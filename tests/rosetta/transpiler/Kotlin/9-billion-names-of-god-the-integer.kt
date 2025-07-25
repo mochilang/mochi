@@ -1,3 +1,5 @@
+import java.math.BigInteger
+
 var _nowSeed = 0L
 var _nowSeeded = false
 fun _now(): Int {
@@ -61,9 +63,9 @@ fun bigAdd(a: MutableList<Int>, b: MutableList<Int>): MutableList<Int> {
         if (i < b.size) {
             bv = b[i]
         }
-        var s: Int = (av + bv) + carry
-        res = run { val _tmp = res.toMutableList(); _tmp.add(s % 10); _tmp } as MutableList<Int>
-        carry = s / 10
+        var s: BigInteger = (av + bv) + carry
+        res = run { val _tmp = res.toMutableList(); _tmp.add(s.remainder(10.toBigInteger())); _tmp } as MutableList<Int>
+        carry = (s.divide(10.toBigInteger())) as Int
         i = i + 1
     }
     return bigTrim(res)
@@ -79,9 +81,9 @@ fun bigSub(a: MutableList<Int>, b: MutableList<Int>): MutableList<Int> {
         if (i < b.size) {
             bv = b[i]
         }
-        var diff: Int = (av - bv) - borrow
-        if (diff < 0) {
-            diff = diff + 10
+        var diff: BigInteger = (av - bv) - borrow
+        if (diff.compareTo(0.toBigInteger()) < 0) {
+            diff = diff.add(10.toBigInteger())
             borrow = 1
         } else {
             borrow = 0
@@ -94,10 +96,10 @@ fun bigSub(a: MutableList<Int>, b: MutableList<Int>): MutableList<Int> {
 
 fun bigToString(a: MutableList<Int>): String {
     var s: String = ""
-    var i: Int = a.size - 1
-    while (i >= 0) {
-        s = s + (a[i]).toString()
-        i = i - 1
+    var i: BigInteger = a.size - 1
+    while (i.compareTo(0.toBigInteger()) >= 0) {
+        s = s + ((a)[(i).toInt()] as Int).toString()
+        i = i.subtract(1.toBigInteger())
     }
     return s
 }
@@ -118,10 +120,10 @@ fun cumu(n: Int): MutableList<MutableList<Int>> {
         var x: Int = 1
         while (x <= y) {
             val _val: MutableList<Int> = cache[y - x][minInt(x, y - x)]
-            row = run { val _tmp = row.toMutableList(); _tmp.add(bigAdd(row[row.size - 1], _val)); _tmp } as MutableList<MutableList<Int>>
+            row = run { val _tmp = ::row.toMutableList(); _tmp.add(bigAdd(::row[::row.size - 1], _val)); _tmp } as MutableList<MutableList<Int>>
             x = x + 1
         }
-        cache = run { val _tmp = cache.toMutableList(); _tmp.add(row); _tmp } as MutableList<MutableList<MutableList<Int>>>
+        cache = run { val _tmp = cache.toMutableList(); _tmp.add(::row); _tmp } as MutableList<MutableList<MutableList<Int>>>
         y = y + 1
     }
     return cache[n]
@@ -159,7 +161,7 @@ fun main() {
         println("")
         println("sums:")
         for (num in mutableListOf(23, 123, 1234)) {
-            val r: MutableList<MutableList<Int>> = cumu(num)
+            val r: Any? = cumu(num)
             println((num.toString() + " ") + bigToString((r[r.size - 1]) as MutableList<Int>))
         }
         System.gc()

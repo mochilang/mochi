@@ -1,4 +1,32 @@
-var pps: MutableMap<Int, Boolean> = mutableMapOf<Any, Any>() as MutableMap<Int, Boolean>
+import java.math.BigInteger
+
+var _nowSeed = 0L
+var _nowSeeded = false
+fun _now(): Int {
+    if (!_nowSeeded) {
+        System.getenv("MOCHI_NOW_SEED")?.toLongOrNull()?.let {
+            _nowSeed = it
+            _nowSeeded = true
+        }
+    }
+    return if (_nowSeeded) {
+        _nowSeed = (_nowSeed * 1664525 + 1013904223) % 2147483647
+        kotlin.math.abs(_nowSeed.toInt())
+    } else {
+        kotlin.math.abs(System.nanoTime().toInt())
+    }
+}
+
+fun toJson(v: Any?): String = when (v) {
+    null -> "null"
+    is String -> "\"" + v.replace("\"", "\\\"") + "\""
+    is Boolean, is Number -> v.toString()
+    is Map<*, *> -> v.entries.joinToString(prefix = "{", postfix = "}") { toJson(it.key.toString()) + ":" + toJson(it.value) }
+    is Iterable<*> -> v.joinToString(prefix = "[", postfix = "]") { toJson(it) }
+    else -> toJson(v.toString())
+}
+
+var pps: MutableMap<Int, Boolean> = mutableMapOf<Any?, Any?>() as MutableMap<Int, Boolean>
 fun pow10(exp: Int): Int {
     var n: Int = 1
     var i: Int = 0
@@ -32,7 +60,7 @@ fun totient(n: Int): Int {
 }
 
 fun getPerfectPowers(maxExp: Int): Unit {
-    val upper: Int = pow10(maxExp) as Int
+    val upper: Int = pow10(maxExp)
     var i: Int = 2
     while ((i * i) < upper) {
         var p: Int = i
@@ -48,21 +76,21 @@ fun getPerfectPowers(maxExp: Int): Unit {
 }
 
 fun getAchilles(minExp: Int, maxExp: Int): MutableMap<Int, Boolean> {
-    val lower: Int = pow10(minExp) as Int
-    val upper: Int = pow10(maxExp) as Int
-    var achilles: MutableMap<Int, Boolean> = mutableMapOf<Any, Any>() as MutableMap<Int, Boolean>
+    val lower: Int = pow10(minExp)
+    val upper: Int = pow10(maxExp)
+    var achilles: MutableMap<Int, Boolean> = mutableMapOf<Any?, Any?>() as MutableMap<Int, Boolean>
     var b: Int = 1
     while (((b * b) * b) < upper) {
-        val b3: Int = (b * b) * b
+        val b3: BigInteger = (b * b) * b
         var a: Int = 1
         while (true) {
-            val p: Int = (b3 * a) * a
-            if (p >= upper) {
+            val p: BigInteger = (b3.multiply(a.toBigInteger())).multiply(a.toBigInteger())
+            if (p.compareTo(upper.toBigInteger()) >= 0) {
                 break
             }
-            if (p >= lower) {
-                if (!((p in pps) as Boolean)) {
-                    (achilles)[p] = true
+            if (p.compareTo(lower.toBigInteger()) >= 0) {
+                if (!((p /* unsupported */ ) as Boolean)) {
+                    (achilles)[(p).toInt()] = true
                 }
             }
             a = a + 1
@@ -111,19 +139,19 @@ fun pad(n: Int, width: Int): String {
 fun user_main(): Unit {
     val maxDigits: Int = 15
     getPerfectPowers(5)
-    val achSet: MutableMap<Int, Boolean> = getAchilles(1, 5) as MutableMap<Int, Boolean>
+    val achSet: MutableMap<Int, Boolean> = getAchilles(1, 5)
     var ach: MutableList<Int> = mutableListOf()
     for (k in (achSet)["keys"]!!().keys) {
-        ach = (ach + mutableListOf(k)).toMutableList() as MutableList<Int>
+        ach = ((ach + mutableListOf(k)).toMutableList()) as MutableList<Int>
     }
-    ach = sortInts(ach) as MutableList<Int>
+    ach = sortInts(ach)
     println("First 50 Achilles numbers:")
     var i: Int = 0
     while (i < 50) {
         var line: String = ""
         var j: Int = 0
         while (j < 10) {
-            line = line + pad(ach[i], 4) as String
+            line = line + pad(ach[i], 4)
             if (j < 9) {
                 line = line + " "
             }
@@ -137,7 +165,7 @@ fun user_main(): Unit {
     var count: Int = 0
     var idx: Int = 0
     while (count < 30) {
-        val tot: Int = totient(ach[idx]) as Int
+        val tot: Int = totient(ach[idx])
         if (tot in achSet) {
             strong = (strong + mutableListOf(ach[idx])).toMutableList()
             count = count + 1
@@ -149,7 +177,7 @@ fun user_main(): Unit {
         var line: String = ""
         var j: Int = 0
         while (j < 10) {
-            line = line + pad(strong[i], 5) as String
+            line = line + pad(strong[i], 5)
             if (j < 9) {
                 line = line + " "
             }
@@ -163,11 +191,23 @@ fun user_main(): Unit {
     var d: Int = 2
     while (d <= maxDigits) {
         val c: Int = counts[d - 2]
-        println((pad(d, 2) as String + " digits: ") + c.toString())
+        println((pad(d, 2) + " digits: ") + c.toString())
         d = d + 1
     }
 }
 
 fun main() {
-    user_main()
+    run {
+        System.gc()
+        val _startMem = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()
+        val _start = _now()
+        user_main()
+        System.gc()
+        val _end = _now()
+        val _endMem = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()
+        val _durationUs = (_end - _start) / 1000
+        val _memDiff = kotlin.math.abs(_endMem - _startMem)
+        val _res = mapOf("duration_us" to _durationUs, "memory_bytes" to _memDiff, "name" to "main")
+        println(toJson(_res))
+    }
 }

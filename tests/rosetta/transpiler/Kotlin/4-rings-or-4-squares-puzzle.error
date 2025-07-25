@@ -1,0 +1,19 @@
+OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/4-rings-or-4-squares-puzzle.kt:33:31: error: type mismatch: inferred type is Int but BigInteger was expected
+    val square1: BigInteger = a + b
+                              ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/4-rings-or-4-squares-puzzle.kt:34:31: error: type mismatch: inferred type is Int but BigInteger was expected
+    val square2: BigInteger = (b + c) + d
+                              ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/4-rings-or-4-squares-puzzle.kt:35:31: error: type mismatch: inferred type is Int but BigInteger was expected
+    val square3: BigInteger = (d + e) + f
+                              ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/4-rings-or-4-squares-puzzle.kt:36:31: error: type mismatch: inferred type is Int but BigInteger was expected
+    val square4: BigInteger = f + g
+                              ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/4-rings-or-4-squares-puzzle.kt:44:29: error: type mismatch: inferred type is Int but BigInteger was expected
+        var j: BigInteger = i + 1
+                            ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/4-rings-or-4-squares-puzzle.kt:62:37: error: type mismatch: inferred type is Int but BigInteger was expected
+                val s: BigInteger = (b + c) + d
+                                    ^

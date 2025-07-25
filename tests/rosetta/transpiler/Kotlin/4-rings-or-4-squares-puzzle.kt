@@ -1,3 +1,5 @@
+import java.math.BigInteger
+
 var _nowSeed = 0L
 var _nowSeeded = false
 fun _now(): Int {
@@ -28,23 +30,23 @@ val r1: MutableMap<String, Any?> = getCombs(1, 7, true)
 val r2: MutableMap<String, Any?> = getCombs(3, 9, true)
 val r3: MutableMap<String, Any?> = getCombs(0, 9, false)
 fun validComb(a: Int, b: Int, c: Int, d: Int, e: Int, f: Int, g: Int): Boolean {
-    val square1: Int = a + b
-    val square2: Int = (b + c) + d
-    val square3: Int = (d + e) + f
-    val square4: Int = f + g
-    return ((((square1 == square2) && (square2 == square3) as Boolean)) && (square3 == square4)) as Boolean
+    val square1: BigInteger = a + b
+    val square2: BigInteger = (b + c) + d
+    val square3: BigInteger = (d + e) + f
+    val square4: BigInteger = f + g
+    return ((((square1.compareTo(square2) == 0) && (square2.compareTo(square3) == 0) as Boolean)) && (square3.compareTo(square4) == 0)) as Boolean
 }
 
 fun isUnique(a: Int, b: Int, c: Int, d: Int, e: Int, f: Int, g: Int): Boolean {
     var nums: MutableList<Int> = mutableListOf(a, b, c, d, e, f, g)
     var i: Int = 0
     while (i < nums.size) {
-        var j: Int = i + 1
-        while (j < nums.size) {
-            if (nums[i] == nums[j]) {
+        var j: BigInteger = i + 1
+        while (j.compareTo(nums.size.toBigInteger()) < 0) {
+            if (nums[i] == (nums)[(j).toInt()] as Int) {
                 return false
             }
-            j = j + 1
+            j = j.add(1.toBigInteger())
         }
         i = i + 1
     }
@@ -57,24 +59,24 @@ fun getCombs(low: Int, high: Int, unique: Boolean): MutableMap<String, Any?> {
     for (b in low until high + 1) {
         for (c in low until high + 1) {
             for (d in low until high + 1) {
-                val s: Int = (b + c) + d
+                val s: BigInteger = (b + c) + d
                 for (e in low until high + 1) {
                     for (f in low until high + 1) {
-                        val a: Int = s - b
-                        val g: Int = s - f
-                        if ((a < low) || (a > high)) {
+                        val a: BigInteger = s.subtract(b.toBigInteger())
+                        val g: BigInteger = s.subtract(f.toBigInteger())
+                        if ((a.compareTo(low.toBigInteger()) < 0) || (a.compareTo(high.toBigInteger()) > 0)) {
                             continue
                         }
-                        if ((g < low) || (g > high)) {
+                        if ((g.compareTo(low.toBigInteger()) < 0) || (g.compareTo(high.toBigInteger()) > 0)) {
                             continue
                         }
-                        if (((d + e) + f) != s) {
+                        if (((d + e) + f).toBigInteger().compareTo(s) != 0) {
                             continue
                         }
-                        if ((f + g) != s) {
+                        if ((f.toBigInteger().add(g)).compareTo(s) != 0) {
                             continue
                         }
-                        if ((!unique as Boolean) || isUnique(a, b, c, d, e, f, g)) {
+                        if ((!unique as Boolean) || isUnique(a as Int, b, c, d, e, f, g as Int)) {
                             valid = run { val _tmp = valid.toMutableList(); _tmp.add(mutableListOf(a, b, c, d, e, f, g)); _tmp } as MutableList<Any?>
                             count = count + 1
                         }

@@ -1,3 +1,5 @@
+import java.math.BigInteger
+
 var _nowSeed = 0L
 var _nowSeeded = false
 fun _now(): Int {
@@ -70,9 +72,9 @@ fun numberName(n: Int): String {
     }
     if (n < 100) {
         var t: String = tens[(n / 10).toInt()]
-        var s: Int = n % 10
-        if (s > 0) {
-            t = (t + " ") + small[s]
+        var s: BigInteger = n % 10
+        if (s.compareTo(0.toBigInteger()) > 0) {
+            t = (t + " ") + (small)[(s).toInt()] as String
         }
         return t
     }
@@ -91,8 +93,8 @@ fun pluralizeFirst(s: String, n: Int): String {
 }
 
 fun randInt(seed: Int, n: Int): Int {
-    val next: Int = ((seed * 1664525) + 1013904223) % 2147483647
-    return next % n
+    val next: BigInteger = ((seed * 1664525) + 1013904223) % 2147483647
+    return (next.remainder(n.toBigInteger())) as Int
 }
 
 fun slur(p: String, d: Int): String {
@@ -105,17 +107,17 @@ fun slur(p: String, d: Int): String {
         a = run { val _tmp = a.toMutableList(); _tmp.add(p.substring(i, i + 1)); _tmp } as MutableList<String>
         i = i + 1
     }
-    var idx: Int = a.size - 1
+    var idx: BigInteger = a.size - 1
     var seed: Int = d
-    while (idx >= 1) {
+    while (idx.compareTo(1.toBigInteger()) >= 0) {
         seed = ((seed * 1664525) + 1013904223) % 2147483647
         if ((seed % 100) >= d) {
-            val j: Int = seed % (idx + 1)
-            val tmp: String = a[idx]
-            a[idx] = a[j]
-            a[j] = tmp
+            val j: BigInteger = seed.toBigInteger().remainder((idx.add(1.toBigInteger())))
+            val tmp: String = (a)[(idx).toInt()] as String
+            a[(idx).toInt()] = (a)[(j).toInt()] as String
+            a[(j).toInt()] = tmp
         }
-        idx = idx - 1
+        idx = idx.subtract(1.toBigInteger())
     }
     var s: String = p.substring(0, 1)
     var k: Int = 0

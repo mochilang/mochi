@@ -1,0 +1,38 @@
+OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/9-billion-names-of-god-the-integer.kt:66:29: error: type mismatch: inferred type is Int but BigInteger was expected
+        var s: BigInteger = (av + bv) + carry
+                            ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/9-billion-names-of-god-the-integer.kt:67:62: error: type mismatch: inferred type is BigInteger! but Int was expected
+        res = run { val _tmp = res.toMutableList(); _tmp.add(s.remainder(10.toBigInteger())); _tmp } as MutableList<Int>
+                                                             ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/9-billion-names-of-god-the-integer.kt:84:32: error: type mismatch: inferred type is Int but BigInteger was expected
+        var diff: BigInteger = (av - bv) - borrow
+                               ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/9-billion-names-of-god-the-integer.kt:91:62: error: type mismatch: inferred type is BigInteger but Int was expected
+        res = run { val _tmp = res.toMutableList(); _tmp.add(diff); _tmp } as MutableList<Int>
+                                                             ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/9-billion-names-of-god-the-integer.kt:99:25: error: type mismatch: inferred type is Int but BigInteger was expected
+    var i: BigInteger = a.size - 1
+                        ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/9-billion-names-of-god-the-integer.kt:123:38: error: unsupported [References to variables aren't supported yet]
+            row = run { val _tmp = ::row.toMutableList(); _tmp.add(bigAdd(::row[::row.size - 1], _val)); _tmp } as MutableList<MutableList<Int>>
+                                     ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/9-billion-names-of-god-the-integer.kt:123:77: error: unsupported [References to variables aren't supported yet]
+            row = run { val _tmp = ::row.toMutableList(); _tmp.add(bigAdd(::row[::row.size - 1], _val)); _tmp } as MutableList<MutableList<Int>>
+                                                                            ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/9-billion-names-of-god-the-integer.kt:123:83: error: unsupported [References to variables aren't supported yet]
+            row = run { val _tmp = ::row.toMutableList(); _tmp.add(bigAdd(::row[::row.size - 1], _val)); _tmp } as MutableList<MutableList<Int>>
+                                                                                  ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/9-billion-names-of-god-the-integer.kt:126:68: error: unsupported [References to variables aren't supported yet]
+        cache = run { val _tmp = cache.toMutableList(); _tmp.add(::row); _tmp } as MutableList<MutableList<MutableList<Int>>>
+                                                                   ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/9-billion-names-of-god-the-integer.kt:165:59: error: unresolved reference. None of the following candidates is applicable because of receiver type mismatch: 
+@InlineOnly public inline operator fun <@OnlyInputTypes K, V> Map<out ???, ???>.get(key: ???): ??? defined in kotlin.collections
+            println((num.toString() + " ") + bigToString((r[r.size - 1]) as MutableList<Int>))
+                                                          ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/9-billion-names-of-god-the-integer.kt:165:60: error: no get method providing array access
+            println((num.toString() + " ") + bigToString((r[r.size - 1]) as MutableList<Int>))
+                                                           ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/9-billion-names-of-god-the-integer.kt:165:63: error: unresolved reference: size
+            println((num.toString() + " ") + bigToString((r[r.size - 1]) as MutableList<Int>))
+                                                              ^

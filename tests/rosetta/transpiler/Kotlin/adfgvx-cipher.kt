@@ -1,3 +1,5 @@
+import java.math.BigInteger
+
 var _nowSeed = 0L
 var _nowSeeded = false
 fun _now(): Int {
@@ -9,10 +11,19 @@ fun _now(): Int {
     }
     return if (_nowSeeded) {
         _nowSeed = (_nowSeed * 1664525 + 1013904223) % 2147483647
-        _nowSeed.toInt()
+        kotlin.math.abs(_nowSeed.toInt())
     } else {
-        System.nanoTime().toInt()
+        kotlin.math.abs(System.nanoTime().toInt())
     }
+}
+
+fun toJson(v: Any?): String = when (v) {
+    null -> "null"
+    is String -> "\"" + v.replace("\"", "\\\"") + "\""
+    is Boolean, is Number -> v.toString()
+    is Map<*, *> -> v.entries.joinToString(prefix = "{", postfix = "}") { toJson(it.key.toString()) + ":" + toJson(it.value) }
+    is Iterable<*> -> v.joinToString(prefix = "[", postfix = "]") { toJson(it) }
+    else -> toJson(v.toString())
 }
 
 var adfgvx: String = "ADFGVX"
@@ -24,13 +35,13 @@ fun shuffleStr(s: String): String {
         arr = run { val _tmp = arr.toMutableList(); _tmp.add(s.substring(i, i + 1)); _tmp } as MutableList<String>
         i = i + 1
     }
-    var j: Int = arr.size - 1
-    while (j > 0) {
-        val k: Int = _now() % (j + 1)
-        val tmp: String = arr[j]
-        arr[j] = arr[k]
-        arr[k] = tmp
-        j = j - 1
+    var j: BigInteger = arr.size - 1
+    while (j.compareTo(0.toBigInteger()) > 0) {
+        val k: BigInteger = _now().toBigInteger().remainder((j.add(1.toBigInteger())))
+        val tmp: String = (arr)[(j).toInt()] as String
+        arr[(j).toInt()] = (arr)[(k).toInt()] as String
+        arr[(k).toInt()] = tmp
+        j = j.subtract(1.toBigInteger())
     }
     var out: String = ""
     i = 0
@@ -42,7 +53,7 @@ fun shuffleStr(s: String): String {
 }
 
 fun createPolybius(): MutableList<String> {
-    val shuffled: String = shuffleStr(alphabet) as String
+    val shuffled: String = shuffleStr(alphabet)
     var labels: MutableList<String> = mutableListOf()
     var li: Int = 0
     while (li < adfgvx.length) {
@@ -77,9 +88,9 @@ fun createKey(n: Int): String {
     var key: String = ""
     var i: Int = 0
     while (i < n) {
-        val idx: Int = _now() % pool.length
-        key = key + (pool[idx]).toString()
-        pool = pool.substring(0, idx) + pool.substring(idx + 1, pool.length)
+        val idx: BigInteger = _now() % pool.length
+        key = key + (pool[(idx).toInt()]).toString()
+        pool = pool.substring(0, idx) + pool.substring(idx.add(1.toBigInteger()), pool.length)
         i = i + 1
     }
     println("\nThe key is " + key)
@@ -87,10 +98,10 @@ fun createKey(n: Int): String {
 }
 
 fun orderKey(key: String): MutableList<Int> {
-    var pairs: MutableList<Any> = mutableListOf()
+    var pairs: MutableList<Any?> = mutableListOf()
     var i: Int = 0
     while (i < key.length) {
-        pairs = run { val _tmp = pairs.toMutableList(); _tmp.add(mutableListOf(key.substring(i, i + 1), i)); _tmp }
+        pairs = run { val _tmp = pairs.toMutableList(); _tmp.add(mutableListOf(key.substring(i, i + 1), i)); _tmp } as MutableList<Any?>
         i = i + 1
     }
     var n: Int = pairs.size
@@ -99,7 +110,7 @@ fun orderKey(key: String): MutableList<Int> {
         var j: Int = 0
         while (j < (n - 1)) {
             if (pairs[j][0] > pairs[j + 1][0]) {
-                val tmp = pairs[j]
+                val tmp: Any? = pairs[j]
                 pairs[j] = pairs[j + 1]
                 pairs[j + 1] = tmp
             }
@@ -107,10 +118,10 @@ fun orderKey(key: String): MutableList<Int> {
         }
         m = m + 1
     }
-    var res: MutableList<Any> = mutableListOf()
+    var res: MutableList<Any?> = mutableListOf()
     i = 0
     while (i < n) {
-        res = run { val _tmp = res.toMutableList(); _tmp.add(pairs[i][1].toInt()); _tmp }
+        res = run { val _tmp = res.toMutableList(); _tmp.add((pairs[i][1]).toInt()); _tmp } as MutableList<Any?>
         i = i + 1
     }
     return res as MutableList<Int>
@@ -131,7 +142,7 @@ fun encrypt(polybius: MutableList<String>, key: String, plainText: String): Stri
             var c: Int = 0
             while (c < 6) {
                 if (polybius[r].subList(c, c + 1) == plainText.substring(i, i + 1)) {
-                    temp = (((temp + (labels.subList(r, r + 1)).toString()).toMutableList()) + labels.subList(c, c + 1)).toMutableList() as String
+                    temp = ((((temp + (labels.subList(r, r + 1)).toString()).toMutableList()) + labels.subList(c, c + 1)).toMutableList()) as String
                 }
                 c = c + 1
             }
@@ -158,11 +169,11 @@ fun encrypt(polybius: MutableList<String>, key: String, plainText: String): Stri
     var idx: Int = 0
     while (idx < temp.length) {
         val row: MutableList<String> = idx / key.length
-        val col: Int = idx % key.length
-        (table)[row] as MutableList<String>[col] = temp.substring(idx, idx + 1)
+        val col: BigInteger = idx % key.length
+        table[row][(col).toInt()] = temp.substring(idx, idx + 1)
         idx = idx + 1
     }
-    val order: MutableList<Int> = orderKey(key) as MutableList<Int>
+    val order: MutableList<Int> = orderKey(key)
     var cols: MutableList<String> = mutableListOf()
     var ci: Int = 0
     while (ci < key.length) {
@@ -256,7 +267,7 @@ fun decrypt(polybius: MutableList<String>, key: String, cipherText: String): Str
         table = run { val _tmp = table.toMutableList(); _tmp.add(row); _tmp } as MutableList<MutableList<String>>
         r = r + 1
     }
-    val order: MutableList<Int> = orderKey(key) as MutableList<Int>
+    val order: MutableList<Int> = orderKey(key)
     r = 0
     while (r < maxColLen) {
         var c: Int = 0
@@ -279,8 +290,8 @@ fun decrypt(polybius: MutableList<String>, key: String, cipherText: String): Str
     var plainText: String = ""
     var idx: Int = 0
     while (idx < temp.length) {
-        val rIdx: Int = indexOf(adfgvx, temp.substring(idx, idx + 1)) as Int
-        val cIdx: Int = indexOf(adfgvx, temp.substring(idx + 1, idx + 2)) as Int
+        val rIdx: Int = indexOf(adfgvx, temp.substring(idx, idx + 1))
+        val cIdx: Int = indexOf(adfgvx, temp.substring(idx + 1, idx + 2))
         plainText = plainText + (polybius[rIdx][cIdx]).toString()
         idx = idx + 2
     }
@@ -289,15 +300,27 @@ fun decrypt(polybius: MutableList<String>, key: String, cipherText: String): Str
 
 fun user_main(): Unit {
     val plainText: String = "ATTACKAT1200AM"
-    val polybius: MutableList<String> = createPolybius() as MutableList<String>
-    val key: String = createKey(9) as String
+    val polybius: MutableList<String> = createPolybius()
+    val key: String = createKey(9)
     println("\nPlaintext : " + plainText)
-    val cipherText: String = encrypt(polybius, key, plainText) as String
+    val cipherText: String = encrypt(polybius, key, plainText)
     println("\nEncrypted : " + cipherText)
-    val plainText2: String = decrypt(polybius, key, cipherText) as String
+    val plainText2: String = decrypt(polybius, key, cipherText)
     println("\nDecrypted : " + plainText2)
 }
 
 fun main() {
-    user_main()
+    run {
+        System.gc()
+        val _startMem = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()
+        val _start = _now()
+        user_main()
+        System.gc()
+        val _end = _now()
+        val _endMem = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()
+        val _durationUs = (_end - _start) / 1000
+        val _memDiff = kotlin.math.abs(_endMem - _startMem)
+        val _res = mapOf("duration_us" to _durationUs, "memory_bytes" to _memDiff, "name" to "main")
+        println(toJson(_res))
+    }
 }

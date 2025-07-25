@@ -1,0 +1,10 @@
+OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/99-bottles-of-beer-2.kt:75:29: error: type mismatch: inferred type is Int but BigInteger was expected
+        var s: BigInteger = n % 10
+                            ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/99-bottles-of-beer-2.kt:96:28: error: type mismatch: inferred type is Int but BigInteger was expected
+    val next: BigInteger = ((seed * 1664525) + 1013904223) % 2147483647
+                           ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/99-bottles-of-beer-2.kt:110:27: error: type mismatch: inferred type is Int but BigInteger was expected
+    var idx: BigInteger = a.size - 1
+                          ^
