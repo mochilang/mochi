@@ -8,6 +8,7 @@ import (
 	"io"
 	"math"
 	"math/big"
+	"math/rand"
 	"os"
 	"reflect"
 	"runtime"
@@ -28,6 +29,7 @@ import (
 var (
 	seededNow bool
 	nowSeed   int64
+	rng       *rand.Rand
 )
 
 func init() {
@@ -37,6 +39,11 @@ func init() {
 			seededNow = true
 		}
 	}
+	if seededNow {
+		rng = rand.New(rand.NewSource(nowSeed))
+	} else {
+		rng = rand.New(rand.NewSource(time.Now().UnixNano()))
+	}
 }
 
 // SetNowSeed enables deterministic values for the now() builtin.
@@ -44,6 +51,7 @@ func init() {
 func SetNowSeed(n int64) {
 	seededNow = true
 	nowSeed = n
+	rng = rand.New(rand.NewSource(nowSeed))
 }
 
 // Value represents a runtime value handled by the VM.
@@ -1262,12 +1270,7 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 			}
 			fmt.Fprintln(m.writer, strings.TrimSpace(sb.String()))
 		case OpNow:
-			if seededNow {
-				nowSeed = (nowSeed*1664525 + 1013904223) % 2147483647
-				fr.regs[ins.A] = Value{Tag: ValueInt, Int: int(nowSeed)}
-			} else {
-				fr.regs[ins.A] = Value{Tag: ValueInt, Int: int(time.Now().UnixNano())}
-			}
+			fr.regs[ins.A] = Value{Tag: ValueInt, Int: int(rng.Int63())}
 		case OpMem:
 			var ms runtime.MemStats
 			runtime.ReadMemStats(&ms)
@@ -2474,6 +2477,10 @@ func (c *compiler) compileMain(p *parser.Program) (Function, error) {
 		if err := fc.compileStmt(st); err != nil {
 			return Function{}, err
 		}
+	}
+	if idx, ok := c.fnIndex["main"]; ok {
+		tmp := fc.newReg()
+		fc.emit(lexer.Position{}, Instr{Op: OpCall, A: tmp, B: idx, C: 0, D: 0})
 	}
 	fc.emit(lexer.Position{}, Instr{Op: OpReturn, A: 0})
 	if fc.fn.NumRegs == 0 {
