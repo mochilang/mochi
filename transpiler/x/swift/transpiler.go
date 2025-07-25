@@ -927,7 +927,11 @@ func (c *CastExpr) emit(w io.Writer) {
 			c.Expr.emit(w)
 			return
 		}
-		if t == "String" && !force {
+		if force {
+			fmt.Fprint(w, "(")
+			c.Expr.emit(w)
+			fmt.Fprintf(w, " as! %s)", t)
+		} else if t == "String" {
 			fmt.Fprint(w, "String(describing: ")
 			c.Expr.emit(w)
 			fmt.Fprint(w, ")")
@@ -1747,7 +1751,15 @@ func convertStmt(env *types.Env, st *parser.Statement) (Stmt, error) {
 				swiftT = ut.Name
 			}
 			if swiftT != "Any" {
-				ex = &CastExpr{Expr: ex, Type: swiftT + "!"}
+				srcSwiftT := swiftTypeOf(types.TypeOfExpr(st.Var.Value, env))
+				if srcSwiftT == swiftT {
+					// no cast needed
+				} else if (swiftT == "Int" || swiftT == "Int64" || swiftT == "Double") &&
+					(srcSwiftT == "Int" || srcSwiftT == "Int64" || srcSwiftT == "Double") {
+					ex = &CastExpr{Expr: ex, Type: swiftT}
+				} else {
+					ex = &CastExpr{Expr: ex, Type: swiftT + "!"}
+				}
 			}
 		}
 		return &VarDecl{Name: st.Var.Name, Const: false, Type: typ, Expr: ex}, nil
