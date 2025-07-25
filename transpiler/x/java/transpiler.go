@@ -136,6 +136,10 @@ func javaBoxType(t string) string {
 	case "bigint", "java.math.BigInteger":
 		return "java.math.BigInteger"
 	default:
+		if strings.HasSuffix(t, "[]") {
+			elem := strings.TrimSuffix(t, "[]")
+			return javaBoxType(elem) + "[]"
+		}
 		return "Object"
 	}
 }
@@ -204,7 +208,14 @@ func emitCastExpr(w io.Writer, e Expr, typ string) {
 			}
 		}
 	}
-	if jt := javaType(typ); jt == "java.math.BigInteger" {
+	jt := javaType(typ)
+	if jt == "String" && !isStringExpr(e) {
+		fmt.Fprint(w, "String.valueOf(")
+		e.emit(w)
+		fmt.Fprint(w, ")")
+		return
+	}
+	if jt == "java.math.BigInteger" {
 		if inferType(e) == "bigint" {
 			e.emit(w)
 			return
@@ -1194,6 +1205,8 @@ func (m *MapLit) emit(w io.Writer) {
 		}
 		if same {
 			valType = javaBoxType(t)
+		} else if m.ValueType != "" {
+			valType = javaBoxType(m.ValueType)
 		}
 	} else if m.ValueType != "" {
 		valType = javaBoxType(m.ValueType)
@@ -1203,16 +1216,19 @@ func (m *MapLit) emit(w io.Writer) {
 		keyType = javaBoxType(m.KeyType)
 	}
 	if len(m.Keys) > 0 {
-		fmt.Fprintf(w, "new java.util.LinkedHashMap<%s, %s>(java.util.Map.of(", keyType, valType)
+		fmt.Fprintf(w, "new java.util.LinkedHashMap<%s, %s>() {{", keyType, valType)
 		for i := range m.Keys {
-			if i > 0 {
-				fmt.Fprint(w, ", ")
-			}
+			fmt.Fprint(w, " put(")
 			m.Keys[i].emit(w)
 			fmt.Fprint(w, ", ")
-			m.Values[i].emit(w)
+			if m.ValueType != "" {
+				emitCastExpr(w, m.Values[i], m.ValueType)
+			} else {
+				m.Values[i].emit(w)
+			}
+			fmt.Fprint(w, ");")
 		}
-		fmt.Fprint(w, "))")
+		fmt.Fprint(w, " }}")
 	} else {
 		fmt.Fprintf(w, "new java.util.LinkedHashMap<%s, %s>()", keyType, valType)
 	}
@@ -2122,6 +2138,12 @@ func isMapExpr(e Expr) bool {
 				return true
 			}
 		}
+	case *FieldExpr:
+		if t, ok := fieldTypeFromVar(ex.Target, ex.Name); ok {
+			if strings.Contains(t, "Map") {
+				return true
+			}
+		}
 	}
 	if inferType(e) == "map" {
 		return true
@@ -2528,16 +2550,14 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 				if len(ml.Fields) > 0 {
 					mapVarFields[s.Let.Name] = ml.Fields
 				}
-				if len(ml.Keys) == 0 {
-					if ml.ValueType == "" {
-						if vt := mapValueType(t); vt != "" {
-							ml.ValueType = vt
-						}
+				if ml.ValueType == "" {
+					if vt := mapValueType(t); vt != "" {
+						ml.ValueType = vt
 					}
-					if ml.KeyType == "" {
-						if kt := mapKeyType(t); kt != "" {
-							ml.KeyType = kt
-						}
+				}
+				if ml.KeyType == "" {
+					if kt := mapKeyType(t); kt != "" {
+						ml.KeyType = kt
 					}
 				}
 			} else if ce, ok := e.(*CallExpr); ok {
@@ -2600,16 +2620,14 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 				if len(ml.Fields) > 0 {
 					mapVarFields[s.Var.Name] = ml.Fields
 				}
-				if len(ml.Keys) == 0 {
-					if ml.ValueType == "" {
-						if vt := mapValueType(t); vt != "" {
-							ml.ValueType = vt
-						}
+				if ml.ValueType == "" {
+					if vt := mapValueType(t); vt != "" {
+						ml.ValueType = vt
 					}
-					if ml.KeyType == "" {
-						if kt := mapKeyType(t); kt != "" {
-							ml.KeyType = kt
-						}
+				}
+				if ml.KeyType == "" {
+					if kt := mapKeyType(t); kt != "" {
+						ml.KeyType = kt
 					}
 				}
 			} else if ce, ok := e.(*CallExpr); ok {
@@ -3512,11 +3530,29 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 	case p.Struct != nil:
 		names := make([]string, len(p.Struct.Fields))
 		vals := make([]Expr, len(p.Struct.Fields))
+		var st types.StructType
+		if topEnv != nil {
+			if s, ok := topEnv.GetStruct(p.Struct.Name); ok {
+				st = s
+			}
+		}
 		for i, f := range p.Struct.Fields {
 			names[i] = f.Name
 			v, err := compileExpr(f.Value)
 			if err != nil {
 				return nil, err
+			}
+			if ml, ok := v.(*MapLit); ok && st.Fields != nil {
+				if ft, ok2 := st.Fields[f.Name]; ok2 {
+					if mt, ok3 := ft.(types.MapType); ok3 {
+						if ml.KeyType == "" {
+							ml.KeyType = toJavaTypeFromType(mt.Key)
+						}
+						if ml.ValueType == "" {
+							ml.ValueType = toJavaTypeFromType(mt.Value)
+						}
+					}
+				}
 			}
 			vals[i] = v
 		}

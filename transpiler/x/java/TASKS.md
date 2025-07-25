@@ -1,4 +1,36 @@
-## Progress (2025-07-25 14:32 +0700)
+## Progress (2025-07-25 09:47 UTC)
+- rosetta: update index 35 (e892c009c0)
+
+- rosetta: support map fields in structs (55a74ae43a)
+
+- rosetta: update index 33 (8232275d7f)
+
+- rosetta: update index 33 (8232275d7f)
+
+- rosetta: update index 33 (8232275d7f)
+
+- remove old error file (b2c4c5935c)
+
+- rosetta: update Java output for index 31 (01ba73c49d)
+
+- rosetta: update Java output for index 31 (01ba73c49d)
+
+- rosetta: update Java output for index 31 (01ba73c49d)
+
+- rosetta: update Java output for index 31 (01ba73c49d)
+
+- rosetta: update Java output for index 31 (01ba73c49d)
+
+- rosetta: update Java output for index 31 (01ba73c49d)
+
+- rosetta: update Java output for index 31 (01ba73c49d)
+
+- rosetta: update Java output for index 31 (01ba73c49d)
+
+- rosetta: update Java output for index 30 (a70ada40d6)
+
+- java transpiler: add bigint support (e46c95c50b)
+
 - transpiler/java: update rosetta outputs and add features (aefc0b2d3e)
 
 - transpiler/java: update rosetta outputs and add features (aefc0b2d3e)

@@ -1,9 +1,9 @@
 # Java Rosetta Transpiler Output
 
 Generated Java code for programs in `tests/rosetta/x/Mochi`. Each program has a `.java` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
-Last updated: 2025-07-25 14:49 GMT+7
+Last updated: 2025-07-25 16:47 GMT+7
 
-## Rosetta Checklist (42/284)
+## Rosetta Checklist (44/284)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 23.0ms | 245.84KB |
@@ -35,13 +35,13 @@ Last updated: 2025-07-25 14:49 GMT+7
 | 27 | achilles-numbers | ✓ | 54.0ms | 10.33MB |
 | 28 | ackermann-function-2 | ✓ | 5.0ms | 0B |
 | 29 | ackermann-function-3 | ✓ | 160.47s | 11.78MB |
-| 30 | ackermann-function | ✓ |  |  |
-| 31 | active-directory-connect | ✓ |  |  |
-| 32 | active-directory-search-for-a-user |   |  |  |
-| 33 | active-object | ✓ |  |  |
-| 34 | add-a-variable-to-a-class-instance-at-runtime |   |  |  |
-| 35 | additive-primes | ✓ |  |  |
-| 36 | address-of-a-variable | ✓ |  |  |
+| 30 | ackermann-function | ✓ | 5.0ms | 0B |
+| 31 | active-directory-connect | ✓ | 5.0ms | 0B |
+| 32 | active-directory-search-for-a-user | ✓ | 20.0ms | 246.02KB |
+| 33 | active-object | ✓ | 710.0µs | 0B |
+| 34 | add-a-variable-to-a-class-instance-at-runtime | ✓ | 4.0ms | 0B |
+| 35 | additive-primes | ✓ | 14.0ms | 0B |
+| 36 | address-of-a-variable | ✓ | 11.0ms | 245.78KB |
 | 37 | adfgvx-cipher |   |  |  |
 | 38 | aks-test-for-primes | ✓ |  |  |
 | 39 | algebraic-data-types | ✓ |  |  |
