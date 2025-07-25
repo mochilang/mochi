@@ -60,6 +60,7 @@ var (
 	needListAppendStr    bool
 	needListAppendPtr    bool
 	needNow              bool
+	needMem              bool
 	needInput            bool
 	needSubstring        bool
 	needAtoi             bool
@@ -283,6 +284,11 @@ type ForStmt struct {
 	ListVar  string
 	ElemType string
 	Body     []Stmt
+}
+
+type BenchStmt struct {
+	Name string
+	Body []Stmt
 }
 
 func (c *CallStmt) emit(w io.Writer, indent int) {
@@ -603,6 +609,30 @@ func (f *ForStmt) emit(w io.Writer, indent int) {
 	for _, s := range f.Body {
 		s.emit(w, indent+1)
 	}
+	writeIndent(w, indent)
+	io.WriteString(w, "}\n")
+}
+
+func (b *BenchStmt) emit(w io.Writer, indent int) {
+	writeIndent(w, indent)
+	io.WriteString(w, "{\n")
+	writeIndent(w, indent+1)
+	io.WriteString(w, "long long __start = _now();\n")
+	writeIndent(w, indent+1)
+	io.WriteString(w, "long long __mem_start = _mem();\n")
+	for _, s := range b.Body {
+		s.emit(w, indent+1)
+	}
+	writeIndent(w, indent+1)
+	io.WriteString(w, "long long __end = _now();\n")
+	writeIndent(w, indent+1)
+	io.WriteString(w, "long long __mem_end = _mem();\n")
+	writeIndent(w, indent+1)
+	io.WriteString(w, "long long __dur_us = (__end - __start) / 1000;\n")
+	writeIndent(w, indent+1)
+	io.WriteString(w, "long long __mem_bytes = __mem_end - __mem_start;\n")
+	writeIndent(w, indent+1)
+	fmt.Fprintf(w, "printf(\"{\\n  \\\"duration_us\\\": %%-lld,\\n  \\\"memory_bytes\\\": %%-lld,\\n  \\\"name\\\": \\\"%s\\\"\\n}\\n\", __dur_us, __mem_bytes);\n", escape(b.Name))
 	writeIndent(w, indent)
 	io.WriteString(w, "}\n")
 }
@@ -1252,6 +1282,9 @@ func (p *Program) Emit() []byte {
 	if needStrConcat || needStrInt || needStrFloat || needStrBool || needSubstring || needAtoi || needInput || needNow || needUpper || needLower {
 		buf.WriteString("#include <stdlib.h>\n")
 	}
+	if needMem {
+		buf.WriteString("#include <malloc.h>\n")
+	}
 	if needUpper || needLower {
 		buf.WriteString("#include <ctype.h>\n")
 	}
@@ -1398,7 +1431,13 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("    }\n")
 		buf.WriteString("    struct timespec ts;\n")
 		buf.WriteString("    clock_gettime(CLOCK_REALTIME, &ts);\n")
-		buf.WriteString("    return (long long)(ts.tv_sec * 1000 + ts.tv_nsec / 1000000);\n")
+		buf.WriteString("    return (long long)(ts.tv_sec * 1000000000LL + ts.tv_nsec);\n")
+		buf.WriteString("}\n\n")
+	}
+	if needMem {
+		buf.WriteString("static long long _mem(void) {\n")
+		buf.WriteString("    struct mallinfo mi = mallinfo();\n")
+		buf.WriteString("    return (long long)mi.uordblks;\n")
 		buf.WriteString("}\n\n")
 	}
 	if needInput {
@@ -1620,6 +1659,7 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 	needListAppendStr = false
 	needListAppendPtr = false
 	needNow = false
+	needMem = false
 	needInput = false
 	needSubstring = false
 	needAtoi = false
@@ -2345,6 +2385,14 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 		return &BreakStmt{}, nil
 	case s.Continue != nil:
 		return &ContinueStmt{}, nil
+	case s.Bench != nil:
+		body, err := compileStmts(env, s.Bench.Body)
+		if err != nil {
+			return nil, err
+		}
+		needNow = true
+		needMem = true
+		return &BenchStmt{Name: s.Bench.Name, Body: body}, nil
 	case s.Test != nil:
 		return nil, nil
 	}

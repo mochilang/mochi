@@ -80,6 +80,7 @@ func transpileAndRun(src string) ([]byte, error) {
 		return nil, fmt.Errorf("compile failed: %v: %s", err, string(out))
 	}
 	cmd := exec.Command(exe)
+	cmd.Env = append(os.Environ(), "MOCHI_NOW_SEED=1")
 	if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
 		cmd.Stdin = bytes.NewReader(data)
 	}
@@ -160,6 +161,7 @@ func TestTranspilerGolden(t *testing.T) {
 		filepath.Join(srcDir, "pure_fold.mochi"),
 		filepath.Join(srcDir, "pure_global_fold.mochi"),
 		filepath.Join(srcDir, "test_block.mochi"),
+		filepath.Join(srcDir, "bench_block.mochi"),
 		filepath.Join(srcDir, "cast_struct.mochi"),
 		filepath.Join(srcDir, "record_assign.mochi"),
 		filepath.Join(srcDir, "user_type_literal.mochi"),
