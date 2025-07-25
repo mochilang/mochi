@@ -115,7 +115,11 @@ func runCase(src, outDir string) ([]byte, error) {
 	if err := os.WriteFile(codePath, code, 0o644); err != nil {
 		return nil, err
 	}
-	cmd := exec.Command("zig", "run", codePath)
+	cmdArgs := []string{"run", codePath}
+	if bench {
+		cmdArgs = append(cmdArgs, "-lc")
+	}
+	cmd := exec.Command("zig", cmdArgs...)
 	cmdEnv := append(os.Environ(), "MOCHI_NOW_SEED=1")
 	if bench {
 		cmdEnv = append(cmdEnv, "MOCHI_BENCHMARK=1")
