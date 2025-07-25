@@ -2,7 +2,7 @@
 
 This directory contains Dart code generated from Mochi programs in `tests/rosetta/x/Mochi`. Each program has a `.dart` file and `.out` output. Compilation or runtime failures are captured in a `.error` file.
 
-Compiled and ran: 124/284
+Compiled and ran: 129/284
 
 ## Checklist
 | Index | Name | Status | Duration | Memory |
@@ -131,18 +131,18 @@ Compiled and ran: 124/284
 | 122 | bitmap-midpoint-circle-algorithm | ✓ |  |  |
 | 123 | bitmap-ppm-conversion-through-a-pipe | ✓ |  |  |
 | 124 | bitmap-read-a-ppm-file |   |  |  |
-| 125 | bitmap-read-an-image-through-a-pipe | ✓ |  |  |
-| 126 | bitmap-write-a-ppm-file | ✓ |  |  |
-| 127 | bitmap | ✓ |  |  |
-| 128 | bitwise-io-1 | ✓ |  |  |
-| 129 | bitwise-io-2 |   |  |  |
-| 130 | bitwise-operations | ✓ |  |  |
-| 131 | blum-integer | ✓ |  |  |
-| 132 | boolean-values | ✓ |  |  |
-| 133 | box-the-compass |   |  |  |
-| 134 | boyer-moore-string-search |   |  |  |
-| 135 | brazilian-numbers |   |  |  |
-| 136 | break-oo-privacy |   |  |  |
+| 125 | bitmap-read-an-image-through-a-pipe | ✓ | 6.319ms | 804.0 KB |
+| 126 | bitmap-write-a-ppm-file | ✓ | 7.857ms | 660.0 KB |
+| 127 | bitmap | ✓ | 58.397ms | 6.0 MB |
+| 128 | bitwise-io-1 | ✓ | 6.417ms | 16.0 KB |
+| 129 | bitwise-io-2 | ✓ | 7.84ms | 1.4 MB |
+| 130 | bitwise-operations | ✓ | 6.685ms | 28.0 KB |
+| 131 | blum-integer | ✓ | 6.868ms | 660.0 KB |
+| 132 | boolean-values | ✓ | 6.335ms | 12.4 MB |
+| 133 | box-the-compass | ✓ | 10.029ms | 640.0 KB |
+| 134 | boyer-moore-string-search | ✓ | 6.452ms | 12.0 MB |
+| 135 | brazilian-numbers | ✓ | 2.607762s | 640.0 KB |
+| 136 | break-oo-privacy | ✓ | 10.556ms | 12.1 MB |
 | 137 | brilliant-numbers |   |  |  |
 | 138 | brownian-tree |   |  |  |
 | 139 | bulls-and-cows-player |   |  |  |
@@ -292,4 +292,4 @@ Compiled and ran: 124/284
 | 283 | define-a-primitive-data-type |   |  |  |
 | 284 | md5 |   |  |  |
 
-_Last updated: 2025-07-25 10:01 +0700_
+_Last updated: 2025-07-25 10:45 +0700_

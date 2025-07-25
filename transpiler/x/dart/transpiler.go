@@ -992,15 +992,20 @@ type CallExpr struct {
 }
 
 func (c *CallExpr) emit(w io.Writer) error {
-	if sel, ok := c.Func.(*SelectorExpr); ok && sel.Field == "keys" && len(c.Args) == 0 {
-		if strings.HasPrefix(inferType(sel.Receiver), "Map<") {
-			if err := sel.Receiver.emit(w); err != nil {
-				return err
+	if sel, ok := c.Func.(*SelectorExpr); ok {
+		if sel.Field == "keys" && len(c.Args) == 0 {
+			if strings.HasPrefix(inferType(sel.Receiver), "Map<") {
+				if err := sel.Receiver.emit(w); err != nil {
+					return err
+				}
+				if _, err := io.WriteString(w, ".keys"); err != nil {
+					return err
+				}
+				return nil
 			}
-			if _, err := io.WriteString(w, ".keys"); err != nil {
-				return err
-			}
-			return nil
+		}
+		if sel.Field == "padStart" && len(c.Args) == 2 {
+			sel.Field = "padLeft"
 		}
 	}
 	if err := c.Func.emit(w); err != nil {
@@ -2841,6 +2846,8 @@ func inferType(e Expr) string {
 				return "num"
 			case "upper", "lower", "trim", "substr", "substring", "padStart", "repeat", "to_json", "str":
 				return "String"
+			case "indexOf":
+				return "int"
 			case "min", "max":
 				return "num"
 			case "values":
@@ -2877,6 +2884,9 @@ func inferType(e Expr) string {
 			}
 			if sel.Field == "toUpperCase" || sel.Field == "toLowerCase" || sel.Field == "substring" || sel.Field == "substr" || sel.Field == "padLeft" || sel.Field == "padRight" {
 				return "String"
+			}
+			if sel.Field == "indexOf" {
+				return "int"
 			}
 		}
 		return "dynamic"
@@ -4025,6 +4035,13 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			}
 			return &CallExpr{Func: &SelectorExpr{Receiver: &Name{Name: "int"}, Field: "parse"}, Args: []Expr{v}}, nil
 		}
+		if p.Call.Func == "parseIntStr" && len(p.Call.Args) == 1 {
+			arg, err := convertExpr(p.Call.Args[0])
+			if err != nil {
+				return nil, err
+			}
+			return &CallExpr{Func: &SelectorExpr{Receiver: &Name{Name: "int"}, Field: "parse"}, Args: []Expr{arg}}, nil
+		}
 		if p.Call.Func == "float" && len(p.Call.Args) == 1 {
 			v, err := convertExpr(p.Call.Args[0])
 			if err != nil {
@@ -4093,6 +4110,20 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			}
 			return &CallExpr{Func: &SelectorExpr{Receiver: s0, Field: "padLeft"}, Args: []Expr{s1, s2}}, nil
 		}
+		if p.Call.Func == "pow" && len(p.Call.Args) == 2 {
+			x, err := convertExpr(p.Call.Args[0])
+			if err != nil {
+				return nil, err
+			}
+			y, err := convertExpr(p.Call.Args[1])
+			if err != nil {
+				return nil, err
+			}
+			imports = append(imports, "import 'dart:math';")
+			expr := &CallExpr{Func: &Name{Name: "pow"}, Args: []Expr{x, y}}
+			expr = &CallExpr{Func: &SelectorExpr{Receiver: expr, Field: "toInt"}}
+			return expr, nil
+		}
 		if p.Call.Func == "num" && len(p.Call.Args) == 1 {
 			arg, err := convertExpr(p.Call.Args[0])
 			if err != nil {
@@ -4128,6 +4159,17 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				return nil, err
 			}
 			return &CallExpr{Func: &SelectorExpr{Receiver: arg, Field: "toLowerCase"}}, nil
+		}
+		if p.Call.Func == "indexOf" && len(p.Call.Args) == 2 {
+			s, err := convertExpr(p.Call.Args[0])
+			if err != nil {
+				return nil, err
+			}
+			sub, err := convertExpr(p.Call.Args[1])
+			if err != nil {
+				return nil, err
+			}
+			return &CallExpr{Func: &SelectorExpr{Receiver: s, Field: "indexOf"}, Args: []Expr{sub}}, nil
 		}
 		if p.Call.Func == "print" {
 			var args []Expr

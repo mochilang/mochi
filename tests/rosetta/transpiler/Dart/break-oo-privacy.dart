@@ -22,6 +22,12 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
+class Foobar {
+  int Exported;
+  int unexported;
+  Foobar({required this.Exported, required this.unexported});
+}
+
 void main() {
   var _benchMem0 = ProcessInfo.currentRss;
   var _benchSw = Stopwatch()..start();
@@ -29,30 +35,24 @@ void main() {
   {
   var _benchMem0 = ProcessInfo.currentRss;
   var _benchSw = Stopwatch()..start();
-  bool parseBool(String s) {
-  final String l = s.toLowerCase();
-  if (l == "1" || l == "t" || l == true || l == "yes" || l == "y") {
-    return true;
-  }
-  return false;
+  Foobar examineAndModify(Foobar f) {
+  print(" v: {" + (f.Exported).toString() + " " + (f.unexported).toString() + "} = {" + (f.Exported).toString() + " " + (f.unexported).toString() + "}");
+  print("    Idx Name       Type CanSet");
+  print("     0: Exported   int  true");
+  print("     1: unexported int  false");
+  f.Exported = 16;
+  f.unexported = 44;
+  print("  modified unexported field via unsafe");
+  return f;
 }
-  void main() {
-  bool n = true;
-  print(n);
-  print("bool");
-  n = !n;
-  print(n);
-  final int x = 5;
-  final int y = 8;
-  print(["x == y:", x == y].join(" "));
-  print(["x < y:", x < y].join(" "));
-  print("\nConvert String into Boolean Data type\n");
-  final String str1 = "japan";
-  print(["Before :", "string"].join(" "));
-  final bool bolStr = parseBool(str1);
-  print(["After :", "bool"].join(" "));
+  void anotherExample() {
+  print("bufio.ReadByte returned error: unsafely injected error value into bufio inner workings");
 }
-  main();
+  Foobar obj = Foobar(Exported: 12, unexported: 42);
+  print("obj: {" + (obj.Exported).toString() + " " + (obj.unexported).toString() + "}");
+  obj = examineAndModify(obj);
+  print("obj: {" + (obj.Exported).toString() + " " + (obj.unexported).toString() + "}");
+  anotherExample();
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "main"}));
