@@ -1075,15 +1075,15 @@ func (i *IndexExpr) emit(w io.Writer) {
 }
 
 func (s *SliceExpr) emit(w io.Writer) {
-	io.WriteString(w, "([&](const auto& c){ if constexpr(std::is_same_v<std::decay_t<decltype(c)>, std::string>) return c.substr(")
+	io.WriteString(w, "([&](const auto& __v){ if constexpr(std::is_same_v<std::decay_t<decltype(__v)>, std::string>) return __v.substr(")
 	s.Start.emit(w)
 	io.WriteString(w, ", ")
 	s.End.emit(w)
 	io.WriteString(w, " - ")
 	s.Start.emit(w)
-	io.WriteString(w, "); else return std::vector<typename std::decay_t<decltype(c)>::value_type>(c.begin()+")
+	io.WriteString(w, "); else return std::vector<typename std::decay_t<decltype(__v)>::value_type>(__v.begin+")
 	s.Start.emit(w)
-	io.WriteString(w, ", c.begin()+")
+	io.WriteString(w, ", __v.begin()+")
 	s.End.emit(w)
 	io.WriteString(w, "); })(")
 	s.Target.emit(w)
@@ -1104,10 +1104,10 @@ func (in *InExpr) emit(w io.Writer) {
 		currentProgram.addInclude("<algorithm>")
 		currentProgram.addInclude("<type_traits>")
 	}
-	io.WriteString(w, "([&](const auto& c, const auto& v){ ")
-	io.WriteString(w, "if constexpr(std::is_same_v<std::decay_t<decltype(c)>, std::string>) { return c.find(v) != std::string::npos; } ")
-	io.WriteString(w, "else if constexpr(requires { c.find(v); }) { return c.find(v) != c.end(); } ")
-	io.WriteString(w, "else { return std::find(c.begin(), c.end(), v) != c.end(); } })(")
+	io.WriteString(w, "([&](const auto& __c, const auto& __v){ ")
+	io.WriteString(w, "if constexpr(std::is_same_v<std::decay_t<decltype(__c)>, std::string>) { return __c.find(__v) != std::string::npos; } ")
+	io.WriteString(w, "else if constexpr(requires { __c.find(__v); }) { return __c.find(__v) != __c.end(); } ")
+	io.WriteString(w, "else { return std::find(__c.begin(), __c.end(), __v) != __c.end(); } })(")
 	in.Coll.emit(w)
 	io.WriteString(w, ", ")
 	in.Value.emit(w)
