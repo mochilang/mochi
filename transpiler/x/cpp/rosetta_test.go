@@ -5,6 +5,7 @@ package cpp_test
 import (
 	"bufio"
 	"bytes"
+	"encoding/json"
 	"flag"
 	"fmt"
 	"os"
@@ -52,6 +53,7 @@ func TestCPPTranspiler_Rosetta_Golden(t *testing.T) {
 	root := repoRoot(t)
 	outDir := filepath.Join(root, "tests", "rosetta", "transpiler", "CPP")
 	os.MkdirAll(outDir, 0o755)
+	bench := os.Getenv("MOCHI_BENCHMARK") == "true"
 
 	names, err := readIndex(filepath.Join(root, "tests", "rosetta", "x", "Mochi"))
 	if err != nil {
@@ -84,12 +86,15 @@ func TestCPPTranspiler_Rosetta_Golden(t *testing.T) {
 		base := strings.TrimSuffix(filepath.Base(src), ".mochi")
 		codePath := filepath.Join(outDir, base+".cpp")
 		outPath := filepath.Join(outDir, base+".out")
+		benchPath := filepath.Join(outDir, base+".bench")
 		errPath := filepath.Join(outDir, base+".error")
 		want, err := os.ReadFile(outPath)
-		if err != nil && !updateEnabled() {
+		if err != nil && !updateEnabled() && !bench {
 			return fmt.Errorf("missing golden output: %v", err)
 		}
-		want = bytes.TrimSpace(want)
+		if !bench {
+			want = bytes.TrimSpace(want)
+		}
 
 		prog, err := parser.Parse(src)
 		if err != nil {
@@ -101,6 +106,7 @@ func TestCPPTranspiler_Rosetta_Golden(t *testing.T) {
 			_ = os.WriteFile(errPath, []byte("type: "+errs[0].Error()), 0o644)
 			return errs[0]
 		}
+		cpp.SetBenchMain(bench)
 		ast, err := cpp.Transpile(prog, env)
 		if err != nil {
 			_ = os.WriteFile(errPath, []byte("transpile: "+err.Error()), 0o644)
@@ -117,7 +123,11 @@ func TestCPPTranspiler_Rosetta_Golden(t *testing.T) {
 		}
 		defer os.Remove(bin)
 		cmd := exec.Command(bin)
-		cmd.Env = append(os.Environ(), "MOCHI_NOW_SEED=1")
+		envv := append(os.Environ(), "MOCHI_NOW_SEED=1")
+		if bench {
+			envv = append(envv, "MOCHI_BENCHMARK=1")
+		}
+		cmd.Env = envv
 		if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
 			cmd.Stdin = bytes.NewReader(data)
 		}
@@ -130,6 +140,12 @@ func TestCPPTranspiler_Rosetta_Golden(t *testing.T) {
 			}
 		} else {
 			_ = os.Remove(errPath)
+		}
+		if bench {
+			if updateEnabled() {
+				_ = os.WriteFile(benchPath, got, 0o644)
+			}
+			return nil
 		}
 		if updateEnabled() {
 			_ = os.WriteFile(outPath, got, 0o644)
@@ -172,17 +188,35 @@ func updateRosettaReadme() {
 	}
 	total := len(names)
 	compiled := 0
-	var lines []string
+	var rows []string
+	rows = append(rows, "| Index | Name | Status | Duration | Memory |")
+	rows = append(rows, "| ---: | --- | :---: | ---: | ---: |")
 	for i, f := range names {
 		name := strings.TrimSuffix(f, ".mochi")
-		mark := "[ ]"
-		if _, err := os.Stat(filepath.Join(outDir, name+".out")); err == nil {
-			if _, err2 := os.Stat(filepath.Join(outDir, name+".error")); os.IsNotExist(err2) {
-				compiled++
-				mark = "[x]"
+		status := ""
+		dur := ""
+		mem := ""
+		if _, err := os.Stat(filepath.Join(outDir, name+".error")); err == nil {
+			status = "error"
+		} else if _, err := os.Stat(filepath.Join(outDir, name+".out")); err == nil {
+			status = "ok"
+			compiled++
+		}
+		if data, err := os.ReadFile(filepath.Join(outDir, name+".bench")); err == nil {
+			var r struct {
+				DurationUS  int64 `json:"duration_us"`
+				MemoryBytes int64 `json:"memory_bytes"`
+			}
+			trimmed := bytes.TrimSpace(data)
+			if idx := bytes.LastIndex(trimmed, []byte("{")); idx >= 0 {
+				trimmed = trimmed[idx:]
+			}
+			if json.Unmarshal(trimmed, &r) == nil {
+				dur = formatDuration(time.Duration(r.DurationUS) * time.Microsecond)
+				mem = formatBytes(r.MemoryBytes)
 			}
 		}
-		lines = append(lines, fmt.Sprintf("%d. %s %s (%d)", i+1, mark, name, i+1))
+		rows = append(rows, fmt.Sprintf("| %d | %s | %s | %s | %s |", i+1, name, status, dur, mem))
 	}
 	tsRaw, _ := exec.Command("git", "log", "-1", "--format=%cI").Output()
 	ts := strings.TrimSpace(string(tsRaw))
@@ -197,7 +231,38 @@ func updateRosettaReadme() {
 	buf.WriteString("# C++ Transpiler Rosetta Output\n\n")
 	buf.WriteString("This directory stores C++ code generated from Mochi programs in `tests/rosetta/x/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.cpp` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.\n\n")
 	fmt.Fprintf(&buf, "Checklist of programs that currently transpile and run (%d/%d) - Last updated %s:\n", compiled, total, ts)
-	buf.WriteString(strings.Join(lines, "\n"))
+	buf.WriteString(strings.Join(rows, "\n"))
 	buf.WriteString("\n")
 	_ = os.WriteFile(readmePath, buf.Bytes(), 0o644)
+}
+
+func formatDuration(d time.Duration) string {
+	switch {
+	case d < time.Microsecond:
+		return fmt.Sprintf("%dns", d.Nanoseconds())
+	case d < time.Millisecond:
+		return fmt.Sprintf("%.1fµs", float64(d.Microseconds()))
+	case d < time.Second:
+		return fmt.Sprintf("%.1fms", float64(d.Milliseconds()))
+	default:
+		return fmt.Sprintf("%.2fs", d.Seconds())
+	}
+}
+
+func formatBytes(n int64) string {
+	const (
+		_KB = 1024
+		_MB = _KB * 1024
+		_GB = _MB * 1024
+	)
+	switch {
+	case n >= _GB:
+		return fmt.Sprintf("%.2fGB", float64(n)/float64(_GB))
+	case n >= _MB:
+		return fmt.Sprintf("%.2fMB", float64(n)/float64(_MB))
+	case n >= _KB:
+		return fmt.Sprintf("%.2fKB", float64(n)/float64(_KB))
+	default:
+		return fmt.Sprintf("%dB", n)
+	}
 }
