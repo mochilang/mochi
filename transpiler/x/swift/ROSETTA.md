@@ -2,8 +2,8 @@
 
 Generated Swift code for Mochi Rosetta programs in `tests/rosetta/x/Mochi`. Outputs are stored in `tests/rosetta/transpiler/Swift`. Errors are captured in `.error` files.
 
-Completed: 51/284
-Last updated: 2025-07-25 19:45 +0700
+Completed: 53/284
+Last updated: 2025-07-25 20:48 +0700
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -19,22 +19,22 @@ Last updated: 2025-07-25 19:45 +0700
 | 10 | 24-game | ✓ |  |  |
 | 11 | 4-rings-or-4-squares-puzzle |   |  |  |
 | 12 | 9-billion-names-of-god-the-integer | ✓ |  |  |
-| 13 | 99-bottles-of-beer-2 | ✓ |  |  |
-| 14 | 99-bottles-of-beer | ✓ |  |  |
-| 15 | DNS-query | ✓ |  |  |
-| 16 | a+b | ✓ |  |  |
-| 17 | abbreviations-automatic | ✓ |  |  |
-| 18 | abbreviations-easy | ✓ |  |  |
-| 19 | abbreviations-simple | ✓ |  |  |
-| 20 | abc-problem | ✓ |  |  |
-| 21 | abelian-sandpile-model-identity | ✓ |  |  |
-| 22 | abelian-sandpile-model | ✓ |  |  |
-| 23 | abstract-type | ✓ |  |  |
-| 24 | abundant-deficient-and-perfect-number-classifications | ✓ |  |  |
-| 25 | abundant-odd-numbers |   |  |  |
-| 26 | accumulator-factory | ✓ |  |  |
-| 27 | achilles-numbers |   |  |  |
-| 28 | ackermann-function-2 | ✓ |  |  |
+| 13 | 99-bottles-of-beer-2 | ✓ | 32.737ms | 3.1 MB |
+| 14 | 99-bottles-of-beer | ✓ | 502µs | 3.2 MB |
+| 15 | DNS-query | ✓ | 798µs | 3.4 MB |
+| 16 | a+b | ✓ | 404µs | 3.2 MB |
+| 17 | abbreviations-automatic | ✓ | 27.126ms | 3.1 MB |
+| 18 | abbreviations-easy | ✓ | 11.509ms | 3.2 MB |
+| 19 | abbreviations-simple | ✓ | 16.815ms | 3.4 MB |
+| 20 | abc-problem | ✓ | 1.544ms | 3.5 MB |
+| 21 | abelian-sandpile-model-identity | ✓ | 556µs | 3.1 MB |
+| 22 | abelian-sandpile-model | ✓ | 562µs | 3.2 MB |
+| 23 | abstract-type | ✓ | 239µs | 2.9 MB |
+| 24 | abundant-deficient-and-perfect-number-classifications | ✓ | 2.534971s | 3.2 MB |
+| 25 | abundant-odd-numbers | ✓ | 2.749635s | 3.2 MB |
+| 26 | accumulator-factory | ✓ | 346µs | 3.4 MB |
+| 27 | achilles-numbers | ✓ | 16.911ms | 3.2 MB |
+| 28 | ackermann-function-2 | ✓ | 264µs | 2.9 MB |
 | 29 | ackermann-function-3 |   |  |  |
 | 30 | ackermann-function | ✓ |  |  |
 | 31 | active-directory-connect | ✓ |  |  |
