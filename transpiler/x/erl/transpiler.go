@@ -80,6 +80,7 @@ var useToInt bool
 var useMemberHelper bool
 var mutatedFuncs map[string]int
 var benchMain bool
+var inputCount int
 
 // SetBenchMain configures whether the generated main function is wrapped in a
 // benchmark block when emitting code. When enabled, the program will output a
@@ -1141,6 +1142,23 @@ func isMapExpr(e Expr, env *types.Env, ctx *context) bool {
 		}
 	case *IndexExpr:
 		if v.Kind == "map" {
+			if sl, ok := v.Index.(*StringLit); ok {
+				if nr, ok2 := v.Target.(*NameRef); ok2 && env != nil {
+					name := nr.Name
+					if ctx != nil {
+						name = ctx.original(nr.Name)
+					}
+					if t, err := env.GetVar(name); err == nil {
+						if st, ok3 := t.(types.StructType); ok3 {
+							if ft, ok4 := st.Fields[sl.Value]; ok4 {
+								if _, ok5 := ft.(types.MapType); ok5 {
+									return true
+								}
+							}
+						}
+					}
+				}
+			}
 			return mapValueIsMap(v.Target, env, ctx)
 		}
 	case *CallExpr:
@@ -1457,7 +1475,9 @@ func (c *CallExpr) emit(w io.Writer) {
 		io.WriteString(w, ")")
 		return
 	case "input":
-		io.WriteString(w, "(case io:get_line(\"\") of eof -> \"q\"; L -> string:trim(L) end)")
+		v := fmt.Sprintf("L%d", inputCount)
+		inputCount++
+		fmt.Fprintf(w, "(case io:get_line(\"\") of eof -> \"q\"; %s -> string:trim(%s) end)", v, v)
 		return
 	case "abs":
 		io.WriteString(w, "erlang:abs(")
@@ -1705,7 +1725,7 @@ func (s *SliceExpr) emit(w io.Writer) {
 			}
 			io.WriteString(w, ")")
 		} else {
-			io.WriteString(w, "byte_size(")
+			io.WriteString(w, "length(")
 			s.Target.emit(w)
 			io.WriteString(w, ")")
 			if s.Start != nil {
@@ -2559,6 +2579,7 @@ func extractSaveExpr(e *parser.Expr) *parser.SaveExpr {
 func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	base := filepath.Dir(prog.Pos.Filename)
 	ctx := newContext(base)
+	inputCount = 0
 	useNow = false
 	useLookupHost = false
 	useToInt = false
@@ -2791,6 +2812,9 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context, top bool) (
 			if _, ok := t.(types.MapType); ok {
 				kind = "map"
 			}
+		}
+		if kind == "list" && isStringExpr(idx) {
+			kind = "map"
 		}
 		if kind == "map" {
 			return []Stmt{&MapAssignStmt{Name: alias, Old: old, Key: idx, Value: val}}, nil
@@ -3878,7 +3902,15 @@ func convertPrimary(p *parser.Primary, env *types.Env, ctx *context) (Expr, erro
 				}
 			}
 		}
-		name = strings.ToLower(name)
+		lower := builtinFunc(name)
+		if !lower {
+			if _, ok := env.GetFunc(name); ok {
+				lower = true
+			}
+		}
+		if lower {
+			name = strings.ToLower(name)
+		}
 		ce := &CallExpr{Func: name}
 		for _, a := range p.Call.Args {
 			ae, err := convertExpr(a, env, ctx)
