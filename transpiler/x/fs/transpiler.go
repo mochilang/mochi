@@ -6,7 +6,6 @@ import (
 	"bytes"
 	"fmt"
 	"io"
-	"math"
 	"os/exec"
 	"strconv"
 	"strings"
@@ -1383,10 +1382,10 @@ func (b *BinaryExpr) emit(w io.Writer) {
 	castIf := func(expr Expr, targetType string) Expr {
 		return &CastExpr{Expr: expr, Type: targetType}
 	}
-	if (lt == "obj" || lt == "") && (rt == "int" || rt == "float" || rt == "string" || rt == "bool") {
+	if lt == "obj" && (rt == "int" || rt == "float" || rt == "string" || rt == "bool") {
 		left = castIf(left, rt)
 		lt = rt
-	} else if (rt == "obj" || rt == "") && (lt == "int" || lt == "float" || lt == "string" || lt == "bool") {
+	} else if rt == "obj" && (lt == "int" || lt == "float" || lt == "string" || lt == "bool") {
 		right = castIf(right, lt)
 		rt = lt
 	}
@@ -1425,11 +1424,7 @@ func (b *BinaryExpr) emit(w io.Writer) {
 type IntLit struct{ Value int64 }
 
 func (i *IntLit) emit(w io.Writer) {
-	if i.Value > math.MaxInt32 || i.Value < math.MinInt32 {
-		fmt.Fprintf(w, "%dL", i.Value)
-	} else {
-		fmt.Fprintf(w, "%d", i.Value)
-	}
+	fmt.Fprintf(w, "%dL", i.Value)
 }
 
 type BoolLit struct{ Value bool }
@@ -1573,10 +1568,7 @@ func needsParen(e Expr) bool {
 func inferType(e Expr) string {
 	switch v := e.(type) {
 	case *IntLit:
-		if v.Value > math.MaxInt32 || v.Value < math.MinInt32 {
-			return "int64"
-		}
-		return "int"
+		return "int64"
 	case *FloatLit:
 		return "float"
 	case *StringLit:
@@ -1707,7 +1699,7 @@ func inferType(e Expr) string {
 		case "System.Console.ReadLine", "input":
 			return "string"
 		case "Seq.length", "List.length", "String.length":
-			return "int"
+			return "int64"
 		case "Seq.sum", "List.sum":
 			return "int"
 		case "Seq.averageBy float", "List.averageBy float":
@@ -1795,16 +1787,28 @@ func (i *IndexExpr) emit(w io.Writer) {
 	t := inferType(i.Target)
 	if strings.Contains(t, "array") || t == "" {
 		i.Target.emit(w)
-		io.WriteString(w, ".[")
-		i.Index.emit(w)
+		io.WriteString(w, ".[int ")
+		if needsParen(i.Index) {
+			io.WriteString(w, "(")
+			i.Index.emit(w)
+			io.WriteString(w, ")")
+		} else {
+			i.Index.emit(w)
+		}
 		io.WriteString(w, "]")
 		return
 	}
 	if t == "string" {
 		io.WriteString(w, "string (")
 		i.Target.emit(w)
-		io.WriteString(w, ".[")
-		i.Index.emit(w)
+		io.WriteString(w, ".[int ")
+		if needsParen(i.Index) {
+			io.WriteString(w, "(")
+			i.Index.emit(w)
+			io.WriteString(w, ")")
+		} else {
+			i.Index.emit(w)
+		}
 		io.WriteString(w, "])")
 		return
 	}
@@ -1949,7 +1953,7 @@ func (s *SliceExpr) emit(w io.Writer) {
 	if !s.IsString && t != "string" {
 		io.WriteString(w, "Array.sub ")
 		s.Target.emit(w)
-		io.WriteString(w, " ")
+		io.WriteString(w, " (int ")
 		if needsParen(start) {
 			io.WriteString(w, "(")
 			start.emit(w)
@@ -1957,7 +1961,7 @@ func (s *SliceExpr) emit(w io.Writer) {
 		} else {
 			start.emit(w)
 		}
-		io.WriteString(w, " ")
+		io.WriteString(w, ") (int ")
 		var endLen Expr
 		if s.End != nil {
 			endLen = &BinaryExpr{Left: s.End, Op: "-", Right: start}
@@ -1971,6 +1975,7 @@ func (s *SliceExpr) emit(w io.Writer) {
 		} else {
 			endLen.emit(w)
 		}
+		io.WriteString(w, ")")
 		return
 	}
 	s.Target.emit(w)
@@ -1995,26 +2000,9 @@ type CastExpr struct {
 
 func (c *CastExpr) emit(w io.Writer) {
 	switch c.Type {
-	case "float":
-		io.WriteString(w, "unbox<float> ")
-		if needsParen(c.Expr) {
-			io.WriteString(w, "(")
-			c.Expr.emit(w)
-			io.WriteString(w, ")")
-		} else {
-			c.Expr.emit(w)
-		}
-	case "int":
-		io.WriteString(w, "unbox<int> ")
-		if needsParen(c.Expr) {
-			io.WriteString(w, "(")
-			c.Expr.emit(w)
-			io.WriteString(w, ")")
-		} else {
-			c.Expr.emit(w)
-		}
-	case "bigint":
-		io.WriteString(w, "unbox<bigint> ")
+	case "float", "int", "int64", "bigint":
+		io.WriteString(w, c.Type)
+		io.WriteString(w, " ")
 		if needsParen(c.Expr) {
 			io.WriteString(w, "(")
 			c.Expr.emit(w)
@@ -2788,11 +2776,13 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				case "group":
 					if id, ok := args[0].(*IdentExpr); ok {
 						field := &FieldExpr{Target: id, Name: "items"}
-						return &CallExpr{Func: "Array.length", Args: []Expr{field}}, nil
+						call := &CallExpr{Func: "Array.length", Args: []Expr{field}}
+						return &CallExpr{Func: "int64", Args: []Expr{call}}, nil
 					}
 				}
 			}
-			return &CallExpr{Func: fn, Args: args}, nil
+			call := &CallExpr{Func: fn, Args: args}
+			return &CallExpr{Func: "int64", Args: []Expr{call}}, nil
 		case "str":
 			return &CallExpr{Func: "string", Args: args}, nil
 		case "sum":

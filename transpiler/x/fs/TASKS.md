@@ -1,3 +1,7 @@
+## Progress (2025-07-25 21:49 +0700)
+- transpiler: add int map index support
+- Generated F# for 103/104 programs (103 passing)
+
 ## Progress (2025-07-25 10:58 +0000)
 - fs transpiler: handle dynamic map indexing
 - Generated F# for 103/104 programs (103 passing)
