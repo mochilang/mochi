@@ -1,3 +1,43 @@
+## Progress (2025-07-25 14:28 +0700)
+- go transpiler: bench rosetta index 19
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-25 14:28 +0700)
+- go transpiler: bench rosetta index 18
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-25 14:27 +0700)
+- go transpiler: bench rosetta index 17
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-25 14:27 +0700)
+- go transpiler: bench rosetta index 16
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-25 14:27 +0700)
+- go transpiler: bench rosetta index 15
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-25 14:27 +0700)
+- go transpiler: bench rosetta index 14
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-25 14:26 +0700)
+- go transpiler: bench rosetta index 13
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-25 14:26 +0700)
+- go transpiler: bench rosetta index 12
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-25 14:26 +0700)
+- go transpiler: add bench for rosetta index 11
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-25 14:22 +0700)
+- transpiler/ocaml: add print expr, casts, and bench runs
+- Regenerated golden files - 104/104 vm valid programs passing
+
 ## Progress (2025-07-25 13:13 +0700)
 - rosetta: update OCaml outputs
 - Regenerated golden files - 104/104 vm valid programs passing
