@@ -2234,7 +2234,7 @@ func (b *BenchStmt) emit(w io.Writer, indent int) {
 	}
 	fmt.Fprintln(w, ind2+"auto __bench_end = _now();")
 	fmt.Fprintln(w, ind2+"auto __bench_mem_end = _mem();")
-	fmt.Fprintln(w, ind2+"auto __bench_dur = (__bench_end - __bench_start) / 1000;")
+	fmt.Fprintln(w, ind2+"auto __bench_dur = __bench_end - __bench_start;")
 	fmt.Fprintln(w, ind2+"auto __bench_mem = __bench_mem_end;")
 	fmt.Fprintf(w, "%sstd::cout << \"{\\n  \\\"duration_us\\\": \" << __bench_dur << \",\\n  \\\"memory_bytes\\\": \" << __bench_mem << \",\\n  \\\"name\\\": \\\"%s\\\"\\n}\" << std::endl;\n", ind2, b.Name)
 	fmt.Fprintln(w, ind+"}")
