@@ -364,6 +364,9 @@ func (s *VarStmt) emit(w io.Writer) error {
 		typ = inferType(s.Value)
 	}
 	nextStructHint = ""
+	if n, ok := s.Value.(*Name); ok && n.Name == "null" && !strings.HasSuffix(typ, "?") {
+		typ += "?"
+	}
 	localVarTypes[s.Name] = typ
 	if typ == "dynamic" {
 		if _, err := io.WriteString(w, "var "+s.Name); err != nil {
@@ -1018,6 +1021,15 @@ func (c *CallExpr) emit(w io.Writer) error {
 		}
 		if sel.Field == "padStart" && len(c.Args) == 2 {
 			sel.Field = "padLeft"
+		}
+	}
+	if n, ok := c.Func.(*Name); ok && n.Name == "keys" && len(c.Args) == 1 {
+		if strings.HasPrefix(inferType(c.Args[0]), "Map<") {
+			if err := c.Args[0].emit(w); err != nil {
+				return err
+			}
+			_, err := io.WriteString(w, ".keys")
+			return err
 		}
 	}
 	if err := c.Func.emit(w); err != nil {
@@ -2509,12 +2521,23 @@ func inferType(e Expr) string {
 		if len(ex.Elems) == 0 {
 			return "List<dynamic>"
 		}
-		typ := inferType(ex.Elems[0])
-		for _, el := range ex.Elems[1:] {
-			if t := inferType(el); t != typ {
+		typ := ""
+		for _, el := range ex.Elems {
+			t := inferType(el)
+			if t == "List<dynamic>" {
+				if ll, ok := el.(*ListLit); ok && len(ll.Elems) == 0 {
+					continue
+				}
+			}
+			if typ == "" {
+				typ = t
+			} else if t != typ {
 				typ = "dynamic"
 				break
 			}
+		}
+		if typ == "" {
+			typ = "dynamic"
 		}
 		return "List<" + typ + ">"
 	case *MapLit:
@@ -2917,7 +2940,7 @@ func inferType(e Expr) string {
 		if strings.HasPrefix(t, "Map<") && strings.HasSuffix(t, ">") {
 			parts := strings.TrimSuffix(strings.TrimPrefix(t, "Map<"), ">")
 			if idx := strings.Index(parts, ","); idx >= 0 {
-				return strings.TrimSpace(parts[idx+1:])
+				return strings.TrimSpace(parts[idx+1:]) + "?"
 			}
 		}
 		return "dynamic"
@@ -3348,7 +3371,18 @@ func Transpile(prog *parser.Program, env *types.Env, bench, wrapMain bool) (*Pro
 	if wrapMain {
 		usesJSON = true
 		useNow = true
-		p.Stmts = []Stmt{&BenchStmt{Name: "main", Body: p.Stmts}}
+		var globals []Stmt
+		var body []Stmt
+		for _, st := range p.Stmts {
+			switch st.(type) {
+			case *FuncDecl, *LetStmt, *VarStmt:
+				globals = append(globals, st)
+			default:
+				body = append(body, st)
+			}
+		}
+		bench := &BenchStmt{Name: "main", Body: body}
+		p.Stmts = append(globals, bench)
 	}
 	p.Imports = append(p.Imports, imports...)
 	return p, nil
@@ -3860,6 +3894,7 @@ func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
 				if i < len(pf.Ops)-1 {
 					expr = &NotNilExpr{X: iex}
 				} else {
+					iex.NoBang = true
 					expr = iex
 				}
 			}
