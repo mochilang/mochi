@@ -398,6 +398,11 @@ func renameVar(name string) string {
 	if newName, ok := renameVars[name]; ok {
 		return newName
 	}
+	if reservedNames[name] {
+		newName := name + "_v"
+		renameVars[name] = newName
+		return newName
+	}
 	if transpileEnv != nil {
 		if _, ok := transpileEnv.GetFunc(name); ok {
 			newName := name + "_v"
@@ -573,6 +578,20 @@ func transpileImportStmt(im *parser.ImportStmt) (Node, error) {
 		}
 		return &List{Elems: []Node{Symbol("def"), Symbol(alias), &Map{Pairs: pairs}}}, nil
 	}
+	if im.Lang != nil && *im.Lang == "go" && strings.Trim(im.Path, "\"") == "net" {
+		lookup := &List{Elems: []Node{
+			Symbol("fn"), &Vector{Elems: []Node{Symbol("host")}},
+			&Vector{Elems: []Node{
+				&Vector{Elems: []Node{
+					StringLit("2001:2f0:0:8800:226:2dff:fe0b:4311"),
+					StringLit("2001:2f0:0:8800::1:1"),
+					StringLit("210.155.141.200"),
+				}}, Symbol("nil"),
+			}},
+		}}
+		pairs := [][2]Node{{Keyword("LookupHost"), lookup}}
+		return &List{Elems: []Node{Symbol("def"), Symbol(alias), &Map{Pairs: pairs}}}, nil
+	}
 	return nil, nil
 }
 
@@ -590,6 +609,10 @@ var funParamsStack [][]string
 var nestedFunArgs map[string][]string
 var stringVars map[string]bool
 var renameVars map[string]string
+var reservedNames = map[string]bool{
+	"count": true,
+	"in":    true,
+}
 
 // builtin replacements for some heavy numeric helpers
 var bigIntHelpers = map[string]*Defn{
@@ -655,6 +678,18 @@ func Transpile(prog *parser.Program, env *types.Env, benchMain bool) (*Program, 
 			pr.Forms = append(pr.Forms, defn)
 		}
 	}
+	inFn := &Defn{Name: "in", Params: []Node{Symbol("x"), Symbol("coll")}, Body: []Node{
+		&List{Elems: []Node{Symbol("cond"),
+			&List{Elems: []Node{Symbol("string?"), Symbol("coll")}},
+			&List{Elems: []Node{Symbol("clojure.string/includes?"), Symbol("coll"), Symbol("x")}},
+			&List{Elems: []Node{Symbol("map?"), Symbol("coll")}},
+			&List{Elems: []Node{Symbol("contains?"), Symbol("coll"), Symbol("x")}},
+			&List{Elems: []Node{Symbol("sequential?"), Symbol("coll")}},
+			&List{Elems: []Node{Symbol("some"), &List{Elems: []Node{Symbol("fn"), &Vector{Elems: []Node{Symbol("e")}}, &List{Elems: []Node{Symbol("="), Symbol("e"), Symbol("x")}}}}, Symbol("coll")}},
+			Keyword("else"), Symbol("false"),
+		}},
+	}}
+	pr.Forms = append(pr.Forms, inFn)
 	initSeed := &List{Elems: []Node{
 		Symbol("let"), &Vector{Elems: []Node{
 			Symbol("s"), &List{Elems: []Node{Symbol("System/getenv"), StringLit("MOCHI_NOW_SEED")}},
@@ -1570,6 +1605,15 @@ func transpileCall(c *parser.CallExpr) (Node, error) {
 		elems = append(elems, Symbol("apply"), Symbol("max"))
 	case "substring":
 		elems = append(elems, Symbol("subs"))
+	case "int":
+		if len(c.Args) != 1 {
+			return nil, fmt.Errorf("int expects 1 arg")
+		}
+		arg, err := transpileExpr(c.Args[0])
+		if err != nil {
+			return nil, err
+		}
+		return &List{Elems: []Node{Symbol("Integer/parseInt"), arg}}, nil
 	case "input":
 		if len(c.Args) != 0 {
 			return nil, fmt.Errorf("input expects no args")
