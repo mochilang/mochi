@@ -2,8 +2,8 @@
 
 Generated Elixir code from Mochi Rosetta programs lives in `tests/rosetta/transpiler/Elixir`.
 
-## Rosetta Test Checklist (31/284)
-_Last updated: 2025-07-25 17:50 +0700_
+## Rosetta Test Checklist (34/284)
+_Last updated: 2025-07-25 11:42 +0000_
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | 100-doors-2 | ✓ | 6.21ms | 91.6 KB |
@@ -42,9 +42,9 @@ _Last updated: 2025-07-25 17:50 +0700_
 | 34 | add-a-variable-to-a-class-instance-at-runtime |  |  |  |
 | 35 | additive-primes | ✓ | 337us | 67.8 KB |
 | 36 | address-of-a-variable | ✓ | 1.71ms | 348.5 KB |
-| 37 | adfgvx-cipher |  |  |  |
-| 38 | aks-test-for-primes |  |  |  |
-| 39 | algebraic-data-types |  |  |  |
+| 37 | adfgvx-cipher | ✓ | 2.91ms | 68.7 KB |
+| 38 | aks-test-for-primes | ✓ | 766us | 2.1 MB |
+| 39 | algebraic-data-types | ✓ | 1.57ms | 189.5 KB |
 | 40 | align-columns |  |  |  |
 | 41 | aliquot-sequence-classifications |  |  |  |
 | 42 | almkvist-giullera-formula-for-pi |  |  |  |

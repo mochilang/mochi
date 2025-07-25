@@ -6,3 +6,9 @@
 5:  x - 5x + 10x - 10x + 5x - 1
 6:  x - 6x + 15x - 20x + 15x - 6x + 1
 7:  x - 7x + 21x - 35x + 35x - 21x + 7x - 1
+
+{
+  "duration_us": 766,
+  "memory_bytes": 2200200,
+  "name": "main"
+}
