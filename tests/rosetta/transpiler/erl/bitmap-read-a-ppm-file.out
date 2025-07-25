@@ -1,0 +1,17 @@
+/workspace/mochi/tests/rosetta/transpiler/erl/bitmap-read-a-ppm-file.erl:161:20: Warning: variable 'Neg_3' exported from 'case' (line 142, column 9)
+%  161| {Digits, I_8, N_2, Neg_3, Str} = Fun_5(Digits, I_7, N, Neg_3, Str),
+%     |                    ^
+
+/workspace/mochi/tests/rosetta/transpiler/erl/bitmap-read-a-ppm-file.erl:197:2: Warning: variable 'I_11' exported from 'case' (line 180, column 17)
+%  197| {I_11, J_2, Line, Lines, Parts, S_3, Toks_2} = Fun_6(I_11, J, Line, Lines, Parts, S_3, Toks),
+%     |  ^
+
+Original Colour PPM file
+"P3\n# feep.ppm\n4 4\n15\n 0  0  0    0  0  0    0  0  0   15  0 15\n 0  0  0    0 15  7    0  0  0    0  0  0\n 0  0  0    0  0  0    0 15  7    0  0  0\n15  0 15    0  0  0    0  0  0    0  0  0\n"
+Grey PPM:
+"P3\n# generated from Bitmap.writeppmp3\n4 4\n15\n    0  0  0    0  0  0    0  0  0    0  0  0\n    0  0  0    0  0  0    0  0  0    0  0  0\n    0  0  0    0  0  0    0  0  0    0  0  0\n    0  0  0    0  0  0    0  0  0    0  0  0\n"
+{
+  "duration_us": 31651,
+  "memory_bytes": 3314800,
+  "name": "main"
+}

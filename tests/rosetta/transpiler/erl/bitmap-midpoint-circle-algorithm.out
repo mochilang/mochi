@@ -1,0 +1,30 @@
+/workspace/mochi/tests/rosetta/transpiler/erl/bitmap-midpoint-circle-algorithm.erl:62:43: Warning: the result of evaluating operator '++'/2 is ignored (suppress the warning by assigning the expression to the _ variable)
+%   62|             G_4 = lists:sublist(G_3, Y_3) ++ [Tmp_2] ++ lists:nthtail(Y_3 + 1, G_3),
+%     |                                           ^
+
+[]
+[]
+[]
+[]
+[]
+[]
+[]
+[]
+[]
+[]
+[]
+[]
+[]
+[]
+[]
+[]
+[]
+[]
+[]
+[]
+[]
+{
+  "duration_us": 17645,
+  "memory_bytes": 99672,
+  "name": "main"
+}
