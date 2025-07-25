@@ -426,6 +426,28 @@ func (b *BlockStmt) emit(w io.Writer) {
 	}
 }
 
+// BenchStmt represents a benchmarking block measuring runtime duration
+// and memory usage of the enclosed statements. Memory usage is currently
+// always reported as zero as the transpiled Swift code does not track
+// allocations.
+type BenchStmt struct {
+	Name string
+	Body []Stmt
+}
+
+func (b *BenchStmt) emit(w io.Writer) {
+	fmt.Fprint(w, "do {\n")
+	fmt.Fprint(w, "    let _benchMemStart = 0\n")
+	fmt.Fprint(w, "    let _benchStart = _now()\n")
+	for _, st := range b.Body {
+		st.emit(w)
+	}
+	fmt.Fprint(w, "    let _benchEnd = _now()\n")
+	fmt.Fprint(w, "    let _benchMemEnd = 0\n")
+	fmt.Fprintf(w, "    print(\"{\\n  \\\"duration_us\\\": \\((_benchEnd - _benchStart) / 1000),\\n  \\\"memory_bytes\\\": \\(_benchMemEnd - _benchMemStart),\\n  \\\"name\\\": \\\"%s\\\"\\n}\")\n", b.Name)
+	fmt.Fprint(w, "}\n")
+}
+
 type LitExpr struct {
 	Value    string
 	IsString bool
@@ -1615,6 +1637,13 @@ func convertStmt(env *types.Env, st *parser.Statement) (Stmt, error) {
 			return nil, err
 		}
 		return &BlockStmt{Stmts: body}, nil
+	case st.Bench != nil:
+		usesNow = true
+		body, err := convertStmts(env, st.Bench.Body)
+		if err != nil {
+			return nil, err
+		}
+		return &BenchStmt{Name: st.Bench.Name, Body: body}, nil
 	case st.Expect != nil:
 		cond, err := convertExpr(env, st.Expect.Value)
 		if err != nil {
