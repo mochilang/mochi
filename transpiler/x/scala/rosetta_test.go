@@ -5,6 +5,7 @@ package scalat_test
 import (
 	"bufio"
 	"bytes"
+	"encoding/json"
 	"flag"
 	"fmt"
 	"os"
@@ -67,6 +68,8 @@ func TestScalaTranspiler_Rosetta_Golden(t *testing.T) {
 		names = names[:1]
 	}
 
+	bench := os.Getenv("MOCHI_BENCHMARK") == "true" || os.Getenv("MOCHI_BENCHMARK") == "1"
+
 	var passed, failed int
 	for i, nameFile := range names {
 		name := strings.TrimSuffix(filepath.Base(nameFile), ".mochi")
@@ -85,7 +88,7 @@ func TestScalaTranspiler_Rosetta_Golden(t *testing.T) {
 				_ = os.WriteFile(errPath, []byte(errs[0].Error()), 0o644)
 				t.Fatalf("type: %v", errs[0])
 			}
-			ast, err := scalat.Transpile(prog, env)
+			ast, err := scalat.Transpile(prog, env, bench)
 			if err != nil {
 				_ = os.WriteFile(errPath, []byte(err.Error()), 0o644)
 				t.Fatalf("transpile: %v", err)
@@ -105,7 +108,9 @@ func TestScalaTranspiler_Rosetta_Golden(t *testing.T) {
 				cmd.Stdin = bytes.NewReader(data)
 			}
 			want, _ := os.ReadFile(outPath)
-			want = bytes.TrimSpace(want)
+			if !bench {
+				want = bytes.TrimSpace(want)
+			}
 
 			out, err := cmd.CombinedOutput()
 			got := bytes.TrimSpace(out)
@@ -115,6 +120,9 @@ func TestScalaTranspiler_Rosetta_Golden(t *testing.T) {
 			}
 			_ = os.Remove(errPath)
 			_ = os.WriteFile(outPath, got, 0o644)
+			if bench {
+				return
+			}
 
 			if !updating() && len(want) > 0 {
 				if !bytes.Equal(got, want) {
@@ -141,29 +149,64 @@ func updateRosettaChecklist() {
 		return
 	}
 	total := len(names)
-	completed := 0
-	var lines []string
+	compiled := 0
+	var rows []string
+	rows = append(rows, "| Index | Name | Status | Duration | Memory |")
+	rows = append(rows, "|------:|------|:-----:|---------:|-------:|")
 	for i, nameFile := range names {
 		name := strings.TrimSuffix(filepath.Base(nameFile), ".mochi")
-		mark := "[ ]"
-		if _, err := os.Stat(filepath.Join(outDir, name+".out")); err == nil {
-			completed++
-			mark = "[x]"
-		} else if _, err := os.Stat(filepath.Join(outDir, name+".error")); err == nil {
-			mark = "[ ]"
+		status := " "
+		dur := ""
+		mem := ""
+		if _, err := os.Stat(filepath.Join(outDir, name+".error")); err == nil {
+			status = "error"
+		} else if _, err := os.Stat(filepath.Join(outDir, name+".scala")); err == nil {
+			compiled++
+			status = "✓"
 		}
-		lines = append(lines, fmt.Sprintf("%d. %s %s (%d)", i+1, mark, name, i+1))
+		if data, err := os.ReadFile(filepath.Join(outDir, name+".out")); err == nil {
+			var js struct {
+				Duration int64 `json:"duration_us"`
+				Memory   int64 `json:"memory_bytes"`
+			}
+			data = bytes.TrimSpace(data)
+			if idx := bytes.LastIndexByte(data, '{'); idx >= 0 {
+				if json.Unmarshal(data[idx:], &js) == nil && js.Duration > 0 {
+					dur = humanDuration(js.Duration)
+					mem = humanSize(js.Memory)
+				}
+			}
+		}
+		rows = append(rows, fmt.Sprintf("| %d | %s | %s | %s | %s |", i+1, name, status, dur, mem))
 	}
+	loc, _ := time.LoadLocation("Asia/Bangkok")
+	ts := time.Now().In(loc).Format("2006-01-02 15:04 -0700")
 	var buf bytes.Buffer
 	buf.WriteString("# Scala Transpiler Rosetta Output\n\n")
 	buf.WriteString("Generated Scala code for Rosetta tasks in `tests/rosetta/x/Mochi`. Each program has a `.scala` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.\n\n")
-	loc, _ := time.LoadLocation("Asia/Bangkok")
-	ts := time.Now().In(loc).Format("2006-01-02 15:04 -0700")
-	buf.WriteString(fmt.Sprintf("## Golden Test Checklist (%d/%d)\n", completed, total))
+	fmt.Fprintf(&buf, "## Golden Test Checklist (%d/%d)\n", compiled, total)
 	buf.WriteString(fmt.Sprintf("_Last updated: %s_\n\n", ts))
-	buf.WriteString(strings.Join(lines, "\n"))
+	buf.WriteString(strings.Join(rows, "\n"))
 	buf.WriteString("\n")
 	_ = os.WriteFile(filepath.Join(root, "transpiler", "x", "scala", "ROSETTA.md"), buf.Bytes(), 0o644)
+}
+
+func humanDuration(us int64) string {
+	d := time.Duration(us) * time.Microsecond
+	return d.String()
+}
+
+func humanSize(b int64) string {
+	const unit = 1024
+	if b < unit {
+		return fmt.Sprintf("%d B", b)
+	}
+	div, exp := int64(unit), 0
+	for n := b / unit; n >= unit; n /= unit {
+		div *= unit
+		exp++
+	}
+	return fmt.Sprintf("%.1f %cB", float64(b)/float64(div), "KMGTPE"[exp])
 }
 
 func updating() bool {

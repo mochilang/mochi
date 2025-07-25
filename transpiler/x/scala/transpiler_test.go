@@ -35,7 +35,7 @@ func TestScalaTranspiler_PrintHello(t *testing.T) {
 	if errs := types.Check(prog, env); len(errs) > 0 {
 		t.Fatalf("type: %v", errs[0])
 	}
-	ast, err := scalat.Transpile(prog, env)
+	ast, err := scalat.Transpile(prog, env, false)
 	if err != nil {
 		t.Fatalf("transpile: %v", err)
 	}
@@ -88,7 +88,7 @@ func TestScalaTranspiler_BasicCompare(t *testing.T) {
 	if errs := types.Check(prog, env); len(errs) > 0 {
 		t.Fatalf("type: %v", errs[0])
 	}
-	ast, err := scalat.Transpile(prog, env)
+	ast, err := scalat.Transpile(prog, env, false)
 	if err != nil {
 		t.Fatalf("transpile: %v", err)
 	}
@@ -141,7 +141,7 @@ func TestScalaTranspiler_StringConcat(t *testing.T) {
 	if errs := types.Check(prog, env); len(errs) > 0 {
 		t.Fatalf("type: %v", errs[0])
 	}
-	ast, err := scalat.Transpile(prog, env)
+	ast, err := scalat.Transpile(prog, env, false)
 	if err != nil {
 		t.Fatalf("transpile: %v", err)
 	}
@@ -194,7 +194,7 @@ func TestScalaTranspiler_StringCompare(t *testing.T) {
 	if errs := types.Check(prog, env); len(errs) > 0 {
 		t.Fatalf("type: %v", errs[0])
 	}
-	ast, err := scalat.Transpile(prog, env)
+	ast, err := scalat.Transpile(prog, env, false)
 	if err != nil {
 		t.Fatalf("transpile: %v", err)
 	}

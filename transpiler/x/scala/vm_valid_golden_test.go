@@ -51,7 +51,7 @@ func TestScalaTranspiler_VMValid_Golden(t *testing.T) {
 			_ = os.WriteFile(errPath, []byte(errs[0].Error()), 0o644)
 			return nil, errs[0]
 		}
-		ast, err := scalat.Transpile(prog, env)
+		ast, err := scalat.Transpile(prog, env, false)
 		if err != nil {
 			_ = os.WriteFile(errPath, []byte(err.Error()), 0o644)
 			return nil, err

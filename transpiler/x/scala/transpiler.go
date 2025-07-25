@@ -673,7 +673,7 @@ func (b *BenchStmt) emit(w io.Writer) {
 	fmt.Fprint(w, "  val _end = _now()\n")
 	fmt.Fprint(w, "  val _endMem = Runtime.getRuntime.totalMemory() - Runtime.getRuntime.freeMemory()\n")
 	fmt.Fprint(w, "  val _durUs = (_end - _start) / 1000\n")
-	fmt.Fprint(w, "  val _memDiff = 0\n")
+	fmt.Fprint(w, "  val _memDiff = math.max(0, _endMem - _startMem)\n")
 	fmt.Fprintf(w, "  println(toJson(Map(\"duration_us\" -> _durUs, \"memory_bytes\" -> _memDiff, \"name\" -> \"%s\")))\n", b.Name)
 	fmt.Fprint(w, "}")
 }
@@ -1443,7 +1443,7 @@ func Emit(p *Program) []byte {
 }
 
 // Transpile converts a Mochi AST into our simple Scala AST.
-func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
+func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, error) {
 	sc := &Program{}
 	typeDecls = nil
 	needsBreaks = false
@@ -1490,6 +1490,11 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 		if s != nil {
 			sc.Stmts = append(sc.Stmts, s)
 		}
+	}
+	if bench {
+		needsJSON = true
+		useNow = true
+		sc.Stmts = []Stmt{&BenchStmt{Name: "main", Body: sc.Stmts}}
 	}
 	if len(typeDecls) > 0 {
 		stmts := make([]Stmt, 0, len(typeDecls)+len(sc.Stmts))
