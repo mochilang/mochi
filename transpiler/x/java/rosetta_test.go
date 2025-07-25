@@ -3,9 +3,10 @@
 package javatr_test
 
 import (
-	"bytes"
-	"flag"
-	"fmt"
+       "bytes"
+       "encoding/json"
+       "flag"
+       "fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -44,16 +45,18 @@ func runRosettaTask(t *testing.T, name string) {
 		_ = os.WriteFile(errPath, []byte("parse: "+err.Error()), 0644)
 		t.Fatalf("parse %s: %v", name, err)
 	}
-	env := types.NewEnv(nil)
-	if errs := types.Check(prog, env); len(errs) > 0 {
-		_ = os.WriteFile(errPath, []byte("type: "+errs[0].Error()), 0644)
-		t.Fatalf("type %s: %v", name, errs[0])
-	}
-	ast, err := javatr.Transpile(prog, env)
-	if err != nil {
-		_ = os.WriteFile(errPath, []byte("transpile: "+err.Error()), 0644)
-		t.Fatalf("transpile %s: %v", name, err)
-	}
+        env := types.NewEnv(nil)
+        if errs := types.Check(prog, env); len(errs) > 0 {
+                _ = os.WriteFile(errPath, []byte("type: "+errs[0].Error()), 0644)
+                t.Fatalf("type %s: %v", name, errs[0])
+        }
+        bench := os.Getenv("MOCHI_BENCHMARK") != ""
+        javatr.SetBenchMain(bench)
+        ast, err := javatr.Transpile(prog, env)
+        if err != nil {
+                _ = os.WriteFile(errPath, []byte("transpile: "+err.Error()), 0644)
+                t.Fatalf("transpile %s: %v", name, err)
+        }
 	code := javatr.Emit(ast)
 	if err := os.WriteFile(codePath, code, 0644); err != nil {
 		t.Fatalf("write code %s: %v", name, err)
@@ -71,8 +74,12 @@ func runRosettaTask(t *testing.T, name string) {
 		_ = os.WriteFile(errPath, append([]byte("compile: "+err.Error()+"\n"), out...), 0644)
 		t.Fatalf("javac %s: %v", name, err)
 	}
-	cmd = exec.Command("java", "-cp", tmp, className)
-	cmd.Env = append(os.Environ(), "MOCHI_ROOT="+root, "MOCHI_NOW_SEED=1")
+        cmd = exec.Command("java", "-cp", tmp, className)
+        envVars := append(os.Environ(), "MOCHI_ROOT="+root, "MOCHI_NOW_SEED=1")
+        if bench {
+                envVars = append(envVars, "MOCHI_BENCHMARK=1")
+        }
+        cmd.Env = envVars
 	if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
 		cmd.Stdin = bytes.NewReader(data)
 	}
@@ -149,27 +156,62 @@ func updateRosetta() {
 	outDir := filepath.Join(root, "tests", "rosetta", "transpiler", "Java")
 	readmePath := filepath.Join(root, "transpiler", "x", "java", "ROSETTA.md")
 
-	files, _ := filepath.Glob(filepath.Join(srcDir, "*.mochi"))
-	total := len(files)
-	compiled := 0
-	var lines []string
-	for i, f := range files {
-		name := strings.TrimSuffix(filepath.Base(f), ".mochi")
-		mark := "[ ]"
-		if _, err := os.Stat(filepath.Join(outDir, name+".out")); err == nil {
-			if _, err2 := os.Stat(filepath.Join(outDir, name+".error")); os.IsNotExist(err2) {
-				compiled++
-				mark = "[x]"
-			}
-		}
-		lines = append(lines, fmt.Sprintf("%d. %s %s (%d)", i+1, mark, name, i+1))
-	}
-	ts := time.Now().Format("2006-01-02 15:04 MST")
-	var buf bytes.Buffer
-	buf.WriteString("# Java Rosetta Transpiler Output\n\n")
-	buf.WriteString("Generated Java code for programs in `tests/rosetta/x/Mochi`. Each program has a `.java` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.\n\n")
-	fmt.Fprintf(&buf, "## Rosetta Checklist (%d/%d) - updated %s\n", compiled, total, ts)
-	buf.WriteString(strings.Join(lines, "\n"))
-	buf.WriteString("\n")
-	_ = os.WriteFile(readmePath, buf.Bytes(), 0644)
+        files, _ := filepath.Glob(filepath.Join(srcDir, "*.mochi"))
+        total := len(files)
+        compiled := 0
+        var lines []string
+        lines = append(lines, "| Index | Name | Status | Duration | Memory |")
+        lines = append(lines, "|------:|------|:-----:|---------:|-------:|")
+        for i, f := range files {
+                name := strings.TrimSuffix(filepath.Base(f), ".mochi")
+                status := " "
+                if _, err := os.Stat(filepath.Join(outDir, name+".error")); err == nil {
+                        // leave unchecked
+                } else if _, err := os.Stat(filepath.Join(outDir, name+".java")); err == nil {
+                        compiled++
+                        status = "✓"
+                }
+                dur := ""
+                mem := ""
+                if data, err := os.ReadFile(filepath.Join(outDir, name+".out")); err == nil {
+                        var js struct {
+                                Duration int64 `json:"duration_us"`
+                                Memory   int64 `json:"memory_bytes"`
+                        }
+                        data = bytes.TrimSpace(data)
+                        if idx := bytes.LastIndexByte(data, '{'); idx >= 0 {
+                                if json.Unmarshal(data[idx:], &js) == nil && js.Duration > 0 {
+                                        dur = humanDuration(js.Duration)
+                                        mem = humanSize(js.Memory)
+                                }
+                        }
+                }
+                lines = append(lines, fmt.Sprintf("| %d | %s | %s | %s | %s |", i+1, name, status, dur, mem))
+        }
+        ts := time.Now().UTC().Format("2006-01-02 15:04 MST")
+        var buf bytes.Buffer
+        buf.WriteString("# Java Rosetta Transpiler Output\n\n")
+        buf.WriteString("Generated Java code for programs in `tests/rosetta/x/Mochi`. Each program has a `.java` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.\n\n")
+        fmt.Fprintf(&buf, "## Rosetta Checklist (%d/%d) - updated %s\n", compiled, total, ts)
+        buf.WriteString(strings.Join(lines, "\n"))
+        buf.WriteString("\n")
+        _ = os.WriteFile(readmePath, buf.Bytes(), 0644)
+}
+
+func humanDuration(us int64) string {
+        d := time.Duration(us) * time.Microsecond
+        return d.String()
+}
+
+func humanSize(b int64) string {
+        const unit = 1024
+        if b < unit {
+                return fmt.Sprintf("%d B", b)
+        }
+        div, exp := int64(unit), 0
+        for n := b / unit; n >= unit; n /= unit {
+                div *= unit
+                exp++
+        }
+        return fmt.Sprintf("%.1f %cB", float64(b)/float64(div), "KMGTPE"[exp])
 }

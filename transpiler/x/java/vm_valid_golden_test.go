@@ -40,16 +40,18 @@ func TestJavaTranspiler_VMValid_Golden(t *testing.T) {
 			_ = os.WriteFile(errPath, []byte(err.Error()), 0o644)
 			return nil, err
 		}
-		env := types.NewEnv(nil)
-		if errs := types.Check(prog, env); len(errs) > 0 {
-			_ = os.WriteFile(errPath, []byte(errs[0].Error()), 0o644)
-			return nil, errs[0]
-		}
-		ast, err := javatr.Transpile(prog, env)
-		if err != nil {
-			_ = os.WriteFile(errPath, []byte(err.Error()), 0o644)
-			return nil, err
-		}
+                env := types.NewEnv(nil)
+                if errs := types.Check(prog, env); len(errs) > 0 {
+                        _ = os.WriteFile(errPath, []byte(errs[0].Error()), 0o644)
+                        return nil, errs[0]
+                }
+                bench := os.Getenv("MOCHI_BENCHMARK") != ""
+                javatr.SetBenchMain(bench)
+                ast, err := javatr.Transpile(prog, env)
+                if err != nil {
+                        _ = os.WriteFile(errPath, []byte(err.Error()), 0o644)
+                        return nil, err
+                }
 		code := javatr.Emit(ast)
 		if err := os.WriteFile(codePath, code, 0o644); err != nil {
 			return nil, err
@@ -64,8 +66,12 @@ func TestJavaTranspiler_VMValid_Golden(t *testing.T) {
 			_ = os.WriteFile(errPath, append([]byte(err.Error()+"\n"), out...), 0o644)
 			return nil, err
 		}
-		cmd = exec.Command("java", "-cp", outDir, "Main")
-		cmd.Env = append(os.Environ(), "MOCHI_NOW_SEED=1")
+                cmd = exec.Command("java", "-cp", outDir, "Main")
+                envVars := append(os.Environ(), "MOCHI_NOW_SEED=1")
+                if bench {
+                        envVars = append(envVars, "MOCHI_BENCHMARK=1")
+                }
+                cmd.Env = envVars
 		if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
 			cmd.Stdin = bytes.NewReader(data)
 		}

@@ -41,6 +41,11 @@ var structDefs map[string]map[string]string
 var varDecls map[string]*VarStmt
 var funcMapFields map[string]map[string]string
 var mapVarFields map[string]map[string]string
+var benchMain bool
+
+// SetBenchMain configures whether the generated main function
+// is wrapped in a benchmark block when emitting code.
+func SetBenchMain(v bool) { benchMain = v }
 
 func copyMap(src map[string]string) map[string]string {
 	dst := make(map[string]string, len(src))
@@ -3697,7 +3702,11 @@ func compileQueryExpr(q *parser.QueryExpr) (Expr, error) {
 
 // Emit generates formatted Java source from the AST.
 func Emit(prog *Program) []byte {
-	var buf bytes.Buffer
+        if benchMain {
+                needNow = true
+                needMem = true
+        }
+        var buf bytes.Buffer
 	buf.WriteString("public class Main {\n")
 	// emit type declarations and global variables first
 	for _, st := range prog.Stmts {
@@ -3805,16 +3814,30 @@ func Emit(prog *Program) []byte {
 			buf.WriteByte('\n')
 		}
 	}
-	buf.WriteString("    public static void main(String[] args) {\n")
-	for _, st := range prog.Stmts {
-		switch st.(type) {
-		case *LetStmt, *VarStmt, *TypeDeclStmt, *InterfaceDeclStmt:
-			// already emitted as globals or declarations
-		default:
-			st.emit(&buf, "        ")
-		}
-	}
-	buf.WriteString("    }\n")
+        buf.WriteString("    public static void main(String[] args) {\n")
+        if benchMain {
+                buf.WriteString("        int _benchStart = _now();\n")
+                buf.WriteString("        int _benchMem = _mem();\n")
+        }
+        for _, st := range prog.Stmts {
+                switch st.(type) {
+                case *LetStmt, *VarStmt, *TypeDeclStmt, *InterfaceDeclStmt:
+                        // already emitted as globals or declarations
+                default:
+                        st.emit(&buf, "        ")
+                }
+        }
+        if benchMain {
+                buf.WriteString("        int _benchDuration = (_now() - _benchStart) / 1000;\n")
+                buf.WriteString("        int _benchMemory = _mem() - _benchMem;\n")
+                buf.WriteString("        System.out.println(\"{\");\n")
+                buf.WriteString("        System.out.println(\"  \\\"duration_us\\\": \" + _benchDuration + \",\");\n")
+                buf.WriteString("        System.out.println(\"  \\\"memory_bytes\\\": \" + _benchMemory + \",\");\n")
+                buf.WriteString("        System.out.println(\"  \\\"name\\\": \\\"main\\\"\");\n")
+                buf.WriteString("        System.out.println(\"}\");\n")
+                buf.WriteString("        return;\n")
+        }
+        buf.WriteString("    }\n")
 	if needNow {
 		buf.WriteString("\n    static boolean _nowSeeded = false;\n")
 		buf.WriteString("    static int _nowSeed;\n")
