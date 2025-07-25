@@ -2,9 +2,9 @@
 
 Generated Lua code for programs in `tests/rosetta/x/Mochi`. Each program has a `.lua` file produced by the transpiler and a `.out` file with its runtime output. Compilation or runtime errors are captured in `.error` files.
 
-Transpiled programs: 278/284
+Transpiled programs: 275/284
 
-Last updated: 2025-07-25 17:25 GMT+7
+Last updated: 2025-07-25 17:45 GMT+7
 
 Checklist:
 
@@ -82,37 +82,37 @@ Checklist:
 | 70 | arithmetic-integer-1 | ✓ | 28µs | 2.7 KB |
 | 71 | arithmetic-integer-2 | ✓ | 58µs | 2.7 KB |
 | 72 | arithmetic-numbers | ✓ |  |  |
-| 73 | arithmetic-rational | ✓ |  |  |
-| 74 | array-concatenation | ✓ |  |  |
-| 75 | array-length | ✓ |  |  |
-| 76 | arrays | ✓ |  |  |
-| 77 | ascending-primes | ✓ |  |  |
-| 78 | ascii-art-diagram-converter | ✓ |  |  |
-| 79 | assertions | ✓ |  |  |
-| 80 | associative-array-creation | ✓ |  |  |
-| 81 | associative-array-iteration | ✓ |  |  |
-| 82 | associative-array-merging | ✓ |  |  |
-| 83 | atomic-updates | ✓ |  |  |
-| 84 | attractive-numbers | ✓ |  |  |
-| 85 | average-loop-length | ✓ |  |  |
-| 86 | averages-arithmetic-mean | ✓ |  |  |
-| 87 | averages-mean-time-of-day | ✓ |  |  |
-| 88 | averages-median-1 | ✓ |  |  |
-| 89 | averages-median-2 | ✓ |  |  |
-| 90 | averages-median-3 | ✓ |  |  |
-| 91 | averages-mode | ✓ |  |  |
-| 92 | averages-pythagorean-means | ✓ |  |  |
-| 93 | averages-root-mean-square | ✓ |  |  |
-| 94 | averages-simple-moving-average | ✓ |  |  |
-| 95 | avl-tree | ✓ |  |  |
-| 96 | b-zier-curves-intersections | ✓ |  |  |
-| 97 | babbage-problem | ✓ |  |  |
-| 98 | babylonian-spiral | ✓ |  |  |
-| 99 | balanced-brackets | ✓ |  |  |
-| 100 | balanced-ternary | ✓ |  |  |
-| 101 | barnsley-fern | ✓ |  |  |
-| 102 | base64-decode-data | ✓ |  |  |
-| 103 | bell-numbers | ✓ |  |  |
+| 73 | arithmetic-rational | ✓ | 189µs | 2.9 KB |
+| 74 | array-concatenation | ✓ | 168µs | 1.5 KB |
+| 75 | array-length | ✓ | 109µs | 872 B |
+| 76 | arrays | ✓ | 228µs | 3.1 KB |
+| 77 | ascending-primes | ✓ | 1.134ms | 9.3 KB |
+| 78 | ascii-art-diagram-converter | ✓ | 59µs | 104 B |
+| 79 | assertions | ✓ | 28µs | 104 B |
+| 80 | associative-array-creation | ✓ | 137µs | 896 B |
+| 81 | associative-array-iteration | ✓ | 153µs | 2.9 KB |
+| 82 | associative-array-merging | ✓ | 130µs | 912 B |
+| 83 | atomic-updates | ✓ | 213µs | 936 B |
+| 84 | attractive-numbers | ✓ | 297µs | 3.0 KB |
+| 85 | average-loop-length | ✓ | 3.04969s | 1.3 KB |
+| 86 | averages-arithmetic-mean | ✓ | 166µs | 2.9 KB |
+| 87 | averages-mean-time-of-day | ✓ | 96µs | 1.4 KB |
+| 88 | averages-median-1 | ✓ | 191µs | 912 B |
+| 89 | averages-median-2 | ✓ | 178µs | 912 B |
+| 90 | averages-median-3 | ✓ | 207µs | 960 B |
+| 91 | averages-mode | ✓ | 199µs | 1.7 KB |
+| 92 | averages-pythagorean-means | ✓ | 256µs | 2.9 KB |
+| 93 | averages-root-mean-square | ✓ | 161µs | 96 B |
+| 94 | averages-simple-moving-average | ✓ | 210µs | 1.1 KB |
+| 95 | avl-tree | ✓ | 258µs | 1.7 KB |
+| 96 | b-zier-curves-intersections | ✓ | 4.101ms | 2.5 KB |
+| 97 | babbage-problem | ✓ | 1.926ms | 64 B |
+| 98 | babylonian-spiral | ✓ | 923µs | 1.1 KB |
+| 99 | balanced-brackets | ✓ | 306µs | 3.0 KB |
+| 100 | balanced-ternary | ✓ | 280µs | 1.3 KB |
+| 101 | barnsley-fern | ✓ | 15.654ms | 139.0 KB |
+| 102 | base64-decode-data | ✓ | 1.565ms | 1.3 KB |
+| 103 | bell-numbers | ✓ | 1.762ms | 960 B |
 | 104 | benfords-law | ✓ |  |  |
 | 105 | bernoulli-numbers | ✓ |  |  |
 | 106 | best-shuffle | ✓ |  |  |
@@ -253,8 +253,8 @@ Checklist:
 | 241 | count-in-factors | ✓ |  |  |
 | 242 | count-in-octal-1 | ✓ | 143µs | 2.8 KB |
 | 243 | count-in-octal-2 | ✓ | 87.341ms | 2.8 KB |
-| 244 | count-in-octal-3 | ✓ |  |  |
-| 245 | count-in-octal-4 | ✓ |  |  |
+| 244 | count-in-octal-3 |   |  |  |
+| 245 | count-in-octal-4 |   |  |  |
 | 246 | count-occurrences-of-a-substring | ✓ | 41µs | 912 B |
 | 247 | count-the-coins-1 | ✓ | 1.051ms | 15.9 KB |
 | 248 | count-the-coins-2 | ✓ |  |  |
@@ -272,7 +272,7 @@ Checklist:
 | 260 | csv-to-html-translation-3 | ✓ | 35µs | 64 B |
 | 261 | csv-to-html-translation-4 | ✓ | 28µs | 64 B |
 | 262 | csv-to-html-translation-5 | ✓ | 199µs | 2.4 KB |
-| 263 | cuban-primes | ✓ |  |  |
+| 263 | cuban-primes |   |  |  |
 | 264 | cullen-and-woodall-numbers | ✓ | 157µs | 1.1 KB |
 | 265 | cumulative-standard-deviation | ✓ | 100µs | 2.9 KB |
 | 266 | currency | ✓ | 84µs | 1.2 KB |
