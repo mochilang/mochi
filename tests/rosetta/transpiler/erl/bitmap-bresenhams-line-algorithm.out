@@ -1,0 +1,19 @@
+/workspace/mochi/tests/rosetta/transpiler/erl/bitmap-bresenhams-line-algorithm.erl:88:24: Warning: variable 'Sx_3' exported from 'case' (line 41, column 9)
+%   88| {Dx, Dy, Err_5, Pts_2, Sx_3, Sy_3, X0_3, X1, Y0_3, Y1} = Fun(Dx, Dy, Err, Pts, Sx_3, Sy_3, X0, X1, Y0, Y1),
+%     |                        ^
+
+/workspace/mochi/tests/rosetta/transpiler/erl/bitmap-bresenhams-line-algorithm.erl:88:30: Warning: variable 'Sy_3' exported from 'case' (line 47, column 9)
+%   88| {Dx, Dy, Err_5, Pts_2, Sx_3, Sy_3, X0_3, X1, Y0_3, Y1} = Fun(Dx, Dy, Err, Pts, Sx_3, Sy_3, X0, X1, Y0, Y1),
+%     |                              ^
+
+(0,0)
+(1,1)
+(2,1)
+(3,2)
+(4,3)
+(5,3)
+{
+  "duration_us": 6250,
+  "memory_bytes": 50512,
+  "name": "main"
+}
