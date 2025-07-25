@@ -915,7 +915,7 @@ func convertParserExpr(e *parser.Expr) (Node, error) {
 			ops = ops[:len(ops)-1]
 
 			exprs = append(exprs, makeBinaryTyped(o, l, r, lt, rt))
-			typesStack = append(typesStack, types.AnyType{})
+			typesStack = append(typesStack, binaryResultType(o, lt, rt))
 		}
 
 		op := part.Op
@@ -942,7 +942,7 @@ func convertParserExpr(e *parser.Expr) (Node, error) {
 		ops = ops[:len(ops)-1]
 
 		exprs = append(exprs, makeBinaryTyped(o, l, r, lt, rt))
-		typesStack = append(typesStack, types.AnyType{})
+		typesStack = append(typesStack, binaryResultType(o, lt, rt))
 	}
 
 	if len(exprs) != 1 {
@@ -2155,6 +2155,70 @@ func precedence(op string) int {
 	}
 }
 
+func binaryResultType(op string, lt, rt types.Type) types.Type {
+	switch op {
+	case "+":
+		if _, ok := lt.(types.StringType); ok {
+			return types.StringType{}
+		}
+		if _, ok := rt.(types.StringType); ok {
+			return types.StringType{}
+		}
+	case "<", "<=", ">", ">=", "==", "!=", "&&", "||", "in":
+		return types.BoolType{}
+	}
+	return types.AnyType{}
+}
+
+func isAddOne(end, start Node) bool {
+	lst, ok := end.(*List)
+	if !ok || len(lst.Elems) != 3 {
+		return false
+	}
+	if sym, ok := lst.Elems[0].(Symbol); !ok || sym != Symbol("+") {
+		return false
+	}
+	if nodesEqual(lst.Elems[1], start) && isIntOne(lst.Elems[2]) {
+		return true
+	}
+	if nodesEqual(lst.Elems[2], start) && isIntOne(lst.Elems[1]) {
+		return true
+	}
+	return false
+}
+
+func nodesEqual(a, b Node) bool {
+	switch x := a.(type) {
+	case Symbol:
+		y, ok := b.(Symbol)
+		return ok && x == y
+	case IntLit:
+		y, ok := b.(IntLit)
+		return ok && x == y
+	case StringLit:
+		y, ok := b.(StringLit)
+		return ok && x == y
+	case *List:
+		y, ok := b.(*List)
+		if !ok || len(x.Elems) != len(y.Elems) {
+			return false
+		}
+		for i := range x.Elems {
+			if !nodesEqual(x.Elems[i], y.Elems[i]) {
+				return false
+			}
+		}
+		return true
+	default:
+		return false
+	}
+}
+
+func isIntOne(n Node) bool {
+	v, ok := n.(IntLit)
+	return ok && int(v) == 1
+}
+
 func convertCall(target Node, call *parser.CallOp) (Node, error) {
 	sym, ok := target.(Symbol)
 	if !ok {
@@ -2341,6 +2405,10 @@ func convertIndex(target Node, orig *parser.Primary, idx *parser.IndexOp) (Node,
 			case types.StringType:
 				return &List{Elems: []Node{Symbol("substring"), target, start, end}}, nil
 			case types.ListType:
+				// if slicing a list by one element, treat as index access
+				if isAddOne(end, start) {
+					return &List{Elems: []Node{Symbol("list-ref"), target, start}}, nil
+				}
 				return &List{Elems: []Node{Symbol("take"), &List{Elems: []Node{Symbol("drop"), target, start}}, lenNode}}, nil
 			}
 		}
@@ -2361,7 +2429,8 @@ func convertIndex(target Node, orig *parser.Primary, idx *parser.IndexOp) (Node,
 	if orig != nil {
 		switch types.ExprType(&parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: &parser.PostfixExpr{Target: orig}}}}, currentEnv).(type) {
 		case types.StringType:
-			return &List{Elems: []Node{Symbol("string-ref"), target, in}}, nil
+			one := &List{Elems: []Node{Symbol("+"), in, IntLit(1)}}
+			return &List{Elems: []Node{Symbol("substring"), target, in, one}}, nil
 		case types.ListType:
 			return &List{Elems: []Node{Symbol("list-ref"), target, in}}, nil
 		case types.MapType:
@@ -2371,7 +2440,7 @@ func convertIndex(target Node, orig *parser.Primary, idx *parser.IndexOp) (Node,
 	}
 	return &List{Elems: []Node{
 		Symbol("cond"),
-		&List{Elems: []Node{&List{Elems: []Node{Symbol("string?"), target}}, &List{Elems: []Node{Symbol("string-ref"), target, in}}}},
+		&List{Elems: []Node{&List{Elems: []Node{Symbol("string?"), target}}, &List{Elems: []Node{Symbol("substring"), target, in, &List{Elems: []Node{Symbol("+"), in, IntLit(1)}}}}}},
 		&List{Elems: []Node{&List{Elems: []Node{Symbol("hash-table?"), target}}, &List{Elems: []Node{Symbol("hash-table-ref"), target, in}}}},
 		&List{Elems: []Node{Symbol("else"), &List{Elems: []Node{Symbol("list-ref"), target, in}}}},
 	}}, nil

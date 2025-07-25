@@ -3,7 +3,7 @@
 Generated Scheme code for Rosetta Code tasks under `tests/rosetta/x/Mochi`.
 
 ## Checklist (82/284)
-Last updated: 2025-07-25 13:00 UTC
+Last updated: 2025-07-25 13:21 UTC
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -35,14 +35,14 @@ Last updated: 2025-07-25 13:00 UTC
 | 26 | accumulator-factory | ✓ | 48µs | 12.4 MB |
 | 27 | achilles-numbers | ✓ | 390.36ms | 16.5 MB |
 | 28 | ackermann-function-2 | ✓ | 225µs | 12.6 MB |
-| 29 | ackermann-function-3 | ✓ |  |  |
-| 30 | ackermann-function | ✓ |  |  |
-| 31 | active-directory-connect | ✓ |  |  |
-| 32 | active-directory-search-for-a-user | ✓ |  |  |
-| 33 | active-object | ✓ |  |  |
-| 34 | add-a-variable-to-a-class-instance-at-runtime | ✓ |  |  |
-| 35 | additive-primes | ✓ |  |  |
-| 36 | address-of-a-variable | ✓ |  |  |
+| 29 | ackermann-function-3 | ✓ | 2m30.92099s | 16.5 MB |
+| 30 | ackermann-function | ✓ | 159.518ms | 12.7 MB |
+| 31 | active-directory-connect | ✓ | 92µs | 12.5 MB |
+| 32 | active-directory-search-for-a-user | ✓ | 79µs | 12.6 MB |
+| 33 | active-object | ✓ | 1.053ms | 12.7 MB |
+| 34 | add-a-variable-to-a-class-instance-at-runtime | ✓ | 143µs | 12.3 MB |
+| 35 | additive-primes | ✓ | 2.986ms | 12.2 MB |
+| 36 | address-of-a-variable | ✓ | 314µs | 11.2 MB |
 | 37 | adfgvx-cipher |   |  |  |
 | 38 | aks-test-for-primes | ✓ |  |  |
 | 39 | algebraic-data-types |   |  |  |

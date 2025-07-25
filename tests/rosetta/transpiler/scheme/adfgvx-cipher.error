@@ -1,22 +1,29 @@
 exit status 70
-ERROR in "string-concatenate": invalid type, expected String: #\L
-  called from <anonymous> on line 321 of file /workspace/mochi/tests/rosetta/transpiler/scheme/adfgvx-cipher.scm
-  called from loop16 on line 308 of file /workspace/mochi/tests/rosetta/transpiler/scheme/adfgvx-cipher.scm
+ERROR in loop23 on line 490 of file /workspace/mochi/tests/rosetta/transpiler/scheme/adfgvx-cipher.scm: invalid type, expected Number: "7"
   called from call-with-current-continuation on line 848 of file /usr/share/chibi/init-7.scm
-  called from <anonymous> on line 305 of file /workspace/mochi/tests/rosetta/transpiler/scheme/adfgvx-cipher.scm
+  called from <anonymous> on line 456 of file /workspace/mochi/tests/rosetta/transpiler/scheme/adfgvx-cipher.scm
+  called from loop21 on line 454 of file /workspace/mochi/tests/rosetta/transpiler/scheme/adfgvx-cipher.scm
   called from call-with-current-continuation on line 848 of file /usr/share/chibi/init-7.scm
-  called from <anonymous> on line 280 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 451 of file /workspace/mochi/tests/rosetta/transpiler/scheme/adfgvx-cipher.scm
   called from call-with-current-continuation on line 848 of file /usr/share/chibi/init-7.scm
-  called from <anonymous> on line 1650 of file /workspace/mochi/tests/rosetta/transpiler/scheme/adfgvx-cipher.scm
+  called from <anonymous> on line 851 of file /workspace/mochi/tests/rosetta/transpiler/scheme/adfgvx-cipher.scm
+  called from call-with-current-continuation on line 848 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 1732 of file /workspace/mochi/tests/rosetta/transpiler/scheme/adfgvx-cipher.scm
+  called from call-with-current-continuation on line 848 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 1763 of file /workspace/mochi/tests/rosetta/transpiler/scheme/adfgvx-cipher.scm
   called from <anonymous> on line 1292 of file /usr/share/chibi/init-7.scm
   called from <anonymous> on line 821 of file /usr/share/chibi/init-7.scm
 6 x 6 Polybius square:
 
   | A D F G V X
 ---------------
-A | T F X Q 9 V 
-D | 0 Y P J 4 3 
-F | O D 8 1 G R 
-G | A 6 B N C I 
-V | H Z E 7 K U 
-X | W M 2 S 5 L 
+A | B F T O H R 
+D | J Y G 4 8 P 
+F | S 0 2 5 N Q 
+G | D M 6 9 L 1 
+V | W K X I Z 7 
+X | 3 A V C E U 
+
+The key is 270MAEZNG
+
+Plaintext : ATTACKAT1200AM
