@@ -2075,6 +2075,15 @@ func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
 			args[i] = ex
 		}
 		switch method {
+		case "write":
+			if len(args) != 1 {
+				return nil, fmt.Errorf("write expects 1 arg")
+			}
+			target := e
+			if v, ok := e.(*Var); ok && v.Name == "stdout" {
+				target = &Name{Value: "STDOUT"}
+			}
+			return &CallExpr{Func: "fwrite", Args: []Expr{target, args[0]}}, nil
 		case "contains":
 			if isStringExpr(e) {
 				return &CallExpr{Func: "str_contains", Args: append([]Expr{e}, args...)}, nil

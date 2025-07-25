@@ -1,0 +1,51 @@
+Deprecated: Implicit conversion from float 1.111111111111111E+47 to int loses precision in /workspace/mochi/tests/rosetta/transpiler/php/deceptive-numbers.php on line 65
+
+Deprecated: Implicit conversion from float 1.1111111111111112E+75 to int loses precision in /workspace/mochi/tests/rosetta/transpiler/php/deceptive-numbers.php on line 65
+
+Deprecated: Implicit conversion from float 1.1111111111111113E+89 to int loses precision in /workspace/mochi/tests/rosetta/transpiler/php/deceptive-numbers.php on line 65
+
+Deprecated: Implicit conversion from float 1.1111111111111114E+117 to int loses precision in /workspace/mochi/tests/rosetta/transpiler/php/deceptive-numbers.php on line 65
+
+Deprecated: Implicit conversion from float 1.1111111111111113E+119 to int loses precision in /workspace/mochi/tests/rosetta/transpiler/php/deceptive-numbers.php on line 65
+
+Deprecated: Implicit conversion from float 1.1111111111111116E+131 to int loses precision in /workspace/mochi/tests/rosetta/transpiler/php/deceptive-numbers.php on line 65
+
+Deprecated: Implicit conversion from float 1.1111111111111115E+141 to int loses precision in /workspace/mochi/tests/rosetta/transpiler/php/deceptive-numbers.php on line 65
+
+Deprecated: Implicit conversion from float 1.1111111111111118E+159 to int loses precision in /workspace/mochi/tests/rosetta/transpiler/php/deceptive-numbers.php on line 65
+
+Deprecated: Implicit conversion from float 1.1111111111111117E+167 to int loses precision in /workspace/mochi/tests/rosetta/transpiler/php/deceptive-numbers.php on line 65
+
+Deprecated: Implicit conversion from float 1.1111111111111115E+185 to int loses precision in /workspace/mochi/tests/rosetta/transpiler/php/deceptive-numbers.php on line 65
+
+Deprecated: Implicit conversion from float 1.1111111111111111E+201 to int loses precision in /workspace/mochi/tests/rosetta/transpiler/php/deceptive-numbers.php on line 65
+
+Deprecated: Implicit conversion from float 1.1111111111111111E+207 to int loses precision in /workspace/mochi/tests/rosetta/transpiler/php/deceptive-numbers.php on line 65
+
+Deprecated: Implicit conversion from float 1.1111111111111112E+215 to int loses precision in /workspace/mochi/tests/rosetta/transpiler/php/deceptive-numbers.php on line 65
+
+Deprecated: Implicit conversion from float 1.1111111111111111E+219 to int loses precision in /workspace/mochi/tests/rosetta/transpiler/php/deceptive-numbers.php on line 65
+
+Deprecated: Implicit conversion from float 1.1111111111111112E+245 to int loses precision in /workspace/mochi/tests/rosetta/transpiler/php/deceptive-numbers.php on line 65
+
+Deprecated: Implicit conversion from float 1.1111111111111111E+251 to int loses precision in /workspace/mochi/tests/rosetta/transpiler/php/deceptive-numbers.php on line 65
+
+Deprecated: Implicit conversion from float 1.1111111111111112E+257 to int loses precision in /workspace/mochi/tests/rosetta/transpiler/php/deceptive-numbers.php on line 65
+
+Deprecated: Implicit conversion from float 1.1111111111111113E+285 to int loses precision in /workspace/mochi/tests/rosetta/transpiler/php/deceptive-numbers.php on line 65
+
+Deprecated: Implicit conversion from float 1.1111111111111113E+287 to int loses precision in /workspace/mochi/tests/rosetta/transpiler/php/deceptive-numbers.php on line 65
+
+Deprecated: Implicit conversion from float 1.1111111111111114E+297 to int loses precision in /workspace/mochi/tests/rosetta/transpiler/php/deceptive-numbers.php on line 65
+
+Deprecated: Implicit conversion from float 1.1111111111111114E+299 to int loses precision in /workspace/mochi/tests/rosetta/transpiler/php/deceptive-numbers.php on line 65
+
+Deprecated: Implicit conversion from float INF to int loses precision in /workspace/mochi/tests/rosetta/transpiler/php/deceptive-numbers.php on line 65
+
+Deprecated: Implicit conversion from float INF to int loses precision in /workspace/mochi/tests/rosetta/transpiler/php/deceptive-numbers.php on line 65
+
+Deprecated: Implicit conversion from float INF to int loses precision in /workspace/mochi/tests/rosetta/transpiler/php/deceptive-numbers.php on line 65
+
+Deprecated: Implicit conversion from float INF to int loses precision in /workspace/mochi/tests/rosetta/transpiler/php/deceptive-numbers.php on line 65
+The first 25 deceptive numbers are:
+[49 77 91 119 121 133 143 161 169 187 203 209 217 221 247 253 259 287 289 299 301 319 323 329 341]
