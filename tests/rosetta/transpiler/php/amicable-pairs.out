@@ -7,3 +7,8 @@ The amicable pairs below 20,000 are:
   10744 and 10856
   12285 and 14595
   17296 and 18416
+{
+  "duration_us": 19789947,
+  "memory_bytes": 96,
+  "name": "main"
+}

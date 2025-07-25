@@ -6,3 +6,8 @@
 -170.0
 -118.1184
 -80.7109
+{
+  "duration_us": 48,
+  "memory_bytes": 128,
+  "name": "main"
+}

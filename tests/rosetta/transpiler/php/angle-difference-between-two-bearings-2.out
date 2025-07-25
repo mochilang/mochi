@@ -4,21 +4,14 @@
 -175.0
 170.0
 -170.0
-
-Deprecated: Implicit conversion from float -118.1184 to int loses precision in /workspace/mochi/tests/rosetta/transpiler/php/angle-difference-between-two-bearings-2.php on line 5
--118.0
-
-Deprecated: Implicit conversion from float -80.7109 to int loses precision in /workspace/mochi/tests/rosetta/transpiler/php/angle-difference-between-two-bearings-2.php on line 5
--80.0
-
-Deprecated: Implicit conversion from float 99940.41671687661 to int loses precision in /workspace/mochi/tests/rosetta/transpiler/php/angle-difference-between-two-bearings-2.php on line 5
--140.0
-
-Deprecated: Implicit conversion from float 199007.6560814813 to int loses precision in /workspace/mochi/tests/rosetta/transpiler/php/angle-difference-between-two-bearings-2.php on line 5
--73.0
-
-Deprecated: Implicit conversion from float -155321.5029523074 to int loses precision in /workspace/mochi/tests/rosetta/transpiler/php/angle-difference-between-two-bearings-2.php on line 5
--161.0
-
-Deprecated: Implicit conversion from float -17962.70114441173 to int loses precision in /workspace/mochi/tests/rosetta/transpiler/php/angle-difference-between-two-bearings-2.php on line 5
-38.0
+-118.11840000000001
+-80.71089999999998
+-139.58328312338563
+-72.34391851868713
+-161.50295230740448
+37.29885558826936
+{
+  "duration_us": 55,
+  "memory_bytes": 128,
+  "name": "main"
+}

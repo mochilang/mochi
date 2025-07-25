@@ -3,3 +3,8 @@
 12 * 8 = 96
 12 / 8 = 1
 12 % 8 = 4
+{
+  "duration_us": 47,
+  "memory_bytes": 96,
+  "name": "main"
+}
