@@ -55,8 +55,8 @@ func runRosettaCase(t *testing.T, name string) {
 	if err := os.WriteFile(codePath, code, 0o644); err != nil {
 		t.Fatalf("write code: %v", err)
 	}
-	cmd := exec.Command("deno", "run", "--quiet", "--allow-net", "--allow-read", "--allow-env", codePath)
-	cmd.Env = append(os.Environ(), "DENO_TLS_CA_STORE=system", "MOCHI_NOW_SEED=1")
+       cmd := exec.Command("deno", "run", "--quiet", "--allow-net", "--allow-read", "--allow-env", codePath)
+       cmd.Env = append(os.Environ(), "DENO_TLS_CA_STORE=system")
 	if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
 		cmd.Stdin = bytes.NewReader(data)
 	}
