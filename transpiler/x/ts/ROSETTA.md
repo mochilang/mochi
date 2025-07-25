@@ -2,28 +2,28 @@
 
 This checklist is auto-generated.
 Generated TypeScript code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/TypeScript`.
-Last updated: 2025-07-25 03:30 UTC
+Last updated: 2025-07-25 05:42 UTC
 
 ## Rosetta Golden Test Checklist (272/284)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
-| 1 | 100-doors-2 | ✓ | 3µs | 536.0 KB |
-| 2 | 100-doors-3 | ✓ | 571.223ms | 256.0 KB |
-| 3 | 100-doors | ✓ | 571.223ms | 288.0 KB |
+| 1 | 100-doors-2 | ✓ | 1ms | 512.0 KB |
+| 2 | 100-doors-3 | ✓ | 1ms | 128.0 KB |
+| 3 | 100-doors | ✓ | 1ms | 256.0 KB |
 | 4 | 100-prisoners | ✓ |  | 13.1 MB |
 | 5 | 15-puzzle-game | ✓ |  | 384.0 KB |
-| 6 | 15-puzzle-solver | ✓ | 571.223ms |  |
-| 7 | 2048 | ✓ | 731.363ms | 768.0 KB |
-| 8 | 21-game | ✓ |  | 512.0 KB |
-| 9 | 24-game-solve | ✓ | 232.815ms | 7.3 MB |
-| 10 | 24-game | ✓ |  | 384.0 KB |
-| 11 | 4-rings-or-4-squares-puzzle | ✓ | 571.223ms | 16.7 MB |
+| 6 | 15-puzzle-solver | ✓ | 1ms | 128.0 KB |
+| 7 | 2048 | ✓ | 2ms | 896.0 KB |
+| 8 | 21-game | ✓ | 1ms | 640.0 KB |
+| 9 | 24-game-solve | ✓ | 21ms | 12.8 MB |
+| 10 | 24-game | ✓ | 1ms | 512.0 KB |
+| 11 | 4-rings-or-4-squares-puzzle | ✓ | 30ms | 17.1 MB |
 | 12 | 9-billion-names-of-god-the-integer | ✓ |  |  |
-| 13 | 99-bottles-of-beer-2 | ✓ | 571.223ms | 5.2 MB |
-| 14 | 99-bottles-of-beer | ✓ | 571.223ms | 3.4 MB |
-| 15 | DNS-query | ✓ | 571.223ms | 128.0 KB |
-| 16 | a+b | ✓ | 571.223ms | 384.0 KB |
-| 17 | abbreviations-automatic | ✓ | 571.223ms | 5.2 MB |
+| 13 | 99-bottles-of-beer-2 | ✓ | 8ms | 5.6 MB |
+| 14 | 99-bottles-of-beer | ✓ | 3ms | 3.2 MB |
+| 15 | DNS-query | ✓ |  | 128.0 KB |
+| 16 | a+b | ✓ | 1ms | 512.0 KB |
+| 17 | abbreviations-automatic | ✓ | 9ms | 5.5 MB |
 | 18 | abbreviations-easy | ✓ | 571.223ms | 384.0 KB |
 | 19 | abbreviations-simple | ✓ | 571.223ms | 640.0 KB |
 | 20 | abc-problem | ✓ | 571.223ms | 512.0 KB |

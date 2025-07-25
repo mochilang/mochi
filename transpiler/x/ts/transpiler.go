@@ -1521,7 +1521,7 @@ func (b *BenchStmt) emit(w io.Writer) {
 	}
 	io.WriteString(w, "  const _end = _now()\n")
 	io.WriteString(w, "  const _duration = _end - _start\n")
-	io.WriteString(w, "  const _duration_us = Math.trunc(_duration / 1000)\n")
+	io.WriteString(w, "  const _duration_us = Math.trunc(_duration)\n")
 	io.WriteString(w, "  const _endMem = _mem()\n")
 	io.WriteString(w, "  const _memory_bytes = Math.max(0, _endMem - _startMem)\n")
 	fmt.Fprintf(w, "  console.log(JSON.stringify({\n    \"duration_us\": _duration_us,\n    \"memory_bytes\": _memory_bytes,\n    \"name\": %q\n  }, null, \"  \"))\n", b.Name)
