@@ -1,6 +1,0 @@
-run: exit status 1
-Traceback (most recent call last):
-  File "/workspace/mochi/tests/rosetta/transpiler/Python/csv-to-html-translation-2.py", line 8, in <module>
-    for line in split(c, "\n"):
-                ^^^^^
-NameError: name 'split' is not defined
