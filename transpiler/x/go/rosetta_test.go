@@ -128,13 +128,15 @@ func TestGoTranspiler_Rosetta_Golden(t *testing.T) {
 			}
 			_ = os.Remove(errPath)
 			if bench {
-				_ = os.WriteFile(filepath.Join(outDir, name+".bench"), got, 0o644)
-			} else {
-				_ = os.WriteFile(outPath, got, 0o644)
-			}
-			if bench {
+				benchData := got
+				if idx := bytes.LastIndexByte(got, '{'); idx >= 0 {
+					_ = os.WriteFile(outPath, bytes.TrimSpace(got[:idx]), 0o644)
+					benchData = got[idx:]
+				}
+				_ = os.WriteFile(filepath.Join(outDir, name+".bench"), benchData, 0o644)
 				return
 			}
+			_ = os.WriteFile(outPath, got, 0o644)
 			if updating() || len(want) == 0 {
 				return
 			}
