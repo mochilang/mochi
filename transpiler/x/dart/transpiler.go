@@ -75,7 +75,7 @@ var dartKeywords = map[string]struct{}{
 	"abstract": {}, "else": {}, "enum": {}, "false": {}, "final": {},
 	"for": {}, "if": {}, "in": {}, "new": {}, "null": {}, "super": {},
 	"switch": {}, "case": {}, "var": {}, "void": {}, "while": {},
-	"return": {}, "this": {}, "true": {},
+	"return": {}, "this": {}, "true": {}, "is": {},
 }
 
 func sanitize(name string) string {
@@ -258,11 +258,19 @@ func (f *ForInStmt) emit(out io.Writer) error {
 		return err
 	}
 	if f.Iterable != nil {
-		if strings.HasPrefix(inferType(f.Iterable), "Map<") {
+		typ := inferType(f.Iterable)
+		if strings.HasPrefix(typ, "Map<") {
 			if err := f.Iterable.emit(out); err != nil {
 				return err
 			}
 			if _, err := io.WriteString(out, ".keys"); err != nil {
+				return err
+			}
+		} else if typ == "String" {
+			if err := f.Iterable.emit(out); err != nil {
+				return err
+			}
+			if _, err := io.WriteString(out, ".split('')"); err != nil {
 				return err
 			}
 		} else {
@@ -362,6 +370,9 @@ func (s *VarStmt) emit(w io.Writer) error {
 	typ := s.Type
 	if typ == "" {
 		typ = inferType(s.Value)
+		if _, ok := s.Value.(*IndexExpr); ok && strings.HasSuffix(typ, "?") {
+			typ = strings.TrimSuffix(typ, "?")
+		}
 	}
 	nextStructHint = ""
 	if n, ok := s.Value.(*Name); ok && n.Name == "null" && !strings.HasSuffix(typ, "?") {
@@ -378,6 +389,29 @@ func (s *VarStmt) emit(w io.Writer) error {
 		}
 	}
 	if s.Value != nil {
+		if ll, ok := s.Value.(*ListLit); ok && len(ll.Elems) == 0 && strings.HasPrefix(typ, "List<") {
+			elem := strings.TrimSuffix(strings.TrimPrefix(typ, "List<"), ">")
+			_, err := io.WriteString(w, " = <"+elem+">[]")
+			return err
+		}
+		if iex, ok := s.Value.(*IndexExpr); ok {
+			valType := inferType(s.Value)
+			if strings.HasSuffix(valType, "?") && !strings.HasSuffix(typ, "?") {
+				if _, err := io.WriteString(w, " = "); err != nil {
+					return err
+				}
+				old := iex.NoBang
+				iex.NoBang = true
+				if err := iex.emit(w); err != nil {
+					return err
+				}
+				iex.NoBang = old
+				_, err := io.WriteString(w, "!")
+				typ = strings.TrimSuffix(typ, "?")
+				localVarTypes[s.Name] = typ
+				return err
+			}
+		}
 		if typ == "BigInt" && inferType(s.Value) == "int" {
 			if lit, ok := s.Value.(*IntLit); ok {
 				_, err := fmt.Fprintf(w, " = BigInt.from(%d)", lit.Value)
@@ -1141,8 +1175,21 @@ func (b *BoolLit) emit(w io.Writer) error {
 type ListLit struct{ Elems []Expr }
 
 func (l *ListLit) emit(w io.Writer) error {
-	if _, err := io.WriteString(w, "["); err != nil {
-		return err
+	allNull := true
+	for _, e := range l.Elems {
+		if n, ok := e.(*Name); !ok || n.Name != "null" {
+			allNull = false
+			break
+		}
+	}
+	if allNull {
+		if _, err := io.WriteString(w, "<dynamic>["); err != nil {
+			return err
+		}
+	} else {
+		if _, err := io.WriteString(w, "["); err != nil {
+			return err
+		}
 	}
 	for i, e := range l.Elems {
 		if i > 0 {
@@ -1386,6 +1433,11 @@ func (s *SliceExpr) emit(w io.Writer) error {
 
 func (i *IndexExpr) emit(w io.Writer) error {
 	t := inferType(i.Target)
+	wrap := false
+	switch i.Target.(type) {
+	case *CastExpr:
+		wrap = true
+	}
 	if fields, ok := structFields[t]; ok {
 		if s, ok2 := i.Index.(*StringLit); ok2 {
 			for _, f := range fields {
@@ -1436,8 +1488,20 @@ func (i *IndexExpr) emit(w io.Writer) error {
 		_, err := io.WriteString(w, ")")
 		return err
 	}
-	if err := i.Target.emit(w); err != nil {
-		return err
+	if wrap {
+		if _, err := io.WriteString(w, "("); err != nil {
+			return err
+		}
+		if err := i.Target.emit(w); err != nil {
+			return err
+		}
+		if _, err := io.WriteString(w, ")"); err != nil {
+			return err
+		}
+	} else {
+		if err := i.Target.emit(w); err != nil {
+			return err
+		}
 	}
 	if _, err := io.WriteString(w, "["); err != nil {
 		return err
@@ -3892,7 +3956,7 @@ func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
 				}
 				iex := &IndexExpr{Target: expr, Index: idx}
 				if i < len(pf.Ops)-1 {
-					expr = &NotNilExpr{X: iex}
+					expr = iex
 				} else {
 					iex.NoBang = true
 					expr = iex

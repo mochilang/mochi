@@ -1,0 +1,23 @@
+run: exit status 254
+../../../tests/rosetta/transpiler/Dart/bifid-cipher.dart:65:24: Error: Operator '[]' cannot be called on 'List<int>?' because it is potentially null.
+ - 'List' is from 'dart:core'.
+    row0 = [...row0, xy[0]];
+                       ^
+../../../tests/rosetta/transpiler/Dart/bifid-cipher.dart:66:24: Error: Operator '[]' cannot be called on 'List<int>?' because it is potentially null.
+ - 'List' is from 'dart:core'.
+    row1 = [...row1, xy[1]];
+                       ^
+../../../tests/rosetta/transpiler/Dart/bifid-cipher.dart:76:21: Error: A value of type 'String?' can't be assigned to a variable of type 'String' because 'String?' is nullable and 'String' isn't.
+    res = res + dmap[key];
+                    ^
+../../../tests/rosetta/transpiler/Dart/bifid-cipher.dart:89:28: Error: Operator '[]' cannot be called on 'List<int>?' because it is potentially null.
+ - 'List' is from 'dart:core'.
+    coords = [...coords, xy[0]];
+                           ^
+../../../tests/rosetta/transpiler/Dart/bifid-cipher.dart:90:28: Error: Operator '[]' cannot be called on 'List<int>?' because it is potentially null.
+ - 'List' is from 'dart:core'.
+    coords = [...coords, xy[1]];
+                           ^
+../../../tests/rosetta/transpiler/Dart/bifid-cipher.dart:109:21: Error: A value of type 'String?' can't be assigned to a variable of type 'String' because 'String?' is nullable and 'String' isn't.
+    res = res + dmap[key];
+                    ^
