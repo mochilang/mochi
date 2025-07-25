@@ -78,6 +78,7 @@ var (
 	nowSeed           int64
 	loopLimit         = 1000000
 	loopCount         int
+	benchMain         bool
 )
 
 type breakErr struct{}
@@ -87,6 +88,10 @@ func (breakErr) Error() string { return "break" }
 type continueErr struct{}
 
 func (continueErr) Error() string { return "continue" }
+
+// SetBenchMain configures whether the emitted program is wrapped in a
+// benchmark block that reports execution duration and memory usage.
+func SetBenchMain(v bool) { benchMain = v }
 
 func toFloat(v value) float64 {
 	switch v.kind {
@@ -3164,6 +3169,21 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	}
 
 	_ = env
+	if benchMain {
+		lines := []string{
+			"benchStart := Time millisecondClockValue.",
+			"benchMemStart := ObjectMemory totalMemory.",
+		}
+		lines = append(lines, p.Lines...)
+		lines = append(lines,
+			"benchEnd := Time millisecondClockValue.",
+			"benchMemEnd := ObjectMemory totalMemory.",
+			"dur := (benchEnd - benchStart) * 1000.",
+			"mem := benchMemEnd - benchMemStart.",
+			"Transcript show:'{\"duration_us\": ' , dur printString , ', \"memory_bytes\": ' , mem printString , ', \"name\": \"main\"}' ; cr",
+		)
+		p.Lines = lines
+	}
 	return p, nil
 }
 
