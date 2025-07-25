@@ -761,6 +761,9 @@ func (l *LenExpr) emit(w io.Writer) {
 
 func (c *CallExpr) emit(w io.Writer) {
 	c.Fn.emit(w)
+	if f, ok := c.Fn.(*FieldExpr); ok && f.Name == "mkString" && len(c.Args) == 0 {
+		return
+	}
 	fmt.Fprint(w, "(")
 	for i, a := range c.Args {
 		if i > 0 {
@@ -1796,12 +1799,18 @@ func convertBinary(b *parser.BinaryExpr, env *types.Env) (Expr, error) {
 			if op == "+" || op == "-" || op == "*" || op == "/" || op == "%" {
 				lt := inferTypeWithEnv(left, env)
 				rt := inferTypeWithEnv(right, env)
-				if op == "+" && (strings.HasPrefix(lt, "ArrayBuffer[") || strings.HasPrefix(rt, "ArrayBuffer[")) {
-					ex = &BinaryExpr{Left: left, Op: "++", Right: right}
-					operands[i] = ex
-					operands = append(operands[:i+1], operands[i+2:]...)
-					operators = append(operators[:i], operators[i+1:]...)
-					return
+				if op == "+" {
+					if !strings.HasPrefix(lt, "ArrayBuffer[") && strings.HasPrefix(rt, "ArrayBuffer[String]") {
+						right = &CallExpr{Fn: &FieldExpr{Receiver: right, Name: "mkString"}, Args: []Expr{}}
+					} else if !strings.HasPrefix(rt, "ArrayBuffer[") && strings.HasPrefix(lt, "ArrayBuffer[String]") {
+						left = &CallExpr{Fn: &FieldExpr{Receiver: left, Name: "mkString"}, Args: []Expr{}}
+					} else if strings.HasPrefix(lt, "ArrayBuffer[") || strings.HasPrefix(rt, "ArrayBuffer[") {
+						ex = &BinaryExpr{Left: left, Op: "++", Right: right}
+						operands[i] = ex
+						operands = append(operands[:i+1], operands[i+2:]...)
+						operators = append(operators[:i], operators[i+1:]...)
+						return
+					}
 				}
 				if lt != "Any" && lt != "" && rt == "Any" {
 					right = &CastExpr{Value: right, Type: lt}
@@ -1834,8 +1843,8 @@ func convertBinary(b *parser.BinaryExpr, env *types.Env) (Expr, error) {
 				} else if rt == "Int" && (lt == "Any" || lt == "") {
 					left = &CastExpr{Value: left, Type: "Int"}
 				} else if (lt == "Any" || lt == "") && (rt == "Any" || rt == "") {
-					left = &CastExpr{Value: left, Type: "Int"}
-					right = &CastExpr{Value: right, Type: "Int"}
+					left = &CastExpr{Value: left, Type: "String"}
+					right = &CastExpr{Value: right, Type: "String"}
 				}
 			}
 			if op == "%" {
