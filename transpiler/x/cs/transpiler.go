@@ -606,14 +606,29 @@ func (b *BinaryExpr) emit(w io.Writer) {
 			fmt.Fprint(w, ".Concat(")
 			b.Right.emit(w)
 			fmt.Fprint(w, ").ToArray())")
-		} else {
-			fmt.Fprint(w, "(")
-			b.Left.emit(w)
-			fmt.Fprintf(w, " %s ", b.Op)
-			b.Right.emit(w)
-			fmt.Fprint(w, ")")
-		}
-	}
+               } else {
+                       lt := typeOfExpr(b.Left)
+                       rt := typeOfExpr(b.Right)
+                       useDyn := lt == "object" || lt == "" || rt == "object" || rt == ""
+                       fmt.Fprint(w, "(")
+                       if useDyn {
+                               fmt.Fprint(w, "((dynamic)")
+                               b.Left.emit(w)
+                               fmt.Fprint(w, ")")
+                       } else {
+                               b.Left.emit(w)
+                       }
+                       fmt.Fprintf(w, " %s ", b.Op)
+                       if useDyn {
+                               fmt.Fprint(w, "((dynamic)")
+                               b.Right.emit(w)
+                               fmt.Fprint(w, ")")
+                       } else {
+                               b.Right.emit(w)
+                       }
+                       fmt.Fprint(w, ")")
+               }
+       }
 }
 
 // BoolOpExpr represents boolean && and || operations with integer semantics.
@@ -783,9 +798,14 @@ func (m *MapGetExpr) emit(w io.Writer) {
 }
 
 func (m *MethodCallExpr) emit(w io.Writer) {
-	if vr, ok := m.Target.(*VarRef); ok {
-		if alias, ok2 := importAliases[vr.Name]; ok2 && alias == "math" {
-			fmt.Fprint(w, "Math.")
+       if m.Name == "keys" && len(m.Args) == 0 && (isMapExpr(m.Target) || strings.HasPrefix(typeOfExpr(m.Target), "Dictionary<")) {
+               m.Target.emit(w)
+               fmt.Fprint(w, ".Keys")
+               return
+       }
+       if vr, ok := m.Target.(*VarRef); ok {
+               if alias, ok2 := importAliases[vr.Name]; ok2 && alias == "math" {
+                       fmt.Fprint(w, "Math.")
 			fmt.Fprintf(w, "%s(", strings.Title(m.Name))
 			for i, a := range m.Args {
 				if i > 0 {
@@ -1188,20 +1208,20 @@ func csType(t *parser.TypeRef) string {
 			return "Dictionary<object, object>"
 		}
 	}
-	if t.Fun != nil {
-		var parts []string
-		for _, p := range t.Fun.Params {
-			parts = append(parts, csType(p))
-		}
-		if t.Fun.Return != nil {
-			parts = append(parts, csType(t.Fun.Return))
-			return fmt.Sprintf("Func<%s>", strings.Join(parts, ", "))
-		}
-		if len(parts) == 0 {
-			return "Action"
-		}
-		return fmt.Sprintf("Action<%s>", strings.Join(parts, ", "))
-	}
+       if t.Fun != nil {
+               var parts []string
+               for _, p := range t.Fun.Params {
+                       parts = append(parts, csType(p))
+               }
+               if t.Fun.Return != nil {
+                       parts = append(parts, csType(t.Fun.Return))
+                       return fmt.Sprintf("Func<%s>", strings.Join(parts, ", "))
+               }
+               if len(parts) == 0 {
+                       return "Func<object>"
+               }
+               return fmt.Sprintf("Func<%s, object>", strings.Join(parts, ", "))
+       }
 	return "object"
 }
 
@@ -1388,15 +1408,18 @@ func typeOfExpr(e Expr) string {
 		return ""
 	case *AvgExpr:
 		return "double"
-	case *SumExpr:
-		t := typeOfExpr(ex.Arg)
-		if strings.HasSuffix(t, "[]") {
-			t = strings.TrimSuffix(t, "[]")
-		}
-		if t == "double" {
-			return "double"
-		}
-		return "int"
+       case *SumExpr:
+               t := typeOfExpr(ex.Arg)
+               if strings.HasSuffix(t, "[]") {
+                       t = strings.TrimSuffix(t, "[]")
+               }
+               if t == "double" {
+                       return "double"
+               }
+               if t == "long" {
+                       return "long"
+               }
+               return "int"
 	case *CountExpr:
 		return "int"
 	case *MinExpr:
@@ -1492,20 +1515,28 @@ func typeOfExpr(e Expr) string {
 		if ret, ok := funRets[ex.Func]; ok {
 			return ret
 		}
-	case *MethodCallExpr:
-		switch ex.Name {
-		case "ToArray":
-			t := typeOfExpr(ex.Target)
-			if strings.HasSuffix(t, "[]") {
-				return t
-			}
-			if t != "" {
-				return t
-			}
-			return "object[]"
-		case "Select", "Where":
-			return typeOfExpr(ex.Target)
-		default:
+        case *MethodCallExpr:
+                switch ex.Name {
+                case "ToArray":
+                        t := typeOfExpr(ex.Target)
+                        if strings.HasSuffix(t, "[]") {
+                                return t
+                        }
+                        if t != "" {
+                                return t
+                        }
+                        return "object[]"
+               case "keys":
+                       t := typeOfExpr(ex.Target)
+                       if strings.HasPrefix(t, "Dictionary<") {
+                               parts := strings.TrimPrefix(strings.TrimSuffix(t, ">"), "Dictionary<")
+                               key := strings.Split(parts, ",")[0]
+                               return fmt.Sprintf("%s[]", strings.TrimSpace(key))
+                       }
+                       return "object[]"
+                case "Select", "Where":
+                        return typeOfExpr(ex.Target)
+                default:
 			if vr, ok := ex.Target.(*VarRef); ok {
 				if alias, ok2 := importAliases[vr.Name]; ok2 && alias == "math" {
 					return "double"
@@ -3621,9 +3652,11 @@ func Emit(prog *Program) []byte {
 	if usesDict {
 		buf.WriteString("using System.Collections.Generic;\n")
 	}
-	if usesLinq {
-		buf.WriteString("using System.Linq;\n")
-	}
+        if usesLinq {
+                buf.WriteString("using System.Linq;\n")
+        } else {
+                buf.WriteString("using System.Linq;\n")
+        }
 	if usesJson {
 		buf.WriteString("using System.Text.Json;\n")
 	}

@@ -1,7 +1,0 @@
-dotnet run: exit status 1
-/tmp/TestCSTranspiler_Rosetta_Golden660273109/001/Program.cs(125,20): error CS0019: Operator '+' cannot be applied to operands of type 'int[]' and 'int[]' [/tmp/TestCSTranspiler_Rosetta_Golden660273109/001/app.csproj]
-/tmp/TestCSTranspiler_Rosetta_Golden660273109/001/Program.cs(130,29): error CS0019: Operator '+' cannot be applied to operands of type 'int[]' and 'int[]' [/tmp/TestCSTranspiler_Rosetta_Golden660273109/001/app.csproj]
-/tmp/TestCSTranspiler_Rosetta_Golden660273109/001/Program.cs(152,36): error CS1061: 'Dictionary<int, bool>' does not contain a definition for 'keys' and no accessible extension method 'keys' accepting a first argument of type 'Dictionary<int, bool>' could be found (are you missing a using directive or an assembly reference?) [/tmp/TestCSTranspiler_Rosetta_Golden660273109/001/app.csproj]
-/tmp/TestCSTranspiler_Rosetta_Golden660273109/001/Program.cs(178,27): error CS0019: Operator '+' cannot be applied to operands of type 'int[]' and 'int[]' [/tmp/TestCSTranspiler_Rosetta_Golden660273109/001/app.csproj]
-
-The build failed. Fix the build errors and run again.
