@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated TypeScript code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/TypeScript`.
-Last updated: 2025-07-25 15:07 UTC
+Last updated: 2025-07-25 17:24 UTC
 
-## Rosetta Golden Test Checklist (275/284)
+## Rosetta Golden Test Checklist (279/284)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 1.595ms | 512.0 KB |
@@ -246,48 +246,48 @@ Last updated: 2025-07-25 15:07 UTC
 | 237 | copy-a-string-1 | ✓ | 8µs |  |
 | 238 | copy-a-string-2 | ✓ | 637µs |  |
 | 239 | copy-stdin-to-stdout-1 | ✓ | 1.586ms | 384.0 KB |
-| 240 | copy-stdin-to-stdout-2 | ✓ |  |  |
-| 241 | count-in-factors | ✓ |  |  |
-| 242 | count-in-octal-1 | ✓ |  |  |
-| 243 | count-in-octal-2 | ✓ |  |  |
+| 240 | copy-stdin-to-stdout-2 | ✓ | 1.278ms | 512.0 KB |
+| 241 | count-in-factors | ✓ | 10.156ms | 3.2 MB |
+| 242 | count-in-octal-1 | ✓ | 1.612ms | 512.0 KB |
+| 243 | count-in-octal-2 | ✓ | 248.532ms | 10.1 MB |
 | 244 | count-in-octal-3 | ✓ |  |  |
 | 245 | count-in-octal-4 | ✓ |  |  |
-| 246 | count-occurrences-of-a-substring | ✓ |  |  |
-| 247 | count-the-coins-1 | ✓ |  |  |
-| 248 | count-the-coins-2 | ✓ |  |  |
-| 249 | cramers-rule | ✓ |  |  |
-| 250 | crc-32-1 | ✓ |  |  |
-| 251 | crc-32-2 | ✓ |  |  |
-| 252 | create-a-file-on-magnetic-tape | ✓ |  |  |
-| 253 | create-a-file | ✓ |  |  |
-| 254 | create-a-two-dimensional-array-at-runtime-1 | ✓ |  |  |
-| 255 | create-an-html-table | ✓ |  |  |
-| 256 | create-an-object-at-a-given-address | ✓ |  |  |
-| 257 | csv-data-manipulation | ✓ |  |  |
-| 258 | csv-to-html-translation-1 | ✓ |  |  |
-| 259 | csv-to-html-translation-2 | ✓ |  |  |
-| 260 | csv-to-html-translation-3 | ✓ |  |  |
-| 261 | csv-to-html-translation-4 | ✓ |  |  |
-| 262 | csv-to-html-translation-5 | ✓ |  |  |
+| 246 | count-occurrences-of-a-substring | ✓ | 537µs | 128.0 KB |
+| 247 | count-the-coins-1 | ✓ | 1.268ms | 2.4 MB |
+| 248 | count-the-coins-2 | ✓ | 1m9.014519s | 57.8 MB |
+| 249 | cramers-rule | ✓ | 924µs | 256.0 KB |
+| 250 | crc-32-1 | ✓ | 4.502ms | 8.7 MB |
+| 251 | crc-32-2 | ✓ | 4.338ms | 9.0 MB |
+| 252 | create-a-file-on-magnetic-tape | ✓ | 93µs |  |
+| 253 | create-a-file | ✓ | 501µs |  |
+| 254 | create-a-two-dimensional-array-at-runtime-1 | ✓ | 1.012ms | 384.0 KB |
+| 255 | create-an-html-table | ✓ | 538µs | 128.0 KB |
+| 256 | create-an-object-at-a-given-address | ✓ | 1.18ms | 128.0 KB |
+| 257 | csv-data-manipulation | ✓ | 681µs | 128.0 KB |
+| 258 | csv-to-html-translation-1 | ✓ | 668µs | 128.0 KB |
+| 259 | csv-to-html-translation-2 | ✓ | 594µs | 256.0 KB |
+| 260 | csv-to-html-translation-3 | ✓ | 566µs |  |
+| 261 | csv-to-html-translation-4 | ✓ | 510µs | 128.0 KB |
+| 262 | csv-to-html-translation-5 | ✓ | 714µs | 128.0 KB |
 | 263 | cuban-primes | ✓ |  |  |
-| 264 | cullen-and-woodall-numbers | ✓ |  |  |
-| 265 | cumulative-standard-deviation | ✓ |  |  |
-| 266 | currency | ✓ |  |  |
-| 267 | currying | ✓ |  |  |
-| 268 | curzon-numbers | ✓ |  |  |
-| 269 | cusip | ✓ |  |  |
-| 270 | cyclops-numbers | ✓ |  |  |
-| 271 | damm-algorithm | ✓ |  |  |
-| 272 | date-format | ✓ |  |  |
-| 273 | date-manipulation |   |  |  |
-| 274 | day-of-the-week | ✓ |  |  |
-| 275 | de-bruijn-sequences | ✓ |  |  |
-| 276 | deal-cards-for-freecell |   |  |  |
-| 277 | death-star |   |  |  |
+| 264 | cullen-and-woodall-numbers | ✓ | 960µs | 384.0 KB |
+| 265 | cumulative-standard-deviation | ✓ | 735µs | 128.0 KB |
+| 266 | currency | ✓ | 823µs | 128.0 KB |
+| 267 | currying | ✓ | 792µs |  |
+| 268 | curzon-numbers | ✓ | 59.425ms | 10.9 MB |
+| 269 | cusip | ✓ | 648µs | 128.0 KB |
+| 270 | cyclops-numbers | ✓ | 4µs |  |
+| 271 | damm-algorithm | ✓ | 619µs |  |
+| 272 | date-format | ✓ | 530µs |  |
+| 273 | date-manipulation | ✓ | 1.346ms | 384.0 KB |
+| 274 | day-of-the-week | ✓ | 872µs | 384.0 KB |
+| 275 | de-bruijn-sequences | ✓ | 852.917ms | 81.2 MB |
+| 276 | deal-cards-for-freecell | ✓ | 1.429ms | 512.0 KB |
+| 277 | death-star | ✓ | 6.739ms | 10.5 MB |
 | 278 | deceptive-numbers | ✓ |  |  |
 | 279 | deconvolution-1d-2 |   |  |  |
-| 280 | deconvolution-1d-3 |   |  |  |
-| 281 | deconvolution-1d | ✓ |  |  |
-| 282 | deepcopy-1 | ✓ |  |  |
+| 280 | deconvolution-1d-3 | ✓ | 1.405ms | 384.0 KB |
+| 281 | deconvolution-1d | ✓ | 668µs | 128.0 KB |
+| 282 | deepcopy-1 | ✓ | 671µs | 128.0 KB |
 | 283 | define-a-primitive-data-type |   |  |  |
 | 284 | md5 |   |  |  |
