@@ -3,7 +3,7 @@
 Generated Swift code for Mochi Rosetta programs in `tests/rosetta/x/Mochi`. Outputs are stored in `tests/rosetta/transpiler/Swift`. Errors are captured in `.error` files.
 
 Completed: 56/284
-Last updated: 2025-07-26 00:39 +0700
+Last updated: 2025-07-26 04:52 +0700
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -49,25 +49,25 @@ Last updated: 2025-07-26 00:39 +0700
 | 40 | align-columns | ✓ |  |  |
 | 41 | aliquot-sequence-classifications |   |  |  |
 | 42 | almkvist-giullera-formula-for-pi | ✓ | 911.694ms | 3.4 MB |
-| 43 | almost-prime | ✓ | 677µs | 3.1 MB |
-| 44 | amb | ✓ | 420µs | 3.1 MB |
-| 45 | amicable-pairs | ✓ | 8.286811s | 3.4 MB |
-| 46 | anagrams-deranged-anagrams | ✓ | 574µs | 3.3 MB |
-| 47 | anagrams | ✓ | 1.074ms | 3.2 MB |
-| 48 | angle-difference-between-two-bearings-1 | ✓ | 331µs | 3.1 MB |
-| 49 | angle-difference-between-two-bearings-2 | ✓ | 429µs | 3.4 MB |
-| 50 | angles-geometric-normalization-and-conversion | ✓ | 777µs | 3.2 MB |
-| 51 | animate-a-pendulum | ✓ | 328µs | 3.1 MB |
-| 52 | animation | ✓ | 1.186ms | 2.9 MB |
-| 53 | anonymous-recursion-1 | ✓ | 270µs | 3.2 MB |
-| 54 | anonymous-recursion-2 | ✓ | 455µs | 3.0 MB |
-| 55 | anonymous-recursion | ✓ | 272µs | 3.0 MB |
-| 56 | anti-primes | ✓ | 349.108ms | 3.1 MB |
-| 57 | append-a-record-to-the-end-of-a-text-file | ✓ | 322µs | 3.3 MB |
-| 58 | apply-a-callback-to-an-array-1 | ✓ | 309µs | 3.3 MB |
-| 59 | apply-a-callback-to-an-array-2 | ✓ | 495µs | 3.1 MB |
-| 60 | apply-a-digital-filter-direct-form-ii-transposed- | ✓ | 462µs | 3.1 MB |
-| 61 | approximate-equality | ✓ | 370µs | 3.2 MB |
+| 43 | almost-prime | ✓ | 320µs | 2.8 MB |
+| 44 | amb | ✓ | 183µs | 2.9 MB |
+| 45 | amicable-pairs | ✓ | 1.042388s | 3.4 MB |
+| 46 | anagrams-deranged-anagrams | ✓ | 276µs | 3.5 MB |
+| 47 | anagrams | ✓ | 607µs | 2.9 MB |
+| 48 | angle-difference-between-two-bearings-1 | ✓ | 152µs | 3.2 MB |
+| 49 | angle-difference-between-two-bearings-2 | ✓ | 174µs | 3.1 MB |
+| 50 | angles-geometric-normalization-and-conversion | ✓ | 222µs | 3.1 MB |
+| 51 | animate-a-pendulum | ✓ | 110µs | 3.1 MB |
+| 52 | animation | ✓ | 667µs | 3.0 MB |
+| 53 | anonymous-recursion-1 | ✓ | 117µs | 3.2 MB |
+| 54 | anonymous-recursion-2 | ✓ | 122µs | 3.0 MB |
+| 55 | anonymous-recursion | ✓ | 96µs | 3.4 MB |
+| 56 | anti-primes | ✓ | 83.773ms | 3.2 MB |
+| 57 | append-a-record-to-the-end-of-a-text-file | ✓ | 121µs | 3.2 MB |
+| 58 | apply-a-callback-to-an-array-1 | ✓ | 128µs | 3.0 MB |
+| 59 | apply-a-callback-to-an-array-2 | ✓ | 217µs | 3.1 MB |
+| 60 | apply-a-digital-filter-direct-form-ii-transposed- | ✓ | 173µs | 3.1 MB |
+| 61 | approximate-equality | ✓ | 146µs | 3.0 MB |
 | 62 | arbitrary-precision-integers-included- |   |  |  |
 | 63 | archimedean-spiral |   |  |  |
 | 64 | arena-storage-pool |   |  |  |
@@ -291,3 +291,23 @@ Last updated: 2025-07-26 00:39 +0700
 | 282 | deepcopy-1 |   |  |  |
 | 283 | define-a-primitive-data-type |   |  |  |
 | 284 | md5 |   |  |  |
+\n## Progress Checklist
+- [x] 43 almost-prime
+- [x] 44 amb
+- [x] 45 amicable-pairs
+- [x] 46 anagrams-deranged-anagrams
+- [x] 47 anagrams
+- [x] 48 angle-difference-between-two-bearings-1
+- [x] 49 angle-difference-between-two-bearings-2
+- [x] 50 angles-geometric-normalization-and-conversion
+- [x] 51 animate-a-pendulum
+- [x] 52 animation
+- [x] 53 anonymous-recursion-1
+- [x] 54 anonymous-recursion-2
+- [x] 55 anonymous-recursion
+- [x] 56 anti-primes
+- [x] 57 append-a-record-to-the-end-of-a-text-file
+- [x] 58 apply-a-callback-to-an-array-1
+- [x] 59 apply-a-callback-to-an-array-2
+- [x] 60 apply-a-digital-filter-direct-form-ii-transposed-
+- [x] 61 approximate-equality
