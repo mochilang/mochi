@@ -1988,6 +1988,8 @@ func convertReturnStmt(env *types.Env, r *parser.ReturnStmt) (Stmt, error) {
 			typ := swiftTypeOf(rt)
 			if typ != "Any" {
 				ex = &CastExpr{Expr: ex, Type: typ + "!"}
+			} else if lit, ok := ex.(*LitExpr); ok && lit.Value == "nil" {
+				ex = &RawStmt{Code: "nil as Any?"}
 			}
 		}
 	}
@@ -2817,11 +2819,27 @@ func convertPostfix(env *types.Env, p *parser.PostfixExpr) (Expr, error) {
 				}
 				isStr := false
 				if env != nil {
-					if t := types.TypeOfPrimaryBasic(p.Target, env); types.IsStringType(t) {
+					if types.IsStringType(baseType) || types.IsAnyType(baseType) {
 						isStr = true
+					}
+					if lt, ok := baseType.(types.ListType); ok && types.IsStringType(lt.Elem) {
+						if sv, ok1 := intConst(op.Index.Start); ok1 {
+							if ev, ok2 := intConst(op.Index.End); ok2 && ev == sv+1 {
+								expr = &IndexExpr{Base: expr, Index: start, AsString: true}
+								baseType = lt.Elem
+								continue
+							}
+						}
 					}
 				}
 				expr = &SliceExpr{Base: expr, Start: start, End: end, AsString: isStr}
+				if env != nil {
+					if lt, ok := baseType.(types.ListType); ok {
+						baseType = lt.Elem
+					} else if types.IsStringType(baseType) {
+						baseType = types.StringType{}
+					}
+				}
 				continue
 			}
 			if op.Index.Start == nil || op.Index.Colon != nil || op.Index.End != nil || op.Index.Colon2 != nil || op.Index.Step != nil {
@@ -2901,7 +2919,9 @@ func convertPostfix(env *types.Env, p *parser.PostfixExpr) (Expr, error) {
 				}
 				if env != nil && j < len(paramTypes) {
 					pt := swiftTypeOf(paramTypes[j])
-					if pt != "Any" && !(j < len(mutInfo) && mutInfo[j]) {
+					if lit, ok := ae.(*LitExpr); ok && lit.Value == "nil" && pt == "Any" {
+						ae = &RawStmt{Code: "nil as Any?"}
+					} else if pt != "Any" && !(j < len(mutInfo) && mutInfo[j]) {
 						ae = &CastExpr{Expr: ae, Type: pt + "!"}
 					}
 				}
@@ -2913,7 +2933,8 @@ func convertPostfix(env *types.Env, p *parser.PostfixExpr) (Expr, error) {
 		if op.Cast != nil {
 			typ := toSwiftType(op.Cast.Type)
 			if env != nil {
-				if st, ok := types.ResolveTypeRef(op.Cast.Type, env).(types.StructType); ok {
+				resT := types.ResolveTypeRef(op.Cast.Type, env)
+				if st, ok := resT.(types.StructType); ok {
 					if ml, ok := expr.(*MapLit); ok {
 						var fields []FieldInit
 						for j := range ml.Keys {
@@ -2925,8 +2946,16 @@ func convertPostfix(env *types.Env, p *parser.PostfixExpr) (Expr, error) {
 					} else {
 						expr = &CastExpr{Expr: expr, Type: st.Name}
 					}
+					baseType = resT
 				} else {
+					if types.IsAnyType(baseType) {
+						switch typ {
+						case "Int", "Int64", "Double", "Bool", "String":
+							typ += "!"
+						}
+					}
 					expr = &CastExpr{Expr: expr, Type: typ}
+					baseType = resT
 				}
 			} else {
 				expr = &CastExpr{Expr: expr, Type: typ}

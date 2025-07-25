@@ -2,8 +2,8 @@
 
 Generated Swift code for Mochi Rosetta programs in `tests/rosetta/x/Mochi`. Outputs are stored in `tests/rosetta/transpiler/Swift`. Errors are captured in `.error` files.
 
-Completed: 53/284
-Last updated: 2025-07-25 20:48 +0700
+Completed: 54/284
+Last updated: 2025-07-25 23:50 +0700
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -36,15 +36,15 @@ Last updated: 2025-07-25 20:48 +0700
 | 27 | achilles-numbers | ✓ | 16.911ms | 3.2 MB |
 | 28 | ackermann-function-2 | ✓ | 264µs | 2.9 MB |
 | 29 | ackermann-function-3 |   |  |  |
-| 30 | ackermann-function | ✓ |  |  |
-| 31 | active-directory-connect | ✓ |  |  |
-| 32 | active-directory-search-for-a-user | ✓ |  |  |
-| 33 | active-object | ✓ |  |  |
-| 34 | add-a-variable-to-a-class-instance-at-runtime | ✓ |  |  |
-| 35 | additive-primes |   |  |  |
-| 36 | address-of-a-variable | ✓ |  |  |
+| 30 | ackermann-function | ✓ | 209µs | 3.2 MB |
+| 31 | active-directory-connect | ✓ | 88µs | 3.1 MB |
+| 32 | active-directory-search-for-a-user | ✓ | 120µs | 3.1 MB |
+| 33 | active-object | ✓ | 155µs | 3.2 MB |
+| 34 | add-a-variable-to-a-class-instance-at-runtime | ✓ | 124µs | 3.1 MB |
+| 35 | additive-primes | ✓ | 254µs | 3.1 MB |
+| 36 | address-of-a-variable | ✓ | 120µs | 3.1 MB |
 | 37 | adfgvx-cipher |   |  |  |
-| 38 | aks-test-for-primes | ✓ |  |  |
+| 38 | aks-test-for-primes | ✓ | 118µs | 3.1 MB |
 | 39 | algebraic-data-types |   |  |  |
 | 40 | align-columns | ✓ |  |  |
 | 41 | aliquot-sequence-classifications |   |  |  |
