@@ -26,6 +26,7 @@ var usesInput bool
 var usesNow bool
 var usesLookupHost bool
 var usesJSON bool
+var usesBench bool
 var returnStack []Symbol
 var unionConsts map[string]int
 var unionConstOrder []string
@@ -216,6 +217,10 @@ func header() []byte {
         (set! _now_seed (modulo (+ (* _now_seed 1664525) 1013904223) 2147483647))
         _now_seed)
       (* (current-seconds) 1000000000)))`
+	}
+	if usesBench {
+		prelude += "(import (chibi time))\n"
+		prelude += "(define (_mem) (* 1024 (resource-usage-max-rss (get-resource-usage resource-usage/self))))\n"
 	}
 	if usesLookupHost {
 		prelude += "(import (chibi net) (scheme sort) (chibi string))\n"
@@ -774,7 +779,7 @@ func convertStmt(st *parser.Statement) (Node, error) {
 
 // Transpile converts a Mochi AST into a minimal Scheme AST supporting
 // print statements with string literals.
-func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
+func Transpile(prog *parser.Program, env *types.Env, benchMain bool) (*Program, error) {
 	currentEnv = env
 	needBase = false
 	needHash = false
@@ -782,6 +787,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	usesNow = false
 	usesJSON = false
 	usesLookupHost = false
+	usesBench = false
 	unionConsts = map[string]int{}
 	unionConstOrder = nil
 	p := &Program{}
@@ -805,6 +811,47 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 			defs[i] = &List{Elems: []Node{Symbol("define"), constSym, IntLit(unionConsts[v])}}
 		}
 		p.Forms = append(defs, p.Forms...)
+	}
+	if benchMain {
+		needBase = true
+		usesNow = true
+		usesJSON = true
+		usesBench = true
+		startSym := gensym("start")
+		endSym := gensym("end")
+		durSym := gensym("dur")
+		durStr := &List{Elems: []Node{Symbol("number->string"), Symbol(durSym)}}
+		memStr := &List{Elems: []Node{Symbol("number->string"), &List{Elems: []Node{Symbol("_mem")}}}}
+		jsonStr := &List{Elems: []Node{Symbol("string-append"),
+			StringLit("{\n  \"duration_us\": "), durStr,
+			StringLit(",\n  \"memory_bytes\": "), memStr,
+			StringLit(",\n  \"name\": \"main\"\n}"),
+		}}
+		jsonCall := &List{Elems: []Node{
+			Symbol("begin"),
+			&List{Elems: []Node{Symbol("display"), jsonStr}},
+			&List{Elems: []Node{Symbol("newline")}},
+		}}
+		innerLet2 := &List{Elems: []Node{
+			Symbol("let"),
+			&List{Elems: []Node{
+				&List{Elems: []Node{Symbol(durSym), &List{Elems: []Node{Symbol("quotient"), &List{Elems: []Node{Symbol("-"), Symbol(endSym), Symbol(startSym)}}, IntLit(1000)}}}},
+			}},
+			jsonCall,
+		}}
+		innerLet1 := &List{Elems: []Node{
+			Symbol("let"),
+			&List{Elems: []Node{
+				&List{Elems: []Node{Symbol(endSym), &List{Elems: []Node{Symbol("now")}}}},
+			}},
+			innerLet2,
+		}}
+		inner := append(p.Forms, innerLet1)
+		p.Forms = []Node{&List{Elems: []Node{
+			Symbol("let"),
+			&List{Elems: []Node{&List{Elems: []Node{Symbol(startSym), &List{Elems: []Node{Symbol("now")}}}}}},
+			&List{Elems: append([]Node{Symbol("begin")}, inner...)},
+		}}}
 	}
 	return p, nil
 }
