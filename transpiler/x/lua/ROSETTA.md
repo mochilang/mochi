@@ -2,9 +2,9 @@
 
 Generated Lua code for programs in `tests/rosetta/x/Mochi`. Each program has a `.lua` file produced by the transpiler and a `.out` file with its runtime output. Compilation or runtime errors are captured in `.error` files.
 
-Transpiled programs: 237/284
+Transpiled programs: 238/284
 
-Last updated: 2025-07-25 13:06 GMT+7
+Last updated: 2025-07-25 14:32 GMT+7
 
 Checklist:
 
@@ -30,20 +30,20 @@ Checklist:
 | 18 | abbreviations-easy | ✓ | 1.549ms | 1.6 KB |
 | 19 | abbreviations-simple | ✓ | 2.17ms | 8.4 KB |
 | 20 | abc-problem | ✓ | 1.294ms | 2.0 KB |
-| 21 | abelian-sandpile-model-identity | ✓ |  |  |
-| 22 | abelian-sandpile-model | ✓ |  |  |
-| 23 | abstract-type | ✓ |  |  |
-| 24 | abundant-deficient-and-perfect-number-classifications | ✓ |  |  |
-| 25 | abundant-odd-numbers | ✓ |  |  |
-| 26 | accumulator-factory |   |  |  |
-| 27 | achilles-numbers | ✓ |  |  |
-| 28 | ackermann-function-2 | ✓ |  |  |
-| 29 | ackermann-function-3 | ✓ |  |  |
-| 30 | ackermann-function | ✓ |  |  |
-| 31 | active-directory-connect | ✓ |  |  |
-| 32 | active-directory-search-for-a-user | ✓ |  |  |
-| 33 | active-object | ✓ |  |  |
-| 34 | add-a-variable-to-a-class-instance-at-runtime | ✓ |  |  |
+| 21 | abelian-sandpile-model-identity | ✓ | 354µs | 2.5 KB |
+| 22 | abelian-sandpile-model | ✓ | 334µs | 608 B |
+| 23 | abstract-type | ✓ | 33µs | 304 B |
+| 24 | abundant-deficient-and-perfect-number-classifications | ✓ | 4.041724s | 136 B |
+| 25 | abundant-odd-numbers | ✓ | 7.727416s | 1.8 KB |
+| 26 | accumulator-factory | ✓ | 84µs | 368 B |
+| 27 | achilles-numbers | ✓ | 95.787ms | 16.2 KB |
+| 28 | ackermann-function-2 | ✓ | 110µs | 240 B |
+| 29 | ackermann-function-3 | ✓ | 132µs | 640 B |
+| 30 | ackermann-function | ✓ | 716µs | 26.6 KB |
+| 31 | active-directory-connect | ✓ | 32µs | 136 B |
+| 32 | active-directory-search-for-a-user | ✓ | 36µs | 200 B |
+| 33 | active-object | ✓ | 209µs | 96 B |
+| 34 | add-a-variable-to-a-class-instance-at-runtime | ✓ | 255µs | 168 B |
 | 35 | additive-primes | ✓ |  |  |
 | 36 | address-of-a-variable | ✓ |  |  |
 | 37 | adfgvx-cipher | ✓ |  |  |
