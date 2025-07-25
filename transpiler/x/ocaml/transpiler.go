@@ -872,13 +872,10 @@ func (f *FunStmt) emit(w io.Writer) {
 		io.WriteString(w, "(Obj.magic 0)")
 	}
 	io.WriteString(w, " in\n")
-	if m := getFuncMutations(rootEnv, f.Name); len(m) > 0 {
-		for _, p := range f.Params {
-			if m[p] {
-				fmt.Fprintf(w, "  let %s = ref %s in\n", sanitizeIdent(p), sanitizeIdent(p))
-			}
-		}
-	}
+	// Function parameters that are mutated are already passed as OCaml
+	// references. Earlier versions of the transpiler created local copies
+	// with `ref` here which prevented modifications from being visible to
+	// the caller. Simply rely on the caller passing a reference.
 	io.WriteString(w, "  (try\n")
 	for _, st := range f.Body {
 		st.emit(w)
@@ -4424,12 +4421,18 @@ func convertCall(c *parser.CallExpr, env *types.Env, vars map[string]VarInfo) (E
 			}
 		}
 		args := make([]Expr, len(c.Args))
+		mut := getFuncMutations(env, c.Func)
 		for i, a := range c.Args {
 			ex, at, err := convertExpr(a, env, vars)
 			if err != nil {
 				return nil, "", err
 			}
-			if i < len(fn.Params) {
+			if mut != nil && i < len(fn.Params) && mut[fn.Params[i].Name] {
+				// pass reference without dereferencing
+				if n, ok := ex.(*Name); ok {
+					ex = &Name{Ident: n.Ident, Typ: n.Typ, Ref: false}
+				}
+			} else if i < len(fn.Params) {
 				ptyp := typeRefString(fn.Params[i].Type)
 				if ts := typeString(types.ResolveTypeRef(fn.Params[i].Type, env)); ts != "" {
 					ptyp = ts
