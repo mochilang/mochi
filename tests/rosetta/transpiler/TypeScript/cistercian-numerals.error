@@ -1,0 +1,23 @@
+run: exit status 1
+0:
+          x           
+          x           
+          x           
+          x           
+          x           
+          x           
+          x           
+          x           
+          x           
+          x           
+          x           
+          x           
+          x           
+          x           
+          x           
+
+1:
+[0m[1m[31merror[0m: Uncaught (in promise) TypeError: draw[(Math.trunc(...) * 1000)] is not a function
+      draw[(Math.trunc(thousands) * 1000)]();
+[0m[31m                                          ^[0m
+    at [0m[36mfile:///workspace/mochi/tests/rosetta/transpiler/TypeScript/cistercian-numerals.ts[0m:[0m[33m246[0m:[0m[33m43[0m

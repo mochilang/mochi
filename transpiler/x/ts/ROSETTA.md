@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated TypeScript code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/TypeScript`.
-Last updated: 2025-07-25 13:50 UTC
+Last updated: 2025-07-25 14:25 UTC
 
-## Rosetta Golden Test Checklist (275/284)
+## Rosetta Golden Test Checklist (274/284)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 1.595ms | 512.0 KB |
@@ -184,37 +184,37 @@ Last updated: 2025-07-25 13:50 UTC
 | 175 | case-sensitivity-of-identifiers | ✓ | 535µs | 128.0 KB |
 | 176 | casting-out-nines | ✓ | 2.09ms | 2.9 MB |
 | 177 | catalan-numbers-1 | ✓ | 593µs | 128.0 KB |
-| 178 | catalan-numbers-2 | ✓ |  |  |
-| 179 | catalan-numbers-pascals-triangle | ✓ |  |  |
-| 180 | catamorphism | ✓ |  |  |
-| 181 | catmull-clark-subdivision-surface | ✓ |  |  |
-| 182 | chaocipher | ✓ |  |  |
-| 183 | chaos-game | ✓ |  |  |
-| 184 | character-codes-1 | ✓ |  |  |
-| 185 | character-codes-2 | ✓ |  |  |
-| 186 | character-codes-3 | ✓ |  |  |
-| 187 | character-codes-4 | ✓ |  |  |
-| 188 | character-codes-5 | ✓ |  |  |
-| 189 | chat-server | ✓ |  |  |
-| 190 | check-machin-like-formulas | ✓ |  |  |
-| 191 | check-that-file-exists | ✓ |  |  |
-| 192 | checkpoint-synchronization-1 | ✓ |  |  |
-| 193 | checkpoint-synchronization-2 | ✓ |  |  |
-| 194 | checkpoint-synchronization-3 | ✓ |  |  |
-| 195 | checkpoint-synchronization-4 | ✓ |  |  |
-| 196 | chernicks-carmichael-numbers | ✓ |  |  |
-| 197 | cheryls-birthday | ✓ |  |  |
-| 198 | chinese-remainder-theorem | ✓ |  |  |
-| 199 | chinese-zodiac | ✓ |  |  |
-| 200 | cholesky-decomposition-1 | ✓ |  |  |
-| 201 | cholesky-decomposition | ✓ |  |  |
-| 202 | chowla-numbers | ✓ |  |  |
-| 203 | church-numerals-1 | ✓ |  |  |
-| 204 | church-numerals-2 | ✓ |  |  |
-| 205 | circles-of-given-radius-through-two-points | ✓ |  |  |
-| 206 | circular-primes | ✓ |  |  |
-| 207 | cistercian-numerals | ✓ |  |  |
-| 208 | comma-quibbling | ✓ |  |  |
+| 178 | catalan-numbers-2 | ✓ | 995µs |  |
+| 179 | catalan-numbers-pascals-triangle | ✓ | 2.878ms | 384.0 KB |
+| 180 | catamorphism | ✓ | 1.141ms |  |
+| 181 | catmull-clark-subdivision-surface | ✓ | 8.246ms | 896.0 KB |
+| 182 | chaocipher | ✓ | 1.398ms | 128.0 KB |
+| 183 | chaos-game | ✓ | 14.331ms | 5.0 MB |
+| 184 | character-codes-1 | ✓ | 594µs |  |
+| 185 | character-codes-2 | ✓ | 686µs | 128.0 KB |
+| 186 | character-codes-3 | ✓ | 661µs | 128.0 KB |
+| 187 | character-codes-4 | ✓ | 686µs | 128.0 KB |
+| 188 | character-codes-5 | ✓ | 607µs | 128.0 KB |
+| 189 | chat-server | ✓ | 855µs | 128.0 KB |
+| 190 | check-machin-like-formulas | ✓ | 4.061ms | 1.4 MB |
+| 191 | check-that-file-exists | ✓ | 689µs | 128.0 KB |
+| 192 | checkpoint-synchronization-1 | ✓ | 1.974ms | 128.0 KB |
+| 193 | checkpoint-synchronization-2 | ✓ | 1.852ms | 128.0 KB |
+| 194 | checkpoint-synchronization-3 | ✓ | 2.668ms | 256.0 KB |
+| 195 | checkpoint-synchronization-4 | ✓ | 3.469ms | 256.0 KB |
+| 196 | chernicks-carmichael-numbers | ✓ | 178.351ms | 10.7 MB |
+| 197 | cheryls-birthday | ✓ | 1.409ms |  |
+| 198 | chinese-remainder-theorem | ✓ | 687µs |  |
+| 199 | chinese-zodiac | ✓ | 748µs | 128.0 KB |
+| 200 | cholesky-decomposition-1 | ✓ | 3.307ms | 128.0 KB |
+| 201 | cholesky-decomposition | ✓ | 1.78ms | 256.0 KB |
+| 202 | chowla-numbers | ✓ | 534µs |  |
+| 203 | church-numerals-1 | ✓ | 1.127ms | 128.0 KB |
+| 204 | church-numerals-2 | ✓ | 32µs |  |
+| 205 | circles-of-given-radius-through-two-points | ✓ | 3.048ms | 512.0 KB |
+| 206 | circular-primes | ✓ | 6.315ms | 1.1 MB |
+| 207 | cistercian-numerals |   |  |  |
+| 208 | comma-quibbling | ✓ | 780µs |  |
 | 209 | compiler-virtual-machine-interpreter | ✓ |  |  |
 | 210 | composite-numbers-k-with-no-single-digit-factors-whose-factors-are-all-substrings-of-k | ✓ |  |  |
 | 211 | compound-data-type | ✓ |  |  |
