@@ -35,6 +35,7 @@ var needAppendBool bool
 var needAppendObj bool
 var needNetLookupHost bool
 var needMem bool
+var needPadStart bool
 var pyMathAliases map[string]bool
 var builtinAliases map[string]string
 var structDefs map[string]map[string]string
@@ -111,6 +112,10 @@ func javaType(t string) string {
 	default:
 		if t == "" {
 			return ""
+		}
+		if strings.HasSuffix(t, "[]") {
+			elem := strings.TrimSuffix(t, "[]")
+			return javaType(elem) + "[]"
 		}
 		if strings.HasPrefix(t, "string") {
 			return "String" + t[len("string"):]
@@ -1063,7 +1068,16 @@ func (s *IndexAssignStmt) emit(w io.Writer, indent string) {
 		fmt.Fprint(w, "]")
 	}
 	fmt.Fprint(w, " = ")
-	s.Expr.emit(w)
+	elem := arrayElemType(s.Target)
+	for i := 1; i < len(s.Indices); i++ {
+		if strings.HasSuffix(elem, "[]") {
+			elem = strings.TrimSuffix(elem, "[]")
+		} else {
+			elem = ""
+			break
+		}
+	}
+	emitCastExpr(w, s.Expr, elem)
 	fmt.Fprint(w, ";\n")
 }
 
@@ -1120,6 +1134,23 @@ type ForEachStmt struct {
 }
 
 func (fe *ForEachStmt) emit(w io.Writer, indent string) {
+	if !fe.IsMap && isStringExpr(fe.Iterable) {
+		t := javaType(fe.ElemType)
+		if t == "" {
+			t = "var"
+		}
+		fmt.Fprint(w, indent+"for (int _i = 0; _i < ")
+		fe.Iterable.emit(w)
+		fmt.Fprint(w, ".length(); _i++) {\n")
+		fmt.Fprintf(w, indent+"    %s %s = ", t, fe.Name)
+		fe.Iterable.emit(w)
+		fmt.Fprint(w, ".substring(_i, _i + 1);\n")
+		for _, st := range fe.Body {
+			st.emit(w, indent+"    ")
+		}
+		fmt.Fprint(w, indent+"}\n")
+		return
+	}
 	typ := javaType(fe.ElemType)
 	if typ == "" {
 		fmt.Fprint(w, indent+"for (var "+fe.Name+" : ")
@@ -2128,9 +2159,11 @@ func (ix *IndexExpr) emit(w io.Writer) {
 	}
 	if isStringExpr(ix.Target) {
 		ix.Target.emit(w)
-		fmt.Fprint(w, ".charAt(")
+		fmt.Fprint(w, ".substring(")
 		ix.Index.emit(w)
-		fmt.Fprint(w, ")")
+		fmt.Fprint(w, ", ")
+		ix.Index.emit(w)
+		fmt.Fprint(w, "+1)")
 	} else if isArrayExpr(ix.Target) {
 		ix.Target.emit(w)
 		fmt.Fprint(w, "[")
@@ -2525,6 +2558,7 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	needNow = false
 	needMem = false
 	needAppendBool = false
+	needPadStart = false
 	pyMathAliases = map[string]bool{}
 	builtinAliases = map[string]string{}
 	structDefs = map[string]map[string]string{}
@@ -3613,6 +3647,10 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 		if name == "lower" && len(args) == 1 {
 			return &MethodCallExpr{Target: args[0], Name: "toLowerCase", Args: nil}, nil
 		}
+		if name == "padStart" && len(args) == 3 {
+			needPadStart = true
+			return &CallExpr{Func: "_padStart", Args: args}, nil
+		}
 		return &CallExpr{Func: name, Args: args}, nil
 	case p.Lit != nil && p.Lit.Str != nil:
 		return &StringLit{Value: *p.Lit.Str}, nil
@@ -4416,6 +4454,13 @@ func Emit(prog *Program) []byte {
 		buf.WriteString("        } catch (Exception e) {\n")
 		buf.WriteString("            return new Object[]{null, e.toString()};\n")
 		buf.WriteString("        }\n")
+		buf.WriteString("    }\n")
+	}
+	if needPadStart {
+		buf.WriteString("\n    static String _padStart(String s, int width, String pad) {\n")
+		buf.WriteString("        String out = s;\n")
+		buf.WriteString("        while (out.length() < width) { out = pad + out; }\n")
+		buf.WriteString("        return out;\n")
 		buf.WriteString("    }\n")
 	}
 	buf.WriteString("}\n")
