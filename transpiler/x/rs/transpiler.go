@@ -57,6 +57,7 @@ var localVarStack []map[string]bool
 var currentFuncLocals map[string]bool
 var currentFuncRet string
 var indexLHS bool
+var refMode bool
 
 func VarTypes() map[string]string { return varTypes }
 
@@ -421,7 +422,11 @@ func (f *FuncDecl) emit(w io.Writer) {
 			io.WriteString(w, ", ")
 		}
 		if p.Type != "" {
-			fmt.Fprintf(w, "mut %s: %s", p.Name, p.Type)
+			if strings.HasPrefix(p.Type, "&") {
+				fmt.Fprintf(w, "%s: %s", p.Name, p.Type)
+			} else {
+				fmt.Fprintf(w, "mut %s: %s", p.Name, p.Type)
+			}
 		} else {
 			fmt.Fprintf(w, "mut %s", p.Name)
 		}
@@ -955,6 +960,10 @@ func (n *NameRef) emit(w io.Writer) {
 	if newName, ok := globalRenames[n.Name]; ok && !isLocal(n.Name) {
 		name = newName
 	}
+	if refMode {
+		io.WriteString(w, name)
+		return
+	}
 	if cloneVars[n.Name] {
 		typ := n.Type
 		if typ == "" {
@@ -1252,8 +1261,22 @@ type UnaryExpr struct {
 }
 
 func (u *UnaryExpr) emit(w io.Writer) {
-	io.WriteString(w, u.Op)
-	u.Expr.emit(w)
+	if strings.TrimSpace(u.Op) == "&mut" {
+		io.WriteString(w, "&mut ")
+		old := refMode
+		refMode = true
+		u.Expr.emit(w)
+		refMode = old
+	} else if strings.TrimSpace(u.Op) == "&" {
+		io.WriteString(w, "&")
+		old := refMode
+		refMode = true
+		u.Expr.emit(w)
+		refMode = old
+	} else {
+		io.WriteString(w, u.Op)
+		u.Expr.emit(w)
+	}
 }
 
 type IfExpr struct {
@@ -2471,10 +2494,17 @@ func compileFunStmt(fn *parser.FunStmt) (Stmt, error) {
 		if p.Type != nil {
 			typ = rustTypeRef(p.Type)
 		}
-		params[i] = Param{Name: p.Name, Type: typ}
+		sigType := typ
+		if strings.HasPrefix(typ, "Vec<") {
+			mut := paramMutated(fn.Body, p.Name)
+			if mut && (fn.Return == nil || rustTypeRef(fn.Return) != typ) {
+				sigType = "&mut " + typ
+			}
+		}
+		params[i] = Param{Name: p.Name, Type: sigType}
 		locals[p.Name] = true
 		currentFuncLocals[p.Name] = true
-		typList[i] = typ
+		typList[i] = sigType
 		if typ != "" {
 			varTypes[p.Name] = typ
 			if strings.HasPrefix(typ, "HashMap") {
@@ -2965,7 +2995,11 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 		}
 		if pts, ok := funParamTypes[name]; ok {
 			for i := 0; i < len(args) && i < len(pts); i++ {
-				if strings.HasPrefix(pts[i], "&") {
+				if strings.HasPrefix(pts[i], "&mut ") {
+					if _, isUnary := args[i].(*UnaryExpr); !isUnary {
+						args[i] = &UnaryExpr{Op: "&mut", Expr: args[i]}
+					}
+				} else if strings.HasPrefix(pts[i], "&") {
 					if _, isUnary := args[i].(*UnaryExpr); !isUnary {
 						args[i] = &UnaryExpr{Op: "&", Expr: args[i]}
 					}
@@ -4599,6 +4633,67 @@ func identName(e *parser.Expr) (string, bool) {
 		return p.Target.Selector.Root, true
 	}
 	return "", false
+}
+
+func paramMutated(body []*parser.Statement, name string) bool {
+	hasIndex := false
+	hasAssign := false
+	for _, st := range body {
+		idx, assign := stmtMutates(st, name)
+		if idx {
+			hasIndex = true
+		}
+		if assign {
+			hasAssign = true
+		}
+	}
+	return hasIndex && !hasAssign
+}
+
+func stmtMutates(st *parser.Statement, name string) (bool, bool) {
+	switch {
+	case st.Assign != nil:
+		if st.Assign.Name == name {
+			if len(st.Assign.Index) > 0 {
+				return true, false
+			}
+			return false, true
+		}
+		return false, false
+	case st.For != nil:
+		i, a := stmtsMutate(st.For.Body, name)
+		return i, a
+	case st.While != nil:
+		i, a := stmtsMutate(st.While.Body, name)
+		return i, a
+	case st.If != nil:
+		i1, a1 := stmtsMutate(st.If.Then, name)
+		if i1 || a1 {
+			return i1, a1
+		}
+		if st.If.ElseIf != nil {
+			i2, a2 := stmtMutates(&parser.Statement{If: st.If.ElseIf}, name)
+			if i2 || a2 {
+				return i2, a2
+			}
+		}
+		return stmtsMutate(st.If.Else, name)
+	default:
+		return false, false
+	}
+}
+
+func stmtsMutate(list []*parser.Statement, name string) (bool, bool) {
+	for _, st := range list {
+		i, a := stmtMutates(st, name)
+		if i || a {
+			if i {
+				return true, a
+			}
+			return false, true
+		}
+	}
+	return false, false
 }
 
 func rustIdent(name string) string {

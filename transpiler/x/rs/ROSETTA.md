@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Rust code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/Rust`.
-Last updated: 2025-07-25 17:26 UTC
+Last updated: 2025-07-25 17:55 UTC
 
-## Rosetta Golden Test Checklist (19/284)
+## Rosetta Golden Test Checklist (21/284)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 109µs | 3.2 MB |
@@ -27,8 +27,8 @@ Last updated: 2025-07-25 17:26 UTC
 | 18 | abbreviations-easy | ✓ | 478µs | 3.2 MB |
 | 19 | abbreviations-simple | ✓ | 1.004ms | 3.2 MB |
 | 20 | abc-problem | ✓ | 356µs | 3.2 MB |
-| 21 | abelian-sandpile-model-identity |   |  |  |
-| 22 | abelian-sandpile-model |   |  |  |
+| 21 | abelian-sandpile-model-identity | ✓ | 86µs | 3.2 MB |
+| 22 | abelian-sandpile-model | ✓ | 96µs | 3.2 MB |
 | 23 | abstract-type |   |  |  |
 | 24 | abundant-deficient-and-perfect-number-classifications |   |  |  |
 | 25 | abundant-odd-numbers |   |  |  |
