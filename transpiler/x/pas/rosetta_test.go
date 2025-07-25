@@ -5,6 +5,7 @@ package pas_test
 import (
 	"bufio"
 	"bytes"
+	"encoding/json"
 	"flag"
 	"fmt"
 	"os"
@@ -70,6 +71,8 @@ func runRosettaCase(t *testing.T, name string) {
 	if errs := types.Check(prog, env); len(errs) > 0 {
 		t.Fatalf("type: %v", errs[0])
 	}
+	bench := os.Getenv("MOCHI_BENCHMARK") == "true" || os.Getenv("MOCHI_BENCHMARK") == "1"
+	pas.SetBenchMain(bench)
 	ast, err := pas.Transpile(env, prog)
 	if err != nil {
 		t.Fatalf("transpile: %v", err)
@@ -85,6 +88,9 @@ func runRosettaCase(t *testing.T, name string) {
 		t.Fatalf("compile: %v", err)
 	}
 	cmd := exec.Command(exe)
+	if bench {
+		cmd.Env = append(os.Environ(), "MOCHI_BENCHMARK=1")
+	}
 	if in, err := os.ReadFile(filepath.Join(root, "tests", "rosetta", "x", "Mochi", name+".in")); err == nil {
 		cmd.Stdin = bytes.NewReader(in)
 	}
@@ -183,28 +189,40 @@ func updateRosettaChecklist() {
 		return
 	}
 	total := len(names)
-	completed := 0
+	compiled := 0
 	var lines []string
+	lines = append(lines, "| Index | Name | Status | Duration | Memory |")
+	lines = append(lines, "|------:|------|:-----:|---------:|-------:|")
 	for i, name := range names {
-		mark := "[ ]"
-		if _, err := os.Stat(filepath.Join(outDir, name+".out")); err == nil {
-			if _, err2 := os.Stat(filepath.Join(outDir, name+".error")); os.IsNotExist(err2) {
-				completed++
-				mark = "[x]"
+		status := " "
+		if _, err := os.Stat(filepath.Join(outDir, name+".error")); err == nil {
+			// leave blank
+		} else if _, err := os.Stat(filepath.Join(outDir, name+".pas")); err == nil {
+			compiled++
+			status = "✓"
+		}
+		dur := ""
+		mem := ""
+		if data, err := os.ReadFile(filepath.Join(outDir, name+".out")); err == nil {
+			var js struct {
+				Duration int64 `json:"duration_us"`
+				Memory   int64 `json:"memory_bytes"`
+			}
+			data = bytes.TrimSpace(data)
+			if idx := bytes.LastIndexByte(data, '{'); idx >= 0 {
+				if json.Unmarshal(data[idx:], &js) == nil && js.Duration > 0 {
+					dur = humanDuration(js.Duration)
+					mem = humanSize(js.Memory)
+				}
 			}
 		}
-		lines = append(lines, fmt.Sprintf("- %s (%d) %s", mark, i+1, name))
+		lines = append(lines, fmt.Sprintf("| %d | %s | %s | %s | %s |", i+1, name, status, dur, mem))
 	}
+	ts := time.Now().UTC().Format("2006-01-02 15:04 MST")
 	var buf bytes.Buffer
 	buf.WriteString("# Pascal Rosetta Transpiler\n\n")
 	buf.WriteString("Generated Pascal code for Rosetta tasks lives under `tests/rosetta/transpiler/Pascal`.\n\n")
-	ts := time.Now().Format("2006-01-02 15:04 MST")
-	if out, err := exec.Command("git", "log", "-1", "--format=%cI").Output(); err == nil {
-		if t, perr := time.Parse(time.RFC3339, strings.TrimSpace(string(out))); perr == nil {
-			ts = t.Format("2006-01-02 15:04 MST")
-		}
-	}
-	fmt.Fprintf(&buf, "## Rosetta Checklist (%d/%d) - updated %s\n", completed, total, ts)
+	fmt.Fprintf(&buf, "## Rosetta Checklist (%d/%d) - updated %s\n", compiled, total, ts)
 	buf.WriteString(strings.Join(lines, "\n"))
 	buf.WriteString("\n")
 	_ = os.WriteFile(readmePath, buf.Bytes(), 0o644)
@@ -222,4 +240,22 @@ func updateIndex(dir string) error {
 		fmt.Fprintf(&buf, "%d %s\n", i+1, filepath.Base(f))
 	}
 	return os.WriteFile(filepath.Join(dir, "index.txt"), buf.Bytes(), 0o644)
+}
+
+func humanDuration(us int64) string {
+	d := time.Duration(us) * time.Microsecond
+	return d.String()
+}
+
+func humanSize(b int64) string {
+	const unit = 1024
+	if b < unit {
+		return fmt.Sprintf("%d B", b)
+	}
+	div, exp := int64(unit), 0
+	for n := b / unit; n >= unit; n /= unit {
+		div *= unit
+		exp++
+	}
+	return fmt.Sprintf("%.1f %cB", float64(b)/float64(div), "KMGTPE"[exp])
 }

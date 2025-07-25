@@ -25,6 +25,11 @@ var nameStack []map[string]string
 var currentFunc string
 var funcNames map[string]struct{}
 var funcReturns map[string]string
+var benchMain bool
+
+// SetBenchMain configures whether the main body of the program is wrapped in a
+// benchmark block when emitting code.
+func SetBenchMain(v bool) { benchMain = v }
 
 func currentScope() map[string]string {
 	if len(nameStack) == 0 {
@@ -121,6 +126,7 @@ type Program struct {
 	NeedListStr   bool
 	UseLookupHost bool
 	UseNow        bool
+	UseMem        bool
 	UseInput      bool
 }
 
@@ -826,7 +832,10 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("var _nowSeed: int64 = 0;\n")
 		buf.WriteString("var _nowSeeded: boolean = false;\n")
 		buf.WriteString("procedure init_now();\nvar s: string; v: int64;\nbegin\n  s := GetEnvironmentVariable('MOCHI_NOW_SEED');\n  if s <> '' then begin\n    Val(s, v);\n    _nowSeed := v;\n    _nowSeeded := true;\n  end;\nend;\n")
-		buf.WriteString("function _now(): integer;\nbegin\n  if _nowSeeded then begin\n    _nowSeed := (_nowSeed * 1664525 + 1013904223) mod 2147483647;\n    _now := _nowSeed;\n  end else begin\n    _now := Integer(GetTickCount64());\n  end;\nend;\n")
+		buf.WriteString("function _now(): integer;\nbegin\n  if _nowSeeded then begin\n    _nowSeed := (_nowSeed * 1664525 + 1013904223) mod 2147483647;\n    _now := _nowSeed;\n  end else begin\n    _now := Integer(GetTickCount64()*1000);\n  end;\nend;\n")
+	}
+	if p.UseMem {
+		buf.WriteString("function _mem(): int64;\nvar h: TFPCHeapStatus;\nbegin\n  h := GetFPCHeapStatus;\n  _mem := h.CurrHeapUsed;\nend;\n")
 	}
 	if p.UseInput {
 		buf.WriteString("function _input(): string;\nvar s: string;\nbegin\n  if EOF(Input) then s := '' else ReadLn(s);\n  _input := s;\nend;\n")
@@ -929,166 +938,183 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 	}
 	varTypes := map[string]string{}
 	currentVarTypes = varTypes
-	for _, st := range prog.Statements {
-		switch {
-		case st.Expr != nil:
-			if se := extractSaveExpr(st.Expr.Expr); se != nil {
-				src, err := convertExpr(env, se.Src)
-				if err != nil {
-					return nil, err
-				}
-				format := parseFormat(se.With)
-				path := ""
-				if se.Path != nil {
-					path = strings.Trim(*se.Path, "\"")
-				}
-				if format == "jsonl" && (path == "" || path == "-") {
-					var rec RecordDef
-					t := types.ExprType(se.Src, env)
-					if lt, ok := t.(types.ListType); ok {
-						if stype, ok := lt.Elem.(types.StructType); ok {
-							rec, _ = findRecord(stype.Name)
-						}
-					}
-					if rec.Name == "" {
-						if name, ok := exprToIdent(se.Src); ok {
-							if vt, ok2 := currentVarTypes[sanitize(name)]; ok2 && strings.HasPrefix(vt, "array of ") {
-								rec, _ = findRecord(strings.TrimPrefix(vt, "array of "))
-							}
-						}
-					}
-					if rec.Name == "" {
-						return nil, fmt.Errorf("save expects list of records")
-					}
-					loopVar := "row"
-					body := []Stmt{&WritelnStmt{Expr: buildJSONLineExpr(loopVar, rec)}}
-					pr.Stmts = append(pr.Stmts, &ForEachStmt{Name: loopVar, Iterable: src, Body: body})
-					continue
-				}
-				return nil, fmt.Errorf("unsupported save")
-			}
-			call := st.Expr.Expr.Binary.Left.Value.Target.Call
-			if call != nil && call.Func == "print" && len(st.Expr.Expr.Binary.Right) == 0 {
-				var parts []Expr
-				var typesList []string
-				needSys := false
-				for _, a := range call.Args {
-					ex, err := convertExpr(env, a)
+
+	if benchMain {
+		bench := &parser.BenchBlock{Name: "main", Body: prog.Statements}
+		stmts, err := convertBenchBlock(env, bench, varTypes)
+		if err != nil {
+			return nil, err
+		}
+		pr.Stmts = append(pr.Stmts, stmts...)
+	} else {
+		for _, st := range prog.Statements {
+			switch {
+			case st.Expr != nil:
+				if se := extractSaveExpr(st.Expr.Expr); se != nil {
+					src, err := convertExpr(env, se.Src)
 					if err != nil {
 						return nil, err
 					}
-					parts = append(parts, ex)
-					t := inferType(ex)
-					typesList = append(typesList, t)
-					if t == "boolean" {
-						needSys = true
-					} else if strings.HasPrefix(t, "array of ") {
-						if strings.HasPrefix(t, "array of string") {
-							pr.NeedListStr = true
-						} else {
-							pr.NeedShowList = true
+					format := parseFormat(se.With)
+					path := ""
+					if se.Path != nil {
+						path = strings.Trim(*se.Path, "\"")
+					}
+					if format == "jsonl" && (path == "" || path == "-") {
+						var rec RecordDef
+						t := types.ExprType(se.Src, env)
+						if lt, ok := t.(types.ListType); ok {
+							if stype, ok := lt.Elem.(types.StructType); ok {
+								rec, _ = findRecord(stype.Name)
+							}
+						}
+						if rec.Name == "" {
+							if name, ok := exprToIdent(se.Src); ok {
+								if vt, ok2 := currentVarTypes[sanitize(name)]; ok2 && strings.HasPrefix(vt, "array of ") {
+									rec, _ = findRecord(strings.TrimPrefix(vt, "array of "))
+								}
+							}
+						}
+						if rec.Name == "" {
+							return nil, fmt.Errorf("save expects list of records")
+						}
+						loopVar := "row"
+						body := []Stmt{&WritelnStmt{Expr: buildJSONLineExpr(loopVar, rec)}}
+						pr.Stmts = append(pr.Stmts, &ForEachStmt{Name: loopVar, Iterable: src, Body: body})
+						continue
+					}
+					return nil, fmt.Errorf("unsupported save")
+				}
+				call := st.Expr.Expr.Binary.Left.Value.Target.Call
+				if call != nil && call.Func == "print" && len(st.Expr.Expr.Binary.Right) == 0 {
+					var parts []Expr
+					var typesList []string
+					needSys := false
+					for _, a := range call.Args {
+						ex, err := convertExpr(env, a)
+						if err != nil {
+							return nil, err
+						}
+						parts = append(parts, ex)
+						t := inferType(ex)
+						typesList = append(typesList, t)
+						if t == "boolean" {
+							needSys = true
+						} else if strings.HasPrefix(t, "array of ") {
+							if strings.HasPrefix(t, "array of string") {
+								pr.NeedListStr = true
+							} else {
+								pr.NeedShowList = true
+							}
 						}
 					}
+					pr.Stmts = append(pr.Stmts, &PrintStmt{Exprs: parts, Types: typesList, NeedSysUtils: needSys})
+					continue
 				}
-				pr.Stmts = append(pr.Stmts, &PrintStmt{Exprs: parts, Types: typesList, NeedSysUtils: needSys})
+				ex, err := convertExpr(env, st.Expr.Expr)
+				if err != nil {
+					return nil, err
+				}
+				pr.Stmts = append(pr.Stmts, &ExprStmt{Expr: ex})
 				continue
-			}
-			ex, err := convertExpr(env, st.Expr.Expr)
-			if err != nil {
-				return nil, err
-			}
-			pr.Stmts = append(pr.Stmts, &ExprStmt{Expr: ex})
-			continue
-		case st.Type != nil:
-			var fields []Field
-			for _, m := range st.Type.Members {
-				if m.Field == nil || m.Field.Type == nil {
-					continue
-				}
-				typ := typeFromRef(m.Field.Type)
-				if typ == "" {
-					continue
-				}
-				fields = append(fields, Field{Name: m.Field.Name, Type: typ})
-			}
-			pr.Records = append(pr.Records, RecordDef{Name: st.Type.Name, Fields: fields})
-		case st.Let != nil:
-			name := sanitize(st.Let.Name)
-			vd := VarDecl{Name: name}
-			if st.Let.Type != nil {
-				vd.Type = typeFromRef(st.Let.Type)
-			}
-			if call := callFromExpr(st.Let.Value); call != nil && call.Func == "net.LookupHost" {
-				vd.Type = "array of string"
-			}
-			if st.Let.Value != nil {
-				if isEmptyMapLiteral(st.Let.Value) && strings.HasPrefix(vd.Type, "specialize TFPGMap") {
-					vd.Init = &CallExpr{Name: vd.Type + ".Create"}
-					pr.Vars = append(pr.Vars, vd)
-					varTypes[vd.Name] = vd.Type
-					continue
-				}
-				if call := callFromExpr(st.Let.Value); call != nil && call.Func == "exists" && len(call.Args) == 1 {
-					if q := queryFromExpr(call.Args[0]); q != nil {
-						tmp := fmt.Sprintf("tmp%d", len(pr.Vars))
-						stmts, typ, err := buildQuery(env, q, tmp, varTypes)
-						if err != nil {
-							return nil, err
-						}
-						pr.Vars = append(pr.Vars, VarDecl{Name: tmp, Type: typ})
-						pr.Stmts = append(pr.Stmts, stmts...)
-						cond := &BinaryExpr{Op: ">", Left: &CallExpr{Name: "Length", Args: []Expr{&VarRef{Name: tmp}}}, Right: &IntLit{Value: 0}, Bool: true}
-						pr.Stmts = append(pr.Stmts, &AssignStmt{Name: name, Expr: cond})
-						vd.Type = "boolean"
-						varTypes[name] = "boolean"
-					} else {
-						return nil, fmt.Errorf("unsupported exists arg")
+			case st.Type != nil:
+				var fields []Field
+				for _, m := range st.Type.Members {
+					if m.Field == nil || m.Field.Type == nil {
+						continue
 					}
-				} else if q := queryFromExpr(st.Let.Value); q != nil {
-					if len(q.Joins) == 1 && q.Joins[0].Side != nil && *q.Joins[0].Side == "left" &&
-						len(q.Froms) == 0 && q.Group == nil && q.Sort == nil && q.Skip == nil && q.Take == nil && !q.Distinct {
-						stmts, typ, err := buildLeftJoinQuery(env, q, name, varTypes)
-						if err != nil {
-							return nil, err
+					typ := typeFromRef(m.Field.Type)
+					if typ == "" {
+						continue
+					}
+					fields = append(fields, Field{Name: m.Field.Name, Type: typ})
+				}
+				pr.Records = append(pr.Records, RecordDef{Name: st.Type.Name, Fields: fields})
+			case st.Let != nil:
+				name := sanitize(st.Let.Name)
+				vd := VarDecl{Name: name}
+				if st.Let.Type != nil {
+					vd.Type = typeFromRef(st.Let.Type)
+				}
+				if call := callFromExpr(st.Let.Value); call != nil && call.Func == "net.LookupHost" {
+					vd.Type = "array of string"
+				}
+				if st.Let.Value != nil {
+					if isEmptyMapLiteral(st.Let.Value) && strings.HasPrefix(vd.Type, "specialize TFPGMap") {
+						vd.Init = &CallExpr{Name: vd.Type + ".Create"}
+						pr.Vars = append(pr.Vars, vd)
+						varTypes[vd.Name] = vd.Type
+						continue
+					}
+					if call := callFromExpr(st.Let.Value); call != nil && call.Func == "exists" && len(call.Args) == 1 {
+						if q := queryFromExpr(call.Args[0]); q != nil {
+							tmp := fmt.Sprintf("tmp%d", len(pr.Vars))
+							stmts, typ, err := buildQuery(env, q, tmp, varTypes)
+							if err != nil {
+								return nil, err
+							}
+							pr.Vars = append(pr.Vars, VarDecl{Name: tmp, Type: typ})
+							pr.Stmts = append(pr.Stmts, stmts...)
+							cond := &BinaryExpr{Op: ">", Left: &CallExpr{Name: "Length", Args: []Expr{&VarRef{Name: tmp}}}, Right: &IntLit{Value: 0}, Bool: true}
+							pr.Stmts = append(pr.Stmts, &AssignStmt{Name: name, Expr: cond})
+							vd.Type = "boolean"
+							varTypes[name] = "boolean"
+						} else {
+							return nil, fmt.Errorf("unsupported exists arg")
 						}
-						vd.Type = typ
-						pr.Stmts = append(pr.Stmts, stmts...)
-					} else if q.Group != nil && len(q.Froms) == 0 && len(q.Joins) == 1 && isGroupByJoin(q) {
-						stmts, typ, err := buildGroupByJoinQuery(env, q, name, varTypes)
-						if err != nil {
-							return nil, err
-						}
-						vd.Type = typ
-						pr.Stmts = append(pr.Stmts, stmts...)
-					} else if q.Group != nil && len(q.Froms) == 0 && len(q.Joins) == 0 && q.Skip == nil && q.Take == nil && !q.Distinct {
-						if q.Sort == nil && isSimpleGroupBy(q) {
-							stmts, typ, err := buildGroupByQuery(env, q, name, varTypes)
+					} else if q := queryFromExpr(st.Let.Value); q != nil {
+						if len(q.Joins) == 1 && q.Joins[0].Side != nil && *q.Joins[0].Side == "left" &&
+							len(q.Froms) == 0 && q.Group == nil && q.Sort == nil && q.Skip == nil && q.Take == nil && !q.Distinct {
+							stmts, typ, err := buildLeftJoinQuery(env, q, name, varTypes)
 							if err != nil {
 								return nil, err
 							}
 							vd.Type = typ
 							pr.Stmts = append(pr.Stmts, stmts...)
-						} else if isGroupBySum(q) {
-							stmts, typ, err := buildGroupBySum(env, q, name, varTypes)
+						} else if q.Group != nil && len(q.Froms) == 0 && len(q.Joins) == 1 && isGroupByJoin(q) {
+							stmts, typ, err := buildGroupByJoinQuery(env, q, name, varTypes)
 							if err != nil {
 								return nil, err
 							}
 							vd.Type = typ
 							pr.Stmts = append(pr.Stmts, stmts...)
-						} else if isGroupByConditionalSum(q) {
-							stmts, typ, err := buildGroupByConditionalSum(env, q, name, varTypes)
-							if err != nil {
-								return nil, err
+						} else if q.Group != nil && len(q.Froms) == 0 && len(q.Joins) == 0 && q.Skip == nil && q.Take == nil && !q.Distinct {
+							if q.Sort == nil && isSimpleGroupBy(q) {
+								stmts, typ, err := buildGroupByQuery(env, q, name, varTypes)
+								if err != nil {
+									return nil, err
+								}
+								vd.Type = typ
+								pr.Stmts = append(pr.Stmts, stmts...)
+							} else if isGroupBySum(q) {
+								stmts, typ, err := buildGroupBySum(env, q, name, varTypes)
+								if err != nil {
+									return nil, err
+								}
+								vd.Type = typ
+								pr.Stmts = append(pr.Stmts, stmts...)
+							} else if isGroupByConditionalSum(q) {
+								stmts, typ, err := buildGroupByConditionalSum(env, q, name, varTypes)
+								if err != nil {
+									return nil, err
+								}
+								vd.Type = typ
+								pr.Stmts = append(pr.Stmts, stmts...)
+							} else if isGroupByMultiSort(q) {
+								stmts, typ, err := buildGroupByMultiSort(env, q, name, varTypes)
+								if err != nil {
+									return nil, err
+								}
+								vd.Type = typ
+								pr.Stmts = append(pr.Stmts, stmts...)
+							} else {
+								stmts, typ, err := buildQuery(env, q, name, varTypes)
+								if err != nil {
+									return nil, err
+								}
+								vd.Type = typ
+								pr.Stmts = append(pr.Stmts, stmts...)
 							}
-							vd.Type = typ
-							pr.Stmts = append(pr.Stmts, stmts...)
-						} else if isGroupByMultiSort(q) {
-							stmts, typ, err := buildGroupByMultiSort(env, q, name, varTypes)
-							if err != nil {
-								return nil, err
-							}
-							vd.Type = typ
-							pr.Stmts = append(pr.Stmts, stmts...)
 						} else {
 							stmts, typ, err := buildQuery(env, q, name, varTypes)
 							if err != nil {
@@ -1098,36 +1124,91 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 							pr.Stmts = append(pr.Stmts, stmts...)
 						}
 					} else {
-						stmts, typ, err := buildQuery(env, q, name, varTypes)
+						ex, err := convertExpr(env, st.Let.Value)
 						if err != nil {
 							return nil, err
 						}
-						vd.Type = typ
-						pr.Stmts = append(pr.Stmts, stmts...)
+						vd.Init = ex
+						if vd.Type == "array of any" {
+							if t := inferType(ex); strings.HasPrefix(t, "array of ") {
+								vd.Type = t
+							}
+						} else if vd.Type == "" {
+							if t := inferType(ex); t != "" {
+								vd.Type = t
+							} else {
+								switch tt := types.ExprType(st.Let.Value, env).(type) {
+								case types.StringType:
+									vd.Type = "string"
+								case types.ListType:
+									if _, ok := tt.Elem.(types.StringType); ok {
+										vd.Type = "array of string"
+									} else if _, ok := tt.Elem.(types.BoolType); ok {
+										vd.Type = "array of boolean"
+									} else if _, ok := tt.Elem.(types.AnyType); ok {
+										// unknown element type, leave var type empty for now
+										vd.Type = ""
+									} else {
+										vd.Type = "array of integer"
+									}
+								case types.BoolType:
+									vd.Type = "boolean"
+								}
+							}
+						}
 					}
-				} else {
-					ex, err := convertExpr(env, st.Let.Value)
+				}
+				pr.Vars = append(pr.Vars, vd)
+				if vd.Type != "" {
+					varTypes[vd.Name] = vd.Type
+				}
+				if vd.Type != "" {
+					varTypes[vd.Name] = vd.Type
+				}
+				if vd.Type != "" {
+					varTypes[vd.Name] = vd.Type
+				}
+			case st.Var != nil:
+				name := sanitize(st.Var.Name)
+				vd := VarDecl{Name: name}
+				if st.Var.Type != nil {
+					vd.Type = typeFromRef(st.Var.Type)
+				}
+				if st.Var.Value != nil {
+					if isEmptyMapLiteral(st.Var.Value) && strings.HasPrefix(vd.Type, "specialize TFPGMap") {
+						vd.Init = &CallExpr{Name: vd.Type + ".Create"}
+						pr.Vars = append(pr.Vars, vd)
+						varTypes[vd.Name] = vd.Type
+						continue
+					}
+					ex, err := convertExpr(env, st.Var.Value)
 					if err != nil {
 						return nil, err
 					}
-					vd.Init = ex
-					if vd.Type == "array of any" {
-						if t := inferType(ex); strings.HasPrefix(t, "array of ") {
-							vd.Type = t
+					if rec, ok := ex.(*RecordLit); ok {
+						if vd.Type == "" {
+							vd.Type = rec.Type
 						}
-					} else if vd.Type == "" {
+						pr.Vars = append(pr.Vars, vd)
+						for _, f := range rec.Fields {
+							pr.Stmts = append(pr.Stmts, &AssignStmt{Name: fmt.Sprintf("%s.%s", vd.Name, f.Name), Expr: f.Expr})
+						}
+						continue
+					}
+					vd.Init = ex
+					if vd.Type == "" {
 						if t := inferType(ex); t != "" {
 							vd.Type = t
 						} else {
-							switch tt := types.ExprType(st.Let.Value, env).(type) {
+							switch t := types.ExprType(st.Var.Value, env).(type) {
 							case types.StringType:
 								vd.Type = "string"
 							case types.ListType:
-								if _, ok := tt.Elem.(types.StringType); ok {
+								if _, ok := t.Elem.(types.StringType); ok {
 									vd.Type = "array of string"
-								} else if _, ok := tt.Elem.(types.BoolType); ok {
+								} else if _, ok := t.Elem.(types.BoolType); ok {
 									vd.Type = "array of boolean"
-								} else if _, ok := tt.Elem.(types.AnyType); ok {
+								} else if _, ok := t.Elem.(types.AnyType); ok {
 									// unknown element type, leave var type empty for now
 									vd.Type = ""
 								} else {
@@ -1139,301 +1220,239 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 						}
 					}
 				}
-			}
-			pr.Vars = append(pr.Vars, vd)
-			if vd.Type != "" {
-				varTypes[vd.Name] = vd.Type
-			}
-			if vd.Type != "" {
-				varTypes[vd.Name] = vd.Type
-			}
-			if vd.Type != "" {
-				varTypes[vd.Name] = vd.Type
-			}
-		case st.Var != nil:
-			name := sanitize(st.Var.Name)
-			vd := VarDecl{Name: name}
-			if st.Var.Type != nil {
-				vd.Type = typeFromRef(st.Var.Type)
-			}
-			if st.Var.Value != nil {
-				if isEmptyMapLiteral(st.Var.Value) && strings.HasPrefix(vd.Type, "specialize TFPGMap") {
-					vd.Init = &CallExpr{Name: vd.Type + ".Create"}
-					pr.Vars = append(pr.Vars, vd)
-					varTypes[vd.Name] = vd.Type
-					continue
-				}
-				ex, err := convertExpr(env, st.Var.Value)
+				pr.Vars = append(pr.Vars, vd)
+			case st.Assign != nil:
+				name := sanitize(st.Assign.Name)
+				ex, err := convertExpr(env, st.Assign.Value)
 				if err != nil {
 					return nil, err
 				}
-				if rec, ok := ex.(*RecordLit); ok {
-					if vd.Type == "" {
-						vd.Type = rec.Type
+				if len(st.Assign.Field) > 0 {
+					target := &SelectorExpr{Root: st.Assign.Name}
+					for _, f := range st.Assign.Field {
+						target.Tail = append(target.Tail, f.Name)
 					}
-					pr.Vars = append(pr.Vars, vd)
-					for _, f := range rec.Fields {
-						pr.Stmts = append(pr.Stmts, &AssignStmt{Name: fmt.Sprintf("%s.%s", vd.Name, f.Name), Expr: f.Expr})
-					}
-					continue
+					pr.Stmts = append(pr.Stmts, &SetStmt{Target: target, Expr: ex})
+					break
 				}
-				vd.Init = ex
-				if vd.Type == "" {
-					if t := inferType(ex); t != "" {
-						vd.Type = t
+				if len(st.Assign.Index) == 1 && st.Assign.Index[0].Colon == nil && st.Assign.Index[0].Colon2 == nil && len(st.Assign.Field) == 0 {
+					idx, err := convertExpr(env, st.Assign.Index[0].Start)
+					if err != nil {
+						return nil, err
+					}
+					if t, ok := varTypes[name]; ok && strings.HasPrefix(t, "specialize TFPGMap") {
+						pr.Stmts = append(pr.Stmts, &MapAssignStmt{Name: name, Key: idx, Expr: ex})
 					} else {
-						switch t := types.ExprType(st.Var.Value, env).(type) {
-						case types.StringType:
-							vd.Type = "string"
-						case types.ListType:
-							if _, ok := t.Elem.(types.StringType); ok {
-								vd.Type = "array of string"
-							} else if _, ok := t.Elem.(types.BoolType); ok {
-								vd.Type = "array of boolean"
-							} else if _, ok := t.Elem.(types.AnyType); ok {
-								// unknown element type, leave var type empty for now
-								vd.Type = ""
-							} else {
-								vd.Type = "array of integer"
+						pr.Stmts = append(pr.Stmts, &IndexAssignStmt{Name: name, Index: idx, Expr: ex})
+					}
+					break
+				}
+				if len(st.Assign.Index) == 2 &&
+					st.Assign.Index[0].Colon == nil && st.Assign.Index[1].Colon == nil &&
+					st.Assign.Index[0].Colon2 == nil && st.Assign.Index[1].Colon2 == nil &&
+					len(st.Assign.Field) == 0 {
+					idx1, err := convertExpr(env, st.Assign.Index[0].Start)
+					if err != nil {
+						return nil, err
+					}
+					idx2, err := convertExpr(env, st.Assign.Index[1].Start)
+					if err != nil {
+						return nil, err
+					}
+					pr.Stmts = append(pr.Stmts, &DoubleIndexAssignStmt{Name: name, Index1: idx1, Index2: idx2, Expr: ex})
+					break
+				}
+				if _, ok := varTypes[name]; !ok {
+					if t := inferType(ex); t != "" {
+						varTypes[name] = t
+						setVarType(name, t)
+					}
+					if call, ok := ex.(*CallExpr); ok && call.Name == "concat" && len(call.Args) == 2 {
+						if list, ok := call.Args[1].(*ListLit); ok && len(list.Elems) == 1 {
+							if et := inferType(list.Elems[0]); et != "" {
+								t := "array of " + et
+								varTypes[name] = t
+								setVarType(name, t)
 							}
-						case types.BoolType:
-							vd.Type = "boolean"
 						}
 					}
 				}
-			}
-			pr.Vars = append(pr.Vars, vd)
-		case st.Assign != nil:
-			name := sanitize(st.Assign.Name)
-			ex, err := convertExpr(env, st.Assign.Value)
-			if err != nil {
-				return nil, err
-			}
-			if len(st.Assign.Field) > 0 {
-				target := &SelectorExpr{Root: st.Assign.Name}
-				for _, f := range st.Assign.Field {
-					target.Tail = append(target.Tail, f.Name)
-				}
-				pr.Stmts = append(pr.Stmts, &SetStmt{Target: target, Expr: ex})
-				break
-			}
-			if len(st.Assign.Index) == 1 && st.Assign.Index[0].Colon == nil && st.Assign.Index[0].Colon2 == nil && len(st.Assign.Field) == 0 {
-				idx, err := convertExpr(env, st.Assign.Index[0].Start)
+				pr.Stmts = append(pr.Stmts, &AssignStmt{Name: name, Expr: ex})
+			case st.For != nil:
+				start, err := convertExpr(env, st.For.Source)
 				if err != nil {
 					return nil, err
 				}
-				if t, ok := varTypes[name]; ok && strings.HasPrefix(t, "specialize TFPGMap") {
-					pr.Stmts = append(pr.Stmts, &MapAssignStmt{Name: name, Key: idx, Expr: ex})
-				} else {
-					pr.Stmts = append(pr.Stmts, &IndexAssignStmt{Name: name, Index: idx, Expr: ex})
-				}
-				break
-			}
-			if len(st.Assign.Index) == 2 &&
-				st.Assign.Index[0].Colon == nil && st.Assign.Index[1].Colon == nil &&
-				st.Assign.Index[0].Colon2 == nil && st.Assign.Index[1].Colon2 == nil &&
-				len(st.Assign.Field) == 0 {
-				idx1, err := convertExpr(env, st.Assign.Index[0].Start)
-				if err != nil {
-					return nil, err
-				}
-				idx2, err := convertExpr(env, st.Assign.Index[1].Start)
-				if err != nil {
-					return nil, err
-				}
-				pr.Stmts = append(pr.Stmts, &DoubleIndexAssignStmt{Name: name, Index1: idx1, Index2: idx2, Expr: ex})
-				break
-			}
-			if _, ok := varTypes[name]; !ok {
-				if t := inferType(ex); t != "" {
-					varTypes[name] = t
-					setVarType(name, t)
-				}
-				if call, ok := ex.(*CallExpr); ok && call.Name == "concat" && len(call.Args) == 2 {
-					if list, ok := call.Args[1].(*ListLit); ok && len(list.Elems) == 1 {
-						if et := inferType(list.Elems[0]); et != "" {
-							t := "array of " + et
-							varTypes[name] = t
-							setVarType(name, t)
-						}
-					}
-				}
-			}
-			pr.Stmts = append(pr.Stmts, &AssignStmt{Name: name, Expr: ex})
-		case st.For != nil:
-			start, err := convertExpr(env, st.For.Source)
-			if err != nil {
-				return nil, err
-			}
-			typ := "integer"
-			if st.For.RangeEnd == nil {
-				t := types.ExprType(st.For.Source, env)
-				if lt, ok := t.(types.ListType); ok {
-					if _, ok := lt.Elem.(types.StringType); ok {
-						typ = "string"
-					} else if _, ok := lt.Elem.(types.BoolType); ok {
-						typ = "boolean"
-					}
-				}
-			}
-			if _, ok := varTypes[st.For.Name]; !ok {
-				varTypes[st.For.Name] = typ
-			}
-			setVarType(st.For.Name, varTypes[st.For.Name])
-			body, err := convertBody(env, st.For.Body, varTypes)
-			if err != nil {
-				return nil, err
-			}
-			if st.For.RangeEnd != nil {
-				end, err := convertExpr(env, st.For.RangeEnd)
-				if err != nil {
-					return nil, err
-				}
-				pr.Stmts = append(pr.Stmts, &ForRangeStmt{Name: st.For.Name, Start: start, End: end, Body: body})
-			} else {
-				pr.Stmts = append(pr.Stmts, &ForEachStmt{Name: st.For.Name, Iterable: start, Body: body})
-			}
-		case st.While != nil:
-			cond, err := convertExpr(env, st.While.Cond)
-			if err != nil {
-				return nil, err
-			}
-			body, err := convertBody(env, st.While.Body, varTypes)
-			if err != nil {
-				return nil, err
-			}
-			pr.Stmts = append(pr.Stmts, &WhileStmt{Cond: cond, Body: body})
-		case st.If != nil:
-			cond, err := convertExpr(env, st.If.Cond)
-			if err != nil {
-				return nil, err
-			}
-			thenBody, err := convertBody(env, st.If.Then, varTypes)
-			if err != nil {
-				return nil, err
-			}
-			elseBody, err := convertBody(env, st.If.Else, varTypes)
-			if err != nil {
-				return nil, err
-			}
-			pr.Stmts = append(pr.Stmts, &IfStmt{Cond: cond, Then: thenBody, Else: elseBody})
-		case st.Fun != nil:
-			local := map[string]string{}
-			for k, v := range varTypes {
-				local[k] = v
-			}
-			for _, p := range st.Fun.Params {
 				typ := "integer"
-				if p.Type != nil {
-					if p.Type.Simple != nil {
-						switch *p.Type.Simple {
-						case "int":
-							typ = "integer"
-						case "string":
+				if st.For.RangeEnd == nil {
+					t := types.ExprType(st.For.Source, env)
+					if lt, ok := t.(types.ListType); ok {
+						if _, ok := lt.Elem.(types.StringType); ok {
 							typ = "string"
-						case "bool":
+						} else if _, ok := lt.Elem.(types.BoolType); ok {
 							typ = "boolean"
-						default:
-							typ = *p.Type.Simple
 						}
-					} else if p.Type.Generic != nil && p.Type.Generic.Name == "list" && len(p.Type.Generic.Args) == 1 {
-						arg := p.Type.Generic.Args[0]
-						elem := "integer"
-						if arg.Simple != nil {
-							switch *arg.Simple {
-							case "int":
-								elem = "integer"
-							case "string":
-								elem = "string"
-							case "bool":
-								elem = "boolean"
-							default:
-								elem = *arg.Simple
-							}
-						}
-						typ = "array of " + elem
 					}
 				}
-				if strings.HasPrefix(typ, "array of ") {
-					elem := strings.TrimPrefix(typ, "array of ")
-					typ = pr.addArrayAlias(elem)
+				if _, ok := varTypes[st.For.Name]; !ok {
+					varTypes[st.For.Name] = typ
 				}
-				local[p.Name] = typ
-			}
-			pushScope()
-			currentFunc = st.Fun.Name
-			for _, p := range st.Fun.Params {
-				currentScope()[p.Name] = p.Name
-			}
-			fnBody, err := convertBody(env, st.Fun.Body, local)
-			if err != nil {
-				return nil, err
-			}
-			popScope()
-			currentFunc = ""
-			var params []string
-			for _, p := range st.Fun.Params {
-				typ := "integer"
-				if p.Type != nil {
-					typ = typeFromRef(p.Type)
-				}
-				if strings.HasPrefix(typ, "array of ") {
-					elem := strings.TrimPrefix(typ, "array of ")
-					typ = pr.addArrayAlias(elem)
-				}
-				params = append(params, fmt.Sprintf("%s: %s", p.Name, typ))
-			}
-			rt := ""
-			if st.Fun.Return != nil {
-				rt = typeFromRef(st.Fun.Return)
-				if strings.HasPrefix(rt, "array of ") {
-					elem := strings.TrimPrefix(rt, "array of ")
-					rt = pr.addArrayAlias(elem)
-				}
-			}
-			if rt == "" {
-				for _, st := range fnBody {
-					if ret, ok := st.(*ReturnStmt); ok && ret.Expr != nil {
-						rt = inferType(ret.Expr)
-						if strings.HasPrefix(rt, "array of ") {
-							elem := strings.TrimPrefix(rt, "array of ")
-							rt = pr.addArrayAlias(elem)
-						}
-						break
-					}
-				}
-			}
-			pr.Funs = append(pr.Funs, FunDecl{Name: st.Fun.Name, Params: params, ReturnType: rt, Body: fnBody})
-			if rt != "" {
-				funcReturns[st.Fun.Name] = rt
-			}
-		case st.Return != nil:
-			if st.Return.Value != nil {
-				ex, err := convertExpr(env, st.Return.Value)
+				setVarType(st.For.Name, varTypes[st.For.Name])
+				body, err := convertBody(env, st.For.Body, varTypes)
 				if err != nil {
 					return nil, err
 				}
-				pr.Stmts = append(pr.Stmts, &ReturnStmt{Expr: ex})
-			} else {
-				pr.Stmts = append(pr.Stmts, &ReturnStmt{Expr: nil})
+				if st.For.RangeEnd != nil {
+					end, err := convertExpr(env, st.For.RangeEnd)
+					if err != nil {
+						return nil, err
+					}
+					pr.Stmts = append(pr.Stmts, &ForRangeStmt{Name: st.For.Name, Start: start, End: end, Body: body})
+				} else {
+					pr.Stmts = append(pr.Stmts, &ForEachStmt{Name: st.For.Name, Iterable: start, Body: body})
+				}
+			case st.While != nil:
+				cond, err := convertExpr(env, st.While.Cond)
+				if err != nil {
+					return nil, err
+				}
+				body, err := convertBody(env, st.While.Body, varTypes)
+				if err != nil {
+					return nil, err
+				}
+				pr.Stmts = append(pr.Stmts, &WhileStmt{Cond: cond, Body: body})
+			case st.If != nil:
+				cond, err := convertExpr(env, st.If.Cond)
+				if err != nil {
+					return nil, err
+				}
+				thenBody, err := convertBody(env, st.If.Then, varTypes)
+				if err != nil {
+					return nil, err
+				}
+				elseBody, err := convertBody(env, st.If.Else, varTypes)
+				if err != nil {
+					return nil, err
+				}
+				pr.Stmts = append(pr.Stmts, &IfStmt{Cond: cond, Then: thenBody, Else: elseBody})
+			case st.Fun != nil:
+				local := map[string]string{}
+				for k, v := range varTypes {
+					local[k] = v
+				}
+				for _, p := range st.Fun.Params {
+					typ := "integer"
+					if p.Type != nil {
+						if p.Type.Simple != nil {
+							switch *p.Type.Simple {
+							case "int":
+								typ = "integer"
+							case "string":
+								typ = "string"
+							case "bool":
+								typ = "boolean"
+							default:
+								typ = *p.Type.Simple
+							}
+						} else if p.Type.Generic != nil && p.Type.Generic.Name == "list" && len(p.Type.Generic.Args) == 1 {
+							arg := p.Type.Generic.Args[0]
+							elem := "integer"
+							if arg.Simple != nil {
+								switch *arg.Simple {
+								case "int":
+									elem = "integer"
+								case "string":
+									elem = "string"
+								case "bool":
+									elem = "boolean"
+								default:
+									elem = *arg.Simple
+								}
+							}
+							typ = "array of " + elem
+						}
+					}
+					if strings.HasPrefix(typ, "array of ") {
+						elem := strings.TrimPrefix(typ, "array of ")
+						typ = pr.addArrayAlias(elem)
+					}
+					local[p.Name] = typ
+				}
+				pushScope()
+				currentFunc = st.Fun.Name
+				for _, p := range st.Fun.Params {
+					currentScope()[p.Name] = p.Name
+				}
+				fnBody, err := convertBody(env, st.Fun.Body, local)
+				if err != nil {
+					return nil, err
+				}
+				popScope()
+				currentFunc = ""
+				var params []string
+				for _, p := range st.Fun.Params {
+					typ := "integer"
+					if p.Type != nil {
+						typ = typeFromRef(p.Type)
+					}
+					if strings.HasPrefix(typ, "array of ") {
+						elem := strings.TrimPrefix(typ, "array of ")
+						typ = pr.addArrayAlias(elem)
+					}
+					params = append(params, fmt.Sprintf("%s: %s", p.Name, typ))
+				}
+				rt := ""
+				if st.Fun.Return != nil {
+					rt = typeFromRef(st.Fun.Return)
+					if strings.HasPrefix(rt, "array of ") {
+						elem := strings.TrimPrefix(rt, "array of ")
+						rt = pr.addArrayAlias(elem)
+					}
+				}
+				if rt == "" {
+					for _, st := range fnBody {
+						if ret, ok := st.(*ReturnStmt); ok && ret.Expr != nil {
+							rt = inferType(ret.Expr)
+							if strings.HasPrefix(rt, "array of ") {
+								elem := strings.TrimPrefix(rt, "array of ")
+								rt = pr.addArrayAlias(elem)
+							}
+							break
+						}
+					}
+				}
+				pr.Funs = append(pr.Funs, FunDecl{Name: st.Fun.Name, Params: params, ReturnType: rt, Body: fnBody})
+				if rt != "" {
+					funcReturns[st.Fun.Name] = rt
+				}
+			case st.Return != nil:
+				if st.Return.Value != nil {
+					ex, err := convertExpr(env, st.Return.Value)
+					if err != nil {
+						return nil, err
+					}
+					pr.Stmts = append(pr.Stmts, &ReturnStmt{Expr: ex})
+				} else {
+					pr.Stmts = append(pr.Stmts, &ReturnStmt{Expr: nil})
+				}
+			case st.Import != nil:
+				continue
+			case st.ExternFun != nil:
+				continue
+			case st.ExternVar != nil:
+				continue
+			case st.Bench != nil:
+				benchStmts, err := convertBenchBlock(env, st.Bench, varTypes)
+				if err != nil {
+					return nil, err
+				}
+				pr.Stmts = append(pr.Stmts, benchStmts...)
+			case st.Test != nil:
+				// ignore test blocks in transpiled output
+				continue
+			default:
+				return nil, fmt.Errorf("unsupported statement")
 			}
-		case st.Import != nil:
-			continue
-		case st.ExternFun != nil:
-			continue
-		case st.ExternVar != nil:
-			continue
-		case st.Bench != nil:
-			benchStmts, err := convertBenchBlock(env, st.Bench, varTypes)
-			if err != nil {
-				return nil, err
-			}
-			pr.Stmts = append(pr.Stmts, benchStmts...)
-		case st.Test != nil:
-			// ignore test blocks in transpiled output
-			continue
-		default:
-			return nil, fmt.Errorf("unsupported statement")
 		}
 	}
 	for name, typ := range varTypes {
@@ -1734,29 +1753,45 @@ func convertBody(env *types.Env, body []*parser.Statement, varTypes map[string]s
 func convertBenchBlock(env *types.Env, bench *parser.BenchBlock, varTypes map[string]string) ([]Stmt, error) {
 	currProg.UseSysUtils = true
 	currProg.UseNow = true
+	currProg.UseMem = true
 	startName := sanitize(fmt.Sprintf("bench_start_%d", len(currProg.Vars)))
 	durName := sanitize(fmt.Sprintf("bench_dur_%d", len(currProg.Vars)))
+	memStart := sanitize(fmt.Sprintf("bench_mem_%d", len(currProg.Vars)))
+	memDiff := sanitize(fmt.Sprintf("bench_memdiff_%d", len(currProg.Vars)))
 	if !hasVar(startName) {
 		currProg.Vars = append(currProg.Vars, VarDecl{Name: startName, Type: "integer"})
 	}
 	if !hasVar(durName) {
 		currProg.Vars = append(currProg.Vars, VarDecl{Name: durName, Type: "integer"})
 	}
+	if !hasVar(memStart) {
+		currProg.Vars = append(currProg.Vars, VarDecl{Name: memStart, Type: "int64"})
+	}
+	if !hasVar(memDiff) {
+		currProg.Vars = append(currProg.Vars, VarDecl{Name: memDiff, Type: "int64"})
+	}
 	varTypes[startName] = "integer"
 	varTypes[durName] = "integer"
-	out := []Stmt{&AssignStmt{Name: startName, Expr: &CallExpr{Name: "_now"}}}
+	varTypes[memStart] = "int64"
+	varTypes[memDiff] = "int64"
+	out := []Stmt{
+		&AssignStmt{Name: memStart, Expr: &CallExpr{Name: "_mem"}},
+		&AssignStmt{Name: startName, Expr: &CallExpr{Name: "_now"}},
+	}
 	body, err := convertBody(env, bench.Body, varTypes)
 	if err != nil {
 		return nil, err
 	}
 	out = append(out, body...)
+	out = append(out, &AssignStmt{Name: memDiff, Expr: &BinaryExpr{Op: "-", Left: &CallExpr{Name: "_mem"}, Right: &VarRef{Name: memStart}}})
 	diff := &BinaryExpr{Op: "-", Left: &CallExpr{Name: "_now"}, Right: &VarRef{Name: startName}}
 	div := &BinaryExpr{Op: "div", Left: diff, Right: &IntLit{Value: 1000}}
 	out = append(out, &AssignStmt{Name: durName, Expr: div})
 	out = append(out, &WritelnStmt{Expr: &StringLit{Value: "{"}})
 	line2 := &BinaryExpr{Op: "+", Left: &BinaryExpr{Op: "+", Left: &StringLit{Value: "  \"duration_us\": "}, Right: &CallExpr{Name: "IntToStr", Args: []Expr{&VarRef{Name: durName}}}}, Right: &StringLit{Value: ","}}
 	out = append(out, &WritelnStmt{Expr: line2})
-	out = append(out, &WritelnStmt{Expr: &StringLit{Value: "  \"memory_bytes\": 0,"}})
+	line3 := &BinaryExpr{Op: "+", Left: &BinaryExpr{Op: "+", Left: &StringLit{Value: "  \"memory_bytes\": "}, Right: &CallExpr{Name: "IntToStr", Args: []Expr{&VarRef{Name: memDiff}}}}, Right: &StringLit{Value: ","}}
+	out = append(out, &WritelnStmt{Expr: line3})
 	line4 := &BinaryExpr{Op: "+", Left: &BinaryExpr{Op: "+", Left: &StringLit{Value: "  \"name\": \""}, Right: &StringLit{Value: bench.Name}}, Right: &StringLit{Value: "\""}}
 	out = append(out, &WritelnStmt{Expr: line4})
 	out = append(out, &WritelnStmt{Expr: &StringLit{Value: "}"}})
