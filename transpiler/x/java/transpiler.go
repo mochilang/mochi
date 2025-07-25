@@ -164,8 +164,11 @@ func javaBoxType(t string) string {
 
 func mapValueType(t string) string {
 	if i := strings.Index(t, "Map<"); i >= 0 {
-		inside := strings.TrimSuffix(t[i+4:], ">")
-		parts := strings.SplitN(inside, ",", 2)
+		rest := t[i+4:]
+		if j := strings.Index(rest, ">"); j >= 0 {
+			rest = rest[:j]
+		}
+		parts := strings.SplitN(rest, ",", 2)
 		if len(parts) == 2 {
 			v := strings.TrimSpace(parts[1])
 			switch v {
@@ -185,8 +188,11 @@ func mapValueType(t string) string {
 
 func mapKeyType(t string) string {
 	if i := strings.Index(t, "Map<"); i >= 0 {
-		inside := strings.TrimSuffix(t[i+4:], ">")
-		parts := strings.SplitN(inside, ",", 2)
+		rest := t[i+4:]
+		if j := strings.Index(rest, ">"); j >= 0 {
+			rest = rest[:j]
+		}
+		parts := strings.SplitN(rest, ",", 2)
 		if len(parts) == 2 {
 			k := strings.TrimSpace(parts[0])
 			switch k {
@@ -1718,7 +1724,7 @@ func (a *AppendExpr) emit(w io.Writer) {
 		fmt.Fprint(w, ")).toArray()")
 		return
 	}
-	if strings.HasSuffix(jt, "[]") {
+	if strings.HasSuffix(jt, "[]") || strings.Contains(jt, "<") {
 		needAppendObj = true
 		fmt.Fprint(w, "appendObj(")
 		a.List.emit(w)
@@ -2246,7 +2252,8 @@ func isMapExpr(e Expr) bool {
 			}
 		}
 	}
-	if inferType(e) == "map" {
+	t := inferType(e)
+	if t == "map" || (strings.Contains(t, "Map") && !strings.HasSuffix(t, "[]")) {
 		return true
 	}
 	return false
@@ -3297,7 +3304,10 @@ func compilePostfix(pf *parser.PostfixExpr) (Expr, error) {
 			}
 			if rType == "" {
 				if v, ok := expr.(*VarExpr); ok {
-					rType = mapValueType(varTypes[v.Name])
+					tname := varTypes[v.Name]
+					if strings.Contains(tname, "Map") && !strings.HasSuffix(tname, "[]") {
+						rType = mapValueType(tname)
+					}
 				}
 			}
 			isMap := isMapExpr(expr)
