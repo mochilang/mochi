@@ -248,6 +248,13 @@ func header() []byte {
 	prelude += `(define (to-str x)
   (cond ((pair? x)
          (string-append "[" (string-join (map to-str x) ", ") "]"))
+        ((hash-table? x)
+         (let* ((ks (hash-table-keys x))
+                (pairs (map (lambda (k)
+                              (string-append (to-str k) ":" (to-str (hash-table-ref x k))))
+                            ks)))
+           (string-append "{" (string-join pairs ", ") "}")))
+        ((null? x) "")
         ((string? x) x)
         ((boolean? x) (if x "1" "0"))
         (else (number->string x))))`
@@ -261,7 +268,7 @@ func header() []byte {
 		ts.In(loc).Format("2006-01-02 15:04 -0700"), prelude))
 }
 
-func voidSym() Node { return &List{Elems: []Node{Symbol("quote"), Symbol("nil")}} }
+func voidSym() Node { return &List{Elems: []Node{Symbol("quote"), &List{Elems: []Node{}}}} }
 
 func typedDefault(t *parser.TypeRef) Node {
 	if t == nil || t.Simple == nil {
@@ -1076,6 +1083,8 @@ func convertParserPrimary(p *parser.Primary) (Node, error) {
 		return StringLit(*p.Lit.Str), nil
 	case p.Lit != nil && p.Lit.Bool != nil:
 		return BoolLit(bool(*p.Lit.Bool)), nil
+	case p.Lit != nil && p.Lit.Null:
+		return voidSym(), nil
 	case p.Selector != nil && len(p.Selector.Tail) == 0:
 		if p.Selector.Root == "nil" {
 			return voidSym(), nil
@@ -2009,6 +2018,10 @@ func makeBinaryTyped(op string, left, right Node, lt, rt types.Type) Node {
 		_, ok := t.(types.BoolType)
 		return ok
 	}
+	isListType := func(t types.Type) bool {
+		_, ok := t.(types.ListType)
+		return ok
+	}
 	if op == "/" {
 		if _, ok := lt.(types.FloatType); ok {
 			return &List{Elems: []Node{Symbol("/"), left, right}}
@@ -2044,6 +2057,10 @@ func makeBinaryTyped(op string, left, right Node, lt, rt types.Type) Node {
 		case "!=":
 			return &List{Elems: []Node{Symbol("not"), &List{Elems: []Node{Symbol("string=?"), left, right}}}}
 		}
+	}
+
+	if op == "+" && (isListType(lt) || isListType(rt)) {
+		return &List{Elems: []Node{Symbol("append"), left, right}}
 	}
 	if isBoolType(lt) || isBoolType(rt) {
 		switch op {
@@ -2165,6 +2182,12 @@ func convertCall(target Node, call *parser.CallOp) (Node, error) {
 			return &List{Elems: []Node{Symbol("string-append"), args[0], args[1]}}, nil
 		}
 		return &List{Elems: []Node{Symbol("append"), args[0], &List{Elems: []Node{Symbol("list"), args[1]}}}}, nil
+	case "keys":
+		if len(args) != 1 {
+			return nil, fmt.Errorf("keys expects 1 arg")
+		}
+		needHash = true
+		return &List{Elems: []Node{Symbol("hash-table-keys"), args[0]}}, nil
 	case "sum":
 		if len(args) != 1 {
 			return nil, fmt.Errorf("sum expects 1 arg")
@@ -2310,7 +2333,7 @@ func convertIndex(target Node, orig *parser.Primary, idx *parser.IndexOp) (Node,
 			return &List{Elems: []Node{Symbol("list-ref"), target, in}}, nil
 		case types.MapType:
 			needHash = true
-			return &List{Elems: []Node{Symbol("hash-table-ref"), target, in}}, nil
+			return &List{Elems: []Node{Symbol("hash-table-ref/default"), target, in, voidSym()}}, nil
 		}
 	}
 	return &List{Elems: []Node{
