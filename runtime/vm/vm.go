@@ -2466,11 +2466,12 @@ func (c *compiler) compileMain(p *parser.Program) (Function, error) {
 		if st.Fun != nil {
 			continue
 		}
-		if st.Expr != nil {
-			if isTopLevelMainCall(st.Expr.Expr) {
-				continue
-			}
-		}
+		// Previously a top-level call to `main()` was ignored so users
+		// had to rely on other statements to drive execution. This
+		// prevented many Rosetta examples which define a `main` function
+		// and invoke it at the end from running under the VM.  Compile
+		// all top-level expressions, including a `main()` call, so that
+		// these programs execute as expected.
 		if err := fc.compileStmt(st); err != nil {
 			return Function{}, err
 		}

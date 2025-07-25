@@ -2,15 +2,15 @@
 
 This checklist is auto-generated.
 Generated IR and outputs from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/ir`.
-Last updated: 2025-07-25 11:20 UTC
+Last updated: 2025-07-25 13:33 UTC
 
-## Rosetta Golden Test Checklist (116/284)
+## Rosetta Golden Test Checklist (117/284)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 116µs | 11.7 KB |
 | 2 | 100-doors-3 | ✓ | 184µs | 7.7 KB |
 | 3 | 100-doors | ✓ | 6.231ms | 851.8 KB |
-| 4 | 100-prisoners | ✓ | 4.224632s | 275.7 KB |
+| 4 | 100-prisoners | ✓ | 3.400683s | 1.5 MB |
 | 5 | 15-puzzle-game | ✓ |  |  |
 | 6 | 15-puzzle-solver | ✓ | 917.949ms | 26.9 KB |
 | 7 | 2048 | ✓ | 5.393ms |  |
@@ -125,7 +125,7 @@ Last updated: 2025-07-25 11:20 UTC
 | 116 | bitcoin-address-validation | ✓ | 9.508ms |  |
 | 117 | bitmap-b-zier-curves-cubic |   |  |  |
 | 118 | bitmap-b-zier-curves-quadratic |   |  |  |
-| 119 | bitmap-bresenhams-line-algorithm |   |  |  |
+| 119 | bitmap-bresenhams-line-algorithm | ✓ | 64µs | 26.3 KB |
 | 120 | bitmap-flood-fill |   |  |  |
 | 121 | bitmap-histogram |   |  |  |
 | 122 | bitmap-midpoint-circle-algorithm |   |  |  |
