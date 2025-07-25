@@ -12,6 +12,12 @@ import (
 // Program is a minimal placeholder used when the real implementation is excluded by build tags.
 type Program struct{}
 
+// benchMain controls whether the main function is wrapped in a benchmark block.
+var benchMain bool
+
+// SetBenchMain is a no-op in the stub build.
+func SetBenchMain(v bool) { benchMain = v }
+
 // Transpile returns a placeholder program so dependent packages compile without the slow implementation.
 func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	return &Program{}, nil

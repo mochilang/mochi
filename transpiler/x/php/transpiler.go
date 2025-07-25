@@ -183,6 +183,12 @@ var usesIndexOf bool
 var usesRepeat bool
 var usesParseIntStr bool
 var usesIntDiv bool
+var benchMain bool
+
+// SetBenchMain configures whether the generated main function is wrapped in a
+// benchmark block when emitting code. When enabled, the program will print a
+// JSON object with duration and memory statistics on completion.
+func SetBenchMain(v bool) { benchMain = v }
 
 // Some PHP built-in functions cannot be redefined. When a Mochi program
 // defines a function with one of these names we rename the function and all
@@ -778,7 +784,7 @@ func (b *BenchStmt) emit(w io.Writer) {
 	io.WriteString(w, "$__end = _now();\n")
 	io.WriteString(w, "$__end_mem = memory_get_usage();\n")
 	io.WriteString(w, "$__duration = intdiv($__end - $__start, 1000);\n")
-	io.WriteString(w, "$__mem_diff = 0;\n")
+	io.WriteString(w, "$__mem_diff = max(0, $__end_mem - $__start_mem);\n")
 	fmt.Fprintf(w, "$__bench = [\"duration_us\" => $__duration, \"memory_bytes\" => $__mem_diff, \"name\" => %q];\n", b.Name)
 	io.WriteString(w, "$__j = json_encode($__bench, 128);\n")
 	io.WriteString(w, "$__j = str_replace(\"    \", \"  \", $__j);\n")
@@ -1872,6 +1878,10 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 		if conv != nil {
 			p.Stmts = append(p.Stmts, conv)
 		}
+	}
+	if benchMain {
+		usesNow = true
+		p.Stmts = []Stmt{&BenchStmt{Name: "main", Body: p.Stmts}}
 	}
 	return p, nil
 }
