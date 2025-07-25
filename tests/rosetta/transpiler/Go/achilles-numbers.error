@@ -1,0 +1,3 @@
+exit status 1
+# command-line-arguments
+../../../tests/rosetta/transpiler/Go/achilles-numbers.go:171:88: cannot use []any{…} (value of type []any) as []int value in argument to append

@@ -92,12 +92,13 @@ func TestGoTranspiler_Rosetta_Golden(t *testing.T) {
 				_ = os.WriteFile(errPath, []byte(errs[0].Error()), 0o644)
 				t.Fatalf("type: %v", errs[0])
 			}
+			bench := os.Getenv("MOCHI_BENCHMARK") == "true"
+			gotrans.SetBenchMain(bench)
 			gprog, err := gotrans.Transpile(prog, env)
 			if err != nil {
 				_ = os.WriteFile(errPath, []byte(err.Error()), 0o644)
 				t.Fatalf("transpile: %v", err)
 			}
-			bench := os.Getenv("MOCHI_BENCHMARK") == "true"
 			code := gotrans.Emit(gprog, bench)
 			if err := os.WriteFile(codePath, code, 0o644); err != nil {
 				t.Fatalf("write code: %v", err)
@@ -171,9 +172,9 @@ func updateRosettaChecklist() {
 		dur := ""
 		mem := ""
 		if _, err := os.Stat(filepath.Join(outDir, name+".error")); err == nil {
-			status = "error"
+			status = " "
 		} else if _, err := os.Stat(filepath.Join(outDir, name+".go")); err == nil {
-			status = "ok"
+			status = "✓"
 			compiled++
 		}
 		if data, err := os.ReadFile(filepath.Join(outDir, name+".bench")); err == nil {
@@ -181,9 +182,12 @@ func updateRosettaChecklist() {
 				DurationUS  int64 `json:"duration_us"`
 				MemoryBytes int64 `json:"memory_bytes"`
 			}
-			if json.Unmarshal(bytes.TrimSpace(data), &r) == nil {
-				dur = formatDuration(time.Duration(r.DurationUS) * time.Microsecond)
-				mem = formatBytes(r.MemoryBytes)
+			data = bytes.TrimSpace(data)
+			if idx := bytes.LastIndexByte(data, '{'); idx >= 0 {
+				if json.Unmarshal(data[idx:], &r) == nil && r.DurationUS > 0 {
+					dur = formatDuration(time.Duration(r.DurationUS) * time.Microsecond)
+					mem = formatBytes(r.MemoryBytes)
+				}
 			}
 		}
 		rows = append(rows, fmt.Sprintf("| %d | %s | %s | %s | %s |", i+1, name, status, dur, mem))

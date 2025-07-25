@@ -1,8 +1,6 @@
 exit status 1
 # command-line-arguments
 ../../../tests/rosetta/transpiler/Go/adfgvx-cipher.go:140:7: invalid operation: pairs[j].([]any)[0] > pairs[(j + 1)].([]any)[0] (operator > not defined on interface)
-../../../tests/rosetta/transpiler/Go/adfgvx-cipher.go:154:25: cannot convert pairs[i].([]any)[1] (variable of interface type any) to type int: need type assertion
-../../../tests/rosetta/transpiler/Go/adfgvx-cipher.go:157:9: cannot use res (variable of type []any) as []int value in return statement
-../../../tests/rosetta/transpiler/Go/adfgvx-cipher.go:181:13: cannot use func() []string {…}() (value of type []string) as string value in assignment
-../../../tests/rosetta/transpiler/Go/adfgvx-cipher.go:182:34: invalid operation: temp + labels[r:(r + 1)] (mismatched types string and []string)
-../../../tests/rosetta/transpiler/Go/adfgvx-cipher.go:183:18: invalid operation: temp + labels[r:(r + 1)] (mismatched types string and []string)
+../../../tests/rosetta/transpiler/Go/adfgvx-cipher.go:157:9: invalid operation: res (variable of type []any) is not an interface
+../../../tests/rosetta/transpiler/Go/adfgvx-cipher.go:181:13: invalid operation: func() []string {…}() (value of type []string) is not an interface
+../../../tests/rosetta/transpiler/Go/adfgvx-cipher.go:183:12: invalid argument: arguments to copy res (variable of type []string) and (temp + fmt.Sprint(labels[r:(r + 1)])) (value of type string) have different element types string and byte
