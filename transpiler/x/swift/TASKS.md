@@ -1,5 +1,5 @@
-## Progress (2025-07-25 20:48 +0700)
-- scala rosetta: update docs
+## Progress (2025-07-26 00:39 +0700)
+- swift: fix float cast and transpile index 51
 - Generated golden tests for 102/104 programs
 - Updated README checklist and output artifacts
 
