@@ -33,6 +33,25 @@ var groupVars = map[string]bool{}
 // containing duration and memory statistics.
 var benchMain bool
 
+var continueLabels []string
+
+func pushContinue(label string) {
+	continueLabels = append(continueLabels, label)
+}
+
+func popContinue() {
+	if len(continueLabels) > 0 {
+		continueLabels = continueLabels[:len(continueLabels)-1]
+	}
+}
+
+func currentContinue() string {
+	if len(continueLabels) == 0 {
+		return ""
+	}
+	return continueLabels[len(continueLabels)-1]
+}
+
 // SetBenchMain configures benchmark wrapping for the main program.
 func SetBenchMain(v bool) { benchMain = v }
 
@@ -269,10 +288,12 @@ func (wst *WhileStmt) emit(w io.Writer) {
 	io.WriteString(w, "(let/ec _break (let loop ()\n  (if ")
 	wst.Cond.emit(w)
 	io.WriteString(w, " (let ()\n")
+	pushContinue("loop")
 	for _, st := range wst.Body {
 		io.WriteString(w, "    ")
 		st.emit(w)
 	}
+	popContinue()
 	io.WriteString(w, "    (loop)) (void))))\n")
 }
 
@@ -282,7 +303,16 @@ func (b *BreakStmt) emit(w io.Writer) { io.WriteString(w, "(_break)\n") }
 
 type ContinueStmt struct{}
 
-func (c *ContinueStmt) emit(w io.Writer) { io.WriteString(w, "(loop)\n") }
+func (c *ContinueStmt) emit(w io.Writer) {
+	label := currentContinue()
+	if label == "" {
+		io.WriteString(w, "(void)\n")
+		return
+	}
+	io.WriteString(w, "(")
+	io.WriteString(w, label)
+	io.WriteString(w, ")\n")
+}
 
 type RangeContinueStmt struct{ Var string }
 
@@ -291,7 +321,9 @@ func (c *RangeContinueStmt) emit(w io.Writer) {
 	io.WriteString(w, c.Var)
 	io.WriteString(w, " (+ ")
 	io.WriteString(w, c.Var)
-	io.WriteString(w, " 1)) (loop))\n")
+	io.WriteString(w, " 1)) (")
+	io.WriteString(w, currentContinue())
+	io.WriteString(w, "))\n")
 }
 
 type UpdateStmt struct {
@@ -350,9 +382,11 @@ func (fr *ForRangeStmt) emit(w io.Writer) {
 	io.WriteString(w, " ")
 	fr.End.emit(w)
 	io.WriteString(w, ")\n")
+	pushContinue("loop")
 	for _, st := range fr.Body {
 		st.emit(w)
 	}
+	popContinue()
 	io.WriteString(w, "      (set! ")
 	io.WriteString(w, fr.Name)
 	io.WriteString(w, " (+ ")
@@ -372,7 +406,7 @@ type ForInStmt struct {
 
 func (f *ForInStmt) emit(w io.Writer) {
 	if f.String {
-		io.WriteString(w, "(for ([__i (in-range (string-length ")
+		io.WriteString(w, " (let/ec _break (for ([__i (in-range (string-length ")
 		f.Iterable.emit(w)
 		io.WriteString(w, "))])")
 		if f.Break != nil {
@@ -387,14 +421,20 @@ func (f *ForInStmt) emit(w io.Writer) {
 		io.WriteString(w, f.Name)
 		io.WriteString(w, " (substring ")
 		f.Iterable.emit(w)
-		io.WriteString(w, " __i (+ __i 1)))\n")
+		io.WriteString(w, " __i (+ __i 1)))\n  (let/ec _cont\n")
+		pushContinue("_cont")
 		for _, st := range f.Body {
-			st.emit(w)
+			if _, ok := st.(*ContinueStmt); ok {
+				io.WriteString(w, "    (_cont)\n")
+			} else {
+				st.emit(w)
+			}
 		}
-		io.WriteString(w, ")\n")
+		popContinue()
+		io.WriteString(w, "  )))\n")
 		return
 	}
-	io.WriteString(w, "(for ([")
+	io.WriteString(w, "(let/ec _break (for ([")
 	io.WriteString(w, f.Name)
 	io.WriteString(w, " ")
 	if f.Keys {
@@ -413,11 +453,17 @@ func (f *ForInStmt) emit(w io.Writer) {
 		io.WriteString(w, " #:unless ")
 		f.Unless.emit(w)
 	}
-	io.WriteString(w, ")\n")
+	io.WriteString(w, ")\n  (let/ec _cont\n")
+	pushContinue("_cont")
 	for _, st := range f.Body {
-		st.emit(w)
+		if _, ok := st.(*ContinueStmt); ok {
+			io.WriteString(w, "    (_cont)\n")
+		} else {
+			st.emit(w)
+		}
 	}
-	io.WriteString(w, ")\n")
+	popContinue()
+	io.WriteString(w, "  )))\n")
 }
 
 type ReturnStmt struct{ Expr Expr }
@@ -926,6 +972,30 @@ func literalIntPostfix(p *parser.PostfixExpr) bool {
 		return false
 	}
 	return p.Target.Lit != nil && p.Target.Lit.Int != nil
+}
+
+func exprIsInt(e Expr, env *types.Env) bool {
+	switch v := e.(type) {
+	case *IntLit:
+		return true
+	case *Name:
+		if env != nil {
+			if t, err := env.GetVar(v.Name); err == nil {
+				if _, ok := t.(types.IntType); ok {
+					return true
+				}
+				if _, ok := t.(types.Int64Type); ok {
+					return true
+				}
+			}
+		}
+	case *BinaryExpr:
+		switch v.Op {
+		case "quotient", "modulo", "+", "-", "*":
+			return exprIsInt(v.Left, env) && exprIsInt(v.Right, env)
+		}
+	}
+	return false
 }
 
 // plusOne checks if e represents start + 1 where start is the same expression
@@ -1791,6 +1861,9 @@ func convertForStmt(n *parser.ForStmt, env *types.Env) (Stmt, error) {
 func replaceRangeContinue(st Stmt, varName string) Stmt {
 	switch s := st.(type) {
 	case *ContinueStmt:
+		if varName == "" {
+			return s
+		}
 		return &RangeContinueStmt{Var: varName}
 	case *IfStmt:
 		for i, c := range s.Then {
@@ -2050,14 +2123,20 @@ func convertBinary(b *parser.BinaryExpr, env *types.Env) (Expr, error) {
 			op = "or"
 		}
 		if op == "/" {
-			lt := leftType
+			ltInt := exprIsInt(currLeft, env)
 			rt := types.TypeOfPostfix(part.Right, env)
-			if literalIntPostfix(part.Right) && !types.IsFloatType(lt) {
-				op = "quotient"
-			} else if (types.IsIntType(lt) || types.IsInt64Type(lt)) && (types.IsIntType(rt) || types.IsInt64Type(rt)) {
+			rtInt := types.IsIntType(rt) || types.IsInt64Type(rt)
+			if ltInt && rtInt {
 				op = "quotient"
 			} else {
-				op = "/"
+				lt := leftType
+				if literalIntPostfix(part.Right) && !types.IsFloatType(lt) {
+					op = "quotient"
+				} else if (types.IsIntType(lt) || types.IsInt64Type(lt)) && rtInt {
+					op = "quotient"
+				} else {
+					op = "/"
+				}
 			}
 		}
 		if op == "in" {
