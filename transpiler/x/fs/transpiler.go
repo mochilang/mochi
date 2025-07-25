@@ -1357,6 +1357,42 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		}
 		return
 	}
+	if b.Op == "%" {
+		io.WriteString(w, "((")
+		if needsParen(b.Left) {
+			io.WriteString(w, "(")
+			b.Left.emit(w)
+			io.WriteString(w, ")")
+		} else {
+			b.Left.emit(w)
+		}
+		io.WriteString(w, " % ")
+		if needsParen(b.Right) {
+			io.WriteString(w, "(")
+			b.Right.emit(w)
+			io.WriteString(w, ")")
+		} else {
+			b.Right.emit(w)
+		}
+		io.WriteString(w, " + ")
+		if needsParen(b.Right) {
+			io.WriteString(w, "(")
+			b.Right.emit(w)
+			io.WriteString(w, ")")
+		} else {
+			b.Right.emit(w)
+		}
+		io.WriteString(w, ") % ")
+		if needsParen(b.Right) {
+			io.WriteString(w, "(")
+			b.Right.emit(w)
+			io.WriteString(w, ")")
+		} else {
+			b.Right.emit(w)
+		}
+		io.WriteString(w, ")")
+		return
+	}
 	if b.Op == "+" {
 		lt := inferType(b.Left)
 		rt := inferType(b.Right)
