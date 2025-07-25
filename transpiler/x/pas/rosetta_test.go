@@ -88,9 +88,14 @@ func runRosettaCase(t *testing.T, name string) {
 		t.Fatalf("compile: %v", err)
 	}
 	cmd := exec.Command(exe)
+	envs := os.Environ()
 	if bench {
-		cmd.Env = append(os.Environ(), "MOCHI_BENCHMARK=1")
+		envs = append(envs, "MOCHI_BENCHMARK=1")
 	}
+	if os.Getenv("MOCHI_NOW_SEED") == "" {
+		envs = append(envs, "MOCHI_NOW_SEED=1")
+	}
+	cmd.Env = envs
 	if in, err := os.ReadFile(filepath.Join(root, "tests", "rosetta", "x", "Mochi", name+".in")); err == nil {
 		cmd.Stdin = bytes.NewReader(in)
 	}
