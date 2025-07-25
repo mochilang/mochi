@@ -1,64 +1,64 @@
 public class Main {
     static String err = "";
 
-    static bigint pow_big(bigint base, int exp) {
-        bigint result = 1;
-        bigint b = base;
+    static java.math.BigInteger pow_big(java.math.BigInteger base, int exp) {
+        java.math.BigInteger result = java.math.BigInteger.valueOf(1);
+        java.math.BigInteger b = base;
         int e = exp;
         while (e > 0) {
             if (e % 2 == 1) {
-                result = result * b;
+                result = result.multiply(b);
             }
-            b = b * b;
+            b = b.multiply(b);
             e = ((Number)((e / 2))).intValue();
         }
         return result;
     }
 
-    static int bit_len(bigint x) {
-        bigint n = x;
+    static int bit_len(java.math.BigInteger x) {
+        java.math.BigInteger n = x;
         int c = 0;
-        while (n > 0) {
-            n = n / 2;
+        while (n.compareTo(java.math.BigInteger.valueOf(0)) > 0) {
+            n = n.divide(java.math.BigInteger.valueOf(2));
             c = c + 1;
         }
         return c;
     }
 
-    static bigint ackermann2(bigint m, bigint n) {
+    static java.math.BigInteger ackermann2(java.math.BigInteger m, java.math.BigInteger n) {
         if (!(err.equals(""))) {
-            return 0;
+            return java.math.BigInteger.valueOf(0);
         }
-        if (m <= 3) {
+        if (m.compareTo(java.math.BigInteger.valueOf(3)) <= 0) {
             int mi = ((Number)(m)).intValue();
             if (mi == 0) {
-                return n + 1;
+                return n.add(java.math.BigInteger.valueOf(1));
             }
             if (mi == 1) {
-                return n + 2;
+                return n.add(java.math.BigInteger.valueOf(2));
             }
             if (mi == 2) {
-                return 2 * n + 3;
+                return java.math.BigInteger.valueOf(2).multiply(n).add(java.math.BigInteger.valueOf(3));
             }
             if (mi == 3) {
                 int nb = bit_len(n);
                 if (nb > 64) {
                     err = "A(m,n) had n of " + String.valueOf(nb) + " bits; too large";
-                    return 0;
+                    return java.math.BigInteger.valueOf(0);
                 }
-                bigint r = pow_big(2, ((Number)(n)).intValue());
-                return 8 * r - 3;
+                java.math.BigInteger r = pow_big(java.math.BigInteger.valueOf(2), ((Number)(n)).intValue());
+                return java.math.BigInteger.valueOf(8).multiply(r).subtract(java.math.BigInteger.valueOf(3));
             }
         }
         if (bit_len(n) == 0) {
-            return ackermann2(m - (1), 1);
+            return ackermann2(m.subtract((java.math.BigInteger.valueOf(1))), java.math.BigInteger.valueOf(1));
         }
-        return ackermann2(m - (1), ackermann2(m, n - (1)));
+        return ackermann2(m.subtract((java.math.BigInteger.valueOf(1))), ackermann2(m, n.subtract((java.math.BigInteger.valueOf(1)))));
     }
 
     static void show(int m, int n) {
         err = "";
-        bigint res = ackermann2(m, n);
+        java.math.BigInteger res = ackermann2(new java.math.BigInteger(String.valueOf(m)), new java.math.BigInteger(String.valueOf(n)));
         if (!(err.equals(""))) {
             System.out.println("A(" + String.valueOf(m) + ", " + String.valueOf(n) + ") = Error: " + err);
             return;

@@ -80,6 +80,8 @@ func javaType(t string) string {
 		return "void"
 	case "float", "float64", "double":
 		return "double"
+	case "bigint":
+		return "java.math.BigInteger"
 	case "int[]":
 		return "int[]"
 	case "string[]":
@@ -131,6 +133,8 @@ func javaBoxType(t string) string {
 		return "Boolean"
 	case "string", "String":
 		return "String"
+	case "bigint", "java.math.BigInteger":
+		return "java.math.BigInteger"
 	default:
 		return "Object"
 	}
@@ -200,6 +204,22 @@ func emitCastExpr(w io.Writer, e Expr, typ string) {
 			}
 		}
 	}
+	if jt := javaType(typ); jt == "java.math.BigInteger" {
+		if inferType(e) == "bigint" {
+			e.emit(w)
+			return
+		}
+		if _, ok := e.(*IntLit); ok {
+			fmt.Fprint(w, "java.math.BigInteger.valueOf(")
+			e.emit(w)
+			fmt.Fprint(w, ")")
+			return
+		}
+		fmt.Fprint(w, "new java.math.BigInteger(String.valueOf(")
+		e.emit(w)
+		fmt.Fprint(w, "))")
+		return
+	}
 	e.emit(w)
 }
 
@@ -213,6 +233,8 @@ func typeFromName(n string) types.Type {
 		return types.BoolType{}
 	case "string", "String":
 		return types.StringType{}
+	case "bigint", "java.math.BigInteger":
+		return types.BigIntType{}
 	default:
 		return types.AnyType{}
 	}
@@ -335,6 +357,9 @@ func inferType(e Expr) string {
 			}
 			lt := inferType(ex.Left)
 			rt := inferType(ex.Right)
+			if lt == "bigint" || rt == "bigint" {
+				return "bigint"
+			}
 			if lt == "double" || rt == "double" {
 				return "double"
 			}
@@ -342,6 +367,9 @@ func inferType(e Expr) string {
 		case "-", "*", "/", "%":
 			lt := inferType(ex.Left)
 			rt := inferType(ex.Right)
+			if lt == "bigint" || rt == "bigint" {
+				return "bigint"
+			}
 			if lt == "double" || rt == "double" {
 				return "double"
 			}
@@ -391,6 +419,11 @@ func inferType(e Expr) string {
 		return "int"
 	case *FloatCastExpr:
 		return "double"
+	case *CastExpr:
+		if ex.Type != "" {
+			return ex.Type
+		}
+		return inferType(ex.Value)
 	case *CallExpr:
 		switch ex.Func {
 		case "String.valueOf", "substring":
@@ -1266,6 +1299,7 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		if rt == "" && guessIntExpr(b.Right) {
 			rt = "int"
 		}
+		big := lt == "bigint" || rt == "bigint"
 		typ := "int"
 		if lt == "Object" {
 			lt = ""
@@ -1275,6 +1309,63 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		}
 		if lt == "double" || rt == "double" {
 			typ = "double"
+		}
+		if big {
+			emitBigIntOperand := func(e Expr, t string) {
+				if inferType(e) == "bigint" {
+					e.emit(w)
+				} else if _, ok := e.(*IntLit); ok {
+					fmt.Fprint(w, "java.math.BigInteger.valueOf(")
+					e.emit(w)
+					fmt.Fprint(w, ")")
+				} else {
+					fmt.Fprint(w, "new java.math.BigInteger(String.valueOf(")
+					e.emit(w)
+					fmt.Fprint(w, "))")
+				}
+			}
+			emitBigIntOperand(b.Left, lt)
+			switch b.Op {
+			case "+":
+				fmt.Fprint(w, ".add(")
+				emitBigIntOperand(b.Right, rt)
+				fmt.Fprint(w, ")")
+			case "-":
+				fmt.Fprint(w, ".subtract(")
+				emitBigIntOperand(b.Right, rt)
+				fmt.Fprint(w, ")")
+			case "*":
+				fmt.Fprint(w, ".multiply(")
+				emitBigIntOperand(b.Right, rt)
+				fmt.Fprint(w, ")")
+			case "/":
+				fmt.Fprint(w, ".divide(")
+				emitBigIntOperand(b.Right, rt)
+				fmt.Fprint(w, ")")
+			case "%":
+				fmt.Fprint(w, ".remainder(")
+				emitBigIntOperand(b.Right, rt)
+				fmt.Fprint(w, ")")
+			case "==", "!=", "<", "<=", ">", ">=":
+				fmt.Fprint(w, ".compareTo(")
+				emitBigIntOperand(b.Right, rt)
+				fmt.Fprint(w, ") ")
+				switch b.Op {
+				case "==":
+					fmt.Fprint(w, "== 0")
+				case "!=":
+					fmt.Fprint(w, "!= 0")
+				case "<":
+					fmt.Fprint(w, "< 0")
+				case "<=":
+					fmt.Fprint(w, "<= 0")
+				case ">":
+					fmt.Fprint(w, "> 0")
+				case ">=":
+					fmt.Fprint(w, ">= 0")
+				}
+			}
+			return
 		}
 		if lt == "" {
 			fmt.Fprint(w, "((Number)(")
@@ -1575,9 +1666,24 @@ func (c *FloatCastExpr) emit(w io.Writer) {
 }
 
 func (c *CastExpr) emit(w io.Writer) {
-	fmt.Fprintf(w, "((%s)(", c.Type)
-	c.Value.emit(w)
-	fmt.Fprint(w, "))")
+	jt := javaType(c.Type)
+	if jt == "java.math.BigInteger" {
+		if inferType(c.Value) == "bigint" {
+			c.Value.emit(w)
+		} else if _, ok := c.Value.(*IntLit); ok {
+			fmt.Fprint(w, "java.math.BigInteger.valueOf(")
+			c.Value.emit(w)
+			fmt.Fprint(w, ")")
+		} else {
+			fmt.Fprint(w, "new java.math.BigInteger(String.valueOf(")
+			c.Value.emit(w)
+			fmt.Fprint(w, "))")
+		}
+	} else {
+		fmt.Fprintf(w, "((%s)(", jt)
+		c.Value.emit(w)
+		fmt.Fprint(w, "))")
+	}
 }
 
 func (i *InstanceOfExpr) emit(w io.Writer) {
@@ -3131,9 +3237,13 @@ func compilePostfix(pf *parser.PostfixExpr) (Expr, error) {
 					expr = &IntCastExpr{Value: expr}
 				case "float", "float64", "double":
 					expr = &FloatCastExpr{Value: expr}
+				case "bigint":
+					expr = &CastExpr{Value: expr, Type: ctype}
 				default:
 					if st, ok := expr.(*StructLit); ok {
 						st.Name = ctype
+					} else {
+						expr = &CastExpr{Value: expr, Type: ctype}
 					}
 				}
 			} else {
@@ -4101,6 +4211,8 @@ func toJavaTypeFromType(t types.Type) string {
 		return "boolean"
 	case types.StringType:
 		return "String"
+	case types.BigIntType:
+		return "java.math.BigInteger"
 	case types.ListType:
 		et := toJavaTypeFromType(tt.Elem)
 		if et == "" {
