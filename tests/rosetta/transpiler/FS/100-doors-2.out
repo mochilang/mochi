@@ -99,7 +99,7 @@ Door 98 Closed
 Door 99 Closed
 Door 100 Open
 {
-  "duration_us": 339,
-  "memory_bytes": 46304,
+  "duration_us": 325,
+  "memory_bytes": 42272,
   "name": "main"
 }
