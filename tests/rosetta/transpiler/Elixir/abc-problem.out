@@ -5,3 +5,8 @@ TREAT false
 COMMON false
 SQUAD false
 CONFUSE false
+{
+  "duration_us": 11890,
+  "memory_bytes": 401536,
+  "name": "main"
+}

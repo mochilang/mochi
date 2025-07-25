@@ -2,7 +2,7 @@ There are 0 deficient numbers between 1 and 20000
 There are 0 abundant numbers  between 1 and 20000
 There are 0 perfect numbers between 1 and 20000
 {
-  "duration_us": 567275,
-  "memory_bytes": 25800,
+  "duration_us": 1951114,
+  "memory_bytes": 29384,
   "name": "main"
 }
