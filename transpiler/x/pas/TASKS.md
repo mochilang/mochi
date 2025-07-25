@@ -1,3 +1,6 @@
+## Progress (2025-07-24 19:09 UTC)
+- pascal: implement bench block support (progress 88/104)
+
 ## Progress (2025-07-24 14:14 UTC)
 - pascal: support upper/lower builtin and resolve array alias (progress 87/103)
 
