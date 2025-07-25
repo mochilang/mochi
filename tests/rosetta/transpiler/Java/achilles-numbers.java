@@ -1,5 +1,5 @@
 public class Main {
-    static java.util.Map<Integer,Boolean> pps = new java.util.LinkedHashMap<String, Object>();
+    static java.util.Map<Integer,Boolean> pps = new java.util.LinkedHashMap<Integer, Boolean>();
 
     static int pow10(int exp) {
         int n = 1;
@@ -52,7 +52,7 @@ pps.put(p, true);
     static java.util.Map<Integer,Boolean> getAchilles(int minExp, int maxExp) {
         int lower = pow10(minExp);
         int upper = pow10(maxExp);
-        java.util.Map<Integer,Boolean> achilles = new java.util.LinkedHashMap<String, Object>();
+        java.util.Map<Integer,Boolean> achilles = new java.util.LinkedHashMap<Integer, Boolean>();
         int b = 1;
         while (b * b * b < upper) {
             int b3 = b * b * b;
@@ -88,12 +88,12 @@ achilles.put(p, true);
                 }
                 i = i + 1;
             }
-            res = java.util.stream.Stream.concat(java.util.Arrays.stream(res), java.util.Arrays.stream(new int[]{min})).toArray(Object[]::new);
+            res = java.util.stream.IntStream.concat(java.util.Arrays.stream(res), java.util.Arrays.stream(new int[]{min})).toArray();
             int[] out = new int[]{};
             int j = 0;
             while (j < tmp.length) {
                 if (j != idx) {
-                    out = java.util.stream.Stream.concat(java.util.Arrays.stream(out), java.util.Arrays.stream(new int[]{tmp[j]})).toArray(Object[]::new);
+                    out = java.util.stream.IntStream.concat(java.util.Arrays.stream(out), java.util.Arrays.stream(new int[]{tmp[j]})).toArray();
                 }
                 j = j + 1;
             }
@@ -115,8 +115,8 @@ achilles.put(p, true);
         getPerfectPowers(5);
         java.util.Map<Integer,Boolean> achSet = getAchilles(1, 5);
         int[] ach = new int[]{};
-        for (var k : achSet.keys()) {
-            ach = java.util.stream.Stream.concat(java.util.Arrays.stream(ach), java.util.Arrays.stream(new int[]{k})).toArray(Object[]::new);
+        for (var k : achSet.keySet()) {
+            ach = java.util.stream.IntStream.concat(java.util.Arrays.stream(ach), java.util.Arrays.stream(new int[]{k})).toArray();
         }
         ach = sortInts(ach);
         System.out.println("First 50 Achilles numbers:");
@@ -141,7 +141,7 @@ achilles.put(p, true);
         while (count < 30) {
             int tot = totient(ach[idx]);
             if (achSet.containsKey(tot)) {
-                strong = java.util.stream.Stream.concat(java.util.Arrays.stream(strong), java.util.Arrays.stream(new int[]{ach[idx]})).toArray(Object[]::new);
+                strong = java.util.stream.IntStream.concat(java.util.Arrays.stream(strong), java.util.Arrays.stream(new int[]{ach[idx]})).toArray();
                 count = count + 1;
             }
             idx = idx + 1;
@@ -170,6 +170,39 @@ achilles.put(p, true);
         }
     }
     public static void main(String[] args) {
-        main();
+        {
+            long _benchStart = _now();
+            long _benchMem = _mem();
+            main();
+            long _benchDuration = _now() - _benchStart;
+            long _benchMemory = _mem() - _benchMem;
+            System.out.println("{");
+            System.out.println("  \"duration_us\": " + _benchDuration + ",");
+            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
+            System.out.println("  \"name\": \"main\"");
+            System.out.println("}");
+            return;
+        }
+    }
+
+    static boolean _nowSeeded = false;
+    static int _nowSeed;
+    static int _now() {
+        if (!_nowSeeded) {
+            String s = System.getenv("MOCHI_NOW_SEED");
+            if (s != null && !s.isEmpty()) {
+                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
+            }
+        }
+        if (_nowSeeded) {
+            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
+            return _nowSeed;
+        }
+        return (int)(System.nanoTime() / 1000);
+    }
+
+    static long _mem() {
+        Runtime rt = Runtime.getRuntime();
+        return rt.totalMemory() - rt.freeMemory();
     }
 }

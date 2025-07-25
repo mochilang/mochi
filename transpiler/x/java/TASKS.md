@@ -1,4 +1,58 @@
-## Progress (2025-07-25 05:39 UTC)
+## Progress (2025-07-25 13:07 +0700)
+- java rosetta: update index 10, fix slice elem type (05dce82272)
+
+- java rosetta: update index 10, fix slice elem type (05dce82272)
+
+- java rosetta: update index 10, fix slice elem type (05dce82272)
+
+- java rosetta: update index 10, fix slice elem type (05dce82272)
+
+- java rosetta: update index 10, fix slice elem type (05dce82272)
+
+- java rosetta: update index 10, fix slice elem type (05dce82272)
+
+- java rosetta: update index 10, fix slice elem type (05dce82272)
+
+- java rosetta: update index 10, fix slice elem type (05dce82272)
+
+- java rosetta: update index 10, fix slice elem type (05dce82272)
+
+- java rosetta: update index 10, fix slice elem type (05dce82272)
+
+- java rosetta: update index 10, fix slice elem type (05dce82272)
+
+- java rosetta: update index 10, fix slice elem type (05dce82272)
+
+- java rosetta: update index 10, fix slice elem type (05dce82272)
+
+- java rosetta: update index 10, fix slice elem type (05dce82272)
+
+- java rosetta: update index 10, fix slice elem type (05dce82272)
+
+- java rosetta: update index 10, fix slice elem type (05dce82272)
+
+- java rosetta: update index 10, fix slice elem type (05dce82272)
+
+- java rosetta: update index 10, fix slice elem type (05dce82272)
+
+- java rosetta: update index 10, fix slice elem type (05dce82272)
+
+- java rosetta: update index 10, fix slice elem type (05dce82272)
+
+- java rosetta: update index 10, fix slice elem type (05dce82272)
+
+- java rosetta: update index 10, fix slice elem type (05dce82272)
+
+- java rosetta: update index 10, fix slice elem type (05dce82272)
+
+- java rosetta: update index 10, fix slice elem type (05dce82272)
+
+- java rosetta: update index 10, fix slice elem type (05dce82272)
+
+- java rosetta: update index 10, fix slice elem type (05dce82272)
+
+- java rosetta: update index 10, fix slice elem type (05dce82272)
+
 - java rosetta: update index 9 (0b64d8d661)
 
 - java rosetta: update index 9 (0b64d8d661)

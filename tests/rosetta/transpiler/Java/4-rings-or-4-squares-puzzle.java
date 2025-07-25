@@ -51,7 +51,7 @@ public class Main {
                                 continue;
                             }
                             if (!(Boolean)unique || isUnique(a, b, c, d, e, f, g)) {
-                                valid = java.util.stream.Stream.concat(java.util.Arrays.stream(valid), java.util.stream.Stream.of(new int[]{a, b, c, d, e, f, g})).toArray(int[][]::new);
+                                valid = appendObj(valid, new int[]{a, b, c, d, e, f, g});
                                 count = count + 1;
                             }
                         }
@@ -62,10 +62,49 @@ public class Main {
         return new java.util.LinkedHashMap<String, Object>(java.util.Map.of("count", count, "list", valid));
     }
     public static void main(String[] args) {
-        System.out.println(String.valueOf((int)(r1.get("count"))) + " unique solutions in 1 to 7");
-        System.out.println(java.util.Arrays.deepToString((int[][])(r1.get("list"))));
-        System.out.println(String.valueOf((int)(r2.get("count"))) + " unique solutions in 3 to 9");
-        System.out.println(java.util.Arrays.deepToString((int[][])(r2.get("list"))));
-        System.out.println(String.valueOf((int)(r3.get("count"))) + " non-unique solutions in 0 to 9");
+        {
+            long _benchStart = _now();
+            long _benchMem = _mem();
+            System.out.println(String.valueOf(((int)r1.get("count"))) + " unique solutions in 1 to 7");
+            System.out.println(java.util.Arrays.deepToString(((int[][])r1.get("list"))));
+            System.out.println(String.valueOf(((int)r2.get("count"))) + " unique solutions in 3 to 9");
+            System.out.println(java.util.Arrays.deepToString(((int[][])r2.get("list"))));
+            System.out.println(String.valueOf(((int)r3.get("count"))) + " non-unique solutions in 0 to 9");
+            long _benchDuration = _now() - _benchStart;
+            long _benchMemory = _mem() - _benchMem;
+            System.out.println("{");
+            System.out.println("  \"duration_us\": " + _benchDuration + ",");
+            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
+            System.out.println("  \"name\": \"main\"");
+            System.out.println("}");
+            return;
+        }
+    }
+
+    static boolean _nowSeeded = false;
+    static int _nowSeed;
+    static int _now() {
+        if (!_nowSeeded) {
+            String s = System.getenv("MOCHI_NOW_SEED");
+            if (s != null && !s.isEmpty()) {
+                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
+            }
+        }
+        if (_nowSeeded) {
+            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
+            return _nowSeed;
+        }
+        return (int)(System.nanoTime() / 1000);
+    }
+
+    static long _mem() {
+        Runtime rt = Runtime.getRuntime();
+        return rt.totalMemory() - rt.freeMemory();
+    }
+
+    static <T> T[] appendObj(T[] arr, T v) {
+        T[] out = java.util.Arrays.copyOf(arr, arr.length + 1);
+        out[arr.length] = v;
+        return out;
     }
 }

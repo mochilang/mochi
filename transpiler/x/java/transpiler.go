@@ -157,6 +157,29 @@ func mapValueType(t string) string {
 	return ""
 }
 
+func mapKeyType(t string) string {
+	if i := strings.Index(t, "Map<"); i >= 0 {
+		inside := strings.TrimSuffix(t[i+4:], ">")
+		parts := strings.SplitN(inside, ",", 2)
+		if len(parts) == 2 {
+			k := strings.TrimSpace(parts[0])
+			switch k {
+			case "Integer":
+				return "int"
+			case "Double":
+				return "double"
+			case "Boolean":
+				return "boolean"
+			case "String":
+				return "string"
+			default:
+				return k
+			}
+		}
+	}
+	return ""
+}
+
 func emitCastExpr(w io.Writer, e Expr, typ string) {
 	// Cast map lookups to the destination type when needed.
 	if typ != "" && typ != "java.util.Map" && typ != "map" {
@@ -1118,9 +1141,11 @@ func (l *ListLit) emit(w io.Writer) {
 
 // MapLit represents a simple map literal.
 type MapLit struct {
-	Keys   []Expr
-	Values []Expr
-	Fields map[string]string
+	Keys      []Expr
+	Values    []Expr
+	Fields    map[string]string
+	KeyType   string
+	ValueType string
 }
 
 func (m *MapLit) emit(w io.Writer) {
@@ -1137,9 +1162,15 @@ func (m *MapLit) emit(w io.Writer) {
 		if same {
 			valType = javaBoxType(t)
 		}
+	} else if m.ValueType != "" {
+		valType = javaBoxType(m.ValueType)
+	}
+	keyType := "String"
+	if m.KeyType != "" {
+		keyType = javaBoxType(m.KeyType)
 	}
 	if len(m.Keys) > 0 {
-		fmt.Fprintf(w, "new java.util.LinkedHashMap<String, %s>(java.util.Map.of(", valType)
+		fmt.Fprintf(w, "new java.util.LinkedHashMap<%s, %s>(java.util.Map.of(", keyType, valType)
 		for i := range m.Keys {
 			if i > 0 {
 				fmt.Fprint(w, ", ")
@@ -1150,7 +1181,7 @@ func (m *MapLit) emit(w io.Writer) {
 		}
 		fmt.Fprint(w, "))")
 	} else {
-		fmt.Fprintf(w, "new java.util.LinkedHashMap<String, %s>()", valType)
+		fmt.Fprintf(w, "new java.util.LinkedHashMap<%s, %s>()", keyType, valType)
 	}
 }
 
@@ -1193,25 +1224,29 @@ func (b *BinaryExpr) emit(w io.Writer) {
 	}
 	if (isStringExpr(b.Left) || isStringExpr(b.Right)) &&
 		(b.Op == "<" || b.Op == "<=" || b.Op == ">" || b.Op == ">=") {
-		switch b.Op {
-		case "<", "<=", ">", ">=":
-			fmt.Fprint(w, "(")
-			b.Left.emit(w)
-			fmt.Fprint(w, ".compareTo(")
-			b.Right.emit(w)
-			fmt.Fprint(w, ") ")
+		lt := inferType(b.Left)
+		rt := inferType(b.Right)
+		if lt != "int" && lt != "double" && rt != "int" && rt != "double" {
 			switch b.Op {
-			case "<":
-				fmt.Fprint(w, "< 0")
-			case "<=":
-				fmt.Fprint(w, "<= 0")
-			case ">":
-				fmt.Fprint(w, "> 0")
-			case ">=":
-				fmt.Fprint(w, ">= 0")
+			case "<", "<=", ">", ">=":
+				fmt.Fprint(w, "(")
+				b.Left.emit(w)
+				fmt.Fprint(w, ".compareTo(")
+				b.Right.emit(w)
+				fmt.Fprint(w, ") ")
+				switch b.Op {
+				case "<":
+					fmt.Fprint(w, "< 0")
+				case "<=":
+					fmt.Fprint(w, "<= 0")
+				case ">":
+					fmt.Fprint(w, "> 0")
+				case ">=":
+					fmt.Fprint(w, ">= 0")
+				}
+				fmt.Fprint(w, ")")
+				return
 			}
-			fmt.Fprint(w, ")")
-			return
 		}
 	}
 	if b.Op == "&&" || b.Op == "||" {
@@ -1232,6 +1267,12 @@ func (b *BinaryExpr) emit(w io.Writer) {
 			rt = "int"
 		}
 		typ := "int"
+		if lt == "Object" {
+			lt = ""
+		}
+		if rt == "Object" {
+			rt = ""
+		}
 		if lt == "double" || rt == "double" {
 			typ = "double"
 		}
@@ -2377,8 +2418,22 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 				varTypes[s.Let.Name] = t
 				varDecls[s.Let.Name] = &VarStmt{Name: s.Let.Name, Type: t, Expr: e}
 			}
-			if ml, ok := e.(*MapLit); ok && len(ml.Fields) > 0 {
-				mapVarFields[s.Let.Name] = ml.Fields
+			if ml, ok := e.(*MapLit); ok {
+				if len(ml.Fields) > 0 {
+					mapVarFields[s.Let.Name] = ml.Fields
+				}
+				if len(ml.Keys) == 0 {
+					if ml.ValueType == "" {
+						if vt := mapValueType(t); vt != "" {
+							ml.ValueType = vt
+						}
+					}
+					if ml.KeyType == "" {
+						if kt := mapKeyType(t); kt != "" {
+							ml.KeyType = kt
+						}
+					}
+				}
 			} else if ce, ok := e.(*CallExpr); ok {
 				if f, ok2 := funcMapFields[ce.Func]; ok2 {
 					mapVarFields[s.Let.Name] = f
@@ -2435,8 +2490,22 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 			if t != "" {
 				varTypes[s.Var.Name] = t
 			}
-			if ml, ok := e.(*MapLit); ok && len(ml.Fields) > 0 {
-				mapVarFields[s.Var.Name] = ml.Fields
+			if ml, ok := e.(*MapLit); ok {
+				if len(ml.Fields) > 0 {
+					mapVarFields[s.Var.Name] = ml.Fields
+				}
+				if len(ml.Keys) == 0 {
+					if ml.ValueType == "" {
+						if vt := mapValueType(t); vt != "" {
+							ml.ValueType = vt
+						}
+					}
+					if ml.KeyType == "" {
+						if kt := mapKeyType(t); kt != "" {
+							ml.KeyType = kt
+						}
+					}
+				}
 			} else if ce, ok := e.(*CallExpr); ok {
 				if f, ok2 := funcMapFields[ce.Func]; ok2 {
 					mapVarFields[s.Var.Name] = f
@@ -2760,7 +2829,20 @@ func compileStmts(list []*parser.Statement) ([]Stmt, error) {
 			return nil, err
 		}
 		if st != nil {
-			out = append(out, st)
+			if _, ok := st.(*ReturnStmt); ok {
+				if len(out) > 0 {
+					if w, ok2 := out[len(out)-1].(*WhileStmt); ok2 {
+						if b, ok3 := w.Cond.(*BoolLit); ok3 && b.Value {
+							// ignore unreachable return after infinite loop
+							break
+						}
+					}
+				}
+				out = append(out, st)
+				break
+			} else {
+				out = append(out, st)
+			}
 		}
 	}
 	return out, nil
@@ -2994,7 +3076,9 @@ func compilePostfix(pf *parser.PostfixExpr) (Expr, error) {
 				args[j] = ex
 			}
 			if fe, ok := expr.(*FieldExpr); ok {
-				if v, ok2 := fe.Target.(*VarExpr); ok2 && pyMathAliases[v.Name] {
+				if fe.Name == "keys" && len(args) == 0 && (isMapExpr(fe.Target) || strings.Contains(inferType(fe.Target), "Map")) {
+					expr = &MethodCallExpr{Target: fe.Target, Name: "keySet", Args: nil}
+				} else if v, ok2 := fe.Target.(*VarExpr); ok2 && pyMathAliases[v.Name] {
 					expr = &CallExpr{Func: "Math." + fe.Name, Args: args}
 				} else if v, ok2 := fe.Target.(*VarExpr); ok2 {
 					if kind, ok3 := builtinAliases[v.Name]; ok3 && kind == "go_testpkg" {
