@@ -335,7 +335,7 @@ func inferType(e Expr) string {
 			t := inferType(ex.Elems[0])
 			if t != "" {
 				if strings.HasSuffix(t, "[]") {
-					return t
+					return t + "[]"
 				}
 				switch t {
 				case "string":
@@ -1076,10 +1076,16 @@ type ForEachStmt struct {
 	Iterable Expr
 	Body     []Stmt
 	IsMap    bool
+	ElemType string
 }
 
 func (fe *ForEachStmt) emit(w io.Writer, indent string) {
-	fmt.Fprint(w, indent+"for (var "+fe.Name+" : ")
+	typ := javaType(fe.ElemType)
+	if typ == "" {
+		fmt.Fprint(w, indent+"for (var "+fe.Name+" : ")
+	} else {
+		fmt.Fprintf(w, indent+"for (%s %s : ", typ, fe.Name)
+	}
 	fe.Iterable.emit(w)
 	if fe.IsMap {
 		fmt.Fprint(w, ".keySet()")
@@ -2578,6 +2584,9 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 			}
 			if t == "" && topEnv != nil {
 				t = toJavaTypeFromType(types.ExprType(s.Let.Value, topEnv))
+				if t == "Object" || t == "Object[]" {
+					t = ""
+				}
 			}
 			if t == "" {
 				t = inferType(e)
@@ -2651,6 +2660,9 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 			}
 			if t == "" && topEnv != nil {
 				t = toJavaTypeFromType(types.ExprType(s.Var.Value, topEnv))
+				if t == "Object" || t == "Object[]" {
+					t = ""
+				}
 			}
 			if t == "" {
 				t = inferType(e)
@@ -2953,10 +2965,18 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 				keyType = mapKeyType(t)
 			}
 		}
-		if isMap && keyType != "" {
-			varTypes[s.For.Name] = keyType
+		elemType := ""
+		if isMap {
+			if keyType != "" {
+				varTypes[s.For.Name] = keyType
+				elemType = keyType
+			}
+		} else {
+			if elem != "" {
+				elemType = elem
+			}
 		}
-		return &ForEachStmt{Name: s.For.Name, Iterable: iter, Body: body, IsMap: isMap}, nil
+		return &ForEachStmt{Name: s.For.Name, Iterable: iter, Body: body, IsMap: isMap, ElemType: elemType}, nil
 	case s.Update != nil:
 		up, err := compileUpdateStmt(s.Update)
 		if err != nil {
@@ -4217,6 +4237,7 @@ func Emit(prog *Program) []byte {
 	if needMem {
 		buf.WriteString("\n    static long _mem() {\n")
 		buf.WriteString("        Runtime rt = Runtime.getRuntime();\n")
+		buf.WriteString("        rt.gc();\n")
 		buf.WriteString("        return rt.totalMemory() - rt.freeMemory();\n")
 		buf.WriteString("    }\n")
 	}
