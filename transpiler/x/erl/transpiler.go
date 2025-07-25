@@ -1176,6 +1176,37 @@ func isZeroExpr(e Expr) bool {
 	}
 }
 
+// exprType attempts to resolve the static type of e using env. It returns nil
+// if the type cannot be determined.
+func exprType(e Expr, env *types.Env, ctx *context) types.Type {
+	if env == nil {
+		return nil
+	}
+	switch v := e.(type) {
+	case *NameRef:
+		name := v.Name
+		if ctx != nil {
+			name = ctx.original(v.Name)
+		}
+		if t, err := env.GetVar(name); err == nil {
+			return t
+		}
+	case *IndexExpr:
+		t := exprType(v.Target, env, ctx)
+		switch tt := t.(type) {
+		case types.MapType:
+			return tt.Value
+		case types.StructType:
+			if sl, ok := v.Index.(*StringLit); ok {
+				return types.FieldType(tt, []string{sl.Value})
+			}
+		case types.ListType:
+			return tt.Elem
+		}
+	}
+	return nil
+}
+
 func isMapExpr(e Expr, env *types.Env, ctx *context) bool {
 	switch v := e.(type) {
 	case *MapLit:
@@ -1197,7 +1228,14 @@ func isMapExpr(e Expr, env *types.Env, ctx *context) bool {
 		}
 	case *IndexExpr:
 		if v.Kind == "map" {
-			return mapValueIsMap(v.Target, env, ctx)
+			if mapValueIsMap(v.Target, env, ctx) {
+				return true
+			}
+			if t := exprType(v, env, ctx); t != nil {
+				if _, ok := t.(types.MapType); ok {
+					return true
+				}
+			}
 		}
 	case *CallExpr:
 		if v.Func == "maps:get" {
@@ -1292,6 +1330,13 @@ func mapValueIsMap(e Expr, env *types.Env, ctx *context) bool {
 				if _, ok := mt.Value.(types.MapType); ok {
 					return true
 				}
+			}
+		}
+	}
+	if ie, ok := e.(*IndexExpr); ok && ie.Kind == "map" {
+		if t := exprType(ie, env, ctx); t != nil {
+			if _, ok := t.(types.MapType); ok {
+				return true
 			}
 		}
 	}
@@ -2827,6 +2872,15 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context, top bool) (
 			if t, err := env.GetVar(st.Var.Name); err == nil {
 				if _, ok := t.(types.MapType); ok {
 					isMapV = true
+				}
+			}
+		}
+		if !isMapV {
+			if ie, ok := e.(*IndexExpr); ok && ie.Kind == "map" {
+				if t := exprType(ie, env, ctx); t != nil {
+					if _, ok := t.(types.MapType); ok {
+						isMapV = true
+					}
 				}
 			}
 		}
