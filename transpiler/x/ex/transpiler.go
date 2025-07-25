@@ -749,9 +749,21 @@ type FuncDecl struct {
 	Name   string
 	Params []string
 	Body   []Stmt
+	Locals map[string]struct{}
 }
 
 func (fn *FuncDecl) emit(w io.Writer, indent int) {
+	prevGlobals := globalVars
+	globalVars = map[string]struct{}{}
+	for k, v := range prevGlobals {
+		globalVars[k] = v
+	}
+	for _, p := range fn.Params {
+		delete(globalVars, p)
+	}
+	for name := range fn.Locals {
+		delete(globalVars, name)
+	}
 	for i := 0; i < indent; i++ {
 		io.WriteString(w, "  ")
 	}
@@ -789,6 +801,7 @@ func (fn *FuncDecl) emit(w io.Writer, indent int) {
 		io.WriteString(w, "  ")
 	}
 	io.WriteString(w, "end")
+	globalVars = prevGlobals
 }
 
 // AnonFun represents an anonymous function expression.
@@ -1445,7 +1458,9 @@ func (c *CastExpr) emit(w io.Writer) {
 			c.Expr.emit(w)
 			io.WriteString(w, ")")
 		default:
+			io.WriteString(w, "trunc(")
 			c.Expr.emit(w)
+			io.WriteString(w, ")")
 		}
 	default:
 		c.Expr.emit(w)
@@ -1474,6 +1489,7 @@ func Emit(p *Program, benchMain bool) []byte {
 	buf.WriteString(nowHelper(1))
 	buf.WriteString(memHelper(1))
 	buf.WriteString(lookupHostHelper(1))
+	buf.WriteString(sliceHelper(1))
 	var globals []Stmt
 	var funcs []Stmt
 	var main []Stmt
@@ -1828,16 +1844,23 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 		return &ReturnStmt{Value: val}, nil
 	case st.Fun != nil:
 		child := types.NewEnv(env)
+		locals := map[string]struct{}{}
 		for _, p := range st.Fun.Params {
 			if p.Type != nil {
 				child.SetVar(p.Name, types.ResolveTypeRef(p.Type, env), false)
 			} else {
 				child.SetVar(p.Name, types.AnyType{}, false)
 			}
+			locals[p.Name] = struct{}{}
 		}
 		funcDepth++
 		body := make([]Stmt, 0, len(st.Fun.Body))
 		for _, b := range st.Fun.Body {
+			if b.Let != nil {
+				locals[b.Let.Name] = struct{}{}
+			} else if b.Var != nil {
+				locals[b.Var.Name] = struct{}{}
+			}
 			bs, err := compileStmt(b, child)
 			if err != nil {
 				funcDepth--
@@ -1869,7 +1892,7 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 			env.SetVar(st.Fun.Name, types.FuncType{}, false)
 			return &AssignStmt{Name: st.Fun.Name, Value: &AnonFun{Params: params, Body: body}}, nil
 		}
-		return &FuncDecl{Name: st.Fun.Name, Params: params, Body: body}, nil
+		return &FuncDecl{Name: st.Fun.Name, Params: params, Body: body, Locals: locals}, nil
 	case st.ExternVar != nil:
 		return nil, nil
 	case st.ExternFun != nil:
@@ -2804,6 +2827,13 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 		return nil, err
 	}
 	typ := types.TypeOfPrimary(pf.Target, env)
+	if _, ok := typ.(types.AnyType); ok {
+		if pf.Target.Selector != nil && len(pf.Target.Selector.Tail) == 0 {
+			if t, err := env.GetVar(pf.Target.Selector.Root); err == nil {
+				typ = t
+			}
+		}
+	}
 	for i := 0; i < len(pf.Ops); i++ {
 		op := pf.Ops[i]
 		if op.Cast != nil {
@@ -2882,10 +2912,10 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 				expr = &CallExpr{Func: "String.slice", Args: []Expr{base, start, diff}}
 				typ = types.StringType{}
 			case types.ListType:
-				expr = &CallExpr{Func: "Enum.slice", Args: []Expr{base, start, diff}}
+				expr = &CallExpr{Func: "_slice", Args: []Expr{base, start, diff}}
 				typ = tt.Elem
 			default:
-				expr = &CallExpr{Func: "Enum.slice", Args: []Expr{base, start, diff}}
+				expr = &CallExpr{Func: "_slice", Args: []Expr{base, start, diff}}
 				typ = types.AnyType{}
 			}
 		} else if op.Field != nil && op.Field.Name == "contains" && i+1 < len(pf.Ops) && pf.Ops[i+1].Call != nil {
@@ -3256,6 +3286,8 @@ func compileLiteral(l *parser.Literal) (Expr, error) {
 		return &BoolLit{Value: bool(*l.Bool)}, nil
 	case l.Str != nil:
 		return &StringLit{Value: *l.Str}, nil
+	case l.Null:
+		return &NilLit{}, nil
 	default:
 		return nil, fmt.Errorf("unsupported literal")
 	}
@@ -3348,6 +3380,19 @@ func nowHelper(indent int) string {
 	buf.WriteString(pad + "    seed\n")
 	buf.WriteString(pad + "  else\n")
 	buf.WriteString(pad + "    System.os_time(:nanosecond)\n")
+	buf.WriteString(pad + "  end\n")
+	buf.WriteString(pad + "end\n")
+	return buf.String()
+}
+
+func sliceHelper(indent int) string {
+	var buf bytes.Buffer
+	pad := strings.Repeat("  ", indent)
+	buf.WriteString(pad + "defp _slice(base, start, len) do\n")
+	buf.WriteString(pad + "  cond do\n")
+	buf.WriteString(pad + "    is_binary(base) -> String.slice(base, start, len)\n")
+	buf.WriteString(pad + "    len == 1 -> Enum.at(base, start)\n")
+	buf.WriteString(pad + "    true -> Enum.slice(base, start, len)\n")
 	buf.WriteString(pad + "  end\n")
 	buf.WriteString(pad + "end\n")
 	return buf.String()
