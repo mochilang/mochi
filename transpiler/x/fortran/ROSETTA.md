@@ -6,7 +6,7 @@ Checklist of programs that currently transpile and run (2/284):
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
-| 1 | 100-doors-2 | ✓ | 112us | 256.0 KB |
+| 1 | 100-doors-2 | ✓ | 170us | 256.0 KB |
 | 2 | 100-doors-3 |  |  |  |
 | 3 | 100-doors |  |  |  |
 | 4 | 100-prisoners |  |  |  |
@@ -291,4 +291,4 @@ Checklist of programs that currently transpile and run (2/284):
 | 283 | define-a-primitive-data-type |  |  |  |
 | 284 | md5 |  |  |  |
 
-_Last updated: 2025-07-25 08:23:49 +0700_
+_Last updated: 2025-07-25 10:01:54 +0700_
