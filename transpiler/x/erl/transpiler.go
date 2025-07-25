@@ -2903,9 +2903,9 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context, top bool) (
 			return []Stmt{&MapAssignStmt{Name: alias, Old: old, Key: idx, Value: val}}, nil
 		}
 		return []Stmt{&ListAssignStmt{Name: alias, Old: old, Index: idx, Value: val}}, nil
-       case st.Assign != nil && len(st.Assign.Index) == 2 && len(st.Assign.Field) == 0:
+	case st.Assign != nil && len(st.Assign.Index) == 2 && len(st.Assign.Field) == 0:
 		var old string
-                if ctx.isGlobal(st.Assign.Name) {
+		if ctx.isGlobal(st.Assign.Name) {
 			old = ctx.newAlias(st.Assign.Name)
 		} else {
 			old = ctx.current(st.Assign.Name)
@@ -2957,88 +2957,88 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context, top bool) (
 			pre := &LetStmt{Name: old, Expr: &CallExpr{Func: "erlang:get", Args: []Expr{&AtomLit{Name: fmt.Sprintf("'%s'", st.Assign.Name)}}}}
 			stmts = append([]Stmt{pre}, stmts...)
 			stmts = append(stmts, &PutStmt{Name: st.Assign.Name, Expr: &NameRef{Name: alias}})
-                        return stmts, nil
-                }
-                return stmts, nil
-       case st.Assign != nil && len(st.Assign.Index) == 3 && len(st.Assign.Field) == 0:
-               var old string
-               if ctx.isGlobal(st.Assign.Name) {
-                       old = ctx.newAlias(st.Assign.Name)
-               } else {
-                       old = ctx.current(st.Assign.Name)
-               }
-               idx1, err := convertExpr(st.Assign.Index[0].Start, env, ctx)
-               if err != nil {
-                       return nil, err
-               }
-               idx2, err := convertExpr(st.Assign.Index[1].Start, env, ctx)
-               if err != nil {
-                       return nil, err
-               }
-               idx3, err := convertExpr(st.Assign.Index[2].Start, env, ctx)
-               if err != nil {
-                       return nil, err
-               }
-               val, err := convertExpr(st.Assign.Value, env, ctx)
-               if err != nil {
-                       return nil, err
-               }
-               alias := ctx.newAlias(st.Assign.Name)
-               ctx.clearConst(st.Assign.Name)
-               if ctx.isParam(st.Assign.Name) {
-                       ctx.markMutated(st.Assign.Name)
-               }
-               tmp := ctx.newAlias("tmp")
-               tmp2 := ctx.newAlias("tmp")
-               tmp3 := ctx.newAlias("tmp")
-               kind := "list"
-               if ctx.isMapVar(st.Assign.Name) {
-                       kind = "map"
-               } else if t, err := env.GetVar(st.Assign.Name); err == nil {
-                       if _, ok := t.(types.MapType); ok {
-                               kind = "map"
-                       }
-               }
-               kind2 := "list"
-               if _, ok := idx2.(*StringLit); ok {
-                       kind2 = "map"
-               }
-               kind3 := "list"
-               if _, ok := idx3.(*StringLit); ok {
-                       kind3 = "map"
-               }
-               var stmts []Stmt
-               // level 1
-               inner1 := &IndexExpr{Target: &NameRef{Name: old}, Index: idx1, Kind: kind}
-               stmts = append(stmts, &LetStmt{Name: tmp, Expr: inner1})
-               // level 2
-               inner2 := &IndexExpr{Target: &NameRef{Name: tmp}, Index: idx2, Kind: kind2}
-               stmts = append(stmts, &LetStmt{Name: tmp2, Expr: inner2})
-               // update innermost
-               if kind3 == "map" {
-                       stmts = append(stmts, &MapAssignStmt{Name: tmp3, Old: tmp2, Key: idx3, Value: val})
-               } else {
-                       stmts = append(stmts, &ListAssignStmt{Name: tmp3, Old: tmp2, Index: idx3, Value: val})
-               }
-               // assign back level2
-               if kind2 == "map" {
-                       stmts = append(stmts, &MapAssignStmt{Name: tmp2, Old: tmp, Key: idx2, Value: &NameRef{Name: tmp3}})
-               } else {
-                       stmts = append(stmts, &ListAssignStmt{Name: tmp2, Old: tmp, Index: idx2, Value: &NameRef{Name: tmp3}})
-               }
-               // assign back level1
-               if kind == "map" {
-                       stmts = append(stmts, &MapAssignStmt{Name: alias, Old: old, Key: idx1, Value: &NameRef{Name: tmp2}})
-               } else {
-                       stmts = append(stmts, &ListAssignStmt{Name: alias, Old: old, Index: idx1, Value: &NameRef{Name: tmp2}})
-               }
-               if ctx.isGlobal(st.Assign.Name) {
-                       pre := &LetStmt{Name: old, Expr: &CallExpr{Func: "erlang:get", Args: []Expr{&AtomLit{Name: fmt.Sprintf("'%s'", st.Assign.Name)}}}}
-                       stmts = append([]Stmt{pre}, stmts...)
-                       stmts = append(stmts, &PutStmt{Name: st.Assign.Name, Expr: &NameRef{Name: alias}})
-                       return stmts, nil
-               }
-               return stmts, nil
+			return stmts, nil
+		}
+		return stmts, nil
+	case st.Assign != nil && len(st.Assign.Index) == 3 && len(st.Assign.Field) == 0:
+		var old string
+		if ctx.isGlobal(st.Assign.Name) {
+			old = ctx.newAlias(st.Assign.Name)
+		} else {
+			old = ctx.current(st.Assign.Name)
+		}
+		idx1, err := convertExpr(st.Assign.Index[0].Start, env, ctx)
+		if err != nil {
+			return nil, err
+		}
+		idx2, err := convertExpr(st.Assign.Index[1].Start, env, ctx)
+		if err != nil {
+			return nil, err
+		}
+		idx3, err := convertExpr(st.Assign.Index[2].Start, env, ctx)
+		if err != nil {
+			return nil, err
+		}
+		val, err := convertExpr(st.Assign.Value, env, ctx)
+		if err != nil {
+			return nil, err
+		}
+		alias := ctx.newAlias(st.Assign.Name)
+		ctx.clearConst(st.Assign.Name)
+		if ctx.isParam(st.Assign.Name) {
+			ctx.markMutated(st.Assign.Name)
+		}
+		tmp := ctx.newAlias("tmp")
+		tmp2 := ctx.newAlias("tmp")
+		tmp3 := ctx.newAlias("tmp")
+		kind := "list"
+		if ctx.isMapVar(st.Assign.Name) {
+			kind = "map"
+		} else if t, err := env.GetVar(st.Assign.Name); err == nil {
+			if _, ok := t.(types.MapType); ok {
+				kind = "map"
+			}
+		}
+		kind2 := "list"
+		if _, ok := idx2.(*StringLit); ok {
+			kind2 = "map"
+		}
+		kind3 := "list"
+		if _, ok := idx3.(*StringLit); ok {
+			kind3 = "map"
+		}
+		var stmts []Stmt
+		// level 1
+		inner1 := &IndexExpr{Target: &NameRef{Name: old}, Index: idx1, Kind: kind}
+		stmts = append(stmts, &LetStmt{Name: tmp, Expr: inner1})
+		// level 2
+		inner2 := &IndexExpr{Target: &NameRef{Name: tmp}, Index: idx2, Kind: kind2}
+		stmts = append(stmts, &LetStmt{Name: tmp2, Expr: inner2})
+		// update innermost
+		if kind3 == "map" {
+			stmts = append(stmts, &MapAssignStmt{Name: tmp3, Old: tmp2, Key: idx3, Value: val})
+		} else {
+			stmts = append(stmts, &ListAssignStmt{Name: tmp3, Old: tmp2, Index: idx3, Value: val})
+		}
+		// assign back level2
+		if kind2 == "map" {
+			stmts = append(stmts, &MapAssignStmt{Name: tmp2, Old: tmp, Key: idx2, Value: &NameRef{Name: tmp3}})
+		} else {
+			stmts = append(stmts, &ListAssignStmt{Name: tmp2, Old: tmp, Index: idx2, Value: &NameRef{Name: tmp3}})
+		}
+		// assign back level1
+		if kind == "map" {
+			stmts = append(stmts, &MapAssignStmt{Name: alias, Old: old, Key: idx1, Value: &NameRef{Name: tmp2}})
+		} else {
+			stmts = append(stmts, &ListAssignStmt{Name: alias, Old: old, Index: idx1, Value: &NameRef{Name: tmp2}})
+		}
+		if ctx.isGlobal(st.Assign.Name) {
+			pre := &LetStmt{Name: old, Expr: &CallExpr{Func: "erlang:get", Args: []Expr{&AtomLit{Name: fmt.Sprintf("'%s'", st.Assign.Name)}}}}
+			stmts = append([]Stmt{pre}, stmts...)
+			stmts = append(stmts, &PutStmt{Name: st.Assign.Name, Expr: &NameRef{Name: alias}})
+			return stmts, nil
+		}
+		return stmts, nil
 	case st.Update != nil:
 		u, err := convertUpdateStmt(st.Update, env, ctx)
 		if err != nil {
@@ -5242,8 +5242,10 @@ func (p *Program) Emit() []byte {
 		buf.WriteString(helperSHA256)
 		buf.WriteString("\n")
 	}
-	buf.WriteString(helperPadStart)
-	buf.WriteString("\n")
+	if p.UsePadStart {
+		buf.WriteString(helperPadStart)
+		buf.WriteString("\n")
+	}
 	for _, f := range p.Funs {
 		f.emit(&buf)
 	}
