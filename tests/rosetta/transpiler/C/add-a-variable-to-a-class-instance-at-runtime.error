@@ -1,0 +1,31 @@
+compile failed: exit status 1: /tmp/ctranspile4210531961/add-a-variable-to-a-class-instance-at-runtime.mochi.c: In function ‘_mem’:
+/tmp/ctranspile4210531961/add-a-variable-to-a-class-instance-at-runtime.mochi.c:48:12: warning: ‘mallinfo’ is deprecated [-Wdeprecated-declarations]
+   48 |     struct mallinfo mi = mallinfo();
+      |            ^~~~~~~~
+In file included from /tmp/ctranspile4210531961/add-a-variable-to-a-class-instance-at-runtime.mochi.c:5:
+/usr/include/malloc.h:114:24: note: declared here
+  114 | extern struct mallinfo mallinfo (void) __THROW __MALLOC_DEPRECATED;
+      |                        ^~~~~~~~
+/tmp/ctranspile4210531961/add-a-variable-to-a-class-instance-at-runtime.mochi.c: In function ‘user_main’:
+/tmp/ctranspile4210531961/add-a-variable-to-a-class-instance-at-runtime.mochi.c:71:51: error: incompatible types when initializing type ‘int’ using type ‘Anon1’
+   71 |     SomeStruct ss = (SomeStruct){.runtimeFields = (Anon1){}};
+      |                                                   ^
+/tmp/ctranspile4210531961/add-a-variable-to-a-class-instance-at-runtime.mochi.c:80:9: error: unknown type name ‘MapSS’
+   80 |         MapSS fields = ss.runtimeFields;
+      |         ^~~~~
+/tmp/ctranspile4210531961/add-a-variable-to-a-class-instance-at-runtime.mochi.c:81:22: error: assignment of read-only location ‘*(name + (sizetype)fields)’
+   81 |         fields[name] = value;
+      |                      ^
+/tmp/ctranspile4210531961/add-a-variable-to-a-class-instance-at-runtime.mochi.c:89:17: error: expected ‘)’ before ‘in’
+   89 |         if (name in ss.runtimeFields) {
+      |            ~    ^~~
+      |                 )
+/tmp/ctranspile4210531961/add-a-variable-to-a-class-instance-at-runtime.mochi.c:91:58: warning: passing argument 2 of ‘str_concat’ makes pointer from integer without a cast [-Wint-conversion]
+   91 |             puts(str_concat(str_concat("Its value is '", value), "'"));
+      |                                                          ^~~~~
+      |                                                          |
+      |                                                          int
+/tmp/ctranspile4210531961/add-a-variable-to-a-class-instance-at-runtime.mochi.c:8:52: note: expected ‘const char *’ but argument is of type ‘int’
+    8 | static char* str_concat(const char *a, const char *b) {
+      |                                        ~~~~~~~~~~~~^
+
