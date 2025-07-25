@@ -1,0 +1,257 @@
+func main (regs=1)
+  Return       r0
+
+  // fun getBins(limits: list<int>, data: list<int>): list<int> {
+func getBins (regs=30)
+  // var n = len(limits)
+  Len          r2, r0
+  Move         r3, r2
+  // var bins: list<int> = []
+  Const        r4, []
+  Move         r5, r4
+  // var i = 0
+  Const        r6, 0
+  Move         r7, r6
+L1:
+  // while i < n + 1 {
+  Const        r8, 1
+  AddInt       r9, r3, r8
+  LessInt      r10, r7, r9
+  JumpIfFalse  r10, L0
+  // bins = append(bins, 0)
+  Const        r6, 0
+  Append       r11, r5, r6
+  Move         r5, r11
+  // i = i + 1
+  Const        r8, 1
+  AddInt       r12, r7, r8
+  Move         r7, r12
+  // while i < n + 1 {
+  Jump         L1
+L0:
+  // var j = 0
+  Const        r6, 0
+  Move         r13, r6
+L7:
+  // while j < len(data) {
+  Len          r14, r1
+  LessInt      r15, r13, r14
+  JumpIfFalse  r15, L2
+  // let d = data[j]
+  Index        r16, r1, r13
+  Move         r17, r16
+  // var index = 0
+  Const        r6, 0
+  Move         r18, r6
+L6:
+  // while index < len(limits) {
+  Len          r19, r0
+  LessInt      r20, r18, r19
+  JumpIfFalse  r20, L3
+  // if d < limits[index] { break }
+  Index        r21, r0, r18
+  Less         r22, r17, r21
+  JumpIfFalse  r22, L4
+  Jump         L3
+L4:
+  // if d == limits[index] {
+  Index        r23, r0, r18
+  Equal        r24, r17, r23
+  JumpIfFalse  r24, L5
+  // index = index + 1
+  Const        r8, 1
+  AddInt       r25, r18, r8
+  Move         r18, r25
+  // break
+  Jump         L3
+L5:
+  // index = index + 1
+  Const        r8, 1
+  AddInt       r26, r18, r8
+  Move         r18, r26
+  // while index < len(limits) {
+  Jump         L6
+L3:
+  // bins[index] = bins[index] + 1
+  Index        r27, r5, r18
+  Const        r8, 1
+  Add          r28, r27, r8
+  SetIndex     r5, r18, r28
+  // j = j + 1
+  Const        r8, 1
+  AddInt       r29, r13, r8
+  Move         r13, r29
+  // while j < len(data) {
+  Jump         L7
+L2:
+  // return bins
+  Return       r5
+
+  // fun padLeft(n: int, width: int): string {
+func padLeft (regs=17)
+  // var s = str(n)
+  Str          r2, r0
+  Move         r3, r2
+  // var pad = width - len(s)
+  Len          r4, r3
+  Sub          r5, r1, r4
+  Move         r6, r5
+  // var out = ""
+  Const        r7, ""
+  Move         r8, r7
+  // var i = 0
+  Const        r9, 0
+  Move         r10, r9
+L1:
+  // while i < pad {
+  Less         r11, r10, r6
+  JumpIfFalse  r11, L0
+  // out = out + " "
+  Const        r12, " "
+  Add          r13, r8, r12
+  Move         r8, r13
+  // i = i + 1
+  Const        r14, 1
+  AddInt       r15, r10, r14
+  Move         r10, r15
+  // while i < pad {
+  Jump         L1
+L0:
+  // return out + s
+  Add          r16, r8, r3
+  Return       r16
+
+  // fun printBins(limits: list<int>, bins: list<int>) {
+func printBins (regs=58)
+  // var n = len(limits)
+  Len          r2, r0
+  Move         r3, r2
+  // print("           < " + padLeft(limits[0], 3) + " = " + padLeft(bins[0], 2))
+  Const        r4, "           < "
+  Const        r7, 0
+  Index        r8, r0, r7
+  Move         r5, r8
+  Const        r9, 3
+  Move         r6, r9
+  Call2        r10, padLeft, r5, r6
+  Add          r11, r4, r10
+  Const        r12, " = "
+  Add          r13, r11, r12
+  Const        r7, 0
+  Index        r16, r1, r7
+  Move         r14, r16
+  Const        r17, 2
+  Move         r15, r17
+  Call2        r18, padLeft, r14, r15
+  Add          r19, r13, r18
+  Print        r19
+  // var i = 1
+  Const        r20, 1
+  Move         r21, r20
+L1:
+  // while i < n {
+  LessInt      r22, r21, r3
+  JumpIfFalse  r22, L0
+  // print(">= " + padLeft(limits[i - 1], 3) + " and < " + padLeft(limits[i], 3) + " = " + padLeft(bins[i], 2))
+  Const        r23, ">= "
+  Const        r20, 1
+  SubInt       r26, r21, r20
+  Index        r27, r0, r26
+  Move         r24, r27
+  Const        r9, 3
+  Move         r25, r9
+  Call2        r28, padLeft, r24, r25
+  Add          r29, r23, r28
+  Const        r30, " and < "
+  Add          r31, r29, r30
+  Index        r34, r0, r21
+  Move         r32, r34
+  Const        r9, 3
+  Move         r33, r9
+  Call2        r35, padLeft, r32, r33
+  Add          r36, r31, r35
+  Const        r12, " = "
+  Add          r37, r36, r12
+  Index        r40, r1, r21
+  Move         r38, r40
+  Const        r17, 2
+  Move         r39, r17
+  Call2        r41, padLeft, r38, r39
+  Add          r42, r37, r41
+  Print        r42
+  // i = i + 1
+  Const        r20, 1
+  AddInt       r43, r21, r20
+  Move         r21, r43
+  // while i < n {
+  Jump         L1
+L0:
+  // print(">= " + padLeft(limits[n - 1], 3) + "           = " + padLeft(bins[n], 2))
+  Const        r23, ">= "
+  Const        r20, 1
+  SubInt       r46, r3, r20
+  Index        r47, r0, r46
+  Move         r44, r47
+  Const        r9, 3
+  Move         r45, r9
+  Call2        r48, padLeft, r44, r45
+  Add          r49, r23, r48
+  Const        r50, "           = "
+  Add          r51, r49, r50
+  Index        r54, r1, r3
+  Move         r52, r54
+  Const        r17, 2
+  Move         r53, r17
+  Call2        r55, padLeft, r52, r53
+  Add          r56, r51, r55
+  Print        r56
+  // print("")
+  Const        r57, ""
+  Print        r57
+  Return       r0
+
+  // fun main() {
+func main (regs=26)
+  // let limitsList = [
+  Const        r0, [[23, 37, 43, 53, 67, 83], [14, 18, 249, 312, 389, 392, 513, 591, 634, 720]]
+  Move         r1, r0
+  // let dataList = [
+  Const        r2, [[95, 21, 94, 12, 99, 4, 70, 75, 83, 93, 52, 80, 57, 5, 53, 86, 65, 17, 92, 83, 71, 61, 54, 58, 47, 16, 8, 9, 32, 84, 7, 87, 46, 19, 30, 37, 96, 6, 98, 40, 79, 97, 45, 64, 60, 29, 49, 36, 43, 55], [445, 814, 519, 697, 700, 130, 255, 889, 481, 122, 932, 77, 323, 525, 570, 219, 367, 523, 442, 933, 416, 589, 930, 373, 202, 253, 775, 47, 731, 685, 293, 126, 133, 450, 545, 100, 741, 583, 763, 306, 655, 267, 248, 477, 549, 238, 62, 678, 98, 534, 622, 907, 406, 714, 184, 391, 913, 42, 560, 247, 346, 860, 56, 138, 546, 38, 985, 948, 58, 213, 799, 319, 390, 634, 458, 945, 733, 507, 916, 123, 345, 110, 720, 917, 313, 845, 426, 9, 457, 628, 410, 723, 354, 895, 881, 953, 677, 137, 397, 97, 854, 740, 83, 216, 421, 94, 517, 479, 292, 963, 376, 981, 480, 39, 257, 272, 157, 5, 316, 395, 787, 942, 456, 242, 759, 898, 576, 67, 298, 425, 894, 435, 831, 241, 989, 614, 987, 770, 384, 692, 698, 765, 331, 487, 251, 600, 879, 342, 982, 527, 736, 795, 585, 40, 54, 901, 408, 359, 577, 237, 605, 847, 353, 968, 832, 205, 838, 427, 876, 959, 686, 646, 835, 127, 621, 892, 443, 198, 988, 791, 466, 23, 707, 467, 33, 670, 921, 180, 991, 396, 160, 436, 717, 918, 8, 374, 101, 684, 727, 749]]
+  Move         r3, r2
+  // var i = 0
+  Const        r4, 0
+  Move         r5, r4
+L1:
+  // while i < len(limitsList) {
+  Const        r6, 2
+  LessInt      r7, r5, r6
+  JumpIfFalse  r7, L0
+  // print("Example " + str(i + 1) + "\n")
+  Const        r8, "Example "
+  Const        r9, 1
+  AddInt       r10, r5, r9
+  Str          r11, r10
+  Add          r12, r8, r11
+  Const        r13, "\n"
+  Add          r14, r12, r13
+  Print        r14
+  // let bins = getBins(limitsList[i], dataList[i])
+  Index        r17, r1, r5
+  Move         r15, r17
+  Index        r18, r3, r5
+  Move         r16, r18
+  Call2        r19, getBins, r15, r16
+  Move         r20, r19
+  // printBins(limitsList[i], bins)
+  Index        r23, r1, r5
+  Move         r21, r23
+  Move         r22, r20
+  Call2        r24, printBins, r21, r22
+  // i = i + 1
+  Const        r9, 1
+  AddInt       r25, r5, r9
+  Move         r5, r25
+  // while i < len(limitsList) {
+  Jump         L1
+L0:
+  Return       r0

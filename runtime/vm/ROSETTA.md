@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated IR and outputs from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/ir`.
-Last updated: 2025-07-25 10:54 UTC
+Last updated: 2025-07-25 11:20 UTC
 
-## Rosetta Golden Test Checklist (105/284)
+## Rosetta Golden Test Checklist (116/284)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 116µs | 11.7 KB |
@@ -111,18 +111,18 @@ Last updated: 2025-07-25 10:54 UTC
 | 102 | base64-decode-data | ✓ | 9.665ms | 528.8 KB |
 | 103 | bell-numbers | ✓ | 431µs | 136 B |
 | 104 | benfords-law | ✓ | 164µs | 136 B |
-| 105 | bernoulli-numbers | ✓ | 29.662ms | 1.4 MB |
-| 106 | best-shuffle |   |  |  |
-| 107 | bifid-cipher |   |  |  |
-| 108 | bin-given-limits |   |  |  |
-| 109 | binary-digits |   |  |  |
-| 110 | binary-search |   |  |  |
-| 111 | binary-strings |   |  |  |
-| 112 | bioinformatics-base-count |   |  |  |
-| 113 | bioinformatics-global-alignment |   |  |  |
-| 114 | bioinformatics-sequence-mutation |   |  |  |
-| 115 | biorhythms |   |  |  |
-| 116 | bitcoin-address-validation |   |  |  |
+| 105 | bernoulli-numbers | ✓ | 37.109ms |  |
+| 106 | best-shuffle | ✓ | 171µs | 136 B |
+| 107 | bifid-cipher | ✓ | 290µs | 136 B |
+| 108 | bin-given-limits | ✓ | 51µs | 136 B |
+| 109 | binary-digits | ✓ | 496µs | 32.1 KB |
+| 110 | binary-search | ✓ | 494µs | 136 B |
+| 111 | binary-strings | ✓ | 2.182ms |  |
+| 112 | bioinformatics-base-count | ✓ | 3.197ms | 1.1 MB |
+| 113 | bioinformatics-global-alignment | ✓ | 407µs | 136 B |
+| 114 | bioinformatics-sequence-mutation | ✓ | 357µs | 136 B |
+| 115 | biorhythms | ✓ | 61µs | 472 B |
+| 116 | bitcoin-address-validation | ✓ | 9.508ms |  |
 | 117 | bitmap-b-zier-curves-cubic |   |  |  |
 | 118 | bitmap-b-zier-curves-quadratic |   |  |  |
 | 119 | bitmap-bresenhams-line-algorithm |   |  |  |

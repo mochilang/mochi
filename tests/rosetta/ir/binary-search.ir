@@ -1,0 +1,143 @@
+func main (regs=1)
+  Return       r0
+
+  // fun bsearch(arr: list<int>, x: int): int {
+func bsearch (regs=17)
+  // var low = 0
+  Const        r2, 0
+  Move         r3, r2
+  // var high = len(arr) - 1
+  Len          r4, r0
+  Const        r5, 1
+  SubInt       r6, r4, r5
+  Move         r7, r6
+L1:
+  // while low <= high {
+  LessEqInt    r8, r3, r7
+  JumpIfFalse  r8, L0
+  // let mid = (low + high) / 2
+  AddInt       r9, r3, r7
+  Const        r10, 2
+  DivInt       r11, r9, r10
+  Move         r12, r11
+  // if arr[mid] > x {
+  Index        r13, r0, r12
+  Less         r14, r1, r13
+  JumpIfFalse  r14, L1
+  // high = mid - 1
+  Const        r5, 1
+  SubInt       r15, r12, r5
+  Move         r7, r15
+  // while low <= high {
+  Jump         L1
+L0:
+  // return -1
+  Const        r5, 1
+  NegInt       r16, r5
+  Return       r16
+
+  // fun bsearchRec(arr: list<int>, x: int, low: int, high: int): int {
+func bsearchRec (regs=19)
+  // if high < low { return -1 }
+  Less         r4, r3, r2
+  JumpIfFalse  r4, L0
+  Const        r5, 1
+  NegInt       r6, r5
+  Return       r6
+L0:
+  // let mid = (low + high) / 2
+  Add          r7, r2, r3
+  Const        r8, 2
+  Div          r9, r7, r8
+  Move         r10, r9
+  // if arr[mid] > x {
+  Index        r11, r0, r10
+  Less         r12, r1, r11
+  JumpIfFalse  r12, L1
+  // return bsearchRec(arr, x, low, mid - 1)
+  Move         r13, r0
+  Move         r14, r1
+  Move         r15, r2
+  Const        r5, 1
+  Sub          r17, r10, r5
+  Move         r16, r17
+  Call         r18, bsearchRec, r13, r14, r15, r16
+  Return       r18
+L1:
+  // return mid
+  Return       r10
+
+  // fun main() {
+func main (regs=39)
+  // let nums = [-31, 0, 1, 2, 2, 4, 65, 83, 99, 782]
+  Const        r0, [-31, 0, 1, 2, 2, 4, 65, 83, 99, 782]
+  Move         r1, r0
+  // var x = 2
+  Const        r2, 2
+  Move         r3, r2
+  // var idx = bsearch(nums, x)
+  Const        r6, [-31, 0, 1, 2, 2, 4, 65, 83, 99, 782]
+  Move         r4, r6
+  Move         r5, r3
+  Call2        r7, bsearch, r4, r5
+  Move         r8, r7
+  // if idx >= 0 {
+  Const        r9, 0
+  LessEq       r10, r9, r8
+  JumpIfFalse  r10, L0
+  // print(str(x) + " is at index " + str(idx) + ".")
+  Str          r11, r3
+  Const        r12, " is at index "
+  Add          r13, r11, r12
+  Str          r14, r8
+  Add          r15, r13, r14
+  Const        r16, "."
+  Add          r17, r15, r16
+  Print        r17
+  // if idx >= 0 {
+  Jump         L1
+L0:
+  // print(str(x) + " is not found.")
+  Str          r18, r3
+  Const        r19, " is not found."
+  Add          r20, r18, r19
+  Print        r20
+L1:
+  // x = 5
+  Const        r21, 5
+  Move         r3, r21
+  // idx = bsearchRec(nums, x, 0, len(nums) - 1)
+  Const        r26, [-31, 0, 1, 2, 2, 4, 65, 83, 99, 782]
+  Move         r22, r26
+  Move         r23, r3
+  Const        r9, 0
+  Move         r24, r9
+  Const        r27, 10
+  Const        r28, 1
+  Const        r29, 9
+  Move         r25, r29
+  Call         r30, bsearchRec, r22, r23, r24, r25
+  Move         r8, r30
+  // if idx >= 0 {
+  Const        r9, 0
+  LessEq       r31, r9, r8
+  JumpIfFalse  r31, L2
+  // print(str(x) + " is at index " + str(idx) + ".")
+  Str          r32, r3
+  Const        r12, " is at index "
+  Add          r33, r32, r12
+  Str          r34, r8
+  Add          r35, r33, r34
+  Const        r16, "."
+  Add          r36, r35, r16
+  Print        r36
+  // if idx >= 0 {
+  Jump         L3
+L2:
+  // print(str(x) + " is not found.")
+  Str          r37, r3
+  Const        r19, " is not found."
+  Add          r38, r37, r19
+  Print        r38
+L3:
+  Return       r0

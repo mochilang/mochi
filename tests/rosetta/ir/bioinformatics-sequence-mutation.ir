@@ -1,0 +1,507 @@
+func main (regs=1)
+  Return       r0
+
+  // fun randInt(s: int, n: int): list<int> {
+func randInt (regs=13)
+  // let next = (s * 1664525 + 1013904223) % 2147483647
+  Const        r2, 1664525
+  Mul          r3, r0, r2
+  Const        r4, 1013904223
+  Add          r5, r3, r4
+  Const        r6, 2147483647
+  Mod          r7, r5, r6
+  Move         r8, r7
+  // return [next, next % n]
+  Move         r9, r8
+  Mod          r11, r8, r1
+  Move         r10, r11
+  MakeList     r12, 2, r9
+  Return       r12
+
+  // fun padLeft(s: string, w: int): string {
+func padLeft (regs=14)
+  // var res = ""
+  Const        r2, ""
+  Move         r3, r2
+  // var n = w - len(s)
+  Len          r4, r0
+  Sub          r5, r1, r4
+  Move         r6, r5
+L1:
+  // while n > 0 {
+  Const        r7, 0
+  Less         r8, r7, r6
+  JumpIfFalse  r8, L0
+  // res = res + " "
+  Const        r9, " "
+  Add          r10, r3, r9
+  Move         r3, r10
+  // n = n - 1
+  Const        r11, 1
+  Sub          r12, r6, r11
+  Move         r6, r12
+  // while n > 0 {
+  Jump         L1
+L0:
+  // return res + s
+  Add          r13, r3, r0
+  Return       r13
+
+  // fun makeSeq(s: int, le: int): list<any> {
+func makeSeq (regs=26)
+  // let bases = "ACGT"
+  Const        r2, "ACGT"
+  Move         r3, r2
+  // var out = ""
+  Const        r4, ""
+  Move         r5, r4
+  // var i = 0
+  Const        r6, 0
+  Move         r7, r6
+L1:
+  // while i < le {
+  Less         r8, r7, r1
+  JumpIfFalse  r8, L0
+  // var r = randInt(s, 4)
+  Move         r9, r0
+  Const        r11, 4
+  Move         r10, r11
+  Call2        r12, randInt, r9, r10
+  Move         r13, r12
+  // s = r[0]
+  Const        r6, 0
+  Index        r14, r13, r6
+  Move         r0, r14
+  // let idx = r[1] as int
+  Const        r15, 1
+  Index        r16, r13, r15
+  Cast         r17, r16, int
+  Move         r18, r17
+  // out = out + substring(bases, idx, idx + 1)
+  Const        r2, "ACGT"
+  Const        r15, 1
+  Add          r19, r18, r15
+  Slice        r20, r2, r18, r19
+  Add          r21, r5, r20
+  Move         r5, r21
+  // i = i + 1
+  Const        r15, 1
+  AddInt       r22, r7, r15
+  Move         r7, r22
+  // while i < le {
+  Jump         L1
+L0:
+  // return [s, out]
+  Move         r23, r0
+  Move         r24, r5
+  MakeList     r25, 2, r23
+  Return       r25
+
+  // fun mutate(s: int, dna: string, w: list<int>): list<any> {
+func mutate (regs=72)
+  // let bases = "ACGT"
+  Const        r3, "ACGT"
+  Move         r4, r3
+  // let le = len(dna)
+  Len          r5, r1
+  Move         r6, r5
+  // var r = randInt(s, le)
+  Move         r7, r0
+  Move         r8, r6
+  Call2        r9, randInt, r7, r8
+  Move         r10, r9
+  // s = r[0]
+  Const        r11, 0
+  Index        r12, r10, r11
+  Move         r0, r12
+  // let p = r[1] as int
+  Const        r13, 1
+  Index        r14, r10, r13
+  Cast         r15, r14, int
+  Move         r16, r15
+  // r = randInt(s, 300)
+  Move         r17, r0
+  Const        r19, 300
+  Move         r18, r19
+  Call2        r20, randInt, r17, r18
+  Move         r10, r20
+  // s = r[0]
+  Const        r11, 0
+  Index        r21, r10, r11
+  Move         r0, r21
+  // let x = r[1] as int
+  Const        r13, 1
+  Index        r22, r10, r13
+  Cast         r23, r22, int
+  Move         r24, r23
+  // var arr: list<string> = []
+  Const        r25, []
+  Move         r26, r25
+  // var i = 0
+  Const        r11, 0
+  Move         r27, r11
+L1:
+  // while i < le {
+  LessInt      r28, r27, r6
+  JumpIfFalse  r28, L0
+  // arr = append(arr, substring(dna, i, i+1))
+  Const        r13, 1
+  AddInt       r29, r27, r13
+  Slice        r30, r1, r27, r29
+  Append       r31, r26, r30
+  Move         r26, r31
+  // i = i + 1
+  Const        r13, 1
+  AddInt       r32, r27, r13
+  Move         r27, r32
+  // while i < le {
+  Jump         L1
+L0:
+  // if x < w[0] {
+  Const        r11, 0
+  Index        r33, r2, r11
+  Less         r34, r24, r33
+  JumpIfFalse  r34, L2
+  // r = randInt(s, 4)
+  Move         r35, r0
+  Const        r37, 4
+  Move         r36, r37
+  Call2        r38, randInt, r35, r36
+  Move         r10, r38
+  // s = r[0]
+  Const        r11, 0
+  Index        r39, r10, r11
+  Move         r0, r39
+  // let idx = r[1] as int
+  Const        r13, 1
+  Index        r40, r10, r13
+  Cast         r41, r40, int
+  Move         r42, r41
+  // let b = substring(bases, idx, idx+1)
+  Const        r3, "ACGT"
+  Const        r13, 1
+  Add          r43, r42, r13
+  Slice        r44, r3, r42, r43
+  Move         r45, r44
+  // print("  Change @" + padLeft(str(p), 3) + " '" + arr[p] + "' to '" + b + "'")
+  Const        r46, "  Change @"
+  Str          r49, r16
+  Move         r47, r49
+  Const        r50, 3
+  Move         r48, r50
+  Call2        r51, padLeft, r47, r48
+  Add          r52, r46, r51
+  Const        r53, " '"
+  Add          r54, r52, r53
+  Index        r55, r26, r16
+  Add          r56, r54, r55
+  Const        r57, "' to '"
+  Add          r58, r56, r57
+  Add          r59, r58, r45
+  Const        r60, "'"
+  Add          r61, r59, r60
+  Print        r61
+  // arr[p] = b
+  SetIndex     r26, r16, r45
+L2:
+  // var out = ""
+  Const        r62, ""
+  Move         r63, r62
+  // i = 0
+  Const        r11, 0
+  Move         r27, r11
+L4:
+  // while i < len(arr) {
+  Len          r64, r26
+  LessInt      r65, r27, r64
+  JumpIfFalse  r65, L3
+  // out = out + arr[i]
+  Index        r66, r26, r27
+  Add          r67, r63, r66
+  Move         r63, r67
+  // i = i + 1
+  Const        r13, 1
+  AddInt       r68, r27, r13
+  Move         r27, r68
+  // while i < len(arr) {
+  Jump         L4
+L3:
+  // return [s, out]
+  Move         r69, r0
+  Move         r70, r63
+  MakeList     r71, 2, r69
+  Return       r71
+
+  // fun prettyPrint(dna: string, rowLen: int) {
+func prettyPrint (regs=78)
+  // print("SEQUENCE:")
+  Const        r2, "SEQUENCE:"
+  Print        r2
+  // let le = len(dna)
+  Len          r3, r0
+  Move         r4, r3
+  // var i = 0
+  Const        r5, 0
+  Move         r6, r5
+L2:
+  // while i < le {
+  LessInt      r7, r6, r4
+  JumpIfFalse  r7, L0
+  // var k = i + rowLen
+  Add          r8, r6, r1
+  Move         r9, r8
+  // if k > le { k = le }
+  Less         r10, r4, r9
+  JumpIfFalse  r10, L1
+  Move         r9, r4
+L1:
+  // print(padLeft(str(i), 5) + ": " + dna[i:k])
+  Str          r13, r6
+  Move         r11, r13
+  Const        r14, 5
+  Move         r12, r14
+  Call2        r15, padLeft, r11, r12
+  Const        r16, ": "
+  Add          r17, r15, r16
+  Move         r18, r6
+  Move         r19, r9
+  Slice        r20, r0, r18, r19
+  Add          r21, r17, r20
+  Print        r21
+  // i = i + rowLen
+  Add          r22, r6, r1
+  Move         r6, r22
+  // while i < le {
+  Jump         L2
+L0:
+  // var a = 0
+  Const        r5, 0
+  Move         r23, r5
+  // var c = 0
+  Const        r5, 0
+  Move         r24, r5
+  // var g = 0
+  Const        r5, 0
+  Move         r25, r5
+  // var t = 0
+  Const        r5, 0
+  Move         r26, r5
+  // var idx = 0
+  Const        r5, 0
+  Move         r27, r5
+L8:
+  // while idx < le {
+  LessInt      r28, r27, r4
+  JumpIfFalse  r28, L3
+  // let ch = substring(dna, idx, idx+1)
+  Const        r29, 1
+  AddInt       r30, r27, r29
+  Slice        r31, r0, r27, r30
+  Move         r32, r31
+  // if ch == "A" { a = a + 1 } else {
+  Const        r33, "A"
+  Equal        r34, r32, r33
+  JumpIfFalse  r34, L4
+  Const        r29, 1
+  AddInt       r35, r23, r29
+  Move         r23, r35
+  Jump         L5
+L4:
+  // if ch == "C" { c = c + 1 } else {
+  Const        r36, "C"
+  Equal        r37, r32, r36
+  JumpIfFalse  r37, L6
+  Const        r29, 1
+  AddInt       r38, r24, r29
+  Move         r24, r38
+  Jump         L5
+L6:
+  // if ch == "G" { g = g + 1 } else {
+  Const        r39, "G"
+  Equal        r40, r32, r39
+  JumpIfFalse  r40, L7
+  Const        r29, 1
+  AddInt       r41, r25, r29
+  Move         r25, r41
+  Jump         L5
+L7:
+  // if ch == "T" { t = t + 1 }
+  Const        r42, "T"
+  Equal        r43, r32, r42
+  JumpIfFalse  r43, L5
+  Const        r29, 1
+  AddInt       r44, r26, r29
+  Move         r26, r44
+L5:
+  // idx = idx + 1
+  Const        r29, 1
+  AddInt       r45, r27, r29
+  Move         r27, r45
+  // while idx < le {
+  Jump         L8
+L3:
+  // print("")
+  Const        r46, ""
+  Print        r46
+  // print("BASE COUNT:")
+  Const        r47, "BASE COUNT:"
+  Print        r47
+  // print("    A: " + padLeft(str(a), 3))
+  Const        r48, "    A: "
+  Str          r51, r23
+  Move         r49, r51
+  Const        r52, 3
+  Move         r50, r52
+  Call2        r53, padLeft, r49, r50
+  Add          r54, r48, r53
+  Print        r54
+  // print("    C: " + padLeft(str(c), 3))
+  Const        r55, "    C: "
+  Str          r58, r24
+  Move         r56, r58
+  Const        r52, 3
+  Move         r57, r52
+  Call2        r59, padLeft, r56, r57
+  Add          r60, r55, r59
+  Print        r60
+  // print("    G: " + padLeft(str(g), 3))
+  Const        r61, "    G: "
+  Str          r64, r25
+  Move         r62, r64
+  Const        r52, 3
+  Move         r63, r52
+  Call2        r65, padLeft, r62, r63
+  Add          r66, r61, r65
+  Print        r66
+  // print("    T: " + padLeft(str(t), 3))
+  Const        r67, "    T: "
+  Str          r70, r26
+  Move         r68, r70
+  Const        r52, 3
+  Move         r69, r52
+  Call2        r71, padLeft, r68, r69
+  Add          r72, r67, r71
+  Print        r72
+  // print("    ------")
+  Const        r73, "    ------"
+  Print        r73
+  // print("    Σ: " + str(le))
+  Const        r74, "    Σ: "
+  Str          r75, r4
+  Add          r76, r74, r75
+  Print        r76
+  // print("    ======")
+  Const        r77, "    ======"
+  Print        r77
+  Return       r0
+
+  // fun wstring(w: list<int>): string {
+func wstring (regs=20)
+  // return "  Change: " + str(w[0]) + "\n  Delete: " + str(w[1]) + "\n  Insert: " + str(w[2]) + "\n"
+  Const        r1, "  Change: "
+  Const        r2, 0
+  Index        r3, r0, r2
+  Str          r4, r3
+  Add          r5, r1, r4
+  Const        r6, "\n  Delete: "
+  Add          r7, r5, r6
+  Const        r8, 1
+  Index        r9, r0, r8
+  Str          r10, r9
+  Add          r11, r7, r10
+  Const        r12, "\n  Insert: "
+  Add          r13, r11, r12
+  Const        r14, 2
+  Index        r15, r0, r14
+  Str          r16, r15
+  Add          r17, r13, r16
+  Const        r18, "\n"
+  Add          r19, r17, r18
+  Return       r19
+
+  // fun main() {
+func main (regs=44)
+  // var seed = 1
+  Const        r0, 1
+  Move         r1, r0
+  // var res = makeSeq(seed, 250)
+  Move         r2, r1
+  Const        r4, 250
+  Move         r3, r4
+  Call2        r5, makeSeq, r2, r3
+  Move         r6, r5
+  // seed = res[0]
+  Const        r7, 0
+  Index        r8, r6, r7
+  Move         r1, r8
+  // var dna = res[1] as string
+  Const        r0, 1
+  Index        r9, r6, r0
+  Cast         r10, r9, string
+  Move         r11, r10
+  // prettyPrint(dna, 50)
+  Move         r12, r11
+  Const        r14, 50
+  Move         r13, r14
+  Call2        r15, prettyPrint, r12, r13
+  // let muts = 10
+  Const        r16, 10
+  Move         r17, r16
+  // let w = [100, 100, 100]
+  Const        r18, [100, 100, 100]
+  Move         r19, r18
+  // print("\nWEIGHTS (ex 300):")
+  Const        r20, "\nWEIGHTS (ex 300):"
+  Print        r20
+  // print(wstring(w))
+  Const        r22, [100, 100, 100]
+  Move         r21, r22
+  Call         r23, wstring, r21
+  Print        r23
+  // print("MUTATIONS (" + str(muts) + "):")
+  Const        r24, "MUTATIONS ("
+  Const        r25, "10"
+  Const        r26, "MUTATIONS (10"
+  Const        r27, "):"
+  Const        r28, "MUTATIONS (10):"
+  Print        r28
+  // var i = 0
+  Const        r7, 0
+  Move         r29, r7
+L1:
+  // while i < muts {
+  Const        r16, 10
+  LessInt      r30, r29, r16
+  JumpIfFalse  r30, L0
+  // res = mutate(seed, dna, w)
+  Move         r31, r1
+  Move         r32, r11
+  Const        r34, [100, 100, 100]
+  Move         r33, r34
+  Call         r35, mutate, r31, r32, r33
+  Move         r6, r35
+  // seed = res[0]
+  Const        r7, 0
+  Index        r36, r6, r7
+  Move         r1, r36
+  // dna = res[1] as string
+  Const        r0, 1
+  Index        r37, r6, r0
+  Cast         r38, r37, string
+  Move         r11, r38
+  // i = i + 1
+  Const        r0, 1
+  AddInt       r39, r29, r0
+  Move         r29, r39
+  // while i < muts {
+  Jump         L1
+L0:
+  // print("")
+  Const        r40, ""
+  Print        r40
+  // prettyPrint(dna, 50)
+  Move         r41, r11
+  Const        r14, 50
+  Move         r42, r14
+  Call2        r43, prettyPrint, r41, r42
+  Return       r0

@@ -1,0 +1,480 @@
+func main (regs=1)
+  Return       r0
+
+  // fun square_to_maps(square: list<list<string>>): map<string, any> {
+func square_to_maps (regs=33)
+  // var emap: map<string, list<int>> = {}
+  Const        r1, {}
+  Move         r2, r1
+  // var dmap: map<string, string> = {}
+  Const        r1, {}
+  Move         r3, r1
+  // var x = 0
+  Const        r4, 0
+  Move         r5, r4
+L3:
+  // while x < len(square) {
+  Len          r6, r0
+  LessInt      r7, r5, r6
+  JumpIfFalse  r7, L0
+  // let row = square[x]
+  Index        r8, r0, r5
+  Move         r9, r8
+  // var y = 0
+  Const        r4, 0
+  Move         r10, r4
+L2:
+  // while y < len(row) {
+  Len          r11, r9
+  LessInt      r12, r10, r11
+  JumpIfFalse  r12, L1
+  // let ch = row[y]
+  Index        r13, r9, r10
+  Move         r14, r13
+  // emap[ch] = [x, y]
+  Move         r15, r5
+  Move         r16, r10
+  MakeList     r17, 2, r15
+  SetIndex     r2, r14, r17
+  // dmap[str(x) + "," + str(y)] = ch
+  Str          r18, r5
+  Const        r19, ","
+  Add          r20, r18, r19
+  Str          r21, r10
+  Add          r22, r20, r21
+  SetIndex     r3, r22, r14
+  // y = y + 1
+  Const        r23, 1
+  AddInt       r24, r10, r23
+  Move         r10, r24
+  // while y < len(row) {
+  Jump         L2
+L1:
+  // x = x + 1
+  Const        r23, 1
+  AddInt       r25, r5, r23
+  Move         r5, r25
+  // while x < len(square) {
+  Jump         L3
+L0:
+  // return {"e": emap, "d": dmap}
+  Const        r26, "e"
+  Const        r27, "d"
+  Move         r28, r26
+  Move         r29, r2
+  Move         r30, r27
+  Move         r31, r3
+  MakeMap      r32, 2, r28
+  Return       r32
+
+  // fun remove_space(text: string, emap: map<string, list<int>>): string {
+func remove_space (regs=22)
+  // let s = upper(text)
+  Upper        r2, r0
+  Move         r3, r2
+  // var out = ""
+  Const        r4, ""
+  Move         r5, r4
+  // var i = 0
+  Const        r6, 0
+  Move         r7, r6
+L3:
+  // while i < len(s) {
+  Len          r8, r3
+  LessInt      r9, r7, r8
+  JumpIfFalse  r9, L0
+  // let ch = s[i:i+1]
+  Move         r10, r7
+  Const        r12, 1
+  AddInt       r13, r7, r12
+  Move         r11, r13
+  Slice        r14, r3, r10, r11
+  Move         r15, r14
+  // if ch != " " && ch in emap { out = out + ch }
+  Const        r16, " "
+  NotEqual     r17, r15, r16
+  In           r18, r15, r1
+  Move         r19, r17
+  JumpIfFalse  r19, L1
+  Move         r19, r18
+L1:
+  JumpIfFalse  r19, L2
+  Add          r20, r5, r15
+  Move         r5, r20
+L2:
+  // i = i + 1
+  Const        r12, 1
+  AddInt       r21, r7, r12
+  Move         r7, r21
+  // while i < len(s) {
+  Jump         L3
+L0:
+  // return out
+  Return       r5
+
+  // fun encrypt(text: string, emap: map<string,list<int>>, dmap: map<string,string>): string {
+func encrypt (regs=53)
+  // text = remove_space(text, emap)
+  Move         r3, r0
+  Move         r4, r1
+  Call2        r5, remove_space, r3, r4
+  Move         r0, r5
+  // var row0: list<int> = []
+  Const        r6, []
+  Move         r7, r6
+  // var row1: list<int> = []
+  Const        r6, []
+  Move         r8, r6
+  // var i = 0
+  Const        r9, 0
+  Move         r10, r9
+L1:
+  // while i < len(text) {
+  Len          r11, r0
+  LessInt      r12, r10, r11
+  JumpIfFalse  r12, L0
+  // let ch = text[i:i+1]
+  Move         r13, r10
+  Const        r15, 1
+  AddInt       r16, r10, r15
+  Move         r14, r16
+  Slice        r17, r0, r13, r14
+  Move         r18, r17
+  // let xy = emap[ch]
+  Index        r19, r1, r18
+  Move         r20, r19
+  // row0 = append(row0, xy[0])
+  Const        r9, 0
+  Index        r21, r20, r9
+  Append       r22, r7, r21
+  Move         r7, r22
+  // row1 = append(row1, xy[1])
+  Const        r15, 1
+  Index        r23, r20, r15
+  Append       r24, r8, r23
+  Move         r8, r24
+  // i = i + 1
+  Const        r15, 1
+  AddInt       r25, r10, r15
+  Move         r10, r25
+  // while i < len(text) {
+  Jump         L1
+L0:
+  // for v in row1 { row0 = append(row0, v) }
+  IterPrep     r26, r8
+  Len          r27, r26
+  Const        r28, 0
+L3:
+  LessInt      r29, r28, r27
+  JumpIfFalse  r29, L2
+  Index        r30, r26, r28
+  Move         r31, r30
+  Append       r32, r7, r31
+  Move         r7, r32
+  Const        r33, 1
+  AddInt       r34, r28, r33
+  Move         r28, r34
+  Jump         L3
+L2:
+  // var res = ""
+  Const        r35, ""
+  Move         r36, r35
+  // var j = 0
+  Const        r9, 0
+  Move         r37, r9
+L5:
+  // while j < len(row0) {
+  Len          r38, r7
+  LessInt      r39, r37, r38
+  JumpIfFalse  r39, L4
+  // let key = str(row0[j]) + "," + str(row0[j+1])
+  Index        r40, r7, r37
+  Str          r41, r40
+  Const        r42, ","
+  Add          r43, r41, r42
+  Const        r15, 1
+  AddInt       r44, r37, r15
+  Index        r45, r7, r44
+  Str          r46, r45
+  Add          r47, r43, r46
+  Move         r48, r47
+  // res = res + dmap[key]
+  Index        r49, r2, r48
+  Add          r50, r36, r49
+  Move         r36, r50
+  // j = j + 2
+  Const        r51, 2
+  AddInt       r52, r37, r51
+  Move         r37, r52
+  // while j < len(row0) {
+  Jump         L5
+L4:
+  // return res
+  Return       r36
+
+  // fun decrypt(text: string, emap: map<string,list<int>>, dmap: map<string,string>): string {
+func decrypt (regs=56)
+  // text = remove_space(text, emap)
+  Move         r3, r0
+  Move         r4, r1
+  Call2        r5, remove_space, r3, r4
+  Move         r0, r5
+  // var coords: list<int> = []
+  Const        r6, []
+  Move         r7, r6
+  // var i = 0
+  Const        r8, 0
+  Move         r9, r8
+L1:
+  // while i < len(text) {
+  Len          r10, r0
+  LessInt      r11, r9, r10
+  JumpIfFalse  r11, L0
+  // let ch = text[i:i+1]
+  Move         r12, r9
+  Const        r14, 1
+  AddInt       r15, r9, r14
+  Move         r13, r15
+  Slice        r16, r0, r12, r13
+  Move         r17, r16
+  // let xy = emap[ch]
+  Index        r18, r1, r17
+  Move         r19, r18
+  // coords = append(coords, xy[0])
+  Const        r8, 0
+  Index        r20, r19, r8
+  Append       r21, r7, r20
+  Move         r7, r21
+  // coords = append(coords, xy[1])
+  Const        r14, 1
+  Index        r22, r19, r14
+  Append       r23, r7, r22
+  Move         r7, r23
+  // i = i + 1
+  Const        r14, 1
+  AddInt       r24, r9, r14
+  Move         r9, r24
+  // while i < len(text) {
+  Jump         L1
+L0:
+  // var half = len(coords) / 2
+  Len          r25, r7
+  Const        r26, 2
+  DivInt       r27, r25, r26
+  Move         r28, r27
+  // var k1: list<int> = []
+  Const        r6, []
+  Move         r29, r6
+  // var k2: list<int> = []
+  Const        r6, []
+  Move         r30, r6
+  // var idx = 0
+  Const        r8, 0
+  Move         r31, r8
+L3:
+  // while idx < half {
+  LessInt      r32, r31, r28
+  JumpIfFalse  r32, L2
+  // k1 = append(k1, coords[idx])
+  Index        r33, r7, r31
+  Append       r34, r29, r33
+  Move         r29, r34
+  // idx = idx + 1
+  Const        r14, 1
+  AddInt       r35, r31, r14
+  Move         r31, r35
+  // while idx < half {
+  Jump         L3
+L2:
+  // while idx < len(coords) {
+  Len          r36, r7
+  LessInt      r37, r31, r36
+  JumpIfFalse  r37, L4
+  // k2 = append(k2, coords[idx])
+  Index        r38, r7, r31
+  Append       r39, r30, r38
+  Move         r30, r39
+  // idx = idx + 1
+  Const        r14, 1
+  AddInt       r40, r31, r14
+  Move         r31, r40
+  // while idx < len(coords) {
+  Jump         L2
+L4:
+  // var res = ""
+  Const        r41, ""
+  Move         r42, r41
+  // var j = 0
+  Const        r8, 0
+  Move         r43, r8
+L6:
+  // while j < half {
+  LessInt      r44, r43, r28
+  JumpIfFalse  r44, L5
+  // let key = str(k1[j]) + "," + str(k2[j])
+  Index        r45, r29, r43
+  Str          r46, r45
+  Const        r47, ","
+  Add          r48, r46, r47
+  Index        r49, r30, r43
+  Str          r50, r49
+  Add          r51, r48, r50
+  Move         r52, r51
+  // res = res + dmap[key]
+  Index        r53, r2, r52
+  Add          r54, r42, r53
+  Move         r42, r54
+  // j = j + 1
+  Const        r14, 1
+  AddInt       r55, r43, r14
+  Move         r43, r55
+  // while j < half {
+  Jump         L6
+L5:
+  // return res
+  Return       r42
+
+  // fun main() {
+func main (regs=70)
+  // let squareRosetta = [
+  Const        r0, [["A", "B", "C", "D", "E"], ["F", "G", "H", "I", "K"], ["L", "M", "N", "O", "P"], ["Q", "R", "S", "T", "U"], ["V", "W", "X", "Y", "Z"], ["J", "1", "2", "3", "4"]]
+  Move         r1, r0
+  // let squareWikipedia = [
+  Const        r2, [["B", "G", "W", "K", "Z"], ["Q", "P", "N", "D", "S"], ["I", "O", "A", "X", "E"], ["F", "C", "L", "U", "M"], ["T", "H", "Y", "V", "R"], ["J", "1", "2", "3", "4"]]
+  Move         r3, r2
+  // let textRosetta = "0ATTACKATDAWN"
+  Const        r4, "0ATTACKATDAWN"
+  Move         r5, r4
+  // let textWikipedia = "FLEEATONCE"
+  Const        r6, "FLEEATONCE"
+  Move         r7, r6
+  // let textTest = "The invasion will start on the first of January"
+  Const        r8, "The invasion will start on the first of January"
+  Move         r9, r8
+  // var maps = square_to_maps(squareRosetta)
+  Const        r11, [["A", "B", "C", "D", "E"], ["F", "G", "H", "I", "K"], ["L", "M", "N", "O", "P"], ["Q", "R", "S", "T", "U"], ["V", "W", "X", "Y", "Z"], ["J", "1", "2", "3", "4"]]
+  Move         r10, r11
+  Call         r12, square_to_maps, r10
+  Move         r13, r12
+  // var emap = maps["e"]
+  Const        r14, "e"
+  Index        r15, r13, r14
+  Move         r16, r15
+  // var dmap = maps["d"]
+  Const        r17, "d"
+  Index        r18, r13, r17
+  Move         r19, r18
+  // print("from Rosettacode")
+  Const        r20, "from Rosettacode"
+  Print        r20
+  // print("original:\t " + textRosetta)
+  Const        r21, "original:\t "
+  Const        r4, "0ATTACKATDAWN"
+  Add          r22, r21, r4
+  Print        r22
+  // var s = encrypt(textRosetta, emap, dmap)
+  Const        r4, "0ATTACKATDAWN"
+  Move         r23, r4
+  Move         r24, r16
+  Move         r25, r19
+  Call         r26, encrypt, r23, r24, r25
+  Move         r27, r26
+  // print("codiert:\t " + s)
+  Const        r28, "codiert:\t "
+  Add          r29, r28, r27
+  Print        r29
+  // s = decrypt(s, emap, dmap)
+  Move         r30, r27
+  Move         r31, r16
+  Move         r32, r19
+  Call         r33, decrypt, r30, r31, r32
+  Move         r27, r33
+  // print("and back:\t " + s)
+  Const        r34, "and back:\t "
+  Add          r35, r34, r27
+  Print        r35
+  // maps = square_to_maps(squareWikipedia)
+  Const        r37, [["B", "G", "W", "K", "Z"], ["Q", "P", "N", "D", "S"], ["I", "O", "A", "X", "E"], ["F", "C", "L", "U", "M"], ["T", "H", "Y", "V", "R"], ["J", "1", "2", "3", "4"]]
+  Move         r36, r37
+  Call         r38, square_to_maps, r36
+  Move         r13, r38
+  // emap = maps["e"]
+  Const        r14, "e"
+  Index        r39, r13, r14
+  Move         r16, r39
+  // dmap = maps["d"]
+  Const        r17, "d"
+  Index        r40, r13, r17
+  Move         r19, r40
+  // print("from Wikipedia")
+  Const        r41, "from Wikipedia"
+  Print        r41
+  // print("original:\t " + textWikipedia)
+  Const        r21, "original:\t "
+  Const        r6, "FLEEATONCE"
+  Add          r42, r21, r6
+  Print        r42
+  // s = encrypt(textWikipedia, emap, dmap)
+  Const        r6, "FLEEATONCE"
+  Move         r43, r6
+  Move         r44, r16
+  Move         r45, r19
+  Call         r46, encrypt, r43, r44, r45
+  Move         r27, r46
+  // print("codiert:\t " + s)
+  Const        r28, "codiert:\t "
+  Add          r47, r28, r27
+  Print        r47
+  // s = decrypt(s, emap, dmap)
+  Move         r48, r27
+  Move         r49, r16
+  Move         r50, r19
+  Call         r51, decrypt, r48, r49, r50
+  Move         r27, r51
+  // print("and back:\t " + s)
+  Const        r34, "and back:\t "
+  Add          r52, r34, r27
+  Print        r52
+  // maps = square_to_maps(squareWikipedia)
+  Const        r54, [["B", "G", "W", "K", "Z"], ["Q", "P", "N", "D", "S"], ["I", "O", "A", "X", "E"], ["F", "C", "L", "U", "M"], ["T", "H", "Y", "V", "R"], ["J", "1", "2", "3", "4"]]
+  Move         r53, r54
+  Call         r55, square_to_maps, r53
+  Move         r13, r55
+  // emap = maps["e"]
+  Const        r14, "e"
+  Index        r56, r13, r14
+  Move         r16, r56
+  // dmap = maps["d"]
+  Const        r17, "d"
+  Index        r57, r13, r17
+  Move         r19, r57
+  // print("from Rosettacode long part")
+  Const        r58, "from Rosettacode long part"
+  Print        r58
+  // print("original:\t " + textTest)
+  Const        r21, "original:\t "
+  Const        r8, "The invasion will start on the first of January"
+  Add          r59, r21, r8
+  Print        r59
+  // s = encrypt(textTest, emap, dmap)
+  Const        r8, "The invasion will start on the first of January"
+  Move         r60, r8
+  Move         r61, r16
+  Move         r62, r19
+  Call         r63, encrypt, r60, r61, r62
+  Move         r27, r63
+  // print("codiert:\t " + s)
+  Const        r28, "codiert:\t "
+  Add          r64, r28, r27
+  Print        r64
+  // s = decrypt(s, emap, dmap)
+  Move         r65, r27
+  Move         r66, r16
+  Move         r67, r19
+  Call         r68, decrypt, r65, r66, r67
+  Move         r27, r68
+  // print("and back:\t " + s)
+  Const        r34, "and back:\t "
+  Add          r69, r34, r27
+  Print        r69
+  Return       r0

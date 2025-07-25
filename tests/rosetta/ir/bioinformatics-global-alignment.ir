@@ -1,0 +1,685 @@
+func main (regs=1)
+  Return       r0
+
+  // fun padLeft(s: string, w: int): string {
+func padLeft (regs=14)
+  // var res = ""
+  Const        r2, ""
+  Move         r3, r2
+  // var n = w - len(s)
+  Len          r4, r0
+  Sub          r5, r1, r4
+  Move         r6, r5
+L1:
+  // while n > 0 {
+  Const        r7, 0
+  Less         r8, r7, r6
+  JumpIfFalse  r8, L0
+  // res = res + " "
+  Const        r9, " "
+  Add          r10, r3, r9
+  Move         r3, r10
+  // n = n - 1
+  Const        r11, 1
+  Sub          r12, r6, r11
+  Move         r6, r12
+  // while n > 0 {
+  Jump         L1
+L0:
+  // return res + s
+  Add          r13, r3, r0
+  Return       r13
+
+  // fun indexOfFrom(s: string, ch: string, start: int): int {
+func indexOfFrom (regs=12)
+  // var i = start
+  Move         r3, r2
+L2:
+  // while i < len(s) {
+  Len          r4, r0
+  Less         r5, r3, r4
+  JumpIfFalse  r5, L0
+  // if substring(s, i, i + 1) == ch {
+  Const        r6, 1
+  Add          r7, r3, r6
+  Slice        r8, r0, r3, r7
+  Equal        r9, r8, r1
+  JumpIfFalse  r9, L1
+  // return i
+  Return       r3
+L1:
+  // i = i + 1
+  Const        r6, 1
+  Add          r10, r3, r6
+  Move         r3, r10
+  // while i < len(s) {
+  Jump         L2
+L0:
+  // return -1
+  Const        r6, 1
+  NegInt       r11, r6
+  Return       r11
+
+  // fun containsStr(s: string, sub: string): bool {
+func containsStr (regs=17)
+  // var i = 0
+  Const        r2, 0
+  Move         r3, r2
+  // let sl = len(s)
+  Len          r4, r0
+  Move         r5, r4
+  // let subl = len(sub)
+  Len          r6, r1
+  Move         r7, r6
+L2:
+  // while i <= sl - subl {
+  SubInt       r8, r5, r7
+  LessEqInt    r9, r3, r8
+  JumpIfFalse  r9, L0
+  // if substring(s, i, i + subl) == sub { return true }
+  AddInt       r10, r3, r7
+  Slice        r11, r0, r3, r10
+  Equal        r12, r11, r1
+  JumpIfFalse  r12, L1
+  Const        r13, true
+  Return       r13
+L1:
+  // i = i + 1
+  Const        r14, 1
+  AddInt       r15, r3, r14
+  Move         r3, r15
+  // while i <= sl - subl {
+  Jump         L2
+L0:
+  // return false
+  Const        r16, false
+  Return       r16
+
+  // fun distinct(slist: list<string>): list<string> {
+func distinct (regs=25)
+  // var res: list<string> = []
+  Const        r1, []
+  Move         r2, r1
+  // for s in slist {
+  IterPrep     r3, r0
+  Len          r4, r3
+  Const        r5, 0
+L5:
+  LessInt      r6, r5, r4
+  JumpIfFalse  r6, L0
+  Index        r7, r3, r5
+  Move         r8, r7
+  // var found = false
+  Const        r9, false
+  Move         r10, r9
+  // for r in res {
+  IterPrep     r11, r2
+  Len          r12, r11
+  Const        r13, 0
+L3:
+  LessInt      r14, r13, r12
+  JumpIfFalse  r14, L1
+  Index        r15, r11, r13
+  Move         r16, r15
+  // if r == s {
+  Equal        r17, r16, r8
+  JumpIfFalse  r17, L2
+  // found = true
+  Const        r18, true
+  Move         r10, r18
+  // break
+  Jump         L1
+L2:
+  // for r in res {
+  Const        r19, 1
+  AddInt       r20, r13, r19
+  Move         r13, r20
+  Jump         L3
+L1:
+  // if !found { res = append(res, s) }
+  Not          r21, r10
+  JumpIfFalse  r21, L4
+  Append       r22, r2, r8
+  Move         r2, r22
+L4:
+  // for s in slist {
+  Const        r23, 1
+  AddInt       r24, r5, r23
+  Move         r5, r24
+  Jump         L5
+L0:
+  // return res
+  Return       r2
+
+  // fun permutations(xs: list<string>): list<list<string>> {
+func permutations (regs=43)
+  // if len(xs) <= 1 { return [xs] }
+  Len          r1, r0
+  Const        r2, 1
+  LessEqInt    r3, r1, r2
+  JumpIfFalse  r3, L0
+  Move         r4, r0
+  MakeList     r5, 1, r4
+  Return       r5
+L0:
+  // var res: list<list<string>> = []
+  Const        r6, []
+  Move         r7, r6
+  // var i = 0
+  Const        r8, 0
+  Move         r9, r8
+L9:
+  // while i < len(xs) {
+  Len          r10, r0
+  LessInt      r11, r9, r10
+  JumpIfFalse  r11, L1
+  // var rest: list<string> = []
+  Const        r6, []
+  Move         r12, r6
+  // var j = 0
+  Const        r8, 0
+  Move         r13, r8
+L4:
+  // while j < len(xs) {
+  Len          r14, r0
+  LessInt      r15, r13, r14
+  JumpIfFalse  r15, L2
+  // if j != i { rest = append(rest, xs[j]) }
+  NotEqual     r16, r13, r9
+  JumpIfFalse  r16, L3
+  Index        r17, r0, r13
+  Append       r18, r12, r17
+  Move         r12, r18
+L3:
+  // j = j + 1
+  Const        r2, 1
+  AddInt       r19, r13, r2
+  Move         r13, r19
+  // while j < len(xs) {
+  Jump         L4
+L2:
+  // let subs = permutations(rest)
+  Move         r20, r12
+  Call         r21, permutations, r20
+  Move         r22, r21
+  // for p in subs {
+  IterPrep     r23, r22
+  Len          r24, r23
+  Const        r25, 0
+L8:
+  LessInt      r26, r25, r24
+  JumpIfFalse  r26, L5
+  Index        r27, r23, r25
+  Move         r28, r27
+  // var perm: list<string> = [xs[i]]
+  Index        r30, r0, r9
+  Move         r29, r30
+  MakeList     r31, 1, r29
+  Move         r32, r31
+  // var k = 0
+  Const        r8, 0
+  Move         r33, r8
+L7:
+  // while k < len(p) {
+  Len          r34, r28
+  LessInt      r35, r33, r34
+  JumpIfFalse  r35, L6
+  // perm = append(perm, p[k])
+  Index        r36, r28, r33
+  Append       r37, r32, r36
+  Move         r32, r37
+  // k = k + 1
+  Const        r2, 1
+  AddInt       r38, r33, r2
+  Move         r33, r38
+  // while k < len(p) {
+  Jump         L7
+L6:
+  // res = append(res, perm)
+  Append       r39, r7, r32
+  Move         r7, r39
+  // for p in subs {
+  Const        r40, 1
+  AddInt       r41, r25, r40
+  Move         r25, r41
+  Jump         L8
+L5:
+  // i = i + 1
+  Const        r2, 1
+  AddInt       r42, r9, r2
+  Move         r9, r42
+  // while i < len(xs) {
+  Jump         L9
+L1:
+  // return res
+  Return       r7
+
+  // fun headTailOverlap(s1: string, s2: string): int {
+func headTailOverlap (regs=25)
+  // var start = 0
+  Const        r2, 0
+  Move         r3, r2
+L2:
+  // while true {
+  Const        r4, true
+  // let ix = indexOfFrom(s1, s2[0:1], start)
+  Move         r5, r0
+  Const        r2, 0
+  Move         r8, r2
+  Const        r10, 1
+  Move         r9, r10
+  Slice        r11, r1, r8, r9
+  Move         r6, r11
+  Move         r7, r3
+  Call         r12, indexOfFrom, r5, r6, r7
+  Move         r13, r12
+  // if ix == 0 - 1 { return 0 }
+  Const        r2, 0
+  Const        r10, 1
+  SubInt       r14, r2, r10
+  Equal        r15, r13, r14
+  JumpIfFalse  r15, L0
+  Const        r2, 0
+  Return       r2
+L0:
+  // start = ix
+  Move         r3, r13
+  // if substring(s2, 0, len(s1) - start) == substring(s1, start, len(s1)) {
+  Const        r2, 0
+  Len          r16, r0
+  Sub          r17, r16, r3
+  Slice        r18, r1, r2, r17
+  Len          r19, r0
+  Slice        r20, r0, r3, r19
+  Equal        r21, r18, r20
+  JumpIfFalse  r21, L1
+  // return len(s1) - start
+  Len          r22, r0
+  Sub          r23, r22, r3
+  Return       r23
+L1:
+  // start = start + 1
+  Const        r10, 1
+  Add          r24, r3, r10
+  Move         r3, r24
+  // while true {
+  Jump         L2
+
+  // fun deduplicate(slist: list<string>): list<string> {
+func deduplicate (regs=28)
+  // let arr = distinct(slist)
+  Distinct     1,0,0,0
+  Move         r2, r1
+  // var filtered: list<string> = []
+  Const        r3, []
+  Move         r4, r3
+  // var i = 0
+  Const        r5, 0
+  Move         r6, r5
+L6:
+  // while i < len(arr) {
+  Len          r7, r2
+  LessInt      r8, r6, r7
+  JumpIfFalse  r8, L0
+  // let s1 = arr[i]
+  Index        r9, r2, r6
+  Move         r10, r9
+  // var within = false
+  Const        r11, false
+  Move         r12, r11
+  // var j = 0
+  Const        r5, 0
+  Move         r13, r5
+L4:
+  // while j < len(arr) {
+  Len          r14, r2
+  LessInt      r15, r13, r14
+  JumpIfFalse  r15, L1
+  // if j != i && containsStr(arr[j], s1) {
+  NotEqual     r16, r13, r6
+  Move         r17, r16
+  JumpIfFalse  r17, L2
+  Index        r20, r2, r13
+  Move         r18, r20
+  Move         r19, r10
+  Call2        r21, containsStr, r18, r19
+  Move         r17, r21
+L2:
+  JumpIfFalse  r17, L3
+  // within = true
+  Const        r22, true
+  Move         r12, r22
+  // break
+  Jump         L1
+L3:
+  // j = j + 1
+  Const        r23, 1
+  AddInt       r24, r13, r23
+  Move         r13, r24
+  // while j < len(arr) {
+  Jump         L4
+L1:
+  // if !within { filtered = append(filtered, s1) }
+  Not          r25, r12
+  JumpIfFalse  r25, L5
+  Append       r26, r4, r10
+  Move         r4, r26
+L5:
+  // i = i + 1
+  Const        r23, 1
+  AddInt       r27, r6, r23
+  Move         r6, r27
+  // while i < len(arr) {
+  Jump         L6
+L0:
+  // return filtered
+  Return       r4
+
+  // fun joinAll(ss: list<string>): string {
+func joinAll (regs=12)
+  // var out = ""
+  Const        r1, ""
+  Move         r2, r1
+  // for s in ss { out = out + s }
+  IterPrep     r3, r0
+  Len          r4, r3
+  Const        r5, 0
+L1:
+  LessInt      r6, r5, r4
+  JumpIfFalse  r6, L0
+  Index        r7, r3, r5
+  Move         r8, r7
+  Add          r9, r2, r8
+  Move         r2, r9
+  Const        r10, 1
+  AddInt       r11, r5, r10
+  Move         r5, r11
+  Jump         L1
+L0:
+  // return out
+  Return       r2
+
+  // fun shortestCommonSuperstring(slist: list<string>): string {
+func shortestCommonSuperstring (regs=42)
+  // let ss = deduplicate(slist)
+  Move         r1, r0
+  Call         r2, deduplicate, r1
+  Move         r3, r2
+  // var shortest = joinAll(ss)
+  Move         r4, r3
+  Call         r5, joinAll, r4
+  Move         r6, r5
+  // let perms = permutations(ss)
+  Move         r7, r3
+  Call         r8, permutations, r7
+  Move         r9, r8
+  // var idx = 0
+  Const        r10, 0
+  Move         r11, r10
+L4:
+  // while idx < len(perms) {
+  Len          r12, r9
+  LessInt      r13, r11, r12
+  JumpIfFalse  r13, L0
+  // let perm = perms[idx]
+  Index        r14, r9, r11
+  Move         r15, r14
+  // var sup = perm[0]
+  Const        r10, 0
+  Index        r16, r15, r10
+  Move         r17, r16
+  // var i = 0
+  Const        r10, 0
+  Move         r18, r10
+L2:
+  // while i < len(ss) - 1 {
+  Len          r19, r3
+  Const        r20, 1
+  SubInt       r21, r19, r20
+  LessInt      r22, r18, r21
+  JumpIfFalse  r22, L1
+  // let ov = headTailOverlap(perm[i], perm[i+1])
+  Index        r25, r15, r18
+  Move         r23, r25
+  Const        r20, 1
+  AddInt       r26, r18, r20
+  Index        r27, r15, r26
+  Move         r24, r27
+  Call2        r28, headTailOverlap, r23, r24
+  Move         r29, r28
+  // sup = sup + substring(perm[i+1], ov, len(perm[i+1]))
+  Const        r20, 1
+  AddInt       r30, r18, r20
+  Index        r31, r15, r30
+  Const        r20, 1
+  AddInt       r32, r18, r20
+  Index        r33, r15, r32
+  Len          r34, r33
+  Slice        r35, r31, r29, r34
+  Add          r36, r17, r35
+  Move         r17, r36
+  // i = i + 1
+  Const        r20, 1
+  AddInt       r37, r18, r20
+  Move         r18, r37
+  // while i < len(ss) - 1 {
+  Jump         L2
+L1:
+  // if len(sup) < len(shortest) { shortest = sup }
+  Len          r38, r17
+  Len          r39, r6
+  LessInt      r40, r38, r39
+  JumpIfFalse  r40, L3
+  Move         r6, r17
+L3:
+  // idx = idx + 1
+  Const        r20, 1
+  AddInt       r41, r11, r20
+  Move         r11, r41
+  // while idx < len(perms) {
+  Jump         L4
+L0:
+  // return shortest
+  Return       r6
+
+  // fun printCounts(seq: string) {
+func printCounts (regs=91)
+  // var a = 0
+  Const        r1, 0
+  Move         r2, r1
+  // var c = 0
+  Const        r1, 0
+  Move         r3, r1
+  // var g = 0
+  Const        r1, 0
+  Move         r4, r1
+  // var t = 0
+  Const        r1, 0
+  Move         r5, r1
+  // var i = 0
+  Const        r1, 0
+  Move         r6, r1
+L5:
+  // while i < len(seq) {
+  Len          r7, r0
+  LessInt      r8, r6, r7
+  JumpIfFalse  r8, L0
+  // let ch = substring(seq, i, i + 1)
+  Const        r9, 1
+  AddInt       r10, r6, r9
+  Slice        r11, r0, r6, r10
+  Move         r12, r11
+  // if ch == "A" {
+  Const        r13, "A"
+  Equal        r14, r12, r13
+  JumpIfFalse  r14, L1
+  // a = a + 1
+  Const        r9, 1
+  AddInt       r15, r2, r9
+  Move         r2, r15
+  // if ch == "A" {
+  Jump         L2
+L1:
+  // if ch == "C" {
+  Const        r16, "C"
+  Equal        r17, r12, r16
+  JumpIfFalse  r17, L3
+  // c = c + 1
+  Const        r9, 1
+  AddInt       r18, r3, r9
+  Move         r3, r18
+  // if ch == "C" {
+  Jump         L2
+L3:
+  // if ch == "G" {
+  Const        r19, "G"
+  Equal        r20, r12, r19
+  JumpIfFalse  r20, L4
+  // g = g + 1
+  Const        r9, 1
+  AddInt       r21, r4, r9
+  Move         r4, r21
+  // if ch == "G" {
+  Jump         L2
+L4:
+  // if ch == "T" {
+  Const        r22, "T"
+  Equal        r23, r12, r22
+  JumpIfFalse  r23, L2
+  // t = t + 1
+  Const        r9, 1
+  AddInt       r24, r5, r9
+  Move         r5, r24
+L2:
+  // i = i + 1
+  Const        r9, 1
+  AddInt       r25, r6, r9
+  Move         r6, r25
+  // while i < len(seq) {
+  Jump         L5
+L0:
+  // let total = len(seq)
+  Len          r26, r0
+  Move         r27, r26
+  // print("\nNucleotide counts for " + seq + ":\n")
+  Const        r28, "\nNucleotide counts for "
+  Add          r29, r28, r0
+  Const        r30, ":\n"
+  Add          r31, r29, r30
+  Print        r31
+  // print(padLeft("A", 10) + padLeft(str(a), 12))
+  Const        r13, "A"
+  Move         r32, r13
+  Const        r34, 10
+  Move         r33, r34
+  Call2        r35, padLeft, r32, r33
+  Str          r38, r2
+  Move         r36, r38
+  Const        r39, 12
+  Move         r37, r39
+  Call2        r40, padLeft, r36, r37
+  Add          r41, r35, r40
+  Print        r41
+  // print(padLeft("C", 10) + padLeft(str(c), 12))
+  Const        r16, "C"
+  Move         r42, r16
+  Const        r34, 10
+  Move         r43, r34
+  Call2        r44, padLeft, r42, r43
+  Str          r47, r3
+  Move         r45, r47
+  Const        r39, 12
+  Move         r46, r39
+  Call2        r48, padLeft, r45, r46
+  Add          r49, r44, r48
+  Print        r49
+  // print(padLeft("G", 10) + padLeft(str(g), 12))
+  Const        r19, "G"
+  Move         r50, r19
+  Const        r34, 10
+  Move         r51, r34
+  Call2        r52, padLeft, r50, r51
+  Str          r55, r4
+  Move         r53, r55
+  Const        r39, 12
+  Move         r54, r39
+  Call2        r56, padLeft, r53, r54
+  Add          r57, r52, r56
+  Print        r57
+  // print(padLeft("T", 10) + padLeft(str(t), 12))
+  Const        r22, "T"
+  Move         r58, r22
+  Const        r34, 10
+  Move         r59, r34
+  Call2        r60, padLeft, r58, r59
+  Str          r63, r5
+  Move         r61, r63
+  Const        r39, 12
+  Move         r62, r39
+  Call2        r64, padLeft, r61, r62
+  Add          r65, r60, r64
+  Print        r65
+  // print(padLeft("Other", 10) + padLeft(str(total - (a+c+g+t)), 12))
+  Const        r68, "Other"
+  Move         r66, r68
+  Const        r34, 10
+  Move         r67, r34
+  Call2        r69, padLeft, r66, r67
+  AddInt       r72, r2, r3
+  AddInt       r73, r72, r4
+  AddInt       r74, r73, r5
+  SubInt       r75, r27, r74
+  Str          r76, r75
+  Move         r70, r76
+  Const        r39, 12
+  Move         r71, r39
+  Call2        r77, padLeft, r70, r71
+  Add          r78, r69, r77
+  Print        r78
+  // print("  ____________________")
+  Const        r79, "  ____________________"
+  Print        r79
+  // print(padLeft("Total length", 14) + padLeft(str(total), 8))
+  Const        r82, "Total length"
+  Move         r80, r82
+  Const        r83, 14
+  Move         r81, r83
+  Call2        r84, padLeft, r80, r81
+  Str          r87, r27
+  Move         r85, r87
+  Const        r88, 8
+  Move         r86, r88
+  Call2        r89, padLeft, r85, r86
+  Add          r90, r84, r89
+  Print        r90
+  Return       r0
+
+  // fun main() {
+func main (regs=16)
+  // let tests: list<list<string>> = [
+  Const        r0, [["TA", "AAG", "TA", "GAA", "TA"], ["CATTAGGG", "ATTAG", "GGG", "TA"], ["AAGAUGGA", "GGAGCGCAUC", "AUCGCAAUAAGGA"], ["ATGAAATGGATGTTCTGAGTTGGTCAGTCCCAATGTGCGGGGTTTCTTTTAGTACGTCGGGAGTGGTATTAT", "GGTCGATTCTGAGGACAAAGGTCAAGATGGAGCGCATCGAACGCAATAAGGATCATTTGATGGGACGTTTCGTCGACAAAGT", "CTATGTTCTTATGAAATGGATGTTCTGAGTTGGTCAGTCCCAATGTGCGGGGTTTCTTTTAGTACGTCGGGAGTGGTATTATA", "TGCTTTCCAATTATGTAAGCGTTCCGAGACGGGGTGGTCGATTCTGAGGACAAAGGTCAAGATGGAGCGCATC", "AACGCAATAAGGATCATTTGATGGGACGTTTCGTCGACAAAGTCTTGTTTCGAGAGTAACGGCTACCGTCTT", "GCGCATCGAACGCAATAAGGATCATTTGATGGGACGTTTCGTCGACAAAGTCTTGTTTCGAGAGTAACGGCTACCGTC", "CGTTTCGTCGACAAAGTCTTGTTTCGAGAGTAACGGCTACCGTCTTCGATTCTGCTTATAACACTATGTTCT", "TGCTTTCCAATTATGTAAGCGTTCCGAGACGGGGTGGTCGATTCTGAGGACAAAGGTCAAGATGGAGCGCATC", "CGTAAAAAATTACAACGTCCTTTGGCTATCTCTTAAACTCCTGCTAAATGCTCGTGC", "GATGGAGCGCATCGAACGCAATAAGGATCATTTGATGGGACGTTTCGTCGACAAAGTCTTGTTTCGAGAGTAACGGCTACCGTCTTCGATT", "TTTCCAATTATGTAAGCGTTCCGAGACGGGGTGGTCGATTCTGAGGACAAAGGTCAAGATGGAGCGCATC", "CTATGTTCTTATGAAATGGATGTTCTGAGTTGGTCAGTCCCAATGTGCGGGGTTTCTTTTAGTACGTCGGGAGTGGTATTATA", "TCTCTTAAACTCCTGCTAAATGCTCGTGCTTTCCAATTATGTAAGCGTTCCGAGACGGGGTGGTCGATTCTGAGGACAAAGGTCAAGA"]]
+  Move         r1, r0
+  // for seqs in tests {
+  Const        r2, [["TA", "AAG", "TA", "GAA", "TA"], ["CATTAGGG", "ATTAG", "GGG", "TA"], ["AAGAUGGA", "GGAGCGCAUC", "AUCGCAAUAAGGA"], ["ATGAAATGGATGTTCTGAGTTGGTCAGTCCCAATGTGCGGGGTTTCTTTTAGTACGTCGGGAGTGGTATTAT", "GGTCGATTCTGAGGACAAAGGTCAAGATGGAGCGCATCGAACGCAATAAGGATCATTTGATGGGACGTTTCGTCGACAAAGT", "CTATGTTCTTATGAAATGGATGTTCTGAGTTGGTCAGTCCCAATGTGCGGGGTTTCTTTTAGTACGTCGGGAGTGGTATTATA", "TGCTTTCCAATTATGTAAGCGTTCCGAGACGGGGTGGTCGATTCTGAGGACAAAGGTCAAGATGGAGCGCATC", "AACGCAATAAGGATCATTTGATGGGACGTTTCGTCGACAAAGTCTTGTTTCGAGAGTAACGGCTACCGTCTT", "GCGCATCGAACGCAATAAGGATCATTTGATGGGACGTTTCGTCGACAAAGTCTTGTTTCGAGAGTAACGGCTACCGTC", "CGTTTCGTCGACAAAGTCTTGTTTCGAGAGTAACGGCTACCGTCTTCGATTCTGCTTATAACACTATGTTCT", "TGCTTTCCAATTATGTAAGCGTTCCGAGACGGGGTGGTCGATTCTGAGGACAAAGGTCAAGATGGAGCGCATC", "CGTAAAAAATTACAACGTCCTTTGGCTATCTCTTAAACTCCTGCTAAATGCTCGTGC", "GATGGAGCGCATCGAACGCAATAAGGATCATTTGATGGGACGTTTCGTCGACAAAGTCTTGTTTCGAGAGTAACGGCTACCGTCTTCGATT", "TTTCCAATTATGTAAGCGTTCCGAGACGGGGTGGTCGATTCTGAGGACAAAGGTCAAGATGGAGCGCATC", "CTATGTTCTTATGAAATGGATGTTCTGAGTTGGTCAGTCCCAATGTGCGGGGTTTCTTTTAGTACGTCGGGAGTGGTATTATA", "TCTCTTAAACTCCTGCTAAATGCTCGTGCTTTCCAATTATGTAAGCGTTCCGAGACGGGGTGGTCGATTCTGAGGACAAAGGTCAAGA"]]
+  IterPrep     r3, r2
+  Len          r4, r3
+  Const        r5, 0
+L1:
+  LessInt      r6, r5, r4
+  JumpIfFalse  r6, L0
+  Index        r7, r3, r5
+  Move         r8, r7
+  // let scs = shortestCommonSuperstring(seqs)
+  Move         r9, r8
+  Call         r10, shortestCommonSuperstring, r9
+  Move         r11, r10
+  // printCounts(scs)
+  Move         r12, r11
+  Call         r13, printCounts, r12
+  // for seqs in tests {
+  Const        r14, 1
+  AddInt       r15, r5, r14
+  Move         r5, r15
+  Jump         L1
+L0:
+  Return       r0

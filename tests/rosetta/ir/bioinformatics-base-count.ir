@@ -1,0 +1,262 @@
+func main (regs=99)
+  // let dna = "" +
+  Const        r8, ""
+  // "CGTAAAAAATTACAACGTCCTTTGGCTATCTCTTAAACTCCTGCTAAATG" +
+  Const        r9, "CGTAAAAAATTACAACGTCCTTTGGCTATCTCTTAAACTCCTGCTAAATG"
+  // let dna = "" +
+  Add          r10, r8, r9
+  // "CTCGTGCTTTCCAATTATGTAAGCGTTCCGAGACGGGGTGGTCGATTCTG" +
+  Const        r11, "CTCGTGCTTTCCAATTATGTAAGCGTTCCGAGACGGGGTGGTCGATTCTG"
+  // "CGTAAAAAATTACAACGTCCTTTGGCTATCTCTTAAACTCCTGCTAAATG" +
+  Add          r12, r10, r11
+  // "AGGACAAAGGTCAAGATGGAGCGCATCGAACGCAATAAGGATCATTTGAT" +
+  Const        r13, "AGGACAAAGGTCAAGATGGAGCGCATCGAACGCAATAAGGATCATTTGAT"
+  // "CTCGTGCTTTCCAATTATGTAAGCGTTCCGAGACGGGGTGGTCGATTCTG" +
+  Add          r14, r12, r13
+  // "GGGACGTTTCGTCGACAAAGTCTTGTTTCGAGAGTAACGGCTACCGTCTT" +
+  Const        r15, "GGGACGTTTCGTCGACAAAGTCTTGTTTCGAGAGTAACGGCTACCGTCTT"
+  // "AGGACAAAGGTCAAGATGGAGCGCATCGAACGCAATAAGGATCATTTGAT" +
+  Add          r16, r14, r15
+  // "CGATTCTGCTTATAACACTATGTTCTTATGAAATGGATGTTCTGAGTTGG" +
+  Const        r17, "CGATTCTGCTTATAACACTATGTTCTTATGAAATGGATGTTCTGAGTTGG"
+  // "GGGACGTTTCGTCGACAAAGTCTTGTTTCGAGAGTAACGGCTACCGTCTT" +
+  Add          r18, r16, r17
+  // "TCAGTCCCAATGTGCGGGGTTTCTTTTAGTACGTCGGGAGTGGTATTATA" +
+  Const        r19, "TCAGTCCCAATGTGCGGGGTTTCTTTTAGTACGTCGGGAGTGGTATTATA"
+  // "CGATTCTGCTTATAACACTATGTTCTTATGAAATGGATGTTCTGAGTTGG" +
+  Add          r20, r18, r19
+  // "TTTAATTTTTCTATATAGCGATCTGTATTTAAGCAATTCATTTAGGTTAT" +
+  Const        r21, "TTTAATTTTTCTATATAGCGATCTGTATTTAAGCAATTCATTTAGGTTAT"
+  // "TCAGTCCCAATGTGCGGGGTTTCTTTTAGTACGTCGGGAGTGGTATTATA" +
+  Add          r22, r20, r21
+  // "CGCCGCGATGCTCGGTTCGGACCGCCAAGCATCTGGCTCCACTGCTAGTG" +
+  Const        r23, "CGCCGCGATGCTCGGTTCGGACCGCCAAGCATCTGGCTCCACTGCTAGTG"
+  // "TTTAATTTTTCTATATAGCGATCTGTATTTAAGCAATTCATTTAGGTTAT" +
+  Add          r24, r22, r23
+  // "TCCTAAATTTGAATGGCAAACACAAATAAGATTTAGCAATTCGTGTAGAC" +
+  Const        r25, "TCCTAAATTTGAATGGCAAACACAAATAAGATTTAGCAATTCGTGTAGAC"
+  // "CGCCGCGATGCTCGGTTCGGACCGCCAAGCATCTGGCTCCACTGCTAGTG" +
+  Add          r26, r24, r25
+  // "GACCGGGGACTTGCATGATGGGAGCAGCTTTGTTAAACTACGAACGTAAT"
+  Const        r27, "GACCGGGGACTTGCATGATGGGAGCAGCTTTGTTAAACTACGAACGTAAT"
+  // "TCCTAAATTTGAATGGCAAACACAAATAAGATTTAGCAATTCGTGTAGAC" +
+  Add          r28, r26, r27
+  // let dna = "" +
+  Move         r0, r28
+  SetGlobal    0,0,0,0
+  // print("SEQUENCE:")
+  Const        r29, "SEQUENCE:"
+  Print        r29
+  // let le = len(dna)
+  Const        r30, 500
+  Move         r1, r30
+  SetGlobal    1,1,0,0
+  // var i = 0
+  Const        r31, 0
+  Move         r2, r31
+  SetGlobal    2,2,0,0
+L2:
+  // while i < le {
+  Const        r30, 500
+  LessInt      r32, r2, r30
+  JumpIfFalse  r32, L0
+  // var k = i + 50
+  Const        r33, 50
+  AddInt       r34, r2, r33
+  Move         r35, r34
+  // if k > le { k = le }
+  Const        r30, 500
+  LessInt      r36, r30, r35
+  JumpIfFalse  r36, L1
+  Const        r30, 500
+  Move         r35, r30
+L1:
+  // print(padLeft(str(i), 5) + ": " + dna[i:k])
+  Str          r39, r2
+  Move         r37, r39
+  Const        r40, 5
+  Move         r38, r40
+  Call2        r41, padLeft, r37, r38
+  Const        r42, ": "
+  Add          r43, r41, r42
+  Move         r44, r2
+  Move         r45, r35
+  Slice        r46, r0, r44, r45
+  Add          r47, r43, r46
+  Print        r47
+  // i = i + 50
+  Const        r33, 50
+  AddInt       r48, r2, r33
+  Move         r2, r48
+  SetGlobal    2,2,0,0
+  // while i < le {
+  Jump         L2
+L0:
+  // var a = 0
+  Const        r31, 0
+  Move         r3, r31
+  SetGlobal    3,3,0,0
+  // var c = 0
+  Const        r31, 0
+  Move         r4, r31
+  SetGlobal    4,4,0,0
+  // var g = 0
+  Const        r31, 0
+  Move         r5, r31
+  SetGlobal    5,5,0,0
+  // var t = 0
+  Const        r31, 0
+  Move         r6, r31
+  SetGlobal    6,6,0,0
+  // var idx = 0
+  Const        r31, 0
+  Move         r7, r31
+  SetGlobal    7,7,0,0
+L8:
+  // while idx < le {
+  Const        r30, 500
+  LessInt      r49, r7, r30
+  JumpIfFalse  r49, L3
+  // let ch = substring(dna, idx, idx + 1)
+  Const        r50, "CGTAAAAAATTACAACGTCCTTTGGCTATCTCTTAAACTCCTGCTAAATGCTCGTGCTTTCCAATTATGTAAGCGTTCCGAGACGGGGTGGTCGATTCTGAGGACAAAGGTCAAGATGGAGCGCATCGAACGCAATAAGGATCATTTGATGGGACGTTTCGTCGACAAAGTCTTGTTTCGAGAGTAACGGCTACCGTCTTCGATTCTGCTTATAACACTATGTTCTTATGAAATGGATGTTCTGAGTTGGTCAGTCCCAATGTGCGGGGTTTCTTTTAGTACGTCGGGAGTGGTATTATATTTAATTTTTCTATATAGCGATCTGTATTTAAGCAATTCATTTAGGTTATCGCCGCGATGCTCGGTTCGGACCGCCAAGCATCTGGCTCCACTGCTAGTGTCCTAAATTTGAATGGCAAACACAAATAAGATTTAGCAATTCGTGTAGACGACCGGGGACTTGCATGATGGGAGCAGCTTTGTTAAACTACGAACGTAAT"
+  Const        r51, 1
+  AddInt       r52, r7, r51
+  Slice        r53, r50, r7, r52
+  Move         r54, r53
+  // if ch == "A" {
+  Const        r55, "A"
+  Equal        r56, r54, r55
+  JumpIfFalse  r56, L4
+  // a = a + 1
+  Const        r51, 1
+  AddInt       r57, r3, r51
+  Move         r3, r57
+  SetGlobal    3,3,0,0
+  // if ch == "A" {
+  Jump         L5
+L4:
+  // if ch == "C" {
+  Const        r58, "C"
+  Equal        r59, r54, r58
+  JumpIfFalse  r59, L6
+  // c = c + 1
+  Const        r51, 1
+  AddInt       r60, r4, r51
+  Move         r4, r60
+  SetGlobal    4,4,0,0
+  // if ch == "C" {
+  Jump         L5
+L6:
+  // if ch == "G" {
+  Const        r61, "G"
+  Equal        r62, r54, r61
+  JumpIfFalse  r62, L7
+  // g = g + 1
+  Const        r51, 1
+  AddInt       r63, r5, r51
+  Move         r5, r63
+  SetGlobal    5,5,0,0
+  // if ch == "G" {
+  Jump         L5
+L7:
+  // if ch == "T" {
+  Const        r64, "T"
+  Equal        r65, r54, r64
+  JumpIfFalse  r65, L5
+  // t = t + 1
+  Const        r51, 1
+  AddInt       r66, r6, r51
+  Move         r6, r66
+  SetGlobal    6,6,0,0
+L5:
+  // idx = idx + 1
+  Const        r51, 1
+  AddInt       r67, r7, r51
+  Move         r7, r67
+  SetGlobal    7,7,0,0
+  // while idx < le {
+  Jump         L8
+L3:
+  // print("")
+  Const        r8, ""
+  Print        r8
+  // print("BASE COUNT:")
+  Const        r68, "BASE COUNT:"
+  Print        r68
+  // print("    A: " + padLeft(str(a), 3))
+  Const        r69, "    A: "
+  Str          r72, r3
+  Move         r70, r72
+  Const        r73, 3
+  Move         r71, r73
+  Call2        r74, padLeft, r70, r71
+  Add          r75, r69, r74
+  Print        r75
+  // print("    C: " + padLeft(str(c), 3))
+  Const        r76, "    C: "
+  Str          r79, r4
+  Move         r77, r79
+  Const        r73, 3
+  Move         r78, r73
+  Call2        r80, padLeft, r77, r78
+  Add          r81, r76, r80
+  Print        r81
+  // print("    G: " + padLeft(str(g), 3))
+  Const        r82, "    G: "
+  Str          r85, r5
+  Move         r83, r85
+  Const        r73, 3
+  Move         r84, r73
+  Call2        r86, padLeft, r83, r84
+  Add          r87, r82, r86
+  Print        r87
+  // print("    T: " + padLeft(str(t), 3))
+  Const        r88, "    T: "
+  Str          r91, r6
+  Move         r89, r91
+  Const        r73, 3
+  Move         r90, r73
+  Call2        r92, padLeft, r89, r90
+  Add          r93, r88, r92
+  Print        r93
+  // print("    ------")
+  Const        r94, "    ------"
+  Print        r94
+  // print("    Σ: " + str(le))
+  Const        r95, "    Σ: "
+  Const        r96, "500"
+  Const        r97, "    Σ: 500"
+  Print        r97
+  // print("    ======")
+  Const        r98, "    ======"
+  Print        r98
+  Return       r0
+
+  // fun padLeft(s: string, w: int): string {
+func padLeft (regs=22)
+  // var res = ""
+  Const        r10, ""
+  Move         r11, r10
+  // var n = w - len(s)
+  Len          r12, r8
+  Sub          r13, r9, r12
+  Move         r14, r13
+L1:
+  // while n > 0 {
+  Const        r15, 0
+  Less         r16, r15, r14
+  JumpIfFalse  r16, L0
+  // res = res + " "
+  Const        r17, " "
+  Add          r18, r11, r17
+  Move         r11, r18
+  // n = n - 1
+  Const        r19, 1
+  Sub          r20, r14, r19
+  Move         r14, r20
+  // while n > 0 {
+  Jump         L1
+L0:
+  // return res + s
+  Add          r21, r11, r8
+  Return       r21

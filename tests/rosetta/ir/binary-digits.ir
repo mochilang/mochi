@@ -1,0 +1,56 @@
+func main (regs=8)
+  // for i in 0..16 {
+  Const        r0, 0
+  Const        r1, 16
+  Move         r2, r0
+L1:
+  LessInt      r3, r2, r1
+  JumpIfFalse  r3, L0
+  // print(toBin(i))
+  Move         r4, r2
+  Call         r5, toBin, r4
+  Print        r5
+  // for i in 0..16 {
+  Const        r6, 1
+  AddInt       r7, r2, r6
+  Move         r2, r7
+  Jump         L1
+L0:
+  Return       r0
+
+  // fun toBin(n: int): string {
+func toBin (regs=14)
+  // if n == 0 {
+  Const        r1, 0
+  Equal        r2, r0, r1
+  JumpIfFalse  r2, L0
+  // return "0"
+  Const        r3, "0"
+  Return       r3
+L0:
+  // var bits = ""
+  Const        r4, ""
+  Move         r5, r4
+  // var x: int = n
+  Move         r6, r0
+L2:
+  // while x > 0 {
+  Const        r1, 0
+  Less         r7, r1, r6
+  JumpIfFalse  r7, L1
+  // bits = str(x % 2) + bits
+  Const        r8, 2
+  Mod          r9, r6, r8
+  Str          r10, r9
+  Add          r11, r10, r5
+  Move         r5, r11
+  // x = (x / 2) as int
+  Const        r8, 2
+  Div          r12, r6, r8
+  Cast         r13, r12, int
+  Move         r6, r13
+  // while x > 0 {
+  Jump         L2
+L1:
+  // return bits
+  Return       r5

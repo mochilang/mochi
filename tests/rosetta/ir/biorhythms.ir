@@ -1,0 +1,615 @@
+func main (regs=4)
+  // let PI: float = 3.141592653589793
+  Const        r2, 3.141592653589793
+  Move         r0, r2
+  SetGlobal    0,0,0,0
+  // let TWO_PI: float = 6.283185307179586
+  Const        r3, 6.283185307179586
+  Move         r1, r3
+  SetGlobal    1,1,0,0
+  Return       r0
+
+  // fun sinApprox(x: float): float {
+func sinApprox (regs=22)
+  // var term = x
+  Move         r3, r2
+  // var sum = x
+  Move         r4, r2
+  // var n = 1
+  Const        r5, 1
+  Move         r6, r5
+L1:
+  // while n <= 8 {
+  Const        r7, 8
+  LessEqInt    r8, r6, r7
+  JumpIfFalse  r8, L0
+  // let denom = ((2*n) * (2*n + 1)) as float
+  Const        r9, 2
+  MulInt       r10, r9, r6
+  Const        r9, 2
+  MulInt       r11, r9, r6
+  Const        r5, 1
+  AddInt       r12, r11, r5
+  MulInt       r13, r10, r12
+  Cast         r14, r13, float
+  Move         r15, r14
+  // term = -term * x * x / denom
+  Neg          r16, r3
+  Mul          r17, r16, r2
+  Mul          r18, r17, r2
+  Div          r19, r18, r15
+  Move         r3, r19
+  // sum = sum + term
+  Add          r20, r4, r3
+  Move         r4, r20
+  // n = n + 1
+  Const        r5, 1
+  AddInt       r21, r6, r5
+  Move         r6, r21
+  // while n <= 8 {
+  Jump         L1
+L0:
+  // return sum
+  Return       r4
+
+  // fun floor(x: float): float {
+func floor (regs=10)
+  // var i = x as int
+  Cast         r3, r2, int
+  Move         r4, r3
+  // if (i as float) > x { i = i - 1 }
+  Cast         r5, r4, float
+  Less         r6, r2, r5
+  JumpIfFalse  r6, L0
+  Const        r7, 1
+  Sub          r8, r4, r7
+  Move         r4, r8
+L0:
+  // return i as float
+  Cast         r9, r4, float
+  Return       r9
+
+  // fun absFloat(x: float): float { if x < 0.0 { return -x } return x }
+func absFloat (regs=6)
+  // fun absFloat(x: float): float { if x < 0.0 { return -x } return x }
+  Const        r3, 0.0
+  LessFloat    r4, r2, r3
+  JumpIfFalse  r4, L0
+  Neg          r5, r2
+  Return       r5
+L0:
+  Return       r2
+
+  // fun absInt(n: int): int { if n < 0 { return -n } return n }
+func absInt (regs=6)
+  // fun absInt(n: int): int { if n < 0 { return -n } return n }
+  Const        r3, 0
+  Less         r4, r2, r3
+  JumpIfFalse  r4, L0
+  Neg          r5, r2
+  Return       r5
+L0:
+  Return       r2
+
+  // fun parseIntStr(str: string): int {
+func parseIntStr (regs=32)
+  // var i = 0
+  Const        r3, 0
+  Move         r4, r3
+  // var neg = false
+  Const        r5, false
+  Move         r6, r5
+  // if len(str) > 0 && str[0:1] == "-" {
+  Len          r7, r2
+  Const        r3, 0
+  LessInt      r8, r3, r7
+  Const        r3, 0
+  Move         r9, r3
+  Const        r11, 1
+  Move         r10, r11
+  Slice        r12, r2, r9, r10
+  Const        r13, "-"
+  Equal        r14, r12, r13
+  Move         r15, r8
+  JumpIfFalse  r15, L0
+  Move         r15, r14
+L0:
+  JumpIfFalse  r15, L1
+  // neg = true
+  Const        r16, true
+  Move         r6, r16
+  // i = 1
+  Const        r11, 1
+  Move         r4, r11
+L1:
+  // var n = 0
+  Const        r3, 0
+  Move         r17, r3
+  // let digits = {
+  Const        r18, {"0": 0, "1": 1, "2": 2, "3": 3, "4": 4, "5": 5, "6": 6, "7": 7, "8": 8, "9": 9}
+  Move         r19, r18
+L3:
+  // while i < len(str) {
+  Len          r20, r2
+  LessInt      r21, r4, r20
+  JumpIfFalse  r21, L2
+  // n = n * 10 + digits[str[i:i+1]]
+  Const        r22, 10
+  MulInt       r23, r17, r22
+  Move         r24, r4
+  Const        r11, 1
+  AddInt       r26, r4, r11
+  Move         r25, r26
+  Slice        r27, r2, r24, r25
+  Index        r28, r19, r27
+  Add          r29, r23, r28
+  Move         r17, r29
+  // i = i + 1
+  Const        r11, 1
+  AddInt       r30, r4, r11
+  Move         r4, r30
+  // while i < len(str) {
+  Jump         L3
+L2:
+  // if neg { n = -n }
+  JumpIfFalse  r6, L4
+  Neg          r31, r17
+  Move         r17, r31
+L4:
+  // return n
+  Return       r17
+
+  // fun parseDate(s: string): list<int> {
+func parseDate (regs=31)
+  // let y = parseIntStr(s[0:4])
+  Const        r5, 0
+  Move         r4, r5
+  Const        r7, 4
+  Move         r6, r7
+  Slice        r8, r2, r4, r6
+  Move         r3, r8
+  Call         r9, parseIntStr, r3
+  Move         r10, r9
+  // let m = parseIntStr(s[5:7])
+  Const        r13, 5
+  Move         r12, r13
+  Const        r15, 7
+  Move         r14, r15
+  Slice        r16, r2, r12, r14
+  Move         r11, r16
+  Call         r17, parseIntStr, r11
+  Move         r18, r17
+  // let d = parseIntStr(s[8:10])
+  Const        r21, 8
+  Move         r20, r21
+  Const        r23, 10
+  Move         r22, r23
+  Slice        r24, r2, r20, r22
+  Move         r19, r24
+  Call         r25, parseIntStr, r19
+  Move         r26, r25
+  // return [y, m, d]
+  Move         r27, r10
+  Move         r28, r18
+  Move         r29, r26
+  MakeList     r30, 3, r27
+  Return       r30
+
+  // fun leap(y: int): bool {
+func leap (regs=15)
+  // if y % 400 == 0 { return true }
+  Const        r3, 400
+  Mod          r4, r2, r3
+  Const        r5, 0
+  Equal        r6, r4, r5
+  JumpIfFalse  r6, L0
+  Const        r7, true
+  Return       r7
+L0:
+  // if y % 100 == 0 { return false }
+  Const        r8, 100
+  Mod          r9, r2, r8
+  Const        r5, 0
+  Equal        r10, r9, r5
+  JumpIfFalse  r10, L1
+  Const        r11, false
+  Return       r11
+L1:
+  // return y % 4 == 0
+  Const        r12, 4
+  Mod          r13, r2, r12
+  Const        r5, 0
+  Equal        r14, r13, r5
+  Return       r14
+
+  // fun daysInMonth(y: int, m: int): int {
+func daysInMonth (regs=29)
+  // let feb = if leap(y) { 29 } else { 28 }
+  Move         r4, r2
+  Call         r5, leap, r4
+  Const        r6, 29
+  Const        r7, 28
+  Select       8,5,6,7
+  Move         r9, r8
+  // let lengths = [31, feb, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+  Const        r22, 31
+  Move         r10, r22
+  Move         r11, r9
+  Const        r22, 31
+  Move         r12, r22
+  Const        r23, 30
+  Move         r13, r23
+  Const        r22, 31
+  Move         r14, r22
+  Const        r23, 30
+  Move         r15, r23
+  Const        r22, 31
+  Move         r16, r22
+  Const        r22, 31
+  Move         r17, r22
+  Const        r23, 30
+  Move         r18, r23
+  Const        r22, 31
+  Move         r19, r22
+  Const        r23, 30
+  Move         r20, r23
+  Const        r22, 31
+  Move         r21, r22
+  MakeList     r24, 12, r10
+  Move         r25, r24
+  // return lengths[m-1]
+  Const        r26, 1
+  Sub          r27, r3, r26
+  Index        r28, r25, r27
+  Return       r28
+
+  // fun addDays(y: int, m: int, d: int, n: int): list<int> {
+func addDays (regs=39)
+  // var yy = y
+  Move         r6, r2
+  // var mm = m
+  Move         r7, r3
+  // var dd = d
+  Move         r8, r4
+  // if n >= 0 {
+  Const        r9, 0
+  LessEq       r10, r9, r5
+  JumpIfFalse  r10, L0
+  // var i = 0
+  Const        r9, 0
+  Move         r11, r9
+L3:
+  // while i < n {
+  Less         r12, r11, r5
+  JumpIfFalse  r12, L1
+  // dd = dd + 1
+  Const        r13, 1
+  Add          r14, r8, r13
+  Move         r8, r14
+  // if dd > daysInMonth(yy, mm) {
+  Move         r15, r6
+  Move         r16, r7
+  Call2        r17, daysInMonth, r15, r16
+  Less         r18, r17, r8
+  JumpIfFalse  r18, L2
+  // dd = 1
+  Const        r13, 1
+  Move         r8, r13
+  // mm = mm + 1
+  Const        r13, 1
+  Add          r19, r7, r13
+  Move         r7, r19
+  // if mm > 12 {
+  Const        r20, 12
+  Less         r21, r20, r7
+  JumpIfFalse  r21, L2
+  // mm = 1
+  Const        r13, 1
+  Move         r7, r13
+  // yy = yy + 1
+  Const        r13, 1
+  Add          r22, r6, r13
+  Move         r6, r22
+L2:
+  // i = i + 1
+  Const        r13, 1
+  AddInt       r23, r11, r13
+  Move         r11, r23
+  // while i < n {
+  Jump         L3
+L0:
+  // var i = 0
+  Const        r9, 0
+  Move         r24, r9
+L6:
+  // while i > n {
+  Less         r25, r5, r24
+  JumpIfFalse  r25, L1
+  // dd = dd - 1
+  Const        r13, 1
+  SubInt       r26, r8, r13
+  Move         r8, r26
+  // if dd < 1 {
+  Const        r13, 1
+  LessInt      r27, r8, r13
+  JumpIfFalse  r27, L4
+  // mm = mm - 1
+  Const        r13, 1
+  SubInt       r28, r7, r13
+  Move         r7, r28
+  // if mm < 1 {
+  Const        r13, 1
+  LessInt      r29, r7, r13
+  JumpIfFalse  r29, L5
+  // mm = 12
+  Const        r20, 12
+  Move         r7, r20
+  // yy = yy - 1
+  Const        r13, 1
+  Sub          r30, r6, r13
+  Move         r6, r30
+L5:
+  // dd = daysInMonth(yy, mm)
+  Move         r31, r6
+  Move         r32, r7
+  Call2        r33, daysInMonth, r31, r32
+  Move         r8, r33
+L4:
+  // i = i - 1
+  Const        r13, 1
+  SubInt       r34, r24, r13
+  Move         r24, r34
+  // while i > n {
+  Jump         L6
+L1:
+  // return [yy, mm, dd]
+  Move         r35, r6
+  Move         r36, r7
+  Move         r37, r8
+  MakeList     r38, 3, r35
+  Return       r38
+
+  // fun pad2(n: int): string { if n < 10 { return "0" + str(n) } return str(n) }
+func pad2 (regs=9)
+  // fun pad2(n: int): string { if n < 10 { return "0" + str(n) } return str(n) }
+  Const        r3, 10
+  Less         r4, r2, r3
+  JumpIfFalse  r4, L0
+  Const        r5, "0"
+  Str          r6, r2
+  Add          r7, r5, r6
+  Return       r7
+L0:
+  Str          r8, r2
+  Return       r8
+
+  // fun dateString(y: int, m: int, d: int): string {
+func dateString (regs=15)
+  // return str(y) + "-" + pad2(m) + "-" + pad2(d)
+  Str          r5, r2
+  Const        r6, "-"
+  Add          r7, r5, r6
+  Move         r8, r3
+  Call         r9, pad2, r8
+  Add          r10, r7, r9
+  Const        r6, "-"
+  Add          r11, r10, r6
+  Move         r12, r4
+  Call         r13, pad2, r12
+  Add          r14, r11, r13
+  Return       r14
+
+  // fun day(y: int, m: int, d: int): int {
+func day (regs=30)
+  // let part1 = 367 * y
+  Const        r5, 367
+  Mul          r6, r5, r2
+  Move         r7, r6
+  // let part2 = ((7 * ((y + ((m + 9) / 12)) as int)) / 4) as int
+  Const        r8, 7
+  Const        r9, 9
+  Add          r10, r3, r9
+  Const        r11, 12
+  Div          r12, r10, r11
+  Add          r13, r2, r12
+  Cast         r14, r13, int
+  Mul          r15, r8, r14
+  Const        r16, 4
+  Div          r17, r15, r16
+  Cast         r18, r17, int
+  Move         r19, r18
+  // let part3 = ((275 * m) / 9) as int
+  Const        r20, 275
+  Mul          r21, r20, r3
+  Const        r9, 9
+  Div          r22, r21, r9
+  Cast         r23, r22, int
+  Move         r24, r23
+  // return part1 - part2 + part3 + d - 730530
+  Sub          r25, r7, r19
+  Add          r26, r25, r24
+  Add          r27, r26, r4
+  Const        r28, 730530
+  Sub          r29, r27, r28
+  Return       r29
+
+  // fun biorhythms(birth: string, target: string) {
+func biorhythms (regs=95)
+  // let bparts = parseDate(birth)
+  Move         r4, r2
+  Call         r5, parseDate, r4
+  Move         r6, r5
+  // let by = bparts[0]
+  Const        r7, 0
+  Index        r8, r6, r7
+  Move         r9, r8
+  // let bm = bparts[1]
+  Const        r10, 1
+  Index        r11, r6, r10
+  Move         r12, r11
+  // let bd = bparts[2]
+  Const        r13, 2
+  Index        r14, r6, r13
+  Move         r15, r14
+  // let tparts = parseDate(target)
+  Move         r16, r3
+  Call         r17, parseDate, r16
+  Move         r18, r17
+  // let ty = tparts[0]
+  Const        r7, 0
+  Index        r19, r18, r7
+  Move         r20, r19
+  // let tm = tparts[1]
+  Const        r10, 1
+  Index        r21, r18, r10
+  Move         r22, r21
+  // let td = tparts[2]
+  Const        r13, 2
+  Index        r23, r18, r13
+  Move         r24, r23
+  // let diff = absInt(day(ty, tm, td) - day(by, bm, bd))
+  Move         r26, r20
+  Move         r27, r22
+  Move         r28, r24
+  Call         r29, day, r26, r27, r28
+  Move         r30, r9
+  Move         r31, r12
+  Move         r32, r15
+  Call         r33, day, r30, r31, r32
+  Sub          r34, r29, r33
+  Move         r25, r34
+  Call         r35, absInt, r25
+  Move         r36, r35
+  // print("Born " + birth + ", Target " + target)
+  Const        r37, "Born "
+  Add          r38, r37, r2
+  Const        r39, ", Target "
+  Add          r40, r38, r39
+  Add          r41, r40, r3
+  Print        r41
+  // print("Day " + str(diff))
+  Const        r42, "Day "
+  Str          r43, r36
+  Add          r44, r42, r43
+  Print        r44
+  // let cycles = ["Physical day ", "Emotional day", "Mental day   "]
+  Const        r45, ["Physical day ", "Emotional day", "Mental day   "]
+  Move         r46, r45
+  // let lengths = [23, 28, 33]
+  Const        r47, [23, 28, 33]
+  Move         r48, r47
+  // let quadrants = [["up and rising", "peak"], ["up but falling", "transition"], ["down and falling", "valley"], ["down but rising", "transition"]]
+  Const        r49, [["up and rising", "peak"], ["up but falling", "transition"], ["down and falling", "valley"], ["down but rising", "transition"]]
+  Move         r50, r49
+  // var i = 0
+  Const        r7, 0
+  Move         r51, r7
+L3:
+  // while i < 3 {
+  Const        r52, 3
+  LessInt      r53, r51, r52
+  JumpIfFalse  r53, L0
+  // let length = lengths[i]
+  Index        r54, r48, r51
+  Move         r55, r54
+  // let cycle = cycles[i]
+  Index        r56, r46, r51
+  Move         r57, r56
+  // let position = diff % length
+  Mod          r58, r36, r55
+  Move         r59, r58
+  // let quadrant = (position * 4) / length
+  Const        r60, 4
+  Mul          r61, r59, r60
+  Div          r62, r61, r55
+  Move         r63, r62
+  // var percent = sinApprox(2.0 * PI * (position as float) / (length as float))
+  Const        r65, 2.0
+  MulFloat     r66, r65, r0
+  Cast         r67, r59, float
+  MulFloat     r68, r66, r67
+  Cast         r69, r55, float
+  DivFloat     r70, r68, r69
+  Move         r64, r70
+  Call         r71, sinApprox, r64
+  Move         r72, r71
+  // percent = floor(percent * 1000.0) / 10.0
+  Const        r74, 1000.0
+  MulFloat     r75, r72, r74
+  Move         r73, r75
+  Call         r76, floor, r73
+  Const        r77, 10.0
+  DivFloat     r78, r76, r77
+  Move         r72, r78
+  // var description = ""
+  Const        r79, ""
+  Move         r80, r79
+  // if percent > 95.0 {
+  Const        r81, 95.0
+  LessFloat    r82, r81, r72
+  JumpIfFalse  r82, L1
+  // description = " peak"
+  Const        r83, " peak"
+  Move         r80, r83
+L1:
+  // var posStr = str(position)
+  Str          r84, r59
+  Move         r85, r84
+  // if position < 10 { posStr = " " + posStr }
+  Const        r86, 10
+  Less         r87, r59, r86
+  JumpIfFalse  r87, L2
+  Const        r88, " "
+  Add          r89, r88, r85
+  Move         r85, r89
+L2:
+  // print(cycle + posStr + " : " + description)
+  Add          r90, r57, r85
+  Const        r91, " : "
+  Add          r92, r90, r91
+  Add          r93, r92, r80
+  Print        r93
+  // i = i + 1
+  Const        r10, 1
+  AddInt       r94, r51, r10
+  Move         r51, r94
+  // while i < 3 {
+  Jump         L3
+L0:
+  // print("")
+  Const        r79, ""
+  Print        r79
+  Return       r0
+
+  // fun main() {
+func main (regs=17)
+  // let pairs = [["1943-03-09", "1972-07-11"], ["1809-01-12", "1863-11-19"], ["1809-02-12", "1863-11-19"]]
+  Const        r2, [["1943-03-09", "1972-07-11"], ["1809-01-12", "1863-11-19"], ["1809-02-12", "1863-11-19"]]
+  Move         r3, r2
+  // var idx = 0
+  Const        r4, 0
+  Move         r5, r4
+L1:
+  // while idx < len(pairs) {
+  Const        r6, 3
+  LessInt      r7, r5, r6
+  JumpIfFalse  r7, L0
+  // let p = pairs[idx]
+  Index        r8, r3, r5
+  Move         r9, r8
+  // biorhythms(p[0], p[1])
+  Const        r4, 0
+  Index        r12, r9, r4
+  Move         r10, r12
+  Const        r13, 1
+  Index        r14, r9, r13
+  Move         r11, r14
+  Call2        r15, biorhythms, r10, r11
+  // idx = idx + 1
+  Const        r13, 1
+  AddInt       r16, r5, r13
+  Move         r5, r16
+  // while idx < len(pairs) {
+  Jump         L1
+L0:
+  Return       r0
