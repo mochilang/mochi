@@ -1,7 +1,7 @@
 # Go Rosetta Transpiler Output
 
 Completed programs: 124/284
-Last updated: 2025-07-25 19:29 +0700
+Last updated: 2025-07-25 20:06 +0700
 
 Checklist:
 
@@ -81,37 +81,37 @@ Checklist:
 | 72 | arithmetic-numbers | ✓ | 370.0ms | 30.57MB |
 | 73 | arithmetic-rational | ✓ | 597.0µs | 1.76KB |
 | 74 | array-concatenation | ✓ | 753.0µs | 1.97KB |
-| 75 | array-length | ✓ |  |  |
-| 76 | arrays | ✓ |  |  |
-| 77 | ascending-primes | ✓ |  |  |
-| 78 | ascii-art-diagram-converter | ✓ |  |  |
-| 79 | assertions | ✓ |  |  |
-| 80 | associative-array-creation | ✓ |  |  |
-| 81 | associative-array-iteration | ✓ |  |  |
-| 82 | associative-array-merging | ✓ |  |  |
-| 83 | atomic-updates | ✓ |  |  |
-| 84 | attractive-numbers | ✓ |  |  |
-| 85 | average-loop-length | ✓ |  |  |
-| 86 | averages-arithmetic-mean | ✓ |  |  |
-| 87 | averages-mean-time-of-day | ✓ |  |  |
-| 88 | averages-median-1 | ✓ |  |  |
-| 89 | averages-median-2 | ✓ |  |  |
-| 90 | averages-median-3 | ✓ |  |  |
-| 91 | averages-mode | ✓ |  |  |
-| 92 | averages-pythagorean-means | ✓ |  |  |
-| 93 | averages-root-mean-square | ✓ |  |  |
-| 94 | averages-simple-moving-average | ✓ |  |  |
-| 95 | avl-tree | ✓ |  |  |
-| 96 | b-zier-curves-intersections | ✓ |  |  |
-| 97 | babbage-problem | ✓ |  |  |
-| 98 | babylonian-spiral | ✓ |  |  |
-| 99 | balanced-brackets | ✓ |  |  |
-| 100 | balanced-ternary | ✓ |  |  |
-| 101 | barnsley-fern | ✓ |  |  |
-| 102 | base64-decode-data | ✓ |  |  |
-| 103 | bell-numbers | ✓ |  |  |
-| 104 | benfords-law | ✓ |  |  |
-| 105 | bernoulli-numbers | ✓ |  |  |
+| 75 | array-length | ✓ | 53.0µs | 1.23KB |
+| 76 | arrays | ✓ | 93.0µs | 2.91KB |
+| 77 | ascending-primes | ✓ | 316.0µs | 137.06KB |
+| 78 | ascii-art-diagram-converter | ✓ | 73.0µs | 1.09KB |
+| 79 | assertions | ✓ | 42.0µs | 968B |
+| 80 | associative-array-creation | ✓ | 184.0µs | 1.00KB |
+| 81 | associative-array-iteration | ✓ | 106.0µs | 1.38KB |
+| 82 | associative-array-merging | ✓ | 98.0µs | 2.09KB |
+| 83 | atomic-updates | ✓ | 128.0µs | 2.50KB |
+| 84 | attractive-numbers | ✓ | 82.0µs | 5.21KB |
+| 85 | average-loop-length | ✓ | 17.0ms | 935.52KB |
+| 86 | averages-arithmetic-mean | ✓ | 98.0µs | 2.41KB |
+| 87 | averages-mean-time-of-day | ✓ | 56.0µs | 984B |
+| 88 | averages-median-1 | ✓ | 52.0µs | 984B |
+| 89 | averages-median-2 | ✓ | 158.0µs | 984B |
+| 90 | averages-median-3 | ✓ | 125.0µs | 984B |
+| 91 | averages-mode | ✓ | 69.0µs | 1.63KB |
+| 92 | averages-pythagorean-means | ✓ | 46.0µs | 1.26KB |
+| 93 | averages-root-mean-square | ✓ | 113.0µs | 1000B |
+| 94 | averages-simple-moving-average | ✓ | 140.0µs | 2.33KB |
+| 95 | avl-tree | ✓ | 163.0µs | 13.68KB |
+| 96 | b-zier-curves-intersections | ✓ | 600.0µs | 539.52KB |
+| 97 | babbage-problem | ✓ | 108.0µs | 1.09KB |
+| 98 | babylonian-spiral | ✓ | 162.0µs | 55.46KB |
+| 99 | balanced-brackets | ✓ | 104.0µs | 5.59KB |
+| 100 | balanced-ternary | ✓ | 72.0µs | 3.30KB |
+| 101 | barnsley-fern | ✓ | 822.0µs | 531.45KB |
+| 102 | base64-decode-data | ✓ | 933.0µs | 705.30KB |
+| 103 | bell-numbers | ✓ | 407.0µs | 188.01KB |
+| 104 | benfords-law | ✓ | 566.0µs | 26.77KB |
+| 105 | bernoulli-numbers | ✓ | 43.0ms | 1.84MB |
 | 106 | best-shuffle | ✓ |  |  |
 | 107 | bifid-cipher | ✓ |  |  |
 | 108 | bin-given-limits | ✓ |  |  |
