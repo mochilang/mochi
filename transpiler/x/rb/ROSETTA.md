@@ -2,7 +2,7 @@
 
 Generated Ruby code from Mochi Rosetta tasks lives in `tests/rosetta/transpiler/rb`.
 
-Last updated: 2025-07-25 12:49 UTC
+Last updated: 2025-07-25 13:11 UTC
 
 ## Checklist (198/284)
 | Index | Name | Status | Duration | Memory |
@@ -87,36 +87,36 @@ Last updated: 2025-07-25 12:49 UTC
 | 78 | ascii-art-diagram-converter | ✓ | 38µs | 12.8 KB |
 | 79 | assertions | ✓ | 56µs | 8.9 KB |
 | 80 | associative-array-creation | ✓ | 30µs | 10.1 KB |
-| 81 | associative-array-iteration | ✓ |  |  |
-| 82 | associative-array-merging | ✓ |  |  |
-| 83 | atomic-updates | ✓ |  |  |
-| 84 | attractive-numbers | ✓ |  |  |
-| 85 | average-loop-length | ✓ |  |  |
-| 86 | averages-arithmetic-mean | ✓ |  |  |
-| 87 | averages-mean-time-of-day | ✓ |  |  |
-| 88 | averages-median-1 | ✓ |  |  |
-| 89 | averages-median-2 | ✓ |  |  |
-| 90 | averages-median-3 | ✓ |  |  |
-| 91 | averages-mode | ✓ |  |  |
-| 92 | averages-pythagorean-means | ✓ |  |  |
-| 93 | averages-root-mean-square | ✓ |  |  |
-| 94 | averages-simple-moving-average | ✓ |  |  |
-| 95 | avl-tree | ✓ |  |  |
-| 96 | b-zier-curves-intersections | ✓ |  |  |
-| 97 | babbage-problem | ✓ |  |  |
-| 98 | babylonian-spiral | ✓ |  |  |
-| 99 | balanced-brackets | ✓ |  |  |
-| 100 | balanced-ternary | ✓ |  |  |
-| 101 | barnsley-fern | ✓ |  |  |
-| 102 | base64-decode-data | ✓ |  |  |
-| 103 | bell-numbers | ✓ |  |  |
-| 104 | benfords-law | ✓ |  |  |
-| 105 | bernoulli-numbers | ✓ |  |  |
-| 106 | best-shuffle | ✓ |  |  |
-| 107 | bifid-cipher | ✓ |  |  |
-| 108 | bin-given-limits | ✓ |  |  |
-| 109 | binary-digits | ✓ |  |  |
-| 110 | binary-search | ✓ |  |  |
+| 81 | associative-array-iteration | ✓ | 38µs | 10.6 KB |
+| 82 | associative-array-merging | ✓ | 73µs | 10.6 KB |
+| 83 | atomic-updates | ✓ | 101µs | 17.8 KB |
+| 84 | attractive-numbers | ✓ | 278µs | 30.5 KB |
+| 85 | average-loop-length | ✓ | 683.319ms | 238.6 KB |
+| 86 | averages-arithmetic-mean | ✓ | 93µs | 15.0 KB |
+| 87 | averages-mean-time-of-day | ✓ | 122µs | 19.5 KB |
+| 88 | averages-median-1 | ✓ | 95µs | 9.5 KB |
+| 89 | averages-median-2 | ✓ | 54µs | 9.5 KB |
+| 90 | averages-median-3 | ✓ | 67µs | 9.9 KB |
+| 91 | averages-mode | ✓ | 56µs | 10.7 KB |
+| 92 | averages-pythagorean-means | ✓ | 128µs | 10.3 KB |
+| 93 | averages-root-mean-square | ✓ | 71µs | 9.1 KB |
+| 94 | averages-simple-moving-average | ✓ | 120µs | 21.7 KB |
+| 95 | avl-tree | ✓ | 313µs | 64.3 KB |
+| 96 | b-zier-curves-intersections | ✓ | 5.125ms | 13.0 KB |
+| 97 | babbage-problem | ✓ | 5.874ms | 9.3 KB |
+| 98 | babylonian-spiral | ✓ | 377µs | 118.0 KB |
+| 99 | balanced-brackets | ✓ | 137µs | 37.2 KB |
+| 100 | balanced-ternary | ✓ | 103µs | 25.0 KB |
+| 101 | barnsley-fern | ✓ | 31.306ms | 1.0 MB |
+| 102 | base64-decode-data | ✓ | 1.718ms | 515.7 KB |
+| 103 | bell-numbers | ✓ | 1.199ms | 399.4 KB |
+| 104 | benfords-law | ✓ | 22.017ms | -16799 B |
+| 105 | bernoulli-numbers | ✓ | 42.089ms | 79.8 KB |
+| 106 | best-shuffle | ✓ | 177µs | 38.8 KB |
+| 107 | bifid-cipher | ✓ | 525µs | 235.1 KB |
+| 108 | bin-given-limits | ✓ | 378µs | 27.2 KB |
+| 109 | binary-digits | ✓ | 49µs | 13.4 KB |
+| 110 | binary-search | ✓ | 30µs | 9.7 KB |
 | 111 | binary-strings | ✓ |  |  |
 | 112 | bioinformatics-base-count | ✓ |  |  |
 | 113 | bioinformatics-global-alignment | ✓ |  |  |
