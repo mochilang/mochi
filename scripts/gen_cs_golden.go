@@ -39,7 +39,7 @@ func runCase(name string) error {
 	if errs := types.Check(prog, env); len(errs) > 0 {
 		return fmt.Errorf("type: %v", errs[0])
 	}
-	ast, err := cstrans.Transpile(prog, env)
+	ast, err := cstrans.Transpile(prog, env, false)
 	if err != nil {
 		return fmt.Errorf("transpile: %v", err)
 	}

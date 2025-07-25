@@ -750,11 +750,11 @@ func transpileProgram(lang string, env *types.Env, prog *parser.Program, root, s
 		}
 		return p.Emit(), nil
 	case "cs", "csharp":
-		p, err := cstranspiler.Transpile(prog, env)
+		p, err := cstranspiler.Transpile(prog, env, false)
 		if err != nil {
 			return nil, err
 		}
-		return cstranspiler.Emit(p, false), nil
+		return cstranspiler.Emit(p), nil
 	case "erlang", "erl":
 		p, err := erl.Transpile(prog, env)
 		if err != nil {

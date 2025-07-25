@@ -41,11 +41,12 @@ func init() {
 // --- C# AST ---
 
 type Program struct {
-	Imports []string
-	Structs []StructDecl
-	Globals []*Global
-	Funcs   []*Function
-	Stmts   []Stmt
+	Imports   []string
+	Structs   []StructDecl
+	Globals   []*Global
+	Funcs     []*Function
+	Stmts     []Stmt
+	BenchMain bool
 }
 
 type Global struct {
@@ -288,7 +289,7 @@ func (b *BenchStmt) emit(w io.Writer) {
 	}
 	fmt.Fprint(w, "    var __end = _now();\n")
 	fmt.Fprint(w, "    var __memEnd = _mem();\n")
-       fmt.Fprint(w, "    var __dur = (__end - __start);\n")
+	fmt.Fprint(w, "    var __dur = (__end - __start);\n")
 	fmt.Fprint(w, "    var __memDiff = __memEnd - __memStart;\n")
 	fmt.Fprintf(w, "    Console.WriteLine(JsonSerializer.Serialize(new SortedDictionary<string, object>{{\"name\", \"%s\"}, {\"duration_us\", __dur}, {\"memory_bytes\", __memDiff}}, new JsonSerializerOptions{ WriteIndented = true }));\n", b.Name)
 	fmt.Fprint(w, "}")
@@ -1835,8 +1836,8 @@ func (e *ExistsExpr) emit(w io.Writer) {
 }
 
 // Transpile converts a Mochi AST to a simple C# AST.
-func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
-	prog := &Program{}
+func Transpile(p *parser.Program, env *types.Env, bench bool) (*Program, error) {
+	prog := &Program{BenchMain: bench}
 	currentProg = prog
 	defer func() { currentProg = nil }()
 	stringVars = make(map[string]bool)
@@ -2812,10 +2813,10 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			args[i] = ex
 		}
 		name := p.Call.Func
-               if name == "now" && len(args) == 0 {
-                       usesNow = true
-                       return &RawExpr{Code: "_now()", Type: "long"}, nil
-               }
+		if name == "now" && len(args) == 0 {
+			usesNow = true
+			return &RawExpr{Code: "_now()", Type: "long"}, nil
+		}
 		if sig, ok := varTypes[name]; ok && strings.HasPrefix(sig, "fn/") {
 			n, err := strconv.Atoi(strings.TrimPrefix(sig, "fn/"))
 			if err == nil && len(args) < n {
@@ -3531,8 +3532,8 @@ func compileQueryExpr(q *parser.QueryExpr) (Expr, error) {
 }
 
 // Emit generates formatted C# source from the AST.
-func Emit(prog *Program, bench bool) []byte {
-	if bench {
+func Emit(prog *Program) []byte {
+	if prog.BenchMain {
 		usesNow = true
 		usesMem = true
 		usesJson = true
@@ -3597,7 +3598,7 @@ func Emit(prog *Program, bench bool) []byte {
 	if usesNow {
 		buf.WriteString("\tstatic bool seededNow = false;\n")
 		buf.WriteString("\tstatic long nowSeed = 0;\n")
-               buf.WriteString("\tstatic long _now() {\n")
+		buf.WriteString("\tstatic long _now() {\n")
 		buf.WriteString("\t\tif (!seededNow) {\n")
 		buf.WriteString("\t\t\tvar s = Environment.GetEnvironmentVariable(\"MOCHI_NOW_SEED\");\n")
 		buf.WriteString("\t\t\tif (long.TryParse(s, out var v)) {\n")
@@ -3606,11 +3607,11 @@ func Emit(prog *Program, bench bool) []byte {
 		buf.WriteString("\t\t\t}\n")
 		buf.WriteString("\t\t}\n")
 		buf.WriteString("\t\tif (seededNow) {\n")
-               buf.WriteString("\t\t\tnowSeed = (nowSeed*1664525 + 1013904223) % 9223372036854775783L;\n")
-               buf.WriteString("\t\t\treturn nowSeed;\n")
+		buf.WriteString("\t\t\tnowSeed = (nowSeed*1664525 + 1013904223) % 9223372036854775783L;\n")
+		buf.WriteString("\t\t\treturn nowSeed;\n")
 		buf.WriteString("\t\t}\n")
-               buf.WriteString("\t\treturn DateTime.UtcNow.Ticks / 100;\n")
-               buf.WriteString("\t}\n")
+		buf.WriteString("\t\treturn DateTime.UtcNow.Ticks / 100;\n")
+		buf.WriteString("\t}\n")
 	}
 	if usesMem {
 		buf.WriteString("\tstatic long _mem() {\n")
