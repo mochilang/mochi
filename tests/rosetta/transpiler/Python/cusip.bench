@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "/workspace/mochi/tests/rosetta/transpiler/Python/cusip.py", line 71, in <module>
+    if isCusip(cand):
+       ^^^^^^^^^^^^^
+  File "/workspace/mochi/tests/rosetta/transpiler/Python/cusip.py", line 48, in isCusip
+    v = parseIntStr(c, 10)
+        ^^^^^^^^^^^
+NameError: name 'parseIntStr' is not defined

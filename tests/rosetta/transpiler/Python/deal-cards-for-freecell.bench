@@ -1,0 +1,8 @@
+Game #1
+Traceback (most recent call last):
+  File "/workspace/mochi/tests/rosetta/transpiler/Python/deal-cards-for-freecell.py", line 64, in <module>
+    show(deal(1))
+  File "/workspace/mochi/tests/rosetta/transpiler/Python/deal-cards-for-freecell.py", line 58, in show
+    stdout.write(" " + "".join(nums[c // 4:c // 4 + 1]) + "".join(suits[c % 4:c % 4 + 1]))
+    ^^^^^^
+NameError: name 'stdout' is not defined
