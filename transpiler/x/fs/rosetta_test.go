@@ -92,6 +92,7 @@ func TestFSTranspiler_Rosetta_Golden(t *testing.T) {
 		ok := t.Run(base, func(t *testing.T) {
 			codePath := filepath.Join(outDir, safe+".fs")
 			outPath := filepath.Join(outDir, safe+".out")
+			benchPath := filepath.Join(outDir, safe+".bench")
 			errPath := filepath.Join(outDir, safe+".error")
 			exePath := filepath.Join(outDir, safe+".exe")
 
@@ -136,12 +137,16 @@ func TestFSTranspiler_Rosetta_Golden(t *testing.T) {
 				t.Fatalf("run: %v", err)
 			}
 			_ = os.Remove(errPath)
+			dest := outPath
+			if bench {
+				dest = benchPath
+			}
 			if shouldUpdate := os.Getenv("UPDATE"); shouldUpdate == "1" || shouldUpdate == "true" {
-				_ = os.WriteFile(outPath, append(got, '\n'), 0o644)
+				_ = os.WriteFile(dest, append(got, '\n'), 0o644)
 				return
 			}
-			_ = os.WriteFile(outPath, got, 0o644)
-			if want, err := os.ReadFile(outPath); err == nil {
+			_ = os.WriteFile(dest, got, 0o644)
+			if want, err := os.ReadFile(dest); err == nil {
 				want = bytes.TrimSpace(want)
 				if !bytes.Equal(got, want) {
 					t.Errorf("output mismatch\nGot: %s\nWant: %s", got, want)
@@ -198,7 +203,11 @@ func updateRosetta() {
 		}
 		dur := ""
 		mem := ""
-		if data, err := os.ReadFile(filepath.Join(outDir, safe+".out")); err == nil {
+		data, err := os.ReadFile(filepath.Join(outDir, safe+".bench"))
+		if err != nil {
+			data, err = os.ReadFile(filepath.Join(outDir, safe+".out"))
+		}
+		if err == nil {
 			var js struct {
 				Duration int64 `json:"duration_us"`
 				Memory   int64 `json:"memory_bytes"`
