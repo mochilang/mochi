@@ -1296,7 +1296,19 @@ type LenExpr struct {
 }
 
 func (l *LenExpr) emit(w io.Writer) {
-	l.Value.emit(w)
+	needParens := false
+	switch l.Value.(type) {
+	case *CastExpr, *BinaryExpr, *IndexExpr, *CallExpr, *FieldExpr,
+		*UnionExpr, *UnionAllExpr, *ExceptExpr, *IntersectExpr:
+		needParens = true
+	}
+	if needParens {
+		io.WriteString(w, "(")
+		l.Value.emit(w)
+		io.WriteString(w, ")")
+	} else {
+		l.Value.emit(w)
+	}
 	if l.IsString {
 		io.WriteString(w, ".length")
 	} else {
@@ -1364,7 +1376,19 @@ type AppendExpr struct {
 func (a *AppendExpr) emit(w io.Writer) {
 	io.WriteString(w, "run { ")
 	io.WriteString(w, "val _tmp = ")
-	a.List.emit(w)
+	needParens := false
+	switch a.List.(type) {
+	case *CastExpr, *BinaryExpr, *IndexExpr, *CallExpr, *FieldExpr,
+		*UnionExpr, *UnionAllExpr, *ExceptExpr, *IntersectExpr:
+		needParens = true
+	}
+	if needParens {
+		io.WriteString(w, "(")
+		a.List.emit(w)
+		io.WriteString(w, ")")
+	} else {
+		a.List.emit(w)
+	}
 	io.WriteString(w, ".toMutableList(); _tmp.add(")
 	a.Elem.emit(w)
 	io.WriteString(w, "); _tmp }")
@@ -1413,9 +1437,21 @@ type SubstringExpr struct {
 func (s *SubstringExpr) emit(w io.Writer) {
 	s.Value.emit(w)
 	io.WriteString(w, ".substring(")
-	s.Start.emit(w)
+	if guessType(s.Start) == "BigInteger" {
+		io.WriteString(w, "(")
+		s.Start.emit(w)
+		io.WriteString(w, ").toInt()")
+	} else {
+		s.Start.emit(w)
+	}
 	io.WriteString(w, ", ")
-	s.End.emit(w)
+	if guessType(s.End) == "BigInteger" {
+		io.WriteString(w, "(")
+		s.End.emit(w)
+		io.WriteString(w, ").toInt()")
+	} else {
+		s.End.emit(w)
+	}
 	io.WriteString(w, ")")
 }
 
@@ -2670,6 +2706,12 @@ func convertStmts(env *types.Env, list []*parser.Statement) ([]Stmt, error) {
 				if typ == "MutableMap<Any, Any>" {
 					typ = "MutableMap<String, Any>"
 				}
+				if typ == "BigInteger" {
+					typ = "Int"
+				}
+				if typ == "BigInteger" && guessType(v) == "Int" {
+					typ = "Int"
+				}
 			}
 			if s.Let.Type != nil {
 				if _, ok := v.(*MapLit); ok {
@@ -3121,7 +3163,14 @@ func convertForStmt(env *types.Env, fs *parser.ForStmt) (Stmt, error) {
 		}
 	}
 	if types.IsMapExpr(fs.Source, env) {
-		iter = &FieldExpr{Receiver: iter, Name: "keys"}
+		// If the source expression is a map variable itself we iterate
+		// over the key set. However map indexing like `m[k]` should be
+		// treated as a list value and not converted to `keys`.
+		if fs.Source != nil && fs.Source.Binary != nil &&
+			fs.Source.Binary.Left != nil && fs.Source.Binary.Left.Value != nil &&
+			len(fs.Source.Binary.Left.Value.Ops) == 0 {
+			iter = &FieldExpr{Receiver: iter, Name: "keys"}
+		}
 	}
 	bodyEnv := types.NewEnv(env)
 	bodyEnv.SetVar(fs.Name, elem, true)

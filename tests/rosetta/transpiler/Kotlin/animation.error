@@ -1,10 +1,4 @@
 OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
-/workspace/mochi/tests/rosetta/transpiler/Kotlin/animation.kt:13:35: error: type mismatch: inferred type is Int but BigInteger was expected
-            val idx: BigInteger = (shift + i) % msg.length
-                                  ^
-/workspace/mochi/tests/rosetta/transpiler/Kotlin/animation.kt:14:41: error: type mismatch: inferred type is BigInteger but Int was expected
-            line = line + msg.substring(idx, idx.add(1.toBigInteger()))
-                                        ^
-/workspace/mochi/tests/rosetta/transpiler/Kotlin/animation.kt:14:46: error: type mismatch: inferred type is BigInteger! but Int was expected
-            line = line + msg.substring(idx, idx.add(1.toBigInteger()))
-                                             ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/animation.kt:44:54: error: unresolved reference: add
+                line = line + msg.substring(idx, idx.add(1.toBigInteger()))
+                                                     ^
