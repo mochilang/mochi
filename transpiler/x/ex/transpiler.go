@@ -1549,6 +1549,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	res := &Program{}
 	builtinAliases = make(map[string]string)
 	globalVars = make(map[string]struct{})
+	funcSeen := false
 	for _, st := range prog.Statements {
 		if st.Import != nil && st.Import.Lang != nil {
 			alias := st.Import.As
@@ -1578,10 +1579,15 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 				}
 			}
 		}
-		if st.Let != nil {
-			globalVars[st.Let.Name] = struct{}{}
-		} else if st.Var != nil {
-			globalVars[st.Var.Name] = struct{}{}
+		if !funcSeen {
+			if st.Fun != nil {
+				funcSeen = true
+			}
+			if st.Let != nil {
+				globalVars[st.Let.Name] = struct{}{}
+			} else if st.Var != nil {
+				globalVars[st.Var.Name] = struct{}{}
+			}
 		}
 	}
 	for _, st := range prog.Statements {
