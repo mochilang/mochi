@@ -1246,7 +1246,9 @@ func (b *BinaryExpr) emit(w io.Writer) {
 	if b.Op == "in" {
 		rtyp := inferType(b.Right)
 		if rtyp != "map" {
-			if id, ok := b.Right.(*IdentExpr); ok {
+			if strings.HasPrefix(rtyp, "Map<") {
+				rtyp = "map"
+			} else if id, ok := b.Right.(*IdentExpr); ok {
 				if t, ok2 := varTypes[id.Name]; ok2 && strings.HasPrefix(t, "Map<") {
 					rtyp = "map"
 				}
@@ -1356,6 +1358,10 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		right = &CastExpr{Expr: right, Type: "float"}
 	} else if rt == "float" && lt == "int" {
 		left = &CastExpr{Expr: left, Type: "float"}
+	} else if lt == "bigint" && rt == "int" {
+		right = &CastExpr{Expr: right, Type: "bigint"}
+	} else if rt == "bigint" && lt == "int" {
+		left = &CastExpr{Expr: left, Type: "bigint"}
 	}
 	if needsParen(left) {
 		io.WriteString(w, "(")
@@ -1604,6 +1610,9 @@ func inferType(e Expr) string {
 			if (lt == "int" && rt == "float") || (lt == "float" && rt == "int") {
 				return "float"
 			}
+			if (lt == "bigint" && rt == "int") || (lt == "int" && rt == "bigint") || (lt == "bigint" && rt == "bigint") {
+				return "bigint"
+			}
 			if v.Op == "+" && (lt == "string" || rt == "string") {
 				return "string"
 			}
@@ -1676,6 +1685,11 @@ func valueType(e Expr) string {
 			return id.Type
 		}
 		if t, ok := varTypes[id.Name]; ok {
+			return t
+		}
+	}
+	if ll, ok := e.(*ListLit); ok {
+		if t := simpleListType(ll); t != "" {
 			return t
 		}
 	}
@@ -1785,6 +1799,51 @@ type MethodCallExpr struct {
 }
 
 func (m *MethodCallExpr) emit(w io.Writer) {
+	// Special handling for common container methods.
+	switch m.Name {
+	case "keys":
+		if len(m.Args) == 0 {
+			typ := inferType(m.Target)
+			if typ == "map" || strings.HasPrefix(typ, "Map<") {
+				io.WriteString(w, "(Map.toList ")
+				m.Target.emit(w)
+				io.WriteString(w, " |> List.map fst)")
+			} else {
+				io.WriteString(w, "(Seq.map fst ")
+				m.Target.emit(w)
+				io.WriteString(w, ")")
+			}
+			return
+		}
+	case "values":
+		if len(m.Args) == 0 {
+			typ := inferType(m.Target)
+			if typ == "map" || strings.HasPrefix(typ, "Map<") {
+				io.WriteString(w, "(Map.toList ")
+				m.Target.emit(w)
+				io.WriteString(w, " |> List.map snd)")
+			} else if fields, ok := structFieldNames(typ); ok {
+				io.WriteString(w, "[")
+				for i, f := range fields {
+					if i > 0 {
+						io.WriteString(w, "; ")
+					}
+					io.WriteString(w, "(")
+					m.Target.emit(w)
+					io.WriteString(w, ".")
+					io.WriteString(w, fsIdent(f))
+					io.WriteString(w, ")")
+				}
+				io.WriteString(w, "]")
+			} else {
+				io.WriteString(w, "(Seq.map snd ")
+				m.Target.emit(w)
+				io.WriteString(w, ")")
+			}
+			return
+		}
+	}
+
 	m.Target.emit(w)
 	io.WriteString(w, ".")
 	io.WriteString(w, mapMethod(m.Name))
@@ -1872,6 +1931,15 @@ func (c *CastExpr) emit(w io.Writer) {
 		}
 	case "int":
 		io.WriteString(w, "int ")
+		if needsParen(c.Expr) {
+			io.WriteString(w, "(")
+			c.Expr.emit(w)
+			io.WriteString(w, ")")
+		} else {
+			c.Expr.emit(w)
+		}
+	case "bigint":
+		io.WriteString(w, "bigint ")
 		if needsParen(c.Expr) {
 			io.WriteString(w, "(")
 			c.Expr.emit(w)
@@ -2137,6 +2205,12 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 					}
 				}
 			}
+			if declared == "" && transpileEnv != nil && st.Let.Value != nil {
+				tt := types.ExprType(st.Let.Value, transpileEnv)
+				if fs := fsType(tt); fs != "obj" {
+					declared = fs
+				}
+			}
 		}
 		if sl, ok := e.(*StructLit); ok && sl.Name != "" {
 			declared = sl.Name
@@ -2185,6 +2259,12 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 					if t := elemTypeOf(ix.Target); t != "" {
 						declared = t
 					}
+				}
+			}
+			if declared == "" && transpileEnv != nil && st.Var.Value != nil {
+				tt := types.ExprType(st.Var.Value, transpileEnv)
+				if fs := fsType(tt); fs != "obj" {
+					declared = fs
 				}
 			}
 		}

@@ -1,13 +1,31 @@
-// Generated 2025-07-25 13:04 +0700
+// Generated 2025-07-25 09:51 +0000
 
 exception Return
 
+let mutable _nowSeed:int64 = 0L
+let mutable _nowSeeded = false
+let _initNow () =
+    let s = System.Environment.GetEnvironmentVariable("MOCHI_NOW_SEED")
+    if System.String.IsNullOrEmpty(s) |> not then
+        match System.Int32.TryParse(s) with
+        | true, v ->
+            _nowSeed <- int64 v
+            _nowSeeded <- true
+        | _ -> ()
+let _now () =
+    if _nowSeeded then
+        _nowSeed <- (_nowSeed * 1664525L + 1013904223L) % 2147483647L
+        int _nowSeed
+    else
+        int (System.DateTime.UtcNow.Ticks % 2147483647L)
+
+_initNow()
 let rec pow_big (``base``: bigint) (exp: int) =
     let mutable __ret : bigint = Unchecked.defaultof<bigint>
     let mutable ``base`` = ``base``
     let mutable exp = exp
     try
-        let mutable result: bigint = 1 :?> bigint
+        let mutable result: bigint = bigint 1
         let mutable b: bigint = ``base``
         let mutable e: int = exp
         while e > 0 do
@@ -26,8 +44,8 @@ and bit_len (x: bigint) =
     try
         let mutable n: bigint = x
         let mutable c: int = 0
-        while n > 0 do
-            n <- n / 2
+        while n > (bigint 0) do
+            n <- n / (bigint 2)
             c <- c + 1
         __ret <- c
         raise Return
@@ -41,32 +59,32 @@ let rec ackermann2 (m: bigint) (n: bigint) =
     let mutable n = n
     try
         if err <> "" then
-            __ret <- 0 :?> bigint
+            __ret <- bigint 0
             raise Return
-        if m <= 3 then
-            let mi = int m
+        if m <= (bigint 3) then
+            let mi: int = int m
             if mi = 0 then
-                __ret <- n + 1
+                __ret <- n + (bigint 1)
                 raise Return
             if mi = 1 then
-                __ret <- n + 2
+                __ret <- n + (bigint 2)
                 raise Return
             if mi = 2 then
-                __ret <- (2 * n) + 3
+                __ret <- ((bigint 2) * n) + (bigint 3)
                 raise Return
             if mi = 3 then
-                let nb = bit_len n
+                let nb: int = bit_len n
                 if nb > 64 then
                     err <- ("A(m,n) had n of " + (string nb)) + " bits; too large"
-                    __ret <- 0 :?> bigint
+                    __ret <- bigint 0
                     raise Return
-                let r = pow_big (2 :?> bigint) (int n)
-                __ret <- (8 * r) - 3
+                let r: bigint = pow_big (bigint 2) (int n)
+                __ret <- ((bigint 8) * r) - (bigint 3)
                 raise Return
         if (bit_len n) = 0 then
-            __ret <- ackermann2 (m - (1 :?> bigint)) (1 :?> bigint)
+            __ret <- ackermann2 (m - (bigint 1)) (bigint 1)
             raise Return
-        __ret <- ackermann2 (m - (1 :?> bigint)) (ackermann2 m (n - (1 :?> bigint)))
+        __ret <- ackermann2 (m - (bigint 1)) (ackermann2 m (n - (bigint 1)))
         raise Return
         __ret
     with
@@ -77,7 +95,7 @@ and show (m: int) (n: int) =
     let mutable n = n
     try
         err <- ""
-        let res = ackermann2 (m :?> bigint) (n :?> bigint)
+        let res: bigint = ackermann2 (bigint m) (bigint n)
         if err <> "" then
             printfn "%s" ((((("A(" + (string m)) + ", ") + (string n)) + ") = Error: ") + err)
             __ret <- ()
@@ -95,6 +113,8 @@ and show (m: int) (n: int) =
 and main () =
     let mutable __ret : unit = Unchecked.defaultof<unit>
     try
+        let __bench_start = _now()
+        let __mem_start = System.GC.GetTotalMemory(true)
         show 0 0
         show 1 2
         show 2 4
@@ -103,6 +123,10 @@ and main () =
         show 4 1
         show 4 2
         show 4 3
+        let __bench_end = _now()
+        let __mem_end = System.GC.GetTotalMemory(true)
+        printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)
+
         __ret
     with
         | Return -> __ret

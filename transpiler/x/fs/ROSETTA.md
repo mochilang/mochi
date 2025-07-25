@@ -2,7 +2,7 @@
 
 This file is auto-generated from rosetta tests.
 
-## Rosetta Golden Test Checklist (70/284)
+## Rosetta Golden Test Checklist (74/284)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 151µs | 41.3 KB |
@@ -31,16 +31,16 @@ This file is auto-generated from rosetta tests.
 | 24 | abundant-deficient-and-perfect-number-classifications | ✓ |  |  |
 | 25 | abundant-odd-numbers | ✓ |  |  |
 | 26 | accumulator-factory |   |  |  |
-| 27 | achilles-numbers |   |  |  |
-| 28 | ackermann-function-2 | ✓ |  |  |
-| 29 | ackermann-function-3 |   |  |  |
-| 30 | ackermann-function | ✓ |  |  |
-| 31 | active-directory-connect | ✓ |  |  |
-| 32 | active-directory-search-for-a-user |   |  |  |
-| 33 | active-object | ✓ |  |  |
-| 34 | add-a-variable-to-a-class-instance-at-runtime |   |  |  |
-| 35 | additive-primes | ✓ |  |  |
-| 36 | address-of-a-variable | ✓ |  |  |
+| 27 | achilles-numbers | ✓ | 213µs | 52.8 KB |
+| 28 | ackermann-function-2 | ✓ | 150µs | 41.5 KB |
+| 29 | ackermann-function-3 | ✓ |  | 65.9 KB |
+| 30 | ackermann-function | ✓ | 273µs | 41.5 KB |
+| 31 | active-directory-connect | ✓ | 280µs | 62.8 KB |
+| 32 | active-directory-search-for-a-user | ✓ | 241µs | 61.6 KB |
+| 33 | active-object | ✓ | 187µs | 46.8 KB |
+| 34 | add-a-variable-to-a-class-instance-at-runtime | ✓ |  |  |
+| 35 | additive-primes | ✓ | 162µs | 41.6 KB |
+| 36 | address-of-a-variable | ✓ | 406µs | 69.2 KB |
 | 37 | adfgvx-cipher |   |  |  |
 | 38 | aks-test-for-primes | ✓ |  |  |
 | 39 | algebraic-data-types |   |  |  |
@@ -290,4 +290,4 @@ This file is auto-generated from rosetta tests.
 | 283 | define-a-primitive-data-type |   |  |  |
 | 284 | md5 |   |  |  |
 
-Last updated: 2025-07-25 13:04 +0700
+Last updated: 2025-07-25 09:57 +0000
