@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Rust code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/Rust`.
-Last updated: 2025-07-25 16:57 UTC
+Last updated: 2025-07-25 17:26 UTC
 
-## Rosetta Golden Test Checklist (17/284)
+## Rosetta Golden Test Checklist (19/284)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 109µs | 3.2 MB |
@@ -18,15 +18,15 @@ Last updated: 2025-07-25 16:57 UTC
 | 9 | 24-game-solve | ✓ | 3.207ms | 3.2 MB |
 | 10 | 24-game | ✓ | 59µs | 3.2 MB |
 | 11 | 4-rings-or-4-squares-puzzle | ✓ | 210µs | 4.1 MB |
-| 12 | 9-billion-names-of-god-the-integer | ✓ |  |  |
-| 13 | 99-bottles-of-beer-2 | ✓ |  |  |
-| 14 | 99-bottles-of-beer | ✓ |  |  |
-| 15 | DNS-query | ✓ |  |  |
-| 16 | a+b | ✓ |  |  |
-| 17 | abbreviations-automatic | ✓ |  |  |
-| 18 | abbreviations-easy | ✓ |  |  |
-| 19 | abbreviations-simple |   |  |  |
-| 20 | abc-problem |   |  |  |
+| 12 | 9-billion-names-of-god-the-integer | ✓ | 1m2.820075s | 351.4 MB |
+| 13 | 99-bottles-of-beer-2 | ✓ | 8.329ms | 3.2 MB |
+| 14 | 99-bottles-of-beer | ✓ | 227µs | 3.2 MB |
+| 15 | DNS-query | ✓ | 11µs | 3.2 MB |
+| 16 | a+b | ✓ | 22µs | 3.2 MB |
+| 17 | abbreviations-automatic | ✓ | 2.964ms | 3.2 MB |
+| 18 | abbreviations-easy | ✓ | 478µs | 3.2 MB |
+| 19 | abbreviations-simple | ✓ | 1.004ms | 3.2 MB |
+| 20 | abc-problem | ✓ | 356µs | 3.2 MB |
 | 21 | abelian-sandpile-model-identity |   |  |  |
 | 22 | abelian-sandpile-model |   |  |  |
 | 23 | abstract-type |   |  |  |
