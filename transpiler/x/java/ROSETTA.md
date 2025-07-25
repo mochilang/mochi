@@ -1,9 +1,9 @@
 # Java Rosetta Transpiler Output
 
 Generated Java code for programs in `tests/rosetta/x/Mochi`. Each program has a `.java` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
-Last updated: 2025-07-25 17:41 GMT+7
+Last updated: 2025-07-25 18:31 GMT+7
 
-## Rosetta Checklist (59/284)
+## Rosetta Checklist (70/284)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 23.0ms | 245.84KB |
@@ -66,17 +66,17 @@ Last updated: 2025-07-25 17:41 GMT+7
 | 58 | apply-a-callback-to-an-array-1 | ✓ | 517.0µs | 0B |
 | 59 | apply-a-callback-to-an-array-2 | ✓ | 23.0ms | 0B |
 | 60 | apply-a-digital-filter-direct-form-ii-transposed- | ✓ | 1.0ms | 0B |
-| 61 | approximate-equality |   |  |  |
-| 62 | arbitrary-precision-integers-included- |   |  |  |
-| 63 | archimedean-spiral |   |  |  |
-| 64 | arena-storage-pool |   |  |  |
-| 65 | arithmetic-complex |   |  |  |
-| 66 | arithmetic-derivative |   |  |  |
-| 67 | arithmetic-evaluation |   |  |  |
-| 68 | arithmetic-geometric-mean-calculate-pi |   |  |  |
-| 69 | arithmetic-geometric-mean |   |  |  |
-| 70 | arithmetic-integer-1 |   |  |  |
-| 71 | arithmetic-integer-2 |   |  |  |
+| 61 | approximate-equality | ✓ | 15.0ms | 48.33KB |
+| 62 | arbitrary-precision-integers-included- | ✓ | 22.0ms | 65.13KB |
+| 63 | archimedean-spiral | ✓ | 23.0ms | 47.97KB |
+| 64 | arena-storage-pool | ✓ | 13.0ms | 46.47KB |
+| 65 | arithmetic-complex | ✓ | 13.0ms | 50.62KB |
+| 66 | arithmetic-derivative | ✓ | 23.0ms | 56.12KB |
+| 67 | arithmetic-evaluation | ✓ | 10.0ms | 38.70KB |
+| 68 | arithmetic-geometric-mean-calculate-pi | ✓ | 6.0ms | 10.35KB |
+| 69 | arithmetic-geometric-mean | ✓ | 6.0ms | 10.35KB |
+| 70 | arithmetic-integer-1 | ✓ | 23.0ms | 40.70KB |
+| 71 | arithmetic-integer-2 | ✓ | 10.0ms | 40.70KB |
 | 72 | arithmetic-numbers |   |  |  |
 | 73 | arithmetic-rational |   |  |  |
 | 74 | array-concatenation |   |  |  |

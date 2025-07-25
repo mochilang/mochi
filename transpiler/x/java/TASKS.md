@@ -1,4 +1,56 @@
-## Progress (2025-07-25 10:20 UTC)
+## Progress (2025-07-25 18:18 +0700)
+- fix java transpiler loops and benchmark (4ab79ffb81)
+
+- fix java transpiler loops and benchmark (4ab79ffb81)
+
+- fix java transpiler loops and benchmark (4ab79ffb81)
+
+- fix java transpiler loops and benchmark (4ab79ffb81)
+
+- fix java transpiler loops and benchmark (4ab79ffb81)
+
+- fix java transpiler loops and benchmark (4ab79ffb81)
+
+- fix java transpiler loops and benchmark (4ab79ffb81)
+
+- fix java transpiler loops and benchmark (4ab79ffb81)
+
+- fix java transpiler loops and benchmark (4ab79ffb81)
+
+- fix java transpiler loops and benchmark (4ab79ffb81)
+
+- fix java transpiler loops and benchmark (4ab79ffb81)
+
+- fix java transpiler loops and benchmark (4ab79ffb81)
+
+- fix java transpiler loops and benchmark (4ab79ffb81)
+
+- fix java transpiler loops and benchmark (4ab79ffb81)
+
+- fix java transpiler loops and benchmark (4ab79ffb81)
+
+- fix java transpiler loops and benchmark (4ab79ffb81)
+
+- fix java transpiler loops and benchmark (4ab79ffb81)
+
+- fix java transpiler loops and benchmark (4ab79ffb81)
+
+- fix java transpiler loops and benchmark (4ab79ffb81)
+
+- fix java transpiler loops and benchmark (4ab79ffb81)
+
+- fix java transpiler loops and benchmark (4ab79ffb81)
+
+- fix java transpiler loops and benchmark (4ab79ffb81)
+
+- fix java transpiler loops and benchmark (4ab79ffb81)
+
+- fix java transpiler loops and benchmark (4ab79ffb81)
+
+- fix java transpiler loops and benchmark (4ab79ffb81)
+
+- fix java transpiler loops and benchmark (4ab79ffb81)
+
 - transpiler/java: add apply-a-callback-to-an-array-1 (4156232354)
 
 - transpiler/java: add apply-a-callback-to-an-array-1 (4156232354)
