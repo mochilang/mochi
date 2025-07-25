@@ -4,7 +4,7 @@ Generated Lua code for programs in `tests/rosetta/x/Mochi`. Each program has a `
 
 Transpiled programs: 275/284
 
-Last updated: 2025-07-25 19:21 GMT+7
+Last updated: 2025-07-25 20:06 GMT+7
 
 Checklist:
 
@@ -158,48 +158,48 @@ Checklist:
 | 146 | calendar---for-real-programmers-2 | ✓ | 1.337ms | 1003 B |
 | 147 | calendar | ✓ | 1.046ms | 1003 B |
 | 148 | calkin-wilf-sequence | ✓ | 206µs | 864 B |
-| 149 | call-a-foreign-language-function | ✓ |  |  |
-| 150 | call-a-function-1 | ✓ |  |  |
-| 151 | call-a-function-10 | ✓ |  |  |
-| 152 | call-a-function-11 | ✓ |  |  |
-| 153 | call-a-function-12 | ✓ |  |  |
-| 154 | call-a-function-2 | ✓ |  |  |
-| 155 | call-a-function-3 | ✓ |  |  |
-| 156 | call-a-function-4 | ✓ |  |  |
-| 157 | call-a-function-5 | ✓ |  |  |
-| 158 | call-a-function-6 | ✓ |  |  |
-| 159 | call-a-function-7 | ✓ |  |  |
-| 160 | call-a-function-8 | ✓ |  |  |
-| 161 | call-a-function-9 | ✓ |  |  |
-| 162 | call-an-object-method-1 | ✓ |  |  |
-| 163 | call-an-object-method-2 | ✓ |  |  |
-| 164 | call-an-object-method-3 | ✓ |  |  |
-| 165 | call-an-object-method | ✓ |  |  |
-| 166 | camel-case-and-snake-case | ✓ |  |  |
-| 167 | canny-edge-detector | ✓ |  |  |
-| 168 | canonicalize-cidr | ✓ |  |  |
-| 169 | cantor-set | ✓ |  |  |
-| 170 | carmichael-3-strong-pseudoprimes | ✓ |  |  |
-| 171 | cartesian-product-of-two-or-more-lists-1 | ✓ |  |  |
-| 172 | cartesian-product-of-two-or-more-lists-2 | ✓ |  |  |
-| 173 | cartesian-product-of-two-or-more-lists-3 | ✓ |  |  |
-| 174 | cartesian-product-of-two-or-more-lists-4 | ✓ |  |  |
-| 175 | case-sensitivity-of-identifiers | ✓ |  |  |
-| 176 | casting-out-nines | ✓ |  |  |
-| 177 | catalan-numbers-1 | ✓ |  |  |
-| 178 | catalan-numbers-2 | ✓ |  |  |
-| 179 | catalan-numbers-pascals-triangle | ✓ |  |  |
-| 180 | catamorphism | ✓ |  |  |
-| 181 | catmull-clark-subdivision-surface | ✓ |  |  |
-| 182 | chaocipher | ✓ |  |  |
-| 183 | chaos-game | ✓ |  |  |
-| 184 | character-codes-1 | ✓ |  |  |
-| 185 | character-codes-2 | ✓ |  |  |
-| 186 | character-codes-3 | ✓ |  |  |
-| 187 | character-codes-4 | ✓ |  |  |
-| 188 | character-codes-5 | ✓ |  |  |
-| 189 | chat-server | ✓ |  |  |
-| 190 | check-machin-like-formulas | ✓ |  |  |
+| 149 | call-a-foreign-language-function | ✓ | 35µs | 320 B |
+| 150 | call-a-function-1 | ✓ | 3µs | 344 B |
+| 151 | call-a-function-10 | ✓ | 15µs | 288 B |
+| 152 | call-a-function-11 | ✓ | 53µs | 2.3 KB |
+| 153 | call-a-function-12 | ✓ | 35µs | 392 B |
+| 154 | call-a-function-2 | ✓ | 5µs | 384 B |
+| 155 | call-a-function-3 | ✓ | 5µs | 384 B |
+| 156 | call-a-function-4 | ✓ | 4µs | 360 B |
+| 157 | call-a-function-5 | ✓ | 42µs | 320 B |
+| 158 | call-a-function-6 | ✓ | 44µs | 400 B |
+| 159 | call-a-function-7 | ✓ | 3µs | 384 B |
+| 160 | call-a-function-8 | ✓ | 39µs | 400 B |
+| 161 | call-a-function-9 | ✓ | 17µs | 384 B |
+| 162 | call-an-object-method-1 | ✓ | 3µs | 424 B |
+| 163 | call-an-object-method-2 | ✓ | 4µs | 520 B |
+| 164 | call-an-object-method-3 | ✓ | 3µs | 432 B |
+| 165 | call-an-object-method | ✓ | 4µs | 432 B |
+| 166 | camel-case-and-snake-case | ✓ | 498µs | 4.0 KB |
+| 167 | canny-edge-detector | ✓ | 306µs | 520 B |
+| 168 | canonicalize-cidr | ✓ | 415µs | 4.7 KB |
+| 169 | cantor-set | ✓ | 393µs | 988 B |
+| 170 | carmichael-3-strong-pseudoprimes | ✓ | 2.614ms | 4.5 KB |
+| 171 | cartesian-product-of-two-or-more-lists-1 | ✓ | 70µs | 440 B |
+| 172 | cartesian-product-of-two-or-more-lists-2 | ✓ | 370µs | 528 B |
+| 173 | cartesian-product-of-two-or-more-lists-3 | ✓ | 582µs | 120 B |
+| 174 | cartesian-product-of-two-or-more-lists-4 | ✓ | 415µs | 120 B |
+| 175 | case-sensitivity-of-identifiers | ✓ | 77µs | 400 B |
+| 176 | casting-out-nines | ✓ | 8.707ms | 7.4 KB |
+| 177 | catalan-numbers-1 | ✓ | 80µs | 2.4 KB |
+| 178 | catalan-numbers-2 | ✓ | 117µs | 2.8 KB |
+| 179 | catalan-numbers-pascals-triangle | ✓ | 140µs | 2.8 KB |
+| 180 | catamorphism | ✓ | 59µs | 2.5 KB |
+| 181 | catmull-clark-subdivision-surface | ✓ | 1.924ms | 4.6 KB |
+| 182 | chaocipher | ✓ | 504µs | 4.5 KB |
+| 183 | chaos-game | ✓ | 7.999ms | 59.6 KB |
+| 184 | character-codes-1 | ✓ | 36µs | 280 B |
+| 185 | character-codes-2 | ✓ | 47µs | 312 B |
+| 186 | character-codes-3 | ✓ | 46µs | 2.3 KB |
+| 187 | character-codes-4 | ✓ | 40µs | 280 B |
+| 188 | character-codes-5 | ✓ | 34µs | 280 B |
+| 189 | chat-server | ✓ | 48µs | 664 B |
+| 190 | check-machin-like-formulas | ✓ | 7.794ms | 23.1 KB |
 | 191 | check-that-file-exists | ✓ |  |  |
 | 192 | checkpoint-synchronization-1 | ✓ |  |  |
 | 193 | checkpoint-synchronization-2 | ✓ |  |  |
