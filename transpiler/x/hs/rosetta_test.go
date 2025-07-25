@@ -68,13 +68,13 @@ func runRosettaTask(root, name string) error {
 		writeErr(root, name, fmt.Errorf("type: %v", errs[0]))
 		return fmt.Errorf("type error: %v", errs[0])
 	}
-	hprog, err := hs.Transpile(prog, env)
+	bench := os.Getenv("MOCHI_BENCHMARK") == "true" || os.Getenv("MOCHI_BENCHMARK") == "1"
+	hprog, err := hs.Transpile(prog, env, bench)
 	if err != nil {
 		writeErr(root, name, fmt.Errorf("transpile: %w", err))
 		return fmt.Errorf("transpile error: %v", err)
 	}
-	bench := os.Getenv("MOCHI_BENCHMARK") == "true" || os.Getenv("MOCHI_BENCHMARK") == "1"
-	code := hs.Emit(hprog, bench)
+	code := hs.Emit(hprog, false)
 	outDir := filepath.Join(root, "tests", "rosetta", "transpiler", "Haskell")
 	os.MkdirAll(outDir, 0o755)
 	hsFile := filepath.Join(outDir, name+".hs")
@@ -83,10 +83,12 @@ func runRosettaTask(root, name string) error {
 	}
 
 	cmd := exec.Command("runhaskell", hsFile)
-	runEnv := append(os.Environ(), "MOCHI_NOW_SEED=1")
+	runEnv := os.Environ()
 	if bench {
 		runEnv = append(runEnv, "MOCHI_BENCHMARK=1")
 		runEnv = append(runEnv, "GHCRTS=-T")
+	} else {
+		runEnv = append(runEnv, "MOCHI_NOW_SEED=1")
 	}
 	cmd.Env = runEnv
 	if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
@@ -193,6 +195,8 @@ func updateChecklist() {
 	total := len(names)
 	compiled := 0
 	var lines []string
+	lines = append(lines, "| Index | Name | Status | Duration | Memory |")
+	lines = append(lines, "|------:|------|:-----:|---------:|-------:|")
 	for i, n := range names {
 		name := strings.TrimSuffix(filepath.Base(n), ".mochi")
 		status := ""

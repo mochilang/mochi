@@ -24,7 +24,7 @@ func main() {
 		fmt.Fprintln(os.Stderr, errs[0])
 		panic(errs[0])
 	}
-	hprog, err := hs.Transpile(prog, env)
+	hprog, err := hs.Transpile(prog, env, false)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		panic(err)

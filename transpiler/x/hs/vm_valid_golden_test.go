@@ -42,7 +42,7 @@ func TestHSTranspiler_VMValid_Golden(t *testing.T) {
 			_ = os.WriteFile(errPath, []byte("type: "+errs[0].Error()), 0o644)
 			return nil, errs[0]
 		}
-		hprog, err := hs.Transpile(prog, env)
+		hprog, err := hs.Transpile(prog, env, false)
 		if err != nil {
 			_ = os.WriteFile(errPath, []byte("transpile: "+err.Error()), 0o644)
 			return nil, err

@@ -780,7 +780,7 @@ func transpileProgram(lang string, env *types.Env, prog *parser.Program, root, s
 		}
 		return fstrans.Emit(p), nil
 	case "hs", "haskell":
-		p, err := hs.Transpile(prog, env)
+		p, err := hs.Transpile(prog, env, false)
 		if err != nil {
 			return nil, err
 		}

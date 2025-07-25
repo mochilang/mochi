@@ -50,7 +50,7 @@ func TestTranspile_PrintHello(t *testing.T) {
 	if errs := types.Check(prog, env); len(errs) > 0 {
 		t.Fatalf("type: %v", errs[0])
 	}
-	ast, err := hs.Transpile(prog, env)
+	ast, err := hs.Transpile(prog, env, false)
 	if err != nil {
 		t.Fatalf("transpile: %v", err)
 	}
@@ -96,7 +96,7 @@ func TestTranspile_BinaryPrecedence(t *testing.T) {
 	if errs := types.Check(prog, env); len(errs) > 0 {
 		t.Fatalf("type: %v", errs[0])
 	}
-	ast, err := hs.Transpile(prog, env)
+	ast, err := hs.Transpile(prog, env, false)
 	if err != nil {
 		t.Fatalf("transpile: %v", err)
 	}
@@ -141,7 +141,7 @@ func TestTranspile_LetAndPrint(t *testing.T) {
 	if errs := types.Check(prog, env); len(errs) > 0 {
 		t.Fatalf("type: %v", errs[0])
 	}
-	ast, err := hs.Transpile(prog, env)
+	ast, err := hs.Transpile(prog, env, false)
 	if err != nil {
 		t.Fatalf("transpile: %v", err)
 	}
@@ -186,7 +186,7 @@ func TestTranspile_TypedLet(t *testing.T) {
 	if errs := types.Check(prog, env); len(errs) > 0 {
 		t.Fatalf("type: %v", errs[0])
 	}
-	ast, err := hs.Transpile(prog, env)
+	ast, err := hs.Transpile(prog, env, false)
 	if err != nil {
 		t.Fatalf("transpile: %v", err)
 	}
@@ -231,7 +231,7 @@ func TestTranspile_FunCall(t *testing.T) {
 	if errs := types.Check(prog, env); len(errs) > 0 {
 		t.Fatalf("type: %v", errs[0])
 	}
-	ast, err := hs.Transpile(prog, env)
+	ast, err := hs.Transpile(prog, env, false)
 	if err != nil {
 		t.Fatalf("transpile: %v", err)
 	}
@@ -276,7 +276,7 @@ func TestTranspile_FunExprInLet(t *testing.T) {
 	if errs := types.Check(prog, env); len(errs) > 0 {
 		t.Fatalf("type: %v", errs[0])
 	}
-	ast, err := hs.Transpile(prog, env)
+	ast, err := hs.Transpile(prog, env, false)
 	if err != nil {
 		t.Fatalf("transpile: %v", err)
 	}
@@ -321,7 +321,7 @@ func TestTranspile_FunThreeArgs(t *testing.T) {
 	if errs := types.Check(prog, env); len(errs) > 0 {
 		t.Fatalf("type: %v", errs[0])
 	}
-	ast, err := hs.Transpile(prog, env)
+	ast, err := hs.Transpile(prog, env, false)
 	if err != nil {
 		t.Fatalf("transpile: %v", err)
 	}
@@ -366,7 +366,7 @@ func TestTranspile_StringConcat(t *testing.T) {
 	if errs := types.Check(prog, env); len(errs) > 0 {
 		t.Fatalf("type: %v", errs[0])
 	}
-	ast, err := hs.Transpile(prog, env)
+	ast, err := hs.Transpile(prog, env, false)
 	if err != nil {
 		t.Fatalf("transpile: %v", err)
 	}
@@ -411,7 +411,7 @@ func TestTranspile_LenString(t *testing.T) {
 	if errs := types.Check(prog, env); len(errs) > 0 {
 		t.Fatalf("type: %v", errs[0])
 	}
-	ast, err := hs.Transpile(prog, env)
+	ast, err := hs.Transpile(prog, env, false)
 	if err != nil {
 		t.Fatalf("transpile: %v", err)
 	}
