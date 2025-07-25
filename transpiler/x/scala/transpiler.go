@@ -2474,6 +2474,14 @@ func convertCall(c *parser.CallExpr, env *types.Env) (Expr, error) {
 			ln := &LenExpr{Value: args[0]}
 			return &BinaryExpr{Left: sum, Op: "/", Right: ln}, nil
 		}
+	case "float":
+		if len(args) == 1 {
+			return &CastExpr{Value: args[0], Type: "Double"}, nil
+		}
+	case "abs":
+		if len(args) == 1 {
+			return &CallExpr{Fn: &Name{Name: "Math.abs"}, Args: []Expr{args[0]}}, nil
+		}
 	case "min":
 		if len(args) == 1 {
 			return &FieldExpr{Receiver: args[0], Name: "min"}, nil
@@ -3280,9 +3288,15 @@ func convertForStmt(fs *parser.ForStmt, env *types.Env) (Stmt, error) {
 		if err != nil {
 			return nil, err
 		}
+		child := env
+		if env != nil {
+			child = types.NewEnv(env)
+			child.SetVar(fs.Name, types.IntType{}, false)
+			localVarTypes[fs.Name] = "Int"
+		}
 		var body []Stmt
 		for _, st := range fs.Body {
-			s, err := convertStmt(st, env)
+			s, err := convertStmt(st, child)
 			if err != nil {
 				return nil, err
 			}
@@ -3303,9 +3317,24 @@ func convertForStmt(fs *parser.ForStmt, env *types.Env) (Stmt, error) {
 			}
 		}
 	}
+	child := env
+	if env != nil {
+		child = types.NewEnv(env)
+		t := inferTypeWithEnv(iter, env)
+		elem := elementType(t)
+		if elem == "" {
+			elem = "Any"
+		}
+		localVarTypes[fs.Name] = elem
+		var typ types.Type = types.AnyType{}
+		if elem == "Int" {
+			typ = types.IntType{}
+		}
+		child.SetVar(fs.Name, typ, false)
+	}
 	var body []Stmt
 	for _, st := range fs.Body {
-		s, err := convertStmt(st, env)
+		s, err := convertStmt(st, child)
 		if err != nil {
 			return nil, err
 		}
@@ -3610,6 +3639,15 @@ func inferType(e Expr) string {
 			}
 		}
 		return "Any"
+	case *SliceExpr:
+		t := inferType(ex.Value)
+		if strings.HasPrefix(t, "ArrayBuffer[") {
+			return t
+		}
+		if t == "String" {
+			return "String"
+		}
+		return "ArrayBuffer[Any]"
 	case *SubstringExpr:
 		return "String"
 	case *NowExpr:
@@ -3678,7 +3716,7 @@ func inferType(e Expr) string {
 }
 
 func inferTypeWithEnv(e Expr, env *types.Env) string {
-	if t := inferType(e); t != "" && t != "Any" {
+	if t := inferType(e); t != "" && t != "Any" && t != "ArrayBuffer[Any]" {
 		return t
 	}
 	if env != nil {
@@ -3721,6 +3759,15 @@ func inferTypeWithEnv(e Expr, env *types.Env) string {
 					}
 				}
 			}
+		case *SliceExpr:
+			t := inferTypeWithEnv(ex.Value, env)
+			if strings.HasPrefix(t, "ArrayBuffer[") {
+				return t
+			}
+			if t == "String" {
+				return "String"
+			}
+			return "ArrayBuffer[Any]"
 		case *CallExpr:
 			if n, ok := ex.Fn.(*Name); ok {
 				if typ, err := env.GetVar(n.Name); err == nil {
@@ -3728,6 +3775,23 @@ func inferTypeWithEnv(e Expr, env *types.Env) string {
 						return toScalaTypeFromType(ft.Return)
 					}
 				}
+			}
+		case *BinaryExpr:
+			lt := inferTypeWithEnv(ex.Left, env)
+			rt := inferTypeWithEnv(ex.Right, env)
+			switch ex.Op {
+			case "+", "-", "*", "/", "%":
+				if ex.Op == "+" && (lt == "String" || rt == "String") {
+					return "String"
+				}
+				if lt == "Double" || rt == "Double" {
+					return "Double"
+				}
+				if lt == "Int" && rt == "Int" {
+					return "Int"
+				}
+			case "==", "!=", ">", "<", ">=", "<=", "&&", "||":
+				return "Boolean"
 			}
 		}
 	}
