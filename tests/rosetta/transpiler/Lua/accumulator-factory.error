@@ -1,8 +1,0 @@
-error[T043]: operator `+` cannot be used with `any`%!(EXTRA string=+)
-  --> /workspace/mochi/tests/rosetta/x/Mochi/accumulator-factory.mochi:7:25
-
-  7 |     store[0] = store[0] + nv
-    |                         ^
-
-help:
-  Cast values to concrete types before using `%s`.

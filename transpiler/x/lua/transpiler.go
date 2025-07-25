@@ -2518,7 +2518,11 @@ func convertPostfix(p *parser.PostfixExpr) (Expr, error) {
 					}
 					args = append(args, ae)
 				}
-				if id, ok := expr.(*Ident); ok {
+				if op.Field.Name == "keys" || op.Field.Name == "values" {
+					// built-in map methods
+					args = append([]Expr{expr}, args...)
+					expr = &CallExpr{Func: op.Field.Name, Args: args}
+				} else if id, ok := expr.(*Ident); ok {
 					// treat as a namespaced function call
 					name := id.Name + "." + op.Field.Name
 					cexpr := &CallExpr{Func: name, Args: args}
