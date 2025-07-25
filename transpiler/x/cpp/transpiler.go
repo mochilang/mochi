@@ -195,6 +195,13 @@ type MapLit struct {
 	ValueType string
 }
 
+// MapGetExpr represents m.get(key, default).
+type MapGetExpr struct {
+	Map     Expr
+	Key     Expr
+	Default Expr
+}
+
 // TupleExpr represents a std::tuple initialization.
 type TupleExpr struct{ Elems []Expr }
 
@@ -1005,6 +1012,16 @@ func (m *MapLit) emit(w io.Writer) {
 	io.WriteString(w, "}")
 }
 
+func (mg *MapGetExpr) emit(w io.Writer) {
+	io.WriteString(w, "([&]{ auto &__map = ")
+	mg.Map.emit(w)
+	io.WriteString(w, "; auto __it = __map.find(")
+	mg.Key.emit(w)
+	io.WriteString(w, "); if(__it != __map.end()) return __it->second; return ")
+	mg.Default.emit(w)
+	io.WriteString(w, "; }())")
+}
+
 func (t *TupleExpr) emit(w io.Writer) {
 	io.WriteString(w, "std::tuple{")
 	for i, e := range t.Elems {
@@ -1236,11 +1253,14 @@ func (s *StrExpr) emit(w io.Writer) {
 	}
 	io.WriteString(w, "([&]{ std::ostringstream ss; ")
 	typ := exprType(s.Value)
-	if typ == "std::any" {
+	switch {
+	case strings.HasPrefix(typ, "std::vector<") || strings.HasPrefix(typ, "std::map<") || strings.HasPrefix(typ, "std::optional<"):
+		emitToStream(w, "ss", s.Value, 0)
+	case typ == "std::any":
 		io.WriteString(w, "any_to_stream(ss, ")
 		s.Value.emit(w)
-		io.WriteString(w, ");")
-	} else {
+		io.WriteString(w, ");\n")
+	default:
 		io.WriteString(w, "ss << std::boolalpha << ")
 		s.Value.emit(w)
 		io.WriteString(w, ";")
@@ -1974,6 +1994,39 @@ func (b *BinaryExpr) emit(w io.Writer) {
 			io.WriteString(w, "(")
 			b.Left.emit(w)
 			io.WriteString(w, " / ")
+			b.Right.emit(w)
+			io.WriteString(w, ")")
+		}
+		return
+	}
+	if b.Op == "%" {
+		lt := exprType(b.Left)
+		rt := exprType(b.Right)
+		if lt == "double" || rt == "double" {
+			if currentProgram != nil {
+				currentProgram.addInclude("<cmath>")
+			}
+			io.WriteString(w, "std::fmod(")
+			if lt == "double" {
+				b.Left.emit(w)
+			} else {
+				io.WriteString(w, "(double)(")
+				b.Left.emit(w)
+				io.WriteString(w, ")")
+			}
+			io.WriteString(w, ", ")
+			if rt == "double" {
+				b.Right.emit(w)
+			} else {
+				io.WriteString(w, "(double)(")
+				b.Right.emit(w)
+				io.WriteString(w, ")")
+			}
+			io.WriteString(w, ")")
+		} else {
+			io.WriteString(w, "(")
+			b.Left.emit(w)
+			io.WriteString(w, " % ")
 			b.Right.emit(w)
 			io.WriteString(w, ")")
 		}
@@ -3499,6 +3552,8 @@ func convertPostfix(p *parser.PostfixExpr) (Expr, error) {
 			} else if sel, ok := expr.(*SelectorExpr); ok {
 				if sel.Field == "keys" && len(args) == 0 {
 					expr = &KeysExpr{Map: sel.Target}
+				} else if sel.Field == "get" && len(args) == 2 {
+					expr = &MapGetExpr{Map: sel.Target, Key: args[0], Default: args[1]}
 				} else {
 					if vr, ok2 := sel.Target.(*VarRef); ok2 {
 						if kind, ok3 := builtinAliases[vr.Name]; ok3 {
@@ -5538,6 +5593,12 @@ func exprType(e Expr) string {
 		if strings.HasPrefix(t, "std::vector<") {
 			return t
 		}
+		if t == "std::string" {
+			return "std::string"
+		}
+		return "auto"
+	case *SubstringExpr:
+		t := exprType(v.Value)
 		if t == "std::string" {
 			return "std::string"
 		}
