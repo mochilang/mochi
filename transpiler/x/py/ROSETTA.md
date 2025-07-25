@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated Python code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/Python`.
-Last updated: 2025-07-25 19:21 GMT+7
+Last updated: 2025-07-25 19:44 GMT+7
 
 ## Rosetta Golden Test Checklist (267/284)
 | Index | Name | Status | Duration | Memory |
@@ -169,36 +169,36 @@ Last updated: 2025-07-25 19:21 GMT+7
 | 160 | call-a-function-8 | ✓ | 17.0µs | 12.68MB |
 | 161 | call-a-function-9 | ✓ | 3.0µs | 12.54MB |
 | 162 | call-an-object-method-1 | ✓ | 373.0µs | 12.16MB |
-| 163 | call-an-object-method-2 | ✓ |  |  |
-| 164 | call-an-object-method-3 | ✓ |  |  |
-| 165 | call-an-object-method | ✓ |  |  |
-| 166 | camel-case-and-snake-case | ✓ |  |  |
-| 167 | canny-edge-detector | ✓ |  |  |
-| 168 | canonicalize-cidr | ✓ |  |  |
-| 169 | cantor-set | ✓ |  |  |
-| 170 | carmichael-3-strong-pseudoprimes | ✓ |  |  |
-| 171 | cartesian-product-of-two-or-more-lists-1 | ✓ |  |  |
-| 172 | cartesian-product-of-two-or-more-lists-2 | ✓ |  |  |
-| 173 | cartesian-product-of-two-or-more-lists-3 | ✓ |  |  |
-| 174 | cartesian-product-of-two-or-more-lists-4 | ✓ |  |  |
-| 175 | case-sensitivity-of-identifiers | ✓ |  |  |
-| 176 | casting-out-nines | ✓ |  |  |
-| 177 | catalan-numbers-1 | ✓ |  |  |
-| 178 | catalan-numbers-2 | ✓ |  |  |
-| 179 | catalan-numbers-pascals-triangle | ✓ |  |  |
-| 180 | catamorphism | ✓ |  |  |
-| 181 | catmull-clark-subdivision-surface |   |  |  |
-| 182 | chaocipher | ✓ |  |  |
-| 183 | chaos-game | ✓ |  |  |
-| 184 | character-codes-1 | ✓ |  |  |
-| 185 | character-codes-2 | ✓ |  |  |
-| 186 | character-codes-3 | ✓ |  |  |
-| 187 | character-codes-4 | ✓ |  |  |
-| 188 | character-codes-5 | ✓ |  |  |
-| 189 | chat-server | ✓ |  |  |
-| 190 | check-machin-like-formulas | ✓ |  |  |
-| 191 | check-that-file-exists | ✓ |  |  |
-| 192 | checkpoint-synchronization-1 | ✓ |  |  |
+| 163 | call-an-object-method-2 | ✓ | 921.0µs | 12.42MB |
+| 164 | call-an-object-method-3 | ✓ | 842.0µs | 12.43MB |
+| 165 | call-an-object-method | ✓ | 814.0µs | 12.30MB |
+| 166 | camel-case-and-snake-case | ✓ | 293.0µs | 13.74MB |
+| 167 | canny-edge-detector | ✓ | 274.0µs | 13.58MB |
+| 168 | canonicalize-cidr | ✓ | 428.0µs | 13.50MB |
+| 169 | cantor-set | ✓ | 654.0µs | 12.80MB |
+| 170 | carmichael-3-strong-pseudoprimes | ✓ | 3.0ms | 12.17MB |
+| 171 | cartesian-product-of-two-or-more-lists-1 | ✓ | 40.0µs | 12.59MB |
+| 172 | cartesian-product-of-two-or-more-lists-2 | ✓ | 182.0µs | 13.57MB |
+| 173 | cartesian-product-of-two-or-more-lists-3 | ✓ | 172.0µs | 13.03MB |
+| 174 | cartesian-product-of-two-or-more-lists-4 | ✓ | 172.0µs | 13.30MB |
+| 175 | case-sensitivity-of-identifiers | ✓ | 26.0µs | 12.61MB |
+| 176 | casting-out-nines | ✓ | 4.0ms | 13.35MB |
+| 177 | catalan-numbers-1 | ✓ | 79.0µs | 12.48MB |
+| 178 | catalan-numbers-2 | ✓ | 82.0µs | 12.42MB |
+| 179 | catalan-numbers-pascals-triangle | ✓ | 117.0µs | 12.09MB |
+| 180 | catamorphism | ✓ | 21.0µs | 12.35MB |
+| 181 | catmull-clark-subdivision-surface | ✓ | 844.0µs | 14.61MB |
+| 182 | chaocipher | ✓ | 474.0µs | 12.81MB |
+| 183 | chaos-game | ✓ | 10.0ms | 12.62MB |
+| 184 | character-codes-1 | ✓ | 13.0µs | 12.17MB |
+| 185 | character-codes-2 | ✓ | 13.0µs | 12.85MB |
+| 186 | character-codes-3 | ✓ | 23.0µs | 12.67MB |
+| 187 | character-codes-4 | ✓ | 16.0µs | 12.83MB |
+| 188 | character-codes-5 | ✓ | 16.0µs | 12.55MB |
+| 189 | chat-server | error |  |  |
+| 190 | check-machin-like-formulas | ✓ | 11.0ms | 13.92MB |
+| 191 | check-that-file-exists | ✓ | 15.0µs | 12.42MB |
+| 192 | checkpoint-synchronization-1 | ✓ | 41.0µs | 12.21MB |
 | 193 | checkpoint-synchronization-2 | ✓ |  |  |
 | 194 | checkpoint-synchronization-3 | ✓ |  |  |
 | 195 | checkpoint-synchronization-4 | ✓ |  |  |
