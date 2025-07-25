@@ -2316,17 +2316,206 @@ func dataExprFromFile(path, format string, typ *parser.TypeRef) (Expr, error) {
 	return valueToExpr(v, typ), nil
 }
 
+// collectHelpers traverses the program and returns a set of helper names that
+// are required by the emitted Lua code.
+func collectHelpers(p *Program) map[string]bool {
+	used := map[string]bool{}
+
+	var walkStmt func(Stmt)
+	var walkExpr func(Expr)
+	walkExpr = func(e Expr) {
+		switch ex := e.(type) {
+		case *CallExpr:
+			switch ex.Func {
+			case "now":
+				used["now"] = true
+			case "_bigrat", "_add", "_sub", "_mul", "_div", "num", "denom":
+				used["bigrat"] = true
+			case "padStart":
+				used["padStart"] = true
+			case "sha256":
+				used["sha256"] = true
+			case "indexOf":
+				used["indexOf"] = true
+			case "parseIntStr":
+				used["parseIntStr"] = true
+			}
+			for _, a := range ex.Args {
+				walkExpr(a)
+			}
+		case *DynCallExpr:
+			walkExpr(ex.Fn)
+			for _, a := range ex.Args {
+				walkExpr(a)
+			}
+		case *IfExpr:
+			walkExpr(ex.Cond)
+			walkExpr(ex.Then)
+			walkExpr(ex.Else)
+		case *BinaryExpr:
+			walkExpr(ex.Left)
+			walkExpr(ex.Right)
+		case *UnaryExpr:
+			walkExpr(ex.Value)
+		case *ListLit:
+			for _, it := range ex.Elems {
+				walkExpr(it)
+			}
+		case *MapLit:
+			for i := range ex.Keys {
+				walkExpr(ex.Keys[i])
+				walkExpr(ex.Values[i])
+			}
+		case *IndexExpr:
+			walkExpr(ex.Target)
+			walkExpr(ex.Index)
+		case *SliceExpr:
+			used["slice"] = true
+			walkExpr(ex.Target)
+			if ex.Start != nil {
+				walkExpr(ex.Start)
+			}
+			if ex.End != nil {
+				walkExpr(ex.End)
+			}
+		case *FunExpr:
+			for _, st := range ex.Body {
+				walkStmt(st)
+			}
+			if ex.Expr != nil {
+				walkExpr(ex.Expr)
+			}
+		case *MatchExpr:
+			walkExpr(ex.Target)
+			for _, a := range ex.Arms {
+				if a.Pattern != nil {
+					walkExpr(a.Pattern)
+				}
+				walkExpr(a.Result)
+			}
+		case *QueryComp:
+			for _, s := range ex.Sources {
+				walkExpr(s)
+			}
+			if ex.Body != nil {
+				walkExpr(ex.Body)
+			}
+			if ex.Where != nil {
+				walkExpr(ex.Where)
+			}
+			if ex.GroupKey != nil {
+				walkExpr(ex.GroupKey)
+			}
+			if ex.Having != nil {
+				walkExpr(ex.Having)
+			}
+			if ex.SortKey != nil {
+				walkExpr(ex.SortKey)
+			}
+			if ex.Skip != nil {
+				walkExpr(ex.Skip)
+			}
+			if ex.Take != nil {
+				walkExpr(ex.Take)
+			}
+		}
+	}
+
+	walkStmt = func(s Stmt) {
+		switch st := s.(type) {
+		case *ExprStmt:
+			walkExpr(st.Expr)
+		case *AssignStmt:
+			if st.Value != nil {
+				walkExpr(st.Value)
+			}
+		case *QueryAssignStmt:
+			walkExpr(st.Query)
+		case *SaveStmt:
+			walkExpr(st.Src)
+		case *FunStmt:
+			for _, b := range st.Body {
+				walkStmt(b)
+			}
+		case *ReturnStmt:
+			walkExpr(st.Value)
+		case *IfStmt:
+			walkExpr(st.Cond)
+			for _, b := range st.Then {
+				walkStmt(b)
+			}
+			for _, b := range st.Else {
+				walkStmt(b)
+			}
+		case *WhileStmt:
+			walkExpr(st.Cond)
+			for _, b := range st.Body {
+				walkStmt(b)
+			}
+		case *ForRangeStmt:
+			if st.Start != nil {
+				walkExpr(st.Start)
+			}
+			if st.End != nil {
+				walkExpr(st.End)
+			}
+			for _, b := range st.Body {
+				walkStmt(b)
+			}
+		case *ForInStmt:
+			walkExpr(st.Iterable)
+			for _, b := range st.Body {
+				walkStmt(b)
+			}
+		case *BenchStmt:
+			used["now"] = true
+			for _, b := range st.Body {
+				walkStmt(b)
+			}
+		case *UpdateStmt:
+			for _, v := range st.Values {
+				walkExpr(v)
+			}
+			if st.Cond != nil {
+				walkExpr(st.Cond)
+			}
+		}
+	}
+
+	for _, st := range p.Stmts {
+		walkStmt(st)
+	}
+	return used
+}
+
 // Emit converts the AST back into Lua source code with a standard header.
 func Emit(p *Program) []byte {
 	var b bytes.Buffer
 	b.WriteString(header())
-	b.WriteString(helperNow)
-	b.WriteString(helperPadStart)
-	b.WriteString(helperBigRat)
-	b.WriteString(helperSHA256)
-	b.WriteString(helperIndexOf)
-	b.WriteString(helperParseIntStr)
-	b.WriteString(helperSlice)
+
+	used := collectHelpers(p)
+	if used["now"] {
+		b.WriteString(helperNow)
+	}
+	if used["padStart"] {
+		b.WriteString(helperPadStart)
+	}
+	if used["bigrat"] {
+		b.WriteString(helperBigRat)
+	}
+	if used["sha256"] {
+		b.WriteString(helperSHA256)
+	}
+	if used["indexOf"] {
+		b.WriteString(helperIndexOf)
+	}
+	if used["parseIntStr"] {
+		b.WriteString(helperParseIntStr)
+	}
+	if used["slice"] {
+		b.WriteString(helperSlice)
+	}
+
 	prevEnv := currentEnv
 	currentEnv = p.Env
 	for i, st := range p.Stmts {

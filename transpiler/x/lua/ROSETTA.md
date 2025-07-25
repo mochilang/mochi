@@ -4,7 +4,7 @@ Generated Lua code for programs in `tests/rosetta/x/Mochi`. Each program has a `
 
 Transpiled programs: 239/284
 
-Last updated: 2025-07-25 16:25 GMT+7
+Last updated: 2025-07-25 16:49 GMT+7
 
 Checklist:
 
@@ -55,16 +55,16 @@ Checklist:
 | 43 | almost-prime | ✓ | 669µs | 304 B |
 | 44 | amb | ✓ | 62µs | 1.8 KB |
 | 45 | amicable-pairs | ✓ | 12.414371s | 319.0 KB |
-| 46 | anagrams-deranged-anagrams | ✓ |  |  |
-| 47 | anagrams | ✓ |  |  |
-| 48 | angle-difference-between-two-bearings-1 | ✓ |  |  |
-| 49 | angle-difference-between-two-bearings-2 | ✓ |  |  |
-| 50 | angles-geometric-normalization-and-conversion | ✓ |  |  |
-| 51 | animate-a-pendulum | ✓ |  |  |
-| 52 | animation | ✓ |  |  |
-| 53 | anonymous-recursion-1 | ✓ |  |  |
-| 54 | anonymous-recursion-2 | ✓ |  |  |
-| 55 | anonymous-recursion | ✓ |  |  |
+| 46 | anagrams-deranged-anagrams | ✓ | 140µs | 312 B |
+| 47 | anagrams | ✓ | 533µs | 312 B |
+| 48 | angle-difference-between-two-bearings-1 | ✓ | 44µs | 984 B |
+| 49 | angle-difference-between-two-bearings-2 | ✓ | 62µs | 1.4 KB |
+| 50 | angles-geometric-normalization-and-conversion | ✓ | 366µs | 776 B |
+| 51 | animate-a-pendulum | ✓ | 42µs | 160 B |
+| 52 | animation | ✓ | 889µs | 102 B |
+| 53 | anonymous-recursion-1 | ✓ | 62µs | 136 B |
+| 54 | anonymous-recursion-2 | ✓ | 49µs | 136 B |
+| 55 | anonymous-recursion | ✓ | 82µs | 720 B |
 | 56 | anti-primes | ✓ |  |  |
 | 57 | append-a-record-to-the-end-of-a-text-file | ✓ |  |  |
 | 58 | apply-a-callback-to-an-array-1 | ✓ |  |  |
