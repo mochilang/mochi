@@ -1861,18 +1861,36 @@ func (b *BinaryExpr) emit(w io.Writer) {
 			io.WriteString(w, "; __lhs.insert(__lhs.end(), __rhs.begin(), __rhs.end()); return __lhs; }())")
 			return
 		}
-		// string + vector<string>
-		if lt == "std::string" && strings.HasPrefix(rt, "std::vector<") && elementTypeFromListType(rt) == "std::string" {
-			if currentProgram != nil {
-				currentProgram.addInclude("<vector>")
-			}
-			io.WriteString(w, "([&]{ std::string __res = ")
-			b.Left.emit(w)
-			io.WriteString(w, "; const auto& __vec = ")
-			b.Right.emit(w)
-			io.WriteString(w, "; for(const auto& __e : __vec){ __res += __e; } return __res; }())")
-			return
-		}
+               // string + vector<string>
+               if lt == "std::string" && strings.HasPrefix(rt, "std::vector<") && elementTypeFromListType(rt) == "std::string" {
+                       if currentProgram != nil {
+                               currentProgram.addInclude("<vector>")
+                       }
+                       io.WriteString(w, "([&]{ std::string __res = ")
+                       b.Left.emit(w)
+                       io.WriteString(w, "; const auto& __vec = ")
+                       b.Right.emit(w)
+                       io.WriteString(w, "; for(const auto& __e : __vec){ __res += __e; } return __res; }())")
+                       return
+               }
+               // string + any
+               if lt == "std::string" && rt == "std::any" {
+                       io.WriteString(w, "(")
+                       b.Left.emit(w)
+                       io.WriteString(w, " + ")
+                       (&StrExpr{Value: b.Right}).emit(w)
+                       io.WriteString(w, ")")
+                       return
+               }
+               // any + string
+               if lt == "std::any" && rt == "std::string" {
+                       io.WriteString(w, "(")
+                       (&StrExpr{Value: b.Left}).emit(w)
+                       io.WriteString(w, " + ")
+                       b.Right.emit(w)
+                       io.WriteString(w, ")")
+                       return
+               }
 	}
 	if b.Op == "/" {
 		lt := exprType(b.Left)
@@ -3239,18 +3257,20 @@ func convertBinary(b *parser.BinaryExpr) (Expr, error) {
 					}
 					ex = &InExpr{Value: l, Coll: r}
 				} else {
-					if ops[i] == "+" || ops[i] == "-" || ops[i] == "*" || ops[i] == "/" || ops[i] == "%" {
-						lt := exprType(l)
-						rt := exprType(r)
-						if !(strings.Contains(lt, "any") && strings.Contains(rt, "any")) {
-							if strings.Contains(lt, "any") {
-								l = &CastExpr{Value: l, Type: "double"}
-							}
-							if strings.Contains(rt, "any") {
-								r = &CastExpr{Value: r, Type: "double"}
-							}
-						}
-					}
+                                       if ops[i] == "+" || ops[i] == "-" || ops[i] == "*" || ops[i] == "/" || ops[i] == "%" {
+                                                lt := exprType(l)
+                                                rt := exprType(r)
+                                                if ops[i] != "+" || (lt != "std::string" && rt != "std::string") {
+                                                        if !(strings.Contains(lt, "any") && strings.Contains(rt, "any")) {
+                                                                if strings.Contains(lt, "any") {
+                                                                        l = &CastExpr{Value: l, Type: "double"}
+                                                                }
+                                                                if strings.Contains(rt, "any") {
+                                                                        r = &CastExpr{Value: r, Type: "double"}
+                                                                }
+                                                        }
+                                                }
+                                        }
 					ex = &BinaryExpr{Left: l, Op: ops[i], Right: r}
 				}
 				operands[i] = ex
