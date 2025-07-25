@@ -5,6 +5,7 @@ package st_test
 import (
 	"bufio"
 	"bytes"
+	"encoding/json"
 	"flag"
 	"fmt"
 	"os"
@@ -57,6 +58,8 @@ func TestSmalltalkRosetta(t *testing.T) {
 		files = files[idx-1 : idx]
 	}
 
+	bench := os.Getenv("MOCHI_BENCHMARK") == "true" || os.Getenv("MOCHI_BENCHMARK") == "1"
+
 	for i, srcPath := range files {
 		name := strings.TrimSuffix(filepath.Base(srcPath), ".mochi")
 		testName := fmt.Sprintf("%03d_%s", i+1, name)
@@ -89,7 +92,7 @@ func TestSmalltalkRosetta(t *testing.T) {
 				return
 			}
 			var buf bytes.Buffer
-			if err := st.Emit(&buf, ast); err != nil {
+			if err := st.Emit(&buf, ast, bench); err != nil {
 				_ = os.WriteFile(errPath, []byte(err.Error()), 0o644)
 				t.Skip("emit error")
 				return
@@ -102,6 +105,9 @@ func TestSmalltalkRosetta(t *testing.T) {
 			if gstErr == nil {
 				cmd := exec.Command("gst", stPath)
 				cmd.Env = append(os.Environ(), "MOCHI_ROOT="+root)
+				if bench {
+					cmd.Env = append(cmd.Env, "MOCHI_BENCHMARK=1")
+				}
 				if data, err := os.ReadFile(strings.TrimSuffix(srcPath, ".mochi") + ".in"); err == nil {
 					cmd.Stdin = bytes.NewReader(data)
 				}
@@ -111,6 +117,10 @@ func TestSmalltalkRosetta(t *testing.T) {
 					return
 				}
 			} else {
+				if bench {
+					t.Skip("gst not installed for benchmark")
+					return
+				}
 				var err error
 				out, err = os.ReadFile(strings.TrimSuffix(srcPath, ".mochi") + ".out")
 				if err != nil {
@@ -119,6 +129,13 @@ func TestSmalltalkRosetta(t *testing.T) {
 				}
 			}
 			got := bytes.TrimSpace(out)
+			if bench {
+				benchPath := filepath.Join(outDir, name+".bench")
+				if shouldUpdate() {
+					_ = os.WriteFile(benchPath, got, 0o644)
+				}
+				return
+			}
 			if shouldUpdate() {
 				if err := os.WriteFile(wantPath, append(got, '\n'), 0o644); err != nil {
 					t.Fatalf("write out: %v", err)
@@ -182,17 +199,31 @@ func updateRosettaChecklist() {
 	}
 	total := len(names)
 	compiled := 0
-	var lines []string
+	var rows []string
+	rows = append(rows, "| Index | Name | Status | Duration | Memory |")
+	rows = append(rows, "|------:|------|--------|---------:|-------:|")
 	for i, nameFile := range names {
 		name := strings.TrimSuffix(nameFile, ".mochi")
-		mark := "[ ]"
-		if _, err := os.Stat(filepath.Join(outDir, name+".out")); err == nil {
-			if _, err2 := os.Stat(filepath.Join(outDir, name+".error")); os.IsNotExist(err2) {
-				compiled++
-				mark = "[x]"
+		status := " "
+		dur := ""
+		mem := ""
+		if _, err := os.Stat(filepath.Join(outDir, name+".error")); err == nil {
+			status = "error"
+		} else if _, err := os.Stat(filepath.Join(outDir, name+".st")); err == nil {
+			status = "ok"
+			compiled++
+		}
+		if data, err := os.ReadFile(filepath.Join(outDir, name+".bench")); err == nil {
+			var r struct {
+				DurationUS  int64 `json:"duration_us"`
+				MemoryBytes int64 `json:"memory_bytes"`
+			}
+			if json.Unmarshal(bytes.TrimSpace(data), &r) == nil {
+				dur = formatDuration(time.Duration(r.DurationUS) * time.Microsecond)
+				mem = formatBytes(r.MemoryBytes)
 			}
 		}
-		lines = append(lines, fmt.Sprintf("%d. %s %d %s", i+1, mark, i+1, name))
+		rows = append(rows, fmt.Sprintf("| %d | %s | %s | %s | %s |", i+1, name, status, dur, mem))
 	}
 	out, err := exec.Command("git", "log", "-1", "--format=%cI").Output()
 	ts := time.Now()
@@ -210,7 +241,38 @@ func updateRosettaChecklist() {
 	buf.WriteString("This checklist tracks the Rosetta Code programs transpiled into Smalltalk under `tests/rosetta/transpiler/st`.\n")
 	fmt.Fprintf(&buf, "Last updated: %s\n\n", ts.Format("2006-01-02 15:04 -0700"))
 	fmt.Fprintf(&buf, "## Rosetta Golden Test Checklist (%d/%d)\n", compiled, total)
-	buf.WriteString(strings.Join(lines, "\n"))
+	buf.WriteString(strings.Join(rows, "\n"))
 	buf.WriteString("\n")
 	_ = os.WriteFile(readmePath, buf.Bytes(), 0o644)
+}
+
+func formatDuration(d time.Duration) string {
+	switch {
+	case d < time.Microsecond:
+		return fmt.Sprintf("%dns", d.Nanoseconds())
+	case d < time.Millisecond:
+		return fmt.Sprintf("%.1fµs", float64(d.Microseconds()))
+	case d < time.Second:
+		return fmt.Sprintf("%.1fms", float64(d.Milliseconds()))
+	default:
+		return fmt.Sprintf("%.2fs", d.Seconds())
+	}
+}
+
+func formatBytes(n int64) string {
+	const (
+		_KB = 1024
+		_MB = _KB * 1024
+		_GB = _MB * 1024
+	)
+	switch {
+	case n >= _GB:
+		return fmt.Sprintf("%.2fGB", float64(n)/float64(_GB))
+	case n >= _MB:
+		return fmt.Sprintf("%.2fMB", float64(n)/float64(_MB))
+	case n >= _KB:
+		return fmt.Sprintf("%.2fKB", float64(n)/float64(_KB))
+	default:
+		return fmt.Sprintf("%dB", n)
+	}
 }

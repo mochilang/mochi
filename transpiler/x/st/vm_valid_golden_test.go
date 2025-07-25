@@ -67,7 +67,7 @@ func TestSmalltalkTranspiler_VMValid_Golden(t *testing.T) {
 			return nil, err
 		}
 		var buf bytes.Buffer
-		if err := st.Emit(&buf, ast); err != nil {
+		if err := st.Emit(&buf, ast, false); err != nil {
 			_ = os.WriteFile(errPath, []byte(err.Error()), 0o644)
 			return nil, err
 		}
