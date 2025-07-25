@@ -2,8 +2,8 @@
 
 Generated Swift code for Mochi Rosetta programs in `tests/rosetta/x/Mochi`. Outputs are stored in `tests/rosetta/transpiler/Swift`. Errors are captured in `.error` files.
 
-Completed: 50/284
-Last updated: 2025-07-25 10:40 +0700
+Completed: 51/284
+Last updated: 2025-07-25 19:45 +0700
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -16,7 +16,7 @@ Last updated: 2025-07-25 10:40 +0700
 | 7 | 2048 | ✓ |  |  |
 | 8 | 21-game | ✓ |  |  |
 | 9 | 24-game-solve | ✓ |  |  |
-| 10 | 24-game |   |  |  |
+| 10 | 24-game | ✓ |  |  |
 | 11 | 4-rings-or-4-squares-puzzle |   |  |  |
 | 12 | 9-billion-names-of-god-the-integer | ✓ |  |  |
 | 13 | 99-bottles-of-beer-2 | ✓ |  |  |

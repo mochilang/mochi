@@ -922,15 +922,7 @@ func (c *CastExpr) emit(w io.Writer) {
 				} else {
 					fmt.Fprintf(w, "%s(", t)
 					c.Expr.emit(w)
-					if t != "Bool" {
-						if t == "String" {
-							fmt.Fprint(w, ")")
-						} else {
-							fmt.Fprint(w, ")!")
-						}
-					} else {
-						fmt.Fprint(w, ")")
-					}
+					fmt.Fprint(w, ")")
 				}
 			} else {
 				fmt.Fprint(w, "(")

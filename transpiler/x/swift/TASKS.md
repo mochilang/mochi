@@ -1,5 +1,5 @@
-## Progress (2025-07-25 10:40 +0700)
-- swift: benchmark output for first rosetta
+## Progress (2025-07-25 19:45 +0700)
+- swift transpiler: add _int helper and fix cast logic
 - Generated golden tests for 102/104 programs
 - Updated README checklist and output artifacts
 
