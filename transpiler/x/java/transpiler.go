@@ -114,6 +114,9 @@ func javaType(t string) string {
 				ret := t[retIdx+1:]
 				if len(params) == 1 {
 					pt := javaBoxType(javaType(params[0]))
+					if ret == "void" {
+						return fmt.Sprintf("java.util.function.Consumer<%s>", pt)
+					}
 					rt := javaBoxType(javaType(ret))
 					return fmt.Sprintf("java.util.function.Function<%s,%s>", pt, rt)
 				}
@@ -415,7 +418,7 @@ func inferType(e Expr) string {
 		return "java.util.List"
 	case *AppendExpr:
 		t := inferType(ex.Value)
-		if t == "" {
+		if t == "" || t == "void" {
 			t = arrayElemType(ex.List)
 		}
 		if t == "" {
@@ -462,6 +465,18 @@ func inferType(e Expr) string {
 		case "contains":
 			return "boolean"
 		case "apply":
+			if v, ok := ex.Target.(*VarExpr); ok {
+				if ft, ok2 := varTypes[v.Name]; ok2 {
+					if strings.HasPrefix(ft, "fn(") {
+						if idx := strings.LastIndex(ft, "):"); idx >= 0 {
+							ret := ft[idx+2:]
+							if ret != "" {
+								return ret
+							}
+						}
+					}
+				}
+			}
 			return "Object"
 		}
 	case *VarExpr:
@@ -2614,8 +2629,10 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 				return nil, err
 			}
 			t := typeRefString(s.Var.Type)
-			if t == "list" && topEnv != nil {
-				t = toJavaTypeFromType(types.ExprType(s.Var.Value, topEnv))
+			if t == "" {
+				if s.Var.Type != nil && s.Var.Type.Generic != nil && s.Var.Type.Generic.Name == "list" && topEnv != nil {
+					t = toJavaTypeFromType(types.ExprType(s.Var.Value, topEnv))
+				}
 			}
 			if t == "" {
 				switch ex := e.(type) {
@@ -3326,8 +3343,17 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			needNow = true
 			return &CallExpr{Func: "_now", Args: nil}, nil
 		}
-		if t, ok := varTypes[name]; ok && (strings.HasPrefix(t, "fn") || strings.HasPrefix(t, "java.util.function.Function")) {
-			return &MethodCallExpr{Target: &VarExpr{Name: name}, Name: "apply", Args: args}, nil
+		if t, ok := varTypes[name]; ok {
+			if strings.HasPrefix(t, "fn") {
+				method := "apply"
+				if strings.HasSuffix(t, ":void") {
+					method = "accept"
+				}
+				return &MethodCallExpr{Target: &VarExpr{Name: name}, Name: method, Args: args}, nil
+			}
+			if strings.HasPrefix(t, "java.util.function.Function") {
+				return &MethodCallExpr{Target: &VarExpr{Name: name}, Name: "apply", Args: args}, nil
+			}
 		}
 		if name == "print" {
 			name = "System.out.println"
@@ -4264,6 +4290,9 @@ func typeRefString(tr *parser.TypeRef) string {
 			params = append(params, typeRefString(p))
 		}
 		ret := typeRefString(tr.Fun.Return)
+		if ret == "" {
+			ret = "void"
+		}
 		return fmt.Sprintf("fn(%s):%s", strings.Join(params, ","), ret)
 	}
 	return ""
