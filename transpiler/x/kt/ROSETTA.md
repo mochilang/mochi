@@ -2,7 +2,7 @@
 
 Generated Kotlin sources for Rosetta Code tests are stored in `tests/rosetta/transpiler/Kotlin`.
 
-Last updated: 2025-07-25 20:01 +0700
+Last updated: 2025-07-25 22:07 +0700
 
 Completed tasks: **54/284**
 
@@ -18,36 +18,36 @@ Completed tasks: **54/284**
 | 7 | 2048 | ✓ | 17.43ms | 151.1 KB |
 | 8 | 21-game | ✓ | 14.86ms | 118.8 KB |
 | 9 | 24-game-solve | ✓ |  | 138.7 KB |
-| 10 | 24-game | ✓ |  | 111.2 KB |
+| 10 | 24-game | ✓ | 18.30ms | 96.2 KB |
 | 11 | 4-rings-or-4-squares-puzzle | ✓ |  | 795.4 KB |
 | 12 | 9-billion-names-of-god-the-integer | ✓ | 245.36ms | 825.1 KB |
 | 13 | 99-bottles-of-beer-2 | ✓ |  | 97.2 KB |
-| 14 | 99-bottles-of-beer | ✓ | 22.77ms | 133.8 KB |
-| 15 | DNS-query | ✓ | 7.31ms | 134.2 KB |
-| 16 | a+b | ✓ | 12.98ms | 119.2 KB |
-| 17 | abbreviations-automatic | ✓ |  | 128.6 KB |
-| 18 | abbreviations-easy | ✓ |  | 121.2 KB |
-| 19 | abbreviations-simple | ✓ |  | 117.4 KB |
-| 20 | abc-problem | ✓ |  | 120.7 KB |
-| 21 | abelian-sandpile-model-identity | ✓ | 10.98ms | 133.1 KB |
-| 22 | abelian-sandpile-model | ✓ |  | 121.8 KB |
-| 23 | abstract-type | ✓ | 10.64ms | 130.4 KB |
-| 24 | abundant-deficient-and-perfect-number-classifications | ✓ | 257.75ms | 133.6 KB |
+| 14 | 99-bottles-of-beer | ✓ | 11.87ms | 133.8 KB |
+| 15 | DNS-query | ✓ |  | 134.1 KB |
+| 16 | a+b | ✓ |  | 102.6 KB |
+| 17 | abbreviations-automatic | ✓ | 24.27ms | 131.6 KB |
+| 18 | abbreviations-easy | ✓ |  | 123.0 KB |
+| 19 | abbreviations-simple | ✓ |  | 119.5 KB |
+| 20 | abc-problem | ✓ | 13.57ms | 121.4 KB |
+| 21 | abelian-sandpile-model-identity | ✓ |  | 133.0 KB |
+| 22 | abelian-sandpile-model | ✓ |  | 123.5 KB |
+| 23 | abstract-type | ✓ | 5.54ms | 130.4 KB |
+| 24 | abundant-deficient-and-perfect-number-classifications | ✓ |  | 133.6 KB |
 | 25 | abundant-odd-numbers | ✓ |  | 826.2 KB |
-| 26 | accumulator-factory | ✓ |  | 109.3 KB |
+| 26 | accumulator-factory | ✓ | 12.46ms | 109.0 KB |
 | 27 | achilles-numbers |  |  |  |
-| 28 | ackermann-function-2 | ✓ | 5.90ms | 133.9 KB |
+| 28 | ackermann-function-2 | ✓ | 3.06ms | 133.9 KB |
 | 29 | ackermann-function-3 | ✓ |  |  |
-| 30 | ackermann-function | ✓ |  |  |
-| 31 | active-directory-connect | ✓ |  |  |
-| 32 | active-directory-search-for-a-user | ✓ |  |  |
-| 33 | active-object | ✓ |  |  |
-| 34 | add-a-variable-to-a-class-instance-at-runtime | ✓ |  |  |
-| 35 | additive-primes | ✓ |  |  |
-| 36 | address-of-a-variable | ✓ |  |  |
+| 30 | ackermann-function | ✓ |  | 133.9 KB |
+| 31 | active-directory-connect | ✓ | 9.17ms | 122.7 KB |
+| 32 | active-directory-search-for-a-user | ✓ |  | 120.8 KB |
+| 33 | active-object | ✓ |  | 124.4 KB |
+| 34 | add-a-variable-to-a-class-instance-at-runtime | ✓ | 14.70ms | 101.4 KB |
+| 35 | additive-primes | ✓ |  | 131.2 KB |
+| 36 | address-of-a-variable | ✓ | 19.16ms | 105.8 KB |
 | 37 | adfgvx-cipher |  |  |  |
-| 38 | aks-test-for-primes | ✓ |  |  |
-| 39 | algebraic-data-types | ✓ |  |  |
+| 38 | aks-test-for-primes | ✓ | 5.39ms | 130.5 KB |
+| 39 | algebraic-data-types | ✓ |  | 121.9 KB |
 | 40 | align-columns |  |  |  |
 | 41 | aliquot-sequence-classifications |  |  |  |
 | 42 | almkvist-giullera-formula-for-pi |  |  |  |

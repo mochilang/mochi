@@ -1,37 +1,49 @@
 OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
-/workspace/mochi/tests/rosetta/transpiler/Kotlin/adfgvx-cipher.kt:162:44: error: unexpected tokens (use ';' to separate expressions on the same line)
-        (table)[row] as MutableList<String>[col] = temp.substring(idx, idx + 1)
-                                           ^
-/workspace/mochi/tests/rosetta/transpiler/Kotlin/adfgvx-cipher.kt:101:17: error: unresolved reference. None of the following candidates is applicable because of receiver type mismatch: 
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/adfgvx-cipher.kt:38:25: error: type mismatch: inferred type is Int but BigInteger was expected
+    var j: BigInteger = arr.size - 1
+                        ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/adfgvx-cipher.kt:91:31: error: type mismatch: inferred type is Int but BigInteger was expected
+        val idx: BigInteger = _now() % pool.length
+                              ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/adfgvx-cipher.kt:93:34: error: type mismatch: inferred type is BigInteger but Int was expected
+        pool = pool.substring(0, idx) + pool.substring(idx.add(1.toBigInteger()), pool.length)
+                                 ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/adfgvx-cipher.kt:93:56: error: type mismatch: inferred type is BigInteger! but Int was expected
+        pool = pool.substring(0, idx) + pool.substring(idx.add(1.toBigInteger()), pool.length)
+                                                       ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/adfgvx-cipher.kt:112:17: error: unresolved reference. None of the following candidates is applicable because of receiver type mismatch: 
 @InlineOnly public inline operator fun <@OnlyInputTypes K, V> Map<out Int, ???>.get(key: Int): ??? defined in kotlin.collections
             if (pairs[j][0] > pairs[j + 1][0]) {
                 ^
-/workspace/mochi/tests/rosetta/transpiler/Kotlin/adfgvx-cipher.kt:101:25: error: no get method providing array access
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/adfgvx-cipher.kt:112:25: error: no get method providing array access
             if (pairs[j][0] > pairs[j + 1][0]) {
                         ^
-/workspace/mochi/tests/rosetta/transpiler/Kotlin/adfgvx-cipher.kt:101:31: error: unresolved reference. None of the following candidates is applicable because of receiver type mismatch: 
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/adfgvx-cipher.kt:112:31: error: unresolved reference. None of the following candidates is applicable because of receiver type mismatch: 
 @InlineOnly public inline operator fun <@OnlyInputTypes K, V> Map<out Int, ???>.get(key: Int): ??? defined in kotlin.collections
             if (pairs[j][0] > pairs[j + 1][0]) {
                               ^
-/workspace/mochi/tests/rosetta/transpiler/Kotlin/adfgvx-cipher.kt:101:43: error: no get method providing array access
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/adfgvx-cipher.kt:112:43: error: no get method providing array access
             if (pairs[j][0] > pairs[j + 1][0]) {
                                           ^
-/workspace/mochi/tests/rosetta/transpiler/Kotlin/adfgvx-cipher.kt:113:62: error: unresolved reference. None of the following candidates is applicable because of receiver type mismatch: 
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/adfgvx-cipher.kt:124:63: error: unresolved reference. None of the following candidates is applicable because of receiver type mismatch: 
 @InlineOnly public inline operator fun <@OnlyInputTypes K, V> Map<out Int, ???>.get(key: Int): ??? defined in kotlin.collections
-        res = run { val _tmp = res.toMutableList(); _tmp.add(pairs[i][1].toInt()); _tmp }
-                                                             ^
-/workspace/mochi/tests/rosetta/transpiler/Kotlin/adfgvx-cipher.kt:113:70: error: no get method providing array access
-        res = run { val _tmp = res.toMutableList(); _tmp.add(pairs[i][1].toInt()); _tmp }
-                                                                     ^
-/workspace/mochi/tests/rosetta/transpiler/Kotlin/adfgvx-cipher.kt:133:33: error: unresolved reference: subList
+        res = run { val _tmp = res.toMutableList(); _tmp.add((pairs[i][1]).toInt()); _tmp } as MutableList<Any?>
+                                                              ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/adfgvx-cipher.kt:124:71: error: no get method providing array access
+        res = run { val _tmp = res.toMutableList(); _tmp.add((pairs[i][1]).toInt()); _tmp } as MutableList<Any?>
+                                                                      ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/adfgvx-cipher.kt:144:33: error: unresolved reference: subList
                 if (polybius[r].subList(c, c + 1) == plainText.substring(i, i + 1)) {
                                 ^
-/workspace/mochi/tests/rosetta/transpiler/Kotlin/adfgvx-cipher.kt:160:40: error: type mismatch: inferred type is Int but MutableList<String> was expected
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/adfgvx-cipher.kt:171:40: error: type mismatch: inferred type is Int but MutableList<String> was expected
         val row: MutableList<String> = idx / key.length
                                        ^
-/workspace/mochi/tests/rosetta/transpiler/Kotlin/adfgvx-cipher.kt:162:17: error: type mismatch: inferred type is MutableList<String> but Int was expected
-        (table)[row] as MutableList<String>[col] = temp.substring(idx, idx + 1)
-                ^
-/workspace/mochi/tests/rosetta/transpiler/Kotlin/adfgvx-cipher.kt:206:42: error: operator '==' cannot be applied to 'Char' and 'String'
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/adfgvx-cipher.kt:172:31: error: type mismatch: inferred type is Int but BigInteger was expected
+        val col: BigInteger = idx % key.length
+                              ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/adfgvx-cipher.kt:173:15: error: type mismatch: inferred type is MutableList<String> but Int was expected
+        table[row][(col).toInt()] = temp.substring(idx, idx + 1)
+              ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/adfgvx-cipher.kt:217:42: error: operator '==' cannot be applied to 'Char' and 'String'
         if ((i == cipherText.length) || (cipherText[i] == " ")) {
                                          ^

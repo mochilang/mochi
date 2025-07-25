@@ -1,3 +1,5 @@
+import java.math.BigInteger
+
 var _nowSeed = 0L
 var _nowSeeded = false
 fun _now(): Int {
@@ -39,9 +41,9 @@ fun divisors(n: Int): MutableList<Int> {
         i = i + 1
     }
     var j: Int = divs2.size - 1
-    while (j >= 0) {
-        divs = run { val _tmp = divs.toMutableList(); _tmp.add(divs2[j]); _tmp } as MutableList<Int>
-        j = j - 1
+    while (j.compareTo(0.toBigInteger()) >= 0) {
+        divs = run { val _tmp = divs.toMutableList(); _tmp.add((divs2)[(j).toInt()] as Int); _tmp } as MutableList<Int>
+        j = j.subtract(1.toBigInteger())
     }
     return divs
 }
@@ -107,7 +109,7 @@ fun abundantOdd(searchFrom: Int, countFrom: Int, countTo: Int, printOne: Boolean
 fun user_main(): Unit {
     val max: Int = 25
     println(("The first " + max.toString()) + " abundant odd numbers are:")
-    val n: Int = abundantOdd(1, 0, max, false)
+    val n: Any? = abundantOdd(1, 0, max, false)
     println("\nThe one thousandth abundant odd number is:")
     abundantOdd(n as Int, max, 1000, true)
     println("\nThe first abundant odd number above one billion is:")

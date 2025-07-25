@@ -1,7 +1,10 @@
 OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
-/workspace/mochi/tests/rosetta/transpiler/Kotlin/achilles-numbers.kt:116:15: error: type inference failed. The value of the type parameter K should be mentioned in input types (argument types, receiver type or expected type). Try to specify it explicitly.
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/achilles-numbers.kt:84:30: error: type mismatch: inferred type is Int but BigInteger was expected
+        val b3: BigInteger = (b * b) * b
+                             ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/achilles-numbers.kt:144:15: error: type inference failed. The value of the type parameter K should be mentioned in input types (argument types, receiver type or expected type). Try to specify it explicitly.
     for (k in (achSet)["keys"]!!().keys) {
               ^
-/workspace/mochi/tests/rosetta/transpiler/Kotlin/achilles-numbers.kt:116:15: error: expression '(achSet)["keys"]!!' of type 'Boolean' cannot be invoked as a function. The function 'invoke()' is not found
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/achilles-numbers.kt:144:15: error: expression '(achSet)["keys"]!!' of type 'Boolean' cannot be invoked as a function. The function 'invoke()' is not found
     for (k in (achSet)["keys"]!!().keys) {
               ^

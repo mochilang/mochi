@@ -1,0 +1,9 @@
+A(0, 0) = 1
+A(1, 2) = 4
+A(2, 4) = 11
+Exception in thread "main" java.lang.ClassCastException: class java.math.BigInteger cannot be cast to class java.lang.Integer (java.math.BigInteger and java.lang.Integer are in module java.base of loader 'bootstrap')
+	at Ackermann_function_3Kt.ackermann2(ackermann-function-3.kt:76)
+	at Ackermann_function_3Kt.show(ackermann-function-3.kt:87)
+	at Ackermann_function_3Kt.user_main(ackermann-function-3.kt:106)
+	at Ackermann_function_3Kt.main(ackermann-function-3.kt:118)
+	at Ackermann_function_3Kt.main(ackermann-function-3.kt)

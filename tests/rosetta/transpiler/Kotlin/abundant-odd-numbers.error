@@ -1,0 +1,23 @@
+OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/abundant-odd-numbers.kt:44:14: error: none of the following functions can be called with the arguments supplied: 
+public final operator fun compareTo(other: Byte): Int defined in kotlin.Int
+public final operator fun compareTo(other: Double): Int defined in kotlin.Int
+public final operator fun compareTo(other: Float): Int defined in kotlin.Int
+public open fun compareTo(other: Int): Int defined in kotlin.Int
+public final operator fun compareTo(other: Long): Int defined in kotlin.Int
+public final operator fun compareTo(other: Short): Int defined in kotlin.Int
+    while (j.compareTo(0.toBigInteger()) >= 0) {
+             ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/abundant-odd-numbers.kt:46:15: error: unresolved reference. None of the following candidates is applicable because of receiver type mismatch: 
+public infix fun <T> Array<out ???>.subtract(other: Iterable<???>): Set<???> defined in kotlin.collections
+public infix fun BooleanArray.subtract(other: Iterable<Boolean>): Set<Boolean> defined in kotlin.collections
+public infix fun ByteArray.subtract(other: Iterable<Byte>): Set<Byte> defined in kotlin.collections
+public infix fun CharArray.subtract(other: Iterable<Char>): Set<Char> defined in kotlin.collections
+public infix fun DoubleArray.subtract(other: Iterable<Double>): Set<Double> defined in kotlin.collections
+public infix fun FloatArray.subtract(other: Iterable<Float>): Set<Float> defined in kotlin.collections
+public infix fun IntArray.subtract(other: Iterable<Int>): Set<Int> defined in kotlin.collections
+public infix fun LongArray.subtract(other: Iterable<Long>): Set<Long> defined in kotlin.collections
+public infix fun ShortArray.subtract(other: Iterable<Short>): Set<Short> defined in kotlin.collections
+public infix fun <T> Iterable<???>.subtract(other: Iterable<???>): Set<???> defined in kotlin.collections
+        j = j.subtract(1.toBigInteger())
+              ^
