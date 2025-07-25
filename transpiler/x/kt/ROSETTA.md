@@ -2,7 +2,7 @@
 
 Generated Kotlin sources for Rosetta Code tests are stored in `tests/rosetta/transpiler/Kotlin`.
 
-Last updated: 2025-07-25 19:33 +0700
+Last updated: 2025-07-25 20:01 +0700
 
 Completed tasks: **54/284**
 
@@ -36,7 +36,7 @@ Completed tasks: **54/284**
 | 25 | abundant-odd-numbers | ✓ |  | 826.2 KB |
 | 26 | accumulator-factory | ✓ |  | 109.3 KB |
 | 27 | achilles-numbers |  |  |  |
-| 28 | ackermann-function-2 | ✓ |  |  |
+| 28 | ackermann-function-2 | ✓ | 5.90ms | 133.9 KB |
 | 29 | ackermann-function-3 | ✓ |  |  |
 | 30 | ackermann-function | ✓ |  |  |
 | 31 | active-directory-connect | ✓ |  |  |
