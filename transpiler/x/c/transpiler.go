@@ -22,56 +22,57 @@ import (
 )
 
 var (
-	constLists           map[string]*ListLit
-	constStrings         map[string]string
-	structTypes          map[string]types.StructType
-	currentEnv           *types.Env
-	funcParamTypes       map[string][]string
-	funcReturnTypes      map[string]string
-	varTypes             map[string]string
-	closureApply         map[string]string
-	closureFields        map[string][]string
-	extraFuncs           []*Function
-	structCounter        int
-	tempCounter          int
-	anonStructs          map[string]string
-	currentVarName       string
-	needMath             bool
-	needContainsInt      bool
-	needContainsStr      bool
-	needStrConcat        bool
-	needStrInt           bool
-	needStrFloat         bool
-	needStrListInt       bool
-	needStrListStr       bool
-	needUpper            bool
-	needLower            bool
-	needStrBool          bool
-	multiJoinEnabled     bool
-	multiJoinSort        bool
-	groupLeftJoinEnabled bool
-	datasetWhereEnabled  bool
-	joinMultiEnabled     bool
-	builtinAliases       map[string]string
-	funcAliases          map[string]string
-	mapKeyTypes          map[string]string
-	mapValTypes          map[string]string
-	needMapGetSI         bool
-	needMapSetSI         bool
-	needMapGetIS         bool
-	needMapGetSL         bool
-	needMapGetSS         bool
-	needMapSetSS         bool
-	needListAppendInt    bool
-	needListAppendStr    bool
-	needListAppendPtr    bool
-	needListAppendStrPtr bool
-	needListAppendSizeT  bool
-	needNow              bool
-	needMem              bool
-	needInput            bool
-	needSubstring        bool
-	needAtoi             bool
+	constLists              map[string]*ListLit
+	constStrings            map[string]string
+	structTypes             map[string]types.StructType
+	currentEnv              *types.Env
+	funcParamTypes          map[string][]string
+	funcReturnTypes         map[string]string
+	varTypes                map[string]string
+	closureApply            map[string]string
+	closureFields           map[string][]string
+	extraFuncs              []*Function
+	structCounter           int
+	tempCounter             int
+	anonStructs             map[string]string
+	currentVarName          string
+	needMath                bool
+	needContainsInt         bool
+	needContainsStr         bool
+	needStrConcat           bool
+	needStrInt              bool
+	needStrFloat            bool
+	needStrListInt          bool
+	needStrListStr          bool
+	needUpper               bool
+	needLower               bool
+	needStrBool             bool
+	multiJoinEnabled        bool
+	multiJoinSort           bool
+	groupLeftJoinEnabled    bool
+	datasetWhereEnabled     bool
+	joinMultiEnabled        bool
+	builtinAliases          map[string]string
+	funcAliases             map[string]string
+	mapKeyTypes             map[string]string
+	mapValTypes             map[string]string
+	needMapGetSI            bool
+	needMapSetSI            bool
+	needMapGetIS            bool
+	needMapGetSL            bool
+	needMapGetSS            bool
+	needMapSetSS            bool
+	needListAppendInt       bool
+	needListAppendStr       bool
+	needListAppendPtr       bool
+	needListAppendStrPtr    bool
+	needListAppendDoublePtr bool
+	needListAppendSizeT     bool
+	needNow                 bool
+	needMem                 bool
+	needInput               bool
+	needSubstring           bool
+	needAtoi                bool
 
 	currentFuncName   string
 	currentFuncReturn string
@@ -482,6 +483,45 @@ func (d *DeclStmt) emit(w io.Writer, indent int) {
 			return
 		}
 		if lst, ok := d.Value.(*ListLit); ok {
+			if len(lst.Elems) > 0 {
+				if sub, ok2 := lst.Elems[0].(*ListLit); ok2 {
+					fmt.Fprintf(w, "%s %s[%d][%d] = {", base, d.Name, len(lst.Elems), len(sub.Elems))
+					for i, e := range lst.Elems {
+						if i > 0 {
+							io.WriteString(w, ", ")
+						}
+						if sl, ok3 := e.(*ListLit); ok3 {
+							io.WriteString(w, "{")
+							for j, se := range sl.Elems {
+								if j > 0 {
+									io.WriteString(w, ", ")
+								}
+								se.emitExpr(w)
+							}
+							io.WriteString(w, "}")
+						}
+					}
+					io.WriteString(w, "};\n")
+					writeIndent(w, indent)
+					fmt.Fprintf(w, "size_t %s_len = %d;\n", d.Name, len(lst.Elems))
+					writeIndent(w, indent)
+					fmt.Fprintf(w, "size_t %s_lens[] = {", d.Name)
+					for i, e := range lst.Elems {
+						if i > 0 {
+							io.WriteString(w, ", ")
+						}
+						if sl, ok3 := e.(*ListLit); ok3 {
+							fmt.Fprintf(w, "%d", len(sl.Elems))
+						} else {
+							io.WriteString(w, "0")
+						}
+					}
+					io.WriteString(w, "};\n")
+					writeIndent(w, indent)
+					fmt.Fprintf(w, "size_t %s_lens_len = %d;\n", d.Name, len(lst.Elems))
+					return
+				}
+			}
 			fmt.Fprintf(w, "%s **%s = NULL;\n", base, d.Name)
 			writeIndent(w, indent)
 			fmt.Fprintf(w, "size_t %s_len = 0;\n", d.Name)
@@ -489,23 +529,6 @@ func (d *DeclStmt) emit(w io.Writer, indent int) {
 			fmt.Fprintf(w, "size_t *%s_lens = NULL;\n", d.Name)
 			writeIndent(w, indent)
 			fmt.Fprintf(w, "size_t %s_lens_len = 0;\n", d.Name)
-			for _, e := range lst.Elems {
-				if sub, ok2 := e.(*ListLit); ok2 {
-					writeIndent(w, indent)
-					needListAppendStrPtr = true
-					fmt.Fprintf(w, "%s = list_append_strptr(%s, &%s_len, (const char*[]){", d.Name, d.Name, d.Name)
-					for j, se := range sub.Elems {
-						if j > 0 {
-							io.WriteString(w, ", ")
-						}
-						se.emitExpr(w)
-					}
-					io.WriteString(w, "});\n")
-					writeIndent(w, indent)
-					needListAppendSizeT = true
-					fmt.Fprintf(w, "%s_lens = list_append_szt(%s_lens, &%s_lens_len, %d);\n", d.Name, d.Name, d.Name, len(sub.Elems))
-				}
-			}
 			return
 		}
 		if _, ok := d.Value.(*IndexExpr); ok {
@@ -643,10 +666,20 @@ func (a *AssignStmt) emit(w io.Writer, indent int) {
 					return
 				}
 				if strings.HasSuffix(base, "[]") {
-					needListAppendPtr = true
-					fmt.Fprintf(w, "%s = list_append_intptr(%s, &%s_len, ", a.Name, a.Name, a.Name)
+					elemBase := strings.TrimSuffix(base, "[]")
+					switch elemBase {
+					case "int":
+						needListAppendPtr = true
+						fmt.Fprintf(w, "%s = list_append_intptr(%s, &%s_len, ", a.Name, a.Name, a.Name)
+					case "double":
+						needListAppendDoublePtr = true
+						fmt.Fprintf(w, "%s = list_append_doubleptr(%s, &%s_len, ", a.Name, a.Name, a.Name)
+					default:
+						needListAppendStrPtr = true
+						fmt.Fprintf(w, "%s = list_append_strptr(%s, &%s_len, ", a.Name, a.Name, a.Name)
+					}
 					if lit, ok := call.Args[1].(*ListLit); ok {
-						fmt.Fprintf(w, "({int *tmp = malloc(%d * sizeof(int)); ", len(lit.Elems))
+						fmt.Fprintf(w, "({%s *tmp = malloc(%d * sizeof(%s)); ", elemBase, len(lit.Elems), elemBase)
 						for i, e := range lit.Elems {
 							fmt.Fprintf(w, "tmp[%d] = ", i)
 							e.emitExpr(w)
@@ -747,22 +780,59 @@ func (f *ForStmt) emit(w io.Writer, indent int) {
 		if typ == "" {
 			typ = "int"
 		}
-		fmt.Fprintf(w, "%s %s[] = {", typ, arrName)
-		for i, e := range f.List {
-			if i > 0 {
-				io.WriteString(w, ", ")
+		if strings.HasSuffix(typ, "[]") {
+			base := strings.TrimSuffix(typ, "[]")
+			subLen := 0
+			if len(f.List) > 0 {
+				if lst, ok := f.List[0].(*ListLit); ok {
+					subLen = len(lst.Elems)
+				}
 			}
-			e.emitExpr(w)
+			fmt.Fprintf(w, "%s %s[%d][%d] = {", base, arrName, len(f.List), subLen)
+			for i, e := range f.List {
+				if i > 0 {
+					io.WriteString(w, ", ")
+				}
+				if lst, ok := e.(*ListLit); ok {
+					io.WriteString(w, "{")
+					for j, it := range lst.Elems {
+						if j > 0 {
+							io.WriteString(w, ", ")
+						}
+						it.emitExpr(w)
+					}
+					io.WriteString(w, "}")
+				} else {
+					e.emitExpr(w)
+				}
+			}
+			io.WriteString(w, "};\n")
+			writeIndent(w, indent+1)
+			fmt.Fprintf(w, "size_t %s = %d;\n", lenName, len(f.List))
+			writeIndent(w, indent+1)
+			fmt.Fprintf(w, "for (size_t i = 0; i < %s; i++) {\n", lenName)
+			writeIndent(w, indent+2)
+			fmt.Fprintf(w, "%s %s[%d] = {0};\n", base, f.Var, subLen)
+			writeIndent(w, indent+2)
+			fmt.Fprintf(w, "memcpy(%s, %s[i], sizeof(%s[i]));\n", f.Var, arrName, arrName)
+		} else {
+			fmt.Fprintf(w, "%s %s[] = {", typ, arrName)
+			for i, e := range f.List {
+				if i > 0 {
+					io.WriteString(w, ", ")
+				}
+				e.emitExpr(w)
+			}
+			io.WriteString(w, "};\n")
+			writeIndent(w, indent+1)
+			fmt.Fprintf(w, "size_t %s = sizeof(%s) / sizeof(%s[0]);\n", lenName, arrName, arrName)
+			writeIndent(w, indent+1)
+			io.WriteString(w, "for (size_t i = 0; i < ")
+			io.WriteString(w, lenName)
+			io.WriteString(w, "; i++) {\n")
+			writeIndent(w, indent+2)
+			fmt.Fprintf(w, "%s %s = %s[i];\n", typ, f.Var, arrName)
 		}
-		io.WriteString(w, "};\n")
-		writeIndent(w, indent+1)
-		fmt.Fprintf(w, "size_t %s = sizeof(%s) / sizeof(%s[0]);\n", lenName, arrName, arrName)
-		writeIndent(w, indent+1)
-		io.WriteString(w, "for (size_t i = 0; i < ")
-		io.WriteString(w, lenName)
-		io.WriteString(w, "; i++) {\n")
-		writeIndent(w, indent+2)
-		fmt.Fprintf(w, "%s %s = %s[i];\n", typ, f.Var, arrName)
 		for _, s := range f.Body {
 			s.emit(w, indent+2)
 		}
@@ -1834,6 +1904,14 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("    return arr;\n")
 		buf.WriteString("}\n\n")
 	}
+	if needListAppendDoublePtr {
+		buf.WriteString("static double** list_append_doubleptr(double **arr, size_t *len, double *val) {\n")
+		buf.WriteString("    arr = realloc(arr, (*len + 1) * sizeof(double*));\n")
+		buf.WriteString("    arr[*len] = val;\n")
+		buf.WriteString("    (*len)++;\n")
+		buf.WriteString("    return arr;\n")
+		buf.WriteString("}\n\n")
+	}
 	if needListAppendStrPtr {
 		buf.WriteString("static const char*** list_append_strptr(const char ***arr, size_t *len, const char **val) {\n")
 		buf.WriteString("    arr = realloc(arr, (*len + 1) * sizeof(const char**));\n")
@@ -2086,6 +2164,7 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 	needListAppendStr = false
 	needListAppendPtr = false
 	needListAppendStrPtr = false
+	needListAppendDoublePtr = false
 	needNow = false
 	needMem = false
 	needInput = false
@@ -2443,12 +2522,12 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 			markMath()
 		}
 		if list, ok := convertListExpr(s.Let.Value); ok {
-			if len(list) > 0 {
+			if len(list) > 0 && !strings.HasSuffix(declType, "[][]") {
 				constLists[s.Let.Name] = &ListLit{Elems: list}
 			} else {
 				delete(constLists, s.Let.Name)
 			}
-		} else if lst, ok2 := valExpr.(*ListLit); ok2 && len(lst.Elems) > 0 {
+		} else if lst, ok2 := valExpr.(*ListLit); ok2 && len(lst.Elems) > 0 && !strings.HasSuffix(declType, "[][]") {
 			constLists[s.Let.Name] = lst
 		} else {
 			delete(constLists, s.Let.Name)
@@ -2459,8 +2538,10 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 			delete(constStrings, s.Let.Name)
 		}
 		if val, ok := valueFromExpr(valExpr); ok {
-			if arr, ok2 := val.([]any); !ok2 || len(arr) > 0 {
-				env.SetValue(s.Let.Name, val, true)
+			if !strings.HasSuffix(declType, "[][]") {
+				if arr, ok2 := val.([]any); !ok2 || len(arr) > 0 {
+					env.SetValue(s.Let.Name, val, true)
+				}
 			}
 		}
 		varTypes[s.Let.Name] = declType
@@ -5458,24 +5539,28 @@ func evalMapEntry(target Expr, key Expr) (Expr, bool) {
 }
 
 func varName(e *parser.Expr) string {
-        if e == nil || e.Binary == nil || e.Binary.Left == nil || e.Binary.Left.Value == nil || e.Binary.Left.Value.Target == nil {
-                return ""
-        }
-        if sel := e.Binary.Left.Value.Target.Selector; sel != nil && len(sel.Tail) == 0 {
-                return sel.Root
-        }
-        return ""
+	if e == nil || e.Binary == nil || e.Binary.Left == nil || e.Binary.Left.Value == nil || e.Binary.Left.Value.Target == nil {
+		return ""
+	}
+	if sel := e.Binary.Left.Value.Target.Selector; sel != nil && len(sel.Tail) == 0 {
+		return sel.Root
+	}
+	return ""
 }
 
 func simpleVarName(e *parser.Expr) string {
-       if e == nil || e.Binary != nil || e.Primary == nil || e.Primary.Selector == nil {
-               return ""
-       }
-       sel := e.Primary.Selector
-       if len(sel.Tail) == 0 {
-               return sel.Root
-       }
-       return ""
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return ""
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 || u.Value == nil {
+		return ""
+	}
+	p := u.Value
+	if p.Target != nil && p.Target.Selector != nil && len(p.Target.Selector.Tail) == 0 {
+		return p.Target.Selector.Root
+	}
+	return ""
 }
 
 func isMapVar(name string) bool {
