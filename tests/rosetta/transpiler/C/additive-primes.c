@@ -60,89 +60,77 @@ static char* _substring(const char *s, int start, int end) {
     return res;
 }
 
-const char* err = "";
-
-int pow_big(int base, int exp) {
-    int result = 1;
-    int b = base;
-    int e = exp;
-    while (e > 0) {
-        if ((e % 2) == 1) {
-            result = result * b;
-        }
-        b = b * b;
-        e = e / 2;
-    }
-    return result;
-}
-
-int bit_len(int x) {
-    int n = x;
-    int c = 0;
-    while (n > 0) {
-        n = n / 2;
-        c = c + 1;
-    }
-    return c;
-}
-
-int ackermann2(int m, int n) {
-    if (0) {
+int isPrime(int n) {
+    if (n < 2) {
         return 0;
     }
-    if (m <= 3) {
-        int mi = (int)(m);
-        if (mi == 0) {
-            return n + 1;
-        }
-        if (mi == 1) {
-            return n + 2;
-        }
-        if (mi == 2) {
-            return (2 * n) + 3;
-        }
-        if (mi == 3) {
-            int nb = bit_len(n);
-            if (nb > 64) {
-                err = str_concat(str_concat("A(m,n) had n of ", str_int(nb)), " bits; too large");
-                return 0;
-            }
-            int r = pow_big(2, (int)(n));
-            return (8 * r) - 3;
-        }
+    if ((n % 2) == 0) {
+        return n == 2;
     }
-    if (bit_len(n) == 0) {
-        return ackermann2(m - 1, 1);
+    if ((n % 3) == 0) {
+        return n == 3;
     }
-    return ackermann2(m - 1, ackermann2(m, n - 1));
+    int d = 5;
+    while ((d * d) <= n) {
+        if ((n % d) == 0) {
+            return 0;
+        }
+        d = d + 2;
+        if ((n % d) == 0) {
+            return 0;
+        }
+        d = d + 4;
+    }
+    return 1;
 }
 
-int show(int m, int n) {
-    err = "";
-    int res = ackermann2(m, n);
-    if (strcmp(err, "") != 0) {
-        puts(str_concat(str_concat(str_concat(str_concat(str_concat("A(", str_int(m)), ", "), str_int(n)), ") = Error: "), err));
-        return 0;
+int sumDigits(int n) {
+    int s = 0;
+    int x = n;
+    while (x > 0) {
+        s = s + (x % 10);
+        x = x / 10;
     }
-    if (bit_len(res) <= 256) {
-        puts(str_concat(str_concat(str_concat(str_concat(str_concat("A(", str_int(m)), ", "), str_int(n)), ") = "), str_int(res)));
-    } else {
-        const char* s = str_int(res);
-        const char* pre = _substring(s, 0, 20);
-        const char* suf = _substring(s, strlen(s) - 20, strlen(s));
-        puts(str_concat(str_concat(str_concat(str_concat(str_concat(str_concat(str_concat(str_concat(str_concat("A(", str_int(m)), ", "), str_int(n)), ") = "), str_int(strlen(s))), " digits starting/ending with: "), pre), "..."), suf));
+    return s;
+}
+
+const char* pad(int n) {
+    if (n < 10) {
+        return str_concat("  ", str_int(n));
     }
+    if (n < 100) {
+        return str_concat(" ", str_int(n));
+    }
+    return str_int(n);
 }
 
 int user_main() {
-    show(0, 0);
-    show(1, 2);
-    show(2, 4);
-    show(3, 100);
-    show(3, 1000000);
-    show(4, 1);
-    show(4, 2);
-    show(4, 3);
+    puts("Additive primes less than 500:");
+    int count = 0;
+    const char* line = "";
+    int lineCount = 0;
+    int i = 2;
+    while (i < 500) {
+        if (isPrime(i) && isPrime(sumDigits(i))) {
+            count = count + 1;
+            line = str_concat(str_concat(line, pad(i)), "  ");
+            lineCount = lineCount + 1;
+            if (lineCount == 10) {
+                printf("%d\n", _substring(line, 0, strlen(line) - 2));
+                line = "";
+                lineCount = 0;
+            }
+        }
+        if (i > 2) {
+            i = i + 2;
+        } else {
+            i = i + 1;
+        }
+    }
+    if (lineCount > 0) {
+        printf("%d\n", _substring(line, 0, strlen(line) - 2));
+    }
+    puts(str_concat(str_int(count), " additive primes found."));
 }
 
 int main(void) {

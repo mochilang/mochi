@@ -49,40 +49,73 @@ static long long _mem(void) {
     return (long long)mi.uordblks;
 }
 
-int pow(int base, int exp) {
-    int result = 1;
-    int i = 0;
-    while (i < exp) {
-        result = result * base;
-        i = i + 1;
+const char* poly(int p) {
+    const char* s = "";
+    int coef = 1;
+    int i = p;
+    if (coef != 1) {
+        s = str_concat(s, str_int(coef));
     }
-    return result;
+    while (i > 0) {
+        s = str_concat(s, "x");
+        if (i != 1) {
+            s = str_concat(str_concat(s, "^"), str_int(i));
+        }
+        coef = (coef * i) / ((p - i) + 1);
+        int d = coef;
+        if (((p - (i - 1)) % 2) == 1) {
+            d = -(d);
+        }
+        if (d < 0) {
+            s = str_concat(str_concat(s, " - "), str_int(-(d)));
+        } else {
+            s = str_concat(str_concat(s, " + "), str_int(d));
+        }
+        i = i - 1;
+    }
+    if (strcmp(s, "") == 0) {
+        s = "1";
+    }
+    return s;
 }
 
-int ackermann2(int m, int n) {
-    if (m == 0) {
-        return n + 1;
+int aks(int n) {
+    if (n < 2) {
+        return 0;
     }
-    if (m == 1) {
-        return n + 2;
+    int c = n;
+    int i = 1;
+    while (i < n) {
+        if ((c % n) != 0) {
+            return 0;
+        }
+        c = (c * (n - i)) / (i + 1);
+        i = i + 1;
     }
-    if (m == 2) {
-        return (2 * n) + 3;
-    }
-    if (m == 3) {
-        return (8 * pow(2, n)) - 3;
-    }
-    if (n == 0) {
-        return ackermann2(m - 1, 1);
-    }
-    return ackermann2(m - 1, ackermann2(m, n - 1));
+    return 1;
 }
 
 int user_main() {
-    puts(str_concat("A(0, 0) = ", str_int(ackermann2(0, 0))));
-    puts(str_concat("A(1, 2) = ", str_int(ackermann2(1, 2))));
-    puts(str_concat("A(2, 4) = ", str_int(ackermann2(2, 4))));
-    puts(str_concat("A(3, 4) = ", str_int(ackermann2(3, 4))));
+    int p = 0;
+    while (p <= 7) {
+        puts(str_concat(str_concat(str_int(p), ":  "), poly(p)));
+        p = p + 1;
+    }
+    int first = 1;
+    p = 2;
+    const char* line = "";
+    while (p < 50) {
+        if (aks(p)) {
+            if (first) {
+                line = str_concat(line, str_int(p));
+                first = 0;
+            } else {
+                line = str_concat(str_concat(line, " "), str_int(p));
+            }
+        }
+        p = p + 1;
+    }
+    puts(line);
 }
 
 int main(void) {

@@ -2,7 +2,7 @@
 
 This directory stores C code generated from Mochi programs in `tests/rosetta/x/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.c` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (19/284) - Last updated 2025-07-25 17:54 +0700:
+Checklist of programs that currently transpile and run (28/284) - Last updated 2025-07-25 19:53 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | 100-doors-2 | ✓ | 65us | 17.2 KB |
@@ -32,17 +32,17 @@ Checklist of programs that currently transpile and run (19/284) - Last updated 2
 | 25 | abundant-odd-numbers |  |  |  |
 | 26 | accumulator-factory |  |  |  |
 | 27 | achilles-numbers |  |  |  |
-| 28 | ackermann-function-2 |  |  |  |
-| 29 | ackermann-function-3 |  |  |  |
-| 30 | ackermann-function |  |  |  |
-| 31 | active-directory-connect |  |  |  |
-| 32 | active-directory-search-for-a-user |  |  |  |
-| 33 | active-object |  |  |  |
+| 28 | ackermann-function-2 | ✓ | 35us | 4.9 KB |
+| 29 | ackermann-function-3 | ✓ | 41us | 6.7 KB |
+| 30 | ackermann-function | ✓ | 112us | 4.9 KB |
+| 31 | active-directory-connect | ✓ | 24us | 4.7 KB |
+| 32 | active-directory-search-for-a-user | ✓ | 25us | 5.0 KB |
+| 33 | active-object | ✓ | 124us | 4.7 KB |
 | 34 | add-a-variable-to-a-class-instance-at-runtime |  |  |  |
-| 35 | additive-primes |  |  |  |
-| 36 | address-of-a-variable |  |  |  |
+| 35 | additive-primes | ✓ | 61us | 11.8 KB |
+| 36 | address-of-a-variable | ✓ | 36us | 4.7 KB |
 | 37 | adfgvx-cipher |  |  |  |
-| 38 | aks-test-for-primes |  |  |  |
+| 38 | aks-test-for-primes | ✓ | 65us | 12.7 KB |
 | 39 | algebraic-data-types |  |  |  |
 | 40 | align-columns |  |  |  |
 | 41 | aliquot-sequence-classifications |  |  |  |

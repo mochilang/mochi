@@ -3,17 +3,8 @@
 #include <string.h>
 #include <stdlib.h>
 #include <malloc.h>
+#include <math.h>
 
-
-static char* str_concat(const char *a, const char *b) {
-    size_t len1 = strlen(a);
-    size_t len2 = strlen(b);
-    char *res = malloc(len1 + len2 + 1);
-    memcpy(res, a, len1);
-    memcpy(res + len1, b, len2);
-    res[len1 + len2] = 0;
-    return res;
-}
 
 #include <time.h>
 #include <stdlib.h>
@@ -41,39 +32,14 @@ static long long _mem(void) {
     return (long long)mi.uordblks;
 }
 
-typedef struct LDAPClient LDAPClient;
-
-struct LDAPClient {
-    const char* Base;
-    const char* Host;
-    int Port;
-    int UseSSL;
-    const char* BindDN;
-    const char* BindPassword;
-    const char* UserFilter;
-    const char* GroupFilter;
-    const char** Attributes;
-    size_t Attributes_len;
-};
-
-int connect(LDAPClient client) {
-    return (strcmp(client.Host, "") != 0) && (client.Port > 0);
-}
-
-int user_main() {
-    LDAPClient client = (LDAPClient){.Base = "dc=example,dc=com", .Host = "ldap.example.com", .Port = 389, .UseSSL = 0, .BindDN = "uid=readonlyuser,ou=People,dc=example,dc=com", .BindPassword = "readonlypassword", .UserFilter = "(uid=%s)", .GroupFilter = "(memberUid=%s)", .Attributes = (const char*[]){ "givenName", "sn", "mail", "uid" }, .Attributes_len = 4};
-    if (connect(client)) {
-        puts(str_concat("Connected to ", client.Host));
-    } else {
-        puts("Failed to connect");
-    }
-}
+double myVar = 3.14;
 
 int main(void) {
     {
         long long __start = _now();
         long long __mem_start = _mem();
-        user_main();
+        printf("%s %g\n", "value as float:", myVar);
+        puts("address: <not available>");
         long long __end = _now();
         long long __mem_end = _mem();
         long long __dur_us = (__end - __start) / 1000;

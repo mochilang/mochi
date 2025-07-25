@@ -1,0 +1,122 @@
+compile failed: exit status 1: /tmp/ctranspile3134895967/algebraic-data-types.mochi.c: In function ‘_mem’:
+/tmp/ctranspile3134895967/algebraic-data-types.mochi.c:48:12: warning: ‘mallinfo’ is deprecated [-Wdeprecated-declarations]
+   48 |     struct mallinfo mi = mallinfo();
+      |            ^~~~~~~~
+In file included from /tmp/ctranspile3134895967/algebraic-data-types.mochi.c:5:
+/usr/include/malloc.h:114:24: note: declared here
+  114 | extern struct mallinfo mallinfo (void) __THROW __MALLOC_DEPRECATED;
+      |                        ^~~~~~~~
+/tmp/ctranspile3134895967/algebraic-data-types.mochi.c: In function ‘treeString’:
+/tmp/ctranspile3134895967/algebraic-data-types.mochi.c:68:9: error: expected expression before ‘)’ token
+   68 |     if () {
+      |         ^
+/tmp/ctranspile3134895967/algebraic-data-types.mochi.c:72:107: warning: passing argument 2 of ‘str_concat’ makes pointer from integer without a cast [-Wint-conversion]
+   72 |     return str_concat(str_concat(str_concat(str_concat(str_concat(str_concat(str_concat(str_concat("T(", m["cl"]), ", "), treeString(m["le"])), ", "), str_int(m["aa"])), ", "), treeString(m["ri"])), ")");
+      |                                                                                                          ~^~~~~~
+      |                                                                                                           |
+      |                                                                                                           char
+/tmp/ctranspile3134895967/algebraic-data-types.mochi.c:8:52: note: expected ‘const char *’ but argument is of type ‘char’
+    8 | static char* str_concat(const char *a, const char *b) {
+      |                                        ~~~~~~~~~~~~^
+/tmp/ctranspile3134895967/algebraic-data-types.mochi.c: In function ‘balance’:
+/tmp/ctranspile3134895967/algebraic-data-types.mochi.c:76:9: error: expected expression before ‘)’ token
+   76 |     if () {
+      |         ^
+/tmp/ctranspile3134895967/algebraic-data-types.mochi.c:80:17: warning: passing argument 1 of ‘strcmp’ makes pointer from integer without a cast [-Wint-conversion]
+   80 |     if (strcmp(m["cl"], "B") != 0) {
+      |                ~^~~~~~
+      |                 |
+      |                 char
+In file included from /tmp/ctranspile3134895967/algebraic-data-types.mochi.c:3:
+/usr/include/string.h:156:32: note: expected ‘const char *’ but argument is of type ‘char’
+  156 | extern int strcmp (const char *__s1, const char *__s2)
+      |                    ~~~~~~~~~~~~^~~~
+/tmp/ctranspile3134895967/algebraic-data-types.mochi.c:85:9: error: expected expression before ‘)’ token
+   85 |     if () {
+      |         ^
+/tmp/ctranspile3134895967/algebraic-data-types.mochi.c:87:20: error: ‘leMap’ undeclared (first use in this function)
+   87 |         if (strcmp(leMap["cl"], "R") == 0) {
+      |                    ^~~~~
+/tmp/ctranspile3134895967/algebraic-data-types.mochi.c:87:20: note: each undeclared identifier is reported only once for each function it appears in
+/tmp/ctranspile3134895967/algebraic-data-types.mochi.c:89:17: error: expected expression before ‘)’ token
+   89 |             if () {
+      |                 ^
+/tmp/ctranspile3134895967/algebraic-data-types.mochi.c:91:28: error: ‘leleMap’ undeclared (first use in this function); did you mean ‘lele’?
+   91 |                 if (strcmp(leleMap["cl"], "R") == 0) {
+      |                            ^~~~~~~
+      |                            lele
+/tmp/ctranspile3134895967/algebraic-data-types.mochi.c:96:17: error: expected expression before ‘)’ token
+   96 |             if () {
+      |                 ^
+/tmp/ctranspile3134895967/algebraic-data-types.mochi.c:98:28: error: ‘leriMap’ undeclared (first use in this function); did you mean ‘leri’?
+   98 |                 if (strcmp(leriMap["cl"], "R") == 0) {
+      |                            ^~~~~~~
+      |                            leri
+/tmp/ctranspile3134895967/algebraic-data-types.mochi.c:104:9: error: expected expression before ‘)’ token
+  104 |     if () {
+      |         ^
+/tmp/ctranspile3134895967/algebraic-data-types.mochi.c:106:20: error: ‘riMap’ undeclared (first use in this function)
+  106 |         if (strcmp(riMap["cl"], "R") == 0) {
+      |                    ^~~~~
+/tmp/ctranspile3134895967/algebraic-data-types.mochi.c:108:17: error: expected expression before ‘)’ token
+  108 |             if () {
+      |                 ^
+/tmp/ctranspile3134895967/algebraic-data-types.mochi.c:110:28: error: ‘rileMap’ undeclared (first use in this function); did you mean ‘rile’?
+  110 |                 if (strcmp(rileMap["cl"], "R") == 0) {
+      |                            ^~~~~~~
+      |                            rile
+/tmp/ctranspile3134895967/algebraic-data-types.mochi.c:115:17: error: expected expression before ‘)’ token
+  115 |             if () {
+      |                 ^
+/tmp/ctranspile3134895967/algebraic-data-types.mochi.c:117:28: error: ‘ririMap’ undeclared (first use in this function); did you mean ‘riri’?
+  117 |                 if (strcmp(ririMap["cl"], "R") == 0) {
+      |                            ^~~~~~~
+      |                            riri
+/tmp/ctranspile3134895967/algebraic-data-types.mochi.c: In function ‘ins’:
+/tmp/ctranspile3134895967/algebraic-data-types.mochi.c:127:9: error: expected expression before ‘)’ token
+  127 |     if () {
+      |         ^
+/tmp/ctranspile3134895967/algebraic-data-types.mochi.c:131:31: warning: passing argument 1 of ‘node’ makes pointer from integer without a cast [-Wint-conversion]
+  131 |         return balance(node(tr["cl"], ins(tr["le"], x), tr["aa"], tr["ri"]));
+      |                             ~~^~~~~~
+      |                               |
+      |                               char
+/tmp/ctranspile3134895967/algebraic-data-types.mochi.c:63:24: note: expected ‘const char *’ but argument is of type ‘char’
+   63 | Anon1 node(const char* cl, int le, int aa, int ri) {
+      |            ~~~~~~~~~~~~^~
+/tmp/ctranspile3134895967/algebraic-data-types.mochi.c:131:24: error: incompatible type for argument 1 of ‘balance’
+  131 |         return balance(node(tr["cl"], ins(tr["le"], x), tr["aa"], tr["ri"]));
+      |                        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |                        |
+      |                        Anon1
+/tmp/ctranspile3134895967/algebraic-data-types.mochi.c:75:17: note: expected ‘int’ but argument is of type ‘Anon1’
+   75 | int balance(int t) {
+      |             ~~~~^
+/tmp/ctranspile3134895967/algebraic-data-types.mochi.c:134:31: warning: passing argument 1 of ‘node’ makes pointer from integer without a cast [-Wint-conversion]
+  134 |         return balance(node(tr["cl"], tr["le"], tr["aa"], ins(tr["ri"], x)));
+      |                             ~~^~~~~~
+      |                               |
+      |                               char
+/tmp/ctranspile3134895967/algebraic-data-types.mochi.c:63:24: note: expected ‘const char *’ but argument is of type ‘char’
+   63 | Anon1 node(const char* cl, int le, int aa, int ri) {
+      |            ~~~~~~~~~~~~^~
+/tmp/ctranspile3134895967/algebraic-data-types.mochi.c:134:24: error: incompatible type for argument 1 of ‘balance’
+  134 |         return balance(node(tr["cl"], tr["le"], tr["aa"], ins(tr["ri"], x)));
+      |                        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |                        |
+      |                        Anon1
+/tmp/ctranspile3134895967/algebraic-data-types.mochi.c:75:17: note: expected ‘int’ but argument is of type ‘Anon1’
+   75 | int balance(int t) {
+      |             ~~~~^
+/tmp/ctranspile3134895967/algebraic-data-types.mochi.c: In function ‘insert’:
+/tmp/ctranspile3134895967/algebraic-data-types.mochi.c:141:9: error: expected expression before ‘)’ token
+  141 |     if () {
+      |         ^
+/tmp/ctranspile3134895967/algebraic-data-types.mochi.c:142:16: error: incompatible types when returning type ‘int’ but ‘Anon1’ was expected
+  142 |         return 0;
+      |                ^
+/tmp/ctranspile3134895967/algebraic-data-types.mochi.c: In function ‘main’:
+/tmp/ctranspile3134895967/algebraic-data-types.mochi.c:154:18: error: incompatible types when assigning to type ‘int’ from type ‘Anon1’
+  154 |             tr = insert(tr, i);
+      |                  ^~~~~~
+
