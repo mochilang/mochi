@@ -143,12 +143,16 @@ func TestCPPTranspiler_Rosetta_Golden(t *testing.T) {
 		} else {
 			_ = os.Remove(errPath)
 		}
-		if bench {
-			if updateEnabled() {
-				_ = os.WriteFile(benchPath, got, 0o644)
-			}
-			return nil
-		}
+                if bench {
+                        if updateEnabled() {
+                                outBytes := got
+                                if idx := bytes.LastIndexByte(outBytes, '{'); idx >= 0 {
+                                        outBytes = outBytes[idx:]
+                                }
+                                _ = os.WriteFile(benchPath, outBytes, 0o644)
+                        }
+                        return nil
+                }
 		if updateEnabled() {
 			_ = os.WriteFile(outPath, got, 0o644)
 			return nil
