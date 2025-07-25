@@ -152,7 +152,7 @@ begin
   if playOneMove_s = '' then begin
   continue;
 end;
-  playOneMove_c := copy(playOneMove_s, 0+1, (1 - (0)));
+  playOneMove_c := copy(playOneMove_s, 0+1, (1 - 0));
   playOneMove_m := 0;
   if (playOneMove_c = 'U') or (playOneMove_c = 'u') then begin
   playOneMove_m := 0;
