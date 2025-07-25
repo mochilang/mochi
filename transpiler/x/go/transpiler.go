@@ -472,7 +472,11 @@ type NotExpr struct{ Expr Expr }
 
 func (n *NotExpr) emit(w io.Writer) {
 	fmt.Fprint(w, "!")
-	n.Expr.emit(w)
+	if a, ok := n.Expr.(*AssertExpr); ok && a.Type == "bool" {
+		a.Expr.emit(w)
+	} else {
+		n.Expr.emit(w)
+	}
 }
 
 // MapLit represents a map literal.
@@ -1741,6 +1745,57 @@ func (a *AssertExpr) emit(w io.Writer) {
 	fmt.Fprintf(w, ".(%s)", a.Type)
 }
 
+func stripAssert(e Expr, typ string) Expr {
+	switch ex := e.(type) {
+	case *AssertExpr:
+		if ex.Type == typ {
+			return stripAssert(ex.Expr, typ)
+		}
+	case *NotExpr:
+		ex.Expr = stripAssert(ex.Expr, typ)
+	case *BinaryExpr:
+		ex.Left = stripAssert(ex.Left, typ)
+		ex.Right = stripAssert(ex.Right, typ)
+	case *IndexExpr:
+		ex.X = stripAssert(ex.X, typ)
+		ex.Index = stripAssert(ex.Index, typ)
+	}
+	return e
+}
+
+func walkStmt(s Stmt, fn func(Stmt)) {
+	fn(s)
+	switch st := s.(type) {
+	case *StmtList:
+		for _, c := range st.List {
+			walkStmt(c, fn)
+		}
+	case *IfStmt:
+		for _, c := range st.Then {
+			walkStmt(c, fn)
+		}
+		for _, c := range st.Else {
+			walkStmt(c, fn)
+		}
+	case *ForRangeStmt:
+		for _, c := range st.Body {
+			walkStmt(c, fn)
+		}
+	case *ForEachStmt:
+		for _, c := range st.Body {
+			walkStmt(c, fn)
+		}
+	case *WhileStmt:
+		for _, c := range st.Body {
+			walkStmt(c, fn)
+		}
+	case *BenchStmt:
+		for _, c := range st.Body {
+			walkStmt(c, fn)
+		}
+	}
+}
+
 // Transpile converts a Mochi program to a minimal Go AST.
 func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	usesStrings = false
@@ -1778,6 +1833,46 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 			gp.Stmts = append(gp.Stmts, extraDecls...)
 			extraDecls = nil
 		}
+	}
+	// refine global variable declaration types using the final type
+	for _, st := range gp.Stmts {
+		if vd, ok := st.(*VarDecl); ok && vd.Global {
+			if t, err := env.GetVar(vd.Name); err == nil {
+				typ := toGoTypeFromType(t)
+				if ll, ok2 := vd.Value.(*ListLit); ok2 {
+					if lt, ok3 := t.(types.ListType); ok3 {
+						if ll.ElemType == "" || ll.ElemType == "any" {
+							ll.ElemType = toGoTypeFromType(lt.Elem)
+						}
+					}
+				}
+				if typ != "" && typ != vd.Type {
+					vd.Type = typ
+				}
+				for _, st2 := range gp.Stmts {
+					if as, ok3 := st2.(*AssignStmt); ok3 && as.Name == vd.Name {
+						if ll, ok4 := as.Value.(*ListLit); ok4 {
+							if lt, ok5 := t.(types.ListType); ok5 {
+								if ll.ElemType == "" || ll.ElemType == "any" {
+									ll.ElemType = toGoTypeFromType(lt.Elem)
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	for _, st := range gp.Stmts {
+		walkStmt(st, func(s Stmt) {
+			if ia, ok := s.(*IndexAssignStmt); ok {
+				if t, err := env.GetVar(ia.Name); err == nil {
+					if lt, ok2 := t.(types.ListType); ok2 {
+						ia.Value = stripAssert(ia.Value, toGoTypeFromType(lt.Elem))
+					}
+				}
+			}
+		})
 	}
 	_ = env // reserved for future use
 	gp.UseStrings = usesStrings
@@ -2576,11 +2671,19 @@ func compileIfStmt(is *parser.IfStmt, env *types.Env) (Stmt, error) {
 	}
 	cond := boolExprFor(condExpr, types.ExprType(is.Cond, env))
 	if ix, ok := condExpr.(*IndexExpr); ok {
-		if vr, ok2 := ix.X.(*VarRef); ok2 && topEnv != nil {
-			if vt, err := topEnv.GetVar(vr.Name); err == nil {
+		if vr, ok2 := ix.X.(*VarRef); ok2 {
+			if vt, err := env.GetVar(vr.Name); err == nil {
 				if lt, ok3 := vt.(types.ListType); ok3 {
 					if _, ok4 := lt.Elem.(types.AnyType); ok4 {
 						cond = &AssertExpr{Expr: condExpr, Type: "bool"}
+					}
+				}
+			} else if topEnv != nil {
+				if vt, err := topEnv.GetVar(vr.Name); err == nil {
+					if lt, ok3 := vt.(types.ListType); ok3 {
+						if _, ok4 := lt.Elem.(types.AnyType); ok4 {
+							cond = &AssertExpr{Expr: condExpr, Type: "bool"}
+						}
 					}
 				}
 			}

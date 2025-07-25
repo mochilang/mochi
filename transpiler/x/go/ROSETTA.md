@@ -1,7 +1,7 @@
 # Go Rosetta Transpiler Output
 
-Completed programs: 120/284
-Last updated: 2025-07-25 08:55 +0700
+Completed programs: 121/284
+Last updated: 2025-07-25 09:24 +0700
 
 Checklist:
 
@@ -9,7 +9,7 @@ Checklist:
 |------:|------|--------|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 571.0ms | 5.54KB |
 | 2 | 100-doors-3 | ✓ |  |  |
-| 3 | 100-doors |   |  |  |
+| 3 | 100-doors | ✓ |  |  |
 | 4 | 100-prisoners | ✓ |  |  |
 | 5 | 15-puzzle-game | ✓ |  |  |
 | 6 | 15-puzzle-solver | ✓ |  |  |
