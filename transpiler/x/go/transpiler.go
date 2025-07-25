@@ -3476,28 +3476,36 @@ func compileForStmt(fs *parser.ForStmt, env *types.Env) (Stmt, error) {
 	if err != nil {
 		return nil, err
 	}
-	t := types.TypeOfExpr(fs.Source, env)
-	if types.IsAnyType(t) {
-		t = types.TypeOfExprBasic(fs.Source, env)
-	}
 	child := types.NewEnv(env)
 	var isMap bool
 	var keyType string
 	var elemType string
-	switch tt := t.(type) {
-	case types.MapType:
-		isMap = true
-		child.SetVar(fs.Name, tt.Key, true)
-		keyType = toGoTypeFromType(tt.Key)
-		usesSort = true
-	case types.ListType:
-		child.SetVar(fs.Name, tt.Elem, true)
-		elemType = toGoTypeFromType(tt.Elem)
-	case types.StringType:
-		child.SetVar(fs.Name, types.StringType{}, true)
-		elemType = "string"
-	default:
-		child.SetVar(fs.Name, types.AnyType{}, true)
+	if ke, ok := iter.(*KeysExpr); ok {
+		child.SetVar(fs.Name, toTypeFromGoType(ke.KeyType), true)
+		elemType = ke.KeyType
+	} else if ve, ok := iter.(*ValuesExpr); ok {
+		child.SetVar(fs.Name, toTypeFromGoType(ve.ValueType), true)
+		elemType = ve.ValueType
+	} else {
+		t := types.TypeOfExpr(fs.Source, env)
+		if types.IsAnyType(t) {
+			t = types.TypeOfExprBasic(fs.Source, env)
+		}
+		switch tt := t.(type) {
+		case types.MapType:
+			isMap = true
+			child.SetVar(fs.Name, tt.Key, true)
+			keyType = toGoTypeFromType(tt.Key)
+			usesSort = true
+		case types.ListType:
+			child.SetVar(fs.Name, tt.Elem, true)
+			elemType = toGoTypeFromType(tt.Elem)
+		case types.StringType:
+			child.SetVar(fs.Name, types.StringType{}, true)
+			elemType = "string"
+		default:
+			child.SetVar(fs.Name, types.AnyType{}, true)
+		}
 	}
 	body, err := compileStmts(fs.Body, child)
 	if err != nil {

@@ -1,7 +1,7 @@
 # Go Rosetta Transpiler Output
 
 Completed programs: 123/284
-Last updated: 2025-07-25 14:52 +0700
+Last updated: 2025-07-25 18:01 +0700
 
 Checklist:
 
@@ -34,20 +34,20 @@ Checklist:
 | 25 | abundant-odd-numbers | ✓ | 1.48s | 2.79MB |
 | 26 | accumulator-factory | ✓ | 507.0µs | 968B |
 | 27 | achilles-numbers |   |  |  |
-| 28 | ackermann-function-2 | ✓ |  |  |
-| 29 | ackermann-function-3 | ✓ |  |  |
-| 30 | ackermann-function | ✓ |  |  |
-| 31 | active-directory-connect | ✓ |  |  |
-| 32 | active-directory-search-for-a-user | ✓ |  |  |
-| 33 | active-object | ✓ |  |  |
-| 34 | add-a-variable-to-a-class-instance-at-runtime | ✓ |  |  |
-| 35 | additive-primes | ✓ |  |  |
-| 36 | address-of-a-variable | ✓ |  |  |
+| 28 | ackermann-function-2 | ✓ | 89.0µs | 1.05KB |
+| 29 | ackermann-function-3 | ✓ | 93.61s | 3.03MB |
+| 30 | ackermann-function | ✓ | 608.0µs | 1.05KB |
+| 31 | active-directory-connect | ✓ | 288.0µs | 1000B |
+| 32 | active-directory-search-for-a-user | ✓ | 406.0µs | 1.10KB |
+| 33 | active-object | ✓ | 428.0µs | 1000B |
+| 34 | add-a-variable-to-a-class-instance-at-runtime | ✓ | 467.0µs | 5.09KB |
+| 35 | additive-primes | ✓ | 639.0µs | 4.64KB |
+| 36 | address-of-a-variable | ✓ | 260.0µs | 1016B |
 | 37 | adfgvx-cipher |   |  |  |
-| 38 | aks-test-for-primes | ✓ |  |  |
+| 38 | aks-test-for-primes | ✓ | 517.0µs | 3.35KB |
 | 39 | algebraic-data-types |   |  |  |
-| 40 | align-columns | ✓ |  |  |
-| 41 | aliquot-sequence-classifications | ✓ |  |  |
+| 40 | align-columns | ✓ | 6.0ms | 1.22MB |
+| 41 | aliquot-sequence-classifications | ✓ | 46.0ms | 21.24KB |
 | 42 | almkvist-giullera-formula-for-pi |   |  |  |
 | 43 | almost-prime | ✓ |  |  |
 | 44 | amb | ✓ |  |  |
