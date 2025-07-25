@@ -2,7 +2,7 @@
 
 Generated Kotlin sources for Rosetta Code tests are stored in `tests/rosetta/transpiler/Kotlin`.
 
-Last updated: 2025-07-25 19:02 +0700
+Last updated: 2025-07-25 19:33 +0700
 
 Completed tasks: **54/284**
 
@@ -15,26 +15,26 @@ Completed tasks: **54/284**
 | 4 | 100-prisoners | ✓ | 713.19ms | 839.4 KB |
 | 5 | 15-puzzle-game | ✓ | 23.23ms | 105.3 KB |
 | 6 | 15-puzzle-solver | ✓ | 6.67ms | 134.1 KB |
-| 7 | 2048 | ✓ |  |  |
-| 8 | 21-game | ✓ |  |  |
-| 9 | 24-game-solve | ✓ |  |  |
-| 10 | 24-game | ✓ |  |  |
-| 11 | 4-rings-or-4-squares-puzzle | ✓ |  |  |
-| 12 | 9-billion-names-of-god-the-integer | ✓ |  |  |
-| 13 | 99-bottles-of-beer-2 | ✓ |  |  |
-| 14 | 99-bottles-of-beer | ✓ |  |  |
-| 15 | DNS-query | ✓ |  |  |
-| 16 | a+b | ✓ |  |  |
-| 17 | abbreviations-automatic | ✓ |  |  |
-| 18 | abbreviations-easy | ✓ |  |  |
-| 19 | abbreviations-simple | ✓ |  |  |
-| 20 | abc-problem | ✓ |  |  |
-| 21 | abelian-sandpile-model-identity | ✓ |  |  |
-| 22 | abelian-sandpile-model | ✓ |  |  |
-| 23 | abstract-type | ✓ |  |  |
-| 24 | abundant-deficient-and-perfect-number-classifications | ✓ |  |  |
-| 25 | abundant-odd-numbers | ✓ |  |  |
-| 26 | accumulator-factory | ✓ |  |  |
+| 7 | 2048 | ✓ | 17.43ms | 151.1 KB |
+| 8 | 21-game | ✓ | 14.86ms | 118.8 KB |
+| 9 | 24-game-solve | ✓ |  | 138.7 KB |
+| 10 | 24-game | ✓ |  | 111.2 KB |
+| 11 | 4-rings-or-4-squares-puzzle | ✓ |  | 795.4 KB |
+| 12 | 9-billion-names-of-god-the-integer | ✓ | 245.36ms | 825.1 KB |
+| 13 | 99-bottles-of-beer-2 | ✓ |  | 97.2 KB |
+| 14 | 99-bottles-of-beer | ✓ | 22.77ms | 133.8 KB |
+| 15 | DNS-query | ✓ | 7.31ms | 134.2 KB |
+| 16 | a+b | ✓ | 12.98ms | 119.2 KB |
+| 17 | abbreviations-automatic | ✓ |  | 128.6 KB |
+| 18 | abbreviations-easy | ✓ |  | 121.2 KB |
+| 19 | abbreviations-simple | ✓ |  | 117.4 KB |
+| 20 | abc-problem | ✓ |  | 120.7 KB |
+| 21 | abelian-sandpile-model-identity | ✓ | 10.98ms | 133.1 KB |
+| 22 | abelian-sandpile-model | ✓ |  | 121.8 KB |
+| 23 | abstract-type | ✓ | 10.64ms | 130.4 KB |
+| 24 | abundant-deficient-and-perfect-number-classifications | ✓ | 257.75ms | 133.6 KB |
+| 25 | abundant-odd-numbers | ✓ |  | 826.2 KB |
+| 26 | accumulator-factory | ✓ |  | 109.3 KB |
 | 27 | achilles-numbers |  |  |  |
 | 28 | ackermann-function-2 | ✓ |  |  |
 | 29 | ackermann-function-3 | ✓ |  |  |

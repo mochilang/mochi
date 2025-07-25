@@ -1,3 +1,29 @@
+var _nowSeed = 0L
+var _nowSeeded = false
+fun _now(): Int {
+    if (!_nowSeeded) {
+        System.getenv("MOCHI_NOW_SEED")?.toLongOrNull()?.let {
+            _nowSeed = it
+            _nowSeeded = true
+        }
+    }
+    return if (_nowSeeded) {
+        _nowSeed = (_nowSeed * 1664525 + 1013904223) % 2147483647
+        kotlin.math.abs(_nowSeed.toInt())
+    } else {
+        kotlin.math.abs(System.nanoTime().toInt())
+    }
+}
+
+fun toJson(v: Any?): String = when (v) {
+    null -> "null"
+    is String -> "\"" + v.replace("\"", "\\\"") + "\""
+    is Boolean, is Number -> v.toString()
+    is Map<*, *> -> v.entries.joinToString(prefix = "{", postfix = "}") { toJson(it.key.toString()) + ":" + toJson(it.value) }
+    is Iterable<*> -> v.joinToString(prefix = "[", postfix = "]") { toJson(it) }
+    else -> toJson(v.toString())
+}
+
 fun fields(s: String): MutableList<String> {
     var words: MutableList<String> = mutableListOf()
     var cur: String = ""
@@ -17,7 +43,7 @@ fun fields(s: String): MutableList<String> {
     if (cur.length > 0) {
         words = run { val _tmp = words.toMutableList(); _tmp.add(cur); _tmp } as MutableList<String>
     }
-    return words as MutableList<String>
+    return words
 }
 
 fun takeRunes(s: String, n: Int): String {
@@ -30,11 +56,11 @@ fun takeRunes(s: String, n: Int): String {
         idx = idx + 1
         count = count + 1
     }
-    return s as String
+    return s
 }
 
 fun distinct(xs: MutableList<String>): MutableList<String> {
-    var m: MutableMap<String, Boolean> = mutableMapOf<Any, Any>() as MutableMap<String, Boolean>
+    var m: MutableMap<String, Boolean> = mutableMapOf<Any?, Any?>() as MutableMap<String, Boolean>
     var out: MutableList<String> = mutableListOf()
     var i: Int = 0
     while (i < xs.size) {
@@ -45,7 +71,7 @@ fun distinct(xs: MutableList<String>): MutableList<String> {
         }
         i = i + 1
     }
-    return out as MutableList<String>
+    return out
 }
 
 fun abbrevLen(words: MutableList<String>): Int {
@@ -59,19 +85,19 @@ fun abbrevLen(words: MutableList<String>): Int {
             i = i + 1
         }
         if (distinct(abbrs).size == size) {
-            return l as Int
+            return l
         }
         l = l + 1
     }
-    return 0 as Int
+    return 0
 }
 
 fun pad2(n: Int): String {
     val s: String = n.toString()
     if (s.length < 2) {
-        return " " + s as String
+        return " " + s
     }
-    return s as String
+    return s
 }
 
 fun user_main(): Unit {
@@ -80,11 +106,23 @@ fun user_main(): Unit {
     while (i < lines.size) {
         val words: MutableList<String> = fields(lines[i])
         val l: Int = abbrevLen(words)
-        println(((pad2(l)).toString() + "  ") + lines[i])
+        println((pad2(l) + "  ") + lines[i])
         i = i + 1
     }
 }
 
 fun main() {
-    user_main()
+    run {
+        System.gc()
+        val _startMem = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()
+        val _start = _now()
+        user_main()
+        System.gc()
+        val _end = _now()
+        val _endMem = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()
+        val _durationUs = (_end - _start) / 1000
+        val _memDiff = kotlin.math.abs(_endMem - _startMem)
+        val _res = mapOf("duration_us" to _durationUs, "memory_bytes" to _memDiff, "name" to "main")
+        println(toJson(_res))
+    }
 }

@@ -9,13 +9,22 @@ fun _now(): Int {
     }
     return if (_nowSeeded) {
         _nowSeed = (_nowSeed * 1664525 + 1013904223) % 2147483647
-        _nowSeed.toInt()
+        kotlin.math.abs(_nowSeed.toInt())
     } else {
-        System.nanoTime().toInt()
+        kotlin.math.abs(System.nanoTime().toInt())
     }
 }
 
 fun input(): String = readLine() ?: ""
+
+fun toJson(v: Any?): String = when (v) {
+    null -> "null"
+    is String -> "\"" + v.replace("\"", "\\\"") + "\""
+    is Boolean, is Number -> v.toString()
+    is Map<*, *> -> v.entries.joinToString(prefix = "{", postfix = "}") { toJson(it.key.toString()) + ":" + toJson(it.value) }
+    is Iterable<*> -> v.joinToString(prefix = "[", postfix = "]") { toJson(it) }
+    else -> toJson(v.toString())
+}
 
 data class Board(var cells: MutableList<MutableList<Int>>)
 data class SpawnResult(var board: Board, var full: Boolean)
@@ -295,60 +304,72 @@ fun has2048(b: Board): Boolean {
 }
 
 fun main() {
-    board = r.board
-    r = spawnTile(board)
-    board = r.board
-    full = r.full
-    draw(board, score)
-    while (true) {
-        println("Move: ")
-        val cmd: String = input()
-        var moved: Boolean = false
-        if ((cmd == "a") || (cmd == "A")) {
-            val m: MoveResult = moveLeft(board, score)
-            board = m.board
-            score = m.score
-            moved = m.moved
-        }
-        if ((cmd == "d") || (cmd == "D")) {
-            val m: MoveResult = moveRight(board, score)
-            board = m.board
-            score = m.score
-            moved = m.moved
-        }
-        if ((cmd == "w") || (cmd == "W")) {
-            val m: MoveResult = moveUp(board, score)
-            board = m.board
-            score = m.score
-            moved = m.moved
-        }
-        if ((cmd == "s") || (cmd == "S")) {
-            val m: MoveResult = moveDown(board, score)
-            board = m.board
-            score = m.score
-            moved = m.moved
-        }
-        if ((cmd == "q") || (cmd == "Q")) {
-            break
-        }
-        if (moved as Boolean) {
-            val r2: SpawnResult = spawnTile(board)
-            board = r2.board
-            full = r2.full
-            if (full && (!hasMoves(board) as Boolean)) {
-                draw(board, score)
+    run {
+        System.gc()
+        val _startMem = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()
+        val _start = _now()
+        board = r.board
+        r = spawnTile(board)
+        board = r.board
+        full = r.full
+        draw(board, score)
+        while (true) {
+            println("Move: ")
+            val cmd: String = input()
+            var moved: Boolean = false
+            if ((cmd == "a") || (cmd == "A")) {
+                val m: MoveResult = moveLeft(board, score)
+                board = m.board
+                score = m.score
+                moved = m.moved
+            }
+            if ((cmd == "d") || (cmd == "D")) {
+                val m: MoveResult = moveRight(board, score)
+                board = m.board
+                score = m.score
+                moved = m.moved
+            }
+            if ((cmd == "w") || (cmd == "W")) {
+                val m: MoveResult = moveUp(board, score)
+                board = m.board
+                score = m.score
+                moved = m.moved
+            }
+            if ((cmd == "s") || (cmd == "S")) {
+                val m: MoveResult = moveDown(board, score)
+                board = m.board
+                score = m.score
+                moved = m.moved
+            }
+            if ((cmd == "q") || (cmd == "Q")) {
+                break
+            }
+            if (moved as Boolean) {
+                val r2: SpawnResult = spawnTile(board)
+                board = r2.board
+                full = r2.full
+                if (full && (!hasMoves(board) as Boolean)) {
+                    draw(board, score)
+                    println("Game Over")
+                    break
+                }
+            }
+            draw(board, score)
+            if ((has2048(board)) as Boolean) {
+                println("You win!")
+                break
+            }
+            if (!hasMoves(board)) {
                 println("Game Over")
                 break
             }
         }
-        draw(board, score)
-        if ((has2048(board)) as Boolean) {
-            println("You win!")
-            break
-        }
-        if (!hasMoves(board)) {
-            println("Game Over")
-            break
-        }
+        System.gc()
+        val _end = _now()
+        val _endMem = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()
+        val _durationUs = (_end - _start) / 1000
+        val _memDiff = kotlin.math.abs(_endMem - _startMem)
+        val _res = mapOf("duration_us" to _durationUs, "memory_bytes" to _memDiff, "name" to "main")
+        println(toJson(_res))
     }
 }

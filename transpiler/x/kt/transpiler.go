@@ -138,9 +138,9 @@ fun _now(): Int {
     }
     return if (_nowSeeded) {
         _nowSeed = (_nowSeed * 1664525 + 1013904223) % 2147483647
-        _nowSeed.toInt()
+        kotlin.math.abs(_nowSeed.toInt())
     } else {
-        System.nanoTime().toInt()
+        kotlin.math.abs(System.nanoTime().toInt())
     }
 }`,
 	}
@@ -1906,6 +1906,8 @@ func kotlinTypeFromType(t types.Type) string {
 		return "String"
 	case types.FloatType, *types.FloatType, types.BigRatType, *types.BigRatType:
 		return "Double"
+	case types.AnyType, *types.AnyType:
+		return "Any?"
 	case types.ListType:
 		elem := kotlinTypeFromType(tt.Elem)
 		if elem == "" {
@@ -2191,10 +2193,8 @@ func newVarRef(env *types.Env, name string) *VarRef {
 			typ = kotlinTypeFromType(t)
 			hasVar = true
 		}
-		if !hasVar {
-			if _, ok := env.GetFunc(name); ok {
-				isFunc = true
-			}
+		if _, ok := env.GetFunc(name); ok {
+			isFunc = true
 		}
 	}
 	if !hasVar && localFuncs[name] {
