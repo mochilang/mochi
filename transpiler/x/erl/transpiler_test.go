@@ -72,6 +72,7 @@ func runGolden(t *testing.T, name string) {
 		_ = os.WriteFile(erlFile, code, 0o755)
 	}
 	cmd := exec.Command("escript", erlFile)
+	cmd.Env = append(os.Environ(), "MOCHI_NOW_SEED=1")
 	out, err := cmd.CombinedOutput()
 	if err != nil {
 		if updateEnabled() {
@@ -276,6 +277,8 @@ func TestTranspileGoAuto(t *testing.T)     { runGolden(t, "go_auto") }
 func TestTranspileSaveJSONLStdout(t *testing.T) { runGolden(t, "save_jsonl_stdout") }
 
 func TestTranspileUpdateStmt(t *testing.T) { runGolden(t, "update_stmt") }
+
+func TestTranspileBenchBlock(t *testing.T) { runGolden(t, "bench_block") }
 
 func updateEnabled() bool { return *update }
 
