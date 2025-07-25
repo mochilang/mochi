@@ -207,6 +207,14 @@ type CommentStmt struct {
 
 func (*CommentStmt) isStmt() {}
 
+// BenchStmt represents a benchmark block.
+type BenchStmt struct {
+	Name string
+	Body []Stmt
+}
+
+func (*BenchStmt) isStmt() {}
+
 // DataClassDef represents a @dataclass definition.
 type DataClassDef struct {
 	Name    string
@@ -923,6 +931,23 @@ func emitStmtIndent(w io.Writer, s Stmt, indent string) error {
 					return err
 				}
 			}
+		}
+		return nil
+	case *BenchStmt:
+		if _, err := io.WriteString(w, indent+"_bench_start = _now()\n"); err != nil {
+			return err
+		}
+		for _, bs := range st.Body {
+			if err := emitStmtIndent(w, bs, indent); err != nil {
+				return err
+			}
+		}
+		if _, err := io.WriteString(w, indent+"_bench_end = _now()\n"); err != nil {
+			return err
+		}
+		line := fmt.Sprintf("%sprint(json.dumps({\"duration_us\": (_bench_end - _bench_start)//1000, \"memory_bytes\": 0, \"name\": %q}, indent=2))\n", indent, st.Name)
+		if _, err := io.WriteString(w, line); err != nil {
+			return err
 		}
 		return nil
 	case *BreakStmt:
@@ -2712,6 +2737,22 @@ func Emit(w io.Writer, p *Program) error {
 					}
 				}
 			}
+		case *BenchStmt:
+			if _, err := io.WriteString(w, "_bench_start = _now()\n"); err != nil {
+				return err
+			}
+			for _, bs := range st.Body {
+				if err := emitStmtIndent(w, bs, ""); err != nil {
+					return err
+				}
+			}
+			if _, err := io.WriteString(w, "_bench_end = _now()\n"); err != nil {
+				return err
+			}
+			line := fmt.Sprintf("print(json.dumps({\"duration_us\": (_bench_end - _bench_start)//1000, \"memory_bytes\": 0, \"name\": %q}, indent=2))\n", st.Name)
+			if _, err := io.WriteString(w, line); err != nil {
+				return err
+			}
 		case *BreakStmt:
 			if _, err := io.WriteString(w, "break\n"); err != nil {
 				return err
@@ -3131,6 +3172,19 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 				}
 			}
 			p.Stmts = append(p.Stmts, &IfStmt{Cond: cond, Then: thenStmts, Else: elseStmts})
+		case st.Bench != nil:
+			body, err := convertStmts(st.Bench.Body, env)
+			if err != nil {
+				return nil, err
+			}
+			name := strings.Trim(st.Bench.Name, "\"")
+			if currentImports != nil {
+				currentImports["json"] = true
+				currentImports["os"] = true
+				currentImports["time"] = true
+			}
+			usesNow = true
+			p.Stmts = append(p.Stmts, &BenchStmt{Name: name, Body: body})
 		case st.Break != nil:
 			p.Stmts = append(p.Stmts, &BreakStmt{})
 		case st.Continue != nil:
@@ -3549,6 +3603,19 @@ func convertStmts(list []*parser.Statement, env *types.Env) ([]Stmt, error) {
 				}
 			}
 			out = append(out, &IfStmt{Cond: cond, Then: thenStmts, Else: elseStmts})
+		case s.Bench != nil:
+			body, err := convertStmts(s.Bench.Body, env)
+			if err != nil {
+				return nil, err
+			}
+			name := strings.Trim(s.Bench.Name, "\"")
+			if currentImports != nil {
+				currentImports["json"] = true
+				currentImports["os"] = true
+				currentImports["time"] = true
+			}
+			usesNow = true
+			out = append(out, &BenchStmt{Name: name, Body: body})
 		case s.Break != nil:
 			out = append(out, &BreakStmt{})
 		case s.Continue != nil:
@@ -4085,7 +4152,8 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				if isBoolOp(p.Call.Args[i]) {
 					outArgs[i] = &RawExpr{Code: fmt.Sprintf("(1 if %s else 0)", exprString(a))}
 				} else if _, ok := t.(types.BoolType); ok {
-					outArgs[i] = &RawExpr{Code: fmt.Sprintf("(\"true\" if %s else \"false\")", exprString(a))}
+					// Match the VM's representation using capitalized booleans
+					outArgs[i] = &RawExpr{Code: fmt.Sprintf("(\"True\" if %s else \"False\")", exprString(a))}
 				} else if lt, ok := t.(types.ListType); ok {
 					if _, ok2 := lt.Elem.(types.StructType); ok2 {
 						currentImports["dataclasses"] = true

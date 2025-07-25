@@ -65,7 +65,7 @@ func runCase(t *testing.T, name string) {
 		t.Fatalf("write: %v", err)
 	}
 	cmd := exec.Command("python3", pyFile)
-	cmd.Env = append(os.Environ(), "MOCHI_ROOT="+root)
+	cmd.Env = append(os.Environ(), "MOCHI_ROOT="+root, "MOCHI_NOW_SEED=1")
 	out, err := cmd.CombinedOutput()
 	got := bytes.TrimSpace(out)
 	if err != nil {
@@ -378,4 +378,8 @@ func TestTranspile_QuerySumSelect(t *testing.T) {
 
 func TestTranspile_UpdateStmt(t *testing.T) {
 	runCase(t, "update_stmt")
+}
+
+func TestTranspile_BenchBlock(t *testing.T) {
+	runCase(t, "bench_block")
 }
