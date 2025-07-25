@@ -19,7 +19,7 @@ begin
     _nowSeed := (_nowSeed * 1664525 + 1013904223) mod 2147483647;
     _now := _nowSeed;
   end else begin
-    _now := Integer(GetTickCount64());
+    _now := Integer(GetTickCount64()*1000);
   end;
 end;
 function _input(): string;
@@ -146,6 +146,27 @@ end;
   playOneMove_m := 0;
   if (playOneMove_c = 'U') or (playOneMove_c = 'u') then begin
   playOneMove_m := 0;
+end else begin
+  if (playOneMove_c = 'D') or (playOneMove_c = 'd') then begin
+  playOneMove_m := 1;
+end else begin
+  if (playOneMove_c = 'R') or (playOneMove_c = 'r') then begin
+  playOneMove_m := 2;
+end else begin
+  if (playOneMove_c = 'L') or (playOneMove_c = 'l') then begin
+  playOneMove_m := 3;
+end else begin
+  if (playOneMove_c = 'Q') or (playOneMove_c = 'q') then begin
+  writeln(('Quiting after ' + IntToStr(moves)) + ' moves.');
+  quit := true;
+  exit();
+end else begin
+  writeln((('Please enter "U", "D", "L", or "R" to move the empty cell' + #10 + '' + 'up, down, left, or right. You can also enter "Q" to quit.' + #10 + '') + 'Upper or lowercase is accepted and only the first non-blank' + #10 + '') + 'character is important (i.e. you may enter "up" if you like).');
+  continue;
+end;
+end;
+end;
+end;
 end;
   if not doMove(playOneMove_m) then begin
   writeln('That is not a valid move at the moment.');
