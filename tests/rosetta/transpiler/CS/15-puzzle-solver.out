@@ -1,2 +1,2 @@
-/tmp/TestCSTranspiler_Rosetta_Golden3317588644/001/Program.cs(6,14): warning CS8981: The type name 'testpkg' only contains lower-cased ascii characters. Such names may become reserved for the language. [/tmp/TestCSTranspiler_Rosetta_Golden3317588644/001/app.csproj]
+/tmp/TestCSTranspiler_Rosetta_Golden3737443120/001/Program.cs(8,14): warning CS8981: The type name 'testpkg' only contains lower-cased ascii characters. Such names may become reserved for the language. [/tmp/TestCSTranspiler_Rosetta_Golden3737443120/001/app.csproj]
 Solution found in 52 moves: rrrulddluuuldrurdddrullulurrrddldluurddlulurruldrdrd
