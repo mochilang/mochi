@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated IR and outputs from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/ir`.
-Last updated: 2025-07-25 05:09 UTC
+Last updated: 2025-07-25 05:41 UTC
 
-## Rosetta Golden Test Checklist (20/284)
+## Rosetta Golden Test Checklist (39/284)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 116µs | 11.7 KB |
@@ -28,25 +28,25 @@ Last updated: 2025-07-25 05:09 UTC
 | 19 | abbreviations-simple | ✓ | 5.16ms |  |
 | 20 | abc-problem | ✓ | 4.951ms |  |
 | 21 | abelian-sandpile-model-identity |   |  |  |
-| 22 | abelian-sandpile-model |   |  |  |
-| 23 | abstract-type |   |  |  |
-| 24 | abundant-deficient-and-perfect-number-classifications |   |  |  |
-| 25 | abundant-odd-numbers |   |  |  |
-| 26 | accumulator-factory |   |  |  |
-| 27 | achilles-numbers |   |  |  |
-| 28 | ackermann-function-2 |   |  |  |
-| 29 | ackermann-function-3 |   |  |  |
-| 30 | ackermann-function |   |  |  |
-| 31 | active-directory-connect |   |  |  |
-| 32 | active-directory-search-for-a-user |   |  |  |
-| 33 | active-object |   |  |  |
-| 34 | add-a-variable-to-a-class-instance-at-runtime |   |  |  |
-| 35 | additive-primes |   |  |  |
-| 36 | address-of-a-variable |   |  |  |
-| 37 | adfgvx-cipher |   |  |  |
-| 38 | aks-test-for-primes |   |  |  |
-| 39 | algebraic-data-types |   |  |  |
-| 40 | align-columns |   |  |  |
+| 22 | abelian-sandpile-model | ✓ | 4.879ms | 1.8 MB |
+| 23 | abstract-type | ✓ | 130µs | 42.3 KB |
+| 24 | abundant-deficient-and-perfect-number-classifications | ✓ | 20.285908s | 1.3 MB |
+| 25 | abundant-odd-numbers | ✓ | 26.193914s |  |
+| 26 | accumulator-factory | ✓ | 33µs | 8.4 KB |
+| 27 | achilles-numbers | ✓ |  |  |
+| 28 | ackermann-function-2 | ✓ | 40µs | 22.1 KB |
+| 29 | ackermann-function-3 | ✓ |  |  |
+| 30 | ackermann-function | ✓ | 26.651ms | 1.8 MB |
+| 31 | active-directory-connect | ✓ | 62µs | 14.2 KB |
+| 32 | active-directory-search-for-a-user | ✓ | 97µs | 6.5 KB |
+| 33 | active-object | ✓ | 1.388ms | 667.9 KB |
+| 34 | add-a-variable-to-a-class-instance-at-runtime | ✓ | 55µs | 7.9 KB |
+| 35 | additive-primes | ✓ | 2.007ms |  |
+| 36 | address-of-a-variable | ✓ | 23µs | 600 B |
+| 37 | adfgvx-cipher | ✓ |  |  |
+| 38 | aks-test-for-primes | ✓ | 313µs | 155.7 KB |
+| 39 | algebraic-data-types | ✓ | 272µs | 320.2 KB |
+| 40 | align-columns | ✓ | 3.193ms |  |
 | 41 | aliquot-sequence-classifications |   |  |  |
 | 42 | almkvist-giullera-formula-for-pi |   |  |  |
 | 43 | almost-prime |   |  |  |

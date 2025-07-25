@@ -1,0 +1,114 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun pfacSum(i: int): int {
+func pfacSum (regs=12)
+  // var sum = 0
+  Const        r1, 0
+  Move         r2, r1
+  // var p = 1
+  Const        r3, 1
+  Move         r4, r3
+L2:
+  // while p <= i / 2 {
+  Const        r5, 2
+  Div          r6, r0, r5
+  LessEq       r7, r4, r6
+  JumpIfFalse  r7, L0
+  // if i % p == 0 {
+  Mod          r8, r0, r4
+  Const        r1, 0
+  Equal        r9, r8, r1
+  JumpIfFalse  r9, L1
+  // sum = sum + p
+  AddInt       r10, r2, r4
+  Move         r2, r10
+L1:
+  // p = p + 1
+  Const        r3, 1
+  AddInt       r11, r4, r3
+  Move         r4, r11
+  // while p <= i / 2 {
+  Jump         L2
+L0:
+  // return sum
+  Return       r2
+
+  // fun main() {
+func main (regs=31)
+  // var d = 0
+  Const        r0, 0
+  Move         r1, r0
+  // var a = 0
+  Const        r0, 0
+  Move         r2, r0
+  // var pnum = 0
+  Const        r0, 0
+  Move         r3, r0
+  // var i = 1
+  Const        r4, 1
+  Move         r5, r4
+L4:
+  // while i <= 20000 {
+  Const        r6, 20000
+  LessEqInt    r7, r5, r6
+  JumpIfFalse  r7, L0
+  // let j = pfacSum(i)
+  Move         r8, r5
+  Call         r9, pfacSum, r8
+  Move         r10, r9
+  // if j < i {
+  Less         r11, r10, r5
+  JumpIfFalse  r11, L1
+  // d = d + 1
+  Const        r4, 1
+  AddInt       r12, r1, r4
+  Move         r1, r12
+L1:
+  // if j == i {
+  Equal        r13, r10, r5
+  JumpIfFalse  r13, L2
+  // pnum = pnum + 1
+  Const        r4, 1
+  AddInt       r14, r3, r4
+  Move         r3, r14
+L2:
+  // if j > i {
+  Less         r15, r5, r10
+  JumpIfFalse  r15, L3
+  // a = a + 1
+  Const        r4, 1
+  AddInt       r16, r2, r4
+  Move         r2, r16
+L3:
+  // i = i + 1
+  Const        r4, 1
+  AddInt       r17, r5, r4
+  Move         r5, r17
+  // while i <= 20000 {
+  Jump         L4
+L0:
+  // print("There are " + str(d) + " deficient numbers between 1 and 20000")
+  Const        r18, "There are "
+  Str          r19, r1
+  Add          r20, r18, r19
+  Const        r21, " deficient numbers between 1 and 20000"
+  Add          r22, r20, r21
+  Print        r22
+  // print("There are " + str(a) + " abundant numbers  between 1 and 20000")
+  Const        r18, "There are "
+  Str          r23, r2
+  Add          r24, r18, r23
+  Const        r25, " abundant numbers  between 1 and 20000"
+  Add          r26, r24, r25
+  Print        r26
+  // print("There are " + str(pnum) + " perfect numbers between 1 and 20000")
+  Const        r18, "There are "
+  Str          r27, r3
+  Add          r28, r18, r27
+  Const        r29, " perfect numbers between 1 and 20000"
+  Add          r30, r28, r29
+  Print        r30
+  Return       r0

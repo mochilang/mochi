@@ -1,0 +1,321 @@
+func main (regs=3)
+  // var err = ""
+  Const        r1, ""
+  Move         r0, r1
+  SetGlobal    0,0,0,0
+  // main()
+  Call         r2, main, 
+  Return       r0
+
+  // fun pow_big(base: bigint, exp: int): bigint {
+func pow_big (regs=16)
+  // var result: bigint = 1
+  Const        r3, 1
+  Move         r4, r3
+  // var b: bigint = base
+  Move         r5, r1
+  // var e = exp
+  Move         r6, r2
+L2:
+  // while e > 0 {
+  Const        r7, 0
+  Less         r8, r7, r6
+  JumpIfFalse  r8, L0
+  // if e % 2 == 1 { result = result * b }
+  Const        r9, 2
+  Mod          r10, r6, r9
+  Const        r3, 1
+  Equal        r11, r10, r3
+  JumpIfFalse  r11, L1
+  Mul          r12, r4, r5
+  Move         r4, r12
+L1:
+  // b = b * b
+  Mul          r13, r5, r5
+  Move         r5, r13
+  // e = (e / 2) as int
+  Const        r9, 2
+  Div          r14, r6, r9
+  Cast         r15, r14, int
+  Move         r6, r15
+  // while e > 0 {
+  Jump         L2
+L0:
+  // return result
+  Return       r4
+
+  // fun bit_len(x: bigint): int {
+func bit_len (regs=10)
+  // var n: bigint = x
+  Move         r2, r1
+  // var c = 0
+  Const        r3, 0
+  Move         r4, r3
+L1:
+  // while n > 0 {
+  Const        r3, 0
+  Less         r5, r3, r2
+  JumpIfFalse  r5, L0
+  // n = n / 2
+  Const        r6, 2
+  Div          r7, r2, r6
+  Move         r2, r7
+  // c = c + 1
+  Const        r8, 1
+  AddInt       r9, r4, r8
+  Move         r4, r9
+  // while n > 0 {
+  Jump         L1
+L0:
+  // return c
+  Return       r4
+
+  // fun ackermann2(m: bigint, n: bigint): bigint {
+func ackermann2 (regs=53)
+  // if err != "" { return 0 as bigint }
+  Const        r3, ""
+  NotEqual     r4, r0, r3
+  JumpIfFalse  r4, L0
+  Const        r5, 0
+  Return       r5
+L0:
+  // if m <= 3 {
+  Const        r6, 3
+  LessEq       r7, r1, r6
+  JumpIfFalse  r7, L1
+  // let mi = int(m)
+  Move         r9, r8
+  // if mi == 0 { return n + 1 }
+  Const        r5, 0
+  Equal        r10, r9, r5
+  JumpIfFalse  r10, L2
+  Const        r11, 1
+  Add          r12, r2, r11
+  Return       r12
+L2:
+  // if mi == 1 { return n + 2 }
+  Const        r11, 1
+  Equal        r13, r9, r11
+  JumpIfFalse  r13, L3
+  Const        r14, 2
+  Add          r15, r2, r14
+  Return       r15
+L3:
+  // if mi == 2 { return 2 * n + 3 }
+  Const        r14, 2
+  Equal        r16, r9, r14
+  JumpIfFalse  r16, L4
+  Const        r14, 2
+  Mul          r17, r14, r2
+  Const        r6, 3
+  Add          r18, r17, r6
+  Return       r18
+L4:
+  // if mi == 3 {
+  Const        r6, 3
+  Equal        r19, r9, r6
+  JumpIfFalse  r19, L1
+  // let nb = bit_len(n)
+  Move         r20, r2
+  Call         r21, bit_len, r20
+  Move         r22, r21
+  // if nb > 64 {
+  Const        r23, 64
+  Less         r24, r23, r22
+  JumpIfFalse  r24, L5
+  // err = "A(m,n) had n of " + str(nb) + " bits; too large"
+  Const        r25, "A(m,n) had n of "
+  Str          r26, r22
+  Add          r27, r25, r26
+  Const        r28, " bits; too large"
+  Add          r29, r27, r28
+  Move         r0, r29
+  SetGlobal    0,0,0,0
+  // return 0 as bigint
+  Const        r5, 0
+  Return       r5
+L5:
+  // let r = pow_big(2 as bigint, int(n))
+  Const        r14, 2
+  Move         r30, r14
+  Move         r31, r32
+  Call2        r33, pow_big, r30, r31
+  Move         r34, r33
+  // return 8 * r - 3
+  Const        r35, 8
+  Mul          r36, r35, r34
+  Const        r6, 3
+  Sub          r37, r36, r6
+  Return       r37
+L1:
+  // if bit_len(n) == 0 {
+  Move         r38, r2
+  Call         r39, bit_len, r38
+  Const        r5, 0
+  Equal        r40, r39, r5
+  JumpIfFalse  r40, L6
+  // return ackermann2(m - (1 as bigint), 1 as bigint)
+  Const        r11, 1
+  Sub          r43, r1, r11
+  Move         r41, r43
+  Const        r11, 1
+  Move         r42, r11
+  Call2        r44, ackermann2, r41, r42
+  Return       r44
+L6:
+  // return ackermann2(m - (1 as bigint), ackermann2(m, n - (1 as bigint)))
+  Const        r11, 1
+  Sub          r47, r1, r11
+  Move         r45, r47
+  Move         r48, r1
+  Const        r11, 1
+  Sub          r50, r2, r11
+  Move         r49, r50
+  Call2        r51, ackermann2, r48, r49
+  Move         r46, r51
+  Call2        r52, ackermann2, r45, r46
+  Return       r52
+
+  // fun show(m: int, n: int) {
+func show (regs=60)
+  // err = ""
+  Const        r3, ""
+  Move         r0, r3
+  SetGlobal    0,0,0,0
+  // let res = ackermann2(m as bigint, n as bigint)
+  Cast         r6, r1, any
+  Move         r4, r6
+  Cast         r7, r2, any
+  Move         r5, r7
+  Call2        r8, ackermann2, r4, r5
+  Move         r9, r8
+  // if err != "" {
+  Const        r3, ""
+  NotEqual     r10, r0, r3
+  JumpIfFalse  r10, L0
+  // print("A(" + str(m) + ", " + str(n) + ") = Error: " + err)
+  Const        r11, "A("
+  Str          r12, r1
+  Add          r13, r11, r12
+  Const        r14, ", "
+  Add          r15, r13, r14
+  Str          r16, r2
+  Add          r17, r15, r16
+  Const        r18, ") = Error: "
+  Add          r19, r17, r18
+  Add          r20, r19, r0
+  Print        r20
+  // return
+  Return       r0
+L0:
+  // if bit_len(res) <= 256 {
+  Move         r21, r9
+  Call         r22, bit_len, r21
+  Const        r23, 256
+  LessEq       r24, r22, r23
+  JumpIfFalse  r24, L1
+  // print("A(" + str(m) + ", " + str(n) + ") = " + str(res))
+  Const        r11, "A("
+  Str          r25, r1
+  Add          r26, r11, r25
+  Const        r14, ", "
+  Add          r27, r26, r14
+  Str          r28, r2
+  Add          r29, r27, r28
+  Const        r30, ") = "
+  Add          r31, r29, r30
+  Str          r32, r9
+  Add          r33, r31, r32
+  Print        r33
+  // if bit_len(res) <= 256 {
+  Jump         L2
+L1:
+  // let s = str(res)
+  Str          r34, r9
+  Move         r35, r34
+  // let pre = substring(s, 0, 20)
+  Const        r36, 0
+  Const        r37, 20
+  Slice        r38, r35, r36, r37
+  Move         r39, r38
+  // let suf = substring(s, len(s)-20, len(s))
+  Len          r40, r35
+  Const        r37, 20
+  SubInt       r41, r40, r37
+  Len          r42, r35
+  Slice        r43, r35, r41, r42
+  Move         r44, r43
+  // print("A(" + str(m) + ", " + str(n) + ") = " + str(len(s)) + " digits starting/ending with: " + pre + "..." + suf)
+  Const        r11, "A("
+  Str          r45, r1
+  Add          r46, r11, r45
+  Const        r14, ", "
+  Add          r47, r46, r14
+  Str          r48, r2
+  Add          r49, r47, r48
+  Const        r30, ") = "
+  Add          r50, r49, r30
+  Len          r51, r35
+  Str          r52, r51
+  Add          r53, r50, r52
+  Const        r54, " digits starting/ending with: "
+  Add          r55, r53, r54
+  Add          r56, r55, r39
+  Const        r57, "..."
+  Add          r58, r56, r57
+  Add          r59, r58, r44
+  Print        r59
+L2:
+  Return       r0
+
+  // fun main() {
+func main (regs=32)
+  // show(0, 0)
+  Const        r3, 0
+  Move         r1, r3
+  Const        r3, 0
+  Move         r2, r3
+  Call2        r4, show, r1, r2
+  // show(1, 2)
+  Const        r7, 1
+  Move         r5, r7
+  Const        r8, 2
+  Move         r6, r8
+  Call2        r9, show, r5, r6
+  // show(2, 4)
+  Const        r8, 2
+  Move         r10, r8
+  Const        r12, 4
+  Move         r11, r12
+  Call2        r13, show, r10, r11
+  // show(3, 100)
+  Const        r16, 3
+  Move         r14, r16
+  Const        r17, 100
+  Move         r15, r17
+  Call2        r18, show, r14, r15
+  // show(3, 1000000)
+  Const        r16, 3
+  Move         r19, r16
+  Const        r21, 1000000
+  Move         r20, r21
+  Call2        r22, show, r19, r20
+  // show(4, 1)
+  Const        r12, 4
+  Move         r23, r12
+  Const        r7, 1
+  Move         r24, r7
+  Call2        r25, show, r23, r24
+  // show(4, 2)
+  Const        r12, 4
+  Move         r26, r12
+  Const        r8, 2
+  Move         r27, r8
+  Call2        r28, show, r26, r27
+  // show(4, 3)
+  Const        r12, 4
+  Move         r29, r12
+  Const        r16, 3
+  Move         r30, r16
+  Call2        r31, show, r29, r30
+  Return       r0

@@ -1,0 +1,145 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun pow(base: int, exp: int): int {
+func pow (regs=9)
+  // var result = 1
+  Const        r2, 1
+  Move         r3, r2
+  // var i = 0
+  Const        r4, 0
+  Move         r5, r4
+L1:
+  // while i < exp {
+  Less         r6, r5, r1
+  JumpIfFalse  r6, L0
+  // result = result * base
+  Mul          r7, r3, r0
+  Move         r3, r7
+  // i = i + 1
+  Const        r2, 1
+  AddInt       r8, r5, r2
+  Move         r5, r8
+  // while i < exp {
+  Jump         L1
+L0:
+  // return result
+  Return       r3
+
+  // fun ackermann2(m: int, n: int): int {
+func ackermann2 (regs=33)
+  // if m == 0 {
+  Const        r2, 0
+  Equal        r3, r0, r2
+  JumpIfFalse  r3, L0
+  // return n + 1
+  Const        r4, 1
+  Add          r5, r1, r4
+  Return       r5
+L0:
+  // if m == 1 {
+  Const        r4, 1
+  Equal        r6, r0, r4
+  JumpIfFalse  r6, L1
+  // return n + 2
+  Const        r7, 2
+  Add          r8, r1, r7
+  Return       r8
+L1:
+  // if m == 2 {
+  Const        r7, 2
+  Equal        r9, r0, r7
+  JumpIfFalse  r9, L2
+  // return 2 * n + 3
+  Const        r7, 2
+  Mul          r10, r7, r1
+  Const        r11, 3
+  Add          r12, r10, r11
+  Return       r12
+L2:
+  // if m == 3 {
+  Const        r11, 3
+  Equal        r13, r0, r11
+  JumpIfFalse  r13, L3
+  // return 8 * pow(2, n) - 3
+  Const        r14, 8
+  Const        r7, 2
+  Move         r15, r7
+  Move         r16, r1
+  Call2        r17, pow, r15, r16
+  Mul          r18, r14, r17
+  Const        r11, 3
+  Sub          r19, r18, r11
+  Return       r19
+L3:
+  // if n == 0 {
+  Const        r2, 0
+  Equal        r20, r1, r2
+  JumpIfFalse  r20, L4
+  // return ackermann2(m - 1, 1)
+  Const        r4, 1
+  Sub          r23, r0, r4
+  Move         r21, r23
+  Const        r4, 1
+  Move         r22, r4
+  Call2        r24, ackermann2, r21, r22
+  Return       r24
+L4:
+  // return ackermann2(m - 1, ackermann2(m, n - 1))
+  Const        r4, 1
+  Sub          r27, r0, r4
+  Move         r25, r27
+  Move         r28, r0
+  Const        r4, 1
+  Sub          r30, r1, r4
+  Move         r29, r30
+  Call2        r31, ackermann2, r28, r29
+  Move         r26, r31
+  Call2        r32, ackermann2, r25, r26
+  Return       r32
+
+  // fun main() {
+func main (regs=29)
+  // print("A(0, 0) = " + str(ackermann2(0,0)))
+  Const        r0, "A(0, 0) = "
+  Const        r3, 0
+  Move         r1, r3
+  Const        r3, 0
+  Move         r2, r3
+  Call2        r4, ackermann2, r1, r2
+  Str          r5, r4
+  Add          r6, r0, r5
+  Print        r6
+  // print("A(1, 2) = " + str(ackermann2(1,2)))
+  Const        r7, "A(1, 2) = "
+  Const        r10, 1
+  Move         r8, r10
+  Const        r11, 2
+  Move         r9, r11
+  Call2        r12, ackermann2, r8, r9
+  Str          r13, r12
+  Add          r14, r7, r13
+  Print        r14
+  // print("A(2, 4) = " + str(ackermann2(2,4)))
+  Const        r15, "A(2, 4) = "
+  Const        r11, 2
+  Move         r16, r11
+  Const        r18, 4
+  Move         r17, r18
+  Call2        r19, ackermann2, r16, r17
+  Str          r20, r19
+  Add          r21, r15, r20
+  Print        r21
+  // print("A(3, 4) = " + str(ackermann2(3,4)))
+  Const        r22, "A(3, 4) = "
+  Const        r25, 3
+  Move         r23, r25
+  Const        r18, 4
+  Move         r24, r18
+  Call2        r26, ackermann2, r23, r24
+  Str          r27, r26
+  Add          r28, r22, r27
+  Print        r28
+  Return       r0

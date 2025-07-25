@@ -1,0 +1,12 @@
+func main (regs=4)
+  // var myVar = 3.14
+  Const        r1, 3.14
+  Move         r0, r1
+  SetGlobal    0,0,0,0
+  // print("value as float:", myVar)
+  Const        r2, "value as float:"
+  Print2       r2, r0
+  // print("address: <not available>")
+  Const        r3, "address: <not available>"
+  Print        r3
+  Return       r0
