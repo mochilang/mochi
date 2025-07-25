@@ -872,8 +872,12 @@ func (f *FunStmt) emit(w io.Writer) {
 		io.WriteString(w, "(Obj.magic 0)")
 	}
 	io.WriteString(w, " in\n")
-	for range f.Params {
-		// parameters are immutable; no refs needed
+	if m := getFuncMutations(rootEnv, f.Name); len(m) > 0 {
+		for _, p := range f.Params {
+			if m[p] {
+				fmt.Fprintf(w, "  let %s = ref %s in\n", sanitizeIdent(p), sanitizeIdent(p))
+			}
+		}
 	}
 	io.WriteString(w, "  (try\n")
 	for _, st := range f.Body {
@@ -2816,7 +2820,13 @@ func transpileStmt(st *parser.Statement, env *types.Env, vars map[string]VarInfo
 			if p.Type != nil {
 				typ := typeRefString(p.Type)
 				if typ == "int" || typ == "float" {
-					casts = append(casts, &LetStmt{Name: p.Name, Expr: &RawExpr{Code: fmt.Sprintf("(Obj.magic %s : %s)", sanitizeIdent(p.Name), typ)}})
+					exprCode := fmt.Sprintf("(Obj.magic %s : %s)", sanitizeIdent(p.Name), typ)
+					if mutated[p.Name] {
+						expr := &RawExpr{Code: strings.ReplaceAll(exprCode, sanitizeIdent(p.Name), fmt.Sprintf("!%s", sanitizeIdent(p.Name)))}
+						casts = append(casts, &AssignStmt{Name: p.Name, Expr: expr})
+					} else {
+						casts = append(casts, &LetStmt{Name: p.Name, Expr: &RawExpr{Code: exprCode}})
+					}
 				}
 			}
 		}
@@ -3852,7 +3862,13 @@ func convertFunExpr(fn *parser.FunExpr, env *types.Env, vars map[string]VarInfo)
 			if p.Type != nil {
 				typ := typeRefString(p.Type)
 				if typ == "int" || typ == "float" {
-					casts = append(casts, &LetStmt{Name: p.Name, Expr: &RawExpr{Code: fmt.Sprintf("(Obj.magic %s : %s)", sanitizeIdent(p.Name), typ)}})
+					exprCode := fmt.Sprintf("(Obj.magic %s : %s)", sanitizeIdent(p.Name), typ)
+					if mutated[p.Name] {
+						expr := &RawExpr{Code: strings.ReplaceAll(exprCode, sanitizeIdent(p.Name), fmt.Sprintf("!%s", sanitizeIdent(p.Name)))}
+						casts = append(casts, &AssignStmt{Name: p.Name, Expr: expr})
+					} else {
+						casts = append(casts, &LetStmt{Name: p.Name, Expr: &RawExpr{Code: exprCode}})
+					}
 				}
 			}
 		}
@@ -3870,7 +3886,13 @@ func convertFunExpr(fn *parser.FunExpr, env *types.Env, vars map[string]VarInfo)
 			if p.Type != nil {
 				typ := typeRefString(p.Type)
 				if typ == "int" || typ == "float" {
-					casts = append(casts, &LetStmt{Name: p.Name, Expr: &RawExpr{Code: fmt.Sprintf("(Obj.magic %s : %s)", sanitizeIdent(p.Name), typ)}})
+					exprCode := fmt.Sprintf("(Obj.magic %s : %s)", sanitizeIdent(p.Name), typ)
+					if mutated[p.Name] {
+						expr := &RawExpr{Code: strings.ReplaceAll(exprCode, sanitizeIdent(p.Name), fmt.Sprintf("!%s", sanitizeIdent(p.Name)))}
+						casts = append(casts, &AssignStmt{Name: p.Name, Expr: expr})
+					} else {
+						casts = append(casts, &LetStmt{Name: p.Name, Expr: &RawExpr{Code: exprCode}})
+					}
 				}
 			}
 		}
