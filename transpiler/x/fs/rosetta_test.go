@@ -57,8 +57,8 @@ func TestFSTranspiler_Rosetta_Golden(t *testing.T) {
 	os.MkdirAll(outDir, 0o755)
 	t.Cleanup(updateRosettaReadme)
 
-        bench := os.Getenv("MOCHI_BENCHMARK") == "true" || os.Getenv("MOCHI_BENCHMARK") == "1"
-        fstrans.SetBenchMain(bench)
+	bench := os.Getenv("MOCHI_BENCHMARK") == "true" || os.Getenv("MOCHI_BENCHMARK") == "1"
+	fstrans.SetBenchMain(bench)
 
 	_ = updateIndex(srcDir)
 	names, err := readIndex(filepath.Join(srcDir, "index.txt"))
@@ -89,12 +89,12 @@ func TestFSTranspiler_Rosetta_Golden(t *testing.T) {
 	for _, src := range files {
 		base := strings.TrimSuffix(filepath.Base(src), ".mochi")
 		safe := strings.ReplaceAll(base, "+", "_")
-                ok := t.Run(base, func(t *testing.T) {
-                        codePath := filepath.Join(outDir, safe+".fs")
-                        outPath := filepath.Join(outDir, safe+".out")
-                        benchPath := filepath.Join(outDir, safe+".bench")
-                        errPath := filepath.Join(outDir, safe+".error")
-                        exePath := filepath.Join(outDir, safe+".exe")
+		ok := t.Run(base, func(t *testing.T) {
+			codePath := filepath.Join(outDir, safe+".fs")
+			outPath := filepath.Join(outDir, safe+".out")
+			benchPath := filepath.Join(outDir, safe+".bench")
+			errPath := filepath.Join(outDir, safe+".error")
+			exePath := filepath.Join(outDir, safe+".exe")
 
 			prog, err := parser.Parse(src)
 			if err != nil {
@@ -137,16 +137,16 @@ func TestFSTranspiler_Rosetta_Golden(t *testing.T) {
 				t.Fatalf("run: %v", err)
 			}
 			_ = os.Remove(errPath)
-                        dest := outPath
-                        if bench {
-                                dest = benchPath
-                        }
-                        if shouldUpdate := os.Getenv("UPDATE"); shouldUpdate == "1" || shouldUpdate == "true" {
-                                _ = os.WriteFile(dest, append(got, '\n'), 0o644)
-                                return
-                        }
-                        _ = os.WriteFile(dest, got, 0o644)
-                        if want, err := os.ReadFile(dest); err == nil {
+			dest := outPath
+			if bench {
+				dest = benchPath
+			}
+			if shouldUpdate := os.Getenv("UPDATE"); shouldUpdate == "1" || shouldUpdate == "true" {
+				_ = os.WriteFile(dest, append(got, '\n'), 0o644)
+				return
+			}
+			_ = os.WriteFile(dest, got, 0o644)
+			if want, err := os.ReadFile(dest); err == nil {
 				want = bytes.TrimSpace(want)
 				if !bytes.Equal(got, want) {
 					t.Errorf("output mismatch\nGot: %s\nWant: %s", got, want)
@@ -201,13 +201,13 @@ func updateRosetta() {
 			compiled++
 			mark = "✓"
 		}
-                dur := ""
-                mem := ""
-                data, err := os.ReadFile(filepath.Join(outDir, safe+".bench"))
-                if err != nil {
-                        data, err = os.ReadFile(filepath.Join(outDir, safe+".out"))
-                }
-                if err == nil {
+		dur := ""
+		mem := ""
+		data, err := os.ReadFile(filepath.Join(outDir, safe+".bench"))
+		if err != nil {
+			data, err = os.ReadFile(filepath.Join(outDir, safe+".out"))
+		}
+		if err == nil {
 			var js struct {
 				Duration int64 `json:"duration_us"`
 				Memory   int64 `json:"memory_bytes"`
