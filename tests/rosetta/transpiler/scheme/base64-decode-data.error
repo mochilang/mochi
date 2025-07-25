@@ -1,0 +1,12 @@
+exit status 70
+WARNING: importing already defined binding: equal?
+WARNING: importing already defined binding: let-syntax
+WARNING: importing already defined binding: letrec-syntax
+ERROR in loop17 on line 280 of file /usr/share/chibi/init-7.scm: car: not a pair: "Rosetta Code Base64 decode data task"
+  called from call-with-current-continuation on line 848 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 426 of file /workspace/mochi/tests/rosetta/transpiler/scheme/base64-decode-data.scm
+  called from call-with-current-continuation on line 848 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 705 of file /workspace/mochi/tests/rosetta/transpiler/scheme/base64-decode-data.scm
+  called from <anonymous> on line 1292 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 821 of file /usr/share/chibi/init-7.scm
+Original : Rosetta Code Base64 decode data task

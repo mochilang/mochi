@@ -1,0 +1,11 @@
+exit status 70
+WARNING: importing already defined binding: equal?
+WARNING: importing already defined binding: let-syntax
+WARNING: importing already defined binding: letrec-syntax
+ERROR on line 131 of file /workspace/mochi/tests/rosetta/transpiler/scheme/bernoulli-numbers.scm: undefined variable: num
+  called from loop9 on line 127 of file /workspace/mochi/tests/rosetta/transpiler/scheme/bernoulli-numbers.scm
+  called from call-with-current-continuation on line 848 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 1292 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 821 of file /usr/share/chibi/init-7.scm
+Searching for modules exporting num ...
+... none found.

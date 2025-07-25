@@ -1,0 +1,15 @@
+exit status 70
+WARNING: importing already defined binding: equal?
+WARNING: importing already defined binding: let-syntax
+WARNING: importing already defined binding: letrec-syntax
+ERROR on line 280 of file /usr/share/chibi/init-7.scm: undefined variable: sha256
+  called from call-with-current-continuation on line 848 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 218 of file /workspace/mochi/tests/rosetta/transpiler/scheme/bitcoin-address-validation.scm
+  called from call-with-current-continuation on line 848 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 241 of file /workspace/mochi/tests/rosetta/transpiler/scheme/bitcoin-address-validation.scm
+  called from call-with-current-continuation on line 848 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 337 of file /workspace/mochi/tests/rosetta/transpiler/scheme/bitcoin-address-validation.scm
+  called from <anonymous> on line 1292 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 821 of file /usr/share/chibi/init-7.scm
+Searching for modules exporting sha256 ...
+... none found.

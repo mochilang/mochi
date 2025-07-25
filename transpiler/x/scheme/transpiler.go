@@ -200,7 +200,8 @@ func header() []byte {
 	loc, _ := time.LoadLocation("Asia/Bangkok")
 	prelude := ""
 	if needBase {
-		prelude += "(import (only (scheme base) call/cc when list-ref list-set! list))\n"
+               prelude += "(import (only (scheme base) call/cc when list-ref list-set!))\n"
+               prelude += "(import (rename (scheme base) (list _list)))\n"
 		prelude += "(import (scheme time))\n"
 	}
 	// Always import string helpers for functions like string-contains
@@ -1151,10 +1152,10 @@ func convertParserPrimary(p *parser.Primary) (Node, error) {
 			}
 			elems = append(elems, n)
 		}
-		return &List{Elems: append([]Node{Symbol("list")}, elems...)}, nil
+		return &List{Elems: append([]Node{Symbol("_list")}, elems...)}, nil
 	case p.Map != nil:
 		needHash = true
-		pairs := []Node{Symbol("list")}
+		pairs := []Node{Symbol("_list")}
 		for _, it := range p.Map.Items {
 			var k Node
 			if s, ok := types.SimpleStringKey(it.Key); ok {
@@ -1181,7 +1182,7 @@ func convertParserPrimary(p *parser.Primary) (Node, error) {
 			if len(p.Struct.Fields) != len(st.Order) {
 				return nil, fmt.Errorf("invalid fields for %s", p.Struct.Name)
 			}
-			pairs := []Node{Symbol("list"),
+			pairs := []Node{Symbol("_list"),
 				&List{Elems: []Node{Symbol("cons"), StringLit(tagKey), ensureUnionConst(p.Struct.Name)}},
 			}
 			for i, f := range p.Struct.Fields {
@@ -1195,7 +1196,7 @@ func convertParserPrimary(p *parser.Primary) (Node, error) {
 			return &List{Elems: []Node{Symbol("alist->hash-table"), &List{Elems: pairs}}}, nil
 		}
 		needHash = true
-		pairs := []Node{Symbol("list")}
+		pairs := []Node{Symbol("_list")}
 		for _, f := range p.Struct.Fields {
 			v, err := convertParserExpr(f.Value)
 			if err != nil {
@@ -1453,7 +1454,7 @@ func convertRightJoinQuery(q *parser.QueryExpr) (Node, error) {
 	matchedSym := gensym("matched")
 	appendNode := &List{Elems: []Node{
 		Symbol("set!"), resSym,
-		&List{Elems: []Node{Symbol("append"), resSym, &List{Elems: []Node{Symbol("list"), sel}}}},
+		&List{Elems: []Node{Symbol("append"), resSym, &List{Elems: []Node{Symbol("_list"), sel}}}},
 	}}
 	innerBody := &List{Elems: []Node{
 		Symbol("if"), cond,
@@ -1486,7 +1487,7 @@ func convertRightJoinQuery(q *parser.QueryExpr) (Node, error) {
 	}}
 	return &List{Elems: []Node{
 		Symbol("let"),
-		&List{Elems: []Node{&List{Elems: []Node{resSym, &List{Elems: []Node{Symbol("list")}}}}}},
+		&List{Elems: []Node{&List{Elems: []Node{resSym, &List{Elems: []Node{Symbol("_list")}}}}}},
 		&List{Elems: []Node{Symbol("begin"), outerLoop, resSym}},
 	}}, nil
 }
@@ -1627,9 +1628,9 @@ func convertGroupByJoinQuery(q *parser.QueryExpr) (Node, error) {
 			&List{Elems: []Node{
 				Symbol("alist->hash-table"),
 				&List{Elems: []Node{
-					Symbol("list"),
+					Symbol("_list"),
 					&List{Elems: []Node{Symbol("cons"), StringLit("key"), Symbol(k)}},
-					&List{Elems: []Node{Symbol("cons"), StringLit("items"), &List{Elems: []Node{Symbol("list")}}}},
+					&List{Elems: []Node{Symbol("cons"), StringLit("items"), &List{Elems: []Node{Symbol("_list")}}}},
 				}},
 			}},
 		}},
@@ -1640,7 +1641,7 @@ func convertGroupByJoinQuery(q *parser.QueryExpr) (Node, error) {
 	if len(loops) == 1 {
 		item = Symbol(loops[0].name)
 	} else {
-		itemPairs := []Node{Symbol("list")}
+		itemPairs := []Node{Symbol("_list")}
 		for _, l := range loops {
 			itemPairs = append(itemPairs, &List{Elems: []Node{Symbol("cons"), StringLit(l.name), Symbol(l.name)}})
 		}
@@ -1652,7 +1653,7 @@ func convertGroupByJoinQuery(q *parser.QueryExpr) (Node, error) {
 		&List{Elems: []Node{
 			Symbol("append"),
 			&List{Elems: []Node{Symbol("hash-table-ref"), Symbol(g), StringLit("items")}},
-			&List{Elems: []Node{Symbol("list"), item}},
+			&List{Elems: []Node{Symbol("_list"), item}},
 		}},
 	}}
 
@@ -1689,7 +1690,7 @@ func convertGroupByJoinQuery(q *parser.QueryExpr) (Node, error) {
 			&List{Elems: []Node{gParam}},
 			&List{Elems: []Node{
 				Symbol("set!"), Symbol(res),
-				&List{Elems: []Node{Symbol("append"), Symbol(res), &List{Elems: []Node{Symbol("list"), sel}}}},
+				&List{Elems: []Node{Symbol("append"), Symbol(res), &List{Elems: []Node{Symbol("_list"), sel}}}},
 			}},
 		}},
 		&List{Elems: []Node{Symbol("hash-table-values"), Symbol(groups)}},
@@ -1717,7 +1718,7 @@ func convertGroupByJoinQuery(q *parser.QueryExpr) (Node, error) {
 		Symbol("let"),
 		&List{Elems: []Node{
 			&List{Elems: []Node{Symbol(groups), &List{Elems: []Node{Symbol("make-hash-table")}}}},
-			&List{Elems: []Node{Symbol(res), &List{Elems: []Node{Symbol("list")}}}},
+			&List{Elems: []Node{Symbol(res), &List{Elems: []Node{Symbol("_list")}}}},
 		}},
 		&List{Elems: []Node{Symbol("begin"), loopBody, buildRes, sortCall, Symbol(res)}},
 	}}, nil
@@ -1768,9 +1769,9 @@ func convertGroupByQuery(q *parser.QueryExpr) (Node, error) {
 			&List{Elems: []Node{
 				Symbol("alist->hash-table"),
 				&List{Elems: []Node{
-					Symbol("list"),
+					Symbol("_list"),
 					&List{Elems: []Node{Symbol("cons"), StringLit("key"), Symbol(k)}},
-					&List{Elems: []Node{Symbol("cons"), StringLit("items"), &List{Elems: []Node{Symbol("list")}}}},
+					&List{Elems: []Node{Symbol("cons"), StringLit("items"), &List{Elems: []Node{Symbol("_list")}}}},
 				}},
 			}},
 		}},
@@ -1782,7 +1783,7 @@ func convertGroupByQuery(q *parser.QueryExpr) (Node, error) {
 		&List{Elems: []Node{
 			Symbol("append"),
 			&List{Elems: []Node{Symbol("hash-table-ref"), Symbol(g), StringLit("items")}},
-			&List{Elems: []Node{Symbol("list"), Symbol(q.Var)}},
+			&List{Elems: []Node{Symbol("_list"), Symbol(q.Var)}},
 		}},
 	}}
 
@@ -1812,7 +1813,7 @@ func convertGroupByQuery(q *parser.QueryExpr) (Node, error) {
 			&List{Elems: []Node{gParam}},
 			&List{Elems: []Node{
 				Symbol("set!"), Symbol(res),
-				&List{Elems: []Node{Symbol("append"), Symbol(res), &List{Elems: []Node{Symbol("list"), sel}}}},
+				&List{Elems: []Node{Symbol("append"), Symbol(res), &List{Elems: []Node{Symbol("_list"), sel}}}},
 			}},
 		}},
 		&List{Elems: []Node{Symbol("hash-table-values"), Symbol(groups)}},
@@ -1822,7 +1823,7 @@ func convertGroupByQuery(q *parser.QueryExpr) (Node, error) {
 		Symbol("let"),
 		&List{Elems: []Node{
 			&List{Elems: []Node{Symbol(groups), &List{Elems: []Node{Symbol("make-hash-table")}}}},
-			&List{Elems: []Node{Symbol(res), &List{Elems: []Node{Symbol("list")}}}},
+			&List{Elems: []Node{Symbol(res), &List{Elems: []Node{Symbol("_list")}}}},
 		}},
 		&List{Elems: []Node{Symbol("begin"), loop, buildRes, Symbol(res)}},
 	}}, nil
@@ -1932,7 +1933,7 @@ func convertQueryExpr(q *parser.QueryExpr) (Node, error) {
 		Symbol("set!"), resSym,
 		&List{Elems: []Node{
 			Symbol("append"), resSym,
-			&List{Elems: []Node{Symbol("list"), sel}},
+			&List{Elems: []Node{Symbol("_list"), sel}},
 		}},
 	}})
 	if cond != nil {
@@ -1950,7 +1951,7 @@ func convertQueryExpr(q *parser.QueryExpr) (Node, error) {
 	currentEnv = prevEnv
 	return &List{Elems: []Node{
 		Symbol("let"),
-		&List{Elems: []Node{&List{Elems: []Node{resSym, &List{Elems: []Node{Symbol("list")}}}}}},
+		&List{Elems: []Node{&List{Elems: []Node{resSym, &List{Elems: []Node{Symbol("_list")}}}}}},
 		&List{Elems: []Node{Symbol("begin"), body, resSym}},
 	}}, nil
 }
@@ -2238,7 +2239,7 @@ func convertCall(target Node, call *parser.CallOp) (Node, error) {
 		if len(args) != len(st.Order) {
 			return nil, fmt.Errorf("%s expects %d args", sym, len(st.Order))
 		}
-		pairs := []Node{Symbol("list")}
+		pairs := []Node{Symbol("_list")}
 		opPair := &List{Elems: []Node{Symbol("cons"), StringLit(tagKey), ensureUnionConst(string(sym))}}
 		pairs = append(pairs, opPair)
 		for i, field := range st.Order {
@@ -2278,7 +2279,7 @@ func convertCall(target Node, call *parser.CallOp) (Node, error) {
 		if _, ok := types.ExprType(call.Args[0], currentEnv).(types.StringType); ok {
 			return &List{Elems: []Node{Symbol("string-append"), args[0], args[1]}}, nil
 		}
-		return &List{Elems: []Node{Symbol("append"), args[0], &List{Elems: []Node{Symbol("list"), args[1]}}}}, nil
+		return &List{Elems: []Node{Symbol("append"), args[0], &List{Elems: []Node{Symbol("_list"), args[1]}}}}, nil
 	case "keys":
 		if len(args) != 1 {
 			return nil, fmt.Errorf("keys expects 1 arg")

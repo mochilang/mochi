@@ -2,8 +2,8 @@
 
 Generated Scheme code for Rosetta Code tasks under `tests/rosetta/x/Mochi`.
 
-## Checklist (82/284)
-Last updated: 2025-07-25 13:21 UTC
+## Checklist (103/284)
+Last updated: 2025-07-25 14:11 UTC
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -94,36 +94,36 @@ Last updated: 2025-07-25 13:21 UTC
 | 85 | average-loop-length | ✓ |  |  |
 | 86 | averages-arithmetic-mean | ✓ |  |  |
 | 87 | averages-mean-time-of-day |   |  |  |
-| 88 | averages-median-1 |   |  |  |
-| 89 | averages-median-2 |   |  |  |
-| 90 | averages-median-3 |   |  |  |
-| 91 | averages-mode |   |  |  |
-| 92 | averages-pythagorean-means |   |  |  |
-| 93 | averages-root-mean-square |   |  |  |
-| 94 | averages-simple-moving-average |   |  |  |
-| 95 | avl-tree |   |  |  |
-| 96 | b-zier-curves-intersections |   |  |  |
-| 97 | babbage-problem |   |  |  |
-| 98 | babylonian-spiral |   |  |  |
-| 99 | balanced-brackets |   |  |  |
-| 100 | balanced-ternary |   |  |  |
+| 88 | averages-median-1 | ✓ | 73µs | 12.5 MB |
+| 89 | averages-median-2 | ✓ | 68µs | 12.6 MB |
+| 90 | averages-median-3 | ✓ | 105µs | 12.6 MB |
+| 91 | averages-mode | ✓ | 120µs | 12.7 MB |
+| 92 | averages-pythagorean-means | ✓ | 347µs | 12.7 MB |
+| 93 | averages-root-mean-square | ✓ | 52µs | 12.6 MB |
+| 94 | averages-simple-moving-average | ✓ | 860µs | 12.7 MB |
+| 95 | avl-tree | ✓ | 562µs | 13.7 MB |
+| 96 | b-zier-curves-intersections | ✓ | 33.826ms | 13.6 MB |
+| 97 | babbage-problem | ✓ | 10.348ms | 12.2 MB |
+| 98 | babylonian-spiral | ✓ | 5.686ms | 13.7 MB |
+| 99 | balanced-brackets | ✓ | 825µs | 12.6 MB |
+| 100 | balanced-ternary | ✓ | 342µs | 13.8 MB |
 | 101 | barnsley-fern |   |  |  |
 | 102 | base64-decode-data |   |  |  |
 | 103 | bell-numbers |   |  |  |
 | 104 | benfords-law |   |  |  |
 | 105 | bernoulli-numbers |   |  |  |
-| 106 | best-shuffle |   |  |  |
-| 107 | bifid-cipher |   |  |  |
-| 108 | bin-given-limits |   |  |  |
-| 109 | binary-digits |   |  |  |
-| 110 | binary-search |   |  |  |
-| 111 | binary-strings |   |  |  |
-| 112 | bioinformatics-base-count |   |  |  |
+| 106 | best-shuffle | ✓ | 865µs | 13.0 MB |
+| 107 | bifid-cipher | ✓ | 10.302ms | 13.9 MB |
+| 108 | bin-given-limits | ✓ | 3.485ms | 13.8 MB |
+| 109 | binary-digits | ✓ | 603µs | 12.4 MB |
+| 110 | binary-search | ✓ | 69µs | 12.6 MB |
+| 111 | binary-strings | ✓ | 516µs | 12.9 MB |
+| 112 | bioinformatics-base-count | ✓ | 867µs | 12.6 MB |
 | 113 | bioinformatics-global-alignment |   |  |  |
 | 114 | bioinformatics-sequence-mutation |   |  |  |
 | 115 | biorhythms |   |  |  |
 | 116 | bitcoin-address-validation |   |  |  |
-| 117 | bitmap-b-zier-curves-cubic |   |  |  |
+| 117 | bitmap-b-zier-curves-cubic | ✓ |  |  |
 | 118 | bitmap-b-zier-curves-quadratic |   |  |  |
 | 119 | bitmap-bresenhams-line-algorithm |   |  |  |
 | 120 | bitmap-flood-fill |   |  |  |

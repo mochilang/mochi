@@ -1,0 +1,17 @@
+exit status 70
+ERROR on line 743 of file /workspace/mochi/tests/rosetta/transpiler/scheme/biorhythms.scm: undefined variable: contains
+  called from <anonymous> on line 647 of file /workspace/mochi/tests/rosetta/transpiler/scheme/biorhythms.scm
+  called from loop26 on line 280 of file /usr/share/chibi/init-7.scm
+  called from call-with-current-continuation on line 848 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 619 of file /workspace/mochi/tests/rosetta/transpiler/scheme/biorhythms.scm
+  called from call-with-current-continuation on line 848 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 884 of file /workspace/mochi/tests/rosetta/transpiler/scheme/biorhythms.scm
+  called from loop29 on line 871 of file /workspace/mochi/tests/rosetta/transpiler/scheme/biorhythms.scm
+  called from call-with-current-continuation on line 848 of file /usr/share/chibi/init-7.scm
+  called from call-with-current-continuation on line 848 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 1292 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 821 of file /usr/share/chibi/init-7.scm
+Searching for modules exporting contains ...
+... none found.
+Born 1943-03-09, Target 1972-07-11
+Day 10717
