@@ -1958,12 +1958,14 @@ func Transpile(prog *parser.Program, env *types.Env, benchMain bool) (*Program, 
 	}
 
 	if benchMain {
-		// keep type declarations at top-level so that exported
-		// interfaces or type aliases remain valid modules
+		// keep type declarations and function declarations at top-level
+		// so that exported interfaces or type aliases remain valid and
+		// functions are in scope for other declarations within the bench
+		// block.
 		var mainStmts []Stmt
 		for _, st := range tsProg.Stmts {
 			switch st.(type) {
-			case *InterfaceDecl, *TypeAlias:
+			case *InterfaceDecl, *TypeAlias, *FuncDecl:
 				prelude = append(prelude, st)
 			default:
 				mainStmts = append(mainStmts, st)
@@ -2250,7 +2252,8 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 			path := strings.Trim(s.Import.Path, "\"")
 			switch path {
 			case "mochi/runtime/ffi/go/testpkg":
-				expr := &RawExpr{Code: "{ Add: (a:number,b:number)=>a+b, Pi: 3.14, Answer: 42, FifteenPuzzleExample: ()=>'Solution found in 52 moves: rrrulddluuuldrurdddrullulurrrddldluurddlulurruldrdrd' }"}
+				useSHA256 = true
+				expr := &RawExpr{Code: "{ Add: (a:number,b:number)=>a+b, Pi: 3.14, Answer: 42, FifteenPuzzleExample: ()=>'Solution found in 52 moves: rrrulddluuuldrurdddrullulurrrddldluurddlulurruldrdrd', MD5Hex: (s:string)=>{ const h=createHash('md5'); h.update(s); return h.digest('hex'); } }"}
 				return &VarDecl{Name: alias, Expr: expr, Const: true}, nil
 			case "strings":
 				expr := &RawExpr{Code: "{ ToUpper: (s:string)=>s.toUpperCase(), TrimSpace: (s:string)=>s.trim() }"}
@@ -2457,7 +2460,7 @@ func convertUpdate(u *parser.UpdateStmt, env *types.Env) (*UpdateStmt, error) {
 			transpileEnv = prev
 			return nil, err
 		}
-		val = substituteFields(val, "item", fieldSet)
+		val = substituteFields(val, "item", fieldSet, nil)
 		fields = append(fields, key)
 		values = append(values, val)
 	}
@@ -2468,7 +2471,7 @@ func convertUpdate(u *parser.UpdateStmt, env *types.Env) (*UpdateStmt, error) {
 			transpileEnv = prev
 			return nil, err
 		}
-		cond = substituteFields(cond, "item", fieldSet)
+		cond = substituteFields(cond, "item", fieldSet, nil)
 	}
 	transpileEnv = prev
 	return &UpdateStmt{Target: u.Target, Fields: fields, Values: values, Cond: cond}, nil
@@ -2494,12 +2497,18 @@ func convertTypeDecl(td *parser.TypeDecl) (Stmt, error) {
 	}
 	var fields []string
 	fieldSet := map[string]bool{}
+	methodSet := map[string]bool{}
 	for _, m := range td.Members {
 		if m.Field != nil {
 			ft := types.ResolveTypeRef(m.Field.Type, transpileEnv)
 			fields = append(fields, fmt.Sprintf("%s: %s", tsKey(m.Field.Name), tsType(ft)))
 			fieldSet[m.Field.Name] = true
 		}
+		if m.Method != nil {
+			methodSet[m.Method.Name] = true
+		}
+	}
+	for _, m := range td.Members {
 		if m.Method != nil {
 			params := []string{"self"}
 			paramTypes := []string{td.Name}
@@ -2525,7 +2534,7 @@ func convertTypeDecl(td *parser.TypeDecl) (Stmt, error) {
 				return nil, err
 			}
 			for i := range body {
-				body[i] = substituteStmtFields(body[i], "self", fieldSet)
+				body[i] = substituteStmtFields(body[i], "self", fieldSet, methodSet)
 			}
 			var retType string
 			if m.Method.Return != nil {
@@ -4040,58 +4049,64 @@ func emitSortComparator(w io.Writer, sortExpr Expr) {
 	io.WriteString(w, "a.k < b.k ? -1 : a.k > b.k ? 1 : 0")
 }
 
-func substituteFields(e Expr, varName string, fields map[string]bool) Expr {
+func substituteFields(e Expr, varName string, fields map[string]bool, methods map[string]bool) Expr {
 	switch ex := e.(type) {
 	case *NameRef:
 		if fields[ex.Name] {
 			return &IndexExpr{Target: &NameRef{Name: varName}, Index: &StringLit{Value: ex.Name}}
 		}
+		if methods[ex.Name] {
+			return &MethodCallExpr{Target: &NameRef{Name: varName}, Method: ex.Name}
+		}
 		return ex
 	case *BinaryExpr:
-		ex.Left = substituteFields(ex.Left, varName, fields)
-		ex.Right = substituteFields(ex.Right, varName, fields)
+		ex.Left = substituteFields(ex.Left, varName, fields, methods)
+		ex.Right = substituteFields(ex.Right, varName, fields, methods)
 		return ex
 	case *UnaryExpr:
-		ex.Expr = substituteFields(ex.Expr, varName, fields)
+		ex.Expr = substituteFields(ex.Expr, varName, fields, methods)
 		return ex
 	case *CallExpr:
 		for i := range ex.Args {
-			ex.Args[i] = substituteFields(ex.Args[i], varName, fields)
+			ex.Args[i] = substituteFields(ex.Args[i], varName, fields, methods)
+		}
+		if methods[ex.Func] {
+			return &MethodCallExpr{Target: &NameRef{Name: varName}, Method: ex.Func, Args: ex.Args}
 		}
 		return ex
 	case *MethodCallExpr:
-		ex.Target = substituteFields(ex.Target, varName, fields)
+		ex.Target = substituteFields(ex.Target, varName, fields, methods)
 		for i := range ex.Args {
-			ex.Args[i] = substituteFields(ex.Args[i], varName, fields)
+			ex.Args[i] = substituteFields(ex.Args[i], varName, fields, methods)
 		}
 		return ex
 	case *IndexExpr:
-		ex.Target = substituteFields(ex.Target, varName, fields)
-		ex.Index = substituteFields(ex.Index, varName, fields)
+		ex.Target = substituteFields(ex.Target, varName, fields, methods)
+		ex.Index = substituteFields(ex.Index, varName, fields, methods)
 		return ex
 	case *SliceExpr:
-		ex.Target = substituteFields(ex.Target, varName, fields)
+		ex.Target = substituteFields(ex.Target, varName, fields, methods)
 		if ex.Start != nil {
-			ex.Start = substituteFields(ex.Start, varName, fields)
+			ex.Start = substituteFields(ex.Start, varName, fields, methods)
 		}
 		if ex.End != nil {
-			ex.End = substituteFields(ex.End, varName, fields)
+			ex.End = substituteFields(ex.End, varName, fields, methods)
 		}
 		return ex
 	case *IfExpr:
-		ex.Cond = substituteFields(ex.Cond, varName, fields)
-		ex.Then = substituteFields(ex.Then, varName, fields)
-		ex.Else = substituteFields(ex.Else, varName, fields)
+		ex.Cond = substituteFields(ex.Cond, varName, fields, methods)
+		ex.Then = substituteFields(ex.Then, varName, fields, methods)
+		ex.Else = substituteFields(ex.Else, varName, fields, methods)
 		return ex
 	case *ListLit:
 		for i := range ex.Elems {
-			ex.Elems[i] = substituteFields(ex.Elems[i], varName, fields)
+			ex.Elems[i] = substituteFields(ex.Elems[i], varName, fields, methods)
 		}
 		return ex
 	case *MapLit:
 		for i := range ex.Entries {
-			ex.Entries[i].Key = substituteFields(ex.Entries[i].Key, varName, fields)
-			ex.Entries[i].Value = substituteFields(ex.Entries[i].Value, varName, fields)
+			ex.Entries[i].Key = substituteFields(ex.Entries[i].Key, varName, fields, methods)
+			ex.Entries[i].Value = substituteFields(ex.Entries[i].Value, varName, fields, methods)
 		}
 		return ex
 	default:
@@ -4158,22 +4173,22 @@ func replaceFields(e Expr, target Expr, fields map[string]string) Expr {
 	}
 }
 
-func substituteStmtFields(s Stmt, varName string, fields map[string]bool) Stmt {
+func substituteStmtFields(s Stmt, varName string, fields, methods map[string]bool) Stmt {
 	switch st := s.(type) {
 	case *ExprStmt:
-		st.Expr = substituteFields(st.Expr, varName, fields)
+		st.Expr = substituteFields(st.Expr, varName, fields, methods)
 		return st
 	case *ReturnStmt:
 		if st.Value != nil {
-			st.Value = substituteFields(st.Value, varName, fields)
+			st.Value = substituteFields(st.Value, varName, fields, methods)
 		}
 		return st
 	case *AssignStmt:
-		st.Expr = substituteFields(st.Expr, varName, fields)
+		st.Expr = substituteFields(st.Expr, varName, fields, methods)
 		return st
 	case *VarDecl:
 		if st.Expr != nil {
-			st.Expr = substituteFields(st.Expr, varName, fields)
+			st.Expr = substituteFields(st.Expr, varName, fields, methods)
 		}
 		return st
 	default:

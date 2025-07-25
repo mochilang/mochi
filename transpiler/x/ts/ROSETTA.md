@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated TypeScript code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/TypeScript`.
-Last updated: 2025-07-25 17:24 UTC
+Last updated: 2025-07-25 17:40 UTC
 
-## Rosetta Golden Test Checklist (279/284)
+## Rosetta Golden Test Checklist (281/284)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 1.595ms | 512.0 KB |
@@ -289,5 +289,5 @@ Last updated: 2025-07-25 17:24 UTC
 | 280 | deconvolution-1d-3 | ✓ | 1.405ms | 384.0 KB |
 | 281 | deconvolution-1d | ✓ | 668µs | 128.0 KB |
 | 282 | deepcopy-1 | ✓ | 671µs | 128.0 KB |
-| 283 | define-a-primitive-data-type |   |  |  |
-| 284 | md5 |   |  |  |
+| 283 | define-a-primitive-data-type | ✓ | 670µs | 128.0 KB |
+| 284 | md5 | ✓ | 636µs | 256.0 KB |
