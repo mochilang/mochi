@@ -42,6 +42,8 @@ type Program struct {
 }
 
 var benchMain bool
+var usesNow bool
+var usesInput bool
 
 // SetBenchMain configures whether the generated main function is wrapped
 // in a benchmark block that records duration and memory usage.
@@ -308,9 +310,9 @@ func (p *Program) Emit() []byte {
 	for _, s := range p.Stmts {
 		s.emit(&buf, 2)
 	}
-	if benchMain || len(p.Funcs) > 0 {
+	if benchMain || usesNow || usesInput || len(p.Funcs) > 0 {
 		buf.WriteString("contains\n")
-		if benchMain {
+		if benchMain || usesNow {
 			buf.WriteString("function now_() result(res)\n")
 			buf.WriteString("  implicit none\n")
 			buf.WriteString("  integer(kind=8) :: res\n")
@@ -318,6 +320,8 @@ func (p *Program) Emit() []byte {
 			buf.WriteString("  call system_clock(count, rate)\n")
 			buf.WriteString("  res = count * 1000000 / rate\n")
 			buf.WriteString("end function now_\n")
+		}
+		if benchMain {
 			buf.WriteString("function mem_() result(res)\n")
 			buf.WriteString("  implicit none\n")
 			buf.WriteString("  integer(kind=8) :: res\n")
@@ -332,6 +336,13 @@ func (p *Program) Emit() []byte {
 			buf.WriteString("  end if\n")
 			buf.WriteString("end function mem_\n")
 		}
+		if usesInput {
+			buf.WriteString("function input_() result(res)\n")
+			buf.WriteString("  implicit none\n")
+			buf.WriteString("  character(len=100) :: res\n")
+			buf.WriteString("  read(*,'(A)') res\n")
+			buf.WriteString("end function input_\n")
+		}
 		for _, f := range p.Funcs {
 			f.emit(&buf)
 		}
@@ -341,6 +352,8 @@ func (p *Program) Emit() []byte {
 }
 
 func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
+	usesNow = false
+	usesInput = false
 	fp := &Program{}
 	for _, st := range prog.Statements {
 		stmt, err := compileStmt(fp, st, env)
@@ -2613,6 +2626,14 @@ func toPrimary(p *parser.Primary, env *types.Env) (string, error) {
 				return "", err
 			}
 			return fmt.Sprintf("sum(%s)/real(size(%s))", argExpr, argExpr), nil
+		}
+		if p.Call.Func == "now" && len(p.Call.Args) == 0 {
+			usesNow = true
+			return "now_()", nil
+		}
+		if p.Call.Func == "input" && len(p.Call.Args) == 0 {
+			usesInput = true
+			return "input_()", nil
 		}
 		var args []string
 		for _, a := range p.Call.Args {
