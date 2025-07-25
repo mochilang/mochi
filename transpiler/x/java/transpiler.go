@@ -406,6 +406,18 @@ func inferType(e Expr) string {
 	return ""
 }
 
+func guessIntExpr(e Expr) bool {
+	if inferType(e) == "int" {
+		return true
+	}
+	if ix, ok := e.(*IndexExpr); ok {
+		if arrayElemType(ix.Target) == "int" {
+			return true
+		}
+	}
+	return false
+}
+
 func inferReturnType(body []Stmt) string {
 	if len(body) == 0 {
 		return "void"
@@ -1008,13 +1020,13 @@ type BenchStmt struct {
 
 func (b *BenchStmt) emit(w io.Writer, indent string) {
 	fmt.Fprint(w, indent+"{\n")
-	fmt.Fprint(w, indent+"    int _benchStart = _now();\n")
-	fmt.Fprint(w, indent+"    int _benchMem = _mem();\n")
+	fmt.Fprint(w, indent+"    long _benchStart = _now();\n")
+	fmt.Fprint(w, indent+"    long _benchMem = _mem();\n")
 	for _, st := range b.Body {
 		st.emit(w, indent+"    ")
 	}
-	fmt.Fprint(w, indent+"    int _benchDuration = (_now() - _benchStart) / 1000;\n")
-	fmt.Fprint(w, indent+"    int _benchMemory = _mem() - _benchMem;\n")
+	fmt.Fprint(w, indent+"    long _benchDuration = _now() - _benchStart;\n")
+	fmt.Fprint(w, indent+"    long _benchMemory = _mem() - _benchMem;\n")
 	fmt.Fprint(w, indent+"    System.out.println(\"{\");\n")
 	fmt.Fprint(w, indent+"    System.out.println(\"  \\\"duration_us\\\": \" + _benchDuration + \",\");\n")
 	fmt.Fprint(w, indent+"    System.out.println(\"  \\\"memory_bytes\\\": \" + _benchMemory + \",\");\n")
@@ -1211,6 +1223,12 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		b.Op == "==" || b.Op == "!=" || b.Op == "<" || b.Op == "<=" || b.Op == ">" || b.Op == ">=" {
 		lt := inferType(b.Left)
 		rt := inferType(b.Right)
+		if lt == "" && guessIntExpr(b.Left) {
+			lt = "int"
+		}
+		if rt == "" && guessIntExpr(b.Right) {
+			rt = "int"
+		}
 		typ := "int"
 		if lt == "double" || rt == "double" {
 			typ = "double"
@@ -1218,7 +1236,11 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		if lt == "" {
 			fmt.Fprint(w, "((Number)(")
 			b.Left.emit(w)
-			fmt.Fprint(w, ")).doubleValue()")
+			if typ == "int" {
+				fmt.Fprint(w, ")).intValue()")
+			} else {
+				fmt.Fprint(w, ")).doubleValue()")
+			}
 		} else {
 			emitCastExpr(w, b.Left, typ)
 		}
@@ -1226,7 +1248,11 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		if rt == "" {
 			fmt.Fprint(w, "((Number)(")
 			b.Right.emit(w)
-			fmt.Fprint(w, ")).doubleValue()")
+			if typ == "int" {
+				fmt.Fprint(w, ")).intValue()")
+			} else {
+				fmt.Fprint(w, ")).doubleValue()")
+			}
 		} else {
 			emitCastExpr(w, b.Right, typ)
 		}
@@ -2231,7 +2257,6 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	if benchMain {
 		needNow = true
 		needMem = true
-		prog.Stmts = []Stmt{&BenchStmt{Name: "main", Body: prog.Stmts}}
 	}
 	return &prog, nil
 }
@@ -3856,13 +3881,13 @@ func Emit(prog *Program) []byte {
 		buf.WriteString("            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);\n")
 		buf.WriteString("            return _nowSeed;\n")
 		buf.WriteString("        }\n")
-		buf.WriteString("        return (int)System.currentTimeMillis();\n")
+		buf.WriteString("        return (int)(System.nanoTime() / 1000);\n")
 		buf.WriteString("    }\n")
 	}
 	if needMem {
-		buf.WriteString("\n    static int _mem() {\n")
+		buf.WriteString("\n    static long _mem() {\n")
 		buf.WriteString("        Runtime rt = Runtime.getRuntime();\n")
-		buf.WriteString("        return (int)(rt.totalMemory() - rt.freeMemory());\n")
+		buf.WriteString("        return rt.totalMemory() - rt.freeMemory();\n")
 		buf.WriteString("    }\n")
 	}
 	if needAppendBool {

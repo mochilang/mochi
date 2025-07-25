@@ -78,7 +78,11 @@ func runRosettaTask(t *testing.T, name string) {
 		t.Fatalf("javac %s: %v", name, err)
 	}
 	cmd = exec.Command("java", "-cp", tmp, className)
-	cmd.Env = append(os.Environ(), "MOCHI_ROOT="+root, "MOCHI_NOW_SEED=1")
+	runEnv := []string{"MOCHI_ROOT=" + root}
+	if !bench {
+		runEnv = append(runEnv, "MOCHI_NOW_SEED=1")
+	}
+	cmd.Env = append(os.Environ(), runEnv...)
 	if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
 		cmd.Stdin = bytes.NewReader(data)
 	}
@@ -187,26 +191,29 @@ func updateRosetta() {
 	compiled := 0
 	var rows []string
 	rows = append(rows, "| Index | Name | Status | Duration | Memory |")
-	rows = append(rows, "|------:|------|--------|---------:|-------:|")
+	rows = append(rows, "|------:|------|:-----:|---------:|-------:|")
 	for _, e := range entries {
 		name := strings.TrimSuffix(filepath.Base(e.file), ".mochi")
 		status := " "
 		dur := ""
 		mem := ""
 		if _, err := os.Stat(filepath.Join(outDir, name+".error")); err == nil {
-			status = "error"
+			// leave unchecked
 		} else if _, err := os.Stat(filepath.Join(outDir, name+".java")); err == nil {
-			status = "ok"
+			status = "✓"
 			compiled++
 		}
 		if data, err := os.ReadFile(filepath.Join(outDir, name+".bench")); err == nil {
-			var r struct {
-				DurationUS  int64 `json:"duration_us"`
-				MemoryBytes int64 `json:"memory_bytes"`
-			}
-			if json.Unmarshal(bytes.TrimSpace(data), &r) == nil {
-				dur = formatDuration(time.Duration(r.DurationUS) * time.Microsecond)
-				mem = formatBytes(r.MemoryBytes)
+			data = bytes.TrimSpace(data)
+			if idx := bytes.LastIndexByte(data, '{'); idx >= 0 {
+				var r struct {
+					DurationUS  int64 `json:"duration_us"`
+					MemoryBytes int64 `json:"memory_bytes"`
+				}
+				if json.Unmarshal(data[idx:], &r) == nil && r.DurationUS > 0 {
+					dur = formatDuration(time.Duration(r.DurationUS) * time.Microsecond)
+					mem = formatBytes(r.MemoryBytes)
+				}
 			}
 		}
 		rows = append(rows, fmt.Sprintf("| %d | %s | %s | %s | %s |", e.idx, name, status, dur, mem))
