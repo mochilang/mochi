@@ -43,6 +43,7 @@ type Program struct {
 	UseLenAny    bool
 	UseReflect   bool
 	UseRuntime   bool
+	UseRepeat    bool
 	BenchMain    bool
 }
 
@@ -64,6 +65,7 @@ var (
 	usesLenAny     bool
 	usesReflect    bool
 	usesRuntime    bool
+	usesRepeat     bool
 	topEnv         *types.Env
 	extraDecls     []Stmt
 	structCount    int
@@ -811,7 +813,7 @@ func (b *BenchStmt) emit(w io.Writer) {
 	fmt.Fprint(w, "    var ms runtime.MemStats\n")
 	fmt.Fprint(w, "    runtime.ReadMemStats(&ms)\n")
 	fmt.Fprint(w, "    startMem := ms.Alloc\n")
-	fmt.Fprint(w, "    start := _now()\n")
+	fmt.Fprint(w, "    benchStart := time.Now().UnixNano()\n")
 	for _, st := range b.Body {
 		fmt.Fprint(w, "    ")
 		st.emit(w)
@@ -819,8 +821,8 @@ func (b *BenchStmt) emit(w io.Writer) {
 	}
 	fmt.Fprint(w, "    runtime.ReadMemStats(&ms)\n")
 	fmt.Fprint(w, "    endMem := ms.Alloc\n")
-	fmt.Fprint(w, "    end := _now()\n")
-	fmt.Fprintf(w, "    data := map[string]any{\"name\": %q, \"duration_us\": (end - start)/1000, \"memory_bytes\": endMem - startMem}\n", b.Name)
+	fmt.Fprint(w, "    benchEnd := time.Now().UnixNano()\n")
+	fmt.Fprintf(w, "    data := map[string]any{\"name\": %q, \"duration_us\": (benchEnd - benchStart)/1000, \"memory_bytes\": endMem - startMem}\n", b.Name)
 	fmt.Fprint(w, "    out, _ := json.MarshalIndent(data, \"\", \"  \")\n")
 	fmt.Fprint(w, "    fmt.Println(string(out))\n")
 	fmt.Fprint(w, "}()")
@@ -1774,6 +1776,7 @@ func Transpile(p *parser.Program, env *types.Env, benchMain bool) (*Program, err
 	usesLenAny = false
 	usesReflect = false
 	usesRuntime = false
+	usesRepeat = false
 	topEnv = env
 	extraDecls = nil
 	structCount = 0
@@ -1806,6 +1809,7 @@ func Transpile(p *parser.Program, env *types.Env, benchMain bool) (*Program, err
 	gp.UseSubstr = usesSubstr
 	gp.UseFloatConv = usesFloatConv
 	gp.UsePadStart = usesPadStart
+	gp.UseRepeat = usesRepeat
 	gp.UseSHA256 = usesSHA256
 	gp.UseBigInt = usesBigInt
 	gp.UseBigRat = usesBigRat
@@ -4518,6 +4522,10 @@ func compilePrimary(p *parser.Primary, env *types.Env, base string) (Expr, error
 			usesPadStart = true
 			usesStrings = true
 			return &CallExpr{Func: "_padStart", Args: args[:3]}, nil
+		case "repeat":
+			usesRepeat = true
+			usesStrings = true
+			return &CallExpr{Func: "_repeat", Args: args[:2]}, nil
 		case "substring", "substr":
 			usesSubstr = true
 			if types.IsAnyType(types.TypeOfExpr(p.Call.Args[0], env)) {
@@ -5236,6 +5244,12 @@ func Emit(prog *Program, bench bool) []byte {
 		buf.WriteString("    if len(s) >= l { return s }\n")
 		buf.WriteString("    fill := ch[:1]\n")
 		buf.WriteString("    return strings.Repeat(fill, l-len(s)) + s\n")
+		buf.WriteString("}\n\n")
+	}
+	if prog.UseRepeat {
+		buf.WriteString("func _repeat(s string, n int) string {\n")
+		buf.WriteString("    if n <= 0 { return \"\" }\n")
+		buf.WriteString("    return strings.Repeat(s, n)\n")
 		buf.WriteString("}\n\n")
 	}
 	if prog.UseLenAny {

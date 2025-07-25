@@ -1,7 +1,7 @@
 # Go Rosetta Transpiler Output
 
-Completed programs: 128/284
-Last updated: 2025-07-25 21:06 +0700
+Completed programs: 139/284
+Last updated: 2025-07-26 04:40 +0700
 
 Checklist:
 
@@ -142,18 +142,18 @@ Checklist:
 | 133 | box-the-compass | ✓ | 697.0µs | 8.58KB |
 | 134 | boyer-moore-string-search | ✓ | 1.0ms | 57.34KB |
 | 135 | brazilian-numbers | ✓ | 13.71s | 2.68KB |
-| 136 | break-oo-privacy |   |  |  |
+| 136 | break-oo-privacy | ✓ |  |  |
 | 137 | brilliant-numbers |   |  |  |
-| 138 | brownian-tree |   |  |  |
-| 139 | bulls-and-cows-player |   |  |  |
-| 140 | bulls-and-cows |   |  |  |
-| 141 | burrows-wheeler-transform |   |  |  |
-| 142 | caesar-cipher-1 |   |  |  |
-| 143 | caesar-cipher-2 |   |  |  |
-| 144 | calculating-the-value-of-e |   |  |  |
-| 145 | calendar---for-real-programmers-1 |   |  |  |
-| 146 | calendar---for-real-programmers-2 |   |  |  |
-| 147 | calendar |   |  |  |
+| 138 | brownian-tree | ✓ | 7.07s | 2.36MB |
+| 139 | bulls-and-cows-player | ✓ | 327.0µs | 172.02KB |
+| 140 | bulls-and-cows | ✓ | 108.0µs | 5.03KB |
+| 141 | burrows-wheeler-transform | ✓ | 1.0ms | 911.16KB |
+| 142 | caesar-cipher-1 | ✓ | 122.0µs | 37.59KB |
+| 143 | caesar-cipher-2 | ✓ | 228.0µs | 37.59KB |
+| 144 | calculating-the-value-of-e | ✓ | 55.0µs | 1.04KB |
+| 145 | calendar---for-real-programmers-1 | ✓ | 595.0µs | 11.21KB |
+| 146 | calendar---for-real-programmers-2 | ✓ | 1.0ms | 11.21KB |
+| 147 | calendar | ✓ | 518.0µs | 11.21KB |
 | 148 | calkin-wilf-sequence |   |  |  |
 | 149 | call-a-foreign-language-function |   |  |  |
 | 150 | call-a-function-1 |   |  |  |

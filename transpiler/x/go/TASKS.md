@@ -1,3 +1,59 @@
+## Progress (2025-07-26 04:40 +0700)
+- transpiler/java: fix list return and reset varDecls
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-26 04:40 +0700)
+- transpiler/java: fix list return and reset varDecls
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-26 04:40 +0700)
+- transpiler/java: fix list return and reset varDecls
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-26 04:40 +0700)
+- transpiler/java: fix list return and reset varDecls
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-26 04:40 +0700)
+- transpiler/java: fix list return and reset varDecls
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-26 04:40 +0700)
+- transpiler/java: fix list return and reset varDecls
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-26 04:40 +0700)
+- transpiler/java: fix list return and reset varDecls
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-26 04:40 +0700)
+- transpiler/java: fix list return and reset varDecls
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-26 04:40 +0700)
+- transpiler/java: fix list return and reset varDecls
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-26 04:40 +0700)
+- transpiler/java: fix list return and reset varDecls
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-26 04:40 +0700)
+- transpiler/java: fix list return and reset varDecls
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-26 04:40 +0700)
+- transpiler/java: fix list return and reset varDecls
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-26 04:40 +0700)
+- transpiler/java: fix list return and reset varDecls
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-26 04:40 +0700)
+- transpiler/java: fix list return and reset varDecls
+- Regenerated golden files - 104/104 vm valid programs passing
+
 ## Progress (2025-07-25 21:06 +0700)
 - ts: update rosetta outputs 148-177
 - Regenerated golden files - 104/104 vm valid programs passing
