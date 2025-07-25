@@ -19,8 +19,10 @@ function toOct(n)
 end;
 
 function main()
-  for i = 0, 65536 - 1 do
+  local i = 0
+  while true do
     print(toOct(i))
+    i = (i + 1)
   end
 end;
 

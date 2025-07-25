@@ -14,7 +14,7 @@ fun fmt1(x: float): string {
   var y = ((x * 10.0) + 0.5) as int as float / 10.0
   var s = str(y)
   let dot = indexOf(s, ".")
-  if dot == -1 { s = s + ".0" }
+  if dot < 0 { s = s + ".0" }
   return s
 }
 
@@ -29,9 +29,9 @@ fun listToString1(xs: list<float>): string {
   return s + "]"
 }
 
-fun fft(in: list<complex>): list<complex> {
-  let n = len(in)
-  var out: list<complex> = in
+fun fft(arr: list<complex>): list<complex> {
+  let n = len(arr)
+  var out: list<complex> = arr
   var size = 1
   while size < n {
     size = size * 2
@@ -44,7 +44,7 @@ fun fft(in: list<complex>): list<complex> {
     var t = 0
     while t < n {
       let angle = -2.0 * PI * (k as float) * (t as float) / (size as float)
-      sum = sum + in[t] * cis(angle)
+      sum = sum + arr[t] * cis(angle)
       t = t + 1
     }
     res = append(res, sum)
@@ -53,8 +53,8 @@ fun fft(in: list<complex>): list<complex> {
   return res
 }
 
-fun ifft(in: list<complex>): list<complex> {
-  let n = len(in)
+fun ifft(arr: list<complex>): list<complex> {
+  let n = len(arr)
   var out: list<complex> = []
   var k = 0
   while k < n {
@@ -62,7 +62,7 @@ fun ifft(in: list<complex>): list<complex> {
     var t = 0
     while t < n {
       let angle = 2.0 * PI * (k as float) * (t as float) / (n as float)
-      sum = sum + in[t] * cis(angle)
+      sum = sum + arr[t] * cis(angle)
       t = t + 1
     }
     out = append(out, sum / (n as float))

@@ -14,7 +14,7 @@ fun fmt1(x: float): string {
   var y = ((x * 10.0) + 0.5) as int as float / 10.0
   var s = str(y)
   let dot = indexOf(s, ".")
-  if dot == -1 { s = s + ".0" }
+  if dot < 0 { s = s + ".0" }
   return s
 }
 

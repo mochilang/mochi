@@ -19,8 +19,14 @@ function toOct(n)
 end;
 
 function main()
-  for i = 0, 65536 - 1 do
-    print(toOct(i))
+  local i = 0
+  while true do
+    print(toOct(math.floor(i)))
+    local next = (i + 1)
+    if (next == i) then
+      break
+    end
+    i = next
   end
 end;
 
