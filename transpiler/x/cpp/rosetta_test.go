@@ -123,9 +123,11 @@ func TestCPPTranspiler_Rosetta_Golden(t *testing.T) {
 		}
 		defer os.Remove(bin)
 		cmd := exec.Command(bin)
-		envv := append(os.Environ(), "MOCHI_NOW_SEED=1")
+		envv := os.Environ()
 		if bench {
 			envv = append(envv, "MOCHI_BENCHMARK=1")
+		} else {
+			envv = append(envv, "MOCHI_NOW_SEED=1")
 		}
 		cmd.Env = envv
 		if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
