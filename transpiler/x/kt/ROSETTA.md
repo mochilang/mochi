@@ -2,7 +2,7 @@
 
 Generated Kotlin sources for Rosetta Code tests are stored in `tests/rosetta/transpiler/Kotlin`.
 
-Last updated: 2025-07-25 22:07 +0700
+Last updated: 2025-07-26 04:45 +0700
 
 Completed tasks: **54/284**
 
@@ -51,8 +51,8 @@ Completed tasks: **54/284**
 | 40 | align-columns |  |  |  |
 | 41 | aliquot-sequence-classifications |  |  |  |
 | 42 | almkvist-giullera-formula-for-pi |  |  |  |
-| 43 | almost-prime | ✓ |  |  |
-| 44 | amb | ✓ |  |  |
+| 43 | almost-prime | ✓ | 13.54ms | 122.7 KB |
+| 44 | amb | ✓ | 31.89ms | 121.2 KB |
 | 45 | amicable-pairs | ✓ |  |  |
 | 46 | anagrams-deranged-anagrams |  |  |  |
 | 47 | anagrams |  |  |  |
