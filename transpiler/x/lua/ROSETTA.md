@@ -2,9 +2,9 @@
 
 Generated Lua code for programs in `tests/rosetta/x/Mochi`. Each program has a `.lua` file produced by the transpiler and a `.out` file with its runtime output. Compilation or runtime errors are captured in `.error` files.
 
-Transpiled programs: 275/284
+Transpiled programs: 279/284
 
-Last updated: 2025-07-25 20:18 GMT+7
+Last updated: 2025-07-25 21:10 GMT+7
 
 Checklist:
 
@@ -169,37 +169,37 @@ Checklist:
 | 157 | call-a-function-5 | ✓ | 42µs | 320 B |
 | 158 | call-a-function-6 | ✓ | 44µs | 400 B |
 | 159 | call-a-function-7 | ✓ | 3µs | 384 B |
-| 160 | call-a-function-8 | ✓ | 23µs | 2.9 KB |
-| 161 | call-a-function-9 | ✓ | 7µs | 904 B |
-| 162 | call-an-object-method-1 | ✓ | 2µs | 240 B |
-| 163 | call-an-object-method-2 | ✓ | 3µs | 344 B |
-| 164 | call-an-object-method-3 | ✓ | 3µs | 232 B |
-| 165 | call-an-object-method | ✓ | 2µs | 232 B |
-| 166 | camel-case-and-snake-case | ✓ | 426µs | 1.1 KB |
-| 167 | canny-edge-detector | ✓ | 149µs | 1.1 KB |
-| 168 | canonicalize-cidr | ✓ | 303µs | 1.4 KB |
-| 169 | cantor-set | ✓ | 665µs | 2.0 KB |
-| 170 | carmichael-3-strong-pseudoprimes | ✓ | 1.045ms | 3.0 KB |
-| 171 | cartesian-product-of-two-or-more-lists-1 | ✓ | 56µs | 2.9 KB |
-| 172 | cartesian-product-of-two-or-more-lists-2 | ✓ | 518µs | 3.1 KB |
-| 173 | cartesian-product-of-two-or-more-lists-3 | ✓ | 441µs | 4.6 KB |
-| 174 | cartesian-product-of-two-or-more-lists-4 | ✓ | 551µs | 2.6 KB |
-| 175 | case-sensitivity-of-identifiers | ✓ | 45µs | 848 B |
-| 176 | casting-out-nines | ✓ | 6.658ms | 3.8 KB |
-| 177 | catalan-numbers-1 | ✓ | 52µs | 952 B |
-| 178 | catalan-numbers-2 | ✓ | 36µs | 3.0 KB |
-| 179 | catalan-numbers-pascals-triangle | ✓ | 122µs | 3.2 KB |
-| 180 | catamorphism | ✓ | 45µs | 1.0 KB |
-| 181 | catmull-clark-subdivision-surface | ✓ | 1.297ms | 7.0 KB |
-| 182 | chaocipher | ✓ | 222µs | 1.1 KB |
-| 183 | chaos-game | ✓ | 4.361ms | 58.1 KB |
-| 184 | character-codes-1 | ✓ | 42µs | 96 B |
-| 185 | character-codes-2 | ✓ | 36µs | 128 B |
-| 186 | character-codes-3 | ✓ | 40µs | 2.1 KB |
-| 187 | character-codes-4 | ✓ | 27µs | 96 B |
-| 188 | character-codes-5 | ✓ | 32µs | 96 B |
-| 189 | chat-server | ✓ | 47µs | 1.2 KB |
-| 190 | check-machin-like-formulas | ✓ | 4.076ms | 21.5 KB |
+| 160 | call-a-function-8 | ✓ | 39µs | 400 B |
+| 161 | call-a-function-9 | ✓ | 17µs | 384 B |
+| 162 | call-an-object-method-1 | ✓ | 3µs | 424 B |
+| 163 | call-an-object-method-2 | ✓ | 4µs | 520 B |
+| 164 | call-an-object-method-3 | ✓ | 3µs | 432 B |
+| 165 | call-an-object-method | ✓ | 4µs | 432 B |
+| 166 | camel-case-and-snake-case | ✓ | 498µs | 4.0 KB |
+| 167 | canny-edge-detector | ✓ | 306µs | 520 B |
+| 168 | canonicalize-cidr | ✓ | 415µs | 4.7 KB |
+| 169 | cantor-set | ✓ | 393µs | 988 B |
+| 170 | carmichael-3-strong-pseudoprimes | ✓ | 2.614ms | 4.5 KB |
+| 171 | cartesian-product-of-two-or-more-lists-1 | ✓ | 70µs | 440 B |
+| 172 | cartesian-product-of-two-or-more-lists-2 | ✓ | 370µs | 528 B |
+| 173 | cartesian-product-of-two-or-more-lists-3 | ✓ | 582µs | 120 B |
+| 174 | cartesian-product-of-two-or-more-lists-4 | ✓ | 415µs | 120 B |
+| 175 | case-sensitivity-of-identifiers | ✓ | 77µs | 400 B |
+| 176 | casting-out-nines | ✓ | 8.707ms | 7.4 KB |
+| 177 | catalan-numbers-1 | ✓ | 80µs | 2.4 KB |
+| 178 | catalan-numbers-2 | ✓ | 117µs | 2.8 KB |
+| 179 | catalan-numbers-pascals-triangle | ✓ | 140µs | 2.8 KB |
+| 180 | catamorphism | ✓ | 59µs | 2.5 KB |
+| 181 | catmull-clark-subdivision-surface | ✓ | 1.924ms | 4.6 KB |
+| 182 | chaocipher | ✓ | 504µs | 4.5 KB |
+| 183 | chaos-game | ✓ | 7.999ms | 59.6 KB |
+| 184 | character-codes-1 | ✓ | 36µs | 280 B |
+| 185 | character-codes-2 | ✓ | 47µs | 312 B |
+| 186 | character-codes-3 | ✓ | 46µs | 2.3 KB |
+| 187 | character-codes-4 | ✓ | 40µs | 280 B |
+| 188 | character-codes-5 | ✓ | 34µs | 280 B |
+| 189 | chat-server | ✓ | 48µs | 664 B |
+| 190 | check-machin-like-formulas | ✓ | 7.794ms | 23.1 KB |
 | 191 | check-that-file-exists | ✓ | 63µs | 848 B |
 | 192 | checkpoint-synchronization-1 | ✓ | 57µs | 2.8 KB |
 | 193 | checkpoint-synchronization-2 | ✓ | 71µs | 2.9 KB |
@@ -235,56 +235,56 @@ Checklist:
 | 223 | conditional-structures-8 | ✓ | 2µs | 144 B |
 | 224 | conditional-structures-9 | ✓ | 2µs | 104 B |
 | 225 | consecutive-primes-with-ascending-or-descending-differences | ✓ |  |  |
-| 226 | constrained-genericity-1 | ✓ |  |  |
-| 227 | constrained-genericity-2 | ✓ |  |  |
-| 228 | constrained-genericity-3 | ✓ |  |  |
-| 229 | constrained-genericity-4 | ✓ |  |  |
-| 230 | constrained-random-points-on-a-circle-1 | ✓ |  |  |
-| 231 | constrained-random-points-on-a-circle-2 | ✓ |  |  |
-| 232 | continued-fraction | ✓ |  |  |
-| 233 | convert-decimal-number-to-rational | ✓ |  |  |
-| 234 | convert-seconds-to-compound-duration | ✓ |  |  |
-| 235 | convex-hull | ✓ |  |  |
-| 236 | conways-game-of-life | ✓ |  |  |
-| 237 | copy-a-string-1 | ✓ |  |  |
-| 238 | copy-a-string-2 | ✓ |  |  |
-| 239 | copy-stdin-to-stdout-1 | ✓ |  |  |
-| 240 | copy-stdin-to-stdout-2 | ✓ |  |  |
-| 241 | count-in-factors | ✓ |  |  |
-| 242 | count-in-octal-1 | ✓ | 143µs | 2.8 KB |
-| 243 | count-in-octal-2 | ✓ | 87.341ms | 2.8 KB |
-| 244 | count-in-octal-3 |   |  |  |
-| 245 | count-in-octal-4 |   |  |  |
-| 246 | count-occurrences-of-a-substring | ✓ | 41µs | 912 B |
-| 247 | count-the-coins-1 | ✓ | 1.051ms | 15.9 KB |
+| 226 | constrained-genericity-1 | ✓ | 2µs | 64 B |
+| 227 | constrained-genericity-2 | ✓ | 1µs | 64 B |
+| 228 | constrained-genericity-3 | ✓ | 1µs | 104 B |
+| 229 | constrained-genericity-4 | ✓ | 31µs | 848 B |
+| 230 | constrained-random-points-on-a-circle-1 | ✓ | 2.265ms | 36.1 KB |
+| 231 | constrained-random-points-on-a-circle-2 | ✓ | 3.115ms | 95.0 KB |
+| 232 | continued-fraction | ✓ | 145µs | 3.0 KB |
+| 233 | convert-decimal-number-to-rational | ✓ | 67µs | 944 B |
+| 234 | convert-seconds-to-compound-duration | ✓ | 58µs | 2.7 KB |
+| 235 | convex-hull | ✓ | 198µs | 3.6 KB |
+| 236 | conways-game-of-life | ✓ | 1.343766s | 2.5 KB |
+| 237 | copy-a-string-1 | ✓ | 1µs | 64 B |
+| 238 | copy-a-string-2 | ✓ | 14µs | 136 B |
+| 239 | copy-stdin-to-stdout-1 | ✓ | 46µs | 64 B |
+| 240 | copy-stdin-to-stdout-2 | ✓ | 27µs | 168 B |
+| 241 | count-in-factors | ✓ | 422µs | 2.7 KB |
+| 242 | count-in-octal-1 | ✓ | 151µs | 2.8 KB |
+| 243 | count-in-octal-2 | ✓ | 84.425ms | 2.8 KB |
+| 244 | count-in-octal-3 | ✓ |  |  |
+| 245 | count-in-octal-4 | ✓ |  |  |
+| 246 | count-occurrences-of-a-substring | ✓ | 49µs | 912 B |
+| 247 | count-the-coins-1 | ✓ | 896µs | 15.9 KB |
 | 248 | count-the-coins-2 | ✓ |  |  |
-| 249 | cramers-rule | ✓ | 520µs | 4.5 KB |
-| 250 | crc-32-1 | ✓ | 1.802ms | 9.0 KB |
-| 251 | crc-32-2 | ✓ | 1.799ms | 9.0 KB |
-| 252 | create-a-file-on-magnetic-tape | ✓ | 5µs | 1.0 KB |
-| 253 | create-a-file | ✓ | 33µs | 888 B |
-| 254 | create-a-two-dimensional-array-at-runtime-1 | ✓ | 57µs | 856 B |
-| 255 | create-an-html-table | ✓ | 122µs | 2.8 KB |
-| 256 | create-an-object-at-a-given-address | ✓ | 120µs | 2.9 KB |
-| 257 | csv-data-manipulation | ✓ | 57µs | 1.5 KB |
-| 258 | csv-to-html-translation-1 | ✓ | 48µs | 4.3 KB |
-| 259 | csv-to-html-translation-2 | ✓ | 93µs | 2.4 KB |
-| 260 | csv-to-html-translation-3 | ✓ | 35µs | 64 B |
-| 261 | csv-to-html-translation-4 | ✓ | 28µs | 64 B |
-| 262 | csv-to-html-translation-5 | ✓ | 199µs | 2.4 KB |
-| 263 | cuban-primes |   |  |  |
+| 249 | cramers-rule | ✓ | 447µs | 4.5 KB |
+| 250 | crc-32-1 | ✓ | 1.868ms | 9.0 KB |
+| 251 | crc-32-2 | ✓ | 2.076ms | 9.0 KB |
+| 252 | create-a-file-on-magnetic-tape | ✓ | 6µs | 1.0 KB |
+| 253 | create-a-file | ✓ | 25µs | 888 B |
+| 254 | create-a-two-dimensional-array-at-runtime-1 | ✓ | 51µs | 856 B |
+| 255 | create-an-html-table | ✓ | 60µs | 2.8 KB |
+| 256 | create-an-object-at-a-given-address | ✓ | 126µs | 2.9 KB |
+| 257 | csv-data-manipulation | ✓ | 94µs | 1.5 KB |
+| 258 | csv-to-html-translation-1 | ✓ | 66µs | 4.3 KB |
+| 259 | csv-to-html-translation-2 | ✓ | 73µs | 2.4 KB |
+| 260 | csv-to-html-translation-3 | ✓ | 25µs | 64 B |
+| 261 | csv-to-html-translation-4 | ✓ | 23µs | 64 B |
+| 262 | csv-to-html-translation-5 | ✓ | 257µs | 2.4 KB |
+| 263 | cuban-primes | ✓ |  |  |
 | 264 | cullen-and-woodall-numbers | ✓ | 157µs | 1.1 KB |
-| 265 | cumulative-standard-deviation | ✓ | 100µs | 2.9 KB |
-| 266 | currency | ✓ | 84µs | 1.2 KB |
-| 267 | currying |   |  |  |
-| 268 | curzon-numbers | ✓ | 51.514ms | 2.9 KB |
-| 269 | cusip | ✓ | 88µs | 1.1 KB |
-| 270 | cyclops-numbers | ✓ | 3µs | 1.1 KB |
-| 271 | damm-algorithm | ✓ | 77µs | 952 B |
-| 272 | date-format | ✓ | 41µs | 928 B |
-| 273 | date-manipulation | ✓ | 118µs | 2.1 KB |
-| 274 | day-of-the-week | ✓ | 51µs | 2.7 KB |
-| 275 | de-bruijn-sequences | ✓ | 2.607883s | 164.3 KB |
+| 265 | cumulative-standard-deviation | ✓ | 71µs | 2.9 KB |
+| 266 | currency | ✓ | 71µs | 1.2 KB |
+| 267 | currying | ✓ | 50µs | 2.9 KB |
+| 268 | curzon-numbers | ✓ | 49.17ms | 2.9 KB |
+| 269 | cusip | ✓ | 68µs | 1.1 KB |
+| 270 | cyclops-numbers | ✓ | 4µs | 1.1 KB |
+| 271 | damm-algorithm | ✓ | 44µs | 952 B |
+| 272 | date-format | ✓ | 36µs | 928 B |
+| 273 | date-manipulation | ✓ | 104µs | 2.1 KB |
+| 274 | day-of-the-week | ✓ | 77µs | 2.7 KB |
+| 275 | de-bruijn-sequences | ✓ | 3.672655s | 164.3 KB |
 | 276 | deal-cards-for-freecell |   |  |  |
 | 277 | death-star | ✓ | 7.933ms | 984 B |
 | 278 | deceptive-numbers | ✓ | 2.491983s | 2.9 KB |
