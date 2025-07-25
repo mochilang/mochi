@@ -22,6 +22,24 @@ import (
 	"mochi/types"
 )
 
+const helperSHA256 = `
+List<int> _sha256(List<int> bs) {
+  final tmp = File('${Directory.systemTemp.path}/sha256_${DateTime.now().microsecondsSinceEpoch}.bin');
+  tmp.writeAsBytesSync(bs.map((e) => e & 0xff).toList());
+  final result = Process.runSync('sha256sum', [tmp.path]);
+  tmp.deleteSync();
+  var hex = '';
+  if (result.stdout is String) {
+    hex = (result.stdout as String).split(' ')[0];
+  }
+  final out = <int>[];
+  for (var i = 0; i < hex.length; i += 2) {
+    out.add(int.parse(hex.substring(i, i + 2), radix: 16));
+  }
+  return out;
+}
+`
+
 // --- Struct tracking for generated classes ---
 type StructField struct {
 	Name string
@@ -44,6 +62,7 @@ var (
 	useInput         bool
 	useLookupHost    bool
 	useBigRat        bool
+	useSHA256        bool
 	useSubstrClamp   bool
 	imports          []string
 	testpkgAliases   map[string]struct{}
@@ -3275,12 +3294,12 @@ func Emit(w io.Writer, p *Program) error {
 			return err
 		}
 	}
-	if (useNow || useInput) && !added["dart:io"] {
+	if (useNow || useInput || useSHA256) && !added["dart:io"] {
 		if _, err := io.WriteString(w, "import 'dart:io';\n"); err != nil {
 			return err
 		}
 	}
-	if len(p.Imports) > 0 || usesJSON || useNow || useInput {
+	if len(p.Imports) > 0 || usesJSON || useNow || useInput || useSHA256 {
 		if _, err := io.WriteString(w, "\n"); err != nil {
 			return err
 		}
@@ -3306,6 +3325,11 @@ func Emit(w io.Writer, p *Program) error {
 	}
 	if useBigRat {
 		if _, err := io.WriteString(w, "class BigRat {\n  BigInt num;\n  BigInt den;\n  BigRat(this.num, [BigInt? d]) : den = d ?? BigInt.one {\n    if (den.isNegative) { num = -num; den = -den; }\n    var g = num.gcd(den);\n    num = num ~/ g;\n    den = den ~/ g;\n  }\n  BigRat add(BigRat o) => BigRat(num * o.den + o.num * den, den * o.den);\n  BigRat sub(BigRat o) => BigRat(num * o.den - o.num * den, den * o.den);\n  BigRat mul(BigRat o) => BigRat(num * o.num, den * o.den);\n  BigRat div(BigRat o) => BigRat(num * o.den, den * o.num);\n}\n\nBigRat _bigrat(dynamic n, [dynamic d]) {\n  if (n is BigRat && d == null) return BigRat(n.num, n.den);\n  BigInt numer;\n  BigInt denom = d == null ? BigInt.one : (d is BigInt ? d : BigInt.from((d as num).toInt()));\n  if (n is BigRat) { numer = n.num; denom = n.den; }\n  else if (n is BigInt) { numer = n; }\n  else if (n is int) { numer = BigInt.from(n); }\n  else if (n is num) { numer = BigInt.from(n.toInt()); }\n  else { numer = BigInt.zero; }\n  return BigRat(numer, denom);\n}\nBigInt _num(BigRat r) => r.num;\nBigInt _denom(BigRat r) => r.den;\nBigRat _add(BigRat a, BigRat b) => a.add(b);\nBigRat _sub(BigRat a, BigRat b) => a.sub(b);\nBigRat _mul(BigRat a, BigRat b) => a.mul(b);\nBigRat _div(BigRat a, BigRat b) => a.div(b);\n\n"); err != nil {
+			return err
+		}
+	}
+	if useSHA256 {
+		if _, err := io.WriteString(w, helperSHA256+"\n"); err != nil {
 			return err
 		}
 	}
@@ -3459,6 +3483,7 @@ func Transpile(prog *parser.Program, env *types.Env, bench, wrapMain bool) (*Pro
 	useInput = false
 	useLookupHost = false
 	useBigRat = false
+	useSHA256 = false
 	useSubstrClamp = false
 	imports = nil
 	testpkgAliases = map[string]struct{}{}
@@ -3839,6 +3864,7 @@ func convertAssignTarget(as *parser.AssignStmt) (Expr, error) {
 		}
 		iexpr := &IndexExpr{Target: expr, Index: val}
 		if i < len(as.Index)-1 || len(as.Field) > 0 {
+			iexpr.NoBang = true
 			expr = &NotNilExpr{X: iexpr}
 		} else {
 			iexpr.NoBang = true
@@ -4239,7 +4265,7 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				return convertExistsQuery(q)
 			}
 		}
-		if p.Call.Func == "substring" && len(p.Call.Args) == 3 {
+		if (p.Call.Func == "substring" || p.Call.Func == "substr") && len(p.Call.Args) == 3 {
 			s0, err := convertExpr(p.Call.Args[0])
 			if err != nil {
 				return nil, err
@@ -4283,6 +4309,14 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			expr := &CallExpr{Func: &Name{Name: "pow"}, Args: []Expr{x, y}}
 			expr = &CallExpr{Func: &SelectorExpr{Receiver: expr, Field: "toInt"}}
 			return expr, nil
+		}
+		if p.Call.Func == "sha256" && len(p.Call.Args) == 1 {
+			arg, err := convertExpr(p.Call.Args[0])
+			if err != nil {
+				return nil, err
+			}
+			useSHA256 = true
+			return &CallExpr{Func: &Name{Name: "_sha256"}, Args: []Expr{arg}}, nil
 		}
 		if p.Call.Func == "num" && len(p.Call.Args) == 1 {
 			arg, err := convertExpr(p.Call.Args[0])

@@ -2,7 +2,7 @@
 
 This directory contains Dart code generated from Mochi programs in `tests/rosetta/x/Mochi`. Each program has a `.dart` file and `.out` output. Compilation or runtime failures are captured in a `.error` file.
 
-Compiled and ran: 137/284
+Compiled and ran: 142/284
 
 ## Checklist
 | Index | Name | Status | Duration | Memory |
@@ -121,17 +121,17 @@ Compiled and ran: 137/284
 | 112 | bioinformatics-base-count | ✓ | 14.528ms | 1.9 MB |
 | 113 | bioinformatics-global-alignment | ✓ |  |  |
 | 114 | bioinformatics-sequence-mutation | ✓ |  |  |
-| 115 | biorhythms |   |  |  |
-| 116 | bitcoin-address-validation |   |  |  |
-| 117 | bitmap-b-zier-curves-cubic |   |  |  |
-| 118 | bitmap-b-zier-curves-quadratic |   |  |  |
+| 115 | biorhythms | ✓ |  |  |
+| 116 | bitcoin-address-validation | ✓ | 182.763ms | 13.4 MB |
+| 117 | bitmap-b-zier-curves-cubic | ✓ | 209.129ms | 8.7 MB |
+| 118 | bitmap-b-zier-curves-quadratic | ✓ | 209.587ms | 6.4 MB |
 | 119 | bitmap-bresenhams-line-algorithm | ✓ |  |  |
-| 120 | bitmap-flood-fill | ✓ |  |  |
+| 120 | bitmap-flood-fill | ✓ | 15.93ms | 2.2 MB |
 | 121 | bitmap-histogram | ✓ |  |  |
-| 122 | bitmap-midpoint-circle-algorithm | ✓ |  |  |
+| 122 | bitmap-midpoint-circle-algorithm | ✓ | 27.77ms | 2.8 MB |
 | 123 | bitmap-ppm-conversion-through-a-pipe | ✓ |  |  |
-| 124 | bitmap-read-a-ppm-file |   |  |  |
-| 125 | bitmap-read-an-image-through-a-pipe | ✓ | 6.319ms | 804.0 KB |
+| 124 | bitmap-read-a-ppm-file | ✓ | 14.691ms | 4.1 MB |
+| 125 | bitmap-read-an-image-through-a-pipe | ✓ | 12.352ms | 3.2 MB |
 | 126 | bitmap-write-a-ppm-file | ✓ | 7.857ms | 660.0 KB |
 | 127 | bitmap | ✓ | 58.397ms | 6.0 MB |
 | 128 | bitwise-io-1 | ✓ | 6.417ms | 16.0 KB |
@@ -292,4 +292,4 @@ Compiled and ran: 137/284
 | 283 | define-a-primitive-data-type |   |  |  |
 | 284 | md5 |   |  |  |
 
-_Last updated: 2025-07-26 00:23 +0700_
+_Last updated: 2025-07-26 04:53 +0700_

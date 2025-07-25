@@ -22,24 +22,29 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-void main() {
-  var _benchMem0 = ProcessInfo.currentRss;
-  var _benchSw = Stopwatch()..start();
-  _initNow();
-  {
-  var _benchMem0 = ProcessInfo.currentRss;
-  var _benchSw = Stopwatch()..start();
-  int parseIntStr(String str) {
+String _substr(String s, int start, int end) {
+  var n = s.length;
+  if (start < 0) start += n;
+  if (end < 0) end += n;
+  if (start < 0) start = 0;
+  if (start > n) start = n;
+  if (end < 0) end = 0;
+  if (end > n) end = n;
+  if (start > end) start = end;
+  return s.substring(start, end);
+}
+
+int parseIntStr(String str) {
   int i = 0;
   bool neg = false;
-  if (str.length > 0 && str.substring(0, 1) == "-") {
+  if (str.length > 0 && _substr(str, 0, 1) == "-") {
     neg = true;
     i = 1;
   }
   int n = 0;
   final Map<String, int> digits = {"0": 0, "1": 1, "2": 2, "3": 3, "4": 4, "5": 5, "6": 6, "7": 7, "8": 8, "9": 9};
   while (i < str.length) {
-    n = n * 10 + digits[str.substring(i, i + 1)]!;
+    n = n * 10 + digits[_substr(str, i, i + 1)]!;
     i = i + 1;
   }
   if (neg) {
@@ -47,12 +52,13 @@ void main() {
   }
   return n;
 }
-  List<String> splitWs(String s) {
-  List<String> parts = [];
+
+List<String> splitWs(String s) {
+  List<String> parts = <String>[];
   String cur = "";
   int i = 0;
   while (i < s.length) {
-    final String ch = s.substring(i, i + 1);
+    final String ch = _substr(s, i, i + 1);
     if (ch == " " || ch == "\n" || ch == "	" || ch == "\r") {
     if (cur.length > 0) {
     parts = [...parts, cur];
@@ -68,25 +74,34 @@ void main() {
   }
   return parts;
 }
-  Map<String, dynamic> parsePpm(String data) {
+
+Map<String, dynamic> parsePpm(String data) {
   final List<String> toks = splitWs(data);
   if (toks.length < 4) {
     return {"err": true};
   }
   final String magic = toks[0];
-  final int w = parseIntStr(toks[1]);
-  final int h = parseIntStr(toks[2]);
-  final int maxv = parseIntStr(toks[3]);
-  List<int> px = [];
+  final w = int.parse(toks[1]);
+  final h = int.parse(toks[2]);
+  final maxv = int.parse(toks[3]);
+  List<int> px = <int>[];
   int i = 4;
   while (i < toks.length) {
-    px = [...px, parseIntStr(toks[i])];
+    px = [...px, int.parse(toks[i])];
     i = i + 1;
   }
   return {"magic": magic, "w": w, "h": h, "max": maxv, "px": px};
 }
-  final String ppmData = "P3\n2 2\n1\n0 1 1 0 1 0 0 1 1 1 0 0\n";
-  final Map<String, dynamic> img = parsePpm(ppmData);
+
+final String ppmData = "P3\n2 2\n1\n0 1 1 0 1 0 0 1 1 1 0 0\n";
+final Map<String, dynamic> img = parsePpm(ppmData);
+void main() {
+  var _benchMem0 = ProcessInfo.currentRss;
+  var _benchSw = Stopwatch()..start();
+  _initNow();
+  {
+  var _benchMem0 = ProcessInfo.currentRss;
+  var _benchSw = Stopwatch()..start();
   print("width=" + (img["w"]).toString() + " height=" + (img["h"]).toString());
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
