@@ -1,4 +1,4 @@
-// Generated 2025-07-26 04:38 +0700
+// Generated 2025-07-26 05:05 +0700
 
 exception Return
 
@@ -210,8 +210,8 @@ and findIntersects (p: QuadCurve) (q: QuadCurve) (tol: float) (spacing: float) =
             let work: Map<string, QuadCurve> = workload.[idx]
             workload <- Array.sub workload 0 (idx - 0)
             let res: Map<string, obj> = testIntersect (unbox<QuadCurve> (work.["p"] |> unbox<QuadCurve>)) (unbox<QuadCurve> (work.["q"] |> unbox<QuadCurve>)) tol
-            let excl: obj = res.["exclude"]
-            let acc: obj = res.["accept"]
+            let excl: obj = box (res.["exclude"])
+            let acc: obj = box (res.["accept"])
             let inter: Point = unbox<Point> (res.["intersect"])
             if unbox<bool> acc then
                 if not (seemsToBeDuplicate inters inter spacing) then

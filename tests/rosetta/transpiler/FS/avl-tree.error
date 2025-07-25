@@ -4,11 +4,6 @@ Freely distributed under the Apache 2.0 Open Source License
 
 /workspace/mochi/tests/rosetta/transpiler/FS/avl-tree.fs(3,1): warning FS0221: The declarations in this file will be placed in an implicit module 'Avl-tree' based on the file name 'avl-tree.fs'. However this is not a valid F# identifier, so the contents will not be accessible from other files. Consider renaming the file or adding a 'module' or 'namespace' declaration at the top of the file.
 
-/workspace/mochi/tests/rosetta/transpiler/FS/avl-tree.fs(50,29): error FS0001: This expression was expected to have type
-    obj    
-but here has type
-    obj array    
-
 /workspace/mochi/tests/rosetta/transpiler/FS/avl-tree.fs(71,18): error FS0001: This expression was expected to have type
     Map<string,obj>    
 but here has type
@@ -21,57 +16,13 @@ but here has type
 
 /workspace/mochi/tests/rosetta/transpiler/FS/avl-tree.fs(101,18): error FS0001: The type 'obj' does not support a conversion to the type 'int'
 
-/workspace/mochi/tests/rosetta/transpiler/FS/avl-tree.fs(102,39): error FS0001: This expression was expected to have type
-    obj    
-but here has type
-    int    
-
-/workspace/mochi/tests/rosetta/transpiler/FS/avl-tree.fs(103,36): error FS0001: This expression was expected to have type
-    obj    
-but here has type
-    int    
-
 /workspace/mochi/tests/rosetta/transpiler/FS/avl-tree.fs(105,22): error FS0001: The type 'obj' does not support a conversion to the type 'int'
-
-/workspace/mochi/tests/rosetta/transpiler/FS/avl-tree.fs(106,44): error FS0001: The type 'obj' does not support the operator '~-'
-
-/workspace/mochi/tests/rosetta/transpiler/FS/avl-tree.fs(107,40): error FS0001: This expression was expected to have type
-    obj    
-but here has type
-    int    
-
-/workspace/mochi/tests/rosetta/transpiler/FS/avl-tree.fs(109,43): error FS0001: This expression was expected to have type
-    obj    
-but here has type
-    int    
-
-/workspace/mochi/tests/rosetta/transpiler/FS/avl-tree.fs(110,40): error FS0001: This expression was expected to have type
-    obj    
-but here has type
-    int    
-
-/workspace/mochi/tests/rosetta/transpiler/FS/avl-tree.fs(111,33): error FS0001: This expression was expected to have type
-    obj    
-but here has type
-    int    
 
 /workspace/mochi/tests/rosetta/transpiler/FS/avl-tree.fs(122,18): error FS0001: The type 'obj' does not support a conversion to the type 'int'
 
-/workspace/mochi/tests/rosetta/transpiler/FS/avl-tree.fs(123,39): error FS0001: This expression was expected to have type
-    obj    
-but here has type
-    int    
-
-/workspace/mochi/tests/rosetta/transpiler/FS/avl-tree.fs(124,36): error FS0001: This expression was expected to have type
-    obj    
-but here has type
-    int    
-
 /workspace/mochi/tests/rosetta/transpiler/FS/avl-tree.fs(143,18): error FS0001: The type 'obj' does not support a conversion to the type 'int'
 
-/workspace/mochi/tests/rosetta/transpiler/FS/avl-tree.fs(150,42): error FS0001: The type 'obj' does not support a conversion to the type 'int'
-
-/workspace/mochi/tests/rosetta/transpiler/FS/avl-tree.fs(150,76): error FS0001: The type 'obj' does not match the type 'int'
+/workspace/mochi/tests/rosetta/transpiler/FS/avl-tree.fs(150,47): error FS0001: The type 'obj' does not support a conversion to the type 'int'
 
 /workspace/mochi/tests/rosetta/transpiler/FS/avl-tree.fs(151,18): error FS0001: The type 'obj' does not support a conversion to the type 'int'
 
@@ -81,44 +32,20 @@ but here has type
 
 /workspace/mochi/tests/rosetta/transpiler/FS/avl-tree.fs(180,18): error FS0001: The type 'obj' does not support a conversion to the type 'int'
 
-/workspace/mochi/tests/rosetta/transpiler/FS/avl-tree.fs(181,39): error FS0001: This expression was expected to have type
-    obj    
-but here has type
-    int    
-
-/workspace/mochi/tests/rosetta/transpiler/FS/avl-tree.fs(182,36): error FS0001: This expression was expected to have type
-    obj    
-but here has type
-    int    
-
 /workspace/mochi/tests/rosetta/transpiler/FS/avl-tree.fs(185,18): error FS0001: The type 'obj' does not support a conversion to the type 'int'
-
-/workspace/mochi/tests/rosetta/transpiler/FS/avl-tree.fs(189,36): error FS0001: The type 'obj' does not support the operator '~-'
-
-/workspace/mochi/tests/rosetta/transpiler/FS/avl-tree.fs(190,32): error FS0001: This expression was expected to have type
-    obj    
-but here has type
-    int    
 
 /workspace/mochi/tests/rosetta/transpiler/FS/avl-tree.fs(205,18): error FS0001: The type 'obj' does not support a conversion to the type 'int'
 
-/workspace/mochi/tests/rosetta/transpiler/FS/avl-tree.fs(215,37): error FS0039: The field, constructor or member 'Item' is not defined
+/workspace/mochi/tests/rosetta/transpiler/FS/avl-tree.fs(215,42): error FS0039: The field, constructor or member 'Item' is not defined
 
 /workspace/mochi/tests/rosetta/transpiler/FS/avl-tree.fs(216,26): error FS0039: The field, constructor or member 'Item' is not defined
 
 /workspace/mochi/tests/rosetta/transpiler/FS/avl-tree.fs(218,18): error FS0001: The type 'obj' does not support a conversion to the type 'int'
 
-/workspace/mochi/tests/rosetta/transpiler/FS/avl-tree.fs(225,43): error FS0001: The type 'obj' does not support a conversion to the type 'int'
-
-/workspace/mochi/tests/rosetta/transpiler/FS/avl-tree.fs(225,74): error FS0001: The type 'obj' does not match the type 'int'
+/workspace/mochi/tests/rosetta/transpiler/FS/avl-tree.fs(225,48): error FS0001: The type 'obj' does not support a conversion to the type 'int'
 
 /workspace/mochi/tests/rosetta/transpiler/FS/avl-tree.fs(226,19): error FS0001: The type 'obj' does not support a conversion to the type 'int'
 
 /workspace/mochi/tests/rosetta/transpiler/FS/avl-tree.fs(226,53): error FS0001: The type 'obj' does not support a conversion to the type 'int'
 
 /workspace/mochi/tests/rosetta/transpiler/FS/avl-tree.fs(229,18): error FS0001: The type 'obj' does not support a conversion to the type 'int'
-
-/workspace/mochi/tests/rosetta/transpiler/FS/avl-tree.fs(319,32): error FS0001: This expression was expected to have type
-    obj    
-but here has type
-    int    

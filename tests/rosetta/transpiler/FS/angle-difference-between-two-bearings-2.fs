@@ -1,4 +1,4 @@
-// Generated 2025-07-25 14:38 +0000
+// Generated 2025-07-26 05:05 +0700
 
 exception Return
 
@@ -28,7 +28,7 @@ let rec angleDiff (b1: float) (b2: float) =
     let mutable b2 = b2
     try
         let diff: float = b2 - b1
-        __ret <- ((((diff % 360.0) + 360.0) + 180.0) % 360.0) - 180.0
+        __ret <- ((((((((diff % 360.0 + 360.0) % 360.0)) + 360.0) + 180.0) % 360.0 + 360.0) % 360.0)) - 180.0
         raise Return
         __ret
     with

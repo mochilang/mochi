@@ -1,4 +1,4 @@
-// Generated 2025-07-26 04:38 +0700
+// Generated 2025-07-26 05:05 +0700
 
 exception Return
 
@@ -47,7 +47,7 @@ and setLink (n: Map<string, obj>) (dir: int) (v: obj) =
     try
         let mutable links: obj array = unbox<obj array> (n.["Link"])
         links.[dir] <- v
-        n <- Map.add "Link" links n
+        n <- Map.add "Link" (box links) n
         __ret
     with
         | Return -> __ret
@@ -99,16 +99,16 @@ and adjustBalance (root: Map<string, obj>) (dir: int) (bal: int) =
         let mutable n: Map<string, obj> = unbox<Map<string, obj>> (getLink root dir)
         let mutable nn: Map<string, obj> = unbox<Map<string, obj>> (getLink n (int (opp dir)))
         if (int (nn.["Balance"])) = 0 then
-            root <- Map.add "Balance" 0 root
-            n <- Map.add "Balance" 0 n
+            root <- Map.add "Balance" (box 0) root
+            n <- Map.add "Balance" (box 0) n
         else
             if (int (nn.["Balance"])) = bal then
-                root <- Map.add "Balance" (-bal) root
-                n <- Map.add "Balance" 0 n
+                root <- Map.add "Balance" (box (-bal)) root
+                n <- Map.add "Balance" (box 0) n
             else
-                root <- Map.add "Balance" 0 root
-                n <- Map.add "Balance" bal n
-        nn <- Map.add "Balance" 0 nn
+                root <- Map.add "Balance" (box 0) root
+                n <- Map.add "Balance" (box bal) n
+        nn <- Map.add "Balance" (box 0) nn
         __ret
     with
         | Return -> __ret
@@ -120,8 +120,8 @@ and insertBalance (root: Map<string, obj>) (dir: int) =
         let mutable n: Map<string, obj> = unbox<Map<string, obj>> (getLink root dir)
         let mutable bal: int = (2 * dir) - 1
         if (int (n.["Balance"])) = bal then
-            root <- Map.add "Balance" 0 root
-            n <- Map.add "Balance" 0 n
+            root <- Map.add "Balance" (box 0) root
+            n <- Map.add "Balance" (box 0) n
             __ret <- single root (int (opp dir))
             raise Return
         adjustBalance root dir bal
@@ -147,7 +147,7 @@ and insertR (root: obj) (data: int) =
         if unbox<bool> (r.["done"]) then
             __ret <- Map.ofList [("node", box node); ("done", box true)]
             raise Return
-        node <- Map.add "Balance" ((int (node.["Balance"])) + ((2 * dir) - 1)) node
+        node <- Map.add "Balance" (box ((int (node.["Balance"])) + ((2 * dir) - 1))) node
         if (int (node.["Balance"])) = 0 then
             __ret <- Map.ofList [("node", box node); ("done", box true)]
             raise Return
@@ -178,16 +178,16 @@ and removeBalance (root: Map<string, obj>) (dir: int) =
         let mutable n: Map<string, obj> = unbox<Map<string, obj>> (getLink root (int (opp dir)))
         let mutable bal: int = (2 * dir) - 1
         if (int (n.["Balance"])) = (-bal) then
-            root <- Map.add "Balance" 0 root
-            n <- Map.add "Balance" 0 n
+            root <- Map.add "Balance" (box 0) root
+            n <- Map.add "Balance" (box 0) n
             __ret <- Map.ofList [("node", box (single root dir)); ("done", box false)]
             raise Return
         if (int (n.["Balance"])) = bal then
             adjustBalance root (int (opp dir)) (-bal)
             __ret <- Map.ofList [("node", box (double root dir)); ("done", box false)]
             raise Return
-        root <- Map.add "Balance" (-bal) root
-        n <- Map.add "Balance" bal n
+        root <- Map.add "Balance" (box (-bal)) root
+        n <- Map.add "Balance" (box bal) n
         __ret <- Map.ofList [("node", box (single root dir)); ("done", box true)]
         raise Return
         __ret
@@ -212,7 +212,7 @@ and removeR (root: obj) (data: int) =
             let mutable heir = getLink node 0
             while (getLink (unbox<Map<string, obj>> heir) 1) <> null do
                 heir <- getLink (unbox<Map<string, obj>> heir) 1
-            node <- Map.add "Data" (heir.["Data"]) node
+            node <- Map.add "Data" (box (heir.["Data"])) node
             data <- int (heir.["Data"])
         let mutable dir: int = 0
         if (int (node.["Data"])) < data then
@@ -222,7 +222,7 @@ and removeR (root: obj) (data: int) =
         if unbox<bool> (r.["done"]) then
             __ret <- Map.ofList [("node", box node); ("done", box true)]
             raise Return
-        node <- Map.add "Balance" (((int (node.["Balance"])) + 1) - (2 * dir)) node
+        node <- Map.add "Balance" (box (((int (node.["Balance"])) + 1) - (2 * dir))) node
         if ((int (node.["Balance"])) = 1) || ((int (node.["Balance"])) = (-1)) then
             __ret <- Map.ofList [("node", box node); ("done", box true)]
             raise Return
@@ -316,7 +316,7 @@ and main () =
         tree <- Remove tree 3
         tree <- Remove tree 1
         let mutable t: Map<string, obj> = unbox<Map<string, obj>> tree
-        t <- Map.add "Balance" 0 t
+        t <- Map.add "Balance" (box 0) t
         tree <- t
         dump tree 0
         let __bench_end = _now()
