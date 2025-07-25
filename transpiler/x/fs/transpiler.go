@@ -1840,7 +1840,13 @@ type IndexExpr struct {
 func (i *IndexExpr) emit(w io.Writer) {
 	t := inferType(i.Target)
 	if strings.Contains(t, "array") || t == "" {
-		i.Target.emit(w)
+		if needsParen(i.Target) {
+			io.WriteString(w, "(")
+			i.Target.emit(w)
+			io.WriteString(w, ")")
+		} else {
+			i.Target.emit(w)
+		}
 		io.WriteString(w, ".[")
 		i.Index.emit(w)
 		io.WriteString(w, "]")
@@ -2578,6 +2584,10 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 		if err != nil {
 			return nil, err
 		}
+		t := inferType(cond)
+		if t == "obj" || t == "" {
+			cond = &CastExpr{Expr: cond, Type: "bool"}
+		}
 		body := make([]Stmt, len(st.While.Body))
 		for i, s := range st.While.Body {
 			cs, err := convertStmt(s)
@@ -3108,6 +3118,9 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				items[i][1] = &CallExpr{Func: "box", Args: []Expr{items[i][1]}}
 				types[i] = "obj"
 			}
+		} else if len(items) == 1 && types[0] != "obj" {
+			items[0][1] = &CallExpr{Func: "box", Args: []Expr{items[0][1]}}
+			types[0] = "obj"
 		}
 		return &MapLit{Items: items, Types: types}, nil
 	case p.Match != nil:
@@ -3228,6 +3241,10 @@ func convertIfStmt(in *parser.IfStmt) (Stmt, error) {
 	cond, err := convertExpr(in.Cond)
 	if err != nil {
 		return nil, err
+	}
+	t := inferType(cond)
+	if t == "obj" || t == "" {
+		cond = &CastExpr{Expr: cond, Type: "bool"}
 	}
 	thenStmts := make([]Stmt, len(in.Then))
 	for i, s := range in.Then {

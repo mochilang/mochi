@@ -1,0 +1,13 @@
+compile: exit status 1
+F# Compiler for F# 4.0 (Open Source Edition)
+Freely distributed under the Apache 2.0 Open Source License
+
+/workspace/mochi/tests/rosetta/transpiler/FS/bitwise-io-2.fs(3,1): warning FS0221: The declarations in this file will be placed in an implicit module 'Bitwise-io-2' based on the file name 'bitwise-io-2.fs'. However this is not a valid F# identifier, so the contents will not be accessible from other files. Consider renaming the file or adding a 'module' or 'namespace' declaration at the top of the file.
+
+/workspace/mochi/tests/rosetta/transpiler/FS/bitwise-io-2.fs(249,32): error FS0039: The value or constructor 'indexOf' is not defined
+
+/workspace/mochi/tests/rosetta/transpiler/FS/bitwise-io-2.fs(253,16): error FS0039: The value or constructor 'indexOf' is not defined
+
+/workspace/mochi/tests/rosetta/transpiler/FS/bitwise-io-2.fs(258,33): error FS0039: The value or constructor 'parseIntStr' is not defined
+
+/workspace/mochi/tests/rosetta/transpiler/FS/bitwise-io-2.fs(350,35): error FS0001: The type 'obj' does not support a conversion to the type 'int'
