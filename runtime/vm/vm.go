@@ -27,13 +27,13 @@ import (
 
 var (
 	seededNow bool
-	nowSeed   int64
+	nowSeed   uint32
 )
 
 func init() {
 	if s := os.Getenv("MOCHI_NOW_SEED"); s != "" {
-		if v, err := strconv.ParseInt(s, 10, 64); err == nil {
-			nowSeed = v
+		if v, err := strconv.ParseUint(s, 10, 32); err == nil {
+			nowSeed = uint32(v)
 			seededNow = true
 		}
 	}
@@ -43,7 +43,7 @@ func init() {
 // It is primarily used by tests to ensure stable output.
 func SetNowSeed(n int64) {
 	seededNow = true
-	nowSeed = n
+	nowSeed = uint32(n)
 }
 
 // Value represents a runtime value handled by the VM.
@@ -1263,7 +1263,7 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 			fmt.Fprintln(m.writer, strings.TrimSpace(sb.String()))
 		case OpNow:
 			if seededNow {
-				nowSeed = (nowSeed*1664525 + 1013904223) % 2147483647
+				nowSeed = nowSeed*1664525 + 1013904223
 				fr.regs[ins.A] = Value{Tag: ValueInt, Int: int(nowSeed)}
 			} else {
 				fr.regs[ins.A] = Value{Tag: ValueInt, Int: int(time.Now().UnixNano())}
@@ -1284,7 +1284,9 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 			if lst.Tag == ValueMap {
 				if flag, ok := lst.Map["__group__"]; ok && flag.Tag == ValueBool && flag.Bool {
 					items := lst.Map["items"]
-					newItems := append(append([]Value(nil), items.List...), fr.regs[ins.C])
+					newItems := make([]Value, len(items.List)+1)
+					copy(newItems, items.List)
+					newItems[len(items.List)] = fr.regs[ins.C]
 					lst.Map["items"] = Value{Tag: ValueList, List: newItems}
 					lst.Map["count"] = Value{Tag: ValueInt, Int: len(newItems)}
 					fr.regs[ins.A] = lst
@@ -1294,7 +1296,9 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 			if lst.Tag != ValueList {
 				return Value{}, m.newError(fmt.Errorf("append expects list"), trace, ins.Line)
 			}
-			newList := append(append([]Value(nil), lst.List...), fr.regs[ins.C])
+			newList := make([]Value, len(lst.List)+1)
+			copy(newList, lst.List)
+			newList[len(lst.List)] = fr.regs[ins.C]
 			fr.regs[ins.A] = Value{Tag: ValueList, List: newList}
 		case OpUnionAll:
 			a := fr.regs[ins.B]
@@ -2462,19 +2466,30 @@ func (c *compiler) compileMain(p *parser.Program) (Function, error) {
 		fc.fn.NumRegs = len(c.globals)
 	}
 	fc.idx = len(c.globals)
+
+	hasMainFunc := false
+	hasMainCall := false
 	for _, st := range p.Statements {
 		if st.Fun != nil {
+			if st.Fun.Name == "main" {
+				hasMainFunc = true
+			}
 			continue
 		}
-		if st.Expr != nil {
-			if isTopLevelMainCall(st.Expr.Expr) {
-				continue
-			}
+		if st.Expr != nil && isTopLevelMainCall(st.Expr.Expr) {
+			hasMainCall = true
 		}
 		if err := fc.compileStmt(st); err != nil {
 			return Function{}, err
 		}
 	}
+	if hasMainFunc && !hasMainCall {
+		callStmt := &parser.Statement{Expr: &parser.ExprStmt{Expr: &parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: &parser.PostfixExpr{Target: &parser.Primary{Call: &parser.CallExpr{Func: "main"}}}}}}}}
+		if err := fc.compileStmt(callStmt); err != nil {
+			return Function{}, err
+		}
+	}
+
 	fc.emit(lexer.Position{}, Instr{Op: OpReturn, A: 0})
 	if fc.fn.NumRegs == 0 {
 		fc.fn.NumRegs = 1
