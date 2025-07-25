@@ -1094,9 +1094,9 @@ func precedence(op string) int {
 }
 
 func (b *BinaryExpr) emit(w io.Writer) {
-	emitChild := func(e Expr) {
+	emitChild := func(e Expr, right bool) {
 		if be, ok := e.(*BinaryExpr); ok {
-			if precedence(be.Op) < precedence(b.Op) {
+			if precedence(be.Op) < precedence(b.Op) || (right && precedence(be.Op) <= precedence(b.Op)) {
 				fmt.Fprint(w, "(")
 				be.emit(w)
 				fmt.Fprint(w, ")")
@@ -1105,9 +1105,9 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		}
 		e.emit(w)
 	}
-	emitChild(b.Left)
+	emitChild(b.Left, false)
 	fmt.Fprintf(w, " %s ", b.Op)
-	emitChild(b.Right)
+	emitChild(b.Right, true)
 }
 
 type queryFrom struct {
@@ -2523,7 +2523,11 @@ func convertCall(c *parser.CallExpr, env *types.Env) (Expr, error) {
 					}
 				}
 			}
-			return &LenExpr{Value: args[0]}, nil
+			val := args[0]
+			if inferTypeWithEnv(val, env) == "Any" {
+				val = &CastExpr{Value: val, Type: "String"}
+			}
+			return &LenExpr{Value: val}, nil
 		}
 	case "print":
 		if len(args) == 1 {
@@ -2578,7 +2582,11 @@ func convertCall(c *parser.CallExpr, env *types.Env) (Expr, error) {
 		}
 	case "substring":
 		if len(args) == 3 {
-			return &SubstringExpr{Value: args[0], Start: args[1], End: args[2]}, nil
+			val := args[0]
+			if inferTypeWithEnv(val, env) == "Any" {
+				val = &CastExpr{Value: val, Type: "String"}
+			}
+			return &SubstringExpr{Value: val, Start: args[1], End: args[2]}, nil
 		}
 	case "upper":
 		if len(args) == 1 {
@@ -2613,7 +2621,10 @@ func convertCall(c *parser.CallExpr, env *types.Env) (Expr, error) {
 		}
 	case "keys":
 		if len(args) == 1 {
-			return &FieldExpr{Receiver: args[0], Name: "keys"}, nil
+			// Return sorted keys to match deterministic iteration
+			ks := &FieldExpr{Receiver: args[0], Name: "keys"}
+			seq := &FieldExpr{Receiver: ks, Name: "toSeq"}
+			return &FieldExpr{Receiver: seq, Name: "sorted"}, nil
 		}
 	case "values":
 		if len(args) == 1 {

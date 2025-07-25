@@ -2,8 +2,8 @@
 
 Generated Scala code for Rosetta tasks in `tests/rosetta/x/Mochi`. Each program has a `.scala` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
 
-## Golden Test Checklist (105/284)
-_Last updated: 2025-07-25 21:13 +0700_
+## Golden Test Checklist (110/284)
+_Last updated: 2025-07-26 00:05 +0700_
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -87,36 +87,36 @@ _Last updated: 2025-07-25 21:13 +0700_
 | 78 | ascii-art-diagram-converter | ✓ | 3µs | 8.7 MB |
 | 79 | assertions | ✓ | 2µs | 8.7 MB |
 | 80 | associative-array-creation | ✓ | 7µs | 8.7 MB |
-| 81 | associative-array-iteration | ✓ |  |  |
-| 82 | associative-array-merging | ✓ |  |  |
-| 83 | atomic-updates | ✓ |  |  |
-| 84 | attractive-numbers | ✓ |  |  |
-| 85 | average-loop-length | ✓ |  |  |
-| 86 | averages-arithmetic-mean | ✓ |  |  |
-| 87 | averages-mean-time-of-day | ✓ |  |  |
-| 88 | averages-median-1 | ✓ |  |  |
-| 89 | averages-median-2 | ✓ |  |  |
-| 90 | averages-median-3 | ✓ |  |  |
-| 91 | averages-mode | ✓ |  |  |
-| 92 | averages-pythagorean-means | ✓ |  |  |
-| 93 | averages-root-mean-square | ✓ |  |  |
-| 94 | averages-simple-moving-average | ✓ |  |  |
-| 95 | avl-tree | ✓ |  |  |
-| 96 | b-zier-curves-intersections | error |  |  |
-| 97 | babbage-problem | ✓ | 5µs | 8.7 MB |
-| 98 | babylonian-spiral | ✓ | 21µs | 8.7 MB |
-| 99 | balanced-brackets | ✓ | 7µs | 8.7 MB |
-| 100 | balanced-ternary | ✓ | 6µs | 8.7 MB |
-| 101 | barnsley-fern | ✓ | 55µs | 8.8 MB |
-| 102 | base64-decode-data | ✓ | 21µs | 8.7 MB |
-| 103 | bell-numbers | ✓ | 18µs | 8.7 MB |
-| 104 | benfords-law | ✓ | 40µs | 8.7 MB |
-| 105 | bernoulli-numbers | ✓ | 251µs | 8.7 MB |
-| 106 | best-shuffle | error |  |  |
-| 107 | bifid-cipher | ✓ | 17µs | 8.7 MB |
-| 108 | bin-given-limits |   |  |  |
-| 109 | binary-digits |   |  |  |
-| 110 | binary-search |   |  |  |
+| 81 | associative-array-iteration | ✓ | 4µs | 3.5 MB |
+| 82 | associative-array-merging | ✓ | 5µs | 3.5 MB |
+| 83 | atomic-updates | ✓ | 10µs | 3.5 MB |
+| 84 | attractive-numbers | ✓ | 1µs | 3.5 MB |
+| 85 | average-loop-length | ✓ | 170µs | 3.5 MB |
+| 86 | averages-arithmetic-mean | ✓ | 9µs | 3.5 MB |
+| 87 | averages-mean-time-of-day | ✓ | 24µs | 3.5 MB |
+| 88 | averages-median-1 | ✓ | 4µs | 3.5 MB |
+| 89 | averages-median-2 | ✓ | 4µs | 3.5 MB |
+| 90 | averages-median-3 | ✓ | 8µs | 3.5 MB |
+| 91 | averages-mode | ✓ | 10µs | 3.5 MB |
+| 92 | averages-pythagorean-means | ✓ | 10µs | 3.5 MB |
+| 93 | averages-root-mean-square | ✓ | 1µs | 3.5 MB |
+| 94 | averages-simple-moving-average | ✓ | 6µs | 3.5 MB |
+| 95 | avl-tree | ✓ | 10µs | 3.5 MB |
+| 96 | b-zier-curves-intersections | ✓ | 56µs | 3.5 MB |
+| 97 | babbage-problem | ✓ | 4µs | 3.5 MB |
+| 98 | babylonian-spiral | ✓ | 19µs | 3.5 MB |
+| 99 | balanced-brackets | ✓ | 8µs | 3.5 MB |
+| 100 | balanced-ternary | ✓ | 5µs | 3.5 MB |
+| 101 | barnsley-fern | ✓ | 31µs | 3.5 MB |
+| 102 | base64-decode-data | ✓ | 9µs | 3.5 MB |
+| 103 | bell-numbers | ✓ | 17µs | 3.5 MB |
+| 104 | benfords-law | ✓ | 29µs | 3.5 MB |
+| 105 | bernoulli-numbers | ✓ | 92µs | 3.5 MB |
+| 106 | best-shuffle | ✓ | 6µs | 3.5 MB |
+| 107 | bifid-cipher | ✓ | 14µs | 3.5 MB |
+| 108 | bin-given-limits | ✓ | 10µs | 3.5 MB |
+| 109 | binary-digits | ✓ | 2µs | 3.5 MB |
+| 110 | binary-search | ✓ | 5µs | 3.5 MB |
 | 111 | binary-strings |   |  |  |
 | 112 | bioinformatics-base-count |   |  |  |
 | 113 | bioinformatics-global-alignment |   |  |  |
