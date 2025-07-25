@@ -1,0 +1,14 @@
+Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
+Copyright (c) 1993-2021 by Florian Klaempfl and others
+Target OS: Linux for x86-64
+Compiling /workspace/mochi/tests/rosetta/transpiler/Pascal/call-a-function-12.pas
+call-a-function-12.pas(20,8) Error: Wrong number of parameters specified for call to "anon0"
+call-a-function-12.pas(13,10) Error: Found declaration: anon0(LongInt):LongInt;
+call-a-function-12.pas(37,8) Error: Wrong number of parameters specified for call to "anon4"
+call-a-function-12.pas(30,10) Error: Found declaration: anon4(LongInt):LongInt;
+call-a-function-12.pas(47,21) Error: Identifier not found "add2"
+call-a-function-12.pas(47,48) Error: Identifier not found "add3"
+call-a-function-12.pas(49,20) Error: Identifier not found "partial"
+call-a-function-12.pas(54) Fatal: There were 7 errors compiling module, stopping
+Fatal: Compilation aborted
+Error: /usr/bin/ppcx64 returned an error exitcode

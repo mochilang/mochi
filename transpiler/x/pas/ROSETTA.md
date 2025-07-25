@@ -2,14 +2,14 @@
 
 Generated Pascal code for Rosetta tasks lives under `tests/rosetta/transpiler/Pascal`.
 
-## Rosetta Checklist (13/284) - updated 2025-07-25 05:52 UTC
+## Rosetta Checklist (17/284) - updated 2025-07-25 12:30 UTC
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 1µs | 128 B |
 | 2 | 100-doors-3 | ✓ |  |  |
 | 3 | 100-doors | ✓ |  |  |
 | 4 | 100-prisoners | ✓ |  |  |
-| 5 | 15-puzzle-game |   |  |  |
+| 5 | 15-puzzle-game | ✓ |  |  |
 | 6 | 15-puzzle-solver | ✓ |  |  |
 | 7 | 2048 | ✓ |  |  |
 | 8 | 21-game | ✓ |  |  |
@@ -154,9 +154,9 @@ Generated Pascal code for Rosetta tasks lives under `tests/rosetta/transpiler/Pa
 | 147 | calendar |   |  |  |
 | 148 | calkin-wilf-sequence |   |  |  |
 | 149 | call-a-foreign-language-function |   |  |  |
-| 150 | call-a-function-1 |   |  |  |
-| 151 | call-a-function-10 |   |  |  |
-| 152 | call-a-function-11 |   |  |  |
+| 150 | call-a-function-1 | ✓ |  |  |
+| 151 | call-a-function-10 | ✓ |  |  |
+| 152 | call-a-function-11 | ✓ |  |  |
 | 153 | call-a-function-12 |   |  |  |
 | 154 | call-a-function-2 |   |  |  |
 | 155 | call-a-function-3 |   |  |  |
