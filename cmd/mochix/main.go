@@ -753,7 +753,7 @@ func transpileProgram(lang string, env *types.Env, prog *parser.Program, root, s
 		if err != nil {
 			return nil, err
 		}
-		return cstranspiler.Emit(p), nil
+		return cstranspiler.Emit(p, false), nil
 	case "erlang", "erl":
 		p, err := erl.Transpile(prog, env)
 		if err != nil {

@@ -19,4 +19,4 @@ func Transpile(_ *parser.Program, _ *types.Env) (*Program, error) {
 
 // Emit returns nil output. It is a no-op replacement when the real
 // implementation is not included.
-func Emit(_ *Program) []byte { return nil }
+func Emit(_ *Program, _ bool) []byte { return nil }

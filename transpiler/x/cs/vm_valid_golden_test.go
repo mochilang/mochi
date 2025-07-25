@@ -46,7 +46,8 @@ func TestCSTranspiler_VMValid_Golden(t *testing.T) {
 			_ = os.WriteFile(errPath, []byte("transpile: "+err.Error()), 0o644)
 			return nil, err
 		}
-		code := cs.Emit(ast)
+		bench := os.Getenv("MOCHI_BENCHMARK") == "true" || os.Getenv("MOCHI_BENCHMARK") == "1"
+		code := cs.Emit(ast, bench)
 		if err := os.WriteFile(codePath, code, 0o644); err != nil {
 			return nil, err
 		}
