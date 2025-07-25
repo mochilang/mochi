@@ -2,15 +2,15 @@
 
 Generated Zig code for Rosetta tasks lives under `tests/rosetta/transpiler/Zig`.
 
-Last updated: 2025-07-25 19:56 +0700
+Last updated: 2025-07-25 20:18 +0700
 
 ## Program Checklist (57/284)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
-| 1 | 100-doors-2 | ✓ | 2.672ms |  |
-| 2 | 100-doors-3 | ✓ | 507µs |  |
-| 3 | 100-doors | ✓ | 571.223ms |  |
-| 4 | 100-prisoners | ✓ |  |  |
+| 1 | 100-doors-2 | ✓ | 1.447ms |  |
+| 2 | 100-doors-3 | ✓ | 296µs |  |
+| 3 | 100-doors | ✓ | 1.503ms |  |
+| 4 | 100-prisoners | ✓ | 8.895315s | 2.8 GB |
 | 5 | 15-puzzle-game | ✓ |  |  |
 | 6 | 15-puzzle-solver | ✓ |  |  |
 | 7 | 2048 | ✓ |  |  |

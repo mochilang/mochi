@@ -651,6 +651,8 @@ func zigTypeFromExpr(e Expr) string {
 			return "[]const u8"
 		case "_now":
 			return "i64"
+		case "_input":
+			return "[]const u8"
 		default:
 			if strings.HasPrefix(ce.Func, "std.math.") {
 				return "f64"
@@ -1013,9 +1015,9 @@ func (p *Program) Emit() []byte {
 	if useInput {
 		buf.WriteString("\nvar _in_buf = std.io.bufferedReader(std.io.getStdIn().reader());\n")
 		buf.WriteString("fn _input() []const u8 {\n")
-		buf.WriteString("    const opt_line = _in_buf.reader().readUntilDelimiterOrEofAlloc(std.heap.page_allocator, '\n', 1 << 20) catch return \"\";\n")
+		buf.WriteString("    const opt_line = _in_buf.reader().readUntilDelimiterOrEofAlloc(std.heap.page_allocator, '\\n', 1 << 20) catch return \"\";\n")
 		buf.WriteString("    const line = opt_line orelse return \"\";\n")
-		buf.WriteString("    if (line.len > 0 and line[line.len - 1] == '\n') {\n")
+		buf.WriteString("    if (line.len > 0 and line[line.len - 1] == '\\n') {\n")
 		buf.WriteString("        return line[0..line.len-1];\n")
 		buf.WriteString("    }\n")
 		buf.WriteString("    return line;\n")
@@ -1372,6 +1374,18 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		b.Right.emit(w)
 		io.WriteString(w, ")")
 		return
+	}
+	if op == "/" {
+		lt := zigTypeFromExpr(b.Left)
+		rt := zigTypeFromExpr(b.Right)
+		if lt == "i64" && rt == "i64" {
+			io.WriteString(w, "@divTrunc(")
+			b.Left.emit(w)
+			io.WriteString(w, ", ")
+			b.Right.emit(w)
+			io.WriteString(w, ")")
+			return
+		}
 	}
 	lp := precedence(b.Op)
 	if lb, ok := b.Left.(*BinaryExpr); ok && precedence(lb.Op) > lp {
