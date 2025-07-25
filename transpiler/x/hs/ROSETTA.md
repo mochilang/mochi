@@ -2,7 +2,7 @@
 
 Generated Haskell code for Rosetta Mochi programs. Each `.hs` file is in `tests/rosetta/transpiler/Haskell` with matching `.out` output. Failures produce a `.error` file.
 
-Last updated: 2025-07-25 01:10 GMT+7
+Last updated: 2025-07-25 01:22 GMT+7
 
 ## Checklist
 1. [x] 100-doors-2 (1)
@@ -17,7 +17,7 @@ Last updated: 2025-07-25 01:10 GMT+7
 10. [x] 24-game (10)
 11. [x] 4-rings-or-4-squares-puzzle (11)
 12. [x] 9-billion-names-of-god-the-integer (12)
-13. [ ] 99-bottles-of-beer-2 (13)
+13. [x] 99-bottles-of-beer-2 (13)
 14. [ ] 99-bottles-of-beer (14)
 15. [x] DNS-query (15)
 16. [x] a+b (16)
