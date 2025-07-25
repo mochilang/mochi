@@ -1,0 +1,8 @@
+run: exit status 1
+/workspace/mochi/tests/rosetta/transpiler/rb/calkin-wilf-sequence.rb:20:in `_padStart': undefined method `rjust' for 1:Integer (NoMethodError)
+
+  s.rjust(len, ch)
+   ^^^^^^
+	from /workspace/mochi/tests/rosetta/transpiler/rb/calkin-wilf-sequence.rb:112:in `main'
+	from /workspace/mochi/tests/rosetta/transpiler/rb/calkin-wilf-sequence.rb:120:in `<main>'
+The first 20 terms of the Calkin-Wilf sequnence are:

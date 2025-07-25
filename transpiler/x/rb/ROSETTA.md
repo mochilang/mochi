@@ -2,7 +2,7 @@
 
 Generated Ruby code from Mochi Rosetta tasks lives in `tests/rosetta/transpiler/rb`.
 
-Last updated: 2025-07-25 13:11 UTC
+Last updated: 2025-07-25 14:16 UTC
 
 ## Checklist (198/284)
 | Index | Name | Status | Duration | Memory |
@@ -129,7 +129,7 @@ Last updated: 2025-07-25 13:11 UTC
 | 120 | bitmap-flood-fill | ✓ |  |  |
 | 121 | bitmap-histogram | ✓ |  |  |
 | 122 | bitmap-midpoint-circle-algorithm | ✓ |  |  |
-| 123 | bitmap-ppm-conversion-through-a-pipe |   |  |  |
+| 123 | bitmap-ppm-conversion-through-a-pipe | ✓ |  |  |
 | 124 | bitmap-read-a-ppm-file | ✓ |  |  |
 | 125 | bitmap-read-an-image-through-a-pipe | ✓ |  |  |
 | 126 | bitmap-write-a-ppm-file | ✓ |  |  |
@@ -154,9 +154,9 @@ Last updated: 2025-07-25 13:11 UTC
 | 145 | calendar---for-real-programmers-1 | ✓ |  |  |
 | 146 | calendar---for-real-programmers-2 | ✓ |  |  |
 | 147 | calendar | ✓ |  |  |
-| 148 | calkin-wilf-sequence | ✓ |  |  |
+| 148 | calkin-wilf-sequence |   |  |  |
 | 149 | call-a-foreign-language-function | ✓ |  |  |
-| 150 | call-a-function-1 | ✓ |  |  |
+| 150 | call-a-function-1 | ✓ | 4µs | 600 B |
 | 151 | call-a-function-10 | ✓ |  |  |
 | 152 | call-a-function-11 | ✓ |  |  |
 | 153 | call-a-function-12 | ✓ |  |  |
