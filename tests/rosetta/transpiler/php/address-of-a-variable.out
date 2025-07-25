@@ -1,2 +1,7 @@
 value as float: 3.14
 address: <not available>
+{
+  "duration_us": 36,
+  "memory_bytes": 96,
+  "name": "main"
+}

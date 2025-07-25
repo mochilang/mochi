@@ -1,21 +1,55 @@
 <?php
 ini_set('memory_limit', '-1');
+$now_seed = 0;
+$now_seeded = false;
+$s = getenv('MOCHI_NOW_SEED');
+if ($s !== false && $s !== '') {
+    $now_seed = intval($s);
+    $now_seeded = true;
+}
+function _now() {
+    global $now_seed, $now_seeded;
+    if ($now_seeded) {
+        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
+        return $now_seed;
+    }
+    return hrtime(true);
+}
 function _len($x) {
     if (is_array($x)) { return count($x); }
     if (is_string($x)) { return strlen($x); }
     return strlen(strval($x));
 }
-function skipWS($p) {
-  global $parseIntStr, $parseNumber, $parseFactor, $powInt, $parsePower, $parseTerm, $parseExpr, $evalExpr, $main;
+function _str($x) {
+    if (is_array($x)) {
+        $isList = array_keys($x) === range(0, count($x) - 1);
+        if ($isList) {
+            $parts = [];
+            foreach ($x as $v) { $parts[] = _str($v); }
+            return '[' . implode(' ', $parts) . ']';
+        }
+        $parts = [];
+        foreach ($x as $k => $v) { $parts[] = _str($k) . ':' . _str($v); }
+        return 'map[' . implode(' ', $parts) . ']';
+    }
+    if (is_bool($x)) return $x ? 'true' : 'false';
+    if ($x === null) return 'null';
+    return strval($x);
+}
+function parseIntStr($s, $base = 10) {
+    return intval($s, intval($base));
+}
+$__start_mem = memory_get_usage();
+$__start = _now();
+  function skipWS(&$p) {
   $i = $p['pos'];
   while ($i < _len($p['expr']) && substr($p['expr'], $i, $i + 1 - $i) == ' ') {
   $i = $i + 1;
 };
   $p['pos'] = $i;
   return $p;
-}
-function parseIntStr($str) {
-  global $skipWS, $parseNumber, $parseFactor, $powInt, $parsePower, $parseTerm, $parseExpr, $evalExpr, $main;
+};
+  function mochi_parseIntStr($str) {
   $i = 0;
   $n = 0;
   while ($i < strlen($str)) {
@@ -23,9 +57,8 @@ function parseIntStr($str) {
   $i = $i + 1;
 };
   return $n;
-}
-function parseNumber($p) {
-  global $skipWS, $parseIntStr, $parseFactor, $powInt, $parsePower, $parseTerm, $parseExpr, $evalExpr, $main;
+};
+  function parseNumber(&$p) {
   $p = skipWS($p);
   $start = $p['pos'];
   while ($p['pos'] < _len($p['expr'])) {
@@ -37,10 +70,9 @@ function parseNumber($p) {
 }
 };
   $token = substr($p['expr'], $start, $p['pos'] - $start);
-  return ['v' => parseIntStr($token), 'p' => $p];
-}
-function parseFactor($p) {
-  global $skipWS, $parseIntStr, $parseNumber, $powInt, $parsePower, $parseTerm, $parseExpr, $evalExpr, $main;
+  return ['v' => parseIntStr($token, 10), 'p' => $p];
+};
+  function parseFactor(&$p) {
   $p = skipWS($p);
   if ($p['pos'] < _len($p['expr']) && substr($p['expr'], $p['pos'], $p['pos'] + 1 - $p['pos']) == '(') {
   $p['pos'] = $p['pos'] + 1;
@@ -61,9 +93,8 @@ function parseFactor($p) {
   return ['v' => -$v, 'p' => $p];
 }
   return parseNumber($p);
-}
-function powInt($base, $exp) {
-  global $skipWS, $parseIntStr, $parseNumber, $parseFactor, $parsePower, $parseTerm, $parseExpr, $evalExpr, $main;
+};
+  function powInt($base, $exp) {
   $r = 1;
   $b = $base;
   $e = $exp;
@@ -75,9 +106,8 @@ function powInt($base, $exp) {
   $e = $e / intval(2);
 };
   return $r;
-}
-function parsePower($p) {
-  global $skipWS, $parseIntStr, $parseNumber, $parseFactor, $powInt, $parseTerm, $parseExpr, $evalExpr, $main;
+};
+  function parsePower(&$p) {
   $r = parseFactor($p);
   $v = $r['v'];
   $p = $r['p'];
@@ -94,9 +124,8 @@ function parsePower($p) {
 }
 };
   return ['v' => $v, 'p' => $p];
-}
-function parseTerm($p) {
-  global $skipWS, $parseIntStr, $parseNumber, $parseFactor, $powInt, $parsePower, $parseExpr, $evalExpr, $main;
+};
+  function parseTerm(&$p) {
   $r = parsePower($p);
   $v = $r['v'];
   $p = $r['p'];
@@ -124,9 +153,8 @@ function parseTerm($p) {
   break;
 };
   return ['v' => $v, 'p' => $p];
-}
-function parseExpr($p) {
-  global $skipWS, $parseIntStr, $parseNumber, $parseFactor, $powInt, $parsePower, $parseTerm, $evalExpr, $main;
+};
+  function parseExpr(&$p) {
   $r = parseTerm($p);
   $v = $r['v'];
   $p = $r['p'];
@@ -154,16 +182,22 @@ function parseExpr($p) {
   break;
 };
   return ['v' => $v, 'p' => $p];
-}
-function evalExpr($expr) {
-  global $skipWS, $parseIntStr, $parseNumber, $parseFactor, $powInt, $parsePower, $parseTerm, $parseExpr, $main;
+};
+  function evalExpr($expr) {
   $p = ['expr' => $expr, 'pos' => 0];
   $r = parseExpr($p);
   return $r['v'];
-}
-function main() {
-  global $skipWS, $parseIntStr, $parseNumber, $parseFactor, $powInt, $parsePower, $parseTerm, $parseExpr, $evalExpr;
+};
+  function main() {
   $expr = '2*(3-1)+2*5';
-  echo rtrim($expr . ' = ' . json_encode(evalExpr($expr), 1344)), PHP_EOL;
-}
-main();
+  echo rtrim($expr . ' = ' . _str(evalExpr($expr))), PHP_EOL;
+};
+  main();
+$__end = _now();
+$__end_mem = memory_get_usage();
+$__duration = intdiv($__end - $__start, 1000);
+$__mem_diff = max(0, $__end_mem - $__start_mem);
+$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
+$__j = json_encode($__bench, 128);
+$__j = str_replace("    ", "  ", $__j);
+echo $__j, PHP_EOL;;

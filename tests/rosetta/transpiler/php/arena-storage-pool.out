@@ -3,3 +3,8 @@
 pool empty
 pool empty
 15
+{
+  "duration_us": 53,
+  "memory_bytes": 96,
+  "name": "main"
+}

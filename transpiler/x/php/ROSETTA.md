@@ -2,12 +2,12 @@
 
 Generated PHP code from Mochi Rosetta tasks lives in `tests/rosetta/transpiler/php`.
 
-Last updated: 2025-07-25 19:43 +0700
+Last updated: 2025-07-25 20:03 +0700
 
-## Checklist (264/284)
+## Checklist (263/284)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
-| 1 | 100-doors-2 | ✓ | 142µs | 136 B |
+| 1 | 100-doors-2 |   | 142µs | 136 B |
 | 2 | 100-doors-3 | ✓ | 571.223ms | 224 B |
 | 3 | 100-doors | ✓ | 571.223ms | 2.7 KB |
 | 4 | 100-prisoners | ✓ |  |  |
@@ -42,41 +42,41 @@ Last updated: 2025-07-25 19:43 +0700
 | 33 | active-object | ✓ | 242µs | 384 B |
 | 34 | add-a-variable-to-a-class-instance-at-runtime | ✓ | 123µs | 8.1 KB |
 | 35 | additive-primes | ✓ | 274µs | 96 B |
-| 36 | address-of-a-variable | ✓ |  |  |
-| 37 | adfgvx-cipher | ✓ |  |  |
-| 38 | aks-test-for-primes | ✓ |  |  |
-| 39 | algebraic-data-types | ✓ |  |  |
-| 40 | align-columns | ✓ |  |  |
-| 41 | aliquot-sequence-classifications | ✓ |  |  |
-| 42 | almkvist-giullera-formula-for-pi | ✓ |  |  |
-| 43 | almost-prime | ✓ |  |  |
-| 44 | amb | ✓ |  |  |
-| 45 | amicable-pairs | ✓ |  |  |
-| 46 | anagrams-deranged-anagrams | ✓ |  |  |
-| 47 | anagrams | ✓ |  |  |
-| 48 | angle-difference-between-two-bearings-1 | ✓ |  |  |
-| 49 | angle-difference-between-two-bearings-2 | ✓ |  |  |
-| 50 | angles-geometric-normalization-and-conversion | ✓ |  |  |
-| 51 | animate-a-pendulum | ✓ |  |  |
-| 52 | animation | ✓ |  |  |
-| 53 | anonymous-recursion-1 | ✓ |  |  |
-| 54 | anonymous-recursion-2 | ✓ |  |  |
-| 55 | anonymous-recursion | ✓ |  |  |
-| 56 | anti-primes | ✓ |  |  |
-| 57 | append-a-record-to-the-end-of-a-text-file | ✓ |  |  |
-| 58 | apply-a-callback-to-an-array-1 | ✓ |  |  |
-| 59 | apply-a-callback-to-an-array-2 | ✓ |  |  |
-| 60 | apply-a-digital-filter-direct-form-ii-transposed- | ✓ |  |  |
-| 61 | approximate-equality | ✓ |  |  |
-| 62 | arbitrary-precision-integers-included- | ✓ |  |  |
-| 63 | archimedean-spiral | ✓ |  |  |
-| 64 | arena-storage-pool | ✓ |  |  |
-| 65 | arithmetic-complex | ✓ |  |  |
-| 66 | arithmetic-derivative | ✓ |  |  |
-| 67 | arithmetic-evaluation | ✓ |  |  |
-| 68 | arithmetic-geometric-mean-calculate-pi | ✓ |  |  |
-| 69 | arithmetic-geometric-mean | ✓ |  |  |
-| 70 | arithmetic-integer-1 | ✓ |  |  |
+| 36 | address-of-a-variable | ✓ | 36µs | 96 B |
+| 37 | adfgvx-cipher | ✓ | 210µs | 208 B |
+| 38 | aks-test-for-primes | ✓ | 175µs | 96 B |
+| 39 | algebraic-data-types | ✓ | 106µs | 6.0 KB |
+| 40 | align-columns | ✓ | 120µs | 5.0 KB |
+| 41 | aliquot-sequence-classifications | ✓ | 90.195ms | 128 B |
+| 42 | almkvist-giullera-formula-for-pi | ✓ | 2.509759s | 96 B |
+| 43 | almost-prime | ✓ | 301µs | 96 B |
+| 44 | amb | ✓ | 43µs | 96 B |
+| 45 | amicable-pairs | ✓ | 19.789947s | 96 B |
+| 46 | anagrams-deranged-anagrams | ✓ | 70µs | 96 B |
+| 47 | anagrams | ✓ | 134µs | 96 B |
+| 48 | angle-difference-between-two-bearings-1 | ✓ | 48µs | 128 B |
+| 49 | angle-difference-between-two-bearings-2 | ✓ | 55µs | 128 B |
+| 50 | angles-geometric-normalization-and-conversion | ✓ | 151µs | 96 B |
+| 51 | animate-a-pendulum | ✓ | 32µs | 384 B |
+| 52 | animation | ✓ | 156µs | 136 B |
+| 53 | anonymous-recursion-1 | ✓ | 44µs | 96 B |
+| 54 | anonymous-recursion-2 | ✓ | 40µs | 96 B |
+| 55 | anonymous-recursion | ✓ | 52µs | 96 B |
+| 56 | anti-primes | ✓ | 2.751236s | 96 B |
+| 57 | append-a-record-to-the-end-of-a-text-file | ✓ | 40µs | 96 B |
+| 58 | apply-a-callback-to-an-array-1 | ✓ | 40µs | 96 B |
+| 59 | apply-a-callback-to-an-array-2 | ✓ | 63µs | 96 B |
+| 60 | apply-a-digital-filter-direct-form-ii-transposed- | ✓ | 81µs | 888 B |
+| 61 | approximate-equality | ✓ | 54µs | 96 B |
+| 62 | arbitrary-precision-integers-included- | ✓ | 58µs | 256 B |
+| 63 | archimedean-spiral | ✓ | 7.123ms | 480 B |
+| 64 | arena-storage-pool | ✓ | 53µs | 96 B |
+| 65 | arithmetic-complex | ✓ | 52µs | 128 B |
+| 66 | arithmetic-derivative | ✓ | 383µs | 96 B |
+| 67 | arithmetic-evaluation | ✓ | 111µs | 96 B |
+| 68 | arithmetic-geometric-mean-calculate-pi | ✓ | 42µs | 96 B |
+| 69 | arithmetic-geometric-mean | ✓ | 47µs | 96 B |
+| 70 | arithmetic-integer-1 | ✓ | 47µs | 96 B |
 | 71 | arithmetic-integer-2 | ✓ |  |  |
 | 72 | arithmetic-numbers |   |  |  |
 | 73 | arithmetic-rational | ✓ |  |  |

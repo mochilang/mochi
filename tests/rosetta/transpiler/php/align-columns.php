@@ -1,6 +1,32 @@
 <?php
-function split($s, $sep) {
-  global $rstripEmpty, $spaces, $pad, $newFormatter, $printFmt, $text, $f;
+ini_set('memory_limit', '-1');
+$now_seed = 0;
+$now_seeded = false;
+$s = getenv('MOCHI_NOW_SEED');
+if ($s !== false && $s !== '') {
+    $now_seed = intval($s);
+    $now_seeded = true;
+}
+function _now() {
+    global $now_seed, $now_seeded;
+    if ($now_seeded) {
+        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
+        return $now_seed;
+    }
+    return hrtime(true);
+}
+function _intdiv($a, $b) {
+    if (function_exists('bcdiv')) {
+        $sa = is_int($a) ? strval($a) : sprintf('%.0f', $a);
+        $sb = is_int($b) ? strval($b) : sprintf('%.0f', $b);
+        return intval(bcdiv($sa, $sb, 0));
+    }
+    return intdiv($a, $b);
+}
+$__start_mem = memory_get_usage();
+$__start = _now();
+  function split($s, $sep) {
+  global $text, $f;
   $parts = [];
   $cur = '';
   $i = 0;
@@ -16,17 +42,17 @@ function split($s, $sep) {
 };
   $parts = array_merge($parts, [$cur]);
   return $parts;
-}
-function rstripEmpty($words) {
-  global $split, $spaces, $pad, $newFormatter, $printFmt, $text, $f;
+};
+  function rstripEmpty($words) {
+  global $text, $f;
   $n = count($words);
   while ($n > 0 && $words[$n - 1] == '') {
   $n = $n - 1;
 };
   return array_slice($words, 0, $n - 0);
-}
-function spaces($n) {
-  global $split, $rstripEmpty, $pad, $newFormatter, $printFmt, $text, $f;
+};
+  function spaces($n) {
+  global $text, $f;
   $out = '';
   $i = 0;
   while ($i < $n) {
@@ -34,9 +60,9 @@ function spaces($n) {
   $i = $i + 1;
 };
   return $out;
-}
-function pad($word, $width, $align) {
-  global $split, $rstripEmpty, $spaces, $newFormatter, $printFmt, $text, $f;
+};
+  function pad($word, $width, $align) {
+  global $text, $f;
   $diff = $width - strlen($word);
   if ($align == 0) {
   return $word . spaces($diff);
@@ -44,14 +70,13 @@ function pad($word, $width, $align) {
   if ($align == 2) {
   return spaces($diff) . $word;
 }
-  $left = intval((intdiv($diff, 2)));
+  $left = intval((_intdiv($diff, 2)));
   $right = $diff - $left;
   return spaces($left) . $word . spaces($right);
-}
-function newFormatter($text) {
-  global $split, $rstripEmpty, $spaces, $pad, $printFmt, $f;
-  $lines = split($text, '
-');
+};
+  function newFormatter($text) {
+  global $f;
+  $lines = explode('\n', $text);
   $fmtLines = [];
   $width = [];
   $i = 0;
@@ -60,7 +85,7 @@ function newFormatter($text) {
   $i = $i + 1;
   continue;
 }
-  $words = rstripEmpty(split($lines[$i], '$'));
+  $words = rstripEmpty(explode('$', $lines[$i]));
   $fmtLines = array_merge($fmtLines, [$words]);
   $j = 0;
   while ($j < count($words)) {
@@ -77,9 +102,9 @@ function newFormatter($text) {
   $i = $i + 1;
 };
   return ['text' => $fmtLines, 'width' => $width];
-}
-function printFmt($f, $align) {
-  global $split, $rstripEmpty, $spaces, $pad, $newFormatter, $text;
+};
+  function printFmt($f, $align) {
+  global $text;
   $lines = $f['text'];
   $width = $f['width'];
   $i = 0;
@@ -91,18 +116,21 @@ function printFmt($f, $align) {
   $line = $line . pad($words[$j], $width[$j], $align) . ' ';
   $j = $j + 1;
 };
-  echo $line, PHP_EOL;
+  echo rtrim($line), PHP_EOL;
   $i = $i + 1;
 };
-  echo '', PHP_EOL;
-}
-$text = 'Given$a$text$file$of$many$lines,$where$fields$within$a$line
-' . 'are$delineated$by$a$single$\'dollar\'$character,$write$a$program
-' . 'that$aligns$each$column$of$fields$by$ensuring$that$words$in$each
-' . 'column$are$separated$by$at$least$one$space.
-' . 'Further,$allow$for$each$word$in$a$column$to$be$either$left
-' . 'justified,$right$justified,$or$center$justified$within$its$column.';
-$f = newFormatter($text);
-printFmt($f, 0);
-printFmt($f, 1);
-printFmt($f, 2);
+  echo rtrim(''), PHP_EOL;
+};
+  $text = 'Given$a$text$file$of$many$lines,$where$fields$within$a$line\n' . 'are$delineated$by$a$single$\'dollar\'$character,$write$a$program\n' . 'that$aligns$each$column$of$fields$by$ensuring$that$words$in$each\n' . 'column$are$separated$by$at$least$one$space.\n' . 'Further,$allow$for$each$word$in$a$column$to$be$either$left\n' . 'justified,$right$justified,$or$center$justified$within$its$column.';
+  $f = newFormatter($text);
+  printFmt($f, 0);
+  printFmt($f, 1);
+  printFmt($f, 2);
+$__end = _now();
+$__end_mem = memory_get_usage();
+$__duration = intdiv($__end - $__start, 1000);
+$__mem_diff = max(0, $__end_mem - $__start_mem);
+$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
+$__j = json_encode($__bench, 128);
+$__j = str_replace("    ", "  ", $__j);
+echo $__j, PHP_EOL;;

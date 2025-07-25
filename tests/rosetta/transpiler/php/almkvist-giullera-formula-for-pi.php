@@ -1,15 +1,58 @@
 <?php
-function bigTrim($a) {
-  global $bigFromInt, $bigCmp, $bigAdd, $bigSub, $bigMulSmall, $bigMulBig, $bigMulPow10, $bigDivSmall, $bigToString, $repeat, $sortInts, $primesUpTo, $factorialExp, $factorSmall, $computeIP, $formatTerm, $bigAbsDiff, $main;
+ini_set('memory_limit', '-1');
+$now_seed = 0;
+$now_seeded = false;
+$s = getenv('MOCHI_NOW_SEED');
+if ($s !== false && $s !== '') {
+    $now_seed = intval($s);
+    $now_seeded = true;
+}
+function _now() {
+    global $now_seed, $now_seeded;
+    if ($now_seeded) {
+        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
+        return $now_seed;
+    }
+    return hrtime(true);
+}
+function _str($x) {
+    if (is_array($x)) {
+        $isList = array_keys($x) === range(0, count($x) - 1);
+        if ($isList) {
+            $parts = [];
+            foreach ($x as $v) { $parts[] = _str($v); }
+            return '[' . implode(' ', $parts) . ']';
+        }
+        $parts = [];
+        foreach ($x as $k => $v) { $parts[] = _str($k) . ':' . _str($v); }
+        return 'map[' . implode(' ', $parts) . ']';
+    }
+    if (is_bool($x)) return $x ? 'true' : 'false';
+    if ($x === null) return 'null';
+    return strval($x);
+}
+function repeat($s, $n) {
+    return str_repeat($s, intval($n));
+}
+function _intdiv($a, $b) {
+    if (function_exists('bcdiv')) {
+        $sa = is_int($a) ? strval($a) : sprintf('%.0f', $a);
+        $sb = is_int($b) ? strval($b) : sprintf('%.0f', $b);
+        return intval(bcdiv($sa, $sb, 0));
+    }
+    return intdiv($a, $b);
+}
+$__start_mem = memory_get_usage();
+$__start = _now();
+  function bigTrim($a) {
   $n = count($a);
   while ($n > 1 && $a[$n - 1] == 0) {
   $a = array_slice($a, 0, $n - 1 - 0);
   $n = $n - 1;
 };
   return $a;
-}
-function bigFromInt($x) {
-  global $bigTrim, $bigCmp, $bigAdd, $bigSub, $bigMulSmall, $bigMulBig, $bigMulPow10, $bigDivSmall, $bigToString, $repeat, $sortInts, $primesUpTo, $factorialExp, $factorSmall, $computeIP, $formatTerm, $bigAbsDiff, $main;
+};
+  function bigFromInt($x) {
   if ($x == 0) {
   return [0];
 }
@@ -17,12 +60,11 @@ function bigFromInt($x) {
   $n = $x;
   while ($n > 0) {
   $digits = array_merge($digits, [$n % 10]);
-  $n = intdiv($n, 10);
+  $n = _intdiv($n, 10);
 };
   return $digits;
-}
-function bigCmp($a, $b) {
-  global $bigTrim, $bigFromInt, $bigAdd, $bigSub, $bigMulSmall, $bigMulBig, $bigMulPow10, $bigDivSmall, $bigToString, $repeat, $sortInts, $primesUpTo, $factorialExp, $factorSmall, $computeIP, $formatTerm, $bigAbsDiff, $main;
+};
+  function bigCmp($a, $b) {
   if (count($a) > count($b)) {
   return 1;
 }
@@ -40,9 +82,8 @@ function bigCmp($a, $b) {
   $i = $i - 1;
 };
   return 0;
-}
-function bigAdd($a, $b) {
-  global $bigTrim, $bigFromInt, $bigCmp, $bigSub, $bigMulSmall, $bigMulBig, $bigMulPow10, $bigDivSmall, $bigToString, $repeat, $sortInts, $primesUpTo, $factorialExp, $factorSmall, $computeIP, $formatTerm, $bigAbsDiff, $main;
+};
+  function bigAdd($a, $b) {
   $res = [];
   $carry = 0;
   $i = 0;
@@ -57,13 +98,12 @@ function bigAdd($a, $b) {
 }
   $s = $av + $bv + $carry;
   $res = array_merge($res, [$s % 10]);
-  $carry = intdiv($s, 10);
+  $carry = _intdiv($s, 10);
   $i = $i + 1;
 };
   return bigTrim($res);
-}
-function bigSub($a, $b) {
-  global $bigTrim, $bigFromInt, $bigCmp, $bigAdd, $bigMulSmall, $bigMulBig, $bigMulPow10, $bigDivSmall, $bigToString, $repeat, $sortInts, $primesUpTo, $factorialExp, $factorSmall, $computeIP, $formatTerm, $bigAbsDiff, $main;
+};
+  function bigSub($a, $b) {
   $res = [];
   $borrow = 0;
   $i = 0;
@@ -84,9 +124,8 @@ function bigSub($a, $b) {
   $i = $i + 1;
 };
   return bigTrim($res);
-}
-function bigMulSmall($a, $m) {
-  global $bigTrim, $bigFromInt, $bigCmp, $bigAdd, $bigSub, $bigMulBig, $bigMulPow10, $bigDivSmall, $bigToString, $repeat, $sortInts, $primesUpTo, $factorialExp, $factorSmall, $computeIP, $formatTerm, $bigAbsDiff, $main;
+};
+  function bigMulSmall($a, $m) {
   if ($m == 0) {
   return [0];
 }
@@ -96,17 +135,16 @@ function bigMulSmall($a, $m) {
   while ($i < count($a)) {
   $prod = $a[$i] * $m + $carry;
   $res = array_merge($res, [$prod % 10]);
-  $carry = intdiv($prod, 10);
+  $carry = _intdiv($prod, 10);
   $i = $i + 1;
 };
   while ($carry > 0) {
   $res = array_merge($res, [$carry % 10]);
-  $carry = intdiv($carry, 10);
+  $carry = _intdiv($carry, 10);
 };
   return bigTrim($res);
-}
-function bigMulBig($a, $b) {
-  global $bigTrim, $bigFromInt, $bigCmp, $bigAdd, $bigSub, $bigMulSmall, $bigMulPow10, $bigDivSmall, $bigToString, $repeat, $sortInts, $primesUpTo, $factorialExp, $factorSmall, $computeIP, $formatTerm, $bigAbsDiff, $main;
+};
+  function bigMulBig($a, $b) {
   $res = [];
   $i = 0;
   while ($i < count($a) + count($b)) {
@@ -121,55 +159,51 @@ function bigMulBig($a, $b) {
   $idx = $i + $j;
   $prod = $res[$idx] + $a[$i] * $b[$j] + $carry;
   $res[$idx] = $prod % 10;
-  $carry = intdiv($prod, 10);
+  $carry = _intdiv($prod, 10);
   $j = $j + 1;
 };
   $idx = $i + count($b);
   while ($carry > 0) {
   $prod = $res[$idx] + $carry;
   $res[$idx] = $prod % 10;
-  $carry = intdiv($prod, 10);
+  $carry = _intdiv($prod, 10);
   $idx = $idx + 1;
 };
   $i = $i + 1;
 };
   return bigTrim($res);
-}
-function bigMulPow10($a, $k) {
-  global $bigTrim, $bigFromInt, $bigCmp, $bigAdd, $bigSub, $bigMulSmall, $bigMulBig, $bigDivSmall, $bigToString, $repeat, $sortInts, $primesUpTo, $factorialExp, $factorSmall, $computeIP, $formatTerm, $bigAbsDiff, $main;
+};
+  function bigMulPow10($a, $k) {
   $i = 0;
   while ($i < $k) {
   $a = array_merge([0], $a);
   $i = $i + 1;
 };
   return $a;
-}
-function bigDivSmall($a, $m) {
-  global $bigTrim, $bigFromInt, $bigCmp, $bigAdd, $bigSub, $bigMulSmall, $bigMulBig, $bigMulPow10, $bigToString, $repeat, $sortInts, $primesUpTo, $factorialExp, $factorSmall, $computeIP, $formatTerm, $bigAbsDiff, $main;
+};
+  function bigDivSmall($a, $m) {
   $res = [];
   $rem = 0;
   $i = count($a) - 1;
   while ($i >= 0) {
   $cur = $rem * 10 + $a[$i];
-  $q = intdiv($cur, $m);
+  $q = _intdiv($cur, $m);
   $rem = $cur % $m;
   $res = array_merge([$q], $res);
   $i = $i - 1;
 };
   return bigTrim($res);
-}
-function bigToString($a) {
-  global $bigTrim, $bigFromInt, $bigCmp, $bigAdd, $bigSub, $bigMulSmall, $bigMulBig, $bigMulPow10, $bigDivSmall, $repeat, $sortInts, $primesUpTo, $factorialExp, $factorSmall, $computeIP, $formatTerm, $bigAbsDiff, $main;
+};
+  function bigToString($a) {
   $s = '';
   $i = count($a) - 1;
   while ($i >= 0) {
-  $s = $s . json_encode($a[$i], 1344);
+  $s = $s . _str($a[$i]);
   $i = $i - 1;
 };
   return $s;
-}
-function repeat($ch, $n) {
-  global $bigTrim, $bigFromInt, $bigCmp, $bigAdd, $bigSub, $bigMulSmall, $bigMulBig, $bigMulPow10, $bigDivSmall, $bigToString, $sortInts, $primesUpTo, $factorialExp, $factorSmall, $computeIP, $formatTerm, $bigAbsDiff, $main;
+};
+  function mochi_repeat($ch, $n) {
   $s = '';
   $i = 0;
   while ($i < $n) {
@@ -177,9 +211,8 @@ function repeat($ch, $n) {
   $i = $i + 1;
 };
   return $s;
-}
-function sortInts($xs) {
-  global $bigTrim, $bigFromInt, $bigCmp, $bigAdd, $bigSub, $bigMulSmall, $bigMulBig, $bigMulPow10, $bigDivSmall, $bigToString, $repeat, $primesUpTo, $factorialExp, $factorSmall, $computeIP, $formatTerm, $bigAbsDiff, $main;
+};
+  function sortInts($xs) {
   $res = [];
   $tmp = $xs;
   while (count($tmp) > 0) {
@@ -205,9 +238,8 @@ function sortInts($xs) {
   $tmp = $out;
 };
   return $res;
-}
-function primesUpTo($n) {
-  global $bigTrim, $bigFromInt, $bigCmp, $bigAdd, $bigSub, $bigMulSmall, $bigMulBig, $bigMulPow10, $bigDivSmall, $bigToString, $repeat, $sortInts, $factorialExp, $factorSmall, $computeIP, $formatTerm, $bigAbsDiff, $main;
+};
+  function primesUpTo($n) {
   $sieve = [];
   $i = 0;
   while ($i <= $n) {
@@ -234,9 +266,8 @@ function primesUpTo($n) {
   $x = $x + 1;
 };
   return $res;
-}
-function factorialExp($n, $primes) {
-  global $bigTrim, $bigFromInt, $bigCmp, $bigAdd, $bigSub, $bigMulSmall, $bigMulBig, $bigMulPow10, $bigDivSmall, $bigToString, $repeat, $sortInts, $primesUpTo, $factorSmall, $computeIP, $formatTerm, $bigAbsDiff, $main;
+};
+  function factorialExp($n, $primes) {
   $m = [];
   foreach ($primes as $p) {
   if ($p > $n) {
@@ -245,15 +276,14 @@ function factorialExp($n, $primes) {
   $t = $n;
   $e = 0;
   while ($t > 0) {
-  $t = intdiv($t, $p);
+  $t = _intdiv($t, $p);
   $e = $e + $t;
 };
-  $m[json_encode($p, 1344)] = $e;
+  $m[_str($p)] = $e;
 };
   return $m;
-}
-function factorSmall($x, $primes) {
-  global $bigTrim, $bigFromInt, $bigCmp, $bigAdd, $bigSub, $bigMulSmall, $bigMulBig, $bigMulPow10, $bigDivSmall, $bigToString, $repeat, $sortInts, $primesUpTo, $factorialExp, $computeIP, $formatTerm, $bigAbsDiff, $main;
+};
+  function factorSmall($x, $primes) {
   $f = [];
   $n = $x;
   foreach ($primes as $p) {
@@ -263,19 +293,18 @@ function factorSmall($x, $primes) {
   $c = 0;
   while ($n % $p == 0) {
   $c = $c + 1;
-  $n = intdiv($n, $p);
+  $n = _intdiv($n, $p);
 };
   if ($c > 0) {
-  $f[json_encode($p, 1344)] = $c;
+  $f[_str($p)] = $c;
 }
 };
   if ($n > 1) {
-  $f[json_encode($n, 1344)] = (array_key_exists(json_encode($n, 1344), $f) ? $f[json_encode($n, 1344)] : 0) + 1;
+  $f[_str($n)] = (array_key_exists(_str($n), $f) ? $f[_str($n)] : 0) + 1;
 }
   return $f;
-}
-function computeIP($n, $primes) {
-  global $bigTrim, $bigFromInt, $bigCmp, $bigAdd, $bigSub, $bigMulSmall, $bigMulBig, $bigMulPow10, $bigDivSmall, $bigToString, $repeat, $sortInts, $primesUpTo, $factorialExp, $factorSmall, $formatTerm, $bigAbsDiff, $main;
+};
+  function computeIP($n, $primes) {
   $exps = factorialExp(6 * $n, $primes);
   $fn = factorialExp($n, $primes);
   foreach (array_keys($fn) as $k) {
@@ -295,7 +324,7 @@ function computeIP($n, $primes) {
   $keys = sortInts($keys);
   $res = bigFromInt(1);
   foreach ($keys as $p) {
-  $e = $exps[json_encode($p, 1344)];
+  $e = $exps[_str($p)];
   $i = 0;
   while ($i < $e) {
   $res = bigMulSmall($res, $p);
@@ -303,9 +332,8 @@ function computeIP($n, $primes) {
 };
 };
   return $res;
-}
-function formatTerm($ip, $pw) {
-  global $bigTrim, $bigFromInt, $bigCmp, $bigAdd, $bigSub, $bigMulSmall, $bigMulBig, $bigMulPow10, $bigDivSmall, $bigToString, $repeat, $sortInts, $primesUpTo, $factorialExp, $factorSmall, $computeIP, $bigAbsDiff, $main;
+};
+  function formatTerm($ip, $pw) {
   $s = bigToString($ip);
   if ($pw >= strlen($s)) {
   $frac = repeat('0', $pw - strlen($s)) . $s;
@@ -315,25 +343,23 @@ function formatTerm($ip, $pw) {
   return '0.' . substr($frac, 0, 33 - 0);
 }
   $intpart = substr($s, 0, strlen($s) - $pw - 0);
-  $frac = substr($s, strlen($s) - $pw, strlen($s) - strlen($s) - $pw);
+  $frac = substr($s, strlen($s) - $pw, strlen($s) - (strlen($s) - $pw));
   if (strlen($frac) < 33) {
   $frac = $frac . repeat('0', 33 - strlen($frac));
 }
   return $intpart . '.' . substr($frac, 0, 33 - 0);
-}
-function bigAbsDiff($a, $b) {
-  global $bigTrim, $bigFromInt, $bigCmp, $bigAdd, $bigSub, $bigMulSmall, $bigMulBig, $bigMulPow10, $bigDivSmall, $bigToString, $repeat, $sortInts, $primesUpTo, $factorialExp, $factorSmall, $computeIP, $formatTerm, $main;
+};
+  function bigAbsDiff($a, $b) {
   if (bigCmp($a, $b) >= 0) {
   return bigSub($a, $b);
 }
   return bigSub($b, $a);
-}
-function main() {
-  global $bigTrim, $bigFromInt, $bigCmp, $bigAdd, $bigSub, $bigMulSmall, $bigMulBig, $bigMulPow10, $bigDivSmall, $bigToString, $repeat, $sortInts, $primesUpTo, $factorialExp, $factorSmall, $computeIP, $formatTerm, $bigAbsDiff;
+};
+  function main() {
   $primes = primesUpTo(2000);
-  echo 'N                               Integer Portion  Pow  Nth Term (33 dp)', PHP_EOL;
+  echo rtrim('N                               Integer Portion  Pow  Nth Term (33 dp)'), PHP_EOL;
   $line = repeat('-', 89);
-  echo $line, PHP_EOL;
+  echo rtrim($line), PHP_EOL;
   $sum = bigFromInt(0);
   $prev = bigFromInt(0);
   $denomPow = 0;
@@ -352,7 +378,7 @@ function main() {
   while (strlen($ipStr) < 44) {
   $ipStr = ' ' . $ipStr;
 };
-  $pwStr = json_encode(-$pw, 1344);
+  $pwStr = _str(-$pw);
   while (strlen($pwStr) < 3) {
   $pwStr = ' ' . $pwStr;
 };
@@ -360,7 +386,7 @@ function main() {
   while (strlen($padTerm) < 35) {
   $padTerm = $padTerm . ' ';
 };
-  echo json_encode($n, 1344) . '  ' . $ipStr . '  ' . $pwStr . '  ' . $padTerm, PHP_EOL;
+  echo rtrim(_str($n) . '  ' . $ipStr . '  ' . $pwStr . '  ' . $padTerm), PHP_EOL;
 }
   $sum = bigAdd($sum, $ip);
   $diff = bigAbsDiff($sum, $prev);
@@ -388,9 +414,17 @@ function main() {
   if (strlen($piStr) <= $precision) {
   $piStr = repeat('0', $precision - strlen($piStr) + 1) . $piStr;
 }
-  $out = substr($piStr, 0, strlen($piStr) - $precision - 0) . '.' . substr($piStr, strlen($piStr) - $precision, strlen($piStr) - strlen($piStr) - $precision);
-  echo '', PHP_EOL;
-  echo 'Pi to 70 decimal places is:', PHP_EOL;
-  echo $out, PHP_EOL;
-}
-main();
+  $out = substr($piStr, 0, strlen($piStr) - $precision - 0) . '.' . substr($piStr, strlen($piStr) - $precision, strlen($piStr) - (strlen($piStr) - $precision));
+  echo rtrim(''), PHP_EOL;
+  echo rtrim('Pi to 70 decimal places is:'), PHP_EOL;
+  echo rtrim($out), PHP_EOL;
+};
+  main();
+$__end = _now();
+$__end_mem = memory_get_usage();
+$__duration = intdiv($__end - $__start, 1000);
+$__mem_diff = max(0, $__end_mem - $__start_mem);
+$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
+$__j = json_encode($__bench, 128);
+$__j = str_replace("    ", "  ", $__j);
+echo $__j, PHP_EOL;;

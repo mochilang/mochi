@@ -204,6 +204,7 @@ var phpReserved = map[string]struct{}{
 	"exp":         {},
 	"hypot":       {},
 	"parseIntStr": {},
+	"repeat":      {},
 	"crc32":       {},
 	"xor":         {},
 	"trim":        {},
@@ -2059,6 +2060,11 @@ func convertBinary(b *parser.BinaryExpr) (Expr, error) {
 				return &CallExpr{Func: "_mul", Args: []Expr{left, right}}, false
 			}
 			return &BinaryExpr{Left: left, Op: "*", Right: right}, false
+		case "%":
+			if !isIntExpr(left) || !isIntExpr(right) {
+				return &CallExpr{Func: "fmod", Args: []Expr{left, right}}, false
+			}
+			return &BinaryExpr{Left: left, Op: "%", Right: right}, false
 		}
 		return &BinaryExpr{Left: left, Op: op, Right: right}, false
 	}

@@ -1,41 +1,81 @@
 <?php
-function add($a, $b) {
-  global $mul, $neg, $inv, $conj, $cstr;
-  return ["re" => $a["re"] + $b["re"], "im" => $a["im"] + $b["im"]];
+ini_set('memory_limit', '-1');
+$now_seed = 0;
+$now_seeded = false;
+$s = getenv('MOCHI_NOW_SEED');
+if ($s !== false && $s !== '') {
+    $now_seed = intval($s);
+    $now_seeded = true;
 }
-function mul($a, $b) {
-  global $add, $neg, $inv, $conj, $cstr;
-  return ["re" => $a["re"] * $b["re"] - $a["im"] * $b["im"], "im" => $a["re"] * $b["im"] + $a["im"] * $b["re"]];
+function _now() {
+    global $now_seed, $now_seeded;
+    if ($now_seeded) {
+        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
+        return $now_seed;
+    }
+    return hrtime(true);
 }
-function neg($a) {
-  global $add, $mul, $inv, $conj, $cstr, $b;
-  return ["re" => -$a["re"], "im" => -$a["im"]];
+function _str($x) {
+    if (is_array($x)) {
+        $isList = array_keys($x) === range(0, count($x) - 1);
+        if ($isList) {
+            $parts = [];
+            foreach ($x as $v) { $parts[] = _str($v); }
+            return '[' . implode(' ', $parts) . ']';
+        }
+        $parts = [];
+        foreach ($x as $k => $v) { $parts[] = _str($k) . ':' . _str($v); }
+        return 'map[' . implode(' ', $parts) . ']';
+    }
+    if (is_bool($x)) return $x ? 'true' : 'false';
+    if ($x === null) return 'null';
+    return strval($x);
 }
-function inv($a) {
-  global $add, $mul, $neg, $conj, $cstr, $b;
-  $denom = $a["re"] * $a["re"] + $a["im"] * $a["im"];
-  return ["re" => $a["re"] / $denom, "im" => -$a["im"] / $denom];
-}
-function conj($a) {
-  global $add, $mul, $neg, $inv, $cstr, $b;
-  return ["re" => $a["re"], "im" => -$a["im"]];
-}
-function cstr($a) {
-  global $add, $mul, $neg, $inv, $conj, $b;
-  $s = "(" . json_encode($a["re"], 1344);
-  if ($a["im"] >= 0) {
-  $s = $s . "+" . json_encode($a["im"], 1344) . "i)";
+$__start_mem = memory_get_usage();
+$__start = _now();
+  function add($a, $b) {
+  return ['re' => $a['re'] + $b['re'], 'im' => $a['im'] + $b['im']];
+};
+  function mul($a, $b) {
+  return ['re' => $a['re'] * $b['re'] - $a['im'] * $b['im'], 'im' => $a['re'] * $b['im'] + $a['im'] * $b['re']];
+};
+  function neg($a) {
+  global $b;
+  return ['re' => -$a['re'], 'im' => -$a['im']];
+};
+  function inv($a) {
+  global $b;
+  $denom = $a['re'] * $a['re'] + $a['im'] * $a['im'];
+  return ['re' => $a['re'] / $denom, 'im' => -$a['im'] / $denom];
+};
+  function conj($a) {
+  global $b;
+  return ['re' => $a['re'], 'im' => -$a['im']];
+};
+  function cstr($a) {
+  global $b;
+  $s = '(' . _str($a['re']);
+  if ($a['im'] >= 0) {
+  $s = $s . '+' . _str($a['im']) . 'i)';
 } else {
-  $s = $s . json_encode($a["im"], 1344) . "i)";
+  $s = $s . _str($a['im']) . 'i)';
 }
   return $s;
-}
-$a = ["re" => 1.0, "im" => 1.0];
-$b = ["re" => 3.14159, "im" => 1.25];
-echo "a:       " . cstr($a), PHP_EOL;
-echo "b:       " . cstr($b), PHP_EOL;
-echo "a + b:   " . cstr(add($a, $b)), PHP_EOL;
-echo "a * b:   " . cstr(mul($a, $b)), PHP_EOL;
-echo "-a:      " . cstr(neg($a)), PHP_EOL;
-echo "1 / a:   " . cstr(inv($a)), PHP_EOL;
-echo "a̅:       " . cstr(conj($a)), PHP_EOL;
+};
+  $a = ['re' => 1.0, 'im' => 1.0];
+  $b = ['re' => 3.14159, 'im' => 1.25];
+  echo rtrim('a:       ' . cstr($a)), PHP_EOL;
+  echo rtrim('b:       ' . cstr($b)), PHP_EOL;
+  echo rtrim('a + b:   ' . cstr(add($a, $b))), PHP_EOL;
+  echo rtrim('a * b:   ' . cstr(mul($a, $b))), PHP_EOL;
+  echo rtrim('-a:      ' . cstr(neg($a))), PHP_EOL;
+  echo rtrim('1 / a:   ' . cstr(inv($a))), PHP_EOL;
+  echo rtrim('a̅:       ' . cstr(conj($a))), PHP_EOL;
+$__end = _now();
+$__end_mem = memory_get_usage();
+$__duration = intdiv($__end - $__start, 1000);
+$__mem_diff = max(0, $__end_mem - $__start_mem);
+$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
+$__j = json_encode($__bench, 128);
+$__j = str_replace("    ", "  ", $__j);
+echo $__j, PHP_EOL;;

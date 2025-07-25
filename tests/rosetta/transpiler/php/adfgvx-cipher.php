@@ -1,4 +1,5 @@
 <?php
+ini_set('memory_limit', '-1');
 $now_seed = 0;
 $now_seeded = false;
 $s = getenv('MOCHI_NOW_SEED');
@@ -14,10 +15,16 @@ function _now() {
     }
     return hrtime(true);
 }
-$adfgvx = "ADFGVX";
-$alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-function shuffleStr($s) {
-  global $adfgvx, $alphabet, $createPolybius, $createKey, $orderKey, $encrypt, $indexOf, $decrypt, $main;
+function _indexof($s, $sub) {
+    $pos = strpos($s, $sub);
+    return $pos === false ? -1 : $pos;
+}
+$__start_mem = memory_get_usage();
+$__start = _now();
+  $adfgvx = 'ADFGVX';
+  $alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  function shuffleStr($s) {
+  global $adfgvx, $alphabet;
   $arr = [];
   $i = 0;
   while ($i < strlen($s)) {
@@ -32,16 +39,16 @@ function shuffleStr($s) {
   $arr[$k] = $tmp;
   $j = $j - 1;
 };
-  $out = "";
+  $out = '';
   $i = 0;
   while ($i < count($arr)) {
   $out = $out . $arr[$i];
   $i = $i + 1;
 };
   return $out;
-}
-function createPolybius() {
-  global $adfgvx, $alphabet, $shuffleStr, $createKey, $orderKey, $encrypt, $indexOf, $decrypt, $main;
+};
+  function createPolybius() {
+  global $adfgvx, $alphabet;
   $shuffled = shuffleStr($alphabet);
   $labels = [];
   $li = 0;
@@ -49,44 +56,44 @@ function createPolybius() {
   $labels = array_merge($labels, [substr($adfgvx, $li, $li + 1 - $li)]);
   $li = $li + 1;
 };
-  echo "6 x 6 Polybius square:\n", PHP_EOL;
-  echo "  | A D F G V X", PHP_EOL;
-  echo "---------------", PHP_EOL;
+  echo rtrim('6 x 6 Polybius square:\n'), PHP_EOL;
+  echo rtrim('  | A D F G V X'), PHP_EOL;
+  echo rtrim('---------------'), PHP_EOL;
   $p = [];
   $i = 0;
   while ($i < 6) {
   $row = substr($shuffled, $i * 6, ($i + 1) * 6 - $i * 6);
   $p = array_merge($p, [$row]);
-  $line = $labels[$i] . " | ";
+  $line = $labels[$i] . ' | ';
   $j = 0;
   while ($j < 6) {
-  $line = $line . substr($row, $j, $j + 1 - $j) . " ";
+  $line = $line . substr($row, $j, $j + 1 - $j) . ' ';
   $j = $j + 1;
 };
-  echo $line, PHP_EOL;
+  echo rtrim($line), PHP_EOL;
   $i = $i + 1;
 };
   return $p;
-}
-function createKey($n) {
-  global $adfgvx, $alphabet, $shuffleStr, $createPolybius, $orderKey, $encrypt, $indexOf, $decrypt, $main;
+};
+  function createKey($n) {
+  global $adfgvx, $alphabet;
   if ($n < 7 || $n > 12) {
-  echo "Key should be within 7 and 12 letters long.", PHP_EOL;
+  echo rtrim('Key should be within 7 and 12 letters long.'), PHP_EOL;
 }
-  $pool = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-  $key = "";
+  $pool = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  $key = '';
   $i = 0;
   while ($i < $n) {
   $idx = _now() % strlen($pool);
   $key = $key . substr($pool, $idx, $idx + 1 - $idx);
-  $pool = substr($pool, 0, $idx - 0) . substr($pool, $idx + 1, strlen($pool) - $idx + 1);
+  $pool = substr($pool, 0, $idx - 0) . substr($pool, $idx + 1, strlen($pool) - ($idx + 1));
   $i = $i + 1;
 };
-  echo "\nThe key is " . $key, PHP_EOL;
+  echo rtrim('\nThe key is ' . $key), PHP_EOL;
   return $key;
-}
-function orderKey($key) {
-  global $adfgvx, $alphabet, $shuffleStr, $createPolybius, $createKey, $encrypt, $indexOf, $decrypt, $main;
+};
+  function orderKey($key) {
+  global $adfgvx, $alphabet;
   $pairs = [];
   $i = 0;
   while ($i < strlen($key)) {
@@ -110,20 +117,20 @@ function orderKey($key) {
   $res = [];
   $i = 0;
   while ($i < $n) {
-  $res = array_merge($res, [intval($pairs[$i][1])]);
+  $res = array_merge($res, [ord($pairs[$i][1])]);
   $i = $i + 1;
 };
   return $res;
-}
-function encrypt(&$polybius, $key, $plainText) {
-  global $adfgvx, $alphabet, $shuffleStr, $createPolybius, $createKey, $orderKey, $indexOf, $decrypt, $main;
+};
+  function encrypt($polybius, $key, $plainText) {
+  global $adfgvx, $alphabet;
   $labels = [];
   $li = 0;
   while ($li < strlen($adfgvx)) {
   $labels = array_merge($labels, [substr($adfgvx, $li, $li + 1 - $li)]);
   $li = $li + 1;
 };
-  $temp = "";
+  $temp = '';
   $i = 0;
   while ($i < strlen($plainText)) {
   $r = 0;
@@ -149,7 +156,7 @@ function encrypt(&$polybius, $key, $plainText) {
   $row = [];
   $j = 0;
   while ($j < strlen($key)) {
-  $row = array_merge($row, [""]);
+  $row = array_merge($row, ['']);
   $j = $j + 1;
 };
   $table = array_merge($table, [$row]);
@@ -166,7 +173,7 @@ function encrypt(&$polybius, $key, $plainText) {
   $cols = [];
   $ci = 0;
   while ($ci < strlen($key)) {
-  $colStr = "";
+  $colStr = '';
   $ri = 0;
   while ($ri < $colLen) {
   $colStr = $colStr . $table[$ri][$order[$ci]];
@@ -175,19 +182,19 @@ function encrypt(&$polybius, $key, $plainText) {
   $cols = array_merge($cols, [$colStr]);
   $ci = $ci + 1;
 };
-  $result = "";
+  $result = '';
   $ci = 0;
   while ($ci < count($cols)) {
   $result = $result . $cols[$ci];
   if ($ci < count($cols) - 1) {
-  $result = $result . " ";
+  $result = $result . ' ';
 }
   $ci = $ci + 1;
 };
   return $result;
-}
-function indexOf($s, $ch) {
-  global $adfgvx, $alphabet, $shuffleStr, $createPolybius, $createKey, $orderKey, $encrypt, $decrypt, $main;
+};
+  function indexOf($s, $ch) {
+  global $adfgvx, $alphabet;
   $i = 0;
   while ($i < strlen($s)) {
   if (substr($s, $i, $i + 1 - $i) == $ch) {
@@ -196,14 +203,14 @@ function indexOf($s, $ch) {
   $i = $i + 1;
 };
   return -1;
-}
-function decrypt(&$polybius, $key, $cipherText) {
-  global $adfgvx, $alphabet, $shuffleStr, $createPolybius, $createKey, $orderKey, $encrypt, $indexOf, $main;
+};
+  function decrypt($polybius, $key, $cipherText) {
+  global $adfgvx, $alphabet;
   $colStrs = [];
   $start = 0;
   $i = 0;
   while ($i <= strlen($cipherText)) {
-  if ($i == strlen($cipherText) || substr($cipherText, $i, $i + 1 - $i) == " ") {
+  if ($i == strlen($cipherText) || substr($cipherText, $i, $i + 1 - $i) == ' ') {
   $colStrs = array_merge($colStrs, [substr($cipherText, $start, $i - $start)]);
   $start = $i + 1;
 }
@@ -234,7 +241,7 @@ function decrypt(&$polybius, $key, $cipherText) {
   if ($k < count($ls)) {
   $pad = array_merge($pad, [$ls[$k]]);
 } else {
-  $pad = array_merge($pad, [""]);
+  $pad = array_merge($pad, ['']);
 }
   $k = $k + 1;
 };
@@ -250,7 +257,7 @@ function decrypt(&$polybius, $key, $cipherText) {
   $row = [];
   $c = 0;
   while ($c < strlen($key)) {
-  $row = array_merge($row, [""]);
+  $row = array_merge($row, ['']);
   $c = $c + 1;
 };
   $table = array_merge($table, [$row]);
@@ -266,7 +273,7 @@ function decrypt(&$polybius, $key, $cipherText) {
 };
   $r = $r + 1;
 };
-  $temp = "";
+  $temp = '';
   $r = 0;
   while ($r < count($table)) {
   $j = 0;
@@ -276,25 +283,33 @@ function decrypt(&$polybius, $key, $cipherText) {
 };
   $r = $r + 1;
 };
-  $plainText = "";
+  $plainText = '';
   $idx = 0;
   while ($idx < strlen($temp)) {
-  $rIdx = indexOf($adfgvx, substr($temp, $idx, $idx + 1 - $idx));
-  $cIdx = indexOf($adfgvx, substr($temp, $idx + 1, $idx + 2 - $idx + 1));
+  $rIdx = _indexof($adfgvx, substr($temp, $idx, $idx + 1 - $idx));
+  $cIdx = _indexof($adfgvx, substr($temp, $idx + 1, $idx + 2 - ($idx + 1)));
   $plainText = $plainText . substr($polybius[$rIdx], $cIdx, $cIdx + 1 - $cIdx);
   $idx = $idx + 2;
 };
   return $plainText;
-}
-function main() {
-  global $adfgvx, $alphabet, $shuffleStr, $createPolybius, $createKey, $orderKey, $encrypt, $indexOf, $decrypt;
-  $plainText = "ATTACKAT1200AM";
+};
+  function main() {
+  global $adfgvx, $alphabet;
+  $plainText = 'ATTACKAT1200AM';
   $polybius = createPolybius();
   $key = createKey(9);
-  echo "\nPlaintext : " . $plainText, PHP_EOL;
+  echo rtrim('\nPlaintext : ' . $plainText), PHP_EOL;
   $cipherText = encrypt($polybius, $key, $plainText);
-  echo "\nEncrypted : " . $cipherText, PHP_EOL;
+  echo rtrim('\nEncrypted : ' . $cipherText), PHP_EOL;
   $plainText2 = decrypt($polybius, $key, $cipherText);
-  echo "\nDecrypted : " . $plainText2, PHP_EOL;
-}
-main();
+  echo rtrim('\nDecrypted : ' . $plainText2), PHP_EOL;
+};
+  main();
+$__end = _now();
+$__end_mem = memory_get_usage();
+$__duration = intdiv($__end - $__start, 1000);
+$__mem_diff = max(0, $__end_mem - $__start_mem);
+$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
+$__j = json_encode($__bench, 128);
+$__j = str_replace("    ", "  ", $__j);
+echo $__j, PHP_EOL;;
