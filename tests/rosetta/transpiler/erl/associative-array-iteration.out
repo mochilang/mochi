@@ -7,3 +7,8 @@ key = world
 value = 71
 value = 13
 value = 31
+{
+  "duration_us": 24881,
+  "memory_bytes": 305720,
+  "name": "main"
+}

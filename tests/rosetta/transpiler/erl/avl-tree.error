@@ -1,0 +1,26 @@
+exit status 127
+Empty tree:
+null,
+
+Insert test:
+{
+   "Data": 3,
+   "Balance": 0,
+   "Link": [
+      null,
+      null,
+   ]
+},
+
+Remove test:
+escript: exception error: bad map: nil
+  in function  maps:put/3
+     called as maps:put("Balance",0,nil)
+     *** argument 3: not a map
+  in call from main:main/0 (/workspace/mochi/tests/rosetta/transpiler/erl/avl-tree.erl, line 326)
+  in call from main:main/1 (/workspace/mochi/tests/rosetta/transpiler/erl/avl-tree.erl, line 335)
+  in call from escript:run/2 (escript.erl, line 904)
+  in call from escript:start/1 (escript.erl, line 418)
+  in call from init:start_it/1 
+  in call from init:start_em/1 
+  in call from init:do_boot/3 

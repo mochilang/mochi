@@ -1,0 +1,6 @@
+#{"color" => "red","name" => "Rocket Skates","price" => 15.25,"year" => 1974}
+{
+  "duration_us": 26290,
+  "memory_bytes": 214768,
+  "name": "main"
+}
