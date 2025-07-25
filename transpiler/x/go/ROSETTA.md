@@ -1,7 +1,7 @@
 # Go Rosetta Transpiler Output
 
 Completed programs: 123/284
-Last updated: 2025-07-25 13:13 +0700
+Last updated: 2025-07-25 14:28 +0700
 
 Checklist:
 
@@ -17,16 +17,16 @@ Checklist:
 | 8 | 21-game | ✓ | 54.0µs | 5.04KB |
 | 9 | 24-game-solve | ✓ | 1.0ms | 556.91KB |
 | 10 | 24-game | ✓ | 101.0µs | 5.18KB |
-| 11 | 4-rings-or-4-squares-puzzle | ✓ |  |  |
-| 12 | 9-billion-names-of-god-the-integer | ✓ |  |  |
-| 13 | 99-bottles-of-beer-2 | ✓ |  |  |
-| 14 | 99-bottles-of-beer | ✓ |  |  |
-| 15 | DNS-query | ✓ |  |  |
-| 16 | a+b | ✓ |  |  |
-| 17 | abbreviations-automatic | ✓ |  |  |
-| 18 | abbreviations-easy | ✓ |  |  |
-| 19 | abbreviations-simple | ✓ |  |  |
-| 20 | abc-problem | ✓ |  |  |
+| 11 | 4-rings-or-4-squares-puzzle | ✓ | 3.0ms | 404.89KB |
+| 12 | 9-billion-names-of-god-the-integer | ✓ | 1.88s | 307.56MB |
+| 13 | 99-bottles-of-beer-2 | ✓ | 12.0ms | 629.10KB |
+| 14 | 99-bottles-of-beer | ✓ | 720.0µs | 14.70KB |
+| 15 | DNS-query | ✓ | 341.0ms | 211.02KB |
+| 16 | a+b | ✓ | 464.0µs | 4.91KB |
+| 17 | abbreviations-automatic | ✓ | 16.0ms | 1.96MB |
+| 18 | abbreviations-easy | ✓ | 6.0ms | 1.24MB |
+| 19 | abbreviations-simple | ✓ | 10.0ms | 2.06MB |
+| 20 | abc-problem | ✓ | 906.0µs | 54.01KB |
 | 21 | abelian-sandpile-model-identity | ✓ |  |  |
 | 22 | abelian-sandpile-model | ✓ |  |  |
 | 23 | abstract-type | ✓ |  |  |
