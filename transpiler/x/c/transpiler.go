@@ -909,17 +909,49 @@ func (s *StructLit) emitExpr(w io.Writer) {
 			io.WriteString(w, ", ")
 		}
 		fmt.Fprintf(w, ".%s = ", f.Name)
-		if f.Value != nil {
-			f.Value.emitExpr(w)
-		}
+		printed := false
 		if st, ok := structTypes[s.Name]; ok {
 			if ft, ok2 := st.Fields[f.Name]; ok2 {
-				if _, ok3 := ft.(types.ListType); ok3 {
+				switch mt := ft.(type) {
+				case types.ListType:
+					if f.Value != nil {
+						f.Value.emitExpr(w)
+					}
 					io.WriteString(w, ", .")
 					io.WriteString(w, f.Name+"_len = ")
 					emitLenExpr(w, f.Value)
+					printed = true
+				case types.MapType:
+					if ml, okm := f.Value.(*MapLit); okm && len(ml.Items) == 0 {
+						if _, ok := mt.Key.(types.StringType); ok {
+							if _, ok2 := mt.Value.(types.StringType); ok2 {
+								io.WriteString(w, "(MapSS){0}")
+								printed = true
+							} else if lt, ok2 := mt.Value.(types.ListType); ok2 {
+								if _, ok3 := lt.Elem.(types.StringType); ok3 {
+									io.WriteString(w, "(MapSL){0}")
+									printed = true
+								}
+							}
+						}
+					} else if sl, okm := f.Value.(*StructLit); okm && len(sl.Fields) == 0 {
+						if _, ok := mt.Key.(types.StringType); ok {
+							if _, ok2 := mt.Value.(types.StringType); ok2 {
+								io.WriteString(w, "(MapSS){0}")
+								printed = true
+							} else if lt, ok2 := mt.Value.(types.ListType); ok2 {
+								if _, ok3 := lt.Elem.(types.StringType); ok3 {
+									io.WriteString(w, "(MapSL){0}")
+									printed = true
+								}
+							}
+						}
+					}
 				}
 			}
+		}
+		if !printed && f.Value != nil {
+			f.Value.emitExpr(w)
 		}
 	}
 	io.WriteString(w, "}")
@@ -1073,6 +1105,37 @@ func (i *IndexExpr) emitExpr(w io.Writer) {
 			io.WriteString(w, "_len)")
 			return
 		}
+	}
+	if t := inferExprType(currentEnv, i.Target); t == "MapSS" {
+		needMapGetSS = true
+		io.WriteString(w, "map_get_ss(")
+		i.Target.emitExpr(w)
+		io.WriteString(w, ".keys, ")
+		i.Target.emitExpr(w)
+		io.WriteString(w, ".vals, ")
+		i.Target.emitExpr(w)
+		io.WriteString(w, ".len, ")
+		i.Index.emitExpr(w)
+		io.WriteString(w, ")")
+		return
+	}
+	if t := inferExprType(currentEnv, i.Target); t == "MapSL" {
+		needMapGetSL = true
+		funcReturnTypes["map_get_sl"] = "const char*[]"
+		io.WriteString(w, "map_get_sl(")
+		i.Target.emitExpr(w)
+		io.WriteString(w, ".keys, ")
+		i.Target.emitExpr(w)
+		io.WriteString(w, ".vals, ")
+		i.Target.emitExpr(w)
+		io.WriteString(w, ".lens, ")
+		i.Target.emitExpr(w)
+		io.WriteString(w, ".len, ")
+		i.Index.emitExpr(w)
+		io.WriteString(w, ", &")
+		io.WriteString(w, currentFuncName)
+		io.WriteString(w, "_len)")
+		return
 	}
 	i.Target.emitExpr(w)
 	io.WriteString(w, "[")
@@ -1466,6 +1529,21 @@ func (p *Program) Emit() []byte {
 			s.emit(io.Discard, 1)
 		}
 	}
+	for _, st := range structTypes {
+		for _, ft := range st.Fields {
+			if mt, ok := ft.(types.MapType); ok {
+				if _, ok := mt.Key.(types.StringType); ok {
+					if _, ok2 := mt.Value.(types.StringType); ok2 {
+						needMapGetSS = true
+					} else if lt, ok2 := mt.Value.(types.ListType); ok2 {
+						if _, ok3 := lt.Elem.(types.StringType); ok3 {
+							needMapGetSL = true
+						}
+					}
+				}
+			}
+		}
+	}
 
 	var buf bytes.Buffer
 	ts := gitTimestamp()
@@ -1751,29 +1829,12 @@ func (p *Program) Emit() []byte {
 		for _, field := range st.Order {
 			typ := "int"
 			if ft, ok := st.Fields[field]; ok {
-				switch ft := ft.(type) {
-				case types.StringType:
-					typ = "const char*"
-				case types.BoolType:
-					typ = "int"
-				case types.FloatType:
-					typ = "double"
-				case types.StructType:
-					typ = ft.Name
-				case types.ListType:
-					if inner, ok := ft.Elem.(types.ListType); ok {
-						if _, ok := inner.Elem.(types.StringType); ok {
-							typ = "const char***"
-						} else {
-							typ = "int**"
-						}
-					} else {
-						if _, ok := ft.Elem.(types.StringType); ok {
-							typ = "const char**"
-						} else {
-							typ = "int*"
-						}
-					}
+				typ = cTypeFromMochiType(ft)
+				if typ == "MapSS" {
+					needMapGetSS = true
+				}
+				if typ == "MapSL" {
+					needMapGetSL = true
 				}
 			}
 			fmt.Fprintf(&buf, "    %s %s;\n", typ, field)
@@ -2426,6 +2487,16 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 			}
 		}
 		varTypes[s.Var.Name] = declType
+		if _, ok := valExpr.(*FieldExpr); ok && (declType == "MapSS" || declType == "MapSL") {
+			mapKeyTypes[s.Var.Name] = "const char*"
+			if declType == "MapSS" {
+				mapValTypes[s.Var.Name] = "const char*"
+				needMapGetSS = true
+			} else {
+				mapValTypes[s.Var.Name] = "const char*[]"
+				needMapGetSL = true
+			}
+		}
 		if m, isMap := valExpr.(*MapLit); isMap {
 			keyT := "const char*"
 			valT := "int"
