@@ -62,6 +62,7 @@ func TestFSTranspiler_VMValid_Golden(t *testing.T) {
 			return nil, err
 		}
 		run := exec.Command("mono", exe)
+		run.Env = append(os.Environ(), "MOCHI_NOW_SEED=1")
 		if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
 			run.Stdin = bytes.NewReader(data)
 		}

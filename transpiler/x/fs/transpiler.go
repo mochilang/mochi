@@ -1119,6 +1119,35 @@ func (fst *ForStmt) emit(w io.Writer) {
 	indentLevel--
 }
 
+type BenchStmt struct {
+	Name string
+	Body []Stmt
+}
+
+func (bs *BenchStmt) emit(w io.Writer) {
+	writeIndent(w)
+	io.WriteString(w, "let __memStart = System.GC.GetTotalMemory(false)\n")
+	writeIndent(w)
+	io.WriteString(w, "let __start = _now()\n")
+	for i, st := range bs.Body {
+		st.emit(w)
+		if i < len(bs.Body)-1 {
+			w.Write([]byte{'\n'})
+		}
+	}
+	w.Write([]byte{'\n'})
+	writeIndent(w)
+	io.WriteString(w, "let __end = _now()\n")
+	writeIndent(w)
+	io.WriteString(w, "let __memEnd = System.GC.GetTotalMemory(false)\n")
+	writeIndent(w)
+	io.WriteString(w, "let __dur_us = (__end - __start) / 1000\n")
+	writeIndent(w)
+	io.WriteString(w, "let __mem_diff = __memEnd - __memStart\n")
+	writeIndent(w)
+	fmt.Fprintf(w, "printfn \"{\\n  \\\"duration_us\\\": %%d,\\n  \\\"memory_bytes\\\": %%d,\\n  \\\"name\\\": \\\"%s\\\"\\n}\" __dur_us __mem_diff", bs.Name)
+}
+
 type LetStmt struct {
 	Name    string
 	Mutable bool
@@ -2246,6 +2275,22 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 			usesBreak = true
 		}
 		return &ForStmt{Name: st.For.Name, Start: start, End: end, Body: body, WithBreak: wb}, nil
+	case st.Bench != nil:
+		save := varTypes
+		varTypes = copyMap(varTypes)
+		body := make([]Stmt, len(st.Bench.Body))
+		for i, s := range st.Bench.Body {
+			cs, err := convertStmt(s)
+			if err != nil {
+				varTypes = save
+				return nil, err
+			}
+			body[i] = cs
+		}
+		varTypes = save
+		usesNow = true
+		neededOpens["System"] = true
+		return &BenchStmt{Name: st.Bench.Name, Body: body}, nil
 	case st.Update != nil:
 		up, err := convertUpdateStmt(st.Update)
 		if err != nil {
