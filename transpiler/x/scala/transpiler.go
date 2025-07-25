@@ -38,6 +38,11 @@ var useLookupHost bool
 var builtinAliases map[string]string
 var localVarTypes map[string]string
 var returnTypeStack []string
+var benchMain bool
+
+// SetBenchMain configures whether Transpile should wrap the main function
+// in a benchmark block when emitting code.
+func SetBenchMain(v bool) { benchMain = v }
 
 func BuiltinAliases() map[string]string { return builtinAliases }
 
@@ -1366,7 +1371,7 @@ func Emit(p *Program) []byte {
 		buf.WriteString("      _nowSeed = (_nowSeed * 1664525 + 1013904223) % 2147483647\n")
 		buf.WriteString("      _nowSeed.toInt\n")
 		buf.WriteString("    } else {\n")
-		buf.WriteString("      Math.abs(System.nanoTime().toInt)\n")
+		buf.WriteString("      Math.abs((System.nanoTime() / 1000).toInt)\n")
 		buf.WriteString("    }\n")
 		buf.WriteString("  }\n\n")
 	}
@@ -1494,7 +1499,8 @@ func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, erro
 			sc.Stmts = append(sc.Stmts, s)
 		}
 	}
-	if bench {
+	wrap := bench || benchMain
+	if wrap {
 		needsJSON = true
 		useNow = true
 		sc.Stmts = []Stmt{&BenchStmt{Name: "main", Body: sc.Stmts}}
@@ -1792,13 +1798,8 @@ func convertBinary(b *parser.BinaryExpr, env *types.Env) (Expr, error) {
 					left = &CastExpr{Value: left, Type: rt}
 				}
 				if (lt == "Any" || lt == "") && (rt == "Any" || rt == "") {
-					if op == "+" {
-						left = &CastExpr{Value: left, Type: "Int"}
-						right = &CastExpr{Value: right, Type: "Int"}
-					} else {
-						left = &CastExpr{Value: left, Type: "Double"}
-						right = &CastExpr{Value: right, Type: "Double"}
-					}
+					left = &CastExpr{Value: left, Type: "Int"}
+					right = &CastExpr{Value: right, Type: "Int"}
 				}
 			} else if op == "&&" || op == "||" {
 				if inferTypeWithEnv(left, env) != "Boolean" {
@@ -1819,8 +1820,8 @@ func convertBinary(b *parser.BinaryExpr, env *types.Env) (Expr, error) {
 				} else if rt == "Int" && (lt == "Any" || lt == "") {
 					left = &CastExpr{Value: left, Type: "Int"}
 				} else if (lt == "Any" || lt == "") && (rt == "Any" || rt == "") {
-					left = &CastExpr{Value: left, Type: "String"}
-					right = &CastExpr{Value: right, Type: "String"}
+					left = &CastExpr{Value: left, Type: "Int"}
+					right = &CastExpr{Value: right, Type: "Int"}
 				}
 			}
 			if op == "%" && inferTypeWithEnv(left, env) == "Int" && inferTypeWithEnv(right, env) == "Int" {
@@ -2436,6 +2437,15 @@ func convertCall(c *parser.CallExpr, env *types.Env) (Expr, error) {
 		if len(args) == 1 {
 			toStr := &CallExpr{Fn: &FieldExpr{Receiver: args[0], Name: "toString"}}
 			return &FieldExpr{Receiver: toStr, Name: "toInt"}, nil
+		}
+	case "float":
+		if len(args) == 1 {
+			toStr := &CallExpr{Fn: &FieldExpr{Receiver: args[0], Name: "toString"}}
+			return &FieldExpr{Receiver: toStr, Name: "toDouble"}, nil
+		}
+	case "abs":
+		if len(args) == 1 {
+			return &CallExpr{Fn: &FieldExpr{Receiver: &Name{Name: "Math"}, Name: "abs"}, Args: args}, nil
 		}
 	case "input":
 		if len(args) == 0 {

@@ -69,6 +69,7 @@ func TestScalaTranspiler_Rosetta_Golden(t *testing.T) {
 	}
 
 	bench := os.Getenv("MOCHI_BENCHMARK") == "true" || os.Getenv("MOCHI_BENCHMARK") == "1"
+	scalat.SetBenchMain(bench)
 
 	var passed, failed int
 	for i, nameFile := range names {
@@ -77,6 +78,7 @@ func TestScalaTranspiler_Rosetta_Golden(t *testing.T) {
 			codePath := filepath.Join(outDir, name+".scala")
 			outPath := filepath.Join(outDir, name+".out")
 			errPath := filepath.Join(outDir, name+".error")
+			benchPath := filepath.Join(outDir, name+".bench")
 
 			prog, err := parser.Parse(filepath.Join(srcDir, nameFile))
 			if err != nil {
@@ -103,26 +105,40 @@ func TestScalaTranspiler_Rosetta_Golden(t *testing.T) {
 				t.Fatalf("compile: %v", err)
 			}
 			cmd := exec.Command("scala", "-cp", tmp, "Main")
-			cmd.Env = append(os.Environ(), "MOCHI_NOW_SEED=1")
+			cmdEnv := append([]string{}, os.Environ()...)
+			if !bench {
+				cmdEnv = append(cmdEnv, "MOCHI_NOW_SEED=1")
+			}
+			cmd.Env = cmdEnv
 			if data, err := os.ReadFile(strings.TrimSuffix(filepath.Join(srcDir, nameFile), ".mochi") + ".in"); err == nil {
 				cmd.Stdin = bytes.NewReader(data)
 			}
 			want, _ := os.ReadFile(outPath)
 			if !bench {
 				want = bytes.TrimSpace(want)
+				if idx := bytes.LastIndexByte(want, '{'); idx >= 0 && bytes.Contains(want[idx:], []byte("duration_us")) {
+					want = bytes.TrimSpace(want[:idx])
+				}
 			}
 
-			out, err := cmd.CombinedOutput()
-			got := bytes.TrimSpace(out)
+			outBytes, err := cmd.CombinedOutput()
+			got := bytes.TrimSpace(outBytes)
 			if err != nil {
-				_ = os.WriteFile(errPath, append([]byte(err.Error()+"\n"), out...), 0o644)
+				_ = os.WriteFile(errPath, append([]byte(err.Error()+"\n"), outBytes...), 0o644)
 				t.Fatalf("run: %v", err)
 			}
 			_ = os.Remove(errPath)
-			_ = os.WriteFile(outPath, got, 0o644)
 			if bench {
+				if idx := bytes.LastIndexByte(got, '{'); idx >= 0 {
+					got = got[idx:]
+				}
+				_ = os.WriteFile(benchPath, got, 0o644)
 				return
 			}
+			if idx := bytes.LastIndexByte(got, '{'); idx >= 0 && bytes.Contains(got[idx:], []byte("duration_us")) {
+				got = bytes.TrimSpace(got[:idx])
+			}
+			_ = os.WriteFile(outPath, got, 0o644)
 
 			if !updating() && len(want) > 0 {
 				if !bytes.Equal(got, want) {
@@ -164,7 +180,20 @@ func updateRosettaChecklist() {
 			compiled++
 			status = "✓"
 		}
-		if data, err := os.ReadFile(filepath.Join(outDir, name+".out")); err == nil {
+		if data, err := os.ReadFile(filepath.Join(outDir, name+".bench")); err == nil {
+			var js struct {
+				Duration int64 `json:"duration_us"`
+				Memory   int64 `json:"memory_bytes"`
+			}
+			if json.Unmarshal(bytes.TrimSpace(data), &js) == nil {
+				if js.Duration > 0 {
+					dur = humanDuration(js.Duration)
+				}
+				if js.Memory > 0 {
+					mem = humanSize(js.Memory)
+				}
+			}
+		} else if data, err := os.ReadFile(filepath.Join(outDir, name+".out")); err == nil {
 			var js struct {
 				Duration int64 `json:"duration_us"`
 				Memory   int64 `json:"memory_bytes"`
