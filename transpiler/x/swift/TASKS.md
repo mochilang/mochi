@@ -1,5 +1,5 @@
-## Progress (2025-07-25 09:00 +0700)
-- swift transpiler: benchmark support
+## Progress (2025-07-25 10:23 +0700)
+- transpiler(ts): support benchmarks with top level types
 - Generated golden tests for 102/104 programs
 - Updated README checklist and output artifacts
 

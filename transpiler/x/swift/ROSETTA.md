@@ -3,11 +3,11 @@
 Generated Swift code for Mochi Rosetta programs in `tests/rosetta/x/Mochi`. Outputs are stored in `tests/rosetta/transpiler/Swift`. Errors are captured in `.error` files.
 
 Completed: 41/284
-Last updated: 2025-07-25 09:21 +0700
+Last updated: 2025-07-25 10:23 +0700
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
-| 1 | 100-doors-2 | ✓ | 172µs | 3.4 MB |
+| 1 | 100-doors-2 | ✓ | 278µs | 3.1 MB |
 | 2 | 100-doors-3 | ✓ |  |  |
 | 3 | 100-doors | ✓ |  |  |
 | 4 | 100-prisoners | ✓ |  |  |
