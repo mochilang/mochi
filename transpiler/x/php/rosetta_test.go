@@ -105,9 +105,11 @@ func runRosettaPHP(src string, outDir string, bench bool) error {
 		return fmt.Errorf("write code: %w", err)
 	}
 	cmd := exec.Command("php", codePath)
-	envv := append(os.Environ(), "MOCHI_NOW_SEED=1")
+	envv := os.Environ()
 	if bench {
 		envv = append(envv, "MOCHI_BENCHMARK=1")
+	} else {
+		envv = append(envv, "MOCHI_NOW_SEED=1")
 	}
 	cmd.Env = envv
 	if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
@@ -117,6 +119,14 @@ func runRosettaPHP(src string, outDir string, bench bool) error {
 	want = bytes.TrimSpace(want)
 	out, err := cmd.CombinedOutput()
 	got := bytes.TrimSpace(out)
+	if bench {
+		benchPath := filepath.Join(outDir, name+".bench")
+		if idx := bytes.LastIndexByte(got, '{'); idx >= 0 {
+			_ = os.WriteFile(benchPath, got[idx:], 0o644)
+		} else {
+			_ = os.WriteFile(benchPath, nil, 0o644)
+		}
+	}
 	if err != nil {
 		_ = os.WriteFile(errPath, append([]byte("run: "+err.Error()+"\n"), out...), 0o644)
 		return fmt.Errorf("run: %w", err)
@@ -186,7 +196,17 @@ func updateRosettaReadme() {
 		}
 		dur := ""
 		mem := ""
-		if data, err := os.ReadFile(outFile); err == nil {
+		benchFile := filepath.Join(outDir, name+".bench")
+		if data, err := os.ReadFile(benchFile); err == nil && len(data) > 0 {
+			var js struct {
+				Duration int64 `json:"duration_us"`
+				Memory   int64 `json:"memory_bytes"`
+			}
+			if json.Unmarshal(bytes.TrimSpace(data), &js) == nil && js.Duration > 0 {
+				dur = humanDuration(js.Duration)
+				mem = humanSize(js.Memory)
+			}
+		} else if data, err := os.ReadFile(outFile); err == nil {
 			var js struct {
 				Duration int64 `json:"duration_us"`
 				Memory   int64 `json:"memory_bytes"`
