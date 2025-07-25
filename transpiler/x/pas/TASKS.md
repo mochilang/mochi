@@ -1,3 +1,45 @@
+## Progress (2025-07-25 19:48 +0700)
+- pascal transpiler: handle functions in bench mode and update generics (progress 88/104)
+
+## Progress (2025-07-25 19:48 +0700)
+- pascal transpiler: handle functions in bench mode and update generics (progress 88/104)
+
+## Progress (2025-07-25 19:48 +0700)
+- pascal transpiler: handle functions in bench mode and update generics (progress 88/104)
+
+## Progress (2025-07-25 19:48 +0700)
+- pascal transpiler: handle functions in bench mode and update generics (progress 88/104)
+
+## Progress (2025-07-25 19:48 +0700)
+- pascal transpiler: handle functions in bench mode and update generics (progress 88/104)
+
+## Progress (2025-07-25 19:48 +0700)
+- pascal transpiler: handle functions in bench mode and update generics (progress 88/104)
+
+## Progress (2025-07-25 19:48 +0700)
+- pascal transpiler: handle functions in bench mode and update generics (progress 88/104)
+
+## Progress (2025-07-25 19:48 +0700)
+- pascal transpiler: handle functions in bench mode and update generics (progress 88/104)
+
+## Progress (2025-07-25 19:48 +0700)
+- pascal transpiler: handle functions in bench mode and update generics (progress 88/104)
+
+## Progress (2025-07-25 19:48 +0700)
+- pascal transpiler: handle functions in bench mode and update generics (progress 88/104)
+
+## Progress (2025-07-25 19:48 +0700)
+- pascal transpiler: handle functions in bench mode and update generics (progress 88/104)
+
+## Progress (2025-07-25 19:48 +0700)
+- pascal transpiler: handle functions in bench mode and update generics (progress 88/104)
+
+## Progress (2025-07-25 19:48 +0700)
+- pascal transpiler: handle functions in bench mode and update generics (progress 88/104)
+
+## Progress (2025-07-25 19:48 +0700)
+- pascal transpiler: handle functions in bench mode and update generics (progress 88/104)
+
 ## Progress (2025-07-25 19:17 +0700)
 - pascal: handle type declarations inside bench blocks (progress 88/104)
 
