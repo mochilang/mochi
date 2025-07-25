@@ -3335,7 +3335,15 @@ func convertPrimary(env *types.Env, pr *parser.Primary) (Expr, error) {
 		}
 		return ce, nil
 	case pr.FunExpr != nil && pr.FunExpr.ExprBody != nil:
-		body, err := convertExpr(env, pr.FunExpr.ExprBody)
+		child := types.NewEnv(env)
+		for _, p := range pr.FunExpr.Params {
+			var pt types.Type = types.AnyType{}
+			if p.Type != nil {
+				pt = types.ResolveTypeRef(p.Type, env)
+			}
+			child.SetVar(p.Name, pt, false)
+		}
+		body, err := convertExpr(child, pr.FunExpr.ExprBody)
 		if err != nil {
 			return nil, err
 		}

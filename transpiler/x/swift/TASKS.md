@@ -1,5 +1,5 @@
-## Progress (2025-07-25 10:23 +0700)
-- transpiler(ts): support benchmarks with top level types
+## Progress (2025-07-25 10:40 +0700)
+- swift: benchmark output for first rosetta
 - Generated golden tests for 102/104 programs
 - Updated README checklist and output artifacts
 
