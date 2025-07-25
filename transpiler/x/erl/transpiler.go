@@ -1107,6 +1107,31 @@ func isFloatExpr(e Expr, env *types.Env, ctx *context) bool {
 	}
 }
 
+func isIntExpr(e Expr, env *types.Env, ctx *context) bool {
+	switch v := e.(type) {
+	case *IntLit:
+		return true
+	case *UnaryExpr:
+		return isIntExpr(v.Expr, env, ctx)
+	case *BinaryExpr:
+		return isIntExpr(v.Left, env, ctx) && isIntExpr(v.Right, env, ctx)
+	case *NameRef:
+		if env != nil {
+			name := v.Name
+			if ctx != nil {
+				name = ctx.original(v.Name)
+			}
+			if t, err := env.GetVar(name); err == nil {
+				switch t.(type) {
+				case types.IntType, types.Int64Type, types.BigIntType:
+					return true
+				}
+			}
+		}
+	}
+	return false
+}
+
 func isBoolExpr(e Expr, env *types.Env, ctx *context) bool {
 	switch v := e.(type) {
 	case *BoolLit:
@@ -1231,12 +1256,36 @@ func isMapExpr(e Expr, env *types.Env, ctx *context) bool {
 		}
 	case *IndexExpr:
 		if v.Kind == "map" {
+			if fieldIsString(v.Target, v.Index, env, ctx) {
+				return false
+			}
+			if nr, ok := v.Target.(*NameRef); ok {
+				name := nr.Name
+				if ctx != nil {
+					name = ctx.original(nr.Name)
+					if sl, ok := v.Index.(*StringLit); ok {
+						if ctx.isStrField(name, sl.Value) || ctx.isBoolField(name, sl.Value) {
+							return false
+						}
+					}
+				}
+				if env != nil {
+					if t, err := env.GetVar(name); err == nil {
+						if _, ok := t.(types.StructType); ok {
+							return false
+						}
+					}
+				}
+			}
 			if mapValueIsMap(v.Target, env, ctx) {
 				return true
 			}
 			if t := exprType(v, env, ctx); t != nil {
 				if _, ok := t.(types.MapType); ok {
 					return true
+				}
+				if _, ok := t.(types.StructType); ok {
+					return false
 				}
 			}
 			// when type information is unavailable, assume map
@@ -2308,7 +2357,7 @@ func (b *BenchStmt) emit(w io.Writer) {
 		io.WriteString(w, ",\n    ")
 		st.emit(w)
 	}
-	fmt.Fprintf(w, ",\n    End = mochi_now(),\n    EndMem = erlang:memory(total),\n    DurationUs = (End - Start) div 1000,\n    MemBytes = abs(EndMem - StartMem),\n    io:format(\"{~n  \\\"duration_us\\\": ~p,~n  \\\"memory_bytes\\\": ~p,~n  \\\"name\\\": \\\"%s\\\"~n}\n\", [DurationUs, MemBytes])", b.Name)
+	fmt.Fprintf(w, ",\n    End = mochi_now(),\n    EndMem = erlang:memory(total),\n    DurationUs = (End - Start) div 1000,\n    MemBytes = erlang:abs(EndMem - StartMem),\n    io:format(\"{~n  \\\"duration_us\\\": ~p,~n  \\\"memory_bytes\\\": ~p,~n  \\\"name\\\": \\\"%s\\\"~n}\n\", [DurationUs, MemBytes])", b.Name)
 }
 
 func isNameRef(e Expr, name string) bool {
@@ -3508,6 +3557,22 @@ func convertFunStmt(fn *parser.FunStmt, env *types.Env, ctx *context) (*FuncDecl
 			if p.Type.Generic != nil && p.Type.Generic.Name == "map" {
 				fctx.setMapVar(p.Name, true)
 			}
+			if p.Type.Simple != nil {
+				if st, ok := env.GetStruct(*p.Type.Simple); ok {
+					strF := map[string]bool{}
+					boolF := map[string]bool{}
+					for fn, ft := range st.Fields {
+						switch ft.(type) {
+						case types.StringType:
+							strF[fn] = true
+						case types.BoolType:
+							boolF[fn] = true
+						}
+					}
+					fctx.setStrFields(p.Name, strF)
+					fctx.setBoolFields(p.Name, boolF)
+				}
+			}
 		}
 	}
 	var stmts []Stmt
@@ -3968,6 +4033,8 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env, ctx *context) (Expr,
 				kind = "map"
 				if fieldIsString(expr, idx, env, ctx) {
 					isStr = true
+				} else if _, ok := idx.(*StringLit); !ok {
+					kind = "list"
 				}
 			} else if isStringExpr(expr) {
 				kind = "string"

@@ -13,7 +13,7 @@ sum  ---updates---    mean  buckets
 1000 1 1 2  "ondddd;-V½"
 1000 1 1 2  "on_idd;-V½"
 {
-  "duration_us": 21682,
-  "memory_bytes": 4258656,
+  "duration_us": 10503,
+  "memory_bytes": 4300328,
   "name": "main"
 }
