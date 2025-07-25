@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"math"
+	"os"
 	"sort"
 	"strconv"
 	"strings"
@@ -37,6 +38,7 @@ var useNumDenom bool
 var useSHA256 bool
 var useRepeat bool
 var useParseIntStr bool
+var useBench bool
 
 var reserved = map[string]bool{
 	"break": true, "case": true, "catch": true, "class": true, "const": true,
@@ -145,6 +147,13 @@ type ForInStmt struct {
 	Iterable Expr
 	Body     []Stmt
 	Keys     bool // if true, iterate over keys using `in` instead of values
+}
+
+// BenchStmt represents a benchmark block that measures execution time
+// of its body and prints a JSON summary similar to the VM output.
+type BenchStmt struct {
+	Name string
+	Body []Stmt
 }
 
 type Expr interface {
@@ -1502,6 +1511,23 @@ func (s *SaveStmt) emit(w io.Writer) {
 	io.WriteString(w, "// unsupported save")
 }
 
+func (b *BenchStmt) emit(w io.Writer) {
+	io.WriteString(w, "{\n")
+	io.WriteString(w, "  const _startMem = _mem()\n")
+	io.WriteString(w, "  const _start = _now()\n")
+	iw := &indentWriter{w: w, indent: "  "}
+	for _, st := range b.Body {
+		emitStmt(iw, st, 1)
+	}
+	io.WriteString(w, "  const _end = _now()\n")
+	io.WriteString(w, "  const _duration = _end - _start\n")
+	io.WriteString(w, "  const _duration_us = Math.trunc(_duration / 1000)\n")
+	io.WriteString(w, "  const _endMem = _mem()\n")
+	io.WriteString(w, "  const _memory_bytes = Math.max(0, _endMem - _startMem)\n")
+	fmt.Fprintf(w, "  console.log(JSON.stringify({\n    \"duration_us\": _duration_us,\n    \"memory_bytes\": _memory_bytes,\n    \"name\": %q\n  }, null, \"  \"))\n", b.Name)
+	io.WriteString(w, "}\n")
+}
+
 func (u *UpdateStmt) emit(w io.Writer) {
 	io.WriteString(w, "for (let i = 0; i < ")
 	io.WriteString(w, u.Target)
@@ -1878,6 +1904,10 @@ func emitStmt(w *indentWriter, s Stmt, level int) {
 		}
 		io.WriteString(w, pad)
 		io.WriteString(w, "}\n")
+	case *BenchStmt:
+		io.WriteString(w, pad)
+		st.emit(w)
+		io.WriteString(w, "\n")
 	case *SaveStmt:
 		io.WriteString(w, pad)
 		st.emit(w)
@@ -1924,10 +1954,28 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 		tsProg.Stmts = append(tsProg.Stmts, stmt)
 	}
 	if useNow {
-		prelude = append(prelude, &RawStmt{Code: `var _nowSeed = 0;
+		seed := os.Getenv("MOCHI_NOW_SEED")
+		if seed != "" {
+			prelude = append(prelude, &RawStmt{Code: fmt.Sprintf(`var _nowSeed = %s;
+var _nowSeeded = true;
+function _now(): number {
+  _nowSeed = (_nowSeed * 1664525 + 1013904223) %% 2147483647;
+  return _nowSeed;
+}`, seed)})
+		} else {
+			prelude = append(prelude, &RawStmt{Code: `var _nowSeed = 0;
 var _nowSeeded = false;
 {
-  const s = typeof Deno !== "undefined" ? Deno.env.get("MOCHI_NOW_SEED") : (process.env.MOCHI_NOW_SEED || "");
+  let s = "";
+  if (typeof Deno !== "undefined") {
+    try {
+      s = Deno.env.get("MOCHI_NOW_SEED") ?? "";
+    } catch (_e) {
+      s = "";
+    }
+  } else if (typeof process !== "undefined") {
+    s = process.env.MOCHI_NOW_SEED || "";
+  }
   if (s) {
     const v = parseInt(s, 10);
     if (!isNaN(v)) {
@@ -1942,6 +1990,18 @@ function _now(): number {
     return _nowSeed;
   }
   return Date.now() * 1000;
+}`})
+		}
+	}
+	if useBench {
+		prelude = append(prelude, &RawStmt{Code: `function _mem(): number {
+  if (typeof Deno !== 'undefined') {
+    return (Deno.memoryUsage?.().rss ?? 0);
+  }
+  if (typeof process !== 'undefined') {
+    return process.memoryUsage().rss;
+  }
+  return 0;
 }`})
 	}
 	if useInput {
@@ -2229,6 +2289,14 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 		return convertWhileStmt(s.While, transpileEnv)
 	case s.For != nil:
 		return convertForStmt(s.For, transpileEnv)
+	case s.Bench != nil:
+		body, err := convertStmtList(s.Bench.Body)
+		if err != nil {
+			return nil, err
+		}
+		useNow = true
+		useBench = true
+		return &BenchStmt{Name: s.Bench.Name, Body: body}, nil
 	case s.Update != nil:
 		up, err := convertUpdate(s.Update, transpileEnv)
 		if err != nil {
