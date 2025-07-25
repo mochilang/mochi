@@ -2576,18 +2576,6 @@ func hasImport(p *Program, mod string) bool {
 // and prints a JSON report.
 func Emit(w io.Writer, p *Program, bench bool) error {
 	if bench {
-		// find the main function and wrap its body in a BenchStmt
-		found := false
-		for _, s := range p.Stmts {
-			if fn, ok := s.(*FuncDef); ok && fn.Name == "main" {
-				fn.Body = []Stmt{&BenchStmt{Name: "main", Body: fn.Body}}
-				found = true
-				break
-			}
-		}
-		if !found {
-			p.Stmts = []Stmt{&BenchStmt{Name: "main", Body: p.Stmts}}
-		}
 		if currentImports != nil {
 			currentImports["json"] = true
 			currentImports["os"] = true
@@ -2914,7 +2902,7 @@ func Emit(w io.Writer, p *Program, bench bool) error {
 }
 
 // Transpile converts a Mochi program to a Python AST.
-func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
+func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, error) {
 	currentImports = map[string]bool{}
 	currentImportLang = map[string]string{}
 	currentEnv = env
@@ -3208,7 +3196,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 			}
 			var elseStmts []Stmt
 			if st.If.ElseIf != nil {
-				elseStmt, err := Transpile(&parser.Program{Statements: []*parser.Statement{{If: st.If.ElseIf}}}, env)
+				elseStmt, err := Transpile(&parser.Program{Statements: []*parser.Statement{{If: st.If.ElseIf}}}, env, bench)
 				if err != nil {
 					return nil, err
 				}
@@ -3379,6 +3367,26 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 		default:
 			return nil, fmt.Errorf("unsupported statement")
 		}
+	}
+	if bench {
+		found := false
+		for _, s := range p.Stmts {
+			if fn, ok := s.(*FuncDef); ok && fn.Name == "main" {
+				fn.Body = []Stmt{&BenchStmt{Name: "main", Body: fn.Body}}
+				found = true
+				break
+			}
+		}
+		if !found {
+			p.Stmts = []Stmt{&BenchStmt{Name: "main", Body: p.Stmts}}
+		}
+		if currentImports != nil {
+			currentImports["json"] = true
+			currentImports["os"] = true
+			currentImports["time"] = true
+			currentImports["resource"] = true
+		}
+		usesNow = true
 	}
 	_ = env // unused for now
 	return p, nil

@@ -56,7 +56,7 @@ func runRosettaCase(t *testing.T, name string) {
 		_ = os.WriteFile(errPath, []byte("type: "+errs[0].Error()), 0o644)
 		t.Fatalf("type: %v", errs[0])
 	}
-	ast, err := py.Transpile(prog, env)
+	ast, err := py.Transpile(prog, env, bench)
 	if err != nil {
 		_ = os.WriteFile(errPath, []byte("transpile: "+err.Error()), 0o644)
 		t.Fatalf("transpile: %v", err)
@@ -70,7 +70,11 @@ func runRosettaCase(t *testing.T, name string) {
 		t.Fatalf("write code: %v", err)
 	}
 	cmd := exec.Command("python3", codePath)
-	cmd.Env = append(os.Environ(), "MOCHI_NOW_SEED=1")
+	envv := os.Environ()
+	if !bench {
+		envv = append(envv, "MOCHI_NOW_SEED=1")
+	}
+	cmd.Env = envv
 	if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
 		cmd.Stdin = bytes.NewReader(data)
 	}
@@ -90,7 +94,13 @@ func runRosettaCase(t *testing.T, name string) {
 	if bench {
 		benchPath := filepath.Join(outDir, name+".bench")
 		if updateEnabled() {
-			_ = os.WriteFile(benchPath, got, 0o644)
+			idx := bytes.LastIndex(got, []byte("{"))
+			part := bytes.TrimSpace(got[idx:])
+			if idx >= 0 && json.Valid(part) {
+				_ = os.WriteFile(benchPath, part, 0o644)
+			} else {
+				_ = os.WriteFile(benchPath, got, 0o644)
+			}
 		}
 		return
 	}

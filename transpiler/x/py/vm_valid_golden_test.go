@@ -47,12 +47,12 @@ func TestPyTranspiler_VMValid_Golden(t *testing.T) {
 			_ = os.WriteFile(errPath, []byte("type: "+errs[0].Error()), 0o644)
 			return nil, errs[0]
 		}
-		ast, err := py.Transpile(prog, env)
+		bench := os.Getenv("MOCHI_BENCHMARK") == "true"
+		ast, err := py.Transpile(prog, env, bench)
 		if err != nil {
 			_ = os.WriteFile(errPath, []byte("transpile: "+err.Error()), 0o644)
 			return nil, err
 		}
-		bench := os.Getenv("MOCHI_BENCHMARK") == "true"
 		var buf bytes.Buffer
 		if err := py.Emit(&buf, ast, bench); err != nil {
 			_ = os.WriteFile(errPath, []byte("emit: "+err.Error()), 0o644)
@@ -62,7 +62,11 @@ func TestPyTranspiler_VMValid_Golden(t *testing.T) {
 			return nil, err
 		}
 		cmd := exec.Command("python3", codePath)
-		cmd.Env = append(os.Environ(), "MOCHI_NOW_SEED=1")
+		envv := os.Environ()
+		if !bench {
+			envv = append(envv, "MOCHI_NOW_SEED=1")
+		}
+		cmd.Env = envv
 		if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
 			cmd.Stdin = bytes.NewReader(data)
 		}

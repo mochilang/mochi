@@ -51,11 +51,11 @@ func runCase(t *testing.T, name string) {
 	if errs := types.Check(prog, env); len(errs) > 0 {
 		t.Fatalf("type: %v", errs[0])
 	}
-	progAST, err := py.Transpile(prog, env)
+	bench := os.Getenv("MOCHI_BENCHMARK") == "true"
+	progAST, err := py.Transpile(prog, env, bench)
 	if err != nil {
 		t.Fatalf("transpile: %v", err)
 	}
-	bench := os.Getenv("MOCHI_BENCHMARK") == "true"
 	var buf bytes.Buffer
 	if err := py.Emit(&buf, progAST, bench); err != nil {
 		t.Fatalf("emit: %v", err)
@@ -66,7 +66,11 @@ func runCase(t *testing.T, name string) {
 		t.Fatalf("write: %v", err)
 	}
 	cmd := exec.Command("python3", pyFile)
-	cmd.Env = append(os.Environ(), "MOCHI_ROOT="+root, "MOCHI_NOW_SEED=1")
+	envv := append(os.Environ(), "MOCHI_ROOT="+root)
+	if !bench {
+		envv = append(envv, "MOCHI_NOW_SEED=1")
+	}
+	cmd.Env = envv
 	out, err := cmd.CombinedOutput()
 	got := bytes.TrimSpace(out)
 	if err != nil {
