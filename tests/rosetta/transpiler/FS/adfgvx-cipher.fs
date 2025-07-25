@@ -1,4 +1,4 @@
-// Generated 2025-07-24 20:52 +0700
+// Generated 2025-07-25 17:17 +0700
 
 exception Return
 
@@ -33,10 +33,10 @@ let rec shuffleStr (s: string) =
         while i < (String.length s) do
             arr <- Array.append arr [|s.Substring(i, (i + 1) - i)|]
             i <- i + 1
-        let mutable j = (Array.length arr) - 1
+        let mutable j: int = (Array.length arr) - 1
         while j > 0 do
             let k = (_now()) % (j + 1)
-            let tmp = arr.[j]
+            let tmp: string = arr.[j]
             arr.[j] <- arr.[k]
             arr.[k] <- tmp
             j <- j - 1
@@ -53,7 +53,7 @@ let rec shuffleStr (s: string) =
 and createPolybius () =
     let mutable __ret : string array = Unchecked.defaultof<string array>
     try
-        let shuffled = shuffleStr alphabet
+        let shuffled: string = shuffleStr alphabet
         let mutable labels: string array = [||]
         let mutable li: int = 0
         while li < (String.length adfgvx) do
@@ -65,12 +65,12 @@ and createPolybius () =
         let mutable p: string array = [||]
         let mutable i: int = 0
         while i < 6 do
-            let mutable row = Array.sub shuffled (i * 6) (((i + 1) * 6) - (i * 6))
+            let mutable row: string = shuffled.Substring(i * 6, ((i + 1) * 6) - (i * 6))
             p <- Array.append p [|row|]
             let mutable line: string = (labels.[i]) + " | "
             let mutable j: int = 0
             while j < 6 do
-                line <- (line + (Array.sub row j ((j + 1) - j))) + " "
+                line <- (line + (row.Substring(j, (j + 1) - j))) + " "
                 j <- j + 1
             printfn "%s" line
             i <- i + 1
@@ -89,8 +89,8 @@ and createKey (n: int) =
         let mutable key: string = ""
         let mutable i: int = 0
         while i < n do
-            let idx = (_now()) % (String.length pool)
-            key <- key + (pool.[idx])
+            let idx: int = (_now()) % (String.length pool)
+            key <- key + (string (pool.[idx]))
             pool <- (pool.Substring(0, idx - 0)) + (pool.Substring(idx + 1, (String.length pool) - (idx + 1)))
             i <- i + 1
         printfn "%s" ("\nThe key is " + key)
@@ -106,9 +106,9 @@ and orderKey (key: string) =
         let mutable pairs = [||]
         let mutable i: int = 0
         while i < (String.length key) do
-            pairs <- Array.append pairs [|[|key.Substring(i, (i + 1) - i); i|]|]
+            pairs <- Array.append pairs [|[|box (key.Substring(i, (i + 1) - i)); box i|]|]
             i <- i + 1
-        let mutable n = Array.length pairs
+        let mutable n: int = Array.length pairs
         let mutable m: int = 0
         while m < n do
             let mutable j: int = 0
@@ -171,7 +171,7 @@ and encrypt (polybius: string array) (key: string) (plainText: string) =
             let col: int = idx % (String.length key)
             table.[row].[col] <- temp.Substring(idx, (idx + 1) - idx)
             idx <- idx + 1
-        let order = orderKey key
+        let order: int array = orderKey key
         let mutable cols: string array = [||]
         let mutable ci: int = 0
         while ci < (String.length key) do
@@ -220,7 +220,7 @@ and decrypt (polybius: string array) (key: string) (cipherText: string) =
         let mutable start: int = 0
         let mutable i: int = 0
         while i <= (String.length cipherText) do
-            if (i = (String.length cipherText)) || ((cipherText.[i]) = " ") then
+            if (i = (String.length cipherText)) || ((string (cipherText.[i])) = " ") then
                 colStrs <- Array.append colStrs [|cipherText.Substring(start, i - start)|]
                 start <- i + 1
             i <- i + 1
@@ -233,13 +233,13 @@ and decrypt (polybius: string array) (key: string) (cipherText: string) =
         let mutable cols: string array array = [||]
         i <- 0
         while i < (Array.length colStrs) do
-            let mutable s = colStrs.[i]
+            let mutable s: string = colStrs.[i]
             let mutable ls: string array = [||]
             let mutable j: int = 0
-            while j < (Seq.length s) do
-                ls <- Array.append ls [|Array.sub s j ((j + 1) - j)|]
+            while j < (String.length s) do
+                ls <- Array.append ls [|s.Substring(j, (j + 1) - j)|]
                 j <- j + 1
-            if (Seq.length s) < maxColLen then
+            if (String.length s) < maxColLen then
                 let mutable pad: string array = [||]
                 let mutable k: int = 0
                 while k < maxColLen do
@@ -262,7 +262,7 @@ and decrypt (polybius: string array) (key: string) (cipherText: string) =
                 c <- c + 1
             table <- Array.append table [|row|]
             r <- r + 1
-        let order = orderKey key
+        let order: int array = orderKey key
         r <- 0
         while r < maxColLen do
             let mutable c: int = 0
@@ -281,8 +281,8 @@ and decrypt (polybius: string array) (key: string) (cipherText: string) =
         let mutable plainText: string = ""
         let mutable idx: int = 0
         while idx < (String.length temp) do
-            let rIdx = indexOf adfgvx (temp.Substring(idx, (idx + 1) - idx))
-            let cIdx = indexOf adfgvx (temp.Substring(idx + 1, (idx + 2) - (idx + 1)))
+            let rIdx: int = indexOf adfgvx (temp.Substring(idx, (idx + 1) - idx))
+            let cIdx: int = indexOf adfgvx (temp.Substring(idx + 1, (idx + 2) - (idx + 1)))
             plainText <- plainText + (polybius.[rIdx].[cIdx])
             idx <- idx + 2
         __ret <- plainText
@@ -291,16 +291,22 @@ and decrypt (polybius: string array) (key: string) (cipherText: string) =
     with
         | Return -> __ret
 and main () =
-    let mutable __ret : obj = Unchecked.defaultof<obj>
+    let mutable __ret : unit = Unchecked.defaultof<unit>
     try
+        let __bench_start = _now()
+        let __mem_start = System.GC.GetTotalMemory(true)
         let plainText: string = "ATTACKAT1200AM"
-        let polybius = createPolybius()
-        let key = createKey 9
+        let polybius: string array = createPolybius()
+        let key: string = createKey 9
         printfn "%s" ("\nPlaintext : " + plainText)
-        let cipherText = encrypt polybius key plainText
+        let cipherText: string = encrypt polybius key plainText
         printfn "%s" ("\nEncrypted : " + cipherText)
-        let plainText2 = decrypt polybius key cipherText
+        let plainText2: string = decrypt polybius key cipherText
         printfn "%s" ("\nDecrypted : " + plainText2)
+        let __bench_end = _now()
+        let __mem_end = System.GC.GetTotalMemory(true)
+        printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)
+
         __ret
     with
         | Return -> __ret

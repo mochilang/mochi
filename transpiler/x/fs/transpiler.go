@@ -650,9 +650,32 @@ func (b *BenchStmt) emit(w io.Writer) {
 type ListLit struct{ Elems []Expr }
 
 func (l *ListLit) emit(w io.Writer) {
+	types := make([]string, len(l.Elems))
+	same := true
+	prev := ""
+	for i, e := range l.Elems {
+		t := inferType(e)
+		types[i] = t
+		if i == 0 {
+			prev = t
+		} else if t != prev {
+			same = false
+		}
+	}
 	io.WriteString(w, "[|")
 	for i, e := range l.Elems {
-		e.emit(w)
+		if !same && types[i] != "obj" {
+			io.WriteString(w, "box ")
+			if needsParen(e) {
+				io.WriteString(w, "(")
+				e.emit(w)
+				io.WriteString(w, ")")
+			} else {
+				e.emit(w)
+			}
+		} else {
+			e.emit(w)
+		}
 		if i < len(l.Elems)-1 {
 			io.WriteString(w, "; ")
 		}
@@ -1744,6 +1767,14 @@ func (i *IndexExpr) emit(w io.Writer) {
 		io.WriteString(w, ".[")
 		i.Index.emit(w)
 		io.WriteString(w, "]")
+		return
+	}
+	if t == "string" {
+		io.WriteString(w, "string (")
+		i.Target.emit(w)
+		io.WriteString(w, ".[")
+		i.Index.emit(w)
+		io.WriteString(w, "])")
 		return
 	}
 	if strings.HasPrefix(t, "Map<") || t == "map" {
