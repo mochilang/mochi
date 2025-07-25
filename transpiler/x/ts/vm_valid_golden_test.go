@@ -44,7 +44,7 @@ func TestTSTranspiler_VMValid_Golden(t *testing.T) {
 			return nil, errs[0]
 		}
 
-		tsProg, err := tstrans.Transpile(prog, env)
+		tsProg, err := tstrans.Transpile(prog, env, false)
 		if err != nil {
 			_ = os.WriteFile(errPath, []byte("transpile: "+err.Error()), 0o644)
 			return nil, err

@@ -698,7 +698,7 @@ func transpileProgram(lang string, env *types.Env, prog *parser.Program, root, s
 		}
 		return gotrans.Emit(p), nil
 	case "ts":
-		p, err := tstranspiler.Transpile(prog, env)
+		p, err := tstranspiler.Transpile(prog, env, false)
 		if err != nil {
 			return nil, err
 		}
