@@ -55,6 +55,9 @@ var needIORef bool
 // usesNow reports whether the _now helper is required.
 var usesNow bool
 
+// usesMem reports whether the _mem helper is required.
+var usesMem bool
+
 // usesLookupHost reports whether the _lookup_host helper is required.
 var usesLookupHost bool
 
@@ -921,9 +924,11 @@ func (b *BenchStmt) emit(w io.Writer) {
 	writeIndent(w)
 	io.WriteString(w, "end <- _now\n")
 	writeIndent(w)
+	io.WriteString(w, "memEnd <- _mem\n")
+	writeIndent(w)
 	io.WriteString(w, "let benchData = Aeson.object [")
 	io.WriteString(w, "\"duration_us\" Aeson..= ((end - start) `div` 1000), ")
-	io.WriteString(w, "\"memory_bytes\" Aeson..= (0 :: Int), ")
+	io.WriteString(w, "\"memory_bytes\" Aeson..= memEnd, ")
 	fmt.Fprintf(w, "\"name\" Aeson..= (%q :: String)]\n", b.Name)
 	writeIndent(w)
 	io.WriteString(w, "BSL.putStrLn (Pretty.encodePretty' Pretty.defConfig{Pretty.confIndent = Pretty.Spaces 2} benchData)\n")
@@ -2207,7 +2212,7 @@ func inferVarFromSource(name string, src Expr) {
 	}
 }
 
-func header(withList, withMap, withJSON, withTrace, withIORef, withNow, withLookupHost bool) string {
+func header(withList, withMap, withJSON, withTrace, withIORef, withNow, withLookupHost, withMem bool) string {
 	out, err := exec.Command("git", "log", "-1", "--date=iso-strict", "--format=%cd").Output()
 	ts := time.Now()
 	if err == nil {
@@ -2254,6 +2259,9 @@ func header(withList, withMap, withJSON, withTrace, withIORef, withNow, withLook
 		h += "import Data.Time.Clock.POSIX (getPOSIXTime)\n"
 		h += "import Data.Char (isDigit)\n"
 	}
+	if withMem {
+		h += "import GHC.Stats (getRTSStats, max_mem_in_use_bytes)\n"
+	}
 	h += "import System.IO (isEOF)\n"
 	h += "input :: IO String\n"
 	h += "input = do\n"
@@ -2292,6 +2300,10 @@ func header(withList, withMap, withJSON, withTrace, withIORef, withNow, withLook
 		h += "        t <- getPOSIXTime\n"
 		h += "        return (floor (t * 1000000000))\n"
 	}
+	if withMem {
+		h += "_mem :: IO Int\n"
+		h += "_mem = fmap (fromIntegral . max_mem_in_use_bytes) getRTSStats\n"
+	}
 	if withLookupHost {
 		h += "nil :: [a]\n"
 		h += "nil = []\n"
@@ -2302,7 +2314,13 @@ func header(withList, withMap, withJSON, withTrace, withIORef, withNow, withLook
 }
 
 // Emit generates formatted Haskell code.
-func Emit(p *Program) []byte {
+func Emit(p *Program, bench bool) []byte {
+	if bench {
+		needJSON = true
+		usesNow = true
+		usesMem = true
+		p.Stmts = []Stmt{&BenchStmt{Name: "main", Body: p.Stmts}}
+	}
 	for _, m := range mutatedGlobal {
 		if m {
 			needIORef = true
@@ -2323,7 +2341,7 @@ func Emit(p *Program) []byte {
 		}
 	}
 	var buf bytes.Buffer
-	buf.WriteString(header(needDataList, needDataMap, needJSON, needTrace, needIORef, usesNow, usesLookupHost))
+	buf.WriteString(header(needDataList, needDataMap, needJSON, needTrace, needIORef, usesNow, usesLookupHost, usesMem))
 	if needGroupBy {
 		buf.WriteString(groupPrelude())
 		buf.WriteByte('\n')
@@ -2421,6 +2439,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	needTrace = false
 	needIORef = false
 	usesNow = false
+	usesMem = false
 	usesLookupHost = false
 	usesInput = false
 	groupVars = map[string]bool{}

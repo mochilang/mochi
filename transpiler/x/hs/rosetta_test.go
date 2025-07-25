@@ -5,6 +5,7 @@ package hs_test
 import (
 	"bufio"
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"os"
 	"os/exec"
@@ -72,7 +73,8 @@ func runRosettaTask(root, name string) error {
 		writeErr(root, name, fmt.Errorf("transpile: %w", err))
 		return fmt.Errorf("transpile error: %v", err)
 	}
-	code := hs.Emit(hprog)
+	bench := os.Getenv("MOCHI_BENCHMARK") == "true" || os.Getenv("MOCHI_BENCHMARK") == "1"
+	code := hs.Emit(hprog, bench)
 	outDir := filepath.Join(root, "tests", "rosetta", "transpiler", "Haskell")
 	os.MkdirAll(outDir, 0o755)
 	hsFile := filepath.Join(outDir, name+".hs")
@@ -81,7 +83,12 @@ func runRosettaTask(root, name string) error {
 	}
 
 	cmd := exec.Command("runhaskell", hsFile)
-	cmd.Env = append(os.Environ(), "MOCHI_NOW_SEED=1")
+	runEnv := append(os.Environ(), "MOCHI_NOW_SEED=1")
+	if bench {
+		runEnv = append(runEnv, "MOCHI_BENCHMARK=1")
+		runEnv = append(runEnv, "GHCRTS=-T")
+	}
+	cmd.Env = runEnv
 	if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
 		cmd.Stdin = bytes.NewReader(data)
 	}
@@ -92,6 +99,11 @@ func runRosettaTask(root, name string) error {
 		return fmt.Errorf("run error: %v", err)
 	}
 	removeErr(root, name)
+	if bench {
+		benchPath := filepath.Join(outDir, name+".bench")
+		_ = os.WriteFile(benchPath, got, 0o644)
+		return nil
+	}
 	outPath := filepath.Join(outDir, name+".out")
 	if shouldUpdateRosetta() {
 		_ = os.WriteFile(outPath, append(got, '\n'), 0o644)
@@ -183,12 +195,31 @@ func updateChecklist() {
 	var lines []string
 	for i, n := range names {
 		name := strings.TrimSuffix(filepath.Base(n), ".mochi")
-		mark := "[ ]"
+		status := ""
 		if _, err := os.Stat(filepath.Join(outDir, name+".out")); err == nil {
 			compiled++
-			mark = "[x]"
+			status = "✓"
 		}
-		lines = append(lines, fmt.Sprintf("%d. %s %s (%d)", i+1, mark, name, i+1))
+		dur := ""
+		mem := ""
+		if data, err := os.ReadFile(filepath.Join(outDir, name+".bench")); err == nil {
+			var js struct {
+				Duration int64 `json:"duration_us"`
+				Memory   int64 `json:"memory_bytes"`
+			}
+			data = bytes.TrimSpace(data)
+			if idx := bytes.LastIndexByte(data, '{'); idx >= 0 {
+				if json.Unmarshal(data[idx:], &js) == nil {
+					if js.Duration > 0 {
+						dur = humanDuration(js.Duration)
+					}
+					if js.Memory > 0 {
+						mem = humanSize(js.Memory)
+					}
+				}
+			}
+		}
+		lines = append(lines, fmt.Sprintf("| %d | %s | %s | %s | %s |", i+1, name, status, dur, mem))
 	}
 	var buf bytes.Buffer
 	fmt.Fprintf(&buf, "# Rosetta Haskell Transpiler (%d/%d succeeded)\n\n", compiled, total)
@@ -206,4 +237,22 @@ func updateChecklist() {
 	buf.WriteString(strings.Join(lines, "\n"))
 	buf.WriteString("\n")
 	_ = os.WriteFile(readme, buf.Bytes(), 0o644)
+}
+
+func humanDuration(us int64) string {
+	d := time.Duration(us) * time.Microsecond
+	return d.String()
+}
+
+func humanSize(b int64) string {
+	const unit = 1024
+	if b < unit {
+		return fmt.Sprintf("%d B", b)
+	}
+	div, exp := int64(unit), 0
+	for n := b / unit; n >= unit; n /= unit {
+		div *= unit
+		exp++
+	}
+	return fmt.Sprintf("%.1f %cB", float64(b)/float64(div), "KMGTPE"[exp])
 }

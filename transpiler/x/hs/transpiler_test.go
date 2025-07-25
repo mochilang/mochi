@@ -54,7 +54,7 @@ func TestTranspile_PrintHello(t *testing.T) {
 	if err != nil {
 		t.Fatalf("transpile: %v", err)
 	}
-	code := hs.Emit(ast)
+	code := hs.Emit(ast, false)
 	hsFile := filepath.Join(outDir, "print_hello.hs")
 	if err := os.WriteFile(hsFile, code, 0o644); err != nil {
 		t.Fatalf("write: %v", err)
@@ -100,7 +100,7 @@ func TestTranspile_BinaryPrecedence(t *testing.T) {
 	if err != nil {
 		t.Fatalf("transpile: %v", err)
 	}
-	code := hs.Emit(ast)
+	code := hs.Emit(ast, false)
 	hsFile := filepath.Join(outDir, base+".hs")
 	if err := os.WriteFile(hsFile, code, 0o644); err != nil {
 		t.Fatalf("write: %v", err)
@@ -145,7 +145,7 @@ func TestTranspile_LetAndPrint(t *testing.T) {
 	if err != nil {
 		t.Fatalf("transpile: %v", err)
 	}
-	code := hs.Emit(ast)
+	code := hs.Emit(ast, false)
 	hsFile := filepath.Join(outDir, base+".hs")
 	if err := os.WriteFile(hsFile, code, 0o644); err != nil {
 		t.Fatalf("write: %v", err)
@@ -190,7 +190,7 @@ func TestTranspile_TypedLet(t *testing.T) {
 	if err != nil {
 		t.Fatalf("transpile: %v", err)
 	}
-	code := hs.Emit(ast)
+	code := hs.Emit(ast, false)
 	hsFile := filepath.Join(outDir, base+".hs")
 	if err := os.WriteFile(hsFile, code, 0o644); err != nil {
 		t.Fatalf("write: %v", err)
@@ -235,7 +235,7 @@ func TestTranspile_FunCall(t *testing.T) {
 	if err != nil {
 		t.Fatalf("transpile: %v", err)
 	}
-	code := hs.Emit(ast)
+	code := hs.Emit(ast, false)
 	hsFile := filepath.Join(outDir, base+".hs")
 	if err := os.WriteFile(hsFile, code, 0o644); err != nil {
 		t.Fatalf("write: %v", err)
@@ -280,7 +280,7 @@ func TestTranspile_FunExprInLet(t *testing.T) {
 	if err != nil {
 		t.Fatalf("transpile: %v", err)
 	}
-	code := hs.Emit(ast)
+	code := hs.Emit(ast, false)
 	hsFile := filepath.Join(outDir, base+".hs")
 	if err := os.WriteFile(hsFile, code, 0o644); err != nil {
 		t.Fatalf("write: %v", err)
@@ -325,7 +325,7 @@ func TestTranspile_FunThreeArgs(t *testing.T) {
 	if err != nil {
 		t.Fatalf("transpile: %v", err)
 	}
-	code := hs.Emit(ast)
+	code := hs.Emit(ast, false)
 	hsFile := filepath.Join(outDir, base+".hs")
 	if err := os.WriteFile(hsFile, code, 0o644); err != nil {
 		t.Fatalf("write: %v", err)
@@ -370,7 +370,7 @@ func TestTranspile_StringConcat(t *testing.T) {
 	if err != nil {
 		t.Fatalf("transpile: %v", err)
 	}
-	code := hs.Emit(ast)
+	code := hs.Emit(ast, false)
 	hsFile := filepath.Join(outDir, base+".hs")
 	if err := os.WriteFile(hsFile, code, 0o644); err != nil {
 		t.Fatalf("write: %v", err)
@@ -415,7 +415,7 @@ func TestTranspile_LenString(t *testing.T) {
 	if err != nil {
 		t.Fatalf("transpile: %v", err)
 	}
-	code := hs.Emit(ast)
+	code := hs.Emit(ast, false)
 	hsFile := filepath.Join(outDir, base+".hs")
 	if err := os.WriteFile(hsFile, code, 0o644); err != nil {
 		t.Fatalf("write: %v", err)

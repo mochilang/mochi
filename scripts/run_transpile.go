@@ -29,6 +29,6 @@ func main() {
 		fmt.Fprintln(os.Stderr, err)
 		panic(err)
 	}
-	code := hs.Emit(hprog)
+	code := hs.Emit(hprog, false)
 	os.WriteFile(os.Args[2], code, 0644)
 }
