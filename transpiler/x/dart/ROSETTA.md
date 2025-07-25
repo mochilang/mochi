@@ -2,7 +2,7 @@
 
 This directory contains Dart code generated from Mochi programs in `tests/rosetta/x/Mochi`. Each program has a `.dart` file and `.out` output. Compilation or runtime failures are captured in a `.error` file.
 
-Compiled and ran: 130/284
+Compiled and ran: 138/284
 
 ## Checklist
 | Index | Name | Status | Duration | Memory |
@@ -143,16 +143,16 @@ Compiled and ran: 130/284
 | 134 | boyer-moore-string-search | ✓ | 6.452ms | 12.0 MB |
 | 135 | brazilian-numbers | ✓ | 2.607762s | 640.0 KB |
 | 136 | break-oo-privacy | ✓ | 10.556ms | 12.1 MB |
-| 137 | brilliant-numbers |   |  |  |
-| 138 | brownian-tree |   |  |  |
+| 137 | brilliant-numbers | ✓ |  |  |
+| 138 | brownian-tree | ✓ |  |  |
 | 139 | bulls-and-cows-player |   |  |  |
 | 140 | bulls-and-cows |   |  |  |
-| 141 | burrows-wheeler-transform |   |  |  |
-| 142 | caesar-cipher-1 |   |  |  |
-| 143 | caesar-cipher-2 |   |  |  |
-| 144 | calculating-the-value-of-e |   |  |  |
-| 145 | calendar---for-real-programmers-1 |   |  |  |
-| 146 | calendar---for-real-programmers-2 |   |  |  |
+| 141 | burrows-wheeler-transform | ✓ |  |  |
+| 142 | caesar-cipher-1 | ✓ |  |  |
+| 143 | caesar-cipher-2 | ✓ |  |  |
+| 144 | calculating-the-value-of-e | ✓ |  |  |
+| 145 | calendar---for-real-programmers-1 | ✓ |  |  |
+| 146 | calendar---for-real-programmers-2 | ✓ |  |  |
 | 147 | calendar |   |  |  |
 | 148 | calkin-wilf-sequence |   |  |  |
 | 149 | call-a-foreign-language-function |   |  |  |
@@ -292,4 +292,4 @@ Compiled and ran: 130/284
 | 283 | define-a-primitive-data-type |   |  |  |
 | 284 | md5 |   |  |  |
 
-_Last updated: 2025-07-25 17:27 +0700_
+_Last updated: 2025-07-25 19:02 +0700_
