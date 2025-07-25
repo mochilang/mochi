@@ -84,9 +84,11 @@ func transpileAndRunRacket(root, srcPath, wantPath, outDir, name string) error {
 		return fmt.Errorf("write rkt: %w", err)
 	}
 	cmd := exec.Command("racket", rktFile)
-	envs := append(os.Environ(), "MOCHI_ROOT="+root, "MOCHI_NOW_SEED=1")
+	envs := append(os.Environ(), "MOCHI_ROOT="+root)
 	if bench {
 		envs = append(envs, "MOCHI_BENCHMARK=1")
+	} else {
+		envs = append(envs, "MOCHI_NOW_SEED=1")
 	}
 	cmd.Env = envs
 	if data, err := os.ReadFile(strings.TrimSuffix(srcPath, ".mochi") + ".in"); err == nil {
@@ -97,6 +99,13 @@ func transpileAndRunRacket(root, srcPath, wantPath, outDir, name string) error {
 	if err != nil {
 		writeRacketError(outDir, name, fmt.Errorf("run error: %v\n%s", err, out))
 		return err
+	}
+	if bench {
+		if err := os.WriteFile(filepath.Join(outDir, name+".out"), got, 0o644); err != nil {
+			return fmt.Errorf("write out: %w", err)
+		}
+		_ = os.Remove(filepath.Join(outDir, name+".error"))
+		return nil
 	}
 	want, _ := os.ReadFile(wantPath)
 	want = bytes.TrimSpace(want)
