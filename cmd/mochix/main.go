@@ -705,11 +705,11 @@ func transpileProgram(lang string, env *types.Env, prog *parser.Program, root, s
 		}
 		return tstranspiler.Emit(p), nil
 	case "py", "python":
-		p, err := py.Transpile(prog, env)
+		bench := os.Getenv("MOCHI_BENCHMARK") == "true"
+		p, err := py.Transpile(prog, env, bench)
 		if err != nil {
 			return nil, err
 		}
-		bench := os.Getenv("MOCHI_BENCHMARK") == "true"
 		var buf bytes.Buffer
 		if err := py.Emit(&buf, p, bench); err != nil {
 			return nil, err
