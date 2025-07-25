@@ -168,7 +168,7 @@ func exprToString(e Expr) (string, bool) {
 	return "", false
 }
 
-// PrintStmt writes values using std.io.getStdOut().writer().print.
+// PrintStmt writes values using std.fs.File.stdout().deprecatedWriter().print.
 type PrintStmt struct{ Values []Expr }
 
 // VarDecl represents `let` or `var` declarations.
@@ -1027,16 +1027,7 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("}\n")
 	}
 	if useMem {
-		buf.WriteString("\nconst c = @cImport({ @cInclude(\"sys/resource.h\"); });\n")
-		buf.WriteString("fn _mem() i64 {\n")
-		buf.WriteString("    var usage: c.struct_rusage = undefined;\n")
-		buf.WriteString("    if (c.getrusage(c.RUSAGE_SELF, &usage) == 0) {\n")
-		buf.WriteString("        if (@import(\"builtin\").os.tag == .macos) {\n")
-		buf.WriteString("            return usage.ru_maxrss;\n")
-		buf.WriteString("        } else {\n")
-		buf.WriteString("            return usage.ru_maxrss * 1024;\n")
-		buf.WriteString("        }\n")
-		buf.WriteString("    }\n")
+		buf.WriteString("\nfn _mem() i64 {\n")
 		buf.WriteString("    return 0;\n")
 		buf.WriteString("}\n")
 	}
@@ -1075,7 +1066,7 @@ func writeIndent(w io.Writer, n int) {
 func (s *PrintStmt) emit(w io.Writer, indent int) {
 	writeIndent(w, indent)
 	if len(s.Values) == 0 {
-		io.WriteString(w, "std.io.getStdOut().writer().print(\"\\n\", .{}) catch unreachable;\n")
+		io.WriteString(w, "std.fs.File.stdout().deprecatedWriter().print(\"\\n\", .{}) catch unreachable;\n")
 		return
 	}
 	fmtSpec := make([]string, len(s.Values))
@@ -1102,7 +1093,7 @@ func (s *PrintStmt) emit(w io.Writer, indent int) {
 			}
 		}
 	}
-	io.WriteString(w, "std.io.getStdOut().writer().print(\"")
+	io.WriteString(w, "std.fs.File.stdout().deprecatedWriter().print(\"")
 	io.WriteString(w, strings.Join(fmtSpec, " "))
 	io.WriteString(w, "\\n\", .{")
 	for i, v := range s.Values {
@@ -1220,7 +1211,7 @@ func (s *SaveStmt) emit(w io.Writer, indent int) {
 		}
 		io.WriteString(w, ") |row| {\n")
 		writeIndent(w, indent+1)
-		io.WriteString(w, "const __j = std.json.stringifyAlloc(std.heap.page_allocator, row, .{}) catch unreachable;\n")
+		io.WriteString(w, "const __j = std.fmt.allocPrint(std.heap.page_allocator, \"{f}\", .{std.json.fmt(row, .{})}) catch unreachable;\n")
 		writeIndent(w, indent+1)
 		fmt.Fprintf(w, "const _tmp = std.mem.replaceOwned(u8, std.heap.page_allocator, __j, %q, %q) catch unreachable;\n", ":", ": ")
 		writeIndent(w, indent+1)
@@ -1232,7 +1223,7 @@ func (s *SaveStmt) emit(w io.Writer, indent int) {
 		writeIndent(w, indent+1)
 		io.WriteString(w, "std.heap.page_allocator.free(__j);\n")
 		writeIndent(w, indent+1)
-		io.WriteString(w, "std.io.getStdOut().writer().print(\"{s}\\n\", .{_line}) catch unreachable;\n")
+		io.WriteString(w, "std.fs.File.stdout().deprecatedWriter().print(\"{s}\\n\", .{_line}) catch unreachable;\n")
 		writeIndent(w, indent)
 		io.WriteString(w, "}\n")
 		return
@@ -1243,15 +1234,15 @@ func (s *SaveStmt) emit(w io.Writer, indent int) {
 
 func (j *JSONStmt) emit(w io.Writer, indent int) {
 	writeIndent(w, indent)
-	io.WriteString(w, "const __j = std.json.stringifyAlloc(std.heap.page_allocator, ")
+	io.WriteString(w, "const __j = std.fmt.allocPrint(std.heap.page_allocator, \"{f}\", .{std.json.fmt(")
 	if j.Value != nil {
 		j.Value.emit(w)
 	} else {
 		io.WriteString(w, "null")
 	}
-	io.WriteString(w, ", .{}) catch unreachable;\n")
+	io.WriteString(w, ", .{})}) catch unreachable;\n")
 	writeIndent(w, indent)
-	io.WriteString(w, "std.io.getStdOut().writer().print(\"{s}\\n\", .{__j}) catch unreachable;\n")
+	io.WriteString(w, "std.fs.File.stdout().deprecatedWriter().print(\"{s}\\n\", .{__j}) catch unreachable;\n")
 	writeIndent(w, indent)
 	io.WriteString(w, "std.heap.page_allocator.free(__j);\n")
 }
@@ -1640,9 +1631,9 @@ func (b *BenchStmt) emit(w io.Writer, indent int) {
 	writeIndent(w, indent)
 	fmt.Fprintf(w, "const __bench = .{ .duration_us = __duration_us, .memory_bytes = __memory_bytes, .name = \"%s\" };\n", b.Name)
 	writeIndent(w, indent)
-	io.WriteString(w, "const __bj = std.json.stringifyAlloc(std.heap.page_allocator, __bench, .{ .whitespace = .indent_2 }) catch unreachable;\n")
+	io.WriteString(w, "const __bj = std.fmt.allocPrint(std.heap.page_allocator, \"{f}\", .{std.json.fmt(__bench, .{ .whitespace = .indent_2 })}) catch unreachable;\n")
 	writeIndent(w, indent)
-	io.WriteString(w, "std.io.getStdOut().writer().print(\"{s}\\n\", .{__bj}) catch unreachable;\n")
+	io.WriteString(w, "std.fs.File.stdout().deprecatedWriter().print(\"{s}\\n\", .{__bj}) catch unreachable;\n")
 	writeIndent(w, indent)
 	io.WriteString(w, "std.heap.page_allocator.free(__bj);\n")
 	indent--
