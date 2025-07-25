@@ -2,21 +2,21 @@
 
 Generated Scala code for Rosetta tasks in `tests/rosetta/x/Mochi`. Each program has a `.scala` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
 
-## Golden Test Checklist (91/284)
-_Last updated: 2025-07-25 10:20 +0700_
+## Golden Test Checklist (92/284)
+_Last updated: 2025-07-25 10:52 +0700_
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
-| 1 | 100-doors-2 | ✓ | 12µs | 8.7 MB |
-| 2 | 100-doors-3 | ✓ |  |  |
-| 3 | 100-doors | ✓ |  |  |
-| 4 | 100-prisoners | ✓ |  |  |
-| 5 | 15-puzzle-game | ✓ |  |  |
-| 6 | 15-puzzle-solver | ✓ |  |  |
-| 7 | 2048 | ✓ |  |  |
-| 8 | 21-game | ✓ |  |  |
-| 9 | 24-game-solve | ✓ |  |  |
-| 10 | 24-game | error |  |  |
+| 1 | 100-doors-2 | ✓ | 8µs | 8.7 MB |
+| 2 | 100-doors-3 | ✓ | 5µs | 8.7 MB |
+| 3 | 100-doors | ✓ | 8µs | 8.7 MB |
+| 4 | 100-prisoners | ✓ | 4.792ms | 8.7 MB |
+| 5 | 15-puzzle-game | ✓ | 21µs | 8.7 MB |
+| 6 | 15-puzzle-solver | ✓ | 3µs | 8.7 MB |
+| 7 | 2048 | ✓ | 19µs | 8.7 MB |
+| 8 | 21-game | ✓ | 7µs | 8.7 MB |
+| 9 | 24-game-solve | ✓ | 39µs | 8.8 MB |
+| 10 | 24-game | ✓ | 13µs | 8.8 MB |
 | 11 | 4-rings-or-4-squares-puzzle | ✓ |  |  |
 | 12 | 9-billion-names-of-god-the-integer | ✓ |  |  |
 | 13 | 99-bottles-of-beer-2 | ✓ |  |  |

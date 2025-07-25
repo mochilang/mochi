@@ -1,3 +1,63 @@
+## Progress (2025-07-25 10:49 +0700)
+- scala rosetta: handle BenchStmt breaks
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-25 10:49 +0700)
+- scala rosetta: handle BenchStmt breaks
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-25 10:49 +0700)
+- scala rosetta: handle BenchStmt breaks
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-25 10:49 +0700)
+- scala rosetta: handle BenchStmt breaks
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-25 10:49 +0700)
+- scala rosetta: handle BenchStmt breaks
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-25 10:49 +0700)
+- scala rosetta: handle BenchStmt breaks
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-25 10:49 +0700)
+- scala rosetta: handle BenchStmt breaks
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-25 10:47 +0700)
+- scala rosetta: regenerate index 3
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-25 10:47 +0700)
+- scala rosetta: regenerate index 3
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-25 10:47 +0700)
+- scala rosetta: regenerate index 1-2
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-25 10:39 +0700)
+- scala transpiler: add bench mode flag and bench support
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-25 10:39 +0700)
+- scala transpiler: add bench mode flag and bench support
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-25 10:39 +0700)
+- scala transpiler: add bench mode flag and bench support
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-25 10:39 +0700)
+- scala transpiler: add bench mode flag and bench support
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-25 10:39 +0700)
+- scala transpiler: add bench mode flag and bench support
+- Regenerated golden files - 93/104 vm valid programs passing
+
 ## Progress (2025-07-25 01:09 +0700)
 - scala transpiler: handle function expr param types
 - Regenerated golden files - 92/103 vm valid programs passing

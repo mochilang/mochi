@@ -2,12 +2,13 @@
 
 Generated Scala code for programs in `tests/vm/valid`. Each program has a `.scala` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
 
-## Golden Test Checklist (92/103)
-_Last updated: 2025-07-25 01:27 +0700_
+## Golden Test Checklist (93/104)
+_Last updated: 2025-07-25 10:52 +0700_
 
 - [x] append_builtin
 - [x] avg_builtin
 - [x] basic_compare
+- [x] bench_block
 - [x] binary_precedence
 - [x] bool_chain
 - [x] break_continue
