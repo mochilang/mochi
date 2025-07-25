@@ -1,8 +1,0 @@
-exit status 2
-File "/workspace/mochi/tests/rosetta/transpiler/OCaml/adfgvx-cipher.ml", line 1:
-Warning 24 [bad-module-name]: bad source file name: "Adfgvx-cipher" is not a valid module name.
-File "/workspace/mochi/tests/rosetta/transpiler/OCaml/adfgvx-cipher.ml", line 247, characters 58-83:
-247 |   colStr := (!colStr ^ List.nth (List.nth (!table) (!ri)) (List.nth (!order) (!ci)));
-                                                                ^^^^^^^^^^^^^^^^^^^^^^^^^
-Error: This expression has type Obj.t but an expression was expected of type
-         int

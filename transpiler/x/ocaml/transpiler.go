@@ -31,6 +31,7 @@ var usesMem bool
 var benchMain bool
 var funcMutations = map[string]map[string]bool{}
 var rootEnv *types.Env
+var currentRetTyp string
 
 // Program represents an OCaml program. All statements are emitted inside
 // a `let () =` block.
@@ -798,7 +799,13 @@ type ReturnStmt struct{ Expr Expr }
 func (r *ReturnStmt) emit(w io.Writer) {
 	io.WriteString(w, "  __ret := ")
 	if r.Expr != nil {
-		r.Expr.emit(w)
+		if currentRetTyp != "" {
+			fmt.Fprintf(w, "(Obj.magic (")
+			r.Expr.emit(w)
+			fmt.Fprintf(w, ") : %s)", ocamlType(currentRetTyp))
+		} else {
+			r.Expr.emit(w)
+		}
 	} else {
 		io.WriteString(w, "()")
 	}
@@ -872,6 +879,7 @@ func (f *FunStmt) emit(w io.Writer) {
 		io.WriteString(w, "(Obj.magic 0)")
 	}
 	io.WriteString(w, " in\n")
+	currentRetTyp = f.RetTyp
 	// Function parameters that are mutated are already passed as OCaml
 	// references. Earlier versions of the transpiler created local copies
 	// with `ref` here which prevented modifications from being visible to
@@ -889,6 +897,7 @@ func (f *FunStmt) emit(w io.Writer) {
 		io.WriteString(w, "    !__ret\n")
 	}
 	io.WriteString(w, "  with Return -> !__ret)")
+	currentRetTyp = ""
 	if f.Local {
 		io.WriteString(w, " in\n")
 	} else {
@@ -1915,6 +1924,14 @@ func (c *CastExpr) emit(w io.Writer) {
 		io.WriteString(w, "Obj.repr (")
 		c.Expr.emit(w)
 		io.WriteString(w, ")")
+	case "obj_to_int":
+		io.WriteString(w, "(Obj.magic ")
+		c.Expr.emit(w)
+		io.WriteString(w, " : int)")
+	case "obj_to_float":
+		io.WriteString(w, "(Obj.magic ")
+		c.Expr.emit(w)
+		io.WriteString(w, " : float)")
 	default:
 		c.Expr.emit(w)
 	}
@@ -1940,6 +1957,14 @@ func (c *CastExpr) emitPrint(w io.Writer) {
 	case "float_to_obj":
 		io.WriteString(w, "string_of_float ")
 		c.Expr.emit(w)
+	case "obj_to_int":
+		io.WriteString(w, "string_of_int (Obj.magic ")
+		c.Expr.emit(w)
+		io.WriteString(w, " : int)")
+	case "obj_to_float":
+		io.WriteString(w, "string_of_float (Obj.magic ")
+		c.Expr.emit(w)
+		io.WriteString(w, " : float)")
 	default:
 		c.Expr.emitPrint(w)
 	}
@@ -2237,10 +2262,12 @@ let _now () =
 `
 
 const helperLookupHost = `
-let nil = Obj.repr 0
-
 let _lookup_host _host =
   [Obj.repr ([] : string list); nil]
+`
+
+const helperNil = `
+let nil = Obj.repr 0
 `
 
 const helperMem = `
@@ -2329,6 +2356,10 @@ func defaultValueExpr(typ string) Expr {
 		return &RawExpr{Code: "(Obj.magic 0)"}
 	}
 	if strings.HasPrefix(typ, "list-") {
+		elem := strings.TrimPrefix(typ, "list-")
+		if elem != "" {
+			return &RawExpr{Code: fmt.Sprintf("([] : %s list)", ocamlType(elem))}
+		}
 		return &ListLit{Elems: nil}
 	}
 	if strings.HasPrefix(typ, "map-") {
@@ -2373,6 +2404,8 @@ func (p *Program) Emit() []byte {
 	buf.WriteString(header())
 	buf.WriteString("\n")
 	buf.WriteString(helperShow)
+	buf.WriteString("\n")
+	buf.WriteString(helperNil)
 	buf.WriteString("\n")
 	if p.UsesStrModule() {
 		buf.WriteString("open Str\n\n")
@@ -3048,7 +3081,17 @@ func convertBinary(b *parser.BinaryExpr, env *types.Env, vars map[string]VarInfo
 		resTyp := ltyp
 		switch info.op {
 		case "+", "-", "*", "/", "%":
-			if info.op == "+" && strings.HasPrefix(ltyp, "list") && strings.HasPrefix(rtyp, "list") {
+			if info.op == "+" && (ltyp == "string" || rtyp == "string") {
+				if ltyp != "string" {
+					left = &FuncCall{Name: "__show", Args: []Expr{left}, Ret: "string"}
+					ltyp = "string"
+				}
+				if rtyp != "string" {
+					right = &FuncCall{Name: "__show", Args: []Expr{right}, Ret: "string"}
+					rtyp = "string"
+				}
+				resTyp = "string"
+			} else if info.op == "+" && strings.HasPrefix(ltyp, "list") && strings.HasPrefix(rtyp, "list") {
 				resTyp = ltyp
 				info.op = "union_all"
 			} else if info.op == "+" && ltyp == "string" && rtyp == "string" {
@@ -3059,6 +3102,14 @@ func convertBinary(b *parser.BinaryExpr, env *types.Env, vars map[string]VarInfo
 				resTyp = "string"
 			} else if info.op == "+" && rtyp == "string" && strings.HasPrefix(ltyp, "list") {
 				left = &StrJoin{List: left}
+				ltyp = "string"
+				resTyp = "string"
+			} else if info.op == "+" && ltyp == "string" && rtyp == "" {
+				right = &FuncCall{Name: "__show", Args: []Expr{right}, Ret: "string"}
+				rtyp = "string"
+				resTyp = "string"
+			} else if info.op == "+" && rtyp == "string" && ltyp == "" {
+				left = &FuncCall{Name: "__show", Args: []Expr{left}, Ret: "string"}
 				ltyp = "string"
 				resTyp = "string"
 			} else if ltyp == "float" || rtyp == "float" {
@@ -3522,6 +3573,10 @@ func convertPostfix(p *parser.PostfixExpr, env *types.Env, vars map[string]VarIn
 			target := typeRefString(op.Cast.Type)
 			if typ == "string" && target == "int" {
 				expr = &CastExpr{Expr: expr, Type: target}
+			} else if target == "int" && typ != "int" {
+				expr = &CastExpr{Expr: expr, Type: "obj_to_int"}
+			} else if target == "float" && typ != "float" && typ != "int" {
+				expr = &CastExpr{Expr: expr, Type: "obj_to_float"}
 			} else if typ == "int" && target == "float" {
 				expr = &CastExpr{Expr: expr, Type: "int_to_float"}
 			} else if typ == "float" && target == "int" {
@@ -3774,6 +3829,9 @@ func convertLiteral(l *parser.Literal) (Expr, string, error) {
 	}
 	if l.Str != nil {
 		return &StringLit{Value: *l.Str}, "string", nil
+	}
+	if l.Null {
+		return &RawExpr{Code: "nil"}, "", nil
 	}
 	return nil, "", fmt.Errorf("unsupported literal")
 }

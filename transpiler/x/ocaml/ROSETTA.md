@@ -2,7 +2,7 @@
 
 This directory contains OCaml code generated from Rosetta Code programs in `tests/rosetta/x/Mochi`.
 
-Completed programs: 52/284
+Completed programs: 53/284
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -36,16 +36,16 @@ Completed programs: 52/284
 | 28 | ackermann-function-2 | ✓ | 152.0µs | 368B |
 | 29 | ackermann-function-3 | ✓ | 135.0µs | 1.61KB |
 | 30 | ackermann-function | ✓ | 519.0µs | 368B |
-| 31 | active-directory-connect | ✓ | 19.0µs | 248B |
-| 32 | active-directory-search-for-a-user | ✓ | 25.0µs | 560B |
-| 33 | active-object | ✓ | 746.0µs | 256.98KB |
-| 34 | add-a-variable-to-a-class-instance-at-runtime | ✓ | 31.0µs | 1016B |
-| 35 | additive-primes | ✓ | 156.0µs | 5.68KB |
-| 36 | address-of-a-variable | ✓ | 47.0µs | 744B |
-| 37 | adfgvx-cipher | error |  |  |
-| 38 | aks-test-for-primes | ✓ | 102.0µs | 6.47KB |
+| 31 | active-directory-connect | ✓ | 12.0µs | 248B |
+| 32 | active-directory-search-for-a-user | ✓ | 31.0µs | 560B |
+| 33 | active-object | ✓ | 242.0µs | 256.98KB |
+| 34 | add-a-variable-to-a-class-instance-at-runtime | ✓ | 27.0µs | 1016B |
+| 35 | additive-primes | ✓ | 166.0µs | 5.68KB |
+| 36 | address-of-a-variable | ✓ | 46.0µs | 744B |
+| 37 | adfgvx-cipher | ✓ | 605.0µs | 231.65KB |
+| 38 | aks-test-for-primes | ✓ | 94.0µs | 6.47KB |
 | 39 | algebraic-data-types | error |  |  |
-| 40 | align-columns | ✓ | 282.0µs | 50.18KB |
+| 40 | align-columns | ✓ | 248.0µs | 50.18KB |
 | 41 | aliquot-sequence-classifications | ✓ |  |  |
 | 42 | almkvist-giullera-formula-for-pi | error |  |  |
 | 43 | almost-prime | ✓ |  |  |
@@ -290,4 +290,4 @@ Completed programs: 52/284
 | 282 | deepcopy-1 |   |  |  |
 | 283 | define-a-primitive-data-type |   |  |  |
 | 284 | md5 |   |  |  |
-Last updated 2025-07-25 21:12 +0700
+Last updated 2025-07-26 00:13 +0700
