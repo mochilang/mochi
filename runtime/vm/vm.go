@@ -7266,6 +7266,9 @@ func (fc *funcCompiler) evalConstPostfix(p *parser.PostfixExpr) (Value, bool) {
 		switch {
 		case op.Cast != nil:
 			typ := resolveTypeRef(op.Cast.Type, fc.comp.env)
+			if _, ok := typ.(types.BigRatType); ok {
+				return Value{}, false
+			}
 			cv, err := castValue(typ, v.ToAny())
 			if err != nil {
 				return Value{}, false
@@ -8056,6 +8059,8 @@ func resolveTypeRef(t *parser.TypeRef, env *types.Env) types.Type {
 			return types.StringType{}
 		case "bool":
 			return types.BoolType{}
+		case "bigrat":
+			return types.BigRatType{}
 		default:
 			if st, ok := env.GetStruct(*t.Simple); ok {
 				return st
@@ -8103,6 +8108,35 @@ func castValue(t types.Type, v any) (any, error) {
 		case string:
 			if bi, ok := new(big.Int).SetString(x, 10); ok {
 				return bi, nil
+			}
+			return nil, fmt.Errorf("cannot cast %q to %s", x, t)
+		default:
+			return nil, fmt.Errorf("cannot cast %T to %s", v, t)
+		}
+	case types.BigRatType:
+		if v == nil {
+			return big.NewRat(0, 1), nil
+		}
+		switch x := v.(type) {
+		case *big.Rat:
+			if x == nil {
+				return (*big.Rat)(nil), nil
+			}
+			return new(big.Rat).Set(x), nil
+		case *big.Int:
+			if x == nil {
+				return big.NewRat(0, 1), nil
+			}
+			return new(big.Rat).SetInt(x), nil
+		case int:
+			return big.NewRat(int64(x), 1), nil
+		case float64:
+			r := new(big.Rat)
+			r.SetFloat64(x)
+			return r, nil
+		case string:
+			if r, ok := new(big.Rat).SetString(x); ok {
+				return r, nil
 			}
 			return nil, fmt.Errorf("cannot cast %q to %s", x, t)
 		default:

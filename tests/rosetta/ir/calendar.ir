@@ -1,0 +1,217 @@
+func main (regs=68)
+  // let daysInMonth = [31,28,31,30,31,30,31,31,30,31,30,31]
+  Const        r5, [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+  Move         r0, r5
+  SetGlobal    0,0,0,0
+  // let start = [3,6,6,2,4,0,2,5,1,3,6,1]  // 0=Sun
+  Const        r6, [3, 6, 6, 2, 4, 0, 2, 5, 1, 3, 6, 1]
+  Move         r1, r6
+  SetGlobal    1,1,0,0
+  // let months = [" January ", " February", "  March  ", "  April  ",
+  Const        r7, [" January ", " February", "  March  ", "  April  ", "   May   ", "   June  ", "   July  ", "  August ", "September", " October ", " November", " December"]
+  Move         r2, r7
+  SetGlobal    2,2,0,0
+  // let days = ["Su","Mo","Tu","We","Th","Fr","Sa"]
+  Const        r8, ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"]
+  Move         r3, r8
+  SetGlobal    3,3,0,0
+  // print("                                [SNOOPY]\n")
+  Const        r9, "                                [SNOOPY]\n"
+  Print        r9
+  // print("                                  1969\n")
+  Const        r10, "                                  1969\n"
+  Print        r10
+  // var qtr = 0
+  Const        r11, 0
+  Move         r4, r11
+  SetGlobal    4,4,0,0
+L17:
+  // while qtr < 4 {
+  Const        r12, 4
+  LessInt      r13, r4, r12
+  JumpIfFalse  r13, L0
+  // var mi = 0
+  Const        r11, 0
+  Move         r14, r11
+L2:
+  // while mi < 3 {
+  Const        r15, 3
+  LessInt      r16, r14, r15
+  JumpIfFalse  r16, L1
+  // print("      " + months[qtr*3+mi] + "           ", false)
+  Const        r17, "      "
+  Const        r15, 3
+  MulInt       r18, r4, r15
+  AddInt       r19, r18, r14
+  Index        r20, r2, r19
+  Add          r21, r17, r20
+  Const        r22, "           "
+  Add          r23, r21, r22
+  Const        r24, false
+  Print2       r23, r24
+  // mi = mi + 1
+  Const        r25, 1
+  AddInt       r26, r14, r25
+  Move         r14, r26
+  // while mi < 3 {
+  Jump         L2
+L1:
+  // print("")
+  Const        r27, ""
+  Print        r27
+  // mi = 0
+  Const        r11, 0
+  Move         r14, r11
+L6:
+  // while mi < 3 {
+  Const        r15, 3
+  LessInt      r28, r14, r15
+  JumpIfFalse  r28, L3
+  // var d = 0
+  Const        r11, 0
+  Move         r29, r11
+L5:
+  // while d < 7 {
+  Const        r30, 7
+  LessInt      r31, r29, r30
+  JumpIfFalse  r31, L4
+  // print(" " + days[d], false)
+  Const        r32, " "
+  Index        r33, r3, r29
+  Add          r34, r32, r33
+  Const        r24, false
+  Print2       r34, r24
+  // d = d + 1
+  Const        r25, 1
+  AddInt       r35, r29, r25
+  Move         r29, r35
+  // while d < 7 {
+  Jump         L5
+L4:
+  // print("     ", false)
+  Const        r36, "     "
+  Const        r24, false
+  Print2       r36, r24
+  // mi = mi + 1
+  Const        r25, 1
+  AddInt       r37, r14, r25
+  Move         r14, r37
+  // while mi < 3 {
+  Jump         L6
+L3:
+  // print("")
+  Const        r27, ""
+  Print        r27
+  // var week = 0
+  Const        r11, 0
+  Move         r38, r11
+L16:
+  // while week < 6 {
+  Const        r39, 6
+  LessInt      r40, r38, r39
+  JumpIfFalse  r40, L7
+  // mi = 0
+  Const        r11, 0
+  Move         r14, r11
+L15:
+  // while mi < 3 {
+  Const        r15, 3
+  LessInt      r41, r14, r15
+  JumpIfFalse  r41, L8
+  // var day = 0
+  Const        r11, 0
+  Move         r42, r11
+L14:
+  // while day < 7 {
+  Const        r30, 7
+  LessInt      r43, r42, r30
+  JumpIfFalse  r43, L9
+  // let m = qtr*3 + mi
+  Const        r15, 3
+  MulInt       r44, r4, r15
+  AddInt       r45, r44, r14
+  Move         r46, r45
+  // let val = week*7 + day - start[m] + 1
+  Const        r30, 7
+  MulInt       r47, r38, r30
+  AddInt       r48, r47, r42
+  Index        r49, r1, r46
+  Sub          r50, r48, r49
+  Const        r25, 1
+  Add          r51, r50, r25
+  Move         r52, r51
+  // if val >= 1 && val <= daysInMonth[m] {
+  Const        r25, 1
+  LessEq       r53, r25, r52
+  Index        r54, r0, r46
+  LessEq       r55, r52, r54
+  Move         r56, r53
+  JumpIfFalse  r56, L10
+  Move         r56, r55
+L10:
+  JumpIfFalse  r56, L11
+  // var s = str(val)
+  Str          r57, r52
+  Move         r58, r57
+  // if len(s) == 1 { s = " " + s }
+  Len          r59, r58
+  Const        r25, 1
+  EqualInt     r60, r59, r25
+  JumpIfFalse  r60, L12
+  Const        r32, " "
+  Add          r61, r32, r58
+  Move         r58, r61
+L12:
+  // print(" " + s, false)
+  Const        r32, " "
+  Add          r62, r32, r58
+  Const        r24, false
+  Print2       r62, r24
+  // if val >= 1 && val <= daysInMonth[m] {
+  Jump         L13
+L11:
+  // print("   ", false)
+  Const        r63, "   "
+  Const        r24, false
+  Print2       r63, r24
+L13:
+  // day = day + 1
+  Const        r25, 1
+  AddInt       r64, r42, r25
+  Move         r42, r64
+  // while day < 7 {
+  Jump         L14
+L9:
+  // print("     ", false)
+  Const        r36, "     "
+  Const        r24, false
+  Print2       r36, r24
+  // mi = mi + 1
+  Const        r25, 1
+  AddInt       r65, r14, r25
+  Move         r14, r65
+  // while mi < 3 {
+  Jump         L15
+L8:
+  // print("")
+  Const        r27, ""
+  Print        r27
+  // week = week + 1
+  Const        r25, 1
+  AddInt       r66, r38, r25
+  Move         r38, r66
+  // while week < 6 {
+  Jump         L16
+L7:
+  // print("")
+  Const        r27, ""
+  Print        r27
+  // qtr = qtr + 1
+  Const        r25, 1
+  AddInt       r67, r4, r25
+  Move         r4, r67
+  SetGlobal    4,4,0,0
+  // while qtr < 4 {
+  Jump         L17
+L0:
+  Return       r0
