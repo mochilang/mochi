@@ -1,3 +1,29 @@
+var _nowSeed = 0L
+var _nowSeeded = false
+fun _now(): Int {
+    if (!_nowSeeded) {
+        System.getenv("MOCHI_NOW_SEED")?.toLongOrNull()?.let {
+            _nowSeed = it
+            _nowSeeded = true
+        }
+    }
+    return if (_nowSeeded) {
+        _nowSeed = (_nowSeed * 1664525 + 1013904223) % 2147483647
+        kotlin.math.abs(_nowSeed.toInt())
+    } else {
+        kotlin.math.abs(System.nanoTime().toInt())
+    }
+}
+
+fun toJson(v: Any?): String = when (v) {
+    null -> "null"
+    is String -> "\"" + v.replace("\"", "\\\"") + "\""
+    is Boolean, is Number -> v.toString()
+    is Map<*, *> -> v.entries.joinToString(prefix = "{", postfix = "}") { toJson(it.key.toString()) + ":" + toJson(it.value) }
+    is Iterable<*> -> v.joinToString(prefix = "[", postfix = "]") { toJson(it) }
+    else -> toJson(v.toString())
+}
+
 fun fields(s: String): MutableList<String> {
     var words: MutableList<String> = mutableListOf()
     var cur: String = ""
@@ -17,7 +43,7 @@ fun fields(s: String): MutableList<String> {
     if (cur.length > 0) {
         words = run { val _tmp = words.toMutableList(); _tmp.add(cur); _tmp } as MutableList<String>
     }
-    return words as MutableList<String>
+    return words
 }
 
 fun padRight(s: String, width: Int): String {
@@ -27,7 +53,7 @@ fun padRight(s: String, width: Int): String {
         out = out + " "
         i = i + 1
     }
-    return out as String
+    return out
 }
 
 fun join(xs: MutableList<String>, sep: String): String {
@@ -40,13 +66,13 @@ fun join(xs: MutableList<String>, sep: String): String {
         res = res + xs[i]
         i = i + 1
     }
-    return res as String
+    return res
 }
 
 fun validate(commands: MutableList<String>, words: MutableList<String>, mins: MutableList<Int>): MutableList<String> {
     var results: MutableList<String> = mutableListOf()
     if (words.size == 0) {
-        return results as MutableList<String>
+        return results
     }
     var wi: Int = 0
     while (wi < words.size) {
@@ -72,12 +98,12 @@ fun validate(commands: MutableList<String>, words: MutableList<String>, mins: Mu
         }
         wi = wi + 1
     }
-    return results as MutableList<String>
+    return results
 }
 
 fun user_main(): Unit {
     val table: String = ((((("Add ALTer  BAckup Bottom  CAppend Change SCHANGE  CInsert CLAst COMPress Copy " + "COUnt COVerlay CURsor DELete CDelete Down DUPlicate Xedit EXPand EXTract Find ") + "NFind NFINDUp NFUp CFind FINdup FUp FOrward GET Help HEXType Input POWerinput ") + " Join SPlit SPLTJOIN  LOAD  Locate CLocate  LOWercase UPPercase  LPrefix MACRO ") + "MErge MODify MOve MSG Next Overlay PARSE PREServe PURge PUT PUTD  Query  QUIT ") + "READ  RECover REFRESH RENum REPeat  Replace CReplace  RESet  RESTore  RGTLEFT ") + "RIght LEft  SAVE  SET SHift SI  SORT  SOS  STAck STATus  TOP TRAnsfer TypeUp "
-    val commands: MutableList<String> = fields(table) as MutableList<String>
+    val commands: MutableList<String> = fields(table)
     var mins: MutableList<Int> = mutableListOf()
     var i: Int = 0
     while (i < commands.size) {
@@ -95,18 +121,30 @@ fun user_main(): Unit {
         i = i + 1
     }
     val sentence: String = "riG   rePEAT copies  put mo   rest    types   fup.    6       poweRin"
-    val words: MutableList<String> = fields(sentence) as MutableList<String>
-    val results: MutableList<String> = validate(commands, words, mins) as MutableList<String>
+    val words: MutableList<String> = fields(sentence)
+    val results: MutableList<String> = validate(commands, words, mins)
     var out1: String = "user words:  "
     var k: Int = 0
     while (k < words.size) {
-        out1 = (out1 + padRight(words[k], results[k].length) as String) + " "
+        out1 = (out1 + padRight(words[k], results[k].length)) + " "
         k = k + 1
     }
     println(out1)
-    println("full words:  " + join(results, " ") as String)
+    println("full words:  " + join(results, " "))
 }
 
 fun main() {
-    user_main()
+    run {
+        System.gc()
+        val _startMem = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()
+        val _start = _now()
+        user_main()
+        System.gc()
+        val _end = _now()
+        val _endMem = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()
+        val _durationUs = (_end - _start) / 1000
+        val _memDiff = kotlin.math.abs(_endMem - _startMem)
+        val _res = mapOf("duration_us" to _durationUs, "memory_bytes" to _memDiff, "name" to "main")
+        println(toJson(_res))
+    }
 }

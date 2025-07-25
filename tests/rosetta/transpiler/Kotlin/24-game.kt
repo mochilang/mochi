@@ -9,13 +9,22 @@ fun _now(): Int {
     }
     return if (_nowSeeded) {
         _nowSeed = (_nowSeed * 1664525 + 1013904223) % 2147483647
-        _nowSeed.toInt()
+        kotlin.math.abs(_nowSeed.toInt())
     } else {
-        System.nanoTime().toInt()
+        kotlin.math.abs(System.nanoTime().toInt())
     }
 }
 
 fun input(): String = readLine() ?: ""
+
+fun toJson(v: Any?): String = when (v) {
+    null -> "null"
+    is String -> "\"" + v.replace("\"", "\\\"") + "\""
+    is Boolean, is Number -> v.toString()
+    is Map<*, *> -> v.entries.joinToString(prefix = "{", postfix = "}") { toJson(it.key.toString()) + ":" + toJson(it.value) }
+    is Iterable<*> -> v.joinToString(prefix = "[", postfix = "]") { toJson(it) }
+    else -> toJson(v.toString())
+}
 
 fun randDigit(): Int {
     return (_now() % 9) + 1
@@ -98,5 +107,17 @@ fun user_main(): Unit {
 }
 
 fun main() {
-    user_main()
+    run {
+        System.gc()
+        val _startMem = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()
+        val _start = _now()
+        user_main()
+        System.gc()
+        val _end = _now()
+        val _endMem = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()
+        val _durationUs = (_end - _start) / 1000
+        val _memDiff = kotlin.math.abs(_endMem - _startMem)
+        val _res = mapOf("duration_us" to _durationUs, "memory_bytes" to _memDiff, "name" to "main")
+        println(toJson(_res))
+    }
 }
