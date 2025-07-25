@@ -3295,18 +3295,18 @@ func isStringType(t types.Type) bool {
 }
 
 func boolExprFor(e Expr, t types.Type) Expr {
-	if _, ok := t.(types.BoolType); ok {
-		if ix, ok2 := e.(*IndexExpr); ok2 {
-			if vr, ok3 := ix.X.(*VarRef); ok3 && topEnv != nil {
-				if vt, err := topEnv.GetVar(vr.Name); err == nil {
-					if lt, ok4 := vt.(types.ListType); ok4 {
-						if _, ok5 := lt.Elem.(types.AnyType); ok5 {
-							return &AssertExpr{Expr: e, Type: "bool"}
-						}
+	if ix, ok := e.(*IndexExpr); ok {
+		if vr, ok2 := ix.X.(*VarRef); ok2 && topEnv != nil {
+			if vt, err := topEnv.GetVar(vr.Name); err == nil {
+				if lt, ok3 := vt.(types.ListType); ok3 {
+					if _, ok4 := lt.Elem.(types.AnyType); ok4 {
+						return &AssertExpr{Expr: e, Type: "bool"}
 					}
 				}
 			}
 		}
+	}
+	if _, ok := t.(types.BoolType); ok {
 		return e
 	}
 	switch ex := e.(type) {
