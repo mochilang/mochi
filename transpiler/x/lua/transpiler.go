@@ -553,14 +553,36 @@ func (c *CallExpr) emit(w io.Writer) {
 			c.Args[1].emit(w)
 		}
 		io.WriteString(w, ")")
-	case "avg":
-		io.WriteString(w, "(function(lst)\n  local sum = 0\n  for _, v in ipairs(lst) do\n    sum = sum + v\n  end\n  if #lst == 0 then\n    return 0\n  end\n  local r = sum / #lst\n  if r == math.floor(r) then return math.floor(r) end\n  return string.format('%.15f', r)\nend)(")
-		if len(c.Args) > 0 {
-			c.Args[0].emit(w)
-		}
-		io.WriteString(w, ")")
-	case "sum":
-		io.WriteString(w, "(function(lst)\n  local s = 0\n  for _, v in ipairs(lst) do\n    s = s + v\n  end\n  return s\nend)(")
+        case "avg":
+                io.WriteString(w, "(function(lst)\n  local sum = 0\n  for _, v in ipairs(lst) do\n    sum = sum + v\n  end\n  if #lst == 0 then\n    return 0\n  end\n  local r = sum / #lst\n  if r == math.floor(r) then return math.floor(r) end\n  return string.format('%.15f', r)\nend)(")
+                if len(c.Args) > 0 {
+                        c.Args[0].emit(w)
+                }
+                io.WriteString(w, ")")
+       case "write":
+               if len(c.Args) == 0 {
+                       io.WriteString(w, "io.write()")
+                       return
+               }
+               if id, ok := c.Args[0].(*Ident); ok && id.Name == "stdout" {
+                       io.WriteString(w, "io.write(")
+                       for i, a := range c.Args[1:] {
+                               if i > 0 { io.WriteString(w, ", ") }
+                               a.emit(w)
+                       }
+                       io.WriteString(w, ")")
+               } else {
+                       c.Args[0].emit(w)
+                       io.WriteString(w, ":write(")
+                       for i, a := range c.Args[1:] {
+                               if i > 0 { io.WriteString(w, ", ") }
+                               a.emit(w)
+                       }
+                       io.WriteString(w, ")")
+               }
+               return
+        case "sum":
+                io.WriteString(w, "(function(lst)\n  local s = 0\n  for _, v in ipairs(lst) do\n    s = s + v\n  end\n  return s\nend)(")
 		if len(c.Args) > 0 {
 			c.Args[0].emit(w)
 		}

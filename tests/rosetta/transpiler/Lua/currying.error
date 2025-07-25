@@ -1,8 +1,0 @@
-exit status 1
-2^8 = 256
-4³ = 64
-lua: /workspace/mochi/tests/rosetta/transpiler/Lua/currying.lua:44: attempt to call a nil value (field 'Method')
-stack traceback:
-	/workspace/mochi/tests/rosetta/transpiler/Lua/currying.lua:44: in function 'main'
-	/workspace/mochi/tests/rosetta/transpiler/Lua/currying.lua:50: in main chunk
-	[C]: in ?
