@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated IR and outputs from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/ir`.
-Last updated: 2025-07-25 05:09 UTC
+Last updated: 2025-07-25 05:47 UTC
 
-## Rosetta Golden Test Checklist (20/284)
+## Rosetta Golden Test Checklist (21/284)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 116µs | 11.7 KB |
@@ -27,7 +27,7 @@ Last updated: 2025-07-25 05:09 UTC
 | 18 | abbreviations-easy | ✓ | 4.772ms |  |
 | 19 | abbreviations-simple | ✓ | 5.16ms |  |
 | 20 | abc-problem | ✓ | 4.951ms |  |
-| 21 | abelian-sandpile-model-identity |   |  |  |
+| 21 | abelian-sandpile-model-identity | ✓ | 407µs | 516.0 KB |
 | 22 | abelian-sandpile-model |   |  |  |
 | 23 | abstract-type |   |  |  |
 | 24 | abundant-deficient-and-perfect-number-classifications |   |  |  |
