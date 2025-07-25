@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated TypeScript code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/TypeScript`.
-Last updated: 2025-07-25 12:45 UTC
+Last updated: 2025-07-25 13:50 UTC
 
 ## Rosetta Golden Test Checklist (275/284)
 | Index | Name | Status | Duration | Memory |
@@ -154,36 +154,36 @@ Last updated: 2025-07-25 12:45 UTC
 | 145 | calendar---for-real-programmers-1 | ✓ | 571.223ms | 5.4 MB |
 | 146 | calendar---for-real-programmers-2 | ✓ | 571.223ms | 5.1 MB |
 | 147 | calendar | ✓ | 571.223ms | 5.4 MB |
-| 148 | calkin-wilf-sequence | ✓ |  |  |
-| 149 | call-a-foreign-language-function | ✓ |  |  |
-| 150 | call-a-function-1 | ✓ |  |  |
-| 151 | call-a-function-10 | ✓ |  |  |
-| 152 | call-a-function-11 | ✓ |  |  |
-| 153 | call-a-function-12 | ✓ |  |  |
-| 154 | call-a-function-2 | ✓ |  |  |
-| 155 | call-a-function-3 | ✓ |  |  |
-| 156 | call-a-function-4 | ✓ |  |  |
-| 157 | call-a-function-5 | ✓ |  |  |
-| 158 | call-a-function-6 | ✓ |  |  |
-| 159 | call-a-function-7 | ✓ |  |  |
-| 160 | call-a-function-8 | ✓ |  |  |
-| 161 | call-a-function-9 | ✓ |  |  |
-| 162 | call-an-object-method-1 | ✓ |  |  |
-| 163 | call-an-object-method-2 | ✓ |  |  |
-| 164 | call-an-object-method-3 | ✓ |  |  |
-| 165 | call-an-object-method | ✓ |  |  |
-| 166 | camel-case-and-snake-case | ✓ |  |  |
-| 167 | canny-edge-detector | ✓ |  |  |
-| 168 | canonicalize-cidr | ✓ |  |  |
-| 169 | cantor-set | ✓ |  |  |
-| 170 | carmichael-3-strong-pseudoprimes | ✓ |  |  |
-| 171 | cartesian-product-of-two-or-more-lists-1 | ✓ |  |  |
-| 172 | cartesian-product-of-two-or-more-lists-2 | ✓ |  |  |
-| 173 | cartesian-product-of-two-or-more-lists-3 | ✓ |  |  |
-| 174 | cartesian-product-of-two-or-more-lists-4 | ✓ |  |  |
-| 175 | case-sensitivity-of-identifiers | ✓ |  |  |
-| 176 | casting-out-nines | ✓ |  |  |
-| 177 | catalan-numbers-1 | ✓ |  |  |
+| 148 | calkin-wilf-sequence | ✓ | 1.04ms | 512.0 KB |
+| 149 | call-a-foreign-language-function | ✓ | 299µs |  |
+| 150 | call-a-function-1 | ✓ | 4µs |  |
+| 151 | call-a-function-10 | ✓ | 41µs |  |
+| 152 | call-a-function-11 | ✓ | 594µs |  |
+| 153 | call-a-function-12 | ✓ | 5.379ms |  |
+| 154 | call-a-function-2 | ✓ | 28µs |  |
+| 155 | call-a-function-3 | ✓ | 24µs |  |
+| 156 | call-a-function-4 | ✓ | 22µs |  |
+| 157 | call-a-function-5 | ✓ | 345µs | 128.0 KB |
+| 158 | call-a-function-6 | ✓ | 318µs |  |
+| 159 | call-a-function-7 | ✓ | 16µs |  |
+| 160 | call-a-function-8 | ✓ | 88µs |  |
+| 161 | call-a-function-9 | ✓ | 62µs | 128.0 KB |
+| 162 | call-an-object-method-1 | ✓ | 44µs |  |
+| 163 | call-an-object-method-2 | ✓ | 31µs | 128.0 KB |
+| 164 | call-an-object-method-3 | ✓ | 42µs |  |
+| 165 | call-an-object-method | ✓ | 45µs |  |
+| 166 | camel-case-and-snake-case | ✓ | 1.333ms | 512.0 KB |
+| 167 | canny-edge-detector | ✓ | 747µs | 128.0 KB |
+| 168 | canonicalize-cidr | ✓ | 955µs | 128.0 KB |
+| 169 | cantor-set | ✓ | 586µs | 544.0 KB |
+| 170 | carmichael-3-strong-pseudoprimes | ✓ | 1.241ms | 2.7 MB |
+| 171 | cartesian-product-of-two-or-more-lists-1 | ✓ | 506µs | 128.0 KB |
+| 172 | cartesian-product-of-two-or-more-lists-2 | ✓ | 1.15ms | 256.0 KB |
+| 173 | cartesian-product-of-two-or-more-lists-3 | ✓ | 1.279ms | 256.0 KB |
+| 174 | cartesian-product-of-two-or-more-lists-4 | ✓ | 975µs | 256.0 KB |
+| 175 | case-sensitivity-of-identifiers | ✓ | 535µs | 128.0 KB |
+| 176 | casting-out-nines | ✓ | 2.09ms | 2.9 MB |
+| 177 | catalan-numbers-1 | ✓ | 593µs | 128.0 KB |
 | 178 | catalan-numbers-2 | ✓ |  |  |
 | 179 | catalan-numbers-pascals-triangle | ✓ |  |  |
 | 180 | catamorphism | ✓ |  |  |
