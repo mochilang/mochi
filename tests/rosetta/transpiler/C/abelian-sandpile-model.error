@@ -1,0 +1,109 @@
+compile failed: exit status 1: /tmp/ctranspile1744047964/abelian-sandpile-model.mochi.c: In function ‘_mem’:
+/tmp/ctranspile1744047964/abelian-sandpile-model.mochi.c:65:12: warning: ‘mallinfo’ is deprecated [-Wdeprecated-declarations]
+   65 |     struct mallinfo mi = mallinfo();
+      |            ^~~~~~~~
+In file included from /tmp/ctranspile1744047964/abelian-sandpile-model.mochi.c:5:
+/usr/include/malloc.h:114:24: note: declared here
+  114 | extern struct mallinfo mallinfo (void) __THROW __MALLOC_DEPRECATED;
+      |                        ^~~~~~~~
+/tmp/ctranspile1744047964/abelian-sandpile-model.mochi.c: In function ‘handlePile’:
+/tmp/ctranspile1744047964/abelian-sandpile-model.mochi.c:98:51: warning: passing argument 3 of ‘handlePile’ makes pointer from integer without a cast [-Wint-conversion]
+   98 |                 pile = handlePile(pile, pile_len, x, y - 1);
+      |                                                   ^
+      |                                                   |
+      |                                                   int
+/tmp/ctranspile1744047964/abelian-sandpile-model.mochi.c:92:59: note: expected ‘size_t *’ {aka ‘long unsigned int *’} but argument is of type ‘int’
+   92 | int * * handlePile(int * * pile, size_t pile_len, size_t* pile_lens, size_t pile_lens_len, int x, int y) {
+      |                                                   ~~~~~~~~^~~~~~~~~
+/tmp/ctranspile1744047964/abelian-sandpile-model.mochi.c:98:24: error: too few arguments to function ‘handlePile’
+   98 |                 pile = handlePile(pile, pile_len, x, y - 1);
+      |                        ^~~~~~~~~~
+/tmp/ctranspile1744047964/abelian-sandpile-model.mochi.c:92:9: note: declared here
+   92 | int * * handlePile(int * * pile, size_t pile_len, size_t* pile_lens, size_t pile_lens_len, int x, int y) {
+      |         ^~~~~~~~~~
+/tmp/ctranspile1744047964/abelian-sandpile-model.mochi.c:106:53: warning: passing argument 3 of ‘handlePile’ makes pointer from integer without a cast [-Wint-conversion]
+  106 |                 pile = handlePile(pile, pile_len, x - 1, y);
+      |                                                   ~~^~~
+      |                                                     |
+      |                                                     int
+/tmp/ctranspile1744047964/abelian-sandpile-model.mochi.c:92:59: note: expected ‘size_t *’ {aka ‘long unsigned int *’} but argument is of type ‘int’
+   92 | int * * handlePile(int * * pile, size_t pile_len, size_t* pile_lens, size_t pile_lens_len, int x, int y) {
+      |                                                   ~~~~~~~~^~~~~~~~~
+/tmp/ctranspile1744047964/abelian-sandpile-model.mochi.c:106:24: error: too few arguments to function ‘handlePile’
+  106 |                 pile = handlePile(pile, pile_len, x - 1, y);
+      |                        ^~~~~~~~~~
+/tmp/ctranspile1744047964/abelian-sandpile-model.mochi.c:92:9: note: declared here
+   92 | int * * handlePile(int * * pile, size_t pile_len, size_t* pile_lens, size_t pile_lens_len, int x, int y) {
+      |         ^~~~~~~~~~
+/tmp/ctranspile1744047964/abelian-sandpile-model.mochi.c:114:51: warning: passing argument 3 of ‘handlePile’ makes pointer from integer without a cast [-Wint-conversion]
+  114 |                 pile = handlePile(pile, pile_len, x, y + 1);
+      |                                                   ^
+      |                                                   |
+      |                                                   int
+/tmp/ctranspile1744047964/abelian-sandpile-model.mochi.c:92:59: note: expected ‘size_t *’ {aka ‘long unsigned int *’} but argument is of type ‘int’
+   92 | int * * handlePile(int * * pile, size_t pile_len, size_t* pile_lens, size_t pile_lens_len, int x, int y) {
+      |                                                   ~~~~~~~~^~~~~~~~~
+/tmp/ctranspile1744047964/abelian-sandpile-model.mochi.c:114:24: error: too few arguments to function ‘handlePile’
+  114 |                 pile = handlePile(pile, pile_len, x, y + 1);
+      |                        ^~~~~~~~~~
+/tmp/ctranspile1744047964/abelian-sandpile-model.mochi.c:92:9: note: declared here
+   92 | int * * handlePile(int * * pile, size_t pile_len, size_t* pile_lens, size_t pile_lens_len, int x, int y) {
+      |         ^~~~~~~~~~
+/tmp/ctranspile1744047964/abelian-sandpile-model.mochi.c:122:53: warning: passing argument 3 of ‘handlePile’ makes pointer from integer without a cast [-Wint-conversion]
+  122 |                 pile = handlePile(pile, pile_len, x + 1, y);
+      |                                                   ~~^~~
+      |                                                     |
+      |                                                     int
+/tmp/ctranspile1744047964/abelian-sandpile-model.mochi.c:92:59: note: expected ‘size_t *’ {aka ‘long unsigned int *’} but argument is of type ‘int’
+   92 | int * * handlePile(int * * pile, size_t pile_len, size_t* pile_lens, size_t pile_lens_len, int x, int y) {
+      |                                                   ~~~~~~~~^~~~~~~~~
+/tmp/ctranspile1744047964/abelian-sandpile-model.mochi.c:122:24: error: too few arguments to function ‘handlePile’
+  122 |                 pile = handlePile(pile, pile_len, x + 1, y);
+      |                        ^~~~~~~~~~
+/tmp/ctranspile1744047964/abelian-sandpile-model.mochi.c:92:9: note: declared here
+   92 | int * * handlePile(int * * pile, size_t pile_len, size_t* pile_lens, size_t pile_lens_len, int x, int y) {
+      |         ^~~~~~~~~~
+/tmp/ctranspile1744047964/abelian-sandpile-model.mochi.c:127:43: warning: passing argument 3 of ‘handlePile’ makes pointer from integer without a cast [-Wint-conversion]
+  127 |         pile = handlePile(pile, pile_len, x, y);
+      |                                           ^
+      |                                           |
+      |                                           int
+/tmp/ctranspile1744047964/abelian-sandpile-model.mochi.c:92:59: note: expected ‘size_t *’ {aka ‘long unsigned int *’} but argument is of type ‘int’
+   92 | int * * handlePile(int * * pile, size_t pile_len, size_t* pile_lens, size_t pile_lens_len, int x, int y) {
+      |                                                   ~~~~~~~~^~~~~~~~~
+/tmp/ctranspile1744047964/abelian-sandpile-model.mochi.c:127:16: error: too few arguments to function ‘handlePile’
+  127 |         pile = handlePile(pile, pile_len, x, y);
+      |                ^~~~~~~~~~
+/tmp/ctranspile1744047964/abelian-sandpile-model.mochi.c:92:9: note: declared here
+   92 | int * * handlePile(int * * pile, size_t pile_len, size_t* pile_lens, size_t pile_lens_len, int x, int y) {
+      |         ^~~~~~~~~~
+/tmp/ctranspile1744047964/abelian-sandpile-model.mochi.c: In function ‘user_main’:
+/tmp/ctranspile1744047964/abelian-sandpile-model.mochi.c:161:39: warning: passing argument 3 of ‘handlePile’ makes pointer from integer without a cast [-Wint-conversion]
+  161 |     pile = handlePile(pile, pile_len, hdim, hdim);
+      |                                       ^~~~
+      |                                       |
+      |                                       int
+/tmp/ctranspile1744047964/abelian-sandpile-model.mochi.c:92:59: note: expected ‘size_t *’ {aka ‘long unsigned int *’} but argument is of type ‘int’
+   92 | int * * handlePile(int * * pile, size_t pile_len, size_t* pile_lens, size_t pile_lens_len, int x, int y) {
+      |                                                   ~~~~~~~~^~~~~~~~~
+/tmp/ctranspile1744047964/abelian-sandpile-model.mochi.c:161:12: error: too few arguments to function ‘handlePile’
+  161 |     pile = handlePile(pile, pile_len, hdim, hdim);
+      |            ^~~~~~~~~~
+/tmp/ctranspile1744047964/abelian-sandpile-model.mochi.c:92:9: note: declared here
+   92 | int * * handlePile(int * * pile, size_t pile_len, size_t* pile_lens, size_t pile_lens_len, int x, int y) {
+      |         ^~~~~~~~~~
+/tmp/ctranspile1744047964/abelian-sandpile-model.mochi.c:164:30: warning: passing argument 3 of ‘drawPile’ makes pointer from integer without a cast [-Wint-conversion]
+  164 |     drawPile(pile, pile_len, 16);
+      |                              ^~
+      |                              |
+      |                              int
+/tmp/ctranspile1744047964/abelian-sandpile-model.mochi.c:134:53: note: expected ‘size_t *’ {aka ‘long unsigned int *’} but argument is of type ‘int’
+  134 | int drawPile(int * * pile, size_t pile_len, size_t* pile_lens, size_t pile_lens_len, int d) {
+      |                                             ~~~~~~~~^~~~~~~~~
+/tmp/ctranspile1744047964/abelian-sandpile-model.mochi.c:164:5: error: too few arguments to function ‘drawPile’
+  164 |     drawPile(pile, pile_len, 16);
+      |     ^~~~~~~~
+/tmp/ctranspile1744047964/abelian-sandpile-model.mochi.c:134:5: note: declared here
+  134 | int drawPile(int * * pile, size_t pile_len, size_t* pile_lens, size_t pile_lens_len, int d) {
+      |     ^~~~~~~~
+

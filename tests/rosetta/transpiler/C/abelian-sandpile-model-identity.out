@@ -1,0 +1,93 @@
+Avalanche of topplings:
+
+4 3 3 
+3 true 2 
+false 2 3 
+
+false 4 3 
+4 true 2 
+false 2 3 
+
+true false 4 
+4 2 2 
+false 2 3 
+
+true true false 
+4 2 3 
+false 2 3 
+
+2 true false 
+false 3 3 
+true 2 3 
+
+Commutative additions:
+
+true 2 false 
+2 true true 
+false true 3 
+
+plus
+
+2 true 3 
+true false true 
+false true false 
+
+equals
+
+3 3 3 
+3 true 2 
+false 2 3 
+
+and
+
+2 true 3 
+true false true 
+false true false 
+
+plus
+
+true 2 false 
+2 true true 
+false true 3 
+
+also equals
+
+3 3 3 
+3 true 2 
+false 2 3 
+
+Addition of identity sandpile:
+
+3 3 3 
+3 3 3 
+3 3 3 
+
+plus
+
+2 true 2 
+true false true 
+2 true 2 
+
+equals
+
+3 3 3 
+3 3 3 
+3 3 3 
+
+Addition of identities:
+
+2 true 2 
+true false true 
+2 true 2 
+
+plus
+
+2 true 2 
+true false true 
+2 true 2 
+
+equals
+
+2 true 2 
+true false true 
+2 true 2
