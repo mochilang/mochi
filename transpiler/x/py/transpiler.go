@@ -2589,14 +2589,14 @@ func Emit(w io.Writer, p *Program, bench bool) error {
 		return err
 	}
 	var imports []string
-	needDC := false
+       needDC := false
 	if currentImports != nil {
 		if currentImports["json"] && !hasImport(p, "json") {
 			imports = append(imports, "import json")
 		}
-		if currentImports["dataclasses"] && !hasImport(p, "dataclasses") {
-			imports = append(imports, "import dataclasses")
-		}
+               if currentImports["dataclasses"] && !hasImport(p, "dataclasses") {
+                       imports = append(imports, "import dataclasses")
+               }
 		if currentImports["socket"] && !hasImport(p, "socket") {
 			imports = append(imports, "import socket")
 		}
@@ -2625,11 +2625,11 @@ func Emit(w io.Writer, p *Program, bench bool) error {
 			imports = append(imports, line)
 		}
 	}
-	if needDC {
-		imports = append(imports, "from __future__ import annotations")
-		imports = append(imports, "from dataclasses import dataclass")
-		imports = append(imports, "from typing import List, Dict")
-	}
+       if needDC || (currentImports != nil && currentImports["dataclasses"]) {
+               imports = append(imports, "from __future__ import annotations")
+               imports = append(imports, "from dataclasses import dataclass")
+               imports = append(imports, "from typing import List, Dict")
+       }
 	sort.Strings(imports)
 	for _, line := range imports {
 		if _, err := io.WriteString(w, line+"\n"); err != nil {
