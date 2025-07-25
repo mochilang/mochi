@@ -2,7 +2,7 @@
 
 Generated Ruby code from Mochi Rosetta tasks lives in `tests/rosetta/transpiler/rb`.
 
-Last updated: 2025-07-25 14:16 UTC
+Last updated: 2025-07-25 14:47 UTC
 
 ## Checklist (198/284)
 | Index | Name | Status | Duration | Memory |
@@ -117,32 +117,32 @@ Last updated: 2025-07-25 14:16 UTC
 | 108 | bin-given-limits | ✓ | 378µs | 27.2 KB |
 | 109 | binary-digits | ✓ | 49µs | 13.4 KB |
 | 110 | binary-search | ✓ | 30µs | 9.7 KB |
-| 111 | binary-strings | ✓ |  |  |
-| 112 | bioinformatics-base-count | ✓ |  |  |
-| 113 | bioinformatics-global-alignment | ✓ |  |  |
-| 114 | bioinformatics-sequence-mutation | ✓ |  |  |
-| 115 | biorhythms | ✓ |  |  |
-| 116 | bitcoin-address-validation | ✓ |  |  |
-| 117 | bitmap-b-zier-curves-cubic | ✓ |  |  |
-| 118 | bitmap-b-zier-curves-quadratic | ✓ |  |  |
-| 119 | bitmap-bresenhams-line-algorithm | ✓ |  |  |
-| 120 | bitmap-flood-fill | ✓ |  |  |
-| 121 | bitmap-histogram | ✓ |  |  |
-| 122 | bitmap-midpoint-circle-algorithm | ✓ |  |  |
-| 123 | bitmap-ppm-conversion-through-a-pipe | ✓ |  |  |
-| 124 | bitmap-read-a-ppm-file | ✓ |  |  |
-| 125 | bitmap-read-an-image-through-a-pipe | ✓ |  |  |
-| 126 | bitmap-write-a-ppm-file | ✓ |  |  |
-| 127 | bitmap | ✓ |  |  |
-| 128 | bitwise-io-1 | ✓ |  |  |
-| 129 | bitwise-io-2 | ✓ |  |  |
-| 130 | bitwise-operations | ✓ |  |  |
-| 131 | blum-integer | ✓ |  |  |
-| 132 | boolean-values | ✓ |  |  |
-| 133 | box-the-compass | ✓ |  |  |
-| 134 | boyer-moore-string-search | ✓ |  |  |
-| 135 | brazilian-numbers | ✓ |  |  |
-| 136 | break-oo-privacy | ✓ |  |  |
+| 111 | binary-strings | ✓ | 106µs | 19.6 KB |
+| 112 | bioinformatics-base-count | ✓ | 436µs | 112.0 KB |
+| 113 | bioinformatics-global-alignment | ✓ | 1.801793s | 1.1 MB |
+| 114 | bioinformatics-sequence-mutation | ✓ | 11.049ms | 964.7 KB |
+| 115 | biorhythms | ✓ | 311µs | 43.5 KB |
+| 116 | bitcoin-address-validation | ✓ | 3.402ms | 63.8 KB |
+| 117 | bitmap-b-zier-curves-cubic | ✓ | 327.288ms | 14.4 MB |
+| 118 | bitmap-b-zier-curves-quadratic | ✓ | 303.476ms | 14.4 MB |
+| 119 | bitmap-bresenhams-line-algorithm | ✓ | 70µs | 15.1 KB |
+| 120 | bitmap-flood-fill | ✓ | 43µs | 11.5 KB |
+| 121 | bitmap-histogram | ✓ | 94µs | 12.4 KB |
+| 122 | bitmap-midpoint-circle-algorithm | ✓ | 307µs | 136.2 KB |
+| 123 | bitmap-ppm-conversion-through-a-pipe | ✓ | 370.677ms | 5.5 MB |
+| 124 | bitmap-read-a-ppm-file | ✓ | 496µs | 171.0 KB |
+| 125 | bitmap-read-an-image-through-a-pipe | ✓ | 163µs | 31.1 KB |
+| 126 | bitmap-write-a-ppm-file | ✓ | 148µs | 35.1 KB |
+| 127 | bitmap | ✓ | 187.178ms | 3.6 MB |
+| 128 | bitwise-io-1 | ✓ | 127µs | 14.1 KB |
+| 129 | bitwise-io-2 | ✓ | 571µs | 74.8 KB |
+| 130 | bitwise-operations | ✓ | 134µs | 27.9 KB |
+| 131 | blum-integer | ✓ | 439µs | 46.7 KB |
+| 132 | boolean-values | ✓ | 44µs | 10.6 KB |
+| 133 | box-the-compass | ✓ | 274µs | 60.5 KB |
+| 134 | boyer-moore-string-search | ✓ | 191µs | 39.9 KB |
+| 135 | brazilian-numbers | ✓ | 2m22.978749s | 52.9 KB |
+| 136 | break-oo-privacy | ✓ | 64µs | 12.6 KB |
 | 137 | brilliant-numbers | ✓ |  |  |
 | 138 | brownian-tree | ✓ |  |  |
 | 139 | bulls-and-cows-player | ✓ |  |  |
@@ -206,15 +206,15 @@ Last updated: 2025-07-25 14:16 UTC
 | 197 | cheryls-birthday | ✓ |  |  |
 | 198 | chinese-remainder-theorem | ✓ |  |  |
 | 199 | chinese-zodiac |   |  |  |
-| 200 | cholesky-decomposition-1 | ✓ |  |  |
-| 201 | cholesky-decomposition | ✓ |  |  |
-| 202 | chowla-numbers | ✓ |  |  |
+| 200 | cholesky-decomposition-1 | ✓ | 197µs | 27.8 KB |
+| 201 | cholesky-decomposition | ✓ | 161µs | 22.2 KB |
+| 202 | chowla-numbers | ✓ | 46µs | 8.8 KB |
 | 203 | church-numerals-1 |   |  |  |
 | 204 | church-numerals-2 |   |  |  |
-| 205 | circles-of-given-radius-through-two-points | ✓ |  |  |
-| 206 | circular-primes | ✓ |  |  |
+| 205 | circles-of-given-radius-through-two-points | ✓ | 230µs | 25.9 KB |
+| 206 | circular-primes | ✓ | 428µs | 214.3 KB |
 | 207 | cistercian-numerals |   |  |  |
-| 208 | comma-quibbling | ✓ |  |  |
+| 208 | comma-quibbling | ✓ | 88µs | 10.9 KB |
 | 209 | compiler-virtual-machine-interpreter |   |  |  |
 | 210 | composite-numbers-k-with-no-single-digit-factors-whose-factors-are-all-substrings-of-k |   |  |  |
 | 211 | compound-data-type |   |  |  |
