@@ -84,6 +84,8 @@ var usesJson bool
 var usesNow bool
 var usesInput bool
 var usesMem bool
+var usesBigInt bool
+var currentReturnType string
 var globalDecls map[string]*Global
 var mutatedVars map[string]bool
 var blockDepth int
@@ -172,10 +174,10 @@ func (s *LetStmt) emit(w io.Writer) {
 			t = v
 		}
 	}
-	if t == "" {
-		if vt, ok := varTypes[s.Name]; ok && vt != "" && !strings.HasPrefix(vt, "fn/") {
-			t = vt
-		}
+	if vt, ok := varTypes[s.Name]; ok && vt != "" && !strings.HasPrefix(vt, "fn/") {
+		t = vt
+	} else if vt, ok := finalVarTypes[s.Name]; ok && vt != "" && !strings.HasPrefix(vt, "fn/") {
+		t = vt
 	}
 	if t != "" && t != "object" {
 		fmt.Fprintf(w, "%s %s = ", t, name)
@@ -199,10 +201,10 @@ func (s *VarStmt) emit(w io.Writer) {
 			t = v
 		}
 	}
-	if t == "" {
-		if vt, ok := varTypes[s.Name]; ok && vt != "" && !strings.HasPrefix(vt, "fn/") {
-			t = vt
-		}
+	if vt, ok := varTypes[s.Name]; ok && vt != "" && !strings.HasPrefix(vt, "fn/") {
+		t = vt
+	} else if vt, ok := finalVarTypes[s.Name]; ok && vt != "" && !strings.HasPrefix(vt, "fn/") {
+		t = vt
 	}
 	if t != "" && t != "object" {
 		fmt.Fprintf(w, "%s %s", t, name)
@@ -1161,6 +1163,9 @@ func csType(t *parser.TypeRef) string {
 			return "bool"
 		case "float":
 			return "double"
+		case "bigint":
+			usesBigInt = true
+			return "BigInteger"
 		}
 		if st, ok := structTypes[*t.Simple]; ok {
 			return st.Name
@@ -1188,8 +1193,14 @@ func csType(t *parser.TypeRef) string {
 		for _, p := range t.Fun.Params {
 			parts = append(parts, csType(p))
 		}
-		parts = append(parts, csType(t.Fun.Return))
-		return fmt.Sprintf("Func<%s>", strings.Join(parts, ", "))
+		if t.Fun.Return != nil {
+			parts = append(parts, csType(t.Fun.Return))
+			return fmt.Sprintf("Func<%s>", strings.Join(parts, ", "))
+		}
+		if len(parts) == 0 {
+			return "Action"
+		}
+		return fmt.Sprintf("Action<%s>", strings.Join(parts, ", "))
 	}
 	return "object"
 }
@@ -1204,6 +1215,9 @@ func csTypeFromType(t types.Type) string {
 		return "string"
 	case types.BoolType:
 		return "bool"
+	case types.BigIntType:
+		usesBigInt = true
+		return "BigInteger"
 	case types.ListType:
 		return fmt.Sprintf("%s[]", csTypeFromType(tt.Elem))
 	case types.MapType:
@@ -1457,7 +1471,13 @@ func typeOfExpr(e Expr) string {
 		}
 		return ""
 	case *FunLit:
-		return fmt.Sprintf("Func<%s>", strings.Join(append(append([]string{}, ex.ParamTypes...), ex.ReturnType), ", "))
+		if ex.ReturnType != "" {
+			return fmt.Sprintf("Func<%s>", strings.Join(append(append([]string{}, ex.ParamTypes...), ex.ReturnType), ", "))
+		}
+		if len(ex.ParamTypes) == 0 {
+			return "Action"
+		}
+		return fmt.Sprintf("Action<%s>", strings.Join(ex.ParamTypes, ", "))
 	case *VarRef:
 		if t, ok := varTypes[ex.Name]; ok {
 			return t
@@ -2158,6 +2178,8 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 				stringVars[s.Let.Name] = true
 			case "bool":
 				val = &BoolLit{Value: false}
+			case "bigint":
+				val = &IntLit{Value: 0}
 			default:
 				return nil, fmt.Errorf("unsupported let type")
 			}
@@ -2194,14 +2216,9 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 				varTypes[s.Let.Name] = t
 			}
 		}
-		alias := s.Let.Name
-		if _, ok := varAliases[s.Let.Name]; ok {
-			alias = fmt.Sprintf("%s_%d", s.Let.Name, aliasCounter)
-			aliasCounter++
-			varAliases[s.Let.Name] = alias
-		} else {
-			varAliases[s.Let.Name] = alias
-		}
+		alias := fmt.Sprintf("%s_%d", s.Let.Name, aliasCounter)
+		aliasCounter++
+		varAliases[s.Let.Name] = alias
 		if t, ok := varTypes[s.Let.Name]; ok {
 			varTypes[alias] = t
 			if alias != s.Let.Name {
@@ -2255,6 +2272,8 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 				stringVars[s.Var.Name] = true
 			case "bool":
 				val = &BoolLit{Value: false}
+			case "bigint":
+				val = &IntLit{Value: 0}
 			default:
 				return nil, fmt.Errorf("unsupported var type")
 			}
@@ -2289,14 +2308,9 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 				varTypes[s.Var.Name] = t
 			}
 		}
-		alias := s.Var.Name
-		if _, ok := varAliases[s.Var.Name]; ok {
-			alias = fmt.Sprintf("%s_%d", s.Var.Name, aliasCounter)
-			aliasCounter++
-			varAliases[s.Var.Name] = alias
-		} else {
-			varAliases[s.Var.Name] = alias
-		}
+		alias := fmt.Sprintf("%s_%d", s.Var.Name, aliasCounter)
+		aliasCounter++
+		varAliases[s.Var.Name] = alias
 		if t, ok := varTypes[s.Var.Name]; ok {
 			varTypes[alias] = t
 			if alias != s.Var.Name {
@@ -2431,10 +2445,10 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 		params := make([]string, len(s.Fun.Params))
 		ptypes := make([]string, len(s.Fun.Params))
 		savedAliases := cloneStringMap(varAliases)
-		savedCounter := aliasCounter
+		savedRet := currentReturnType
 		defer func() {
 			varAliases = savedAliases
-			aliasCounter = savedCounter
+			currentReturnType = savedRet
 		}()
 		// save global variable maps so local declarations don't leak
 		savedAll := cloneStringMap(varTypes)
@@ -2456,6 +2470,7 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 			}
 		}
 		retType := csType(s.Fun.Return)
+		currentReturnType = retType
 		var body []Stmt
 		if prog != nil && blockDepth > 0 {
 			prog = nil
@@ -2521,6 +2536,11 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 			val, err = compileExpr(s.Return.Value)
 			if err != nil {
 				return nil, err
+			}
+			if l, ok := val.(*ListLit); ok && len(l.Elems) == 0 && strings.HasSuffix(currentReturnType, "[]") {
+				if l.ElemType == "" || l.ElemType == "object[]" {
+					l.ElemType = currentReturnType
+				}
 			}
 		}
 		return &ReturnStmt{Value: val}, nil
@@ -3585,6 +3605,9 @@ func Emit(prog *Program) []byte {
 	if usesJson {
 		buf.WriteString("using System.Text.Json;\n")
 	}
+	if usesBigInt {
+		buf.WriteString("using System.Numerics;\n")
+	}
 	if usesInput {
 		buf.WriteString("using System.IO;\n")
 	}
@@ -3711,10 +3734,11 @@ return _fmt(v);
 				t = vt
 			}
 		}
+		name := safeName(g.Name)
 		if t == "" || t == "object" {
-			fmt.Fprintf(&buf, "dynamic %s = ", g.Name)
+			fmt.Fprintf(&buf, "dynamic %s = ", name)
 		} else {
-			fmt.Fprintf(&buf, "%s %s = ", t, g.Name)
+			fmt.Fprintf(&buf, "%s %s = ", t, name)
 		}
 		g.Value.emit(&buf)
 		buf.WriteString(";\n")
