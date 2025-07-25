@@ -1,4 +1,8 @@
-## Progress (2025-07-25 13:07 +0700)
+## Progress (2025-07-25 14:32 +0700)
+- transpiler/java: update rosetta outputs and add features (aefc0b2d3e)
+
+- transpiler/java: update rosetta outputs and add features (aefc0b2d3e)
+
 - java rosetta: update index 10, fix slice elem type (05dce82272)
 
 - java rosetta: update index 10, fix slice elem type (05dce82272)
