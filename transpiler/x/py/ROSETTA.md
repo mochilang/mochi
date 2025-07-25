@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Python code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/Python`.
-Last updated: 2025-07-25 14:27 GMT+7
+Last updated: 2025-07-25 16:45 GMT+7
 
-## Rosetta Golden Test Checklist (271/284)
+## Rosetta Golden Test Checklist (269/284)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 161.0µs | 12.50MB |
@@ -37,57 +37,57 @@ Last updated: 2025-07-25 14:27 GMT+7
 | 28 | ackermann-function-2 | ✓ | 13.0µs | 12.55MB |
 | 29 | ackermann-function-3 | ✓ | 104.05s | 13.17MB |
 | 30 | ackermann-function | ✓ | 738.0µs | 12.44MB |
-| 31 | active-directory-connect | ✓ | 16.0µs | 15.52MB |
-| 32 | active-directory-search-for-a-user | ✓ | 13.0µs | 15.52MB |
-| 33 | active-object | ✓ | 604.0µs | 12.62MB |
+| 31 | active-directory-connect | ✓ | 10.0µs | 12.55MB |
+| 32 | active-directory-search-for-a-user | ✓ | 10.0µs | 12.73MB |
+| 33 | active-object | ✓ | 426.0µs | 12.62MB |
 | 34 | add-a-variable-to-a-class-instance-at-runtime | ✓ |  |  |
-| 35 | additive-primes | ✓ |  |  |
-| 36 | address-of-a-variable | ✓ |  |  |
-| 37 | adfgvx-cipher | ✓ |  |  |
-| 38 | aks-test-for-primes | ✓ |  |  |
-| 39 | algebraic-data-types | ✓ |  |  |
-| 40 | align-columns | ✓ |  |  |
-| 41 | aliquot-sequence-classifications | ✓ |  |  |
-| 42 | almkvist-giullera-formula-for-pi | ✓ |  |  |
-| 43 | almost-prime | ✓ |  |  |
-| 44 | amb | ✓ |  |  |
-| 45 | amicable-pairs | ✓ |  |  |
-| 46 | anagrams-deranged-anagrams | ✓ |  |  |
-| 47 | anagrams | ✓ |  |  |
-| 48 | angle-difference-between-two-bearings-1 | ✓ |  |  |
-| 49 | angle-difference-between-two-bearings-2 | ✓ |  |  |
-| 50 | angles-geometric-normalization-and-conversion | ✓ |  |  |
-| 51 | animate-a-pendulum | ✓ |  |  |
-| 52 | animation | ✓ |  |  |
-| 53 | anonymous-recursion-1 | ✓ |  |  |
-| 54 | anonymous-recursion-2 | ✓ |  |  |
-| 55 | anonymous-recursion | ✓ |  |  |
-| 56 | anti-primes | ✓ |  |  |
-| 57 | append-a-record-to-the-end-of-a-text-file | ✓ |  |  |
-| 58 | apply-a-callback-to-an-array-1 | ✓ |  |  |
-| 59 | apply-a-callback-to-an-array-2 | ✓ |  |  |
-| 60 | apply-a-digital-filter-direct-form-ii-transposed- | ✓ |  |  |
-| 61 | approximate-equality | ✓ |  |  |
-| 62 | arbitrary-precision-integers-included- | ✓ |  |  |
-| 63 | archimedean-spiral | ✓ |  |  |
-| 64 | arena-storage-pool | ✓ |  |  |
-| 65 | arithmetic-complex | ✓ |  |  |
-| 66 | arithmetic-derivative | ✓ |  |  |
-| 67 | arithmetic-evaluation | ✓ | 238.0µs | 13.50MB |
-| 68 | arithmetic-geometric-mean-calculate-pi | ✓ |  |  |
-| 69 | arithmetic-geometric-mean | ✓ |  |  |
-| 70 | arithmetic-integer-1 | ✓ |  |  |
-| 71 | arithmetic-integer-2 | ✓ |  |  |
+| 35 | additive-primes | ✓ | 173.0µs | 12.87MB |
+| 36 | address-of-a-variable | ✓ | 13.0µs | 12.24MB |
+| 37 | adfgvx-cipher | ✓ | 323.0µs | 14.45MB |
+| 38 | aks-test-for-primes | ✓ | 134.0µs | 12.74MB |
+| 39 | algebraic-data-types | ✓ | 100.0µs | 13.87MB |
+| 40 | align-columns | ✓ | 199.0µs | 13.43MB |
+| 41 | aliquot-sequence-classifications | ✓ | 923.0ms | 14.07MB |
+| 42 | almkvist-giullera-formula-for-pi | error |  |  |
+| 43 | almost-prime | ✓ | 442.0µs | 12.69MB |
+| 44 | amb | ✓ | 22.0µs | 12.82MB |
+| 45 | amicable-pairs | ✓ | 9.12s | 13.15MB |
+| 46 | anagrams-deranged-anagrams | ✓ | 90.0µs | 12.92MB |
+| 47 | anagrams | ✓ | 260.0µs | 13.45MB |
+| 48 | angle-difference-between-two-bearings-1 | ✓ | 26.0µs | 12.72MB |
+| 49 | angle-difference-between-two-bearings-2 | ✓ | 34.0µs | 13.00MB |
+| 50 | angles-geometric-normalization-and-conversion | ✓ | 181.0µs | 13.42MB |
+| 51 | animate-a-pendulum | ✓ | 71.0µs | 13.00MB |
+| 52 | animation | ✓ | 621.0µs | 12.75MB |
+| 53 | anonymous-recursion-1 | ✓ | 24.0µs | 12.91MB |
+| 54 | anonymous-recursion-2 | ✓ | 28.0µs | 12.94MB |
+| 55 | anonymous-recursion | ✓ | 46.0µs | 12.41MB |
+| 56 | anti-primes | ✓ | 1.15s | 12.66MB |
+| 57 | append-a-record-to-the-end-of-a-text-file | ✓ | 10.0µs | 12.54MB |
+| 58 | apply-a-callback-to-an-array-1 | ✓ | 11.0µs | 12.46MB |
+| 59 | apply-a-callback-to-an-array-2 | ✓ | 47.0µs | 12.68MB |
+| 60 | apply-a-digital-filter-direct-form-ii-transposed- | ✓ | 76.0µs | 12.87MB |
+| 61 | approximate-equality | ✓ | 54.0µs | 13.19MB |
+| 62 | arbitrary-precision-integers-included- | ✓ | 487.0ms | 12.93MB |
+| 63 | archimedean-spiral | ✓ | 27.0ms | 13.20MB |
+| 64 | arena-storage-pool | ✓ | 19.0µs | 12.84MB |
+| 65 | arithmetic-complex | error |  |  |
+| 66 | arithmetic-derivative | ✓ | 685.0µs | 12.94MB |
+| 67 | arithmetic-evaluation | ✓ | 110.0µs | 13.86MB |
+| 68 | arithmetic-geometric-mean-calculate-pi | ✓ | 25.0µs | 12.94MB |
+| 69 | arithmetic-geometric-mean | ✓ | 25.0µs | 12.85MB |
+| 70 | arithmetic-integer-1 | ✓ | 19.0µs | 12.35MB |
+| 71 | arithmetic-integer-2 | ✓ | 17.0µs | 12.75MB |
 | 72 | arithmetic-numbers | ✓ |  |  |
-| 73 | arithmetic-rational | ✓ |  |  |
-| 74 | array-concatenation | ✓ |  |  |
-| 75 | array-length | ✓ |  |  |
-| 76 | arrays | ✓ |  |  |
-| 77 | ascending-primes | ✓ |  |  |
-| 78 | ascii-art-diagram-converter | ✓ |  |  |
-| 79 | assertions | ✓ |  |  |
-| 80 | associative-array-creation | ✓ |  |  |
-| 81 | associative-array-iteration | ✓ |  |  |
+| 73 | arithmetic-rational | ✓ | 150.0µs | 12.73MB |
+| 74 | array-concatenation | ✓ | 20.0µs | 13.09MB |
+| 75 | array-length | ✓ | 13.0µs | 12.34MB |
+| 76 | arrays | ✓ | 58.0µs | 12.86MB |
+| 77 | ascending-primes | ✓ | 1.0ms | 13.00MB |
+| 78 | ascii-art-diagram-converter | ✓ | 25.0µs | 13.03MB |
+| 79 | assertions | ✓ | 7.0µs | 11.61MB |
+| 80 | associative-array-creation | ✓ | 13.0µs | 12.74MB |
+| 81 | associative-array-iteration | ✓ | 19.0µs | 12.45MB |
 | 82 | associative-array-merging | ✓ |  |  |
 | 83 | atomic-updates | ✓ |  |  |
 | 84 | attractive-numbers | ✓ |  |  |

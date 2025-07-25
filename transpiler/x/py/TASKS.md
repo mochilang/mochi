@@ -1,5 +1,5 @@
-## Progress (2025-07-25 14:22 +0700)
-- Commit 8ac5817145: go transpiler: update first rosetta benchmarks
+## Progress (2025-07-25 14:40 +0700)
+- Commit f46f5284ac: transpiler/erl: run rosetta indexes 107-113
 - Generated Python for 104/104 programs
 - Updated README checklist and outputs
 - Removed runtime helpers and improved boolean type inference
