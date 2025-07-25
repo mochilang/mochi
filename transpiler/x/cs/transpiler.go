@@ -49,6 +49,13 @@ type Program struct {
 	BenchMain bool
 }
 
+var benchMain bool
+
+// SetBenchMain configures whether the generated program's main body
+// is wrapped in a benchmark block when emitting code. When enabled the
+// program prints a JSON object with duration and memory usage on exit.
+func SetBenchMain(v bool) { benchMain = v }
+
 type Global struct {
 	Name  string
 	Value Expr
@@ -1719,6 +1726,7 @@ type AppendExpr struct {
 }
 
 func (a *AppendExpr) emit(w io.Writer) {
+	usesLinq = true
 	fmt.Fprint(w, "(")
 	a.List.emit(w)
 	fmt.Fprint(w, ".Append(")
@@ -1793,9 +1801,9 @@ type SubstringExpr struct {
 
 func (s *SubstringExpr) emit(w io.Writer) {
 	s.Str.emit(w)
-	fmt.Fprint(w, ".Substring(")
+	fmt.Fprint(w, ".Substring((int)(")
 	s.Start.emit(w)
-	fmt.Fprint(w, ", (")
+	fmt.Fprint(w, "), (int)(")
 	s.End.emit(w)
 	fmt.Fprint(w, " - ")
 	s.Start.emit(w)
@@ -1836,8 +1844,8 @@ func (e *ExistsExpr) emit(w io.Writer) {
 }
 
 // Transpile converts a Mochi AST to a simple C# AST.
-func Transpile(p *parser.Program, env *types.Env, bench bool) (*Program, error) {
-	prog := &Program{BenchMain: bench}
+func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
+	prog := &Program{BenchMain: benchMain}
 	currentProg = prog
 	defer func() { currentProg = nil }()
 	stringVars = make(map[string]bool)
@@ -3607,7 +3615,9 @@ func Emit(prog *Program) []byte {
 		buf.WriteString("\t\t\t}\n")
 		buf.WriteString("\t\t}\n")
 		buf.WriteString("\t\tif (seededNow) {\n")
-		buf.WriteString("\t\t\tnowSeed = (nowSeed*1664525 + 1013904223) % 9223372036854775783L;\n")
+		buf.WriteString("\t\t\tnowSeed = unchecked(nowSeed * 1664525 + 1013904223);\n")
+		buf.WriteString("\t\t\tnowSeed %= 9223372036854775783L;\n")
+		buf.WriteString("\t\t\tif (nowSeed < 0) nowSeed += 9223372036854775783L;\n")
 		buf.WriteString("\t\t\treturn nowSeed;\n")
 		buf.WriteString("\t\t}\n")
 		buf.WriteString("\t\treturn DateTime.UtcNow.Ticks / 100;\n")
