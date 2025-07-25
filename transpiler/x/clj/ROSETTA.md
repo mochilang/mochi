@@ -1,7 +1,7 @@
 # Clojure Rosetta Transpiler
 
 Completed: 17/284
-Last updated: 2025-07-25 21:19 +0700
+Last updated: 2025-07-25 22:21 +0700
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -18,9 +18,9 @@ Last updated: 2025-07-25 21:19 +0700
 | 11 | 4-rings-or-4-squares-puzzle |   |  |  |
 | 12 | 9-billion-names-of-god-the-integer | ✓ | 7.099292s | 46.6 MB |
 | 13 | 99-bottles-of-beer-2 |   |  |  |
-| 14 | 99-bottles-of-beer | ✓ |  |  |
-| 15 | DNS-query | ✓ | 25.283ms | 17.8 MB |
-| 16 | a+b | ✓ | 32.002ms | 18.0 MB |
+| 14 | 99-bottles-of-beer | ✓ | 31.158ms | 18.5 MB |
+| 15 | DNS-query | ✓ | 21.781ms | 18.1 MB |
+| 16 | a+b | ✓ | 13.848ms | 18.3 MB |
 | 17 | abbreviations-automatic |   |  |  |
 | 18 | abbreviations-easy |   |  |  |
 | 19 | abbreviations-simple |   |  |  |
