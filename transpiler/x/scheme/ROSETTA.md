@@ -2,8 +2,8 @@
 
 Generated Scheme code for Rosetta Code tasks under `tests/rosetta/x/Mochi`.
 
-## Checklist (65/284)
-Last updated: 2025-07-25 03:13 UTC
+## Checklist (79/284)
+Last updated: 2025-07-25 05:44 UTC
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -79,20 +79,20 @@ Last updated: 2025-07-25 03:13 UTC
 | 70 | arithmetic-integer-1 | ✓ |  |  |
 | 71 | arithmetic-integer-2 | ✓ |  |  |
 | 72 | arithmetic-numbers | ✓ |  |  |
-| 73 | arithmetic-rational |   |  |  |
-| 74 | array-concatenation |   |  |  |
-| 75 | array-length |   |  |  |
-| 76 | arrays |   |  |  |
-| 77 | ascending-primes |   |  |  |
-| 78 | ascii-art-diagram-converter |   |  |  |
-| 79 | assertions |   |  |  |
-| 80 | associative-array-creation |   |  |  |
-| 81 | associative-array-iteration |   |  |  |
-| 82 | associative-array-merging |   |  |  |
-| 83 | atomic-updates |   |  |  |
-| 84 | attractive-numbers |   |  |  |
-| 85 | average-loop-length |   |  |  |
-| 86 | averages-arithmetic-mean |   |  |  |
+| 73 | arithmetic-rational | ✓ |  |  |
+| 74 | array-concatenation | ✓ |  |  |
+| 75 | array-length | ✓ |  |  |
+| 76 | arrays | ✓ |  |  |
+| 77 | ascending-primes | ✓ |  |  |
+| 78 | ascii-art-diagram-converter | ✓ |  |  |
+| 79 | assertions | ✓ |  |  |
+| 80 | associative-array-creation | ✓ |  |  |
+| 81 | associative-array-iteration | ✓ |  |  |
+| 82 | associative-array-merging | ✓ |  |  |
+| 83 | atomic-updates | ✓ |  |  |
+| 84 | attractive-numbers | ✓ |  |  |
+| 85 | average-loop-length | ✓ |  |  |
+| 86 | averages-arithmetic-mean | ✓ |  |  |
 | 87 | averages-mean-time-of-day |   |  |  |
 | 88 | averages-median-1 |   |  |  |
 | 89 | averages-median-2 |   |  |  |
