@@ -1,9 +1,9 @@
 # Java Rosetta Transpiler Output
 
 Generated Java code for programs in `tests/rosetta/x/Mochi`. Each program has a `.java` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
-Last updated: 2025-07-25 19:28 GMT+7
+Last updated: 2025-07-25 19:48 GMT+7
 
-## Rosetta Checklist (81/284)
+## Rosetta Checklist (91/284)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 23.0ms | 245.84KB |
@@ -88,16 +88,16 @@ Last updated: 2025-07-25 19:28 GMT+7
 | 80 | associative-array-creation | ✓ | 19.0ms | 94.27KB |
 | 81 | associative-array-iteration | ✓ | 11.0ms | 39.91KB |
 | 82 | associative-array-merging | ✓ | 6.0ms | 11.35KB |
-| 83 | atomic-updates |   |  |  |
-| 84 | attractive-numbers |   |  |  |
-| 85 | average-loop-length |   |  |  |
-| 86 | averages-arithmetic-mean |   |  |  |
-| 87 | averages-mean-time-of-day |   |  |  |
-| 88 | averages-median-1 |   |  |  |
-| 89 | averages-median-2 |   |  |  |
-| 90 | averages-median-3 |   |  |  |
-| 91 | averages-mode |   |  |  |
-| 92 | averages-pythagorean-means |   |  |  |
+| 83 | atomic-updates | ✓ | 14.0ms | 55.44KB |
+| 84 | attractive-numbers | ✓ | 13.0ms | 39.11KB |
+| 85 | average-loop-length | ✓ | 77.0ms | 91.09KB |
+| 86 | averages-arithmetic-mean | ✓ | 12.0ms | 49.51KB |
+| 87 | averages-mean-time-of-day | ✓ | 17.0ms | 77.97KB |
+| 88 | averages-median-1 | ✓ | 6.0ms | 10.35KB |
+| 89 | averages-median-2 | ✓ | 13.0ms | 10.35KB |
+| 90 | averages-median-3 | ✓ | 7.0ms | 10.45KB |
+| 91 | averages-mode | ✓ | 16.0ms | 46.71KB |
+| 92 | averages-pythagorean-means | ✓ | 14.0ms | 49.09KB |
 | 93 | averages-root-mean-square |   |  |  |
 | 94 | averages-simple-moving-average |   |  |  |
 | 95 | avl-tree |   |  |  |
