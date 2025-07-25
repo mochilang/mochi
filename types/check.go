@@ -646,9 +646,9 @@ func Check(prog *parser.Program, env *Env) []error {
 		}
 	}
 
-	// Final pass: check remaining statements.
+	// Final pass: check remaining statements, including function bodies.
 	for _, stmt := range prog.Statements {
-		if stmt.Type == nil && stmt.Fun == nil {
+		if stmt.Type == nil {
 			if err := checkStmt(stmt, env, VoidType{}); err != nil {
 				errs = append(errs, err)
 			}
