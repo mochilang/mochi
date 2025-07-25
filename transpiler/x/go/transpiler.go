@@ -4433,6 +4433,32 @@ func compilePrimary(p *parser.Primary, env *types.Env, base string) (Expr, error
 				imports["math"] = "math"
 			}
 			return &CallExpr{Func: "math.Abs", Args: []Expr{args[0]}}, nil
+		case "pow":
+			if imports != nil {
+				imports["math"] = "math"
+			}
+			if len(args) != 2 {
+				return nil, fmt.Errorf("pow expects two arguments")
+			}
+			at1 := types.TypeOfExpr(p.Call.Args[0], env)
+			at2 := types.TypeOfExpr(p.Call.Args[1], env)
+			a0 := args[0]
+			a1 := args[1]
+			int1 := false
+			int2 := false
+			if _, ok := at1.(types.IntType); ok {
+				int1 = true
+				a0 = &CallExpr{Func: "float64", Args: []Expr{a0}}
+			}
+			if _, ok := at2.(types.IntType); ok {
+				int2 = true
+				a1 = &CallExpr{Func: "float64", Args: []Expr{a1}}
+			}
+			expr := &CallExpr{Func: "math.Pow", Args: []Expr{a0, a1}}
+			if int1 && int2 {
+				expr = &CallExpr{Func: "int", Args: []Expr{expr}}
+			}
+			return expr, nil
 		case "sum":
 			isFloat := false
 			switch a := args[0].(type) {
