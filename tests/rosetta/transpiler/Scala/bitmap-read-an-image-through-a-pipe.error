@@ -1,0 +1,8 @@
+exit status 1
+/workspace/mochi/tests/rosetta/transpiler/Scala/bitmap-read-an-image-through-a-pipe.scala:68: error: value w is not a member of scala.collection.mutable.Map[String,Any]
+    println("width=" + String.valueOf(img.w) + " height=" + String.valueOf(img.h))
+                                          ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/bitmap-read-an-image-through-a-pipe.scala:68: error: value h is not a member of scala.collection.mutable.Map[String,Any]
+    println("width=" + String.valueOf(img.w) + " height=" + String.valueOf(img.h))
+                                                                               ^
+two errors found

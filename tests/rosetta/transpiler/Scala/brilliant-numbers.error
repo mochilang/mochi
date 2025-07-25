@@ -1,0 +1,14 @@
+exit status 1
+/workspace/mochi/tests/rosetta/transpiler/Scala/brilliant-numbers.scala:154: error: not found: value pow
+      val limit = pow(10, k)
+                  ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/brilliant-numbers.scala:161: error: value padStart is not a member of String
+      println("First >= " + climit.padStart(18, " ") + " is " + ctotal.padStart(14, " ") + " in the series: " + cnext.padStart(18, " "))
+                                   ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/brilliant-numbers.scala:161: error: value padStart is not a member of String
+      println("First >= " + climit.padStart(18, " ") + " is " + ctotal.padStart(14, " ") + " in the series: " + cnext.padStart(18, " "))
+                                                                       ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/brilliant-numbers.scala:161: error: value padStart is not a member of String
+      println("First >= " + climit.padStart(18, " ") + " is " + ctotal.padStart(14, " ") + " in the series: " + cnext.padStart(18, " "))
+                                                                                                                      ^
+four errors found

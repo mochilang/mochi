@@ -1,0 +1,11 @@
+exit status 1
+/workspace/mochi/tests/rosetta/transpiler/Scala/bitwise-io-2.scala:165: error: not found: value indexOf
+    var idx: Int = indexOf(upper, ch)
+                   ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/bitwise-io-2.scala:169: error: not found: value indexOf
+    idx = indexOf(lower, ch)
+          ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/bitwise-io-2.scala:174: error: not found: value parseIntStr
+      return (48 + parseIntStr(ch)).asInstanceOf[Int]
+                   ^
+three errors found

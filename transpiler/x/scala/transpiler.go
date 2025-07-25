@@ -36,6 +36,7 @@ var continueStack []string
 var useNow bool
 var useLookupHost bool
 var needsPadStart bool
+var needsSHA256 bool
 var needsBigRat bool
 var builtinAliases map[string]string
 var localVarTypes map[string]string
@@ -69,6 +70,25 @@ func escapeName(name string) string {
 		return "`" + name + "`"
 	}
 	return name
+}
+
+func quoteScalaString(s string) string {
+	q := strconv.QuoteToASCII(s)
+	// Convert \xXX escapes produced by Go to \u00XX for Java/Scala compatibility
+	var b strings.Builder
+	i := 0
+	for i < len(q) {
+		if q[i] == '\\' && i+3 < len(q) && q[i+1] == 'x' {
+			b.WriteString("\\u00")
+			b.WriteByte(q[i+2])
+			b.WriteByte(q[i+3])
+			i += 4
+			continue
+		}
+		b.WriteByte(q[i])
+		i++
+	}
+	return b.String()
 }
 
 // Program represents a simple Scala program consisting of statements in main.
@@ -779,7 +799,9 @@ func (c *CallExpr) emit(w io.Writer) {
 
 type StringLit struct{ Value string }
 
-func (s *StringLit) emit(w io.Writer) { fmt.Fprintf(w, "%q", s.Value) }
+func (s *StringLit) emit(w io.Writer) {
+	fmt.Fprint(w, quoteScalaString(s.Value))
+}
 
 type IntLit struct {
 	Value int64
@@ -901,7 +923,7 @@ type IndexExpr struct {
 }
 
 func (idx *IndexExpr) emit(w io.Writer) {
-	if strings.HasPrefix(idx.Container, "Map[") && idx.Container != "Any" && idx.Type != "" {
+	if strings.HasPrefix(idx.Container, "Map[") && idx.Container != "Any" {
 		idx.Value.emit(w)
 		fmt.Fprint(w, ".getOrElse(")
 		idx.Index.emit(w)
@@ -1048,7 +1070,7 @@ type SubstringExpr struct {
 
 func (s *SubstringExpr) emit(w io.Writer) {
 	s.Value.emit(w)
-	fmt.Fprint(w, ".substring(")
+	fmt.Fprint(w, ".slice(")
 	s.Start.emit(w)
 	fmt.Fprint(w, ", ")
 	s.End.emit(w)
@@ -1457,6 +1479,14 @@ func Emit(p *Program) []byte {
 		buf.WriteString("    var out = s\n")
 		buf.WriteString("    while (out.length < width) { out = pad + out }\n")
 		buf.WriteString("    out\n")
+		buf.WriteString("  }\n\n")
+	}
+	if needsSHA256 {
+		buf.WriteString("  private def _sha256(bytes: Array[Byte]): ArrayBuffer[Int] = {\n")
+		buf.WriteString("    val md = java.security.MessageDigest.getInstance(\"SHA-256\")\n")
+		buf.WriteString("    md.update(bytes)\n")
+		buf.WriteString("    val sum = md.digest()\n")
+		buf.WriteString("    ArrayBuffer(sum.map(b => (b & 0xff).toInt): _*)\n")
 		buf.WriteString("  }\n\n")
 	}
 
@@ -2580,6 +2610,28 @@ func convertCall(c *parser.CallExpr, env *types.Env) (Expr, error) {
 		if len(args) == 2 {
 			return &AppendExpr{List: args[0], Elem: args[1]}, nil
 		}
+	case "contains":
+		if len(args) == 2 {
+			recv := args[0]
+			if inferTypeWithEnv(recv, env) == "Any" {
+				recv = &CastExpr{Value: recv, Type: "Any"}
+			}
+			return &CallExpr{Fn: &FieldExpr{Receiver: recv, Name: "contains"}, Args: []Expr{args[1]}}, nil
+		}
+	case "sha256":
+		if len(args) == 1 {
+			needsSHA256 = true
+			val := args[0]
+			typ := inferTypeWithEnv(val, env)
+			if typ == "String" {
+				val = &CallExpr{Fn: &FieldExpr{Receiver: val, Name: "getBytes"}, Args: nil}
+			} else if strings.HasPrefix(typ, "ArrayBuffer[") {
+				lam := &FunExpr{Params: []Param{{Name: "x", Type: "Int"}}, Expr: &FieldExpr{Receiver: &Name{Name: "x"}, Name: "toByte"}}
+				mapped := &CallExpr{Fn: &FieldExpr{Receiver: val, Name: "map"}, Args: []Expr{lam}}
+				val = &FieldExpr{Receiver: mapped, Name: "toArray"}
+			}
+			return &CallExpr{Fn: &Name{Name: "_sha256"}, Args: []Expr{val}}, nil
+		}
 	case "substring":
 		if len(args) == 3 {
 			val := args[0]
@@ -3367,6 +3419,11 @@ func convertFunStmt(fs *parser.FunStmt, env *types.Env) (Stmt, error) {
 	}
 	if fn.Return == "" {
 		fn.Return = "Any"
+	}
+	if fn.Return != "Unit" && containsReturn(fn.Body) {
+		if _, ok := fn.Body[len(fn.Body)-1].(*ReturnStmt); !ok {
+			fn.Body = append(fn.Body, &ReturnStmt{Value: defaultExpr(fn.Return)})
+		}
 	}
 	return fn, nil
 }

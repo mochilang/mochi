@@ -2,12 +2,12 @@
 
 Generated Scala code for Rosetta tasks in `tests/rosetta/x/Mochi`. Each program has a `.scala` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
 
-## Golden Test Checklist (110/284)
-_Last updated: 2025-07-26 00:05 +0700_
+## Golden Test Checklist (133/284)
+_Last updated: 2025-07-26 04:52 +0700_
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
-| 1 | 100-doors-2 | ✓ | 6µs | 8.7 MB |
+| 1 | 100-doors-2 | ✓ | 7µs | 8.7 MB |
 | 2 | 100-doors-3 | ✓ | 5µs | 8.7 MB |
 | 3 | 100-doors | ✓ | 8µs | 8.7 MB |
 | 4 | 100-prisoners | ✓ | 4.792ms | 8.7 MB |
@@ -118,37 +118,37 @@ _Last updated: 2025-07-26 00:05 +0700_
 | 109 | binary-digits | ✓ | 2µs | 3.5 MB |
 | 110 | binary-search | ✓ | 5µs | 3.5 MB |
 | 111 | binary-strings |   |  |  |
-| 112 | bioinformatics-base-count |   |  |  |
-| 113 | bioinformatics-global-alignment |   |  |  |
-| 114 | bioinformatics-sequence-mutation |   |  |  |
-| 115 | biorhythms |   |  |  |
-| 116 | bitcoin-address-validation |   |  |  |
-| 117 | bitmap-b-zier-curves-cubic |   |  |  |
-| 118 | bitmap-b-zier-curves-quadratic |   |  |  |
-| 119 | bitmap-bresenhams-line-algorithm |   |  |  |
-| 120 | bitmap-flood-fill |   |  |  |
-| 121 | bitmap-histogram |   |  |  |
-| 122 | bitmap-midpoint-circle-algorithm |   |  |  |
-| 123 | bitmap-ppm-conversion-through-a-pipe |   |  |  |
-| 124 | bitmap-read-a-ppm-file |   |  |  |
-| 125 | bitmap-read-an-image-through-a-pipe |   |  |  |
-| 126 | bitmap-write-a-ppm-file |   |  |  |
-| 127 | bitmap |   |  |  |
-| 128 | bitwise-io-1 |   |  |  |
-| 129 | bitwise-io-2 |   |  |  |
-| 130 | bitwise-operations |   |  |  |
-| 131 | blum-integer |   |  |  |
-| 132 | boolean-values |   |  |  |
-| 133 | box-the-compass |   |  |  |
-| 134 | boyer-moore-string-search |   |  |  |
-| 135 | brazilian-numbers |   |  |  |
-| 136 | break-oo-privacy |   |  |  |
-| 137 | brilliant-numbers |   |  |  |
-| 138 | brownian-tree |   |  |  |
-| 139 | bulls-and-cows-player |   |  |  |
-| 140 | bulls-and-cows |   |  |  |
-| 141 | burrows-wheeler-transform |   |  |  |
-| 142 | caesar-cipher-1 |   |  |  |
+| 112 | bioinformatics-base-count | ✓ | 4µs | 8.7 MB |
+| 113 | bioinformatics-global-alignment | ✓ | 199µs | 8.7 MB |
+| 114 | bioinformatics-sequence-mutation | ✓ | 21µs | 8.7 MB |
+| 115 | biorhythms | ✓ | 11µs | 8.7 MB |
+| 116 | bitcoin-address-validation | ✓ | 25µs | 8.9 MB |
+| 117 | bitmap-b-zier-curves-cubic | error |  |  |
+| 118 | bitmap-b-zier-curves-quadratic | error |  |  |
+| 119 | bitmap-bresenhams-line-algorithm | ✓ | 7µs | 8.7 MB |
+| 120 | bitmap-flood-fill | ✓ | 4µs | 8.7 MB |
+| 121 | bitmap-histogram | ✓ | 5µs | 8.7 MB |
+| 122 | bitmap-midpoint-circle-algorithm | ✓ | 28µs | 8.7 MB |
+| 123 | bitmap-ppm-conversion-through-a-pipe | ✓ | 81µs | 8.7 MB |
+| 124 | bitmap-read-a-ppm-file | error |  |  |
+| 125 | bitmap-read-an-image-through-a-pipe | error |  |  |
+| 126 | bitmap-write-a-ppm-file | ✓ | 6µs | 8.7 MB |
+| 127 | bitmap | error |  |  |
+| 128 | bitwise-io-1 | ✓ | 3µs | 8.7 MB |
+| 129 | bitwise-io-2 | error |  |  |
+| 130 | bitwise-operations | ✓ | 6µs | 8.7 MB |
+| 131 | blum-integer | ✓ | 7µs | 8.7 MB |
+| 132 | boolean-values | ✓ | 6µs | 8.7 MB |
+| 133 | box-the-compass | ✓ | 7µs | 8.7 MB |
+| 134 | boyer-moore-string-search | ✓ | 39µs | 8.7 MB |
+| 135 | brazilian-numbers | ✓ | 2.52ms | 8.7 MB |
+| 136 | break-oo-privacy | ✓ | 3µs | 8.7 MB |
+| 137 | brilliant-numbers | error |  |  |
+| 138 | brownian-tree | ✓ |  |  |
+| 139 | bulls-and-cows-player | ✓ | 39µs | 8.7 MB |
+| 140 | bulls-and-cows | error |  |  |
+| 141 | burrows-wheeler-transform | ✓ | 25µs | 8.7 MB |
+| 142 | caesar-cipher-1 | ✓ | 8µs | 8.7 MB |
 | 143 | caesar-cipher-2 |   |  |  |
 | 144 | calculating-the-value-of-e |   |  |  |
 | 145 | calendar---for-real-programmers-1 |   |  |  |
