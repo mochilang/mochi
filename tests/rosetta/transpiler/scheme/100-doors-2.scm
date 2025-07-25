@@ -1,4 +1,4 @@
-;; Generated on 2025-07-25 08:58 +0700
+;; Generated on 2025-07-25 10:01 +0700
 (import (only (scheme base) call/cc when list-ref list-set! list))
 (import (scheme time))
 (import (chibi string))
@@ -16,7 +16,7 @@
       (begin
         (set! _now_seed (modulo (+ (* _now_seed 1664525) 1013904223) 2147483647))
         _now_seed)
-      (* (current-seconds) 1000000000)))(import (chibi time))
+      (inexact->exact (* (current-second) 1000000000))))(import (chibi time))
 (define (_mem) (* 1024 (resource-usage-max-rss (get-resource-usage resource-usage/self))))
 (import (chibi json))
 (define (to-str x)

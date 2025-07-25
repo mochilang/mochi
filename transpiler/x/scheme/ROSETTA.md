@@ -3,11 +3,11 @@
 Generated Scheme code for Rosetta Code tasks under `tests/rosetta/x/Mochi`.
 
 ## Checklist (65/284)
-Last updated: 2025-07-25 02:33 UTC
+Last updated: 2025-07-25 03:13 UTC
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
-| 1 | 100-doors-2 | ✓ | 571.223ms | 12.0 MB |
+| 1 | 100-doors-2 | ✓ | 1.637ms | 12.2 MB |
 | 2 | 100-doors-3 | ✓ |  |  |
 | 3 | 100-doors | ✓ |  |  |
 | 4 | 100-prisoners | ✓ |  |  |

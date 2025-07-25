@@ -222,7 +222,7 @@ func header() []byte {
       (begin
         (set! _now_seed (modulo (+ (* _now_seed 1664525) 1013904223) 2147483647))
         _now_seed)
-      (* (current-seconds) 1000000000)))`
+      (inexact->exact (* (current-second) 1000000000))))`
 	}
 	if usesBench {
 		prelude += "(import (chibi time))\n"

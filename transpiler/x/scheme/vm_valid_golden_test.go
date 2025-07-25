@@ -43,7 +43,8 @@ func TestSchemeTranspiler_VMValid_Golden(t *testing.T) {
 			_ = os.WriteFile(errPath, []byte(errs[0].Error()), 0o644)
 			return nil, errs[0]
 		}
-		scheme.SetBenchMain(false)
+		bench := os.Getenv("MOCHI_BENCHMARK") != ""
+		scheme.SetBenchMain(bench)
 		lp, err := scheme.Transpile(prog, env)
 		if err != nil {
 			_ = os.WriteFile(errPath, []byte(err.Error()), 0o644)
@@ -54,7 +55,13 @@ func TestSchemeTranspiler_VMValid_Golden(t *testing.T) {
 			return nil, err
 		}
 		cmd := exec.Command("chibi-scheme", "-q", "-m", "chibi", "-m", "srfi.1", "-m", "srfi.69", "-m", "scheme.sort", "-m", "chibi.string", codePath)
-		cmd.Env = append(os.Environ(), "MOCHI_NOW_SEED=1")
+		runEnv := append(os.Environ())
+		if bench {
+			runEnv = append(runEnv, "MOCHI_BENCHMARK=1")
+		} else {
+			runEnv = append(runEnv, "MOCHI_NOW_SEED=1")
+		}
+		cmd.Env = runEnv
 		if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
 			cmd.Stdin = bytes.NewReader(data)
 		}
