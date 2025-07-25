@@ -1,4 +1,21 @@
 # 📦 CHANGELOG.md
+
+## [0.10.40] – 2025-07-25T10:01:54+07:00
+
+### Added
+
+* Benchmark blocks and modes across many transpilers with memory measurement
+* Union pattern matching for Racket with improved map, list and struct handling
+* Extended BigInt and BigRat helpers plus numerous new Rosetta programs
+
+### Changed
+
+* `tap-gist` CLI rewritten using `fang`
+* Progress tables and golden outputs refreshed
+
+### Fixed
+
+* Benchmark output duration handling for PHP and assorted compiler bugs
 ## [0.10.39] – 2025-07-24T11:43:58+07:00
 
 ### Added
