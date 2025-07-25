@@ -2570,6 +2570,17 @@ func compileIfStmt(is *parser.IfStmt, env *types.Env) (Stmt, error) {
 		return nil, err
 	}
 	cond := boolExprFor(condExpr, types.ExprType(is.Cond, env))
+	if ix, ok := condExpr.(*IndexExpr); ok {
+		if vr, ok2 := ix.X.(*VarRef); ok2 && topEnv != nil {
+			if vt, err := topEnv.GetVar(vr.Name); err == nil {
+				if lt, ok3 := vt.(types.ListType); ok3 {
+					if _, ok4 := lt.Elem.(types.AnyType); ok4 {
+						cond = &AssertExpr{Expr: condExpr, Type: "bool"}
+					}
+				}
+			}
+		}
+	}
 	thenStmts, err := compileStmts(is.Then, env)
 	if err != nil {
 		return nil, err
@@ -3296,13 +3307,18 @@ func isStringType(t types.Type) bool {
 
 func boolExprFor(e Expr, t types.Type) Expr {
 	if ix, ok := e.(*IndexExpr); ok {
-		if vr, ok2 := ix.X.(*VarRef); ok2 && topEnv != nil {
-			if vt, err := topEnv.GetVar(vr.Name); err == nil {
-				if lt, ok3 := vt.(types.ListType); ok3 {
-					if _, ok4 := lt.Elem.(types.AnyType); ok4 {
-						return &AssertExpr{Expr: e, Type: "bool"}
+		if vr, ok2 := ix.X.(*VarRef); ok2 {
+			if topEnv != nil {
+				if vt, err := topEnv.GetVar(vr.Name); err == nil {
+					if lt, ok3 := vt.(types.ListType); ok3 {
+						if _, ok4 := lt.Elem.(types.AnyType); ok4 {
+							return &AssertExpr{Expr: e, Type: "bool"}
+						}
 					}
 				}
+			}
+			if _, ok := t.(types.BoolType); !ok {
+				return &AssertExpr{Expr: e, Type: "bool"}
 			}
 		}
 	}
