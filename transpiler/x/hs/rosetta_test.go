@@ -69,12 +69,12 @@ func runRosettaTask(root, name string) error {
 		return fmt.Errorf("type error: %v", errs[0])
 	}
 	bench := os.Getenv("MOCHI_BENCHMARK") == "true" || os.Getenv("MOCHI_BENCHMARK") == "1"
-	hprog, err := hs.Transpile(prog, env, bench)
-	if err != nil {
-		writeErr(root, name, fmt.Errorf("transpile: %w", err))
-		return fmt.Errorf("transpile error: %v", err)
-	}
-	code := hs.Emit(hprog, false)
+    hprog, err := hs.Transpile(prog, env, bench)
+    if err != nil {
+            writeErr(root, name, fmt.Errorf("transpile: %w", err))
+            return fmt.Errorf("transpile error: %v", err)
+    }
+    code := hs.Emit(hprog, bench)
 	outDir := filepath.Join(root, "tests", "rosetta", "transpiler", "Haskell")
 	os.MkdirAll(outDir, 0o755)
 	hsFile := filepath.Join(outDir, name+".hs")
