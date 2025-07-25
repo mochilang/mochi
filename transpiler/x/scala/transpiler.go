@@ -933,6 +933,13 @@ func (idx *IndexExpr) emit(w io.Writer) {
 			idx.Index.emit(w)
 			fmt.Fprint(w, ")")
 		}
+	} else if idx.Container == "String" {
+		idx.Value.emit(w)
+		fmt.Fprint(w, ".slice(")
+		idx.Index.emit(w)
+		fmt.Fprint(w, ", ")
+		idx.Index.emit(w)
+		fmt.Fprint(w, " + 1)")
 	} else {
 		idx.Value.emit(w)
 		fmt.Fprint(w, "(")
@@ -1819,10 +1826,9 @@ func convertBinary(b *parser.BinaryExpr, env *types.Env) (Expr, error) {
 					left = &CastExpr{Value: left, Type: rt}
 				}
 				if (lt == "Any" || lt == "") && (rt == "Any" || rt == "") {
-					// fallback to floating point arithmetic when
-					// both operand types are unknown
-					left = &CastExpr{Value: left, Type: "Double"}
-					right = &CastExpr{Value: right, Type: "Double"}
+					// fallback to integer arithmetic when both operand types are unknown
+					left = &CastExpr{Value: left, Type: "Int"}
+					right = &CastExpr{Value: right, Type: "Int"}
 				}
 			} else if op == "&&" || op == "||" {
 				if inferTypeWithEnv(left, env) != "Boolean" {
