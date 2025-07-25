@@ -209,9 +209,9 @@ func updateRosettaChecklist() {
 		dur := ""
 		mem := ""
 		if _, err := os.Stat(filepath.Join(outDir, name+".error")); err == nil {
-			status = "error"
+			status = "✗"
 		} else if _, err := os.Stat(filepath.Join(outDir, name+".st")); err == nil {
-			status = "ok"
+			status = "✓"
 			compiled++
 		}
 		if data, err := os.ReadFile(filepath.Join(outDir, name+".bench")); err == nil {
