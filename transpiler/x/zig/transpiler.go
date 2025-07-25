@@ -48,8 +48,16 @@ var useAscii bool
 var useMem bool
 var variantTags map[string]int
 
+// when true, wrap the generated main function in a benchmark block
+var benchMain bool
+
 // GetFuncReturns exposes function return types for testing.
 func GetFuncReturns() map[string]string { return funcReturns }
+
+// SetBenchMain configures whether the generated main function is wrapped in
+// a benchmark block when emitting code. When enabled, the program will print
+// a JSON object with duration and memory statistics on completion.
+func SetBenchMain(v bool) { benchMain = v }
 
 func toSnakeCase(s string) string {
 	var buf strings.Builder
@@ -1019,7 +1027,16 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("}\n")
 	}
 	if useMem {
-		buf.WriteString("\nfn _mem() i64 {\n")
+		buf.WriteString("\nconst c = @cImport({ @cInclude(\"sys/resource.h\"); });\n")
+		buf.WriteString("fn _mem() i64 {\n")
+		buf.WriteString("    var usage: c.struct_rusage = undefined;\n")
+		buf.WriteString("    if (c.getrusage(c.RUSAGE_SELF, &usage) == 0) {\n")
+		buf.WriteString("        if (@import(\"builtin\").os.tag == .macos) {\n")
+		buf.WriteString("            return usage.ru_maxrss;\n")
+		buf.WriteString("        } else {\n")
+		buf.WriteString("            return usage.ru_maxrss * 1024;\n")
+		buf.WriteString("        }\n")
+		buf.WriteString("    }\n")
 		buf.WriteString("    return 0;\n")
 		buf.WriteString("}\n")
 	}
@@ -1767,7 +1784,8 @@ func (c *CallExpr) emit(w io.Writer) {
 }
 
 // Transpile converts a Mochi program into our simple Zig AST.
-func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
+func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, error) {
+	benchMain = bench
 	main := &Func{Name: "main"}
 	funcs := []*Func{}
 	globals := []*VarDecl{}
@@ -1850,6 +1868,11 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 		}
 	}
 	_ = env
+	if benchMain {
+		useNow = true
+		useMem = true
+		main.Body = []Stmt{&BenchStmt{Name: "main", Body: main.Body}}
+	}
 	funcs = append(funcs, extraFuncs...)
 	funcs = append(funcs, main)
 	structs := make([]*StructDef, 0, len(structDefs))

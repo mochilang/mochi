@@ -5,6 +5,7 @@ package zigt_test
 import (
 	"bufio"
 	"bytes"
+	"encoding/json"
 	"flag"
 	"fmt"
 	"os"
@@ -93,6 +94,7 @@ func TestZigTranspiler_Rosetta(t *testing.T) {
 
 func runCase(src, outDir string) ([]byte, error) {
 	name := strings.TrimSuffix(filepath.Base(src), ".mochi")
+	bench := os.Getenv("MOCHI_BENCHMARK") == "true"
 	prog, err := parser.Parse(src)
 	if err != nil {
 		writeErr(outDir, name, fmt.Errorf("parse: %w", err))
@@ -103,7 +105,7 @@ func runCase(src, outDir string) ([]byte, error) {
 		writeErr(outDir, name, fmt.Errorf("type: %v", errs[0]))
 		return nil, errs[0]
 	}
-	ast, err := zigt.Transpile(prog, env)
+	ast, err := zigt.Transpile(prog, env, bench)
 	if err != nil {
 		writeErr(outDir, name, fmt.Errorf("transpile: %v", err))
 		return nil, err
@@ -114,7 +116,11 @@ func runCase(src, outDir string) ([]byte, error) {
 		return nil, err
 	}
 	cmd := exec.Command("zig", "run", codePath)
-	cmd.Env = append(os.Environ(), "MOCHI_NOW_SEED=1")
+	cmdEnv := append(os.Environ(), "MOCHI_NOW_SEED=1")
+	if bench {
+		cmdEnv = append(cmdEnv, "MOCHI_BENCHMARK=1")
+	}
+	cmd.Env = cmdEnv
 	if data, err := os.ReadFile(filepath.Join(filepath.Dir(src), name+".in")); err == nil {
 		cmd.Stdin = bytes.NewReader(data)
 	}
@@ -134,6 +140,15 @@ func runCase(src, outDir string) ([]byte, error) {
 		if !bytes.Equal(got, bytes.TrimSpace(want)) {
 			return got, fmt.Errorf("output mismatch for %s", name)
 		}
+	}
+	if bench {
+		// parse benchmark json for progress if present
+		var js struct {
+			Duration int64  `json:"duration_us"`
+			Memory   int64  `json:"memory_bytes"`
+			Name     string `json:"name"`
+		}
+		_ = json.Unmarshal(got, &js)
 	}
 	return got, nil
 }
@@ -174,16 +189,33 @@ func updateRosettaReadme() {
 	total := len(names)
 	compiled := 0
 	var lines []string
+	lines = append(lines, "| Index | Name | Status | Duration | Memory |")
+	lines = append(lines, "|------:|------|:-----:|---------:|-------:|")
 	for i, name := range names {
 		base := strings.TrimSuffix(name, ".mochi")
-		mark := "[ ]"
-		if _, err := os.Stat(filepath.Join(outDir, base+".out")); err == nil {
-			if _, err2 := os.Stat(filepath.Join(outDir, base+".error")); os.IsNotExist(err2) {
-				mark = "[x]"
-				compiled++
+		status := " "
+		if _, err := os.Stat(filepath.Join(outDir, base+".error")); err == nil {
+			// leave unchecked
+		} else if _, err := os.Stat(filepath.Join(outDir, base+".zig")); err == nil {
+			compiled++
+			status = "✓"
+		}
+		dur := ""
+		mem := ""
+		if data, err := os.ReadFile(filepath.Join(outDir, base+".out")); err == nil {
+			var js struct {
+				Duration int64 `json:"duration_us"`
+				Memory   int64 `json:"memory_bytes"`
+			}
+			data = bytes.TrimSpace(data)
+			if idx := bytes.LastIndexByte(data, '{'); idx >= 0 {
+				if json.Unmarshal(data[idx:], &js) == nil && js.Duration > 0 {
+					dur = humanDuration(js.Duration)
+					mem = humanSize(js.Memory)
+				}
 			}
 		}
-		lines = append(lines, fmt.Sprintf("%d. %s (%d) %s", i+1, mark, i+1, base))
+		lines = append(lines, fmt.Sprintf("| %d | %s | %s | %s | %s |", i+1, base, status, dur, mem))
 	}
 	out, err := exec.Command("git", "log", "-1", "--format=%cI").Output()
 	ts := ""
@@ -206,4 +238,22 @@ func updateRosettaReadme() {
 	buf.WriteString(strings.Join(lines, "\n"))
 	buf.WriteByte('\n')
 	_ = os.WriteFile(readme, buf.Bytes(), 0o644)
+}
+
+func humanDuration(us int64) string {
+	d := time.Duration(us) * time.Microsecond
+	return d.String()
+}
+
+func humanSize(b int64) string {
+	const unit = 1024
+	if b < unit {
+		return fmt.Sprintf("%d B", b)
+	}
+	div, exp := int64(unit), 0
+	for n := b / unit; n >= unit; n /= unit {
+		div *= unit
+		exp++
+	}
+	return fmt.Sprintf("%.1f %cB", float64(b)/float64(div), "KMGTPE"[exp])
 }
