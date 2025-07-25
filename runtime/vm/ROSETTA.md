@@ -2,31 +2,31 @@
 
 This checklist is auto-generated.
 Generated IR and outputs from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/ir`.
-Last updated: 2025-07-25 05:09 UTC
+Last updated: 2025-07-25 05:49 UTC
 
 ## Rosetta Golden Test Checklist (20/284)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
-| 1 | 100-doors-2 | ✓ | 116µs | 11.7 KB |
-| 2 | 100-doors-3 | ✓ | 184µs | 7.7 KB |
-| 3 | 100-doors | ✓ | 6.231ms | 851.8 KB |
-| 4 | 100-prisoners | ✓ | 4.224632s | 275.7 KB |
+| 1 | 100-doors-2 | ✓ | 530µs | 11.7 KB |
+| 2 | 100-doors-3 | ✓ | 491µs | 7.8 KB |
+| 3 | 100-doors | ✓ | 18.113ms | 828.9 KB |
+| 4 | 100-prisoners | ✓ | 5.077662s |  |
 | 5 | 15-puzzle-game | ✓ |  |  |
-| 6 | 15-puzzle-solver | ✓ | 917.949ms | 26.9 KB |
-| 7 | 2048 | ✓ |  |  |
-| 8 | 21-game | ✓ |  |  |
-| 9 | 24-game-solve | ✓ | 2.162ms |  |
-| 10 | 24-game | ✓ | 119µs | 17.0 KB |
-| 11 | 4-rings-or-4-squares-puzzle | ✓ | 273.989ms | 4.9 MB |
-| 12 | 9-billion-names-of-god-the-integer | ✓ | 11.35998s | 112.4 MB |
-| 13 | 99-bottles-of-beer-2 | ✓ | 60.961ms |  |
-| 14 | 99-bottles-of-beer | ✓ | 1.628ms | 434.1 KB |
-| 15 | DNS-query | ✓ | 740.178ms |  |
-| 16 | a+b | ✓ | 20µs | 792 B |
-| 17 | abbreviations-automatic | ✓ | 14.043ms | 154.7 KB |
-| 18 | abbreviations-easy | ✓ | 4.772ms |  |
-| 19 | abbreviations-simple | ✓ | 5.16ms |  |
-| 20 | abc-problem | ✓ | 4.951ms |  |
+| 6 | 15-puzzle-solver | ✓ | 1.743738s | 24.4 KB |
+| 7 | 2048 | ✓ | 3.417ms | 723.7 KB |
+| 8 | 21-game | ✓ | 544µs | 10.0 KB |
+| 9 | 24-game-solve | ✓ | 10.672ms |  |
+| 10 | 24-game | ✓ | 716µs | 17.0 KB |
+| 11 | 4-rings-or-4-squares-puzzle | ✓ | 614.532ms | 3.7 MB |
+| 12 | 9-billion-names-of-god-the-integer | ✓ | 13.684268s | 150.6 MB |
+| 13 | 99-bottles-of-beer-2 | ✓ | 54.1ms | 1.8 MB |
+| 14 | 99-bottles-of-beer | ✓ | 996µs | 434.1 KB |
+| 15 | DNS-query | ✓ | 1.09114s | 28.2 KB |
+| 16 | a+b | ✓ | 347µs | 792 B |
+| 17 | abbreviations-automatic | ✓ | 26.661ms |  |
+| 18 | abbreviations-easy | ✓ | 7.926ms |  |
+| 19 | abbreviations-simple | ✓ | 14.18ms |  |
+| 20 | abc-problem | ✓ | 9.591ms |  |
 | 21 | abelian-sandpile-model-identity |   |  |  |
 | 22 | abelian-sandpile-model |   |  |  |
 | 23 | abstract-type |   |  |  |

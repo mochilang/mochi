@@ -98,7 +98,13 @@ func runRosettaCase(t *testing.T, name string) {
 
 	bench := os.Getenv("MOCHI_BENCHMARK") == "true" || os.Getenv("MOCHI_BENCHMARK") == "1"
 	var out bytes.Buffer
-	m := vm.New(p, &out)
+	inPath := filepath.Join(root, "tests", "rosetta", "x", "Mochi", name+".in")
+	var m *vm.VM
+	if data, err := os.ReadFile(inPath); err == nil {
+		m = vm.NewWithIO(p, bytes.NewReader(data), &out)
+	} else {
+		m = vm.New(p, &out)
+	}
 	var start time.Time
 	var startMem uint64
 	if bench {
