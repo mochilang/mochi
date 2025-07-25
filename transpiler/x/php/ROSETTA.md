@@ -2,23 +2,23 @@
 
 Generated PHP code from Mochi Rosetta tasks lives in `tests/rosetta/transpiler/php`.
 
-Last updated: 2025-07-25 09:30 +0700
+Last updated: 2025-07-25 10:07 +0700
 
-## Checklist (264/284)
+## Checklist (263/284)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
-| 1 | 100-doors-2 | ✓ | 188µs | 136 B |
-| 2 | 100-doors-3 | ✓ | 571.223ms | 224 B |
-| 3 | 100-doors | ✓ | 571.223ms | 2.7 KB |
-| 4 | 100-prisoners | ✓ |  |  |
-| 5 | 15-puzzle-game | ✓ |  |  |
-| 6 | 15-puzzle-solver | ✓ | 571.223ms | 1.2 KB |
+| 1 | 100-doors-2 | ✓ | 142µs | 136 B |
+| 2 | 100-doors-3 | ✓ | 51µs | 224 B |
+| 3 | 100-doors | ✓ | 167µs | 2.7 KB |
+| 4 | 100-prisoners | ✓ | 245.58ms | 96 B |
+| 5 | 15-puzzle-game | ✓ | 164µs | 8.6 KB |
+| 6 | 15-puzzle-solver | ✓ | 82µs | 1.2 KB |
 | 7 | 2048 | ✓ |  |  |
-| 8 | 21-game | ✓ |  |  |
-| 9 | 24-game-solve | ✓ |  |  |
-| 10 | 24-game | ✓ |  |  |
-| 11 | 4-rings-or-4-squares-puzzle | ✓ |  |  |
-| 12 | 9-billion-names-of-god-the-integer | ✓ |  |  |
+| 8 | 21-game | ✓ | 88µs | 8.1 KB |
+| 9 | 24-game-solve | ✓ | 17.831ms | 320 B |
+| 10 | 24-game | ✓ | 93µs | 8.1 KB |
+| 11 | 4-rings-or-4-squares-puzzle | ✓ | 25.43ms | 675.6 KB |
+| 12 | 9-billion-names-of-god-the-integer |   |  |  |
 | 13 | 99-bottles-of-beer-2 | ✓ |  |  |
 | 14 | 99-bottles-of-beer | ✓ |  |  |
 | 15 | DNS-query | ✓ |  |  |
