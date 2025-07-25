@@ -23,35 +23,54 @@ exception Continue
 
 exception Return
 
-let rec search_user directory username =
+let rec kPrime n k =
+  let __ret = ref false in
+  (try
+  let nf = ref (0) in
+  let i = ref (2) in
+  (try while (!i <= !n) do
+    try
+  (try while ((!n mod !i) = 0) do
+    try
+  if (!nf = k) then (
+  __ret := false; raise Return
+  );
+  nf := (!nf + 1);
+  n := (!n / !i);
+    with Continue -> ()
+  done with Break -> ());
+  i := (!i + 1);
+    with Continue -> ()
+  done with Break -> ());
+  __ret := (!nf = k); raise Return
+  with Return -> !__ret)
+
+let rec gen k count =
   let __ret = ref [] in
   (try
-  __ret := (List.assoc (username) directory); raise Return
+  let r = ref ([]) in
+  let n = ref (2) in
+  (try while (List.length (!r) < count) do
+    try
+  if kPrime (n) (k) then (
+  r := List.append !r [!n];
+  );
+  n := (!n + 1);
+    with Continue -> ()
+  done with Break -> ());
+  __ret := !r; raise Return
   with Return -> !__ret)
 
 let rec main () =
   let __ret = ref (Obj.magic 0) in
   (try
-  let client = ref ([("Base", Obj.repr "dc=example,dc=com"); ("Host", Obj.repr "ldap.example.com"); ("Port", Obj.repr 389); ("GroupFilter", Obj.repr "(memberUid=%s)")]) in
-  let directory = ref ([("username", ["admins"; "users"]); ("john", ["users"])]) in
-  let groups = ref (search_user (!directory) ("username")) in
-  if (List.length (!groups) > 0) then (
-  let out = ref ("Groups: [") in
-  let i = ref (0) in
-  (try while (!i < List.length (!groups)) do
+  let k = ref (1) in
+  (try while (!k <= 5) do
     try
-  out := (((!out ^ "\"") ^ List.nth (!groups) (!i)) ^ "\"");
-  if (!i < (List.length (!groups) - 1)) then (
-  out := (!out ^ ", ");
-  );
-  i := (!i + 1);
+  print_endline ((((string_of_int (!k)) ^ " ") ^ __show (gen (!k) (10))));
+  k := (!k + 1);
     with Continue -> ()
   done with Break -> ());
-  out := (!out ^ "]");
-  print_endline (__show !out);
-  ) else (
-  print_endline ("User not found");
-  );
     !__ret
   with Return -> !__ret)
 

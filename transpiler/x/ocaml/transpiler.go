@@ -27,6 +27,8 @@ var structFields = map[string]map[string]string{}
 var usesNow bool
 var usesLookupHost bool
 var usesDynMath bool
+var usesMem bool
+var benchMain bool
 var funcMutations = map[string]map[string]bool{}
 var rootEnv *types.Env
 
@@ -35,6 +37,11 @@ var rootEnv *types.Env
 type Program struct {
 	Stmts []Stmt
 }
+
+// SetBenchMain configures whether the generated main function is wrapped in a
+// benchmark block when emitting code. When enabled, the program will output a
+// JSON object with duration and memory statistics on completion.
+func SetBenchMain(v bool) { benchMain = v }
 
 func (p *Program) UsesStrModule() bool {
 	var exprUses func(Expr) bool
@@ -801,12 +808,16 @@ type BenchStmt struct {
 func (b *BenchStmt) emit(w io.Writer) {
 	io.WriteString(w, "  _now_seeded := true;\n")
 	io.WriteString(w, "  _now_seed := 1;\n")
+	io.WriteString(w, "  let mem_start = _mem () in\n")
 	io.WriteString(w, "  let start = _now () in\n")
 	for _, st := range b.Body {
 		st.emit(w)
 	}
 	io.WriteString(w, "  let finish = _now () in\n")
-	fmt.Fprintf(w, "  Printf.printf \"{\\n  \\\"duration_us\\\": %%d,\\n  \\\"memory_bytes\\\": 0,\\n  \\\"name\\\": \\\"%%s\\\"\\n}\\n\" ((finish - start) / 1000) %q;\n", b.Name)
+	io.WriteString(w, "  let mem_end = _mem () in\n")
+	io.WriteString(w, "  let dur = (finish - start) / 1000 in\n")
+	io.WriteString(w, "  let mem_bytes = max 0 (mem_end - mem_start) in\n")
+	fmt.Fprintf(w, "  Printf.printf \"{\\n  \\\"duration_us\\\": %%d,\\n  \\\"memory_bytes\\\": %%d,\\n  \\\"name\\\": \\\"%%s\\\"\\n}\\n\" dur mem_bytes %q;\n", b.Name)
 }
 
 // FunStmt represents a simple function declaration with no parameters.
@@ -935,9 +946,9 @@ type SubstringBuiltin struct {
 }
 
 func (s *SubstringBuiltin) emit(w io.Writer) {
-	io.WriteString(w, "String.sub ")
+	io.WriteString(w, "String.sub (")
 	s.Str.emit(w)
-	io.WriteString(w, " ")
+	io.WriteString(w, ") ")
 	s.Start.emit(w)
 	io.WriteString(w, " (")
 	s.End.emit(w)
@@ -1290,8 +1301,12 @@ func (f *FuncExpr) emit(w io.Writer) {
 
 func (f *FuncExpr) emitPrint(w io.Writer) { f.emit(w) }
 
-// ListLit represents a list literal of integers.
-type ListLit struct{ Elems []Expr }
+// ListLit represents a list literal. When Dynamic is true the
+// elements may have mixed types and are boxed using Obj.repr.
+type ListLit struct {
+	Elems   []Expr
+	Dynamic bool
+}
 
 func (l *ListLit) emit(w io.Writer) {
 	io.WriteString(w, "[")
@@ -1299,15 +1314,27 @@ func (l *ListLit) emit(w io.Writer) {
 		if i > 0 {
 			io.WriteString(w, "; ")
 		}
-		e.emit(w)
+		if l.Dynamic {
+			io.WriteString(w, "Obj.repr (")
+			e.emit(w)
+			io.WriteString(w, ")")
+		} else {
+			e.emit(w)
+		}
 	}
 	io.WriteString(w, "]")
 }
 
 func (l *ListLit) emitPrint(w io.Writer) {
-	io.WriteString(w, "(\"[\" ^ String.concat \", \" (List.map string_of_int (")
-	l.emit(w)
-	io.WriteString(w, ")) ^ \"]\")")
+	if l.Dynamic {
+		io.WriteString(w, "__show (")
+		l.emit(w)
+		io.WriteString(w, ")")
+	} else {
+		io.WriteString(w, "(\"[\" ^ String.concat \", \" (List.map string_of_int (")
+		l.emit(w)
+		io.WriteString(w, ")) ^ \"]\")")
+	}
 }
 
 // MapEntry represents a key/value pair in a map literal.
@@ -2161,6 +2188,12 @@ let _lookup_host _host =
   [Obj.repr ([] : string list); nil]
 `
 
+const helperMem = `
+let _mem () =
+  let st = Gc.stat () in
+  st.live_words * (Sys.word_size / 8)
+`
+
 const helperDynMath = `
 let _dyn_add a b =
   if Obj.is_int a && Obj.is_int b then
@@ -2300,6 +2333,10 @@ func (p *Program) Emit() []byte {
 	}
 	if usesDynMath {
 		buf.WriteString(helperDynMath)
+		buf.WriteString("\n")
+	}
+	if usesMem {
+		buf.WriteString(helperMem)
 		buf.WriteString("\n")
 	}
 	if p.UsesControl() {
@@ -2677,6 +2714,7 @@ func transpileStmt(st *parser.Statement, env *types.Env, vars map[string]VarInfo
 			return nil, err
 		}
 		usesNow = true
+		usesMem = true
 		name := strings.Trim(st.Bench.Name, "\"")
 		return &BenchStmt{Name: name, Body: body}, nil
 	case st.Break != nil:
@@ -2812,6 +2850,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	usesNow = false
 	usesLookupHost = false
 	usesDynMath = false
+	usesMem = false
 	pr := &Program{}
 	vars := map[string]VarInfo{}
 	stmts, err := transpileStmts(prog.Statements, env, vars)
@@ -2819,6 +2858,11 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 		return nil, err
 	}
 	pr.Stmts = stmts
+	if benchMain {
+		usesNow = true
+		usesMem = true
+		pr.Stmts = []Stmt{&BenchStmt{Name: "main", Body: pr.Stmts}}
+	}
 	return pr, nil
 }
 
@@ -3476,6 +3520,7 @@ func convertPrimary(p *parser.Primary, env *types.Env, vars map[string]VarInfo) 
 	case p.List != nil:
 		elems := make([]Expr, len(p.List.Elems))
 		elemTyp := ""
+		dynamic := false
 		for i, e := range p.List.Elems {
 			ex, t, err := convertExpr(e, env, vars)
 			if err != nil {
@@ -3483,6 +3528,11 @@ func convertPrimary(p *parser.Primary, env *types.Env, vars map[string]VarInfo) 
 			}
 			if i == 0 {
 				elemTyp = t
+			} else if t != elemTyp {
+				dynamic = true
+			}
+			if t == "" {
+				dynamic = true
 			}
 			elems[i] = ex
 		}
@@ -3490,7 +3540,7 @@ func convertPrimary(p *parser.Primary, env *types.Env, vars map[string]VarInfo) 
 		if elemTyp != "" {
 			listTyp = "list-" + elemTyp
 		}
-		return &ListLit{Elems: elems}, listTyp, nil
+		return &ListLit{Elems: elems, Dynamic: dynamic}, listTyp, nil
 	case p.Load != nil:
 		format := parseFormat(p.Load.With)
 		path := ""
@@ -4451,7 +4501,7 @@ func valueToExpr(v interface{}) Expr {
 		for i, it := range val {
 			elems[i] = valueToExpr(it)
 		}
-		return &ListLit{Elems: elems}
+		return &ListLit{Elems: elems, Dynamic: true}
 	case string:
 		return &StringLit{Value: val}
 	case bool:
