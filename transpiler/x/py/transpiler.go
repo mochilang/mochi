@@ -36,6 +36,7 @@ var (
 	structCounter     int
 	usesNow           bool
 	usesLookupHost    bool
+	usesIndexOf       bool
 )
 
 const helperNow = `
@@ -64,6 +65,14 @@ def _lookup_host(host):
         return socket.gethostbyname_ex(host)[2], None
     except Exception as e:
         return [], e
+`
+
+const helperIndexOf = `
+def _index_of(xs, val):
+    for i, v in enumerate(xs):
+        if v == val:
+            return i
+    return -1
 `
 
 var pyKeywords = map[string]bool{
@@ -432,7 +441,7 @@ type IndexExpr struct {
 }
 
 func (i *IndexExpr) emit(w io.Writer) error {
-	if mp, ok := inferPyType(i.Target, currentEnv).(types.MapType); ok {
+	if _, ok := inferPyType(i.Target, currentEnv).(types.MapType); ok {
 		if err := emitExpr(w, i.Target); err != nil {
 			return err
 		}
@@ -442,14 +451,25 @@ func (i *IndexExpr) emit(w io.Writer) error {
 		if err := emitExpr(w, i.Index); err != nil {
 			return err
 		}
-		if _, err := io.WriteString(w, ", "); err != nil {
+		if _, err := io.WriteString(w, ")"); err != nil {
 			return err
 		}
-		if err := emitExpr(w, zeroValueExpr(mp.Value)); err != nil {
+		return nil
+	}
+	if _, ok := i.Index.(*StringLit); ok {
+		if err := emitExpr(w, i.Target); err != nil {
 			return err
 		}
-		_, err := io.WriteString(w, ")")
-		return err
+		if _, err := io.WriteString(w, ".get("); err != nil {
+			return err
+		}
+		if err := emitExpr(w, i.Index); err != nil {
+			return err
+		}
+		if _, err := io.WriteString(w, ")"); err != nil {
+			return err
+		}
+		return nil
 	}
 	if err := emitExpr(w, i.Target); err != nil {
 		return err
@@ -468,6 +488,7 @@ type FieldExpr struct {
 	Target   Expr
 	Name     string
 	MapIndex bool
+	MapGet   bool
 }
 
 func (f *FieldExpr) emit(w io.Writer) error {
@@ -483,6 +504,10 @@ func (f *FieldExpr) emit(w io.Writer) error {
 		}
 	}
 	if useIndex {
+		if f.MapGet {
+			_, err := fmt.Fprintf(w, ".get(%q)", f.Name)
+			return err
+		}
 		_, err := fmt.Fprintf(w, "[%q]", f.Name)
 		return err
 	}
@@ -2279,7 +2304,7 @@ func cloneExpr(e Expr) Expr {
 	case *Name:
 		return &Name{Name: ex.Name}
 	case *FieldExpr:
-		return &FieldExpr{Target: cloneExpr(ex.Target), Name: ex.Name, MapIndex: ex.MapIndex}
+		return &FieldExpr{Target: cloneExpr(ex.Target), Name: ex.Name, MapIndex: ex.MapIndex, MapGet: ex.MapGet}
 	case *CallExpr:
 		args := make([]Expr, len(ex.Args))
 		for i := range ex.Args {
@@ -2658,6 +2683,11 @@ func Emit(w io.Writer, p *Program, bench bool) error {
 			return err
 		}
 	}
+	if usesIndexOf {
+		if _, err := io.WriteString(w, helperIndexOf+"\n"); err != nil {
+			return err
+		}
+	}
 	// no runtime helpers required
 	for _, s := range p.Stmts {
 		switch st := s.(type) {
@@ -2913,6 +2943,7 @@ func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, erro
 	structCounter = 0
 	usesNow = false
 	usesLookupHost = false
+	usesIndexOf = false
 	p := &Program{}
 	for _, st := range prog.Statements {
 		switch {
@@ -4067,7 +4098,7 @@ func convertPostfix(p *parser.PostfixExpr) (Expr, error) {
 					}
 				}
 			}
-			expr = &FieldExpr{Target: expr, Name: op.Field.Name, MapIndex: mapIndex}
+			expr = &FieldExpr{Target: expr, Name: op.Field.Name, MapIndex: mapIndex, MapGet: mapIndex}
 		case op.Call != nil:
 			var args []Expr
 			for _, a := range op.Call.Args {
@@ -4260,6 +4291,11 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				call := &CallExpr{Func: &FieldExpr{Target: args[0], Name: "values"}, Args: nil}
 				return &CallExpr{Func: &Name{Name: "list"}, Args: []Expr{call}}, nil
 			}
+		case "keys":
+			if len(args) == 1 {
+				call := &CallExpr{Func: &FieldExpr{Target: args[0], Name: "keys"}, Args: nil}
+				return &CallExpr{Func: &Name{Name: "list"}, Args: []Expr{call}}, nil
+			}
 		case "min", "max":
 			if len(args) == 1 {
 				return &CallExpr{Func: &Name{Name: p.Call.Func}, Args: args}, nil
@@ -4290,6 +4326,12 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			}
 		case "indexOf":
 			if len(args) == 2 {
+				if currentEnv != nil {
+					if _, ok := inferTypeFromExpr(p.Call.Args[0]).(types.ListType); ok {
+						usesIndexOf = true
+						return &CallExpr{Func: &Name{Name: "_index_of"}, Args: args}, nil
+					}
+				}
 				return &CallExpr{Func: &FieldExpr{Target: args[0], Name: "find"}, Args: []Expr{args[1]}}, nil
 			}
 		case "now":
