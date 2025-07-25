@@ -32,6 +32,7 @@ var inFunction bool
 var inLambda int
 var builtinAliases map[string]string
 var useNow bool
+var useMem bool
 var usesLookupHost bool
 var reserved = map[string]bool{"this": true, "new": true}
 var currentReturnType string
@@ -70,6 +71,7 @@ type Program struct {
 	// collected types of top-level variables
 	GlobalTypes   map[string]string
 	UseNow        bool
+	UseMem        bool
 	UseLookupHost bool
 }
 
@@ -147,6 +149,12 @@ type UpdateStmt struct {
 	Fields []string
 	Values []Expr
 	Cond   Expr
+}
+
+// BenchStmt measures execution time of a block and prints the result.
+type BenchStmt struct {
+	Name string
+	Body []Stmt
 }
 
 // ListLit represents a list literal converted to std::vector.
@@ -493,6 +501,9 @@ func (p *Program) write(w io.Writer) {
 		p.addInclude("<cstdlib>")
 		p.addInclude("<chrono>")
 	}
+	if p.UseMem {
+		p.addInclude("<sys/resource.h>")
+	}
 	if p.UseLookupHost {
 		p.addInclude("<any>")
 		p.addInclude("<netdb.h>")
@@ -528,6 +539,17 @@ func (p *Program) write(w io.Writer) {
 		fmt.Fprintln(w, "        return static_cast<int>(seed);")
 		fmt.Fprintln(w, "    }")
 		fmt.Fprintln(w, "    return (int)(std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count() % 2147483647);")
+		fmt.Fprintln(w, "}")
+	}
+	if p.UseMem {
+		fmt.Fprintln(w, "static long _mem() {")
+		fmt.Fprintln(w, "    struct rusage usage{};")
+		fmt.Fprintln(w, "    getrusage(RUSAGE_SELF, &usage);")
+		fmt.Fprintln(w, "#ifdef __APPLE__")
+		fmt.Fprintln(w, "    return usage.ru_maxrss;")
+		fmt.Fprintln(w, "#else")
+		fmt.Fprintln(w, "    return usage.ru_maxrss * 1024;")
+		fmt.Fprintln(w, "#endif")
 		fmt.Fprintln(w, "}")
 	}
 	if p.UseLookupHost {
@@ -2189,6 +2211,28 @@ func (u *UpdateStmt) emit(w io.Writer, indent int) {
 	io.WriteString(w, "}\n")
 }
 
+func (b *BenchStmt) emit(w io.Writer, indent int) {
+	if currentProgram != nil {
+		currentProgram.addInclude("<iostream>")
+		currentProgram.addInclude("<chrono>")
+		currentProgram.addInclude("<sys/resource.h>")
+	}
+	ind := strings.Repeat("    ", indent)
+	fmt.Fprintln(w, ind+"{")
+	ind2 := strings.Repeat("    ", indent+1)
+	fmt.Fprintln(w, ind2+"auto __bench_start = _now();")
+	fmt.Fprintln(w, ind2+"auto __bench_mem_start = _mem();")
+	for _, st := range b.Body {
+		st.emit(w, indent+1)
+	}
+	fmt.Fprintln(w, ind2+"auto __bench_end = _now();")
+	fmt.Fprintln(w, ind2+"auto __bench_mem_end = _mem();")
+	fmt.Fprintln(w, ind2+"auto __bench_dur = (__bench_end - __bench_start) / 1000;")
+	fmt.Fprintln(w, ind2+"auto __bench_mem = __bench_mem_end - __bench_mem_start;")
+	fmt.Fprintf(w, "%sstd::cout << \"{\\n  \\\"duration_us\\\": \" << __bench_dur << \",\\n  \\\"memory_bytes\\\": \" << __bench_mem << \",\\n  \\\"name\\\": \\\"%s\\\"\\n}\" << std::endl;\n", ind2, b.Name)
+	fmt.Fprintln(w, ind+"}")
+}
+
 func (f *ForStmt) emit(w io.Writer, indent int) {
 	for i := 0; i < indent; i++ {
 		io.WriteString(w, "    ")
@@ -2297,6 +2341,7 @@ func (i *IfExpr) emit(w io.Writer) {
 
 func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	useNow = false
+	useMem = false
 	usesLookupHost = false
 	cp := &Program{Includes: []string{"<iostream>", "<string>"}, ListTypes: map[string]string{}, GlobalTypes: map[string]string{}}
 	currentProgram = cp
@@ -2325,6 +2370,12 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 			if _, err := convertStmt(stmt); err != nil {
 				return nil, err
 			}
+		case stmt.Bench != nil:
+			bs, err := convertBenchBlock(stmt.Bench)
+			if err != nil {
+				return nil, err
+			}
+			body = append(body, bs)
 		case stmt.Expr != nil:
 			if se := extractSaveExpr(stmt.Expr.Expr); se != nil {
 				src, err := convertExpr(se.Src)
@@ -2714,6 +2765,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	}
 	cp.Globals = globals
 	cp.UseNow = useNow
+	cp.UseMem = useMem
 	cp.UseLookupHost = usesLookupHost
 	hasMain := false
 	for _, fn := range cp.Functions {
@@ -2992,6 +3044,12 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 			return nil, err
 		}
 		return us, nil
+	case s.Bench != nil:
+		bs, err := convertBenchBlock(s.Bench)
+		if err != nil {
+			return nil, err
+		}
+		return bs, nil
 	case s.For != nil:
 		start, err := convertExpr(s.For.Source)
 		if err != nil {
@@ -5600,4 +5658,23 @@ func convertUpdateStmt(u *parser.UpdateStmt) (Stmt, error) {
 		cond = substituteFieldRefs(c, fieldSet)
 	}
 	return &UpdateStmt{Target: u.Target, Fields: fields, Values: values, Cond: cond}, nil
+}
+
+func convertBenchBlock(b *parser.BenchBlock) (Stmt, error) {
+	old := localTypes
+	localTypes = map[string]string{}
+	var body []Stmt
+	for _, st := range b.Body {
+		cs, err := convertStmt(st)
+		if err != nil {
+			localTypes = old
+			return nil, err
+		}
+		body = append(body, cs)
+	}
+	localTypes = old
+	useNow = true
+	useMem = true
+	name := strings.Trim(b.Name, "\"")
+	return &BenchStmt{Name: name, Body: body}, nil
 }
