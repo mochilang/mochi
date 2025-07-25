@@ -1,191 +1,330 @@
 exit status 1
-/tmp/TestSwiftTranspiler_Rosetta_Golden1138770315/001/main.swift:4:45: error: cannot find type 'bigint' in scope
- 2 | import Foundation
- 3 | 
- 4 | func pow_big(_ base: bigint, _ exp: Int) -> bigint {
-   |                                             `- error: cannot find type 'bigint' in scope
- 5 |     var result: bigint = 1
- 6 |     var b: bigint = base
+/tmp/TestSwiftTranspiler_Rosetta_Golden1380138100/001/main.swift:125:38: warning: forced cast of 'BigInt' to same type has no effect
+123 |     func pow_big(_ base: BigInt, _ exp: Int) -> BigInt {
+124 |         var result: BigInt = BigInt(1)
+125 |         var b: BigInt = BigInt((base as! BigInt))
+    |                                      `- warning: forced cast of 'BigInt' to same type has no effect
+126 |         var e = (exp as! Int)
+127 |         while (e > 0) {
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden1138770315/001/main.swift:4:22: error: cannot find type 'bigint' in scope
- 2 | import Foundation
- 3 | 
- 4 | func pow_big(_ base: bigint, _ exp: Int) -> bigint {
-   |                      `- error: cannot find type 'bigint' in scope
- 5 |     var result: bigint = 1
- 6 |     var b: bigint = base
+/tmp/TestSwiftTranspiler_Rosetta_Golden1380138100/001/main.swift:126:22: warning: forced cast of 'Int' to same type has no effect
+124 |         var result: BigInt = BigInt(1)
+125 |         var b: BigInt = BigInt((base as! BigInt))
+126 |         var e = (exp as! Int)
+    |                      `- warning: forced cast of 'Int' to same type has no effect
+127 |         while (e > 0) {
+128 |             if ((e % 2) == 1) {
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden1138770315/001/main.swift:17:19: error: cannot find type 'bigint' in scope
-15 |     return result
-16 | }
-17 | func bit_len(_ x: bigint) -> Int {
-   |                   `- error: cannot find type 'bigint' in scope
-18 |     var n: bigint = x
-19 |     var c = 0
+/tmp/TestSwiftTranspiler_Rosetta_Golden1380138100/001/main.swift:129:40: warning: forced cast of 'BigInt' to same type has no effect
+127 |         while (e > 0) {
+128 |             if ((e % 2) == 1) {
+129 |                 result = ((result * b) as! BigInt)
+    |                                        `- warning: forced cast of 'BigInt' to same type has no effect
+130 |             }
+131 |             b = ((b * b) as! BigInt)
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden1138770315/001/main.swift:27:46: error: cannot find type 'bigint' in scope
-25 | }
-26 | var err = ""
-27 | func ackermann2(_ m: bigint, _ n: bigint) -> bigint {
-   |                                              `- error: cannot find type 'bigint' in scope
-28 |     if (err != "") {
-29 |         return 0
+/tmp/TestSwiftTranspiler_Rosetta_Golden1380138100/001/main.swift:131:26: warning: forced cast of 'BigInt' to same type has no effect
+129 |                 result = ((result * b) as! BigInt)
+130 |             }
+131 |             b = ((b * b) as! BigInt)
+    |                          `- warning: forced cast of 'BigInt' to same type has no effect
+132 |             e = Int((e / 2))
+133 |         }
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden1138770315/001/main.swift:27:22: error: cannot find type 'bigint' in scope
-25 | }
-26 | var err = ""
-27 | func ackermann2(_ m: bigint, _ n: bigint) -> bigint {
-   |                      `- error: cannot find type 'bigint' in scope
-28 |     if (err != "") {
-29 |         return 0
+/tmp/TestSwiftTranspiler_Rosetta_Golden1380138100/001/main.swift:134:24: warning: forced cast of 'BigInt' to same type has no effect
+132 |             e = Int((e / 2))
+133 |         }
+134 |         return (result as! BigInt)
+    |                        `- warning: forced cast of 'BigInt' to same type has no effect
+135 |     }
+136 |     func bit_len(_ x: BigInt) -> Int {
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden1138770315/001/main.swift:27:35: error: cannot find type 'bigint' in scope
-25 | }
-26 | var err = ""
-27 | func ackermann2(_ m: bigint, _ n: bigint) -> bigint {
-   |                                   `- error: cannot find type 'bigint' in scope
-28 |     if (err != "") {
-29 |         return 0
+/tmp/TestSwiftTranspiler_Rosetta_Golden1380138100/001/main.swift:137:35: warning: forced cast of 'BigInt' to same type has no effect
+135 |     }
+136 |     func bit_len(_ x: BigInt) -> Int {
+137 |         var n: BigInt = BigInt((x as! BigInt))
+    |                                   `- warning: forced cast of 'BigInt' to same type has no effect
+138 |         var c = 0
+139 |         while (n > 0) {
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden1138770315/001/main.swift:83:1: warning: using '_' to ignore the result of a Void-returning function is redundant
-81 |     _ = show(4, 3)
-82 | }
-83 | _ = main()
-   | `- warning: using '_' to ignore the result of a Void-returning function is redundant
-84 | 
+/tmp/TestSwiftTranspiler_Rosetta_Golden1380138100/001/main.swift:139:18: error: referencing operator function '>' on 'BinaryInteger' requires that 'BigInt' conform to 'BinaryInteger'
+137 |         var n: BigInt = BigInt((x as! BigInt))
+138 |         var c = 0
+139 |         while (n > 0) {
+    |                  `- error: referencing operator function '>' on 'BinaryInteger' requires that 'BigInt' conform to 'BinaryInteger'
+140 |             n = ((n / 2) as! BigInt)
+141 |             c = ((c + 1) as! Int)
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden1138770315/001/main.swift:5:17: error: cannot find type 'bigint' in scope
- 3 | 
- 4 | func pow_big(_ base: bigint, _ exp: Int) -> bigint {
- 5 |     var result: bigint = 1
-   |                 `- error: cannot find type 'bigint' in scope
- 6 |     var b: bigint = base
- 7 |     var e = (exp as! Int)
+Swift.BinaryInteger:1:11: note: where 'Self' = 'BigInt'
+1 | extension BinaryInteger {
+  |           `- note: where 'Self' = 'BigInt'
+2 |     public static func == <Other>(lhs: Self, rhs: Other) -> Bool where Other : BinaryInteger
+3 |     public static func != <Other>(lhs: Self, rhs: Other) -> Bool where Other : BinaryInteger
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden1138770315/001/main.swift:6:12: error: cannot find type 'bigint' in scope
- 4 | func pow_big(_ base: bigint, _ exp: Int) -> bigint {
- 5 |     var result: bigint = 1
- 6 |     var b: bigint = base
-   |            `- error: cannot find type 'bigint' in scope
- 7 |     var e = (exp as! Int)
- 8 |     while (e > 0) {
+/tmp/TestSwiftTranspiler_Rosetta_Golden1380138100/001/main.swift:140:21: error: binary operator '/' cannot be applied to operands of type 'BigInt' and 'Int'
+138 |         var c = 0
+139 |         while (n > 0) {
+140 |             n = ((n / 2) as! BigInt)
+    |                     |- error: binary operator '/' cannot be applied to operands of type 'BigInt' and 'Int'
+    |                     `- note: overloads for '/' exist with these partially matching parameter lists: (Int, Int)
+141 |             c = ((c + 1) as! Int)
+142 |         }
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden1138770315/001/main.swift:7:18: warning: forced cast of 'Int' to same type has no effect
- 5 |     var result: bigint = 1
- 6 |     var b: bigint = base
- 7 |     var e = (exp as! Int)
-   |                  `- warning: forced cast of 'Int' to same type has no effect
- 8 |     while (e > 0) {
- 9 |         if ((e % 2) == 1) {
+/tmp/TestSwiftTranspiler_Rosetta_Golden1380138100/001/main.swift:141:26: warning: forced cast of 'Int' to same type has no effect
+139 |         while (n > 0) {
+140 |             n = ((n / 2) as! BigInt)
+141 |             c = ((c + 1) as! Int)
+    |                          `- warning: forced cast of 'Int' to same type has no effect
+142 |         }
+143 |         return (c as! Int)
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden1138770315/001/main.swift:18:12: error: cannot find type 'bigint' in scope
-16 | }
-17 | func bit_len(_ x: bigint) -> Int {
-18 |     var n: bigint = x
-   |            `- error: cannot find type 'bigint' in scope
-19 |     var c = 0
-20 |     while (n > 0) {
+/tmp/TestSwiftTranspiler_Rosetta_Golden1380138100/001/main.swift:143:19: warning: forced cast of 'Int' to same type has no effect
+141 |             c = ((c + 1) as! Int)
+142 |         }
+143 |         return (c as! Int)
+    |                   `- warning: forced cast of 'Int' to same type has no effect
+144 |     }
+145 |     var err = ""
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden1138770315/001/main.swift:22:22: warning: forced cast of 'Int' to same type has no effect
-20 |     while (n > 0) {
-21 |         n = (n / 2)
-22 |         c = ((c + 1) as! Int)
-   |                      `- warning: forced cast of 'Int' to same type has no effect
-23 |     }
-24 |     return (c as! Int)
+/tmp/TestSwiftTranspiler_Rosetta_Golden1380138100/001/main.swift:148:20: error: cannot convert return expression of type 'Int' to return type 'BigInt'
+146 |     func ackermann2(_ m: BigInt, _ n: BigInt) -> BigInt {
+147 |         if (err != "") {
+148 |             return 0
+    |                    `- error: cannot convert return expression of type 'Int' to return type 'BigInt'
+149 |         }
+150 |         if (m <= 3) {
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden1138770315/001/main.swift:24:15: warning: forced cast of 'Int' to same type has no effect
-22 |         c = ((c + 1) as! Int)
-23 |     }
-24 |     return (c as! Int)
-   |               `- warning: forced cast of 'Int' to same type has no effect
-25 | }
-26 | var err = ""
+/tmp/TestSwiftTranspiler_Rosetta_Golden1380138100/001/main.swift:150:15: error: referencing operator function '<=' on 'BinaryInteger' requires that 'BigInt' conform to 'BinaryInteger'
+148 |             return 0
+149 |         }
+150 |         if (m <= 3) {
+    |               `- error: referencing operator function '<=' on 'BinaryInteger' requires that 'BigInt' conform to 'BinaryInteger'
+151 |             let mi = Int(_int(m))
+152 |             if (mi == 0) {
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden1138770315/001/main.swift:45:93: warning: forced cast of 'String' to same type has no effect
-43 |             let nb = Int(bit_len(n))
-44 |             if (nb > 64) {
-45 |                 err = ((("A(m,n) had n of " + String(describing: nb)) + " bits; too large") as! String)
-   |                                                                                             `- warning: forced cast of 'String' to same type has no effect
-46 |                 return 0
-47 |             }
+Swift.BinaryInteger:1:11: note: where 'Self' = 'BigInt'
+1 | extension BinaryInteger {
+  |           `- note: where 'Self' = 'BigInt'
+2 |     public static func == <Other>(lhs: Self, rhs: Other) -> Bool where Other : BinaryInteger
+3 |     public static func != <Other>(lhs: Self, rhs: Other) -> Bool where Other : BinaryInteger
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden1138770315/001/main.swift:59:33: error: cannot find type 'bigint' in scope
-57 | func show(_ m: Int, _ n: Int) {
-58 |     err = ""
-59 |     let res = ackermann2((m as! bigint), (n as! bigint))
-   |                                 `- error: cannot find type 'bigint' in scope
-60 |     if (err != "") {
-61 |         print(((((("A(" + String(describing: m)) + ", ") + String(describing: n)) + ") = Error: ") + err))
+/tmp/TestSwiftTranspiler_Rosetta_Golden1380138100/001/main.swift:153:28: error: binary operator '+' cannot be applied to operands of type 'BigInt' and 'Int'
+151 |             let mi = Int(_int(m))
+152 |             if (mi == 0) {
+153 |                 return ((n + 1) as! BigInt)
+    |                            |- error: binary operator '+' cannot be applied to operands of type 'BigInt' and 'Int'
+    |                            `- note: overloads for '+' exist with these partially matching parameter lists: (BigInt, BigInt), (Int, Int)
+154 |             }
+155 |             if (mi == 1) {
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden1138770315/001/main.swift:59:49: error: cannot find type 'bigint' in scope
-57 | func show(_ m: Int, _ n: Int) {
-58 |     err = ""
-59 |     let res = ackermann2((m as! bigint), (n as! bigint))
-   |                                                 `- error: cannot find type 'bigint' in scope
-60 |     if (err != "") {
-61 |         print(((((("A(" + String(describing: m)) + ", ") + String(describing: n)) + ") = Error: ") + err))
+/tmp/TestSwiftTranspiler_Rosetta_Golden1380138100/001/main.swift:156:28: error: binary operator '+' cannot be applied to operands of type 'BigInt' and 'Int'
+154 |             }
+155 |             if (mi == 1) {
+156 |                 return ((n + 2) as! BigInt)
+    |                            |- error: binary operator '+' cannot be applied to operands of type 'BigInt' and 'Int'
+    |                            `- note: overloads for '+' exist with these partially matching parameter lists: (BigInt, BigInt), (Int, Int)
+157 |             }
+158 |             if (mi == 2) {
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden1138770315/001/main.swift:74:5: warning: using '_' to ignore the result of a Void-returning function is redundant
-72 | }
-73 | func main() {
-74 |     _ = show(0, 0)
-   |     `- warning: using '_' to ignore the result of a Void-returning function is redundant
-75 |     _ = show(1, 2)
-76 |     _ = show(2, 4)
+/tmp/TestSwiftTranspiler_Rosetta_Golden1380138100/001/main.swift:159:31: error: cannot convert value of type 'BigInt' to expected argument type 'Int'
+157 |             }
+158 |             if (mi == 2) {
+159 |                 return (((2 * n) + 3) as! BigInt)
+    |                               `- error: cannot convert value of type 'BigInt' to expected argument type 'Int'
+160 |             }
+161 |             if (mi == 3) {
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden1138770315/001/main.swift:75:5: warning: using '_' to ignore the result of a Void-returning function is redundant
-73 | func main() {
-74 |     _ = show(0, 0)
-75 |     _ = show(1, 2)
-   |     `- warning: using '_' to ignore the result of a Void-returning function is redundant
-76 |     _ = show(2, 4)
-77 |     _ = show(3, 100)
+/tmp/TestSwiftTranspiler_Rosetta_Golden1380138100/001/main.swift:162:41: warning: forced cast of 'BigInt' to same type has no effect
+160 |             }
+161 |             if (mi == 3) {
+162 |                 let nb = Int(bit_len((n as! BigInt)))
+    |                                         `- warning: forced cast of 'BigInt' to same type has no effect
+163 |                 if (nb > 64) {
+164 |                     err = ((("A(m,n) had n of " + String(describing: nb)) + " bits; too large") as! String)
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden1138770315/001/main.swift:76:5: warning: using '_' to ignore the result of a Void-returning function is redundant
-74 |     _ = show(0, 0)
-75 |     _ = show(1, 2)
-76 |     _ = show(2, 4)
-   |     `- warning: using '_' to ignore the result of a Void-returning function is redundant
-77 |     _ = show(3, 100)
-78 |     _ = show(3, 1000000)
+/tmp/TestSwiftTranspiler_Rosetta_Golden1380138100/001/main.swift:164:97: warning: forced cast of 'String' to same type has no effect
+162 |                 let nb = Int(bit_len((n as! BigInt)))
+163 |                 if (nb > 64) {
+164 |                     err = ((("A(m,n) had n of " + String(describing: nb)) + " bits; too large") as! String)
+    |                                                                                                 `- warning: forced cast of 'String' to same type has no effect
+165 |                     return 0
+166 |                 }
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden1138770315/001/main.swift:77:5: warning: using '_' to ignore the result of a Void-returning function is redundant
-75 |     _ = show(1, 2)
-76 |     _ = show(2, 4)
-77 |     _ = show(3, 100)
-   |     `- warning: using '_' to ignore the result of a Void-returning function is redundant
-78 |     _ = show(3, 1000000)
-79 |     _ = show(4, 1)
+/tmp/TestSwiftTranspiler_Rosetta_Golden1380138100/001/main.swift:165:28: error: cannot convert return expression of type 'Int' to return type 'BigInt'
+163 |                 if (nb > 64) {
+164 |                     err = ((("A(m,n) had n of " + String(describing: nb)) + " bits; too large") as! String)
+165 |                     return 0
+    |                            `- error: cannot convert return expression of type 'Int' to return type 'BigInt'
+166 |                 }
+167 |                 let r = pow_big(2, Int(_int(n)))
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden1138770315/001/main.swift:78:5: warning: using '_' to ignore the result of a Void-returning function is redundant
-76 |     _ = show(2, 4)
-77 |     _ = show(3, 100)
-78 |     _ = show(3, 1000000)
-   |     `- warning: using '_' to ignore the result of a Void-returning function is redundant
-79 |     _ = show(4, 1)
-80 |     _ = show(4, 2)
+/tmp/TestSwiftTranspiler_Rosetta_Golden1380138100/001/main.swift:167:33: error: cannot convert value of type 'Int' to expected argument type 'BigInt'
+165 |                     return 0
+166 |                 }
+167 |                 let r = pow_big(2, Int(_int(n)))
+    |                                 `- error: cannot convert value of type 'Int' to expected argument type 'BigInt'
+168 |                 return (((8 * r) - 3) as! BigInt)
+169 |             }
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden1138770315/001/main.swift:79:5: warning: using '_' to ignore the result of a Void-returning function is redundant
-77 |     _ = show(3, 100)
-78 |     _ = show(3, 1000000)
-79 |     _ = show(4, 1)
-   |     `- warning: using '_' to ignore the result of a Void-returning function is redundant
-80 |     _ = show(4, 2)
-81 |     _ = show(4, 3)
+/tmp/TestSwiftTranspiler_Rosetta_Golden1380138100/001/main.swift:168:39: warning: cast from 'Int' to unrelated type 'BigInt' always fails
+166 |                 }
+167 |                 let r = pow_big(2, Int(_int(n)))
+168 |                 return (((8 * r) - 3) as! BigInt)
+    |                                       `- warning: cast from 'Int' to unrelated type 'BigInt' always fails
+169 |             }
+170 |         }
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden1138770315/001/main.swift:80:5: warning: using '_' to ignore the result of a Void-returning function is redundant
-78 |     _ = show(3, 1000000)
-79 |     _ = show(4, 1)
-80 |     _ = show(4, 2)
-   |     `- warning: using '_' to ignore the result of a Void-returning function is redundant
-81 |     _ = show(4, 3)
-82 | }
+/tmp/TestSwiftTranspiler_Rosetta_Golden1380138100/001/main.swift:171:28: warning: forced cast of 'BigInt' to same type has no effect
+169 |             }
+170 |         }
+171 |         if (Int(bit_len((n as! BigInt))) == 0) {
+    |                            `- warning: forced cast of 'BigInt' to same type has no effect
+172 |             return BigInt(ackermann2(((m - 1) as! BigInt), 1))
+173 |         }
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden1138770315/001/main.swift:81:5: warning: using '_' to ignore the result of a Void-returning function is redundant
-79 |     _ = show(4, 1)
-80 |     _ = show(4, 2)
-81 |     _ = show(4, 3)
-   |     `- warning: using '_' to ignore the result of a Void-returning function is redundant
-82 | }
-83 | _ = main()
+/tmp/TestSwiftTranspiler_Rosetta_Golden1380138100/001/main.swift:172:42: error: binary operator '-' cannot be applied to operands of type 'BigInt' and 'Int'
+170 |         }
+171 |         if (Int(bit_len((n as! BigInt))) == 0) {
+172 |             return BigInt(ackermann2(((m - 1) as! BigInt), 1))
+    |                                          |- error: binary operator '-' cannot be applied to operands of type 'BigInt' and 'Int'
+    |                                          `- note: overloads for '-' exist with these partially matching parameter lists: (BigInt, BigInt), (Int, Int)
+173 |         }
+174 |         return BigInt(ackermann2(((m - 1) as! BigInt), BigInt(ackermann2((m as! BigInt), ((n - 1) as! BigInt)))))
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1380138100/001/main.swift:172:60: error: cannot convert value of type 'Int' to expected argument type 'BigInt'
+170 |         }
+171 |         if (Int(bit_len((n as! BigInt))) == 0) {
+172 |             return BigInt(ackermann2(((m - 1) as! BigInt), 1))
+    |                                                            `- error: cannot convert value of type 'Int' to expected argument type 'BigInt'
+173 |         }
+174 |         return BigInt(ackermann2(((m - 1) as! BigInt), BigInt(ackermann2((m as! BigInt), ((n - 1) as! BigInt)))))
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1380138100/001/main.swift:174:38: error: binary operator '-' cannot be applied to operands of type 'BigInt' and 'Int'
+172 |             return BigInt(ackermann2(((m - 1) as! BigInt), 1))
+173 |         }
+174 |         return BigInt(ackermann2(((m - 1) as! BigInt), BigInt(ackermann2((m as! BigInt), ((n - 1) as! BigInt)))))
+    |                                      |- error: binary operator '-' cannot be applied to operands of type 'BigInt' and 'Int'
+    |                                      `- note: overloads for '-' exist with these partially matching parameter lists: (BigInt, BigInt), (Int, Int)
+175 |     }
+176 |     func show(_ m: Int, _ n: Int) {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1380138100/001/main.swift:174:94: error: binary operator '-' cannot be applied to operands of type 'BigInt' and 'Int'
+172 |             return BigInt(ackermann2(((m - 1) as! BigInt), 1))
+173 |         }
+174 |         return BigInt(ackermann2(((m - 1) as! BigInt), BigInt(ackermann2((m as! BigInt), ((n - 1) as! BigInt)))))
+    |                                                                                              |- error: binary operator '-' cannot be applied to operands of type 'BigInt' and 'Int'
+    |                                                                                              `- note: overloads for '-' exist with these partially matching parameter lists: (BigInt, BigInt), (Int, Int)
+175 |     }
+176 |     func show(_ m: Int, _ n: Int) {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1380138100/001/main.swift:183:30: warning: forced cast of 'BigInt' to same type has no effect
+181 |             return
+182 |         }
+183 |         if (Int(bit_len((res as! BigInt))) <= 256) {
+    |                              `- warning: forced cast of 'BigInt' to same type has no effect
+184 |             print(((((("A(" + String(describing: m)) + ", ") + String(describing: n)) + ") = ") + String(describing: res)))
+185 |         } else {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1380138100/001/main.swift:187:58: warning: forced cast of 'String' to same type has no effect
+185 |         } else {
+186 |             let s = String(describing: res)
+187 |             let pre = String(describing: String(Array((s as! String))[0..<20]))
+    |                                                          `- warning: forced cast of 'String' to same type has no effect
+188 |             let suf = String(describing: String(Array((s as! String))[((Int(((s).count)) - 20) as! Int)..<Int(((s).count))]))
+189 |             print(((((((((("A(" + String(describing: m)) + ", ") + String(describing: n)) + ") = ") + String(describing: Int(((s).count)))) + " digits starting/ending with: ") + pre) + "...") + suf))
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1380138100/001/main.swift:188:58: warning: forced cast of 'String' to same type has no effect
+186 |             let s = String(describing: res)
+187 |             let pre = String(describing: String(Array((s as! String))[0..<20]))
+188 |             let suf = String(describing: String(Array((s as! String))[((Int(((s).count)) - 20) as! Int)..<Int(((s).count))]))
+    |                                                          `- warning: forced cast of 'String' to same type has no effect
+189 |             print(((((((((("A(" + String(describing: m)) + ", ") + String(describing: n)) + ") = ") + String(describing: Int(((s).count)))) + " digits starting/ending with: ") + pre) + "...") + suf))
+190 |         }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1380138100/001/main.swift:188:96: warning: forced cast of 'Int' to same type has no effect
+186 |             let s = String(describing: res)
+187 |             let pre = String(describing: String(Array((s as! String))[0..<20]))
+188 |             let suf = String(describing: String(Array((s as! String))[((Int(((s).count)) - 20) as! Int)..<Int(((s).count))]))
+    |                                                                                                `- warning: forced cast of 'Int' to same type has no effect
+189 |             print(((((((((("A(" + String(describing: m)) + ", ") + String(describing: n)) + ") = ") + String(describing: Int(((s).count)))) + " digits starting/ending with: ") + pre) + "...") + suf))
+190 |         }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1380138100/001/main.swift:193:9: warning: using '_' to ignore the result of a Void-returning function is redundant
+191 |     }
+192 |     func main() {
+193 |         _ = show(0, 0)
+    |         `- warning: using '_' to ignore the result of a Void-returning function is redundant
+194 |         _ = show(1, 2)
+195 |         _ = show(2, 4)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1380138100/001/main.swift:194:9: warning: using '_' to ignore the result of a Void-returning function is redundant
+192 |     func main() {
+193 |         _ = show(0, 0)
+194 |         _ = show(1, 2)
+    |         `- warning: using '_' to ignore the result of a Void-returning function is redundant
+195 |         _ = show(2, 4)
+196 |         _ = show(3, 100)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1380138100/001/main.swift:195:9: warning: using '_' to ignore the result of a Void-returning function is redundant
+193 |         _ = show(0, 0)
+194 |         _ = show(1, 2)
+195 |         _ = show(2, 4)
+    |         `- warning: using '_' to ignore the result of a Void-returning function is redundant
+196 |         _ = show(3, 100)
+197 |         _ = show(3, 1000000)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1380138100/001/main.swift:196:9: warning: using '_' to ignore the result of a Void-returning function is redundant
+194 |         _ = show(1, 2)
+195 |         _ = show(2, 4)
+196 |         _ = show(3, 100)
+    |         `- warning: using '_' to ignore the result of a Void-returning function is redundant
+197 |         _ = show(3, 1000000)
+198 |         _ = show(4, 1)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1380138100/001/main.swift:197:9: warning: using '_' to ignore the result of a Void-returning function is redundant
+195 |         _ = show(2, 4)
+196 |         _ = show(3, 100)
+197 |         _ = show(3, 1000000)
+    |         `- warning: using '_' to ignore the result of a Void-returning function is redundant
+198 |         _ = show(4, 1)
+199 |         _ = show(4, 2)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1380138100/001/main.swift:198:9: warning: using '_' to ignore the result of a Void-returning function is redundant
+196 |         _ = show(3, 100)
+197 |         _ = show(3, 1000000)
+198 |         _ = show(4, 1)
+    |         `- warning: using '_' to ignore the result of a Void-returning function is redundant
+199 |         _ = show(4, 2)
+200 |         _ = show(4, 3)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1380138100/001/main.swift:199:9: warning: using '_' to ignore the result of a Void-returning function is redundant
+197 |         _ = show(3, 1000000)
+198 |         _ = show(4, 1)
+199 |         _ = show(4, 2)
+    |         `- warning: using '_' to ignore the result of a Void-returning function is redundant
+200 |         _ = show(4, 3)
+201 |     }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1380138100/001/main.swift:200:9: warning: using '_' to ignore the result of a Void-returning function is redundant
+198 |         _ = show(4, 1)
+199 |         _ = show(4, 2)
+200 |         _ = show(4, 3)
+    |         `- warning: using '_' to ignore the result of a Void-returning function is redundant
+201 |     }
+202 |     _ = main()
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1380138100/001/main.swift:202:5: warning: using '_' to ignore the result of a Void-returning function is redundant
+200 |         _ = show(4, 3)
+201 |     }
+202 |     _ = main()
+    |     `- warning: using '_' to ignore the result of a Void-returning function is redundant
+203 |     let _benchEnd = _now()
+204 |     let _benchMemEnd = _mem()
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1380138100/001/main.swift:72:17: warning: variable 'a' was never mutated; consider changing to 'let' constant
+ 70 |         var result: [UInt32] = []
+ 71 |         for i in 0..<lhs.digits.count {
+ 72 |             var a = Int64(lhs.digits[i]) - borrow
+    |                 `- warning: variable 'a' was never mutated; consider changing to 'let' constant
+ 73 |             let b = i < rhs.digits.count ? Int64(rhs.digits[i]) : 0
+ 74 |             var diff = a - b

@@ -1,5 +1,5 @@
-## Progress (2025-07-25 19:45 +0700)
-- swift transpiler: add _int helper and fix cast logic
+## Progress (2025-07-25 20:48 +0700)
+- scala rosetta: update docs
 - Generated golden tests for 102/104 programs
 - Updated README checklist and output artifacts
 
