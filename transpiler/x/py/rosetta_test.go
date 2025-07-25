@@ -5,6 +5,7 @@ package py_test
 import (
 	"bufio"
 	"bytes"
+	"encoding/json"
 	"flag"
 	"fmt"
 	"os"
@@ -35,12 +36,13 @@ func runRosettaCase(t *testing.T, name string) {
 	outPath := filepath.Join(outDir, name+".out")
 	errPath := filepath.Join(outDir, name+".error")
 
+	bench := os.Getenv("MOCHI_BENCHMARK") == "true"
 	want, err := os.ReadFile(outPath)
 	if err != nil {
 		if !updateEnabled() {
 			t.Fatalf("read want: %v", err)
 		}
-	} else {
+	} else if !bench {
 		want = bytes.TrimSpace(want)
 	}
 
@@ -60,7 +62,7 @@ func runRosettaCase(t *testing.T, name string) {
 		t.Fatalf("transpile: %v", err)
 	}
 	var buf bytes.Buffer
-	if err := py.Emit(&buf, ast); err != nil {
+	if err := py.Emit(&buf, ast, bench); err != nil {
 		_ = os.WriteFile(errPath, []byte("emit: "+err.Error()), 0o644)
 		t.Fatalf("emit: %v", err)
 	}
@@ -83,6 +85,14 @@ func runRosettaCase(t *testing.T, name string) {
 		}
 	} else {
 		_ = os.Remove(errPath)
+	}
+
+	if bench {
+		benchPath := filepath.Join(outDir, name+".bench")
+		if updateEnabled() {
+			_ = os.WriteFile(benchPath, got, 0o644)
+		}
+		return
 	}
 
 	if updateEnabled() {
@@ -178,17 +188,31 @@ func updateRosetta() {
 	}
 	total := len(entries)
 	compiled := 0
-	var lines []string
+	var rows []string
+	rows = append(rows, "| Index | Name | Status | Duration | Memory |")
+	rows = append(rows, "|------:|------|--------|---------:|-------:|")
 	for _, e := range entries {
 		name := strings.TrimSuffix(filepath.Base(e.file), ".mochi")
-		mark := "[ ]"
+		status := " "
+		dur := ""
+		mem := ""
 		if _, err := os.Stat(filepath.Join(outDir, name+".error")); err == nil {
-			// leave unchecked
+			status = "error"
 		} else if _, err := os.Stat(filepath.Join(outDir, name+".py")); err == nil {
+			status = "ok"
 			compiled++
-			mark = "[x]"
 		}
-		lines = append(lines, fmt.Sprintf("%d. %s %s", e.idx, mark, name))
+		if data, err := os.ReadFile(filepath.Join(outDir, name+".bench")); err == nil {
+			var r struct {
+				DurationUS  int64 `json:"duration_us"`
+				MemoryBytes int64 `json:"memory_bytes"`
+			}
+			if json.Unmarshal(bytes.TrimSpace(data), &r) == nil {
+				dur = formatDuration(time.Duration(r.DurationUS) * time.Microsecond)
+				mem = formatBytes(r.MemoryBytes)
+			}
+		}
+		rows = append(rows, fmt.Sprintf("| %d | %s | %s | %s | %s |", e.idx, name, status, dur, mem))
 	}
 	var buf bytes.Buffer
 	buf.WriteString("# Rosetta Transpiler Progress\n\n")
@@ -197,7 +221,38 @@ func updateRosetta() {
 	loc := time.FixedZone("GMT+7", 7*60*60)
 	buf.WriteString("Last updated: " + time.Now().In(loc).Format("2006-01-02 15:04 MST") + "\n\n")
 	fmt.Fprintf(&buf, "## Rosetta Golden Test Checklist (%d/%d)\n", compiled, total)
-	buf.WriteString(strings.Join(lines, "\n"))
+	buf.WriteString(strings.Join(rows, "\n"))
 	buf.WriteString("\n")
 	_ = os.WriteFile(md, buf.Bytes(), 0o644)
+}
+
+func formatDuration(d time.Duration) string {
+	switch {
+	case d < time.Microsecond:
+		return fmt.Sprintf("%dns", d.Nanoseconds())
+	case d < time.Millisecond:
+		return fmt.Sprintf("%.1fµs", float64(d.Microseconds()))
+	case d < time.Second:
+		return fmt.Sprintf("%.1fms", float64(d.Milliseconds()))
+	default:
+		return fmt.Sprintf("%.2fs", d.Seconds())
+	}
+}
+
+func formatBytes(n int64) string {
+	const (
+		_KB = 1024
+		_MB = _KB * 1024
+		_GB = _MB * 1024
+	)
+	switch {
+	case n >= _GB:
+		return fmt.Sprintf("%.2fGB", float64(n)/float64(_GB))
+	case n >= _MB:
+		return fmt.Sprintf("%.2fMB", float64(n)/float64(_MB))
+	case n >= _KB:
+		return fmt.Sprintf("%.2fKB", float64(n)/float64(_KB))
+	default:
+		return fmt.Sprintf("%dB", n)
+	}
 }

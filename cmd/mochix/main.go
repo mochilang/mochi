@@ -708,8 +708,9 @@ func transpileProgram(lang string, env *types.Env, prog *parser.Program, root, s
 		if err != nil {
 			return nil, err
 		}
+		bench := os.Getenv("MOCHI_BENCHMARK") == "true"
 		var buf bytes.Buffer
-		if err := py.Emit(&buf, p); err != nil {
+		if err := py.Emit(&buf, p, bench); err != nil {
 			return nil, err
 		}
 		return buf.Bytes(), nil
