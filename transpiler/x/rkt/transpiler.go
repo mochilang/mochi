@@ -170,6 +170,29 @@ func (s *SaveStmt) emit(w io.Writer) {
 	io.WriteString(w, ";; unsupported save\n")
 }
 
+type BenchStmt struct {
+	Name string
+	Body []Stmt
+}
+
+func (b *BenchStmt) emit(w io.Writer) {
+	fmt.Fprintln(w, "(let* ([_start_mem (current-memory-use)] [_start (now)])")
+	for _, st := range b.Body {
+		st.emit(w)
+	}
+	fmt.Fprintln(w, "  (let* ([_end (now)] [_end_mem (current-memory-use)]")
+	fmt.Fprintln(w, "         [_dur (- _end _start)]")
+	fmt.Fprintln(w, "         [_dur_us (quotient _dur 1000)]")
+	fmt.Fprintln(w, "         [_mem 0])")
+	io.WriteString(w, "    (displayln \"{\")\n")
+	io.WriteString(w, "    (displayln (format \"  \\\"duration_us\\\": ~a,\" _dur_us))\n")
+	io.WriteString(w, "    (displayln \"  \\\"memory_bytes\\\": 0,\")\n")
+	fmt.Fprintf(w, "    (displayln \"  \\\"name\\\": \\\"%s\\\"\")\n", b.Name)
+	io.WriteString(w, "    (displayln \"}\")\n")
+	io.WriteString(w, "  )\n")
+	io.WriteString(w, ")\n")
+}
+
 type IfStmt struct {
 	Cond Expr
 	Then []Stmt
@@ -1579,6 +1602,13 @@ func convertStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 		return convertWhileStmt(st.While, env)
 	case st.For != nil:
 		return convertForStmt(st.For, env)
+	case st.Bench != nil:
+		child := types.NewEnv(env)
+		body, err := convertStatements(st.Bench.Body, child)
+		if err != nil {
+			return nil, err
+		}
+		return &BenchStmt{Name: st.Bench.Name, Body: body}, nil
 	case st.Break != nil:
 		return &BreakStmt{}, nil
 	case st.Continue != nil:
