@@ -172,7 +172,7 @@ func (v *VarDecl) emit(w io.Writer) {
 	case v.Type != "":
 		fmt.Fprintf(w, "var %s %s", v.Name, v.Type)
 	default:
-		fmt.Fprintf(w, "var %s", v.Name)
+		fmt.Fprintf(w, "var %s any", v.Name)
 	}
 }
 
@@ -1176,7 +1176,7 @@ func (bi *BoolIntExpr) emit(w io.Writer) {
 type LookupHostExpr struct{ Arg Expr }
 
 func (lh *LookupHostExpr) emit(w io.Writer) {
-	io.WriteString(w, "func() []any { a, b := net.LookupHost(")
+	io.WriteString(w, "func() any { a, b := net.LookupHost(")
 	lh.Arg.emit(w)
 	io.WriteString(w, "); return []any{a, b} }()")
 }
@@ -3296,6 +3296,17 @@ func isStringType(t types.Type) bool {
 
 func boolExprFor(e Expr, t types.Type) Expr {
 	if _, ok := t.(types.BoolType); ok {
+		if ix, ok2 := e.(*IndexExpr); ok2 {
+			if vr, ok3 := ix.X.(*VarRef); ok3 && topEnv != nil {
+				if vt, err := topEnv.GetVar(vr.Name); err == nil {
+					if lt, ok4 := vt.(types.ListType); ok4 {
+						if _, ok5 := lt.Elem.(types.AnyType); ok5 {
+							return &AssertExpr{Expr: e, Type: "bool"}
+						}
+					}
+				}
+			}
+		}
 		return e
 	}
 	switch ex := e.(type) {
@@ -3703,6 +3714,9 @@ func compileBinary(b *parser.BinaryExpr, env *types.Env, base string) (Expr, err
 					et := "any"
 					if lt, ok := typesList[i].(types.ListType); ok {
 						et = toGoTypeFromType(lt.Elem)
+						if ll, ok2 := right.(*ListLit); ok2 {
+							updateListLitType(ll, lt.Elem)
+						}
 					}
 					newExpr = &UnionAllExpr{Left: left, Right: right, ElemType: et}
 				case "except":
@@ -3968,6 +3982,14 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env, base string) (Expr, 
 				usesStrings = true
 			}
 			return &ContainsExpr{Collection: expr, Value: args[0], Kind: kind, ElemType: et}, nil
+		case "keys":
+			mt, _ := types.TypeOfPrimary(pf.Target, env).(types.MapType)
+			usesSort = true
+			return &KeysExpr{Map: expr, KeyType: toGoTypeFromType(mt.Key)}, nil
+		case "values":
+			mt, _ := types.TypeOfPrimary(pf.Target, env).(types.MapType)
+			usesSort = true
+			return &ValuesExpr{Map: expr, ValueType: toGoTypeFromType(mt.Value)}, nil
 		default:
 			return nil, fmt.Errorf("unsupported method %s", method)
 		}
@@ -4733,6 +4755,9 @@ func toGoTypeFromType(t types.Type) string {
 		params := make([]string, len(tt.Params))
 		for i, p := range tt.Params {
 			params[i] = toGoTypeFromType(p)
+			if params[i] == "" {
+				params[i] = "any"
+			}
 		}
 		ret := toGoTypeFromType(tt.Return)
 		if ret == "" {
@@ -4928,7 +4953,13 @@ func identName(e *parser.Expr) (string, bool) {
 }
 
 // Emit formats the Go AST back into source code.
-func Emit(prog *Program) []byte {
+func Emit(prog *Program, bench bool) []byte {
+	if bench {
+		prog.UseTime = true
+		prog.UseJSON = true
+		prog.UsePrint = true
+		prog.UseRuntime = true
+	}
 	var buf bytes.Buffer
 	buf.WriteString("//go:build ignore\n\n")
 	buf.Write(meta.Header("//"))
@@ -5098,22 +5129,43 @@ func Emit(prog *Program) []byte {
 		}
 	}
 	buf.WriteString("func main() {\n")
-	for _, s := range prog.Stmts {
-		if vd, ok := s.(*VarDecl); ok && vd.Global {
-			continue
+	if bench {
+		bs := &BenchStmt{Name: "main"}
+		for _, s := range prog.Stmts {
+			if vd, ok := s.(*VarDecl); ok && vd.Global {
+				continue
+			}
+			if _, ok := s.(*FuncDecl); ok {
+				continue
+			}
+			if _, ok := s.(*TypeDeclStmt); ok {
+				continue
+			}
+			if _, ok := s.(*UnionDeclStmt); ok {
+				continue
+			}
+			bs.Body = append(bs.Body, s)
 		}
-		if _, ok := s.(*FuncDecl); ok {
-			continue
-		}
-		if _, ok := s.(*TypeDeclStmt); ok {
-			continue
-		}
-		if _, ok := s.(*UnionDeclStmt); ok {
-			continue
-		}
-		buf.WriteString("    ")
-		s.emit(&buf)
+		bs.emit(&buf)
 		buf.WriteString("\n")
+	} else {
+		for _, s := range prog.Stmts {
+			if vd, ok := s.(*VarDecl); ok && vd.Global {
+				continue
+			}
+			if _, ok := s.(*FuncDecl); ok {
+				continue
+			}
+			if _, ok := s.(*TypeDeclStmt); ok {
+				continue
+			}
+			if _, ok := s.(*UnionDeclStmt); ok {
+				continue
+			}
+			buf.WriteString("    ")
+			s.emit(&buf)
+			buf.WriteString("\n")
+		}
 	}
 	buf.WriteString("}\n")
 	out, err := format.Source(buf.Bytes())

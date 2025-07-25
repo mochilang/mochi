@@ -696,7 +696,8 @@ func transpileProgram(lang string, env *types.Env, prog *parser.Program, root, s
 		if err != nil {
 			return nil, err
 		}
-		return gotrans.Emit(p), nil
+		bench := os.Getenv("MOCHI_BENCHMARK") == "true"
+		return gotrans.Emit(p, bench), nil
 	case "ts":
 		p, err := tstranspiler.Transpile(prog, env, false)
 		if err != nil {
