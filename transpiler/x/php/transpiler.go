@@ -192,6 +192,7 @@ var usesParseIntStr bool
 var usesIntDiv bool
 var usesSHA256 bool
 var benchMain bool
+var extraStmts []Stmt
 
 // SetBenchMain configures whether the generated main function is wrapped in a
 // benchmark block when emitting code. When enabled, the program will print a
@@ -1943,6 +1944,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	usesSHA256 = false
 	defer func() { transpileEnv = nil }()
 	p := &Program{Env: env}
+	extraStmts = nil
 	for _, st := range prog.Statements {
 		if st.Fun != nil {
 			name := st.Fun.Name
@@ -1962,6 +1964,9 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 		if conv != nil {
 			p.Stmts = append(p.Stmts, conv)
 		}
+	}
+	if len(extraStmts) > 0 {
+		p.Stmts = append(extraStmts, p.Stmts...)
 	}
 	if benchMain {
 		usesNow = true
@@ -2215,6 +2220,19 @@ func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
 				if _, ok := importedModules[root]; ok {
 					call := fmt.Sprintf("$%s['%s']", root, method)
 					return &CallExpr{Func: call, Args: args}, nil
+				}
+			}
+			if transpileEnv != nil && pf.Target != nil {
+				base := pf.Target
+				if pf.Target.Selector != nil {
+					base = &parser.Primary{Selector: &parser.SelectorExpr{Root: pf.Target.Selector.Root}}
+				}
+				if t := types.TypeOfPrimary(base, transpileEnv); t != nil {
+					if st, ok := t.(types.StructType); ok && st.Name != "" {
+						call := st.Name + "_" + method
+						args = append([]Expr{e}, args...)
+						return &CallExpr{Func: call, Args: args}, nil
+					}
 				}
 			}
 			return nil, fmt.Errorf("method %s not supported", method)
@@ -3085,6 +3103,22 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 	case st.If != nil:
 		return convertIfStmt(st.If)
 	case st.Type != nil:
+		for _, mem := range st.Type.Members {
+			if mem.Method == nil {
+				continue
+			}
+			fun := *mem.Method
+			fun.Name = st.Type.Name + "_" + fun.Name
+			fun.Params = append([]*parser.Param{{Name: "self"}}, fun.Params...)
+			stmt := &parser.Statement{Fun: &fun}
+			conv, err := convertStmt(stmt)
+			if err != nil {
+				return nil, err
+			}
+			if conv != nil {
+				extraStmts = append(extraStmts, conv)
+			}
+		}
 		return nil, nil
 	case st.Test != nil:
 		return nil, nil
@@ -3096,6 +3130,25 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 func convertStmtList(list []*parser.Statement) ([]Stmt, error) {
 	out := []Stmt{}
 	for _, s := range list {
+		if s.Type != nil {
+			for _, mem := range s.Type.Members {
+				if mem.Method == nil {
+					continue
+				}
+				fun := *mem.Method
+				fun.Name = s.Type.Name + "_" + fun.Name
+				fun.Params = append([]*parser.Param{{Name: "self"}}, fun.Params...)
+				stmt := &parser.Statement{Fun: &fun}
+				st, err := convertStmt(stmt)
+				if err != nil {
+					return nil, err
+				}
+				if st != nil {
+					out = append(out, st)
+				}
+			}
+			continue
+		}
 		st, err := convertStmt(s)
 		if err != nil {
 			return nil, err
