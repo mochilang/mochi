@@ -1058,6 +1058,23 @@ func isStringExpr(e Expr) bool {
 	}
 }
 
+func maybeStringExpr(e Expr) bool {
+	if isStringExpr(e) {
+		return true
+	}
+	switch v := e.(type) {
+	case *CallExpr:
+		if strings.Contains(v.Func, "string:") {
+			return true
+		}
+	case *BinaryExpr:
+		if v.Op == "+" || v.Op == "++" {
+			return maybeStringExpr(v.Left) || maybeStringExpr(v.Right)
+		}
+	}
+	return false
+}
+
 func isFloatExpr(e Expr, env *types.Env, ctx *context) bool {
 	switch v := e.(type) {
 	case *FloatLit:
@@ -1763,7 +1780,7 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		op := mapOp(b.Op)
 		// use string concatenation operator when needed
 		if b.Op == "+" {
-			if isStringExpr(b.Left) || isStringExpr(b.Right) {
+			if maybeStringExpr(b.Left) || maybeStringExpr(b.Right) {
 				op = "++"
 			}
 		}
@@ -3775,7 +3792,7 @@ func convertBinary(b *parser.BinaryExpr, env *types.Env, ctx *context) (Expr, er
 					_, rightIsList := typesList[i+1].(types.ListType)
 					_, leftIsStr := typesList[i].(types.StringType)
 					_, rightIsStr := typesList[i+1].(types.StringType)
-					if leftIsList || rightIsList || leftIsStr || rightIsStr || isStringExpr(l) || isStringExpr(r) {
+					if leftIsList || rightIsList || leftIsStr || rightIsStr || isStringExpr(l) || isStringExpr(r) || maybeStringExpr(l) || maybeStringExpr(r) {
 						op = "++"
 					}
 				}
