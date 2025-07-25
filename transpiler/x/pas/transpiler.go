@@ -1322,19 +1322,11 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 				}
 				pr.Stmts = append(pr.Stmts, &WhileStmt{Cond: cond, Body: body})
 			case st.If != nil:
-				cond, err := convertExpr(env, st.If.Cond)
+				ifStmt, err := convertIf(env, st.If, varTypes)
 				if err != nil {
 					return nil, err
 				}
-				thenBody, err := convertBody(env, st.If.Then, varTypes)
-				if err != nil {
-					return nil, err
-				}
-				elseBody, err := convertBody(env, st.If.Else, varTypes)
-				if err != nil {
-					return nil, err
-				}
-				pr.Stmts = append(pr.Stmts, &IfStmt{Cond: cond, Then: thenBody, Else: elseBody})
+				pr.Stmts = append(pr.Stmts, ifStmt)
 			case st.Fun != nil:
 				local := map[string]string{}
 				for k, v := range varTypes {
@@ -1481,6 +1473,32 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 	markSysUtils(pr)
 	currProg = nil
 	return pr, nil
+}
+
+func convertIf(env *types.Env, ifs *parser.IfStmt, varTypes map[string]string) (*IfStmt, error) {
+	cond, err := convertExpr(env, ifs.Cond)
+	if err != nil {
+		return nil, err
+	}
+	thenBody, err := convertBody(env, ifs.Then, varTypes)
+	if err != nil {
+		return nil, err
+	}
+	var elseBody []Stmt
+	if ifs.ElseIf != nil {
+		nested, err := convertIf(env, ifs.ElseIf, varTypes)
+		if err != nil {
+			return nil, err
+		}
+		elseBody = []Stmt{nested}
+	} else {
+		var err2 error
+		elseBody, err2 = convertBody(env, ifs.Else, varTypes)
+		if err2 != nil {
+			return nil, err2
+		}
+	}
+	return &IfStmt{Cond: cond, Then: thenBody, Else: elseBody}, nil
 }
 
 func convertBody(env *types.Env, body []*parser.Statement, varTypes map[string]string) ([]Stmt, error) {
@@ -1721,19 +1739,11 @@ func convertBody(env *types.Env, body []*parser.Statement, varTypes map[string]s
 			out = append(out, &ExprStmt{Expr: ex})
 			continue
 		case st.If != nil:
-			cond, err := convertExpr(env, st.If.Cond)
+			ifStmt, err := convertIf(env, st.If, varTypes)
 			if err != nil {
 				return nil, err
 			}
-			thenBody, err := convertBody(env, st.If.Then, varTypes)
-			if err != nil {
-				return nil, err
-			}
-			elseBody, err := convertBody(env, st.If.Else, varTypes)
-			if err != nil {
-				return nil, err
-			}
-			out = append(out, &IfStmt{Cond: cond, Then: thenBody, Else: elseBody})
+			out = append(out, ifStmt)
 		case st.Return != nil:
 			if st.Return.Value != nil {
 				ex, err := convertExpr(env, st.Return.Value)
@@ -1820,6 +1830,17 @@ func convertExpr(env *types.Env, e *parser.Expr) (Expr, error) {
 	if len(e.Binary.Right) == 0 {
 		return left, nil
 	}
+	if len(e.Binary.Right) == 1 && e.Binary.Right[0].Op == "+" {
+		right, err := convertPostfix(env, e.Binary.Right[0].Right)
+		if err != nil {
+			return nil, err
+		}
+		lt := inferType(left)
+		rt := inferType(right)
+		if strings.HasPrefix(lt, "array of ") && strings.HasPrefix(rt, "array of ") {
+			return &CallExpr{Name: "concat", Args: []Expr{left, right}}, nil
+		}
+	}
 	if len(e.Binary.Right) == 1 && e.Binary.Right[0].Op == "in" {
 		right, err := convertPostfix(env, e.Binary.Right[0].Right)
 		if err != nil {
@@ -1864,6 +1885,14 @@ func convertExpr(env *types.Env, e *parser.Expr) (Expr, error) {
 		var be *BinaryExpr
 		switch op {
 		case "+", "-", "*", "%":
+			if op == "+" {
+				lt := inferType(left)
+				rt := inferType(right)
+				if strings.HasPrefix(lt, "array of ") && strings.HasPrefix(rt, "array of ") {
+					exprs = append(exprs, &CallExpr{Name: "concat", Args: []Expr{left, right}})
+					return nil
+				}
+			}
 			be = &BinaryExpr{Op: op, Left: left, Right: right}
 		case "/":
 			be = &BinaryExpr{Op: "/", Left: left, Right: right}
@@ -3238,6 +3267,9 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 		} else if name == "substring" && len(args) == 3 {
 			return &SliceExpr{Target: args[0], Start: args[1], End: args[2], String: true}, nil
 		} else if name == "int" && len(args) == 1 {
+			if inferType(args[0]) == "string" {
+				return &CallExpr{Name: "StrToInt", Args: []Expr{args[0]}}, nil
+			}
 			return &CastExpr{Expr: args[0], Type: "int"}, nil
 		} else if name == "str" && len(args) == 1 {
 			t := inferType(args[0])
