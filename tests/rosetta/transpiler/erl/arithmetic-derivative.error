@@ -1,4 +1,0 @@
-exit status 127
-/workspace/mochi/tests/rosetta/transpiler/erl/arithmetic-derivative.erl:4:44: bad function name
-/workspace/mochi/tests/rosetta/transpiler/erl/arithmetic-derivative.erl:77:1: syntax error before: D
-escript: There were compilation errors.

@@ -3,10 +3,10 @@ escript: exception error: bad map: "2*(3-1)+2*5"
   in function  map_size/1
      called as map_size("2*(3-1)+2*5")
      *** argument 1: not a map
-  in call from main:'-skipWS/1-Fun_loop/2-0-'/2 (/workspace/mochi/tests/rosetta/transpiler/erl/arithmetic-evaluation.erl, line 22)
-  in call from main:skipWS/1 (/workspace/mochi/tests/rosetta/transpiler/erl/arithmetic-evaluation.erl, line 29)
-  in call from main:parseFactor/1 (/workspace/mochi/tests/rosetta/transpiler/erl/arithmetic-evaluation.erl, line 81)
-  in call from main:parsePower/1 (/workspace/mochi/tests/rosetta/transpiler/erl/arithmetic-evaluation.erl, line 142)
-  in call from main:parseTerm/1 (/workspace/mochi/tests/rosetta/transpiler/erl/arithmetic-evaluation.erl, line 180)
-  in call from main:parseExpr/1 (/workspace/mochi/tests/rosetta/transpiler/erl/arithmetic-evaluation.erl, line 248)
-  in call from main:evalExpr/1 (/workspace/mochi/tests/rosetta/transpiler/erl/arithmetic-evaluation.erl, line 317)
+  in call from main:'-skipws/1-Fun_loop/2-0-'/2 (/workspace/mochi/tests/rosetta/transpiler/erl/arithmetic-evaluation.erl, line 46)
+  in call from main:skipws/1 (/workspace/mochi/tests/rosetta/transpiler/erl/arithmetic-evaluation.erl, line 53)
+  in call from main:parsefactor/1 (/workspace/mochi/tests/rosetta/transpiler/erl/arithmetic-evaluation.erl, line 105)
+  in call from main:parsepower/1 (/workspace/mochi/tests/rosetta/transpiler/erl/arithmetic-evaluation.erl, line 166)
+  in call from main:parseterm/1 (/workspace/mochi/tests/rosetta/transpiler/erl/arithmetic-evaluation.erl, line 204)
+  in call from main:parseexpr/1 (/workspace/mochi/tests/rosetta/transpiler/erl/arithmetic-evaluation.erl, line 272)
+  in call from main:evalexpr/1 (/workspace/mochi/tests/rosetta/transpiler/erl/arithmetic-evaluation.erl, line 341)

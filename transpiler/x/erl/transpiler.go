@@ -3299,10 +3299,18 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context, top bool) (
 		loopCtx.setBoolFields(st.For.Name, boolFields(src, env, ctx))
 		loopCtx.setStringVar(st.For.Name, isStringExpr(src))
 		loopCtx.setFloatVar(st.For.Name, isFloatExpr(src, env, ctx))
-		loopCtx.setMapVar(st.For.Name, isMapExpr(src, env, ctx))
+		srcIsMap := isMapExpr(src, env, ctx)
+		if !srcIsMap {
+			if t := exprType(src, env, ctx); t != nil {
+				if _, ok := t.(types.MapType); ok {
+					srcIsMap = true
+				}
+			}
+		}
+		loopCtx.setMapVar(st.For.Name, srcIsMap)
 		loopCtx.setBoolVar(st.For.Name, isBoolExpr(src, env, ctx))
 		kind := "list"
-		if isMapExpr(src, env, ctx) {
+		if srcIsMap {
 			isGroupItems := false
 			for g := range ctx.groups {
 				if isGroupItemsExpr(st.For.Source, g) {

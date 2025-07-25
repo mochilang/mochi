@@ -4,3 +4,8 @@
 16
 25
 [1,4,9,16,25]
+{
+  "duration_us": 9696,
+  "memory_bytes": 340968,
+  "name": "main"
+}

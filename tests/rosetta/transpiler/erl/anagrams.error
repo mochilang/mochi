@@ -1,0 +1,12 @@
+exit status 127
+escript: exception error: bad map: ["abel"]
+  in function  map_size/1
+     called as map_size(["abel"])
+     *** argument 1: not a map
+  in call from main:'-main/0-Fun_8_loop/4-0-'/4 (/workspace/mochi/tests/rosetta/transpiler/erl/anagrams.erl, line 156)
+  in call from main:main/0 (/workspace/mochi/tests/rosetta/transpiler/erl/anagrams.erl, line 164)
+  in call from main:main/1 (/workspace/mochi/tests/rosetta/transpiler/erl/anagrams.erl, line 221)
+  in call from escript:run/2 (escript.erl, line 904)
+  in call from escript:start/1 (escript.erl, line 418)
+  in call from init:start_it/1 
+  in call from init:start_em/1 
