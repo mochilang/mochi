@@ -523,6 +523,8 @@ func (p *Program) write(w io.Writer) {
 	p.addInclude("<cmath>")
 	p.addInclude("<optional>")
 	p.addInclude("<vector>")
+	p.addInclude("<any>")
+	p.addInclude("<type_traits>")
 	if p.UseNow {
 		p.addInclude("<cstdlib>")
 		p.addInclude("<chrono>")
@@ -1174,7 +1176,11 @@ func (i *IndexExpr) emit(w io.Writer) {
 }
 
 func (s *SliceExpr) emit(w io.Writer) {
-	io.WriteString(w, "([&](const auto& __v){ if constexpr(std::is_same_v<std::decay_t<decltype(__v)>, std::string>) return __v.substr(")
+	cap := "[&]"
+	if !inFunction && inLambda == 0 {
+		cap = "[]"
+	}
+	io.WriteString(w, "("+cap+"(const auto& __v){ if constexpr(std::is_same_v<std::decay_t<decltype(__v)>, std::string>) return __v.substr(")
 	s.Start.emit(w)
 	io.WriteString(w, ", ")
 	s.End.emit(w)
@@ -2948,7 +2954,16 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 					}
 				}
 			}
-			varType := elementTypeFromListType(guessType(stmt.For.Source))
+			gtyp := guessType(stmt.For.Source)
+			if vr, ok := start.(*VarRef); ok {
+				if lt, ok2 := localTypes[vr.Name]; ok2 {
+					gtyp = lt
+				}
+			}
+			if strings.HasPrefix(gtyp, "std::map<") {
+				fs.IsMap = true
+			}
+			varType := elementTypeFromListType(gtyp)
 			if vr, ok := start.(*VarRef); ok {
 				if _, ok3 := localTypes[vr.Name]; !ok3 {
 					if t, ok2 := currentProgram.ListTypes[vr.Name]; ok2 {
