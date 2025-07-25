@@ -1454,6 +1454,15 @@ func toClassName(name string) string {
 }
 
 func maybeDataClassList(name string, list *ListLit, env *types.Env) (*DataClassDef, []Expr) {
+	if env != nil {
+		if t, err := env.GetVar(name); err == nil {
+			if lt, ok := t.(types.ListType); ok {
+				if _, ok := lt.Elem.(types.MapType); ok {
+					return nil, nil
+				}
+			}
+		}
+	}
 	if len(list.Elems) == 0 {
 		return nil, nil
 	}
@@ -4189,7 +4198,7 @@ func convertPostfix(p *parser.PostfixExpr) (Expr, error) {
 							}
 							expr = &CallExpr{Func: &Name{Name: name}, Args: kwargs}
 						} else {
-							expr = &CallExpr{Func: &Name{Name: name}, Args: []Expr{&RawExpr{Code: "**" + exprString(expr)}}}
+							// assume value is already of desired type
 						}
 						_ = st
 					}

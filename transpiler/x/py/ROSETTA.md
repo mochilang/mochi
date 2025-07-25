@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated Python code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/Python`.
-Last updated: 2025-07-25 17:02 GMT+7
+Last updated: 2025-07-25 17:42 GMT+7
 
 ## Rosetta Golden Test Checklist (269/284)
 | Index | Name | Status | Duration | Memory |
@@ -98,17 +98,17 @@ Last updated: 2025-07-25 17:02 GMT+7
 | 89 | averages-median-2 | ✓ | 29.0µs | 13.05MB |
 | 90 | averages-median-3 | ✓ | 43.0µs | 12.61MB |
 | 91 | averages-mode | ✓ | 38.0µs | 12.68MB |
-| 92 | averages-pythagorean-means | ✓ |  |  |
-| 93 | averages-root-mean-square | ✓ |  |  |
-| 94 | averages-simple-moving-average | ✓ |  |  |
-| 95 | avl-tree | ✓ |  |  |
-| 96 | b-zier-curves-intersections | ✓ |  |  |
-| 97 | babbage-problem | ✓ |  |  |
-| 98 | babylonian-spiral | ✓ |  |  |
-| 99 | balanced-brackets | ✓ |  |  |
-| 100 | balanced-ternary | ✓ |  |  |
-| 101 | barnsley-fern | ✓ |  |  |
-| 102 | base64-decode-data | ✓ |  |  |
+| 92 | averages-pythagorean-means | ✓ | 69.0µs | 12.59MB |
+| 93 | averages-root-mean-square | ✓ | 35.0µs | 12.31MB |
+| 94 | averages-simple-moving-average | ✓ | 158.0µs | 12.78MB |
+| 95 | avl-tree | ✓ | 199.0µs | 14.04MB |
+| 96 | b-zier-curves-intersections | ✓ | 6.0ms | 13.57MB |
+| 97 | babbage-problem | ✓ | 9.0ms | 11.99MB |
+| 98 | babylonian-spiral | ✓ | 384.0µs | 14.06MB |
+| 99 | balanced-brackets | ✓ | 137.0µs | 12.62MB |
+| 100 | balanced-ternary | ✓ | 97.0µs | 13.48MB |
+| 101 | barnsley-fern | ✓ | 38.0ms | 13.06MB |
+| 102 | base64-decode-data | ✓ | 1.0ms | 13.99MB |
 | 103 | bell-numbers | ✓ |  |  |
 | 104 | benfords-law | ✓ |  |  |
 | 105 | bernoulli-numbers | ✓ |  |  |

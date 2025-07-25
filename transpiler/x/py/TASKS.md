@@ -1,5 +1,5 @@
-## Progress (2025-07-25 16:52 +0700)
-- Commit 04d6bedffa: add error logs for failing rosetta cases
+## Progress (2025-07-25 17:27 +0700)
+- Commit 1836ebc7db: erl transpiler: conditionally emit padStart helper
 - Generated Python for 104/104 programs
 - Updated README checklist and outputs
 - Removed runtime helpers and improved boolean type inference
