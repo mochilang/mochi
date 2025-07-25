@@ -2762,6 +2762,9 @@ func convertPostfix(p *parser.PostfixExpr) (Expr, error) {
 							}
 						}
 						expr = cexpr
+					} else if id.Name == "stdout" && op.Field.Name == "write" {
+						// map stdout.write to io.write
+						expr = &CallExpr{Func: "io.write", Args: args}
 					} else {
 						// method call with receiver as first argument
 						args = append([]Expr{expr}, args...)
