@@ -2,22 +2,22 @@
 
 This directory contains Dart code generated from Mochi programs in `tests/rosetta/x/Mochi`. Each program has a `.dart` file and `.out` output. Compilation or runtime failures are captured in a `.error` file.
 
-Compiled and ran: 125/284
+Compiled and ran: 130/284
 
 ## Checklist
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 10.076ms | 1.4 MB |
 | 2 | 100-doors-3 | ✓ | 7.194ms | 12.0 MB |
-| 3 | 100-doors |   |  |  |
+| 3 | 100-doors | ✓ |  |  |
 | 4 | 100-prisoners | ✓ | 276.736ms | 5.0 MB |
 | 5 | 15-puzzle-game | ✓ | 23.29ms | 192.0 KB |
 | 6 | 15-puzzle-solver | ✓ | 5.473ms | 10.6 MB |
 | 7 | 2048 | ✓ | 30.218ms | 676.0 KB |
 | 8 | 21-game | ✓ | 13.411ms | 1.5 MB |
-| 9 | 24-game-solve |   |  |  |
+| 9 | 24-game-solve | ✓ |  |  |
 | 10 | 24-game | ✓ | 14.135ms | 1.9 MB |
-| 11 | 4-rings-or-4-squares-puzzle |   |  |  |
+| 11 | 4-rings-or-4-squares-puzzle | ✓ |  |  |
 | 12 | 9-billion-names-of-god-the-integer | ✓ | 2.671112s | 319.5 MB |
 | 13 | 99-bottles-of-beer-2 | ✓ | 22.502ms | 3.2 MB |
 | 14 | 99-bottles-of-beer | ✓ | 6.245ms | 760.0 KB |
@@ -45,10 +45,10 @@ Compiled and ran: 125/284
 | 36 | address-of-a-variable | ✓ | 5.84ms | 10.7 MB |
 | 37 | adfgvx-cipher | ✓ | 9.665ms | 1.6 MB |
 | 38 | aks-test-for-primes | ✓ | 5.546ms | 496.0 KB |
-| 39 | algebraic-data-types |   |  |  |
+| 39 | algebraic-data-types | ✓ |  |  |
 | 40 | align-columns | ✓ | 7.95ms | 232.0 KB |
 | 41 | aliquot-sequence-classifications | ✓ | 40.353ms | 1012.0 KB |
-| 42 | almkvist-giullera-formula-for-pi |   |  |  |
+| 42 | almkvist-giullera-formula-for-pi | ✓ |  |  |
 | 43 | almost-prime | ✓ | 7.954ms | 108.0 KB |
 | 44 | amb | ✓ | 5.844ms | 2.6 MB |
 | 45 | amicable-pairs | ✓ | 1.287573s | 11.4 MB |
@@ -58,7 +58,7 @@ Compiled and ran: 125/284
 | 49 | angle-difference-between-two-bearings-2 | ✓ | 6.594ms | 1.2 MB |
 | 50 | angles-geometric-normalization-and-conversion | ✓ | 8.128ms | 204.0 KB |
 | 51 | animate-a-pendulum | ✓ | 6.655ms | 12.4 MB |
-| 52 | animation | ✓ |  |  |
+| 52 | animation | ✓ | 30.716ms | 9.2 MB |
 | 53 | anonymous-recursion-1 | ✓ |  |  |
 | 54 | anonymous-recursion-2 | ✓ |  |  |
 | 55 | anonymous-recursion | ✓ |  |  |
@@ -292,4 +292,4 @@ Compiled and ran: 125/284
 | 283 | define-a-primitive-data-type |   |  |  |
 | 284 | md5 |   |  |  |
 
-_Last updated: 2025-07-25 11:10 +0700_
+_Last updated: 2025-07-25 12:23 +0700_
