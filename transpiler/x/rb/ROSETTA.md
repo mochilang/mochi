@@ -2,7 +2,7 @@
 
 Generated Ruby code from Mochi Rosetta tasks lives in `tests/rosetta/transpiler/rb`.
 
-Last updated: 2025-07-25 12:24 UTC
+Last updated: 2025-07-25 12:49 UTC
 
 ## Checklist (198/284)
 | Index | Name | Status | Duration | Memory |
@@ -74,19 +74,19 @@ Last updated: 2025-07-25 12:24 UTC
 | 65 | arithmetic-complex | ✓ | 223µs | 15.7 KB |
 | 66 | arithmetic-derivative | ✓ | 1.038ms | 364.9 KB |
 | 67 | arithmetic-evaluation | ✓ | 129µs | 25.8 KB |
-| 68 | arithmetic-geometric-mean-calculate-pi | ✓ |  |  |
-| 69 | arithmetic-geometric-mean | ✓ |  |  |
-| 70 | arithmetic-integer-1 | ✓ |  |  |
-| 71 | arithmetic-integer-2 | ✓ |  |  |
+| 68 | arithmetic-geometric-mean-calculate-pi | ✓ | 96µs | 9.5 KB |
+| 69 | arithmetic-geometric-mean | ✓ | 61µs | 9.5 KB |
+| 70 | arithmetic-integer-1 | ✓ | 49µs | 10.6 KB |
+| 71 | arithmetic-integer-2 | ✓ | 39µs | 11.2 KB |
 | 72 | arithmetic-numbers |   |  |  |
-| 73 | arithmetic-rational | ✓ |  |  |
-| 74 | array-concatenation | ✓ |  |  |
-| 75 | array-length | ✓ |  |  |
-| 76 | arrays | ✓ |  |  |
-| 77 | ascending-primes | ✓ |  |  |
-| 78 | ascii-art-diagram-converter | ✓ |  |  |
-| 79 | assertions | ✓ |  |  |
-| 80 | associative-array-creation | ✓ |  |  |
+| 73 | arithmetic-rational | ✓ | 166µs | 15.4 KB |
+| 74 | array-concatenation | ✓ | 95µs | 12.5 KB |
+| 75 | array-length | ✓ | 25µs | 9.9 KB |
+| 76 | arrays | ✓ | 72µs | 22.4 KB |
+| 77 | ascending-primes | ✓ | 1.579ms | 124.7 KB |
+| 78 | ascii-art-diagram-converter | ✓ | 38µs | 12.8 KB |
+| 79 | assertions | ✓ | 56µs | 8.9 KB |
+| 80 | associative-array-creation | ✓ | 30µs | 10.1 KB |
 | 81 | associative-array-iteration | ✓ |  |  |
 | 82 | associative-array-merging | ✓ |  |  |
 | 83 | atomic-updates | ✓ |  |  |
