@@ -1,0 +1,8 @@
+exit status 1
+/workspace/mochi/tests/rosetta/transpiler/Scala/best-shuffle.scala:73: error: value size is not a member of Any
+      while (i < (t).size) {
+                     ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/best-shuffle.scala:74: error: value substring is not a member of Any
+        arr = arr :+ t.substring(i, i + 1)
+                       ^
+two errors found

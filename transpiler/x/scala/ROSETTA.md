@@ -2,8 +2,8 @@
 
 Generated Scala code for Rosetta tasks in `tests/rosetta/x/Mochi`. Each program has a `.scala` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
 
-## Golden Test Checklist (94/284)
-_Last updated: 2025-07-25 19:55 +0700_
+## Golden Test Checklist (104/284)
+_Last updated: 2025-07-25 20:41 +0700_
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -103,17 +103,17 @@ _Last updated: 2025-07-25 19:55 +0700_
 | 94 | averages-simple-moving-average | ✓ |  |  |
 | 95 | avl-tree | ✓ |  |  |
 | 96 | b-zier-curves-intersections | error |  |  |
-| 97 | babbage-problem |   |  |  |
-| 98 | babylonian-spiral |   |  |  |
-| 99 | balanced-brackets |   |  |  |
-| 100 | balanced-ternary |   |  |  |
-| 101 | barnsley-fern |   |  |  |
-| 102 | base64-decode-data |   |  |  |
-| 103 | bell-numbers |   |  |  |
-| 104 | benfords-law |   |  |  |
-| 105 | bernoulli-numbers |   |  |  |
-| 106 | best-shuffle |   |  |  |
-| 107 | bifid-cipher |   |  |  |
+| 97 | babbage-problem | ✓ | 5µs | 8.7 MB |
+| 98 | babylonian-spiral | ✓ | 21µs | 8.7 MB |
+| 99 | balanced-brackets | ✓ | 7µs | 8.7 MB |
+| 100 | balanced-ternary | ✓ | 6µs | 8.7 MB |
+| 101 | barnsley-fern | ✓ | 55µs | 8.8 MB |
+| 102 | base64-decode-data | ✓ | 21µs | 8.7 MB |
+| 103 | bell-numbers | ✓ | 18µs | 8.7 MB |
+| 104 | benfords-law | ✓ | 40µs | 8.7 MB |
+| 105 | bernoulli-numbers | ✓ | 251µs | 8.7 MB |
+| 106 | best-shuffle | error |  |  |
+| 107 | bifid-cipher | ✓ | 17µs | 8.7 MB |
 | 108 | bin-given-limits |   |  |  |
 | 109 | binary-digits |   |  |  |
 | 110 | binary-search |   |  |  |

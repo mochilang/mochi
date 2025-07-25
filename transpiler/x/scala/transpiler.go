@@ -35,6 +35,8 @@ var breakStack []string
 var continueStack []string
 var useNow bool
 var useLookupHost bool
+var needsPadStart bool
+var needsBigRat bool
 var builtinAliases map[string]string
 var localVarTypes map[string]string
 var returnTypeStack []string
@@ -997,7 +999,7 @@ func (c *CastExpr) emit(w io.Writer) {
 		fmt.Fprint(w, ".asInstanceOf[Int]")
 	case "float", "Double":
 		fmt.Fprint(w, ".toString.toDouble")
-	case "string":
+	case "string", "String":
 		fmt.Fprint(w, ".toString")
 	case "bool":
 		fmt.Fprint(w, ".asInstanceOf[Boolean]")
@@ -1376,6 +1378,9 @@ func Emit(p *Program) []byte {
 		buf.WriteString("import scala.util.control.Breaks\n")
 		buf.WriteString("import scala.util.control.Breaks._\n")
 	}
+	if needsPadStart {
+		buf.WriteString("import scala.annotation.tailrec\n")
+	}
 	buf.WriteString("object Main {\n")
 	if useNow {
 		buf.WriteString("  private var _nowSeed: Long = 0L\n")
@@ -1400,6 +1405,23 @@ func Emit(p *Program) []byte {
 		buf.WriteString("    ArrayBuffer(addrs, null)\n")
 		buf.WriteString("  }\n\n")
 	}
+	if needsBigRat {
+		buf.WriteString("  class BigRat(var num: BigInt, var den: BigInt) {\n")
+		buf.WriteString("    def +(o: BigRat) = BigRat(num * o.den + o.num * den, den * o.den)\n")
+		buf.WriteString("    def -(o: BigRat) = BigRat(num * o.den - o.num * den, den * o.den)\n")
+		buf.WriteString("    def *(o: BigRat) = BigRat(num * o.num, den * o.den)\n")
+		buf.WriteString("    def /(o: BigRat) = BigRat(num * o.den, den * o.num)\n")
+		buf.WriteString("  }\n")
+		buf.WriteString("  object BigRat {\n")
+		buf.WriteString("    def apply(n: BigInt, d: BigInt = BigInt(1)): BigRat = {\n")
+		buf.WriteString("      val g = n.gcd(d); var nn = n / g; var dd = d / g; if (dd < 0) { nn = -nn; dd = -dd }\n")
+		buf.WriteString("      new BigRat(nn, dd)\n")
+		buf.WriteString("    }\n")
+		buf.WriteString("  }\n")
+		buf.WriteString("  def _bigrat(n: BigInt, d: BigInt = BigInt(1)) = BigRat(n, d)\n")
+		buf.WriteString("  def num(r: BigRat): BigInt = r.num\n")
+		buf.WriteString("  def denom(r: BigRat): BigInt = r.den\n\n")
+	}
 	if needsJSON {
 		buf.WriteString("  def toJson(value: Any, indent: Int = 0): String = value match {\n")
 		buf.WriteString("    case m: scala.collection.Map[_, _] =>\n")
@@ -1410,6 +1432,13 @@ func Emit(p *Program) []byte {
 		buf.WriteString("      \"[\\n\"+items.mkString(\",\\n\")+\"\\n\"+\"  \"*indent+\"]\"\n")
 		buf.WriteString("    case s: String => \"\\\"\"+s+\"\\\"\"\n")
 		buf.WriteString("    case other => other.toString\n")
+		buf.WriteString("  }\n\n")
+	}
+	if needsPadStart {
+		buf.WriteString("  private def _padStart(s: String, width: Int, pad: String): String = {\n")
+		buf.WriteString("    var out = s\n")
+		buf.WriteString("    while (out.length < width) { out = pad + out }\n")
+		buf.WriteString("    out\n")
 		buf.WriteString("  }\n\n")
 	}
 
@@ -1479,6 +1508,7 @@ func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, erro
 	needsBreaks = false
 	needsJSON = false
 	needsBigInt = false
+	needsBigRat = false
 	useNow = false
 	useLookupHost = false
 	builtinAliases = map[string]string{}
@@ -1806,6 +1836,14 @@ func convertBinary(b *parser.BinaryExpr, env *types.Env) (Expr, error) {
 			if op == "+" || op == "-" || op == "*" || op == "/" || op == "%" {
 				lt := inferTypeWithEnv(left, env)
 				rt := inferTypeWithEnv(right, env)
+				if lt == "BigRat" || rt == "BigRat" {
+					needsBigRat = true
+					ex = &BinaryExpr{Left: left, Op: op, Right: right}
+					operands[i] = ex
+					operands = append(operands[:i+1], operands[i+2:]...)
+					operators = append(operators[:i], operators[i+1:]...)
+					return
+				}
 				if op == "+" {
 					if !strings.HasPrefix(lt, "ArrayBuffer[") && strings.HasPrefix(rt, "ArrayBuffer[String]") {
 						right = &CallExpr{Fn: &FieldExpr{Receiver: right, Name: "mkString"}, Args: []Expr{}}
@@ -2176,6 +2214,9 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 			}
 			if i+1 < len(pf.Ops) && pf.Ops[i+1].Call != nil {
 				call := pf.Ops[i+1].Call
+				if inferTypeWithEnv(expr, env) == "Any" {
+					expr = &CastExpr{Value: expr, Type: "String"}
+				}
 				if op.Field.Name == "keys" && len(call.Args) == 0 {
 					expr = &FieldExpr{Receiver: expr, Name: "keys"}
 					i++
@@ -2189,9 +2230,20 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 					}
 					args[j] = ex
 				}
-				expr = &CallExpr{Fn: &FieldExpr{Receiver: expr, Name: op.Field.Name}, Args: args}
+				if op.Field.Name == "padStart" {
+					if len(args) != 2 {
+						return nil, fmt.Errorf("padStart expects 2 args")
+					}
+					needsPadStart = true
+					expr = &CallExpr{Fn: &Name{Name: "_padStart"}, Args: append([]Expr{expr}, args...)}
+				} else {
+					expr = &CallExpr{Fn: &FieldExpr{Receiver: expr, Name: op.Field.Name}, Args: args}
+				}
 				i++
 			} else {
+				if inferTypeWithEnv(expr, env) == "Any" && (op.Field.Name == "size" || op.Field.Name == "substring") {
+					expr = &CastExpr{Value: expr, Type: "String"}
+				}
 				expr = &FieldExpr{Receiver: expr, Name: op.Field.Name}
 			}
 		case op.Index != nil:
@@ -2298,7 +2350,13 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 					}
 				}
 				if !converted {
-					expr = &CastExpr{Value: expr, Type: typ}
+					if typ == "BigRat" || strings.ToLower(typ) == "bigrat" {
+						needsBigRat = true
+						needsBigInt = true
+						expr = &CallExpr{Fn: &Name{Name: "_bigrat"}, Args: []Expr{expr}}
+					} else {
+						expr = &CastExpr{Value: expr, Type: typ}
+					}
 				}
 			} else {
 				expr = &CastExpr{Value: expr, Type: toScalaType(op.Cast.Type)}
@@ -2511,6 +2569,11 @@ func convertCall(c *parser.CallExpr, env *types.Env) (Expr, error) {
 	case "lower":
 		if len(args) == 1 {
 			return &CallExpr{Fn: &FieldExpr{Receiver: args[0], Name: "toLowerCase"}}, nil
+		}
+	case "padStart":
+		if len(args) == 3 {
+			needsPadStart = true
+			return &CallExpr{Fn: &Name{Name: "_padStart"}, Args: args}, nil
 		}
 	case "sum":
 		if len(args) == 1 {
@@ -3491,6 +3554,10 @@ func toScalaType(t *parser.TypeRef) string {
 			return "Boolean"
 		case "float":
 			return "Double"
+		case "bigrat":
+			needsBigRat = true
+			needsBigInt = true
+			return "BigRat"
 		case "bigint":
 			needsBigInt = true
 			return "BigInt"
@@ -3553,6 +3620,10 @@ func toScalaTypeFromType(t types.Type) string {
 	case types.BigIntType:
 		needsBigInt = true
 		return "BigInt"
+	case types.BigRatType:
+		needsBigRat = true
+		needsBigInt = true
+		return "BigRat"
 	case types.ListType:
 		return fmt.Sprintf("ArrayBuffer[%s]", toScalaTypeFromType(tt.Elem))
 	case types.MapType:
@@ -3780,6 +3851,9 @@ func inferTypeWithEnv(e Expr, env *types.Env) string {
 					if ft, ok2 := typ.(types.FuncType); ok2 {
 						return toScalaTypeFromType(ft.Return)
 					}
+				}
+				if n.Name == "_bigrat" {
+					return "BigRat"
 				}
 			}
 		}

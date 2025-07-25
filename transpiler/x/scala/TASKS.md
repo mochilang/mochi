@@ -1,3 +1,131 @@
+## Progress (2025-07-25 20:40 +0700)
+- scala rosetta: add indices 97-107
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-25 20:09 +0700)
+- scala: fix func return inference and update accumulator
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-25 20:09 +0700)
+- scala: fix func return inference and update accumulator
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-25 20:09 +0700)
+- scala: fix func return inference and update accumulator
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-25 20:09 +0700)
+- scala: fix func return inference and update accumulator
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-25 20:09 +0700)
+- scala: fix func return inference and update accumulator
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-25 20:09 +0700)
+- scala: fix func return inference and update accumulator
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-25 20:09 +0700)
+- scala: fix func return inference and update accumulator
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-25 20:09 +0700)
+- scala: fix func return inference and update accumulator
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-25 20:09 +0700)
+- scala: fix func return inference and update accumulator
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-25 20:09 +0700)
+- scala: fix func return inference and update accumulator
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-25 20:09 +0700)
+- scala: fix func return inference and update accumulator
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-25 20:09 +0700)
+- scala: fix func return inference and update accumulator
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-25 20:09 +0700)
+- scala: fix func return inference and update accumulator
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-25 20:09 +0700)
+- scala: fix func return inference and update accumulator
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-25 20:09 +0700)
+- scala: fix func return inference and update accumulator
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-25 20:09 +0700)
+- scala: fix func return inference and update accumulator
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-25 20:09 +0700)
+- scala: fix func return inference and update accumulator
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-25 20:09 +0700)
+- scala: fix func return inference and update accumulator
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-25 20:09 +0700)
+- scala: fix func return inference and update accumulator
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-25 20:09 +0700)
+- scala: fix func return inference and update accumulator
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-25 20:09 +0700)
+- scala: fix func return inference and update accumulator
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-25 20:09 +0700)
+- scala: fix func return inference and update accumulator
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-25 20:09 +0700)
+- scala: fix func return inference and update accumulator
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-25 20:09 +0700)
+- scala: fix func return inference and update accumulator
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-25 20:09 +0700)
+- scala: fix func return inference and update accumulator
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-25 20:09 +0700)
+- scala: fix func return inference and update accumulator
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-25 20:09 +0700)
+- scala: fix func return inference and update accumulator
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-25 20:09 +0700)
+- scala: fix func return inference and update accumulator
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-25 20:09 +0700)
+- scala: fix func return inference and update accumulator
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-25 20:09 +0700)
+- scala: fix func return inference and update accumulator
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-25 20:09 +0700)
+- scala: fix func return inference and update accumulator
+- Regenerated golden files - 93/104 vm valid programs passing
+
 ## Progress (2025-07-25 16:28 +0700)
 - transpiler: update scala handling
 - Regenerated golden files - 93/104 vm valid programs passing
