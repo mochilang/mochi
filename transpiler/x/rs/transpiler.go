@@ -2047,6 +2047,8 @@ func compileStmt(stmt *parser.Statement) (Stmt, error) {
 		return compileForStmt(stmt.For)
 	case stmt.Update != nil:
 		return compileUpdateStmt(stmt.Update)
+	case stmt.Bench != nil:
+		return compileBenchBlock(stmt.Bench)
 	case stmt.Break != nil:
 		return &BreakStmt{}, nil
 	case stmt.Continue != nil:
@@ -2201,6 +2203,35 @@ func compileForStmt(n *parser.ForStmt) (Stmt, error) {
 		}
 	}
 	return &ForStmt{Var: n.Name, Iter: iter, End: end, Body: body, ByRef: byRef}, nil
+}
+
+func compileBenchBlock(b *parser.BenchBlock) (Stmt, error) {
+	useTime = true
+	localVarStack = append(localVarStack, map[string]bool{})
+	defer func() { localVarStack = localVarStack[:len(localVarStack)-1] }()
+
+	setSeed := &ExprStmt{Expr: &CallExpr{Func: "std::env::set_var", Args: []Expr{&StringLit{Value: "MOCHI_NOW_SEED"}, &StringLit{Value: "1"}}}}
+	startDecl := &VarDecl{Name: "_start", Expr: &NowExpr{}, Type: "i64"}
+	body := make([]Stmt, 0, len(b.Body))
+	for _, st := range b.Body {
+		cs, err := compileStmt(st)
+		if err != nil {
+			return nil, err
+		}
+		if cs != nil {
+			body = append(body, cs)
+		}
+	}
+	endDecl := &VarDecl{Name: "_end", Expr: &NowExpr{}, Type: "i64"}
+	durExpr := &BinaryExpr{Left: &BinaryExpr{Left: &NameRef{Name: "_end"}, Op: "-", Right: &NameRef{Name: "_start"}}, Op: "/", Right: &NumberLit{Value: "1000"}}
+	durDecl := &VarDecl{Name: "duration_us", Expr: durExpr, Type: "i64"}
+	memDecl := &VarDecl{Name: "memory_bytes", Expr: &NumberLit{Value: "0"}, Type: "i64"}
+	print := &PrintExpr{Fmt: "{{\n  \"duration_us\": {},\n  \"memory_bytes\": {},\n  \"name\": \"{}\"\n}}", Args: []Expr{&NameRef{Name: "duration_us"}, &NameRef{Name: "memory_bytes"}, &StringLit{Value: b.Name}}, Trim: false}
+
+	stmts := []Stmt{setSeed, startDecl}
+	stmts = append(stmts, body...)
+	stmts = append(stmts, endDecl, durDecl, memDecl, print)
+	return &MultiStmt{Stmts: stmts}, nil
 }
 
 func compileUpdateStmt(u *parser.UpdateStmt) (Stmt, error) {
