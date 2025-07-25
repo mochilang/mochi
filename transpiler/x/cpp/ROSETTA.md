@@ -2,7 +2,7 @@
 
 This directory stores C++ code generated from Mochi programs in `tests/rosetta/x/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.cpp` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (37/284) - Last updated 2025-07-25 17:17 +0700:
+Checklist of programs that currently transpile and run (37/284) - Last updated 2025-07-25 18:01 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | 100-doors-2 | ✓ | 222.0µs | 13.12MB |
@@ -16,16 +16,16 @@ Checklist of programs that currently transpile and run (37/284) - Last updated 2
 | 9 | 24-game-solve | ✓ | 4.0ms | 13.75MB |
 | 10 | 24-game | ✓ |  |  |
 | 11 | 4-rings-or-4-squares-puzzle |   |  |  |
-| 12 | 9-billion-names-of-god-the-integer | ✓ |  |  |
-| 13 | 99-bottles-of-beer-2 | ✓ |  |  |
-| 14 | 99-bottles-of-beer | ✓ |  |  |
-| 15 | DNS-query | ✓ |  |  |
-| 16 | a+b | ✓ |  |  |
-| 17 | abbreviations-automatic | ✓ |  |  |
-| 18 | abbreviations-easy | ✓ |  |  |
-| 19 | abbreviations-simple | ✓ |  |  |
-| 20 | abc-problem | ✓ |  |  |
-| 21 | abelian-sandpile-model-identity | ✓ |  |  |
+| 12 | 9-billion-names-of-god-the-integer | ✓ | 170.46s | 219.58MB |
+| 13 | 99-bottles-of-beer-2 | ✓ | 49.0ms | 14.17MB |
+| 14 | 99-bottles-of-beer | ✓ | 981.0µs | 12.66MB |
+| 15 | DNS-query | ✓ | 221.0µs | 12.50MB |
+| 16 | a+b | ✓ | 184.0µs | 11.99MB |
+| 17 | abbreviations-automatic | ✓ | 16.0ms | 13.94MB |
+| 18 | abbreviations-easy | ✓ | 2.0ms | 13.65MB |
+| 19 | abbreviations-simple | ✓ | 5.0ms | 14.03MB |
+| 20 | abc-problem | ✓ | 2.0ms | 12.93MB |
+| 21 | abelian-sandpile-model-identity | ✓ | 525.0µs | 13.68MB |
 | 22 | abelian-sandpile-model | ✓ |  |  |
 | 23 | abstract-type | ✓ |  |  |
 | 24 | abundant-deficient-and-perfect-number-classifications | ✓ |  |  |

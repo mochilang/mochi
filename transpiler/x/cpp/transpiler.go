@@ -90,8 +90,10 @@ func (p *Program) addInclude(inc string) {
 }
 
 type Param struct {
-	Name string
-	Type string
+	Name   string
+	Type   string
+	Assign bool
+	Mutate bool
 }
 
 type Func struct {
@@ -712,14 +714,16 @@ func (p *Program) write(w io.Writer) {
 			typ := p.Type
 			if typ == "" {
 				io.WriteString(w, "auto")
+			} else if p.Mutate {
+				io.WriteString(w, typ+"&")
+			} else if p.Assign {
+				io.WriteString(w, typ)
+			} else if strings.HasPrefix(typ, "std::vector<") {
+				io.WriteString(w, "const "+typ+"&")
+			} else if strings.HasPrefix(typ, "std::map<") {
+				io.WriteString(w, typ+"&")
 			} else {
-				if strings.HasPrefix(typ, "std::vector<") {
-					io.WriteString(w, "const "+typ+"&")
-				} else if strings.HasPrefix(typ, "std::map<") {
-					io.WriteString(w, typ+"&")
-				} else {
-					io.WriteString(w, typ)
-				}
+				io.WriteString(w, typ)
 			}
 			io.WriteString(w, " ")
 			io.WriteString(w, safeName(p.Name))
@@ -775,14 +779,16 @@ func (f *Func) emit(w io.Writer) {
 		typ := p.Type
 		if typ == "" {
 			io.WriteString(w, "auto ")
+		} else if p.Mutate {
+			io.WriteString(w, typ+"& ")
+		} else if p.Assign {
+			io.WriteString(w, typ+" ")
+		} else if strings.HasPrefix(typ, "std::vector<") {
+			io.WriteString(w, "const "+typ+"& ")
+		} else if strings.HasPrefix(typ, "std::map<") {
+			io.WriteString(w, typ+"& ")
 		} else {
-			if strings.HasPrefix(typ, "std::vector<") {
-				io.WriteString(w, "const "+typ+"& ")
-			} else if strings.HasPrefix(typ, "std::map<") {
-				io.WriteString(w, typ+"& ")
-			} else {
-				io.WriteString(w, typ+" ")
-			}
+			io.WriteString(w, typ+" ")
 		}
 		io.WriteString(w, safeName(p.Name))
 	}
@@ -1356,7 +1362,7 @@ func (c *CallExpr) emit(w io.Writer) {
 func (l *LambdaExpr) emit(w io.Writer) {
 	cap := "[]"
 	if inFunction || inLambda > 0 {
-		cap = "[&]"
+		cap = "[=]"
 	}
 	io.WriteString(w, cap+"(")
 	for i, p := range l.Params {
@@ -3624,6 +3630,22 @@ func convertFun(fn *parser.FunStmt) (*Func, error) {
 		}
 		body = append(body, s)
 	}
+	type modInfo struct{ assign, mutate bool }
+	mods := map[string]modInfo{}
+	for _, p := range fn.Params {
+		for _, st := range body {
+			if stmtModifies(st, p.Name) {
+				mi := mods[p.Name]
+				mi.mutate = true
+				mods[p.Name] = mi
+			}
+			if stmtAssigns(st, p.Name) {
+				mi := mods[p.Name]
+				mi.assign = true
+				mods[p.Name] = mi
+			}
+		}
+	}
 	var params []Param
 	for _, p := range fn.Params {
 		typ := ""
@@ -3637,7 +3659,9 @@ func convertFun(fn *parser.FunStmt) (*Func, error) {
 			}
 		}
 		inFunction = prev
-		params = append(params, Param{Name: p.Name, Type: typ})
+		mi := mods[p.Name]
+		param := Param{Name: p.Name, Type: typ, Assign: mi.assign, Mutate: mi.mutate}
+		params = append(params, param)
 	}
 	defer func() { currentReturnType = prevRet }()
 	return &Func{Name: fn.Name, Params: params, ReturnType: ret, Body: body}, nil
@@ -5846,4 +5870,109 @@ func convertBenchBlock(b *parser.BenchBlock) (Stmt, error) {
 	useMem = true
 	name := strings.Trim(b.Name, "\"")
 	return &BenchStmt{Name: name, Body: body}, nil
+}
+
+// exprRefersTo checks if expression e ultimately refers to variable name.
+func exprRefersTo(e Expr, name string) bool {
+	switch ex := e.(type) {
+	case *VarRef:
+		return ex.Name == name
+	case *IndexExpr:
+		return exprRefersTo(ex.Target, name)
+	case *SelectorExpr:
+		return exprRefersTo(ex.Target, name)
+	case *PtrGetExpr:
+		return exprRefersTo(ex.Target, name)
+	}
+	return false
+}
+
+// stmtModifies checks if statement s mutates variable name through element
+// assignment or append.
+func stmtModifies(s Stmt, name string) bool {
+	switch st := s.(type) {
+	case *AssignIndexStmt:
+		return exprRefersTo(st.Target, name)
+	case *AssignFieldStmt:
+		return exprRefersTo(st.Target, name)
+	case *ExprStmt:
+		if ap, ok := st.Expr.(*AppendExpr); ok {
+			return exprRefersTo(ap.List, name)
+		}
+	case *ForStmt:
+		for _, b := range st.Body {
+			if stmtModifies(b, name) {
+				return true
+			}
+		}
+	case *WhileStmt:
+		for _, b := range st.Body {
+			if stmtModifies(b, name) {
+				return true
+			}
+		}
+	case *IfStmt:
+		for _, b := range st.Then {
+			if stmtModifies(b, name) {
+				return true
+			}
+		}
+		if st.ElseIf != nil {
+			if stmtModifies(st.ElseIf, name) {
+				return true
+			}
+		}
+		for _, b := range st.Else {
+			if stmtModifies(b, name) {
+				return true
+			}
+		}
+	case *BenchStmt:
+		for _, b := range st.Body {
+			if stmtModifies(b, name) {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func stmtAssigns(s Stmt, name string) bool {
+	switch st := s.(type) {
+	case *AssignStmt:
+		return st.Name == name
+	case *ForStmt:
+		for _, b := range st.Body {
+			if stmtAssigns(b, name) {
+				return true
+			}
+		}
+	case *WhileStmt:
+		for _, b := range st.Body {
+			if stmtAssigns(b, name) {
+				return true
+			}
+		}
+	case *IfStmt:
+		for _, b := range st.Then {
+			if stmtAssigns(b, name) {
+				return true
+			}
+		}
+		if st.ElseIf != nil && stmtAssigns(st.ElseIf, name) {
+			return true
+		}
+		for _, b := range st.Else {
+			if stmtAssigns(b, name) {
+				return true
+			}
+		}
+	case *BenchStmt:
+		for _, b := range st.Body {
+			if stmtAssigns(b, name) {
+				return true
+			}
+		}
+	}
+	return false
 }

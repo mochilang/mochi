@@ -1,3 +1,133 @@
+## Progress (2025-07-25 18:01 +0700)
+- erl transpiler: handle map mutations and update rosetta
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-25 18:01 +0700)
+- erl transpiler: handle map mutations and update rosetta
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-25 18:01 +0700)
+- erl transpiler: handle map mutations and update rosetta
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-25 18:01 +0700)
+- erl transpiler: handle map mutations and update rosetta
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-25 18:01 +0700)
+- erl transpiler: handle map mutations and update rosetta
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-25 18:01 +0700)
+- erl transpiler: handle map mutations and update rosetta
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-25 18:01 +0700)
+- erl transpiler: handle map mutations and update rosetta
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-25 18:01 +0700)
+- erl transpiler: handle map mutations and update rosetta
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-25 18:01 +0700)
+- erl transpiler: handle map mutations and update rosetta
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-25 18:01 +0700)
+- erl transpiler: handle map mutations and update rosetta
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-25 18:01 +0700)
+- erl transpiler: handle map mutations and update rosetta
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-25 18:01 +0700)
+- erl transpiler: handle map mutations and update rosetta
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-25 18:01 +0700)
+- erl transpiler: handle map mutations and update rosetta
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-25 18:01 +0700)
+- erl transpiler: handle map mutations and update rosetta
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-25 18:01 +0700)
+- erl transpiler: handle map mutations and update rosetta
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-25 18:01 +0700)
+- erl transpiler: handle map mutations and update rosetta
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-25 18:01 +0700)
+- erl transpiler: handle map mutations and update rosetta
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-25 18:01 +0700)
+- erl transpiler: handle map mutations and update rosetta
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-25 18:01 +0700)
+- erl transpiler: handle map mutations and update rosetta
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-25 18:01 +0700)
+- erl transpiler: handle map mutations and update rosetta
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-25 18:01 +0700)
+- erl transpiler: handle map mutations and update rosetta
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-25 18:01 +0700)
+- erl transpiler: handle map mutations and update rosetta
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-25 18:01 +0700)
+- erl transpiler: handle map mutations and update rosetta
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-25 18:01 +0700)
+- erl transpiler: handle map mutations and update rosetta
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-25 18:01 +0700)
+- erl transpiler: handle map mutations and update rosetta
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-25 18:01 +0700)
+- erl transpiler: handle map mutations and update rosetta
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
 ## Progress (2025-07-25 17:17 +0700)
 - rosetta(vm): update animate-a-pendulum benchmark
 - Generated C++ for 103/104 programs
