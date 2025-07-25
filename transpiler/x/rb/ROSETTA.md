@@ -2,9 +2,9 @@
 
 Generated Ruby code from Mochi Rosetta tasks lives in `tests/rosetta/transpiler/rb`.
 
-Last updated: 2025-07-25 03:43 UTC
+Last updated: 2025-07-25 12:24 UTC
 
-## Checklist (197/284)
+## Checklist (198/284)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 195µs | 36.2 KB |
@@ -57,23 +57,23 @@ Last updated: 2025-07-25 03:43 UTC
 | 48 | angle-difference-between-two-bearings-1 | ✓ | 44µs | 10.0 KB |
 | 49 | angle-difference-between-two-bearings-2 | ✓ | 64µs | 10.7 KB |
 | 50 | angles-geometric-normalization-and-conversion | ✓ | 378µs | 58.5 KB |
-| 51 | animate-a-pendulum | ✓ |  |  |
-| 52 | animation | ✓ |  |  |
-| 53 | anonymous-recursion-1 | ✓ |  |  |
-| 54 | anonymous-recursion-2 | ✓ |  |  |
-| 55 | anonymous-recursion | ✓ |  |  |
-| 56 | anti-primes | ✓ |  |  |
-| 57 | append-a-record-to-the-end-of-a-text-file | ✓ |  |  |
-| 58 | apply-a-callback-to-an-array-1 | ✓ |  |  |
-| 59 | apply-a-callback-to-an-array-2 | ✓ |  |  |
-| 60 | apply-a-digital-filter-direct-form-ii-transposed- | ✓ |  |  |
-| 61 | approximate-equality | ✓ |  |  |
-| 62 | arbitrary-precision-integers-included- | ✓ |  |  |
-| 63 | archimedean-spiral | ✓ |  |  |
-| 64 | arena-storage-pool | ✓ |  |  |
-| 65 | arithmetic-complex | ✓ |  |  |
-| 66 | arithmetic-derivative | ✓ |  |  |
-| 67 | arithmetic-evaluation |   |  |  |
+| 51 | animate-a-pendulum | ✓ | 136µs | 10.8 KB |
+| 52 | animation | ✓ | 947µs | 110.4 KB |
+| 53 | anonymous-recursion-1 | ✓ | 69µs | 11.4 KB |
+| 54 | anonymous-recursion-2 | ✓ | 56µs | 12.4 KB |
+| 55 | anonymous-recursion | ✓ | 79µs | 12.4 KB |
+| 56 | anti-primes | ✓ | 1.782873s | 14.3 KB |
+| 57 | append-a-record-to-the-end-of-a-text-file | ✓ | 47µs | 10.0 KB |
+| 58 | apply-a-callback-to-an-array-1 | ✓ | 21µs | 9.0 KB |
+| 59 | apply-a-callback-to-an-array-2 | ✓ | 49µs | 10.6 KB |
+| 60 | apply-a-digital-filter-direct-form-ii-transposed- | ✓ | 133µs | 14.2 KB |
+| 61 | approximate-equality | ✓ | 83µs | 14.3 KB |
+| 62 | arbitrary-precision-integers-included- | ✓ | 20.961ms | 486.8 KB |
+| 63 | archimedean-spiral | ✓ | 67.853ms | 35.2 KB |
+| 64 | arena-storage-pool | ✓ | 36µs | 10.7 KB |
+| 65 | arithmetic-complex | ✓ | 223µs | 15.7 KB |
+| 66 | arithmetic-derivative | ✓ | 1.038ms | 364.9 KB |
+| 67 | arithmetic-evaluation | ✓ | 129µs | 25.8 KB |
 | 68 | arithmetic-geometric-mean-calculate-pi | ✓ |  |  |
 | 69 | arithmetic-geometric-mean | ✓ |  |  |
 | 70 | arithmetic-integer-1 | ✓ |  |  |

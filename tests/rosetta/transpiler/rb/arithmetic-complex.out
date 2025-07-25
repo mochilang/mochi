@@ -1,4 +1,4 @@
-/workspace/mochi/tests/rosetta/transpiler/rb/arithmetic-complex.rb:13: warning: already initialized constant Complex
+/workspace/mochi/tests/rosetta/transpiler/rb/arithmetic-complex.rb:47: warning: already initialized constant Complex
 a:       (1.0+1.0i)
 b:       (3.14159+1.25i)
 a + b:   (4.14159+2.25i)

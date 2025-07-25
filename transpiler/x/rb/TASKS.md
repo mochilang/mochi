@@ -1,3 +1,93 @@
+## Progress (2025-07-25 19:24 +0700)
+- Commit 2a0201ee79: rb: transpile arithmetic-derivative
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-25 19:24 +0700)
+- Commit b86e972469: rb: transpile arithmetic-complex
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-25 19:23 +0700)
+- Commit 5a80255857: rb: transpile arena-storage-pool
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-25 19:23 +0700)
+- Commit efa5c159da: rb: transpile archimedean-spiral
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-25 19:22 +0700)
+- Commit 3ed91cc49f: rb: transpile arbitrary-precision
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-25 19:22 +0700)
+- Commit 245aa57629: rb: transpile approximate-equality
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-25 19:21 +0700)
+- Commit 209e9b22c5: rb: transpile apply-a-digital-filter
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-25 19:21 +0700)
+- Commit 9e68a224eb: rb: transpile apply-a-callback-to-an-array-2
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-25 19:20 +0700)
+- Commit 7358c45ee6: rb: transpile apply-a-callback-to-an-array-1
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-25 19:20 +0700)
+- Commit 4a1eb1abf0: rb: transpile append-a-record
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-25 19:19 +0700)
+- Commit 882baa9775: rb: transpile anti-primes
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-25 19:19 +0700)
+- Commit f241d13c2e: rb: transpile anonymous-recursion
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-25 19:19 +0700)
+- Commit d538bcb8ea: rb: transpile anonymous-recursion-2
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-25 19:18 +0700)
+- Commit a1e2e49331: rb: transpile anonymous-recursion-1
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-25 19:18 +0700)
+- Commit a05cabe489: rb: transpile animation
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-25 19:17 +0700)
+- Commit 1435096e93: rb: transpile animate-a-pendulum
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-25 19:02 +0700)
+- Commit 6bb4e4bd23: pascal transpiler: handle else-if and list concatenation
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-25 19:02 +0700)
+- Commit 6bb4e4bd23: pascal transpiler: handle else-if and list concatenation
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
 ## Progress (2025-07-25 10:39 +0700)
 - Commit 3e31183d86: rust transpiler: add bench mode and update tests
 - Generated Ruby for 104/104 programs
