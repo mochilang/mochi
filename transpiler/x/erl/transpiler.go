@@ -2119,14 +2119,20 @@ func (c *ContinueStmt) emit(w io.Writer) {
 }
 
 func (cs *CallStmt) emit(w io.Writer) { cs.Call.emit(w) }
-
 func (b *BenchStmt) emit(w io.Writer) {
-	io.WriteString(w, "Start = mochi_now()")
+	io.WriteString(w, "StartMem = element(2, process_info(self(), memory)),\n    Start = mochi_now()")
 	for _, st := range b.Body {
 		io.WriteString(w, ",\n    ")
 		st.emit(w)
 	}
-	fmt.Fprintf(w, ",\n    End = mochi_now(),\n    DurationUs = (End - Start) div 1000,\n    io:format(\"{~n  \\\"duration_us\\\": ~p,~n  \\\"memory_bytes\\\": 0,~n  \\\"name\\\": \\\"~s\\\"~n}\n\", [DurationUs, \"%s\"])", b.Name)
+	fmt.Fprintf(w, `,
+    End = mochi_now(),
+    erlang:garbage_collect(),
+    EndMem = element(2, process_info(self(), memory)),
+    DurationUs = (End - Start) div 1000,
+    MemBytes = EndMem,
+    io:format("{~n  \"duration_us\": ~p,~n  \"memory_bytes\": ~p,~n  \"name\": \"~s\"~n}
+", [DurationUs, MemBytes, "%s"])`, b.Name)
 }
 
 func isNameRef(e Expr, name string) bool {
@@ -2549,6 +2555,12 @@ func extractSaveExpr(e *parser.Expr) *parser.SaveExpr {
 	return p.Target.Save
 }
 
+var benchMain bool
+
+// SetBenchMain configures whether the generated main function is wrapped in a
+// benchmark block when emitting code.
+func SetBenchMain(v bool) { benchMain = v }
+
 // Transpile converts a subset of Mochi to an Erlang AST.
 func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	base := filepath.Dir(prog.Pos.Filename)
@@ -2573,6 +2585,10 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 			return nil, err
 		}
 		p.Stmts = append(p.Stmts, stmts...)
+	}
+	if benchMain {
+		useNow = true
+		p.Stmts = []Stmt{&BenchStmt{Name: "main", Body: p.Stmts}}
 	}
 	p.UseNow = useNow
 	p.UseLookupHost = useLookupHost

@@ -1,3 +1,7 @@
+/workspace/mochi/tests/rosetta/transpiler/erl/100-doors-2.erl:29:16: Warning: the result of calling element/2 is ignored (suppress the warning by assigning the expression to the _ variable)
+%   29|     StartMem = element(2, process_info(self(), memory)),
+%     |                ^
+
 Door 1 Open
 Door 2 Closed
 Door 3 Closed
@@ -98,3 +102,8 @@ Door 97 Closed
 Door 98 Closed
 Door 99 Closed
 Door 100 Open
+{
+  "duration_us": 571223,
+  "memory_bytes": 2856,
+  "name": "main"
+}
