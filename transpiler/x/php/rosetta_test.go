@@ -5,6 +5,7 @@ package php_test
 import (
 	"bufio"
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"os"
 	"os/exec"
@@ -28,6 +29,9 @@ func TestPHPTranspiler_Rosetta_Golden(t *testing.T) {
 	outDir := filepath.Join(root, "tests", "rosetta", "transpiler", "php")
 	os.MkdirAll(outDir, 0o755)
 	defer updateRosettaReadme()
+
+	bench := os.Getenv("MOCHI_BENCHMARK") == "true" || os.Getenv("MOCHI_BENCHMARK") == "1"
+	php.SetBenchMain(bench)
 
 	indexPath := filepath.Join(srcDir, "index.txt")
 	f, err := os.Open(indexPath)
@@ -65,13 +69,13 @@ func TestPHPTranspiler_Rosetta_Golden(t *testing.T) {
 
 	for _, src := range files {
 		name := strings.TrimSuffix(filepath.Base(src), ".mochi")
-		if err := runRosettaPHP(src, outDir); err != nil {
+		if err := runRosettaPHP(src, outDir, bench); err != nil {
 			t.Fatalf("%s: %v", name, err)
 		}
 	}
 }
 
-func runRosettaPHP(src string, outDir string) error {
+func runRosettaPHP(src string, outDir string, bench bool) error {
 	name := strings.TrimSuffix(filepath.Base(src), ".mochi")
 	codePath := filepath.Join(outDir, name+".php")
 	outPath := filepath.Join(outDir, name+".out")
@@ -101,7 +105,11 @@ func runRosettaPHP(src string, outDir string) error {
 		return fmt.Errorf("write code: %w", err)
 	}
 	cmd := exec.Command("php", codePath)
-	cmd.Env = append(os.Environ(), "MOCHI_NOW_SEED=1")
+	envv := append(os.Environ(), "MOCHI_NOW_SEED=1")
+	if bench {
+		envv = append(envv, "MOCHI_BENCHMARK=1")
+	}
+	cmd.Env = envv
 	if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
 		cmd.Stdin = bytes.NewReader(data)
 	}
@@ -164,17 +172,34 @@ func updateRosettaReadme() {
 	total := len(files)
 	compiled := 0
 	var lines []string
+	lines = append(lines, "| Index | Name | Status | Duration | Memory |")
+	lines = append(lines, "|------:|------|:-----:|---------:|-------:|")
 	for i, nameFile := range files {
 		name := strings.TrimSuffix(nameFile, ".mochi")
-		mark := "[ ]"
+		status := " "
 		phpFile := filepath.Join(outDir, name+".php")
 		outFile := filepath.Join(outDir, name+".out")
 		errFile := filepath.Join(outDir, name+".error")
 		if exists(phpFile) && exists(outFile) && !exists(errFile) {
 			compiled++
-			mark = "[x]"
+			status = "✓"
 		}
-		lines = append(lines, fmt.Sprintf("- %s %d %s", mark, i+1, name))
+		dur := ""
+		mem := ""
+		if data, err := os.ReadFile(outFile); err == nil {
+			var js struct {
+				Duration int64 `json:"duration_us"`
+				Memory   int64 `json:"memory_bytes"`
+			}
+			data = bytes.TrimSpace(data)
+			if idx := bytes.LastIndexByte(data, '{'); idx >= 0 {
+				if json.Unmarshal(data[idx:], &js) == nil && js.Duration > 0 {
+					dur = humanDuration(js.Duration)
+					mem = humanSize(js.Memory)
+				}
+			}
+		}
+		lines = append(lines, fmt.Sprintf("| %d | %s | %s | %s | %s |", i+1, name, status, dur, mem))
 	}
 
 	var buf bytes.Buffer
@@ -199,4 +224,22 @@ func shouldUpdate() bool {
 		return true
 	}
 	return false
+}
+
+func humanDuration(us int64) string {
+	d := time.Duration(us) * time.Microsecond
+	return d.String()
+}
+
+func humanSize(b int64) string {
+	const unit = 1024
+	if b < unit {
+		return fmt.Sprintf("%d B", b)
+	}
+	div, exp := int64(unit), 0
+	for n := b / unit; n >= unit; n /= unit {
+		div *= unit
+		exp++
+	}
+	return fmt.Sprintf("%.1f %cB", float64(b)/float64(div), "KMGTPE"[exp])
 }
