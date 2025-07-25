@@ -31,6 +31,7 @@ var usesInt bool
 var usesKeys bool
 var usesMem bool
 var usesBigInt bool
+var usesSlice bool
 var funcMutParams map[string][]bool
 var funcInOutParams map[string][]bool
 
@@ -60,6 +61,7 @@ type Program struct {
 	UseKeys       bool
 	UseMem        bool
 	UseBigInt     bool
+	UseSlice      bool
 }
 
 type Stmt interface{ emit(io.Writer) }
@@ -830,6 +832,17 @@ type IndexExpr struct {
 	Force    bool
 }
 
+func isIndexLike(e Expr) bool {
+	switch ex := e.(type) {
+	case *IndexExpr:
+		return true
+	case *CastExpr:
+		return isIndexLike(ex.Expr)
+	default:
+		return false
+	}
+}
+
 // SliceExpr represents a[start:end] slicing for lists or strings.
 type SliceExpr struct {
 	Base     Expr
@@ -864,15 +877,16 @@ func (ie *IndexExpr) emit(w io.Writer) {
 
 func (s *SliceExpr) emit(w io.Writer) {
 	if s.AsString {
-		fmt.Fprint(w, "String(Array(")
+		usesSlice = true
+		fmt.Fprint(w, "_slice(")
 		s.Base.emit(w)
-		fmt.Fprint(w, ")[")
+		fmt.Fprint(w, ", ")
 		if s.Start != nil {
 			s.Start.emit(w)
 		} else {
 			fmt.Fprint(w, "0")
 		}
-		fmt.Fprint(w, "..<")
+		fmt.Fprint(w, ", ")
 		if s.End != nil {
 			s.End.emit(w)
 		} else {
@@ -880,7 +894,7 @@ func (s *SliceExpr) emit(w io.Writer) {
 			s.Base.emit(w)
 			fmt.Fprint(w, ").count")
 		}
-		fmt.Fprint(w, "])")
+		fmt.Fprint(w, ")")
 		return
 	}
 	fmt.Fprint(w, "Array(")
@@ -927,12 +941,27 @@ func (c *CastExpr) emit(w io.Writer) {
 			c.Expr.emit(w)
 			return
 		}
-		if force {
+		if force && isIndexLike(c.Expr) && t != "Double" {
 			fmt.Fprint(w, "(")
 			c.Expr.emit(w)
 			fmt.Fprintf(w, " as! %s)", t)
-		} else if t == "String" {
+			return
+		}
+		if t == "String" {
 			fmt.Fprint(w, "String(describing: ")
+			c.Expr.emit(w)
+			fmt.Fprint(w, ")")
+		} else if t == "BigInt" {
+			fmt.Fprint(w, "BigInt(")
+			c.Expr.emit(w)
+			fmt.Fprint(w, ")")
+		} else if t == "Bool" && force {
+			fmt.Fprint(w, "(")
+			c.Expr.emit(w)
+			fmt.Fprint(w, " as! Bool)")
+		} else if !force && (t == "Int" || t == "Int64") {
+			usesInt = true
+			fmt.Fprint(w, "_int(")
 			c.Expr.emit(w)
 			fmt.Fprint(w, ")")
 		} else {
@@ -1438,6 +1467,13 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("    }\n")
 		buf.WriteString("    return 0\n}\n")
 	}
+	if p.UseSlice {
+		buf.WriteString("func _slice(_ s: String, _ start: Int, _ end: Int) -> String {\n")
+		buf.WriteString("    let startIdx = s.index(s.startIndex, offsetBy: start)\n")
+		buf.WriteString("    let endIdx = s.index(s.startIndex, offsetBy: end)\n")
+		buf.WriteString("    return String(s[startIdx..<endIdx])\n")
+		buf.WriteString("}\n")
+	}
 	if p.UseBigInt {
 		buf.WriteString("struct BigInt: Comparable, CustomStringConvertible {\n")
 		buf.WriteString("    private var digits: [UInt32] = []\n")
@@ -1555,6 +1591,7 @@ func Transpile(env *types.Env, prog *parser.Program, benchMain bool) (*Program, 
 	usesKeys = false
 	usesMem = false
 	usesBigInt = false
+	usesSlice = false
 	funcMutParams = map[string][]bool{}
 	funcInOutParams = map[string][]bool{}
 	p := &Program{}
@@ -1575,6 +1612,7 @@ func Transpile(env *types.Env, prog *parser.Program, benchMain bool) (*Program, 
 	p.UseKeys = usesKeys
 	p.UseMem = usesMem
 	p.UseBigInt = usesBigInt
+	p.UseSlice = usesSlice
 	return p, nil
 }
 
@@ -2527,9 +2565,11 @@ func convertExpr(env *types.Env, e *parser.Expr) (Expr, error) {
 				left = &RawStmt{Code: fmt.Sprintf("String(describing: %s)", exprString(left))}
 				right = &RawStmt{Code: fmt.Sprintf("String(describing: %s)", exprString(right))}
 			} else if types.IsIntType(ltyp) && types.IsAnyType(rtyp) {
+				usesInt = true
 				right = &CastExpr{Expr: right, Type: "Int!"}
 				rtyp = types.IntType{}
 			} else if types.IsIntType(rtyp) && types.IsAnyType(ltyp) {
+				usesInt = true
 				left = &CastExpr{Expr: left, Type: "Int!"}
 				ltyp = types.IntType{}
 			} else if types.IsBoolType(ltyp) && types.IsAnyType(rtyp) {
@@ -2584,6 +2624,7 @@ func convertExpr(env *types.Env, e *parser.Expr) (Expr, error) {
 				} else {
 					if types.IsAnyType(ltyp) {
 						if types.IsIntType(rtyp) || types.IsInt64Type(rtyp) {
+							usesInt = true
 							left = &CastExpr{Expr: left, Type: "Int!"}
 							ltyp = types.IntType{}
 						} else {
@@ -2593,6 +2634,7 @@ func convertExpr(env *types.Env, e *parser.Expr) (Expr, error) {
 					}
 					if types.IsAnyType(rtyp) {
 						if types.IsIntType(ltyp) || types.IsInt64Type(ltyp) {
+							usesInt = true
 							right = &CastExpr{Expr: right, Type: "Int!"}
 							rtyp = types.IntType{}
 						} else {
@@ -2669,6 +2711,7 @@ func convertUnary(env *types.Env, u *parser.Unary) (Expr, error) {
 					t = ot.Elem
 				}
 				if types.IsAnyType(t) {
+					usesInt = true
 					expr = &CastExpr{Expr: expr, Type: "Int"}
 				}
 			}
@@ -2829,6 +2872,9 @@ func convertPostfix(env *types.Env, p *parser.PostfixExpr) (Expr, error) {
 					}
 				}
 				expr = &SliceExpr{Base: expr, Start: start, End: end, AsString: isStr}
+				if isStr {
+					usesSlice = true
+				}
 				if env != nil {
 					if lt, ok := baseType.(types.ListType); ok {
 						baseType = lt.Elem
@@ -2976,8 +3022,10 @@ func convertPostfix(env *types.Env, p *parser.PostfixExpr) (Expr, error) {
 		if _, ok := expr.(*FieldExpr); !ok {
 			switch {
 			case types.IsIntType(t):
+				usesInt = true
 				expr = &CastExpr{Expr: expr, Type: "Int"}
 			case types.IsInt64Type(t):
+				usesInt = true
 				expr = &CastExpr{Expr: expr, Type: "Int64"}
 			case types.IsFloatType(t):
 				expr = &CastExpr{Expr: expr, Type: "Double"}
