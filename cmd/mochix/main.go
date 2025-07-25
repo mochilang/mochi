@@ -861,7 +861,7 @@ func transpileProgram(lang string, env *types.Env, prog *parser.Program, root, s
 		}
 		return rs.Emit(p), nil
 	case "scala":
-		p, err := scalat.Transpile(prog, env)
+		p, err := scalat.Transpile(prog, env, false)
 		if err != nil {
 			return nil, err
 		}
