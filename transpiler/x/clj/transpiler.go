@@ -267,6 +267,58 @@ func Format(src []byte) []byte {
 	return src
 }
 
+// Bench represents a benchmark block wrapping body forms.
+type Bench struct {
+	Name string
+	Body []Node
+}
+
+func (b *Bench) Emit(w io.Writer) {
+	iw, ok := w.(*indentWriter)
+	if !ok {
+		iw = &indentWriter{w: w}
+	}
+	io.WriteString(iw, "(let [rt (Runtime/getRuntime)\n")
+	iw.indent += 2
+	iw.writeIndent()
+	io.WriteString(iw, "start-mem (- (.totalMemory rt) (.freeMemory rt))\n")
+	iw.writeIndent()
+	io.WriteString(iw, "start (System/nanoTime)]\n")
+	iw.indent += 2
+	for i, n := range b.Body {
+		iw.writeIndent()
+		if n != nil {
+			n.Emit(iw)
+		} else {
+			io.WriteString(iw, "nil")
+		}
+		if i < len(b.Body)-1 {
+			io.WriteString(iw, "\n")
+		}
+	}
+	io.WriteString(iw, "\n")
+	iw.writeIndent()
+	io.WriteString(iw, "(System/gc)\n")
+	iw.writeIndent()
+	io.WriteString(iw, "(let [end (System/nanoTime)\n")
+	iw.indent += 2
+	iw.writeIndent()
+	io.WriteString(iw, "end-mem (- (.totalMemory rt) (.freeMemory rt))\n")
+	iw.writeIndent()
+	io.WriteString(iw, "duration-us (quot (- end start) 1000)\n")
+	iw.writeIndent()
+	io.WriteString(iw, "memory-bytes (Math/abs ^long (- end-mem start-mem))]\n")
+	iw.writeIndent()
+	fmt.Fprintf(iw, "(println (str \"{\\n  \\\"duration_us\\\": \" duration-us \",\\n  \\\"memory_bytes\\\": \" memory-bytes \",\\n  \\\"name\\\": \\\"%s\\\"\\n}\"))", b.Name)
+	io.WriteString(iw, "\n")
+	iw.indent -= 2
+	iw.writeIndent()
+	io.WriteString(iw, ")\n")
+	iw.indent -= 2
+	iw.writeIndent()
+	io.WriteString(iw, ")")
+}
+
 func repoRoot() string {
 	dir, err := os.Getwd()
 	if err != nil {
@@ -518,7 +570,7 @@ var bigIntHelpers = map[string]*Defn{
 // Transpile converts a Mochi program into a Clojure AST. The implementation
 // is intentionally minimal and currently only supports very small programs used
 // by a subset of tests.
-func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
+func Transpile(prog *parser.Program, env *types.Env, benchMain bool) (*Program, error) {
 	if prog == nil {
 		return nil, fmt.Errorf("nil program")
 	}
@@ -563,7 +615,8 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 		nsElems = append(nsElems, &List{Elems: []Node{Keyword("refer-clojure"), Keyword("exclude"), vec}})
 	}
 	pr.Forms = append(pr.Forms, &List{Elems: nsElems})
-	pr.Forms = append(pr.Forms, &List{Elems: []Node{Symbol("require"), Symbol("'clojure.set")}})
+	reqElems := []Node{Symbol("require"), Symbol("'clojure.set")}
+	pr.Forms = append(pr.Forms, &List{Elems: reqElems})
 	for name := range builtinUsed {
 		if defn, ok := bigIntHelpers[name]; ok {
 			pr.Forms = append(pr.Forms, defn)
@@ -621,7 +674,11 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 		}
 	}
 
-	pr.Forms = append(pr.Forms, &Defn{Name: "-main", Params: nil, Body: body})
+	mainBody := body
+	if benchMain {
+		mainBody = []Node{&Bench{Name: "main", Body: body}}
+	}
+	pr.Forms = append(pr.Forms, &Defn{Name: "-main", Params: nil, Body: mainBody})
 
 	// invoke main
 	pr.Forms = append(pr.Forms, &List{Elems: []Node{Symbol("-main")}})

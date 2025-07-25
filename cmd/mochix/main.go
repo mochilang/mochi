@@ -716,7 +716,7 @@ func transpileProgram(lang string, env *types.Env, prog *parser.Program, root, s
 		}
 		return buf.Bytes(), nil
 	case "clj":
-		p, err := cljt.Transpile(prog, env)
+		p, err := cljt.Transpile(prog, env, false)
 		if err != nil {
 			return nil, err
 		}
