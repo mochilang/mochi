@@ -65,7 +65,7 @@ public class Main {
                 row = java.util.stream.IntStream.concat(java.util.Arrays.stream(row), java.util.stream.IntStream.of(0)).toArray();
                 x = x + 1;
             }
-            b = java.util.stream.Stream.concat(java.util.Arrays.stream(b), java.util.stream.Stream.of(row)).toArray(int[][]::new);
+            b = appendObj(b, row);
             y = y + 1;
         }
         return new Board(b);
@@ -78,8 +78,8 @@ public class Main {
         while (y < SIZE) {
             int x = 0;
             while (x < SIZE) {
-                if (grid[y][x] == 0) {
-                    empty = java.util.stream.Stream.concat(java.util.Arrays.stream(empty), java.util.stream.Stream.of(new int[]{x, y})).toArray(int[][]::new);
+                if (((Number)(grid[y][x])).intValue() == 0) {
+                    empty = appendObj(empty, new int[]{x, y});
                 }
                 x = x + 1;
             }
@@ -147,7 +147,7 @@ grid[cell[1]][cell[0]] = val;
         int[] xs = new int[]{};
         int i = 0;
         while (i < row.length) {
-            if (row[i] != 0) {
+            if (((Number)(row[i])).intValue() != 0) {
                 xs = java.util.stream.IntStream.concat(java.util.Arrays.stream(xs), java.util.stream.IntStream.of(row[i])).toArray();
             }
             i = i + 1;
@@ -156,8 +156,8 @@ grid[cell[1]][cell[0]] = val;
         int gain = 0;
         i = 0;
         while (i < xs.length) {
-            if (i + 1 < xs.length && xs[i] == xs[i + 1]) {
-                int v = xs[i] * 2;
+            if (i + 1 < xs.length && xs[i] == ((Number)(xs[i + 1])).intValue()) {
+                int v = ((Number)(xs[i])).intValue() * 2;
                 gain = gain + v;
                 res = java.util.stream.IntStream.concat(java.util.Arrays.stream(res), java.util.stream.IntStream.of(v)).toArray();
                 i = i + 2;
@@ -179,10 +179,10 @@ grid[cell[1]][cell[0]] = val;
         while (y < SIZE) {
             SlideResult r = slideLeft(grid[y]);
             int[] new_ = r.row;
-            score = score + r.gain;
+            score = score + ((Number)(r.gain)).intValue();
             int x = 0;
             while (x < SIZE) {
-                if (grid[y][x] != new_[x]) {
+                if (((Number)(grid[y][x])).intValue() != ((Number)(new_[x])).intValue()) {
                     moved = true;
                 }
 grid[y][x] = new_[x];
@@ -201,11 +201,11 @@ grid[y][x] = new_[x];
             int[] rev = reverseRow(grid[y]);
             SlideResult r = slideLeft(rev);
             rev = r.row;
-            score = score + r.gain;
+            score = score + ((Number)(r.gain)).intValue();
             rev = reverseRow(rev);
             int x = 0;
             while (x < SIZE) {
-                if (grid[y][x] != rev[x]) {
+                if (((Number)(grid[y][x])).intValue() != ((Number)(rev[x])).intValue()) {
                     moved = true;
                 }
 grid[y][x] = rev[x];
@@ -246,10 +246,10 @@ b.cells = rows;
             int[] col = getCol(b, x);
             SlideResult r = slideLeft(col);
             int[] new_ = r.row;
-            score = score + r.gain;
+            score = score + ((Number)(r.gain)).intValue();
             int y = 0;
             while (y < SIZE) {
-                if (grid[y][x] != new_[y]) {
+                if (((Number)(grid[y][x])).intValue() != ((Number)(new_[y])).intValue()) {
                     moved = true;
                 }
 grid[y][x] = new_[y];
@@ -268,11 +268,11 @@ grid[y][x] = new_[y];
             int[] col = reverseRow(getCol(b, x));
             SlideResult r = slideLeft(col);
             col = r.row;
-            score = score + r.gain;
+            score = score + ((Number)(r.gain)).intValue();
             col = reverseRow(col);
             int y = 0;
             while (y < SIZE) {
-                if (grid[y][x] != col[y]) {
+                if (((Number)(grid[y][x])).intValue() != ((Number)(col[y])).intValue()) {
                     moved = true;
                 }
 grid[y][x] = col[y];
@@ -288,13 +288,13 @@ grid[y][x] = col[y];
         while (y < SIZE) {
             int x = 0;
             while (x < SIZE) {
-                if (b.cells[y][x] == 0) {
+                if (((Number)(b.cells[y][x])).intValue() == 0) {
                     return true;
                 }
-                if (x + 1 < SIZE && b.cells[y][x] == b.cells[y][x + 1]) {
+                if (x + 1 < SIZE && b.cells[y][x] == ((Number)(b.cells[y][x + 1])).intValue()) {
                     return true;
                 }
-                if (y + 1 < SIZE && b.cells[y][x] == b.cells[y + 1][x]) {
+                if (y + 1 < SIZE && b.cells[y][x] == ((Number)(b.cells[y + 1][x])).intValue()) {
                     return true;
                 }
                 x = x + 1;
@@ -309,7 +309,7 @@ grid[y][x] = col[y];
         while (y < SIZE) {
             int x = 0;
             while (x < SIZE) {
-                if (b.cells[y][x] >= 2048) {
+                if (((Number)(b.cells[y][x])).intValue() >= 2048) {
                     return true;
                 }
                 x = x + 1;
@@ -319,61 +319,73 @@ grid[y][x] = col[y];
         return false;
     }
     public static void main(String[] args) {
-        board = r.board;
-        r = spawnTile(board);
-        board = r.board;
-        full = r.full;
-        draw(board, score);
-        while (true) {
-            System.out.println("Move: ");
-            String cmd = (_scanner.hasNextLine() ? _scanner.nextLine() : "");
-            boolean moved = false;
-            if (((cmd.equals("a")) || cmd.equals("A"))) {
-                MoveResult m = moveLeft(board, score);
-                board = m.board;
-                score = m.score;
-                moved = m.moved;
-            }
-            if (((cmd.equals("d")) || cmd.equals("D"))) {
-                MoveResult m = moveRight(board, score);
-                board = m.board;
-                score = m.score;
-                moved = m.moved;
-            }
-            if (((cmd.equals("w")) || cmd.equals("W"))) {
-                MoveResult m = moveUp(board, score);
-                board = m.board;
-                score = m.score;
-                moved = m.moved;
-            }
-            if (((cmd.equals("s")) || cmd.equals("S"))) {
-                MoveResult m = moveDown(board, score);
-                board = m.board;
-                score = m.score;
-                moved = m.moved;
-            }
-            if (((cmd.equals("q")) || cmd.equals("Q"))) {
-                break;
-            }
-            if (moved) {
-                SpawnResult r2 = spawnTile(board);
-                board = r2.board;
-                full = r2.full;
-                if (full && (!(Boolean)hasMoves(board))) {
-                    draw(board, score);
+        {
+            long _benchStart = _now();
+            long _benchMem = _mem();
+            board = r.board;
+            r = spawnTile(board);
+            board = r.board;
+            full = r.full;
+            draw(board, score);
+            while (true) {
+                System.out.println("Move: ");
+                String cmd = (_scanner.hasNextLine() ? _scanner.nextLine() : "");
+                boolean moved = false;
+                if (((cmd.equals("a")) || cmd.equals("A"))) {
+                    MoveResult m = moveLeft(board, score);
+                    board = m.board;
+                    score = m.score;
+                    moved = m.moved;
+                }
+                if (((cmd.equals("d")) || cmd.equals("D"))) {
+                    MoveResult m = moveRight(board, score);
+                    board = m.board;
+                    score = m.score;
+                    moved = m.moved;
+                }
+                if (((cmd.equals("w")) || cmd.equals("W"))) {
+                    MoveResult m = moveUp(board, score);
+                    board = m.board;
+                    score = m.score;
+                    moved = m.moved;
+                }
+                if (((cmd.equals("s")) || cmd.equals("S"))) {
+                    MoveResult m = moveDown(board, score);
+                    board = m.board;
+                    score = m.score;
+                    moved = m.moved;
+                }
+                if (((cmd.equals("q")) || cmd.equals("Q"))) {
+                    break;
+                }
+                if (moved) {
+                    SpawnResult r2 = spawnTile(board);
+                    board = r2.board;
+                    full = r2.full;
+                    if (full && (!(Boolean)hasMoves(board))) {
+                        draw(board, score);
+                        System.out.println("Game Over");
+                        break;
+                    }
+                }
+                draw(board, score);
+                if (has2048(board)) {
+                    System.out.println("You win!");
+                    break;
+                }
+                if (!(Boolean)hasMoves(board)) {
                     System.out.println("Game Over");
                     break;
                 }
             }
-            draw(board, score);
-            if (has2048(board)) {
-                System.out.println("You win!");
-                break;
-            }
-            if (!(Boolean)hasMoves(board)) {
-                System.out.println("Game Over");
-                break;
-            }
+            long _benchDuration = _now() - _benchStart;
+            long _benchMemory = _mem() - _benchMem;
+            System.out.println("{");
+            System.out.println("  \"duration_us\": " + _benchDuration + ",");
+            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
+            System.out.println("  \"name\": \"main\"");
+            System.out.println("}");
+            return;
         }
     }
 
@@ -390,6 +402,17 @@ grid[y][x] = col[y];
             _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
             return _nowSeed;
         }
-        return (int)System.currentTimeMillis();
+        return (int)(System.nanoTime() / 1000);
+    }
+
+    static long _mem() {
+        Runtime rt = Runtime.getRuntime();
+        return rt.totalMemory() - rt.freeMemory();
+    }
+
+    static <T> T[] appendObj(T[] arr, T v) {
+        T[] out = java.util.Arrays.copyOf(arr, arr.length + 1);
+        out[arr.length] = v;
+        return out;
     }
 }

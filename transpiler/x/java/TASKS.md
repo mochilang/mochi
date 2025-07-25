@@ -1,4 +1,34 @@
-## Progress (2025-07-25 10:36 +0700)
+## Progress (2025-07-25 05:39 UTC)
+- java rosetta: update index 9 (0b64d8d661)
+
+- java rosetta: update index 9 (0b64d8d661)
+
+- java rosetta: update index 9 (0b64d8d661)
+
+- java rosetta: update index 9 (0b64d8d661)
+
+- java rosetta: update index 9 (0b64d8d661)
+
+- java rosetta: update index 9 (0b64d8d661)
+
+- java rosetta: update index 8 (7e843627ab)
+
+- java rosetta: update index 7 (c4f3920c34)
+
+- java rosetta: update index 6 (5e9e7854fd)
+
+- java rosetta: update index 5 (e8e6f3fba8)
+
+- java rosetta: update index 4 (21b6323b0e)
+
+- java rosetta: update index 3 (3774c80165)
+
+- java rosetta: regenerate for indexes 1-2 (78d7115636)
+
+- cs transpiler: handle string element type in loops (5ec8b59a93)
+
+- cs transpiler: handle string element type in loops (5ec8b59a93)
+
 - php: fix union constructor detection and bench output (7568f9dcb2)
 
 - php: fix union constructor detection and bench output (7568f9dcb2)

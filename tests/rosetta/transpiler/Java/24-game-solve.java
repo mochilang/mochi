@@ -1,47 +1,74 @@
 public class Main {
-    static int OP_NUM = 0;
+    static class Rational {
+        int num;
+        int denom;
+        Rational(int num, int denom) {
+            this.num = num;
+            this.denom = denom;
+        }
+        @Override public String toString() {
+            return String.format("{'num': %s, 'denom': %s}", String.valueOf(num), String.valueOf(denom));
+        }
+    }
+
     static int OP_ADD = 1;
     static int OP_SUB = 2;
     static int OP_MUL = 3;
     static int OP_DIV = 4;
+    interface Expr {}
+
+    static class Num implements Expr {
+        Rational value;
+        Num(Rational value) {
+            this.value = value;
+        }
+        @Override public String toString() {
+            return String.format("{'value': %s}", String.valueOf(value));
+        }
+    }
+
+    static class Bin implements Expr {
+        int op;
+        Expr left;
+        Expr right;
+        Bin(int op, Expr left, Expr right) {
+            this.op = op;
+            this.left = left;
+            this.right = right;
+        }
+        @Override public String toString() {
+            return String.format("{'op': %s, 'left': %s, 'right': %s}", String.valueOf(op), String.valueOf(left), String.valueOf(right));
+        }
+    }
+
     static int n_cards = 4;
     static int goal = 24;
     static int digit_range = 9;
 
-    static java.util.Map<String,Object> newNum(int n) {
-        return new java.util.LinkedHashMap<String, Object>(java.util.Map.of("op", OP_NUM, "value", new java.util.LinkedHashMap<String, Object>(java.util.Map.of("num", n, "denom", 1))));
+    static Rational binEval(int op, Expr l, Expr r) {
+        Rational lv = exprEval(l);
+        Rational rv = exprEval(r);
+        if (op == OP_ADD) {
+            return new Rational(((Number)(lv.num)).intValue() * ((Number)(rv.denom)).intValue() + ((Number)(lv.denom)).intValue() * ((Number)(rv.num)).intValue(), ((Number)(lv.denom)).intValue() * ((Number)(rv.denom)).intValue());
+        }
+        if (op == OP_SUB) {
+            return new Rational(((Number)(lv.num)).intValue() * ((Number)(rv.denom)).intValue() - ((Number)(lv.denom)).intValue() * ((Number)(rv.num)).intValue(), ((Number)(lv.denom)).intValue() * ((Number)(rv.denom)).intValue());
+        }
+        if (op == OP_MUL) {
+            return new Rational(((Number)(lv.num)).intValue() * ((Number)(rv.num)).intValue(), ((Number)(lv.denom)).intValue() * ((Number)(rv.denom)).intValue());
+        }
+        return new Rational(((Number)(lv.num)).intValue() * ((Number)(rv.denom)).intValue(), ((Number)(lv.denom)).intValue() * ((Number)(rv.num)).intValue());
     }
 
-    static java.util.Map<String,Integer> exprEval(java.util.Map<String,Object> x) {
-        if ((int)((java.util.Map)(x.get("op"))) == OP_NUM) {
-            return (java.util.Map)(x.get("value"));
-        }
-        java.util.Map<String,Integer> l = exprEval((java.util.Map)(x.get("left")));
-        java.util.Map<String,Integer> r = exprEval((java.util.Map)(x.get("right")));
-        if ((int)((java.util.Map)(x.get("op"))) == OP_ADD) {
-            return new java.util.LinkedHashMap<String, Integer>(java.util.Map.of("num", (int)((java.util.Map)(l.get("num"))) * (int)((java.util.Map)(r.get("denom"))) + (int)((java.util.Map)(l.get("denom"))) * (int)((java.util.Map)(r.get("num"))), "denom", (int)((java.util.Map)(l.get("denom"))) * (int)((java.util.Map)(r.get("denom")))));
-        }
-        if ((int)((java.util.Map)(x.get("op"))) == OP_SUB) {
-            return new java.util.LinkedHashMap<String, Integer>(java.util.Map.of("num", (int)((java.util.Map)(l.get("num"))) * (int)((java.util.Map)(r.get("denom"))) - (int)((java.util.Map)(l.get("denom"))) * (int)((java.util.Map)(r.get("num"))), "denom", (int)((java.util.Map)(l.get("denom"))) * (int)((java.util.Map)(r.get("denom")))));
-        }
-        if ((int)((java.util.Map)(x.get("op"))) == OP_MUL) {
-            return new java.util.LinkedHashMap<String, Integer>(java.util.Map.of("num", (int)((java.util.Map)(l.get("num"))) * (int)((java.util.Map)(r.get("num"))), "denom", (int)((java.util.Map)(l.get("denom"))) * (int)((java.util.Map)(r.get("denom")))));
-        }
-        return new java.util.LinkedHashMap<String, Integer>(java.util.Map.of("num", (int)((java.util.Map)(l.get("num"))) * (int)((java.util.Map)(r.get("denom"))), "denom", (int)((java.util.Map)(l.get("denom"))) * (int)((java.util.Map)(r.get("num")))));
-    }
-
-    static String exprString(java.util.Map<String,Object> x) {
-        if ((int)((java.util.Map)(x.get("op"))) == OP_NUM) {
-            return String.valueOf((java.util.Map)(x.get("value"))["num"]);
-        }
-        String ls = exprString((java.util.Map)(x.get("left")));
-        String rs = exprString((java.util.Map)(x.get("right")));
+    static String binString(int op, Expr l, Expr r) {
+        String ls = exprString(l);
+        String rs = exprString(r);
         String opstr = "";
-        if ((int)((java.util.Map)(x.get("op"))) == OP_ADD) {
+        if (op == OP_ADD) {
             opstr = " + ";
-        } else         if ((int)((java.util.Map)(x.get("op"))) == OP_SUB) {
+        } else         if (op == OP_SUB) {
             opstr = " - ";
-        } else         if ((int)((java.util.Map)(x.get("op"))) == OP_MUL) {
+        } else         if (op == OP_MUL) {
             opstr = " * ";
         } else {
             opstr = " / ";
@@ -49,11 +76,23 @@ public class Main {
         return "(" + ls + opstr + rs + ")";
     }
 
-    static boolean solve(java.util.Map<String,Object>[] xs) {
+    static Expr newNum(int n) {
+        return new Num(new Rational(n, 1));
+    }
+
+    static Rational exprEval(Expr x) {
+        return x instanceof Num ? ((Num)(x)).value : binEval(((Bin)(x)).op, ((Bin)(x)).left, ((Bin)(x)).right);
+    }
+
+    static String exprString(Expr x) {
+        return x instanceof Num ? String.valueOf(((Num)(x)).value.num) : binString(((Bin)(x)).op, ((Bin)(x)).left, ((Bin)(x)).right);
+    }
+
+    static boolean solve(Expr[] xs) {
         if (xs.length == 1) {
-            java.util.Map<String,Integer> f = exprEval((java.util.Map)(xs.get(0)));
-            if ((int)((int)(f.get("denom"))) != 0 && (boolean)((int)(f.get("num"))) == (int)((int)(f.get("denom"))) * goal) {
-                System.out.println(exprString((java.util.Map)(xs.get(0))));
+            Rational f = exprEval(xs[0]);
+            if (((Number)(f.denom)).intValue() != 0 && f.num == ((Number)(f.denom)).intValue() * goal) {
+                System.out.println(exprString(xs[0]));
                 return true;
             }
             return false;
@@ -62,28 +101,29 @@ public class Main {
         while (i < xs.length) {
             int j = i + 1;
             while (j < xs.length) {
-                java.util.Map<String,Object>[] rest = new java.util.Map<String,Object>[]{};
+                Expr[] rest = new Expr[]{};
                 int k = 0;
                 while (k < xs.length) {
                     if (k != i && k != j) {
-                        rest = java.util.stream.Stream.concat(java.util.Arrays.stream(rest), java.util.stream.Stream.of((java.util.Map)(xs.get(k)))).toArray(java.util.Map<String,Object>[]::new);
+                        rest = java.util.stream.Stream.concat(java.util.Arrays.stream(rest), java.util.stream.Stream.of(xs[k])).toArray(Expr[]::new);
                     }
                     k = k + 1;
                 }
-                java.util.Map<String,Object> a = (java.util.Map<String,Object>)((java.util.Map)(xs.get(i)));
-                java.util.Map<String,Object> b = (java.util.Map<String,Object>)((java.util.Map)(xs.get(j)));
+                Expr a = xs[i];
+                Expr b = xs[j];
+                Bin node = new Bin(OP_ADD, a, b);
                 for (var op : new int[]{OP_ADD, OP_SUB, OP_MUL, OP_DIV}) {
-                    java.util.Map node = new java.util.LinkedHashMap<String, Object>(java.util.Map.of("op", op, "left", a, "right", b));
-                    if (solve(java.util.stream.Stream.concat(java.util.Arrays.stream(rest), java.util.stream.Stream.of(node)).toArray(java.util.Map[]::new))) {
+                    node = new Bin(op, a, b);
+                    if (solve(java.util.stream.Stream.concat(java.util.Arrays.stream(rest), java.util.stream.Stream.of(node)).toArray(Expr[]::new))) {
                         return true;
                     }
                 }
-                java.util.Map node = new java.util.LinkedHashMap<String, Object>(java.util.Map.of("op", OP_SUB, "left", b, "right", a));
-                if (solve(java.util.stream.Stream.concat(java.util.Arrays.stream(rest), java.util.stream.Stream.of(node)).toArray(java.util.Map[]::new))) {
+                node = new Bin(OP_SUB, b, a);
+                if (solve(java.util.stream.Stream.concat(java.util.Arrays.stream(rest), java.util.stream.Stream.of(node)).toArray(Expr[]::new))) {
                     return true;
                 }
-                node = new java.util.LinkedHashMap<String, Object>(java.util.Map.of("op", OP_DIV, "left", b, "right", a));
-                if (solve(java.util.stream.Stream.concat(java.util.Arrays.stream(rest), java.util.stream.Stream.of(node)).toArray(java.util.Map[]::new))) {
+                node = new Bin(OP_DIV, b, a);
+                if (solve(java.util.stream.Stream.concat(java.util.Arrays.stream(rest), java.util.stream.Stream.of(node)).toArray(Expr[]::new))) {
                     return true;
                 }
                 j = j + 1;
@@ -96,11 +136,11 @@ public class Main {
     static void main() {
         int iter = 0;
         while (iter < 10) {
-            java.util.Map<String,Object>[] cards = new java.util.Map<String,Object>[]{};
+            Expr[] cards = new Expr[]{};
             int i = 0;
             while (i < n_cards) {
                 int n = (_now() % (digit_range - 1)) + 1;
-                cards = java.util.stream.Stream.concat(java.util.Arrays.stream(cards), java.util.stream.Stream.of(newNum(n))).toArray(java.util.Map<String,Object>[]::new);
+                cards = java.util.stream.Stream.concat(java.util.Arrays.stream(cards), java.util.stream.Stream.of(newNum(n))).toArray(Expr[]::new);
                 System.out.println(" " + String.valueOf(n));
                 i = i + 1;
             }
@@ -112,7 +152,19 @@ public class Main {
         }
     }
     public static void main(String[] args) {
-        main();
+        {
+            long _benchStart = _now();
+            long _benchMem = _mem();
+            main();
+            long _benchDuration = _now() - _benchStart;
+            long _benchMemory = _mem() - _benchMem;
+            System.out.println("{");
+            System.out.println("  \"duration_us\": " + _benchDuration + ",");
+            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
+            System.out.println("  \"name\": \"main\"");
+            System.out.println("}");
+            return;
+        }
     }
 
     static boolean _nowSeeded = false;
@@ -128,6 +180,11 @@ public class Main {
             _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
             return _nowSeed;
         }
-        return (int)System.currentTimeMillis();
+        return (int)(System.nanoTime() / 1000);
+    }
+
+    static long _mem() {
+        Runtime rt = Runtime.getRuntime();
+        return rt.totalMemory() - rt.freeMemory();
     }
 }
