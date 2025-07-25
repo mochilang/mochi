@@ -679,7 +679,9 @@ func convertStmt(st *parser.Statement) (Node, error) {
 		needBase = true
 		params := []Node{}
 		prevEnv := currentEnv
-		currentEnv = types.NewEnv(currentEnv)
+		childEnv := types.NewEnv(currentEnv)
+		childEnv.SetVar(st.Fun.Name, types.AnyType{}, false)
+		currentEnv = childEnv
 		for _, p := range st.Fun.Params {
 			params = append(params, Symbol(p.Name))
 			var pt types.Type = types.AnyType{}
@@ -693,6 +695,9 @@ func convertStmt(st *parser.Statement) (Node, error) {
 		bodyForms, err := convertStmts(st.Fun.Body)
 		popReturn()
 		currentEnv = prevEnv
+		if prevEnv != nil {
+			prevEnv.SetVar(st.Fun.Name, types.AnyType{}, false)
+		}
 		if err != nil {
 			return nil, err
 		}
@@ -1007,6 +1012,19 @@ func convertParserPostfix(pf *parser.PostfixExpr) (Node, error) {
 		}
 		node = &List{Elems: []Node{Symbol("if"), &List{Elems: []Node{Symbol("string-contains"), node, arg}}, BoolLit(true), BoolLit(false)}}
 		pf = &parser.PostfixExpr{Target: rootPrim, Ops: pf.Ops[1:]}
+	} else if pf.Target.Selector != nil && len(pf.Target.Selector.Tail) == 1 && pf.Target.Selector.Tail[0] == "keys" && len(pf.Ops) > 0 && pf.Ops[0].Call != nil {
+		rootPrim := &parser.Primary{Selector: &parser.SelectorExpr{Root: pf.Target.Selector.Root}}
+		node, err = convertParserPrimary(rootPrim)
+		if err != nil {
+			return nil, err
+		}
+		call := pf.Ops[0].Call
+		if len(call.Args) != 0 {
+			return nil, fmt.Errorf("keys expects no args")
+		}
+		needHash = true
+		node = &List{Elems: []Node{Symbol("hash-table-keys"), node}}
+		pf = &parser.PostfixExpr{Target: rootPrim, Ops: pf.Ops[1:]}
 	} else {
 		node, err = convertParserPrimary(pf.Target)
 		if err != nil {
@@ -1070,6 +1088,14 @@ func convertParserPostfix(pf *parser.PostfixExpr) (Node, error) {
 				}}
 			}
 			i++
+		case op.Field != nil && op.Field.Name == "keys" && i+1 < len(pf.Ops) && pf.Ops[i+1].Call != nil:
+			call := pf.Ops[i+1].Call
+			if len(call.Args) != 0 {
+				return nil, fmt.Errorf("keys expects no args")
+			}
+			needHash = true
+			node = &List{Elems: []Node{Symbol("hash-table-keys"), node}}
+			i++
 		default:
 			return nil, fmt.Errorf("unsupported postfix")
 		}
@@ -1095,6 +1121,9 @@ func convertParserPrimary(p *parser.Primary) (Node, error) {
 		}
 		if currentEnv != nil {
 			if _, err := currentEnv.GetVar(p.Selector.Root); err == nil {
+				return Symbol(p.Selector.Root), nil
+			}
+			if _, ok := currentEnv.GetFunc(p.Selector.Root); ok {
 				return Symbol(p.Selector.Root), nil
 			}
 		}

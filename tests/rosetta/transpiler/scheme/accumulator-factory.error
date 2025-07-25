@@ -1,6 +1,0 @@
-exit status 70
-ERROR on line 61 of file /workspace/mochi/tests/rosetta/transpiler/scheme/accumulator-factory.scm: non procedure application: "add"
-  called from call-with-current-continuation on line 848 of file /usr/share/chibi/init-7.scm
-  called from <anonymous> on line 73 of file /workspace/mochi/tests/rosetta/transpiler/scheme/accumulator-factory.scm
-  called from <anonymous> on line 1292 of file /usr/share/chibi/init-7.scm
-  called from <anonymous> on line 821 of file /usr/share/chibi/init-7.scm
