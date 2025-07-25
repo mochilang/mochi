@@ -92,19 +92,26 @@ func TestGoTranspiler_Rosetta_Golden(t *testing.T) {
 				_ = os.WriteFile(errPath, []byte(errs[0].Error()), 0o644)
 				t.Fatalf("type: %v", errs[0])
 			}
-			bench := os.Getenv("MOCHI_BENCHMARK") == "true"
-			gotrans.SetBenchMain(bench)
+			benchEnv := os.Getenv("MOCHI_BENCHMARK")
+			bench := benchEnv == "true" || benchEnv == "1"
 			gprog, err := gotrans.Transpile(prog, env)
 			if err != nil {
 				_ = os.WriteFile(errPath, []byte(err.Error()), 0o644)
 				t.Fatalf("transpile: %v", err)
 			}
+			gprog.BenchMain = bench
 			code := gotrans.Emit(gprog, bench)
 			if err := os.WriteFile(codePath, code, 0o644); err != nil {
 				t.Fatalf("write code: %v", err)
 			}
 			cmd := exec.Command("go", "run", codePath)
-			cmd.Env = append(os.Environ(), "MOCHI_NOW_SEED=1")
+			runEnv := os.Environ()
+			if bench {
+				runEnv = append(runEnv, "MOCHI_BENCHMARK=1")
+			} else {
+				runEnv = append(runEnv, "MOCHI_NOW_SEED=1")
+			}
+			cmd.Env = runEnv
 			if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
 				cmd.Stdin = bytes.NewReader(data)
 			}

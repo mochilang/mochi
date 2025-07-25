@@ -42,6 +42,7 @@ type Program struct {
 	UseLenAny    bool
 	UseReflect   bool
 	UseRuntime   bool
+	BenchMain    bool
 }
 
 var (
@@ -808,8 +809,6 @@ func (b *BenchStmt) emit(w io.Writer) {
 	fmt.Fprint(w, "    var ms runtime.MemStats\n")
 	fmt.Fprint(w, "    runtime.ReadMemStats(&ms)\n")
 	fmt.Fprint(w, "    startMem := ms.Alloc\n")
-	fmt.Fprint(w, "    seededNow = true\n")
-	fmt.Fprint(w, "    nowSeed = 1\n")
 	fmt.Fprint(w, "    start := _now()\n")
 	for _, st := range b.Body {
 		fmt.Fprint(w, "    ")
@@ -3310,6 +3309,19 @@ func isStringType(t types.Type) bool {
 	return ok
 }
 
+func isFloatType(t types.Type) bool {
+	_, ok := t.(types.FloatType)
+	return ok
+}
+
+func isIntType(t types.Type) bool {
+	if _, ok := t.(types.IntType); ok {
+		return true
+	}
+	_, ok := t.(types.Int64Type)
+	return ok
+}
+
 func boolExprFor(e Expr, t types.Type) Expr {
 	if ix, ok := e.(*IndexExpr); ok {
 		if vr, ok2 := ix.X.(*VarRef); ok2 {
@@ -3824,6 +3836,18 @@ func compileBinary(b *parser.BinaryExpr, env *types.Env, base string) (Expr, err
 						if _, ok := typesList[i+1].(types.FloatType); ok {
 							if _, ok2 := typesList[i].(types.IntType); ok2 {
 								left = &CallExpr{Func: "float64", Args: []Expr{left}}
+							}
+						}
+					}
+					if newExpr == nil {
+						if ops[i].Op == "%" {
+							if _, ok := typesList[i].(types.FloatType); ok ||
+								(isFloatType(typesList[i]) && !isIntType(typesList[i])) ||
+								isFloatType(typesList[i+1]) {
+								if imports != nil {
+									imports["math"] = "math"
+								}
+								newExpr = &CallExpr{Func: "math.Mod", Args: []Expr{left, right}}
 							}
 						}
 					}
@@ -4975,7 +4999,7 @@ func identName(e *parser.Expr) (string, bool) {
 
 // Emit formats the Go AST back into source code.
 func Emit(prog *Program, bench bool) []byte {
-	bench = bench || benchMain
+	bench = bench || benchMain || prog.BenchMain
 	if bench {
 		prog.UseTime = true
 		prog.UseJSON = true
