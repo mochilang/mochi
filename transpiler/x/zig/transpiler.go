@@ -1487,7 +1487,7 @@ func (c *CastExpr) emit(w io.Writer) {
 		io.WriteString(w, "std.fmt.parseInt(i64, ")
 		c.Value.emit(w)
 		io.WriteString(w, ", 10) catch 0")
-	case "float":
+	case "float", "f64":
 		io.WriteString(w, "@as(f64, @floatFromInt(")
 		c.Value.emit(w)
 		io.WriteString(w, "))")
@@ -1912,74 +1912,119 @@ func compileExpr(e *parser.Expr) (Expr, error) {
 	if e == nil || e.Binary == nil {
 		return nil, fmt.Errorf("unsupported expression")
 	}
-	left, err := compileUnary(e.Binary.Left)
+	first, err := compileUnary(e.Binary.Left)
 	if err != nil {
 		return nil, err
 	}
-	expr := left
+	operands := []Expr{first}
+	ops := make([]parser.BinaryOp, 0, len(e.Binary.Right))
 	for _, op := range e.Binary.Right {
 		r, err := compilePostfix(op.Right)
 		if err != nil {
 			return nil, err
 		}
-		if llist, ok := expr.(*ListLit); ok {
-			if rlist, ok2 := r.(*ListLit); ok2 {
-				switch op.Op {
-				case "union":
-					seen := map[int]bool{}
-					res := []Expr{}
-					for _, v := range llist.Elems {
-						iv := v.(*IntLit)
-						if !seen[iv.Value] {
-							seen[iv.Value] = true
-							res = append(res, iv)
-						}
-					}
-					for _, v := range rlist.Elems {
-						iv := v.(*IntLit)
-						if !seen[iv.Value] || op.All {
-							if !seen[iv.Value] {
-								seen[iv.Value] = true
-							}
-							res = append(res, iv)
-						}
-					}
-					expr = &ListLit{Elems: res}
-					continue
-				case "except":
-					m := map[int]bool{}
-					for _, v := range rlist.Elems {
-						m[v.(*IntLit).Value] = true
-					}
-					res := []Expr{}
-					for _, v := range llist.Elems {
-						iv := v.(*IntLit)
-						if !m[iv.Value] {
-							res = append(res, iv)
-						}
-					}
-					expr = &ListLit{Elems: res}
-					continue
-				case "intersect":
-					m := map[int]bool{}
-					for _, v := range rlist.Elems {
-						m[v.(*IntLit).Value] = true
-					}
-					res := []Expr{}
-					for _, v := range llist.Elems {
-						iv := v.(*IntLit)
-						if m[iv.Value] {
-							res = append(res, iv)
-						}
-					}
-					expr = &ListLit{Elems: res}
-					continue
-				}
+		operands = append(operands, r)
+		ops = append(ops, *op)
+	}
+
+	contains := func(list []string, op string) bool {
+		for _, s := range list {
+			if s == op {
+				return true
 			}
 		}
-		expr = &BinaryExpr{Left: expr, Op: op.Op, Right: r}
+		return false
 	}
-	return expr, nil
+
+	levels := [][]string{
+		{"*", "/", "%"},
+		{"+", "-"},
+		{"<", "<=", ">", ">="},
+		{"==", "!=", "in"},
+		{"&&"},
+		{"||"},
+		{"union", "union_all", "except", "intersect"},
+	}
+
+	for _, lvl := range levels {
+		for i := 0; i < len(ops); {
+			if !contains(lvl, ops[i].Op) {
+				i++
+				continue
+			}
+			l := operands[i]
+			r := operands[i+1]
+			if ll, ok := l.(*ListLit); ok {
+				if rl, ok2 := r.(*ListLit); ok2 {
+					switch ops[i].Op {
+					case "union":
+						seen := map[int]bool{}
+						res := []Expr{}
+						for _, v := range ll.Elems {
+							iv := v.(*IntLit)
+							if !seen[iv.Value] {
+								seen[iv.Value] = true
+								res = append(res, iv)
+							}
+						}
+						for _, v := range rl.Elems {
+							iv := v.(*IntLit)
+							if !seen[iv.Value] || ops[i].All {
+								if !seen[iv.Value] {
+									seen[iv.Value] = true
+								}
+								res = append(res, iv)
+							}
+						}
+						operands[i] = &ListLit{Elems: res}
+						operands = append(operands[:i+1], operands[i+2:]...)
+						ops = append(ops[:i], ops[i+1:]...)
+						continue
+					case "except":
+						m := map[int]bool{}
+						for _, v := range rl.Elems {
+							m[v.(*IntLit).Value] = true
+						}
+						res := []Expr{}
+						for _, v := range ll.Elems {
+							iv := v.(*IntLit)
+							if !m[iv.Value] {
+								res = append(res, iv)
+							}
+						}
+						operands[i] = &ListLit{Elems: res}
+						operands = append(operands[:i+1], operands[i+2:]...)
+						ops = append(ops[:i], ops[i+1:]...)
+						continue
+					case "intersect":
+						m := map[int]bool{}
+						for _, v := range rl.Elems {
+							m[v.(*IntLit).Value] = true
+						}
+						res := []Expr{}
+						for _, v := range ll.Elems {
+							iv := v.(*IntLit)
+							if m[iv.Value] {
+								res = append(res, iv)
+							}
+						}
+						operands[i] = &ListLit{Elems: res}
+						operands = append(operands[:i+1], operands[i+2:]...)
+						ops = append(ops[:i], ops[i+1:]...)
+						continue
+					}
+				}
+			}
+			expr := &BinaryExpr{Left: l, Op: ops[i].Op, Right: r}
+			operands[i] = expr
+			operands = append(operands[:i+1], operands[i+2:]...)
+			ops = append(ops[:i], ops[i+1:]...)
+		}
+	}
+	if len(operands) != 1 {
+		return nil, fmt.Errorf("unexpected state after binary compile")
+	}
+	return operands[0], nil
 }
 
 func compileUnary(u *parser.Unary) (Expr, error) {
