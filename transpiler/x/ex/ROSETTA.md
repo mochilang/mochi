@@ -3,12 +3,12 @@
 Generated Elixir code from Mochi Rosetta programs lives in `tests/rosetta/transpiler/Elixir`.
 
 ## Rosetta Test Checklist (34/284)
-_Last updated: 2025-07-25 11:42 +0000_
+_Last updated: 2025-07-25 19:29 +0700_
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
-| 1 | 100-doors-2 | ✓ | 6.21ms | 91.6 KB |
-| 2 | 100-doors-3 | ✓ | 3.37ms | 513.3 KB |
-| 3 | 100-doors | ✓ | 2.94ms | 57.0 KB |
+| 1 | 100-doors-2 | ✓ |  |  |
+| 2 | 100-doors-3 | ✓ |  |  |
+| 3 | 100-doors | ✓ |  |  |
 | 4 | 100-prisoners | ✓ |  |  |
 | 5 | 15-puzzle-game | ✓ |  |  |
 | 6 | 15-puzzle-solver | ✓ | 140us | 370.3 KB |
@@ -18,18 +18,18 @@ _Last updated: 2025-07-25 11:42 +0000_
 | 10 | 24-game | ✓ |  |  |
 | 11 | 4-rings-or-4-squares-puzzle | ✓ | 22.44ms | 4.3 MB |
 | 12 | 9-billion-names-of-god-the-integer | ✓ |  |  |
-| 13 | 99-bottles-of-beer-2 | ✓ | 20.17ms | 2.6 MB |
-| 14 | 99-bottles-of-beer | ✓ |  |  |
-| 15 | DNS-query | ✓ |  |  |
-| 16 | a+b | ✓ |  |  |
-| 17 | abbreviations-automatic | ✓ |  |  |
-| 18 | abbreviations-easy | ✓ |  |  |
-| 19 | abbreviations-simple | ✓ |  |  |
-| 20 | abc-problem | ✓ |  |  |
+| 13 | 99-bottles-of-beer-2 | ✓ | 37.15ms | 128.3 KB |
+| 14 | 99-bottles-of-beer | ✓ | 13.99ms | 108.6 KB |
+| 15 | DNS-query | ✓ | 489.77ms | 159.0 KB |
+| 16 | a+b | ✓ | 2.73ms | 390.9 KB |
+| 17 | abbreviations-automatic | ✓ | 19.49ms | 3.0 KB |
+| 18 | abbreviations-easy | ✓ | 6.97ms | 2.6 MB |
+| 19 | abbreviations-simple | ✓ | 8.77ms | 177.8 KB |
+| 20 | abc-problem | ✓ | 11.89ms | 392.1 KB |
 | 21 | abelian-sandpile-model-identity |  |  |  |
-| 22 | abelian-sandpile-model | ✓ | 1.31ms | 165.3 KB |
-| 23 | abstract-type | ✓ | 107us | 396.6 KB |
-| 24 | abundant-deficient-and-perfect-number-classifications | ✓ | 567.27ms | 25.2 KB |
+| 22 | abelian-sandpile-model | ✓ | 2.20ms | 58.6 KB |
+| 23 | abstract-type | ✓ | 190us | 226.9 KB |
+| 24 | abundant-deficient-and-perfect-number-classifications | ✓ | 1.95s | 28.7 KB |
 | 25 | abundant-odd-numbers |  |  |  |
 | 26 | accumulator-factory | ✓ | 3us | 332.2 KB |
 | 27 | achilles-numbers |  |  |  |

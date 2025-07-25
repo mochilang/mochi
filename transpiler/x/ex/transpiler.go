@@ -3016,6 +3016,10 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 		switch name {
 		case "int":
 			if len(args) == 1 {
+				t := types.TypeOfExprBasic(p.Call.Args[0], env)
+				if _, ok := t.(types.StringType); ok {
+					return &CallExpr{Func: "String.to_integer", Args: []Expr{args[0]}}, nil
+				}
 				return &CallExpr{Func: "Kernel.trunc", Args: []Expr{args[0]}}, nil
 			}
 		case "float":
