@@ -92,6 +92,7 @@ func TestFSTranspiler_Rosetta_Golden(t *testing.T) {
 		ok := t.Run(base, func(t *testing.T) {
 			codePath := filepath.Join(outDir, safe+".fs")
 			outPath := filepath.Join(outDir, safe+".out")
+			benchPath := filepath.Join(outDir, safe+".bench")
 			errPath := filepath.Join(outDir, safe+".error")
 			exePath := filepath.Join(outDir, safe+".exe")
 
@@ -136,15 +137,31 @@ func TestFSTranspiler_Rosetta_Golden(t *testing.T) {
 				t.Fatalf("run: %v", err)
 			}
 			_ = os.Remove(errPath)
+
+			if bench {
+				benchBytes := got
+				if idx := bytes.LastIndexByte(benchBytes, '{'); idx >= 0 {
+					_ = os.WriteFile(benchPath, benchBytes[idx:], 0o644)
+					got = bytes.TrimSpace(benchBytes[:idx])
+				} else {
+					_ = os.WriteFile(benchPath, benchBytes, 0o644)
+					got = nil
+				}
+			}
+
 			if shouldUpdate := os.Getenv("UPDATE"); shouldUpdate == "1" || shouldUpdate == "true" {
-				_ = os.WriteFile(outPath, append(got, '\n'), 0o644)
+				if got != nil {
+					_ = os.WriteFile(outPath, append(got, '\n'), 0o644)
+				}
 				return
 			}
-			_ = os.WriteFile(outPath, got, 0o644)
-			if want, err := os.ReadFile(outPath); err == nil {
-				want = bytes.TrimSpace(want)
-				if !bytes.Equal(got, want) {
-					t.Errorf("output mismatch\nGot: %s\nWant: %s", got, want)
+			if got != nil {
+				_ = os.WriteFile(outPath, got, 0o644)
+				if want, err := os.ReadFile(outPath); err == nil {
+					want = bytes.TrimSpace(want)
+					if !bytes.Equal(got, want) {
+						t.Errorf("output mismatch\nGot: %s\nWant: %s", got, want)
+					}
 				}
 			}
 		})
@@ -198,7 +215,21 @@ func updateRosetta() {
 		}
 		dur := ""
 		mem := ""
-		if data, err := os.ReadFile(filepath.Join(outDir, safe+".out")); err == nil {
+		benchFile := filepath.Join(outDir, safe+".bench")
+		if data, err := os.ReadFile(benchFile); err == nil {
+			var js struct {
+				Duration int64 `json:"duration_us"`
+				Memory   int64 `json:"memory_bytes"`
+			}
+			if json.Unmarshal(bytes.TrimSpace(data), &js) == nil {
+				if js.Duration > 0 {
+					dur = humanDuration(js.Duration)
+				}
+				if js.Memory > 0 {
+					mem = humanSize(js.Memory)
+				}
+			}
+		} else if data, err := os.ReadFile(filepath.Join(outDir, safe+".out")); err == nil {
 			var js struct {
 				Duration int64 `json:"duration_us"`
 				Memory   int64 `json:"memory_bytes"`

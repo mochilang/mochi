@@ -5,7 +5,7 @@ This file is auto-generated from rosetta tests.
 ## Rosetta Golden Test Checklist (67/284)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
-| 1 | 100-doors-2 | ✓ | 325µs | 41.3 KB |
+| 1 | 100-doors-2 | ✓ | 162µs | 44.2 KB |
 | 2 | 100-doors-3 | ✓ | 325µs | 45.8 KB |
 | 3 | 100-doors | ✓ | 328µs | 45.6 KB |
 | 4 | 100-prisoners | ✓ |  |  |
@@ -290,4 +290,4 @@ This file is auto-generated from rosetta tests.
 | 283 | define-a-primitive-data-type |   |  |  |
 | 284 | md5 |   |  |  |
 
-Last updated: 2025-07-25 08:50 +0700
+Last updated: 2025-07-25 10:01 +0700
