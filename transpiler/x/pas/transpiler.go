@@ -1589,6 +1589,19 @@ func convertBody(env *types.Env, body []*parser.Statement, varTypes map[string]s
 			if vd.Type != "" {
 				varTypes[vd.Name] = vd.Type
 			}
+		case st.Type != nil:
+			var fields []Field
+			for _, m := range st.Type.Members {
+				if m.Field == nil || m.Field.Type == nil {
+					continue
+				}
+				typ := typeFromRef(m.Field.Type)
+				if typ == "" {
+					continue
+				}
+				fields = append(fields, Field{Name: m.Field.Name, Type: typ})
+			}
+			currProg.Records = append(currProg.Records, RecordDef{Name: st.Type.Name, Fields: fields})
 		case st.Var != nil:
 			name := sanitize(st.Var.Name)
 			vd := VarDecl{Name: name}

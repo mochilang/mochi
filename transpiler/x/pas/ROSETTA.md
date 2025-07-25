@@ -2,14 +2,14 @@
 
 Generated Pascal code for Rosetta tasks lives under `tests/rosetta/transpiler/Pascal`.
 
-## Rosetta Checklist (13/284) - updated 2025-07-25 05:52 UTC
+## Rosetta Checklist (14/284) - updated 2025-07-25 12:07 UTC
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 1µs | 128 B |
-| 2 | 100-doors-3 | ✓ |  |  |
-| 3 | 100-doors | ✓ |  |  |
+| 2 | 100-doors-3 | ✓ | 571.223ms |  |
+| 3 | 100-doors | ✓ | 571.223ms | 288 B |
 | 4 | 100-prisoners | ✓ |  |  |
-| 5 | 15-puzzle-game |   |  |  |
+| 5 | 15-puzzle-game | ✓ |  |  |
 | 6 | 15-puzzle-solver | ✓ |  |  |
 | 7 | 2048 | ✓ |  |  |
 | 8 | 21-game | ✓ |  |  |
