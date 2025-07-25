@@ -4,6 +4,7 @@ package kt
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"os"
 	"os/exec"
@@ -23,16 +24,34 @@ func UpdateRosettaChecklist() {
 	total := len(files)
 	compiled := 0
 	var lines []string
+	lines = append(lines, "| Index | Name | Status | Duration | Memory |")
+	lines = append(lines, "| ---: | --- | :---: | ---: | ---: |")
 	for i, f := range files {
 		name := strings.TrimSuffix(filepath.Base(f), ".mochi")
-		mark := "[ ]"
-		if _, err := os.Stat(filepath.Join(outDir, name+".kt")); err == nil {
-			if _, errE := os.Stat(filepath.Join(outDir, name+".error")); errE != nil {
-				compiled++
-				mark = "[x]"
+		status := ""
+		dur := ""
+		mem := ""
+		outPath := filepath.Join(outDir, name+".out")
+		if data, err := os.ReadFile(outPath); err == nil {
+			status = "x"
+			compiled++
+			trimmed := bytes.TrimSpace(data)
+			if idx := bytes.LastIndex(trimmed, []byte("{")); idx >= 0 {
+				var res struct {
+					Dur int64 `json:"duration_us"`
+					Mem int64 `json:"memory_bytes"`
+				}
+				if json.Unmarshal(trimmed[idx:], &res) == nil {
+					if res.Dur > 0 {
+						dur = humanDur(time.Duration(res.Dur) * time.Microsecond)
+					}
+					if res.Mem > 0 {
+						mem = humanSize(res.Mem)
+					}
+				}
 			}
 		}
-		lines = append(lines, fmt.Sprintf("%d. %s `%s` (%d)", i+1, mark, name, i+1))
+		lines = append(lines, fmt.Sprintf("| %d | %s | %s | %s | %s |", i+1, name, status, dur, mem))
 	}
 	out, err := exec.Command("git", "log", "-1", "--date=iso-strict", "--format=%cd").Output()
 	ts := ""
@@ -56,4 +75,32 @@ func UpdateRosettaChecklist() {
 	buf.WriteString(strings.Join(lines, "\n"))
 	buf.WriteString("\n")
 	_ = os.WriteFile(filepath.Join(root, "transpiler", "x", "kt", "ROSETTA.md"), buf.Bytes(), 0o644)
+}
+
+func humanDur(d time.Duration) string {
+	if d < time.Millisecond {
+		return fmt.Sprintf("%dus", d.Microseconds())
+	}
+	if d < time.Second {
+		return fmt.Sprintf("%.2fms", float64(d.Microseconds())/1000)
+	}
+	if d < time.Minute {
+		return fmt.Sprintf("%.2fs", d.Seconds())
+	}
+	return d.String()
+}
+
+func humanSize(n int64) string {
+	const unit = 1024
+	units := []string{"B", "KB", "MB", "GB", "TB"}
+	if n < unit {
+		return fmt.Sprintf("%d B", n)
+	}
+	val := float64(n)
+	exp := 0
+	for val >= unit && exp < len(units)-1 {
+		val /= unit
+		exp++
+	}
+	return fmt.Sprintf("%.1f %s", val, units[exp])
 }
