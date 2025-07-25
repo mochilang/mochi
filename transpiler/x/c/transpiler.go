@@ -59,6 +59,7 @@ var (
 	needListAppendInt    bool
 	needListAppendStr    bool
 	needListAppendPtr    bool
+	needListAppendSizeT  bool
 	needNow              bool
 	needMem              bool
 	needInput            bool
@@ -90,6 +91,16 @@ func emitLenExpr(w io.Writer, e Expr) {
 		io.WriteString(w, v.Func+"_len")
 	case *ListLit:
 		fmt.Fprintf(w, "%d", len(v.Elems))
+	case *IndexExpr:
+		if vr, ok := v.Target.(*VarRef); ok {
+			if typ, ok2 := varTypes[vr.Name]; ok2 && strings.HasSuffix(typ, "[][]") {
+				io.WriteString(w, vr.Name+"_lens[")
+				v.Index.emitExpr(w)
+				io.WriteString(w, "]")
+				break
+			}
+		}
+		io.WriteString(w, "0")
 	default:
 		io.WriteString(w, "0")
 	}
@@ -354,13 +365,33 @@ func (r *ReturnStmt) emit(w io.Writer, indent int) {
 		if strings.HasSuffix(currentFuncReturn, "[]") {
 			switch v := r.Expr.(type) {
 			case *VarRef:
+				if strings.HasSuffix(currentFuncReturn, "[][]") {
+					fmt.Fprintf(w, "%s_lens = %s_lens, ", currentFuncName, v.Name)
+				}
 				fmt.Fprintf(w, "%s_len = %s_len, ", currentFuncName, v.Name)
 			case *FieldExpr:
 				fmt.Fprintf(w, "%s_len = ", currentFuncName)
 				v.Target.emitExpr(w)
 				fmt.Fprintf(w, ".%s_len, ", v.Name)
 			case *CallExpr:
+				if strings.HasSuffix(currentFuncReturn, "[][]") {
+					fmt.Fprintf(w, "%s_lens = %s_lens, ", currentFuncName, v.Func)
+				}
 				fmt.Fprintf(w, "%s_len = %s_len, ", currentFuncName, v.Func)
+			case *ListLit:
+				if strings.HasSuffix(currentFuncReturn, "[][]") {
+					fmt.Fprintf(w, "%s_lens = (size_t[]){", currentFuncName)
+					for i, e := range v.Elems {
+						if lst, ok := e.(*ListLit); ok {
+							if i > 0 {
+								io.WriteString(w, ", ")
+							}
+							fmt.Fprintf(w, "%d", len(lst.Elems))
+						}
+					}
+					io.WriteString(w, "}, ")
+				}
+				fmt.Fprintf(w, "%s_len = %d, ", currentFuncName, len(v.Elems))
 			}
 		}
 		r.Expr.emitExpr(w)
@@ -384,12 +415,20 @@ func (d *DeclStmt) emit(w io.Writer, indent int) {
 			io.WriteString(w, ";\n")
 			writeIndent(w, indent)
 			fmt.Fprintf(w, "size_t %s_len = %s_len;\n", d.Name, call.Func)
+			writeIndent(w, indent)
+			fmt.Fprintf(w, "size_t *%s_lens = %s_lens;\n", d.Name, call.Func)
+			writeIndent(w, indent)
+			fmt.Fprintf(w, "size_t %s_lens_len = %s_len;\n", d.Name, call.Func)
 			return
 		}
 		if vr, ok := d.Value.(*VarRef); ok {
 			fmt.Fprintf(w, "%s **%s = %s;\n", base, d.Name, vr.Name)
 			writeIndent(w, indent)
 			fmt.Fprintf(w, "size_t %s_len = %s_len;\n", d.Name, vr.Name)
+			writeIndent(w, indent)
+			fmt.Fprintf(w, "size_t *%s_lens = %s_lens;\n", d.Name, vr.Name)
+			writeIndent(w, indent)
+			fmt.Fprintf(w, "size_t %s_lens_len = %s_len;\n", d.Name, vr.Name)
 			return
 		}
 		if fe, ok := d.Value.(*FieldExpr); ok {
@@ -400,11 +439,33 @@ func (d *DeclStmt) emit(w io.Writer, indent int) {
 			fmt.Fprintf(w, "size_t %s_len = ", d.Name)
 			fe.Target.emitExpr(w)
 			fmt.Fprintf(w, ".%s_len;\n", fe.Name)
+			writeIndent(w, indent)
+			fmt.Fprintf(w, "size_t *%s_lens = ", d.Name)
+			fe.Target.emitExpr(w)
+			fmt.Fprintf(w, ".%s_lens;\n", fe.Name)
+			writeIndent(w, indent)
+			fmt.Fprintf(w, "size_t %s_lens_len = ", d.Name)
+			fe.Target.emitExpr(w)
+			fmt.Fprintf(w, ".%s_len;\n", fe.Name)
+			return
+		}
+		if _, ok := d.Value.(*IndexExpr); ok {
+			fmt.Fprintf(w, "%s **%s = ", base, d.Name)
+			d.Value.emitExpr(w)
+			io.WriteString(w, ";\n")
+			writeIndent(w, indent)
+			fmt.Fprintf(w, "size_t %s_len = ", d.Name)
+			emitLenExpr(w, d.Value)
+			io.WriteString(w, ";\n")
 			return
 		}
 		fmt.Fprintf(w, "%s **%s = NULL;\n", base, d.Name)
 		writeIndent(w, indent)
 		fmt.Fprintf(w, "size_t %s_len = 0;\n", d.Name)
+		writeIndent(w, indent)
+		fmt.Fprintf(w, "size_t *%s_lens = NULL;\n", d.Name)
+		writeIndent(w, indent)
+		fmt.Fprintf(w, "size_t %s_lens_len = 0;\n", d.Name)
 		return
 	} else if strings.HasSuffix(typ, "[]") {
 		base := strings.TrimSuffix(typ, "[]")
@@ -453,6 +514,16 @@ func (d *DeclStmt) emit(w io.Writer, indent int) {
 			io.WriteString(w, ";\n")
 			writeIndent(w, indent)
 			fmt.Fprintf(w, "size_t %s_len = %s_len;\n", d.Name, call.Func)
+			return
+		}
+		if _, ok := d.Value.(*IndexExpr); ok {
+			fmt.Fprintf(w, "%s *%s = ", base, d.Name)
+			d.Value.emitExpr(w)
+			io.WriteString(w, ";\n")
+			writeIndent(w, indent)
+			fmt.Fprintf(w, "size_t %s_len = ", d.Name)
+			emitLenExpr(w, d.Value)
+			io.WriteString(w, ";\n")
 			return
 		}
 		if d.Value != nil {
@@ -524,6 +595,11 @@ func (a *AssignStmt) emit(w io.Writer, indent int) {
 						call.Args[1].emitExpr(w)
 					}
 					io.WriteString(w, ");\n")
+					needListAppendSizeT = true
+					writeIndent(w, indent)
+					fmt.Fprintf(w, "%s_lens = list_append_szt(%s_lens, &%s_lens_len, ", a.Name, a.Name, a.Name)
+					emitLenExpr(w, call.Args[1])
+					io.WriteString(w, ");\n")
 					return
 				}
 			}
@@ -553,6 +629,14 @@ func (a *AssignStmt) emit(w io.Writer, indent int) {
 				fmt.Fprintf(w, "%s_len = %s_len;\n", a.Name, call.Func)
 			} else {
 				fmt.Fprintf(w, "size_t %s_len = %s_len;\n", a.Name, call.Func)
+			}
+			if strings.HasSuffix(funcReturnTypes[call.Func], "[][]") {
+				writeIndent(w, indent)
+				if _, declared := varTypes[a.Name]; declared {
+					fmt.Fprintf(w, "%s_lens = %s_lens;\n", a.Name, call.Func)
+				} else {
+					fmt.Fprintf(w, "size_t *%s_lens = %s_lens;\n", a.Name, call.Func)
+				}
 			}
 		}
 	}
@@ -763,7 +847,11 @@ func (l *ListLit) emitExpr(w io.Writer) {
 			elemType = "double"
 		}
 	}
-	fmt.Fprintf(w, "(%s[]){ ", elemType)
+	outType := elemType
+	if strings.HasSuffix(elemType, "[]") {
+		outType = strings.TrimSuffix(elemType, "[]") + "*"
+	}
+	fmt.Fprintf(w, "(%s[]){ ", outType)
 	for i, e := range l.Elems {
 		if i > 0 {
 			io.WriteString(w, ", ")
@@ -1335,6 +1423,9 @@ func (p *Program) Emit() []byte {
 	for _, fn := range p.Functions {
 		if strings.HasSuffix(fn.Return, "[]") {
 			fmt.Fprintf(&buf, "size_t %s_len;\n", fn.Name)
+			if strings.HasSuffix(fn.Return, "[][]") {
+				fmt.Fprintf(&buf, "size_t *%s_lens;\n", fn.Name)
+			}
 		}
 	}
 	if len(p.Functions) > 0 {
@@ -1447,6 +1538,14 @@ func (p *Program) Emit() []byte {
 	if needListAppendPtr {
 		buf.WriteString("static int** list_append_intptr(int **arr, size_t *len, int *val) {\n")
 		buf.WriteString("    arr = realloc(arr, (*len + 1) * sizeof(int*));\n")
+		buf.WriteString("    arr[*len] = val;\n")
+		buf.WriteString("    (*len)++;\n")
+		buf.WriteString("    return arr;\n")
+		buf.WriteString("}\n\n")
+	}
+	if needListAppendSizeT {
+		buf.WriteString("static size_t* list_append_szt(size_t *arr, size_t *len, size_t val) {\n")
+		buf.WriteString("    arr = realloc(arr, (*len + 1) * sizeof(size_t));\n")
 		buf.WriteString("    arr[*len] = val;\n")
 		buf.WriteString("    (*len)++;\n")
 		buf.WriteString("    return arr;\n")
@@ -2762,6 +2861,14 @@ func compileFunction(env *types.Env, name string, fn *parser.FunExpr) (*Function
 			params = append(params, Param{Name: p.Name + "_len", Type: "size_t"})
 			varTypes[p.Name+"_len"] = "size_t"
 			localEnv.SetVar(p.Name+"_len", types.IntType{}, true)
+			if strings.HasSuffix(typ, "[][]") {
+				params = append(params, Param{Name: p.Name + "_lens", Type: "size_t*"})
+				params = append(params, Param{Name: p.Name + "_lens_len", Type: "size_t"})
+				varTypes[p.Name+"_lens"] = "size_t*"
+				varTypes[p.Name+"_lens_len"] = "size_t"
+				localEnv.SetVar(p.Name+"_lens", types.IntType{}, true)
+				localEnv.SetVar(p.Name+"_lens_len", types.IntType{}, true)
+			}
 		}
 	}
 	funcParamTypes[name] = paramTypes
