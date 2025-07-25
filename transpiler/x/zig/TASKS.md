@@ -1,3 +1,23 @@
+## Progress (2025-07-25 20:18 +0700)
+- Commit acdeb3237d: rosetta: update zig result for index 3
+- Generated Zig for 98/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-25 20:17 +0700)
+- Commit 68d5c681e9: rosetta: update zig result for index 2
+- Generated Zig for 98/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-25 20:17 +0700)
+- Commit 7d8027fcd0: rosetta: update zig result for index 1
+- Generated Zig for 98/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-25 20:12 +0700)
+- Commit b187c0cc1b: rosetta: update durations
+- Generated Zig for 98/104 programs
+- Updated README checklist and outputs
+
 ## Progress (2025-07-24 20:52 +0700)
 - Commit 09fec1883d: php: add str helper and transpile bitmap-histogram
 - Generated Zig for 98/103 programs
