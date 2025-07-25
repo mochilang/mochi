@@ -568,13 +568,11 @@ func (s *SliceExpr) emit(w io.Writer) {
 	if s.End != nil && s.Start != nil {
 		io.WriteString(w, "(")
 		s.End.emit(w)
-		io.WriteString(w, " - (")
+		io.WriteString(w, " - ")
 		s.Start.emit(w)
-		io.WriteString(w, ")")
 		io.WriteString(w, ")")
 	} else if s.End != nil {
 		s.End.emit(w)
-		io.WriteString(w, ")")
 	} else {
 		io.WriteString(w, "Length(")
 		s.Target.emit(w)
@@ -1262,18 +1260,17 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 					pr.Stmts = append(pr.Stmts, &DoubleIndexAssignStmt{Name: name, Index1: idx1, Index2: idx2, Expr: ex})
 					break
 				}
-				if _, ok := varTypes[name]; !ok {
-					if t := inferType(ex); t != "" {
-						varTypes[name] = t
-						setVarType(name, t)
-					}
-					if call, ok := ex.(*CallExpr); ok && call.Name == "concat" && len(call.Args) == 2 {
-						if list, ok := call.Args[1].(*ListLit); ok && len(list.Elems) == 1 {
-							if et := inferType(list.Elems[0]); et != "" {
-								t := "array of " + et
-								varTypes[name] = t
-								setVarType(name, t)
-							}
+				existing, ok := varTypes[name]
+				if t := inferType(ex); t != "" && (!ok || existing == "" || existing == "array of integer") {
+					varTypes[name] = t
+					setVarType(name, t)
+				}
+				if call, ok := ex.(*CallExpr); ok && call.Name == "concat" && len(call.Args) == 2 {
+					if list, ok := call.Args[1].(*ListLit); ok && len(list.Elems) == 1 {
+						if et := inferType(list.Elems[0]); et != "" {
+							t := "array of " + et
+							varTypes[name] = t
+							setVarType(name, t)
 						}
 					}
 				}
@@ -3402,7 +3399,11 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 			if t == "Variant" || t == "any" || t == "string" {
 				return args[0], nil
 			}
-			name = "IntToStr"
+			if t == "real" {
+				name = "FloatToStr"
+			} else {
+				name = "IntToStr"
+			}
 		} else if name == "upper" && len(args) == 1 {
 			currProg.UseSysUtils = true
 			return &CallExpr{Name: "UpperCase", Args: args}, nil
@@ -3464,6 +3465,8 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 			return &CallExpr{Name: "_input", Args: nil}, nil
 		} else if name == "append" && len(args) == 2 {
 			return &CallExpr{Name: "concat", Args: []Expr{args[0], &ListLit{Elems: []Expr{args[1]}}}}, nil
+		} else if name == "float" && len(args) == 1 {
+			return &CallExpr{Name: "Double", Args: args}, nil
 		}
 		return &CallExpr{Name: name, Args: args}, nil
 	case p.List != nil:
@@ -3775,6 +3778,8 @@ func inferType(e Expr) string {
 		case "min", "max":
 			return "integer"
 		case "Sqrt", "Sin", "Ln", "Power":
+			return "real"
+		case "Double":
 			return "real"
 		case "concat":
 			if len(v.Args) > 0 {
