@@ -6,7 +6,7 @@ Completed programs: 40/284
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
-| 1 | 100-doors-2 | ✓ |  |  |
+| 1 | 100-doors-2 | ✓ | 134.0µs | 11.08KB |
 | 2 | 100-doors-3 | ✓ |  |  |
 | 3 | 100-doors | ✓ |  |  |
 | 4 | 100-prisoners | ✓ |  |  |
@@ -290,4 +290,4 @@ Completed programs: 40/284
 | 282 | deepcopy-1 |   |  |  |
 | 283 | define-a-primitive-data-type |   |  |  |
 | 284 | md5 |   |  |  |
-Last updated 2025-07-25 08:23 +0700
+Last updated 2025-07-25 08:49 +0700

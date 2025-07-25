@@ -80,7 +80,13 @@ func runCase(src, outDir string) ([]byte, error) {
 		return nil, err
 	}
 	cmd := exec.Command(exe)
-	cmd.Env = append(os.Environ(), "MOCHI_NOW_SEED=1")
+	runEnv := append(os.Environ())
+	if bench {
+		runEnv = append(runEnv, "MOCHI_BENCHMARK=1")
+	} else {
+		runEnv = append(runEnv, "MOCHI_NOW_SEED=1")
+	}
+	cmd.Env = runEnv
 	if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
 		cmd.Stdin = bytes.NewReader(data)
 	}
@@ -91,6 +97,9 @@ func runCase(src, outDir string) ([]byte, error) {
 	}
 	outBytes := bytes.TrimSpace(out)
 	if bench {
+		if idx := bytes.LastIndexByte(outBytes, '{'); idx >= 0 {
+			outBytes = outBytes[idx:]
+		}
 		_ = os.WriteFile(benchPath, outBytes, 0o644)
 	} else {
 		_ = os.WriteFile(outPath, outBytes, 0o644)
@@ -123,6 +132,7 @@ func TestOCamlTranspiler_Rosetta_Golden(t *testing.T) {
 	if _, err := exec.LookPath("ocamlc"); err != nil {
 		t.Skip("ocamlc not installed")
 	}
+	bench := os.Getenv("MOCHI_BENCHMARK") == "true" || os.Getenv("MOCHI_BENCHMARK") == "1"
 	root := repoRootDir(t)
 	srcDir := filepath.Join(root, "tests", "rosetta", "x", "Mochi")
 	outDir := filepath.Join(root, "tests", "rosetta", "transpiler", "OCaml")
@@ -149,6 +159,10 @@ func TestOCamlTranspiler_Rosetta_Golden(t *testing.T) {
 		got, err := runCase(src, outDir)
 		if err != nil {
 			t.Fatalf("%v", err)
+		}
+		if bench {
+			// no golden comparison when benchmarking
+			return
 		}
 		wantPath := filepath.Join(outDir, name+".out")
 		want, err := os.ReadFile(wantPath)
