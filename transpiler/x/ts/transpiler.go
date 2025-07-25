@@ -1953,10 +1953,22 @@ func Transpile(prog *parser.Program, env *types.Env, benchMain bool) (*Program, 
 		}
 		tsProg.Stmts = append(tsProg.Stmts, stmt)
 	}
+
 	if benchMain {
+		// keep type declarations at top-level so that exported
+		// interfaces or type aliases remain valid modules
+		var mainStmts []Stmt
+		for _, st := range tsProg.Stmts {
+			switch st.(type) {
+			case *InterfaceDecl, *TypeAlias:
+				prelude = append(prelude, st)
+			default:
+				mainStmts = append(mainStmts, st)
+			}
+		}
+		tsProg.Stmts = []Stmt{&BenchStmt{Name: "main", Body: mainStmts}}
 		useBench = true
 		useNow = true
-		tsProg.Stmts = []Stmt{&BenchStmt{Name: "main", Body: tsProg.Stmts}}
 	}
 	if useNow {
 		seed := os.Getenv("MOCHI_NOW_SEED")
