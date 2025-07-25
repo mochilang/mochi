@@ -54,6 +54,7 @@ func TestGoTranspiler_VMValid_Golden(t *testing.T) {
 			return nil, err
 		}
 		cmd := exec.Command("go", "run", codePath)
+		cmd.Env = append(os.Environ(), "MOCHI_NOW_SEED=1")
 		if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
 			cmd.Stdin = bytes.NewReader(data)
 		}
@@ -63,7 +64,11 @@ func TestGoTranspiler_VMValid_Golden(t *testing.T) {
 			return nil, err
 		}
 		outBytes := bytes.TrimSpace(out)
-		_ = os.WriteFile(outPath, outBytes, 0o644)
+		if bench {
+			_ = os.WriteFile(filepath.Join(outDir, base+".bench"), outBytes, 0o644)
+		} else {
+			_ = os.WriteFile(outPath, outBytes, 0o644)
+		}
 		_ = os.Remove(errPath)
 		return outBytes, nil
 	})

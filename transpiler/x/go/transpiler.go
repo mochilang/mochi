@@ -42,6 +42,7 @@ type Program struct {
 	UseLenAny    bool
 	UseReflect   bool
 	UseRuntime   bool
+	UseMath      bool
 }
 
 var (
@@ -61,6 +62,7 @@ var (
 	usesLenAny     bool
 	usesReflect    bool
 	usesRuntime    bool
+	usesMath       bool
 	topEnv         *types.Env
 	extraDecls     []Stmt
 	structCount    int
@@ -1759,6 +1761,7 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	usesLenAny = false
 	usesReflect = false
 	usesRuntime = false
+	usesMath = false
 	topEnv = env
 	extraDecls = nil
 	structCount = 0
@@ -1796,6 +1799,7 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	gp.UseLenAny = usesLenAny
 	gp.UseReflect = usesReflect
 	gp.UseRuntime = usesRuntime
+	gp.UseMath = usesMath
 	gp.Imports = imports
 	return gp, nil
 }
@@ -3827,6 +3831,22 @@ func compileBinary(b *parser.BinaryExpr, env *types.Env, base string) (Expr, err
 							}
 						}
 					}
+					if newExpr == nil && ops[i].Op == "%" {
+						if _, ok := typesList[i].(types.AnyType); ok {
+							left = &CallExpr{Func: "_toFloat", Args: []Expr{left}}
+							usesFloatConv = true
+						} else if _, ok := typesList[i].(types.IntType); ok {
+							left = &CallExpr{Func: "float64", Args: []Expr{left}}
+						}
+						if _, ok := typesList[i+1].(types.AnyType); ok {
+							right = &CallExpr{Func: "_toFloat", Args: []Expr{right}}
+							usesFloatConv = true
+						} else if _, ok := typesList[i+1].(types.IntType); ok {
+							right = &CallExpr{Func: "float64", Args: []Expr{right}}
+						}
+						usesMath = true
+						newExpr = &CallExpr{Func: "math.Mod", Args: []Expr{left, right}}
+					}
 					if newExpr == nil {
 						newExpr = &BinaryExpr{Left: left, Op: ops[i].Op, Right: right}
 					}
@@ -5022,6 +5042,9 @@ func Emit(prog *Program, bench bool) []byte {
 	}
 	if prog.UseBigInt || prog.UseBigRat {
 		buf.WriteString("    \"math/big\"\n")
+	}
+	if prog.UseMath {
+		buf.WriteString("    \"math\"\n")
 	}
 	if prog.UseReflect {
 		buf.WriteString("    \"reflect\"\n")
