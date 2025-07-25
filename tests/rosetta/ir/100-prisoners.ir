@@ -1,6 +1,4 @@
 func main (regs=1)
-  // main()
-  Call         r0, main, 
   Return       r0
 
   // fun shuffle(xs: list<int>): list<int> {
@@ -63,7 +61,7 @@ L2:
   LessInt      r11, r9, r10
   JumpIfFalse  r11, L1
   // drawers = append(drawers, i)
-  Append       r12, r8, r9
+  AppendFast   r12, r8, r9
   Move         r8, r12
   // i = i + 1
   Const        r13, 1
@@ -137,7 +135,7 @@ L9:
   JumpIfFalse  r35, L8
   // opened = append(opened, false)
   Const        r21, false
-  Append       r36, r33, r21
+  AppendFast   r36, r33, r21
   Move         r33, r36
   // k = k + 1
   Const        r13, 1

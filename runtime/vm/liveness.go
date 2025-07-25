@@ -103,7 +103,7 @@ func useDef(ins Instr, n int) (use, def []bool) {
 		OpCast, OpIterPrep, OpNow, OpMem:
 		addDef(ins.A)
 		addUse(ins.B)
-	case OpAppend:
+	case OpAppend, OpAppendFast:
 		addDef(ins.A)
 		addUse(ins.B)
 		addUse(ins.C)
@@ -208,7 +208,7 @@ func defRegs(ins Instr) []int {
 		OpIn, OpNeg, OpNegInt, OpNegFloat, OpNot, OpStr, OpFirst, OpExists,
 		OpLen, OpIndex, OpSlice, OpMakeList, OpMakeMap,
 		OpCount, OpAvg, OpSum, OpMin, OpMax, OpValues,
-		OpCast, OpIterPrep, OpNow, OpMem, OpAppend, OpUnionAll, OpUnion,
+		OpCast, OpIterPrep, OpNow, OpMem, OpAppend, OpAppendFast, OpUnionAll, OpUnion,
 		OpExcept, OpIntersect, OpSort, OpCall2, OpCall, OpCallV,
 		OpMakeClosure, OpLoad, OpSave, OpEval, OpFetch:
 		return []int{ins.A}
@@ -254,7 +254,10 @@ func Optimize(fn *Function) {
 			changed = true
 		}
 		analysis := Liveness(fn)
-		_ = analysis
+		if appendInPlace(fn, analysis) {
+			changed = true
+			analysis = Liveness(fn)
+		}
 		// Peephole optimization disabled to avoid incorrect register
 		// propagation across branches.
 		// if peephole(fn, analysis) {
@@ -282,6 +285,22 @@ func Optimize(fn *Function) {
 	// TODO: fix CompactRegisters and re-enable once the allocator
 	// handles lifetimes correctly.
 	// CompactRegisters(fn)
+}
+
+// appendInPlace converts OpAppend instructions to OpAppendFast when the
+// source list register is dead after the append. This allows the runtime to
+// mutate the slice instead of copying it, reducing allocations.
+func appendInPlace(fn *Function, analysis *LiveInfo) bool {
+	changed := false
+	for pc, ins := range fn.Code {
+		if ins.Op == OpAppend {
+			if ins.B >= 0 && ins.B < len(analysis.Out[pc]) && !analysis.Out[pc][ins.B] {
+				fn.Code[pc].Op = OpAppendFast
+				changed = true
+			}
+		}
+	}
+	return changed
 }
 
 // removeDead eliminates instructions that only define dead registers.
@@ -1041,7 +1060,7 @@ func evalBinaryConst(op Op, b, c Value) (Value, bool) {
 			}
 			return Value{Tag: ValueInt, Int: b.Int % c.Int}, true
 		}
-	case OpAppend:
+	case OpAppend, OpAppendFast:
 		if b.Tag == ValueList {
 			out := append(append([]Value(nil), b.List...), c)
 			return Value{Tag: ValueList, List: out}, true
