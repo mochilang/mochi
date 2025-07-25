@@ -2,7 +2,7 @@
 
 This directory stores C++ code generated from Mochi programs in `tests/rosetta/x/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.cpp` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (36/284) - Last updated 2025-07-25 18:46 +0700:
+Checklist of programs that currently transpile and run (37/284) - Last updated 2025-07-25 19:01 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | 100-doors-2 | ✓ | 222.0µs | 13.12MB |
@@ -25,19 +25,19 @@ Checklist of programs that currently transpile and run (36/284) - Last updated 2
 | 18 | abbreviations-easy | ✓ | 1.0ms | 13.74MB |
 | 19 | abbreviations-simple | ✓ | 3.0ms | 14.25MB |
 | 20 | abc-problem | ✓ |  |  |
-| 21 | abelian-sandpile-model-identity |   |  |  |
+| 21 | abelian-sandpile-model-identity | ✓ |  |  |
 | 22 | abelian-sandpile-model | ✓ | 398.0µs | 13.57MB |
-| 23 | abstract-type | ✓ |  |  |
-| 24 | abundant-deficient-and-perfect-number-classifications | ✓ |  |  |
-| 25 | abundant-odd-numbers | ✓ |  |  |
-| 26 | accumulator-factory | ✓ |  |  |
-| 27 | achilles-numbers | ✓ |  |  |
-| 28 | ackermann-function-2 | ✓ |  |  |
+| 23 | abstract-type | ✓ | 113.0µs | 13.05MB |
+| 24 | abundant-deficient-and-perfect-number-classifications | ✓ | 222.0ms | 12.93MB |
+| 25 | abundant-odd-numbers | ✓ | 1.10s | 12.94MB |
+| 26 | accumulator-factory | ✓ | 71.0µs | 12.79MB |
+| 27 | achilles-numbers | ✓ | 21.0ms | 14.59MB |
+| 28 | ackermann-function-2 | ✓ | 52.0µs | 13.44MB |
 | 29 | ackermann-function-3 | ✓ |  |  |
-| 30 | ackermann-function | ✓ |  |  |
-| 31 | active-directory-connect | ✓ |  |  |
-| 32 | active-directory-search-for-a-user | ✓ |  |  |
-| 33 | active-object | ✓ |  |  |
+| 30 | ackermann-function | ✓ | 217.0µs | 12.62MB |
+| 31 | active-directory-connect | ✓ | 44.0µs | 12.87MB |
+| 32 | active-directory-search-for-a-user | ✓ | 66.0µs | 12.94MB |
+| 33 | active-object | ✓ | 85.0µs | 13.00MB |
 | 34 | add-a-variable-to-a-class-instance-at-runtime | ✓ |  |  |
 | 35 | additive-primes | ✓ |  |  |
 | 36 | address-of-a-variable | ✓ |  |  |
