@@ -2,9 +2,9 @@
 
 Generated Lua code for programs in `tests/rosetta/x/Mochi`. Each program has a `.lua` file produced by the transpiler and a `.out` file with its runtime output. Compilation or runtime errors are captured in `.error` files.
 
-Transpiled programs: 239/284
+Transpiled programs: 240/284
 
-Last updated: 2025-07-25 16:49 GMT+7
+Last updated: 2025-07-25 17:05 GMT+7
 
 Checklist:
 
@@ -65,18 +65,18 @@ Checklist:
 | 53 | anonymous-recursion-1 | ✓ | 62µs | 136 B |
 | 54 | anonymous-recursion-2 | ✓ | 49µs | 136 B |
 | 55 | anonymous-recursion | ✓ | 82µs | 720 B |
-| 56 | anti-primes | ✓ |  |  |
-| 57 | append-a-record-to-the-end-of-a-text-file | ✓ |  |  |
-| 58 | apply-a-callback-to-an-array-1 | ✓ |  |  |
-| 59 | apply-a-callback-to-an-array-2 | ✓ |  |  |
-| 60 | apply-a-digital-filter-direct-form-ii-transposed- | ✓ |  |  |
-| 61 | approximate-equality | ✓ |  |  |
-| 62 | arbitrary-precision-integers-included- | ✓ |  |  |
-| 63 | archimedean-spiral | ✓ |  |  |
-| 64 | arena-storage-pool | ✓ |  |  |
-| 65 | arithmetic-complex | ✓ |  |  |
-| 66 | arithmetic-derivative | ✓ |  |  |
-| 67 | arithmetic-evaluation |   |  |  |
+| 56 | anti-primes | ✓ | 1.208419s | 2.8 KB |
+| 57 | append-a-record-to-the-end-of-a-text-file | ✓ | 32µs | 880 B |
+| 58 | apply-a-callback-to-an-array-1 | ✓ | 45µs | 704 B |
+| 59 | apply-a-callback-to-an-array-2 | ✓ | 29µs | 952 B |
+| 60 | apply-a-digital-filter-direct-form-ii-transposed- | ✓ | 148µs | 3.9 KB |
+| 61 | approximate-equality | ✓ | 47µs | 2.9 KB |
+| 62 | arbitrary-precision-integers-included- | ✓ | 36µs | 828 B |
+| 63 | archimedean-spiral | ✓ | 5.313ms | 2.1 KB |
+| 64 | arena-storage-pool | ✓ | 44µs | 984 B |
+| 65 | arithmetic-complex | ✓ | 67µs | 3.1 KB |
+| 66 | arithmetic-derivative | ✓ | 1.138ms | 5.1 KB |
+| 67 | arithmetic-evaluation | ✓ | 86µs | 1.8 KB |
 | 68 | arithmetic-geometric-mean-calculate-pi | ✓ |  |  |
 | 69 | arithmetic-geometric-mean | ✓ |  |  |
 | 70 | arithmetic-integer-1 | ✓ |  |  |
