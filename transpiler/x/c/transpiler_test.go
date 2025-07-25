@@ -42,6 +42,7 @@ func repoRoot(t *testing.T) string {
 }
 
 func transpileFile(src string) ([]byte, error) {
+	ctrans.SetBenchMain(os.Getenv("MOCHI_BENCHMARK") != "")
 	prog, err := parser.Parse(src)
 	if err != nil {
 		return nil, fmt.Errorf("parse error: %w", err)
@@ -80,7 +81,11 @@ func transpileAndRun(src string) ([]byte, error) {
 		return nil, fmt.Errorf("compile failed: %v: %s", err, string(out))
 	}
 	cmd := exec.Command(exe)
-	cmd.Env = append(os.Environ(), "MOCHI_NOW_SEED=1")
+	env := append(os.Environ(), "MOCHI_NOW_SEED=1")
+	if os.Getenv("MOCHI_BENCHMARK") != "" {
+		env = append(env, "MOCHI_BENCHMARK=1")
+	}
+	cmd.Env = env
 	if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
 		cmd.Stdin = bytes.NewReader(data)
 	}
