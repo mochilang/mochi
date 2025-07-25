@@ -1,0 +1,241 @@
+func main (regs=89)
+  // var a = [0, 0, 0, 0, 0]
+  Const        r3, [0, 0, 0, 0, 0]
+  Move         r0, r3
+  SetGlobal    0,0,0,0
+  // print("len(a) = " + str(len(a)))
+  Const        r4, "len(a) = "
+  Const        r5, 5
+  Const        r6, "5"
+  Const        r7, "len(a) = 5"
+  Print        r7
+  // print("a = " + listStr(a))
+  Const        r8, "a = "
+  Move         r9, r0
+  Call         r10, listStr, r9
+  Add          r11, r8, r10
+  Print        r11
+  // a[0] = 3
+  Const        r12, 3
+  Const        r13, 0
+  SetIndex     r0, r13, r12
+  SetGlobal    0,0,0,0
+  // print("a = " + listStr(a))
+  Const        r8, "a = "
+  Move         r14, r0
+  Call         r15, listStr, r14
+  Add          r16, r8, r15
+  Print        r16
+  // print("a[0] = " + str(a[0]))
+  Const        r17, "a[0] = "
+  Const        r13, 0
+  Index        r18, r0, r13
+  Str          r19, r18
+  Add          r20, r17, r19
+  Print        r20
+  // var s = a[0:4]
+  Const        r13, 0
+  Move         r21, r13
+  Const        r23, 4
+  Move         r22, r23
+  Slice        r24, r0, r21, r22
+  Move         r1, r24
+  SetGlobal    1,1,0,0
+  // var cap_s = 5
+  Const        r25, 5
+  Move         r2, r25
+  SetGlobal    2,2,0,0
+  // print("s = " + listStr(s))
+  Const        r26, "s = "
+  Move         r27, r1
+  Call         r28, listStr, r27
+  Add          r29, r26, r28
+  Print        r29
+  // print("len(s) = " + str(len(s)) + "  cap(s) = " + str(cap_s))
+  Const        r30, "len(s) = "
+  Len          r31, r1
+  Str          r32, r31
+  Add          r33, r30, r32
+  Const        r34, "  cap(s) = "
+  Add          r35, r33, r34
+  Str          r36, r2
+  Add          r37, r35, r36
+  Print        r37
+  // s = a[0:5]
+  Const        r13, 0
+  Move         r38, r13
+  Const        r25, 5
+  Move         r39, r25
+  Slice        r40, r0, r38, r39
+  Move         r1, r40
+  SetGlobal    1,1,0,0
+  // print("s = " + listStr(s))
+  Const        r26, "s = "
+  Move         r41, r1
+  Call         r42, listStr, r41
+  Add          r43, r26, r42
+  Print        r43
+  // a[0] = 22
+  Const        r44, 22
+  Const        r13, 0
+  SetIndex     r0, r13, r44
+  SetGlobal    0,0,0,0
+  // s[0] = 22
+  Const        r44, 22
+  Const        r13, 0
+  SetIndex     r1, r13, r44
+  SetGlobal    1,1,0,0
+  // print("a = " + listStr(a))
+  Const        r8, "a = "
+  Move         r45, r0
+  Call         r46, listStr, r45
+  Add          r47, r8, r46
+  Print        r47
+  // print("s = " + listStr(s))
+  Const        r26, "s = "
+  Move         r48, r1
+  Call         r49, listStr, r48
+  Add          r50, r26, r49
+  Print        r50
+  // s = append(s, 4)
+  Const        r23, 4
+  Append       r51, r1, r23
+  Move         r1, r51
+  SetGlobal    1,1,0,0
+  // s = append(s, 5)
+  Const        r25, 5
+  Append       r52, r1, r25
+  Move         r1, r52
+  SetGlobal    1,1,0,0
+  // s = append(s, 6)
+  Const        r53, 6
+  Append       r54, r1, r53
+  Move         r1, r54
+  SetGlobal    1,1,0,0
+  // cap_s = 10
+  Const        r55, 10
+  Move         r2, r55
+  SetGlobal    2,2,0,0
+  // print("s = " + listStr(s))
+  Const        r26, "s = "
+  Move         r56, r1
+  Call         r57, listStr, r56
+  Add          r58, r26, r57
+  Print        r58
+  // print("len(s) = " + str(len(s)) + "  cap(s) = " + str(cap_s))
+  Const        r30, "len(s) = "
+  Len          r59, r1
+  Str          r60, r59
+  Add          r61, r30, r60
+  Const        r34, "  cap(s) = "
+  Add          r62, r61, r34
+  Str          r63, r2
+  Add          r64, r62, r63
+  Print        r64
+  // a[4] = -1
+  Const        r65, 1
+  Const        r66, -1
+  Const        r23, 4
+  SetIndex     r0, r23, r66
+  SetGlobal    0,0,0,0
+  // print("a = " + listStr(a))
+  Const        r8, "a = "
+  Move         r67, r0
+  Call         r68, listStr, r67
+  Add          r69, r8, r68
+  Print        r69
+  // print("s = " + listStr(s))
+  Const        r26, "s = "
+  Move         r70, r1
+  Call         r71, listStr, r70
+  Add          r72, r26, r71
+  Print        r72
+  // s = []
+  Const        r73, []
+  Move         r1, r73
+  SetGlobal    1,1,0,0
+  // for i in 0..8 {
+  Const        r13, 0
+  Const        r74, 8
+  Move         r75, r13
+L1:
+  LessInt      r76, r75, r74
+  JumpIfFalse  r76, L0
+  // s = append(s, 0)
+  Const        r13, 0
+  Append       r77, r1, r13
+  Move         r1, r77
+  SetGlobal    1,1,0,0
+  // for i in 0..8 {
+  Const        r78, 1
+  AddInt       r79, r75, r78
+  Move         r75, r79
+  Jump         L1
+L0:
+  // cap_s = 8
+  Const        r74, 8
+  Move         r2, r74
+  SetGlobal    2,2,0,0
+  // print("s = " + listStr(s))
+  Const        r26, "s = "
+  Move         r80, r1
+  Call         r81, listStr, r80
+  Add          r82, r26, r81
+  Print        r82
+  // print("len(s) = " + str(len(s)) + "  cap(s) = " + str(cap_s))
+  Const        r30, "len(s) = "
+  Len          r83, r1
+  Str          r84, r83
+  Add          r85, r30, r84
+  Const        r34, "  cap(s) = "
+  Add          r86, r85, r34
+  Str          r87, r2
+  Add          r88, r86, r87
+  Print        r88
+  Return       r0
+
+  // fun listStr(xs: list<int>): string {
+func listStr (regs=21)
+  // var s = "["
+  Const        r4, "["
+  Move         r1, r4
+  SetGlobal    1,1,0,0
+  // var i = 0
+  Const        r5, 0
+  Move         r6, r5
+L2:
+  // while i < len(xs) {
+  Len          r7, r3
+  LessInt      r8, r6, r7
+  JumpIfFalse  r8, L0
+  // s = s + str(xs[i])
+  Index        r9, r3, r6
+  Str          r10, r9
+  Add          r11, r1, r10
+  Move         r1, r11
+  SetGlobal    1,1,0,0
+  // if i + 1 < len(xs) { s = s + " " }
+  Const        r12, 1
+  AddInt       r13, r6, r12
+  Len          r14, r3
+  LessInt      r15, r13, r14
+  JumpIfFalse  r15, L1
+  Const        r16, " "
+  Add          r17, r1, r16
+  Move         r1, r17
+  SetGlobal    1,1,0,0
+L1:
+  // i = i + 1
+  Const        r12, 1
+  AddInt       r18, r6, r12
+  Move         r6, r18
+  // while i < len(xs) {
+  Jump         L2
+L0:
+  // s = s + "]"
+  Const        r19, "]"
+  Add          r20, r1, r19
+  Move         r1, r20
+  SetGlobal    1,1,0,0
+  // return s
+  Return       r1

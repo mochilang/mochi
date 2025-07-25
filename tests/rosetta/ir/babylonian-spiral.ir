@@ -1,0 +1,531 @@
+func main (regs=1)
+  Return       r0
+
+  // fun push(h: list<map<string, int>>, it: map<string, int>): list<map<string, int>> {
+func push (regs=23)
+  // h = append(h, it)
+  Append       r2, r0, r1
+  Move         r0, r2
+  // var i = len(h) - 1
+  Len          r3, r0
+  Const        r4, 1
+  SubInt       r5, r3, r4
+  Move         r6, r5
+L2:
+  // while i > 0 && h[i-1]["s"] > h[i]["s"] {
+  Const        r7, 0
+  LessInt      r8, r7, r6
+  Const        r4, 1
+  SubInt       r9, r6, r4
+  Index        r10, r0, r9
+  Const        r11, "s"
+  Index        r12, r10, r11
+  Index        r13, r0, r6
+  Const        r11, "s"
+  Index        r14, r13, r11
+  Less         r15, r14, r12
+  Move         r16, r8
+  JumpIfFalse  r16, L0
+  Move         r16, r15
+L0:
+  JumpIfFalse  r16, L1
+  // let tmp = h[i-1]
+  Const        r4, 1
+  SubInt       r17, r6, r4
+  Index        r18, r0, r17
+  Move         r19, r18
+  // h[i-1] = h[i]
+  Index        r20, r0, r6
+  Const        r4, 1
+  SubInt       r21, r6, r4
+  SetIndex     r0, r21, r20
+  // h[i] = tmp
+  SetIndex     r0, r6, r19
+  // i = i - 1
+  Const        r4, 1
+  SubInt       r22, r6, r4
+  Move         r6, r22
+  // while i > 0 && h[i-1]["s"] > h[i]["s"] {
+  Jump         L2
+L1:
+  // return h
+  Return       r0
+
+  // fun step(h: list<map<string, int>>, nv: int, dir: list<int>): map<string, any> {
+func step (regs=172)
+L2:
+  // while len(h) == 0 || nv * nv <= h[0]["s"] {
+  Len          r3, r0
+  Mul          r4, r1, r1
+  Const        r5, 0
+  Index        r6, r0, r5
+  Const        r7, "s"
+  Index        r8, r6, r7
+  LessEq       r9, r4, r8
+  Const        r5, 0
+  EqualInt     r10, r3, r5
+  Move         r11, r10
+  JumpIfTrue   r11, L0
+  Move         r11, r9
+L0:
+  JumpIfFalse  r11, L1
+  // h = push(h, {"s": nv * nv, "a": nv, "b": 0})
+  Move         r12, r0
+  Const        r7, "s"
+  Mul          r14, r1, r1
+  Const        r15, "a"
+  Const        r16, "b"
+  Const        r5, 0
+  Move         r17, r7
+  Move         r18, r14
+  Move         r19, r15
+  Move         r20, r1
+  Move         r21, r16
+  Move         r22, r5
+  MakeMap      r23, 3, r17
+  Move         r13, r23
+  Call2        r24, push, r12, r13
+  Move         r0, r24
+  // nv = nv + 1
+  Const        r25, 1
+  Add          r26, r1, r25
+  Move         r1, r26
+  // while len(h) == 0 || nv * nv <= h[0]["s"] {
+  Jump         L2
+L1:
+  // let s = h[0]["s"]
+  Const        r5, 0
+  Index        r27, r0, r5
+  Const        r7, "s"
+  Index        r28, r27, r7
+  Move         r29, r28
+  // var v: list<list<int>> = []
+  Const        r30, []
+  Move         r31, r30
+L5:
+  // while len(h) > 0 && h[0]["s"] == s {
+  Len          r32, r0
+  Const        r5, 0
+  LessInt      r33, r5, r32
+  Const        r5, 0
+  Index        r34, r0, r5
+  Const        r7, "s"
+  Index        r35, r34, r7
+  Equal        r36, r35, r29
+  Move         r37, r33
+  JumpIfFalse  r37, L3
+  Move         r37, r36
+L3:
+  JumpIfFalse  r37, L4
+  // let it = h[0]
+  Const        r5, 0
+  Index        r38, r0, r5
+  Move         r39, r38
+  // h = h[1:]
+  Const        r25, 1
+  Move         r40, r25
+  Const        r41, nil
+  Slice        r42, r0, r40, r41
+  Move         r0, r42
+  // v = append(v, [it["a"], it["b"]])
+  Const        r15, "a"
+  Index        r45, r39, r15
+  Move         r43, r45
+  Const        r16, "b"
+  Index        r46, r39, r16
+  Move         r44, r46
+  MakeList     r47, 2, r43
+  Append       r48, r31, r47
+  Move         r31, r48
+  // if it["a"] > it["b"] {
+  Const        r15, "a"
+  Index        r49, r39, r15
+  Const        r16, "b"
+  Index        r50, r39, r16
+  Less         r51, r50, r49
+  JumpIfFalse  r51, L5
+  // h = push(h, {"s": it["a"] * it["a"] + (it["b"] + 1) * (it["b"] + 1), "a": it["a"], "b": it["b"] + 1})
+  Move         r52, r0
+  Const        r7, "s"
+  Const        r15, "a"
+  Index        r54, r39, r15
+  Const        r15, "a"
+  Index        r55, r39, r15
+  Mul          r56, r54, r55
+  Const        r16, "b"
+  Index        r57, r39, r16
+  Const        r25, 1
+  Add          r58, r57, r25
+  Const        r16, "b"
+  Index        r59, r39, r16
+  Const        r25, 1
+  Add          r60, r59, r25
+  Mul          r61, r58, r60
+  Add          r62, r56, r61
+  Const        r15, "a"
+  Const        r15, "a"
+  Index        r63, r39, r15
+  Const        r16, "b"
+  Const        r16, "b"
+  Index        r64, r39, r16
+  Const        r25, 1
+  Add          r65, r64, r25
+  Move         r66, r7
+  Move         r67, r62
+  Move         r68, r15
+  Move         r69, r63
+  Move         r70, r16
+  Move         r71, r65
+  MakeMap      r72, 3, r66
+  Move         r53, r72
+  Call2        r73, push, r52, r53
+  Move         r0, r73
+  // while len(h) > 0 && h[0]["s"] == s {
+  Jump         L5
+L4:
+  // var list: list<list<int>> = []
+  Const        r30, []
+  Move         r74, r30
+  // for p in v { list = append(list, p) }
+  IterPrep     r75, r31
+  Len          r76, r75
+  Const        r77, 0
+L7:
+  LessInt      r78, r77, r76
+  JumpIfFalse  r78, L6
+  Index        r79, r75, r77
+  Move         r80, r79
+  Append       r81, r74, r80
+  Move         r74, r81
+  Const        r82, 1
+  AddInt       r83, r77, r82
+  Move         r77, r83
+  Jump         L7
+L6:
+  // var temp: list<list<int>> = list
+  Move         r84, r74
+  // for p in temp { if p[0] != p[1] { list = append(list, [p[1], p[0]]) } }
+  IterPrep     r85, r84
+  Len          r86, r85
+  Const        r87, 0
+L10:
+  LessInt      r88, r87, r86
+  JumpIfFalse  r88, L8
+  Index        r89, r85, r87
+  Move         r80, r89
+  Const        r5, 0
+  Index        r90, r80, r5
+  Const        r25, 1
+  Index        r91, r80, r25
+  NotEqual     r92, r90, r91
+  JumpIfFalse  r92, L9
+  Const        r25, 1
+  Index        r95, r80, r25
+  Move         r93, r95
+  Const        r5, 0
+  Index        r96, r80, r5
+  Move         r94, r96
+  MakeList     r97, 2, r93
+  Append       r98, r74, r97
+  Move         r74, r98
+L9:
+  Const        r99, 1
+  AddInt       r100, r87, r99
+  Move         r87, r100
+  Jump         L10
+L8:
+  // temp = list
+  Move         r84, r74
+  // for p in temp { if p[1] != 0 { list = append(list, [p[0], -p[1]]) } }
+  IterPrep     r101, r84
+  Len          r102, r101
+  Const        r103, 0
+L13:
+  LessInt      r104, r103, r102
+  JumpIfFalse  r104, L11
+  Index        r105, r101, r103
+  Move         r80, r105
+  Const        r25, 1
+  Index        r106, r80, r25
+  Const        r5, 0
+  NotEqual     r107, r106, r5
+  JumpIfFalse  r107, L12
+  Const        r5, 0
+  Index        r110, r80, r5
+  Move         r108, r110
+  Const        r25, 1
+  Index        r111, r80, r25
+  Neg          r112, r111
+  Move         r109, r112
+  MakeList     r113, 2, r108
+  Append       r114, r74, r113
+  Move         r74, r114
+L12:
+  Const        r115, 1
+  AddInt       r116, r103, r115
+  Move         r103, r116
+  Jump         L13
+L11:
+  // temp = list
+  Move         r84, r74
+  // for p in temp { if p[0] != 0 { list = append(list, [-p[0], p[1]]) } }
+  IterPrep     r117, r84
+  Len          r118, r117
+  Const        r119, 0
+L16:
+  LessInt      r120, r119, r118
+  JumpIfFalse  r120, L14
+  Index        r121, r117, r119
+  Move         r80, r121
+  Const        r5, 0
+  Index        r122, r80, r5
+  Const        r5, 0
+  NotEqual     r123, r122, r5
+  JumpIfFalse  r123, L15
+  Const        r5, 0
+  Index        r126, r80, r5
+  Neg          r127, r126
+  Move         r124, r127
+  Const        r25, 1
+  Index        r128, r80, r25
+  Move         r125, r128
+  MakeList     r129, 2, r124
+  Append       r130, r74, r129
+  Move         r74, r130
+L15:
+  Const        r131, 1
+  AddInt       r132, r119, r131
+  Move         r119, r132
+  Jump         L16
+L14:
+  // var bestDot = -999999999
+  Const        r133, 999999999
+  Const        r134, -999999999
+  Move         r135, r134
+  // var best = dir
+  Move         r136, r2
+  // for p in list {
+  IterPrep     r137, r74
+  Len          r138, r137
+  Const        r139, 0
+L19:
+  LessInt      r140, r139, r138
+  JumpIfFalse  r140, L17
+  Index        r141, r137, r139
+  Move         r80, r141
+  // let cross = p[0] * dir[1] - p[1] * dir[0]
+  Const        r5, 0
+  Index        r142, r80, r5
+  Const        r25, 1
+  Index        r143, r2, r25
+  Mul          r144, r142, r143
+  Const        r25, 1
+  Index        r145, r80, r25
+  Const        r5, 0
+  Index        r146, r2, r5
+  Mul          r147, r145, r146
+  Sub          r148, r144, r147
+  Move         r149, r148
+  // if cross >= 0 {
+  Const        r5, 0
+  LessEq       r150, r5, r149
+  JumpIfFalse  r150, L18
+  // let dot = p[0] * dir[0] + p[1] * dir[1]
+  Const        r5, 0
+  Index        r151, r80, r5
+  Const        r5, 0
+  Index        r152, r2, r5
+  Mul          r153, r151, r152
+  Const        r25, 1
+  Index        r154, r80, r25
+  Const        r25, 1
+  Index        r155, r2, r25
+  Mul          r156, r154, r155
+  Add          r157, r153, r156
+  Move         r158, r157
+  // if dot > bestDot {
+  Less         r159, r135, r158
+  JumpIfFalse  r159, L18
+  // bestDot = dot
+  Move         r135, r158
+  // best = p
+  Move         r136, r80
+L18:
+  // for p in list {
+  Const        r160, 1
+  AddInt       r161, r139, r160
+  Move         r139, r161
+  Jump         L19
+L17:
+  // return {"d": best, "heap": h, "n": nv}
+  Const        r162, "d"
+  Const        r163, "heap"
+  Const        r164, "n"
+  Move         r165, r162
+  Move         r166, r136
+  Move         r167, r163
+  Move         r168, r0
+  Move         r169, r164
+  Move         r170, r1
+  MakeMap      r171, 3, r165
+  Return       r171
+
+  // fun positions(n: int): list<list<int>> {
+func positions (regs=36)
+  // var pos: list<list<int>> = []
+  Const        r1, []
+  Move         r2, r1
+  // var x = 0
+  Const        r3, 0
+  Move         r4, r3
+  // var y = 0
+  Const        r3, 0
+  Move         r5, r3
+  // var dir: list<int> = [0, 1]
+  Const        r6, [0, 1]
+  Move         r7, r6
+  // var heap: list<map<string, int>> = []
+  Const        r1, []
+  Move         r8, r1
+  // var nv = 1
+  Const        r9, 1
+  Move         r10, r9
+  // var i = 0
+  Const        r3, 0
+  Move         r11, r3
+L1:
+  // while i < n {
+  Less         r12, r11, r0
+  JumpIfFalse  r12, L0
+  // pos = append(pos, [x, y])
+  Move         r13, r4
+  Move         r14, r5
+  MakeList     r15, 2, r13
+  Append       r16, r2, r15
+  Move         r2, r16
+  // let st = step(heap, nv, dir)
+  Move         r17, r8
+  Move         r18, r10
+  Move         r19, r7
+  Call         r20, step, r17, r18, r19
+  Move         r21, r20
+  // dir = st["d"] as list<int>
+  Const        r22, "d"
+  Index        r23, r21, r22
+  Cast         r24, r23, [int]
+  Move         r7, r24
+  // heap = st["heap"] as list<map<string, int>>
+  Const        r25, "heap"
+  Index        r26, r21, r25
+  Cast         r27, r26, [{string: int}]
+  Move         r8, r27
+  // nv = st["n"] as int
+  Const        r28, "n"
+  Index        r29, r21, r28
+  Cast         r30, r29, int
+  Move         r10, r30
+  // x = x + dir[0]
+  Const        r3, 0
+  Index        r31, r7, r3
+  Add          r32, r4, r31
+  Move         r4, r32
+  // y = y + dir[1]
+  Const        r9, 1
+  Index        r33, r7, r9
+  Add          r34, r5, r33
+  Move         r5, r34
+  // i = i + 1
+  Const        r9, 1
+  AddInt       r35, r11, r9
+  Move         r11, r35
+  // while i < n {
+  Jump         L1
+L0:
+  // return pos
+  Return       r2
+
+  // fun pad(s: string, w: int): string {
+func pad (regs=7)
+  // var r = s
+  Move         r2, r0
+L1:
+  // while len(r) < w { r = r + " " }
+  Len          r3, r2
+  Less         r4, r3, r1
+  JumpIfFalse  r4, L0
+  Const        r5, " "
+  Add          r6, r2, r5
+  Move         r2, r6
+  Jump         L1
+L0:
+  // return r
+  Return       r2
+
+  // fun main() {
+func main (regs=35)
+  // let pts = positions(40)
+  Const        r1, 40
+  Move         r0, r1
+  Call         r2, positions, r0
+  Move         r3, r2
+  // print("The first 40 Babylonian spiral points are:")
+  Const        r4, "The first 40 Babylonian spiral points are:"
+  Print        r4
+  // var line = ""
+  Const        r5, ""
+  Move         r6, r5
+  // var i = 0
+  Const        r7, 0
+  Move         r8, r7
+L2:
+  // while i < len(pts) {
+  Len          r9, r3
+  LessInt      r10, r8, r9
+  JumpIfFalse  r10, L0
+  // let p = pts[i]
+  Index        r11, r3, r8
+  Move         r12, r11
+  // let s = pad("(" + str(p[0]) + ", " + str(p[1]) + ")", 10)
+  Const        r15, "("
+  Const        r7, 0
+  Index        r16, r12, r7
+  Str          r17, r16
+  Add          r18, r15, r17
+  Const        r19, ", "
+  Add          r20, r18, r19
+  Const        r21, 1
+  Index        r22, r12, r21
+  Str          r23, r22
+  Add          r24, r20, r23
+  Const        r25, ")"
+  Add          r26, r24, r25
+  Move         r13, r26
+  Const        r27, 10
+  Move         r14, r27
+  Call2        r28, pad, r13, r14
+  Move         r29, r28
+  // line = line + s
+  Add          r30, r6, r29
+  Move         r6, r30
+  // if (i + 1) % 10 == 0 {
+  Const        r21, 1
+  AddInt       r31, r8, r21
+  Const        r27, 10
+  ModInt       r32, r31, r27
+  Const        r7, 0
+  EqualInt     r33, r32, r7
+  JumpIfFalse  r33, L1
+  // print(line)
+  Print        r6
+  // line = ""
+  Const        r5, ""
+  Move         r6, r5
+L1:
+  // i = i + 1
+  Const        r21, 1
+  AddInt       r34, r8, r21
+  Move         r8, r34
+  // while i < len(pts) {
+  Jump         L2
+L0:
+  Return       r0

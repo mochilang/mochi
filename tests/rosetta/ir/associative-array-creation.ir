@@ -1,0 +1,78 @@
+func main (regs=1)
+  Return       r0
+
+  // fun removeKey(m: map<string, int>, k: string): map<string, int> {
+func removeKey (regs=14)
+  // var out: map<string, int> = {}
+  Const        r2, {}
+  Move         r3, r2
+  // for key in m {
+  IterPrep     r4, r0
+  Len          r5, r4
+  Const        r6, 0
+L2:
+  LessInt      r7, r6, r5
+  JumpIfFalse  r7, L0
+  Index        r8, r4, r6
+  Move         r9, r8
+  // if key != k {
+  NotEqual     r10, r9, r1
+  JumpIfFalse  r10, L1
+  // out[key] = m[key]
+  Index        r11, r0, r9
+  SetIndex     r3, r9, r11
+L1:
+  // for key in m {
+  Const        r12, 1
+  AddInt       r13, r6, r12
+  Move         r6, r13
+  Jump         L2
+L0:
+  // return out
+  Return       r3
+
+  // fun main() {
+func main (regs=21)
+  // var x: map<string, int> = null
+  Const        r0, nil
+  Move         r1, r0
+  // x = {}
+  Const        r2, {}
+  Move         r1, r2
+  // x["foo"] = 3
+  Const        r3, 3
+  Const        r4, "foo"
+  SetIndex     r1, r4, r3
+  // let y1 = x["bar"]
+  Const        r5, "bar"
+  Index        r6, r1, r5
+  Move         r7, r6
+  // let ok = "bar" in x
+  Const        r5, "bar"
+  In           r8, r5, r1
+  Move         r9, r8
+  // print(y1)
+  Print        r7
+  // print(ok)
+  Print        r9
+  // x = removeKey(x, "foo")
+  Move         r10, r1
+  Const        r4, "foo"
+  Move         r11, r4
+  Call2        r12, removeKey, r10, r11
+  Move         r1, r12
+  // x = {"foo": 2, "bar": 42, "baz": -1}
+  Const        r13, {"bar": 42, "baz": -1, "foo": 2}
+  Move         r1, r13
+  // print(x["foo"], x["bar"], x["baz"])
+  Const        r4, "foo"
+  Index        r17, r1, r4
+  Move         r14, r17
+  Const        r5, "bar"
+  Index        r18, r1, r5
+  Move         r15, r18
+  Const        r19, "baz"
+  Index        r20, r1, r19
+  Move         r16, r20
+  PrintN       r14, 3, r14
+  Return       r0

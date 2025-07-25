@@ -1,0 +1,188 @@
+func main (regs=1)
+  Return       r0
+
+  // fun poolPut(p: list<int>, x: int): list<int> {
+func poolPut (regs=3)
+  // return append(p, x)
+  Append       r2, r0, r1
+  Return       r2
+
+  // fun poolGet(p: list<int>): map<string, any> {
+func poolGet (regs=26)
+  // if len(p) == 0 {
+  Len          r1, r0
+  Const        r2, 0
+  EqualInt     r3, r1, r2
+  JumpIfFalse  r3, L0
+  // print("pool empty")
+  Const        r4, "pool empty"
+  Print        r4
+  // return {"pool": p, "val": 0}
+  Const        r5, "pool"
+  Const        r6, "val"
+  Const        r2, 0
+  Move         r7, r5
+  Move         r8, r0
+  Move         r9, r6
+  Move         r10, r2
+  MakeMap      r11, 2, r7
+  Return       r11
+L0:
+  // let idx = len(p) - 1
+  Len          r12, r0
+  Const        r13, 1
+  SubInt       r14, r12, r13
+  Move         r15, r14
+  // let v = p[idx]
+  Index        r16, r0, r15
+  Move         r17, r16
+  // p = p[0:idx]
+  Const        r2, 0
+  Move         r18, r2
+  Move         r19, r15
+  Slice        r20, r0, r18, r19
+  Move         r0, r20
+  // return {"pool": p, "val": v}
+  Const        r5, "pool"
+  Const        r6, "val"
+  Move         r21, r5
+  Move         r22, r0
+  Move         r23, r6
+  Move         r24, r17
+  MakeMap      r25, 2, r21
+  Return       r25
+
+  // fun clearPool(p: list<int>): list<int> {
+func clearPool (regs=2)
+  // return []
+  Const        r1, []
+  Return       r1
+
+  // fun main() {
+func main (regs=61)
+  // var pool: list<int> = []
+  Const        r0, []
+  Move         r1, r0
+  // var i = 1
+  Const        r2, 1
+  Move         r3, r2
+  // var j = 2
+  Const        r4, 2
+  Move         r5, r4
+  // print(str(i + j))
+  AddInt       r6, r3, r5
+  Str          r7, r6
+  Print        r7
+  // pool = poolPut(pool, i)
+  Move         r8, r1
+  Move         r9, r3
+  Call2        r10, poolPut, r8, r9
+  Move         r1, r10
+  // pool = poolPut(pool, j)
+  Move         r11, r1
+  Move         r12, r5
+  Call2        r13, poolPut, r11, r12
+  Move         r1, r13
+  // i = 0
+  Const        r14, 0
+  Move         r3, r14
+  // j = 0
+  Const        r14, 0
+  Move         r5, r14
+  // let res1 = poolGet(pool)
+  Move         r15, r1
+  Call         r16, poolGet, r15
+  Move         r17, r16
+  // pool = res1["pool"] as list<int>
+  Const        r18, "pool"
+  Index        r19, r17, r18
+  Cast         r20, r19, [int]
+  Move         r1, r20
+  // i = res1["val"] as int
+  Const        r21, "val"
+  Index        r22, r17, r21
+  Cast         r23, r22, int
+  Move         r3, r23
+  // let res2 = poolGet(pool)
+  Move         r24, r1
+  Call         r25, poolGet, r24
+  Move         r26, r25
+  // pool = res2["pool"] as list<int>
+  Const        r18, "pool"
+  Index        r27, r26, r18
+  Cast         r28, r27, [int]
+  Move         r1, r28
+  // j = res2["val"] as int
+  Const        r21, "val"
+  Index        r29, r26, r21
+  Cast         r30, r29, int
+  Move         r5, r30
+  // i = 4
+  Const        r31, 4
+  Move         r3, r31
+  // j = 5
+  Const        r32, 5
+  Move         r5, r32
+  // print(str(i + j))
+  AddInt       r33, r3, r5
+  Str          r34, r33
+  Print        r34
+  // pool = poolPut(pool, i)
+  Move         r35, r1
+  Move         r36, r3
+  Call2        r37, poolPut, r35, r36
+  Move         r1, r37
+  // pool = poolPut(pool, j)
+  Move         r38, r1
+  Move         r39, r5
+  Call2        r40, poolPut, r38, r39
+  Move         r1, r40
+  // i = 0
+  Const        r14, 0
+  Move         r3, r14
+  // j = 0
+  Const        r14, 0
+  Move         r5, r14
+  // pool = clearPool(pool)
+  Move         r41, r1
+  Call         r42, clearPool, r41
+  Move         r1, r42
+  // let res3 = poolGet(pool)
+  Move         r43, r1
+  Call         r44, poolGet, r43
+  Move         r45, r44
+  // pool = res3["pool"] as list<int>
+  Const        r18, "pool"
+  Index        r46, r45, r18
+  Cast         r47, r46, [int]
+  Move         r1, r47
+  // i = res3["val"] as int
+  Const        r21, "val"
+  Index        r48, r45, r21
+  Cast         r49, r48, int
+  Move         r3, r49
+  // let res4 = poolGet(pool)
+  Move         r50, r1
+  Call         r51, poolGet, r50
+  Move         r52, r51
+  // pool = res4["pool"] as list<int>
+  Const        r18, "pool"
+  Index        r53, r52, r18
+  Cast         r54, r53, [int]
+  Move         r1, r54
+  // j = res4["val"] as int
+  Const        r21, "val"
+  Index        r55, r52, r21
+  Cast         r56, r55, int
+  Move         r5, r56
+  // i = 7
+  Const        r57, 7
+  Move         r3, r57
+  // j = 8
+  Const        r58, 8
+  Move         r5, r58
+  // print(str(i + j))
+  AddInt       r59, r3, r5
+  Str          r60, r59
+  Print        r60
+  Return       r0

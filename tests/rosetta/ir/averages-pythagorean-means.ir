@@ -1,0 +1,154 @@
+func main (regs=1)
+  Return       r0
+
+  // fun powf(base: float, exp: int): float {
+func powf (regs=10)
+  // var result = 1.0
+  Const        r2, 1.0
+  Move         r3, r2
+  // var i = 0
+  Const        r4, 0
+  Move         r5, r4
+L1:
+  // while i < exp {
+  Less         r6, r5, r1
+  JumpIfFalse  r6, L0
+  // result = result * base
+  MulFloat     r7, r3, r0
+  Move         r3, r7
+  // i = i + 1
+  Const        r8, 1
+  AddInt       r9, r5, r8
+  Move         r5, r9
+  // while i < exp {
+  Jump         L1
+L0:
+  // return result
+  Return       r3
+
+  // fun nthRoot(x: float, n: int): float {
+func nthRoot (regs=19)
+  // var low = 0.0
+  Const        r2, 0.0
+  Move         r3, r2
+  // var high = x
+  Move         r4, r0
+  // var i = 0
+  Const        r5, 0
+  Move         r6, r5
+L3:
+  // while i < 60 {
+  Const        r7, 60
+  LessInt      r8, r6, r7
+  JumpIfFalse  r8, L0
+  // let mid = (low + high) / 2.0
+  AddFloat     r9, r3, r4
+  Const        r10, 2.0
+  DivFloat     r11, r9, r10
+  Move         r12, r11
+  // if powf(mid, n) > x {
+  Move         r13, r12
+  Move         r14, r1
+  Call2        r15, powf, r13, r14
+  Less         r16, r0, r15
+  JumpIfFalse  r16, L1
+  // high = mid
+  Move         r4, r12
+  // if powf(mid, n) > x {
+  Jump         L2
+L1:
+  // low = mid
+  Move         r3, r12
+L2:
+  // i = i + 1
+  Const        r17, 1
+  AddInt       r18, r6, r17
+  Move         r6, r18
+  // while i < 60 {
+  Jump         L3
+L0:
+  // return low
+  Return       r3
+
+  // fun main() {
+func main (regs=43)
+  // var sum = 0.0
+  Const        r0, 0.0
+  Move         r1, r0
+  // var sumRecip = 0.0
+  Const        r0, 0.0
+  Move         r2, r0
+  // var prod = 1.0
+  Const        r3, 1.0
+  Move         r4, r3
+  // var n = 1
+  Const        r5, 1
+  Move         r6, r5
+L1:
+  // while n <= 10 {
+  Const        r7, 10
+  LessEqInt    r8, r6, r7
+  JumpIfFalse  r8, L0
+  // let f = n as float
+  Cast         r9, r6, float
+  Move         r10, r9
+  // sum = sum + f
+  AddFloat     r11, r1, r10
+  Move         r1, r11
+  // sumRecip = sumRecip + 1.0 / f
+  Const        r3, 1.0
+  DivFloat     r12, r3, r10
+  AddFloat     r13, r2, r12
+  Move         r2, r13
+  // prod = prod * f
+  MulFloat     r14, r4, r10
+  Move         r4, r14
+  // n = n + 1
+  Const        r5, 1
+  AddInt       r15, r6, r5
+  Move         r6, r15
+  // while n <= 10 {
+  Jump         L1
+L0:
+  // let count = 10.0
+  Const        r16, 10.0
+  Move         r17, r16
+  // let a = sum / count
+  Const        r16, 10.0
+  DivFloat     r18, r1, r16
+  Move         r19, r18
+  // let g = nthRoot(prod, 10)
+  Move         r20, r4
+  Const        r7, 10
+  Move         r21, r7
+  Call2        r22, nthRoot, r20, r21
+  Move         r23, r22
+  // let h = count / sumRecip
+  Const        r16, 10.0
+  DivFloat     r24, r16, r2
+  Move         r25, r24
+  // print("A: " + str(a) + " G: " + str(g) + " H: " + str(h))
+  Const        r26, "A: "
+  Str          r27, r19
+  Add          r28, r26, r27
+  Const        r29, " G: "
+  Add          r30, r28, r29
+  Str          r31, r23
+  Add          r32, r30, r31
+  Const        r33, " H: "
+  Add          r34, r32, r33
+  Str          r35, r25
+  Add          r36, r34, r35
+  Print        r36
+  // print("A >= G >= H: " + str(a >= g && g >= h))
+  Const        r37, "A >= G >= H: "
+  LessEqFloat  r38, r23, r19
+  LessEqFloat  r39, r25, r23
+  Move         r40, r38
+  JumpIfFalse  r40, L2
+  Move         r40, r39
+L2:
+  Str          r41, r40
+  Add          r42, r37, r41
+  Print        r42
+  Return       r0

@@ -1,0 +1,67 @@
+func main (regs=1)
+  Return       r0
+
+  // fun main() {
+func main (regs=36)
+  // let a = 12
+  Const        r0, 12
+  Move         r1, r0
+  // let b = 8
+  Const        r2, 8
+  Move         r3, r2
+  // print(str(a) + " + " + str(b) + " = " + str(a + b))
+  Const        r4, "12"
+  Const        r5, " + "
+  Add          r6, r4, r5
+  Const        r7, "8"
+  Add          r8, r6, r7
+  Const        r9, " = "
+  Add          r10, r8, r9
+  Const        r11, "20"
+  Add          r12, r10, r11
+  Print        r12
+  // print(str(a) + " - " + str(b) + " = " + str(a - b))
+  Const        r4, "12"
+  Const        r13, " - "
+  Add          r14, r4, r13
+  Const        r7, "8"
+  Add          r15, r14, r7
+  Const        r9, " = "
+  Add          r16, r15, r9
+  Const        r17, "4"
+  Add          r18, r16, r17
+  Print        r18
+  // print(str(a) + " * " + str(b) + " = " + str(a * b))
+  Const        r4, "12"
+  Const        r19, " * "
+  Add          r20, r4, r19
+  Const        r7, "8"
+  Add          r21, r20, r7
+  Const        r9, " = "
+  Add          r22, r21, r9
+  Const        r23, "96"
+  Add          r24, r22, r23
+  Print        r24
+  // print(str(a) + " / " + str(b) + " = " + str((a / b) as int))
+  Const        r4, "12"
+  Const        r25, " / "
+  Add          r26, r4, r25
+  Const        r7, "8"
+  Add          r27, r26, r7
+  Const        r9, " = "
+  Add          r28, r27, r9
+  Const        r29, "1"
+  Add          r30, r28, r29
+  Print        r30
+  // print(str(a) + " % " + str(b) + " = " + str(a % b))
+  Const        r4, "12"
+  Const        r31, " % "
+  Add          r32, r4, r31
+  Const        r7, "8"
+  Add          r33, r32, r7
+  Const        r9, " = "
+  Add          r34, r33, r9
+  Const        r17, "4"
+  Add          r35, r34, r17
+  Print        r35
+  Return       r0

@@ -40,9 +40,9 @@ L1:
   Return       r6
 
   // fun main() {
-func main (regs=21)
-  // for n in [0, 1, 2, 3, 4, 5, 10, 40, -1] {
-  Const        r0, [0, 1, 2, 3, 4, 5, 10, 40, -1]
+func main (regs=24)
+  // for i in [-1,0,1,2,3,4,5,6,7,8,9,10] {
+  Const        r0, [-1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
   IterPrep     r1, r0
   Len          r2, r1
   Const        r3, 0
@@ -51,32 +51,36 @@ L3:
   JumpIfFalse  r4, L0
   Index        r5, r1, r3
   Move         r6, r5
-  // if n < 0 {
+  // if i < 0 {
   Const        r7, 0
   Less         r8, r6, r7
   JumpIfFalse  r8, L1
-  // print("fib undefined for negative numbers")
-  Const        r9, "fib undefined for negative numbers"
-  Print        r9
-  // if n < 0 {
+  // print("fib(" + str(i) + ") returned error: negative n is forbidden")
+  Const        r9, "fib("
+  Str          r10, r6
+  Add          r11, r9, r10
+  Const        r12, ") returned error: negative n is forbidden"
+  Add          r13, r11, r12
+  Print        r13
+  // if i < 0 {
   Jump         L2
 L1:
-  // print("fib " + str(n) + " = " + str(fib(n)))
-  Const        r10, "fib "
-  Str          r11, r6
-  Add          r12, r10, r11
-  Const        r13, " = "
-  Add          r14, r12, r13
-  Move         r15, r6
-  Call         r16, fib, r15
-  Str          r17, r16
-  Add          r18, r14, r17
-  Print        r18
+  // print("fib(" + str(i) + ") = " + str(fib(i)))
+  Const        r9, "fib("
+  Str          r14, r6
+  Add          r15, r9, r14
+  Const        r16, ") = "
+  Add          r17, r15, r16
+  Move         r18, r6
+  Call         r19, fib, r18
+  Str          r20, r19
+  Add          r21, r17, r20
+  Print        r21
 L2:
-  // for n in [0, 1, 2, 3, 4, 5, 10, 40, -1] {
-  Const        r19, 1
-  AddInt       r20, r3, r19
-  Move         r3, r20
+  // for i in [-1,0,1,2,3,4,5,6,7,8,9,10] {
+  Const        r22, 1
+  AddInt       r23, r3, r22
+  Move         r3, r23
   Jump         L3
 L0:
   Return       r0

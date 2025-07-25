@@ -1,0 +1,72 @@
+func main (regs=18)
+  // let n = 10
+  Const        r4, 10
+  Move         r0, r4
+  SetGlobal    0,0,0,0
+  // var sum = 0.0
+  Const        r5, 0.0
+  Move         r1, r5
+  SetGlobal    1,1,0,0
+  // var x = 1
+  Const        r6, 1
+  Move         r2, r6
+  SetGlobal    2,2,0,0
+L1:
+  // while x <= n {
+  Const        r4, 10
+  LessEqInt    r7, r2, r4
+  JumpIfFalse  r7, L0
+  // sum = sum + (x as float) * (x as float)
+  Cast         r8, r2, float
+  Cast         r9, r2, float
+  Mul          r10, r8, r9
+  AddFloat     r11, r1, r10
+  Move         r1, r11
+  SetGlobal    1,1,0,0
+  // x = x + 1
+  Const        r6, 1
+  AddInt       r12, r2, r6
+  Move         r2, r12
+  SetGlobal    2,2,0,0
+  // while x <= n {
+  Jump         L1
+L0:
+  // let rms = sqrtApprox(sum / (n as float))
+  Const        r14, 10.0
+  DivFloat     r15, r1, r14
+  Move         r13, r15
+  Call         r16, sqrtApprox, r13
+  Move         r3, r16
+  SetGlobal    3,3,0,0
+  // print(str(rms))
+  Str          r17, r3
+  Print        r17
+  Return       r0
+
+  // fun sqrtApprox(x: float): float {
+func sqrtApprox (regs=16)
+  // var guess = x
+  Move         r5, r4
+  // var i = 0
+  Const        r6, 0
+  Move         r7, r6
+L1:
+  // while i < 20 {
+  Const        r8, 20
+  LessInt      r9, r7, r8
+  JumpIfFalse  r9, L0
+  // guess = (guess + x / guess) / 2.0
+  Div          r10, r4, r5
+  Add          r11, r5, r10
+  Const        r12, 2.0
+  DivFloat     r13, r11, r12
+  Move         r5, r13
+  // i = i + 1
+  Const        r14, 1
+  AddInt       r15, r7, r14
+  Move         r7, r15
+  // while i < 20 {
+  Jump         L1
+L0:
+  // return guess
+  Return       r5

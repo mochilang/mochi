@@ -1,0 +1,349 @@
+func main (regs=1)
+  Return       r0
+
+  // fun primeFactors(n: int): list<int> {
+func primeFactors (regs=24)
+  // var factors: list<int> = []
+  Const        r1, []
+  Move         r2, r1
+  // var x = n
+  Move         r3, r0
+L1:
+  // while x % 2 == 0 {
+  Const        r4, 2
+  Mod          r5, r3, r4
+  Const        r6, 0
+  Equal        r7, r5, r6
+  JumpIfFalse  r7, L0
+  // factors = append(factors, 2)
+  Const        r4, 2
+  Append       r8, r2, r4
+  Move         r2, r8
+  // x = (x / 2) as int
+  Const        r4, 2
+  Div          r9, r3, r4
+  Cast         r10, r9, int
+  Move         r3, r10
+  // while x % 2 == 0 {
+  Jump         L1
+L0:
+  // var p = 3
+  Const        r11, 3
+  Move         r12, r11
+L5:
+  // while p * p <= x {
+  MulInt       r13, r12, r12
+  LessEq       r14, r13, r3
+  JumpIfFalse  r14, L2
+L4:
+  // while x % p == 0 {
+  Mod          r15, r3, r12
+  Const        r6, 0
+  Equal        r16, r15, r6
+  JumpIfFalse  r16, L3
+  // factors = append(factors, p)
+  Append       r17, r2, r12
+  Move         r2, r17
+  // x = (x / p) as int
+  Div          r18, r3, r12
+  Cast         r19, r18, int
+  Move         r3, r19
+  // while x % p == 0 {
+  Jump         L4
+L3:
+  // p = p + 2
+  Const        r4, 2
+  AddInt       r20, r12, r4
+  Move         r12, r20
+  // while p * p <= x {
+  Jump         L5
+L2:
+  // if x > 1 {
+  Const        r21, 1
+  Less         r22, r21, r3
+  JumpIfFalse  r22, L6
+  // factors = append(factors, x)
+  Append       r23, r2, r3
+  Move         r2, r23
+L6:
+  // return factors
+  Return       r2
+
+  // fun repeat(ch: string, n: int): string {
+func repeat (regs=10)
+  // var s = ""
+  Const        r2, ""
+  Move         r3, r2
+  // var i = 0
+  Const        r4, 0
+  Move         r5, r4
+L1:
+  // while i < n {
+  Less         r6, r5, r1
+  JumpIfFalse  r6, L0
+  // s = s + ch
+  Add          r7, r3, r0
+  Move         r3, r7
+  // i = i + 1
+  Const        r8, 1
+  AddInt       r9, r5, r8
+  Move         r5, r9
+  // while i < n {
+  Jump         L1
+L0:
+  // return s
+  Return       r3
+
+  // fun D(n: float): float {
+func D (regs=49)
+  // if n < 0.0 {
+  Const        r1, 0.0
+  LessFloat    r2, r0, r1
+  JumpIfFalse  r2, L0
+  // return -D(-n)
+  Neg          r4, r0
+  Move         r3, r4
+  Call         r5, D, r3
+  Neg          r6, r5
+  Return       r6
+L0:
+  // if n < 2.0 {
+  Const        r7, 2.0
+  LessFloat    r8, r0, r7
+  JumpIfFalse  r8, L1
+  // return 0.0
+  Const        r1, 0.0
+  Return       r1
+L1:
+  // var factors: list<int> = []
+  Const        r9, []
+  Move         r10, r9
+  // if n < 10000000000000000000.0 {
+  Const        r11, 10000000000000000000.0
+  LessFloat    r12, r0, r11
+  JumpIfFalse  r12, L2
+  // factors = primeFactors((n) as int)
+  Cast         r14, r0, int
+  Move         r13, r14
+  Call         r15, primeFactors, r13
+  Move         r10, r15
+  // if n < 10000000000000000000.0 {
+  Jump         L3
+L2:
+  // let g = (n / 100.0) as int
+  Const        r16, 100.0
+  DivFloat     r17, r0, r16
+  Cast         r18, r17, int
+  Move         r19, r18
+  // factors = primeFactors(g)
+  Move         r20, r19
+  Call         r21, primeFactors, r20
+  Move         r10, r21
+  // factors = append(factors, 2)
+  Const        r22, 2
+  Append       r23, r10, r22
+  Move         r10, r23
+  // factors = append(factors, 2)
+  Const        r22, 2
+  Append       r24, r10, r22
+  Move         r10, r24
+  // factors = append(factors, 5)
+  Const        r25, 5
+  Append       r26, r10, r25
+  Move         r10, r26
+  // factors = append(factors, 5)
+  Const        r25, 5
+  Append       r27, r10, r25
+  Move         r10, r27
+L3:
+  // let c = len(factors)
+  Len          r28, r10
+  Move         r29, r28
+  // if c == 1 {
+  Const        r30, 1
+  EqualInt     r31, r29, r30
+  JumpIfFalse  r31, L4
+  // return 1.0
+  Const        r32, 1.0
+  Return       r32
+L4:
+  // if c == 2 {
+  Const        r22, 2
+  EqualInt     r33, r29, r22
+  JumpIfFalse  r33, L5
+  // return (factors[0] + factors[1]) as float
+  Const        r34, 0
+  Index        r35, r10, r34
+  Const        r30, 1
+  Index        r36, r10, r30
+  Add          r37, r35, r36
+  Cast         r38, r37, float
+  Return       r38
+L5:
+  // let d = n / (factors[0] as float)
+  Const        r34, 0
+  Index        r39, r10, r34
+  Cast         r40, r39, float
+  Div          r41, r0, r40
+  Move         r42, r41
+  // return D(d) * (factors[0] as float) + d
+  Move         r43, r42
+  Call         r44, D, r43
+  Const        r34, 0
+  Index        r45, r10, r34
+  Cast         r46, r45, float
+  Mul          r47, r44, r46
+  Add          r48, r47, r42
+  Return       r48
+
+  // fun pad(n: int): string {
+func pad (regs=8)
+  // var s = str(n)
+  Str          r1, r0
+  Move         r2, r1
+L1:
+  // while len(s) < 4 {
+  Len          r3, r2
+  Const        r4, 4
+  LessInt      r5, r3, r4
+  JumpIfFalse  r5, L0
+  // s = " " + s
+  Const        r6, " "
+  Add          r7, r6, r2
+  Move         r2, r7
+  // while len(s) < 4 {
+  Jump         L1
+L0:
+  // return s
+  Return       r2
+
+  // fun main() {
+func main (regs=61)
+  // var vals: list<int> = []
+  Const        r0, []
+  Move         r1, r0
+  // var n = -99
+  Const        r2, 99
+  Const        r3, -99
+  Move         r4, r3
+L1:
+  // while n < 101 {
+  Const        r5, 101
+  LessInt      r6, r4, r5
+  JumpIfFalse  r6, L0
+  // vals = append(vals, (D(n as float)) as int)
+  Cast         r8, r4, float
+  Move         r7, r8
+  Call         r9, D, r7
+  Cast         r10, r9, int
+  Append       r11, r1, r10
+  Move         r1, r11
+  // n = n + 1
+  Const        r12, 1
+  AddInt       r13, r4, r12
+  Move         r4, r13
+  // while n < 101 {
+  Jump         L1
+L0:
+  // var i = 0
+  Const        r14, 0
+  Move         r15, r14
+L6:
+  // while i < len(vals) {
+  Len          r16, r1
+  LessInt      r17, r15, r16
+  JumpIfFalse  r17, L2
+  // var line = ""
+  Const        r18, ""
+  Move         r19, r18
+  // var j = 0
+  Const        r14, 0
+  Move         r20, r14
+L5:
+  // while j < 10 {
+  Const        r21, 10
+  LessInt      r22, r20, r21
+  JumpIfFalse  r22, L3
+  // line = line + pad(vals[i+j])
+  AddInt       r24, r15, r20
+  Index        r25, r1, r24
+  Move         r23, r25
+  Call         r26, pad, r23
+  Add          r27, r19, r26
+  Move         r19, r27
+  // if j < 9 { line = line + " " }
+  Const        r28, 9
+  LessInt      r29, r20, r28
+  JumpIfFalse  r29, L4
+  Const        r30, " "
+  Add          r31, r19, r30
+  Move         r19, r31
+L4:
+  // j = j + 1
+  Const        r12, 1
+  AddInt       r32, r20, r12
+  Move         r20, r32
+  // while j < 10 {
+  Jump         L5
+L3:
+  // print(line)
+  Print        r19
+  // i = i + 10
+  Const        r21, 10
+  AddInt       r33, r15, r21
+  Move         r15, r33
+  // while i < len(vals) {
+  Jump         L6
+L2:
+  // var pow = 1.0
+  Const        r34, 1.0
+  Move         r35, r34
+  // var m = 1
+  Const        r12, 1
+  Move         r36, r12
+L9:
+  // while m < 21 {
+  Const        r37, 21
+  LessInt      r38, r36, r37
+  JumpIfFalse  r38, L7
+  // pow = pow * 10.0
+  Const        r39, 10.0
+  MulFloat     r40, r35, r39
+  Move         r35, r40
+  // var exp = str(m)
+  Str          r41, r36
+  Move         r42, r41
+  // if len(exp) < 2 { exp = exp + " " }
+  Len          r43, r42
+  Const        r44, 2
+  LessInt      r45, r43, r44
+  JumpIfFalse  r45, L8
+  Const        r30, " "
+  Add          r46, r42, r30
+  Move         r42, r46
+L8:
+  // var res = str(m) + repeat("0", m - 1)
+  Str          r47, r36
+  Const        r50, "0"
+  Move         r48, r50
+  Const        r12, 1
+  SubInt       r51, r36, r12
+  Move         r49, r51
+  Call2        r52, repeat, r48, r49
+  Add          r53, r47, r52
+  Move         r54, r53
+  // print("D(10^" + exp + ") / 7 = " + res)
+  Const        r55, "D(10^"
+  Add          r56, r55, r42
+  Const        r57, ") / 7 = "
+  Add          r58, r56, r57
+  Add          r59, r58, r54
+  Print        r59
+  // m = m + 1
+  Const        r12, 1
+  AddInt       r60, r36, r12
+  Move         r36, r60
+  // while m < 21 {
+  Jump         L9
+L7:
+  Return       r0

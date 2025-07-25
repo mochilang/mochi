@@ -1,0 +1,167 @@
+func main (regs=1)
+  Return       r0
+
+  // fun abs(x: float): float {
+func abs (regs=4)
+  // if x < 0.0 { return -x }
+  Const        r1, 0.0
+  LessFloat    r2, r0, r1
+  JumpIfFalse  r2, L0
+  Neg          r3, r0
+  Return       r3
+L0:
+  // return x
+  Return       r0
+
+  // fun maxf(a: float, b: float): float {
+func maxf (regs=3)
+  // if a > b { return a }
+  Less         r2, r1, r0
+  JumpIfFalse  r2, L0
+  Return       r0
+L0:
+  // return b
+  Return       r1
+
+  // fun isClose(a: float, b: float): bool {
+func isClose (regs=18)
+  // let relTol = 0.000000001
+  Const        r2, 0.000000001
+  Move         r3, r2
+  // let t = abs(a - b)
+  Sub          r5, r0, r1
+  Move         r4, r5
+  Call         r6, abs, r4
+  Move         r7, r6
+  // let u = relTol * maxf(abs(a), abs(b))
+  Const        r2, 0.000000001
+  Move         r10, r0
+  Call         r11, abs, r10
+  Move         r8, r11
+  Move         r12, r1
+  Call         r13, abs, r12
+  Move         r9, r13
+  Call2        r14, maxf, r8, r9
+  MulFloat     r15, r2, r14
+  Move         r16, r15
+  // return t <= u
+  LessEqFloat  r17, r7, r16
+  Return       r17
+
+  // fun sqrtApprox(x: float): float {
+func sqrtApprox (regs=12)
+  // var guess = x
+  Move         r1, r0
+  // var i = 0
+  Const        r2, 0
+  Move         r3, r2
+L1:
+  // while i < 10 {
+  Const        r4, 10
+  LessInt      r5, r3, r4
+  JumpIfFalse  r5, L0
+  // guess = (guess + x / guess) / 2.0
+  Div          r6, r0, r1
+  Add          r7, r1, r6
+  Const        r8, 2.0
+  DivFloat     r9, r7, r8
+  Move         r1, r9
+  // i = i + 1
+  Const        r10, 1
+  AddInt       r11, r3, r10
+  Move         r3, r11
+  // while i < 10 {
+  Jump         L1
+L0:
+  // return guess
+  Return       r1
+
+  // fun main() {
+func main (regs=60)
+  // let root2 = sqrtApprox(2.0)
+  Const        r1, 2.0
+  Move         r0, r1
+  Call         r2, sqrtApprox, r0
+  Move         r3, r2
+  // [100000000000000.01, 100000000000000.011],
+  Const        r13, [100000000000000.02, 100000000000000.02]
+  Move         r4, r13
+  // [100.01, 100.011],
+  Const        r14, [100.01, 100.011]
+  Move         r5, r14
+  // [10000000000000.001 / 10000.0, 1000000000.0000001000],
+  Const        r15, [1000000000.0000002, 1000000000.0000001]
+  Move         r6, r15
+  // [0.001, 0.0010000001],
+  Const        r16, [0.001, 0.0010000001]
+  Move         r7, r16
+  // [0.000000000000000000000101, 0.0],
+  Const        r17, [0.000000000000000000000101, 0.0]
+  Move         r8, r17
+  // [root2 * root2, 2.0],
+  Mul          r20, r3, r3
+  Move         r18, r20
+  Const        r1, 2.0
+  Move         r19, r1
+  MakeList     r21, 2, r18
+  Move         r9, r21
+  // [(-root2) * root2, -2.0],
+  Neg          r24, r3
+  Mul          r25, r24, r3
+  Move         r22, r25
+  Const        r1, 2.0
+  NegFloat     r26, r1
+  Move         r23, r26
+  MakeList     r27, 2, r22
+  Move         r10, r27
+  // [100000000000000003.0, 100000000000000004.0],
+  Const        r28, [100000000000000000.0, 100000000000000000.0]
+  Move         r11, r28
+  // [3.14159265358979323846, 3.14159265358979324],
+  Const        r29, [3.141592653589793, 3.141592653589793]
+  Move         r12, r29
+  // let pairs = [
+  MakeList     r30, 9, r4
+  Move         r31, r30
+  // for pair in pairs {
+  IterPrep     r32, r31
+  Len          r33, r32
+  Const        r34, 0
+L1:
+  LessInt      r35, r34, r33
+  JumpIfFalse  r35, L0
+  Index        r36, r32, r34
+  Move         r37, r36
+  // let a = pair[0]
+  Const        r38, 0
+  Index        r39, r37, r38
+  Move         r40, r39
+  // let b = pair[1]
+  Const        r41, 1
+  Index        r42, r37, r41
+  Move         r43, r42
+  // let s = if isClose(a, b) { "≈" } else { "≉" }
+  Move         r44, r40
+  Move         r45, r43
+  Call2        r46, isClose, r44, r45
+  Const        r47, "≈"
+  Const        r48, "≉"
+  Select       49,46,47,48
+  Move         r50, r49
+  // print(str(a) + " " + s + " " + str(b))
+  Str          r51, r40
+  Const        r52, " "
+  Add          r53, r51, r52
+  Add          r54, r53, r50
+  Const        r52, " "
+  Add          r55, r54, r52
+  Str          r56, r43
+  Add          r57, r55, r56
+  Print        r57
+  // for pair in pairs {
+  Const        r58, 1
+  AddInt       r59, r34, r58
+  Move         r34, r59
+  Jump         L1
+L0:
+  Return       r0

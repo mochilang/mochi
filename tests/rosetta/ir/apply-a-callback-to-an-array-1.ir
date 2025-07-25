@@ -1,0 +1,22 @@
+func main (regs=11)
+  // for i in [1, 2, 3, 4, 5] {
+  Const        r0, [1, 2, 3, 4, 5]
+  IterPrep     r1, r0
+  Len          r2, r1
+  Const        r3, 0
+L1:
+  LessInt      r4, r3, r2
+  JumpIfFalse  r4, L0
+  Index        r5, r1, r3
+  Move         r6, r5
+  // print(str(i * i))
+  Mul          r7, r6, r6
+  Str          r8, r7
+  Print        r8
+  // for i in [1, 2, 3, 4, 5] {
+  Const        r9, 1
+  AddInt       r10, r3, r9
+  Move         r3, r10
+  Jump         L1
+L0:
+  Return       r0

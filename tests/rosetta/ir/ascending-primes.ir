@@ -1,0 +1,236 @@
+func main (regs=2)
+  // var asc: list<int> = []
+  Const        r1, []
+  Move         r0, r1
+  SetGlobal    0,0,0,0
+  Return       r0
+
+  // fun isPrime(n: int): bool {
+func isPrime (regs=25)
+  // if n < 2 { return false }
+  Const        r2, 2
+  Less         r3, r1, r2
+  JumpIfFalse  r3, L0
+  Const        r4, false
+  Return       r4
+L0:
+  // if n % 2 == 0 { return n == 2 }
+  Const        r2, 2
+  Mod          r5, r1, r2
+  Const        r6, 0
+  Equal        r7, r5, r6
+  JumpIfFalse  r7, L1
+  Const        r2, 2
+  Equal        r8, r1, r2
+  Return       r8
+L1:
+  // if n % 3 == 0 { return n == 3 }
+  Const        r9, 3
+  Mod          r10, r1, r9
+  Const        r6, 0
+  Equal        r11, r10, r6
+  JumpIfFalse  r11, L2
+  Const        r9, 3
+  Equal        r12, r1, r9
+  Return       r12
+L2:
+  // var d = 5
+  Const        r13, 5
+  Move         r14, r13
+L6:
+  // while d * d <= n {
+  MulInt       r15, r14, r14
+  LessEq       r16, r15, r1
+  JumpIfFalse  r16, L3
+  // if n % d == 0 { return false }
+  Mod          r17, r1, r14
+  Const        r6, 0
+  Equal        r18, r17, r6
+  JumpIfFalse  r18, L4
+  Const        r4, false
+  Return       r4
+L4:
+  // d = d + 2
+  Const        r2, 2
+  AddInt       r19, r14, r2
+  Move         r14, r19
+  // if n % d == 0 { return false }
+  Mod          r20, r1, r14
+  Const        r6, 0
+  Equal        r21, r20, r6
+  JumpIfFalse  r21, L5
+  Const        r4, false
+  Return       r4
+L5:
+  // d = d + 4
+  Const        r22, 4
+  AddInt       r23, r14, r22
+  Move         r14, r23
+  // while d * d <= n {
+  Jump         L6
+L3:
+  // return true
+  Const        r24, true
+  Return       r24
+
+  // fun gen(first: int, cand: int, digits: int) {
+func gen (regs=24)
+  // if digits == 0 {
+  Const        r4, 0
+  Equal        r5, r3, r4
+  JumpIfFalse  r5, L0
+  // if isPrime(cand) {
+  Move         r6, r2
+  Call         r7, isPrime, r6
+  JumpIfFalse  r7, L1
+  // asc = asc + [cand]
+  Move         r8, r2
+  MakeList     r9, 1, r8
+  Add          r10, r0, r9
+  Move         r0, r10
+  SetGlobal    0,0,0,0
+L1:
+  // return
+  Return       r0
+L0:
+  // var i = first
+  Move         r11, r1
+L3:
+  // while i < 10 {
+  Const        r12, 10
+  Less         r13, r11, r12
+  JumpIfFalse  r13, L2
+  // gen(i + 1, cand * 10 + i, digits - 1)
+  Const        r17, 1
+  Add          r18, r11, r17
+  Move         r14, r18
+  Const        r12, 10
+  Mul          r19, r2, r12
+  Add          r20, r19, r11
+  Move         r15, r20
+  Const        r17, 1
+  Sub          r21, r3, r17
+  Move         r16, r21
+  Call         r22, gen, r14, r15, r16
+  // i = i + 1
+  Const        r17, 1
+  Add          r23, r11, r17
+  Move         r11, r23
+  // while i < 10 {
+  Jump         L3
+L2:
+  Return       r0
+
+  // fun pad(n: int, width: int): string {
+func pad (regs=9)
+  // var s = str(n)
+  Str          r3, r1
+  Move         r4, r3
+L1:
+  // while len(s) < width {
+  Len          r5, r4
+  Less         r6, r5, r2
+  JumpIfFalse  r6, L0
+  // s = " " + s
+  Const        r7, " "
+  Add          r8, r7, r4
+  Move         r4, r8
+  // while len(s) < width {
+  Jump         L1
+L0:
+  // return s
+  Return       r4
+
+  // fun main() {
+func main (regs=42)
+  // var digits = 1
+  Const        r1, 1
+  Move         r2, r1
+L1:
+  // while digits < 10 {
+  Const        r3, 10
+  LessInt      r4, r2, r3
+  JumpIfFalse  r4, L0
+  // gen(1, 0, digits)
+  Const        r1, 1
+  Move         r5, r1
+  Const        r8, 0
+  Move         r6, r8
+  Move         r7, r2
+  Call         r9, gen, r5, r6, r7
+  // digits = digits + 1
+  Const        r1, 1
+  AddInt       r10, r2, r1
+  Move         r2, r10
+  // while digits < 10 {
+  Jump         L1
+L0:
+  // print("There are " + str(len(asc)) + " ascending primes, namely:")
+  Const        r11, "There are "
+  Len          r12, r0
+  Str          r13, r12
+  Add          r14, r11, r13
+  Const        r15, " ascending primes, namely:"
+  Add          r16, r14, r15
+  Print        r16
+  // var i = 0
+  Const        r8, 0
+  Move         r17, r8
+  // var line = ""
+  Const        r18, ""
+  Move         r19, r18
+L4:
+  // while i < len(asc) {
+  Len          r20, r0
+  LessInt      r21, r17, r20
+  JumpIfFalse  r21, L2
+  // line = line + pad(asc[i], 8) + " "
+  Index        r24, r0, r17
+  Move         r22, r24
+  Const        r25, 8
+  Move         r23, r25
+  Call2        r26, pad, r22, r23
+  Add          r27, r19, r26
+  Const        r28, " "
+  Add          r29, r27, r28
+  Move         r19, r29
+  // if (i + 1) % 10 == 0 {
+  Const        r1, 1
+  AddInt       r30, r17, r1
+  Const        r3, 10
+  ModInt       r31, r30, r3
+  Const        r8, 0
+  EqualInt     r32, r31, r8
+  JumpIfFalse  r32, L3
+  // print(substring(line, 0, len(line)-1))
+  Const        r8, 0
+  Len          r33, r19
+  Const        r1, 1
+  SubInt       r34, r33, r1
+  Slice        r35, r19, r8, r34
+  Print        r35
+  // line = ""
+  Const        r18, ""
+  Move         r19, r18
+L3:
+  // i = i + 1
+  Const        r1, 1
+  AddInt       r36, r17, r1
+  Move         r17, r36
+  // while i < len(asc) {
+  Jump         L4
+L2:
+  // if len(line) > 0 {
+  Len          r37, r19
+  Const        r8, 0
+  LessInt      r38, r8, r37
+  JumpIfFalse  r38, L5
+  // print(substring(line, 0, len(line)-1))
+  Const        r8, 0
+  Len          r39, r19
+  Const        r1, 1
+  SubInt       r40, r39, r1
+  Slice        r41, r19, r8, r40
+  Print        r41
+L5:
+  Return       r0

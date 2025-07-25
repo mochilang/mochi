@@ -1,0 +1,464 @@
+func main (regs=1)
+  Return       r0
+
+  // fun sieve(limit: int): list<int> {
+func sieve (regs=22)
+  // var spf: list<int> = []
+  Const        r1, []
+  Move         r2, r1
+  // var i = 0
+  Const        r3, 0
+  Move         r4, r3
+L1:
+  // while i <= limit {
+  LessEq       r5, r4, r0
+  JumpIfFalse  r5, L0
+  // spf = append(spf, 0)
+  Const        r3, 0
+  Append       r6, r2, r3
+  Move         r2, r6
+  // i = i + 1
+  Const        r7, 1
+  AddInt       r8, r4, r7
+  Move         r4, r8
+  // while i <= limit {
+  Jump         L1
+L0:
+  // i = 2
+  Const        r9, 2
+  Move         r4, r9
+L6:
+  // while i <= limit {
+  LessEq       r10, r4, r0
+  JumpIfFalse  r10, L2
+  // if spf[i] == 0 {
+  Index        r11, r2, r4
+  Const        r3, 0
+  Equal        r12, r11, r3
+  JumpIfFalse  r12, L3
+  // spf[i] = i
+  SetIndex     r2, r4, r4
+  // if i * i <= limit {
+  MulInt       r13, r4, r4
+  LessEq       r14, r13, r0
+  JumpIfFalse  r14, L3
+  // var j = i * i
+  MulInt       r15, r4, r4
+  Move         r16, r15
+L5:
+  // while j <= limit {
+  LessEq       r17, r16, r0
+  JumpIfFalse  r17, L3
+  // if spf[j] == 0 { spf[j] = i }
+  Index        r18, r2, r16
+  Const        r3, 0
+  Equal        r19, r18, r3
+  JumpIfFalse  r19, L4
+  SetIndex     r2, r16, r4
+L4:
+  // j = j + i
+  AddInt       r20, r16, r4
+  Move         r16, r20
+  // while j <= limit {
+  Jump         L5
+L3:
+  // i = i + 1
+  Const        r7, 1
+  AddInt       r21, r4, r7
+  Move         r4, r21
+  // while i <= limit {
+  Jump         L6
+L2:
+  // return spf
+  Return       r2
+
+  // fun primesFrom(spf: list<int>, limit: int): list<int> {
+func primesFrom (regs=12)
+  // var primes: list<int> = []
+  Const        r2, []
+  Move         r3, r2
+  // var i = 3
+  Const        r4, 3
+  Move         r5, r4
+L2:
+  // while i <= limit {
+  LessEq       r6, r5, r1
+  JumpIfFalse  r6, L0
+  // if spf[i] == i { primes = append(primes, i) }
+  Index        r7, r0, r5
+  Equal        r8, r7, r5
+  JumpIfFalse  r8, L1
+  Append       r9, r3, r5
+  Move         r3, r9
+L1:
+  // i = i + 1
+  Const        r10, 1
+  AddInt       r11, r5, r10
+  Move         r5, r11
+  // while i <= limit {
+  Jump         L2
+L0:
+  // return primes
+  Return       r3
+
+  // fun pad3(n: int): string {
+func pad3 (regs=8)
+  // var s = str(n)
+  Str          r1, r0
+  Move         r2, r1
+L1:
+  // while len(s) < 3 { s = " " + s }
+  Len          r3, r2
+  Const        r4, 3
+  LessInt      r5, r3, r4
+  JumpIfFalse  r5, L0
+  Const        r6, " "
+  Add          r7, r6, r2
+  Move         r2, r7
+  Jump         L1
+L0:
+  // return s
+  Return       r2
+
+  // fun commatize(n: int): string {
+func commatize (regs=24)
+  // var s = str(n)
+  Str          r1, r0
+  Move         r2, r1
+  // var out = ""
+  Const        r3, ""
+  Move         r4, r3
+  // var i = len(s) - 1
+  Len          r5, r2
+  Const        r6, 1
+  SubInt       r7, r5, r6
+  Move         r8, r7
+  // var c = 0
+  Const        r9, 0
+  Move         r10, r9
+L3:
+  // while i >= 0 {
+  Const        r9, 0
+  LessEqInt    r11, r9, r8
+  JumpIfFalse  r11, L0
+  // out = substring(s, i, i+1) + out
+  Const        r6, 1
+  AddInt       r12, r8, r6
+  Slice        r13, r2, r8, r12
+  Add          r14, r13, r4
+  Move         r4, r14
+  // c = c + 1
+  Const        r6, 1
+  AddInt       r15, r10, r6
+  Move         r10, r15
+  // if c % 3 == 0 && i > 0 { out = "," + out }
+  Const        r16, 3
+  ModInt       r17, r10, r16
+  Const        r9, 0
+  LessInt      r18, r9, r8
+  Const        r9, 0
+  EqualInt     r19, r17, r9
+  Move         r20, r19
+  JumpIfFalse  r20, L1
+  Move         r20, r18
+L1:
+  JumpIfFalse  r20, L2
+  Const        r21, ","
+  Add          r22, r21, r4
+  Move         r4, r22
+L2:
+  // i = i - 1
+  Const        r6, 1
+  SubInt       r23, r8, r6
+  Move         r8, r23
+  // while i >= 0 {
+  Jump         L3
+L0:
+  // return out
+  Return       r4
+
+  // fun primeCount(primes: list<int>, last: int, spf: list<int>): int {
+func primeCount (regs=22)
+  // var lo = 0
+  Const        r3, 0
+  Move         r4, r3
+  // var hi = len(primes)
+  Len          r5, r0
+  Move         r6, r5
+L2:
+  // while lo < hi {
+  LessInt      r7, r4, r6
+  JumpIfFalse  r7, L0
+  // var mid = ((lo + hi) / 2) as int
+  AddInt       r8, r4, r6
+  Const        r9, 2
+  DivInt       r10, r8, r9
+  Cast         r11, r10, int
+  Move         r12, r11
+  // if primes[mid] < last {
+  Index        r13, r0, r12
+  Less         r14, r13, r1
+  JumpIfFalse  r14, L1
+  // lo = mid + 1
+  Const        r15, 1
+  Add          r16, r12, r15
+  Move         r4, r16
+  // if primes[mid] < last {
+  Jump         L2
+L1:
+  // hi = mid
+  Move         r6, r12
+  // while lo < hi {
+  Jump         L2
+L0:
+  // var count = lo + 1  // account for prime 2
+  Const        r15, 1
+  Add          r17, r4, r15
+  Move         r18, r17
+  // if spf[last] != last { count = count - 1 }
+  Index        r19, r2, r1
+  NotEqual     r20, r19, r1
+  JumpIfFalse  r20, L3
+  Const        r15, 1
+  Sub          r21, r18, r15
+  Move         r18, r21
+L3:
+  // return count
+  Return       r18
+
+  // fun arithmeticNumbers(limit: int, spf: list<int>): list<int> {
+func arithmeticNumbers (regs=36)
+  // var arr: list<int> = [1]
+  Const        r2, [1]
+  Move         r3, r2
+  // var n = 3
+  Const        r4, 3
+  Move         r5, r4
+L8:
+  // while len(arr) < limit {
+  Len          r6, r3
+  Less         r7, r6, r0
+  JumpIfFalse  r7, L0
+  // if spf[n] == n {
+  Index        r8, r1, r5
+  Equal        r9, r8, r5
+  JumpIfFalse  r9, L1
+  // arr = append(arr, n)
+  Append       r10, r3, r5
+  Move         r3, r10
+  // if spf[n] == n {
+  Jump         L2
+L1:
+  // var x = n
+  Move         r11, r5
+  // var sigma = 1
+  Const        r12, 1
+  Move         r13, r12
+  // var tau = 1
+  Const        r12, 1
+  Move         r14, r12
+L7:
+  // while x > 1 {
+  Const        r12, 1
+  LessInt      r15, r12, r11
+  JumpIfFalse  r15, L3
+  // var p = spf[x]
+  Index        r16, r1, r11
+  Move         r17, r16
+  // if p == 0 { p = x }
+  Const        r18, 0
+  Equal        r19, r17, r18
+  JumpIfFalse  r19, L4
+  Move         r17, r11
+L4:
+  // var cnt = 0
+  Const        r18, 0
+  Move         r20, r18
+  // var power = p
+  Move         r21, r17
+  // var sum = 1
+  Const        r12, 1
+  Move         r22, r12
+L6:
+  // while x % p == 0 {
+  ModInt       r23, r11, r17
+  Const        r18, 0
+  EqualInt     r24, r23, r18
+  JumpIfFalse  r24, L5
+  // x = x / p
+  DivInt       r25, r11, r17
+  Move         r11, r25
+  // cnt = cnt + 1
+  Const        r12, 1
+  AddInt       r26, r20, r12
+  Move         r20, r26
+  // sum = sum + power
+  AddInt       r27, r22, r21
+  Move         r22, r27
+  // power = power * p
+  MulInt       r28, r21, r17
+  Move         r21, r28
+  // while x % p == 0 {
+  Jump         L6
+L5:
+  // sigma = sigma * sum
+  MulInt       r29, r13, r22
+  Move         r13, r29
+  // tau = tau * (cnt + 1)
+  Const        r12, 1
+  AddInt       r30, r20, r12
+  MulInt       r31, r14, r30
+  Move         r14, r31
+  // while x > 1 {
+  Jump         L7
+L3:
+  // if sigma % tau == 0 { arr = append(arr, n) }
+  ModInt       r32, r13, r14
+  Const        r18, 0
+  EqualInt     r33, r32, r18
+  JumpIfFalse  r33, L2
+  Append       r34, r3, r5
+  Move         r3, r34
+L2:
+  // n = n + 1
+  Const        r12, 1
+  AddInt       r35, r5, r12
+  Move         r5, r35
+  // while len(arr) < limit {
+  Jump         L8
+L0:
+  // return arr
+  Return       r3
+
+  // fun main() {
+func main (regs=75)
+  // let limit = 1228663
+  Const        r0, 1228663
+  Move         r1, r0
+  // let spf = sieve(limit)
+  Const        r0, 1228663
+  Move         r2, r0
+  Call         r3, sieve, r2
+  Move         r4, r3
+  // let primes = primesFrom(spf, limit)
+  Move         r5, r4
+  Const        r0, 1228663
+  Move         r6, r0
+  Call2        r7, primesFrom, r5, r6
+  Move         r8, r7
+  // let arr = arithmeticNumbers(1000000, spf)
+  Const        r11, 1000000
+  Move         r9, r11
+  Move         r10, r4
+  Call2        r12, arithmeticNumbers, r9, r10
+  Move         r13, r12
+  // print("The first 100 arithmetic numbers are:")
+  Const        r14, "The first 100 arithmetic numbers are:"
+  Print        r14
+  // var i = 0
+  Const        r15, 0
+  Move         r16, r15
+L4:
+  // while i < 100 {
+  Const        r17, 100
+  LessInt      r18, r16, r17
+  JumpIfFalse  r18, L0
+  // var line = ""
+  Const        r19, ""
+  Move         r20, r19
+  // var j = 0
+  Const        r15, 0
+  Move         r21, r15
+L3:
+  // while j < 10 {
+  Const        r22, 10
+  LessInt      r23, r21, r22
+  JumpIfFalse  r23, L1
+  // line = line + pad3(arr[i + j])
+  AddInt       r25, r16, r21
+  Index        r26, r13, r25
+  Move         r24, r26
+  Call         r27, pad3, r24
+  Add          r28, r20, r27
+  Move         r20, r28
+  // if j < 9 { line = line + " " }
+  Const        r29, 9
+  LessInt      r30, r21, r29
+  JumpIfFalse  r30, L2
+  Const        r31, " "
+  Add          r32, r20, r31
+  Move         r20, r32
+L2:
+  // j = j + 1
+  Const        r33, 1
+  AddInt       r34, r21, r33
+  Move         r21, r34
+  // while j < 10 {
+  Jump         L3
+L1:
+  // print(line)
+  Print        r20
+  // i = i + 10
+  Const        r22, 10
+  AddInt       r35, r16, r22
+  Move         r16, r35
+  // while i < 100 {
+  Jump         L4
+L0:
+  // for x in [1000, 10000, 100000, 1000000] {
+  Const        r36, [1000, 10000, 100000, 1000000]
+  IterPrep     r37, r36
+  Len          r38, r37
+  Const        r39, 0
+L6:
+  LessInt      r40, r39, r38
+  JumpIfFalse  r40, L5
+  Index        r41, r37, r39
+  Move         r42, r41
+  // let last = arr[x - 1]
+  Const        r33, 1
+  Sub          r43, r42, r33
+  Index        r44, r13, r43
+  Move         r45, r44
+  // let lastc = commatize(last)
+  Move         r46, r45
+  Call         r47, commatize, r46
+  Move         r48, r47
+  // print("\nThe " + commatize(x) + "th arithmetic number is: " + lastc)
+  Const        r49, "\nThe "
+  Move         r50, r42
+  Call         r51, commatize, r50
+  Add          r52, r49, r51
+  Const        r53, "th arithmetic number is: "
+  Add          r54, r52, r53
+  Add          r55, r54, r48
+  Print        r55
+  // let pc = primeCount(primes, last, spf)
+  Move         r56, r8
+  Move         r57, r45
+  Move         r58, r4
+  Call         r59, primeCount, r56, r57, r58
+  Move         r60, r59
+  // let comp = x - pc - 1
+  Sub          r61, r42, r60
+  Const        r33, 1
+  Sub          r62, r61, r33
+  Move         r63, r62
+  // print("The count of such numbers <= " + lastc + " which are composite is " + commatize(comp) + ".")
+  Const        r64, "The count of such numbers <= "
+  Add          r65, r64, r48
+  Const        r66, " which are composite is "
+  Add          r67, r65, r66
+  Move         r68, r63
+  Call         r69, commatize, r68
+  Add          r70, r67, r69
+  Const        r71, "."
+  Add          r72, r70, r71
+  Print        r72
+  // for x in [1000, 10000, 100000, 1000000] {
+  Const        r73, 1
+  AddInt       r74, r39, r73
+  Move         r39, r74
+  Jump         L6
+L5:
+  Return       r0

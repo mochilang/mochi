@@ -1,0 +1,73 @@
+func main (regs=1)
+  Return       r0
+
+  // fun main() {
+func main (regs=39)
+  // let m: map<string, int> = {"hello": 13, "world": 31, "!": 71}
+  Const        r0, {"!": 71, "hello": 13, "world": 31}
+  Move         r1, r0
+  // for k in keys(m) {
+  IterPrep     r3, r2
+  Len          r4, r3
+  Const        r5, 0
+L1:
+  LessInt      r6, r5, r4
+  JumpIfFalse  r6, L0
+  Index        r7, r3, r5
+  Move         r8, r7
+  // print("key = " + k + ", value = " + str(m[k]))
+  Const        r9, "key = "
+  Add          r10, r9, r8
+  Const        r11, ", value = "
+  Add          r12, r10, r11
+  Index        r13, r1, r8
+  Str          r14, r13
+  Add          r15, r12, r14
+  Print        r15
+  // for k in keys(m) {
+  Const        r16, 1
+  AddInt       r17, r5, r16
+  Move         r5, r17
+  Jump         L1
+L0:
+  // for k in keys(m) {
+  IterPrep     r19, r18
+  Len          r20, r19
+  Const        r21, 0
+L3:
+  LessInt      r22, r21, r20
+  JumpIfFalse  r22, L2
+  Index        r23, r19, r21
+  Move         r8, r23
+  // print("key = " + k)
+  Const        r9, "key = "
+  Add          r24, r9, r8
+  Print        r24
+  // for k in keys(m) {
+  Const        r25, 1
+  AddInt       r26, r21, r25
+  Move         r21, r26
+  Jump         L3
+L2:
+  // for k in keys(m) {
+  IterPrep     r28, r27
+  Len          r29, r28
+  Const        r30, 0
+L5:
+  LessInt      r31, r30, r29
+  JumpIfFalse  r31, L4
+  Index        r32, r28, r30
+  Move         r8, r32
+  // print("value = " + str(m[k]))
+  Const        r33, "value = "
+  Index        r34, r1, r8
+  Str          r35, r34
+  Add          r36, r33, r35
+  Print        r36
+  // for k in keys(m) {
+  Const        r37, 1
+  AddInt       r38, r30, r37
+  Move         r30, r38
+  Jump         L5
+L4:
+  Return       r0

@@ -1,0 +1,140 @@
+func main (regs=21)
+  // let a = [1.0, -0.00000000000000027756, 0.33333333, -0.00000000000000001850]
+  Const        r5, [1.0, -0.00000000000000027756, 0.33333333, -0.0000000000000000185]
+  Move         r0, r5
+  SetGlobal    0,0,0,0
+  // let b = [0.16666667, 0.5, 0.5, 0.16666667]
+  Const        r6, [0.16666667, 0.5, 0.5, 0.16666667]
+  Move         r1, r6
+  SetGlobal    1,1,0,0
+  // let sig = [
+  Const        r7, [-0.917843918645, 0.141984778794, 1.20536903482, 0.190286794412, -0.662370894973, -1.00700480494, -0.404707073677, 0.800482325044, 0.743500089861, 1.01090520172, 0.741527555207, 0.277841675195, 0.400833448236, -0.2085993586, -0.172842103641, -0.134316096293, 0.0259303398477, 0.490105989562, 0.549391221511, 0.9047198589]
+  Move         r2, r7
+  SetGlobal    2,2,0,0
+  // let res = applyFilter(sig, a, b)
+  Const        r11, [-0.917843918645, 0.141984778794, 1.20536903482, 0.190286794412, -0.662370894973, -1.00700480494, -0.404707073677, 0.800482325044, 0.743500089861, 1.01090520172, 0.741527555207, 0.277841675195, 0.400833448236, -0.2085993586, -0.172842103641, -0.134316096293, 0.0259303398477, 0.490105989562, 0.549391221511, 0.9047198589]
+  Move         r8, r11
+  Const        r12, [1.0, -0.00000000000000027756, 0.33333333, -0.0000000000000000185]
+  Move         r9, r12
+  Const        r13, [0.16666667, 0.5, 0.5, 0.16666667]
+  Move         r10, r13
+  Call         r14, applyFilter, r8, r9, r10
+  Move         r3, r14
+  SetGlobal    3,3,0,0
+  // var k = 0
+  Const        r15, 0
+  Move         r4, r15
+  SetGlobal    4,4,0,0
+L1:
+  // while k < len(res) {
+  Len          r16, r3
+  LessInt      r17, r4, r16
+  JumpIfFalse  r17, L0
+  // print(res[k])
+  Index        r18, r3, r4
+  Print        r18
+  // k = k + 1
+  Const        r19, 1
+  AddInt       r20, r4, r19
+  Move         r4, r20
+  SetGlobal    4,4,0,0
+  // while k < len(res) {
+  Jump         L1
+L0:
+  Return       r0
+
+  // fun applyFilter(input: list<float>, a: list<float>, b: list<float>): list<float> {
+func applyFilter (regs=48)
+  // var out: list<float> = []
+  Const        r8, []
+  Move         r9, r8
+  // let scale = 1.0 / a[0]
+  Const        r10, 1.0
+  Const        r11, 0
+  Index        r12, r6, r11
+  DivFloat     r13, r10, r12
+  Move         r14, r13
+  // var i = 0
+  Const        r11, 0
+  Move         r15, r11
+L7:
+  // while i < len(input) {
+  Len          r16, r5
+  LessInt      r17, r15, r16
+  JumpIfFalse  r17, L0
+  // var tmp = 0.0
+  Const        r18, 0.0
+  Move         r19, r18
+  // var j = 0
+  Const        r11, 0
+  Move         r20, r11
+L3:
+  // while j <= i && j < len(b) {
+  LessEqInt    r21, r20, r15
+  Len          r22, r7
+  LessInt      r23, r20, r22
+  Move         r24, r21
+  JumpIfFalse  r24, L1
+  Move         r24, r23
+L1:
+  JumpIfFalse  r24, L2
+  // tmp = tmp + b[j] * input[i - j]
+  Index        r25, r7, r20
+  SubInt       r26, r15, r20
+  Index        r27, r5, r26
+  Mul          r28, r25, r27
+  AddFloat     r29, r19, r28
+  Move         r19, r29
+  // j = j + 1
+  Const        r30, 1
+  AddInt       r31, r20, r30
+  Move         r20, r31
+  // while j <= i && j < len(b) {
+  Jump         L3
+L2:
+  // j = 0
+  Const        r11, 0
+  Move         r20, r11
+L6:
+  // while j < i && j + 1 < len(a) {
+  Const        r30, 1
+  AddInt       r32, r20, r30
+  LessInt      r33, r20, r15
+  Len          r34, r6
+  LessInt      r35, r32, r34
+  Move         r36, r33
+  JumpIfFalse  r36, L4
+  Move         r36, r35
+L4:
+  JumpIfFalse  r36, L5
+  // tmp = tmp - a[j + 1] * out[i - j - 1]
+  Const        r30, 1
+  AddInt       r37, r20, r30
+  Index        r38, r6, r37
+  SubInt       r39, r15, r20
+  Const        r30, 1
+  SubInt       r40, r39, r30
+  Index        r41, r9, r40
+  Mul          r42, r38, r41
+  SubFloat     r43, r19, r42
+  Move         r19, r43
+  // j = j + 1
+  Const        r30, 1
+  AddInt       r44, r20, r30
+  Move         r20, r44
+  // while j < i && j + 1 < len(a) {
+  Jump         L6
+L5:
+  // out = append(out, tmp * scale)
+  MulFloat     r45, r19, r14
+  Append       r46, r9, r45
+  Move         r9, r46
+  // i = i + 1
+  Const        r30, 1
+  AddInt       r47, r15, r30
+  Move         r15, r47
+  // while i < len(input) {
+  Jump         L7
+L0:
+  // return out
+  Return       r9

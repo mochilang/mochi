@@ -1,0 +1,124 @@
+func main (regs=24)
+  // var a = [1, 2, 3]
+  Const        r6, [1, 2, 3]
+  Move         r0, r6
+  SetGlobal    0,0,0,0
+  // var b = [7, 12, 60]
+  Const        r7, [7, 12, 60]
+  Move         r1, r7
+  SetGlobal    1,1,0,0
+  // print(str(concatInts(a, b)))
+  Move         r8, r0
+  Move         r9, r1
+  Call2        r10, concatInts, r8, r9
+  Str          r11, r10
+  Print        r11
+  // var i: list<any> = [1, 2, 3]
+  Const        r12, [1, 2, 3]
+  Move         r2, r12
+  SetGlobal    2,2,0,0
+  // var j: list<any> = ["Crosby", "Stills", "Nash", "Young"]
+  Const        r13, ["Crosby", "Stills", "Nash", "Young"]
+  Move         r3, r13
+  SetGlobal    3,3,0,0
+  // print(str(concatAny(i, j)))
+  Move         r14, r2
+  Move         r15, r3
+  Call2        r16, concatAny, r14, r15
+  Str          r17, r16
+  Print        r17
+  // var l = [1, 2, 3]
+  Const        r18, [1, 2, 3]
+  Move         r4, r18
+  SetGlobal    4,4,0,0
+  // var m = [7, 12, 60]
+  Const        r19, [7, 12, 60]
+  Move         r5, r19
+  SetGlobal    5,5,0,0
+  // print(str(concatInts(l, m)))
+  Move         r20, r4
+  Move         r21, r5
+  Call2        r22, concatInts, r20, r21
+  Str          r23, r22
+  Print        r23
+  Return       r0
+
+  // fun concatInts(a: list<int>, b: list<int>): list<int> {
+func concatInts (regs=27)
+  // var out: list<int> = []
+  Const        r8, []
+  Move         r9, r8
+  // for v in a { out = append(out, v) }
+  IterPrep     r10, r6
+  Len          r11, r10
+  Const        r12, 0
+L1:
+  LessInt      r13, r12, r11
+  JumpIfFalse  r13, L0
+  Index        r14, r10, r12
+  Move         r15, r14
+  Append       r16, r9, r15
+  Move         r9, r16
+  Const        r17, 1
+  AddInt       r18, r12, r17
+  Move         r12, r18
+  Jump         L1
+L0:
+  // for v in b { out = append(out, v) }
+  IterPrep     r19, r7
+  Len          r20, r19
+  Const        r21, 0
+L3:
+  LessInt      r22, r21, r20
+  JumpIfFalse  r22, L2
+  Index        r23, r19, r21
+  Move         r15, r23
+  Append       r24, r9, r15
+  Move         r9, r24
+  Const        r25, 1
+  AddInt       r26, r21, r25
+  Move         r21, r26
+  Jump         L3
+L2:
+  // return out
+  Return       r9
+
+  // fun concatAny(a: list<any>, b: list<any>): list<any> {
+func concatAny (regs=27)
+  // var out: list<any> = []
+  Const        r8, []
+  Move         r9, r8
+  // for v in a { out = append(out, v) }
+  IterPrep     r10, r6
+  Len          r11, r10
+  Const        r12, 0
+L1:
+  LessInt      r13, r12, r11
+  JumpIfFalse  r13, L0
+  Index        r14, r10, r12
+  Move         r15, r14
+  Append       r16, r9, r15
+  Move         r9, r16
+  Const        r17, 1
+  AddInt       r18, r12, r17
+  Move         r12, r18
+  Jump         L1
+L0:
+  // for v in b { out = append(out, v) }
+  IterPrep     r19, r7
+  Len          r20, r19
+  Const        r21, 0
+L3:
+  LessInt      r22, r21, r20
+  JumpIfFalse  r22, L2
+  Index        r23, r19, r21
+  Move         r15, r23
+  Append       r24, r9, r15
+  Move         r9, r24
+  Const        r25, 1
+  AddInt       r26, r21, r25
+  Move         r21, r26
+  Jump         L3
+L2:
+  // return out
+  Return       r9

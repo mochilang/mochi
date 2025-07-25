@@ -1,0 +1,582 @@
+func main (regs=14)
+  // let msg = "Rosetta Code Base64 decode data task"
+  Const        r3, "Rosetta Code Base64 decode data task"
+  Move         r0, r3
+  SetGlobal    0,0,0,0
+  // print("Original : " + msg)
+  Const        r4, "Original : "
+  Const        r3, "Rosetta Code Base64 decode data task"
+  Add          r5, r4, r3
+  Print        r5
+  // let enc = base64Encode(msg)
+  Const        r3, "Rosetta Code Base64 decode data task"
+  Move         r6, r3
+  Call         r7, base64Encode, r6
+  Move         r1, r7
+  SetGlobal    1,1,0,0
+  // print("\nEncoded  : " + enc)
+  Const        r8, "\nEncoded  : "
+  Add          r9, r8, r1
+  Print        r9
+  // let dec = base64Decode(enc)
+  Move         r10, r1
+  Call         r11, base64Decode, r10
+  Move         r2, r11
+  SetGlobal    2,2,0,0
+  // print("\nDecoded  : " + dec)
+  Const        r12, "\nDecoded  : "
+  Add          r13, r12, r2
+  Print        r13
+  Return       r0
+
+  // fun indexOf(s: string, ch: string): int {
+func indexOf (regs=14)
+  // var i = 0
+  Const        r5, 0
+  Move         r6, r5
+L2:
+  // while i < len(s) {
+  Len          r7, r3
+  LessInt      r8, r6, r7
+  JumpIfFalse  r8, L0
+  // if s[i] == ch {
+  Index        r9, r3, r6
+  Equal        r10, r9, r4
+  JumpIfFalse  r10, L1
+  // return i
+  Return       r6
+L1:
+  // i = i + 1
+  Const        r11, 1
+  AddInt       r12, r6, r11
+  Move         r6, r12
+  // while i < len(s) {
+  Jump         L2
+L0:
+  // return -1
+  Const        r11, 1
+  NegInt       r13, r11
+  Return       r13
+
+  // fun parseIntStr(str: string): int {
+func parseIntStr (regs=28)
+  // var i = 0
+  Const        r4, 0
+  Move         r5, r4
+  // var neg = false
+  Const        r6, false
+  Move         r7, r6
+  // if len(str) > 0 && str[0] == "-" {
+  Len          r8, r3
+  Const        r4, 0
+  LessInt      r9, r4, r8
+  Const        r4, 0
+  Index        r10, r3, r4
+  Const        r11, "-"
+  Equal        r12, r10, r11
+  Move         r13, r9
+  JumpIfFalse  r13, L0
+  Move         r13, r12
+L0:
+  JumpIfFalse  r13, L1
+  // neg = true
+  Const        r14, true
+  Move         r7, r14
+  // i = 1
+  Const        r15, 1
+  Move         r5, r15
+L1:
+  // var n = 0
+  Const        r4, 0
+  Move         r16, r4
+  // let digits = {
+  Const        r17, {"0": 0, "1": 1, "2": 2, "3": 3, "4": 4, "5": 5, "6": 6, "7": 7, "8": 8, "9": 9}
+  Move         r18, r17
+L3:
+  // while i < len(str) {
+  Len          r19, r3
+  LessInt      r20, r5, r19
+  JumpIfFalse  r20, L2
+  // n = n * 10 + digits[str[i]]
+  Const        r21, 10
+  MulInt       r22, r16, r21
+  Index        r23, r3, r5
+  Index        r24, r18, r23
+  Add          r25, r22, r24
+  Move         r16, r25
+  // i = i + 1
+  Const        r15, 1
+  AddInt       r26, r5, r15
+  Move         r5, r26
+  // while i < len(str) {
+  Jump         L3
+L2:
+  // if neg { n = -n }
+  JumpIfFalse  r7, L4
+  Neg          r27, r16
+  Move         r16, r27
+L4:
+  // return n
+  Return       r16
+
+  // fun ord(ch: string): int {
+func ord (regs=43)
+  // let upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+  Const        r4, "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+  Move         r5, r4
+  // let lower = "abcdefghijklmnopqrstuvwxyz"
+  Const        r6, "abcdefghijklmnopqrstuvwxyz"
+  Move         r7, r6
+  // var idx = indexOf(upper, ch)
+  Const        r4, "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+  Move         r8, r4
+  Move         r9, r3
+  Call2        r10, indexOf, r8, r9
+  Move         r11, r10
+  // if idx >= 0 { return 65 + idx }
+  Const        r12, 0
+  LessEq       r13, r12, r11
+  JumpIfFalse  r13, L0
+  Const        r14, 65
+  Add          r15, r14, r11
+  Return       r15
+L0:
+  // idx = indexOf(lower, ch)
+  Const        r6, "abcdefghijklmnopqrstuvwxyz"
+  Move         r16, r6
+  Move         r17, r3
+  Call2        r18, indexOf, r16, r17
+  Move         r11, r18
+  // if idx >= 0 { return 97 + idx }
+  Const        r12, 0
+  LessEq       r19, r12, r11
+  JumpIfFalse  r19, L1
+  Const        r20, 97
+  Add          r21, r20, r11
+  Return       r21
+L1:
+  // if ch >= "0" && ch <= "9" { return 48 + parseIntStr(ch) }
+  Const        r22, "0"
+  LessEq       r23, r22, r3
+  Const        r24, "9"
+  LessEq       r25, r3, r24
+  Move         r26, r23
+  JumpIfFalse  r26, L2
+  Move         r26, r25
+L2:
+  JumpIfFalse  r26, L3
+  Const        r27, 48
+  Move         r28, r3
+  Call         r29, parseIntStr, r28
+  Add          r30, r27, r29
+  Return       r30
+L3:
+  // if ch == "+" { return 43 }
+  Const        r31, "+"
+  Equal        r32, r3, r31
+  JumpIfFalse  r32, L4
+  Const        r33, 43
+  Return       r33
+L4:
+  // if ch == "/" { return 47 }
+  Const        r34, "/"
+  Equal        r35, r3, r34
+  JumpIfFalse  r35, L5
+  Const        r36, 47
+  Return       r36
+L5:
+  // if ch == " " { return 32 }
+  Const        r37, " "
+  Equal        r38, r3, r37
+  JumpIfFalse  r38, L6
+  Const        r39, 32
+  Return       r39
+L6:
+  // if ch == "=" { return 61 }
+  Const        r40, "="
+  Equal        r41, r3, r40
+  JumpIfFalse  r41, L7
+  Const        r42, 61
+  Return       r42
+L7:
+  // return 0
+  Const        r12, 0
+  Return       r12
+
+  // fun chr(n: int): string {
+func chr (regs=55)
+  // let upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+  Const        r4, "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+  Move         r5, r4
+  // let lower = "abcdefghijklmnopqrstuvwxyz"
+  Const        r6, "abcdefghijklmnopqrstuvwxyz"
+  Move         r7, r6
+  // if n >= 65 && n < 91 { return upper[n-65:n-64] }
+  Const        r8, 65
+  LessEq       r9, r8, r3
+  Const        r10, 91
+  Less         r11, r3, r10
+  Move         r12, r9
+  JumpIfFalse  r12, L0
+  Move         r12, r11
+L0:
+  JumpIfFalse  r12, L1
+  Const        r8, 65
+  Sub          r14, r3, r8
+  Move         r13, r14
+  Const        r16, 64
+  Sub          r17, r3, r16
+  Move         r15, r17
+  Slice        r18, r5, r13, r15
+  Return       r18
+L1:
+  // if n >= 97 && n < 123 { return lower[n-97:n-96] }
+  Const        r19, 97
+  LessEq       r20, r19, r3
+  Const        r21, 123
+  Less         r22, r3, r21
+  Move         r23, r20
+  JumpIfFalse  r23, L2
+  Move         r23, r22
+L2:
+  JumpIfFalse  r23, L3
+  Const        r19, 97
+  Sub          r25, r3, r19
+  Move         r24, r25
+  Const        r27, 96
+  Sub          r28, r3, r27
+  Move         r26, r28
+  Slice        r29, r7, r24, r26
+  Return       r29
+L3:
+  // if n >= 48 && n < 58 {
+  Const        r30, 48
+  LessEq       r31, r30, r3
+  Const        r32, 58
+  Less         r33, r3, r32
+  Move         r34, r31
+  JumpIfFalse  r34, L4
+  Move         r34, r33
+L4:
+  JumpIfFalse  r34, L5
+  // let digits = "0123456789"
+  Const        r35, "0123456789"
+  Move         r36, r35
+  // return digits[n-48:n-47]
+  Const        r30, 48
+  Sub          r38, r3, r30
+  Move         r37, r38
+  Const        r40, 47
+  Sub          r41, r3, r40
+  Move         r39, r41
+  Slice        r42, r36, r37, r39
+  Return       r42
+L5:
+  // if n == 43 { return "+" }
+  Const        r43, 43
+  Equal        r44, r3, r43
+  JumpIfFalse  r44, L6
+  Const        r45, "+"
+  Return       r45
+L6:
+  // if n == 47 { return "/" }
+  Const        r40, 47
+  Equal        r46, r3, r40
+  JumpIfFalse  r46, L7
+  Const        r47, "/"
+  Return       r47
+L7:
+  // if n == 32 { return " " }
+  Const        r48, 32
+  Equal        r49, r3, r48
+  JumpIfFalse  r49, L8
+  Const        r50, " "
+  Return       r50
+L8:
+  // if n == 61 { return "=" }
+  Const        r51, 61
+  Equal        r52, r3, r51
+  JumpIfFalse  r52, L9
+  Const        r53, "="
+  Return       r53
+L9:
+  // return "?" }
+  Const        r54, "?"
+  Return       r54
+
+  // fun toBinary(n: int, bits: int): string {
+func toBinary (regs=19)
+  // var b = ""
+  Const        r5, ""
+  Move         r6, r5
+  // var val = n
+  Move         r7, r3
+  // var i = 0
+  Const        r8, 0
+  Move         r9, r8
+L1:
+  // while i < bits {
+  Less         r10, r9, r4
+  JumpIfFalse  r10, L0
+  // b = str(val % 2) + b
+  Const        r11, 2
+  Mod          r12, r7, r11
+  Str          r13, r12
+  Add          r14, r13, r6
+  Move         r6, r14
+  // val = (val / 2) as int
+  Const        r11, 2
+  Div          r15, r7, r11
+  Cast         r16, r15, int
+  Move         r7, r16
+  // i = i + 1
+  Const        r17, 1
+  AddInt       r18, r9, r17
+  Move         r9, r18
+  // while i < bits {
+  Jump         L1
+L0:
+  // return b
+  Return       r6
+
+  // fun binToInt(bits: string): int {
+func binToInt (regs=20)
+  // var n = 0
+  Const        r4, 0
+  Move         r5, r4
+  // var i = 0
+  Const        r4, 0
+  Move         r6, r4
+L1:
+  // while i < len(bits) {
+  Len          r7, r3
+  LessInt      r8, r6, r7
+  JumpIfFalse  r8, L0
+  // n = n * 2 + parseIntStr(bits[i:i+1])
+  Const        r9, 2
+  MulInt       r10, r5, r9
+  Move         r12, r6
+  Const        r14, 1
+  AddInt       r15, r6, r14
+  Move         r13, r15
+  Slice        r16, r3, r12, r13
+  Move         r11, r16
+  Call         r17, parseIntStr, r11
+  Add          r18, r10, r17
+  Move         r5, r18
+  // i = i + 1
+  Const        r14, 1
+  AddInt       r19, r6, r14
+  Move         r6, r19
+  // while i < len(bits) {
+  Jump         L1
+L0:
+  // return n
+  Return       r5
+
+  // fun base64Encode(text: string): string {
+func base64Encode (regs=72)
+  // let alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
+  Const        r4, "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
+  Move         r5, r4
+  // var bin = ""
+  Const        r6, ""
+  Move         r7, r6
+  // for ch in text {
+  IterPrep     r8, r3
+  Len          r9, r8
+  Const        r10, 0
+L1:
+  LessInt      r11, r10, r9
+  JumpIfFalse  r11, L0
+  Index        r12, r8, r10
+  Move         r13, r12
+  // bin = bin + toBinary(ord(ch), 8)
+  Move         r16, r13
+  Call         r17, ord, r16
+  Move         r14, r17
+  Const        r18, 8
+  Move         r15, r18
+  Call2        r19, toBinary, r14, r15
+  Add          r20, r7, r19
+  Move         r7, r20
+  // for ch in text {
+  Const        r21, 1
+  AddInt       r22, r10, r21
+  Move         r10, r22
+  Jump         L1
+L0:
+  // while len(bin) % 6 != 0 { bin = bin + "0" }
+  Len          r23, r7
+  Const        r24, 6
+  ModInt       r25, r23, r24
+  Const        r26, 0
+  NotEqual     r27, r25, r26
+  JumpIfFalse  r27, L2
+  Const        r28, "0"
+  Add          r29, r7, r28
+  Move         r7, r29
+  Jump         L0
+L2:
+  // var out = ""
+  Const        r6, ""
+  Move         r30, r6
+  // var i = 0
+  Const        r26, 0
+  Move         r31, r26
+L4:
+  // while i < len(bin) {
+  Len          r32, r7
+  LessInt      r33, r31, r32
+  JumpIfFalse  r33, L3
+  // let chunk = bin[i:i+6]
+  Move         r34, r31
+  Const        r24, 6
+  AddInt       r36, r31, r24
+  Move         r35, r36
+  Slice        r37, r7, r34, r35
+  Move         r38, r37
+  // let val = binToInt(chunk)
+  Move         r39, r38
+  Call         r40, binToInt, r39
+  Move         r41, r40
+  // out = out + alphabet[val:val+1]
+  Move         r42, r41
+  Const        r44, 1
+  Add          r45, r41, r44
+  Move         r43, r45
+  Slice        r46, r5, r42, r43
+  Add          r47, r30, r46
+  Move         r30, r47
+  // i = i + 6
+  Const        r24, 6
+  AddInt       r48, r31, r24
+  Move         r31, r48
+  // while i < len(bin) {
+  Jump         L4
+L3:
+  // let pad = (3 - (len(text) % 3)) % 3
+  Const        r49, 3
+  Len          r50, r3
+  Const        r49, 3
+  ModInt       r51, r50, r49
+  SubInt       r52, r49, r51
+  Const        r49, 3
+  ModInt       r53, r52, r49
+  Move         r54, r53
+  // if pad == 1 { out = out[0:len(out)-1] + "=" }
+  Const        r44, 1
+  EqualInt     r55, r54, r44
+  JumpIfFalse  r55, L5
+  Const        r26, 0
+  Move         r56, r26
+  Len          r58, r30
+  Const        r44, 1
+  SubInt       r59, r58, r44
+  Move         r57, r59
+  Slice        r60, r30, r56, r57
+  Const        r61, "="
+  Add          r62, r60, r61
+  Move         r30, r62
+L5:
+  // if pad == 2 { out = out[0:len(out)-2] + "==" }
+  Const        r63, 2
+  EqualInt     r64, r54, r63
+  JumpIfFalse  r64, L6
+  Const        r26, 0
+  Move         r65, r26
+  Len          r67, r30
+  Const        r63, 2
+  SubInt       r68, r67, r63
+  Move         r66, r68
+  Slice        r69, r30, r65, r66
+  Const        r70, "=="
+  Add          r71, r69, r70
+  Move         r30, r71
+L6:
+  // return out
+  Return       r30
+
+  // fun base64Decode(enc: string): string {
+func base64Decode (regs=44)
+  // let alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
+  Const        r4, "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
+  Move         r5, r4
+  // var bin = ""
+  Const        r6, ""
+  Move         r7, r6
+  // var i = 0
+  Const        r8, 0
+  Move         r9, r8
+L2:
+  // while i < len(enc) {
+  Len          r10, r3
+  LessInt      r11, r9, r10
+  JumpIfFalse  r11, L0
+  // let ch = enc[i]
+  Index        r12, r3, r9
+  Move         r13, r12
+  // if ch == "=" { break }
+  Const        r14, "="
+  Equal        r15, r13, r14
+  JumpIfFalse  r15, L1
+  Jump         L0
+L1:
+  // let idx = indexOf(alphabet, ch)
+  Const        r4, "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
+  Move         r16, r4
+  Move         r17, r13
+  Call2        r18, indexOf, r16, r17
+  Move         r19, r18
+  // bin = bin + toBinary(idx, 6)
+  Move         r20, r19
+  Const        r22, 6
+  Move         r21, r22
+  Call2        r23, toBinary, r20, r21
+  Add          r24, r7, r23
+  Move         r7, r24
+  // i = i + 1
+  Const        r25, 1
+  AddInt       r26, r9, r25
+  Move         r9, r26
+  // while i < len(enc) {
+  Jump         L2
+L0:
+  // var out = ""
+  Const        r6, ""
+  Move         r27, r6
+  // i = 0
+  Const        r8, 0
+  Move         r9, r8
+L4:
+  // while i + 8 <= len(bin) {
+  Const        r28, 8
+  AddInt       r29, r9, r28
+  Len          r30, r7
+  LessEqInt    r31, r29, r30
+  JumpIfFalse  r31, L3
+  // let chunk = bin[i:i+8]
+  Move         r32, r9
+  Const        r28, 8
+  AddInt       r34, r9, r28
+  Move         r33, r34
+  Slice        r35, r7, r32, r33
+  Move         r36, r35
+  // let val = binToInt(chunk)
+  Move         r37, r36
+  Call         r38, binToInt, r37
+  Move         r39, r38
+  // out = out + chr(val)
+  Move         r40, r39
+  Call         r41, chr, r40
+  Add          r42, r27, r41
+  Move         r27, r42
+  // i = i + 8
+  Const        r28, 8
+  AddInt       r43, r9, r28
+  Move         r9, r43
+  // while i + 8 <= len(bin) {
+  Jump         L4
+L3:
+  // return out
+  Return       r27

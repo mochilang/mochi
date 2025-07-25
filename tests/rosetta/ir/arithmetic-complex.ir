@@ -1,0 +1,248 @@
+func main (regs=59)
+  // let a = Complex { re: 1.0, im: 1.0 }
+  Const        r2, 1.0
+  Const        r2, 1.0
+  Const        r3, "__name"
+  Const        r4, "Complex"
+  Const        r5, "re"
+  Move         r6, r2
+  Const        r7, "im"
+  Move         r8, r2
+  MakeMap      r9, 3, r3
+  Move         r0, r9
+  SetGlobal    0,0,0,0
+  // let b = Complex { re: 3.14159, im: 1.25 }
+  Const        r10, 3.14159
+  Const        r11, 1.25
+  Const        r12, "__name"
+  Const        r13, "Complex"
+  Const        r14, "re"
+  Move         r15, r10
+  Const        r16, "im"
+  Move         r17, r11
+  MakeMap      r18, 3, r12
+  Move         r1, r18
+  SetGlobal    1,1,0,0
+  // print("a:       " + cstr(a))
+  Const        r19, "a:       "
+  Move         r20, r0
+  Call         r21, cstr, r20
+  Add          r22, r19, r21
+  Print        r22
+  // print("b:       " + cstr(b))
+  Const        r23, "b:       "
+  Move         r24, r1
+  Call         r25, cstr, r24
+  Add          r26, r23, r25
+  Print        r26
+  // print("a + b:   " + cstr(add(a, b)))
+  Const        r27, "a + b:   "
+  Move         r29, r0
+  Move         r30, r1
+  Call2        r31, add, r29, r30
+  Move         r28, r31
+  Call         r32, cstr, r28
+  Add          r33, r27, r32
+  Print        r33
+  // print("a * b:   " + cstr(mul(a, b)))
+  Const        r34, "a * b:   "
+  Move         r36, r0
+  Move         r37, r1
+  Call2        r38, mul, r36, r37
+  Move         r35, r38
+  Call         r39, cstr, r35
+  Add          r40, r34, r39
+  Print        r40
+  // print("-a:      " + cstr(neg(a)))
+  Const        r41, "-a:      "
+  Move         r43, r0
+  Call         r44, neg, r43
+  Move         r42, r44
+  Call         r45, cstr, r42
+  Add          r46, r41, r45
+  Print        r46
+  // print("1 / a:   " + cstr(inv(a)))
+  Const        r47, "1 / a:   "
+  Move         r49, r0
+  Call         r50, inv, r49
+  Move         r48, r50
+  Call         r51, cstr, r48
+  Add          r52, r47, r51
+  Print        r52
+  // print("a\u0305:       " + cstr(conj(a)))
+  Const        r53, "a̅:       "
+  Move         r55, r0
+  Call         r56, conj, r55
+  Move         r54, r56
+  Call         r57, cstr, r54
+  Add          r58, r53, r57
+  Print        r58
+  Return       r0
+
+  // fun add(a: Complex, b: Complex): Complex {
+func add (regs=19)
+  // return Complex { re: a.re + b.re, im: a.im + b.im }
+  Const        r4, "re"
+  Index        r5, r2, r4
+  Const        r4, "re"
+  Index        r6, r3, r4
+  Add          r7, r5, r6
+  Const        r8, "im"
+  Index        r9, r2, r8
+  Const        r8, "im"
+  Index        r10, r3, r8
+  Add          r11, r9, r10
+  Const        r12, "__name"
+  Const        r13, "Complex"
+  Const        r14, "re"
+  Move         r15, r7
+  Const        r16, "im"
+  Move         r17, r11
+  MakeMap      r18, 3, r12
+  Return       r18
+
+  // fun mul(a: Complex, b: Complex): Complex {
+func mul (regs=27)
+  // re: a.re * b.re - a.im * b.im,
+  Const        r4, "re"
+  Index        r5, r2, r4
+  Const        r4, "re"
+  Index        r6, r3, r4
+  Mul          r7, r5, r6
+  Const        r8, "im"
+  Index        r9, r2, r8
+  Const        r8, "im"
+  Index        r10, r3, r8
+  Mul          r11, r9, r10
+  Sub          r12, r7, r11
+  // im: a.re * b.im + a.im * b.re,
+  Const        r4, "re"
+  Index        r13, r2, r4
+  Const        r8, "im"
+  Index        r14, r3, r8
+  Mul          r15, r13, r14
+  Const        r8, "im"
+  Index        r16, r2, r8
+  Const        r4, "re"
+  Index        r17, r3, r4
+  Mul          r18, r16, r17
+  Add          r19, r15, r18
+  // return Complex {
+  Const        r20, "__name"
+  Const        r21, "Complex"
+  // re: a.re * b.re - a.im * b.im,
+  Const        r22, "re"
+  Move         r23, r12
+  // im: a.re * b.im + a.im * b.re,
+  Const        r24, "im"
+  Move         r25, r19
+  // return Complex {
+  MakeMap      r26, 3, r20
+  Return       r26
+
+  // fun neg(a: Complex): Complex {
+func neg (regs=16)
+  // return Complex { re: -a.re, im: -a.im }
+  Const        r3, "re"
+  Index        r4, r2, r3
+  Neg          r5, r4
+  Const        r6, "im"
+  Index        r7, r2, r6
+  Neg          r8, r7
+  Const        r9, "__name"
+  Const        r10, "Complex"
+  Const        r11, "re"
+  Move         r12, r5
+  Const        r13, "im"
+  Move         r14, r8
+  MakeMap      r15, 3, r9
+  Return       r15
+
+  // fun inv(a: Complex): Complex {
+func inv (regs=25)
+  // let denom = a.re * a.re + a.im * a.im
+  Const        r3, "re"
+  Index        r4, r2, r3
+  Const        r3, "re"
+  Index        r5, r2, r3
+  Mul          r6, r4, r5
+  Const        r7, "im"
+  Index        r8, r2, r7
+  Const        r7, "im"
+  Index        r9, r2, r7
+  Mul          r10, r8, r9
+  Add          r11, r6, r10
+  Move         r12, r11
+  // return Complex { re: a.re / denom, im: -a.im / denom }
+  Const        r3, "re"
+  Index        r13, r2, r3
+  Div          r14, r13, r12
+  Const        r7, "im"
+  Index        r15, r2, r7
+  Neg          r16, r15
+  Div          r17, r16, r12
+  Const        r18, "__name"
+  Const        r19, "Complex"
+  Const        r20, "re"
+  Move         r21, r14
+  Const        r22, "im"
+  Move         r23, r17
+  MakeMap      r24, 3, r18
+  Return       r24
+
+  // fun conj(a: Complex): Complex {
+func conj (regs=15)
+  // return Complex { re: a.re, im: -a.im }
+  Const        r3, "re"
+  Index        r4, r2, r3
+  Const        r5, "im"
+  Index        r6, r2, r5
+  Neg          r7, r6
+  Const        r8, "__name"
+  Const        r9, "Complex"
+  Const        r10, "re"
+  Move         r11, r4
+  Const        r12, "im"
+  Move         r13, r7
+  MakeMap      r14, 3, r8
+  Return       r14
+
+  // fun cstr(a: Complex): string {
+func cstr (regs=24)
+  // var s = "(" + str(a.re)
+  Const        r3, "("
+  Const        r4, "re"
+  Index        r5, r2, r4
+  Str          r6, r5
+  Add          r7, r3, r6
+  Move         r8, r7
+  // if a.im >= 0 {
+  Const        r9, "im"
+  Index        r10, r2, r9
+  Const        r11, 0
+  LessEq       r12, r11, r10
+  JumpIfFalse  r12, L0
+  // s = s + "+" + str(a.im) + "i)"
+  Const        r13, "+"
+  Add          r14, r8, r13
+  Const        r9, "im"
+  Index        r15, r2, r9
+  Str          r16, r15
+  Add          r17, r14, r16
+  Const        r18, "i)"
+  Add          r19, r17, r18
+  Move         r8, r19
+  // if a.im >= 0 {
+  Jump         L1
+L0:
+  // s = s + str(a.im) + "i)"
+  Const        r9, "im"
+  Index        r20, r2, r9
+  Str          r21, r20
+  Add          r22, r8, r21
+  Const        r18, "i)"
+  Add          r23, r22, r18
+  Move         r8, r23
+L1:
+  // return s
+  Return       r8

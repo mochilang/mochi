@@ -1,0 +1,702 @@
+func main (regs=1)
+  Return       r0
+
+  // fun absf(x: float): float {
+func absf (regs=4)
+  // if x < 0.0 { return -x }
+  Const        r1, 0.0
+  LessFloat    r2, r0, r1
+  JumpIfFalse  r2, L0
+  Neg          r3, r0
+  Return       r3
+L0:
+  // return x
+  Return       r0
+
+  // fun maxf(a: float, b: float): float {
+func maxf (regs=3)
+  // if a > b { return a }
+  Less         r2, r1, r0
+  JumpIfFalse  r2, L0
+  Return       r0
+L0:
+  // return b
+  Return       r1
+
+  // fun minf(a: float, b: float): float {
+func minf (regs=3)
+  // if a < b { return a }
+  Less         r2, r0, r1
+  JumpIfFalse  r2, L0
+  Return       r0
+L0:
+  // return b
+  Return       r1
+
+  // fun max3(a: float, b: float, c: float): float {
+func max3 (regs=6)
+  // var m = a
+  Move         r3, r0
+  // if b > m { m = b }
+  Less         r4, r3, r1
+  JumpIfFalse  r4, L0
+  Move         r3, r1
+L0:
+  // if c > m { m = c }
+  Less         r5, r3, r2
+  JumpIfFalse  r5, L1
+  Move         r3, r2
+L1:
+  // return m
+  Return       r3
+
+  // fun min3(a: float, b: float, c: float): float {
+func min3 (regs=6)
+  // var m = a
+  Move         r3, r0
+  // if b < m { m = b }
+  Less         r4, r1, r3
+  JumpIfFalse  r4, L0
+  Move         r3, r1
+L0:
+  // if c < m { m = c }
+  Less         r5, r2, r3
+  JumpIfFalse  r5, L1
+  Move         r3, r2
+L1:
+  // return m
+  Return       r3
+
+  // fun subdivideQuadSpline(q: QuadSpline, t: float): list<QuadSpline> {
+func subdivideQuadSpline (regs=50)
+  // let s = 1.0 - t
+  Const        r2, 1.0
+  SubFloat     r3, r2, r1
+  Move         r4, r3
+  // var u = QuadSpline { c0: q.c0, c1: 0.0, c2: 0.0 }
+  Const        r5, "c0"
+  Index        r6, r0, r5
+  Const        r7, 0.0
+  Const        r7, 0.0
+  Const        r8, "__name"
+  Const        r9, "QuadSpline"
+  Const        r10, "c0"
+  Move         r11, r6
+  Const        r12, "c1"
+  Move         r13, r7
+  Const        r14, "c2"
+  Move         r15, r7
+  MakeMap      r16, 4, r8
+  Move         r17, r16
+  // var v = QuadSpline { c0: 0.0, c1: 0.0, c2: q.c2 }
+  Const        r7, 0.0
+  Const        r7, 0.0
+  Const        r18, "c2"
+  Index        r19, r0, r18
+  Const        r20, "__name"
+  Const        r21, "QuadSpline"
+  Const        r22, "c0"
+  Move         r23, r7
+  Const        r24, "c1"
+  Move         r25, r7
+  Const        r26, "c2"
+  Move         r27, r19
+  MakeMap      r28, 4, r20
+  Move         r29, r28
+  // u.c1 = s * q.c0 + t * q.c1
+  Const        r5, "c0"
+  Index        r30, r0, r5
+  MulFloat     r31, r4, r30
+  Const        r32, "c1"
+  Index        r33, r0, r32
+  Mul          r34, r1, r33
+  AddFloat     r35, r31, r34
+  Const        r32, "c1"
+  SetIndex     r17, r32, r35
+  // v.c1 = s * q.c1 + t * q.c2
+  Const        r32, "c1"
+  Index        r36, r0, r32
+  MulFloat     r37, r4, r36
+  Const        r18, "c2"
+  Index        r38, r0, r18
+  Mul          r39, r1, r38
+  AddFloat     r40, r37, r39
+  Const        r32, "c1"
+  SetIndex     r29, r32, r40
+  // u.c2 = s * u.c1 + t * v.c1
+  Const        r32, "c1"
+  Index        r41, r17, r32
+  MulFloat     r42, r4, r41
+  Const        r32, "c1"
+  Index        r43, r29, r32
+  Mul          r44, r1, r43
+  AddFloat     r45, r42, r44
+  Const        r18, "c2"
+  SetIndex     r17, r18, r45
+  // v.c0 = u.c2
+  Const        r18, "c2"
+  Index        r46, r17, r18
+  Const        r5, "c0"
+  SetIndex     r29, r5, r46
+  // return [u, v]
+  Move         r47, r17
+  Move         r48, r29
+  MakeList     r49, 2, r47
+  Return       r49
+
+  // fun subdivideQuadCurve(q: QuadCurve, t: float): list<QuadCurve> {
+func subdivideQuadCurve (regs=39)
+  // let xs = subdivideQuadSpline(q.x, t)
+  Const        r4, "x"
+  Index        r5, r0, r4
+  Move         r2, r5
+  Move         r3, r1
+  Call2        r6, subdivideQuadSpline, r2, r3
+  Move         r7, r6
+  // let ys = subdivideQuadSpline(q.y, t)
+  Const        r10, "y"
+  Index        r11, r0, r10
+  Move         r8, r11
+  Move         r9, r1
+  Call2        r12, subdivideQuadSpline, r8, r9
+  Move         r13, r12
+  // var u = QuadCurve { x: xs[0], y: ys[0] }
+  Const        r14, 0
+  Index        r15, r7, r14
+  Const        r14, 0
+  Index        r16, r13, r14
+  Const        r17, "__name"
+  Const        r18, "QuadCurve"
+  Const        r19, "x"
+  Move         r20, r15
+  Const        r21, "y"
+  Move         r22, r16
+  MakeMap      r23, 3, r17
+  Move         r24, r23
+  // var v = QuadCurve { x: xs[1], y: ys[1] }
+  Const        r25, 1
+  Index        r26, r7, r25
+  Const        r25, 1
+  Index        r27, r13, r25
+  Const        r28, "__name"
+  Const        r29, "QuadCurve"
+  Const        r30, "x"
+  Move         r31, r26
+  Const        r32, "y"
+  Move         r33, r27
+  MakeMap      r34, 3, r28
+  Move         r35, r34
+  // return [u, v]
+  Move         r36, r24
+  Move         r37, r35
+  MakeList     r38, 2, r36
+  Return       r38
+
+  // fun rectsOverlap(xa0: float, ya0: float, xa1: float, ya1: float,
+func rectsOverlap (regs=13)
+  // return xb0 <= xa1 && xa0 <= xb1 && yb0 <= ya1 && ya0 <= yb1
+  LessEq       r8, r4, r2
+  LessEq       r9, r0, r6
+  LessEq       r10, r5, r3
+  LessEq       r11, r1, r7
+  Move         r12, r8
+  JumpIfFalse  r12, L0
+  Move         r12, r9
+  JumpIfFalse  r12, L0
+  Move         r12, r10
+  JumpIfFalse  r12, L0
+  Move         r12, r11
+L0:
+  Return       r12
+
+  // fun testIntersect(p: QuadCurve, q: QuadCurve, tol: float): map<string, any> {
+func testIntersect (regs=153)
+  // let pxmin = min3(p.x.c0, p.x.c1, p.x.c2)
+  Const        r6, "x"
+  Index        r7, r0, r6
+  Const        r8, "c0"
+  Index        r9, r7, r8
+  Move         r3, r9
+  Const        r6, "x"
+  Index        r10, r0, r6
+  Const        r11, "c1"
+  Index        r12, r10, r11
+  Move         r4, r12
+  Const        r6, "x"
+  Index        r13, r0, r6
+  Const        r14, "c2"
+  Index        r15, r13, r14
+  Move         r5, r15
+  Call         r16, min3, r3, r4, r5
+  Move         r17, r16
+  // let pymin = min3(p.y.c0, p.y.c1, p.y.c2)
+  Const        r21, "y"
+  Index        r22, r0, r21
+  Const        r8, "c0"
+  Index        r23, r22, r8
+  Move         r18, r23
+  Const        r21, "y"
+  Index        r24, r0, r21
+  Const        r11, "c1"
+  Index        r25, r24, r11
+  Move         r19, r25
+  Const        r21, "y"
+  Index        r26, r0, r21
+  Const        r14, "c2"
+  Index        r27, r26, r14
+  Move         r20, r27
+  Call         r28, min3, r18, r19, r20
+  Move         r29, r28
+  // let pxmax = max3(p.x.c0, p.x.c1, p.x.c2)
+  Const        r6, "x"
+  Index        r33, r0, r6
+  Const        r8, "c0"
+  Index        r34, r33, r8
+  Move         r30, r34
+  Const        r6, "x"
+  Index        r35, r0, r6
+  Const        r11, "c1"
+  Index        r36, r35, r11
+  Move         r31, r36
+  Const        r6, "x"
+  Index        r37, r0, r6
+  Const        r14, "c2"
+  Index        r38, r37, r14
+  Move         r32, r38
+  Call         r39, max3, r30, r31, r32
+  Move         r40, r39
+  // let pymax = max3(p.y.c0, p.y.c1, p.y.c2)
+  Const        r21, "y"
+  Index        r44, r0, r21
+  Const        r8, "c0"
+  Index        r45, r44, r8
+  Move         r41, r45
+  Const        r21, "y"
+  Index        r46, r0, r21
+  Const        r11, "c1"
+  Index        r47, r46, r11
+  Move         r42, r47
+  Const        r21, "y"
+  Index        r48, r0, r21
+  Const        r14, "c2"
+  Index        r49, r48, r14
+  Move         r43, r49
+  Call         r50, max3, r41, r42, r43
+  Move         r51, r50
+  // let qxmin = min3(q.x.c0, q.x.c1, q.x.c2)
+  Const        r6, "x"
+  Index        r55, r1, r6
+  Const        r8, "c0"
+  Index        r56, r55, r8
+  Move         r52, r56
+  Const        r6, "x"
+  Index        r57, r1, r6
+  Const        r11, "c1"
+  Index        r58, r57, r11
+  Move         r53, r58
+  Const        r6, "x"
+  Index        r59, r1, r6
+  Const        r14, "c2"
+  Index        r60, r59, r14
+  Move         r54, r60
+  Call         r61, min3, r52, r53, r54
+  Move         r62, r61
+  // let qymin = min3(q.y.c0, q.y.c1, q.y.c2)
+  Const        r21, "y"
+  Index        r66, r1, r21
+  Const        r8, "c0"
+  Index        r67, r66, r8
+  Move         r63, r67
+  Const        r21, "y"
+  Index        r68, r1, r21
+  Const        r11, "c1"
+  Index        r69, r68, r11
+  Move         r64, r69
+  Const        r21, "y"
+  Index        r70, r1, r21
+  Const        r14, "c2"
+  Index        r71, r70, r14
+  Move         r65, r71
+  Call         r72, min3, r63, r64, r65
+  Move         r73, r72
+  // let qxmax = max3(q.x.c0, q.x.c1, q.x.c2)
+  Const        r6, "x"
+  Index        r77, r1, r6
+  Const        r8, "c0"
+  Index        r78, r77, r8
+  Move         r74, r78
+  Const        r6, "x"
+  Index        r79, r1, r6
+  Const        r11, "c1"
+  Index        r80, r79, r11
+  Move         r75, r80
+  Const        r6, "x"
+  Index        r81, r1, r6
+  Const        r14, "c2"
+  Index        r82, r81, r14
+  Move         r76, r82
+  Call         r83, max3, r74, r75, r76
+  Move         r84, r83
+  // let qymax = max3(q.y.c0, q.y.c1, q.y.c2)
+  Const        r21, "y"
+  Index        r88, r1, r21
+  Const        r8, "c0"
+  Index        r89, r88, r8
+  Move         r85, r89
+  Const        r21, "y"
+  Index        r90, r1, r21
+  Const        r11, "c1"
+  Index        r91, r90, r11
+  Move         r86, r91
+  Const        r21, "y"
+  Index        r92, r1, r21
+  Const        r14, "c2"
+  Index        r93, r92, r14
+  Move         r87, r93
+  Call         r94, max3, r85, r86, r87
+  Move         r95, r94
+  // var exclude = true
+  Const        r96, true
+  Move         r97, r96
+  // var accept = false
+  Const        r98, false
+  Move         r99, r98
+  // var inter = Point { x: 0.0, y: 0.0 }
+  Const        r100, 0.0
+  Const        r100, 0.0
+  Const        r101, "__name"
+  Const        r102, "Point"
+  Const        r103, "x"
+  Move         r104, r100
+  Const        r105, "y"
+  Move         r106, r100
+  MakeMap      r107, 3, r101
+  Move         r108, r107
+  // if rectsOverlap(pxmin, pymin, pxmax, pymax, qxmin, qymin, qxmax, qymax) {
+  Move         r109, r17
+  Move         r110, r29
+  Move         r111, r40
+  Move         r112, r51
+  Move         r113, r62
+  Move         r114, r73
+  Move         r115, r84
+  Move         r116, r95
+  Call         r117, rectsOverlap, r109, r110, r111, r112, r113, r114, r115, r116
+  JumpIfFalse  r117, L0
+  // exclude = false
+  Const        r98, false
+  Move         r97, r98
+  // let xmin = maxf(pxmin, qxmin)
+  Move         r118, r17
+  Move         r119, r62
+  Call2        r120, maxf, r118, r119
+  Move         r121, r120
+  // let xmax = minf(pxmax, qxmax)
+  Move         r122, r40
+  Move         r123, r84
+  Call2        r124, minf, r122, r123
+  Move         r125, r124
+  // if xmax - xmin <= tol {
+  Sub          r126, r125, r121
+  LessEq       r127, r126, r2
+  JumpIfFalse  r127, L0
+  // let ymin = maxf(pymin, qymin)
+  Move         r128, r29
+  Move         r129, r73
+  Call2        r130, maxf, r128, r129
+  Move         r131, r130
+  // let ymax = minf(pymax, qymax)
+  Move         r132, r51
+  Move         r133, r95
+  Call2        r134, minf, r132, r133
+  Move         r135, r134
+  // if ymax - ymin <= tol {
+  Sub          r136, r135, r131
+  LessEq       r137, r136, r2
+  JumpIfFalse  r137, L0
+  // accept = true
+  Const        r96, true
+  Move         r99, r96
+  // inter.x = 0.5 * (xmin + xmax)
+  Const        r138, 0.5
+  Add          r139, r121, r125
+  MulFloat     r140, r138, r139
+  Const        r6, "x"
+  SetIndex     r108, r6, r140
+  // inter.y = 0.5 * (ymin + ymax)
+  Const        r138, 0.5
+  Add          r141, r131, r135
+  MulFloat     r142, r138, r141
+  Const        r21, "y"
+  SetIndex     r108, r21, r142
+L0:
+  // return {"exclude": exclude, "accept": accept, "intersect": inter}
+  Const        r143, "exclude"
+  Const        r144, "accept"
+  Const        r145, "intersect"
+  Move         r146, r143
+  Move         r147, r97
+  Move         r148, r144
+  Move         r149, r99
+  Move         r150, r145
+  Move         r151, r108
+  MakeMap      r152, 3, r146
+  Return       r152
+
+  // fun seemsToBeDuplicate(pts: list<Point>, xy: Point, spacing: float): bool {
+func seemsToBeDuplicate (regs=28)
+  // var i = 0
+  Const        r3, 0
+  Move         r4, r3
+L3:
+  // while i < len(pts) {
+  Len          r5, r0
+  LessInt      r6, r4, r5
+  JumpIfFalse  r6, L0
+  // let pt = pts[i]
+  Index        r7, r0, r4
+  Move         r8, r7
+  // if absf(pt.x - xy.x) < spacing && absf(pt.y - xy.y) < spacing {
+  Const        r10, "x"
+  Index        r11, r8, r10
+  Const        r10, "x"
+  Index        r12, r1, r10
+  Sub          r13, r11, r12
+  Move         r9, r13
+  Call         r14, absf, r9
+  Less         r15, r14, r2
+  Const        r17, "y"
+  Index        r18, r8, r17
+  Const        r17, "y"
+  Index        r19, r1, r17
+  Sub          r20, r18, r19
+  Move         r16, r20
+  Call         r21, absf, r16
+  Less         r22, r21, r2
+  Move         r23, r15
+  JumpIfFalse  r23, L1
+  Move         r23, r22
+L1:
+  JumpIfFalse  r23, L2
+  // return true
+  Const        r24, true
+  Return       r24
+L2:
+  // i = i + 1
+  Const        r25, 1
+  AddInt       r26, r4, r25
+  Move         r4, r26
+  // while i < len(pts) {
+  Jump         L3
+L0:
+  // return false
+  Const        r27, false
+  Return       r27
+
+  // fun findIntersects(p: QuadCurve, q: QuadCurve, tol: float, spacing: float): list<Point> {
+func findIntersects (regs=51)
+  // var inters: list<Point> = []
+  Const        r4, []
+  Move         r5, r4
+  // var workload: list<map<string, QuadCurve>> = [{"p": p, "q": q}]
+  Const        r7, "p"
+  Const        r8, "q"
+  Move         r9, r7
+  Move         r10, r0
+  Move         r11, r8
+  Move         r12, r1
+  MakeMap      r13, 2, r9
+  Move         r6, r13
+  MakeList     r14, 1, r6
+  Move         r15, r14
+L1:
+  // while len(workload) > 0 {
+  Len          r16, r15
+  Const        r17, 0
+  LessInt      r18, r17, r16
+  JumpIfFalse  r18, L0
+  // let idx = len(workload) - 1
+  Len          r19, r15
+  Const        r20, 1
+  SubInt       r21, r19, r20
+  Move         r22, r21
+  // let work = workload[idx]
+  Index        r23, r15, r22
+  Move         r24, r23
+  // workload = workload[:idx]
+  Const        r25, nil
+  Move         r26, r22
+  Slice        r27, r15, r25, r26
+  Move         r15, r27
+  // let res = testIntersect(work["p"], work["q"], tol)
+  Const        r7, "p"
+  Index        r31, r24, r7
+  Move         r28, r31
+  Const        r8, "q"
+  Index        r32, r24, r8
+  Move         r29, r32
+  Move         r30, r2
+  Call         r33, testIntersect, r28, r29, r30
+  Move         r34, r33
+  // let excl = res["exclude"]
+  Const        r35, "exclude"
+  Index        r36, r34, r35
+  Move         r37, r36
+  // let acc = res["accept"]
+  Const        r38, "accept"
+  Index        r39, r34, r38
+  Move         r40, r39
+  // let inter = res["intersect"] as Point
+  Const        r41, "intersect"
+  Index        r42, r34, r41
+  Cast         r43, r42, Point
+  Move         r44, r43
+  // if acc {
+  JumpIfFalse  r40, L1
+  // if !seemsToBeDuplicate(inters, inter, spacing) {
+  Move         r45, r5
+  Move         r46, r44
+  Move         r47, r3
+  Call         r48, seemsToBeDuplicate, r45, r46, r47
+  Not          r49, r48
+  JumpIfFalse  r49, L1
+  // inters = append(inters, inter)
+  Append       r50, r5, r44
+  Move         r5, r50
+  // while len(workload) > 0 {
+  Jump         L1
+L0:
+  // return inters
+  Return       r5
+
+  // fun main() {
+func main (regs=92)
+  // x: QuadSpline { c0: -1.0, c1: 0.0, c2: 1.0 },
+  Const        r0, 1.0
+  NegFloat     r1, r0
+  Const        r2, 0.0
+  Const        r0, 1.0
+  Const        r3, "__name"
+  Const        r4, "QuadSpline"
+  Const        r5, "c0"
+  Move         r6, r1
+  Const        r7, "c1"
+  Move         r8, r2
+  Const        r9, "c2"
+  Move         r10, r0
+  MakeMap      r11, 4, r3
+  // y: QuadSpline { c0: 0.0, c1: 10.0, c2: 0.0 },
+  Const        r2, 0.0
+  Const        r12, 10.0
+  Const        r2, 0.0
+  Const        r13, "__name"
+  Const        r14, "QuadSpline"
+  Const        r15, "c0"
+  Move         r16, r2
+  Const        r17, "c1"
+  Move         r18, r12
+  Const        r19, "c2"
+  Move         r20, r2
+  MakeMap      r21, 4, r13
+  // let p = QuadCurve {
+  Const        r22, "__name"
+  Const        r23, "QuadCurve"
+  // x: QuadSpline { c0: -1.0, c1: 0.0, c2: 1.0 },
+  Const        r24, "x"
+  Move         r25, r11
+  // y: QuadSpline { c0: 0.0, c1: 10.0, c2: 0.0 },
+  Const        r26, "y"
+  Move         r27, r21
+  // let p = QuadCurve {
+  MakeMap      r28, 3, r22
+  Move         r29, r28
+  // x: QuadSpline { c0: 2.0, c1: -8.0, c2: 2.0 },
+  Const        r30, 2.0
+  Const        r31, 8.0
+  Const        r32, -8.0
+  Const        r30, 2.0
+  Const        r33, "__name"
+  Const        r34, "QuadSpline"
+  Const        r35, "c0"
+  Move         r36, r30
+  Const        r37, "c1"
+  Move         r38, r32
+  Const        r39, "c2"
+  Move         r40, r30
+  MakeMap      r41, 4, r33
+  // y: QuadSpline { c0: 1.0, c1: 2.0, c2: 3.0 },
+  Const        r0, 1.0
+  Const        r30, 2.0
+  Const        r42, 3.0
+  Const        r43, "__name"
+  Const        r44, "QuadSpline"
+  Const        r45, "c0"
+  Move         r46, r0
+  Const        r47, "c1"
+  Move         r48, r30
+  Const        r49, "c2"
+  Move         r50, r42
+  MakeMap      r51, 4, r43
+  // let q = QuadCurve {
+  Const        r52, "__name"
+  Const        r53, "QuadCurve"
+  // x: QuadSpline { c0: 2.0, c1: -8.0, c2: 2.0 },
+  Const        r54, "x"
+  Move         r55, r41
+  // y: QuadSpline { c0: 1.0, c1: 2.0, c2: 3.0 },
+  Const        r56, "y"
+  Move         r57, r51
+  // let q = QuadCurve {
+  MakeMap      r58, 3, r52
+  Move         r59, r58
+  // let tol = 0.0000001
+  Const        r60, 0.0000001
+  Move         r61, r60
+  // let spacing = tol * 10.0
+  Const        r60, 0.0000001
+  Const        r12, 10.0
+  MulFloat     r62, r60, r12
+  Move         r63, r62
+  // let inters = findIntersects(p, q, tol, spacing)
+  Move         r64, r29
+  Move         r65, r59
+  Const        r60, 0.0000001
+  Move         r66, r60
+  Const        r68, 0.000001
+  Move         r67, r68
+  Call         r69, findIntersects, r64, r65, r66, r67
+  Move         r70, r69
+  // var i = 0
+  Const        r71, 0
+  Move         r72, r71
+L1:
+  // while i < len(inters) {
+  Len          r73, r70
+  LessInt      r74, r72, r73
+  JumpIfFalse  r74, L0
+  // let pt = inters[i]
+  Index        r75, r70, r72
+  Move         r76, r75
+  // print("(" + str(pt.x) + ", " + str(pt.y) + ")")
+  Const        r77, "("
+  Const        r78, "x"
+  Index        r79, r76, r78
+  Str          r80, r79
+  Add          r81, r77, r80
+  Const        r82, ", "
+  Add          r83, r81, r82
+  Const        r84, "y"
+  Index        r85, r76, r84
+  Str          r86, r85
+  Add          r87, r83, r86
+  Const        r88, ")"
+  Add          r89, r87, r88
+  Print        r89
+  // i = i + 1
+  Const        r90, 1
+  AddInt       r91, r72, r90
+  Move         r72, r91
+  // while i < len(inters) {
+  Jump         L1
+L0:
+  Return       r0
