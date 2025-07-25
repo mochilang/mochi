@@ -1,7 +1,7 @@
 # Rosetta C# Transpiler Output
 
-Completed programs: 69/284
-Last updated: 2025-07-25 19:53 +0700
+Completed programs: 70/284
+Last updated: 2025-07-25 20:19 +0700
 
 ## Checklist
 | Index | Name | Status | Duration | Memory |
@@ -44,37 +44,37 @@ Last updated: 2025-07-25 19:53 +0700
 | 36 | address-of-a-variable | ✓ | 1.055ms | 16.0MB |
 | 37 | adfgvx-cipher |   |  |  |
 | 38 | aks-test-for-primes | ✓ | 958µs | 24.1MB |
-| 39 | algebraic-data-types | ✓ |  |  |
-| 40 | align-columns | ✓ |  |  |
-| 41 | aliquot-sequence-classifications | ✓ |  |  |
-| 42 | almkvist-giullera-formula-for-pi |   |  |  |
-| 43 | almost-prime | ✓ |  |  |
-| 44 | amb | ✓ |  |  |
-| 45 | amicable-pairs | ✓ |  |  |
-| 46 | anagrams-deranged-anagrams | ✓ | 4.177ms | 24.1MB |
-| 47 | anagrams | ✓ | 1.529ms | 77.0MB |
-| 48 | angle-difference-between-two-bearings-1 | ✓ | 1.464ms | 16.0MB |
-| 49 | angle-difference-between-two-bearings-2 | ✓ | 1.341ms | 16.0MB |
-| 50 | angles-geometric-normalization-and-conversion | ✓ | 1.241ms | 32.1MB |
-| 51 | animate-a-pendulum | ✓ | 951µs | 16.0MB |
-| 52 | animation | ✓ | 895µs | 60.9MB |
-| 53 | anonymous-recursion-1 | ✓ | 903µs | 16.0MB |
-| 54 | anonymous-recursion-2 | ✓ | 1.013ms | 16.0MB |
-| 55 | anonymous-recursion | ✓ | 949µs | 16.0MB |
-| 56 | anti-primes | ✓ | 9.324ms | 16.0MB |
-| 57 | append-a-record-to-the-end-of-a-text-file | ✓ | 1.01ms | 16.0MB |
-| 58 | apply-a-callback-to-an-array-1 | ✓ | 882µs | 16.0MB |
-| 59 | apply-a-callback-to-an-array-2 | ✓ | 3.257ms | 16.0MB |
-| 60 | apply-a-digital-filter-direct-form-ii-transposed- | ✓ | 3.66ms | 16.0MB |
-| 61 | approximate-equality | ✓ | 4.16ms | 16.0MB |
-| 62 | arbitrary-precision-integers-included- | ✓ | 1.544ms | 1.8GB |
-| 63 | archimedean-spiral | ✓ | 3.59ms | 32.1MB |
-| 64 | arena-storage-pool | ✓ | 20.638ms | 2.4GB |
-| 65 | arithmetic-complex | ✓ | 3.012ms | 16.0MB |
-| 66 | arithmetic-derivative | ✓ | 3.201ms | 341.0MB |
-| 67 | arithmetic-evaluation | ✓ | 3.419ms | 16.0MB |
-| 68 | arithmetic-geometric-mean-calculate-pi | ✓ | 2.863ms | 16.0MB |
-| 69 | arithmetic-geometric-mean | ✓ | 3.042ms | 16.0MB |
+| 39 | algebraic-data-types | ✓ | 26.02ms | 3.3GB |
+| 40 | align-columns | ✓ | 4.195ms | 1.9GB |
+| 41 | aliquot-sequence-classifications | ✓ | 36.965ms | 3.0GB |
+| 42 | almkvist-giullera-formula-for-pi | ✓ | 84.673ms | 18.3GB |
+| 43 | almost-prime | ✓ | 3.366ms | 24.1MB |
+| 44 | amb | ✓ | 13.625ms | 1.0GB |
+| 45 | amicable-pairs | ✓ | 250.872ms | 1.1GB |
+| 46 | anagrams-deranged-anagrams | ✓ | 14.195ms | 1.2GB |
+| 47 | anagrams | ✓ | 14.023ms | 1.3GB |
+| 48 | angle-difference-between-two-bearings-1 | ✓ | 2.768ms | 16.0MB |
+| 49 | angle-difference-between-two-bearings-2 | ✓ | 3.03ms | 16.0MB |
+| 50 | angles-geometric-normalization-and-conversion | ✓ | 3.77ms | 32.1MB |
+| 51 | animate-a-pendulum | ✓ | 15.182ms | 1.5GB |
+| 52 | animation | ✓ | 12.806ms | 1.3GB |
+| 53 | anonymous-recursion-1 | ✓ | 2.55ms | 16.0MB |
+| 54 | anonymous-recursion-2 | ✓ | 3.023ms | 16.0MB |
+| 55 | anonymous-recursion | ✓ | 2.733ms | 16.0MB |
+| 56 | anti-primes | ✓ | 42.424ms | 1.1GB |
+| 57 | append-a-record-to-the-end-of-a-text-file | ✓ | 2.605ms | 16.0MB |
+| 58 | apply-a-callback-to-an-array-1 | ✓ | 2.726ms | 16.0MB |
+| 59 | apply-a-callback-to-an-array-2 | ✓ | 16.906ms | 2.2GB |
+| 60 | apply-a-digital-filter-direct-form-ii-transposed- | ✓ | 2.9ms | 16.0MB |
+| 61 | approximate-equality | ✓ | 3.166ms | 16.0MB |
+| 62 | arbitrary-precision-integers-included- | ✓ | 10.623ms | 2.8GB |
+| 63 | archimedean-spiral | ✓ | 18.515ms | 11.4GB |
+| 64 | arena-storage-pool | ✓ | 17.442ms | 2.5GB |
+| 65 | arithmetic-complex | ✓ | 2.923ms | 16.0MB |
+| 66 | arithmetic-derivative | ✓ | 14.854ms | 1.9GB |
+| 67 | arithmetic-evaluation | ✓ | 14.258ms | 1.1GB |
+| 68 | arithmetic-geometric-mean-calculate-pi | ✓ | 3.518ms | 16.0MB |
+| 69 | arithmetic-geometric-mean | ✓ | 14.814ms | 1.6GB |
 | 70 | arithmetic-integer-1 | ✓ | 3.054ms | 16.0MB |
 | 71 | arithmetic-integer-2 | ✓ | 2.933ms | 16.0MB |
 | 72 | arithmetic-numbers |   |  |  |
