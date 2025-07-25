@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated Python code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/Python`.
-Last updated: 2025-07-25 16:45 GMT+7
+Last updated: 2025-07-25 17:02 GMT+7
 
 ## Rosetta Golden Test Checklist (269/284)
 | Index | Name | Status | Duration | Memory |
@@ -88,16 +88,16 @@ Last updated: 2025-07-25 16:45 GMT+7
 | 79 | assertions | ✓ | 7.0µs | 11.61MB |
 | 80 | associative-array-creation | ✓ | 13.0µs | 12.74MB |
 | 81 | associative-array-iteration | ✓ | 19.0µs | 12.45MB |
-| 82 | associative-array-merging | ✓ |  |  |
-| 83 | atomic-updates | ✓ |  |  |
-| 84 | attractive-numbers | ✓ |  |  |
-| 85 | average-loop-length | ✓ |  |  |
-| 86 | averages-arithmetic-mean | ✓ |  |  |
-| 87 | averages-mean-time-of-day | ✓ |  |  |
-| 88 | averages-median-1 | ✓ |  |  |
-| 89 | averages-median-2 | ✓ |  |  |
-| 90 | averages-median-3 | ✓ |  |  |
-| 91 | averages-mode | ✓ |  |  |
+| 82 | associative-array-merging | ✓ | 28.0µs | 12.63MB |
+| 83 | atomic-updates | ✓ | 67.0µs | 12.54MB |
+| 84 | attractive-numbers | ✓ | 175.0µs | 12.98MB |
+| 85 | average-loop-length | ✓ | 505.0ms | 13.21MB |
+| 86 | averages-arithmetic-mean | ✓ | 67.0µs | 12.88MB |
+| 87 | averages-mean-time-of-day | ✓ | 70.0µs | 13.63MB |
+| 88 | averages-median-1 | ✓ | 30.0µs | 12.75MB |
+| 89 | averages-median-2 | ✓ | 29.0µs | 13.05MB |
+| 90 | averages-median-3 | ✓ | 43.0µs | 12.61MB |
+| 91 | averages-mode | ✓ | 38.0µs | 12.68MB |
 | 92 | averages-pythagorean-means | ✓ |  |  |
 | 93 | averages-root-mean-square | ✓ |  |  |
 | 94 | averages-simple-moving-average | ✓ |  |  |
