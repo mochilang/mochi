@@ -3,7 +3,7 @@
 Generated Scala code for Rosetta tasks in `tests/rosetta/x/Mochi`. Each program has a `.scala` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
 
 ## Golden Test Checklist (94/284)
-_Last updated: 2025-07-25 19:21 +0700_
+_Last updated: 2025-07-25 19:55 +0700_
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -32,7 +32,7 @@ _Last updated: 2025-07-25 19:21 +0700_
 | 23 | abstract-type | ✓ | 3µs | 8.7 MB |
 | 24 | abundant-deficient-and-perfect-number-classifications | ✓ | 255µs | 8.7 MB |
 | 25 | abundant-odd-numbers | ✓ | 654µs | 8.7 MB |
-| 26 | accumulator-factory | ✓ | 7µs | 8.7 MB |
+| 26 | accumulator-factory | ✓ | 4µs | 8.7 MB |
 | 27 | achilles-numbers | ✓ | 65µs | 8.7 MB |
 | 28 | ackermann-function-2 | ✓ | 3µs | 8.7 MB |
 | 29 | ackermann-function-3 | ✓ |  |  |
