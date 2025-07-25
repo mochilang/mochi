@@ -42,6 +42,17 @@
   (do (def iter 0) (while (< iter 10) (do (def cards []) (def i 0) (while (< i n_cards) (do (def n (+ (mod (swap! nowSeed (fn [s] (mod (+ (* s 1664525) 1013904223) 2147483647))) (- digit_range 1)) 1)) (def cards (conj cards (newNum n))) (println (str " " (str n))) (def i (+ i 1)))) (println ":  ") (when (not (solve cards)) (println "No solution")) (def iter (+ iter 1))))))
 
 (defn -main []
-  (main))
+  (let [rt (Runtime/getRuntime)
+    start-mem (- (.totalMemory rt) (.freeMemory rt))
+    start (System/nanoTime)]
+      (main)
+      (System/gc)
+      (let [end (System/nanoTime)
+        end-mem (- (.totalMemory rt) (.freeMemory rt))
+        duration-us (quot (- end start) 1000)
+        memory-bytes (Math/abs ^long (- end-mem start-mem))]
+        (println (str "{\n  \"duration_us\": " duration-us ",\n  \"memory_bytes\": " memory-bytes ",\n  \"name\": \"main\"\n}"))
+      )
+    ))
 
 (-main)

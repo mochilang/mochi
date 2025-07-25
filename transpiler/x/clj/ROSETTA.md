@@ -1,19 +1,19 @@
 # Clojure Rosetta Transpiler
 
-Completed: 16/284
-Last updated: 2025-07-25 10:49 +0700
+Completed: 14/284
+Last updated: 2025-07-25 12:41 +0700
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
-| 1 | 100-doors-2 | ✓ | 42.868ms | 18.4 MB |
-| 2 | 100-doors-3 | ✓ | 40.46ms | 18.4 MB |
-| 3 | 100-doors | ✓ | 43.762ms | 19.4 MB |
-| 4 | 100-prisoners | ✓ | 2.882578s | 21.8 MB |
+| 1 | 100-doors-2 | ✓ | 50.48ms | 18.7 MB |
+| 2 | 100-doors-3 | ✓ | 43.875ms | 18.5 MB |
+| 3 | 100-doors | ✓ | 49.661ms | 19.5 MB |
+| 4 | 100-prisoners | ✓ | 3.814992s | 22.2 MB |
 | 5 | 15-puzzle-game |   |  |  |
-| 6 | 15-puzzle-solver | ✓ |  |  |
-| 7 | 2048 | ✓ |  |  |
-| 8 | 21-game | ✓ |  |  |
-| 9 | 24-game-solve | ✓ |  |  |
+| 6 | 15-puzzle-solver | ✓ | 50.367ms | 17.6 MB |
+| 7 | 2048 |   |  |  |
+| 8 | 21-game |   |  |  |
+| 9 | 24-game-solve | ✓ | 128.127ms | 23.3 MB |
 | 10 | 24-game |   |  |  |
 | 11 | 4-rings-or-4-squares-puzzle |   |  |  |
 | 12 | 9-billion-names-of-god-the-integer | ✓ |  |  |

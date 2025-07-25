@@ -1,0 +1,8 @@
+run error: exit status 1
+WARNING: empty already refers to: #'clojure.core/empty in namespace: main, being replaced by: #'main/empty
+WARNING: val already refers to: #'clojure.core/val in namespace: main, being replaced by: #'main/val
+Syntax error (UnsupportedOperationException) compiling recur at (/workspace/mochi/tests/rosetta/transpiler/Clojure/2048.clj:70:922).
+Can only recur from tail position
+
+Full report at:
+/tmp/clojure-17896287559438758186.edn

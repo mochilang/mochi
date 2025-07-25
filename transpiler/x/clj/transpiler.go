@@ -1079,6 +1079,24 @@ func isZeroNode(n Node) bool {
 	return false
 }
 
+func isReturnThrow(n Node) bool {
+	l, ok := n.(*List)
+	if !ok || len(l.Elems) < 2 {
+		return false
+	}
+	if sym, ok := l.Elems[0].(Symbol); !ok || sym != "throw" {
+		return false
+	}
+	if inner, ok := l.Elems[1].(*List); ok && len(inner.Elems) >= 2 {
+		if s, ok := inner.Elems[0].(Symbol); ok && s == "ex-info" {
+			if str, ok := inner.Elems[1].(StringLit); ok && string(str) == "return" {
+				return true
+			}
+		}
+	}
+	return false
+}
+
 func isAggCall(e *parser.Expr) string {
 	if e == nil || e.Binary == nil || e.Binary.Left == nil || len(e.Binary.Right) > 0 {
 		return ""
@@ -2208,7 +2226,19 @@ func transpileWhileStmt(w *parser.WhileStmt) (Node, error) {
 	}
 
 	elseBody := append([]Node{}, other...)
-	elseBody = append(elseBody, &List{Elems: []Node{Symbol("recur"), Symbol(flagVar)}})
+	appendRecur := true
+	var last Node
+	if len(other) > 0 {
+		last = other[len(other)-1]
+	} else if len(pre) > 0 {
+		last = pre[len(pre)-1]
+	}
+	if last != nil && isReturnThrow(last) {
+		appendRecur = false
+	}
+	if appendRecur {
+		elseBody = append(elseBody, &List{Elems: []Node{Symbol("recur"), Symbol(flagVar)}})
+	}
 	var elseNode Node
 	if len(elseBody) == 1 {
 		elseNode = elseBody[0]
