@@ -648,7 +648,7 @@ func (p *Program) write(w io.Writer) {
 					if i > 0 {
 						io.WriteString(w, ", ")
 					}
-					if strings.HasPrefix(f.Type, "std::unique_ptr<") {
+					if strings.HasPrefix(f.Type, "std::unique_ptr<") || strings.HasPrefix(f.Type, "std::shared_ptr<") {
 						fmt.Fprintf(w, "%s(std::move(%s_))", f.Name, f.Name)
 					} else {
 						fmt.Fprintf(w, "%s(%s_)", f.Name, f.Name)
@@ -1026,7 +1026,7 @@ func (s *SelectorExpr) emit(w io.Writer) {
 		io.WriteString(w, "[\"")
 		io.WriteString(w, s.Field)
 		io.WriteString(w, "\"]")
-	} else if strings.HasPrefix(t, "std::optional<") || strings.HasSuffix(t, "*") || strings.HasPrefix(t, "std::unique_ptr<") {
+	} else if strings.HasPrefix(t, "std::optional<") || strings.HasSuffix(t, "*") || strings.HasPrefix(t, "std::unique_ptr<") || strings.HasPrefix(t, "std::shared_ptr<") {
 		s.Target.emit(w)
 		io.WriteString(w, "->")
 		io.WriteString(w, s.Field)
@@ -1299,7 +1299,7 @@ func (c *CastExpr) emit(w io.Writer) {
 		io.WriteString(w, ")")
 		return
 	}
-	if strings.HasPrefix(valType, "std::unique_ptr<") && strings.HasSuffix(c.Type, "*") {
+	if (strings.HasPrefix(valType, "std::unique_ptr<") || strings.HasPrefix(valType, "std::shared_ptr<")) && strings.HasSuffix(c.Type, "*") {
 		c.Value.emit(w)
 		io.WriteString(w, ".get()")
 		return
@@ -2008,9 +2008,13 @@ func (s *LetStmt) emit(w io.Writer, indent int) {
 	io.WriteString(w, safeName(s.Name))
 	if s.Value != nil {
 		io.WriteString(w, " = ")
-		if strings.HasPrefix(typ, "std::unique_ptr<") {
+		if strings.HasPrefix(typ, "std::unique_ptr<") || strings.HasPrefix(typ, "std::shared_ptr<") {
 			if sl, ok := s.Value.(*StructLit); ok {
-				fmt.Fprintf(w, "std::make_unique<%s>(", sl.Name)
+				maker := "std::make_unique"
+				if strings.HasPrefix(typ, "std::shared_ptr<") {
+					maker = "std::make_shared"
+				}
+				fmt.Fprintf(w, "%s<%s>(", maker, sl.Name)
 				for i, f := range sl.Fields {
 					if i > 0 {
 						io.WriteString(w, ", ")
@@ -2095,6 +2099,20 @@ func (a *AssignStmt) emit(w io.Writer, indent int) {
 			}
 		}
 	}
+	if strings.HasPrefix(varType, "std::shared_ptr<") {
+		if sl, ok := a.Value.(*StructLit); ok {
+			fmt.Fprintf(w, "std::make_shared<%s>(", sl.Name)
+			for i, f := range sl.Fields {
+				if i > 0 {
+					io.WriteString(w, ", ")
+				}
+				f.Value.emit(w)
+			}
+			io.WriteString(w, ")")
+			io.WriteString(w, ";\n")
+			return
+		}
+	}
 	a.Value.emit(w)
 	io.WriteString(w, ";\n")
 }
@@ -2138,9 +2156,13 @@ func (r *ReturnStmt) emit(w io.Writer, indent int) {
 	io.WriteString(w, "return")
 	if r.Value != nil {
 		io.WriteString(w, " ")
-		if strings.HasPrefix(r.Type, "std::unique_ptr<") {
+		if strings.HasPrefix(r.Type, "std::unique_ptr<") || strings.HasPrefix(r.Type, "std::shared_ptr<") {
 			if sl, ok := r.Value.(*StructLit); ok {
-				fmt.Fprintf(w, "std::make_unique<%s>(", sl.Name)
+				maker := "std::make_unique"
+				if strings.HasPrefix(r.Type, "std::shared_ptr<") {
+					maker = "std::make_shared"
+				}
+				fmt.Fprintf(w, "%s<%s>(", maker, sl.Name)
 				for i, f := range sl.Fields {
 					if i > 0 {
 						io.WriteString(w, ", ")
@@ -2989,6 +3011,9 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 					elem := strings.TrimSuffix(strings.TrimPrefix(t, "std::vector<std::unique_ptr<"), ">>")
 					typ = elem + "*"
 					val = &PtrGetExpr{Target: val}
+				} else if strings.HasPrefix(t, "std::vector<std::shared_ptr<") {
+					elem := strings.TrimSuffix(strings.TrimPrefix(t, "std::vector<std::shared_ptr<"), ">>")
+					typ = fmt.Sprintf("std::shared_ptr<%s>", elem)
 				}
 			}
 			if typ == "auto" || typ == "" {
@@ -3038,6 +3063,9 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 					elem := strings.TrimSuffix(strings.TrimPrefix(t, "std::vector<std::unique_ptr<"), ">>")
 					typ = elem + "*"
 					val = &PtrGetExpr{Target: val}
+				} else if strings.HasPrefix(t, "std::vector<std::shared_ptr<") {
+					elem := strings.TrimSuffix(strings.TrimPrefix(t, "std::vector<std::shared_ptr<"), ">>")
+					typ = fmt.Sprintf("std::shared_ptr<%s>", elem)
 				}
 			}
 			if typ == "auto" || typ == "" {
@@ -3593,6 +3621,8 @@ func convertFun(fn *parser.FunStmt) (*Func, error) {
 			typ = cppTypeFrom(tp)
 			if strings.HasPrefix(typ, "std::unique_ptr<") {
 				typ = strings.TrimSuffix(strings.TrimPrefix(typ, "std::unique_ptr<"), ">") + "*"
+			} else if strings.HasPrefix(typ, "std::shared_ptr<") {
+				typ = strings.TrimSuffix(strings.TrimPrefix(typ, "std::shared_ptr<"), ">") + "*"
 			}
 		}
 		inFunction = prev
@@ -3844,6 +3874,8 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 						ptyp := cppTypeFrom(types.ResolveTypeRef(fn.Params[i].Type, currentEnv))
 						if strings.HasPrefix(ptyp, "std::unique_ptr<") {
 							ptyp = strings.TrimSuffix(strings.TrimPrefix(ptyp, "std::unique_ptr<"), ">") + "*"
+						} else if strings.HasPrefix(ptyp, "std::shared_ptr<") {
+							ptyp = strings.TrimSuffix(strings.TrimPrefix(ptyp, "std::shared_ptr<"), ">") + "*"
 						}
 						if ptyp == "" {
 							ptyp = "auto"
@@ -4122,6 +4154,9 @@ func convertMatchExpr(me *parser.MatchExpr) (Expr, error) {
 					if strings.HasPrefix(ft, "std::unique_ptr<") {
 						val = &PtrGetExpr{Target: val}
 						ft = strings.TrimSuffix(strings.TrimPrefix(ft, "std::unique_ptr<"), ">") + "*"
+					} else if strings.HasPrefix(ft, "std::shared_ptr<") {
+						val = &PtrGetExpr{Target: val}
+						ft = strings.TrimSuffix(strings.TrimPrefix(ft, "std::shared_ptr<"), ">") + "*"
 					}
 					if name != "_" {
 						then = append(then, &LetStmt{Name: name, Type: ft, Value: val})
@@ -4153,7 +4188,7 @@ func convertMatchExpr(me *parser.MatchExpr) (Expr, error) {
 		def = &FloatLit{Value: 0}
 	case currentReturnType == "bool":
 		def = &BoolLit{Value: false}
-	case strings.HasPrefix(currentReturnType, "std::unique_ptr<"):
+	case strings.HasPrefix(currentReturnType, "std::unique_ptr<") || strings.HasPrefix(currentReturnType, "std::shared_ptr<"):
 		def = &NullLit{}
 	default:
 		def = &StructLit{Name: currentReturnType}
@@ -4992,7 +5027,7 @@ func cppType(t string) string {
 			if currentProgram != nil {
 				currentProgram.addInclude("<memory>")
 			}
-			return fmt.Sprintf("std::unique_ptr<%s>", t)
+			return fmt.Sprintf("std::shared_ptr<%s>", t)
 		}
 	}
 	return "auto"
@@ -5030,7 +5065,7 @@ func cppTypeFrom(tp types.Type) string {
 		if currentProgram != nil {
 			currentProgram.addInclude("<memory>")
 		}
-		return fmt.Sprintf("std::unique_ptr<%s>", t.Name)
+		return fmt.Sprintf("std::shared_ptr<%s>", t.Name)
 	default:
 		return "auto"
 	}
@@ -5162,7 +5197,7 @@ func guessType(e *parser.Expr) string {
 				if currentProgram != nil {
 					currentProgram.addInclude("<memory>")
 				}
-				return fmt.Sprintf("std::unique_ptr<%s>", ut.Name)
+				return fmt.Sprintf("std::shared_ptr<%s>", ut.Name)
 			}
 		}
 		return name
@@ -5285,6 +5320,14 @@ func exprType(e Expr) string {
 		}
 		return "auto"
 	case *StructLit:
+		if currentEnv != nil {
+			if ut, ok := currentEnv.FindUnionByVariant(v.Name); ok {
+				if currentProgram != nil {
+					currentProgram.addInclude("<memory>")
+				}
+				return fmt.Sprintf("std::shared_ptr<%s>", ut.Name)
+			}
+		}
 		return v.Name
 	case *ListLit:
 		if len(v.Elems) > 0 {
@@ -5556,7 +5599,7 @@ func convertUnionDecl(td *parser.TypeDecl) (StructDef, []StructDef, error) {
 			if f.Type != nil {
 				typ = cppTypeFrom(types.ResolveTypeRef(f.Type, currentEnv))
 				if typ == td.Name {
-					typ = fmt.Sprintf("std::unique_ptr<%s>", td.Name)
+					typ = fmt.Sprintf("std::shared_ptr<%s>", td.Name)
 					if currentProgram != nil {
 						currentProgram.addInclude("<memory>")
 					}
