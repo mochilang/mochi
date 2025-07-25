@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Python code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/Python`.
-Last updated: 2025-07-25 18:16 GMT+7
+Last updated: 2025-07-25 19:21 GMT+7
 
-## Rosetta Golden Test Checklist (268/284)
+## Rosetta Golden Test Checklist (267/284)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 161.0µs | 12.50MB |
@@ -135,40 +135,40 @@ Last updated: 2025-07-25 18:16 GMT+7
 | 126 | bitmap-write-a-ppm-file | ✓ | 118.0µs | 13.63MB |
 | 127 | bitmap | ✓ | 226.0ms | 20.87MB |
 | 128 | bitwise-io-1 | ✓ | 1.0ms | 13.15MB |
-| 129 | bitwise-io-2 | error |  |  |
+| 129 | bitwise-io-2 | ✓ |  |  |
 | 130 | bitwise-operations | ✓ | 146.0µs | 13.86MB |
 | 131 | blum-integer | ✓ | 313.0µs | 13.26MB |
 | 132 | boolean-values | ✓ | 18.0µs | 12.62MB |
-| 133 | box-the-compass | ✓ |  |  |
-| 134 | boyer-moore-string-search | ✓ |  |  |
+| 133 | box-the-compass | ✓ | 132.0µs | 13.61MB |
+| 134 | boyer-moore-string-search | ✓ | 71.0µs | 12.98MB |
 | 135 | brazilian-numbers | ✓ |  |  |
-| 136 | break-oo-privacy | ✓ |  |  |
+| 136 | break-oo-privacy | ✓ | 542.0µs | 12.81MB |
 | 137 | brilliant-numbers | ✓ |  |  |
 | 138 | brownian-tree | ✓ |  |  |
 | 139 | bulls-and-cows-player | ✓ |  |  |
 | 140 | bulls-and-cows | ✓ |  |  |
-| 141 | burrows-wheeler-transform | ✓ |  |  |
-| 142 | caesar-cipher-1 | ✓ |  |  |
-| 143 | caesar-cipher-2 | ✓ |  |  |
-| 144 | calculating-the-value-of-e | ✓ |  |  |
-| 145 | calendar---for-real-programmers-1 | ✓ |  |  |
-| 146 | calendar---for-real-programmers-2 | ✓ |  |  |
-| 147 | calendar | ✓ |  |  |
-| 148 | calkin-wilf-sequence | ✓ |  |  |
-| 149 | call-a-foreign-language-function | ✓ |  |  |
-| 150 | call-a-function-1 | ✓ |  |  |
-| 151 | call-a-function-10 | ✓ |  |  |
-| 152 | call-a-function-11 | ✓ |  |  |
-| 153 | call-a-function-12 | ✓ |  |  |
-| 154 | call-a-function-2 | ✓ |  |  |
-| 155 | call-a-function-3 | ✓ |  |  |
-| 156 | call-a-function-4 | ✓ |  |  |
-| 157 | call-a-function-5 | ✓ |  |  |
-| 158 | call-a-function-6 | ✓ |  |  |
-| 159 | call-a-function-7 | ✓ |  |  |
-| 160 | call-a-function-8 | ✓ |  |  |
-| 161 | call-a-function-9 | ✓ |  |  |
-| 162 | call-an-object-method-1 | ✓ |  |  |
+| 141 | burrows-wheeler-transform | ✓ | 12.0ms | 13.98MB |
+| 142 | caesar-cipher-1 | ✓ | 222.0µs | 12.67MB |
+| 143 | caesar-cipher-2 | ✓ | 217.0µs | 12.65MB |
+| 144 | calculating-the-value-of-e | ✓ | 27.0µs | 12.98MB |
+| 145 | calendar---for-real-programmers-1 | ✓ | 868.0µs | 13.23MB |
+| 146 | calendar---for-real-programmers-2 | ✓ | 932.0µs | 12.54MB |
+| 147 | calendar | ✓ | 895.0µs | 13.02MB |
+| 148 | calkin-wilf-sequence | error |  |  |
+| 149 | call-a-foreign-language-function | ✓ | 7.0µs | 12.43MB |
+| 150 | call-a-function-1 | ✓ | 2.0µs | 12.39MB |
+| 151 | call-a-function-10 | ✓ | 2.0µs | 12.58MB |
+| 152 | call-a-function-11 | ✓ | 11.0µs | 12.42MB |
+| 153 | call-a-function-12 | ✓ | 10.0µs | 12.68MB |
+| 154 | call-a-function-2 | ✓ | 2.0µs | 12.31MB |
+| 155 | call-a-function-3 | ✓ | 2.0µs | 12.52MB |
+| 156 | call-a-function-4 | ✓ | 1.0µs | 12.31MB |
+| 157 | call-a-function-5 | ✓ | 9.0µs | 12.61MB |
+| 158 | call-a-function-6 | ✓ | 9.0µs | 12.49MB |
+| 159 | call-a-function-7 | error |  |  |
+| 160 | call-a-function-8 | ✓ | 17.0µs | 12.68MB |
+| 161 | call-a-function-9 | ✓ | 3.0µs | 12.54MB |
+| 162 | call-an-object-method-1 | ✓ | 373.0µs | 12.16MB |
 | 163 | call-an-object-method-2 | ✓ |  |  |
 | 164 | call-an-object-method-3 | ✓ |  |  |
 | 165 | call-an-object-method | ✓ |  |  |

@@ -1,0 +1,8 @@
+The first 20 terms of the Calkin-Wilf sequnence are:
+Traceback (most recent call last):
+  File "/workspace/mochi/tests/rosetta/transpiler/Python/calkin-wilf-sequence.py", line 114, in <module>
+    main()
+  File "/workspace/mochi/tests/rosetta/transpiler/Python/calkin-wilf-sequence.py", line 105, in main
+    print((i + int(1)).rjust(2, " ") + ": " + s)
+          ^^^^^^^^^^^^^^^^^^
+AttributeError: 'int' object has no attribute 'rjust'
