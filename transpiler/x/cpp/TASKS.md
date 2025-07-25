@@ -1,3 +1,173 @@
+## Progress (2025-07-26 05:07 +0700)
+- cpp transpiler: include <any> and run rosetta 73
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 05:07 +0700)
+- cpp transpiler: include <any> and run rosetta 73
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 05:07 +0700)
+- cpp transpiler: include <any> and run rosetta 73
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 05:07 +0700)
+- cpp transpiler: include <any> and run rosetta 73
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 05:07 +0700)
+- cpp transpiler: include <any> and run rosetta 73
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 05:07 +0700)
+- cpp transpiler: include <any> and run rosetta 73
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 05:07 +0700)
+- cpp transpiler: include <any> and run rosetta 73
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 05:07 +0700)
+- cpp transpiler: include <any> and run rosetta 73
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 05:07 +0700)
+- cpp transpiler: include <any> and run rosetta 73
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 05:07 +0700)
+- cpp transpiler: include <any> and run rosetta 73
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 05:07 +0700)
+- cpp transpiler: include <any> and run rosetta 73
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 05:07 +0700)
+- cpp transpiler: include <any> and run rosetta 73
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 05:07 +0700)
+- cpp transpiler: include <any> and run rosetta 73
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 05:07 +0700)
+- cpp transpiler: include <any> and run rosetta 73
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 05:07 +0700)
+- cpp transpiler: include <any> and run rosetta 73
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 05:07 +0700)
+- cpp transpiler: include <any> and run rosetta 73
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 05:07 +0700)
+- cpp transpiler: include <any> and run rosetta 73
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 05:07 +0700)
+- cpp transpiler: include <any> and run rosetta 73
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 05:07 +0700)
+- cpp transpiler: include <any> and run rosetta 73
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 05:07 +0700)
+- cpp transpiler: include <any> and run rosetta 73
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 05:07 +0700)
+- cpp transpiler: include <any> and run rosetta 73
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 05:07 +0700)
+- cpp transpiler: include <any> and run rosetta 73
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 05:07 +0700)
+- cpp transpiler: include <any> and run rosetta 73
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 05:07 +0700)
+- cpp transpiler: include <any> and run rosetta 73
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 05:07 +0700)
+- cpp transpiler: include <any> and run rosetta 73
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 05:07 +0700)
+- cpp transpiler: include <any> and run rosetta 73
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 05:07 +0700)
+- cpp transpiler: include <any> and run rosetta 73
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 05:07 +0700)
+- cpp transpiler: include <any> and run rosetta 73
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 05:07 +0700)
+- cpp transpiler: include <any> and run rosetta 73
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 05:07 +0700)
+- cpp transpiler: include <any> and run rosetta 73
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 05:07 +0700)
+- cpp transpiler: include <any> and run rosetta 73
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 04:51 +0700)
+- ctrans: support float slice of slices
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 04:51 +0700)
+- ctrans: support float slice of slices
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 04:51 +0700)
+- ctrans: support float slice of slices
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
 ## Progress (2025-07-25 21:15 +0700)
 - scheme transpiler: avoid list name clash
 - Generated C++ for 103/104 programs
