@@ -33,7 +33,7 @@ func UpdateRosettaChecklist() {
 		mem := ""
 		outPath := filepath.Join(outDir, name+".out")
 		if data, err := os.ReadFile(outPath); err == nil {
-			status = "x"
+			status = "✓"
 			compiled++
 			trimmed := bytes.TrimSpace(data)
 			if idx := bytes.LastIndex(trimmed, []byte("{")); idx >= 0 {

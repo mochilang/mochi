@@ -2,81 +2,81 @@
 
 Generated Kotlin sources for Rosetta Code tests are stored in `tests/rosetta/transpiler/Kotlin`.
 
-Last updated: 2025-07-25 08:23 +0700
+Last updated: 2025-07-25 08:40 +0700
 
-Completed tasks: **52/284**
+Completed tasks: **53/284**
 
 ### Checklist
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
-| 1 | 100-doors-2 | x |  |  |
-| 2 | 100-doors-3 | x |  |  |
-| 3 | 100-doors | x |  |  |
+| 1 | 100-doors-2 | ✓ | 571.22ms | 431.4 KB |
+| 2 | 100-doors-3 | ✓ |  |  |
+| 3 | 100-doors | ✓ |  |  |
 | 4 | 100-prisoners |  |  |  |
-| 5 | 15-puzzle-game | x |  |  |
-| 6 | 15-puzzle-solver |  |  |  |
-| 7 | 2048 | x |  |  |
-| 8 | 21-game | x |  |  |
-| 9 | 24-game-solve | x |  |  |
-| 10 | 24-game | x |  |  |
-| 11 | 4-rings-or-4-squares-puzzle | x |  |  |
-| 12 | 9-billion-names-of-god-the-integer | x |  |  |
-| 13 | 99-bottles-of-beer-2 | x |  |  |
-| 14 | 99-bottles-of-beer | x |  |  |
-| 15 | DNS-query | x |  |  |
-| 16 | a+b | x |  |  |
-| 17 | abbreviations-automatic | x |  |  |
-| 18 | abbreviations-easy | x |  |  |
-| 19 | abbreviations-simple | x |  |  |
-| 20 | abc-problem | x |  |  |
-| 21 | abelian-sandpile-model-identity | x |  |  |
-| 22 | abelian-sandpile-model | x |  |  |
-| 23 | abstract-type | x |  |  |
-| 24 | abundant-deficient-and-perfect-number-classifications | x |  |  |
-| 25 | abundant-odd-numbers | x |  |  |
-| 26 | accumulator-factory | x |  |  |
+| 5 | 15-puzzle-game | ✓ |  |  |
+| 6 | 15-puzzle-solver | ✓ |  |  |
+| 7 | 2048 | ✓ |  |  |
+| 8 | 21-game | ✓ |  |  |
+| 9 | 24-game-solve | ✓ |  |  |
+| 10 | 24-game | ✓ |  |  |
+| 11 | 4-rings-or-4-squares-puzzle | ✓ |  |  |
+| 12 | 9-billion-names-of-god-the-integer | ✓ |  |  |
+| 13 | 99-bottles-of-beer-2 | ✓ |  |  |
+| 14 | 99-bottles-of-beer | ✓ |  |  |
+| 15 | DNS-query | ✓ |  |  |
+| 16 | a+b | ✓ |  |  |
+| 17 | abbreviations-automatic | ✓ |  |  |
+| 18 | abbreviations-easy | ✓ |  |  |
+| 19 | abbreviations-simple | ✓ |  |  |
+| 20 | abc-problem | ✓ |  |  |
+| 21 | abelian-sandpile-model-identity | ✓ |  |  |
+| 22 | abelian-sandpile-model | ✓ |  |  |
+| 23 | abstract-type | ✓ |  |  |
+| 24 | abundant-deficient-and-perfect-number-classifications | ✓ |  |  |
+| 25 | abundant-odd-numbers | ✓ |  |  |
+| 26 | accumulator-factory | ✓ |  |  |
 | 27 | achilles-numbers |  |  |  |
-| 28 | ackermann-function-2 | x |  |  |
-| 29 | ackermann-function-3 | x |  |  |
-| 30 | ackermann-function | x |  |  |
-| 31 | active-directory-connect | x |  |  |
-| 32 | active-directory-search-for-a-user | x |  |  |
-| 33 | active-object | x |  |  |
-| 34 | add-a-variable-to-a-class-instance-at-runtime | x |  |  |
-| 35 | additive-primes | x |  |  |
-| 36 | address-of-a-variable | x |  |  |
+| 28 | ackermann-function-2 | ✓ |  |  |
+| 29 | ackermann-function-3 | ✓ |  |  |
+| 30 | ackermann-function | ✓ |  |  |
+| 31 | active-directory-connect | ✓ |  |  |
+| 32 | active-directory-search-for-a-user | ✓ |  |  |
+| 33 | active-object | ✓ |  |  |
+| 34 | add-a-variable-to-a-class-instance-at-runtime | ✓ |  |  |
+| 35 | additive-primes | ✓ |  |  |
+| 36 | address-of-a-variable | ✓ |  |  |
 | 37 | adfgvx-cipher |  |  |  |
-| 38 | aks-test-for-primes | x |  |  |
-| 39 | algebraic-data-types | x |  |  |
+| 38 | aks-test-for-primes | ✓ |  |  |
+| 39 | algebraic-data-types | ✓ |  |  |
 | 40 | align-columns |  |  |  |
 | 41 | aliquot-sequence-classifications |  |  |  |
 | 42 | almkvist-giullera-formula-for-pi |  |  |  |
-| 43 | almost-prime | x |  |  |
-| 44 | amb | x |  |  |
-| 45 | amicable-pairs | x |  |  |
+| 43 | almost-prime | ✓ |  |  |
+| 44 | amb | ✓ |  |  |
+| 45 | amicable-pairs | ✓ |  |  |
 | 46 | anagrams-deranged-anagrams |  |  |  |
 | 47 | anagrams |  |  |  |
-| 48 | angle-difference-between-two-bearings-1 | x |  |  |
-| 49 | angle-difference-between-two-bearings-2 | x |  |  |
-| 50 | angles-geometric-normalization-and-conversion | x |  |  |
+| 48 | angle-difference-between-two-bearings-1 | ✓ |  |  |
+| 49 | angle-difference-between-two-bearings-2 | ✓ |  |  |
+| 50 | angles-geometric-normalization-and-conversion | ✓ |  |  |
 | 51 | animate-a-pendulum |  |  |  |
 | 52 | animation |  |  |  |
 | 53 | anonymous-recursion-1 |  |  |  |
 | 54 | anonymous-recursion-2 |  |  |  |
-| 55 | anonymous-recursion | x |  |  |
-| 56 | anti-primes | x |  |  |
-| 57 | append-a-record-to-the-end-of-a-text-file | x |  |  |
-| 58 | apply-a-callback-to-an-array-1 | x |  |  |
-| 59 | apply-a-callback-to-an-array-2 | x |  |  |
-| 60 | apply-a-digital-filter-direct-form-ii-transposed- | x |  |  |
-| 61 | approximate-equality | x |  |  |
-| 62 | arbitrary-precision-integers-included- | x |  |  |
-| 63 | archimedean-spiral | x |  |  |
+| 55 | anonymous-recursion | ✓ |  |  |
+| 56 | anti-primes | ✓ |  |  |
+| 57 | append-a-record-to-the-end-of-a-text-file | ✓ |  |  |
+| 58 | apply-a-callback-to-an-array-1 | ✓ |  |  |
+| 59 | apply-a-callback-to-an-array-2 | ✓ |  |  |
+| 60 | apply-a-digital-filter-direct-form-ii-transposed- | ✓ |  |  |
+| 61 | approximate-equality | ✓ |  |  |
+| 62 | arbitrary-precision-integers-included- | ✓ |  |  |
+| 63 | archimedean-spiral | ✓ |  |  |
 | 64 | arena-storage-pool |  |  |  |
-| 65 | arithmetic-complex | x |  |  |
+| 65 | arithmetic-complex | ✓ |  |  |
 | 66 | arithmetic-derivative |  |  |  |
 | 67 | arithmetic-evaluation |  |  |  |
-| 68 | arithmetic-geometric-mean-calculate-pi | x |  |  |
+| 68 | arithmetic-geometric-mean-calculate-pi | ✓ |  |  |
 | 69 | arithmetic-geometric-mean |  |  |  |
 | 70 | arithmetic-integer-1 |  |  |  |
 | 71 | arithmetic-integer-2 |  |  |  |
