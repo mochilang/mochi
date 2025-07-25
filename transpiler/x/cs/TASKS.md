@@ -1,3 +1,69 @@
+## Progress (2025-07-25 14:26 UTC)
+- cs: add attractive-numbers (progress 103/104)
+
+## Progress (2025-07-25 14:26 UTC)
+- cs: add atomic-updates (progress 103/104)
+
+## Progress (2025-07-25 14:26 UTC)
+- cs: add associative-array-merging (progress 103/104)
+
+## Progress (2025-07-25 14:25 UTC)
+- cs: add associative-array-iteration (progress 103/104)
+
+## Progress (2025-07-25 14:24 UTC)
+- cs: map index default (progress 103/104)
+
+## Progress (2025-07-25 14:24 UTC)
+- cs: map index default (progress 103/104)
+
+## Progress (2025-07-25 14:20 UTC)
+- cs: add assertions (progress 103/104)
+
+## Progress (2025-07-25 14:20 UTC)
+- cs: add assertions (progress 103/104)
+
+## Progress (2025-07-25 14:20 UTC)
+- cs: add assertions (progress 103/104)
+
+## Progress (2025-07-25 14:19 UTC)
+- cs: add ascii art diagram converter (progress 103/104)
+
+## Progress (2025-07-25 14:19 UTC)
+- cs: add ascending-primes (progress 103/104)
+
+## Progress (2025-07-25 14:18 UTC)
+- cs: handle empty list assignment (progress 103/104)
+
+## Progress (2025-07-25 14:15 UTC)
+- cs: add array-length (progress 103/104)
+
+## Progress (2025-07-25 14:15 UTC)
+- cs: add array-length (progress 103/104)
+
+## Progress (2025-07-25 14:15 UTC)
+- cs: add array-length (progress 103/104)
+
+## Progress (2025-07-25 14:15 UTC)
+- cs: add array-length (progress 103/104)
+
+## Progress (2025-07-25 14:14 UTC)
+- cs: support typed list literals (progress 103/104)
+
+## Progress (2025-07-25 14:11 UTC)
+- cs: transpile arithmetic-rational (progress 103/104)
+
+## Progress (2025-07-25 14:11 UTC)
+- cs: transpile arithmetic-rational (progress 103/104)
+
+## Progress (2025-07-25 14:11 UTC)
+- cs: transpile arithmetic-rational (progress 103/104)
+
+## Progress (2025-07-25 21:06 +0700)
+- ts: update rosetta outputs 148-177 (progress 103/104)
+
+## Progress (2025-07-25 21:06 +0700)
+- ts: update rosetta outputs 148-177 (progress 103/104)
+
 ## Progress (2025-07-25 19:53 +0700)
 - cs rosetta: support map keys, run index 27 (progress 103/104)
 
@@ -487,6 +553,28 @@
 
 ## Progress (2025-07-22 03:14 +0000)
 - cs transpiler: 100/102 tests compiled
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
