@@ -93,15 +93,19 @@ func runRosettaCase(t *testing.T, name string) {
 
 	if bench {
 		benchPath := filepath.Join(outDir, name+".bench")
-		if updateEnabled() {
-			idx := bytes.LastIndex(got, []byte("{"))
-			part := bytes.TrimSpace(got[idx:])
-			if idx >= 0 && json.Valid(part) {
-				_ = os.WriteFile(benchPath, part, 0o644)
-			} else {
-				_ = os.WriteFile(benchPath, got, 0o644)
-			}
-		}
+               if updateEnabled() {
+                       idx := bytes.LastIndex(got, []byte("{"))
+                       if idx >= 0 {
+                               part := bytes.TrimSpace(got[idx:])
+                               if json.Valid(part) {
+                                       _ = os.WriteFile(benchPath, part, 0o644)
+                               } else {
+                                       _ = os.WriteFile(benchPath, got, 0o644)
+                               }
+                       } else {
+                               _ = os.WriteFile(benchPath, got, 0o644)
+                       }
+               }
 		return
 	}
 
