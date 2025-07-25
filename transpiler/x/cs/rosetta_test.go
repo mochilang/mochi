@@ -5,6 +5,7 @@ package cstranspiler_test
 import (
 	"bufio"
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"os"
 	"os/exec"
@@ -75,7 +76,8 @@ func TestCSTranspiler_Rosetta_Golden(t *testing.T) {
 			_ = os.WriteFile(errPath, []byte("transpile: "+err.Error()), 0o644)
 			return nil, err
 		}
-		code := cs.Emit(ast)
+		bench := os.Getenv("MOCHI_BENCHMARK") == "true" || os.Getenv("MOCHI_BENCHMARK") == "1"
+		code := cs.Emit(ast, bench)
 		if err := os.WriteFile(codePath, code, 0o644); err != nil {
 			return nil, err
 		}
@@ -130,17 +132,51 @@ func updateRosetta() {
 	names, _ := readIndex(filepath.Join(srcDir, "index.txt"))
 	total := len(names)
 	compiled := 0
-	var lines []string
+	var rows []string
+
+	humanDur := func(us int64) string {
+		d := time.Duration(us) * time.Microsecond
+		return d.String()
+	}
+	humanBytes := func(n int64) string {
+		if n < 1024 {
+			return fmt.Sprintf("%dB", n)
+		}
+		units := []string{"KB", "MB", "GB", "TB", "PB", "EB"}
+		v := float64(n)
+		u := 0
+		for v >= 1024 && u < len(units)-1 {
+			v /= 1024
+			u++
+		}
+		return fmt.Sprintf("%.1f%s", v, units[u])
+	}
+
 	for i, name := range names {
 		base := strings.TrimSuffix(name, ".mochi")
 		mark := "[ ]"
-		if _, err := os.Stat(filepath.Join(outDir, base+".out")); err == nil {
+		dur := ""
+		mem := ""
+		outPath := filepath.Join(outDir, base+".out")
+		if data, err := os.ReadFile(outPath); err == nil {
+			var res struct {
+				Duration int64 `json:"duration_us"`
+				Memory   int64 `json:"memory_bytes"`
+			}
+			if json.Unmarshal(data, &res) == nil {
+				if res.Duration > 0 {
+					dur = humanDur(res.Duration)
+				}
+				if res.Memory > 0 {
+					mem = humanBytes(res.Memory)
+				}
+			}
 			if _, err2 := os.Stat(filepath.Join(outDir, base+".error")); os.IsNotExist(err2) {
 				compiled++
 				mark = "[x]"
 			}
 		}
-		lines = append(lines, fmt.Sprintf("%d. %s %s (%d)", i+1, mark, base, i+1))
+		rows = append(rows, fmt.Sprintf("| %d | %s | %s | %s | %s |", i+1, base, mark, dur, mem))
 	}
 
 	var buf bytes.Buffer
@@ -152,7 +188,9 @@ func updateRosetta() {
 		}
 	}
 	buf.WriteString("\n## Checklist\n")
-	buf.WriteString(strings.Join(lines, "\n"))
+	buf.WriteString("| Index | Name | Status | Duration | Memory |\n")
+	buf.WriteString("| --- | --- | --- | --- | --- |\n")
+	buf.WriteString(strings.Join(rows, "\n"))
 	buf.WriteString("\n")
 	_ = os.WriteFile(mdPath, buf.Bytes(), 0o644)
 }
