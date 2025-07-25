@@ -1,4 +1,4 @@
 OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
-/workspace/mochi/tests/rosetta/transpiler/Kotlin/anonymous-recursion-1.kt:11:29: error: type mismatch: inferred type is Int but BigInteger was expected
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/anonymous-recursion-1.kt:37:29: error: type mismatch: inferred type is Int but BigInteger was expected
         val t: BigInteger = a + b
                             ^

@@ -2,9 +2,9 @@
 
 Generated Kotlin sources for Rosetta Code tests are stored in `tests/rosetta/transpiler/Kotlin`.
 
-Last updated: 2025-07-26 04:45 +0700
+Last updated: 2025-07-26 05:05 +0700
 
-Completed tasks: **54/284**
+Completed tasks: **57/284**
 
 ### Checklist
 | Index | Name | Status | Duration | Memory |
@@ -53,13 +53,13 @@ Completed tasks: **54/284**
 | 42 | almkvist-giullera-formula-for-pi |  |  |  |
 | 43 | almost-prime | ✓ | 13.54ms | 122.7 KB |
 | 44 | amb | ✓ | 31.89ms | 121.2 KB |
-| 45 | amicable-pairs | ✓ |  |  |
-| 46 | anagrams-deranged-anagrams |  |  |  |
-| 47 | anagrams |  |  |  |
-| 48 | angle-difference-between-two-bearings-1 | ✓ |  |  |
-| 49 | angle-difference-between-two-bearings-2 | ✓ |  |  |
-| 50 | angles-geometric-normalization-and-conversion | ✓ |  |  |
-| 51 | animate-a-pendulum |  |  |  |
+| 45 | amicable-pairs | ✓ | 1.96s | 821.3 KB |
+| 46 | anagrams-deranged-anagrams | ✓ | 22.78ms | 129.9 KB |
+| 47 | anagrams | ✓ | 25.65ms | 128.6 KB |
+| 48 | angle-difference-between-two-bearings-1 | ✓ | 11.23ms | 131.0 KB |
+| 49 | angle-difference-between-two-bearings-2 | ✓ | 10.72ms | 131.0 KB |
+| 50 | angles-geometric-normalization-and-conversion | ✓ | 26.45ms | 120.1 KB |
+| 51 | animate-a-pendulum | ✓ | 7.51ms | 141.0 KB |
 | 52 | animation |  |  |  |
 | 53 | anonymous-recursion-1 |  |  |  |
 | 54 | anonymous-recursion-2 |  |  |  |

@@ -1,4 +1,0 @@
-OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
-/workspace/mochi/tests/rosetta/transpiler/Kotlin/animate-a-pendulum.kt:47:24: error: type mismatch: inferred type is Double but Int was expected
-        val pos: Int = (10.0 * sinApprox(phi)) + 0.5.toInt()
-                       ^
