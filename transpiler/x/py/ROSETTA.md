@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated Python code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/Python`.
-Last updated: 2025-07-25 13:22 GMT+7
+Last updated: 2025-07-25 14:27 GMT+7
 
 ## Rosetta Golden Test Checklist (271/284)
 | Index | Name | Status | Duration | Memory |
@@ -27,16 +27,16 @@ Last updated: 2025-07-25 13:22 GMT+7
 | 18 | abbreviations-easy | ✓ | 779.0µs | 13.69MB |
 | 19 | abbreviations-simple | ✓ | 1.0ms | 13.32MB |
 | 20 | abc-problem | ✓ | 356.0µs | 12.68MB |
-| 21 | abelian-sandpile-model-identity | ✓ | 158.0µs | 15.20MB |
-| 22 | abelian-sandpile-model | ✓ | 160.0µs | 15.23MB |
-| 23 | abstract-type | ✓ | 17.0µs | 15.23MB |
-| 24 | abundant-deficient-and-perfect-number-classifications | ✓ | 11.57s | 15.23MB |
-| 25 | abundant-odd-numbers | ✓ | 9.65s | 15.23MB |
-| 26 | accumulator-factory | ✓ | 18.0µs | 15.23MB |
-| 27 | achilles-numbers | ✓ | 18.0ms | 15.36MB |
-| 28 | ackermann-function-2 | ✓ | 17.0µs | 15.36MB |
-| 29 | ackermann-function-3 | ✓ | 144.77s | 15.52MB |
-| 30 | ackermann-function | ✓ | 2.0ms | 15.52MB |
+| 21 | abelian-sandpile-model-identity | ✓ | 326.0µs | 13.69MB |
+| 22 | abelian-sandpile-model | ✓ | 104.0µs | 12.97MB |
+| 23 | abstract-type | ✓ | 14.0µs | 12.84MB |
+| 24 | abundant-deficient-and-perfect-number-classifications | ✓ | 8.15s | 12.81MB |
+| 25 | abundant-odd-numbers | ✓ | 7.08s | 13.03MB |
+| 26 | accumulator-factory | ✓ | 16.0µs | 12.63MB |
+| 27 | achilles-numbers | ✓ | 12.0ms | 13.82MB |
+| 28 | ackermann-function-2 | ✓ | 13.0µs | 12.55MB |
+| 29 | ackermann-function-3 | ✓ | 104.05s | 13.17MB |
+| 30 | ackermann-function | ✓ | 738.0µs | 12.44MB |
 | 31 | active-directory-connect | ✓ | 16.0µs | 15.52MB |
 | 32 | active-directory-search-for-a-user | ✓ | 13.0µs | 15.52MB |
 | 33 | active-object | ✓ | 604.0µs | 12.62MB |
