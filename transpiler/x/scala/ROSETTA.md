@@ -2,12 +2,12 @@
 
 Generated Scala code for Rosetta tasks in `tests/rosetta/x/Mochi`. Each program has a `.scala` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
 
-## Golden Test Checklist (92/284)
-_Last updated: 2025-07-25 09:03 +0700_
+## Golden Test Checklist (91/284)
+_Last updated: 2025-07-25 10:20 +0700_
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
-| 1 | 100-doors-2 | ✓ | 571.223ms | 8.7 MB |
+| 1 | 100-doors-2 | ✓ | 12µs | 8.7 MB |
 | 2 | 100-doors-3 | ✓ |  |  |
 | 3 | 100-doors | ✓ |  |  |
 | 4 | 100-prisoners | ✓ |  |  |
@@ -16,7 +16,7 @@ _Last updated: 2025-07-25 09:03 +0700_
 | 7 | 2048 | ✓ |  |  |
 | 8 | 21-game | ✓ |  |  |
 | 9 | 24-game-solve | ✓ |  |  |
-| 10 | 24-game | ✓ |  |  |
+| 10 | 24-game | error |  |  |
 | 11 | 4-rings-or-4-squares-puzzle | ✓ |  |  |
 | 12 | 9-billion-names-of-god-the-integer | ✓ |  |  |
 | 13 | 99-bottles-of-beer-2 | ✓ |  |  |
