@@ -128,6 +128,7 @@ type Program struct {
 	UseLookupHost bool
 	UseNow        bool
 	UseMem        bool
+	NeedBenchNow  bool
 	UseInput      bool
 }
 
@@ -837,6 +838,9 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("procedure init_now();\nvar s: string; v: int64;\nbegin\n  s := GetEnvironmentVariable('MOCHI_NOW_SEED');\n  if s <> '' then begin\n    Val(s, v);\n    _nowSeed := v;\n    _nowSeeded := true;\n  end;\nend;\n")
 		buf.WriteString("function _now(): integer;\nbegin\n  if _nowSeeded then begin\n    _nowSeed := (_nowSeed * 1664525 + 1013904223) mod 2147483647;\n    _now := _nowSeed;\n  end else begin\n    _now := Integer(GetTickCount64()*1000);\n  end;\nend;\n")
 	}
+	if p.NeedBenchNow {
+		buf.WriteString("function _bench_now(): int64;\nbegin\n  _bench_now := GetTickCount64()*1000;\nend;\n")
+	}
 	if p.UseMem {
 		buf.WriteString("function _mem(): int64;\nvar h: TFPCHeapStatus;\nbegin\n  h := GetFPCHeapStatus;\n  _mem := h.CurrHeapUsed;\nend;\n")
 	}
@@ -1335,6 +1339,7 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 				}
 				pr.Stmts = append(pr.Stmts, ifStmt)
 			case st.Fun != nil:
+				fn := st.Fun
 				local := map[string]string{}
 				for k, v := range varTypes {
 					local[k] = v
@@ -1378,7 +1383,7 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 					local[p.Name] = typ
 				}
 				pushScope()
-				currentFunc = st.Fun.Name
+				currentFunc = fn.Name
 				for _, p := range st.Fun.Params {
 					currentScope()[p.Name] = p.Name
 				}
@@ -1420,28 +1425,40 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 						}
 					}
 				} else if strings.HasPrefix(rt, "specialize TFPGMap") {
-					for _, st := range fnBody {
-						if ret, ok := st.(*ReturnStmt); ok && ret.Expr != nil {
-							typ := inferType(ret.Expr)
-							if typ != "" && !strings.HasPrefix(typ, "specialize TFPGMap") {
-								rt = typ
+					for _, stmt := range fnBody {
+						if ret, ok := stmt.(*ReturnStmt); ok && ret.Expr != nil {
+							switch expr := ret.Expr.(type) {
+							case *RecordLit:
+								rt = expr.Type
+							case *CallExpr:
+								if t, ok := funcReturns[expr.Name]; ok {
+									rt = t
+								}
+							default:
+								typ := inferType(ret.Expr)
+								if typ != "" && !strings.HasPrefix(typ, "specialize TFPGMap") {
+									rt = typ
+								}
 							}
 							break
 						}
 					}
+					if strings.HasPrefix(rt, "Anon") {
+						funcReturns[fn.Name] = rt
+					}
 				}
-				if st.Fun.Name == "parseIntStr" {
+				if fn.Name == "parseIntStr" {
 					if len(params) == 1 {
 						nameParts := strings.SplitN(params[0], ":", 2)
 						paramName := strings.TrimSpace(nameParts[0])
 						body := []Stmt{&ReturnStmt{Expr: &CallExpr{Name: "StrToInt", Args: []Expr{&VarRef{Name: paramName}}}}}
-						currProg.Funs = append(currProg.Funs, FunDecl{Name: st.Fun.Name, Params: params, ReturnType: "integer", Body: body})
-						funcReturns[st.Fun.Name] = "integer"
+						currProg.Funs = append(currProg.Funs, FunDecl{Name: fn.Name, Params: params, ReturnType: "integer", Body: body})
+						funcReturns[fn.Name] = "integer"
 					}
 				} else {
-					currProg.Funs = append(currProg.Funs, FunDecl{Name: st.Fun.Name, Params: params, ReturnType: rt, Body: fnBody})
+					currProg.Funs = append(currProg.Funs, FunDecl{Name: fn.Name, Params: params, ReturnType: rt, Body: fnBody})
 					if rt != "" {
-						funcReturns[st.Fun.Name] = rt
+						funcReturns[fn.Name] = rt
 					}
 				}
 			case st.Return != nil:
@@ -1904,6 +1921,7 @@ func convertBenchBlock(env *types.Env, bench *parser.BenchBlock, varTypes map[st
 	currProg.UseSysUtils = true
 	currProg.UseNow = true
 	currProg.UseMem = true
+	currProg.NeedBenchNow = true
 	startName := sanitize(fmt.Sprintf("bench_start_%d", len(currProg.Vars)))
 	durName := sanitize(fmt.Sprintf("bench_dur_%d", len(currProg.Vars)))
 	memStart := sanitize(fmt.Sprintf("bench_mem_%d", len(currProg.Vars)))
@@ -1926,7 +1944,7 @@ func convertBenchBlock(env *types.Env, bench *parser.BenchBlock, varTypes map[st
 	varTypes[memDiff] = "int64"
 	out := []Stmt{
 		&AssignStmt{Name: memStart, Expr: &CallExpr{Name: "_mem"}},
-		&AssignStmt{Name: startName, Expr: &CallExpr{Name: "_now"}},
+		&AssignStmt{Name: startName, Expr: &CallExpr{Name: "_bench_now"}},
 	}
 	body, err := convertBody(env, bench.Body, varTypes)
 	if err != nil {
@@ -1935,7 +1953,7 @@ func convertBenchBlock(env *types.Env, bench *parser.BenchBlock, varTypes map[st
 	out = append(out, body...)
 	out = append(out, &ExprStmt{Expr: &CallExpr{Name: "Sleep", Args: []Expr{&IntLit{Value: 1}}}})
 	out = append(out, &AssignStmt{Name: memDiff, Expr: &BinaryExpr{Op: "-", Left: &CallExpr{Name: "_mem"}, Right: &VarRef{Name: memStart}}})
-	diff := &BinaryExpr{Op: "-", Left: &CallExpr{Name: "_now"}, Right: &VarRef{Name: startName}}
+	diff := &BinaryExpr{Op: "-", Left: &CallExpr{Name: "_bench_now"}, Right: &VarRef{Name: startName}}
 	div := &BinaryExpr{Op: "div", Left: diff, Right: &IntLit{Value: 1000}}
 	out = append(out, &AssignStmt{Name: durName, Expr: div})
 	out = append(out, &WritelnStmt{Expr: &StringLit{Value: "{"}})
