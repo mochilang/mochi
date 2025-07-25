@@ -92,18 +92,22 @@ func TestGoTranspiler_Rosetta_Golden(t *testing.T) {
 				_ = os.WriteFile(errPath, []byte(errs[0].Error()), 0o644)
 				t.Fatalf("type: %v", errs[0])
 			}
-			gprog, err := gotrans.Transpile(prog, env)
+			bench := os.Getenv("MOCHI_BENCHMARK") == "true"
+			gprog, err := gotrans.Transpile(prog, env, bench)
 			if err != nil {
 				_ = os.WriteFile(errPath, []byte(err.Error()), 0o644)
 				t.Fatalf("transpile: %v", err)
 			}
-			bench := os.Getenv("MOCHI_BENCHMARK") == "true"
 			code := gotrans.Emit(gprog, bench)
 			if err := os.WriteFile(codePath, code, 0o644); err != nil {
 				t.Fatalf("write code: %v", err)
 			}
 			cmd := exec.Command("go", "run", codePath)
-			cmd.Env = append(os.Environ(), "MOCHI_NOW_SEED=1")
+			if !bench {
+				cmd.Env = append(os.Environ(), "MOCHI_NOW_SEED=1")
+			} else {
+				cmd.Env = os.Environ()
+			}
 			if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
 				cmd.Stdin = bytes.NewReader(data)
 			}
@@ -164,16 +168,16 @@ func updateRosettaChecklist() {
 	compiled := 0
 	var rows []string
 	rows = append(rows, "| Index | Name | Status | Duration | Memory |")
-	rows = append(rows, "|------:|------|--------|---------:|-------:|")
+	rows = append(rows, "|------:|------|:-----:|---------:|-------:|")
 	for i, f := range names {
 		name := strings.TrimSuffix(f, ".mochi")
 		status := " "
 		dur := ""
 		mem := ""
 		if _, err := os.Stat(filepath.Join(outDir, name+".error")); err == nil {
-			status = "error"
+			// leave unchecked
 		} else if _, err := os.Stat(filepath.Join(outDir, name+".go")); err == nil {
-			status = "ok"
+			status = "✓"
 			compiled++
 		}
 		if data, err := os.ReadFile(filepath.Join(outDir, name+".bench")); err == nil {
@@ -181,9 +185,12 @@ func updateRosettaChecklist() {
 				DurationUS  int64 `json:"duration_us"`
 				MemoryBytes int64 `json:"memory_bytes"`
 			}
-			if json.Unmarshal(bytes.TrimSpace(data), &r) == nil {
-				dur = formatDuration(time.Duration(r.DurationUS) * time.Microsecond)
-				mem = formatBytes(r.MemoryBytes)
+			data = bytes.TrimSpace(data)
+			if idx := bytes.LastIndexByte(data, '{'); idx >= 0 {
+				if json.Unmarshal(data[idx:], &r) == nil && r.DurationUS > 0 {
+					dur = formatDuration(time.Duration(r.DurationUS) * time.Microsecond)
+					mem = formatBytes(r.MemoryBytes)
+				}
 			}
 		}
 		rows = append(rows, fmt.Sprintf("| %d | %s | %s | %s | %s |", i+1, name, status, dur, mem))

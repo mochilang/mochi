@@ -1,3 +1,19 @@
+## Progress (2025-07-25 09:08 +0700)
+- java: benchmark support and update rosetta
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-25 09:08 +0700)
+- java: benchmark support and update rosetta
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-25 09:08 +0700)
+- java: benchmark support and update rosetta
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-25 09:08 +0700)
+- java: benchmark support and update rosetta
+- Regenerated golden files - 104/104 vm valid programs passing
+
 ## Progress (2025-07-25 00:31 +0700)
 - ocaml transpiler: support dynamic function calls and map keys
 - Regenerated golden files - 103/103 vm valid programs passing

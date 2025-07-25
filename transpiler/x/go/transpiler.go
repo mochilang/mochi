@@ -1737,7 +1737,7 @@ func (a *AssertExpr) emit(w io.Writer) {
 }
 
 // Transpile converts a Mochi program to a minimal Go AST.
-func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
+func Transpile(p *parser.Program, env *types.Env, benchMain bool) (*Program, error) {
 	usesStrings = false
 	usesStrconv = false
 	usesPrint = false
@@ -1792,6 +1792,17 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	gp.UseReflect = usesReflect
 	gp.UseRuntime = usesRuntime
 	gp.Imports = imports
+	if benchMain {
+		usesTime = true
+		usesJSON = true
+		usesPrint = true
+		usesRuntime = true
+		gp.UseTime = true
+		gp.UseJSON = true
+		gp.UsePrint = true
+		gp.UseRuntime = true
+		gp.Stmts = []Stmt{&BenchStmt{Name: "main", Body: gp.Stmts}}
+	}
 	return gp, nil
 }
 
@@ -5129,43 +5140,22 @@ func Emit(prog *Program, bench bool) []byte {
 		}
 	}
 	buf.WriteString("func main() {\n")
-	if bench {
-		bs := &BenchStmt{Name: "main"}
-		for _, s := range prog.Stmts {
-			if vd, ok := s.(*VarDecl); ok && vd.Global {
-				continue
-			}
-			if _, ok := s.(*FuncDecl); ok {
-				continue
-			}
-			if _, ok := s.(*TypeDeclStmt); ok {
-				continue
-			}
-			if _, ok := s.(*UnionDeclStmt); ok {
-				continue
-			}
-			bs.Body = append(bs.Body, s)
+	for _, s := range prog.Stmts {
+		if vd, ok := s.(*VarDecl); ok && vd.Global {
+			continue
 		}
-		bs.emit(&buf)
+		if _, ok := s.(*FuncDecl); ok {
+			continue
+		}
+		if _, ok := s.(*TypeDeclStmt); ok {
+			continue
+		}
+		if _, ok := s.(*UnionDeclStmt); ok {
+			continue
+		}
+		buf.WriteString("    ")
+		s.emit(&buf)
 		buf.WriteString("\n")
-	} else {
-		for _, s := range prog.Stmts {
-			if vd, ok := s.(*VarDecl); ok && vd.Global {
-				continue
-			}
-			if _, ok := s.(*FuncDecl); ok {
-				continue
-			}
-			if _, ok := s.(*TypeDeclStmt); ok {
-				continue
-			}
-			if _, ok := s.(*UnionDeclStmt); ok {
-				continue
-			}
-			buf.WriteString("    ")
-			s.emit(&buf)
-			buf.WriteString("\n")
-		}
 	}
 	buf.WriteString("}\n")
 	out, err := format.Source(buf.Bytes())
