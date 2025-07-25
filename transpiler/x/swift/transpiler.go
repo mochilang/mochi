@@ -923,34 +923,18 @@ func (c *CastExpr) emit(w io.Writer) {
 	}
 	switch t {
 	case "Int", "Int64", "Double", "String", "Bool", "BigInt":
-		if force {
-			if ce, ok := c.Expr.(*CallExpr); ok {
-				if t == "String" && ce.Func == "str" {
-					c.Expr.emit(w)
-				} else {
-					fmt.Fprintf(w, "%s(", t)
-					c.Expr.emit(w)
-					fmt.Fprint(w, ")")
-				}
-			} else {
-				fmt.Fprint(w, "(")
-				c.Expr.emit(w)
-				fmt.Fprintf(w, " as! %s)", t)
-			}
+		if ce, ok := c.Expr.(*CallExpr); ok && t == "String" && ce.Func == "str" {
+			c.Expr.emit(w)
+			return
+		}
+		if t == "String" && !force {
+			fmt.Fprint(w, "String(describing: ")
+			c.Expr.emit(w)
+			fmt.Fprint(w, ")")
 		} else {
-			if t == "String" {
-				if ce, ok := c.Expr.(*CallExpr); ok && ce.Func == "str" {
-					c.Expr.emit(w)
-				} else {
-					fmt.Fprint(w, "String(describing: ")
-					c.Expr.emit(w)
-					fmt.Fprint(w, ")")
-				}
-			} else {
-				fmt.Fprintf(w, "%s(", t)
-				c.Expr.emit(w)
-				fmt.Fprint(w, ")")
-			}
+			fmt.Fprintf(w, "%s(", t)
+			c.Expr.emit(w)
+			fmt.Fprint(w, ")")
 		}
 	default:
 		fmt.Fprint(w, "(")
@@ -2549,10 +2533,10 @@ func convertExpr(env *types.Env, e *parser.Expr) (Expr, error) {
 				left = &CastExpr{Expr: left, Type: "Double!"}
 				ltyp = types.FloatType{}
 			} else if types.IsFloatType(ltyp) && types.IsIntType(rtyp) {
-				right = &CastExpr{Expr: right, Type: "Double!"}
+				right = &CastExpr{Expr: right, Type: "Double"}
 				rtyp = types.FloatType{}
 			} else if types.IsFloatType(rtyp) && types.IsIntType(ltyp) {
-				left = &CastExpr{Expr: left, Type: "Double!"}
+				left = &CastExpr{Expr: left, Type: "Double"}
 				ltyp = types.FloatType{}
 			} else if types.IsStringType(ltyp) && types.IsAnyType(rtyp) {
 				right = &CastExpr{Expr: right, Type: "String"}

@@ -2,8 +2,8 @@
 
 Generated Swift code for Mochi Rosetta programs in `tests/rosetta/x/Mochi`. Outputs are stored in `tests/rosetta/transpiler/Swift`. Errors are captured in `.error` files.
 
-Completed: 54/284
-Last updated: 2025-07-25 23:50 +0700
+Completed: 56/284
+Last updated: 2025-07-26 00:39 +0700
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -48,17 +48,17 @@ Last updated: 2025-07-25 23:50 +0700
 | 39 | algebraic-data-types |   |  |  |
 | 40 | align-columns | ✓ |  |  |
 | 41 | aliquot-sequence-classifications |   |  |  |
-| 42 | almkvist-giullera-formula-for-pi |   |  |  |
-| 43 | almost-prime | ✓ |  |  |
-| 44 | amb | ✓ |  |  |
-| 45 | amicable-pairs |   |  |  |
-| 46 | anagrams-deranged-anagrams | ✓ |  |  |
-| 47 | anagrams | ✓ |  |  |
-| 48 | angle-difference-between-two-bearings-1 | ✓ |  |  |
-| 49 | angle-difference-between-two-bearings-2 | ✓ |  |  |
-| 50 | angles-geometric-normalization-and-conversion | ✓ |  |  |
-| 51 | animate-a-pendulum | ✓ |  |  |
-| 52 | animation | ✓ |  |  |
+| 42 | almkvist-giullera-formula-for-pi | ✓ | 911.694ms | 3.4 MB |
+| 43 | almost-prime | ✓ | 677µs | 3.1 MB |
+| 44 | amb | ✓ | 420µs | 3.1 MB |
+| 45 | amicable-pairs | ✓ | 8.286811s | 3.4 MB |
+| 46 | anagrams-deranged-anagrams | ✓ | 574µs | 3.3 MB |
+| 47 | anagrams | ✓ | 1.074ms | 3.2 MB |
+| 48 | angle-difference-between-two-bearings-1 | ✓ | 331µs | 3.1 MB |
+| 49 | angle-difference-between-two-bearings-2 | ✓ | 429µs | 3.4 MB |
+| 50 | angles-geometric-normalization-and-conversion | ✓ | 777µs | 3.2 MB |
+| 51 | animate-a-pendulum | ✓ | 328µs | 3.1 MB |
+| 52 | animation | ✓ | 1.186ms | 2.9 MB |
 | 53 | anonymous-recursion-1 | ✓ | 270µs | 3.2 MB |
 | 54 | anonymous-recursion-2 | ✓ | 455µs | 3.0 MB |
 | 55 | anonymous-recursion | ✓ | 272µs | 3.0 MB |
