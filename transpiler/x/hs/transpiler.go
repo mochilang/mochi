@@ -2426,7 +2426,7 @@ func Emit(p *Program, bench bool) []byte {
 // Transpile converts a Mochi program into a simple Haskell AST.
 var envInfo *types.Env
 
-func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
+func Transpile(prog *parser.Program, env *types.Env, benchMain bool) (*Program, error) {
 	envInfo = env
 	h := &Program{}
 	vars = map[string]Expr{}
@@ -2655,6 +2655,12 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 				h.Stmts = h.Stmts[:len(h.Stmts)-1]
 			}
 		}
+	}
+	if benchMain {
+		needJSON = true
+		usesNow = true
+		usesMem = true
+		h.Stmts = []Stmt{&BenchStmt{Name: "main", Body: h.Stmts}}
 	}
 	// attach struct type declarations
 	for _, tdecl := range structDefs {
