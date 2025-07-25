@@ -41,7 +41,7 @@ func TestSwiftTranspiler_VMValid_Golden(t *testing.T) {
 			_ = os.WriteFile(errPath, []byte(errs[0].Error()), 0o644)
 			return nil, errs[0]
 		}
-		ast, err := swifttrans.Transpile(env, prog)
+		ast, err := swifttrans.Transpile(env, prog, false)
 		if err != nil {
 			_ = os.WriteFile(errPath, []byte(err.Error()), 0o644)
 			return nil, err
@@ -50,7 +50,7 @@ func TestSwiftTranspiler_VMValid_Golden(t *testing.T) {
 		if err := os.WriteFile(codePath, code, 0o644); err != nil {
 			return nil, err
 		}
-		out, err := compileAndRunSwiftSrc(t, swiftExe, code, nil)
+		out, err := compileAndRunSwiftSrc(t, swiftExe, code, nil, false)
 		if err != nil {
 			_ = os.WriteFile(errPath, append([]byte(err.Error()+"\n"), out...), 0o644)
 			return nil, err

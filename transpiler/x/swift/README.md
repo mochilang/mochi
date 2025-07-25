@@ -2,13 +2,14 @@
 
 Generated Swift code for programs in `tests/vm/valid`. Each program has a `.swift` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
 
-Transpiled programs: 101/103
-Last updated: 2025-07-24 21:16 +0700
+Transpiled programs: 102/104
+Last updated: 2025-07-25 08:23 +0700
 
 Checklist:
 - [x] append_builtin
 - [x] avg_builtin
 - [x] basic_compare
+- [x] bench_block
 - [x] binary_precedence
 - [x] bool_chain
 - [x] break_continue

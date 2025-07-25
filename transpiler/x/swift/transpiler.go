@@ -28,6 +28,7 @@ var usesNow bool
 var usesLookupHost bool
 var usesNum bool
 var usesKeys bool
+var usesMem bool
 var funcMutParams map[string][]bool
 var funcInOutParams map[string][]bool
 
@@ -54,6 +55,7 @@ type Program struct {
 	UseLookupHost bool
 	UseNum        bool
 	UseKeys       bool
+	UseMem        bool
 }
 
 type Stmt interface{ emit(io.Writer) }
@@ -427,9 +429,8 @@ func (b *BlockStmt) emit(w io.Writer) {
 }
 
 // BenchStmt represents a benchmarking block measuring runtime duration
-// and memory usage of the enclosed statements. Memory usage is currently
-// always reported as zero as the transpiled Swift code does not track
-// allocations.
+// and memory usage of the enclosed statements. Memory usage is approximated
+// by reading `/proc/self/status` on Linux systems.
 type BenchStmt struct {
 	Name string
 	Body []Stmt
@@ -437,13 +438,13 @@ type BenchStmt struct {
 
 func (b *BenchStmt) emit(w io.Writer) {
 	fmt.Fprint(w, "do {\n")
-	fmt.Fprint(w, "    let _benchMemStart = 0\n")
+	fmt.Fprint(w, "    let _benchMemStart = _mem()\n")
 	fmt.Fprint(w, "    let _benchStart = _now()\n")
 	for _, st := range b.Body {
 		st.emit(w)
 	}
 	fmt.Fprint(w, "    let _benchEnd = _now()\n")
-	fmt.Fprint(w, "    let _benchMemEnd = 0\n")
+	fmt.Fprint(w, "    let _benchMemEnd = _mem()\n")
 	fmt.Fprintf(w, "    print(\"{\\n  \\\"duration_us\\\": \\((_benchEnd - _benchStart) / 1000),\\n  \\\"memory_bytes\\\": \\(_benchMemEnd - _benchMemStart),\\n  \\\"name\\\": \\\"%s\\\"\\n}\")\n", b.Name)
 	fmt.Fprint(w, "}\n")
 }
@@ -1398,6 +1399,20 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("    Array(m.keys)\n")
 		buf.WriteString("}\n")
 	}
+	if p.UseMem {
+		buf.WriteString("func _mem() -> Int {\n")
+		buf.WriteString("    if let status = try? String(contentsOfFile: \"/proc/self/status\") {\n")
+		buf.WriteString("        for line in status.split(separator: \"\\n\") {\n")
+		buf.WriteString("            if line.hasPrefix(\"VmRSS:\") {\n")
+		buf.WriteString("                let parts = line.split(whereSeparator: { $0 == \" \" || $0 == \"\\t\" })\n")
+		buf.WriteString("                if parts.count >= 2, let kb = Int(parts[1]) {\n")
+		buf.WriteString("                    return kb * 1024\n")
+		buf.WriteString("                }\n")
+		buf.WriteString("            }\n")
+		buf.WriteString("        }\n")
+		buf.WriteString("    }\n")
+		buf.WriteString("    return 0\n}\n")
+	}
 	needJSON := false
 	for _, st := range p.Stmts {
 		if _, ok := st.(*SaveStmt); ok {
@@ -1425,11 +1440,12 @@ func (p *Program) Emit() []byte {
 }
 
 // Transpile converts a Mochi program into a simple Swift AST.
-func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
+func Transpile(env *types.Env, prog *parser.Program, benchMain bool) (*Program, error) {
 	usesNow = false
 	usesLookupHost = false
 	usesNum = false
 	usesKeys = false
+	usesMem = false
 	funcMutParams = map[string][]bool{}
 	funcInOutParams = map[string][]bool{}
 	p := &Program{}
@@ -1437,11 +1453,17 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 	if err != nil {
 		return nil, err
 	}
+	if benchMain {
+		usesNow = true
+		usesMem = true
+		stmts = []Stmt{&BenchStmt{Name: "main", Body: stmts}}
+	}
 	p.Stmts = stmts
 	p.UseNow = usesNow
 	p.UseLookupHost = usesLookupHost
 	p.UseNum = usesNum
 	p.UseKeys = usesKeys
+	p.UseMem = usesMem
 	return p, nil
 }
 
@@ -1639,6 +1661,7 @@ func convertStmt(env *types.Env, st *parser.Statement) (Stmt, error) {
 		return &BlockStmt{Stmts: body}, nil
 	case st.Bench != nil:
 		usesNow = true
+		usesMem = true
 		body, err := convertStmts(env, st.Bench.Body)
 		if err != nil {
 			return nil, err

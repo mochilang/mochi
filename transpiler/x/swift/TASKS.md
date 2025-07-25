@@ -1,6 +1,6 @@
-## Progress (2025-07-24 21:16 +0700)
-- swift transpiler: support string cast describing
-- Generated golden tests for 101/103 programs
+## Progress (2025-07-25 08:23 +0700)
+- dart: add bench main support
+- Generated golden tests for 102/104 programs
 - Updated README checklist and output artifacts
 
 # Swift Transpiler Tasks

@@ -31,7 +31,7 @@ func ensureSwift(t *testing.T) string {
 	return ""
 }
 
-func compileAndRunSwiftSrc(t *testing.T, swiftExe string, code []byte, in []byte) ([]byte, error) {
+func compileAndRunSwiftSrc(t *testing.T, swiftExe string, code []byte, in []byte, bench bool) ([]byte, error) {
 	dir := t.TempDir()
 	file := filepath.Join(dir, "main.swift")
 	if err := os.WriteFile(file, code, 0644); err != nil {
@@ -42,7 +42,11 @@ func compileAndRunSwiftSrc(t *testing.T, swiftExe string, code []byte, in []byte
 		return out, err
 	}
 	cmd := exec.Command(exe)
-	cmd.Env = append(os.Environ(), "MOCHI_NOW_SEED=1")
+	env := append(os.Environ(), "MOCHI_NOW_SEED=1")
+	if bench {
+		env = append(env, "MOCHI_BENCHMARK=1")
+	}
+	cmd.Env = env
 	if len(in) > 0 {
 		cmd.Stdin = bytes.NewReader(in)
 	}
@@ -68,7 +72,7 @@ func TestSwiftTranspiler_PrintHello(t *testing.T) {
 	if errs := types.Check(prog, env); len(errs) > 0 {
 		t.Fatalf("type error: %v", errs[0])
 	}
-	ast, err := swifttrans.Transpile(env, prog)
+	ast, err := swifttrans.Transpile(env, prog, false)
 	if err != nil {
 		t.Fatalf("transpile error: %v", err)
 	}
@@ -77,7 +81,7 @@ func TestSwiftTranspiler_PrintHello(t *testing.T) {
 	if err := os.WriteFile(codePath, code, 0644); err != nil {
 		t.Fatal(err)
 	}
-	out, err := compileAndRunSwiftSrc(t, swiftExe, code, nil)
+	out, err := compileAndRunSwiftSrc(t, swiftExe, code, nil, false)
 	if err != nil {
 		_ = os.WriteFile(filepath.Join(outDir, "print_hello.error"), out, 0644)
 		t.Fatalf("swift run error: %v", err)
