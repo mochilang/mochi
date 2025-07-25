@@ -1,3 +1,57 @@
+## Progress (2025-07-25 19:02 +0700)
+- pascal transpiler: handle else-if and list concatenation (progress 103/104)
+
+## Progress (2025-07-25 19:02 +0700)
+- pascal transpiler: handle else-if and list concatenation (progress 103/104)
+
+## Progress (2025-07-25 19:02 +0700)
+- pascal transpiler: handle else-if and list concatenation (progress 103/104)
+
+## Progress (2025-07-25 19:02 +0700)
+- pascal transpiler: handle else-if and list concatenation (progress 103/104)
+
+## Progress (2025-07-25 19:02 +0700)
+- pascal transpiler: handle else-if and list concatenation (progress 103/104)
+
+## Progress (2025-07-25 19:02 +0700)
+- pascal transpiler: handle else-if and list concatenation (progress 103/104)
+
+## Progress (2025-07-25 19:02 +0700)
+- pascal transpiler: handle else-if and list concatenation (progress 103/104)
+
+## Progress (2025-07-25 19:02 +0700)
+- pascal transpiler: handle else-if and list concatenation (progress 103/104)
+
+## Progress (2025-07-25 19:02 +0700)
+- pascal transpiler: handle else-if and list concatenation (progress 103/104)
+
+## Progress (2025-07-25 19:02 +0700)
+- pascal transpiler: handle else-if and list concatenation (progress 103/104)
+
+## Progress (2025-07-25 19:02 +0700)
+- pascal transpiler: handle else-if and list concatenation (progress 103/104)
+
+## Progress (2025-07-25 19:02 +0700)
+- pascal transpiler: handle else-if and list concatenation (progress 103/104)
+
+## Progress (2025-07-25 19:02 +0700)
+- pascal transpiler: handle else-if and list concatenation (progress 103/104)
+
+## Progress (2025-07-25 19:02 +0700)
+- pascal transpiler: handle else-if and list concatenation (progress 103/104)
+
+## Progress (2025-07-25 19:02 +0700)
+- pascal transpiler: handle else-if and list concatenation (progress 103/104)
+
+## Progress (2025-07-25 19:02 +0700)
+- pascal transpiler: handle else-if and list concatenation (progress 103/104)
+
+## Progress (2025-07-25 19:02 +0700)
+- pascal transpiler: handle else-if and list concatenation (progress 103/104)
+
+## Progress (2025-07-25 19:02 +0700)
+- pascal transpiler: handle else-if and list concatenation (progress 103/104)
+
 ## Progress (2025-07-25 12:29 +0700)
 - cs transpiler: handle string element type in loops (progress 103/104)
 
@@ -337,6 +391,24 @@
 
 ## Progress (2025-07-22 03:14 +0000)
 - cs transpiler: 100/102 tests compiled
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

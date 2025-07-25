@@ -1442,6 +1442,9 @@ func typeOfExpr(e Expr) string {
 		return ""
 	case *FieldExpr:
 		t := typeOfExpr(ex.Target)
+		if (t == "string" || strings.HasSuffix(t, "[]")) && ex.Name == "Length" {
+			return "int"
+		}
 		if st, ok := structTypes[t]; ok {
 			if ft, ok2 := st.Fields[ex.Name]; ok2 {
 				return csTypeFromType(ft)
@@ -2388,9 +2391,18 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 				}
 			}
 			if t := typeOfExpr(val); t != "" {
-				varTypes[s.Assign.Name] = t
+				name := s.Assign.Name
+				if alias, ok := varAliases[name]; ok {
+					name = alias
+				}
+				varTypes[name] = t
+				finalVarTypes[name] = t
 			}
-			mutatedVars[s.Assign.Name] = true
+			if alias, ok := varAliases[s.Assign.Name]; ok {
+				mutatedVars[alias] = true
+			} else {
+				mutatedVars[s.Assign.Name] = true
+			}
 			name := s.Assign.Name
 			if alias, ok := varAliases[name]; ok {
 				name = alias
@@ -2864,6 +2876,9 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			args[i] = ex
 		}
 		name := p.Call.Func
+		if alias, ok := varAliases[name]; ok {
+			name = alias
+		}
 		if name == "now" && len(args) == 0 {
 			usesNow = true
 			return &RawExpr{Code: "_now()", Type: "long"}, nil
@@ -3181,6 +3196,11 @@ func compileMatchExpr(me *parser.MatchExpr) (Expr, error) {
 		if !ok {
 			return nil, fmt.Errorf("unsupported match pattern")
 		}
+		for j, v := range vars {
+			if v == "_" {
+				vars[j] = fmt.Sprintf("_unused_%d_%d", i, j)
+			}
+		}
 		saved := make(map[string]string)
 		st := structTypes[name]
 		for j, v := range vars {
@@ -3188,6 +3208,7 @@ func compileMatchExpr(me *parser.MatchExpr) (Expr, error) {
 			varTypes[v] = csTypeFromType(st.Fields[st.Order[j]])
 		}
 		res, err := compileExpr(c.Result)
+		t := typeOfExpr(res)
 		for _, v := range vars {
 			if saved[v] == "" {
 				delete(varTypes, v)
@@ -3207,10 +3228,11 @@ func compileMatchExpr(me *parser.MatchExpr) (Expr, error) {
 			field := st.Order[j]
 			body.WriteString(fmt.Sprintf("var %s = %s.%s; ", safeName(v), tmp, field))
 		}
-		if retType == "object" {
-			t := typeOfExpr(res)
-			if t != "" {
+		if t != "" {
+			if retType == "object" {
 				retType = t
+			} else if retType != t {
+				retType = "object"
 			}
 		}
 		var rbuf bytes.Buffer
