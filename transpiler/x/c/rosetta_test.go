@@ -74,30 +74,41 @@ func TestRosettaTranspilerGolden(t *testing.T) {
 			_ = os.Remove(errPath)
 			if updateEnabled() {
 				trimmed := bytes.TrimSpace(out)
-				ext := ".out"
+				var benchData []byte
 				if bench {
-					ext = ".bench"
+					if idx := bytes.LastIndexByte(trimmed, '{'); idx >= 0 {
+						benchData = trimmed[idx:]
+						trimmed = bytes.TrimSpace(trimmed[:idx])
+					}
+					_ = os.WriteFile(filepath.Join(outDir, name+".bench"), benchData, 0o644)
 				}
-				_ = os.WriteFile(filepath.Join(outDir, name+ext), trimmed, 0o644)
+				_ = os.WriteFile(filepath.Join(outDir, name+".out"), trimmed, 0o644)
 				return
 			}
-			ext := ".out"
-			if bench {
-				ext = ".bench"
-			}
-			wantPath := filepath.Join(outDir, name+ext)
+			wantPath := filepath.Join(outDir, name+".out")
 			want, err := os.ReadFile(wantPath)
 			if err != nil {
 				t.Fatalf("read want: %v", err)
 			}
-			if bench {
-				// benchmark results are nondeterministic; skip comparison
-				return
-			}
 			want = bytes.TrimSpace(want)
 			got := bytes.TrimSpace(out)
+			if bench {
+				if idx := bytes.LastIndexByte(got, '{'); idx >= 0 {
+					got = bytes.TrimSpace(got[:idx])
+				}
+			}
 			if !bytes.Equal(got, want) {
 				t.Fatalf("output mismatch\nGot: %s\nWant: %s", got, want)
+			}
+			if bench {
+				benchPath := filepath.Join(outDir, name+".bench")
+				benchData, err := os.ReadFile(benchPath)
+				if err != nil {
+					t.Fatalf("read bench: %v", err)
+				}
+				if len(benchData) == 0 {
+					t.Fatalf("benchmark data missing")
+				}
 			}
 		}); !ok {
 			t.Fatalf("first failing program: %s", name)
