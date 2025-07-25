@@ -758,6 +758,11 @@ type CallExpr struct {
 }
 
 func (c *CallExpr) emit(w io.Writer) {
+	if c.Func == "keys" && len(c.Args) == 1 {
+		c.Args[0].emit(w)
+		fmt.Fprint(w, ".Keys")
+		return
+	}
 	// Special case conversions to int for BigInteger arguments
 	if (c.Func == "Convert.ToInt32" || c.Func == "Convert.ToInt64") && len(c.Args) == 1 &&
 		typeOfExpr(c.Args[0]) == "BigInteger" {
@@ -1666,6 +1671,35 @@ func (ix *IndexExpr) emit(w io.Writer) {
 	}
 	targetType := typeOfExpr(ix.Target)
 	idxType := typeOfExpr(ix.Index)
+	if strings.HasPrefix(targetType, "Dictionary<") {
+		parts := strings.TrimPrefix(strings.TrimSuffix(targetType, ">"), "Dictionary<")
+		arr := strings.Split(parts, ",")
+		valType := "object"
+		if len(arr) == 2 {
+			valType = strings.TrimSpace(arr[1])
+		}
+		ix.Target.emit(w)
+		fmt.Fprint(w, ".ContainsKey(")
+		ix.Index.emit(w)
+		fmt.Fprint(w, ") ? ")
+		ix.Target.emit(w)
+		fmt.Fprint(w, "[")
+		ix.Index.emit(w)
+		fmt.Fprint(w, "] : ")
+		switch valType {
+		case "long":
+			fmt.Fprint(w, "0")
+		case "double":
+			fmt.Fprint(w, "0.0")
+		case "bool":
+			fmt.Fprint(w, "false")
+		case "string":
+			fmt.Fprint(w, "\"\"")
+		default:
+			fmt.Fprint(w, "null")
+		}
+		return
+	}
 	if targetType == "string" {
 		ix.Target.emit(w)
 		fmt.Fprint(w, ".Substring(")
@@ -2257,8 +2291,12 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 			if res, changed := inferStructList(s.Let.Name, prog, list); changed {
 				val = res
 			}
-			if len(list.Elems) == 0 && s.Let.Type != nil && s.Let.Type.Generic != nil && s.Let.Type.Generic.Name == "list" && len(s.Let.Type.Generic.Args) == 1 {
+			if s.Let.Type != nil && s.Let.Type.Generic != nil && s.Let.Type.Generic.Name == "list" && len(s.Let.Type.Generic.Args) == 1 {
 				list.ElemType = fmt.Sprintf("%s[]", csType(s.Let.Type.Generic.Args[0]))
+				varTypes[s.Let.Name] = list.ElemType
+			} else if len(list.Elems) == 0 {
+				list.ElemType = "object[]"
+				varTypes[s.Let.Name] = "object[]"
 			}
 		}
 		if mp, ok := val.(*MapLit); ok {
@@ -2346,13 +2384,12 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 			varTypes[s.Var.Name] = csType(s.Var.Type)
 		}
 		if list, ok := val.(*ListLit); ok {
-			if len(list.Elems) == 0 {
-				if s.Var.Type != nil && s.Var.Type.Generic != nil && s.Var.Type.Generic.Name == "list" && len(s.Var.Type.Generic.Args) == 1 {
-					list.ElemType = fmt.Sprintf("%s[]", csType(s.Var.Type.Generic.Args[0]))
-				} else {
-					list.ElemType = "object[]"
-					varTypes[s.Var.Name] = "object[]"
-				}
+			if s.Var.Type != nil && s.Var.Type.Generic != nil && s.Var.Type.Generic.Name == "list" && len(s.Var.Type.Generic.Args) == 1 {
+				list.ElemType = fmt.Sprintf("%s[]", csType(s.Var.Type.Generic.Args[0]))
+				varTypes[s.Var.Name] = list.ElemType
+			} else if len(list.Elems) == 0 {
+				list.ElemType = "object[]"
+				varTypes[s.Var.Name] = "object[]"
 			}
 			_ = list // do not convert mutable vars to structs
 		}
@@ -2408,8 +2445,35 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 			if err != nil {
 				return nil, err
 			}
+			if list, ok := val.(*ListLit); ok && len(list.Elems) == 0 {
+				nameAlias := s.Assign.Name
+				if alias, ok := varAliases[nameAlias]; ok {
+					nameAlias = alias
+				}
+				if vt, ok := varTypes[nameAlias]; ok && strings.HasSuffix(vt, "[]") {
+					list.ElemType = vt
+				}
+			}
+			if mp, ok := val.(*MapLit); ok && len(mp.Items) == 0 {
+				nameAlias := s.Assign.Name
+				if alias, ok := varAliases[nameAlias]; ok {
+					nameAlias = alias
+				}
+				if vt, ok := varTypes[nameAlias]; ok && strings.HasPrefix(vt, "Dictionary<") {
+					parts := strings.TrimPrefix(strings.TrimSuffix(vt, ">"), "Dictionary<")
+					arr := strings.Split(parts, ",")
+					if len(arr) == 2 {
+						mp.KeyType = strings.TrimSpace(arr[0])
+						mp.ValType = strings.TrimSpace(arr[1])
+					}
+				}
+			}
 			if app, ok := val.(*AppendExpr); ok {
-				if vt, ok2 := varTypes[s.Assign.Name]; ok2 {
+				nameAlias := s.Assign.Name
+				if alias, ok := varAliases[nameAlias]; ok {
+					nameAlias = alias
+				}
+				if vt, ok2 := varTypes[nameAlias]; ok2 {
 					item := app.Item
 					if mp, ok3 := item.(*MapLit); ok3 {
 						if len(mp.Items) > 2 {
@@ -2421,21 +2485,21 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 					t := typeOfExpr(item)
 					if t != "" {
 						if vt == "" || vt == "object[]" {
-							varTypes[s.Assign.Name] = t + "[]"
+							varTypes[nameAlias] = t + "[]"
 						} else if strings.HasSuffix(vt, "[]") {
 							cur := strings.TrimSuffix(vt, "[]")
 							if cur != t {
 								if cur == "int" && t == "double" {
-									varTypes[s.Assign.Name] = "double[]"
+									varTypes[nameAlias] = "double[]"
 								} else {
-									varTypes[s.Assign.Name] = "object[]"
+									varTypes[nameAlias] = "object[]"
 								}
 							}
 						}
 						if g, ok3 := globalDecls[s.Assign.Name]; ok3 {
-							g.Value = &RawExpr{Code: fmt.Sprintf("new %s{}", varTypes[s.Assign.Name]), Type: varTypes[s.Assign.Name]}
+							g.Value = &RawExpr{Code: fmt.Sprintf("new %s{}", varTypes[nameAlias]), Type: varTypes[nameAlias]}
 						}
-						finalVarTypes[s.Assign.Name] = varTypes[s.Assign.Name]
+						finalVarTypes[nameAlias] = varTypes[nameAlias]
 					}
 					val = &AppendExpr{List: app.List, Item: item}
 				}
@@ -3828,8 +3892,10 @@ return _fmt(v);
 	for _, g := range prog.Globals {
 		buf.WriteString("\tstatic ")
 		t := typeOfExpr(g.Value)
-		if vt, ok := varTypes[g.Name]; ok && vt != "" && !strings.HasPrefix(vt, "fn/") {
-			if t == "" || t == "object" {
+		if vt, ok := finalVarTypes[g.Name]; ok && vt != "" && !strings.HasPrefix(vt, "fn/") {
+			t = vt
+		} else if vt, ok := varTypes[g.Name]; ok && vt != "" && !strings.HasPrefix(vt, "fn/") {
+			if t == "" || t == "object" || t != vt {
 				t = vt
 			}
 		}

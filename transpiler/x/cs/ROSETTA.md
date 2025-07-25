@@ -1,7 +1,7 @@
 # Rosetta C# Transpiler Output
 
-Completed programs: 70/284
-Last updated: 2025-07-25 20:19 +0700
+Completed programs: 83/284
+Last updated: 2025-07-25 14:26 UTC
 
 ## Checklist
 | Index | Name | Status | Duration | Memory |
@@ -78,19 +78,19 @@ Last updated: 2025-07-25 20:19 +0700
 | 70 | arithmetic-integer-1 | ✓ | 3.054ms | 16.0MB |
 | 71 | arithmetic-integer-2 | ✓ | 2.933ms | 16.0MB |
 | 72 | arithmetic-numbers |   |  |  |
-| 73 | arithmetic-rational |   |  |  |
-| 74 | array-concatenation |   |  |  |
-| 75 | array-length |   |  |  |
-| 76 | arrays |   |  |  |
-| 77 | ascending-primes |   |  |  |
-| 78 | ascii-art-diagram-converter |   |  |  |
-| 79 | assertions |   |  |  |
-| 80 | associative-array-creation |   |  |  |
-| 81 | associative-array-iteration |   |  |  |
-| 82 | associative-array-merging |   |  |  |
-| 83 | atomic-updates |   |  |  |
-| 84 | attractive-numbers |   |  |  |
-| 85 | average-loop-length |   |  |  |
+| 73 | arithmetic-rational | ✓ | 2.823ms | 16.0MB |
+| 74 | array-concatenation | ✓ | 3.471ms | 16.0MB |
+| 75 | array-length | ✓ | 2.724ms | 16.0MB |
+| 76 | arrays | ✓ | 4.92ms | 24.1MB |
+| 77 | ascending-primes | ✓ | 13.849ms | 1.1GB |
+| 78 | ascii-art-diagram-converter | ✓ | 2.778ms | 16.0MB |
+| 79 | assertions | ✓ | 2.383ms | 16.0MB |
+| 80 | associative-array-creation | ✓ | 3.191ms | 16.0MB |
+| 81 | associative-array-iteration | ✓ | 15.854ms | 2.3GB |
+| 82 | associative-array-merging | ✓ | 11.802ms | 1.1GB |
+| 83 | atomic-updates | ✓ | 2.968ms | 16.0MB |
+| 84 | attractive-numbers | ✓ | 2.697ms | 32.1MB |
+| 85 | average-loop-length | ✓ | 52.588ms | 11.7GB |
 | 86 | averages-arithmetic-mean |   |  |  |
 | 87 | averages-mean-time-of-day |   |  |  |
 | 88 | averages-median-1 |   |  |  |
