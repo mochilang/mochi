@@ -1,0 +1,5 @@
+exit status 1
+lua: /workspace/mochi/tests/rosetta/transpiler/Lua/md5.lua:13: attempt to call a nil value (field 'MD5Hex')
+stack traceback:
+	/workspace/mochi/tests/rosetta/transpiler/Lua/md5.lua:13: in main chunk
+	[C]: in ?

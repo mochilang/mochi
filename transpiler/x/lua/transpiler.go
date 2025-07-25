@@ -166,6 +166,15 @@ local function slice(lst, s, e)
 end
 `
 
+const helperSplit = `
+local function _split(s, sep)
+  local t = {}
+  local pattern = string.format("([^%s]+)", sep)
+  string.gsub(s, pattern, function(c) t[#t+1] = c end)
+  return t
+end
+`
+
 // Program represents a simple Lua program consisting of a sequence of
 // statements.
 type Program struct {
@@ -609,6 +618,16 @@ end)(`)
 		}
 	case "indexOf":
 		io.WriteString(w, "_indexOf(")
+		if len(c.Args) > 0 {
+			c.Args[0].emit(w)
+		}
+		io.WriteString(w, ", ")
+		if len(c.Args) > 1 {
+			c.Args[1].emit(w)
+		}
+		io.WriteString(w, ")")
+	case "split":
+		io.WriteString(w, "_split(")
 		if len(c.Args) > 0 {
 			c.Args[0].emit(w)
 		}
@@ -2337,6 +2356,8 @@ func collectHelpers(p *Program) map[string]bool {
 				used["sha256"] = true
 			case "indexOf":
 				used["indexOf"] = true
+			case "split":
+				used["split"] = true
 			case "parseIntStr":
 				used["parseIntStr"] = true
 			}
@@ -2511,6 +2532,9 @@ func Emit(p *Program) []byte {
 	}
 	if used["parseIntStr"] {
 		b.WriteString(helperParseIntStr)
+	}
+	if used["split"] {
+		b.WriteString(helperSplit)
 	}
 	if used["slice"] {
 		b.WriteString(helperSlice)

@@ -1,0 +1,8 @@
+exit status 1
+
+Game #1
+lua: ...tests/rosetta/transpiler/Lua/deal-cards-for-freecell.lua:56: attempt to index a nil value (global 'stdout')
+stack traceback:
+	...tests/rosetta/transpiler/Lua/deal-cards-for-freecell.lua:56: in function 'show'
+	...tests/rosetta/transpiler/Lua/deal-cards-for-freecell.lua:80: in main chunk
+	[C]: in ?
