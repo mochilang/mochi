@@ -1,7 +1,7 @@
 # Rosetta C# Transpiler Output
 
-Completed programs: 52/284
-Last updated: 2025-07-25 12:58 +0700
+Completed programs: 62/284
+Last updated: 2025-07-25 13:09 +0700
 
 ## Checklist
 | Index | Name | Status | Duration | Memory |
@@ -64,16 +64,16 @@ Last updated: 2025-07-25 12:58 +0700
 | 56 | anti-primes | ✓ | 9.324ms | 16.0MB |
 | 57 | append-a-record-to-the-end-of-a-text-file | ✓ | 1.01ms | 16.0MB |
 | 58 | apply-a-callback-to-an-array-1 | ✓ | 882µs | 16.0MB |
-| 59 | apply-a-callback-to-an-array-2 |   |  |  |
-| 60 | apply-a-digital-filter-direct-form-ii-transposed- |   |  |  |
-| 61 | approximate-equality |   |  |  |
-| 62 | arbitrary-precision-integers-included- |   |  |  |
-| 63 | archimedean-spiral |   |  |  |
-| 64 | arena-storage-pool |   |  |  |
-| 65 | arithmetic-complex |   |  |  |
-| 66 | arithmetic-derivative |   |  |  |
-| 67 | arithmetic-evaluation |   |  |  |
-| 68 | arithmetic-geometric-mean-calculate-pi |   |  |  |
+| 59 | apply-a-callback-to-an-array-2 | ✓ | 3.257ms | 16.0MB |
+| 60 | apply-a-digital-filter-direct-form-ii-transposed- | ✓ | 3.66ms | 16.0MB |
+| 61 | approximate-equality | ✓ | 4.16ms | 16.0MB |
+| 62 | arbitrary-precision-integers-included- | ✓ | 1.544ms | 1.8GB |
+| 63 | archimedean-spiral | ✓ | 3.59ms | 32.1MB |
+| 64 | arena-storage-pool | ✓ | 20.638ms | 2.4GB |
+| 65 | arithmetic-complex | ✓ | 3.012ms | 16.0MB |
+| 66 | arithmetic-derivative | ✓ | 3.201ms | 341.0MB |
+| 67 | arithmetic-evaluation | ✓ | 3.419ms | 16.0MB |
+| 68 | arithmetic-geometric-mean-calculate-pi | ✓ | 2.863ms | 16.0MB |
 | 69 | arithmetic-geometric-mean |   |  |  |
 | 70 | arithmetic-integer-1 |   |  |  |
 | 71 | arithmetic-integer-2 |   |  |  |
