@@ -1,3 +1,118 @@
+## Progress (2025-07-25 18:46 +0700)
+- cpp rosetta: benchmark index 20
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-25 18:46 +0700)
+- cpp rosetta: benchmark index 20
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-25 18:46 +0700)
+- cpp rosetta: benchmark index 20
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-25 18:45 +0700)
+- cpp rosetta: benchmark index 19
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-25 18:45 +0700)
+- cpp rosetta: benchmark index 19
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-25 18:45 +0700)
+- cpp rosetta: benchmark index 19
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-25 18:45 +0700)
+- cpp rosetta: benchmark index 19
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-25 18:45 +0700)
+- cpp rosetta: benchmark index 18
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-25 18:45 +0700)
+- cpp rosetta: benchmark index 18
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-25 18:44 +0700)
+- cpp rosetta: benchmark index 17
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-25 18:44 +0700)
+- cpp rosetta: benchmark index 17
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-25 18:44 +0700)
+- cpp rosetta: benchmark index 16
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-25 18:44 +0700)
+- cpp rosetta: benchmark index 16
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-25 18:43 +0700)
+- cpp rosetta: benchmark index 15
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-25 18:43 +0700)
+- cpp rosetta: benchmark index 15
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-25 18:43 +0700)
+- cpp rosetta: benchmark index 14
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-25 18:43 +0700)
+- cpp rosetta: benchmark index 14
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-25 18:43 +0700)
+- cpp rosetta: benchmark index 13
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-25 18:43 +0700)
+- cpp rosetta: benchmark index 13
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-25 18:42 +0700)
+- cpp transpiler: handle mutated params
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-25 18:42 +0700)
+- cpp transpiler: handle mutated params
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-25 18:29 +0700)
+- transpiler: handle more builtins and update rosetta outputs
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-25 18:29 +0700)
+- transpiler: handle more builtins and update rosetta outputs
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
 ## Progress (2025-07-25 18:01 +0700)
 - erl transpiler: handle map mutations and update rosetta
 - Generated C++ for 103/104 programs

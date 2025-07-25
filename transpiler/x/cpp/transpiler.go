@@ -38,6 +38,8 @@ var benchMain bool
 var reserved = map[string]bool{"this": true, "new": true}
 var currentReturnType string
 var inReturn bool
+var mutatedParams map[string]bool
+var paramNames map[string]bool
 
 // SetBenchMain configures whether the generated main function is wrapped in a
 // benchmark block when emitting code.
@@ -90,8 +92,9 @@ func (p *Program) addInclude(inc string) {
 }
 
 type Param struct {
-	Name string
-	Type string
+	Name  string
+	Type  string
+	ByVal bool
 }
 
 type Func struct {
@@ -714,9 +717,17 @@ func (p *Program) write(w io.Writer) {
 				io.WriteString(w, "auto")
 			} else {
 				if strings.HasPrefix(typ, "std::vector<") {
-					io.WriteString(w, "const "+typ+"&")
+					if p.ByVal {
+						io.WriteString(w, typ)
+					} else {
+						io.WriteString(w, "const "+typ+"&")
+					}
 				} else if strings.HasPrefix(typ, "std::map<") {
-					io.WriteString(w, typ+"&")
+					if p.ByVal {
+						io.WriteString(w, typ)
+					} else {
+						io.WriteString(w, typ+"&")
+					}
 				} else {
 					io.WriteString(w, typ)
 				}
@@ -777,9 +788,17 @@ func (f *Func) emit(w io.Writer) {
 			io.WriteString(w, "auto ")
 		} else {
 			if strings.HasPrefix(typ, "std::vector<") {
-				io.WriteString(w, "const "+typ+"& ")
+				if p.ByVal {
+					io.WriteString(w, typ+" ")
+				} else {
+					io.WriteString(w, "const "+typ+"& ")
+				}
 			} else if strings.HasPrefix(typ, "std::map<") {
-				io.WriteString(w, typ+"& ")
+				if p.ByVal {
+					io.WriteString(w, typ+" ")
+				} else {
+					io.WriteString(w, typ+"& ")
+				}
 			} else {
 				io.WriteString(w, typ+" ")
 			}
@@ -3152,6 +3171,9 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 			}
 		}
 		if len(s.Assign.Index) > 0 {
+			if paramNames != nil && paramNames[s.Assign.Name] {
+				mutatedParams[s.Assign.Name] = true
+			}
 			parts := s.Assign.Index
 			if parts[len(parts)-1].Colon != nil {
 				return nil, fmt.Errorf("unsupported index assignment")
@@ -3174,12 +3196,20 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 			return &AssignIndexStmt{Target: target, Index: idx, Value: val}, nil
 		}
 		if len(s.Assign.Field) > 0 {
+			if paramNames != nil && paramNames[s.Assign.Name] {
+				mutatedParams[s.Assign.Name] = true
+			}
 			var target Expr = &VarRef{Name: s.Assign.Name}
 			for _, f := range s.Assign.Field[:len(s.Assign.Field)-1] {
 				target = &SelectorExpr{Target: target, Field: f.Name}
 			}
 			fld := s.Assign.Field[len(s.Assign.Field)-1].Name
 			return &AssignFieldStmt{Target: target, Field: fld, Value: val}, nil
+		}
+		if paramNames != nil && len(s.Assign.Index) == 0 && len(s.Assign.Field) == 0 {
+			if paramNames[s.Assign.Name] {
+				mutatedParams[s.Assign.Name] = true
+			}
 		}
 		return &AssignStmt{Name: s.Assign.Name, Value: val}, nil
 	case s.Update != nil:
@@ -3617,6 +3647,11 @@ func convertWhileStmt(ws *parser.WhileStmt) (*WhileStmt, error) {
 func convertFun(fn *parser.FunStmt) (*Func, error) {
 	prev := inFunction
 	inFunction = true
+	paramNames = map[string]bool{}
+	mutatedParams = map[string]bool{}
+	for _, p := range fn.Params {
+		paramNames[p.Name] = true
+	}
 	prevLocals := localTypes
 	prevDecls := currentVarDecls
 	localTypes = map[string]string{}
@@ -3669,15 +3704,22 @@ func convertFun(fn *parser.FunStmt) (*Func, error) {
 			}
 		}
 		inFunction = prev
-		params = append(params, Param{Name: p.Name, Type: typ})
+		params = append(params, Param{Name: p.Name, Type: typ, ByVal: mutatedParams[p.Name]})
 	}
 	defer func() { currentReturnType = prevRet }()
+	paramNames = nil
+	mutatedParams = nil
 	return &Func{Name: fn.Name, Params: params, ReturnType: ret, Body: body}, nil
 }
 
 func convertFunLambda(fn *parser.FunStmt) (*BlockLambda, error) {
 	prev := inFunction
 	inFunction = true
+	paramNames = map[string]bool{}
+	mutatedParams = map[string]bool{}
+	for _, p := range fn.Params {
+		paramNames[p.Name] = true
+	}
 	prevLocals := localTypes
 	prevDecls := currentVarDecls
 	localTypes = map[string]string{}
@@ -3706,9 +3748,11 @@ func convertFunLambda(fn *parser.FunStmt) (*BlockLambda, error) {
 		if p.Type != nil && p.Type.Simple != nil {
 			typ = cppType(*p.Type.Simple)
 		}
-		params = append(params, Param{Name: p.Name, Type: typ})
+		params = append(params, Param{Name: p.Name, Type: typ, ByVal: mutatedParams[p.Name]})
 	}
 	inFunction = prev
+	paramNames = nil
+	mutatedParams = nil
 	return &BlockLambda{Params: params, Body: body}, nil
 }
 
