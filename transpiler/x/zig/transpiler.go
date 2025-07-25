@@ -45,6 +45,7 @@ var useConcat bool
 var useInput bool
 var useLookupHost bool
 var useAscii bool
+var useMem bool
 var variantTags map[string]int
 
 // GetFuncReturns exposes function return types for testing.
@@ -751,6 +752,12 @@ type ContinueStmt struct{}
 // ReturnStmt returns from a function optionally with a value.
 type ReturnStmt struct{ Value Expr }
 
+// BenchStmt measures execution time and prints a JSON result.
+type BenchStmt struct {
+	Name string
+	Body []Stmt
+}
+
 func gitTime() string {
 	out, err := exec.Command("git", "log", "-1", "--format=%cI").Output()
 	if err == nil {
@@ -1009,6 +1016,11 @@ func (p *Program) Emit() []byte {
 	if useLookupHost {
 		buf.WriteString("\nfn _lookup_host(host: []const u8) []const i32 {\n")
 		buf.WriteString("    return &[_]i32{0, 0};\n")
+		buf.WriteString("}\n")
+	}
+	if useMem {
+		buf.WriteString("\nfn _mem() i64 {\n")
+		buf.WriteString("    return 0;\n")
 		buf.WriteString("}\n")
 	}
 	return buf.Bytes()
@@ -1589,6 +1601,38 @@ func (r *ReturnStmt) emit(w io.Writer, indent int) {
 	io.WriteString(w, ";\n")
 }
 
+func (b *BenchStmt) emit(w io.Writer, indent int) {
+	writeIndent(w, indent)
+	io.WriteString(w, "{\n")
+	indent++
+	writeIndent(w, indent)
+	io.WriteString(w, "const __start_mem = _mem();\n")
+	writeIndent(w, indent)
+	io.WriteString(w, "const __start = _now();\n")
+	for _, st := range b.Body {
+		st.emit(w, indent)
+	}
+	writeIndent(w, indent)
+	io.WriteString(w, "const __end = _now();\n")
+	writeIndent(w, indent)
+	io.WriteString(w, "const __end_mem = _mem();\n")
+	writeIndent(w, indent)
+	io.WriteString(w, "const __duration_us = @divTrunc(@as(i64, @intCast(__end - __start)), 1000);\n")
+	writeIndent(w, indent)
+	io.WriteString(w, "const __memory_bytes = __end_mem - __start_mem;\n")
+	writeIndent(w, indent)
+	fmt.Fprintf(w, "const __bench = .{ .duration_us = __duration_us, .memory_bytes = __memory_bytes, .name = \"%s\" };\n", b.Name)
+	writeIndent(w, indent)
+	io.WriteString(w, "const __bj = std.json.stringifyAlloc(std.heap.page_allocator, __bench, .{ .whitespace = .indent_2 }) catch unreachable;\n")
+	writeIndent(w, indent)
+	io.WriteString(w, "std.io.getStdOut().writer().print(\"{s}\\n\", .{__bj}) catch unreachable;\n")
+	writeIndent(w, indent)
+	io.WriteString(w, "std.heap.page_allocator.free(__bj);\n")
+	indent--
+	writeIndent(w, indent)
+	io.WriteString(w, "}\n")
+}
+
 func (i *IfExpr) emit(w io.Writer) {
 	io.WriteString(w, "if (")
 	if i.Cond != nil {
@@ -1746,6 +1790,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	useConcat = false
 	useLookupHost = false
 	useAscii = false
+	useMem = false
 	mutables := map[string]bool{}
 	collectMutables(prog.Statements, mutables)
 	constLists = map[string]*ListLit{}
@@ -2558,6 +2603,20 @@ func compileForStmt(fs *parser.ForStmt, prog *parser.Program) (Stmt, error) {
 	return &ForStmt{Name: fs.Name, Start: start, End: end, Iterable: iter, Body: body}, nil
 }
 
+func compileBenchStmt(bs *parser.BenchBlock, prog *parser.Program) (Stmt, error) {
+	body := make([]Stmt, 0, len(bs.Body))
+	for _, s := range bs.Body {
+		st, err := compileStmt(s, prog)
+		if err != nil {
+			return nil, err
+		}
+		body = append(body, st)
+	}
+	useNow = true
+	useMem = true
+	return &BenchStmt{Name: bs.Name, Body: body}, nil
+}
+
 func mapFields(m *MapLit) ([]Field, bool) {
 	fields := make([]Field, len(m.Entries))
 	for i, e := range m.Entries {
@@ -3055,6 +3114,8 @@ func compileStmt(s *parser.Statement, prog *parser.Program) (Stmt, error) {
 		return compileWhileStmt(s.While, prog)
 	case s.For != nil:
 		return compileForStmt(s.For, prog)
+	case s.Bench != nil:
+		return compileBenchStmt(s.Bench, prog)
 	case s.Return != nil:
 		return compileReturnStmt(s.Return)
 	case s.Fun != nil:
@@ -3344,6 +3405,10 @@ func stmtsUse(name string, stmts []Stmt) bool {
 				if exprUses(name, v) {
 					return true
 				}
+			}
+		case *BenchStmt:
+			if stmtsUse(name, s.Body) {
+				return true
 			}
 		}
 	}
