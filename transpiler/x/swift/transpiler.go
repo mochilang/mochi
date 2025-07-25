@@ -30,6 +30,7 @@ var usesNum bool
 var usesInt bool
 var usesKeys bool
 var usesMem bool
+var usesBigInt bool
 var funcMutParams map[string][]bool
 var funcInOutParams map[string][]bool
 
@@ -58,6 +59,7 @@ type Program struct {
 	UseInt        bool
 	UseKeys       bool
 	UseMem        bool
+	UseBigInt     bool
 }
 
 type Stmt interface{ emit(io.Writer) }
@@ -332,7 +334,13 @@ func (v *VarDecl) emit(w io.Writer) {
 	}
 	if v.Expr != nil {
 		fmt.Fprint(w, " = ")
-		v.Expr.emit(w)
+		if v.Type == "BigInt" {
+			fmt.Fprint(w, "BigInt(")
+			v.Expr.emit(w)
+			fmt.Fprint(w, ")")
+		} else {
+			v.Expr.emit(w)
+		}
 	}
 	fmt.Fprint(w, "\n")
 }
@@ -914,7 +922,7 @@ func (c *CastExpr) emit(w io.Writer) {
 		t = strings.TrimSuffix(t, "!")
 	}
 	switch t {
-	case "Int", "Int64", "Double", "String", "Bool":
+	case "Int", "Int64", "Double", "String", "Bool", "BigInt":
 		if force {
 			if ce, ok := c.Expr.(*CallExpr); ok {
 				if t == "String" && ce.Func == "str" {
@@ -1417,6 +1425,9 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("    if let i = v as? Int { return i }\n")
 		buf.WriteString("    if let i = v as? Int64 { return Int(i) }\n")
 		buf.WriteString("    if let d = v as? Double { return Int(d) }\n")
+		if p.UseBigInt {
+			buf.WriteString("    if let b = v as? BigInt { return b.toInt() }\n")
+		}
 		buf.WriteString("    return 0\n")
 		buf.WriteString("}\n")
 	}
@@ -1438,6 +1449,88 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("        }\n")
 		buf.WriteString("    }\n")
 		buf.WriteString("    return 0\n}\n")
+	}
+	if p.UseBigInt {
+		buf.WriteString("struct BigInt: Comparable, CustomStringConvertible {\n")
+		buf.WriteString("    private var digits: [UInt32] = []\n")
+		buf.WriteString("    init() {}\n")
+		buf.WriteString("    init(_ v: Int) {\n")
+		buf.WriteString("        var n = v\n")
+		buf.WriteString("        while n > 0 { digits.append(UInt32(n % 1000000000)); n /= 1000000000 }\n")
+		buf.WriteString("    }\n")
+		buf.WriteString("    init(_ other: BigInt) { digits = other.digits }\n")
+		buf.WriteString("    func toInt() -> Int {\n")
+		buf.WriteString("        var res: Int64 = 0\n")
+		buf.WriteString("        for d in digits.reversed() { res = res * 1000000000 + Int64(d) }\n")
+		buf.WriteString("        if res > Int64(Int.max) { return Int.max }\n")
+		buf.WriteString("        return Int(res)\n")
+		buf.WriteString("    }\n")
+		buf.WriteString("    static func +(lhs: BigInt, rhs: BigInt) -> BigInt {\n")
+		buf.WriteString("        var carry: UInt64 = 0\n")
+		buf.WriteString("        var result: [UInt32] = []\n")
+		buf.WriteString("        let maxLen = max(lhs.digits.count, rhs.digits.count)\n")
+		buf.WriteString("        for i in 0..<maxLen {\n")
+		buf.WriteString("            let a = i < lhs.digits.count ? UInt64(lhs.digits[i]) : 0\n")
+		buf.WriteString("            let b = i < rhs.digits.count ? UInt64(rhs.digits[i]) : 0\n")
+		buf.WriteString("            let sum = a + b + carry\n")
+		buf.WriteString("            result.append(UInt32(sum % 1000000000))\n")
+		buf.WriteString("            carry = sum / 1000000000\n")
+		buf.WriteString("        }\n")
+		buf.WriteString("        if carry > 0 { result.append(UInt32(carry)) }\n")
+		buf.WriteString("        var r = BigInt(); r.digits = result; return r\n")
+		buf.WriteString("    }\n")
+		buf.WriteString("    static func -(lhs: BigInt, rhs: BigInt) -> BigInt {\n")
+		buf.WriteString("        var borrow: Int64 = 0\n")
+		buf.WriteString("        var result: [UInt32] = []\n")
+		buf.WriteString("        for i in 0..<lhs.digits.count {\n")
+		buf.WriteString("            var a = Int64(lhs.digits[i]) - borrow\n")
+		buf.WriteString("            let b = i < rhs.digits.count ? Int64(rhs.digits[i]) : 0\n")
+		buf.WriteString("            var diff = a - b\n")
+		buf.WriteString("            if diff < 0 { diff += 1000000000; borrow = 1 } else { borrow = 0 }\n")
+		buf.WriteString("            result.append(UInt32(diff))\n")
+		buf.WriteString("        }\n")
+		buf.WriteString("        while result.last == 0 { result.removeLast(); if result.isEmpty { break } }\n")
+		buf.WriteString("        var r = BigInt(); r.digits = result; return r\n")
+		buf.WriteString("    }\n")
+		buf.WriteString("    static func *(lhs: BigInt, rhs: BigInt) -> BigInt {\n")
+		buf.WriteString("        if lhs.digits.isEmpty || rhs.digits.isEmpty { return BigInt() }\n")
+		buf.WriteString("        var result = Array(repeating: UInt64(0), count: lhs.digits.count + rhs.digits.count)\n")
+		buf.WriteString("        for i in 0..<lhs.digits.count {\n")
+		buf.WriteString("            var carry: UInt64 = 0\n")
+		buf.WriteString("            for j in 0..<rhs.digits.count {\n")
+		buf.WriteString("                let idx = i + j\n")
+		buf.WriteString("                let prod = UInt64(lhs.digits[i]) * UInt64(rhs.digits[j]) + result[idx] + carry\n")
+		buf.WriteString("                result[idx] = prod % 1000000000\n")
+		buf.WriteString("                carry = prod / 1000000000\n")
+		buf.WriteString("            }\n")
+		buf.WriteString("            if carry > 0 { result[i + rhs.digits.count] += carry }\n")
+		buf.WriteString("        }\n")
+		buf.WriteString("        var resDigits: [UInt32] = result.map { UInt32($0) }\n")
+		buf.WriteString("        while resDigits.last == 0 { resDigits.removeLast(); if resDigits.isEmpty { break } }\n")
+		buf.WriteString("        var r = BigInt(); r.digits = resDigits; return r\n")
+		buf.WriteString("    }\n")
+		buf.WriteString("    func bitLength() -> Int {\n")
+		buf.WriteString("        if digits.isEmpty { return 0 }\n")
+		buf.WriteString("        var v = digits.last!\n")
+		buf.WriteString("        var bits = 0\n")
+		buf.WriteString("        while v > 0 { v >>= 1; bits += 1 }\n")
+		buf.WriteString("        return bits + (digits.count - 1) * 30\n")
+		buf.WriteString("    }\n")
+		buf.WriteString("    static func <(lhs: BigInt, rhs: BigInt) -> Bool {\n")
+		buf.WriteString("        if lhs.digits.count != rhs.digits.count { return lhs.digits.count < rhs.digits.count }\n")
+		buf.WriteString("        for i in stride(from: lhs.digits.count-1, through: 0, by: -1) {\n")
+		buf.WriteString("            if lhs.digits[i] != rhs.digits[i] { return lhs.digits[i] < rhs.digits[i] }\n")
+		buf.WriteString("        }\n")
+		buf.WriteString("        return false\n")
+		buf.WriteString("    }\n")
+		buf.WriteString("    static func ==(lhs: BigInt, rhs: BigInt) -> Bool { lhs.digits == rhs.digits }\n")
+		buf.WriteString("    var description: String {\n")
+		buf.WriteString("        if digits.isEmpty { return \"0\" }\n")
+		buf.WriteString("        var s = String(digits.last!)\n")
+		buf.WriteString("        for d in digits.dropLast().reversed() { s += String(format: \"%09d\", d) }\n")
+		buf.WriteString("        return s\n")
+		buf.WriteString("    }\n")
+		buf.WriteString("}\n")
 	}
 	needJSON := false
 	for _, st := range p.Stmts {
@@ -1473,6 +1566,7 @@ func Transpile(env *types.Env, prog *parser.Program, benchMain bool) (*Program, 
 	usesInt = false
 	usesKeys = false
 	usesMem = false
+	usesBigInt = false
 	funcMutParams = map[string][]bool{}
 	funcInOutParams = map[string][]bool{}
 	p := &Program{}
@@ -1492,6 +1586,7 @@ func Transpile(env *types.Env, prog *parser.Program, benchMain bool) (*Program, 
 	p.UseInt = usesInt
 	p.UseKeys = usesKeys
 	p.UseMem = usesMem
+	p.UseBigInt = usesBigInt
 	return p, nil
 }
 
@@ -3506,6 +3601,9 @@ func toSwiftType(t *parser.TypeRef) string {
 		return "String"
 	case "bool":
 		return "Bool"
+	case "bigint":
+		usesBigInt = true
+		return "BigInt"
 	case "any":
 		return "Any"
 	default:
@@ -3548,6 +3646,9 @@ func toSwiftOptionalType(t *parser.TypeRef) string {
 		return "String?"
 	case "bool":
 		return "Bool?"
+	case "bigint":
+		usesBigInt = true
+		return "BigInt?"
 	case "any":
 		return "Any?"
 	default:
@@ -3561,6 +3662,9 @@ func swiftTypeOf(t types.Type) string {
 		return "Int"
 	case types.Int64Type:
 		return "Int64"
+	case types.BigIntType:
+		usesBigInt = true
+		return "BigInt"
 	case types.FloatType, types.BigRatType:
 		return "Double"
 	case types.StringType:
