@@ -27,12 +27,12 @@ import (
 
 var (
 	seededNow bool
-	nowSeed   int64
+	nowSeed   uint64
 )
 
 func init() {
 	if s := os.Getenv("MOCHI_NOW_SEED"); s != "" {
-		if v, err := strconv.ParseInt(s, 10, 64); err == nil {
+		if v, err := strconv.ParseUint(s, 10, 64); err == nil {
 			nowSeed = v
 			seededNow = true
 		}
@@ -41,7 +41,7 @@ func init() {
 
 // SetNowSeed enables deterministic values for the now() builtin.
 // It is primarily used by tests to ensure stable output.
-func SetNowSeed(n int64) {
+func SetNowSeed(n uint64) {
 	seededNow = true
 	nowSeed = n
 }
@@ -1262,12 +1262,17 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 			}
 			fmt.Fprintln(m.writer, strings.TrimSpace(sb.String()))
 		case OpNow:
-			if seededNow {
-				nowSeed = (nowSeed*1664525 + 1013904223) % 2147483647
-				fr.regs[ins.A] = Value{Tag: ValueInt, Int: int(nowSeed)}
-			} else {
-				fr.regs[ins.A] = Value{Tag: ValueInt, Int: int(time.Now().UnixNano())}
+			if !seededNow {
+				seededNow = true
+				nowSeed = uint64(time.Now().UnixNano())
 			}
+			// Use a fast xorshift PRNG to avoid expensive modulus operations.
+			s := nowSeed
+			s ^= s << 13
+			s ^= s >> 7
+			s ^= s << 17
+			nowSeed = s
+			fr.regs[ins.A] = Value{Tag: ValueInt, Int: int(s)}
 		case OpMem:
 			var ms runtime.MemStats
 			runtime.ReadMemStats(&ms)
@@ -2465,11 +2470,6 @@ func (c *compiler) compileMain(p *parser.Program) (Function, error) {
 	for _, st := range p.Statements {
 		if st.Fun != nil {
 			continue
-		}
-		if st.Expr != nil {
-			if isTopLevelMainCall(st.Expr.Expr) {
-				continue
-			}
 		}
 		if err := fc.compileStmt(st); err != nil {
 			return Function{}, err

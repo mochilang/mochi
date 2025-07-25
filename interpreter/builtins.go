@@ -1,14 +1,14 @@
 package interpreter
 
 import (
-        "bufio"
-        "encoding/json"
-        "fmt"
-        "io"
-        "os"
-        "strconv"
-        "strings"
-        "time"
+	"bufio"
+	"encoding/json"
+	"fmt"
+	"io"
+	"os"
+	"strconv"
+	"strings"
+	"time"
 
 	"mochi/parser"
 	"mochi/runtime/data"
@@ -90,28 +90,31 @@ func builtinAppend(i *Interpreter, c *parser.CallExpr) (any, error) {
 }
 
 var (
-        seededNow bool
-        nowSeed   int64
+	seededNow bool
+	nowSeed   uint64
 )
 
 func init() {
-        if s := os.Getenv("MOCHI_NOW_SEED"); s != "" {
-                if v, err := strconv.ParseInt(s, 10, 64); err == nil {
-                        nowSeed = v
-                        seededNow = true
-                }
-        }
+	if s := os.Getenv("MOCHI_NOW_SEED"); s != "" {
+		if v, err := strconv.ParseUint(s, 10, 64); err == nil {
+			nowSeed = v
+			seededNow = true
+		}
+	}
 }
 
 func builtinNow(i *Interpreter, c *parser.CallExpr) (any, error) {
-        if len(c.Args) != 0 {
-                return nil, fmt.Errorf("now() takes no arguments")
-        }
-        if seededNow {
-                nowSeed = (nowSeed*1664525 + 1013904223) % 2147483647
-                return nowSeed, nil
-        }
-        return time.Now().UnixNano(), nil
+	if len(c.Args) != 0 {
+		return nil, fmt.Errorf("now() takes no arguments")
+	}
+	if !seededNow {
+		seededNow = true
+		nowSeed = uint64(time.Now().UnixNano())
+	}
+	nowSeed ^= nowSeed << 13
+	nowSeed ^= nowSeed >> 7
+	nowSeed ^= nowSeed << 17
+	return int64(nowSeed), nil
 }
 
 func builtinJSON(i *Interpreter, c *parser.CallExpr) (any, error) {
