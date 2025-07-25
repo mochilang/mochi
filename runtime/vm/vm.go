@@ -1262,12 +1262,18 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 			}
 			fmt.Fprintln(m.writer, strings.TrimSpace(sb.String()))
 		case OpNow:
-			if seededNow {
-				nowSeed = (nowSeed*1664525 + 1013904223) % 2147483647
-				fr.regs[ins.A] = Value{Tag: ValueInt, Int: int(nowSeed)}
-			} else {
-				fr.regs[ins.A] = Value{Tag: ValueInt, Int: int(time.Now().UnixNano())}
+			if !seededNow {
+				seededNow = true
+				nowSeed = time.Now().UnixNano()
 			}
+			// Use a fast xorshift PRNG to avoid expensive modulus
+			// operations when generating pseudo-random numbers.
+			s := nowSeed
+			s ^= s << 13
+			s ^= s >> 7
+			s ^= s << 17
+			nowSeed = s
+			fr.regs[ins.A] = Value{Tag: ValueInt, Int: int(s & 0x7fffffff)}
 		case OpMem:
 			var ms runtime.MemStats
 			runtime.ReadMemStats(&ms)
@@ -2465,11 +2471,6 @@ func (c *compiler) compileMain(p *parser.Program) (Function, error) {
 	for _, st := range p.Statements {
 		if st.Fun != nil {
 			continue
-		}
-		if st.Expr != nil {
-			if isTopLevelMainCall(st.Expr.Expr) {
-				continue
-			}
 		}
 		if err := fc.compileStmt(st); err != nil {
 			return Function{}, err
