@@ -7,6 +7,11 @@ import (
 	"mochi/types"
 )
 
+var benchMain bool
+
+// SetBenchMain is a no-op in the stub build.
+func SetBenchMain(v bool) { benchMain = v }
+
 // Program is a minimal placeholder used when the real implementation is
 // excluded by build tags.
 type Program struct{}
@@ -19,4 +24,4 @@ func Transpile(_ *parser.Program, _ *types.Env) (*Program, error) {
 
 // Emit returns nil output. It is a no-op replacement when the real
 // implementation is not included.
-func Emit(_ *Program, _ bool) []byte { return nil }
+func Emit(_ *Program) []byte { return nil }

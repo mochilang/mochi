@@ -52,7 +52,7 @@ func TestTranspilePrintHello(t *testing.T) {
 	if errs := types.Check(prog, env); len(errs) > 0 {
 		t.Fatal(errs[0])
 	}
-	ast, err := transpiler.Transpile(prog, env, false)
+	ast, err := transpiler.Transpile(prog, env)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -114,7 +114,7 @@ func TestCSTranspiler_Golden(t *testing.T) {
 			if errs := types.Check(prog, env); len(errs) > 0 {
 				t.Fatalf("type error: %v", errs[0])
 			}
-			ast, err := transpiler.Transpile(prog, env, false)
+			ast, err := transpiler.Transpile(prog, env)
 			if err != nil {
 				t.Fatalf("transpile error: %v", err)
 			}

@@ -59,6 +59,7 @@ func TestCSTranspiler_Rosetta_Golden(t *testing.T) {
 		base := strings.TrimSuffix(filepath.Base(src), ".mochi")
 		codePath := filepath.Join(outDir, base+".cs")
 		outPath := filepath.Join(outDir, base+".out")
+		benchPath := filepath.Join(outDir, base+".bench")
 		errPath := filepath.Join(outDir, base+".error")
 
 		prog, err := parser.Parse(src)
@@ -72,7 +73,8 @@ func TestCSTranspiler_Rosetta_Golden(t *testing.T) {
 			return nil, errs[0]
 		}
 		bench := os.Getenv("MOCHI_BENCHMARK") == "true" || os.Getenv("MOCHI_BENCHMARK") == "1"
-		ast, err := cs.Transpile(prog, env, bench)
+		cs.SetBenchMain(bench)
+		ast, err := cs.Transpile(prog, env)
 		if err != nil {
 			_ = os.WriteFile(errPath, []byte("transpile: "+err.Error()), 0o644)
 			return nil, err
@@ -110,7 +112,14 @@ func TestCSTranspiler_Rosetta_Golden(t *testing.T) {
 		}
 		_ = os.Remove(errPath)
 		outBytes := bytes.TrimSpace(out)
-		_ = os.WriteFile(outPath, outBytes, 0o644)
+		if bench {
+			if idx := bytes.LastIndexByte(outBytes, '{'); idx >= 0 {
+				outBytes = outBytes[idx:]
+			}
+			_ = os.WriteFile(benchPath, outBytes, 0o644)
+		} else {
+			_ = os.WriteFile(outPath, outBytes, 0o644)
+		}
 		return outBytes, nil
 	}
 
@@ -161,8 +170,27 @@ func updateRosetta() {
 		mark := " "
 		dur := ""
 		mem := ""
+		benchFile := filepath.Join(outDir, base+".bench")
 		outPath := filepath.Join(outDir, base+".out")
-		if data, err := os.ReadFile(outPath); err == nil {
+		if data, err := os.ReadFile(benchFile); err == nil {
+			var res struct {
+				Duration int64 `json:"duration_us"`
+				Memory   int64 `json:"memory_bytes"`
+			}
+			data = bytes.TrimSpace(data)
+			if json.Unmarshal(data, &res) == nil {
+				if res.Duration > 0 {
+					dur = humanDur(res.Duration)
+				}
+				if res.Memory > 0 {
+					mem = humanBytes(res.Memory)
+				}
+			}
+			if _, err2 := os.Stat(filepath.Join(outDir, base+".error")); os.IsNotExist(err2) {
+				compiled++
+				mark = "✓"
+			}
+		} else if data, err := os.ReadFile(outPath); err == nil {
 			var res struct {
 				Duration int64 `json:"duration_us"`
 				Memory   int64 `json:"memory_bytes"`

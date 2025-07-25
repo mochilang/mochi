@@ -42,7 +42,8 @@ func TestCSTranspiler_VMValid_Golden(t *testing.T) {
 			return nil, errs[0]
 		}
 		bench := os.Getenv("MOCHI_BENCHMARK") == "true" || os.Getenv("MOCHI_BENCHMARK") == "1"
-		ast, err := cs.Transpile(prog, env, bench)
+		cs.SetBenchMain(bench)
+		ast, err := cs.Transpile(prog, env)
 		if err != nil {
 			_ = os.WriteFile(errPath, []byte("transpile: "+err.Error()), 0o644)
 			return nil, err
