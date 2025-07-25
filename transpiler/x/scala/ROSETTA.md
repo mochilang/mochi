@@ -2,12 +2,12 @@
 
 Generated Scala code for Rosetta tasks in `tests/rosetta/x/Mochi`. Each program has a `.scala` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
 
-## Golden Test Checklist (92/284)
-_Last updated: 2025-07-25 10:52 +0700_
+## Golden Test Checklist (91/284)
+_Last updated: 2025-07-25 12:58 +0700_
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
-| 1 | 100-doors-2 | ✓ | 8µs | 8.7 MB |
+| 1 | 100-doors-2 | ✓ | 6µs | 8.7 MB |
 | 2 | 100-doors-3 | ✓ | 5µs | 8.7 MB |
 | 3 | 100-doors | ✓ | 8µs | 8.7 MB |
 | 4 | 100-prisoners | ✓ | 4.792ms | 8.7 MB |
@@ -32,7 +32,7 @@ _Last updated: 2025-07-25 10:52 +0700_
 | 23 | abstract-type | ✓ |  |  |
 | 24 | abundant-deficient-and-perfect-number-classifications | ✓ |  |  |
 | 25 | abundant-odd-numbers | ✓ |  |  |
-| 26 | accumulator-factory | ✓ |  |  |
+| 26 | accumulator-factory | error |  |  |
 | 27 | achilles-numbers | error |  |  |
 | 28 | ackermann-function-2 | ✓ |  |  |
 | 29 | ackermann-function-3 | ✓ |  |  |
