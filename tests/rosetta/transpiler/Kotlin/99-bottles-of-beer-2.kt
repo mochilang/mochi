@@ -17,7 +17,7 @@ fun fields(s: String): MutableList<String> {
     if (cur.length > 0) {
         words = run { val _tmp = words.toMutableList(); _tmp.add(cur); _tmp } as MutableList<String>
     }
-    return words as MutableList<String>
+    return words
 }
 
 fun join(xs: MutableList<String>, sep: String): String {
@@ -30,48 +30,48 @@ fun join(xs: MutableList<String>, sep: String): String {
         res = res + xs[i]
         i = i + 1
     }
-    return res as String
+    return res
 }
 
 fun numberName(n: Int): String {
     val small: MutableList<String> = mutableListOf("no", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen")
     val tens: MutableList<String> = mutableListOf("ones", "ten", "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety")
     if (n < 0) {
-        return "" as String
+        return ""
     }
     if (n < 20) {
-        return small[n] as String
+        return small[n]
     }
     if (n < 100) {
-        var t: String = (tens)[n / 10 as Int] as String
+        var t: String = tens[(n / 10).toInt()]
         var s: Int = n % 10
         if (s > 0) {
             t = (t + " ") + small[s]
         }
-        return t as String
+        return t
     }
-    return "" as String
+    return ""
 }
 
 fun pluralizeFirst(s: String, n: Int): String {
     if (n == 1) {
-        return s as String
+        return s
     }
     val w: MutableList<String> = fields(s)
     if (w.size > 0) {
         w[0] = w[0] + "s"
     }
-    return join(w, " ") as String
+    return join(w, " ")
 }
 
 fun randInt(seed: Int, n: Int): Int {
     val next: Int = ((seed * 1664525) + 1013904223) % 2147483647
-    return next % n as Int
+    return next % n
 }
 
 fun slur(p: String, d: Int): String {
     if (p.length <= 2) {
-        return p as String
+        return p
     }
     var a: MutableList<String> = mutableListOf()
     var i: Int = 1
@@ -99,16 +99,16 @@ fun slur(p: String, d: Int): String {
     }
     s = s + (p.substring(p.length - 1, p.length)).toString()
     val w: MutableList<String> = fields(s)
-    return join(w, " ") as String
+    return join(w, " ")
 }
 
 fun user_main(): Unit {
     var i: Int = 99
     while (i > 0) {
-        println(((((slur(numberName(i) as String, i)).toString() + " ") + (pluralizeFirst(slur("bottle of", i) as String, i)).toString()) + " ") + (slur("beer on the wall", i)).toString())
-        println(((((slur(numberName(i) as String, i)).toString() + " ") + (pluralizeFirst(slur("bottle of", i) as String, i)).toString()) + " ") + (slur("beer", i)).toString())
-        println(((((slur("take one", i)).toString() + " ") + (slur("down", i)).toString()) + " ") + (slur("pass it around", i)).toString())
-        println(((((slur(numberName(i - 1) as String, i)).toString() + " ") + (pluralizeFirst(slur("bottle of", i) as String, i - 1)).toString()) + " ") + (slur("beer on the wall", i)).toString())
+        println((((slur(numberName(i), i) + " ") + pluralizeFirst(slur("bottle of", i), i)) + " ") + slur("beer on the wall", i))
+        println((((slur(numberName(i), i) + " ") + pluralizeFirst(slur("bottle of", i), i)) + " ") + slur("beer", i))
+        println((((slur("take one", i) + " ") + slur("down", i)) + " ") + slur("pass it around", i))
+        println((((slur(numberName(i - 1), i) + " ") + pluralizeFirst(slur("bottle of", i), i - 1)) + " ") + slur("beer on the wall", i))
         i = i - 1
     }
 }

@@ -93,7 +93,7 @@ fun draw(b: Board, score: Int): Unit {
             if (v == 0) {
                 line = line + "    |"
             } else {
-                line = (line + (pad(v)).toString()) + "|"
+                line = (line + pad(v)) + "|"
             }
             x = x + 1
         }
@@ -149,9 +149,9 @@ fun moveLeft(b: Board, score: Int): MoveResult {
     var moved: Boolean = false
     var y: Int = 0
     while (y < SIZE) {
-        val r: SlideResult = slideLeft(grid[y] as MutableList<Int>)
-        val new = r.row
-        score = score + (r.gain as Int)
+        val r: SlideResult = slideLeft(grid[y])
+        val new: MutableList<Int> = r.row
+        score = score + r.gain
         var x: Int = 0
         while (x < SIZE) {
             if (grid[y][x] != new[x]) {
@@ -171,11 +171,11 @@ fun moveRight(b: Board, score: Int): MoveResult {
     var moved: Boolean = false
     var y: Int = 0
     while (y < SIZE) {
-        var rev: MutableList<Int> = reverseRow(grid[y] as MutableList<Int>)
+        var rev: MutableList<Int> = reverseRow(grid[y])
         val r: SlideResult = slideLeft(rev)
-        rev = r.row as MutableList<Int>
-        score = score + (r.gain as Int)
-        rev = reverseRow(rev) as MutableList<Int>
+        rev = r.row
+        score = score + r.gain
+        rev = reverseRow(rev)
         var x: Int = 0
         while (x < SIZE) {
             if (grid[y][x] != rev[x]) {
@@ -203,7 +203,7 @@ fun setCol(b: Board, x: Int, col: MutableList<Int>): Unit {
     var rows: MutableList<MutableList<Int>> = b.cells
     var y: Int = 0
     while (y < SIZE) {
-        var row = rows[y]
+        var row: MutableList<Int> = rows[y]
         row[x] = col[y]
         rows[y] = row
         y = y + 1
@@ -219,8 +219,8 @@ fun moveUp(b: Board, score: Int): MoveResult {
     while (x < SIZE) {
         var col: MutableList<Int> = getCol(b, x)
         val r: SlideResult = slideLeft(col)
-        val new = r.row
-        score = score + (r.gain as Int)
+        val new: MutableList<Int> = r.row
+        score = score + r.gain
         var y: Int = 0
         while (y < SIZE) {
             if (grid[y][x] != new[y]) {
@@ -240,11 +240,11 @@ fun moveDown(b: Board, score: Int): MoveResult {
     var moved: Boolean = false
     var x: Int = 0
     while (x < SIZE) {
-        var col: MutableList<Int> = reverseRow(getCol(b, x) as MutableList<Int>)
+        var col: MutableList<Int> = reverseRow(getCol(b, x))
         val r: SlideResult = slideLeft(col)
-        col = r.row as MutableList<Int>
-        score = score + (r.gain as Int)
-        col = reverseRow(col) as MutableList<Int>
+        col = r.row
+        score = score + r.gain
+        col = reverseRow(col)
         var y: Int = 0
         while (y < SIZE) {
             if (grid[y][x] != col[y]) {
@@ -306,47 +306,47 @@ fun main() {
         var moved: Boolean = false
         if ((cmd == "a") || (cmd == "A")) {
             val m: MoveResult = moveLeft(board, score)
-            board = m.board as Board
-            score = m.score as Int
-            moved = m.moved as Boolean
+            board = m.board
+            score = m.score
+            moved = m.moved
         }
         if ((cmd == "d") || (cmd == "D")) {
             val m: MoveResult = moveRight(board, score)
-            board = m.board as Board
-            score = m.score as Int
-            moved = m.moved as Boolean
+            board = m.board
+            score = m.score
+            moved = m.moved
         }
         if ((cmd == "w") || (cmd == "W")) {
             val m: MoveResult = moveUp(board, score)
-            board = m.board as Board
-            score = m.score as Int
-            moved = m.moved as Boolean
+            board = m.board
+            score = m.score
+            moved = m.moved
         }
         if ((cmd == "s") || (cmd == "S")) {
             val m: MoveResult = moveDown(board, score)
-            board = m.board as Board
-            score = m.score as Int
-            moved = m.moved as Boolean
+            board = m.board
+            score = m.score
+            moved = m.moved
         }
         if ((cmd == "q") || (cmd == "Q")) {
             break
         }
         if (moved as Boolean) {
             val r2: SpawnResult = spawnTile(board)
-            board = r2.board as Board
-            full = r2.full as Boolean
-            if (full && (!(hasMoves(board) as Boolean) as Boolean)) {
+            board = r2.board
+            full = r2.full
+            if (full && (!hasMoves(board) as Boolean)) {
                 draw(board, score)
                 println("Game Over")
                 break
             }
         }
         draw(board, score)
-        if (has2048(board) as Boolean) {
+        if ((has2048(board)) as Boolean) {
             println("You win!")
             break
         }
-        if (!(hasMoves(board) as Boolean)) {
+        if (!hasMoves(board)) {
             println("Game Over")
             break
         }

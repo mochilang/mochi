@@ -118,18 +118,19 @@ fun solve(xs: MutableList<Expr>): Boolean {
             }
             val a: Expr = xs[i]
             val b: Expr = xs[j]
+            var node: Bin = Bin(op = OP_ADD, left = a, right = b)
             for (op in mutableListOf(OP_ADD, OP_SUB, OP_MUL, OP_DIV)) {
-                var node: Bin = Bin(op = op, left = a, right = b)
-                if (solve(run { val _tmp = rest.toMutableList(); _tmp.add(node); _tmp } as MutableList<Expr>) as Boolean) {
+                node = Bin(op = op, left = a, right = b)
+                if ((solve(run { val _tmp = rest.toMutableList(); _tmp.add(node); _tmp } as MutableList<Expr>)) as Boolean) {
                     return true
                 }
             }
-            var node: Bin = Bin(op = OP_SUB, left = b, right = a)
-            if (solve(run { val _tmp = rest.toMutableList(); _tmp.add(node); _tmp } as MutableList<Expr>) as Boolean) {
+            node = Bin(op = OP_SUB, left = b, right = a)
+            if ((solve(run { val _tmp = rest.toMutableList(); _tmp.add(node); _tmp } as MutableList<Expr>)) as Boolean) {
                 return true
             }
             node = Bin(op = OP_DIV, left = b, right = a)
-            if (solve(run { val _tmp = rest.toMutableList(); _tmp.add(node); _tmp } as MutableList<Expr>) as Boolean) {
+            if ((solve(run { val _tmp = rest.toMutableList(); _tmp.add(node); _tmp } as MutableList<Expr>)) as Boolean) {
                 return true
             }
             j = j + 1
@@ -151,7 +152,7 @@ fun user_main(): Unit {
             i = i + 1
         }
         println(":  ")
-        if (!(solve(cards) as Boolean)) {
+        if (!solve(cards)) {
             println("No solution")
         }
         iter = iter + 1
