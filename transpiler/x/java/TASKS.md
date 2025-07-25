@@ -1,4 +1,50 @@
-## Progress (2025-07-25 18:18 +0700)
+## Progress (2025-07-25 19:02 +0700)
+- pascal transpiler: handle else-if and list concatenation (6bb4e4bd23)
+
+- pascal transpiler: handle else-if and list concatenation (6bb4e4bd23)
+
+- pascal transpiler: handle else-if and list concatenation (6bb4e4bd23)
+
+- pascal transpiler: handle else-if and list concatenation (6bb4e4bd23)
+
+- pascal transpiler: handle else-if and list concatenation (6bb4e4bd23)
+
+- pascal transpiler: handle else-if and list concatenation (6bb4e4bd23)
+
+- pascal transpiler: handle else-if and list concatenation (6bb4e4bd23)
+
+- pascal transpiler: handle else-if and list concatenation (6bb4e4bd23)
+
+- pascal transpiler: handle else-if and list concatenation (6bb4e4bd23)
+
+- pascal transpiler: handle else-if and list concatenation (6bb4e4bd23)
+
+- pascal transpiler: handle else-if and list concatenation (6bb4e4bd23)
+
+- pascal transpiler: handle else-if and list concatenation (6bb4e4bd23)
+
+- pascal transpiler: handle else-if and list concatenation (6bb4e4bd23)
+
+- pascal transpiler: handle else-if and list concatenation (6bb4e4bd23)
+
+- pascal transpiler: handle else-if and list concatenation (6bb4e4bd23)
+
+- pascal transpiler: handle else-if and list concatenation (6bb4e4bd23)
+
+- pascal transpiler: handle else-if and list concatenation (6bb4e4bd23)
+
+- pascal transpiler: handle else-if and list concatenation (6bb4e4bd23)
+
+- pascal transpiler: handle else-if and list concatenation (6bb4e4bd23)
+
+- pascal transpiler: handle else-if and list concatenation (6bb4e4bd23)
+
+- pascal transpiler: handle else-if and list concatenation (6bb4e4bd23)
+
+- pascal transpiler: handle else-if and list concatenation (6bb4e4bd23)
+
+- pascal transpiler: handle else-if and list concatenation (6bb4e4bd23)
+
 - fix java transpiler loops and benchmark (4ab79ffb81)
 
 - fix java transpiler loops and benchmark (4ab79ffb81)

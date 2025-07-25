@@ -1,9 +1,9 @@
 # Java Rosetta Transpiler Output
 
 Generated Java code for programs in `tests/rosetta/x/Mochi`. Each program has a `.java` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
-Last updated: 2025-07-25 18:31 GMT+7
+Last updated: 2025-07-25 19:28 GMT+7
 
-## Rosetta Checklist (70/284)
+## Rosetta Checklist (81/284)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 23.0ms | 245.84KB |
@@ -77,17 +77,17 @@ Last updated: 2025-07-25 18:31 GMT+7
 | 69 | arithmetic-geometric-mean | ✓ | 6.0ms | 10.35KB |
 | 70 | arithmetic-integer-1 | ✓ | 23.0ms | 40.70KB |
 | 71 | arithmetic-integer-2 | ✓ | 10.0ms | 40.70KB |
-| 72 | arithmetic-numbers |   |  |  |
-| 73 | arithmetic-rational |   |  |  |
-| 74 | array-concatenation |   |  |  |
-| 75 | array-length |   |  |  |
-| 76 | arrays |   |  |  |
-| 77 | ascending-primes |   |  |  |
-| 78 | ascii-art-diagram-converter |   |  |  |
-| 79 | assertions |   |  |  |
-| 80 | associative-array-creation |   |  |  |
-| 81 | associative-array-iteration |   |  |  |
-| 82 | associative-array-merging |   |  |  |
+| 72 | arithmetic-numbers | ✓ |  |  |
+| 73 | arithmetic-rational | ✓ | 24.0ms | 39.38KB |
+| 74 | array-concatenation | ✓ | 14.0ms | 47.89KB |
+| 75 | array-length | ✓ | 11.0ms | 39.15KB |
+| 76 | arrays | ✓ | 16.0ms | 58.69KB |
+| 77 | ascending-primes | ✓ | 18.0ms | 55.77KB |
+| 78 | ascii-art-diagram-converter | ✓ | 6.0ms | 3.63KB |
+| 79 | assertions | ✓ | 5.0ms | 504B |
+| 80 | associative-array-creation | ✓ | 19.0ms | 94.27KB |
+| 81 | associative-array-iteration | ✓ | 11.0ms | 39.91KB |
+| 82 | associative-array-merging | ✓ | 6.0ms | 11.35KB |
 | 83 | atomic-updates |   |  |  |
 | 84 | attractive-numbers |   |  |  |
 | 85 | average-loop-length |   |  |  |
