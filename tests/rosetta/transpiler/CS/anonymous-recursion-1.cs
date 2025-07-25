@@ -56,19 +56,37 @@ class Program {
         }
         return _fmt(v);
     }
-    static double[][] testCases = new double[][]{new double[]{20, 45}, new double[]{(0 - 45), 45}, new double[]{(0 - 85), 90}, new double[]{(0 - 95), 90}, new double[]{(0 - 45), 125}, new double[]{(0 - 45), 145}, new double[]{29.4803, (0 - 88.6381)}, new double[]{(0 - 78.3251), (0 - 159.036)}, new double[]{(0 - 70099.74233810938), 29840.67437876723}, new double[]{(0 - 165313.6666297357), 33693.9894517456}, new double[]{1174.8380510598456, (0 - 154146.66490124757)}, new double[]{60175.77306795546, 42213.07192354373}};
-    static double angleDiff(double b1, double b2) {
-        double diff = (b2 - b1);
-        return (((((diff % 360) + 360) + 180) % 360) - 180);
+    static long fib(long n) {
+        if ((n < 2)) {
+            return n;
+        };
+        long a = 0;
+        long b = 1;
+        long i = 1;
+        while ((i < n)) {
+            long t = (a + b);
+            a = b;
+            b = t;
+            i = (i + 1);
+        };
+        return b;
+    }
+
+    static void main() {
+        foreach (var n_0 in new long[]{0, 1, 2, 3, 4, 5, 10, 40, -1}) {
+            if ((n_0 < 0)) {
+                Console.WriteLine(_fmtTop("fib undefined for negative numbers"));
+            } else {
+                Console.WriteLine(_fmtTop(((("fib " + (n_0).ToString()) + " = ") + (fib(n_0)).ToString())));
+            }
+        };
     }
 
     static void Main() {
         {
             var __memStart = _mem();
             var __start = _now();
-            foreach (var tc_0 in testCases) {
-                Console.WriteLine(_fmtTop(angleDiff(tc_0[0], tc_0[1])));
-            }
+            main();
             var __end = _now();
             var __memEnd = _mem();
             var __dur = (__end - __start);

@@ -1012,7 +1012,8 @@ func isMapExpr(e Expr) bool {
 	case *MapLit:
 		return true
 	case *IndexExpr:
-		if isMapExpr(ex.Target) {
+		t := typeOfExpr(e)
+		if strings.HasPrefix(t, "Dictionary<") {
 			return true
 		}
 	case *FieldExpr:
@@ -1338,6 +1339,8 @@ func typeOfExpr(e Expr) string {
 		return "bool"
 	case *NotExpr:
 		return "bool"
+	case *UnaryExpr:
+		return typeOfExpr(ex.Val)
 	case *InExpr:
 		return "bool"
 	case *BinaryExpr:

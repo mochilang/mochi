@@ -56,18 +56,58 @@ class Program {
         }
         return _fmt(v);
     }
-    static double[][] testCases = new double[][]{new double[]{20, 45}, new double[]{(0 - 45), 45}, new double[]{(0 - 85), 90}, new double[]{(0 - 95), 90}, new double[]{(0 - 45), 125}, new double[]{(0 - 45), 145}, new double[]{29.4803, (0 - 88.6381)}, new double[]{(0 - 78.3251), (0 - 159.036)}, new double[]{(0 - 70099.74233810938), 29840.67437876723}, new double[]{(0 - 165313.6666297357), 33693.9894517456}, new double[]{1174.8380510598456, (0 - 154146.66490124757)}, new double[]{60175.77306795546, 42213.07192354373}};
-    static double angleDiff(double b1, double b2) {
-        double diff = (b2 - b1);
-        return (((((diff % 360) + 360) + 180) % 360) - 180);
+    static double PI = 3.141592653589793;
+    static double L = 10;
+    static double G = 9.81;
+    static double dt = 0.2;
+    static double phi0 = (PI / 4);
+    static double omega = sqrtApprox((G / L));
+    static double t = 0;
+    static double sinApprox(double x) {
+        double term = x;
+        double sum = x;
+        long n = 1;
+        while ((n <= 10)) {
+            var denom = Convert.ToDouble(((2 * n) * ((2 * n) + 1)));
+            term = (((-term * x) * x) / denom);
+            sum = (sum + term);
+            n = (n + 1);
+        };
+        return sum;
+    }
+
+    static double cosApprox(double x) {
+        double term = 1;
+        double sum = 1;
+        long n = 1;
+        while ((n <= 10)) {
+            var denom = Convert.ToDouble((((2 * n) - 1) * (2 * n)));
+            term = (((-term * x) * x) / denom);
+            sum = (sum + term);
+            n = (n + 1);
+        };
+        return sum;
+    }
+
+    static double sqrtApprox(double x) {
+        double guess = x;
+        long i = 0;
+        while ((i < 10)) {
+            guess = ((guess + (x / guess)) / 2);
+            i = (i + 1);
+        };
+        return guess;
     }
 
     static void Main() {
         {
             var __memStart = _mem();
             var __start = _now();
-            foreach (var tc_0 in testCases) {
-                Console.WriteLine(_fmtTop(angleDiff(tc_0[0], tc_0[1])));
+            for (var step_0 = 0; step_0 < 10; step_0++) {
+                double phi = (phi0 * cosApprox((omega * t)));
+                var pos = Convert.ToInt32(((10 * sinApprox(phi)) + 0.5));
+                Console.WriteLine(_fmtTop((pos).ToString()));
+                t = (t + dt);
             }
             var __end = _now();
             var __memEnd = _mem();

@@ -1,4 +1,0 @@
-dotnet run: exit status 1
-/tmp/TestCSTranspiler_Rosetta_Golden759242497/001/Program.cs(39,21): error CS0019: Operator '-' cannot be applied to operands of type 'object' and 'object' [/tmp/TestCSTranspiler_Rosetta_Golden759242497/001/app.csproj]
-
-The build failed. Fix the build errors and run again.
