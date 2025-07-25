@@ -868,7 +868,7 @@ func transpileProgram(lang string, env *types.Env, prog *parser.Program, root, s
 		}
 		return scalat.Emit(p), nil
 	case "scheme":
-		p, err := scheme.Transpile(prog, env)
+		p, err := scheme.Transpile(prog, env, false)
 		if err != nil {
 			return nil, err
 		}
