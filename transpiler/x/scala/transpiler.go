@@ -1826,9 +1826,9 @@ func convertBinary(b *parser.BinaryExpr, env *types.Env) (Expr, error) {
 					left = &CastExpr{Value: left, Type: rt}
 				}
 				if (lt == "Any" || lt == "") && (rt == "Any" || rt == "") {
-					// fallback to integer arithmetic when both operand types are unknown
-					left = &CastExpr{Value: left, Type: "Int"}
-					right = &CastExpr{Value: right, Type: "Int"}
+					// fallback to floating point arithmetic when both operand types are unknown
+					left = &CastExpr{Value: left, Type: "Double"}
+					right = &CastExpr{Value: right, Type: "Double"}
 				}
 			} else if op == "&&" || op == "||" {
 				if inferTypeWithEnv(left, env) != "Boolean" {
@@ -3274,7 +3274,7 @@ func convertFunStmt(fs *parser.FunStmt, env *types.Env) (Stmt, error) {
 		fn.Body = append(init, fn.Body...)
 	}
 	if fn.Return == "" {
-		fn.Return = "Unit"
+		fn.Return = "Any"
 	}
 	return fn, nil
 }
@@ -3533,7 +3533,7 @@ func toScalaType(t *parser.TypeRef) string {
 		}
 		ret := toScalaType(t.Fun.Return)
 		if ret == "" {
-			ret = "Unit"
+			ret = "Any"
 		}
 		return fmt.Sprintf("(%s) => %s", strings.Join(parts, ", "), ret)
 	}
