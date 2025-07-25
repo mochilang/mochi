@@ -54,6 +54,7 @@ end else begin
 end;
   writeln(line);
 end;
+  Sleep(1);
   bench_memdiff_0 := _mem() - bench_mem_0;
   bench_dur_0 := (_now() - bench_start_0) div 1000;
   writeln('{');

@@ -101,7 +101,16 @@ func runRosettaCase(t *testing.T, name string) {
 	}
 	_ = os.Remove(filepath.Join(outDir, name+".error"))
 	got := bytes.TrimSpace(out)
+	benchPath := filepath.Join(outDir, name+".bench")
 	outPath := filepath.Join(outDir, name+".out")
+	if bench {
+		idx := bytes.LastIndexByte(got, '{')
+		if idx >= 0 {
+			benchData := bytes.TrimSpace(got[idx:])
+			_ = os.WriteFile(benchPath, benchData, 0o644)
+			got = bytes.TrimSpace(got[:idx])
+		}
+	}
 	if updateEnabled() {
 		_ = os.WriteFile(outPath, got, 0o644)
 		return
@@ -203,7 +212,21 @@ func updateRosettaChecklist() {
 		}
 		dur := ""
 		mem := ""
-		if data, err := os.ReadFile(filepath.Join(outDir, name+".out")); err == nil {
+		benchFile := filepath.Join(outDir, name+".bench")
+		if data, err := os.ReadFile(benchFile); err == nil {
+			var js struct {
+				Duration int64 `json:"duration_us"`
+				Memory   int64 `json:"memory_bytes"`
+			}
+			if json.Unmarshal(bytes.TrimSpace(data), &js) == nil {
+				if js.Duration > 0 {
+					dur = humanDuration(js.Duration)
+				}
+				if js.Memory > 0 {
+					mem = humanSize(js.Memory)
+				}
+			}
+		} else if data, err := os.ReadFile(filepath.Join(outDir, name+".out")); err == nil {
 			var js struct {
 				Duration int64 `json:"duration_us"`
 				Memory   int64 `json:"memory_bytes"`
