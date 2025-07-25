@@ -294,9 +294,8 @@ func compareValues(a, b value) int {
 }
 
 // Emit writes the Smalltalk source code to w with a generated header.
-// Emit writes the Smalltalk source code to w. If bench is true, the
-// entire program is wrapped in a benchmark block that prints a JSON
-// report with execution duration and memory usage.
+// If bench is true, the emitted program is wrapped in a benchmark block
+// that prints JSON with execution duration and memory usage.
 func Emit(w io.Writer, prog *Program, bench bool) error {
 	if prog == nil {
 		return nil
@@ -306,6 +305,7 @@ func Emit(w io.Writer, prog *Program, bench bool) error {
 	}
 	if bench {
 		io.WriteString(w, "benchStart := Time millisecondClockValue.\n")
+		io.WriteString(w, "benchMemStart := ObjectMemory totalMemory.\n")
 	}
 	for i, line := range prog.Lines {
 		if _, err := io.WriteString(w, line); err != nil {
@@ -319,9 +319,12 @@ func Emit(w io.Writer, prog *Program, bench bool) error {
 	}
 	if bench {
 		io.WriteString(w, "benchEnd := Time millisecondClockValue.\n")
+		io.WriteString(w, "benchMemEnd := ObjectMemory totalMemory.\n")
 		io.WriteString(w, "dur := (benchEnd - benchStart) * 1000.\n")
+		io.WriteString(w, "mem := benchMemEnd - benchMemStart.\n")
 		io.WriteString(w, "Transcript show:'{\"duration_us\": '")
-		io.WriteString(w, " , dur printString , ', \"memory_bytes\": 0, \"name\": \"main\"}' ; cr\n")
+		io.WriteString(w, " , dur printString , ', \"memory_bytes\": '")
+		io.WriteString(w, " , mem printString , ', \"name\": \"main\"}' ; cr\n")
 	}
 	if len(prog.Lines) > 0 {
 		if _, err := io.WriteString(w, "\n"); err != nil {
