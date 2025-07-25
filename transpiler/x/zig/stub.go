@@ -10,6 +10,9 @@ import (
 // Program is a placeholder used when the real implementation is excluded by build tags.
 type Program struct{}
 
+// benchMain controls whether the main function is wrapped in a benchmark block.
+var benchMain bool
+
 // SetBenchMain is a no-op in the stub build.
 func SetBenchMain(v bool) { benchMain = v }
 
