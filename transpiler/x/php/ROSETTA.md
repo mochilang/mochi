@@ -2,9 +2,9 @@
 
 Generated PHP code from Mochi Rosetta tasks lives in `tests/rosetta/transpiler/php`.
 
-Last updated: 2025-07-25 01:29 +0700
+Last updated: 2025-07-25 02:13 +0700
 
-## Checklist (218/284)
+## Checklist (260/284)
 - [x] 1 100-doors-2
 - [x] 2 100-doors-3
 - [x] 3 100-doors
@@ -229,56 +229,56 @@ Last updated: 2025-07-25 01:29 +0700
 - [x] 222 conditional-structures-7
 - [x] 223 conditional-structures-8
 - [x] 224 conditional-structures-9
-- [x] 225 consecutive-primes-with-ascending-or-descending-differences
+- [ ] 225 consecutive-primes-with-ascending-or-descending-differences
 - [x] 226 constrained-genericity-1
 - [x] 227 constrained-genericity-2
-- [ ] 228 constrained-genericity-3
-- [ ] 229 constrained-genericity-4
-- [ ] 230 constrained-random-points-on-a-circle-1
-- [ ] 231 constrained-random-points-on-a-circle-2
-- [ ] 232 continued-fraction
-- [ ] 233 convert-decimal-number-to-rational
-- [ ] 234 convert-seconds-to-compound-duration
-- [ ] 235 convex-hull
-- [ ] 236 conways-game-of-life
-- [ ] 237 copy-a-string-1
-- [ ] 238 copy-a-string-2
-- [ ] 239 copy-stdin-to-stdout-1
-- [ ] 240 copy-stdin-to-stdout-2
-- [ ] 241 count-in-factors
-- [ ] 242 count-in-octal-1
-- [ ] 243 count-in-octal-2
+- [x] 228 constrained-genericity-3
+- [x] 229 constrained-genericity-4
+- [x] 230 constrained-random-points-on-a-circle-1
+- [x] 231 constrained-random-points-on-a-circle-2
+- [x] 232 continued-fraction
+- [x] 233 convert-decimal-number-to-rational
+- [x] 234 convert-seconds-to-compound-duration
+- [x] 235 convex-hull
+- [x] 236 conways-game-of-life
+- [x] 237 copy-a-string-1
+- [x] 238 copy-a-string-2
+- [x] 239 copy-stdin-to-stdout-1
+- [x] 240 copy-stdin-to-stdout-2
+- [x] 241 count-in-factors
+- [x] 242 count-in-octal-1
+- [x] 243 count-in-octal-2
 - [ ] 244 count-in-octal-3
 - [ ] 245 count-in-octal-4
-- [ ] 246 count-occurrences-of-a-substring
-- [ ] 247 count-the-coins-1
-- [ ] 248 count-the-coins-2
-- [ ] 249 cramers-rule
-- [ ] 250 crc-32-1
-- [ ] 251 crc-32-2
-- [ ] 252 create-a-file-on-magnetic-tape
-- [ ] 253 create-a-file
-- [ ] 254 create-a-two-dimensional-array-at-runtime-1
-- [ ] 255 create-an-html-table
-- [ ] 256 create-an-object-at-a-given-address
-- [ ] 257 csv-data-manipulation
-- [ ] 258 csv-to-html-translation-1
-- [ ] 259 csv-to-html-translation-2
-- [ ] 260 csv-to-html-translation-3
-- [ ] 261 csv-to-html-translation-4
-- [ ] 262 csv-to-html-translation-5
+- [x] 246 count-occurrences-of-a-substring
+- [x] 247 count-the-coins-1
+- [x] 248 count-the-coins-2
+- [x] 249 cramers-rule
+- [x] 250 crc-32-1
+- [x] 251 crc-32-2
+- [x] 252 create-a-file-on-magnetic-tape
+- [x] 253 create-a-file
+- [x] 254 create-a-two-dimensional-array-at-runtime-1
+- [x] 255 create-an-html-table
+- [x] 256 create-an-object-at-a-given-address
+- [x] 257 csv-data-manipulation
+- [x] 258 csv-to-html-translation-1
+- [x] 259 csv-to-html-translation-2
+- [x] 260 csv-to-html-translation-3
+- [x] 261 csv-to-html-translation-4
+- [x] 262 csv-to-html-translation-5
 - [ ] 263 cuban-primes
-- [ ] 264 cullen-and-woodall-numbers
-- [ ] 265 cumulative-standard-deviation
-- [ ] 266 currency
+- [x] 264 cullen-and-woodall-numbers
+- [x] 265 cumulative-standard-deviation
+- [x] 266 currency
 - [ ] 267 currying
-- [ ] 268 curzon-numbers
-- [ ] 269 cusip
+- [x] 268 curzon-numbers
+- [x] 269 cusip
 - [ ] 270 cyclops-numbers
-- [ ] 271 damm-algorithm
-- [ ] 272 date-format
-- [ ] 273 date-manipulation
-- [ ] 274 day-of-the-week
+- [x] 271 damm-algorithm
+- [x] 272 date-format
+- [x] 273 date-manipulation
+- [x] 274 day-of-the-week
 - [ ] 275 de-bruijn-sequences
 - [ ] 276 deal-cards-for-freecell
 - [ ] 277 death-star

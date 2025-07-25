@@ -1,0 +1,5 @@
+creature = shark
+pointer = 0
+*pointer = shark
+*pointer = jellyfish
+creature = jellyfish
