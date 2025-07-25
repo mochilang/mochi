@@ -38,6 +38,7 @@ func TestRosettaKotlin(t *testing.T) {
 			idx = v
 		}
 	}
+	bench := os.Getenv("MOCHI_BENCHMARK") == "true"
 	files, err := filepath.Glob(filepath.Join(srcDir, "*.mochi"))
 	if err != nil {
 		t.Fatalf("glob: %v", err)
@@ -52,6 +53,7 @@ func TestRosettaKotlin(t *testing.T) {
 	ktPath := filepath.Join(outDir, name+".kt")
 	t.Cleanup(kt.UpdateRosettaChecklist)
 	ok := t.Run(fmt.Sprintf("%03d_%s", idx, name), func(t *testing.T) {
+		kt.SetBenchMain(bench)
 		prog, err := parser.Parse(srcPath)
 		if err != nil {
 			writeKTError(outDir, name, fmt.Errorf("parse error: %w", err))
@@ -77,7 +79,11 @@ func TestRosettaKotlin(t *testing.T) {
 			t.Fatalf("kotlinc: %v", err)
 		}
 		cmd := exec.Command("java", "-jar", jar)
-		cmd.Env = append(os.Environ(), "MOCHI_ROOT="+root, "MOCHI_NOW_SEED=1")
+		runEnv := append(os.Environ(), "MOCHI_ROOT="+root, "MOCHI_NOW_SEED=1")
+		if bench {
+			runEnv = append(runEnv, "MOCHI_BENCHMARK=1")
+		}
+		cmd.Env = runEnv
 		if inData, err := os.ReadFile(filepath.Join(srcDir, name+".in")); err == nil {
 			cmd.Stdin = bytes.NewReader(inData)
 		}

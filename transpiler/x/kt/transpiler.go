@@ -24,6 +24,7 @@ var (
 	builtinAliases map[string]string
 	reserved       map[string]bool
 	currentRetType string
+	benchMain      bool
 )
 
 func init() {
@@ -183,6 +184,11 @@ func useHelper(name string) {
 		extraHelpers = append(extraHelpers, code)
 	}
 }
+
+// SetBenchMain configures whether the generated main function should be wrapped
+// in a benchmark block when emitting code. When enabled, the program will print
+// a JSON object containing duration and memory statistics.
+func SetBenchMain(v bool) { benchMain = v }
 
 func safeName(n string) string {
 	if reserved[n] {
@@ -2561,6 +2567,11 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 		default:
 			return nil, fmt.Errorf("unsupported statement")
 		}
+	}
+	if benchMain {
+		useHelper("_now")
+		useHelper("toJson")
+		p.Stmts = []Stmt{&BenchStmt{Name: "main", Body: p.Stmts}}
 	}
 	p.Structs = extraDecls
 	p.Unions = extraUnions

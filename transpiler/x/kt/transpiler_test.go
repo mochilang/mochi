@@ -51,6 +51,7 @@ func TestTranspilePrograms(t *testing.T) {
 		outPath := filepath.Join(outDir, base+".out")
 		errPath := filepath.Join(outDir, base+".error")
 
+		bench := os.Getenv("MOCHI_BENCHMARK") == "true"
 		prog, err := parser.Parse(src)
 		if err != nil {
 			_ = os.WriteFile(errPath, []byte("parse: "+err.Error()), 0o644)
@@ -61,6 +62,7 @@ func TestTranspilePrograms(t *testing.T) {
 			_ = os.WriteFile(errPath, []byte("type: "+errs[0].Error()), 0o644)
 			return nil, errs[0]
 		}
+		kt.SetBenchMain(bench)
 		ast, err := kt.Transpile(env, prog)
 		if err != nil {
 			_ = os.WriteFile(errPath, []byte("transpile: "+err.Error()), 0o644)
@@ -76,7 +78,11 @@ func TestTranspilePrograms(t *testing.T) {
 			return nil, err
 		}
 		cmd := exec.Command("java", "-jar", jar)
-		cmd.Env = append(os.Environ(), "MOCHI_ROOT="+root)
+		runEnv := append(os.Environ(), "MOCHI_ROOT="+root)
+		if bench {
+			runEnv = append(runEnv, "MOCHI_BENCHMARK=1")
+		}
+		cmd.Env = runEnv
 		if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
 			cmd.Stdin = bytes.NewReader(data)
 		}
