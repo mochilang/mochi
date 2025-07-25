@@ -27,7 +27,7 @@ fun parseIntStr(str: String): Int {
     var n: Int = 0
     val digits: MutableMap<String, Int> = mutableMapOf<String, Int>("0" to (0), "1" to (1), "2" to (2), "3" to (3), "4" to (4), "5" to (5), "6" to (6), "7" to (7), "8" to (8), "9" to (9))
     while (i < str.length) {
-        n = (n * 10) + ((digits)[str.substring(i, i + 1)]!! as Int) as Int
+        n = (n * 10) + (digits)[str.substring(i, i + 1)] as Int
         i = i + 1
     }
     if (neg as Boolean) {

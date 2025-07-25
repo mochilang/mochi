@@ -18,17 +18,17 @@ fun _now(): Int {
 fun input(): String = readLine() ?: ""
 
 fun randDigit(): Int {
-    return (_now() % 9) + 1 as Int
+    return (_now() % 9) + 1
 }
 
 fun user_main(): Unit {
-    var digits: MutableList<Any> = mutableListOf()
+    var digits: MutableList<Any?> = mutableListOf()
     for (i in 0 until 4) {
-        digits = run { val _tmp = digits.toMutableList(); _tmp.add(randDigit()); _tmp } as MutableList<Any>
+        digits = run { val _tmp = digits.toMutableList(); _tmp.add(randDigit()); _tmp } as MutableList<Any?>
     }
     var numstr: String = ""
     for (i in 0 until 4) {
-        numstr = numstr + digits[i].toString()
+        numstr = numstr + (digits[i]).toString()
     }
     println(("Your numbers: " + numstr) + "\n")
     println("Enter RPN: ")
@@ -37,7 +37,7 @@ fun user_main(): Unit {
         println("invalid. expression length must be 7. (4 numbers, 3 operators, no spaces)")
         return
     }
-    var stack: MutableList<Any> = mutableListOf()
+    var stack: MutableList<Any?> = mutableListOf()
     var i: Int = 0
     var valid: Boolean = true
     while (i < expr.length) {
@@ -48,7 +48,7 @@ fun user_main(): Unit {
                 return
             }
             var j: Int = 0
-            while (digits[j] != ((ch as Int as Number).toDouble() - ("0" as Int as Number).toDouble())) {
+            while (digits[j] != (ch.toInt() - "0".toInt())) {
                 j = j + 1
                 if (j == digits.size) {
                     println("wrong numbers.")
@@ -56,15 +56,15 @@ fun user_main(): Unit {
                 }
             }
             digits = (digits.subList(0, j) + digits.subList(j + 1, digits.size)).toMutableList()
-            stack = run { val _tmp = stack.toMutableList(); _tmp.add((ch as Int as Number).toDouble() - ("0" as Int as Number).toDouble().toDouble()); _tmp } as MutableList<Any>
+            stack = run { val _tmp = stack.toMutableList(); _tmp.add((ch.toInt() - "0".toInt()).toDouble()); _tmp } as MutableList<Any?>
         } else {
             if (stack.size < 2) {
                 println("invalid expression syntax.")
                 valid = false
                 break
             }
-            var b = stack[stack.size - 1]
-            var a = stack[stack.size - 2]
+            var b: Any? = stack[stack.size - 1]
+            var a: Any? = stack[stack.size - 2]
             if (ch == "+") {
                 stack[stack.size - 2] = (a as Number).toDouble() + (b as Number).toDouble()
             } else {
@@ -89,8 +89,8 @@ fun user_main(): Unit {
         i = i + 1
     }
     if (valid as Boolean) {
-        if ((kotlin.math.abs((stack[0] as Number).toDouble() - 24.0) as Number).toDouble() > 0.000001) {
-            println(("incorrect. " + stack[0].toString()) + " != 24")
+        if (kotlin.math.abs((stack[0] as Number).toDouble() - 24.0) > 0.000001) {
+            println(("incorrect. " + (stack[0]).toString()) + " != 24")
         } else {
             println("correct.")
         }

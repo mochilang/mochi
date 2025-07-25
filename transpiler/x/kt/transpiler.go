@@ -763,7 +763,7 @@ func (b *BinaryExpr) emit(w io.Writer) {
 			}
 		} else if numOp {
 			t := guessType(e)
-			if t == "Any" {
+			if t == "Any" || t == "Any?" {
 				ot := guessType(other)
 				if ot == "Int" {
 					cast(e, "Int")
@@ -2662,6 +2662,8 @@ func convertStmts(env *types.Env, list []*parser.Statement) ([]Stmt, error) {
 				var tt types.Type
 				if s.Let.Type != nil {
 					tt = types.ResolveTypeRef(s.Let.Type, env)
+				} else if t := types.CheckExprType(s.Let.Value, env); t != nil {
+					tt = t
 				} else {
 					switch typ {
 					case "Int":
@@ -2776,6 +2778,8 @@ func convertStmts(env *types.Env, list []*parser.Statement) ([]Stmt, error) {
 				var tt types.Type
 				if s.Var.Type != nil {
 					tt = types.ResolveTypeRef(s.Var.Type, env)
+				} else if t := types.CheckExprType(s.Var.Value, env); t != nil {
+					tt = t
 				} else {
 					switch typ {
 					case "Int":
@@ -3937,7 +3941,7 @@ func convertPostfix(env *types.Env, p *parser.PostfixExpr) (Expr, error) {
 			case "go_net":
 				if field == "LookupHost" {
 					list := &TypedListLit{ElemType: "Any?", Elems: []Expr{&ListLit{Elems: []Expr{&StringLit{Value: "210.155.141.200"}}}, &VarRef{Name: "null"}}}
-					return &CastExpr{Value: list, Type: "MutableList<Any>"}, nil
+					return &CastExpr{Value: list, Type: "MutableList<Any?>"}, nil
 				}
 			}
 		}
