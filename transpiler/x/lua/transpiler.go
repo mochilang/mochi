@@ -27,6 +27,12 @@ var loopCounter int
 var continueLabels []string
 var structCount int
 var funcDepth int
+var benchMainFlag bool
+
+// SetBenchMain configures whether the generated main function is wrapped in a
+// benchmark block when emitting code. When enabled, programs print a JSON
+// object with duration and memory statistics on completion.
+func SetBenchMain(v bool) { benchMainFlag = v }
 
 const helperNow = `
 local _now_seed = 0
@@ -3471,7 +3477,7 @@ func Transpile(prog *parser.Program, env *types.Env, benchMain bool) (*Program, 
 			lp.Stmts = append(lp.Stmts, s)
 		}
 	}
-	if benchMain {
+	if benchMain || benchMainFlag {
 		lp.Stmts = []Stmt{&BenchStmt{Name: "main", Body: lp.Stmts}}
 	}
 	currentEnv = nil
