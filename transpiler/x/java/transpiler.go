@@ -56,6 +56,17 @@ func copyMap(src map[string]string) map[string]string {
 	return dst
 }
 
+func currentEnv() *types.Env {
+	if topEnv == nil {
+		return nil
+	}
+	env := topEnv.Copy()
+	for name, typ := range varTypes {
+		env.SetVar(name, typeFromName(typ), false)
+	}
+	return env
+}
+
 func sanitize(name string) string {
 	switch name {
 	case "this":
@@ -2554,7 +2565,7 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 			}
 			t := typeRefString(s.Let.Type)
 			if t == "list" && topEnv != nil {
-				t = toJavaTypeFromType(types.ExprType(s.Let.Value, topEnv))
+				t = toJavaTypeFromType(types.ExprType(s.Let.Value, currentEnv()))
 			}
 			if t == "" {
 				switch ex := e.(type) {
@@ -2583,7 +2594,7 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 				}
 			}
 			if t == "" && topEnv != nil {
-				t = toJavaTypeFromType(types.ExprType(s.Let.Value, topEnv))
+				t = toJavaTypeFromType(types.ExprType(s.Let.Value, currentEnv()))
 				if t == "Object" || t == "Object[]" {
 					t = ""
 				}
@@ -2645,7 +2656,7 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 			t := typeRefString(s.Var.Type)
 			if t == "" {
 				if s.Var.Type != nil && s.Var.Type.Generic != nil && s.Var.Type.Generic.Name == "list" && topEnv != nil {
-					t = toJavaTypeFromType(types.ExprType(s.Var.Value, topEnv))
+					t = toJavaTypeFromType(types.ExprType(s.Var.Value, currentEnv()))
 				}
 			}
 			if t == "" {
@@ -2659,7 +2670,7 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 				}
 			}
 			if t == "" && topEnv != nil {
-				t = toJavaTypeFromType(types.ExprType(s.Var.Value, topEnv))
+				t = toJavaTypeFromType(types.ExprType(s.Var.Value, currentEnv()))
 				if t == "Object" || t == "Object[]" {
 					t = ""
 				}
@@ -3028,14 +3039,6 @@ func compileStmts(list []*parser.Statement) ([]Stmt, error) {
 		}
 		if st != nil {
 			if _, ok := st.(*ReturnStmt); ok {
-				if len(out) > 0 {
-					if w, ok2 := out[len(out)-1].(*WhileStmt); ok2 {
-						if b, ok3 := w.Cond.(*BoolLit); ok3 && b.Value {
-							// ignore unreachable return after infinite loop
-							break
-						}
-					}
-				}
 				out = append(out, st)
 				break
 			} else {
@@ -3602,7 +3605,7 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			if s, ok := literalString(it.Key); ok {
 				t := inferType(ve)
 				if t == "" && topEnv != nil {
-					t = toJavaTypeFromType(types.ExprType(it.Value, topEnv))
+					t = toJavaTypeFromType(types.ExprType(it.Value, currentEnv()))
 				}
 				if t != "" {
 					fields[s] = t
@@ -3831,7 +3834,7 @@ func compileQueryExpr(q *parser.QueryExpr) (Expr, error) {
 		}
 	}
 	if topEnv != nil {
-		if lt, ok := types.ExprType(q.Source, topEnv).(types.ListType); ok {
+		if lt, ok := types.ExprType(q.Source, currentEnv()).(types.ListType); ok {
 			elemType = toJavaTypeFromType(lt.Elem)
 		}
 	}
@@ -3866,7 +3869,7 @@ func compileQueryExpr(q *parser.QueryExpr) (Expr, error) {
 		}
 		ftype := "java.util.Map"
 		if topEnv != nil {
-			if lt, ok := types.ExprType(f.Src, topEnv).(types.ListType); ok {
+			if lt, ok := types.ExprType(f.Src, currentEnv()).(types.ListType); ok {
 				ftype = toJavaTypeFromType(lt.Elem)
 				if st, ok := topEnv.GetStruct(ftype); ok {
 					topEnv.SetVar(f.Var, st, false)
@@ -3893,7 +3896,7 @@ func compileQueryExpr(q *parser.QueryExpr) (Expr, error) {
 		}
 		jt := "java.util.Map"
 		if topEnv != nil {
-			if lt, ok := types.ExprType(j.Src, topEnv).(types.ListType); ok {
+			if lt, ok := types.ExprType(j.Src, currentEnv()).(types.ListType); ok {
 				jt = toJavaTypeFromType(lt.Elem)
 				if st, ok := topEnv.GetStruct(jt); ok {
 					topEnv.SetVar(j.Var, st, false)
@@ -3936,7 +3939,7 @@ func compileQueryExpr(q *parser.QueryExpr) (Expr, error) {
 		}
 		keyType := "java.util.Map"
 		if topEnv != nil {
-			keyType = toJavaTypeFromType(types.ExprType(q.Group.Exprs[0], topEnv))
+			keyType = toJavaTypeFromType(types.ExprType(q.Group.Exprs[0], currentEnv()))
 		}
 		if keyType == "" {
 			keyType = inferType(keyExpr)
@@ -4184,9 +4187,17 @@ func Emit(prog *Program) []byte {
 			buf.WriteString(typ + " " + p.Name)
 		}
 		buf.WriteString(") {\n")
+		savedVT := varTypes
+		varTypes = copyMap(varTypes)
+		for _, p := range fn.Params {
+			if p.Type != "" {
+				varTypes[p.Name] = p.Type
+			}
+		}
 		for _, s := range fn.Body {
 			s.emit(&buf, "        ")
 		}
+		varTypes = savedVT
 		buf.WriteString("    }")
 		buf.WriteByte('\n')
 		if i < len(prog.Funcs)-1 {
@@ -4406,7 +4417,7 @@ func inferStructFromList(ll *parser.ListLiteral) (st types.StructType, ok bool) 
 			return types.StructType{}, false
 		}
 		order[i] = key
-		fields[key] = types.ExprType(it.Value, topEnv)
+		fields[key] = types.ExprType(it.Value, currentEnv())
 	}
 	for _, el := range ll.Elems[1:] {
 		if el.Binary == nil || len(el.Binary.Right) != 0 {
@@ -4421,7 +4432,7 @@ func inferStructFromList(ll *parser.ListLiteral) (st types.StructType, ok bool) 
 			if !ok || key != order[i] {
 				return types.StructType{}, false
 			}
-			t := types.ExprType(it.Value, topEnv)
+			t := types.ExprType(it.Value, currentEnv())
 			if !types.EqualTypes(fields[key], t) {
 				return types.StructType{}, false
 			}
