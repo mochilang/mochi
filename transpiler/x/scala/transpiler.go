@@ -809,11 +809,8 @@ type IntLit struct {
 }
 
 func (i *IntLit) emit(w io.Writer) {
-	if i.Long {
-		fmt.Fprintf(w, "%dL", i.Value)
-	} else {
-		fmt.Fprintf(w, "%d", i.Value)
-	}
+	needsBigInt = true
+	fmt.Fprintf(w, "BigInt(%d)", i.Value)
 }
 
 type BoolLit struct{ Value bool }
@@ -1002,7 +999,7 @@ type CastExpr struct {
 }
 
 func (c *CastExpr) emit(w io.Writer) {
-	if c.Type == "bigint" {
+	if c.Type == "bigint" || c.Type == "int" {
 		needsBigInt = true
 		fmt.Fprint(w, "BigInt(")
 		c.Value.emit(w)
@@ -1018,25 +1015,6 @@ func (c *CastExpr) emit(w io.Writer) {
 		fmt.Fprint(w, ")")
 	}
 	switch c.Type {
-	case "int":
-		switch v := c.Value.(type) {
-		case *IndexExpr:
-			if v.Container == "String" {
-				fmt.Fprint(w, ".charAt(0).toInt")
-			} else {
-				fmt.Fprint(w, ".asInstanceOf[Int]")
-			}
-		case *SliceExpr:
-			if v.Type == "String" {
-				fmt.Fprint(w, ".charAt(0).toInt")
-			} else {
-				fmt.Fprint(w, ".asInstanceOf[Int]")
-			}
-		case *SubstringExpr:
-			fmt.Fprint(w, ".charAt(0).toInt")
-		default:
-			fmt.Fprint(w, ".asInstanceOf[Int]")
-		}
 	case "float", "Double":
 		fmt.Fprint(w, ".toString.toDouble")
 	case "string", "String":
@@ -2583,8 +2561,9 @@ func convertCall(c *parser.CallExpr, env *types.Env) (Expr, error) {
 		}
 	case "int":
 		if len(args) == 1 {
+			needsBigInt = true
 			toStr := &CallExpr{Fn: &FieldExpr{Receiver: args[0], Name: "toString"}}
-			return &FieldExpr{Receiver: toStr, Name: "toInt"}, nil
+			return &CallExpr{Fn: &Name{Name: "BigInt"}, Args: []Expr{toStr}}, nil
 		}
 	case "float":
 		if len(args) == 1 {
@@ -3633,7 +3612,8 @@ func toScalaType(t *parser.TypeRef) string {
 		name := strings.ToLower(strings.TrimSpace(*t.Simple))
 		switch name {
 		case "int":
-			return "Int"
+			needsBigInt = true
+			return "BigInt"
 		case "string":
 			return "String"
 		case "bool":
@@ -3696,7 +3676,8 @@ func toScalaType(t *parser.TypeRef) string {
 func toScalaTypeFromType(t types.Type) string {
 	switch tt := t.(type) {
 	case types.IntType, types.Int64Type:
-		return "Int"
+		needsBigInt = true
+		return "BigInt"
 	case types.StringType:
 		return "String"
 	case types.BoolType:
@@ -3741,10 +3722,8 @@ func elementType(container string) string {
 func inferType(e Expr) string {
 	switch ex := e.(type) {
 	case *IntLit:
-		if ex.Long {
-			return "Long"
-		}
-		return "Int"
+		needsBigInt = true
+		return "BigInt"
 	case *StringLit:
 		return "String"
 	case *BoolLit:
