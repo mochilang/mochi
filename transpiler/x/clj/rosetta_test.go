@@ -4,6 +4,7 @@ package cljt_test
 
 import (
 	"bytes"
+	"encoding/json"
 	"flag"
 	"fmt"
 	"os"
@@ -80,7 +81,8 @@ func compileRunClojureRosetta(t *testing.T, srcPath, outDir, name string) {
 		t.Skip("type error")
 		return
 	}
-	ast, err := cljt.Transpile(prog, env)
+	bench := os.Getenv("MOCHI_BENCHMARK") != ""
+	ast, err := cljt.Transpile(prog, env, bench)
 	if err != nil {
 		writeRosettaCljError(outDir, name, fmt.Errorf("transpile error: %w", err))
 		t.Skip("transpile error")
@@ -105,7 +107,21 @@ func compileRunClojureRosetta(t *testing.T, srcPath, outDir, name string) {
 		return
 	}
 	got := bytes.TrimSpace(buf.Bytes())
+	benchPath := filepath.Join(outDir, name+".bench")
 	outPath := filepath.Join(outDir, name+".out")
+	if bench {
+		outBytes := got
+		if idx := bytes.LastIndexByte(outBytes, '{'); idx >= 0 {
+			outBytes = outBytes[idx:]
+		}
+		_ = os.WriteFile(benchPath, outBytes, 0o644)
+		var js struct {
+			Duration int64 `json:"duration_us"`
+			Memory   int64 `json:"memory_bytes"`
+		}
+		_ = json.Unmarshal(outBytes, &js)
+		return
+	}
 	if *update {
 		if err := os.WriteFile(outPath, got, 0o644); err != nil {
 			t.Fatalf("write out: %v", err)
@@ -140,25 +156,76 @@ func updateRosettaReadme() {
 	files, _ := filepath.Glob(filepath.Join(srcDir, "*.mochi"))
 	sort.Strings(files)
 	total := len(files)
-	completed := 0
+	compiled := 0
 	var lines []string
+	lines = append(lines, "| Index | Name | Status | Duration | Memory |")
+	lines = append(lines, "|------:|------|:-----:|---------:|-------:|")
 	for i, f := range files {
 		name := strings.TrimSuffix(filepath.Base(f), ".mochi")
-		mark := "[ ]"
-		if _, err := os.Stat(filepath.Join(binDir, name+".out")); err == nil {
-			completed++
-			mark = "[x]"
+		status := " "
+		if _, err := os.Stat(filepath.Join(binDir, name+".error")); err == nil {
+			// leave unchecked
+		} else if _, err := os.Stat(filepath.Join(binDir, name+".clj")); err == nil {
+			compiled++
+			status = "✓"
 		}
-		lines = append(lines, fmt.Sprintf("%d. %s %s (%d)", i+1, mark, name, i+1))
+		dur := ""
+		mem := ""
+		benchFile := filepath.Join(binDir, name+".bench")
+		if data, err := os.ReadFile(benchFile); err == nil {
+			var js struct {
+				Duration int64 `json:"duration_us"`
+				Memory   int64 `json:"memory_bytes"`
+			}
+			if json.Unmarshal(bytes.TrimSpace(data), &js) == nil {
+				if js.Duration > 0 {
+					dur = humanDuration(js.Duration)
+				}
+				if js.Memory > 0 {
+					mem = humanSize(js.Memory)
+				}
+			}
+		} else if data, err := os.ReadFile(filepath.Join(binDir, name+".out")); err == nil {
+			var js struct {
+				Duration int64 `json:"duration_us"`
+				Memory   int64 `json:"memory_bytes"`
+			}
+			data = bytes.TrimSpace(data)
+			if idx := bytes.LastIndexByte(data, '{'); idx >= 0 {
+				if json.Unmarshal(data[idx:], &js) == nil && js.Duration > 0 {
+					dur = humanDuration(js.Duration)
+					mem = humanSize(js.Memory)
+				}
+			}
+		}
+		lines = append(lines, fmt.Sprintf("| %d | %s | %s | %s | %s |", i+1, name, status, dur, mem))
 	}
 	loc, _ := time.LoadLocation("Asia/Bangkok")
 	ts := time.Now().In(loc).Format("2006-01-02 15:04 -0700")
 
 	var buf bytes.Buffer
 	buf.WriteString("# Clojure Rosetta Transpiler\n\n")
-	fmt.Fprintf(&buf, "Completed: %d/%d\n", completed, total)
+	fmt.Fprintf(&buf, "Completed: %d/%d\n", compiled, total)
 	fmt.Fprintf(&buf, "Last updated: %s\n\n", ts)
 	buf.WriteString(strings.Join(lines, "\n"))
 	buf.WriteString("\n")
 	_ = os.WriteFile(readmePath, buf.Bytes(), 0o644)
+}
+
+func humanDuration(us int64) string {
+	d := time.Duration(us) * time.Microsecond
+	return d.String()
+}
+
+func humanSize(b int64) string {
+	const unit = 1024
+	if b < unit {
+		return fmt.Sprintf("%d B", b)
+	}
+	div, exp := int64(unit), 0
+	for n := b / unit; n >= unit; n /= unit {
+		div *= unit
+		exp++
+	}
+	return fmt.Sprintf("%.1f %cB", float64(b)/float64(div), "KMGTPE"[exp])
 }

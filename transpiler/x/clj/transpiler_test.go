@@ -97,7 +97,7 @@ func compileAndRunClojure(t *testing.T, srcPath, outDir, name string) {
 		t.Skip("type error")
 		return
 	}
-	ast, err := cljt.Transpile(prog, env)
+	ast, err := cljt.Transpile(prog, env, false)
 	if err != nil {
 		writeCljError(outDir, name, fmt.Errorf("transpile error: %w", err))
 		t.Skip("transpile error")
