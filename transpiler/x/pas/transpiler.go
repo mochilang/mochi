@@ -1423,6 +1423,12 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 			continue
 		case st.ExternVar != nil:
 			continue
+		case st.Bench != nil:
+			benchStmts, err := convertBenchBlock(env, st.Bench, varTypes)
+			if err != nil {
+				return nil, err
+			}
+			pr.Stmts = append(pr.Stmts, benchStmts...)
 		case st.Test != nil:
 			// ignore test blocks in transpiled output
 			continue
@@ -1617,6 +1623,12 @@ func convertBody(env *types.Env, body []*parser.Statement, varTypes map[string]s
 			out = append(out, &BreakStmt{})
 		case st.Continue != nil:
 			out = append(out, &ContinueStmt{})
+		case st.Bench != nil:
+			benchStmts, err := convertBenchBlock(env, st.Bench, varTypes)
+			if err != nil {
+				return nil, err
+			}
+			out = append(out, benchStmts...)
 		case st.Expr != nil:
 			if se := extractSaveExpr(st.Expr.Expr); se != nil {
 				src, err := convertExpr(env, se.Src)
@@ -1716,6 +1728,38 @@ func convertBody(env *types.Env, body []*parser.Statement, varTypes map[string]s
 			return nil, fmt.Errorf("unsupported statement")
 		}
 	}
+	return out, nil
+}
+
+func convertBenchBlock(env *types.Env, bench *parser.BenchBlock, varTypes map[string]string) ([]Stmt, error) {
+	currProg.UseSysUtils = true
+	currProg.UseNow = true
+	startName := sanitize(fmt.Sprintf("bench_start_%d", len(currProg.Vars)))
+	durName := sanitize(fmt.Sprintf("bench_dur_%d", len(currProg.Vars)))
+	if !hasVar(startName) {
+		currProg.Vars = append(currProg.Vars, VarDecl{Name: startName, Type: "integer"})
+	}
+	if !hasVar(durName) {
+		currProg.Vars = append(currProg.Vars, VarDecl{Name: durName, Type: "integer"})
+	}
+	varTypes[startName] = "integer"
+	varTypes[durName] = "integer"
+	out := []Stmt{&AssignStmt{Name: startName, Expr: &CallExpr{Name: "_now"}}}
+	body, err := convertBody(env, bench.Body, varTypes)
+	if err != nil {
+		return nil, err
+	}
+	out = append(out, body...)
+	diff := &BinaryExpr{Op: "-", Left: &CallExpr{Name: "_now"}, Right: &VarRef{Name: startName}}
+	div := &BinaryExpr{Op: "div", Left: diff, Right: &IntLit{Value: 1000}}
+	out = append(out, &AssignStmt{Name: durName, Expr: div})
+	out = append(out, &WritelnStmt{Expr: &StringLit{Value: "{"}})
+	line2 := &BinaryExpr{Op: "+", Left: &BinaryExpr{Op: "+", Left: &StringLit{Value: "  \"duration_us\": "}, Right: &CallExpr{Name: "IntToStr", Args: []Expr{&VarRef{Name: durName}}}}, Right: &StringLit{Value: ","}}
+	out = append(out, &WritelnStmt{Expr: line2})
+	out = append(out, &WritelnStmt{Expr: &StringLit{Value: "  \"memory_bytes\": 0,"}})
+	line4 := &BinaryExpr{Op: "+", Left: &BinaryExpr{Op: "+", Left: &StringLit{Value: "  \"name\": \""}, Right: &StringLit{Value: bench.Name}}, Right: &StringLit{Value: "\""}}
+	out = append(out, &WritelnStmt{Expr: line4})
+	out = append(out, &WritelnStmt{Expr: &StringLit{Value: "}"}})
 	return out, nil
 }
 
