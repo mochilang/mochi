@@ -99,6 +99,12 @@ def _sha256(bs)
 end
 `
 
+const helperMem = `
+def _mem()
+  0
+end
+`
+
 // --- Ruby AST ---
 
 type Program struct {
@@ -1169,6 +1175,7 @@ var (
 	usesSHA256      bool
 	usesIndexOf     bool
 	usesParseIntStr bool
+	usesMem         bool
 )
 
 // reserved lists Ruby reserved keywords that cannot be used as identifiers.
@@ -1303,6 +1310,42 @@ type CommentStmt struct{ Text string }
 func (cmt *CommentStmt) emit(e *emitter) {
 	io.WriteString(e.w, "# ")
 	io.WriteString(e.w, cmt.Text)
+}
+
+// BenchStmt represents a benchmark block.
+type BenchStmt struct {
+	Name string
+	Body []Stmt
+}
+
+func (b *BenchStmt) emit(e *emitter) {
+	io.WriteString(e.w, "start_mem = _mem()")
+	e.nl()
+	e.writeIndent()
+	io.WriteString(e.w, "start = _now()")
+	e.nl()
+	e.indent++
+	pushScope()
+	for _, st := range b.Body {
+		e.writeIndent()
+		st.emit(e)
+		e.nl()
+	}
+	popScope()
+	e.indent--
+	e.writeIndent()
+	io.WriteString(e.w, "end_time = _now()")
+	e.nl()
+	e.writeIndent()
+	io.WriteString(e.w, "end_mem = _mem()")
+	e.nl()
+	e.writeIndent()
+	io.WriteString(e.w, "result = {\"duration_us\" => ((end_time - start) / 1000), \"memory_bytes\" => (end_mem - start_mem), \"name\" => \"")
+	io.WriteString(e.w, b.Name)
+	io.WriteString(e.w, "\"}")
+	e.nl()
+	e.writeIndent()
+	io.WriteString(e.w, "puts(JSON.pretty_generate(result))")
 }
 
 // ImportStmt represents an import of a builtin module.
@@ -2536,6 +2579,11 @@ func Emit(w io.Writer, p *Program) error {
 			return err
 		}
 	}
+	if usesMem {
+		if _, err := io.WriteString(w, helperMem+"\n"); err != nil {
+			return err
+		}
+	}
 	if _, err := io.WriteString(w, helperAdd+"\n"); err != nil {
 		return err
 	}
@@ -2559,6 +2607,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	usesSHA256 = false
 	usesIndexOf = false
 	usesParseIntStr = false
+	usesMem = false
 	currentEnv = env
 	topVars = map[string]bool{}
 	scopeStack = nil
@@ -2794,6 +2843,29 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 		}
 		comment := &CommentStmt{Text: "test " + strings.Trim(st.Test.Name, "\"")}
 		return &BlockStmt{Stmts: append([]Stmt{comment}, body...)}, nil
+	case st.Bench != nil:
+		body := make([]Stmt, len(st.Bench.Body))
+		savedEnv := currentEnv
+		if savedEnv != nil {
+			currentEnv = types.NewEnv(savedEnv)
+		}
+		pushScope()
+		for i, s := range st.Bench.Body {
+			st2, err := convertStmt(s)
+			if err != nil {
+				popScope()
+				currentEnv = savedEnv
+				return nil, err
+			}
+			body[i] = st2
+		}
+		popScope()
+		currentEnv = savedEnv
+		needsJSON = true
+		usesNow = true
+		usesMem = true
+		name := strings.Trim(st.Bench.Name, "\"")
+		return &BenchStmt{Name: name, Body: body}, nil
 	case st.Break != nil:
 		return &BreakStmt{}, nil
 	case st.Continue != nil:
@@ -4559,6 +4631,12 @@ func stmtNode(s Stmt) *ast.Node {
 		return n
 	case *ForInStmt:
 		n := &ast.Node{Kind: "for_in", Value: st.Name, Children: []*ast.Node{exprNode(st.Iterable)}}
+		for _, b := range st.Body {
+			n.Children = append(n.Children, stmtNode(b))
+		}
+		return n
+	case *BenchStmt:
+		n := &ast.Node{Kind: "bench", Value: st.Name}
 		for _, b := range st.Body {
 			n.Children = append(n.Children, stmtNode(b))
 		}
