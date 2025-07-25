@@ -1,12 +1,43 @@
 <?php
 ini_set('memory_limit', '-1');
-function randInt($s, $n) {
-  global $padLeft, $makeSeq, $mutate, $prettyPrint, $wstring, $main;
+$now_seed = 0;
+$now_seeded = false;
+$s = getenv('MOCHI_NOW_SEED');
+if ($s !== false && $s !== '') {
+    $now_seed = intval($s);
+    $now_seeded = true;
+}
+function _now() {
+    global $now_seed, $now_seeded;
+    if ($now_seeded) {
+        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
+        return $now_seed;
+    }
+    return hrtime(true);
+}
+function _str($x) {
+    if (is_array($x)) {
+        $isList = array_keys($x) === range(0, count($x) - 1);
+        if ($isList) {
+            $parts = [];
+            foreach ($x as $v) { $parts[] = _str($v); }
+            return '[' . implode(' ', $parts) . ']';
+        }
+        $parts = [];
+        foreach ($x as $k => $v) { $parts[] = _str($k) . ':' . _str($v); }
+        return 'map[' . implode(' ', $parts) . ']';
+    }
+    if (is_bool($x)) return $x ? 'true' : 'false';
+    if ($x === null) return 'null';
+    return strval($x);
+}
+$__start_mem = memory_get_usage();
+$__start = _now();
+  function randInt($s, $n) {
   $next = ($s * 1664525 + 1013904223) % 2147483647;
   return [$next, $next % $n];
-}
-function padLeft($s, $w) {
-  global $randInt, $makeSeq, $mutate, $prettyPrint, $wstring, $main;
+};
+  function padLeft($s, $w) {
   $res = '';
   $n = $w - strlen($s);
   while ($n > 0) {
@@ -14,9 +45,8 @@ function padLeft($s, $w) {
   $n = $n - 1;
 };
   return $res . $s;
-}
-function makeSeq($s, $le) {
-  global $randInt, $padLeft, $mutate, $prettyPrint, $wstring, $main;
+};
+  function makeSeq($s, $le) {
   $bases = 'ACGT';
   $out = '';
   $i = 0;
@@ -28,9 +58,8 @@ function makeSeq($s, $le) {
   $i = $i + 1;
 };
   return [$s, $out];
-}
-function mutate($s, $dna, $w) {
-  global $randInt, $padLeft, $makeSeq, $prettyPrint, $wstring, $main;
+};
+  function mutate($s, $dna, $w) {
   $bases = 'ACGT';
   $le = strlen($dna);
   $r = randInt($s, $le);
@@ -50,11 +79,11 @@ function mutate($s, $dna, $w) {
   $s = $r[0];
   $idx = intval($r[1]);
   $b = substr($bases, $idx, $idx + 1 - $idx);
-  echo rtrim('  Change @' . padLeft(json_encode($p, 1344), 3) . ' \'' . $arr[$p] . '\' to \'' . $b . '\''), PHP_EOL;
+  echo rtrim('  Change @' . padLeft(_str($p), 3) . ' \'' . $arr[$p] . '\' to \'' . $b . '\''), PHP_EOL;
   $arr[$p] = $b;
 } else {
   if ($x < $w[0] + $w[1]) {
-  echo rtrim('  Delete @' . padLeft(json_encode($p, 1344), 3) . ' \'' . $arr[$p] . '\''), PHP_EOL;
+  echo rtrim('  Delete @' . padLeft(_str($p), 3) . ' \'' . $arr[$p] . '\''), PHP_EOL;
   $j = $p;
   while ($j < count($arr) - 1) {
   $arr[$j] = $arr[$j + 1];
@@ -72,7 +101,7 @@ function mutate($s, $dna, $w) {
   $arr[$j] = $arr[$j - 1];
   $j = $j - 1;
 };
-  echo rtrim('  Insert @' . padLeft(json_encode($p, 1344), 3) . ' \'' . $b . '\''), PHP_EOL;
+  echo rtrim('  Insert @' . padLeft(_str($p), 3) . ' \'' . $b . '\''), PHP_EOL;
   $arr[$p] = $b;
 };
 }
@@ -83,9 +112,8 @@ function mutate($s, $dna, $w) {
   $i = $i + 1;
 };
   return [$s, $out];
-}
-function prettyPrint($dna, $rowLen) {
-  global $randInt, $padLeft, $makeSeq, $mutate, $wstring, $main;
+};
+  function prettyPrint($dna, $rowLen) {
   echo rtrim('SEQUENCE:'), PHP_EOL;
   $le = strlen($dna);
   $i = 0;
@@ -94,7 +122,7 @@ function prettyPrint($dna, $rowLen) {
   if ($k > $le) {
   $k = $le;
 }
-  echo rtrim(padLeft(json_encode($i, 1344), 5) . ': ' . substr($dna, $i, $k - $i)), PHP_EOL;
+  echo rtrim(padLeft(_str($i), 5) . ': ' . substr($dna, $i, $k - $i)), PHP_EOL;
   $i = $i + $rowLen;
 };
   $a = 0;
@@ -123,23 +151,18 @@ function prettyPrint($dna, $rowLen) {
 };
   echo rtrim(''), PHP_EOL;
   echo rtrim('BASE COUNT:'), PHP_EOL;
-  echo rtrim('    A: ' . padLeft(json_encode($a, 1344), 3)), PHP_EOL;
-  echo rtrim('    C: ' . padLeft(json_encode($c, 1344), 3)), PHP_EOL;
-  echo rtrim('    G: ' . padLeft(json_encode($g, 1344), 3)), PHP_EOL;
-  echo rtrim('    T: ' . padLeft(json_encode($t, 1344), 3)), PHP_EOL;
+  echo rtrim('    A: ' . padLeft(_str($a), 3)), PHP_EOL;
+  echo rtrim('    C: ' . padLeft(_str($c), 3)), PHP_EOL;
+  echo rtrim('    G: ' . padLeft(_str($g), 3)), PHP_EOL;
+  echo rtrim('    T: ' . padLeft(_str($t), 3)), PHP_EOL;
   echo rtrim('    ------'), PHP_EOL;
-  echo rtrim('    Σ: ' . json_encode($le, 1344)), PHP_EOL;
+  echo rtrim('    Σ: ' . _str($le)), PHP_EOL;
   echo rtrim('    ======'), PHP_EOL;
-}
-function wstring($w) {
-  global $randInt, $padLeft, $makeSeq, $mutate, $prettyPrint, $main;
-  return '  Change: ' . json_encode($w[0], 1344) . '
-  Delete: ' . json_encode($w[1], 1344) . '
-  Insert: ' . json_encode($w[2], 1344) . '
-';
-}
-function main() {
-  global $randInt, $padLeft, $makeSeq, $mutate, $prettyPrint, $wstring;
+};
+  function wstring($w) {
+  return '  Change: ' . _str($w[0]) . '\n  Delete: ' . _str($w[1]) . '\n  Insert: ' . _str($w[2]) . '\n';
+};
+  function main() {
   $seed = 1;
   $res = makeSeq($seed, 250);
   $seed = $res[0];
@@ -147,10 +170,9 @@ function main() {
   prettyPrint($dna, 50);
   $muts = 10;
   $w = [100, 100, 100];
-  echo rtrim('
-WEIGHTS (ex 300):'), PHP_EOL;
+  echo rtrim('\nWEIGHTS (ex 300):'), PHP_EOL;
   echo rtrim(wstring($w)), PHP_EOL;
-  echo rtrim('MUTATIONS (' . json_encode($muts, 1344) . '):'), PHP_EOL;
+  echo rtrim('MUTATIONS (' . _str($muts) . '):'), PHP_EOL;
   $i = 0;
   while ($i < $muts) {
   $res = mutate($seed, $dna, $w);
@@ -160,5 +182,13 @@ WEIGHTS (ex 300):'), PHP_EOL;
 };
   echo rtrim(''), PHP_EOL;
   prettyPrint($dna, 50);
-}
-main();
+};
+  main();
+$__end = _now();
+$__end_mem = memory_get_usage();
+$__duration = intdiv($__end - $__start, 1000);
+$__mem_diff = max(0, $__end_mem - $__start_mem);
+$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
+$__j = json_encode($__bench, 128);
+$__j = str_replace("    ", "  ", $__j);
+echo $__j, PHP_EOL;;

@@ -2,7 +2,7 @@
 
 Generated PHP code from Mochi Rosetta tasks lives in `tests/rosetta/transpiler/php`.
 
-Last updated: 2025-07-25 20:48 +0700
+Last updated: 2025-07-25 21:15 +0700
 
 ## Checklist (265/284)
 | Index | Name | Status | Duration | Memory |
@@ -108,36 +108,36 @@ Last updated: 2025-07-25 20:48 +0700
 | 99 | balanced-brackets | ✓ | 232µs | 128 B |
 | 100 | balanced-ternary | ✓ | 185µs | 96 B |
 | 101 | barnsley-fern | ✓ | 10.777ms | 165.5 KB |
-| 102 | base64-decode-data | ✓ |  |  |
-| 103 | bell-numbers | ✓ |  |  |
-| 104 | benfords-law | ✓ |  |  |
-| 105 | bernoulli-numbers | ✓ |  |  |
-| 106 | best-shuffle | ✓ |  |  |
-| 107 | bifid-cipher | ✓ |  |  |
-| 108 | bin-given-limits | ✓ |  |  |
-| 109 | binary-digits | ✓ |  |  |
-| 110 | binary-search | ✓ |  |  |
-| 111 | binary-strings | ✓ |  |  |
-| 112 | bioinformatics-base-count | ✓ |  |  |
-| 113 | bioinformatics-global-alignment | ✓ |  |  |
-| 114 | bioinformatics-sequence-mutation | ✓ |  |  |
-| 115 | biorhythms | ✓ |  |  |
-| 116 | bitcoin-address-validation | ✓ |  |  |
-| 117 | bitmap-b-zier-curves-cubic | ✓ |  |  |
-| 118 | bitmap-b-zier-curves-quadratic | ✓ |  |  |
-| 119 | bitmap-bresenhams-line-algorithm | ✓ |  |  |
-| 120 | bitmap-flood-fill | ✓ |  |  |
-| 121 | bitmap-histogram | ✓ |  |  |
-| 122 | bitmap-midpoint-circle-algorithm | ✓ |  |  |
-| 123 | bitmap-ppm-conversion-through-a-pipe | ✓ |  |  |
-| 124 | bitmap-read-a-ppm-file | ✓ |  |  |
-| 125 | bitmap-read-an-image-through-a-pipe | ✓ |  |  |
-| 126 | bitmap-write-a-ppm-file | ✓ |  |  |
-| 127 | bitmap | ✓ |  |  |
-| 128 | bitwise-io-1 | ✓ |  |  |
-| 129 | bitwise-io-2 | ✓ |  |  |
-| 130 | bitwise-operations | ✓ |  |  |
-| 131 | blum-integer | ✓ |  |  |
+| 102 | base64-decode-data | ✓ | 266µs | 336 B |
+| 103 | bell-numbers | ✓ | 238µs | 96 B |
+| 104 | benfords-law | ✓ | 1.816ms | 96 B |
+| 105 | bernoulli-numbers | ✓ | 428.038ms | 688 B |
+| 106 | best-shuffle | ✓ | 72µs | 96 B |
+| 107 | bifid-cipher | ✓ | 249µs | 96 B |
+| 108 | bin-given-limits | ✓ | 113µs | 96 B |
+| 109 | binary-digits | ✓ | 71µs | 96 B |
+| 110 | binary-search | ✓ | 52µs | 96 B |
+| 111 | binary-strings | ✓ | 91µs | 1.4 KB |
+| 112 | bioinformatics-base-count | ✓ | 115µs | 416 B |
+| 113 | bioinformatics-global-alignment | ✓ | 164.861ms | 96 B |
+| 114 | bioinformatics-sequence-mutation | ✓ | 1.008ms | 96 B |
+| 115 | biorhythms | ✓ | 158µs | 160 B |
+| 116 | bitcoin-address-validation | ✓ | 409µs | 96 B |
+| 117 | bitmap-b-zier-curves-cubic | ✓ | 108.94ms | 3.5 MB |
+| 118 | bitmap-b-zier-curves-quadratic | ✓ | 123.799ms | 3.5 MB |
+| 119 | bitmap-bresenhams-line-algorithm | ✓ | 44µs | 96 B |
+| 120 | bitmap-flood-fill | ✓ | 55µs | 1.4 KB |
+| 121 | bitmap-histogram | ✓ | 97µs | 96 B |
+| 122 | bitmap-midpoint-circle-algorithm | ✓ | 145µs | 15.1 KB |
+| 123 | bitmap-ppm-conversion-through-a-pipe | ✓ | 405.465ms | 64 B |
+| 124 | bitmap-read-a-ppm-file | ✓ | 107µs | 648 B |
+| 125 | bitmap-read-an-image-through-a-pipe | ✓ | 60µs | 944 B |
+| 126 | bitmap-write-a-ppm-file | ✓ | 59µs | 96 B |
+| 127 | bitmap | ✓ | 171.328ms | 96 B |
+| 128 | bitwise-io-1 | ✓ | 82µs | 192 B |
+| 129 | bitwise-io-2 | ✓ | 240µs | 192 B |
+| 130 | bitwise-operations | ✓ | 138µs | 96 B |
+| 131 | blum-integer | ✓ | 181µs | 96 B |
 | 132 | boolean-values | ✓ |  |  |
 | 133 | box-the-compass | ✓ |  |  |
 | 134 | boyer-moore-string-search | ✓ |  |  |

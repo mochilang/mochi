@@ -1,2 +1,7 @@
 2 is at index 4.
 5 is not found.
+{
+  "duration_us": 52,
+  "memory_bytes": 96,
+  "name": "main"
+}

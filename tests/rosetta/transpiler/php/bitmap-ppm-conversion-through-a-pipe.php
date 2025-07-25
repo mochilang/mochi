@@ -15,19 +15,26 @@ function _now() {
     }
     return hrtime(true);
 }
-function pixelFromRgb($c) {
-  global $rgbFromPixel, $NewBitmap, $FillRgb, $SetPxRgb, $nextRand, $main;
-  $r = (intval((intdiv($c, 65536)))) % 256;
-  $g = (intval((intdiv($c, 256)))) % 256;
+function _intdiv($a, $b) {
+    if (function_exists('bcdiv')) {
+        $sa = is_int($a) ? strval($a) : sprintf('%.0f', $a);
+        $sb = is_int($b) ? strval($b) : sprintf('%.0f', $b);
+        return intval(bcdiv($sa, $sb, 0));
+    }
+    return intdiv($a, $b);
+}
+$__start_mem = memory_get_usage();
+$__start = _now();
+  function pixelFromRgb($c) {
+  $r = fmod((intval((_intdiv($c, 65536)))), 256);
+  $g = fmod((intval((_intdiv($c, 256)))), 256);
   $b = $c % 256;
   return ['R' => $r, 'G' => $g, 'B' => $b];
-}
-function rgbFromPixel($p) {
-  global $pixelFromRgb, $NewBitmap, $FillRgb, $SetPxRgb, $nextRand, $main;
+};
+  function rgbFromPixel($p) {
   return $p['R'] * 65536 + $p['G'] * 256 + $p['B'];
-}
-function NewBitmap($x, $y) {
-  global $pixelFromRgb, $rgbFromPixel, $FillRgb, $SetPxRgb, $nextRand, $main;
+};
+  function NewBitmap($x, $y) {
   $data = [];
   $row = 0;
   while ($row < $y) {
@@ -41,9 +48,8 @@ function NewBitmap($x, $y) {
   $row = $row + 1;
 };
   return ['cols' => $x, 'rows' => $y, 'px' => $data];
-}
-function FillRgb(&$b, $c) {
-  global $pixelFromRgb, $rgbFromPixel, $NewBitmap, $SetPxRgb, $nextRand, $main;
+};
+  function FillRgb(&$b, $c) {
   $y = 0;
   $p = pixelFromRgb($c);
   while ($y < $b['rows']) {
@@ -58,9 +64,8 @@ function FillRgb(&$b, $c) {
 };
   $y = $y + 1;
 };
-}
-function SetPxRgb(&$b, $x, $y, $c) {
-  global $pixelFromRgb, $rgbFromPixel, $NewBitmap, $FillRgb, $nextRand, $main;
+};
+  function SetPxRgb(&$b, $x, $y, $c) {
   if ($x < 0 || $x >= $b['cols'] || $y < 0 || $y >= $b['rows']) {
   return false;
 }
@@ -70,13 +75,11 @@ function SetPxRgb(&$b, $x, $y, $c) {
   $px[$y] = $row;
   $b['px'] = $px;
   return true;
-}
-function nextRand($seed) {
-  global $pixelFromRgb, $rgbFromPixel, $NewBitmap, $FillRgb, $SetPxRgb, $main;
+};
+  function nextRand($seed) {
   return ($seed * 1664525 + 1013904223) % 2147483648;
-}
-function main() {
-  global $pixelFromRgb, $rgbFromPixel, $NewBitmap, $FillRgb, $SetPxRgb, $nextRand;
+};
+  function main() {
   $bm = NewBitmap(400, 300);
   FillRgb($bm, 12615744);
   $seed = _now();
@@ -117,5 +120,13 @@ function main() {
 };
   $y = $y + 1;
 };
-}
-main();
+};
+  main();
+$__end = _now();
+$__end_mem = memory_get_usage();
+$__duration = intdiv($__end - $__start, 1000);
+$__mem_diff = max(0, $__end_mem - $__start_mem);
+$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
+$__j = json_encode($__bench, 128);
+$__j = str_replace("    ", "  ", $__j);
+echo $__j, PHP_EOL;;

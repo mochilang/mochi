@@ -3,3 +3,8 @@
 .#o#.
 .###.
 .....
+{
+  "duration_us": 55,
+  "memory_bytes": 1416,
+  "name": "main"
+}

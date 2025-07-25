@@ -13,11 +13,8 @@ BASE COUNT:
     ------
     Σ: 250
     ======
-
-WEIGHTS (ex 300):
-  Change: 100
-  Delete: 100
-  Insert: 100
+\nWEIGHTS (ex 300):
+  Change: 100\n  Delete: 100\n  Insert: 100\n
 MUTATIONS (10):
   Insert @113 'C'
   Insert @172 'A'
@@ -45,3 +42,8 @@ BASE COUNT:
     ------
     Σ: 248
     ======
+{
+  "duration_us": 1008,
+  "memory_bytes": 96,
+  "name": "main"
+}

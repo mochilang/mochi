@@ -5,3 +5,8 @@
 (4,3)
 (5,3)
 (6,4)
+{
+  "duration_us": 44,
+  "memory_bytes": 96,
+  "name": "main"
+}
