@@ -13,13 +13,13 @@ public class Main {
             tri = appendObj(tri, row);
             i = i + 1;
         }
-tri[1][0] = 1;
+tri[1][0] = java.math.BigInteger.valueOf(1);
         i = 2;
         while (i < n) {
 tri[i][0] = tri[i - 1][i - 2];
             int j = 1;
             while (j < i) {
-tri[i][j] = ((Number)(tri[i][j - 1])).intValue() + ((Number)(tri[i - 1][j - 1])).intValue();
+tri[i][j] = tri[i][j - 1].add(tri[i - 1][j - 1]);
                 j = j + 1;
             }
             i = i + 1;
