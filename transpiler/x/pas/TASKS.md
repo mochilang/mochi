@@ -1,3 +1,51 @@
+## Progress (2025-07-25 19:17 +0700)
+- pascal: handle type declarations inside bench blocks (progress 88/104)
+
+## Progress (2025-07-25 19:17 +0700)
+- pascal: handle type declarations inside bench blocks (progress 88/104)
+
+## Progress (2025-07-25 19:17 +0700)
+- pascal: handle type declarations inside bench blocks (progress 88/104)
+
+## Progress (2025-07-25 19:17 +0700)
+- pascal: handle type declarations inside bench blocks (progress 88/104)
+
+## Progress (2025-07-25 19:17 +0700)
+- pascal: handle type declarations inside bench blocks (progress 88/104)
+
+## Progress (2025-07-25 19:17 +0700)
+- pascal: handle type declarations inside bench blocks (progress 88/104)
+
+## Progress (2025-07-25 19:17 +0700)
+- pascal: handle type declarations inside bench blocks (progress 88/104)
+
+## Progress (2025-07-25 19:17 +0700)
+- pascal: handle type declarations inside bench blocks (progress 88/104)
+
+## Progress (2025-07-25 19:17 +0700)
+- pascal: handle type declarations inside bench blocks (progress 88/104)
+
+## Progress (2025-07-25 19:17 +0700)
+- pascal: handle type declarations inside bench blocks (progress 88/104)
+
+## Progress (2025-07-25 19:17 +0700)
+- pascal: handle type declarations inside bench blocks (progress 88/104)
+
+## Progress (2025-07-25 19:17 +0700)
+- pascal: handle type declarations inside bench blocks (progress 88/104)
+
+## Progress (2025-07-25 19:17 +0700)
+- pascal: handle type declarations inside bench blocks (progress 88/104)
+
+## Progress (2025-07-25 19:17 +0700)
+- pascal: handle type declarations inside bench blocks (progress 88/104)
+
+## Progress (2025-07-25 19:17 +0700)
+- pascal: handle type declarations inside bench blocks (progress 88/104)
+
+## Progress (2025-07-25 19:17 +0700)
+- pascal: handle type declarations inside bench blocks (progress 88/104)
+
 ## Progress (2025-07-25 12:07 UTC)
 - pascal: update rosetta 100-doors-3 (progress 88/104)
 

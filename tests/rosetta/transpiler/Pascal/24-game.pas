@@ -19,8 +19,14 @@ begin
     _nowSeed := (_nowSeed * 1664525 + 1013904223) mod 2147483647;
     _now := _nowSeed;
   end else begin
-    _now := Integer(GetTickCount64());
+    _now := Integer(GetTickCount64()*1000);
   end;
+end;
+function _mem(): int64;
+var h: TFPCHeapStatus;
+begin
+  h := GetFPCHeapStatus;
+  _mem := h.CurrHeapUsed;
 end;
 function _input(): string;
 var s: string;
@@ -29,17 +35,21 @@ begin
   _input := s;
 end;
 var
-  main_digits: array of boolean;
+  bench_start_0: integer;
+  bench_dur_0: integer;
+  bench_mem_0: int64;
+  bench_memdiff_0: int64;
+  main_digits: array of integer;
   i: integer;
   main_numstr: string;
   main_expr: string;
-  main_stack: array of boolean;
+  main_stack: array of integer;
   main_i: integer;
   main_valid: boolean;
   main_ch: string;
   main_j: integer;
-  main_b: boolean;
-  main_a: boolean;
+  main_b: integer;
+  main_a: integer;
 function randDigit(): integer;
 begin
   exit((_now() mod 9) + 1);
@@ -72,15 +82,15 @@ end;
   exit();
 end;
   main_j := 0;
-  while main_digits[main_j] <> (int(main_ch) - int('0')) do begin
+  while main_digits[main_j] <> (StrToInt(main_ch) - StrToInt('0')) do begin
   main_j := main_j + 1;
   if main_j = Length(main_digits) then begin
   writeln('wrong numbers.');
   exit();
 end;
 end;
-  main_digits := copy(main_digits, 0, main_j)) + copy(main_digits, main_j + 1, Length(main_digits));
-  main_stack := concat(main_stack, [float(int(main_ch) - int('0'))]);
+  main_digits := concat(copy(main_digits, 0, main_j)), copy(main_digits, main_j + 1, Length(main_digits)));
+  main_stack := concat(main_stack, [float(StrToInt(main_ch) - StrToInt('0'))]);
 end else begin
   if Length(main_stack) < 2 then begin
   writeln('invalid expression syntax.');
@@ -91,6 +101,22 @@ end;
   main_a := main_stack[Length(main_stack) - 2];
   if main_ch = '+' then begin
   main_stack[Length(main_stack) - 2] := main_a + main_b;
+end else begin
+  if main_ch = '-' then begin
+  main_stack[Length(main_stack) - 2] := main_a - main_b;
+end else begin
+  if main_ch = '*' then begin
+  main_stack[Length(main_stack) - 2] := main_a * main_b;
+end else begin
+  if main_ch = '/' then begin
+  main_stack[Length(main_stack) - 2] := main_a div main_b;
+end else begin
+  writeln(main_ch + ' invalid.');
+  main_valid := false;
+  break;
+end;
+end;
+end;
 end;
   main_stack := copy(main_stack, 0, Length(main_stack) - 1));
 end;
@@ -106,5 +132,15 @@ end;
 end;
 begin
   init_now();
+  bench_mem_0 := _mem();
+  bench_start_0 := _now();
   main();
+  Sleep(1);
+  bench_memdiff_0 := _mem() - bench_mem_0;
+  bench_dur_0 := (_now() - bench_start_0) div 1000;
+  writeln('{');
+  writeln(('  "duration_us": ' + IntToStr(bench_dur_0)) + ',');
+  writeln(('  "memory_bytes": ' + IntToStr(bench_memdiff_0)) + ',');
+  writeln(('  "name": "' + 'main') + '"');
+  writeln('}');
 end.

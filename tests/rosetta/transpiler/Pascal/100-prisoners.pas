@@ -1,6 +1,7 @@
 {$mode objfpc}
 program Main;
 uses SysUtils;
+type IntArray = array of integer;
 var _nowSeed: int64 = 0;
 var _nowSeeded: boolean = false;
 procedure init_now();
@@ -19,12 +20,21 @@ begin
     _nowSeed := (_nowSeed * 1664525 + 1013904223) mod 2147483647;
     _now := _nowSeed;
   end else begin
-    _now := Integer(GetTickCount64());
+    _now := Integer(GetTickCount64()*1000);
   end;
 end;
-type IntArray = array of integer;
+function _mem(): int64;
+var h: TFPCHeapStatus;
+begin
+  h := GetFPCHeapStatus;
+  _mem := h.CurrHeapUsed;
+end;
 var
-  shuffle_arr: IntArray;
+  bench_start_0: integer;
+  bench_dur_0: integer;
+  bench_mem_0: int64;
+  bench_memdiff_0: int64;
+  shuffle_arr: array of integer;
   shuffle_i: integer;
   shuffle_j: integer;
   shuffle_tmp: integer;
@@ -43,8 +53,8 @@ var
   doTrials_n: integer;
   doTrials_rf: integer;
   main_trials: integer;
-  strat: string;
   np: integer;
+  strat: string;
 function shuffle(xs: IntArray): IntArray;
 begin
   shuffle_arr := xs;
@@ -133,5 +143,15 @@ end;
 end;
 begin
   init_now();
+  bench_mem_0 := _mem();
+  bench_start_0 := _now();
   main();
+  Sleep(1);
+  bench_memdiff_0 := _mem() - bench_mem_0;
+  bench_dur_0 := (_now() - bench_start_0) div 1000;
+  writeln('{');
+  writeln(('  "duration_us": ' + IntToStr(bench_dur_0)) + ',');
+  writeln(('  "memory_bytes": ' + IntToStr(bench_memdiff_0)) + ',');
+  writeln(('  "name": "' + 'main') + '"');
+  writeln('}');
 end.

@@ -1,6 +1,8 @@
 {$mode objfpc}
 program Main;
 uses SysUtils;
+type IntArray = array of integer;
+type IntArrayArray = array of IntArray;
 var _nowSeed: int64 = 0;
 var _nowSeeded: boolean = false;
 procedure init_now();
@@ -19,8 +21,14 @@ begin
     _nowSeed := (_nowSeed * 1664525 + 1013904223) mod 2147483647;
     _now := _nowSeed;
   end else begin
-    _now := Integer(GetTickCount64());
+    _now := Integer(GetTickCount64()*1000);
   end;
+end;
+function _mem(): int64;
+var h: TFPCHeapStatus;
+begin
+  h := GetFPCHeapStatus;
+  _mem := h.CurrHeapUsed;
 end;
 function _input(): string;
 var s: string;
@@ -28,8 +36,6 @@ begin
   if EOF(Input) then s := '' else ReadLn(s);
   _input := s;
 end;
-type IntArray = array of integer;
-type IntArrayArray = array of IntArray;
 type Board = record
   cells: array of IntArray;
 end;
@@ -47,6 +53,10 @@ type MoveResult = record
   moved: boolean;
 end;
 var
+  bench_start_0: integer;
+  bench_dur_0: integer;
+  bench_mem_0: int64;
+  bench_memdiff_0: int64;
   SIZE: integer;
   newBoard_b: array of IntArray;
   newBoard_y: integer;
@@ -402,15 +412,17 @@ end;
 end;
 begin
   init_now();
+  bench_mem_0 := _mem();
+  bench_start_0 := _now();
   SIZE := 4;
   board_var := newBoard();
   r := spawnTile(board_var);
-  full := r.full;
-  score := 0;
   board_var := r.board;
+  full := r.full;
   r := spawnTile(board_var);
   board_var := r.board;
   full := r.full;
+  score := 0;
   draw(board_var, score);
   while true do begin
   writeln('Move: ');
@@ -463,4 +475,12 @@ end;
   break;
 end;
 end;
+  Sleep(1);
+  bench_memdiff_0 := _mem() - bench_mem_0;
+  bench_dur_0 := (_now() - bench_start_0) div 1000;
+  writeln('{');
+  writeln(('  "duration_us": ' + IntToStr(bench_dur_0)) + ',');
+  writeln(('  "memory_bytes": ' + IntToStr(bench_memdiff_0)) + ',');
+  writeln(('  "name": "' + 'main') + '"');
+  writeln('}');
 end.
