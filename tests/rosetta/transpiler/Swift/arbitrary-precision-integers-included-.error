@@ -1,0 +1,104 @@
+exit status 1
+/tmp/TestSwiftTranspiler_Rosetta_Golden4138715870/001/main.swift:37:23: warning: forced cast of 'Int' to same type has no effect
+35 |     func pow_int(_ base: Int, _ exp: Int) -> Int {
+36 |         var result = 1
+37 |         var b = (base as! Int)
+   |                       `- warning: forced cast of 'Int' to same type has no effect
+38 |         var e = (exp as! Int)
+39 |         while (e > 0) {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden4138715870/001/main.swift:38:22: warning: forced cast of 'Int' to same type has no effect
+36 |         var result = 1
+37 |         var b = (base as! Int)
+38 |         var e = (exp as! Int)
+   |                      `- warning: forced cast of 'Int' to same type has no effect
+39 |         while (e > 0) {
+40 |             if ((e % 2) == 1) {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden4138715870/001/main.swift:41:40: warning: forced cast of 'Int' to same type has no effect
+39 |         while (e > 0) {
+40 |             if ((e % 2) == 1) {
+41 |                 result = ((result * b) as! Int)
+   |                                        `- warning: forced cast of 'Int' to same type has no effect
+42 |             }
+43 |             b = ((b * b) as! Int)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden4138715870/001/main.swift:43:26: warning: forced cast of 'Int' to same type has no effect
+41 |                 result = ((result * b) as! Int)
+42 |             }
+43 |             b = ((b * b) as! Int)
+   |                          `- warning: forced cast of 'Int' to same type has no effect
+44 |             e = Int((e / 2))
+45 |         }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden4138715870/001/main.swift:46:24: warning: forced cast of 'Int' to same type has no effect
+44 |             e = Int((e / 2))
+45 |         }
+46 |         return (result as! Int)
+   |                        `- warning: forced cast of 'Int' to same type has no effect
+47 |     }
+48 |     func pow_big(_ base: bigint, _ exp: Int) -> bigint {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden4138715870/001/main.swift:48:49: error: cannot find type 'bigint' in scope
+46 |         return (result as! Int)
+47 |     }
+48 |     func pow_big(_ base: bigint, _ exp: Int) -> bigint {
+   |                                                 `- error: cannot find type 'bigint' in scope
+49 |         var result: bigint = 1
+50 |         var b: bigint = base
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden4138715870/001/main.swift:48:26: error: cannot find type 'bigint' in scope
+46 |         return (result as! Int)
+47 |     }
+48 |     func pow_big(_ base: bigint, _ exp: Int) -> bigint {
+   |                          `- error: cannot find type 'bigint' in scope
+49 |         var result: bigint = 1
+50 |         var b: bigint = base
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden4138715870/001/main.swift:49:21: error: cannot find type 'bigint' in scope
+47 |     }
+48 |     func pow_big(_ base: bigint, _ exp: Int) -> bigint {
+49 |         var result: bigint = 1
+   |                     `- error: cannot find type 'bigint' in scope
+50 |         var b: bigint = base
+51 |         var e = (exp as! Int)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden4138715870/001/main.swift:50:16: error: cannot find type 'bigint' in scope
+48 |     func pow_big(_ base: bigint, _ exp: Int) -> bigint {
+49 |         var result: bigint = 1
+50 |         var b: bigint = base
+   |                `- error: cannot find type 'bigint' in scope
+51 |         var e = (exp as! Int)
+52 |         while (e > 0) {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden4138715870/001/main.swift:51:22: warning: forced cast of 'Int' to same type has no effect
+49 |         var result: bigint = 1
+50 |         var b: bigint = base
+51 |         var e = (exp as! Int)
+   |                      `- warning: forced cast of 'Int' to same type has no effect
+52 |         while (e > 0) {
+53 |             if ((e % 2) == 1) {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden4138715870/001/main.swift:62:33: warning: forced cast of 'Int' to same type has no effect
+60 |     }
+61 |     var e1 = Int(pow_int(3, 2))
+62 |     var e2 = Int(pow_int(4, (e1 as! Int)))
+   |                                 `- warning: forced cast of 'Int' to same type has no effect
+63 |     var base: bigint = 5
+64 |     var x: bigint = pow_big(base, (e2 as! Int))
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden4138715870/001/main.swift:63:15: error: cannot find type 'bigint' in scope
+61 |     var e1 = Int(pow_int(3, 2))
+62 |     var e2 = Int(pow_int(4, (e1 as! Int)))
+63 |     var base: bigint = 5
+   |               `- error: cannot find type 'bigint' in scope
+64 |     var x: bigint = pow_big(base, (e2 as! Int))
+65 |     var s = String(describing: x)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden4138715870/001/main.swift:64:12: error: cannot find type 'bigint' in scope
+62 |     var e2 = Int(pow_int(4, (e1 as! Int)))
+63 |     var base: bigint = 5
+64 |     var x: bigint = pow_big(base, (e2 as! Int))
+   |            `- error: cannot find type 'bigint' in scope
+65 |     var s = String(describing: x)
+66 |     print("5^(4^(3^2)) has", Int(((s).count)), "digits:", String(describing: String(Array((s as! String))[0..<20])), "...", String(describing: String(Array((s as! String))[((Int(((s).count)) - 20) as! Int)..<Int(((s).count))])))

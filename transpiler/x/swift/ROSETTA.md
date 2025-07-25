@@ -2,14 +2,14 @@
 
 Generated Swift code for Mochi Rosetta programs in `tests/rosetta/x/Mochi`. Outputs are stored in `tests/rosetta/transpiler/Swift`. Errors are captured in `.error` files.
 
-Completed: 41/284
-Last updated: 2025-07-25 10:23 +0700
+Completed: 50/284
+Last updated: 2025-07-25 10:40 +0700
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
-| 1 | 100-doors-2 | ✓ | 278µs | 3.1 MB |
-| 2 | 100-doors-3 | ✓ |  |  |
-| 3 | 100-doors | ✓ |  |  |
+| 1 | 100-doors-2 | ✓ | 318µs | 3.0 MB |
+| 2 | 100-doors-3 | ✓ | 228µs | 3.2 MB |
+| 3 | 100-doors | ✓ | 956µs | 2.9 MB |
 | 4 | 100-prisoners | ✓ |  |  |
 | 5 | 15-puzzle-game | ✓ |  |  |
 | 6 | 15-puzzle-solver | ✓ |  |  |
@@ -59,15 +59,15 @@ Last updated: 2025-07-25 10:23 +0700
 | 50 | angles-geometric-normalization-and-conversion | ✓ |  |  |
 | 51 | animate-a-pendulum | ✓ |  |  |
 | 52 | animation | ✓ |  |  |
-| 53 | anonymous-recursion-1 |   |  |  |
-| 54 | anonymous-recursion-2 |   |  |  |
-| 55 | anonymous-recursion |   |  |  |
-| 56 | anti-primes |   |  |  |
-| 57 | append-a-record-to-the-end-of-a-text-file |   |  |  |
-| 58 | apply-a-callback-to-an-array-1 |   |  |  |
-| 59 | apply-a-callback-to-an-array-2 |   |  |  |
-| 60 | apply-a-digital-filter-direct-form-ii-transposed- |   |  |  |
-| 61 | approximate-equality |   |  |  |
+| 53 | anonymous-recursion-1 | ✓ | 270µs | 3.2 MB |
+| 54 | anonymous-recursion-2 | ✓ | 455µs | 3.0 MB |
+| 55 | anonymous-recursion | ✓ | 272µs | 3.0 MB |
+| 56 | anti-primes | ✓ | 349.108ms | 3.1 MB |
+| 57 | append-a-record-to-the-end-of-a-text-file | ✓ | 322µs | 3.3 MB |
+| 58 | apply-a-callback-to-an-array-1 | ✓ | 309µs | 3.3 MB |
+| 59 | apply-a-callback-to-an-array-2 | ✓ | 495µs | 3.1 MB |
+| 60 | apply-a-digital-filter-direct-form-ii-transposed- | ✓ | 462µs | 3.1 MB |
+| 61 | approximate-equality | ✓ | 370µs | 3.2 MB |
 | 62 | arbitrary-precision-integers-included- |   |  |  |
 | 63 | archimedean-spiral |   |  |  |
 | 64 | arena-storage-pool |   |  |  |
