@@ -4,7 +4,7 @@ Generated Lua code for programs in `tests/rosetta/x/Mochi`. Each program has a `
 
 Transpiled programs: 240/284
 
-Last updated: 2025-07-25 17:05 GMT+7
+Last updated: 2025-07-25 17:18 GMT+7
 
 Checklist:
 
@@ -77,10 +77,10 @@ Checklist:
 | 65 | arithmetic-complex | ✓ | 67µs | 3.1 KB |
 | 66 | arithmetic-derivative | ✓ | 1.138ms | 5.1 KB |
 | 67 | arithmetic-evaluation | ✓ | 86µs | 1.8 KB |
-| 68 | arithmetic-geometric-mean-calculate-pi | ✓ |  |  |
-| 69 | arithmetic-geometric-mean | ✓ |  |  |
-| 70 | arithmetic-integer-1 | ✓ |  |  |
-| 71 | arithmetic-integer-2 | ✓ |  |  |
+| 68 | arithmetic-geometric-mean-calculate-pi | ✓ | 45µs | 272 B |
+| 69 | arithmetic-geometric-mean | ✓ | 101µs | 272 B |
+| 70 | arithmetic-integer-1 | ✓ | 28µs | 2.7 KB |
+| 71 | arithmetic-integer-2 | ✓ | 58µs | 2.7 KB |
 | 72 | arithmetic-numbers |   |  |  |
 | 73 | arithmetic-rational | ✓ |  |  |
 | 74 | array-concatenation | ✓ |  |  |
