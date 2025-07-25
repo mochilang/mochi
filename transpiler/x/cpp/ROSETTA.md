@@ -2,7 +2,7 @@
 
 This directory stores C++ code generated from Mochi programs in `tests/rosetta/x/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.cpp` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (49/284) - Last updated 2025-07-25 19:16 +0700:
+Checklist of programs that currently transpile and run (59/284) - Last updated 2025-07-25 19:47 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | 100-doors-2 | ✓ | 222.0µs | 13.12MB |
@@ -58,16 +58,16 @@ Checklist of programs that currently transpile and run (49/284) - Last updated 2
 | 51 | animate-a-pendulum | ✓ | 320.0µs | 13.16MB |
 | 52 | animation | ✓ | 491.0µs | 12.45MB |
 | 53 | anonymous-recursion-1 | ✓ | 73.0µs | 12.67MB |
-| 54 | anonymous-recursion-2 |   |  |  |
-| 55 | anonymous-recursion |   |  |  |
-| 56 | anti-primes |   |  |  |
-| 57 | append-a-record-to-the-end-of-a-text-file |   |  |  |
-| 58 | apply-a-callback-to-an-array-1 |   |  |  |
-| 59 | apply-a-callback-to-an-array-2 |   |  |  |
-| 60 | apply-a-digital-filter-direct-form-ii-transposed- |   |  |  |
-| 61 | approximate-equality |   |  |  |
-| 62 | arbitrary-precision-integers-included- |   |  |  |
-| 63 | archimedean-spiral |   |  |  |
+| 54 | anonymous-recursion-2 | ✓ | 68.0µs | 13.05MB |
+| 55 | anonymous-recursion | ✓ | 72.0µs | 12.93MB |
+| 56 | anti-primes | ✓ | 28.0ms | 12.88MB |
+| 57 | append-a-record-to-the-end-of-a-text-file | ✓ | 36.0µs | 12.62MB |
+| 58 | apply-a-callback-to-an-array-1 | ✓ | 57.0µs | 12.69MB |
+| 59 | apply-a-callback-to-an-array-2 | ✓ | 74.0µs | 13.40MB |
+| 60 | apply-a-digital-filter-direct-form-ii-transposed- | ✓ | 3.0ms | 13.32MB |
+| 61 | approximate-equality | ✓ | 186.0µs | 13.23MB |
+| 62 | arbitrary-precision-integers-included- | ✓ | 1.0ms | 13.24MB |
+| 63 | archimedean-spiral | ✓ | 9.0ms | 13.12MB |
 | 64 | arena-storage-pool |   |  |  |
 | 65 | arithmetic-complex |   |  |  |
 | 66 | arithmetic-derivative |   |  |  |

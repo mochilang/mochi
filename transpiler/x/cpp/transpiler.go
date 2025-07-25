@@ -110,6 +110,11 @@ type Expr interface{ emit(io.Writer) }
 
 type PrintStmt struct{ Values []Expr }
 
+// PrintExpr represents a print call used as an expression. It expands to a
+// lambda block that prints the values and returns 0 so it can appear where an
+// expression is required.
+type PrintExpr struct{ Values []Expr }
+
 // WhileStmt represents a simple while loop.
 type WhileStmt struct {
 	Cond Expr
@@ -596,6 +601,11 @@ func (p *Program) write(w io.Writer) {
 		fmt.Fprintln(w, "    return res;")
 		fmt.Fprintln(w, "}")
 	}
+	fmt.Fprintln(w, "template<typename T> std::string _to_string(const T& v) {")
+	fmt.Fprintln(w, "    std::ostringstream ss;")
+	fmt.Fprintln(w, "    ss << std::boolalpha << v;")
+	fmt.Fprintln(w, "    return ss.str();")
+	fmt.Fprintln(w, "}")
 	if usesAny {
 		fmt.Fprintln(w, "static void any_to_stream(std::ostream& os, const std::any& val) {")
 		fmt.Fprintln(w, "    if(val.type() == typeid(int)) os << std::any_cast<int>(val);")
@@ -841,6 +851,14 @@ func (s *PrintStmt) emit(w io.Writer, indent int) {
 		io.WriteString(w, "    ")
 	}
 	io.WriteString(w, "std::cout << std::endl;\n")
+}
+
+func (p *PrintExpr) emit(w io.Writer) {
+	io.WriteString(w, "([&]{\n")
+	ps := &PrintStmt{Values: p.Values}
+	ps.emit(w, 1)
+	io.WriteString(w, "    return 0;\n")
+	io.WriteString(w, "}())")
 }
 
 func emitToStream(w io.Writer, stream string, e Expr, indent int) {
@@ -1250,22 +1268,29 @@ func (a *AvgExpr) emit(w io.Writer) {
 func (s *StrExpr) emit(w io.Writer) {
 	if currentProgram != nil {
 		currentProgram.addInclude("<sstream>")
+		currentProgram.addInclude("<iomanip>")
 	}
-	io.WriteString(w, "([&]{ std::ostringstream ss; ")
-	typ := exprType(s.Value)
-	switch {
-	case strings.HasPrefix(typ, "std::vector<") || strings.HasPrefix(typ, "std::map<") || strings.HasPrefix(typ, "std::optional<"):
-		emitToStream(w, "ss", s.Value, 0)
-	case typ == "std::any":
-		io.WriteString(w, "any_to_stream(ss, ")
+	if inFunction || inLambda > 0 {
+		io.WriteString(w, "([&]{ std::ostringstream ss; ")
+		typ := exprType(s.Value)
+		switch {
+		case strings.HasPrefix(typ, "std::vector<") || strings.HasPrefix(typ, "std::map<") || strings.HasPrefix(typ, "std::optional<"):
+			emitToStream(w, "ss", s.Value, 0)
+		case typ == "std::any":
+			io.WriteString(w, "any_to_stream(ss, ")
+			s.Value.emit(w)
+			io.WriteString(w, ");\n")
+		default:
+			io.WriteString(w, "ss << std::boolalpha << ")
+			s.Value.emit(w)
+			io.WriteString(w, ";")
+		}
+		io.WriteString(w, " return ss.str(); }())")
+	} else {
+		io.WriteString(w, "_to_string(")
 		s.Value.emit(w)
-		io.WriteString(w, ");\n")
-	default:
-		io.WriteString(w, "ss << std::boolalpha << ")
-		s.Value.emit(w)
-		io.WriteString(w, ";")
+		io.WriteString(w, ")")
 	}
-	io.WriteString(w, " return ss.str(); }())")
 }
 
 func (v *ValuesExpr) emit(w io.Writer) {
@@ -4000,6 +4025,21 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			if len(p.Call.Args) == 0 {
 				return &InputExpr{}, nil
 			}
+		case "print":
+			var args []Expr
+			for _, a := range p.Call.Args {
+				ce, err := convertExpr(a)
+				if err != nil {
+					return nil, err
+				}
+				args = append(args, ce)
+			}
+			if currentProgram != nil {
+				currentProgram.addInclude("<sstream>")
+				currentProgram.addInclude("<iomanip>")
+				currentProgram.addInclude("<iostream>")
+			}
+			return &PrintExpr{Values: args}, nil
 		}
 		var args []Expr
 		for _, a := range p.Call.Args {

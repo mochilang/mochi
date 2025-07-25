@@ -1,3 +1,128 @@
+## Progress (2025-07-25 19:47 +0700)
+- cpp transpiler: handle map get and fmod
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-25 19:48 +0700)
+- cpp rosetta: benchmark indices 54-63
+- Implemented PrintExpr for expressions
+- Added _to_string helper for global string conversions
+
+## Progress (2025-07-25 19:47 +0700)
+- cpp transpiler: handle map get and fmod
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-25 19:47 +0700)
+- cpp transpiler: handle map get and fmod
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-25 19:47 +0700)
+- cpp transpiler: handle map get and fmod
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-25 19:47 +0700)
+- cpp transpiler: handle map get and fmod
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-25 19:47 +0700)
+- cpp transpiler: handle map get and fmod
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-25 19:47 +0700)
+- cpp transpiler: handle map get and fmod
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-25 19:47 +0700)
+- cpp transpiler: handle map get and fmod
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-25 19:47 +0700)
+- cpp transpiler: handle map get and fmod
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-25 19:47 +0700)
+- cpp transpiler: handle map get and fmod
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-25 19:47 +0700)
+- cpp transpiler: handle map get and fmod
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-25 19:47 +0700)
+- cpp transpiler: handle map get and fmod
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-25 19:47 +0700)
+- cpp transpiler: handle map get and fmod
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-25 19:47 +0700)
+- cpp transpiler: handle map get and fmod
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-25 19:47 +0700)
+- cpp transpiler: handle map get and fmod
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-25 19:47 +0700)
+- cpp transpiler: handle map get and fmod
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-25 19:47 +0700)
+- cpp transpiler: handle map get and fmod
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-25 19:47 +0700)
+- cpp transpiler: handle map get and fmod
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-25 19:47 +0700)
+- cpp transpiler: handle map get and fmod
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-25 19:47 +0700)
+- cpp transpiler: handle map get and fmod
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-25 19:47 +0700)
+- cpp transpiler: handle map get and fmod
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-25 19:47 +0700)
+- cpp transpiler: handle map get and fmod
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-25 19:47 +0700)
+- cpp transpiler: handle map get and fmod
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-25 19:47 +0700)
+- cpp transpiler: handle map get and fmod
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
 ## Progress (2025-07-25 19:16 +0700)
 - cpp rosetta: benchmark indices 23-33
 - Generated C++ for 103/104 programs
