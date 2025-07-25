@@ -25,6 +25,7 @@ var needHash bool
 var usesInput bool
 var usesNow bool
 var usesLookupHost bool
+var usesJSON bool
 var returnStack []Symbol
 var unionConsts map[string]int
 var unionConstOrder []string
@@ -229,6 +230,9 @@ func header() []byte {
                    (if (string-contains addr ":") acc (cons addr acc))))
           (list (list-sort string<? acc) 'nil))))))
 `
+	}
+	if usesJSON {
+		prelude += "(import (chibi json))\n"
 	}
 	prelude += `(define (to-str x)
   (cond ((pair? x)
@@ -704,6 +708,50 @@ func convertStmt(st *parser.Statement) (Node, error) {
 		return convertWhileStmt(st.While)
 	case st.For != nil:
 		return convertForStmt(st.For)
+	case st.Bench != nil:
+		needBase = true
+		usesNow = true
+		usesJSON = true
+		prevEnv := currentEnv
+		currentEnv = types.NewEnv(currentEnv)
+		bodyForms, err := convertStmts(st.Bench.Body)
+		currentEnv = prevEnv
+		if err != nil {
+			return nil, err
+		}
+		startSym := gensym("start")
+		endSym := gensym("end")
+		durSym := gensym("dur")
+		durStr := &List{Elems: []Node{Symbol("number->string"), Symbol(durSym)}}
+		jsonStr := &List{Elems: []Node{Symbol("string-append"),
+			StringLit("{\n  \"duration_us\": "), durStr,
+			StringLit(",\n  \"memory_bytes\": 0,\n  \"name\": \"" + st.Bench.Name + "\"\n}"),
+		}}
+		jsonCall := &List{Elems: []Node{
+			Symbol("begin"),
+			&List{Elems: []Node{Symbol("display"), jsonStr}},
+			&List{Elems: []Node{Symbol("newline")}},
+		}}
+		innerLet2 := &List{Elems: []Node{
+			Symbol("let"),
+			&List{Elems: []Node{
+				&List{Elems: []Node{Symbol(durSym), &List{Elems: []Node{Symbol("quotient"), &List{Elems: []Node{Symbol("-"), Symbol(endSym), Symbol(startSym)}}, IntLit(1000)}}}},
+			}},
+			jsonCall,
+		}}
+		innerLet1 := &List{Elems: []Node{
+			Symbol("let"),
+			&List{Elems: []Node{
+				&List{Elems: []Node{Symbol(endSym), &List{Elems: []Node{Symbol("now")}}}},
+			}},
+			innerLet2,
+		}}
+		inner := append(bodyForms, innerLet1)
+		return &List{Elems: []Node{
+			Symbol("let"),
+			&List{Elems: []Node{&List{Elems: []Node{Symbol(startSym), &List{Elems: []Node{Symbol("now")}}}}}},
+			&List{Elems: append([]Node{Symbol("begin")}, inner...)},
+		}}, nil
 	case st.Type != nil:
 		return nil, nil
 	case st.Import != nil:
@@ -731,6 +779,8 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	needBase = false
 	needHash = false
 	usesInput = false
+	usesNow = false
+	usesJSON = false
 	usesLookupHost = false
 	unionConsts = map[string]int{}
 	unionConstOrder = nil
