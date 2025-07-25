@@ -2192,6 +2192,10 @@ func transpileWhileStmt(w *parser.WhileStmt) (Node, error) {
 	condFound := false
 	for _, n := range bodyNodes {
 		if c, b, ok := condRecur(n); ok {
+			if condFound {
+				other = append(other, n)
+				continue
+			}
 			condFound = true
 			condElems = append(condElems, c, b)
 		} else {
