@@ -27,9 +27,15 @@ var usesNow bool
 var usesLookupHost bool
 var usesJSON bool
 var usesBench bool
+var benchMain bool
 var returnStack []Symbol
 var unionConsts map[string]int
 var unionConstOrder []string
+
+// SetBenchMain configures whether the generated main function is wrapped
+// in a benchmark block when emitting code. When enabled, the program will
+// output a JSON object with duration and memory statistics on completion.
+func SetBenchMain(v bool) { benchMain = v }
 
 func pushLoop(breakSym Symbol, cont Node) {
 	breakStack = append(breakStack, breakSym)
@@ -779,7 +785,7 @@ func convertStmt(st *parser.Statement) (Node, error) {
 
 // Transpile converts a Mochi AST into a minimal Scheme AST supporting
 // print statements with string literals.
-func Transpile(prog *parser.Program, env *types.Env, benchMain bool) (*Program, error) {
+func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	currentEnv = env
 	needBase = false
 	needHash = false

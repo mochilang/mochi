@@ -3,60 +3,60 @@
 Generated Scheme code for Rosetta Code tasks under `tests/rosetta/x/Mochi`.
 
 ## Checklist (65/284)
-Last updated: 2025-07-25 02:14 UTC
+Last updated: 2025-07-25 02:33 UTC
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
-| 1 | 100-doors-2 | ✓ | 571.223ms | 12.5 MB |
-| 2 | 100-doors-3 | ✓ | 571.223ms | 12.4 MB |
-| 3 | 100-doors | ✓ | 571.223ms | 12.6 MB |
+| 1 | 100-doors-2 | ✓ | 571.223ms | 12.0 MB |
+| 2 | 100-doors-3 | ✓ |  |  |
+| 3 | 100-doors | ✓ |  |  |
 | 4 | 100-prisoners | ✓ |  |  |
 | 5 | 15-puzzle-game | ✓ |  |  |
-| 6 | 15-puzzle-solver | ✓ | 571.223ms | 12.5 MB |
-| 7 | 2048 | ✓ | 731.363ms | 16.4 MB |
+| 6 | 15-puzzle-solver | ✓ |  |  |
+| 7 | 2048 | ✓ |  |  |
 | 8 | 21-game | ✓ |  |  |
 | 9 | 24-game-solve |   |  |  |
 | 10 | 24-game | ✓ |  |  |
 | 11 | 4-rings-or-4-squares-puzzle | ✓ |  |  |
 | 12 | 9-billion-names-of-god-the-integer | ✓ |  |  |
-| 13 | 99-bottles-of-beer-2 | ✓ | 571.223ms | 13.5 MB |
-| 14 | 99-bottles-of-beer | ✓ | 571.223ms | 12.6 MB |
-| 15 | DNS-query | ✓ | 571.223ms | 12.1 MB |
-| 16 | a+b | ✓ | 571.223ms | 11.7 MB |
-| 17 | abbreviations-automatic | ✓ | 571.223ms | 13.8 MB |
-| 18 | abbreviations-easy | ✓ | 571.223ms | 16.5 MB |
-| 19 | abbreviations-simple | ✓ | 571.223ms | 16.6 MB |
-| 20 | abc-problem | ✓ | 571.223ms | 13.2 MB |
-| 21 | abelian-sandpile-model-identity | ✓ | 571.223ms | 13.5 MB |
-| 22 | abelian-sandpile-model | ✓ | 571.223ms | 13.1 MB |
-| 23 | abstract-type | ✓ | 571.223ms | 12.8 MB |
-| 24 | abundant-deficient-and-perfect-number-classifications | ✓ | 571.223ms | 12.5 MB |
-| 25 | abundant-odd-numbers | ✓ | 571.223ms | 17.7 MB |
+| 13 | 99-bottles-of-beer-2 | ✓ |  |  |
+| 14 | 99-bottles-of-beer | ✓ |  |  |
+| 15 | DNS-query | ✓ |  |  |
+| 16 | a+b | ✓ |  |  |
+| 17 | abbreviations-automatic | ✓ |  |  |
+| 18 | abbreviations-easy | ✓ |  |  |
+| 19 | abbreviations-simple | ✓ |  |  |
+| 20 | abc-problem | ✓ |  |  |
+| 21 | abelian-sandpile-model-identity | ✓ |  |  |
+| 22 | abelian-sandpile-model | ✓ |  |  |
+| 23 | abstract-type | ✓ |  |  |
+| 24 | abundant-deficient-and-perfect-number-classifications | ✓ |  |  |
+| 25 | abundant-odd-numbers | ✓ |  |  |
 | 26 | accumulator-factory |   |  |  |
 | 27 | achilles-numbers |   |  |  |
-| 28 | ackermann-function-2 | ✓ | 571.223ms | 12.6 MB |
+| 28 | ackermann-function-2 | ✓ |  |  |
 | 29 | ackermann-function-3 | ✓ |  |  |
-| 30 | ackermann-function | ✓ | 571.223ms | 12.6 MB |
-| 31 | active-directory-connect | ✓ | 571.223ms | 12.4 MB |
-| 32 | active-directory-search-for-a-user | ✓ | 571.223ms | 12.7 MB |
-| 33 | active-object | ✓ | 571.223ms | 12.6 MB |
-| 34 | add-a-variable-to-a-class-instance-at-runtime | ✓ | 571.223ms | 12.6 MB |
-| 35 | additive-primes | ✓ | 571.223ms | 12.7 MB |
-| 36 | address-of-a-variable | ✓ | 571.223ms | 12.4 MB |
+| 30 | ackermann-function | ✓ |  |  |
+| 31 | active-directory-connect | ✓ |  |  |
+| 32 | active-directory-search-for-a-user | ✓ |  |  |
+| 33 | active-object | ✓ |  |  |
+| 34 | add-a-variable-to-a-class-instance-at-runtime | ✓ |  |  |
+| 35 | additive-primes | ✓ |  |  |
+| 36 | address-of-a-variable | ✓ |  |  |
 | 37 | adfgvx-cipher |   |  |  |
-| 38 | aks-test-for-primes | ✓ | 571.223ms | 12.9 MB |
+| 38 | aks-test-for-primes | ✓ |  |  |
 | 39 | algebraic-data-types |   |  |  |
-| 40 | align-columns | ✓ | 571.223ms | 13.5 MB |
+| 40 | align-columns | ✓ |  |  |
 | 41 | aliquot-sequence-classifications |   |  |  |
 | 42 | almkvist-giullera-formula-for-pi |   |  |  |
-| 43 | almost-prime | ✓ | 571.223ms | 13.0 MB |
-| 44 | amb | ✓ | 571.223ms | 13.1 MB |
+| 43 | almost-prime | ✓ |  |  |
+| 44 | amb | ✓ |  |  |
 | 45 | amicable-pairs | ✓ |  |  |
-| 46 | anagrams-deranged-anagrams | ✓ | 571.223ms | 13.1 MB |
-| 47 | anagrams | ✓ | 571.223ms | 13.4 MB |
-| 48 | angle-difference-between-two-bearings-1 | ✓ | 571.223ms | 12.5 MB |
-| 49 | angle-difference-between-two-bearings-2 | ✓ | 571.223ms | 12.3 MB |
-| 50 | angles-geometric-normalization-and-conversion | ✓ | 571.223ms | 12.7 MB |
+| 46 | anagrams-deranged-anagrams | ✓ |  |  |
+| 47 | anagrams | ✓ |  |  |
+| 48 | angle-difference-between-two-bearings-1 | ✓ |  |  |
+| 49 | angle-difference-between-two-bearings-2 | ✓ |  |  |
+| 50 | angles-geometric-normalization-and-conversion | ✓ |  |  |
 | 51 | animate-a-pendulum | ✓ |  |  |
 | 52 | animation | ✓ |  |  |
 | 53 | anonymous-recursion-1 | ✓ |  |  |

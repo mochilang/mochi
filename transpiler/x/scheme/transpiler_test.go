@@ -56,7 +56,8 @@ func TestSchemeTranspiler_PrintHello(t *testing.T) {
 	if errs := types.Check(prog, env); len(errs) > 0 {
 		t.Fatalf("type: %v", errs[0])
 	}
-	ast, err := scheme.Transpile(prog, env, false)
+	scheme.SetBenchMain(false)
+	ast, err := scheme.Transpile(prog, env)
 	if err != nil {
 		t.Fatalf("transpile: %v", err)
 	}
@@ -104,7 +105,8 @@ func TestSchemeTranspiler_LetAndPrint(t *testing.T) {
 	if errs := types.Check(prog, env); len(errs) > 0 {
 		t.Fatalf("type: %v", errs[0])
 	}
-	ast, err := scheme.Transpile(prog, env, false)
+	scheme.SetBenchMain(false)
+	ast, err := scheme.Transpile(prog, env)
 	if err != nil {
 		t.Fatalf("transpile: %v", err)
 	}
@@ -152,7 +154,8 @@ func TestSchemeTranspiler_TypedLet(t *testing.T) {
 	if errs := types.Check(prog, env); len(errs) > 0 {
 		t.Fatalf("type: %v", errs[0])
 	}
-	ast, err := scheme.Transpile(prog, env, false)
+	scheme.SetBenchMain(false)
+	ast, err := scheme.Transpile(prog, env)
 	if err != nil {
 		t.Fatalf("transpile: %v", err)
 	}
@@ -200,7 +203,8 @@ func TestSchemeTranspiler_BinaryPrecedence(t *testing.T) {
 	if errs := types.Check(prog, env); len(errs) > 0 {
 		t.Fatalf("type: %v", errs[0])
 	}
-	ast, err := scheme.Transpile(prog, env, false)
+	scheme.SetBenchMain(false)
+	ast, err := scheme.Transpile(prog, env)
 	if err != nil {
 		t.Fatalf("transpile: %v", err)
 	}
@@ -248,7 +252,8 @@ func TestSchemeTranspiler_BasicCompare(t *testing.T) {
 	if errs := types.Check(prog, env); len(errs) > 0 {
 		t.Fatalf("type: %v", errs[0])
 	}
-	ast, err := scheme.Transpile(prog, env, false)
+	scheme.SetBenchMain(false)
+	ast, err := scheme.Transpile(prog, env)
 	if err != nil {
 		t.Fatalf("transpile: %v", err)
 	}
@@ -296,7 +301,8 @@ func TestSchemeTranspiler_StringConcat(t *testing.T) {
 	if errs := types.Check(prog, env); len(errs) > 0 {
 		t.Fatalf("type: %v", errs[0])
 	}
-	ast, err := scheme.Transpile(prog, env, false)
+	scheme.SetBenchMain(false)
+	ast, err := scheme.Transpile(prog, env)
 	if err != nil {
 		t.Fatalf("transpile: %v", err)
 	}
@@ -344,7 +350,8 @@ func TestSchemeTranspiler_StringCompare(t *testing.T) {
 	if errs := types.Check(prog, env); len(errs) > 0 {
 		t.Fatalf("type: %v", errs[0])
 	}
-	ast, err := scheme.Transpile(prog, env, false)
+	scheme.SetBenchMain(false)
+	ast, err := scheme.Transpile(prog, env)
 	if err != nil {
 		t.Fatalf("transpile: %v", err)
 	}
@@ -392,7 +399,8 @@ func TestSchemeTranspiler_UnaryNeg(t *testing.T) {
 	if errs := types.Check(prog, env); len(errs) > 0 {
 		t.Fatalf("type: %v", errs[0])
 	}
-	ast, err := scheme.Transpile(prog, env, false)
+	scheme.SetBenchMain(false)
+	ast, err := scheme.Transpile(prog, env)
 	if err != nil {
 		t.Fatalf("transpile: %v", err)
 	}
@@ -439,7 +447,8 @@ func TestSchemeTranspiler_BoolChain(t *testing.T) {
 	if errs := types.Check(prog, env); len(errs) > 0 {
 		t.Fatalf("type: %v", errs[0])
 	}
-	ast, err := scheme.Transpile(prog, env, false)
+	scheme.SetBenchMain(false)
+	ast, err := scheme.Transpile(prog, env)
 	if err != nil {
 		t.Fatalf("transpile: %v", err)
 	}
@@ -486,7 +495,8 @@ func TestSchemeTranspiler_TypedVar(t *testing.T) {
 	if errs := types.Check(prog, env); len(errs) > 0 {
 		t.Fatalf("type: %v", errs[0])
 	}
-	ast, err := scheme.Transpile(prog, env, false)
+	scheme.SetBenchMain(false)
+	ast, err := scheme.Transpile(prog, env)
 	if err != nil {
 		t.Fatalf("transpile: %v", err)
 	}
@@ -534,7 +544,8 @@ func TestSchemeTranspiler_VarAssignment(t *testing.T) {
 	if errs := types.Check(prog, env); len(errs) > 0 {
 		t.Fatalf("type: %v", errs[0])
 	}
-	ast, err := scheme.Transpile(prog, env, false)
+	scheme.SetBenchMain(false)
+	ast, err := scheme.Transpile(prog, env)
 	if err != nil {
 		t.Fatalf("transpile: %v", err)
 	}

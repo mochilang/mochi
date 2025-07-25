@@ -97,7 +97,8 @@ func TestSchemeTranspiler_Rosetta_Golden(t *testing.T) {
 				t.Fatalf("type: %v", errs[0])
 			}
 			bench := os.Getenv("MOCHI_BENCHMARK") != ""
-			ast, err := scheme.Transpile(prog, env, bench)
+			scheme.SetBenchMain(bench)
+			ast, err := scheme.Transpile(prog, env)
 			if err != nil {
 				_ = os.WriteFile(errPath, []byte(err.Error()), 0o644)
 				t.Fatalf("transpile: %v", err)
@@ -117,9 +118,10 @@ func TestSchemeTranspiler_Rosetta_Golden(t *testing.T) {
 				t.Fatalf("run: %v", err)
 			}
 			outBytes := bytes.TrimSpace(out)
-			_ = os.WriteFile(outPath, outBytes, 0o644)
-			_ = os.Remove(errPath)
 			if bench {
+				benchPath := filepath.Join(outDir, base+".bench")
+				_ = os.WriteFile(benchPath, outBytes, 0o644)
+				_ = os.Remove(errPath)
 				var js struct {
 					Duration int64  `json:"duration_us"`
 					Memory   int64  `json:"memory_bytes"`
@@ -128,6 +130,8 @@ func TestSchemeTranspiler_Rosetta_Golden(t *testing.T) {
 				_ = json.Unmarshal(outBytes, &js)
 				return
 			}
+			_ = os.WriteFile(outPath, outBytes, 0o644)
+			_ = os.Remove(errPath)
 			if updateEnabled() || len(want) == 0 {
 				return
 			}
@@ -171,7 +175,7 @@ func updateRosettaChecklist() {
 		}
 		dur := ""
 		mem := ""
-		if data, err := os.ReadFile(filepath.Join(outDir, name+".out")); err == nil {
+		if data, err := os.ReadFile(filepath.Join(outDir, name+".bench")); err == nil {
 			var js struct {
 				Duration int64 `json:"duration_us"`
 				Memory   int64 `json:"memory_bytes"`
