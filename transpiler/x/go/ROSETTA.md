@@ -1,7 +1,7 @@
 # Go Rosetta Transpiler Output
 
 Completed programs: 123/284
-Last updated: 2025-07-25 18:01 +0700
+Last updated: 2025-07-25 19:02 +0700
 
 Checklist:
 
@@ -36,33 +36,33 @@ Checklist:
 | 27 | achilles-numbers |   |  |  |
 | 28 | ackermann-function-2 | ✓ | 89.0µs | 1.05KB |
 | 29 | ackermann-function-3 | ✓ | 93.61s | 3.03MB |
-| 30 | ackermann-function | ✓ | 608.0µs | 1.05KB |
-| 31 | active-directory-connect | ✓ | 288.0µs | 1000B |
-| 32 | active-directory-search-for-a-user | ✓ | 406.0µs | 1.10KB |
-| 33 | active-object | ✓ | 428.0µs | 1000B |
-| 34 | add-a-variable-to-a-class-instance-at-runtime | ✓ | 467.0µs | 5.09KB |
-| 35 | additive-primes | ✓ | 639.0µs | 4.64KB |
-| 36 | address-of-a-variable | ✓ | 260.0µs | 1016B |
+| 30 | ackermann-function | ✓ | 165.0µs | 1.05KB |
+| 31 | active-directory-connect | ✓ | 84.0µs | 1000B |
+| 32 | active-directory-search-for-a-user | ✓ | 57.0µs | 1.10KB |
+| 33 | active-object | ✓ | 253.0µs | 1000B |
+| 34 | add-a-variable-to-a-class-instance-at-runtime | ✓ | 112.0µs | 5.09KB |
+| 35 | additive-primes | ✓ | 113.0µs | 4.64KB |
+| 36 | address-of-a-variable | ✓ | 82.0µs | 1016B |
 | 37 | adfgvx-cipher |   |  |  |
-| 38 | aks-test-for-primes | ✓ | 517.0µs | 3.35KB |
+| 38 | aks-test-for-primes | ✓ | 85.0µs | 3.35KB |
 | 39 | algebraic-data-types |   |  |  |
 | 40 | align-columns | ✓ | 6.0ms | 1.22MB |
 | 41 | aliquot-sequence-classifications | ✓ | 46.0ms | 21.24KB |
 | 42 | almkvist-giullera-formula-for-pi |   |  |  |
-| 43 | almost-prime | ✓ |  |  |
-| 44 | amb | ✓ |  |  |
-| 45 | amicable-pairs | ✓ |  |  |
-| 46 | anagrams-deranged-anagrams | ✓ |  |  |
-| 47 | anagrams | ✓ |  |  |
-| 48 | angle-difference-between-two-bearings-1 | ✓ |  |  |
-| 49 | angle-difference-between-two-bearings-2 | ✓ |  |  |
-| 50 | angles-geometric-normalization-and-conversion | ✓ |  |  |
-| 51 | animate-a-pendulum | ✓ |  |  |
-| 52 | animation | ✓ |  |  |
-| 53 | anonymous-recursion-1 | ✓ |  |  |
-| 54 | anonymous-recursion-2 | ✓ |  |  |
-| 55 | anonymous-recursion | ✓ |  |  |
-| 56 | anti-primes | ✓ |  |  |
+| 43 | almost-prime | ✓ | 572.0µs | 3.17KB |
+| 44 | amb | ✓ | 476.0µs | 1.15KB |
+| 45 | amicable-pairs | ✓ | 987.0ms | 646.82KB |
+| 46 | anagrams-deranged-anagrams | ✓ | 537.0µs | 3.55KB |
+| 47 | anagrams | ✓ | 466.0µs | 18.59KB |
+| 48 | angle-difference-between-two-bearings-1 | ✓ | 477.0µs | 1.49KB |
+| 49 | angle-difference-between-two-bearings-2 | ✓ | 437.0µs | 1.88KB |
+| 50 | angles-geometric-normalization-and-conversion | ✓ | 463.0µs | 9.27KB |
+| 51 | animate-a-pendulum | ✓ | 444.0µs | 1.09KB |
+| 52 | animation | ✓ | 401.0µs | 9.05KB |
+| 53 | anonymous-recursion-1 | ✓ | 356.0µs | 1.31KB |
+| 54 | anonymous-recursion-2 | ✓ | 502.0µs | 1.37KB |
+| 55 | anonymous-recursion | ✓ | 383.0µs | 1.37KB |
+| 56 | anti-primes | ✓ | 148.0ms | 2.25KB |
 | 57 | append-a-record-to-the-end-of-a-text-file | ✓ |  |  |
 | 58 | apply-a-callback-to-an-array-1 | ✓ |  |  |
 | 59 | apply-a-callback-to-an-array-2 |   |  |  |
