@@ -4,7 +4,7 @@ Generated Lua code for programs in `tests/rosetta/x/Mochi`. Each program has a `
 
 Transpiled programs: 281/284
 
-Last updated: 2025-07-25 21:10 GMT+7
+Last updated: 2025-07-25 22:07 GMT+7
 
 Checklist:
 
@@ -235,24 +235,24 @@ Checklist:
 | 223 | conditional-structures-8 | ✓ | 2µs | 144 B |
 | 224 | conditional-structures-9 | ✓ | 2µs | 104 B |
 | 225 | consecutive-primes-with-ascending-or-descending-differences | ✓ |  |  |
-| 226 | constrained-genericity-1 | ✓ |  |  |
-| 227 | constrained-genericity-2 | ✓ |  |  |
-| 228 | constrained-genericity-3 | ✓ |  |  |
-| 229 | constrained-genericity-4 | ✓ |  |  |
-| 230 | constrained-random-points-on-a-circle-1 | ✓ |  |  |
-| 231 | constrained-random-points-on-a-circle-2 | ✓ |  |  |
-| 232 | continued-fraction | ✓ |  |  |
-| 233 | convert-decimal-number-to-rational | ✓ |  |  |
-| 234 | convert-seconds-to-compound-duration | ✓ |  |  |
-| 235 | convex-hull | ✓ |  |  |
-| 236 | conways-game-of-life | ✓ |  |  |
-| 237 | copy-a-string-1 | ✓ |  |  |
-| 238 | copy-a-string-2 | ✓ |  |  |
-| 239 | copy-stdin-to-stdout-1 | ✓ |  |  |
-| 240 | copy-stdin-to-stdout-2 | ✓ |  |  |
-| 241 | count-in-factors | ✓ |  |  |
-| 242 | count-in-octal-1 | ✓ | 143µs | 2.8 KB |
-| 243 | count-in-octal-2 | ✓ | 87.341ms | 2.8 KB |
+| 226 | constrained-genericity-1 | ✓ | 2µs | 64 B |
+| 227 | constrained-genericity-2 | ✓ | 2µs | 64 B |
+| 228 | constrained-genericity-3 | ✓ | 3µs | 104 B |
+| 229 | constrained-genericity-4 | ✓ | 34µs | 848 B |
+| 230 | constrained-random-points-on-a-circle-1 | ✓ | 3.474ms | 36.9 KB |
+| 231 | constrained-random-points-on-a-circle-2 | ✓ | 5.071ms | 95.0 KB |
+| 232 | continued-fraction | ✓ | 377µs | 3.0 KB |
+| 233 | convert-decimal-number-to-rational | ✓ | 97µs | 944 B |
+| 234 | convert-seconds-to-compound-duration | ✓ | 137µs | 2.7 KB |
+| 235 | convex-hull | ✓ | 428µs | 3.6 KB |
+| 236 | conways-game-of-life | ✓ | 1.458549s | 2.5 KB |
+| 237 | copy-a-string-1 | ✓ | 2µs | 64 B |
+| 238 | copy-a-string-2 | ✓ | 30µs | 136 B |
+| 239 | copy-stdin-to-stdout-1 | ✓ | 75µs | 64 B |
+| 240 | copy-stdin-to-stdout-2 | ✓ | 126µs | 168 B |
+| 241 | count-in-factors | ✓ | 711µs | 2.7 KB |
+| 242 | count-in-octal-1 | ✓ | 224µs | 2.8 KB |
+| 243 | count-in-octal-2 | ✓ | 140.675ms | 2.8 KB |
 | 244 | count-in-octal-3 | ✓ |  |  |
 | 245 | count-in-octal-4 | ✓ |  |  |
 | 246 | count-occurrences-of-a-substring | ✓ | 41µs | 912 B |
