@@ -835,7 +835,8 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("var _nowSeed: int64 = 0;\n")
 		buf.WriteString("var _nowSeeded: boolean = false;\n")
 		buf.WriteString("procedure init_now();\nvar s: string; v: int64;\nbegin\n  s := GetEnvironmentVariable('MOCHI_NOW_SEED');\n  if s <> '' then begin\n    Val(s, v);\n    _nowSeed := v;\n    _nowSeeded := true;\n  end;\nend;\n")
-		buf.WriteString("function _now(): integer;\nbegin\n  if _nowSeeded then begin\n    _nowSeed := (_nowSeed * 1664525 + 1013904223) mod 2147483647;\n    _now := _nowSeed;\n  end else begin\n    _now := Integer(GetTickCount64()*1000);\n  end;\nend;\n")
+		buf.WriteString("function _sys_now(): integer;\nbegin\n  _sys_now := Integer(GetTickCount64()*1000);\nend;\n")
+		buf.WriteString("function _now(): integer;\nbegin\n  if _nowSeeded then begin\n    _nowSeed := (_nowSeed * 1664525 + 1013904223) mod 2147483647;\n    _now := _nowSeed;\n  end else begin\n    _now := _sys_now();\n  end;\nend;\n")
 	}
 	if p.UseMem {
 		buf.WriteString("function _mem(): int64;\nvar h: TFPCHeapStatus;\nbegin\n  h := GetFPCHeapStatus;\n  _mem := h.CurrHeapUsed;\nend;\n")
@@ -1422,9 +1423,18 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 				} else if strings.HasPrefix(rt, "specialize TFPGMap") {
 					for _, st := range fnBody {
 						if ret, ok := st.(*ReturnStmt); ok && ret.Expr != nil {
-							typ := inferType(ret.Expr)
-							if typ != "" && !strings.HasPrefix(typ, "specialize TFPGMap") {
-								rt = typ
+							if ce, ok2 := ret.Expr.(*CallExpr); ok2 {
+								if t, ok3 := funcReturns[ce.Name]; ok3 && t != "" {
+									rt = t
+								} else if strings.HasPrefix(ce.Name, "make") {
+									rt = strings.TrimPrefix(ce.Name, "make")
+								}
+							}
+							if strings.HasPrefix(rt, "specialize TFPGMap") {
+								typ := inferType(ret.Expr)
+								if typ != "" && !strings.HasPrefix(typ, "specialize TFPGMap") {
+									rt = typ
+								}
 							}
 							break
 						}
@@ -1926,7 +1936,7 @@ func convertBenchBlock(env *types.Env, bench *parser.BenchBlock, varTypes map[st
 	varTypes[memDiff] = "int64"
 	out := []Stmt{
 		&AssignStmt{Name: memStart, Expr: &CallExpr{Name: "_mem"}},
-		&AssignStmt{Name: startName, Expr: &CallExpr{Name: "_now"}},
+		&AssignStmt{Name: startName, Expr: &CallExpr{Name: "_sys_now"}},
 	}
 	body, err := convertBody(env, bench.Body, varTypes)
 	if err != nil {
@@ -1935,7 +1945,7 @@ func convertBenchBlock(env *types.Env, bench *parser.BenchBlock, varTypes map[st
 	out = append(out, body...)
 	out = append(out, &ExprStmt{Expr: &CallExpr{Name: "Sleep", Args: []Expr{&IntLit{Value: 1}}}})
 	out = append(out, &AssignStmt{Name: memDiff, Expr: &BinaryExpr{Op: "-", Left: &CallExpr{Name: "_mem"}, Right: &VarRef{Name: memStart}}})
-	diff := &BinaryExpr{Op: "-", Left: &CallExpr{Name: "_now"}, Right: &VarRef{Name: startName}}
+	diff := &BinaryExpr{Op: "-", Left: &CallExpr{Name: "_sys_now"}, Right: &VarRef{Name: startName}}
 	div := &BinaryExpr{Op: "div", Left: diff, Right: &IntLit{Value: 1000}}
 	out = append(out, &AssignStmt{Name: durName, Expr: div})
 	out = append(out, &WritelnStmt{Expr: &StringLit{Value: "{"}})
