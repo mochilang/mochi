@@ -1948,6 +1948,17 @@ func Transpile(prog *parser.Program, env *types.Env, benchMain bool) (*Program, 
 		useStdout = false
 	}()
 	tsProg := &Program{}
+	mainDefined := false
+	mainCalled := false
+
+	for _, st := range prog.Statements {
+		if st.Fun != nil && st.Fun.Name == "main" {
+			mainDefined = true
+		}
+		if st.Expr != nil && isTopLevelMainCall(st.Expr.Expr) {
+			mainCalled = true
+		}
+	}
 
 	for _, st := range prog.Statements {
 		stmt, err := convertStmt(st)
@@ -1967,9 +1978,14 @@ func Transpile(prog *parser.Program, env *types.Env, benchMain bool) (*Program, 
 			switch st.(type) {
 			case *InterfaceDecl, *TypeAlias, *FuncDecl:
 				prelude = append(prelude, st)
+			case *VarDecl:
+				prelude = append(prelude, st)
 			default:
 				mainStmts = append(mainStmts, st)
 			}
+		}
+		if mainDefined && !mainCalled {
+			mainStmts = append(mainStmts, &ExprStmt{Expr: &CallExpr{Func: "main"}})
 		}
 		tsProg.Stmts = []Stmt{&BenchStmt{Name: "main", Body: mainStmts}}
 		useBench = true
@@ -3490,6 +3506,11 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			}
 			useRepeat = true
 			return &CallExpr{Func: "repeat", Args: []Expr{args[0], args[1]}}, nil
+		case "pow":
+			if len(args) != 2 {
+				return nil, fmt.Errorf("pow expects two arguments")
+			}
+			return &CallExpr{Func: "Math.pow", Args: args}, nil
 		case "substr":
 			if len(args) != 3 {
 				return nil, fmt.Errorf("substr expects three arguments")
@@ -3920,6 +3941,18 @@ func isSimpleIdent(e *parser.Expr) (string, bool) {
 		return p.Target.Selector.Root, true
 	}
 	return "", false
+}
+
+func isTopLevelMainCall(e *parser.Expr) bool {
+	if e == nil || e.Binary == nil || e.Binary.Right != nil {
+		return false
+	}
+	u := e.Binary.Left
+	if u == nil || len(u.Ops) > 0 || u.Value == nil || u.Value.Target == nil {
+		return false
+	}
+	call := u.Value.Target.Call
+	return call != nil && call.Func == "main" && len(call.Args) == 0
 }
 
 func isIdent(s string) bool {
