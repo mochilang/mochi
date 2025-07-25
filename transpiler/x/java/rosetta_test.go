@@ -79,7 +79,9 @@ func runRosettaTask(t *testing.T, name string) {
 	}
 	cmd = exec.Command("java", "-cp", tmp, className)
 	runEnv := []string{"MOCHI_ROOT=" + root}
-	if !bench {
+	if bench {
+		runEnv = append(runEnv, "MOCHI_BENCHMARK=1")
+	} else {
 		runEnv = append(runEnv, "MOCHI_NOW_SEED=1")
 	}
 	cmd.Env = append(os.Environ(), runEnv...)
@@ -94,6 +96,9 @@ func runRosettaTask(t *testing.T, name string) {
 	}
 	_ = os.Remove(errPath)
 	if bench {
+		if idx := bytes.LastIndexByte(got, '{'); idx >= 0 {
+			got = got[idx:]
+		}
 		if shouldUpdateRosetta() {
 			_ = os.WriteFile(benchPath, got, 0644)
 		}

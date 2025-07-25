@@ -286,7 +286,7 @@ func inferType(e Expr) string {
 				}
 			}
 		}
-		return "int[]"
+		return ""
 	case *StructLit:
 		if ex.Name != "" {
 			return ex.Name
@@ -366,6 +366,8 @@ func inferType(e Expr) string {
 		return jt + "[]"
 	case *IntCastExpr:
 		return "int"
+	case *FloatCastExpr:
+		return "double"
 	case *CallExpr:
 		switch ex.Func {
 		case "String.valueOf", "substring":
@@ -1449,8 +1451,11 @@ func (v *ValuesExpr) emit(w io.Writer) {
 
 func (a *AppendExpr) emit(w io.Writer) {
 	elem := a.ElemType
-	if elem == "" {
-		elem = arrayElemType(a.List)
+	if elem == "" || elem == "Object" {
+		t := arrayElemType(a.List)
+		if t != "" {
+			elem = t
+		}
 	}
 	if elem == "" {
 		elem = "Object"
@@ -3120,9 +3125,9 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			return &ValuesExpr{Map: args[0]}, nil
 		}
 		if name == "append" && len(args) == 2 {
-			et := inferType(args[1])
+			et := arrayElemType(args[0])
 			if et == "" {
-				et = arrayElemType(args[0])
+				et = inferType(args[1])
 			}
 			return &AppendExpr{List: args[0], Value: args[1], ElemType: et}, nil
 		}
@@ -3987,6 +3992,10 @@ func toJavaTypeFromType(t types.Type) string {
 		}
 		return et + "[]"
 	case types.StructType:
+		if tt.Name != "" {
+			return tt.Name
+		}
+	case types.UnionType:
 		if tt.Name != "" {
 			return tt.Name
 		}
