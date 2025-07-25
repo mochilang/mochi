@@ -1,8 +1,0 @@
-type: error[T008]: type mismatch: expected bool, got bigint
-  --> /workspace/mochi/tests/rosetta/x/Mochi/convex-hull.mochi:10:12
-
- 10 |   return ((b.x - a.x) * (c.y - a.y)) > ((b.y - a.y) * (c.x - a.x))
-    |            ^
-
-help:
-  Change the value to match the expected type.

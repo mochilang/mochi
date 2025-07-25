@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated TypeScript code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/TypeScript`.
-Last updated: 2025-07-25 14:25 UTC
+Last updated: 2025-07-25 15:07 UTC
 
-## Rosetta Golden Test Checklist (274/284)
+## Rosetta Golden Test Checklist (275/284)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 1.595ms | 512.0 KB |
@@ -215,37 +215,37 @@ Last updated: 2025-07-25 14:25 UTC
 | 206 | circular-primes | ✓ | 6.315ms | 1.1 MB |
 | 207 | cistercian-numerals |   |  |  |
 | 208 | comma-quibbling | ✓ | 780µs |  |
-| 209 | compiler-virtual-machine-interpreter | ✓ |  |  |
-| 210 | composite-numbers-k-with-no-single-digit-factors-whose-factors-are-all-substrings-of-k | ✓ |  |  |
-| 211 | compound-data-type | ✓ |  |  |
-| 212 | concurrent-computing-1 | ✓ |  |  |
-| 213 | concurrent-computing-2 | ✓ |  |  |
-| 214 | concurrent-computing-3 | ✓ |  |  |
-| 215 | conditional-structures-1 | ✓ |  |  |
-| 216 | conditional-structures-10 | ✓ |  |  |
-| 217 | conditional-structures-2 | ✓ |  |  |
-| 218 | conditional-structures-3 | ✓ |  |  |
-| 219 | conditional-structures-4 | ✓ |  |  |
-| 220 | conditional-structures-5 | ✓ |  |  |
-| 221 | conditional-structures-6 | ✓ |  |  |
-| 222 | conditional-structures-7 | ✓ |  |  |
-| 223 | conditional-structures-8 | ✓ |  |  |
-| 224 | conditional-structures-9 | ✓ |  |  |
+| 209 | compiler-virtual-machine-interpreter | ✓ | 3.639ms | 384.0 KB |
+| 210 | composite-numbers-k-with-no-single-digit-factors-whose-factors-are-all-substrings-of-k | ✓ | 17.314176s | 77.5 MB |
+| 211 | compound-data-type | ✓ | 7µs |  |
+| 212 | concurrent-computing-1 | ✓ | 686µs | 128.0 KB |
+| 213 | concurrent-computing-2 | ✓ | 730µs |  |
+| 214 | concurrent-computing-3 | ✓ | 1.465ms |  |
+| 215 | conditional-structures-1 | ✓ | 7µs |  |
+| 216 | conditional-structures-10 | ✓ | 557µs |  |
+| 217 | conditional-structures-2 | ✓ | 8µs |  |
+| 218 | conditional-structures-3 | ✓ | 8µs |  |
+| 219 | conditional-structures-4 | ✓ | 7µs |  |
+| 220 | conditional-structures-5 | ✓ | 7µs |  |
+| 221 | conditional-structures-6 | ✓ | 7µs |  |
+| 222 | conditional-structures-7 | ✓ | 8µs |  |
+| 223 | conditional-structures-8 | ✓ | 7µs |  |
+| 224 | conditional-structures-9 | ✓ | 8µs |  |
 | 225 | consecutive-primes-with-ascending-or-descending-differences | ✓ |  |  |
-| 226 | constrained-genericity-1 | ✓ |  |  |
-| 227 | constrained-genericity-2 | ✓ |  |  |
-| 228 | constrained-genericity-3 | ✓ |  |  |
-| 229 | constrained-genericity-4 | ✓ |  |  |
-| 230 | constrained-random-points-on-a-circle-1 | ✓ |  |  |
-| 231 | constrained-random-points-on-a-circle-2 | ✓ |  |  |
-| 232 | continued-fraction | ✓ |  |  |
-| 233 | convert-decimal-number-to-rational | ✓ |  |  |
-| 234 | convert-seconds-to-compound-duration | ✓ |  |  |
-| 235 | convex-hull |   |  |  |
-| 236 | conways-game-of-life | ✓ |  |  |
-| 237 | copy-a-string-1 | ✓ |  |  |
-| 238 | copy-a-string-2 | ✓ |  |  |
-| 239 | copy-stdin-to-stdout-1 | ✓ |  |  |
+| 226 | constrained-genericity-1 | ✓ | 8µs |  |
+| 227 | constrained-genericity-2 | ✓ | 7µs |  |
+| 228 | constrained-genericity-3 | ✓ | 8µs |  |
+| 229 | constrained-genericity-4 | ✓ | 562µs |  |
+| 230 | constrained-random-points-on-a-circle-1 | ✓ | 10.121ms | 2.2 MB |
+| 231 | constrained-random-points-on-a-circle-2 | ✓ | 11.172ms | 2.4 MB |
+| 232 | continued-fraction | ✓ | 1.371ms |  |
+| 233 | convert-decimal-number-to-rational | ✓ | 1.713ms | 128.0 KB |
+| 234 | convert-seconds-to-compound-duration | ✓ | 727µs | 128.0 KB |
+| 235 | convex-hull | ✓ | 1.774ms | 256.0 KB |
+| 236 | conways-game-of-life | ✓ | 80.629ms | 11.2 MB |
+| 237 | copy-a-string-1 | ✓ | 8µs |  |
+| 238 | copy-a-string-2 | ✓ | 637µs |  |
+| 239 | copy-stdin-to-stdout-1 | ✓ | 1.586ms | 384.0 KB |
 | 240 | copy-stdin-to-stdout-2 | ✓ |  |  |
 | 241 | count-in-factors | ✓ |  |  |
 | 242 | count-in-octal-1 | ✓ |  |  |
