@@ -69,12 +69,14 @@ func runRosettaTask(root, name string) error {
 		return fmt.Errorf("type error: %v", errs[0])
 	}
 	bench := os.Getenv("MOCHI_BENCHMARK") == "true" || os.Getenv("MOCHI_BENCHMARK") == "1"
-    hprog, err := hs.Transpile(prog, env, bench)
-    if err != nil {
-            writeErr(root, name, fmt.Errorf("transpile: %w", err))
-            return fmt.Errorf("transpile error: %v", err)
-    }
-    code := hs.Emit(hprog, bench)
+	hprog, err := hs.Transpile(prog, env, bench)
+	if err != nil {
+		writeErr(root, name, fmt.Errorf("transpile: %w", err))
+		return fmt.Errorf("transpile error: %v", err)
+	}
+	// Emit without an additional bench wrapper since Transpile already
+	// wrapped the main function when benchmarking is enabled.
+	code := hs.Emit(hprog, false)
 	outDir := filepath.Join(root, "tests", "rosetta", "transpiler", "Haskell")
 	os.MkdirAll(outDir, 0o755)
 	hsFile := filepath.Join(outDir, name+".hs")
@@ -103,7 +105,11 @@ func runRosettaTask(root, name string) error {
 	removeErr(root, name)
 	if bench {
 		benchPath := filepath.Join(outDir, name+".bench")
-		_ = os.WriteFile(benchPath, got, 0o644)
+		outBytes := got
+		if idx := bytes.LastIndexByte(outBytes, '{'); idx >= 0 {
+			outBytes = outBytes[idx:]
+		}
+		_ = os.WriteFile(benchPath, outBytes, 0o644)
 		return nil
 	}
 	outPath := filepath.Join(outDir, name+".out")
