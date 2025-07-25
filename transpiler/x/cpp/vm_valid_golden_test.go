@@ -61,7 +61,9 @@ func TestCPPTranspiler_VMValid_Golden(t *testing.T) {
 			return nil, err
 		}
 		defer os.Remove(bin)
-		out, err := exec.Command(bin).CombinedOutput()
+		cmd := exec.Command(bin)
+		cmd.Env = append(os.Environ(), "MOCHI_NOW_SEED=1")
+		out, err := cmd.CombinedOutput()
 		if err != nil {
 			_ = os.WriteFile(errPath, append([]byte("run: "+err.Error()+"\n"), out...), 0o644)
 			return nil, err
