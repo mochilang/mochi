@@ -1,0 +1,96 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun main() {
+func main (regs=42)
+  // var ss = SomeStruct { runtimeFields: {} }
+  Const        r0, {}
+  Const        r1, "__name"
+  Const        r2, "SomeStruct"
+  Const        r3, "runtimeFields"
+  Move         r4, r0
+  MakeMap      r5, 2, r1
+  Move         r6, r5
+  // print("Create two fields at runtime: \n")
+  Const        r7, "Create two fields at runtime: \n"
+  Print        r7
+  // var i = 1
+  Const        r8, 1
+  Move         r9, r8
+L1:
+  // while i <= 2 {
+  Const        r10, 2
+  LessEqInt    r11, r9, r10
+  JumpIfFalse  r11, L0
+  // print("  Field #" + str(i) + ":\n")
+  Const        r12, "  Field #"
+  Str          r13, r9
+  Add          r14, r12, r13
+  Const        r15, ":\n"
+  Add          r16, r14, r15
+  Print        r16
+  // print("       Enter name  : ")
+  Const        r17, "       Enter name  : "
+  Print        r17
+  // let name = input()
+  Input        r18
+  Move         r19, r18
+  // print("       Enter value : ")
+  Const        r20, "       Enter value : "
+  Print        r20
+  // let value = input()
+  Input        r21
+  Move         r22, r21
+  // var fields = ss.runtimeFields
+  Const        r23, "runtimeFields"
+  Index        r24, r6, r23
+  Move         r25, r24
+  // fields[name] = value
+  SetIndex     r25, r19, r22
+  // ss.runtimeFields = fields
+  Const        r23, "runtimeFields"
+  SetIndex     r6, r23, r25
+  // print("\n")
+  Const        r26, "\n"
+  Print        r26
+  // i = i + 1
+  Const        r8, 1
+  AddInt       r27, r9, r8
+  Move         r9, r27
+  // while i <= 2 {
+  Jump         L1
+L0:
+  // while true {
+  Const        r28, true
+  // print("Which field do you want to inspect ? ")
+  Const        r29, "Which field do you want to inspect ? "
+  Print        r29
+  // let name = input()
+  Input        r30
+  Move         r31, r30
+  // if name in ss.runtimeFields {
+  Const        r23, "runtimeFields"
+  Index        r32, r6, r23
+  In           r33, r31, r32
+  JumpIfFalse  r33, L2
+  // let value = ss.runtimeFields[name]
+  Const        r23, "runtimeFields"
+  Index        r34, r6, r23
+  Index        r35, r34, r31
+  Move         r36, r35
+  // print("Its value is '" + value + "'")
+  Const        r37, "Its value is '"
+  Add          r38, r37, r36
+  Const        r39, "'"
+  Add          r40, r38, r39
+  Print        r40
+  // return
+  Return       r0
+L2:
+  // print("There is no field of that name, try again\n")
+  Const        r41, "There is no field of that name, try again\n"
+  Print        r41
+  // while true {
+  Jump         L0

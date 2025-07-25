@@ -1,0 +1,458 @@
+func main (regs=12)
+  // var tr: any = null
+  Const        r2, nil
+  Move         r0, r2
+  SetGlobal    0,0,0,0
+  // var i = 1
+  Const        r3, 1
+  Move         r1, r3
+  SetGlobal    1,1,0,0
+L1:
+  // while i <= 16 {
+  Const        r4, 16
+  LessEqInt    r5, r1, r4
+  JumpIfFalse  r5, L0
+  // tr = insert(tr, i)
+  Move         r6, r0
+  Move         r7, r1
+  Call2        r8, insert, r6, r7
+  Move         r0, r8
+  SetGlobal    0,0,0,0
+  // i = i + 1
+  Const        r3, 1
+  AddInt       r9, r1, r3
+  Move         r1, r9
+  SetGlobal    1,1,0,0
+  // while i <= 16 {
+  Jump         L1
+L0:
+  // print(treeString(tr))
+  Move         r10, r0
+  Call         r11, treeString, r10
+  Print        r11
+  Return       r0
+
+  // fun node(cl: string, le: any, aa: int, ri: any): map<string, any> {
+func node (regs=19)
+  // return {"cl": cl, "le": le, "aa": aa, "ri": ri}
+  Const        r6, "cl"
+  Const        r7, "le"
+  Const        r8, "aa"
+  Const        r9, "ri"
+  Move         r10, r6
+  Move         r11, r2
+  Move         r12, r7
+  Move         r13, r3
+  Move         r14, r8
+  Move         r15, r4
+  Move         r16, r9
+  Move         r17, r5
+  MakeMap      r18, 4, r10
+  Return       r18
+
+  // fun treeString(t: any): string {
+func treeString (regs=32)
+  // if t == null {
+  Const        r3, nil
+  Equal        r4, r2, r3
+  JumpIfFalse  r4, L0
+  // return "E"
+  Const        r5, "E"
+  Return       r5
+L0:
+  // let m = t as map<string, any>
+  Cast         r6, r2, {string: any}
+  Move         r7, r6
+  // return "T(" + m["cl"] + ", " + treeString(m["le"]) + ", " + str(m["aa"]) + ", " + treeString(m["ri"]) + ")"
+  Const        r8, "T("
+  Const        r9, "cl"
+  Index        r10, r7, r9
+  Add          r11, r8, r10
+  Const        r12, ", "
+  Add          r13, r11, r12
+  Const        r15, "le"
+  Index        r16, r7, r15
+  Move         r14, r16
+  Call         r17, treeString, r14
+  Add          r18, r13, r17
+  Const        r12, ", "
+  Add          r19, r18, r12
+  Const        r20, "aa"
+  Index        r21, r7, r20
+  Str          r22, r21
+  Add          r23, r19, r22
+  Const        r12, ", "
+  Add          r24, r23, r12
+  Const        r26, "ri"
+  Index        r27, r7, r26
+  Move         r25, r27
+  Call         r28, treeString, r25
+  Add          r29, r24, r28
+  Const        r30, ")"
+  Add          r31, r29, r30
+  Return       r31
+
+  // fun balance(t: any): any {
+func balance (regs=143)
+  // if t == null { return t }
+  Const        r3, nil
+  Equal        r4, r2, r3
+  JumpIfFalse  r4, L0
+  Return       r2
+L0:
+  // let m = t as map<string, any>
+  Cast         r5, r2, {string: any}
+  Move         r6, r5
+  // if m["cl"] != "B" {
+  Const        r7, "cl"
+  Index        r8, r6, r7
+  Const        r9, "B"
+  NotEqual     r10, r8, r9
+  JumpIfFalse  r10, L1
+  // return t
+  Return       r2
+L1:
+  // let le = m["le"]
+  Const        r11, "le"
+  Index        r12, r6, r11
+  Move         r13, r12
+  // let ri = m["ri"]
+  Const        r14, "ri"
+  Index        r15, r6, r14
+  Move         r16, r15
+  // if le != null {
+  Const        r3, nil
+  NotEqual     r17, r13, r3
+  JumpIfFalse  r17, L2
+  // let leMap = le as map<string, any>
+  Cast         r18, r13, {string: any}
+  Move         r19, r18
+  // if leMap["cl"] == "R" {
+  Const        r7, "cl"
+  Index        r20, r19, r7
+  Const        r21, "R"
+  Equal        r22, r20, r21
+  JumpIfFalse  r22, L2
+  // let lele = leMap["le"]
+  Const        r11, "le"
+  Index        r23, r19, r11
+  Move         r24, r23
+  // if lele != null {
+  Const        r3, nil
+  NotEqual     r25, r24, r3
+  JumpIfFalse  r25, L3
+  // let leleMap = lele as map<string, any>
+  Cast         r26, r24, {string: any}
+  Move         r27, r26
+  // if leleMap["cl"] == "R" {
+  Const        r7, "cl"
+  Index        r28, r27, r7
+  Const        r21, "R"
+  Equal        r29, r28, r21
+  JumpIfFalse  r29, L3
+  // return node("R", node("B", leleMap["le"], leleMap["aa"], leleMap["ri"]), leMap["aa"], node("B", leMap["ri"], m["aa"], ri))
+  Const        r21, "R"
+  Move         r30, r21
+  Const        r9, "B"
+  Move         r34, r9
+  Const        r11, "le"
+  Index        r38, r27, r11
+  Move         r35, r38
+  Const        r39, "aa"
+  Index        r40, r27, r39
+  Move         r36, r40
+  Const        r14, "ri"
+  Index        r41, r27, r14
+  Move         r37, r41
+  Call         r42, node, r34, r35, r36, r37
+  Move         r31, r42
+  Const        r39, "aa"
+  Index        r43, r19, r39
+  Move         r32, r43
+  Const        r9, "B"
+  Move         r44, r9
+  Const        r14, "ri"
+  Index        r48, r19, r14
+  Move         r45, r48
+  Const        r39, "aa"
+  Index        r49, r6, r39
+  Move         r46, r49
+  Move         r47, r16
+  Call         r50, node, r44, r45, r46, r47
+  Move         r33, r50
+  Call         r51, node, r30, r31, r32, r33
+  Return       r51
+L3:
+  // let leri = leMap["ri"]
+  Const        r14, "ri"
+  Index        r52, r19, r14
+  Move         r53, r52
+  // if leri != null {
+  Const        r3, nil
+  NotEqual     r54, r53, r3
+  JumpIfFalse  r54, L2
+  // let leriMap = leri as map<string, any>
+  Cast         r55, r53, {string: any}
+  Move         r56, r55
+  // if leriMap["cl"] == "R" {
+  Const        r7, "cl"
+  Index        r57, r56, r7
+  Const        r21, "R"
+  Equal        r58, r57, r21
+  JumpIfFalse  r58, L2
+  // return node("R", node("B", leMap["le"], leMap["aa"], leriMap["le"]), leriMap["aa"], node("B", leriMap["ri"], m["aa"], ri))
+  Const        r21, "R"
+  Move         r59, r21
+  Const        r9, "B"
+  Move         r63, r9
+  Const        r11, "le"
+  Index        r67, r19, r11
+  Move         r64, r67
+  Const        r39, "aa"
+  Index        r68, r19, r39
+  Move         r65, r68
+  Const        r11, "le"
+  Index        r69, r56, r11
+  Move         r66, r69
+  Call         r70, node, r63, r64, r65, r66
+  Move         r60, r70
+  Const        r39, "aa"
+  Index        r71, r56, r39
+  Move         r61, r71
+  Const        r9, "B"
+  Move         r72, r9
+  Const        r14, "ri"
+  Index        r76, r56, r14
+  Move         r73, r76
+  Const        r39, "aa"
+  Index        r77, r6, r39
+  Move         r74, r77
+  Move         r75, r16
+  Call         r78, node, r72, r73, r74, r75
+  Move         r62, r78
+  Call         r79, node, r59, r60, r61, r62
+  Return       r79
+L2:
+  // if ri != null {
+  Const        r3, nil
+  NotEqual     r80, r16, r3
+  JumpIfFalse  r80, L4
+  // let riMap = ri as map<string, any>
+  Cast         r81, r16, {string: any}
+  Move         r82, r81
+  // if riMap["cl"] == "R" {
+  Const        r7, "cl"
+  Index        r83, r82, r7
+  Const        r21, "R"
+  Equal        r84, r83, r21
+  JumpIfFalse  r84, L4
+  // let rile = riMap["le"]
+  Const        r11, "le"
+  Index        r85, r82, r11
+  Move         r86, r85
+  // if rile != null {
+  Const        r3, nil
+  NotEqual     r87, r86, r3
+  JumpIfFalse  r87, L5
+  // let rileMap = rile as map<string, any>
+  Cast         r88, r86, {string: any}
+  Move         r89, r88
+  // if rileMap["cl"] == "R" {
+  Const        r7, "cl"
+  Index        r90, r89, r7
+  Const        r21, "R"
+  Equal        r91, r90, r21
+  JumpIfFalse  r91, L5
+  // return node("R", node("B", m["le"], m["aa"], rileMap["le"]), rileMap["aa"], node("B", rileMap["ri"], riMap["aa"], riMap["ri"]))
+  Const        r21, "R"
+  Move         r92, r21
+  Const        r9, "B"
+  Move         r96, r9
+  Const        r11, "le"
+  Index        r100, r6, r11
+  Move         r97, r100
+  Const        r39, "aa"
+  Index        r101, r6, r39
+  Move         r98, r101
+  Const        r11, "le"
+  Index        r102, r89, r11
+  Move         r99, r102
+  Call         r103, node, r96, r97, r98, r99
+  Move         r93, r103
+  Const        r39, "aa"
+  Index        r104, r89, r39
+  Move         r94, r104
+  Const        r9, "B"
+  Move         r105, r9
+  Const        r14, "ri"
+  Index        r109, r89, r14
+  Move         r106, r109
+  Const        r39, "aa"
+  Index        r110, r82, r39
+  Move         r107, r110
+  Const        r14, "ri"
+  Index        r111, r82, r14
+  Move         r108, r111
+  Call         r112, node, r105, r106, r107, r108
+  Move         r95, r112
+  Call         r113, node, r92, r93, r94, r95
+  Return       r113
+L5:
+  // let riri = riMap["ri"]
+  Const        r14, "ri"
+  Index        r114, r82, r14
+  Move         r115, r114
+  // if riri != null {
+  Const        r3, nil
+  NotEqual     r116, r115, r3
+  JumpIfFalse  r116, L4
+  // let ririMap = riri as map<string, any>
+  Cast         r117, r115, {string: any}
+  Move         r118, r117
+  // if ririMap["cl"] == "R" {
+  Const        r7, "cl"
+  Index        r119, r118, r7
+  Const        r21, "R"
+  Equal        r120, r119, r21
+  JumpIfFalse  r120, L4
+  // return node("R", node("B", m["le"], m["aa"], riMap["le"]), riMap["aa"], node("B", ririMap["le"], ririMap["aa"], ririMap["ri"]))
+  Const        r21, "R"
+  Move         r121, r21
+  Const        r9, "B"
+  Move         r125, r9
+  Const        r11, "le"
+  Index        r129, r6, r11
+  Move         r126, r129
+  Const        r39, "aa"
+  Index        r130, r6, r39
+  Move         r127, r130
+  Const        r11, "le"
+  Index        r131, r82, r11
+  Move         r128, r131
+  Call         r132, node, r125, r126, r127, r128
+  Move         r122, r132
+  Const        r39, "aa"
+  Index        r133, r82, r39
+  Move         r123, r133
+  Const        r9, "B"
+  Move         r134, r9
+  Const        r11, "le"
+  Index        r138, r118, r11
+  Move         r135, r138
+  Const        r39, "aa"
+  Index        r139, r118, r39
+  Move         r136, r139
+  Const        r14, "ri"
+  Index        r140, r118, r14
+  Move         r137, r140
+  Call         r141, node, r134, r135, r136, r137
+  Move         r124, r141
+  Call         r142, node, r121, r122, r123, r124
+  Return       r142
+L4:
+  // return t
+  Return       r2
+
+  // fun ins(tr: any, x: int): any {
+func ins (regs=48)
+  // if tr == null {
+  Const        r4, nil
+  Equal        r5, r2, r4
+  JumpIfFalse  r5, L0
+  // return node("R", null, x, null)
+  Const        r10, "R"
+  Move         r6, r10
+  Const        r4, nil
+  Move         r7, r4
+  Move         r8, r3
+  Const        r4, nil
+  Move         r9, r4
+  Call         r11, node, r6, r7, r8, r9
+  Return       r11
+L0:
+  // if x < tr["aa"] {
+  Const        r12, "aa"
+  Index        r13, r2, r12
+  Less         r14, r3, r13
+  JumpIfFalse  r14, L1
+  // return balance(node(tr["cl"], ins(tr["le"], x), tr["aa"], tr["ri"]))
+  Const        r20, "cl"
+  Index        r21, r2, r20
+  Move         r16, r21
+  Const        r24, "le"
+  Index        r25, r2, r24
+  Move         r22, r25
+  Move         r23, r3
+  Call2        r26, ins, r22, r23
+  Move         r17, r26
+  Const        r12, "aa"
+  Index        r27, r2, r12
+  Move         r18, r27
+  Const        r28, "ri"
+  Index        r29, r2, r28
+  Move         r19, r29
+  Call         r30, node, r16, r17, r18, r19
+  Move         r15, r30
+  Call         r31, balance, r15
+  Return       r31
+L1:
+  // if x > tr["aa"] {
+  Const        r12, "aa"
+  Index        r32, r2, r12
+  Less         r33, r32, r3
+  JumpIfFalse  r33, L2
+  // return balance(node(tr["cl"], tr["le"], tr["aa"], ins(tr["ri"], x)))
+  Const        r20, "cl"
+  Index        r39, r2, r20
+  Move         r35, r39
+  Const        r24, "le"
+  Index        r40, r2, r24
+  Move         r36, r40
+  Const        r12, "aa"
+  Index        r41, r2, r12
+  Move         r37, r41
+  Const        r28, "ri"
+  Index        r44, r2, r28
+  Move         r42, r44
+  Move         r43, r3
+  Call2        r45, ins, r42, r43
+  Move         r38, r45
+  Call         r46, node, r35, r36, r37, r38
+  Move         r34, r46
+  Call         r47, balance, r34
+  Return       r47
+L2:
+  // return tr
+  Return       r2
+
+  // fun insert(tr: any, x: int): any {
+func insert (regs=24)
+  // let t = ins(tr, x)
+  Move         r4, r2
+  Move         r5, r3
+  Call2        r6, ins, r4, r5
+  Move         r7, r6
+  // if t == null { return null }
+  Const        r8, nil
+  Equal        r9, r7, r8
+  JumpIfFalse  r9, L0
+  Const        r8, nil
+  Return       r8
+L0:
+  // let m = t as map<string, any>
+  Cast         r10, r7, {string: any}
+  Move         r11, r10
+  // return node("B", m["le"], m["aa"], m["ri"])
+  Const        r16, "B"
+  Move         r12, r16
+  Const        r17, "le"
+  Index        r18, r11, r17
+  Move         r13, r18
+  Const        r19, "aa"
+  Index        r20, r11, r19
+  Move         r14, r20
+  Const        r21, "ri"
+  Index        r22, r11, r21
+  Move         r15, r22
+  Call         r23, node, r12, r13, r14, r15
+  Return       r23
