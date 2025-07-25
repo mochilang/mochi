@@ -22,7 +22,7 @@ var builtinNames = map[string]struct{}{
 	"print": {}, "len": {}, "substring": {}, "count": {}, "sum": {}, "avg": {},
 	"str": {}, "min": {}, "max": {}, "append": {}, "json": {}, "exists": {},
 	"values": {}, "keys": {}, "load": {}, "save": {}, "now": {}, "input": {},
-	"upper": {}, "lower": {}, "num": {}, "denom": {}, "indexOf": {}, "repeat": {}, "parseIntStr": {}, "slice": {},
+	"upper": {}, "lower": {}, "num": {}, "denom": {}, "indexOf": {}, "repeat": {}, "parseIntStr": {}, "slice": {}, "split": {},
 }
 
 const helperLookupHost = `function _lookup_host($host) {
@@ -165,6 +165,15 @@ const helperParseIntStr = `function parseIntStr($s, $base = 10) {
     return intval($s, intval($base));
 }`
 
+const helperIntDiv = `function _intdiv($a, $b) {
+    if (function_exists('bcdiv')) {
+        $sa = is_int($a) ? strval($a) : sprintf('%.0f', $a);
+        $sb = is_int($b) ? strval($b) : sprintf('%.0f', $b);
+        return intval(bcdiv($sa, $sb, 0));
+    }
+    return intdiv($a, $b);
+}`
+
 var usesLookupHost bool
 var usesNow bool
 var usesLen bool
@@ -173,6 +182,7 @@ var usesStr bool
 var usesIndexOf bool
 var usesRepeat bool
 var usesParseIntStr bool
+var usesIntDiv bool
 
 // Some PHP built-in functions cannot be redefined. When a Mochi program
 // defines a function with one of these names we rename the function and all
@@ -188,6 +198,8 @@ var phpReserved = map[string]struct{}{
 	"exp":         {},
 	"hypot":       {},
 	"parseIntStr": {},
+	"crc32":       {},
+	"xor":         {},
 	"trim":        {},
 }
 
@@ -1518,6 +1530,13 @@ func (b *BinaryExpr) emit(w io.Writer) {
 			fmt.Fprint(w, ")")
 			return
 		}
+		// Fallback for unknown types: check array key existence
+		fmt.Fprint(w, "isset(")
+		b.Right.emit(w)
+		fmt.Fprint(w, "[")
+		b.Left.emit(w)
+		fmt.Fprint(w, "])")
+		return
 	} else if b.Op == "union" {
 		fmt.Fprint(w, "array_values(array_unique(array_merge(")
 		b.Left.emit(w)
@@ -1559,7 +1578,8 @@ func (g *GroupExpr) emit(w io.Writer) {
 }
 
 func (d *IntDivExpr) emit(w io.Writer) {
-	io.WriteString(w, "intdiv(")
+	usesIntDiv = true
+	io.WriteString(w, "_intdiv(")
 	d.Left.emit(w)
 	io.WriteString(w, ", ")
 	d.Right.emit(w)
@@ -1746,6 +1766,11 @@ func Emit(w io.Writer, p *Program) error {
 			return err
 		}
 	}
+	if usesIntDiv {
+		if _, err := io.WriteString(w, helperIntDiv+"\n"); err != nil {
+			return err
+		}
+	}
 	hasMain := false
 	mainCalled := false
 	for _, s := range p.Stmts {
@@ -1796,6 +1821,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	usesIndexOf = false
 	usesRepeat = false
 	usesParseIntStr = false
+	usesIntDiv = false
 	defer func() { transpileEnv = nil }()
 	p := &Program{Env: env}
 	for _, st := range prog.Statements {
@@ -1882,6 +1908,7 @@ func convertBinary(b *parser.BinaryExpr) (Expr, error) {
 		switch op {
 		case "/":
 			if isIntExpr(left) && isIntExpr(right) {
+				usesIntDiv = true
 				return &IntDivExpr{Left: left, Right: right}, false
 			}
 			if isBigRatExpr(left) || isBigRatExpr(right) {
@@ -2253,6 +2280,11 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				return nil, fmt.Errorf("slice expects 3 args")
 			}
 			return &SliceExpr{X: args[0], Start: args[1], End: args[2]}, nil
+		} else if name == "split" {
+			if len(args) != 2 {
+				return nil, fmt.Errorf("split expects 2 args")
+			}
+			return &CallExpr{Func: "explode", Args: []Expr{args[1], args[0]}}, nil
 		} else if name == "indexOf" {
 			if len(args) != 2 {
 				return nil, fmt.Errorf("indexOf expects 2 args")

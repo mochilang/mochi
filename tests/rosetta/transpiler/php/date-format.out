@@ -1,0 +1,5 @@
+Deprecated: Implicit conversion from float 369.8383561643836 to int loses precision in /workspace/mochi/tests/rosetta/transpiler/php/date-format.php on line 52
+
+Deprecated: Implicit conversion from float 369.8383561643836 to int loses precision in /workspace/mochi/tests/rosetta/transpiler/php/date-format.php on line 52
+1969.8383561644-03-00
+Thursday, March 0, 1969.8383561644
