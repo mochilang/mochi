@@ -2841,6 +2841,17 @@ func isMapExpr(p *parser.PostfixExpr) bool {
 	return false
 }
 
+func isMapIntKey(p *parser.PostfixExpr) bool {
+	if p == nil || p.Target == nil || transpileEnv == nil {
+		return false
+	}
+	t := types.CheckExprType(&parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: &parser.PostfixExpr{Target: p.Target}}}}, transpileEnv)
+	if mt, ok := t.(types.MapType); ok {
+		return isIntType(mt.Key)
+	}
+	return false
+}
+
 func isIntType(t types.Type) bool {
 	switch t.(type) {
 	case types.IntType, types.Int64Type:
@@ -2989,7 +3000,7 @@ func convertBinary(b *parser.BinaryExpr) (Expr, error) {
 		case "intersect":
 			operands[i] = &IntersectExpr{Left: operands[i], Right: operands[i+1]}
 		default:
-			if ops[i] == "/" && isIntType(typesArr[i]) && isIntType(typesArr[i+1]) && !(isFloatLitExpr(operands[i]) || isFloatLitExpr(operands[i+1])) {
+			if ops[i] == "/" && (isIntType(typesArr[i]) && isIntType(typesArr[i+1]) || (isVarIntExpr(operands[i]) && isIntLitExpr(operands[i+1])) || (isIntLitExpr(operands[i]) && isIntLitExpr(operands[i+1]))) && !(isFloatLitExpr(operands[i]) || isFloatLitExpr(operands[i+1])) {
 				operands[i] = &IntDivExpr{Left: operands[i], Right: operands[i+1]}
 				typesArr[i] = types.IntType{}
 			} else {
@@ -3131,6 +3142,13 @@ func convertPostfix(p *parser.PostfixExpr) (expr Expr, err error) {
 				}
 				if !isMapExpr(p) {
 					if _, ok := literalString(idxExpr); !ok {
+						idx = &CallExpr{Func: "Math.trunc", Args: []Expr{idx}}
+					}
+				} else if isMapIntKey(p) {
+					if be, ok := idx.(*BinaryExpr); ok && be.Op == "*" {
+						be.Left = &CallExpr{Func: "Math.trunc", Args: []Expr{be.Left}}
+						idx = be
+					} else {
 						idx = &CallExpr{Func: "Math.trunc", Args: []Expr{idx}}
 					}
 				}
