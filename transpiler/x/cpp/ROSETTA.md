@@ -2,20 +2,20 @@
 
 This directory stores C++ code generated from Mochi programs in `tests/rosetta/x/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.cpp` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (36/284) - Last updated 2025-07-25 10:01 +0700:
+Checklist of programs that currently transpile and run (37/284) - Last updated 2025-07-25 17:17 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | 100-doors-2 | ✓ | 222.0µs | 13.12MB |
-| 2 | 100-doors-3 | ✓ |  |  |
-| 3 | 100-doors | ✓ |  |  |
-| 4 | 100-prisoners | ✓ |  |  |
-| 5 | 15-puzzle-game | ✓ |  |  |
-| 6 | 15-puzzle-solver | ✓ |  |  |
-| 7 | 2048 | ✓ |  |  |
-| 8 | 21-game | ✓ |  |  |
-| 9 | 24-game-solve |   |  |  |
+| 2 | 100-doors-3 | ✓ | 206.0µs | 12.62MB |
+| 3 | 100-doors | ✓ | 485.0µs | 12.42MB |
+| 4 | 100-prisoners | ✓ | 915.0ms | 12.78MB |
+| 5 | 15-puzzle-game | ✓ | 258.0µs | 14.07MB |
+| 6 | 15-puzzle-solver | ✓ | 141.0µs | 12.91MB |
+| 7 | 2048 | ✓ | 689.0µs | 13.73MB |
+| 8 | 21-game | ✓ | 356.0µs | 13.36MB |
+| 9 | 24-game-solve | ✓ | 4.0ms | 13.75MB |
 | 10 | 24-game | ✓ |  |  |
-| 11 | 4-rings-or-4-squares-puzzle | ✓ |  |  |
+| 11 | 4-rings-or-4-squares-puzzle |   |  |  |
 | 12 | 9-billion-names-of-god-the-integer | ✓ |  |  |
 | 13 | 99-bottles-of-beer-2 | ✓ |  |  |
 | 14 | 99-bottles-of-beer | ✓ |  |  |
@@ -44,7 +44,7 @@ Checklist of programs that currently transpile and run (36/284) - Last updated 2
 | 37 | adfgvx-cipher |   |  |  |
 | 38 | aks-test-for-primes | ✓ |  |  |
 | 39 | algebraic-data-types |   |  |  |
-| 40 | align-columns |   |  |  |
+| 40 | align-columns | ✓ |  |  |
 | 41 | aliquot-sequence-classifications |   |  |  |
 | 42 | almkvist-giullera-formula-for-pi |   |  |  |
 | 43 | almost-prime |   |  |  |
