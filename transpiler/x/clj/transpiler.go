@@ -176,6 +176,39 @@ type indentWriter struct {
 	indent int
 }
 
+func containsReturn(stmts []*parser.Statement) bool {
+	for _, st := range stmts {
+		switch {
+		case st == nil:
+			continue
+		case st.Return != nil:
+			return true
+		case st.Fun != nil:
+			if containsReturn(st.Fun.Body) {
+				return true
+			}
+		case st.If != nil:
+			if containsReturn(st.If.Then) || containsReturn(st.If.Else) {
+				return true
+			}
+			for it := st.If.ElseIf; it != nil; it = it.ElseIf {
+				if containsReturn(it.Then) || containsReturn(it.Else) {
+					return true
+				}
+			}
+		case st.While != nil:
+			if containsReturn(st.While.Body) {
+				return true
+			}
+		case st.For != nil:
+			if containsReturn(st.For.Body) {
+				return true
+			}
+		}
+	}
+	return false
+}
+
 func (iw *indentWriter) Write(p []byte) (int, error) { return iw.w.Write(p) }
 
 func (iw *indentWriter) writeIndent() {
@@ -853,7 +886,7 @@ func transpileFunStmt(f *parser.FunStmt) (Node, error) {
 	}
 	funParamsStack = append(funParamsStack, names)
 	body := []Node{}
-	hasReturn := false
+	hasReturn := containsReturn(f.Body)
 	for i := 0; i < len(f.Body); i++ {
 		st := f.Body[i]
 		// Pattern: if ... return X; return Y
@@ -874,9 +907,6 @@ func transpileFunStmt(f *parser.FunStmt) (Node, error) {
 				body = append(body, &List{Elems: []Node{Symbol("if"), cond, thenExpr, elseExpr}})
 				break
 			}
-		}
-		if st.Return != nil {
-			hasReturn = true
 		}
 		n, err := transpileStmt(st)
 		if err != nil {
@@ -1007,8 +1037,11 @@ func isStringNode(n Node) bool {
 		return true
 	case *List:
 		if len(t.Elems) > 0 {
-			if sym, ok := t.Elems[0].(Symbol); ok && sym == "str" {
-				return true
+			if sym, ok := t.Elems[0].(Symbol); ok {
+				switch sym {
+				case "str", "subs", "clojure.string/join", "fields", "join", "numberName", "pluralizeFirst", "slur":
+					return true
+				}
 			}
 		}
 	case Symbol:
