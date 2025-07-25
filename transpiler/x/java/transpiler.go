@@ -350,6 +350,14 @@ func inferType(e Expr) string {
 		}
 		if len(ex.Elems) > 0 {
 			t := inferType(ex.Elems[0])
+			if t == "" {
+				for _, el := range ex.Elems[1:] {
+					t = inferType(el)
+					if t != "" {
+						break
+					}
+				}
+			}
 			if t != "" {
 				if strings.HasSuffix(t, "[]") {
 					return t + "[]"
@@ -1239,7 +1247,9 @@ type MapLit struct {
 
 func (m *MapLit) emit(w io.Writer) {
 	valType := "Object"
-	if len(m.Values) > 0 {
+	if m.ValueType != "" {
+		valType = javaBoxType(m.ValueType)
+	} else if len(m.Values) > 0 {
 		t := inferType(m.Values[0])
 		same := true
 		for _, v := range m.Values[1:] {
@@ -1250,11 +1260,7 @@ func (m *MapLit) emit(w io.Writer) {
 		}
 		if same {
 			valType = javaBoxType(t)
-		} else if m.ValueType != "" {
-			valType = javaBoxType(m.ValueType)
 		}
-	} else if m.ValueType != "" {
-		valType = javaBoxType(m.ValueType)
 	}
 	keyType := "String"
 	if m.KeyType != "" {
@@ -2518,6 +2524,9 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 			if ret == "" {
 				ret = inferReturnType(body)
 			}
+			if vt := mapValueType(ret); vt != "" {
+				setReturnMapValueType(body, vt)
+			}
 			for _, p := range params {
 				if javaType(p.Type) == "" {
 					stmt := &AssignStmt{Name: p.Name, Expr: &CallExpr{Func: "new java.util.LinkedHashMap", Args: []Expr{&VarExpr{Name: p.Name}}}, Type: p.Type}
@@ -2667,8 +2676,19 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 					}
 				}
 			}
-			if l, ok := e.(*ListLit); ok && l.ElemType == "" && strings.HasSuffix(t, "[]") {
-				l.ElemType = strings.TrimSuffix(t, "[]")
+			if l, ok := e.(*ListLit); ok && strings.HasSuffix(t, "[]") {
+				elemT := strings.TrimSuffix(t, "[]")
+				if l.ElemType == "" {
+					l.ElemType = elemT
+				}
+				if strings.HasSuffix(elemT, "[]") {
+					inner := strings.TrimSuffix(elemT, "[]")
+					for _, el := range l.Elems {
+						if ll, ok2 := el.(*ListLit); ok2 && ll.ElemType == "" {
+							ll.ElemType = inner
+						}
+					}
+				}
 			}
 			return &LetStmt{Name: s.Let.Name, Type: t, Expr: e}, nil
 		}
@@ -3094,6 +3114,15 @@ func compileStmts(list []*parser.Statement) ([]Stmt, error) {
 			}
 		}
 	}
+	if len(out) >= 2 {
+		if _, ok := out[len(out)-1].(*ReturnStmt); ok {
+			if w, ok2 := out[len(out)-2].(*WhileStmt); ok2 {
+				if b, ok3 := w.Cond.(*BoolLit); ok3 && b.Value {
+					out = out[:len(out)-1]
+				}
+			}
+		}
+	}
 	return out, nil
 }
 
@@ -3166,6 +3195,16 @@ func compileExpr(e *parser.Expr) (Expr, error) {
 			}
 			fallthrough
 		case "-", "*", "/", "%", "==", "!=", "<", "<=", ">", ">=", "&&", "||":
+			if op.Op == "%" {
+				lt := inferType(expr)
+				rt := inferType(r)
+				if lt != "double" && lt != "float" && rt != "double" && rt != "float" && lt != "bigint" && rt != "bigint" {
+					expr = &CallExpr{Func: "Math.floorMod", Args: []Expr{expr, r}}
+				} else {
+					expr = &BinaryExpr{Left: expr, Op: op.Op, Right: r}
+				}
+				continue
+			}
 			expr = &BinaryExpr{Left: expr, Op: op.Op, Right: r}
 		case "in":
 			if isStringExpr(r) {
@@ -4696,6 +4735,24 @@ func substituteVars(e Expr, vars map[string]Expr) Expr {
 		return &ListLit{ElemType: ex.ElemType, Elems: elems}
 	default:
 		return ex
+	}
+}
+
+func setReturnMapValueType(stmts []Stmt, vt string) {
+	for _, st := range stmts {
+		switch s := st.(type) {
+		case *ReturnStmt:
+			if ml, ok := s.Expr.(*MapLit); ok {
+				ml.ValueType = vt
+			}
+		case *IfStmt:
+			setReturnMapValueType(s.Then, vt)
+			setReturnMapValueType(s.Else, vt)
+		case *WhileStmt:
+			setReturnMapValueType(s.Body, vt)
+		case *ForRangeStmt:
+			setReturnMapValueType(s.Body, vt)
+		}
 	}
 }
 
