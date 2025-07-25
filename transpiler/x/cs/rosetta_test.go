@@ -91,8 +91,12 @@ func TestCSTranspiler_Rosetta_Golden(t *testing.T) {
 		if err := os.WriteFile(file, code, 0644); err != nil {
 			return nil, err
 		}
-		cmd := exec.Command("dotnet", "run", "--project", proj)
-		cmd.Env = append(os.Environ(), "DOTNET_NOLOGO=1", "DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1", "MOCHI_NOW_SEED=1")
+               cmd := exec.Command("dotnet", "run", "--project", proj)
+               envs := []string{"DOTNET_NOLOGO=1", "DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1"}
+               if !bench {
+                       envs = append(envs, "MOCHI_NOW_SEED=1")
+               }
+               cmd.Env = append(os.Environ(), envs...)
 		inPath := filepath.Join(srcDir, base+".in")
 		if data, err := os.ReadFile(inPath); err == nil {
 			env := "MOCHI_INPUT_FILE=" + inPath
@@ -158,24 +162,26 @@ func updateRosetta() {
 		dur := ""
 		mem := ""
 		outPath := filepath.Join(outDir, base+".out")
-		if data, err := os.ReadFile(outPath); err == nil {
-			var res struct {
-				Duration int64 `json:"duration_us"`
-				Memory   int64 `json:"memory_bytes"`
-			}
-			if json.Unmarshal(data, &res) == nil {
-				if res.Duration > 0 {
-					dur = humanDur(res.Duration)
-				}
-				if res.Memory > 0 {
-					mem = humanBytes(res.Memory)
-				}
-			}
-			if _, err2 := os.Stat(filepath.Join(outDir, base+".error")); os.IsNotExist(err2) {
-				compiled++
-				mark = "[x]"
-			}
-		}
+               if data, err := os.ReadFile(outPath); err == nil {
+                       var res struct {
+                               Duration int64 `json:"duration_us"`
+                               Memory   int64 `json:"memory_bytes"`
+                       }
+                       if idx := bytes.LastIndexByte(data, '{'); idx >= 0 {
+                               if json.Unmarshal(data[idx:], &res) == nil {
+                                       if res.Duration > 0 {
+                                               dur = humanDur(res.Duration)
+                                       }
+                                       if res.Memory > 0 {
+                                               mem = humanBytes(res.Memory)
+                                       }
+                               }
+                       }
+                       if _, err2 := os.Stat(filepath.Join(outDir, base+".error")); os.IsNotExist(err2) {
+                               compiled++
+                               mark = "[x]"
+                       }
+               }
 		rows = append(rows, fmt.Sprintf("| %d | %s | %s | %s | %s |", i+1, base, mark, dur, mem))
 	}
 

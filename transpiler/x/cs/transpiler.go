@@ -288,7 +288,7 @@ func (b *BenchStmt) emit(w io.Writer) {
 	}
 	fmt.Fprint(w, "    var __end = _now();\n")
 	fmt.Fprint(w, "    var __memEnd = _mem();\n")
-	fmt.Fprint(w, "    var __dur = (__end - __start) / 1000;\n")
+       fmt.Fprint(w, "    var __dur = (__end - __start);\n")
 	fmt.Fprint(w, "    var __memDiff = __memEnd - __memStart;\n")
 	fmt.Fprintf(w, "    Console.WriteLine(JsonSerializer.Serialize(new SortedDictionary<string, object>{{\"name\", \"%s\"}, {\"duration_us\", __dur}, {\"memory_bytes\", __memDiff}}, new JsonSerializerOptions{ WriteIndented = true }));\n", b.Name)
 	fmt.Fprint(w, "}")
@@ -2812,10 +2812,10 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			args[i] = ex
 		}
 		name := p.Call.Func
-		if name == "now" && len(args) == 0 {
-			usesNow = true
-			return &RawExpr{Code: "_now()", Type: "int"}, nil
-		}
+               if name == "now" && len(args) == 0 {
+                       usesNow = true
+                       return &RawExpr{Code: "_now()", Type: "long"}, nil
+               }
 		if sig, ok := varTypes[name]; ok && strings.HasPrefix(sig, "fn/") {
 			n, err := strconv.Atoi(strings.TrimPrefix(sig, "fn/"))
 			if err == nil && len(args) < n {
@@ -3597,7 +3597,7 @@ func Emit(prog *Program, bench bool) []byte {
 	if usesNow {
 		buf.WriteString("\tstatic bool seededNow = false;\n")
 		buf.WriteString("\tstatic long nowSeed = 0;\n")
-		buf.WriteString("\tstatic int _now() {\n")
+               buf.WriteString("\tstatic long _now() {\n")
 		buf.WriteString("\t\tif (!seededNow) {\n")
 		buf.WriteString("\t\t\tvar s = Environment.GetEnvironmentVariable(\"MOCHI_NOW_SEED\");\n")
 		buf.WriteString("\t\t\tif (long.TryParse(s, out var v)) {\n")
@@ -3606,11 +3606,11 @@ func Emit(prog *Program, bench bool) []byte {
 		buf.WriteString("\t\t\t}\n")
 		buf.WriteString("\t\t}\n")
 		buf.WriteString("\t\tif (seededNow) {\n")
-		buf.WriteString("\t\t\tnowSeed = (nowSeed*1664525 + 1013904223) % 2147483647;\n")
-		buf.WriteString("\t\t\treturn (int)nowSeed;\n")
+               buf.WriteString("\t\t\tnowSeed = (nowSeed*1664525 + 1013904223) % 9223372036854775783L;\n")
+               buf.WriteString("\t\t\treturn nowSeed;\n")
 		buf.WriteString("\t\t}\n")
-		buf.WriteString("\t\treturn (int)(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() % int.MaxValue);\n")
-		buf.WriteString("\t}\n")
+               buf.WriteString("\t\treturn DateTime.UtcNow.Ticks / 100;\n")
+               buf.WriteString("\t}\n")
 	}
 	if usesMem {
 		buf.WriteString("\tstatic long _mem() {\n")
