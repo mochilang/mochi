@@ -1,0 +1,156 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun absi(x: int): int {
+func absi (regs=4)
+  // if x < 0 { return -x }
+  Const        r1, 0
+  Less         r2, r0, r1
+  JumpIfFalse  r2, L0
+  Neg          r3, r0
+  Return       r3
+L0:
+  // return x
+  Return       r0
+
+  // fun bresenham(x0: int, y0: int, x1: int, y1: int): list<Point> {
+func bresenham (regs=45)
+  // var dx = absi(x1 - x0)
+  Sub          r5, r2, r0
+  Move         r4, r5
+  Call         r6, absi, r4
+  Move         r7, r6
+  // var dy = absi(y1 - y0)
+  Sub          r9, r3, r1
+  Move         r8, r9
+  Call         r10, absi, r8
+  Move         r11, r10
+  // var sx = -1
+  Const        r12, 1
+  NegInt       r13, r12
+  Move         r14, r13
+  // if x0 < x1 { sx = 1 }
+  Less         r15, r0, r2
+  JumpIfFalse  r15, L0
+  Const        r12, 1
+  Move         r14, r12
+L0:
+  // var sy = -1
+  Const        r12, 1
+  NegInt       r16, r12
+  Move         r17, r16
+  // if y0 < y1 { sy = 1 }
+  Less         r18, r1, r3
+  JumpIfFalse  r18, L1
+  Const        r12, 1
+  Move         r17, r12
+L1:
+  // var err = dx - dy
+  Sub          r19, r7, r11
+  Move         r20, r19
+  // var pts: list<Point> = []
+  Const        r21, []
+  Move         r22, r21
+L6:
+  // while true {
+  Const        r23, true
+  // pts = append(pts, Point{x: x0, y: y0})
+  Const        r24, "__name"
+  Const        r25, "Point"
+  Const        r26, "x"
+  Move         r27, r0
+  Const        r28, "y"
+  Move         r29, r1
+  MakeMap      r30, 3, r24
+  Append       r31, r22, r30
+  Move         r22, r31
+  // if x0 == x1 && y0 == y1 {
+  Equal        r32, r0, r2
+  Equal        r33, r1, r3
+  Move         r34, r32
+  JumpIfFalse  r34, L2
+  Move         r34, r33
+L2:
+  JumpIfFalse  r34, L3
+  // break
+  Jump         L4
+L3:
+  // var e2 = 2 * err
+  Const        r35, 2
+  Mul          r36, r35, r20
+  Move         r37, r36
+  // if e2 > (-dy) {
+  Neg          r38, r11
+  Less         r39, r38, r37
+  JumpIfFalse  r39, L5
+  // err = err - dy
+  Sub          r40, r20, r11
+  Move         r20, r40
+  // x0 = x0 + sx
+  Add          r41, r0, r14
+  Move         r0, r41
+L5:
+  // if e2 < dx {
+  Less         r42, r37, r7
+  JumpIfFalse  r42, L6
+  // err = err + dx
+  Add          r43, r20, r7
+  Move         r20, r43
+  // y0 = y0 + sy
+  Add          r44, r1, r17
+  Move         r1, r44
+  // while true {
+  Jump         L6
+L4:
+  // return pts
+  Return       r22
+
+  // fun main() {
+func main (regs=29)
+  // let pts = bresenham(0, 0, 6, 4)
+  Const        r4, 0
+  Move         r0, r4
+  Const        r4, 0
+  Move         r1, r4
+  Const        r5, 6
+  Move         r2, r5
+  Const        r6, 4
+  Move         r3, r6
+  Call         r7, bresenham, r0, r1, r2, r3
+  Move         r8, r7
+  // var i = 0
+  Const        r4, 0
+  Move         r9, r4
+L1:
+  // while i < len(pts) {
+  Len          r10, r8
+  LessInt      r11, r9, r10
+  JumpIfFalse  r11, L0
+  // let p = pts[i]
+  Index        r12, r8, r9
+  Move         r13, r12
+  // print("(" + str(p.x) + "," + str(p.y) + ")")
+  Const        r14, "("
+  Const        r15, "x"
+  Index        r16, r13, r15
+  Str          r17, r16
+  Add          r18, r14, r17
+  Const        r19, ","
+  Add          r20, r18, r19
+  Const        r21, "y"
+  Index        r22, r13, r21
+  Str          r23, r22
+  Add          r24, r20, r23
+  Const        r25, ")"
+  Add          r26, r24, r25
+  Print        r26
+  // i = i + 1
+  Const        r27, 1
+  AddInt       r28, r9, r27
+  Move         r9, r28
+  // while i < len(pts) {
+  Jump         L1
+L0:
+  Return       r0
