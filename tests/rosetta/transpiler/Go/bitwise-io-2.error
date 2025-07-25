@@ -1,0 +1,3 @@
+exit status 1
+# command-line-arguments
+../../../tests/rosetta/transpiler/Go/bitwise-io-2.go:250:10: invalid operation: (48 + _parseIntStr(ch, 10)) (value of type int) is not an interface
