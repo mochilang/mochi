@@ -1,3 +1,8 @@
 There are 15043 deficient numbers between 1 and 20000
 There are 4953 abundant numbers  between 1 and 20000
 There are 4 perfect numbers between 1 and 20000
+{
+  "duration_us": 29816518,
+  "memory_bytes": 96,
+  "name": "main"
+}

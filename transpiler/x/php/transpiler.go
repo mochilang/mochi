@@ -1525,19 +1525,46 @@ func (s *StringLit) emit(w io.Writer) {
 	// Escape backslashes and single quotes.
 	esc := strings.ReplaceAll(s.Value, "\\", "\\\\")
 	esc = strings.ReplaceAll(esc, "'", "\\'")
+	esc = strings.ReplaceAll(esc, "\n", "\\n")
+	esc = strings.ReplaceAll(esc, "\t", "\\t")
 	io.WriteString(w, "'"+esc+"'")
 }
 
 func (b *BinaryExpr) emit(w io.Writer) {
 	if b.Op == "+" {
+		lp := precedence(b.Op)
 		if isStringExpr(b.Left) || isStringExpr(b.Right) {
-			b.Left.emit(w)
+			if lb, ok := b.Left.(*BinaryExpr); ok && precedence(lb.Op) > lp {
+				io.WriteString(w, "(")
+				lb.emit(w)
+				io.WriteString(w, ")")
+			} else {
+				b.Left.emit(w)
+			}
 			fmt.Fprint(w, " . ")
-			b.Right.emit(w)
+			if rb, ok := b.Right.(*BinaryExpr); ok && precedence(rb.Op) >= lp {
+				io.WriteString(w, "(")
+				rb.emit(w)
+				io.WriteString(w, ")")
+			} else {
+				b.Right.emit(w)
+			}
 		} else {
-			b.Left.emit(w)
+			if lb, ok := b.Left.(*BinaryExpr); ok && precedence(lb.Op) > lp {
+				io.WriteString(w, "(")
+				lb.emit(w)
+				io.WriteString(w, ")")
+			} else {
+				b.Left.emit(w)
+			}
 			fmt.Fprint(w, " + ")
-			b.Right.emit(w)
+			if rb, ok := b.Right.(*BinaryExpr); ok && precedence(rb.Op) >= lp {
+				io.WriteString(w, "(")
+				rb.emit(w)
+				io.WriteString(w, ")")
+			} else {
+				b.Right.emit(w)
+			}
 		}
 		return
 	} else if b.Op == "in" {
@@ -1601,9 +1628,43 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		fmt.Fprint(w, "))")
 		return
 	}
-	b.Left.emit(w)
+	lp := precedence(b.Op)
+	if lb, ok := b.Left.(*BinaryExpr); ok && precedence(lb.Op) > lp {
+		io.WriteString(w, "(")
+		lb.emit(w)
+		io.WriteString(w, ")")
+	} else {
+		b.Left.emit(w)
+	}
 	fmt.Fprintf(w, " %s ", b.Op)
-	b.Right.emit(w)
+	if rb, ok := b.Right.(*BinaryExpr); ok && precedence(rb.Op) >= lp {
+		io.WriteString(w, "(")
+		rb.emit(w)
+		io.WriteString(w, ")")
+	} else {
+		b.Right.emit(w)
+	}
+}
+
+func precedence(op string) int {
+	switch op {
+	case "*", "/", "%":
+		return 0
+	case "+", "-":
+		return 1
+	case "<", "<=", ">", ">=":
+		return 2
+	case "==", "!=", "in":
+		return 3
+	case "&&":
+		return 4
+	case "||":
+		return 5
+	case "union", "union_all", "except", "intersect":
+		return 6
+	default:
+		return 7
+	}
 }
 
 func (g *GroupExpr) emit(w io.Writer) {

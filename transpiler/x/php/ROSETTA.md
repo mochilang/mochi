@@ -2,36 +2,36 @@
 
 Generated PHP code from Mochi Rosetta tasks lives in `tests/rosetta/transpiler/php`.
 
-Last updated: 2025-07-25 10:07 +0700
+Last updated: 2025-07-25 19:26 +0700
 
-## Checklist (263/284)
+## Checklist (264/284)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 142µs | 136 B |
-| 2 | 100-doors-3 | ✓ | 51µs | 224 B |
-| 3 | 100-doors | ✓ | 167µs | 2.7 KB |
-| 4 | 100-prisoners | ✓ | 245.58ms | 96 B |
-| 5 | 15-puzzle-game | ✓ | 164µs | 8.6 KB |
-| 6 | 15-puzzle-solver | ✓ | 82µs | 1.2 KB |
+| 2 | 100-doors-3 | ✓ | 571.223ms | 224 B |
+| 3 | 100-doors | ✓ | 571.223ms | 2.7 KB |
+| 4 | 100-prisoners | ✓ |  |  |
+| 5 | 15-puzzle-game | ✓ |  |  |
+| 6 | 15-puzzle-solver | ✓ | 571.223ms | 1.2 KB |
 | 7 | 2048 | ✓ |  |  |
-| 8 | 21-game | ✓ | 88µs | 8.1 KB |
-| 9 | 24-game-solve | ✓ | 17.831ms | 320 B |
-| 10 | 24-game | ✓ | 93µs | 8.1 KB |
-| 11 | 4-rings-or-4-squares-puzzle | ✓ | 25.43ms | 675.6 KB |
-| 12 | 9-billion-names-of-god-the-integer |   |  |  |
-| 13 | 99-bottles-of-beer-2 | ✓ |  |  |
-| 14 | 99-bottles-of-beer | ✓ |  |  |
-| 15 | DNS-query | ✓ |  |  |
-| 16 | a+b | ✓ |  |  |
-| 17 | abbreviations-automatic | ✓ |  |  |
-| 18 | abbreviations-easy | ✓ |  |  |
-| 19 | abbreviations-simple | ✓ |  |  |
-| 20 | abc-problem | ✓ |  |  |
-| 21 | abelian-sandpile-model-identity | ✓ |  |  |
-| 22 | abelian-sandpile-model | ✓ |  |  |
-| 23 | abstract-type | ✓ |  |  |
-| 24 | abundant-deficient-and-perfect-number-classifications | ✓ |  |  |
-| 25 | abundant-odd-numbers | ✓ |  |  |
+| 8 | 21-game | ✓ |  |  |
+| 9 | 24-game-solve | ✓ |  |  |
+| 10 | 24-game | ✓ |  |  |
+| 11 | 4-rings-or-4-squares-puzzle | ✓ |  |  |
+| 12 | 9-billion-names-of-god-the-integer | ✓ |  |  |
+| 13 | 99-bottles-of-beer-2 | ✓ | 5.576ms | 96 B |
+| 14 | 99-bottles-of-beer | ✓ | 439µs | 96 B |
+| 15 | DNS-query | ✓ | 308.932ms | 568 B |
+| 16 | a+b | ✓ | 56µs | 8.1 KB |
+| 17 | abbreviations-automatic | ✓ | 2.198ms | 96 B |
+| 18 | abbreviations-easy | ✓ | 323µs | 96 B |
+| 19 | abbreviations-simple | ✓ | 369µs | 96 B |
+| 20 | abc-problem | ✓ | 289µs | 96 B |
+| 21 | abelian-sandpile-model-identity | ✓ | 135µs | 2.2 KB |
+| 22 | abelian-sandpile-model | ✓ | 181µs | 128 B |
+| 23 | abstract-type | ✓ | 75µs | 96 B |
+| 24 | abundant-deficient-and-perfect-number-classifications | ✓ | 29.816518s | 96 B |
+| 25 | abundant-odd-numbers | ✓ | 3.612025s | 96 B |
 | 26 | accumulator-factory | ✓ |  |  |
 | 27 | achilles-numbers | ✓ |  |  |
 | 28 | ackermann-function-2 | ✓ |  |  |
