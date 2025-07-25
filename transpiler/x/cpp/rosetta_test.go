@@ -53,7 +53,7 @@ func TestCPPTranspiler_Rosetta_Golden(t *testing.T) {
 	root := repoRoot(t)
 	outDir := filepath.Join(root, "tests", "rosetta", "transpiler", "CPP")
 	os.MkdirAll(outDir, 0o755)
-	bench := os.Getenv("MOCHI_BENCHMARK") == "true"
+	bench := os.Getenv("MOCHI_BENCHMARK") != ""
 
 	names, err := readIndex(filepath.Join(root, "tests", "rosetta", "x", "Mochi"))
 	if err != nil {
@@ -193,13 +193,13 @@ func updateRosettaReadme() {
 	rows = append(rows, "| ---: | --- | :---: | ---: | ---: |")
 	for i, f := range names {
 		name := strings.TrimSuffix(f, ".mochi")
-		status := ""
+		status := " "
 		dur := ""
 		mem := ""
 		if _, err := os.Stat(filepath.Join(outDir, name+".error")); err == nil {
-			status = "error"
+			// leave unchecked
 		} else if _, err := os.Stat(filepath.Join(outDir, name+".out")); err == nil {
-			status = "ok"
+			status = "✓"
 			compiled++
 		}
 		if data, err := os.ReadFile(filepath.Join(outDir, name+".bench")); err == nil {
