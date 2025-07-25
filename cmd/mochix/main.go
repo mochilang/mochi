@@ -858,7 +858,7 @@ func transpileProgram(lang string, env *types.Env, prog *parser.Program, root, s
 		}
 		return buf.Bytes(), nil
 	case "rust":
-		p, err := rs.Transpile(prog, env)
+		p, err := rs.Transpile(prog, env, false)
 		if err != nil {
 			return nil, err
 		}

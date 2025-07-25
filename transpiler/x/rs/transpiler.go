@@ -1666,7 +1666,7 @@ func (fs *ForStmt) emit(w io.Writer) {}
 
 // Transpile converts a Mochi AST to a simplified Rust AST. Only a very small
 // subset of Mochi is supported which is sufficient for tests.
-func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
+func Transpile(p *parser.Program, env *types.Env, benchMain bool) (*Program, error) {
 	usesHashMap = false
 	usesGroup = false
 	useMath = false
@@ -1722,6 +1722,9 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 				unsafeFuncs[fd.Name] = true
 			}
 		}
+	}
+	if benchMain {
+		prog.Stmts = []Stmt{wrapBench("main", prog.Stmts)}
 	}
 	prog.Types = typeDecls
 	_ = env // reserved for future use
@@ -2210,7 +2213,6 @@ func compileBenchBlock(b *parser.BenchBlock) (Stmt, error) {
 	localVarStack = append(localVarStack, map[string]bool{})
 	defer func() { localVarStack = localVarStack[:len(localVarStack)-1] }()
 
-	setSeed := &ExprStmt{Expr: &CallExpr{Func: "std::env::set_var", Args: []Expr{&StringLit{Value: "MOCHI_NOW_SEED"}, &StringLit{Value: "1"}}}}
 	startDecl := &VarDecl{Name: "_start", Expr: &NowExpr{}, Type: "i64"}
 	body := make([]Stmt, 0, len(b.Body))
 	for _, st := range b.Body {
@@ -2228,10 +2230,26 @@ func compileBenchBlock(b *parser.BenchBlock) (Stmt, error) {
 	memDecl := &VarDecl{Name: "memory_bytes", Expr: &NumberLit{Value: "0"}, Type: "i64"}
 	print := &PrintExpr{Fmt: "{{\n  \"duration_us\": {},\n  \"memory_bytes\": {},\n  \"name\": \"{}\"\n}}", Args: []Expr{&NameRef{Name: "duration_us"}, &NameRef{Name: "memory_bytes"}, &StringLit{Value: b.Name}}, Trim: false}
 
-	stmts := []Stmt{setSeed, startDecl}
+	stmts := []Stmt{startDecl}
 	stmts = append(stmts, body...)
 	stmts = append(stmts, endDecl, durDecl, memDecl, print)
 	return &MultiStmt{Stmts: stmts}, nil
+}
+
+func wrapBench(name string, body []Stmt) Stmt {
+	useTime = true
+	startMem := &VarDecl{Name: "_start_mem", Expr: &CallExpr{Func: "_mem"}, Type: "i64"}
+	startDecl := &VarDecl{Name: "_start", Expr: &NowExpr{}, Type: "i64"}
+	endDecl := &VarDecl{Name: "_end", Expr: &NowExpr{}, Type: "i64"}
+	durExpr := &BinaryExpr{Left: &BinaryExpr{Left: &NameRef{Name: "_end"}, Op: "-", Right: &NameRef{Name: "_start"}}, Op: "/", Right: &NumberLit{Value: "1000"}}
+	durDecl := &VarDecl{Name: "duration_us", Expr: durExpr, Type: "i64"}
+	endMem := &VarDecl{Name: "_end_mem", Expr: &CallExpr{Func: "_mem"}, Type: "i64"}
+	memDecl := &VarDecl{Name: "memory_bytes", Expr: &NameRef{Name: "_end_mem"}, Type: "i64"}
+	print := &PrintExpr{Fmt: "{{\n  \"duration_us\": {},\n  \"memory_bytes\": {},\n  \"name\": \"{}\"\n}}", Args: []Expr{&NameRef{Name: "duration_us"}, &NameRef{Name: "memory_bytes"}, &StringLit{Value: name}}, Trim: false}
+	stmts := []Stmt{startMem, startDecl}
+	stmts = append(stmts, body...)
+	stmts = append(stmts, endDecl, endMem, durDecl, memDecl, print)
+	return &MultiStmt{Stmts: stmts}
 }
 
 func compileUpdateStmt(u *parser.UpdateStmt) (Stmt, error) {
@@ -4125,6 +4143,20 @@ func Emit(prog *Program) []byte {
 		buf.WriteString("    } else {\n")
 		buf.WriteString("        SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_nanos() as i64\n")
 		buf.WriteString("    }\n")
+		buf.WriteString("}\n")
+		buf.WriteString("fn _mem() -> i64 {\n")
+		buf.WriteString("    if let Ok(mut f) = std::fs::File::open(\"/proc/self/statm\") {\n")
+		buf.WriteString("        let mut s = String::new();\n")
+		buf.WriteString("        use std::io::Read;\n")
+		buf.WriteString("        if f.read_to_string(&mut s).is_ok() {\n")
+		buf.WriteString("            if let Some(p) = s.split_whitespace().next() {\n")
+		buf.WriteString("                if let Ok(v) = p.parse::<i64>() {\n")
+		buf.WriteString("                    return v * 4096;\n")
+		buf.WriteString("                }\n")
+		buf.WriteString("            }\n")
+		buf.WriteString("        }\n")
+		buf.WriteString("    }\n")
+		buf.WriteString("    0\n")
 		buf.WriteString("}\n")
 	}
 	if prog.UseInput {

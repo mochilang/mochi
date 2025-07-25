@@ -42,7 +42,7 @@ func TestRSTranspiler_VMValid_Golden(t *testing.T) {
 			_ = os.WriteFile(errPath, []byte("type: "+errs[0].Error()), 0o644)
 			return nil, errs[0]
 		}
-		progAST, err := rs.Transpile(prog, env)
+		progAST, err := rs.Transpile(prog, env, false)
 		if err != nil {
 			_ = os.WriteFile(errPath, []byte("transpile: "+err.Error()), 0o644)
 			return nil, err
