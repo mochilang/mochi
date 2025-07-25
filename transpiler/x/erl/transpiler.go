@@ -2556,7 +2556,7 @@ func extractSaveExpr(e *parser.Expr) *parser.SaveExpr {
 }
 
 // Transpile converts a subset of Mochi to an Erlang AST.
-func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
+func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, error) {
 	base := filepath.Dir(prog.Pos.Filename)
 	ctx := newContext(base)
 	useNow = false
@@ -2580,7 +2580,8 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 		}
 		p.Stmts = append(p.Stmts, stmts...)
 	}
-	if benchMain {
+	bm := bench || benchMain
+	if bm {
 		useNow = true
 		p.Stmts = []Stmt{&BenchStmt{Name: "main", Body: p.Stmts}}
 	}

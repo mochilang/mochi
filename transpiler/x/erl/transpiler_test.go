@@ -59,8 +59,7 @@ func runGolden(t *testing.T, name string) {
 		t.Fatalf("type: %v", errs[0])
 	}
 	bench := os.Getenv("MOCHI_BENCHMARK") == "true" || os.Getenv("MOCHI_BENCHMARK") == "1"
-	erl.SetBenchMain(bench)
-	ast, err := erl.Transpile(prog, env)
+	ast, err := erl.Transpile(prog, env, bench)
 	if err != nil {
 		t.Fatalf("transpile: %v", err)
 	}
