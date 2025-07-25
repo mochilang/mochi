@@ -2,9 +2,9 @@
 
 Generated PHP code from Mochi Rosetta tasks lives in `tests/rosetta/transpiler/php`.
 
-Last updated: 2025-07-25 21:15 +0700
+Last updated: 2025-07-25 22:09 +0700
 
-## Checklist (265/284)
+## Checklist (266/284)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 142µs | 136 B |
@@ -138,11 +138,11 @@ Last updated: 2025-07-25 21:15 +0700
 | 129 | bitwise-io-2 | ✓ | 240µs | 192 B |
 | 130 | bitwise-operations | ✓ | 138µs | 96 B |
 | 131 | blum-integer | ✓ | 181µs | 96 B |
-| 132 | boolean-values | ✓ |  |  |
-| 133 | box-the-compass | ✓ |  |  |
-| 134 | boyer-moore-string-search | ✓ |  |  |
-| 135 | brazilian-numbers | ✓ |  |  |
-| 136 | break-oo-privacy | ✓ |  |  |
+| 132 | boolean-values | ✓ | 46µs | 96 B |
+| 133 | box-the-compass | ✓ | 127µs | 288 B |
+| 134 | boyer-moore-string-search | ✓ | 98µs | 96 B |
+| 135 | brazilian-numbers | ✓ | 2m41.763631s | 96 B |
+| 136 | break-oo-privacy | ✓ | 62µs | 504 B |
 | 137 | brilliant-numbers |   |  |  |
 | 138 | brownian-tree | ✓ |  |  |
 | 139 | bulls-and-cows-player | ✓ |  |  |
@@ -168,7 +168,7 @@ Last updated: 2025-07-25 21:15 +0700
 | 159 | call-a-function-7 | ✓ |  |  |
 | 160 | call-a-function-8 | ✓ |  |  |
 | 161 | call-a-function-9 | ✓ |  |  |
-| 162 | call-an-object-method-1 |   |  |  |
+| 162 | call-an-object-method-1 | ✓ | 1µs | 128 B |
 | 163 | call-an-object-method-2 | ✓ |  |  |
 | 164 | call-an-object-method-3 |   |  |  |
 | 165 | call-an-object-method |   |  |  |
