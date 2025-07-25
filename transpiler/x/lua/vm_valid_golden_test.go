@@ -56,6 +56,13 @@ func TestLuaTranspiler_VMValid_Golden(t *testing.T) {
 		cmd := exec.Command("lua", codePath)
 		runEnv := append(os.Environ(), "MOCHI_NOW_SEED=1")
 		if bench {
+			// allow real timing when benchmarking
+			for i, v := range runEnv {
+				if strings.HasPrefix(v, "MOCHI_NOW_SEED=") {
+					runEnv = append(runEnv[:i], runEnv[i+1:]...)
+					break
+				}
+			}
 			runEnv = append(runEnv, "MOCHI_BENCHMARK=1")
 		}
 		cmd.Env = runEnv

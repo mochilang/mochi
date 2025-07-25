@@ -50,30 +50,32 @@ func readIndex(path string) ([]string, error) {
 	return names, nil
 }
 
-func runCase(src, outDir string) ([]byte, error) {
+func runCase(src, outDir string) ([]byte, bool, error) {
 	base := strings.TrimSuffix(filepath.Base(src), ".mochi")
 	codePath := filepath.Join(outDir, base+".lua")
 	errPath := filepath.Join(outDir, base+".error")
+	benchPath := filepath.Join(outDir, base+".bench")
 
 	prog, err := parser.Parse(src)
 	if err != nil {
 		_ = os.WriteFile(errPath, []byte(err.Error()), 0o644)
-		return nil, err
+		return nil, false, err
 	}
 	env := types.NewEnv(nil)
 	if errs := types.Check(prog, env); len(errs) > 0 {
 		_ = os.WriteFile(errPath, []byte(errs[0].Error()), 0o644)
-		return nil, errs[0]
+		return nil, false, errs[0]
 	}
-	bench := os.Getenv("MOCHI_BENCHMARK") != ""
+	bench := os.Getenv("MOCHI_BENCHMARK") == "true" || os.Getenv("MOCHI_BENCHMARK") == "1"
+	lua.SetBenchMain(bench)
 	ast, err := lua.Transpile(prog, env, bench)
 	if err != nil {
 		_ = os.WriteFile(errPath, []byte(err.Error()), 0o644)
-		return nil, err
+		return nil, bench, err
 	}
 	code := lua.Emit(ast)
 	if err := os.WriteFile(codePath, code, 0o644); err != nil {
-		return nil, err
+		return nil, bench, err
 	}
 	cmd := exec.Command("lua", codePath)
 	runEnv := append(os.Environ(), "MOCHI_NOW_SEED=1")
@@ -94,10 +96,19 @@ func runCase(src, outDir string) ([]byte, error) {
 	out, err := cmd.CombinedOutput()
 	if err != nil {
 		_ = os.WriteFile(errPath, append([]byte(err.Error()+"\n"), out...), 0o644)
-		return nil, err
+		return nil, bench, err
 	}
 	_ = os.Remove(errPath)
-	return bytes.TrimSpace(out), nil
+	out = bytes.TrimSpace(out)
+	if bench {
+		part := out
+		if idx := bytes.LastIndexByte(out, '{'); idx >= 0 {
+			part = out[idx:]
+		}
+		_ = os.WriteFile(benchPath, part, 0o644)
+		return part, true, nil
+	}
+	return out, false, nil
 }
 
 func TestLuaTranspiler_Rosetta(t *testing.T) {
@@ -142,9 +153,12 @@ func TestLuaTranspiler_Rosetta(t *testing.T) {
 		name := strings.TrimSuffix(filepath.Base(src), ".mochi")
 		testName := fmt.Sprintf("%03d_%s", i+1, name)
 		ok := t.Run(testName, func(t *testing.T) {
-			got, err := runCase(src, outDir)
+			got, bench, err := runCase(src, outDir)
 			if err != nil {
 				t.Fatalf("run error: %v", err)
+			}
+			if bench {
+				return
 			}
 			wantPath := filepath.Join(outDir, name+".out")
 			want, err := os.ReadFile(wantPath)
@@ -208,7 +222,22 @@ func updateRosettaReadme() {
 		}
 		dur := ""
 		mem := ""
-		if data, err := os.ReadFile(filepath.Join(outDir, name+".out")); err == nil {
+		benchFile := filepath.Join(outDir, name+".bench")
+		if data, err := os.ReadFile(benchFile); err == nil {
+			var js struct {
+				Duration int64 `json:"duration_us"`
+				Memory   int64 `json:"memory_bytes"`
+			}
+			data = bytes.TrimSpace(data)
+			if json.Unmarshal(data, &js) == nil {
+				if js.Duration > 0 {
+					dur = humanDuration(js.Duration)
+				}
+				if js.Memory > 0 {
+					mem = humanSize(js.Memory)
+				}
+			}
+		} else if data, err := os.ReadFile(filepath.Join(outDir, name+".out")); err == nil {
 			var js struct {
 				Duration int64 `json:"duration_us"`
 				Memory   int64 `json:"memory_bytes"`
