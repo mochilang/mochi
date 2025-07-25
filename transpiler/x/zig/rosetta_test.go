@@ -132,6 +132,21 @@ func runCase(src, outDir string) ([]byte, error) {
 	}
 	os.Remove(filepath.Join(outDir, name+".error"))
 	outPath := filepath.Join(outDir, name+".out")
+	benchPath := filepath.Join(outDir, name+".bench")
+	if bench {
+		outBytes := got
+		if idx := bytes.LastIndexByte(outBytes, '{'); idx >= 0 {
+			outBytes = outBytes[idx:]
+		}
+		_ = os.WriteFile(benchPath, outBytes, 0o644)
+		var js struct {
+			Duration int64  `json:"duration_us"`
+			Memory   int64  `json:"memory_bytes"`
+			Name     string `json:"name"`
+		}
+		_ = json.Unmarshal(outBytes, &js)
+		return got, nil
+	}
 	if *updateRosetta {
 		if err := os.WriteFile(outPath, append(got, '\n'), 0o644); err != nil {
 			return nil, err
@@ -140,15 +155,6 @@ func runCase(src, outDir string) ([]byte, error) {
 		if !bytes.Equal(got, bytes.TrimSpace(want)) {
 			return got, fmt.Errorf("output mismatch for %s", name)
 		}
-	}
-	if bench {
-		// parse benchmark json for progress if present
-		var js struct {
-			Duration int64  `json:"duration_us"`
-			Memory   int64  `json:"memory_bytes"`
-			Name     string `json:"name"`
-		}
-		_ = json.Unmarshal(got, &js)
 	}
 	return got, nil
 }
@@ -202,7 +208,21 @@ func updateRosettaReadme() {
 		}
 		dur := ""
 		mem := ""
-		if data, err := os.ReadFile(filepath.Join(outDir, base+".out")); err == nil {
+		benchFile := filepath.Join(outDir, base+".bench")
+		if data, err := os.ReadFile(benchFile); err == nil {
+			var js struct {
+				Duration int64 `json:"duration_us"`
+				Memory   int64 `json:"memory_bytes"`
+			}
+			if json.Unmarshal(bytes.TrimSpace(data), &js) == nil {
+				if js.Duration > 0 {
+					dur = humanDuration(js.Duration)
+				}
+				if js.Memory > 0 {
+					mem = humanSize(js.Memory)
+				}
+			}
+		} else if data, err := os.ReadFile(filepath.Join(outDir, base+".out")); err == nil {
 			var js struct {
 				Duration int64 `json:"duration_us"`
 				Memory   int64 `json:"memory_bytes"`
