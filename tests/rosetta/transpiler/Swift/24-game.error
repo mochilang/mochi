@@ -1,12 +1,12 @@
 exit status 1
-/tmp/TestSwiftTranspiler_Rosetta_Golden1681500980/001/main.swift:100:1: warning: using '_' to ignore the result of a Void-returning function is redundant
+/tmp/TestSwiftTranspiler_Rosetta_Golden972884720/001/main.swift:100:1: warning: using '_' to ignore the result of a Void-returning function is redundant
  98 |     }
  99 | }
 100 | _ = main()
     | `- warning: using '_' to ignore the result of a Void-returning function is redundant
 101 | 
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden1681500980/001/main.swift:26:42: warning: forced cast of 'Int' to same type has no effect
+/tmp/TestSwiftTranspiler_Rosetta_Golden972884720/001/main.swift:26:42: warning: forced cast of 'Int' to same type has no effect
  24 | }
  25 | func randDigit() -> Int {
  26 |     return ((Int((Int(_now()) % 9)) + 1) as! Int)
@@ -14,7 +14,7 @@ exit status 1
  27 | }
  28 | func main() {
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden1681500980/001/main.swift:31:73: warning: forced cast from '[Int]' to '[Any]' always succeeds; did you mean to use 'as'?
+/tmp/TestSwiftTranspiler_Rosetta_Golden972884720/001/main.swift:31:73: warning: forced cast from '[Int]' to '[Any]' always succeeds; did you mean to use 'as'?
  29 |     var digits: [Any] = ([] as! [Any])
  30 |     for i in 0..<4 {
  31 |         digits = ((((digits + [Int(randDigit())]) as! [Any]) as! [Int]) as! [Any])
@@ -22,7 +22,7 @@ exit status 1
  32 |     }
  33 |     var numstr = ""
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden1681500980/001/main.swift:35:56: warning: forced cast of '[Any]' to same type has no effect
+/tmp/TestSwiftTranspiler_Rosetta_Golden972884720/001/main.swift:35:56: warning: forced cast of '[Any]' to same type has no effect
  33 |     var numstr = ""
  34 |     for i in 0..<4 {
  35 |         numstr = ((numstr + String(describing: (digits as! [Any])[i])) as! String)
@@ -30,7 +30,7 @@ exit status 1
  36 |     }
  37 |     print((("Your numbers: " + numstr) + "\n"))
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden1681500980/001/main.swift:35:72: warning: forced cast of 'String' to same type has no effect
+/tmp/TestSwiftTranspiler_Rosetta_Golden972884720/001/main.swift:35:72: warning: forced cast of 'String' to same type has no effect
  33 |     var numstr = ""
  34 |     for i in 0..<4 {
  35 |         numstr = ((numstr + String(describing: (digits as! [Any])[i])) as! String)
@@ -38,7 +38,7 @@ exit status 1
  36 |     }
  37 |     print((("Your numbers: " + numstr) + "\n"))
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden1681500980/001/main.swift:39:16: error: no exact matches in call to initializer 
+/tmp/TestSwiftTranspiler_Rosetta_Golden972884720/001/main.swift:39:16: error: no exact matches in call to initializer 
  37 |     print((("Your numbers: " + numstr) + "\n"))
  38 |     print("Enter RPN: ")
  39 |     var expr = String((readLine() ?? ""))!
@@ -68,7 +68,7 @@ Foundation.String.init:3:10: note: incorrect labels for candidate (have: '(_:)',
   |          `- note: incorrect labels for candidate (have: '(_:)', expected: '(utf8String:)')
 4 | 
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden1681500980/001/main.swift:48:72: warning: forced cast of 'Int' to same type has no effect
+/tmp/TestSwiftTranspiler_Rosetta_Golden972884720/001/main.swift:48:72: warning: forced cast of 'Int' to same type has no effect
  46 |     var valid = true
  47 |     while (i < Int(((expr).count))) {
  48 |         let ch = String(describing: String(Array((expr as! String))[(i as! Int)..<((i + 1) as! Int)]))
@@ -76,7 +76,7 @@ Foundation.String.init:3:10: note: incorrect labels for candidate (have: '(_:)',
  49 |         if ((ch >= "0") && (ch <= "9")) {
  50 |             if (Int(((digits).count)) == 0) {
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden1681500980/001/main.swift:48:92: warning: forced cast of 'Int' to same type has no effect
+/tmp/TestSwiftTranspiler_Rosetta_Golden972884720/001/main.swift:48:92: warning: forced cast of 'Int' to same type has no effect
  46 |     var valid = true
  47 |     while (i < Int(((expr).count))) {
  48 |         let ch = String(describing: String(Array((expr as! String))[(i as! Int)..<((i + 1) as! Int)]))
@@ -84,7 +84,7 @@ Foundation.String.init:3:10: note: incorrect labels for candidate (have: '(_:)',
  49 |         if ((ch >= "0") && (ch <= "9")) {
  50 |             if (Int(((digits).count)) == 0) {
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden1681500980/001/main.swift:55:29: warning: forced cast of '[Any]' to same type has no effect
+/tmp/TestSwiftTranspiler_Rosetta_Golden972884720/001/main.swift:55:29: warning: forced cast of '[Any]' to same type has no effect
  53 |             }
  54 |             var j = 0
  55 |             while (((digits as! [Any])[j] as! Int) != ((ch as! Int) - "0")) {
@@ -92,7 +92,7 @@ Foundation.String.init:3:10: note: incorrect labels for candidate (have: '(_:)',
  56 |                 j = ((j + 1) as! Int)
  57 |                 if (j == Int(((digits).count))) {
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden1681500980/001/main.swift:55:71: error: cannot convert value of type 'String' to expected argument type 'Int'
+/tmp/TestSwiftTranspiler_Rosetta_Golden972884720/001/main.swift:55:71: error: cannot convert value of type 'String' to expected argument type 'Int'
  53 |             }
  54 |             var j = 0
  55 |             while (((digits as! [Any])[j] as! Int) != ((ch as! Int) - "0")) {
@@ -100,7 +100,7 @@ Foundation.String.init:3:10: note: incorrect labels for candidate (have: '(_:)',
  56 |                 j = ((j + 1) as! Int)
  57 |                 if (j == Int(((digits).count))) {
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden1681500980/001/main.swift:56:30: warning: forced cast of 'Int' to same type has no effect
+/tmp/TestSwiftTranspiler_Rosetta_Golden972884720/001/main.swift:56:30: warning: forced cast of 'Int' to same type has no effect
  54 |             var j = 0
  55 |             while (((digits as! [Any])[j] as! Int) != ((ch as! Int) - "0")) {
  56 |                 j = ((j + 1) as! Int)
@@ -108,7 +108,7 @@ Foundation.String.init:3:10: note: incorrect labels for candidate (have: '(_:)',
  57 |                 if (j == Int(((digits).count))) {
  58 |                     print("wrong numbers.")
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden1681500980/001/main.swift:63:55: error: cannot convert value of type 'String' to expected argument type 'Int'
+/tmp/TestSwiftTranspiler_Rosetta_Golden972884720/001/main.swift:63:55: error: cannot convert value of type 'String' to expected argument type 'Int'
  61 |             }
  62 |             digits = ((Array(digits[0..<j]) + Array(digits[(j + 1)..<digits.count])) as! [Any])
  63 |             stack = ((stack + [Double(((ch as! Int) - "0"))]) as! [Any])
@@ -116,7 +116,7 @@ Foundation.String.init:3:10: note: incorrect labels for candidate (have: '(_:)',
  64 |         } else {
  65 |             if (Int(((stack).count)) < 2) {
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden1681500980/001/main.swift:70:28: warning: forced cast of '[Any]' to same type has no effect
+/tmp/TestSwiftTranspiler_Rosetta_Golden972884720/001/main.swift:70:28: warning: forced cast of '[Any]' to same type has no effect
  68 |                 break
  69 |             }
  70 |             var b = (stack as! [Any])[(Int(((stack).count)) - 1)]
@@ -124,7 +124,7 @@ Foundation.String.init:3:10: note: incorrect labels for candidate (have: '(_:)',
  71 |             var a = (stack as! [Any])[(Int(((stack).count)) - 2)]
  72 |             if (ch == "+") {
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden1681500980/001/main.swift:71:28: warning: forced cast of '[Any]' to same type has no effect
+/tmp/TestSwiftTranspiler_Rosetta_Golden972884720/001/main.swift:71:28: warning: forced cast of '[Any]' to same type has no effect
  69 |             }
  70 |             var b = (stack as! [Any])[(Int(((stack).count)) - 1)]
  71 |             var a = (stack as! [Any])[(Int(((stack).count)) - 2)]
@@ -132,7 +132,7 @@ Foundation.String.init:3:10: note: incorrect labels for candidate (have: '(_:)',
  72 |             if (ch == "+") {
  73 |                 stack[(Int(((stack).count)) - 2)] = (_num(a) + _num(b))
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden1681500980/001/main.swift:90:22: warning: forced cast of 'Int' to same type has no effect
+/tmp/TestSwiftTranspiler_Rosetta_Golden972884720/001/main.swift:90:22: warning: forced cast of 'Int' to same type has no effect
  88 |             stack = (Array(stack[0..<(Int(((stack).count)) - 1)]) as! [Any])
  89 |         }
  90 |         i = ((i + 1) as! Int)
@@ -140,7 +140,7 @@ Foundation.String.init:3:10: note: incorrect labels for candidate (have: '(_:)',
  91 |     }
  92 |     if valid {
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden1681500980/001/main.swift:93:13: error: no exact matches in call to initializer 
+/tmp/TestSwiftTranspiler_Rosetta_Golden972884720/001/main.swift:93:13: error: no exact matches in call to initializer 
  91 |     }
  92 |     if valid {
  93 |         if (Double(abs((((stack as! [Any])[0] as! Double) - 24.0)))! > 0.000001) {
@@ -161,7 +161,7 @@ Swift.BinaryFloatingPoint.init:2:19: note: incorrect labels for candidate (have:
   |                   `- note: incorrect labels for candidate (have: '(_:)', expected: '(exactly:)')
 3 | 
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden1681500980/001/main.swift:94:63: warning: forced cast of '[Any]' to same type has no effect
+/tmp/TestSwiftTranspiler_Rosetta_Golden972884720/001/main.swift:94:63: warning: forced cast of '[Any]' to same type has no effect
  92 |     if valid {
  93 |         if (Double(abs((((stack as! [Any])[0] as! Double) - 24.0)))! > 0.000001) {
  94 |             print((("incorrect. " + String(describing: (stack as! [Any])[0])) + " != 24"))

@@ -55,6 +55,7 @@ func TestSwiftTranspiler_Rosetta_Golden(t *testing.T) {
 		codePath := filepath.Join(outDir, base+".swift")
 		outPath := filepath.Join(outDir, base+".out")
 		errPath := filepath.Join(outDir, base+".error")
+		benchPath := filepath.Join(outDir, base+".bench")
 
 		prog, err := parser.Parse(src)
 		if err != nil {
@@ -90,15 +91,20 @@ func TestSwiftTranspiler_Rosetta_Golden(t *testing.T) {
 			return fmt.Errorf("run: %v", err)
 		}
 		outBytes := bytes.TrimSpace(out)
-		if !bench {
+		if bench {
+			if idx := bytes.LastIndexByte(outBytes, '{'); idx >= 0 {
+				outBytes = outBytes[idx:]
+			}
+			_ = os.WriteFile(benchPath, outBytes, 0o644)
+		} else {
 			if idx := bytes.LastIndexByte(outBytes, '{'); idx >= 0 && bytes.Contains(outBytes[idx:], []byte("duration_us")) {
 				outBytes = bytes.TrimSpace(outBytes[:idx])
 			}
+			if !updating() && len(want) > 0 && !bytes.Equal(outBytes, want) {
+				return fmt.Errorf("output mismatch\nGot: %s\nWant: %s", outBytes, want)
+			}
+			_ = os.WriteFile(outPath, outBytes, 0o644)
 		}
-		if !bench && !updating() && len(want) > 0 && !bytes.Equal(outBytes, want) {
-			return fmt.Errorf("output mismatch\nGot: %s\nWant: %s", outBytes, want)
-		}
-		_ = os.WriteFile(outPath, outBytes, 0o644)
 		_ = os.Remove(errPath)
 		return nil
 	}
@@ -159,7 +165,17 @@ func updateRosetta() {
 		}
 		dur := ""
 		mem := ""
-		if data, err := os.ReadFile(filepath.Join(outDir, name+".out")); err == nil {
+		if data, err := os.ReadFile(filepath.Join(outDir, name+".bench")); err == nil {
+			var js struct {
+				Duration int64 `json:"duration_us"`
+				Memory   int64 `json:"memory_bytes"`
+			}
+			data = bytes.TrimSpace(data)
+			if json.Unmarshal(data, &js) == nil && js.Duration > 0 {
+				dur = humanDuration(js.Duration)
+				mem = humanSize(js.Memory)
+			}
+		} else if data, err := os.ReadFile(filepath.Join(outDir, name+".out")); err == nil {
 			var js struct {
 				Duration int64 `json:"duration_us"`
 				Memory   int64 `json:"memory_bytes"`
