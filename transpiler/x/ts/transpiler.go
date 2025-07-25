@@ -2863,6 +2863,15 @@ func isFloatLitExpr(e Expr) bool {
 	return false
 }
 
+func isVarIntExpr(e Expr) bool {
+	if nr, ok := e.(*NameRef); ok && transpileEnv != nil {
+		if t, err := transpileEnv.GetVar(nr.Name); err == nil {
+			return isIntType(t)
+		}
+	}
+	return false
+}
+
 func convertBinary(b *parser.BinaryExpr) (Expr, error) {
 	if b == nil {
 		return nil, fmt.Errorf("nil binary")
@@ -2980,7 +2989,7 @@ func convertBinary(b *parser.BinaryExpr) (Expr, error) {
 		case "intersect":
 			operands[i] = &IntersectExpr{Left: operands[i], Right: operands[i+1]}
 		default:
-			if ops[i] == "/" && isIntType(typesArr[i]) && isIntType(typesArr[i+1]) && !(isFloatLitExpr(operands[i]) || isFloatLitExpr(operands[i+1])) {
+			if ops[i] == "/" && !(isFloatLitExpr(operands[i]) || isFloatLitExpr(operands[i+1])) {
 				operands[i] = &IntDivExpr{Left: operands[i], Right: operands[i+1]}
 				typesArr[i] = types.IntType{}
 			} else {
