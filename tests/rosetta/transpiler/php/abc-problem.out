@@ -5,3 +5,8 @@ TREAT true
 COMMON false
 SQUAD true
 CONFUSE true
+{
+  "duration_us": 289,
+  "memory_bytes": 96,
+  "name": "main"
+}
