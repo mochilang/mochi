@@ -3,7 +3,9 @@
 package javatr_test
 
 import (
+	"bufio"
 	"bytes"
+	"encoding/json"
 	"flag"
 	"fmt"
 	"os"
@@ -37,7 +39,11 @@ func runRosettaTask(t *testing.T, name string) {
 	outDir := filepath.Join(root, "tests", "rosetta", "transpiler", "Java")
 	codePath := filepath.Join(outDir, name+".java")
 	wantOut := filepath.Join(outDir, name+".out")
+	benchPath := filepath.Join(outDir, name+".bench")
 	errPath := filepath.Join(outDir, name+".error")
+
+	bench := os.Getenv("MOCHI_BENCHMARK") == "true"
+	javatr.SetBenchMain(bench)
 
 	prog, err := parser.Parse(src)
 	if err != nil {
@@ -83,6 +89,12 @@ func runRosettaTask(t *testing.T, name string) {
 		t.Fatalf("run %s: %v", name, err)
 	}
 	_ = os.Remove(errPath)
+	if bench {
+		if shouldUpdateRosetta() {
+			_ = os.WriteFile(benchPath, got, 0644)
+		}
+		return
+	}
 	if shouldUpdateRosetta() {
 		_ = os.WriteFile(wantOut, append(got, '\n'), 0644)
 	} else if want, err := os.ReadFile(wantOut); err == nil {
@@ -148,28 +160,95 @@ func updateRosetta() {
 	srcDir := filepath.Join(root, "tests", "rosetta", "x", "Mochi")
 	outDir := filepath.Join(root, "tests", "rosetta", "transpiler", "Java")
 	readmePath := filepath.Join(root, "transpiler", "x", "java", "ROSETTA.md")
-
-	files, _ := filepath.Glob(filepath.Join(srcDir, "*.mochi"))
-	total := len(files)
+	indexPath := filepath.Join(srcDir, "index.txt")
+	f, err := os.Open(indexPath)
+	if err != nil {
+		return
+	}
+	defer f.Close()
+	scanner := bufio.NewScanner(f)
+	type entry struct {
+		idx  int
+		file string
+	}
+	var entries []entry
+	for scanner.Scan() {
+		parts := strings.Fields(scanner.Text())
+		if len(parts) != 2 {
+			continue
+		}
+		n, err := strconv.Atoi(parts[0])
+		if err != nil {
+			continue
+		}
+		entries = append(entries, entry{idx: n, file: parts[1]})
+	}
+	total := len(entries)
 	compiled := 0
-	var lines []string
-	for i, f := range files {
-		name := strings.TrimSuffix(filepath.Base(f), ".mochi")
-		mark := "[ ]"
-		if _, err := os.Stat(filepath.Join(outDir, name+".out")); err == nil {
-			if _, err2 := os.Stat(filepath.Join(outDir, name+".error")); os.IsNotExist(err2) {
-				compiled++
-				mark = "[x]"
+	var rows []string
+	rows = append(rows, "| Index | Name | Status | Duration | Memory |")
+	rows = append(rows, "|------:|------|--------|---------:|-------:|")
+	for _, e := range entries {
+		name := strings.TrimSuffix(filepath.Base(e.file), ".mochi")
+		status := " "
+		dur := ""
+		mem := ""
+		if _, err := os.Stat(filepath.Join(outDir, name+".error")); err == nil {
+			status = "error"
+		} else if _, err := os.Stat(filepath.Join(outDir, name+".java")); err == nil {
+			status = "ok"
+			compiled++
+		}
+		if data, err := os.ReadFile(filepath.Join(outDir, name+".bench")); err == nil {
+			var r struct {
+				DurationUS  int64 `json:"duration_us"`
+				MemoryBytes int64 `json:"memory_bytes"`
+			}
+			if json.Unmarshal(bytes.TrimSpace(data), &r) == nil {
+				dur = formatDuration(time.Duration(r.DurationUS) * time.Microsecond)
+				mem = formatBytes(r.MemoryBytes)
 			}
 		}
-		lines = append(lines, fmt.Sprintf("%d. %s %s (%d)", i+1, mark, name, i+1))
+		rows = append(rows, fmt.Sprintf("| %d | %s | %s | %s | %s |", e.idx, name, status, dur, mem))
 	}
-	ts := time.Now().Format("2006-01-02 15:04 MST")
 	var buf bytes.Buffer
 	buf.WriteString("# Java Rosetta Transpiler Output\n\n")
-	buf.WriteString("Generated Java code for programs in `tests/rosetta/x/Mochi`. Each program has a `.java` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.\n\n")
-	fmt.Fprintf(&buf, "## Rosetta Checklist (%d/%d) - updated %s\n", compiled, total, ts)
-	buf.WriteString(strings.Join(lines, "\n"))
+	buf.WriteString("Generated Java code for programs in `tests/rosetta/x/Mochi`. Each program has a `.java` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.\n")
+	loc := time.FixedZone("GMT+7", 7*60*60)
+	buf.WriteString("Last updated: " + time.Now().In(loc).Format("2006-01-02 15:04 MST") + "\n\n")
+	fmt.Fprintf(&buf, "## Rosetta Checklist (%d/%d)\n", compiled, total)
+	buf.WriteString(strings.Join(rows, "\n"))
 	buf.WriteString("\n")
 	_ = os.WriteFile(readmePath, buf.Bytes(), 0644)
+}
+
+func formatDuration(d time.Duration) string {
+	switch {
+	case d < time.Microsecond:
+		return fmt.Sprintf("%dns", d.Nanoseconds())
+	case d < time.Millisecond:
+		return fmt.Sprintf("%.1fµs", float64(d.Microseconds()))
+	case d < time.Second:
+		return fmt.Sprintf("%.1fms", float64(d.Milliseconds()))
+	default:
+		return fmt.Sprintf("%.2fs", d.Seconds())
+	}
+}
+
+func formatBytes(n int64) string {
+	const (
+		_KB = 1024
+		_MB = _KB * 1024
+		_GB = _MB * 1024
+	)
+	switch {
+	case n >= _GB:
+		return fmt.Sprintf("%.2fGB", float64(n)/float64(_GB))
+	case n >= _MB:
+		return fmt.Sprintf("%.2fMB", float64(n)/float64(_MB))
+	case n >= _KB:
+		return fmt.Sprintf("%.2fKB", float64(n)/float64(_KB))
+	default:
+		return fmt.Sprintf("%dB", n)
+	}
 }

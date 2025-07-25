@@ -41,6 +41,12 @@ var structDefs map[string]map[string]string
 var varDecls map[string]*VarStmt
 var funcMapFields map[string]map[string]string
 var mapVarFields map[string]map[string]string
+var benchMain bool
+
+// SetBenchMain configures whether the generated main function is wrapped in a
+// benchmark block when emitting code. When enabled, the program will print a
+// JSON object with duration and memory statistics on completion.
+func SetBenchMain(v bool) { benchMain = v }
 
 func copyMap(src map[string]string) map[string]string {
 	dst := make(map[string]string, len(src))
@@ -91,11 +97,11 @@ func javaType(t string) string {
 		if strings.HasPrefix(t, "string") {
 			return "String" + t[len("string"):]
 		}
-		if strings.HasPrefix(t, "bool") {
-			return "boolean" + t[len("bool"):]
-		}
 		if strings.HasPrefix(t, "boolean") && t != "boolean" {
 			return "boolean" + t[len("boolean"):]
+		}
+		if strings.HasPrefix(t, "bool") {
+			return "boolean" + t[len("bool"):]
 		}
 		if strings.HasPrefix(t, "fn(") {
 			start := strings.Index(t, "(") + 1
@@ -368,6 +374,8 @@ func inferType(e Expr) string {
 			return "int"
 		case "System.out.println":
 			return "void"
+		case "_now":
+			return "int"
 		default:
 			if t, ok := funcRet[ex.Func]; ok {
 				return t
@@ -2220,6 +2228,11 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 		}
 	}
 	_ = env // reserved
+	if benchMain {
+		needNow = true
+		needMem = true
+		prog.Stmts = []Stmt{&BenchStmt{Name: "main", Body: prog.Stmts}}
+	}
 	return &prog, nil
 }
 
@@ -3806,12 +3819,26 @@ func Emit(prog *Program) []byte {
 		}
 	}
 	buf.WriteString("    public static void main(String[] args) {\n")
-	for _, st := range prog.Stmts {
-		switch st.(type) {
-		case *LetStmt, *VarStmt, *TypeDeclStmt, *InterfaceDeclStmt:
-			// already emitted as globals or declarations
-		default:
-			st.emit(&buf, "        ")
+	if benchMain {
+		var body []Stmt
+		for _, st := range prog.Stmts {
+			switch st.(type) {
+			case *LetStmt, *VarStmt, *TypeDeclStmt, *InterfaceDeclStmt:
+				// already emitted as globals or declarations
+			default:
+				body = append(body, st)
+			}
+		}
+		bs := &BenchStmt{Name: "main", Body: body}
+		bs.emit(&buf, "        ")
+	} else {
+		for _, st := range prog.Stmts {
+			switch st.(type) {
+			case *LetStmt, *VarStmt, *TypeDeclStmt, *InterfaceDeclStmt:
+				// already emitted as globals or declarations
+			default:
+				st.emit(&buf, "        ")
+			}
 		}
 	}
 	buf.WriteString("    }\n")
