@@ -1,0 +1,36 @@
+/workspace/mochi/tests/rosetta/transpiler/erl/biorhythms.erl:39:1: Warning: function mochi_pad_start/3 is unused
+%   39| mochi_pad_start(S, Len, Ch) ->
+%     | ^
+
+/workspace/mochi/tests/rosetta/transpiler/erl/biorhythms.erl:121:20: Warning: variable 'Neg_3' exported from 'case' (line 102, column 9)
+%  121| {Digits, I_7, N_5, Neg_3, Str} = Fun_2(Digits, I_6, N_4, Neg_3, Str),
+%     |                    ^
+
+/workspace/mochi/tests/rosetta/transpiler/erl/biorhythms.erl:285:26: Warning: ambiguous call of overridden auto-imported BIF floor/1 --
+use erlang:floor/1 or "-compile({no_auto_import,[floor/1]})." to resolve name clash
+%  285|             Percent_2 = (floor((Percent * 1000)) / 10),
+%     |                          ^
+
+Born 1943-03-09, Target 1972-07-11
+Day 10717
+Physical day 22 :  -26.6% (down but rising, next transition 1972-07-12)
+Emotional day21 :  valley
+Mental day   25 :  valley
+
+Born 1809-01-12, Target 1863-11-19
+Day 20034
+Physical day  1 :  26.9% (up and rising, next peak 1863-11-23)
+Emotional day14 :  critical transition
+Mental day    3 :  54.0% (up and rising, next peak 1863-11-24)
+
+Born 1809-02-12, Target 1863-11-19
+Day 20003
+Physical day 16 :  -94.3% (down and falling, next valley 1863-11-20)
+Emotional day11 :  62.3% (up but falling, next transition 1863-11-22)
+Mental day    5 :  81.4% (up and rising, next peak 1863-11-22)
+
+{
+  "duration_us": 19152,
+  "memory_bytes": 6882040,
+  "name": "main"
+}
