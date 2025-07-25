@@ -2,7 +2,7 @@
 
 This directory contains Dart code generated from Mochi programs in `tests/rosetta/x/Mochi`. Each program has a `.dart` file and `.out` output. Compilation or runtime failures are captured in a `.error` file.
 
-Compiled and ran: 138/284
+Compiled and ran: 136/284
 
 ## Checklist
 | Index | Name | Status | Duration | Memory |
@@ -70,9 +70,9 @@ Compiled and ran: 138/284
 | 61 | approximate-equality | ✓ | 7.786ms | 4.3 MB |
 | 62 | arbitrary-precision-integers-included- | ✓ | 1.560571s | 140.0 KB |
 | 63 | archimedean-spiral | ✓ |  |  |
-| 64 | arena-storage-pool | ✓ |  |  |
-| 65 | arithmetic-complex | ✓ |  |  |
-| 66 | arithmetic-derivative | ✓ |  |  |
+| 64 | arena-storage-pool | ✓ | 6.639ms | 3.2 MB |
+| 65 | arithmetic-complex | ✓ | 6.116ms | 700.0 KB |
+| 66 | arithmetic-derivative | ✓ | 16.176ms | 2.0 MB |
 | 67 | arithmetic-evaluation | ✓ |  |  |
 | 68 | arithmetic-geometric-mean-calculate-pi | ✓ |  |  |
 | 69 | arithmetic-geometric-mean | ✓ |  |  |
@@ -80,13 +80,13 @@ Compiled and ran: 138/284
 | 71 | arithmetic-integer-2 | ✓ |  |  |
 | 72 | arithmetic-numbers | ✓ |  |  |
 | 73 | arithmetic-rational | ✓ |  |  |
-| 74 | array-concatenation | ✓ |  |  |
+| 74 | array-concatenation | ✓ | 7.359ms | 12.4 MB |
 | 75 | array-length | ✓ |  |  |
-| 76 | arrays | ✓ |  |  |
+| 76 | arrays | ✓ | 6.254ms | 316.0 KB |
 | 77 | ascending-primes | ✓ |  |  |
 | 78 | ascii-art-diagram-converter | ✓ |  |  |
 | 79 | assertions | ✓ |  |  |
-| 80 | associative-array-creation | ✓ |  |  |
+| 80 | associative-array-creation |   |  |  |
 | 81 | associative-array-iteration | ✓ |  |  |
 | 82 | associative-array-merging | ✓ |  |  |
 | 83 | atomic-updates | ✓ |  |  |
@@ -94,12 +94,12 @@ Compiled and ran: 138/284
 | 85 | average-loop-length | ✓ |  |  |
 | 86 | averages-arithmetic-mean | ✓ |  |  |
 | 87 | averages-mean-time-of-day | ✓ |  |  |
-| 88 | averages-median-1 | ✓ |  |  |
-| 89 | averages-median-2 | ✓ |  |  |
-| 90 | averages-median-3 | ✓ |  |  |
-| 91 | averages-mode | ✓ |  |  |
+| 88 | averages-median-1 | ✓ | 6.154ms | 12.5 MB |
+| 89 | averages-median-2 | ✓ | 6.537ms | 11.8 MB |
+| 90 | averages-median-3 | ✓ | 7.315ms | 504.0 KB |
+| 91 | averages-mode |   |  |  |
 | 92 | averages-pythagorean-means | ✓ |  |  |
-| 93 | averages-root-mean-square | ✓ |  |  |
+| 93 | averages-root-mean-square | ✓ | 6.155ms | 12.2 MB |
 | 94 | averages-simple-moving-average | ✓ |  |  |
 | 95 | avl-tree | ✓ |  |  |
 | 96 | b-zier-curves-intersections | ✓ |  |  |
@@ -292,4 +292,4 @@ Compiled and ran: 138/284
 | 283 | define-a-primitive-data-type |   |  |  |
 | 284 | md5 |   |  |  |
 
-_Last updated: 2025-07-25 19:02 +0700_
+_Last updated: 2025-07-25 21:35 +0700_

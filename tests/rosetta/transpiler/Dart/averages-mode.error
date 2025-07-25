@@ -1,0 +1,25 @@
+run: exit status 254
+../../../tests/rosetta/transpiler/Dart/averages-mode.dart:46:29: Error: Operator '+' cannot be called on 'int?' because it is potentially null.
+    counts1[v] = counts1[v] + 1;
+                            ^
+../../../tests/rosetta/transpiler/Dart/averages-mode.dart:46:29: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    counts1[v] = counts1[v] + 1;
+                            ^
+../../../tests/rosetta/transpiler/Dart/averages-mode.dart:57:11: Error: Operator '>' cannot be called on 'int?' because it is potentially null.
+    if (c > max1) {
+          ^
+../../../tests/rosetta/transpiler/Dart/averages-mode.dart:58:12: Error: A value of type 'int?' can't be assigned to a variable of type 'int' because 'int?' is nullable and 'int' isn't.
+    max1 = c;
+           ^
+../../../tests/rosetta/transpiler/Dart/averages-mode.dart:75:29: Error: Operator '+' cannot be called on 'int?' because it is potentially null.
+    counts2[v] = counts2[v] + 1;
+                            ^
+../../../tests/rosetta/transpiler/Dart/averages-mode.dart:75:29: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    counts2[v] = counts2[v] + 1;
+                            ^
+../../../tests/rosetta/transpiler/Dart/averages-mode.dart:86:11: Error: Operator '>' cannot be called on 'int?' because it is potentially null.
+    if (c > max2) {
+          ^
+../../../tests/rosetta/transpiler/Dart/averages-mode.dart:87:12: Error: A value of type 'int?' can't be assigned to a variable of type 'int' because 'int?' is nullable and 'int' isn't.
+    max2 = c;
+           ^

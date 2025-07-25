@@ -1,0 +1,4 @@
+run: exit status 254
+../../../tests/rosetta/transpiler/Dart/associative-array-creation.dart:29:17: Error: A value of type 'int?' can't be assigned to a variable of type 'int' because 'int?' is nullable and 'int' isn't.
+    out[key] = m[key];
+                ^
