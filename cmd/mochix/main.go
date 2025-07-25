@@ -756,7 +756,8 @@ func transpileProgram(lang string, env *types.Env, prog *parser.Program, root, s
 		}
 		return cstranspiler.Emit(p), nil
 	case "erlang", "erl":
-		p, err := erl.Transpile(prog, env)
+		bench := os.Getenv("MOCHI_BENCHMARK") != ""
+		p, err := erl.Transpile(prog, env, bench)
 		if err != nil {
 			return nil, err
 		}
