@@ -2272,7 +2272,9 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		name := p.Call.Func
 		callName := name
 		if transpileEnv != nil {
-			if _, builtin := builtinNames[name]; !builtin {
+			if _, ok := transpileEnv.FindUnionByVariant(name); ok {
+				// union constructors behave like global functions
+			} else if _, builtin := builtinNames[name]; !builtin {
 				if closureNames[name] {
 					callName = "$" + name
 				}
@@ -2280,7 +2282,15 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		}
 		if callName == name {
 			if _, glob := globalSet[name]; !glob {
-				callName = "$" + name
+				if _, builtin := builtinNames[name]; builtin {
+					// keep builtin function name
+				} else if transpileEnv != nil {
+					if _, ok := transpileEnv.FindUnionByVariant(name); !ok {
+						callName = "$" + name
+					}
+				} else {
+					callName = "$" + name
+				}
 			}
 		}
 		if newName, ok := renameMap[name]; ok {
