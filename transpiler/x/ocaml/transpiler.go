@@ -880,10 +880,8 @@ func (f *FunStmt) emit(w io.Writer) {
 	}
 	io.WriteString(w, " in\n")
 	currentRetTyp = f.RetTyp
-	// Function parameters that are mutated are already passed as OCaml
-	// references. Earlier versions of the transpiler created local copies
-	// with `ref` here which prevented modifications from being visible to
-	// the caller. Simply rely on the caller passing a reference.
+	// Function parameters that are mutated are copied into local OCaml
+	// references so modifications do not affect the caller.
 	io.WriteString(w, "  (try\n")
 	for _, st := range f.Body {
 		st.emit(w)
@@ -2860,14 +2858,12 @@ func transpileStmt(st *parser.Statement, env *types.Env, vars map[string]VarInfo
 		for _, p := range st.Fun.Params {
 			if p.Type != nil {
 				typ := typeRefString(p.Type)
-				if typ == "int" || typ == "float" {
-					exprCode := fmt.Sprintf("(Obj.magic %s : %s)", sanitizeIdent(p.Name), typ)
-					if mutated[p.Name] {
-						expr := &RawExpr{Code: strings.ReplaceAll(exprCode, sanitizeIdent(p.Name), fmt.Sprintf("!%s", sanitizeIdent(p.Name)))}
-						casts = append(casts, &AssignStmt{Name: p.Name, Expr: expr})
-					} else {
-						casts = append(casts, &LetStmt{Name: p.Name, Expr: &RawExpr{Code: exprCode}})
-					}
+				if mutated[p.Name] {
+					expr := &RawExpr{Code: fmt.Sprintf("(Obj.magic %s : %s)", sanitizeIdent(p.Name), ocamlType(typ))}
+					casts = append(casts, &VarStmt{Name: p.Name, Expr: expr})
+				} else {
+					expr := &RawExpr{Code: fmt.Sprintf("(Obj.magic %s : %s)", sanitizeIdent(p.Name), ocamlType(typ))}
+					casts = append(casts, &LetStmt{Name: p.Name, Expr: expr})
 				}
 			}
 		}
@@ -3927,14 +3923,11 @@ func convertFunExpr(fn *parser.FunExpr, env *types.Env, vars map[string]VarInfo)
 		for _, p := range fn.Params {
 			if p.Type != nil {
 				typ := typeRefString(p.Type)
-				if typ == "int" || typ == "float" {
-					exprCode := fmt.Sprintf("(Obj.magic %s : %s)", sanitizeIdent(p.Name), typ)
-					if mutated[p.Name] {
-						expr := &RawExpr{Code: strings.ReplaceAll(exprCode, sanitizeIdent(p.Name), fmt.Sprintf("!%s", sanitizeIdent(p.Name)))}
-						casts = append(casts, &AssignStmt{Name: p.Name, Expr: expr})
-					} else {
-						casts = append(casts, &LetStmt{Name: p.Name, Expr: &RawExpr{Code: exprCode}})
-					}
+				expr := &RawExpr{Code: fmt.Sprintf("(Obj.magic %s : %s)", sanitizeIdent(p.Name), ocamlType(typ))}
+				if mutated[p.Name] {
+					casts = append(casts, &VarStmt{Name: p.Name, Expr: expr})
+				} else {
+					casts = append(casts, &LetStmt{Name: p.Name, Expr: expr})
 				}
 			}
 		}
@@ -3951,14 +3944,11 @@ func convertFunExpr(fn *parser.FunExpr, env *types.Env, vars map[string]VarInfo)
 		for _, p := range fn.Params {
 			if p.Type != nil {
 				typ := typeRefString(p.Type)
-				if typ == "int" || typ == "float" {
-					exprCode := fmt.Sprintf("(Obj.magic %s : %s)", sanitizeIdent(p.Name), typ)
-					if mutated[p.Name] {
-						expr := &RawExpr{Code: strings.ReplaceAll(exprCode, sanitizeIdent(p.Name), fmt.Sprintf("!%s", sanitizeIdent(p.Name)))}
-						casts = append(casts, &AssignStmt{Name: p.Name, Expr: expr})
-					} else {
-						casts = append(casts, &LetStmt{Name: p.Name, Expr: &RawExpr{Code: exprCode}})
-					}
+				expr := &RawExpr{Code: fmt.Sprintf("(Obj.magic %s : %s)", sanitizeIdent(p.Name), ocamlType(typ))}
+				if mutated[p.Name] {
+					casts = append(casts, &VarStmt{Name: p.Name, Expr: expr})
+				} else {
+					casts = append(casts, &LetStmt{Name: p.Name, Expr: expr})
 				}
 			}
 		}
@@ -4486,9 +4476,8 @@ func convertCall(c *parser.CallExpr, env *types.Env, vars map[string]VarInfo) (E
 				return nil, "", err
 			}
 			if mut != nil && i < len(fn.Params) && mut[fn.Params[i].Name] {
-				// pass reference without dereferencing
 				if n, ok := ex.(*Name); ok {
-					ex = &Name{Ident: n.Ident, Typ: n.Typ, Ref: false}
+					ex = &Name{Ident: n.Ident, Typ: n.Typ, Ref: true}
 				}
 			} else if i < len(fn.Params) {
 				ptyp := typeRefString(fn.Params[i].Type)

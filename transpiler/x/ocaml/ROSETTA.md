@@ -48,16 +48,16 @@ Completed programs: 53/284
 | 40 | align-columns | ✓ | 248.0µs | 50.18KB |
 | 41 | aliquot-sequence-classifications | ✓ |  |  |
 | 42 | almkvist-giullera-formula-for-pi | error |  |  |
-| 43 | almost-prime | ✓ |  |  |
-| 44 | amb | ✓ |  |  |
-| 45 | amicable-pairs | ✓ |  |  |
+| 43 | almost-prime | ✓ | 254.0µs | 13.09KB |
+| 44 | amb | ✓ | 81.0µs | 3.40KB |
+| 45 | amicable-pairs | ✓ | 28.04s | 13.41GB |
 | 46 | anagrams-deranged-anagrams | error |  |  |
 | 47 | anagrams | error |  |  |
-| 48 | angle-difference-between-two-bearings-1 | ✓ |  |  |
+| 48 | angle-difference-between-two-bearings-1 | ✓ | 43.0µs | 1.63KB |
 | 49 | angle-difference-between-two-bearings-2 | error |  |  |
 | 50 | angles-geometric-normalization-and-conversion | error |  |  |
-| 51 | animate-a-pendulum | ✓ | 69.0µs | 19.89KB |
-| 52 | animation | ✓ | 327.0µs | 31.69KB |
+| 51 | animate-a-pendulum | ✓ | 43.0µs | 19.97KB |
+| 52 | animation | ✓ | 143.0µs | 31.69KB |
 | 53 | anonymous-recursion-1 | ✓ | 31.0µs | 1.01KB |
 | 54 | anonymous-recursion-2 | ✓ | 41.0µs | 1.36KB |
 | 55 | anonymous-recursion | ✓ | 75.0µs | 1.32KB |
@@ -290,4 +290,4 @@ Completed programs: 53/284
 | 282 | deepcopy-1 |   |  |  |
 | 283 | define-a-primitive-data-type |   |  |  |
 | 284 | md5 |   |  |  |
-Last updated 2025-07-26 00:13 +0700
+Last updated 2025-07-26 05:05 +0700
