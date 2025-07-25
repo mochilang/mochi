@@ -1,0 +1,14 @@
+Cows and Bulls
+Guess four digit number of unique digits in the range 1 to 9.
+A correct digit but not in the correct place is a cow.
+A correct digit in the correct place is a bull.
+Guess: 
+Cows: 3, bulls: 0
+Guess: 
+Traceback (most recent call last):
+  File "/workspace/mochi/tests/rosetta/transpiler/Python/bulls-and-cows.py", line 96, in <module>
+    main()
+  File "/workspace/mochi/tests/rosetta/transpiler/Python/bulls-and-cows.py", line 59, in main
+    guess = input()
+            ^^^^^^^
+EOFError: EOF when reading a line

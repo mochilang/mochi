@@ -1,0 +1,5 @@
+run: exit status 1
+  File "/workspace/mochi/tests/rosetta/transpiler/Python/call-a-function-7.py", line 39
+    _bench_end = _now()
+    ^
+IndentationError: expected an indented block after 'if' statement on line 38
