@@ -50,7 +50,7 @@ func TestTranspile_PrintHello(t *testing.T) {
 	if errs := types.Check(prog, env); len(errs) > 0 {
 		t.Fatalf("type: %v", errs[0])
 	}
-	progAST, err := lua.Transpile(prog, env)
+	progAST, err := lua.Transpile(prog, env, false)
 	if err != nil {
 		t.Fatalf("transpile: %v", err)
 	}
@@ -95,7 +95,7 @@ func TestTranspile_BinaryPrecedence(t *testing.T) {
 	if errs := types.Check(prog, env); len(errs) > 0 {
 		t.Fatalf("type: %v", errs[0])
 	}
-	progAST, err := lua.Transpile(prog, env)
+	progAST, err := lua.Transpile(prog, env, false)
 	if err != nil {
 		t.Fatalf("transpile: %v", err)
 	}
@@ -140,7 +140,7 @@ func TestTranspile_UnaryNeg(t *testing.T) {
 	if errs := types.Check(prog, env); len(errs) > 0 {
 		t.Fatalf("type: %v", errs[0])
 	}
-	progAST, err := lua.Transpile(prog, env)
+	progAST, err := lua.Transpile(prog, env, false)
 	if err != nil {
 		t.Fatalf("transpile: %v", err)
 	}
@@ -185,7 +185,7 @@ func TestTranspile_StringConcat(t *testing.T) {
 	if errs := types.Check(prog, env); len(errs) > 0 {
 		t.Fatalf("type: %v", errs[0])
 	}
-	progAST, err := lua.Transpile(prog, env)
+	progAST, err := lua.Transpile(prog, env, false)
 	if err != nil {
 		t.Fatalf("transpile: %v", err)
 	}
@@ -230,7 +230,7 @@ func TestTranspile_StringCompare(t *testing.T) {
 	if errs := types.Check(prog, env); len(errs) > 0 {
 		t.Fatalf("type: %v", errs[0])
 	}
-	progAST, err := lua.Transpile(prog, env)
+	progAST, err := lua.Transpile(prog, env, false)
 	if err != nil {
 		t.Fatalf("transpile: %v", err)
 	}

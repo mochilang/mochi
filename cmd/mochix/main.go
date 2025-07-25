@@ -798,7 +798,8 @@ func transpileProgram(lang string, env *types.Env, prog *parser.Program, root, s
 		}
 		return kt.Emit(p), nil
 	case "lua":
-		p, err := lua.Transpile(prog, env)
+		bench := os.Getenv("MOCHI_BENCHMARK") != ""
+		p, err := lua.Transpile(prog, env, bench)
 		if err != nil {
 			return nil, err
 		}
