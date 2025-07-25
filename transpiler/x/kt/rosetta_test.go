@@ -51,6 +51,7 @@ func TestRosettaKotlin(t *testing.T) {
 	name := strings.TrimSuffix(filepath.Base(srcPath), ".mochi")
 	outPath := strings.TrimSuffix(srcPath, ".mochi") + ".out"
 	ktPath := filepath.Join(outDir, name+".kt")
+	benchPath := filepath.Join(outDir, name+".bench")
 	t.Cleanup(kt.UpdateRosettaChecklist)
 	ok := t.Run(fmt.Sprintf("%03d_%s", idx, name), func(t *testing.T) {
 		kt.SetBenchMain(bench)
@@ -97,19 +98,27 @@ func TestRosettaKotlin(t *testing.T) {
 			t.Fatalf("run: %v", err)
 		}
 		got := bytes.TrimSpace(buf.Bytes())
-		_ = os.WriteFile(filepath.Join(outDir, name+".out"), got, 0o644)
-		wantData, err := os.ReadFile(filepath.Join(outDir, name+".out"))
-		if err != nil {
-			// fall back to source out if not found
-			wantData, err = os.ReadFile(outPath)
-			if err != nil {
-				t.Fatalf("read want: %v", err)
+		if bench {
+			outBytes := got
+			if idx := bytes.LastIndexByte(outBytes, '{'); idx >= 0 {
+				outBytes = outBytes[idx:]
 			}
-		}
-		want := bytes.TrimSpace(wantData)
-		if !bytes.Equal(got, want) {
-			writeKTError(outDir, name, fmt.Errorf("output mismatch\n-- got --\n%s\n-- want --\n%s", got, want))
-			t.Fatalf("output mismatch")
+			_ = os.WriteFile(benchPath, outBytes, 0o644)
+		} else {
+			_ = os.WriteFile(filepath.Join(outDir, name+".out"), got, 0o644)
+			wantData, err := os.ReadFile(filepath.Join(outDir, name+".out"))
+			if err != nil {
+				// fall back to source out if not found
+				wantData, err = os.ReadFile(outPath)
+				if err != nil {
+					t.Fatalf("read want: %v", err)
+				}
+			}
+			want := bytes.TrimSpace(wantData)
+			if !bytes.Equal(got, want) {
+				writeKTError(outDir, name, fmt.Errorf("output mismatch\n-- got --\n%s\n-- want --\n%s", got, want))
+				t.Fatalf("output mismatch")
+			}
 		}
 		_ = os.Remove(filepath.Join(outDir, name+".error"))
 		_ = os.Remove(jar)

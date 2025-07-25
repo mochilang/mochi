@@ -32,7 +32,24 @@ func UpdateRosettaChecklist() {
 		dur := ""
 		mem := ""
 		outPath := filepath.Join(outDir, name+".out")
-		if data, err := os.ReadFile(outPath); err == nil {
+		benchFile := filepath.Join(outDir, name+".bench")
+		if data, err := os.ReadFile(benchFile); err == nil {
+			status = "✓"
+			compiled++
+			data = bytes.TrimSpace(data)
+			var res struct {
+				Dur int64 `json:"duration_us"`
+				Mem int64 `json:"memory_bytes"`
+			}
+			if json.Unmarshal(data, &res) == nil {
+				if res.Dur > 0 {
+					dur = humanDur(time.Duration(res.Dur) * time.Microsecond)
+				}
+				if res.Mem > 0 {
+					mem = humanSize(res.Mem)
+				}
+			}
+		} else if data, err := os.ReadFile(outPath); err == nil {
 			status = "✓"
 			compiled++
 			trimmed := bytes.TrimSpace(data)
