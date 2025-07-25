@@ -1,7 +1,25 @@
-// Generated 2025-07-25 00:53 +0700
+// Generated 2025-07-25 14:38 +0000
 
 exception Return
 
+let mutable _nowSeed:int64 = 0L
+let mutable _nowSeeded = false
+let _initNow () =
+    let s = System.Environment.GetEnvironmentVariable("MOCHI_NOW_SEED")
+    if System.String.IsNullOrEmpty(s) |> not then
+        match System.Int32.TryParse(s) with
+        | true, v ->
+            _nowSeed <- int64 v
+            _nowSeeded <- true
+        | _ -> ()
+let _now () =
+    if _nowSeeded then
+        _nowSeed <- (_nowSeed * 1664525L + 1013904223L) % 2147483647L
+        int _nowSeed
+    else
+        int (System.DateTime.UtcNow.Ticks % 2147483647L)
+
+_initNow()
 let rec primeFactors (n: int) =
     let mutable __ret : int array = Unchecked.defaultof<int array>
     let mutable n = n
@@ -53,21 +71,21 @@ and D (n: float) =
         if n < 10000000000000000000.0 then
             factors <- primeFactors (int n)
         else
-            let g = int (n / 100.0)
+            let g: int = int (n / 100.0)
             factors <- primeFactors g
             factors <- Array.append factors [|2|]
             factors <- Array.append factors [|2|]
             factors <- Array.append factors [|5|]
             factors <- Array.append factors [|5|]
-        let c = Array.length factors
+        let c: int = Array.length factors
         if c = 1 then
             __ret <- 1.0
             raise Return
         if c = 2 then
             __ret <- float ((factors.[0]) + (factors.[1]))
             raise Return
-        let d = n / (float (factors.[0]))
-        __ret <- ((D d) * (float (factors.[0]))) + d
+        let d: float = n / (float (factors.[0]))
+        __ret <- (float ((float (D d)) * (float (factors.[0])))) + d
         raise Return
         __ret
     with
@@ -87,17 +105,19 @@ and pad (n: int) =
 and main () =
     let mutable __ret : unit = Unchecked.defaultof<unit>
     try
+        let __bench_start = _now()
+        let __mem_start = System.GC.GetTotalMemory(true)
         let mutable vals: int array = [||]
         let mutable n: int = -99
         while n < 101 do
             vals <- Array.append vals [|int (D (float n))|]
             n <- n + 1
         let mutable i: int = 0
-        while i < (Array.length vals) do
+        while i < (int (Array.length vals)) do
             let mutable line: string = ""
             let mutable j: int = 0
             while j < 10 do
-                line <- line + (pad (vals.[i + j]))
+                line <- line + (unbox<string> (pad (int (vals.[i + j]))))
                 if j < 9 then
                     line <- line + " "
                 j <- j + 1
@@ -110,9 +130,13 @@ and main () =
             let mutable exp: string = string m
             if (String.length exp) < 2 then
                 exp <- exp + " "
-            let mutable res: string = (string m) + (repeat "0" (m - 1))
+            let mutable res: string = (string m) + (unbox<string> (repeat "0" (m - 1)))
             printfn "%s" ((("D(10^" + exp) + ") / 7 = ") + res)
             m <- m + 1
+        let __bench_end = _now()
+        let __mem_end = System.GC.GetTotalMemory(true)
+        printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)
+
         __ret
     with
         | Return -> __ret

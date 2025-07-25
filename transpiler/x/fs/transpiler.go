@@ -149,7 +149,7 @@ func bodyUsesBreak(body []Stmt) bool {
 func fsType(t types.Type) string {
 	switch tt := t.(type) {
 	case types.IntType, types.Int64Type:
-		return "int64"
+		return "int"
 	case types.BigIntType:
 		return "bigint"
 	case types.BigRatType:
@@ -190,9 +190,9 @@ func fsType(t types.Type) string {
 func fsTypeFromString(s string) string {
 	switch s {
 	case "int":
-		return "int64"
+		return "int"
 	case "int64":
-		return "int64"
+		return "int"
 	case "float":
 		return "float"
 	case "bool":
@@ -983,7 +983,13 @@ func (g *GroupQueryExpr) emit(w io.Writer) {
 
 func (a *AppendExpr) emit(w io.Writer) {
 	io.WriteString(w, "Array.append ")
-	a.List.emit(w)
+	if needsParen(a.List) {
+		io.WriteString(w, "(")
+		a.List.emit(w)
+		io.WriteString(w, ")")
+	} else {
+		a.List.emit(w)
+	}
 	io.WriteString(w, " [|")
 	a.Elem.emit(w)
 	io.WriteString(w, "|]")
@@ -1542,6 +1548,10 @@ func mapMethod(name string) string {
 	}
 }
 
+func isMapType(t string) bool {
+	return t == "map" || strings.HasPrefix(t, "Map<")
+}
+
 func precedence(op string) int {
 	switch op {
 	case "||":
@@ -1879,7 +1889,7 @@ func (m *MethodCallExpr) emit(w io.Writer) {
 	case "keys":
 		if len(m.Args) == 0 {
 			typ := inferType(m.Target)
-			if typ == "map" || strings.HasPrefix(typ, "Map<") {
+			if isMapType(typ) {
 				io.WriteString(w, "(Map.toList ")
 				m.Target.emit(w)
 				io.WriteString(w, " |> List.map fst)")
@@ -1893,7 +1903,7 @@ func (m *MethodCallExpr) emit(w io.Writer) {
 	case "values":
 		if len(m.Args) == 0 {
 			typ := inferType(m.Target)
-			if typ == "map" || strings.HasPrefix(typ, "Map<") {
+			if isMapType(typ) {
 				io.WriteString(w, "(Map.toList ")
 				m.Target.emit(w)
 				io.WriteString(w, " |> List.map snd)")
@@ -1915,6 +1925,23 @@ func (m *MethodCallExpr) emit(w io.Writer) {
 				m.Target.emit(w)
 				io.WriteString(w, ")")
 			}
+			return
+		}
+	case "get":
+		if len(m.Args) == 2 && isMapType(inferType(m.Target)) {
+			io.WriteString(w, "(defaultArg (Map.tryFind ")
+			if needsParen(m.Args[0]) {
+				io.WriteString(w, "(")
+				m.Args[0].emit(w)
+				io.WriteString(w, ")")
+			} else {
+				m.Args[0].emit(w)
+			}
+			io.WriteString(w, " ")
+			m.Target.emit(w)
+			io.WriteString(w, ") ")
+			m.Args[1].emit(w)
+			io.WriteString(w, ")")
 			return
 		}
 	}
@@ -1996,7 +2023,11 @@ type CastExpr struct {
 func (c *CastExpr) emit(w io.Writer) {
 	switch c.Type {
 	case "float":
-		io.WriteString(w, "unbox<float> ")
+		if t := inferType(c.Expr); t == "obj" {
+			io.WriteString(w, "unbox<float> ")
+		} else {
+			io.WriteString(w, "float ")
+		}
 		if needsParen(c.Expr) {
 			io.WriteString(w, "(")
 			c.Expr.emit(w)
@@ -2005,7 +2036,11 @@ func (c *CastExpr) emit(w io.Writer) {
 			c.Expr.emit(w)
 		}
 	case "int":
-		io.WriteString(w, "unbox<int> ")
+		if t := inferType(c.Expr); t == "obj" {
+			io.WriteString(w, "unbox<int> ")
+		} else {
+			io.WriteString(w, "int ")
+		}
 		if needsParen(c.Expr) {
 			io.WriteString(w, "(")
 			c.Expr.emit(w)
@@ -2014,7 +2049,11 @@ func (c *CastExpr) emit(w io.Writer) {
 			c.Expr.emit(w)
 		}
 	case "bigint":
-		io.WriteString(w, "unbox<bigint> ")
+		if t := inferType(c.Expr); t == "obj" {
+			io.WriteString(w, "unbox<bigint> ")
+		} else {
+			io.WriteString(w, "bigint ")
+		}
 		if needsParen(c.Expr) {
 			io.WriteString(w, "(")
 			c.Expr.emit(w)

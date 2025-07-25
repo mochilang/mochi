@@ -1,4 +1,4 @@
-// Generated 2025-07-24 20:52 +0700
+// Generated 2025-07-25 14:38 +0000
 
 exception Return
 
@@ -29,7 +29,7 @@ and gen (k: int) (count: int) =
     try
         let mutable r: int array = [||]
         let mutable n: int = 2
-        while (Array.length r) < count do
+        while (unbox<int> (Array.length r)) < count do
             if kPrime n k then
                 r <- Array.append r [|n|]
             n <- n + 1
@@ -39,7 +39,7 @@ and gen (k: int) (count: int) =
     with
         | Return -> __ret
 and main () =
-    let mutable __ret : obj = Unchecked.defaultof<obj>
+    let mutable __ret : unit = Unchecked.defaultof<unit>
     try
         let mutable k: int = 1
         while k <= 5 do

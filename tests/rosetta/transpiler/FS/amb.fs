@@ -1,4 +1,4 @@
-// Generated 2025-07-24 20:52 +0700
+// Generated 2025-07-25 14:38 +0000
 
 exception Return
 
@@ -8,7 +8,7 @@ let rec amb (wordsets: string array array) (res: string array) (idx: int) =
     let mutable res = res
     let mutable idx = idx
     try
-        if idx = (Seq.length wordsets) then
+        if idx = (unbox<int> (Array.length wordsets)) then
             __ret <- true
             raise Return
         let mutable prev: string = ""
@@ -29,19 +29,19 @@ let rec amb (wordsets: string array array) (res: string array) (idx: int) =
     with
         | Return -> __ret
 and main () =
-    let mutable __ret : obj = Unchecked.defaultof<obj>
+    let mutable __ret : unit = Unchecked.defaultof<unit>
     try
-        let wordset: array array = [|[|"the"; "that"; "a"|]; [|"frog"; "elephant"; "thing"|]; [|"walked"; "treaded"; "grows"|]; [|"slowly"; "quickly"|]|]
+        let wordset: string array array = [|[|"the"; "that"; "a"|]; [|"frog"; "elephant"; "thing"|]; [|"walked"; "treaded"; "grows"|]; [|"slowly"; "quickly"|]|]
         let mutable res: string array = [||]
         let mutable i: int = 0
-        while i < (Array.length wordset) do
+        while i < (unbox<int> (Array.length wordset)) do
             res <- Array.append res [|""|]
             i <- i + 1
         if amb wordset res 0 then
-            let mutable out: string = "[" + (res.[0])
+            let mutable out: string = "[" + (unbox<string> (res.[0]))
             let mutable j: int = 1
-            while j < (Array.length res) do
-                out <- (out + " ") + (res.[j])
+            while j < (unbox<int> (Array.length res)) do
+                out <- (out + " ") + (unbox<string> (res.[j]))
                 j <- j + 1
             out <- out + "]"
             printfn "%s" out

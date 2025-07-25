@@ -2,7 +2,7 @@
 
 This file is auto-generated from rosetta tests.
 
-## Rosetta Golden Test Checklist (75/284)
+## Rosetta Golden Test Checklist (79/284)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 151µs | 41.3 KB |
@@ -46,31 +46,31 @@ This file is auto-generated from rosetta tests.
 | 39 | algebraic-data-types | ✓ | 393µs | 66.7 KB |
 | 40 | align-columns | ✓ | 262µs | 70.9 KB |
 | 41 | aliquot-sequence-classifications |   |  |  |
-| 42 | almkvist-giullera-formula-for-pi |   |  |  |
+| 42 | almkvist-giullera-formula-for-pi | ✓ | 2.249ms | 131.9 KB |
 | 43 | almost-prime | ✓ |  |  |
-| 44 | amb |   |  |  |
+| 44 | amb | ✓ |  |  |
 | 45 | amicable-pairs | ✓ |  |  |
-| 46 | anagrams-deranged-anagrams | ✓ |  |  |
+| 46 | anagrams-deranged-anagrams | ✓ | 240µs | 53.0 KB |
 | 47 | anagrams | ✓ |  |  |
-| 48 | angle-difference-between-two-bearings-1 |   |  |  |
-| 49 | angle-difference-between-two-bearings-2 |   |  |  |
-| 50 | angles-geometric-normalization-and-conversion | ✓ |  |  |
-| 51 | animate-a-pendulum | ✓ |  |  |
-| 52 | animation | ✓ |  |  |
-| 53 | anonymous-recursion-1 | ✓ |  |  |
-| 54 | anonymous-recursion-2 | ✓ |  |  |
-| 55 | anonymous-recursion | ✓ |  |  |
-| 56 | anti-primes | ✓ |  |  |
-| 57 | append-a-record-to-the-end-of-a-text-file | ✓ |  |  |
-| 58 | apply-a-callback-to-an-array-1 | ✓ |  |  |
-| 59 | apply-a-callback-to-an-array-2 | ✓ |  |  |
-| 60 | apply-a-digital-filter-direct-form-ii-transposed- | ✓ |  |  |
-| 61 | approximate-equality | ✓ |  |  |
-| 62 | arbitrary-precision-integers-included- | ✓ |  |  |
-| 63 | archimedean-spiral | ✓ |  |  |
-| 64 | arena-storage-pool | ✓ |  |  |
-| 65 | arithmetic-complex | ✓ |  |  |
-| 66 | arithmetic-derivative | ✓ |  |  |
+| 48 | angle-difference-between-two-bearings-1 | ✓ | 596µs | 67.4 KB |
+| 49 | angle-difference-between-two-bearings-2 | ✓ | 378µs | 74.8 KB |
+| 50 | angles-geometric-normalization-and-conversion | ✓ | 191µs | 42.5 KB |
+| 51 | animate-a-pendulum | ✓ | 159µs | 41.5 KB |
+| 52 | animation | ✓ | 156µs | 41.6 KB |
+| 53 | anonymous-recursion-1 | ✓ | 333µs | 51.9 KB |
+| 54 | anonymous-recursion-2 | ✓ | 152µs | 41.5 KB |
+| 55 | anonymous-recursion | ✓ | 159µs | 41.5 KB |
+| 56 | anti-primes | ✓ | 495µs | 41.5 KB |
+| 57 | append-a-record-to-the-end-of-a-text-file | ✓ | 156µs | 42.1 KB |
+| 58 | apply-a-callback-to-an-array-1 | ✓ | 153µs | 41.4 KB |
+| 59 | apply-a-callback-to-an-array-2 | ✓ | 163µs | 41.8 KB |
+| 60 | apply-a-digital-filter-direct-form-ii-transposed- | ✓ | 379µs | 63.6 KB |
+| 61 | approximate-equality | ✓ | 174µs | 42.9 KB |
+| 62 | arbitrary-precision-integers-included- | ✓ | 15.861ms | 528.1 KB |
+| 63 | archimedean-spiral | ✓ | 363µs | 42.5 KB |
+| 64 | arena-storage-pool | ✓ | 237µs | 53.4 KB |
+| 65 | arithmetic-complex | ✓ | 180µs | 46.4 KB |
+| 66 | arithmetic-derivative | ✓ | 191µs | 41.8 KB |
 | 67 | arithmetic-evaluation | ✓ |  |  |
 | 68 | arithmetic-geometric-mean-calculate-pi | ✓ |  |  |
 | 69 | arithmetic-geometric-mean | ✓ |  |  |
@@ -290,4 +290,4 @@ This file is auto-generated from rosetta tests.
 | 283 | define-a-primitive-data-type |   |  |  |
 | 284 | md5 |   |  |  |
 
-Last updated: 2025-07-25 10:58 +0000
+Last updated: 2025-07-25 14:38 +0000

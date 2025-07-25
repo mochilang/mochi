@@ -1,7 +1,25 @@
-// Generated 2025-07-24 20:52 +0700
+// Generated 2025-07-25 14:38 +0000
 
 exception Return
 
+let mutable _nowSeed:int64 = 0L
+let mutable _nowSeeded = false
+let _initNow () =
+    let s = System.Environment.GetEnvironmentVariable("MOCHI_NOW_SEED")
+    if System.String.IsNullOrEmpty(s) |> not then
+        match System.Int32.TryParse(s) with
+        | true, v ->
+            _nowSeed <- int64 v
+            _nowSeeded <- true
+        | _ -> ()
+let _now () =
+    if _nowSeeded then
+        _nowSeed <- (_nowSeed * 1664525L + 1013904223L) % 2147483647L
+        int _nowSeed
+    else
+        int (System.DateTime.UtcNow.Ticks % 2147483647L)
+
+_initNow()
 let rec d2d (d: float) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable d = d
@@ -42,7 +60,7 @@ and d2g (d: float) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable d = d
     try
-        __ret <- ((d2d d) * 400.0) / 360.0
+        __ret <- (float ((float (d2d d)) * 400.0)) / 360.0
         raise Return
         __ret
     with
@@ -51,7 +69,7 @@ and d2m (d: float) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable d = d
     try
-        __ret <- ((d2d d) * 6400.0) / 360.0
+        __ret <- (float ((float (d2d d)) * 6400.0)) / 360.0
         raise Return
         __ret
     with
@@ -60,7 +78,7 @@ and d2r (d: float) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable d = d
     try
-        __ret <- ((d2d d) * 3.141592653589793) / 180.0
+        __ret <- (float ((float (d2d d)) * 3.141592653589793)) / 180.0
         raise Return
         __ret
     with
@@ -69,7 +87,7 @@ and g2d (g: float) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable g = g
     try
-        __ret <- ((g2g g) * 360.0) / 400.0
+        __ret <- (float ((float (g2g g)) * 360.0)) / 400.0
         raise Return
         __ret
     with
@@ -78,7 +96,7 @@ and g2m (g: float) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable g = g
     try
-        __ret <- ((g2g g) * 6400.0) / 400.0
+        __ret <- (float ((float (g2g g)) * 6400.0)) / 400.0
         raise Return
         __ret
     with
@@ -87,7 +105,7 @@ and g2r (g: float) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable g = g
     try
-        __ret <- ((g2g g) * 3.141592653589793) / 200.0
+        __ret <- (float ((float (g2g g)) * 3.141592653589793)) / 200.0
         raise Return
         __ret
     with
@@ -96,7 +114,7 @@ and m2d (m: float) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable m = m
     try
-        __ret <- ((m2m m) * 360.0) / 6400.0
+        __ret <- (float ((float (m2m m)) * 360.0)) / 6400.0
         raise Return
         __ret
     with
@@ -105,7 +123,7 @@ and m2g (m: float) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable m = m
     try
-        __ret <- ((m2m m) * 400.0) / 6400.0
+        __ret <- (float ((float (m2m m)) * 400.0)) / 6400.0
         raise Return
         __ret
     with
@@ -114,7 +132,7 @@ and m2r (m: float) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable m = m
     try
-        __ret <- ((m2m m) * 3.141592653589793) / 3200.0
+        __ret <- (float ((float (m2m m)) * 3.141592653589793)) / 3200.0
         raise Return
         __ret
     with
@@ -123,7 +141,7 @@ and r2d (r: float) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable r = r
     try
-        __ret <- ((r2r r) * 180.0) / 3.141592653589793
+        __ret <- (float ((float (r2r r)) * 180.0)) / 3.141592653589793
         raise Return
         __ret
     with
@@ -132,7 +150,7 @@ and r2g (r: float) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable r = r
     try
-        __ret <- ((r2r r) * 200.0) / 3.141592653589793
+        __ret <- (float ((float (r2r r)) * 200.0)) / 3.141592653589793
         raise Return
         __ret
     with
@@ -141,18 +159,20 @@ and r2m (r: float) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable r = r
     try
-        __ret <- ((r2r r) * 3200.0) / 3.141592653589793
+        __ret <- (float ((float (r2r r)) * 3200.0)) / 3.141592653589793
         raise Return
         __ret
     with
         | Return -> __ret
 and main () =
-    let mutable __ret : obj = Unchecked.defaultof<obj>
+    let mutable __ret : unit = Unchecked.defaultof<unit>
     try
+        let __bench_start = _now()
+        let __mem_start = System.GC.GetTotalMemory(true)
         let angles: float array = [|-2.0; -1.0; 0.0; 1.0; 2.0; 6.2831853; 16.0; 57.2957795; 359.0; 399.0; 6399.0; 1000000.0|]
         printfn "%s" "degrees normalized_degs gradians mils radians"
         for a in angles do
-            printfn "%s" (((((((((string a) + " ") + (string (d2d a))) + " ") + (string (d2g a))) + " ") + (string (d2m a))) + " ") + (string (d2r a)))
+            printfn "%s" (((((((((string a) + " ") + (string (d2d (float a)))) + " ") + (string (d2g (float a)))) + " ") + (string (d2m (float a)))) + " ") + (string (d2r (float a))))
         printfn "%s" "\ngradians normalized_grds degrees mils radians"
         for a in angles do
             printfn "%s" (((((((((string a) + " ") + (string (g2g a))) + " ") + (string (g2d a))) + " ") + (string (g2m a))) + " ") + (string (g2r a)))
@@ -162,6 +182,10 @@ and main () =
         printfn "%s" "\nradians normalized_rads degrees gradians mils"
         for a in angles do
             printfn "%s" (((((((((string a) + " ") + (string (r2r a))) + " ") + (string (r2d a))) + " ") + (string (r2g a))) + " ") + (string (r2m a)))
+        let __bench_end = _now()
+        let __mem_end = System.GC.GetTotalMemory(true)
+        printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)
+
         __ret
     with
         | Return -> __ret

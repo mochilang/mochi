@@ -1,4 +1,4 @@
-// Generated 2025-07-24 20:52 +0700
+// Generated 2025-07-25 14:38 +0000
 
 exception Return
 
@@ -31,7 +31,7 @@ and pad (n: int) (width: int) =
     with
         | Return -> __ret
 and main () =
-    let mutable __ret : obj = Unchecked.defaultof<obj>
+    let mutable __ret : unit = Unchecked.defaultof<unit>
     try
         let mutable sums: int array = [||]
         let mutable i: int = 0
@@ -45,9 +45,9 @@ and main () =
         printfn "%s" "The amicable pairs below 20,000 are:"
         let mutable n: int = 2
         while n < 19999 do
-            let m = sums.[n]
-            if ((m > n) && (m < 20000)) && (n = (sums.[m])) then
-                printfn "%s" ((("  " + (pad n 5)) + " and ") + (pad m 5))
+            let m: int = sums.[n]
+            if ((m > n) && (m < 20000)) && (n = (unbox<int> (sums.[m]))) then
+                printfn "%s" ((("  " + (unbox<string> (pad n 5))) + " and ") + (unbox<string> (pad m 5)))
             n <- n + 1
         __ret
     with
