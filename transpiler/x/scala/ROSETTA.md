@@ -2,8 +2,8 @@
 
 Generated Scala code for Rosetta tasks in `tests/rosetta/x/Mochi`. Each program has a `.scala` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
 
-## Golden Test Checklist (91/284)
-_Last updated: 2025-07-25 12:58 +0700_
+## Golden Test Checklist (93/284)
+_Last updated: 2025-07-25 13:21 +0700_
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -27,20 +27,20 @@ _Last updated: 2025-07-25 12:58 +0700_
 | 18 | abbreviations-easy | ✓ |  |  |
 | 19 | abbreviations-simple | ✓ |  |  |
 | 20 | abc-problem | ✓ |  |  |
-| 21 | abelian-sandpile-model-identity | ✓ |  |  |
-| 22 | abelian-sandpile-model | ✓ |  |  |
-| 23 | abstract-type | ✓ |  |  |
-| 24 | abundant-deficient-and-perfect-number-classifications | ✓ |  |  |
-| 25 | abundant-odd-numbers | ✓ |  |  |
-| 26 | accumulator-factory | error |  |  |
-| 27 | achilles-numbers | error |  |  |
-| 28 | ackermann-function-2 | ✓ |  |  |
+| 21 | abelian-sandpile-model-identity | ✓ | 8µs | 8.7 MB |
+| 22 | abelian-sandpile-model | ✓ | 7µs | 8.7 MB |
+| 23 | abstract-type | ✓ | 4µs | 8.7 MB |
+| 24 | abundant-deficient-and-perfect-number-classifications | ✓ | 253µs | 8.7 MB |
+| 25 | abundant-odd-numbers | ✓ | 667µs | 8.7 MB |
+| 26 | accumulator-factory | ✓ | 7µs | 8.7 MB |
+| 27 | achilles-numbers | ✓ | 65µs | 8.7 MB |
+| 28 | ackermann-function-2 | ✓ | 3µs | 8.7 MB |
 | 29 | ackermann-function-3 | ✓ |  |  |
-| 30 | ackermann-function | ✓ |  |  |
-| 31 | active-directory-connect | ✓ |  |  |
-| 32 | active-directory-search-for-a-user | ✓ |  |  |
-| 33 | active-object | ✓ |  |  |
-| 34 | add-a-variable-to-a-class-instance-at-runtime | ✓ |  |  |
+| 30 | ackermann-function | ✓ | 4µs | 8.7 MB |
+| 31 | active-directory-connect | ✓ | 4µs | 8.7 MB |
+| 32 | active-directory-search-for-a-user | ✓ | 4µs | 8.7 MB |
+| 33 | active-object | ✓ | 39µs | 8.7 MB |
+| 34 | add-a-variable-to-a-class-instance-at-runtime | ✓ | 5µs | 8.7 MB |
 | 35 | additive-primes | ✓ |  |  |
 | 36 | address-of-a-variable | ✓ |  |  |
 | 37 | adfgvx-cipher | error |  |  |

@@ -1,3 +1,79 @@
+## Progress (2025-07-25 13:17 +0700)
+- scala transpiler: regenerate rosetta index 28
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-25 13:17 +0700)
+- scala transpiler: regenerate rosetta index 28
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-25 13:17 +0700)
+- scala transpiler: regenerate rosetta index 28
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-25 13:17 +0700)
+- scala transpiler: regenerate rosetta index 28
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-25 13:17 +0700)
+- scala transpiler: regenerate rosetta index 28
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-25 13:16 +0700)
+- scala transpiler: handle map keys/values, regen index 27
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-25 13:10 +0700)
+- remove stale error file
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-25 13:10 +0700)
+- remove stale error file
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-25 13:10 +0700)
+- remove stale error file
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-25 13:10 +0700)
+- remove stale error file
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-25 13:07 +0700)
+- scala transpiler: regenerate rosetta index 25
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-25 13:07 +0700)
+- scala transpiler: regenerate rosetta index 25
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-25 13:07 +0700)
+- scala transpiler: regenerate rosetta index 25
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-25 13:07 +0700)
+- scala transpiler: regenerate rosetta index 24
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-25 13:07 +0700)
+- scala transpiler: regenerate rosetta index 23
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-25 13:06 +0700)
+- scala transpiler: regenerate rosetta index 22
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-25 13:06 +0700)
+- scala transpiler: regenerate rosetta index 21
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-25 13:00 +0700)
+- scala: add benchmark output
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-25 13:00 +0700)
+- scala: add benchmark output
+- Regenerated golden files - 93/104 vm valid programs passing
+
 ## Progress (2025-07-25 12:58 +0700)
 - scala: update transpiler and regenerate rosetta outputs
 - Regenerated golden files - 93/104 vm valid programs passing
