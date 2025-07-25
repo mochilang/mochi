@@ -1,0 +1,1436 @@
+func main (regs=1)
+  Return       r0
+
+  // fun bigTrim(a: list<int>): list<int> {
+func bigTrim (regs=15)
+  // var n = count(a)
+  Count        r1, r0
+  Move         r2, r1
+L2:
+  // while n > 1 && a[n-1] == 0 {
+  Const        r3, 1
+  LessInt      r4, r3, r2
+  Const        r3, 1
+  SubInt       r5, r2, r3
+  Index        r6, r0, r5
+  Const        r7, 0
+  Equal        r8, r6, r7
+  Move         r9, r4
+  JumpIfFalse  r9, L0
+  Move         r9, r8
+L0:
+  JumpIfFalse  r9, L1
+  // a = a[0:n-1]
+  Const        r7, 0
+  Move         r10, r7
+  Const        r3, 1
+  SubInt       r12, r2, r3
+  Move         r11, r12
+  Slice        r13, r0, r10, r11
+  Move         r0, r13
+  // n = n - 1
+  Const        r3, 1
+  SubInt       r14, r2, r3
+  Move         r2, r14
+  // while n > 1 && a[n-1] == 0 {
+  Jump         L2
+L1:
+  // return a
+  Return       r0
+
+  // fun bigFromInt(x: int): list<int> {
+func bigFromInt (regs=12)
+  // if x == 0 { return [0] }
+  Const        r1, 0
+  Equal        r2, r0, r1
+  JumpIfFalse  r2, L0
+  Const        r3, [0]
+  Return       r3
+L0:
+  // var digits: list<int> = []
+  Const        r4, []
+  Move         r5, r4
+  // var n = x
+  Move         r6, r0
+L2:
+  // while n > 0 {
+  Const        r1, 0
+  Less         r7, r1, r6
+  JumpIfFalse  r7, L1
+  // digits = append(digits, n % 10)
+  Const        r8, 10
+  Mod          r9, r6, r8
+  Append       r10, r5, r9
+  Move         r5, r10
+  // n = n / 10
+  Const        r8, 10
+  Div          r11, r6, r8
+  Move         r6, r11
+  // while n > 0 {
+  Jump         L2
+L1:
+  // return digits
+  Return       r5
+
+  // fun bigCmp(a: list<int>, b: list<int>): int {
+func bigCmp (regs=23)
+  // if count(a) > count(b) { return 1 }
+  Count        r2, r0
+  Count        r3, r1
+  LessInt      r4, r3, r2
+  JumpIfFalse  r4, L0
+  Const        r5, 1
+  Return       r5
+L0:
+  // if count(a) < count(b) { return -1 }
+  Count        r6, r0
+  Count        r7, r1
+  LessInt      r8, r6, r7
+  JumpIfFalse  r8, L1
+  Const        r5, 1
+  NegInt       r9, r5
+  Return       r9
+L1:
+  // var i = count(a) - 1
+  Count        r10, r0
+  Const        r5, 1
+  SubInt       r11, r10, r5
+  Move         r12, r11
+L5:
+  // while i >= 0 {
+  Const        r13, 0
+  LessEqInt    r14, r13, r12
+  JumpIfFalse  r14, L2
+  // if a[i] > b[i] { return 1 }
+  Index        r15, r0, r12
+  Index        r16, r1, r12
+  Less         r17, r16, r15
+  JumpIfFalse  r17, L3
+  Const        r5, 1
+  Return       r5
+L3:
+  // if a[i] < b[i] { return -1 }
+  Index        r18, r0, r12
+  Index        r19, r1, r12
+  Less         r20, r18, r19
+  JumpIfFalse  r20, L4
+  Const        r5, 1
+  NegInt       r21, r5
+  Return       r21
+L4:
+  // i = i - 1
+  Const        r5, 1
+  SubInt       r22, r12, r5
+  Move         r12, r22
+  // while i >= 0 {
+  Jump         L5
+L2:
+  // return 0
+  Const        r13, 0
+  Return       r13
+
+  // fun bigAdd(a: list<int>, b: list<int>): list<int> {
+func bigAdd (regs=32)
+  // var res: list<int> = []
+  Const        r2, []
+  Move         r3, r2
+  // var carry = 0
+  Const        r4, 0
+  Move         r5, r4
+  // var i = 0
+  Const        r4, 0
+  Move         r6, r4
+L4:
+  // while i < count(a) || i < count(b) || carry > 0 {
+  Count        r7, r0
+  LessInt      r8, r6, r7
+  Count        r9, r1
+  LessInt      r10, r6, r9
+  Const        r4, 0
+  LessInt      r11, r4, r5
+  Move         r12, r8
+  JumpIfTrue   r12, L0
+  Move         r12, r10
+  JumpIfTrue   r12, L0
+  Move         r12, r11
+L0:
+  JumpIfFalse  r12, L1
+  // var av = 0
+  Const        r4, 0
+  Move         r13, r4
+  // if i < count(a) { av = a[i] }
+  Count        r14, r0
+  LessInt      r15, r6, r14
+  JumpIfFalse  r15, L2
+  Index        r16, r0, r6
+  Move         r13, r16
+L2:
+  // var bv = 0
+  Const        r4, 0
+  Move         r17, r4
+  // if i < count(b) { bv = b[i] }
+  Count        r18, r1
+  LessInt      r19, r6, r18
+  JumpIfFalse  r19, L3
+  Index        r20, r1, r6
+  Move         r17, r20
+L3:
+  // var s = av + bv + carry
+  Add          r21, r13, r17
+  Add          r22, r21, r5
+  Move         r23, r22
+  // res = append(res, s % 10)
+  Const        r24, 10
+  Mod          r25, r23, r24
+  Append       r26, r3, r25
+  Move         r3, r26
+  // carry = s / 10
+  Const        r24, 10
+  Div          r27, r23, r24
+  Move         r5, r27
+  // i = i + 1
+  Const        r28, 1
+  AddInt       r29, r6, r28
+  Move         r6, r29
+  // while i < count(a) || i < count(b) || carry > 0 {
+  Jump         L4
+L1:
+  // return bigTrim(res)
+  Move         r30, r3
+  Call         r31, bigTrim, r30
+  Return       r31
+
+  // fun bigSub(a: list<int>, b: list<int>): list<int> {
+func bigSub (regs=26)
+  // var res: list<int> = []
+  Const        r2, []
+  Move         r3, r2
+  // var borrow = 0
+  Const        r4, 0
+  Move         r5, r4
+  // var i = 0
+  Const        r4, 0
+  Move         r6, r4
+L4:
+  // while i < count(a) {
+  Count        r7, r0
+  LessInt      r8, r6, r7
+  JumpIfFalse  r8, L0
+  // var av = a[i]
+  Index        r9, r0, r6
+  Move         r10, r9
+  // var bv = 0
+  Const        r4, 0
+  Move         r11, r4
+  // if i < count(b) { bv = b[i] }
+  Count        r12, r1
+  LessInt      r13, r6, r12
+  JumpIfFalse  r13, L1
+  Index        r14, r1, r6
+  Move         r11, r14
+L1:
+  // var diff = av - bv - borrow
+  Sub          r15, r10, r11
+  Sub          r16, r15, r5
+  Move         r17, r16
+  // if diff < 0 {
+  Const        r4, 0
+  Less         r18, r17, r4
+  JumpIfFalse  r18, L2
+  // diff = diff + 10
+  Const        r19, 10
+  Add          r20, r17, r19
+  Move         r17, r20
+  // borrow = 1
+  Const        r21, 1
+  Move         r5, r21
+  // if diff < 0 {
+  Jump         L3
+L2:
+  // borrow = 0
+  Const        r4, 0
+  Move         r5, r4
+L3:
+  // res = append(res, diff)
+  Append       r22, r3, r17
+  Move         r3, r22
+  // i = i + 1
+  Const        r21, 1
+  AddInt       r23, r6, r21
+  Move         r6, r23
+  // while i < count(a) {
+  Jump         L4
+L0:
+  // return bigTrim(res)
+  Move         r24, r3
+  Call         r25, bigTrim, r24
+  Return       r25
+
+  // fun bigMulSmall(a: list<int>, m: int): list<int> {
+func bigMulSmall (regs=27)
+  // if m == 0 { return [0] }
+  Const        r2, 0
+  Equal        r3, r1, r2
+  JumpIfFalse  r3, L0
+  Const        r4, [0]
+  Return       r4
+L0:
+  // var res: list<int> = []
+  Const        r5, []
+  Move         r6, r5
+  // var carry = 0
+  Const        r2, 0
+  Move         r7, r2
+  // var i = 0
+  Const        r2, 0
+  Move         r8, r2
+L2:
+  // while i < count(a) {
+  Count        r9, r0
+  LessInt      r10, r8, r9
+  JumpIfFalse  r10, L1
+  // var prod = a[i] * m + carry
+  Index        r11, r0, r8
+  Mul          r12, r11, r1
+  Add          r13, r12, r7
+  Move         r14, r13
+  // res = append(res, prod % 10)
+  Const        r15, 10
+  Mod          r16, r14, r15
+  Append       r17, r6, r16
+  Move         r6, r17
+  // carry = prod / 10
+  Const        r15, 10
+  Div          r18, r14, r15
+  Move         r7, r18
+  // i = i + 1
+  Const        r19, 1
+  AddInt       r20, r8, r19
+  Move         r8, r20
+  // while i < count(a) {
+  Jump         L2
+L1:
+  // while carry > 0 {
+  Const        r2, 0
+  Less         r21, r2, r7
+  JumpIfFalse  r21, L3
+  // res = append(res, carry % 10)
+  Const        r15, 10
+  Mod          r22, r7, r15
+  Append       r23, r6, r22
+  Move         r6, r23
+  // carry = carry / 10
+  Const        r15, 10
+  Div          r24, r7, r15
+  Move         r7, r24
+  // while carry > 0 {
+  Jump         L1
+L3:
+  // return bigTrim(res)
+  Move         r25, r6
+  Call         r26, bigTrim, r25
+  Return       r26
+
+  // fun bigMulBig(a: list<int>, b: list<int>): list<int> {
+func bigMulBig (regs=45)
+  // var res: list<int> = []
+  Const        r2, []
+  Move         r3, r2
+  // var i = 0
+  Const        r4, 0
+  Move         r5, r4
+L1:
+  // while i < count(a) + count(b) {
+  Count        r6, r0
+  Count        r7, r1
+  AddInt       r8, r6, r7
+  LessInt      r9, r5, r8
+  JumpIfFalse  r9, L0
+  // res = append(res, 0)
+  Const        r4, 0
+  Append       r10, r3, r4
+  Move         r3, r10
+  // i = i + 1
+  Const        r11, 1
+  AddInt       r12, r5, r11
+  Move         r5, r12
+  // while i < count(a) + count(b) {
+  Jump         L1
+L0:
+  // i = 0
+  Const        r4, 0
+  Move         r5, r4
+L7:
+  // while i < count(a) {
+  Count        r13, r0
+  LessInt      r14, r5, r13
+  JumpIfFalse  r14, L2
+  // var carry = 0
+  Const        r4, 0
+  Move         r15, r4
+  // var j = 0
+  Const        r4, 0
+  Move         r16, r4
+L4:
+  // while j < count(b) {
+  Count        r17, r1
+  LessInt      r18, r16, r17
+  JumpIfFalse  r18, L3
+  // var idx = i + j
+  AddInt       r19, r5, r16
+  Move         r20, r19
+  // var prod = res[idx] + a[i] * b[j] + carry
+  Index        r21, r3, r20
+  Index        r22, r0, r5
+  Index        r23, r1, r16
+  Mul          r24, r22, r23
+  Add          r25, r21, r24
+  Add          r26, r25, r15
+  Move         r27, r26
+  // res[idx] = prod % 10
+  Const        r28, 10
+  Mod          r29, r27, r28
+  SetIndex     r3, r20, r29
+  // carry = prod / 10
+  Const        r28, 10
+  Div          r30, r27, r28
+  Move         r15, r30
+  // j = j + 1
+  Const        r11, 1
+  AddInt       r31, r16, r11
+  Move         r16, r31
+  // while j < count(b) {
+  Jump         L4
+L3:
+  // var idx = i + count(b)
+  Count        r32, r1
+  AddInt       r33, r5, r32
+  Move         r34, r33
+L6:
+  // while carry > 0 {
+  Const        r4, 0
+  Less         r35, r4, r15
+  JumpIfFalse  r35, L5
+  // var prod = res[idx] + carry
+  Index        r36, r3, r34
+  Add          r37, r36, r15
+  Move         r38, r37
+  // res[idx] = prod % 10
+  Const        r28, 10
+  Mod          r39, r38, r28
+  SetIndex     r3, r34, r39
+  // carry = prod / 10
+  Const        r28, 10
+  Div          r40, r38, r28
+  Move         r15, r40
+  // idx = idx + 1
+  Const        r11, 1
+  AddInt       r41, r34, r11
+  Move         r34, r41
+  // while carry > 0 {
+  Jump         L6
+L5:
+  // i = i + 1
+  Const        r11, 1
+  AddInt       r42, r5, r11
+  Move         r5, r42
+  // while i < count(a) {
+  Jump         L7
+L2:
+  // return bigTrim(res)
+  Move         r43, r3
+  Call         r44, bigTrim, r43
+  Return       r44
+
+  // fun bigMulPow10(a: list<int>, k: int): list<int> {
+func bigMulPow10 (regs=9)
+  // var i = 0
+  Const        r2, 0
+  Move         r3, r2
+L1:
+  // while i < k {
+  Less         r4, r3, r1
+  JumpIfFalse  r4, L0
+  // a = [0] + a
+  Const        r5, [0]
+  Add          r6, r5, r0
+  Move         r0, r6
+  // i = i + 1
+  Const        r7, 1
+  AddInt       r8, r3, r7
+  Move         r3, r8
+  // while i < k {
+  Jump         L1
+L0:
+  // return a
+  Return       r0
+
+  // fun bigDivSmall(a: list<int>, m: int): list<int> {
+func bigDivSmall (regs=25)
+  // var res: list<int> = []
+  Const        r2, []
+  Move         r3, r2
+  // var rem = 0
+  Const        r4, 0
+  Move         r5, r4
+  // var i = count(a) - 1
+  Count        r6, r0
+  Const        r7, 1
+  SubInt       r8, r6, r7
+  Move         r9, r8
+L1:
+  // while i >= 0 {
+  Const        r4, 0
+  LessEqInt    r10, r4, r9
+  JumpIfFalse  r10, L0
+  // var cur = rem * 10 + a[i]
+  Const        r11, 10
+  MulInt       r12, r5, r11
+  Index        r13, r0, r9
+  Add          r14, r12, r13
+  Move         r15, r14
+  // var q = cur / m
+  Div          r16, r15, r1
+  Move         r17, r16
+  // rem = cur % m
+  Mod          r18, r15, r1
+  Move         r5, r18
+  // res = [q] + res
+  Move         r19, r17
+  MakeList     r20, 1, r19
+  Add          r21, r20, r3
+  Move         r3, r21
+  // i = i - 1
+  Const        r7, 1
+  SubInt       r22, r9, r7
+  Move         r9, r22
+  // while i >= 0 {
+  Jump         L1
+L0:
+  // return bigTrim(res)
+  Move         r23, r3
+  Call         r24, bigTrim, r23
+  Return       r24
+
+  // fun bigToString(a: list<int>): string {
+func bigToString (regs=13)
+  // var s = ""
+  Const        r1, ""
+  Move         r2, r1
+  // var i = count(a) - 1
+  Count        r3, r0
+  Const        r4, 1
+  SubInt       r5, r3, r4
+  Move         r6, r5
+L1:
+  // while i >= 0 {
+  Const        r7, 0
+  LessEqInt    r8, r7, r6
+  JumpIfFalse  r8, L0
+  // s = s + str(a[i])
+  Index        r9, r0, r6
+  Str          r10, r9
+  Add          r11, r2, r10
+  Move         r2, r11
+  // i = i - 1
+  Const        r4, 1
+  SubInt       r12, r6, r4
+  Move         r6, r12
+  // while i >= 0 {
+  Jump         L1
+L0:
+  // return s
+  Return       r2
+
+  // fun repeat(ch: string, n: int): string {
+func repeat (regs=10)
+  // var s = ""
+  Const        r2, ""
+  Move         r3, r2
+  // var i = 0
+  Const        r4, 0
+  Move         r5, r4
+L1:
+  // while i < n {
+  Less         r6, r5, r1
+  JumpIfFalse  r6, L0
+  // s = s + ch
+  Add          r7, r3, r0
+  Move         r3, r7
+  // i = i + 1
+  Const        r8, 1
+  AddInt       r9, r5, r8
+  Move         r5, r9
+  // while i < n {
+  Jump         L1
+L0:
+  // return s
+  Return       r3
+
+  // fun sortInts(xs: list<int>): list<int> {
+func sortInts (regs=31)
+  // var res: list<int> = []
+  Const        r1, []
+  Move         r2, r1
+  // var tmp = xs
+  Move         r3, r0
+L7:
+  // while count(tmp) > 0 {
+  Count        r4, r3
+  Const        r5, 0
+  LessInt      r6, r5, r4
+  JumpIfFalse  r6, L0
+  // var min = tmp[0]
+  Const        r5, 0
+  Index        r7, r3, r5
+  Move         r8, r7
+  // var idx = 0
+  Const        r5, 0
+  Move         r9, r5
+  // var i = 1
+  Const        r10, 1
+  Move         r11, r10
+L3:
+  // while i < count(tmp) {
+  Count        r12, r3
+  LessInt      r13, r11, r12
+  JumpIfFalse  r13, L1
+  // if tmp[i] < min {
+  Index        r14, r3, r11
+  Less         r15, r14, r8
+  JumpIfFalse  r15, L2
+  // min = tmp[i]
+  Index        r16, r3, r11
+  Move         r8, r16
+  // idx = i
+  Move         r9, r11
+L2:
+  // i = i + 1
+  Const        r10, 1
+  AddInt       r17, r11, r10
+  Move         r11, r17
+  // while i < count(tmp) {
+  Jump         L3
+L1:
+  // res = res + [min]
+  Move         r18, r8
+  MakeList     r19, 1, r18
+  Add          r20, r2, r19
+  Move         r2, r20
+  // var out: list<int> = []
+  Const        r1, []
+  Move         r21, r1
+  // var j = 0
+  Const        r5, 0
+  Move         r22, r5
+L6:
+  // while j < count(tmp) {
+  Count        r23, r3
+  LessInt      r24, r22, r23
+  JumpIfFalse  r24, L4
+  // if j != idx { out = out + [tmp[j]] }
+  NotEqual     r25, r22, r9
+  JumpIfFalse  r25, L5
+  Index        r27, r3, r22
+  Move         r26, r27
+  MakeList     r28, 1, r26
+  Add          r29, r21, r28
+  Move         r21, r29
+L5:
+  // j = j + 1
+  Const        r10, 1
+  AddInt       r30, r22, r10
+  Move         r22, r30
+  // while j < count(tmp) {
+  Jump         L6
+L4:
+  // tmp = out
+  Move         r3, r21
+  // while count(tmp) > 0 {
+  Jump         L7
+L0:
+  // return res
+  Return       r2
+
+  // fun primesUpTo(n: int): list<int> {
+func primesUpTo (regs=27)
+  // var sieve: list<bool> = []
+  Const        r1, []
+  Move         r2, r1
+  // var i = 0
+  Const        r3, 0
+  Move         r4, r3
+L1:
+  // while i <= n {
+  LessEq       r5, r4, r0
+  JumpIfFalse  r5, L0
+  // sieve = append(sieve, true)
+  Const        r6, true
+  Append       r7, r2, r6
+  Move         r2, r7
+  // i = i + 1
+  Const        r8, 1
+  AddInt       r9, r4, r8
+  Move         r4, r9
+  // while i <= n {
+  Jump         L1
+L0:
+  // var p = 2
+  Const        r10, 2
+  Move         r11, r10
+L5:
+  // while p * p <= n {
+  MulInt       r12, r11, r11
+  LessEq       r13, r12, r0
+  JumpIfFalse  r13, L2
+  // if sieve[p] {
+  Index        r14, r2, r11
+  JumpIfFalse  r14, L3
+  // var m = p * p
+  MulInt       r15, r11, r11
+  Move         r16, r15
+L4:
+  // while m <= n {
+  LessEq       r17, r16, r0
+  JumpIfFalse  r17, L3
+  // sieve[m] = false
+  Const        r18, false
+  SetIndex     r2, r16, r18
+  // m = m + p
+  AddInt       r19, r16, r11
+  Move         r16, r19
+  // while m <= n {
+  Jump         L4
+L3:
+  // p = p + 1
+  Const        r8, 1
+  AddInt       r20, r11, r8
+  Move         r11, r20
+  // while p * p <= n {
+  Jump         L5
+L2:
+  // var res: list<int> = []
+  Const        r1, []
+  Move         r21, r1
+  // var x = 2
+  Const        r10, 2
+  Move         r22, r10
+L8:
+  // while x <= n {
+  LessEq       r23, r22, r0
+  JumpIfFalse  r23, L6
+  // if sieve[x] { res = append(res, x) }
+  Index        r24, r2, r22
+  JumpIfFalse  r24, L7
+  Append       r25, r21, r22
+  Move         r21, r25
+L7:
+  // x = x + 1
+  Const        r8, 1
+  AddInt       r26, r22, r8
+  Move         r22, r26
+  // while x <= n {
+  Jump         L8
+L6:
+  // return res
+  Return       r21
+
+  // fun factorialExp(n: int, primes: list<int>): map<string,int> {
+func factorialExp (regs=20)
+  // var m: map<string,int> = {}
+  Const        r2, {}
+  Move         r3, r2
+  // for p in primes {
+  IterPrep     r4, r1
+  Len          r5, r4
+  Const        r6, 0
+L4:
+  LessInt      r7, r6, r5
+  JumpIfFalse  r7, L0
+  Index        r8, r4, r6
+  Move         r9, r8
+  // if p > n { break }
+  Less         r10, r0, r9
+  JumpIfFalse  r10, L1
+  Jump         L0
+L1:
+  // var t = n
+  Move         r11, r0
+  // var e = 0
+  Const        r12, 0
+  Move         r13, r12
+L3:
+  // while t > 0 {
+  Const        r12, 0
+  Less         r14, r12, r11
+  JumpIfFalse  r14, L2
+  // t = t / p
+  Div          r15, r11, r9
+  Move         r11, r15
+  // e = e + t
+  Add          r16, r13, r11
+  Move         r13, r16
+  // while t > 0 {
+  Jump         L3
+L2:
+  // m[str(p)] = e
+  Str          r17, r9
+  SetIndex     r3, r17, r13
+  // for p in primes {
+  Const        r18, 1
+  AddInt       r19, r6, r18
+  Move         r6, r19
+  Jump         L4
+L0:
+  // return m
+  Return       r3
+
+  // fun factorSmall(x: int, primes: list<int>): map<string,int> {
+func factorSmall (regs=33)
+  // var f: map<string,int> = {}
+  Const        r2, {}
+  Move         r3, r2
+  // var n = x
+  Move         r4, r0
+  // for p in primes {
+  IterPrep     r5, r1
+  Len          r6, r5
+  Const        r7, 0
+L5:
+  LessInt      r8, r7, r6
+  JumpIfFalse  r8, L0
+  Index        r9, r5, r7
+  Move         r10, r9
+  // if p * p > n { break }
+  Mul          r11, r10, r10
+  Less         r12, r4, r11
+  JumpIfFalse  r12, L1
+  Jump         L0
+L1:
+  // var c = 0
+  Const        r13, 0
+  Move         r14, r13
+L3:
+  // while n % p == 0 {
+  Mod          r15, r4, r10
+  Const        r13, 0
+  Equal        r16, r15, r13
+  JumpIfFalse  r16, L2
+  // c = c + 1
+  Const        r17, 1
+  AddInt       r18, r14, r17
+  Move         r14, r18
+  // n = n / p
+  Div          r19, r4, r10
+  Move         r4, r19
+  // while n % p == 0 {
+  Jump         L3
+L2:
+  // if c > 0 { f[str(p)] = c }
+  Const        r13, 0
+  LessInt      r20, r13, r14
+  JumpIfFalse  r20, L4
+  Str          r21, r10
+  SetIndex     r3, r21, r14
+L4:
+  // for p in primes {
+  Const        r22, 1
+  AddInt       r23, r7, r22
+  Move         r7, r23
+  Jump         L5
+L0:
+  // if n > 1 { f[str(n)] = f.get(str(n), 0) + 1 }
+  Const        r17, 1
+  Less         r24, r17, r4
+  JumpIfFalse  r24, L6
+  Const        r25, "get"
+  Const        r26, nil
+  Str          r29, r4
+  Move         r27, r29
+  Const        r13, 0
+  Move         r28, r13
+  CallV        r30, r26, 2, r27
+  Const        r17, 1
+  Add          r31, r30, r17
+  Str          r32, r4
+  SetIndex     r3, r32, r31
+L6:
+  // return f
+  Return       r3
+
+  // fun computeIP(n: int, primes: list<int>): list<int> {
+func computeIP (regs=102)
+  // var exps = factorialExp(6*n, primes)
+  Const        r4, 6
+  Mul          r5, r4, r0
+  Move         r2, r5
+  Move         r3, r1
+  Call2        r6, factorialExp, r2, r3
+  Move         r7, r6
+  // let fn = factorialExp(n, primes)
+  Move         r8, r0
+  Move         r9, r1
+  Call2        r10, factorialExp, r8, r9
+  Move         r11, r10
+  // for k in fn { exps[k] = exps.get(k, 0) - 6 * fn[k] }
+  IterPrep     r12, r11
+  Len          r13, r12
+  Const        r14, 0
+L1:
+  LessInt      r15, r14, r13
+  JumpIfFalse  r15, L0
+  Index        r16, r12, r14
+  Move         r17, r16
+  Const        r18, "get"
+  Index        r19, r7, r18
+  Move         r20, r17
+  Const        r22, 0
+  Move         r21, r22
+  CallV        r23, r19, 2, r20
+  Const        r4, 6
+  Index        r24, r11, r17
+  Mul          r25, r4, r24
+  Sub          r26, r23, r25
+  SetIndex     r7, r17, r26
+  Const        r27, 1
+  AddInt       r28, r14, r27
+  Move         r14, r28
+  Jump         L1
+L0:
+  // exps["2"] = exps.get("2", 0) + 5
+  Const        r18, "get"
+  Index        r29, r7, r18
+  Const        r32, "2"
+  Move         r30, r32
+  Const        r22, 0
+  Move         r31, r22
+  CallV        r33, r29, 2, r30
+  Const        r34, 5
+  Add          r35, r33, r34
+  Const        r32, "2"
+  SetIndex     r7, r32, r35
+  // let t2 = 532*n*n + 126*n + 9
+  Const        r36, 532
+  Mul          r37, r36, r0
+  Mul          r38, r37, r0
+  Const        r39, 126
+  Mul          r40, r39, r0
+  Add          r41, r38, r40
+  Const        r42, 9
+  Add          r43, r41, r42
+  Move         r44, r43
+  // let ft2 = factorSmall(t2, primes)
+  Move         r45, r44
+  Move         r46, r1
+  Call2        r47, factorSmall, r45, r46
+  Move         r48, r47
+  // for k in ft2 { exps[k] = exps.get(k, 0) + ft2[k] }
+  IterPrep     r49, r48
+  Len          r50, r49
+  Const        r51, 0
+L3:
+  LessInt      r52, r51, r50
+  JumpIfFalse  r52, L2
+  Index        r53, r49, r51
+  Move         r17, r53
+  Const        r18, "get"
+  Index        r54, r7, r18
+  Move         r55, r17
+  Const        r22, 0
+  Move         r56, r22
+  CallV        r57, r54, 2, r55
+  Index        r58, r48, r17
+  Add          r59, r57, r58
+  SetIndex     r7, r17, r59
+  Const        r60, 1
+  AddInt       r61, r51, r60
+  Move         r51, r61
+  Jump         L3
+L2:
+  // exps["3"] = exps.get("3", 0) - 1
+  Const        r18, "get"
+  Index        r62, r7, r18
+  Const        r65, "3"
+  Move         r63, r65
+  Const        r22, 0
+  Move         r64, r22
+  CallV        r66, r62, 2, r63
+  Const        r67, 1
+  Sub          r68, r66, r67
+  Const        r65, "3"
+  SetIndex     r7, r65, r68
+  // var keys: list<int> = []
+  Const        r69, []
+  Move         r70, r69
+  // for k in exps { keys = append(keys, int(k)) }
+  IterPrep     r71, r7
+  Len          r72, r71
+  Const        r73, 0
+L5:
+  LessInt      r74, r73, r72
+  JumpIfFalse  r74, L4
+  Index        r75, r71, r73
+  Move         r17, r75
+  Append       r77, r70, r76
+  Move         r70, r77
+  Const        r78, 1
+  AddInt       r79, r73, r78
+  Move         r73, r79
+  Jump         L5
+L4:
+  // keys = sortInts(keys)
+  Move         r80, r70
+  Call         r81, sortInts, r80
+  Move         r70, r81
+  // var res = bigFromInt(1)
+  Const        r67, 1
+  Move         r82, r67
+  Call         r83, bigFromInt, r82
+  Move         r84, r83
+  // for p in keys {
+  IterPrep     r85, r70
+  Len          r86, r85
+  Const        r87, 0
+L9:
+  LessInt      r88, r87, r86
+  JumpIfFalse  r88, L6
+  Index        r89, r85, r87
+  Move         r90, r89
+  // var e = exps[str(p)]
+  Str          r91, r90
+  Index        r92, r7, r91
+  Move         r93, r92
+  // var i = 0
+  Const        r22, 0
+  Move         r94, r22
+L8:
+  // while i < e {
+  Less         r95, r94, r93
+  JumpIfFalse  r95, L7
+  // res = bigMulSmall(res, p)
+  Move         r96, r84
+  Move         r97, r90
+  Call2        r98, bigMulSmall, r96, r97
+  Move         r84, r98
+  // i = i + 1
+  Const        r67, 1
+  AddInt       r99, r94, r67
+  Move         r94, r99
+  // while i < e {
+  Jump         L8
+L7:
+  // for p in keys {
+  Const        r100, 1
+  AddInt       r101, r87, r100
+  Move         r87, r101
+  Jump         L9
+L6:
+  // return res
+  Return       r84
+
+  // fun formatTerm(ip: list<int>, pw: int): string {
+func formatTerm (regs=49)
+  // var s = bigToString(ip)
+  Move         r2, r0
+  Call         r3, bigToString, r2
+  Move         r4, r3
+  // if pw >= len(s) {
+  Len          r5, r4
+  LessEq       r6, r5, r1
+  JumpIfFalse  r6, L0
+  // var frac = repeat("0", pw - len(s)) + s
+  Const        r9, "0"
+  Move         r7, r9
+  Len          r10, r4
+  Sub          r11, r1, r10
+  Move         r8, r11
+  Call2        r12, repeat, r7, r8
+  Add          r13, r12, r4
+  Move         r14, r13
+  // if len(frac) < 33 { frac = frac + repeat("0", 33 - len(frac)) }
+  Len          r15, r14
+  Const        r16, 33
+  LessInt      r17, r15, r16
+  JumpIfFalse  r17, L1
+  Const        r9, "0"
+  Move         r18, r9
+  Const        r16, 33
+  Len          r20, r14
+  SubInt       r21, r16, r20
+  Move         r19, r21
+  Call2        r22, repeat, r18, r19
+  Add          r23, r14, r22
+  Move         r14, r23
+L1:
+  // return "0." + substring(frac, 0, 33)
+  Const        r24, "0."
+  Const        r25, 0
+  Const        r16, 33
+  Slice        r26, r14, r25, r16
+  Add          r27, r24, r26
+  Return       r27
+L0:
+  // var intpart = substring(s, 0, len(s) - pw)
+  Const        r25, 0
+  Len          r28, r4
+  Sub          r29, r28, r1
+  Slice        r30, r4, r25, r29
+  Move         r31, r30
+  // var frac = substring(s, len(s) - pw, len(s))
+  Len          r32, r4
+  Sub          r33, r32, r1
+  Len          r34, r4
+  Slice        r35, r4, r33, r34
+  Move         r36, r35
+  // if len(frac) < 33 { frac = frac + repeat("0", 33 - len(frac)) }
+  Len          r37, r36
+  Const        r16, 33
+  LessInt      r38, r37, r16
+  JumpIfFalse  r38, L2
+  Const        r9, "0"
+  Move         r39, r9
+  Const        r16, 33
+  Len          r41, r36
+  SubInt       r42, r16, r41
+  Move         r40, r42
+  Call2        r43, repeat, r39, r40
+  Add          r44, r36, r43
+  Move         r36, r44
+L2:
+  // return intpart + "." + substring(frac, 0, 33)
+  Const        r45, "."
+  Add          r46, r31, r45
+  Const        r25, 0
+  Const        r16, 33
+  Slice        r47, r36, r25, r16
+  Add          r48, r46, r47
+  Return       r48
+
+  // fun bigAbsDiff(a: list<int>, b: list<int>): list<int> {
+func bigAbsDiff (regs=13)
+  // if bigCmp(a, b) >= 0 { return bigSub(a, b) }
+  Move         r2, r0
+  Move         r3, r1
+  Call2        r4, bigCmp, r2, r3
+  Const        r5, 0
+  LessEq       r6, r5, r4
+  JumpIfFalse  r6, L0
+  Move         r7, r0
+  Move         r8, r1
+  Call2        r9, bigSub, r7, r8
+  Return       r9
+L0:
+  // return bigSub(b, a)
+  Move         r10, r1
+  Move         r11, r0
+  Call2        r12, bigSub, r10, r11
+  Return       r12
+
+  // fun main() {
+func main (regs=173)
+  // let primes = primesUpTo(2000)
+  Const        r1, 2000
+  Move         r0, r1
+  Call         r2, primesUpTo, r0
+  Move         r3, r2
+  // print("N                               Integer Portion  Pow  Nth Term (33 dp)")
+  Const        r4, "N                               Integer Portion  Pow  Nth Term (33 dp)"
+  Print        r4
+  // let line = repeat("-", 89)
+  Const        r7, "-"
+  Move         r5, r7
+  Const        r8, 89
+  Move         r6, r8
+  Call2        r9, repeat, r5, r6
+  Move         r10, r9
+  // print(line)
+  Print        r10
+  // var sum = bigFromInt(0)
+  Const        r12, 0
+  Move         r11, r12
+  Call         r13, bigFromInt, r11
+  Move         r14, r13
+  // var prev = bigFromInt(0)
+  Const        r12, 0
+  Move         r15, r12
+  Call         r16, bigFromInt, r15
+  Move         r17, r16
+  // var denomPow = 0
+  Const        r12, 0
+  Move         r18, r12
+  // var n = 0
+  Const        r12, 0
+  Move         r19, r12
+L11:
+  // while true {
+  Const        r20, true
+  // let ip = computeIP(n, primes)
+  Move         r21, r19
+  Move         r22, r3
+  Call2        r23, computeIP, r21, r22
+  Move         r24, r23
+  // let pw = 6*n + 3
+  Const        r25, 6
+  MulInt       r26, r25, r19
+  Const        r27, 3
+  AddInt       r28, r26, r27
+  Move         r29, r28
+  // if pw > denomPow {
+  LessInt      r30, r18, r29
+  JumpIfFalse  r30, L0
+  // sum = bigMulPow10(sum, pw - denomPow)
+  Move         r31, r14
+  SubInt       r33, r29, r18
+  Move         r32, r33
+  Call2        r34, bigMulPow10, r31, r32
+  Move         r14, r34
+  // prev = bigMulPow10(prev, pw - denomPow)
+  Move         r35, r17
+  SubInt       r37, r29, r18
+  Move         r36, r37
+  Call2        r38, bigMulPow10, r35, r36
+  Move         r17, r38
+  // denomPow = pw
+  Move         r18, r29
+L0:
+  // if n < 10 {
+  Const        r39, 10
+  LessInt      r40, r19, r39
+  JumpIfFalse  r40, L1
+  // let termStr = formatTerm(ip, pw)
+  Move         r41, r24
+  Move         r42, r29
+  Call2        r43, formatTerm, r41, r42
+  Move         r44, r43
+  // var ipStr = bigToString(ip)
+  Move         r45, r24
+  Call         r46, bigToString, r45
+  Move         r47, r46
+L3:
+  // while len(ipStr) < 44 { ipStr = " " + ipStr }
+  Len          r48, r47
+  Const        r49, 44
+  LessInt      r50, r48, r49
+  JumpIfFalse  r50, L2
+  Const        r51, " "
+  Add          r52, r51, r47
+  Move         r47, r52
+  Jump         L3
+L2:
+  // var pwStr = str(-pw)
+  NegInt       r53, r29
+  Str          r54, r53
+  Move         r55, r54
+L5:
+  // while len(pwStr) < 3 { pwStr = " " + pwStr }
+  Len          r56, r55
+  Const        r27, 3
+  LessInt      r57, r56, r27
+  JumpIfFalse  r57, L4
+  Const        r51, " "
+  Add          r58, r51, r55
+  Move         r55, r58
+  Jump         L5
+L4:
+  // var padTerm = termStr
+  Move         r59, r44
+L7:
+  // while len(padTerm) < 35 { padTerm = padTerm + " " }
+  Len          r60, r59
+  Const        r61, 35
+  LessInt      r62, r60, r61
+  JumpIfFalse  r62, L6
+  Const        r51, " "
+  Add          r63, r59, r51
+  Move         r59, r63
+  Jump         L7
+L6:
+  // print(str(n) + "  " + ipStr + "  " + pwStr + "  " + padTerm)
+  Str          r64, r19
+  Const        r65, "  "
+  Add          r66, r64, r65
+  Add          r67, r66, r47
+  Const        r65, "  "
+  Add          r68, r67, r65
+  Add          r69, r68, r55
+  Const        r65, "  "
+  Add          r70, r69, r65
+  Add          r71, r70, r59
+  Print        r71
+L1:
+  // sum = bigAdd(sum, ip)
+  Move         r72, r14
+  Move         r73, r24
+  Call2        r74, bigAdd, r72, r73
+  Move         r14, r74
+  // let diff = bigAbsDiff(sum, prev)
+  Move         r75, r14
+  Move         r76, r17
+  Call2        r77, bigAbsDiff, r75, r76
+  Move         r78, r77
+  // if denomPow >= 70 && bigCmp(diff, bigMulPow10(bigFromInt(1), denomPow - 70)) < 0 {
+  Const        r79, 70
+  LessEqInt    r80, r79, r18
+  Move         r81, r78
+  Const        r86, 1
+  Move         r85, r86
+  Call         r87, bigFromInt, r85
+  Move         r83, r87
+  Const        r79, 70
+  SubInt       r88, r18, r79
+  Move         r84, r88
+  Call2        r89, bigMulPow10, r83, r84
+  Move         r82, r89
+  Call2        r90, bigCmp, r81, r82
+  Const        r12, 0
+  Less         r91, r90, r12
+  Move         r92, r80
+  JumpIfFalse  r92, L8
+  Move         r92, r91
+L8:
+  JumpIfFalse  r92, L9
+  // break
+  Jump         L10
+L9:
+  // prev = sum
+  Move         r17, r14
+  // n = n + 1
+  Const        r86, 1
+  AddInt       r93, r19, r86
+  Move         r19, r93
+  // while true {
+  Jump         L11
+L10:
+  // let precision = 70
+  Const        r79, 70
+  Move         r94, r79
+  // let target = bigMulPow10(bigFromInt(1), denomPow + 2*precision)
+  Const        r86, 1
+  Move         r97, r86
+  Call         r98, bigFromInt, r97
+  Move         r95, r98
+  Const        r99, 2
+  Const        r79, 70
+  MulInt       r100, r99, r79
+  AddInt       r101, r18, r100
+  Move         r96, r101
+  Call2        r102, bigMulPow10, r95, r96
+  Move         r103, r102
+  // var low = bigFromInt(0)
+  Const        r12, 0
+  Move         r104, r12
+  Call         r105, bigFromInt, r104
+  Move         r106, r105
+  // var high = bigMulPow10(bigFromInt(1), precision + 1)
+  Const        r86, 1
+  Move         r109, r86
+  Call         r110, bigFromInt, r109
+  Move         r107, r110
+  Const        r79, 70
+  Const        r86, 1
+  AddInt       r111, r79, r86
+  Move         r108, r111
+  Call2        r112, bigMulPow10, r107, r108
+  Move         r113, r112
+L14:
+  // while bigCmp(low, bigSub(high, bigFromInt(1))) < 0 {
+  Move         r114, r106
+  Move         r116, r113
+  Const        r86, 1
+  Move         r118, r86
+  Call         r119, bigFromInt, r118
+  Move         r117, r119
+  Call2        r120, bigSub, r116, r117
+  Move         r115, r120
+  Call2        r121, bigCmp, r114, r115
+  Const        r12, 0
+  Less         r122, r121, r12
+  JumpIfFalse  r122, L12
+  // var mid = bigDivSmall(bigAdd(low, high), 2)
+  Move         r125, r106
+  Move         r126, r113
+  Call2        r127, bigAdd, r125, r126
+  Move         r123, r127
+  Const        r99, 2
+  Move         r124, r99
+  Call2        r128, bigDivSmall, r123, r124
+  Move         r129, r128
+  // var prod = bigMulBig(bigMulBig(mid, mid), sum)
+  Move         r132, r129
+  Move         r133, r129
+  Call2        r134, bigMulBig, r132, r133
+  Move         r130, r134
+  Move         r131, r14
+  Call2        r135, bigMulBig, r130, r131
+  Move         r136, r135
+  // if bigCmp(prod, target) <= 0 {
+  Move         r137, r136
+  Move         r138, r103
+  Call2        r139, bigCmp, r137, r138
+  Const        r12, 0
+  LessEq       r140, r139, r12
+  JumpIfFalse  r140, L13
+  // low = mid
+  Move         r106, r129
+  // if bigCmp(prod, target) <= 0 {
+  Jump         L14
+L13:
+  // high = bigSub(mid, bigFromInt(1))
+  Move         r141, r129
+  Const        r86, 1
+  Move         r143, r86
+  Call         r144, bigFromInt, r143
+  Move         r142, r144
+  Call2        r145, bigSub, r141, r142
+  Move         r113, r145
+  // while bigCmp(low, bigSub(high, bigFromInt(1))) < 0 {
+  Jump         L14
+L12:
+  // var piInt = low
+  Move         r146, r106
+  // var piStr = bigToString(piInt)
+  Move         r147, r146
+  Call         r148, bigToString, r147
+  Move         r149, r148
+  // if len(piStr) <= precision {
+  Len          r150, r149
+  Const        r79, 70
+  LessEqInt    r151, r150, r79
+  JumpIfFalse  r151, L15
+  // piStr = repeat("0", precision - len(piStr) + 1) + piStr
+  Const        r154, "0"
+  Move         r152, r154
+  Const        r79, 70
+  Len          r155, r149
+  SubInt       r156, r79, r155
+  Const        r86, 1
+  AddInt       r157, r156, r86
+  Move         r153, r157
+  Call2        r158, repeat, r152, r153
+  Add          r159, r158, r149
+  Move         r149, r159
+L15:
+  // var out = substring(piStr, 0, len(piStr) - precision) + "." + substring(piStr, len(piStr) - precision, len(piStr))
+  Const        r12, 0
+  Len          r160, r149
+  Const        r79, 70
+  SubInt       r161, r160, r79
+  Slice        r162, r149, r12, r161
+  Const        r163, "."
+  Add          r164, r162, r163
+  Len          r165, r149
+  Const        r79, 70
+  SubInt       r166, r165, r79
+  Len          r167, r149
+  Slice        r168, r149, r166, r167
+  Add          r169, r164, r168
+  Move         r170, r169
+  // print("")
+  Const        r171, ""
+  Print        r171
+  // print("Pi to 70 decimal places is:")
+  Const        r172, "Pi to 70 decimal places is:"
+  Print        r172
+  // print(out)
+  Print        r170
+  Return       r0

@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated IR and outputs from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/ir`.
-Last updated: 2025-07-25 08:05 UTC
+Last updated: 2025-07-25 09:46 UTC
 
-## Rosetta Golden Test Checklist (52/284)
+## Rosetta Golden Test Checklist (53/284)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 116µs | 11.7 KB |
@@ -37,26 +37,26 @@ Last updated: 2025-07-25 08:05 UTC
 | 28 | ackermann-function-2 | ✓ | 50µs | 136 B |
 | 29 | ackermann-function-3 | ✓ | 52µs | 248 B |
 | 30 | ackermann-function | ✓ | 37µs | 136 B |
-| 31 | active-directory-connect | ✓ | 62µs | 14.2 KB |
-| 32 | active-directory-search-for-a-user | ✓ | 97µs | 6.5 KB |
-| 33 | active-object | ✓ | 1.388ms | 667.9 KB |
-| 34 | add-a-variable-to-a-class-instance-at-runtime | ✓ | 55µs | 7.9 KB |
-| 35 | additive-primes | ✓ | 2.007ms |  |
-| 36 | address-of-a-variable | ✓ | 23µs | 600 B |
-| 37 | adfgvx-cipher | ✓ |  |  |
-| 38 | aks-test-for-primes | ✓ | 313µs | 155.7 KB |
-| 39 | algebraic-data-types | ✓ | 272µs | 320.2 KB |
-| 40 | align-columns | ✓ | 3.193ms |  |
-| 41 | aliquot-sequence-classifications | ✓ |  |  |
-| 42 | almkvist-giullera-formula-for-pi |   |  |  |
-| 43 | almost-prime | ✓ | 3.662ms | 913.6 KB |
-| 44 | amb | ✓ | 686µs | 75.9 KB |
-| 45 | amicable-pairs | ✓ |  |  |
-| 46 | anagrams-deranged-anagrams | ✓ | 1.042ms | 99.2 KB |
-| 47 | anagrams | ✓ | 2.138ms | 571.4 KB |
-| 48 | angle-difference-between-two-bearings-1 | ✓ | 501µs | 19.2 KB |
-| 49 | angle-difference-between-two-bearings-2 | ✓ | 524µs | 26.6 KB |
-| 50 | angles-geometric-normalization-and-conversion | ✓ | 1.13ms | 288.9 KB |
+| 31 | active-directory-connect | ✓ | 742µs | 136 B |
+| 32 | active-directory-search-for-a-user | ✓ | 606µs | 136 B |
+| 33 | active-object | ✓ | 3.176ms | 667.9 KB |
+| 34 | add-a-variable-to-a-class-instance-at-runtime | ✓ | 490µs | 136 B |
+| 35 | additive-primes | ✓ | 532µs | 136 B |
+| 36 | address-of-a-variable | ✓ | 360µs | 600 B |
+| 37 | adfgvx-cipher | ✓ | 756µs | 472 B |
+| 38 | aks-test-for-primes | ✓ | 601µs | 136 B |
+| 39 | algebraic-data-types | ✓ | 1.589ms | 282.7 KB |
+| 40 | align-columns | ✓ | 12.064ms |  |
+| 41 | aliquot-sequence-classifications | ✓ | 684µs | 248 B |
+| 42 | almkvist-giullera-formula-for-pi | ✓ | 766µs | 136 B |
+| 43 | almost-prime | ✓ | 664µs | 136 B |
+| 44 | amb | ✓ | 484µs | 136 B |
+| 45 | amicable-pairs | ✓ | 546µs | 136 B |
+| 46 | anagrams-deranged-anagrams | ✓ | 402µs | 136 B |
+| 47 | anagrams | ✓ | 664µs | 136 B |
+| 48 | angle-difference-between-two-bearings-1 | ✓ | 504µs | 19.2 KB |
+| 49 | angle-difference-between-two-bearings-2 | ✓ | 551µs | 26.6 KB |
+| 50 | angles-geometric-normalization-and-conversion | ✓ | 593µs | 136 B |
 | 51 | animate-a-pendulum | ✓ | 1.023ms | 73.8 KB |
 | 52 | animation | ✓ | 930µs | 18.1 KB |
 | 53 | anonymous-recursion-1 | ✓ | 349µs | 15.6 KB |

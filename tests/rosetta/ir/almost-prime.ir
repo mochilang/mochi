@@ -1,6 +1,4 @@
 func main (regs=1)
-  // main()
-  Call         r0, main, 
   Return       r0
 
   // fun kPrime(n: int, k: int): bool {
