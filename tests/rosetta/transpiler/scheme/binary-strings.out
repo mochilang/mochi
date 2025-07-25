@@ -1,0 +1,13 @@
+WARNING: importing already defined binding: equal?
+WARNING: importing already defined binding: let-syntax
+WARNING: importing already defined binding: letrec-syntax
+[98, 105, 110, 97, 114, 121]
+[98, 105, 110, 97, 114, 121]
+1
+binary
+banany
+0
+binaryz
+in
+banany -> bamamy
+bary

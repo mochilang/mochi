@@ -1,0 +1,13 @@
+exit status 70
+WARNING: importing already defined binding: equal?
+WARNING: importing already defined binding: let-syntax
+WARNING: importing already defined binding: letrec-syntax
+ERROR in loop11 on line 211 of file /workspace/mochi/tests/rosetta/transpiler/scheme/bell-numbers.scm: undefined variable: padStart
+  called from call-with-current-continuation on line 848 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 205 of file /workspace/mochi/tests/rosetta/transpiler/scheme/bell-numbers.scm
+  called from call-with-current-continuation on line 848 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 1292 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 821 of file /usr/share/chibi/init-7.scm
+Searching for modules exporting padStart ...
+... none found.
+First fifteen and fiftieth Bell numbers:

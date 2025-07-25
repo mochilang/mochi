@@ -1,0 +1,11 @@
+exit status 70
+WARNING: importing already defined binding: equal?
+WARNING: importing already defined binding: let-syntax
+WARNING: importing already defined binding: letrec-syntax
+ERROR in list-tail on line 34 of file /usr/share/chibi/init-7.scm: cdr: not a pair: ()
+  called from list-ref on line 36 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 197 of file /workspace/mochi/tests/rosetta/transpiler/scheme/barnsley-fern.scm
+  called from loop9 on line 170 of file /workspace/mochi/tests/rosetta/transpiler/scheme/barnsley-fern.scm
+  called from call-with-current-continuation on line 848 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 1292 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 821 of file /usr/share/chibi/init-7.scm

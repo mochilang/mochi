@@ -1,0 +1,8 @@
+WARNING: importing already defined binding: equal?
+WARNING: importing already defined binding: let-syntax
+WARNING: importing already defined binding: letrec-syntax
+     a:      +-0++0+     523
+     b:        --00-    -109
+     c:        +-++-      65
+a(b-c)
+:  +-0+-00-0-0   40794

@@ -1,0 +1,26 @@
+exit status 70
+WARNING: importing already defined binding: equal?
+WARNING: importing already defined binding: let-syntax
+WARNING: importing already defined binding: letrec-syntax
+ERROR in list-ref on line 36 of file /usr/share/chibi/init-7.scm: car: not a pair: ()
+  called from <anonymous> on line 280 of file /usr/share/chibi/init-7.scm
+  called from loop20 on line 280 of file /usr/share/chibi/init-7.scm
+  called from call-with-current-continuation on line 848 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 327 of file /workspace/mochi/tests/rosetta/transpiler/scheme/bioinformatics-global-alignment.scm
+  called from loop16 on line 277 of file /workspace/mochi/tests/rosetta/transpiler/scheme/bioinformatics-global-alignment.scm
+  called from call-with-current-continuation on line 848 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 271 of file /workspace/mochi/tests/rosetta/transpiler/scheme/bioinformatics-global-alignment.scm
+  called from call-with-current-continuation on line 848 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 288 of file /workspace/mochi/tests/rosetta/transpiler/scheme/bioinformatics-global-alignment.scm
+  called from loop16 on line 276 of file /workspace/mochi/tests/rosetta/transpiler/scheme/bioinformatics-global-alignment.scm
+  called from call-with-current-continuation on line 848 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 271 of file /workspace/mochi/tests/rosetta/transpiler/scheme/bioinformatics-global-alignment.scm
+  called from call-with-current-continuation on line 848 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 280 of file /usr/share/chibi/init-7.scm
+  called from call-with-current-continuation on line 848 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 280 of file /usr/share/chibi/init-7.scm
+  called from loop44 on line 1081 of file /workspace/mochi/tests/rosetta/transpiler/scheme/bioinformatics-global-alignment.scm
+  called from call-with-current-continuation on line 848 of file /usr/share/chibi/init-7.scm
+  called from call-with-current-continuation on line 848 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 1292 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 821 of file /usr/share/chibi/init-7.scm
