@@ -1,21 +1,21 @@
 # Java Rosetta Transpiler Output
 
 Generated Java code for programs in `tests/rosetta/x/Mochi`. Each program has a `.java` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
-Last updated: 2025-07-25 10:39 GMT+7
+Last updated: 2025-07-25 12:48 GMT+7
 
-## Rosetta Checklist (38/284)
+## Rosetta Checklist (40/284)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
-| 1 | 100-doors-2 | ✓ | 14.0ms | 245.84KB |
-| 2 | 100-doors-3 | ✓ |  |  |
-| 3 | 100-doors | ✓ |  |  |
-| 4 | 100-prisoners | ✓ |  |  |
-| 5 | 15-puzzle-game | ✓ |  |  |
-| 6 | 15-puzzle-solver | ✓ |  |  |
-| 7 | 2048 | ✓ |  |  |
-| 8 | 21-game | ✓ |  |  |
-| 9 | 24-game-solve |   |  |  |
-| 10 | 24-game |   |  |  |
+| 1 | 100-doors-2 | ✓ | 23.0ms | 245.84KB |
+| 2 | 100-doors-3 | ✓ | 10.0ms | 0B |
+| 3 | 100-doors | ✓ | 11.0ms | 0B |
+| 4 | 100-prisoners | ✓ | 684.0ms | 43.51MB |
+| 5 | 15-puzzle-game | ✓ | 20.0ms | 245.80KB |
+| 6 | 15-puzzle-solver | ✓ | 542.0µs | 0B |
+| 7 | 2048 | ✓ | 22.0ms | 491.66KB |
+| 8 | 21-game | ✓ | 11.0ms | 245.81KB |
+| 9 | 24-game-solve | ✓ | 70.0ms | 3.76MB |
+| 10 | 24-game | ✓ | 13.0ms | 245.81KB |
 | 11 | 4-rings-or-4-squares-puzzle | ✓ |  |  |
 | 12 | 9-billion-names-of-god-the-integer | ✓ |  |  |
 | 13 | 99-bottles-of-beer-2 | ✓ |  |  |

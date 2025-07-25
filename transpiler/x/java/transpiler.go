@@ -1476,6 +1476,14 @@ func (a *AppendExpr) emit(w io.Writer) {
 		fmt.Fprint(w, ")")
 		return
 	}
+	if elem == "double" {
+		fmt.Fprint(w, "java.util.stream.DoubleStream.concat(java.util.Arrays.stream(")
+		a.List.emit(w)
+		fmt.Fprint(w, "), java.util.stream.DoubleStream.of(")
+		a.Value.emit(w)
+		fmt.Fprint(w, ")).toArray()")
+		return
+	}
 	if elem == "int" {
 		fmt.Fprint(w, "java.util.stream.IntStream.concat(java.util.Arrays.stream(")
 		a.List.emit(w)
@@ -1584,6 +1592,14 @@ func (u *UnionAllExpr) emit(w io.Writer) {
 	}
 	if elem == "int" {
 		fmt.Fprint(w, "java.util.stream.IntStream.concat(java.util.Arrays.stream(")
+		u.Left.emit(w)
+		fmt.Fprint(w, "), java.util.Arrays.stream(")
+		u.Right.emit(w)
+		fmt.Fprint(w, ")).toArray()")
+		return
+	}
+	if elem == "double" {
+		fmt.Fprint(w, "java.util.stream.DoubleStream.concat(java.util.Arrays.stream(")
 		u.Left.emit(w)
 		fmt.Fprint(w, "), java.util.Arrays.stream(")
 		u.Right.emit(w)
@@ -2066,6 +2082,10 @@ func arrayElemType(e Expr) string {
 			t = arrayElemType(ex.Right)
 		}
 		return t
+	case *SliceExpr:
+		if !isStringExpr(ex.Value) {
+			return arrayElemType(ex.Value)
+		}
 	case *IndexExpr:
 		if ex.ResultType != "" {
 			t := ex.ResultType
@@ -2086,6 +2106,15 @@ func arrayElemType(e Expr) string {
 		return ""
 	case *VarExpr:
 		if t, ok := varTypes[ex.Name]; ok {
+			if strings.HasSuffix(t, "[]") {
+				return strings.TrimSuffix(t, "[]")
+			}
+			if strings.HasPrefix(t, "java.util.List<") && strings.HasSuffix(t, ">") {
+				return strings.TrimSuffix(strings.TrimPrefix(t, "java.util.List<"), ">")
+			}
+		}
+		if vs, ok := varDecls[ex.Name]; ok {
+			t := vs.Type
 			if strings.HasSuffix(t, "[]") {
 				return strings.TrimSuffix(t, "[]")
 			}
@@ -3114,6 +3143,9 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 				}
 			}
 			return &SumExpr{Value: args[0]}, nil
+		}
+		if name == "abs" && len(args) == 1 {
+			return &CallExpr{Func: "Math.abs", Args: args}, nil
 		}
 		if name == "int" && len(args) == 1 {
 			return &IntCastExpr{Value: args[0]}, nil

@@ -10,9 +10,9 @@ public class Main {
             i = 1;
         }
         int n = 0;
-        java.util.Map digits = new java.util.LinkedHashMap<String, Integer>(java.util.Map.of("0", 0, "1", 1, "2", 2, "3", 3, "4", 4, "5", 5, "6", 6, "7", 7, "8", 8, "9", 9));
+        java.util.Map<String,Integer> digits = new java.util.LinkedHashMap<String, Integer>(java.util.Map.of("0", 0, "1", 1, "2", 2, "3", 3, "4", 4, "5", 5, "6", 6, "7", 7, "8", 8, "9", 9));
         while (i < str.length()) {
-            n = n * 10 + (int)(digits.get(str.substring(i, i + 1)));
+            n = n * 10 + (int)(((int)digits.get(str.substring(i, i + 1))));
             i = i + 1;
         }
         if (neg) {
@@ -33,10 +33,10 @@ public class Main {
         System.out.println("\n\nRunning total is now 0\n\n");
         int round = 1;
         boolean done = false;
-        while (!(Boolean)done) {
+        while (!done) {
             System.out.println("ROUND " + String.valueOf(round) + ":\n\n");
             int i = 0;
-            while (i < 2 && (!(Boolean)done)) {
+            while (i < 2 && (!done)) {
                 if (computer) {
                     int choice = 0;
                     if (total < 18) {
@@ -83,14 +83,26 @@ public class Main {
                     }
                 }
                 System.out.println("\n");
-                computer = !(Boolean)computer;
+                computer = !computer;
                 i = i + 1;
             }
             round = round + 1;
         }
     }
     public static void main(String[] args) {
-        main();
+        {
+            long _benchStart = _now();
+            long _benchMem = _mem();
+            main();
+            long _benchDuration = _now() - _benchStart;
+            long _benchMemory = _mem() - _benchMem;
+            System.out.println("{");
+            System.out.println("  \"duration_us\": " + _benchDuration + ",");
+            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
+            System.out.println("  \"name\": \"main\"");
+            System.out.println("}");
+            return;
+        }
     }
 
     static boolean _nowSeeded = false;
@@ -106,6 +118,11 @@ public class Main {
             _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
             return _nowSeed;
         }
-        return (int)System.currentTimeMillis();
+        return (int)(System.nanoTime() / 1000);
+    }
+
+    static long _mem() {
+        Runtime rt = Runtime.getRuntime();
+        return rt.totalMemory() - rt.freeMemory();
     }
 }

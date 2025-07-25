@@ -28,7 +28,7 @@ arr[j] = tmp;
             boolean success = true;
             while (p < np) {
                 boolean found = false;
-                if (strategy == "optimal") {
+                if ((strategy.equals("optimal"))) {
                     int prev = p;
                     int d = 0;
                     while (d < 50) {
@@ -54,14 +54,14 @@ arr[j] = tmp;
                             n = _now() % 100;
                         }
 opened[n] = true;
-                        if (drawers[n] == p) {
+                        if (((Number)(drawers[n])).intValue() == p) {
                             found = true;
                             break;
                         }
                         d = d + 1;
                     }
                 }
-                if (!(Boolean)found) {
+                if (!found) {
                     success = false;
                     break;
                 }
@@ -72,7 +72,7 @@ opened[n] = true;
             }
             t = t + 1;
         }
-        double rf = (pardoned) / (trials) * 100.0;
+        double rf = (((Number)(pardoned)).doubleValue()) / (((Number)(trials)).doubleValue()) * 100.0;
         System.out.println("  strategy = " + strategy + "  pardoned = " + String.valueOf(pardoned) + " relative frequency = " + String.valueOf(rf) + "%");
     }
 
@@ -86,7 +86,19 @@ opened[n] = true;
         }
     }
     public static void main(String[] args) {
-        main();
+        {
+            long _benchStart = _now();
+            long _benchMem = _mem();
+            main();
+            long _benchDuration = _now() - _benchStart;
+            long _benchMemory = _mem() - _benchMem;
+            System.out.println("{");
+            System.out.println("  \"duration_us\": " + _benchDuration + ",");
+            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
+            System.out.println("  \"name\": \"main\"");
+            System.out.println("}");
+            return;
+        }
     }
 
     static boolean _nowSeeded = false;
@@ -102,7 +114,12 @@ opened[n] = true;
             _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
             return _nowSeed;
         }
-        return (int)System.currentTimeMillis();
+        return (int)(System.nanoTime() / 1000);
+    }
+
+    static long _mem() {
+        Runtime rt = Runtime.getRuntime();
+        return rt.totalMemory() - rt.freeMemory();
     }
 
     static boolean[] appendBool(boolean[] arr, boolean v) {
