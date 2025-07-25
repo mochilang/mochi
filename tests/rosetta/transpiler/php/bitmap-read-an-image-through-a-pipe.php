@@ -1,5 +1,20 @@
 <?php
 ini_set('memory_limit', '-1');
+$now_seed = 0;
+$now_seeded = false;
+$s = getenv('MOCHI_NOW_SEED');
+if ($s !== false && $s !== '') {
+    $now_seed = intval($s);
+    $now_seeded = true;
+}
+function _now() {
+    global $now_seed, $now_seeded;
+    if ($now_seeded) {
+        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
+        return $now_seed;
+    }
+    return hrtime(true);
+}
 function _str($x) {
     if (is_array($x)) {
         $isList = array_keys($x) === range(0, count($x) - 1);
@@ -16,8 +31,13 @@ function _str($x) {
     if ($x === null) return 'null';
     return strval($x);
 }
-function parseIntStr($str) {
-  global $splitWs, $parsePpm, $ppmData, $img;
+function parseIntStr($s, $base = 10) {
+    return intval($s, intval($base));
+}
+$__start_mem = memory_get_usage();
+$__start = _now();
+  function mochi_parseIntStr($str) {
+  global $ppmData, $img;
   $i = 0;
   $neg = false;
   if (strlen($str) > 0 && substr($str, 0, 1 - 0) == '-') {
@@ -34,30 +54,34 @@ function parseIntStr($str) {
   $n = -$n;
 }
   return $n;
-}
-function splitWs($s) {
-  global $parseIntStr, $parsePpm, $ppmData, $img;
+};
+  function splitWs($s) {
+  global $ppmData, $img;
   $parts = [];
   $cur = '';
   $i = 0;
   while ($i < strlen($s)) {
   $ch = substr($s, $i, $i + 1 - $i);
-  if ($ch == ' ' || $ch == '
-' || $ch == '	' || $ch == '') {
-  if (strlen($cur) > 0) {
-  $parts = array_merge($parts, [$cur]);
-  $cur = '';
+  if ($ch == ' ' || $ch == '\n' || $ch == '\t' || $ch == '') {
 };
-} else {
-  $cur = $cur . $ch;
-}
-  $i = $i + 1;
+  function parsePpm($data) {
+  global $ppmData, $img;
+  $w = parseIntStr($toks[1], 10);
+  $h = parseIntStr($toks[2], 10);
+  $maxv = parseIntStr($toks[3], 10);
+  $px = array_merge($px, [parseIntStr($toks[$i], 10)]);
 };
-  if (strlen($cur) > 0) {
-  $parts = array_merge($parts, [$cur]);
-}
-  return $parts;
-}
+  $ppmData = 'P3\n2 2\n1\n0 1 1 0 1 0 0 1 1 1 0 0\n';
+  $img = parsePpm($ppmData);
+  echo rtrim('width=' . _str($img['w']) . ' height=' . _str($img['h'])), PHP_EOL;
+$__end = _now();
+$__end_mem = memory_get_usage();
+$__duration = intdiv($__end - $__start, 1000);
+$__mem_diff = max(0, $__end_mem - $__start_mem);
+$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
+$__j = json_encode($__bench, 128);
+$__j = str_replace("    ", "  ", $__j);
+echo $__j, PHP_EOL;;
 function parsePpm($data) {
   global $parseIntStr, $splitWs, $ppmData, $img;
   $toks = splitWs($data);

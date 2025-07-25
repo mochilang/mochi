@@ -1,4 +1,4 @@
-Nucleotide counts for TAAGAA:
+\nNucleotide counts for TAAGAA:\n
          A           4
          C           0
          G           1
@@ -6,8 +6,7 @@ Nucleotide counts for TAAGAA:
      Other           0
   ____________________
   Total length       6
-
-Nucleotide counts for CATTAGGG:
+\nNucleotide counts for CATTAGGG:\n
          A           2
          C           1
          G           3
@@ -15,8 +14,7 @@ Nucleotide counts for CATTAGGG:
      Other           0
   ____________________
   Total length       8
-
-Nucleotide counts for AAGAUGGAGCGCAUCGCAAUAAGGA:
+\nNucleotide counts for AAGAUGGAGCGCAUCGCAAUAAGGA:\n
          A          10
          C           4
          G           8
@@ -24,8 +22,7 @@ Nucleotide counts for AAGAUGGAGCGCAUCGCAAUAAGGA:
      Other           3
   ____________________
   Total length      25
-
-Nucleotide counts for CGTAAAAAATTACAACGTCCTTTGGCTATCTCTTAAACTCCTGCTAAATGCTCGTGCTTTCCAATTATGTAAGCGTTCCGAGACGGGGTGGTCGATTCTGAGGACAAAGGTCAAGATGGAGCGCATCGAACGCAATAAGGATCATTTGATGGGACGTTTCGTCGACAAAGTCTTGTTTCGAGAGTAACGGCTACCGTCTTCGATTCTGCTTATAACACTATGTTCTTATGAAATGGATGTTCTGAGTTGGTCAGTCCCAATGTGCGGGGTTTCTTTTAGTACGTCGGGAGTGGTATTATA:
+\nNucleotide counts for CGTAAAAAATTACAACGTCCTTTGGCTATCTCTTAAACTCCTGCTAAATGCTCGTGCTTTCCAATTATGTAAGCGTTCCGAGACGGGGTGGTCGATTCTGAGGACAAAGGTCAAGATGGAGCGCATCGAACGCAATAAGGATCATTTGATGGGACGTTTCGTCGACAAAGTCTTGTTTCGAGAGTAACGGCTACCGTCTTCGATTCTGCTTATAACACTATGTTCTTATGAAATGGATGTTCTGAGTTGGTCAGTCCCAATGTGCGGGGTTTCTTTTAGTACGTCGGGAGTGGTATTATA:\n
          A          74
          C          57
          G          75
@@ -33,3 +30,8 @@ Nucleotide counts for CGTAAAAAATTACAACGTCCTTTGGCTATCTCTTAAACTCCTGCTAAATGCTCGTGCT
      Other           0
   ____________________
   Total length     300
+{
+  "duration_us": 164861,
+  "memory_bytes": 96,
+  "name": "main"
+}

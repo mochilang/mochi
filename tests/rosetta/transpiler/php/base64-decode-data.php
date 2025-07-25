@@ -1,7 +1,55 @@
 <?php
 ini_set('memory_limit', '-1');
-function indexOf($s, $ch) {
-  global $parseIntStr, $mochi_ord, $mochi_chr, $toBinary, $binToInt, $base64Encode, $base64Decode, $msg, $enc, $dec;
+$now_seed = 0;
+$now_seeded = false;
+$s = getenv('MOCHI_NOW_SEED');
+if ($s !== false && $s !== '') {
+    $now_seed = intval($s);
+    $now_seeded = true;
+}
+function _now() {
+    global $now_seed, $now_seeded;
+    if ($now_seeded) {
+        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
+        return $now_seed;
+    }
+    return hrtime(true);
+}
+function _str($x) {
+    if (is_array($x)) {
+        $isList = array_keys($x) === range(0, count($x) - 1);
+        if ($isList) {
+            $parts = [];
+            foreach ($x as $v) { $parts[] = _str($v); }
+            return '[' . implode(' ', $parts) . ']';
+        }
+        $parts = [];
+        foreach ($x as $k => $v) { $parts[] = _str($k) . ':' . _str($v); }
+        return 'map[' . implode(' ', $parts) . ']';
+    }
+    if (is_bool($x)) return $x ? 'true' : 'false';
+    if ($x === null) return 'null';
+    return strval($x);
+}
+function _indexof($s, $sub) {
+    $pos = strpos($s, $sub);
+    return $pos === false ? -1 : $pos;
+}
+function parseIntStr($s, $base = 10) {
+    return intval($s, intval($base));
+}
+function _intdiv($a, $b) {
+    if (function_exists('bcdiv')) {
+        $sa = is_int($a) ? strval($a) : sprintf('%.0f', $a);
+        $sb = is_int($b) ? strval($b) : sprintf('%.0f', $b);
+        return intval(bcdiv($sa, $sb, 0));
+    }
+    return intdiv($a, $b);
+}
+$__start_mem = memory_get_usage();
+$__start = _now();
+  function indexOf($s, $ch) {
+  global $msg, $enc, $dec;
   $i = 0;
   while ($i < strlen($s)) {
   if (substr($s, $i, $i + 1 - $i) == $ch) {
@@ -10,9 +58,9 @@ function indexOf($s, $ch) {
   $i = $i + 1;
 };
   return -1;
-}
-function parseIntStr($str) {
-  global $indexOf, $mochi_ord, $mochi_chr, $toBinary, $binToInt, $base64Encode, $base64Decode, $msg, $enc, $dec;
+};
+  function mochi_parseIntStr($str) {
+  global $msg, $enc, $dec;
   $i = 0;
   $neg = false;
   if (strlen($str) > 0 && substr($str, 0, 0 + 1 - 0) == '-') {
@@ -29,21 +77,21 @@ function parseIntStr($str) {
   $n = -$n;
 }
   return $n;
-}
-function mochi_ord($ch) {
-  global $indexOf, $parseIntStr, $mochi_chr, $toBinary, $binToInt, $base64Encode, $base64Decode, $msg, $enc, $dec;
+};
+  function mochi_ord($ch) {
+  global $msg, $enc, $dec;
   $upper = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
   $lower = 'abcdefghijklmnopqrstuvwxyz';
-  $idx = indexOf($upper, $ch);
+  $idx = _indexof($upper, $ch);
   if ($idx >= 0) {
   return 65 + $idx;
 }
-  $idx = indexOf($lower, $ch);
+  $idx = _indexof($lower, $ch);
   if ($idx >= 0) {
   return 97 + $idx;
 }
   if ($ch >= '0' && $ch <= '9') {
-  return 48 + parseIntStr($ch);
+  return 48 + parseIntStr($ch, 10);
 }
   if ($ch == '+') {
   return 43;
@@ -58,20 +106,20 @@ function mochi_ord($ch) {
   return 61;
 }
   return 0;
-}
-function mochi_chr($n) {
-  global $indexOf, $parseIntStr, $mochi_ord, $toBinary, $binToInt, $base64Encode, $base64Decode, $msg, $enc, $dec;
+};
+  function mochi_chr($n) {
+  global $msg, $enc, $dec;
   $upper = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
   $lower = 'abcdefghijklmnopqrstuvwxyz';
   if ($n >= 65 && $n < 91) {
-  return substr($upper, $n - 65, $n - 64 - $n - 65);
+  return substr($upper, $n - 65, $n - 64 - ($n - 65));
 }
   if ($n >= 97 && $n < 123) {
-  return substr($lower, $n - 97, $n - 96 - $n - 97);
+  return substr($lower, $n - 97, $n - 96 - ($n - 97));
 }
   if ($n >= 48 && $n < 58) {
   $digits = '0123456789';
-  return substr($digits, $n - 48, $n - 47 - $n - 48);
+  return substr($digits, $n - 48, $n - 47 - ($n - 48));
 }
   if ($n == 43) {
   return '+';
@@ -86,37 +134,37 @@ function mochi_chr($n) {
   return '=';
 }
   return '?';
-}
-function toBinary($n, $bits) {
-  global $indexOf, $parseIntStr, $mochi_ord, $mochi_chr, $binToInt, $base64Encode, $base64Decode, $msg, $enc, $dec;
+};
+  function toBinary($n, $bits) {
+  global $msg, $enc, $dec;
   $b = '';
   $val = $n;
   $i = 0;
   while ($i < $bits) {
-  $b = json_encode($val % 2, 1344) . $b;
-  $val = intval((intdiv($val, 2)));
+  $b = _str($val % 2) . $b;
+  $val = intval((_intdiv($val, 2)));
   $i = $i + 1;
 };
   return $b;
-}
-function binToInt($bits) {
-  global $indexOf, $parseIntStr, $mochi_ord, $mochi_chr, $toBinary, $base64Encode, $base64Decode, $msg, $enc, $dec;
+};
+  function binToInt($bits) {
+  global $msg, $enc, $dec;
   $n = 0;
   $i = 0;
   while ($i < strlen($bits)) {
-  $n = $n * 2 + parseIntStr(substr($bits, $i, $i + 1 - $i));
+  $n = $n * 2 + parseIntStr(substr($bits, $i, $i + 1 - $i), 10);
   $i = $i + 1;
 };
   return $n;
-}
-function base64Encode($text) {
-  global $indexOf, $parseIntStr, $mochi_ord, $mochi_chr, $toBinary, $binToInt, $base64Decode, $msg, $enc, $dec;
+};
+  function base64Encode($text) {
+  global $msg, $enc, $dec;
   $alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
   $bin = '';
-  foreach ($text as $ch) {
+  foreach (str_split($text) as $ch) {
   $bin = $bin . toBinary(mochi_ord($ch), 8);
 };
-  while (strlen($bin) % 6 != 0) {
+  while (fmod(strlen($bin), 6) != 0) {
   $bin = $bin . '0';
 };
   $out = '';
@@ -127,7 +175,7 @@ function base64Encode($text) {
   $out = $out . substr($alphabet, $val, $val + 1 - $val);
   $i = $i + 6;
 };
-  $pad = (3 - (strlen($text) % 3)) % 3;
+  $pad = fmod((3 - (fmod(strlen($text), 3))), 3);
   if ($pad == 1) {
   $out = substr($out, 0, strlen($out) - 1 - 0) . '=';
 }
@@ -135,9 +183,9 @@ function base64Encode($text) {
   $out = substr($out, 0, strlen($out) - 2 - 0) . '==';
 }
   return $out;
-}
-function base64Decode($enc) {
-  global $indexOf, $parseIntStr, $mochi_ord, $mochi_chr, $toBinary, $binToInt, $base64Encode, $msg, $dec;
+};
+  function base64Decode($enc) {
+  global $msg, $dec;
   $alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
   $bin = '';
   $i = 0;
@@ -146,7 +194,7 @@ function base64Decode($enc) {
   if ($ch == '=') {
   break;
 }
-  $idx = indexOf($alphabet, $ch);
+  $idx = _indexof($alphabet, $ch);
   $bin = $bin . toBinary($idx, 6);
   $i = $i + 1;
 };
@@ -159,12 +207,18 @@ function base64Decode($enc) {
   $i = $i + 8;
 };
   return $out;
-}
-$msg = 'Rosetta Code Base64 decode data task';
-echo rtrim('Original : ' . $msg), PHP_EOL;
-$enc = base64Encode($msg);
-echo rtrim('
-Encoded  : ' . $enc), PHP_EOL;
-$dec = base64Decode($enc);
-echo rtrim('
-Decoded  : ' . $dec), PHP_EOL;
+};
+  $msg = 'Rosetta Code Base64 decode data task';
+  echo rtrim('Original : ' . $msg), PHP_EOL;
+  $enc = base64Encode($msg);
+  echo rtrim('\nEncoded  : ' . $enc), PHP_EOL;
+  $dec = base64Decode($enc);
+  echo rtrim('\nDecoded  : ' . $dec), PHP_EOL;
+$__end = _now();
+$__end_mem = memory_get_usage();
+$__duration = intdiv($__end - $__start, 1000);
+$__mem_diff = max(0, $__end_mem - $__start_mem);
+$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
+$__j = json_encode($__bench, 128);
+$__j = str_replace("    ", "  ", $__j);
+echo $__j, PHP_EOL;;

@@ -19,3 +19,8 @@
     #           #
      ##       ##
        #######
+{
+  "duration_us": 145,
+  "memory_bytes": 15440,
+  "name": "main"
+}

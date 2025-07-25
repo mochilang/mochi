@@ -1,4 +1,4 @@
-Example 1
+Example 1\n
            <  23 = 11
 >=  23 and <  37 =  4
 >=  37 and <  43 =  2
@@ -7,7 +7,7 @@ Example 1
 >=  67 and <  83 =  5
 >=  83           = 13
 
-Example 2
+Example 2\n
            <  14 =  3
 >=  14 and <  18 =  0
 >=  18 and < 249 = 44
@@ -19,3 +19,9 @@ Example 2
 >= 591 and < 634 =  6
 >= 634 and < 720 = 16
 >= 720           = 59
+
+{
+  "duration_us": 113,
+  "memory_bytes": 96,
+  "name": "main"
+}

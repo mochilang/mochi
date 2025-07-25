@@ -9,3 +9,8 @@ Digit  Observed  Predicted
   7      0.056     0.058
   8      0.053     0.051
   9      0.045     0.046
+{
+  "duration_us": 1816,
+  "memory_bytes": 96,
+  "name": "main"
+}

@@ -1,9 +1,19 @@
 <?php
 ini_set('memory_limit', '-1');
-function _len($x) {
-    if (is_array($x)) { return count($x); }
-    if (is_string($x)) { return strlen($x); }
-    return strlen(strval($x));
+$now_seed = 0;
+$now_seeded = false;
+$s = getenv('MOCHI_NOW_SEED');
+if ($s !== false && $s !== '') {
+    $now_seed = intval($s);
+    $now_seeded = true;
+}
+function _now() {
+    global $now_seed, $now_seeded;
+    if ($now_seeded) {
+        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
+        return $now_seed;
+    }
+    return hrtime(true);
 }
 function _str($x) {
     if (is_array($x)) {
@@ -21,8 +31,9 @@ function _str($x) {
     if ($x === null) return 'null';
     return strval($x);
 }
-function newBitmap($w, $h, $c) {
-  global $setPixel, $fillRect, $pad, $writePPMP3, $main;
+$__start_mem = memory_get_usage();
+$__start = _now();
+  function newBitmap($w, $h, $c) {
   $rows = [];
   $y = 0;
   while ($y < $h) {
@@ -36,17 +47,15 @@ function newBitmap($w, $h, $c) {
   $y = $y + 1;
 };
   return ['width' => $w, 'height' => $h, 'pixels' => $rows];
-}
-function setPixel(&$b, $x, $y, $c) {
-  global $newBitmap, $fillRect, $pad, $writePPMP3, $main;
+};
+  function setPixel(&$b, $x, $y, $c) {
   $rows = $b['pixels'];
   $row = $rows[$y];
   $row[$x] = $c;
   $rows[$y] = $row;
   $b['pixels'] = $rows;
-}
-function fillRect(&$b, $x, $y, $w, $h, $c) {
-  global $newBitmap, $setPixel, $pad, $writePPMP3, $main;
+};
+  function fillRect(&$b, $x, $y, $w, $h, $c) {
   $yy = $y;
   while ($yy < $y + $h) {
   $xx = $x;
@@ -56,17 +65,15 @@ function fillRect(&$b, $x, $y, $w, $h, $c) {
 };
   $yy = $yy + 1;
 };
-}
-function pad($n, $width) {
-  global $newBitmap, $setPixel, $fillRect, $writePPMP3, $main;
+};
+  function pad($n, $width) {
   $s = _str($n);
   while (strlen($s) < $width) {
   $s = ' ' . $s;
 };
   return $s;
-}
-function writePPMP3($b) {
-  global $newBitmap, $setPixel, $fillRect, $pad, $main;
+};
+  function writePPMP3($b) {
   $maxv = 0;
   $y = 0;
   while ($y < $b['height']) {
@@ -86,12 +93,8 @@ function writePPMP3($b) {
 };
   $y = $y + 1;
 };
-  $out = 'P3
-# generated from Bitmap.writeppmp3
-' . _str($b['width']) . ' ' . _str($b['height']) . '
-' . _str($maxv) . '
-';
-  $numsize = _len(_str($maxv));
+  $out = 'P3\n# generated from Bitmap.writeppmp3\n' . _str($b['width']) . ' ' . _str($b['height']) . '\n' . _str($maxv) . '\n';
+  $numsize = strlen(_str($maxv));
   $y = $b['height'] - 1;
   while ($y >= 0) {
   $line = '';
@@ -103,18 +106,15 @@ function writePPMP3($b) {
 };
   $out = $out . $line;
   if ($y > 0) {
-  $out = $out . '
-';
+  $out = $out . '\n';
 } else {
-  $out = $out . '
-';
+  $out = $out . '\n';
 }
   $y = $y - 1;
 };
   return $out;
-}
-function main() {
-  global $newBitmap, $setPixel, $fillRect, $pad, $writePPMP3;
+};
+  function main() {
   $black = ['R' => 0, 'G' => 0, 'B' => 0];
   $white = ['R' => 255, 'G' => 255, 'B' => 255];
   $bm = newBitmap(4, 4, $black);
@@ -122,5 +122,13 @@ function main() {
   setPixel($bm, 3, 3, ['R' => 127, 'G' => 0, 'B' => 63]);
   $ppm = writePPMP3($bm);
   echo rtrim($ppm), PHP_EOL;
-}
-main();
+};
+  main();
+$__end = _now();
+$__end_mem = memory_get_usage();
+$__duration = intdiv($__end - $__start, 1000);
+$__mem_diff = max(0, $__end_mem - $__start_mem);
+$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
+$__j = json_encode($__bench, 128);
+$__j = str_replace("    ", "  ", $__j);
+echo $__j, PHP_EOL;;

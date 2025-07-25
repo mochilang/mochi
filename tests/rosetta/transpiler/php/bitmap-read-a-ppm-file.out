@@ -1,14 +1,9 @@
 Original Colour PPM file
-P3
-# feep.ppm
-4 4
-15
- 0  0  0    0  0  0    0  0  0   15  0 15
- 0  0  0    0 15  7    0  0  0    0  0  0
- 0  0  0    0  0  0    0 15  7    0  0  0
-15  0 15    0  0  0    0  0  0    0  0  0
+P3\n# feep.ppm\n4 4\n15\n 0  0  0    0  0  0    0  0  0   15  0 15\n 0  0  0    0 15  7    0  0  0    0  0  0\n 0  0  0    0  0  0    0 15  7    0  0  0\n15  0 15    0  0  0    0  0  0    0  0  0\n
 Grey PPM:
-P3
-# generated from Bitmap.writeppmp3
-0 0
-0
+P3\n# generated from Bitmap.writeppmp3\n0 0\n0\n
+{
+  "duration_us": 107,
+  "memory_bytes": 648,
+  "name": "main"
+}

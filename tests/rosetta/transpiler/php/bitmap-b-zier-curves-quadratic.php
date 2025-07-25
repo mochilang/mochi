@@ -1,15 +1,40 @@
 <?php
 ini_set('memory_limit', '-1');
-$b2Seg = 20;
-function pixelFromRgb($rgb) {
-  global $b2Seg, $newBitmap, $setPx, $fill, $fillRgb, $line, $bezier2;
-  $r = intval(((intdiv($rgb, 65536)) % 256));
-  $g = intval(((intdiv($rgb, 256)) % 256));
+$now_seed = 0;
+$now_seeded = false;
+$s = getenv('MOCHI_NOW_SEED');
+if ($s !== false && $s !== '') {
+    $now_seed = intval($s);
+    $now_seeded = true;
+}
+function _now() {
+    global $now_seed, $now_seeded;
+    if ($now_seeded) {
+        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
+        return $now_seed;
+    }
+    return hrtime(true);
+}
+function _intdiv($a, $b) {
+    if (function_exists('bcdiv')) {
+        $sa = is_int($a) ? strval($a) : sprintf('%.0f', $a);
+        $sb = is_int($b) ? strval($b) : sprintf('%.0f', $b);
+        return intval(bcdiv($sa, $sb, 0));
+    }
+    return intdiv($a, $b);
+}
+$__start_mem = memory_get_usage();
+$__start = _now();
+  $b2Seg = 20;
+  function pixelFromRgb($rgb) {
+  global $b2Seg;
+  $r = intval(((_intdiv($rgb, 65536)) % 256));
+  $g = intval(((_intdiv($rgb, 256)) % 256));
   $b = intval(($rgb % 256));
   return ['r' => $r, 'g' => $g, 'b' => $b];
-}
-function newBitmap($cols, $rows) {
-  global $b2Seg, $pixelFromRgb, $setPx, $fill, $fillRgb, $line, $bezier2, $b;
+};
+  function newBitmap($cols, $rows) {
+  global $b2Seg, $b;
   $d = [];
   $y = 0;
   while ($y < $rows) {
@@ -23,17 +48,17 @@ function newBitmap($cols, $rows) {
   $y = $y + 1;
 };
   return ['cols' => $cols, 'rows' => $rows, 'data' => $d];
-}
-function setPx($b, $x, $y, $p) {
-  global $b2Seg, $pixelFromRgb, $newBitmap, $fill, $fillRgb, $line, $bezier2;
+};
+  function setPx(&$b, $x, $y, $p) {
+  global $b2Seg;
   $cols = intval($b['cols']);
   $rows = intval($b['rows']);
   if ($x >= 0 && $x < $cols && $y >= 0 && $y < $rows) {
   $b['data'][$y][$x] = $p;
 }
-}
-function fill($b, $p) {
-  global $b2Seg, $pixelFromRgb, $newBitmap, $setPx, $fillRgb, $line, $bezier2;
+};
+  function fill(&$b, $p) {
+  global $b2Seg;
   $cols = intval($b['cols']);
   $rows = intval($b['rows']);
   $y = 0;
@@ -45,13 +70,13 @@ function fill($b, $p) {
 };
   $y = $y + 1;
 };
-}
-function fillRgb($b, $rgb) {
-  global $b2Seg, $pixelFromRgb, $newBitmap, $setPx, $fill, $line, $bezier2;
+};
+  function fillRgb(&$b, $rgb) {
+  global $b2Seg;
   fill($b, pixelFromRgb($rgb));
-}
-function line($b, $x0, $y0, $x1, $y1, $p) {
-  global $b2Seg, $pixelFromRgb, $newBitmap, $setPx, $fill, $fillRgb, $bezier2;
+};
+  function line(&$b, $x0, $y0, $x1, $y1, $p) {
+  global $b2Seg;
   $dx = $x1 - $x0;
   if ($dx < 0) {
   $dx = -$dx;
@@ -84,9 +109,9 @@ function line($b, $x0, $y0, $x1, $y1, $p) {
   $y0 = $y0 + $sy;
 }
 };
-}
-function bezier2($b, $x1, $y1, $x2, $y2, $x3, $y3, $p) {
-  global $b2Seg, $pixelFromRgb, $newBitmap, $setPx, $fill, $fillRgb, $line;
+};
+  function bezier2(&$b, $x1, $y1, $x2, $y2, $x3, $y3, $p) {
+  global $b2Seg;
   $px = [];
   $py = [];
   $i = 0;
@@ -123,7 +148,15 @@ function bezier2($b, $x1, $y1, $x2, $y2, $x3, $y3, $p) {
   $y0 = $y;
   $i = $i + 1;
 };
-}
-$b = newBitmap(400, 300);
-fillRgb($b, 14614575);
-bezier2($b, 20, 150, 500, -100, 300, 280, pixelFromRgb(4165615));
+};
+  $b = newBitmap(400, 300);
+  fillRgb($b, 14614575);
+  bezier2($b, 20, 150, 500, -100, 300, 280, pixelFromRgb(4165615));
+$__end = _now();
+$__end_mem = memory_get_usage();
+$__duration = intdiv($__end - $__start, 1000);
+$__mem_diff = max(0, $__end_mem - $__start_mem);
+$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
+$__j = json_encode($__bench, 128);
+$__j = str_replace("    ", "  ", $__j);
+echo $__j, PHP_EOL;;
