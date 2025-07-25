@@ -3,92 +3,336 @@ null
 
 Insert test:
 
-Warning: Trying to access array offset on null in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 61
+Warning: Trying to access array offset on null in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 69
 
-Warning: Trying to access array offset on null in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 9
+Notice: Only variables should be passed by reference in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 58
 
-Warning: Trying to access array offset on null in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 9
+Warning: Trying to access array offset on null in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 40
 
-Warning: Trying to access array offset on null in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 43
-
-Warning: Trying to access array offset on null in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 9
-
-Warning: Trying to access array offset on null in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 9
-
-Warning: Trying to access array offset on null in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 9
-
-Warning: Trying to access array offset on null in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 9
-
-Warning: Trying to access array offset on null in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 13
-
-Warning: Trying to access array offset on null in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 13
-
-Warning: Trying to access array offset on null in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 9
-
-Warning: Trying to access array offset on null in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 9
-
-Warning: Trying to access array offset on null in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 13
-
-Warning: Trying to access array offset on null in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 61
-
-Warning: Trying to access array offset on null in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 9
-
-Warning: Trying to access array offset on null in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 9
+Warning: Trying to access array offset on null in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 40
 
 Warning: Trying to access array offset on null in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 43
 
-Warning: Trying to access array offset on null in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 9
+Warning: Undefined array key 1 in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 40
 
-Warning: Trying to access array offset on null in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 9
+Warning: Undefined array key "Data" in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 100
 
-Warning: Trying to access array offset on null in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 9
+Deprecated: ord(): Passing null to parameter #1 ($character) of type string is deprecated in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 100
 
-Warning: Trying to access array offset on null in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 9
+Warning: Trying to access array offset on null in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 69
 
-Warning: Trying to access array offset on null in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 13
+Notice: Only variables should be passed by reference in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 58
 
-Warning: Trying to access array offset on null in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 13
+Warning: Trying to access array offset on null in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 40
 
-Warning: Trying to access array offset on null in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 9
+Warning: Trying to access array offset on null in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 40
 
-Warning: Trying to access array offset on null in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 9
+Warning: Trying to access array offset on null in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 43
 
-Warning: Trying to access array offset on null in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 13
+Warning: Undefined array key 1 in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 40
+
+Warning: Undefined array key "Data" in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 100
+
+Deprecated: ord(): Passing null to parameter #1 ($character) of type string is deprecated in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 100
+
+Warning: Undefined array key "Data" in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 100
+
+Deprecated: ord(): Passing null to parameter #1 ($character) of type string is deprecated in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 100
+
+Warning: Trying to access array offset on null in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 69
+
+Notice: Only variables should be passed by reference in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 58
+
+Warning: Trying to access array offset on null in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 40
+
+Warning: Trying to access array offset on null in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 40
+
+Warning: Trying to access array offset on null in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 43
+
+Warning: Undefined array key 1 in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 40
+
+Warning: Undefined array key "Data" in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 100
+
+Deprecated: ord(): Passing null to parameter #1 ($character) of type string is deprecated in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 100
+
+Warning: Undefined array key "Data" in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 100
+
+Deprecated: ord(): Passing null to parameter #1 ($character) of type string is deprecated in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 100
+
+Warning: Undefined array key "Data" in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 100
+
+Deprecated: ord(): Passing null to parameter #1 ($character) of type string is deprecated in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 100
+
+Warning: Trying to access array offset on null in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 69
+
+Notice: Only variables should be passed by reference in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 58
+
+Warning: Trying to access array offset on null in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 40
+
+Warning: Trying to access array offset on null in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 40
+
+Warning: Trying to access array offset on null in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 43
+
+Warning: Undefined array key 1 in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 40
 {
-   "Data": 5,
-   "Balance": 0,
+
+Warning: Undefined array key "Data" in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 197
+   "Data": null,
+
+Warning: Undefined array key "Balance" in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 198
+   "Balance": null,
    "Link": [
-      null,
-      null
+      {
+         "Data": 1,
+         "Balance": 0,
+         "Link": [
+            null,
+            null
+         ]
+      },
+      {
+
+Warning: Undefined array key "Data" in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 197
+         "Data": null,
+
+Warning: Undefined array key "Balance" in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 198
+         "Balance": null,
+         "Link": [
+            {
+               "Data": 4,
+               "Balance": 0,
+               "Link": [
+                  null,
+                  null
+               ]
+            },
+            {
+
+Warning: Undefined array key "Data" in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 197
+               "Data": null,
+
+Warning: Undefined array key "Balance" in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 198
+               "Balance": null,
+               "Link": [
+                  {
+                     "Data": 1,
+                     "Balance": 0,
+                     "Link": [
+                        null,
+                        null
+                     ]
+                  },
+                  {
+
+Warning: Undefined array key "Data" in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 197
+                     "Data": null,
+
+Warning: Undefined array key "Balance" in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 198
+                     "Balance": null,
+                     "Link": [
+                        {
+                           "Data": 5,
+                           "Balance": 0,
+                           "Link": [
+                              null,
+                              null
+                           ]
+                        },
+                        {
+                           "Data": 3,
+                           "Balance": 0,
+                           "Link": [
+                              null,
+                              null
+                           ]
+                        }
+                     ]
+                  }
+               ]
+            }
+         ]
+      }
    ]
 }
 
 Remove test:
 
-Warning: Trying to access array offset on null in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 102
+Warning: Undefined array key "Data" in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 142
 
-Warning: Trying to access array offset on null in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 107
+Deprecated: ord(): Passing null to parameter #1 ($character) of type string is deprecated in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 142
 
-Warning: Trying to access array offset on null in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 9
+Warning: Undefined array key "Data" in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 157
 
-Warning: Trying to access array offset on null in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 9
+Deprecated: ord(): Passing null to parameter #1 ($character) of type string is deprecated in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 157
 
-Warning: Trying to access array offset on null in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 13
+Warning: Undefined array key "Data" in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 142
+
+Deprecated: ord(): Passing null to parameter #1 ($character) of type string is deprecated in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 142
+
+Warning: Undefined array key "Data" in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 157
+
+Deprecated: ord(): Passing null to parameter #1 ($character) of type string is deprecated in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 157
+
+Warning: Undefined array key "Data" in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 142
+
+Deprecated: ord(): Passing null to parameter #1 ($character) of type string is deprecated in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 142
+
+Warning: Undefined array key "Data" in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 157
+
+Deprecated: ord(): Passing null to parameter #1 ($character) of type string is deprecated in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 157
+
+Warning: Undefined array key "Data" in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 142
+
+Deprecated: ord(): Passing null to parameter #1 ($character) of type string is deprecated in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 142
+
+Warning: Undefined array key "Data" in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 157
+
+Deprecated: ord(): Passing null to parameter #1 ($character) of type string is deprecated in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 157
+
+Warning: Trying to access array offset on null in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 124
+
+Warning: Trying to access array offset on null in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 129
+
+Warning: Trying to access array offset on null in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 40
+
+Warning: Trying to access array offset on null in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 40
+
+Warning: Trying to access array offset on null in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 43
+
+Warning: Undefined array key "Data" in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 142
+
+Deprecated: ord(): Passing null to parameter #1 ($character) of type string is deprecated in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 142
+
+Warning: Undefined array key "Data" in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 157
+
+Deprecated: ord(): Passing null to parameter #1 ($character) of type string is deprecated in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 157
+
+Warning: Undefined array key "Data" in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 142
+
+Deprecated: ord(): Passing null to parameter #1 ($character) of type string is deprecated in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 142
+
+Warning: Undefined array key "Data" in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 157
+
+Deprecated: ord(): Passing null to parameter #1 ($character) of type string is deprecated in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 157
+
+Warning: Undefined array key "Data" in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 142
+
+Deprecated: ord(): Passing null to parameter #1 ($character) of type string is deprecated in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 142
+
+Warning: Undefined array key "Data" in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 157
+
+Deprecated: ord(): Passing null to parameter #1 ($character) of type string is deprecated in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 157
+
+Warning: Undefined array key "Data" in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 142
+
+Deprecated: ord(): Passing null to parameter #1 ($character) of type string is deprecated in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 142
+
+Warning: Undefined array key "Data" in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 157
+
+Deprecated: ord(): Passing null to parameter #1 ($character) of type string is deprecated in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 157
+
+Warning: Undefined array key "Data" in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 142
+
+Deprecated: ord(): Passing null to parameter #1 ($character) of type string is deprecated in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 142
+
+Warning: Undefined array key "Data" in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 157
+
+Deprecated: ord(): Passing null to parameter #1 ($character) of type string is deprecated in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 157
+
+Warning: Undefined array key 1 in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 40
+
+Warning: Undefined array key "Balance" in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 165
+
+Deprecated: ord(): Passing null to parameter #1 ($character) of type string is deprecated in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 165
 {
 
-Warning: Undefined array key "Data" in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 179
+Warning: Undefined array key "Data" in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 197
    "Data": null,
    "Balance": 0,
    "Link": [
+      {
+         "Data": 1,
+         "Balance": 0,
+         "Link": [
+            null,
+            null
+         ]
+      },
+      {
 
-Warning: Undefined array key "Link" in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 9
+Warning: Undefined array key "Data" in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 197
+         "Data": null,
 
-Warning: Trying to access array offset on null in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 9
-      null,
+Warning: Undefined array key "Balance" in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 198
+         "Balance": null,
+         "Link": [
+            {
+               "Data": 4,
+               "Balance": 0,
+               "Link": [
+                  null,
+                  null
+               ]
+            },
+            {
 
-Warning: Undefined array key "Link" in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 9
+Warning: Undefined array key "Data" in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 197
+               "Data": null,
 
-Warning: Trying to access array offset on null in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 9
-      null
+Warning: Undefined array key "Balance" in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 198
+               "Balance": null,
+               "Link": [
+                  {
+                     "Data": 1,
+                     "Balance": 0,
+                     "Link": [
+                        null,
+                        null
+                     ]
+                  },
+                  {
+
+Warning: Undefined array key "Data" in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 197
+                     "Data": null,
+
+Warning: Undefined array key "Balance" in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 198
+                     "Balance": null,
+                     "Link": [
+                        {
+                           "Data": 5,
+                           "Balance": 0,
+                           "Link": [
+                              null,
+                              null
+                           ]
+                        },
+                        {
+
+Warning: Undefined array key "Data" in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 197
+                           "Data": null,
+                           "Balance": -1,
+                           "Link": [
+                              {
+                                 "Data": 3,
+                                 "Balance": 1,
+                                 "Link": [
+                                    null,
+                                    null
+                                 ]
+                              },
+                              null
+                           ]
+                        }
+                     ]
+                  }
+               ]
+            }
+         ]
+      }
    ]
+}
+{
+  "duration_us": 720,
+  "memory_bytes": 152,
+  "name": "main"
 }

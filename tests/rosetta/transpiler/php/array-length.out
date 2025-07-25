@@ -1,1 +1,6 @@
-Length of ["apple","orange","pear"] is 3.
+Length of [apple orange pear] is 3.
+{
+  "duration_us": 102,
+  "memory_bytes": 96,
+  "name": "main"
+}

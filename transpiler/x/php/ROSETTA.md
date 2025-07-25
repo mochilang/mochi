@@ -2,12 +2,12 @@
 
 Generated PHP code from Mochi Rosetta tasks lives in `tests/rosetta/transpiler/php`.
 
-Last updated: 2025-07-25 20:03 +0700
+Last updated: 2025-07-25 20:48 +0700
 
-## Checklist (263/284)
+## Checklist (265/284)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
-| 1 | 100-doors-2 |   | 142µs | 136 B |
+| 1 | 100-doors-2 | ✓ | 142µs | 136 B |
 | 2 | 100-doors-3 | ✓ | 571.223ms | 224 B |
 | 3 | 100-doors | ✓ | 571.223ms | 2.7 KB |
 | 4 | 100-prisoners | ✓ |  |  |
@@ -77,37 +77,37 @@ Last updated: 2025-07-25 20:03 +0700
 | 68 | arithmetic-geometric-mean-calculate-pi | ✓ | 42µs | 96 B |
 | 69 | arithmetic-geometric-mean | ✓ | 47µs | 96 B |
 | 70 | arithmetic-integer-1 | ✓ | 47µs | 96 B |
-| 71 | arithmetic-integer-2 | ✓ |  |  |
+| 71 | arithmetic-integer-2 | ✓ | 63µs | 96 B |
 | 72 | arithmetic-numbers |   |  |  |
-| 73 | arithmetic-rational | ✓ |  |  |
-| 74 | array-concatenation | ✓ |  |  |
-| 75 | array-length | ✓ |  |  |
-| 76 | arrays | ✓ |  |  |
-| 77 | ascending-primes |   |  |  |
-| 78 | ascii-art-diagram-converter | ✓ |  |  |
-| 79 | assertions | ✓ |  |  |
-| 80 | associative-array-creation | ✓ |  |  |
-| 81 | associative-array-iteration | ✓ |  |  |
-| 82 | associative-array-merging | ✓ |  |  |
-| 83 | atomic-updates | ✓ |  |  |
-| 84 | attractive-numbers | ✓ |  |  |
-| 85 | average-loop-length | ✓ |  |  |
-| 86 | averages-arithmetic-mean | ✓ |  |  |
-| 87 | averages-mean-time-of-day | ✓ |  |  |
-| 88 | averages-median-1 | ✓ |  |  |
-| 89 | averages-median-2 | ✓ |  |  |
-| 90 | averages-median-3 | ✓ |  |  |
-| 91 | averages-mode | ✓ |  |  |
-| 92 | averages-pythagorean-means | ✓ |  |  |
-| 93 | averages-root-mean-square | ✓ |  |  |
-| 94 | averages-simple-moving-average | ✓ |  |  |
-| 95 | avl-tree | ✓ |  |  |
-| 96 | b-zier-curves-intersections | ✓ |  |  |
-| 97 | babbage-problem | ✓ |  |  |
-| 98 | babylonian-spiral | ✓ |  |  |
-| 99 | balanced-brackets | ✓ |  |  |
-| 100 | balanced-ternary | ✓ |  |  |
-| 101 | barnsley-fern | ✓ |  |  |
+| 73 | arithmetic-rational | ✓ | 245µs | 96 B |
+| 74 | array-concatenation | ✓ | 130µs | 224 B |
+| 75 | array-length | ✓ | 102µs | 96 B |
+| 76 | arrays | ✓ | 123µs | 592 B |
+| 77 | ascending-primes | ✓ | 569µs | 2.7 KB |
+| 78 | ascii-art-diagram-converter | ✓ | 106µs | 96 B |
+| 79 | assertions | ✓ | 48µs | 96 B |
+| 80 | associative-array-creation | ✓ | 179µs | 152 B |
+| 81 | associative-array-iteration | ✓ | 76µs | 96 B |
+| 82 | associative-array-merging | ✓ | 117µs | 96 B |
+| 83 | atomic-updates | ✓ | 189µs | 96 B |
+| 84 | attractive-numbers | ✓ | 257µs | 96 B |
+| 85 | average-loop-length | ✓ | 200.863ms | 96 B |
+| 86 | averages-arithmetic-mean | ✓ | 158µs | 96 B |
+| 87 | averages-mean-time-of-day | ✓ | 110µs | 128 B |
+| 88 | averages-median-1 | ✓ | 83µs | 96 B |
+| 89 | averages-median-2 | ✓ | 134µs | 96 B |
+| 90 | averages-median-3 | ✓ | 99µs | 96 B |
+| 91 | averages-mode | ✓ | 287µs | 1.7 KB |
+| 92 | averages-pythagorean-means | ✓ | 142µs | 96 B |
+| 93 | averages-root-mean-square | ✓ | 200µs | 192 B |
+| 94 | averages-simple-moving-average | ✓ | 129µs | 96 B |
+| 95 | avl-tree | ✓ | 720µs | 152 B |
+| 96 | b-zier-curves-intersections | ✓ | 1.592ms | 96 B |
+| 97 | babbage-problem | ✓ | 862µs | 96 B |
+| 98 | babylonian-spiral | ✓ | 424µs | 96 B |
+| 99 | balanced-brackets | ✓ | 232µs | 128 B |
+| 100 | balanced-ternary | ✓ | 185µs | 96 B |
+| 101 | barnsley-fern | ✓ | 10.777ms | 165.5 KB |
 | 102 | base64-decode-data | ✓ |  |  |
 | 103 | bell-numbers | ✓ |  |  |
 | 104 | benfords-law | ✓ |  |  |

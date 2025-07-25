@@ -7,3 +7,8 @@ Sum of recipr. factors of 8128 = 1 exactly perfect!
 Sum of recipr. factors of 30240 = 3 exactly
 Sum of recipr. factors of 32760 = 3 exactly
 Sum of recipr. factors of 523776 = 2 exactly
+{
+  "duration_us": 245,
+  "memory_bytes": 96,
+  "name": "main"
+}

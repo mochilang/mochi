@@ -1,28 +1,57 @@
 <?php
 ini_set('memory_limit', '-1');
-function absf($x) {
-  global $maxf, $minf, $max3, $min3, $subdivideQuadSpline, $subdivideQuadCurve, $rectsOverlap, $testIntersect, $seemsToBeDuplicate, $findIntersects, $main;
+$now_seed = 0;
+$now_seeded = false;
+$s = getenv('MOCHI_NOW_SEED');
+if ($s !== false && $s !== '') {
+    $now_seed = intval($s);
+    $now_seeded = true;
+}
+function _now() {
+    global $now_seed, $now_seeded;
+    if ($now_seeded) {
+        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
+        return $now_seed;
+    }
+    return hrtime(true);
+}
+function _str($x) {
+    if (is_array($x)) {
+        $isList = array_keys($x) === range(0, count($x) - 1);
+        if ($isList) {
+            $parts = [];
+            foreach ($x as $v) { $parts[] = _str($v); }
+            return '[' . implode(' ', $parts) . ']';
+        }
+        $parts = [];
+        foreach ($x as $k => $v) { $parts[] = _str($k) . ':' . _str($v); }
+        return 'map[' . implode(' ', $parts) . ']';
+    }
+    if (is_bool($x)) return $x ? 'true' : 'false';
+    if ($x === null) return 'null';
+    return strval($x);
+}
+$__start_mem = memory_get_usage();
+$__start = _now();
+  function absf($x) {
   if ($x < 0.0) {
   return -$x;
 }
   return $x;
-}
-function maxf($a, $b) {
-  global $absf, $minf, $max3, $min3, $subdivideQuadSpline, $subdivideQuadCurve, $rectsOverlap, $testIntersect, $seemsToBeDuplicate, $findIntersects, $main;
+};
+  function maxf($a, $b) {
   if ($a > $b) {
   return $a;
 }
   return $b;
-}
-function minf($a, $b) {
-  global $absf, $maxf, $max3, $min3, $subdivideQuadSpline, $subdivideQuadCurve, $rectsOverlap, $testIntersect, $seemsToBeDuplicate, $findIntersects, $main;
+};
+  function minf($a, $b) {
   if ($a < $b) {
   return $a;
 }
   return $b;
-}
-function max3($a, $b, $c) {
-  global $absf, $maxf, $minf, $min3, $subdivideQuadSpline, $subdivideQuadCurve, $rectsOverlap, $testIntersect, $seemsToBeDuplicate, $findIntersects, $main;
+};
+  function max3($a, $b, $c) {
   $m = $a;
   if ($b > $m) {
   $m = $b;
@@ -31,9 +60,8 @@ function max3($a, $b, $c) {
   $m = $c;
 }
   return $m;
-}
-function min3($a, $b, $c) {
-  global $absf, $maxf, $minf, $max3, $subdivideQuadSpline, $subdivideQuadCurve, $rectsOverlap, $testIntersect, $seemsToBeDuplicate, $findIntersects, $main;
+};
+  function min3($a, $b, $c) {
   $m = $a;
   if ($b < $m) {
   $m = $b;
@@ -42,9 +70,8 @@ function min3($a, $b, $c) {
   $m = $c;
 }
   return $m;
-}
-function subdivideQuadSpline($q, $t) {
-  global $absf, $maxf, $minf, $max3, $min3, $subdivideQuadCurve, $rectsOverlap, $testIntersect, $seemsToBeDuplicate, $findIntersects, $main;
+};
+  function subdivideQuadSpline($q, $t) {
   $s = 1.0 - $t;
   $u = ['c0' => $q['c0'], 'c1' => 0.0, 'c2' => 0.0];
   $v = ['c0' => 0.0, 'c1' => 0.0, 'c2' => $q['c2']];
@@ -53,21 +80,18 @@ function subdivideQuadSpline($q, $t) {
   $u['c2'] = $s * $u['c1'] + $t * $v['c1'];
   $v['c0'] = $u['c2'];
   return [$u, $v];
-}
-function subdivideQuadCurve($q, $t) {
-  global $absf, $maxf, $minf, $max3, $min3, $subdivideQuadSpline, $rectsOverlap, $testIntersect, $seemsToBeDuplicate, $findIntersects, $main;
+};
+  function subdivideQuadCurve($q, $t) {
   $xs = subdivideQuadSpline($q['x'], $t);
   $ys = subdivideQuadSpline($q['y'], $t);
   $u = ['x' => $xs[0], 'y' => $ys[0]];
   $v = ['x' => $xs[1], 'y' => $ys[1]];
   return [$u, $v];
-}
-function rectsOverlap($xa0, $ya0, $xa1, $ya1, $xb0, $yb0, $xb1, $yb1) {
-  global $absf, $maxf, $minf, $max3, $min3, $subdivideQuadSpline, $subdivideQuadCurve, $testIntersect, $seemsToBeDuplicate, $findIntersects, $main;
+};
+  function rectsOverlap($xa0, $ya0, $xa1, $ya1, $xb0, $yb0, $xb1, $yb1) {
   return $xb0 <= $xa1 && $xa0 <= $xb1 && $yb0 <= $ya1 && $ya0 <= $yb1;
-}
-function testIntersect($p, $q, $tol) {
-  global $absf, $maxf, $minf, $max3, $min3, $subdivideQuadSpline, $subdivideQuadCurve, $rectsOverlap, $seemsToBeDuplicate, $findIntersects, $main;
+};
+  function testIntersect($p, $q, $tol) {
   $pxmin = min3($p['x']['c0'], $p['x']['c1'], $p['x']['c2']);
   $pymin = min3($p['y']['c0'], $p['y']['c1'], $p['y']['c2']);
   $pxmax = max3($p['x']['c0'], $p['x']['c1'], $p['x']['c2']);
@@ -94,9 +118,8 @@ function testIntersect($p, $q, $tol) {
 };
 }
   return ['exclude' => $exclude, 'accept' => $accept, 'intersect' => $inter];
-}
-function seemsToBeDuplicate($pts, $xy, $spacing) {
-  global $absf, $maxf, $minf, $max3, $min3, $subdivideQuadSpline, $subdivideQuadCurve, $rectsOverlap, $testIntersect, $findIntersects, $main;
+};
+  function seemsToBeDuplicate($pts, $xy, $spacing) {
   $i = 0;
   while ($i < count($pts)) {
   $pt = $pts[$i];
@@ -106,9 +129,8 @@ function seemsToBeDuplicate($pts, $xy, $spacing) {
   $i = $i + 1;
 };
   return false;
-}
-function findIntersects($p, $q, $tol, $spacing) {
-  global $absf, $maxf, $minf, $max3, $min3, $subdivideQuadSpline, $subdivideQuadCurve, $rectsOverlap, $testIntersect, $seemsToBeDuplicate, $main;
+};
+  function findIntersects($p, $q, $tol, $spacing) {
   $inters = [];
   $workload = [['p' => $p, 'q' => $q]];
   while (count($workload) > 0) {
@@ -139,9 +161,8 @@ function findIntersects($p, $q, $tol, $spacing) {
 }
 };
   return $inters;
-}
-function main() {
-  global $absf, $maxf, $minf, $max3, $min3, $subdivideQuadSpline, $subdivideQuadCurve, $rectsOverlap, $testIntersect, $seemsToBeDuplicate, $findIntersects;
+};
+  function main() {
   $p = ['x' => ['c0' => -1.0, 'c1' => 0.0, 'c2' => 1.0], 'y' => ['c0' => 0.0, 'c1' => 10.0, 'c2' => 0.0]];
   $q = ['x' => ['c0' => 2.0, 'c1' => -8.0, 'c2' => 2.0], 'y' => ['c0' => 1.0, 'c1' => 2.0, 'c2' => 3.0]];
   $tol = 0.0000001;
@@ -150,8 +171,16 @@ function main() {
   $i = 0;
   while ($i < count($inters)) {
   $pt = $inters[$i];
-  echo rtrim('(' . json_encode($pt['x'], 1344) . ', ' . json_encode($pt['y'], 1344) . ')'), PHP_EOL;
+  echo rtrim('(' . _str($pt['x']) . ', ' . _str($pt['y']) . ')'), PHP_EOL;
   $i = $i + 1;
 };
-}
-main();
+};
+  main();
+$__end = _now();
+$__end_mem = memory_get_usage();
+$__duration = intdiv($__end - $__start, 1000);
+$__mem_diff = max(0, $__end_mem - $__start_mem);
+$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
+$__j = json_encode($__bench, 128);
+$__j = str_replace("    ", "  ", $__j);
+echo $__j, PHP_EOL;;

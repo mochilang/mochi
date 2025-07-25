@@ -1,32 +1,59 @@
 <?php
 ini_set('memory_limit', '-1');
-function Node($data) {
-  global $getLink, $setLink, $opp, $single, $double, $adjustBalance, $insertBalance, $insertR, $Insert, $removeBalance, $removeR, $Remove, $indentStr, $dumpNode, $dump, $main;
+$now_seed = 0;
+$now_seeded = false;
+$s = getenv('MOCHI_NOW_SEED');
+if ($s !== false && $s !== '') {
+    $now_seed = intval($s);
+    $now_seeded = true;
+}
+function _now() {
+    global $now_seed, $now_seeded;
+    if ($now_seeded) {
+        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
+        return $now_seed;
+    }
+    return hrtime(true);
+}
+function _str($x) {
+    if (is_array($x)) {
+        $isList = array_keys($x) === range(0, count($x) - 1);
+        if ($isList) {
+            $parts = [];
+            foreach ($x as $v) { $parts[] = _str($v); }
+            return '[' . implode(' ', $parts) . ']';
+        }
+        $parts = [];
+        foreach ($x as $k => $v) { $parts[] = _str($k) . ':' . _str($v); }
+        return 'map[' . implode(' ', $parts) . ']';
+    }
+    if (is_bool($x)) return $x ? 'true' : 'false';
+    if ($x === null) return 'null';
+    return strval($x);
+}
+$__start_mem = memory_get_usage();
+$__start = _now();
+  function Node($data) {
   return ['Data' => $data, 'Balance' => 0, 'Link' => [null, null]];
-}
-function getLink($n, $dir) {
-  global $Node, $setLink, $opp, $single, $double, $adjustBalance, $insertBalance, $insertR, $Insert, $removeBalance, $removeR, $Remove, $indentStr, $dumpNode, $dump, $main;
+};
+  function getLink($n, $dir) {
   return ($n['Link'])[$dir];
-}
-function setLink($n, $dir, $v) {
-  global $Node, $getLink, $opp, $single, $double, $adjustBalance, $insertBalance, $insertR, $Insert, $removeBalance, $removeR, $Remove, $indentStr, $dumpNode, $dump, $main;
+};
+  function setLink(&$n, $dir, $v) {
   $links = $n['Link'];
   $links[$dir] = $v;
   $n['Link'] = $links;
-}
-function opp($dir) {
-  global $Node, $getLink, $setLink, $single, $double, $adjustBalance, $insertBalance, $insertR, $Insert, $removeBalance, $removeR, $Remove, $indentStr, $dumpNode, $dump, $main;
+};
+  function opp($dir) {
   return 1 - $dir;
-}
-function single($root, $dir) {
-  global $Node, $getLink, $setLink, $opp, $double, $adjustBalance, $insertBalance, $insertR, $Insert, $removeBalance, $removeR, $Remove, $indentStr, $dumpNode, $dump, $main;
+};
+  function single(&$root, $dir) {
   $tmp = getLink($root, opp($dir));
   setLink($root, opp($dir), getLink($tmp, $dir));
   setLink($tmp, $dir, $root);
   return $tmp;
-}
-function double($root, $dir) {
-  global $Node, $getLink, $setLink, $opp, $single, $adjustBalance, $insertBalance, $insertR, $Insert, $removeBalance, $removeR, $Remove, $indentStr, $dumpNode, $dump, $main;
+};
+  function double(&$root, $dir) {
   $tmp = getLink(getLink($root, opp($dir)), $dir);
   setLink(getLink($root, opp($dir)), $dir, getLink($tmp, opp($dir)));
   setLink($tmp, opp($dir), getLink($root, opp($dir)));
@@ -35,9 +62,8 @@ function double($root, $dir) {
   setLink($root, opp($dir), getLink($tmp, $dir));
   setLink($tmp, $dir, $root);
   return $tmp;
-}
-function adjustBalance($root, $dir, $bal) {
-  global $Node, $getLink, $setLink, $opp, $single, $double, $insertBalance, $insertR, $Insert, $removeBalance, $removeR, $Remove, $indentStr, $dumpNode, $dump, $main;
+};
+  function adjustBalance(&$root, $dir, $bal) {
   $n = getLink($root, $dir);
   $nn = getLink($n, opp($dir));
   if ($nn['Balance'] == 0) {
@@ -53,9 +79,8 @@ function adjustBalance($root, $dir, $bal) {
 };
 }
   $nn['Balance'] = 0;
-}
-function insertBalance($root, $dir) {
-  global $Node, $getLink, $setLink, $opp, $single, $double, $adjustBalance, $insertR, $Insert, $removeBalance, $removeR, $Remove, $indentStr, $dumpNode, $dump, $main;
+};
+  function insertBalance(&$root, $dir) {
   $n = getLink($root, $dir);
   $bal = 2 * $dir - 1;
   if ($n['Balance'] == $bal) {
@@ -65,9 +90,8 @@ function insertBalance($root, $dir) {
 }
   adjustBalance($root, $dir, $bal);
   return double($root, opp($dir));
-}
-function insertR($root, $data) {
-  global $Node, $getLink, $setLink, $opp, $single, $double, $adjustBalance, $insertBalance, $Insert, $removeBalance, $removeR, $Remove, $indentStr, $dumpNode, $dump, $main;
+};
+  function insertR($root, $data) {
   if ($root == null) {
   return ['node' => Node($data), 'done' => false];
 }
@@ -89,14 +113,12 @@ function insertR($root, $data) {
   return ['node' => $node, 'done' => false];
 }
   return ['node' => insertBalance($node, $dir), 'done' => true];
-}
-function Insert($tree, $data) {
-  global $Node, $getLink, $setLink, $opp, $single, $double, $adjustBalance, $insertBalance, $insertR, $removeBalance, $removeR, $Remove, $indentStr, $dumpNode, $dump, $main;
+};
+  function Insert($tree, $data) {
   $r = insertR($tree, $data);
   return $r['node'];
-}
-function removeBalance($root, $dir) {
-  global $Node, $getLink, $setLink, $opp, $single, $double, $adjustBalance, $insertBalance, $insertR, $Insert, $removeR, $Remove, $indentStr, $dumpNode, $dump, $main;
+};
+  function removeBalance(&$root, $dir) {
   $n = getLink($root, opp($dir));
   $bal = 2 * $dir - 1;
   if ($n['Balance'] == (-$bal)) {
@@ -111,9 +133,8 @@ function removeBalance($root, $dir) {
   $root['Balance'] = -$bal;
   $n['Balance'] = $bal;
   return ['node' => single($root, $dir), 'done' => true];
-}
-function removeR($root, $data) {
-  global $Node, $getLink, $setLink, $opp, $single, $double, $adjustBalance, $insertBalance, $insertR, $Insert, $removeBalance, $Remove, $indentStr, $dumpNode, $dump, $main;
+};
+  function removeR($root, $data) {
   if ($root == null) {
   return ['node' => null, 'done' => false];
 }
@@ -149,14 +170,12 @@ function removeR($root, $data) {
   return ['node' => $node, 'done' => false];
 }
   return removeBalance($node, $dir);
-}
-function Remove($tree, $data) {
-  global $Node, $getLink, $setLink, $opp, $single, $double, $adjustBalance, $insertBalance, $insertR, $Insert, $removeBalance, $removeR, $indentStr, $dumpNode, $dump, $main;
+};
+  function Remove($tree, $data) {
   $r = removeR($tree, $data);
   return $r['node'];
-}
-function indentStr($n) {
-  global $Node, $getLink, $setLink, $opp, $single, $double, $adjustBalance, $insertBalance, $insertR, $Insert, $removeBalance, $removeR, $Remove, $dumpNode, $dump, $main;
+};
+  function indentStr($n) {
   $s = '';
   $i = 0;
   while ($i < $n) {
@@ -164,9 +183,8 @@ function indentStr($n) {
   $i = $i + 1;
 };
   return $s;
-}
-function dumpNode($node, $indent, $comma) {
-  global $Node, $getLink, $setLink, $opp, $single, $double, $adjustBalance, $insertBalance, $insertR, $Insert, $removeBalance, $removeR, $Remove, $indentStr, $dump, $main;
+};
+  function dumpNode($node, $indent, $comma) {
   $sp = indentStr($indent);
   if ($node == null) {
   $line = $sp . 'null';
@@ -176,8 +194,8 @@ function dumpNode($node, $indent, $comma) {
   echo rtrim($line), PHP_EOL;
 } else {
   echo rtrim($sp . '{'), PHP_EOL;
-  echo rtrim(indentStr($indent + 3) . '"Data": ' . json_encode($node['Data'], 1344) . ','), PHP_EOL;
-  echo rtrim(indentStr($indent + 3) . '"Balance": ' . json_encode($node['Balance'], 1344) . ','), PHP_EOL;
+  echo rtrim(indentStr($indent + 3) . '"Data": ' . _str($node['Data']) . ','), PHP_EOL;
+  echo rtrim(indentStr($indent + 3) . '"Balance": ' . _str($node['Balance']) . ','), PHP_EOL;
   echo rtrim(indentStr($indent + 3) . '"Link": ['), PHP_EOL;
   dumpNode(getLink($node, 0), $indent + 6, true);
   dumpNode(getLink($node, 1), $indent + 6, false);
@@ -188,13 +206,11 @@ function dumpNode($node, $indent, $comma) {
 };
   echo rtrim($end), PHP_EOL;
 }
-}
-function dump($node, $indent) {
-  global $Node, $getLink, $setLink, $opp, $single, $double, $adjustBalance, $insertBalance, $insertR, $Insert, $removeBalance, $removeR, $Remove, $indentStr, $dumpNode, $main;
+};
+  function dump($node, $indent) {
   dumpNode($node, $indent, false);
-}
-function main() {
-  global $Node, $getLink, $setLink, $opp, $single, $double, $adjustBalance, $insertBalance, $insertR, $Insert, $removeBalance, $removeR, $Remove, $indentStr, $dumpNode, $dump;
+};
+  function main() {
   $tree = null;
   echo rtrim('Empty tree:'), PHP_EOL;
   dump($tree, 0);
@@ -214,5 +230,13 @@ function main() {
   $t['Balance'] = 0;
   $tree = $t;
   dump($tree, 0);
-}
-main();
+};
+  main();
+$__end = _now();
+$__end_mem = memory_get_usage();
+$__duration = intdiv($__end - $__start, 1000);
+$__mem_diff = max(0, $__end_mem - $__start_mem);
+$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
+$__j = json_encode($__bench, 128);
+$__j = str_replace("    ", "  ", $__j);
+echo $__j, PHP_EOL;;
