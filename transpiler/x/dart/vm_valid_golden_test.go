@@ -47,7 +47,7 @@ func TestDartTranspiler_VMValid_Golden(t *testing.T) {
 			return nil, errs[0]
 		}
 		bench := os.Getenv("MOCHI_BENCHMARK") == "true"
-		ast, err := dartt.Transpile(prog, env, bench)
+		ast, err := dartt.Transpile(prog, env, bench, bench)
 		if err != nil {
 			_ = os.WriteFile(errPath, []byte("transpile: "+err.Error()), 0o644)
 			return nil, err

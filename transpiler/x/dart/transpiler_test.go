@@ -51,7 +51,7 @@ func runGolden(t *testing.T, name string) {
 	if errs := types.Check(prog, env); len(errs) > 0 {
 		t.Fatalf("type: %v", errs[0])
 	}
-	ast, err := dartt.Transpile(prog, env, false)
+	ast, err := dartt.Transpile(prog, env, false, false)
 	if err != nil {
 		t.Fatalf("transpile: %v", err)
 	}
