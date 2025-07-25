@@ -28,12 +28,13 @@ func runRosettaCase(t *testing.T, name string) {
 	src := filepath.Join(root, "tests", "rosetta", "x", "Mochi", name+".mochi")
 	outDir := filepath.Join(root, "tests", "rosetta", "transpiler", "TypeScript")
 	os.MkdirAll(outDir, 0o755)
-	codePath := filepath.Join(outDir, name+".ts")
-	outPath := filepath.Join(outDir, name+".out")
-	errPath := filepath.Join(outDir, name+".error")
+    codePath := filepath.Join(outDir, name+".ts")
+    outPath := filepath.Join(outDir, name+".out")
+    benchPath := filepath.Join(outDir, name+".bench")
+    errPath := filepath.Join(outDir, name+".error")
 
-	want, _ := os.ReadFile(outPath)
-	want = bytes.TrimSpace(want)
+    want, _ := os.ReadFile(outPath)
+    want = bytes.TrimSpace(want)
 	prog, err := parser.Parse(src)
 	if err != nil {
 		_ = os.WriteFile(errPath, []byte("parse: "+err.Error()), 0o644)
@@ -59,26 +60,33 @@ func runRosettaCase(t *testing.T, name string) {
 	if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
 		cmd.Stdin = bytes.NewReader(data)
 	}
-	out, err := cmd.CombinedOutput()
-	got := bytes.TrimSpace(out)
-	if err != nil {
-		_ = os.WriteFile(errPath, append([]byte("run: "+err.Error()+"\n"), out...), 0o644)
-		t.Fatalf("run: %v", err)
-	}
-	_ = os.Remove(errPath)
-	_ = os.WriteFile(outPath, got, 0o644)
-	if bench {
-		// try to parse benchmark json for progress stats
-		var js struct {
-			Duration int64  `json:"duration_us"`
-			Memory   int64  `json:"memory_bytes"`
-			Name     string `json:"name"`
-		}
-		_ = json.Unmarshal(got, &js)
-	}
-	if updating() || len(want) == 0 {
-		return
-	}
+    out, err := cmd.CombinedOutput()
+    got := bytes.TrimSpace(out)
+    if err != nil {
+        _ = os.WriteFile(errPath, append([]byte("run: "+err.Error()+"\n"), out...), 0o644)
+        t.Fatalf("run: %v", err)
+    }
+    _ = os.Remove(errPath)
+    if bench {
+        // extract trailing JSON benchmark if present
+        outBytes := got
+        if idx := bytes.LastIndexByte(outBytes, '{'); idx >= 0 {
+            outBytes = outBytes[idx:]
+        }
+        _ = os.WriteFile(benchPath, outBytes, 0o644)
+        // try to parse benchmark json for progress stats
+        var js struct {
+            Duration int64  `json:"duration_us"`
+            Memory   int64  `json:"memory_bytes"`
+            Name     string `json:"name"`
+        }
+        _ = json.Unmarshal(outBytes, &js)
+        return
+    }
+    _ = os.WriteFile(outPath, got, 0o644)
+    if updating() || len(want) == 0 {
+            return
+    }
 	if !bytes.Equal(got, want) {
 		t.Fatalf("output mismatch\nGot: %s\nWant: %s", got, want)
 	}
@@ -166,21 +174,35 @@ func updateRosettaChecklist() {
 			compiled++
 			status = "✓"
 		}
-		dur := ""
-		mem := ""
-		if data, err := os.ReadFile(filepath.Join(outDir, name+".out")); err == nil {
-			var js struct {
-				Duration int64 `json:"duration_us"`
-				Memory   int64 `json:"memory_bytes"`
-			}
-			data = bytes.TrimSpace(data)
-			if idx := bytes.LastIndexByte(data, '{'); idx >= 0 {
-				if json.Unmarshal(data[idx:], &js) == nil && js.Duration > 0 {
-					dur = humanDuration(js.Duration)
-					mem = humanSize(js.Memory)
-				}
-			}
-		}
+                dur := ""
+                mem := ""
+                benchFile := filepath.Join(outDir, name+".bench")
+                if data, err := os.ReadFile(benchFile); err == nil {
+                        var js struct {
+                                Duration int64 `json:"duration_us"`
+                                Memory   int64 `json:"memory_bytes"`
+                        }
+                        if json.Unmarshal(bytes.TrimSpace(data), &js) == nil {
+                                if js.Duration > 0 {
+                                        dur = humanDuration(js.Duration)
+                                }
+                                if js.Memory > 0 {
+                                        mem = humanSize(js.Memory)
+                                }
+                        }
+                } else if data, err := os.ReadFile(filepath.Join(outDir, name+".out")); err == nil {
+                        var js struct {
+                                Duration int64 `json:"duration_us"`
+                                Memory   int64 `json:"memory_bytes"`
+                        }
+                        data = bytes.TrimSpace(data)
+                        if idx := bytes.LastIndexByte(data, '{'); idx >= 0 {
+                                if json.Unmarshal(data[idx:], &js) == nil && js.Duration > 0 {
+                                        dur = humanDuration(js.Duration)
+                                        mem = humanSize(js.Memory)
+                                }
+                        }
+                }
 		lines = append(lines, fmt.Sprintf("| %d | %s | %s | %s | %s |", i+1, name, status, dur, mem))
 	}
 	ts := time.Now().UTC().Format("2006-01-02 15:04 MST")
