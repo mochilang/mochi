@@ -106,6 +106,34 @@ func emitLenExpr(w io.Writer, e Expr) {
 	}
 }
 
+func emitLensExpr(w io.Writer, e Expr) {
+	switch v := e.(type) {
+	case *VarRef:
+		io.WriteString(w, v.Name+"_lens")
+	case *FieldExpr:
+		v.Target.emitExpr(w)
+		io.WriteString(w, "."+v.Name+"_lens")
+	case *CallExpr:
+		io.WriteString(w, v.Func+"_lens")
+	default:
+		io.WriteString(w, "NULL")
+	}
+}
+
+func emitExtraArgs(w io.Writer, paramType string, arg Expr) {
+	if strings.HasSuffix(paramType, "[][]") {
+		io.WriteString(w, ", ")
+		emitLenExpr(w, arg)
+		io.WriteString(w, ", ")
+		emitLensExpr(w, arg)
+		io.WriteString(w, ", ")
+		emitLenExpr(w, arg)
+	} else if strings.HasSuffix(paramType, "[]") {
+		io.WriteString(w, ", ")
+		emitLenExpr(w, arg)
+	}
+}
+
 const version = "0.10.32"
 
 // --- Simple C AST ---
@@ -349,10 +377,7 @@ func (c *CallStmt) emit(w io.Writer, indent int) {
 			io.WriteString(w, "&")
 		}
 		a.emitExpr(w)
-		if strings.HasSuffix(paramType, "[]") {
-			io.WriteString(w, ", ")
-			emitLenExpr(w, a)
-		}
+		emitExtraArgs(w, paramType, a)
 	}
 	io.WriteString(w, ");\n")
 }
@@ -557,6 +582,9 @@ func (d *DeclStmt) emit(w io.Writer, indent int) {
 func (a *AssignStmt) emit(w io.Writer, indent int) {
 	if call, ok := a.Value.(*CallExpr); ok && call.Func == "append" && len(call.Args) == 2 {
 		if vr, ok2 := call.Args[0].(*VarRef); ok2 && vr.Name == a.Name && len(a.Indexes) == 0 && len(a.Fields) == 0 {
+			if ds, ok := declStmts[a.Name]; ok {
+				ds.Value = nil
+			}
 			base := strings.TrimSuffix(varTypes[a.Name], "[]")
 			writeIndent(w, indent)
 			switch base {
@@ -1115,10 +1143,7 @@ func (c *CallExpr) emitExpr(w io.Writer) {
 			io.WriteString(w, "&")
 		}
 		a.emitExpr(w)
-		if strings.HasSuffix(paramType, "[]") {
-			io.WriteString(w, ", ")
-			emitLenExpr(w, a)
-		}
+		emitExtraArgs(w, paramType, a)
 	}
 	io.WriteString(w, ")")
 }

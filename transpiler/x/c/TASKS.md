@@ -1,5 +1,5 @@
-## Progress (2025-07-25 17:35 +0700)
-- Commit 13e5acb925: transpiler/c: update Rosetta outputs
+## Progress (2025-07-25 17:54 +0700)
+- Commit 8b26f21fb6: transpiler/c: add partial nested list support
 - Regenerated golden files - 81/104 vm valid programs passing
 
 ## Progress (2025-07-22 14:12 +0700)
