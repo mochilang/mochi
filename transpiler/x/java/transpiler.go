@@ -297,9 +297,13 @@ func fieldTypeFromVar(target Expr, name string) (string, bool) {
 	}
 	switch v := target.(type) {
 	case *VarExpr:
-		tname, ok := varTypes[v.Name]
-		if !ok {
-			return "", false
+		tname := v.Type
+		if tname == "" {
+			var ok bool
+			tname, ok = varTypes[v.Name]
+			if !ok {
+				return "", false
+			}
 		}
 		base := strings.TrimSuffix(tname, "[]")
 		if topEnv != nil {
@@ -2435,22 +2439,19 @@ func arrayElemType(e Expr) string {
 		}
 		return ""
 	case *VarExpr:
-		if t, ok := varTypes[ex.Name]; ok {
-			if strings.HasSuffix(t, "[]") {
-				return strings.TrimSuffix(t, "[]")
-			}
-			if strings.HasPrefix(t, "java.util.List<") && strings.HasSuffix(t, ">") {
-				return strings.TrimSuffix(strings.TrimPrefix(t, "java.util.List<"), ">")
+		t := ex.Type
+		if t == "" {
+			if v, ok := varTypes[ex.Name]; ok {
+				t = v
+			} else if vs, ok2 := varDecls[ex.Name]; ok2 {
+				t = vs.Type
 			}
 		}
-		if vs, ok := varDecls[ex.Name]; ok {
-			t := vs.Type
-			if strings.HasSuffix(t, "[]") {
-				return strings.TrimSuffix(t, "[]")
-			}
-			if strings.HasPrefix(t, "java.util.List<") && strings.HasSuffix(t, ">") {
-				return strings.TrimSuffix(strings.TrimPrefix(t, "java.util.List<"), ">")
-			}
+		if strings.HasSuffix(t, "[]") {
+			return strings.TrimSuffix(t, "[]")
+		}
+		if strings.HasPrefix(t, "java.util.List<") && strings.HasSuffix(t, ">") {
+			return strings.TrimSuffix(strings.TrimPrefix(t, "java.util.List<"), ">")
 		}
 	case *FieldExpr:
 		if t, ok := fieldTypeFromVar(ex.Target, ex.Name); ok {
@@ -2470,7 +2471,13 @@ func isListExpr(e Expr) bool {
 	case *QueryExpr, *ListLit, *ValuesExpr, *KeysExpr:
 		return true
 	case *VarExpr:
-		if t, ok := varTypes[ex.Name]; ok && strings.HasPrefix(t, "java.util.List") {
+		t := ex.Type
+		if t == "" {
+			if v, ok := varTypes[ex.Name]; ok {
+				t = v
+			}
+		}
+		if strings.HasPrefix(t, "java.util.List") {
 			return true
 		}
 	}
