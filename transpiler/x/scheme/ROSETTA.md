@@ -2,8 +2,8 @@
 
 Generated Scheme code for Rosetta Code tasks under `tests/rosetta/x/Mochi`.
 
-## Checklist (80/284)
-Last updated: 2025-07-25 12:39 UTC
+## Checklist (82/284)
+Last updated: 2025-07-25 13:00 UTC
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -32,9 +32,9 @@ Last updated: 2025-07-25 12:39 UTC
 | 23 | abstract-type | ✓ |  |  |
 | 24 | abundant-deficient-and-perfect-number-classifications | ✓ |  |  |
 | 25 | abundant-odd-numbers | ✓ |  |  |
-| 26 | accumulator-factory |   |  |  |
-| 27 | achilles-numbers |   |  |  |
-| 28 | ackermann-function-2 | ✓ |  |  |
+| 26 | accumulator-factory | ✓ | 48µs | 12.4 MB |
+| 27 | achilles-numbers | ✓ | 390.36ms | 16.5 MB |
+| 28 | ackermann-function-2 | ✓ | 225µs | 12.6 MB |
 | 29 | ackermann-function-3 | ✓ |  |  |
 | 30 | ackermann-function | ✓ |  |  |
 | 31 | active-directory-connect | ✓ |  |  |
