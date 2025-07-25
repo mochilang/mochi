@@ -305,7 +305,10 @@ type FieldPtrExpr struct {
 	Field  string
 }
 
-type ReturnStmt struct{ Value Expr }
+type ReturnStmt struct {
+	Value Expr
+	Type  string
+}
 
 type VarRef struct{ Name string }
 
@@ -645,7 +648,11 @@ func (p *Program) write(w io.Writer) {
 					if i > 0 {
 						io.WriteString(w, ", ")
 					}
-					fmt.Fprintf(w, "%s(%s_)", f.Name, f.Name)
+					if strings.HasPrefix(f.Type, "std::unique_ptr<") {
+						fmt.Fprintf(w, "%s(std::move(%s_))", f.Name, f.Name)
+					} else {
+						fmt.Fprintf(w, "%s(%s_)", f.Name, f.Name)
+					}
 				}
 				fmt.Fprintln(w, " {}")
 			}
@@ -1861,36 +1868,36 @@ func (b *BinaryExpr) emit(w io.Writer) {
 			io.WriteString(w, "; __lhs.insert(__lhs.end(), __rhs.begin(), __rhs.end()); return __lhs; }())")
 			return
 		}
-               // string + vector<string>
-               if lt == "std::string" && strings.HasPrefix(rt, "std::vector<") && elementTypeFromListType(rt) == "std::string" {
-                       if currentProgram != nil {
-                               currentProgram.addInclude("<vector>")
-                       }
-                       io.WriteString(w, "([&]{ std::string __res = ")
-                       b.Left.emit(w)
-                       io.WriteString(w, "; const auto& __vec = ")
-                       b.Right.emit(w)
-                       io.WriteString(w, "; for(const auto& __e : __vec){ __res += __e; } return __res; }())")
-                       return
-               }
-               // string + any
-               if lt == "std::string" && rt == "std::any" {
-                       io.WriteString(w, "(")
-                       b.Left.emit(w)
-                       io.WriteString(w, " + ")
-                       (&StrExpr{Value: b.Right}).emit(w)
-                       io.WriteString(w, ")")
-                       return
-               }
-               // any + string
-               if lt == "std::any" && rt == "std::string" {
-                       io.WriteString(w, "(")
-                       (&StrExpr{Value: b.Left}).emit(w)
-                       io.WriteString(w, " + ")
-                       b.Right.emit(w)
-                       io.WriteString(w, ")")
-                       return
-               }
+		// string + vector<string>
+		if lt == "std::string" && strings.HasPrefix(rt, "std::vector<") && elementTypeFromListType(rt) == "std::string" {
+			if currentProgram != nil {
+				currentProgram.addInclude("<vector>")
+			}
+			io.WriteString(w, "([&]{ std::string __res = ")
+			b.Left.emit(w)
+			io.WriteString(w, "; const auto& __vec = ")
+			b.Right.emit(w)
+			io.WriteString(w, "; for(const auto& __e : __vec){ __res += __e; } return __res; }())")
+			return
+		}
+		// string + any
+		if lt == "std::string" && rt == "std::any" {
+			io.WriteString(w, "(")
+			b.Left.emit(w)
+			io.WriteString(w, " + ")
+			(&StrExpr{Value: b.Right}).emit(w)
+			io.WriteString(w, ")")
+			return
+		}
+		// any + string
+		if lt == "std::any" && rt == "std::string" {
+			io.WriteString(w, "(")
+			(&StrExpr{Value: b.Left}).emit(w)
+			io.WriteString(w, " + ")
+			b.Right.emit(w)
+			io.WriteString(w, ")")
+			return
+		}
 	}
 	if b.Op == "/" {
 		lt := exprType(b.Left)
@@ -2131,6 +2138,20 @@ func (r *ReturnStmt) emit(w io.Writer, indent int) {
 	io.WriteString(w, "return")
 	if r.Value != nil {
 		io.WriteString(w, " ")
+		if strings.HasPrefix(r.Type, "std::unique_ptr<") {
+			if sl, ok := r.Value.(*StructLit); ok {
+				fmt.Fprintf(w, "std::make_unique<%s>(", sl.Name)
+				for i, f := range sl.Fields {
+					if i > 0 {
+						io.WriteString(w, ", ")
+					}
+					f.Value.emit(w)
+				}
+				io.WriteString(w, ")")
+				io.WriteString(w, ";\n")
+				return
+			}
+		}
 		r.Value.emit(w)
 	}
 	io.WriteString(w, ";\n")
@@ -2962,6 +2983,14 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 		}
 		if typ == "" && s.Let.Value != nil {
 			typ = exprType(val)
+			if idx, ok := val.(*IndexExpr); ok {
+				t := exprType(idx.Target)
+				if strings.HasPrefix(t, "std::vector<std::unique_ptr<") {
+					elem := strings.TrimSuffix(strings.TrimPrefix(t, "std::vector<std::unique_ptr<"), ">>")
+					typ = elem + "*"
+					val = &PtrGetExpr{Target: val}
+				}
+			}
 			if typ == "auto" || typ == "" {
 				typ = guessType(s.Let.Value)
 				if typ == "" {
@@ -3003,6 +3032,14 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 		}
 		if typ == "" && s.Var.Value != nil {
 			typ = exprType(val)
+			if idx, ok := val.(*IndexExpr); ok {
+				t := exprType(idx.Target)
+				if strings.HasPrefix(t, "std::vector<std::unique_ptr<") {
+					elem := strings.TrimSuffix(strings.TrimPrefix(t, "std::vector<std::unique_ptr<"), ">>")
+					typ = elem + "*"
+					val = &PtrGetExpr{Target: val}
+				}
+			}
 			if typ == "auto" || typ == "" {
 				typ = guessType(s.Var.Value)
 				if typ == "" {
@@ -3151,7 +3188,7 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 		if val == nil && currentReturnType == "int" {
 			val = &IntLit{Value: 0}
 		}
-		return &ReturnStmt{Value: val}, nil
+		return &ReturnStmt{Value: val, Type: currentReturnType}, nil
 	case s.Import != nil:
 		if s.Import.Lang != nil {
 			alias := s.Import.As
@@ -3257,20 +3294,20 @@ func convertBinary(b *parser.BinaryExpr) (Expr, error) {
 					}
 					ex = &InExpr{Value: l, Coll: r}
 				} else {
-                                       if ops[i] == "+" || ops[i] == "-" || ops[i] == "*" || ops[i] == "/" || ops[i] == "%" {
-                                                lt := exprType(l)
-                                                rt := exprType(r)
-                                                if ops[i] != "+" || (lt != "std::string" && rt != "std::string") {
-                                                        if !(strings.Contains(lt, "any") && strings.Contains(rt, "any")) {
-                                                                if strings.Contains(lt, "any") {
-                                                                        l = &CastExpr{Value: l, Type: "double"}
-                                                                }
-                                                                if strings.Contains(rt, "any") {
-                                                                        r = &CastExpr{Value: r, Type: "double"}
-                                                                }
-                                                        }
-                                                }
-                                        }
+					if ops[i] == "+" || ops[i] == "-" || ops[i] == "*" || ops[i] == "/" || ops[i] == "%" {
+						lt := exprType(l)
+						rt := exprType(r)
+						if ops[i] != "+" || (lt != "std::string" && rt != "std::string") {
+							if !(strings.Contains(lt, "any") && strings.Contains(rt, "any")) {
+								if strings.Contains(lt, "any") {
+									l = &CastExpr{Value: l, Type: "double"}
+								}
+								if strings.Contains(rt, "any") {
+									r = &CastExpr{Value: r, Type: "double"}
+								}
+							}
+						}
+					}
 					ex = &BinaryExpr{Left: l, Op: ops[i], Right: r}
 				}
 				operands[i] = ex
@@ -4098,17 +4135,30 @@ func convertMatchExpr(me *parser.MatchExpr) (Expr, error) {
 				return nil, err
 			}
 			localTypes = old
-			then = append(then, &ReturnStmt{Value: res})
+			then = append(then, &ReturnStmt{Value: res, Type: currentReturnType})
 			body = append(body, &IfStmt{Cond: &VarRef{Name: tmp}, Then: then})
 		} else {
 			res, err := convertExpr(c.Result)
 			if err != nil {
 				return nil, err
 			}
-			body = append(body, &ReturnStmt{Value: res})
+			body = append(body, &ReturnStmt{Value: res, Type: currentReturnType})
 		}
 	}
-	body = append(body, &ReturnStmt{Value: &StringLit{Value: ""}})
+	var def Expr = &StringLit{Value: ""}
+	switch {
+	case currentReturnType == "int":
+		def = &IntLit{Value: 0}
+	case currentReturnType == "double":
+		def = &FloatLit{Value: 0}
+	case currentReturnType == "bool":
+		def = &BoolLit{Value: false}
+	case strings.HasPrefix(currentReturnType, "std::unique_ptr<"):
+		def = &NullLit{}
+	default:
+		def = &StructLit{Name: currentReturnType}
+	}
+	body = append(body, &ReturnStmt{Value: def, Type: currentReturnType})
 	return &MatchBlock{Body: body}, nil
 }
 
@@ -5106,7 +5156,16 @@ func guessType(e *parser.Expr) string {
 	}
 	pf := e.Binary.Left.Value
 	if pf.Target.Struct != nil {
-		return pf.Target.Struct.Name
+		name := pf.Target.Struct.Name
+		if currentEnv != nil {
+			if ut, ok := currentEnv.FindUnionByVariant(name); ok {
+				if currentProgram != nil {
+					currentProgram.addInclude("<memory>")
+				}
+				return fmt.Sprintf("std::unique_ptr<%s>", ut.Name)
+			}
+		}
+		return name
 	}
 	if lit := pf.Target.Lit; lit != nil {
 		if lit.Int != nil {
