@@ -2,7 +2,7 @@
 
 Generated Pascal code for Rosetta tasks lives under `tests/rosetta/transpiler/Pascal`.
 
-## Rosetta Checklist (16/284) - updated 2025-07-25 14:10 UTC
+## Rosetta Checklist (17/284) - updated 2025-07-25 14:52 UTC
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 571.223ms | 128 B |
@@ -13,7 +13,7 @@ Generated Pascal code for Rosetta tasks lives under `tests/rosetta/transpiler/Pa
 | 6 | 15-puzzle-solver | ✓ | 571.223ms |  |
 | 7 | 2048 | ✓ | 731.363ms | 1.3 KB |
 | 8 | 21-game | ✓ |  |  |
-| 9 | 24-game-solve |   |  |  |
+| 9 | 24-game-solve | ✓ |  |  |
 | 10 | 24-game | ✓ |  |  |
 | 11 | 4-rings-or-4-squares-puzzle | ✓ |  |  |
 | 12 | 9-billion-names-of-god-the-integer |   |  |  |
