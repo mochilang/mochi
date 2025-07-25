@@ -22,7 +22,7 @@
 (declare minInt cumu row)
 
 (defn minInt [a b]
-  (if (< a b) (throw (ex-info "return" {:v a})) (throw (ex-info "return" {:v b}))))
+  (try (if (< a b) (throw (ex-info "return" {:v a})) (throw (ex-info "return" {:v b}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
 
 (defn cumu [n]
   (try (do (def cache [[(bigFromInt 1)]]) (def y 1) (while (<= y n) (do (def row_v [(bigFromInt 0)]) (def x 1) (while (<= x y) (do (def val (nth (nth cache (- y x)) (minInt x (- y x)))) (def row_v (conj row_v (bigAdd (nth row_v (- (count row_v) 1)) val))) (def x (+ x 1)))) (def cache (conj cache row_v)) (def y (+ y 1)))) (throw (ex-info "return" {:v (nth cache n)}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
@@ -33,10 +33,21 @@
 (def x 1)
 
 (defn -main []
-  (println "rows:")
-  (while (< x 11) (do (def r (row x)) (def line "") (def i 0) (while (< i (count r)) (do (def line (str (str (str line " ") (nth r i)) " ")) (def i (+ i 1)))) (println line) (def x (+ x 1))))
-  (println "")
-  (println "sums:")
-  (doseq [num [23 123 1234]] (do (def r (cumu num)) (println (str (str (str num) " ") (bigToString (nth r (- (count r) 1))))))))
+  (let [rt (Runtime/getRuntime)
+    start-mem (- (.totalMemory rt) (.freeMemory rt))
+    start (System/nanoTime)]
+      (println "rows:")
+      (while (< x 11) (do (def r (row x)) (def line "") (def i 0) (while (< i (count r)) (do (def line (str (str (str line " ") (nth r i)) " ")) (def i (+ i 1)))) (println line) (def x (+ x 1))))
+      (println "")
+      (println "sums:")
+      (doseq [num [23 123 1234]] (do (def r (cumu num)) (println (str (str (str num) " ") (bigToString (nth r (- (count r) 1)))))))
+      (System/gc)
+      (let [end (System/nanoTime)
+        end-mem (- (.totalMemory rt) (.freeMemory rt))
+        duration-us (quot (- end start) 1000)
+        memory-bytes (Math/abs ^long (- end-mem start-mem))]
+        (println (str "{\n  \"duration_us\": " duration-us ",\n  \"memory_bytes\": " memory-bytes ",\n  \"name\": \"main\"\n}"))
+      )
+    ))
 
 (-main)
