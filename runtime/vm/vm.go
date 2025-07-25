@@ -1284,7 +1284,9 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 			if lst.Tag == ValueMap {
 				if flag, ok := lst.Map["__group__"]; ok && flag.Tag == ValueBool && flag.Bool {
 					items := lst.Map["items"]
-					newItems := append(append([]Value(nil), items.List...), fr.regs[ins.C])
+					newItems := make([]Value, len(items.List)+1)
+					copy(newItems, items.List)
+					newItems[len(items.List)] = fr.regs[ins.C]
 					lst.Map["items"] = Value{Tag: ValueList, List: newItems}
 					lst.Map["count"] = Value{Tag: ValueInt, Int: len(newItems)}
 					fr.regs[ins.A] = lst
@@ -1294,7 +1296,9 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 			if lst.Tag != ValueList {
 				return Value{}, m.newError(fmt.Errorf("append expects list"), trace, ins.Line)
 			}
-			newList := append(append([]Value(nil), lst.List...), fr.regs[ins.C])
+			newList := make([]Value, len(lst.List)+1)
+			copy(newList, lst.List)
+			newList[len(lst.List)] = fr.regs[ins.C]
 			fr.regs[ins.A] = Value{Tag: ValueList, List: newList}
 		case OpUnionAll:
 			a := fr.regs[ins.B]
@@ -2462,19 +2466,30 @@ func (c *compiler) compileMain(p *parser.Program) (Function, error) {
 		fc.fn.NumRegs = len(c.globals)
 	}
 	fc.idx = len(c.globals)
+
+	hasMainFunc := false
+	hasMainCall := false
 	for _, st := range p.Statements {
 		if st.Fun != nil {
+			if st.Fun.Name == "main" {
+				hasMainFunc = true
+			}
 			continue
 		}
-		if st.Expr != nil {
-			if isTopLevelMainCall(st.Expr.Expr) {
-				continue
-			}
+		if st.Expr != nil && isTopLevelMainCall(st.Expr.Expr) {
+			hasMainCall = true
 		}
 		if err := fc.compileStmt(st); err != nil {
 			return Function{}, err
 		}
 	}
+	if hasMainFunc && !hasMainCall {
+		callStmt := &parser.Statement{Expr: &parser.ExprStmt{Expr: &parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: &parser.PostfixExpr{Target: &parser.Primary{Call: &parser.CallExpr{Func: "main"}}}}}}}}
+		if err := fc.compileStmt(callStmt); err != nil {
+			return Function{}, err
+		}
+	}
+
 	fc.emit(lexer.Position{}, Instr{Op: OpReturn, A: 0})
 	if fc.fn.NumRegs == 0 {
 		fc.fn.NumRegs = 1
