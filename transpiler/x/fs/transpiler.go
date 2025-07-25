@@ -579,6 +579,25 @@ func (c *ContinueStmt) emit(w io.Writer) {
 	io.WriteString(w, "raise Continue")
 }
 
+// BenchStmt represents a benchmark block.
+type BenchStmt struct {
+	Name string
+	Body []Stmt
+}
+
+func (b *BenchStmt) emit(w io.Writer) {
+	writeIndent(w)
+	io.WriteString(w, "let __bench_start = _now()\n")
+	for _, st := range b.Body {
+		st.emit(w)
+		w.Write([]byte{'\n'})
+	}
+	writeIndent(w)
+	io.WriteString(w, "let __bench_end = _now()\n")
+	writeIndent(w)
+	fmt.Fprintf(w, "printfn \"{\\n  \\\"duration_us\\\": %%d,\\n  \\\"memory_bytes\\\": 0,\\n  \\\"name\\\": \\\"%s\\\"\\n}\" ((__bench_end - __bench_start) / 1000)\n", b.Name)
+}
+
 // ListLit represents an F# list literal.
 type ListLit struct{ Elems []Expr }
 
@@ -2251,6 +2270,17 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 			usesBreak = true
 		}
 		return &ForStmt{Name: st.For.Name, Start: start, End: end, Body: body, WithBreak: wb}, nil
+	case st.Bench != nil:
+		usesNow = true
+		body := make([]Stmt, len(st.Bench.Body))
+		for i, s := range st.Bench.Body {
+			cs, err := convertStmt(s)
+			if err != nil {
+				return nil, err
+			}
+			body[i] = cs
+		}
+		return &BenchStmt{Name: st.Bench.Name, Body: body}, nil
 	case st.Update != nil:
 		up, err := convertUpdateStmt(st.Update)
 		if err != nil {
