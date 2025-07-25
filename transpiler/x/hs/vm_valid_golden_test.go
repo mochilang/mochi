@@ -47,11 +47,15 @@ func TestHSTranspiler_VMValid_Golden(t *testing.T) {
 			_ = os.WriteFile(errPath, []byte("transpile: "+err.Error()), 0o644)
 			return nil, err
 		}
-		code := hs.Emit(hprog)
+		bench := os.Getenv("MOCHI_BENCHMARK") == "true" || os.Getenv("MOCHI_BENCHMARK") == "1"
+		code := hs.Emit(hprog, bench)
 		if err := os.WriteFile(codePath, code, 0o644); err != nil {
 			return nil, err
 		}
 		cmd := exec.Command("runhaskell", codePath)
+		if bench {
+			cmd.Env = append(os.Environ(), "MOCHI_BENCHMARK=1", "GHCRTS=-T")
+		}
 		if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
 			cmd.Stdin = bytes.NewReader(data)
 		}
