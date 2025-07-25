@@ -2,16 +2,16 @@
 
 This checklist is auto-generated.
 Generated IR and outputs from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/ir`.
-Last updated: 2025-07-25 04:25 UTC
+Last updated: 2025-07-25 04:40 UTC
 
-## Rosetta Golden Test Checklist (1/284)
+## Rosetta Golden Test Checklist (5/284)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
-| 1 | 100-doors-2 | ✓ | 496µs | 11.7 KB |
-| 2 | 100-doors-3 |   |  |  |
-| 3 | 100-doors |   |  |  |
-| 4 | 100-prisoners |   |  |  |
-| 5 | 15-puzzle-game |   |  |  |
+| 1 | 100-doors-2 | ✓ | 94µs | 11.7 KB |
+| 2 | 100-doors-3 | ✓ | 402µs | 7.7 KB |
+| 3 | 100-doors | ✓ | 6.139ms | 809.9 KB |
+| 4 | 100-prisoners | ✓ | 3.646688s |  |
+| 5 | 15-puzzle-game | ✓ |  |  |
 | 6 | 15-puzzle-solver |   |  |  |
 | 7 | 2048 |   |  |  |
 | 8 | 21-game |   |  |  |

@@ -1,0 +1,399 @@
+func main (regs=11)
+  // var board = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,0]
+  Const        r5, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 0]
+  Move         r0, r5
+  SetGlobal    0,0,0,0
+  // let solved = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,0]
+  Const        r6, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 0]
+  Move         r1, r6
+  SetGlobal    1,1,0,0
+  // var empty = 15
+  Const        r7, 15
+  Move         r2, r7
+  SetGlobal    2,2,0,0
+  // var moves = 0
+  Const        r8, 0
+  Move         r3, r8
+  SetGlobal    3,3,0,0
+  // var quit = false
+  Const        r9, false
+  Move         r4, r9
+  SetGlobal    4,4,0,0
+  // main()
+  Call         r10, main, 
+  Return       r0
+
+  // fun randMove(): int { return now() % 4 }
+func randMove (regs=8)
+  // fun randMove(): int { return now() % 4 }
+  Now          r5
+  Const        r6, 4
+  ModInt       r7, r5, r6
+  Return       r7
+
+  // fun isSolved(): bool {
+func isSolved (regs=16)
+  // var i = 0
+  Const        r5, 0
+  Move         r6, r5
+L2:
+  // while i < 16 {
+  Const        r7, 16
+  LessInt      r8, r6, r7
+  JumpIfFalse  r8, L0
+  // if board[i] != solved[i] { return false }
+  Index        r9, r0, r6
+  Index        r10, r1, r6
+  NotEqual     r11, r9, r10
+  JumpIfFalse  r11, L1
+  Const        r12, false
+  Return       r12
+L1:
+  // i = i + 1
+  Const        r13, 1
+  AddInt       r14, r6, r13
+  Move         r6, r14
+  // while i < 16 {
+  Jump         L2
+L0:
+  // return true
+  Const        r15, true
+  Return       r15
+
+  // fun isValidMove(m: int): MoveResult {
+func isValidMove (regs=63)
+  // if m == 0 { return MoveResult{idx: empty - 4, ok: empty / 4 > 0} }
+  Const        r6, 0
+  Equal        r7, r5, r6
+  JumpIfFalse  r7, L0
+  Const        r8, 4
+  Sub          r9, r2, r8
+  Const        r8, 4
+  Div          r10, r2, r8
+  Const        r6, 0
+  Less         r11, r6, r10
+  Const        r12, "__name"
+  Const        r13, "MoveResult"
+  Const        r14, "idx"
+  Move         r15, r9
+  Const        r16, "ok"
+  Move         r17, r11
+  MakeMap      r18, 3, r12
+  Return       r18
+L0:
+  // if m == 1 { return MoveResult{idx: empty + 4, ok: empty / 4 < 3} }
+  Const        r19, 1
+  Equal        r20, r5, r19
+  JumpIfFalse  r20, L1
+  Const        r8, 4
+  Add          r21, r2, r8
+  Const        r8, 4
+  Div          r22, r2, r8
+  Const        r23, 3
+  Less         r24, r22, r23
+  Const        r25, "__name"
+  Const        r26, "MoveResult"
+  Const        r27, "idx"
+  Move         r28, r21
+  Const        r29, "ok"
+  Move         r30, r24
+  MakeMap      r31, 3, r25
+  Return       r31
+L1:
+  // if m == 2 { return MoveResult{idx: empty + 1, ok: empty % 4 < 3} }
+  Const        r32, 2
+  Equal        r33, r5, r32
+  JumpIfFalse  r33, L2
+  Const        r19, 1
+  Add          r34, r2, r19
+  Const        r8, 4
+  Mod          r35, r2, r8
+  Const        r23, 3
+  Less         r36, r35, r23
+  Const        r37, "__name"
+  Const        r38, "MoveResult"
+  Const        r39, "idx"
+  Move         r40, r34
+  Const        r41, "ok"
+  Move         r42, r36
+  MakeMap      r43, 3, r37
+  Return       r43
+L2:
+  // if m == 3 { return MoveResult{idx: empty - 1, ok: empty % 4 > 0} }
+  Const        r23, 3
+  Equal        r44, r5, r23
+  JumpIfFalse  r44, L3
+  Const        r19, 1
+  Sub          r45, r2, r19
+  Const        r8, 4
+  Mod          r46, r2, r8
+  Const        r6, 0
+  Less         r47, r6, r46
+  Const        r48, "__name"
+  Const        r49, "MoveResult"
+  Const        r50, "idx"
+  Move         r51, r45
+  Const        r52, "ok"
+  Move         r53, r47
+  MakeMap      r54, 3, r48
+  Return       r54
+L3:
+  // return MoveResult{idx: 0, ok: false}
+  Const        r6, 0
+  Const        r55, false
+  Const        r56, "__name"
+  Const        r57, "MoveResult"
+  Const        r58, "idx"
+  Move         r59, r6
+  Const        r60, "ok"
+  Move         r61, r55
+  MakeMap      r62, 3, r56
+  Return       r62
+
+  // fun doMove(m: int): bool {
+func doMove (regs=23)
+  // let r = isValidMove(m)
+  Move         r6, r5
+  Call         r7, isValidMove, r6
+  Move         r8, r7
+  // if !r.ok { return false }
+  Const        r9, "ok"
+  Index        r10, r8, r9
+  Not          r11, r10
+  JumpIfFalse  r11, L0
+  Const        r12, false
+  Return       r12
+L0:
+  // let i = empty
+  Move         r13, r2
+  // let j = r.idx
+  Const        r14, "idx"
+  Index        r15, r8, r14
+  Move         r16, r15
+  // let tmp = board[i]
+  Index        r17, r0, r13
+  Move         r18, r17
+  // board[i] = board[j]
+  Index        r19, r0, r16
+  SetIndex     r0, r13, r19
+  SetGlobal    0,0,0,0
+  // board[j] = tmp
+  SetIndex     r0, r16, r18
+  SetGlobal    0,0,0,0
+  // empty = j
+  Move         r2, r16
+  SetGlobal    2,2,0,0
+  // moves = moves + 1
+  Const        r20, 1
+  Add          r21, r3, r20
+  Move         r3, r21
+  SetGlobal    3,3,0,0
+  // return true
+  Const        r22, true
+  Return       r22
+
+  // fun shuffle(n: int) {
+func shuffle (regs=16)
+  // var i = 0
+  Const        r6, 0
+  Move         r7, r6
+L2:
+  // while i < n || isSolved() {
+  Less         r8, r7, r5
+  Move         r9, r8
+  JumpIfTrue   r9, L0
+  Call         r10, isSolved, 
+  Move         r9, r10
+L0:
+  JumpIfFalse  r9, L1
+  // if doMove(randMove()) { i = i + 1 }
+  Call         r12, randMove, 
+  Move         r11, r12
+  Call         r13, doMove, r11
+  JumpIfFalse  r13, L2
+  Const        r14, 1
+  AddInt       r15, r7, r14
+  Move         r7, r15
+  // while i < n || isSolved() {
+  Jump         L2
+L1:
+  Return       r0
+
+  // fun printBoard() {
+func printBoard (regs=32)
+  // var line = ""
+  Const        r5, ""
+  Move         r6, r5
+  // var i = 0
+  Const        r7, 0
+  Move         r8, r7
+L5:
+  // while i < 16 {
+  Const        r9, 16
+  LessInt      r10, r8, r9
+  JumpIfFalse  r10, L0
+  // let val = board[i]
+  Index        r11, r0, r8
+  Move         r12, r11
+  // if val == 0 {
+  Const        r7, 0
+  Equal        r13, r12, r7
+  JumpIfFalse  r13, L1
+  // line = line + "  ."
+  Const        r14, "  ."
+  Add          r15, r6, r14
+  Move         r6, r15
+  // if val == 0 {
+  Jump         L2
+L1:
+  // let s = str(val)
+  Str          r16, r12
+  Move         r17, r16
+  // if val < 10 {
+  Const        r18, 10
+  Less         r19, r12, r18
+  JumpIfFalse  r19, L3
+  // line = line + "  " + s
+  Const        r20, "  "
+  Add          r21, r6, r20
+  Add          r22, r21, r17
+  Move         r6, r22
+  // if val < 10 {
+  Jump         L2
+L3:
+  // line = line + " " + s
+  Const        r23, " "
+  Add          r24, r6, r23
+  Add          r25, r24, r17
+  Move         r6, r25
+L2:
+  // if i % 4 == 3 {
+  Const        r26, 4
+  ModInt       r27, r8, r26
+  Const        r28, 3
+  EqualInt     r29, r27, r28
+  JumpIfFalse  r29, L4
+  // print(line)
+  Print        r6
+  // line = ""
+  Const        r5, ""
+  Move         r6, r5
+L4:
+  // i = i + 1
+  Const        r30, 1
+  AddInt       r31, r8, r30
+  Move         r8, r31
+  // while i < 16 {
+  Jump         L5
+L0:
+  Return       r0
+
+  // fun playOneMove() {
+func playOneMove (regs=32)
+L1:
+  // while true {
+  Const        r5, true
+  // print("Enter move #" + str(moves + 1) + " (U, D, L, R, or Q): ")
+  Const        r6, "Enter move #"
+  Const        r7, 1
+  Add          r8, r3, r7
+  Str          r9, r8
+  Add          r10, r6, r9
+  Const        r11, " (U, D, L, R, or Q): "
+  Add          r12, r10, r11
+  Print        r12
+  // let s = input()
+  Input        r13
+  Move         r14, r13
+  // if s == "" { continue }
+  Const        r15, ""
+  Equal        r16, r14, r15
+  JumpIfFalse  r16, L0
+  Jump         L1
+L0:
+  // let c = s[0:1]
+  Const        r18, 0
+  Move         r17, r18
+  Const        r7, 1
+  Move         r19, r7
+  Slice        r20, r14, r17, r19
+  Move         r21, r20
+  // var m = 0
+  Const        r18, 0
+  Move         r22, r18
+  // if c == "U" || c == "u" {
+  Const        r23, "U"
+  Equal        r24, r21, r23
+  Const        r25, "u"
+  Equal        r26, r21, r25
+  Move         r27, r24
+  JumpIfTrue   r27, L2
+  Move         r27, r26
+L2:
+  JumpIfFalse  r27, L3
+  // m = 0
+  Const        r18, 0
+  Move         r22, r18
+L3:
+  // if !doMove(m) {
+  Move         r28, r22
+  Call         r29, doMove, r28
+  Not          r30, r29
+  JumpIfFalse  r30, L4
+  // print("That is not a valid move at the moment.")
+  Const        r31, "That is not a valid move at the moment."
+  Print        r31
+  // continue
+  Jump         L1
+L4:
+  // return
+  Return       r0
+
+  // fun play() {
+func play (regs=20)
+  // print("Starting board:")
+  Const        r5, "Starting board:"
+  Print        r5
+L2:
+  // while !quit && isSolved() == false {
+  Not          r6, r4
+  Call         r7, isSolved, 
+  Const        r8, false
+  Equal        r9, r7, r8
+  Move         r10, r6
+  JumpIfFalse  r10, L0
+  Move         r10, r9
+L0:
+  JumpIfFalse  r10, L1
+  // print("")
+  Const        r11, ""
+  Print        r11
+  // printBoard()
+  Call         r12, printBoard, 
+  // playOneMove()
+  Call         r13, playOneMove, 
+  // while !quit && isSolved() == false {
+  Jump         L2
+L1:
+  // if isSolved() {
+  Call         r14, isSolved, 
+  JumpIfFalse  r14, L3
+  // print("You solved the puzzle in " + str(moves) + " moves.")
+  Const        r15, "You solved the puzzle in "
+  Str          r16, r3
+  Add          r17, r15, r16
+  Const        r18, " moves."
+  Add          r19, r17, r18
+  Print        r19
+L3:
+  Return       r0
+
+  // fun main() {
+func main (regs=9)
+  // shuffle(50)
+  Const        r6, 50
+  Move         r5, r6
+  Call         r7, shuffle, r5
+  // play()
+  Call         r8, play, 
+  Return       r0
