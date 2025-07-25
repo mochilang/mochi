@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated Python code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/Python`.
-Last updated: 2025-07-25 19:44 GMT+7
+Last updated: 2025-07-25 20:10 GMT+7
 
 ## Rosetta Golden Test Checklist (267/284)
 | Index | Name | Status | Duration | Memory |
@@ -199,23 +199,23 @@ Last updated: 2025-07-25 19:44 GMT+7
 | 190 | check-machin-like-formulas | ✓ | 11.0ms | 13.92MB |
 | 191 | check-that-file-exists | ✓ | 15.0µs | 12.42MB |
 | 192 | checkpoint-synchronization-1 | ✓ | 41.0µs | 12.21MB |
-| 193 | checkpoint-synchronization-2 | ✓ |  |  |
-| 194 | checkpoint-synchronization-3 | ✓ |  |  |
-| 195 | checkpoint-synchronization-4 | ✓ |  |  |
-| 196 | chernicks-carmichael-numbers | ✓ |  |  |
-| 197 | cheryls-birthday | ✓ |  |  |
-| 198 | chinese-remainder-theorem | ✓ |  |  |
-| 199 | chinese-zodiac | ✓ |  |  |
-| 200 | cholesky-decomposition-1 | ✓ |  |  |
-| 201 | cholesky-decomposition | ✓ |  |  |
-| 202 | chowla-numbers | ✓ |  |  |
-| 203 | church-numerals-1 | ✓ |  |  |
+| 193 | checkpoint-synchronization-2 | ✓ | 48.0µs | 12.36MB |
+| 194 | checkpoint-synchronization-3 | ✓ | 87.0µs | 12.72MB |
+| 195 | checkpoint-synchronization-4 | ✓ | 139.0µs | 12.35MB |
+| 196 | chernicks-carmichael-numbers | ✓ | 2.87s | 13.67MB |
+| 197 | cheryls-birthday | ✓ | 932.0µs | 12.47MB |
+| 198 | chinese-remainder-theorem | ✓ | 22.0µs | 12.87MB |
+| 199 | chinese-zodiac | ✓ | 1.0ms | 12.62MB |
+| 200 | cholesky-decomposition-1 | ✓ | 157.0µs | 13.79MB |
+| 201 | cholesky-decomposition | ✓ | 120.0µs | 12.62MB |
+| 202 | chowla-numbers | ✓ | 10.0µs | 12.73MB |
+| 203 | church-numerals-1 | ✓ | 161.0µs | 12.87MB |
 | 204 | church-numerals-2 | ✓ |  |  |
-| 205 | circles-of-given-radius-through-two-points | ✓ |  |  |
-| 206 | circular-primes | ✓ |  |  |
-| 207 | cistercian-numerals | ✓ |  |  |
-| 208 | comma-quibbling | ✓ |  |  |
-| 209 | compiler-virtual-machine-interpreter | ✓ |  |  |
+| 205 | circles-of-given-radius-through-two-points | ✓ | 1.0ms | 13.59MB |
+| 206 | circular-primes | ✓ | 501.0µs | 13.24MB |
+| 207 | cistercian-numerals | ✓ | 1.0ms | 14.18MB |
+| 208 | comma-quibbling | ✓ | 20.0µs | 12.93MB |
+| 209 | compiler-virtual-machine-interpreter | ✓ | 319.0µs | 14.35MB |
 | 210 | composite-numbers-k-with-no-single-digit-factors-whose-factors-are-all-substrings-of-k | ✓ |  |  |
 | 211 | compound-data-type | ✓ |  |  |
 | 212 | concurrent-computing-1 | ✓ |  |  |
