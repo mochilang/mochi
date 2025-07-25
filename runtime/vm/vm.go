@@ -1284,7 +1284,7 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 			if lst.Tag == ValueMap {
 				if flag, ok := lst.Map["__group__"]; ok && flag.Tag == ValueBool && flag.Bool {
 					items := lst.Map["items"]
-					newItems := append(append([]Value(nil), items.List...), fr.regs[ins.C])
+					newItems := append(items.List, fr.regs[ins.C])
 					lst.Map["items"] = Value{Tag: ValueList, List: newItems}
 					lst.Map["count"] = Value{Tag: ValueInt, Int: len(newItems)}
 					fr.regs[ins.A] = lst
@@ -1294,7 +1294,7 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 			if lst.Tag != ValueList {
 				return Value{}, m.newError(fmt.Errorf("append expects list"), trace, ins.Line)
 			}
-			newList := append(append([]Value(nil), lst.List...), fr.regs[ins.C])
+			newList := append(lst.List, fr.regs[ins.C])
 			fr.regs[ins.A] = Value{Tag: ValueList, List: newList}
 		case OpUnionAll:
 			a := fr.regs[ins.B]
@@ -2466,11 +2466,20 @@ func (c *compiler) compileMain(p *parser.Program) (Function, error) {
 		if st.Fun != nil {
 			continue
 		}
-		if st.Expr != nil {
-			if isTopLevelMainCall(st.Expr.Expr) {
-				continue
-			}
-		}
+		// Execute all top-level expressions so a trailing
+		// `main()` call actually invokes the user's entry
+		// function when running via the VM. Previously the
+		// compiler skipped such calls, assuming the runtime
+		// would handle invoking `main` automatically. The VM
+		// does not do this, which left programs that define a
+		// `main` function and call it explicitly with no
+		// effect. Running Rosetta examples like
+		// `100-prisoners` therefore produced no output and the
+		// golden tests stalled while waiting for results.
+		//
+		// By compiling all expressions, the generated program
+		// faithfully executes the top-level `main()` call and
+		// any other initializers.
 		if err := fc.compileStmt(st); err != nil {
 			return Function{}, err
 		}
@@ -2480,18 +2489,6 @@ func (c *compiler) compileMain(p *parser.Program) (Function, error) {
 		fc.fn.NumRegs = 1
 	}
 	return fc.fn, nil
-}
-
-func isTopLevelMainCall(e *parser.Expr) bool {
-	if e == nil || e.Binary == nil || e.Binary.Right != nil {
-		return false
-	}
-	left := e.Binary.Left
-	if left == nil || left.Value == nil || left.Value.Target == nil {
-		return false
-	}
-	call := left.Value.Target.Call
-	return call != nil && call.Func == "main" && len(call.Args) == 0
 }
 
 func (fc *funcCompiler) emit(pos lexer.Position, i Instr) {
