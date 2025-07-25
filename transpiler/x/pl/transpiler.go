@@ -22,26 +22,27 @@ import (
 
 var usesNow bool
 var usesSlice bool
+var usesFmt bool
 
 const helperNow = `
-:- dynamic _now_seed/1.
-:- dynamic _now_seeded/1.
+:- dynamic now_seed/1.
+:- dynamic now_seeded/1.
 
 init_now :-
     ( getenv('MOCHI_NOW_SEED', S), S \= '' ->
         atom_number(S, V),
-        assertz(_now_seed(V)),
-        assertz(_now_seeded(true))
+        assertz(now_seed(V)),
+        assertz(now_seeded(true))
     ;
-        assertz(_now_seed(0)),
-        assertz(_now_seeded(false))
+        assertz(now_seed(0)),
+        assertz(now_seeded(false))
     ).
 
-_now(T) :-
-    ( _now_seeded(true) ->
-        retract(_now_seed(S)),
+mochi_now(T) :-
+    ( now_seeded(true) ->
+        retract(now_seed(S)),
         NS is (S*1664525 + 1013904223) mod 2147483647,
-        assertz(_now_seed(NS)),
+        assertz(now_seed(NS)),
         T = NS
     ;
         get_time(Time), T is floor(Time*1000000000)
@@ -58,6 +59,10 @@ _slice(List, Start, End, Result) :-
     append(Prefix, Rest, List),
     length(Result, L),
     append(Result, _, Rest).
+`
+
+const helperFmt = `
+print_fmt(Fmt, Args, _) :- format(Fmt, Args).
 `
 
 // Program represents a simple Prolog program.
@@ -224,7 +229,7 @@ func builtinCall(env *compileEnv, name string, args []Expr) (Expr, bool) {
 	case "now":
 		if len(args) == 0 {
 			usesNow = true
-			return &CallExpr{Name: "_now"}, true
+			return &CallExpr{Name: "mochi_now"}, true
 		}
 	}
 	return nil, false
@@ -2123,6 +2128,12 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 				return nil, err
 			}
 			p.Stmts = append(p.Stmts, ifStmt)
+		case st.Bench != nil:
+			benchStmts, err := compileBench(st.Bench, ce)
+			if err != nil {
+				return nil, err
+			}
+			p.Stmts = append(p.Stmts, benchStmts...)
 		case st.For != nil:
 			loopStmts, err := compileStmts([]*parser.Statement{st}, ce)
 			if err != nil {
@@ -2159,6 +2170,9 @@ func Emit(w io.Writer, p *Program) error {
 	}
 	if usesSlice {
 		io.WriteString(w, helperSlice+"\n")
+	}
+	if usesFmt {
+		io.WriteString(w, helperFmt+"\n")
 	}
 	io.WriteString(w, ":- initialization(main).\n")
 	io.WriteString(w, ":- style_check(-singleton).\n\n")
@@ -2477,6 +2491,12 @@ func compileStmts(sts []*parser.Statement, env *compileEnv) ([]Stmt, error) {
 			out = append(out, &BreakStmt{})
 		case s.Continue != nil:
 			out = append(out, &ContinueStmt{})
+		case s.Bench != nil:
+			benchStmts, err := compileBench(s.Bench, env)
+			if err != nil {
+				return nil, err
+			}
+			out = append(out, benchStmts...)
 		case s.For != nil:
 			if s.For.RangeEnd != nil {
 				start, err := toExpr(s.For.Source, env)
@@ -2643,6 +2663,33 @@ func compileIfStmt(is *parser.IfStmt, env *compileEnv) (*IfStmt, error) {
 		}
 	}
 	return &IfStmt{Cond: cond, Then: thenStmts, Else: elseStmts}, nil
+}
+
+func compileBench(b *parser.BenchBlock, env *compileEnv) ([]Stmt, error) {
+	usesNow = true
+	usesFmt = true
+
+	start := env.fresh("start")
+	end := env.fresh("end")
+	diff := env.fresh("dur0")
+	div := env.fresh("dur1")
+	dur := env.fresh("dur")
+
+	stmts := []Stmt{&LetStmt{Name: start, Expr: &CallExpr{Name: "mochi_now"}}}
+	body, err := compileStmts(b.Body, env)
+	if err != nil {
+		return nil, err
+	}
+	stmts = append(stmts, body...)
+	stmts = append(stmts, &LetStmt{Name: end, Expr: &CallExpr{Name: "mochi_now"}})
+	stmts = append(stmts, &LetStmt{Name: diff, Expr: &BinaryExpr{Left: &Var{Name: end}, Op: "-", Right: &Var{Name: start}}})
+	stmts = append(stmts, &LetStmt{Name: div, Expr: &BinaryExpr{Left: &Var{Name: diff}, Op: "/", Right: &IntLit{Value: 1000}}})
+	stmts = append(stmts, &LetStmt{Name: dur, Expr: &CallExpr{Name: "floor", Args: []Expr{&Var{Name: div}}}})
+
+	fmtStr := fmt.Sprintf("{\n  \"duration_us\": ~d,\n  \"memory_bytes\": 0,\n  \"name\": \"%s\"\n}", b.Name)
+	call := &CallStmt{Call: &CallExpr{Name: "print_fmt", Args: []Expr{&StringLit{Value: fmtStr}, &ListLit{Elems: []Expr{&Var{Name: dur}}}}}}
+	stmts = append(stmts, call)
+	return stmts, nil
 }
 
 func stmtNode(s Stmt) *ast.Node {
