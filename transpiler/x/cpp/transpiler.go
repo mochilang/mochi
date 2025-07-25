@@ -34,9 +34,14 @@ var builtinAliases map[string]string
 var useNow bool
 var useMem bool
 var usesLookupHost bool
+var benchMain bool
 var reserved = map[string]bool{"this": true, "new": true}
 var currentReturnType string
 var inReturn bool
+
+// SetBenchMain configures whether the generated main function is wrapped in a
+// benchmark block when emitting code.
+func SetBenchMain(v bool) { benchMain = v }
 
 func safeName(n string) string {
 	if reserved[n] {
@@ -2228,7 +2233,7 @@ func (b *BenchStmt) emit(w io.Writer, indent int) {
 	fmt.Fprintln(w, ind2+"auto __bench_end = _now();")
 	fmt.Fprintln(w, ind2+"auto __bench_mem_end = _mem();")
 	fmt.Fprintln(w, ind2+"auto __bench_dur = (__bench_end - __bench_start) / 1000;")
-	fmt.Fprintln(w, ind2+"auto __bench_mem = __bench_mem_end - __bench_mem_start;")
+	fmt.Fprintln(w, ind2+"auto __bench_mem = __bench_mem_end;")
 	fmt.Fprintf(w, "%sstd::cout << \"{\\n  \\\"duration_us\\\": \" << __bench_dur << \",\\n  \\\"memory_bytes\\\": \" << __bench_mem << \",\\n  \\\"name\\\": \\\"%s\\\"\\n}\" << std::endl;\n", ind2, b.Name)
 	fmt.Fprintln(w, ind+"}")
 }
@@ -2771,11 +2776,22 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	for _, fn := range cp.Functions {
 		if fn.Name == "main" {
 			hasMain = true
+			if benchMain {
+				fn.Body = []Stmt{&BenchStmt{Name: "main", Body: fn.Body}}
+				cp.UseNow = true
+				cp.UseMem = true
+			}
 			break
 		}
 	}
 	if !hasMain {
-		cp.Functions = append(cp.Functions, &Func{Name: "main", ReturnType: "int", Body: body})
+		if benchMain {
+			cp.Functions = append(cp.Functions, &Func{Name: "main", ReturnType: "int", Body: []Stmt{&BenchStmt{Name: "main", Body: body}}})
+			cp.UseNow = true
+			cp.UseMem = true
+		} else {
+			cp.Functions = append(cp.Functions, &Func{Name: "main", ReturnType: "int", Body: body})
+		}
 	}
 	if env != nil && cp.GlobalTypes != nil {
 		for n, t := range cp.GlobalTypes {

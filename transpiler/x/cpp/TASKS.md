@@ -1,3 +1,23 @@
+## Progress (2025-07-25 08:20 +0700)
+- ctrans: benchmark option and update
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-25 08:20 +0700)
+- ctrans: benchmark option and update
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-25 08:20 +0700)
+- ctrans: benchmark option and update
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-25 08:20 +0700)
+- ctrans: benchmark option and update
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
 ## Progress (2025-07-24 19:10 +0700)
 - cpp transpiler: add bigint and map any support
 - Generated C++ for 102/103 programs
