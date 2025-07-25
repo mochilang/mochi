@@ -6363,6 +6363,8 @@ func (fc *funcCompiler) compileIf(s *parser.IfStmt) error {
 	cond := fc.compileExpr(s.Cond)
 	jmpFalse := len(fc.fn.Code)
 	fc.emit(s.Pos, Instr{Op: OpJumpIfFalse, A: cond})
+
+	// then block
 	fc.pushScope()
 	for _, st := range s.Then {
 		if err := fc.compileStmt(st); err != nil {
@@ -6371,13 +6373,21 @@ func (fc *funcCompiler) compileIf(s *parser.IfStmt) error {
 		}
 	}
 	fc.popScope()
+
 	endJump := -1
-	if len(s.Else) > 0 {
+	if s.ElseIf != nil || len(s.Else) > 0 {
 		endJump = len(fc.fn.Code)
 		fc.emit(s.Pos, Instr{Op: OpJump})
 	}
+
+	// else/elseif block
 	fc.fn.Code[jmpFalse].B = len(fc.fn.Code)
-	if len(s.Else) > 0 {
+
+	if s.ElseIf != nil {
+		if err := fc.compileIf(s.ElseIf); err != nil {
+			return err
+		}
+	} else if len(s.Else) > 0 {
 		fc.pushScope()
 		for _, st := range s.Else {
 			if err := fc.compileStmt(st); err != nil {
@@ -6386,6 +6396,9 @@ func (fc *funcCompiler) compileIf(s *parser.IfStmt) error {
 			}
 		}
 		fc.popScope()
+	}
+
+	if endJump != -1 {
 		fc.fn.Code[endJump].A = len(fc.fn.Code)
 	}
 	return nil
