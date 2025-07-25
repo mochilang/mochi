@@ -1,0 +1,21 @@
+/workspace/mochi/tests/rosetta/transpiler/erl/bitmap-b-zier-curves-cubic.erl:192:7: Warning: variable 'Dx_3' exported from 'case' (line 134, column 9)
+%  192| {B_9, Dx_3, Dy_3, Err_5, P_3, Sx_3, Sy_3, X0_3, X1, Y0_3, Y1} = Fun_5(B_9, Dx_3, Dy_3, Err, P_3, Sx_3, Sy_3, X0, X1, Y0, Y1),
+%     |       ^
+
+/workspace/mochi/tests/rosetta/transpiler/erl/bitmap-b-zier-curves-cubic.erl:192:13: Warning: variable 'Dy_3' exported from 'case' (line 140, column 9)
+%  192| {B_9, Dx_3, Dy_3, Err_5, P_3, Sx_3, Sy_3, X0_3, X1, Y0_3, Y1} = Fun_5(B_9, Dx_3, Dy_3, Err, P_3, Sx_3, Sy_3, X0, X1, Y0, Y1),
+%     |             ^
+
+/workspace/mochi/tests/rosetta/transpiler/erl/bitmap-b-zier-curves-cubic.erl:192:31: Warning: variable 'Sx_3' exported from 'case' (line 146, column 9)
+%  192| {B_9, Dx_3, Dy_3, Err_5, P_3, Sx_3, Sy_3, X0_3, X1, Y0_3, Y1} = Fun_5(B_9, Dx_3, Dy_3, Err, P_3, Sx_3, Sy_3, X0, X1, Y0, Y1),
+%     |                               ^
+
+/workspace/mochi/tests/rosetta/transpiler/erl/bitmap-b-zier-curves-cubic.erl:192:37: Warning: variable 'Sy_3' exported from 'case' (line 152, column 9)
+%  192| {B_9, Dx_3, Dy_3, Err_5, P_3, Sx_3, Sy_3, X0_3, X1, Y0_3, Y1} = Fun_5(B_9, Dx_3, Dy_3, Err, P_3, Sx_3, Sy_3, X0, X1, Y0, Y1),
+%     |                                     ^
+
+{
+  "duration_us": 842162,
+  "memory_bytes": 2182160,
+  "name": "main"
+}

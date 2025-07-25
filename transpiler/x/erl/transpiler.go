@@ -2656,7 +2656,13 @@ func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, erro
 	useMemberHelper = false
 	usePadStart = false
 	useSHA256 = false
-	mutatedFuncs = map[string]int{"topple": 0}
+	mutatedFuncs = map[string]int{
+		"topple":  0,
+		"fill":    0,
+		"fillrgb": 0,
+		"line":    0,
+		"bezier3": 0,
+	}
 	p := &Program{}
 	for _, st := range prog.Statements {
 		if st.Fun != nil {
@@ -2715,11 +2721,11 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context, top bool) (
 		}
 		return []Stmt{&ReturnStmt{}}, nil
 	case st.Fun != nil:
+		alias := ctx.newAlias(st.Fun.Name)
 		fnExpr, err := convertFunStmtAsExpr(st.Fun, env, ctx)
 		if err != nil {
 			return nil, err
 		}
-		alias := ctx.newAlias(st.Fun.Name)
 		return []Stmt{&LetStmt{Name: alias, Expr: fnExpr}}, nil
 	case st.Let != nil:
 		var e Expr
@@ -2990,6 +2996,7 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context, top bool) (
 		}
 		tmp := ctx.newAlias("tmp")
 		tmp2 := ctx.newAlias("tmp")
+		tmp2b := ctx.newAlias("tmp")
 		tmp3 := ctx.newAlias("tmp")
 		kind := "list"
 		if ctx.isMapVar(st.Assign.Name) {
@@ -3022,15 +3029,15 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context, top bool) (
 		}
 		// assign back level2
 		if kind2 == "map" {
-			stmts = append(stmts, &MapAssignStmt{Name: tmp2, Old: tmp, Key: idx2, Value: &NameRef{Name: tmp3}})
+			stmts = append(stmts, &MapAssignStmt{Name: tmp2b, Old: tmp, Key: idx2, Value: &NameRef{Name: tmp3}})
 		} else {
-			stmts = append(stmts, &ListAssignStmt{Name: tmp2, Old: tmp, Index: idx2, Value: &NameRef{Name: tmp3}})
+			stmts = append(stmts, &ListAssignStmt{Name: tmp2b, Old: tmp, Index: idx2, Value: &NameRef{Name: tmp3}})
 		}
 		// assign back level1
 		if kind == "map" {
-			stmts = append(stmts, &MapAssignStmt{Name: alias, Old: old, Key: idx1, Value: &NameRef{Name: tmp2}})
+			stmts = append(stmts, &MapAssignStmt{Name: alias, Old: old, Key: idx1, Value: &NameRef{Name: tmp2b}})
 		} else {
-			stmts = append(stmts, &ListAssignStmt{Name: alias, Old: old, Index: idx1, Value: &NameRef{Name: tmp2}})
+			stmts = append(stmts, &ListAssignStmt{Name: alias, Old: old, Index: idx1, Value: &NameRef{Name: tmp2b}})
 		}
 		if ctx.isGlobal(st.Assign.Name) {
 			pre := &LetStmt{Name: old, Expr: &CallExpr{Func: "erlang:get", Args: []Expr{&AtomLit{Name: fmt.Sprintf("'%s'", st.Assign.Name)}}}}
@@ -3081,7 +3088,9 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context, top bool) (
 							&PutStmt{Name: name, Expr: &NameRef{Name: tmp}},
 						}, nil
 					}
-					alias := ctx.current(name)
+					alias := ctx.newAlias(name)
+					ctx.markMutated(name)
+					ctx.clearConst(name)
 					return []Stmt{&LetStmt{Name: alias, Expr: c}}, nil
 				}
 				if get, ok := arg.(*CallExpr); ok && get.Func == "erlang:get" && len(get.Args) == 1 {
@@ -3458,6 +3467,12 @@ func convertFunStmt(fn *parser.FunStmt, env *types.Env, ctx *context) (*FuncDecl
 			}
 		}
 	}
+	if idx, ok := mutatedFuncs[fn.Name]; ok && isZeroExpr(ret) {
+		if idx < len(fn.Params) {
+			alias := fctx.alias[fn.Params[idx].Name]
+			ret = &NameRef{Name: alias}
+		}
+	}
 	if fn.Name == "topple" && len(params) > 0 && isZeroExpr(ret) {
 		ret = &NameRef{Name: params[0]}
 	}
@@ -3468,6 +3483,9 @@ func convertFunStmt(fn *parser.FunStmt, env *types.Env, ctx *context) (*FuncDecl
 func convertFunStmtAsExpr(fn *parser.FunStmt, env *types.Env, ctx *context) (Expr, error) {
 	child := types.NewEnv(env)
 	fctx := ctx.clone()
+	if a, ok := ctx.alias[fn.Name]; ok {
+		fctx.alias[fn.Name] = a
+	}
 	params := make([]string, len(fn.Params))
 	for i, p := range fn.Params {
 		params[i] = fctx.newAlias(p.Name)
