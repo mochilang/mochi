@@ -1,3 +1,139 @@
+## Progress (2025-07-25 13:13 +0700)
+- rosetta: update OCaml outputs
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-25 13:13 +0700)
+- rosetta: update OCaml outputs
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-25 13:13 +0700)
+- rosetta: update OCaml outputs
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-25 13:13 +0700)
+- rosetta: update OCaml outputs
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-25 13:13 +0700)
+- rosetta: update OCaml outputs
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-25 13:13 +0700)
+- rosetta: update OCaml outputs
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-25 13:13 +0700)
+- rosetta: update OCaml outputs
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-25 13:13 +0700)
+- rosetta: update OCaml outputs
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-25 13:13 +0700)
+- rosetta: update OCaml outputs
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-25 13:13 +0700)
+- rosetta: update OCaml outputs
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-25 13:13 +0700)
+- rosetta: update OCaml outputs
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-25 13:13 +0700)
+- rosetta: update OCaml outputs
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-25 13:13 +0700)
+- rosetta: update OCaml outputs
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-25 13:13 +0700)
+- rosetta: update OCaml outputs
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-25 13:13 +0700)
+- rosetta: update OCaml outputs
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-25 13:13 +0700)
+- rosetta: update OCaml outputs
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-25 13:13 +0700)
+- rosetta: update OCaml outputs
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-25 13:13 +0700)
+- rosetta: update OCaml outputs
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-25 13:13 +0700)
+- rosetta: update OCaml outputs
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-25 13:13 +0700)
+- rosetta: update OCaml outputs
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-25 13:13 +0700)
+- rosetta: update OCaml outputs
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-25 13:13 +0700)
+- rosetta: update OCaml outputs
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-25 13:13 +0700)
+- rosetta: update OCaml outputs
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-25 13:13 +0700)
+- rosetta: update OCaml outputs
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-25 13:13 +0700)
+- rosetta: update OCaml outputs
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-25 13:13 +0700)
+- rosetta: update OCaml outputs
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-25 13:13 +0700)
+- rosetta: update OCaml outputs
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-25 13:13 +0700)
+- rosetta: update OCaml outputs
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-25 13:13 +0700)
+- rosetta: update OCaml outputs
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-25 13:13 +0700)
+- rosetta: update OCaml outputs
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-25 13:13 +0700)
+- rosetta: update OCaml outputs
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-25 13:13 +0700)
+- rosetta: update OCaml outputs
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-25 13:13 +0700)
+- rosetta: update OCaml outputs
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-25 13:13 +0700)
+- rosetta: update OCaml outputs
+- Regenerated golden files - 104/104 vm valid programs passing
+
 ## Progress (2025-07-25 10:32 +0700)
 - python transpiler: update rosetta tests and bench
 - Regenerated golden files - 104/104 vm valid programs passing
@@ -1930,3 +2066,5 @@
 - scheme transpiler: support join items
 - Regenerated golden files - 84/100 vm valid programs passing
 
+## Progress (2025-07-25 06:19 +0000)
+- update Go transpiler bench results for first 10 programs

@@ -1,22 +1,22 @@
 # Go Rosetta Transpiler Output
 
 Completed programs: 123/284
-Last updated: 2025-07-25 10:32 +0700
+Last updated: 2025-07-25 13:13 +0700
 
 Checklist:
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|--------|---------:|-------:|
-| 1 | 100-doors-2 | ✓ | 736.0µs | 5.54KB |
-| 2 | 100-doors-3 | ✓ |  |  |
-| 3 | 100-doors | ✓ |  |  |
-| 4 | 100-prisoners | ✓ |  |  |
-| 5 | 15-puzzle-game | ✓ |  |  |
-| 6 | 15-puzzle-solver | ✓ |  |  |
-| 7 | 2048 | ✓ |  |  |
-| 8 | 21-game | ✓ |  |  |
-| 9 | 24-game-solve | ✓ |  |  |
-| 10 | 24-game | ✓ |  |  |
+| 1 | 100-doors-2 | ✓ | 132.0µs | 5.54KB |
+| 2 | 100-doors-3 | ✓ | 50.0µs | 6.57KB |
+| 3 | 100-doors | ✓ | 70.0µs | 3.59KB |
+| 4 | 100-prisoners | ✓ | 31.0ms | 1.44MB |
+| 5 | 15-puzzle-game | ✓ | 67.0µs | 5.55KB |
+| 6 | 15-puzzle-solver | ✓ | 722.0ms | 1.33KB |
+| 7 | 2048 | ✓ | 132.0µs | 15.22KB |
+| 8 | 21-game | ✓ | 54.0µs | 5.04KB |
+| 9 | 24-game-solve | ✓ | 1.0ms | 556.91KB |
+| 10 | 24-game | ✓ | 101.0µs | 5.18KB |
 | 11 | 4-rings-or-4-squares-puzzle | ✓ |  |  |
 | 12 | 9-billion-names-of-god-the-integer | ✓ |  |  |
 | 13 | 99-bottles-of-beer-2 | ✓ |  |  |
