@@ -2,7 +2,7 @@
 
 This directory contains Dart code generated from Mochi programs in `tests/rosetta/x/Mochi`. Each program has a `.dart` file and `.out` output. Compilation or runtime failures are captured in a `.error` file.
 
-Compiled and ran: 136/284
+Compiled and ran: 137/284
 
 ## Checklist
 | Index | Name | Status | Duration | Memory |
@@ -103,23 +103,23 @@ Compiled and ran: 136/284
 | 94 | averages-simple-moving-average | ✓ |  |  |
 | 95 | avl-tree | ✓ |  |  |
 | 96 | b-zier-curves-intersections | ✓ |  |  |
-| 97 | babbage-problem | ✓ |  |  |
+| 97 | babbage-problem | ✓ | 5.873ms | 3.9 MB |
 | 98 | babylonian-spiral | ✓ |  |  |
 | 99 | balanced-brackets | ✓ |  |  |
 | 100 | balanced-ternary | ✓ |  |  |
-| 101 | barnsley-fern | ✓ |  |  |
-| 102 | base64-decode-data | ✓ |  |  |
+| 101 | barnsley-fern | ✓ | 16.066ms | 2.9 MB |
+| 102 | base64-decode-data | ✓ | 7.738ms | 916.0 KB |
 | 103 | bell-numbers | ✓ |  |  |
 | 104 | benfords-law | ✓ |  |  |
-| 105 | bernoulli-numbers | ✓ |  |  |
+| 105 | bernoulli-numbers | ✓ | 374.485ms | 1.2 MB |
 | 106 | best-shuffle | ✓ |  |  |
 | 107 | bifid-cipher | ✓ |  |  |
 | 108 | bin-given-limits | ✓ |  |  |
-| 109 | binary-digits | ✓ |  |  |
+| 109 | binary-digits | ✓ | 18.793ms | 10.1 MB |
 | 110 | binary-search | ✓ |  |  |
-| 111 | binary-strings | ✓ |  |  |
-| 112 | bioinformatics-base-count | ✓ |  |  |
-| 113 | bioinformatics-global-alignment |   |  |  |
+| 111 | binary-strings | ✓ | 16.734ms | 2.4 MB |
+| 112 | bioinformatics-base-count | ✓ | 14.528ms | 1.9 MB |
+| 113 | bioinformatics-global-alignment | ✓ |  |  |
 | 114 | bioinformatics-sequence-mutation | ✓ |  |  |
 | 115 | biorhythms |   |  |  |
 | 116 | bitcoin-address-validation |   |  |  |
@@ -292,4 +292,4 @@ Compiled and ran: 136/284
 | 283 | define-a-primitive-data-type |   |  |  |
 | 284 | md5 |   |  |  |
 
-_Last updated: 2025-07-25 21:35 +0700_
+_Last updated: 2025-07-26 00:23 +0700_

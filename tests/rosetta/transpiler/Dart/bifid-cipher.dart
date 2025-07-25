@@ -22,6 +22,18 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
+String _substr(String s, int start, int end) {
+  var n = s.length;
+  if (start < 0) start += n;
+  if (end < 0) end += n;
+  if (start < 0) start = 0;
+  if (start > n) start = n;
+  if (end < 0) end = 0;
+  if (end > n) end = n;
+  if (start > end) start = end;
+  return s.substring(start, end);
+}
+
 Map<String, dynamic> square_to_maps(List<List<String>> square) {
   Map<String, List<int>> emap = {};
   Map<String, String> dmap = {};
@@ -45,7 +57,7 @@ String remove_space(String text, Map<String, List<int>> emap) {
   String out = "";
   int i = 0;
   while (i < s.length) {
-    final String ch = s.substring(i, i + 1);
+    final String ch = _substr(s, i, i + 1);
     if (ch != " " && emap.containsKey(ch)) {
     out = out + ch;
   }
@@ -60,8 +72,8 @@ String encrypt(String text, Map<String, List<int>> emap, Map<String, String> dma
   List<int> row1 = <int>[];
   int i = 0;
   while (i < text.length) {
-    final String ch = text.substring(i, i + 1);
-    final List<int>? xy = emap[ch];
+    final String ch = _substr(text, i, i + 1);
+    final List<int> xy = emap[ch]!;
     row0 = [...row0, xy[0]];
     row1 = [...row1, xy[1]];
     i = i + 1;
@@ -73,7 +85,7 @@ String encrypt(String text, Map<String, List<int>> emap, Map<String, String> dma
   int j = 0;
   while (j < row0.length) {
     final String key = (row0[j]).toString() + "," + (row0[j + 1]).toString();
-    res = res + dmap[key];
+    res = res + dmap[key]!;
     j = j + 2;
   }
   return res;
@@ -84,8 +96,8 @@ String decrypt(String text, Map<String, List<int>> emap, Map<String, String> dma
   List<int> coords = <int>[];
   int i = 0;
   while (i < text.length) {
-    final String ch = text.substring(i, i + 1);
-    final List<int>? xy = emap[ch];
+    final String ch = _substr(text, i, i + 1);
+    final List<int> xy = emap[ch]!;
     coords = [...coords, xy[0]];
     coords = [...coords, xy[1]];
     i = i + 1;
@@ -106,7 +118,7 @@ String decrypt(String text, Map<String, List<int>> emap, Map<String, String> dma
   int j = 0;
   while (j < half) {
     final String key = (k1[j]).toString() + "," + (k2[j]).toString();
-    res = res + dmap[key];
+    res = res + dmap[key]!;
     j = j + 1;
   }
   return res;
@@ -128,8 +140,8 @@ void main() {
   s = decrypt(s, emap, dmap);
   print("and back:	 " + s);
   maps = square_to_maps(squareWikipedia);
-  emap = maps["e"];
-  dmap = maps["d"];
+  emap = maps["e"]!;
+  dmap = maps["d"]!;
   print("from Wikipedia");
   print("original:	 " + textWikipedia);
   s = encrypt(textWikipedia, emap, dmap);
@@ -137,8 +149,8 @@ void main() {
   s = decrypt(s, emap, dmap);
   print("and back:	 " + s);
   maps = square_to_maps(squareWikipedia);
-  emap = maps["e"];
-  dmap = maps["d"];
+  emap = maps["e"]!;
+  dmap = maps["d"]!;
   print("from Rosettacode long part");
   print("original:	 " + textTest);
   s = encrypt(textTest, emap, dmap);
