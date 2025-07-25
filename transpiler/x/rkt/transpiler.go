@@ -683,11 +683,13 @@ func (i *IndexExpr) emit(w io.Writer) {
 		i.Index.emit(w)
 		io.WriteString(w, " #f) #f)")
 	} else {
-		io.WriteString(w, "(list-ref ")
+		io.WriteString(w, "(if ")
+		i.Target.emit(w)
+		io.WriteString(w, " (list-ref ")
 		i.Target.emit(w)
 		io.WriteString(w, " ")
 		i.Index.emit(w)
-		io.WriteString(w, ")")
+		io.WriteString(w, ") #f)")
 	}
 }
 
@@ -1897,7 +1899,8 @@ func convertFunStmt(fn *parser.FunStmt, env *types.Env) (Stmt, error) {
 	child := types.NewEnv(env)
 	var params []string
 	for _, p := range fn.Params {
-		params = append(params, p.Name)
+		name := sanitizeName(p.Name)
+		params = append(params, name)
 		var typ types.Type = types.AnyType{}
 		if p.Type != nil {
 			typ = types.ResolveTypeRef(p.Type, env)
@@ -1915,7 +1918,8 @@ func convertFunExpr(fn *parser.FunExpr, env *types.Env) (Expr, error) {
 	child := types.NewEnv(env)
 	params := make([]string, len(fn.Params))
 	for i, p := range fn.Params {
-		params[i] = p.Name
+		name := sanitizeName(p.Name)
+		params[i] = name
 		var typ types.Type = types.AnyType{}
 		if p.Type != nil {
 			typ = types.ResolveTypeRef(p.Type, env)
