@@ -3,7 +3,7 @@ public class Main {
     static int i = 1;
 
     static java.util.Map<String,Object> node(String cl, Object le, int aa, Object ri) {
-        return new java.util.LinkedHashMap<String, Object>(){{put("cl", cl); put("le", le); put("aa", aa); put("ri", ri);}};
+        return new java.util.LinkedHashMap<String, Object>() {{ put("cl", cl); put("le", le); put("aa", aa); put("ri", ri); }};
     }
 
     static String treeString(Object t) {
@@ -11,7 +11,7 @@ public class Main {
             return "E";
         }
         java.util.Map<String,Object> m = ((java.util.Map<String,Object>)(t));
-        return "T(" + (String)(((Object)m.get("cl"))) + ", " + treeString((Object)(((Object)m.get("le")))) + ", " + String.valueOf(((Object)m.get("aa"))) + ", " + treeString((Object)(((Object)m.get("ri")))) + ")";
+        return String.valueOf(String.valueOf(String.valueOf(String.valueOf(String.valueOf("T(" + (String)(((Object)m.get("cl")))) + ", " + treeString((Object)(((Object)m.get("le"))))) + ", ") + String.valueOf(((Object)m.get("aa")))) + ", " + treeString((Object)(((Object)m.get("ri"))))) + ")";
     }
 
     static Object balance(Object t) {
@@ -69,10 +69,10 @@ public class Main {
         if ((tr == null)) {
             return node("R", null, x, null);
         }
-        if (((Number)(x)).doubleValue() < ((Number)(((Object)((java.util.Map)tr).get("aa")))).doubleValue()) {
+        if (x < ((Number)(((Object)((java.util.Map)tr).get("aa")))).intValue()) {
             return balance(node((String)(((Object)((java.util.Map)tr).get("cl"))), ins((Object)(((Object)((java.util.Map)tr).get("le"))), x), (int)(((Object)((java.util.Map)tr).get("aa"))), (Object)(((Object)((java.util.Map)tr).get("ri")))));
         }
-        if (((Number)(x)).doubleValue() > ((Number)(((Object)((java.util.Map)tr).get("aa")))).doubleValue()) {
+        if (x > ((Number)(((Object)((java.util.Map)tr).get("aa")))).intValue()) {
             return balance(node((String)(((Object)((java.util.Map)tr).get("cl"))), (Object)(((Object)((java.util.Map)tr).get("le"))), (int)(((Object)((java.util.Map)tr).get("aa"))), ins((Object)(((Object)((java.util.Map)tr).get("ri"))), x)));
         }
         return tr;
@@ -87,10 +87,43 @@ public class Main {
         return node("B", (Object)(((Object)m.get("le"))), (int)(((Object)m.get("aa"))), (Object)(((Object)m.get("ri"))));
     }
     public static void main(String[] args) {
-        while (i <= 16) {
-            tr = insert(tr, i);
-            i = i + 1;
+        {
+            long _benchStart = _now();
+            long _benchMem = _mem();
+            while (i <= 16) {
+                tr = insert(tr, i);
+                i = i + 1;
+            }
+            System.out.println(treeString(tr));
+            long _benchDuration = _now() - _benchStart;
+            long _benchMemory = _mem() - _benchMem;
+            System.out.println("{");
+            System.out.println("  \"duration_us\": " + _benchDuration + ",");
+            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
+            System.out.println("  \"name\": \"main\"");
+            System.out.println("}");
+            return;
         }
-        System.out.println(treeString(tr));
+    }
+
+    static boolean _nowSeeded = false;
+    static int _nowSeed;
+    static int _now() {
+        if (!_nowSeeded) {
+            String s = System.getenv("MOCHI_NOW_SEED");
+            if (s != null && !s.isEmpty()) {
+                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
+            }
+        }
+        if (_nowSeeded) {
+            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
+            return _nowSeed;
+        }
+        return (int)(System.nanoTime() / 1000);
+    }
+
+    static long _mem() {
+        Runtime rt = Runtime.getRuntime();
+        return rt.totalMemory() - rt.freeMemory();
     }
 }

@@ -1,5 +1,5 @@
 public class Main {
-    static String text = "Given$a$text$file$of$many$lines,$where$fields$within$a$line\n" + "are$delineated$by$a$single$'dollar'$character,$write$a$program\n" + "that$aligns$each$column$of$fields$by$ensuring$that$words$in$each\n" + "column$are$separated$by$at$least$one$space.\n" + "Further,$allow$for$each$word$in$a$column$to$be$either$left\n" + "justified,$right$justified,$or$center$justified$within$its$column.";
+    static String text = String.valueOf(String.valueOf(String.valueOf(String.valueOf(String.valueOf("Given$a$text$file$of$many$lines,$where$fields$within$a$line\n" + "are$delineated$by$a$single$'dollar'$character,$write$a$program\n") + "that$aligns$each$column$of$fields$by$ensuring$that$words$in$each\n") + "column$are$separated$by$at$least$one$space.\n") + "Further,$allow$for$each$word$in$a$column$to$be$either$left\n") + "justified,$right$justified,$or$center$justified$within$its$column.");
     static java.util.Map<String,Object> f = newFormatter(text);
 
     static String[] split(String s, String sep) {
@@ -12,7 +12,7 @@ public class Main {
                 cur = "";
                 i = i + sep.length();
             } else {
-                cur = cur + s.substring(i, i + 1);
+                cur = String.valueOf(cur + s.substring(i, i + 1));
                 i = i + 1;
             }
         }
@@ -32,7 +32,7 @@ public class Main {
         String out = "";
         int i = 0;
         while (i < n) {
-            out = out + " ";
+            out = String.valueOf(out + " ");
             i = i + 1;
         }
         return out;
@@ -41,14 +41,14 @@ public class Main {
     static String pad(String word, int width, int align) {
         int diff = width - word.length();
         if (align == 0) {
-            return word + spaces(diff);
+            return word + String.valueOf(spaces(diff));
         }
         if (align == 2) {
-            return spaces(diff) + word;
+            return String.valueOf(spaces(diff)) + word;
         }
         int left = ((Number)((diff / 2))).intValue();
         int right = diff - left;
-        return spaces(left) + word + spaces(right);
+        return String.valueOf(spaces(left)) + word + spaces(right);
     }
 
     static java.util.Map<String,Object> newFormatter(String text) {
@@ -61,21 +61,21 @@ public class Main {
                 i = i + 1;
                 continue;
             }
-            String[] words = rstripEmpty(split(lines[i], "$"));
+            String[] words = rstripEmpty(split(String.valueOf(lines[i]), "$"));
             fmtLines = appendObj(fmtLines, words);
             int j = 0;
             while (j < words.length) {
                 int wlen = words[j].length();
                 if (j == width.length) {
                     width = java.util.stream.IntStream.concat(java.util.Arrays.stream(width), java.util.stream.IntStream.of(wlen)).toArray();
-                } else                 if (wlen > ((Number)(width[j])).doubleValue()) {
+                } else                 if (wlen > width[j]) {
 width[j] = wlen;
                 }
                 j = j + 1;
             }
             i = i + 1;
         }
-        return new java.util.LinkedHashMap<String, Object>(java.util.Map.of("text", fmtLines, "width", width));
+        return new java.util.LinkedHashMap<String, Object>(java.util.Map.ofEntries(java.util.Map.entry("text", fmtLines), java.util.Map.entry("width", width)));
     }
 
     static void printFmt(java.util.Map<String,Object> f, int align) {
@@ -87,7 +87,7 @@ width[j] = wlen;
             String line = "";
             int j = 0;
             while (j < words.length) {
-                line = line + pad(words[j], width[j], align) + " ";
+                line = String.valueOf(String.valueOf(line + String.valueOf(pad(String.valueOf(words[j]), width[j], align))) + " ");
                 j = j + 1;
             }
             System.out.println(line);
@@ -96,9 +96,42 @@ width[j] = wlen;
         System.out.println("");
     }
     public static void main(String[] args) {
-        printFmt(f, 0);
-        printFmt(f, 1);
-        printFmt(f, 2);
+        {
+            long _benchStart = _now();
+            long _benchMem = _mem();
+            printFmt(f, 0);
+            printFmt(f, 1);
+            printFmt(f, 2);
+            long _benchDuration = _now() - _benchStart;
+            long _benchMemory = _mem() - _benchMem;
+            System.out.println("{");
+            System.out.println("  \"duration_us\": " + _benchDuration + ",");
+            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
+            System.out.println("  \"name\": \"main\"");
+            System.out.println("}");
+            return;
+        }
+    }
+
+    static boolean _nowSeeded = false;
+    static int _nowSeed;
+    static int _now() {
+        if (!_nowSeeded) {
+            String s = System.getenv("MOCHI_NOW_SEED");
+            if (s != null && !s.isEmpty()) {
+                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
+            }
+        }
+        if (_nowSeeded) {
+            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
+            return _nowSeed;
+        }
+        return (int)(System.nanoTime() / 1000);
+    }
+
+    static long _mem() {
+        Runtime rt = Runtime.getRuntime();
+        return rt.totalMemory() - rt.freeMemory();
     }
 
     static <T> T[] appendObj(T[] arr, T v) {

@@ -15,7 +15,7 @@ public class Main {
     static String pad(int n, int width) {
         String s = String.valueOf(n);
         while (s.length() < width) {
-            s = " " + s;
+            s = String.valueOf(" " + s);
         }
         return s;
     }
@@ -37,12 +37,45 @@ sums[i] = pfacSum(i);
         while (n < 19999) {
             int m = sums[n];
             if (m > n && m < 20000 && n == sums[m]) {
-                System.out.println("  " + pad(n, 5) + " and " + pad(m, 5));
+                System.out.println(String.valueOf("  " + String.valueOf(pad(n, 5))) + " and " + pad(m, 5));
             }
             n = n + 1;
         }
     }
     public static void main(String[] args) {
-        main();
+        {
+            long _benchStart = _now();
+            long _benchMem = _mem();
+            main();
+            long _benchDuration = _now() - _benchStart;
+            long _benchMemory = _mem() - _benchMem;
+            System.out.println("{");
+            System.out.println("  \"duration_us\": " + _benchDuration + ",");
+            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
+            System.out.println("  \"name\": \"main\"");
+            System.out.println("}");
+            return;
+        }
+    }
+
+    static boolean _nowSeeded = false;
+    static int _nowSeed;
+    static int _now() {
+        if (!_nowSeeded) {
+            String s = System.getenv("MOCHI_NOW_SEED");
+            if (s != null && !s.isEmpty()) {
+                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
+            }
+        }
+        if (_nowSeeded) {
+            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
+            return _nowSeed;
+        }
+        return (int)(System.nanoTime() / 1000);
+    }
+
+    static long _mem() {
+        Runtime rt = Runtime.getRuntime();
+        return rt.totalMemory() - rt.freeMemory();
     }
 }
