@@ -1,0 +1,25 @@
+/workspace/mochi/tests/rosetta/transpiler/erl/binary-digits.erl:39:1: Warning: function mochi_pad_start/3 is unused
+%   39| mochi_pad_start(S, Len, Ch) ->
+%     | ^
+
+"0"
+"1"
+"10"
+"11"
+"100"
+"101"
+"110"
+"111"
+"1000"
+"1001"
+"1010"
+"1011"
+"1100"
+"1101"
+"1110"
+"1111"
+{
+  "duration_us": 7640,
+  "memory_bytes": 2112,
+  "name": "main"
+}

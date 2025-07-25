@@ -1,0 +1,19 @@
+/workspace/mochi/tests/rosetta/transpiler/erl/binary-strings.erl:29:1: Warning: function mochi_pad_start/3 is unused
+%   29| mochi_pad_start(S, Len, Ch) ->
+%     | ^
+
+"binary"
+"binary"
+true
+"binary"
+"banany"
+false
+"binaryz"
+"in"
+banany -> bamamy
+"bary"
+{
+  "duration_us": 6379,
+  "memory_bytes": 25768,
+  "name": "main"
+}
