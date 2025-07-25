@@ -27,6 +27,7 @@ import (
 var usesNow bool
 var usesLookupHost bool
 var usesNum bool
+var usesInt bool
 var usesKeys bool
 var usesMem bool
 var funcMutParams map[string][]bool
@@ -54,6 +55,7 @@ type Program struct {
 	UseNow        bool
 	UseLookupHost bool
 	UseNum        bool
+	UseInt        bool
 	UseKeys       bool
 	UseMem        bool
 }
@@ -921,7 +923,11 @@ func (c *CastExpr) emit(w io.Writer) {
 					fmt.Fprintf(w, "%s(", t)
 					c.Expr.emit(w)
 					if t != "Bool" {
-						fmt.Fprint(w, ")!")
+						if t == "String" {
+							fmt.Fprint(w, ")")
+						} else {
+							fmt.Fprint(w, ")!")
+						}
 					} else {
 						fmt.Fprint(w, ")")
 					}
@@ -1075,9 +1081,10 @@ func (c *CallExpr) emit(w io.Writer) {
 		return
 	case "int":
 		if len(c.Args) == 1 {
-			fmt.Fprint(w, "Int(")
+			fmt.Fprint(w, "_int(")
 			c.Args[0].emit(w)
 			fmt.Fprint(w, ")")
+			usesInt = true
 			return
 		}
 	case "float":
@@ -1412,6 +1419,15 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("    return 0\n")
 		buf.WriteString("}\n")
 	}
+	if p.UseInt {
+		buf.WriteString("func _int(_ v: Any) -> Int {\n")
+		buf.WriteString("    if let s = v as? String { return Int(s) ?? 0 }\n")
+		buf.WriteString("    if let i = v as? Int { return i }\n")
+		buf.WriteString("    if let i = v as? Int64 { return Int(i) }\n")
+		buf.WriteString("    if let d = v as? Double { return Int(d) }\n")
+		buf.WriteString("    return 0\n")
+		buf.WriteString("}\n")
+	}
 	if p.UseKeys {
 		buf.WriteString("func _keys<K,V>(_ m: [K: V]) -> [K] {\n")
 		buf.WriteString("    Array(m.keys)\n")
@@ -1462,6 +1478,7 @@ func Transpile(env *types.Env, prog *parser.Program, benchMain bool) (*Program, 
 	usesNow = false
 	usesLookupHost = false
 	usesNum = false
+	usesInt = false
 	usesKeys = false
 	usesMem = false
 	funcMutParams = map[string][]bool{}
@@ -1480,6 +1497,7 @@ func Transpile(env *types.Env, prog *parser.Program, benchMain bool) (*Program, 
 	p.UseNow = usesNow
 	p.UseLookupHost = usesLookupHost
 	p.UseNum = usesNum
+	p.UseInt = usesInt
 	p.UseKeys = usesKeys
 	p.UseMem = usesMem
 	return p, nil
@@ -3279,7 +3297,8 @@ func convertPrimary(env *types.Env, pr *parser.Primary) (Expr, error) {
 			if err != nil {
 				return nil, err
 			}
-			return &CastExpr{Expr: arg, Type: "Int!"}, nil
+			usesInt = true
+			return &CallExpr{Func: "_int", Args: []Expr{arg}}, nil
 		}
 		if pr.Call.Func == "input" && len(pr.Call.Args) == 0 {
 			return &CallExpr{Func: "input"}, nil
