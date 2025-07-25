@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated TypeScript code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/TypeScript`.
-Last updated: 2025-07-25 10:41 UTC
+Last updated: 2025-07-25 11:00 UTC
 
-## Rosetta Golden Test Checklist (272/284)
+## Rosetta Golden Test Checklist (273/284)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 1.595ms | 512.0 KB |
@@ -121,7 +121,7 @@ Last updated: 2025-07-25 10:41 UTC
 | 112 | bioinformatics-base-count | ✓ | 1.232ms | 128.0 KB |
 | 113 | bioinformatics-global-alignment | ✓ | 195.968ms | 28.7 MB |
 | 114 | bioinformatics-sequence-mutation | ✓ | 13.273ms | 2.5 MB |
-| 115 | biorhythms |   | 2.247ms | 256.0 KB |
+| 115 | biorhythms | ✓ | 2.247ms | 256.0 KB |
 | 116 | bitcoin-address-validation | ✓ | 3.433ms | 640.0 KB |
 | 117 | bitmap-b-zier-curves-cubic | ✓ | 182.079ms | 30.8 MB |
 | 118 | bitmap-b-zier-curves-quadratic | ✓ | 186.558ms | 31.0 MB |
@@ -130,19 +130,19 @@ Last updated: 2025-07-25 10:41 UTC
 | 121 | bitmap-histogram | ✓ | 2.218ms | 128.0 KB |
 | 122 | bitmap-midpoint-circle-algorithm | ✓ | 3.508ms | 256.0 KB |
 | 123 | bitmap-ppm-conversion-through-a-pipe | ✓ | 191.744ms | 31.6 MB |
-| 124 | bitmap-read-a-ppm-file | ✓ |  |  |
-| 125 | bitmap-read-an-image-through-a-pipe | ✓ |  |  |
-| 126 | bitmap-write-a-ppm-file | ✓ |  |  |
-| 127 | bitmap | ✓ |  |  |
-| 128 | bitwise-io-1 | ✓ |  |  |
-| 129 | bitwise-io-2 | ✓ |  |  |
-| 130 | bitwise-operations | ✓ |  |  |
-| 131 | blum-integer | ✓ |  |  |
-| 132 | boolean-values | ✓ |  |  |
-| 133 | box-the-compass | ✓ |  |  |
-| 134 | boyer-moore-string-search | ✓ |  |  |
-| 135 | brazilian-numbers | ✓ |  |  |
-| 136 | break-oo-privacy | ✓ |  |  |
+| 124 | bitmap-read-a-ppm-file | ✓ | 2.791ms | 256.0 KB |
+| 125 | bitmap-read-an-image-through-a-pipe | ✓ | 1.331ms | 128.0 KB |
+| 126 | bitmap-write-a-ppm-file | ✓ | 1.048ms | 128.0 KB |
+| 127 | bitmap | ✓ | 125.419ms | 28.1 MB |
+| 128 | bitwise-io-1 | ✓ | 888µs | 128.0 KB |
+| 129 | bitwise-io-2 | ✓ | 3.214ms | 384.0 KB |
+| 130 | bitwise-operations | ✓ | 2.556ms | 128.0 KB |
+| 131 | blum-integer | ✓ | 2.621ms | 3.1 MB |
+| 132 | boolean-values | ✓ | 1.193ms | 128.0 KB |
+| 133 | box-the-compass | ✓ | 2.672ms | 640.0 KB |
+| 134 | boyer-moore-string-search | ✓ | 1.918ms | 128.0 KB |
+| 135 | brazilian-numbers | ✓ | 4.46147s | 9.2 MB |
+| 136 | break-oo-privacy | ✓ | 817µs |  |
 | 137 | brilliant-numbers |   |  |  |
 | 138 | brownian-tree | ✓ |  |  |
 | 139 | bulls-and-cows-player |   |  |  |

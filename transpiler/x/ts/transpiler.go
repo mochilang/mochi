@@ -3093,8 +3093,11 @@ func convertPostfix(p *parser.PostfixExpr) (expr Expr, err error) {
 					continue
 				}
 			}
-			// fall through to regular field handling
-			fallthrough
+			// treat as property access on non-struct value
+			expr = &IndexExpr{Target: expr, Index: &StringLit{Value: op.Field.Name}}
+			partial.Ops = append(partial.Ops, op)
+			curType = postfixExprType(partial)
+			continue
 		case op.Index != nil:
 			if op.Index.Colon != nil {
 				if op.Index.Colon2 != nil || op.Index.Step != nil {
