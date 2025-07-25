@@ -64,7 +64,8 @@ func TestTranspile_Golden(t *testing.T) {
 		if errs := types.Check(prog, env); len(errs) > 0 {
 			t.Fatalf("type %s: %v", name, errs[0])
 		}
-		ast, err := rkt.Transpile(prog, env)
+		bench := os.Getenv("MOCHI_BENCHMARK") != ""
+		ast, err := rkt.Transpile(prog, env, bench)
 		if err != nil {
 			t.Fatalf("transpile %s: %v", name, err)
 		}
@@ -77,7 +78,11 @@ func TestTranspile_Golden(t *testing.T) {
 			t.Fatalf("write %s: %v", name, err)
 		}
 		cmd := exec.Command("racket", rktFile)
-		cmd.Env = append(os.Environ(), "MOCHI_ROOT="+root, "MOCHI_NOW_SEED=1")
+		envs := append(os.Environ(), "MOCHI_ROOT="+root, "MOCHI_NOW_SEED=1")
+		if bench {
+			envs = append(envs, "MOCHI_BENCHMARK=1")
+		}
+		cmd.Env = envs
 		out, err := cmd.CombinedOutput()
 		trimmed := bytes.TrimSpace(out)
 		if err != nil {

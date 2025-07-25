@@ -28,6 +28,14 @@ var importedModules map[string]string
 var needsGroupStruct bool
 var groupVars = map[string]bool{}
 
+// benchMain controls whether the generated program is wrapped in a benchmark
+// block when emitting code. When enabled the resulting output is a JSON object
+// containing duration and memory statistics.
+var benchMain bool
+
+// SetBenchMain configures benchmark wrapping for the main program.
+func SetBenchMain(v bool) { benchMain = v }
+
 func sanitizeName(name string) string {
 	if name == "list" {
 		return "list_"
@@ -183,10 +191,10 @@ func (b *BenchStmt) emit(w io.Writer) {
 	fmt.Fprintln(w, "  (let* ([_end (now)] [_end_mem (current-memory-use)]")
 	fmt.Fprintln(w, "         [_dur (- _end _start)]")
 	fmt.Fprintln(w, "         [_dur_us (quotient _dur 1000)]")
-	fmt.Fprintln(w, "         [_mem 0])")
+	fmt.Fprintln(w, "         [_mem (max 0 (- _end_mem _start_mem))])")
 	io.WriteString(w, "    (displayln \"{\")\n")
 	io.WriteString(w, "    (displayln (format \"  \\\"duration_us\\\": ~a,\" _dur_us))\n")
-	io.WriteString(w, "    (displayln \"  \\\"memory_bytes\\\": 0,\")\n")
+	io.WriteString(w, "    (displayln (format \"  \\\"memory_bytes\\\": ~a,\" _mem))\n")
 	fmt.Fprintf(w, "    (displayln \"  \\\"name\\\": \\\"%s\\\"\")\n", b.Name)
 	io.WriteString(w, "    (displayln \"}\")\n")
 	io.WriteString(w, "  )\n")
@@ -1340,7 +1348,8 @@ func Emit(w io.Writer, p *Program) error {
 	return nil
 }
 
-func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
+func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, error) {
+	benchMain = bench
 	r := &Program{}
 	importedModules = map[string]string{}
 	if env != nil {
@@ -1419,6 +1428,9 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 		if s != nil {
 			r.Stmts = append(r.Stmts, s)
 		}
+	}
+	if benchMain {
+		r.Stmts = []Stmt{&BenchStmt{Name: "main", Body: r.Stmts}}
 	}
 	// no runtime helpers required
 	_ = env
