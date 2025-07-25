@@ -17,6 +17,10 @@ import (
 )
 
 var currentEnv *types.Env
+
+// tagKey is the hash-table key used to store the variant tag for union values.
+const tagKey = "__tag"
+
 var breakStack []Symbol
 var continueStack []Node
 var gensymCounter int
@@ -1149,7 +1153,7 @@ func convertParserPrimary(p *parser.Primary) (Node, error) {
 				return nil, fmt.Errorf("invalid fields for %s", p.Struct.Name)
 			}
 			pairs := []Node{Symbol("list"),
-				&List{Elems: []Node{Symbol("cons"), StringLit("op"), ensureUnionConst(p.Struct.Name)}},
+				&List{Elems: []Node{Symbol("cons"), StringLit(tagKey), ensureUnionConst(p.Struct.Name)}},
 			}
 			for i, f := range p.Struct.Fields {
 				v, err := convertParserExpr(f.Value)
@@ -1272,7 +1276,7 @@ func convertMatchExpr(me *parser.MatchExpr) (Node, error) {
 			}
 			var cond Node
 			cond = &List{Elems: []Node{Symbol("equal?"),
-				&List{Elems: []Node{Symbol("hash-table-ref"), temp, StringLit("op")}},
+				&List{Elems: []Node{Symbol("hash-table-ref"), temp, StringLit(tagKey)}},
 				ensureUnionConst(variant),
 			}}
 			expr = &List{Elems: []Node{Symbol("if"), cond, then, expr}}
@@ -2142,7 +2146,7 @@ func convertCall(target Node, call *parser.CallOp) (Node, error) {
 			return nil, fmt.Errorf("%s expects %d args", sym, len(st.Order))
 		}
 		pairs := []Node{Symbol("list")}
-		opPair := &List{Elems: []Node{Symbol("cons"), StringLit("op"), ensureUnionConst(string(sym))}}
+		opPair := &List{Elems: []Node{Symbol("cons"), StringLit(tagKey), ensureUnionConst(string(sym))}}
 		pairs = append(pairs, opPair)
 		for i, field := range st.Order {
 			pair := &List{Elems: []Node{Symbol("cons"), StringLit(field), args[i]}}

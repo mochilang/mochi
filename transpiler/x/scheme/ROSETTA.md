@@ -2,25 +2,25 @@
 
 Generated Scheme code for Rosetta Code tasks under `tests/rosetta/x/Mochi`.
 
-## Checklist (79/284)
-Last updated: 2025-07-25 05:44 UTC
+## Checklist (80/284)
+Last updated: 2025-07-25 12:39 UTC
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 1.637ms | 12.2 MB |
-| 2 | 100-doors-3 | ✓ |  |  |
-| 3 | 100-doors | ✓ |  |  |
+| 2 | 100-doors-3 | ✓ | 142µs | 12.1 MB |
+| 3 | 100-doors | ✓ | 2.429ms | 12.4 MB |
 | 4 | 100-prisoners | ✓ |  |  |
 | 5 | 15-puzzle-game | ✓ |  |  |
-| 6 | 15-puzzle-solver | ✓ |  |  |
-| 7 | 2048 | ✓ |  |  |
-| 8 | 21-game | ✓ |  |  |
-| 9 | 24-game-solve |   |  |  |
-| 10 | 24-game | ✓ |  |  |
+| 6 | 15-puzzle-solver | ✓ | 118µs | 11.5 MB |
+| 7 | 2048 | ✓ | 1.145ms | 16.5 MB |
+| 8 | 21-game | ✓ | 80µs | 13.1 MB |
+| 9 | 24-game-solve | ✓ | 2.273714s | 13.5 MB |
+| 10 | 24-game | ✓ | 246µs | 12.6 MB |
 | 11 | 4-rings-or-4-squares-puzzle | ✓ |  |  |
 | 12 | 9-billion-names-of-god-the-integer | ✓ |  |  |
-| 13 | 99-bottles-of-beer-2 | ✓ |  |  |
-| 14 | 99-bottles-of-beer | ✓ |  |  |
+| 13 | 99-bottles-of-beer-2 | ✓ | 64.07ms | 13.5 MB |
+| 14 | 99-bottles-of-beer | ✓ | 1.473ms | 12.5 MB |
 | 15 | DNS-query | ✓ |  |  |
 | 16 | a+b | ✓ |  |  |
 | 17 | abbreviations-automatic | ✓ |  |  |
