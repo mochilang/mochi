@@ -1,0 +1,10 @@
+compile: exit status 1
+/workspace/mochi/tests/rosetta/transpiler/CPP/9-billion-names-of-god-the-integer.cpp: In function ‘std::vector<int> bigTrim(const std::vector<int>&)’:
+/workspace/mochi/tests/rosetta/transpiler/CPP/9-billion-names-of-god-the-integer.cpp:53:257: error: passing ‘const std::vector<int>’ as ‘this’ argument discards qualifiers [-fpermissive]
+   53 |         a = ([&](const auto& __v){ if constexpr(std::is_same_v<std::decay_t<decltype(__v)>, std::string>) return __v.substr(0, (n - 1) - 0); else return std::vector<typename std::decay_t<decltype(__v)>::value_type>(__v.begin()+0, __v.begin()+(n - 1)); })(a);
+      |                                                                                                                                                                                                                                                                 ^
+In file included from /usr/include/c++/13/vector:66,
+                 from /workspace/mochi/tests/rosetta/transpiler/CPP/9-billion-names-of-god-the-integer.cpp:4:
+/usr/include/c++/13/bits/stl_vector.h:766:7: note:   in call to ‘constexpr std::vector<_Tp, _Alloc>& std::vector<_Tp, _Alloc>::operator=(std::vector<_Tp, _Alloc>&&) [with _Tp = int; _Alloc = std::allocator<int>]’
+  766 |       operator=(vector&& __x) noexcept(_Alloc_traits::_S_nothrow_move())
+      |       ^~~~~~~~
