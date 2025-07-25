@@ -2,71 +2,71 @@
 
 This checklist is auto-generated.
 Generated TypeScript code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/TypeScript`.
-Last updated: 2025-07-25 02:24 UTC
+Last updated: 2025-07-25 03:18 UTC
 
 ## Rosetta Golden Test Checklist (272/284)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 571.223ms | 384.0 KB |
-| 2 | 100-doors-3 | ✓ |  |  |
-| 3 | 100-doors | ✓ |  |  |
-| 4 | 100-prisoners | ✓ |  |  |
-| 5 | 15-puzzle-game | ✓ |  |  |
-| 6 | 15-puzzle-solver | ✓ |  |  |
-| 7 | 2048 | ✓ |  |  |
-| 8 | 21-game | ✓ |  |  |
-| 9 | 24-game-solve | ✓ |  |  |
-| 10 | 24-game | ✓ |  |  |
-| 11 | 4-rings-or-4-squares-puzzle | ✓ |  |  |
+| 2 | 100-doors-3 | ✓ | 571.223ms | 256.0 KB |
+| 3 | 100-doors | ✓ | 571.223ms | 288.0 KB |
+| 4 | 100-prisoners | ✓ |  | 13.1 MB |
+| 5 | 15-puzzle-game | ✓ |  | 384.0 KB |
+| 6 | 15-puzzle-solver | ✓ | 571.223ms |  |
+| 7 | 2048 | ✓ | 731.363ms | 768.0 KB |
+| 8 | 21-game | ✓ |  | 512.0 KB |
+| 9 | 24-game-solve | ✓ | 232.815ms | 7.3 MB |
+| 10 | 24-game | ✓ |  | 384.0 KB |
+| 11 | 4-rings-or-4-squares-puzzle | ✓ | 571.223ms | 16.7 MB |
 | 12 | 9-billion-names-of-god-the-integer | ✓ |  |  |
-| 13 | 99-bottles-of-beer-2 | ✓ |  |  |
-| 14 | 99-bottles-of-beer | ✓ |  |  |
-| 15 | DNS-query | ✓ |  |  |
-| 16 | a+b | ✓ |  |  |
-| 17 | abbreviations-automatic | ✓ |  |  |
-| 18 | abbreviations-easy | ✓ |  |  |
-| 19 | abbreviations-simple | ✓ |  |  |
-| 20 | abc-problem | ✓ |  |  |
-| 21 | abelian-sandpile-model-identity | ✓ |  |  |
-| 22 | abelian-sandpile-model | ✓ |  |  |
-| 23 | abstract-type | ✓ |  |  |
-| 24 | abundant-deficient-and-perfect-number-classifications | ✓ |  |  |
-| 25 | abundant-odd-numbers | ✓ |  |  |
-| 26 | accumulator-factory | ✓ |  |  |
-| 27 | achilles-numbers | ✓ |  |  |
-| 28 | ackermann-function-2 | ✓ |  |  |
-| 29 | ackermann-function-3 | ✓ |  |  |
-| 30 | ackermann-function | ✓ |  |  |
-| 31 | active-directory-connect | ✓ |  |  |
-| 32 | active-directory-search-for-a-user | ✓ |  |  |
-| 33 | active-object | ✓ |  |  |
-| 34 | add-a-variable-to-a-class-instance-at-runtime | ✓ |  |  |
-| 35 | additive-primes | ✓ |  |  |
-| 36 | address-of-a-variable | ✓ |  |  |
-| 37 | adfgvx-cipher | ✓ |  |  |
-| 38 | aks-test-for-primes | ✓ |  |  |
-| 39 | algebraic-data-types | ✓ |  |  |
-| 40 | align-columns | ✓ |  |  |
-| 41 | aliquot-sequence-classifications | ✓ |  |  |
+| 13 | 99-bottles-of-beer-2 | ✓ | 571.223ms | 5.2 MB |
+| 14 | 99-bottles-of-beer | ✓ | 571.223ms | 3.4 MB |
+| 15 | DNS-query | ✓ | 571.223ms | 128.0 KB |
+| 16 | a+b | ✓ | 571.223ms | 384.0 KB |
+| 17 | abbreviations-automatic | ✓ | 571.223ms | 5.2 MB |
+| 18 | abbreviations-easy | ✓ | 571.223ms | 384.0 KB |
+| 19 | abbreviations-simple | ✓ | 571.223ms | 640.0 KB |
+| 20 | abc-problem | ✓ | 571.223ms | 512.0 KB |
+| 21 | abelian-sandpile-model-identity | ✓ | 571.223ms | 128.0 KB |
+| 22 | abelian-sandpile-model | ✓ | 571.223ms | 256.0 KB |
+| 23 | abstract-type | ✓ | 571.223ms | 128.0 KB |
+| 24 | abundant-deficient-and-perfect-number-classifications | ✓ | 571.223ms | 7.4 MB |
+| 25 | abundant-odd-numbers | ✓ | 571.223ms | 10.8 MB |
+| 26 | accumulator-factory | ✓ | 571.223ms | 128.0 KB |
+| 27 | achilles-numbers | ✓ | 571.223ms | 10.5 MB |
+| 28 | ackermann-function-2 | ✓ | 571.223ms | 128.0 KB |
+| 29 | ackermann-function-3 | ✓ | 571.223ms | 4.2 MB |
+| 30 | ackermann-function | ✓ | 571.223ms | 2.2 MB |
+| 31 | active-directory-connect | ✓ | 571.223ms |  |
+| 32 | active-directory-search-for-a-user | ✓ | 571.223ms | 128.0 KB |
+| 33 | active-object | ✓ | 571.223ms | 2.7 MB |
+| 34 | add-a-variable-to-a-class-instance-at-runtime | ✓ | 571.223ms | 384.0 KB |
+| 35 | additive-primes | ✓ | 571.223ms | 384.0 KB |
+| 36 | address-of-a-variable | ✓ | 571.223ms | 128.0 KB |
+| 37 | adfgvx-cipher | ✓ | 251.644ms | 512.0 KB |
+| 38 | aks-test-for-primes | ✓ | 571.223ms |  |
+| 39 | algebraic-data-types | ✓ | 571.223ms | 128.0 KB |
+| 40 | align-columns | ✓ | 571.223ms | 1.8 MB |
+| 41 | aliquot-sequence-classifications | ✓ | 571.223ms | 8.9 MB |
 | 42 | almkvist-giullera-formula-for-pi |   |  |  |
-| 43 | almost-prime | ✓ |  |  |
-| 44 | amb | ✓ |  |  |
-| 45 | amicable-pairs | ✓ |  |  |
-| 46 | anagrams-deranged-anagrams | ✓ |  |  |
-| 47 | anagrams | ✓ |  |  |
-| 48 | angle-difference-between-two-bearings-1 | ✓ |  |  |
-| 49 | angle-difference-between-two-bearings-2 | ✓ |  |  |
-| 50 | angles-geometric-normalization-and-conversion | ✓ |  |  |
-| 51 | animate-a-pendulum | ✓ |  |  |
-| 52 | animation | ✓ |  |  |
-| 53 | anonymous-recursion-1 | ✓ |  |  |
-| 54 | anonymous-recursion-2 | ✓ |  |  |
-| 55 | anonymous-recursion | ✓ |  |  |
-| 56 | anti-primes | ✓ |  |  |
-| 57 | append-a-record-to-the-end-of-a-text-file | ✓ |  |  |
-| 58 | apply-a-callback-to-an-array-1 | ✓ |  |  |
-| 59 | apply-a-callback-to-an-array-2 | ✓ |  |  |
-| 60 | apply-a-digital-filter-direct-form-ii-transposed- | ✓ |  |  |
+| 43 | almost-prime | ✓ | 571.223ms | 1.5 MB |
+| 44 | amb | ✓ | 571.223ms | 256.0 KB |
+| 45 | amicable-pairs | ✓ | 571.223ms | 48.2 MB |
+| 46 | anagrams-deranged-anagrams | ✓ | 571.223ms | 128.0 KB |
+| 47 | anagrams | ✓ | 571.223ms | 800.0 KB |
+| 48 | angle-difference-between-two-bearings-1 | ✓ | 571.223ms | 128.0 KB |
+| 49 | angle-difference-between-two-bearings-2 | ✓ | 571.223ms | 384.0 KB |
+| 50 | angles-geometric-normalization-and-conversion | ✓ | 571.223ms | 512.0 KB |
+| 51 | animate-a-pendulum | ✓ | 571.223ms | 128.0 KB |
+| 52 | animation | ✓ | 571.223ms | 256.0 KB |
+| 53 | anonymous-recursion-1 | ✓ | 571.223ms |  |
+| 54 | anonymous-recursion-2 | ✓ | 571.223ms |  |
+| 55 | anonymous-recursion | ✓ | 571.223ms |  |
+| 56 | anti-primes | ✓ | 571.223ms | 7.4 MB |
+| 57 | append-a-record-to-the-end-of-a-text-file | ✓ | 571.223ms | 128.0 KB |
+| 58 | apply-a-callback-to-an-array-1 | ✓ | 571.223ms |  |
+| 59 | apply-a-callback-to-an-array-2 | ✓ | 571.223ms | 128.0 KB |
+| 60 | apply-a-digital-filter-direct-form-ii-transposed- | ✓ | 571.223ms | 256.0 KB |
 | 61 | approximate-equality | ✓ |  |  |
 | 62 | arbitrary-precision-integers-included- | ✓ |  |  |
 | 63 | archimedean-spiral | ✓ |  |  |
