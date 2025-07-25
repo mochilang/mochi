@@ -1226,9 +1226,9 @@ func csType(t *parser.TypeRef) string {
 			return fmt.Sprintf("Func<%s>", strings.Join(parts, ", "))
 		}
 		if len(parts) == 0 {
-			return "Func<object>"
+			return "Action"
 		}
-		return fmt.Sprintf("Func<%s, object>", strings.Join(parts, ", "))
+		return fmt.Sprintf("Action<%s>", strings.Join(parts, ", "))
 	}
 	return "object"
 }
