@@ -2,7 +2,7 @@
 
 This file is auto-generated from rosetta tests.
 
-## Rosetta Golden Test Checklist (79/284)
+## Rosetta Golden Test Checklist (78/284)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 151µs | 41.3 KB |
@@ -14,7 +14,7 @@ This file is auto-generated from rosetta tests.
 | 7 | 2048 | ✓ | 188µs | 42.7 KB |
 | 8 | 21-game | ✓ | 153µs | 41.8 KB |
 | 9 | 24-game-solve | ✓ | 1.054ms | 62.3 KB |
-| 10 | 24-game | ✓ |  |  |
+| 10 | 24-game |   |  |  |
 | 11 | 4-rings-or-4-squares-puzzle | ✓ | 2.005ms | 302.9 KB |
 | 12 | 9-billion-names-of-god-the-integer | ✓ | 54.495ms | 289.7 KB |
 | 13 | 99-bottles-of-beer-2 | ✓ | 322µs | 43.1 KB |
@@ -71,19 +71,19 @@ This file is auto-generated from rosetta tests.
 | 64 | arena-storage-pool | ✓ | 237µs | 53.4 KB |
 | 65 | arithmetic-complex | ✓ | 180µs | 46.4 KB |
 | 66 | arithmetic-derivative | ✓ | 191µs | 41.8 KB |
-| 67 | arithmetic-evaluation | ✓ |  |  |
-| 68 | arithmetic-geometric-mean-calculate-pi | ✓ |  |  |
-| 69 | arithmetic-geometric-mean | ✓ |  |  |
-| 70 | arithmetic-integer-1 | ✓ |  |  |
-| 71 | arithmetic-integer-2 | ✓ |  |  |
+| 67 | arithmetic-evaluation | ✓ | 500µs | 52.6 KB |
+| 68 | arithmetic-geometric-mean-calculate-pi | ✓ | 396µs | 46.5 KB |
+| 69 | arithmetic-geometric-mean | ✓ | 396µs | 56.3 KB |
+| 70 | arithmetic-integer-1 | ✓ | 321µs | 41.4 KB |
+| 71 | arithmetic-integer-2 | ✓ | 319µs | 45.3 KB |
 | 72 | arithmetic-numbers | ✓ |  |  |
-| 73 | arithmetic-rational | ✓ |  |  |
-| 74 | array-concatenation | ✓ |  |  |
-| 75 | array-length | ✓ |  |  |
-| 76 | arrays | ✓ |  |  |
-| 77 | ascending-primes | ✓ |  |  |
-| 78 | ascii-art-diagram-converter | ✓ |  |  |
-| 79 | assertions | ✓ |  |  |
+| 73 | arithmetic-rational | ✓ | 330µs | 52.6 KB |
+| 74 | array-concatenation | ✓ | 337µs | 42.2 KB |
+| 75 | array-length | ✓ | 326µs | 41.3 KB |
+| 76 | arrays | ✓ | 312µs | 56.2 KB |
+| 77 | ascending-primes | ✓ | 362µs | 56.1 KB |
+| 78 | ascii-art-diagram-converter | ✓ | 294µs | 42.3 KB |
+| 79 | assertions | ✓ | 330µs | 34.9 KB |
 | 80 | associative-array-creation | ✓ |  |  |
 | 81 | associative-array-iteration | ✓ |  |  |
 | 82 | associative-array-merging | ✓ |  |  |
@@ -290,4 +290,4 @@ This file is auto-generated from rosetta tests.
 | 283 | define-a-primitive-data-type |   |  |  |
 | 284 | md5 |   |  |  |
 
-Last updated: 2025-07-25 14:38 +0000
+Last updated: 2025-07-25 22:14 +0700
