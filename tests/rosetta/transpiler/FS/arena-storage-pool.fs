@@ -1,7 +1,25 @@
-// Generated 2025-07-25 00:53 +0700
+// Generated 2025-07-25 14:38 +0000
 
 exception Return
 
+let mutable _nowSeed:int64 = 0L
+let mutable _nowSeeded = false
+let _initNow () =
+    let s = System.Environment.GetEnvironmentVariable("MOCHI_NOW_SEED")
+    if System.String.IsNullOrEmpty(s) |> not then
+        match System.Int32.TryParse(s) with
+        | true, v ->
+            _nowSeed <- int64 v
+            _nowSeeded <- true
+        | _ -> ()
+let _now () =
+    if _nowSeeded then
+        _nowSeed <- (_nowSeed * 1664525L + 1013904223L) % 2147483647L
+        int _nowSeed
+    else
+        int (System.DateTime.UtcNow.Ticks % 2147483647L)
+
+_initNow()
 let rec poolPut (p: int array) (x: int) =
     let mutable __ret : int array = Unchecked.defaultof<int array>
     let mutable p = p
@@ -16,12 +34,12 @@ and poolGet (p: int array) =
     let mutable __ret : Map<string, obj> = Unchecked.defaultof<Map<string, obj>>
     let mutable p = p
     try
-        if (Array.length p) = 0 then
+        if (unbox<int> (Array.length p)) = 0 then
             printfn "%s" "pool empty"
             __ret <- Map.ofList [("pool", box p); ("val", box 0)]
             raise Return
-        let idx = (Array.length p) - 1
-        let v = p.[idx]
+        let idx: int = (unbox<int> (Array.length p)) - 1
+        let v: int = p.[idx]
         p <- Array.sub p 0 (idx - 0)
         __ret <- Map.ofList [("pool", box p); ("val", box v)]
         raise Return
@@ -40,6 +58,8 @@ and clearPool (p: int array) =
 and main () =
     let mutable __ret : unit = Unchecked.defaultof<unit>
     try
+        let __bench_start = _now()
+        let __mem_start = System.GC.GetTotalMemory(true)
         let mutable pool: int array = [||]
         let mutable i: int = 1
         let mutable j: int = 2
@@ -48,12 +68,12 @@ and main () =
         pool <- poolPut pool j
         i <- 0
         j <- 0
-        let res1 = poolGet pool
-        pool <- (res1.["pool"]) :?> int array
-        i <- (res1.["val"]) :?> int
-        let res2 = poolGet pool
-        pool <- (res2.["pool"]) :?> int array
-        j <- (res2.["val"]) :?> int
+        let res1: Map<string, obj> = poolGet pool
+        pool <- unbox<int array> (res1.["pool"])
+        i <- unbox<int> (res1.["val"])
+        let res2: Map<string, obj> = poolGet pool
+        pool <- unbox<int array> (res2.["pool"])
+        j <- unbox<int> (res2.["val"])
         i <- 4
         j <- 5
         printfn "%s" (string (i + j))
@@ -62,15 +82,19 @@ and main () =
         i <- 0
         j <- 0
         pool <- clearPool pool
-        let res3 = poolGet pool
-        pool <- (res3.["pool"]) :?> int array
-        i <- (res3.["val"]) :?> int
-        let res4 = poolGet pool
-        pool <- (res4.["pool"]) :?> int array
-        j <- (res4.["val"]) :?> int
+        let res3: Map<string, obj> = poolGet pool
+        pool <- unbox<int array> (res3.["pool"])
+        i <- unbox<int> (res3.["val"])
+        let res4: Map<string, obj> = poolGet pool
+        pool <- unbox<int array> (res4.["pool"])
+        j <- unbox<int> (res4.["val"])
         i <- 7
         j <- 8
         printfn "%s" (string (i + j))
+        let __bench_end = _now()
+        let __mem_end = System.GC.GetTotalMemory(true)
+        printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)
+
         __ret
     with
         | Return -> __ret

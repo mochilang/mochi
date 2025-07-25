@@ -1,3 +1,11 @@
+## Progress (2025-07-25 14:38 +0000)
+- fs transpiler: support map get
+- Generated F# for 103/104 programs (103 passing)
+
+## Progress (2025-07-25 21:26 +0700)
+- transpiler/clj: generate outputs for tests 14 and 15
+- Generated F# for 103/104 programs (103 passing)
+
 ## Progress (2025-07-25 10:58 +0000)
 - fs transpiler: handle dynamic map indexing
 - Generated F# for 103/104 programs (103 passing)
