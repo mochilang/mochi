@@ -65,6 +65,7 @@ func TestJavaTranspiler_VMValid_Golden(t *testing.T) {
 			return nil, err
 		}
 		cmd = exec.Command("java", "-cp", outDir, "Main")
+		cmd.Env = append(os.Environ(), "MOCHI_NOW_SEED=1")
 		if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
 			cmd.Stdin = bytes.NewReader(data)
 		}
