@@ -1,9 +1,22 @@
-dotnet run: exit status 1
-/tmp/TestCSTranspiler_Rosetta_Golden1139539648/001/Program.cs(95,18): error CS1929: 'string[]' does not contain a definition for 'Append' and the best extension method overload 'Queryable.Append<char[]>(IQueryable<char[]>, char[])' requires a receiver of type 'System.Linq.IQueryable<char[]>' [/tmp/TestCSTranspiler_Rosetta_Golden1139539648/001/app.csproj]
-/tmp/TestCSTranspiler_Rosetta_Golden1139539648/001/Program.cs(137,22): error CS0021: Cannot apply indexing with [] to an expression of type 'object' [/tmp/TestCSTranspiler_Rosetta_Golden1139539648/001/app.csproj]
-/tmp/TestCSTranspiler_Rosetta_Golden1139539648/001/Program.cs(137,36): error CS0021: Cannot apply indexing with [] to an expression of type 'object' [/tmp/TestCSTranspiler_Rosetta_Golden1139539648/001/app.csproj]
-/tmp/TestCSTranspiler_Rosetta_Golden1139539648/001/Program.cs(149,47): error CS0021: Cannot apply indexing with [] to an expression of type 'object' [/tmp/TestCSTranspiler_Rosetta_Golden1139539648/001/app.csproj]
-/tmp/TestCSTranspiler_Rosetta_Golden1139539648/001/Program.cs(152,16): error CS0029: Cannot implicitly convert type 'object[]' to 'int[]' [/tmp/TestCSTranspiler_Rosetta_Golden1139539648/001/app.csproj]
-/tmp/TestCSTranspiler_Rosetta_Golden1139539648/001/Program.cs(242,47): error CS0019: Operator '==' cannot be applied to operands of type 'char' and 'string' [/tmp/TestCSTranspiler_Rosetta_Golden1139539648/001/app.csproj]
+dotnet run: exit status 134
+6 x 6 Polybius square:
 
-The build failed. Fix the build errors and run again.
+  | A D F G V X
+---------------
+A | J 1 F 9 4 S 
+D | W N R 8 V I 
+F | H E X M A C 
+G | O 6 5 Y P 3 
+V | 2 U B D G Z 
+X | 0 L Q 7 K T 
+
+The key is VJ1D6MN35
+
+Plaintext : ATTACKAT1200AM
+Unhandled exception. Microsoft.CSharp.RuntimeBinder.RuntimeBinderException: Operator '>' cannot be applied to operands of type 'string' and 'string'
+   at CallSite.Target(Closure, CallSite, Object, Object)
+   at System.Dynamic.UpdateDelegates.UpdateAndExecute2[T0,T1,TRet](CallSite site, T0 arg0, T1 arg1)
+   at Program.orderKey(String key) in /tmp/TestCSTranspiler_Rosetta_Golden1171387361/001/Program.cs:line 143
+   at Program.encrypt(String[] polybius, String key, String plainText) in /tmp/TestCSTranspiler_Rosetta_Golden1171387361/001/Program.cs:line 207
+   at Program.main() in /tmp/TestCSTranspiler_Rosetta_Golden1171387361/001/Program.cs:line 337
+   at Program.Main() in /tmp/TestCSTranspiler_Rosetta_Golden1171387361/001/Program.cs:line 347
