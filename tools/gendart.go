@@ -28,7 +28,7 @@ func main() {
 	if errs := types.Check(prog, env); len(errs) > 0 {
 		panic(errs[0])
 	}
-	ast, err := dart.Transpile(prog, env)
+	ast, err := dart.Transpile(prog, env, false)
 	if err != nil {
 		panic(err)
 	}
