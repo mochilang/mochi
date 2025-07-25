@@ -129,7 +129,7 @@ func init() {
 		"importBigInt": `import java.math.BigInteger`,
 		"_now": `var _nowSeed = 0L
 var _nowSeeded = false
-fun _now(): Int {
+fun _now(): Long {
     if (!_nowSeeded) {
         System.getenv("MOCHI_NOW_SEED")?.toLongOrNull()?.let {
             _nowSeed = it
@@ -138,9 +138,9 @@ fun _now(): Int {
     }
     return if (_nowSeeded) {
         _nowSeed = (_nowSeed * 1664525 + 1013904223) % 2147483647
-        kotlin.math.abs(_nowSeed.toInt())
+        kotlin.math.abs(_nowSeed)
     } else {
-        kotlin.math.abs(System.nanoTime().toInt())
+        kotlin.math.abs(System.nanoTime())
     }
 }`,
 	}
