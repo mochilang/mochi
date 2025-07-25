@@ -15,5 +15,8 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 	return &Program{}, nil
 }
 
+// SetBenchMain is a no-op in the stub build.
+func SetBenchMain(v bool) {}
+
 // Emit returns an empty byte slice. It is a no-op replacement for the real function.
 func (p *Program) Emit() []byte { return nil }
