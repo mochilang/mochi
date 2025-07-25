@@ -1090,6 +1090,40 @@ func (c *ContinueStmt) emit(w io.Writer, indentLevel int) {
 	io.WriteString(w, "continue")
 }
 
+// BenchStmt represents a benchmark block that measures execution time and
+// memory usage of its body.
+type BenchStmt struct {
+	Name string
+	Body []Stmt
+}
+
+func (bs *BenchStmt) emit(w io.Writer, indentLevel int) {
+	indent(w, indentLevel)
+	io.WriteString(w, "run {\n")
+	indent(w, indentLevel+1)
+	io.WriteString(w, "val _startMem = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()\n")
+	indent(w, indentLevel+1)
+	io.WriteString(w, "val _start = _now()\n")
+	for _, st := range bs.Body {
+		st.emit(w, indentLevel+1)
+		io.WriteString(w, "\n")
+	}
+	indent(w, indentLevel+1)
+	io.WriteString(w, "val _end = _now()\n")
+	indent(w, indentLevel+1)
+	io.WriteString(w, "val _endMem = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()\n")
+	indent(w, indentLevel+1)
+	io.WriteString(w, "val _durationUs = (_end - _start) / 1000\n")
+	indent(w, indentLevel+1)
+	io.WriteString(w, "val _memDiff = _endMem - _startMem\n")
+	indent(w, indentLevel+1)
+	fmt.Fprintf(w, "val _res = mapOf(\"duration_us\" to _durationUs, \"memory_bytes\" to _memDiff, \"name\" to %q)\n", bs.Name)
+	indent(w, indentLevel+1)
+	io.WriteString(w, "println(toJson(_res))\n")
+	indent(w, indentLevel)
+	io.WriteString(w, "}")
+}
+
 // IfExpr is a conditional expression using Kotlin's `if`.
 type IfExpr struct {
 	Cond Expr
@@ -2891,6 +2925,12 @@ func convertStmts(env *types.Env, list []*parser.Statement) ([]Stmt, error) {
 				return nil, err
 			}
 			out = append(out, st)
+		case s.Bench != nil:
+			st, err := convertBench(env, s.Bench)
+			if err != nil {
+				return nil, err
+			}
+			out = append(out, st)
 		case s.Break != nil:
 			out = append(out, &BreakStmt{})
 		case s.Continue != nil:
@@ -3021,6 +3061,17 @@ func convertForStmt(env *types.Env, fs *parser.ForStmt) (Stmt, error) {
 		return nil, err
 	}
 	return &ForEachStmt{Name: fs.Name, Iterable: iter, Body: body}, nil
+}
+
+func convertBench(env *types.Env, bb *parser.BenchBlock) (Stmt, error) {
+	bodyEnv := types.NewEnv(env)
+	body, err := convertStmts(bodyEnv, bb.Body)
+	if err != nil {
+		return nil, err
+	}
+	useHelper("_now")
+	useHelper("toJson")
+	return &BenchStmt{Name: strings.Trim(bb.Name, "\""), Body: body}, nil
 }
 
 func convertUpdateStmt(env *types.Env, us *parser.UpdateStmt) (Stmt, error) {
