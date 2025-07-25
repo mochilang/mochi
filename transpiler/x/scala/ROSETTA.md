@@ -3,7 +3,7 @@
 Generated Scala code for Rosetta tasks in `tests/rosetta/x/Mochi`. Each program has a `.scala` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
 
 ## Golden Test Checklist (94/284)
-_Last updated: 2025-07-25 16:40 +0700_
+_Last updated: 2025-07-25 19:21 +0700_
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -17,21 +17,21 @@ _Last updated: 2025-07-25 16:40 +0700_
 | 8 | 21-game | ✓ | 7µs | 8.7 MB |
 | 9 | 24-game-solve | ✓ | 39µs | 8.8 MB |
 | 10 | 24-game | ✓ | 13µs | 8.8 MB |
-| 11 | 4-rings-or-4-squares-puzzle | ✓ |  |  |
-| 12 | 9-billion-names-of-god-the-integer | ✓ |  |  |
-| 13 | 99-bottles-of-beer-2 | ✓ |  |  |
-| 14 | 99-bottles-of-beer | ✓ |  |  |
-| 15 | DNS-query | ✓ |  |  |
-| 16 | a+b | ✓ |  |  |
-| 17 | abbreviations-automatic | ✓ |  |  |
-| 18 | abbreviations-easy | ✓ |  |  |
-| 19 | abbreviations-simple | ✓ |  |  |
-| 20 | abc-problem | ✓ |  |  |
-| 21 | abelian-sandpile-model-identity | ✓ | 8µs | 8.7 MB |
+| 11 | 4-rings-or-4-squares-puzzle | ✓ | 62µs | 85.8 KB |
+| 12 | 9-billion-names-of-god-the-integer | ✓ | 2.573ms | 8.7 MB |
+| 13 | 99-bottles-of-beer-2 | ✓ | 54µs | 8.7 MB |
+| 14 | 99-bottles-of-beer | ✓ | 14µs | 8.7 MB |
+| 15 | DNS-query | ✓ | 369µs | 8.7 MB |
+| 16 | a+b | ✓ | 6µs | 8.7 MB |
+| 17 | abbreviations-automatic | ✓ | 34µs | 8.7 MB |
+| 18 | abbreviations-easy | ✓ | 14µs | 8.7 MB |
+| 19 | abbreviations-simple | ✓ | 18µs | 8.7 MB |
+| 20 | abc-problem | ✓ | 13µs | 8.7 MB |
+| 21 | abelian-sandpile-model-identity | ✓ | 10µs | 8.7 MB |
 | 22 | abelian-sandpile-model | ✓ | 7µs | 8.7 MB |
-| 23 | abstract-type | ✓ | 4µs | 8.7 MB |
-| 24 | abundant-deficient-and-perfect-number-classifications | ✓ | 253µs | 8.7 MB |
-| 25 | abundant-odd-numbers | ✓ | 667µs | 8.7 MB |
+| 23 | abstract-type | ✓ | 3µs | 8.7 MB |
+| 24 | abundant-deficient-and-perfect-number-classifications | ✓ | 255µs | 8.7 MB |
+| 25 | abundant-odd-numbers | ✓ | 654µs | 8.7 MB |
 | 26 | accumulator-factory | ✓ | 7µs | 8.7 MB |
 | 27 | achilles-numbers | ✓ | 65µs | 8.7 MB |
 | 28 | ackermann-function-2 | ✓ | 3µs | 8.7 MB |
@@ -41,8 +41,8 @@ _Last updated: 2025-07-25 16:40 +0700_
 | 32 | active-directory-search-for-a-user | ✓ | 4µs | 8.7 MB |
 | 33 | active-object | ✓ | 39µs | 8.7 MB |
 | 34 | add-a-variable-to-a-class-instance-at-runtime | ✓ | 5µs | 8.7 MB |
-| 35 | additive-primes | ✓ | 4µs | 8.7 MB |
-| 36 | address-of-a-variable | ✓ | 5µs | 8.7 MB |
+| 35 | additive-primes | ✓ | 6µs | 8.7 MB |
+| 36 | address-of-a-variable | ✓ | 8µs | 8.7 MB |
 | 37 | adfgvx-cipher | ✓ | 15µs | 8.7 MB |
 | 38 | aks-test-for-primes | ✓ | 5µs | 8.7 MB |
 | 39 | algebraic-data-types | ✓ | 7µs | 8.7 MB |
