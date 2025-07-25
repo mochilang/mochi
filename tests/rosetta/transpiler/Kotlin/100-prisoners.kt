@@ -15,13 +15,22 @@ fun _now(): Int {
     }
 }
 
+fun toJson(v: Any?): String = when (v) {
+    null -> "null"
+    is String -> "\"" + v.replace("\"", "\\\"") + "\""
+    is Boolean, is Number -> v.toString()
+    is Map<*, *> -> v.entries.joinToString(prefix = "{", postfix = "}") { toJson(it.key.toString()) + ":" + toJson(it.value) }
+    is Iterable<*> -> v.joinToString(prefix = "[", postfix = "]") { toJson(it) }
+    else -> toJson(v.toString())
+}
+
 fun shuffle(xs: MutableList<Int>): MutableList<Int> {
     var arr: MutableList<Int> = xs
     var i: Int = 99
     while (i > 0) {
         val j: Int = _now() % (i + 1)
-        val tmp: Int = (arr[i] as Int)
-        arr[i] = (arr[j] as Int)
+        val tmp: Int = arr[i]
+        arr[i] = arr[j]
         arr[j] = tmp
         i = i - 1
     }
@@ -35,7 +44,7 @@ fun doTrials(trials: Int, np: Int, strategy: String): Unit {
         var drawers: MutableList<Int> = mutableListOf()
         var i: Int = 0
         while (i < 100) {
-            drawers = (drawers + i).toMutableList()
+            drawers = run { val _tmp = drawers.toMutableList(); _tmp.add(i); _tmp } as MutableList<Int>
             i = i + 1
         }
         drawers = shuffle(drawers)
@@ -47,7 +56,7 @@ fun doTrials(trials: Int, np: Int, strategy: String): Unit {
                 var prev: Int = p
                 var d: Int = 0
                 while (d < 50) {
-                    val _this: Int = (drawers[prev] as Int)
+                    val _this: Int = drawers[prev]
                     if (_this == p) {
                         found = true
                         break
@@ -59,17 +68,17 @@ fun doTrials(trials: Int, np: Int, strategy: String): Unit {
                 var opened: MutableList<Boolean> = mutableListOf()
                 var k: Int = 0
                 while (k < 100) {
-                    opened = (opened + false).toMutableList()
+                    opened = run { val _tmp = opened.toMutableList(); _tmp.add(false); _tmp } as MutableList<Boolean>
                     k = k + 1
                 }
                 var d: Int = 0
                 while (d < 50) {
                     var n: Int = _now() % 100
-                    while ((opened[n] as Boolean) as Boolean) {
+                    while ((opened[n]) as Boolean) {
                         n = _now() % 100
                     }
                     opened[n] = true
-                    if ((drawers[n] as Int) == p) {
+                    if (drawers[n] == p) {
                         found = true
                         break
                     }
@@ -87,14 +96,14 @@ fun doTrials(trials: Int, np: Int, strategy: String): Unit {
         }
         t = t + 1
     }
-    val rf: Double = ((pardoned.toDouble() as Number).toDouble() / (trials.toDouble() as Number).toDouble()) * 100.0
-    println(((((("  strategy = " + strategy) + "  pardoned = ") + (pardoned.toString()).toString()) + " relative frequency = ") + (rf.toString()).toString()) + "%")
+    val rf: Double = (pardoned.toDouble() / trials.toDouble()) * 100.0
+    println(((((("  strategy = " + strategy) + "  pardoned = ") + pardoned.toString()) + " relative frequency = ") + rf.toString()) + "%")
 }
 
 fun user_main(): Unit {
     val trials: Int = 1000
     for (np in mutableListOf(10, 100)) {
-        println(((("Results from " + (trials.toString()).toString()) + " trials with ") + (np.toString()).toString()) + " prisoners:\n")
+        println(((("Results from " + trials.toString()) + " trials with ") + np.toString()) + " prisoners:\n")
         for (strat in mutableListOf("random", "optimal")) {
             doTrials(trials, np, strat)
         }
@@ -102,5 +111,17 @@ fun user_main(): Unit {
 }
 
 fun main() {
-    user_main()
+    run {
+        System.gc()
+        val _startMem = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()
+        val _start = _now()
+        user_main()
+        System.gc()
+        val _end = _now()
+        val _endMem = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()
+        val _durationUs = (_end - _start) / 1000
+        val _memDiff = kotlin.math.abs(_endMem - _startMem)
+        val _res = mapOf("duration_us" to _durationUs, "memory_bytes" to _memDiff, "name" to "main")
+        println(toJson(_res))
+    }
 }

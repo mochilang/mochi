@@ -515,7 +515,13 @@ func (ix *IndexExpr) emit(w io.Writer) {
 		ix.Target.emit(w)
 	}
 	io.WriteString(w, "[")
-	ix.Index.emit(w)
+	if idxType == "BigInteger" {
+		io.WriteString(w, "(")
+		ix.Index.emit(w)
+		io.WriteString(w, ").toInt()")
+	} else {
+		ix.Index.emit(w)
+	}
 	io.WriteString(w, "]")
 	if isMap || dynamicCast != "" {
 		if ix.Type != "" {
@@ -1893,8 +1899,7 @@ func kotlinTypeFromType(t types.Type) string {
 	case types.Int64Type, *types.Int64Type:
 		return "Long"
 	case types.BigIntType, *types.BigIntType:
-		useHelper("importBigInt")
-		return "BigInteger"
+		return "Int"
 	case types.BoolType, *types.BoolType:
 		return "Boolean"
 	case types.StringType, *types.StringType:
@@ -2348,6 +2353,12 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 				if typ == "MutableMap<Any, Any>" {
 					typ = "MutableMap<String, Any>"
 				}
+				if typ == "BigInteger" {
+					typ = "Int"
+				}
+				if typ == "BigInteger" && guessType(val) == "Int" {
+					typ = "Int"
+				}
 			}
 			p.Globals = append(p.Globals, &LetStmt{Name: st.Let.Name, Type: typ, Value: val})
 			if env != nil {
@@ -2627,6 +2638,11 @@ func convertStmts(env *types.Env, list []*parser.Statement) ([]Stmt, error) {
 				}
 				if typ == "" {
 					typ = guessType(v)
+					if typ == "" {
+						if ix, ok := v.(*IndexExpr); ok && ix.Type != "" {
+							typ = ix.Type
+						}
+					}
 				}
 				if typ == "Any" {
 					// allow Kotlin to infer a more precise type
@@ -2729,6 +2745,11 @@ func convertStmts(env *types.Env, list []*parser.Statement) ([]Stmt, error) {
 				}
 				if typ == "" {
 					typ = guessType(v)
+					if typ == "" {
+						if ix, ok := v.(*IndexExpr); ok && ix.Type != "" {
+							typ = ix.Type
+						}
+					}
 				}
 				if typ == "Int" {
 					if lit, ok := v.(*IntLit); ok {

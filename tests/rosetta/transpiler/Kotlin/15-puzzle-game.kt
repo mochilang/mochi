@@ -17,7 +17,16 @@ fun _now(): Int {
 
 fun input(): String = readLine() ?: ""
 
-data class MoveResult(val idx: Int, val ok: Boolean)
+fun toJson(v: Any?): String = when (v) {
+    null -> "null"
+    is String -> "\"" + v.replace("\"", "\\\"") + "\""
+    is Boolean, is Number -> v.toString()
+    is Map<*, *> -> v.entries.joinToString(prefix = "{", postfix = "}") { toJson(it.key.toString()) + ":" + toJson(it.value) }
+    is Iterable<*> -> v.joinToString(prefix = "[", postfix = "]") { toJson(it) }
+    else -> toJson(v.toString())
+}
+
+data class MoveResult(var idx: Int, var ok: Boolean)
 var board: MutableList<Int> = mutableListOf(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 0)
 val solved: MutableList<Int> = mutableListOf(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 0)
 var empty: Int = 15
@@ -55,7 +64,7 @@ fun isValidMove(m: Int): MoveResult {
 }
 
 fun doMove(m: Int): Boolean {
-    val r: MoveResult = isValidMove(m) as MoveResult
+    val r: MoveResult = isValidMove(m)
     if (!(r.ok as Boolean)) {
         return false
     }
@@ -71,8 +80,8 @@ fun doMove(m: Int): Boolean {
 
 fun shuffle(n: Int): Unit {
     var i: Int = 0
-    while ((i < n) || isSolved() as Boolean) {
-        if (doMove(randMove() as Int) as Boolean as Boolean) {
+    while ((i < n) || isSolved()) {
+        if ((doMove(randMove())) as Boolean) {
             i = i + 1
         }
     }
@@ -134,7 +143,7 @@ fun playOneMove(): Unit {
                 }
             }
         }
-        if (!(doMove(m) as Boolean)) {
+        if (!doMove(m)) {
             println("That is not a valid move at the moment.")
             continue
         }
@@ -144,12 +153,12 @@ fun playOneMove(): Unit {
 
 fun play(): Unit {
     println("Starting board:")
-    while ((!quit as Boolean) && (isSolved() as Boolean == false)) {
+    while ((!quit as Boolean) && (isSolved() == false)) {
         println("")
         printBoard()
         playOneMove()
     }
-    if (isSolved() as Boolean as Boolean) {
+    if ((isSolved()) as Boolean) {
         println(("You solved the puzzle in " + moves.toString()) + " moves.")
     }
 }
@@ -160,5 +169,17 @@ fun user_main(): Unit {
 }
 
 fun main() {
-    user_main()
+    run {
+        System.gc()
+        val _startMem = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()
+        val _start = _now()
+        user_main()
+        System.gc()
+        val _end = _now()
+        val _endMem = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()
+        val _durationUs = (_end - _start) / 1000
+        val _memDiff = kotlin.math.abs(_endMem - _startMem)
+        val _res = mapOf("duration_us" to _durationUs, "memory_bytes" to _memDiff, "name" to "main")
+        println(toJson(_res))
+    }
 }
