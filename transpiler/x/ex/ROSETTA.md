@@ -2,8 +2,8 @@
 
 Generated Elixir code from Mochi Rosetta programs lives in `tests/rosetta/transpiler/Elixir`.
 
-## Rosetta Test Checklist (34/284)
-_Last updated: 2025-07-25 19:29 +0700_
+## Rosetta Test Checklist (35/284)
+_Last updated: 2025-07-25 14:12 +0000_
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | 100-doors-2 | ✓ |  |  |
@@ -46,7 +46,7 @@ _Last updated: 2025-07-25 19:29 +0700_
 | 38 | aks-test-for-primes | ✓ | 766us | 2.1 MB |
 | 39 | algebraic-data-types | ✓ | 1.57ms | 189.5 KB |
 | 40 | align-columns |  |  |  |
-| 41 | aliquot-sequence-classifications |  |  |  |
+| 41 | aliquot-sequence-classifications | ✓ | 75.49ms | 135.4 KB |
 | 42 | almkvist-giullera-formula-for-pi |  |  |  |
 | 43 | almost-prime |  |  |  |
 | 44 | amb |  |  |  |
