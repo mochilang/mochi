@@ -1,0 +1,3 @@
+exit status 1
+# command-line-arguments
+../../../tests/rosetta/transpiler/Go/boolean-values.go:38:43: invalid operation: l == true (mismatched types string and untyped bool)

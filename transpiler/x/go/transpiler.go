@@ -28,6 +28,7 @@ type Program struct {
 	Imports      map[string]string
 	UseStrings   bool
 	UseStrconv   bool
+	UseParseInt  bool
 	UsePrint     bool
 	UseSort      bool
 	UseJSON      bool
@@ -48,6 +49,7 @@ type Program struct {
 var (
 	usesStrings    bool
 	usesStrconv    bool
+	usesParseInt   bool
 	usesPrint      bool
 	usesSort       bool
 	usesJSON       bool
@@ -1795,6 +1797,7 @@ func Transpile(p *parser.Program, env *types.Env, benchMain bool) (*Program, err
 	_ = env // reserved for future use
 	gp.UseStrings = usesStrings
 	gp.UseStrconv = usesStrconv
+	gp.UseParseInt = usesParseInt
 	gp.UsePrint = usesPrint
 	gp.UseSort = usesSort
 	gp.UseJSON = usesJSON
@@ -1818,7 +1821,9 @@ func Transpile(p *parser.Program, env *types.Env, benchMain bool) (*Program, err
 		if vd, ok := st.(*VarDecl); ok {
 			if t, err := env.GetVar(vd.Name); err == nil {
 				if gt := toGoTypeFromType(t); gt != "" {
-					vd.Type = gt
+					if vd.Type == "" || vd.Type == "any" || vd.Type == "[]any" {
+						vd.Type = gt
+					}
 				}
 			}
 			initTypes[vd.Name] = vd.Type
@@ -4512,6 +4517,15 @@ func compilePrimary(p *parser.Primary, env *types.Env, base string) (Expr, error
 		case "upper":
 			usesStrings = true
 			return &CallExpr{Func: "strings.ToUpper", Args: []Expr{args[0]}}, nil
+		case "indexOf":
+			usesStrings = true
+			return &CallExpr{Func: "strings.Index", Args: []Expr{args[0], args[1]}}, nil
+		case "parseIntStr":
+			usesParseInt = true
+			if len(args) == 1 {
+				args = append(args, &IntLit{Value: 10})
+			}
+			return &CallExpr{Func: "_parseIntStr", Args: []Expr{args[0], args[1]}}, nil
 		case "now":
 			usesTime = true
 			return &NowExpr{}, nil
@@ -5119,6 +5133,9 @@ func Emit(prog *Program, bench bool) []byte {
 	if prog.UseStrconv {
 		buf.WriteString("    \"strconv\"\n")
 	}
+	if prog.UseParseInt {
+		buf.WriteString("    \"strconv\"\n")
+	}
 	if prog.UseTime {
 		buf.WriteString("    \"time\"\n")
 		buf.WriteString("    \"os\"\n")
@@ -5229,6 +5246,9 @@ func Emit(prog *Program, bench bool) []byte {
 		buf.WriteString("    for i, v := range h[:] { out[i] = int(v) }\n")
 		buf.WriteString("    return out\n")
 		buf.WriteString("}\n\n")
+	}
+	if prog.UseParseInt {
+		buf.WriteString("func _parseIntStr(s string, base int) int { v, _ := strconv.ParseInt(s, base, 64); return int(v) }\n\n")
 	}
 	if prog.UseBigRat {
 		buf.WriteString("func _bigrat(v any) *big.Rat {\n")

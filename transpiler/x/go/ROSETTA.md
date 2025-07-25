@@ -1,7 +1,7 @@
 # Go Rosetta Transpiler Output
 
-Completed programs: 124/284
-Last updated: 2025-07-25 20:06 +0700
+Completed programs: 128/284
+Last updated: 2025-07-25 21:06 +0700
 
 Checklist:
 
@@ -112,36 +112,36 @@ Checklist:
 | 103 | bell-numbers | ✓ | 407.0µs | 188.01KB |
 | 104 | benfords-law | ✓ | 566.0µs | 26.77KB |
 | 105 | bernoulli-numbers | ✓ | 43.0ms | 1.84MB |
-| 106 | best-shuffle | ✓ |  |  |
-| 107 | bifid-cipher | ✓ |  |  |
-| 108 | bin-given-limits | ✓ |  |  |
-| 109 | binary-digits | ✓ |  |  |
-| 110 | binary-search | ✓ |  |  |
-| 111 | binary-strings | ✓ |  |  |
-| 112 | bioinformatics-base-count | ✓ |  |  |
-| 113 | bioinformatics-global-alignment | ✓ |  |  |
-| 114 | bioinformatics-sequence-mutation | ✓ |  |  |
-| 115 | biorhythms | ✓ |  |  |
-| 116 | bitcoin-address-validation | ✓ |  |  |
-| 117 | bitmap-b-zier-curves-cubic | ✓ |  |  |
-| 118 | bitmap-b-zier-curves-quadratic | ✓ |  |  |
-| 119 | bitmap-bresenhams-line-algorithm | ✓ |  |  |
-| 120 | bitmap-flood-fill | ✓ |  |  |
-| 121 | bitmap-histogram | ✓ |  |  |
-| 122 | bitmap-midpoint-circle-algorithm | ✓ |  |  |
-| 123 | bitmap-ppm-conversion-through-a-pipe | ✓ |  |  |
-| 124 | bitmap-read-a-ppm-file | ✓ |  |  |
-| 125 | bitmap-read-an-image-through-a-pipe | ✓ |  |  |
-| 126 | bitmap-write-a-ppm-file | ✓ |  |  |
-| 127 | bitmap | ✓ |  |  |
-| 128 | bitwise-io-1 | ✓ |  |  |
+| 106 | best-shuffle | ✓ | 681.0µs | 5.30KB |
+| 107 | bifid-cipher | ✓ | 1.0ms | 74.71KB |
+| 108 | bin-given-limits | ✓ | 655.0µs | 2.43KB |
+| 109 | binary-digits | ✓ | 219.0µs | 1.29KB |
+| 110 | binary-search | ✓ | 480.0µs | 1.02KB |
+| 111 | binary-strings | ✓ | 589.0µs | 2.15KB |
+| 112 | bioinformatics-base-count | ✓ | 4.0ms | 1022.66KB |
+| 113 | bioinformatics-global-alignment | ✓ | 1.73s | 2.82MB |
+| 114 | bioinformatics-sequence-mutation | ✓ | 17.0ms | 3.39MB |
+| 115 | biorhythms | ✓ | 807.0µs | 10.95KB |
+| 116 | bitcoin-address-validation | ✓ | 2.0ms | 442.70KB |
+| 117 | bitmap-b-zier-curves-cubic | ✓ | 25.0ms | 4.24MB |
+| 118 | bitmap-b-zier-curves-quadratic | ✓ | 24.0ms | 4.26MB |
+| 119 | bitmap-bresenhams-line-algorithm | ✓ | 255.0µs | 1.29KB |
+| 120 | bitmap-flood-fill | ✓ | 630.0µs | 1.60KB |
+| 121 | bitmap-histogram | ✓ | 684.0µs | 1.52KB |
+| 122 | bitmap-midpoint-circle-algorithm | ✓ | 812.0µs | 28.26KB |
+| 123 | bitmap-ppm-conversion-through-a-pipe | ✓ | 23.0ms | 4.26MB |
+| 124 | bitmap-read-a-ppm-file | ✓ | 1.0ms | 205.88KB |
+| 125 | bitmap-read-an-image-through-a-pipe | ✓ | 801.0µs | 13.43KB |
+| 126 | bitmap-write-a-ppm-file | ✓ | 754.0µs | 4.52KB |
+| 127 | bitmap | ✓ | 23.0ms | 2.86MB |
+| 128 | bitwise-io-1 | ✓ | 209.0µs | 1.12KB |
 | 129 | bitwise-io-2 |   |  |  |
 | 130 | bitwise-operations |   |  |  |
-| 131 | blum-integer |   |  |  |
+| 131 | blum-integer | ✓ | 578.0µs | 4.83KB |
 | 132 | boolean-values |   |  |  |
-| 133 | box-the-compass |   |  |  |
-| 134 | boyer-moore-string-search |   |  |  |
-| 135 | brazilian-numbers |   |  |  |
+| 133 | box-the-compass | ✓ | 697.0µs | 8.58KB |
+| 134 | boyer-moore-string-search | ✓ | 1.0ms | 57.34KB |
+| 135 | brazilian-numbers | ✓ | 13.71s | 2.68KB |
 | 136 | break-oo-privacy |   |  |  |
 | 137 | brilliant-numbers |   |  |  |
 | 138 | brownian-tree |   |  |  |
