@@ -38,7 +38,7 @@ func runCase(name string) error {
 	if errs := types.Check(prog, env); len(errs) > 0 {
 		return fmt.Errorf("type: %v", errs[0])
 	}
-	ast, err := kt.Transpile(env, prog)
+	ast, err := kt.Transpile(env, prog, false)
 	if err != nil {
 		return fmt.Errorf("transpile: %v", err)
 	}

@@ -791,7 +791,8 @@ func transpileProgram(lang string, env *types.Env, prog *parser.Program, root, s
 		}
 		return javatr.Emit(p), nil
 	case "kotlin", "kt":
-		p, err := kt.Transpile(env, prog)
+		bench := os.Getenv("MOCHI_BENCHMARK") == "true"
+		p, err := kt.Transpile(env, prog, bench)
 		if err != nil {
 			return nil, err
 		}

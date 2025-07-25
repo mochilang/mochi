@@ -61,7 +61,8 @@ func TestTranspilePrograms(t *testing.T) {
 			_ = os.WriteFile(errPath, []byte("type: "+errs[0].Error()), 0o644)
 			return nil, errs[0]
 		}
-		ast, err := kt.Transpile(env, prog)
+		bench := os.Getenv("MOCHI_BENCHMARK") == "true"
+		ast, err := kt.Transpile(env, prog, bench)
 		if err != nil {
 			_ = os.WriteFile(errPath, []byte("transpile: "+err.Error()), 0o644)
 			return nil, err

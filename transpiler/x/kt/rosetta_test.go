@@ -3,12 +3,12 @@
 package kt_test
 
 import (
+	"bufio"
 	"bytes"
 	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
-	"sort"
 	"strconv"
 	"strings"
 	"testing"
@@ -32,21 +32,22 @@ func TestRosettaKotlin(t *testing.T) {
 	if err := os.MkdirAll(outDir, 0o755); err != nil {
 		t.Fatalf("mkout: %v", err)
 	}
+	names, err := readIndex(filepath.Join(srcDir, "index.txt"))
+	if err != nil {
+		t.Fatalf("read index: %v", err)
+	}
 	idx := 1
-	if s := os.Getenv("ROSETTA_INDEX"); s != "" {
-		if v, err := strconv.Atoi(s); err == nil && v > 0 {
+	if s := os.Getenv("MOCHI_ROSETTA_INDEX"); s != "" {
+		if v, err := strconv.Atoi(s); err == nil && v > 0 && v <= len(names) {
 			idx = v
+			names = names[idx-1 : idx]
 		}
 	}
-	files, err := filepath.Glob(filepath.Join(srcDir, "*.mochi"))
-	if err != nil {
-		t.Fatalf("glob: %v", err)
+	bench := os.Getenv("MOCHI_BENCHMARK") == "true" || os.Getenv("MOCHI_BENCHMARK") == "1"
+	if len(names) == 0 {
+		t.Fatal("no programs")
 	}
-	sort.Strings(files)
-	if idx > len(files) {
-		t.Fatalf("index %d out of range", idx)
-	}
-	srcPath := files[idx-1]
+	srcPath := filepath.Join(srcDir, names[0])
 	name := strings.TrimSuffix(filepath.Base(srcPath), ".mochi")
 	outPath := strings.TrimSuffix(srcPath, ".mochi") + ".out"
 	ktPath := filepath.Join(outDir, name+".kt")
@@ -62,7 +63,7 @@ func TestRosettaKotlin(t *testing.T) {
 			writeKTError(outDir, name, fmt.Errorf("type error: %v", errs[0]))
 			t.Fatalf("type: %v", errs[0])
 		}
-		ast, err := kt.Transpile(env, prog)
+		ast, err := kt.Transpile(env, prog, bench)
 		if err != nil {
 			writeKTError(outDir, name, fmt.Errorf("transpile error: %w", err))
 			t.Fatalf("transpile: %v", err)
@@ -77,7 +78,11 @@ func TestRosettaKotlin(t *testing.T) {
 			t.Fatalf("kotlinc: %v", err)
 		}
 		cmd := exec.Command("java", "-jar", jar)
-		cmd.Env = append(os.Environ(), "MOCHI_ROOT="+root, "MOCHI_NOW_SEED=1")
+		runEnv := append(os.Environ(), "MOCHI_ROOT="+root, "MOCHI_NOW_SEED=1")
+		if bench {
+			runEnv = append(runEnv, "MOCHI_BENCHMARK=1")
+		}
+		cmd.Env = runEnv
 		if inData, err := os.ReadFile(filepath.Join(srcDir, name+".in")); err == nil {
 			cmd.Stdin = bytes.NewReader(inData)
 		}
@@ -109,4 +114,24 @@ func TestRosettaKotlin(t *testing.T) {
 	if !ok {
 		t.Fatalf("program failed: %s", name)
 	}
+}
+
+func readIndex(path string) ([]string, error) {
+	f, err := os.Open(path)
+	if err != nil {
+		return nil, err
+	}
+	defer f.Close()
+	var names []string
+	scanner := bufio.NewScanner(f)
+	for scanner.Scan() {
+		parts := strings.Fields(scanner.Text())
+		if len(parts) == 2 {
+			names = append(names, parts[1])
+		}
+	}
+	if err := scanner.Err(); err != nil {
+		return nil, err
+	}
+	return names, nil
 }

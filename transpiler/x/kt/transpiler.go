@@ -2265,7 +2265,7 @@ func handleImport(env *types.Env, im *parser.ImportStmt) bool {
 }
 
 // Transpile converts a Mochi program to a simple Kotlin AST.
-func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
+func Transpile(env *types.Env, prog *parser.Program, benchMain bool) (*Program, error) {
 	extraDecls = nil
 	extraUnions = nil
 	extraHelpers = nil
@@ -2561,6 +2561,11 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 		default:
 			return nil, fmt.Errorf("unsupported statement")
 		}
+	}
+	if benchMain {
+		useHelper("_now")
+		useHelper("toJson")
+		p.Stmts = []Stmt{&BenchStmt{Name: "main", Body: p.Stmts}}
 	}
 	p.Structs = extraDecls
 	p.Unions = extraUnions
