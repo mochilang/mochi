@@ -1,0 +1,26 @@
+exit status 1
+/workspace/mochi/tests/rosetta/transpiler/Scala/bitmap.scala:85: error: value ok is not a member of scala.collection.mutable.Map[String,Any]
+    if ((!(r.ok).asInstanceOf[Boolean]).asInstanceOf[Boolean]) {
+             ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/bitmap.scala:88: error: value pixel is not a member of scala.collection.mutable.Map[String,Any]
+    return Map("ok" -> (true), "rgb" -> (rgbFromPixel((r.pixel).asInstanceOf[Pixel])))
+                                                         ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/bitmap.scala:111: error: value ok is not a member of scala.collection.mutable.Map[String,Any]
+    if ((c1.ok).asInstanceOf[Boolean]) {
+            ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/bitmap.scala:112: error: value pixel is not a member of scala.collection.mutable.Map[String,Any]
+      println("Pixel at (0,0) is " + pixelStr((c1.pixel).asInstanceOf[Pixel]))
+                                                  ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/bitmap.scala:114: error: value ok is not a member of scala.collection.mutable.Map[String,Any]
+    if ((c2.ok).asInstanceOf[Boolean]) {
+            ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/bitmap.scala:115: error: value pixel is not a member of scala.collection.mutable.Map[String,Any]
+      println("Pixel at (10,20) is " + pixelStr((c2.pixel).asInstanceOf[Pixel]))
+                                                    ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/bitmap.scala:117: error: value ok is not a member of scala.collection.mutable.Map[String,Any]
+    if ((c3.ok).asInstanceOf[Boolean]) {
+            ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/bitmap.scala:118: error: value pixel is not a member of scala.collection.mutable.Map[String,Any]
+      val p = c3.pixel
+                 ^
+8 errors found

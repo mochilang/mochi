@@ -1,0 +1,8 @@
+exit status 1
+/workspace/mochi/tests/rosetta/transpiler/Scala/bitmap-b-zier-curves-cubic.scala:35: error: Any does not take parameters
+      b.getOrElse("data", null.asInstanceOf[Any])(y)(x) = p
+                                                 ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/bitmap-b-zier-curves-cubic.scala:46: error: Any does not take parameters
+        b.getOrElse("data", null.asInstanceOf[Any])(y)(x) = p
+                                                   ^
+two errors found

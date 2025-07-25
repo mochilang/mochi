@@ -1,0 +1,7 @@
+exit status 1
+/workspace/mochi/tests/rosetta/transpiler/Scala/bulls-and-cows.scala:53: error: type mismatch;
+ found   : String
+ required: Int
+  var pat: Int = digits(0) + digits(1) + digits(2) + digits(3)
+                                                   ^
+one error found

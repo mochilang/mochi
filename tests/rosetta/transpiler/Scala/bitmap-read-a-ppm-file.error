@@ -1,0 +1,31 @@
+exit status 1
+/workspace/mochi/tests/rosetta/transpiler/Scala/bitmap-read-a-ppm-file.scala:43: error: not found: value substr
+      val ch: String = substr(s, i, i + 1)
+                       ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/bitmap-read-a-ppm-file.scala:61: error: not found: value substr
+      val ch: String = substr(s, i, i + 1)
+                       ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/bitmap-read-a-ppm-file.scala:105: error: not found: value substr
+        if (((line).size > 0 && substr(line, 0, 1) == "#").asInstanceOf[Boolean]) {
+                                ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/bitmap-read-a-ppm-file.scala:163: error: type mismatch;
+ found   : Double
+ required: Int
+        setPx(b, x, y, Pixel(l, l, l))
+                             ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/bitmap-read-a-ppm-file.scala:163: error: type mismatch;
+ found   : Double
+ required: Int
+        setPx(b, x, y, Pixel(l, l, l))
+                                ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/bitmap-read-a-ppm-file.scala:163: error: type mismatch;
+ found   : Double
+ required: Int
+        setPx(b, x, y, Pixel(l, l, l))
+                                   ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/bitmap-read-a-ppm-file.scala:165: error: type mismatch;
+ found   : Double
+ required: Int
+          m = l
+              ^
+7 errors found
