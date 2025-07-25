@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Python code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/Python`.
-Last updated: 2025-07-25 17:42 GMT+7
+Last updated: 2025-07-25 18:16 GMT+7
 
-## Rosetta Golden Test Checklist (269/284)
+## Rosetta Golden Test Checklist (268/284)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 161.0µs | 12.50MB |
@@ -109,36 +109,36 @@ Last updated: 2025-07-25 17:42 GMT+7
 | 100 | balanced-ternary | ✓ | 97.0µs | 13.48MB |
 | 101 | barnsley-fern | ✓ | 38.0ms | 13.06MB |
 | 102 | base64-decode-data | ✓ | 1.0ms | 13.99MB |
-| 103 | bell-numbers | ✓ |  |  |
-| 104 | benfords-law | ✓ |  |  |
-| 105 | bernoulli-numbers | ✓ |  |  |
-| 106 | best-shuffle | ✓ |  |  |
-| 107 | bifid-cipher | ✓ |  |  |
-| 108 | bin-given-limits | ✓ |  |  |
-| 109 | binary-digits | ✓ |  |  |
-| 110 | binary-search | ✓ |  |  |
-| 111 | binary-strings | ✓ |  |  |
-| 112 | bioinformatics-base-count | ✓ |  |  |
-| 113 | bioinformatics-global-alignment | ✓ |  |  |
-| 114 | bioinformatics-sequence-mutation | ✓ |  |  |
-| 115 | biorhythms | ✓ |  |  |
-| 116 | bitcoin-address-validation | ✓ |  |  |
-| 117 | bitmap-b-zier-curves-cubic | ✓ |  |  |
-| 118 | bitmap-b-zier-curves-quadratic | ✓ |  |  |
-| 119 | bitmap-bresenhams-line-algorithm | ✓ |  |  |
-| 120 | bitmap-flood-fill | ✓ |  |  |
-| 121 | bitmap-histogram | ✓ |  |  |
-| 122 | bitmap-midpoint-circle-algorithm | ✓ |  |  |
-| 123 | bitmap-ppm-conversion-through-a-pipe | ✓ |  |  |
-| 124 | bitmap-read-a-ppm-file | ✓ |  |  |
-| 125 | bitmap-read-an-image-through-a-pipe | ✓ |  |  |
-| 126 | bitmap-write-a-ppm-file | ✓ |  |  |
-| 127 | bitmap | ✓ |  |  |
-| 128 | bitwise-io-1 | ✓ |  |  |
-| 129 | bitwise-io-2 | ✓ |  |  |
-| 130 | bitwise-operations | ✓ |  |  |
-| 131 | blum-integer | ✓ |  |  |
-| 132 | boolean-values | ✓ |  |  |
+| 103 | bell-numbers | ✓ | 885.0µs | 12.86MB |
+| 104 | benfords-law | ✓ | 4.0ms | 12.90MB |
+| 105 | bernoulli-numbers | ✓ | 195.0ms | 12.80MB |
+| 106 | best-shuffle | ✓ | 133.0µs | 13.10MB |
+| 107 | bifid-cipher | ✓ | 467.0µs | 13.80MB |
+| 108 | bin-given-limits | ✓ | 378.0µs | 14.08MB |
+| 109 | binary-digits | ✓ | 75.0µs | 12.22MB |
+| 110 | binary-search | ✓ | 17.0µs | 12.36MB |
+| 111 | binary-strings | ✓ | 84.0µs | 12.44MB |
+| 112 | bioinformatics-base-count | ✓ | 352.0µs | 12.83MB |
+| 113 | bioinformatics-global-alignment | ✓ | 685.0ms | 14.05MB |
+| 114 | bioinformatics-sequence-mutation | ✓ | 2.0ms | 13.55MB |
+| 115 | biorhythms | ✓ | 170.0µs | 14.19MB |
+| 116 | bitcoin-address-validation | ✓ | 597.0µs | 13.99MB |
+| 117 | bitmap-b-zier-curves-cubic | ✓ | 245.0ms | 26.37MB |
+| 118 | bitmap-b-zier-curves-quadratic | ✓ | 244.0ms | 26.50MB |
+| 119 | bitmap-bresenhams-line-algorithm | ✓ | 62.0µs | 12.57MB |
+| 120 | bitmap-flood-fill | ✓ | 29.0µs | 12.71MB |
+| 121 | bitmap-histogram | ✓ | 39.0µs | 13.46MB |
+| 122 | bitmap-midpoint-circle-algorithm | ✓ | 188.0µs | 12.93MB |
+| 123 | bitmap-ppm-conversion-through-a-pipe | ✓ | 431.0ms | 26.36MB |
+| 124 | bitmap-read-a-ppm-file | ✓ | 2.0ms | 13.47MB |
+| 125 | bitmap-read-an-image-through-a-pipe | ✓ | 56.0µs | 12.49MB |
+| 126 | bitmap-write-a-ppm-file | ✓ | 118.0µs | 13.63MB |
+| 127 | bitmap | ✓ | 226.0ms | 20.87MB |
+| 128 | bitwise-io-1 | ✓ | 1.0ms | 13.15MB |
+| 129 | bitwise-io-2 | error |  |  |
+| 130 | bitwise-operations | ✓ | 146.0µs | 13.86MB |
+| 131 | blum-integer | ✓ | 313.0µs | 13.26MB |
+| 132 | boolean-values | ✓ | 18.0µs | 12.62MB |
 | 133 | box-the-compass | ✓ |  |  |
 | 134 | boyer-moore-string-search | ✓ |  |  |
 | 135 | brazilian-numbers | ✓ |  |  |

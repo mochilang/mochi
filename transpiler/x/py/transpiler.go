@@ -37,6 +37,7 @@ var (
 	usesNow           bool
 	usesLookupHost    bool
 	usesIndexOf       bool
+	usesSubstr        bool
 )
 
 const helperNow = `
@@ -73,6 +74,11 @@ def _index_of(xs, val):
         if v == val:
             return i
     return -1
+`
+
+const helperSubstr = `
+def _substr(s, start, end):
+    return s[start:end]
 `
 
 var pyKeywords = map[string]bool{
@@ -772,6 +778,13 @@ func (b *BinaryExpr) emit(w io.Writer) error {
 			}
 		}
 		op := b.Op
+		if op == "/" {
+			if isIntOnlyExpr(b.Left, currentEnv) && isIntOnlyExpr(b.Right, currentEnv) {
+				op = "//"
+			} else if isIntLike(inferPyType(b.Left, currentEnv)) && isIntLike(inferPyType(b.Right, currentEnv)) {
+				op = "//"
+			}
+		}
 		switch op {
 		case "&&":
 			op = "and"
@@ -1562,6 +1575,35 @@ func isFloatLike(t types.Type) bool {
 	switch t.(type) {
 	case types.FloatType, types.BigRatType:
 		return true
+	default:
+		return false
+	}
+}
+
+func isIntOnlyExpr(e Expr, env *types.Env) bool {
+	switch ex := e.(type) {
+	case *IntLit:
+		return true
+	case *Name:
+		if env != nil {
+			if t, err := env.GetVar(ex.Name); err == nil {
+				return isIntLike(t)
+			}
+		}
+		return true
+	case *BinaryExpr:
+		if ex.Op == "/" {
+			return isIntOnlyExpr(ex.Left, env) && isIntOnlyExpr(ex.Right, env)
+		}
+		switch ex.Op {
+		case "+", "-", "*", "%", "//":
+			return isIntOnlyExpr(ex.Left, env) && isIntOnlyExpr(ex.Right, env)
+		}
+		return false
+	case *UnaryExpr:
+		return isIntOnlyExpr(ex.Expr, env)
+	case *ParenExpr:
+		return isIntOnlyExpr(ex.Expr, env)
 	default:
 		return false
 	}
@@ -2641,6 +2683,9 @@ func Emit(w io.Writer, p *Program, bench bool) error {
 		if currentImports["fractions"] && !hasImport(p, "fractions") {
 			imports = append(imports, "from fractions import Fraction")
 		}
+		if currentImports["hashlib"] && !hasImport(p, "hashlib") {
+			imports = append(imports, "import hashlib")
+		}
 		if currentImports["os"] && !hasImport(p, "os") {
 			imports = append(imports, "import os")
 		}
@@ -2694,6 +2739,11 @@ func Emit(w io.Writer, p *Program, bench bool) error {
 	}
 	if usesIndexOf {
 		if _, err := io.WriteString(w, helperIndexOf+"\n"); err != nil {
+			return err
+		}
+	}
+	if usesSubstr {
+		if _, err := io.WriteString(w, helperSubstr+"\n"); err != nil {
 			return err
 		}
 	}
@@ -3332,6 +3382,9 @@ func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, erro
 					}
 				}
 				dc := &DataClassDef{Name: st.Type.Name, Fields: fields}
+				if currentImports != nil {
+					currentImports["dataclasses"] = true
+				}
 				if env != nil {
 					env.SetStruct(dc.Name, structFromDataClass(dc, env))
 				}
@@ -3380,6 +3433,9 @@ func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, erro
 						vf = append(vf, DataClassField{Name: f.Name, Type: typ})
 					}
 					dc := &DataClassDef{Name: v.Name, Fields: vf}
+					if currentImports != nil {
+						currentImports["dataclasses"] = true
+					}
 					p.Stmts = append(p.Stmts, dc)
 					if env != nil {
 						env.SetStruct(dc.Name, structFromDataClass(dc, env))
@@ -3914,10 +3970,9 @@ func convertBinary(b *parser.BinaryExpr) (Expr, error) {
 
 	apply := func(left Expr, op string, right Expr) Expr {
 		if op == "/" {
-			// Python's division operator performs floating point division.
-			// Mochi's "/" operator matches this behaviour, so we do
-			// not attempt to detect integer division and always
-			// emit "/".
+			if isIntOnlyExpr(left, currentEnv) && isIntOnlyExpr(right, currentEnv) {
+				op = "//"
+			}
 		}
 		if op == "+" {
 			if s, ok := left.(*SliceExpr); ok {
@@ -4313,9 +4368,28 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			if len(args) == 2 {
 				return &CallExpr{Func: &FieldExpr{Target: args[0], Name: "split"}, Args: []Expr{args[1]}}, nil
 			}
+		case "contains":
+			if len(args) == 2 {
+				return &BinaryExpr{Left: args[1], Op: "in", Right: args[0]}, nil
+			}
+		case "sha256":
+			if len(args) == 1 {
+				if currentImports != nil {
+					currentImports["hashlib"] = true
+				}
+				bytesCall := &CallExpr{Func: &Name{Name: "bytes"}, Args: []Expr{args[0]}}
+				hashCall := &CallExpr{Func: &FieldExpr{Target: &Name{Name: "hashlib"}, Name: "sha256"}, Args: []Expr{bytesCall}}
+				digest := &CallExpr{Func: &FieldExpr{Target: hashCall, Name: "digest"}, Args: nil}
+				return &CallExpr{Func: &Name{Name: "list"}, Args: []Expr{digest}}, nil
+			}
 		case "substring":
 			if len(args) == 3 {
 				return &SliceExpr{Target: args[0], Start: args[1], End: args[2]}, nil
+			}
+		case "substr":
+			if len(args) == 3 {
+				usesSubstr = true
+				return &CallExpr{Func: &Name{Name: "_substr"}, Args: args}, nil
 			}
 		case "slice":
 			if len(args) == 3 {
