@@ -1439,6 +1439,7 @@ func (mi *MapIndexExpr) emitPrint(w io.Writer) {
 			io.WriteString(w, "string_of_float ")
 			mi.emit(w)
 		default:
+			io.WriteString(w, "__show ")
 			mi.emit(w)
 		}
 	} else {
@@ -1449,8 +1450,18 @@ func (mi *MapIndexExpr) emitPrint(w io.Writer) {
 			io.WriteString(w, " ")
 			mi.Map.emit(w)
 			io.WriteString(w, ")")
+		case "float":
+			io.WriteString(w, "string_of_float (List.assoc ")
+			mi.Key.emit(w)
+			io.WriteString(w, " ")
+			mi.Map.emit(w)
+			io.WriteString(w, ")")
 		default:
-			mi.emit(w)
+			io.WriteString(w, "__show (List.assoc ")
+			mi.Key.emit(w)
+			io.WriteString(w, " ")
+			mi.Map.emit(w)
+			io.WriteString(w, ")")
 		}
 	}
 }
@@ -4413,17 +4424,12 @@ func convertCall(c *parser.CallExpr, env *types.Env, vars map[string]VarInfo) (E
 			}
 		}
 		args := make([]Expr, len(c.Args))
-		mutated := getFuncMutations(env, c.Func)
 		for i, a := range c.Args {
 			ex, at, err := convertExpr(a, env, vars)
 			if err != nil {
 				return nil, "", err
 			}
 			if i < len(fn.Params) {
-				if n, ok := ex.(*Name); ok && mutated != nil && mutated[fn.Params[i].Name] {
-					// pass reference without dereference
-					n.Ref = false
-				}
 				ptyp := typeRefString(fn.Params[i].Type)
 				if ts := typeString(types.ResolveTypeRef(fn.Params[i].Type, env)); ts != "" {
 					ptyp = ts
