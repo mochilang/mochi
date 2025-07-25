@@ -1200,6 +1200,9 @@ func isMapExpr(e Expr, env *types.Env, ctx *context) bool {
 			return mapValueIsMap(v.Target, env, ctx)
 		}
 	case *CallExpr:
+		if v.Func == "maps:get" {
+			return true
+		}
 		if v.Func == "erlang:get" && len(v.Args) == 1 {
 			if a, ok := v.Args[0].(*AtomLit); ok {
 				name := strings.Trim(a.Name, "'")
