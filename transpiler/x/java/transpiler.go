@@ -42,6 +42,7 @@ var varDecls map[string]*VarStmt
 var funcMapFields map[string]map[string]string
 var mapVarFields map[string]map[string]string
 var benchMain bool
+var currentFuncReturn string
 
 // SetBenchMain configures whether the generated main function is wrapped in a
 // benchmark block when emitting code. When enabled, the program will print a
@@ -2540,6 +2541,10 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 					varTypes[pa.Name] = t
 				}
 			}
+			savedDecls := varDecls
+			varDecls = map[string]*VarStmt{}
+			savedRet := currentFuncReturn
+			currentFuncReturn = typeRefString(s.Fun.Return)
 			body, err := compileStmts(s.Fun.Body)
 			if err != nil {
 				return nil, err
@@ -2548,7 +2553,7 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 			for _, p := range s.Fun.Params {
 				params = append(params, Param{Name: p.Name, Type: typeRefString(p.Type)})
 			}
-			ret := typeRefString(s.Fun.Return)
+			ret := currentFuncReturn
 			if ret == "" {
 				ret = inferReturnType(body)
 			}
@@ -2572,6 +2577,8 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 			funcParams[s.Fun.Name] = ptypes
 			prog.Funcs = append(prog.Funcs, &Function{Name: s.Fun.Name, Params: params, Return: ret, Body: body})
 			varTypes = saved
+			varDecls = savedDecls
+			currentFuncReturn = savedRet
 			continue
 		}
 		st, err := compileStmt(s)
@@ -3005,6 +3012,9 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 			e, err = compileExpr(s.Return.Value)
 			if err != nil {
 				return nil, err
+			}
+			if l, ok := e.(*ListLit); ok && l.ElemType == "" && strings.HasSuffix(currentFuncReturn, "[]") {
+				l.ElemType = strings.TrimSuffix(currentFuncReturn, "[]")
 			}
 		}
 		return &ReturnStmt{Expr: e}, nil
