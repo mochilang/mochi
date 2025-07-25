@@ -3,7 +3,7 @@ A(1, 2) = 4
 A(2, 4) = 11
 A(3, 4) = 125
 {
-  "duration_us": 255,
-  "memory_bytes": 336304,
+  "duration_us": 375,
+  "memory_bytes": 286768,
   "name": "main"
 }

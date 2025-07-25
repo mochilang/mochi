@@ -2,8 +2,8 @@
 
 Generated Elixir code from Mochi Rosetta programs lives in `tests/rosetta/transpiler/Elixir`.
 
-## Rosetta Test Checklist (29/284)
-_Last updated: 2025-07-25 09:42 +0000_
+## Rosetta Test Checklist (31/284)
+_Last updated: 2025-07-25 10:35 +0000_
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | 100-doors-2 | ✓ | 6.21ms | 91.6 KB |
@@ -31,17 +31,17 @@ _Last updated: 2025-07-25 09:42 +0000_
 | 23 | abstract-type | ✓ | 107us | 396.6 KB |
 | 24 | abundant-deficient-and-perfect-number-classifications | ✓ | 567.27ms | 25.2 KB |
 | 25 | abundant-odd-numbers |  |  |  |
-| 26 | accumulator-factory | ✓ | 17us | 266.8 KB |
+| 26 | accumulator-factory | ✓ | 3us | 332.2 KB |
 | 27 | achilles-numbers |  |  |  |
-| 28 | ackermann-function-2 | ✓ | 255us | 328.4 KB |
-| 29 | ackermann-function-3 | ✓ | 1.58ms | 54.1 KB |
-| 30 | ackermann-function | ✓ | 2.73ms | 28.3 KB |
-| 31 | active-directory-connect | ✓ | 111us | 533.9 KB |
-| 32 | active-directory-search-for-a-user | ✓ | 134us | 386.3 KB |
-| 33 | active-object | ✓ | 1.62ms | 1.6 KB |
+| 28 | ackermann-function-2 | ✓ | 375us | 280.0 KB |
+| 29 | ackermann-function-3 | ✓ | 1.12ms | 105.2 KB |
+| 30 | ackermann-function | ✓ | 2.38ms | 184.5 KB |
+| 31 | active-directory-connect | ✓ | 244us | 179.6 KB |
+| 32 | active-directory-search-for-a-user | ✓ | 182us | 389.9 KB |
+| 33 | active-object | ✓ | 2.57ms | 35.7 KB |
 | 34 | add-a-variable-to-a-class-instance-at-runtime |  |  |  |
-| 35 | additive-primes |  |  |  |
-| 36 | address-of-a-variable |  |  |  |
+| 35 | additive-primes | ✓ | 337us | 67.8 KB |
+| 36 | address-of-a-variable | ✓ | 1.71ms | 348.5 KB |
 | 37 | adfgvx-cipher |  |  |  |
 | 38 | aks-test-for-primes |  |  |  |
 | 39 | algebraic-data-types |  |  |  |

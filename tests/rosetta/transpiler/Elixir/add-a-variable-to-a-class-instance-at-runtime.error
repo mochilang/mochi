@@ -20,20 +20,6 @@ run: exit status 1
     │
     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/add-a-variable-to-a-class-instance-at-runtime.exs:70:8: Main.main/0
 
-    warning: function _now/0 is unused
-    │
-  3 │   defp _now() do
-    │        ~
-    │
-    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/add-a-variable-to-a-class-instance-at-runtime.exs:3:8: Main (module)
-
-    warning: function _mem/0 is unused
-    │
- 28 │   defp _mem() do
-    │        ~
-    │
-    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/add-a-variable-to-a-class-instance-at-runtime.exs:28:8: Main (module)
-
     warning: function _lookup_host/1 is unused
     │
  31 │   defp _lookup_host(host) do
@@ -67,4 +53,5 @@ Create two fields at runtime:
     (elixir 1.18.3) lib/list.ex:814: List.replace_at/3
     /workspace/mochi/tests/rosetta/transpiler/Elixir/add-a-variable-to-a-class-instance-at-runtime.exs:61: anonymous fn/3 in Main.main/0
     /workspace/mochi/tests/rosetta/transpiler/Elixir/add-a-variable-to-a-class-instance-at-runtime.exs:71: Main.main/0
-    /workspace/mochi/tests/rosetta/transpiler/Elixir/add-a-variable-to-a-class-instance-at-runtime.exs:107: (file)
+    /workspace/mochi/tests/rosetta/transpiler/Elixir/add-a-variable-to-a-class-instance-at-runtime.exs:109: Main.bench_main/0
+    /workspace/mochi/tests/rosetta/transpiler/Elixir/add-a-variable-to-a-class-instance-at-runtime.exs:115: (file)

@@ -7,7 +7,7 @@ A(4, 1) = Error: A(m,n) had n of 1075 bits; too large
 A(4, 2) = Error: A(m,n) had n of 1075 bits; too large
 A(4, 3) = Error: A(m,n) had n of 1075 bits; too large
 {
-  "duration_us": 1584,
-  "memory_bytes": 55416,
+  "duration_us": 1125,
+  "memory_bytes": 107736,
   "name": "main"
 }

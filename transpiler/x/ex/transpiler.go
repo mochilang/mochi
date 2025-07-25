@@ -1478,14 +1478,14 @@ func Emit(p *Program, benchMain bool) []byte {
 	var funcs []Stmt
 	var main []Stmt
 	for _, st := range p.Stmts {
-		switch st.(type) {
+		switch t := st.(type) {
 		case *FuncDecl:
 			funcs = append(funcs, st)
 		case *LetStmt:
-			if funcsExist {
-				main = append(main, st)
-			} else {
+			if funcsExist && isConstExpr(t.Value) {
 				globals = append(globals, st)
+			} else {
+				main = append(main, st)
 			}
 		default:
 			if es, ok := st.(*ExprStmt); ok {
@@ -3687,6 +3687,29 @@ func identName(e *parser.Expr) (string, bool) {
 		return p.Target.Selector.Root, true
 	}
 	return "", false
+}
+
+func isConstExpr(e Expr) bool {
+	switch v := e.(type) {
+	case *NumberLit, *StringLit, *BoolLit, *AtomLit, *NilLit:
+		return true
+	case *ListLit:
+		for _, el := range v.Elems {
+			if !isConstExpr(el) {
+				return false
+			}
+		}
+		return true
+	case *MapLit:
+		for _, it := range v.Items {
+			if !isConstExpr(it.Key) || !isConstExpr(it.Value) {
+				return false
+			}
+		}
+		return true
+	default:
+		return false
+	}
 }
 
 func substituteFieldRefs(e Expr, fields map[string]bool) Expr {
