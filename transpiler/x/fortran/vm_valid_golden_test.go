@@ -72,7 +72,18 @@ func TestFortranTranspiler_VMValid_Golden(t *testing.T) {
 			return nil, err
 		}
 		outBytes := bytes.TrimSpace(out)
-		_ = os.WriteFile(outPath, outBytes, 0o644)
+		benchPath := filepath.Join(outDir, base+".bench")
+		if bench {
+			benchData := outBytes
+			if idx := bytes.LastIndex(benchData, []byte("{")); idx >= 0 {
+				benchData = benchData[idx:]
+			}
+			_ = os.WriteFile(benchPath, benchData, 0o644)
+			_ = os.Remove(outPath)
+		} else {
+			_ = os.WriteFile(outPath, outBytes, 0o644)
+			_ = os.Remove(benchPath)
+		}
 		_ = os.Remove(errPath)
 		return outBytes, nil
 	})

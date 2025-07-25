@@ -1,3 +1,12 @@
+## Progress (2025-07-25 10:01:54 +0700)
+- pascal: add bench mode
+
+## Progress (2025-07-25 10:01:54 +0700)
+- pascal: add bench mode
+
+## Progress (2025-07-25 10:01:54 +0700)
+- pascal: add bench mode
+
 ## Progress (2025-07-24 07:28:23 +0700)
 - hs transpiler: handle while expr returns
 

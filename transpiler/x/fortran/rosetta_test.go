@@ -64,7 +64,19 @@ func runTask(name string) ([]byte, error) {
 		return nil, fmt.Errorf("run: %v", err)
 	}
 	outBytes := bytes.TrimSpace(out)
-	_ = os.WriteFile(filepath.Join(outDir, name+".out"), outBytes, 0o644)
+	benchPath := filepath.Join(outDir, name+".bench")
+	outPath := filepath.Join(outDir, name+".out")
+	if bench {
+		benchData := outBytes
+		if idx := bytes.LastIndex(benchData, []byte("{")); idx >= 0 {
+			benchData = benchData[idx:]
+		}
+		_ = os.WriteFile(benchPath, benchData, 0o644)
+		_ = os.Remove(outPath)
+	} else {
+		_ = os.WriteFile(outPath, outBytes, 0o644)
+		_ = os.Remove(benchPath)
+	}
 	_ = os.Remove(filepath.Join(outDir, name+".error"))
 	return outBytes, nil
 }
@@ -93,14 +105,17 @@ func TestFortranTranspiler_Rosetta(t *testing.T) {
 	name := names[idx-1]
 	t.Logf("running #%d: %s", idx, name)
 
+	bench := os.Getenv("MOCHI_BENCHMARK") != "" && os.Getenv("MOCHI_BENCHMARK") != "0"
 	got, err := runTask(name)
 	if err != nil {
 		t.Fatalf("%v", err)
 	}
-	wantPath := filepath.Join(root, "tests", "rosetta", "x", "Mochi", name+".out")
-	if want, err := os.ReadFile(wantPath); err == nil {
-		if !bytes.Equal(got, bytes.TrimSpace(want)) {
-			t.Errorf("output mismatch for %s\n\n--- Got ---\n%s\n\n--- Want ---\n%s", name, got, bytes.TrimSpace(want))
+	if !bench {
+		wantPath := filepath.Join(root, "tests", "rosetta", "x", "Mochi", name+".out")
+		if want, err := os.ReadFile(wantPath); err == nil {
+			if !bytes.Equal(got, bytes.TrimSpace(want)) {
+				t.Errorf("output mismatch for %s\n\n--- Got ---\n%s\n\n--- Want ---\n%s", name, got, bytes.TrimSpace(want))
+			}
 		}
 	}
 }
@@ -135,8 +150,24 @@ func updateChecklist() {
 		status := ""
 		dur := ""
 		mem := ""
+		benchPath := filepath.Join(outDir, name+".bench")
 		outPath := filepath.Join(outDir, name+".out")
-		if data, err := os.ReadFile(outPath); err == nil {
+		if data, err := os.ReadFile(benchPath); err == nil {
+			status = "✓"
+			compiled++
+			var js struct {
+				Dur int64 `json:"duration_us"`
+				Mem int64 `json:"memory_bytes"`
+			}
+			if json.Unmarshal(bytes.TrimSpace(data), &js) == nil {
+				if js.Dur > 0 {
+					dur = humanDur(time.Duration(js.Dur) * time.Microsecond)
+				}
+				if js.Mem > 0 {
+					mem = humanSize(js.Mem)
+				}
+			}
+		} else if data, err := os.ReadFile(outPath); err == nil {
 			status = "✓"
 			compiled++
 			var js struct {
