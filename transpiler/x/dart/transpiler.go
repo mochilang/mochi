@@ -138,6 +138,7 @@ type Program struct {
 	Imports   []string
 	Stmts     []Stmt
 	BenchMain bool
+	WrapMain  bool
 }
 
 type Stmt interface{ emit(io.Writer) error }
@@ -578,7 +579,7 @@ func (b *BenchStmt) emit(w io.Writer) error {
 	if _, err := io.WriteString(w, "  var _benchMem1 = ProcessInfo.currentRss;\n"); err != nil {
 		return err
 	}
-	if _, err := fmt.Fprintf(w, "  print(jsonEncode({\"duration_us\": _benchSw.elapsedMicroseconds, \"memory_bytes\": _benchMem1 - _benchMem0, \"name\": %q}));\n", b.Name); err != nil {
+	if _, err := fmt.Fprintf(w, "  print(jsonEncode({\"duration_us\": _benchSw.elapsedMicroseconds, \"memory_bytes\": (_benchMem1 - _benchMem0).abs(), \"name\": %q}));\n", b.Name); err != nil {
 		return err
 	}
 	_, err := io.WriteString(w, "}")
@@ -3272,7 +3273,7 @@ func Emit(w io.Writer, p *Program) error {
 		if _, err := io.WriteString(w, "  var _benchMem1 = ProcessInfo.currentRss;\n"); err != nil {
 			return err
 		}
-		if _, err := fmt.Fprintf(w, "  print(jsonEncode({\"duration_us\": _benchSw.elapsedMicroseconds, \"memory_bytes\": _benchMem1 - _benchMem0, \"name\": %q}));\n", entry); err != nil {
+		if _, err := fmt.Fprintf(w, "  print(jsonEncode({\"duration_us\": _benchSw.elapsedMicroseconds, \"memory_bytes\": (_benchMem1 - _benchMem0).abs(), \"name\": %q}));\n", entry); err != nil {
 			return err
 		}
 	}
@@ -3283,7 +3284,7 @@ func Emit(w io.Writer, p *Program) error {
 }
 
 // Transpile converts a Mochi program into a simple Dart AST.
-func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, error) {
+func Transpile(prog *parser.Program, env *types.Env, bench, wrapMain bool) (*Program, error) {
 	currentEnv = env
 	structSeq = 0
 	structSig = map[string]string{}
@@ -3304,7 +3305,7 @@ func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, erro
 	testpkgAliases = map[string]struct{}{}
 	netAliases = map[string]struct{}{}
 	structMutable = map[string]bool{}
-	p := &Program{BenchMain: bench}
+	p := &Program{BenchMain: bench, WrapMain: wrapMain}
 	for _, st := range prog.Statements {
 		s, err := convertStmtInternal(st)
 		if err != nil {
@@ -3313,6 +3314,11 @@ func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, erro
 		if s != nil {
 			p.Stmts = append(p.Stmts, s)
 		}
+	}
+	if wrapMain {
+		usesJSON = true
+		useNow = true
+		p.Stmts = []Stmt{&BenchStmt{Name: "main", Body: p.Stmts}}
 	}
 	p.Imports = append(p.Imports, imports...)
 	return p, nil

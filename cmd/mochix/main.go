@@ -722,7 +722,7 @@ func transpileProgram(lang string, env *types.Env, prog *parser.Program, root, s
 		}
 		return cljt.Format(cljt.EmitString(p)), nil
 	case "dart":
-		p, err := dartt.Transpile(prog, env, false)
+		p, err := dartt.Transpile(prog, env, false, false)
 		if err != nil {
 			return nil, err
 		}

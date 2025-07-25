@@ -44,6 +44,7 @@ func TestDartTranspiler_Rosetta_Golden(t *testing.T) {
 	if _, err := exec.LookPath("dart"); err != nil {
 		t.Skip("dart not installed")
 	}
+	t.Cleanup(UpdateRosetta)
 	root := repoRoot(t)
 	outDir := filepath.Join(root, "tests", "rosetta", "transpiler", "Dart")
 	os.MkdirAll(outDir, 0o755)
@@ -71,6 +72,7 @@ func TestDartTranspiler_Rosetta_Golden(t *testing.T) {
 		ok := t.Run(fmt.Sprintf("%03d_%s", idxNum, name), func(t *testing.T) {
 			codePath := filepath.Join(outDir, name+".dart")
 			outPath := filepath.Join(outDir, name+".out")
+			benchPath := filepath.Join(outDir, name+".bench")
 			errPath := filepath.Join(outDir, name+".error")
 
 			prog, err := parser.Parse(src)
@@ -83,7 +85,7 @@ func TestDartTranspiler_Rosetta_Golden(t *testing.T) {
 				_ = os.WriteFile(errPath, []byte("type: "+errs[0].Error()), 0o644)
 				t.Fatalf("type: %v", errs[0])
 			}
-			ast, err := dartt.Transpile(prog, env, bench)
+			ast, err := dartt.Transpile(prog, env, bench, bench)
 			if err != nil {
 				_ = os.WriteFile(errPath, []byte("transpile: "+err.Error()), 0o644)
 				t.Fatalf("transpile: %v", err)
@@ -110,7 +112,15 @@ func TestDartTranspiler_Rosetta_Golden(t *testing.T) {
 				t.Fatalf("run: %v", err)
 			}
 			_ = os.Remove(errPath)
-			_ = os.WriteFile(outPath, got, 0o644)
+			if bench {
+				outBytes := got
+				if idx := bytes.LastIndexByte(outBytes, '{'); idx >= 0 {
+					outBytes = outBytes[idx:]
+				}
+				_ = os.WriteFile(benchPath, outBytes, 0o644)
+			} else {
+				_ = os.WriteFile(outPath, got, 0o644)
+			}
 		})
 		if !ok {
 			t.Fatalf("first failing program: %s", name)
@@ -160,27 +170,30 @@ func UpdateRosetta() {
 	}
 	for i, fname := range names {
 		name := strings.TrimSuffix(fname, ".mochi")
-		mark := "[ ]"
+		mark := " "
 		dur := ""
 		mem := ""
-		if _, err := os.Stat(filepath.Join(outDir, name+".out")); err == nil {
-			if _, err2 := os.Stat(filepath.Join(outDir, name+".error")); os.IsNotExist(err2) {
-				completed++
-				mark = "[x]"
-				data, _ := os.ReadFile(filepath.Join(outDir, name+".out"))
-				if idx := bytes.LastIndexByte(data, '{'); idx != -1 {
-					var bench struct {
-						DurationUs  int64 `json:"duration_us"`
-						MemoryBytes int64 `json:"memory_bytes"`
-					}
-					_ = json.Unmarshal(data[idx:], &bench)
-					if bench.DurationUs > 0 {
-						dur = fmtDuration(bench.DurationUs)
-					}
-					if bench.MemoryBytes > 0 {
-						mem = fmtSize(bench.MemoryBytes)
-					}
+		benchFile := filepath.Join(outDir, name+".bench")
+		if _, err := os.Stat(benchFile); err == nil {
+			mark = "✓"
+			completed++
+			data, _ := os.ReadFile(benchFile)
+			var bench struct {
+				DurationUs  int64 `json:"duration_us"`
+				MemoryBytes int64 `json:"memory_bytes"`
+			}
+			if json.Unmarshal(bytes.TrimSpace(data), &bench) == nil {
+				if bench.DurationUs > 0 {
+					dur = fmtDuration(bench.DurationUs)
 				}
+				if bench.MemoryBytes > 0 {
+					mem = fmtSize(bench.MemoryBytes)
+				}
+			}
+		} else if _, err := os.Stat(filepath.Join(outDir, name+".out")); err == nil {
+			if _, err2 := os.Stat(filepath.Join(outDir, name+".error")); os.IsNotExist(err2) {
+				mark = "✓"
+				completed++
 			}
 		}
 		lines = append(lines, fmt.Sprintf("| %d | %s | %s | %s | %s |", i+1, name, mark, dur, mem))
@@ -192,7 +205,7 @@ func UpdateRosetta() {
 	fmt.Fprintf(&buf, "Compiled and ran: %d/%d\n", completed, total)
 	buf.WriteString("\n## Checklist\n")
 	buf.WriteString("| Index | Name | Status | Duration | Memory |\n")
-	buf.WriteString("| --- | --- | --- | --- | --- |\n")
+	buf.WriteString("|------:|------|:-----:|---------:|-------:|\n")
 	buf.WriteString(strings.Join(lines, "\n"))
 	buf.WriteString("\n")
 	if ts != "" {
