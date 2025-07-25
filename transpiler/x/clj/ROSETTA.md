@@ -1,7 +1,7 @@
 # Clojure Rosetta Transpiler
 
 Completed: 14/284
-Last updated: 2025-07-25 19:37 +0700
+Last updated: 2025-07-25 20:06 +0700
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -18,7 +18,7 @@ Last updated: 2025-07-25 19:37 +0700
 | 11 | 4-rings-or-4-squares-puzzle |   |  |  |
 | 12 | 9-billion-names-of-god-the-integer | ✓ | 7.099292s | 46.6 MB |
 | 13 | 99-bottles-of-beer-2 |   |  |  |
-| 14 | 99-bottles-of-beer |   | 27.567ms | 18.0 MB |
+| 14 | 99-bottles-of-beer |   |  |  |
 | 15 | DNS-query |   |  |  |
 | 16 | a+b |   |  |  |
 | 17 | abbreviations-automatic |   |  |  |
@@ -27,7 +27,7 @@ Last updated: 2025-07-25 19:37 +0700
 | 20 | abc-problem |   |  |  |
 | 21 | abelian-sandpile-model-identity | ✓ |  |  |
 | 22 | abelian-sandpile-model |   |  |  |
-| 23 | abstract-type | ✓ | 21.155ms | 19.2 MB |
+| 23 | abstract-type | ✓ |  |  |
 | 24 | abundant-deficient-and-perfect-number-classifications | ✓ |  |  |
 | 25 | abundant-odd-numbers |   |  |  |
 | 26 | accumulator-factory |   |  |  |

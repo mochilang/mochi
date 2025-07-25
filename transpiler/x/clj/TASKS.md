@@ -1,3 +1,7 @@
+## Progress (2025-07-25 19:56 +0700)
+- transpiler(ts): update rosetta outputs for 138-147
+- Regenerated golden files - 101/104 vm valid programs passing
+
 ## Progress (2025-07-25 12:29 +0700)
 - cs transpiler: handle string element type in loops
 - Regenerated golden files - 101/104 vm valid programs passing
