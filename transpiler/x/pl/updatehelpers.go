@@ -4,6 +4,7 @@ package pl
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"os"
 	"os/exec"
@@ -128,15 +129,46 @@ func UpdateRosettaReadme() {
 	total := len(files)
 	compiled := 0
 	var lines []string
+	lines = append(lines, "| Index | Name | Status | Duration | Memory |")
+	lines = append(lines, "|------:|------|:-----:|---------:|-------:|")
 	for i, name := range files {
-		mark := "[ ]"
-		if _, err := os.Stat(filepath.Join(outDir, name+".out")); err == nil {
-			if _, err2 := os.Stat(filepath.Join(outDir, name+".error")); os.IsNotExist(err2) {
-				compiled++
-				mark = "[x]"
+		status := " "
+		if _, err := os.Stat(filepath.Join(outDir, name+".error")); err == nil {
+			// leave unchecked
+		} else if _, err := os.Stat(filepath.Join(outDir, name+".pl")); err == nil {
+			compiled++
+			status = "✓"
+		}
+		dur := ""
+		mem := ""
+		benchFile := filepath.Join(outDir, name+".bench")
+		if data, err := os.ReadFile(benchFile); err == nil {
+			var js struct {
+				Duration int64 `json:"duration_us"`
+				Memory   int64 `json:"memory_bytes"`
+			}
+			if json.Unmarshal(bytes.TrimSpace(data), &js) == nil {
+				if js.Duration > 0 {
+					dur = humanDuration(js.Duration)
+				}
+				if js.Memory > 0 {
+					mem = humanSize(js.Memory)
+				}
+			}
+		} else if data, err := os.ReadFile(filepath.Join(outDir, name+".out")); err == nil {
+			var js struct {
+				Duration int64 `json:"duration_us"`
+				Memory   int64 `json:"memory_bytes"`
+			}
+			data = bytes.TrimSpace(data)
+			if idx := bytes.LastIndexByte(data, '{'); idx >= 0 {
+				if json.Unmarshal(data[idx:], &js) == nil && js.Duration > 0 {
+					dur = humanDuration(js.Duration)
+					mem = humanSize(js.Memory)
+				}
 			}
 		}
-		lines = append(lines, fmt.Sprintf("%d. %s `%d %s`", i+1, mark, i+1, name))
+		lines = append(lines, fmt.Sprintf("| %d | %s | %s | %s | %s |", i+1, name, status, dur, mem))
 	}
 	out, err := exec.Command("git", "log", "-1", "--date=iso-strict", "--format=%cd").Output()
 	ts := ""
@@ -151,11 +183,31 @@ func UpdateRosettaReadme() {
 	}
 	var buf bytes.Buffer
 	buf.WriteString("# Rosetta Prolog Transpiler\n\n")
-	fmt.Fprintf(&buf, "## Rosetta Golden Test Checklist (%d/%d)\n", compiled, total)
+	buf.WriteString("This checklist is auto-generated.\n")
+	buf.WriteString("Generated Prolog code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/Prolog`.\n")
 	if ts != "" {
-		fmt.Fprintf(&buf, "Last updated: %s\n", ts)
+		buf.WriteString("Last updated: " + ts + "\n\n")
 	}
+	fmt.Fprintf(&buf, "## Rosetta Golden Test Checklist (%d/%d)\n", compiled, total)
 	buf.WriteString(strings.Join(lines, "\n"))
-	buf.WriteString("\n\n*Checklist generated automatically from tests/rosetta/x/Mochi*")
+	buf.WriteString("\n")
 	_ = os.WriteFile(readme, buf.Bytes(), 0o644)
+}
+
+func humanDuration(us int64) string {
+	d := time.Duration(us) * time.Microsecond
+	return d.String()
+}
+
+func humanSize(b int64) string {
+	const unit = 1024
+	if b < unit {
+		return fmt.Sprintf("%d B", b)
+	}
+	div, exp := int64(unit), 0
+	for n := b / unit; n >= unit; n /= unit {
+		div *= unit
+		exp++
+	}
+	return fmt.Sprintf("%.1f %cB", float64(b)/float64(div), "KMGTPE"[exp])
 }

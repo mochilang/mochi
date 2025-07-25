@@ -4,6 +4,7 @@ package pl_test
 
 import (
 	"bytes"
+	"encoding/json"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -47,7 +48,10 @@ func runRosettaTask(t *testing.T, name string) {
 	outDir := filepath.Join(root, "tests", "rosetta", "transpiler", "Prolog")
 	os.MkdirAll(outDir, 0o755)
 
-	outWant := filepath.Join(outDir, name+".out")
+	outPath := filepath.Join(outDir, name+".out")
+	benchPath := filepath.Join(outDir, name+".bench")
+	errPath := filepath.Join(outDir, name+".error")
+
 	wantPath := filepath.Join(root, "tests", "rosetta", "x", "Mochi", name+".out")
 	os.Setenv("ROSETTA_OUT_PATH", wantPath)
 	defer os.Unsetenv("ROSETTA_OUT_PATH")
@@ -61,6 +65,8 @@ func runRosettaTask(t *testing.T, name string) {
 	if errs := types.Check(prog, env); len(errs) > 0 {
 		t.Fatalf("%s: type: %v", name, errs[0])
 	}
+	bench := os.Getenv("MOCHI_BENCHMARK") != ""
+	pl.SetBenchMain(bench)
 	ast, err := pl.Transpile(prog, env)
 	if err != nil {
 		t.Fatalf("%s: transpile: %v", name, err)
@@ -78,13 +84,26 @@ func runRosettaTask(t *testing.T, name string) {
 	out, err := cmd.CombinedOutput()
 	got := bytes.TrimSpace(out)
 	if err != nil || bytes.Contains(out, []byte("ERROR:")) {
-		_ = os.WriteFile(filepath.Join(outDir, name+".error"), out, 0o644)
+		_ = os.WriteFile(errPath, out, 0o644)
 		t.Fatalf("%s: run: %v\n%s", name, err, string(out))
 	}
-	_ = os.Remove(filepath.Join(outDir, name+".error"))
+	_ = os.Remove(errPath)
+	if bench {
+		_ = os.WriteFile(benchPath, got, 0o644)
+		var js struct {
+			Duration int64  `json:"duration_us"`
+			Memory   int64  `json:"memory_bytes"`
+			Name     string `json:"name"`
+		}
+		_ = json.Unmarshal(got, &js)
+		return
+	}
+	_ = os.WriteFile(outPath, got, 0o644)
 	if shouldUpdateRosetta() {
-		_ = os.WriteFile(outWant, append(got, '\n'), 0o644)
-	} else if want, err := os.ReadFile(outWant); err == nil {
+		_ = os.WriteFile(outPath, append(got, '\n'), 0o644)
+		return
+	}
+	if want, err := os.ReadFile(outPath); err == nil {
 		if !bytes.Equal(got, bytes.TrimSpace(want)) {
 			t.Fatalf("%s: output mismatch:\nGot: %s\nWant: %s", name, got, bytes.TrimSpace(want))
 		}

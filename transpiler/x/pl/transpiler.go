@@ -23,6 +23,12 @@ import (
 var usesNow bool
 var usesSlice bool
 var usesFmt bool
+var benchMain bool
+
+// SetBenchMain configures whether the generated main function should be wrapped
+// in a benchmark block when emitting code. When enabled, execution duration and
+// memory statistics will be printed as a JSON object.
+func SetBenchMain(v bool) { benchMain = v }
 
 const helperNow = `
 :- dynamic now_seed/1.
@@ -2012,15 +2018,11 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 		}
 	}
 	p := &Program{}
-	for i, st := range prog.Statements {
+	var body []*parser.Statement
+	for _, st := range prog.Statements {
 		switch {
-		case st.Test != nil:
-			continue
-		case st.Expect != nil:
-			continue
-		case st.Import != nil:
-			continue
-		case st.ExternType != nil, st.ExternVar != nil, st.ExternFun != nil, st.ExternObject != nil:
+		case st.Test != nil, st.Expect != nil, st.Import != nil,
+			st.ExternType != nil, st.ExternVar != nil, st.ExternFun != nil, st.ExternObject != nil:
 			continue
 		case st.Fun != nil:
 			if len(st.Fun.Params) == 0 && st.Fun.Return != nil && len(st.Fun.Body) == 1 {
@@ -2032,132 +2034,19 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 				return nil, err
 			}
 			p.Funcs = append(p.Funcs, fn)
-		case st.Let != nil:
-			var expr Expr
-			if st.Let.Value != nil {
-				var err error
-				expr, err = toExpr(st.Let.Value, ce)
-				if err != nil {
-					return nil, err
-				}
-				if call := st.Let.Value.Binary.Left.Value.Target.Call; call != nil {
-					if fn, ok := ce.fnMap[call.Func]; ok {
-						args := make([]Expr, len(call.Args))
-						for i, a := range call.Args {
-							ex, err2 := toExpr(a, ce)
-							if err2 != nil {
-								return nil, err2
-							}
-							args[i] = ex
-						}
-						if fl, err2 := evalFunCallResult(fn, args, ce); err2 == nil {
-							expr = fl
-						}
-					}
-				}
-			} else {
-				expr = &IntLit{Value: 0}
-			}
-			name := ce.fresh(st.Let.Name)
-			ce.setConst(name, expr)
-			p.Stmts = append(p.Stmts, &LetStmt{Name: name, Expr: expr})
-		case st.Var != nil:
-			if nextSimpleAssign(prog.Statements, i, st.Var.Name) {
-				continue
-			}
-			var expr Expr
-			if st.Var.Value != nil {
-				var err error
-				expr, err = toExpr(st.Var.Value, ce)
-				if err != nil {
-					return nil, err
-				}
-				if call := st.Var.Value.Binary.Left.Value.Target.Call; call != nil {
-					if fn, ok := ce.fnMap[call.Func]; ok {
-						args := make([]Expr, len(call.Args))
-						for i, a := range call.Args {
-							ex, err2 := toExpr(a, ce)
-							if err2 != nil {
-								return nil, err2
-							}
-							args[i] = ex
-						}
-						if fl, err2 := evalFunCallResult(fn, args, ce); err2 == nil {
-							expr = fl
-						}
-					}
-				}
-			} else {
-				expr = &IntLit{Value: 0}
-			}
-			name := ce.fresh(st.Var.Name)
-			ce.setConst(name, expr)
-			p.Stmts = append(p.Stmts, &LetStmt{Name: name, Expr: expr})
-		case st.Assign != nil && len(st.Assign.Index) == 0 && len(st.Assign.Field) == 0:
-			expr, err := toExpr(st.Assign.Value, ce)
-			if err != nil {
-				return nil, err
-			}
-			name := ce.fresh(st.Assign.Name)
-			ce.setConst(name, expr)
-			p.Stmts = append(p.Stmts, &LetStmt{Name: name, Expr: expr})
-		case st.Assign != nil && len(st.Assign.Index) == 2 &&
-			st.Assign.Index[0].Colon == nil && st.Assign.Index[0].End == nil && st.Assign.Index[0].Step == nil &&
-			st.Assign.Index[1].Colon == nil && st.Assign.Index[1].End == nil && st.Assign.Index[1].Step == nil:
-			assignStmts, err := compileStmts([]*parser.Statement{st}, ce)
-			if err != nil {
-				return nil, err
-			}
-			p.Stmts = append(p.Stmts, assignStmts...)
-		case st.Assign != nil && len(st.Assign.Index) == 1 && st.Assign.Index[0].Colon == nil && st.Assign.Index[0].End == nil && st.Assign.Index[0].Step == nil:
-			idx, err := toExpr(st.Assign.Index[0].Start, ce)
-			if err != nil {
-				return nil, err
-			}
-			val, err := toExpr(st.Assign.Value, ce)
-			if err != nil {
-				return nil, err
-			}
-			target := ce.current(st.Assign.Name)
-			name := ce.fresh(st.Assign.Name)
-			ce.setConst(name, nil)
-			p.Stmts = append(p.Stmts, &IndexAssignStmt{Name: name, Target: target, Index: idx, Value: val})
-		case st.If != nil:
-			ifStmt, err := compileIfStmt(st.If, ce)
-			if err != nil {
-				return nil, err
-			}
-			p.Stmts = append(p.Stmts, ifStmt)
-		case st.Bench != nil:
-			benchStmts, err := compileBench(st.Bench, ce)
-			if err != nil {
-				return nil, err
-			}
-			p.Stmts = append(p.Stmts, benchStmts...)
-		case st.For != nil:
-			loopStmts, err := compileStmts([]*parser.Statement{st}, ce)
-			if err != nil {
-				return nil, err
-			}
-			p.Stmts = append(p.Stmts, loopStmts...)
-		case st.While != nil:
-			loopStmts, err := compileStmts([]*parser.Statement{st}, ce)
-			if err != nil {
-				return nil, err
-			}
-			p.Stmts = append(p.Stmts, loopStmts...)
-		case st.Expr != nil:
-			exprStmts, err := compileStmts([]*parser.Statement{st}, ce)
-			if err != nil {
-				return nil, err
-			}
-			p.Stmts = append(p.Stmts, exprStmts...)
-		case st.Type != nil:
-			// ignore type declarations
-			continue
 		default:
-			return nil, fmt.Errorf("unsupported statement")
+			body = append(body, st)
 		}
+	}
+	var err error
+	if benchMain {
+		bench := &parser.BenchBlock{Name: "main", Body: body}
+		p.Stmts, err = compileBench(bench, ce)
+	} else {
+		p.Stmts, err = compileStmts(body, ce)
+	}
+	if err != nil {
+		return nil, err
 	}
 	return p, nil
 }
