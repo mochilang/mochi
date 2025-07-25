@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated IR and outputs from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/ir`.
-Last updated: 2025-07-25 04:40 UTC
+Last updated: 2025-07-25 05:36 UTC
 
-## Rosetta Golden Test Checklist (5/284)
+## Rosetta Golden Test Checklist (21/284)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 94µs | 11.7 KB |
@@ -12,22 +12,22 @@ Last updated: 2025-07-25 04:40 UTC
 | 3 | 100-doors | ✓ | 6.139ms | 809.9 KB |
 | 4 | 100-prisoners | ✓ | 3.646688s |  |
 | 5 | 15-puzzle-game | ✓ |  |  |
-| 6 | 15-puzzle-solver |   |  |  |
-| 7 | 2048 |   |  |  |
-| 8 | 21-game |   |  |  |
-| 9 | 24-game-solve |   |  |  |
-| 10 | 24-game |   |  |  |
-| 11 | 4-rings-or-4-squares-puzzle |   |  |  |
-| 12 | 9-billion-names-of-god-the-integer |   |  |  |
-| 13 | 99-bottles-of-beer-2 |   |  |  |
-| 14 | 99-bottles-of-beer |   |  |  |
-| 15 | DNS-query |   |  |  |
-| 16 | a+b |   |  |  |
-| 17 | abbreviations-automatic |   |  |  |
-| 18 | abbreviations-easy |   |  |  |
-| 19 | abbreviations-simple |   |  |  |
-| 20 | abc-problem |   |  |  |
-| 21 | abelian-sandpile-model-identity |   |  |  |
+| 6 | 15-puzzle-solver | ✓ | 1.53901s | 27.8 KB |
+| 7 | 2048 | ✓ | 3.551ms | 726.7 KB |
+| 8 | 21-game | ✓ | 366µs | 10.1 KB |
+| 9 | 24-game-solve | ✓ | 7.126ms |  |
+| 10 | 24-game | ✓ | 515µs | 17.0 KB |
+| 11 | 4-rings-or-4-squares-puzzle | ✓ | 490.06ms | 4.4 MB |
+| 12 | 9-billion-names-of-god-the-integer | ✓ | 13.692761s | 100.9 MB |
+| 13 | 99-bottles-of-beer-2 | ✓ | 51.904ms | 1.3 MB |
+| 14 | 99-bottles-of-beer | ✓ | 1.079ms | 434.1 KB |
+| 15 | DNS-query | ✓ | 1.116742s | 30.5 KB |
+| 16 | a+b | ✓ | 257µs | 792 B |
+| 17 | abbreviations-automatic | ✓ | 27.493ms |  |
+| 18 | abbreviations-easy | ✓ | 9.521ms |  |
+| 19 | abbreviations-simple | ✓ | 12.371ms |  |
+| 20 | abc-problem | ✓ | 7.062ms |  |
+| 21 | abelian-sandpile-model-identity | ✓ |  |  |
 | 22 | abelian-sandpile-model |   |  |  |
 | 23 | abstract-type |   |  |  |
 | 24 | abundant-deficient-and-perfect-number-classifications |   |  |  |

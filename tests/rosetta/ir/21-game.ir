@@ -1,0 +1,294 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun parseIntStr(str: string): int {
+func parseIntStr (regs=30)
+  // var i = 0
+  Const        r1, 0
+  Move         r2, r1
+  // var neg = false
+  Const        r3, false
+  Move         r4, r3
+  // if len(str) > 0 && str[0:1] == "-" {
+  Len          r5, r0
+  Const        r1, 0
+  LessInt      r6, r1, r5
+  Const        r1, 0
+  Move         r7, r1
+  Const        r9, 1
+  Move         r8, r9
+  Slice        r10, r0, r7, r8
+  Const        r11, "-"
+  Equal        r12, r10, r11
+  Move         r13, r6
+  JumpIfFalse  r13, L0
+  Move         r13, r12
+L0:
+  JumpIfFalse  r13, L1
+  // neg = true
+  Const        r14, true
+  Move         r4, r14
+  // i = 1
+  Const        r9, 1
+  Move         r2, r9
+L1:
+  // var n = 0
+  Const        r1, 0
+  Move         r15, r1
+  // let digits = {
+  Const        r16, {"0": 0, "1": 1, "2": 2, "3": 3, "4": 4, "5": 5, "6": 6, "7": 7, "8": 8, "9": 9}
+  Move         r17, r16
+L3:
+  // while i < len(str) {
+  Len          r18, r0
+  LessInt      r19, r2, r18
+  JumpIfFalse  r19, L2
+  // n = n * 10 + digits[str[i:i+1]]
+  Const        r20, 10
+  MulInt       r21, r15, r20
+  Move         r22, r2
+  Const        r9, 1
+  AddInt       r24, r2, r9
+  Move         r23, r24
+  Slice        r25, r0, r22, r23
+  Index        r26, r17, r25
+  Add          r27, r21, r26
+  Move         r15, r27
+  // i = i + 1
+  Const        r9, 1
+  AddInt       r28, r2, r9
+  Move         r2, r28
+  // while i < len(str) {
+  Jump         L3
+L2:
+  // if neg { n = -n }
+  JumpIfFalse  r4, L4
+  Neg          r29, r15
+  Move         r15, r29
+L4:
+  // return n
+  Return       r15
+
+  // fun main() {
+func main (regs=74)
+  // var total = 0
+  Const        r0, 0
+  Move         r1, r0
+  // var computer = now() % 2 == 0
+  Now          r2
+  Const        r3, 2
+  ModInt       r4, r2, r3
+  Const        r0, 0
+  EqualInt     r5, r4, r0
+  Move         r6, r5
+  // print("Enter q to quit at any time\n")
+  Const        r7, "Enter q to quit at any time\n"
+  Print        r7
+  // if computer {
+  JumpIfFalse  r6, L0
+  // print("The computer will choose first")
+  Const        r8, "The computer will choose first"
+  Print        r8
+  // if computer {
+  Jump         L1
+L0:
+  // print("You will choose first")
+  Const        r9, "You will choose first"
+  Print        r9
+L1:
+  // print("\n\nRunning total is now 0\n\n")
+  Const        r10, "\n\nRunning total is now 0\n\n"
+  Print        r10
+  // var round = 1
+  Const        r11, 1
+  Move         r12, r11
+  // var done = false
+  Const        r13, false
+  Move         r14, r13
+L17:
+  // while !done {
+  Not          r15, r14
+  JumpIfFalse  r15, L2
+  // print("ROUND " + str(round) + ":\n\n")
+  Const        r16, "ROUND "
+  Str          r17, r12
+  Add          r18, r16, r17
+  Const        r19, ":\n\n"
+  Add          r20, r18, r19
+  Print        r20
+  // var i = 0
+  Const        r0, 0
+  Move         r21, r0
+L16:
+  // while i < 2 && (!done) {
+  Const        r3, 2
+  LessInt      r22, r21, r3
+  Move         r23, r22
+  JumpIfFalse  r23, L3
+  Not          r24, r14
+  Move         r23, r24
+L3:
+  JumpIfFalse  r23, L4
+  // if computer {
+  JumpIfFalse  r6, L5
+  // var choice = 0
+  Const        r0, 0
+  Move         r25, r0
+  // if total < 18 {
+  Const        r26, 18
+  LessInt      r27, r1, r26
+  JumpIfFalse  r27, L6
+  // choice = now() % 3 + 1
+  Now          r28
+  Const        r29, 3
+  ModInt       r30, r28, r29
+  Const        r11, 1
+  AddInt       r31, r30, r11
+  Move         r25, r31
+  // if total < 18 {
+  Jump         L7
+L6:
+  // choice = 21 - total
+  Const        r32, 21
+  SubInt       r33, r32, r1
+  Move         r25, r33
+L7:
+  // total = total + choice
+  AddInt       r34, r1, r25
+  Move         r1, r34
+  // print("The computer chooses " + str(choice))
+  Const        r35, "The computer chooses "
+  Str          r36, r25
+  Add          r37, r35, r36
+  Print        r37
+  // print("Running total is now " + str(total))
+  Const        r38, "Running total is now "
+  Str          r39, r1
+  Add          r40, r38, r39
+  Print        r40
+  // if total == 21 {
+  Const        r32, 21
+  EqualInt     r41, r1, r32
+  JumpIfFalse  r41, L8
+  // print("\nSo, commiserations, the computer has won!")
+  Const        r42, "\nSo, commiserations, the computer has won!"
+  Print        r42
+  // done = true
+  Const        r43, true
+  Move         r14, r43
+  // if computer {
+  Jump         L8
+L5:
+  // while true {
+  Const        r43, true
+  JumpIfFalse  r43, L9
+  // print("Your choice 1 to 3 : ")
+  Const        r44, "Your choice 1 to 3 : "
+  Print        r44
+  // let line = input()
+  Input        r45
+  Move         r46, r45
+  // if line == "q" || line == "Q" {
+  Const        r47, "q"
+  Equal        r48, r46, r47
+  Const        r49, "Q"
+  Equal        r50, r46, r49
+  Move         r51, r48
+  JumpIfTrue   r51, L10
+  Move         r51, r50
+L10:
+  JumpIfFalse  r51, L11
+  // print("OK, quitting the game")
+  Const        r52, "OK, quitting the game"
+  Print        r52
+  // done = true
+  Const        r43, true
+  Move         r14, r43
+  // break
+  Jump         L9
+L11:
+  // var num = parseIntStr(line)
+  Move         r53, r46
+  Call         r54, parseIntStr, r53
+  Move         r55, r54
+  // if num < 1 || num > 3 {
+  Const        r11, 1
+  Less         r56, r55, r11
+  Const        r29, 3
+  Less         r57, r29, r55
+  Move         r58, r56
+  JumpIfTrue   r58, L12
+  Move         r58, r57
+L12:
+  JumpIfFalse  r58, L13
+  // if total + num > 21 {
+  Add          r59, r1, r55
+  Const        r32, 21
+  Less         r60, r32, r59
+  JumpIfFalse  r60, L14
+  // print("Too big, try again")
+  Const        r61, "Too big, try again"
+  Print        r61
+  // if total + num > 21 {
+  Jump         L5
+L14:
+  // print("Out of range, try again")
+  Const        r62, "Out of range, try again"
+  Print        r62
+  // continue
+  Jump         L5
+L13:
+  // if total + num > 21 {
+  Add          r63, r1, r55
+  Const        r32, 21
+  Less         r64, r32, r63
+  JumpIfFalse  r64, L15
+  // print("Too big, try again")
+  Const        r61, "Too big, try again"
+  Print        r61
+  // continue
+  Jump         L5
+L15:
+  // total = total + num
+  Add          r65, r1, r55
+  Move         r1, r65
+  // print("Running total is now " + str(total))
+  Const        r38, "Running total is now "
+  Str          r66, r1
+  Add          r67, r38, r66
+  Print        r67
+L9:
+  // if total == 21 {
+  Const        r32, 21
+  Equal        r68, r1, r32
+  JumpIfFalse  r68, L8
+  // print("\nSo, congratulations, you've won!")
+  Const        r69, "\nSo, congratulations, you've won!"
+  Print        r69
+  // done = true
+  Const        r43, true
+  Move         r14, r43
+L8:
+  // print("\n")
+  Const        r70, "\n"
+  Print        r70
+  // computer = !computer
+  Not          r71, r6
+  Move         r6, r71
+  // i = i + 1
+  Const        r11, 1
+  AddInt       r72, r21, r11
+  Move         r21, r72
+  // while i < 2 && (!done) {
+  Jump         L16
+L4:
+  // round = round + 1
+  Const        r11, 1
+  AddInt       r73, r12, r11
+  Move         r12, r73
+  // while !done {
+  Jump         L17
+L2:
+  Return       r0

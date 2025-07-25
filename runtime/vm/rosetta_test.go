@@ -8,6 +8,7 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
+	"io"
 	"os"
 	"path/filepath"
 	"runtime"
@@ -97,8 +98,14 @@ func runRosettaCase(t *testing.T, name string) {
 	}
 
 	bench := os.Getenv("MOCHI_BENCHMARK") == "true" || os.Getenv("MOCHI_BENCHMARK") == "1"
+	inPath := filepath.Join(root, "tests", "rosetta", "x", "Mochi", name+".in")
+	var in io.Reader = os.Stdin
+	if r, err := os.Open(inPath); err == nil {
+		defer r.Close()
+		in = r
+	}
 	var out bytes.Buffer
-	m := vm.New(p, &out)
+	m := vm.NewWithIO(p, in, &out)
 	var start time.Time
 	var startMem uint64
 	if bench {
