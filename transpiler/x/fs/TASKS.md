@@ -1,3 +1,11 @@
+## Progress (2025-07-25 10:58 +0000)
+- fs transpiler: handle dynamic map indexing
+- Generated F# for 103/104 programs (103 passing)
+
+## Progress (2025-07-25 17:45 +0700)
+- lua: update transpiler helpers and rosetta outputs
+- Generated F# for 103/104 programs (103 passing)
+
 ## Progress (2025-07-25 17:17 +0700)
 - rosetta(vm): update animate-a-pendulum benchmark
 - Generated F# for 103/104 programs (103 passing)

@@ -2,7 +2,7 @@
 
 This file is auto-generated from rosetta tests.
 
-## Rosetta Golden Test Checklist (74/284)
+## Rosetta Golden Test Checklist (75/284)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 151µs | 41.3 KB |
@@ -43,8 +43,8 @@ This file is auto-generated from rosetta tests.
 | 36 | address-of-a-variable | ✓ | 406µs | 69.2 KB |
 | 37 | adfgvx-cipher |   |  |  |
 | 38 | aks-test-for-primes | ✓ |  |  |
-| 39 | algebraic-data-types |   |  |  |
-| 40 | align-columns | ✓ |  |  |
+| 39 | algebraic-data-types | ✓ | 393µs | 66.7 KB |
+| 40 | align-columns | ✓ | 262µs | 70.9 KB |
 | 41 | aliquot-sequence-classifications |   |  |  |
 | 42 | almkvist-giullera-formula-for-pi |   |  |  |
 | 43 | almost-prime | ✓ |  |  |
@@ -290,4 +290,4 @@ This file is auto-generated from rosetta tests.
 | 283 | define-a-primitive-data-type |   |  |  |
 | 284 | md5 |   |  |  |
 
-Last updated: 2025-07-25 17:17 +0700
+Last updated: 2025-07-25 10:58 +0000

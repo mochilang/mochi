@@ -6,6 +6,7 @@ import (
 	"bytes"
 	"fmt"
 	"io"
+	"math"
 	"os/exec"
 	"strconv"
 	"strings"
@@ -148,7 +149,7 @@ func bodyUsesBreak(body []Stmt) bool {
 func fsType(t types.Type) string {
 	switch tt := t.(type) {
 	case types.IntType, types.Int64Type:
-		return "int"
+		return "int64"
 	case types.BigIntType:
 		return "bigint"
 	case types.BigRatType:
@@ -188,8 +189,10 @@ func fsType(t types.Type) string {
 
 func fsTypeFromString(s string) string {
 	switch s {
-	case "int", "int64":
-		return "int"
+	case "int":
+		return "int64"
+	case "int64":
+		return "int64"
 	case "float":
 		return "float"
 	case "bool":
@@ -1377,10 +1380,24 @@ func (b *BinaryExpr) emit(w io.Writer) {
 	rt := inferType(b.Right)
 	left := b.Left
 	right := b.Right
+	castIf := func(expr Expr, targetType string) Expr {
+		return &CastExpr{Expr: expr, Type: targetType}
+	}
+	if (lt == "obj" || lt == "") && (rt == "int" || rt == "float" || rt == "string" || rt == "bool") {
+		left = castIf(left, rt)
+		lt = rt
+	} else if (rt == "obj" || rt == "") && (lt == "int" || lt == "float" || lt == "string" || lt == "bool") {
+		right = castIf(right, lt)
+		rt = lt
+	}
 	if lt == "float" && rt == "int" {
 		right = &CastExpr{Expr: right, Type: "float"}
 	} else if rt == "float" && lt == "int" {
 		left = &CastExpr{Expr: left, Type: "float"}
+	} else if lt == "int64" && rt == "int" {
+		right = &CastExpr{Expr: right, Type: "int64"}
+	} else if rt == "int64" && lt == "int" {
+		left = &CastExpr{Expr: left, Type: "int64"}
 	} else if lt == "bigint" && rt == "int" {
 		right = &CastExpr{Expr: right, Type: "bigint"}
 	} else if rt == "bigint" && lt == "int" {
@@ -1405,9 +1422,15 @@ func (b *BinaryExpr) emit(w io.Writer) {
 	}
 }
 
-type IntLit struct{ Value int }
+type IntLit struct{ Value int64 }
 
-func (i *IntLit) emit(w io.Writer) { fmt.Fprintf(w, "%d", i.Value) }
+func (i *IntLit) emit(w io.Writer) {
+	if i.Value > math.MaxInt32 || i.Value < math.MinInt32 {
+		fmt.Fprintf(w, "%dL", i.Value)
+	} else {
+		fmt.Fprintf(w, "%d", i.Value)
+	}
+}
 
 type BoolLit struct{ Value bool }
 
@@ -1550,6 +1573,9 @@ func needsParen(e Expr) bool {
 func inferType(e Expr) string {
 	switch v := e.(type) {
 	case *IntLit:
+		if v.Value > math.MaxInt32 || v.Value < math.MinInt32 {
+			return "int64"
+		}
 		return "int"
 	case *FloatLit:
 		return "float"
@@ -1646,6 +1672,11 @@ func inferType(e Expr) string {
 		return "string"
 	case *SliceExpr:
 		return inferType(v.Target)
+	case *CastExpr:
+		if v.Type != "" {
+			return v.Type
+		}
+		return inferType(v.Expr)
 	case *IndexExpr:
 		t := inferType(v.Target)
 		if strings.HasSuffix(t, " array") {
@@ -1777,7 +1808,7 @@ func (i *IndexExpr) emit(w io.Writer) {
 		io.WriteString(w, "])")
 		return
 	}
-	if strings.HasPrefix(t, "Map<") || t == "map" {
+	if strings.HasPrefix(t, "Map<") || t == "map" || t == "obj" || t == "" {
 		valT := mapValueType(t)
 		if id, ok := i.Target.(*IdentExpr); ok {
 			if vt := id.Type; vt != "" {
@@ -1791,7 +1822,14 @@ func (i *IndexExpr) emit(w io.Writer) {
 				}
 			}
 		}
-		io.WriteString(w, "(defaultArg (Map.tryFind ")
+		if t == "obj" || t == "" {
+			io.WriteString(w, "((")
+			i.Target.emit(w)
+			io.WriteString(w, " :?> Map<string, obj>).[")
+		} else {
+			i.Target.emit(w)
+			io.WriteString(w, ".[")
+		}
 		if needsParen(i.Index) {
 			io.WriteString(w, "(")
 			i.Index.emit(w)
@@ -1799,9 +1837,15 @@ func (i *IndexExpr) emit(w io.Writer) {
 		} else {
 			i.Index.emit(w)
 		}
-		io.WriteString(w, " ")
-		i.Target.emit(w)
-		fmt.Fprintf(w, ") Unchecked.defaultof<%s>)", valT)
+		io.WriteString(w, "]")
+		if t == "obj" || t == "" {
+			io.WriteString(w, ")")
+		}
+		if valT != "obj" {
+			io.WriteString(w, " |> unbox<")
+			io.WriteString(w, valT)
+			io.WriteString(w, ">")
+		}
 		return
 	}
 	i.Target.emit(w)
@@ -1952,7 +1996,7 @@ type CastExpr struct {
 func (c *CastExpr) emit(w io.Writer) {
 	switch c.Type {
 	case "float":
-		io.WriteString(w, "float ")
+		io.WriteString(w, "unbox<float> ")
 		if needsParen(c.Expr) {
 			io.WriteString(w, "(")
 			c.Expr.emit(w)
@@ -1961,7 +2005,7 @@ func (c *CastExpr) emit(w io.Writer) {
 			c.Expr.emit(w)
 		}
 	case "int":
-		io.WriteString(w, "int ")
+		io.WriteString(w, "unbox<int> ")
 		if needsParen(c.Expr) {
 			io.WriteString(w, "(")
 			c.Expr.emit(w)
@@ -1970,7 +2014,7 @@ func (c *CastExpr) emit(w io.Writer) {
 			c.Expr.emit(w)
 		}
 	case "bigint":
-		io.WriteString(w, "bigint ")
+		io.WriteString(w, "unbox<bigint> ")
 		if needsParen(c.Expr) {
 			io.WriteString(w, "(")
 			c.Expr.emit(w)
@@ -1979,6 +2023,9 @@ func (c *CastExpr) emit(w io.Writer) {
 			c.Expr.emit(w)
 		}
 	default:
+		io.WriteString(w, "unbox<")
+		io.WriteString(w, c.Type)
+		io.WriteString(w, "> ")
 		if needsParen(c.Expr) {
 			io.WriteString(w, "(")
 			c.Expr.emit(w)
@@ -1986,8 +2033,6 @@ func (c *CastExpr) emit(w io.Writer) {
 		} else {
 			c.Expr.emit(w)
 		}
-		io.WriteString(w, " :?> ")
-		io.WriteString(w, c.Type)
 	}
 }
 
@@ -2834,6 +2879,17 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				if _, ok := transpileEnv.FindUnionByVariant(p.Call.Func); ok {
 					return &VariantExpr{Name: p.Call.Func, Args: args}, nil
 				}
+				if fv, err := transpileEnv.GetVar(p.Call.Func); err == nil {
+					if ft, ok := fv.(types.FuncType); ok {
+						for i := 0; i < len(args) && i < len(ft.Params); i++ {
+							pt := fsType(ft.Params[i])
+							at := inferType(args[i])
+							if (at == "obj" || at == "") && pt != "" && pt != "obj" {
+								args[i] = &CastExpr{Expr: args[i], Type: pt}
+							}
+						}
+					}
+				}
 			}
 			return &CallExpr{Func: p.Call.Func, Args: args}, nil
 		}
@@ -2842,7 +2898,7 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 	case p.Lit != nil && p.Lit.Str != nil:
 		return &StringLit{Value: *p.Lit.Str}, nil
 	case p.Lit != nil && p.Lit.Int != nil:
-		return &IntLit{Value: int(*p.Lit.Int)}, nil
+		return &IntLit{Value: int64(*p.Lit.Int)}, nil
 	case p.Lit != nil && p.Lit.Float != nil:
 		return &FloatLit{Value: *p.Lit.Float}, nil
 	case p.Lit != nil && p.Lit.Bool != nil:
