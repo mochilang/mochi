@@ -806,8 +806,6 @@ type BenchStmt struct {
 }
 
 func (b *BenchStmt) emit(w io.Writer) {
-	io.WriteString(w, "  _now_seeded := true;\n")
-	io.WriteString(w, "  _now_seed := 1;\n")
 	io.WriteString(w, "  let mem_start = _mem () in\n")
 	io.WriteString(w, "  let start = _now () in\n")
 	for _, st := range b.Body {
@@ -1443,6 +1441,11 @@ type SliceExpr struct {
 	Typ   string
 }
 
+// StrJoin concatenates a list of strings into a single string.
+type StrJoin struct {
+	List Expr
+}
+
 // ListUpdateExpr updates a list at a specific index and returns the new list.
 type ListUpdateExpr struct {
 	List  Expr
@@ -1738,9 +1741,9 @@ func (mu *MapUpdateExpr) emitPrint(w io.Writer) { mu.emit(w) }
 func (ix *IndexExpr) emit(w io.Writer) {
 	switch ix.ColTyp {
 	case "string":
-		io.WriteString(w, "String.make 1 (String.get ")
+		io.WriteString(w, "String.make 1 (String.get (")
 		ix.Col.emit(w)
-		io.WriteString(w, " ")
+		io.WriteString(w, ") ")
 		ix.Index.emit(w)
 		io.WriteString(w, ")")
 	default:
@@ -1765,9 +1768,9 @@ func (ix *IndexExpr) emitPrint(w io.Writer) {
 
 func (s *SliceExpr) emit(w io.Writer) {
 	if s.Typ == "string" {
-		io.WriteString(w, "String.sub ")
+		io.WriteString(w, "String.sub (")
 		s.Col.emit(w)
-		io.WriteString(w, " ")
+		io.WriteString(w, ") ")
 		s.Start.emit(w)
 		io.WriteString(w, " (")
 		s.End.emit(w)
@@ -1789,6 +1792,14 @@ func (s *SliceExpr) emit(w io.Writer) {
 }
 
 func (s *SliceExpr) emitPrint(w io.Writer) { s.emit(w) }
+
+func (sj *StrJoin) emit(w io.Writer) {
+	io.WriteString(w, "String.concat \"\" (")
+	sj.List.emit(w)
+	io.WriteString(w, ")")
+}
+
+func (sj *StrJoin) emitPrint(w io.Writer) { sj.emit(w) }
 
 // UnaryMinus represents negation of an integer expression.
 type UnaryMinus struct {
@@ -2190,8 +2201,7 @@ let _lookup_host _host =
 
 const helperMem = `
 let _mem () =
-  let st = Gc.stat () in
-  st.live_words * (Sys.word_size / 8)
+  int_of_float (Gc.allocated_bytes ())
 `
 
 const helperDynMath = `
@@ -2970,6 +2980,14 @@ func convertBinary(b *parser.BinaryExpr, env *types.Env, vars map[string]VarInfo
 				resTyp = ltyp
 				info.op = "union_all"
 			} else if info.op == "+" && ltyp == "string" && rtyp == "string" {
+				resTyp = "string"
+			} else if info.op == "+" && ltyp == "string" && strings.HasPrefix(rtyp, "list") {
+				right = &StrJoin{List: right}
+				rtyp = "string"
+				resTyp = "string"
+			} else if info.op == "+" && rtyp == "string" && strings.HasPrefix(ltyp, "list") {
+				left = &StrJoin{List: left}
+				ltyp = "string"
 				resTyp = "string"
 			} else if ltyp == "float" || rtyp == "float" {
 				resTyp = "float"
