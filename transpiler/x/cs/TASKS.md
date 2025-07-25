@@ -1,3 +1,39 @@
+## Progress (2025-07-25 12:33 UTC)
+- cs rosetta: handle dynamic addition, index 26 (progress 103/104)
+
+## Progress (2025-07-25 12:33 UTC)
+- cs rosetta: handle dynamic addition, index 26 (progress 103/104)
+
+## Progress (2025-07-25 12:33 UTC)
+- cs rosetta: handle dynamic addition, index 26 (progress 103/104)
+
+## Progress (2025-07-25 12:33 UTC)
+- cs rosetta: handle dynamic addition, index 26 (progress 103/104)
+
+## Progress (2025-07-25 12:30 UTC)
+- cs rosetta: fix sum type, run index 25 (progress 103/104)
+
+## Progress (2025-07-25 12:30 UTC)
+- cs rosetta: fix sum type, run index 25 (progress 103/104)
+
+## Progress (2025-07-25 12:30 UTC)
+- cs rosetta: fix sum type, run index 25 (progress 103/104)
+
+## Progress (2025-07-25 12:28 UTC)
+- cs rosetta: run index 24 (progress 103/104)
+
+## Progress (2025-07-25 12:28 UTC)
+- cs rosetta: run index 24 (progress 103/104)
+
+## Progress (2025-07-25 19:23 +0700)
+- transpiler/cs: support alias in calls and match (progress 103/104)
+
+## Progress (2025-07-25 19:23 +0700)
+- transpiler/cs: support alias in calls and match (progress 103/104)
+
+## Progress (2025-07-25 19:23 +0700)
+- transpiler/cs: support alias in calls and match (progress 103/104)
+
 ## Progress (2025-07-25 19:02 +0700)
 - pascal transpiler: handle else-if and list concatenation (progress 103/104)
 
@@ -391,6 +427,18 @@
 
 ## Progress (2025-07-22 03:14 +0000)
 - cs transpiler: 100/102 tests compiled
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
