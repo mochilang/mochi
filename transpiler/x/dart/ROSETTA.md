@@ -2,62 +2,62 @@
 
 This directory contains Dart code generated from Mochi programs in `tests/rosetta/x/Mochi`. Each program has a `.dart` file and `.out` output. Compilation or runtime failures are captured in a `.error` file.
 
-Compiled and ran: 129/284
+Compiled and ran: 125/284
 
 ## Checklist
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 10.076ms | 1.4 MB |
-| 2 | 100-doors-3 | ✓ |  |  |
-| 3 | 100-doors | ✓ |  |  |
-| 4 | 100-prisoners | ✓ |  |  |
-| 5 | 15-puzzle-game | ✓ |  |  |
-| 6 | 15-puzzle-solver | ✓ |  |  |
-| 7 | 2048 | ✓ |  |  |
-| 8 | 21-game | ✓ |  |  |
-| 9 | 24-game-solve | ✓ |  |  |
-| 10 | 24-game | ✓ |  |  |
-| 11 | 4-rings-or-4-squares-puzzle | ✓ |  |  |
-| 12 | 9-billion-names-of-god-the-integer | ✓ |  |  |
-| 13 | 99-bottles-of-beer-2 | ✓ |  |  |
-| 14 | 99-bottles-of-beer | ✓ |  |  |
-| 15 | DNS-query | ✓ |  |  |
-| 16 | a+b | ✓ |  |  |
-| 17 | abbreviations-automatic | ✓ |  |  |
-| 18 | abbreviations-easy | ✓ |  |  |
-| 19 | abbreviations-simple | ✓ |  |  |
-| 20 | abc-problem | ✓ |  |  |
-| 21 | abelian-sandpile-model-identity | ✓ |  |  |
-| 22 | abelian-sandpile-model | ✓ |  |  |
-| 23 | abstract-type | ✓ |  |  |
-| 24 | abundant-deficient-and-perfect-number-classifications | ✓ |  |  |
-| 25 | abundant-odd-numbers | ✓ |  |  |
-| 26 | accumulator-factory | ✓ |  |  |
-| 27 | achilles-numbers |   |  |  |
-| 28 | ackermann-function-2 | ✓ |  |  |
-| 29 | ackermann-function-3 | ✓ |  |  |
-| 30 | ackermann-function | ✓ |  |  |
-| 31 | active-directory-connect | ✓ |  |  |
-| 32 | active-directory-search-for-a-user | ✓ |  |  |
-| 33 | active-object | ✓ |  |  |
-| 34 | add-a-variable-to-a-class-instance-at-runtime | ✓ |  |  |
-| 35 | additive-primes | ✓ |  |  |
-| 36 | address-of-a-variable | ✓ |  |  |
-| 37 | adfgvx-cipher | ✓ |  |  |
-| 38 | aks-test-for-primes | ✓ |  |  |
-| 39 | algebraic-data-types | ✓ |  |  |
-| 40 | align-columns | ✓ |  |  |
-| 41 | aliquot-sequence-classifications | ✓ |  |  |
-| 42 | almkvist-giullera-formula-for-pi | ✓ |  |  |
-| 43 | almost-prime | ✓ |  |  |
-| 44 | amb | ✓ |  |  |
-| 45 | amicable-pairs | ✓ |  |  |
-| 46 | anagrams-deranged-anagrams | ✓ |  |  |
-| 47 | anagrams | ✓ |  |  |
-| 48 | angle-difference-between-two-bearings-1 | ✓ |  |  |
-| 49 | angle-difference-between-two-bearings-2 | ✓ |  |  |
-| 50 | angles-geometric-normalization-and-conversion | ✓ |  |  |
-| 51 | animate-a-pendulum | ✓ |  |  |
+| 2 | 100-doors-3 | ✓ | 7.194ms | 12.0 MB |
+| 3 | 100-doors |   |  |  |
+| 4 | 100-prisoners | ✓ | 276.736ms | 5.0 MB |
+| 5 | 15-puzzle-game | ✓ | 23.29ms | 192.0 KB |
+| 6 | 15-puzzle-solver | ✓ | 5.473ms | 10.6 MB |
+| 7 | 2048 | ✓ | 30.218ms | 676.0 KB |
+| 8 | 21-game | ✓ | 13.411ms | 1.5 MB |
+| 9 | 24-game-solve |   |  |  |
+| 10 | 24-game | ✓ | 14.135ms | 1.9 MB |
+| 11 | 4-rings-or-4-squares-puzzle |   |  |  |
+| 12 | 9-billion-names-of-god-the-integer | ✓ | 2.671112s | 319.5 MB |
+| 13 | 99-bottles-of-beer-2 | ✓ | 22.502ms | 3.2 MB |
+| 14 | 99-bottles-of-beer | ✓ | 6.245ms | 760.0 KB |
+| 15 | DNS-query | ✓ | 6.544ms | 12.5 MB |
+| 16 | a+b | ✓ | 14.005ms | 11.3 MB |
+| 17 | abbreviations-automatic | ✓ | 19.029ms | 1.9 MB |
+| 18 | abbreviations-easy | ✓ | 9.104ms | 2.0 MB |
+| 19 | abbreviations-simple | ✓ | 11.198ms | 84.0 KB |
+| 20 | abc-problem | ✓ | 8.068ms | 568.0 KB |
+| 21 | abelian-sandpile-model-identity | ✓ | 6.995ms | 12.0 MB |
+| 22 | abelian-sandpile-model | ✓ | 6.336ms | 2.7 MB |
+| 23 | abstract-type | ✓ | 6.366ms | 13.1 MB |
+| 24 | abundant-deficient-and-perfect-number-classifications | ✓ | 186.855ms | 13.1 MB |
+| 25 | abundant-odd-numbers | ✓ | 385.384ms | 3.8 MB |
+| 26 | accumulator-factory | ✓ | 6.201ms | 11.8 MB |
+| 27 | achilles-numbers | ✓ | 23.77ms | 3.9 MB |
+| 28 | ackermann-function-2 | ✓ | 5.871ms | 2.8 MB |
+| 29 | ackermann-function-3 | ✓ | 2m6.732393s | 8.3 MB |
+| 30 | ackermann-function | ✓ | 6.601ms | 1.2 MB |
+| 31 | active-directory-connect | ✓ | 13.872ms | 1.5 MB |
+| 32 | active-directory-search-for-a-user | ✓ | 6.278ms | 88.0 KB |
+| 33 | active-object | ✓ | 6.874ms | 11.9 MB |
+| 34 | add-a-variable-to-a-class-instance-at-runtime | ✓ | 21.949ms | 11.9 MB |
+| 35 | additive-primes | ✓ | 6.327ms | 12.6 MB |
+| 36 | address-of-a-variable | ✓ | 5.84ms | 10.7 MB |
+| 37 | adfgvx-cipher | ✓ | 9.665ms | 1.6 MB |
+| 38 | aks-test-for-primes | ✓ | 5.546ms | 496.0 KB |
+| 39 | algebraic-data-types |   |  |  |
+| 40 | align-columns | ✓ | 7.95ms | 232.0 KB |
+| 41 | aliquot-sequence-classifications | ✓ | 40.353ms | 1012.0 KB |
+| 42 | almkvist-giullera-formula-for-pi |   |  |  |
+| 43 | almost-prime | ✓ | 7.954ms | 108.0 KB |
+| 44 | amb | ✓ | 5.844ms | 2.6 MB |
+| 45 | amicable-pairs | ✓ | 1.287573s | 11.4 MB |
+| 46 | anagrams-deranged-anagrams | ✓ | 7.343ms | 164.0 KB |
+| 47 | anagrams | ✓ | 7.445ms | 44.0 KB |
+| 48 | angle-difference-between-two-bearings-1 | ✓ | 6.49ms | 1.6 MB |
+| 49 | angle-difference-between-two-bearings-2 | ✓ | 6.594ms | 1.2 MB |
+| 50 | angles-geometric-normalization-and-conversion | ✓ | 8.128ms | 204.0 KB |
+| 51 | animate-a-pendulum | ✓ | 6.655ms | 12.4 MB |
 | 52 | animation | ✓ |  |  |
 | 53 | anonymous-recursion-1 | ✓ |  |  |
 | 54 | anonymous-recursion-2 | ✓ |  |  |
@@ -292,4 +292,4 @@ Compiled and ran: 129/284
 | 283 | define-a-primitive-data-type |   |  |  |
 | 284 | md5 |   |  |  |
 
-_Last updated: 2025-07-25 10:45 +0700_
+_Last updated: 2025-07-25 11:10 +0700_
