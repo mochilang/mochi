@@ -59,11 +59,22 @@
 (def score 0)
 
 (defn -main []
-  (def board (:board r))
-  (def r (spawnTile board))
-  (def board (:board r))
-  (def full (:full r))
-  (draw board score)
-  (loop [while_flag_1 true] (when (and while_flag_1 true) (do (println "Move: ") (def cmd (read-line)) (def moved false) (when (or (= cmd "a") (= cmd "A")) (do (def m (moveLeft board score)) (def board (:board m)) (def score (:score m)) (def moved (:moved m)))) (when (or (= cmd "d") (= cmd "D")) (do (def m (moveRight board score)) (def board (:board m)) (def score (:score m)) (def moved (:moved m)))) (when (or (= cmd "w") (= cmd "W")) (do (def m (moveUp board score)) (def board (:board m)) (def score (:score m)) (def moved (:moved m)))) (when (or (= cmd "s") (= cmd "S")) (do (def m (moveDown board score)) (def board (:board m)) (def score (:score m)) (def moved (:moved m)))) (cond (or (= cmd "q") (= cmd "Q")) (recur false) (and moved (and full (not (hasMoves board)))) (do (def r2 (spawnTile board)) (def board (:board r2)) (def full (:full r2)) (do (draw board score) (println "Game Over") (recur false))) (has2048 board) (do (println "You win!") (recur false)) (not (hasMoves board)) (do (println "Game Over") (recur false)) :else (do (draw board score) (recur while_flag_1)))))))
+  (let [rt (Runtime/getRuntime)
+    start-mem (- (.totalMemory rt) (.freeMemory rt))
+    start (System/nanoTime)]
+      (def board (:board r))
+      (def r (spawnTile board))
+      (def board (:board r))
+      (def full (:full r))
+      (draw board score)
+      (loop [while_flag_1 true] (when (and while_flag_1 true) (do (println "Move: ") (def cmd (read-line)) (def moved false) (when (or (= cmd "a") (= cmd "A")) (do (def m (moveLeft board score)) (def board (:board m)) (def score (:score m)) (def moved (:moved m)))) (when (or (= cmd "d") (= cmd "D")) (do (def m (moveRight board score)) (def board (:board m)) (def score (:score m)) (def moved (:moved m)))) (when (or (= cmd "w") (= cmd "W")) (do (def m (moveUp board score)) (def board (:board m)) (def score (:score m)) (def moved (:moved m)))) (when (or (= cmd "s") (= cmd "S")) (do (def m (moveDown board score)) (def board (:board m)) (def score (:score m)) (def moved (:moved m)))) (cond (or (= cmd "q") (= cmd "Q")) (recur false) :else (do (when moved (do (def r2 (spawnTile board)) (def board (:board r2)) (def full (:full r2)) (when (and full (not (hasMoves board))) (do (draw board score) (println "Game Over") (recur false))))) (draw board score) (when (has2048 board) (do (println "You win!") (recur false))) (when (not (hasMoves board)) (do (println "Game Over") (recur false))) (recur while_flag_1))))))
+      (System/gc)
+      (let [end (System/nanoTime)
+        end-mem (- (.totalMemory rt) (.freeMemory rt))
+        duration-us (quot (- end start) 1000)
+        memory-bytes (Math/abs ^long (- end-mem start-mem))]
+        (println (str "{\n  \"duration_us\": " duration-us ",\n  \"memory_bytes\": " memory-bytes ",\n  \"name\": \"main\"\n}"))
+      )
+    ))
 
 (-main)
