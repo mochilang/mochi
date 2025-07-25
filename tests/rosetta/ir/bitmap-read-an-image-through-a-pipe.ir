@@ -1,0 +1,247 @@
+func main (regs=16)
+  // let ppmData = "P3\n2 2\n1\n0 1 1 0 1 0 0 1 1 1 0 0\n"
+  Const        r2, "P3\n2 2\n1\n0 1 1 0 1 0 0 1 1 1 0 0\n"
+  Move         r0, r2
+  SetGlobal    0,0,0,0
+  // let img = parsePpm(ppmData)
+  Const        r2, "P3\n2 2\n1\n0 1 1 0 1 0 0 1 1 1 0 0\n"
+  Move         r3, r2
+  Call         r4, parsePpm, r3
+  Move         r1, r4
+  SetGlobal    1,1,0,0
+  // print("width=" + str(img.w) + " height=" + str(img.h))
+  Const        r5, "width="
+  Const        r6, "w"
+  Index        r7, r1, r6
+  Str          r8, r7
+  Add          r9, r5, r8
+  Const        r10, " height="
+  Add          r11, r9, r10
+  Const        r12, "h"
+  Index        r13, r1, r12
+  Str          r14, r13
+  Add          r15, r11, r14
+  Print        r15
+  Return       r0
+
+  // fun parseIntStr(str: string): int {
+func parseIntStr (regs=32)
+  // var i = 0
+  Const        r3, 0
+  Move         r4, r3
+  // var neg = false
+  Const        r5, false
+  Move         r6, r5
+  // if len(str) > 0 && str[0:1] == "-" {
+  Len          r7, r2
+  Const        r3, 0
+  LessInt      r8, r3, r7
+  Const        r3, 0
+  Move         r9, r3
+  Const        r11, 1
+  Move         r10, r11
+  Slice        r12, r2, r9, r10
+  Const        r13, "-"
+  Equal        r14, r12, r13
+  Move         r15, r8
+  JumpIfFalse  r15, L0
+  Move         r15, r14
+L0:
+  JumpIfFalse  r15, L1
+  // neg = true
+  Const        r16, true
+  Move         r6, r16
+  // i = 1
+  Const        r11, 1
+  Move         r4, r11
+L1:
+  // var n = 0
+  Const        r3, 0
+  Move         r17, r3
+  // let digits = {
+  Const        r18, {"0": 0, "1": 1, "2": 2, "3": 3, "4": 4, "5": 5, "6": 6, "7": 7, "8": 8, "9": 9}
+  Move         r19, r18
+L3:
+  // while i < len(str) {
+  Len          r20, r2
+  LessInt      r21, r4, r20
+  JumpIfFalse  r21, L2
+  // n = n * 10 + digits[str[i:i+1]]
+  Const        r22, 10
+  MulInt       r23, r17, r22
+  Move         r24, r4
+  Const        r11, 1
+  AddInt       r26, r4, r11
+  Move         r25, r26
+  Slice        r27, r2, r24, r25
+  Index        r28, r19, r27
+  Add          r29, r23, r28
+  Move         r17, r29
+  // i = i + 1
+  Const        r11, 1
+  AddInt       r30, r4, r11
+  Move         r4, r30
+  // while i < len(str) {
+  Jump         L3
+L2:
+  // if neg { n = -n }
+  JumpIfFalse  r6, L4
+  Neg          r31, r17
+  Move         r17, r31
+L4:
+  // return n
+  Return       r17
+
+  // fun splitWs(s: string): list<string> {
+func splitWs (regs=32)
+  // var parts: list<string> = []
+  Const        r3, []
+  Move         r4, r3
+  // var cur = ""
+  Const        r5, ""
+  Move         r6, r5
+  // var i = 0
+  Const        r7, 0
+  Move         r8, r7
+L4:
+  // while i < len(s) {
+  Len          r9, r2
+  LessInt      r10, r8, r9
+  JumpIfFalse  r10, L0
+  // let ch = substring(s, i, i+1)
+  Const        r11, 1
+  AddInt       r12, r8, r11
+  Slice        r13, r2, r8, r12
+  Move         r14, r13
+  // if ch == " " || ch == "\n" || ch == "\t" || ch == "\r" {
+  Const        r15, " "
+  Equal        r16, r14, r15
+  Const        r17, "\n"
+  Equal        r18, r14, r17
+  Const        r19, "\t"
+  Equal        r20, r14, r19
+  Const        r21, "\r"
+  Equal        r22, r14, r21
+  Move         r23, r16
+  JumpIfTrue   r23, L1
+  Move         r23, r18
+  JumpIfTrue   r23, L1
+  Move         r23, r20
+  JumpIfTrue   r23, L1
+  Move         r23, r22
+L1:
+  JumpIfFalse  r23, L2
+  // if len(cur) > 0 {
+  Len          r24, r6
+  Const        r7, 0
+  LessInt      r25, r7, r24
+  JumpIfFalse  r25, L3
+  // parts = append(parts, cur)
+  Append       r26, r4, r6
+  Move         r4, r26
+  // cur = ""
+  Const        r5, ""
+  Move         r6, r5
+  // if ch == " " || ch == "\n" || ch == "\t" || ch == "\r" {
+  Jump         L3
+L2:
+  // cur = cur + ch
+  Add          r27, r6, r14
+  Move         r6, r27
+L3:
+  // i = i + 1
+  Const        r11, 1
+  AddInt       r28, r8, r11
+  Move         r8, r28
+  // while i < len(s) {
+  Jump         L4
+L0:
+  // if len(cur) > 0 { parts = append(parts, cur) }
+  Len          r29, r6
+  Const        r7, 0
+  LessInt      r30, r7, r29
+  JumpIfFalse  r30, L5
+  Append       r31, r4, r6
+  Move         r4, r31
+L5:
+  // return parts
+  Return       r4
+
+  // fun parsePpm(data: string): map<string, any> {
+func parsePpm (regs=54)
+  // let toks = splitWs(data)
+  Move         r3, r2
+  Call         r4, splitWs, r3
+  Move         r5, r4
+  // if len(toks) < 4 { return {"err": true} }
+  Len          r6, r5
+  Const        r7, 4
+  LessInt      r8, r6, r7
+  JumpIfFalse  r8, L0
+  Const        r9, {"err": true}
+  Return       r9
+L0:
+  // let magic = toks[0]
+  Const        r10, 0
+  Index        r11, r5, r10
+  Move         r12, r11
+  // let w = parseIntStr(toks[1])
+  Const        r14, 1
+  Index        r15, r5, r14
+  Move         r13, r15
+  Call         r16, parseIntStr, r13
+  Move         r17, r16
+  // let h = parseIntStr(toks[2])
+  Const        r19, 2
+  Index        r20, r5, r19
+  Move         r18, r20
+  Call         r21, parseIntStr, r18
+  Move         r22, r21
+  // let maxv = parseIntStr(toks[3])
+  Const        r24, 3
+  Index        r25, r5, r24
+  Move         r23, r25
+  Call         r26, parseIntStr, r23
+  Move         r27, r26
+  // var px: list<int> = []
+  Const        r28, []
+  Move         r29, r28
+  // var i = 4
+  Const        r7, 4
+  Move         r30, r7
+L2:
+  // while i < len(toks) {
+  Len          r31, r5
+  LessInt      r32, r30, r31
+  JumpIfFalse  r32, L1
+  // px = append(px, parseIntStr(toks[i]))
+  Index        r34, r5, r30
+  Move         r33, r34
+  Call         r35, parseIntStr, r33
+  Append       r36, r29, r35
+  Move         r29, r36
+  // i = i + 1
+  Const        r14, 1
+  AddInt       r37, r30, r14
+  Move         r30, r37
+  // while i < len(toks) {
+  Jump         L2
+L1:
+  // return {"magic": magic, "w": w, "h": h, "max": maxv, "px": px}
+  Const        r38, "magic"
+  Const        r39, "w"
+  Const        r40, "h"
+  Const        r41, "max"
+  Const        r42, "px"
+  Move         r43, r38
+  Move         r44, r12
+  Move         r45, r39
+  Move         r46, r17
+  Move         r47, r40
+  Move         r48, r22
+  Move         r49, r41
+  Move         r50, r27
+  Move         r51, r42
+  Move         r52, r29
+  MakeMap      r53, 5, r43
+  Return       r53

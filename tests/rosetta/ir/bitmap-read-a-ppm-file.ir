@@ -1,0 +1,790 @@
+func main (regs=26)
+  // var ppmtxt = "P3\n" +
+  Const        r3, "P3\n"
+  // "# feep.ppm\n" +
+  Const        r4, "# feep.ppm\n"
+  // var ppmtxt = "P3\n" +
+  Const        r5, "P3\n# feep.ppm\n"
+  // "4 4\n" +
+  Const        r6, "4 4\n"
+  // "# feep.ppm\n" +
+  Const        r7, "P3\n# feep.ppm\n4 4\n"
+  // "15\n" +
+  Const        r8, "15\n"
+  // "4 4\n" +
+  Const        r9, "P3\n# feep.ppm\n4 4\n15\n"
+  // " 0  0  0    0  0  0    0  0  0   15  0 15\n" +
+  Const        r10, " 0  0  0    0  0  0    0  0  0   15  0 15\n"
+  // "15\n" +
+  Const        r11, "P3\n# feep.ppm\n4 4\n15\n 0  0  0    0  0  0    0  0  0   15  0 15\n"
+  // " 0  0  0    0 15  7    0  0  0    0  0  0\n" +
+  Const        r12, " 0  0  0    0 15  7    0  0  0    0  0  0\n"
+  // " 0  0  0    0  0  0    0  0  0   15  0 15\n" +
+  Const        r13, "P3\n# feep.ppm\n4 4\n15\n 0  0  0    0  0  0    0  0  0   15  0 15\n 0  0  0    0 15  7    0  0  0    0  0  0\n"
+  // " 0  0  0    0  0  0    0 15  7    0  0  0\n" +
+  Const        r14, " 0  0  0    0  0  0    0 15  7    0  0  0\n"
+  // " 0  0  0    0 15  7    0  0  0    0  0  0\n" +
+  Const        r15, "P3\n# feep.ppm\n4 4\n15\n 0  0  0    0  0  0    0  0  0   15  0 15\n 0  0  0    0 15  7    0  0  0    0  0  0\n 0  0  0    0  0  0    0 15  7    0  0  0\n"
+  // "15  0 15    0  0  0    0  0  0    0  0  0\n"
+  Const        r16, "15  0 15    0  0  0    0  0  0    0  0  0\n"
+  // " 0  0  0    0  0  0    0 15  7    0  0  0\n" +
+  Const        r17, "P3\n# feep.ppm\n4 4\n15\n 0  0  0    0  0  0    0  0  0   15  0 15\n 0  0  0    0 15  7    0  0  0    0  0  0\n 0  0  0    0  0  0    0 15  7    0  0  0\n15  0 15    0  0  0    0  0  0    0  0  0\n"
+  // var ppmtxt = "P3\n" +
+  Move         r0, r17
+  SetGlobal    0,0,0,0
+  // print("Original Colour PPM file")
+  Const        r18, "Original Colour PPM file"
+  Print        r18
+  // print(ppmtxt)
+  Print        r0
+  // var bm = readP3(ppmtxt)
+  Move         r19, r0
+  Call         r20, readP3, r19
+  Move         r1, r20
+  SetGlobal    1,1,0,0
+  // print("Grey PPM:")
+  Const        r21, "Grey PPM:"
+  Print        r21
+  // toGrey(bm)
+  Move         r22, r1
+  Call         r23, toGrey, r22
+  // let out = writeP3(bm)
+  Move         r24, r1
+  Call         r25, writeP3, r24
+  Move         r2, r25
+  SetGlobal    2,2,0,0
+  // print(out)
+  Print        r2
+  Return       r0
+
+  // fun newBitmap(w: int, h: int, max: int): Bitmap {
+func newBitmap (regs=39)
+  // var rows: list<list<Pixel>> = []
+  Const        r6, []
+  Move         r7, r6
+  // var y = 0
+  Const        r8, 0
+  Move         r9, r8
+L3:
+  // while y < h {
+  Less         r10, r9, r4
+  JumpIfFalse  r10, L0
+  // var row: list<Pixel> = []
+  Const        r6, []
+  Move         r11, r6
+  // var x = 0
+  Const        r8, 0
+  Move         r12, r8
+L2:
+  // while x < w {
+  Less         r13, r12, r3
+  JumpIfFalse  r13, L1
+  // row = append(row, Pixel{R:0,G:0,B:0})
+  Const        r8, 0
+  Const        r8, 0
+  Const        r8, 0
+  Const        r14, "__name"
+  Const        r15, "Pixel"
+  Const        r16, "R"
+  Move         r17, r8
+  Const        r18, "G"
+  Move         r19, r8
+  Const        r20, "B"
+  Move         r21, r8
+  MakeMap      r22, 4, r14
+  Append       r23, r11, r22
+  Move         r11, r23
+  // x = x + 1
+  Const        r24, 1
+  AddInt       r25, r12, r24
+  Move         r12, r25
+  // while x < w {
+  Jump         L2
+L1:
+  // rows = append(rows, row)
+  Append       r26, r7, r11
+  Move         r7, r26
+  // y = y + 1
+  Const        r24, 1
+  AddInt       r27, r9, r24
+  Move         r9, r27
+  // while y < h {
+  Jump         L3
+L0:
+  // return Bitmap{w: w, h: h, max: max, data: rows}
+  Const        r28, "__name"
+  Const        r29, "Bitmap"
+  Const        r30, "w"
+  Move         r31, r3
+  Const        r32, "h"
+  Move         r33, r4
+  Const        r34, "max"
+  Move         r35, r5
+  Const        r36, "data"
+  Move         r37, r7
+  MakeMap      r38, 5, r28
+  Return       r38
+
+  // fun setPx(b: Bitmap, x: int, y: int, p: Pixel) {
+func setPx (regs=12)
+  // var rows = b.data
+  Const        r7, "data"
+  Index        r8, r3, r7
+  Move         r9, r8
+  // var row = rows[y]
+  Index        r10, r9, r5
+  Move         r11, r10
+  // row[x] = p
+  SetIndex     r11, r4, r6
+  // rows[y] = row
+  SetIndex     r9, r5, r11
+  // b.data = rows
+  Const        r7, "data"
+  SetIndex     r3, r7, r9
+  Return       r0
+
+  // fun getPx(b: Bitmap, x: int, y: int): Pixel {
+func getPx (regs=10)
+  // return b.data[y][x]
+  Const        r6, "data"
+  Index        r7, r3, r6
+  Index        r8, r7, r5
+  Index        r9, r8, r4
+  Return       r9
+
+  // fun splitLines(s: string): list<string> {
+func splitLines (regs=21)
+  // var out: list<string> = []
+  Const        r4, []
+  Move         r2, r4
+  SetGlobal    2,2,0,0
+  // var cur = ""
+  Const        r5, ""
+  Move         r6, r5
+  // var i = 0
+  Const        r7, 0
+  Move         r8, r7
+L3:
+  // while i < len(s) {
+  Len          r9, r3
+  LessInt      r10, r8, r9
+  JumpIfFalse  r10, L0
+  // let ch = substr(s, i, i+1)
+  Const        r11, 1
+  AddInt       r12, r8, r11
+  Slice        r13, r3, r8, r12
+  Move         r14, r13
+  // if ch == "\n" {
+  Const        r15, "\n"
+  Equal        r16, r14, r15
+  JumpIfFalse  r16, L1
+  // out = append(out, cur)
+  Append       r17, r2, r6
+  Move         r2, r17
+  SetGlobal    2,2,0,0
+  // cur = ""
+  Const        r5, ""
+  Move         r6, r5
+  // if ch == "\n" {
+  Jump         L2
+L1:
+  // cur = cur + ch
+  Add          r18, r6, r14
+  Move         r6, r18
+L2:
+  // i = i + 1
+  Const        r11, 1
+  AddInt       r19, r8, r11
+  Move         r8, r19
+  // while i < len(s) {
+  Jump         L3
+L0:
+  // out = append(out, cur)
+  Append       r20, r2, r6
+  Move         r2, r20
+  SetGlobal    2,2,0,0
+  // return out
+  Return       r2
+
+  // fun splitWS(s: string): list<string> {
+func splitWS (regs=32)
+  // var out: list<string> = []
+  Const        r4, []
+  Move         r2, r4
+  SetGlobal    2,2,0,0
+  // var cur = ""
+  Const        r5, ""
+  Move         r6, r5
+  // var i = 0
+  Const        r7, 0
+  Move         r8, r7
+L4:
+  // while i < len(s) {
+  Len          r9, r3
+  LessInt      r10, r8, r9
+  JumpIfFalse  r10, L0
+  // let ch = substr(s, i, i+1)
+  Const        r11, 1
+  AddInt       r12, r8, r11
+  Slice        r13, r3, r8, r12
+  Move         r14, r13
+  // if ch == " " || ch == "\t" || ch == "\r" || ch == "\n" {
+  Const        r15, " "
+  Equal        r16, r14, r15
+  Const        r17, "\t"
+  Equal        r18, r14, r17
+  Const        r19, "\r"
+  Equal        r20, r14, r19
+  Const        r21, "\n"
+  Equal        r22, r14, r21
+  Move         r23, r16
+  JumpIfTrue   r23, L1
+  Move         r23, r18
+  JumpIfTrue   r23, L1
+  Move         r23, r20
+  JumpIfTrue   r23, L1
+  Move         r23, r22
+L1:
+  JumpIfFalse  r23, L2
+  // if len(cur) > 0 {
+  Len          r24, r6
+  Const        r7, 0
+  LessInt      r25, r7, r24
+  JumpIfFalse  r25, L3
+  // out = append(out, cur)
+  Append       r26, r2, r6
+  Move         r2, r26
+  SetGlobal    2,2,0,0
+  // cur = ""
+  Const        r5, ""
+  Move         r6, r5
+  // if ch == " " || ch == "\t" || ch == "\r" || ch == "\n" {
+  Jump         L3
+L2:
+  // cur = cur + ch
+  Add          r27, r6, r14
+  Move         r6, r27
+L3:
+  // i = i + 1
+  Const        r11, 1
+  AddInt       r28, r8, r11
+  Move         r8, r28
+  // while i < len(s) {
+  Jump         L4
+L0:
+  // if len(cur) > 0 {
+  Len          r29, r6
+  Const        r7, 0
+  LessInt      r30, r7, r29
+  JumpIfFalse  r30, L5
+  // out = append(out, cur)
+  Append       r31, r2, r6
+  Move         r2, r31
+  SetGlobal    2,2,0,0
+L5:
+  // return out
+  Return       r2
+
+  // fun parseIntStr(str: string): int {
+func parseIntStr (regs=33)
+  // var i = 0
+  Const        r4, 0
+  Move         r5, r4
+  // var neg = false
+  Const        r6, false
+  Move         r7, r6
+  // if len(str) > 0 && str[0:1] == "-" {
+  Len          r8, r3
+  Const        r4, 0
+  LessInt      r9, r4, r8
+  Const        r4, 0
+  Move         r10, r4
+  Const        r12, 1
+  Move         r11, r12
+  Slice        r13, r3, r10, r11
+  Const        r14, "-"
+  Equal        r15, r13, r14
+  Move         r16, r9
+  JumpIfFalse  r16, L0
+  Move         r16, r15
+L0:
+  JumpIfFalse  r16, L1
+  // neg = true
+  Const        r17, true
+  Move         r7, r17
+  // i = 1
+  Const        r12, 1
+  Move         r5, r12
+L1:
+  // var n = 0
+  Const        r4, 0
+  Move         r18, r4
+  // let digits = {
+  Const        r19, {"0": 0, "1": 1, "2": 2, "3": 3, "4": 4, "5": 5, "6": 6, "7": 7, "8": 8, "9": 9}
+  Move         r20, r19
+L3:
+  // while i < len(str) {
+  Len          r21, r3
+  LessInt      r22, r5, r21
+  JumpIfFalse  r22, L2
+  // n = n * 10 + digits[str[i:i+1]]
+  Const        r23, 10
+  MulInt       r24, r18, r23
+  Move         r25, r5
+  Const        r12, 1
+  AddInt       r27, r5, r12
+  Move         r26, r27
+  Slice        r28, r3, r25, r26
+  Index        r29, r20, r28
+  Add          r30, r24, r29
+  Move         r18, r30
+  // i = i + 1
+  Const        r12, 1
+  AddInt       r31, r5, r12
+  Move         r5, r31
+  // while i < len(str) {
+  Jump         L3
+L2:
+  // if neg { n = -n }
+  JumpIfFalse  r7, L4
+  Neg          r32, r18
+  Move         r18, r32
+L4:
+  // return n
+  Return       r18
+
+  // fun tokenize(s: string): list<string> {
+func tokenize (regs=33)
+  // let lines = splitLines(s)
+  Move         r4, r3
+  Call         r5, splitLines, r4
+  Move         r6, r5
+  // var toks: list<string> = []
+  Const        r7, []
+  Move         r8, r7
+  // var i = 0
+  Const        r9, 0
+  Move         r10, r9
+L3:
+  // while i < len(lines) {
+  Len          r11, r6
+  LessInt      r12, r10, r11
+  JumpIfFalse  r12, L0
+  // let line = lines[i]
+  Index        r13, r6, r10
+  Move         r14, r13
+  // if len(line) > 0 && substr(line,0,1) == "#" {
+  Len          r15, r14
+  Const        r9, 0
+  LessInt      r16, r9, r15
+  Const        r9, 0
+  Const        r17, 1
+  Slice        r18, r14, r9, r17
+  Const        r19, "#"
+  Equal        r20, r18, r19
+  Move         r21, r16
+  JumpIfFalse  r21, L1
+  Move         r21, r20
+L1:
+  JumpIfFalse  r21, L2
+  // i = i + 1
+  Const        r17, 1
+  AddInt       r22, r10, r17
+  Move         r10, r22
+  // continue
+  Jump         L3
+L2:
+  // let parts = splitWS(line)
+  Move         r23, r14
+  Call         r24, splitWS, r23
+  Move         r25, r24
+  // var j = 0
+  Const        r9, 0
+  Move         r26, r9
+L5:
+  // while j < len(parts) {
+  Len          r27, r25
+  LessInt      r28, r26, r27
+  JumpIfFalse  r28, L4
+  // toks = append(toks, parts[j])
+  Index        r29, r25, r26
+  Append       r30, r8, r29
+  Move         r8, r30
+  // j = j + 1
+  Const        r17, 1
+  AddInt       r31, r26, r17
+  Move         r26, r31
+  // while j < len(parts) {
+  Jump         L5
+L4:
+  // i = i + 1
+  Const        r17, 1
+  AddInt       r32, r10, r17
+  Move         r10, r32
+  // while i < len(lines) {
+  Jump         L3
+L0:
+  // return toks
+  Return       r8
+
+  // fun readP3(text: string): Bitmap {
+func readP3 (regs=78)
+  // let toks = tokenize(text)
+  Move         r4, r3
+  Call         r5, tokenize, r4
+  Move         r6, r5
+  // if len(toks) < 4 { return newBitmap(0,0,0) }
+  Len          r7, r6
+  Const        r8, 4
+  LessInt      r9, r7, r8
+  JumpIfFalse  r9, L0
+  Const        r13, 0
+  Move         r10, r13
+  Const        r13, 0
+  Move         r11, r13
+  Const        r13, 0
+  Move         r12, r13
+  Call         r14, newBitmap, r10, r11, r12
+  Return       r14
+L0:
+  // if toks[0] != "P3" { return newBitmap(0,0,0) }
+  Const        r13, 0
+  Index        r15, r6, r13
+  Const        r16, "P3"
+  NotEqual     r17, r15, r16
+  JumpIfFalse  r17, L1
+  Const        r13, 0
+  Move         r18, r13
+  Const        r13, 0
+  Move         r19, r13
+  Const        r13, 0
+  Move         r20, r13
+  Call         r21, newBitmap, r18, r19, r20
+  Return       r21
+L1:
+  // let w: int = parseIntStr(toks[1])
+  Const        r23, 1
+  Index        r24, r6, r23
+  Move         r22, r24
+  Call         r25, parseIntStr, r22
+  Move         r26, r25
+  // let h: int = parseIntStr(toks[2])
+  Const        r28, 2
+  Index        r29, r6, r28
+  Move         r27, r29
+  Call         r30, parseIntStr, r27
+  Move         r31, r30
+  // let maxv: int = parseIntStr(toks[3])
+  Const        r33, 3
+  Index        r34, r6, r33
+  Move         r32, r34
+  Call         r35, parseIntStr, r32
+  Move         r36, r35
+  // var idx = 4
+  Const        r8, 4
+  Move         r37, r8
+  // var bm = newBitmap(w, h, maxv)
+  Move         r38, r26
+  Move         r39, r31
+  Move         r40, r36
+  Call         r41, newBitmap, r38, r39, r40
+  Move         r1, r41
+  SetGlobal    1,1,0,0
+  // var y = h - 1
+  Const        r23, 1
+  Sub          r42, r31, r23
+  Move         r43, r42
+L5:
+  // while y >= 0 {
+  Const        r13, 0
+  LessEq       r44, r13, r43
+  JumpIfFalse  r44, L2
+  // var x = 0
+  Const        r13, 0
+  Move         r45, r13
+L4:
+  // while x < w {
+  Less         r46, r45, r26
+  JumpIfFalse  r46, L3
+  // let r: int = parseIntStr(toks[idx])
+  Index        r48, r6, r37
+  Move         r47, r48
+  Call         r49, parseIntStr, r47
+  Move         r50, r49
+  // let g: int = parseIntStr(toks[idx+1])
+  Const        r23, 1
+  AddInt       r52, r37, r23
+  Index        r53, r6, r52
+  Move         r51, r53
+  Call         r54, parseIntStr, r51
+  Move         r55, r54
+  // let b: int = parseIntStr(toks[idx+2])
+  Const        r28, 2
+  AddInt       r57, r37, r28
+  Index        r58, r6, r57
+  Move         r56, r58
+  Call         r59, parseIntStr, r56
+  Move         r60, r59
+  // setPx(bm, x, y, Pixel{R:r,G:g,B:b})
+  Move         r61, r1
+  Move         r62, r45
+  Move         r63, r43
+  Const        r65, "__name"
+  Const        r66, "Pixel"
+  Const        r67, "R"
+  Move         r68, r50
+  Const        r69, "G"
+  Move         r70, r55
+  Const        r71, "B"
+  Move         r72, r60
+  MakeMap      r73, 4, r65
+  Move         r64, r73
+  Call         r74, setPx, r61, r62, r63, r64
+  // idx = idx + 3
+  Const        r33, 3
+  AddInt       r75, r37, r33
+  Move         r37, r75
+  // x = x + 1
+  Const        r23, 1
+  AddInt       r76, r45, r23
+  Move         r45, r76
+  // while x < w {
+  Jump         L4
+L3:
+  // y = y - 1
+  Const        r23, 1
+  Sub          r77, r43, r23
+  Move         r43, r77
+  // while y >= 0 {
+  Jump         L5
+L2:
+  // return bm
+  Return       r1
+
+  // fun toGrey(b: Bitmap) {
+func toGrey (regs=60)
+  // let h: int = b.h
+  Const        r4, "h"
+  Index        r5, r3, r4
+  Move         r6, r5
+  // let w: int = b.w
+  Const        r7, "w"
+  Index        r8, r3, r7
+  Move         r9, r8
+  // var m = 0
+  Const        r10, 0
+  Move         r11, r10
+  // var y = 0
+  Const        r10, 0
+  Move         r12, r10
+L5:
+  // while y < h {
+  Less         r13, r12, r6
+  JumpIfFalse  r13, L0
+  // var x = 0
+  Const        r10, 0
+  Move         r14, r10
+L4:
+  // while x < w {
+  Less         r15, r14, r9
+  JumpIfFalse  r15, L1
+  // let p = getPx(b,x,y)
+  Move         r16, r3
+  Move         r17, r14
+  Move         r18, r12
+  Call         r19, getPx, r16, r17, r18
+  Move         r20, r19
+  // var l = (p.R * 2126 + p.G * 7152 + p.B * 722) / 10000
+  Const        r21, "R"
+  Index        r22, r20, r21
+  Const        r23, 2126
+  Mul          r24, r22, r23
+  Const        r25, "G"
+  Index        r26, r20, r25
+  Const        r27, 7152
+  Mul          r28, r26, r27
+  Const        r29, "B"
+  Index        r30, r20, r29
+  Const        r31, 722
+  Mul          r32, r30, r31
+  Add          r33, r24, r28
+  Add          r34, r33, r32
+  Const        r35, 10000
+  Div          r36, r34, r35
+  Move         r37, r36
+  // if l > b.max { l = b.max }
+  Const        r38, "max"
+  Index        r39, r3, r38
+  Less         r40, r39, r37
+  JumpIfFalse  r40, L2
+  Const        r38, "max"
+  Index        r41, r3, r38
+  Move         r37, r41
+L2:
+  // setPx(b, x, y, Pixel{R:l,G:l,B:l})
+  Move         r42, r3
+  Move         r43, r14
+  Move         r44, r12
+  Const        r46, "__name"
+  Const        r47, "Pixel"
+  Const        r48, "R"
+  Move         r49, r37
+  Const        r50, "G"
+  Move         r51, r37
+  Const        r52, "B"
+  Move         r53, r37
+  MakeMap      r54, 4, r46
+  Move         r45, r54
+  Call         r55, setPx, r42, r43, r44, r45
+  // if l > m { m = l }
+  Less         r56, r11, r37
+  JumpIfFalse  r56, L3
+  Move         r11, r37
+L3:
+  // x = x + 1
+  Const        r57, 1
+  AddInt       r58, r14, r57
+  Move         r14, r58
+  // while x < w {
+  Jump         L4
+L1:
+  // y = y + 1
+  Const        r57, 1
+  AddInt       r59, r12, r57
+  Move         r12, r59
+  // while y < h {
+  Jump         L5
+L0:
+  // b.max = m
+  Const        r38, "max"
+  SetIndex     r3, r38, r11
+  Return       r0
+
+  // fun pad(n: int, w: int): string {
+func pad (regs=11)
+  // var s = str(n)
+  Str          r5, r3
+  Move         r6, r5
+L1:
+  // while len(s) < w { s = " " + s }
+  Len          r7, r6
+  Less         r8, r7, r4
+  JumpIfFalse  r8, L0
+  Const        r9, " "
+  Add          r10, r9, r6
+  Move         r6, r10
+  Jump         L1
+L0:
+  // return s
+  Return       r6
+
+  // fun writeP3(b: Bitmap): string {
+func writeP3 (regs=71)
+  // let h: int = b.h
+  Const        r4, "h"
+  Index        r5, r3, r4
+  Move         r6, r5
+  // let w: int = b.w
+  Const        r7, "w"
+  Index        r8, r3, r7
+  Move         r9, r8
+  // var max = b.max
+  Const        r10, "max"
+  Index        r11, r3, r10
+  Move         r12, r11
+  // let digits = len(str(max))
+  Str          r13, r12
+  Len          r14, r13
+  Move         r15, r14
+  // var out = "P3\n# generated from Bitmap.writeppmp3\n" + str(w) + " " + str(h) + "\n" + str(max) + "\n"
+  Const        r16, "P3\n# generated from Bitmap.writeppmp3\n"
+  Str          r17, r9
+  Add          r18, r16, r17
+  Const        r19, " "
+  Add          r20, r18, r19
+  Str          r21, r6
+  Add          r22, r20, r21
+  Const        r23, "\n"
+  Add          r24, r22, r23
+  Str          r25, r12
+  Add          r26, r24, r25
+  Const        r23, "\n"
+  Add          r27, r26, r23
+  Move         r2, r27
+  SetGlobal    2,2,0,0
+  // var y = h - 1
+  Const        r28, 1
+  Sub          r29, r6, r28
+  Move         r30, r29
+L3:
+  // while y >= 0 {
+  Const        r31, 0
+  LessEq       r32, r31, r30
+  JumpIfFalse  r32, L0
+  // var line = ""
+  Const        r33, ""
+  Move         r34, r33
+  // var x = 0
+  Const        r31, 0
+  Move         r35, r31
+L2:
+  // while x < w {
+  Less         r36, r35, r9
+  JumpIfFalse  r36, L1
+  // let p = getPx(b,x,y)
+  Move         r37, r3
+  Move         r38, r35
+  Move         r39, r30
+  Call         r40, getPx, r37, r38, r39
+  Move         r41, r40
+  // line = line + "   " + pad(p.R, digits) + " " + pad(p.G, digits) + " " + pad(p.B, digits)
+  Const        r42, "   "
+  Add          r43, r34, r42
+  Const        r46, "R"
+  Index        r47, r41, r46
+  Move         r44, r47
+  Const        r48, {"0": 0, "1": 1, "2": 2, "3": 3, "4": 4, "5": 5, "6": 6, "7": 7, "8": 8, "9": 9}
+  Move         r45, r48
+  Call2        r49, pad, r44, r45
+  Add          r50, r43, r49
+  Const        r19, " "
+  Add          r51, r50, r19
+  Const        r54, "G"
+  Index        r55, r41, r54
+  Move         r52, r55
+  Const        r56, {"0": 0, "1": 1, "2": 2, "3": 3, "4": 4, "5": 5, "6": 6, "7": 7, "8": 8, "9": 9}
+  Move         r53, r56
+  Call2        r57, pad, r52, r53
+  Add          r58, r51, r57
+  Const        r19, " "
+  Add          r59, r58, r19
+  Const        r62, "B"
+  Index        r63, r41, r62
+  Move         r60, r63
+  Const        r64, {"0": 0, "1": 1, "2": 2, "3": 3, "4": 4, "5": 5, "6": 6, "7": 7, "8": 8, "9": 9}
+  Move         r61, r64
+  Call2        r65, pad, r60, r61
+  Add          r66, r59, r65
+  Move         r34, r66
+  // x = x + 1
+  Const        r28, 1
+  AddInt       r67, r35, r28
+  Move         r35, r67
+  // while x < w {
+  Jump         L2
+L1:
+  // out = out + line + "\n"
+  Add          r68, r2, r34
+  Const        r23, "\n"
+  Add          r69, r68, r23
+  Move         r2, r69
+  SetGlobal    2,2,0,0
+  // y = y - 1
+  Const        r28, 1
+  Sub          r70, r30, r28
+  Move         r30, r70
+  // while y >= 0 {
+  Jump         L3
+L0:
+  // return out
+  Return       r2

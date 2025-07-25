@@ -1,0 +1,532 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun pixelFromRgb(c: int): Pixel {
+func pixelFromRgb (regs=22)
+  // let r = ((c / 65536) as int) % 256
+  Const        r1, 65536
+  Div          r2, r0, r1
+  Cast         r3, r2, int
+  Const        r4, 256
+  Mod          r5, r3, r4
+  Move         r6, r5
+  // let g = ((c / 256) as int) % 256
+  Const        r4, 256
+  Div          r7, r0, r4
+  Cast         r8, r7, int
+  Const        r4, 256
+  Mod          r9, r8, r4
+  Move         r10, r9
+  // let b = c % 256
+  Const        r4, 256
+  Mod          r11, r0, r4
+  Move         r12, r11
+  // return Pixel{ R: r, G: g, B: b }
+  Const        r13, "__name"
+  Const        r14, "Pixel"
+  Const        r15, "R"
+  Move         r16, r6
+  Const        r17, "G"
+  Move         r18, r10
+  Const        r19, "B"
+  Move         r20, r12
+  MakeMap      r21, 4, r13
+  Return       r21
+
+  // fun rgbFromPixel(p: Pixel): int {
+func rgbFromPixel (regs=13)
+  // return p.R * 65536 + p.G * 256 + p.B
+  Const        r1, "R"
+  Index        r2, r0, r1
+  Const        r3, 65536
+  Mul          r4, r2, r3
+  Const        r5, "G"
+  Index        r6, r0, r5
+  Const        r7, 256
+  Mul          r8, r6, r7
+  Add          r9, r4, r8
+  Const        r10, "B"
+  Index        r11, r0, r10
+  Add          r12, r9, r11
+  Return       r12
+
+  // fun NewBitmap(x: int, y: int): Bitmap {
+func NewBitmap (regs=33)
+  // var data: list<list<Pixel>> = []
+  Const        r2, []
+  Move         r3, r2
+  // var row = 0
+  Const        r4, 0
+  Move         r5, r4
+L3:
+  // while row < y {
+  Less         r6, r5, r1
+  JumpIfFalse  r6, L0
+  // var r: list<Pixel> = []
+  Const        r2, []
+  Move         r7, r2
+  // var col = 0
+  Const        r4, 0
+  Move         r8, r4
+L2:
+  // while col < x {
+  Less         r9, r8, r0
+  JumpIfFalse  r9, L1
+  // r = append(r, Pixel{R:0,G:0,B:0})
+  Const        r4, 0
+  Const        r4, 0
+  Const        r4, 0
+  Const        r10, "__name"
+  Const        r11, "Pixel"
+  Const        r12, "R"
+  Move         r13, r4
+  Const        r14, "G"
+  Move         r15, r4
+  Const        r16, "B"
+  Move         r17, r4
+  MakeMap      r18, 4, r10
+  Append       r19, r7, r18
+  Move         r7, r19
+  // col = col + 1
+  Const        r20, 1
+  AddInt       r21, r8, r20
+  Move         r8, r21
+  // while col < x {
+  Jump         L2
+L1:
+  // data = append(data, r)
+  Append       r22, r3, r7
+  Move         r3, r22
+  // row = row + 1
+  Const        r20, 1
+  AddInt       r23, r5, r20
+  Move         r5, r23
+  // while row < y {
+  Jump         L3
+L0:
+  // return Bitmap{ cols: x, rows: y, px: data }
+  Const        r24, "__name"
+  Const        r25, "Bitmap"
+  Const        r26, "cols"
+  Move         r27, r0
+  Const        r28, "rows"
+  Move         r29, r1
+  Const        r30, "px"
+  Move         r31, r3
+  MakeMap      r32, 4, r24
+  Return       r32
+
+  // fun Extent(b: Bitmap): map<string,int> {
+func Extent (regs=10)
+  // return {"cols": b.cols, "rows": b.rows}
+  Const        r1, "cols"
+  Const        r1, "cols"
+  Index        r2, r0, r1
+  Const        r3, "rows"
+  Const        r3, "rows"
+  Index        r4, r0, r3
+  Move         r5, r1
+  Move         r6, r2
+  Move         r7, r3
+  Move         r8, r4
+  MakeMap      r9, 2, r5
+  Return       r9
+
+  // fun Fill(b: Bitmap, p: Pixel) {
+func Fill (regs=19)
+  // var y = 0
+  Const        r2, 0
+  Move         r3, r2
+L3:
+  // while y < b.rows {
+  Const        r4, "rows"
+  Index        r5, r0, r4
+  Less         r6, r3, r5
+  JumpIfFalse  r6, L0
+  // var x = 0
+  Const        r2, 0
+  Move         r7, r2
+L2:
+  // while x < b.cols {
+  Const        r8, "cols"
+  Index        r9, r0, r8
+  Less         r10, r7, r9
+  JumpIfFalse  r10, L1
+  // var px = b.px
+  Const        r11, "px"
+  Index        r12, r0, r11
+  Move         r13, r12
+  // var row = px[y]
+  Index        r14, r13, r3
+  Move         r15, r14
+  // row[x] = p
+  SetIndex     r15, r7, r1
+  // px[y] = row
+  SetIndex     r13, r3, r15
+  // b.px = px
+  Const        r11, "px"
+  SetIndex     r0, r11, r13
+  // x = x + 1
+  Const        r16, 1
+  AddInt       r17, r7, r16
+  Move         r7, r17
+  // while x < b.cols {
+  Jump         L2
+L1:
+  // y = y + 1
+  Const        r16, 1
+  AddInt       r18, r3, r16
+  Move         r3, r18
+  // while y < b.rows {
+  Jump         L3
+L0:
+  Return       r0
+
+  // fun FillRgb(b: Bitmap, c: int) { Fill(b, pixelFromRgb(c)) }
+func FillRgb (regs=7)
+  // fun FillRgb(b: Bitmap, c: int) { Fill(b, pixelFromRgb(c)) }
+  Move         r2, r0
+  Move         r4, r1
+  Call         r5, pixelFromRgb, r4
+  Move         r3, r5
+  Call2        r6, Fill, r2, r3
+  Return       r0
+
+  // fun SetPx(b: Bitmap, x: int, y: int, p: Pixel): bool {
+func SetPx (regs=21)
+  // if x < 0 || x >= b.cols || y < 0 || y >= b.rows { return false }
+  Const        r4, 0
+  Less         r5, r1, r4
+  Const        r6, "cols"
+  Index        r7, r0, r6
+  LessEq       r8, r7, r1
+  Const        r4, 0
+  Less         r9, r2, r4
+  Const        r10, "rows"
+  Index        r11, r0, r10
+  LessEq       r12, r11, r2
+  Move         r13, r5
+  JumpIfTrue   r13, L0
+  Move         r13, r8
+  JumpIfTrue   r13, L0
+  Move         r13, r9
+  JumpIfTrue   r13, L0
+  Move         r13, r12
+L0:
+  JumpIfFalse  r13, L1
+  Const        r14, false
+  Return       r14
+L1:
+  // var px = b.px
+  Const        r15, "px"
+  Index        r16, r0, r15
+  Move         r17, r16
+  // var row = px[y]
+  Index        r18, r17, r2
+  Move         r19, r18
+  // row[x] = p
+  SetIndex     r19, r1, r3
+  // px[y] = row
+  SetIndex     r17, r2, r19
+  // b.px = px
+  Const        r15, "px"
+  SetIndex     r0, r15, r17
+  // return true
+  Const        r20, true
+  Return       r20
+
+  // fun SetPxRgb(b: Bitmap, x: int, y: int, c: int): bool {
+func SetPxRgb (regs=11)
+  // return SetPx(b, x, y, pixelFromRgb(c))
+  Move         r4, r0
+  Move         r5, r1
+  Move         r6, r2
+  Move         r8, r3
+  Call         r9, pixelFromRgb, r8
+  Move         r7, r9
+  Call         r10, SetPx, r4, r5, r6, r7
+  Return       r10
+
+  // fun GetPx(b: Bitmap, x: int, y: int): map<string, any> {
+func GetPx (regs=27)
+  // if x < 0 || x >= b.cols || y < 0 || y >= b.rows {
+  Const        r3, 0
+  Less         r4, r1, r3
+  Const        r5, "cols"
+  Index        r6, r0, r5
+  LessEq       r7, r6, r1
+  Const        r3, 0
+  Less         r8, r2, r3
+  Const        r9, "rows"
+  Index        r10, r0, r9
+  LessEq       r11, r10, r2
+  Move         r12, r4
+  JumpIfTrue   r12, L0
+  Move         r12, r7
+  JumpIfTrue   r12, L0
+  Move         r12, r8
+  JumpIfTrue   r12, L0
+  Move         r12, r11
+L0:
+  JumpIfFalse  r12, L1
+  // return {"ok": false}
+  Const        r13, {"ok": false}
+  Return       r13
+L1:
+  // let row = b.px[y]
+  Const        r14, "px"
+  Index        r15, r0, r14
+  Index        r16, r15, r2
+  Move         r17, r16
+  // return {"ok": true, "pixel": row[x]}
+  Const        r18, "ok"
+  Const        r19, true
+  Const        r20, "pixel"
+  Index        r21, r17, r1
+  Move         r22, r18
+  Move         r23, r19
+  Move         r24, r20
+  Move         r25, r21
+  MakeMap      r26, 2, r22
+  Return       r26
+
+  // fun GetPxRgb(b: Bitmap, x: int, y: int): map<string, any> {
+func GetPxRgb (regs=23)
+  // let r = GetPx(b, x, y)
+  Move         r3, r0
+  Move         r4, r1
+  Move         r5, r2
+  Call         r6, GetPx, r3, r4, r5
+  Move         r7, r6
+  // if !r.ok { return {"ok": false} }
+  Const        r8, "ok"
+  Index        r9, r7, r8
+  Not          r10, r9
+  JumpIfFalse  r10, L0
+  Const        r11, {"ok": false}
+  Return       r11
+L0:
+  // return {"ok": true, "rgb": rgbFromPixel(r.pixel)}
+  Const        r8, "ok"
+  Const        r12, true
+  Const        r13, "rgb"
+  Const        r15, "pixel"
+  Index        r16, r7, r15
+  Move         r14, r16
+  Call         r17, rgbFromPixel, r14
+  Move         r18, r8
+  Move         r19, r12
+  Move         r20, r13
+  Move         r21, r17
+  MakeMap      r22, 2, r18
+  Return       r22
+
+  // fun ppmSize(b: Bitmap): int {
+func ppmSize (regs=22)
+  // let header = "P6\n# Creator: Rosetta Code http://rosettacode.org/\n" +
+  Const        r1, "P6\n# Creator: Rosetta Code http://rosettacode.org/\n"
+  // str(b.cols) + " " + str(b.rows) + "\n255\n"
+  Const        r2, "cols"
+  Index        r3, r0, r2
+  Str          r4, r3
+  // let header = "P6\n# Creator: Rosetta Code http://rosettacode.org/\n" +
+  Add          r5, r1, r4
+  // str(b.cols) + " " + str(b.rows) + "\n255\n"
+  Const        r6, " "
+  Add          r7, r5, r6
+  Const        r8, "rows"
+  Index        r9, r0, r8
+  Str          r10, r9
+  Add          r11, r7, r10
+  Const        r12, "\n255\n"
+  Add          r13, r11, r12
+  // let header = "P6\n# Creator: Rosetta Code http://rosettacode.org/\n" +
+  Move         r14, r13
+  // return len(header) + 3 * b.cols * b.rows
+  Len          r15, r14
+  Const        r16, 3
+  Const        r2, "cols"
+  Index        r17, r0, r2
+  Mul          r18, r16, r17
+  Const        r8, "rows"
+  Index        r19, r0, r8
+  Mul          r20, r18, r19
+  Add          r21, r15, r20
+  Return       r21
+
+  // fun pixelStr(p: Pixel): string {
+func pixelStr (regs=19)
+  // return "{" + str(p.R) + " " + str(p.G) + " " + str(p.B) + "}"
+  Const        r1, "{"
+  Const        r2, "R"
+  Index        r3, r0, r2
+  Str          r4, r3
+  Add          r5, r1, r4
+  Const        r6, " "
+  Add          r7, r5, r6
+  Const        r8, "G"
+  Index        r9, r0, r8
+  Str          r10, r9
+  Add          r11, r7, r10
+  Const        r6, " "
+  Add          r12, r11, r6
+  Const        r13, "B"
+  Index        r14, r0, r13
+  Str          r15, r14
+  Add          r16, r12, r15
+  Const        r17, "}"
+  Add          r18, r16, r17
+  Return       r18
+
+  // fun main() {
+func main (regs=104)
+  // var bm = NewBitmap(300, 240)
+  Const        r2, 300
+  Move         r0, r2
+  Const        r3, 240
+  Move         r1, r3
+  Call2        r4, NewBitmap, r0, r1
+  Move         r5, r4
+  // FillRgb(bm, 16711680)
+  Move         r6, r5
+  Const        r8, 16711680
+  Move         r7, r8
+  Call2        r9, FillRgb, r6, r7
+  // SetPxRgb(bm, 10, 20, 255)
+  Move         r10, r5
+  Const        r14, 10
+  Move         r11, r14
+  Const        r15, 20
+  Move         r12, r15
+  Const        r16, 255
+  Move         r13, r16
+  Call         r17, SetPxRgb, r10, r11, r12, r13
+  // SetPxRgb(bm, 20, 30, 0)
+  Move         r18, r5
+  Const        r15, 20
+  Move         r19, r15
+  Const        r22, 30
+  Move         r20, r22
+  Const        r23, 0
+  Move         r21, r23
+  Call         r24, SetPxRgb, r18, r19, r20, r21
+  // SetPxRgb(bm, 30, 40, 1056816)
+  Move         r25, r5
+  Const        r22, 30
+  Move         r26, r22
+  Const        r29, 40
+  Move         r27, r29
+  Const        r30, 1056816
+  Move         r28, r30
+  Call         r31, SetPxRgb, r25, r26, r27, r28
+  // let c1 = GetPx(bm, 0, 0)
+  Move         r32, r5
+  Const        r23, 0
+  Move         r33, r23
+  Const        r23, 0
+  Move         r34, r23
+  Call         r35, GetPx, r32, r33, r34
+  Move         r36, r35
+  // let c2 = GetPx(bm, 10, 20)
+  Move         r37, r5
+  Const        r14, 10
+  Move         r38, r14
+  Const        r15, 20
+  Move         r39, r15
+  Call         r40, GetPx, r37, r38, r39
+  Move         r41, r40
+  // let c3 = GetPx(bm, 30, 40)
+  Move         r42, r5
+  Const        r22, 30
+  Move         r43, r22
+  Const        r29, 40
+  Move         r44, r29
+  Call         r45, GetPx, r42, r43, r44
+  Move         r46, r45
+  // print("Image size: " + str(bm.cols) + " × " + str(bm.rows))
+  Const        r47, "Image size: "
+  Const        r48, "cols"
+  Index        r49, r5, r48
+  Str          r50, r49
+  Add          r51, r47, r50
+  Const        r52, " × "
+  Add          r53, r51, r52
+  Const        r54, "rows"
+  Index        r55, r5, r54
+  Str          r56, r55
+  Add          r57, r53, r56
+  Print        r57
+  // print(str(ppmSize(bm)) + " bytes when encoded as PPM.")
+  Move         r58, r5
+  Call         r59, ppmSize, r58
+  Str          r60, r59
+  Const        r61, " bytes when encoded as PPM."
+  Add          r62, r60, r61
+  Print        r62
+  // if c1.ok { print("Pixel at (0,0) is " + pixelStr(c1.pixel)) }
+  Const        r63, "ok"
+  Index        r64, r36, r63
+  JumpIfFalse  r64, L0
+  Const        r65, "Pixel at (0,0) is "
+  Const        r67, "pixel"
+  Index        r68, r36, r67
+  Move         r66, r68
+  Call         r69, pixelStr, r66
+  Add          r70, r65, r69
+  Print        r70
+L0:
+  // if c2.ok { print("Pixel at (10,20) is " + pixelStr(c2.pixel)) }
+  Const        r63, "ok"
+  Index        r71, r41, r63
+  JumpIfFalse  r71, L1
+  Const        r72, "Pixel at (10,20) is "
+  Const        r67, "pixel"
+  Index        r74, r41, r67
+  Move         r73, r74
+  Call         r75, pixelStr, r73
+  Add          r76, r72, r75
+  Print        r76
+L1:
+  // if c3.ok {
+  Const        r63, "ok"
+  Index        r77, r46, r63
+  JumpIfFalse  r77, L2
+  // let p = c3.pixel
+  Const        r67, "pixel"
+  Index        r78, r46, r67
+  Move         r79, r78
+  // var r16 = p.R * 257
+  Const        r80, "R"
+  Index        r81, r79, r80
+  Const        r82, 257
+  Mul          r83, r81, r82
+  Move         r84, r83
+  // var g16 = p.G * 257
+  Const        r85, "G"
+  Index        r86, r79, r85
+  Const        r82, 257
+  Mul          r87, r86, r82
+  Move         r88, r87
+  // var b16 = p.B * 257
+  Const        r89, "B"
+  Index        r90, r79, r89
+  Const        r82, 257
+  Mul          r91, r90, r82
+  Move         r92, r91
+  // print("Pixel at (30,40) has R=" + str(r16) + ", G=" + str(g16) + ", B=" + str(b16))
+  Const        r93, "Pixel at (30,40) has R="
+  Str          r94, r84
+  Add          r95, r93, r94
+  Const        r96, ", G="
+  Add          r97, r95, r96
+  Str          r98, r88
+  Add          r99, r97, r98
+  Const        r100, ", B="
+  Add          r101, r99, r100
+  Str          r102, r92
+  Add          r103, r101, r102
+  Print        r103
+L2:
+  Return       r0

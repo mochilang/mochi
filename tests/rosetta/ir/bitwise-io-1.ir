@@ -1,0 +1,379 @@
+func main (regs=1)
+  // ExampleWriter_WriteBits()
+  Call         r0, ExampleWriter_WriteBits, 
+  Return       r0
+
+  // fun pow2(n: int): int {
+func pow2 (regs=9)
+  // var v = 1
+  Const        r1, 1
+  Move         r2, r1
+  // var i = 0
+  Const        r3, 0
+  Move         r4, r3
+L1:
+  // while i < n { v = v * 2; i = i + 1 }
+  Less         r5, r4, r0
+  JumpIfFalse  r5, L0
+  Const        r6, 2
+  MulInt       r7, r2, r6
+  Move         r2, r7
+  Const        r1, 1
+  AddInt       r8, r4, r1
+  Move         r4, r8
+  Jump         L1
+L0:
+  // return v
+  Return       r2
+
+  // fun lshift(x: int, n: int): int { return x * pow2(n) }
+func lshift (regs=5)
+  // fun lshift(x: int, n: int): int { return x * pow2(n) }
+  Move         r2, r1
+  Call         r3, pow2, r2
+  Mul          r4, r0, r3
+  Return       r4
+
+  // fun rshift(x: int, n: int): int { return x / pow2(n) }
+func rshift (regs=5)
+  // fun rshift(x: int, n: int): int { return x / pow2(n) }
+  Move         r2, r1
+  Call         r3, pow2, r2
+  Div          r4, r0, r3
+  Return       r4
+
+  // fun NewWriter(order: string): Writer {
+func NewWriter (regs=14)
+  // return Writer{ order: order, bits: 0, nbits: 0, data: [] }
+  Const        r1, 0
+  Const        r1, 0
+  Const        r2, []
+  Const        r3, "__name"
+  Const        r4, "Writer"
+  Const        r5, "order"
+  Move         r6, r0
+  Const        r7, "bits"
+  Move         r8, r1
+  Const        r9, "nbits"
+  Move         r10, r1
+  Const        r11, "data"
+  Move         r12, r2
+  MakeMap      r13, 5, r3
+  Return       r13
+
+  // fun writeBitsLSB(w: Writer, c: int, width: int): Writer {
+func writeBitsLSB (regs=29)
+  // w.bits = w.bits + lshift(c, w.nbits)
+  Const        r3, "bits"
+  Index        r4, r0, r3
+  Move         r5, r1
+  Const        r7, "nbits"
+  Index        r8, r0, r7
+  Move         r6, r8
+  Call2        r9, lshift, r5, r6
+  Add          r10, r4, r9
+  Const        r3, "bits"
+  SetIndex     r0, r3, r10
+  // w.nbits = w.nbits + width
+  Const        r7, "nbits"
+  Index        r11, r0, r7
+  Add          r12, r11, r2
+  Const        r7, "nbits"
+  SetIndex     r0, r7, r12
+L1:
+  // while w.nbits >= 8 {
+  Const        r7, "nbits"
+  Index        r13, r0, r7
+  Const        r14, 8
+  LessEq       r15, r14, r13
+  JumpIfFalse  r15, L0
+  // let b = w.bits % 256
+  Const        r3, "bits"
+  Index        r16, r0, r3
+  Const        r17, 256
+  Mod          r18, r16, r17
+  Move         r19, r18
+  // w.data = append(w.data, b)
+  Const        r20, "data"
+  Index        r21, r0, r20
+  Append       r22, r21, r19
+  Const        r20, "data"
+  SetIndex     r0, r20, r22
+  // w.bits = rshift(w.bits, 8)
+  Const        r3, "bits"
+  Index        r25, r0, r3
+  Move         r23, r25
+  Const        r14, 8
+  Move         r24, r14
+  Call2        r26, rshift, r23, r24
+  Const        r3, "bits"
+  SetIndex     r0, r3, r26
+  // w.nbits = w.nbits - 8
+  Const        r7, "nbits"
+  Index        r27, r0, r7
+  Const        r14, 8
+  Sub          r28, r27, r14
+  Const        r7, "nbits"
+  SetIndex     r0, r7, r28
+  // while w.nbits >= 8 {
+  Jump         L1
+L0:
+  // return w
+  Return       r0
+
+  // fun writeBitsMSB(w: Writer, c: int, width: int): Writer {
+func writeBitsMSB (regs=37)
+  // w.bits = w.bits + lshift(c, 32 - width - w.nbits)
+  Const        r3, "bits"
+  Index        r4, r0, r3
+  Move         r5, r1
+  Const        r7, 32
+  Sub          r8, r7, r2
+  Const        r9, "nbits"
+  Index        r10, r0, r9
+  Sub          r11, r8, r10
+  Move         r6, r11
+  Call2        r12, lshift, r5, r6
+  Add          r13, r4, r12
+  Const        r3, "bits"
+  SetIndex     r0, r3, r13
+  // w.nbits = w.nbits + width
+  Const        r9, "nbits"
+  Index        r14, r0, r9
+  Add          r15, r14, r2
+  Const        r9, "nbits"
+  SetIndex     r0, r9, r15
+L1:
+  // while w.nbits >= 8 {
+  Const        r9, "nbits"
+  Index        r16, r0, r9
+  Const        r17, 8
+  LessEq       r18, r17, r16
+  JumpIfFalse  r18, L0
+  // let b = rshift(w.bits, 24) % 256
+  Const        r3, "bits"
+  Index        r21, r0, r3
+  Move         r19, r21
+  Const        r22, 24
+  Move         r20, r22
+  Call2        r23, rshift, r19, r20
+  Const        r24, 256
+  Mod          r25, r23, r24
+  Move         r26, r25
+  // w.data = append(w.data, b)
+  Const        r27, "data"
+  Index        r28, r0, r27
+  Append       r29, r28, r26
+  Const        r27, "data"
+  SetIndex     r0, r27, r29
+  // w.bits = (w.bits % pow2(24)) * 256
+  Const        r3, "bits"
+  Index        r30, r0, r3
+  Const        r22, 24
+  Move         r31, r22
+  Call         r32, pow2, r31
+  Mod          r33, r30, r32
+  Const        r24, 256
+  Mul          r34, r33, r24
+  Const        r3, "bits"
+  SetIndex     r0, r3, r34
+  // w.nbits = w.nbits - 8
+  Const        r9, "nbits"
+  Index        r35, r0, r9
+  Const        r17, 8
+  Sub          r36, r35, r17
+  Const        r9, "nbits"
+  SetIndex     r0, r9, r36
+  // while w.nbits >= 8 {
+  Jump         L1
+L0:
+  // return w
+  Return       r0
+
+  // fun WriteBits(w: Writer, c: int, width: int): Writer {
+func WriteBits (regs=15)
+  // if w.order == "LSB" { return writeBitsLSB(w, c, width) }
+  Const        r3, "order"
+  Index        r4, r0, r3
+  Const        r5, "LSB"
+  Equal        r6, r4, r5
+  JumpIfFalse  r6, L0
+  Move         r7, r0
+  Move         r8, r1
+  Move         r9, r2
+  Call         r10, writeBitsLSB, r7, r8, r9
+  Return       r10
+L0:
+  // return writeBitsMSB(w, c, width)
+  Move         r11, r0
+  Move         r12, r1
+  Move         r13, r2
+  Call         r14, writeBitsMSB, r11, r12, r13
+  Return       r14
+
+  // fun CloseWriter(w: Writer): Writer {
+func CloseWriter (regs=21)
+  // if w.nbits > 0 {
+  Const        r1, "nbits"
+  Index        r2, r0, r1
+  Const        r3, 0
+  Less         r4, r3, r2
+  JumpIfFalse  r4, L0
+  // if w.order == "MSB" { w.bits = rshift(w.bits, 24) }
+  Const        r5, "order"
+  Index        r6, r0, r5
+  Const        r7, "MSB"
+  Equal        r8, r6, r7
+  JumpIfFalse  r8, L1
+  Const        r11, "bits"
+  Index        r12, r0, r11
+  Move         r9, r12
+  Const        r13, 24
+  Move         r10, r13
+  Call2        r14, rshift, r9, r10
+  Const        r11, "bits"
+  SetIndex     r0, r11, r14
+L1:
+  // w.data = append(w.data, w.bits % 256)
+  Const        r15, "data"
+  Index        r16, r0, r15
+  Const        r11, "bits"
+  Index        r17, r0, r11
+  Const        r18, 256
+  Mod          r19, r17, r18
+  Append       r20, r16, r19
+  Const        r15, "data"
+  SetIndex     r0, r15, r20
+L0:
+  // w.bits = 0
+  Const        r3, 0
+  Const        r11, "bits"
+  SetIndex     r0, r11, r3
+  // w.nbits = 0
+  Const        r3, 0
+  Const        r1, "nbits"
+  SetIndex     r0, r1, r3
+  // return w
+  Return       r0
+
+  // fun toBinary(n: int, bits: int): string {
+func toBinary (regs=15)
+  // var b = ""
+  Const        r2, ""
+  Move         r3, r2
+  // var val = n
+  Move         r4, r0
+  // var i = 0
+  Const        r5, 0
+  Move         r6, r5
+L1:
+  // while i < bits {
+  Less         r7, r6, r1
+  JumpIfFalse  r7, L0
+  // b = str(val % 2) + b
+  Const        r8, 2
+  Mod          r9, r4, r8
+  Str          r10, r9
+  Add          r11, r10, r3
+  Move         r3, r11
+  // val = val / 2
+  Const        r8, 2
+  Div          r12, r4, r8
+  Move         r4, r12
+  // i = i + 1
+  Const        r13, 1
+  AddInt       r14, r6, r13
+  Move         r6, r14
+  // while i < bits {
+  Jump         L1
+L0:
+  // return b
+  Return       r3
+
+  // fun bytesToBits(bs: list<int>): string {
+func bytesToBits (regs=22)
+  // var out = "["
+  Const        r1, "["
+  Move         r2, r1
+  // var i = 0
+  Const        r3, 0
+  Move         r4, r3
+L2:
+  // while i < len(bs) {
+  Len          r5, r0
+  LessInt      r6, r4, r5
+  JumpIfFalse  r6, L0
+  // out = out + toBinary(bs[i], 8)
+  Index        r9, r0, r4
+  Move         r7, r9
+  Const        r10, 8
+  Move         r8, r10
+  Call2        r11, toBinary, r7, r8
+  Add          r12, r2, r11
+  Move         r2, r12
+  // if i + 1 < len(bs) { out = out + " " }
+  Const        r13, 1
+  AddInt       r14, r4, r13
+  Len          r15, r0
+  LessInt      r16, r14, r15
+  JumpIfFalse  r16, L1
+  Const        r17, " "
+  Add          r18, r2, r17
+  Move         r2, r18
+L1:
+  // i = i + 1
+  Const        r13, 1
+  AddInt       r19, r4, r13
+  Move         r4, r19
+  // while i < len(bs) {
+  Jump         L2
+L0:
+  // out = out + "]"
+  Const        r20, "]"
+  Add          r21, r2, r20
+  Move         r2, r21
+  // return out
+  Return       r2
+
+  // fun ExampleWriter_WriteBits() {
+func ExampleWriter_WriteBits (regs=28)
+  // var bw = NewWriter("MSB")
+  Const        r1, "MSB"
+  Move         r0, r1
+  Call         r2, NewWriter, r0
+  Move         r3, r2
+  // bw = WriteBits(bw, 0x0f, 4)
+  Move         r4, r3
+  Const        r7, 15
+  Move         r5, r7
+  Const        r8, 4
+  Move         r6, r8
+  Call         r9, WriteBits, r4, r5, r6
+  Move         r3, r9
+  // bw = WriteBits(bw, 0x00, 1)
+  Move         r10, r3
+  Const        r13, 0
+  Move         r11, r13
+  Const        r14, 1
+  Move         r12, r14
+  Call         r15, WriteBits, r10, r11, r12
+  Move         r3, r15
+  // bw = WriteBits(bw, 0x13, 5)
+  Move         r16, r3
+  Const        r19, 19
+  Move         r17, r19
+  Const        r20, 5
+  Move         r18, r20
+  Call         r21, WriteBits, r16, r17, r18
+  Move         r3, r21
+  // bw = CloseWriter(bw)
+  Move         r22, r3
+  Call         r23, CloseWriter, r22
+  Move         r3, r23
+  // print(bytesToBits(bw.data))
+  Const        r25, "data"
+  Index        r26, r3, r25
+  Move         r24, r26
+  Call         r27, bytesToBits, r24
+  Print        r27
+  Return       r0

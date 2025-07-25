@@ -2,15 +2,15 @@
 
 This checklist is auto-generated.
 Generated IR and outputs from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/ir`.
-Last updated: 2025-07-25 13:33 UTC
+Last updated: 2025-07-25 14:23 UTC
 
-## Rosetta Golden Test Checklist (117/284)
+## Rosetta Golden Test Checklist (127/284)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 116µs | 11.7 KB |
 | 2 | 100-doors-3 | ✓ | 184µs | 7.7 KB |
 | 3 | 100-doors | ✓ | 6.231ms | 851.8 KB |
-| 4 | 100-prisoners | ✓ | 3.400683s | 1.5 MB |
+| 4 | 100-prisoners | ✓ | 4.224632s | 275.7 KB |
 | 5 | 15-puzzle-game | ✓ |  |  |
 | 6 | 15-puzzle-solver | ✓ | 917.949ms | 26.9 KB |
 | 7 | 2048 | ✓ | 5.393ms |  |
@@ -127,16 +127,16 @@ Last updated: 2025-07-25 13:33 UTC
 | 118 | bitmap-b-zier-curves-quadratic |   |  |  |
 | 119 | bitmap-bresenhams-line-algorithm | ✓ | 64µs | 26.3 KB |
 | 120 | bitmap-flood-fill |   |  |  |
-| 121 | bitmap-histogram |   |  |  |
-| 122 | bitmap-midpoint-circle-algorithm |   |  |  |
-| 123 | bitmap-ppm-conversion-through-a-pipe |   |  |  |
-| 124 | bitmap-read-a-ppm-file |   |  |  |
-| 125 | bitmap-read-an-image-through-a-pipe |   |  |  |
-| 126 | bitmap-write-a-ppm-file |   |  |  |
-| 127 | bitmap |   |  |  |
-| 128 | bitwise-io-1 |   |  |  |
-| 129 | bitwise-io-2 |   |  |  |
-| 130 | bitwise-operations |   |  |  |
+| 121 | bitmap-histogram | ✓ | 583µs | 21.8 KB |
+| 122 | bitmap-midpoint-circle-algorithm | ✓ | 12.763ms | 856.2 KB |
+| 123 | bitmap-ppm-conversion-through-a-pipe | ✓ | 2.860115s | 269.0 MB |
+| 124 | bitmap-read-a-ppm-file | ✓ | 2.681ms | 1.1 MB |
+| 125 | bitmap-read-an-image-through-a-pipe | ✓ | 1.176ms | 142.3 KB |
+| 126 | bitmap-write-a-ppm-file | ✓ | 877µs | 111.5 KB |
+| 127 | bitmap | ✓ | 1.640042s | 160.4 MB |
+| 128 | bitwise-io-1 | ✓ | 643µs | 49.5 KB |
+| 129 | bitwise-io-2 | ✓ | 1.831ms | 672.0 KB |
+| 130 | bitwise-operations | ✓ | 1.237ms | 114.4 KB |
 | 131 | blum-integer |   |  |  |
 | 132 | boolean-values |   |  |  |
 | 133 | box-the-compass |   |  |  |

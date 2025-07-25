@@ -1,0 +1,271 @@
+func main (regs=14)
+  // var g = circle(10)
+  Const        r2, 10
+  Move         r1, r2
+  Call         r3, circle, r1
+  Move         r0, r3
+  SetGlobal    0,0,0,0
+  // for row in g {
+  IterPrep     r4, r0
+  Len          r5, r4
+  Const        r6, 0
+L1:
+  LessInt      r7, r6, r5
+  JumpIfFalse  r7, L0
+  Index        r8, r4, r6
+  Move         r9, r8
+  // print(trimRight(row))
+  Move         r10, r9
+  Call         r11, trimRight, r10
+  Print        r11
+  // for row in g {
+  Const        r12, 1
+  AddInt       r13, r6, r12
+  Move         r6, r13
+  Jump         L1
+L0:
+  Return       r0
+
+  // fun initGrid(size: int): list<list<string>> {
+func initGrid (regs=15)
+  // var g: list<list<string>> = []
+  Const        r2, []
+  Move         r0, r2
+  SetGlobal    0,0,0,0
+  // var y = 0
+  Const        r3, 0
+  Move         r4, r3
+L3:
+  // while y < size {
+  Less         r5, r4, r1
+  JumpIfFalse  r5, L0
+  // var row: list<string> = []
+  Const        r2, []
+  Move         r6, r2
+  // var x = 0
+  Const        r3, 0
+  Move         r7, r3
+L2:
+  // while x < size {
+  Less         r8, r7, r1
+  JumpIfFalse  r8, L1
+  // row = append(row, " ")
+  Const        r9, " "
+  Append       r10, r6, r9
+  Move         r6, r10
+  // x = x + 1
+  Const        r11, 1
+  AddInt       r12, r7, r11
+  Move         r7, r12
+  // while x < size {
+  Jump         L2
+L1:
+  // g = append(g, row)
+  Append       r13, r0, r6
+  Move         r0, r13
+  SetGlobal    0,0,0,0
+  // y = y + 1
+  Const        r11, 1
+  AddInt       r14, r4, r11
+  Move         r4, r14
+  // while y < size {
+  Jump         L3
+L0:
+  // return g
+  Return       r0
+
+  // fun set(g: list<list<string>>, x: int, y: int) {
+func set (regs=15)
+  // if x >= 0 && x < len(g[0]) && y >= 0 && y < len(g) {
+  Const        r4, 0
+  LessEq       r5, r4, r2
+  Const        r4, 0
+  Index        r6, r1, r4
+  Len          r7, r6
+  Less         r8, r2, r7
+  Const        r4, 0
+  LessEq       r9, r4, r3
+  Len          r10, r1
+  Less         r11, r3, r10
+  Move         r12, r5
+  JumpIfFalse  r12, L0
+  Move         r12, r8
+  JumpIfFalse  r12, L0
+  Move         r12, r9
+  JumpIfFalse  r12, L0
+  Move         r12, r11
+L0:
+  JumpIfFalse  r12, L1
+  // g[y][x] = "#"
+  Index        r13, r1, r3
+  Const        r14, "#"
+  SetIndex     r13, r2, r14
+  SetGlobal    0,1,0,0
+L1:
+  Return       r0
+
+  // fun circle(r: int): list<list<string>> {
+func circle (regs=73)
+  // let size = r * 2 + 1
+  Const        r2, 2
+  Mul          r3, r1, r2
+  Const        r4, 1
+  Add          r5, r3, r4
+  Move         r6, r5
+  // var g = initGrid(size)
+  Move         r7, r6
+  Call         r8, initGrid, r7
+  Move         r0, r8
+  SetGlobal    0,0,0,0
+  // var x = r
+  Move         r9, r1
+  // var y = 0
+  Const        r10, 0
+  Move         r11, r10
+  // var err = 1 - r
+  Const        r4, 1
+  Sub          r12, r4, r1
+  Move         r13, r12
+L2:
+  // while y <= x {
+  LessEq       r14, r11, r9
+  JumpIfFalse  r14, L0
+  // set(g, r + x, r + y)
+  Move         r15, r0
+  Add          r18, r1, r9
+  Move         r16, r18
+  Add          r19, r1, r11
+  Move         r17, r19
+  Call         r20, set, r15, r16, r17
+  // set(g, r + y, r + x)
+  Move         r21, r0
+  Add          r24, r1, r11
+  Move         r22, r24
+  Add          r25, r1, r9
+  Move         r23, r25
+  Call         r26, set, r21, r22, r23
+  // set(g, r - x, r + y)
+  Move         r27, r0
+  Sub          r30, r1, r9
+  Move         r28, r30
+  Add          r31, r1, r11
+  Move         r29, r31
+  Call         r32, set, r27, r28, r29
+  // set(g, r - y, r + x)
+  Move         r33, r0
+  Sub          r36, r1, r11
+  Move         r34, r36
+  Add          r37, r1, r9
+  Move         r35, r37
+  Call         r38, set, r33, r34, r35
+  // set(g, r - x, r - y)
+  Move         r39, r0
+  Sub          r42, r1, r9
+  Move         r40, r42
+  Sub          r43, r1, r11
+  Move         r41, r43
+  Call         r44, set, r39, r40, r41
+  // set(g, r - y, r - x)
+  Move         r45, r0
+  Sub          r48, r1, r11
+  Move         r46, r48
+  Sub          r49, r1, r9
+  Move         r47, r49
+  Call         r50, set, r45, r46, r47
+  // set(g, r + x, r - y)
+  Move         r51, r0
+  Add          r54, r1, r9
+  Move         r52, r54
+  Sub          r55, r1, r11
+  Move         r53, r55
+  Call         r56, set, r51, r52, r53
+  // set(g, r + y, r - x)
+  Move         r57, r0
+  Add          r60, r1, r11
+  Move         r58, r60
+  Sub          r61, r1, r9
+  Move         r59, r61
+  Call         r62, set, r57, r58, r59
+  // y = y + 1
+  Const        r4, 1
+  AddInt       r63, r11, r4
+  Move         r11, r63
+  // if err < 0 {
+  Const        r10, 0
+  Less         r64, r13, r10
+  JumpIfFalse  r64, L1
+  // err = err + 2 * y + 1
+  Const        r2, 2
+  MulInt       r65, r2, r11
+  Add          r66, r13, r65
+  Const        r4, 1
+  Add          r67, r66, r4
+  Move         r13, r67
+  // if err < 0 {
+  Jump         L2
+L1:
+  // x = x - 1
+  Const        r4, 1
+  Sub          r68, r9, r4
+  Move         r9, r68
+  // err = err + 2 * (y - x) + 1
+  Const        r2, 2
+  Sub          r69, r11, r9
+  Mul          r70, r2, r69
+  Add          r71, r13, r70
+  Const        r4, 1
+  Add          r72, r71, r4
+  Move         r13, r72
+  // while y <= x {
+  Jump         L2
+L0:
+  // return g
+  Return       r0
+
+  // fun trimRight(row: list<string>): string {
+func trimRight (regs=20)
+  // var end = len(row)
+  Len          r2, r1
+  Move         r3, r2
+L2:
+  // while end > 0 && row[end-1] == " " { end = end - 1 }
+  Const        r4, 0
+  LessInt      r5, r4, r3
+  Const        r6, 1
+  SubInt       r7, r3, r6
+  Index        r8, r1, r7
+  Const        r9, " "
+  Equal        r10, r8, r9
+  Move         r11, r5
+  JumpIfFalse  r11, L0
+  Move         r11, r10
+L0:
+  JumpIfFalse  r11, L1
+  Const        r6, 1
+  SubInt       r12, r3, r6
+  Move         r3, r12
+  Jump         L2
+L1:
+  // var s = ""
+  Const        r13, ""
+  Move         r14, r13
+  // var i = 0
+  Const        r4, 0
+  Move         r15, r4
+L4:
+  // while i < end {
+  LessInt      r16, r15, r3
+  JumpIfFalse  r16, L3
+  // s = s + row[i]
+  Index        r17, r1, r15
+  Add          r18, r14, r17
+  Move         r14, r18
+  // i = i + 1
+  Const        r6, 1
+  AddInt       r19, r15, r6
+  Move         r15, r19
+  // while i < end {
+  Jump         L4
+L3:
+  // return s
+  Return       r14

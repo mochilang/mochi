@@ -1,0 +1,404 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun pixelFromRgb(c: int): Pixel {
+func pixelFromRgb (regs=22)
+  // let r = ((c / 65536) as int) % 256
+  Const        r1, 65536
+  Div          r2, r0, r1
+  Cast         r3, r2, int
+  Const        r4, 256
+  Mod          r5, r3, r4
+  Move         r6, r5
+  // let g = ((c / 256) as int) % 256
+  Const        r4, 256
+  Div          r7, r0, r4
+  Cast         r8, r7, int
+  Const        r4, 256
+  Mod          r9, r8, r4
+  Move         r10, r9
+  // let b = c % 256
+  Const        r4, 256
+  Mod          r11, r0, r4
+  Move         r12, r11
+  // return Pixel{ R: r, G: g, B: b }
+  Const        r13, "__name"
+  Const        r14, "Pixel"
+  Const        r15, "R"
+  Move         r16, r6
+  Const        r17, "G"
+  Move         r18, r10
+  Const        r19, "B"
+  Move         r20, r12
+  MakeMap      r21, 4, r13
+  Return       r21
+
+  // fun rgbFromPixel(p: Pixel): int {
+func rgbFromPixel (regs=13)
+  // return p.R * 65536 + p.G * 256 + p.B
+  Const        r1, "R"
+  Index        r2, r0, r1
+  Const        r3, 65536
+  Mul          r4, r2, r3
+  Const        r5, "G"
+  Index        r6, r0, r5
+  Const        r7, 256
+  Mul          r8, r6, r7
+  Add          r9, r4, r8
+  Const        r10, "B"
+  Index        r11, r0, r10
+  Add          r12, r9, r11
+  Return       r12
+
+  // fun NewBitmap(x: int, y: int): Bitmap {
+func NewBitmap (regs=33)
+  // var data: list<list<Pixel>> = []
+  Const        r2, []
+  Move         r3, r2
+  // var row = 0
+  Const        r4, 0
+  Move         r5, r4
+L3:
+  // while row < y {
+  Less         r6, r5, r1
+  JumpIfFalse  r6, L0
+  // var r: list<Pixel> = []
+  Const        r2, []
+  Move         r7, r2
+  // var col = 0
+  Const        r4, 0
+  Move         r8, r4
+L2:
+  // while col < x {
+  Less         r9, r8, r0
+  JumpIfFalse  r9, L1
+  // r = append(r, Pixel{R:0,G:0,B:0})
+  Const        r4, 0
+  Const        r4, 0
+  Const        r4, 0
+  Const        r10, "__name"
+  Const        r11, "Pixel"
+  Const        r12, "R"
+  Move         r13, r4
+  Const        r14, "G"
+  Move         r15, r4
+  Const        r16, "B"
+  Move         r17, r4
+  MakeMap      r18, 4, r10
+  Append       r19, r7, r18
+  Move         r7, r19
+  // col = col + 1
+  Const        r20, 1
+  AddInt       r21, r8, r20
+  Move         r8, r21
+  // while col < x {
+  Jump         L2
+L1:
+  // data = append(data, r)
+  Append       r22, r3, r7
+  Move         r3, r22
+  // row = row + 1
+  Const        r20, 1
+  AddInt       r23, r5, r20
+  Move         r5, r23
+  // while row < y {
+  Jump         L3
+L0:
+  // return Bitmap{ cols: x, rows: y, px: data }
+  Const        r24, "__name"
+  Const        r25, "Bitmap"
+  Const        r26, "cols"
+  Move         r27, r0
+  Const        r28, "rows"
+  Move         r29, r1
+  Const        r30, "px"
+  Move         r31, r3
+  MakeMap      r32, 4, r24
+  Return       r32
+
+  // fun FillRgb(b: Bitmap, c: int) {
+func FillRgb (regs=22)
+  // var y = 0
+  Const        r2, 0
+  Move         r3, r2
+  // let p = pixelFromRgb(c)
+  Move         r4, r1
+  Call         r5, pixelFromRgb, r4
+  Move         r6, r5
+L3:
+  // while y < b.rows {
+  Const        r7, "rows"
+  Index        r8, r0, r7
+  Less         r9, r3, r8
+  JumpIfFalse  r9, L0
+  // var x = 0
+  Const        r2, 0
+  Move         r10, r2
+L2:
+  // while x < b.cols {
+  Const        r11, "cols"
+  Index        r12, r0, r11
+  Less         r13, r10, r12
+  JumpIfFalse  r13, L1
+  // var px = b.px
+  Const        r14, "px"
+  Index        r15, r0, r14
+  Move         r16, r15
+  // var row = px[y]
+  Index        r17, r16, r3
+  Move         r18, r17
+  // row[x] = p
+  SetIndex     r18, r10, r6
+  // px[y] = row
+  SetIndex     r16, r3, r18
+  // b.px = px
+  Const        r14, "px"
+  SetIndex     r0, r14, r16
+  // x = x + 1
+  Const        r19, 1
+  AddInt       r20, r10, r19
+  Move         r10, r20
+  // while x < b.cols {
+  Jump         L2
+L1:
+  // y = y + 1
+  Const        r19, 1
+  AddInt       r21, r3, r19
+  Move         r3, r21
+  // while y < b.rows {
+  Jump         L3
+L0:
+  Return       r0
+
+  // fun SetPxRgb(b: Bitmap, x: int, y: int, c: int): bool {
+func SetPxRgb (regs=23)
+  // if x < 0 || x >= b.cols || y < 0 || y >= b.rows { return false }
+  Const        r4, 0
+  Less         r5, r1, r4
+  Const        r6, "cols"
+  Index        r7, r0, r6
+  LessEq       r8, r7, r1
+  Const        r4, 0
+  Less         r9, r2, r4
+  Const        r10, "rows"
+  Index        r11, r0, r10
+  LessEq       r12, r11, r2
+  Move         r13, r5
+  JumpIfTrue   r13, L0
+  Move         r13, r8
+  JumpIfTrue   r13, L0
+  Move         r13, r9
+  JumpIfTrue   r13, L0
+  Move         r13, r12
+L0:
+  JumpIfFalse  r13, L1
+  Const        r14, false
+  Return       r14
+L1:
+  // var px = b.px
+  Const        r15, "px"
+  Index        r16, r0, r15
+  Move         r17, r16
+  // var row = px[y]
+  Index        r18, r17, r2
+  Move         r19, r18
+  // row[x] = pixelFromRgb(c)
+  Move         r20, r3
+  Call         r21, pixelFromRgb, r20
+  SetIndex     r19, r1, r21
+  // px[y] = row
+  SetIndex     r17, r2, r19
+  // b.px = px
+  Const        r15, "px"
+  SetIndex     r0, r15, r17
+  // return true
+  Const        r22, true
+  Return       r22
+
+  // fun nextRand(seed: int): int { return (seed * 1664525 + 1013904223) % 2147483648 }
+func nextRand (regs=7)
+  // fun nextRand(seed: int): int { return (seed * 1664525 + 1013904223) % 2147483648 }
+  Const        r1, 1664525
+  Mul          r2, r0, r1
+  Const        r3, 1013904223
+  Add          r4, r2, r3
+  Const        r5, 2147483648
+  Mod          r6, r4, r5
+  Return       r6
+
+  // fun main() {
+func main (regs=75)
+  // var bm = NewBitmap(400, 300)
+  Const        r2, 400
+  Move         r0, r2
+  Const        r3, 300
+  Move         r1, r3
+  Call2        r4, NewBitmap, r0, r1
+  Move         r5, r4
+  // FillRgb(bm, 12615744)
+  Move         r6, r5
+  Const        r8, 12615744
+  Move         r7, r8
+  Call2        r9, FillRgb, r6, r7
+  // var seed = now()
+  Now          r10
+  Move         r11, r10
+  // var i = 0
+  Const        r12, 0
+  Move         r13, r12
+L1:
+  // while i < 2000 {
+  Const        r14, 2000
+  LessInt      r15, r13, r14
+  JumpIfFalse  r15, L0
+  // seed = nextRand(seed)
+  Move         r16, r11
+  Call         r17, nextRand, r16
+  Move         r11, r17
+  // let x = seed % 400
+  Const        r2, 400
+  Mod          r18, r11, r2
+  Move         r19, r18
+  // seed = nextRand(seed)
+  Move         r20, r11
+  Call         r21, nextRand, r20
+  Move         r11, r21
+  // let y = seed % 300
+  Const        r3, 300
+  Mod          r22, r11, r3
+  Move         r23, r22
+  // SetPxRgb(bm, x, y, 8405024)
+  Move         r24, r5
+  Move         r25, r19
+  Move         r26, r23
+  Const        r28, 8405024
+  Move         r27, r28
+  Call         r29, SetPxRgb, r24, r25, r26, r27
+  // i = i + 1
+  Const        r30, 1
+  AddInt       r31, r13, r30
+  Move         r13, r31
+  // while i < 2000 {
+  Jump         L1
+L0:
+  // var x = 0
+  Const        r12, 0
+  Move         r32, r12
+L7:
+  // while x < 400 {
+  Const        r2, 400
+  LessInt      r33, r32, r2
+  JumpIfFalse  r33, L2
+  // var y = 240
+  Const        r34, 240
+  Move         r35, r34
+L4:
+  // while y < 245 {
+  Const        r36, 245
+  LessInt      r37, r35, r36
+  JumpIfFalse  r37, L3
+  // SetPxRgb(bm, x, y, 8405024)
+  Move         r38, r5
+  Move         r39, r32
+  Move         r40, r35
+  Const        r28, 8405024
+  Move         r41, r28
+  Call         r42, SetPxRgb, r38, r39, r40, r41
+  // y = y + 1
+  Const        r30, 1
+  AddInt       r43, r35, r30
+  Move         r35, r43
+  // while y < 245 {
+  Jump         L4
+L3:
+  // y = 260
+  Const        r44, 260
+  Move         r35, r44
+L6:
+  // while y < 265 {
+  Const        r45, 265
+  LessInt      r46, r35, r45
+  JumpIfFalse  r46, L5
+  // SetPxRgb(bm, x, y, 8405024)
+  Move         r47, r5
+  Move         r48, r32
+  Move         r49, r35
+  Const        r28, 8405024
+  Move         r50, r28
+  Call         r51, SetPxRgb, r47, r48, r49, r50
+  // y = y + 1
+  Const        r30, 1
+  AddInt       r52, r35, r30
+  Move         r35, r52
+  // while y < 265 {
+  Jump         L6
+L5:
+  // x = x + 1
+  Const        r30, 1
+  AddInt       r53, r32, r30
+  Move         r32, r53
+  // while x < 400 {
+  Jump         L7
+L2:
+  // var y = 0
+  Const        r12, 0
+  Move         r54, r12
+L13:
+  // while y < 300 {
+  Const        r3, 300
+  LessInt      r55, r54, r3
+  JumpIfFalse  r55, L8
+  // var x = 80
+  Const        r56, 80
+  Move         r32, r56
+L10:
+  // while x < 85 {
+  Const        r57, 85
+  LessInt      r58, r32, r57
+  JumpIfFalse  r58, L9
+  // SetPxRgb(bm, x, y, 8405024)
+  Move         r59, r5
+  Move         r60, r32
+  Move         r61, r54
+  Const        r28, 8405024
+  Move         r62, r28
+  Call         r63, SetPxRgb, r59, r60, r61, r62
+  // x = x + 1
+  Const        r30, 1
+  AddInt       r64, r32, r30
+  Move         r32, r64
+  // while x < 85 {
+  Jump         L10
+L9:
+  // x = 95
+  Const        r65, 95
+  Move         r32, r65
+L12:
+  // while x < 100 {
+  Const        r66, 100
+  LessInt      r67, r32, r66
+  JumpIfFalse  r67, L11
+  // SetPxRgb(bm, x, y, 8405024)
+  Move         r68, r5
+  Move         r69, r32
+  Move         r70, r54
+  Const        r28, 8405024
+  Move         r71, r28
+  Call         r72, SetPxRgb, r68, r69, r70, r71
+  // x = x + 1
+  Const        r30, 1
+  AddInt       r73, r32, r30
+  Move         r32, r73
+  // while x < 100 {
+  Jump         L12
+L11:
+  // y = y + 1
+  Const        r30, 1
+  AddInt       r74, r54, r30
+  Move         r54, r74
+  // while y < 300 {
+  Jump         L13
+L8:
+  Return       r0

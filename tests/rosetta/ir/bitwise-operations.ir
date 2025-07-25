@@ -1,0 +1,566 @@
+func main (regs=6)
+  // bitwise(-460, 6)
+  Const        r2, 460
+  Const        r3, -460
+  Move         r0, r3
+  Const        r4, 6
+  Move         r1, r4
+  Call2        r5, bitwise, r0, r1
+  Return       r0
+
+  // fun toUnsigned16(n: int): int {
+func toUnsigned16 (regs=7)
+  // var u = n
+  Move         r1, r0
+  // if u < 0 { u = u + 65536 }
+  Const        r2, 0
+  Less         r3, r1, r2
+  JumpIfFalse  r3, L0
+  Const        r4, 65536
+  Add          r5, r1, r4
+  Move         r1, r5
+L0:
+  // return u % 65536
+  Const        r4, 65536
+  Mod          r6, r1, r4
+  Return       r6
+
+  // fun bin16(n: int): string {
+func bin16 (regs=23)
+  // var u = toUnsigned16(n)
+  Move         r1, r0
+  Call         r2, toUnsigned16, r1
+  Move         r3, r2
+  // var bits = ""
+  Const        r4, ""
+  Move         r5, r4
+  // var mask = 32768
+  Const        r6, 32768
+  Move         r7, r6
+  // for i in 0..16 {
+  Const        r8, 0
+  Const        r9, 16
+  Move         r10, r8
+L3:
+  LessInt      r11, r10, r9
+  JumpIfFalse  r11, L0
+  // if u >= mask {
+  LessEq       r12, r7, r3
+  JumpIfFalse  r12, L1
+  // bits = bits + "1"
+  Const        r13, "1"
+  Add          r14, r5, r13
+  Move         r5, r14
+  // u = u - mask
+  Sub          r15, r3, r7
+  Move         r3, r15
+  // if u >= mask {
+  Jump         L2
+L1:
+  // bits = bits + "0"
+  Const        r16, "0"
+  Add          r17, r5, r16
+  Move         r5, r17
+L2:
+  // mask = (mask / 2) as int
+  Const        r18, 2
+  DivInt       r19, r7, r18
+  Cast         r20, r19, int
+  Move         r7, r20
+  // for i in 0..16 {
+  Const        r21, 1
+  AddInt       r22, r10, r21
+  Move         r10, r22
+  Jump         L3
+L0:
+  // return bits
+  Return       r5
+
+  // fun bit_and(a: int, b: int): int {
+func bit_and (regs=29)
+  // var ua = toUnsigned16(a)
+  Move         r2, r0
+  Call         r3, toUnsigned16, r2
+  Move         r4, r3
+  // var ub = toUnsigned16(b)
+  Move         r5, r1
+  Call         r6, toUnsigned16, r5
+  Move         r7, r6
+  // var res = 0
+  Const        r8, 0
+  Move         r9, r8
+  // var bit = 1
+  Const        r10, 1
+  Move         r11, r10
+  // for i in 0..16 {
+  Const        r8, 0
+  Const        r12, 16
+  Move         r13, r8
+L3:
+  LessInt      r14, r13, r12
+  JumpIfFalse  r14, L0
+  // if ua % 2 == 1 && ub % 2 == 1 { res = res + bit }
+  Const        r15, 2
+  Mod          r16, r4, r15
+  Const        r15, 2
+  Mod          r17, r7, r15
+  Const        r10, 1
+  Equal        r18, r16, r10
+  Const        r10, 1
+  Equal        r19, r17, r10
+  Move         r20, r18
+  JumpIfFalse  r20, L1
+  Move         r20, r19
+L1:
+  JumpIfFalse  r20, L2
+  AddInt       r21, r9, r11
+  Move         r9, r21
+L2:
+  // ua = (ua / 2) as int
+  Const        r15, 2
+  Div          r22, r4, r15
+  Cast         r23, r22, int
+  Move         r4, r23
+  // ub = (ub / 2) as int
+  Const        r15, 2
+  Div          r24, r7, r15
+  Cast         r25, r24, int
+  Move         r7, r25
+  // bit = bit * 2
+  Const        r15, 2
+  MulInt       r26, r11, r15
+  Move         r11, r26
+  // for i in 0..16 {
+  Const        r27, 1
+  AddInt       r28, r13, r27
+  Move         r13, r28
+  Jump         L3
+L0:
+  // return res
+  Return       r9
+
+  // fun bit_or(a: int, b: int): int {
+func bit_or (regs=29)
+  // var ua = toUnsigned16(a)
+  Move         r2, r0
+  Call         r3, toUnsigned16, r2
+  Move         r4, r3
+  // var ub = toUnsigned16(b)
+  Move         r5, r1
+  Call         r6, toUnsigned16, r5
+  Move         r7, r6
+  // var res = 0
+  Const        r8, 0
+  Move         r9, r8
+  // var bit = 1
+  Const        r10, 1
+  Move         r11, r10
+  // for i in 0..16 {
+  Const        r8, 0
+  Const        r12, 16
+  Move         r13, r8
+L3:
+  LessInt      r14, r13, r12
+  JumpIfFalse  r14, L0
+  // if ua % 2 == 1 || ub % 2 == 1 { res = res + bit }
+  Const        r15, 2
+  Mod          r16, r4, r15
+  Const        r15, 2
+  Mod          r17, r7, r15
+  Const        r10, 1
+  Equal        r18, r16, r10
+  Const        r10, 1
+  Equal        r19, r17, r10
+  Move         r20, r18
+  JumpIfTrue   r20, L1
+  Move         r20, r19
+L1:
+  JumpIfFalse  r20, L2
+  AddInt       r21, r9, r11
+  Move         r9, r21
+L2:
+  // ua = (ua / 2) as int
+  Const        r15, 2
+  Div          r22, r4, r15
+  Cast         r23, r22, int
+  Move         r4, r23
+  // ub = (ub / 2) as int
+  Const        r15, 2
+  Div          r24, r7, r15
+  Cast         r25, r24, int
+  Move         r7, r25
+  // bit = bit * 2
+  Const        r15, 2
+  MulInt       r26, r11, r15
+  Move         r11, r26
+  // for i in 0..16 {
+  Const        r27, 1
+  AddInt       r28, r13, r27
+  Move         r13, r28
+  Jump         L3
+L0:
+  // return res
+  Return       r9
+
+  // fun bit_xor(a: int, b: int): int {
+func bit_xor (regs=35)
+  // var ua = toUnsigned16(a)
+  Move         r2, r0
+  Call         r3, toUnsigned16, r2
+  Move         r4, r3
+  // var ub = toUnsigned16(b)
+  Move         r5, r1
+  Call         r6, toUnsigned16, r5
+  Move         r7, r6
+  // var res = 0
+  Const        r8, 0
+  Move         r9, r8
+  // var bit = 1
+  Const        r10, 1
+  Move         r11, r10
+  // for i in 0..16 {
+  Const        r8, 0
+  Const        r12, 16
+  Move         r13, r8
+L5:
+  LessInt      r14, r13, r12
+  JumpIfFalse  r14, L0
+  // let abit = ua % 2
+  Const        r15, 2
+  Mod          r16, r4, r15
+  Move         r17, r16
+  // let bbit = ub % 2
+  Const        r15, 2
+  Mod          r18, r7, r15
+  Move         r19, r18
+  // if (abit == 1 && bbit == 0) || (abit == 0 && bbit == 1) {
+  Const        r10, 1
+  Equal        r20, r17, r10
+  Const        r8, 0
+  Equal        r21, r19, r8
+  Move         r22, r20
+  JumpIfFalse  r22, L1
+  Move         r22, r21
+L1:
+  Move         r23, r22
+  JumpIfTrue   r23, L2
+  Const        r8, 0
+  Equal        r24, r17, r8
+  Const        r10, 1
+  Equal        r25, r19, r10
+  Move         r26, r24
+  JumpIfFalse  r26, L3
+  Move         r26, r25
+L3:
+  Move         r23, r26
+L2:
+  JumpIfFalse  r23, L4
+  // res = res + bit
+  AddInt       r27, r9, r11
+  Move         r9, r27
+L4:
+  // ua = (ua / 2) as int
+  Const        r15, 2
+  Div          r28, r4, r15
+  Cast         r29, r28, int
+  Move         r4, r29
+  // ub = (ub / 2) as int
+  Const        r15, 2
+  Div          r30, r7, r15
+  Cast         r31, r30, int
+  Move         r7, r31
+  // bit = bit * 2
+  Const        r15, 2
+  MulInt       r32, r11, r15
+  Move         r11, r32
+  // for i in 0..16 {
+  Const        r33, 1
+  AddInt       r34, r13, r33
+  Move         r13, r34
+  Jump         L5
+L0:
+  // return res
+  Return       r9
+
+  // fun bit_not(a: int): int {
+func bit_not (regs=6)
+  // var ua = toUnsigned16(a)
+  Move         r1, r0
+  Call         r2, toUnsigned16, r1
+  Move         r3, r2
+  // return 65535 - ua
+  Const        r4, 65535
+  Sub          r5, r4, r3
+  Return       r5
+
+  // fun shl(a: int, b: int): int {
+func shl (regs=14)
+  // var ua = toUnsigned16(a)
+  Move         r2, r0
+  Call         r3, toUnsigned16, r2
+  Move         r4, r3
+  // var i = 0
+  Const        r5, 0
+  Move         r6, r5
+L1:
+  // while i < b {
+  Less         r7, r6, r1
+  JumpIfFalse  r7, L0
+  // ua = (ua * 2) % 65536
+  Const        r8, 2
+  Mul          r9, r4, r8
+  Const        r10, 65536
+  Mod          r11, r9, r10
+  Move         r4, r11
+  // i = i + 1
+  Const        r12, 1
+  AddInt       r13, r6, r12
+  Move         r6, r13
+  // while i < b {
+  Jump         L1
+L0:
+  // return ua
+  Return       r4
+
+  // fun shr(a: int, b: int): int {
+func shr (regs=13)
+  // var ua = toUnsigned16(a)
+  Move         r2, r0
+  Call         r3, toUnsigned16, r2
+  Move         r4, r3
+  // var i = 0
+  Const        r5, 0
+  Move         r6, r5
+L1:
+  // while i < b {
+  Less         r7, r6, r1
+  JumpIfFalse  r7, L0
+  // ua = (ua / 2) as int
+  Const        r8, 2
+  Div          r9, r4, r8
+  Cast         r10, r9, int
+  Move         r4, r10
+  // i = i + 1
+  Const        r11, 1
+  AddInt       r12, r6, r11
+  Move         r6, r12
+  // while i < b {
+  Jump         L1
+L0:
+  // return ua
+  Return       r4
+
+  // fun las(a: int, b: int): int {
+func las (regs=5)
+  // return shl(a, b)
+  Move         r2, r0
+  Move         r3, r1
+  Call2        r4, shl, r2, r3
+  Return       r4
+
+  // fun ras(a: int, b: int): int {
+func ras (regs=17)
+  // var val = a
+  Move         r2, r0
+  // var i = 0
+  Const        r3, 0
+  Move         r4, r3
+L3:
+  // while i < b {
+  Less         r5, r4, r1
+  JumpIfFalse  r5, L0
+  // if val >= 0 {
+  Const        r3, 0
+  LessEq       r6, r3, r2
+  JumpIfFalse  r6, L1
+  // val = (val / 2) as int
+  Const        r7, 2
+  Div          r8, r2, r7
+  Cast         r9, r8, int
+  Move         r2, r9
+  // if val >= 0 {
+  Jump         L2
+L1:
+  // val = ((val - 1) / 2) as int
+  Const        r10, 1
+  Sub          r11, r2, r10
+  Const        r7, 2
+  Div          r12, r11, r7
+  Cast         r13, r12, int
+  Move         r2, r13
+L2:
+  // i = i + 1
+  Const        r10, 1
+  AddInt       r14, r4, r10
+  Move         r4, r14
+  // while i < b {
+  Jump         L3
+L0:
+  // return toUnsigned16(val)
+  Move         r15, r2
+  Call         r16, toUnsigned16, r15
+  Return       r16
+
+  // fun rol(a: int, b: int): int {
+func rol (regs=18)
+  // var ua = toUnsigned16(a)
+  Move         r2, r0
+  Call         r3, toUnsigned16, r2
+  Move         r4, r3
+  // let left = shl(ua, b)
+  Move         r5, r4
+  Move         r6, r1
+  Call2        r7, shl, r5, r6
+  Move         r8, r7
+  // let right = shr(ua, 16 - b)
+  Move         r9, r4
+  Const        r11, 16
+  Sub          r12, r11, r1
+  Move         r10, r12
+  Call2        r13, shr, r9, r10
+  Move         r14, r13
+  // return toUnsigned16(left + right)
+  Add          r16, r8, r14
+  Move         r15, r16
+  Call         r17, toUnsigned16, r15
+  Return       r17
+
+  // fun ror(a: int, b: int): int {
+func ror (regs=18)
+  // var ua = toUnsigned16(a)
+  Move         r2, r0
+  Call         r3, toUnsigned16, r2
+  Move         r4, r3
+  // let right = shr(ua, b)
+  Move         r5, r4
+  Move         r6, r1
+  Call2        r7, shr, r5, r6
+  Move         r8, r7
+  // let left = shl(ua, 16 - b)
+  Move         r9, r4
+  Const        r11, 16
+  Sub          r12, r11, r1
+  Move         r10, r12
+  Call2        r13, shl, r9, r10
+  Move         r14, r13
+  // return toUnsigned16(left + right)
+  Add          r16, r14, r8
+  Move         r15, r16
+  Call         r17, toUnsigned16, r15
+  Return       r17
+
+  // fun bitwise(a: int, b: int) {
+func bitwise (regs=83)
+  // print("a:   " + bin16(a))
+  Const        r2, "a:   "
+  Move         r3, r0
+  Call         r4, bin16, r3
+  Add          r5, r2, r4
+  Print        r5
+  // print("b:   " + bin16(b))
+  Const        r6, "b:   "
+  Move         r7, r1
+  Call         r8, bin16, r7
+  Add          r9, r6, r8
+  Print        r9
+  // print("and: " + bin16(bit_and(a,b)))
+  Const        r10, "and: "
+  Move         r12, r0
+  Move         r13, r1
+  Call2        r14, bit_and, r12, r13
+  Move         r11, r14
+  Call         r15, bin16, r11
+  Add          r16, r10, r15
+  Print        r16
+  // print("or:  " + bin16(bit_or(a,b)))
+  Const        r17, "or:  "
+  Move         r19, r0
+  Move         r20, r1
+  Call2        r21, bit_or, r19, r20
+  Move         r18, r21
+  Call         r22, bin16, r18
+  Add          r23, r17, r22
+  Print        r23
+  // print("xor: " + bin16(bit_xor(a,b)))
+  Const        r24, "xor: "
+  Move         r26, r0
+  Move         r27, r1
+  Call2        r28, bit_xor, r26, r27
+  Move         r25, r28
+  Call         r29, bin16, r25
+  Add          r30, r24, r29
+  Print        r30
+  // print("not: " + bin16(bit_not(a)))
+  Const        r31, "not: "
+  Move         r33, r0
+  Call         r34, bit_not, r33
+  Move         r32, r34
+  Call         r35, bin16, r32
+  Add          r36, r31, r35
+  Print        r36
+  // if b < 0 {
+  Const        r37, 0
+  Less         r38, r1, r37
+  JumpIfFalse  r38, L0
+  // print("Right operand is negative, but all shifts require an unsigned right operand (shift distance).")
+  Const        r39, "Right operand is negative, but all shifts require an unsigned right operand (shift distance)."
+  Print        r39
+  // return null
+  Const        r40, nil
+  Return       r40
+L0:
+  // print("shl: " + bin16(shl(a,b)))
+  Const        r41, "shl: "
+  Move         r43, r0
+  Move         r44, r1
+  Call2        r45, shl, r43, r44
+  Move         r42, r45
+  Call         r46, bin16, r42
+  Add          r47, r41, r46
+  Print        r47
+  // print("shr: " + bin16(shr(a,b)))
+  Const        r48, "shr: "
+  Move         r50, r0
+  Move         r51, r1
+  Call2        r52, shr, r50, r51
+  Move         r49, r52
+  Call         r53, bin16, r49
+  Add          r54, r48, r53
+  Print        r54
+  // print("las: " + bin16(las(a,b)))
+  Const        r55, "las: "
+  Move         r57, r0
+  Move         r58, r1
+  Call2        r59, las, r57, r58
+  Move         r56, r59
+  Call         r60, bin16, r56
+  Add          r61, r55, r60
+  Print        r61
+  // print("ras: " + bin16(ras(a,b)))
+  Const        r62, "ras: "
+  Move         r64, r0
+  Move         r65, r1
+  Call2        r66, ras, r64, r65
+  Move         r63, r66
+  Call         r67, bin16, r63
+  Add          r68, r62, r67
+  Print        r68
+  // print("rol: " + bin16(rol(a,b)))
+  Const        r69, "rol: "
+  Move         r71, r0
+  Move         r72, r1
+  Call2        r73, rol, r71, r72
+  Move         r70, r73
+  Call         r74, bin16, r70
+  Add          r75, r69, r74
+  Print        r75
+  // print("ror: " + bin16(ror(a,b)))
+  Const        r76, "ror: "
+  Move         r78, r0
+  Move         r79, r1
+  Call2        r80, ror, r78, r79
+  Move         r77, r80
+  Call         r81, bin16, r77
+  Add          r82, r76, r81
+  Print        r82
+  Return       r0
