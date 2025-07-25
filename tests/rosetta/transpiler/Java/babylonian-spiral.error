@@ -1,0 +1,12 @@
+compile: exit status 1
+/tmp/TestJavaTranspiler_Rosetta_Goldenbabylonian-spiral275556754/001/Main.java:6: error: bad operand types for binary operator '>'
+        while (i > 0 && (boolean)(((Object)h[i - 1].get("s"))) > ((Number)(((Object)h[i].get("s")))).intValue()) {
+                                                               ^
+  first type:  boolean
+  second type: int
+/tmp/TestJavaTranspiler_Rosetta_Goldenbabylonian-spiral275556754/001/Main.java:72: error: generic array creation
+        java.util.Map<String,Integer>[] heap = new java.util.Map<String,Integer>[]{};
+                                               ^
+Note: /tmp/TestJavaTranspiler_Rosetta_Goldenbabylonian-spiral275556754/001/Main.java uses unchecked or unsafe operations.
+Note: Recompile with -Xlint:unchecked for details.
+2 errors
