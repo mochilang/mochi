@@ -2,8 +2,147 @@ compile: exit status 1
 F# Compiler for F# 4.0 (Open Source Edition)
 Freely distributed under the Apache 2.0 Open Source License
 
-/workspace/mochi/tests/rosetta/transpiler/FS/aliquot-sequence-classifications.fs(5,22): error FS1147: This number is outside the allowable range for 32-bit signed integers
-
-/workspace/mochi/tests/rosetta/transpiler/FS/aliquot-sequence-classifications.fs(185,24): error FS1147: This number is outside the allowable range for 32-bit signed integers
-
 /workspace/mochi/tests/rosetta/transpiler/FS/aliquot-sequence-classifications.fs(3,1): warning FS0221: The declarations in this file will be placed in an implicit module 'Aliquot-sequence-classifications' based on the file name 'aliquot-sequence-classifications.fs'. However this is not a valid F# identifier, so the contents will not be accessible from other files. Consider renaming the file or adding a 'module' or 'namespace' declaration at the top of the file.
+
+/workspace/mochi/tests/rosetta/transpiler/FS/aliquot-sequence-classifications.fs(29,32): error FS0001: This expression was expected to have type
+    int64    
+but here has type
+    int    
+
+/workspace/mochi/tests/rosetta/transpiler/FS/aliquot-sequence-classifications.fs(30,20): error FS0001: This expression was expected to have type
+    int64    
+but here has type
+    int    
+
+/workspace/mochi/tests/rosetta/transpiler/FS/aliquot-sequence-classifications.fs(31,21): error FS0001: This expression was expected to have type
+    int    
+but here has type
+    int64    
+
+/workspace/mochi/tests/rosetta/transpiler/FS/aliquot-sequence-classifications.fs(34,22): error FS0001: The type 'int' does not match the type 'int64'
+
+/workspace/mochi/tests/rosetta/transpiler/FS/aliquot-sequence-classifications.fs(35,22): error FS0001: The type 'int64' does not match the type 'int'
+
+/workspace/mochi/tests/rosetta/transpiler/FS/aliquot-sequence-classifications.fs(69,22): error FS0001: This expression was expected to have type
+    int64    
+but here has type
+    int    
+
+/workspace/mochi/tests/rosetta/transpiler/FS/aliquot-sequence-classifications.fs(73,19): error FS0001: This expression was expected to have type
+    int    
+but here has type
+    int64    
+
+/workspace/mochi/tests/rosetta/transpiler/FS/aliquot-sequence-classifications.fs(74,18): error FS0001: This expression was expected to have type
+    int64    
+but here has type
+    int    
+
+/workspace/mochi/tests/rosetta/transpiler/FS/aliquot-sequence-classifications.fs(75,35): error FS0001: The type 'int' does not match the type 'int64'
+
+/workspace/mochi/tests/rosetta/transpiler/FS/aliquot-sequence-classifications.fs(86,22): error FS0001: This expression was expected to have type
+    int64    
+but here has type
+    int    
+
+/workspace/mochi/tests/rosetta/transpiler/FS/aliquot-sequence-classifications.fs(89,34): error FS0001: This expression was expected to have type
+    int64    
+but here has type
+    int    
+
+/workspace/mochi/tests/rosetta/transpiler/FS/aliquot-sequence-classifications.fs(90,32): error FS0001: This expression was expected to have type
+    int64    
+but here has type
+    int    
+
+/workspace/mochi/tests/rosetta/transpiler/FS/aliquot-sequence-classifications.fs(93,37): error FS0001: The type 'int' does not match the type 'int64'
+
+/workspace/mochi/tests/rosetta/transpiler/FS/aliquot-sequence-classifications.fs(94,22): error FS0001: The type 'int' does not match the type 'int64'
+
+/workspace/mochi/tests/rosetta/transpiler/FS/aliquot-sequence-classifications.fs(111,28): error FS0001: This expression was expected to have type
+    int64    
+but here has type
+    int    
+
+/workspace/mochi/tests/rosetta/transpiler/FS/aliquot-sequence-classifications.fs(125,50): error FS0001: The type 'int' does not match the type 'int64'
+
+/workspace/mochi/tests/rosetta/transpiler/FS/aliquot-sequence-classifications.fs(128,82): error FS0001: This expression was expected to have type
+    int64    
+but here has type
+    int    
+
+/workspace/mochi/tests/rosetta/transpiler/FS/aliquot-sequence-classifications.fs(173,32): error FS0001: This expression was expected to have type
+    int64    
+but here has type
+    int    
+
+/workspace/mochi/tests/rosetta/transpiler/FS/aliquot-sequence-classifications.fs(174,20): error FS0001: This expression was expected to have type
+    int64    
+but here has type
+    int    
+
+/workspace/mochi/tests/rosetta/transpiler/FS/aliquot-sequence-classifications.fs(175,36): error FS0001: This expression was expected to have type
+    int    
+but here has type
+    int64    
+
+/workspace/mochi/tests/rosetta/transpiler/FS/aliquot-sequence-classifications.fs(176,21): error FS0001: This expression was expected to have type
+    int64    
+but here has type
+    int    
+
+/workspace/mochi/tests/rosetta/transpiler/FS/aliquot-sequence-classifications.fs(178,22): error FS0001: The type 'int' does not match the type 'int64'
+
+/workspace/mochi/tests/rosetta/transpiler/FS/aliquot-sequence-classifications.fs(191,32): error FS0001: This expression was expected to have type
+    int64    
+but here has type
+    int    
+
+/workspace/mochi/tests/rosetta/transpiler/FS/aliquot-sequence-classifications.fs(192,20): error FS0001: This expression was expected to have type
+    int64    
+but here has type
+    int    
+
+/workspace/mochi/tests/rosetta/transpiler/FS/aliquot-sequence-classifications.fs(194,56): error FS0001: This expression was expected to have type
+    int64    
+but here has type
+    int    
+
+/workspace/mochi/tests/rosetta/transpiler/FS/aliquot-sequence-classifications.fs(194,129): error FS0001: This expression was expected to have type
+    int64    
+but here has type
+    int    
+
+/workspace/mochi/tests/rosetta/transpiler/FS/aliquot-sequence-classifications.fs(195,22): error FS0001: The type 'int' does not match the type 'int64'
+
+/workspace/mochi/tests/rosetta/transpiler/FS/aliquot-sequence-classifications.fs(198,32): error FS0001: This expression was expected to have type
+    int64    
+but here has type
+    int    
+
+/workspace/mochi/tests/rosetta/transpiler/FS/aliquot-sequence-classifications.fs(199,20): error FS0001: This expression was expected to have type
+    int64    
+but here has type
+    int    
+
+/workspace/mochi/tests/rosetta/transpiler/FS/aliquot-sequence-classifications.fs(200,34): error FS0001: This expression was expected to have type
+    int64    
+but here has type
+    int    
+
+/workspace/mochi/tests/rosetta/transpiler/FS/aliquot-sequence-classifications.fs(202,62): error FS0001: This expression was expected to have type
+    int64    
+but here has type
+    int    
+
+/workspace/mochi/tests/rosetta/transpiler/FS/aliquot-sequence-classifications.fs(202,135): error FS0001: This expression was expected to have type
+    int64    
+but here has type
+    int    
+
+/workspace/mochi/tests/rosetta/transpiler/FS/aliquot-sequence-classifications.fs(203,22): error FS0001: The type 'int' does not match the type 'int64'
+
+/workspace/mochi/tests/rosetta/transpiler/FS/aliquot-sequence-classifications.fs(207,106): error FS0001: This expression was expected to have type
+    int64    
+but here has type
+    int    
