@@ -1459,6 +1459,7 @@ func Emit(p *Program) []byte {
 		buf.WriteString("    out\n")
 		buf.WriteString("  }\n\n")
 	}
+	buf.WriteString("  private def _contains[T](seq: Seq[T], v: T): Boolean = seq.contains(v)\n\n")
 
 	var globals []Stmt
 	for _, st := range p.Stmts {
@@ -2601,6 +2602,13 @@ func convertCall(c *parser.CallExpr, env *types.Env) (Expr, error) {
 			needsPadStart = true
 			return &CallExpr{Fn: &Name{Name: "_padStart"}, Args: args}, nil
 		}
+	case "contains":
+		if len(args) == 2 {
+			if inferTypeWithEnv(args[0], env) == "String" {
+				return &CallExpr{Fn: &FieldExpr{Receiver: args[0], Name: "contains"}, Args: []Expr{args[1]}}, nil
+			}
+			return &CallExpr{Fn: &Name{Name: "_contains"}, Args: args}, nil
+		}
 	case "sum":
 		if len(args) == 1 {
 			return &FieldExpr{Receiver: args[0], Name: "sum"}, nil
@@ -3321,6 +3329,23 @@ func copyMap(m map[string]string) map[string]string {
 	return n
 }
 
+func zeroValue(typ string) Expr {
+	switch typ {
+	case "Int", "Long", "Short", "Byte":
+		return &IntLit{Value: 0}
+	case "Double", "Float":
+		return &FloatLit{Value: 0.0}
+	case "Boolean":
+		return &BoolLit{Value: false}
+	case "String":
+		return &StringLit{Value: ""}
+	case "Unit", "":
+		return nil
+	default:
+		return &Name{Name: "null"}
+	}
+}
+
 func convertFunStmt(fs *parser.FunStmt, env *types.Env) (Stmt, error) {
 	saved := localVarTypes
 	localVarTypes = copyMap(localVarTypes)
@@ -3364,6 +3389,15 @@ func convertFunStmt(fs *parser.FunStmt, env *types.Env) (Stmt, error) {
 	}
 	if len(init) > 0 {
 		fn.Body = append(init, fn.Body...)
+	}
+	if fn.Return != "Unit" && fn.Return != "" {
+		if len(fn.Body) == 0 {
+			fn.Body = append(fn.Body, &ReturnStmt{Value: zeroValue(fn.Return)})
+		} else {
+			if _, ok := fn.Body[len(fn.Body)-1].(*ReturnStmt); !ok {
+				fn.Body = append(fn.Body, &ReturnStmt{Value: zeroValue(fn.Return)})
+			}
+		}
 	}
 	if fn.Return == "" {
 		fn.Return = "Any"

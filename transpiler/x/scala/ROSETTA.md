@@ -2,8 +2,8 @@
 
 Generated Scala code for Rosetta tasks in `tests/rosetta/x/Mochi`. Each program has a `.scala` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
 
-## Golden Test Checklist (110/284)
-_Last updated: 2025-07-26 00:05 +0700_
+## Golden Test Checklist (115/284)
+_Last updated: 2025-07-26 05:11 +0700_
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -117,16 +117,16 @@ _Last updated: 2025-07-26 00:05 +0700_
 | 108 | bin-given-limits | ✓ | 10µs | 3.5 MB |
 | 109 | binary-digits | ✓ | 2µs | 3.5 MB |
 | 110 | binary-search | ✓ | 5µs | 3.5 MB |
-| 111 | binary-strings |   |  |  |
-| 112 | bioinformatics-base-count |   |  |  |
-| 113 | bioinformatics-global-alignment |   |  |  |
-| 114 | bioinformatics-sequence-mutation |   |  |  |
-| 115 | biorhythms |   |  |  |
-| 116 | bitcoin-address-validation |   |  |  |
-| 117 | bitmap-b-zier-curves-cubic |   |  |  |
-| 118 | bitmap-b-zier-curves-quadratic |   |  |  |
-| 119 | bitmap-bresenhams-line-algorithm |   |  |  |
-| 120 | bitmap-flood-fill |   |  |  |
+| 111 | binary-strings | ✓ | 7µs | 8.7 MB |
+| 112 | bioinformatics-base-count | ✓ | 7µs | 8.7 MB |
+| 113 | bioinformatics-global-alignment | error |  |  |
+| 114 | bioinformatics-sequence-mutation | ✓ | 22µs | 8.7 MB |
+| 115 | biorhythms | ✓ | 17µs | 8.7 MB |
+| 116 | bitcoin-address-validation | error |  |  |
+| 117 | bitmap-b-zier-curves-cubic | error |  |  |
+| 118 | bitmap-b-zier-curves-quadratic | error |  |  |
+| 119 | bitmap-bresenhams-line-algorithm | error |  |  |
+| 120 | bitmap-flood-fill | ✓ | 5µs | 8.7 MB |
 | 121 | bitmap-histogram |   |  |  |
 | 122 | bitmap-midpoint-circle-algorithm |   |  |  |
 | 123 | bitmap-ppm-conversion-through-a-pipe |   |  |  |
