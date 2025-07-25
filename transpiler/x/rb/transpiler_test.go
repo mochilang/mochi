@@ -109,6 +109,7 @@ func TestTranspilePrograms(t *testing.T) {
 		"json_builtin",
 		"tree_sum",
 		"test_block",
+		"bench_block",
 		"list_set_ops",
 		"cross_join_triple",
 		"exists_builtin",
@@ -162,7 +163,7 @@ func TestTranspilePrograms(t *testing.T) {
 				t.Fatalf("write: %v", err)
 			}
 			cmd := exec.Command("ruby", rbFile)
-			cmd.Env = append(os.Environ(), "MOCHI_ROOT="+root)
+			cmd.Env = append(os.Environ(), "MOCHI_ROOT="+root, "MOCHI_NOW_SEED=1")
 			out, err := cmd.CombinedOutput()
 			got := bytes.TrimSpace(out)
 			if err != nil {
