@@ -1,13 +1,13 @@
 # Go Rosetta Transpiler Output
 
-Completed programs: 120/284
-Last updated: 2025-07-25 08:55 +0700
+Completed programs: 122/284
+Last updated: 2025-07-25 09:21 +0700
 
 Checklist:
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|--------|---------:|-------:|
-| 1 | 100-doors-2 | ✓ | 571.0ms | 5.54KB |
+| 1 | 100-doors-2 | ✓ | 104.0µs | 5.54KB |
 | 2 | 100-doors-3 | ✓ |  |  |
 | 3 | 100-doors |   |  |  |
 | 4 | 100-prisoners | ✓ |  |  |
@@ -55,8 +55,8 @@ Checklist:
 | 46 | anagrams-deranged-anagrams | ✓ |  |  |
 | 47 | anagrams | ✓ |  |  |
 | 48 | angle-difference-between-two-bearings-1 | ✓ |  |  |
-| 49 | angle-difference-between-two-bearings-2 |   |  |  |
-| 50 | angles-geometric-normalization-and-conversion |   |  |  |
+| 49 | angle-difference-between-two-bearings-2 | ✓ |  |  |
+| 50 | angles-geometric-normalization-and-conversion | ✓ |  |  |
 | 51 | animate-a-pendulum | ✓ |  |  |
 | 52 | animation | ✓ |  |  |
 | 53 | anonymous-recursion-1 | ✓ |  |  |
