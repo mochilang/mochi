@@ -1,10 +1,8 @@
-func main (regs=3)
+func main (regs=2)
   // let dim = 16
   Const        r1, 16
   Move         r0, r1
   SetGlobal    0,0,0,0
-  // main()
-  Call         r2, main, 
   Return       r0
 
   // fun newPile(d: int): list<list<int>> {
