@@ -2279,8 +2279,17 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 			numericIdx := types.IsNumericType(idxType)
 			isStr := types.IsStringPrimary(pf.Target, env)
 			isMap := types.IsMapPrimary(pf.Target, env)
+			if !isMap {
+				if types.IsMapType(types.TypeOfPrimary(pf.Target, env)) {
+					isMap = true
+				}
+			}
 			if !isMap && !isStr {
 				if _, ok := idx.(*StringLit); ok {
+					isMap = true
+				} else if _, ok := idxType.(types.StringType); ok {
+					isMap = true
+				} else if types.IsMapType(types.TypeOfPrimary(pf.Target, env)) {
 					isMap = true
 				}
 			}
