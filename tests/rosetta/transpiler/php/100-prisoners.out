@@ -1,8 +1,11 @@
 Results from 1000 trials with 10 prisoners:
-
   strategy = random  pardoned = 1 relative frequency = 0.1%
-  strategy = optimal  pardoned = 295 relative frequency = 29.5%
+  strategy = optimal  pardoned = 307 relative frequency = 30.7%
 Results from 1000 trials with 100 prisoners:
-
-  strategy = random  pardoned = 0 relative frequency = 0.0%
-  strategy = optimal  pardoned = 303 relative frequency = 30.3%
+  strategy = random  pardoned = 0 relative frequency = 0%
+  strategy = optimal  pardoned = 335 relative frequency = 33.5%
+{
+  "duration_us": -601178,
+  "memory_bytes": 96,
+  "name": "main"
+}
