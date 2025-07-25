@@ -2,31 +2,31 @@
 
 This directory stores C code generated from Mochi programs in `tests/rosetta/x/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.c` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (17/284) - Last updated 2025-07-25 07:57 +0700:
+Checklist of programs that currently transpile and run (17/284) - Last updated 2025-07-25 09:27 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
-| 1 | 100-doors-2 | x | 571.22ms | 17.2 KB |
-| 2 | 100-doors-3 | x |  |  |
-| 3 | 100-doors | x |  |  |
-| 4 | 100-prisoners | x |  |  |
-| 5 | 15-puzzle-game | x |  |  |
-| 6 | 15-puzzle-solver | x |  |  |
+| 1 | 100-doors-2 | ✓ | 452us | 17.2 KB |
+| 2 | 100-doors-3 | ✓ |  |  |
+| 3 | 100-doors | ✓ |  |  |
+| 4 | 100-prisoners | ✓ |  |  |
+| 5 | 15-puzzle-game | ✓ |  |  |
+| 6 | 15-puzzle-solver | ✓ |  |  |
 | 7 | 2048 |  |  |  |
-| 8 | 21-game | x |  |  |
+| 8 | 21-game | ✓ |  |  |
 | 9 | 24-game-solve |  |  |  |
-| 10 | 24-game | x |  |  |
-| 11 | 4-rings-or-4-squares-puzzle | x |  |  |
+| 10 | 24-game | ✓ |  |  |
+| 11 | 4-rings-or-4-squares-puzzle | ✓ |  |  |
 | 12 | 9-billion-names-of-god-the-integer |  |  |  |
-| 13 | 99-bottles-of-beer-2 | x |  |  |
-| 14 | 99-bottles-of-beer | x |  |  |
+| 13 | 99-bottles-of-beer-2 | ✓ |  |  |
+| 14 | 99-bottles-of-beer | ✓ |  |  |
 | 15 | DNS-query |  |  |  |
-| 16 | a+b | x |  |  |
-| 17 | abbreviations-automatic | x |  |  |
-| 18 | abbreviations-easy | x |  |  |
-| 19 | abbreviations-simple | x |  |  |
-| 20 | abc-problem | x |  |  |
+| 16 | a+b | ✓ |  |  |
+| 17 | abbreviations-automatic | ✓ |  |  |
+| 18 | abbreviations-easy | ✓ |  |  |
+| 19 | abbreviations-simple | ✓ |  |  |
+| 20 | abc-problem | ✓ |  |  |
 | 21 | abelian-sandpile-model-identity |  |  |  |
-| 22 | abelian-sandpile-model | x |  |  |
+| 22 | abelian-sandpile-model | ✓ |  |  |
 | 23 | abstract-type |  |  |  |
 | 24 | abundant-deficient-and-perfect-number-classifications |  |  |  |
 | 25 | abundant-odd-numbers |  |  |  |

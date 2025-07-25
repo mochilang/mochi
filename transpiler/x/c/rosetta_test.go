@@ -29,6 +29,9 @@ func TestRosettaTranspilerGolden(t *testing.T) {
 	os.MkdirAll(outDir, 0o755)
 	t.Cleanup(updateRosettaReadme)
 
+	bench := os.Getenv("MOCHI_BENCHMARK") != ""
+	ctrans.SetBenchMain(bench)
+
 	_ = updateIndex(srcDir)
 	names, err := readIndex(filepath.Join(srcDir, "index.txt"))
 	if err != nil {
@@ -71,13 +74,25 @@ func TestRosettaTranspilerGolden(t *testing.T) {
 			_ = os.Remove(errPath)
 			if updateEnabled() {
 				trimmed := bytes.TrimSpace(out)
-				_ = os.WriteFile(filepath.Join(outDir, name+".out"), trimmed, 0o644)
+				ext := ".out"
+				if bench {
+					ext = ".bench"
+				}
+				_ = os.WriteFile(filepath.Join(outDir, name+ext), trimmed, 0o644)
 				return
 			}
-			wantPath := filepath.Join(outDir, name+".out")
+			ext := ".out"
+			if bench {
+				ext = ".bench"
+			}
+			wantPath := filepath.Join(outDir, name+ext)
 			want, err := os.ReadFile(wantPath)
 			if err != nil {
 				t.Fatalf("read want: %v", err)
+			}
+			if bench {
+				// benchmark results are nondeterministic; skip comparison
+				return
 			}
 			want = bytes.TrimSpace(want)
 			got := bytes.TrimSpace(out)
@@ -121,9 +136,12 @@ func updateRosettaReadme() {
 		status := ""
 		dur := ""
 		mem := ""
-		outPath := filepath.Join(outDir, name+".out")
+		outPath := filepath.Join(outDir, name+".bench")
+		if _, err := os.Stat(outPath); os.IsNotExist(err) {
+			outPath = filepath.Join(outDir, name+".out")
+		}
 		if data, err := os.ReadFile(outPath); err == nil {
-			status = "x"
+			status = "✓"
 			compiled++
 			var res struct {
 				Dur int64 `json:"duration_us"`

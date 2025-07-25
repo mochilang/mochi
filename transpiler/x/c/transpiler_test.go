@@ -81,9 +81,12 @@ func transpileAndRun(src string) ([]byte, error) {
 		return nil, fmt.Errorf("compile failed: %v: %s", err, string(out))
 	}
 	cmd := exec.Command(exe)
-	env := append(os.Environ(), "MOCHI_NOW_SEED=1")
-	if os.Getenv("MOCHI_BENCHMARK") != "" {
+	bench := os.Getenv("MOCHI_BENCHMARK") != ""
+	env := append(os.Environ())
+	if bench {
 		env = append(env, "MOCHI_BENCHMARK=1")
+	} else {
+		env = append(env, "MOCHI_NOW_SEED=1")
 	}
 	cmd.Env = env
 	if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
