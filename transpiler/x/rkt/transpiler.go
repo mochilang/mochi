@@ -244,10 +244,14 @@ func (i *IfStmt) emit(w io.Writer) {
 	io.WriteString(w, "(if ")
 	i.Cond.emit(w)
 	io.WriteString(w, " (let ()\n")
-	for _, s := range i.Then {
-		s.emit(w)
+	if len(i.Then) == 0 {
+		io.WriteString(w, "  (void))")
+	} else {
+		for _, s := range i.Then {
+			s.emit(w)
+		}
+		io.WriteString(w, ")")
 	}
-	io.WriteString(w, ")")
 	if len(i.Else) > 0 {
 		io.WriteString(w, " (let ()\n")
 		for _, s := range i.Else {
@@ -440,8 +444,12 @@ func (f *FunDecl) emit(w io.Writer) {
 		fmt.Fprintf(w, " %s", p)
 	}
 	io.WriteString(w, ")\n  (let/ec _return (begin\n")
-	for _, st := range f.Body {
-		st.emit(w)
+	if len(f.Body) == 0 {
+		io.WriteString(w, "(void)\n")
+	} else {
+		for _, st := range f.Body {
+			st.emit(w)
+		}
 	}
 	io.WriteString(w, "))\n")
 	io.WriteString(w, ")\n")
@@ -1193,7 +1201,12 @@ func header() string {
 	hdr += "(define (upper s) (string-upcase s))\n"
 	hdr += "(define (lower s) (string-downcase s))\n"
 	hdr += "(define (sublist lst start end)\n  (if (string? lst)\n      (substring lst start end)\n      (take (drop lst start) (- end start))))\n\n"
-	hdr += "(define (pad-start s width ch)\n  (if (< (string-length s) width)\n      (string-append (make-string (- width (string-length s)) (string-ref ch 0)) s)\n      s))\n"
+	hdr += "(define (pad-start s width ch)\n  (let ([s (format \"~a\" s)])\n    (if (< (string-length s) width)\n        (string-append (make-string (- width (string-length s)) (string-ref ch 0)) s)\n        s)))\n"
+	hdr += "(define (bigrat n d) (/ n d))\n"
+	hdr += "(define (num r) (numerator r))\n"
+	hdr += "(define (denom r) (denominator r))\n"
+	hdr += "(define (repeat s n) (apply string-append (make-list (int n) s)))\n"
+	hdr += "(define (parseIntStr s b) (let ([n (string->number s b)]) (if n n 0)))\n"
 	return hdr + "\n"
 }
 
@@ -1777,6 +1790,7 @@ func convertForStmt(n *parser.ForStmt, env *types.Env) (Stmt, error) {
 	if err != nil {
 		return nil, err
 	}
+	body = foldContinueIf(body)
 	keys := false
 	if _, ok := types.ExprType(n.Source, env).(types.MapType); ok {
 		keys = true
@@ -1818,6 +1832,23 @@ func replaceRangeContinue(st Stmt, varName string) Stmt {
 	default:
 		return s
 	}
+}
+
+// foldContinueIf rewrites an if statement whose then branch ends with a
+// continue statement so that the continue becomes an else branch wrapping the
+// remaining statements. This is used for for-in loops which cannot directly
+// emit a continue.
+func foldContinueIf(stmts []Stmt) []Stmt {
+	for i, st := range stmts {
+		if ifs, ok := st.(*IfStmt); ok && len(ifs.Then) > 0 && len(ifs.Else) == 0 {
+			if _, ok := ifs.Then[len(ifs.Then)-1].(*ContinueStmt); ok {
+				ifs.Then = ifs.Then[:len(ifs.Then)-1]
+				ifs.Else = stmts[i+1:]
+				return append(stmts[:i], ifs)
+			}
+		}
+	}
+	return stmts
 }
 
 func convertFunStmt(fn *parser.FunStmt, env *types.Env) (Stmt, error) {
