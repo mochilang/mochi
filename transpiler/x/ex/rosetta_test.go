@@ -4,6 +4,7 @@ package ex_test
 
 import (
 	"bytes"
+	"encoding/json"
 	"flag"
 	"fmt"
 	"os"
@@ -81,18 +82,22 @@ func TestExTranspiler_Rosetta_Golden(t *testing.T) {
 				_ = os.WriteFile(errPath, []byte("type: "+errs[0].Error()), 0o644)
 				t.Fatalf("type: %v", errs[0])
 			}
+			bench := os.Getenv("MOCHI_BENCHMARK") == "true"
 			ast, err := ex.Transpile(prog, env)
 			if err != nil {
 				_ = os.WriteFile(errPath, []byte("transpile: "+err.Error()), 0o644)
 				t.Fatalf("transpile: %v", err)
 			}
-			code := ex.Emit(ast)
+			code := ex.Emit(ast, bench)
 			if err := os.WriteFile(codePath, code, 0o644); err != nil {
 				t.Fatalf("write: %v", err)
 			}
 			cmd := exec.Command("elixir", codePath)
 			if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
 				cmd.Stdin = bytes.NewReader(data)
+			}
+			if bench {
+				cmd.Env = append(os.Environ(), "MOCHI_BENCHMARK=true")
 			}
 			out, err := cmd.CombinedOutput()
 			got := bytes.TrimSpace(stripWarnings(out))
@@ -103,6 +108,10 @@ func TestExTranspiler_Rosetta_Golden(t *testing.T) {
 			_ = os.Remove(errPath)
 			got = normalizeOutput(root, got)
 			_ = os.WriteFile(outPath, got, 0o644)
+
+			if bench {
+				return
+			}
 
 			if update {
 				if err := os.WriteFile(outPath, got, 0o644); err != nil {
@@ -174,31 +183,76 @@ func updateRosettaReadme() {
 	sort.Strings(files)
 	total := len(files)
 	compiled := 0
+	out, err := exec.Command("git", "log", "-1", "--format=%cI").Output()
+	ts := ""
+	if err == nil {
+		if t, perr := time.Parse(time.RFC3339, strings.TrimSpace(string(out))); perr == nil {
+			ts = t.Format("2006-01-02 15:04 -0700")
+		}
+	}
 	var lines []string
+	lines = append(lines, "| Index | Name | Status | Duration | Memory |")
+	lines = append(lines, "| ---: | --- | :---: | ---: | ---: |")
 	for i, f := range files {
 		name := strings.TrimSuffix(filepath.Base(f), ".mochi")
-		mark := "[ ]"
-		if _, err := os.Stat(filepath.Join(outDir, name+".exs")); err == nil {
-			if _, err2 := os.Stat(filepath.Join(outDir, name+".out")); err2 == nil {
-				compiled++
-				mark = "[x]"
+		status := ""
+		dur := ""
+		mem := ""
+		outPath := filepath.Join(outDir, name+".out")
+		if data, err := os.ReadFile(outPath); err == nil {
+			status = "x"
+			compiled++
+			var res struct {
+				Dur int64 `json:"duration_us"`
+				Mem int64 `json:"memory_bytes"`
+			}
+			trimmed := bytes.TrimSpace(data)
+			if idx := bytes.LastIndex(trimmed, []byte("{")); idx >= 0 {
+				trimmed = trimmed[idx:]
+				if json.Unmarshal(trimmed, &res) == nil && res.Dur > 0 {
+					dur = humanDur(time.Duration(res.Dur) * time.Microsecond)
+					mem = humanSize(res.Mem)
+				}
 			}
 		}
-		lines = append(lines, fmt.Sprintf("%d. %s [%d] %s", i+1, mark, i+1, name))
+		lines = append(lines, fmt.Sprintf("| %d | %s | %s | %s | %s |", i+1, name, status, dur, mem))
 	}
 	var buf bytes.Buffer
 	buf.WriteString("# Rosetta Transpiler Progress\n\n")
 	buf.WriteString("Generated Elixir code from Mochi Rosetta programs lives in `tests/rosetta/transpiler/Elixir`.\n\n")
 	fmt.Fprintf(&buf, "## Rosetta Test Checklist (%d/%d)\n", compiled, total)
-	out, err := exec.Command("git", "log", "-1", "--format=%cI").Output()
-	ts := time.Now()
-	if err == nil {
-		if t, perr := time.Parse(time.RFC3339, strings.TrimSpace(string(out))); perr == nil {
-			ts = t
-		}
+	if ts != "" {
+		buf.WriteString(fmt.Sprintf("_Last updated: %s_\n", ts))
 	}
-	buf.WriteString(fmt.Sprintf("_Last updated: %s_\n", ts.Format("2006-01-02 15:04 -0700")))
 	buf.WriteString(strings.Join(lines, "\n"))
 	buf.WriteString("\n")
 	_ = os.WriteFile(readmePath, buf.Bytes(), 0o644)
+}
+
+func humanDur(d time.Duration) string {
+	if d < time.Millisecond {
+		return fmt.Sprintf("%dus", d.Microseconds())
+	}
+	if d < time.Second {
+		return fmt.Sprintf("%.2fms", float64(d.Microseconds())/1000)
+	}
+	if d < time.Minute {
+		return fmt.Sprintf("%.2fs", d.Seconds())
+	}
+	return d.String()
+}
+
+func humanSize(n int64) string {
+	const unit = 1024
+	units := []string{"B", "KB", "MB", "GB", "TB"}
+	if n < unit {
+		return fmt.Sprintf("%d B", n)
+	}
+	val := float64(n)
+	exp := 0
+	for val >= unit && exp < len(units)-1 {
+		val /= unit
+		exp++
+	}
+	return fmt.Sprintf("%.1f %s", val, units[exp])
 }

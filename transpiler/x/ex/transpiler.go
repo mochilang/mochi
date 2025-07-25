@@ -1446,7 +1446,7 @@ func (c *CastExpr) emit(w io.Writer) {
 }
 
 // Emit generates Elixir source from the AST.
-func Emit(p *Program) []byte {
+func Emit(p *Program, benchMain bool) []byte {
 	var buf bytes.Buffer
 	buf.WriteString(header())
 	funcsExist := false
@@ -1506,9 +1506,18 @@ func Emit(p *Program) []byte {
 	}
 	if !hasMain {
 		buf.WriteString("  def main() do\n")
+		if benchMain {
+			buf.WriteString("    mem_start = _mem()\n")
+			buf.WriteString("    t_start = _now()\n")
+		}
 		for _, st := range main {
 			st.emit(&buf, 2)
 			buf.WriteString("\n")
+		}
+		if benchMain {
+			buf.WriteString("    duration_us = div(_now() - t_start, 1000)\n")
+			buf.WriteString("    mem_diff = _mem() - mem_start\n")
+			buf.WriteString("    IO.puts(\"{\\n  \\\"duration_us\\\": #{duration_us},\\n  \\\"memory_bytes\\\": #{mem_diff},\\n  \\\"name\\\": \\\"main\\\"\\n}\")\n")
 		}
 		buf.WriteString("  end\n")
 	}
