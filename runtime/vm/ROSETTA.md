@@ -2,17 +2,17 @@
 
 This checklist is auto-generated.
 Generated IR and outputs from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/ir`.
-Last updated: 2025-07-25 05:41 UTC
+Last updated: 2025-07-25 06:09 UTC
 
-## Rosetta Golden Test Checklist (39/284)
+## Rosetta Golden Test Checklist (51/284)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
-| 1 | 100-doors-2 | ✓ | 116µs | 11.7 KB |
-| 2 | 100-doors-3 | ✓ | 184µs | 7.7 KB |
-| 3 | 100-doors | ✓ | 6.231ms | 851.8 KB |
-| 4 | 100-prisoners | ✓ | 4.224632s | 275.7 KB |
+| 1 | 100-doors-2 | ✓ | 582µs | 11.7 KB |
+| 2 | 100-doors-3 | ✓ | 409µs | 7.8 KB |
+| 3 | 100-doors | ✓ | 18.974ms | 1.1 MB |
+| 4 | 100-prisoners | ✓ | 5.27737s | 1.3 MB |
 | 5 | 15-puzzle-game | ✓ |  |  |
-| 6 | 15-puzzle-solver | ✓ | 917.949ms | 26.9 KB |
+| 6 | 15-puzzle-solver | ✓ | 1.637648s | 27.5 KB |
 | 7 | 2048 | ✓ |  |  |
 | 8 | 21-game | ✓ |  |  |
 | 9 | 24-game-solve | ✓ | 2.162ms |  |
@@ -47,19 +47,19 @@ Last updated: 2025-07-25 05:41 UTC
 | 38 | aks-test-for-primes | ✓ | 313µs | 155.7 KB |
 | 39 | algebraic-data-types | ✓ | 272µs | 320.2 KB |
 | 40 | align-columns | ✓ | 3.193ms |  |
-| 41 | aliquot-sequence-classifications |   |  |  |
+| 41 | aliquot-sequence-classifications | ✓ |  |  |
 | 42 | almkvist-giullera-formula-for-pi |   |  |  |
-| 43 | almost-prime |   |  |  |
-| 44 | amb |   |  |  |
-| 45 | amicable-pairs |   |  |  |
-| 46 | anagrams-deranged-anagrams |   |  |  |
-| 47 | anagrams |   |  |  |
-| 48 | angle-difference-between-two-bearings-1 |   |  |  |
-| 49 | angle-difference-between-two-bearings-2 |   |  |  |
-| 50 | angles-geometric-normalization-and-conversion |   |  |  |
-| 51 | animate-a-pendulum |   |  |  |
-| 52 | animation |   |  |  |
-| 53 | anonymous-recursion-1 |   |  |  |
+| 43 | almost-prime | ✓ | 3.662ms | 913.6 KB |
+| 44 | amb | ✓ | 686µs | 75.9 KB |
+| 45 | amicable-pairs | ✓ |  |  |
+| 46 | anagrams-deranged-anagrams | ✓ | 1.042ms | 99.2 KB |
+| 47 | anagrams | ✓ | 2.138ms | 571.4 KB |
+| 48 | angle-difference-between-two-bearings-1 | ✓ | 501µs | 19.2 KB |
+| 49 | angle-difference-between-two-bearings-2 | ✓ | 524µs | 26.6 KB |
+| 50 | angles-geometric-normalization-and-conversion | ✓ | 1.13ms | 288.9 KB |
+| 51 | animate-a-pendulum | ✓ | 1.023ms | 73.8 KB |
+| 52 | animation | ✓ | 930µs | 18.1 KB |
+| 53 | anonymous-recursion-1 | ✓ | 349µs | 15.6 KB |
 | 54 | anonymous-recursion-2 |   |  |  |
 | 55 | anonymous-recursion |   |  |  |
 | 56 | anti-primes |   |  |  |

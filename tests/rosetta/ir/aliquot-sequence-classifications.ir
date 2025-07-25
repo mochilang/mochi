@@ -1,0 +1,400 @@
+func main (regs=3)
+  // let THRESHOLD = 140737488355328
+  Const        r1, 140737488355328
+  Move         r0, r1
+  SetGlobal    0,0,0,0
+  // main()
+  Call         r2, main, 
+  Return       r0
+
+  // fun indexOf(xs: list<int>, value: int): int {
+func indexOf (regs=12)
+  // var i = 0
+  Const        r3, 0
+  Move         r4, r3
+L2:
+  // while i < len(xs) {
+  Len          r5, r1
+  LessInt      r6, r4, r5
+  JumpIfFalse  r6, L0
+  // if xs[i] == value { return i }
+  Index        r7, r1, r4
+  Equal        r8, r7, r2
+  JumpIfFalse  r8, L1
+  Return       r4
+L1:
+  // i = i + 1
+  Const        r9, 1
+  AddInt       r10, r4, r9
+  Move         r4, r10
+  // while i < len(xs) {
+  Jump         L2
+L0:
+  // return 0 - 1
+  Const        r3, 0
+  Const        r9, 1
+  SubInt       r11, r3, r9
+  Return       r11
+
+  // fun contains(xs: list<int>, value: int): bool {
+func contains (regs=10)
+  // return indexOf(xs, value) != 0 - 1
+  Move         r3, r1
+  Move         r4, r2
+  Call2        r5, indexOf, r3, r4
+  Const        r6, 0
+  Const        r7, 1
+  Const        r8, -1
+  NotEqual     r9, r5, r8
+  Return       r9
+
+  // fun maxOf(a: int, b: int): int { if a > b { return a } else { return b } }
+func maxOf (regs=4)
+  // fun maxOf(a: int, b: int): int { if a > b { return a } else { return b } }
+  Less         r3, r2, r1
+  JumpIfFalse  r3, L0
+  Return       r1
+L0:
+  Return       r2
+
+  // fun intSqrt(n: int): int {
+func intSqrt (regs=14)
+  // if n == 0 { return 0 }
+  Const        r2, 0
+  Equal        r3, r1, r2
+  JumpIfFalse  r3, L0
+  Const        r2, 0
+  Return       r2
+L0:
+  // var x = n
+  Move         r4, r1
+  // var y = (x + 1) / 2
+  Const        r5, 1
+  Add          r6, r4, r5
+  Const        r7, 2
+  Div          r8, r6, r7
+  Move         r9, r8
+L2:
+  // while y < x {
+  Less         r10, r9, r4
+  JumpIfFalse  r10, L1
+  // x = y
+  Move         r4, r9
+  // y = (x + n / x) / 2
+  Div          r11, r1, r4
+  Add          r12, r4, r11
+  Const        r7, 2
+  Div          r13, r12, r7
+  Move         r9, r13
+  // while y < x {
+  Jump         L2
+L1:
+  // return x
+  Return       r4
+
+  // fun sumProperDivisors(n: int): int {
+func sumProperDivisors (regs=21)
+  // if n < 2 { return 0 }
+  Const        r2, 2
+  Less         r3, r1, r2
+  JumpIfFalse  r3, L0
+  Const        r4, 0
+  Return       r4
+L0:
+  // let sqrt = intSqrt(n)
+  Move         r5, r1
+  Call         r6, intSqrt, r5
+  Move         r7, r6
+  // var sum = 1
+  Const        r8, 1
+  Move         r9, r8
+  // var i = 2
+  Const        r2, 2
+  Move         r10, r2
+L3:
+  // while i <= sqrt {
+  LessEq       r11, r10, r7
+  JumpIfFalse  r11, L1
+  // if n % i == 0 {
+  Mod          r12, r1, r10
+  Const        r4, 0
+  Equal        r13, r12, r4
+  JumpIfFalse  r13, L2
+  // sum = sum + i + n / i
+  Div          r14, r1, r10
+  AddInt       r15, r9, r10
+  Add          r16, r15, r14
+  Move         r9, r16
+L2:
+  // i = i + 1
+  Const        r8, 1
+  AddInt       r17, r10, r8
+  Move         r10, r17
+  // while i <= sqrt {
+  Jump         L3
+L1:
+  // if sqrt * sqrt == n { sum = sum - sqrt }
+  Mul          r18, r7, r7
+  Equal        r19, r18, r1
+  JumpIfFalse  r19, L4
+  Sub          r20, r9, r7
+  Move         r9, r20
+L4:
+  // return sum
+  Return       r9
+
+  // fun classifySequence(k: int): map<string, any> {
+func classifySequence (regs=30)
+  // var last = k
+  Move         r2, r1
+  // var seq: list<int> = [k]
+  Move         r3, r1
+  MakeList     r4, 1, r3
+  Move         r5, r4
+L1:
+  // while true {
+  Const        r6, true
+  // last = sumProperDivisors(last)
+  Move         r7, r2
+  Call         r8, sumProperDivisors, r7
+  Move         r2, r8
+  // seq = append(seq, last)
+  Append       r9, r5, r2
+  Move         r5, r9
+  // let n = len(seq)
+  Len          r10, r5
+  Move         r11, r10
+  // var aliquot = ""
+  Const        r12, ""
+  Move         r13, r12
+  // if last == 0 {
+  Const        r14, 0
+  Equal        r15, r2, r14
+  JumpIfFalse  r15, L0
+  // aliquot = "Terminating"
+  Const        r16, "Terminating"
+  Move         r13, r16
+L0:
+  // if aliquot != "" { return {"seq": seq, "aliquot": aliquot} }
+  Const        r12, ""
+  NotEqual     r17, r13, r12
+  JumpIfFalse  r17, L1
+  Const        r18, "seq"
+  Const        r19, "aliquot"
+  Move         r20, r18
+  Move         r21, r5
+  Move         r22, r19
+  Move         r23, r13
+  MakeMap      r24, 2, r20
+  Return       r24
+
+  // fun padLeft(n: int, w: int): string {
+func padLeft (regs=9)
+  // var s = str(n)
+  Str          r3, r1
+  Move         r4, r3
+L1:
+  // while len(s) < w { s = " " + s }
+  Len          r5, r4
+  Less         r6, r5, r2
+  JumpIfFalse  r6, L0
+  Const        r7, " "
+  Add          r8, r7, r4
+  Move         r4, r8
+  Jump         L1
+L0:
+  // return s
+  Return       r4
+
+  // fun padRight(s: string, w: int): string {
+func padRight (regs=8)
+  // var r = s
+  Move         r3, r1
+L1:
+  // while len(r) < w { r = r + " " }
+  Len          r4, r3
+  Less         r5, r4, r2
+  JumpIfFalse  r5, L0
+  Const        r6, " "
+  Add          r7, r3, r6
+  Move         r3, r7
+  Jump         L1
+L0:
+  // return r
+  Return       r3
+
+  // fun joinWithCommas(seq: list<int>): string {
+func joinWithCommas (regs=20)
+  // var s = "["
+  Const        r2, "["
+  Move         r3, r2
+  // var i = 0
+  Const        r4, 0
+  Move         r5, r4
+L2:
+  // while i < len(seq) {
+  Len          r6, r1
+  LessInt      r7, r5, r6
+  JumpIfFalse  r7, L0
+  // s = s + str(seq[i])
+  Index        r8, r1, r5
+  Str          r9, r8
+  Add          r10, r3, r9
+  Move         r3, r10
+  // if i < len(seq) - 1 { s = s + ", " }
+  Len          r11, r1
+  Const        r12, 1
+  SubInt       r13, r11, r12
+  LessInt      r14, r5, r13
+  JumpIfFalse  r14, L1
+  Const        r15, ", "
+  Add          r16, r3, r15
+  Move         r3, r16
+L1:
+  // i = i + 1
+  Const        r12, 1
+  AddInt       r17, r5, r12
+  Move         r5, r17
+  // while i < len(seq) {
+  Jump         L2
+L0:
+  // s = s + "]"
+  Const        r18, "]"
+  Add          r19, r3, r18
+  Move         r3, r19
+  // return s
+  Return       r3
+
+  // fun main() {
+func main (regs=81)
+  // print("Aliquot classifications - periods for Sociable/Cyclic in square brackets:\n")
+  Const        r1, "Aliquot classifications - periods for Sociable/Cyclic in square brackets:\n"
+  Print        r1
+  // var k = 1
+  Const        r2, 1
+  Move         r3, r2
+L1:
+  // while k <= 10 {
+  Const        r4, 10
+  LessEqInt    r5, r3, r4
+  JumpIfFalse  r5, L0
+  // let res = classifySequence(k)
+  Move         r6, r3
+  Call         r7, classifySequence, r6
+  Move         r8, r7
+  // print(padLeft(k, 2) + ": " + padRight(res["aliquot"] as string, 15) + " " + joinWithCommas(res["seq"] as list<int>))
+  Move         r9, r3
+  Const        r11, 2
+  Move         r10, r11
+  Call2        r12, padLeft, r9, r10
+  Const        r13, ": "
+  Add          r14, r12, r13
+  Const        r17, "aliquot"
+  Index        r18, r8, r17
+  Cast         r19, r18, string
+  Move         r15, r19
+  Const        r20, 15
+  Move         r16, r20
+  Call2        r21, padRight, r15, r16
+  Add          r22, r14, r21
+  Const        r23, " "
+  Add          r24, r22, r23
+  Const        r26, "seq"
+  Index        r27, r8, r26
+  Cast         r28, r27, [int]
+  Move         r25, r28
+  Call         r29, joinWithCommas, r25
+  Add          r30, r24, r29
+  Print        r30
+  // k = k + 1
+  Const        r2, 1
+  AddInt       r31, r3, r2
+  Move         r3, r31
+  // while k <= 10 {
+  Jump         L1
+L0:
+  // print("")
+  Const        r32, ""
+  Print        r32
+  // let s = [11, 12, 28, 496, 220, 1184, 12496, 1264460, 790, 909, 562, 1064, 1488]
+  Const        r33, [11, 12, 28, 496, 220, 1184, 12496, 1264460, 790, 909, 562, 1064, 1488]
+  Move         r34, r33
+  // var i = 0
+  Const        r35, 0
+  Move         r36, r35
+L3:
+  // while i < len(s) {
+  Const        r37, 13
+  LessInt      r38, r36, r37
+  JumpIfFalse  r38, L2
+  // let val = s[i]
+  Index        r39, r34, r36
+  Move         r40, r39
+  // let res = classifySequence(val)
+  Move         r41, r40
+  Call         r42, classifySequence, r41
+  Move         r43, r42
+  // print(padLeft(val, 7) + ": " + padRight(res["aliquot"] as string, 15) + " " + joinWithCommas(res["seq"] as list<int>))
+  Move         r44, r40
+  Const        r46, 7
+  Move         r45, r46
+  Call2        r47, padLeft, r44, r45
+  Const        r13, ": "
+  Add          r48, r47, r13
+  Const        r17, "aliquot"
+  Index        r51, r43, r17
+  Cast         r52, r51, string
+  Move         r49, r52
+  Const        r20, 15
+  Move         r50, r20
+  Call2        r53, padRight, r49, r50
+  Add          r54, r48, r53
+  Const        r23, " "
+  Add          r55, r54, r23
+  Const        r26, "seq"
+  Index        r57, r43, r26
+  Cast         r58, r57, [int]
+  Move         r56, r58
+  Call         r59, joinWithCommas, r56
+  Add          r60, r55, r59
+  Print        r60
+  // i = i + 1
+  Const        r2, 1
+  AddInt       r61, r36, r2
+  Move         r36, r61
+  // while i < len(s) {
+  Jump         L3
+L2:
+  // print("")
+  Const        r32, ""
+  Print        r32
+  // let big = 15355717786080
+  Const        r62, 15355717786080
+  Move         r63, r62
+  // let r = classifySequence(big)
+  Const        r62, 15355717786080
+  Move         r64, r62
+  Call         r65, classifySequence, r64
+  Move         r66, r65
+  // print(str(big) + ": " + padRight(r["aliquot"] as string, 15) + " " + joinWithCommas(r["seq"] as list<int>))
+  Const        r67, "15355717786080"
+  Const        r13, ": "
+  Add          r68, r67, r13
+  Const        r17, "aliquot"
+  Index        r71, r66, r17
+  Cast         r72, r71, string
+  Move         r69, r72
+  Const        r20, 15
+  Move         r70, r20
+  Call2        r73, padRight, r69, r70
+  Add          r74, r68, r73
+  Const        r23, " "
+  Add          r75, r74, r23
+  Const        r26, "seq"
+  Index        r77, r66, r26
+  Cast         r78, r77, [int]
+  Move         r76, r78
+  Call         r79, joinWithCommas, r76
+  Add          r80, r75, r79
+  Print        r80
+  Return       r0

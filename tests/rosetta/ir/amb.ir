@@ -1,0 +1,159 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun amb(wordsets: list<list<string>>, res: list<string>, idx: int): bool {
+func amb (regs=35)
+  // if idx == len(wordsets) {
+  Len          r3, r0
+  Equal        r4, r2, r3
+  JumpIfFalse  r4, L0
+  // return true
+  Const        r5, true
+  Return       r5
+L0:
+  // var prev = ""
+  Const        r6, ""
+  Move         r7, r6
+  // if idx > 0 {
+  Const        r8, 0
+  Less         r9, r8, r2
+  JumpIfFalse  r9, L1
+  // prev = res[idx - 1]
+  Const        r10, 1
+  Sub          r11, r2, r10
+  Index        r12, r1, r11
+  Move         r7, r12
+L1:
+  // var i = 0
+  Const        r8, 0
+  Move         r13, r8
+L5:
+  // while i < len(wordsets[idx]) {
+  Index        r14, r0, r2
+  Len          r15, r14
+  LessInt      r16, r13, r15
+  JumpIfFalse  r16, L2
+  // let w = wordsets[idx][i]
+  Index        r17, r0, r2
+  Index        r18, r17, r13
+  Move         r19, r18
+  // if idx == 0 || substring(prev, len(prev) - 1, len(prev)) == substring(w, 0, 1) {
+  Const        r8, 0
+  Equal        r20, r2, r8
+  Len          r21, r7
+  Const        r10, 1
+  SubInt       r22, r21, r10
+  Len          r23, r7
+  Slice        r24, r7, r22, r23
+  Const        r8, 0
+  Const        r10, 1
+  Slice        r25, r19, r8, r10
+  Equal        r26, r24, r25
+  Move         r27, r20
+  JumpIfTrue   r27, L3
+  Move         r27, r26
+L3:
+  JumpIfFalse  r27, L4
+  // res[idx] = w
+  SetIndex     r1, r2, r19
+  // if amb(wordsets, res, idx + 1) {
+  Move         r28, r0
+  Move         r29, r1
+  Const        r10, 1
+  Add          r31, r2, r10
+  Move         r30, r31
+  Call         r32, amb, r28, r29, r30
+  JumpIfFalse  r32, L4
+  // return true
+  Const        r5, true
+  Return       r5
+L4:
+  // i = i + 1
+  Const        r10, 1
+  AddInt       r33, r13, r10
+  Move         r13, r33
+  // while i < len(wordsets[idx]) {
+  Jump         L5
+L2:
+  // return false
+  Const        r34, false
+  Return       r34
+
+  // fun main() {
+func main (regs=32)
+  // let wordset = [
+  Const        r0, [["the", "that", "a"], ["frog", "elephant", "thing"], ["walked", "treaded", "grows"], ["slowly", "quickly"]]
+  Move         r1, r0
+  // var res: list<string> = []
+  Const        r2, []
+  Move         r3, r2
+  // var i = 0
+  Const        r4, 0
+  Move         r5, r4
+L1:
+  // while i < len(wordset) {
+  Const        r6, 4
+  LessInt      r7, r5, r6
+  JumpIfFalse  r7, L0
+  // res = append(res, "")
+  Const        r8, ""
+  Append       r9, r3, r8
+  Move         r3, r9
+  // i = i + 1
+  Const        r10, 1
+  AddInt       r11, r5, r10
+  Move         r5, r11
+  // while i < len(wordset) {
+  Jump         L1
+L0:
+  // if amb(wordset, res, 0) {
+  Const        r15, [["the", "that", "a"], ["frog", "elephant", "thing"], ["walked", "treaded", "grows"], ["slowly", "quickly"]]
+  Move         r12, r15
+  Move         r13, r3
+  Const        r4, 0
+  Move         r14, r4
+  Call         r16, amb, r12, r13, r14
+  JumpIfFalse  r16, L2
+  // var out = "[" + res[0]
+  Const        r17, "["
+  Const        r4, 0
+  Index        r18, r3, r4
+  Add          r19, r17, r18
+  Move         r20, r19
+  // var j = 1
+  Const        r10, 1
+  Move         r21, r10
+L4:
+  // while j < len(res) {
+  Len          r22, r3
+  LessInt      r23, r21, r22
+  JumpIfFalse  r23, L3
+  // out = out + " " + res[j]
+  Const        r24, " "
+  Add          r25, r20, r24
+  Index        r26, r3, r21
+  Add          r27, r25, r26
+  Move         r20, r27
+  // j = j + 1
+  Const        r10, 1
+  AddInt       r28, r21, r10
+  Move         r21, r28
+  // while j < len(res) {
+  Jump         L4
+L3:
+  // out = out + "]"
+  Const        r29, "]"
+  Add          r30, r20, r29
+  Move         r20, r30
+  // print(out)
+  Print        r20
+  // if amb(wordset, res, 0) {
+  Jump         L5
+L2:
+  // print("No amb found")
+  Const        r31, "No amb found"
+  Print        r31
+L5:
+  Return       r0

@@ -1,0 +1,90 @@
+func main (regs=31)
+  // let msg = "Hello World! "
+  Const        r5, "Hello World! "
+  Move         r0, r5
+  SetGlobal    0,0,0,0
+  // var shift = 0
+  Const        r6, 0
+  Move         r1, r6
+  SetGlobal    1,1,0,0
+  // var inc = 1
+  Const        r7, 1
+  Move         r2, r7
+  SetGlobal    2,2,0,0
+  // var clicks = 0
+  Const        r6, 0
+  Move         r3, r6
+  SetGlobal    3,3,0,0
+  // var frames = 0
+  Const        r6, 0
+  Move         r4, r6
+  SetGlobal    4,4,0,0
+L3:
+  // while clicks < 5 {
+  Const        r8, 5
+  LessInt      r9, r3, r8
+  JumpIfFalse  r9, L0
+  // var line = ""
+  Const        r10, ""
+  Move         r11, r10
+  // var i = 0
+  Const        r6, 0
+  Move         r12, r6
+L2:
+  // while i < len(msg) {
+  Const        r13, 13
+  LessInt      r14, r12, r13
+  JumpIfFalse  r14, L1
+  // let idx = (shift + i) % len(msg)
+  AddInt       r15, r1, r12
+  Const        r13, 13
+  ModInt       r16, r15, r13
+  Move         r17, r16
+  // line = line + msg[idx:idx+1]
+  Move         r18, r17
+  Const        r7, 1
+  AddInt       r20, r17, r7
+  Move         r19, r20
+  Slice        r21, r0, r18, r19
+  Add          r22, r11, r21
+  Move         r11, r22
+  // i = i + 1
+  Const        r7, 1
+  AddInt       r23, r12, r7
+  Move         r12, r23
+  // while i < len(msg) {
+  Jump         L2
+L1:
+  // print(line)
+  Print        r11
+  // shift = (shift + inc) % len(msg)
+  AddInt       r24, r1, r2
+  Const        r13, 13
+  ModInt       r25, r24, r13
+  Move         r1, r25
+  SetGlobal    1,1,0,0
+  // frames = frames + 1
+  Const        r7, 1
+  AddInt       r26, r4, r7
+  Move         r4, r26
+  SetGlobal    4,4,0,0
+  // if frames % len(msg) == 0 {
+  Const        r13, 13
+  ModInt       r27, r4, r13
+  Const        r6, 0
+  EqualInt     r28, r27, r6
+  JumpIfFalse  r28, L3
+  // inc = len(msg) - inc
+  Const        r13, 13
+  SubInt       r29, r13, r2
+  Move         r2, r29
+  SetGlobal    2,2,0,0
+  // clicks = clicks + 1
+  Const        r7, 1
+  AddInt       r30, r3, r7
+  Move         r3, r30
+  SetGlobal    3,3,0,0
+  // while clicks < 5 {
+  Jump         L3
+L0:
+  Return       r0

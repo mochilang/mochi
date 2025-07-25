@@ -1,0 +1,189 @@
+func main (regs=38)
+  // let PI = 3.141592653589793
+  Const        r7, 3.141592653589793
+  Move         r0, r7
+  SetGlobal    0,0,0,0
+  // let L = 10.0
+  Const        r8, 10.0
+  Move         r1, r8
+  SetGlobal    1,1,0,0
+  // let G = 9.81
+  Const        r9, 9.81
+  Move         r2, r9
+  SetGlobal    2,2,0,0
+  // let dt = 0.2
+  Const        r10, 0.2
+  Move         r3, r10
+  SetGlobal    3,3,0,0
+  // let phi0 = PI / 4.0
+  Const        r7, 3.141592653589793
+  Const        r11, 4.0
+  DivFloat     r12, r7, r11
+  Move         r4, r12
+  SetGlobal    4,4,0,0
+  // let omega = sqrtApprox(G / L)
+  Const        r9, 9.81
+  Const        r8, 10.0
+  DivFloat     r14, r9, r8
+  Move         r13, r14
+  Call         r15, sqrtApprox, r13
+  Move         r5, r15
+  SetGlobal    5,5,0,0
+  // var t = 0.0
+  Const        r16, 0.0
+  Move         r6, r16
+  SetGlobal    6,6,0,0
+  // for step in 0..10 {
+  Const        r17, 0
+  Const        r18, 10
+  Move         r19, r17
+L1:
+  LessInt      r20, r19, r18
+  JumpIfFalse  r20, L0
+  // let phi = phi0 * cosApprox(omega * t)
+  Const        r21, 0.7853981633974483
+  MulFloat     r23, r5, r6
+  Move         r22, r23
+  Call         r24, cosApprox, r22
+  MulFloat     r25, r21, r24
+  Move         r26, r25
+  // let pos = (10.0 * sinApprox(phi) + 0.5) as int
+  Const        r8, 10.0
+  Move         r27, r26
+  Call         r28, sinApprox, r27
+  MulFloat     r29, r8, r28
+  Const        r30, 0.5
+  AddFloat     r31, r29, r30
+  Cast         r32, r31, int
+  Move         r33, r32
+  // print(str(pos))
+  Str          r34, r33
+  Print        r34
+  // t = t + dt
+  Const        r10, 0.2
+  AddFloat     r35, r6, r10
+  Move         r6, r35
+  SetGlobal    6,6,0,0
+  // for step in 0..10 {
+  Const        r36, 1
+  AddInt       r37, r19, r36
+  Move         r19, r37
+  Jump         L1
+L0:
+  Return       r0
+
+  // fun sinApprox(x: float): float {
+func sinApprox (regs=27)
+  // var term = x
+  Move         r8, r7
+  // var sum = x
+  Move         r9, r7
+  // var n = 1
+  Const        r10, 1
+  Move         r11, r10
+L1:
+  // while n <= 10 {
+  Const        r12, 10
+  LessEqInt    r13, r11, r12
+  JumpIfFalse  r13, L0
+  // let denom = ((2*n)*(2*n+1)) as float
+  Const        r14, 2
+  MulInt       r15, r14, r11
+  Const        r14, 2
+  MulInt       r16, r14, r11
+  Const        r10, 1
+  AddInt       r17, r16, r10
+  MulInt       r18, r15, r17
+  Cast         r19, r18, float
+  Move         r20, r19
+  // term = -term * x * x / denom
+  Neg          r21, r8
+  Mul          r22, r21, r7
+  Mul          r23, r22, r7
+  Div          r24, r23, r20
+  Move         r8, r24
+  // sum = sum + term
+  Add          r25, r9, r8
+  Move         r9, r25
+  // n = n + 1
+  Const        r10, 1
+  AddInt       r26, r11, r10
+  Move         r11, r26
+  // while n <= 10 {
+  Jump         L1
+L0:
+  // return sum
+  Return       r9
+
+  // fun cosApprox(x: float): float {
+func cosApprox (regs=28)
+  // var term = 1.0
+  Const        r8, 1.0
+  Move         r9, r8
+  // var sum = 1.0
+  Const        r8, 1.0
+  Move         r10, r8
+  // var n = 1
+  Const        r11, 1
+  Move         r12, r11
+L1:
+  // while n <= 10 {
+  Const        r13, 10
+  LessEqInt    r14, r12, r13
+  JumpIfFalse  r14, L0
+  // let denom = ((2*n-1)*(2*n)) as float
+  Const        r15, 2
+  MulInt       r16, r15, r12
+  Const        r11, 1
+  SubInt       r17, r16, r11
+  Const        r15, 2
+  MulInt       r18, r15, r12
+  MulInt       r19, r17, r18
+  Cast         r20, r19, float
+  Move         r21, r20
+  // term = -term * x * x / denom
+  NegFloat     r22, r9
+  MulFloat     r23, r22, r7
+  MulFloat     r24, r23, r7
+  DivFloat     r25, r24, r21
+  Move         r9, r25
+  // sum = sum + term
+  AddFloat     r26, r10, r9
+  Move         r10, r26
+  // n = n + 1
+  Const        r11, 1
+  AddInt       r27, r12, r11
+  Move         r12, r27
+  // while n <= 10 {
+  Jump         L1
+L0:
+  // return sum
+  Return       r10
+
+  // fun sqrtApprox(x: float): float {
+func sqrtApprox (regs=19)
+  // var guess = x
+  Move         r8, r7
+  // var i = 0
+  Const        r9, 0
+  Move         r10, r9
+L1:
+  // while i < 10 {
+  Const        r11, 10
+  LessInt      r12, r10, r11
+  JumpIfFalse  r12, L0
+  // guess = (guess + x / guess) / 2.0
+  Div          r13, r7, r8
+  Add          r14, r8, r13
+  Const        r15, 2.0
+  DivFloat     r16, r14, r15
+  Move         r8, r16
+  // i = i + 1
+  Const        r17, 1
+  AddInt       r18, r10, r17
+  Move         r10, r18
+  // while i < 10 {
+  Jump         L1
+L0:
+  // return guess
+  Return       r8
