@@ -100,8 +100,9 @@ end
 `
 
 const helperMem = `
+require 'objspace'
 def _mem()
-  0
+  ObjectSpace.memsize_of_all
 end
 `
 
@@ -1176,7 +1177,13 @@ var (
 	usesIndexOf     bool
 	usesParseIntStr bool
 	usesMem         bool
+	benchMain       bool
 )
+
+// SetBenchMain configures whether the generated main function is wrapped in a
+// benchmark block when emitting code. When enabled, the program will output a
+// JSON object with duration and memory statistics on completion.
+func SetBenchMain(v bool) { benchMain = v }
 
 // reserved lists Ruby reserved keywords that cannot be used as identifiers.
 var reserved = map[string]bool{
@@ -2620,6 +2627,12 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 		if conv != nil {
 			rbProg.Stmts = append(rbProg.Stmts, conv)
 		}
+	}
+	if benchMain {
+		needsJSON = true
+		usesNow = true
+		usesMem = true
+		rbProg.Stmts = []Stmt{&BenchStmt{Name: "main", Body: rbProg.Stmts}}
 	}
 	return rbProg, nil
 }

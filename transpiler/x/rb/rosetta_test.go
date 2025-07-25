@@ -5,6 +5,7 @@ package rb_test
 import (
 	"bufio"
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"os"
 	"os/exec"
@@ -20,7 +21,7 @@ import (
 	"mochi/types"
 )
 
-func runRosetta(t *testing.T, src, name, outDir string) {
+func runRosetta(t *testing.T, src, name, outDir string, bench bool) {
 	codePath := filepath.Join(outDir, name+".rb")
 	outPath := filepath.Join(outDir, name+".out")
 	errPath := filepath.Join(outDir, name+".error")
@@ -54,12 +55,27 @@ func runRosetta(t *testing.T, src, name, outDir string) {
 		t.Fatalf("write: %v", err)
 	}
 	cmd := exec.Command("ruby", codePath)
-	cmd.Env = append(os.Environ(), "MOCHI_NOW_SEED=1")
+	envv := os.Environ()
+	if bench {
+		envv = append(envv, "MOCHI_BENCHMARK=1")
+	} else {
+		envv = append(envv, "MOCHI_NOW_SEED=1")
+	}
+	cmd.Env = envv
 	if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
 		cmd.Stdin = bytes.NewReader(data)
 	}
 	out, err := cmd.CombinedOutput()
 	got := bytes.TrimSpace(out)
+	if bench {
+		benchPath := filepath.Join(outDir, name+".bench")
+		if idx := bytes.LastIndexByte(got, '{'); idx >= 0 {
+			_ = os.WriteFile(benchPath, got[idx:], 0o644)
+			got = bytes.TrimSpace(got[:idx])
+		} else {
+			_ = os.WriteFile(benchPath, nil, 0o644)
+		}
+	}
 	if err != nil {
 		_ = os.WriteFile(errPath, append([]byte("run: "+err.Error()+"\n"), out...), 0o644)
 		t.Skipf("run error: %v", err)
@@ -68,6 +84,12 @@ func runRosetta(t *testing.T, src, name, outDir string) {
 	_ = os.Remove(errPath)
 
 	wantPath := filepath.Join(outDir, name+".out")
+	if bench {
+		_ = os.WriteFile(outPath, got, 0o644)
+		_ = os.Remove(errPath)
+		_ = os.WriteFile(wantPath, append(got, '\n'), 0o644)
+		return
+	}
 	if update := shouldUpdate(); update {
 		_ = os.WriteFile(wantPath, append(got, '\n'), 0o644)
 	} else if want, err := os.ReadFile(wantPath); err == nil {
@@ -125,6 +147,8 @@ func TestRubyTranspiler_Rosetta(t *testing.T) {
 	if _, err := exec.LookPath("ruby"); err != nil {
 		t.Skip("ruby not installed")
 	}
+	bench := os.Getenv("MOCHI_BENCHMARK") == "true" || os.Getenv("MOCHI_BENCHMARK") == "1"
+	rb.SetBenchMain(bench)
 	root := repoRoot(t)
 	srcDir := filepath.Join(root, "tests", "rosetta", "x", "Mochi")
 	outDir := filepath.Join(root, "tests", "rosetta", "transpiler", "rb")
@@ -145,7 +169,7 @@ func TestRubyTranspiler_Rosetta(t *testing.T) {
 		f := files[idx-1]
 		name := strings.TrimSuffix(filepath.Base(f), ".mochi")
 		t.Run(fmt.Sprintf("%03d_%s", idx, name), func(t *testing.T) {
-			runRosetta(t, f, name, outDir)
+			runRosetta(t, f, name, outDir, bench)
 		})
 		return
 	}
@@ -158,7 +182,7 @@ func TestRubyTranspiler_Rosetta(t *testing.T) {
 	for i, f := range files[:max] {
 		name := strings.TrimSuffix(filepath.Base(f), ".mochi")
 		t.Run(fmt.Sprintf("%03d_%s", i+1, name), func(t *testing.T) {
-			runRosetta(t, f, name, outDir)
+			runRosetta(t, f, name, outDir, bench)
 		})
 	}
 }
@@ -173,22 +197,76 @@ func updateRosetta() {
 	total := len(files)
 	compiled := 0
 	var lines []string
+	lines = append(lines, "| Index | Name | Status | Duration | Memory |")
+	lines = append(lines, "|------:|------|:-----:|---------:|-------:|")
 	for i, f := range files {
 		name := strings.TrimSuffix(filepath.Base(f), ".mochi")
-		mark := "[ ]"
-		if _, err := os.Stat(filepath.Join(outDir, name+".out")); err == nil {
-			if _, err2 := os.Stat(filepath.Join(outDir, name+".error")); os.IsNotExist(err2) {
-				compiled++
-				mark = "[x]"
+		status := " "
+		rbFile := filepath.Join(outDir, name+".rb")
+		outFile := filepath.Join(outDir, name+".out")
+		errFile := filepath.Join(outDir, name+".error")
+		if exists(rbFile) && exists(outFile) && !exists(errFile) {
+			compiled++
+			status = "✓"
+		}
+		dur := ""
+		mem := ""
+		benchFile := filepath.Join(outDir, name+".bench")
+		if data, err := os.ReadFile(benchFile); err == nil && len(data) > 0 {
+			var js struct {
+				Duration int64 `json:"duration_us"`
+				Memory   int64 `json:"memory_bytes"`
+			}
+			if json.Unmarshal(bytes.TrimSpace(data), &js) == nil && js.Duration > 0 {
+				dur = humanDuration(js.Duration)
+				mem = humanSize(js.Memory)
+			}
+		} else if data, err := os.ReadFile(outFile); err == nil {
+			var js struct {
+				Duration int64 `json:"duration_us"`
+				Memory   int64 `json:"memory_bytes"`
+			}
+			data = bytes.TrimSpace(data)
+			if idx := bytes.LastIndexByte(data, '{'); idx >= 0 {
+				if json.Unmarshal(data[idx:], &js) == nil && js.Duration > 0 {
+					dur = humanDuration(js.Duration)
+					mem = humanSize(js.Memory)
+				}
 			}
 		}
-		lines = append(lines, fmt.Sprintf("%3d. %s %s (%d)", i+1, mark, name, i+1))
+		lines = append(lines, fmt.Sprintf("| %d | %s | %s | %s | %s |", i+1, name, status, dur, mem))
 	}
+
 	ts := time.Now().Format("2006-01-02 15:04 MST")
 	var buf bytes.Buffer
-	fmt.Fprintf(&buf, "# Ruby Rosetta Transpiler Output (%d/%d)\n", compiled, total)
+	buf.WriteString("# Ruby Rosetta Transpiler Output\n\n")
+	buf.WriteString("Generated Ruby code from Mochi Rosetta tasks lives in `tests/rosetta/transpiler/rb`.\n\n")
 	fmt.Fprintf(&buf, "Last updated: %s\n\n", ts)
+	fmt.Fprintf(&buf, "## Checklist (%d/%d)\n", compiled, total)
 	buf.WriteString(strings.Join(lines, "\n"))
 	buf.WriteString("\n")
 	_ = os.WriteFile(readmePath, buf.Bytes(), 0o644)
+}
+
+func exists(path string) bool {
+	_, err := os.Stat(path)
+	return err == nil
+}
+
+func humanDuration(us int64) string {
+	d := time.Duration(us) * time.Microsecond
+	return d.String()
+}
+
+func humanSize(b int64) string {
+	const unit = 1024
+	if b < unit {
+		return fmt.Sprintf("%d B", b)
+	}
+	div, exp := int64(unit), 0
+	for n := b / unit; n >= unit; n /= unit {
+		div *= unit
+		exp++
+	}
+	return fmt.Sprintf("%.1f %cB", float64(b)/float64(div), "KMGTPE"[exp])
 }

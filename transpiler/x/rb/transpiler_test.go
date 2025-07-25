@@ -41,6 +41,8 @@ func TestTranspilePrograms(t *testing.T) {
 	if _, err := exec.LookPath("ruby"); err != nil {
 		t.Skip("ruby not installed")
 	}
+	bench := os.Getenv("MOCHI_BENCHMARK") == "true" || os.Getenv("MOCHI_BENCHMARK") == "1"
+	rb.SetBenchMain(bench)
 	tests := []string{
 		"print_hello",
 		"append_builtin",
@@ -163,7 +165,13 @@ func TestTranspilePrograms(t *testing.T) {
 				t.Fatalf("write: %v", err)
 			}
 			cmd := exec.Command("ruby", rbFile)
-			cmd.Env = append(os.Environ(), "MOCHI_ROOT="+root, "MOCHI_NOW_SEED=1")
+			envv := append(os.Environ(), "MOCHI_ROOT="+root)
+			if bench {
+				envv = append(envv, "MOCHI_BENCHMARK=1")
+			} else {
+				envv = append(envv, "MOCHI_NOW_SEED=1")
+			}
+			cmd.Env = envv
 			out, err := cmd.CombinedOutput()
 			got := bytes.TrimSpace(out)
 			if err != nil {
