@@ -214,6 +214,10 @@ func mapKeyType(t string) string {
 
 func emitCastExpr(w io.Writer, e Expr, typ string) {
 	// Cast map lookups to the destination type when needed.
+	if typ == "boolean" {
+		e.emit(w)
+		return
+	}
 	if typ != "" && typ != "java.util.Map" && typ != "map" {
 		switch ex := e.(type) {
 		case *IndexExpr:
@@ -1234,7 +1238,13 @@ func (l *ListLit) emit(w io.Writer) {
 			arrType = jt
 		}
 	}
-	fmt.Fprintf(w, "new %s[]{", arrType)
+	raw := arrType
+	if idx := strings.Index(arrType, "<"); idx >= 0 {
+		raw = arrType[:idx]
+		fmt.Fprintf(w, "(%s[])new %s[]{", arrType, raw)
+	} else {
+		fmt.Fprintf(w, "new %s[]{", arrType)
+	}
 	for i, e := range l.Elems {
 		if i > 0 {
 			fmt.Fprint(w, ", ")
@@ -2213,6 +2223,9 @@ func isStringExpr(e Expr) bool {
 			return true
 		}
 	case *IndexExpr:
+		if ex.ResultType != "" {
+			return ex.ResultType == "string" || ex.ResultType == "String"
+		}
 		if isStringExpr(ex.Target) || arrayElemType(ex.Target) == "string" {
 			return true
 		}
@@ -2272,6 +2285,12 @@ func isStructType(name string) bool {
 		}
 	}
 	return false
+}
+
+// VarType returns the inferred type name for the given variable during the last
+// transpilation run. It is intended for testing and debugging only.
+func VarType(name string) string {
+	return varTypes[name]
 }
 
 func isStructExpr(e Expr) bool {
@@ -3305,6 +3324,11 @@ func compilePostfix(pf *parser.PostfixExpr) (Expr, error) {
 			if rType == "" {
 				if v, ok := expr.(*VarExpr); ok {
 					tname := varTypes[v.Name]
+					if strings.Contains(tname, "Map") && !strings.HasSuffix(tname, "[]") {
+						rType = mapValueType(tname)
+					}
+				} else {
+					tname := inferType(expr)
 					if strings.Contains(tname, "Map") && !strings.HasSuffix(tname, "[]") {
 						rType = mapValueType(tname)
 					}

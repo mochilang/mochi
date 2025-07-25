@@ -3,7 +3,7 @@ public class Main {
     static java.util.Map<String,Integer>[] push(java.util.Map<String,Integer>[] h, java.util.Map<String,Integer> it) {
         h = appendObj(h, it);
         int i = h.length - 1;
-        while (i > 0 && (boolean)(((Object)h[i - 1].get("s"))) > ((Number)(((Object)h[i].get("s")))).intValue()) {
+        while (i > 0 && ((int)h[i - 1].getOrDefault("s", 0)) > (int)(((int)h[i].getOrDefault("s", 0)))) {
             java.util.Map<String,Integer> tmp = h[i - 1];
 h[i - 1] = h[i];
 h[i] = tmp;
@@ -13,13 +13,13 @@ h[i] = tmp;
     }
 
     static java.util.Map<String,Object> step(java.util.Map<String,Integer>[] h, int nv, int[] dir) {
-        while (h.length == 0 || nv * nv <= ((Number)(((Object)h[0].get("s")))).intValue()) {
+        while (h.length == 0 || nv * nv <= (int)(((int)h[0].getOrDefault("s", 0)))) {
             h = push(h, new java.util.LinkedHashMap<String, Integer>(java.util.Map.ofEntries(java.util.Map.entry("s", nv * nv), java.util.Map.entry("a", nv), java.util.Map.entry("b", 0))));
             nv = nv + 1;
         }
-        Object s = (Object)(((Object)h[0].get("s")));
+        int s = (int)(((int)h[0].getOrDefault("s", 0)));
         int[][] v = new int[][]{};
-        while ((h.length > 0 && (boolean)(((Object)h[0].get("s"))).equals(s))) {
+        while ((h.length > 0 && ((int)h[0].getOrDefault("s", 0)).equals(s))) {
             java.util.Map<String,Integer> it = h[0];
             h = java.util.Arrays.copyOfRange(h, 1, h.length);
             v = appendObj(v, new int[]{((int)it.getOrDefault("a", 0)), ((int)it.getOrDefault("b", 0))});
@@ -69,7 +69,7 @@ h[i] = tmp;
         int x = 0;
         int y = 0;
         int[] dir = new int[]{0, 1};
-        java.util.Map<String,Integer>[] heap = new java.util.Map<String,Integer>[]{};
+        java.util.Map<String,Integer>[] heap = (java.util.Map<String,Integer>[])new java.util.Map[]{};
         int nv = 1;
         int i = 0;
         while (i < n) {
@@ -110,7 +110,41 @@ h[i] = tmp;
         }
     }
     public static void main(String[] args) {
-        main();
+        {
+            long _benchStart = _now();
+            long _benchMem = _mem();
+            main();
+            long _benchDuration = _now() - _benchStart;
+            long _benchMemory = _mem() - _benchMem;
+            System.out.println("{");
+            System.out.println("  \"duration_us\": " + _benchDuration + ",");
+            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
+            System.out.println("  \"name\": \"main\"");
+            System.out.println("}");
+            return;
+        }
+    }
+
+    static boolean _nowSeeded = false;
+    static int _nowSeed;
+    static int _now() {
+        if (!_nowSeeded) {
+            String s = System.getenv("MOCHI_NOW_SEED");
+            if (s != null && !s.isEmpty()) {
+                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
+            }
+        }
+        if (_nowSeeded) {
+            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
+            return _nowSeed;
+        }
+        return (int)(System.nanoTime() / 1000);
+    }
+
+    static long _mem() {
+        Runtime rt = Runtime.getRuntime();
+        rt.gc();
+        return rt.totalMemory() - rt.freeMemory();
     }
 
     static <T> T[] appendObj(T[] arr, T v) {
