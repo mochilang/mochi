@@ -120,9 +120,11 @@ func runCase(src, outDir string) ([]byte, error) {
 		cmdArgs = append(cmdArgs, "-lc")
 	}
 	cmd := exec.Command("zig", cmdArgs...)
-	cmdEnv := append(os.Environ(), "MOCHI_NOW_SEED=1")
+	cmdEnv := append(os.Environ(), "MOCHI_BENCHMARK=0")
 	if bench {
-		cmdEnv = append(cmdEnv, "MOCHI_BENCHMARK=1")
+		cmdEnv[len(cmdEnv)-1] = "MOCHI_BENCHMARK=1"
+	} else {
+		cmdEnv = append(cmdEnv, "MOCHI_NOW_SEED=1")
 	}
 	cmd.Env = cmdEnv
 	if data, err := os.ReadFile(filepath.Join(filepath.Dir(src), name+".in")); err == nil {
