@@ -5,6 +5,7 @@ package ctrans_test
 import (
 	"bufio"
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"os"
 	"os/exec"
@@ -113,14 +114,31 @@ func updateRosettaReadme() {
 		}
 	}
 	var lines []string
+	lines = append(lines, "| Index | Name | Status | Duration | Memory |")
+	lines = append(lines, "| ---: | --- | :---: | ---: | ---: |")
 	for i, f := range names {
 		name := strings.TrimSuffix(filepath.Base(f), ".mochi")
-		mark := "[ ]"
-		if _, err := os.Stat(filepath.Join(outDir, name+".out")); err == nil {
-			mark = "[x]"
+		status := ""
+		dur := ""
+		mem := ""
+		outPath := filepath.Join(outDir, name+".out")
+		if data, err := os.ReadFile(outPath); err == nil {
+			status = "x"
 			compiled++
+			var res struct {
+				Dur int64 `json:"duration_us"`
+				Mem int64 `json:"memory_bytes"`
+			}
+			trimmed := bytes.TrimSpace(data)
+			if idx := bytes.LastIndex(trimmed, []byte("{")); idx >= 0 {
+				trimmed = trimmed[idx:]
+			}
+			if json.Unmarshal(trimmed, &res) == nil && res.Dur > 0 {
+				dur = humanDur(time.Duration(res.Dur) * time.Microsecond)
+				mem = humanSize(res.Mem)
+			}
 		}
-		lines = append(lines, fmt.Sprintf("%d. %s %s (%d)", i+1, mark, name, i+1))
+		lines = append(lines, fmt.Sprintf("| %d | %s | %s | %s | %s |", i+1, name, status, dur, mem))
 	}
 	var buf bytes.Buffer
 	buf.WriteString("# C Transpiler Rosetta Output\n\n")
@@ -163,4 +181,32 @@ func updateIndex(dir string) error {
 		fmt.Fprintf(&buf, "%d %s\n", i+1, filepath.Base(f))
 	}
 	return os.WriteFile(filepath.Join(dir, "index.txt"), buf.Bytes(), 0o644)
+}
+
+func humanDur(d time.Duration) string {
+	if d < time.Millisecond {
+		return fmt.Sprintf("%dus", d.Microseconds())
+	}
+	if d < time.Second {
+		return fmt.Sprintf("%.2fms", float64(d.Microseconds())/1000)
+	}
+	if d < time.Minute {
+		return fmt.Sprintf("%.2fs", d.Seconds())
+	}
+	return d.String()
+}
+
+func humanSize(n int64) string {
+	const unit = 1024
+	units := []string{"B", "KB", "MB", "GB", "TB"}
+	if n < unit {
+		return fmt.Sprintf("%d B", n)
+	}
+	val := float64(n)
+	exp := 0
+	for val >= unit && exp < len(units)-1 {
+		val /= unit
+		exp++
+	}
+	return fmt.Sprintf("%.1f %s", val, units[exp])
 }

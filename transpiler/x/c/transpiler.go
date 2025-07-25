@@ -68,9 +68,16 @@ var (
 	currentFuncName   string
 	currentFuncReturn string
 
+	benchMain bool
+
 	// track local variable declarations so they can be adjusted
 	declStmts map[string]*DeclStmt
 )
+
+// SetBenchMain configures whether the generated main function is wrapped in a
+// benchmark block when emitting code. When enabled, the program will print a
+// JSON object with duration and memory statistics on completion.
+func SetBenchMain(v bool) { benchMain = v }
 
 func emitLenExpr(w io.Writer, e Expr) {
 	switch v := e.(type) {
@@ -1746,6 +1753,11 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 				mainFn.Body = append(mainFn.Body, stmt)
 			}
 		}
+	}
+	if benchMain {
+		needNow = true
+		needMem = true
+		mainFn.Body = []Stmt{&BenchStmt{Name: "main", Body: mainFn.Body}}
 	}
 	p.Functions = append(p.Functions, mainFn)
 	p.Globals = globals
