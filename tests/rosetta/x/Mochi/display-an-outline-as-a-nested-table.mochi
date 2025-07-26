@@ -1,0 +1,176 @@
+// Mochi implementation of Rosetta "Display an outline as a nested table" task
+// Simplified port of the Go version in tests/rosetta/x/Go/display-an-outline-as-a-nested-table.go
+
+fun split(s: string, sep: string): list<string> {
+  var out: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    if i + len(sep) <= len(s) && substring(s, i, i+len(sep)) == sep {
+      out = append(out, cur)
+      cur = ""
+      i = i + len(sep)
+    } else {
+      cur = cur + substring(s, i, i+1)
+      i = i + 1
+    }
+  }
+  out = append(out, cur)
+  return out
+}
+
+fun join(xs: list<string>, sep: string): string {
+  var res = ""
+  var i = 0
+  while i < len(xs) {
+    if i > 0 { res = res + sep }
+    res = res + xs[i]
+    i = i + 1
+  }
+  return res
+}
+
+fun trimLeftSpaces(s: string): string {
+  var i = 0
+  while i < len(s) && s[i:i+1] == " " { i = i + 1 }
+  return s[i:len(s)]
+}
+
+fun makeIndent(outline: string, tab: int): list<map<string, any>> {
+  let lines = split(outline, "\n")
+  var nodes: list<map<string, any>> = []
+  for line in lines {
+    let line2 = trimLeftSpaces(line)
+    let level = (len(line) - len(line2)) / tab
+    nodes = append(nodes, {"level": level, "name": line2})
+  }
+  return nodes
+}
+
+fun toNest(nodes: list<map<string, any>>, start: int, level: int, n: map<string, any>) {
+  if level == 0 { n["name"] = nodes[0]["name"] }
+  var i = start + 1
+  while i < len(nodes) {
+    let node = nodes[i]
+    let lev = node["level"] as int
+    if lev == level + 1 {
+      var child = {"name": node["name"], "children": []}
+      toNest(nodes, i, level+1, child)
+      var cs = n["children"] as list<any>
+      cs = append(cs, child)
+      n["children"] = cs
+    } else if lev <= level {
+      return
+    }
+    i = i + 1
+  }
+}
+
+fun countLeaves(n: map<string, any>): int {
+  let kids = n["children"] as list<any>
+  if len(kids) == 0 { return 1 }
+  var total = 0
+  for k in kids { total = total + countLeaves(k as map<string, any>) }
+  return total
+}
+
+fun nodesByDepth(root: map<string, any>, depth: int): list<list<map<string, any>>> {
+  var levels: list<list<map<string, any>>> = []
+  var current: list<map<string, any>> = [root]
+  var d = 0
+  while d < depth {
+    levels = append(levels, current)
+    var next: list<map<string, any>> = []
+    for n in current {
+      let kids = n["children"] as list<any>
+      for k in kids { next = append(next, k as map<string, any>) }
+    }
+    current = next
+    d = d + 1
+  }
+  return levels
+}
+
+fun toMarkup(n: map<string, any>, cols: list<string>, depth: int): string {
+  var lines: list<string> = []
+  lines = append(lines, "{| class=\"wikitable\" style=\"text-align: center;\"")
+  let l1 = "|-"
+  lines = append(lines, l1)
+  let span = countLeaves(n)
+  lines = append(lines, "| style=\"background: " + cols[0] + " \" colSpan=" + str(span) + " | " + (n["name"] as string))
+  lines = append(lines, l1)
+
+  let lvls = nodesByDepth(n, depth)
+  var lvl = 1
+  while lvl < depth {
+    let nodes = lvls[lvl]
+    if len(nodes) == 0 {
+      lines = append(lines, "|  |")
+    } else {
+      var idx = 0
+      while idx < len(nodes) {
+        let node = nodes[idx]
+        span = countLeaves(node)
+        var col = lvl
+        if lvl == 1 { col = idx + 1 }
+        if col >= len(cols) { col = len(cols) - 1 }
+        let cell = "| style=\"background: " + cols[col] + " \" colspan=" + str(span) + " | " + (node["name"] as string)
+        lines = append(lines, cell)
+        idx = idx + 1
+      }
+    }
+    if lvl < depth - 1 { lines = append(lines, l1) }
+    lvl = lvl + 1
+  }
+  lines = append(lines, "|}")
+  return join(lines, "\n")
+}
+
+fun main() {
+  let outline = "Display an outline as a nested table.\n" +
+    "    Parse the outline to a tree,\n" +
+    "        measuring the indent of each line,\n" +
+    "        translating the indentation to a nested structure,\n" +
+    "        and padding the tree to even depth.\n" +
+    "    count the leaves descending from each node,\n" +
+    "        defining the width of a leaf as 1,\n" +
+    "        and the width of a parent node as a sum.\n" +
+    "            (The sum of the widths of its children)\n" +
+    "    and write out a table with 'colspan' values\n" +
+    "        either as a wiki table,\n" +
+    "        or as HTML."
+  let yellow = "#ffffe6;"
+  let orange = "#ffebd2;"
+  let green = "#f0fff0;"
+  let blue = "#e6ffff;"
+  let pink = "#ffeeff;"
+  let cols = [yellow, orange, green, blue, pink]
+  let nodes = makeIndent(outline, 4)
+  var n = {"name": "", "children": []}
+  toNest(nodes, 0, 0, n)
+  print(toMarkup(n, cols, 4))
+
+  print("\n")
+
+  let outline2 = "Display an outline as a nested table.\n" +
+    "    Parse the outline to a tree,\n" +
+    "        measuring the indent of each line,\n" +
+    "        translating the indentation to a nested structure,\n" +
+    "        and padding the tree to even depth.\n" +
+    "    count the leaves descending from each node,\n" +
+    "        defining the width of a leaf as 1,\n" +
+    "        and the width of a parent node as a sum.\n" +
+    "            (The sum of the widths of its children)\n" +
+    "            Propagating the sums upward as necessary.\n" +
+    "    and write out a table with 'colspan' values\n" +
+    "        either as a wiki table,\n" +
+    "        or as HTML.\n" +
+    "    Optionally add color to the nodes."
+  let cols2 = [blue, yellow, orange, green, pink]
+  let nodes2 = makeIndent(outline2, 4)
+  var n2 = {"name": "", "children": []}
+  toNest(nodes2, 0, 0, n2)
+  print(toMarkup(n2, cols2, 4))
+}
+
+main()
