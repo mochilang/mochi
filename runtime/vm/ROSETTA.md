@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated IR and outputs from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/ir`.
-Last updated: 2025-07-26 11:22 UTC
+Last updated: 2025-07-26 13:53 UTC
 
-## Rosetta Golden Test Checklist (218/332)
+## Rosetta Golden Test Checklist (219/332)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 116µs | 11.7 KB |
@@ -246,7 +246,7 @@ Last updated: 2025-07-26 11:22 UTC
 | 237 | conways-game-of-life |   |  |  |
 | 238 | copy-a-string-1 |   |  |  |
 | 239 | copy-a-string-2 |   |  |  |
-| 240 | copy-stdin-to-stdout-1 |   |  |  |
+| 240 | copy-stdin-to-stdout-1 | ✓ |  |  |
 | 241 | copy-stdin-to-stdout-2 |   |  |  |
 | 242 | count-in-factors |   |  |  |
 | 243 | count-in-octal-1 |   |  |  |
