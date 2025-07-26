@@ -4,7 +4,7 @@ pool empty
 pool empty
 15
 {
-  "duration_us": 7253,
-  "memory_bytes": 444376,
+  "duration_us": 17115,
+  "memory_bytes": 325976,
   "name": "main"
 }
