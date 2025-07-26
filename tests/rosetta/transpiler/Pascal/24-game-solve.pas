@@ -1,7 +1,6 @@
 {$mode objfpc}
 program Main;
 uses SysUtils;
-type ExprArray = array of Expr;
 var _nowSeed: int64 = 0;
 var _nowSeeded: boolean = false;
 procedure init_now();
@@ -23,94 +22,106 @@ begin
     _now := Integer(GetTickCount64()*1000);
   end;
 end;
+function _bench_now(): int64;
+begin
+  _bench_now := GetTickCount64()*1000;
+end;
+function _mem(): int64;
+var h: TFPCHeapStatus;
+begin
+  h := GetFPCHeapStatus;
+  _mem := h.CurrHeapUsed;
+end;
 type Rational = record
   num: integer;
   denom: integer;
 end;
-type Expr = record
+type Node = record
+  val: Rational;
+  txt: string;
 end;
+type NodeArray = array of Node;
 var
+  bench_start_0: integer;
+  bench_dur_0: integer;
+  bench_mem_0: int64;
+  bench_memdiff_0: int64;
   OP_ADD: integer;
   OP_SUB: integer;
   OP_MUL: integer;
   OP_DIV: integer;
-  binEval_lv: integer;
-  binEval_rv: integer;
-  binString_ls: integer;
-  binString_rs: integer;
-  binString_opstr: string;
+  combine_res: Rational;
+  combine_opstr: string;
   n_cards: integer;
   goal: integer;
   digit_range: integer;
   solve_f: Rational;
   solve_i: integer;
   solve_j: integer;
-  solve_rest: array of Expr;
+  solve_rest: array of Node;
   solve_k: integer;
-  solve_a: Expr;
-  solve_b: Expr;
-  solve_node: integer;
+  solve_a: Node;
+  solve_b: Node;
+  solve_node_var: Node;
   op: integer;
   main_iter: integer;
-  main_cards: array of Expr;
+  main_cards: array of Node;
   main_i: integer;
   main_n: integer;
-function makeExpr(): Expr;
+function makeNode(val: Rational; txt: string): Node;
 begin
+  Result.val := val;
+  Result.txt := txt;
 end;
 function makeRational(num: integer; denom: integer): Rational;
 begin
   Result.num := num;
   Result.denom := denom;
 end;
-function binEval(op: integer; l: Expr; r: Expr): Rational;
+function makeNode(n: integer): Node;
 begin
-  binEval_lv := exprEval(l);
-  binEval_rv := exprEval(r);
-  if op = OP_ADD then begin
-  exit(makeRational((binEval_lv.num * binEval_rv.denom) + (binEval_lv.denom * binEval_rv.num), binEval_lv.denom * binEval_rv.denom));
+  exit(makeNode(makeRational(n, 1), IntToStr(n)));
 end;
-  if op = OP_SUB then begin
-  exit(makeRational((binEval_lv.num * binEval_rv.denom) - (binEval_lv.denom * binEval_rv.num), binEval_lv.denom * binEval_rv.denom));
-end;
-  if op = OP_MUL then begin
-  exit(makeRational(binEval_lv.num * binEval_rv.num, binEval_lv.denom * binEval_rv.denom));
-end;
-  exit(makeRational(binEval_lv.num * binEval_rv.denom, binEval_lv.denom * binEval_rv.num));
-end;
-function binString(op: integer; l: Expr; r: Expr): string;
+function combine(op: integer; l: Node; r: Node): Node;
 begin
-  binString_ls := exprString(l);
-  binString_rs := exprString(r);
-  binString_opstr := '';
   if op = OP_ADD then begin
-  binString_opstr := ' + ';
+  combine_res := makeRational((l.val.num * r.val.denom) + (l.val.denom * r.val.num), l.val.denom * r.val.denom);
 end else begin
   if op = OP_SUB then begin
-  binString_opstr := ' - ';
+  combine_res := makeRational((l.val.num * r.val.denom) - (l.val.denom * r.val.num), l.val.denom * r.val.denom);
 end else begin
   if op = OP_MUL then begin
-  binString_opstr := ' * ';
+  combine_res := makeRational(l.val.num * r.val.num, l.val.denom * r.val.denom);
 end else begin
-  binString_opstr := ' / ';
+  combine_res := makeRational(l.val.num * r.val.denom, l.val.denom * r.val.num);
 end;
 end;
 end;
-  exit(((('(' + binString_ls) + binString_opstr) + binString_rs) + ')');
+  combine_opstr := '';
+  if op = OP_ADD then begin
+  combine_opstr := ' + ';
+end else begin
+  if op = OP_SUB then begin
+  combine_opstr := ' - ';
+end else begin
+  if op = OP_MUL then begin
+  combine_opstr := ' * ';
+end else begin
+  combine_opstr := ' / ';
 end;
-function newNum(n: integer): Expr;
+end;
+end;
+  exit(makeNode(combine_res, ((('(' + l.txt) + combine_opstr) + r.txt) + ')'));
+end;
+function exprEval(x: Node): Rational;
 begin
-  exit(makeNum(makeRational(n, 1)));
+  exit(x.val);
 end;
-function exprEval(x: Expr): Rational;
+function exprString(x: Node): string;
 begin
-  exit(IfThen(x = Num(v), v, binEval(op, l, r)));
+  exit(x.txt);
 end;
-function exprString(x: Expr): string;
-begin
-  exit(IfThen(x = Num(v), IntToStr(v.num), binString(op, l, r)));
-end;
-function solve(xs: ExprArray): boolean;
+function solve(xs: NodeArray): boolean;
 begin
   if Length(xs) = 1 then begin
   solve_f := exprEval(xs[0]);
@@ -134,19 +145,18 @@ end;
 end;
   solve_a := xs[solve_i];
   solve_b := xs[solve_j];
-  solve_node := makeBin(OP_ADD, solve_a, solve_b);
   for op in [OP_ADD, OP_SUB, OP_MUL, OP_DIV] do begin
-  solve_node := makeBin(op, solve_a, solve_b);
-  if solve(concat(solve_rest, [solve_node])) then begin
+  solve_node_var := combine(op, solve_a, solve_b);
+  if solve(concat(solve_rest, [solve_node_var])) then begin
   exit(true);
 end;
 end;
-  solve_node := makeBin(OP_SUB, solve_b, solve_a);
-  if solve(concat(solve_rest, [solve_node])) then begin
+  solve_node_var := combine(OP_SUB, solve_b, solve_a);
+  if solve(concat(solve_rest, [solve_node_var])) then begin
   exit(true);
 end;
-  solve_node := makeBin(OP_DIV, solve_b, solve_a);
-  if solve(concat(solve_rest, [solve_node])) then begin
+  solve_node_var := combine(OP_DIV, solve_b, solve_a);
+  if solve(concat(solve_rest, [solve_node_var])) then begin
   exit(true);
 end;
   solve_j := solve_j + 1;
@@ -163,7 +173,7 @@ begin
   main_i := 0;
   while main_i < n_cards do begin
   main_n := (_now() mod (digit_range - 1)) + 1;
-  main_cards := concat(main_cards, [newNum(main_n)]);
+  main_cards := concat(main_cards, [makeNode(main_n)]);
   writeln(' ' + IntToStr(main_n));
   main_i := main_i + 1;
 end;
@@ -176,6 +186,8 @@ end;
 end;
 begin
   init_now();
+  bench_mem_0 := _mem();
+  bench_start_0 := _bench_now();
   OP_ADD := 1;
   OP_SUB := 2;
   OP_MUL := 3;
@@ -184,4 +196,12 @@ begin
   goal := 24;
   digit_range := 9;
   main();
+  Sleep(1);
+  bench_memdiff_0 := _mem() - bench_mem_0;
+  bench_dur_0 := (_bench_now() - bench_start_0) div 1000;
+  writeln('{');
+  writeln(('  "duration_us": ' + IntToStr(bench_dur_0)) + ',');
+  writeln(('  "memory_bytes": ' + IntToStr(bench_memdiff_0)) + ',');
+  writeln(('  "name": "' + 'main') + '"');
+  writeln('}');
 end.
