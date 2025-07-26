@@ -2,7 +2,7 @@
 
 This file is auto-generated from rosetta tests.
 
-## Rosetta Golden Test Checklist (127/284)
+## Rosetta Golden Test Checklist (129/284)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 151µs | 41.3 KB |
@@ -119,14 +119,14 @@ This file is auto-generated from rosetta tests.
 | 112 | bioinformatics-base-count | ✓ | 210µs | 42.9 KB |
 | 113 | bioinformatics-global-alignment | ✓ |  |  |
 | 114 | bioinformatics-sequence-mutation | ✓ |  |  |
-| 115 | biorhythms |   |  |  |
-| 116 | bitcoin-address-validation |   |  |  |
+| 115 | biorhythms | ✓ | 600µs | 75.2 KB |
+| 116 | bitcoin-address-validation | ✓ | 549µs | 86.2 KB |
 | 117 | bitmap-b-zier-curves-cubic |   |  |  |
 | 118 | bitmap-b-zier-curves-quadratic |   |  |  |
-| 119 | bitmap-bresenhams-line-algorithm | ✓ |  |  |
-| 120 | bitmap-flood-fill | ✓ |  |  |
-| 121 | bitmap-histogram | ✓ |  |  |
-| 122 | bitmap-midpoint-circle-algorithm | ✓ |  |  |
+| 119 | bitmap-bresenhams-line-algorithm | ✓ | 401µs | 53.3 KB |
+| 120 | bitmap-flood-fill | ✓ | 388µs | 41.7 KB |
+| 121 | bitmap-histogram | ✓ | 382µs | 52.0 KB |
+| 122 | bitmap-midpoint-circle-algorithm | ✓ | 861µs | 70.0 KB |
 | 123 | bitmap-ppm-conversion-through-a-pipe |   |  |  |
 | 124 | bitmap-read-a-ppm-file |   |  |  |
 | 125 | bitmap-read-an-image-through-a-pipe |   |  |  |
@@ -290,4 +290,4 @@ This file is auto-generated from rosetta tests.
 | 283 | define-a-primitive-data-type |   |  |  |
 | 284 | md5 |   |  |  |
 
-Last updated: 2025-07-26 02:24 +0000
+Last updated: 2025-07-26 03:08 +0000

@@ -1,3 +1,11 @@
+## Progress (2025-07-26 03:08 +0000)
+- fs transpiler: implement contains builtin
+- Generated F# for 103/104 programs (103 passing)
+
+## Progress (2025-07-26 09:59 +0700)
+- ex transpiler: handle padStart and while vars
+- Generated F# for 103/104 programs (103 passing)
+
 ## Progress (2025-07-26 05:05 +0700)
 - dart rosetta: add next batch
 - Generated F# for 103/104 programs (103 passing)

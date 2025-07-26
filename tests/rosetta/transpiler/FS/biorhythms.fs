@@ -1,4 +1,4 @@
-// Generated 2025-07-26 04:38 +0700
+// Generated 2025-07-26 09:59 +0700
 
 exception Return
 
@@ -81,7 +81,7 @@ and parseIntStr (str: string) =
         let mutable n: int = 0
         let digits: Map<string, int> = Map.ofList [("0", 0); ("1", 1); ("2", 2); ("3", 3); ("4", 4); ("5", 5); ("6", 6); ("7", 7); ("8", 8); ("9", 9)]
         while i < (String.length str) do
-            n <- (n * 10) + (int (digits.[(str.Substring(i, (i + 1) - i))] |> unbox<int>))
+            n <- unbox<int> ((n * 10) + (unbox<int> (digits.[(str.Substring(i, (i + 1) - i))] |> unbox<int>)))
             i <- i + 1
         if neg then
             n <- -n
@@ -143,7 +143,7 @@ and addDays (y: int) (m: int) (d: int) (n: int) =
             let mutable i: int = 0
             while i < n do
                 dd <- dd + 1
-                if dd > (int (daysInMonth yy mm)) then
+                if dd > (unbox<int> (daysInMonth yy mm)) then
                     dd <- 1
                     mm <- mm + 1
                     if mm > 12 then
@@ -159,7 +159,7 @@ and addDays (y: int) (m: int) (d: int) (n: int) =
                     if mm < 1 then
                         mm <- 12
                         yy <- yy - 1
-                    dd <- daysInMonth yy mm
+                    dd <- unbox<int> (daysInMonth yy mm)
                 i <- i - 1
         __ret <- [|yy; mm; dd|]
         raise Return
@@ -213,7 +213,7 @@ and biorhythms (birth: string) (target: string) =
         let ty: int = tparts.[0]
         let tm: int = tparts.[1]
         let td: int = tparts.[2]
-        let diff: int = absInt (int ((day ty tm td) - (day by bm bd)))
+        let diff: int = absInt (unbox<int> ((day ty tm td) - (day by bm bd)))
         printfn "%s" ((("Born " + birth) + ", Target ") + target)
         printfn "%s" ("Day " + (string diff))
         let cycles: string array = [|"Physical day "; "Emotional day"; "Mental day   "|]
@@ -226,7 +226,7 @@ and biorhythms (birth: string) (target: string) =
             let position: int = ((diff % length + length) % length)
             let quadrant: int = (position * 4) / length
             let mutable percent: float = sinApprox (((2.0 * PI) * (float position)) / (float length))
-            percent <- (float (floor (percent * 1000.0))) / 10.0
+            percent <- float ((float (floor (percent * 1000.0))) / 10.0)
             let mutable description: string = ""
             if percent > 95.0 then
                 description <- " peak"
@@ -246,7 +246,7 @@ and biorhythms (birth: string) (target: string) =
                         let trend = (quadrants.[quadrant]).[0]
                         let next = (quadrants.[quadrant]).[1]
                         let mutable pct: string = string percent
-                        if not (contains pct ".") then
+                        if not (pct.Contains(".")) then
                             pct <- pct + ".0"
                         description <- (((((((" " + pct) + "% (") + (unbox<string> trend)) + ", next ") + (unbox<string> next)) + " ") + transition) + ")"
             let mutable posStr: string = string position
@@ -265,7 +265,7 @@ and main () =
         let __mem_start = System.GC.GetTotalMemory(true)
         let pairs: string array array = [|[|"1943-03-09"; "1972-07-11"|]; [|"1809-01-12"; "1863-11-19"|]; [|"1809-02-12"; "1863-11-19"|]|]
         let mutable idx: int = 0
-        while idx < (int (Array.length pairs)) do
+        while idx < (unbox<int> (Array.length pairs)) do
             let p: string array = pairs.[idx]
             biorhythms (unbox<string> (p.[0])) (unbox<string> (p.[1]))
             idx <- idx + 1
