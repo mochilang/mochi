@@ -3354,7 +3354,7 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 					case types.StringType, types.IntType, types.FloatType, types.BoolType:
 						arg = args[0]
 					default:
-						arg = &CallExpr{Func: "Kernel.to_string", Args: []Expr{args[0]}}
+						arg = &CallExpr{Func: "Kernel.inspect", Args: []Expr{args[0]}}
 					}
 					if newline {
 						return &CallExpr{Func: "IO.puts", Args: []Expr{arg}}, nil
@@ -3375,7 +3375,7 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 					case types.StringType, types.IntType, types.FloatType, types.BoolType:
 						parts = append(parts, a)
 					default:
-						parts = append(parts, &CallExpr{Func: "Kernel.to_string", Args: []Expr{a}})
+						parts = append(parts, &CallExpr{Func: "Kernel.inspect", Args: []Expr{a}})
 					}
 				}
 			}
@@ -3444,7 +3444,15 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 				return &CallExpr{Func: "String.downcase", Args: []Expr{args[0]}}, nil
 			}
 		case "str":
-			name = "to_string"
+			if len(args) == 1 {
+				t := types.TypeOfExprBasic(p.Call.Args[0], env)
+				switch t.(type) {
+				case types.StringType, types.IntType, types.FloatType, types.BoolType:
+					return &CallExpr{Func: "Kernel.to_string", Args: []Expr{args[0]}}, nil
+				default:
+					return &CallExpr{Func: "Kernel.inspect", Args: []Expr{args[0]}}, nil
+				}
+			}
 		case "append":
 			if len(args) == 2 {
 				list := args[0]
