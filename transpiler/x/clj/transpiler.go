@@ -608,6 +608,7 @@ var funDepth int
 var funParamsStack [][]string
 var nestedFunArgs map[string][]string
 var stringVars map[string]bool
+var stringListVars map[string]bool
 var renameVars map[string]string
 var reservedNames = map[string]bool{
 	"count": true,
@@ -796,6 +797,9 @@ func transpileStmt(s *parser.Statement) (Node, error) {
 		if stringVars != nil && isStringNode(v) {
 			stringVars[s.Let.Name] = true
 		}
+		if stringListVars != nil && isStringListNode(v) {
+			stringListVars[s.Let.Name] = true
+		}
 		name := renameVar(s.Let.Name)
 		return &List{Elems: []Node{Symbol("def"), Symbol(name), v}}, nil
 	case s.Var != nil:
@@ -827,6 +831,9 @@ func transpileStmt(s *parser.Statement) (Node, error) {
 		if stringVars != nil && isStringNode(v) {
 			stringVars[s.Var.Name] = true
 		}
+		if stringListVars != nil && isStringListNode(v) {
+			stringListVars[s.Var.Name] = true
+		}
 		name := renameVar(s.Var.Name)
 		return &List{Elems: []Node{Symbol("def"), Symbol(name), v}}, nil
 	case s.Assign != nil:
@@ -852,6 +859,9 @@ func transpileStmt(s *parser.Statement) (Node, error) {
 		}
 		if stringVars != nil && isStringNode(v) {
 			stringVars[s.Assign.Name] = true
+		}
+		if stringListVars != nil && isStringListNode(v) {
+			stringListVars[s.Assign.Name] = true
 		}
 		name := renameVar(s.Assign.Name)
 		if simple && len(path) > 0 {
@@ -902,10 +912,12 @@ func transpileFunStmt(f *parser.FunStmt) (Node, error) {
 		funDepth--
 		funParamsStack = funParamsStack[:len(funParamsStack)-1]
 		stringVars = nil
+		stringListVars = nil
 		renameVars = nil
 	}()
 
 	stringVars = make(map[string]bool)
+	stringListVars = make(map[string]bool)
 	renameVars = make(map[string]string)
 
 	params := []Node{}
@@ -916,6 +928,12 @@ func transpileFunStmt(f *parser.FunStmt) (Node, error) {
 		if p.Type != nil && p.Type.Simple != nil {
 			if *p.Type.Simple == "string" {
 				stringVars[p.Name] = true
+			}
+		} else if p.Type != nil && p.Type.Generic != nil {
+			if p.Type.Generic.Name == "list" && len(p.Type.Generic.Args) == 1 {
+				if a := p.Type.Generic.Args[0]; a != nil && a.Simple != nil && *a.Simple == "string" {
+					stringListVars[p.Name] = true
+				}
 			}
 		}
 	}
@@ -1076,6 +1094,26 @@ func isStringNode(n Node) bool {
 				switch sym {
 				case "str", "subs", "clojure.string/join", "fields", "join", "numberName", "pluralizeFirst", "slur":
 					return true
+				case "nth", "get":
+					if len(t.Elems) >= 2 {
+						if s, ok := t.Elems[1].(Symbol); ok && transpileEnv != nil {
+							if stringListVars != nil && stringListVars[string(s)] {
+								return true
+							}
+							if typ, err := transpileEnv.GetVar(string(s)); err == nil {
+								switch v := typ.(type) {
+								case types.ListType:
+									if _, ok := v.Elem.(types.StringType); ok {
+										return true
+									}
+								case types.MapType:
+									if _, ok := v.Value.(types.StringType); ok {
+										return true
+									}
+								}
+							}
+						}
+					}
 				}
 			}
 		}
@@ -1089,6 +1127,35 @@ func isStringNode(n Node) bool {
 			if typ, err := transpileEnv.GetVar(string(t)); err == nil {
 				if _, ok := typ.(types.StringType); ok {
 					return true
+				}
+			}
+		}
+	}
+	return false
+}
+
+func isStringListNode(n Node) bool {
+	switch t := n.(type) {
+	case *List:
+		if len(t.Elems) > 0 {
+			if sym, ok := t.Elems[0].(Symbol); ok {
+				if sym == "fields" {
+					return true
+				}
+			}
+		}
+	case Symbol:
+		if stringListVars != nil {
+			if stringListVars[string(t)] {
+				return true
+			}
+		}
+		if transpileEnv != nil {
+			if typ, err := transpileEnv.GetVar(string(t)); err == nil {
+				if lt, ok := typ.(types.ListType); ok {
+					if _, ok := lt.Elem.(types.StringType); ok {
+						return true
+					}
 				}
 			}
 		}
@@ -1605,6 +1672,15 @@ func transpileCall(c *parser.CallExpr) (Node, error) {
 		elems = append(elems, Symbol("apply"), Symbol("max"))
 	case "substring":
 		elems = append(elems, Symbol("subs"))
+	case "lower":
+		if len(c.Args) != 1 {
+			return nil, fmt.Errorf("lower expects 1 arg")
+		}
+		arg, err := transpileExpr(c.Args[0])
+		if err != nil {
+			return nil, err
+		}
+		return &List{Elems: []Node{Symbol("clojure.string/lower-case"), arg}}, nil
 	case "int":
 		if len(c.Args) != 1 {
 			return nil, fmt.Errorf("int expects 1 arg")

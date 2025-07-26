@@ -2,6 +2,9 @@
 
 (require 'clojure.set)
 
+(defn in [x coll]
+  (cond (string? coll) (clojure.string/includes? coll x) (map? coll) (contains? coll x) (sequential? coll) (some (fn [e] (= e x)) coll) :else false))
+
 (def nowSeed (atom (let [s (System/getenv "MOCHI_NOW_SEED")] (if (and s (not (= s ""))) (Integer/parseInt s) 0))))
 
 (declare fields canSpell newSpeller main)
@@ -10,7 +13,7 @@
   (try (do (def res []) (def cur "") (def i 0) (while (< i (count s)) (do (def c (subs s i (+ i 1))) (if (= c " ") (when (> (count cur) 0) (do (def res (conj res cur)) (def cur ""))) (def cur (str cur c))) (def i (+ i 1)))) (when (> (count cur) 0) (def res (conj res cur))) (throw (ex-info "return" {:v res}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
 
 (defn canSpell [word blks]
-  (try (do (when (= (count word) 0) (throw (ex-info "return" {:v true}))) (def c (lower (subs word 0 1))) (def i 0) (while (< i (count blks)) (do (def b (nth blks i)) (when (or (= c (lower (subvec b 0 1))) (= c (lower (subvec b 1 2)))) (do (def rest []) (def j 0) (while (< j (count blks)) (do (when (not= j i) (def rest (conj rest (nth blks j)))) (def j (+ j 1)))) (when (canSpell (subs word 1 (count word)) rest) (throw (ex-info "return" {:v true}))))) (def i (+ i 1)))) (throw (ex-info "return" {:v false}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
+  (try (do (when (= (count word) 0) (throw (ex-info "return" {:v true}))) (def c (clojure.string/lower-case (subs word 0 1))) (def i 0) (while (< i (count blks)) (do (def b (nth blks i)) (when (or (= c (clojure.string/lower-case (subs b 0 1))) (= c (clojure.string/lower-case (subs b 1 2)))) (do (def rest []) (def j 0) (while (< j (count blks)) (do (when (not= j i) (def rest (conj rest (nth blks j)))) (def j (+ j 1)))) (when (canSpell (subs word 1 (count word)) rest) (throw (ex-info "return" {:v true}))))) (def i (+ i 1)))) (throw (ex-info "return" {:v false}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
 
 (defn newSpeller [blocks]
   (try (do (def bl (fields blocks)) (throw (ex-info "return" {:v (fn [w] (canSpell w bl))}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))

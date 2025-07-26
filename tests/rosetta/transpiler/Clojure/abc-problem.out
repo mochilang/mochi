@@ -1,0 +1,8 @@
+WARNING: rest already refers to: #'clojure.core/rest in namespace: main, being replaced by: #'main/rest
+A true
+BARK true
+BOOK false
+TREAT true
+COMMON false
+SQUAD true
+CONFUSE true
