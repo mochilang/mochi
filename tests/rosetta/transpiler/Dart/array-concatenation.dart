@@ -22,8 +22,20 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
+String _substr(String s, int start, int end) {
+  var n = s.length;
+  if (start < 0) start += n;
+  if (end < 0) end += n;
+  if (start < 0) start = 0;
+  if (start > n) start = n;
+  if (end < 0) end = 0;
+  if (end > n) end = n;
+  if (start > end) start = end;
+  return s.substring(start, end);
+}
+
 List<int> concatInts(List<int> a, List<int> b) {
-  List<int> out = [];
+  List<int> out = <int>[];
   for (var v in a) {
     out = [...out, v];
   }
@@ -34,7 +46,7 @@ List<int> concatInts(List<int> a, List<int> b) {
 }
 
 List<dynamic> concatAny(List<dynamic> a, List<dynamic> b) {
-  List<dynamic> out = [];
+  List<dynamic> out = <dynamic>[];
   for (var v in a) {
     out = [...out, v];
   }
@@ -44,6 +56,12 @@ List<dynamic> concatAny(List<dynamic> a, List<dynamic> b) {
   return List<dynamic>.from(out);
 }
 
+List<int> a = [1, 2, 3];
+List<int> b = [7, 12, 60];
+List<dynamic> i = [1, 2, 3];
+List<dynamic> j = ["Crosby", "Stills", "Nash", "Young"];
+List<int> l = [1, 2, 3];
+List<int> m = [7, 12, 60];
 void main() {
   var _benchMem0 = ProcessInfo.currentRss;
   var _benchSw = Stopwatch()..start();
@@ -51,14 +69,8 @@ void main() {
   {
   var _benchMem0 = ProcessInfo.currentRss;
   var _benchSw = Stopwatch()..start();
-  List<int> a = [1, 2, 3];
-  List<int> b = [7, 12, 60];
   print((concatInts(a, b)).toString());
-  List<dynamic> i = [1, 2, 3];
-  List<dynamic> j = ["Crosby", "Stills", "Nash", "Young"];
   print((concatAny(i, j)).toString());
-  List<int> l = [1, 2, 3];
-  List<int> m = [7, 12, 60];
   print((concatInts(l, m)).toString());
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;

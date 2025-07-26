@@ -22,15 +22,22 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-void main() {
-  var _benchMem0 = ProcessInfo.currentRss;
-  var _benchSw = Stopwatch()..start();
-  _initNow();
-  {
-  var _benchMem0 = ProcessInfo.currentRss;
-  var _benchSw = Stopwatch()..start();
-  List<int> primeFactors(int n) {
-  List<int> factors = [];
+String _substr(String s, int start, int end) {
+  var n = s.length;
+  if (start < 0) start += n;
+  if (end < 0) end += n;
+  if (start < 0) start = 0;
+  if (start > n) start = n;
+  if (end < 0) end = 0;
+  if (end > n) end = n;
+  if (start > end) start = end;
+  return s.substring(start, end);
+}
+
+String _repeat(String s, int n) => List.filled(n, s).join();
+
+List<int> primeFactors(int n) {
+  List<int> factors = <int>[];
   int x = n;
   while (x % 2 == 0) {
     factors = [...factors, 2];
@@ -49,7 +56,8 @@ void main() {
   }
   return factors;
 }
-  String repeat(String ch, int n) {
+
+String repeat(String ch, int n) {
   String s = "";
   int i = 0;
   while (i < n) {
@@ -58,43 +66,46 @@ void main() {
   }
   return s;
 }
-  num D(num n) {
+
+num D(num n) {
   if (n < 0.0) {
     return -D(-n);
   }
   if (n < 2.0) {
     return 0.0;
   }
-  List<int> factors = [];
+  List<int> factors = <int>[];
   if (n < 10000000000000000000.0) {
     factors = primeFactors((n).toInt());
   } else {
-    final int g = (n / 100.0).toInt();
+    int g = (n / 100.0).toInt();
     factors = primeFactors(g);
     factors = [...factors, 2];
     factors = [...factors, 2];
     factors = [...factors, 5];
     factors = [...factors, 5];
   }
-  final int c = factors.length;
+  int c = factors.length;
   if (c == 1) {
     return 1.0;
   }
   if (c == 2) {
     return (factors[0] + factors[1]).toDouble();
   }
-  final num d = n / ((factors[0]!).toDouble());
-  return D(d) * ((factors[0]!).toDouble()) + d;
+  num d = n / ((factors[0]).toDouble());
+  return D(d) * ((factors[0]).toDouble()) + d;
 }
-  String pad(int n) {
+
+String pad(int n) {
   String s = (n).toString();
   while (s.length < 4) {
     s = " " + s;
   }
   return s;
 }
-  void main() {
-  List<int> vals = [];
+
+void main() {
+  List<int> vals = <int>[];
   int n = -99;
   while (n < 101) {
     vals = [...vals, (D((n).toDouble())).toInt()];
@@ -122,17 +133,26 @@ void main() {
     if (exp.length < 2) {
     exp = exp + " ";
   }
-    String res = (m).toString() + repeat("0", m - 1);
+    String res = (m).toString() + _repeat("0", m - 1);
     print("D(10^" + exp + ") / 7 = " + res);
     m = m + 1;
   }
 }
+
+void _start() {
+  var _benchMem0 = ProcessInfo.currentRss;
+  var _benchSw = Stopwatch()..start();
+  _initNow();
+  {
+  var _benchMem0 = ProcessInfo.currentRss;
+  var _benchSw = Stopwatch()..start();
   main();
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "main"}));
 }
+  main();
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
-  print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "main"}));
+  print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "_start"}));
 }

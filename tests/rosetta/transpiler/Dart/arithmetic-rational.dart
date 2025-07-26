@@ -22,6 +22,18 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
+String _substr(String s, int start, int end) {
+  var n = s.length;
+  if (start < 0) start += n;
+  if (end < 0) end += n;
+  if (start < 0) start = 0;
+  if (start > n) start = n;
+  if (end < 0) end = 0;
+  if (end > n) end = n;
+  if (start > end) start = end;
+  return s.substring(start, end);
+}
+
 int intSqrt(int x) {
   if (x < 2) {
     return x;
@@ -30,8 +42,8 @@ int intSqrt(int x) {
   int right = x ~/ 2;
   int ans = 0;
   while (left <= right) {
-    final int mid = left + (right - left) ~/ 2;
-    final int sq = mid * mid;
+    int mid = left + (right - left) ~/ 2;
+    int sq = mid * mid;
     if (sq == x) {
     return mid;
   }
@@ -47,12 +59,12 @@ int intSqrt(int x) {
 
 int sumRecip(int n) {
   int s = 1;
-  final int limit = intSqrt(n);
+  int limit = intSqrt(n);
   int f = 2;
   while (f <= limit) {
     if (n % f == 0) {
     s = s + n ~/ f;
-    final int f2 = n ~/ f;
+    int f2 = n ~/ f;
     if (f2 != f) {
     s = s + f;
   };
@@ -63,11 +75,11 @@ int sumRecip(int n) {
 }
 
 void main() {
-  final List<int> nums = [6, 28, 120, 496, 672, 8128, 30240, 32760, 523776];
+  List<int> nums = [6, 28, 120, 496, 672, 8128, 30240, 32760, 523776];
   for (var n in nums) {
-    final int s = sumRecip(n);
+    int s = sumRecip(n);
     if (s % n == 0) {
-    final num val = s / n;
+    num val = s / n;
     String perfect = "";
     if (val == 1) {
     perfect = "perfect!";

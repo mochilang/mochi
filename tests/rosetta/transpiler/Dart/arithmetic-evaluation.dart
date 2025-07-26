@@ -22,6 +22,18 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
+String _substr(String s, int start, int end) {
+  var n = s.length;
+  if (start < 0) start += n;
+  if (end < 0) end += n;
+  if (start < 0) start = 0;
+  if (start > n) start = n;
+  if (end < 0) end = 0;
+  if (end > n) end = n;
+  if (start > end) start = end;
+  return s.substring(start, end);
+}
+
 class Parser {
   String expr;
   int pos;
@@ -36,7 +48,7 @@ class Res {
 
 Parser skipWS(Parser p) {
   int i = p.pos;
-  while (i < p.expr.length && p.expr.substring(i, i + 1) == " ") {
+  while (i < p.expr.length && _substr(p.expr, i, i + 1) == " ") {
     i = i + 1;
   }
   p.pos = i;
@@ -47,7 +59,7 @@ int parseIntStr(String str) {
   int i = 0;
   int n = 0;
   while (i < str.length) {
-    n = n * 10 + ((str.substring(i, i + 1)).codeUnitAt(0)) - 48;
+    n = n * 10 + ((_substr(str, i, i + 1)).codeUnitAt(0)) - 48;
     i = i + 1;
   }
   return n;
@@ -57,31 +69,31 @@ Res parseNumber(Parser p) {
   p = skipWS(p);
   int start = p.pos;
   while (p.pos < p.expr.length) {
-    final String ch = p.expr.substring(p.pos, p.pos + 1);
+    String ch = _substr(p.expr, p.pos, p.pos + 1);
     if (ch.compareTo("0") >= 0 && ch.compareTo("9") <= 0) {
     p.pos = p.pos + 1;
   } else {
     break;
   }
   }
-  final String token = p.expr.substring(start, p.pos);
+  String token = _substr(p.expr, start, p.pos);
   return Res(v: int.parse(token), p: p);
 }
 
 Res parseFactor(Parser p) {
   p = skipWS(p);
-  if (p.pos < p.expr.length && p.expr.substring(p.pos, p.pos + 1) == "(") {
+  if (p.pos < p.expr.length && _substr(p.expr, p.pos, p.pos + 1) == "(") {
     p.pos = p.pos + 1;
     Res r = parseExpr(p);
     int v = r.v;
     p = r.p;
     p = skipWS(p);
-    if (p.pos < p.expr.length && p.expr.substring(p.pos, p.pos + 1) == ")") {
+    if (p.pos < p.expr.length && _substr(p.expr, p.pos, p.pos + 1) == ")") {
     p.pos = p.pos + 1;
   };
     return Res(v: v, p: p);
   }
-  if (p.pos < p.expr.length && p.expr.substring(p.pos, p.pos + 1) == "-") {
+  if (p.pos < p.expr.length && _substr(p.expr, p.pos, p.pos + 1) == "-") {
     p.pos = p.pos + 1;
     Res r = parseFactor(p);
     int v = r.v;
@@ -111,7 +123,7 @@ Res parsePower(Parser p) {
   p = r.p;
   while (true) {
     p = skipWS(p);
-    if (p.pos < p.expr.length && p.expr.substring(p.pos, p.pos + 1) == "^") {
+    if (p.pos < p.expr.length && _substr(p.expr, p.pos, p.pos + 1) == "^") {
     p.pos = p.pos + 1;
     Res r2 = parseFactor(p);
     int rhs = r2.v;
@@ -131,7 +143,7 @@ Res parseTerm(Parser p) {
   while (true) {
     p = skipWS(p);
     if (p.pos < p.expr.length) {
-    final String op = p.expr.substring(p.pos, p.pos + 1);
+    String op = _substr(p.expr, p.pos, p.pos + 1);
     if (op == "*") {
     p.pos = p.pos + 1;
     Res r2 = parsePower(p);
@@ -161,7 +173,7 @@ Res parseExpr(Parser p) {
   while (true) {
     p = skipWS(p);
     if (p.pos < p.expr.length) {
-    final String op = p.expr.substring(p.pos, p.pos + 1);
+    String op = _substr(p.expr, p.pos, p.pos + 1);
     if (op == "+") {
     p.pos = p.pos + 1;
     Res r2 = parseTerm(p);
@@ -186,12 +198,12 @@ Res parseExpr(Parser p) {
 
 int evalExpr(String expr) {
   Parser p = Parser(expr: expr, pos: 0);
-  final Res r = parseExpr(p);
+  Res r = parseExpr(p);
   return r.v;
 }
 
 void main() {
-  final String expr = "2*(3-1)+2*5";
+  String expr = "2*(3-1)+2*5";
   print(expr + " = " + (evalExpr(expr)).toString());
 }
 

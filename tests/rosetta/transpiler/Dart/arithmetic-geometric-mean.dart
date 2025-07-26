@@ -22,6 +22,18 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
+String _substr(String s, int start, int end) {
+  var n = s.length;
+  if (start < 0) start += n;
+  if (end < 0) end += n;
+  if (start < 0) start = 0;
+  if (start > n) start = n;
+  if (end < 0) end = 0;
+  if (end > n) end = n;
+  if (start > end) start = end;
+  return s.substring(start, end);
+}
+
 num abs(num x) {
   if (x < 0.0) {
     return -x;
@@ -40,10 +52,10 @@ num sqrtApprox(num x) {
 }
 
 num agm(num a, num g) {
-  final num eps = 0.00000000000001;
+  num eps = 0.00000000000001;
   while ((a - g).abs() > a.abs() * eps) {
-    final num newA = (a + g) / 2.0;
-    final num newG = sqrtApprox(a * g);
+    num newA = (a + g) / 2.0;
+    num newG = sqrtApprox(a * g);
     a = newA;
     g = newG;
   }
