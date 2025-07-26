@@ -11,28 +11,14 @@ func compose (regs=5)
   // return fun(x: any): any { return f(g(x)) }
   Move         r2, r0
   Move         r3, r1
-  MakeClosure  r4, fn3, 2, r2
+  MakeClosure  r4, fn12, 2, r2
   Return       r4
-
-  // return fun(x: any): any { return f(g(x)) }
-func fn3 (regs=7)
-  // return fun(x: any): any { return f(g(x)) }
-  Move         r4, r2
-  CallV        r5, r1, 1, r4
-  Move         r3, r5
-  CallV        r6, r0, 1, r3
-  Return       r6
 
   // fun zero(): Church { return fun(f: Church): Church { return id } }
 func zero (regs=1)
   // fun zero(): Church { return fun(f: Church): Church { return id } }
-  MakeClosure  r0, fn5, 0, r0
+  MakeClosure  r0, fn13, 0, r0
   Return       r0
-
-  // fun zero(): Church { return fun(f: Church): Church { return id } }
-func fn5 (regs=2)
-  // fun zero(): Church { return fun(f: Church): Church { return id } }
-  Return       r1
 
   // fun one(): Church { return id }
 func one (regs=1)
@@ -43,38 +29,16 @@ func one (regs=1)
 func succ (regs=3)
   // return fun(f: Church): Church { return compose(f, n(f)) }
   Move         r1, r0
-  MakeClosure  r2, fn8, 1, r1
+  MakeClosure  r2, fn14, 1, r1
   Return       r2
-
-  // return fun(f: Church): Church { return compose(f, n(f)) }
-func fn8 (regs=7)
-  // return fun(f: Church): Church { return compose(f, n(f)) }
-  Move         r2, r1
-  Move         r4, r1
-  CallV        r5, r0, 1, r4
-  Move         r3, r5
-  Call2        r6, compose, r2, r3
-  Return       r6
 
   // fun plus(m: Church, n: Church): Church {
 func plus (regs=5)
   // return fun(f: Church): Church { return compose(m(f), n(f)) }
   Move         r2, r0
   Move         r3, r1
-  MakeClosure  r4, fn10, 2, r2
+  MakeClosure  r4, fn15, 2, r2
   Return       r4
-
-  // return fun(f: Church): Church { return compose(m(f), n(f)) }
-func fn10 (regs=10)
-  // return fun(f: Church): Church { return compose(m(f), n(f)) }
-  Move         r5, r2
-  CallV        r6, r0, 1, r5
-  Move         r3, r6
-  Move         r7, r2
-  CallV        r8, r1, 1, r7
-  Move         r4, r8
-  Call2        r9, compose, r3, r4
-  Return       r9
 
   // fun mult(m: Church, n: Church): Church { return compose(m, n) }
 func mult (regs=5)
@@ -108,14 +72,6 @@ func toInt (regs=11)
   // return counter
   Return       r2
 
-  // fun fCounter(f: Church): Church { counter = counter + 1; return f }
-func fCounter (regs=5)
-  // fun fCounter(f: Church): Church { counter = counter + 1; return f }
-  Const        r3, 1
-  Add          r4, r0, r3
-  Move         r0, r4
-  Return       r2
-
   // fun toStr(x: Church): string {
 func toStr (regs=11)
   // var s = ""
@@ -131,14 +87,6 @@ func toStr (regs=11)
   Move         r8, r9
   CallV        r10, r7, 1, r8
   // return s
-  Return       r2
-
-  // fun fCounter(f: Church): Church { s = s + "|"; return f }
-func fCounter (regs=5)
-  // fun fCounter(f: Church): Church { s = s + "|"; return f }
-  Const        r3, "|"
-  Add          r4, r0, r3
-  Move         r0, r4
   Return       r2
 
   // fun main() {
@@ -218,3 +166,55 @@ func main (regs=55)
   Add          r54, r51, r53
   Print        r54
   Return       r0
+
+  // return fun(x: any): any { return f(g(x)) }
+func fn12 (regs=7)
+  // return fun(x: any): any { return f(g(x)) }
+  Move         r4, r2
+  CallV        r5, r1, 1, r4
+  Move         r3, r5
+  CallV        r6, r0, 1, r3
+  Return       r6
+
+  // fun zero(): Church { return fun(f: Church): Church { return id } }
+func fn13 (regs=2)
+  // fun zero(): Church { return fun(f: Church): Church { return id } }
+  Return       r1
+
+  // return fun(f: Church): Church { return compose(f, n(f)) }
+func fn14 (regs=7)
+  // return fun(f: Church): Church { return compose(f, n(f)) }
+  Move         r2, r1
+  Move         r4, r1
+  CallV        r5, r0, 1, r4
+  Move         r3, r5
+  Call2        r6, compose, r2, r3
+  Return       r6
+
+  // return fun(f: Church): Church { return compose(m(f), n(f)) }
+func fn15 (regs=10)
+  // return fun(f: Church): Church { return compose(m(f), n(f)) }
+  Move         r5, r2
+  CallV        r6, r0, 1, r5
+  Move         r3, r6
+  Move         r7, r2
+  CallV        r8, r1, 1, r7
+  Move         r4, r8
+  Call2        r9, compose, r3, r4
+  Return       r9
+
+  // fun fCounter(f: Church): Church { counter = counter + 1; return f }
+func fCounter (regs=5)
+  // fun fCounter(f: Church): Church { counter = counter + 1; return f }
+  Const        r3, 1
+  Add          r4, r0, r3
+  Move         r0, r4
+  Return       r2
+
+  // fun fCounter(f: Church): Church { s = s + "|"; return f }
+func fCounter (regs=5)
+  // fun fCounter(f: Church): Church { s = s + "|"; return f }
+  Const        r3, "|"
+  Add          r4, r0, r3
+  Move         r0, r4
+  Return       r2
