@@ -2,7 +2,7 @@
 
 This directory stores C++ code generated from Mochi programs in `tests/rosetta/x/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.cpp` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (109/332) - Last updated 2025-07-26 22:59 +0700:
+Checklist of programs that currently transpile and run (109/332) - Last updated 2025-07-26 23:45 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | 100-doors-2 | ✓ | 222.0µs | 13.12MB |
@@ -13,7 +13,7 @@ Checklist of programs that currently transpile and run (109/332) - Last updated 
 | 6 | 15-puzzle-solver | ✓ | 141.0µs | 12.91MB |
 | 7 | 2048 | ✓ | 689.0µs | 13.73MB |
 | 8 | 21-game | ✓ | 356.0µs | 13.36MB |
-| 9 | 24-game-solve | ✓ | 4.0ms | 13.75MB |
+| 9 | 24-game-solve |   | 4.0ms | 13.75MB |
 | 10 | 24-game | ✓ |  |  |
 | 11 | 4-rings-or-4-squares-puzzle |   |  |  |
 | 12 | 9-billion-names-of-god-the-integer | ✓ | 126.70s | 219.41MB |
@@ -135,7 +135,7 @@ Checklist of programs that currently transpile and run (109/332) - Last updated 
 | 128 | bitmap |   |  |  |
 | 129 | bitwise-io-1 |   | 246.0µs | 13.08MB |
 | 130 | bitwise-io-2 | ✓ | 574.0µs | 14.68MB |
-| 131 | bitwise-operations |   |  |  |
+| 131 | bitwise-operations | ✓ | 233.0µs | 13.95MB |
 | 132 | blum-integer |   |  |  |
 | 133 | boolean-values |   |  |  |
 | 134 | box-the-compass |   |  |  |
