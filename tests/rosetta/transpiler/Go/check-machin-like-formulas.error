@@ -1,4 +1,0 @@
-exit status 1
-# command-line-arguments
-../../../tests/rosetta/transpiler/Go/check-machin-like-formulas.go:120:15: cannot use [][]any{…} (value of type [][]any) as [][]map[string]int value in assignment
-../../../tests/rosetta/transpiler/Go/check-machin-like-formulas.go:120:23: cannot use []map[string]any{…} (value of type []map[string]any) as []any value in array or slice literal
