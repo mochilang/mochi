@@ -2,7 +2,7 @@
 
 This directory stores C code generated from Mochi programs in `tests/rosetta/x/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.c` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (41/332) - Last updated 2025-07-26 19:40 +0700:
+Checklist of programs that currently transpile and run (42/332) - Last updated 2025-07-26 20:33 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | 100-doors-2 | ✓ | 65us | 17.2 KB |
@@ -63,7 +63,7 @@ Checklist of programs that currently transpile and run (41/332) - Last updated 2
 | 56 | anonymous-recursion | ✓ | 28us | 6.5 KB |
 | 57 | anti-primes | ✓ | 28.61ms | 7.3 KB |
 | 58 | append-a-record-to-the-end-of-a-text-file | ✓ | 16us | 4.7 KB |
-| 59 | apply-a-callback-to-an-array-1 |  |  |  |
+| 59 | apply-a-callback-to-an-array-1 | ✓ | 357us | 4.8 KB |
 | 60 | apply-a-callback-to-an-array-2 |  |  |  |
 | 61 | apply-a-digital-filter-direct-form-ii-transposed- |  |  |  |
 | 62 | approximate-equality |  |  |  |
