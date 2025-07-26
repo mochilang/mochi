@@ -1,7 +1,12 @@
-+++ "Alice" connected +++
-+++ "Bob" connected +++
-Alice> Hello Bob!
-Bob> Hi Alice!
---- "Bob" disconnected ---
---- "Alice" disconnected ---
-Server stopping!
++++ "Alice" connected +++\n
++++ "Bob" connected +++\n
+Alice> Hello Bob!\n
+Bob> Hi Alice!\n
+--- "Bob" disconnected ---\n
+--- "Alice" disconnected ---\n
+Server stopping!\n
+{
+  "duration_us": 89,
+  "memory_bytes": 3264,
+  "name": "main"
+}

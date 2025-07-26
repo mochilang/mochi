@@ -1,5 +1,20 @@
 <?php
 ini_set('memory_limit', '-1');
+$now_seed = 0;
+$now_seeded = false;
+$s = getenv('MOCHI_NOW_SEED');
+if ($s !== false && $s !== '') {
+    $now_seed = intval($s);
+    $now_seeded = true;
+}
+function _now() {
+    global $now_seed, $now_seeded;
+    if ($now_seeded) {
+        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
+        return $now_seed;
+    }
+    return hrtime(true);
+}
 function _str($x) {
     if (is_array($x)) {
         $isList = array_keys($x) === range(0, count($x) - 1);
@@ -16,8 +31,17 @@ function _str($x) {
     if ($x === null) return 'null';
     return strval($x);
 }
-function isPrime($n) {
-  global $bigTrim, $bigFromInt, $bigMulSmall, $bigToString, $pow2, $ccFactors, $ccNumbers;
+function _intdiv($a, $b) {
+    if (function_exists('bcdiv')) {
+        $sa = is_int($a) ? strval($a) : sprintf('%.0f', $a);
+        $sb = is_int($b) ? strval($b) : sprintf('%.0f', $b);
+        return intval(bcdiv($sa, $sb, 0));
+    }
+    return intdiv($a, $b);
+}
+$__start_mem = memory_get_usage();
+$__start = _now();
+  function isPrime($n) {
   if ($n < 2) {
   return false;
 }
@@ -39,18 +63,16 @@ function isPrime($n) {
   $d = $d + 4;
 };
   return true;
-}
-function bigTrim($a) {
-  global $isPrime, $bigFromInt, $bigMulSmall, $bigToString, $pow2, $ccFactors, $ccNumbers;
+};
+  function bigTrim($a) {
   $n = count($a);
   while ($n > 1 && $a[$n - 1] == 0) {
   $a = array_slice($a, 0, $n - 1 - 0);
   $n = $n - 1;
 };
   return $a;
-}
-function bigFromInt($x) {
-  global $isPrime, $bigTrim, $bigMulSmall, $bigToString, $pow2, $ccFactors, $ccNumbers;
+};
+  function bigFromInt($x) {
   if ($x == 0) {
   return [0];
 }
@@ -58,12 +80,11 @@ function bigFromInt($x) {
   $n = $x;
   while ($n > 0) {
   $digits = array_merge($digits, [$n % 10]);
-  $n = intdiv($n, 10);
+  $n = _intdiv($n, 10);
 };
   return $digits;
-}
-function bigMulSmall($a, $m) {
-  global $isPrime, $bigTrim, $bigFromInt, $bigToString, $pow2, $ccFactors, $ccNumbers;
+};
+  function bigMulSmall($a, $m) {
   if ($m == 0) {
   return [0];
 }
@@ -73,17 +94,16 @@ function bigMulSmall($a, $m) {
   while ($i < count($a)) {
   $prod = $a[$i] * $m + $carry;
   $res = array_merge($res, [$prod % 10]);
-  $carry = intdiv($prod, 10);
+  $carry = _intdiv($prod, 10);
   $i = $i + 1;
 };
   while ($carry > 0) {
   $res = array_merge($res, [$carry % 10]);
-  $carry = intdiv($carry, 10);
+  $carry = _intdiv($carry, 10);
 };
   return bigTrim($res);
-}
-function bigToString($a) {
-  global $isPrime, $bigTrim, $bigFromInt, $bigMulSmall, $pow2, $ccFactors, $ccNumbers;
+};
+  function bigToString($a) {
   $s = '';
   $i = count($a) - 1;
   while ($i >= 0) {
@@ -91,9 +111,8 @@ function bigToString($a) {
   $i = $i - 1;
 };
   return $s;
-}
-function pow2($k) {
-  global $isPrime, $bigTrim, $bigFromInt, $bigMulSmall, $bigToString, $ccFactors, $ccNumbers;
+};
+  function pow2($k) {
   $r = 1;
   $i = 0;
   while ($i < $k) {
@@ -101,9 +120,8 @@ function pow2($k) {
   $i = $i + 1;
 };
   return $r;
-}
-function ccFactors($n, $m) {
-  global $isPrime, $bigTrim, $bigFromInt, $bigMulSmall, $bigToString, $pow2, $ccNumbers;
+};
+  function ccFactors($n, $m) {
   $p = 6 * $m + 1;
   if (!isPrime($p)) {
   return [];
@@ -124,9 +142,8 @@ function ccFactors($n, $m) {
   $i = $i + 1;
 };
   return $prod;
-}
-function ccNumbers($start, $end) {
-  global $isPrime, $bigTrim, $bigFromInt, $bigMulSmall, $bigToString, $pow2, $ccFactors;
+};
+  function ccNumbers($start, $end) {
   $n = $start;
   while ($n <= $end) {
   $m = 1;
@@ -147,5 +164,13 @@ function ccNumbers($start, $end) {
 };
   $n = $n + 1;
 };
-}
-ccNumbers(3, 9);
+};
+  ccNumbers(3, 9);
+$__end = _now();
+$__end_mem = memory_get_usage();
+$__duration = intdiv($__end - $__start, 1000);
+$__mem_diff = max(0, $__end_mem - $__start_mem);
+$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
+$__j = json_encode($__bench, 128);
+$__j = str_replace("    ", "  ", $__j);
+echo $__j, PHP_EOL;;

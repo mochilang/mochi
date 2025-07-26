@@ -28,3 +28,8 @@ B worker completes part
 C worker completes part
 D worker completes part
 assemble.  cycle 3 complete
+{
+  "duration_us": 101,
+  "memory_bytes": 96,
+  "name": "main"
+}

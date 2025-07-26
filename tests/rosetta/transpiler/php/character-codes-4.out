@@ -1,2 +1,7 @@
 a π
 a π
+{
+  "duration_us": 42,
+  "memory_bytes": 160,
+  "name": "main"
+}

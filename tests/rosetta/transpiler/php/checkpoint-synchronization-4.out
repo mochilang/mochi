@@ -58,3 +58,8 @@ worker 5 assembling
 worker 5 completed detail
 worker 5 leaves shop
 mechanism 5 completed
+{
+  "duration_us": 181,
+  "memory_bytes": 96,
+  "name": "main"
+}

@@ -1,19 +1,36 @@
 <?php
 ini_set('memory_limit', '-1');
-function add($a, $b) {
-  global $sub, $mul, $fold, $n;
+$now_seed = 0;
+$now_seeded = false;
+$s = getenv('MOCHI_NOW_SEED');
+if ($s !== false && $s !== '') {
+    $now_seed = intval($s);
+    $now_seeded = true;
+}
+function _now() {
+    global $now_seed, $now_seeded;
+    if ($now_seeded) {
+        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
+        return $now_seed;
+    }
+    return hrtime(true);
+}
+$__start_mem = memory_get_usage();
+$__start = _now();
+  function add($a, $b) {
+  global $n;
   return $a + $b;
-}
-function sub($a, $b) {
-  global $add, $mul, $fold, $n;
+};
+  function sub($a, $b) {
+  global $n;
   return $a - $b;
-}
-function mul($a, $b) {
-  global $add, $sub, $fold, $n;
+};
+  function mul($a, $b) {
+  global $n;
   return $a * $b;
-}
-function fold($f, $xs) {
-  global $add, $sub, $mul, $n;
+};
+  function fold($f, $xs) {
+  global $n;
   $r = $xs[0];
   $i = 1;
   while ($i < count($xs)) {
@@ -21,14 +38,22 @@ function fold($f, $xs) {
   $i = $i + 1;
 };
   return $r;
-}
-$n = [1, 2, 3, 4, 5];
-echo rtrim(json_encode(fold(function($a, $b) use (&$add, &$sub, &$mul, &$fold, &$n) {
+};
+  $n = [1, 2, 3, 4, 5];
+  echo rtrim(json_encode(fold(function($a, $b) {
   return add($a, $b);
 }, $n), 1344)), PHP_EOL;
-echo rtrim(json_encode(fold(function($a, $b) use (&$add, &$sub, &$mul, &$fold, &$n) {
+  echo rtrim(json_encode(fold(function($a, $b) {
   return sub($a, $b);
 }, $n), 1344)), PHP_EOL;
-echo rtrim(json_encode(fold(function($a, $b) use (&$add, &$sub, &$mul, &$fold, &$n) {
+  echo rtrim(json_encode(fold(function($a, $b) {
   return mul($a, $b);
 }, $n), 1344)), PHP_EOL;
+$__end = _now();
+$__end_mem = memory_get_usage();
+$__duration = intdiv($__end - $__start, 1000);
+$__mem_diff = max(0, $__end_mem - $__start_mem);
+$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
+$__j = json_encode($__bench, 128);
+$__j = str_replace("    ", "  ", $__j);
+echo $__j, PHP_EOL;;

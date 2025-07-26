@@ -2,7 +2,7 @@
 
 Generated PHP code from Mochi Rosetta tasks lives in `tests/rosetta/transpiler/php`.
 
-Last updated: 2025-07-26 21:53 +0700
+Last updated: 2025-07-26 23:06 +0700
 
 ## Checklist (270/332)
 | Index | Name | Status | Duration | Memory |
@@ -187,26 +187,26 @@ Last updated: 2025-07-26 21:53 +0700
 | 178 | catalan-numbers-1 | ✓ | 79µs | 96 B |
 | 179 | catalan-numbers-2 | ✓ | 97µs | 96 B |
 | 180 | catalan-numbers-pascals-triangle | ✓ | 63µs | 792 B |
-| 181 | catamorphism | ✓ |  |  |
-| 182 | catmull-clark-subdivision-surface | ✓ |  |  |
-| 183 | chaocipher | ✓ |  |  |
-| 184 | chaos-game | ✓ |  |  |
-| 185 | character-codes-1 | ✓ |  |  |
-| 186 | character-codes-2 | ✓ |  |  |
-| 187 | character-codes-3 | ✓ |  |  |
-| 188 | character-codes-4 | ✓ |  |  |
-| 189 | character-codes-5 | ✓ |  |  |
-| 190 | chat-server | ✓ |  |  |
-| 191 | check-machin-like-formulas | ✓ |  |  |
-| 192 | check-that-file-exists | ✓ |  |  |
-| 193 | checkpoint-synchronization-1 | ✓ |  |  |
-| 194 | checkpoint-synchronization-2 | ✓ |  |  |
-| 195 | checkpoint-synchronization-3 | ✓ |  |  |
-| 196 | checkpoint-synchronization-4 | ✓ |  |  |
-| 197 | chernicks-carmichael-numbers | ✓ |  |  |
-| 198 | cheryls-birthday | ✓ |  |  |
-| 199 | chinese-remainder-theorem | ✓ |  |  |
-| 200 | chinese-zodiac | ✓ |  |  |
+| 181 | catamorphism | ✓ | 80µs | 128 B |
+| 182 | catmull-clark-subdivision-surface | ✓ | 408µs | 96 B |
+| 183 | chaocipher | ✓ | 142µs | 96 B |
+| 184 | chaos-game | ✓ | 3.552ms | 69.6 KB |
+| 185 | character-codes-1 | ✓ | 43µs | 96 B |
+| 186 | character-codes-2 | ✓ | 46µs | 96 B |
+| 187 | character-codes-3 | ✓ | 112µs | 192 B |
+| 188 | character-codes-4 | ✓ | 42µs | 160 B |
+| 189 | character-codes-5 | ✓ | 52µs | 96 B |
+| 190 | chat-server | ✓ | 89µs | 3.2 KB |
+| 191 | check-machin-like-formulas | ✓ | 115.869ms | 224 B |
+| 192 | check-that-file-exists | ✓ | 72µs | 96 B |
+| 193 | checkpoint-synchronization-1 | ✓ | 101µs | 96 B |
+| 194 | checkpoint-synchronization-2 | ✓ | 86µs | 128 B |
+| 195 | checkpoint-synchronization-3 | ✓ | 94µs | 128 B |
+| 196 | checkpoint-synchronization-4 | ✓ | 181µs | 96 B |
+| 197 | chernicks-carmichael-numbers | ✓ | 901.469ms | 96 B |
+| 198 | cheryls-birthday | ✓ | 159µs | 1.2 KB |
+| 199 | chinese-remainder-theorem | ✓ | 84µs | 160 B |
+| 200 | chinese-zodiac | ✓ | 196µs | 600 B |
 | 201 | cholesky-decomposition-1 | ✓ |  |  |
 | 202 | cholesky-decomposition | ✓ |  |  |
 | 203 | chowla-numbers | ✓ |  |  |
