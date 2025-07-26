@@ -36,6 +36,7 @@ var needAppendObj bool
 var needNetLookupHost bool
 var needMem bool
 var needPadStart bool
+var needBigRat bool
 var pyMathAliases map[string]bool
 var builtinAliases map[string]string
 var structDefs map[string]map[string]string
@@ -97,6 +98,9 @@ func javaType(t string) string {
 		return "double"
 	case "bigint":
 		return "java.math.BigInteger"
+	case "bigrat":
+		needBigRat = true
+		return "BigRat"
 	case "int[]":
 		return "int[]"
 	case "string[]":
@@ -159,6 +163,8 @@ func javaBoxType(t string) string {
 		return "String"
 	case "bigint", "java.math.BigInteger":
 		return "java.math.BigInteger"
+	case "bigrat", "BigRat":
+		return "BigRat"
 	default:
 		if strings.HasSuffix(t, "[]") {
 			elem := strings.TrimSuffix(t, "[]")
@@ -286,6 +292,8 @@ func typeFromName(n string) types.Type {
 		return types.StringType{}
 	case "bigint", "java.math.BigInteger":
 		return types.BigIntType{}
+	case "bigrat", "BigRat":
+		return types.BigRatType{}
 	default:
 		return types.AnyType{}
 	}
@@ -420,6 +428,9 @@ func inferType(e Expr) string {
 			}
 			lt := inferType(ex.Left)
 			rt := inferType(ex.Right)
+			if lt == "bigrat" || rt == "bigrat" {
+				return "bigrat"
+			}
 			if lt == "bigint" || rt == "bigint" {
 				return "bigint"
 			}
@@ -430,6 +441,9 @@ func inferType(e Expr) string {
 		case "-", "*", "/", "%":
 			lt := inferType(ex.Left)
 			rt := inferType(ex.Right)
+			if lt == "bigrat" || rt == "bigrat" {
+				return "bigrat"
+			}
 			if lt == "bigint" || rt == "bigint" {
 				return "bigint"
 			}
@@ -499,6 +513,10 @@ func inferType(e Expr) string {
 			return "void"
 		case "_now":
 			return "int"
+		case "_bigrat":
+			return "bigrat"
+		case "_padStart":
+			return "String"
 		default:
 			if t, ok := funcRet[ex.Func]; ok {
 				return t
@@ -1033,6 +1051,10 @@ func (s *AssignStmt) emit(w io.Writer, indent string) {
 	if typ == "" {
 		if vs, ok := varDecls[s.Name]; ok {
 			typ = vs.Type
+		} else if t, ok := varTypes[s.Name]; ok {
+			typ = t
+		} else {
+			typ = inferType(s.Expr)
 		}
 	}
 	emitCastExpr(w, s.Expr, typ)
@@ -1424,6 +1446,38 @@ func (b *BinaryExpr) emit(w io.Writer) {
 			rt = "int"
 		}
 		big := lt == "bigint" || rt == "bigint"
+		if lt == "bigrat" || rt == "bigrat" {
+			needBigRat = true
+			switch b.Op {
+			case "+":
+				fmt.Fprint(w, "_add(")
+				b.Left.emit(w)
+				fmt.Fprint(w, ", ")
+				b.Right.emit(w)
+				fmt.Fprint(w, ")")
+			case "-":
+				fmt.Fprint(w, "_sub(")
+				b.Left.emit(w)
+				fmt.Fprint(w, ", ")
+				b.Right.emit(w)
+				fmt.Fprint(w, ")")
+			case "*":
+				fmt.Fprint(w, "_mul(")
+				b.Left.emit(w)
+				fmt.Fprint(w, ", ")
+				b.Right.emit(w)
+				fmt.Fprint(w, ")")
+			case "/":
+				fmt.Fprint(w, "_div(")
+				b.Left.emit(w)
+				fmt.Fprint(w, ", ")
+				b.Right.emit(w)
+				fmt.Fprint(w, ")")
+			default:
+				fmt.Fprint(w, "0")
+			}
+			return
+		}
 		typ := "int"
 		if lt == "Object" {
 			lt = ""
@@ -1590,8 +1644,8 @@ func (f *FieldExpr) emit(w io.Writer) {
 type LenExpr struct{ Value Expr }
 
 func (l *LenExpr) emit(w io.Writer) {
-	l.Value.emit(w)
 	if ix, ok := l.Value.(*IndexExpr); ok {
+		ix.emit(w)
 		if isStringExpr(ix) {
 			fmt.Fprint(w, ".length()")
 		} else {
@@ -1601,17 +1655,24 @@ func (l *LenExpr) emit(w io.Writer) {
 	}
 	switch {
 	case isGroupExpr(l.Value):
+		l.Value.emit(w)
 		fmt.Fprint(w, ".items.size()")
 	case isStringExpr(l.Value):
+		l.Value.emit(w)
 		fmt.Fprint(w, ".length()")
 	case isArrayExpr(l.Value):
+		l.Value.emit(w)
 		fmt.Fprint(w, ".length")
 	case strings.HasSuffix(inferType(l.Value), "[]"):
+		l.Value.emit(w)
 		fmt.Fprint(w, ".length")
 	case isMapExpr(l.Value):
+		l.Value.emit(w)
 		fmt.Fprint(w, ".size()")
 	default:
-		fmt.Fprint(w, ".length")
+		fmt.Fprint(w, "String.valueOf(")
+		l.Value.emit(w)
+		fmt.Fprint(w, ").length()")
 	}
 }
 
@@ -2107,7 +2168,13 @@ type SubstringExpr struct {
 }
 
 func (s *SubstringExpr) emit(w io.Writer) {
-	s.Str.emit(w)
+	if isStringExpr(s.Str) {
+		s.Str.emit(w)
+	} else {
+		fmt.Fprint(w, "String.valueOf(")
+		s.Str.emit(w)
+		fmt.Fprint(w, ")")
+	}
 	fmt.Fprint(w, ".substring(")
 	s.Start.emit(w)
 	fmt.Fprint(w, ", ")
@@ -2566,6 +2633,7 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	needMem = false
 	needAppendBool = false
 	needPadStart = false
+	needBigRat = false
 	pyMathAliases = map[string]bool{}
 	builtinAliases = map[string]string{}
 	structDefs = map[string]map[string]string{}
@@ -3512,6 +3580,9 @@ func compilePostfix(pf *parser.PostfixExpr) (Expr, error) {
 					expr = &FloatCastExpr{Value: expr}
 				case "bigint":
 					expr = &CastExpr{Value: expr, Type: ctype}
+				case "bigrat":
+					needBigRat = true
+					expr = &CallExpr{Func: "_bigrat", Args: []Expr{expr, &NullLit{}}}
 				default:
 					if st, ok := expr.(*StructLit); ok {
 						st.Name = ctype
@@ -3628,6 +3699,14 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 		}
 		if (name == "float" || name == "float64" || name == "double") && len(args) == 1 {
 			return &FloatCastExpr{Value: args[0]}, nil
+		}
+		if name == "num" && len(args) == 1 {
+			needBigRat = true
+			return &CallExpr{Func: "_num", Args: []Expr{args[0]}}, nil
+		}
+		if name == "denom" && len(args) == 1 {
+			needBigRat = true
+			return &CallExpr{Func: "_denom", Args: []Expr{args[0]}}, nil
 		}
 		if name == "values" && len(args) == 1 {
 			return &ValuesExpr{Map: args[0]}, nil
@@ -4470,6 +4549,55 @@ func Emit(prog *Program) []byte {
 		buf.WriteString("        return out;\n")
 		buf.WriteString("    }\n")
 	}
+	if needBigRat {
+		buf.WriteString("\n    static class BigRat {\n")
+		buf.WriteString("        java.math.BigInteger num;\n")
+		buf.WriteString("        java.math.BigInteger den;\n")
+		buf.WriteString("        BigRat(java.math.BigInteger n, java.math.BigInteger d) {\n")
+		buf.WriteString("            if (d.signum() < 0) { n = n.negate(); d = d.negate(); }\n")
+		buf.WriteString("            java.math.BigInteger g = n.gcd(d);\n")
+		buf.WriteString("            num = n.divide(g); den = d.divide(g);\n")
+		buf.WriteString("        }\n")
+		buf.WriteString("        public String toString() { return den.equals(java.math.BigInteger.ONE) ? num.toString() : num.toString()+\"/\"+den.toString(); }\n")
+		buf.WriteString("    }\n")
+		buf.WriteString("    static java.math.BigInteger _toBigInt(Object x) {\n")
+		buf.WriteString("        if (x instanceof java.math.BigInteger) return (java.math.BigInteger)x;\n")
+		buf.WriteString("        if (x instanceof BigRat) return ((BigRat)x).num;\n")
+		buf.WriteString("        if (x instanceof Integer) return java.math.BigInteger.valueOf((Integer)x);\n")
+		buf.WriteString("        if (x instanceof Long) return java.math.BigInteger.valueOf((Long)x);\n")
+		buf.WriteString("        if (x instanceof Double) return java.math.BigInteger.valueOf(((Double)x).longValue());\n")
+		buf.WriteString("        if (x instanceof String) return new java.math.BigInteger((String)x);\n")
+		buf.WriteString("        return java.math.BigInteger.ZERO;\n")
+		buf.WriteString("    }\n")
+		buf.WriteString("    static BigRat _bigrat(Object n, Object d) {\n")
+		buf.WriteString("        java.math.BigInteger nn = _toBigInt(n);\n")
+		buf.WriteString("        java.math.BigInteger dd = d == null ? java.math.BigInteger.ONE : _toBigInt(d);\n")
+		buf.WriteString("        return new BigRat(nn, dd);\n")
+		buf.WriteString("    }\n")
+		buf.WriteString("    static BigRat _bigrat(Object n) { return _bigrat(n, null); }\n")
+		buf.WriteString("    static BigRat _add(Object a, Object b) {\n")
+		buf.WriteString("        BigRat x = _bigrat(a); BigRat y = _bigrat(b);\n")
+		buf.WriteString("        java.math.BigInteger n = x.num.multiply(y.den).add(y.num.multiply(x.den));\n")
+		buf.WriteString("        java.math.BigInteger d = x.den.multiply(y.den);\n")
+		buf.WriteString("        return _bigrat(n, d);\n")
+		buf.WriteString("    }\n")
+		buf.WriteString("    static BigRat _sub(Object a, Object b) {\n")
+		buf.WriteString("        BigRat x = _bigrat(a); BigRat y = _bigrat(b);\n")
+		buf.WriteString("        java.math.BigInteger n = x.num.multiply(y.den).subtract(y.num.multiply(x.den));\n")
+		buf.WriteString("        java.math.BigInteger d = x.den.multiply(y.den);\n")
+		buf.WriteString("        return _bigrat(n, d);\n")
+		buf.WriteString("    }\n")
+		buf.WriteString("    static BigRat _mul(Object a, Object b) {\n")
+		buf.WriteString("        BigRat x = _bigrat(a); BigRat y = _bigrat(b);\n")
+		buf.WriteString("        return _bigrat(x.num.multiply(y.num), x.den.multiply(y.den));\n")
+		buf.WriteString("    }\n")
+		buf.WriteString("    static BigRat _div(Object a, Object b) {\n")
+		buf.WriteString("        BigRat x = _bigrat(a); BigRat y = _bigrat(b);\n")
+		buf.WriteString("        return _bigrat(x.num.multiply(y.den), x.den.multiply(y.num));\n")
+		buf.WriteString("    }\n")
+		buf.WriteString("    static java.math.BigInteger _num(Object x) { return (x instanceof BigRat) ? ((BigRat)x).num : _toBigInt(x); }\n")
+		buf.WriteString("    static java.math.BigInteger _denom(Object x) { return (x instanceof BigRat) ? ((BigRat)x).den : java.math.BigInteger.ONE; }\n")
+	}
 	buf.WriteString("}\n")
 	return formatJava(buf.Bytes())
 }
@@ -4539,6 +4667,9 @@ func toJavaTypeFromType(t types.Type) string {
 		return "String"
 	case types.BigIntType:
 		return "java.math.BigInteger"
+	case types.BigRatType:
+		needBigRat = true
+		return "BigRat"
 	case types.AnyType:
 		return "Object"
 	case types.ListType:
