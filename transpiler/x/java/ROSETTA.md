@@ -1,9 +1,9 @@
 # Java Rosetta Transpiler Output
 
 Generated Java code for programs in `tests/rosetta/x/Mochi`. Each program has a `.java` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
-Last updated: 2025-07-26 23:00 GMT+7
+Last updated: 2025-07-27 01:10 GMT+7
 
-## Rosetta Checklist (134/332)
+## Rosetta Checklist (145/332)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 23.0ms | 245.84KB |
@@ -155,17 +155,17 @@ Last updated: 2025-07-26 23:00 GMT+7
 | 147 | calendar---for-real-programmers-2 | ✓ | 30.0ms | 80.95KB |
 | 148 | calendar | ✓ | 40.0ms | 80.95KB |
 | 149 | calkin-wilf-sequence |   |  |  |
-| 150 | call-a-foreign-language-function |   |  |  |
-| 151 | call-a-function-1 |   |  |  |
-| 152 | call-a-function-10 |   |  |  |
-| 153 | call-a-function-11 |   |  |  |
-| 154 | call-a-function-12 |   |  |  |
-| 155 | call-a-function-2 |   |  |  |
-| 156 | call-a-function-3 |   |  |  |
-| 157 | call-a-function-4 |   |  |  |
-| 158 | call-a-function-5 |   |  |  |
-| 159 | call-a-function-6 |   |  |  |
-| 160 | call-a-function-7 |   |  |  |
+| 150 | call-a-foreign-language-function | ✓ | 24.0ms | 25.62KB |
+| 151 | call-a-function-1 | ✓ | 21.0ms | 0B |
+| 152 | call-a-function-10 | ✓ | 46.0ms | 45.60KB |
+| 153 | call-a-function-11 | ✓ | 32.0ms | 37.83KB |
+| 154 | call-a-function-12 | ✓ | 50.0ms | 88.48KB |
+| 155 | call-a-function-2 | ✓ | 21.0ms | 320B |
+| 156 | call-a-function-3 | ✓ | 20.0ms | 192B |
+| 157 | call-a-function-4 | ✓ | 23.0ms | 280B |
+| 158 | call-a-function-5 | ✓ | 20.0ms | 720B |
+| 159 | call-a-function-6 | ✓ | 51.0ms | 84.13KB |
+| 160 | call-a-function-7 | ✓ | 19.0ms | 0B |
 | 161 | call-a-function-8 |   |  |  |
 | 162 | call-a-function-9 |   |  |  |
 | 163 | call-an-object-method-1 |   |  |  |
