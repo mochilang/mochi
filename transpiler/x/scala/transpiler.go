@@ -1096,21 +1096,13 @@ type SubstringExpr struct {
 func (s *SubstringExpr) emit(w io.Writer) {
 	s.Value.emit(w)
 	fmt.Fprint(w, ".slice(")
-	if isBigIntExpr(s.Start) {
-		fmt.Fprint(w, "(")
-		s.Start.emit(w)
-		fmt.Fprint(w, ").toInt")
-	} else {
-		s.Start.emit(w)
-	}
+	fmt.Fprint(w, "(")
+	s.Start.emit(w)
+	fmt.Fprint(w, ").toInt")
 	fmt.Fprint(w, ", ")
-	if isBigIntExpr(s.End) {
-		fmt.Fprint(w, "(")
-		s.End.emit(w)
-		fmt.Fprint(w, ").toInt")
-	} else {
-		s.End.emit(w)
-	}
+	fmt.Fprint(w, "(")
+	s.End.emit(w)
+	fmt.Fprint(w, ").toInt")
 	fmt.Fprint(w, ")")
 }
 
@@ -1488,6 +1480,7 @@ func Emit(p *Program) []byte {
 		buf.WriteString("    def -(o: BigRat) = BigRat(num * o.den - o.num * den, den * o.den)\n")
 		buf.WriteString("    def *(o: BigRat) = BigRat(num * o.num, den * o.den)\n")
 		buf.WriteString("    def /(o: BigRat) = BigRat(num * o.den, den * o.num)\n")
+		buf.WriteString("    override def toString(): String = s\"${num}/${den}\"\n")
 		buf.WriteString("  }\n")
 		buf.WriteString("  object BigRat {\n")
 		buf.WriteString("    def apply(n: BigInt, d: BigInt = BigInt(1)): BigRat = {\n")
@@ -1757,6 +1750,19 @@ func convertStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 			typ = inferTypeWithEnv(e, env)
 			if typ == "Any" {
 				typ = ""
+			}
+			if b, ok := e.(*BinaryExpr); ok && b.Op == "+" {
+				if _, ok1 := b.Left.(*IndexExpr); ok1 {
+					typ = ""
+				} else if _, ok2 := b.Right.(*IndexExpr); ok2 {
+					typ = ""
+				}
+			}
+			if typ == "Int" && isBigIntExpr(e) {
+				typ = "BigInt"
+			}
+			if typ == "Int" && isBigIntExpr(e) {
+				typ = "BigInt"
 			}
 			if typ == "Int" && isBigIntExpr(e) {
 				typ = "BigInt"
