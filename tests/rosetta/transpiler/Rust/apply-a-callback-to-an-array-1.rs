@@ -37,31 +37,9 @@ fn _mem() -> i64 {
 fn main() {
         let _start_mem: i64 = _mem();
     let _start: i64 = _now();
-    fn fib(mut n: i64) -> i64 {
-    if (n < 2) {
-        return n
+    for i in vec![1, 2, 3, 4, 5] {
+        println!("{}", (i * i).to_string());
     }
-    let mut a: i64 = 0;
-    let mut b: i64 = 1;
-    let mut i: i64 = 1;
-    while (i < n) {
-        let t: i64 = (a + b);
-        a = b;
-        b = t;
-        i = (i + 1);
-    }
-    return b
-};
-    fn mochi_main() {
-    for n in vec![0, 1, 2, 3, 4, 5, 10, 40, -1] {
-        if (n < 0) {
-            println!("{}", "fib undefined for negative numbers");
-        } else {
-            println!("{}", format!("{}{}", format!("{}{}", format!("{}{}", "fib ", n.to_string()), " = "), fib(n).to_string()));
-        }
-    }
-};
-    mochi_main();
     let _end: i64 = _now();
     let _end_mem: i64 = _mem();
     let duration_us: i64 = ((_end - _start) / 1000);

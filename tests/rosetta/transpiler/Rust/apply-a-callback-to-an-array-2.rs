@@ -37,29 +37,22 @@ fn _mem() -> i64 {
 fn main() {
         let _start_mem: i64 = _mem();
     let _start: i64 = _now();
-    fn fib(mut n: i64) -> i64 {
-    if (n < 2) {
-        return n
+    fn each(mut xs: Vec<i64>, f: &mut impl FnMut(i64) -> ()) {
+    for x in xs.clone() {
+        f(x);
     }
-    let mut a: i64 = 0;
-    let mut b: i64 = 1;
-    let mut i: i64 = 1;
-    while (i < n) {
-        let t: i64 = (a + b);
-        a = b;
-        b = t;
-        i = (i + 1);
+};
+    fn Map(mut xs: Vec<i64>, f: &mut impl FnMut(i64) -> i64) -> Vec<i64> {
+    let mut r: Vec<i64> = vec![];
+    for x in xs.clone() {
+        r = { let mut v = r.clone(); v.push(f(x)); v };
     }
-    return b
+    return r
 };
     fn mochi_main() {
-    for n in vec![0, 1, 2, 3, 4, 5, 10, 40, -1] {
-        if (n < 0) {
-            println!("{}", "fib undefined for negative numbers");
-        } else {
-            println!("{}", format!("{}{}", format!("{}{}", format!("{}{}", "fib ", n.to_string()), " = "), fib(n).to_string()));
-        }
-    }
+    let mut s: Vec<i64> = vec![1, 2, 3, 4, 5];
+    each(s.clone(), &mut move |i: i64| { println!("{}", (i * i).to_string()) });
+    println!("{}", format!("{:?}", Map(s.clone(), &mut move |i: i64| -> i64 { (i * i) })));
 };
     mochi_main();
     let _end: i64 = _now();
