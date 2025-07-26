@@ -4,7 +4,7 @@ func main (regs=1)
   Return       r0
 
   // fun parseIntDigits(s: string): int {
-func parseIntDigits (regs=22)
+func parseIntDigits (regs=21)
   // var n = 0
   Const        r1, 0
   Move         r2, r1
@@ -27,23 +27,22 @@ L2:
   Slice        r12, r0, r8, r9
   Move         r13, r12
   // if !(ch in digits) { return 0 }
-  Const        r14, {"0": 0, "1": 1, "2": 2, "3": 3, "4": 4, "5": 5, "6": 6, "7": 7, "8": 8, "9": 9}
-  In           r15, r13, r14
-  Not          r16, r15
-  JumpIfFalse  r16, L1
+  In           r14, r13, r5
+  Not          r15, r14
+  JumpIfFalse  r15, L1
   Const        r1, 0
   Return       r1
 L1:
   // n = n * 10 + digits[ch]
-  Const        r17, 10
-  MulInt       r18, r2, r17
-  Index        r19, r5, r13
-  Add          r20, r18, r19
-  Move         r2, r20
+  Const        r16, 10
+  MulInt       r17, r2, r16
+  Index        r18, r5, r13
+  Add          r19, r17, r18
+  Move         r2, r19
   // i = i + 1
   Const        r10, 1
-  AddInt       r21, r3, r10
-  Move         r3, r21
+  AddInt       r20, r3, r10
+  Move         r3, r20
   // while i < len(s) {
   Jump         L2
 L0:
@@ -174,7 +173,7 @@ L8:
   Return       r48
 
   // fun parseRate(s: string): int {
-func parseRate (regs=55)
+func parseRate (regs=51)
   // var neg = false
   Const        r1, false
   Move         r2, r1
@@ -246,60 +245,56 @@ L3:
   // if seenDot {
   JumpIfFalse  r19, L5
   // if digits < 4 { frac = frac*10 + d; digits = digits+1 }
-  Const        r34, {"0": 0, "1": 1, "2": 2, "3": 3, "4": 4, "5": 5, "6": 6, "7": 7, "8": 8, "9": 9}
-  Const        r35, 4
-  Less         r36, r34, r35
-  JumpIfFalse  r36, L6
-  Const        r37, 10
-  MulInt       r38, r17, r37
-  Add          r39, r38, r33
-  Move         r17, r39
-  Const        r40, {"0": 0, "1": 1, "2": 2, "3": 3, "4": 4, "5": 5, "6": 6, "7": 7, "8": 8, "9": 9}
+  Const        r34, 4
+  LessInt      r35, r18, r34
+  JumpIfFalse  r35, L6
+  Const        r36, 10
+  MulInt       r37, r17, r36
+  Add          r38, r37, r33
+  Move         r17, r38
   Const        r8, 1
-  Add          r41, r40, r8
-  Move         r18, r41
+  AddInt       r39, r18, r8
+  Move         r18, r39
   // if seenDot {
   Jump         L6
 L5:
   // whole = whole*10 + d
-  Const        r37, 10
-  MulInt       r42, r16, r37
-  Add          r43, r42, r33
-  Move         r16, r43
+  Const        r36, 10
+  MulInt       r40, r16, r36
+  Add          r41, r40, r33
+  Move         r16, r41
 L6:
   // i = i + 1
   Const        r8, 1
-  AddInt       r44, r20, r8
-  Move         r20, r44
+  AddInt       r42, r20, r8
+  Move         r20, r42
   // while i < len(s) {
   Jump         L4
 L2:
   // while digits < 4 { frac = frac*10; digits=digits+1 }
-  Const        r45, {"0": 0, "1": 1, "2": 2, "3": 3, "4": 4, "5": 5, "6": 6, "7": 7, "8": 8, "9": 9}
-  Const        r35, 4
-  Less         r46, r45, r35
-  JumpIfFalse  r46, L7
-  Const        r37, 10
-  Mul          r47, r17, r37
-  Move         r17, r47
-  Const        r48, {"0": 0, "1": 1, "2": 2, "3": 3, "4": 4, "5": 5, "6": 6, "7": 7, "8": 8, "9": 9}
+  Const        r34, 4
+  LessInt      r43, r18, r34
+  JumpIfFalse  r43, L7
+  Const        r36, 10
+  Mul          r44, r17, r36
+  Move         r17, r44
   Const        r8, 1
-  Add          r49, r48, r8
-  Move         r18, r49
+  AddInt       r45, r18, r8
+  Move         r18, r45
   Jump         L2
 L7:
   // var val = whole*10000 + frac
-  Const        r50, 10000
-  Mul          r51, r16, r50
-  Add          r52, r51, r17
-  Move         r53, r52
+  Const        r46, 10000
+  Mul          r47, r16, r46
+  Add          r48, r47, r17
+  Move         r49, r48
   // if neg { val = -val }
   JumpIfFalse  r2, L8
-  Neg          r54, r53
-  Move         r53, r54
+  Neg          r50, r49
+  Move         r49, r50
 L8:
   // return val
-  Return       r53
+  Return       r49
 
   // fun dcString(dc: int): string {
 func dcString (regs=21)
