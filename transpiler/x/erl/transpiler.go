@@ -1745,6 +1745,19 @@ func (c *CallExpr) emit(w io.Writer) {
 				return
 			}
 		}
+	case "pow":
+		io.WriteString(w, "math:pow(")
+		if len(c.Args) > 0 {
+			c.Args[0].emit(w)
+		}
+		io.WriteString(w, ", ")
+		if len(c.Args) > 1 {
+			c.Args[1].emit(w)
+		} else {
+			io.WriteString(w, "0")
+		}
+		io.WriteString(w, ")")
+		return
 	case "min":
 		io.WriteString(w, "lists:min(")
 		if len(c.Args) > 0 {
@@ -2616,7 +2629,7 @@ func mapOp(op string) string {
 
 func builtinFunc(name string) bool {
 	switch name {
-	case "print", "append", "avg", "count", "len", "str", "sum", "min", "max", "values", "keys", "exists", "contains", "sha256", "json", "now", "input", "int", "abs", "upper", "lower", "indexOf", "parseIntStr", "indexof", "parseintstr":
+	case "print", "append", "avg", "count", "len", "str", "sum", "min", "max", "values", "keys", "exists", "contains", "sha256", "json", "now", "input", "int", "abs", "upper", "lower", "indexOf", "parseIntStr", "indexof", "parseintstr", "pow":
 		return true
 	default:
 		return false
@@ -3952,6 +3965,26 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env, ctx *context) (Expr,
 		}
 		return &CallExpr{Func: "maps:keys", Args: []Expr{base}}, nil
 	}
+	if pf.Target != nil && pf.Target.Selector != nil && len(pf.Target.Selector.Tail) == 1 && pf.Target.Selector.Tail[0] == "padStart" && len(pf.Ops) == 1 && pf.Ops[0].Call != nil {
+		base, err := convertPrimary(&parser.Primary{Selector: &parser.SelectorExpr{Root: pf.Target.Selector.Root}}, env, ctx)
+		if err != nil {
+			return nil, err
+		}
+		call := pf.Ops[0].Call
+		if len(call.Args) < 1 || len(call.Args) > 2 {
+			return nil, fmt.Errorf("padStart expects 2 args")
+		}
+		args := []Expr{base}
+		for _, a := range call.Args {
+			ex, err := convertExpr(a, env, ctx)
+			if err != nil {
+				return nil, err
+			}
+			args = append(args, ex)
+		}
+		usePadStart = true
+		return &CallExpr{Func: "mochi_pad_start", Args: args}, nil
+	}
 	expr, err := convertPrimary(pf.Target, env, ctx)
 	if err != nil {
 		return nil, err
@@ -4101,6 +4134,22 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env, ctx *context) (Expr,
 				args = append(args, def)
 			}
 			expr = &CallExpr{Func: "maps:get", Args: args}
+			i++
+		case op.Field != nil && op.Field.Name == "padStart" && i+1 < len(pf.Ops) && pf.Ops[i+1].Call != nil:
+			call := pf.Ops[i+1].Call
+			if len(call.Args) < 1 || len(call.Args) > 2 {
+				return nil, fmt.Errorf("padStart expects 2 args")
+			}
+			args := []Expr{expr}
+			for _, a := range call.Args {
+				e, err := convertExpr(a, env, ctx)
+				if err != nil {
+					return nil, err
+				}
+				args = append(args, e)
+			}
+			usePadStart = true
+			expr = &CallExpr{Func: "mochi_pad_start", Args: args}
 			i++
 		case op.Field != nil:
 			field := op.Field.Name

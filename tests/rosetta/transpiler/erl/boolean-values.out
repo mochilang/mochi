@@ -1,0 +1,15 @@
+true
+bool
+false
+x == y: false
+x < y: true
+
+Convert String into Boolean Data type
+
+Before : string
+After : bool
+{
+  "duration_us": 39700,
+  "memory_bytes": 288880,
+  "name": "main"
+}

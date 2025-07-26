@@ -1,0 +1,19 @@
+/workspace/mochi/tests/rosetta/transpiler/erl/blum-integer.erl:238:8: Warning: variable 'Blum_3' exported from 'case' (line 187, column 17)
+%  238| {Bc_2, Blum_3, Counts_9, D_4, Digits, I_5, Idx_3, P, Q} = Fun_6(Bc_2, Blum_3, Counts_9, D_4, Digits, I_5, Idx_2, P, Q),
+%     |        ^
+
+/workspace/mochi/tests/rosetta/transpiler/erl/blum-integer.erl:238:16: Warning: variable 'Counts_9' exported from 'case' (line 193, column 13)
+%  238| {Bc_2, Blum_3, Counts_9, D_4, Digits, I_5, Idx_3, P, Q} = Fun_6(Bc_2, Blum_3, Counts_9, D_4, Digits, I_5, Idx_2, P, Q),
+%     |                ^
+
+First 50 Blum integers:
+ 21  33  57  69  77  93 129 133 141 161
+177 201 209 213 217 237 249 253 301 309
+321 329 341 381 393 413 417 437 453 469
+473 489 497 501 517 537 553 573 581 589
+597 633 649 669 681 713 717 721 737 749
+{
+  "duration_us": 24546,
+  "memory_bytes": 117144,
+  "name": "main"
+}
