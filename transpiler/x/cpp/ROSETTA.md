@@ -2,7 +2,7 @@
 
 This directory stores C++ code generated from Mochi programs in `tests/rosetta/x/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.cpp` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (109/332) - Last updated 2025-07-26 23:45 +0700:
+Checklist of programs that currently transpile and run (129/332) - Last updated 2025-07-27 00:58 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | 100-doors-2 | ✓ | 222.0µs | 13.12MB |
@@ -13,7 +13,7 @@ Checklist of programs that currently transpile and run (109/332) - Last updated 
 | 6 | 15-puzzle-solver | ✓ | 141.0µs | 12.91MB |
 | 7 | 2048 | ✓ | 689.0µs | 13.73MB |
 | 8 | 21-game | ✓ | 356.0µs | 13.36MB |
-| 9 | 24-game-solve |   | 4.0ms | 13.75MB |
+| 9 | 24-game-solve | ✓ | 4.0ms | 13.75MB |
 | 10 | 24-game | ✓ |  |  |
 | 11 | 4-rings-or-4-squares-puzzle |   |  |  |
 | 12 | 9-billion-names-of-god-the-integer | ✓ | 126.70s | 219.41MB |
@@ -136,27 +136,27 @@ Checklist of programs that currently transpile and run (109/332) - Last updated 
 | 129 | bitwise-io-1 |   | 246.0µs | 13.08MB |
 | 130 | bitwise-io-2 | ✓ | 574.0µs | 14.68MB |
 | 131 | bitwise-operations | ✓ | 233.0µs | 13.95MB |
-| 132 | blum-integer |   |  |  |
-| 133 | boolean-values |   |  |  |
-| 134 | box-the-compass |   |  |  |
-| 135 | boyer-moore-string-search |   |  |  |
-| 136 | brazilian-numbers |   |  |  |
-| 137 | break-oo-privacy |   |  |  |
+| 132 | blum-integer | ✓ | 200.0µs | 14.06MB |
+| 133 | boolean-values | ✓ | 48.0µs | 12.94MB |
+| 134 | box-the-compass | ✓ | 488.0µs | 13.20MB |
+| 135 | boyer-moore-string-search | ✓ | 280.0µs | 13.25MB |
+| 136 | brazilian-numbers | ✓ | 8.61s | 13.38MB |
+| 137 | break-oo-privacy | ✓ | 61.0µs | 13.20MB |
 | 138 | brilliant-numbers |   |  |  |
-| 139 | brownian-tree |   |  |  |
-| 140 | bulls-and-cows-player |   |  |  |
-| 141 | bulls-and-cows |   |  |  |
-| 142 | burrows-wheeler-transform |   |  |  |
-| 143 | caesar-cipher-1 |   |  |  |
-| 144 | caesar-cipher-2 |   |  |  |
-| 145 | calculating-the-value-of-e |   |  |  |
-| 146 | calendar---for-real-programmers-1 |   |  |  |
-| 147 | calendar---for-real-programmers-2 |   |  |  |
-| 148 | calendar |   |  |  |
+| 139 | brownian-tree | ✓ | -1993291818000ns | 13.56MB |
+| 140 | bulls-and-cows-player | ✓ |  |  |
+| 141 | bulls-and-cows | ✓ |  |  |
+| 142 | burrows-wheeler-transform | ✓ |  |  |
+| 143 | caesar-cipher-1 | ✓ |  |  |
+| 144 | caesar-cipher-2 | ✓ |  |  |
+| 145 | calculating-the-value-of-e | ✓ |  |  |
+| 146 | calendar---for-real-programmers-1 | ✓ |  |  |
+| 147 | calendar---for-real-programmers-2 | ✓ |  |  |
+| 148 | calendar | ✓ |  |  |
 | 149 | calkin-wilf-sequence |   |  |  |
-| 150 | call-a-foreign-language-function |   |  |  |
-| 151 | call-a-function-1 |   |  |  |
-| 152 | call-a-function-10 |   |  |  |
+| 150 | call-a-foreign-language-function | ✓ |  |  |
+| 151 | call-a-function-1 | ✓ |  |  |
+| 152 | call-a-function-10 | ✓ |  |  |
 | 153 | call-a-function-11 |   |  |  |
 | 154 | call-a-function-12 |   |  |  |
 | 155 | call-a-function-2 |   |  |  |

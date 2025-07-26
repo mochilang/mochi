@@ -4397,6 +4397,10 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				if err != nil {
 					return nil, err
 				}
+				if exprType(arg) == "std::string" {
+					usesParseIntStr = true
+					return &CallExpr{Name: "_parse_int_str", Args: []Expr{arg, &IntLit{Value: 10}}}, nil
+				}
 				return &CastExpr{Value: arg, Type: "int64_t"}, nil
 			}
 		case "float":
