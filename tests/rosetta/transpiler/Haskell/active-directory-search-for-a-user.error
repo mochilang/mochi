@@ -1,0 +1,7 @@
+run: exit status 1
+
+/workspace/mochi/tests/rosetta/transpiler/Haskell/active-directory-search-for-a-user.hs:53:5: error:
+    parse error on input ‘Base’
+   |
+53 |   { Base :: String,
+   |     ^^^^

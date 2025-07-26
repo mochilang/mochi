@@ -1,0 +1,123 @@
+run: exit status 1
+
+/workspace/mochi/tests/rosetta/transpiler/Haskell/achilles-numbers.hs:155:33: error:
+    • Couldn't match type ‘Map.Map (IO b0) Bool’ with ‘()’
+      Expected: IORef ()
+        Actual: IORef (Map.Map (IO b0) Bool)
+    • In the first argument of ‘deref’, namely ‘achilles’
+      In the first argument of ‘return’, namely ‘((deref achilles))’
+      In the expression: return ((deref achilles))
+    • Relevant bindings include
+        b :: IORef (IO b0)
+          (bound at /workspace/mochi/tests/rosetta/transpiler/Haskell/achilles-numbers.hs:128:5)
+        achilles :: IORef (Map.Map (IO b0) Bool)
+          (bound at /workspace/mochi/tests/rosetta/transpiler/Haskell/achilles-numbers.hs:127:5)
+        upper :: IO b0
+          (bound at /workspace/mochi/tests/rosetta/transpiler/Haskell/achilles-numbers.hs:126:9)
+        lower :: IO b0
+          (bound at /workspace/mochi/tests/rosetta/transpiler/Haskell/achilles-numbers.hs:125:9)
+    |
+155 |             else return ((deref achilles))
+    |                                 ^^^^^^^^
+
+/workspace/mochi/tests/rosetta/transpiler/Haskell/achilles-numbers.hs:196:33: error:
+    • Couldn't match type ‘[a]’ with ‘()’
+      Expected: IORef ()
+        Actual: IORef [a]
+    • In the first argument of ‘deref’, namely ‘res’
+      In the first argument of ‘return’, namely ‘((deref res))’
+      In the expression: return ((deref res))
+    • Relevant bindings include
+        tmp :: IORef [a]
+          (bound at /workspace/mochi/tests/rosetta/transpiler/Haskell/achilles-numbers.hs:161:5)
+        res :: IORef [a]
+          (bound at /workspace/mochi/tests/rosetta/transpiler/Haskell/achilles-numbers.hs:160:5)
+        xs :: [a]
+          (bound at /workspace/mochi/tests/rosetta/transpiler/Haskell/achilles-numbers.hs:159:10)
+        sortInts :: [a] -> IO ()
+          (bound at /workspace/mochi/tests/rosetta/transpiler/Haskell/achilles-numbers.hs:159:1)
+    |
+196 |             else return ((deref res))
+    |                                 ^^^
+
+/workspace/mochi/tests/rosetta/transpiler/Haskell/achilles-numbers.hs:219:24: error:
+    • Couldn't match expected type: [a3]
+                  with actual type: IO ()
+    • In the second argument of ‘($!)’, namely ‘(sortInts (deref ach))’
+      In a stmt of a 'do' block: writeIORef ach $! (sortInts (deref ach))
+      In the expression:
+        do let maxDigits = 15
+           getPerfectPowers 5
+           let achSet = getAchilles 1 5
+           ach <- newIORef ([])
+           ....
+    • Relevant bindings include
+        ach :: IORef [a3]
+          (bound at /workspace/mochi/tests/rosetta/transpiler/Haskell/achilles-numbers.hs:215:5)
+    |
+219 |     writeIORef ach $! (sortInts (deref ach))
+    |                        ^^^^^^^^^^^^^^^^^^^^
+
+/workspace/mochi/tests/rosetta/transpiler/Haskell/achilles-numbers.hs:230:65: error:
+    • Couldn't match expected type: [Char]
+                  with actual type: IO String
+    • In the second argument of ‘(++)’, namely
+        ‘pad (((deref ach) !! (deref i))) 4’
+      In the second argument of ‘($!)’, namely
+        ‘((deref line) ++ pad (((deref ach) !! (deref i))) 4)’
+      In a stmt of a 'do' block:
+        writeIORef line
+          $! ((deref line) ++ pad (((deref ach) !! (deref i))) 4)
+    |
+230 |                             writeIORef line $! ((deref line) ++ pad (((deref ach) !! (deref i))) 4)
+    |                                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+/workspace/mochi/tests/rosetta/transpiler/Haskell/achilles-numbers.hs:252:31: error:
+    • Couldn't match type ‘()’ with ‘IO a3’
+      Expected: IO (IO a3)
+        Actual: IO ()
+    • In the second argument of ‘elem’, namely ‘achSet’
+      In the expression: tot `elem` achSet
+      In a stmt of a 'do' block:
+        if tot `elem` achSet then
+            do writeIORef strong
+                 $! ((deref strong) ++ [((deref ach) !! (deref idx))])
+               writeIORef count $! ((deref count) + 1)
+        else
+            return ()
+    • Relevant bindings include
+        tot :: IO a3
+          (bound at /workspace/mochi/tests/rosetta/transpiler/Haskell/achilles-numbers.hs:251:21)
+        strong :: IORef [a3]
+          (bound at /workspace/mochi/tests/rosetta/transpiler/Haskell/achilles-numbers.hs:245:5)
+        ach :: IORef [a3]
+          (bound at /workspace/mochi/tests/rosetta/transpiler/Haskell/achilles-numbers.hs:215:5)
+    |
+252 |                 if tot `elem` achSet then do
+    |                               ^^^^^^
+
+/workspace/mochi/tests/rosetta/transpiler/Haskell/achilles-numbers.hs:270:65: error:
+    • Couldn't match expected type: [Char]
+                  with actual type: IO String
+    • In the second argument of ‘(++)’, namely
+        ‘pad (((deref strong) !! (deref i))) 5’
+      In the second argument of ‘($!)’, namely
+        ‘((deref line) ++ pad (((deref strong) !! (deref i))) 5)’
+      In a stmt of a 'do' block:
+        writeIORef line
+          $! ((deref line) ++ pad (((deref strong) !! (deref i))) 5)
+    |
+270 |                             writeIORef line $! ((deref line) ++ pad (((deref strong) !! (deref i))) 5)
+    |                                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+/workspace/mochi/tests/rosetta/transpiler/Haskell/achilles-numbers.hs:291:27: error:
+    • Couldn't match expected type: [Char]
+                  with actual type: IO String
+    • In the first argument of ‘(++)’, namely ‘pad (deref d) 2’
+      In the first argument of ‘putStrLn’, namely
+        ‘(pad (deref d) 2 ++ " digits: " ++ show c)’
+      In a stmt of a 'do' block:
+        putStrLn (pad (deref d) 2 ++ " digits: " ++ show c)
+    |
+291 |                 putStrLn (pad (deref d) 2 ++ " digits: " ++ show c)
+    |                           ^^^^^^^^^^^^^^^

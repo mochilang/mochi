@@ -1,0 +1,85 @@
+run: exit status 1
+
+/workspace/mochi/tests/rosetta/transpiler/Haskell/ackermann-function-2.hs:67:31: error:
+    • No instance for (Show (IO b3)) arising from a use of ‘show’
+    • In the second argument of ‘(++)’, namely ‘show (ackermann2 0 0)’
+      In the first argument of ‘putStrLn’, namely
+        ‘("A(0, 0) = " ++ show (ackermann2 0 0))’
+      In a stmt of a 'do' block:
+        putStrLn ("A(0, 0) = " ++ show (ackermann2 0 0))
+   |
+67 |     putStrLn ("A(0, 0) = " ++ show (ackermann2 0 0))
+   |                               ^^^^
+
+/workspace/mochi/tests/rosetta/transpiler/Haskell/ackermann-function-2.hs:67:37: error:
+    • No instance for (Ord (IO b3)) arising from a use of ‘ackermann2’
+    • In the first argument of ‘show’, namely ‘(ackermann2 0 0)’
+      In the second argument of ‘(++)’, namely ‘show (ackermann2 0 0)’
+      In the first argument of ‘putStrLn’, namely
+        ‘("A(0, 0) = " ++ show (ackermann2 0 0))’
+   |
+67 |     putStrLn ("A(0, 0) = " ++ show (ackermann2 0 0))
+   |                                     ^^^^^^^^^^
+
+/workspace/mochi/tests/rosetta/transpiler/Haskell/ackermann-function-2.hs:68:31: error:
+    • No instance for (Show (IO b2)) arising from a use of ‘show’
+    • In the second argument of ‘(++)’, namely ‘show (ackermann2 1 2)’
+      In the first argument of ‘putStrLn’, namely
+        ‘("A(1, 2) = " ++ show (ackermann2 1 2))’
+      In a stmt of a 'do' block:
+        putStrLn ("A(1, 2) = " ++ show (ackermann2 1 2))
+   |
+68 |     putStrLn ("A(1, 2) = " ++ show (ackermann2 1 2))
+   |                               ^^^^
+
+/workspace/mochi/tests/rosetta/transpiler/Haskell/ackermann-function-2.hs:68:37: error:
+    • No instance for (Ord (IO b2)) arising from a use of ‘ackermann2’
+    • In the first argument of ‘show’, namely ‘(ackermann2 1 2)’
+      In the second argument of ‘(++)’, namely ‘show (ackermann2 1 2)’
+      In the first argument of ‘putStrLn’, namely
+        ‘("A(1, 2) = " ++ show (ackermann2 1 2))’
+   |
+68 |     putStrLn ("A(1, 2) = " ++ show (ackermann2 1 2))
+   |                                     ^^^^^^^^^^
+
+/workspace/mochi/tests/rosetta/transpiler/Haskell/ackermann-function-2.hs:69:31: error:
+    • No instance for (Show (IO b1)) arising from a use of ‘show’
+    • In the second argument of ‘(++)’, namely ‘show (ackermann2 2 4)’
+      In the first argument of ‘putStrLn’, namely
+        ‘("A(2, 4) = " ++ show (ackermann2 2 4))’
+      In a stmt of a 'do' block:
+        putStrLn ("A(2, 4) = " ++ show (ackermann2 2 4))
+   |
+69 |     putStrLn ("A(2, 4) = " ++ show (ackermann2 2 4))
+   |                               ^^^^
+
+/workspace/mochi/tests/rosetta/transpiler/Haskell/ackermann-function-2.hs:69:37: error:
+    • No instance for (Ord (IO b1)) arising from a use of ‘ackermann2’
+    • In the first argument of ‘show’, namely ‘(ackermann2 2 4)’
+      In the second argument of ‘(++)’, namely ‘show (ackermann2 2 4)’
+      In the first argument of ‘putStrLn’, namely
+        ‘("A(2, 4) = " ++ show (ackermann2 2 4))’
+   |
+69 |     putStrLn ("A(2, 4) = " ++ show (ackermann2 2 4))
+   |                                     ^^^^^^^^^^
+
+/workspace/mochi/tests/rosetta/transpiler/Haskell/ackermann-function-2.hs:70:31: error:
+    • No instance for (Show (IO b0)) arising from a use of ‘show’
+    • In the second argument of ‘(++)’, namely ‘show (ackermann2 3 4)’
+      In the first argument of ‘putStrLn’, namely
+        ‘("A(3, 4) = " ++ show (ackermann2 3 4))’
+      In a stmt of a 'do' block:
+        putStrLn ("A(3, 4) = " ++ show (ackermann2 3 4))
+   |
+70 |     putStrLn ("A(3, 4) = " ++ show (ackermann2 3 4))
+   |                               ^^^^
+
+/workspace/mochi/tests/rosetta/transpiler/Haskell/ackermann-function-2.hs:70:37: error:
+    • No instance for (Ord (IO b0)) arising from a use of ‘ackermann2’
+    • In the first argument of ‘show’, namely ‘(ackermann2 3 4)’
+      In the second argument of ‘(++)’, namely ‘show (ackermann2 3 4)’
+      In the first argument of ‘putStrLn’, namely
+        ‘("A(3, 4) = " ++ show (ackermann2 3 4))’
+   |
+70 |     putStrLn ("A(3, 4) = " ++ show (ackermann2 3 4))
+   |                                     ^^^^^^^^^^
