@@ -1,9 +1,37 @@
-// Generated 2025-07-26 04:38 +0700
+// Generated 2025-07-26 10:43 +0700
 
 exception Break
 exception Continue
 
 exception Return
+
+let mutable _nowSeed:int64 = 0L
+let mutable _nowSeeded = false
+let _initNow () =
+    let s = System.Environment.GetEnvironmentVariable("MOCHI_NOW_SEED")
+    if System.String.IsNullOrEmpty(s) |> not then
+        match System.Int32.TryParse(s) with
+        | true, v ->
+            _nowSeed <- int64 v
+            _nowSeeded <- true
+        | _ -> ()
+let _now () =
+    if _nowSeeded then
+        _nowSeed <- (_nowSeed * 1664525L + 1013904223L) % 2147483647L
+        int _nowSeed
+    else
+        int (System.DateTime.UtcNow.Ticks % 2147483647L)
+
+_initNow()
+let _substring (s:string) (start:int) (finish:int) =
+    let len = String.length s
+    let mutable st = if start < 0 then len + start else start
+    let mutable en = if finish < 0 then len + finish else finish
+    if st < 0 then st <- 0
+    if st > len then st <- len
+    if en > len then en <- len
+    if st > en then st <- en
+    s.Substring(st, en - st)
 
 type Pixel = {
     R: int
@@ -16,6 +44,8 @@ type Bitmap = {
     max: int
     data: Pixel array array
 }
+let __bench_start = _now()
+let __mem_start = System.GC.GetTotalMemory(true)
 let rec newBitmap (w: int) (h: int) (max: int) =
     let mutable __ret : Bitmap = Unchecked.defaultof<Bitmap>
     let mutable w = w
@@ -28,16 +58,16 @@ let rec newBitmap (w: int) (h: int) (max: int) =
             let mutable row: Pixel array = [||]
             let mutable x: int = 0
             while x < w do
-                row <- Array.append row [|{ R = 0; G = 0; B = 0 }|]
+                row <- unbox<Pixel array> (Array.append row [|{ R = 0; G = 0; B = 0 }|])
                 x <- x + 1
-            rows <- Array.append rows [|row|]
+            rows <- unbox<Pixel array array> (Array.append rows [|row|])
             y <- y + 1
-        __ret <- { w = w; h = h; max = max; data = rows }
+        __ret <- unbox<Bitmap> { w = w; h = h; max = max; data = rows }
         raise Return
         __ret
     with
         | Return -> __ret
-and setPx (b: Bitmap) (x: int) (y: int) (p: Pixel) =
+let rec setPx (b: Bitmap) (x: int) (y: int) (p: Pixel) =
     let mutable __ret : unit = Unchecked.defaultof<unit>
     let mutable b = b
     let mutable x = x
@@ -52,7 +82,7 @@ and setPx (b: Bitmap) (x: int) (y: int) (p: Pixel) =
         __ret
     with
         | Return -> __ret
-and getPx (b: Bitmap) (x: int) (y: int) =
+let rec getPx (b: Bitmap) (x: int) (y: int) =
     let mutable __ret : Pixel = Unchecked.defaultof<Pixel>
     let mutable b = b
     let mutable x = x
@@ -63,7 +93,7 @@ and getPx (b: Bitmap) (x: int) (y: int) =
         __ret
     with
         | Return -> __ret
-and splitLines (s: string) =
+let rec splitLines (s: string) =
     let mutable __ret : string array = Unchecked.defaultof<string array>
     let mutable s = s
     try
@@ -71,20 +101,20 @@ and splitLines (s: string) =
         let mutable cur: string = ""
         let mutable i: int = 0
         while i < (String.length s) do
-            let ch: string = substr s i (i + 1)
+            let ch: string = _substring s i (i + 1)
             if ch = "\n" then
-                out <- Array.append out [|cur|]
+                out <- unbox<string array> (Array.append out [|cur|])
                 cur <- ""
             else
                 cur <- cur + ch
             i <- i + 1
-        out <- Array.append out [|cur|]
-        __ret <- out
+        out <- unbox<string array> (Array.append out [|cur|])
+        __ret <- unbox<string array> out
         raise Return
         __ret
     with
         | Return -> __ret
-and splitWS (s: string) =
+let rec splitWS (s: string) =
     let mutable __ret : string array = Unchecked.defaultof<string array>
     let mutable s = s
     try
@@ -92,22 +122,22 @@ and splitWS (s: string) =
         let mutable cur: string = ""
         let mutable i: int = 0
         while i < (String.length s) do
-            let ch: string = substr s i (i + 1)
+            let ch: string = _substring s i (i + 1)
             if (((ch = " ") || (ch = "\t")) || (ch = "\r")) || (ch = "\n") then
                 if (String.length cur) > 0 then
-                    out <- Array.append out [|cur|]
+                    out <- unbox<string array> (Array.append out [|cur|])
                     cur <- ""
             else
                 cur <- cur + ch
             i <- i + 1
         if (String.length cur) > 0 then
-            out <- Array.append out [|cur|]
-        __ret <- out
+            out <- unbox<string array> (Array.append out [|cur|])
+        __ret <- unbox<string array> out
         raise Return
         __ret
     with
         | Return -> __ret
-and parseIntStr (str: string) =
+let rec parseIntStr (str: string) =
     let mutable __ret : int = Unchecked.defaultof<int>
     let mutable str = str
     try
@@ -119,7 +149,7 @@ and parseIntStr (str: string) =
         let mutable n: int = 0
         let digits: Map<string, int> = Map.ofList [("0", 0); ("1", 1); ("2", 2); ("3", 3); ("4", 4); ("5", 5); ("6", 6); ("7", 7); ("8", 8); ("9", 9)]
         while i < (String.length str) do
-            n <- (n * 10) + (int (digits.[(str.Substring(i, (i + 1) - i))] |> unbox<int>))
+            n <- int ((n * 10) + (int (digits.[(str.Substring(i, (i + 1) - i))] |> unbox<int>)))
             i <- i + 1
         if neg then
             n <- -n
@@ -128,7 +158,7 @@ and parseIntStr (str: string) =
         __ret
     with
         | Return -> __ret
-and tokenize (s: string) =
+let rec tokenize (s: string) =
     let mutable __ret : string array = Unchecked.defaultof<string array>
     let mutable s = s
     try
@@ -138,33 +168,33 @@ and tokenize (s: string) =
         try
             while i < (int (Array.length lines)) do
                 let line: string = lines.[i]
-                if ((String.length line) > 0) && ((unbox<string> (substr line 0 1)) = "#") then
+                if ((String.length line) > 0) && ((_substring line 0 1) = "#") then
                     i <- i + 1
                     raise Continue
                 let parts: string array = splitWS line
                 let mutable j: int = 0
                 while j < (int (Array.length parts)) do
-                    toks <- Array.append toks [|parts.[j]|]
+                    toks <- unbox<string array> (Array.append toks [|parts.[j]|])
                     j <- j + 1
                 i <- i + 1
         with
         | Break -> ()
         | Continue -> ()
-        __ret <- toks
+        __ret <- unbox<string array> toks
         raise Return
         __ret
     with
         | Return -> __ret
-and readP3 (text: string) =
+let rec readP3 (text: string) =
     let mutable __ret : Bitmap = Unchecked.defaultof<Bitmap>
     let mutable text = text
     try
         let toks: string array = tokenize text
         if (int (Array.length toks)) < 4 then
-            __ret <- newBitmap 0 0 0
+            __ret <- unbox<Bitmap> (newBitmap 0 0 0)
             raise Return
         if (unbox<string> (toks.[0])) <> "P3" then
-            __ret <- newBitmap 0 0 0
+            __ret <- unbox<Bitmap> (newBitmap 0 0 0)
             raise Return
         let w: int = parseIntStr (unbox<string> (toks.[1]))
         let h: int = parseIntStr (unbox<string> (toks.[2]))
@@ -187,7 +217,7 @@ and readP3 (text: string) =
         __ret
     with
         | Return -> __ret
-and toGrey (b: Bitmap) =
+let rec toGrey (b: Bitmap) =
     let mutable __ret : unit = Unchecked.defaultof<unit>
     let mutable b = b
     try
@@ -211,7 +241,7 @@ and toGrey (b: Bitmap) =
         __ret
     with
         | Return -> __ret
-and pad (n: int) (w: int) =
+let rec pad (n: int) (w: int) =
     let mutable __ret : string = Unchecked.defaultof<string>
     let mutable n = n
     let mutable w = w
@@ -224,7 +254,7 @@ and pad (n: int) (w: int) =
         __ret
     with
         | Return -> __ret
-and writeP3 (b: Bitmap) =
+let rec writeP3 (b: Bitmap) =
     let mutable __ret : string = Unchecked.defaultof<string>
     let mutable b = b
     try
@@ -256,3 +286,6 @@ printfn "%s" "Grey PPM:"
 toGrey bm
 let out: string = writeP3 bm
 printfn "%s" out
+let __bench_end = _now()
+let __mem_end = System.GC.GetTotalMemory(true)
+printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)

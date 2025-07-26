@@ -1,3 +1,7 @@
+## Progress (2025-07-26 10:43 +0700)
+- fs transpiler: fix modulo int64 casting
+- Generated F# for 103/104 programs (103 passing)
+
 ## Progress (2025-07-26 03:08 +0000)
 - fs transpiler: implement contains builtin
 - Generated F# for 103/104 programs (103 passing)

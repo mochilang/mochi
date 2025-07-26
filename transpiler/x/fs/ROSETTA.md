@@ -2,7 +2,7 @@
 
 This file is auto-generated from rosetta tests.
 
-## Rosetta Golden Test Checklist (129/284)
+## Rosetta Golden Test Checklist (131/284)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 151µs | 41.3 KB |
@@ -127,8 +127,8 @@ This file is auto-generated from rosetta tests.
 | 120 | bitmap-flood-fill | ✓ | 388µs | 41.7 KB |
 | 121 | bitmap-histogram | ✓ | 382µs | 52.0 KB |
 | 122 | bitmap-midpoint-circle-algorithm | ✓ | 861µs | 70.0 KB |
-| 123 | bitmap-ppm-conversion-through-a-pipe |   |  |  |
-| 124 | bitmap-read-a-ppm-file |   |  |  |
+| 123 | bitmap-ppm-conversion-through-a-pipe | ✓ | 1.385ms | 1.4 MB |
+| 124 | bitmap-read-a-ppm-file | ✓ | 356µs | 47.0 KB |
 | 125 | bitmap-read-an-image-through-a-pipe |   |  |  |
 | 126 | bitmap-write-a-ppm-file | ✓ |  |  |
 | 127 | bitmap |   |  |  |
@@ -290,4 +290,4 @@ This file is auto-generated from rosetta tests.
 | 283 | define-a-primitive-data-type |   |  |  |
 | 284 | md5 |   |  |  |
 
-Last updated: 2025-07-26 03:08 +0000
+Last updated: 2025-07-26 10:43 +0700
