@@ -1,0 +1,29 @@
+compile: exit status 1
+/workspace/mochi/tests/rosetta/transpiler/CPP/bitwise-io-2.cpp:45:181: warning: multi-character character constant [-Wmultichar]
+   45 |     else if(val.type() == typeid(std::vector<int64_t>)) { const auto& v = std::any_cast<const std::vector<int64_t>&>(val); os << '['; for(size_t i=0;i<v.size();++i){ if(i>0) os << ', '; os << v[i]; } os << ']'; }
+      |                                                                                                                                                                                     ^~~~
+/workspace/mochi/tests/rosetta/transpiler/CPP/bitwise-io-2.cpp:46:209: warning: multi-character character constant [-Wmultichar]
+   46 |     else if(val.type() == typeid(std::vector<std::vector<int64_t>>)) { const auto& vv = std::any_cast<const std::vector<std::vector<int64_t>>&>(val); os << '['; for(size_t i=0;i<vv.size();++i){ if(i>0) os << ', '; const auto& v = vv[i]; os << '['; for(size_t j=0;j<v.size();++j){ if(j>0) os << ', '; os << v[j]; } os << ']'; } os << ']'; }
+      |                                                                                                                                                                                                                 ^~~~
+/workspace/mochi/tests/rosetta/transpiler/CPP/bitwise-io-2.cpp:46:295: warning: multi-character character constant [-Wmultichar]
+   46 |     else if(val.type() == typeid(std::vector<std::vector<int64_t>>)) { const auto& vv = std::any_cast<const std::vector<std::vector<int64_t>>&>(val); os << '['; for(size_t i=0;i<vv.size();++i){ if(i>0) os << ', '; const auto& v = vv[i]; os << '['; for(size_t j=0;j<v.size();++j){ if(j>0) os << ', '; os << v[j]; } os << ']'; } os << ']'; }
+      |                                                                                                                                                                                                                                                                                                       ^~~~
+/workspace/mochi/tests/rosetta/transpiler/CPP/bitwise-io-2.cpp:47:189: warning: multi-character character constant [-Wmultichar]
+   47 |     else if(val.type() == typeid(std::vector<std::string>)) { const auto& v = std::any_cast<const std::vector<std::string>&>(val); os << '['; for(size_t i=0;i<v.size();++i){ if(i>0) os << ', '; os << v[i]; } os << ']'; }
+      |                                                                                                                                                                                             ^~~~
+/workspace/mochi/tests/rosetta/transpiler/CPP/bitwise-io-2.cpp:48:183: warning: multi-character character constant [-Wmultichar]
+   48 |     else if(val.type() == typeid(std::vector<std::any>)) { const auto& v = std::any_cast<const std::vector<std::any>&>(val); os << '['; for(size_t i=0;i<v.size();++i){ if(i>0) os << ', '; any_to_stream(os, v[i]); } os << ']'; }
+      |                                                                                                                                                                                       ^~~~
+/workspace/mochi/tests/rosetta/transpiler/CPP/bitwise-io-2.cpp:49:215: warning: multi-character character constant [-Wmultichar]
+   49 |     else if(val.type() == typeid(std::map<std::string, std::any>)) { const auto& m = std::any_cast<const std::map<std::string, std::any>&>(val); os << '{'; bool first=true; for(const auto& p : m){ if(!first) os << ', '; first=false; os << p.first << ': '; any_to_stream(os, p.second); } os << '}'; }
+      |                                                                                                                                                                                                                       ^~~~
+/workspace/mochi/tests/rosetta/transpiler/CPP/bitwise-io-2.cpp:49:251: warning: multi-character character constant [-Wmultichar]
+   49 |     else if(val.type() == typeid(std::map<std::string, std::any>)) { const auto& m = std::any_cast<const std::map<std::string, std::any>&>(val); os << '{'; bool first=true; for(const auto& p : m){ if(!first) os << ', '; first=false; os << p.first << ': '; any_to_stream(os, p.second); } os << '}'; }
+      |                                                                                                                                                                                                                                                           ^~~~
+/workspace/mochi/tests/rosetta/transpiler/CPP/bitwise-io-2.cpp: In function ‘int64_t ord(std::string)’:
+/workspace/mochi/tests/rosetta/transpiler/CPP/bitwise-io-2.cpp:286:19: error: ‘indexOf’ was not declared in this scope
+  286 |     int64_t idx = indexOf(upper, ch);
+      |                   ^~~~~~~
+/workspace/mochi/tests/rosetta/transpiler/CPP/bitwise-io-2.cpp:295:22: error: ‘parseIntStr’ was not declared in this scope
+  295 |         return (48 + parseIntStr(ch));
+      |                      ^~~~~~~~~~~

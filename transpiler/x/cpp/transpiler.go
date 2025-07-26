@@ -36,6 +36,8 @@ var useMem bool
 var usesLookupHost bool
 var benchMain bool
 var usesSHA256 bool
+var usesIndexOf bool
+var usesParseIntStr bool
 var reserved = map[string]bool{"this": true, "new": true, "double": true, "char": true}
 var currentReturnType string
 var inReturn bool
@@ -77,11 +79,13 @@ type Program struct {
 	Functions []*Func
 	ListTypes map[string]string
 	// collected types of top-level variables
-	GlobalTypes   map[string]string
-	UseNow        bool
-	UseMem        bool
-	UseLookupHost bool
-	UseSHA256     bool
+	GlobalTypes    map[string]string
+	UseNow         bool
+	UseMem         bool
+	UseLookupHost  bool
+	UseSHA256      bool
+	UseIndexOf     bool
+	UseParseIntStr bool
 }
 
 func (p *Program) addInclude(inc string) {
@@ -628,6 +632,21 @@ func (p *Program) write(w io.Writer) {
 		fmt.Fprintln(w, "    return out;")
 		fmt.Fprintln(w, "}")
 	}
+	if p.UseIndexOf {
+		fmt.Fprintln(w, "static long _index_of(const std::string& s, const std::string& sub) {")
+		fmt.Fprintln(w, "    auto pos = s.find(sub);")
+		fmt.Fprintln(w, "    return pos == std::string::npos ? -1 : static_cast<long>(pos);")
+		fmt.Fprintln(w, "}")
+		fmt.Fprintln(w, "template<typename T> long _index_of(const std::vector<T>& xs, const T& v) {")
+		fmt.Fprintln(w, "    for(size_t i=0;i<xs.size();++i){ if(xs[i]==v) return i; }")
+		fmt.Fprintln(w, "    return -1;")
+		fmt.Fprintln(w, "}")
+	}
+	if p.UseParseIntStr {
+		fmt.Fprintln(w, "static long _parse_int_str(const std::string& s, long base) {")
+		fmt.Fprintln(w, "    return std::stol(s, nullptr, base);")
+		fmt.Fprintln(w, "}")
+	}
 	if usesAny {
 		fmt.Fprintln(w, "static void any_to_stream(std::ostream& os, const std::any& val) {")
 		fmt.Fprintln(w, "    if(val.type() == typeid(int)) os << std::any_cast<int>(val);")
@@ -1150,6 +1169,30 @@ func (u *UnaryExpr) emit(w io.Writer) {
 func (s *SelectorExpr) emit(w io.Writer) {
 	t := exprType(s.Target)
 	if strings.HasPrefix(t, "std::map<") {
+		parts := strings.SplitN(strings.TrimSuffix(strings.TrimPrefix(t, "std::map<"), ">"), ",", 2)
+		if len(parts) == 2 {
+			valType := strings.TrimSpace(parts[1])
+			if valType == "std::any" {
+				resType := "std::any"
+				switch s.Field {
+				case "ok":
+					resType = "bool"
+				case "pixel":
+					resType = "Pixel"
+				case "rgb":
+					resType = "int64_t"
+				}
+				if resType != "std::any" {
+					if currentProgram != nil {
+						currentProgram.addInclude("<any>")
+					}
+					fmt.Fprintf(w, "std::any_cast<%s>(", resType)
+					s.Target.emit(w)
+					fmt.Fprintf(w, "[\"%s\"])", s.Field)
+					return
+				}
+			}
+		}
 		s.Target.emit(w)
 		io.WriteString(w, "[\"")
 		io.WriteString(w, s.Field)
@@ -2769,6 +2812,8 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	useMem = false
 	usesLookupHost = false
 	usesSHA256 = false
+	usesIndexOf = false
+	usesParseIntStr = false
 	cp := &Program{Includes: []string{"<iostream>", "<string>"}, ListTypes: map[string]string{}, GlobalTypes: map[string]string{}}
 	currentProgram = cp
 	currentEnv = env
@@ -3215,6 +3260,8 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	cp.UseMem = useMem
 	cp.UseLookupHost = usesLookupHost
 	cp.UseSHA256 = usesSHA256
+	cp.UseIndexOf = usesIndexOf
+	cp.UseParseIntStr = usesParseIntStr
 	hasMain := false
 	for _, fn := range cp.Functions {
 		if fn.Name == "main" {
@@ -4169,6 +4216,19 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				}
 				return &ToLowerExpr{Value: arg}, nil
 			}
+		case "indexOf":
+			if len(p.Call.Args) == 2 {
+				v0, err := convertExpr(p.Call.Args[0])
+				if err != nil {
+					return nil, err
+				}
+				v1, err := convertExpr(p.Call.Args[1])
+				if err != nil {
+					return nil, err
+				}
+				usesIndexOf = true
+				return &CallExpr{Name: "_index_of", Args: []Expr{v0, v1}}, nil
+			}
 		case "str":
 			if len(p.Call.Args) == 1 {
 				arg, err := convertExpr(p.Call.Args[0])
@@ -4310,6 +4370,22 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 					return nil, err
 				}
 				return &CastExpr{Value: arg, Type: "double"}, nil
+			}
+		case "parseIntStr":
+			if len(p.Call.Args) == 1 || len(p.Call.Args) == 2 {
+				v0, err := convertExpr(p.Call.Args[0])
+				if err != nil {
+					return nil, err
+				}
+				var v1 Expr = &IntLit{Value: 10}
+				if len(p.Call.Args) == 2 {
+					v1, err = convertExpr(p.Call.Args[1])
+					if err != nil {
+						return nil, err
+					}
+				}
+				usesParseIntStr = true
+				return &CallExpr{Name: "_parse_int_str", Args: []Expr{v0, v1}}, nil
 			}
 		case "input":
 			if len(p.Call.Args) == 0 {
