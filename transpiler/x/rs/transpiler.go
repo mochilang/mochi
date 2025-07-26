@@ -58,6 +58,7 @@ var currentFuncLocals map[string]bool
 var currentFuncRet string
 var indexLHS bool
 var refMode bool
+var forceMap map[*parser.MapLiteral]bool
 
 func VarTypes() map[string]string { return varTypes }
 
@@ -582,6 +583,12 @@ func (i *IndexExpr) emit(w io.Writer) {
 				io.WriteString(w, ".as_str()")
 			}
 			io.WriteString(w, "]")
+			if !indexLHS {
+				vt := inferType(i)
+				if vt != "" && vt != "i64" && vt != "bool" && vt != "f64" {
+					io.WriteString(w, ".clone()")
+				}
+			}
 			return
 		}
 		if key, ok := literalStringExpr(i.Index); ok {
@@ -605,6 +612,12 @@ func (i *IndexExpr) emit(w io.Writer) {
 			io.WriteString(w, ".as_str()")
 		}
 		io.WriteString(w, "]")
+		if !indexLHS {
+			vt := inferType(i)
+			if vt != "" && vt != "i64" && vt != "bool" && vt != "f64" {
+				io.WriteString(w, ".clone()")
+			}
+		}
 		return
 	}
 	i.Target.emit(w)
@@ -615,6 +628,12 @@ func (i *IndexExpr) emit(w io.Writer) {
 			io.WriteString(w, ".as_str()")
 		}
 		io.WriteString(w, "]")
+		if !indexLHS {
+			vt := inferType(i)
+			if vt != "" && vt != "i64" && vt != "bool" && vt != "f64" {
+				io.WriteString(w, ".clone()")
+			}
+		}
 	} else {
 		if strings.HasPrefix(inferType(i.Target), "Vec<") {
 			io.WriteString(w, "[")
@@ -637,6 +656,11 @@ func (i *IndexExpr) emit(w io.Writer) {
 		et := ""
 		if t := inferType(i.Target); strings.HasPrefix(t, "Vec<") {
 			et = strings.TrimSuffix(strings.TrimPrefix(t, "Vec<"), ">")
+		} else if strings.HasPrefix(t, "HashMap<") {
+			if idx := strings.LastIndex(t, ","); idx > 0 {
+				et = strings.TrimSuffix(t[idx+1:], ">")
+				et = strings.TrimSpace(et)
+			}
 		}
 		if et != "" && et != "i64" && et != "bool" && et != "f64" {
 			io.WriteString(w, ".clone()")
@@ -766,7 +790,13 @@ func (s *StrExpr) emit(w io.Writer) {
 		s.Arg.emit(w)
 		io.WriteString(w, ")")
 	} else {
-		s.Arg.emit(w)
+		if _, ok := s.Arg.(*UnaryExpr); ok {
+			io.WriteString(w, "(")
+			s.Arg.emit(w)
+			io.WriteString(w, ")")
+		} else {
+			s.Arg.emit(w)
+		}
 		io.WriteString(w, ".to_string()")
 	}
 }
@@ -1788,6 +1818,7 @@ func Transpile(p *parser.Program, env *types.Env, benchMain bool) (*Program, err
 	structForList = make(map[*parser.ListLiteral]string)
 	structTypes = make(map[string]types.StructType)
 	structSig = make(map[string]string)
+	forceMap = make(map[*parser.MapLiteral]bool)
 	curEnv = env
 	builtinAliases = map[string]string{}
 	globalRenames = map[string]string{}
@@ -1859,6 +1890,14 @@ func compileStmt(stmt *parser.Statement) (Stmt, error) {
 		var err error
 		emptyList := false
 		if stmt.Let.Value != nil {
+			if ml := mapLiteralExpr(stmt.Let.Value); ml != nil && curEnv != nil {
+				if t, err := curEnv.GetVar(stmt.Let.Name); err == nil {
+					rt := rustTypeFromType(t)
+					if strings.HasPrefix(rt, "HashMap") {
+						forceMap[ml] = true
+					}
+				}
+			}
 			if ll := listLiteral(stmt.Let.Value); ll != nil {
 				if st, ok := types.InferStructFromList(ll, curEnv); ok {
 					name := types.UniqueStructName(strings.Title(stmt.Let.Name)+"Item", curEnv, nil)
@@ -1988,6 +2027,14 @@ func compileStmt(stmt *parser.Statement) (Stmt, error) {
 		var err error
 		emptyList := false
 		if stmt.Var.Value != nil {
+			if ml := mapLiteralExpr(stmt.Var.Value); ml != nil && curEnv != nil {
+				if t, err := curEnv.GetVar(stmt.Var.Name); err == nil {
+					rt := rustTypeFromType(t)
+					if strings.HasPrefix(rt, "HashMap") {
+						forceMap[ml] = true
+					}
+				}
+			}
 			if ll := listLiteral(stmt.Var.Value); ll != nil {
 				if st, ok := types.InferStructFromList(ll, curEnv); ok {
 					name := types.UniqueStructName(strings.Title(stmt.Var.Name)+"Item", curEnv, nil)
@@ -2094,6 +2141,14 @@ func compileStmt(stmt *parser.Statement) (Stmt, error) {
 		}
 		return vd, nil
 	case stmt.Assign != nil:
+		if ml := mapLiteralExpr(stmt.Assign.Value); ml != nil && curEnv != nil {
+			if t, err := curEnv.GetVar(stmt.Assign.Name); err == nil {
+				rt := rustTypeFromType(t)
+				if strings.HasPrefix(rt, "HashMap") {
+					forceMap[ml] = true
+				}
+			}
+		}
 		val, err := compileExpr(stmt.Assign.Value)
 		if err != nil {
 			return nil, err
@@ -2114,6 +2169,19 @@ func compileStmt(stmt *parser.Statement) (Stmt, error) {
 			target, err = applyIndexOps(target, stmt.Assign.Index)
 			if err != nil {
 				return nil, err
+			}
+			if len(stmt.Assign.Field) > 0 {
+				for _, f := range stmt.Assign.Field {
+					target = &FieldExpr{Receiver: target, Name: f.Name}
+				}
+				return &IndexAssignStmt{Target: target, Value: val}, nil
+			}
+			return &IndexAssignStmt{Target: target, Value: val}, nil
+		}
+		if len(stmt.Assign.Field) > 0 {
+			target := Expr(&NameRef{Name: stmt.Assign.Name, Type: varTypes[stmt.Assign.Name]})
+			for _, f := range stmt.Assign.Field {
+				target = &FieldExpr{Receiver: target, Name: f.Name}
 			}
 			return &IndexAssignStmt{Target: target, Value: val}, nil
 		}
@@ -3152,6 +3220,38 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 		}
 		return &ListLit{Elems: elems}, nil
 	case p.Map != nil:
+		if forceMap[p.Map] {
+			entries := make([]MapEntry, len(p.Map.Items))
+			for i, it := range p.Map.Items {
+				k, err := compileExpr(it.Key)
+				if err != nil {
+					return nil, err
+				}
+				v, err := compileExpr(it.Value)
+				if err != nil {
+					return nil, err
+				}
+				entries[i] = MapEntry{Key: k, Value: v}
+			}
+			usesHashMap = true
+			return &MapLit{Items: entries}, nil
+		}
+		if _, ok := types.InferSimpleMap(p.Map, curEnv); ok {
+			entries := make([]MapEntry, len(p.Map.Items))
+			for i, it := range p.Map.Items {
+				k, err := compileExpr(it.Key)
+				if err != nil {
+					return nil, err
+				}
+				v, err := compileExpr(it.Value)
+				if err != nil {
+					return nil, err
+				}
+				entries[i] = MapEntry{Key: k, Value: v}
+			}
+			usesHashMap = true
+			return &MapLit{Items: entries}, nil
+		}
 		if name, ok := structForMap[p.Map]; ok {
 			fields := make([]Expr, len(p.Map.Items))
 			names := make([]string, len(p.Map.Items))
@@ -4189,8 +4289,10 @@ func zeroValue(typ string) string {
 		return "String::new()"
 	case typ == "bool":
 		return "false"
-	case typ == "i64" || typ == "f64":
+	case typ == "i64":
 		return "0"
+	case typ == "f64":
+		return "0.0"
 	case strings.HasPrefix(typ, "Vec<"):
 		return "Vec::new()"
 	case strings.HasPrefix(typ, "HashMap<"):

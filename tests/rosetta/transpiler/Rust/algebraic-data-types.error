@@ -1,0 +1,1194 @@
+error[E0106]: missing lifetime specifier
+ --> /workspace/mochi/tests/rosetta/transpiler/Rust/algebraic-data-types.rs:5:82
+  |
+5 | unsafe fn node(mut cl: String, mut le: f64, mut aa: i64, mut ri: f64) -> HashMap<&str, String> {
+  |                                                                                  ^ expected named lifetime parameter
+  |
+  = help: this function's return type contains a borrowed value, but there is no value for it to be borrowed from
+help: consider using the `'static` lifetime, but this is uncommon unless you're returning a borrowed value from a `const` or a `static`
+  |
+5 | unsafe fn node(mut cl: String, mut le: f64, mut aa: i64, mut ri: f64) -> HashMap<&'static str, String> {
+  |                                                                                   +++++++
+help: instead, you are more likely to want to change one of the arguments to be borrowed...
+  |
+5 | unsafe fn node(mut cl: &String, mut le: &f64, mut aa: &i64, mut ri: &f64) -> HashMap<&str, String> {
+  |                        +                +             +             +
+help: ...or alternatively, you might want to return an owned value
+  |
+5 - unsafe fn node(mut cl: String, mut le: f64, mut aa: i64, mut ri: f64) -> HashMap<&str, String> {
+5 + unsafe fn node(mut cl: String, mut le: f64, mut aa: i64, mut ri: f64) -> HashMap<String, String> {
+  |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/algebraic-data-types.rs:10:8
+   |
+10 |     if (t == Default::default()) {
+   |        ^                       ^
+   |
+   = note: `#[warn(unused_parens)]` on by default
+help: remove these parentheses
+   |
+10 -     if (t == Default::default()) {
+10 +     if t == Default::default() {
+   |
+
+warning: unnecessary parentheses around function argument
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/algebraic-data-types.rs:14:183
+   |
+14 | ...t!("{}{}", "T(", m["cl".as_str()]), ", "), treeString((m["le".as_str()] as f64))), ", "), m["aa".as_str()].to_string()), ", "), treeSt...
+   |                                                          ^                       ^
+   |
+help: remove these parentheses
+   |
+14 -     return format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", "T(", m["cl".as_str()]), ", "), treeString((m["le".as_str()] as f64))), ", "), m["aa".as_str()].to_string()), ", "), treeString((m["ri".as_str()] as f64))), ")").clone()
+14 +     return format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", "T(", m["cl".as_str()]), ", "), treeString(m["le".as_str()] as f64)), ", "), m["aa".as_str()].to_string()), ", "), treeString((m["ri".as_str()] as f64))), ")").clone()
+   |
+
+warning: unnecessary parentheses around function argument
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/algebraic-data-types.rs:14:268
+   |
+14 | ... "), m["aa".as_str()].to_string()), ", "), treeString((m["ri".as_str()] as f64))), ")").clone()
+   |                                                          ^                       ^
+   |
+help: remove these parentheses
+   |
+14 -     return format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", "T(", m["cl".as_str()]), ", "), treeString((m["le".as_str()] as f64))), ", "), m["aa".as_str()].to_string()), ", "), treeString((m["ri".as_str()] as f64))), ")").clone()
+14 +     return format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", "T(", m["cl".as_str()]), ", "), treeString((m["le".as_str()] as f64))), ", "), m["aa".as_str()].to_string()), ", "), treeString(m["ri".as_str()] as f64)), ")").clone()
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/algebraic-data-types.rs:18:8
+   |
+18 |     if (t == Default::default()) {
+   |        ^                       ^
+   |
+help: remove these parentheses
+   |
+18 -     if (t == Default::default()) {
+18 +     if t == Default::default() {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/algebraic-data-types.rs:22:8
+   |
+22 |     if (m["cl".as_str()] != "B") {
+   |        ^                       ^
+   |
+help: remove these parentheses
+   |
+22 -     if (m["cl".as_str()] != "B") {
+22 +     if m["cl".as_str()] != "B" {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/algebraic-data-types.rs:27:8
+   |
+27 |     if (le != Default::default()) {
+   |        ^                        ^
+   |
+help: remove these parentheses
+   |
+27 -     if (le != Default::default()) {
+27 +     if le != Default::default() {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/algebraic-data-types.rs:29:12
+   |
+29 |         if (leMap["cl".as_str()] == "R") {
+   |            ^                           ^
+   |
+help: remove these parentheses
+   |
+29 -         if (leMap["cl".as_str()] == "R") {
+29 +         if leMap["cl".as_str()] == "R" {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/algebraic-data-types.rs:31:16
+   |
+31 |             if (lele != Default::default()) {
+   |                ^                          ^
+   |
+help: remove these parentheses
+   |
+31 -             if (lele != Default::default()) {
+31 +             if lele != Default::default() {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/algebraic-data-types.rs:33:20
+   |
+33 |                 if (leleMap["cl".as_str()] == "R") {
+   |                    ^                             ^
+   |
+help: remove these parentheses
+   |
+33 -                 if (leleMap["cl".as_str()] == "R") {
+33 +                 if leleMap["cl".as_str()] == "R" {
+   |
+
+warning: unnecessary parentheses around function argument
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/algebraic-data-types.rs:34:76
+   |
+34 | ...   return node(String::from("R"), node(String::from("B"), (leleMap["le".as_str()] as f64), leleMap["aa".as_str()], (leleMap["ri".as_st...
+   |                                                              ^                             ^
+   |
+help: remove these parentheses
+   |
+34 -                     return node(String::from("R"), node(String::from("B"), (leleMap["le".as_str()] as f64), leleMap["aa".as_str()], (leleMap["ri".as_str()] as f64)), leMap["aa".as_str()], node(String::from("B"), (leMap["ri".as_str()] as f64), m["aa".as_str()], (ri as f64)))
+34 +                     return node(String::from("R"), node(String::from("B"), leleMap["le".as_str()] as f64, leleMap["aa".as_str()], (leleMap["ri".as_str()] as f64)), leMap["aa".as_str()], node(String::from("B"), (leMap["ri".as_str()] as f64), m["aa".as_str()], (ri as f64)))
+   |
+
+warning: unnecessary parentheses around function argument
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/algebraic-data-types.rs:34:133
+   |
+34 | ...ap["le".as_str()] as f64), leleMap["aa".as_str()], (leleMap["ri".as_str()] as f64)), leMap["aa".as_str()], node(String::from("B"), (le...
+   |                                                       ^                             ^
+   |
+help: remove these parentheses
+   |
+34 -                     return node(String::from("R"), node(String::from("B"), (leleMap["le".as_str()] as f64), leleMap["aa".as_str()], (leleMap["ri".as_str()] as f64)), leMap["aa".as_str()], node(String::from("B"), (leMap["ri".as_str()] as f64), m["aa".as_str()], (ri as f64)))
+34 +                     return node(String::from("R"), node(String::from("B"), (leleMap["le".as_str()] as f64), leleMap["aa".as_str()], leleMap["ri".as_str()] as f64), leMap["aa".as_str()], node(String::from("B"), (leMap["ri".as_str()] as f64), m["aa".as_str()], (ri as f64)))
+   |
+
+warning: unnecessary parentheses around function argument
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/algebraic-data-types.rs:34:213
+   |
+34 | ...64)), leMap["aa".as_str()], node(String::from("B"), (leMap["ri".as_str()] as f64), m["aa".as_str()], (ri as f64)))
+   |                                                        ^                           ^
+   |
+help: remove these parentheses
+   |
+34 -                     return node(String::from("R"), node(String::from("B"), (leleMap["le".as_str()] as f64), leleMap["aa".as_str()], (leleMap["ri".as_str()] as f64)), leMap["aa".as_str()], node(String::from("B"), (leMap["ri".as_str()] as f64), m["aa".as_str()], (ri as f64)))
+34 +                     return node(String::from("R"), node(String::from("B"), (leleMap["le".as_str()] as f64), leleMap["aa".as_str()], (leleMap["ri".as_str()] as f64)), leMap["aa".as_str()], node(String::from("B"), leMap["ri".as_str()] as f64, m["aa".as_str()], (ri as f64)))
+   |
+
+warning: unnecessary parentheses around function argument
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/algebraic-data-types.rs:34:262
+   |
+34 | ...:from("B"), (leMap["ri".as_str()] as f64), m["aa".as_str()], (ri as f64)))
+   |                                                                 ^         ^
+   |
+help: remove these parentheses
+   |
+34 -                     return node(String::from("R"), node(String::from("B"), (leleMap["le".as_str()] as f64), leleMap["aa".as_str()], (leleMap["ri".as_str()] as f64)), leMap["aa".as_str()], node(String::from("B"), (leMap["ri".as_str()] as f64), m["aa".as_str()], (ri as f64)))
+34 +                     return node(String::from("R"), node(String::from("B"), (leleMap["le".as_str()] as f64), leleMap["aa".as_str()], (leleMap["ri".as_str()] as f64)), leMap["aa".as_str()], node(String::from("B"), (leMap["ri".as_str()] as f64), m["aa".as_str()], ri as f64))
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/algebraic-data-types.rs:38:16
+   |
+38 |             if (leri != Default::default()) {
+   |                ^                          ^
+   |
+help: remove these parentheses
+   |
+38 -             if (leri != Default::default()) {
+38 +             if leri != Default::default() {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/algebraic-data-types.rs:40:20
+   |
+40 |                 if (leriMap["cl".as_str()] == "R") {
+   |                    ^                             ^
+   |
+help: remove these parentheses
+   |
+40 -                 if (leriMap["cl".as_str()] == "R") {
+40 +                 if leriMap["cl".as_str()] == "R" {
+   |
+
+warning: unnecessary parentheses around function argument
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/algebraic-data-types.rs:41:76
+   |
+41 | ...   return node(String::from("R"), node(String::from("B"), (leMap["le".as_str()] as f64), leMap["aa".as_str()], (leriMap["le".as_str()]...
+   |                                                              ^                           ^
+   |
+help: remove these parentheses
+   |
+41 -                     return node(String::from("R"), node(String::from("B"), (leMap["le".as_str()] as f64), leMap["aa".as_str()], (leriMap["le".as_str()] as f64)), leriMap["aa".as_str()], node(String::from("B"), (leriMap["ri".as_str()] as f64), m["aa".as_str()], (ri as f64)))
+41 +                     return node(String::from("R"), node(String::from("B"), leMap["le".as_str()] as f64, leMap["aa".as_str()], (leriMap["le".as_str()] as f64)), leriMap["aa".as_str()], node(String::from("B"), (leriMap["ri".as_str()] as f64), m["aa".as_str()], (ri as f64)))
+   |
+
+warning: unnecessary parentheses around function argument
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/algebraic-data-types.rs:41:129
+   |
+41 | ...eMap["le".as_str()] as f64), leMap["aa".as_str()], (leriMap["le".as_str()] as f64)), leriMap["aa".as_str()], node(String::from("B"), (...
+   |                                                       ^                             ^
+   |
+help: remove these parentheses
+   |
+41 -                     return node(String::from("R"), node(String::from("B"), (leMap["le".as_str()] as f64), leMap["aa".as_str()], (leriMap["le".as_str()] as f64)), leriMap["aa".as_str()], node(String::from("B"), (leriMap["ri".as_str()] as f64), m["aa".as_str()], (ri as f64)))
+41 +                     return node(String::from("R"), node(String::from("B"), (leMap["le".as_str()] as f64), leMap["aa".as_str()], leriMap["le".as_str()] as f64), leriMap["aa".as_str()], node(String::from("B"), (leriMap["ri".as_str()] as f64), m["aa".as_str()], (ri as f64)))
+   |
+
+warning: unnecessary parentheses around function argument
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/algebraic-data-types.rs:41:211
+   |
+41 | ...), leriMap["aa".as_str()], node(String::from("B"), (leriMap["ri".as_str()] as f64), m["aa".as_str()], (ri as f64)))
+   |                                                       ^                             ^
+   |
+help: remove these parentheses
+   |
+41 -                     return node(String::from("R"), node(String::from("B"), (leMap["le".as_str()] as f64), leMap["aa".as_str()], (leriMap["le".as_str()] as f64)), leriMap["aa".as_str()], node(String::from("B"), (leriMap["ri".as_str()] as f64), m["aa".as_str()], (ri as f64)))
+41 +                     return node(String::from("R"), node(String::from("B"), (leMap["le".as_str()] as f64), leMap["aa".as_str()], (leriMap["le".as_str()] as f64)), leriMap["aa".as_str()], node(String::from("B"), leriMap["ri".as_str()] as f64, m["aa".as_str()], (ri as f64)))
+   |
+
+warning: unnecessary parentheses around function argument
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/algebraic-data-types.rs:41:262
+   |
+41 | ...rom("B"), (leriMap["ri".as_str()] as f64), m["aa".as_str()], (ri as f64)))
+   |                                                                 ^         ^
+   |
+help: remove these parentheses
+   |
+41 -                     return node(String::from("R"), node(String::from("B"), (leMap["le".as_str()] as f64), leMap["aa".as_str()], (leriMap["le".as_str()] as f64)), leriMap["aa".as_str()], node(String::from("B"), (leriMap["ri".as_str()] as f64), m["aa".as_str()], (ri as f64)))
+41 +                     return node(String::from("R"), node(String::from("B"), (leMap["le".as_str()] as f64), leMap["aa".as_str()], (leriMap["le".as_str()] as f64)), leriMap["aa".as_str()], node(String::from("B"), (leriMap["ri".as_str()] as f64), m["aa".as_str()], ri as f64))
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/algebraic-data-types.rs:46:8
+   |
+46 |     if (ri != Default::default()) {
+   |        ^                        ^
+   |
+help: remove these parentheses
+   |
+46 -     if (ri != Default::default()) {
+46 +     if ri != Default::default() {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/algebraic-data-types.rs:48:12
+   |
+48 |         if (riMap["cl".as_str()] == "R") {
+   |            ^                           ^
+   |
+help: remove these parentheses
+   |
+48 -         if (riMap["cl".as_str()] == "R") {
+48 +         if riMap["cl".as_str()] == "R" {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/algebraic-data-types.rs:50:16
+   |
+50 |             if (rile != Default::default()) {
+   |                ^                          ^
+   |
+help: remove these parentheses
+   |
+50 -             if (rile != Default::default()) {
+50 +             if rile != Default::default() {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/algebraic-data-types.rs:52:20
+   |
+52 |                 if (rileMap["cl".as_str()] == "R") {
+   |                    ^                             ^
+   |
+help: remove these parentheses
+   |
+52 -                 if (rileMap["cl".as_str()] == "R") {
+52 +                 if rileMap["cl".as_str()] == "R" {
+   |
+
+warning: unnecessary parentheses around function argument
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/algebraic-data-types.rs:53:76
+   |
+53 | ...   return node(String::from("R"), node(String::from("B"), (m["le".as_str()] as f64), m["aa".as_str()], (rileMap["le".as_str()] as f64)...
+   |                                                              ^                       ^
+   |
+help: remove these parentheses
+   |
+53 -                     return node(String::from("R"), node(String::from("B"), (m["le".as_str()] as f64), m["aa".as_str()], (rileMap["le".as_str()] as f64)), rileMap["aa".as_str()], node(String::from("B"), (rileMap["ri".as_str()] as f64), riMap["aa".as_str()], (riMap["ri".as_str()] as f64)))
+53 +                     return node(String::from("R"), node(String::from("B"), m["le".as_str()] as f64, m["aa".as_str()], (rileMap["le".as_str()] as f64)), rileMap["aa".as_str()], node(String::from("B"), (rileMap["ri".as_str()] as f64), riMap["aa".as_str()], (riMap["ri".as_str()] as f64)))
+   |
+
+warning: unnecessary parentheses around function argument
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/algebraic-data-types.rs:53:121
+   |
+53 | ..."B"), (m["le".as_str()] as f64), m["aa".as_str()], (rileMap["le".as_str()] as f64)), rileMap["aa".as_str()], node(String::from("B"), (...
+   |                                                       ^                             ^
+   |
+help: remove these parentheses
+   |
+53 -                     return node(String::from("R"), node(String::from("B"), (m["le".as_str()] as f64), m["aa".as_str()], (rileMap["le".as_str()] as f64)), rileMap["aa".as_str()], node(String::from("B"), (rileMap["ri".as_str()] as f64), riMap["aa".as_str()], (riMap["ri".as_str()] as f64)))
+53 +                     return node(String::from("R"), node(String::from("B"), (m["le".as_str()] as f64), m["aa".as_str()], rileMap["le".as_str()] as f64), rileMap["aa".as_str()], node(String::from("B"), (rileMap["ri".as_str()] as f64), riMap["aa".as_str()], (riMap["ri".as_str()] as f64)))
+   |
+
+warning: unnecessary parentheses around function argument
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/algebraic-data-types.rs:53:203
+   |
+53 | ...), rileMap["aa".as_str()], node(String::from("B"), (rileMap["ri".as_str()] as f64), riMap["aa".as_str()], (riMap["ri".as_str()] as f64)))
+   |                                                       ^                             ^
+   |
+help: remove these parentheses
+   |
+53 -                     return node(String::from("R"), node(String::from("B"), (m["le".as_str()] as f64), m["aa".as_str()], (rileMap["le".as_str()] as f64)), rileMap["aa".as_str()], node(String::from("B"), (rileMap["ri".as_str()] as f64), riMap["aa".as_str()], (riMap["ri".as_str()] as f64)))
+53 +                     return node(String::from("R"), node(String::from("B"), (m["le".as_str()] as f64), m["aa".as_str()], (rileMap["le".as_str()] as f64)), rileMap["aa".as_str()], node(String::from("B"), rileMap["ri".as_str()] as f64, riMap["aa".as_str()], (riMap["ri".as_str()] as f64)))
+   |
+
+warning: unnecessary parentheses around function argument
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/algebraic-data-types.rs:53:258
+   |
+53 | ...leMap["ri".as_str()] as f64), riMap["aa".as_str()], (riMap["ri".as_str()] as f64)))
+   |                                                        ^                           ^
+   |
+help: remove these parentheses
+   |
+53 -                     return node(String::from("R"), node(String::from("B"), (m["le".as_str()] as f64), m["aa".as_str()], (rileMap["le".as_str()] as f64)), rileMap["aa".as_str()], node(String::from("B"), (rileMap["ri".as_str()] as f64), riMap["aa".as_str()], (riMap["ri".as_str()] as f64)))
+53 +                     return node(String::from("R"), node(String::from("B"), (m["le".as_str()] as f64), m["aa".as_str()], (rileMap["le".as_str()] as f64)), rileMap["aa".as_str()], node(String::from("B"), (rileMap["ri".as_str()] as f64), riMap["aa".as_str()], riMap["ri".as_str()] as f64))
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/algebraic-data-types.rs:57:16
+   |
+57 |             if (riri != Default::default()) {
+   |                ^                          ^
+   |
+help: remove these parentheses
+   |
+57 -             if (riri != Default::default()) {
+57 +             if riri != Default::default() {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/algebraic-data-types.rs:59:20
+   |
+59 |                 if (ririMap["cl".as_str()] == "R") {
+   |                    ^                             ^
+   |
+help: remove these parentheses
+   |
+59 -                 if (ririMap["cl".as_str()] == "R") {
+59 +                 if ririMap["cl".as_str()] == "R" {
+   |
+
+warning: unnecessary parentheses around function argument
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/algebraic-data-types.rs:60:76
+   |
+60 | ...   return node(String::from("R"), node(String::from("B"), (m["le".as_str()] as f64), m["aa".as_str()], (riMap["le".as_str()] as f64)),...
+   |                                                              ^                       ^
+   |
+help: remove these parentheses
+   |
+60 -                     return node(String::from("R"), node(String::from("B"), (m["le".as_str()] as f64), m["aa".as_str()], (riMap["le".as_str()] as f64)), riMap["aa".as_str()], node(String::from("B"), (ririMap["le".as_str()] as f64), ririMap["aa".as_str()], (ririMap["ri".as_str()] as f64)))
+60 +                     return node(String::from("R"), node(String::from("B"), m["le".as_str()] as f64, m["aa".as_str()], (riMap["le".as_str()] as f64)), riMap["aa".as_str()], node(String::from("B"), (ririMap["le".as_str()] as f64), ririMap["aa".as_str()], (ririMap["ri".as_str()] as f64)))
+   |
+
+warning: unnecessary parentheses around function argument
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/algebraic-data-types.rs:60:121
+   |
+60 | ...("B"), (m["le".as_str()] as f64), m["aa".as_str()], (riMap["le".as_str()] as f64)), riMap["aa".as_str()], node(String::from("B"), (rir...
+   |                                                        ^                           ^
+   |
+help: remove these parentheses
+   |
+60 -                     return node(String::from("R"), node(String::from("B"), (m["le".as_str()] as f64), m["aa".as_str()], (riMap["le".as_str()] as f64)), riMap["aa".as_str()], node(String::from("B"), (ririMap["le".as_str()] as f64), ririMap["aa".as_str()], (ririMap["ri".as_str()] as f64)))
+60 +                     return node(String::from("R"), node(String::from("B"), (m["le".as_str()] as f64), m["aa".as_str()], riMap["le".as_str()] as f64), riMap["aa".as_str()], node(String::from("B"), (ririMap["le".as_str()] as f64), ririMap["aa".as_str()], (ririMap["ri".as_str()] as f64)))
+   |
+
+warning: unnecessary parentheses around function argument
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/algebraic-data-types.rs:60:199
+   |
+60 | ...4)), riMap["aa".as_str()], node(String::from("B"), (ririMap["le".as_str()] as f64), ririMap["aa".as_str()], (ririMap["ri".as_str()] as...
+   |                                                       ^                             ^
+   |
+help: remove these parentheses
+   |
+60 -                     return node(String::from("R"), node(String::from("B"), (m["le".as_str()] as f64), m["aa".as_str()], (riMap["le".as_str()] as f64)), riMap["aa".as_str()], node(String::from("B"), (ririMap["le".as_str()] as f64), ririMap["aa".as_str()], (ririMap["ri".as_str()] as f64)))
+60 +                     return node(String::from("R"), node(String::from("B"), (m["le".as_str()] as f64), m["aa".as_str()], (riMap["le".as_str()] as f64)), riMap["aa".as_str()], node(String::from("B"), ririMap["le".as_str()] as f64, ririMap["aa".as_str()], (ririMap["ri".as_str()] as f64)))
+   |
+
+warning: unnecessary parentheses around function argument
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/algebraic-data-types.rs:60:256
+   |
+60 | ...ap["le".as_str()] as f64), ririMap["aa".as_str()], (ririMap["ri".as_str()] as f64)))
+   |                                                       ^                             ^
+   |
+help: remove these parentheses
+   |
+60 -                     return node(String::from("R"), node(String::from("B"), (m["le".as_str()] as f64), m["aa".as_str()], (riMap["le".as_str()] as f64)), riMap["aa".as_str()], node(String::from("B"), (ririMap["le".as_str()] as f64), ririMap["aa".as_str()], (ririMap["ri".as_str()] as f64)))
+60 +                     return node(String::from("R"), node(String::from("B"), (m["le".as_str()] as f64), m["aa".as_str()], (riMap["le".as_str()] as f64)), riMap["aa".as_str()], node(String::from("B"), (ririMap["le".as_str()] as f64), ririMap["aa".as_str()], ririMap["ri".as_str()] as f64))
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/algebraic-data-types.rs:69:8
+   |
+69 |     if (tr == Default::default()) {
+   |        ^                        ^
+   |
+help: remove these parentheses
+   |
+69 -     if (tr == Default::default()) {
+69 +     if tr == Default::default() {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/algebraic-data-types.rs:72:8
+   |
+72 |     if (x < tr["aa".as_str()]) {
+   |        ^                     ^
+   |
+help: remove these parentheses
+   |
+72 -     if (x < tr["aa".as_str()]) {
+72 +     if x < tr["aa".as_str()] {
+   |
+
+warning: unnecessary parentheses around function argument
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/algebraic-data-types.rs:73:115
+   |
+73 | ...ns((tr["le".as_str()] as f64), x), tr["aa".as_str()], (tr["ri".as_str()] as f64)))
+   |                                                          ^                        ^
+   |
+help: remove these parentheses
+   |
+73 -         return balance(node(tr["cl".as_str()].to_string(), ins((tr["le".as_str()] as f64), x), tr["aa".as_str()], (tr["ri".as_str()] as f64)))
+73 +         return balance(node(tr["cl".as_str()].to_string(), ins((tr["le".as_str()] as f64), x), tr["aa".as_str()], tr["ri".as_str()] as f64))
+   |
+
+warning: unnecessary parentheses around function argument
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/algebraic-data-types.rs:73:64
+   |
+73 | ...   return balance(node(tr["cl".as_str()].to_string(), ins((tr["le".as_str()] as f64), x), tr["aa".as_str()], (tr["ri".as_str()] as f64)))
+   |                                                              ^                        ^
+   |
+help: remove these parentheses
+   |
+73 -         return balance(node(tr["cl".as_str()].to_string(), ins((tr["le".as_str()] as f64), x), tr["aa".as_str()], (tr["ri".as_str()] as f64)))
+73 +         return balance(node(tr["cl".as_str()].to_string(), ins(tr["le".as_str()] as f64, x), tr["aa".as_str()], (tr["ri".as_str()] as f64)))
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/algebraic-data-types.rs:75:8
+   |
+75 |     if (x > tr["aa".as_str()]) {
+   |        ^                     ^
+   |
+help: remove these parentheses
+   |
+75 -     if (x > tr["aa".as_str()]) {
+75 +     if x > tr["aa".as_str()] {
+   |
+
+warning: unnecessary parentheses around function argument
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/algebraic-data-types.rs:76:60
+   |
+76 | ...   return balance(node(tr["cl".as_str()].to_string(), (tr["le".as_str()] as f64), tr["aa".as_str()], ins((tr["ri".as_str()] as f64), x)))
+   |                                                          ^                        ^
+   |
+help: remove these parentheses
+   |
+76 -         return balance(node(tr["cl".as_str()].to_string(), (tr["le".as_str()] as f64), tr["aa".as_str()], ins((tr["ri".as_str()] as f64), x)))
+76 +         return balance(node(tr["cl".as_str()].to_string(), tr["le".as_str()] as f64, tr["aa".as_str()], ins((tr["ri".as_str()] as f64), x)))
+   |
+
+warning: unnecessary parentheses around function argument
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/algebraic-data-types.rs:76:111
+   |
+76 | ...   return balance(node(tr["cl".as_str()].to_string(), (tr["le".as_str()] as f64), tr["aa".as_str()], ins((tr["ri".as_str()] as f64), x)))
+   |                                                                                                             ^                        ^
+   |
+help: remove these parentheses
+   |
+76 -         return balance(node(tr["cl".as_str()].to_string(), (tr["le".as_str()] as f64), tr["aa".as_str()], ins((tr["ri".as_str()] as f64), x)))
+76 +         return balance(node(tr["cl".as_str()].to_string(), (tr["le".as_str()] as f64), tr["aa".as_str()], ins(tr["ri".as_str()] as f64, x)))
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/algebraic-data-types.rs:83:8
+   |
+83 |     if (t == Default::default()) {
+   |        ^                       ^
+   |
+help: remove these parentheses
+   |
+83 -     if (t == Default::default()) {
+83 +     if t == Default::default() {
+   |
+
+warning: unnecessary parentheses around function argument
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/algebraic-data-types.rs:87:36
+   |
+87 |     return node(String::from("B"), (m["le".as_str()] as f64), m["aa".as_str()], (m["ri".as_str()] as f64))
+   |                                    ^                       ^
+   |
+help: remove these parentheses
+   |
+87 -     return node(String::from("B"), (m["le".as_str()] as f64), m["aa".as_str()], (m["ri".as_str()] as f64))
+87 +     return node(String::from("B"), m["le".as_str()] as f64, m["aa".as_str()], (m["ri".as_str()] as f64))
+   |
+
+warning: unnecessary parentheses around function argument
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/algebraic-data-types.rs:87:81
+   |
+87 |     return node(String::from("B"), (m["le".as_str()] as f64), m["aa".as_str()], (m["ri".as_str()] as f64))
+   |                                                                                 ^                       ^
+   |
+help: remove these parentheses
+   |
+87 -     return node(String::from("B"), (m["le".as_str()] as f64), m["aa".as_str()], (m["ri".as_str()] as f64))
+87 +     return node(String::from("B"), (m["le".as_str()] as f64), m["aa".as_str()], m["ri".as_str()] as f64)
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/algebraic-data-types.rs:94:15
+   |
+94 |         while (g_i <= 16) {
+   |               ^         ^
+   |
+help: remove these parentheses
+   |
+94 -         while (g_i <= 16) {
+94 +         while g_i <= 16 {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/algebraic-data-types.rs:96:19
+   |
+96 |             g_i = (g_i + 1);
+   |                   ^       ^
+   |
+help: remove these parentheses
+   |
+96 -             g_i = (g_i + 1);
+96 +             g_i = g_i + 1;
+   |
+
+error[E0308]: mismatched types
+ --> /workspace/mochi/tests/rosetta/transpiler/Rust/algebraic-data-types.rs:6:74
+  |
+6 |     return HashMap::from([(String::from("cl"), cl), (String::from("le"), le), (String::from("aa"), aa), (String::from("ri"), ri)])
+  |                                                                          ^^- help: try using a conversion method: `.to_string()`
+  |                                                                          |
+  |                                                                          expected `String`, found `f64`
+
+error[E0308]: mismatched types
+ --> /workspace/mochi/tests/rosetta/transpiler/Rust/algebraic-data-types.rs:6:100
+  |
+6 |     return HashMap::from([(String::from("cl"), cl), (String::from("le"), le), (String::from("aa"), aa), (String::from("ri"), ri)])
+  |                                                                                                    ^^- help: try using a conversion method: `.to_string()`
+  |                                                                                                    |
+  |                                                                                                    expected `String`, found `i64`
+
+error[E0308]: mismatched types
+ --> /workspace/mochi/tests/rosetta/transpiler/Rust/algebraic-data-types.rs:6:126
+  |
+6 |     return HashMap::from([(String::from("cl"), cl), (String::from("le"), le), (String::from("aa"), aa), (String::from("ri"), ri)])
+  |                                                                                                                              ^^- help: try using a conversion method: `.to_string()`
+  |                                                                                                                              |
+  |                                                                                                                              expected `String`, found `f64`
+
+error[E0658]: use of unstable library feature `str_as_str`
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/algebraic-data-types.rs:14:153
+   |
+14 | ...", format!("{}{}", format!("{}{}", format!("{}{}", "T(", m["cl".as_str()]), ", "), treeString((m["le".as_str()] as f64))), ", "), m["a...
+   |                                                                    ^^^^^^
+   |
+   = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0608]: cannot index into a value of type `f64`
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/algebraic-data-types.rs:14:147
+   |
+14 | ...}", format!("{}{}", format!("{}{}", format!("{}{}", "T(", m["cl".as_str()]), ", "), treeString((m["le".as_str()] as f64))), ", "), m["...
+   |                                                               ^^^^^^^^^^^^^^^
+
+error[E0658]: use of unstable library feature `str_as_str`
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/algebraic-data-types.rs:14:191
+   |
+14 | ...mat!("{}{}", "T(", m["cl".as_str()]), ", "), treeString((m["le".as_str()] as f64))), ", "), m["aa".as_str()].to_string()), ", "), tree...
+   |                                                                    ^^^^^^
+   |
+   = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0608]: cannot index into a value of type `f64`
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/algebraic-data-types.rs:14:185
+   |
+14 | ...rmat!("{}{}", "T(", m["cl".as_str()]), ", "), treeString((m["le".as_str()] as f64))), ", "), m["aa".as_str()].to_string()), ", "), tre...
+   |                                                               ^^^^^^^^^^^^^^^
+
+error[E0658]: use of unstable library feature `str_as_str`
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/algebraic-data-types.rs:14:226
+   |
+14 | ...), ", "), treeString((m["le".as_str()] as f64))), ", "), m["aa".as_str()].to_string()), ", "), treeString((m["ri".as_str()] as f64))),...
+   |                                                                    ^^^^^^
+   |
+   = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0608]: cannot index into a value of type `f64`
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/algebraic-data-types.rs:14:220
+   |
+14 | ...]), ", "), treeString((m["le".as_str()] as f64))), ", "), m["aa".as_str()].to_string()), ", "), treeString((m["ri".as_str()] as f64)))...
+   |                                                               ^^^^^^^^^^^^^^^
+
+error[E0658]: use of unstable library feature `str_as_str`
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/algebraic-data-types.rs:14:276
+   |
+14 | ...", "), m["aa".as_str()].to_string()), ", "), treeString((m["ri".as_str()] as f64))), ")").clone()
+   |                                                                    ^^^^^^
+   |
+   = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0608]: cannot index into a value of type `f64`
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/algebraic-data-types.rs:14:270
+   |
+14 | ... ", "), m["aa".as_str()].to_string()), ", "), treeString((m["ri".as_str()] as f64))), ")").clone()
+   |                                                               ^^^^^^^^^^^^^^^
+
+error[E0658]: use of unstable library feature `str_as_str`
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/algebraic-data-types.rs:22:16
+   |
+22 |     if (m["cl".as_str()] != "B") {
+   |                ^^^^^^
+   |
+   = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0608]: cannot index into a value of type `f64`
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/algebraic-data-types.rs:22:10
+   |
+22 |     if (m["cl".as_str()] != "B") {
+   |          ^^^^^^^^^^^^^^^
+
+error[E0658]: use of unstable library feature `str_as_str`
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/algebraic-data-types.rs:25:26
+   |
+25 |     let le: i64 = m["le".as_str()];
+   |                          ^^^^^^
+   |
+   = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0608]: cannot index into a value of type `f64`
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/algebraic-data-types.rs:25:20
+   |
+25 |     let le: i64 = m["le".as_str()];
+   |                    ^^^^^^^^^^^^^^^
+
+error[E0658]: use of unstable library feature `str_as_str`
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/algebraic-data-types.rs:26:26
+   |
+26 |     let ri: i64 = m["ri".as_str()];
+   |                          ^^^^^^
+   |
+   = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0608]: cannot index into a value of type `f64`
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/algebraic-data-types.rs:26:20
+   |
+26 |     let ri: i64 = m["ri".as_str()];
+   |                    ^^^^^^^^^^^^^^^
+
+error[E0658]: use of unstable library feature `str_as_str`
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/algebraic-data-types.rs:29:24
+   |
+29 |         if (leMap["cl".as_str()] == "R") {
+   |                        ^^^^^^
+   |
+   = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0658]: use of unstable library feature `str_as_str`
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/algebraic-data-types.rs:30:40
+   |
+30 |             let lele: i64 = leMap["le".as_str()];
+   |                                        ^^^^^^
+   |
+   = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0658]: use of unstable library feature `str_as_str`
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/algebraic-data-types.rs:33:34
+   |
+33 |                 if (leleMap["cl".as_str()] == "R") {
+   |                                  ^^^^^^
+   |
+   = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0658]: use of unstable library feature `str_as_str`
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/algebraic-data-types.rs:34:90
+   |
+34 | ...   return node(String::from("R"), node(String::from("B"), (leleMap["le".as_str()] as f64), leleMap["aa".as_str()], (leleMap["ri".as_st...
+   |                                                                            ^^^^^^
+   |
+   = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0658]: use of unstable library feature `str_as_str`
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/algebraic-data-types.rs:34:122
+   |
+34 | ...   return node(String::from("R"), node(String::from("B"), (leleMap["le".as_str()] as f64), leleMap["aa".as_str()], (leleMap["ri".as_st...
+   |                                                                                                            ^^^^^^
+   |
+   = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0658]: use of unstable library feature `str_as_str`
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/algebraic-data-types.rs:34:147
+   |
+34 | ...p["le".as_str()] as f64), leleMap["aa".as_str()], (leleMap["ri".as_str()] as f64)), leMap["aa".as_str()], node(String::from("B"), (leM...
+   |                                                                    ^^^^^^
+   |
+   = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0658]: use of unstable library feature `str_as_str`
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/algebraic-data-types.rs:34:178
+   |
+34 | ...ap["aa".as_str()], (leleMap["ri".as_str()] as f64)), leMap["aa".as_str()], node(String::from("B"), (leMap["ri".as_str()] as f64), m["a...
+   |                                                                    ^^^^^^
+   |
+   = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0658]: use of unstable library feature `str_as_str`
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/algebraic-data-types.rs:34:225
+   |
+34 | ...64)), leMap["aa".as_str()], node(String::from("B"), (leMap["ri".as_str()] as f64), m["aa".as_str()], (ri as f64)))
+   |                                                                    ^^^^^^
+   |
+   = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0658]: use of unstable library feature `str_as_str`
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/algebraic-data-types.rs:34:251
+   |
+34 | ..., node(String::from("B"), (leMap["ri".as_str()] as f64), m["aa".as_str()], (ri as f64)))
+   |                                                                    ^^^^^^
+   |
+   = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0608]: cannot index into a value of type `f64`
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/algebraic-data-types.rs:34:245
+   |
+34 | ...], node(String::from("B"), (leMap["ri".as_str()] as f64), m["aa".as_str()], (ri as f64)))
+   |                                                               ^^^^^^^^^^^^^^^
+
+error[E0658]: use of unstable library feature `str_as_str`
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/algebraic-data-types.rs:37:40
+   |
+37 |             let leri: i64 = leMap["ri".as_str()];
+   |                                        ^^^^^^
+   |
+   = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0658]: use of unstable library feature `str_as_str`
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/algebraic-data-types.rs:40:34
+   |
+40 |                 if (leriMap["cl".as_str()] == "R") {
+   |                                  ^^^^^^
+   |
+   = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0658]: use of unstable library feature `str_as_str`
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/algebraic-data-types.rs:41:88
+   |
+41 | ...   return node(String::from("R"), node(String::from("B"), (leMap["le".as_str()] as f64), leMap["aa".as_str()], (leriMap["le".as_str()]...
+   |                                                                          ^^^^^^
+   |
+   = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0658]: use of unstable library feature `str_as_str`
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/algebraic-data-types.rs:41:118
+   |
+41 | ...   return node(String::from("R"), node(String::from("B"), (leMap["le".as_str()] as f64), leMap["aa".as_str()], (leriMap["le".as_str()]...
+   |                                                                                                        ^^^^^^
+   |
+   = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0658]: use of unstable library feature `str_as_str`
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/algebraic-data-types.rs:41:143
+   |
+41 | ...   return node(String::from("R"), node(String::from("B"), (leMap["le".as_str()] as f64), leMap["aa".as_str()], (leriMap["le".as_str()]...
+   |                                                                                                                                 ^^^^^^
+   |
+   = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0658]: use of unstable library feature `str_as_str`
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/algebraic-data-types.rs:41:176
+   |
+41 | ...["aa".as_str()], (leriMap["le".as_str()] as f64)), leriMap["aa".as_str()], node(String::from("B"), (leriMap["ri".as_str()] as f64), m[...
+   |                                                                    ^^^^^^
+   |
+   = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0658]: use of unstable library feature `str_as_str`
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/algebraic-data-types.rs:41:225
+   |
+41 | ..., leriMap["aa".as_str()], node(String::from("B"), (leriMap["ri".as_str()] as f64), m["aa".as_str()], (ri as f64)))
+   |                                                                    ^^^^^^
+   |
+   = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0658]: use of unstable library feature `str_as_str`
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/algebraic-data-types.rs:41:251
+   |
+41 | ...node(String::from("B"), (leriMap["ri".as_str()] as f64), m["aa".as_str()], (ri as f64)))
+   |                                                                    ^^^^^^
+   |
+   = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0608]: cannot index into a value of type `f64`
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/algebraic-data-types.rs:41:245
+   |
+41 | ... node(String::from("B"), (leriMap["ri".as_str()] as f64), m["aa".as_str()], (ri as f64)))
+   |                                                               ^^^^^^^^^^^^^^^
+
+error[E0658]: use of unstable library feature `str_as_str`
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/algebraic-data-types.rs:48:24
+   |
+48 |         if (riMap["cl".as_str()] == "R") {
+   |                        ^^^^^^
+   |
+   = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0658]: use of unstable library feature `str_as_str`
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/algebraic-data-types.rs:49:40
+   |
+49 |             let rile: i64 = riMap["le".as_str()];
+   |                                        ^^^^^^
+   |
+   = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0658]: use of unstable library feature `str_as_str`
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/algebraic-data-types.rs:52:34
+   |
+52 |                 if (rileMap["cl".as_str()] == "R") {
+   |                                  ^^^^^^
+   |
+   = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0658]: use of unstable library feature `str_as_str`
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/algebraic-data-types.rs:53:84
+   |
+53 | ...   return node(String::from("R"), node(String::from("B"), (m["le".as_str()] as f64), m["aa".as_str()], (rileMap["le".as_str()] as f64)...
+   |                                                                      ^^^^^^
+   |
+   = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0608]: cannot index into a value of type `f64`
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/algebraic-data-types.rs:53:78
+   |
+53 | ...   return node(String::from("R"), node(String::from("B"), (m["le".as_str()] as f64), m["aa".as_str()], (rileMap["le".as_str()] as f64)...
+   |                                                                ^^^^^^^^^^^^^^^
+
+error[E0658]: use of unstable library feature `str_as_str`
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/algebraic-data-types.rs:53:110
+   |
+53 | ...   return node(String::from("R"), node(String::from("B"), (m["le".as_str()] as f64), m["aa".as_str()], (rileMap["le".as_str()] as f64)...
+   |                                                                                                ^^^^^^
+   |
+   = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0608]: cannot index into a value of type `f64`
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/algebraic-data-types.rs:53:104
+   |
+53 | ...   return node(String::from("R"), node(String::from("B"), (m["le".as_str()] as f64), m["aa".as_str()], (rileMap["le".as_str()] as f64)...
+   |                                                                                          ^^^^^^^^^^^^^^^
+
+error[E0658]: use of unstable library feature `str_as_str`
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/algebraic-data-types.rs:53:135
+   |
+53 | ...   return node(String::from("R"), node(String::from("B"), (m["le".as_str()] as f64), m["aa".as_str()], (rileMap["le".as_str()] as f64)...
+   |                                                                                                                         ^^^^^^
+   |
+   = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0658]: use of unstable library feature `str_as_str`
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/algebraic-data-types.rs:53:168
+   |
+53 | ...["aa".as_str()], (rileMap["le".as_str()] as f64)), rileMap["aa".as_str()], node(String::from("B"), (rileMap["ri".as_str()] as f64), ri...
+   |                                                                    ^^^^^^
+   |
+   = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0658]: use of unstable library feature `str_as_str`
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/algebraic-data-types.rs:53:217
+   |
+53 | ..., rileMap["aa".as_str()], node(String::from("B"), (rileMap["ri".as_str()] as f64), riMap["aa".as_str()], (riMap["ri".as_str()] as f64)))
+   |                                                                    ^^^^^^
+   |
+   = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0658]: use of unstable library feature `str_as_str`
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/algebraic-data-types.rs:53:247
+   |
+53 | ...(String::from("B"), (rileMap["ri".as_str()] as f64), riMap["aa".as_str()], (riMap["ri".as_str()] as f64)))
+   |                                                                    ^^^^^^
+   |
+   = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0658]: use of unstable library feature `str_as_str`
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/algebraic-data-types.rs:53:270
+   |
+53 | ...leMap["ri".as_str()] as f64), riMap["aa".as_str()], (riMap["ri".as_str()] as f64)))
+   |                                                                    ^^^^^^
+   |
+   = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0658]: use of unstable library feature `str_as_str`
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/algebraic-data-types.rs:56:40
+   |
+56 |             let riri: i64 = riMap["ri".as_str()];
+   |                                        ^^^^^^
+   |
+   = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0658]: use of unstable library feature `str_as_str`
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/algebraic-data-types.rs:59:34
+   |
+59 |                 if (ririMap["cl".as_str()] == "R") {
+   |                                  ^^^^^^
+   |
+   = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0658]: use of unstable library feature `str_as_str`
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/algebraic-data-types.rs:60:84
+   |
+60 | ...   return node(String::from("R"), node(String::from("B"), (m["le".as_str()] as f64), m["aa".as_str()], (riMap["le".as_str()] as f64)),...
+   |                                                                      ^^^^^^
+   |
+   = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0608]: cannot index into a value of type `f64`
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/algebraic-data-types.rs:60:78
+   |
+60 | ...   return node(String::from("R"), node(String::from("B"), (m["le".as_str()] as f64), m["aa".as_str()], (riMap["le".as_str()] as f64)),...
+   |                                                                ^^^^^^^^^^^^^^^
+
+error[E0658]: use of unstable library feature `str_as_str`
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/algebraic-data-types.rs:60:110
+   |
+60 | ...   return node(String::from("R"), node(String::from("B"), (m["le".as_str()] as f64), m["aa".as_str()], (riMap["le".as_str()] as f64)),...
+   |                                                                                                ^^^^^^
+   |
+   = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0608]: cannot index into a value of type `f64`
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/algebraic-data-types.rs:60:104
+   |
+60 | ...   return node(String::from("R"), node(String::from("B"), (m["le".as_str()] as f64), m["aa".as_str()], (riMap["le".as_str()] as f64)),...
+   |                                                                                          ^^^^^^^^^^^^^^^
+
+error[E0658]: use of unstable library feature `str_as_str`
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/algebraic-data-types.rs:60:133
+   |
+60 | ...   return node(String::from("R"), node(String::from("B"), (m["le".as_str()] as f64), m["aa".as_str()], (riMap["le".as_str()] as f64)),...
+   |                                                                                                                       ^^^^^^
+   |
+   = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0658]: use of unstable library feature `str_as_str`
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/algebraic-data-types.rs:60:164
+   |
+60 | ...), m["aa".as_str()], (riMap["le".as_str()] as f64)), riMap["aa".as_str()], node(String::from("B"), (ririMap["le".as_str()] as f64), ri...
+   |                                                                    ^^^^^^
+   |
+   = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0658]: use of unstable library feature `str_as_str`
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/algebraic-data-types.rs:60:213
+   |
+60 | ...)), riMap["aa".as_str()], node(String::from("B"), (ririMap["le".as_str()] as f64), ririMap["aa".as_str()], (ririMap["ri".as_str()] as ...
+   |                                                                    ^^^^^^
+   |
+   = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0658]: use of unstable library feature `str_as_str`
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/algebraic-data-types.rs:60:245
+   |
+60 | ...tring::from("B"), (ririMap["le".as_str()] as f64), ririMap["aa".as_str()], (ririMap["ri".as_str()] as f64)))
+   |                                                                    ^^^^^^
+   |
+   = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0658]: use of unstable library feature `str_as_str`
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/algebraic-data-types.rs:60:270
+   |
+60 | ...p["le".as_str()] as f64), ririMap["aa".as_str()], (ririMap["ri".as_str()] as f64)))
+   |                                                                    ^^^^^^
+   |
+   = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0658]: use of unstable library feature `str_as_str`
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/algebraic-data-types.rs:72:21
+   |
+72 |     if (x < tr["aa".as_str()]) {
+   |                     ^^^^^^
+   |
+   = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0608]: cannot index into a value of type `f64`
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/algebraic-data-types.rs:72:15
+   |
+72 |     if (x < tr["aa".as_str()]) {
+   |               ^^^^^^^^^^^^^^^
+
+error[E0658]: use of unstable library feature `str_as_str`
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/algebraic-data-types.rs:73:37
+   |
+73 | ...   return balance(node(tr["cl".as_str()].to_string(), ins((tr["le".as_str()] as f64), x), tr["aa".as_str()], (tr["ri".as_str()] as f64)))
+   |                                   ^^^^^^
+   |
+   = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0608]: cannot index into a value of type `f64`
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/algebraic-data-types.rs:73:31
+   |
+73 | ...   return balance(node(tr["cl".as_str()].to_string(), ins((tr["le".as_str()] as f64), x), tr["aa".as_str()], (tr["ri".as_str()] as f64)))
+   |                             ^^^^^^^^^^^^^^^
+
+error[E0658]: use of unstable library feature `str_as_str`
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/algebraic-data-types.rs:73:73
+   |
+73 | ...   return balance(node(tr["cl".as_str()].to_string(), ins((tr["le".as_str()] as f64), x), tr["aa".as_str()], (tr["ri".as_str()] as f64)))
+   |                                                                       ^^^^^^
+   |
+   = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0608]: cannot index into a value of type `f64`
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/algebraic-data-types.rs:73:67
+   |
+73 | ...   return balance(node(tr["cl".as_str()].to_string(), ins((tr["le".as_str()] as f64), x), tr["aa".as_str()], (tr["ri".as_str()] as f64)))
+   |                                                                 ^^^^^^^^^^^^^^^
+
+error[E0658]: use of unstable library feature `str_as_str`
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/algebraic-data-types.rs:73:104
+   |
+73 | ...   return balance(node(tr["cl".as_str()].to_string(), ins((tr["le".as_str()] as f64), x), tr["aa".as_str()], (tr["ri".as_str()] as f64)))
+   |                                                                                                      ^^^^^^
+   |
+   = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0608]: cannot index into a value of type `f64`
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/algebraic-data-types.rs:73:98
+   |
+73 | ...   return balance(node(tr["cl".as_str()].to_string(), ins((tr["le".as_str()] as f64), x), tr["aa".as_str()], (tr["ri".as_str()] as f64)))
+   |                                                                                                ^^^^^^^^^^^^^^^
+
+error[E0658]: use of unstable library feature `str_as_str`
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/algebraic-data-types.rs:73:124
+   |
+73 | ...   return balance(node(tr["cl".as_str()].to_string(), ins((tr["le".as_str()] as f64), x), tr["aa".as_str()], (tr["ri".as_str()] as f64)))
+   |                                                                                                                          ^^^^^^
+   |
+   = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0608]: cannot index into a value of type `f64`
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/algebraic-data-types.rs:73:118
+   |
+73 | ...   return balance(node(tr["cl".as_str()].to_string(), ins((tr["le".as_str()] as f64), x), tr["aa".as_str()], (tr["ri".as_str()] as f64)))
+   |                                                                                                                    ^^^^^^^^^^^^^^^
+
+error[E0658]: use of unstable library feature `str_as_str`
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/algebraic-data-types.rs:75:21
+   |
+75 |     if (x > tr["aa".as_str()]) {
+   |                     ^^^^^^
+   |
+   = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0608]: cannot index into a value of type `f64`
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/algebraic-data-types.rs:75:15
+   |
+75 |     if (x > tr["aa".as_str()]) {
+   |               ^^^^^^^^^^^^^^^
+
+error[E0658]: use of unstable library feature `str_as_str`
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/algebraic-data-types.rs:76:37
+   |
+76 | ...   return balance(node(tr["cl".as_str()].to_string(), (tr["le".as_str()] as f64), tr["aa".as_str()], ins((tr["ri".as_str()] as f64), x)))
+   |                                   ^^^^^^
+   |
+   = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0608]: cannot index into a value of type `f64`
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/algebraic-data-types.rs:76:31
+   |
+76 | ...   return balance(node(tr["cl".as_str()].to_string(), (tr["le".as_str()] as f64), tr["aa".as_str()], ins((tr["ri".as_str()] as f64), x)))
+   |                             ^^^^^^^^^^^^^^^
+
+error[E0658]: use of unstable library feature `str_as_str`
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/algebraic-data-types.rs:76:69
+   |
+76 | ...   return balance(node(tr["cl".as_str()].to_string(), (tr["le".as_str()] as f64), tr["aa".as_str()], ins((tr["ri".as_str()] as f64), x)))
+   |                                                                   ^^^^^^
+   |
+   = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0608]: cannot index into a value of type `f64`
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/algebraic-data-types.rs:76:63
+   |
+76 | ...   return balance(node(tr["cl".as_str()].to_string(), (tr["le".as_str()] as f64), tr["aa".as_str()], ins((tr["ri".as_str()] as f64), x)))
+   |                                                             ^^^^^^^^^^^^^^^
+
+error[E0658]: use of unstable library feature `str_as_str`
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/algebraic-data-types.rs:76:96
+   |
+76 | ...   return balance(node(tr["cl".as_str()].to_string(), (tr["le".as_str()] as f64), tr["aa".as_str()], ins((tr["ri".as_str()] as f64), x)))
+   |                                                                                              ^^^^^^
+   |
+   = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0608]: cannot index into a value of type `f64`
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/algebraic-data-types.rs:76:90
+   |
+76 | ...   return balance(node(tr["cl".as_str()].to_string(), (tr["le".as_str()] as f64), tr["aa".as_str()], ins((tr["ri".as_str()] as f64), x)))
+   |                                                                                        ^^^^^^^^^^^^^^^
+
+error[E0658]: use of unstable library feature `str_as_str`
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/algebraic-data-types.rs:76:120
+   |
+76 | ...   return balance(node(tr["cl".as_str()].to_string(), (tr["le".as_str()] as f64), tr["aa".as_str()], ins((tr["ri".as_str()] as f64), x)))
+   |                                                                                                                      ^^^^^^
+   |
+   = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0608]: cannot index into a value of type `f64`
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/algebraic-data-types.rs:76:114
+   |
+76 | ...   return balance(node(tr["cl".as_str()].to_string(), (tr["le".as_str()] as f64), tr["aa".as_str()], ins((tr["ri".as_str()] as f64), x)))
+   |                                                                                                                ^^^^^^^^^^^^^^^
+
+error[E0658]: use of unstable library feature `str_as_str`
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/algebraic-data-types.rs:87:44
+   |
+87 |     return node(String::from("B"), (m["le".as_str()] as f64), m["aa".as_str()], (m["ri".as_str()] as f64))
+   |                                            ^^^^^^
+   |
+   = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0608]: cannot index into a value of type `f64`
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/algebraic-data-types.rs:87:38
+   |
+87 |     return node(String::from("B"), (m["le".as_str()] as f64), m["aa".as_str()], (m["ri".as_str()] as f64))
+   |                                      ^^^^^^^^^^^^^^^
+
+error[E0658]: use of unstable library feature `str_as_str`
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/algebraic-data-types.rs:87:70
+   |
+87 |     return node(String::from("B"), (m["le".as_str()] as f64), m["aa".as_str()], (m["ri".as_str()] as f64))
+   |                                                                      ^^^^^^
+   |
+   = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0608]: cannot index into a value of type `f64`
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/algebraic-data-types.rs:87:64
+   |
+87 |     return node(String::from("B"), (m["le".as_str()] as f64), m["aa".as_str()], (m["ri".as_str()] as f64))
+   |                                                                ^^^^^^^^^^^^^^^
+
+error[E0658]: use of unstable library feature `str_as_str`
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/algebraic-data-types.rs:87:89
+   |
+87 |     return node(String::from("B"), (m["le".as_str()] as f64), m["aa".as_str()], (m["ri".as_str()] as f64))
+   |                                                                                         ^^^^^^
+   |
+   = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0608]: cannot index into a value of type `f64`
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/algebraic-data-types.rs:87:83
+   |
+87 |     return node(String::from("B"), (m["le".as_str()] as f64), m["aa".as_str()], (m["ri".as_str()] as f64))
+   |                                                                                   ^^^^^^^^^^^^^^^
+
+error: aborting due to 86 previous errors; 45 warnings emitted
+
+Some errors have detailed explanations: E0106, E0308, E0608, E0658.
+For more information about an error, try `rustc --explain E0106`.
