@@ -1,0 +1,176 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun log2(x: float): float {
+func log2 (regs=34)
+  // var k = 0.0
+  Const        r1, 0.0
+  Move         r2, r1
+  // var v = x
+  Move         r3, r0
+L1:
+  // while v >= 2.0 {
+  Const        r4, 2.0
+  LessEqFloat  r5, r4, r3
+  JumpIfFalse  r5, L0
+  // v = v / 2.0
+  Const        r4, 2.0
+  DivFloat     r6, r3, r4
+  Move         r3, r6
+  // k = k + 1.0
+  Const        r7, 1.0
+  AddFloat     r8, r2, r7
+  Move         r2, r8
+  // while v >= 2.0 {
+  Jump         L1
+L0:
+  // while v < 1.0 {
+  Const        r7, 1.0
+  LessFloat    r9, r3, r7
+  JumpIfFalse  r9, L2
+  // v = v * 2.0
+  Const        r4, 2.0
+  MulFloat     r10, r3, r4
+  Move         r3, r10
+  // k = k - 1.0
+  Const        r7, 1.0
+  SubFloat     r11, r2, r7
+  Move         r2, r11
+  // while v < 1.0 {
+  Jump         L0
+L2:
+  // let z = (v - 1.0) / (v + 1.0)
+  Const        r7, 1.0
+  SubFloat     r12, r3, r7
+  Const        r7, 1.0
+  AddFloat     r13, r3, r7
+  DivFloat     r14, r12, r13
+  Move         r15, r14
+  // var zpow = z
+  Move         r16, r15
+  // var sum = z
+  Move         r17, r15
+  // var i = 3
+  Const        r18, 3
+  Move         r19, r18
+L4:
+  // while i <= 9 {
+  Const        r20, 9
+  LessEqInt    r21, r19, r20
+  JumpIfFalse  r21, L3
+  // zpow = zpow * z * z
+  MulFloat     r22, r16, r15
+  MulFloat     r23, r22, r15
+  Move         r16, r23
+  // sum = sum + zpow / (i as float)
+  Cast         r24, r19, float
+  DivFloat     r25, r16, r24
+  AddFloat     r26, r17, r25
+  Move         r17, r26
+  // i = i + 2
+  Const        r27, 2
+  AddInt       r28, r19, r27
+  Move         r19, r28
+  // while i <= 9 {
+  Jump         L4
+L3:
+  // let ln2 = 0.6931471805599453
+  Const        r29, 0.6931471805599453
+  Move         r30, r29
+  // return k + 2.0 * sum / ln2
+  Const        r4, 2.0
+  MulFloat     r31, r4, r17
+  Const        r29, 0.6931471805599453
+  DivFloat     r32, r31, r29
+  AddFloat     r33, r2, r32
+  Return       r33
+
+  // fun main() {
+func main (regs=41)
+  // let s = "1223334444"
+  Const        r0, "1223334444"
+  Move         r1, r0
+  // var counts: map<string,int> = {}
+  Const        r2, {}
+  Move         r3, r2
+  // var l = 0.0
+  Const        r4, 0.0
+  Move         r5, r4
+  // var i = 0
+  Const        r6, 0
+  Move         r7, r6
+L3:
+  // while i < len(s) {
+  Const        r8, 10
+  LessInt      r9, r7, r8
+  JumpIfFalse  r9, L0
+  // let ch = substring(s, i, i+1)
+  Const        r0, "1223334444"
+  Const        r10, 1
+  AddInt       r11, r7, r10
+  Slice        r12, r0, r7, r11
+  Move         r13, r12
+  // if ch in counts {
+  In           r14, r13, r3
+  JumpIfFalse  r14, L1
+  // counts[ch] = counts[ch] + 1
+  Index        r15, r3, r13
+  Const        r10, 1
+  Add          r16, r15, r10
+  SetIndex     r3, r13, r16
+  // if ch in counts {
+  Jump         L2
+L1:
+  // counts[ch] = 1
+  Const        r10, 1
+  SetIndex     r3, r13, r10
+L2:
+  // l = l + 1.0
+  Const        r17, 1.0
+  AddFloat     r18, r5, r17
+  Move         r5, r18
+  // i = i + 1
+  Const        r10, 1
+  AddInt       r19, r7, r10
+  Move         r7, r19
+  // while i < len(s) {
+  Jump         L3
+L0:
+  // var hm = 0.0
+  Const        r4, 0.0
+  Move         r20, r4
+  // for ch in counts {
+  IterPrep     r21, r3
+  Len          r22, r21
+  Const        r23, 0
+L5:
+  LessInt      r24, r23, r22
+  JumpIfFalse  r24, L4
+  Index        r25, r21, r23
+  Move         r26, r25
+  // let c = counts[ch] as float
+  Index        r27, r3, r26
+  Cast         r28, r27, float
+  Move         r29, r28
+  // hm = hm + c * log2(c)
+  Move         r30, r29
+  Call         r31, log2, r30
+  Mul          r32, r29, r31
+  AddFloat     r33, r20, r32
+  Move         r20, r33
+  // for ch in counts {
+  Const        r34, 1
+  AddInt       r35, r23, r34
+  Move         r23, r35
+  Jump         L5
+L4:
+  // print(str(log2(l) - hm / l))
+  Move         r36, r5
+  Call         r37, log2, r36
+  DivFloat     r38, r20, r5
+  SubFloat     r39, r37, r38
+  Str          r40, r39
+  Print        r40
+  Return       r0

@@ -1,0 +1,56 @@
+// Mochi translation of the Rosetta "Entropy" task (variant 1)
+// Based on the Go version in tests/rosetta/x/Go/entropy-1.go
+
+fun log2(x: float): float {
+  var k = 0.0
+  var v = x
+  while v >= 2.0 {
+    v = v / 2.0
+    k = k + 1.0
+  }
+  while v < 1.0 {
+    v = v * 2.0
+    k = k - 1.0
+  }
+  let z = (v - 1.0) / (v + 1.0)
+  var zpow = z
+  var sum = z
+  var i = 3
+  while i <= 9 {
+    zpow = zpow * z * z
+    sum = sum + zpow / (i as float)
+    i = i + 2
+  }
+  let ln2 = 0.6931471805599453
+  return k + 2.0 * sum / ln2
+}
+
+fun H(data: string): float {
+  if data == "" { return 0.0 }
+  var counts: map<string,int> = {}
+  var i = 0
+  while i < len(data) {
+    let ch = substring(data, i, i+1)
+    if ch in counts {
+      counts[ch] = counts[ch] + 1
+    } else {
+      counts[ch] = 1
+    }
+    i = i + 1
+  }
+  var entropy = 0.0
+  let l = len(data) as float
+  for ch in counts {
+    let px = (counts[ch] as float) / l
+    if px > 0.0 {
+      entropy = entropy - px * log2(px)
+    }
+  }
+  return entropy
+}
+
+fun main() {
+  print(str(H("1223334444")))
+}
+
+main()
