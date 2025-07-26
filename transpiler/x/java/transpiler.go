@@ -78,6 +78,8 @@ func sanitize(name string) string {
 		return "new_"
 	case "double":
 		return "double_"
+	case "char":
+		return "char_"
 	}
 	return name
 }
@@ -168,7 +170,11 @@ func javaBoxType(t string) string {
 	default:
 		if strings.HasSuffix(t, "[]") {
 			elem := strings.TrimSuffix(t, "[]")
-			return javaBoxType(elem) + "[]"
+			jt := javaType(elem)
+			if jt == "" {
+				jt = elem
+			}
+			return jt + "[]"
 		}
 		return "Object"
 	}
@@ -230,6 +236,19 @@ func emitCastExpr(w io.Writer, e Expr, typ string) {
 		e.emit(w)
 		return
 	}
+	if typ == "int" || typ == "double" || typ == "float" || typ == "float64" {
+		it := inferType(e)
+		if it == "" || it == "Object" {
+			fmt.Fprint(w, "((Number)(")
+			e.emit(w)
+			if typ == "int" {
+				fmt.Fprint(w, ")).intValue()")
+			} else {
+				fmt.Fprint(w, ")).doubleValue()")
+			}
+			return
+		}
+	}
 	if typ != "" && typ != "java.util.Map" && typ != "map" {
 		switch ex := e.(type) {
 		case *IndexExpr:
@@ -256,9 +275,15 @@ func emitCastExpr(w io.Writer, e Expr, typ string) {
 	}
 	jt := javaType(typ)
 	if jt == "String" && !isStringExpr(e) {
-		fmt.Fprint(w, "String.valueOf(")
-		e.emit(w)
-		fmt.Fprint(w, ")")
+		if it := inferType(e); it == "" || it == "Object" {
+			fmt.Fprint(w, "(String)(")
+			e.emit(w)
+			fmt.Fprint(w, ")")
+		} else {
+			fmt.Fprint(w, "String.valueOf(")
+			e.emit(w)
+			fmt.Fprint(w, ")")
+		}
 		return
 	}
 	if jt == "java.math.BigInteger" {
@@ -373,6 +398,9 @@ func inferType(e Expr) string {
 	case *SliceExpr:
 		if isStringExpr(ex.Value) {
 			return "string"
+		}
+		if t := arrayElemType(ex.Value); t != "" {
+			return t + "[]"
 		}
 	case *ListLit:
 		if ex.ElemType != "" {
@@ -2327,6 +2355,10 @@ func isStringExpr(e Expr) bool {
 		case "toLowerCase", "toUpperCase", "trim", "substring":
 			return true
 		}
+	case *BinaryExpr:
+		if ex.Op == "+" && (isStringExpr(ex.Left) || isStringExpr(ex.Right)) {
+			return true
+		}
 	case *IndexExpr:
 		if ex.ResultType != "" {
 			return ex.ResultType == "string" || ex.ResultType == "String"
@@ -2904,6 +2936,9 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 					if f, ok3 := mapVarFields[v.Name]; ok3 {
 						mapVarFields[s.Var.Name] = f
 					}
+				}
+				if t == "" {
+					t = cast.Type
 				}
 			}
 			if l, ok := e.(*ListLit); ok {

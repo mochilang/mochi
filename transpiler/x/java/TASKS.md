@@ -1,4 +1,82 @@
-## Progress (2025-07-26 04:40 +0700)
+## Progress (2025-07-26 09:37 +0700)
+- fs transpiler: cast assignments (b3f6557d1b)
+
+- fs transpiler: cast assignments (b3f6557d1b)
+
+- fs transpiler: cast assignments (b3f6557d1b)
+
+- fs transpiler: cast assignments (b3f6557d1b)
+
+- fs transpiler: cast assignments (b3f6557d1b)
+
+- fs transpiler: cast assignments (b3f6557d1b)
+
+- fs transpiler: cast assignments (b3f6557d1b)
+
+- fs transpiler: cast assignments (b3f6557d1b)
+
+- fs transpiler: cast assignments (b3f6557d1b)
+
+- fs transpiler: cast assignments (b3f6557d1b)
+
+- fs transpiler: cast assignments (b3f6557d1b)
+
+- fs transpiler: cast assignments (b3f6557d1b)
+
+- fs transpiler: cast assignments (b3f6557d1b)
+
+- fs transpiler: cast assignments (b3f6557d1b)
+
+- fs transpiler: cast assignments (b3f6557d1b)
+
+- fs transpiler: cast assignments (b3f6557d1b)
+
+- fs transpiler: cast assignments (b3f6557d1b)
+
+- fs transpiler: cast assignments (b3f6557d1b)
+
+- fs transpiler: cast assignments (b3f6557d1b)
+
+- fs transpiler: cast assignments (b3f6557d1b)
+
+- fs transpiler: cast assignments (b3f6557d1b)
+
+- fs transpiler: cast assignments (b3f6557d1b)
+
+- fs transpiler: cast assignments (b3f6557d1b)
+
+- fs transpiler: cast assignments (b3f6557d1b)
+
+- fs transpiler: cast assignments (b3f6557d1b)
+
+- fs transpiler: cast assignments (b3f6557d1b)
+
+- fs transpiler: cast assignments (b3f6557d1b)
+
+- fs transpiler: cast assignments (b3f6557d1b)
+
+- fs transpiler: cast assignments (b3f6557d1b)
+
+- fs transpiler: cast assignments (b3f6557d1b)
+
+- fs transpiler: cast assignments (b3f6557d1b)
+
+- fs transpiler: cast assignments (b3f6557d1b)
+
+- fs transpiler: cast assignments (b3f6557d1b)
+
+- fs transpiler: cast assignments (b3f6557d1b)
+
+- fs transpiler: cast assignments (b3f6557d1b)
+
+- fs transpiler: cast assignments (b3f6557d1b)
+
+- fs transpiler: cast assignments (b3f6557d1b)
+
+- fs transpiler: cast assignments (b3f6557d1b)
+
+- fs transpiler: cast assignments (b3f6557d1b)
+
 - transpiler/java: fix list return and reset varDecls (dbccf60947)
 
 - transpiler/java: fix list return and reset varDecls (dbccf60947)

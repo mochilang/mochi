@@ -24,7 +24,7 @@ fun remove_space(text: string, emap: map<string, list<int>>): string {
   var i = 0
   while i < len(s) {
     let ch = s[i:i+1]
-    if ch != " " && ch in emap { out = out + ch }
+    if ch != " " && (ch in emap) { out = out + ch }
     i = i + 1
   }
   return out

@@ -132,7 +132,7 @@ fun main() {
   var seed = 1
   var res = makeSeq(seed, 250)
   seed = res[0]
-  var dna = res[1] as string
+  var dna: string = res[1] as string
   prettyPrint(dna, 50)
   let muts = 10
   let w = [100, 100, 100]

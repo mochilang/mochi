@@ -80,8 +80,10 @@ fun headTailOverlap(s1: string, s2: string): int {
     let ix = indexOfFrom(s1, s2[0:1], start)
     if ix == 0 - 1 { return 0 }
     start = ix
-    if substring(s2, 0, len(s1) - start) == substring(s1, start, len(s1)) {
-      return len(s1) - start
+    let sublen = len(s1) - start
+    if sublen > len(s2) { sublen = len(s2) }
+    if substring(s2, 0, sublen) == substring(s1, start, start + sublen) {
+      return sublen
     }
     start = start + 1
   }
