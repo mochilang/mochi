@@ -3792,6 +3792,16 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			if err != nil {
 				return nil, err
 			}
+			if l, ok := ex.(*ListLit); ok && l.ElemType == "" {
+				if params, ok2 := funcParams[p.Call.Func]; ok2 {
+					if i < len(params) {
+						pt := params[i]
+						if strings.HasSuffix(pt, "[]") {
+							l.ElemType = strings.TrimSuffix(pt, "[]")
+						}
+					}
+				}
+			}
 			args[i] = ex
 		}
 		name := p.Call.Func
