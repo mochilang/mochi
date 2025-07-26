@@ -1,0 +1,266 @@
+func main (regs=62)
+  // let z: Church = zero
+  Move         r0, r3
+  SetGlobal    0,0,0,0
+  // let three = succ(succ(succ(z)))
+  Move         r6, r0
+  Call         r7, succ, r6
+  Move         r5, r7
+  Call         r8, succ, r5
+  Move         r4, r8
+  Call         r9, succ, r4
+  Move         r1, r9
+  SetGlobal    1,1,0,0
+  // let four = succ(three)
+  Move         r10, r1
+  Call         r11, succ, r10
+  Move         r2, r11
+  SetGlobal    2,2,0,0
+  // print("three        -> " + str(toInt(three)))
+  Const        r12, "three        -> "
+  Move         r13, r1
+  Call         r14, toInt, r13
+  Str          r15, r14
+  Add          r16, r12, r15
+  Print        r16
+  // print("four         -> " + str(toInt(four)))
+  Const        r17, "four         -> "
+  Move         r18, r2
+  Call         r19, toInt, r18
+  Str          r20, r19
+  Add          r21, r17, r20
+  Print        r21
+  // print("three + four -> " + str(toInt(add(three, four))))
+  Const        r22, "three + four -> "
+  Move         r24, r1
+  Move         r25, r2
+  Call2        r26, add, r24, r25
+  Move         r23, r26
+  Call         r27, toInt, r23
+  Str          r28, r27
+  Add          r29, r22, r28
+  Print        r29
+  // print("three * four -> " + str(toInt(mul(three, four))))
+  Const        r30, "three * four -> "
+  Move         r32, r1
+  Move         r33, r2
+  Call2        r34, mul, r32, r33
+  Move         r31, r34
+  Call         r35, toInt, r31
+  Str          r36, r35
+  Add          r37, r30, r36
+  Print        r37
+  // print("three ^ four -> " + str(toInt(pow(three, four))))
+  Const        r38, "three ^ four -> "
+  Move         r40, r1
+  Move         r41, r2
+  Call2        r42, pow, r40, r41
+  Move         r39, r42
+  Call         r43, toInt, r39
+  Str          r44, r43
+  Add          r45, r38, r44
+  Print        r45
+  // print("four ^ three -> " + str(toInt(pow(four, three))))
+  Const        r46, "four ^ three -> "
+  Move         r48, r2
+  Move         r49, r1
+  Call2        r50, pow, r48, r49
+  Move         r47, r50
+  Call         r51, toInt, r47
+  Str          r52, r51
+  Add          r53, r46, r52
+  Print        r53
+  // print("5 -> five    -> " + str(toInt(intToChurch(5))))
+  Const        r54, "5 -> five    -> "
+  Const        r57, 5
+  Move         r56, r57
+  Call         r58, intToChurch, r56
+  Move         r55, r58
+  Call         r59, toInt, r55
+  Str          r60, r59
+  Add          r61, r54, r60
+  Print        r61
+  Return       r0
+
+  // fun zero(f: Fn): Fn { return fun(x: any): any { return x } }
+func zero (regs=9)
+  // fun zero(f: Fn): Fn { return fun(x: any): any { return x } }
+  Move         r4, r3
+  Move         r5, r2
+  Move         r6, r1
+  Move         r7, r0
+  MakeClosure  r8, fn9, 4, r4
+  Return       r8
+
+  // fun succ(c: Church): Church {
+func succ (regs=9)
+  // return fun(f: Fn): Fn { return fun(x: any): any { return f(c(f)(x)) } }
+  Move         r4, r3
+  Move         r5, r2
+  Move         r6, r1
+  Move         r7, r0
+  MakeClosure  r8, fn11, 4, r4
+  Return       r8
+
+  // fun add(c: Church, d: Church): Church {
+func add (regs=11)
+  // return fun(f: Fn): Fn { return fun(x: any): any { return c(f)(d(f)(x)) } }
+  Move         r5, r3
+  Move         r6, r4
+  Move         r7, r2
+  Move         r8, r1
+  Move         r9, r0
+  MakeClosure  r10, fn13, 5, r5
+  Return       r10
+
+  // fun mul(c: Church, d: Church): Church {
+func mul (regs=11)
+  // return fun(f: Fn): Fn { return fun(x: any): any { return c(d(f))(x) } }
+  Move         r5, r3
+  Move         r6, r4
+  Move         r7, r2
+  Move         r8, r1
+  Move         r9, r0
+  MakeClosure  r10, fn15, 5, r5
+  Return       r10
+
+  // fun pow(c: Church, d: Church): Church {
+func pow (regs=16)
+  // var di = toInt(d)
+  Move         r5, r4
+  Call         r6, toInt, r5
+  Move         r7, r6
+  // var prod = c
+  Move         r8, r3
+  // var i = 1
+  Const        r9, 1
+  Move         r10, r9
+L1:
+  // while i < di {
+  Less         r11, r10, r7
+  JumpIfFalse  r11, L0
+  // prod = mul(prod, c)
+  Move         r12, r8
+  Move         r13, r3
+  Call2        r14, mul, r12, r13
+  Move         r8, r14
+  // i = i + 1
+  Const        r9, 1
+  AddInt       r15, r10, r9
+  Move         r10, r15
+  // while i < di {
+  Jump         L1
+L0:
+  // return prod
+  Return       r8
+
+  // fun incr(i: any): any { return (i as int) + 1 }
+func incr (regs=7)
+  // fun incr(i: any): any { return (i as int) + 1 }
+  Cast         r4, r3, int
+  Const        r5, 1
+  Add          r6, r4, r5
+  Return       r6
+
+  // fun toInt(c: Church): int { return c(incr)(0) as int }
+func toInt (regs=11)
+  // fun toInt(c: Church): int { return c(incr)(0) as int }
+  Move         r4, r5
+  CallV        r6, r3, 1, r4
+  Const        r8, 0
+  Move         r7, r8
+  CallV        r9, r6, 1, r7
+  Cast         r10, r9, int
+  Return       r10
+
+  // fun intToChurch(i: int): Church {
+func intToChurch (regs=13)
+  // if i == 0 { return zero }
+  Const        r4, 0
+  Equal        r5, r3, r4
+  JumpIfFalse  r5, L0
+  Return       r6
+L0:
+  // return succ(intToChurch(i - 1))
+  Const        r9, 1
+  Sub          r10, r3, r9
+  Move         r8, r10
+  Call         r11, intToChurch, r8
+  Move         r7, r11
+  Call         r12, succ, r7
+  Return       r12
+
+  // fun zero(f: Fn): Fn { return fun(x: any): any { return x } }
+func fn9 (regs=8)
+  // fun zero(f: Fn): Fn { return fun(x: any): any { return x } }
+  Return       r7
+
+  // return fun(f: Fn): Fn { return fun(x: any): any { return f(c(f)(x)) } }
+func fn10 (regs=15)
+  // return fun(f: Fn): Fn { return fun(x: any): any { return f(c(f)(x)) } }
+  Move         r10, r4
+  CallV        r11, r3, 1, r10
+  Move         r12, r8
+  CallV        r13, r11, 1, r12
+  Move         r9, r13
+  CallV        r14, r4, 1, r9
+  Return       r14
+
+  // return fun(f: Fn): Fn { return fun(x: any): any { return f(c(f)(x)) } }
+func fn11 (regs=14)
+  // return fun(f: Fn): Fn { return fun(x: any): any { return f(c(f)(x)) } }
+  Move         r8, r3
+  Move         r9, r7
+  Move         r10, r4
+  Move         r11, r5
+  Move         r12, r6
+  MakeClosure  r13, fn10, 5, r8
+  Return       r13
+
+  // return fun(f: Fn): Fn { return fun(x: any): any { return c(f)(d(f)(x)) } }
+func fn12 (regs=18)
+  // return fun(f: Fn): Fn { return fun(x: any): any { return c(f)(d(f)(x)) } }
+  Move         r10, r5
+  CallV        r11, r3, 1, r10
+  Move         r13, r5
+  CallV        r14, r4, 1, r13
+  Move         r15, r9
+  CallV        r16, r14, 1, r15
+  Move         r12, r16
+  CallV        r17, r11, 1, r12
+  Return       r17
+
+  // return fun(f: Fn): Fn { return fun(x: any): any { return c(f)(d(f)(x)) } }
+func fn13 (regs=16)
+  // return fun(f: Fn): Fn { return fun(x: any): any { return c(f)(d(f)(x)) } }
+  Move         r9, r3
+  Move         r10, r4
+  Move         r11, r8
+  Move         r12, r5
+  Move         r13, r6
+  Move         r14, r7
+  MakeClosure  r15, fn12, 6, r9
+  Return       r15
+
+  // return fun(f: Fn): Fn { return fun(x: any): any { return c(d(f))(x) } }
+func fn14 (regs=16)
+  // return fun(f: Fn): Fn { return fun(x: any): any { return c(d(f))(x) } }
+  Move         r11, r5
+  CallV        r12, r4, 1, r11
+  Move         r10, r12
+  CallV        r13, r3, 1, r10
+  Move         r14, r9
+  CallV        r15, r13, 1, r14
+  Return       r15
+
+  // return fun(f: Fn): Fn { return fun(x: any): any { return c(d(f))(x) } }
+func fn15 (regs=16)
+  // return fun(f: Fn): Fn { return fun(x: any): any { return c(d(f))(x) } }
+  Move         r9, r3
+  Move         r10, r4
+  Move         r11, r8
+  Move         r12, r5
+  Move         r13, r6
+  Move         r14, r7
+  MakeClosure  r15, fn14, 6, r9
+  Return       r15

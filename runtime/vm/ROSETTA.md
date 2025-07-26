@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated IR and outputs from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/ir`.
-Last updated: 2025-07-26 02:36 UTC
+Last updated: 2025-07-26 02:51 UTC
 
-## Rosetta Golden Test Checklist (194/284)
+## Rosetta Golden Test Checklist (201/284)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 116µs | 11.7 KB |
@@ -206,14 +206,14 @@ Last updated: 2025-07-26 02:36 UTC
 | 197 | cheryls-birthday | ✓ | 2.42ms | 341.3 KB |
 | 198 | chinese-remainder-theorem | ✓ | 114µs | 43.0 KB |
 | 199 | chinese-zodiac | ✓ | 74µs | 53.1 KB |
-| 200 | cholesky-decomposition-1 |   |  |  |
-| 201 | cholesky-decomposition |   |  |  |
-| 202 | chowla-numbers |   |  |  |
+| 200 | cholesky-decomposition-1 | ✓ | 909µs | 117.4 KB |
+| 201 | cholesky-decomposition | ✓ |  |  |
+| 202 | chowla-numbers | ✓ |  |  |
 | 203 | church-numerals-1 |   |  |  |
-| 204 | church-numerals-2 |   |  |  |
-| 205 | circles-of-given-radius-through-two-points |   |  |  |
-| 206 | circular-primes |   |  |  |
-| 207 | cistercian-numerals |   |  |  |
+| 204 | church-numerals-2 | ✓ |  |  |
+| 205 | circles-of-given-radius-through-two-points | ✓ |  |  |
+| 206 | circular-primes | ✓ |  |  |
+| 207 | cistercian-numerals | ✓ |  |  |
 | 208 | comma-quibbling |   |  |  |
 | 209 | compiler-virtual-machine-interpreter |   |  |  |
 | 210 | composite-numbers-k-with-no-single-digit-factors-whose-factors-are-all-substrings-of-k |   |  |  |

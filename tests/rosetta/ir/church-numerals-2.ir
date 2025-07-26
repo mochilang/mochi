@@ -1,0 +1,220 @@
+func main (regs=1)
+  Return       r0
+
+  // fun id(x: any): any { return x }
+func id (regs=1)
+  // fun id(x: any): any { return x }
+  Return       r0
+
+  // fun compose(f: fun(any): any, g: fun(any): any): fun(any): any {
+func compose (regs=5)
+  // return fun(x: any): any { return f(g(x)) }
+  Move         r2, r0
+  Move         r3, r1
+  MakeClosure  r4, fn3, 2, r2
+  Return       r4
+
+  // return fun(x: any): any { return f(g(x)) }
+func fn3 (regs=7)
+  // return fun(x: any): any { return f(g(x)) }
+  Move         r4, r2
+  CallV        r5, r1, 1, r4
+  Move         r3, r5
+  CallV        r6, r0, 1, r3
+  Return       r6
+
+  // fun zero(): Church { return fun(f: Church): Church { return id } }
+func zero (regs=1)
+  // fun zero(): Church { return fun(f: Church): Church { return id } }
+  MakeClosure  r0, fn5, 0, r0
+  Return       r0
+
+  // fun zero(): Church { return fun(f: Church): Church { return id } }
+func fn5 (regs=2)
+  // fun zero(): Church { return fun(f: Church): Church { return id } }
+  Return       r1
+
+  // fun one(): Church { return id }
+func one (regs=1)
+  // fun one(): Church { return id }
+  Return       r0
+
+  // fun succ(n: Church): Church {
+func succ (regs=3)
+  // return fun(f: Church): Church { return compose(f, n(f)) }
+  Move         r1, r0
+  MakeClosure  r2, fn8, 1, r1
+  Return       r2
+
+  // return fun(f: Church): Church { return compose(f, n(f)) }
+func fn8 (regs=7)
+  // return fun(f: Church): Church { return compose(f, n(f)) }
+  Move         r2, r1
+  Move         r4, r1
+  CallV        r5, r0, 1, r4
+  Move         r3, r5
+  Call2        r6, compose, r2, r3
+  Return       r6
+
+  // fun plus(m: Church, n: Church): Church {
+func plus (regs=5)
+  // return fun(f: Church): Church { return compose(m(f), n(f)) }
+  Move         r2, r0
+  Move         r3, r1
+  MakeClosure  r4, fn10, 2, r2
+  Return       r4
+
+  // return fun(f: Church): Church { return compose(m(f), n(f)) }
+func fn10 (regs=10)
+  // return fun(f: Church): Church { return compose(m(f), n(f)) }
+  Move         r5, r2
+  CallV        r6, r0, 1, r5
+  Move         r3, r6
+  Move         r7, r2
+  CallV        r8, r1, 1, r7
+  Move         r4, r8
+  Call2        r9, compose, r3, r4
+  Return       r9
+
+  // fun mult(m: Church, n: Church): Church { return compose(m, n) }
+func mult (regs=5)
+  // fun mult(m: Church, n: Church): Church { return compose(m, n) }
+  Move         r2, r0
+  Move         r3, r1
+  Call2        r4, compose, r2, r3
+  Return       r4
+
+  // fun exp(m: Church, n: Church): Church { return n(m) }
+func exp (regs=4)
+  // fun exp(m: Church, n: Church): Church { return n(m) }
+  Move         r2, r0
+  CallV        r3, r1, 1, r2
+  Return       r3
+
+  // fun toInt(x: Church): int {
+func toInt (regs=11)
+  // var counter = 0
+  Const        r1, 0
+  Move         r2, r1
+  // fun fCounter(f: Church): Church { counter = counter + 1; return f }
+  Move         r3, r2
+  Move         r4, r0
+  MakeClosure  r5, fCounter, 2, r3
+  // x(fCounter)(id)
+  Move         r6, r5
+  CallV        r7, r0, 1, r6
+  Move         r8, r9
+  CallV        r10, r7, 1, r8
+  // return counter
+  Return       r2
+
+  // fun fCounter(f: Church): Church { counter = counter + 1; return f }
+func fCounter (regs=5)
+  // fun fCounter(f: Church): Church { counter = counter + 1; return f }
+  Const        r3, 1
+  Add          r4, r0, r3
+  Move         r0, r4
+  Return       r2
+
+  // fun toStr(x: Church): string {
+func toStr (regs=11)
+  // var s = ""
+  Const        r1, ""
+  Move         r2, r1
+  // fun fCounter(f: Church): Church { s = s + "|"; return f }
+  Move         r3, r2
+  Move         r4, r0
+  MakeClosure  r5, fCounter, 2, r3
+  // x(fCounter)(id)
+  Move         r6, r5
+  CallV        r7, r0, 1, r6
+  Move         r8, r9
+  CallV        r10, r7, 1, r8
+  // return s
+  Return       r2
+
+  // fun fCounter(f: Church): Church { s = s + "|"; return f }
+func fCounter (regs=5)
+  // fun fCounter(f: Church): Church { s = s + "|"; return f }
+  Const        r3, "|"
+  Add          r4, r0, r3
+  Move         r0, r4
+  Return       r2
+
+  // fun main() {
+func main (regs=55)
+  // print("zero = " + str(toInt(zero())))
+  Const        r0, "zero = "
+  Call         r2, zero, 
+  Move         r1, r2
+  Call         r3, toInt, r1
+  Str          r4, r3
+  Add          r5, r0, r4
+  Print        r5
+  // let onev = one()
+  Call         r6, one, 
+  Move         r7, r6
+  // print("one = " + str(toInt(onev)))
+  Const        r8, "one = "
+  Move         r9, r7
+  Call         r10, toInt, r9
+  Str          r11, r10
+  Add          r12, r8, r11
+  Print        r12
+  // let two = succ(succ(zero()))
+  Call         r15, zero, 
+  Move         r14, r15
+  Call         r16, succ, r14
+  Move         r13, r16
+  Call         r17, succ, r13
+  Move         r18, r17
+  // print("two = " + str(toInt(two)))
+  Const        r19, "two = "
+  Move         r20, r18
+  Call         r21, toInt, r20
+  Str          r22, r21
+  Add          r23, r19, r22
+  Print        r23
+  // let three = plus(onev, two)
+  Move         r24, r7
+  Move         r25, r18
+  Call2        r26, plus, r24, r25
+  Move         r27, r26
+  // print("three = " + str(toInt(three)))
+  Const        r28, "three = "
+  Move         r29, r27
+  Call         r30, toInt, r29
+  Str          r31, r30
+  Add          r32, r28, r31
+  Print        r32
+  // let four = mult(two, two)
+  Move         r33, r18
+  Move         r34, r18
+  Call2        r35, mult, r33, r34
+  Move         r36, r35
+  // print("four = " + str(toInt(four)))
+  Const        r37, "four = "
+  Move         r38, r36
+  Call         r39, toInt, r38
+  Str          r40, r39
+  Add          r41, r37, r40
+  Print        r41
+  // let eight = exp(two, three)
+  Move         r42, r18
+  Move         r43, r27
+  Call2        r44, exp, r42, r43
+  Move         r45, r44
+  // print("eight = " + str(toInt(eight)))
+  Const        r46, "eight = "
+  Move         r47, r45
+  Call         r48, toInt, r47
+  Str          r49, r48
+  Add          r50, r46, r49
+  Print        r50
+  // print("toStr(four) = " + toStr(four))
+  Const        r51, "toStr(four) = "
+  Move         r52, r36
+  Call         r53, toStr, r52
+  Add          r54, r51, r53
+  Print        r54
+  Return       r0
