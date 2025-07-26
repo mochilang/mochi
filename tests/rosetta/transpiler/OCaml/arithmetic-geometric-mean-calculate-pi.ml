@@ -45,50 +45,64 @@ exception Continue
 
 exception Return
 
-let rec applyFilter input a b =
-  let __ret = ref ([] : float list) in
+let rec abs x =
+  let __ret = ref 0.0 in
   (try
-  let out = ref ([]) in
-  let scale = (1.0 /. List.nth (a) (0)) in
+  let x = (Obj.magic x : float) in
+  if (x < 0.0) then (
+  __ret := (Obj.magic ((-.(x))) : float); raise Return
+  );
+  __ret := (Obj.magic (x) : float); raise Return
+  with Return -> !__ret)
+
+let rec sqrtApprox x =
+  let __ret = ref 0.0 in
+  (try
+  let x = (Obj.magic x : float) in
+  let guess = ref (x) in
   let i = ref (0) in
-  (try while (!i < List.length (input)) do
+  (try while (!i < 20) do
     try
-  let tmp = ref (0.0) in
-  let j = ref (0) in
-  (try while ((!j <= !i) && (!j < List.length (b))) do
-    try
-  tmp := (!tmp +. (List.nth (b) (!j) *. List.nth (input) ((!i - !j))));
-  j := (!j + 1);
-    with Continue -> ()
-  done with Break -> ());
-  j := 0;
-  (try while ((!j < !i) && ((!j + 1) < List.length (a))) do
-    try
-  tmp := (!tmp -. (List.nth (a) ((!j + 1)) *. List.nth (!out) (((!i - !j) - 1))));
-  j := (!j + 1);
-    with Continue -> ()
-  done with Break -> ());
-  out := List.append !out [(!tmp *. scale)];
+  guess := ((!guess +. (x /. !guess)) /. 2.0);
   i := (!i + 1);
     with Continue -> ()
   done with Break -> ());
-  __ret := (Obj.magic (!out) : float list); raise Return
+  __ret := (Obj.magic (!guess) : float); raise Return
   with Return -> !__ret)
 
-let a = ref ([1.0; (-.(0.00000000000000027756)); 0.33333333; (-.(0.0000000000000000185))])
-let b = ref ([0.16666667; 0.5; 0.5; 0.16666667])
-let sig_ = ref ([(-.(0.917843918645)); 0.141984778794; 1.20536903482; 0.190286794412; (-.(0.662370894973)); (-.(1.00700480494)); (-.(0.404707073677)); 0.800482325044; 0.743500089861; 1.01090520172; 0.741527555207; 0.277841675195; 0.400833448236; (-.(0.2085993586)); (-.(0.172842103641)); (-.(0.134316096293)); 0.0259303398477; 0.490105989562; 0.549391221511; 0.9047198589])
-let res = ref (applyFilter (!sig_) (!a) (!b))
-let k = ref (0)
+let rec agmPi () =
+  let __ret = ref 0.0 in
+  (try
+  let a = ref (1.0) in
+  let g = ref ((1.0 /. sqrtApprox (2.0))) in
+  let sum = ref (0.0) in
+  let pow = ref (2.0) in
+  (try while (abs_float (!a -. !g) > 0.000000000000001) do
+    try
+  let t = ref (((!a +. !g) /. 2.0)) in
+  let u = ref (sqrtApprox ((!a *. !g))) in
+  a := !t;
+  g := !u;
+  pow := (!pow *. 2.0);
+  let diff = ref (((!a *. !a) -. (!g *. !g))) in
+  sum := (!sum +. (!diff *. !pow));
+    with Continue -> ()
+  done with Break -> ());
+  let pi = ref ((((4.0 *. !a) *. !a) /. (1.0 -. !sum))) in
+  __ret := (Obj.magic (!pi) : float); raise Return
+  with Return -> !__ret)
+
+let rec main () =
+  let __ret = ref (Obj.magic 0) in
+  (try
+  print_endline ((string_of_float (agmPi ())));
+    !__ret
+  with Return -> !__ret)
+
 let () =
   let mem_start = _mem () in
   let start = _now () in
-  (try while (!k < List.length (!res)) do
-    try
-  print_endline (Printf.sprintf "%.15f" (List.nth (!res) (!k)));
-  k := (!k + 1);
-    with Continue -> ()
-  done with Break -> ());
+  ignore (main ());
   let finish = _now () in
   let mem_end = _mem () in
   let dur = (finish - start) / 1000 in

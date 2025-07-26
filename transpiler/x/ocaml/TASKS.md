@@ -1,7 +1,10 @@
-## Progress (2025-07-25 20:04 +0700)
-- transpiler/py: add benchmarks and code outputs for indices 163-192 (070466d590)
+## Progress (2025-07-26 19:01 +0700)
+- ex transpiler: handle float mod and module globals (ea0c01187b)
 
 - VM valid programs compiled: 102/104
+
+- transpiler/py: add benchmarks and code outputs for indices 163-192 (070466d590)
+
 
 - go transpiler: add bench block (00c74ea891)
 

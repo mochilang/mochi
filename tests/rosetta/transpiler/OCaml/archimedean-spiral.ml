@@ -45,48 +45,65 @@ exception Continue
 
 exception Return
 
-let rec applyFilter input a b =
-  let __ret = ref ([] : float list) in
+let pi = 3.141592653589793
+let rec sinApprox x =
+  let __ret = ref 0.0 in
   (try
-  let out = ref ([]) in
-  let scale = (1.0 /. List.nth (a) (0)) in
-  let i = ref (0) in
-  (try while (!i < List.length (input)) do
+  let x = (Obj.magic x : float) in
+  let term = ref (x) in
+  let sum = ref (x) in
+  let n = ref (1) in
+  (try while (!n <= 10) do
     try
-  let tmp = ref (0.0) in
-  let j = ref (0) in
-  (try while ((!j <= !i) && (!j < List.length (b))) do
-    try
-  tmp := (!tmp +. (List.nth (b) (!j) *. List.nth (input) ((!i - !j))));
-  j := (!j + 1);
+  let denom = float_of_int ((2 * !n) * ((2 * !n) + 1)) in
+  term := ((((-.(!term)) *. x) *. x) /. denom);
+  sum := (!sum +. !term);
+  n := (!n + 1);
     with Continue -> ()
   done with Break -> ());
-  j := 0;
-  (try while ((!j < !i) && ((!j + 1) < List.length (a))) do
-    try
-  tmp := (!tmp -. (List.nth (a) ((!j + 1)) *. List.nth (!out) (((!i - !j) - 1))));
-  j := (!j + 1);
-    with Continue -> ()
-  done with Break -> ());
-  out := List.append !out [(!tmp *. scale)];
-  i := (!i + 1);
-    with Continue -> ()
-  done with Break -> ());
-  __ret := (Obj.magic (!out) : float list); raise Return
+  __ret := (Obj.magic (!sum) : float); raise Return
   with Return -> !__ret)
 
-let a = ref ([1.0; (-.(0.00000000000000027756)); 0.33333333; (-.(0.0000000000000000185))])
-let b = ref ([0.16666667; 0.5; 0.5; 0.16666667])
-let sig_ = ref ([(-.(0.917843918645)); 0.141984778794; 1.20536903482; 0.190286794412; (-.(0.662370894973)); (-.(1.00700480494)); (-.(0.404707073677)); 0.800482325044; 0.743500089861; 1.01090520172; 0.741527555207; 0.277841675195; 0.400833448236; (-.(0.2085993586)); (-.(0.172842103641)); (-.(0.134316096293)); 0.0259303398477; 0.490105989562; 0.549391221511; 0.9047198589])
-let res = ref (applyFilter (!sig_) (!a) (!b))
-let k = ref (0)
+let rec cosApprox x =
+  let __ret = ref 0.0 in
+  (try
+  let x = (Obj.magic x : float) in
+  let term = ref (1.0) in
+  let sum = ref (1.0) in
+  let n = ref (1) in
+  (try while (!n <= 10) do
+    try
+  let denom = float_of_int (((2 * !n) - 1) * (2 * !n)) in
+  term := ((((-.(!term)) *. x) *. x) /. denom);
+  sum := (!sum +. !term);
+  n := (!n + 1);
+    with Continue -> ()
+  done with Break -> ());
+  __ret := (Obj.magic (!sum) : float); raise Return
+  with Return -> !__ret)
+
+let degreesIncr = ((0.1 *. pi) /. 180.0)
+let turns = 2.0
+let stop = (((360.0 *. turns) *. 10.0) *. degreesIncr)
+let width = 600.0
+let centre = (width /. 2.0)
+let a = 1.0
+let b = 20.0
+let theta = ref (0.0)
+let count = ref (0)
 let () =
   let mem_start = _mem () in
   let start = _now () in
-  (try while (!k < List.length (!res)) do
+  (try while (!theta < stop) do
     try
-  print_endline (Printf.sprintf "%.15f" (List.nth (!res) (!k)));
-  k := (!k + 1);
+  let r = (a +. (b *. !theta)) in
+  let x = (r *. cosApprox (!theta)) in
+  let y = (r *. sinApprox (!theta)) in
+  if ((!count mod 100) = 0) then (
+  print_endline ((((string_of_float ((centre +. x))) ^ ",") ^ (string_of_float ((centre -. y)))));
+  );
+  theta := (!theta +. degreesIncr);
+  count := (!count + 1);
     with Continue -> ()
   done with Break -> ());
   let finish = _now () in
