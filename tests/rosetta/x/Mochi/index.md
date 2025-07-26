@@ -1,5 +1,3 @@
-# Mochi Programs Index
-
 - [1](100-doors-2.mochi)
 - [2](100-doors-3.mochi)
 - [3](100-doors.mochi)
@@ -330,5 +328,14 @@
 - [328](earliest-difference-between-prime-gaps.mochi)
 - [329](eban-numbers.mochi)
 - [330](echo-server.mochi)
-- [331](ekg-sequence-convergence.mochi)
-- [332](md5.mochi)
+- [331](eertree.mochi)
+- [332](egyptian-division.mochi)
+- [333](ekg-sequence-convergence.mochi)
+- [334](element-wise-operations.mochi)
+- [335](elementary-cellular-automaton-infinite-length.mochi)
+- [336](elementary-cellular-automaton-random-number-generator.mochi)
+- [337](elementary-cellular-automaton.mochi)
+- [338](elliptic-curve-arithmetic.mochi)
+- [339](emirp-primes.mochi)
+- [340](empty-directory.mochi)
+- [341](md5.mochi)

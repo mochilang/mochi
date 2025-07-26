@@ -1,0 +1,114 @@
+First 100 brilliant numbers:
+   4  false
+   6  false
+   9  false
+  10  false
+  14  false
+  15  false
+  21  false
+  25  false
+  35  false
+  49  false
+ true
+ 121  false
+ 143  false
+ 169  false
+ 187  false
+ 209  false
+ 221  false
+ 247  false
+ 253  false
+ 289  false
+ 299  false
+ true
+ 319  false
+ 323  false
+ 341  false
+ 361  false
+ 377  false
+ 391  false
+ 403  false
+ 407  false
+ 437  false
+ 451  false
+ true
+ 473  false
+ 481  false
+ 493  false
+ 517  false
+ 527  false
+ 529  false
+ 533  false
+ 551  false
+ 559  false
+ 583  false
+ true
+ 589  false
+ 611  false
+ 629  false
+ 649  false
+ 667  false
+ 671  false
+ 689  false
+ 697  false
+ 703  false
+ 713  false
+ true
+ 731  false
+ 737  false
+ 767  false
+ 779  false
+ 781  false
+ 793  false
+ 799  false
+ 803  false
+ 817  false
+ 841  false
+ true
+ 851  false
+ 869  false
+ 871  false
+ 893  false
+ 899  false
+ 901  false
+ 913  false
+ 923  false
+ 943  false
+ 949  false
+ true
+ 961  false
+ 979  false
+ 989  false
+1003  false
+1007  false
+1027  false
+1037  false
+1067  false
+1073  false
+1079  false
+ true
+1081  false
+1121  false
+1139  false
+1147  false
+1157  false
+1159  false
+1189  false
+1207  false
+1219  false
+1241  false
+ true
+1247  false
+1261  false
+1271  false
+1273  false
+1333  false
+1343  false
+1349  false
+1357  false
+1363  false
+1369  false
+ true
+ true
+terminate called after throwing an instance of 'std::bad_any_cast'
+  what():  bad any_cast

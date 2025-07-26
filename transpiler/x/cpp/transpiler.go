@@ -677,7 +677,14 @@ func (p *Program) write(w io.Writer) {
 		fmt.Fprintln(w, "}")
 		fmt.Fprintln(w, "static double any_to_double(const std::any& v) {")
 		fmt.Fprintln(w, "    if(v.type() == typeid(int)) return (double)std::any_cast<int>(v);")
+		fmt.Fprintln(w, "    if(v.type() == typeid(int64_t)) return (double)std::any_cast<int64_t>(v);")
 		fmt.Fprintln(w, "    if(v.type() == typeid(double)) return std::any_cast<double>(v);")
+		fmt.Fprintln(w, "    return 0;")
+		fmt.Fprintln(w, "}")
+		fmt.Fprintln(w, "static int64_t any_to_int(const std::any& v) {")
+		fmt.Fprintln(w, "    if(v.type() == typeid(int)) return std::any_cast<int>(v);")
+		fmt.Fprintln(w, "    if(v.type() == typeid(int64_t)) return std::any_cast<int64_t>(v);")
+		fmt.Fprintln(w, "    if(v.type() == typeid(double)) return (int64_t)std::any_cast<double>(v);")
 		fmt.Fprintln(w, "    return 0;")
 		fmt.Fprintln(w, "}")
 	}
@@ -2249,10 +2256,17 @@ func (b *BinaryExpr) emit(w io.Writer) {
 			currentProgram.addInclude("<any>")
 		}
 		io.WriteString(w, "(")
-		io.WriteString(w, "any_to_double(")
-		b.Left.emit(w)
-		io.WriteString(w, ") "+b.Op+" ")
-		b.Right.emit(w)
+		if rt == "int64_t" {
+			io.WriteString(w, "any_to_int(")
+			b.Left.emit(w)
+			io.WriteString(w, ") "+b.Op+" ")
+			b.Right.emit(w)
+		} else {
+			io.WriteString(w, "any_to_double(")
+			b.Left.emit(w)
+			io.WriteString(w, ") "+b.Op+" ")
+			b.Right.emit(w)
+		}
 		io.WriteString(w, ")")
 		return
 	}
@@ -2281,10 +2295,18 @@ func (b *BinaryExpr) emit(w io.Writer) {
 			currentProgram.addInclude("<any>")
 		}
 		io.WriteString(w, "(")
-		b.Left.emit(w)
-		io.WriteString(w, " "+b.Op+" any_to_double(")
-		b.Right.emit(w)
-		io.WriteString(w, "))")
+		if lt == "int64_t" {
+			b.Left.emit(w)
+			io.WriteString(w, " "+b.Op+" any_to_int(")
+			b.Right.emit(w)
+			io.WriteString(w, ")")
+		} else {
+			b.Left.emit(w)
+			io.WriteString(w, " "+b.Op+" any_to_double(")
+			b.Right.emit(w)
+			io.WriteString(w, ")")
+		}
+		io.WriteString(w, ")")
 		return
 	}
 	io.WriteString(w, "(")
@@ -4396,6 +4418,10 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				arg, err := convertExpr(p.Call.Args[0])
 				if err != nil {
 					return nil, err
+				}
+				if exprType(arg) == "std::string" {
+					usesParseIntStr = true
+					return &CallExpr{Name: "_parse_int_str", Args: []Expr{arg, &IntLit{Value: 10}}}, nil
 				}
 				return &CastExpr{Value: arg, Type: "int64_t"}, nil
 			}

@@ -1,3 +1,138 @@
+## Progress (2025-07-27 00:33 +0700)
+- cpp transpiler: support field calls and handle any
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 00:33 +0700)
+- cpp transpiler: support field calls and handle any
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 00:33 +0700)
+- cpp transpiler: support field calls and handle any
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 00:33 +0700)
+- cpp transpiler: support field calls and handle any
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 00:33 +0700)
+- cpp transpiler: support field calls and handle any
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 00:33 +0700)
+- cpp transpiler: support field calls and handle any
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 00:33 +0700)
+- cpp transpiler: support field calls and handle any
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 00:33 +0700)
+- cpp transpiler: support field calls and handle any
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 00:33 +0700)
+- cpp transpiler: support field calls and handle any
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 00:33 +0700)
+- cpp transpiler: support field calls and handle any
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 00:33 +0700)
+- cpp transpiler: support field calls and handle any
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 00:33 +0700)
+- cpp transpiler: support field calls and handle any
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 00:33 +0700)
+- cpp transpiler: support field calls and handle any
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 00:33 +0700)
+- cpp transpiler: support field calls and handle any
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 00:33 +0700)
+- cpp transpiler: support field calls and handle any
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 00:33 +0700)
+- cpp transpiler: support field calls and handle any
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 00:33 +0700)
+- cpp transpiler: support field calls and handle any
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 00:33 +0700)
+- cpp transpiler: support field calls and handle any
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 00:33 +0700)
+- cpp transpiler: support field calls and handle any
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 00:33 +0700)
+- cpp transpiler: support field calls and handle any
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 00:33 +0700)
+- cpp transpiler: support field calls and handle any
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 00:33 +0700)
+- cpp transpiler: support field calls and handle any
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 00:33 +0700)
+- cpp transpiler: support field calls and handle any
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 00:33 +0700)
+- cpp transpiler: support field calls and handle any
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 00:33 +0700)
+- cpp transpiler: support field calls and handle any
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 00:33 +0700)
+- cpp transpiler: support field calls and handle any
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 00:33 +0700)
+- cpp transpiler: support field calls and handle any
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
 ## Progress (2025-07-26 22:59 +0700)
 - transpiler/rb: support slice builtin and update rosetta outputs
 - Generated C++ for 103/104 programs

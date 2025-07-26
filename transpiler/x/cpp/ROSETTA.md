@@ -2,7 +2,7 @@
 
 This directory stores C++ code generated from Mochi programs in `tests/rosetta/x/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.cpp` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (109/332) - Last updated 2025-07-26 23:45 +0700:
+Checklist of programs that currently transpile and run (116/341) - Last updated 2025-07-27 00:33 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | 100-doors-2 | ✓ | 222.0µs | 13.12MB |
@@ -13,7 +13,7 @@ Checklist of programs that currently transpile and run (109/332) - Last updated 
 | 6 | 15-puzzle-solver | ✓ | 141.0µs | 12.91MB |
 | 7 | 2048 | ✓ | 689.0µs | 13.73MB |
 | 8 | 21-game | ✓ | 356.0µs | 13.36MB |
-| 9 | 24-game-solve |   | 4.0ms | 13.75MB |
+| 9 | 24-game-solve | ✓ | 4.0ms | 13.75MB |
 | 10 | 24-game | ✓ |  |  |
 | 11 | 4-rings-or-4-squares-puzzle |   |  |  |
 | 12 | 9-billion-names-of-god-the-integer | ✓ | 126.70s | 219.41MB |
@@ -136,26 +136,26 @@ Checklist of programs that currently transpile and run (109/332) - Last updated 
 | 129 | bitwise-io-1 |   | 246.0µs | 13.08MB |
 | 130 | bitwise-io-2 | ✓ | 574.0µs | 14.68MB |
 | 131 | bitwise-operations | ✓ | 233.0µs | 13.95MB |
-| 132 | blum-integer |   |  |  |
-| 133 | boolean-values |   |  |  |
-| 134 | box-the-compass |   |  |  |
-| 135 | boyer-moore-string-search |   |  |  |
-| 136 | brazilian-numbers |   |  |  |
-| 137 | break-oo-privacy |   |  |  |
+| 132 | blum-integer | ✓ | 531.0µs | 14.12MB |
+| 133 | boolean-values | ✓ | 170.0µs | 12.94MB |
+| 134 | box-the-compass | ✓ | 861.0µs | 12.99MB |
+| 135 | boyer-moore-string-search | ✓ | 371.0µs | 13.49MB |
+| 136 | brazilian-numbers | ✓ | 8.55s | 13.43MB |
+| 137 | break-oo-privacy | ✓ | 280.0µs | 13.11MB |
 | 138 | brilliant-numbers |   |  |  |
 | 139 | brownian-tree |   |  |  |
 | 140 | bulls-and-cows-player |   |  |  |
 | 141 | bulls-and-cows |   |  |  |
-| 142 | burrows-wheeler-transform |   |  |  |
-| 143 | caesar-cipher-1 |   |  |  |
-| 144 | caesar-cipher-2 |   |  |  |
-| 145 | calculating-the-value-of-e |   |  |  |
-| 146 | calendar---for-real-programmers-1 |   |  |  |
-| 147 | calendar---for-real-programmers-2 |   |  |  |
-| 148 | calendar |   |  |  |
+| 142 | burrows-wheeler-transform |   | 22.0ms | 14.05MB |
+| 143 | caesar-cipher-1 |   | 778.0µs | 13.25MB |
+| 144 | caesar-cipher-2 |   | 749.0µs | 12.86MB |
+| 145 | calculating-the-value-of-e |   | 266.0µs | 13.37MB |
+| 146 | calendar---for-real-programmers-1 |   | 1.0ms | 13.09MB |
+| 147 | calendar---for-real-programmers-2 |   | 1.0ms | 12.86MB |
+| 148 | calendar |   | 1.0ms | 13.36MB |
 | 149 | calkin-wilf-sequence |   |  |  |
-| 150 | call-a-foreign-language-function |   |  |  |
-| 151 | call-a-function-1 |   |  |  |
+| 150 | call-a-foreign-language-function |   | 193.0µs | 12.50MB |
+| 151 | call-a-function-1 |   | 4.0µs | 12.79MB |
 | 152 | call-a-function-10 |   |  |  |
 | 153 | call-a-function-11 |   |  |  |
 | 154 | call-a-function-12 |   |  |  |
@@ -335,5 +335,14 @@ Checklist of programs that currently transpile and run (109/332) - Last updated 
 | 328 | earliest-difference-between-prime-gaps |   |  |  |
 | 329 | eban-numbers |   |  |  |
 | 330 | echo-server |   |  |  |
-| 331 | ekg-sequence-convergence |   |  |  |
-| 332 | md5 |   |  |  |
+| 331 | eertree |   |  |  |
+| 332 | egyptian-division |   |  |  |
+| 333 | ekg-sequence-convergence |   |  |  |
+| 334 | element-wise-operations |   |  |  |
+| 335 | elementary-cellular-automaton-infinite-length |   |  |  |
+| 336 | elementary-cellular-automaton-random-number-generator |   |  |  |
+| 337 | elementary-cellular-automaton |   |  |  |
+| 338 | elliptic-curve-arithmetic |   |  |  |
+| 339 | emirp-primes |   |  |  |
+| 340 | empty-directory |   |  |  |
+| 341 | md5 |   |  |  |
