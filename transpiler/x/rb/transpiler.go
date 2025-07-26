@@ -1274,6 +1274,32 @@ func identName(n string) string {
 	}
 }
 
+// fieldName returns a safe Ruby field name without applying the global
+// variable rewriting that identName performs. Struct field identifiers
+// should not be prefixed with `$`, even if a top-level variable shares
+// the same name.
+func fieldName(n string) string {
+	name := n
+	if inScope(n) && name != "" && unicode.IsUpper(rune(n[0])) {
+		name = "_" + name
+	}
+	switch name {
+	case "nil", "true", "false":
+		return name
+	default:
+		return safeName(name)
+	}
+}
+
+func isNumericType(t types.Type) bool {
+	switch t.(type) {
+	case types.IntType, types.Int64Type, types.FloatType, types.BigIntType, types.BigRatType:
+		return true
+	default:
+		return false
+	}
+}
+
 func (e *emitter) writeIndent() {
 	for i := 0; i < e.indent; i++ {
 		io.WriteString(e.w, "  ")
@@ -2040,6 +2066,16 @@ type MethodCallExpr struct {
 	Args   []Expr
 }
 
+// MethodRefExpr represents a reference to a named method, used when
+// passing a function as a value.
+type MethodRefExpr struct{ Name string }
+
+func (m *MethodRefExpr) emit(e *emitter) {
+	io.WriteString(e.w, "method(:")
+	io.WriteString(e.w, m.Name)
+	io.WriteString(e.w, ")")
+}
+
 func (m *MethodCallExpr) emit(e *emitter) {
 	if m.Method == "padStart" && len(m.Args) == 2 {
 		io.WriteString(e.w, "_padStart(")
@@ -2235,7 +2271,7 @@ func valueToExpr(v interface{}, typ *parser.TypeRef) Expr {
 		items := make([]MapItem, len(names))
 		for i, k := range names {
 			expr := valueToExpr(val[k], nil)
-			fields[i] = StructField{Name: identName(k), Value: expr}
+			fields[i] = StructField{Name: fieldName(k), Value: expr}
 			items[i] = MapItem{Key: &StringLit{Value: k}, Value: expr}
 		}
 		if typ != nil && typ.Simple != nil {
@@ -2668,7 +2704,7 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 			var methods []*FuncStmt
 			for _, m := range st.Type.Members {
 				if m.Field != nil {
-					fields = append(fields, identName(m.Field.Name))
+					fields = append(fields, fieldName(m.Field.Name))
 				} else if m.Method != nil {
 					fn, err := convertFunc(m.Method)
 					if err != nil {
@@ -2688,7 +2724,7 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 			} else {
 				fields := make([]string, len(v.Fields))
 				for i, f := range v.Fields {
-					fields[i] = identName(f.Name)
+					fields[i] = fieldName(f.Name)
 				}
 				stmts = append(stmts, &StructDefStmt{Name: identName(v.Name), Fields: fields})
 			}
@@ -2703,7 +2739,7 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 				structName := identName(toStructName(st.Let.Name))
 				skeys := make([]string, len(keys))
 				for i, k := range keys {
-					skeys[i] = identName(k)
+					skeys[i] = fieldName(k)
 				}
 				stmts := []Stmt{&StructDefStmt{Name: structName, Fields: skeys}}
 				elems := make([]Expr, len(vals))
@@ -3580,7 +3616,7 @@ func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
 							for i, name := range st.Order {
 								for _, it := range ml.Items {
 									if sl, ok := it.Key.(*StringLit); ok && sl.Value == name {
-										fields[i] = StructField{Name: identName(name), Value: it.Value}
+										fields[i] = StructField{Name: fieldName(name), Value: it.Value}
 										break
 									}
 								}
@@ -3594,6 +3630,17 @@ func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
 				}
 				expr = &CastExpr{Value: expr, Type: typName}
 			}
+		case op.Call != nil:
+			args := make([]Expr, len(op.Call.Args))
+			for j, a := range op.Call.Args {
+				ex, err := convertExpr(a)
+				if err != nil {
+					return nil, err
+				}
+				args[j] = ex
+			}
+			expr = &MethodCallExpr{Target: expr, Method: "call", Args: args}
+			curType = nil
 		default:
 			return nil, fmt.Errorf("unsupported postfix")
 		}
@@ -3745,7 +3792,13 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			if len(args) != 2 {
 				return nil, fmt.Errorf("pow expects 2 args")
 			}
-			return &BinaryExpr{Op: "**", Left: args[0], Right: args[1]}, nil
+			if currentEnv != nil {
+				t := types.ExprType(p.Call.Args[0], currentEnv)
+				if isNumericType(t) {
+					return &BinaryExpr{Op: "**", Left: args[0], Right: args[1]}, nil
+				}
+			}
+			return &CallExpr{Func: name, Args: args}, nil
 		case "now":
 			if len(args) != 0 {
 				return nil, fmt.Errorf("now takes no args")
@@ -3865,7 +3918,7 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			if err != nil {
 				return nil, err
 			}
-			fields[i] = StructField{Name: identName(f.Name), Value: v}
+			fields[i] = StructField{Name: fieldName(f.Name), Value: v}
 		}
 		return &StructNewExpr{Name: identName(p.Struct.Name), Fields: fields}, nil
 	case p.Match != nil:
@@ -3888,6 +3941,11 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		if currentEnv != nil {
 			prim := &parser.Primary{Selector: &parser.SelectorExpr{Root: p.Selector.Root}}
 			t = types.ExprType(exprFromPrimary(prim), currentEnv)
+		}
+		if len(p.Selector.Tail) == 0 && currentEnv != nil {
+			if _, ok := currentEnv.GetFunc(p.Selector.Root); ok {
+				return &MethodRefExpr{Name: identName(p.Selector.Root)}, nil
+			}
 		}
 		for _, seg := range p.Selector.Tail {
 			expr, t = fieldAccess(expr, t, seg)
@@ -4490,7 +4548,7 @@ func convertQueryForLet(q *parser.QueryExpr, name string) (Expr, Stmt, error) {
 			if err != nil {
 				return nil, nil, err
 			}
-			skeys[i] = identName(keys[i])
+			skeys[i] = fieldName(keys[i])
 			fields[i] = StructField{Name: skeys[i], Value: ex}
 			if currentEnv != nil {
 				fieldTypes[skeys[i]] = types.ExprType(v, currentEnv)
