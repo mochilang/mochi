@@ -1,7 +1,7 @@
 # Go Rosetta Transpiler Output
 
-Completed programs: 139/284
-Last updated: 2025-07-26 04:40 +0700
+Completed programs: 153/284
+Last updated: 2025-07-26 09:13 +0700
 
 Checklist:
 
@@ -154,20 +154,20 @@ Checklist:
 | 145 | calendar---for-real-programmers-1 | ✓ | 595.0µs | 11.21KB |
 | 146 | calendar---for-real-programmers-2 | ✓ | 1.0ms | 11.21KB |
 | 147 | calendar | ✓ | 518.0µs | 11.21KB |
-| 148 | calkin-wilf-sequence |   |  |  |
-| 149 | call-a-foreign-language-function |   |  |  |
-| 150 | call-a-function-1 |   |  |  |
-| 151 | call-a-function-10 |   |  |  |
-| 152 | call-a-function-11 |   |  |  |
-| 153 | call-a-function-12 |   |  |  |
-| 154 | call-a-function-2 |   |  |  |
-| 155 | call-a-function-3 |   |  |  |
-| 156 | call-a-function-4 |   |  |  |
-| 157 | call-a-function-5 |   |  |  |
-| 158 | call-a-function-6 |   |  |  |
-| 159 | call-a-function-7 |   |  |  |
-| 160 | call-a-function-8 |   |  |  |
-| 161 | call-a-function-9 |   |  |  |
+| 148 | calkin-wilf-sequence | ✓ | 1.0ms | 34.42KB |
+| 149 | call-a-foreign-language-function | ✓ | 203.0µs | 952B |
+| 150 | call-a-function-1 | ✓ | 26.0µs | 0B |
+| 151 | call-a-function-10 | ✓ | 125.0µs | 64B |
+| 152 | call-a-function-11 | ✓ | 460.0µs | 1.02KB |
+| 153 | call-a-function-12 | ✓ | 572.0µs | 968B |
+| 154 | call-a-function-2 | ✓ | 17.0µs | 0B |
+| 155 | call-a-function-3 | ✓ | 23.0µs | 0B |
+| 156 | call-a-function-4 | ✓ | 167.0µs | 0B |
+| 157 | call-a-function-5 | ✓ | 405.0µs | 952B |
+| 158 | call-a-function-6 | ✓ | 285.0µs | 952B |
+| 159 | call-a-function-7 | ✓ | 25.0µs | 0B |
+| 160 | call-a-function-8 | ✓ | 202.0µs | 176B |
+| 161 | call-a-function-9 | ✓ | 29.0µs | 64B |
 | 162 | call-an-object-method-1 |   |  |  |
 | 163 | call-an-object-method-2 |   |  |  |
 | 164 | call-an-object-method-3 |   |  |  |

@@ -1195,6 +1195,9 @@ type IntCastExpr struct{ Expr Expr }
 func (ic *IntCastExpr) emit(w io.Writer) {
 	io.WriteString(w, "int(")
 	ic.Expr.emit(w)
+	if _, ok := ic.Expr.(*BigBinaryExpr); ok {
+		io.WriteString(w, ".Int64()")
+	}
 	io.WriteString(w, ")")
 }
 
@@ -1753,6 +1756,13 @@ func (a *AssertExpr) emit(w io.Writer) {
 		inner.Expr.emit(w)
 		fmt.Fprintf(w, ".(%s)", a.Type)
 		return
+	}
+	if a.Type == "[]any" {
+		switch a.Expr.(type) {
+		case *CallExpr, *VarRef, *IndexExpr, *SliceExpr:
+			a.Expr.emit(w)
+			return
+		}
 	}
 	a.Expr.emit(w)
 	fmt.Fprintf(w, ".(%s)", a.Type)
@@ -4280,7 +4290,12 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env, base string) (Expr, 
 							expr = &AssertExpr{Expr: expr, Type: "int"}
 						}
 					default:
-						expr = &IntCastExpr{Expr: expr}
+						if _, ok := expr.(*BigBinaryExpr); ok {
+							usesBigInt = true
+							expr = &BigIntToIntExpr{Value: expr}
+						} else {
+							expr = &IntCastExpr{Expr: expr}
+						}
 					}
 					t = types.IntType{}
 				} else if name == "bigint" {
@@ -4577,6 +4592,20 @@ func compilePrimary(p *parser.Primary, env *types.Env, base string) (Expr, error
 		case "denom":
 			usesBigRat = true
 			return &CallExpr{Func: "_denom", Args: []Expr{args[0]}}, nil
+		case "append":
+			if len(args) >= 2 {
+				if lt, ok := types.TypeOfExpr(p.Call.Args[0], env).(types.ListType); ok {
+					et := toGoTypeFromType(lt.Elem)
+					if et != "" && et != "any" {
+						for i := 1; i < len(args); i++ {
+							if types.IsAnyType(types.TypeOfExpr(p.Call.Args[i], env)) {
+								args[i] = &AssertExpr{Expr: args[i], Type: et}
+							}
+						}
+					}
+				}
+			}
+			return &CallExpr{Func: "append", Args: args}, nil
 		case "lower":
 			usesStrings = true
 			return &CallExpr{Func: "strings.ToLower", Args: []Expr{args[0]}}, nil
@@ -4633,6 +4662,17 @@ func compilePrimary(p *parser.Primary, env *types.Env, base string) (Expr, error
 							gt := toGoTypeFromType(mt)
 							if gt != "" && gt != "any" {
 								args[i] = &AssertExpr{Expr: args[i], Type: gt}
+							}
+						}
+						if _, ok := at.(types.BigIntType); ok {
+							if _, ok2 := mt.(types.IntType); ok2 {
+								usesBigInt = true
+								args[i] = &BigIntToIntExpr{Value: args[i]}
+							}
+						}
+						if ll, ok := args[i].(*ListLit); ok {
+							if lt, ok2 := mt.(types.ListType); ok2 && ll.ElemType == "any" && len(ll.Elems) == 0 {
+								ll.ElemType = toGoTypeFromType(lt.Elem)
 							}
 						}
 						if lit, ok := args[i].(*FuncLit); ok {

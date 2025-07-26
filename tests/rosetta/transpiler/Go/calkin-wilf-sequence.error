@@ -1,4 +1,0 @@
-exit status 1
-# command-line-arguments
-../../../tests/rosetta/transpiler/Go/calkin-wilf-sequence.go:75:27: cannot use f (variable of type *big.Int) as int value in argument to bigrat
-../../../tests/rosetta/transpiler/Go/calkin-wilf-sequence.go:95:25: cannot convert new(big.Int).Div(a, b) (value of type *big.Int) to type int
