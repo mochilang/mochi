@@ -2949,9 +2949,22 @@ func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, erro
 		p.Stmts = append(p.Stmts, stmts...)
 	}
 	bm := bench || benchMain
+	hasMain := false
+	for _, f := range p.Funs {
+		if f.Name == "main" && len(f.Params) == 0 {
+			hasMain = true
+			break
+		}
+	}
 	if bm {
 		useNow = true
-		p.Stmts = []Stmt{&BenchStmt{Name: "main", Body: p.Stmts}}
+		body := p.Stmts
+		if len(body) == 0 && hasMain {
+			body = []Stmt{&CallStmt{Call: &CallExpr{Func: "main"}}}
+		}
+		p.Stmts = []Stmt{&BenchStmt{Name: "main", Body: body}}
+	} else if len(p.Stmts) == 0 && hasMain {
+		p.Stmts = []Stmt{&CallStmt{Call: &CallExpr{Func: "main"}}}
 	}
 	p.UseNow = useNow
 	p.UseLookupHost = useLookupHost
@@ -4231,8 +4244,22 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env, ctx *context) (Expr,
 			if nr, ok := expr.(*NameRef); ok {
 				ce.Func = nr.Name
 			} else if c, ok := expr.(*CallExpr); ok {
-				ce.Func = c.Func
-				ce.Args = append(ce.Args, c.Args...)
+				if _, okf := env.GetFunc(c.Func); okf {
+					ce.Func = c.Func
+					ce.Args = append(ce.Args, c.Args...)
+				} else {
+					// call result of previous expression using apply/2
+					args := make([]Expr, len(op.Call.Args))
+					for i, a := range op.Call.Args {
+						ae, err := convertExpr(a, env, ctx)
+						if err != nil {
+							return nil, err
+						}
+						args[i] = ae
+					}
+					expr = &CallExpr{Func: "apply", Args: []Expr{c, &ListLit{Elems: args}}}
+					continue
+				}
 			} else {
 				return nil, fmt.Errorf("unsupported postfix")
 			}
@@ -4456,6 +4483,11 @@ func convertPrimary(p *parser.Primary, env *types.Env, ctx *context) (Expr, erro
 				call.ReturnsString = true
 			}
 			return call, nil
+		}
+		if fn, ok := env.GetFunc(p.Selector.Root); ok {
+			if _, exists := ctx.alias[p.Selector.Root]; !exists && !ctx.isParam(p.Selector.Root) {
+				return &NameRef{Name: fmt.Sprintf("fun %s/%d", strings.ToLower(p.Selector.Root), len(fn.Params))}, nil
+			}
 		}
 		nr := &NameRef{Name: ctx.current(p.Selector.Root)}
 		if t, err := env.GetVar(p.Selector.Root); err == nil {
