@@ -1,0 +1,6 @@
+Assertion failed
+{
+  "duration_us": 241,
+  "memory_bytes": 365304,
+  "name": "main"
+}
