@@ -461,12 +461,17 @@ func (i *IfStmt) emit(w io.Writer) {
 }
 
 type CallExpr struct {
-	Func string
-	Args []Expr
+	Func     string
+	FuncExpr Expr
+	Args     []Expr
 }
 
 func (c *CallExpr) emit(w io.Writer) {
-	fmt.Fprint(w, c.Func)
+	if c.FuncExpr != nil {
+		c.FuncExpr.emit(w)
+	} else {
+		fmt.Fprint(w, c.Func)
+	}
 	fmt.Fprint(w, "(")
 	for i, a := range c.Args {
 		if i > 0 {
@@ -3803,6 +3808,9 @@ func compileFunStmt(fn *parser.FunStmt, env *types.Env) (Stmt, error) {
 	params := make([]ParamDecl, len(fn.Params))
 	for i, p := range fn.Params {
 		typ := toGoType(p.Type, env)
+		if typ == "" && p.Type != nil {
+			typ = toGoTypeFromType(types.ResolveTypeRef(p.Type, env))
+		}
 		if typ == "" {
 			if t, err := child.GetVar(p.Name); err == nil {
 				typ = toGoTypeFromType(t)
@@ -3811,6 +3819,9 @@ func compileFunStmt(fn *parser.FunStmt, env *types.Env) (Stmt, error) {
 		params[i] = ParamDecl{Name: p.Name, Type: typ}
 	}
 	ret := toGoType(fn.Return, env)
+	if ret == "" && fn.Return != nil {
+		ret = toGoTypeFromType(types.ResolveTypeRef(fn.Return, env))
+	}
 	if ret == "" {
 		if t, err := child.GetVar(fn.Name); err == nil {
 			if ft, ok := t.(types.FuncType); ok {
@@ -3879,6 +3890,9 @@ func compileFunExpr(fn *parser.FunExpr, env *types.Env) (Expr, error) {
 	params := make([]ParamDecl, len(fn.Params))
 	for i, p := range fn.Params {
 		typ := toGoType(p.Type, env)
+		if typ == "" && p.Type != nil {
+			typ = toGoTypeFromType(types.ResolveTypeRef(p.Type, env))
+		}
 		if typ == "" {
 			if t, err := child.GetVar(p.Name); err == nil {
 				typ = toGoTypeFromType(t)
@@ -3887,6 +3901,9 @@ func compileFunExpr(fn *parser.FunExpr, env *types.Env) (Expr, error) {
 		params[i] = ParamDecl{Name: p.Name, Type: typ}
 	}
 	ret := toGoType(fn.Return, env)
+	if ret == "" && fn.Return != nil {
+		ret = toGoTypeFromType(types.ResolveTypeRef(fn.Return, env))
+	}
 	currentRetType = prevRet
 	return &FuncLit{Params: params, Return: ret, Body: stmts}, nil
 }
@@ -4230,41 +4247,41 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env, base string) (Expr, 
 			recv = &VarRef{Name: pf.Target.Selector.Root}
 		}
 		return &MethodCallExpr{Target: recv, Method: method, Args: args}, nil
-		switch method {
-		case "contains":
-			rec := pf.Target
-			if pf.Target != nil && pf.Target.Selector != nil && len(pf.Target.Selector.Tail) > 0 {
-				rec = &parser.Primary{Selector: &parser.SelectorExpr{Root: pf.Target.Selector.Root}}
-			}
-			mtype := types.TypeOfPrimary(rec, env)
-			var kind, et string
-			switch mt := mtype.(type) {
-			case types.StringType:
-				kind = "string"
-			case types.MapType:
-				kind = "map"
-				et = toGoTypeFromType(mt.Key)
-			case types.ListType:
-				kind = "list"
-				et = toGoTypeFromType(mt.Elem)
-			default:
-				kind = "list"
-			}
-			if kind == "string" {
-				usesStrings = true
-			}
-			return &ContainsExpr{Collection: expr, Value: args[0], Kind: kind, ElemType: et}, nil
-		case "keys":
-			mt, _ := types.TypeOfPrimary(pf.Target, env).(types.MapType)
-			usesSort = true
-			return &KeysExpr{Map: expr, KeyType: toGoTypeFromType(mt.Key)}, nil
-		case "values":
-			mt, _ := types.TypeOfPrimary(pf.Target, env).(types.MapType)
-			usesSort = true
-			return &ValuesExpr{Map: expr, ValueType: toGoTypeFromType(mt.Value)}, nil
-		default:
-			return nil, fmt.Errorf("unsupported method %s", method)
-		}
+		/*switch method {
+		               case "contains":
+		                       rec := pf.Target
+		                       if pf.Target != nil && pf.Target.Selector != nil && len(pf.Target.Selector.Tail) > 0 {
+		                               rec = &parser.Primary{Selector: &parser.SelectorExpr{Root: pf.Target.Selector.Root}}
+		                       }
+		                       mtype := types.TypeOfPrimary(rec, env)
+					var kind, et string
+					switch mt := mtype.(type) {
+					case types.StringType:
+						kind = "string"
+					case types.MapType:
+						kind = "map"
+						et = toGoTypeFromType(mt.Key)
+					case types.ListType:
+						kind = "list"
+						et = toGoTypeFromType(mt.Elem)
+					default:
+						kind = "list"
+					}
+					if kind == "string" {
+						usesStrings = true
+					}
+					return &ContainsExpr{Collection: expr, Value: args[0], Kind: kind, ElemType: et}, nil
+				case "keys":
+					mt, _ := types.TypeOfPrimary(pf.Target, env).(types.MapType)
+					usesSort = true
+					return &KeysExpr{Map: expr, KeyType: toGoTypeFromType(mt.Key)}, nil
+				case "values":
+					mt, _ := types.TypeOfPrimary(pf.Target, env).(types.MapType)
+					usesSort = true
+					return &ValuesExpr{Map: expr, ValueType: toGoTypeFromType(mt.Value)}, nil
+				default:
+		                       return nil, fmt.Errorf("unsupported method %s", method)
+		               }*/
 	}
 	for i := 0; i < len(pf.Ops); i++ {
 		op := pf.Ops[i]
@@ -4377,20 +4394,29 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env, base string) (Expr, 
 				}
 			}
 		} else if op.Call != nil {
+			args := make([]Expr, len(op.Call.Args))
+			for j, a := range op.Call.Args {
+				ex, err := compileExpr(a, env, "")
+				if err != nil {
+					return nil, err
+				}
+				args[j] = ex
+			}
 			if vr, ok := expr.(*VarRef); ok {
 				if _, ok2 := imports[vr.Name]; ok2 {
-					args := make([]Expr, len(op.Call.Args))
-					for j, a := range op.Call.Args {
-						ex, err := compileExpr(a, env, "")
-						if err != nil {
-							return nil, err
-						}
-						args[j] = ex
-					}
-					return &CallExpr{Func: vr.Name, Args: args}, nil
+					expr = &CallExpr{Func: vr.Name, Args: args}
+				} else {
+					expr = &CallExpr{FuncExpr: expr, Args: args}
 				}
+			} else {
+				expr = &CallExpr{FuncExpr: expr, Args: args}
 			}
-			return nil, fmt.Errorf("unsupported call")
+			if ft, ok := t.(types.FuncType); ok {
+				t = ft.Return
+			} else {
+				t = types.AnyType{}
+			}
+			continue
 		} else if op.Cast != nil {
 			if op.Cast.Type == nil {
 				return nil, fmt.Errorf("unsupported postfix")
@@ -4607,6 +4633,9 @@ func compilePrimary(p *parser.Primary, env *types.Env, base string) (Expr, error
 			}
 			return &CallExpr{Func: "math.Abs", Args: []Expr{args[0]}}, nil
 		case "pow":
+			if _, err := env.GetVar(name); err == nil {
+				return &CallExpr{Func: name, Args: args}, nil
+			}
 			if imports != nil {
 				imports["math"] = "math"
 			}
@@ -5130,7 +5159,7 @@ func toGoType(t *parser.TypeRef, env *types.Env) string {
 		}
 		return fmt.Sprintf("func(%s) any", strings.Join(params, ", "))
 	}
-	return "any"
+	return ""
 }
 
 func toGoTypeFromType(t types.Type) string {
@@ -5746,7 +5775,14 @@ func toNodeStmt(s Stmt) *ast.Node {
 func toNodeExpr(e Expr) *ast.Node {
 	switch ex := e.(type) {
 	case *CallExpr:
-		n := &ast.Node{Kind: "call", Value: ex.Func}
+		name := ex.Func
+		if name == "" {
+			name = "expr"
+		}
+		n := &ast.Node{Kind: "call", Value: name}
+		if ex.FuncExpr != nil {
+			n.Children = append(n.Children, toNodeExpr(ex.FuncExpr))
+		}
 		for _, a := range ex.Args {
 			n.Children = append(n.Children, toNodeExpr(a))
 		}
@@ -5962,6 +5998,9 @@ func substituteFieldVars(e Expr, fields map[string]bool) Expr {
 		ex.Right = substituteFieldVars(ex.Right, fields)
 		return ex
 	case *CallExpr:
+		if ex.FuncExpr != nil {
+			ex.FuncExpr = substituteFieldVars(ex.FuncExpr, fields)
+		}
 		for i := range ex.Args {
 			ex.Args[i] = substituteFieldVars(ex.Args[i], fields)
 		}
@@ -6089,6 +6128,9 @@ func fixListLits(expr Expr, env *types.Env) {
 			fixListLits(e, env)
 		}
 	case *CallExpr:
+		if ex.FuncExpr != nil {
+			fixListLits(ex.FuncExpr, env)
+		}
 		for _, a := range ex.Args {
 			fixListLits(a, env)
 		}
@@ -6202,6 +6244,9 @@ func substituteFieldRefsExpr(e Expr, recv string, fields map[string]bool) Expr {
 		}
 		return ex
 	case *CallExpr:
+		if ex.FuncExpr != nil {
+			ex.FuncExpr = substituteFieldRefsExpr(ex.FuncExpr, recv, fields)
+		}
 		for i, a := range ex.Args {
 			ex.Args[i] = substituteFieldRefsExpr(a, recv, fields)
 		}
