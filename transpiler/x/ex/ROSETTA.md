@@ -2,8 +2,8 @@
 
 Generated Elixir code from Mochi Rosetta programs lives in `tests/rosetta/transpiler/Elixir`.
 
-## Rosetta Test Checklist (44/332)
-_Last updated: 2025-07-26 10:36 +0000_
+## Rosetta Test Checklist (48/332)
+_Last updated: 2025-07-26 17:59 +0700_
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | 100-doors-2 | ✓ |  |  |
@@ -51,17 +51,17 @@ _Last updated: 2025-07-26 10:36 +0000_
 | 43 | almkvist-giullera-formula-for-pi |  |  |  |
 | 44 | almost-prime |  |  |  |
 | 45 | amb | ✓ | 922us | 18.8 KB |
-| 46 | amicable-pairs | ✓ | 5.90s | 1.5 MB |
-| 47 | anagrams-deranged-anagrams | ✓ | 1.58ms | 51.4 KB |
-| 48 | anagrams | ✓ | 637us | 38.0 KB |
-| 49 | angle-difference-between-two-bearings-1 | ✓ | 1.88ms | 121.1 KB |
-| 50 | angle-difference-between-two-bearings-2 | ✓ | 1.49ms | 208.0 KB |
-| 51 | angles-geometric-normalization-and-conversion | ✓ | 2.46ms | 494.8 KB |
-| 52 | animate-a-pendulum |  |  |  |
+| 46 | amicable-pairs | ✓ |  |  |
+| 47 | anagrams-deranged-anagrams | ✓ |  |  |
+| 48 | anagrams | ✓ |  |  |
+| 49 | angle-difference-between-two-bearings-1 | ✓ |  |  |
+| 50 | angle-difference-between-two-bearings-2 | ✓ |  |  |
+| 51 | angles-geometric-normalization-and-conversion | ✓ |  |  |
+| 52 | animate-a-pendulum | ✓ |  |  |
 | 53 | animation |  |  |  |
-| 54 | anonymous-recursion-1 |  |  |  |
-| 55 | anonymous-recursion-2 |  |  |  |
-| 56 | anonymous-recursion |  |  |  |
+| 54 | anonymous-recursion-1 | ✓ |  |  |
+| 55 | anonymous-recursion-2 | ✓ |  |  |
+| 56 | anonymous-recursion | ✓ |  |  |
 | 57 | anti-primes |  |  |  |
 | 58 | append-a-record-to-the-end-of-a-text-file |  |  |  |
 | 59 | apply-a-callback-to-an-array-1 |  |  |  |

@@ -71,6 +71,18 @@ func uniqueWhileName() string {
 // moduleMode is true when emitting a module with functions.
 var moduleMode bool
 
+func emitGlobalUpdates(w io.Writer, indent int, vars []string) {
+	for _, v := range vars {
+		if isGlobalVar(v) {
+			io.WriteString(w, "\n")
+			for i := 0; i < indent; i++ {
+				io.WriteString(w, "  ")
+			}
+			fmt.Fprintf(w, "Process.put(:%s, %s)\n", moduleAttrName(v), sanitizeIdent(v))
+		}
+	}
+}
+
 // Program represents a sequence of Elixir statements.
 type Program struct {
 	Stmts []Stmt
@@ -526,7 +538,7 @@ func (fs *ForStmt) emit(w io.Writer, indent int) {
 				if i > 0 {
 					io.WriteString(w, ", ")
 				}
-				io.WriteString(w, v)
+				(&VarRef{Name: v}).emit(w)
 			}
 			io.WriteString(w, "}, fn ")
 			io.WriteString(w, fs.Name)
@@ -557,6 +569,7 @@ func (fs *ForStmt) emit(w io.Writer, indent int) {
 				io.WriteString(w, "  ")
 			}
 			io.WriteString(w, "end)")
+			emitGlobalUpdates(w, indent, fs.Vars)
 			return
 		}
 		for i := 0; i < indent; i++ {
@@ -632,6 +645,7 @@ func (fs *ForStmt) emit(w io.Writer, indent int) {
 			io.WriteString(w, "  ")
 		}
 		io.WriteString(w, "end")
+		emitGlobalUpdates(w, indent, fs.Vars)
 		return
 	}
 	if len(fs.Vars) > 0 && fs.End == nil && fs.Simple {
@@ -683,6 +697,7 @@ func (fs *ForStmt) emit(w io.Writer, indent int) {
 			io.WriteString(w, "  ")
 		}
 		io.WriteString(w, "end)")
+		emitGlobalUpdates(w, indent, fs.Vars)
 		return
 	}
 	if len(fs.Vars) > 0 && fs.End == nil {
@@ -756,7 +771,7 @@ func (fs *ForStmt) emit(w io.Writer, indent int) {
 		for i := 0; i < indent; i++ {
 			io.WriteString(w, "  ")
 		}
-		io.WriteString(w, "end")
+		io.WriteString(w, "end)")
 		return
 	}
 	if fs.Simple {
@@ -986,12 +1001,13 @@ type CondExpr struct {
 func (c *CondExpr) emit(w io.Writer) {
 	io.WriteString(w, "if ")
 	c.Cond.emit(w)
-	io.WriteString(w, ", do: ")
+	io.WriteString(w, " do\n  ")
 	c.Then.emit(w)
 	if c.Else != nil {
-		io.WriteString(w, ", else: ")
+		io.WriteString(w, "\nelse\n  ")
 		c.Else.emit(w)
 	}
+	io.WriteString(w, "\nend")
 }
 
 // CaseExpr represents a simple match/case expression.
@@ -1076,10 +1092,12 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		return
 	}
 	if b.Op == "%" {
-		if isFloat(b.Left) || isFloat(b.Right) {
+		if b.IntDiv {
+			io.WriteString(w, "rem(")
+		} else if isFloat(b.Left) || isFloat(b.Right) {
 			io.WriteString(w, ":math.fmod(")
 		} else {
-			io.WriteString(w, "rem(")
+			io.WriteString(w, ":math.fmod(")
 		}
 		b.Left.emit(w)
 		io.WriteString(w, ", ")
@@ -2971,6 +2989,10 @@ func compileBinary(b *parser.BinaryExpr, env *types.Env) (Expr, error) {
 							bin.StrConcat = true
 						}
 					} else if opName == "/" {
+						if types.IsIntType(typesSlice[i]) && types.IsIntType(typesSlice[i+1]) {
+							bin.IntDiv = true
+						}
+					} else if opName == "%" {
 						if types.IsIntType(typesSlice[i]) && types.IsIntType(typesSlice[i+1]) {
 							bin.IntDiv = true
 						}

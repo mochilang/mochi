@@ -44,19 +44,42 @@ defmodule Main do
       true -> Enum.slice(base, start, len)
     end
   end
-  def angleDiff(b1, b2) do
+  def fib(n) do
     try do
-      diff = b2 - b1
-      throw {:return, (:math.fmod((:math.fmod(diff, 360.0) + 360.0 + 180.0), 360.0)) - 180.0}
+      throw {:return, if n < 2 do
+  n
+else
+  fib(n - 1) + fib(n - 2)
+end}
     catch
       {:return, val} -> val
     end
   end
   def main() do
-    Process.put(:testCases, [[20.0, 45.0], [0 - 45.0, 45.0], [0 - 85.0, 90.0], [0 - 95.0, 90.0], [0 - 45.0, 125.0], [0 - 45.0, 145.0], [29.4803, 0 - 88.6381], [0 - 78.3251, 0 - 159.036], [0 - 70099.74233810938, 29840.67437876723], [0 - 165313.6666297357, 33693.9894517456], [1174.8380510598456, 0 - 154146.66490124757], [60175.77306795546, 42213.07192354373]])
-    Enum.each(Process.get(:testCases), fn tc ->
-      IO.puts(Kernel.to_string(angleDiff(Enum.at(tc, 0), Enum.at(tc, 1))))
-    end)
+    try do
+      i = -1
+      while_fun = fn while_fun, i ->
+        if i <= 10 do
+          if i < 0 do
+            IO.puts((("fib(" <> to_string(i)) <> ") returned error: negative n is forbidden"))
+          else
+            IO.puts(((("fib(" <> to_string(i)) <> ") = ") <> to_string(fib(i))))
+          end
+          i = i + 1
+          while_fun.(while_fun, i)
+        else
+          i
+        end
+      end
+      i = try do
+          while_fun.(while_fun, i)
+        catch
+          :break -> i
+        end
+
+    catch
+      {:return, val} -> val
+    end
   end
 end
 Main.main()

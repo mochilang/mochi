@@ -44,19 +44,50 @@ defmodule Main do
       true -> Enum.slice(base, start, len)
     end
   end
-  def angleDiff(b1, b2) do
-    try do
-      diff = b2 - b1
-      throw {:return, (:math.fmod((:math.fmod(diff, 360.0) + 360.0 + 180.0), 360.0)) - 180.0}
-    catch
-      {:return, val} -> val
-    end
-  end
   def main() do
-    Process.put(:testCases, [[20.0, 45.0], [0 - 45.0, 45.0], [0 - 85.0, 90.0], [0 - 95.0, 90.0], [0 - 45.0, 125.0], [0 - 45.0, 145.0], [29.4803, 0 - 88.6381], [0 - 78.3251, 0 - 159.036], [0 - 70099.74233810938, 29840.67437876723], [0 - 165313.6666297357, 33693.9894517456], [1174.8380510598456, 0 - 154146.66490124757], [60175.77306795546, 42213.07192354373]])
-    Enum.each(Process.get(:testCases), fn tc ->
-      IO.puts(Kernel.to_string(angleDiff(Enum.at(tc, 0), Enum.at(tc, 1))))
-    end)
+    msg = "Hello World! "
+    shift = 0
+    inc = 1
+    clicks = 0
+    frames = 0
+    while_fun = fn while_fun, clicks, frames, inc, shift ->
+      if clicks < 5 do
+        line = ""
+        i = 0
+        while_fun_2 = fn while_fun_2, i, line ->
+          if i < String.length(msg) do
+            idx = rem((shift + i), String.length(msg))
+            line = (line <> String.slice(msg, idx, idx + 1 - idx))
+            i = i + 1
+            while_fun_2.(while_fun_2, i, line)
+          else
+            {i, line}
+          end
+        end
+        {i, line} = try do
+            while_fun_2.(while_fun_2, i, line)
+          catch
+            :break -> {i, line}
+          end
+
+        IO.puts(line)
+        shift = rem((shift + inc), String.length(msg))
+        frames = frames + 1
+        if rem(frames, String.length(msg)) == 0 do
+          inc = String.length(msg) - inc
+          clicks = clicks + 1
+        end
+        while_fun.(while_fun, clicks, frames, inc, shift)
+      else
+        {clicks, frames, inc, shift}
+      end
+    end
+    {clicks, frames, inc, shift} = try do
+        while_fun.(while_fun, clicks, frames, inc, shift)
+      catch
+        :break -> {clicks, frames, inc, shift}
+      end
+
   end
 end
 Main.main()
