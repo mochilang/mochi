@@ -1,0 +1,26 @@
+original : length = 0, string = «««»»»
+collapsed: length = 0, string = «««»»»
+
+original : length = 72, string = «««"If I were two-faced, would I be wearing this one?" --- Abraham Lincoln »»»
+collapsed: length = 70, string = «««"If I were two-faced, would I be wearing this one?" - Abraham Lincoln »»»
+
+original : length = 71, string = «««..111111111111111111111111111111111111111111111111111111111111111777888»»»
+collapsed: length = 4, string = «««.178»»»
+
+original : length = 72, string = «««I never give 'em hell, I just tell the truth, and they think it's hell. »»»
+collapsed: length = 69, string = «««I never give 'em hel, I just tel the truth, and they think it's hel. »»»
+
+original : length = 71, string = «««                                                   ---  Harry S Truman »»»
+collapsed: length = 17, string = ««« - Hary S Truman »»»
+
+original : length = 80, string = «««The better the 4-wheel drive, the further you'll be from help when ya get stuck!»»»
+collapsed: length = 77, string = «««The beter the 4-whel drive, the further you'l be from help when ya get stuck!»»»
+
+original : length = 16, string = «««headmistressship»»»
+collapsed: length = 14, string = «««headmistreship»»»
+
+original : length = 8, string = «««aardvark»»»
+collapsed: length = 7, string = «««ardvark»»»
+
+original : length = 16, string = «««😍😀🙌💃😍😍😍🙌»»»
+collapsed: length = 16, string = «««😍😀🙌💃😍😍😍🙌»»»

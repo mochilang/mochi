@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated TypeScript code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/TypeScript`.
-Last updated: 2025-07-26 10:18 UTC
+Last updated: 2025-07-26 10:34 UTC
 
-## Rosetta Golden Test Checklist (283/332)
+## Rosetta Golden Test Checklist (299/332)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 1.595ms | 512.0 KB |
@@ -291,22 +291,22 @@ Last updated: 2025-07-26 10:18 UTC
 | 282 | deconvolution-1d | ✓ | 668µs | 128.0 KB |
 | 283 | deepcopy-1 | ✓ | 671µs | 128.0 KB |
 | 284 | define-a-primitive-data-type | ✓ | 670µs | 128.0 KB |
-| 285 | delegates |   |  |  |
-| 286 | demings-funnel |   |  |  |
-| 287 | department-numbers |   |  |  |
-| 288 | descending-primes |   |  |  |
-| 289 | detect-division-by-zero |   |  |  |
-| 290 | determine-if-a-string-has-all-the-same-characters |   |  |  |
-| 291 | determine-if-a-string-has-all-unique-characters |   |  |  |
-| 292 | determine-if-a-string-is-collapsible |   |  |  |
-| 293 | determine-if-a-string-is-numeric-1 |   |  |  |
-| 294 | determine-if-a-string-is-numeric-2 |   |  |  |
-| 295 | determine-if-a-string-is-squeezable |   |  |  |
-| 296 | determine-if-only-one-instance-is-running |   |  |  |
-| 297 | determine-if-two-triangles-overlap |   |  |  |
-| 298 | determine-sentence-type |   |  |  |
-| 299 | dice-game-probabilities-1 |   |  |  |
-| 300 | dice-game-probabilities-2 |   |  |  |
+| 285 | delegates | ✓ | 740µs |  |
+| 286 | demings-funnel | ✓ | 4.086ms | 2.0 MB |
+| 287 | department-numbers | ✓ | 1.032ms | 128.0 KB |
+| 288 | descending-primes | ✓ | 2.708ms | 768.0 KB |
+| 289 | detect-division-by-zero | ✓ | 632µs | 128.0 KB |
+| 290 | determine-if-a-string-has-all-the-same-characters | ✓ | 1.962ms | 256.0 KB |
+| 291 | determine-if-a-string-has-all-unique-characters | ✓ | 1.635ms | 256.0 KB |
+| 292 | determine-if-a-string-is-collapsible | ✓ | 1.826ms | 128.0 KB |
+| 293 | determine-if-a-string-is-numeric-1 | ✓ | 1.038ms | 128.0 KB |
+| 294 | determine-if-a-string-is-numeric-2 | ✓ | 712µs |  |
+| 295 | determine-if-a-string-is-squeezable | ✓ | 4.67ms | 384.0 KB |
+| 296 | determine-if-only-one-instance-is-running | ✓ | 643µs | 128.0 KB |
+| 297 | determine-if-two-triangles-overlap | ✓ | 3.563ms | 512.0 KB |
+| 298 | determine-sentence-type | ✓ | 1.418ms | 256.0 KB |
+| 299 | dice-game-probabilities-1 | ✓ | 10.055ms | 7.2 MB |
+| 300 | dice-game-probabilities-2 | ✓ | 11.001ms | 5.8 MB |
 | 301 | digital-root-multiplicative-digital-root |   |  |  |
 | 302 | dijkstras-algorithm |   |  |  |
 | 303 | dinesmans-multiple-dwelling-problem |   |  |  |
