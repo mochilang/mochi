@@ -33,48 +33,22 @@ def _now():
 _bench_mem_start = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
 _bench_start = _now()
 @dataclass
-class cds:
-    i: int
-    s: str
-    b: [int]
-    m: Dict[int, bool]
-def copyList(src):
-    out = []
-    for v in src:
-        out = out + [v]
-    return out
-def copyMap(src):
-    out = {}
-    for k in src:
-        out[k] = src[k]
-    return out
-def deepcopy(c):
-    return cds(i=c.i, s=c.s, b=copyList(c.b), m=copyMap(c.m))
-def cdsStr(c):
-    bs = "["
-    i = 0
-    while i < len(c.b):
-        bs = bs + str(c.b[i])
-        if i < len(c.b) - 1:
-            bs = bs + " "
-        i = i + 1
-    bs = bs + "]"
-    ms = "map["
-    first = True
-    for k in c.m:
-        if not first:
-            ms = ms + " "
-        ms = ms + str(k) + ":" + str(c.m[k])
-        first = False
-    ms = ms + "]"
-    return "{" + str(c.i) + " " + c.s + " " + bs + " " + ms + "}"
-c1 = cds(i=1, s="one", b=[117, 110, 105, 116], m={1: True})
-c2 = deepcopy(c1)
-print(cdsStr(c1))
-print(cdsStr(c2))
-c1 = cds(i=0, s="nil", b=[122, 101, 114, 111], m={1: False})
-print(cdsStr(c1))
-print(cdsStr(c2))
+class Delegator:
+    delegate: Dict[str, Callable[[], str]]
+def operation(d):
+    if "thing" in d.delegate:
+        return d.delegate.get("thing")()
+    return "default implementation"
+def newDelegate():
+    m = {}
+    m["thing"] = lambda : "delegate implementation"
+    return m
+a = Delegator(delegate={})
+print(operation(a))
+a = dataclasses.replace(a, delegate={})
+print(operation(a))
+a = dataclasses.replace(a, delegate=newDelegate())
+print(operation(a))
 _bench_end = _now()
 _bench_mem_end = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
 print(json.dumps({"duration_us": (_bench_end - _bench_start)//1000, "memory_bytes": _bench_mem_end*1024, "name": "main"}, indent=2))

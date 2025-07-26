@@ -38,6 +38,7 @@ var (
 	usesLookupHost    bool
 	usesIndexOf       bool
 	usesSubstr        bool
+	usesCallable      bool
 )
 
 const helperNow = `
@@ -1250,6 +1251,36 @@ func header() string {
 }
 
 func pyTypeName(name string) string {
+	name = strings.TrimSpace(name)
+	if strings.HasPrefix(name, "{") && strings.HasSuffix(name, "}") {
+		inside := strings.TrimSuffix(strings.TrimPrefix(name, "{"), "}")
+		parts := strings.SplitN(inside, ":", 2)
+		if len(parts) == 2 {
+			k := pyTypeName(strings.TrimSpace(parts[0]))
+			v := pyTypeName(strings.TrimSpace(parts[1]))
+			return fmt.Sprintf("Dict[%s, %s]", k, v)
+		}
+	}
+	if strings.HasPrefix(name, "fun(") {
+		usesCallable = true
+		s := strings.TrimPrefix(name, "fun(")
+		end := strings.Index(s, ")")
+		if end >= 0 {
+			params := strings.TrimSpace(s[:end])
+			rest := strings.TrimSpace(s[end+1:])
+			ret := "None"
+			if strings.HasPrefix(rest, ":") {
+				ret = pyTypeName(strings.TrimSpace(rest[1:]))
+			}
+			var ps []string
+			if params != "" {
+				for _, p := range strings.Split(params, ",") {
+					ps = append(ps, pyTypeName(strings.TrimSpace(p)))
+				}
+			}
+			return fmt.Sprintf("Callable[[%s], %s]", strings.Join(ps, ", "), ret)
+		}
+	}
 	switch name {
 	case "string":
 		return "str"
@@ -2711,7 +2742,11 @@ func Emit(w io.Writer, p *Program, bench bool) error {
 	if needDC || (currentImports != nil && currentImports["dataclasses"]) {
 		imports = append(imports, "from __future__ import annotations")
 		imports = append(imports, "from dataclasses import dataclass")
-		imports = append(imports, "from typing import List, Dict")
+		typing := "List, Dict"
+		if usesCallable {
+			typing += ", Callable"
+		}
+		imports = append(imports, "from typing import "+typing)
 	}
 	sort.Strings(imports)
 	for _, line := range imports {
@@ -3003,6 +3038,7 @@ func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, erro
 	usesNow = false
 	usesLookupHost = false
 	usesIndexOf = false
+	usesCallable = false
 	p := &Program{}
 	for _, st := range prog.Statements {
 		switch {

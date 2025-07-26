@@ -26,15 +26,29 @@ def _now():
         return _now_seed
     return int(time.time_ns())
 
-def listToStringInts(xs):
-    s = "["
+def indexOf(s, ch):
     i = 0
-    while i < len(xs):
-        s = s + str(int(xs[i]))
-        if i < len(xs) - 1:
-            s = s + " "
+    while i < len(s):
+        if s[i:i + 1] == ch:
+            return i
         i = i + 1
-    return s + "]"
+    return -1
+def fmt1(x):
+    y = float(int(((x * 10.0) + 0.5))) / 10.0
+    s = str(y)
+    dot = s.find(".")
+    if dot < 0:
+        s = s + ".0"
+    return s
+def printColumnMatrix(xs):
+    if len(xs) == 0:
+        return
+    print("⎡" + fmt1(xs[0]) + "⎤")
+    i = 1
+    while i < len(xs) - 1:
+        print("⎢" + fmt1(xs[i]) + "⎥")
+        i = i + 1
+    print("⎣ " + fmt1(xs[len(xs) - 1]) + "⎦")
 def deconv(g, f):
     h = []
     n = 0
@@ -58,10 +72,11 @@ def main():
     h = [-8.0, -9.0, -3.0, -1.0, -6.0, 7.0]
     f = [-3.0, -6.0, -1.0, 8.0, -6.0, 3.0, -1.0, -9.0, -9.0, 3.0, -2.0, 5.0, 2.0, -2.0, -7.0, -1.0]
     g = [24.0, 75.0, 71.0, -34.0, 3.0, 22.0, -45.0, 23.0, 245.0, 25.0, 52.0, 25.0, -67.0, -96.0, 96.0, 31.0, 55.0, 36.0, 29.0, -43.0, -7.0]
-    print(listToStringInts(h))
-    print(listToStringInts(deconv(g, f)))
-    print(listToStringInts(f))
-    print(listToStringInts(deconv(g, h)))
+    print("deconv(g, f) =")
+    printColumnMatrix(deconv(g, f))
+    print("")
+    print("deconv(g, h) =")
+    printColumnMatrix(deconv(g, h))
     _bench_end = _now()
     _bench_mem_end = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
     print(json.dumps({"duration_us": (_bench_end - _bench_start)//1000, "memory_bytes": _bench_mem_end*1024, "name": "main"}, indent=2))
