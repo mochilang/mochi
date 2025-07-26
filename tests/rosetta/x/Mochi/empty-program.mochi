@@ -1,0 +1,7 @@
+// Mochi translation of Rosetta "Empty program" task
+// An explicitly empty main function
+
+fun main() {
+}
+
+main()

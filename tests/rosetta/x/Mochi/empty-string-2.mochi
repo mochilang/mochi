@@ -1,0 +1,18 @@
+// Mochi translation of Rosetta "Empty string" task - example 2
+
+fun check(s: string) {
+  if len(s) == 0 {
+    print("empty")
+  } else {
+    print("not empty")
+  }
+}
+
+fun main() {
+  let str1 = ""
+  let str2 = " "
+  check(str1)  // prints "empty"
+  check(str2)  // prints "not empty"
+}
+
+main()
