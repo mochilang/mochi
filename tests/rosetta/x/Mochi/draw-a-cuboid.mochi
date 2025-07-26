@@ -1,0 +1,50 @@
+fun repeat(ch: string, n: int): string {
+  var s = ""
+  var i = 0
+  while i < n {
+    s = s + ch
+    i = i + 1
+  }
+  return s
+}
+
+fun cubLine(n: int, dx: int, dy: int, cde: string) {
+  var line = repeat(" ", n + 1) + cde[0:1]
+  var d = 9 * dx - 1
+  while d > 0 {
+    line = line + cde[1:2]
+    d = d - 1
+  }
+  line = line + cde[0:1]
+  line = line + repeat(" ", dy) + cde[2:]
+  print(line)
+}
+
+fun cuboid(dx: int, dy: int, dz: int) {
+  print("cuboid " + str(dx) + " " + str(dy) + " " + str(dz) + ":")
+  cubLine(dy + 1, dx, 0, "+-")
+  var i = 1
+  while i <= dy {
+    cubLine(dy - i + 1, dx, i - 1, "/ |")
+    i = i + 1
+  }
+  cubLine(0, dx, dy, "+-|")
+  var j = 4 * dz - dy - 2
+  while j > 0 {
+    cubLine(0, dx, dy, "| |")
+    j = j - 1
+  }
+  cubLine(0, dx, dy, "| +")
+  i = 1
+  while i <= dy {
+    cubLine(0, dx, dy - i, "| /")
+    i = i + 1
+  }
+  cubLine(0, dx, 0, "+-\n")
+}
+
+cuboid(2, 3, 4)
+print("")
+cuboid(1, 1, 1)
+print("")
+cuboid(6, 2, 1)
