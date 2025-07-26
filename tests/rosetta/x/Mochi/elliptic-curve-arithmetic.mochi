@@ -1,0 +1,78 @@
+// Mochi implementation of Rosetta "Elliptic curve arithmetic" task
+// Translated from Go version in tests/rosetta/x/Go/elliptic-curve-arithmetic.go
+
+type Pt { x: float, y: float, inf: bool }
+
+let bCoeff = 7.0
+fun zero(): Pt { return Pt { x: 0.0, y: 0.0, inf: true } }
+fun isZero(p: Pt): bool { return p.inf }
+fun neg(p: Pt): Pt { return Pt { x: p.x, y: -p.y, inf: p.inf } }
+
+fun dbl(p: Pt): Pt {
+  if isZero(p) { return p }
+  let L = (3.0 * p.x * p.x) / (2.0 * p.y)
+  let x = L * L - 2.0 * p.x
+  return Pt { x: x, y: L * (p.x - x) - p.y, inf: false }
+}
+
+fun add(p: Pt, q: Pt): Pt {
+  if isZero(p) { return q }
+  if isZero(q) { return p }
+  if p.x == q.x {
+    if p.y == q.y { return dbl(p) }
+    return zero()
+  }
+  let L = (q.y - p.y) / (q.x - p.x)
+  let x = L * L - p.x - q.x
+  return Pt { x: x, y: L * (p.x - x) - p.y, inf: false }
+}
+
+fun mul(p: Pt, n: int): Pt {
+  var r = zero()
+  var q = p
+  var k = n
+  while k > 0 {
+    if k % 2 == 1 { r = add(r, q) }
+    q = dbl(q)
+    k = k / 2
+  }
+  return r
+}
+
+fun cbrtApprox(x: float): float {
+  var guess = x
+  var i = 0
+  while i < 40 {
+    guess = (2.0 * guess + x / (guess * guess)) / 3.0
+    i = i + 1
+  }
+  return guess
+}
+
+fun fromY(y: float): Pt {
+  return Pt { x: cbrtApprox(y*y - bCoeff), y: y, inf: false }
+}
+
+fun show(s: string, p: Pt) {
+  if isZero(p) {
+    print(s + "Zero")
+  } else {
+    print(s + "(" + str(p.x) + ", " + str(p.y) + ")")
+  }
+}
+
+fun main() {
+  let a = fromY(1.0)
+  let b = fromY(2.0)
+  show("a = ", a)
+  show("b = ", b)
+  let c = add(a, b)
+  show("c = a + b = ", c)
+  let d = neg(c)
+  show("d = -c = ", d)
+  show("c + d = ", add(c, d))
+  show("a + b + d = ", add(a, add(b, d)))
+  show("a * 12345 = ", mul(a, 12345))
+}
+
+main()
