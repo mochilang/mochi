@@ -3424,7 +3424,9 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context, top bool) (
 		if _, ok := e.(*AtomLit); ok {
 			return nil, nil
 		}
-		return nil, fmt.Errorf("unsupported expression")
+		// Evaluate expression for side effects even if the result is unused
+		// by assigning it to the anonymous variable.
+		return []Stmt{&LetStmt{Name: "_", Expr: e}}, nil
 	case st.Break != nil:
 		if len(loopStack) == 0 {
 			return nil, fmt.Errorf("break outside loop")
