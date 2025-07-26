@@ -1,5 +1,5 @@
-## Progress (2025-07-27 01:21 +0700)
-- Commit 03914c291d: c rosetta: add arithmetic-rational
+## Progress (2025-07-27 06:23 +0700)
+- Commit 70e3094b41: transpiler/erl: advance rosetta tests
 - Regenerated golden files - 81/104 vm valid programs passing
 
 ## Progress (2025-07-22 14:12 +0700)
