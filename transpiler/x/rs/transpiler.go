@@ -606,7 +606,9 @@ func (i *IndexExpr) emit(w io.Writer) {
 			}
 			i.Index.emit(w)
 			if inferType(i.Index) == "String" {
-				io.WriteString(w, ".as_str()")
+				if _, ok := i.Index.(*StringLit); !ok {
+					io.WriteString(w, ".as_str()")
+				}
 			}
 			io.WriteString(w, "]")
 			if !indexLHS {
@@ -635,7 +637,9 @@ func (i *IndexExpr) emit(w io.Writer) {
 		}
 		i.Index.emit(w)
 		if inferType(i.Index) == "String" {
-			io.WriteString(w, ".as_str()")
+			if _, ok := i.Index.(*StringLit); !ok {
+				io.WriteString(w, ".as_str()")
+			}
 		}
 		io.WriteString(w, "]")
 		if !indexLHS {
@@ -651,7 +655,9 @@ func (i *IndexExpr) emit(w io.Writer) {
 		io.WriteString(w, "[")
 		i.Index.emit(w)
 		if inferType(i.Index) == "String" {
-			io.WriteString(w, ".as_str()")
+			if _, ok := i.Index.(*StringLit); !ok {
+				io.WriteString(w, ".as_str()")
+			}
 		}
 		io.WriteString(w, "]")
 		if !indexLHS {
@@ -671,7 +677,10 @@ func (i *IndexExpr) emit(w io.Writer) {
 		} else if inferType(i.Index) == "String" {
 			io.WriteString(w, "[")
 			i.Index.emit(w)
-			io.WriteString(w, ".as_str()]")
+			if _, ok := i.Index.(*StringLit); !ok {
+				io.WriteString(w, ".as_str()")
+			}
+			io.WriteString(w, "]")
 		} else {
 			io.WriteString(w, "[")
 			i.Index.emit(w)
@@ -858,7 +867,9 @@ func (g *MapGetExpr) emit(w io.Writer) {
 	}
 	g.Key.emit(w)
 	if inferType(g.Key) == "String" {
-		io.WriteString(w, ".as_str()")
+		if _, ok := g.Key.(*StringLit); !ok {
+			io.WriteString(w, ".as_str()")
+		}
 	}
 	io.WriteString(w, ").cloned().unwrap_or(")
 	g.Default.emit(w)
@@ -1329,7 +1340,11 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		if lt == "String" && rt == "String" {
 			io.WriteString(w, "(")
 			b.Left.emit(w)
-			io.WriteString(w, ".as_str() ")
+			if _, ok := b.Left.(*StringLit); !ok {
+				io.WriteString(w, ".as_str() ")
+			} else {
+				io.WriteString(w, " ")
+			}
 			io.WriteString(w, b.Op)
 			io.WriteString(w, " ")
 			b.Right.emit(w)
@@ -2055,7 +2070,7 @@ func compileStmt(stmt *parser.Statement) (Stmt, error) {
 				typ = ""
 			}
 		}
-		if typ == "fn" || strings.HasPrefix(typ, "impl Fn(") || strings.HasPrefix(typ, "impl FnMut(") {
+		if typ == "fn" || strings.HasPrefix(typ, "impl Fn(") || strings.HasPrefix(typ, "impl FnMut(") || strings.HasPrefix(typ, "dyn Fn(") || strings.HasPrefix(typ, "dyn FnMut(") {
 			varTypes[stmt.Let.Name] = typ
 			typ = ""
 		}
@@ -2105,7 +2120,7 @@ func compileStmt(stmt *parser.Statement) (Stmt, error) {
 				e = &StringCastExpr{Expr: e}
 			}
 		}
-		mut := strings.HasPrefix(typ, "Vec<") || strings.HasPrefix(typ, "HashMap<") || strings.HasPrefix(varTypes[stmt.Let.Name], "impl FnMut(")
+		mut := strings.HasPrefix(typ, "Vec<") || strings.HasPrefix(typ, "HashMap<") || strings.HasPrefix(varTypes[stmt.Let.Name], "impl FnMut(") || strings.HasPrefix(varTypes[stmt.Let.Name], "dyn FnMut(")
 		vd := &VarDecl{Name: stmt.Let.Name, Expr: e, Type: typ, Mutable: mut}
 		if funcDepth == 0 && len(localVarStack) == 0 {
 			vd.Global = true
@@ -2197,7 +2212,7 @@ func compileStmt(stmt *parser.Statement) (Stmt, error) {
 				typ = ""
 			}
 		}
-		if typ == "fn" || strings.HasPrefix(typ, "impl Fn(") || strings.HasPrefix(typ, "impl FnMut(") {
+		if typ == "fn" || strings.HasPrefix(typ, "impl Fn(") || strings.HasPrefix(typ, "impl FnMut(") || strings.HasPrefix(typ, "dyn Fn(") || strings.HasPrefix(typ, "dyn FnMut(") {
 			varTypes[stmt.Var.Name] = typ
 			typ = ""
 		}
@@ -2731,9 +2746,15 @@ func compileFunStmt(fn *parser.FunStmt) (Stmt, error) {
 				sigType = "&mut " + typ
 			}
 		} else if typ != "" && typ != "i64" && typ != "bool" && typ != "f64" && typ != "String" {
-			mut := paramMutated(fn.Body, p.Name)
-			if !mut {
+			if strings.HasPrefix(typ, "dyn FnMut(") {
+				sigType = "&mut " + typ
+			} else if strings.HasPrefix(typ, "dyn Fn(") {
 				sigType = "&" + typ
+			} else {
+				mut := paramMutated(fn.Body, p.Name)
+				if !mut {
+					sigType = "&" + typ
+				}
 			}
 		}
 		params[i] = Param{Name: p.Name, Type: sigType}
@@ -2833,6 +2854,16 @@ func compileFunStmt(fn *parser.FunStmt) (Stmt, error) {
 		}
 		if out != "" {
 			ret = out
+		}
+		if strings.HasPrefix(ret, "HashMap") {
+			for _, st := range body {
+				if r, ok := st.(*ReturnStmt); ok {
+					if sl, ok2 := r.Value.(*StructLit); ok2 {
+						ret = sl.Name
+						break
+					}
+				}
+			}
 		}
 	}
 	if ret == "String" {
@@ -3150,12 +3181,14 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			return &FloatCastExpr{Expr: args[0]}, nil
 		}
 		if name == "abs" && len(args) == 1 {
-			useAbs = true
-			funReturns[name] = "f64"
-			if inferType(args[0]) != "f64" {
-				args[0] = &FloatCastExpr{Expr: args[0]}
+			if _, ok := funParams[name]; !ok {
+				useAbs = true
+				funReturns[name] = "f64"
+				if inferType(args[0]) != "f64" {
+					args[0] = &FloatCastExpr{Expr: args[0]}
+				}
+				return &CallExpr{Func: "abs", Args: []Expr{args[0]}}, nil
 			}
-			return &CallExpr{Func: "abs", Args: []Expr{args[0]}}, nil
 		}
 		if ut, ok := curEnv.FindUnionByVariant(name); ok {
 			st, _ := curEnv.GetStruct(name)
@@ -3310,7 +3343,7 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 				}
 			}
 		} else {
-			if vt, vok := varTypes[name]; vok && strings.HasPrefix(vt, "impl Fn") {
+			if vt, vok := varTypes[name]; vok && (strings.HasPrefix(vt, "impl Fn") || strings.HasPrefix(vt, "dyn Fn")) {
 				start := strings.Index(vt, "(")
 				end := strings.Index(vt, ")")
 				if start >= 0 && end > start {
@@ -3616,7 +3649,11 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 		}
 		ret := ""
 		if p.FunExpr.Return != nil {
-			ret = rustTypeRef(p.FunExpr.Return)
+			if p.FunExpr.Return.Simple != nil && *p.FunExpr.Return.Simple == "any" {
+				ret = ""
+			} else {
+				ret = rustTypeRef(p.FunExpr.Return)
+			}
 		}
 		if p.FunExpr.BlockBody != nil {
 			body := make([]Stmt, 0, len(p.FunExpr.BlockBody))
@@ -4008,6 +4045,8 @@ func inferType(e Expr) string {
 		return "String"
 	case *StringCastExpr:
 		return "String"
+	case *StrExpr:
+		return "String"
 	case *ListLit:
 		if len(ex.Elems) > 0 {
 			t := inferType(ex.Elems[0])
@@ -4079,6 +4118,12 @@ func inferType(e Expr) string {
 		}
 	case *IndexExpr:
 		ct := inferType(ex.Target)
+		if strings.HasPrefix(ct, "&mut ") {
+			ct = strings.TrimPrefix(ct, "&mut ")
+		}
+		if strings.HasPrefix(ct, "&") {
+			ct = strings.TrimPrefix(ct, "&")
+		}
 		if strings.HasPrefix(ct, "Vec<") {
 			return strings.TrimSuffix(strings.TrimPrefix(ct, "Vec<"), ">")
 		}
@@ -4136,9 +4181,7 @@ func inferType(e Expr) string {
 		if len(ex.Items) > 0 {
 			kt := inferType(ex.Items[0].Key)
 			vt := inferType(ex.Items[0].Value)
-			if kt == "String" {
-				kt = "&str"
-			} else if kt == "" {
+			if kt == "" {
 				kt = "String"
 			}
 			if vt == "" {
@@ -4283,7 +4326,18 @@ func rustTypeRef(tr *parser.TypeRef) string {
 		}
 	}
 	if tr.Fun != nil {
-		return "fn"
+		params := make([]string, len(tr.Fun.Params))
+		for i, p := range tr.Fun.Params {
+			params[i] = rustTypeRef(p)
+		}
+		ret := "()"
+		if tr.Fun.Return != nil {
+			r := rustTypeRef(tr.Fun.Return)
+			if r != "" {
+				ret = r
+			}
+		}
+		return fmt.Sprintf("dyn FnMut(%s) -> %s", strings.Join(params, ", "), ret)
 	}
 	return "i64"
 }

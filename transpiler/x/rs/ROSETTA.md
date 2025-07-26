@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Rust code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/Rust`.
-Last updated: 2025-07-26 16:59 UTC
+Last updated: 2025-07-26 18:18 UTC
 
-## Rosetta Golden Test Checklist (47/332)
+## Rosetta Golden Test Checklist (55/344)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 109µs | 3.2 MB |
@@ -63,14 +63,14 @@ Last updated: 2025-07-26 16:59 UTC
 | 54 | anonymous-recursion-1 | ✓ | 24µs |  |
 | 55 | anonymous-recursion-2 | ✓ | 33µs |  |
 | 56 | anonymous-recursion | ✓ | 29µs |  |
-| 57 | anti-primes |   |  |  |
-| 58 | append-a-record-to-the-end-of-a-text-file |   |  |  |
-| 59 | apply-a-callback-to-an-array-1 |   |  |  |
-| 60 | apply-a-callback-to-an-array-2 |   |  |  |
-| 61 | apply-a-digital-filter-direct-form-ii-transposed- |   |  |  |
-| 62 | approximate-equality |   |  |  |
-| 63 | arbitrary-precision-integers-included- |   |  |  |
-| 64 | archimedean-spiral |   |  |  |
+| 57 | anti-primes | ✓ |  |  |
+| 58 | append-a-record-to-the-end-of-a-text-file | ✓ |  |  |
+| 59 | apply-a-callback-to-an-array-1 | ✓ |  |  |
+| 60 | apply-a-callback-to-an-array-2 | ✓ |  |  |
+| 61 | apply-a-digital-filter-direct-form-ii-transposed- | ✓ |  |  |
+| 62 | approximate-equality | ✓ |  |  |
+| 63 | arbitrary-precision-integers-included- | ✓ |  |  |
+| 64 | archimedean-spiral | ✓ |  |  |
 | 65 | arena-storage-pool |   |  |  |
 | 66 | arithmetic-complex |   |  |  |
 | 67 | arithmetic-derivative |   |  |  |
@@ -337,5 +337,17 @@ Last updated: 2025-07-26 16:59 UTC
 | 328 | earliest-difference-between-prime-gaps |   |  |  |
 | 329 | eban-numbers |   |  |  |
 | 330 | echo-server |   |  |  |
-| 331 | ekg-sequence-convergence |   |  |  |
-| 332 | md5 |   |  |  |
+| 331 | eertree |   |  |  |
+| 332 | egyptian-division |   |  |  |
+| 333 | ekg-sequence-convergence |   |  |  |
+| 334 | element-wise-operations |   |  |  |
+| 335 | elementary-cellular-automaton-infinite-length |   |  |  |
+| 336 | elementary-cellular-automaton-random-number-generator |   |  |  |
+| 337 | elementary-cellular-automaton |   |  |  |
+| 338 | elliptic-curve-arithmetic |   |  |  |
+| 339 | elliptic-curve-digital-signature-algorithm |   |  |  |
+| 340 | emirp-primes |   |  |  |
+| 341 | empty-directory |   |  |  |
+| 342 | empty-program |   |  |  |
+| 343 | enforced-immutability |   |  |  |
+| 344 | md5 |   |  |  |
