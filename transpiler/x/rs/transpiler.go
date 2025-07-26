@@ -2784,6 +2784,11 @@ func compileFunStmt(fn *parser.FunStmt) (Stmt, error) {
 			}
 		}
 	}
+	if st, ok := structTypes[ret]; ok {
+		for i, stt := range body {
+			body[i] = rewriteReturnStruct(stt, ret, st)
+		}
+	}
 	name := fn.Name
 	if name == "main" {
 		mainFuncName = "mochi_main"
@@ -5035,4 +5040,51 @@ func copyBoolMap(src map[string]bool) map[string]bool {
 		dst[k] = v
 	}
 	return dst
+}
+
+func rewriteReturnStruct(st Stmt, name string, typ types.StructType) Stmt {
+	switch s := st.(type) {
+	case *ReturnStmt:
+		if ml, ok := s.Value.(*MapLit); ok {
+			fields := make([]Expr, len(typ.Order))
+			for i, n := range typ.Order {
+				for _, it := range ml.Items {
+					if sl, ok := it.Key.(*StringLit); ok && sl.Value == n {
+						fields[i] = it.Value
+						break
+					}
+				}
+			}
+			s.Value = &StructLit{Name: name, Fields: fields, Names: typ.Order}
+		}
+		return s
+	case *IfStmt:
+		for i, b := range s.Then {
+			s.Then[i] = rewriteReturnStruct(b, name, typ)
+		}
+		for i, b := range s.Else {
+			s.Else[i] = rewriteReturnStruct(b, name, typ)
+		}
+		if s.ElseIf != nil {
+			s.ElseIf = rewriteReturnStruct(s.ElseIf, name, typ).(*IfStmt)
+		}
+		return s
+	case *WhileStmt:
+		for i, b := range s.Body {
+			s.Body[i] = rewriteReturnStruct(b, name, typ)
+		}
+		return s
+	case *ForStmt:
+		for i, b := range s.Body {
+			s.Body[i] = rewriteReturnStruct(b, name, typ)
+		}
+		return s
+	case *MultiStmt:
+		for i, b := range s.Stmts {
+			s.Stmts[i] = rewriteReturnStruct(b, name, typ)
+		}
+		return s
+	default:
+		return s
+	}
 }
