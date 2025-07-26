@@ -1,5 +1,5 @@
-## Progress (2025-07-26 19:40 +0700)
-- Commit b4365ed5fc: transpiler/c: support append expressions
+## Progress (2025-07-27 01:21 +0700)
+- Commit 03914c291d: c rosetta: add arithmetic-rational
 - Regenerated golden files - 81/104 vm valid programs passing
 
 ## Progress (2025-07-22 14:12 +0700)

@@ -2,7 +2,7 @@
 
 This directory stores C code generated from Mochi programs in `tests/rosetta/x/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.c` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (46/341) - Last updated 2025-07-27 00:32 +0700:
+Checklist of programs that currently transpile and run (55/341) - Last updated 2025-07-27 01:21 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | 100-doors-2 | ✓ | 65us | 17.2 KB |
@@ -65,20 +65,20 @@ Checklist of programs that currently transpile and run (46/341) - Last updated 2
 | 58 | append-a-record-to-the-end-of-a-text-file | ✓ | 16us | 4.7 KB |
 | 59 | apply-a-callback-to-an-array-1 | ✓ | 357us | 4.8 KB |
 | 60 | apply-a-callback-to-an-array-2 |  |  |  |
-| 61 | apply-a-digital-filter-direct-form-ii-transposed- | ✓ | 10us | 1.3 KB |
+| 61 | apply-a-digital-filter-direct-form-ii-transposed- | ✓ | 87us | 1.3 KB |
 | 62 | approximate-equality | ✓ | 42us | 6.3 KB |
 | 63 | arbitrary-precision-integers-included- | ✓ | 19us | 4.8 KB |
 | 64 | archimedean-spiral | ✓ | 819us | 13.8 KB |
-| 65 | arena-storage-pool |  |  |  |
-| 66 | arithmetic-complex |  |  |  |
-| 67 | arithmetic-derivative |  |  |  |
-| 68 | arithmetic-evaluation |  |  |  |
-| 69 | arithmetic-geometric-mean-calculate-pi |  |  |  |
-| 70 | arithmetic-geometric-mean |  |  |  |
-| 71 | arithmetic-integer-1 |  |  |  |
-| 72 | arithmetic-integer-2 |  |  |  |
+| 65 | arena-storage-pool | ✓ | 272us | 4.9 KB |
+| 66 | arithmetic-complex | ✓ | 412us | 6.1 KB |
+| 67 | arithmetic-derivative | ✓ | 946us | 79.3 KB |
+| 68 | arithmetic-evaluation | ✓ | 710us | 6.9 KB |
+| 69 | arithmetic-geometric-mean-calculate-pi | ✓ | 275us | 4.7 KB |
+| 70 | arithmetic-geometric-mean | ✓ | 284us | 4.7 KB |
+| 71 | arithmetic-integer-1 | ✓ | 220us | 5.8 KB |
+| 72 | arithmetic-integer-2 | ✓ | 392us | 5.8 KB |
 | 73 | arithmetic-numbers |  |  |  |
-| 74 | arithmetic-rational |  |  |  |
+| 74 | arithmetic-rational | ✓ | 899us | 7.3 KB |
 | 75 | array-concatenation |  |  |  |
 | 76 | array-length |  |  |  |
 | 77 | arrays |  |  |  |
