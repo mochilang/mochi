@@ -1,3 +1,278 @@
+## Progress (2025-07-26 05:05 +0700)
+- dart rosetta: add next batch
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 05:05 +0700)
+- dart rosetta: add next batch
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 05:05 +0700)
+- dart rosetta: add next batch
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 05:05 +0700)
+- dart rosetta: add next batch
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 05:05 +0700)
+- dart rosetta: add next batch
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 05:05 +0700)
+- dart rosetta: add next batch
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 05:05 +0700)
+- dart rosetta: add next batch
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 05:05 +0700)
+- dart rosetta: add next batch
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 05:05 +0700)
+- dart rosetta: add next batch
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 05:05 +0700)
+- dart rosetta: add next batch
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 05:05 +0700)
+- dart rosetta: add next batch
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 05:05 +0700)
+- dart rosetta: add next batch
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 05:05 +0700)
+- dart rosetta: add next batch
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 05:05 +0700)
+- dart rosetta: add next batch
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 05:05 +0700)
+- dart rosetta: add next batch
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 05:05 +0700)
+- dart rosetta: add next batch
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 05:05 +0700)
+- dart rosetta: add next batch
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 05:05 +0700)
+- dart rosetta: add next batch
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 05:05 +0700)
+- dart rosetta: add next batch
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 05:05 +0700)
+- dart rosetta: add next batch
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 05:05 +0700)
+- dart rosetta: add next batch
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 05:05 +0700)
+- dart rosetta: add next batch
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 05:05 +0700)
+- dart rosetta: add next batch
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 05:05 +0700)
+- dart rosetta: add next batch
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 05:05 +0700)
+- dart rosetta: add next batch
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 05:05 +0700)
+- dart rosetta: add next batch
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 05:05 +0700)
+- dart rosetta: add next batch
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 05:05 +0700)
+- dart rosetta: add next batch
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 05:05 +0700)
+- dart rosetta: add next batch
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 05:05 +0700)
+- dart rosetta: add next batch
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 05:05 +0700)
+- dart rosetta: add next batch
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 05:05 +0700)
+- dart rosetta: add next batch
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 05:05 +0700)
+- dart rosetta: add next batch
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 05:05 +0700)
+- dart rosetta: add next batch
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 05:05 +0700)
+- dart rosetta: add next batch
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 05:05 +0700)
+- dart rosetta: add next batch
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 05:05 +0700)
+- dart rosetta: add next batch
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 05:05 +0700)
+- dart rosetta: add next batch
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 05:05 +0700)
+- dart rosetta: add next batch
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 05:05 +0700)
+- dart rosetta: add next batch
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 05:05 +0700)
+- dart rosetta: add next batch
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 05:05 +0700)
+- dart rosetta: add next batch
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 05:05 +0700)
+- dart rosetta: add next batch
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 05:05 +0700)
+- dart rosetta: add next batch
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 05:05 +0700)
+- dart rosetta: add next batch
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 05:05 +0700)
+- dart rosetta: add next batch
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 05:05 +0700)
+- dart rosetta: add next batch
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 05:05 +0700)
+- dart rosetta: add next batch
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 05:05 +0700)
+- dart rosetta: add next batch
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 05:05 +0700)
+- dart rosetta: add next batch
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 05:05 +0700)
+- dart rosetta: add next batch
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 05:05 +0700)
+- dart rosetta: add next batch
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 05:05 +0700)
+- dart rosetta: add next batch
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 05:05 +0700)
+- dart rosetta: add next batch
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 05:05 +0700)
+- dart rosetta: add next batch
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
 ## Progress (2025-07-25 21:15 +0700)
 - scheme transpiler: avoid list name clash
 - Generated C++ for 103/104 programs

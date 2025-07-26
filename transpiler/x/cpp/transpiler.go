@@ -523,6 +523,8 @@ func (p *Program) write(w io.Writer) {
 	p.addInclude("<cmath>")
 	p.addInclude("<optional>")
 	p.addInclude("<vector>")
+	// std::any is referenced by generic helpers regardless of program usage
+	p.addInclude("<any>")
 	if p.UseNow {
 		p.addInclude("<cstdlib>")
 		p.addInclude("<chrono>")
@@ -618,6 +620,20 @@ func (p *Program) write(w io.Writer) {
 		fmt.Fprintln(w, "static double any_to_double(const std::any& v) {")
 		fmt.Fprintln(w, "    if(v.type() == typeid(int)) return (double)std::any_cast<int>(v);")
 		fmt.Fprintln(w, "    if(v.type() == typeid(double)) return std::any_cast<double>(v);")
+		fmt.Fprintln(w, "    return 0;")
+		fmt.Fprintln(w, "}")
+		fmt.Fprintln(w, "static bool any_to_bool(const std::any& v) {")
+		fmt.Fprintln(w, "    if(v.type() == typeid(bool)) return std::any_cast<bool>(v);")
+		fmt.Fprintln(w, "    if(v.type() == typeid(int)) return std::any_cast<int>(v) != 0;")
+		fmt.Fprintln(w, "    if(v.type() == typeid(double)) return std::any_cast<double>(v) != 0.0;")
+		fmt.Fprintln(w, "    return v.has_value();")
+		fmt.Fprintln(w, "}")
+		fmt.Fprintln(w, "static size_t any_size(const std::any& v) {")
+		fmt.Fprintln(w, "    if(v.type() == typeid(std::string)) return std::any_cast<std::string>(v).size();")
+		fmt.Fprintln(w, "    if(v.type() == typeid(std::vector<int>)) return std::any_cast<std::vector<int>>(v).size();")
+		fmt.Fprintln(w, "    if(v.type() == typeid(std::vector<double>)) return std::any_cast<std::vector<double>>(v).size();")
+		fmt.Fprintln(w, "    if(v.type() == typeid(std::vector<std::string>)) return std::any_cast<std::vector<std::string>>(v).size();")
+		fmt.Fprintln(w, "    if(v.type() == typeid(std::vector<std::any>)) return std::any_cast<std::vector<std::any>>(v).size();")
 		fmt.Fprintln(w, "    return 0;")
 		fmt.Fprintln(w, "}")
 	}
@@ -855,7 +871,8 @@ func (s *PrintStmt) emit(w io.Writer, indent int) {
 }
 
 func (p *PrintExpr) emit(w io.Writer) {
-	io.WriteString(w, "([&]{\n")
+	cap := "[&]"
+	io.WriteString(w, "("+cap+"{\n")
 	ps := &PrintStmt{Values: p.Values}
 	ps.emit(w, 1)
 	io.WriteString(w, "    return 0;\n")
@@ -925,7 +942,13 @@ func (wst *WhileStmt) emit(w io.Writer, indent int) {
 		io.WriteString(w, "    ")
 	}
 	io.WriteString(w, "while (")
-	wst.Cond.emit(w)
+	if exprType(wst.Cond) == "std::any" {
+		io.WriteString(w, "any_to_bool(")
+		wst.Cond.emit(w)
+		io.WriteString(w, ")")
+	} else {
+		wst.Cond.emit(w)
+	}
 	io.WriteString(w, ") {\n")
 	for _, st := range wst.Body {
 		st.emit(w, indent+1)
@@ -937,8 +960,14 @@ func (wst *WhileStmt) emit(w io.Writer, indent int) {
 }
 
 func (l *LenExpr) emit(w io.Writer) {
-	l.Value.emit(w)
-	io.WriteString(w, ".size()")
+	if exprType(l.Value) == "std::any" {
+		io.WriteString(w, "any_size(")
+		l.Value.emit(w)
+		io.WriteString(w, ")")
+	} else {
+		l.Value.emit(w)
+		io.WriteString(w, ".size()")
+	}
 }
 
 func (l *ListLit) emit(w io.Writer) {
@@ -1038,7 +1067,8 @@ func (m *MapLit) emit(w io.Writer) {
 }
 
 func (mg *MapGetExpr) emit(w io.Writer) {
-	io.WriteString(w, "([&]{ auto &__map = ")
+	cap := "[&]"
+	io.WriteString(w, "("+cap+"{ auto &__map = ")
 	mg.Map.emit(w)
 	io.WriteString(w, "; auto __it = __map.find(")
 	mg.Key.emit(w)
@@ -1174,7 +1204,8 @@ func (i *IndexExpr) emit(w io.Writer) {
 }
 
 func (s *SliceExpr) emit(w io.Writer) {
-	io.WriteString(w, "([&](const auto& __v){ if constexpr(std::is_same_v<std::decay_t<decltype(__v)>, std::string>) return __v.substr(")
+	cap := "[&]"
+	io.WriteString(w, "("+cap+"(const auto& __v){ if constexpr(std::is_same_v<std::decay_t<decltype(__v)>, std::string>) return __v.substr(")
 	s.Start.emit(w)
 	io.WriteString(w, ", ")
 	s.End.emit(w)
@@ -1203,7 +1234,8 @@ func (in *InExpr) emit(w io.Writer) {
 		currentProgram.addInclude("<algorithm>")
 		currentProgram.addInclude("<type_traits>")
 	}
-	io.WriteString(w, "([&](const auto& __c, const auto& __v){ ")
+	cap := "[&]"
+	io.WriteString(w, "("+cap+"(const auto& __c, const auto& __v){ ")
 	io.WriteString(w, "if constexpr(std::is_same_v<std::decay_t<decltype(__c)>, std::string>) { return __c.find(__v) != std::string::npos; } ")
 	io.WriteString(w, "else if constexpr(requires { __c.find(__v); }) { return __c.find(__v) != __c.end(); } ")
 	io.WriteString(w, "else { return std::find(__c.begin(), __c.end(), __v) != __c.end(); } })(")
@@ -1218,11 +1250,16 @@ func (s *SumExpr) emit(w io.Writer) {
 		currentProgram.addInclude("<numeric>")
 	}
 	if lit, ok := s.Arg.(*ListLit); ok {
-		io.WriteString(w, "([&]{ auto tmp = ")
+		cap := "[&]"
+		if !inFunction && inLambda == 0 {
+			cap = "[]"
+		}
+		io.WriteString(w, "("+cap+"{ auto tmp = ")
 		lit.emit(w)
-		io.WriteString(w, "; return std::accumulate(tmp.begin(), tmp.end(), 0.0); })()")
+		io.WriteString(w, "; return std::accumulate(tmp.begin(), tmp.end(), 0.0); }())")
 	} else {
-		io.WriteString(w, "([&]{ auto __tmp = ")
+		cap := "[&]"
+		io.WriteString(w, "("+cap+"{ auto __tmp = ")
 		s.Arg.emit(w)
 		io.WriteString(w, "; return std::accumulate(__tmp.begin(), __tmp.end(), 0.0); }())")
 	}
@@ -1251,7 +1288,11 @@ func (a *AppendExpr) emit(w io.Writer) {
 		}
 		elemType = valType
 	}
-	io.WriteString(w, "([&]{ auto __tmp = ")
+	cap := "[&]"
+	if !inFunction && inLambda == 0 {
+		cap = "[]"
+	}
+	io.WriteString(w, "("+cap+"{ auto __tmp = ")
 	a.List.emit(w)
 	io.WriteString(w, "; __tmp.push_back(")
 	if et := valType; et != elemType && elemType != "auto" {
@@ -1267,7 +1308,11 @@ func (a *AvgExpr) emit(w io.Writer) {
 		currentProgram.addInclude("<sstream>")
 		currentProgram.addInclude("<iomanip>")
 	}
-	io.WriteString(w, "([&]{ auto tmp = ")
+	cap := "[&]"
+	if !inFunction && inLambda == 0 {
+		cap = "[]"
+	}
+	io.WriteString(w, "("+cap+"{ auto tmp = ")
 	a.List.emit(w)
 	io.WriteString(w, "; return tmp.empty() ? 0.0 : std::accumulate(tmp.begin(), tmp.end(), 0.0) / tmp.size(); }())")
 }
@@ -1305,7 +1350,11 @@ func (v *ValuesExpr) emit(w io.Writer) {
 		currentProgram.addInclude("<vector>")
 		currentProgram.addInclude("<map>")
 	}
-	io.WriteString(w, "([&]{ std::vector<decltype(")
+	cap := "[&]"
+	if !inFunction && inLambda == 0 {
+		cap = "[]"
+	}
+	io.WriteString(w, "("+cap+"{ std::vector<decltype(")
 	v.Map.emit(w)
 	io.WriteString(w, ".begin()->second)> vals; for(const auto& __p : ")
 	v.Map.emit(w)
@@ -1317,7 +1366,11 @@ func (k *KeysExpr) emit(w io.Writer) {
 		currentProgram.addInclude("<vector>")
 		currentProgram.addInclude("<map>")
 	}
-	io.WriteString(w, "([&]{ std::vector<std::decay_t<decltype(")
+	cap := "[&]"
+	if !inFunction && inLambda == 0 {
+		cap = "[]"
+	}
+	io.WriteString(w, "("+cap+"{ std::vector<std::decay_t<decltype(")
 	k.Map.emit(w)
 	io.WriteString(w, ".begin()->first)>> keys; for(const auto& __p : ")
 	k.Map.emit(w)
@@ -1350,7 +1403,11 @@ func (u *ToUpperExpr) emit(w io.Writer) {
 	if currentProgram != nil {
 		currentProgram.addInclude("<cctype>")
 	}
-	io.WriteString(w, "([&]{ std::string __s = ")
+	cap := "[&]"
+	if !inFunction && inLambda == 0 {
+		cap = "[]"
+	}
+	io.WriteString(w, "("+cap+"{ std::string __s = ")
 	u.Value.emit(w)
 	io.WriteString(w, "; for(auto &__c : __s){ __c = std::toupper(static_cast<unsigned char>(__c)); } return __s; }())")
 }
@@ -1359,7 +1416,11 @@ func (u *ToLowerExpr) emit(w io.Writer) {
 	if currentProgram != nil {
 		currentProgram.addInclude("<cctype>")
 	}
-	io.WriteString(w, "([&]{ std::string __s = ")
+	cap := "[&]"
+	if !inFunction && inLambda == 0 {
+		cap = "[]"
+	}
+	io.WriteString(w, "("+cap+"{ std::string __s = ")
 	u.Value.emit(w)
 	io.WriteString(w, "; for(auto &__c : __s){ __c = std::tolower(static_cast<unsigned char>(__c)); } return __s; }())")
 }
@@ -1378,7 +1439,11 @@ func (i *InputExpr) emit(w io.Writer) {
 		currentProgram.addInclude("<iostream>")
 		currentProgram.addInclude("<string>")
 	}
-	io.WriteString(w, "([&]{ std::string __line; std::getline(std::cin, __line); return __line; }())")
+	cap := "[&]"
+	if !inFunction && inLambda == 0 {
+		cap = "[]"
+	}
+	io.WriteString(w, "("+cap+"{ std::string __line; std::getline(std::cin, __line); return __line; }())")
 }
 
 func (n *NowExpr) emit(w io.Writer) {
@@ -1975,7 +2040,11 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		lt := exprType(b.Left)
 		rt := exprType(b.Right)
 		if strings.HasPrefix(lt, "std::vector<") && lt == rt {
-			io.WriteString(w, "([&]{ auto __lhs = ")
+			cap := "[&]"
+			if !inFunction && inLambda == 0 {
+				cap = "[]"
+			}
+			io.WriteString(w, "("+cap+"{ auto __lhs = ")
 			b.Left.emit(w)
 			io.WriteString(w, "; auto __rhs = ")
 			b.Right.emit(w)
@@ -1987,7 +2056,11 @@ func (b *BinaryExpr) emit(w io.Writer) {
 			if currentProgram != nil {
 				currentProgram.addInclude("<vector>")
 			}
-			io.WriteString(w, "([&]{ std::string __res = ")
+			cap := "[&]"
+			if !inFunction && inLambda == 0 {
+				cap = "[]"
+			}
+			io.WriteString(w, "("+cap+"{ std::string __res = ")
 			b.Left.emit(w)
 			io.WriteString(w, "; const auto& __vec = ")
 			b.Right.emit(w)
@@ -2155,7 +2228,9 @@ func (s *LetStmt) emit(w io.Writer, indent int) {
 	io.WriteString(w, safeName(s.Name))
 	if s.Value != nil {
 		io.WriteString(w, " = ")
-		if strings.HasPrefix(typ, "std::unique_ptr<") || strings.HasPrefix(typ, "std::shared_ptr<") {
+		if _, ok := s.Value.(*NullLit); ok && typ != "std::any" {
+			io.WriteString(w, defaultValueForType(typ))
+		} else if strings.HasPrefix(typ, "std::unique_ptr<") || strings.HasPrefix(typ, "std::shared_ptr<") {
 			if sl, ok := s.Value.(*StructLit); ok {
 				maker := "std::make_unique"
 				if strings.HasPrefix(typ, "std::shared_ptr<") {
@@ -2449,6 +2524,9 @@ func (b *BenchStmt) emit(w io.Writer, indent int) {
 }
 
 func (f *ForStmt) emit(w io.Writer, indent int) {
+	if !f.IsMap && strings.HasPrefix(exprType(f.Start), "std::map<") {
+		f.IsMap = true
+	}
 	for i := 0; i < indent; i++ {
 		io.WriteString(w, "    ")
 	}
@@ -2515,7 +2593,13 @@ func (i *IfStmt) emit(w io.Writer, indent int) {
 		io.WriteString(w, "    ")
 	}
 	io.WriteString(w, "if (")
-	i.Cond.emit(w)
+	if exprType(i.Cond) == "std::any" {
+		io.WriteString(w, "any_to_bool(")
+		i.Cond.emit(w)
+		io.WriteString(w, ")")
+	} else {
+		i.Cond.emit(w)
+	}
 	io.WriteString(w, ") {\n")
 	for _, st := range i.Then {
 		st.emit(w, indent+1)
@@ -2948,7 +3032,11 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 					}
 				}
 			}
-			varType := elementTypeFromListType(guessType(stmt.For.Source))
+			gtyp := guessType(stmt.For.Source)
+			if !fs.IsMap && strings.HasPrefix(gtyp, "std::map<") {
+				fs.IsMap = true
+			}
+			varType := elementTypeFromListType(gtyp)
 			if vr, ok := start.(*VarRef); ok {
 				if _, ok3 := localTypes[vr.Name]; !ok3 {
 					if t, ok2 := currentProgram.ListTypes[vr.Name]; ok2 {
@@ -3802,10 +3890,9 @@ func convertFun(fn *parser.FunStmt) (*Func, error) {
 				typ = strings.TrimSuffix(strings.TrimPrefix(typ, "std::shared_ptr<"), ">") + "*"
 			}
 		}
-		inFunction = prev
 		params = append(params, Param{Name: p.Name, Type: typ, ByVal: mutatedParams[p.Name]})
 	}
-	defer func() { currentReturnType = prevRet }()
+	defer func() { currentReturnType = prevRet; inFunction = prev }()
 	paramNames = nil
 	mutatedParams = nil
 	return &Func{Name: fn.Name, Params: params, ReturnType: ret, Body: body}, nil
@@ -5324,6 +5411,9 @@ func guessType(e *parser.Expr) string {
 				return "std::string"
 			}
 		}
+	}
+	if e.Binary != nil && len(e.Binary.Right) > 0 && e.Binary.Right[0].Op == "in" {
+		return "bool"
 	}
 	if types.IsStringExpr(e, currentEnv) {
 		return "std::string"

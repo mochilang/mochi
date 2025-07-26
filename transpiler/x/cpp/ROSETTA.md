@@ -2,7 +2,7 @@
 
 This directory stores C++ code generated from Mochi programs in `tests/rosetta/x/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.cpp` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (67/284) - Last updated 2025-07-25 21:15 +0700:
+Checklist of programs that currently transpile and run (81/284) - Last updated 2025-07-26 05:05 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | 100-doors-2 | ✓ | 222.0µs | 13.12MB |
@@ -78,23 +78,23 @@ Checklist of programs that currently transpile and run (67/284) - Last updated 2
 | 71 | arithmetic-integer-2 | ✓ | 197.0µs | 13.10MB |
 | 72 | arithmetic-numbers |   |  |  |
 | 73 | arithmetic-rational |   |  |  |
-| 74 | array-concatenation |   |  |  |
-| 75 | array-length |   |  |  |
-| 76 | arrays |   |  |  |
-| 77 | ascending-primes |   |  |  |
-| 78 | ascii-art-diagram-converter |   |  |  |
-| 79 | assertions |   |  |  |
-| 80 | associative-array-creation |   |  |  |
-| 81 | associative-array-iteration |   |  |  |
-| 82 | associative-array-merging |   |  |  |
+| 74 | array-concatenation | ✓ | 262.0µs | 12.61MB |
+| 75 | array-length | ✓ | 228.0µs | 12.74MB |
+| 76 | arrays | ✓ | 278.0µs | 13.05MB |
+| 77 | ascending-primes | ✓ | 837.0µs | 12.96MB |
+| 78 | ascii-art-diagram-converter | ✓ | 238.0µs | 13.30MB |
+| 79 | assertions | ✓ | 183.0µs | 12.60MB |
+| 80 | associative-array-creation | ✓ | 204.0µs | 13.05MB |
+| 81 | associative-array-iteration | ✓ | 242.0µs | 12.62MB |
+| 82 | associative-array-merging | ✓ | 504.0µs | 12.79MB |
 | 83 | atomic-updates |   |  |  |
-| 84 | attractive-numbers |   |  |  |
+| 84 | attractive-numbers | ✓ | 416.0µs | 13.11MB |
 | 85 | average-loop-length |   |  |  |
 | 86 | averages-arithmetic-mean |   |  |  |
-| 87 | averages-mean-time-of-day |   |  |  |
-| 88 | averages-median-1 |   |  |  |
-| 89 | averages-median-2 |   |  |  |
-| 90 | averages-median-3 |   |  |  |
+| 87 | averages-mean-time-of-day | ✓ | 235.0µs | 14.36MB |
+| 88 | averages-median-1 | ✓ | 364.0µs | 13.06MB |
+| 89 | averages-median-2 | ✓ | 565.0µs | 12.97MB |
+| 90 | averages-median-3 | ✓ | 390.0µs | 13.28MB |
 | 91 | averages-mode |   |  |  |
 | 92 | averages-pythagorean-means |   |  |  |
 | 93 | averages-root-mean-square |   |  |  |
