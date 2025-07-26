@@ -81,9 +81,9 @@ Compiled and ran: 153/332
 | 72 | arithmetic-integer-2 | ✓ |  |  |
 | 73 | arithmetic-numbers | ✓ |  |  |
 | 74 | arithmetic-rational | ✓ |  |  |
-| 75 | array-concatenation | ✓ | 7.28ms | 12.0 MB |
+| 75 | array-concatenation | ✓ | 12.589ms | 3.5 MB |
 | 76 | array-length | ✓ |  |  |
-| 77 | arrays | ✓ | 6.361ms | 2.9 MB |
+| 77 | arrays | ✓ | 12.049ms | 3.4 MB |
 | 78 | ascending-primes | ✓ |  |  |
 | 79 | ascii-art-diagram-converter | ✓ |  |  |
 | 80 | assertions | ✓ |  |  |
@@ -340,4 +340,4 @@ Compiled and ran: 153/332
 | 331 | ekg-sequence-convergence |   |  |  |
 | 332 | md5 |   |  |  |
 
-_Last updated: 2025-07-26 19:01 +0700_
+_Last updated: 2025-07-26 19:25 +0700_
