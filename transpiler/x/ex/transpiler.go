@@ -31,6 +31,9 @@ func sanitizeIdent(name string) string {
 	if _, ok := elixirReserved[name]; ok {
 		return name + "_"
 	}
+	if len(name) > 0 && name[0] >= 'A' && name[0] <= 'Z' {
+		name = strings.ToLower(name[:1]) + name[1:]
+	}
 	return name
 }
 
@@ -984,6 +987,7 @@ type CondExpr struct {
 }
 
 func (c *CondExpr) emit(w io.Writer) {
+	io.WriteString(w, "(")
 	io.WriteString(w, "if ")
 	c.Cond.emit(w)
 	io.WriteString(w, ", do: ")
@@ -992,6 +996,7 @@ func (c *CondExpr) emit(w io.Writer) {
 		io.WriteString(w, ", else: ")
 		c.Else.emit(w)
 	}
+	io.WriteString(w, ")")
 }
 
 // CaseExpr represents a simple match/case expression.
@@ -2141,7 +2146,6 @@ func compileIfStmt(is *parser.IfStmt, env *types.Env) (Stmt, error) {
 	if err != nil {
 		return nil, err
 	}
-	envBefore := env.Copy()
 	thenStmts := make([]Stmt, 0, len(is.Then))
 	for _, s := range is.Then {
 		st, err := compileStmt(s, env)
@@ -2170,7 +2174,10 @@ func compileIfStmt(is *parser.IfStmt, env *types.Env) (Stmt, error) {
 			}
 		}
 	}
-	vars := gatherMutVars(append(append([]Stmt{}, thenStmts...), elseStmts...), envBefore)
+	// Use the current environment when gathering mutated variables so
+	// that assignments to vars defined outside this if-statement are
+	// properly detected.
+	vars := gatherMutVars(append(append([]Stmt{}, thenStmts...), elseStmts...), env)
 	return &IfStmt{Cond: cond, Then: thenStmts, Else: elseStmts, Vars: vars}, nil
 }
 
@@ -3456,16 +3463,16 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 					params[i] = p.Name
 					callArgs = append(callArgs, &VarRef{Name: p.Name})
 				}
-				call := &CallExpr{Func: name, Args: callArgs}
+				call := &CallExpr{Func: sanitizeIdent(name), Args: callArgs}
 				body := []Stmt{&ExprStmt{Expr: call}}
 				return &AnonFun{Params: params, Body: body}, nil
 			}
-			return &CallExpr{Func: name, Args: args}, nil
+			return &CallExpr{Func: sanitizeIdent(name), Args: args}, nil
 		}
 		if _, err := env.GetVar(name); err == nil {
-			return &CallExpr{Func: name, Args: args, Var: true}, nil
+			return &CallExpr{Func: sanitizeIdent(name), Args: args, Var: true}, nil
 		}
-		return &CallExpr{Func: name, Args: args}, nil
+		return &CallExpr{Func: sanitizeIdent(name), Args: args}, nil
 	case p.Lit != nil:
 		return compileLiteral(p.Lit)
 	case p.Selector != nil:

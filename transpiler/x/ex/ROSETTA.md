@@ -2,8 +2,8 @@
 
 Generated Elixir code from Mochi Rosetta programs lives in `tests/rosetta/transpiler/Elixir`.
 
-## Rosetta Test Checklist (44/332)
-_Last updated: 2025-07-26 10:36 +0000_
+## Rosetta Test Checklist (54/332)
+_Last updated: 2025-07-26 12:30 +0000_
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | 100-doors-2 | ✓ |  |  |
@@ -52,21 +52,21 @@ _Last updated: 2025-07-26 10:36 +0000_
 | 44 | almost-prime |  |  |  |
 | 45 | amb | ✓ | 922us | 18.8 KB |
 | 46 | amicable-pairs | ✓ | 5.90s | 1.5 MB |
-| 47 | anagrams-deranged-anagrams | ✓ | 1.58ms | 51.4 KB |
-| 48 | anagrams | ✓ | 637us | 38.0 KB |
-| 49 | angle-difference-between-two-bearings-1 | ✓ | 1.88ms | 121.1 KB |
-| 50 | angle-difference-between-two-bearings-2 | ✓ | 1.49ms | 208.0 KB |
-| 51 | angles-geometric-normalization-and-conversion | ✓ | 2.46ms | 494.8 KB |
-| 52 | animate-a-pendulum |  |  |  |
-| 53 | animation |  |  |  |
-| 54 | anonymous-recursion-1 |  |  |  |
-| 55 | anonymous-recursion-2 |  |  |  |
-| 56 | anonymous-recursion |  |  |  |
-| 57 | anti-primes |  |  |  |
-| 58 | append-a-record-to-the-end-of-a-text-file |  |  |  |
-| 59 | apply-a-callback-to-an-array-1 |  |  |  |
-| 60 | apply-a-callback-to-an-array-2 |  |  |  |
-| 61 | apply-a-digital-filter-direct-form-ii-transposed- |  |  |  |
+| 47 | anagrams-deranged-anagrams | ✓ |  |  |
+| 48 | anagrams | ✓ |  |  |
+| 49 | angle-difference-between-two-bearings-1 | ✓ |  |  |
+| 50 | angle-difference-between-two-bearings-2 | ✓ |  |  |
+| 51 | angles-geometric-normalization-and-conversion | ✓ |  |  |
+| 52 | animate-a-pendulum | ✓ | 4.10ms | 135.2 KB |
+| 53 | animation | ✓ | 2.70ms | 61.9 KB |
+| 54 | anonymous-recursion-1 | ✓ | 293us | 331.5 KB |
+| 55 | anonymous-recursion-2 | ✓ | 520us | 437.5 KB |
+| 56 | anonymous-recursion | ✓ | 746us | 18.0 KB |
+| 57 | anti-primes | ✓ | 90.70ms | 152.5 KB |
+| 58 | append-a-record-to-the-end-of-a-text-file | ✓ | 115us | 261.9 KB |
+| 59 | apply-a-callback-to-an-array-1 | ✓ | 290us | 350.4 KB |
+| 60 | apply-a-callback-to-an-array-2 | ✓ | 1.55ms | 339.5 KB |
+| 61 | apply-a-digital-filter-direct-form-ii-transposed- | ✓ | 4.47ms | 378.9 KB |
 | 62 | approximate-equality |  |  |  |
 | 63 | arbitrary-precision-integers-included- |  |  |  |
 | 64 | archimedean-spiral |  |  |  |
