@@ -44,57 +44,71 @@ defmodule Main do
       true -> Enum.slice(base, start, len)
     end
   end
-  def mean(v) do
+  def sel(list, k) do
     try do
-      if length(v) == 0 do
-        throw {:return, %{"ok" => false}}
-      end
-      sum = 0.0
       i = 0
-      while_fun = fn while_fun, i, sum ->
-        if i < length(v) do
-          sum = sum + Enum.at(v, i)
+      while_fun = fn while_fun, i, list ->
+        if i <= k do
+          minIndex = i
+          j = i + 1
+          while_fun_2 = fn while_fun_2, j, minIndex ->
+            if j < length(list) do
+              if Enum.at(list, j) < Enum.at(list, minIndex) do
+                minIndex = j
+              end
+              j = j + 1
+              while_fun_2.(while_fun_2, j, minIndex)
+            else
+              {j, minIndex}
+            end
+          end
+          {j, minIndex} = try do
+              while_fun_2.(while_fun_2, j, minIndex)
+            catch
+              :break -> {j, minIndex}
+            end
+
+          tmp = Enum.at(list, i)
+          list = List.replace_at(list, i, Enum.at(list, minIndex))
+          list = List.replace_at(list, minIndex, tmp)
           i = i + 1
-          while_fun.(while_fun, i, sum)
+          while_fun.(while_fun, i, list)
         else
-          {i, sum}
+          {i, list}
         end
       end
-      {i, sum} = try do
-          while_fun.(while_fun, i, sum)
+      {i, list} = try do
+          while_fun.(while_fun, i, list)
         catch
-          :break -> {i, sum}
+          :break -> {i, list}
         end
 
-      throw {:return, %{"ok" => true, "mean" => sum / (length(v))}}
+      throw {:return, Enum.at(list, k)}
+    catch
+      {:return, val} -> val
+    end
+  end
+  def median(a) do
+    try do
+      arr = a
+      half = trunc((div(length(arr), 2)))
+      med = Main.sel(arr, half)
+      if rem(length(arr), 2) == 0 do
+        throw {:return, (med + Enum.at(arr, half - 1)) / 2.0}
+      end
+      throw {:return, med}
     catch
       {:return, val} -> val
     end
   end
   def main() do
-    try do
-      sets = [[], [3.0, 1.0, 4.0, 1.0, 5.0, 9.0], [100000000000000000000.0, 3.0, 1.0, 4.0, 1.0, 5.0, 9.0, -100000000000000000000.0], [10.0, 9.0, 8.0, 7.0, 6.0, 5.0, 4.0, 3.0, 2.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.11], [10.0, 20.0, 30.0, 40.0, 50.0, -100.0, 4.7, -1100.0]]
-      Enum.each(sets, fn v ->
-        IO.puts(("Vector: " <> Kernel.inspect(v)))
-        r = Main.mean(v)
-        if r["ok"] do
-          IO.puts(((("Mean of " <> Kernel.inspect(length(v))) <> " numbers is ") <> Kernel.inspect(r["mean"])))
-        else
-          IO.puts("Mean undefined")
-        end
-        IO.puts("")
-      end)
-    catch
-      {:return, val} -> val
-    end
-  end
-  def bench_main() do
     mem_start = _mem()
     t_start = _now()
-    main()
+    IO.puts(Kernel.inspect(Main.median([3.0, 1.0, 4.0, 1.0])))
+    IO.puts(Kernel.inspect(Main.median([3.0, 1.0, 4.0, 1.0, 5.0])))
     duration_us = div(_now() - t_start, 1000)
     mem_diff = abs(_mem() - mem_start)
     IO.puts("{\n  \"duration_us\": #{duration_us},\n  \"memory_bytes\": #{mem_diff},\n  \"name\": \"main\"\n}")
   end
 end
-Main.bench_main()
+Main.main()
