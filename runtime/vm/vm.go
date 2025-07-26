@@ -748,7 +748,12 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 				bi := new(big.Int).Add(toBigInt(b), toBigInt(c))
 				fr.regs[ins.A] = Value{Tag: ValueBigInt, BigInt: bi}
 			} else {
-				fr.regs[ins.A] = Value{Tag: ValueInt, Int: toInt(b) + toInt(c)}
+				bi := new(big.Int).Add(toBigInt(b), toBigInt(c))
+				if bi.IsInt64() {
+					fr.regs[ins.A] = Value{Tag: ValueInt, Int: int(bi.Int64())}
+				} else {
+					fr.regs[ins.A] = Value{Tag: ValueBigInt, BigInt: bi}
+				}
 			}
 		case OpAddInt:
 			bVal := fr.regs[ins.B]
@@ -756,9 +761,12 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 			if bVal.Tag == ValueNull || cVal.Tag == ValueNull {
 				fr.regs[ins.A] = Value{Tag: ValueNull}
 			} else {
-				b := toInt(bVal)
-				c := toInt(cVal)
-				fr.regs[ins.A] = Value{Tag: ValueInt, Int: b + c}
+				bi := new(big.Int).Add(toBigInt(bVal), toBigInt(cVal))
+				if bi.IsInt64() {
+					fr.regs[ins.A] = Value{Tag: ValueInt, Int: int(bi.Int64())}
+				} else {
+					fr.regs[ins.A] = Value{Tag: ValueBigInt, BigInt: bi}
+				}
 			}
 		case OpAddFloat:
 			b := fr.regs[ins.B]
@@ -784,7 +792,12 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 				bi := new(big.Int).Sub(toBigInt(b), toBigInt(c))
 				fr.regs[ins.A] = Value{Tag: ValueBigInt, BigInt: bi}
 			} else {
-				fr.regs[ins.A] = Value{Tag: ValueInt, Int: toInt(b) - toInt(c)}
+				bi := new(big.Int).Sub(toBigInt(b), toBigInt(c))
+				if bi.IsInt64() {
+					fr.regs[ins.A] = Value{Tag: ValueInt, Int: int(bi.Int64())}
+				} else {
+					fr.regs[ins.A] = Value{Tag: ValueBigInt, BigInt: bi}
+				}
 			}
 		case OpSubInt:
 			bVal := fr.regs[ins.B]
@@ -792,9 +805,12 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 			if bVal.Tag == ValueNull || cVal.Tag == ValueNull {
 				fr.regs[ins.A] = Value{Tag: ValueNull}
 			} else {
-				b := toInt(bVal)
-				c := toInt(cVal)
-				fr.regs[ins.A] = Value{Tag: ValueInt, Int: b - c}
+				bi := new(big.Int).Sub(toBigInt(bVal), toBigInt(cVal))
+				if bi.IsInt64() {
+					fr.regs[ins.A] = Value{Tag: ValueInt, Int: int(bi.Int64())}
+				} else {
+					fr.regs[ins.A] = Value{Tag: ValueBigInt, BigInt: bi}
+				}
 			}
 		case OpSubFloat:
 			b := fr.regs[ins.B]
@@ -850,7 +866,12 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 				bi := new(big.Int).Mul(toBigInt(b), toBigInt(c))
 				fr.regs[ins.A] = Value{Tag: ValueBigInt, BigInt: bi}
 			} else {
-				fr.regs[ins.A] = Value{Tag: ValueInt, Int: toInt(b) * toInt(c)}
+				bi := new(big.Int).Mul(toBigInt(b), toBigInt(c))
+				if bi.IsInt64() {
+					fr.regs[ins.A] = Value{Tag: ValueInt, Int: int(bi.Int64())}
+				} else {
+					fr.regs[ins.A] = Value{Tag: ValueBigInt, BigInt: bi}
+				}
 			}
 		case OpMulInt:
 			bVal := fr.regs[ins.B]
@@ -858,9 +879,12 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 			if bVal.Tag == ValueNull || cVal.Tag == ValueNull {
 				fr.regs[ins.A] = Value{Tag: ValueNull}
 			} else {
-				b := toInt(bVal)
-				c := toInt(cVal)
-				fr.regs[ins.A] = Value{Tag: ValueInt, Int: b * c}
+				bi := new(big.Int).Mul(toBigInt(bVal), toBigInt(cVal))
+				if bi.IsInt64() {
+					fr.regs[ins.A] = Value{Tag: ValueInt, Int: int(bi.Int64())}
+				} else {
+					fr.regs[ins.A] = Value{Tag: ValueBigInt, BigInt: bi}
+				}
 			}
 		case OpMulFloat:
 			b := fr.regs[ins.B]
@@ -887,9 +911,18 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 				fr.regs[ins.A] = Value{Tag: ValueBigRat, BigRat: br}
 			} else if b.Tag == ValueBigInt || c.Tag == ValueBigInt {
 				bi := new(big.Int).Quo(toBigInt(b), toBigInt(c))
-				fr.regs[ins.A] = Value{Tag: ValueBigInt, BigInt: bi}
+				if bi.IsInt64() {
+					fr.regs[ins.A] = Value{Tag: ValueInt, Int: int(bi.Int64())}
+				} else {
+					fr.regs[ins.A] = Value{Tag: ValueBigInt, BigInt: bi}
+				}
 			} else {
-				fr.regs[ins.A] = Value{Tag: ValueInt, Int: toInt(b) / toInt(c)}
+				bi := new(big.Int).Quo(toBigInt(b), toBigInt(c))
+				if bi.IsInt64() {
+					fr.regs[ins.A] = Value{Tag: ValueInt, Int: int(bi.Int64())}
+				} else {
+					fr.regs[ins.A] = Value{Tag: ValueBigInt, BigInt: bi}
+				}
 			}
 		case OpDivInt:
 			bVal := fr.regs[ins.B]
@@ -897,12 +930,16 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 			if bVal.Tag == ValueNull || cVal.Tag == ValueNull {
 				fr.regs[ins.A] = Value{Tag: ValueNull}
 			} else {
-				b := toInt(bVal)
-				c := toInt(cVal)
-				if c == 0 {
+				cBig := toBigInt(cVal)
+				if cBig.Sign() == 0 {
 					return Value{}, m.newError(fmt.Errorf("division by zero"), trace, ins.Line)
 				}
-				fr.regs[ins.A] = Value{Tag: ValueInt, Int: b / c}
+				bi := new(big.Int).Quo(toBigInt(bVal), cBig)
+				if bi.IsInt64() {
+					fr.regs[ins.A] = Value{Tag: ValueInt, Int: int(bi.Int64())}
+				} else {
+					fr.regs[ins.A] = Value{Tag: ValueBigInt, BigInt: bi}
+				}
 			}
 		case OpDivFloat:
 			b := fr.regs[ins.B]
@@ -931,7 +968,12 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 				bi := new(big.Int).Rem(toBigInt(b), toBigInt(c))
 				fr.regs[ins.A] = Value{Tag: ValueBigInt, BigInt: bi}
 			} else {
-				fr.regs[ins.A] = Value{Tag: ValueInt, Int: toInt(b) % toInt(c)}
+				bi := new(big.Int).Rem(toBigInt(b), toBigInt(c))
+				if bi.IsInt64() {
+					fr.regs[ins.A] = Value{Tag: ValueInt, Int: int(bi.Int64())}
+				} else {
+					fr.regs[ins.A] = Value{Tag: ValueBigInt, BigInt: bi}
+				}
 			}
 		case OpModInt:
 			bVal := fr.regs[ins.B]
@@ -939,12 +981,16 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 			if bVal.Tag == ValueNull || cVal.Tag == ValueNull {
 				fr.regs[ins.A] = Value{Tag: ValueNull}
 			} else {
-				b := toInt(bVal)
-				c := toInt(cVal)
-				if c == 0 {
+				cBig := toBigInt(cVal)
+				if cBig.Sign() == 0 {
 					return Value{}, m.newError(fmt.Errorf("division by zero"), trace, ins.Line)
 				}
-				fr.regs[ins.A] = Value{Tag: ValueInt, Int: b % c}
+				bi := new(big.Int).Rem(toBigInt(bVal), cBig)
+				if bi.IsInt64() {
+					fr.regs[ins.A] = Value{Tag: ValueInt, Int: int(bi.Int64())}
+				} else {
+					fr.regs[ins.A] = Value{Tag: ValueBigInt, BigInt: bi}
+				}
 			}
 		case OpModFloat:
 			b := fr.regs[ins.B]
@@ -7446,7 +7492,11 @@ func applyBinaryConst(op string, a, b Value) (Value, bool) {
 			return Value{Tag: ValueBigInt, BigInt: bi}, true
 		}
 		if a.Tag == ValueInt && b.Tag == ValueInt {
-			return Value{Tag: ValueInt, Int: a.Int + b.Int}, true
+			bi := new(big.Int).Add(big.NewInt(int64(a.Int)), big.NewInt(int64(b.Int)))
+			if bi.IsInt64() {
+				return Value{Tag: ValueInt, Int: int(bi.Int64())}, true
+			}
+			return Value{Tag: ValueBigInt, BigInt: bi}, true
 		}
 	case "-":
 		if a.Tag == ValueFloat || b.Tag == ValueFloat {
@@ -7457,7 +7507,11 @@ func applyBinaryConst(op string, a, b Value) (Value, bool) {
 			return Value{Tag: ValueBigInt, BigInt: bi}, true
 		}
 		if a.Tag == ValueInt && b.Tag == ValueInt {
-			return Value{Tag: ValueInt, Int: a.Int - b.Int}, true
+			bi := new(big.Int).Sub(big.NewInt(int64(a.Int)), big.NewInt(int64(b.Int)))
+			if bi.IsInt64() {
+				return Value{Tag: ValueInt, Int: int(bi.Int64())}, true
+			}
+			return Value{Tag: ValueBigInt, BigInt: bi}, true
 		}
 	case "*":
 		if a.Tag == ValueFloat || b.Tag == ValueFloat {
@@ -7468,7 +7522,11 @@ func applyBinaryConst(op string, a, b Value) (Value, bool) {
 			return Value{Tag: ValueBigInt, BigInt: bi}, true
 		}
 		if a.Tag == ValueInt && b.Tag == ValueInt {
-			return Value{Tag: ValueInt, Int: a.Int * b.Int}, true
+			bi := new(big.Int).Mul(big.NewInt(int64(a.Int)), big.NewInt(int64(b.Int)))
+			if bi.IsInt64() {
+				return Value{Tag: ValueInt, Int: int(bi.Int64())}, true
+			}
+			return Value{Tag: ValueBigInt, BigInt: bi}, true
 		}
 	case "/":
 		if (b.Tag == ValueInt && b.Int == 0) || (b.Tag == ValueFloat && b.Float == 0) {
