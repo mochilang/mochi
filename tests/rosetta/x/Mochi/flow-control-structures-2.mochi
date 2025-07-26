@@ -1,0 +1,10 @@
+fun process() {
+  var opened = true
+  if opened {
+    // pretend to do work
+    return
+  }
+}
+
+process()
+print("done")

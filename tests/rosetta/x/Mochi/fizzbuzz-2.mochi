@@ -1,0 +1,7 @@
+for i in 1..101 {
+  let m = {
+    false: {false: str(i), true: "Fizz"},
+    true: {false: "Buzz", true: "FizzBuzz"},
+  }
+  print(m[i % 5 == 0][i % 3 == 0])
+}

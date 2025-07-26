@@ -1,0 +1,7 @@
+var phone1 = true
+var phone2 = false
+if phone1 {
+  print("talk on phone one")
+} else if phone2 {
+  print("talk on phone two")
+}
