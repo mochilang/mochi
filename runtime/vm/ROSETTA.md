@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated IR and outputs from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/ir`.
-Last updated: 2025-07-26 03:26 UTC
+Last updated: 2025-07-26 04:02 UTC
 
-## Rosetta Golden Test Checklist (201/284)
+## Rosetta Golden Test Checklist (202/285)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 116µs | 11.7 KB |
@@ -291,3 +291,4 @@ Last updated: 2025-07-26 03:26 UTC
 | 282 | deepcopy-1 |   |  |  |
 | 283 | define-a-primitive-data-type |   |  |  |
 | 284 | md5 |   |  |  |
+| 285 | delete-a-file | ✓ |  |  |

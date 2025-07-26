@@ -1,0 +1,83 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun remove(fs: map<string,bool>, path: string) {
+func remove (regs=9)
+  // if path in fs {
+  In           r2, r1, r0
+  JumpIfFalse  r2, L0
+  // delete fs[path]
+  Index        r4, r0, r1
+  // print("removed " + path)
+  Const        r5, "removed "
+  Add          r6, r5, r1
+  Print        r6
+  // if path in fs {
+  Jump         L1
+L0:
+  // print(path + ": not found")
+  Const        r7, ": not found"
+  Add          r8, r1, r7
+  Print        r8
+L1:
+  Return       r0
+
+  // fun removeAll(fs: map<string,bool>, path: string) {
+func removeAll (regs=9)
+  // if path in fs {
+  In           r2, r1, r0
+  JumpIfFalse  r2, L0
+  // delete fs[path]
+  Index        r4, r0, r1
+  // print("removed recursively " + path)
+  Const        r5, "removed recursively "
+  Add          r6, r5, r1
+  Print        r6
+  // if path in fs {
+  Jump         L1
+L0:
+  // print(path + ": not found")
+  Const        r7, ": not found"
+  Add          r8, r1, r7
+  Print        r8
+L1:
+  Return       r0
+
+  // fun main() {
+func main (regs=24)
+  // var fs: map<string,bool> = {
+  Const        r0, {"/docs": true, "/input.txt": false, "docs": true, "input.txt": false}
+  Move         r1, r0
+  // remove(fs, "input.txt")
+  Move         r2, r1
+  Const        r4, "input.txt"
+  Move         r3, r4
+  Call2        r5, remove, r2, r3
+  // remove(fs, "/input.txt")
+  Move         r6, r1
+  Const        r8, "/input.txt"
+  Move         r7, r8
+  Call2        r9, remove, r6, r7
+  // remove(fs, "docs")
+  Move         r10, r1
+  Const        r12, "docs"
+  Move         r11, r12
+  Call2        r13, remove, r10, r11
+  // remove(fs, "/docs")
+  Move         r14, r1
+  Const        r16, "/docs"
+  Move         r15, r16
+  Call2        r17, remove, r14, r15
+  // removeAll(fs, "docs")
+  Move         r18, r1
+  Const        r12, "docs"
+  Move         r19, r12
+  Call2        r20, removeAll, r18, r19
+  // removeAll(fs, "/docs")
+  Move         r21, r1
+  Const        r16, "/docs"
+  Move         r22, r16
+  Call2        r23, removeAll, r21, r22
+  Return       r0

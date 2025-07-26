@@ -1,0 +1,38 @@
+// Mochi translation of Rosetta "Delete a file" task
+// Simulates file deletion in a simple in-memory filesystem
+
+fun remove(fs: map<string,bool>, path: string) {
+  if path in fs {
+    delete fs[path]
+    print("removed " + path)
+  } else {
+    print(path + ": not found")
+  }
+}
+
+fun removeAll(fs: map<string,bool>, path: string) {
+  if path in fs {
+    delete fs[path]
+    print("removed recursively " + path)
+  } else {
+    print(path + ": not found")
+  }
+}
+
+fun main() {
+  var fs: map<string,bool> = {
+    "input.txt": false,
+    "/input.txt": false,
+    "docs": true,
+    "/docs": true,
+  }
+
+  remove(fs, "input.txt")
+  remove(fs, "/input.txt")
+  remove(fs, "docs")
+  remove(fs, "/docs")
+  removeAll(fs, "docs")
+  removeAll(fs, "/docs")
+}
+
+main()
