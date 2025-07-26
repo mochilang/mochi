@@ -2,8 +2,8 @@
 
 Generated Swift code for Mochi Rosetta programs in `tests/rosetta/x/Mochi`. Outputs are stored in `tests/rosetta/transpiler/Swift`. Errors are captured in `.error` files.
 
-Completed: 72/284
-Last updated: 2025-07-26 10:02 +0700
+Completed: 87/284
+Last updated: 2025-07-26 10:15 +0700
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -86,21 +86,21 @@ Last updated: 2025-07-26 10:02 +0700
 | 77 | ascending-primes | ✓ | 893µs | 2.9 MB |
 | 78 | ascii-art-diagram-converter | ✓ | 273µs | 2.9 MB |
 | 79 | assertions | ✓ | 204µs | 3.0 MB |
-| 80 | associative-array-creation |   |  |  |
-| 81 | associative-array-iteration |   |  |  |
-| 82 | associative-array-merging |   |  |  |
-| 83 | atomic-updates |   |  |  |
-| 84 | attractive-numbers |   |  |  |
-| 85 | average-loop-length |   |  |  |
-| 86 | averages-arithmetic-mean |   |  |  |
-| 87 | averages-mean-time-of-day |   |  |  |
-| 88 | averages-median-1 |   |  |  |
-| 89 | averages-median-2 |   |  |  |
-| 90 | averages-median-3 |   |  |  |
-| 91 | averages-mode |   |  |  |
-| 92 | averages-pythagorean-means |   |  |  |
-| 93 | averages-root-mean-square |   |  |  |
-| 94 | averages-simple-moving-average |   |  |  |
+| 80 | associative-array-creation | ✓ | 356µs | 3.1 MB |
+| 81 | associative-array-iteration | ✓ | 228µs | 3.1 MB |
+| 82 | associative-array-merging | ✓ | 517µs | 3.4 MB |
+| 83 | atomic-updates | ✓ | 324µs | 2.8 MB |
+| 84 | attractive-numbers | ✓ | 273µs | 3.2 MB |
+| 85 | average-loop-length | ✓ | 618.33ms | 3.1 MB |
+| 86 | averages-arithmetic-mean | ✓ | 359µs | 3.1 MB |
+| 87 | averages-mean-time-of-day | ✓ | 260µs | 3.2 MB |
+| 88 | averages-median-1 | ✓ | 134µs | 3.3 MB |
+| 89 | averages-median-2 | ✓ | 135µs | 3.1 MB |
+| 90 | averages-median-3 | ✓ | 490µs | 3.3 MB |
+| 91 | averages-mode | ✓ | 321µs | 3.2 MB |
+| 92 | averages-pythagorean-means | ✓ | 237µs | 3.3 MB |
+| 93 | averages-root-mean-square | ✓ | 658µs | 3.2 MB |
+| 94 | averages-simple-moving-average | ✓ | 278µs | 3.1 MB |
 | 95 | avl-tree |   |  |  |
 | 96 | b-zier-curves-intersections |   |  |  |
 | 97 | babbage-problem |   |  |  |
