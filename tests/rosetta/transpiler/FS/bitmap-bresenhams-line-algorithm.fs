@@ -1,10 +1,28 @@
-// Generated 2025-07-26 04:38 +0700
+// Generated 2025-07-26 03:08 +0000
 
 exception Break
 exception Continue
 
 exception Return
 
+let mutable _nowSeed:int64 = 0L
+let mutable _nowSeeded = false
+let _initNow () =
+    let s = System.Environment.GetEnvironmentVariable("MOCHI_NOW_SEED")
+    if System.String.IsNullOrEmpty(s) |> not then
+        match System.Int32.TryParse(s) with
+        | true, v ->
+            _nowSeed <- int64 v
+            _nowSeeded <- true
+        | _ -> ()
+let _now () =
+    if _nowSeeded then
+        _nowSeed <- (_nowSeed * 1664525L + 1013904223L) % 2147483647L
+        int _nowSeed
+    else
+        int (System.DateTime.UtcNow.Ticks % 2147483647L)
+
+_initNow()
 type Point = {
     x: int
     y: int
@@ -37,7 +55,7 @@ and bresenham (x0: int) (y0: int) (x1: int) (y1: int) =
         let mutable pts: Point array = [||]
         try
             while true do
-                pts <- Array.append pts [|{ x = x0; y = y0 }|]
+                pts <- unbox<Point array> (Array.append pts [|{ x = x0; y = y0 }|])
                 if (x0 = x1) && (y0 = y1) then
                     raise Break
                 let mutable e2: int = 2 * err
@@ -58,12 +76,18 @@ and bresenham (x0: int) (y0: int) (x1: int) (y1: int) =
 and main () =
     let mutable __ret : unit = Unchecked.defaultof<unit>
     try
+        let __bench_start = _now()
+        let __mem_start = System.GC.GetTotalMemory(true)
         let pts: Point array = bresenham 0 0 6 4
         let mutable i: int = 0
-        while i < (int (Array.length pts)) do
+        while i < (unbox<int> (Array.length pts)) do
             let p: Point = pts.[i]
             printfn "%s" (((("(" + (string (p.x))) + ",") + (string (p.y))) + ")")
             i <- i + 1
+        let __bench_end = _now()
+        let __mem_end = System.GC.GetTotalMemory(true)
+        printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)
+
         __ret
     with
         | Return -> __ret

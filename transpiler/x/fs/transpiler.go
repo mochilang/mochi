@@ -46,6 +46,7 @@ type Program struct {
 	UseBreak     bool
 	UseReturn    bool
 	UseSubstring bool
+	UseSHA256    bool
 }
 
 // varTypes holds the inferred type for each variable defined during
@@ -62,6 +63,7 @@ var (
 	usesBreak     bool
 	usesReturn    bool
 	usesSubstring bool
+	usesSHA256    bool
 	benchMain     bool
 )
 
@@ -105,6 +107,12 @@ const helperSubstring = `let _substring (s:string) (start:int) (finish:int) =
     if en > len then en <- len
     if st > en then st <- en
     s.Substring(st, en - st)
+`
+
+const helperSHA256 = `let _sha256 (bs:int array) : int array =
+    use sha = System.Security.Cryptography.SHA256.Create()
+    let bytes = Array.map byte bs
+    sha.ComputeHash(bytes) |> Array.map int
 `
 
 func writeIndent(w io.Writer) {
@@ -2174,6 +2182,10 @@ func Emit(prog *Program) []byte {
 		buf.WriteString(helperSubstring)
 		buf.WriteString("\n")
 	}
+	if prog.UseSHA256 {
+		buf.WriteString(helperSHA256)
+		buf.WriteString("\n")
+	}
 	for _, st := range prog.Structs {
 		fmt.Fprintf(&buf, "type %s = {\n", fsIdent(st.Name))
 		for _, f := range st.Fields {
@@ -2256,6 +2268,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	usesBreak = false
 	usesReturn = false
 	usesSubstring = false
+	usesSHA256 = false
 	p := &Program{}
 	for _, st := range prog.Statements {
 		conv, err := convertStmt(st)
@@ -2293,6 +2306,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	p.UseBreak = usesBreak
 	p.UseReturn = usesReturn
 	p.UseSubstring = usesSubstring
+	p.UseSHA256 = usesSHA256
 	return p, nil
 }
 
@@ -2996,6 +3010,28 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				return nil, fmt.Errorf("lower expects 1 arg")
 			}
 			return &MethodCallExpr{Target: args[0], Name: "ToLower"}, nil
+		case "contains":
+			if len(args) != 2 {
+				return nil, fmt.Errorf("contains expects 2 args")
+			}
+			t := inferType(args[0])
+			switch {
+			case t == "string":
+				return &MethodCallExpr{Target: args[0], Name: "Contains", Args: []Expr{args[1]}}, nil
+			case t == "array":
+				return &CallExpr{Func: "Array.contains", Args: []Expr{args[1], args[0]}}, nil
+			case t == "map":
+				return &CallExpr{Func: "Map.containsKey", Args: []Expr{args[1], args[0]}}, nil
+			default:
+				return &CallExpr{Func: "Seq.contains", Args: []Expr{args[1], args[0]}}, nil
+			}
+		case "sha256":
+			if len(args) != 1 {
+				return nil, fmt.Errorf("sha256 expects 1 arg")
+			}
+			usesSHA256 = true
+			neededOpens["System.Security.Cryptography"] = true
+			return &CallExpr{Func: "_sha256", Args: args}, nil
 		case "keys":
 			if len(args) != 1 {
 				return nil, fmt.Errorf("keys expects 1 arg")
@@ -3397,6 +3433,9 @@ func buildMapUpdate(m Expr, keys []Expr, val Expr) Expr {
 		return &CallExpr{Func: "Map.add", Args: []Expr{key, v, m}}
 	}
 	inner := buildMapUpdate(&IndexExpr{Target: m, Index: key}, keys[1:], val)
+	if mapValueType(inferType(m)) == "obj" {
+		inner = &CallExpr{Func: "box", Args: []Expr{inner}}
+	}
 	return &CallExpr{Func: "Map.add", Args: []Expr{key, inner, m}}
 }
 
