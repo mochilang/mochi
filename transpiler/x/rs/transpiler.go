@@ -2730,6 +2730,10 @@ func compileFunStmt(fn *parser.FunStmt) (Stmt, error) {
 			if mut && (fn.Return == nil || rustTypeRef(fn.Return) != typ) {
 				sigType = "&mut " + typ
 			}
+		} else if strings.HasPrefix(typ, "impl FnMut(") {
+			sigType = "&mut " + typ
+		} else if strings.HasPrefix(typ, "impl Fn(") {
+			sigType = "&" + typ
 		} else if typ != "" && typ != "i64" && typ != "bool" && typ != "f64" && typ != "String" {
 			mut := paramMutated(fn.Body, p.Name)
 			if !mut {
@@ -3150,12 +3154,14 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			return &FloatCastExpr{Expr: args[0]}, nil
 		}
 		if name == "abs" && len(args) == 1 {
-			useAbs = true
-			funReturns[name] = "f64"
-			if inferType(args[0]) != "f64" {
-				args[0] = &FloatCastExpr{Expr: args[0]}
+			if _, ok := funParams[name]; !ok {
+				useAbs = true
+				funReturns[name] = "f64"
+				if inferType(args[0]) != "f64" {
+					args[0] = &FloatCastExpr{Expr: args[0]}
+				}
+				return &CallExpr{Func: "abs", Args: []Expr{args[0]}}, nil
 			}
-			return &CallExpr{Func: "abs", Args: []Expr{args[0]}}, nil
 		}
 		if ut, ok := curEnv.FindUnionByVariant(name); ok {
 			st, _ := curEnv.GetStruct(name)
@@ -3638,6 +3644,11 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 				return nil, err
 			}
 			expr = e
+			if ret == "f64" {
+				if _, ok := e.(*PrintExpr); ok {
+					ret = ""
+				}
+			}
 		}
 		return &FunLit{Params: params, Return: ret, Expr: expr}, nil
 	case p.Match != nil:
@@ -4079,6 +4090,9 @@ func inferType(e Expr) string {
 		}
 	case *IndexExpr:
 		ct := inferType(ex.Target)
+		if strings.HasPrefix(ct, "&") {
+			ct = strings.TrimPrefix(ct, "&")
+		}
 		if strings.HasPrefix(ct, "Vec<") {
 			return strings.TrimSuffix(strings.TrimPrefix(ct, "Vec<"), ">")
 		}
@@ -4283,7 +4297,22 @@ func rustTypeRef(tr *parser.TypeRef) string {
 		}
 	}
 	if tr.Fun != nil {
-		return "fn"
+		var pts []string
+		for _, p := range tr.Fun.Params {
+			t := "i64"
+			if p.Simple != nil || p.Generic != nil {
+				t = rustTypeRef(p)
+			}
+			pts = append(pts, t)
+		}
+		rt := "()"
+		if tr.Fun.Return != nil {
+			r := rustTypeRef(tr.Fun.Return)
+			if r != "" {
+				rt = r
+			}
+		}
+		return fmt.Sprintf("impl FnMut(%s) -> %s", strings.Join(pts, ", "), rt)
 	}
 	return "i64"
 }
