@@ -1,0 +1,6 @@
+// Mochi translation of Rosetta "Environment variables" task (version 1)
+// Prints the value of the SHELL environment variable.
+
+import go "os" as os auto
+
+print(os.Getenv("SHELL"))

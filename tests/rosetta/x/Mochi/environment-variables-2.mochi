@@ -1,0 +1,19 @@
+// Mochi translation of Rosetta "Environment variables" task (version 2)
+// Searches the environment list for the SHELL variable.
+
+import go "os" as os auto
+
+fun hasPrefix(s: string, p: string): bool {
+  if len(p) > len(s) { return false }
+  return substring(s, 0, len(p)) == p
+}
+
+let name = "SHELL"
+let prefix = name + "="
+for v in os.Environ() {
+  if hasPrefix(v, prefix) {
+    print(name + " has value " + substring(v, len(prefix), len(v)))
+    return
+  }
+}
+print(name + " not found")
