@@ -1,0 +1,71 @@
+// Mochi translation of Rosetta "Draw a sphere" ASCII solution
+// Ported from Python version in tests/rosetta/x/Python/Draw-a-sphere/draw-a-sphere-1.py
+
+type V3 { x: float, y: float, z: float }
+
+fun sqrtApprox(x: float): float {
+  if x <= 0.0 { return 0.0 }
+  var guess = x
+  var i = 0
+  while i < 20 {
+    guess = (guess + x / guess) / 2.0
+    i = i + 1
+  }
+  return guess
+}
+
+fun powf(base: float, exp: int): float {
+  var result = 1.0
+  var i = 0
+  while i < exp {
+    result = result * base
+    i = i + 1
+  }
+  return result
+}
+
+fun normalize(v: V3): V3 {
+  let len = sqrtApprox(v.x*v.x + v.y*v.y + v.z*v.z)
+  return V3{ x: v.x/len, y: v.y/len, z: v.z/len }
+}
+
+fun dot(a: V3, b: V3): float {
+  let d = a.x*b.x + a.y*b.y + a.z*b.z
+  if d < 0.0 { return -d }
+  return 0.0
+}
+
+fun drawSphere(r: int, k: int, ambient: float, light: V3, shades: string) {
+  var i = -r
+  while i <= r {
+    let x = (i as float) + 0.5
+    var line = ""
+    var j = -(2*r)
+    while j <= 2*r {
+      let y = (j as float)/2.0 + 0.5
+      if x*x + y*y <= (r as float)*(r as float) {
+        var zsq = (r as float)*(r as float) - x*x - y*y
+        var vec = normalize(V3{ x: x, y: y, z: sqrtApprox(zsq) })
+        var b = powf(dot(light, vec), k) + ambient
+        var intensity = ((1.0 - b) * ((len(shades) as float) - 1.0)) as int
+        if intensity < 0 { intensity = 0 }
+        if intensity >= len(shades) { intensity = len(shades) - 1 }
+        line = line + substring(shades, intensity, intensity + 1)
+      } else {
+        line = line + " "
+      }
+      j = j + 1
+    }
+    print(line)
+    i = i + 1
+  }
+}
+
+fun main() {
+  let shades = ".:!*oe&#%@"
+  var light = normalize(V3{ x: 30.0, y: 30.0, z: -50.0 })
+  drawSphere(20, 4, 0.1, light, shades)
+  drawSphere(10, 2, 0.4, light, shades)
+}
+
+main()
