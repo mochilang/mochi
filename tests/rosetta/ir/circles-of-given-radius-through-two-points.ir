@@ -1,0 +1,511 @@
+func main (regs=204)
+  // let Two = "Two circles."
+  Const        r7, "Two circles."
+  Move         r0, r7
+  SetGlobal    0,0,0,0
+  // let R0 = "R==0.0 does not describe circles."
+  Const        r8, "R==0.0 does not describe circles."
+  Move         r1, r8
+  SetGlobal    1,1,0,0
+  // let Co = "Coincident points describe an infinite number of circles."
+  Const        r9, "Coincident points describe an infinite number of circles."
+  Move         r2, r9
+  SetGlobal    2,2,0,0
+  // let CoR0 = "Coincident points with r==0.0 describe a degenerate circle."
+  Const        r10, "Coincident points with r==0.0 describe a degenerate circle."
+  Move         r3, r10
+  SetGlobal    3,3,0,0
+  // let Diam = "Points form a diameter and describe only a single circle."
+  Const        r11, "Points form a diameter and describe only a single circle."
+  Move         r4, r11
+  SetGlobal    4,4,0,0
+  // let Far = "Points too far apart to form circles."
+  Const        r12, "Points too far apart to form circles."
+  Move         r5, r12
+  SetGlobal    5,5,0,0
+  // [Point{x:0.1234, y:0.9876}, Point{x:0.8765, y:0.2345}, 2.0],
+  Const        r21, 0.1234
+  Const        r22, 0.9876
+  Const        r23, "__name"
+  Const        r24, "Point"
+  Const        r25, "x"
+  Move         r26, r21
+  Const        r27, "y"
+  Move         r28, r22
+  MakeMap      r29, 3, r23
+  Move         r18, r29
+  Const        r30, 0.8765
+  Const        r31, 0.2345
+  Const        r32, "__name"
+  Const        r33, "Point"
+  Const        r34, "x"
+  Move         r35, r30
+  Const        r36, "y"
+  Move         r37, r31
+  MakeMap      r38, 3, r32
+  Move         r19, r38
+  Const        r39, 2.0
+  Move         r20, r39
+  MakeList     r40, 3, r18
+  Move         r13, r40
+  // [Point{x:0.0, y:2.0}, Point{x:0.0, y:0.0}, 1.0],
+  Const        r44, 0.0
+  Const        r39, 2.0
+  Const        r45, "__name"
+  Const        r46, "Point"
+  Const        r47, "x"
+  Move         r48, r44
+  Const        r49, "y"
+  Move         r50, r39
+  MakeMap      r51, 3, r45
+  Move         r41, r51
+  Const        r44, 0.0
+  Const        r44, 0.0
+  Const        r52, "__name"
+  Const        r53, "Point"
+  Const        r54, "x"
+  Move         r55, r44
+  Const        r56, "y"
+  Move         r57, r44
+  MakeMap      r58, 3, r52
+  Move         r42, r58
+  Const        r59, 1.0
+  Move         r43, r59
+  MakeList     r60, 3, r41
+  Move         r14, r60
+  // [Point{x:0.1234, y:0.9876}, Point{x:0.1234, y:0.9876}, 2.0],
+  Const        r21, 0.1234
+  Const        r22, 0.9876
+  Const        r64, "__name"
+  Const        r65, "Point"
+  Const        r66, "x"
+  Move         r67, r21
+  Const        r68, "y"
+  Move         r69, r22
+  MakeMap      r70, 3, r64
+  Move         r61, r70
+  Const        r21, 0.1234
+  Const        r22, 0.9876
+  Const        r71, "__name"
+  Const        r72, "Point"
+  Const        r73, "x"
+  Move         r74, r21
+  Const        r75, "y"
+  Move         r76, r22
+  MakeMap      r77, 3, r71
+  Move         r62, r77
+  Const        r39, 2.0
+  Move         r63, r39
+  MakeList     r78, 3, r61
+  Move         r15, r78
+  // [Point{x:0.1234, y:0.9876}, Point{x:0.8765, y:0.2345}, 0.5],
+  Const        r21, 0.1234
+  Const        r22, 0.9876
+  Const        r82, "__name"
+  Const        r83, "Point"
+  Const        r84, "x"
+  Move         r85, r21
+  Const        r86, "y"
+  Move         r87, r22
+  MakeMap      r88, 3, r82
+  Move         r79, r88
+  Const        r30, 0.8765
+  Const        r31, 0.2345
+  Const        r89, "__name"
+  Const        r90, "Point"
+  Const        r91, "x"
+  Move         r92, r30
+  Const        r93, "y"
+  Move         r94, r31
+  MakeMap      r95, 3, r89
+  Move         r80, r95
+  Const        r96, 0.5
+  Move         r81, r96
+  MakeList     r97, 3, r79
+  Move         r16, r97
+  // [Point{x:0.1234, y:0.9876}, Point{x:0.1234, y:0.9876}, 0.0]
+  Const        r21, 0.1234
+  Const        r22, 0.9876
+  Const        r101, "__name"
+  Const        r102, "Point"
+  Const        r103, "x"
+  Move         r104, r21
+  Const        r105, "y"
+  Move         r106, r22
+  MakeMap      r107, 3, r101
+  Move         r98, r107
+  Const        r21, 0.1234
+  Const        r22, 0.9876
+  Const        r108, "__name"
+  Const        r109, "Point"
+  Const        r110, "x"
+  Move         r111, r21
+  Const        r112, "y"
+  Move         r113, r22
+  MakeMap      r114, 3, r108
+  Move         r99, r114
+  Const        r44, 0.0
+  Move         r100, r44
+  MakeList     r115, 3, r98
+  Move         r17, r115
+  // var td = [
+  MakeList     r116, 5, r13
+  Move         r6, r116
+  SetGlobal    6,6,0,0
+  // for tc in td {
+  IterPrep     r117, r6
+  Len          r118, r117
+  Const        r119, 0
+L4:
+  LessInt      r120, r119, r118
+  JumpIfFalse  r120, L0
+  Index        r121, r117, r119
+  Move         r122, r121
+  // let p1 = tc[0]
+  Const        r123, 0
+  Index        r124, r122, r123
+  Move         r125, r124
+  // let p2 = tc[1]
+  Const        r126, 1
+  Index        r127, r122, r126
+  Move         r128, r127
+  // let r = tc[2]
+  Const        r129, 2
+  Index        r130, r122, r129
+  Move         r131, r130
+  // print("p1:  {" + str(p1.x) + " " + str(p1.y) + "}")
+  Const        r132, "p1:  {"
+  Const        r133, "x"
+  Index        r134, r125, r133
+  Str          r135, r134
+  Add          r136, r132, r135
+  Const        r137, " "
+  Add          r138, r136, r137
+  Const        r139, "y"
+  Index        r140, r125, r139
+  Str          r141, r140
+  Add          r142, r138, r141
+  Const        r143, "}"
+  Add          r144, r142, r143
+  Print        r144
+  // print("p2:  {" + str(p2.x) + " " + str(p2.y) + "}")
+  Const        r145, "p2:  {"
+  Const        r133, "x"
+  Index        r146, r128, r133
+  Str          r147, r146
+  Add          r148, r145, r147
+  Const        r137, " "
+  Add          r149, r148, r137
+  Const        r139, "y"
+  Index        r150, r128, r139
+  Str          r151, r150
+  Add          r152, r149, r151
+  Const        r143, "}"
+  Add          r153, r152, r143
+  Print        r153
+  // print("r:  " + str(r))
+  Const        r154, "r:  "
+  Str          r155, r131
+  Add          r156, r154, r155
+  Print        r156
+  // let res = circles(p1, p2, r)
+  Move         r157, r125
+  Move         r158, r128
+  Move         r159, r131
+  Call         r160, circles, r157, r158, r159
+  Move         r161, r160
+  // let c1 = res[0]
+  Const        r123, 0
+  Index        r162, r161, r123
+  Move         r163, r162
+  // let c2 = res[1]
+  Const        r126, 1
+  Index        r164, r161, r126
+  Move         r165, r164
+  // let caseStr = res[2]
+  Const        r129, 2
+  Index        r166, r161, r129
+  Move         r167, r166
+  // print("   " + caseStr)
+  Const        r168, "   "
+  Add          r169, r168, r167
+  Print        r169
+  // if caseStr == "Points form a diameter and describe only a single circle." || caseStr == "Coincident points with r==0.0 describe a degenerate circle." {
+  Const        r11, "Points form a diameter and describe only a single circle."
+  Equal        r170, r167, r11
+  Const        r10, "Coincident points with r==0.0 describe a degenerate circle."
+  Equal        r171, r167, r10
+  Move         r172, r170
+  JumpIfTrue   r172, L1
+  Move         r172, r171
+L1:
+  JumpIfFalse  r172, L2
+  // print("   Center:  {" + str(c1.x) + " " + str(c1.y) + "}")
+  Const        r173, "   Center:  {"
+  Const        r133, "x"
+  Index        r174, r163, r133
+  Str          r175, r174
+  Add          r176, r173, r175
+  Const        r137, " "
+  Add          r177, r176, r137
+  Const        r139, "y"
+  Index        r178, r163, r139
+  Str          r179, r178
+  Add          r180, r177, r179
+  Const        r143, "}"
+  Add          r181, r180, r143
+  Print        r181
+  // if caseStr == "Points form a diameter and describe only a single circle." || caseStr == "Coincident points with r==0.0 describe a degenerate circle." {
+  Jump         L3
+L2:
+  // if caseStr == "Two circles." {
+  Const        r7, "Two circles."
+  Equal        r182, r167, r7
+  JumpIfFalse  r182, L3
+  // print("   Center 1:  {" + str(c1.x) + " " + str(c1.y) + "}")
+  Const        r183, "   Center 1:  {"
+  Const        r133, "x"
+  Index        r184, r163, r133
+  Str          r185, r184
+  Add          r186, r183, r185
+  Const        r137, " "
+  Add          r187, r186, r137
+  Const        r139, "y"
+  Index        r188, r163, r139
+  Str          r189, r188
+  Add          r190, r187, r189
+  Const        r143, "}"
+  Add          r191, r190, r143
+  Print        r191
+  // print("   Center 2:  {" + str(c2.x) + " " + str(c2.y) + "}")
+  Const        r192, "   Center 2:  {"
+  Const        r133, "x"
+  Index        r193, r165, r133
+  Str          r194, r193
+  Add          r195, r192, r194
+  Const        r137, " "
+  Add          r196, r195, r137
+  Const        r139, "y"
+  Index        r197, r165, r139
+  Str          r198, r197
+  Add          r199, r196, r198
+  Const        r143, "}"
+  Add          r200, r199, r143
+  Print        r200
+L3:
+  // print("")
+  Const        r201, ""
+  Print        r201
+  // for tc in td {
+  Const        r202, 1
+  AddInt       r203, r119, r202
+  Move         r119, r203
+  Jump         L4
+L0:
+  Return       r0
+
+  // fun sqrtApprox(x: float): float {
+func sqrtApprox (regs=19)
+  // var g = x
+  Move         r8, r7
+  // var i = 0
+  Const        r9, 0
+  Move         r10, r9
+L1:
+  // while i < 40 {
+  Const        r11, 40
+  LessInt      r12, r10, r11
+  JumpIfFalse  r12, L0
+  // g = (g + x / g) / 2.0
+  Div          r13, r7, r8
+  Add          r14, r8, r13
+  Const        r15, 2.0
+  DivFloat     r16, r14, r15
+  Move         r8, r16
+  // i = i + 1
+  Const        r17, 1
+  AddInt       r18, r10, r17
+  Move         r10, r18
+  // while i < 40 {
+  Jump         L1
+L0:
+  // return g
+  Return       r8
+
+  // fun hypot(x: float, y: float): float { return sqrtApprox(x*x + y*y) }
+func hypot (regs=14)
+  // fun hypot(x: float, y: float): float { return sqrtApprox(x*x + y*y) }
+  Mul          r10, r7, r7
+  Mul          r11, r8, r8
+  Add          r12, r10, r11
+  Move         r9, r12
+  Call         r13, sqrtApprox, r9
+  Return       r13
+
+  // fun circles(p1: Point, p2: Point, r: float): list<any> {
+func circles (regs=121)
+  // if p1.x == p2.x && p1.y == p2.y {
+  Const        r10, "x"
+  Index        r11, r7, r10
+  Const        r10, "x"
+  Index        r12, r8, r10
+  Equal        r13, r11, r12
+  Const        r14, "y"
+  Index        r15, r7, r14
+  Const        r14, "y"
+  Index        r16, r8, r14
+  Equal        r17, r15, r16
+  Move         r18, r13
+  JumpIfFalse  r18, L0
+  Move         r18, r17
+L0:
+  JumpIfFalse  r18, L1
+  // if r == 0.0 { return [p1, p1, "Coincident points with r==0.0 describe a degenerate circle."] }
+  Const        r19, 0.0
+  EqualFloat   r20, r9, r19
+  JumpIfFalse  r20, L2
+  Move         r21, r7
+  Move         r22, r7
+  Const        r24, "Coincident points with r==0.0 describe a degenerate circle."
+  Move         r23, r24
+  MakeList     r25, 3, r21
+  Return       r25
+L2:
+  // return [p1, p2, "Coincident points describe an infinite number of circles."]
+  Move         r26, r7
+  Move         r27, r8
+  Const        r29, "Coincident points describe an infinite number of circles."
+  Move         r28, r29
+  MakeList     r30, 3, r26
+  Return       r30
+L1:
+  // if r == 0.0 { return [p1, p2, "R==0.0 does not describe circles."] }
+  Const        r19, 0.0
+  EqualFloat   r31, r9, r19
+  JumpIfFalse  r31, L3
+  Move         r32, r7
+  Move         r33, r8
+  Const        r35, "R==0.0 does not describe circles."
+  Move         r34, r35
+  MakeList     r36, 3, r32
+  Return       r36
+L3:
+  // let dx = p2.x - p1.x
+  Const        r10, "x"
+  Index        r37, r8, r10
+  Const        r10, "x"
+  Index        r38, r7, r10
+  Sub          r39, r37, r38
+  Move         r40, r39
+  // let dy = p2.y - p1.y
+  Const        r14, "y"
+  Index        r41, r8, r14
+  Const        r14, "y"
+  Index        r42, r7, r14
+  Sub          r43, r41, r42
+  Move         r44, r43
+  // let q = hypot(dx, dy)
+  Move         r45, r40
+  Move         r46, r44
+  Call2        r47, hypot, r45, r46
+  Move         r48, r47
+  // if q > 2.0 * r { return [p1, p2, "Points too far apart to form circles."] }
+  Const        r49, 2.0
+  MulFloat     r50, r49, r9
+  LessFloat    r51, r50, r48
+  JumpIfFalse  r51, L4
+  Move         r52, r7
+  Move         r53, r8
+  Const        r55, "Points too far apart to form circles."
+  Move         r54, r55
+  MakeList     r56, 3, r52
+  Return       r56
+L4:
+  // let m = Point{ x: (p1.x + p2.x)/2.0, y: (p1.y + p2.y)/2.0 }
+  Const        r10, "x"
+  Index        r57, r7, r10
+  Const        r10, "x"
+  Index        r58, r8, r10
+  Add          r59, r57, r58
+  Const        r49, 2.0
+  DivFloat     r60, r59, r49
+  Const        r14, "y"
+  Index        r61, r7, r14
+  Const        r14, "y"
+  Index        r62, r8, r14
+  Add          r63, r61, r62
+  Const        r49, 2.0
+  DivFloat     r64, r63, r49
+  Const        r65, "__name"
+  Const        r66, "Point"
+  Const        r67, "x"
+  Move         r68, r60
+  Const        r69, "y"
+  Move         r70, r64
+  MakeMap      r71, 3, r65
+  Move         r72, r71
+  // if q == 2.0 * r { return [m, m, "Points form a diameter and describe only a single circle."] }
+  Const        r49, 2.0
+  MulFloat     r73, r49, r9
+  EqualFloat   r74, r48, r73
+  JumpIfFalse  r74, L5
+  Move         r75, r72
+  Move         r76, r72
+  Const        r78, "Points form a diameter and describe only a single circle."
+  Move         r77, r78
+  MakeList     r79, 3, r75
+  Return       r79
+L5:
+  // let d = sqrtApprox(r*r - q*q/4.0)
+  Mul          r81, r9, r9
+  Mul          r82, r48, r48
+  Const        r83, 4.0
+  DivFloat     r84, r82, r83
+  SubFloat     r85, r81, r84
+  Move         r80, r85
+  Call         r86, sqrtApprox, r80
+  Move         r87, r86
+  // let ox = d * dx / q
+  Mul          r88, r87, r40
+  Div          r89, r88, r48
+  Move         r90, r89
+  // let oy = d * dy / q
+  Mul          r91, r87, r44
+  Div          r92, r91, r48
+  Move         r93, r92
+  // Point{ x: m.x - oy, y: m.y + ox },
+  Const        r10, "x"
+  Index        r97, r72, r10
+  Sub          r98, r97, r93
+  Const        r14, "y"
+  Index        r99, r72, r14
+  Add          r100, r99, r90
+  Const        r101, "__name"
+  Const        r102, "Point"
+  Const        r103, "x"
+  Move         r104, r98
+  Const        r105, "y"
+  Move         r106, r100
+  MakeMap      r107, 3, r101
+  Move         r94, r107
+  // Point{ x: m.x + oy, y: m.y - ox },
+  Const        r10, "x"
+  Index        r108, r72, r10
+  Add          r109, r108, r93
+  Const        r14, "y"
+  Index        r110, r72, r14
+  Sub          r111, r110, r90
+  Const        r112, "__name"
+  Const        r113, "Point"
+  Const        r114, "x"
+  Move         r115, r109
+  Const        r116, "y"
+  Move         r117, r111
+  MakeMap      r118, 3, r112
+  Move         r95, r118
+  // "Two circles."
+  Const        r119, "Two circles."
+  Move         r96, r119
+  // return [
+  MakeList     r120, 3, r94
+  Return       r120

@@ -1,0 +1,31 @@
+p1:  {0.1234 0.9876}
+p2:  {0.8765 0.2345}
+r:  2
+   Two circles.
+   Center 1:  {<nil> <nil>}
+   Center 2:  {<nil> <nil>}
+
+p1:  {0 2}
+p2:  {0 0}
+r:  1
+   Two circles.
+   Center 1:  {<nil> <nil>}
+   Center 2:  {<nil> <nil>}
+
+p1:  {0.1234 0.9876}
+p2:  {0.1234 0.9876}
+r:  2
+   Coincident points describe an infinite number of circles.
+
+p1:  {0.1234 0.9876}
+p2:  {0.8765 0.2345}
+r:  0.5
+   Two circles.
+   Center 1:  {<nil> <nil>}
+   Center 2:  {<nil> <nil>}
+
+p1:  {0.1234 0.9876}
+p2:  {0.1234 0.9876}
+r:  0
+   Coincident points with r==0.0 describe a degenerate circle.
+   Center:  {0.1234 0.9876}

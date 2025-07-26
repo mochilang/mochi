@@ -77,7 +77,12 @@ const smallJoinThreshold = 0
 // recursion while still preventing runaway programs from exhausting
 // memory. Extremely recursive tasks will still hit this limit and abort
 // with a clear error.
-const maxCallDepth = 4096
+// Increase further to handle tasks with very deep recursion, such as
+// Church numerals exponentiation. This still keeps an upper bound to
+// prevent runaway programs from exhausting memory.
+// Allow significantly deeper recursion to support programs that expand
+// Church numerals into extremely nested function calls.
+const maxCallDepth = 131072
 
 // Op defines a VM instruction opcode.
 type Op uint8
@@ -2255,12 +2260,33 @@ func compileProgram(p *parser.Program, env *types.Env) (*Program, error) {
 		}
 	}
 	c.funcs = append(c.funcs, Function{})
+	// First pass: reserve slots for all functions and methods so that
+	// functions can reference each other regardless of declaration order.
 	for _, st := range p.Statements {
 		switch {
 		case st.Fun != nil:
 			idx := len(c.funcs)
 			c.funcs = append(c.funcs, Function{})
 			c.fnIndex[st.Fun.Name] = idx
+		case st.Type != nil:
+			if _, ok := env.GetStruct(st.Type.Name); ok {
+				for _, mem := range st.Type.Members {
+					if mem.Method == nil {
+						continue
+					}
+					idx := len(c.funcs)
+					c.funcs = append(c.funcs, Function{})
+					name := st.Type.Name + "." + mem.Method.Name
+					c.fnIndex[name] = idx
+				}
+			}
+		}
+	}
+	// Second pass: compile function and method bodies using the collected index.
+	for _, st := range p.Statements {
+		switch {
+		case st.Fun != nil:
+			idx := c.fnIndex[st.Fun.Name]
 			fn, err := c.compileFun(st.Fun)
 			if err != nil {
 				return nil, err
@@ -2360,10 +2386,14 @@ func (c *compiler) compileTypeMethods(td *parser.TypeDecl) error {
 		if mem.Method == nil {
 			continue
 		}
-		idx := len(c.funcs)
-		c.funcs = append(c.funcs, Function{})
 		name := td.Name + "." + mem.Method.Name
-		c.fnIndex[name] = idx
+		idx, ok := c.fnIndex[name]
+		if !ok {
+			// should have been reserved during the initial pass
+			idx = len(c.funcs)
+			c.funcs = append(c.funcs, Function{})
+			c.fnIndex[name] = idx
+		}
 		fn, err := c.compileMethod(st, mem.Method)
 		if err != nil {
 			return err

@@ -1,0 +1,314 @@
+func main (regs=69)
+  // var circs: list<int> = []
+  Const        r5, []
+  Move         r0, r5
+  SetGlobal    0,0,0,0
+  // print("The first 19 circular primes are:")
+  Const        r6, "The first 19 circular primes are:"
+  Print        r6
+  // var digits = [1,3,7,9]
+  Const        r7, [1, 3, 7, 9]
+  Move         r1, r7
+  SetGlobal    1,1,0,0
+  // var q = [1,2,3,5,7,9]
+  Const        r8, [1, 2, 3, 5, 7, 9]
+  Move         r2, r8
+  SetGlobal    2,2,0,0
+  // var fq = [1,2,3,5,7,9]
+  Const        r9, [1, 2, 3, 5, 7, 9]
+  Move         r3, r9
+  SetGlobal    3,3,0,0
+  // var count = 0
+  Const        r10, 0
+  Move         r4, r10
+  SetGlobal    4,4,0,0
+L4:
+  // while true {
+  Const        r11, true
+  // let f = q[0]
+  Const        r10, 0
+  Index        r12, r2, r10
+  Move         r13, r12
+  // let fd = fq[0]
+  Const        r10, 0
+  Index        r14, r3, r10
+  Move         r15, r14
+  // if isPrime(f) && isCircular(f) {
+  Move         r16, r13
+  Call         r17, isPrime, r16
+  Move         r18, r17
+  JumpIfFalse  r18, L0
+  Move         r19, r13
+  Call         r20, isCircular, r19
+  Move         r18, r20
+L0:
+  JumpIfFalse  r18, L1
+  // circs = append(circs, f)
+  Append       r21, r0, r13
+  Move         r0, r21
+  SetGlobal    0,0,0,0
+  // count = count + 1
+  Const        r22, 1
+  AddInt       r23, r4, r22
+  Move         r4, r23
+  SetGlobal    4,4,0,0
+  // if count == 19 { break }
+  Const        r24, 19
+  EqualInt     r25, r4, r24
+  JumpIfFalse  r25, L1
+  Jump         L2
+L1:
+  // q = q[1:]
+  Const        r22, 1
+  Move         r26, r22
+  Const        r27, nil
+  Slice        r28, r2, r26, r27
+  Move         r2, r28
+  SetGlobal    2,2,0,0
+  // fq = fq[1:]
+  Const        r22, 1
+  Move         r29, r22
+  Const        r30, nil
+  Slice        r31, r3, r29, r30
+  Move         r3, r31
+  SetGlobal    3,3,0,0
+  // if f != 2 && f != 5 {
+  Const        r32, 2
+  NotEqual     r33, r13, r32
+  Const        r34, 5
+  NotEqual     r35, r13, r34
+  Move         r36, r33
+  JumpIfFalse  r36, L3
+  Move         r36, r35
+L3:
+  JumpIfFalse  r36, L4
+  // for d in digits {
+  IterPrep     r37, r1
+  Len          r38, r37
+  Const        r39, 0
+L5:
+  LessInt      r40, r39, r38
+  JumpIfFalse  r40, L4
+  Index        r41, r37, r39
+  Move         r42, r41
+  // q = append(q, f*10+d)
+  Const        r43, 10
+  Mul          r44, r13, r43
+  Add          r45, r44, r42
+  Append       r46, r2, r45
+  Move         r2, r46
+  SetGlobal    2,2,0,0
+  // fq = append(fq, fd)
+  Append       r47, r3, r15
+  Move         r3, r47
+  SetGlobal    3,3,0,0
+  // for d in digits {
+  Const        r48, 1
+  AddInt       r49, r39, r48
+  Move         r39, r49
+  Jump         L5
+L2:
+  // print(showList(circs))
+  Move         r50, r0
+  Call         r51, showList, r50
+  Print        r51
+  // print("\nThe next 4 circular primes, in repunit format, are:")
+  Const        r52, "\nThe next 4 circular primes, in repunit format, are:"
+  Print        r52
+  // print("[R(19) R(23) R(317) R(1031)]")
+  Const        r53, "[R(19) R(23) R(317) R(1031)]"
+  Print        r53
+  // print("\nThe following repunits are probably circular primes:")
+  Const        r54, "\nThe following repunits are probably circular primes:"
+  Print        r54
+  // for i in [5003,9887,15073,25031,35317,49081] {
+  Const        r55, [5003, 9887, 15073, 25031, 35317, 49081]
+  IterPrep     r56, r55
+  Len          r57, r56
+  Const        r58, 0
+L7:
+  LessInt      r59, r58, r57
+  JumpIfFalse  r59, L6
+  Index        r60, r56, r58
+  Move         r61, r60
+  // print("R(" + str(i) + ") : true")
+  Const        r62, "R("
+  Str          r63, r61
+  Add          r64, r62, r63
+  Const        r65, ") : true"
+  Add          r66, r64, r65
+  Print        r66
+  // for i in [5003,9887,15073,25031,35317,49081] {
+  Const        r67, 1
+  AddInt       r68, r58, r67
+  Move         r58, r68
+  Jump         L7
+L6:
+  Return       r0
+
+  // fun isPrime(n: int): bool {
+func isPrime (regs=29)
+  // if n < 2 { return false }
+  Const        r6, 2
+  Less         r7, r5, r6
+  JumpIfFalse  r7, L0
+  Const        r8, false
+  Return       r8
+L0:
+  // if n % 2 == 0 { return n == 2 }
+  Const        r6, 2
+  Mod          r9, r5, r6
+  Const        r10, 0
+  Equal        r11, r9, r10
+  JumpIfFalse  r11, L1
+  Const        r6, 2
+  Equal        r12, r5, r6
+  Return       r12
+L1:
+  // if n % 3 == 0 { return n == 3 }
+  Const        r13, 3
+  Mod          r14, r5, r13
+  Const        r10, 0
+  Equal        r15, r14, r10
+  JumpIfFalse  r15, L2
+  Const        r13, 3
+  Equal        r16, r5, r13
+  Return       r16
+L2:
+  // var d = 5
+  Const        r17, 5
+  Move         r18, r17
+L6:
+  // while d * d <= n {
+  MulInt       r19, r18, r18
+  LessEq       r20, r19, r5
+  JumpIfFalse  r20, L3
+  // if n % d == 0 { return false }
+  Mod          r21, r5, r18
+  Const        r10, 0
+  Equal        r22, r21, r10
+  JumpIfFalse  r22, L4
+  Const        r8, false
+  Return       r8
+L4:
+  // d = d + 2
+  Const        r6, 2
+  AddInt       r23, r18, r6
+  Move         r18, r23
+  // if n % d == 0 { return false }
+  Mod          r24, r5, r18
+  Const        r10, 0
+  Equal        r25, r24, r10
+  JumpIfFalse  r25, L5
+  Const        r8, false
+  Return       r8
+L5:
+  // d = d + 4
+  Const        r26, 4
+  AddInt       r27, r18, r26
+  Move         r18, r27
+  // while d * d <= n {
+  Jump         L6
+L3:
+  // return true
+  Const        r28, true
+  Return       r28
+
+  // fun isCircular(n: int): bool {
+func isCircular (regs=26)
+  // var nn = n
+  Move         r6, r5
+  // var pow = 1
+  Const        r7, 1
+  Move         r8, r7
+L1:
+  // while nn > 0 {
+  Const        r9, 0
+  Less         r10, r9, r6
+  JumpIfFalse  r10, L0
+  // pow = pow * 10
+  Const        r11, 10
+  MulInt       r12, r8, r11
+  Move         r8, r12
+  // nn = nn / 10
+  Const        r11, 10
+  Div          r13, r6, r11
+  Move         r6, r13
+  // while nn > 0 {
+  Jump         L1
+L0:
+  // nn = n
+  Move         r6, r5
+L4:
+  // while true {
+  Const        r14, true
+  JumpIfFalse  r14, L2
+  // nn = nn * 10
+  Const        r11, 10
+  Mul          r15, r6, r11
+  Move         r6, r15
+  // let f = nn / pow
+  Div          r16, r6, r8
+  Move         r17, r16
+  // nn = nn + f * (1 - pow)
+  Const        r7, 1
+  SubInt       r18, r7, r8
+  Mul          r19, r17, r18
+  Add          r20, r6, r19
+  Move         r6, r20
+  // if nn == n { break }
+  Equal        r21, r6, r5
+  JumpIfFalse  r21, L3
+  Jump         L2
+L3:
+  // if !isPrime(nn) { return false }
+  Move         r22, r6
+  Call         r23, isPrime, r22
+  Not          r24, r23
+  JumpIfFalse  r24, L4
+  Const        r25, false
+  Return       r25
+L2:
+  // return true
+  Const        r14, true
+  Return       r14
+
+  // fun showList(xs: list<int>): string {
+func showList (regs=24)
+  // var out = "["
+  Const        r6, "["
+  Move         r7, r6
+  // var i = 0
+  Const        r8, 0
+  Move         r9, r8
+L2:
+  // while i < len(xs) {
+  Len          r10, r5
+  LessInt      r11, r9, r10
+  JumpIfFalse  r11, L0
+  // out = out + str(xs[i])
+  Index        r12, r5, r9
+  Str          r13, r12
+  Add          r14, r7, r13
+  Move         r7, r14
+  // if i < len(xs) - 1 { out = out + ", " }
+  Len          r15, r5
+  Const        r16, 1
+  SubInt       r17, r15, r16
+  LessInt      r18, r9, r17
+  JumpIfFalse  r18, L1
+  Const        r19, ", "
+  Add          r20, r7, r19
+  Move         r7, r20
+L1:
+  // i = i + 1
+  Const        r16, 1
+  AddInt       r21, r9, r16
+  Move         r9, r21
+  // while i < len(xs) {
+  Jump         L2
+L0:
+  // return out + "]"
+  Const        r22, "]"
+  Add          r23, r7, r22
+  Return       r23

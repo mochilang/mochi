@@ -1,0 +1,475 @@
+func main (regs=14)
+  // demo(makeSym(3, [25.0, 15.0, 18.0, -5.0, 0.0, 11.0]))
+  Const        r3, 3
+  Move         r1, r3
+  Const        r4, [25.0, 15.0, 18.0, -5.0, 0.0, 11.0]
+  Move         r2, r4
+  Call2        r5, makeSym, r1, r2
+  Move         r0, r5
+  Call         r6, demo, r0
+  // demo(makeSym(4, [18.0, 22.0, 70.0, 54.0, 86.0, 174.0, 42.0, 62.0, 134.0, 106.0]))
+  Const        r10, 4
+  Move         r8, r10
+  Const        r11, [18.0, 22.0, 70.0, 54.0, 86.0, 174.0, 42.0, 62.0, 134.0, 106.0]
+  Move         r9, r11
+  Call2        r12, makeSym, r8, r9
+  Move         r7, r12
+  Call         r13, demo, r7
+  Return       r0
+
+  // fun sqrtApprox(x: float): float {
+func sqrtApprox (regs=12)
+  // var guess = x
+  Move         r1, r0
+  // var i = 0
+  Const        r2, 0
+  Move         r3, r2
+L1:
+  // while i < 20 {
+  Const        r4, 20
+  LessInt      r5, r3, r4
+  JumpIfFalse  r5, L0
+  // guess = (guess + x / guess) / 2.0
+  Div          r6, r0, r1
+  Add          r7, r1, r6
+  Const        r8, 2.0
+  DivFloat     r9, r7, r8
+  Move         r1, r9
+  // i = i + 1
+  Const        r10, 1
+  AddInt       r11, r3, r10
+  Move         r3, r11
+  // while i < 20 {
+  Jump         L1
+L0:
+  // return guess
+  Return       r1
+
+  // fun makeSym(order: int, elements: list<float>): map<string, any> {
+func makeSym (regs=9)
+  // return {"order": order, "ele": elements}
+  Const        r2, "order"
+  Const        r3, "ele"
+  Move         r4, r2
+  Move         r5, r0
+  Move         r6, r3
+  Move         r7, r1
+  MakeMap      r8, 2, r4
+  Return       r8
+
+  // fun unpackSym(m: map<string, any>): list<list<float>> {
+func unpackSym (regs=36)
+  // let n = m["order"]
+  Const        r1, "order"
+  Index        r2, r0, r1
+  Move         r3, r2
+  // let ele = m["ele"]
+  Const        r4, "ele"
+  Index        r5, r0, r4
+  Move         r6, r5
+  // var mat: list<list<float>> = []
+  Const        r7, []
+  Move         r8, r7
+  // var idx = 0
+  Const        r9, 0
+  Move         r10, r9
+  // var r = 0
+  Const        r9, 0
+  Move         r11, r9
+L4:
+  // while r < n {
+  Less         r12, r11, r3
+  JumpIfFalse  r12, L0
+  // var row: list<float> = []
+  Const        r7, []
+  Move         r13, r7
+  // var c = 0
+  Const        r9, 0
+  Move         r14, r9
+L2:
+  // while c <= r {
+  LessEqInt    r15, r14, r11
+  JumpIfFalse  r15, L1
+  // row = append(row, ele[idx])
+  Index        r16, r6, r10
+  Append       r17, r13, r16
+  Move         r13, r17
+  // idx = idx + 1
+  Const        r18, 1
+  AddInt       r19, r10, r18
+  Move         r10, r19
+  // c = c + 1
+  Const        r18, 1
+  AddInt       r20, r14, r18
+  Move         r14, r20
+  // while c <= r {
+  Jump         L2
+L1:
+  // while c < n {
+  Less         r21, r14, r3
+  JumpIfFalse  r21, L3
+  // row = append(row, 0.0)
+  Const        r22, 0.0
+  Append       r23, r13, r22
+  Move         r13, r23
+  // c = c + 1
+  Const        r18, 1
+  AddInt       r24, r14, r18
+  Move         r14, r24
+  // while c < n {
+  Jump         L1
+L3:
+  // mat = append(mat, row)
+  Append       r25, r8, r13
+  Move         r8, r25
+  // r = r + 1
+  Const        r18, 1
+  AddInt       r26, r11, r18
+  Move         r11, r26
+  // while r < n {
+  Jump         L4
+L0:
+  // r = 0
+  Const        r9, 0
+  Move         r11, r9
+L8:
+  // while r < n {
+  Less         r27, r11, r3
+  JumpIfFalse  r27, L5
+  // var c = r + 1
+  Const        r18, 1
+  AddInt       r28, r11, r18
+  Move         r29, r28
+L7:
+  // while c < n {
+  Less         r30, r29, r3
+  JumpIfFalse  r30, L6
+  // mat[r][c] = mat[c][r]
+  Index        r31, r8, r11
+  Index        r32, r8, r29
+  Index        r33, r32, r11
+  SetIndex     r31, r29, r33
+  // c = c + 1
+  Const        r18, 1
+  AddInt       r34, r29, r18
+  Move         r29, r34
+  // while c < n {
+  Jump         L7
+L6:
+  // r = r + 1
+  Const        r18, 1
+  AddInt       r35, r11, r18
+  Move         r11, r35
+  // while r < n {
+  Jump         L8
+L5:
+  // return mat
+  Return       r8
+
+  // fun printMat(m: list<list<float>>) {
+func printMat (regs=24)
+  // var i = 0
+  Const        r1, 0
+  Move         r2, r1
+L4:
+  // while i < len(m) {
+  Len          r3, r0
+  LessInt      r4, r2, r3
+  JumpIfFalse  r4, L0
+  // var line = ""
+  Const        r5, ""
+  Move         r6, r5
+  // var j = 0
+  Const        r1, 0
+  Move         r7, r1
+L3:
+  // while j < len(m[i]) {
+  Index        r8, r0, r2
+  Len          r9, r8
+  LessInt      r10, r7, r9
+  JumpIfFalse  r10, L1
+  // line = line + str(m[i][j])
+  Index        r11, r0, r2
+  Index        r12, r11, r7
+  Str          r13, r12
+  Add          r14, r6, r13
+  Move         r6, r14
+  // if j < len(m[i]) - 1 { line = line + " " }
+  Index        r15, r0, r2
+  Len          r16, r15
+  Const        r17, 1
+  SubInt       r18, r16, r17
+  LessInt      r19, r7, r18
+  JumpIfFalse  r19, L2
+  Const        r20, " "
+  Add          r21, r6, r20
+  Move         r6, r21
+L2:
+  // j = j + 1
+  Const        r17, 1
+  AddInt       r22, r7, r17
+  Move         r7, r22
+  // while j < len(m[i]) {
+  Jump         L3
+L1:
+  // print(line)
+  Print        r6
+  // i = i + 1
+  Const        r17, 1
+  AddInt       r23, r2, r17
+  Move         r2, r23
+  // while i < len(m) {
+  Jump         L4
+L0:
+  Return       r0
+
+  // fun printSym(m: map<string, any>) {
+func printSym (regs=5)
+  // printMat(unpackSym(m))
+  Move         r2, r0
+  Call         r3, unpackSym, r2
+  Move         r1, r3
+  Call         r4, printMat, r1
+  Return       r0
+
+  // fun printLower(m: map<string, any>) {
+func printLower (regs=29)
+  // let n = m["order"]
+  Const        r1, "order"
+  Index        r2, r0, r1
+  Move         r3, r2
+  // let ele = m["ele"]
+  Const        r4, "ele"
+  Index        r5, r0, r4
+  Move         r6, r5
+  // var mat: list<list<float>> = []
+  Const        r7, []
+  Move         r8, r7
+  // var idx = 0
+  Const        r9, 0
+  Move         r10, r9
+  // var r = 0
+  Const        r9, 0
+  Move         r11, r9
+L4:
+  // while r < n {
+  Less         r12, r11, r3
+  JumpIfFalse  r12, L0
+  // var row: list<float> = []
+  Const        r7, []
+  Move         r13, r7
+  // var c = 0
+  Const        r9, 0
+  Move         r14, r9
+L2:
+  // while c <= r {
+  LessEqInt    r15, r14, r11
+  JumpIfFalse  r15, L1
+  // row = append(row, ele[idx])
+  Index        r16, r6, r10
+  Append       r17, r13, r16
+  Move         r13, r17
+  // idx = idx + 1
+  Const        r18, 1
+  AddInt       r19, r10, r18
+  Move         r10, r19
+  // c = c + 1
+  Const        r18, 1
+  AddInt       r20, r14, r18
+  Move         r14, r20
+  // while c <= r {
+  Jump         L2
+L1:
+  // while c < n {
+  Less         r21, r14, r3
+  JumpIfFalse  r21, L3
+  // row = append(row, 0.0)
+  Const        r22, 0.0
+  Append       r23, r13, r22
+  Move         r13, r23
+  // c = c + 1
+  Const        r18, 1
+  AddInt       r24, r14, r18
+  Move         r14, r24
+  // while c < n {
+  Jump         L1
+L3:
+  // mat = append(mat, row)
+  Append       r25, r8, r13
+  Move         r8, r25
+  // r = r + 1
+  Const        r18, 1
+  AddInt       r26, r11, r18
+  Move         r11, r26
+  // while r < n {
+  Jump         L4
+L0:
+  // printMat(mat)
+  Move         r27, r8
+  Call         r28, printMat, r27
+  Return       r0
+
+  // fun choleskyLower(a: map<string, any>): map<string, any> {
+func choleskyLower (regs=58)
+  // let n = a["order"]
+  Const        r1, "order"
+  Index        r2, r0, r1
+  Move         r3, r2
+  // let ae = a["ele"]
+  Const        r4, "ele"
+  Index        r5, r0, r4
+  Move         r6, r5
+  // var le: list<float> = []
+  Const        r7, []
+  Move         r8, r7
+  // var idx = 0
+  Const        r9, 0
+  Move         r10, r9
+L1:
+  // while idx < len(ae) {
+  Len          r11, r6
+  LessInt      r12, r10, r11
+  JumpIfFalse  r12, L0
+  // le = append(le, 0.0)
+  Const        r13, 0.0
+  Append       r14, r8, r13
+  Move         r8, r14
+  // idx = idx + 1
+  Const        r15, 1
+  AddInt       r16, r10, r15
+  Move         r10, r16
+  // while idx < len(ae) {
+  Jump         L1
+L0:
+  // var row = 1
+  Const        r15, 1
+  Move         r17, r15
+  // var col = 1
+  Const        r15, 1
+  Move         r18, r15
+  // var dr = 0
+  Const        r9, 0
+  Move         r19, r9
+  // var dc = 0
+  Const        r9, 0
+  Move         r20, r9
+  // var i = 0
+  Const        r9, 0
+  Move         r21, r9
+L7:
+  // while i < len(ae) {
+  Len          r22, r6
+  LessInt      r23, r21, r22
+  JumpIfFalse  r23, L2
+  // let e = ae[i]
+  Index        r24, r6, r21
+  Move         r25, r24
+  // if i < dr {
+  LessInt      r26, r21, r19
+  JumpIfFalse  r26, L3
+  // var d = (e - le[i]) / le[dc]
+  Index        r27, r8, r21
+  Sub          r28, r25, r27
+  Index        r29, r8, r20
+  Div          r30, r28, r29
+  Move         r31, r30
+  // le[i] = d
+  SetIndex     r8, r21, r31
+  // var ci = col
+  Move         r32, r18
+  // var cx = dc
+  Move         r33, r20
+  // var j = i + 1
+  Const        r15, 1
+  AddInt       r34, r21, r15
+  Move         r35, r34
+L5:
+  // while j <= dr {
+  LessEqInt    r36, r35, r19
+  JumpIfFalse  r36, L4
+  // cx = cx + ci
+  AddInt       r37, r33, r32
+  Move         r33, r37
+  // ci = ci + 1
+  Const        r15, 1
+  AddInt       r38, r32, r15
+  Move         r32, r38
+  // le[j] = le[j] + d * le[cx]
+  Index        r39, r8, r35
+  Index        r40, r8, r33
+  Mul          r41, r31, r40
+  Add          r42, r39, r41
+  SetIndex     r8, r35, r42
+  // j = j + 1
+  Const        r15, 1
+  AddInt       r43, r35, r15
+  Move         r35, r43
+  // while j <= dr {
+  Jump         L5
+L4:
+  // col = col + 1
+  Const        r15, 1
+  AddInt       r44, r18, r15
+  Move         r18, r44
+  // dc = dc + col
+  AddInt       r45, r20, r18
+  Move         r20, r45
+  // if i < dr {
+  Jump         L6
+L3:
+  // le[i] = sqrtApprox(e - le[i])
+  Index        r47, r8, r21
+  Sub          r48, r25, r47
+  Move         r46, r48
+  Call         r49, sqrtApprox, r46
+  SetIndex     r8, r21, r49
+  // row = row + 1
+  Const        r15, 1
+  AddInt       r50, r17, r15
+  Move         r17, r50
+  // dr = dr + row
+  AddInt       r51, r19, r17
+  Move         r19, r51
+  // col = 1
+  Const        r15, 1
+  Move         r18, r15
+  // dc = 0
+  Const        r9, 0
+  Move         r20, r9
+L6:
+  // i = i + 1
+  Const        r15, 1
+  AddInt       r52, r21, r15
+  Move         r21, r52
+  // while i < len(ae) {
+  Jump         L7
+L2:
+  // return {"order": n, "ele": le}
+  Const        r1, "order"
+  Const        r4, "ele"
+  Move         r53, r1
+  Move         r54, r3
+  Move         r55, r4
+  Move         r56, r8
+  MakeMap      r57, 2, r53
+  Return       r57
+
+  // fun demo(a: map<string, any>) {
+func demo (regs=10)
+  // print("A:")
+  Const        r1, "A:"
+  Print        r1
+  // printSym(a)
+  Move         r2, r0
+  Call         r3, printSym, r2
+  // print("L:")
+  Const        r4, "L:"
+  Print        r4
+  // let l = choleskyLower(a)
+  Move         r5, r0
+  Call         r6, choleskyLower, r5
+  Move         r7, r6
+  // printLower(l)
+  Move         r8, r7
+  Call         r9, printLower, r8
+  Return       r0
