@@ -297,8 +297,9 @@ type LambdaExpr struct {
 
 // BlockLambda represents a lambda with a statement body.
 type BlockLambda struct {
-	Params []Param
-	Body   []Stmt
+	Params     []Param
+	Body       []Stmt
+	ReturnType string
 }
 
 // MatchBlock represents a simple switch implemented with dynamic_cast.
@@ -770,7 +771,7 @@ func (p *Program) write(w io.Writer) {
 					if p.ByVal {
 						io.WriteString(w, typ)
 					} else {
-						io.WriteString(w, typ+"&")
+						io.WriteString(w, "const "+typ+"&")
 					}
 				} else {
 					io.WriteString(w, typ)
@@ -2216,6 +2217,50 @@ func (s *LetStmt) emit(w io.Writer, indent int) {
 		io.WriteString(w, "    ")
 	}
 	typ := s.Type
+	if bl, ok := s.Value.(*BlockLambda); ok {
+		if currentProgram != nil {
+			currentProgram.addInclude("<functional>")
+		}
+		ret := bl.ReturnType
+		if ret == "" {
+			ret = "void"
+		}
+		io.WriteString(w, fmt.Sprintf("std::function<%s(", ret))
+		for i, p := range bl.Params {
+			if i > 0 {
+				io.WriteString(w, ", ")
+			}
+			pt := p.Type
+			if pt == "" {
+				pt = "auto"
+			}
+			io.WriteString(w, pt)
+		}
+		io.WriteString(w, ")> ")
+		io.WriteString(w, safeName(s.Name))
+		io.WriteString(w, " = ")
+		io.WriteString(w, "[&](")
+		for i, p := range bl.Params {
+			if i > 0 {
+				io.WriteString(w, ", ")
+			}
+			pt := p.Type
+			if pt == "" {
+				pt = "auto"
+			}
+			io.WriteString(w, pt+" "+p.Name)
+		}
+		io.WriteString(w, ") mutable {\n")
+		for _, st := range bl.Body {
+			st.emit(w, indent+1)
+		}
+		io.WriteString(w, strings.Repeat("    ", indent)+"}")
+		io.WriteString(w, ";\n")
+		if localTypes != nil {
+			localTypes[s.Name] = fmt.Sprintf("std::function<%s>", ret)
+		}
+		return
+	}
 	if typ == "" {
 		io.WriteString(w, "auto ")
 	} else {
@@ -2334,13 +2379,62 @@ func (a *AssignStmt) emit(w io.Writer, indent int) {
 }
 
 func (a *AssignIndexStmt) emit(w io.Writer, indent int) {
-	for i := 0; i < indent; i++ {
-		io.WriteString(w, "    ")
+	ind := strings.Repeat("    ", indent)
+	// collect index chain
+	var idxs []Expr
+	target := a.Target
+	for {
+		if ix, ok := target.(*IndexExpr); ok {
+			idxs = append([]Expr{ix.Index}, idxs...)
+			target = ix.Target
+		} else {
+			break
+		}
 	}
-	a.Target.emit(w)
-	io.WriteString(w, "[")
-	a.Index.emit(w)
-	io.WriteString(w, "] = ")
+	if len(idxs) == 0 {
+		io.WriteString(w, ind)
+		a.Target.emit(w)
+		io.WriteString(w, "[")
+		a.Index.emit(w)
+		io.WriteString(w, "] = ")
+		a.Value.emit(w)
+		io.WriteString(w, ";\n")
+		return
+	}
+
+	idxs = append(idxs, a.Index)
+	baseType := exprType(target)
+	valType := exprType(a.Value)
+	if valType == "" {
+		valType = "auto"
+	}
+	cont := valType
+	for i := 1; i < len(idxs); i++ {
+		cont = fmt.Sprintf("std::vector<%s>", cont)
+	}
+
+	io.WriteString(w, ind)
+	if baseType == "std::any" || (strings.HasPrefix(baseType, "std::map<") && strings.Contains(baseType, "std::any")) {
+		if currentProgram != nil {
+			currentProgram.addInclude("<any>")
+		}
+		fmt.Fprintf(w, "std::any_cast<%s&>(", cont)
+		target.emit(w)
+		io.WriteString(w, "[")
+		idxs[0].emit(w)
+		io.WriteString(w, "])")
+	} else {
+		target.emit(w)
+		io.WriteString(w, "[")
+		idxs[0].emit(w)
+		io.WriteString(w, "]")
+	}
+	for _, ix := range idxs[1:] {
+		io.WriteString(w, "[")
+		ix.emit(w)
+		io.WriteString(w, "]")
+	}
+	io.WriteString(w, " = ")
 	a.Value.emit(w)
 	io.WriteString(w, ";\n")
 }
@@ -3198,6 +3292,9 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 		if err != nil {
 			return nil, err
 		}
+		if currentProgram != nil {
+			currentProgram.addInclude("<functional>")
+		}
 		return &LetStmt{Name: s.Fun.Name, Type: "", Value: lam}, nil
 	case s.Expr != nil:
 		if se := extractSaveExpr(s.Expr.Expr); se != nil {
@@ -3938,7 +4035,17 @@ func convertFunLambda(fn *parser.FunStmt) (*BlockLambda, error) {
 	inFunction = prev
 	paramNames = nil
 	mutatedParams = nil
-	return &BlockLambda{Params: params, Body: body}, nil
+	ret := "void"
+	if fn.Return != nil {
+		if fn.Return.Simple != nil {
+			ret = cppType(*fn.Return.Simple)
+		} else if fn.Return.Generic != nil {
+			ret = cppType(typeRefString(&parser.TypeRef{Generic: fn.Return.Generic}))
+		} else {
+			ret = "auto"
+		}
+	}
+	return &BlockLambda{Params: params, Body: body, ReturnType: ret}, nil
 }
 
 func convertPrimary(p *parser.Primary) (Expr, error) {
@@ -4095,7 +4202,7 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				}
 				return &MaxExpr{List: arg}, nil
 			}
-		case "substring":
+		case "substring", "substr":
 			if len(p.Call.Args) == 3 {
 				v0, err := convertExpr(p.Call.Args[0])
 				if err != nil {

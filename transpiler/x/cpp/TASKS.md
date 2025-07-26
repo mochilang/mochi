@@ -1,3 +1,113 @@
+## Progress (2025-07-26 10:04 +0700)
+- cpp transpiler: support SHA256 and 64-bit ints; update rosetta outputs
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 10:04 +0700)
+- cpp transpiler: support SHA256 and 64-bit ints; update rosetta outputs
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 10:04 +0700)
+- cpp transpiler: support SHA256 and 64-bit ints; update rosetta outputs
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 10:04 +0700)
+- cpp transpiler: support SHA256 and 64-bit ints; update rosetta outputs
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 10:04 +0700)
+- cpp transpiler: support SHA256 and 64-bit ints; update rosetta outputs
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 10:04 +0700)
+- cpp transpiler: support SHA256 and 64-bit ints; update rosetta outputs
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 10:04 +0700)
+- cpp transpiler: support SHA256 and 64-bit ints; update rosetta outputs
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 10:04 +0700)
+- cpp transpiler: support SHA256 and 64-bit ints; update rosetta outputs
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 10:04 +0700)
+- cpp transpiler: support SHA256 and 64-bit ints; update rosetta outputs
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 10:04 +0700)
+- cpp transpiler: support SHA256 and 64-bit ints; update rosetta outputs
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 10:04 +0700)
+- cpp transpiler: support SHA256 and 64-bit ints; update rosetta outputs
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 10:04 +0700)
+- cpp transpiler: support SHA256 and 64-bit ints; update rosetta outputs
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 10:04 +0700)
+- cpp transpiler: support SHA256 and 64-bit ints; update rosetta outputs
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 10:04 +0700)
+- cpp transpiler: support SHA256 and 64-bit ints; update rosetta outputs
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 10:04 +0700)
+- cpp transpiler: support SHA256 and 64-bit ints; update rosetta outputs
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 10:04 +0700)
+- cpp transpiler: support SHA256 and 64-bit ints; update rosetta outputs
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 10:04 +0700)
+- cpp transpiler: support SHA256 and 64-bit ints; update rosetta outputs
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 10:04 +0700)
+- cpp transpiler: support SHA256 and 64-bit ints; update rosetta outputs
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 10:04 +0700)
+- cpp transpiler: support SHA256 and 64-bit ints; update rosetta outputs
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 10:04 +0700)
+- cpp transpiler: support SHA256 and 64-bit ints; update rosetta outputs
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 10:04 +0700)
+- cpp transpiler: support SHA256 and 64-bit ints; update rosetta outputs
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 10:04 +0700)
+- cpp transpiler: support SHA256 and 64-bit ints; update rosetta outputs
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
 ## Progress (2025-07-26 09:44 +0700)
 - transpiler/hs: handle for-loop returns
 - Generated C++ for 103/104 programs
