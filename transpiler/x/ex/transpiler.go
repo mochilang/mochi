@@ -2063,6 +2063,14 @@ func compileForStmt(fs *parser.ForStmt, env *types.Env) (Stmt, error) {
 		}
 	}
 	bodyEnv := types.NewEnv(env)
+	// Propagate the element type of the loop source to the loop variable.
+	// This enables built-in functions like len() to produce optimized
+	// implementations depending on the element type.
+	if fs.RangeEnd != nil {
+		bodyEnv.SetVar(fs.Name, types.IntType{}, true)
+	} else {
+		bodyEnv.SetVar(fs.Name, elemTypeOfExpr(fs.Source, env), true)
+	}
 	body := make([]Stmt, 0, len(fs.Body))
 	for _, s := range fs.Body {
 		st, err := compileStmt(s, bodyEnv)
@@ -3098,6 +3106,10 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 					name = "map_size"
 				} else if types.IsStringType(t) {
 					name = "String.length"
+				} else if v, ok := isSimpleIdent(p.Call.Args[0]); ok {
+					if vt, err := env.GetVar(v); err == nil && types.IsStringType(vt) {
+						name = "String.length"
+					}
 				}
 			}
 		case "sum":
