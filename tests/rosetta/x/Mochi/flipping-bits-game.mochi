@@ -1,0 +1,23 @@
+var board = [[1,0,1],[0,1,0],[1,1,0]]
+
+fun flipRow(b: list<list<int>>, r: int): list<list<int>> {
+  var row = 0
+  while row < len(b[r]) {
+    b[r][row] = 1 - b[r][row]
+    row = row + 1
+  }
+  return b
+}
+
+fun flipCol(b: list<list<int>>, c: int): list<list<int>> {
+  var i = 0
+  while i < len(b) {
+    b[i][c] = 1 - b[i][c]
+    i = i + 1
+  }
+  return b
+}
+
+board = flipRow(board, 1)
+board = flipCol(board, 2)
+print(str(board))

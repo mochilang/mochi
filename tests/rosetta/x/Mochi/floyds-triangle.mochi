@@ -1,0 +1,19 @@
+fun floyd(n: int) {
+  print("Floyd " + str(n) + ":")
+  var num = 1
+  var row = 1
+  while row <= n {
+    var col = 0
+    var line = ""
+    while col < row {
+      line = line + str(num) + " "
+      num = num + 1
+      col = col + 1
+    }
+    print(line)
+    row = row + 1
+  }
+}
+
+floyd(5)
+floyd(14)
