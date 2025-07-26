@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated TypeScript code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/TypeScript`.
-Last updated: 2025-07-26 03:00 UTC
+Last updated: 2025-07-26 03:13 UTC
 
 ## Rosetta Golden Test Checklist (283/284)
 | Index | Name | Status | Duration | Memory |
@@ -214,57 +214,57 @@ Last updated: 2025-07-26 03:00 UTC
 | 205 | circles-of-given-radius-through-two-points | ✓ | 3.048ms | 512.0 KB |
 | 206 | circular-primes | ✓ | 6.315ms | 1.1 MB |
 | 207 | cistercian-numerals | ✓ | 9.823ms | 1.9 MB |
-| 208 | comma-quibbling | ✓ | 780µs |  |
-| 209 | compiler-virtual-machine-interpreter | ✓ | 3.639ms | 384.0 KB |
-| 210 | composite-numbers-k-with-no-single-digit-factors-whose-factors-are-all-substrings-of-k | ✓ | 17.314176s | 77.5 MB |
+| 208 | comma-quibbling | ✓ | 871µs |  |
+| 209 | compiler-virtual-machine-interpreter | ✓ | 4.476ms | 384.0 KB |
+| 210 | composite-numbers-k-with-no-single-digit-factors-whose-factors-are-all-substrings-of-k | ✓ | 20.978996s | 42.8 MB |
 | 211 | compound-data-type | ✓ | 7µs |  |
-| 212 | concurrent-computing-1 | ✓ | 686µs | 128.0 KB |
-| 213 | concurrent-computing-2 | ✓ | 730µs |  |
-| 214 | concurrent-computing-3 | ✓ | 1.465ms |  |
+| 212 | concurrent-computing-1 | ✓ | 916µs | 128.0 KB |
+| 213 | concurrent-computing-2 | ✓ | 715µs | 128.0 KB |
+| 214 | concurrent-computing-3 | ✓ | 1.059ms |  |
 | 215 | conditional-structures-1 | ✓ | 7µs |  |
-| 216 | conditional-structures-10 | ✓ | 557µs |  |
+| 216 | conditional-structures-10 | ✓ | 570µs |  |
 | 217 | conditional-structures-2 | ✓ | 8µs |  |
-| 218 | conditional-structures-3 | ✓ | 8µs |  |
-| 219 | conditional-structures-4 | ✓ | 7µs |  |
-| 220 | conditional-structures-5 | ✓ | 7µs |  |
-| 221 | conditional-structures-6 | ✓ | 7µs |  |
-| 222 | conditional-structures-7 | ✓ | 8µs |  |
+| 218 | conditional-structures-3 | ✓ | 7µs |  |
+| 219 | conditional-structures-4 | ✓ | 6µs |  |
+| 220 | conditional-structures-5 | ✓ | 13µs |  |
+| 221 | conditional-structures-6 | ✓ | 8µs |  |
+| 222 | conditional-structures-7 | ✓ | 6µs |  |
 | 223 | conditional-structures-8 | ✓ | 7µs |  |
-| 224 | conditional-structures-9 | ✓ | 8µs |  |
-| 225 | consecutive-primes-with-ascending-or-descending-differences | ✓ | 87.816ms | 14.8 MB |
-| 226 | constrained-genericity-1 | ✓ | 8µs |  |
+| 224 | conditional-structures-9 | ✓ | 7µs |  |
+| 225 | consecutive-primes-with-ascending-or-descending-differences | ✓ | 73.596ms | 16.2 MB |
+| 226 | constrained-genericity-1 | ✓ | 7µs |  |
 | 227 | constrained-genericity-2 | ✓ | 7µs |  |
-| 228 | constrained-genericity-3 | ✓ | 8µs |  |
-| 229 | constrained-genericity-4 | ✓ | 562µs |  |
-| 230 | constrained-random-points-on-a-circle-1 | ✓ | 10.121ms | 2.2 MB |
-| 231 | constrained-random-points-on-a-circle-2 | ✓ | 11.172ms | 2.4 MB |
-| 232 | continued-fraction | ✓ | 1.371ms |  |
-| 233 | convert-decimal-number-to-rational | ✓ | 1.713ms | 128.0 KB |
-| 234 | convert-seconds-to-compound-duration | ✓ | 727µs | 128.0 KB |
-| 235 | convex-hull | ✓ | 1.774ms | 256.0 KB |
-| 236 | conways-game-of-life | ✓ | 80.629ms | 11.2 MB |
-| 237 | copy-a-string-1 | ✓ | 8µs |  |
-| 238 | copy-a-string-2 | ✓ | 637µs |  |
-| 239 | copy-stdin-to-stdout-1 | ✓ | 1.586ms | 384.0 KB |
-| 240 | copy-stdin-to-stdout-2 | ✓ | 1.278ms | 512.0 KB |
-| 241 | count-in-factors | ✓ | 10.156ms | 3.2 MB |
-| 242 | count-in-octal-1 | ✓ | 1.612ms | 512.0 KB |
-| 243 | count-in-octal-2 | ✓ | 248.532ms | 10.1 MB |
+| 228 | constrained-genericity-3 | ✓ | 6µs |  |
+| 229 | constrained-genericity-4 | ✓ | 600µs | 128.0 KB |
+| 230 | constrained-random-points-on-a-circle-1 | ✓ | 4.073ms | 3.1 MB |
+| 231 | constrained-random-points-on-a-circle-2 | ✓ | 3.781ms | 512.0 KB |
+| 232 | continued-fraction | ✓ | 1.536ms |  |
+| 233 | convert-decimal-number-to-rational | ✓ | 881µs | 128.0 KB |
+| 234 | convert-seconds-to-compound-duration | ✓ | 676µs | 128.0 KB |
+| 235 | convex-hull | ✓ | 627µs | 128.0 KB |
+| 236 | conways-game-of-life | ✓ | 79.224ms | 11.3 MB |
+| 237 | copy-a-string-1 | ✓ | 5µs |  |
+| 238 | copy-a-string-2 | ✓ | 597µs |  |
+| 239 | copy-stdin-to-stdout-1 | ✓ | 1.651ms | 384.0 KB |
+| 240 | copy-stdin-to-stdout-2 | ✓ | 1.787ms | 512.0 KB |
+| 241 | count-in-factors | ✓ | 4.147ms | 3.1 MB |
+| 242 | count-in-octal-1 | ✓ | 6.569ms | 512.0 KB |
+| 243 | count-in-octal-2 | ✓ | 252.15ms | 10.4 MB |
 | 244 | count-in-octal-3 | ✓ |  |  |
 | 245 | count-in-octal-4 | ✓ |  |  |
-| 246 | count-occurrences-of-a-substring | ✓ | 537µs | 128.0 KB |
-| 247 | count-the-coins-1 | ✓ | 1.268ms | 2.4 MB |
-| 248 | count-the-coins-2 | ✓ | 1m9.014519s | 57.8 MB |
-| 249 | cramers-rule | ✓ | 924µs | 256.0 KB |
-| 250 | crc-32-1 | ✓ | 4.502ms | 8.7 MB |
-| 251 | crc-32-2 | ✓ | 4.338ms | 9.0 MB |
-| 252 | create-a-file-on-magnetic-tape | ✓ | 93µs |  |
-| 253 | create-a-file | ✓ | 501µs |  |
-| 254 | create-a-two-dimensional-array-at-runtime-1 | ✓ | 1.012ms | 384.0 KB |
-| 255 | create-an-html-table | ✓ | 538µs | 128.0 KB |
-| 256 | create-an-object-at-a-given-address | ✓ | 1.18ms | 128.0 KB |
-| 257 | csv-data-manipulation | ✓ | 681µs | 128.0 KB |
-| 258 | csv-to-html-translation-1 | ✓ | 668µs | 128.0 KB |
+| 246 | count-occurrences-of-a-substring | ✓ | 841µs | 128.0 KB |
+| 247 | count-the-coins-1 | ✓ | 2.19ms | 1.9 MB |
+| 248 | count-the-coins-2 | ✓ | 29.484ms | 11.0 MB |
+| 249 | cramers-rule | ✓ | 1.058ms | 128.0 KB |
+| 250 | crc-32-1 | ✓ | 1.256ms | 2.2 MB |
+| 251 | crc-32-2 | ✓ | 2.145ms | 3.0 MB |
+| 252 | create-a-file-on-magnetic-tape | ✓ | 161µs |  |
+| 253 | create-a-file | ✓ | 889µs | 128.0 KB |
+| 254 | create-a-two-dimensional-array-at-runtime-1 | ✓ | 1.79ms | 640.0 KB |
+| 255 | create-an-html-table | ✓ | 781µs | 128.0 KB |
+| 256 | create-an-object-at-a-given-address | ✓ | 1.65ms | 128.0 KB |
+| 257 | csv-data-manipulation | ✓ | 1.153ms | 128.0 KB |
+| 258 | csv-to-html-translation-1 | ✓ | 833µs |  |
 | 259 | csv-to-html-translation-2 | ✓ | 594µs | 256.0 KB |
 | 260 | csv-to-html-translation-3 | ✓ | 566µs |  |
 | 261 | csv-to-html-translation-4 | ✓ | 510µs | 128.0 KB |
