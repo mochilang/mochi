@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Rust code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/Rust`.
-Last updated: 2025-07-26 10:42 UTC
+Last updated: 2025-07-26 12:34 UTC
 
-## Rosetta Golden Test Checklist (35/332)
+## Rosetta Golden Test Checklist (36/332)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 109µs | 3.2 MB |
@@ -34,16 +34,16 @@ Last updated: 2025-07-26 10:42 UTC
 | 25 | abundant-deficient-and-perfect-number-classifications | ✓ | 178.424ms |  |
 | 26 | abundant-odd-numbers | ✓ | 313.603ms | 128.0 KB |
 | 27 | accumulator-factory | ✓ | 30µs |  |
-| 28 | achilles-numbers |   |  |  |
-| 29 | ackermann-function-2 | ✓ | 22µs |  |
-| 30 | ackermann-function-3 | ✓ | 25µs |  |
-| 31 | ackermann-function | ✓ | 55µs |  |
-| 32 | active-directory-connect | ✓ | 32µs |  |
-| 33 | active-directory-search-for-a-user | ✓ | 23µs |  |
-| 34 | active-object | ✓ | 27µs |  |
-| 35 | add-a-variable-to-a-class-instance-at-runtime | ✓ | 38µs |  |
-| 36 | additive-primes | ✓ | 55µs |  |
-| 37 | address-of-a-variable | ✓ | 56µs |  |
+| 28 | achilles-numbers | ✓ | 7.958ms | 252.0 KB |
+| 29 | ackermann-function-2 | ✓ | 89µs |  |
+| 30 | ackermann-function-3 | ✓ | 34µs |  |
+| 31 | ackermann-function | ✓ | 82µs |  |
+| 32 | active-directory-connect | ✓ | 23µs |  |
+| 33 | active-directory-search-for-a-user | ✓ | 32µs |  |
+| 34 | active-object | ✓ | 43µs |  |
+| 35 | add-a-variable-to-a-class-instance-at-runtime | ✓ | 75µs |  |
+| 36 | additive-primes | ✓ | 83µs |  |
+| 37 | address-of-a-variable | ✓ | 32µs |  |
 | 38 | adfgvx-cipher |   |  |  |
 | 39 | aks-test-for-primes | ✓ | 47µs |  |
 | 40 | algebraic-data-types |   |  |  |

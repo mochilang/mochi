@@ -59,6 +59,8 @@ var currentFuncRet string
 var indexLHS bool
 var refMode bool
 var forceMap map[*parser.MapLiteral]bool
+var useLazy bool
+var useRefCell bool
 
 func VarTypes() map[string]string { return varTypes }
 
@@ -130,6 +132,8 @@ type Program struct {
 	UseInput    bool
 	UseInt      bool
 	UseAbs      bool
+	UseLazy     bool
+	UseRefCell  bool
 	Types       []TypeDecl
 	Globals     []*VarDecl
 }
@@ -573,7 +577,16 @@ func (i *IndexExpr) emit(w io.Writer) {
 	switch t := i.Target.(type) {
 	case *NameRef:
 		if mapVars[t.Name] || strings.HasPrefix(inferType(i.Target), "HashMap") {
-			t.emit(w)
+			if globalVars[t.Name] {
+				name := t.Name
+				if newName, ok := globalRenames[t.Name]; ok && !isLocal(t.Name) {
+					name = newName
+				}
+				io.WriteString(w, name)
+				io.WriteString(w, ".lock().unwrap()")
+			} else {
+				t.emit(w)
+			}
 			io.WriteString(w, "[")
 			if inferType(i.Index) != "String" {
 				io.WriteString(w, "&")
@@ -1057,9 +1070,6 @@ type VarDecl struct {
 
 func (v *VarDecl) emit(w io.Writer) {
 	if v.Global {
-		io.WriteString(w, "static mut ")
-		io.WriteString(w, v.Name)
-		io.WriteString(w, ": ")
 		typ := v.Type
 		if typ == "" {
 			typ = varTypes[v.Name]
@@ -1072,6 +1082,21 @@ func (v *VarDecl) emit(w io.Writer) {
 		if typ == "" {
 			typ = "i64"
 		}
+		if strings.HasPrefix(typ, "HashMap") {
+			useLazy = true
+			useRefCell = true
+			io.WriteString(w, "static ")
+			io.WriteString(w, v.Name)
+			io.WriteString(w, ": LazyLock<Mutex<")
+			io.WriteString(w, typ)
+			io.WriteString(w, ">> = LazyLock::new(|| Mutex::new(")
+			io.WriteString(w, zeroValue(typ))
+			io.WriteString(w, "));")
+			return
+		}
+		io.WriteString(w, "static mut ")
+		io.WriteString(w, v.Name)
+		io.WriteString(w, ": ")
 		io.WriteString(w, typ)
 		io.WriteString(w, " = ")
 		io.WriteString(w, zeroValue(typ))
@@ -1122,13 +1147,21 @@ type AssignStmt struct {
 }
 
 func (a *AssignStmt) emit(w io.Writer) {
+	name := a.Name
 	if newName, ok := globalRenames[a.Name]; ok && !isLocal(a.Name) {
-		io.WriteString(w, newName)
-	} else {
-		io.WriteString(w, a.Name)
+		name = newName
 	}
-	io.WriteString(w, " = ")
-	a.Expr.emit(w)
+	if globalVars[a.Name] && strings.HasPrefix(varTypes[a.Name], "HashMap") {
+		io.WriteString(w, "*")
+		io.WriteString(w, name)
+		io.WriteString(w, ".lock().unwrap()")
+		io.WriteString(w, " = ")
+		a.Expr.emit(w)
+	} else {
+		io.WriteString(w, name)
+		io.WriteString(w, " = ")
+		a.Expr.emit(w)
+	}
 }
 
 // IndexAssignStmt assigns to an indexed expression like x[i] = v.
@@ -1166,8 +1199,17 @@ func (s *IndexAssignStmt) emit(w io.Writer) {
 			}
 		}
 		if strings.HasPrefix(inferType(idx.Target), "HashMap") {
-			idx.Target.emit(w)
-			io.WriteString(w, ".insert(")
+			if nr, ok := idx.Target.(*NameRef); ok && globalVars[nr.Name] {
+				name := nr.Name
+				if newName, ok := globalRenames[nr.Name]; ok && !isLocal(nr.Name) {
+					name = newName
+				}
+				io.WriteString(w, name)
+				io.WriteString(w, ".lock().unwrap().insert(")
+			} else {
+				idx.Target.emit(w)
+				io.WriteString(w, ".insert(")
+			}
 			idx.Index.emit(w)
 			io.WriteString(w, ".clone(), ")
 			s.Value.emit(w)
@@ -1273,10 +1315,21 @@ func (b *BinaryExpr) emit(w io.Writer) {
 			return
 		}
 		if strings.HasPrefix(rt, "HashMap") {
-			b.Right.emit(w)
-			io.WriteString(w, ".contains_key(&")
-			b.Left.emit(w)
-			io.WriteString(w, ")")
+			if nr, ok := b.Right.(*NameRef); ok && globalVars[nr.Name] {
+				name := nr.Name
+				if newName, ok := globalRenames[nr.Name]; ok && !isLocal(nr.Name) {
+					name = newName
+				}
+				io.WriteString(w, name)
+				io.WriteString(w, ".lock().unwrap().contains_key(&")
+				b.Left.emit(w)
+				io.WriteString(w, ")")
+			} else {
+				b.Right.emit(w)
+				io.WriteString(w, ".contains_key(&")
+				b.Left.emit(w)
+				io.WriteString(w, ")")
+			}
 			return
 		}
 	}
@@ -1801,6 +1854,8 @@ func Transpile(p *parser.Program, env *types.Env, benchMain bool) (*Program, err
 	usesInput = false
 	usesInt = false
 	useAbs = false
+	useLazy = false
+	useRefCell = false
 	mapVars = make(map[string]bool)
 	stringVars = make(map[string]bool)
 	groupVars = make(map[string]bool)
@@ -1862,6 +1917,8 @@ func Transpile(p *parser.Program, env *types.Env, benchMain bool) (*Program, err
 	prog.UseInput = usesInput
 	prog.UseInt = usesInt
 	prog.UseAbs = useAbs
+	prog.UseLazy = useLazy
+	prog.UseRefCell = useRefCell
 	return prog, nil
 }
 
@@ -2013,6 +2070,11 @@ func compileStmt(stmt *parser.Statement) (Stmt, error) {
 			globalRenameBack[newName] = stmt.Let.Name
 			vd.Name = newName
 			globalVars[stmt.Let.Name] = true
+			if strings.HasPrefix(typ, "HashMap") {
+				useLazy = true
+				useRefCell = true
+				vd.Expr = nil
+			}
 		} else {
 			if len(localVarStack) > 0 {
 				localVarStack[len(localVarStack)-1][stmt.Let.Name] = true
@@ -2131,6 +2193,11 @@ func compileStmt(stmt *parser.Statement) (Stmt, error) {
 			globalRenameBack[newName] = stmt.Var.Name
 			vd.Name = newName
 			globalVars[stmt.Var.Name] = true
+			if strings.HasPrefix(typ, "HashMap") {
+				useLazy = true
+				useRefCell = true
+				vd.Expr = nil
+			}
 		} else {
 			if len(localVarStack) > 0 {
 				localVarStack[len(localVarStack)-1][stmt.Var.Name] = true
@@ -4476,6 +4543,12 @@ func Emit(prog *Program) []byte {
 	buf.WriteString(header())
 	if prog.UsesHashMap {
 		buf.WriteString("use std::collections::HashMap;\n")
+	}
+	if prog.UseLazy {
+		buf.WriteString("use std::sync::LazyLock;\n")
+	}
+	if prog.UseRefCell {
+		buf.WriteString("use std::sync::Mutex;\n")
 	}
 	if prog.UseTime {
 		buf.WriteString("use std::sync::atomic::{AtomicBool, AtomicI64, Ordering};\n")
