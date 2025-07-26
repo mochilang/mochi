@@ -1,0 +1,7 @@
+// Mochi translation of Rosetta "FTP" task
+// Networking and FTP libraries are not available, so this
+// example only prints the actions that would be performed.
+
+print("Connect to localhost:21 as anonymous")
+print("Change directory to pub")
+print("List files and retrieve somefile.bin")

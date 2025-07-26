@@ -1,0 +1,33 @@
+// Mochi translation of Rosetta "Exponentiation with infix operators in or operating on the base" task
+
+fun p(x: float, e: float): float {
+  var r = 1.0
+  var i = 0
+  while i < (e as int) {
+    r = r * x
+    i = i + 1
+  }
+  return r
+}
+
+var ops = ["-x.p(e)", "-(x).p(e)", "(-x).p(e)", "-(x.p(e))"]
+
+for x in [-5.0, 5.0] {
+  for e in [2.0, 3.0] {
+    let a = -p(x, e)
+    let b = -(p(x, e))
+    let c = p(-x, e)
+    let d = -(p(x, e))
+    print("x = " + (if x < 0 {""} else {" "}) + str((x as int)) + " e = " + str((e as int)) + " | " +
+          ops[0] + " = " + padInt(a) + " | " +
+          ops[1] + " = " + padInt(b) + " | " +
+          ops[2] + " = " + padInt(c) + " | " +
+          ops[3] + " = " + padInt(d))
+  }
+}
+
+fun padInt(f: float): string {
+  let s = str((f as int))
+  if f >= 0 { return " " + s }
+  return s
+}

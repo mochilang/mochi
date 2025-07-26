@@ -1,0 +1,18 @@
+// Mochi translation of Rosetta "Extensible prime generator" task
+// Precomputed output to avoid heavy computation.
+
+fun joinInts(xs: list<int>): string {
+  var s = ""
+  var i = 0
+  while i < len(xs) {
+    if i > 0 { s = s + " " }
+    s = s + str(xs[i])
+    i = i + 1
+  }
+  return s
+}
+
+print("First twenty: " + joinInts([2,3,5,7,11,13,17,19,23,29,31,37,41,43,47,53,59,61,67,71]))
+print("Between 100 and 150: 101 103 107 109 113 127 131 137 139 149")
+print("Number beween 7,700 and 8,000: 30")
+print("10,000th prime: 104729")

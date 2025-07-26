@@ -1,0 +1,5 @@
+// Mochi translation of Rosetta "Execute a system command" task
+// Mochi currently lacks support for running external processes.
+// This example simply prints the command that would be executed.
+
+print("Would run: ls -l")

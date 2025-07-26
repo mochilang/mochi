@@ -1,0 +1,26 @@
+// Mochi translation of Rosetta "FASTA format" task
+// Uses an in-memory list instead of reading a file.
+
+var lines = [
+  ">Rosetta1",
+  "ACGT",
+  ">Rosetta2",
+  "GATTACA",
+]
+
+var header = ""
+var seq = ""
+var first = true
+for line in lines {
+  if line == "" { continue }
+  if substring(line,0,1) == ">" {
+    if header != "" {
+      print(header + ": " + seq)
+    }
+    header = substring(line,1,len(line))
+    seq = ""
+  } else {
+    seq = seq + line
+  }
+}
+if header != "" { print(header + ": " + seq) }
