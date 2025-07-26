@@ -1,9 +1,9 @@
 # Java Rosetta Transpiler Output
 
 Generated Java code for programs in `tests/rosetta/x/Mochi`. Each program has a `.java` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
-Last updated: 2025-07-26 19:29 GMT+7
+Last updated: 2025-07-26 20:04 GMT+7
 
-## Rosetta Checklist (119/332)
+## Rosetta Checklist (126/332)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 23.0ms | 245.84KB |
@@ -136,13 +136,13 @@ Last updated: 2025-07-26 19:29 GMT+7
 | 128 | bitmap | ✓ | 341.0ms | 115.98KB |
 | 129 | bitwise-io-1 | ✓ | 36.0ms | 55.18KB |
 | 130 | bitwise-io-2 | ✓ | 60.0ms | 125.30KB |
-| 131 | bitwise-operations |   |  |  |
-| 132 | blum-integer |   |  |  |
-| 133 | boolean-values |   |  |  |
-| 134 | box-the-compass |   |  |  |
-| 135 | boyer-moore-string-search |   |  |  |
-| 136 | brazilian-numbers |   |  |  |
-| 137 | break-oo-privacy |   |  |  |
+| 131 | bitwise-operations | ✓ | 36.0ms | 40.73KB |
+| 132 | blum-integer | ✓ | 50.0ms | 94.55KB |
+| 133 | boolean-values | ✓ | 30.0ms | 39.56KB |
+| 134 | box-the-compass | ✓ | 46.0ms | 97.79KB |
+| 135 | boyer-moore-string-search | ✓ | 57.0ms | 113.94KB |
+| 136 | brazilian-numbers | ✓ | 3.49s | 72.62KB |
+| 137 | break-oo-privacy | ✓ | 50.0ms | 98.93KB |
 | 138 | brilliant-numbers |   |  |  |
 | 139 | brownian-tree |   |  |  |
 | 140 | bulls-and-cows-player |   |  |  |
