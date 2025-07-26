@@ -370,7 +370,7 @@ type ForRangeStmt struct {
 func (fr *ForRangeStmt) emit(w io.Writer) {
 	io.WriteString(w, "(let/ec _break (let (")
 	io.WriteString(w, "[")
-	io.WriteString(w, fr.Name)
+	io.WriteString(w, sanitizeName(fr.Name))
 	io.WriteString(w, " ")
 	if fr.Start != nil {
 		fr.Start.emit(w)
@@ -378,7 +378,7 @@ func (fr *ForRangeStmt) emit(w io.Writer) {
 		io.WriteString(w, "0")
 	}
 	io.WriteString(w, "])\n  (let loop ()\n    (when (< ")
-	io.WriteString(w, fr.Name)
+	io.WriteString(w, sanitizeName(fr.Name))
 	io.WriteString(w, " ")
 	fr.End.emit(w)
 	io.WriteString(w, ")\n")
@@ -388,9 +388,9 @@ func (fr *ForRangeStmt) emit(w io.Writer) {
 	}
 	popContinue()
 	io.WriteString(w, "      (set! ")
-	io.WriteString(w, fr.Name)
+	io.WriteString(w, sanitizeName(fr.Name))
 	io.WriteString(w, " (+ ")
-	io.WriteString(w, fr.Name)
+	io.WriteString(w, sanitizeName(fr.Name))
 	io.WriteString(w, " 1))\n      (loop)))\n))\n")
 }
 
@@ -418,7 +418,7 @@ func (f *ForInStmt) emit(w io.Writer) {
 			f.Unless.emit(w)
 		}
 		io.WriteString(w, "\n  (define ")
-		io.WriteString(w, f.Name)
+		io.WriteString(w, sanitizeName(f.Name))
 		io.WriteString(w, " (substring ")
 		f.Iterable.emit(w)
 		io.WriteString(w, " __i (+ __i 1)))\n  (let/ec _cont\n")
@@ -435,7 +435,7 @@ func (f *ForInStmt) emit(w io.Writer) {
 		return
 	}
 	io.WriteString(w, "(let/ec _break (for ([")
-	io.WriteString(w, f.Name)
+	io.WriteString(w, sanitizeName(f.Name))
 	io.WriteString(w, " ")
 	if f.Keys {
 		io.WriteString(w, "(in-hash-keys ")
@@ -483,7 +483,7 @@ type FunDecl struct {
 func (f *FunDecl) emit(w io.Writer) {
 	fmt.Fprintf(w, "(define (%s", f.Name)
 	for _, p := range f.Params {
-		fmt.Fprintf(w, " %s", p)
+		fmt.Fprintf(w, " %s", sanitizeName(p))
 	}
 	io.WriteString(w, ")\n  (let/ec _return (begin\n")
 	for _, st := range f.Body {
@@ -505,7 +505,7 @@ func (l *LambdaExpr) emit(w io.Writer) {
 		if i > 0 {
 			io.WriteString(w, " ")
 		}
-		io.WriteString(w, p)
+		io.WriteString(w, sanitizeName(p))
 	}
 	io.WriteString(w, ")")
 	if len(l.Body) > 0 {
