@@ -7389,6 +7389,15 @@ func (fc *funcCompiler) evalConstPrimary(p *parser.Primary) (Value, bool) {
 		return fc.foldCallValue(p.Call)
 	case p.Selector != nil:
 		if len(p.Selector.Tail) == 0 {
+			// Do not treat identifiers that resolve to local or global
+			// variables as constants even if the type environment has
+			// a value recorded for the same name.
+			if _, ok := fc.vars[p.Selector.Root]; ok {
+				return Value{}, false
+			}
+			if _, ok := fc.comp.globals[p.Selector.Root]; ok {
+				return Value{}, false
+			}
 			if val, err := fc.comp.env.GetValue(p.Selector.Root); err == nil {
 				return FromAny(val), true
 			}
