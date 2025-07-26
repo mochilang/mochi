@@ -2976,6 +2976,11 @@ func convertPostfix(env *types.Env, p *parser.PostfixExpr) (Expr, error) {
 					force = true
 				} else if l, ok := baseType.(types.ListType); ok {
 					baseType = l.Elem
+				} else if _, ok := baseType.(types.StructType); ok {
+					// treat struct like a dictionary when indexed dynamically
+					expr = &CastExpr{Expr: expr, Type: "[String: Any]"}
+					baseType = types.AnyType{}
+					force = true
 				}
 			}
 			if env != nil && types.IsAnyType(baseType) {
