@@ -586,8 +586,14 @@ func updateListLitType(ll *ListLit, t types.Type) {
 	if !ok {
 		return
 	}
+	target := toGoTypeFromType(lt.Elem)
+	if target == "" {
+		target = "any"
+	}
 	if ll.ElemType == "" || ll.ElemType == "any" {
-		ll.ElemType = toGoTypeFromType(lt.Elem)
+		ll.ElemType = target
+	} else if target == "any" {
+		ll.ElemType = "any"
 	}
 	for _, el := range ll.Elems {
 		switch inner := el.(type) {
@@ -2053,6 +2059,10 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 		e, err := compileExpr(st.Expr.Expr, env, "")
 		if err != nil {
 			return nil, err
+		}
+		if _, ok := e.(*NullLit); ok {
+			// a standalone 'null' does nothing
+			return nil, nil
 		}
 		return &ExprStmt{Expr: e}, nil
 	case st.Let != nil:
@@ -6278,7 +6288,7 @@ func substituteFieldRefsExpr(e Expr, recv string, fields map[string]bool) Expr {
 	switch ex := e.(type) {
 	case *VarRef:
 		if fields[ex.Name] {
-			return &FieldExpr{X: &VarRef{Name: recv}, Name: ex.Name}
+			return &FieldExpr{X: &VarRef{Name: recv}, Name: toGoFieldName(ex.Name)}
 		}
 		return ex
 	case *BinaryExpr:
@@ -6357,6 +6367,11 @@ func substituteFieldRefsExpr(e Expr, recv string, fields map[string]bool) Expr {
 
 func substituteFieldRefsStmt(s Stmt, recv string, fields map[string]bool) Stmt {
 	switch st := s.(type) {
+	case *PrintStmt:
+		for i, a := range st.Args {
+			st.Args[i] = substituteFieldRefsExpr(a, recv, fields)
+		}
+		return st
 	case *ExprStmt:
 		st.Expr = substituteFieldRefsExpr(st.Expr, recv, fields)
 	case *VarDecl:
