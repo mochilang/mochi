@@ -1,0 +1,13 @@
+run: exit status 1
+
+/workspace/mochi/tests/rosetta/transpiler/Haskell/abundant-odd-numbers.hs:132:27: error:
+    Ambiguous occurrence ‘sum’
+    It could refer to
+       either ‘Prelude.sum’,
+              imported from ‘Prelude’ at /workspace/mochi/tests/rosetta/transpiler/Haskell/abundant-odd-numbers.hs:1:1
+              (and originally defined in ‘Data.Foldable’)
+           or ‘Main.sum’,
+              defined at /workspace/mochi/tests/rosetta/transpiler/Haskell/abundant-odd-numbers.hs:82:1
+    |
+132 |                 let tot = sum divs
+    |                           ^^^

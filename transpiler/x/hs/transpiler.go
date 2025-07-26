@@ -834,6 +834,17 @@ func (l *LetStmt) emit(w io.Writer) {
 					}
 				}
 			}
+			if n, ok2 := call.Fun.(*NameRef); ok2 {
+				if envInfo != nil {
+					if fn, ok := envInfo.GetFunc(n.Name); ok {
+						if funcUsesIO(fn) {
+							io.WriteString(w, name+" <- ")
+							l.Expr.emit(w)
+							return
+						}
+					}
+				}
+			}
 		}
 		io.WriteString(w, "let ")
 	}
@@ -2402,6 +2413,7 @@ func Emit(p *Program, bench bool) []byte {
 		needJSON = true
 		usesNow = true
 		usesMem = true
+		needIORef = true
 		p.Stmts = []Stmt{&BenchStmt{Name: "main", Body: p.Stmts}}
 	}
 	for _, m := range mutatedGlobal {
@@ -2743,6 +2755,7 @@ func Transpile(prog *parser.Program, env *types.Env, benchMain bool) (*Program, 
 		needJSON = true
 		usesNow = true
 		usesMem = true
+		needIORef = true
 		renamed := false
 		for i := range h.Funcs {
 			if h.Funcs[i].Name == "main" {
@@ -3435,6 +3448,7 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 	case p.Call != nil:
 		if p.Call.Func == "now" && len(p.Call.Args) == 0 {
 			usesNow = true
+			needIORef = true
 			inner := &CallExpr{Fun: &NameRef{Name: "_now"}, Args: nil}
 			return &CallExpr{Fun: &NameRef{Name: "unsafePerformIO"}, Args: []Expr{inner}}, nil
 		}
@@ -4009,6 +4023,7 @@ func convertBenchBlock(b *parser.BenchBlock) (Stmt, error) {
 	}
 	usesNow = true
 	needJSON = true
+	needIORef = true
 	name := strings.Trim(b.Name, "\"")
 	return &BenchStmt{Name: name, Body: body}, nil
 }
@@ -4227,6 +4242,37 @@ func convertStmtList(list []*parser.Statement) ([]Stmt, error) {
 		}
 	}
 	return out, nil
+}
+
+func funcUsesIO(fn *parser.FunStmt) bool {
+	uses := false
+	var scan func(*parser.Statement)
+	scan = func(st *parser.Statement) {
+		if uses || st == nil {
+			return
+		}
+		switch {
+		case st.Var != nil || st.Assign != nil || st.For != nil || st.While != nil || st.Fetch != nil:
+			uses = true
+		case st.If != nil:
+			for _, t := range st.If.Then {
+				scan(t)
+			}
+			for _, e := range st.If.Else {
+				scan(e)
+			}
+		case st.Expr != nil:
+			if c := st.Expr.Expr.Binary.Left.Value.Target.Call; c != nil {
+				if c.Func == "print" {
+					uses = true
+				}
+			}
+		}
+	}
+	for _, s := range fn.Body {
+		scan(s)
+	}
+	return uses
 }
 
 func convertGroupItemsLoop(v *parser.VarStmt, loop *parser.ForStmt) (*LetStmt, bool) {
