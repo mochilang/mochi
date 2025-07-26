@@ -3010,7 +3010,7 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 		funcDepth--
 		var params []string
 		for _, p := range st.Fun.Params {
-			params = append(params, p.Name)
+			params = append(params, safeName(p.Name))
 		}
 		// In earlier versions the transpiler copied struct parameters at
 		// the start of top‑level functions to emulate pass‑by‑value
@@ -3063,7 +3063,7 @@ func convertFunc(fn *parser.FunStmt) (*FuncStmt, error) {
 	funcDepth--
 	params := make([]string, len(fn.Params))
 	for i, p := range fn.Params {
-		params[i] = p.Name
+		params[i] = safeName(p.Name)
 	}
 	return &FuncStmt{Name: fn.Name, Params: params, Body: body}, nil
 }

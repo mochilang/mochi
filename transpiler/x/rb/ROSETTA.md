@@ -2,9 +2,9 @@
 
 Generated Ruby code from Mochi Rosetta tasks lives in `tests/rosetta/transpiler/rb`.
 
-Last updated: 2025-07-26 17:07 UTC
+Last updated: 2025-07-26 18:08 UTC
 
-## Checklist (286/332)
+## Checklist (306/341)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 195µs | 36.2 KB |
@@ -309,26 +309,26 @@ Last updated: 2025-07-26 17:07 UTC
 | 300 | dice-game-probabilities-2 |   |  |  |
 | 301 | digital-root-multiplicative-digital-root |   |  |  |
 | 302 | dijkstras-algorithm |   |  |  |
-| 303 | dinesmans-multiple-dwelling-problem |   |  |  |
-| 304 | dining-philosophers-1 |   |  |  |
-| 305 | dining-philosophers-2 |   |  |  |
-| 306 | disarium-numbers |   |  |  |
-| 307 | discordian-date |   |  |  |
-| 308 | display-a-linear-combination |   |  |  |
-| 309 | display-an-outline-as-a-nested-table |   |  |  |
-| 310 | distance-and-bearing |   |  |  |
-| 311 | distributed-programming |   |  |  |
-| 312 | diversity-prediction-theorem |   |  |  |
-| 313 | documentation |   |  |  |
-| 314 | doomsday-rule |   |  |  |
-| 315 | dot-product |   |  |  |
-| 316 | doubly-linked-list-definition-1 |   |  |  |
-| 317 | doubly-linked-list-definition-2 |   |  |  |
-| 318 | doubly-linked-list-element-definition |   |  |  |
-| 319 | doubly-linked-list-traversal |   |  |  |
-| 320 | dragon-curve |   |  |  |
-| 321 | draw-a-clock |   |  |  |
-| 322 | draw-a-cuboid |   |  |  |
+| 303 | dinesmans-multiple-dwelling-problem | ✓ | 53µs | 10.5 KB |
+| 304 | dining-philosophers-1 | ✓ | 69µs | 14.8 KB |
+| 305 | dining-philosophers-2 | ✓ | 68µs | 14.8 KB |
+| 306 | disarium-numbers | ✓ | 13.401643s | 564.4 KB |
+| 307 | discordian-date | ✓ | 72µs | 20.2 KB |
+| 308 | display-a-linear-combination | ✓ | 146µs | 33.7 KB |
+| 309 | display-an-outline-as-a-nested-table | ✓ | 347µs | 145.1 KB |
+| 310 | distance-and-bearing | ✓ | 1.162ms | 49.0 KB |
+| 311 | distributed-programming | ✓ | 31µs | 9.3 KB |
+| 312 | diversity-prediction-theorem | ✓ | 78µs | 13.4 KB |
+| 313 | documentation | ✓ | 5µs | 472 B |
+| 314 | doomsday-rule | ✓ | 91µs | 28.6 KB |
+| 315 | dot-product | ✓ | 51µs | 10.5 KB |
+| 316 | doubly-linked-list-definition-1 | ✓ | 53µs | 2.1 KB |
+| 317 | doubly-linked-list-definition-2 | ✓ | 60µs | 10.6 KB |
+| 318 | doubly-linked-list-element-definition | ✓ | 60µs | 10.3 KB |
+| 319 | doubly-linked-list-traversal | ✓ | 57µs | 10.7 KB |
+| 320 | dragon-curve | ✓ | 4.121ms | -42888 B |
+| 321 | draw-a-clock | ✓ | 83µs | 17.5 KB |
+| 322 | draw-a-cuboid | ✓ | 343µs | 115.4 KB |
 | 323 | draw-a-pixel-1 |   |  |  |
 | 324 | draw-a-rotating-cube |   |  |  |
 | 325 | draw-a-sphere |   |  |  |
@@ -337,5 +337,14 @@ Last updated: 2025-07-26 17:07 UTC
 | 328 | earliest-difference-between-prime-gaps |   |  |  |
 | 329 | eban-numbers |   |  |  |
 | 330 | echo-server |   |  |  |
-| 331 | ekg-sequence-convergence |   |  |  |
-| 332 | md5 |   |  |  |
+| 331 | eertree |   |  |  |
+| 332 | egyptian-division |   |  |  |
+| 333 | ekg-sequence-convergence |   |  |  |
+| 334 | element-wise-operations |   |  |  |
+| 335 | elementary-cellular-automaton-infinite-length |   |  |  |
+| 336 | elementary-cellular-automaton-random-number-generator |   |  |  |
+| 337 | elementary-cellular-automaton |   |  |  |
+| 338 | elliptic-curve-arithmetic |   |  |  |
+| 339 | emirp-primes |   |  |  |
+| 340 | empty-directory |   |  |  |
+| 341 | md5 |   |  |  |
