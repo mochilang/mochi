@@ -1,0 +1,34 @@
+fun sqrtApprox(x: float): float {
+  if x <= 0.0 { return 0.0 }
+  var g = x
+  var i = 0
+  while i < 20 {
+    g = (g + x / g) / 2.0
+    i = i + 1
+  }
+  return g
+}
+
+fun abs(x: float): float {
+  if x < 0.0 { return -x }
+  return x
+}
+
+fun main() {
+  var oldPhi = 1.0
+  var phi = 0.0
+  var iters = 0
+  let limit = 0.00001
+  while true {
+    phi = 1.0 + 1.0 / oldPhi
+    iters = iters + 1
+    if abs(phi - oldPhi) <= limit { break }
+    oldPhi = phi
+  }
+  let actual = (1.0 + sqrtApprox(5.0)) / 2.0
+  print("Final value of phi : " + str(phi))
+  print("Number of iterations : " + str(iters))
+  print("Error (approx) : " + str(phi - actual))
+}
+
+main()
