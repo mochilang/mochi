@@ -1,7 +1,7 @@
 # Go Rosetta Transpiler Output
 
-Completed programs: 246/332
-Last updated: 2025-07-27 01:22 +0700
+Completed programs: 250/341
+Last updated: 2025-07-27 01:56 +0700
 
 Checklist:
 
@@ -266,10 +266,10 @@ Checklist:
 | 257 | create-an-object-at-a-given-address | ✓ | 93.0µs | 3.68KB |
 | 258 | csv-data-manipulation | ✓ | 158.0µs | 1.79KB |
 | 259 | csv-to-html-translation-1 | ✓ | 79.0µs | 3.03KB |
-| 260 | csv-to-html-translation-2 |   |  |  |
-| 261 | csv-to-html-translation-3 |   |  |  |
-| 262 | csv-to-html-translation-4 |   |  |  |
-| 263 | csv-to-html-translation-5 |   |  |  |
+| 260 | csv-to-html-translation-2 | ✓ | 115.0µs | 3.18KB |
+| 261 | csv-to-html-translation-3 | ✓ | 113.0µs | 1.26KB |
+| 262 | csv-to-html-translation-4 | ✓ | 86.0µs | 1.24KB |
+| 263 | csv-to-html-translation-5 | ✓ | 214.0µs | 57.38KB |
 | 264 | cuban-primes |   |  |  |
 | 265 | cullen-and-woodall-numbers |   |  |  |
 | 266 | cumulative-standard-deviation |   |  |  |
@@ -337,5 +337,14 @@ Checklist:
 | 328 | earliest-difference-between-prime-gaps |   |  |  |
 | 329 | eban-numbers |   |  |  |
 | 330 | echo-server |   |  |  |
-| 331 | ekg-sequence-convergence |   |  |  |
-| 332 | md5 |   |  |  |
+| 331 | eertree |   |  |  |
+| 332 | egyptian-division |   |  |  |
+| 333 | ekg-sequence-convergence |   |  |  |
+| 334 | element-wise-operations |   |  |  |
+| 335 | elementary-cellular-automaton-infinite-length |   |  |  |
+| 336 | elementary-cellular-automaton-random-number-generator |   |  |  |
+| 337 | elementary-cellular-automaton |   |  |  |
+| 338 | elliptic-curve-arithmetic |   |  |  |
+| 339 | emirp-primes |   |  |  |
+| 340 | empty-directory |   |  |  |
+| 341 | md5 |   |  |  |
