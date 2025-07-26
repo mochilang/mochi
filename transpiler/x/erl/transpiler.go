@@ -1148,6 +1148,15 @@ func isFloatExpr(e Expr, env *types.Env, ctx *context) bool {
 			return true
 		}
 		return false
+	case *IndexExpr:
+		if env != nil {
+			if t := exprType(v, env, ctx); t != nil {
+				if _, ok := t.(types.FloatType); ok {
+					return true
+				}
+			}
+		}
+		return false
 	case *NameRef:
 		if ctx != nil {
 			name := ctx.original(v.Name)
@@ -3709,8 +3718,16 @@ func convertFunStmt(fn *parser.FunStmt, env *types.Env, ctx *context) (*FuncDecl
 			} else if p.Type.Simple != nil && *p.Type.Simple == "float" {
 				fctx.setFloatVar(p.Name, true)
 			}
-			if p.Type.Generic != nil && p.Type.Generic.Name == "map" {
-				fctx.setMapVar(p.Name, true)
+			if p.Type.Generic != nil {
+				if p.Type.Generic.Name == "map" {
+					fctx.setMapVar(p.Name, true)
+				} else if p.Type.Generic.Name == "list" {
+					if len(p.Type.Generic.Args) > 0 {
+						if p.Type.Generic.Args[0].Simple != nil && *p.Type.Generic.Args[0].Simple == "string" {
+							fctx.setListStrVar(p.Name, true)
+						}
+					}
+				}
 			}
 			if p.Type.Simple != nil {
 				if st, ok := env.GetStruct(*p.Type.Simple); ok {
@@ -4000,7 +4017,7 @@ func convertBinary(b *parser.BinaryExpr, env *types.Env, ctx *context) (Expr, er
 				l := exprs[i]
 				r := exprs[i+1]
 				op := ops[i]
-				if op == "/" && !(isFloatType(typesList[i]) || isFloatType(typesList[i+1]) || isFloatExpr(l, env, ctx) || isFloatExpr(r, env, ctx)) {
+				if op == "/" && isIntExpr(l, env, ctx) && isIntExpr(r, env, ctx) {
 					op = "div"
 					typesList[i] = types.IntType{}
 				} else if op == "%" {
@@ -4263,8 +4280,6 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env, ctx *context) (Expr,
 				kind = "map"
 				if fieldIsString(expr, idx, env, ctx) {
 					isStr = true
-				} else if _, ok := idx.(*StringLit); !ok {
-					kind = "list"
 				}
 			} else if isStringExpr(expr) {
 				kind = "string"

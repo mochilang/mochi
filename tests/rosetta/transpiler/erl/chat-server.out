@@ -1,0 +1,16 @@
+/workspace/mochi/tests/rosetta/transpiler/erl/chat-server.erl:58:43: Warning: a term is constructed, but never used
+%   58|         Clients_2 = lists:append(Clients, [Name_2]),
+%     |                                           ^
+
+"+++ \"Alice\" connected +++\n"
+"+++ \"Bob\" connected +++\n"
+"Alice> Hello Bob!\n"
+"Bob> Hi Alice!\n"
+"--- \"Bob\" disconnected ---\n"
+"--- \"Alice\" disconnected ---\n"
+"Server stopping!\n"
+{
+  "duration_us": 26853,
+  "memory_bytes": 375448,
+  "name": "main"
+}
