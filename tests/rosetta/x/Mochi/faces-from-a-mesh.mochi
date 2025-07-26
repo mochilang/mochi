@@ -146,25 +146,16 @@ fun listStr(xs: list<int>): string {
   return s
 }
 
-print("Perimeter format equality checks:")
-print("  Q == R is " + str(perimEqual([8,1,3], [1,3,8])))
-print("  U == V is " + str(perimEqual([18,8,14,10,12,17,19], [8,14,10,12,17,19,18])))
+let q_equals_r = perimEqual([8,1,3], [1,3,8])
+let u_equals_v = perimEqual([18,8,14,10,12,17,19], [8,14,10,12,17,19,18])
 
 let e = [Edge{a:7,b:11}, Edge{a:1,b:11}, Edge{a:1,b:7}]
 let f = [Edge{a:11,b:23}, Edge{a:1,b:17}, Edge{a:17,b:23}, Edge{a:1,b:11}]
 let g = [Edge{a:8,b:14}, Edge{a:17,b:19}, Edge{a:10,b:12}, Edge{a:10,b:14}, Edge{a:12,b:17}, Edge{a:8,b:18}, Edge{a:18,b:19}]
 let h = [Edge{a:1,b:3}, Edge{a:9,b:11}, Edge{a:3,b:11}, Edge{a:1,b:11}]
 
-print("\nEdge to perimeter format translations:")
-var faces = [e, f, g, h]
-var names = ["E", "F", "G", "H"]
-var idx2 = 0
-while idx2 < len(faces) {
-  let per = faceToPerim(faces[idx2])
-  if per == nil {
-    print("  " + names[idx2] + " => Invalid edge format")
-  } else {
-    print("  " + names[idx2] + " => " + listStr(per as list<int>))
-  }
-  idx2 = idx2 + 1
-}
+let perim_e = faceToPerim(e)
+let perim_f = faceToPerim(f)
+let perim_g = faceToPerim(g)
+let perim_h = faceToPerim(h)
+let perims = [perim_e, perim_f, perim_g, perim_h]
