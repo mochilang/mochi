@@ -2373,7 +2373,34 @@ func (sli *SliceExpr) emit(w io.Writer) {
 
 type StringLit struct{ Value string }
 
-func (s *StringLit) emit(w io.Writer) { fmt.Fprintf(w, "%q", s.Value) }
+func javaQuote(s string) string {
+	var b strings.Builder
+	for _, r := range s {
+		switch r {
+		case '\n':
+			b.WriteString("\n")
+		case '\r':
+			b.WriteString("\r")
+		case '\t':
+			b.WriteString("\t")
+		case '\\':
+			b.WriteString("\\\\")
+		case '"':
+			b.WriteString("\\\"")
+		default:
+			if r < 32 || r == 0x7f {
+				fmt.Fprintf(&b, "\\u%04x", r)
+			} else {
+				b.WriteRune(r)
+			}
+		}
+	}
+	return b.String()
+}
+
+func (s *StringLit) emit(w io.Writer) {
+	fmt.Fprintf(w, "\"%s\"", javaQuote(s.Value))
+}
 
 func isStringExpr(e Expr) bool {
 	switch ex := e.(type) {
@@ -2419,7 +2446,8 @@ func isStringExpr(e Expr) bool {
 		if ex.ResultType != "" {
 			return ex.ResultType == "string" || ex.ResultType == "String"
 		}
-		if isStringExpr(ex.Target) || arrayElemType(ex.Target) == "string" {
+		elemT := arrayElemType(ex.Target)
+		if isStringExpr(ex.Target) || elemT == "string" || elemT == "String" {
 			return true
 		}
 	case *SliceExpr:
