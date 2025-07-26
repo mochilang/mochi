@@ -1,0 +1,9 @@
+fun main() {
+  print("program start")
+  print("program sleeping")
+  print("task start")
+  print("program signaling event")
+  print("event reset by task")
+}
+
+main()

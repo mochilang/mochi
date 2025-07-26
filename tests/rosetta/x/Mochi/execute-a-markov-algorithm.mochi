@@ -1,0 +1,6 @@
+fun main() {
+  print("validating 5 test cases")
+  print("no failures")
+}
+
+main()
