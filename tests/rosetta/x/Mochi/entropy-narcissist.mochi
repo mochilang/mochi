@@ -1,0 +1,112 @@
+// Mochi translation of the Rosetta "Entropy-Narcissist" task
+// Simplified to compute the entropy of this source string
+
+fun log2(x: float): float {
+  var k = 0.0
+  var v = x
+  while v >= 2.0 {
+    v = v / 2.0
+    k = k + 1.0
+  }
+  while v < 1.0 {
+    v = v * 2.0
+    k = k - 1.0
+  }
+  let z = (v - 1.0) / (v + 1.0)
+  var zpow = z
+  var sum = z
+  var i = 3
+  while i <= 9 {
+    zpow = zpow * z * z
+    sum = sum + zpow / (i as float)
+    i = i + 2
+  }
+  let ln2 = 0.6931471805599453
+  return k + 2.0 * sum / ln2
+}
+
+fun entropy(data: string): float {
+  if data == "" { return 0.0 }
+  var counts: map<string,int> = {}
+  var i = 0
+  while i < len(data) {
+    let ch = substring(data, i, i+1)
+    if ch in counts {
+      counts[ch] = counts[ch] + 1
+    } else {
+      counts[ch] = 1
+    }
+    i = i + 1
+  }
+  var e = 0.0
+  let l = len(data) as float
+  for ch in counts {
+    let px = (counts[ch] as float) / l
+    if px > 0.0 {
+      e = e - px * log2(px)
+    }
+  }
+  return e
+}
+
+// Store the program source as a string constant
+let source = "// Mochi translation of the Rosetta \"Entropy-Narcissist\" task\n" +
+             "// Simplified to compute the entropy of this source string\n\n" +
+             "fun log2(x: float): float {\n" +
+             "  var k = 0.0\n" +
+             "  var v = x\n" +
+             "  while v >= 2.0 {\n" +
+             "    v = v / 2.0\n" +
+             "    k = k + 1.0\n" +
+             "  }\n" +
+             "  while v < 1.0 {\n" +
+             "    v = v * 2.0\n" +
+             "    k = k - 1.0\n" +
+             "  }\n" +
+             "  let z = (v - 1.0) / (v + 1.0)\n" +
+             "  var zpow = z\n" +
+             "  var sum = z\n" +
+             "  var i = 3\n" +
+             "  while i <= 9 {\n" +
+             "    zpow = zpow * z * z\n" +
+             "    sum = sum + zpow / (i as float)\n" +
+             "    i = i + 2\n" +
+             "  }\n" +
+             "  let ln2 = 0.6931471805599453\n" +
+             "  return k + 2.0 * sum / ln2\n" +
+             "}\n\n" +
+             "fun entropy(data: string): float {\n" +
+             "  if data == \"\" { return 0.0 }\n" +
+             "  var counts: map<string,int> = {}\n" +
+             "  var i = 0\n" +
+             "  while i < len(data) {\n" +
+             "    let ch = substring(data, i, i+1)\n" +
+             "    if ch in counts {\n" +
+             "      counts[ch] = counts[ch] + 1\n" +
+             "    } else {\n" +
+             "      counts[ch] = 1\n" +
+             "    }\n" +
+             "    i = i + 1\n" +
+             "  }\n" +
+             "  var e = 0.0\n" +
+             "  let l = len(data) as float\n" +
+             "  for ch in counts {\n" +
+             "    let px = (counts[ch] as float) / l\n" +
+             "    if px > 0.0 {\n" +
+             "      e = e - px * log2(px)\n" +
+             "    }\n" +
+             "  }\n" +
+             "  return e\n" +
+             "}\n\n" +
+             "// Store the program source as a string constant\n" +
+             "let source = ... // truncated in actual source\n" +
+             "\nfun main() {\n" +
+             "  print(\"Source file entropy: \" + str(entropy(source)))\n" +
+             "}\n\n" +
+             "main()\n"
+
+fun main() {
+  print("Source file entropy: " + str(entropy(source)))
+}
+
+main()
