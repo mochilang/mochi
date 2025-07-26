@@ -1080,6 +1080,21 @@ func applyBinOp(op string, left, right Node) Node {
 		inter := &List{Elems: []Node{Symbol("clojure.set/intersection"), &List{Elems: []Node{Symbol("set"), left}}, &List{Elems: []Node{Symbol("set"), right}}}}
 		return &List{Elems: []Node{Symbol("vec"), inter}}
 	default:
+		if sym == "<" || sym == "<=" || sym == ">" || sym == ">=" {
+			if isStringNode(left) || isStringNode(right) {
+				cmp := &List{Elems: []Node{Symbol("compare"), left, right}}
+				switch sym {
+				case "<":
+					return &List{Elems: []Node{Symbol("<"), cmp, IntLit(0)}}
+				case "<=":
+					return &List{Elems: []Node{Symbol("<="), cmp, IntLit(0)}}
+				case ">":
+					return &List{Elems: []Node{Symbol(">"), cmp, IntLit(0)}}
+				case ">=":
+					return &List{Elems: []Node{Symbol(">="), cmp, IntLit(0)}}
+				}
+			}
+		}
 		return &List{Elems: []Node{Symbol(sym), left, right}}
 	}
 }
@@ -1210,6 +1225,13 @@ func isZeroNode(n Node) bool {
 		return v == 0
 	case FloatLit:
 		return v == 0.0
+	}
+	return false
+}
+
+func isTrueNode(n Node) bool {
+	if sym, ok := n.(Symbol); ok {
+		return sym == "true"
 	}
 	return false
 }
@@ -1681,6 +1703,15 @@ func transpileCall(c *parser.CallExpr) (Node, error) {
 			return nil, err
 		}
 		return &List{Elems: []Node{Symbol("clojure.string/lower-case"), arg}}, nil
+	case "upper":
+		if len(c.Args) != 1 {
+			return nil, fmt.Errorf("upper expects 1 arg")
+		}
+		arg, err := transpileExpr(c.Args[0])
+		if err != nil {
+			return nil, err
+		}
+		return &List{Elems: []Node{Symbol("clojure.string/upper-case"), arg}}, nil
 	case "int":
 		if len(c.Args) != 1 {
 			return nil, fmt.Errorf("int expects 1 arg")
@@ -2544,10 +2575,13 @@ func condRecur(n Node) (cond Node, recur Node, ok bool) {
 								if len(rl.Elems) == 3 {
 									if fsym, ok := rl.Elems[0].(Symbol); ok && (fsym == "when" || fsym == "if") {
 										if c2, r2, ok2 := condRecur(rl); ok2 {
-											cond := &List{Elems: []Node{Symbol("and"), l.Elems[1], c2}}
 											pre := append([]Node{}, r.Elems[1:len(r.Elems)-1]...)
-											body := &List{Elems: append([]Node{Symbol("do")}, append(pre, r2)...)}
-											return cond, body, true
+											inner := r2
+											if !isTrueNode(c2) {
+												inner = &List{Elems: []Node{Symbol("when"), c2, r2}}
+											}
+											body := &List{Elems: append([]Node{Symbol("do")}, append(pre, inner)...)}
+											return l.Elems[1], body, true
 										}
 									}
 								}
