@@ -2,7 +2,7 @@
 
 This directory contains Dart code generated from Mochi programs in `tests/rosetta/x/Mochi`. Each program has a `.dart` file and `.out` output. Compilation or runtime failures are captured in a `.error` file.
 
-Compiled and ran: 142/284
+Compiled and ran: 146/284
 
 ## Checklist
 | Index | Name | Status | Duration | Memory |
@@ -86,7 +86,7 @@ Compiled and ran: 142/284
 | 77 | ascending-primes | ✓ |  |  |
 | 78 | ascii-art-diagram-converter | ✓ |  |  |
 | 79 | assertions | ✓ |  |  |
-| 80 | associative-array-creation |   |  |  |
+| 80 | associative-array-creation | ✓ |  |  |
 | 81 | associative-array-iteration | ✓ |  |  |
 | 82 | associative-array-merging | ✓ |  |  |
 | 83 | atomic-updates | ✓ |  |  |
@@ -97,7 +97,7 @@ Compiled and ran: 142/284
 | 88 | averages-median-1 | ✓ | 6.154ms | 12.5 MB |
 | 89 | averages-median-2 | ✓ | 6.537ms | 11.8 MB |
 | 90 | averages-median-3 | ✓ | 7.315ms | 504.0 KB |
-| 91 | averages-mode |   |  |  |
+| 91 | averages-mode | ✓ |  |  |
 | 92 | averages-pythagorean-means | ✓ |  |  |
 | 93 | averages-root-mean-square | ✓ | 6.155ms | 12.2 MB |
 | 94 | averages-simple-moving-average | ✓ |  |  |
@@ -153,8 +153,8 @@ Compiled and ran: 142/284
 | 144 | calculating-the-value-of-e | ✓ |  |  |
 | 145 | calendar---for-real-programmers-1 | ✓ |  |  |
 | 146 | calendar---for-real-programmers-2 | ✓ |  |  |
-| 147 | calendar |   |  |  |
-| 148 | calkin-wilf-sequence |   |  |  |
+| 147 | calendar | ✓ | 14.477ms | 4.1 MB |
+| 148 | calkin-wilf-sequence | ✓ |  |  |
 | 149 | call-a-foreign-language-function |   |  |  |
 | 150 | call-a-function-1 |   |  |  |
 | 151 | call-a-function-10 |   |  |  |
@@ -292,4 +292,4 @@ Compiled and ran: 142/284
 | 283 | define-a-primitive-data-type |   |  |  |
 | 284 | md5 |   |  |  |
 
-_Last updated: 2025-07-26 04:53 +0700_
+_Last updated: 2025-07-26 05:29 +0700_

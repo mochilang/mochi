@@ -64,6 +64,8 @@ var (
 	useBigRat        bool
 	useSHA256        bool
 	useSubstrClamp   bool
+	useRepeat        bool
+	useParseIntStr   bool
 	imports          []string
 	testpkgAliases   map[string]struct{}
 	netAliases       map[string]struct{}
@@ -516,11 +518,11 @@ func (s *LetStmt) emit(w io.Writer) error {
 	nextStructHint = ""
 	localVarTypes[s.Name] = typ
 	if typ == "dynamic" {
-		if _, err := io.WriteString(w, "final "+s.Name+" = "); err != nil {
+		if _, err := io.WriteString(w, "var "+s.Name+" = "); err != nil {
 			return err
 		}
 	} else {
-		if _, err := io.WriteString(w, "final "+typ+" "+s.Name+" = "); err != nil {
+		if _, err := io.WriteString(w, typ+" "+s.Name+" = "); err != nil {
 			return err
 		}
 	}
@@ -3323,6 +3325,16 @@ func Emit(w io.Writer, p *Program) error {
 	if _, err := io.WriteString(w, "String _substr(String s, int start, int end) {\n  var n = s.length;\n  if (start < 0) start += n;\n  if (end < 0) end += n;\n  if (start < 0) start = 0;\n  if (start > n) start = n;\n  if (end < 0) end = 0;\n  if (end > n) end = n;\n  if (start > end) start = end;\n  return s.substring(start, end);\n}\n\n"); err != nil {
 		return err
 	}
+	if useRepeat {
+		if _, err := io.WriteString(w, "String _repeat(String s, int n) => List.filled(n, s).join();\n\n"); err != nil {
+			return err
+		}
+	}
+	if useParseIntStr {
+		if _, err := io.WriteString(w, "int _parseIntStr(String s, int r) => int.parse(s, radix: r);\n\n"); err != nil {
+			return err
+		}
+	}
 	if useBigRat {
 		if _, err := io.WriteString(w, "class BigRat {\n  BigInt num;\n  BigInt den;\n  BigRat(this.num, [BigInt? d]) : den = d ?? BigInt.one {\n    if (den.isNegative) { num = -num; den = -den; }\n    var g = num.gcd(den);\n    num = num ~/ g;\n    den = den ~/ g;\n  }\n  BigRat add(BigRat o) => BigRat(num * o.den + o.num * den, den * o.den);\n  BigRat sub(BigRat o) => BigRat(num * o.den - o.num * den, den * o.den);\n  BigRat mul(BigRat o) => BigRat(num * o.num, den * o.den);\n  BigRat div(BigRat o) => BigRat(num * o.den, den * o.num);\n}\n\nBigRat _bigrat(dynamic n, [dynamic d]) {\n  if (n is BigRat && d == null) return BigRat(n.num, n.den);\n  BigInt numer;\n  BigInt denom = d == null ? BigInt.one : (d is BigInt ? d : BigInt.from((d as num).toInt()));\n  if (n is BigRat) { numer = n.num; denom = n.den; }\n  else if (n is BigInt) { numer = n; }\n  else if (n is int) { numer = BigInt.from(n); }\n  else if (n is num) { numer = BigInt.from(n.toInt()); }\n  else { numer = BigInt.zero; }\n  return BigRat(numer, denom);\n}\nBigInt _num(BigRat r) => r.num;\nBigInt _denom(BigRat r) => r.den;\nBigRat _add(BigRat a, BigRat b) => a.add(b);\nBigRat _sub(BigRat a, BigRat b) => a.sub(b);\nBigRat _mul(BigRat a, BigRat b) => a.mul(b);\nBigRat _div(BigRat a, BigRat b) => a.div(b);\n\n"); err != nil {
 			return err
@@ -3485,6 +3497,8 @@ func Transpile(prog *parser.Program, env *types.Env, bench, wrapMain bool) (*Pro
 	useBigRat = false
 	useSHA256 = false
 	useSubstrClamp = false
+	useRepeat = false
+	useParseIntStr = false
 	imports = nil
 	testpkgAliases = map[string]struct{}{}
 	netAliases = map[string]struct{}{}
@@ -3764,8 +3778,20 @@ func convertStmtInternal(st *parser.Statement) (Stmt, error) {
 		} else {
 			return nil, fmt.Errorf("let missing value not supported")
 		}
+		name := sanitize(st.Let.Name)
 		typ := typeRefString(st.Let.Type)
-		return &LetStmt{Name: sanitize(st.Let.Name), Type: typ, Value: e}, nil
+		if typ == "" && currentEnv != nil {
+			if t, err := currentEnv.GetVar(st.Let.Name); err == nil {
+				typ = dartType(t)
+			}
+		}
+		if typ == "" && e != nil {
+			typ = inferType(e)
+		}
+		if typ != "" {
+			localVarTypes[name] = typ
+		}
+		return &LetStmt{Name: name, Type: typ, Value: e}, nil
 	case st.Var != nil:
 		var e Expr
 		if st.Var.Value != nil {
@@ -3777,8 +3803,20 @@ func convertStmtInternal(st *parser.Statement) (Stmt, error) {
 		} else if st.Var.Type != nil && st.Var.Type.Simple != nil && *st.Var.Type.Simple == "int" {
 			e = &IntLit{Value: 0}
 		}
+		name := sanitize(st.Var.Name)
 		typ := typeRefString(st.Var.Type)
-		return &VarStmt{Name: sanitize(st.Var.Name), Type: typ, Value: e}, nil
+		if typ == "" && currentEnv != nil {
+			if t, err := currentEnv.GetVar(st.Var.Name); err == nil {
+				typ = dartType(t)
+			}
+		}
+		if typ == "" && e != nil {
+			typ = inferType(e)
+		}
+		if typ != "" {
+			localVarTypes[name] = typ
+		}
+		return &VarStmt{Name: name, Type: typ, Value: e}, nil
 	case st.Assign != nil:
 		target, err := convertAssignTarget(st.Assign)
 		if err != nil {
@@ -3804,20 +3842,42 @@ func convertStmtInternal(st *parser.Statement) (Stmt, error) {
 	case st.Continue != nil:
 		return &ContinueStmt{}, nil
 	case st.Fun != nil:
-		body, err := convertStmtList(st.Fun.Body)
-		if err != nil {
-			return nil, err
-		}
 		var params []string
 		paramTypes := make(map[string]string)
+		savedLocals := map[string]string{}
 		for _, p := range st.Fun.Params {
 			typ := typeRefString(p.Type)
 			name := sanitize(p.Name)
+			if typ == "" && currentEnv != nil {
+				if t, err := currentEnv.GetVar(p.Name); err == nil {
+					typ = dartType(t)
+				}
+			}
 			if typ != "" {
-				params = append(params, fmt.Sprintf("%s %s", typ, name))
 				paramTypes[name] = typ
+				savedLocals[name] = localVarTypes[name]
+				localVarTypes[name] = typ
+				params = append(params, fmt.Sprintf("%s %s", typ, name))
 			} else {
 				params = append(params, name)
+			}
+		}
+		body, err := convertStmtList(st.Fun.Body)
+		if err != nil {
+			for n, v := range savedLocals {
+				if v != "" {
+					localVarTypes[n] = v
+				} else {
+					delete(localVarTypes, n)
+				}
+			}
+			return nil, err
+		}
+		for n, v := range savedLocals {
+			if v != "" {
+				localVarTypes[n] = v
+			} else {
+				delete(localVarTypes, n)
 			}
 		}
 		fd := &FuncDecl{Name: sanitize(st.Fun.Name), Params: params, ParamTypes: paramTypes, Body: body}
@@ -4085,7 +4145,8 @@ func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
 					if len(args) != 2 {
 						return nil, fmt.Errorf("padStart expects 2 args")
 					}
-					expr = &CallExpr{Func: &SelectorExpr{Receiver: expr, Field: "padLeft"}, Args: args}
+					toStr := &CallExpr{Func: &SelectorExpr{Receiver: expr, Field: "toString"}}
+					expr = &CallExpr{Func: &SelectorExpr{Receiver: toStr, Field: "padLeft"}, Args: args}
 				} else {
 					expr = &CallExpr{Func: &SelectorExpr{Receiver: expr, Field: op.Field.Name}, Args: args}
 				}
@@ -4220,10 +4281,18 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			}
 			return &CallExpr{Func: &SelectorExpr{Receiver: &Name{Name: "int"}, Field: "parse"}, Args: []Expr{v}}, nil
 		}
-		if p.Call.Func == "parseIntStr" && len(p.Call.Args) == 1 {
+		if p.Call.Func == "parseIntStr" && (len(p.Call.Args) == 1 || len(p.Call.Args) == 2) {
 			arg, err := convertExpr(p.Call.Args[0])
 			if err != nil {
 				return nil, err
+			}
+			if len(p.Call.Args) == 2 {
+				base, err := convertExpr(p.Call.Args[1])
+				if err != nil {
+					return nil, err
+				}
+				useParseIntStr = true
+				return &CallExpr{Func: &Name{Name: "_parseIntStr"}, Args: []Expr{arg, base}}, nil
 			}
 			return &CallExpr{Func: &SelectorExpr{Receiver: &Name{Name: "int"}, Field: "parse"}, Args: []Expr{arg}}, nil
 		}
@@ -4265,6 +4334,23 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				return convertExistsQuery(q)
 			}
 		}
+		if p.Call.Func == "bigrat" && (len(p.Call.Args) == 1 || len(p.Call.Args) == 2) {
+			a0, err := convertExpr(p.Call.Args[0])
+			if err != nil {
+				return nil, err
+			}
+			var a1 Expr
+			if len(p.Call.Args) == 2 {
+				a1, err = convertExpr(p.Call.Args[1])
+				if err != nil {
+					return nil, err
+				}
+			} else {
+				a1 = &IntLit{Value: 1}
+			}
+			useBigRat = true
+			return &CallExpr{Func: &Name{Name: "_bigrat"}, Args: []Expr{a0, a1}}, nil
+		}
 		if (p.Call.Func == "substring" || p.Call.Func == "substr") && len(p.Call.Args) == 3 {
 			s0, err := convertExpr(p.Call.Args[0])
 			if err != nil {
@@ -4295,6 +4381,18 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				return nil, err
 			}
 			return &CallExpr{Func: &SelectorExpr{Receiver: s0, Field: "padLeft"}, Args: []Expr{s1, s2}}, nil
+		}
+		if p.Call.Func == "repeat" && len(p.Call.Args) == 2 {
+			s0, err := convertExpr(p.Call.Args[0])
+			if err != nil {
+				return nil, err
+			}
+			s1, err := convertExpr(p.Call.Args[1])
+			if err != nil {
+				return nil, err
+			}
+			useRepeat = true
+			return &CallExpr{Func: &Name{Name: "_repeat"}, Args: []Expr{s0, s1}}, nil
 		}
 		if p.Call.Func == "pow" && len(p.Call.Args) == 2 {
 			x, err := convertExpr(p.Call.Args[0])
