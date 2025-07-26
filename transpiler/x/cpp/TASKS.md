@@ -1,3 +1,98 @@
+## Progress (2025-07-26 05:21 +0700)
+- cpp rosetta: add ascii art converter
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 05:21 +0700)
+- cpp rosetta: add ascii art converter
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 05:21 +0700)
+- cpp rosetta: add ascending primes
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 05:21 +0700)
+- cpp rosetta: add ascending primes
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 05:20 +0700)
+- cpp rosetta: handle slice at global scope
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 05:20 +0700)
+- cpp rosetta: handle slice at global scope
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 05:19 +0700)
+- cpp rosetta: add array length
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 05:19 +0700)
+- cpp rosetta: add array length
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 05:19 +0700)
+- cpp rosetta: add array length
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 05:19 +0700)
+- cpp rosetta: add array concatenation
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 05:19 +0700)
+- cpp rosetta: add array concatenation
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 05:17 +0700)
+- cpp transpiler: include <any> and add index 73
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 05:17 +0700)
+- cpp transpiler: include <any> and add index 73
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 05:17 +0700)
+- cpp transpiler: include <any> and add index 73
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 05:05 +0700)
+- dart rosetta: add next batch
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 05:05 +0700)
+- dart rosetta: add next batch
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 05:05 +0700)
+- dart rosetta: add next batch
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 05:05 +0700)
+- dart rosetta: add next batch
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 05:05 +0700)
+- dart rosetta: add next batch
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
 ## Progress (2025-07-25 21:15 +0700)
 - scheme transpiler: avoid list name clash
 - Generated C++ for 103/104 programs

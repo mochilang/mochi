@@ -522,7 +522,9 @@ func (p *Program) write(w io.Writer) {
 	p.addInclude("<iomanip>")
 	p.addInclude("<cmath>")
 	p.addInclude("<optional>")
-	p.addInclude("<vector>")
+        p.addInclude("<vector>")
+        // always include <any> because generic helpers use std::any
+        p.addInclude("<any>")
 	if p.UseNow {
 		p.addInclude("<cstdlib>")
 		p.addInclude("<chrono>")
@@ -1174,7 +1176,11 @@ func (i *IndexExpr) emit(w io.Writer) {
 }
 
 func (s *SliceExpr) emit(w io.Writer) {
-	io.WriteString(w, "([&](const auto& __v){ if constexpr(std::is_same_v<std::decay_t<decltype(__v)>, std::string>) return __v.substr(")
+        cap := "[]"
+        if inFunction || inLambda > 0 {
+                cap = "[&]"
+        }
+        io.WriteString(w, "("+cap+"(const auto& __v){ if constexpr(std::is_same_v<std::decay_t<decltype(__v)>, std::string>) return __v.substr(")
 	s.Start.emit(w)
 	io.WriteString(w, ", ")
 	s.End.emit(w)
