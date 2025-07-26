@@ -1,0 +1,26 @@
+// Mochi translation of Rosetta "Dot-product" task
+// Based on Go version in tests/rosetta/x/Go/dot-product-1.go
+
+type DotResult { value: int, ok: bool }
+
+fun dot(x: list<int>, y: list<int>): DotResult {
+  if len(x) != len(y) { return DotResult{ value: 0, ok: false } }
+  var sum = 0
+  var i = 0
+  while i < len(x) {
+    sum = sum + x[i] * y[i]
+    i = i + 1
+  }
+  return DotResult{ value: sum, ok: true }
+}
+
+fun main() {
+  let r = dot([1, 3, -5], [4, -2, -1])
+  if !r.ok {
+    print("incompatible lengths")
+  } else {
+    print(str(r.value))
+  }
+}
+
+main()
