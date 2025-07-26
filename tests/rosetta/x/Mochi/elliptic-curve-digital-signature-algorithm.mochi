@@ -1,0 +1,15 @@
+// Mochi program demonstrating ECDSA using Go FFI
+// Calls testpkg.ECDSASample which performs key generation,
+// signing and verification using Go's crypto libraries.
+
+import go "mochi/runtime/ffi/go/testpkg" as testpkg auto
+
+let res: map<string, any> = testpkg.ECDSASample()
+print("Private key:\nD:", res["D"])
+print("\nPublic key:")
+print("X:", res["X"])
+print("Y:", res["Y"])
+print("\nSignature:")
+print("R:", res["R"])
+print("S:", res["S"])
+print("\nSignature verified:", res["Valid"])
