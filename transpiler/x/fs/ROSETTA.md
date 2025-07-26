@@ -2,7 +2,7 @@
 
 This file is auto-generated from rosetta tests.
 
-## Rosetta Golden Test Checklist (131/284)
+## Rosetta Golden Test Checklist (133/310)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 151µs | 41.3 KB |
@@ -129,16 +129,16 @@ This file is auto-generated from rosetta tests.
 | 122 | bitmap-midpoint-circle-algorithm | ✓ | 861µs | 70.0 KB |
 | 123 | bitmap-ppm-conversion-through-a-pipe | ✓ | 1.385ms | 1.4 MB |
 | 124 | bitmap-read-a-ppm-file | ✓ | 356µs | 47.0 KB |
-| 125 | bitmap-read-an-image-through-a-pipe |   |  |  |
-| 126 | bitmap-write-a-ppm-file | ✓ |  |  |
+| 125 | bitmap-read-an-image-through-a-pipe | ✓ | 517µs | 54.1 KB |
+| 126 | bitmap-write-a-ppm-file | ✓ | 361µs | 55.8 KB |
 | 127 | bitmap |   |  |  |
-| 128 | bitwise-io-1 | ✓ |  |  |
+| 128 | bitwise-io-1 | ✓ | 706µs | 76.2 KB |
 | 129 | bitwise-io-2 |   |  |  |
-| 130 | bitwise-operations |   |  |  |
-| 131 | blum-integer | ✓ |  |  |
+| 130 | bitwise-operations | ✓ | 359µs | 51.1 KB |
+| 131 | blum-integer | ✓ | 343µs | 57.0 KB |
 | 132 | boolean-values |   |  |  |
-| 133 | box-the-compass | ✓ |  |  |
-| 134 | boyer-moore-string-search | ✓ |  |  |
+| 133 | box-the-compass | ✓ | 397µs | 43.0 KB |
+| 134 | boyer-moore-string-search | ✓ | 328µs | 49.7 KB |
 | 135 | brazilian-numbers | ✓ |  |  |
 | 136 | break-oo-privacy | ✓ |  |  |
 | 137 | brilliant-numbers |   |  |  |
@@ -288,6 +288,32 @@ This file is auto-generated from rosetta tests.
 | 281 | deconvolution-1d |   |  |  |
 | 282 | deepcopy-1 |   |  |  |
 | 283 | define-a-primitive-data-type |   |  |  |
-| 284 | md5 |   |  |  |
+| 284 | delegates |   |  |  |
+| 285 | demings-funnel |   |  |  |
+| 286 | department-numbers |   |  |  |
+| 287 | descending-primes |   |  |  |
+| 288 | detect-division-by-zero |   |  |  |
+| 289 | determine-if-a-string-has-all-the-same-characters |   |  |  |
+| 290 | determine-if-a-string-has-all-unique-characters |   |  |  |
+| 291 | determine-if-a-string-is-collapsible |   |  |  |
+| 292 | determine-if-a-string-is-numeric-1 |   |  |  |
+| 293 | determine-if-a-string-is-numeric-2 |   |  |  |
+| 294 | determine-if-a-string-is-squeezable |   |  |  |
+| 295 | determine-if-only-one-instance-is-running |   |  |  |
+| 296 | determine-if-two-triangles-overlap |   |  |  |
+| 297 | determine-sentence-type |   |  |  |
+| 298 | dice-game-probabilities-1 |   |  |  |
+| 299 | dice-game-probabilities-2 |   |  |  |
+| 300 | digital-root-multiplicative-digital-root |   |  |  |
+| 301 | dijkstras-algorithm |   |  |  |
+| 302 | dinesmans-multiple-dwelling-problem |   |  |  |
+| 303 | dining-philosophers-1 |   |  |  |
+| 304 | dining-philosophers-2 |   |  |  |
+| 305 | disarium-numbers |   |  |  |
+| 306 | discordian-date |   |  |  |
+| 307 | display-a-linear-combination |   |  |  |
+| 308 | display-an-outline-as-a-nested-table |   |  |  |
+| 309 | documentation |   |  |  |
+| 310 | md5 |   |  |  |
 
-Last updated: 2025-07-26 10:43 +0700
+Last updated: 2025-07-26 12:01 +0700
