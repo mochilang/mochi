@@ -2,8 +2,8 @@
 
 Generated Scala code for Rosetta tasks in `tests/rosetta/x/Mochi`. Each program has a `.scala` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
 
-## Golden Test Checklist (134/284)
-_Last updated: 2025-07-26 05:17 +0700_
+## Golden Test Checklist (136/284)
+_Last updated: 2025-07-26 09:36 +0700_
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -123,8 +123,8 @@ _Last updated: 2025-07-26 05:17 +0700_
 | 114 | bioinformatics-sequence-mutation | ✓ | 21µs | 8.7 MB |
 | 115 | biorhythms | ✓ | 11µs | 8.7 MB |
 | 116 | bitcoin-address-validation | ✓ | 25µs | 8.9 MB |
-| 117 | bitmap-b-zier-curves-cubic | error |  |  |
-| 118 | bitmap-b-zier-curves-quadratic | error |  |  |
+| 117 | bitmap-b-zier-curves-cubic | ✓ | 304µs | 390.2 KB |
+| 118 | bitmap-b-zier-curves-quadratic | ✓ | 293µs | 374.5 KB |
 | 119 | bitmap-bresenhams-line-algorithm | ✓ | 7µs | 8.7 MB |
 | 120 | bitmap-flood-fill | ✓ | 4µs | 8.7 MB |
 | 121 | bitmap-histogram | ✓ | 5µs | 8.7 MB |

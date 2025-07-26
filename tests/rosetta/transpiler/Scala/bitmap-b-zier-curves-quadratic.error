@@ -1,8 +1,0 @@
-exit status 1
-/workspace/mochi/tests/rosetta/transpiler/Scala/bitmap-b-zier-curves-quadratic.scala:35: error: Any does not take parameters
-      b("data")(y)(x) = p
-               ^
-/workspace/mochi/tests/rosetta/transpiler/Scala/bitmap-b-zier-curves-quadratic.scala:46: error: Any does not take parameters
-        b("data")(y)(x) = p
-                 ^
-two errors found

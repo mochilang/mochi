@@ -809,8 +809,12 @@ type IntLit struct {
 }
 
 func (i *IntLit) emit(w io.Writer) {
-	needsBigInt = true
-	fmt.Fprintf(w, "BigInt(%d)", i.Value)
+	if i.Long || i.Value > math.MaxInt32 || i.Value < math.MinInt32 {
+		needsBigInt = true
+		fmt.Fprintf(w, "BigInt(%d)", i.Value)
+	} else {
+		fmt.Fprintf(w, "%d", i.Value)
+	}
 }
 
 type BoolLit struct{ Value bool }
@@ -930,13 +934,11 @@ func (idx *IndexExpr) emit(w io.Writer) {
 			t = "Any"
 		}
 		fmt.Fprintf(w, "null.asInstanceOf[%s])", t)
+		if t != "Any" {
+			fmt.Fprintf(w, ".asInstanceOf[%s]", t)
+		}
 	} else if idx.Container == "Any" {
-		if (idx.ForceMap) || (func() bool {
-			if prev, ok := idx.Value.(*IndexExpr); ok {
-				return strings.HasPrefix(prev.Container, "Map[")
-			}
-			return false
-		}()) {
+		if idx.ForceMap {
 			idx.Value.emit(w)
 			if idx.Type != "" {
 				fmt.Fprintf(w, ".asInstanceOf[Map[String,%s]](", idx.Type)
@@ -999,11 +1001,22 @@ type CastExpr struct {
 }
 
 func (c *CastExpr) emit(w io.Writer) {
-	if c.Type == "bigint" || c.Type == "int" {
+	if c.Type == "bigint" {
 		needsBigInt = true
 		fmt.Fprint(w, "BigInt(")
 		c.Value.emit(w)
 		fmt.Fprint(w, ")")
+		return
+	}
+	if c.Type == "int" {
+		if inferTypeWithEnv(c.Value, nil) == "Double" {
+			fmt.Fprint(w, "Math.round(")
+			c.Value.emit(w)
+			fmt.Fprint(w, ").toInt")
+		} else {
+			c.Value.emit(w)
+			fmt.Fprint(w, ".toString.toInt")
+		}
 		return
 	}
 	switch c.Value.(type) {
@@ -1986,6 +1999,15 @@ func applyIndexOps(base Expr, ops []*parser.IndexOp, env *types.Env) (Expr, erro
 		if ct == "" || ct == "Any" {
 			if iePrev, ok := base.(*IndexExpr); ok {
 				ct = iePrev.Type
+			}
+			idxType := inferTypeWithEnv(idx, env)
+			if ct == "" {
+				if idxType == "String" {
+					ct = "Map[String,Any]"
+					forceMap = true
+				} else {
+					ct = "Any"
+				}
 			} else if _, ok := idx.(*StringLit); ok {
 				forceMap = true
 			}
@@ -3612,8 +3634,7 @@ func toScalaType(t *parser.TypeRef) string {
 		name := strings.ToLower(strings.TrimSpace(*t.Simple))
 		switch name {
 		case "int":
-			needsBigInt = true
-			return "BigInt"
+			return "Int"
 		case "string":
 			return "String"
 		case "bool":
@@ -3676,8 +3697,7 @@ func toScalaType(t *parser.TypeRef) string {
 func toScalaTypeFromType(t types.Type) string {
 	switch tt := t.(type) {
 	case types.IntType, types.Int64Type:
-		needsBigInt = true
-		return "BigInt"
+		return "Int"
 	case types.StringType:
 		return "String"
 	case types.BoolType:
@@ -3722,8 +3742,11 @@ func elementType(container string) string {
 func inferType(e Expr) string {
 	switch ex := e.(type) {
 	case *IntLit:
-		needsBigInt = true
-		return "BigInt"
+		if ex.Long || ex.Value > math.MaxInt32 || ex.Value < math.MinInt32 {
+			needsBigInt = true
+			return "BigInt"
+		}
+		return "Int"
 	case *StringLit:
 		return "String"
 	case *BoolLit:
