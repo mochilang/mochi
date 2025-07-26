@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated TypeScript code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/TypeScript`.
-Last updated: 2025-07-26 12:37 UTC
+Last updated: 2025-07-26 13:32 UTC
 
-## Rosetta Golden Test Checklist (319/332)
+## Rosetta Golden Test Checklist (330/332)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 1.595ms | 512.0 KB |
@@ -327,15 +327,15 @@ Last updated: 2025-07-26 12:37 UTC
 | 318 | doubly-linked-list-element-definition | ✓ | 690µs |  |
 | 319 | doubly-linked-list-traversal | ✓ | 714µs | 128.0 KB |
 | 320 | dragon-curve | ✓ | 1.801ms | 128.0 KB |
-| 321 | draw-a-clock |   |  |  |
-| 322 | draw-a-cuboid |   |  |  |
-| 323 | draw-a-pixel-1 |   |  |  |
-| 324 | draw-a-rotating-cube |   |  |  |
-| 325 | draw-a-sphere |   |  |  |
-| 326 | dutch-national-flag-problem |   |  |  |
-| 327 | dynamic-variable-names |   |  |  |
-| 328 | earliest-difference-between-prime-gaps |   |  |  |
-| 329 | eban-numbers |   |  |  |
-| 330 | echo-server |   |  |  |
-| 331 | ekg-sequence-convergence |   |  |  |
-| 332 | md5 | ✓ | 636µs | 256.0 KB |
+| 321 | draw-a-clock | ✓ | 743µs | 128.0 KB |
+| 322 | draw-a-cuboid | ✓ | 3.326ms | 128.0 KB |
+| 323 | draw-a-pixel-1 | ✓ | 15.11ms | 9.9 MB |
+| 324 | draw-a-rotating-cube | ✓ | 7.667ms | 3.6 MB |
+| 325 | draw-a-sphere | ✓ | 16.525ms | 10.8 MB |
+| 326 | dutch-national-flag-problem | ✓ | 1.073ms | 128.0 KB |
+| 327 | dynamic-variable-names | ✓ | 2.378ms | 512.0 KB |
+| 328 | earliest-difference-between-prime-gaps | ✓ | 3.677ms | 512.0 KB |
+| 329 | eban-numbers | ✓ | 30.75ms | 12.5 MB |
+| 330 | echo-server | ✓ | 639µs | 128.0 KB |
+| 331 | ekg-sequence-convergence | ✓ | 4.206ms | 3.2 MB |
+| 332 | md5 | ✓ | 928µs | 384.0 KB |
