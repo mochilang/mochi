@@ -1,7 +1,7 @@
 # Go Rosetta Transpiler Output
 
-Completed programs: 163/285
-Last updated: 2025-07-26 11:07 +0700
+Completed programs: 170/285
+Last updated: 2025-07-26 11:58 +0700
 
 Checklist:
 
@@ -181,13 +181,13 @@ Checklist:
 | 172 | cartesian-product-of-two-or-more-lists-2 | ✓ | 539.0µs | 10.30KB |
 | 173 | cartesian-product-of-two-or-more-lists-3 | ✓ | 165.0µs | 12.81KB |
 | 174 | cartesian-product-of-two-or-more-lists-4 | ✓ | 134.0µs | 12.91KB |
-| 175 | case-sensitivity-of-identifiers |   |  |  |
-| 176 | casting-out-nines |   |  |  |
-| 177 | catalan-numbers-1 |   |  |  |
-| 178 | catalan-numbers-2 |   |  |  |
-| 179 | catalan-numbers-pascals-triangle |   |  |  |
-| 180 | catamorphism |   |  |  |
-| 181 | catmull-clark-subdivision-surface |   |  |  |
+| 175 | case-sensitivity-of-identifiers | ✓ | 816.0µs | 2.51KB |
+| 176 | casting-out-nines | ✓ | 14.0ms | 2.64MB |
+| 177 | catalan-numbers-1 | ✓ | 293.0µs | 1.27KB |
+| 178 | catalan-numbers-2 | ✓ | 579.0µs | 1.29KB |
+| 179 | catalan-numbers-pascals-triangle | ✓ | 472.0µs | 1.98KB |
+| 180 | catamorphism | ✓ | 773.0µs | 1000B |
+| 181 | catmull-clark-subdivision-surface | ✓ | 1.0ms | 38.61KB |
 | 182 | chaocipher |   |  |  |
 | 183 | chaos-game |   |  |  |
 | 184 | character-codes-1 |   |  |  |

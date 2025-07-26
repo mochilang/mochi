@@ -719,15 +719,19 @@ type ForRangeStmt struct {
 }
 
 func (fr *ForRangeStmt) emit(w io.Writer) {
-	fmt.Fprintf(w, "for %s := ", fr.Name)
+	name := fr.Name
+	if name == "_" {
+		name = "_i"
+	}
+	fmt.Fprintf(w, "for %s := ", name)
 	if fr.Start != nil {
 		fr.Start.emit(w)
 	}
-	fmt.Fprintf(w, "; %s < ", fr.Name)
+	fmt.Fprintf(w, "; %s < ", name)
 	if fr.End != nil {
 		fr.End.emit(w)
 	}
-	fmt.Fprintf(w, "; %s++ {\n", fr.Name)
+	fmt.Fprintf(w, "; %s++ {\n", name)
 	for _, st := range fr.Body {
 		fmt.Fprint(w, "    ")
 		st.emit(w)
@@ -4857,6 +4861,8 @@ func compilePrimary(p *parser.Primary, env *types.Env, base string) (Expr, error
 		if len(p.List.Elems) > 0 {
 			var base types.Type
 			same := true
+			allMap := true
+			allStrKeys := true
 			for i, e := range p.List.Elems {
 				ex, err := compileExpr(e, env, "")
 				if err != nil {
@@ -4864,6 +4870,18 @@ func compilePrimary(p *parser.Primary, env *types.Env, base string) (Expr, error
 				}
 				if ml, ok := ex.(*MapLit); ok {
 					updateMapLitTypes(ml, types.ExprType(e, env))
+				} else {
+					allMap = false
+				}
+				if mlNode := e.Binary.Left.Value.Target.Map; mlNode != nil {
+					for _, it := range mlNode.Items {
+						if _, ok := types.SimpleStringKey(it.Key); !ok {
+							allStrKeys = false
+							break
+						}
+					}
+				} else {
+					allStrKeys = false
 				}
 				elems[i] = ex
 				et := types.ExprType(e, env)
@@ -4876,13 +4894,42 @@ func compilePrimary(p *parser.Primary, env *types.Env, base string) (Expr, error
 				}
 			}
 			if same && base != nil {
-				elemType = toGoTypeFromType(base)
-				if lt, ok := base.(types.ListType); ok {
-					for i, e := range elems {
-						if ll, ok2 := e.(*ListLit); ok2 && ll.ElemType == "any" && len(ll.Elems) == 0 {
-							ll.ElemType = toGoTypeFromType(lt.Elem)
-							elems[i] = ll
+				tname := toGoTypeFromType(base)
+				if tname != "" && tname != "any" {
+					elemType = tname
+					if lt, ok := base.(types.ListType); ok {
+						for i, e := range elems {
+							if ll, ok2 := e.(*ListLit); ok2 && ll.ElemType == "any" && len(ll.Elems) == 0 {
+								ll.ElemType = toGoTypeFromType(lt.Elem)
+								elems[i] = ll
+							}
 						}
+					}
+				} else if allMap && allStrKeys {
+					elemType = "map[string]any"
+					for i, ex := range elems {
+						if ml, ok := ex.(*MapLit); ok {
+							if ml.KeyType == "" || ml.KeyType == "any" {
+								ml.KeyType = "string"
+							}
+							if ml.ValueType == "" {
+								ml.ValueType = "any"
+							}
+							elems[i] = ml
+						}
+					}
+				}
+			} else if allMap && allStrKeys {
+				elemType = "map[string]any"
+				for i, ex := range elems {
+					if ml, ok := ex.(*MapLit); ok {
+						if ml.KeyType == "" || ml.KeyType == "any" {
+							ml.KeyType = "string"
+						}
+						if ml.ValueType == "" {
+							ml.ValueType = "any"
+						}
+						elems[i] = ml
 					}
 				}
 			}
