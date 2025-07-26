@@ -1,53 +1,60 @@
-func main (regs=25)
+func main (regs=26)
   // let n = 10
-  Const        r0, 10
-  Move         r1, r0
+  Const        r5, 10
+  Move         r0, r5
+  SetGlobal    0,0,0,0
   // let repeat = 1000
-  Const        r2, 1000
-  Move         r3, r2
+  Const        r6, 1000
+  Move         r1, r6
+  SetGlobal    1,1,0,0
   // var last = 0
-  Const        r4, 0
-  Move         r5, r4
+  Const        r7, 0
+  Move         r2, r7
+  SetGlobal    2,2,0,0
   // let start = now()
-  Now          r6
-  Move         r7, r6
+  Now          r8
+  Move         r3, r8
+  SetGlobal    3,3,0,0
   // for i in 0..repeat {
-  Const        r4, 0
-  Const        r2, 1000
-  Move         r8, r4
+  Const        r7, 0
+  Const        r6, 1000
+  Move         r9, r7
 L1:
-  LessInt      r9, r8, r2
-  JumpIfFalse  r9, L0
+  LessInt      r10, r9, r6
+  JumpIfFalse  r10, L0
   // last = mul(n)
-  Const        r0, 10
-  Move         r10, r0
-  Call         r11, mul, r10
-  Move         r5, r11
+  Const        r5, 10
+  Move         r11, r5
+  Call         r12, mul, r11
+  Move         r2, r12
+  SetGlobal    2,2,0,0
   // for i in 0..repeat {
-  Const        r12, 1
-  AddInt       r13, r8, r12
-  Move         r8, r13
+  Const        r13, 1
+  AddInt       r14, r9, r13
+  Move         r9, r14
   Jump         L1
 L0:
   // let duration = (now() - start) / 1000
-  Now          r14
-  SubInt       r15, r14, r7
-  Const        r2, 1000
-  DivInt       r16, r15, r2
-  Move         r17, r16
+  Now          r15
+  SubInt       r16, r15, r3
+  Const        r6, 1000
+  DivInt       r17, r16, r6
+  Cast         r18, r17, bigint
+  Move         r4, r18
+  SetGlobal    4,4,0,0
   // "duration_us": duration,
-  Const        r18, "duration_us"
+  Const        r19, "duration_us"
   // "output": last,
-  Const        r19, "output"
+  Const        r20, "output"
   // "duration_us": duration,
-  Move         r20, r18
-  Move         r21, r17
+  Move         r21, r19
+  Move         r22, r4
   // "output": last,
-  Move         r22, r19
-  Move         r23, r5
+  Move         r23, r20
+  Move         r24, r2
   // json({
-  MakeMap      r24, 2, r20
-  JSON         r24
+  MakeMap      r25, 2, r21
+  JSON         r25
   Return       r0
 
   // fun mul(n: int): int {
@@ -59,7 +66,7 @@ func mul (regs=13)
   Const        r6, 1
   Move         r8, r6
 L1:
-  LessInt      r9, r8, r0
+  LessInt      r9, r8, r5
   JumpIfFalse  r9, L0
   // result = result * i
   MulInt       r10, r7, r8
