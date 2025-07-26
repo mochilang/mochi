@@ -1,0 +1,62 @@
+func main (regs=29)
+  // var myValue = Foo{}
+  Const        r2, "__name"
+  Const        r3, "Foo"
+  MakeClosure  r4, Foo.ValueMethod, 0, r0
+  // fun ValueMethod(x: int) {}
+  Const        r5, "ValueMethod"
+  // var myValue = Foo{}
+  MakeClosure  r6, Foo.PointerMethod, 0, r0
+  // fun PointerMethod(x: int) {}
+  Const        r7, "PointerMethod"
+  // var myValue = Foo{}
+  MakeMap      r8, 3, r2
+  Move         r0, r8
+  SetGlobal    0,0,0,0
+  // var myPointer = Foo{}
+  Const        r9, "__name"
+  Const        r10, "Foo"
+  MakeClosure  r11, Foo.ValueMethod, 0, r0
+  // fun ValueMethod(x: int) {}
+  Const        r12, "ValueMethod"
+  // var myPointer = Foo{}
+  MakeClosure  r13, Foo.PointerMethod, 0, r0
+  // fun PointerMethod(x: int) {}
+  Const        r14, "PointerMethod"
+  // var myPointer = Foo{}
+  MakeMap      r15, 3, r9
+  Move         r1, r15
+  SetGlobal    1,1,0,0
+  // myValue.ValueMethod(0)
+  Const        r16, 0
+  Move         r17, r16
+  Call         r18, Foo.ValueMethod, r17
+  // myPointer.PointerMethod(0)
+  Const        r16, 0
+  Move         r19, r16
+  Call         r20, Foo.PointerMethod, r19
+  // myPointer.ValueMethod(0)
+  Const        r16, 0
+  Move         r21, r16
+  Call         r22, Foo.ValueMethod, r21
+  // myValue.PointerMethod(0)
+  Const        r16, 0
+  Move         r23, r16
+  Call         r24, Foo.PointerMethod, r23
+  // myValue.ValueMethod(0)
+  Const        r16, 0
+  Move         r25, r16
+  Call         r26, Foo.ValueMethod, r25
+  // myPointer.PointerMethod(0)
+  Const        r16, 0
+  Move         r27, r16
+  Call         r28, Foo.PointerMethod, r27
+  Return       r0
+
+  // fun ValueMethod(x: int) {}
+func Foo.ValueMethod (regs=3)
+  Return       r0
+
+  // fun PointerMethod(x: int) {}
+func Foo.PointerMethod (regs=3)
+  Return       r0

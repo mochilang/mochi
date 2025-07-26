@@ -1,0 +1,51 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun f(): list<any> {
+func f (regs=1)
+  // return [0, 0.0]
+  Const        r0, [0, 0.0]
+  Return       r0
+
+  // fun g(a: int, b: float): int {
+func g (regs=3)
+  // return 0
+  Const        r2, 0
+  Return       r2
+
+  // fun h(s: string, nums: list<int>) {
+func h (regs=2)
+  Return       r0
+
+  // fun main() {
+func main (regs=22)
+  // h("ex1", [])
+  Const        r2, "ex1"
+  Move         r0, r2
+  Const        r3, []
+  Move         r1, r3
+  Call2        r4, h, r0, r1
+  // h("ex2", [1,2])
+  Const        r7, "ex2"
+  Move         r5, r7
+  Const        r8, [1, 2]
+  Move         r6, r8
+  Call2        r9, h, r5, r6
+  // h("ex3", [1,2,3,4])
+  Const        r12, "ex3"
+  Move         r10, r12
+  Const        r13, [1, 2, 3, 4]
+  Move         r11, r13
+  Call2        r14, h, r10, r11
+  // let list = [1,2,3,4]
+  Const        r15, [1, 2, 3, 4]
+  Move         r16, r15
+  // h("ex4", list)
+  Const        r19, "ex4"
+  Move         r17, r19
+  Const        r20, [1, 2, 3, 4]
+  Move         r18, r20
+  Call2        r21, h, r17, r18
+  Return       r0

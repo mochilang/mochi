@@ -1,0 +1,49 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun bar(a: int, b: int, c: int) {
+func bar (regs=11)
+  // print(str(a) + ", " + str(b) + ", " + str(c))
+  Str          r3, r0
+  Const        r4, ", "
+  Add          r5, r3, r4
+  Str          r6, r1
+  Add          r7, r5, r6
+  Const        r4, ", "
+  Add          r8, r7, r4
+  Str          r9, r2
+  Add          r10, r8, r9
+  Print        r10
+  Return       r0
+
+  // fun main() {
+func main (regs=15)
+  // var args: map<string,int> = {}
+  Const        r0, {}
+  Move         r1, r0
+  // args["a"] = 3
+  Const        r2, 3
+  Const        r3, "a"
+  SetIndex     r1, r3, r2
+  // args["b"] = 2
+  Const        r4, 2
+  Const        r5, "b"
+  SetIndex     r1, r5, r4
+  // args["c"] = 1
+  Const        r6, 1
+  Const        r7, "c"
+  SetIndex     r1, r7, r6
+  // bar(args["a"], args["b"], args["c"])
+  Const        r3, "a"
+  Index        r11, r1, r3
+  Move         r8, r11
+  Const        r5, "b"
+  Index        r12, r1, r5
+  Move         r9, r12
+  Const        r7, "c"
+  Index        r13, r1, r7
+  Move         r10, r13
+  Call         r14, bar, r8, r9, r10
+  Return       r0

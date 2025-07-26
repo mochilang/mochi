@@ -1,0 +1,86 @@
+func main (regs=45)
+  // var nMech = 5
+  Const        r2, 5
+  Move         r0, r2
+  SetGlobal    0,0,0,0
+  // var detailsPerMech = 4
+  Const        r3, 4
+  Move         r1, r3
+  SetGlobal    1,1,0,0
+  // for mech in 1..(nMech + 1) {
+  Const        r4, 1
+  Const        r4, 1
+  AddInt       r5, r0, r4
+  Move         r6, r4
+L3:
+  LessInt      r7, r6, r5
+  JumpIfFalse  r7, L0
+  // let id = mech
+  Move         r8, r6
+  // print("worker " + str(id) + " contracted to assemble " + str(detailsPerMech) + " details")
+  Const        r9, "worker "
+  Str          r10, r8
+  Add          r11, r9, r10
+  Const        r12, " contracted to assemble "
+  Add          r13, r11, r12
+  Const        r14, "4"
+  Add          r15, r13, r14
+  Const        r16, " details"
+  Add          r17, r15, r16
+  Print        r17
+  // print("worker " + str(id) + " enters shop")
+  Const        r9, "worker "
+  Str          r18, r8
+  Add          r19, r9, r18
+  Const        r20, " enters shop"
+  Add          r21, r19, r20
+  Print        r21
+  // var d = 0
+  Const        r22, 0
+  Move         r23, r22
+L2:
+  // while d < detailsPerMech {
+  LessInt      r24, r23, r1
+  JumpIfFalse  r24, L1
+  // print("worker " + str(id) + " assembling")
+  Const        r9, "worker "
+  Str          r25, r8
+  Add          r26, r9, r25
+  Const        r27, " assembling"
+  Add          r28, r26, r27
+  Print        r28
+  // print("worker " + str(id) + " completed detail")
+  Const        r9, "worker "
+  Str          r29, r8
+  Add          r30, r9, r29
+  Const        r31, " completed detail"
+  Add          r32, r30, r31
+  Print        r32
+  // d = d + 1
+  Const        r4, 1
+  AddInt       r33, r23, r4
+  Move         r23, r33
+  // while d < detailsPerMech {
+  Jump         L2
+L1:
+  // print("worker " + str(id) + " leaves shop")
+  Const        r9, "worker "
+  Str          r34, r8
+  Add          r35, r9, r34
+  Const        r36, " leaves shop"
+  Add          r37, r35, r36
+  Print        r37
+  // print("mechanism " + str(mech) + " completed")
+  Const        r38, "mechanism "
+  Str          r39, r6
+  Add          r40, r38, r39
+  Const        r41, " completed"
+  Add          r42, r40, r41
+  Print        r42
+  // for mech in 1..(nMech + 1) {
+  Const        r43, 1
+  AddInt       r44, r6, r43
+  Move         r6, r44
+  Jump         L3
+L0:
+  Return       r0

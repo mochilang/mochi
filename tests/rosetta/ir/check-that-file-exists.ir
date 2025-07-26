@@ -1,0 +1,66 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun printStat(fs: map<string, bool>, path: string) {
+func printStat (regs=12)
+  // if path in fs {
+  In           r2, r1, r0
+  JumpIfFalse  r2, L0
+  // if fs[path] {
+  Index        r3, r0, r1
+  JumpIfFalse  r3, L1
+  // print(path + " is a directory")
+  Const        r4, " is a directory"
+  Add          r5, r1, r4
+  Print        r5
+  // if fs[path] {
+  Jump         L2
+L1:
+  // print(path + " is a file")
+  Const        r6, " is a file"
+  Add          r7, r1, r6
+  Print        r7
+  // if path in fs {
+  Jump         L2
+L0:
+  // print("stat " + path + ": no such file or directory")
+  Const        r8, "stat "
+  Add          r9, r8, r1
+  Const        r10, ": no such file or directory"
+  Add          r11, r9, r10
+  Print        r11
+L2:
+  Return       r0
+
+  // fun main() {
+func main (regs=16)
+  // var fs: map<string, bool> = {}
+  Const        r0, {}
+  Move         r1, r0
+  // fs["docs"] = true
+  Const        r2, true
+  Const        r3, "docs"
+  SetIndex     r1, r3, r2
+  // for p in ["input.txt", "/input.txt", "docs", "/docs"] {
+  Const        r4, ["input.txt", "/input.txt", "docs", "/docs"]
+  IterPrep     r5, r4
+  Len          r6, r5
+  Const        r7, 0
+L1:
+  LessInt      r8, r7, r6
+  JumpIfFalse  r8, L0
+  Index        r9, r5, r7
+  Move         r10, r9
+  // printStat(fs, p)
+  Move         r11, r1
+  Move         r12, r10
+  Call2        r13, printStat, r11, r12
+  // for p in ["input.txt", "/input.txt", "docs", "/docs"] {
+  Const        r14, 1
+  AddInt       r15, r7, r14
+  Move         r7, r15
+  Jump         L1
+L0:
+  Return       r0

@@ -1,0 +1,108 @@
+func main (regs=37)
+  // var partList = ["A", "B", "C", "D"]
+  Const        r2, ["A", "B", "C", "D"]
+  Move         r0, r2
+  SetGlobal    0,0,0,0
+  // var nAssemblies = 3
+  Const        r3, 3
+  Move         r1, r3
+  SetGlobal    1,1,0,0
+  // for cycle in 1..(nAssemblies + 1) {
+  Const        r4, 1
+  Const        r4, 1
+  AddInt       r5, r1, r4
+  Move         r6, r4
+L3:
+  LessInt      r7, r6, r5
+  JumpIfFalse  r7, L0
+  // print("begin assembly cycle " + str(cycle))
+  Const        r8, "begin assembly cycle "
+  Str          r9, r6
+  Add          r10, r8, r9
+  Print        r10
+  // var a = ""
+  Const        r11, ""
+  Move         r12, r11
+  // for p in partList {
+  IterPrep     r13, r0
+  Len          r14, r13
+  Const        r15, 0
+L2:
+  LessInt      r16, r15, r14
+  JumpIfFalse  r16, L1
+  Index        r17, r13, r15
+  Move         r18, r17
+  // print(p + " worker begins part")
+  Const        r19, " worker begins part"
+  Add          r20, r18, r19
+  Print        r20
+  // print(p + " worker completed " + lower(p))
+  Const        r21, " worker completed "
+  Add          r22, r18, r21
+  Lower        r23, r18
+  Add          r24, r22, r23
+  Print        r24
+  // a = a + lower(p)
+  Lower        r25, r18
+  Add          r26, r12, r25
+  Move         r12, r26
+  // for p in partList {
+  Const        r27, 1
+  AddInt       r28, r15, r27
+  Move         r15, r28
+  Jump         L2
+L1:
+  // print(a + " assembled.  cycle " + str(cycle) + " complete")
+  Const        r29, " assembled.  cycle "
+  Add          r30, r12, r29
+  Str          r31, r6
+  Add          r32, r30, r31
+  Const        r33, " complete"
+  Add          r34, r32, r33
+  Print        r34
+  // for cycle in 1..(nAssemblies + 1) {
+  Const        r35, 1
+  AddInt       r36, r6, r35
+  Move         r6, r36
+  Jump         L3
+L0:
+  Return       r0
+
+  // fun lower(ch: string): string {
+func lower (regs=18)
+  // let upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+  Const        r3, "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+  Move         r4, r3
+  // let lower = "abcdefghijklmnopqrstuvwxyz"
+  Const        r5, "abcdefghijklmnopqrstuvwxyz"
+  Move         r6, r5
+  // var i = 0
+  Const        r7, 0
+  Move         r8, r7
+L2:
+  // while i < len(upper) {
+  Const        r9, 26
+  LessInt      r10, r8, r9
+  JumpIfFalse  r10, L0
+  // if ch == substring(upper, i, i+1) { return substring(lower, i, i+1) }
+  Const        r3, "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+  Const        r11, 1
+  AddInt       r12, r8, r11
+  Slice        r13, r3, r8, r12
+  Equal        r14, r2, r13
+  JumpIfFalse  r14, L1
+  Const        r5, "abcdefghijklmnopqrstuvwxyz"
+  Const        r11, 1
+  AddInt       r15, r8, r11
+  Slice        r16, r5, r8, r15
+  Return       r16
+L1:
+  // i = i + 1
+  Const        r11, 1
+  AddInt       r17, r8, r11
+  Move         r8, r17
+  // while i < len(upper) {
+  Jump         L2
+L0:
+  // return ch
+  Return       r2

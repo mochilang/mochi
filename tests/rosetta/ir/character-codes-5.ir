@@ -1,0 +1,48 @@
+func main (regs=11)
+  // print(chr(97))
+  Const        r1, 97
+  Move         r0, r1
+  Call         r2, chr, r0
+  Print        r2
+  // print(chr(960))
+  Const        r4, 960
+  Move         r3, r4
+  Call         r5, chr, r3
+  Print        r5
+  // print(chr(97) + chr(960))
+  Const        r1, 97
+  Move         r6, r1
+  Call         r7, chr, r6
+  Const        r4, 960
+  Move         r8, r4
+  Call         r9, chr, r8
+  Add          r10, r7, r9
+  Print        r10
+  Return       r0
+
+  // fun chr(n: int): string {
+func chr (regs=11)
+  // if n == 97 { return "a" }
+  Const        r1, 97
+  Equal        r2, r0, r1
+  JumpIfFalse  r2, L0
+  Const        r3, "a"
+  Return       r3
+L0:
+  // if n == 960 { return "π" }
+  Const        r4, 960
+  Equal        r5, r0, r4
+  JumpIfFalse  r5, L1
+  Const        r6, "π"
+  Return       r6
+L1:
+  // if n == 65 { return "A" }
+  Const        r7, 65
+  Equal        r8, r0, r7
+  JumpIfFalse  r8, L2
+  Const        r9, "A"
+  Return       r9
+L2:
+  // return "?"
+  Const        r10, "?"
+  Return       r10

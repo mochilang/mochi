@@ -1,0 +1,1623 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun indexOf(s: string, ch: string): int {
+func indexOf (regs=12)
+  // var i = 0
+  Const        r2, 0
+  Move         r3, r2
+L2:
+  // while i < len(s) {
+  Len          r4, r0
+  LessInt      r5, r3, r4
+  JumpIfFalse  r5, L0
+  // if substring(s, i, i+1) == ch { return i }
+  Const        r6, 1
+  AddInt       r7, r3, r6
+  Slice        r8, r0, r3, r7
+  Equal        r9, r8, r1
+  JumpIfFalse  r9, L1
+  Return       r3
+L1:
+  // i = i + 1
+  Const        r6, 1
+  AddInt       r10, r3, r6
+  Move         r3, r10
+  // while i < len(s) {
+  Jump         L2
+L0:
+  // return -1
+  Const        r6, 1
+  NegInt       r11, r6
+  Return       r11
+
+  // fun fmt4(x: float): string {
+func fmt4 (regs=41)
+  // var y = x * 10000.0
+  Const        r1, 10000.0
+  MulFloat     r2, r0, r1
+  Move         r3, r2
+  // if y >= 0 { y = y + 0.5 } else { y = y - 0.5 }
+  Const        r4, 0
+  LessEqFloat  r5, r4, r3
+  JumpIfFalse  r5, L0
+  Const        r6, 0.5
+  AddFloat     r7, r3, r6
+  Move         r3, r7
+  Jump         L1
+L0:
+  Const        r6, 0.5
+  SubFloat     r8, r3, r6
+  Move         r3, r8
+L1:
+  // y = (y as int) as float / 10000.0
+  Cast         r9, r3, int
+  Cast         r10, r9, float
+  Const        r1, 10000.0
+  DivFloat     r11, r10, r1
+  Move         r3, r11
+  // var s = str(y)
+  Str          r12, r3
+  Move         r13, r12
+  // var dot = indexOf(s, ".")
+  Move         r14, r13
+  Const        r16, "."
+  Move         r15, r16
+  Call2        r17, indexOf, r14, r15
+  Move         r18, r17
+  // if dot == 0 - 1 {
+  Const        r4, 0
+  Const        r19, 1
+  SubInt       r20, r4, r19
+  Equal        r21, r18, r20
+  JumpIfFalse  r21, L2
+  // s = s + ".0000"
+  Const        r22, ".0000"
+  Add          r23, r13, r22
+  Move         r13, r23
+  // if dot == 0 - 1 {
+  Jump         L3
+L2:
+  // var decs = len(s) - dot - 1
+  Len          r24, r13
+  Sub          r25, r24, r18
+  Const        r19, 1
+  Sub          r26, r25, r19
+  Move         r27, r26
+  // if decs > 4 {
+  Const        r28, 4
+  Less         r29, r28, r27
+  JumpIfFalse  r29, L4
+  // s = substring(s, 0, dot + 5)
+  Const        r4, 0
+  Const        r30, 5
+  Add          r31, r18, r30
+  Slice        r32, r13, r4, r31
+  Move         r13, r32
+  // if decs > 4 {
+  Jump         L3
+L4:
+  // while decs < 4 {
+  Const        r28, 4
+  Less         r33, r27, r28
+  JumpIfFalse  r33, L3
+  // s = s + "0"
+  Const        r34, "0"
+  Add          r35, r13, r34
+  Move         r13, r35
+  // decs = decs + 1
+  Const        r19, 1
+  Add          r36, r27, r19
+  Move         r27, r36
+  // while decs < 4 {
+  Jump         L4
+L3:
+  // if x >= 0.0 { s = " " + s }
+  Const        r37, 0.0
+  LessEqFloat  r38, r37, r0
+  JumpIfFalse  r38, L5
+  Const        r39, " "
+  Add          r40, r39, r13
+  Move         r13, r40
+L5:
+  // return s
+  Return       r13
+
+  // fun fmt2(n: int): string {
+func fmt2 (regs=8)
+  // let s = str(n)
+  Str          r1, r0
+  Move         r2, r1
+  // if len(s) < 2 { return " " + s }
+  Len          r3, r2
+  Const        r4, 2
+  LessInt      r5, r3, r4
+  JumpIfFalse  r5, L0
+  Const        r6, " "
+  Add          r7, r6, r2
+  Return       r7
+L0:
+  // return s
+  Return       r2
+
+  // fun sumPoint(p1: Point, p2: Point): Point {
+func sumPoint (regs=23)
+  // return Point{ x: p1.x + p2.x, y: p1.y + p2.y, z: p1.z + p2.z }
+  Const        r2, "x"
+  Index        r3, r0, r2
+  Const        r2, "x"
+  Index        r4, r1, r2
+  Add          r5, r3, r4
+  Const        r6, "y"
+  Index        r7, r0, r6
+  Const        r6, "y"
+  Index        r8, r1, r6
+  Add          r9, r7, r8
+  Const        r10, "z"
+  Index        r11, r0, r10
+  Const        r10, "z"
+  Index        r12, r1, r10
+  Add          r13, r11, r12
+  Const        r14, "__name"
+  Const        r15, "Point"
+  Const        r16, "x"
+  Move         r17, r5
+  Const        r18, "y"
+  Move         r19, r9
+  Const        r20, "z"
+  Move         r21, r13
+  MakeMap      r22, 4, r14
+  Return       r22
+
+  // fun mulPoint(p: Point, m: float): Point {
+func mulPoint (regs=20)
+  // return Point{ x: p.x * m, y: p.y * m, z: p.z * m }
+  Const        r2, "x"
+  Index        r3, r0, r2
+  Mul          r4, r3, r1
+  Const        r5, "y"
+  Index        r6, r0, r5
+  Mul          r7, r6, r1
+  Const        r8, "z"
+  Index        r9, r0, r8
+  Mul          r10, r9, r1
+  Const        r11, "__name"
+  Const        r12, "Point"
+  Const        r13, "x"
+  Move         r14, r4
+  Const        r15, "y"
+  Move         r16, r7
+  Const        r17, "z"
+  Move         r18, r10
+  MakeMap      r19, 4, r11
+  Return       r19
+
+  // fun divPoint(p: Point, d: float): Point { return mulPoint(p, 1.0 / d) }
+func divPoint (regs=7)
+  // fun divPoint(p: Point, d: float): Point { return mulPoint(p, 1.0 / d) }
+  Move         r2, r0
+  Const        r4, 1.0
+  DivFloat     r5, r4, r1
+  Move         r3, r5
+  Call2        r6, mulPoint, r2, r3
+  Return       r6
+
+  // fun centerPoint(p1: Point, p2: Point): Point { return divPoint(sumPoint(p1, p2), 2.0) }
+func centerPoint (regs=9)
+  // fun centerPoint(p1: Point, p2: Point): Point { return divPoint(sumPoint(p1, p2), 2.0) }
+  Move         r4, r0
+  Move         r5, r1
+  Call2        r6, sumPoint, r4, r5
+  Move         r2, r6
+  Const        r7, 2.0
+  Move         r3, r7
+  Call2        r8, divPoint, r2, r3
+  Return       r8
+
+  // fun getFacePoints(points: list<Point>, faces: list<list<int>>): list<Point> {
+func getFacePoints (regs=41)
+  // var facePoints: list<Point> = []
+  Const        r2, []
+  Move         r3, r2
+  // var i = 0
+  Const        r4, 0
+  Move         r5, r4
+L3:
+  // while i < len(faces) {
+  Len          r6, r1
+  LessInt      r7, r5, r6
+  JumpIfFalse  r7, L0
+  // let face = faces[i]
+  Index        r8, r1, r5
+  Move         r9, r8
+  // var fp = Point{ x:0.0, y:0.0, z:0.0 }
+  Const        r10, 0.0
+  Const        r10, 0.0
+  Const        r10, 0.0
+  Const        r11, "__name"
+  Const        r12, "Point"
+  Const        r13, "x"
+  Move         r14, r10
+  Const        r15, "y"
+  Move         r16, r10
+  Const        r17, "z"
+  Move         r18, r10
+  MakeMap      r19, 4, r11
+  Move         r20, r19
+  // for idx in face { fp = sumPoint(fp, points[idx]) }
+  IterPrep     r21, r9
+  Len          r22, r21
+  Const        r23, 0
+L2:
+  LessInt      r24, r23, r22
+  JumpIfFalse  r24, L1
+  Index        r25, r21, r23
+  Move         r26, r25
+  Move         r27, r20
+  Index        r29, r0, r26
+  Move         r28, r29
+  Call2        r30, sumPoint, r27, r28
+  Move         r20, r30
+  Const        r31, 1
+  AddInt       r32, r23, r31
+  Move         r23, r32
+  Jump         L2
+L1:
+  // fp = divPoint(fp, (len(face) as float))
+  Move         r33, r20
+  Len          r35, r9
+  Cast         r36, r35, float
+  Move         r34, r36
+  Call2        r37, divPoint, r33, r34
+  Move         r20, r37
+  // facePoints = append(facePoints, fp)
+  Append       r38, r3, r20
+  Move         r3, r38
+  // i = i + 1
+  Const        r39, 1
+  AddInt       r40, r5, r39
+  Move         r5, r40
+  // while i < len(faces) {
+  Jump         L3
+L0:
+  // return facePoints
+  Return       r3
+
+  // fun sortEdges(edges: list<list<int>>): list<list<int>> {
+func sortEdges (regs=46)
+  // var res: list<list<int>> = []
+  Const        r1, []
+  Move         r2, r1
+  // var tmp = edges
+  Move         r3, r0
+L11:
+  // while len(tmp) > 0 {
+  Len          r4, r3
+  Const        r5, 0
+  LessInt      r6, r5, r4
+  JumpIfFalse  r6, L0
+  // var min = tmp[0]
+  Const        r5, 0
+  Index        r7, r3, r5
+  Move         r8, r7
+  // var idx = 0
+  Const        r5, 0
+  Move         r9, r5
+  // var j = 1
+  Const        r10, 1
+  Move         r11, r10
+L7:
+  // while j < len(tmp) {
+  Len          r12, r3
+  LessInt      r13, r11, r12
+  JumpIfFalse  r13, L1
+  // let e = tmp[j]
+  Index        r14, r3, r11
+  Move         r15, r14
+  // if e[0] < min[0] || (e[0] == min[0] && (e[1] < min[1] || (e[1] == min[1] && e[2] < min[2]))) {
+  Const        r5, 0
+  Index        r16, r15, r5
+  Const        r5, 0
+  Index        r17, r8, r5
+  Less         r18, r16, r17
+  Move         r19, r18
+  JumpIfTrue   r19, L2
+  Const        r5, 0
+  Index        r20, r15, r5
+  Const        r5, 0
+  Index        r21, r8, r5
+  Equal        r22, r20, r21
+  Move         r23, r22
+  JumpIfFalse  r23, L3
+  Const        r10, 1
+  Index        r24, r15, r10
+  Const        r10, 1
+  Index        r25, r8, r10
+  Less         r26, r24, r25
+  Move         r27, r26
+  JumpIfTrue   r27, L4
+  Const        r10, 1
+  Index        r28, r15, r10
+  Const        r29, 2
+  Index        r30, r15, r29
+  Const        r29, 2
+  Index        r31, r8, r29
+  Less         r32, r30, r31
+  Const        r10, 1
+  Index        r33, r8, r10
+  Equal        r34, r28, r33
+  Move         r35, r34
+  JumpIfFalse  r35, L5
+  Move         r35, r32
+L5:
+  Move         r27, r35
+L4:
+  Move         r23, r27
+L3:
+  Move         r19, r23
+L2:
+  JumpIfFalse  r19, L6
+  // min = e
+  Move         r8, r15
+  // idx = j
+  Move         r9, r11
+L6:
+  // j = j + 1
+  Const        r10, 1
+  AddInt       r36, r11, r10
+  Move         r11, r36
+  // while j < len(tmp) {
+  Jump         L7
+L1:
+  // res = append(res, min)
+  Append       r37, r2, r8
+  Move         r2, r37
+  // var out: list<list<int>> = []
+  Const        r1, []
+  Move         r38, r1
+  // var k = 0
+  Const        r5, 0
+  Move         r39, r5
+L10:
+  // while k < len(tmp) {
+  Len          r40, r3
+  LessInt      r41, r39, r40
+  JumpIfFalse  r41, L8
+  // if k != idx { out = append(out, tmp[k]) }
+  NotEqual     r42, r39, r9
+  JumpIfFalse  r42, L9
+  Index        r43, r3, r39
+  Append       r44, r38, r43
+  Move         r38, r44
+L9:
+  // k = k + 1
+  Const        r10, 1
+  AddInt       r45, r39, r10
+  Move         r39, r45
+  // while k < len(tmp) {
+  Jump         L10
+L8:
+  // tmp = out
+  Move         r3, r38
+  // while len(tmp) > 0 {
+  Jump         L11
+L0:
+  // return res
+  Return       r2
+
+  // fun getEdgesFaces(points: list<Point>, faces: list<list<int>>): list<Edge> {
+func getEdgesFaces (regs=114)
+  // var edges: list<list<int>> = []
+  Const        r2, []
+  Move         r3, r2
+  // var fnum = 0
+  Const        r4, 0
+  Move         r5, r4
+L6:
+  // while fnum < len(faces) {
+  Len          r6, r1
+  LessInt      r7, r5, r6
+  JumpIfFalse  r7, L0
+  // let face = faces[fnum]
+  Index        r8, r1, r5
+  Move         r9, r8
+  // var numP = len(face)
+  Len          r10, r9
+  Move         r11, r10
+  // var pi = 0
+  Const        r4, 0
+  Move         r12, r4
+L5:
+  // while pi < numP {
+  LessInt      r13, r12, r11
+  JumpIfFalse  r13, L1
+  // var pn1 = face[pi]
+  Index        r14, r9, r12
+  Move         r15, r14
+  // var pn2 = 0
+  Const        r4, 0
+  Move         r16, r4
+  // if pi < numP - 1 { pn2 = face[pi+1] } else { pn2 = face[0] }
+  Const        r17, 1
+  SubInt       r18, r11, r17
+  LessInt      r19, r12, r18
+  JumpIfFalse  r19, L2
+  Const        r17, 1
+  AddInt       r20, r12, r17
+  Index        r21, r9, r20
+  Move         r16, r21
+  Jump         L3
+L2:
+  Const        r4, 0
+  Index        r22, r9, r4
+  Move         r16, r22
+L3:
+  // if pn1 > pn2 {
+  Less         r23, r16, r15
+  JumpIfFalse  r23, L4
+  // var tmpn = pn1
+  Move         r24, r15
+  // pn1 = pn2
+  Move         r15, r16
+  // pn2 = tmpn
+  Move         r16, r24
+L4:
+  // edges = append(edges, [pn1, pn2, fnum])
+  Move         r25, r15
+  Move         r26, r16
+  Move         r27, r5
+  MakeList     r28, 3, r25
+  Append       r29, r3, r28
+  Move         r3, r29
+  // pi = pi + 1
+  Const        r17, 1
+  AddInt       r30, r12, r17
+  Move         r12, r30
+  // while pi < numP {
+  Jump         L5
+L1:
+  // fnum = fnum + 1
+  Const        r17, 1
+  AddInt       r31, r5, r17
+  Move         r5, r31
+  // while fnum < len(faces) {
+  Jump         L6
+L0:
+  // edges = sortEdges(edges)
+  Move         r32, r3
+  Call         r33, sortEdges, r32
+  Move         r3, r33
+  // var merged: list<list<int>> = []
+  Const        r2, []
+  Move         r34, r2
+  // var idx = 0
+  Const        r4, 0
+  Move         r35, r4
+L10:
+  // while idx < len(edges) {
+  Len          r36, r3
+  LessInt      r37, r35, r36
+  JumpIfFalse  r37, L7
+  // let e1 = edges[idx]
+  Index        r38, r3, r35
+  Move         r39, r38
+  // if idx < len(edges) - 1 {
+  Len          r40, r3
+  Const        r17, 1
+  SubInt       r41, r40, r17
+  LessInt      r42, r35, r41
+  JumpIfFalse  r42, L8
+  // let e2 = edges[idx+1]
+  Const        r17, 1
+  AddInt       r43, r35, r17
+  Index        r44, r3, r43
+  Move         r45, r44
+  // if e1[0] == e2[0] && e1[1] == e2[1] {
+  Const        r4, 0
+  Index        r46, r39, r4
+  Const        r4, 0
+  Index        r47, r45, r4
+  Equal        r48, r46, r47
+  Const        r17, 1
+  Index        r49, r39, r17
+  Const        r17, 1
+  Index        r50, r45, r17
+  Equal        r51, r49, r50
+  Move         r52, r48
+  JumpIfFalse  r52, L9
+  Move         r52, r51
+L9:
+  JumpIfFalse  r52, L8
+  // merged = append(merged, [e1[0], e1[1], e1[2], e2[2]])
+  Const        r4, 0
+  Index        r57, r39, r4
+  Move         r53, r57
+  Const        r17, 1
+  Index        r58, r39, r17
+  Move         r54, r58
+  Const        r59, 2
+  Index        r60, r39, r59
+  Move         r55, r60
+  Const        r59, 2
+  Index        r61, r45, r59
+  Move         r56, r61
+  MakeList     r62, 4, r53
+  Append       r63, r34, r62
+  Move         r34, r63
+  // idx = idx + 2
+  Const        r59, 2
+  AddInt       r64, r35, r59
+  Move         r35, r64
+  // continue
+  Jump         L10
+L8:
+  // merged = append(merged, [e1[0], e1[1], e1[2], -1])
+  Const        r4, 0
+  Index        r69, r39, r4
+  Move         r65, r69
+  Const        r17, 1
+  Index        r70, r39, r17
+  Move         r66, r70
+  Const        r59, 2
+  Index        r71, r39, r59
+  Move         r67, r71
+  Const        r17, 1
+  NegInt       r72, r17
+  Move         r68, r72
+  MakeList     r73, 4, r65
+  Append       r74, r34, r73
+  Move         r34, r74
+  // idx = idx + 1
+  Const        r17, 1
+  AddInt       r75, r35, r17
+  Move         r35, r75
+  // while idx < len(edges) {
+  Jump         L10
+L7:
+  // var edgesCenters: list<Edge> = []
+  Const        r2, []
+  Move         r76, r2
+  // for me in merged {
+  IterPrep     r77, r34
+  Len          r78, r77
+  Const        r79, 0
+L12:
+  LessInt      r80, r79, r78
+  JumpIfFalse  r80, L11
+  Index        r81, r77, r79
+  Move         r82, r81
+  // let p1 = points[me[0]]
+  Const        r4, 0
+  Index        r83, r82, r4
+  Index        r84, r0, r83
+  Move         r85, r84
+  // let p2 = points[me[1]]
+  Const        r17, 1
+  Index        r86, r82, r17
+  Index        r87, r0, r86
+  Move         r88, r87
+  // let cp = centerPoint(p1,p2)
+  Move         r89, r85
+  Move         r90, r88
+  Call2        r91, centerPoint, r89, r90
+  Move         r92, r91
+  // edgesCenters = append(edgesCenters, Edge{ pn1: me[0], pn2: me[1], fn1: me[2], fn2: me[3], cp: cp })
+  Const        r4, 0
+  Index        r93, r82, r4
+  Const        r17, 1
+  Index        r94, r82, r17
+  Const        r59, 2
+  Index        r95, r82, r59
+  Const        r96, 3
+  Index        r97, r82, r96
+  Const        r98, "__name"
+  Const        r99, "Edge"
+  Const        r100, "pn1"
+  Move         r101, r93
+  Const        r102, "pn2"
+  Move         r103, r94
+  Const        r104, "fn1"
+  Move         r105, r95
+  Const        r106, "fn2"
+  Move         r107, r97
+  Const        r108, "cp"
+  Move         r109, r92
+  MakeMap      r110, 6, r98
+  Append       r111, r76, r110
+  Move         r76, r111
+  // for me in merged {
+  Const        r112, 1
+  AddInt       r113, r79, r112
+  Move         r79, r113
+  Jump         L12
+L11:
+  // return edgesCenters
+  Return       r76
+
+  // fun getEdgePoints(points: list<Point>, edgesFaces: list<Edge>, facePoints: list<Point>): list<Point> {
+func getEdgePoints (regs=35)
+  // var edgePoints: list<Point> = []
+  Const        r3, []
+  Move         r4, r3
+  // var i = 0
+  Const        r5, 0
+  Move         r6, r5
+L2:
+  // while i < len(edgesFaces) {
+  Len          r7, r1
+  LessInt      r8, r6, r7
+  JumpIfFalse  r8, L0
+  // let edge = edgesFaces[i]
+  Index        r9, r1, r6
+  Move         r10, r9
+  // let cp = edge.cp
+  Const        r11, "cp"
+  Index        r12, r10, r11
+  Move         r13, r12
+  // let fp1 = facePoints[edge.fn1]
+  Const        r14, "fn1"
+  Index        r15, r10, r14
+  Index        r16, r2, r15
+  Move         r17, r16
+  // var fp2 = fp1
+  Move         r18, r17
+  // if edge.fn2 != 0 - 1 {
+  Const        r19, "fn2"
+  Index        r20, r10, r19
+  Const        r5, 0
+  Const        r21, 1
+  SubInt       r22, r5, r21
+  NotEqual     r23, r20, r22
+  JumpIfFalse  r23, L1
+  // fp2 = facePoints[edge.fn2]
+  Const        r19, "fn2"
+  Index        r24, r10, r19
+  Index        r25, r2, r24
+  Move         r18, r25
+L1:
+  // let cfp = centerPoint(fp1, fp2)
+  Move         r26, r17
+  Move         r27, r18
+  Call2        r28, centerPoint, r26, r27
+  Move         r29, r28
+  // edgePoints = append(edgePoints, centerPoint(cp, cfp))
+  Move         r30, r13
+  Move         r31, r29
+  Call2        r32, centerPoint, r30, r31
+  Append       r33, r4, r32
+  Move         r4, r33
+  // i = i + 1
+  Const        r21, 1
+  AddInt       r34, r6, r21
+  Move         r6, r34
+  // while i < len(edgesFaces) {
+  Jump         L2
+L0:
+  // return edgePoints
+  Return       r4
+
+  // fun getAvgFacePoints(points: list<Point>, faces: list<list<int>>, facePoints: list<Point>): list<Point> {
+func getAvgFacePoints (regs=75)
+  // var numP = len(points)
+  Len          r3, r0
+  Move         r4, r3
+  // var temp: list<PointEx> = []
+  Const        r5, []
+  Move         r6, r5
+  // var i = 0
+  Const        r7, 0
+  Move         r8, r7
+L1:
+  // while i < numP {
+  LessInt      r9, r8, r4
+  JumpIfFalse  r9, L0
+  // temp = append(temp, PointEx{ p: Point{ x:0.0, y:0.0, z:0.0 }, n:0 })
+  Const        r10, 0.0
+  Const        r10, 0.0
+  Const        r10, 0.0
+  Const        r11, "__name"
+  Const        r12, "Point"
+  Const        r13, "x"
+  Move         r14, r10
+  Const        r15, "y"
+  Move         r16, r10
+  Const        r17, "z"
+  Move         r18, r10
+  MakeMap      r19, 4, r11
+  Const        r7, 0
+  Const        r20, "__name"
+  Const        r21, "PointEx"
+  Const        r22, "p"
+  Move         r23, r19
+  Const        r24, "n"
+  Move         r25, r7
+  MakeMap      r26, 3, r20
+  Append       r27, r6, r26
+  Move         r6, r27
+  // i = i + 1
+  Const        r28, 1
+  AddInt       r29, r8, r28
+  Move         r8, r29
+  // while i < numP {
+  Jump         L1
+L0:
+  // var fnum = 0
+  Const        r7, 0
+  Move         r30, r7
+L5:
+  // while fnum < len(faces) {
+  Len          r31, r1
+  LessInt      r32, r30, r31
+  JumpIfFalse  r32, L2
+  // let fp = facePoints[fnum]
+  Index        r33, r2, r30
+  Move         r34, r33
+  // for pn in faces[fnum] {
+  Index        r35, r1, r30
+  IterPrep     r36, r35
+  Len          r37, r36
+  Const        r38, 0
+L4:
+  LessInt      r39, r38, r37
+  JumpIfFalse  r39, L3
+  Index        r40, r36, r38
+  Move         r41, r40
+  // let tp = temp[pn]
+  Index        r42, r6, r41
+  Move         r43, r42
+  // temp[pn] = PointEx{ p: sumPoint(tp.p, fp), n: tp.n + 1 }
+  Const        r46, "p"
+  Index        r47, r43, r46
+  Move         r44, r47
+  Move         r45, r34
+  Call2        r48, sumPoint, r44, r45
+  Const        r49, "n"
+  Index        r50, r43, r49
+  Const        r28, 1
+  Add          r51, r50, r28
+  Const        r52, "__name"
+  Const        r53, "PointEx"
+  Const        r54, "p"
+  Move         r55, r48
+  Const        r56, "n"
+  Move         r57, r51
+  MakeMap      r58, 3, r52
+  SetIndex     r6, r41, r58
+  // for pn in faces[fnum] {
+  Const        r59, 1
+  AddInt       r60, r38, r59
+  Move         r38, r60
+  Jump         L4
+L3:
+  // fnum = fnum + 1
+  Const        r28, 1
+  AddInt       r61, r30, r28
+  Move         r30, r61
+  // while fnum < len(faces) {
+  Jump         L5
+L2:
+  // var avg: list<Point> = []
+  Const        r5, []
+  Move         r62, r5
+  // var j = 0
+  Const        r7, 0
+  Move         r63, r7
+L7:
+  // while j < numP {
+  LessInt      r64, r63, r4
+  JumpIfFalse  r64, L6
+  // let tp = temp[j]
+  Index        r65, r6, r63
+  Move         r66, r65
+  // avg = append(avg, divPoint(tp.p, tp.n as float))
+  Const        r46, "p"
+  Index        r69, r66, r46
+  Move         r67, r69
+  Const        r49, "n"
+  Index        r70, r66, r49
+  Cast         r71, r70, float
+  Move         r68, r71
+  Call2        r72, divPoint, r67, r68
+  Append       r73, r62, r72
+  Move         r62, r73
+  // j = j + 1
+  Const        r28, 1
+  AddInt       r74, r63, r28
+  Move         r63, r74
+  // while j < numP {
+  Jump         L7
+L6:
+  // return avg
+  Return       r62
+
+  // fun getAvgMidEdges(points: list<Point>, edgesFaces: list<Edge>): list<Point> {
+func getAvgMidEdges (regs=86)
+  // var numP = len(points)
+  Len          r2, r0
+  Move         r3, r2
+  // var temp: list<PointEx> = []
+  Const        r4, []
+  Move         r5, r4
+  // var i = 0
+  Const        r6, 0
+  Move         r7, r6
+L1:
+  // while i < numP {
+  LessInt      r8, r7, r3
+  JumpIfFalse  r8, L0
+  // temp = append(temp, PointEx{ p: Point{ x:0.0, y:0.0, z:0.0 }, n:0 })
+  Const        r9, 0.0
+  Const        r9, 0.0
+  Const        r9, 0.0
+  Const        r10, "__name"
+  Const        r11, "Point"
+  Const        r12, "x"
+  Move         r13, r9
+  Const        r14, "y"
+  Move         r15, r9
+  Const        r16, "z"
+  Move         r17, r9
+  MakeMap      r18, 4, r10
+  Const        r6, 0
+  Const        r19, "__name"
+  Const        r20, "PointEx"
+  Const        r21, "p"
+  Move         r22, r18
+  Const        r23, "n"
+  Move         r24, r6
+  MakeMap      r25, 3, r19
+  Append       r26, r5, r25
+  Move         r5, r26
+  // i = i + 1
+  Const        r27, 1
+  AddInt       r28, r7, r27
+  Move         r7, r28
+  // while i < numP {
+  Jump         L1
+L0:
+  // for edge in edgesFaces {
+  IterPrep     r29, r1
+  Len          r30, r29
+  Const        r31, 0
+L5:
+  LessInt      r32, r31, r30
+  JumpIfFalse  r32, L2
+  Index        r33, r29, r31
+  Move         r34, r33
+  // let cp = edge.cp
+  Const        r35, "cp"
+  Index        r36, r34, r35
+  Move         r37, r36
+  // var arr = [edge.pn1, edge.pn2]
+  Const        r40, "pn1"
+  Index        r41, r34, r40
+  Move         r38, r41
+  Const        r42, "pn2"
+  Index        r43, r34, r42
+  Move         r39, r43
+  MakeList     r44, 2, r38
+  Move         r45, r44
+  // for pn in arr {
+  IterPrep     r46, r45
+  Len          r47, r46
+  Const        r48, 0
+L4:
+  LessInt      r49, r48, r47
+  JumpIfFalse  r49, L3
+  Index        r50, r46, r48
+  Move         r51, r50
+  // let tp = temp[pn]
+  Index        r52, r5, r51
+  Move         r53, r52
+  // temp[pn] = PointEx{ p: sumPoint(tp.p, cp), n: tp.n + 1 }
+  Const        r56, "p"
+  Index        r57, r53, r56
+  Move         r54, r57
+  Move         r55, r37
+  Call2        r58, sumPoint, r54, r55
+  Const        r59, "n"
+  Index        r60, r53, r59
+  Const        r27, 1
+  Add          r61, r60, r27
+  Const        r62, "__name"
+  Const        r63, "PointEx"
+  Const        r64, "p"
+  Move         r65, r58
+  Const        r66, "n"
+  Move         r67, r61
+  MakeMap      r68, 3, r62
+  SetIndex     r5, r51, r68
+  // for pn in arr {
+  Const        r69, 1
+  AddInt       r70, r48, r69
+  Move         r48, r70
+  Jump         L4
+L3:
+  // for edge in edgesFaces {
+  Const        r71, 1
+  AddInt       r72, r31, r71
+  Move         r31, r72
+  Jump         L5
+L2:
+  // var avg: list<Point> = []
+  Const        r4, []
+  Move         r73, r4
+  // var j = 0
+  Const        r6, 0
+  Move         r74, r6
+L7:
+  // while j < numP {
+  LessInt      r75, r74, r3
+  JumpIfFalse  r75, L6
+  // let tp = temp[j]
+  Index        r76, r5, r74
+  Move         r77, r76
+  // avg = append(avg, divPoint(tp.p, tp.n as float))
+  Const        r56, "p"
+  Index        r80, r77, r56
+  Move         r78, r80
+  Const        r59, "n"
+  Index        r81, r77, r59
+  Cast         r82, r81, float
+  Move         r79, r82
+  Call2        r83, divPoint, r78, r79
+  Append       r84, r73, r83
+  Move         r73, r84
+  // j = j + 1
+  Const        r27, 1
+  AddInt       r85, r74, r27
+  Move         r74, r85
+  // while j < numP {
+  Jump         L7
+L6:
+  // return avg
+  Return       r73
+
+  // fun getPointsFaces(points: list<Point>, faces: list<list<int>>): list<int> {
+func getPointsFaces (regs=26)
+  // var pf: list<int> = []
+  Const        r2, []
+  Move         r3, r2
+  // var i = 0
+  Const        r4, 0
+  Move         r5, r4
+L1:
+  // while i < len(points) {
+  Len          r6, r0
+  LessInt      r7, r5, r6
+  JumpIfFalse  r7, L0
+  // pf = append(pf, 0)
+  Const        r4, 0
+  Append       r8, r3, r4
+  Move         r3, r8
+  // i = i + 1
+  Const        r9, 1
+  AddInt       r10, r5, r9
+  Move         r5, r10
+  // while i < len(points) {
+  Jump         L1
+L0:
+  // var fnum = 0
+  Const        r4, 0
+  Move         r11, r4
+L5:
+  // while fnum < len(faces) {
+  Len          r12, r1
+  LessInt      r13, r11, r12
+  JumpIfFalse  r13, L2
+  // for pn in faces[fnum] { pf[pn] = pf[pn] + 1 }
+  Index        r14, r1, r11
+  IterPrep     r15, r14
+  Len          r16, r15
+  Const        r17, 0
+L4:
+  LessInt      r18, r17, r16
+  JumpIfFalse  r18, L3
+  Index        r19, r15, r17
+  Move         r20, r19
+  Index        r21, r3, r20
+  Const        r9, 1
+  Add          r22, r21, r9
+  SetIndex     r3, r20, r22
+  Const        r23, 1
+  AddInt       r24, r17, r23
+  Move         r17, r24
+  Jump         L4
+L3:
+  // fnum = fnum + 1
+  Const        r9, 1
+  AddInt       r25, r11, r9
+  Move         r11, r25
+  // while fnum < len(faces) {
+  Jump         L5
+L2:
+  // return pf
+  Return       r3
+
+  // fun getNewPoints(points: list<Point>, pf: list<int>, afp: list<Point>, ame: list<Point>): list<Point> {
+func getNewPoints (regs=48)
+  // var newPts: list<Point> = []
+  Const        r4, []
+  Move         r5, r4
+  // var i = 0
+  Const        r6, 0
+  Move         r7, r6
+L1:
+  // while i < len(points) {
+  Len          r8, r0
+  LessInt      r9, r7, r8
+  JumpIfFalse  r9, L0
+  // var n = pf[i] as float
+  Index        r10, r1, r7
+  Cast         r11, r10, float
+  Move         r12, r11
+  // var m1 = (n - 3.0) / n
+  Const        r13, 3.0
+  SubFloat     r14, r12, r13
+  DivFloat     r15, r14, r12
+  Move         r16, r15
+  // var m2 = 1.0 / n
+  Const        r17, 1.0
+  DivFloat     r18, r17, r12
+  Move         r19, r18
+  // var m3 = 2.0 / n
+  Const        r20, 2.0
+  DivFloat     r21, r20, r12
+  Move         r22, r21
+  // let old = points[i]
+  Index        r23, r0, r7
+  Move         r24, r23
+  // let p1 = mulPoint(old, m1)
+  Move         r25, r24
+  Move         r26, r16
+  Call2        r27, mulPoint, r25, r26
+  Move         r28, r27
+  // let p2 = mulPoint(afp[i], m2)
+  Index        r31, r2, r7
+  Move         r29, r31
+  Move         r30, r19
+  Call2        r32, mulPoint, r29, r30
+  Move         r33, r32
+  // let p3 = mulPoint(ame[i], m3)
+  Index        r36, r3, r7
+  Move         r34, r36
+  Move         r35, r22
+  Call2        r37, mulPoint, r34, r35
+  Move         r38, r37
+  // newPts = append(newPts, sumPoint(sumPoint(p1,p2), p3))
+  Move         r41, r28
+  Move         r42, r33
+  Call2        r43, sumPoint, r41, r42
+  Move         r39, r43
+  Move         r40, r38
+  Call2        r44, sumPoint, r39, r40
+  Append       r45, r5, r44
+  Move         r5, r45
+  // i = i + 1
+  Const        r46, 1
+  AddInt       r47, r7, r46
+  Move         r7, r47
+  // while i < len(points) {
+  Jump         L1
+L0:
+  // return newPts
+  Return       r5
+
+  // fun key(a: int, b: int): string {
+func key (regs=12)
+  // if a < b { return str(a) + "," + str(b) }
+  Less         r2, r0, r1
+  JumpIfFalse  r2, L0
+  Str          r3, r0
+  Const        r4, ","
+  Add          r5, r3, r4
+  Str          r6, r1
+  Add          r7, r5, r6
+  Return       r7
+L0:
+  // return str(b) + "," + str(a)
+  Str          r8, r1
+  Const        r4, ","
+  Add          r9, r8, r4
+  Str          r10, r0
+  Add          r11, r9, r10
+  Return       r11
+
+  // fun cmcSubdiv(points: list<Point>, faces: list<list<int>>): list<any> {
+func cmcSubdiv (regs=138)
+  // let facePoints = getFacePoints(points, faces)
+  Move         r2, r0
+  Move         r3, r1
+  Call2        r4, getFacePoints, r2, r3
+  Move         r5, r4
+  // let edgesFaces = getEdgesFaces(points, faces)
+  Move         r6, r0
+  Move         r7, r1
+  Call2        r8, getEdgesFaces, r6, r7
+  Move         r9, r8
+  // let edgePoints = getEdgePoints(points, edgesFaces, facePoints)
+  Move         r10, r0
+  Move         r11, r9
+  Move         r12, r5
+  Call         r13, getEdgePoints, r10, r11, r12
+  Move         r14, r13
+  // let avgFacePoints = getAvgFacePoints(points, faces, facePoints)
+  Move         r15, r0
+  Move         r16, r1
+  Move         r17, r5
+  Call         r18, getAvgFacePoints, r15, r16, r17
+  Move         r19, r18
+  // let avgMidEdges = getAvgMidEdges(points, edgesFaces)
+  Move         r20, r0
+  Move         r21, r9
+  Call2        r22, getAvgMidEdges, r20, r21
+  Move         r23, r22
+  // let pointsFaces = getPointsFaces(points, faces)
+  Move         r24, r0
+  Move         r25, r1
+  Call2        r26, getPointsFaces, r24, r25
+  Move         r27, r26
+  // var newPoints = getNewPoints(points, pointsFaces, avgFacePoints, avgMidEdges)
+  Move         r28, r0
+  Move         r29, r27
+  Move         r30, r19
+  Move         r31, r23
+  Call         r32, getNewPoints, r28, r29, r30, r31
+  Move         r33, r32
+  // var facePointNums: list<int> = []
+  Const        r34, []
+  Move         r35, r34
+  // var nextPoint = len(newPoints)
+  Len          r36, r33
+  Move         r37, r36
+  // for fp in facePoints {
+  IterPrep     r38, r5
+  Len          r39, r38
+  Const        r40, 0
+L1:
+  LessInt      r41, r40, r39
+  JumpIfFalse  r41, L0
+  Index        r42, r38, r40
+  Move         r43, r42
+  // newPoints = append(newPoints, fp)
+  Append       r44, r33, r43
+  Move         r33, r44
+  // facePointNums = append(facePointNums, nextPoint)
+  Append       r45, r35, r37
+  Move         r35, r45
+  // nextPoint = nextPoint + 1
+  Const        r46, 1
+  AddInt       r47, r37, r46
+  Move         r37, r47
+  // for fp in facePoints {
+  Const        r48, 1
+  AddInt       r49, r40, r48
+  Move         r40, r49
+  Jump         L1
+L0:
+  // var edgePointNums: map<string,int> = {}
+  Const        r50, {}
+  Move         r51, r50
+  // var idx = 0
+  Const        r52, 0
+  Move         r53, r52
+L3:
+  // while idx < len(edgesFaces) {
+  Len          r54, r9
+  LessInt      r55, r53, r54
+  JumpIfFalse  r55, L2
+  // let e = edgesFaces[idx]
+  Index        r56, r9, r53
+  Move         r57, r56
+  // newPoints = append(newPoints, edgePoints[idx])
+  Index        r58, r14, r53
+  Append       r59, r33, r58
+  Move         r33, r59
+  // edgePointNums[key(e.pn1,e.pn2)] = nextPoint
+  Const        r62, "pn1"
+  Index        r63, r57, r62
+  Move         r60, r63
+  Const        r64, "pn2"
+  Index        r65, r57, r64
+  Move         r61, r65
+  Call2        r66, key, r60, r61
+  SetIndex     r51, r66, r37
+  // nextPoint = nextPoint + 1
+  Const        r46, 1
+  AddInt       r67, r37, r46
+  Move         r37, r67
+  // idx = idx + 1
+  Const        r46, 1
+  AddInt       r68, r53, r46
+  Move         r53, r68
+  // while idx < len(edgesFaces) {
+  Jump         L3
+L2:
+  // var newFaces: list<list<int>> = []
+  Const        r34, []
+  Move         r69, r34
+  // var fnum = 0
+  Const        r52, 0
+  Move         r70, r52
+L6:
+  // while fnum < len(faces) {
+  Len          r71, r1
+  LessInt      r72, r70, r71
+  JumpIfFalse  r72, L4
+  // let oldFace = faces[fnum]
+  Index        r73, r1, r70
+  Move         r74, r73
+  // if len(oldFace) == 4 {
+  Len          r75, r74
+  Const        r76, 4
+  EqualInt     r77, r75, r76
+  JumpIfFalse  r77, L5
+  // let a = oldFace[0]
+  Const        r52, 0
+  Index        r78, r74, r52
+  Move         r79, r78
+  // let b = oldFace[1]
+  Const        r46, 1
+  Index        r80, r74, r46
+  Move         r81, r80
+  // let c = oldFace[2]
+  Const        r82, 2
+  Index        r83, r74, r82
+  Move         r84, r83
+  // let d = oldFace[3]
+  Const        r85, 3
+  Index        r86, r74, r85
+  Move         r87, r86
+  // let fpnum = facePointNums[fnum]
+  Index        r88, r35, r70
+  Move         r89, r88
+  // let ab = edgePointNums[key(a,b)]
+  Move         r90, r79
+  Move         r91, r81
+  Call2        r92, key, r90, r91
+  Index        r93, r51, r92
+  Move         r94, r93
+  // let da = edgePointNums[key(d,a)]
+  Move         r95, r87
+  Move         r96, r79
+  Call2        r97, key, r95, r96
+  Index        r98, r51, r97
+  Move         r99, r98
+  // let bc = edgePointNums[key(b,c)]
+  Move         r100, r81
+  Move         r101, r84
+  Call2        r102, key, r100, r101
+  Index        r103, r51, r102
+  Move         r104, r103
+  // let cd = edgePointNums[key(c,d)]
+  Move         r105, r84
+  Move         r106, r87
+  Call2        r107, key, r105, r106
+  Index        r108, r51, r107
+  Move         r109, r108
+  // newFaces = append(newFaces, [a, ab, fpnum, da])
+  Move         r110, r79
+  Move         r111, r94
+  Move         r112, r89
+  Move         r113, r99
+  MakeList     r114, 4, r110
+  Append       r115, r69, r114
+  Move         r69, r115
+  // newFaces = append(newFaces, [b, bc, fpnum, ab])
+  Move         r116, r81
+  Move         r117, r104
+  Move         r118, r89
+  Move         r119, r94
+  MakeList     r120, 4, r116
+  Append       r121, r69, r120
+  Move         r69, r121
+  // newFaces = append(newFaces, [c, cd, fpnum, bc])
+  Move         r122, r84
+  Move         r123, r109
+  Move         r124, r89
+  Move         r125, r104
+  MakeList     r126, 4, r122
+  Append       r127, r69, r126
+  Move         r69, r127
+  // newFaces = append(newFaces, [d, da, fpnum, cd])
+  Move         r128, r87
+  Move         r129, r99
+  Move         r130, r89
+  Move         r131, r109
+  MakeList     r132, 4, r128
+  Append       r133, r69, r132
+  Move         r69, r133
+L5:
+  // fnum = fnum + 1
+  Const        r46, 1
+  AddInt       r134, r70, r46
+  Move         r70, r134
+  // while fnum < len(faces) {
+  Jump         L6
+L4:
+  // return [newPoints, newFaces]
+  Move         r135, r33
+  Move         r136, r69
+  MakeList     r137, 2, r135
+  Return       r137
+
+  // fun formatPoint(p: Point): string {
+func formatPoint (regs=22)
+  // return "[" + fmt4(p.x) + " " + fmt4(p.y) + " " + fmt4(p.z) + "]"
+  Const        r1, "["
+  Const        r3, "x"
+  Index        r4, r0, r3
+  Move         r2, r4
+  Call         r5, fmt4, r2
+  Add          r6, r1, r5
+  Const        r7, " "
+  Add          r8, r6, r7
+  Const        r10, "y"
+  Index        r11, r0, r10
+  Move         r9, r11
+  Call         r12, fmt4, r9
+  Add          r13, r8, r12
+  Const        r7, " "
+  Add          r14, r13, r7
+  Const        r16, "z"
+  Index        r17, r0, r16
+  Move         r15, r17
+  Call         r18, fmt4, r15
+  Add          r19, r14, r18
+  Const        r20, "]"
+  Add          r21, r19, r20
+  Return       r21
+
+  // fun formatFace(f: list<int>): string {
+func formatFace (regs=24)
+  // if len(f) == 0 { return "[]" }
+  Len          r1, r0
+  Const        r2, 0
+  EqualInt     r3, r1, r2
+  JumpIfFalse  r3, L0
+  Const        r4, "[]"
+  Return       r4
+L0:
+  // var s = "[" + fmt2(f[0])
+  Const        r5, "["
+  Const        r2, 0
+  Index        r7, r0, r2
+  Move         r6, r7
+  Call         r8, fmt2, r6
+  Add          r9, r5, r8
+  Move         r10, r9
+  // var i = 1
+  Const        r11, 1
+  Move         r12, r11
+L2:
+  // while i < len(f) {
+  Len          r13, r0
+  LessInt      r14, r12, r13
+  JumpIfFalse  r14, L1
+  // s = s + " " + fmt2(f[i])
+  Const        r15, " "
+  Add          r16, r10, r15
+  Index        r18, r0, r12
+  Move         r17, r18
+  Call         r19, fmt2, r17
+  Add          r20, r16, r19
+  Move         r10, r20
+  // i = i + 1
+  Const        r11, 1
+  AddInt       r21, r12, r11
+  Move         r12, r21
+  // while i < len(f) {
+  Jump         L2
+L1:
+  // s = s + "]"
+  Const        r22, "]"
+  Add          r23, r10, r22
+  Move         r10, r23
+  // return s
+  Return       r10
+
+  // fun main() {
+func main (regs=132)
+  // Point{x: -1.0, y: 1.0, z: 1.0},
+  Const        r8, 1.0
+  NegFloat     r9, r8
+  Const        r8, 1.0
+  Const        r8, 1.0
+  Const        r10, "__name"
+  Const        r11, "Point"
+  Const        r12, "x"
+  Move         r13, r9
+  Const        r14, "y"
+  Move         r15, r8
+  Const        r16, "z"
+  Move         r17, r8
+  MakeMap      r18, 4, r10
+  Move         r0, r18
+  // Point{x: -1.0, y: -1.0, z: 1.0},
+  Const        r8, 1.0
+  NegFloat     r19, r8
+  Const        r8, 1.0
+  NegFloat     r20, r8
+  Const        r8, 1.0
+  Const        r21, "__name"
+  Const        r22, "Point"
+  Const        r23, "x"
+  Move         r24, r19
+  Const        r25, "y"
+  Move         r26, r20
+  Const        r27, "z"
+  Move         r28, r8
+  MakeMap      r29, 4, r21
+  Move         r1, r29
+  // Point{x: 1.0, y: -1.0, z: 1.0},
+  Const        r8, 1.0
+  Const        r8, 1.0
+  NegFloat     r30, r8
+  Const        r8, 1.0
+  Const        r31, "__name"
+  Const        r32, "Point"
+  Const        r33, "x"
+  Move         r34, r8
+  Const        r35, "y"
+  Move         r36, r30
+  Const        r37, "z"
+  Move         r38, r8
+  MakeMap      r39, 4, r31
+  Move         r2, r39
+  // Point{x: 1.0, y: 1.0, z: 1.0},
+  Const        r8, 1.0
+  Const        r8, 1.0
+  Const        r8, 1.0
+  Const        r40, "__name"
+  Const        r41, "Point"
+  Const        r42, "x"
+  Move         r43, r8
+  Const        r44, "y"
+  Move         r45, r8
+  Const        r46, "z"
+  Move         r47, r8
+  MakeMap      r48, 4, r40
+  Move         r3, r48
+  // Point{x: 1.0, y: -1.0, z: -1.0},
+  Const        r8, 1.0
+  Const        r8, 1.0
+  NegFloat     r49, r8
+  Const        r8, 1.0
+  NegFloat     r50, r8
+  Const        r51, "__name"
+  Const        r52, "Point"
+  Const        r53, "x"
+  Move         r54, r8
+  Const        r55, "y"
+  Move         r56, r49
+  Const        r57, "z"
+  Move         r58, r50
+  MakeMap      r59, 4, r51
+  Move         r4, r59
+  // Point{x: 1.0, y: 1.0, z: -1.0},
+  Const        r8, 1.0
+  Const        r8, 1.0
+  Const        r8, 1.0
+  NegFloat     r60, r8
+  Const        r61, "__name"
+  Const        r62, "Point"
+  Const        r63, "x"
+  Move         r64, r8
+  Const        r65, "y"
+  Move         r66, r8
+  Const        r67, "z"
+  Move         r68, r60
+  MakeMap      r69, 4, r61
+  Move         r5, r69
+  // Point{x: -1.0, y: -1.0, z: -1.0},
+  Const        r8, 1.0
+  NegFloat     r70, r8
+  Const        r8, 1.0
+  NegFloat     r71, r8
+  Const        r8, 1.0
+  NegFloat     r72, r8
+  Const        r73, "__name"
+  Const        r74, "Point"
+  Const        r75, "x"
+  Move         r76, r70
+  Const        r77, "y"
+  Move         r78, r71
+  Const        r79, "z"
+  Move         r80, r72
+  MakeMap      r81, 4, r73
+  Move         r6, r81
+  // Point{x: -1.0, y: 1.0, z: -1.0},
+  Const        r8, 1.0
+  NegFloat     r82, r8
+  Const        r8, 1.0
+  Const        r8, 1.0
+  NegFloat     r83, r8
+  Const        r84, "__name"
+  Const        r85, "Point"
+  Const        r86, "x"
+  Move         r87, r82
+  Const        r88, "y"
+  Move         r89, r8
+  Const        r90, "z"
+  Move         r91, r83
+  MakeMap      r92, 4, r84
+  Move         r7, r92
+  // let inputPoints = [
+  MakeList     r93, 8, r0
+  Move         r94, r93
+  // let inputFaces = [
+  Const        r95, [[0, 1, 2, 3], [3, 2, 4, 5], [5, 4, 6, 7], [7, 0, 3, 5], [7, 6, 1, 0], [6, 1, 2, 4]]
+  Move         r96, r95
+  // var outputPoints = inputPoints
+  Move         r97, r94
+  // var outputFaces = inputFaces
+  Const        r98, [[0, 1, 2, 3], [3, 2, 4, 5], [5, 4, 6, 7], [7, 0, 3, 5], [7, 6, 1, 0], [6, 1, 2, 4]]
+  Move         r99, r98
+  // var i = 0
+  Const        r100, 0
+  Move         r101, r100
+L1:
+  // while i < 1 {
+  Const        r102, 1
+  LessInt      r103, r101, r102
+  JumpIfFalse  r103, L0
+  // let res = cmcSubdiv(outputPoints, outputFaces)
+  Move         r104, r97
+  Move         r105, r99
+  Call2        r106, cmcSubdiv, r104, r105
+  Move         r107, r106
+  // outputPoints = res[0]
+  Const        r100, 0
+  Index        r108, r107, r100
+  Move         r97, r108
+  // outputFaces = res[1]
+  Const        r102, 1
+  Index        r109, r107, r102
+  Move         r99, r109
+  // i = i + 1
+  Const        r102, 1
+  AddInt       r110, r101, r102
+  Move         r101, r110
+  // while i < 1 {
+  Jump         L1
+L0:
+  // for p in outputPoints { print(formatPoint(p)) }
+  IterPrep     r111, r97
+  Len          r112, r111
+  Const        r113, 0
+L3:
+  LessInt      r114, r113, r112
+  JumpIfFalse  r114, L2
+  Index        r115, r111, r113
+  Move         r116, r115
+  Move         r117, r116
+  Call         r118, formatPoint, r117
+  Print        r118
+  Const        r119, 1
+  AddInt       r120, r113, r119
+  Move         r113, r120
+  Jump         L3
+L2:
+  // print("")
+  Const        r121, ""
+  Print        r121
+  // for f in outputFaces { print(formatFace(f)) }
+  IterPrep     r122, r99
+  Len          r123, r122
+  Const        r124, 0
+L5:
+  LessInt      r125, r124, r123
+  JumpIfFalse  r125, L4
+  Index        r126, r122, r124
+  Move         r127, r126
+  Move         r128, r127
+  Call         r129, formatFace, r128
+  Print        r129
+  Const        r130, 1
+  AddInt       r131, r124, r130
+  Move         r124, r131
+  Jump         L5
+L4:
+  Return       r0

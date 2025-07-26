@@ -1,0 +1,146 @@
+func main (regs=55)
+  // var partList = ["A", "B", "C", "D"]
+  Const        r2, ["A", "B", "C", "D"]
+  Move         r0, r2
+  SetGlobal    0,0,0,0
+  // var nAssemblies = 3
+  Const        r3, 3
+  Move         r1, r3
+  SetGlobal    1,1,0,0
+  // for p in partList {
+  IterPrep     r4, r0
+  Len          r5, r4
+  Const        r6, 0
+L1:
+  LessInt      r7, r6, r5
+  JumpIfFalse  r7, L0
+  Index        r8, r4, r6
+  Move         r9, r8
+  // print(p + " worker running")
+  Const        r10, " worker running"
+  Add          r11, r9, r10
+  Print        r11
+  // for p in partList {
+  Const        r12, 1
+  AddInt       r13, r6, r12
+  Move         r6, r13
+  Jump         L1
+L0:
+  // for cycle in 1..(nAssemblies + 1) {
+  Const        r14, 1
+  Const        r14, 1
+  AddInt       r15, r1, r14
+  Move         r16, r14
+L5:
+  LessInt      r17, r16, r15
+  JumpIfFalse  r17, L2
+  // print("begin assembly cycle " + str(cycle))
+  Const        r18, "begin assembly cycle "
+  Str          r19, r16
+  Add          r20, r18, r19
+  Print        r20
+  // var a = ""
+  Const        r21, ""
+  Move         r22, r21
+  // for p in partList {
+  IterPrep     r23, r0
+  Len          r24, r23
+  Const        r25, 0
+L4:
+  LessInt      r26, r25, r24
+  JumpIfFalse  r26, L3
+  Index        r27, r23, r25
+  Move         r9, r27
+  // print(p + " worker begins part")
+  Const        r28, " worker begins part"
+  Add          r29, r9, r28
+  Print        r29
+  // print(p + " worker completed " + lower(p))
+  Const        r30, " worker completed "
+  Add          r31, r9, r30
+  Lower        r32, r9
+  Add          r33, r31, r32
+  Print        r33
+  // a = a + lower(p)
+  Lower        r34, r9
+  Add          r35, r22, r34
+  Move         r22, r35
+  // for p in partList {
+  Const        r36, 1
+  AddInt       r37, r25, r36
+  Move         r25, r37
+  Jump         L4
+L3:
+  // print(a + " assembled.  cycle " + str(cycle) + " complete")
+  Const        r38, " assembled.  cycle "
+  Add          r39, r22, r38
+  Str          r40, r16
+  Add          r41, r39, r40
+  Const        r42, " complete"
+  Add          r43, r41, r42
+  Print        r43
+  // for cycle in 1..(nAssemblies + 1) {
+  Const        r44, 1
+  AddInt       r45, r16, r44
+  Move         r16, r45
+  Jump         L5
+L2:
+  // for p in partList {
+  IterPrep     r46, r0
+  Len          r47, r46
+  Const        r48, 0
+L7:
+  LessInt      r49, r48, r47
+  JumpIfFalse  r49, L6
+  Index        r50, r46, r48
+  Move         r9, r50
+  // print(p + " worker stopped")
+  Const        r51, " worker stopped"
+  Add          r52, r9, r51
+  Print        r52
+  // for p in partList {
+  Const        r53, 1
+  AddInt       r54, r48, r53
+  Move         r48, r54
+  Jump         L7
+L6:
+  Return       r0
+
+  // fun lower(ch: string): string {
+func lower (regs=18)
+  // let up = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+  Const        r3, "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+  Move         r4, r3
+  // let low = "abcdefghijklmnopqrstuvwxyz"
+  Const        r5, "abcdefghijklmnopqrstuvwxyz"
+  Move         r6, r5
+  // var i = 0
+  Const        r7, 0
+  Move         r8, r7
+L2:
+  // while i < len(up) {
+  Const        r9, 26
+  LessInt      r10, r8, r9
+  JumpIfFalse  r10, L0
+  // if ch == substring(up, i, i+1) { return substring(low, i, i+1) }
+  Const        r3, "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+  Const        r11, 1
+  AddInt       r12, r8, r11
+  Slice        r13, r3, r8, r12
+  Equal        r14, r2, r13
+  JumpIfFalse  r14, L1
+  Const        r5, "abcdefghijklmnopqrstuvwxyz"
+  Const        r11, 1
+  AddInt       r15, r8, r11
+  Slice        r16, r5, r8, r15
+  Return       r16
+L1:
+  // i = i + 1
+  Const        r11, 1
+  AddInt       r17, r8, r11
+  Move         r8, r17
+  // while i < len(up) {
+  Jump         L2
+L0:
+  // return ch
+  Return       r2

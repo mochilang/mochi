@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated IR and outputs from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/ir`.
-Last updated: 2025-07-25 17:44 UTC
+Last updated: 2025-07-26 02:36 UTC
 
-## Rosetta Golden Test Checklist (144/284)
+## Rosetta Golden Test Checklist (194/284)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 116µs | 11.7 KB |
@@ -155,57 +155,57 @@ Last updated: 2025-07-25 17:44 UTC
 | 146 | calendar---for-real-programmers-2 | ✓ | 1.377ms |  |
 | 147 | calendar | ✓ | 1.327ms | 53.5 KB |
 | 148 | calkin-wilf-sequence |   |  |  |
-| 149 | call-a-foreign-language-function |   |  |  |
-| 150 | call-a-function-1 |   |  |  |
-| 151 | call-a-function-10 |   |  |  |
-| 152 | call-a-function-11 |   |  |  |
-| 153 | call-a-function-12 |   |  |  |
-| 154 | call-a-function-2 |   |  |  |
-| 155 | call-a-function-3 |   |  |  |
-| 156 | call-a-function-4 |   |  |  |
-| 157 | call-a-function-5 |   |  |  |
-| 158 | call-a-function-6 |   |  |  |
-| 159 | call-a-function-7 |   |  |  |
-| 160 | call-a-function-8 |   |  |  |
-| 161 | call-a-function-9 |   |  |  |
-| 162 | call-an-object-method-1 |   |  |  |
-| 163 | call-an-object-method-2 |   |  |  |
-| 164 | call-an-object-method-3 |   |  |  |
-| 165 | call-an-object-method |   |  |  |
-| 166 | camel-case-and-snake-case |   |  |  |
-| 167 | canny-edge-detector |   |  |  |
-| 168 | canonicalize-cidr |   |  |  |
-| 169 | cantor-set |   |  |  |
-| 170 | carmichael-3-strong-pseudoprimes |   |  |  |
-| 171 | cartesian-product-of-two-or-more-lists-1 |   |  |  |
-| 172 | cartesian-product-of-two-or-more-lists-2 |   |  |  |
-| 173 | cartesian-product-of-two-or-more-lists-3 |   |  |  |
-| 174 | cartesian-product-of-two-or-more-lists-4 |   |  |  |
-| 175 | case-sensitivity-of-identifiers |   |  |  |
-| 176 | casting-out-nines |   |  |  |
-| 177 | catalan-numbers-1 |   |  |  |
-| 178 | catalan-numbers-2 |   |  |  |
-| 179 | catalan-numbers-pascals-triangle |   |  |  |
-| 180 | catamorphism |   |  |  |
-| 181 | catmull-clark-subdivision-surface |   |  |  |
-| 182 | chaocipher |   |  |  |
-| 183 | chaos-game |   |  |  |
-| 184 | character-codes-1 |   |  |  |
-| 185 | character-codes-2 |   |  |  |
-| 186 | character-codes-3 |   |  |  |
-| 187 | character-codes-4 |   |  |  |
-| 188 | character-codes-5 |   |  |  |
-| 189 | chat-server |   |  |  |
+| 149 | call-a-foreign-language-function | ✓ | 267µs | 6.6 KB |
+| 150 | call-a-function-1 | ✓ | 86µs | 136 B |
+| 151 | call-a-function-10 | ✓ | 73µs |  |
+| 152 | call-a-function-11 | ✓ | 81µs | 3.9 KB |
+| 153 | call-a-function-12 | ✓ | 62µs | 8.2 KB |
+| 154 | call-a-function-2 | ✓ | 64µs | 2.2 KB |
+| 155 | call-a-function-3 | ✓ | 94µs | 4.7 KB |
+| 156 | call-a-function-4 | ✓ | 74µs | 3.0 KB |
+| 157 | call-a-function-5 | ✓ | 37µs | 3.9 KB |
+| 158 | call-a-function-6 | ✓ | 40µs | 4.8 KB |
+| 159 | call-a-function-7 | ✓ | 20µs | 840 B |
+| 160 | call-a-function-8 | ✓ | 69µs | 29.1 KB |
+| 161 | call-a-function-9 | ✓ | 88µs | 8.4 KB |
+| 162 | call-an-object-method-1 | ✓ | 81µs | 11.2 KB |
+| 163 | call-an-object-method-2 | ✓ | 71µs | 4.4 KB |
+| 164 | call-an-object-method-3 | ✓ | 693µs | 5.6 KB |
+| 165 | call-an-object-method | ✓ | 73µs | 5.6 KB |
+| 166 | camel-case-and-snake-case | ✓ | 738µs | 463.0 KB |
+| 167 | canny-edge-detector | ✓ | 388µs | 112.5 KB |
+| 168 | canonicalize-cidr | ✓ | 2.048ms | 559.1 KB |
+| 169 | cantor-set | ✓ | 1.394ms | 728.5 KB |
+| 170 | carmichael-3-strong-pseudoprimes | ✓ | 42.69ms | 404.5 KB |
+| 171 | cartesian-product-of-two-or-more-lists-1 | ✓ | 75µs | 39.7 KB |
+| 172 | cartesian-product-of-two-or-more-lists-2 | ✓ | 575µs | 337.4 KB |
+| 173 | cartesian-product-of-two-or-more-lists-3 | ✓ | 586µs | 414.8 KB |
+| 174 | cartesian-product-of-two-or-more-lists-4 | ✓ | 467µs | 574.6 KB |
+| 175 | case-sensitivity-of-identifiers | ✓ | 80µs | 23.5 KB |
+| 176 | casting-out-nines | ✓ | 12.302ms | 1.8 MB |
+| 177 | catalan-numbers-1 | ✓ | 118µs | 60.6 KB |
+| 178 | catalan-numbers-2 | ✓ | 594µs | 329.7 KB |
+| 179 | catalan-numbers-pascals-triangle | ✓ | 330µs | 546.0 KB |
+| 180 | catamorphism | ✓ | 75µs | 34.4 KB |
+| 181 | catmull-clark-subdivision-surface | ✓ | 2.131ms | 736.3 KB |
+| 182 | chaocipher | ✓ | 711µs | 617.6 KB |
+| 183 | chaos-game | ✓ | 1.25584s |  |
+| 184 | character-codes-1 | ✓ | 43µs | 4.0 KB |
+| 185 | character-codes-2 | ✓ | 28µs | 3.8 KB |
+| 186 | character-codes-3 | ✓ | 40µs | 8.4 KB |
+| 187 | character-codes-4 | ✓ | 38µs | 8.8 KB |
+| 188 | character-codes-5 | ✓ | 42µs | 7.0 KB |
+| 189 | chat-server | ✓ | 154µs | 32.4 KB |
 | 190 | check-machin-like-formulas |   |  |  |
-| 191 | check-that-file-exists |   |  |  |
-| 192 | checkpoint-synchronization-1 |   |  |  |
-| 193 | checkpoint-synchronization-2 |   |  |  |
-| 194 | checkpoint-synchronization-3 |   |  |  |
-| 195 | checkpoint-synchronization-4 |   |  |  |
-| 196 | chernicks-carmichael-numbers |   |  |  |
-| 197 | cheryls-birthday |   |  |  |
-| 198 | chinese-remainder-theorem |   |  |  |
-| 199 | chinese-zodiac |   |  |  |
+| 191 | check-that-file-exists | ✓ | 43µs | 10.6 KB |
+| 192 | checkpoint-synchronization-1 | ✓ | 70µs | 8.4 KB |
+| 193 | checkpoint-synchronization-2 | ✓ | 46µs | 9.1 KB |
+| 194 | checkpoint-synchronization-3 | ✓ | 54µs | 11.0 KB |
+| 195 | checkpoint-synchronization-4 | ✓ | 58µs | 12.7 KB |
+| 196 | chernicks-carmichael-numbers | ✓ | 7.787037s |  |
+| 197 | cheryls-birthday | ✓ | 2.42ms | 341.3 KB |
+| 198 | chinese-remainder-theorem | ✓ | 114µs | 43.0 KB |
+| 199 | chinese-zodiac | ✓ | 74µs | 53.1 KB |
 | 200 | cholesky-decomposition-1 |   |  |  |
 | 201 | cholesky-decomposition |   |  |  |
 | 202 | chowla-numbers |   |  |  |

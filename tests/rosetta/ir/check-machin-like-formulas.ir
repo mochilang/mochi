@@ -1,0 +1,207 @@
+func main (regs=20)
+  // var testCases = [
+  Const        r1, [[{"a": 1, "d": 2, "n": 1}, {"a": 1, "d": 3, "n": 1}], [{"a": 2, "d": 3, "n": 1}, {"a": 1, "d": 7, "n": 1}], [{"a": 4, "d": 5, "n": 1}, {"a": -1, "d": 239, "n": 1}], [{"a": 5, "d": 7, "n": 1}, {"a": 2, "d": 79, "n": 3}], [{"a": 1, "d": 2, "n": 1}, {"a": 1, "d": 5, "n": 1}, {"a": 1, "d": 8, "n": 1}], [{"a": 4, "d": 5, "n": 1}, {"a": -1, "d": 70, "n": 1}, {"a": 1, "d": 99, "n": 1}], [{"a": 5, "d": 7, "n": 1}, {"a": 4, "d": 53, "n": 1}, {"a": 2, "d": 4443, "n": 1}], [{"a": 6, "d": 8, "n": 1}, {"a": 2, "d": 57, "n": 1}, {"a": 1, "d": 239, "n": 1}], [{"a": 8, "d": 10, "n": 1}, {"a": -1, "d": 239, "n": 1}, {"a": -4, "d": 515, "n": 1}], [{"a": 12, "d": 18, "n": 1}, {"a": 8, "d": 57, "n": 1}, {"a": -5, "d": 239, "n": 1}], [{"a": 16, "d": 21, "n": 1}, {"a": 3, "d": 239, "n": 1}, {"a": 4, "d": 1042, "n": 3}], [{"a": 22, "d": 28, "n": 1}, {"a": 2, "d": 443, "n": 1}, {"a": -5, "d": 1393, "n": 1}, {"a": -10, "d": 11018, "n": 1}], [{"a": 22, "d": 38, "n": 1}, {"a": 17, "d": 601, "n": 7}, {"a": 10, "d": 8149, "n": 7}], [{"a": 44, "d": 57, "n": 1}, {"a": 7, "d": 239, "n": 1}, {"a": -12, "d": 682, "n": 1}, {"a": 24, "d": 12943, "n": 1}], [{"a": 88, "d": 172, "n": 1}, {"a": 51, "d": 239, "n": 1}, {"a": 32, "d": 682, "n": 1}, {"a": 44, "d": 5357, "n": 1}, {"a": 68, "d": 12943, "n": 1}], [{"a": 88, "d": 172, "n": 1}, {"a": 51, "d": 239, "n": 1}, {"a": 32, "d": 682, "n": 1}, {"a": 44, "d": 5357, "n": 1}, {"a": 68, "d": 12944, "n": 1}]]
+  Move         r0, r1
+  SetGlobal    0,0,0,0
+  // for ts in testCases {
+  IterPrep     r2, r0
+  Len          r3, r2
+  Const        r4, 0
+L1:
+  LessInt      r5, r4, r3
+  JumpIfFalse  r5, L0
+  Index        r6, r2, r4
+  Move         r7, r6
+  // print("tan " + format(ts) + " = " + str(tans(ts)))
+  Const        r8, "tan "
+  Move         r9, r7
+  Call         r10, format, r9
+  Add          r11, r8, r10
+  Const        r12, " = "
+  Add          r13, r11, r12
+  Move         r14, r7
+  Call         r15, tans, r14
+  Str          r16, r15
+  Add          r17, r13, r16
+  Print        r17
+  // for ts in testCases {
+  Const        r18, 1
+  AddInt       r19, r4, r18
+  Move         r4, r19
+  Jump         L1
+L0:
+  Return       r0
+
+  // fun br(n: int, d: int): bigrat { return (n as bigrat) / (d as bigrat) as bigrat }
+func br (regs=7)
+  // fun br(n: int, d: int): bigrat { return (n as bigrat) / (d as bigrat) as bigrat }
+  Cast         r3, r1, bigrat
+  Cast         r4, r2, bigrat
+  Cast         r5, r4, bigrat
+  Div          r6, r3, r5
+  Return       r6
+
+  // fun format(ts: list<map<string,int>>): string {
+func format (regs=37)
+  // var s = "["
+  Const        r2, "["
+  Move         r3, r2
+  // var i = 0
+  Const        r4, 0
+  Move         r5, r4
+L2:
+  // while i < len(ts) {
+  Len          r6, r1
+  LessInt      r7, r5, r6
+  JumpIfFalse  r7, L0
+  // let t = ts[i]
+  Index        r8, r1, r5
+  Move         r9, r8
+  // s = s + "{" + str(t["a"]) + " " + str(t["n"]) + " " + str(t["d"]) + "}"
+  Const        r10, "{"
+  Add          r11, r3, r10
+  Const        r12, "a"
+  Index        r13, r9, r12
+  Str          r14, r13
+  Add          r15, r11, r14
+  Const        r16, " "
+  Add          r17, r15, r16
+  Const        r18, "n"
+  Index        r19, r9, r18
+  Str          r20, r19
+  Add          r21, r17, r20
+  Const        r16, " "
+  Add          r22, r21, r16
+  Const        r23, "d"
+  Index        r24, r9, r23
+  Str          r25, r24
+  Add          r26, r22, r25
+  Const        r27, "}"
+  Add          r28, r26, r27
+  Move         r3, r28
+  // if i < len(ts)-1 { s = s + " " }
+  Len          r29, r1
+  Const        r30, 1
+  SubInt       r31, r29, r30
+  LessInt      r32, r5, r31
+  JumpIfFalse  r32, L1
+  Const        r16, " "
+  Add          r33, r3, r16
+  Move         r3, r33
+L1:
+  // i = i + 1
+  Const        r30, 1
+  AddInt       r34, r5, r30
+  Move         r5, r34
+  // while i < len(ts) {
+  Jump         L2
+L0:
+  // return s + "]"
+  Const        r35, "]"
+  Add          r36, r3, r35
+  Return       r36
+
+  // fun tanEval(coef: int, f: bigrat): bigrat {
+func tanEval (regs=33)
+  // if coef == 1 { return f }
+  Const        r3, 1
+  Equal        r4, r1, r3
+  JumpIfFalse  r4, L0
+  Return       r2
+L0:
+  // if coef < 0 { return -(tanEval(-coef, f)) as bigrat }
+  Const        r5, 0
+  Less         r6, r1, r5
+  JumpIfFalse  r6, L1
+  Neg          r9, r1
+  Move         r7, r9
+  Move         r8, r2
+  Call2        r10, tanEval, r7, r8
+  Cast         r11, r10, bigrat
+  Neg          r12, r11
+  Return       r12
+L1:
+  // let ca = coef / 2
+  Const        r13, 2
+  Div          r14, r1, r13
+  Move         r15, r14
+  // let cb = coef - ca
+  Sub          r16, r1, r15
+  Move         r17, r16
+  // let a = tanEval(ca, f)
+  Move         r18, r15
+  Move         r19, r2
+  Call2        r20, tanEval, r18, r19
+  Move         r21, r20
+  // let b = tanEval(cb, f)
+  Move         r22, r17
+  Move         r23, r2
+  Call2        r24, tanEval, r22, r23
+  Move         r25, r24
+  // return (a + b) as bigrat / (1 as bigrat - a*b) as bigrat
+  Add          r26, r21, r25
+  Cast         r27, r26, bigrat
+  Const        r3, 1
+  Cast         r28, r3, bigrat
+  Mul          r29, r21, r25
+  Sub          r30, r28, r29
+  Cast         r31, r30, bigrat
+  Div          r32, r27, r31
+  Return       r32
+
+  // fun tans(m: list<map<string,int>>): bigrat {
+func tans (regs=43)
+  // if len(m) == 1 {
+  Len          r2, r1
+  Const        r3, 1
+  EqualInt     r4, r2, r3
+  JumpIfFalse  r4, L0
+  // let t = m[0]
+  Const        r5, 0
+  Index        r6, r1, r5
+  Move         r7, r6
+  // return tanEval(t["a"], br(t["n"], t["d"]))
+  Const        r10, "a"
+  Index        r11, r7, r10
+  Move         r8, r11
+  Const        r14, "n"
+  Index        r15, r7, r14
+  Move         r12, r15
+  Const        r16, "d"
+  Index        r17, r7, r16
+  Move         r13, r17
+  Call2        r18, br, r12, r13
+  Move         r9, r18
+  Call2        r19, tanEval, r8, r9
+  Return       r19
+L0:
+  // let half = len(m)/2
+  Len          r20, r1
+  Const        r21, 2
+  DivInt       r22, r20, r21
+  Move         r23, r22
+  // let a = tans(m[0:half])
+  Const        r5, 0
+  Move         r25, r5
+  Move         r26, r23
+  Slice        r27, r1, r25, r26
+  Move         r24, r27
+  Call         r28, tans, r24
+  Move         r29, r28
+  // let b = tans(m[half:])
+  Move         r31, r23
+  Const        r32, nil
+  Slice        r33, r1, r31, r32
+  Move         r30, r33
+  Call         r34, tans, r30
+  Move         r35, r34
+  // return (a + b) as bigrat / (1 as bigrat - a*b) as bigrat
+  Add          r36, r29, r35
+  Cast         r37, r36, bigrat
+  Const        r3, 1
+  Cast         r38, r3, bigrat
+  Mul          r39, r29, r35
+  Sub          r40, r38, r39
+  Cast         r41, r40, bigrat
+  Div          r42, r37, r41
+  Return       r42

@@ -1,0 +1,214 @@
+func main (regs=67)
+  // let width = 60
+  Const        r10, 60
+  Move         r0, r10
+  SetGlobal    0,0,0,0
+  // let height = (width as float * 0.86602540378) as int
+  Const        r11, 51
+  Move         r1, r11
+  SetGlobal    1,1,0,0
+  // let iterations = 5000
+  Const        r12, 5000
+  Move         r2, r12
+  SetGlobal    2,2,0,0
+  // var grid: list<list<string>> = []
+  Const        r13, []
+  Move         r3, r13
+  SetGlobal    3,3,0,0
+  // var y = 0
+  Const        r14, 0
+  Move         r4, r14
+  SetGlobal    4,4,0,0
+L3:
+  // while y < height {
+  Const        r11, 51
+  LessInt      r15, r4, r11
+  JumpIfFalse  r15, L0
+  // var line: list<string> = []
+  Const        r13, []
+  Move         r16, r13
+  // var x = 0
+  Const        r14, 0
+  Move         r17, r14
+L2:
+  // while x < width {
+  Const        r10, 60
+  LessInt      r18, r17, r10
+  JumpIfFalse  r18, L1
+  // line = append(line, " ")
+  Const        r19, " "
+  Append       r20, r16, r19
+  Move         r16, r20
+  // x = x + 1
+  Const        r21, 1
+  AddInt       r22, r17, r21
+  Move         r17, r22
+  // while x < width {
+  Jump         L2
+L1:
+  // grid = append(grid, line)
+  Append       r23, r3, r16
+  Move         r3, r23
+  SetGlobal    3,3,0,0
+  // y = y + 1
+  Const        r21, 1
+  AddInt       r24, r4, r21
+  Move         r4, r24
+  SetGlobal    4,4,0,0
+  // while y < height {
+  Jump         L3
+L0:
+  // var seed = 1
+  Const        r21, 1
+  Move         r5, r21
+  SetGlobal    5,5,0,0
+  // let vertices: list<list<int>> = [[0, height - 1], [width - 1, height - 1], [(width / 2) as int, 0]]
+  Const        r25, [[0, 50], [59, 50], [30, 0]]
+  Move         r6, r25
+  SetGlobal    6,6,0,0
+  // var px = (width / 2) as int
+  Const        r26, 30
+  Move         r7, r26
+  SetGlobal    7,7,0,0
+  // var py = (height / 2) as int
+  Const        r27, 25
+  Move         r8, r27
+  SetGlobal    8,8,0,0
+  // var i = 0
+  Const        r14, 0
+  Move         r9, r14
+  SetGlobal    9,9,0,0
+L7:
+  // while i < iterations {
+  Const        r12, 5000
+  LessInt      r28, r9, r12
+  JumpIfFalse  r28, L4
+  // var r = randInt(seed, 3)
+  Move         r29, r5
+  Const        r31, 3
+  Move         r30, r31
+  Call2        r32, randInt, r29, r30
+  Move         r33, r32
+  // seed = r[0]
+  Const        r14, 0
+  Index        r34, r33, r14
+  Move         r5, r34
+  SetGlobal    5,5,0,0
+  // let idx = r[1] as int
+  Const        r21, 1
+  Index        r35, r33, r21
+  Cast         r36, r35, int
+  Move         r37, r36
+  // let v = vertices[idx]
+  Index        r38, r6, r37
+  Move         r39, r38
+  // px = ((px + v[0]) / 2) as int
+  Const        r14, 0
+  Index        r40, r39, r14
+  Add          r41, r7, r40
+  Const        r42, 2
+  Div          r43, r41, r42
+  Cast         r44, r43, int
+  Move         r7, r44
+  SetGlobal    7,7,0,0
+  // py = ((py + v[1]) / 2) as int
+  Const        r21, 1
+  Index        r45, r39, r21
+  Add          r46, r8, r45
+  Const        r42, 2
+  Div          r47, r46, r42
+  Cast         r48, r47, int
+  Move         r8, r48
+  SetGlobal    8,8,0,0
+  // if px >= 0 && px < width && py >= 0 && py < height {
+  Const        r14, 0
+  LessEq       r49, r14, r7
+  Const        r10, 60
+  Less         r50, r7, r10
+  Const        r14, 0
+  LessEq       r51, r14, r8
+  Const        r11, 51
+  Less         r52, r8, r11
+  Move         r53, r49
+  JumpIfFalse  r53, L5
+  Move         r53, r50
+  JumpIfFalse  r53, L5
+  Move         r53, r51
+  JumpIfFalse  r53, L5
+  Move         r53, r52
+L5:
+  JumpIfFalse  r53, L6
+  // grid[py][px] = "*"
+  Index        r54, r3, r8
+  Const        r55, "*"
+  SetIndex     r54, r7, r55
+  SetGlobal    3,3,0,0
+L6:
+  // i = i + 1
+  Const        r21, 1
+  AddInt       r56, r9, r21
+  Move         r9, r56
+  SetGlobal    9,9,0,0
+  // while i < iterations {
+  Jump         L7
+L4:
+  // y = 0
+  Const        r14, 0
+  Move         r4, r14
+  SetGlobal    4,4,0,0
+L11:
+  // while y < height {
+  Const        r11, 51
+  LessInt      r57, r4, r11
+  JumpIfFalse  r57, L8
+  // var line = ""
+  Const        r58, ""
+  Move         r59, r58
+  // var x = 0
+  Const        r14, 0
+  Move         r60, r14
+L10:
+  // while x < width {
+  Const        r10, 60
+  LessInt      r61, r60, r10
+  JumpIfFalse  r61, L9
+  // line = line + grid[y][x]
+  Index        r62, r3, r4
+  Index        r63, r62, r60
+  Add          r64, r59, r63
+  Move         r59, r64
+  // x = x + 1
+  Const        r21, 1
+  AddInt       r65, r60, r21
+  Move         r60, r65
+  // while x < width {
+  Jump         L10
+L9:
+  // print(line)
+  Print        r59
+  // y = y + 1
+  Const        r21, 1
+  AddInt       r66, r4, r21
+  Move         r4, r66
+  SetGlobal    4,4,0,0
+  // while y < height {
+  Jump         L11
+L8:
+  Return       r0
+
+  // fun randInt(s: int, n: int): list<int> {
+func randInt (regs=23)
+  // let next = (s * 1664525 + 1013904223) % 2147483647
+  Const        r12, 1664525
+  Mul          r13, r10, r12
+  Const        r14, 1013904223
+  Add          r15, r13, r14
+  Const        r16, 2147483647
+  Mod          r17, r15, r16
+  Move         r18, r17
+  // return [next, next % n]
+  Move         r19, r18
+  Mod          r21, r18, r11
+  Move         r20, r21
+  MakeList     r22, 2, r19
+  Return       r22

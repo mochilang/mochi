@@ -1,0 +1,378 @@
+func main (regs=154)
+  // Birthday{month:5, day:15}, Birthday{month:5, day:16}, Birthday{month:5, day:19},
+  Const        r15, 5
+  Const        r16, 15
+  Const        r17, "__name"
+  Const        r18, "Birthday"
+  Const        r19, "month"
+  Move         r20, r15
+  Const        r21, "day"
+  Move         r22, r16
+  MakeMap      r23, 3, r17
+  Move         r5, r23
+  Const        r15, 5
+  Const        r24, 16
+  Const        r25, "__name"
+  Const        r26, "Birthday"
+  Const        r27, "month"
+  Move         r28, r15
+  Const        r29, "day"
+  Move         r30, r24
+  MakeMap      r31, 3, r25
+  Move         r6, r31
+  Const        r15, 5
+  Const        r32, 19
+  Const        r33, "__name"
+  Const        r34, "Birthday"
+  Const        r35, "month"
+  Move         r36, r15
+  Const        r37, "day"
+  Move         r38, r32
+  MakeMap      r39, 3, r33
+  Move         r7, r39
+  // Birthday{month:6, day:17}, Birthday{month:6, day:18},
+  Const        r40, 6
+  Const        r41, 17
+  Const        r42, "__name"
+  Const        r43, "Birthday"
+  Const        r44, "month"
+  Move         r45, r40
+  Const        r46, "day"
+  Move         r47, r41
+  MakeMap      r48, 3, r42
+  Move         r8, r48
+  Const        r40, 6
+  Const        r49, 18
+  Const        r50, "__name"
+  Const        r51, "Birthday"
+  Const        r52, "month"
+  Move         r53, r40
+  Const        r54, "day"
+  Move         r55, r49
+  MakeMap      r56, 3, r50
+  Move         r9, r56
+  // Birthday{month:7, day:14}, Birthday{month:7, day:16},
+  Const        r57, 7
+  Const        r58, 14
+  Const        r59, "__name"
+  Const        r60, "Birthday"
+  Const        r61, "month"
+  Move         r62, r57
+  Const        r63, "day"
+  Move         r64, r58
+  MakeMap      r65, 3, r59
+  Move         r10, r65
+  Const        r57, 7
+  Const        r24, 16
+  Const        r66, "__name"
+  Const        r67, "Birthday"
+  Const        r68, "month"
+  Move         r69, r57
+  Const        r70, "day"
+  Move         r71, r24
+  MakeMap      r72, 3, r66
+  Move         r11, r72
+  // Birthday{month:8, day:14}, Birthday{month:8, day:15}, Birthday{month:8, day:17}
+  Const        r73, 8
+  Const        r58, 14
+  Const        r74, "__name"
+  Const        r75, "Birthday"
+  Const        r76, "month"
+  Move         r77, r73
+  Const        r78, "day"
+  Move         r79, r58
+  MakeMap      r80, 3, r74
+  Move         r12, r80
+  Const        r73, 8
+  Const        r16, 15
+  Const        r81, "__name"
+  Const        r82, "Birthday"
+  Const        r83, "month"
+  Move         r84, r73
+  Const        r85, "day"
+  Move         r86, r16
+  MakeMap      r87, 3, r81
+  Move         r13, r87
+  Const        r73, 8
+  Const        r41, 17
+  Const        r88, "__name"
+  Const        r89, "Birthday"
+  Const        r90, "month"
+  Move         r91, r73
+  Const        r92, "day"
+  Move         r93, r41
+  MakeMap      r94, 3, r88
+  Move         r14, r94
+  // var choices: list<Birthday> = [
+  MakeList     r95, 10, r5
+  Move         r0, r95
+  SetGlobal    0,0,0,0
+  // var filtered: list<Birthday> = []
+  Const        r96, []
+  Move         r1, r96
+  SetGlobal    1,1,0,0
+  // for bd in choices {
+  IterPrep     r97, r0
+  Len          r98, r97
+  Const        r99, 0
+L2:
+  LessInt      r100, r99, r98
+  JumpIfFalse  r100, L0
+  Index        r101, r97, r99
+  Move         r102, r101
+  // if !monthUnique(bd, choices) {
+  Move         r103, r102
+  Move         r104, r0
+  Call2        r105, monthUnique, r103, r104
+  Not          r106, r105
+  JumpIfFalse  r106, L1
+  // filtered = append(filtered, bd)
+  Append       r107, r1, r102
+  Move         r1, r107
+  SetGlobal    1,1,0,0
+L1:
+  // for bd in choices {
+  Const        r108, 1
+  AddInt       r109, r99, r108
+  Move         r99, r109
+  Jump         L2
+L0:
+  // var filtered2: list<Birthday> = []
+  Const        r96, []
+  Move         r2, r96
+  SetGlobal    2,2,0,0
+  // for bd in filtered {
+  IterPrep     r110, r1
+  Len          r111, r110
+  Const        r112, 0
+L5:
+  LessInt      r113, r112, r111
+  JumpIfFalse  r113, L3
+  Index        r114, r110, r112
+  Move         r102, r114
+  // if !monthWithUniqueDay(bd, filtered) {
+  Move         r115, r102
+  Move         r116, r1
+  Call2        r117, monthWithUniqueDay, r115, r116
+  Not          r118, r117
+  JumpIfFalse  r118, L4
+  // filtered2 = append(filtered2, bd)
+  Append       r119, r2, r102
+  Move         r2, r119
+  SetGlobal    2,2,0,0
+L4:
+  // for bd in filtered {
+  Const        r120, 1
+  AddInt       r121, r112, r120
+  Move         r112, r121
+  Jump         L5
+L3:
+  // var filtered3: list<Birthday> = []
+  Const        r96, []
+  Move         r3, r96
+  SetGlobal    3,3,0,0
+  // for bd in filtered2 {
+  IterPrep     r122, r2
+  Len          r123, r122
+  Const        r124, 0
+L8:
+  LessInt      r125, r124, r123
+  JumpIfFalse  r125, L6
+  Index        r126, r122, r124
+  Move         r102, r126
+  // if dayUnique(bd, filtered2) {
+  Move         r127, r102
+  Move         r128, r2
+  Call2        r129, dayUnique, r127, r128
+  JumpIfFalse  r129, L7
+  // filtered3 = append(filtered3, bd)
+  Append       r130, r3, r102
+  Move         r3, r130
+  SetGlobal    3,3,0,0
+L7:
+  // for bd in filtered2 {
+  Const        r131, 1
+  AddInt       r132, r124, r131
+  Move         r124, r132
+  Jump         L8
+L6:
+  // var filtered4: list<Birthday> = []
+  Const        r96, []
+  Move         r4, r96
+  SetGlobal    4,4,0,0
+  // for bd in filtered3 {
+  IterPrep     r133, r3
+  Len          r134, r133
+  Const        r135, 0
+L11:
+  LessInt      r136, r135, r134
+  JumpIfFalse  r136, L9
+  Index        r137, r133, r135
+  Move         r102, r137
+  // if monthUnique(bd, filtered3) {
+  Move         r138, r102
+  Move         r139, r3
+  Call2        r140, monthUnique, r138, r139
+  JumpIfFalse  r140, L10
+  // filtered4 = append(filtered4, bd)
+  Append       r141, r4, r102
+  Move         r4, r141
+  SetGlobal    4,4,0,0
+L10:
+  // for bd in filtered3 {
+  Const        r142, 1
+  AddInt       r143, r135, r142
+  Move         r135, r143
+  Jump         L11
+L9:
+  // if len(filtered4) == 1 {
+  Len          r144, r4
+  Const        r145, 1
+  EqualInt     r146, r144, r145
+  JumpIfFalse  r146, L12
+  // print("Cheryl's birthday is " + bstr(filtered4[0]))
+  Const        r147, "Cheryl's birthday is "
+  Const        r149, 0
+  Index        r150, r4, r149
+  Move         r148, r150
+  Call         r151, bstr, r148
+  Add          r152, r147, r151
+  Print        r152
+  // if len(filtered4) == 1 {
+  Jump         L13
+L12:
+  // print("Something went wrong!")
+  Const        r153, "Something went wrong!"
+  Print        r153
+L13:
+  Return       r0
+
+  // fun monthUnique(b: Birthday, list: list<Birthday>): bool {
+func monthUnique (regs=24)
+  // var c = 0
+  Const        r7, 0
+  Move         r8, r7
+  // for x in list {
+  IterPrep     r9, r6
+  Len          r10, r9
+  Const        r11, 0
+L2:
+  LessInt      r12, r11, r10
+  JumpIfFalse  r12, L0
+  Index        r13, r9, r11
+  Move         r14, r13
+  // if x.month == b.month {
+  Const        r15, "month"
+  Index        r16, r14, r15
+  Const        r15, "month"
+  Index        r17, r5, r15
+  Equal        r18, r16, r17
+  JumpIfFalse  r18, L1
+  // c = c + 1
+  Const        r19, 1
+  AddInt       r20, r8, r19
+  Move         r8, r20
+L1:
+  // for x in list {
+  Const        r21, 1
+  AddInt       r22, r11, r21
+  Move         r11, r22
+  Jump         L2
+L0:
+  // return c == 1
+  Const        r19, 1
+  EqualInt     r23, r8, r19
+  Return       r23
+
+  // fun dayUnique(b: Birthday, list: list<Birthday>): bool {
+func dayUnique (regs=24)
+  // var c = 0
+  Const        r7, 0
+  Move         r8, r7
+  // for x in list {
+  IterPrep     r9, r6
+  Len          r10, r9
+  Const        r11, 0
+L2:
+  LessInt      r12, r11, r10
+  JumpIfFalse  r12, L0
+  Index        r13, r9, r11
+  Move         r14, r13
+  // if x.day == b.day {
+  Const        r15, "day"
+  Index        r16, r14, r15
+  Const        r15, "day"
+  Index        r17, r5, r15
+  Equal        r18, r16, r17
+  JumpIfFalse  r18, L1
+  // c = c + 1
+  Const        r19, 1
+  AddInt       r20, r8, r19
+  Move         r8, r20
+L1:
+  // for x in list {
+  Const        r21, 1
+  AddInt       r22, r11, r21
+  Move         r11, r22
+  Jump         L2
+L0:
+  // return c == 1
+  Const        r19, 1
+  EqualInt     r23, r8, r19
+  Return       r23
+
+  // fun monthWithUniqueDay(b: Birthday, list: list<Birthday>): bool {
+func monthWithUniqueDay (regs=25)
+  // for x in list {
+  IterPrep     r7, r6
+  Len          r8, r7
+  Const        r9, 0
+L3:
+  LessInt      r10, r9, r8
+  JumpIfFalse  r10, L0
+  Index        r11, r7, r9
+  Move         r12, r11
+  // if x.month == b.month && dayUnique(x, list) {
+  Const        r13, "month"
+  Index        r14, r12, r13
+  Const        r13, "month"
+  Index        r15, r5, r13
+  Equal        r16, r14, r15
+  Move         r17, r16
+  JumpIfFalse  r17, L1
+  Move         r18, r12
+  Move         r19, r6
+  Call2        r20, dayUnique, r18, r19
+  Move         r17, r20
+L1:
+  JumpIfFalse  r17, L2
+  // return true
+  Const        r21, true
+  Return       r21
+L2:
+  // for x in list {
+  Const        r22, 1
+  AddInt       r23, r9, r22
+  Move         r9, r23
+  Jump         L3
+L0:
+  // return false
+  Const        r24, false
+  Return       r24
+
+  // fun bstr(b: Birthday): string {
+func bstr (regs=17)
+  // let months = ["", "January", "February", "March", "April", "May", "June",
+  Const        r6, ["", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+  Move         r7, r6
+  // return months[b.month] + " " + str(b.day)
+  Const        r8, "month"
+  Index        r9, r5, r8
+  Index        r10, r7, r9
+  Const        r11, " "
+  Add          r12, r10, r11
+  Const        r13, "day"
+  Index        r14, r5, r13
+  Str          r15, r14
+  Add          r16, r12, r15
+  Return       r16

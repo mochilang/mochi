@@ -1,0 +1,57 @@
+func main (regs=17)
+  // var b = 97
+  Const        r2, 97
+  Move         r0, r2
+  SetGlobal    0,0,0,0
+  // var r = 960
+  Const        r3, 960
+  Move         r1, r3
+  SetGlobal    1,1,0,0
+  // print(chr(97) + " " + chr(960))
+  Const        r2, 97
+  Move         r4, r2
+  Call         r5, chr, r4
+  Const        r6, " "
+  Add          r7, r5, r6
+  Const        r3, 960
+  Move         r8, r3
+  Call         r9, chr, r8
+  Add          r10, r7, r9
+  Print        r10
+  // print(chr(b) + " " + chr(r))
+  Move         r11, r0
+  Call         r12, chr, r11
+  Const        r6, " "
+  Add          r13, r12, r6
+  Move         r14, r1
+  Call         r15, chr, r14
+  Add          r16, r13, r15
+  Print        r16
+  Return       r0
+
+  // fun chr(n: int): string {
+func chr (regs=13)
+  // if n == 97 { return "a" }
+  Const        r3, 97
+  Equal        r4, r2, r3
+  JumpIfFalse  r4, L0
+  Const        r5, "a"
+  Return       r5
+L0:
+  // if n == 960 { return "π" }
+  Const        r6, 960
+  Equal        r7, r2, r6
+  JumpIfFalse  r7, L1
+  Const        r8, "π"
+  Return       r8
+L1:
+  // if n == 65 { return "A" }
+  Const        r9, 65
+  Equal        r10, r2, r9
+  JumpIfFalse  r10, L2
+  Const        r11, "A"
+  Return       r11
+L2:
+  // return "?"
+  Const        r12, "?"
+  Return       r12

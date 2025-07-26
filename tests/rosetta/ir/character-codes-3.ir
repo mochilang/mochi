@@ -1,0 +1,105 @@
+func main (regs=32)
+  // var b = ord("a")
+  Const        r4, "a"
+  Move         r3, r4
+  Call         r5, ord, r3
+  Move         r0, r5
+  SetGlobal    0,0,0,0
+  // var r = ord("π")
+  Const        r7, "π"
+  Move         r6, r7
+  Call         r8, ord, r6
+  Move         r1, r8
+  SetGlobal    1,1,0,0
+  // var s = "aπ"
+  Const        r9, "aπ"
+  Move         r2, r9
+  SetGlobal    2,2,0,0
+  // print(str(b) + " " + str(r) + " " + s)
+  Str          r10, r0
+  Const        r11, " "
+  Add          r12, r10, r11
+  Str          r13, r1
+  Add          r14, r12, r13
+  Const        r11, " "
+  Add          r15, r14, r11
+  Add          r16, r15, r2
+  Print        r16
+  // print("string cast to []rune: [" + str(b) + " " + str(r) + "]")
+  Const        r17, "string cast to []rune: ["
+  Str          r18, r0
+  Add          r19, r17, r18
+  Const        r11, " "
+  Add          r20, r19, r11
+  Str          r21, r1
+  Add          r22, r20, r21
+  Const        r23, "]"
+  Add          r24, r22, r23
+  Print        r24
+  // print("    string range loop: " + str(b) + " " + str(r))
+  Const        r25, "    string range loop: "
+  Str          r26, r0
+  Add          r27, r25, r26
+  Const        r11, " "
+  Add          r28, r27, r11
+  Str          r29, r1
+  Add          r30, r28, r29
+  Print        r30
+  // print("         string bytes: 0x61 0xcf 0x80")
+  Const        r31, "         string bytes: 0x61 0xcf 0x80"
+  Print        r31
+  Return       r0
+
+  // fun ord(ch: string): int {
+func ord (regs=14)
+  // if ch == "a" { return 97 }
+  Const        r4, "a"
+  Equal        r5, r3, r4
+  JumpIfFalse  r5, L0
+  Const        r6, 97
+  Return       r6
+L0:
+  // if ch == "π" { return 960 }
+  Const        r7, "π"
+  Equal        r8, r3, r7
+  JumpIfFalse  r8, L1
+  Const        r9, 960
+  Return       r9
+L1:
+  // if ch == "A" { return 65 }
+  Const        r10, "A"
+  Equal        r11, r3, r10
+  JumpIfFalse  r11, L2
+  Const        r12, 65
+  Return       r12
+L2:
+  // return 0
+  Const        r13, 0
+  Return       r13
+
+  // fun chr(n: int): string {
+func chr (regs=14)
+  // if n == 97 { return "a" }
+  Const        r4, 97
+  Equal        r5, r3, r4
+  JumpIfFalse  r5, L0
+  Const        r6, "a"
+  Return       r6
+L0:
+  // if n == 960 { return "π" }
+  Const        r7, 960
+  Equal        r8, r3, r7
+  JumpIfFalse  r8, L1
+  Const        r9, "π"
+  Return       r9
+L1:
+  // if n == 65 { return "A" }
+  Const        r10, 65
+  Equal        r11, r3, r10
+  JumpIfFalse  r11, L2
+  Const        r12, "A"
+  Return       r12
+L2:
+  // return "?"
+  Const        r13, "?"
+  Return       r13

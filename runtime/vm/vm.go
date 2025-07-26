@@ -69,10 +69,15 @@ const (
 const smallJoinThreshold = 0
 
 // maxCallDepth guards against runaway recursion leading to stack
-// overflows when executing user programs. The depth is measured as the
-// number of active function calls. When exceeded the VM returns an
-// error instead of crashing.
-const maxCallDepth = 1024
+// overflows when executing user programs. Programs using deeply nested
+// recursion can legitimately require more than the previous limit of
+// 1024 frames, so we raise the bound while still preventing infinite
+// recursion from exhausting memory.
+// Increase the recursion limit modestly to accommodate moderately deep
+// recursion while still preventing runaway programs from exhausting
+// memory. Extremely recursive tasks will still hit this limit and abort
+// with a clear error.
+const maxCallDepth = 4096
 
 // Op defines a VM instruction opcode.
 type Op uint8

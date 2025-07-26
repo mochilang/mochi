@@ -1,0 +1,74 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun f(): list<any> {
+func f (regs=1)
+  // return [0, 0.0]
+  Const        r0, [0, 0.0]
+  Return       r0
+
+  // fun g(a: int, b: float): int {
+func g (regs=3)
+  // return 0
+  Const        r2, 0
+  Return       r2
+
+  // fun h(s: string, nums: list<int>) {
+func h (regs=2)
+  Return       r0
+
+  // fun main() {
+func main (regs=31)
+  // let ab = f()
+  Call         r0, f, 
+  Move         r1, r0
+  // let a = ab[0]
+  Const        r2, 0
+  Index        r3, r1, r2
+  Move         r4, r3
+  // let b = ab[1]
+  Const        r5, 1
+  Index        r6, r1, r5
+  Move         r7, r6
+  // let cb = f()[1]
+  Call         r8, f, 
+  Const        r5, 1
+  Index        r9, r8, r5
+  Move         r10, r9
+  // let d = g(a, cb)
+  Move         r11, r4
+  Move         r12, r10
+  Call2        r13, g, r11, r12
+  Move         r14, r13
+  // let e = g(d, b)
+  Move         r15, r14
+  Move         r16, r7
+  Call2        r17, g, r15, r16
+  Move         r18, r17
+  // var i = g(d, 2.0)
+  Move         r19, r14
+  Const        r21, 2.0
+  Move         r20, r21
+  Call2        r22, g, r19, r20
+  Move         r23, r22
+  // var list: list<int> = []
+  Const        r24, []
+  Move         r25, r24
+  // list = append(list, a)
+  Append       r26, r25, r4
+  Move         r25, r26
+  // list = append(list, d)
+  Append       r27, r25, r14
+  Move         r25, r27
+  // list = append(list, e)
+  Append       r28, r25, r18
+  Move         r25, r28
+  // list = append(list, i)
+  Append       r29, r25, r23
+  Move         r25, r29
+  // i = len(list)
+  Len          r30, r25
+  Move         r23, r30
+  Return       r0

@@ -1,0 +1,18 @@
+func main (regs=1)
+  Return       r0
+
+  // fun f(): list<any> {
+func f (regs=1)
+  // return [0, 0.0]
+  Const        r0, [0, 0.0]
+  Return       r0
+
+  // fun g(a: int, b: float): int {
+func g (regs=3)
+  // return 0
+  Const        r2, 0
+  Return       r2
+
+  // fun h(s: string, nums: list<int>) {
+func h (regs=2)
+  Return       r0

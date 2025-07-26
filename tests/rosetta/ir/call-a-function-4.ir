@@ -1,0 +1,26 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun gifEncode(out: any, img: any, opts: map<string,int>) {
+func gifEncode (regs=3)
+  Return       r0
+
+  // fun main() {
+func main (regs=9)
+  // var opts: map<string,int> = {}
+  Const        r0, {}
+  Move         r1, r0
+  // opts["NumColors"] = 16
+  Const        r2, 16
+  Const        r3, "NumColors"
+  SetIndex     r1, r3, r2
+  // gifEncode(null, null, opts)
+  Const        r7, nil
+  Move         r4, r7
+  Const        r7, nil
+  Move         r5, r7
+  Move         r6, r1
+  Call         r8, gifEncode, r4, r5, r6
+  Return       r0
