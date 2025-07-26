@@ -14,7 +14,7 @@ Vector: [10.0, 20.0, 30.0, 40.0, 50.0, -100.0, 4.7, -1100.0]
 Mean of 8 numbers is -130.6625
 
 {
-  "duration_us": 6934,
-  "memory_bytes": 1372072,
+  "duration_us": 5783,
+  "memory_bytes": 552360,
   "name": "main"
 }
