@@ -36,6 +36,7 @@ var needAppendObj bool
 var needNetLookupHost bool
 var needMem bool
 var needPadStart bool
+var needSHA256 bool
 var needBigRat bool
 var pyMathAliases map[string]bool
 var builtinAliases map[string]string
@@ -146,6 +147,14 @@ func javaType(t string) string {
 					}
 					rt := javaBoxType(javaType(ret))
 					return fmt.Sprintf("java.util.function.Function<%s,%s>", pt, rt)
+				} else if len(params) == 2 {
+					pt1 := javaBoxType(javaType(params[0]))
+					pt2 := javaBoxType(javaType(params[1]))
+					if ret == "void" {
+						return fmt.Sprintf("java.util.function.BiConsumer<%s,%s>", pt1, pt2)
+					}
+					rt := javaBoxType(javaType(ret))
+					return fmt.Sprintf("java.util.function.BiFunction<%s,%s,%s>", pt1, pt2, rt)
 				}
 			}
 		}
@@ -545,6 +554,8 @@ func inferType(e Expr) string {
 			return "bigrat"
 		case "_padStart":
 			return "String"
+		case "_sha256":
+			return "int[]"
 		default:
 			if t, ok := funcRet[ex.Func]; ok {
 				return t
@@ -1114,6 +1125,35 @@ func (s *IndexAssignStmt) emit(w io.Writer, indent string) {
 			fmt.Fprint(w, ";\n")
 			return
 		}
+	}
+	if len(s.Indices) > 1 && isMapExpr(s.Target) {
+		ix := &IndexExpr{Target: s.Target, Index: s.Indices[0], IsMap: true}
+		if key, ok := s.Indices[0].(*StringLit); ok {
+			if fields := mapFieldsForExpr(s.Target); fields != nil {
+				if t, ok2 := fields[key.Value]; ok2 {
+					ix.ResultType = t
+				}
+			}
+		}
+		ix.emit(w)
+		for _, idx := range s.Indices[1:] {
+			fmt.Fprint(w, "[")
+			idx.emit(w)
+			fmt.Fprint(w, "]")
+		}
+		fmt.Fprint(w, " = ")
+		elem := arrayElemType(ix)
+		for i := 1; i < len(s.Indices); i++ {
+			if strings.HasSuffix(elem, "[]") {
+				elem = strings.TrimSuffix(elem, "[]")
+			} else {
+				elem = ""
+				break
+			}
+		}
+		emitCastExpr(w, s.Expr, elem)
+		fmt.Fprint(w, ";\n")
+		return
 	}
 	s.Target.emit(w)
 	for _, idx := range s.Indices {
@@ -2665,6 +2705,7 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	needMem = false
 	needAppendBool = false
 	needPadStart = false
+	needSHA256 = false
 	needBigRat = false
 	pyMathAliases = map[string]bool{}
 	builtinAliases = map[string]string{}
@@ -2987,15 +3028,27 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 		}
 		return nil, nil
 	case s.Fun != nil:
-		expr, err := compileFunExpr(&parser.FunExpr{Params: s.Fun.Params, Return: s.Fun.Return, BlockBody: s.Fun.Body})
-		if err != nil {
-			return nil, err
-		}
 		var ptypes []string
 		for _, pa := range s.Fun.Params {
 			ptypes = append(ptypes, typeRefString(pa.Type))
 		}
-		funType := fmt.Sprintf("fn(%s):%s", strings.Join(ptypes, ","), typeRefString(s.Fun.Return))
+		provisionalRet := typeRefString(s.Fun.Return)
+		if provisionalRet == "" {
+			provisionalRet = "void"
+		}
+		provisional := fmt.Sprintf("fn(%s):%s", strings.Join(ptypes, ","), provisionalRet)
+		varTypes[s.Fun.Name] = provisional
+		expr, err := compileFunExpr(&parser.FunExpr{Params: s.Fun.Params, Return: s.Fun.Return, BlockBody: s.Fun.Body})
+		if err != nil {
+			return nil, err
+		}
+		ret := typeRefString(s.Fun.Return)
+		if lam, ok := expr.(*LambdaExpr); ok {
+			if ret == "" {
+				ret = lam.Return
+			}
+		}
+		funType := fmt.Sprintf("fn(%s):%s", strings.Join(ptypes, ","), ret)
 		varTypes[s.Fun.Name] = funType
 		return &VarStmt{Name: s.Fun.Name, Type: funType, Expr: expr}, nil
 	case s.Assign != nil:
@@ -3300,15 +3353,7 @@ func compileStmts(list []*parser.Statement) ([]Stmt, error) {
 			}
 		}
 	}
-	if len(out) >= 2 {
-		if _, ok := out[len(out)-1].(*ReturnStmt); ok {
-			if w, ok2 := out[len(out)-2].(*WhileStmt); ok2 {
-				if b, ok3 := w.Cond.(*BoolLit); ok3 && b.Value {
-					out = out[:len(out)-1]
-				}
-			}
-		}
-	}
+	// preserve explicit return statements even after infinite loops
 	return out, nil
 }
 
@@ -3771,6 +3816,10 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 		if name == "padStart" && len(args) == 3 {
 			needPadStart = true
 			return &CallExpr{Func: "_padStart", Args: args}, nil
+		}
+		if name == "sha256" && len(args) == 1 {
+			needSHA256 = true
+			return &CallExpr{Func: "_sha256", Args: args}, nil
 		}
 		return &CallExpr{Func: name, Args: args}, nil
 	case p.Lit != nil && p.Lit.Str != nil:
@@ -4582,6 +4631,19 @@ func Emit(prog *Program) []byte {
 		buf.WriteString("        String out = s;\n")
 		buf.WriteString("        while (out.length() < width) { out = pad + out; }\n")
 		buf.WriteString("        return out;\n")
+		buf.WriteString("    }\n")
+	}
+	if needSHA256 {
+		buf.WriteString("\n    static int[] _sha256(int[] bs) {\n")
+		buf.WriteString("        try {\n")
+		buf.WriteString("            java.security.MessageDigest md = java.security.MessageDigest.getInstance(\"SHA-256\");\n")
+		buf.WriteString("            byte[] bytes = new byte[bs.length];\n")
+		buf.WriteString("            for (int i = 0; i < bs.length; i++) bytes[i] = (byte)bs[i];\n")
+		buf.WriteString("            byte[] hash = md.digest(bytes);\n")
+		buf.WriteString("            int[] out = new int[hash.length];\n")
+		buf.WriteString("            for (int i = 0; i < hash.length; i++) out[i] = hash[i] & 0xff;\n")
+		buf.WriteString("            return out;\n")
+		buf.WriteString("        } catch (Exception e) { return new int[0]; }\n")
 		buf.WriteString("    }\n")
 	}
 	if needBigRat {

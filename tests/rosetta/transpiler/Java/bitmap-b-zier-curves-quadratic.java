@@ -1,5 +1,5 @@
 public class Main {
-    static int b3Seg = 30;
+    static int b2Seg = 20;
     static class Pixel {
         int r;
         int g;
@@ -100,11 +100,11 @@ public class Main {
         }
     }
 
-    static void bezier3(java.util.Map<String,Object> b, int x1, int y1, int x2, int y2, int x3, int y3, int x4, int y4, Pixel p) {
+    static void bezier2(java.util.Map<String,Object> b, int x1, int y1, int x2, int y2, int x3, int y3, Pixel p) {
         int[] px = new int[]{};
         int[] py = new int[]{};
         int i = 0;
-        while (i <= b3Seg) {
+        while (i <= b2Seg) {
             px = java.util.stream.IntStream.concat(java.util.Arrays.stream(px), java.util.stream.IntStream.of(0)).toArray();
             py = java.util.stream.IntStream.concat(java.util.Arrays.stream(py), java.util.stream.IntStream.of(0)).toArray();
             i = i + 1;
@@ -115,26 +115,21 @@ public class Main {
         double fy2 = ((Number)(y2)).doubleValue();
         double fx3 = ((Number)(x3)).doubleValue();
         double fy3 = ((Number)(y3)).doubleValue();
-        double fx4 = ((Number)(x4)).doubleValue();
-        double fy4 = ((Number)(y4)).doubleValue();
         i = 0;
-        while (i <= b3Seg) {
-            double d = (((Number)(i)).doubleValue()) / (((Number)(b3Seg)).doubleValue());
-            double a = 1.0 - d;
-            double bcoef = a * a;
-            double ccoef = d * d;
-            double a2 = a * bcoef;
-            double b2 = 3.0 * bcoef * d;
-            double c2 = 3.0 * a * ccoef;
-            double d2 = ccoef * d;
-px[i] = ((Number)((a2 * fx1 + b2 * fx2 + c2 * fx3 + d2 * fx4))).intValue();
-py[i] = ((Number)((a2 * fy1 + b2 * fy2 + c2 * fy3 + d2 * fy4))).intValue();
+        while (i <= b2Seg) {
+            double c = (((Number)(i)).doubleValue()) / (((Number)(b2Seg)).doubleValue());
+            double a = 1.0 - c;
+            double a2 = a * a;
+            double b2 = 2.0 * c * a;
+            double c2 = c * c;
+px[i] = ((Number)((a2 * fx1 + b2 * fx2 + c2 * fx3))).intValue();
+py[i] = ((Number)((a2 * fy1 + b2 * fy2 + c2 * fy3))).intValue();
             i = i + 1;
         }
         int x0 = px[0];
         int y0 = py[0];
         i = 1;
-        while (i <= b3Seg) {
+        while (i <= b2Seg) {
             int x = px[i];
             int y = py[i];
             line(b, x0, y0, x, y, p);
@@ -147,8 +142,8 @@ py[i] = ((Number)((a2 * fy1 + b2 * fy2 + c2 * fy3 + d2 * fy4))).intValue();
         {
             long _benchStart = _now();
             long _benchMem = _mem();
-            fillRgb(b, 16773055);
-            bezier3(b, 20, 200, 700, 50, -300, 50, 380, 150, pixelFromRgb(4165615));
+            fillRgb(b, 14614575);
+            bezier2(b, 20, 150, 500, -100, 300, 280, pixelFromRgb(4165615));
             long _benchDuration = _now() - _benchStart;
             long _benchMemory = _mem() - _benchMem;
             System.out.println("{");
