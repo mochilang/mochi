@@ -4234,6 +4234,16 @@ func convertPostfix(p *parser.PostfixExpr) (Expr, error) {
 								expr = &BinaryExpr{Left: args[0], Op: "+", Right: args[1]}
 								replaced = true
 							}
+						case "MD5Hex":
+							if n.Name == "testpkg" && len(args) == 1 {
+								if currentImports != nil {
+									currentImports["hashlib"] = true
+								}
+								bytesCall := &CallExpr{Func: &FieldExpr{Target: args[0], Name: "encode"}}
+								hashCall := &CallExpr{Func: &FieldExpr{Target: &Name{Name: "hashlib"}, Name: "md5"}, Args: []Expr{bytesCall}}
+								expr = &CallExpr{Func: &FieldExpr{Target: hashCall, Name: "hexdigest"}, Args: nil}
+								replaced = true
+							}
 						case "FifteenPuzzleExample":
 							if n.Name == "testpkg" && len(args) == 0 {
 								expr = &StringLit{Value: "Solution found in 52 moves: rrrulddluuuldrurdddrullulurrrddldluurddlulurruldrdrd"}
@@ -4417,6 +4427,16 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				hashCall := &CallExpr{Func: &FieldExpr{Target: &Name{Name: "hashlib"}, Name: "sha256"}, Args: []Expr{bytesCall}}
 				digest := &CallExpr{Func: &FieldExpr{Target: hashCall, Name: "digest"}, Args: nil}
 				return &CallExpr{Func: &Name{Name: "list"}, Args: []Expr{digest}}, nil
+			}
+		case "MD5Hex":
+			if len(args) == 1 {
+				if currentImports != nil {
+					currentImports["hashlib"] = true
+				}
+				bytesCall := &CallExpr{Func: &FieldExpr{Target: args[0], Name: "encode"}}
+				hashCall := &CallExpr{Func: &FieldExpr{Target: &Name{Name: "hashlib"}, Name: "md5"}, Args: []Expr{bytesCall}}
+				digest := &CallExpr{Func: &FieldExpr{Target: hashCall, Name: "hexdigest"}, Args: nil}
+				return digest, nil
 			}
 		case "substring":
 			if len(args) == 3 {
