@@ -1,3 +1,107 @@
+## Progress (2025-07-27 01:22 +0700)
+- go transpiler: handle bigint comparisons with int
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-27 01:22 +0700)
+- go transpiler: handle bigint comparisons with int
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-27 01:22 +0700)
+- go transpiler: handle bigint comparisons with int
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-27 01:22 +0700)
+- go transpiler: handle bigint comparisons with int
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-27 01:22 +0700)
+- go transpiler: handle bigint comparisons with int
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-27 01:22 +0700)
+- go transpiler: handle bigint comparisons with int
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-27 01:22 +0700)
+- go transpiler: handle bigint comparisons with int
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-27 01:22 +0700)
+- go transpiler: handle bigint comparisons with int
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-27 01:22 +0700)
+- go transpiler: handle bigint comparisons with int
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-27 01:22 +0700)
+- go transpiler: handle bigint comparisons with int
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-27 01:22 +0700)
+- go transpiler: handle bigint comparisons with int
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-27 01:22 +0700)
+- go transpiler: handle bigint comparisons with int
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-27 01:22 +0700)
+- go transpiler: handle bigint comparisons with int
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-27 01:22 +0700)
+- go transpiler: handle bigint comparisons with int
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-27 01:22 +0700)
+- go transpiler: handle bigint comparisons with int
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-27 01:22 +0700)
+- go transpiler: handle bigint comparisons with int
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-27 01:22 +0700)
+- go transpiler: handle bigint comparisons with int
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-27 01:22 +0700)
+- go transpiler: handle bigint comparisons with int
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-27 01:22 +0700)
+- go transpiler: handle bigint comparisons with int
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-27 01:22 +0700)
+- go transpiler: handle bigint comparisons with int
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-27 01:22 +0700)
+- go transpiler: handle bigint comparisons with int
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-27 01:22 +0700)
+- go transpiler: handle bigint comparisons with int
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-27 01:22 +0700)
+- go transpiler: handle bigint comparisons with int
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-27 01:22 +0700)
+- go transpiler: handle bigint comparisons with int
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-27 01:22 +0700)
+- go transpiler: handle bigint comparisons with int
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-27 01:22 +0700)
+- go transpiler: handle bigint comparisons with int
+- Regenerated golden files - 104/104 vm valid programs passing
+
 ## Progress (2025-07-27 00:51 +0700)
 - php: update rosetta outputs for indices 221-263
 - Regenerated golden files - 104/104 vm valid programs passing
