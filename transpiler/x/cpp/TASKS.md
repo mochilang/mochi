@@ -1,3 +1,23 @@
+## Progress (2025-07-26 19:01 +0700)
+- ex transpiler: handle float mod and module globals
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- ex transpiler: handle float mod and module globals
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- ex transpiler: handle float mod and module globals
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- ex transpiler: handle float mod and module globals
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
 ## Progress (2025-07-26 10:04 +0700)
 - cpp transpiler: support SHA256 and 64-bit ints; update rosetta outputs
 - Generated C++ for 103/104 programs
