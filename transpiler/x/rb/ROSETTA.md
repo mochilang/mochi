@@ -2,9 +2,9 @@
 
 Generated Ruby code from Mochi Rosetta tasks lives in `tests/rosetta/transpiler/rb`.
 
-Last updated: 2025-07-26 16:12 UTC
+Last updated: 2025-07-26 17:07 UTC
 
-## Checklist (266/332)
+## Checklist (286/332)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 195µs | 36.2 KB |
@@ -279,27 +279,27 @@ Last updated: 2025-07-26 16:12 UTC
 | 270 | cusip | ✓ | 76µs | 19.8 KB |
 | 271 | cyclops-numbers | ✓ | 4µs | 856 B |
 | 272 | damm-algorithm | ✓ | 55µs | 16.2 KB |
-| 273 | date-format |   |  |  |
-| 274 | date-manipulation |   |  |  |
-| 275 | day-of-the-week |   |  |  |
-| 276 | de-bruijn-sequences |   |  |  |
-| 277 | deal-cards-for-freecell |   |  |  |
-| 278 | death-star |   |  |  |
-| 279 | deceptive-numbers |   |  |  |
+| 273 | date-format | ✓ | 53µs | 11.4 KB |
+| 274 | date-manipulation | ✓ | 98µs | 24.6 KB |
+| 275 | day-of-the-week | ✓ | 91µs | 13.6 KB |
+| 276 | de-bruijn-sequences | ✓ | 323.141ms | 160.9 KB |
+| 277 | deal-cards-for-freecell | ✓ | 180µs | 76.9 KB |
+| 278 | death-star | ✓ | 29.473ms | 475.8 KB |
+| 279 | deceptive-numbers | ✓ | 41.756ms | -67796 B |
 | 280 | deconvolution-1d-2 |   |  |  |
-| 281 | deconvolution-1d-3 |   |  |  |
-| 282 | deconvolution-1d |   |  |  |
-| 283 | deepcopy-1 |   |  |  |
-| 284 | define-a-primitive-data-type |   |  |  |
-| 285 | delegates |   |  |  |
-| 286 | demings-funnel |   |  |  |
-| 287 | department-numbers |   |  |  |
-| 288 | descending-primes |   |  |  |
-| 289 | detect-division-by-zero |   |  |  |
-| 290 | determine-if-a-string-has-all-the-same-characters |   |  |  |
-| 291 | determine-if-a-string-has-all-unique-characters |   |  |  |
-| 292 | determine-if-a-string-is-collapsible |   |  |  |
-| 293 | determine-if-a-string-is-numeric-1 |   |  |  |
+| 281 | deconvolution-1d-3 | ✓ | 107µs | 18.0 KB |
+| 282 | deconvolution-1d | ✓ | 61µs | 21.5 KB |
+| 283 | deepcopy-1 | ✓ | 99µs | 19.9 KB |
+| 284 | define-a-primitive-data-type | ✓ | 49µs | 14.1 KB |
+| 285 | delegates | ✓ | 47µs | 10.8 KB |
+| 286 | demings-funnel | ✓ | 877µs | 442.5 KB |
+| 287 | department-numbers | ✓ | 72µs | 16.3 KB |
+| 288 | descending-primes | ✓ | 3.24ms | 107.2 KB |
+| 289 | detect-division-by-zero | ✓ | 56µs | 11.2 KB |
+| 290 | determine-if-a-string-has-all-the-same-characters | ✓ | 75µs | 27.4 KB |
+| 291 | determine-if-a-string-has-all-unique-characters | ✓ | 254µs | 86.7 KB |
+| 292 | determine-if-a-string-is-collapsible | ✓ | 208µs | 75.3 KB |
+| 293 | determine-if-a-string-is-numeric-1 | ✓ | 37µs | 13.7 KB |
 | 294 | determine-if-a-string-is-numeric-2 |   |  |  |
 | 295 | determine-if-a-string-is-squeezable |   |  |  |
 | 296 | determine-if-only-one-instance-is-running |   |  |  |

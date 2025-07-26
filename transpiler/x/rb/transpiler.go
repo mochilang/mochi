@@ -1276,6 +1276,21 @@ func identName(n string) string {
 	switch name {
 	case "nil", "true", "false":
 		return name
+	case "stdout":
+		if !inScope(n) {
+			return "STDOUT"
+		}
+		return safeName(name)
+	case "stdin":
+		if !inScope(n) {
+			return "STDIN"
+		}
+		return safeName(name)
+	case "stderr":
+		if !inScope(n) {
+			return "STDERR"
+		}
+		return safeName(name)
 	default:
 		return safeName(name)
 	}
@@ -2282,7 +2297,7 @@ func valueToExpr(v interface{}, typ *parser.TypeRef) Expr {
 			items[i] = MapItem{Key: &StringLit{Value: k}, Value: expr}
 		}
 		if typ != nil && typ.Simple != nil {
-			return &StructNewExpr{Name: identName(*typ.Simple), Fields: fields}
+			return &StructNewExpr{Name: identName(toTypeName(*typ.Simple)), Fields: fields}
 		}
 		return &MapLit{Items: items}
 	case []interface{}:
@@ -2590,6 +2605,10 @@ func toStructName(varName string) string {
 	return name
 }
 
+func toTypeName(name string) string {
+	return strings.Title(name)
+}
+
 // global environment used for type inference during conversion
 var currentEnv *types.Env
 var funcDepth int
@@ -2727,7 +2746,8 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 				}
 			}
 			if len(fields) > 0 || len(methods) > 0 {
-				return &StructDefStmt{Name: identName(st.Type.Name), Fields: fields, Methods: methods}, nil
+				name := identName(toTypeName(st.Type.Name))
+				return &StructDefStmt{Name: name, Fields: fields, Methods: methods}, nil
 			}
 		}
 		var stmts []Stmt
@@ -2739,7 +2759,8 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 				for i, f := range v.Fields {
 					fields[i] = fieldName(f.Name)
 				}
-				stmts = append(stmts, &StructDefStmt{Name: identName(v.Name), Fields: fields})
+				name := identName(toTypeName(v.Name))
+				stmts = append(stmts, &StructDefStmt{Name: name, Fields: fields})
 			}
 		}
 		if len(stmts) > 0 {
@@ -3621,7 +3642,7 @@ func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
 			expr, curType = fieldAccess(expr, curType, op.Field.Name)
 		case op.Cast != nil:
 			if op.Cast.Type != nil && op.Cast.Type.Simple != nil {
-				typName := identName(*op.Cast.Type.Simple)
+				typName := identName(toTypeName(*op.Cast.Type.Simple))
 				if currentEnv != nil {
 					if st, ok := currentEnv.GetStruct(typName); ok {
 						if ml, ok2 := expr.(*MapLit); ok2 {
@@ -3862,8 +3883,12 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 						call := &CallExpr{Func: name, Args: callArgs}
 						return &LambdaExpr{Params: params, Expr: call}, nil
 					}
-				} else {
-					return &MethodCallExpr{Target: &Ident{Name: name}, Method: "call", Args: args}, nil
+					return &CallExpr{Func: name, Args: args}, nil
+				}
+				if vt, err := currentEnv.GetVar(name); err == nil {
+					if _, ok := vt.(types.FuncType); ok {
+						return &MethodCallExpr{Target: &Ident{Name: name}, Method: "call", Args: args}, nil
+					}
 				}
 			}
 			return &CallExpr{Func: name, Args: args}, nil
@@ -3944,7 +3969,7 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			}
 			fields[i] = StructField{Name: fieldName(f.Name), Value: v}
 		}
-		return &StructNewExpr{Name: identName(p.Struct.Name), Fields: fields}, nil
+		return &StructNewExpr{Name: identName(toTypeName(p.Struct.Name)), Fields: fields}, nil
 	case p.Match != nil:
 		return convertMatchExpr(p.Match)
 	case p.If != nil:
