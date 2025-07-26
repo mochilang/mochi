@@ -155,7 +155,15 @@ fun _now(): Long {
 	extraHelpers = nil
 	helpersUsed = map[string]bool{}
 	localFuncs = map[string]bool{}
-	funcRets = map[string]string{}
+	funcRets = map[string]string{
+		"kotlin.math.abs": "Double",
+	}
+}
+
+// HasFuncRet reports if a return type mapping exists for name.
+func HasFuncRet(name string) bool {
+	_, ok := funcRets[name]
+	return ok
 }
 
 // Program represents a simple Kotlin program consisting of statements executed in main.
@@ -2691,7 +2699,7 @@ func convertStmts(env *types.Env, list []*parser.Statement) ([]Stmt, error) {
 						}
 					}
 				}
-				if typ == "" {
+				if typ == "" || typ == "Any" || typ == "Any?" {
 					typ = guessType(v)
 					if typ == "" {
 						if ix, ok := v.(*IndexExpr); ok && ix.Type != "" {
@@ -2724,7 +2732,27 @@ func convertStmts(env *types.Env, list []*parser.Statement) ([]Stmt, error) {
 				if s.Let.Type != nil {
 					tt = types.ResolveTypeRef(s.Let.Type, env)
 				} else if t := types.CheckExprType(s.Let.Value, env); t != nil {
-					tt = t
+					if typ != "" && types.ContainsAny(t) {
+						switch typ {
+						case "Int":
+							tt = types.IntType{}
+						case "Double":
+							tt = types.FloatType{}
+						case "Boolean":
+							tt = types.BoolType{}
+						case "String":
+							tt = types.StringType{}
+						default:
+							tt = t
+						}
+					} else {
+						tt = t
+						if typ == "Int" {
+							if _, ok := tt.(types.BigIntType); ok {
+								tt = types.IntType{}
+							}
+						}
+					}
 				} else {
 					switch typ {
 					case "Int":
@@ -2810,7 +2838,7 @@ func convertStmts(env *types.Env, list []*parser.Statement) ([]Stmt, error) {
 						}
 					}
 				}
-				if typ == "" {
+				if typ == "" || typ == "Any" || typ == "Any?" {
 					typ = guessType(v)
 					if typ == "" {
 						if ix, ok := v.(*IndexExpr); ok && ix.Type != "" {
@@ -2846,7 +2874,27 @@ func convertStmts(env *types.Env, list []*parser.Statement) ([]Stmt, error) {
 				if s.Var.Type != nil {
 					tt = types.ResolveTypeRef(s.Var.Type, env)
 				} else if t := types.CheckExprType(s.Var.Value, env); t != nil {
-					tt = t
+					if typ != "" && types.ContainsAny(t) {
+						switch typ {
+						case "Int":
+							tt = types.IntType{}
+						case "Double":
+							tt = types.FloatType{}
+						case "Boolean":
+							tt = types.BoolType{}
+						case "String":
+							tt = types.StringType{}
+						default:
+							tt = t
+						}
+					} else {
+						tt = t
+						if typ == "Int" {
+							if _, ok := tt.(types.BigIntType); ok {
+								tt = types.IntType{}
+							}
+						}
+					}
 				} else {
 					switch typ {
 					case "Int":
