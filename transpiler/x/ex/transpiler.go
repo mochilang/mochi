@@ -24,12 +24,16 @@ import (
 )
 
 var elixirReserved = map[string]struct{}{
-	"fn": {},
+	"fn":  {},
+	"abs": {},
 }
 
 func sanitizeIdent(name string) string {
 	if _, ok := elixirReserved[name]; ok {
 		return name + "_"
+	}
+	if len(name) > 0 && name[0] >= 'A' && name[0] <= 'Z' && !isConstName(name) {
+		return strings.ToLower(name)
 	}
 	return name
 }
@@ -193,7 +197,13 @@ func (r *ReturnStmt) emit(w io.Writer, indent int) {
 	}
 	io.WriteString(w, "throw {:return, ")
 	if r.Value != nil {
-		r.Value.emit(w)
+		if _, ok := r.Value.(*CondExpr); ok {
+			io.WriteString(w, "(")
+			r.Value.emit(w)
+			io.WriteString(w, ")")
+		} else {
+			r.Value.emit(w)
+		}
 	} else {
 		io.WriteString(w, "nil")
 	}
@@ -3251,7 +3261,7 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 			}
 			args[i] = ex
 		}
-		name := p.Call.Func
+		name := sanitizeIdent(p.Call.Func)
 		if idx := strings.Index(name, "."); idx > 0 {
 			alias := name[:idx]
 			method := name[idx+1:]
