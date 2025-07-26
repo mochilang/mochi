@@ -1,0 +1,10 @@
+fun tax(amount: float): float {
+  if amount < 0 {
+    return 0
+  }
+  return amount * 0.05
+}
+
+let amount = 3.0
+let t = tax(amount)
+print("Tax on " + str(amount) + " is " + str(t))

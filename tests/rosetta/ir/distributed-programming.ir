@@ -1,0 +1,36 @@
+func main (regs=12)
+  // let amount = 3.0
+  Const        r2, 3.0
+  Move         r0, r2
+  SetGlobal    0,0,0,0
+  // let t = tax(amount)
+  Const        r2, 3.0
+  Move         r3, r2
+  Call         r4, tax, r3
+  Move         r1, r4
+  SetGlobal    1,1,0,0
+  // print("Tax on " + str(amount) + " is " + str(t))
+  Const        r5, "Tax on "
+  Const        r6, "3"
+  Const        r7, "Tax on 3"
+  Const        r8, " is "
+  Const        r9, "Tax on 3 is "
+  Str          r10, r1
+  Add          r11, r9, r10
+  Print        r11
+  Return       r0
+
+  // fun tax(amount: float): float {
+func tax (regs=7)
+  // if amount < 0 {
+  Const        r3, 0
+  Less         r4, r2, r3
+  JumpIfFalse  r4, L0
+  // return 0
+  Const        r3, 0
+  Return       r3
+L0:
+  // return amount * 0.05
+  Const        r5, 0.05
+  MulFloat     r6, r2, r5
+  Return       r6
