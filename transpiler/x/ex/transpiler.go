@@ -1702,7 +1702,19 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 				t := types.ResolveTypeRef(ld.Type, env)
 				env.SetVar(st.Let.Name, types.ListType{Elem: t}, false)
 			} else if st.Let.Value != nil {
-				env.SetVar(st.Let.Name, types.TypeOfExprBasic(st.Let.Value, env), false)
+				t := types.TypeOfExprBasic(st.Let.Value, env)
+				if lt, ok := t.(types.ListType); ok {
+					if _, isAny := lt.Elem.(types.AnyType); isAny {
+						t = inferStaticType(val)
+					}
+				} else if mt, ok := t.(types.MapType); ok {
+					if _, isAny := mt.Key.(types.AnyType); isAny {
+						t = inferStaticType(val)
+					} else if _, isAny := mt.Value.(types.AnyType); isAny {
+						t = inferStaticType(val)
+					}
+				}
+				env.SetVar(st.Let.Name, t, false)
 			} else {
 				env.SetVar(st.Let.Name, inferStaticType(val), false)
 			}
@@ -1739,7 +1751,19 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 				t := types.ResolveTypeRef(ld.Type, env)
 				env.SetVar(st.Var.Name, types.ListType{Elem: t}, true)
 			} else if st.Var.Value != nil {
-				env.SetVar(st.Var.Name, types.TypeOfExprBasic(st.Var.Value, env), true)
+				t := types.TypeOfExprBasic(st.Var.Value, env)
+				if lt, ok := t.(types.ListType); ok {
+					if _, isAny := lt.Elem.(types.AnyType); isAny {
+						t = inferStaticType(val)
+					}
+				} else if mt, ok := t.(types.MapType); ok {
+					if _, isAny := mt.Key.(types.AnyType); isAny {
+						t = inferStaticType(val)
+					} else if _, isAny := mt.Value.(types.AnyType); isAny {
+						t = inferStaticType(val)
+					}
+				}
+				env.SetVar(st.Var.Name, t, true)
 			} else {
 				env.SetVar(st.Var.Name, inferStaticType(val), true)
 			}
@@ -3019,6 +3043,19 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 			if err != nil {
 				return nil, err
 			}
+			if idx, ok := ex.(*IndexExpr); ok && idx.UseMapSyntax {
+				if mt, ok2 := types.TypeOfExpr(a, env).(types.MapType); ok2 {
+					def := Expr(nil)
+					if _, ok3 := mt.Value.(types.ListType); ok3 {
+						def = &ListLit{}
+					} else if types.IsStringType(mt.Value) {
+						def = &StringLit{Value: ""}
+					}
+					if def != nil {
+						ex = &CallExpr{Func: "Map.get", Args: []Expr{idx.Target, idx.Index, def}}
+					}
+				}
+			}
 			args[i] = ex
 		}
 		name := p.Call.Func
@@ -3126,6 +3163,17 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 		case "len":
 			name = "length"
 			if len(args) == 1 {
+				// Handle map indexing which may return nil when key is missing.
+				if idx, ok := args[0].(*IndexExpr); ok && idx.UseMapSyntax {
+					valT := types.TypeOfExpr(p.Call.Args[0], env)
+					var def Expr = &ListLit{}
+					if types.IsStringType(valT) {
+						def = &StringLit{Value: ""}
+						name = "String.length"
+					}
+					args[0] = &CallExpr{Func: "Map.get", Args: []Expr{idx.Target, idx.Index, def}}
+				}
+
 				t := types.TypeOfExpr(p.Call.Args[0], env)
 				if _, ok := t.(types.MapType); ok {
 					name = "map_size"

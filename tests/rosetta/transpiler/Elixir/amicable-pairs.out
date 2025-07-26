@@ -1,1 +1,6 @@
 The amicable pairs below 20,000 are:
+{
+  "duration_us": 5904043,
+  "memory_bytes": 1531496,
+  "name": "main"
+}

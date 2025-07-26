@@ -121,77 +121,115 @@ defmodule Main do
       {:return, val} -> val
     end
   end
-  def deranged(a, b) do
+  def sortStrings(xs) do
     try do
-      if String.length(a) != String.length(b) do
-        throw {:return, false}
-      end
-      i = 0
-      while_fun_5 = fn while_fun_5, i ->
-        if i < String.length(a) do
-          if String.slice(a, i, i + 1 - i) == String.slice(b, i, i + 1 - i) do
-            throw {:return, false}
+      res = []
+      tmp = xs
+      while_fun_5 = fn while_fun_5, res, tmp ->
+        if length(tmp) > 0 do
+          min = Enum.at(tmp, 0)
+          idx = 0
+          i = 1
+          while_fun_6 = fn while_fun_6, i, idx, min ->
+            if i < length(tmp) do
+              if Enum.at(tmp, i) < min do
+                min = Enum.at(tmp, i)
+                idx = i
+              end
+              i = i + 1
+              while_fun_6.(while_fun_6, i, idx, min)
+            else
+              {i, idx, min}
+            end
           end
-          i = i + 1
-          while_fun_5.(while_fun_5, i)
+          {i, idx, min} = try do
+              while_fun_6.(while_fun_6, i, idx, min)
+            catch
+              :break -> {i, idx, min}
+            end
+
+          res = (res ++ [min])
+          out = []
+          j = 0
+          while_fun_7 = fn while_fun_7, j, out ->
+            if j < length(tmp) do
+              if j != idx do
+                out = (out ++ [Enum.at(tmp, j)])
+              end
+              j = j + 1
+              while_fun_7.(while_fun_7, j, out)
+            else
+              {j, out}
+            end
+          end
+          {j, out} = try do
+              while_fun_7.(while_fun_7, j, out)
+            catch
+              :break -> {j, out}
+            end
+
+          tmp = out
+          while_fun_5.(while_fun_5, res, tmp)
         else
-          i
+          {res, tmp}
         end
       end
-      i = try do
-          while_fun_5.(while_fun_5, i)
+      {res, tmp} = try do
+          while_fun_5.(while_fun_5, res, tmp)
         catch
-          :break -> i
+          :break -> {res, tmp}
         end
 
-      throw {:return, true}
+      throw {:return, res}
     catch
       {:return, val} -> val
     end
   end
   def main() do
     try do
-      words = ["constitutionalism", "misconstitutional"]
-      m = %{}
-      bestLen = 0
-      w1 = ""
-      w2 = ""
-      try do
-        for w <- words do
-          try do
-            if String.length(w) <= bestLen do
-              throw :continue
-            end
-            k = sortRunes(w)
-            if !(Map.has_key?(m, k)) do
-              m = Map.put(m, k, [w])
-              throw :continue
-            end
-            try do
-              for c <- m[k] do
-                try do
-                  if deranged(w, c) do
-                    bestLen = String.length(w)
-                    w1 = c
-                    w2 = w
-                    throw :break
-                  end
-                catch
-                  :continue -> nil
-                end
+      words = ["abel", "able", "bale", "bela", "elba", "alger", "glare", "lager", "large", "regal", "angel", "angle", "galen", "glean", "lange", "caret", "carte", "cater", "crate", "trace", "elan", "lane", "lean", "lena", "neal", "evil", "levi", "live", "veil", "vile"]
+      groups = %{}
+      maxLen = 0
+      Enum.each(words, fn w ->
+        k = sortRunes(w)
+        if !(Map.has_key?(groups, k)) do
+          groups = Map.put(groups, k, [w])
+        else
+          groups = Map.put(groups, k, (groups[k] ++ [w]))
+        end
+        if length(Map.get(groups, k, [])) > maxLen do
+          maxLen = length(Map.get(groups, k, []))
+        end
+      end)
+      printed = %{}
+      Enum.each(words, fn w ->
+        k = sortRunes(w)
+        if length(Map.get(groups, k, [])) == maxLen do
+          if !(Map.has_key?(printed, k)) do
+            g = sortStrings(groups[k])
+            line = ("[" <> Enum.at(g, 0))
+            i = 1
+            while_fun_8 = fn while_fun_8, i, line ->
+              if i < length(g) do
+                line = ((line <> " ") <> Enum.at(g, i))
+                i = i + 1
+                while_fun_8.(while_fun_8, i, line)
+              else
+                {i, line}
               end
-            catch
-              :break -> nil
             end
-            m = Map.put(m, k, (m[k] ++ [w]))
-          catch
-            :continue -> nil
+            {i, line} = try do
+                while_fun_8.(while_fun_8, i, line)
+              catch
+                :break -> {i, line}
+              end
+
+            line = (line <> "]")
+            IO.puts(line)
+            printed = Map.put(printed, k, true)
           end
         end
-      catch
-        :break -> nil
-      end
-      IO.puts(((((w1 <> " ") <> w2) <> " : Length ") <> to_string(bestLen)))
+      end)
     catch
       {:return, val} -> val
     end
