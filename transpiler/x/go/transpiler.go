@@ -747,7 +747,29 @@ type ForEachStmt struct {
 }
 
 func (fe *ForEachStmt) emit(w io.Writer) {
-	if fe.IsMap {
+	if fe.Name == "_" {
+		if fe.IsMap {
+			usesSort = true
+			fmt.Fprintf(w, "for range func() []%s { keys := make([]%s, 0, len(", fe.KeyType, fe.KeyType)
+			if fe.Iterable != nil {
+				fe.Iterable.emit(w)
+			}
+			fmt.Fprint(w, "))\n")
+			fmt.Fprint(w, "        for k := range ")
+			if fe.Iterable != nil {
+				fe.Iterable.emit(w)
+			}
+			fmt.Fprint(w, " { keys = append(keys, k) }\n")
+			fmt.Fprint(w, "        sort.Slice(keys, func(i, j int) bool { return fmt.Sprint(keys[i]) < fmt.Sprint(keys[j]) })\n")
+			fmt.Fprint(w, "        return keys }() {\n")
+		} else {
+			fmt.Fprint(w, "for range ")
+			if fe.Iterable != nil {
+				fe.Iterable.emit(w)
+			}
+			fmt.Fprint(w, " {\n")
+		}
+	} else if fe.IsMap {
 		usesSort = true
 		fmt.Fprintf(w, "for _, %s := range func() []%s { keys := make([]%s, 0, len(", fe.Name, fe.KeyType, fe.KeyType)
 		if fe.Iterable != nil {
@@ -1806,6 +1828,12 @@ func (a *AssertExpr) emit(w io.Writer) {
 	if inner, ok := a.Expr.(*AssertExpr); ok && inner.Type == a.Type {
 		inner.Expr.emit(w)
 		fmt.Fprintf(w, ".(%s)", a.Type)
+		return
+	}
+	if strings.HasPrefix(a.Type, "[]") {
+		fmt.Fprintf(w, "func(v any) %s { if vv, ok := v.(%s); ok { return vv }; return %s{} }(", a.Type, a.Type, a.Type)
+		a.Expr.emit(w)
+		fmt.Fprint(w, ")")
 		return
 	}
 	if a.Type == "[]any" {
@@ -3712,8 +3740,11 @@ func compileReturnStmt(rs *parser.ReturnStmt, env *types.Env) (Stmt, error) {
 		if ll, ok := val.(*ListLit); ok && strings.HasPrefix(ret, "[]") {
 			if ll.ElemType == "" || ll.ElemType == "any" {
 				ll.ElemType = ret[2:]
-				exprType = ret
 			}
+			if lt, ok2 := toTypeFromGoType(ret).(types.ListType); ok2 {
+				updateListLitType(ll, lt)
+			}
+			exprType = ret
 			wrapFuncList(ll, env)
 		}
 		if ml, ok := val.(*MapLit); ok && strings.HasPrefix(ret, "map[") {

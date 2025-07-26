@@ -1,7 +1,7 @@
 # Go Rosetta Transpiler Output
 
-Completed programs: 157/284
-Last updated: 2025-07-26 10:43 +0700
+Completed programs: 160/285
+Last updated: 2025-07-26 11:18 +0700
 
 Checklist:
 
@@ -176,9 +176,9 @@ Checklist:
 | 167 | canny-edge-detector |   |  |  |
 | 168 | canonicalize-cidr |   |  |  |
 | 169 | cantor-set |   |  |  |
-| 170 | carmichael-3-strong-pseudoprimes |   |  |  |
-| 171 | cartesian-product-of-two-or-more-lists-1 |   |  |  |
-| 172 | cartesian-product-of-two-or-more-lists-2 |   |  |  |
+| 170 | carmichael-3-strong-pseudoprimes | ✓ | 831.0µs | 7.96KB |
+| 171 | cartesian-product-of-two-or-more-lists-1 | ✓ | 368.0µs | 2.23KB |
+| 172 | cartesian-product-of-two-or-more-lists-2 | ✓ | 683.0µs | 10.30KB |
 | 173 | cartesian-product-of-two-or-more-lists-3 |   |  |  |
 | 174 | cartesian-product-of-two-or-more-lists-4 |   |  |  |
 | 175 | case-sensitivity-of-identifiers |   |  |  |
@@ -291,3 +291,4 @@ Checklist:
 | 282 | deepcopy-1 |   |  |  |
 | 283 | define-a-primitive-data-type |   |  |  |
 | 284 | md5 |   |  |  |
+| 285 | delegates |   |  |  |
