@@ -1,0 +1,16 @@
+tan [{1 1 2} {1 1 3}] = Main$BigRat@78fa769e
+tan [{2 1 3} {1 1 7}] = Main$BigRat@638ef7ed
+tan [{4 1 5} {-1 1 239}] = Main$BigRat@4bff7da0
+tan [{5 1 7} {2 3 79}] = Main$BigRat@3f1d2e23
+tan [{1 1 2} {1 1 5} {1 1 8}] = Main$BigRat@536dbea0
+tan [{4 1 5} {-1 1 70} {1 1 99}] = Main$BigRat@47c81abf
+tan [{5 1 7} {4 1 53} {2 1 4443}] = Main$BigRat@776a6d9b
+tan [{6 1 8} {2 1 57} {1 1 239}] = Main$BigRat@21d03963
+tan [{8 1 10} {-1 1 239} {-4 1 515}] = Main$BigRat@1f760b47
+tan [{12 1 18} {8 1 57} {-5 1 239}] = Main$BigRat@18ece7f4
+tan [{16 1 21} {3 1 239} {4 3 1042}] = Main$BigRat@3cce57c7
+tan [{22 1 28} {2 1 443} {-5 1 1393} {-10 1 11018}] = Main$BigRat@1cf56a1c
+tan [{22 1 38} {17 7 601} {10 7 8149}] = Main$BigRat@33f676f6
+tan [{44 1 57} {7 1 239} {-12 1 682} {24 1 12943}] = Main$BigRat@4c5ae43b
+tan [{88 1 172} {51 1 239} {32 1 682} {44 1 5357} {68 1 12943}] = Main$BigRat@264f218
+tan [{88 1 172} {51 1 239} {32 1 682} {44 1 5357} {68 1 12944}] = Main$BigRat@3576ddc2

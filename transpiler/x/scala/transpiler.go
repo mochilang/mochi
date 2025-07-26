@@ -1496,6 +1496,7 @@ func Emit(p *Program) []byte {
 		buf.WriteString("    }\n")
 		buf.WriteString("  }\n")
 		buf.WriteString("  def _bigrat(n: BigInt, d: BigInt = BigInt(1)) = BigRat(n, d)\n")
+		buf.WriteString("  def _bigrat(r: BigRat): BigRat = r\n")
 		buf.WriteString("  def num(r: BigRat): BigInt = r.num\n")
 		buf.WriteString("  def denom(r: BigRat): BigInt = r.den\n\n")
 	}
@@ -1694,6 +1695,9 @@ func convertStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 			if typ == "Any" {
 				typ = ""
 			}
+			if typ == "Int" && isBigIntExpr(e) {
+				typ = "BigInt"
+			}
 		}
 		if typ == "" || typ == "ArrayBuffer[Any]" {
 			if ll, ok := e.(*ListLit); ok && len(ll.Elems) > 0 {
@@ -1753,6 +1757,9 @@ func convertStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 			typ = inferTypeWithEnv(e, env)
 			if typ == "Any" {
 				typ = ""
+			}
+			if typ == "Int" && isBigIntExpr(e) {
+				typ = "BigInt"
 			}
 			if n, ok := e.(*Name); ok && n.Name == "null" {
 				typ = "Any"
@@ -2147,7 +2154,14 @@ func convertUnary(u *parser.Unary, env *types.Env) (Expr, error) {
 	for i := len(u.Ops) - 1; i >= 0; i-- {
 		switch u.Ops[i] {
 		case "-":
-			expr = &BinaryExpr{Left: &IntLit{Value: 0}, Op: "-", Right: expr}
+			if inferTypeWithEnv(expr, env) == "BigRat" {
+				needsBigRat = true
+				needsBigInt = true
+				zero := &CallExpr{Fn: &Name{Name: "_bigrat"}, Args: []Expr{&IntLit{Value: 0}}}
+				expr = &BinaryExpr{Left: zero, Op: "-", Right: expr}
+			} else {
+				expr = &BinaryExpr{Left: &IntLit{Value: 0}, Op: "-", Right: expr}
+			}
 		case "!":
 			if inferTypeWithEnv(expr, env) != "Boolean" {
 				expr = &CastExpr{Value: expr, Type: "bool"}
@@ -2456,7 +2470,15 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 					if typ == "BigRat" || strings.ToLower(typ) == "bigrat" {
 						needsBigRat = true
 						needsBigInt = true
-						expr = &CallExpr{Fn: &Name{Name: "_bigrat"}, Args: []Expr{expr}}
+						if call, ok := expr.(*CallExpr); ok {
+							if n, ok2 := call.Fn.(*Name); ok2 && n.Name == "_bigrat" {
+								// already converted
+							} else {
+								expr = &CallExpr{Fn: &Name{Name: "_bigrat"}, Args: []Expr{expr}}
+							}
+						} else if env == nil || inferTypeWithEnv(expr, env) != "BigRat" {
+							expr = &CallExpr{Fn: &Name{Name: "_bigrat"}, Args: []Expr{expr}}
+						}
 					} else {
 						expr = &CastExpr{Value: expr, Type: typ}
 					}
