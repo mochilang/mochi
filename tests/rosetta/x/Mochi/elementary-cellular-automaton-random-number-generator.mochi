@@ -1,0 +1,57 @@
+// Mochi implementation of Rosetta "Elementary cellular automaton - Random number generator" using rule 30
+
+let n = 64
+
+fun pow2(k: int): int {
+  var v = 1
+  var i = 0
+  while i < k { v = v * 2; i = i + 1 }
+  return v
+}
+
+fun ruleBit(ruleNum: int, idx: int): int {
+  var r = ruleNum
+  var i = 0
+  while i < idx { r = r / 2; i = i + 1 }
+  return r % 2
+}
+
+fun evolve(state: list<int>, ruleNum: int): list<int> {
+  var out: list<int> = []
+  var p = 0
+  while p < 10 {
+    var b = 0
+    var q = 7
+    while q >= 0 {
+      let st = state
+      b = b + st[0] * pow2(q)
+      // compute next state from st
+      var next: list<int> = []
+      var i = 0
+      while i < n {
+        var lidx = i - 1
+        if lidx < 0 { lidx = n - 1 }
+        let left = st[lidx]
+        let center = st[i]
+        let ridx = i + 1
+        if ridx >= n { ridx = 0 }
+        let right = st[ridx]
+        let index = left * 4 + center * 2 + right
+        next = append(next, ruleBit(ruleNum, index))
+        i = i + 1
+      }
+      state = next
+      q = q - 1
+    }
+    out = append(out, b)
+    p = p + 1
+  }
+  return out
+}
+
+var init: list<int> = []
+var i = 0
+while i < n { init = append(init, 0); i = i + 1 }
+init[0] = 1
+let bytes = evolve(init, 30)
+print(str(bytes))
