@@ -2,8 +2,8 @@
 
 Generated Swift code for Mochi Rosetta programs in `tests/rosetta/x/Mochi`. Outputs are stored in `tests/rosetta/transpiler/Swift`. Errors are captured in `.error` files.
 
-Completed: 104/332
-Last updated: 2025-07-26 21:41 +0700
+Completed: 111/332
+Last updated: 2025-07-26 22:57 +0700
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -114,13 +114,13 @@ Last updated: 2025-07-26 21:41 +0700
 | 105 | benfords-law | ✓ |  |  |
 | 106 | bernoulli-numbers |   |  |  |
 | 107 | best-shuffle |   |  |  |
-| 108 | bifid-cipher |   |  |  |
-| 109 | bin-given-limits |   |  |  |
-| 110 | binary-digits |   |  |  |
-| 111 | binary-search |   |  |  |
-| 112 | binary-strings |   |  |  |
-| 113 | bioinformatics-base-count |   |  |  |
-| 114 | bioinformatics-global-alignment |   |  |  |
+| 108 | bifid-cipher | ✓ |  |  |
+| 109 | bin-given-limits | ✓ |  |  |
+| 110 | binary-digits | ✓ |  |  |
+| 111 | binary-search | ✓ |  |  |
+| 112 | binary-strings | ✓ |  |  |
+| 113 | bioinformatics-base-count | ✓ |  |  |
+| 114 | bioinformatics-global-alignment | ✓ |  |  |
 | 115 | bioinformatics-sequence-mutation |   |  |  |
 | 116 | biorhythms |   |  |  |
 | 117 | bitcoin-address-validation |   |  |  |

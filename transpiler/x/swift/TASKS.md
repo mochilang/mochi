@@ -1,5 +1,5 @@
-## Progress (2025-07-26 21:41 +0700)
-- swift: support dynamic struct indexing
+## Progress (2025-07-26 22:57 +0700)
+- swift transpiler: handle padStart and float cast
 - Generated golden tests for 102/104 programs
 - Updated README checklist and output artifacts
 
