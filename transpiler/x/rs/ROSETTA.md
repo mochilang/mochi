@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Rust code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/Rust`.
-Last updated: 2025-07-26 12:34 UTC
+Last updated: 2025-07-26 16:18 UTC
 
-## Rosetta Golden Test Checklist (36/332)
+## Rosetta Golden Test Checklist (37/332)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 109µs | 3.2 MB |
@@ -48,7 +48,7 @@ Last updated: 2025-07-26 12:34 UTC
 | 39 | aks-test-for-primes | ✓ | 47µs |  |
 | 40 | algebraic-data-types |   |  |  |
 | 41 | align-columns |   |  |  |
-| 42 | aliquot-sequence-classifications |   |  |  |
+| 42 | aliquot-sequence-classifications | ✓ | 43.475ms |  |
 | 43 | almkvist-giullera-formula-for-pi |   |  |  |
 | 44 | almost-prime |   |  |  |
 | 45 | amb |   |  |  |
