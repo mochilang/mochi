@@ -1,0 +1,203 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun padLeft(n: int, width: int): string {
+func padLeft (regs=8)
+  // var s = str(n)
+  Str          r2, r0
+  Move         r3, r2
+L1:
+  // while len(s) < width { s = " " + s }
+  Len          r4, r3
+  Less         r5, r4, r1
+  JumpIfFalse  r5, L0
+  Const        r6, " "
+  Add          r7, r6, r3
+  Move         r3, r7
+  Jump         L1
+L0:
+  // return s
+  Return       r3
+
+  // fun modPow(base: int, exp: int, mod: int): int {
+func modPow (regs=19)
+  // var result = 1 % mod
+  Const        r3, 1
+  Mod          r4, r3, r2
+  Move         r5, r4
+  // var b = base % mod
+  Mod          r6, r0, r2
+  Move         r7, r6
+  // var e = exp
+  Move         r8, r1
+L2:
+  // while e > 0 {
+  Const        r9, 0
+  Less         r10, r9, r8
+  JumpIfFalse  r10, L0
+  // if e % 2 == 1 { result = (result * b) % mod }
+  Const        r11, 2
+  Mod          r12, r8, r11
+  Const        r3, 1
+  Equal        r13, r12, r3
+  JumpIfFalse  r13, L1
+  Mul          r14, r5, r7
+  Mod          r15, r14, r2
+  Move         r5, r15
+L1:
+  // b = (b * b) % mod
+  Mul          r16, r7, r7
+  Mod          r17, r16, r2
+  Move         r7, r17
+  // e = e / 2
+  Const        r11, 2
+  Div          r18, r8, r11
+  Move         r8, r18
+  // while e > 0 {
+  Jump         L2
+L0:
+  // return result
+  Return       r5
+
+  // fun main() {
+func main (regs=58)
+  // var k = 2
+  Const        r0, 2
+  Move         r1, r0
+L9:
+  // while k <= 10 {
+  Const        r2, 10
+  LessEqInt    r3, r1, r2
+  JumpIfFalse  r3, L0
+  // print("The first 50 Curzon numbers using a base of " + str(k) + " :")
+  Const        r4, "The first 50 Curzon numbers using a base of "
+  Str          r5, r1
+  Add          r6, r4, r5
+  Const        r7, " :"
+  Add          r8, r6, r7
+  Print        r8
+  // var count = 0
+  Const        r9, 0
+  Move         r10, r9
+  // var n = 1
+  Const        r11, 1
+  Move         r12, r11
+  // var curzon50: list<int> = []
+  Const        r13, []
+  Move         r14, r13
+L8:
+  // while true {
+  Const        r15, true
+  // let d = k * n + 1
+  MulInt       r16, r1, r12
+  Const        r11, 1
+  AddInt       r17, r16, r11
+  Move         r18, r17
+  // if (modPow(k, n, d) + 1) % d == 0 {
+  Move         r19, r1
+  Move         r20, r12
+  Move         r21, r18
+  Call         r22, modPow, r19, r20, r21
+  Const        r11, 1
+  Add          r23, r22, r11
+  Mod          r24, r23, r18
+  Const        r9, 0
+  Equal        r25, r24, r9
+  JumpIfFalse  r25, L1
+  // if count < 50 { curzon50 = append(curzon50, n) }
+  Const        r26, 50
+  LessInt      r27, r10, r26
+  JumpIfFalse  r27, L2
+  Append       r28, r14, r12
+  Move         r14, r28
+L2:
+  // count = count + 1
+  Const        r11, 1
+  AddInt       r29, r10, r11
+  Move         r10, r29
+  // if count == 50 {
+  Const        r26, 50
+  EqualInt     r30, r10, r26
+  JumpIfFalse  r30, L3
+  // var idx = 0
+  Const        r9, 0
+  Move         r31, r9
+L6:
+  // while idx < len(curzon50) {
+  Len          r32, r14
+  LessInt      r33, r31, r32
+  JumpIfFalse  r33, L3
+  // var line = ""
+  Const        r34, ""
+  Move         r35, r34
+  // var j = 0
+  Const        r9, 0
+  Move         r36, r9
+L5:
+  // while j < 10 {
+  Const        r2, 10
+  LessInt      r37, r36, r2
+  JumpIfFalse  r37, L4
+  // line = line + padLeft(curzon50[idx], 4) + " "
+  Index        r40, r14, r31
+  Move         r38, r40
+  Const        r41, 4
+  Move         r39, r41
+  Call2        r42, padLeft, r38, r39
+  Add          r43, r35, r42
+  Const        r44, " "
+  Add          r45, r43, r44
+  Move         r35, r45
+  // idx = idx + 1
+  Const        r11, 1
+  AddInt       r46, r31, r11
+  Move         r31, r46
+  // j = j + 1
+  Const        r11, 1
+  AddInt       r47, r36, r11
+  Move         r36, r47
+  // while j < 10 {
+  Jump         L5
+L4:
+  // print(substring(line, 0, len(line) - 1))
+  Const        r9, 0
+  Len          r48, r35
+  Const        r11, 1
+  SubInt       r49, r48, r11
+  Slice        r50, r35, r9, r49
+  Print        r50
+  // while idx < len(curzon50) {
+  Jump         L6
+L3:
+  // if count == 1000 {
+  Const        r51, 1000
+  EqualInt     r52, r10, r51
+  JumpIfFalse  r52, L1
+  // print("\nOne thousandth: " + str(n))
+  Const        r53, "\nOne thousandth: "
+  Str          r54, r12
+  Add          r55, r53, r54
+  Print        r55
+  // break
+  Jump         L7
+L1:
+  // n = n + 1
+  Const        r11, 1
+  AddInt       r56, r12, r11
+  Move         r12, r56
+  // while true {
+  Jump         L8
+L7:
+  // print("")
+  Const        r34, ""
+  Print        r34
+  // k = k + 2
+  Const        r0, 2
+  AddInt       r57, r1, r0
+  Move         r1, r57
+  // while k <= 10 {
+  Jump         L9
+L0:
+  Return       r0

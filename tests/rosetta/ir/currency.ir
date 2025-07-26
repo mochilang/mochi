@@ -1,0 +1,444 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun parseIntDigits(s: string): int {
+func parseIntDigits (regs=22)
+  // var n = 0
+  Const        r1, 0
+  Move         r2, r1
+  // var i = 0
+  Const        r1, 0
+  Move         r3, r1
+  // let digits = {
+  Const        r4, {"0": 0, "1": 1, "2": 2, "3": 3, "4": 4, "5": 5, "6": 6, "7": 7, "8": 8, "9": 9}
+  Move         r5, r4
+L2:
+  // while i < len(s) {
+  Len          r6, r0
+  LessInt      r7, r3, r6
+  JumpIfFalse  r7, L0
+  // let ch = s[i:i+1]
+  Move         r8, r3
+  Const        r10, 1
+  AddInt       r11, r3, r10
+  Move         r9, r11
+  Slice        r12, r0, r8, r9
+  Move         r13, r12
+  // if !(ch in digits) { return 0 }
+  Const        r14, {"0": 0, "1": 1, "2": 2, "3": 3, "4": 4, "5": 5, "6": 6, "7": 7, "8": 8, "9": 9}
+  In           r15, r13, r14
+  Not          r16, r15
+  JumpIfFalse  r16, L1
+  Const        r1, 0
+  Return       r1
+L1:
+  // n = n * 10 + digits[ch]
+  Const        r17, 10
+  MulInt       r18, r2, r17
+  Index        r19, r5, r13
+  Add          r20, r18, r19
+  Move         r2, r20
+  // i = i + 1
+  Const        r10, 1
+  AddInt       r21, r3, r10
+  Move         r3, r21
+  // while i < len(s) {
+  Jump         L2
+L0:
+  // return n
+  Return       r2
+
+  // fun parseDC(s: string): int {
+func parseDC (regs=50)
+  // var neg = false
+  Const        r1, false
+  Move         r2, r1
+  // if len(s) > 0 && s[0:1] == "-" { neg = true; s = substring(s,1,len(s)) }
+  Len          r3, r0
+  Const        r4, 0
+  LessInt      r5, r4, r3
+  Const        r4, 0
+  Move         r6, r4
+  Const        r8, 1
+  Move         r7, r8
+  Slice        r9, r0, r6, r7
+  Const        r10, "-"
+  Equal        r11, r9, r10
+  Move         r12, r5
+  JumpIfFalse  r12, L0
+  Move         r12, r11
+L0:
+  JumpIfFalse  r12, L1
+  Const        r13, true
+  Move         r2, r13
+  Const        r8, 1
+  Len          r14, r0
+  Slice        r15, r0, r8, r14
+  Move         r0, r15
+L1:
+  // var dollars = 0
+  Const        r4, 0
+  Move         r16, r4
+  // var cents = 0
+  Const        r4, 0
+  Move         r17, r4
+  // var i = 0
+  Const        r4, 0
+  Move         r18, r4
+  // var seenDot = false
+  Const        r1, false
+  Move         r19, r1
+  // var centDigits = 0
+  Const        r4, 0
+  Move         r20, r4
+L4:
+  // while i < len(s) {
+  Len          r21, r0
+  LessInt      r22, r18, r21
+  JumpIfFalse  r22, L2
+  // let ch = s[i:i+1]
+  Move         r23, r18
+  Const        r8, 1
+  AddInt       r25, r18, r8
+  Move         r24, r25
+  Slice        r26, r0, r23, r24
+  Move         r27, r26
+  // if ch == "." {
+  Const        r28, "."
+  Equal        r29, r27, r28
+  JumpIfFalse  r29, L3
+  // seenDot = true
+  Const        r13, true
+  Move         r19, r13
+  // i = i + 1
+  Const        r8, 1
+  AddInt       r30, r18, r8
+  Move         r18, r30
+  // continue
+  Jump         L4
+L3:
+  // let d = parseIntDigits(ch)
+  Move         r31, r27
+  Call         r32, parseIntDigits, r31
+  Move         r33, r32
+  // if seenDot {
+  JumpIfFalse  r19, L5
+  // if centDigits < 2 { cents = cents*10 + d; centDigits = centDigits+1 }
+  Const        r34, 2
+  LessInt      r35, r20, r34
+  JumpIfFalse  r35, L6
+  Const        r36, 10
+  MulInt       r37, r17, r36
+  Add          r38, r37, r33
+  Move         r17, r38
+  Const        r8, 1
+  AddInt       r39, r20, r8
+  Move         r20, r39
+  // if seenDot {
+  Jump         L6
+L5:
+  // dollars = dollars*10 + d
+  Const        r36, 10
+  MulInt       r40, r16, r36
+  Add          r41, r40, r33
+  Move         r16, r41
+L6:
+  // i = i + 1
+  Const        r8, 1
+  AddInt       r42, r18, r8
+  Move         r18, r42
+  // while i < len(s) {
+  Jump         L4
+L2:
+  // if centDigits == 1 { cents = cents*10 }
+  Const        r8, 1
+  EqualInt     r43, r20, r8
+  JumpIfFalse  r43, L7
+  Const        r36, 10
+  Mul          r44, r17, r36
+  Move         r17, r44
+L7:
+  // var val = dollars*100 + cents
+  Const        r45, 100
+  Mul          r46, r16, r45
+  Add          r47, r46, r17
+  Move         r48, r47
+  // if neg { val = -val }
+  JumpIfFalse  r2, L8
+  Neg          r49, r48
+  Move         r48, r49
+L8:
+  // return val
+  Return       r48
+
+  // fun parseRate(s: string): int {
+func parseRate (regs=55)
+  // var neg = false
+  Const        r1, false
+  Move         r2, r1
+  // if len(s) > 0 && s[0:1] == "-" { neg = true; s = substring(s,1,len(s)) }
+  Len          r3, r0
+  Const        r4, 0
+  LessInt      r5, r4, r3
+  Const        r4, 0
+  Move         r6, r4
+  Const        r8, 1
+  Move         r7, r8
+  Slice        r9, r0, r6, r7
+  Const        r10, "-"
+  Equal        r11, r9, r10
+  Move         r12, r5
+  JumpIfFalse  r12, L0
+  Move         r12, r11
+L0:
+  JumpIfFalse  r12, L1
+  Const        r13, true
+  Move         r2, r13
+  Const        r8, 1
+  Len          r14, r0
+  Slice        r15, r0, r8, r14
+  Move         r0, r15
+L1:
+  // var whole = 0
+  Const        r4, 0
+  Move         r16, r4
+  // var frac = 0
+  Const        r4, 0
+  Move         r17, r4
+  // var digits = 0
+  Const        r4, 0
+  Move         r18, r4
+  // var seenDot = false
+  Const        r1, false
+  Move         r19, r1
+  // var i = 0
+  Const        r4, 0
+  Move         r20, r4
+L4:
+  // while i < len(s) {
+  Len          r21, r0
+  LessInt      r22, r20, r21
+  JumpIfFalse  r22, L2
+  // let ch = s[i:i+1]
+  Move         r23, r20
+  Const        r8, 1
+  AddInt       r25, r20, r8
+  Move         r24, r25
+  Slice        r26, r0, r23, r24
+  Move         r27, r26
+  // if ch == "." { seenDot = true; i = i + 1; continue }
+  Const        r28, "."
+  Equal        r29, r27, r28
+  JumpIfFalse  r29, L3
+  Const        r13, true
+  Move         r19, r13
+  Const        r8, 1
+  AddInt       r30, r20, r8
+  Move         r20, r30
+  Jump         L4
+L3:
+  // let d = parseIntDigits(ch)
+  Move         r31, r27
+  Call         r32, parseIntDigits, r31
+  Move         r33, r32
+  // if seenDot {
+  JumpIfFalse  r19, L5
+  // if digits < 4 { frac = frac*10 + d; digits = digits+1 }
+  Const        r34, {"0": 0, "1": 1, "2": 2, "3": 3, "4": 4, "5": 5, "6": 6, "7": 7, "8": 8, "9": 9}
+  Const        r35, 4
+  Less         r36, r34, r35
+  JumpIfFalse  r36, L6
+  Const        r37, 10
+  MulInt       r38, r17, r37
+  Add          r39, r38, r33
+  Move         r17, r39
+  Const        r40, {"0": 0, "1": 1, "2": 2, "3": 3, "4": 4, "5": 5, "6": 6, "7": 7, "8": 8, "9": 9}
+  Const        r8, 1
+  Add          r41, r40, r8
+  Move         r18, r41
+  // if seenDot {
+  Jump         L6
+L5:
+  // whole = whole*10 + d
+  Const        r37, 10
+  MulInt       r42, r16, r37
+  Add          r43, r42, r33
+  Move         r16, r43
+L6:
+  // i = i + 1
+  Const        r8, 1
+  AddInt       r44, r20, r8
+  Move         r20, r44
+  // while i < len(s) {
+  Jump         L4
+L2:
+  // while digits < 4 { frac = frac*10; digits=digits+1 }
+  Const        r45, {"0": 0, "1": 1, "2": 2, "3": 3, "4": 4, "5": 5, "6": 6, "7": 7, "8": 8, "9": 9}
+  Const        r35, 4
+  Less         r46, r45, r35
+  JumpIfFalse  r46, L7
+  Const        r37, 10
+  Mul          r47, r17, r37
+  Move         r17, r47
+  Const        r48, {"0": 0, "1": 1, "2": 2, "3": 3, "4": 4, "5": 5, "6": 6, "7": 7, "8": 8, "9": 9}
+  Const        r8, 1
+  Add          r49, r48, r8
+  Move         r18, r49
+  Jump         L2
+L7:
+  // var val = whole*10000 + frac
+  Const        r50, 10000
+  Mul          r51, r16, r50
+  Add          r52, r51, r17
+  Move         r53, r52
+  // if neg { val = -val }
+  JumpIfFalse  r2, L8
+  Neg          r54, r53
+  Move         r53, r54
+L8:
+  // return val
+  Return       r53
+
+  // fun dcString(dc: int): string {
+func dcString (regs=21)
+  // var d = dc / 100
+  Const        r1, 100
+  Div          r2, r0, r1
+  Move         r3, r2
+  // var n = dc
+  Move         r4, r0
+  // if n < 0 { n = -n }
+  Const        r5, 0
+  Less         r6, r4, r5
+  JumpIfFalse  r6, L0
+  Neg          r7, r4
+  Move         r4, r7
+L0:
+  // var c = n % 100
+  Const        r1, 100
+  Mod          r8, r4, r1
+  Move         r9, r8
+  // var cstr = str(c)
+  Str          r10, r9
+  Move         r11, r10
+  // if len(cstr) == 1 { cstr = "0" + cstr }
+  Len          r12, r11
+  Const        r13, 1
+  EqualInt     r14, r12, r13
+  JumpIfFalse  r14, L1
+  Const        r15, "0"
+  Add          r16, r15, r11
+  Move         r11, r16
+L1:
+  // return str(d) + "." + cstr
+  Str          r17, r3
+  Const        r18, "."
+  Add          r19, r17, r18
+  Add          r20, r19, r11
+  Return       r20
+
+  // fun extend(dc: int, n: int): int { return dc * n }
+func extend (regs=3)
+  // fun extend(dc: int, n: int): int { return dc * n }
+  Mul          r2, r0, r1
+  Return       r2
+
+  // fun tax(total: int, rate: int): int {
+func tax (regs=8)
+  // return ((total*rate + 5000) / 10000) as int
+  Mul          r2, r0, r1
+  Const        r3, 5000
+  Add          r4, r2, r3
+  Const        r5, 10000
+  Div          r6, r4, r5
+  Cast         r7, r6, int
+  Return       r7
+
+  // fun padLeft(s: string, n: int): string {
+func padLeft (regs=7)
+  // var out = s
+  Move         r2, r0
+L1:
+  // while len(out) < n {
+  Len          r3, r2
+  Less         r4, r3, r1
+  JumpIfFalse  r4, L0
+  // out = " " + out
+  Const        r5, " "
+  Add          r6, r5, r2
+  Move         r2, r6
+  // while len(out) < n {
+  Jump         L1
+L0:
+  // return out
+  Return       r2
+
+  // fun main() {
+func main (regs=50)
+  // let hp = parseDC("5.50")
+  Const        r1, "5.50"
+  Move         r0, r1
+  Call         r2, parseDC, r0
+  Move         r3, r2
+  // let mp = parseDC("2.86")
+  Const        r5, "2.86"
+  Move         r4, r5
+  Call         r6, parseDC, r4
+  Move         r7, r6
+  // let rate = parseRate("0.0765")
+  Const        r9, "0.0765"
+  Move         r8, r9
+  Call         r10, parseRate, r8
+  Move         r11, r10
+  // let totalBeforeTax = extend(hp, 4000000000000000) + extend(mp, 2)
+  Move         r12, r3
+  Const        r14, 4000000000000000
+  Move         r13, r14
+  Call2        r15, extend, r12, r13
+  Move         r16, r7
+  Const        r18, 2
+  Move         r17, r18
+  Call2        r19, extend, r16, r17
+  Add          r20, r15, r19
+  Move         r21, r20
+  // let t = tax(totalBeforeTax, rate)
+  Move         r22, r21
+  Move         r23, r11
+  Call2        r24, tax, r22, r23
+  Move         r25, r24
+  // let total = totalBeforeTax + t
+  Add          r26, r21, r25
+  Move         r27, r26
+  // print("Total before tax: " + padLeft(dcString(totalBeforeTax), 22))
+  Const        r28, "Total before tax: "
+  Move         r31, r21
+  Call         r32, dcString, r31
+  Move         r29, r32
+  Const        r33, 22
+  Move         r30, r33
+  Call2        r34, padLeft, r29, r30
+  Add          r35, r28, r34
+  Print        r35
+  // print("             Tax: " + padLeft(dcString(t), 22))
+  Const        r36, "             Tax: "
+  Move         r39, r25
+  Call         r40, dcString, r39
+  Move         r37, r40
+  Const        r33, 22
+  Move         r38, r33
+  Call2        r41, padLeft, r37, r38
+  Add          r42, r36, r41
+  Print        r42
+  // print("           Total: " + padLeft(dcString(total), 22))
+  Const        r43, "           Total: "
+  Move         r46, r27
+  Call         r47, dcString, r46
+  Move         r44, r47
+  Const        r33, 22
+  Move         r45, r33
+  Call2        r48, padLeft, r44, r45
+  Add          r49, r43, r48
+  Print        r49
+  Return       r0
