@@ -168,7 +168,7 @@ func exprToString(e Expr) (string, bool) {
 	return "", false
 }
 
-// PrintStmt writes values using std.io.getStdOut().writer().print.
+// PrintStmt writes values using std.debug.print.
 type PrintStmt struct{ Values []Expr }
 
 // VarDecl represents `let` or `var` declarations.
@@ -1013,9 +1013,10 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("}\n")
 	}
 	if useInput {
-		buf.WriteString("\nvar _in_buf = std.io.bufferedReader(std.io.getStdIn().reader());\n")
-		buf.WriteString("fn _input() []const u8 {\n")
-		buf.WriteString("    const opt_line = _in_buf.reader().readUntilDelimiterOrEofAlloc(std.heap.page_allocator, '\\n', 1 << 20) catch return \"\";\n")
+		buf.WriteString("\nfn _input() []const u8 {\n")
+		buf.WriteString("    var buf: [4096]u8 = undefined;\n")
+		buf.WriteString("    var reader = std.io.bufferedReader(std.fs.File.stdin().reader(&buf));\n")
+		buf.WriteString("    const opt_line = reader.reader().readUntilDelimiterOrEofAlloc(std.heap.page_allocator, '\\n', 1 << 20) catch return \"\";\n")
 		buf.WriteString("    const line = opt_line orelse return \"\";\n")
 		buf.WriteString("    if (line.len > 0 and line[line.len - 1] == '\\n') {\n")
 		buf.WriteString("        return line[0..line.len-1];\n")
@@ -1070,7 +1071,7 @@ func writeIndent(w io.Writer, n int) {
 func (s *PrintStmt) emit(w io.Writer, indent int) {
 	writeIndent(w, indent)
 	if len(s.Values) == 0 {
-		io.WriteString(w, "std.io.getStdOut().writer().print(\"\\n\", .{}) catch unreachable;\n")
+		io.WriteString(w, "std.debug.print(\"\\n\", .{});\n")
 		return
 	}
 	fmtSpec := make([]string, len(s.Values))
@@ -1097,7 +1098,7 @@ func (s *PrintStmt) emit(w io.Writer, indent int) {
 			}
 		}
 	}
-	io.WriteString(w, "std.io.getStdOut().writer().print(\"")
+	io.WriteString(w, "std.debug.print(\"")
 	io.WriteString(w, strings.Join(fmtSpec, " "))
 	io.WriteString(w, "\\n\", .{")
 	for i, v := range s.Values {
@@ -1106,7 +1107,7 @@ func (s *PrintStmt) emit(w io.Writer, indent int) {
 		}
 		v.emit(w)
 	}
-	io.WriteString(w, "}) catch unreachable;\n")
+	io.WriteString(w, "});\n")
 }
 
 func (v *VarDecl) emit(w io.Writer, indent int) {
@@ -1227,7 +1228,7 @@ func (s *SaveStmt) emit(w io.Writer, indent int) {
 		writeIndent(w, indent+1)
 		io.WriteString(w, "std.heap.page_allocator.free(__j);\n")
 		writeIndent(w, indent+1)
-		io.WriteString(w, "std.io.getStdOut().writer().print(\"{s}\\n\", .{_line}) catch unreachable;\n")
+		io.WriteString(w, "std.debug.print(\"{s}\\n\", .{_line});\n")
 		writeIndent(w, indent)
 		io.WriteString(w, "}\n")
 		return
@@ -1246,7 +1247,7 @@ func (j *JSONStmt) emit(w io.Writer, indent int) {
 	}
 	io.WriteString(w, ", .{})}) catch unreachable;\n")
 	writeIndent(w, indent)
-	io.WriteString(w, "std.io.getStdOut().writer().print(\"{s}\\n\", .{__j}) catch unreachable;\n")
+	io.WriteString(w, "std.debug.print(\"{s}\\n\", .{__j});\n")
 	writeIndent(w, indent)
 	io.WriteString(w, "std.heap.page_allocator.free(__j);\n")
 }
@@ -1649,7 +1650,7 @@ func (b *BenchStmt) emit(w io.Writer, indent int) {
 	writeIndent(w, indent)
 	io.WriteString(w, "const __bj = std.fmt.allocPrint(std.heap.page_allocator, \"{f}\", .{std.json.fmt(__bench, .{ .whitespace = .indent_2 })}) catch unreachable;\n")
 	writeIndent(w, indent)
-	io.WriteString(w, "std.io.getStdOut().writer().print(\"{s}\\n\", .{__bj}) catch unreachable;\n")
+	io.WriteString(w, "std.debug.print(\"{s}\\n\", .{__bj});\n")
 	writeIndent(w, indent)
 	io.WriteString(w, "std.heap.page_allocator.free(__bj);\n")
 	indent--
