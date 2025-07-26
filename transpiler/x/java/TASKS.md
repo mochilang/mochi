@@ -1,4 +1,104 @@
-## Progress (2025-07-27 01:47 +0700)
+## Progress (2025-07-27 05:58 +0700)
+- java transpiler: improve function typing (1af955c4b2)
+
+- java transpiler: improve function typing (1af955c4b2)
+
+- java transpiler: improve function typing (1af955c4b2)
+
+- java transpiler: improve function typing (1af955c4b2)
+
+- java transpiler: improve function typing (1af955c4b2)
+
+- java transpiler: improve function typing (1af955c4b2)
+
+- java transpiler: improve function typing (1af955c4b2)
+
+- java transpiler: improve function typing (1af955c4b2)
+
+- java transpiler: improve function typing (1af955c4b2)
+
+- java transpiler: improve function typing (1af955c4b2)
+
+- java transpiler: improve function typing (1af955c4b2)
+
+- java transpiler: improve function typing (1af955c4b2)
+
+- java transpiler: improve function typing (1af955c4b2)
+
+- java transpiler: improve function typing (1af955c4b2)
+
+- java transpiler: improve function typing (1af955c4b2)
+
+- java transpiler: improve function typing (1af955c4b2)
+
+- java transpiler: improve function typing (1af955c4b2)
+
+- java transpiler: improve function typing (1af955c4b2)
+
+- java transpiler: improve function typing (1af955c4b2)
+
+- java transpiler: improve function typing (1af955c4b2)
+
+- java transpiler: improve function typing (1af955c4b2)
+
+- java transpiler: improve function typing (1af955c4b2)
+
+- java transpiler: improve function typing (1af955c4b2)
+
+- java transpiler: improve function typing (1af955c4b2)
+
+- java transpiler: improve function typing (1af955c4b2)
+
+- java transpiler: improve function typing (1af955c4b2)
+
+- java transpiler: improve function typing (1af955c4b2)
+
+- java transpiler: improve function typing (1af955c4b2)
+
+- java transpiler: improve function typing (1af955c4b2)
+
+- java transpiler: improve function typing (1af955c4b2)
+
+- java transpiler: improve function typing (1af955c4b2)
+
+- java transpiler: improve function typing (1af955c4b2)
+
+- java transpiler: improve function typing (1af955c4b2)
+
+- java transpiler: improve function typing (1af955c4b2)
+
+- java transpiler: improve function typing (1af955c4b2)
+
+- java transpiler: improve function typing (1af955c4b2)
+
+- java transpiler: improve function typing (1af955c4b2)
+
+- java transpiler: improve function typing (1af955c4b2)
+
+- java transpiler: improve function typing (1af955c4b2)
+
+- java transpiler: improve function typing (1af955c4b2)
+
+- java transpiler: improve function typing (1af955c4b2)
+
+- java transpiler: improve function typing (1af955c4b2)
+
+- java transpiler: improve function typing (1af955c4b2)
+
+- java transpiler: improve function typing (1af955c4b2)
+
+- java transpiler: improve function typing (1af955c4b2)
+
+- java transpiler: improve function typing (1af955c4b2)
+
+- java transpiler: improve function typing (1af955c4b2)
+
+- java transpiler: improve function typing (1af955c4b2)
+
+- java transpiler: improve function typing (1af955c4b2)
+
+- java transpiler: improve function typing (1af955c4b2)
+
 - transpiler/java: add rosetta outputs 150-160 (a489265a9d)
 
 - transpiler/java: add rosetta outputs 150-160 (a489265a9d)
