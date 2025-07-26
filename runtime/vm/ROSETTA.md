@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated IR and outputs from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/ir`.
-Last updated: 2025-07-26 10:13 UTC
+Last updated: 2025-07-26 11:22 UTC
 
-## Rosetta Golden Test Checklist (214/332)
+## Rosetta Golden Test Checklist (218/332)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 116µs | 11.7 KB |
@@ -236,10 +236,10 @@ Last updated: 2025-07-26 10:13 UTC
 | 227 | constrained-genericity-1 |   |  |  |
 | 228 | constrained-genericity-2 |   |  |  |
 | 229 | constrained-genericity-3 |   |  |  |
-| 230 | constrained-genericity-4 |   |  |  |
-| 231 | constrained-random-points-on-a-circle-1 |   |  |  |
-| 232 | constrained-random-points-on-a-circle-2 |   |  |  |
-| 233 | continued-fraction |   |  |  |
+| 230 | constrained-genericity-4 | ✓ | 56µs | 8.1 KB |
+| 231 | constrained-random-points-on-a-circle-1 | ✓ | 33.713ms |  |
+| 232 | constrained-random-points-on-a-circle-2 | ✓ | 74.269ms | 2.2 MB |
+| 233 | continued-fraction | ✓ | 792µs | 317.6 KB |
 | 234 | convert-decimal-number-to-rational |   |  |  |
 | 235 | convert-seconds-to-compound-duration |   |  |  |
 | 236 | convex-hull |   |  |  |
