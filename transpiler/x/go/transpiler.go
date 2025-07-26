@@ -767,6 +767,12 @@ func (fe *ForEachStmt) emit(w io.Writer) {
 			fe.Iterable.emit(w)
 		}
 		fmt.Fprintf(w, " {\n    %s := string(_ch)\n", fe.Name)
+	} else if fe.Name == "_" {
+		fmt.Fprint(w, "for range ")
+		if fe.Iterable != nil {
+			fe.Iterable.emit(w)
+		}
+		fmt.Fprint(w, " {\n")
 	} else {
 		fmt.Fprintf(w, "for _, %s := range ", fe.Name)
 		if fe.Iterable != nil {
@@ -1802,6 +1808,13 @@ func (a *AssertExpr) emit(w io.Writer) {
 				}
 			}
 		}
+	}
+	if strings.HasPrefix(a.Type, "[]") {
+		elem := a.Type[2:]
+		fmt.Fprintf(w, "func(v any) []%s { if vv, ok := v.([]%s); ok { return vv }; if arr, ok := v.([]any); ok && len(arr)==0 { return []%s{} }; return v.([]%s) }(", elem, elem, elem, elem)
+		a.Expr.emit(w)
+		fmt.Fprint(w, ")")
+		return
 	}
 	if inner, ok := a.Expr.(*AssertExpr); ok && inner.Type == a.Type {
 		inner.Expr.emit(w)
@@ -3714,6 +3727,7 @@ func compileReturnStmt(rs *parser.ReturnStmt, env *types.Env) (Stmt, error) {
 				ll.ElemType = ret[2:]
 				exprType = ret
 			}
+			updateListLitType(ll, toTypeFromGoType(ret))
 			wrapFuncList(ll, env)
 		}
 		if ml, ok := val.(*MapLit); ok && strings.HasPrefix(ret, "map[") {
