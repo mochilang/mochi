@@ -1,7 +1,7 @@
 // Mochi implementation of Rosetta "Determine if a string has all unique characters" task
 // Translated from Go version in tests/rosetta/x/Go/determine-if-a-string-has-all-unique-characters.go
 
-fun indexOf(s: string, ch: string, start: int): int {
+fun indexOf3(s: string, ch: string, start: int): int {
   var i = start
   while i < len(s) {
     if substring(s, i, i+1) == ch { return i }
@@ -12,7 +12,7 @@ fun indexOf(s: string, ch: string, start: int): int {
 
 fun ord(ch: string): int {
   let digits = "0123456789"
-  var idx = indexOf(digits, ch, 0)
+  var idx = indexOf3(digits, ch, 0)
   if idx >= 0 { return 48 + idx }
   if ch == "X" { return 0x58 }
   if ch == "é" { return 0xE9 }
