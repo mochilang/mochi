@@ -3229,6 +3229,11 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 				typ = cppType(typeRefString(&parser.TypeRef{Generic: s.Var.Type.Generic}))
 			}
 		}
+		if _, ok := val.(*NullLit); ok && typ != "" {
+			if strings.HasPrefix(typ, "std::map<") || strings.HasPrefix(typ, "std::vector<") || typ == "std::string" {
+				val = nil
+			}
+		}
 		if typ == "" && s.Var.Value != nil {
 			typ = exprType(val)
 			if idx, ok := val.(*IndexExpr); ok {
@@ -3356,7 +3361,16 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 				}
 			}
 		}
-		varType := elementTypeFromListType(guessType(s.For.Source))
+		gtyp := guessType(s.For.Source)
+		if vr, ok := start.(*VarRef); ok {
+			if lt, ok2 := localTypes[vr.Name]; ok2 {
+				gtyp = lt
+			}
+		}
+		if strings.HasPrefix(gtyp, "std::map<") {
+			fs.IsMap = true
+		}
+		varType := elementTypeFromListType(gtyp)
 		if vr, ok := start.(*VarRef); ok {
 			if t, ok2 := currentProgram.ListTypes[vr.Name]; ok2 {
 				varType = t
@@ -5305,6 +5319,13 @@ func guessType(e *parser.Expr) string {
 	if e == nil {
 		return "auto"
 	}
+	if e.Binary != nil && len(e.Binary.Right) > 0 {
+		for _, part := range e.Binary.Right {
+			if part.Op == "in" {
+				return "bool"
+			}
+		}
+	}
 	if e.Binary != nil && e.Binary.Left != nil && e.Binary.Left.Value != nil {
 		pf := e.Binary.Left.Value
 		if sel := pf.Target.Selector; sel != nil && len(sel.Tail) == 0 {
@@ -5452,16 +5473,22 @@ func guessType(e *parser.Expr) string {
 		}
 	}
 	if list := pf.Target.List; list != nil && len(list.Elems) > 0 {
-		first := guessType(list.Elems[0])
+		cand := ""
 		uniform := true
-		for _, el := range list.Elems[1:] {
-			if guessType(el) != first {
+		for _, el := range list.Elems {
+			t := guessType(el)
+			if t == "" || t == "std::vector<std::any>" || t == "auto" {
+				continue
+			}
+			if cand == "" {
+				cand = t
+			} else if cand != t {
 				uniform = false
 				break
 			}
 		}
-		if uniform {
-			return fmt.Sprintf("std::vector<%s>", first)
+		if uniform && cand != "" {
+			return fmt.Sprintf("std::vector<%s>", cand)
 		}
 		if currentProgram != nil {
 			currentProgram.addInclude("<any>")
