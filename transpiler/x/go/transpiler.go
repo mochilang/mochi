@@ -2369,6 +2369,13 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 				if err != nil {
 					return nil, err
 				}
+				fieldSet := map[string]bool{}
+				for fname := range stype.Fields {
+					fieldSet[fname] = true
+				}
+				for i, st := range body {
+					body[i] = substituteFieldRefsStmt(st, "s", fieldSet)
+				}
 				params := make([]ParamDecl, len(meth.Decl.Params))
 				for i, p := range meth.Decl.Params {
 					typ := toGoType(p.Type, env)
@@ -3691,6 +3698,7 @@ func compileReturnStmt(rs *parser.ReturnStmt, env *types.Env) (Stmt, error) {
 	if err != nil {
 		return nil, err
 	}
+	fixListLits(val, env)
 	ret := currentRetType
 	if ret != "" && ret != "any" {
 		exprType := toGoTypeFromType(types.ExprType(rs.Value, env))
@@ -3706,6 +3714,7 @@ func compileReturnStmt(rs *parser.ReturnStmt, env *types.Env) (Stmt, error) {
 				ll.ElemType = ret[2:]
 				exprType = ret
 			}
+			wrapFuncList(ll, env)
 		}
 		if ml, ok := val.(*MapLit); ok && strings.HasPrefix(ret, "map[") {
 			if mt, ok2 := toTypeFromGoType(ret).(types.MapType); ok2 {
@@ -4916,12 +4925,15 @@ func compilePrimary(p *parser.Primary, env *types.Env, base string) (Expr, error
 					break
 				}
 			}
+			var ex Expr
 			if exprNode == nil {
-				return nil, fmt.Errorf("missing field %s", name)
-			}
-			ex, err := compileExpr(exprNode, env, "")
-			if err != nil {
-				return nil, err
+				ex = zeroValueExpr(toGoTypeFromType(st.Fields[name]))
+			} else {
+				var err error
+				ex, err = compileExpr(exprNode, env, "")
+				if err != nil {
+					return nil, err
+				}
 			}
 			if ml, ok := ex.(*MapLit); ok {
 				if stype, ok2 := env.GetStruct(p.Struct.Name); ok2 {
@@ -5990,6 +6002,19 @@ func fixListLits(expr Expr, env *types.Env) {
 				}
 			}
 		}
+		if ex.ElemType == "func()" {
+			for i, el := range ex.Elems {
+				if vr, ok := el.(*VarRef); ok {
+					if t, err := env.GetVar(vr.Name); err == nil {
+						if ft, ok2 := t.(types.FuncType); ok2 {
+							if _, ok3 := ft.Return.(types.VoidType); !ok3 {
+								ex.Elems[i] = &FuncLit{Body: []Stmt{&ExprStmt{Expr: &CallExpr{Func: vr.Name}}}}
+							}
+						}
+					}
+				}
+			}
+		}
 		for _, e := range ex.Elems {
 			fixListLits(e, env)
 		}
@@ -6037,4 +6062,153 @@ func fixListLits(expr Expr, env *types.Env) {
 			ll.ElemType = ex.ElemType
 		}
 	}
+}
+
+func wrapFuncList(ll *ListLit, env *types.Env) {
+	if ll.ElemType != "func()" {
+		return
+	}
+	for i, el := range ll.Elems {
+		if vr, ok := el.(*VarRef); ok {
+			if t, err := env.GetVar(vr.Name); err == nil {
+				if ft, ok2 := t.(types.FuncType); ok2 {
+					if _, ok3 := ft.Return.(types.VoidType); !ok3 {
+						ll.Elems[i] = &FuncLit{Body: []Stmt{&ExprStmt{Expr: &CallExpr{Func: vr.Name}}}}
+					}
+				}
+			}
+		}
+	}
+}
+
+func substituteFieldRefsExpr(e Expr, recv string, fields map[string]bool) Expr {
+	switch ex := e.(type) {
+	case *VarRef:
+		if fields[ex.Name] {
+			return &FieldExpr{X: &VarRef{Name: recv}, Name: ex.Name}
+		}
+		return ex
+	case *BinaryExpr:
+		ex.Left = substituteFieldRefsExpr(ex.Left, recv, fields)
+		ex.Right = substituteFieldRefsExpr(ex.Right, recv, fields)
+		return ex
+	case *BigBinaryExpr:
+		ex.Left = substituteFieldRefsExpr(ex.Left, recv, fields)
+		ex.Right = substituteFieldRefsExpr(ex.Right, recv, fields)
+		return ex
+	case *MethodCallExpr:
+		ex.Target = substituteFieldRefsExpr(ex.Target, recv, fields)
+		for i, a := range ex.Args {
+			ex.Args[i] = substituteFieldRefsExpr(a, recv, fields)
+		}
+		return ex
+	case *CallExpr:
+		for i, a := range ex.Args {
+			ex.Args[i] = substituteFieldRefsExpr(a, recv, fields)
+		}
+		return ex
+	case *NotExpr:
+		ex.Expr = substituteFieldRefsExpr(ex.Expr, recv, fields)
+		return ex
+	case *AssertExpr:
+		ex.Expr = substituteFieldRefsExpr(ex.Expr, recv, fields)
+		return ex
+	case *IndexExpr:
+		ex.X = substituteFieldRefsExpr(ex.X, recv, fields)
+		if ex.Index != nil {
+			ex.Index = substituteFieldRefsExpr(ex.Index, recv, fields)
+		}
+		return ex
+	case *SliceExpr:
+		ex.X = substituteFieldRefsExpr(ex.X, recv, fields)
+		if ex.Start != nil {
+			ex.Start = substituteFieldRefsExpr(ex.Start, recv, fields)
+		}
+		if ex.End != nil {
+			ex.End = substituteFieldRefsExpr(ex.End, recv, fields)
+		}
+		return ex
+	case *FieldExpr:
+		ex.X = substituteFieldRefsExpr(ex.X, recv, fields)
+		return ex
+	case *ListLit:
+		for i, el := range ex.Elems {
+			ex.Elems[i] = substituteFieldRefsExpr(el, recv, fields)
+		}
+		return ex
+	case *MapLit:
+		for i := range ex.Keys {
+			ex.Keys[i] = substituteFieldRefsExpr(ex.Keys[i], recv, fields)
+			ex.Values[i] = substituteFieldRefsExpr(ex.Values[i], recv, fields)
+		}
+		return ex
+	case *IfExpr:
+		ex.Cond = substituteFieldRefsExpr(ex.Cond, recv, fields)
+		ex.Then = substituteFieldRefsExpr(ex.Then, recv, fields)
+		if ex.Else != nil {
+			ex.Else = substituteFieldRefsExpr(ex.Else, recv, fields)
+		}
+		return ex
+	case *FuncLit:
+		for i, st := range ex.Body {
+			ex.Body[i] = substituteFieldRefsStmt(st, recv, fields)
+		}
+		return ex
+	default:
+		return ex
+	}
+}
+
+func substituteFieldRefsStmt(s Stmt, recv string, fields map[string]bool) Stmt {
+	switch st := s.(type) {
+	case *ExprStmt:
+		st.Expr = substituteFieldRefsExpr(st.Expr, recv, fields)
+	case *VarDecl:
+		if st.Value != nil {
+			st.Value = substituteFieldRefsExpr(st.Value, recv, fields)
+		}
+	case *AssignStmt:
+		st.Value = substituteFieldRefsExpr(st.Value, recv, fields)
+	case *SetStmt:
+		st.Target = substituteFieldRefsExpr(st.Target, recv, fields)
+		st.Value = substituteFieldRefsExpr(st.Value, recv, fields)
+	case *ReturnStmt:
+		if st.Value != nil {
+			st.Value = substituteFieldRefsExpr(st.Value, recv, fields)
+		}
+	case *IfStmt:
+		st.Cond = substituteFieldRefsExpr(st.Cond, recv, fields)
+		for i, b := range st.Then {
+			st.Then[i] = substituteFieldRefsStmt(b, recv, fields)
+		}
+		for i, b := range st.Else {
+			st.Else[i] = substituteFieldRefsStmt(b, recv, fields)
+		}
+	case *ForRangeStmt:
+		if st.Start != nil {
+			st.Start = substituteFieldRefsExpr(st.Start, recv, fields)
+		}
+		if st.End != nil {
+			st.End = substituteFieldRefsExpr(st.End, recv, fields)
+		}
+		for i, b := range st.Body {
+			st.Body[i] = substituteFieldRefsStmt(b, recv, fields)
+		}
+	case *ForEachStmt:
+		st.Iterable = substituteFieldRefsExpr(st.Iterable, recv, fields)
+		for i, b := range st.Body {
+			st.Body[i] = substituteFieldRefsStmt(b, recv, fields)
+		}
+	case *IndexAssignStmt:
+		st.Index = substituteFieldRefsExpr(st.Index, recv, fields)
+		st.Value = substituteFieldRefsExpr(st.Value, recv, fields)
+	case *UpdateStmt:
+		for i, v := range st.Values {
+			st.Values[i] = substituteFieldRefsExpr(v, recv, fields)
+		}
+		if st.Cond != nil {
+			st.Cond = substituteFieldRefsExpr(st.Cond, recv, fields)
+		}
+	}
+	return s
 }
