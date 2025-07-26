@@ -3027,7 +3027,7 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				neededOpens["System"] = true
 				return &CallExpr{Func: "System.Console.ReadLine", Args: nil}, nil
 			}
-		case "substring":
+		case "substring", "substr":
 			if len(args) != 3 {
 				return nil, fmt.Errorf("substring expects 3 args")
 			}

@@ -1,4 +1,4 @@
-// Generated 2025-07-26 04:38 +0700
+// Generated 2025-07-26 10:43 +0700
 
 exception Return
 
@@ -39,7 +39,7 @@ let rec pixelFromRgb (c: int) =
         let r: int = (((int (c / 65536)) % 256 + 256) % 256)
         let g: int = (((int (c / 256)) % 256 + 256) % 256)
         let b: int = ((c % 256 + 256) % 256)
-        __ret <- { R = r; G = g; B = b }
+        __ret <- unbox<Pixel> { R = r; G = g; B = b }
         raise Return
         __ret
     with
@@ -64,11 +64,11 @@ and NewBitmap (x: int) (y: int) =
             let mutable r: Pixel array = [||]
             let mutable col: int = 0
             while col < x do
-                r <- Array.append r [|{ R = 0; G = 0; B = 0 }|]
+                r <- unbox<Pixel array> (Array.append r [|{ R = 0; G = 0; B = 0 }|])
                 col <- col + 1
-            data <- Array.append data [|r|]
+            data <- unbox<Pixel array array> (Array.append data [|r|])
             row <- row + 1
-        __ret <- { cols = x; rows = y; px = data }
+        __ret <- unbox<Bitmap> { cols = x; rows = y; px = data }
         raise Return
         __ret
     with
@@ -117,7 +117,7 @@ and nextRand (seed: int) =
     let mutable __ret : int = Unchecked.defaultof<int>
     let mutable seed = seed
     try
-        __ret <- ((((seed * 1664525) + 1013904223) % 2147483648L + 2147483648L) % 2147483648L)
+        __ret <- int ((((int64 ((seed * 1664525) + 1013904223)) % 2147483648L + 2147483648L) % 2147483648L))
         raise Return
         __ret
     with
@@ -125,14 +125,16 @@ and nextRand (seed: int) =
 and main () =
     let mutable __ret : unit = Unchecked.defaultof<unit>
     try
+        let __bench_start = _now()
+        let __mem_start = System.GC.GetTotalMemory(true)
         let mutable bm: Bitmap = NewBitmap 400 300
         FillRgb bm 12615744
         let mutable seed: int = _now()
         let mutable i: int = 0
         while i < 2000 do
-            seed <- nextRand seed
+            seed <- int (nextRand seed)
             let x: int = ((seed % 400 + 400) % 400)
-            seed <- nextRand seed
+            seed <- int (nextRand seed)
             let y: int = ((seed % 300 + 300) % 300)
             SetPxRgb bm x y 8405024
             i <- i + 1
@@ -158,6 +160,10 @@ and main () =
                 SetPxRgb bm x y 8405024
                 x <- x + 1
             y <- y + 1
+        let __bench_end = _now()
+        let __mem_end = System.GC.GetTotalMemory(true)
+        printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)
+
         __ret
     with
         | Return -> __ret
