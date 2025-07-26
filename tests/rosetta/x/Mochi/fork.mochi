@@ -1,2 +1,26 @@
-print("PID: 1")
-print("Done.")
+// Mochi translation of the Rosetta "Fork" task.
+// The VM lacks real process creation APIs so we
+// model the behaviour by invoking the program logic
+// recursively. When invoked with an argument, the
+// "parent" prints its PID, announces the child PID
+// and then calls the child function which prints its
+// own PID and exits.
+
+var nextPID = 1
+
+fun run(hasArg: bool) {
+  let pid = nextPID
+  nextPID = nextPID + 1
+
+  print("PID: " + str(pid))
+  if !hasArg {
+    print("Done.")
+    return
+  }
+
+  let childPID = nextPID
+  print("Child's PID: " + str(childPID))
+  run(false)
+}
+
+run(true)
