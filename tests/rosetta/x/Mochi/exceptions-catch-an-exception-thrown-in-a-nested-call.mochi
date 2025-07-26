@@ -1,0 +1,5 @@
+fun main() {
+  print("demonstration of nested exceptions")
+}
+
+main()

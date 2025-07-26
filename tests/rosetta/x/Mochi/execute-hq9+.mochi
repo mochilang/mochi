@@ -1,0 +1,15 @@
+fun run(code: string) {
+  var acc = 0
+  for ch in code {
+    if ch == "H" { print("Hello, world!") }
+    else if ch == "Q" { print(code) }
+    else if ch == "9" { print("99 Bottles of Beer") }
+    else if ch == "+" { acc = acc + 1 }
+  }
+}
+
+fun main() {
+  run("HQ9+")
+}
+
+main()

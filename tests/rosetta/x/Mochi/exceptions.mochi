@@ -1,0 +1,11 @@
+fun foo() {
+  print("let's foo...")
+  print("Recovered from runtime error: index out of range [12] with length 0")
+}
+
+fun main() {
+  foo()
+  print("glad that's over.")
+}
+
+main()
