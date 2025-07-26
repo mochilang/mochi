@@ -1,0 +1,65 @@
+let PI = 3.141592653589793
+
+fun floorf(x: float): float {
+  var i = x as int
+  if (i as float) > x { i = i - 1 }
+  return i as float
+}
+
+fun frac(x: float): float { return x - floorf(x) }
+
+fun sinApprox(x: float): float {
+  var term = x
+  var sum = x
+  var n = 1
+  while n <= 10 {
+    let denom = ((2*n)*(2*n+1)) as float
+    term = -term * x * x / denom
+    sum = sum + term
+    n = n + 1
+  }
+  return sum
+}
+
+fun sqrtApprox(x: float): float {
+  if x <= 0 { return 0.0 }
+  var guess = x
+  var i = 0
+  while i < 10 {
+    guess = (guess + x / guess) / 2.0
+    i = i + 1
+  }
+  return guess
+}
+
+let nframes = 10
+let w = 32
+let h = 32
+
+var total = 0
+
+var f = 1
+while f <= nframes {
+  var y = 0
+  while y < h {
+    var x = 0
+    while x < w {
+      let fx = x as float
+      let fy = y as float
+      var value = sinApprox(fx / 16.0)
+      value = value + sinApprox(fy / 8.0)
+      value = value + sinApprox((fx + fy) / 16.0)
+      value = value + sinApprox(sqrtApprox(fx*fx + fy*fy) / 8.0)
+      value = value + 4.0
+      value = value / 8.0
+      let rem = frac(value + (f as float)/(nframes as float))
+      let ci = (nframes as float * rem) as int + 1
+      total = total + ci
+      x = x + 1
+    }
+    y = y + 1
+  }
+  f = f + 1
+}
+
+print(total)
