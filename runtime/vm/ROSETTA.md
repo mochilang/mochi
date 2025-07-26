@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated IR and outputs from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/ir`.
-Last updated: 2025-07-26 14:57 UTC
+Last updated: 2025-07-26 16:50 UTC
 
-## Rosetta Golden Test Checklist (248/332)
+## Rosetta Golden Test Checklist (254/332)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 116µs | 11.7 KB |
@@ -270,13 +270,13 @@ Last updated: 2025-07-26 14:57 UTC
 | 261 | csv-to-html-translation-3 | ✓ | 450µs | 3.5 KB |
 | 262 | csv-to-html-translation-4 | ✓ | 399µs | 2.3 KB |
 | 263 | csv-to-html-translation-5 | ✓ | 4.737ms | 609.1 KB |
-| 264 | cuban-primes |   |  |  |
+| 264 | cuban-primes | ✓ |  |  |
 | 265 | cullen-and-woodall-numbers |   |  |  |
-| 266 | cumulative-standard-deviation |   |  |  |
-| 267 | currency |   |  |  |
-| 268 | currying |   |  |  |
-| 269 | curzon-numbers |   |  |  |
-| 270 | cusip |   |  |  |
+| 266 | cumulative-standard-deviation | ✓ |  |  |
+| 267 | currency | ✓ |  |  |
+| 268 | currying | ✓ |  |  |
+| 269 | curzon-numbers | ✓ |  |  |
+| 270 | cusip | ✓ |  |  |
 | 271 | cyclops-numbers |   |  |  |
 | 272 | damm-algorithm |   |  |  |
 | 273 | date-format |   |  |  |

@@ -1,0 +1,184 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun pow(base: float, exp: float): float {
+func pow (regs=11)
+  // var result = 1.0
+  Const        r2, 1.0
+  Move         r3, r2
+  // var i = 0
+  Const        r4, 0
+  Move         r5, r4
+L1:
+  // while i < int(exp) {
+  Less         r7, r5, r6
+  JumpIfFalse  r7, L0
+  // result = result * base
+  MulFloat     r8, r3, r0
+  Move         r3, r8
+  // i = i + 1
+  Const        r9, 1
+  AddInt       r10, r5, r9
+  Move         r5, r10
+  // while i < int(exp) {
+  Jump         L1
+L0:
+  // return result
+  Return       r3
+
+  // fun PowN(b: float): fun(float): float {
+func PowN (regs=3)
+  // return fun(e: float): float => pow(b, e)
+  Move         r1, r0
+  MakeClosure  r2, fn6, 1, r1
+  Return       r2
+
+  // fun PowE(e: float): fun(float): float {
+func PowE (regs=3)
+  // return fun(b: float): float => pow(b, e)
+  Move         r1, r0
+  MakeClosure  r2, fn7, 1, r1
+  Return       r2
+
+  // fun Method(b: int): int {
+func Foo.Method (regs=3)
+  // return value + b
+  Add          r2, r0, r1
+  Return       r2
+
+  // fun main() {
+func main (regs=74)
+  // let pow2 = PowN(2.0)
+  Const        r1, 2.0
+  Move         r0, r1
+  Call         r2, PowN, r0
+  Move         r3, r2
+  // let cube = PowE(3.0)
+  Const        r5, 3.0
+  Move         r4, r5
+  Call         r6, PowE, r4
+  Move         r7, r6
+  // print("2^8 = " + str(pow2(8.0)))
+  Const        r8, "2^8 = "
+  Const        r10, 8.0
+  Move         r9, r10
+  CallV        r11, r3, 1, r9
+  Str          r12, r11
+  Add          r13, r8, r12
+  Print        r13
+  // print("4\u00B3 = " + str(cube(4.0)))
+  Const        r14, "4³ = "
+  Const        r16, 4.0
+  Move         r15, r16
+  CallV        r17, r7, 1, r15
+  Str          r18, r17
+  Add          r19, r14, r18
+  Print        r19
+  // var a = Foo{ value: 2 }
+  Const        r20, 2
+  Const        r21, "__name"
+  Const        r22, "Foo"
+  Const        r23, "value"
+  Move         r24, r20
+  MakeClosure  r25, Foo.Method, 1, r24
+  // fun Method(b: int): int {
+  Const        r26, "Method"
+  // var a = Foo{ value: 2 }
+  MakeMap      r27, 3, r21
+  Move         r28, r27
+  // let fn1 = fun(b: int): int => a.Method(b)
+  Move         r29, r28
+  Move         r30, r7
+  Move         r31, r3
+  MakeClosure  r32, fn8, 3, r29
+  Move         r33, r32
+  // let fn2 = fun(f: Foo, b: int): int => f.Method(b)
+  Move         r34, r28
+  Move         r35, r7
+  Move         r36, r33
+  Move         r37, r3
+  MakeClosure  r38, fn9, 4, r34
+  Move         r39, r38
+  // print("2 + 2 = " + str(a.Method(2)))
+  Const        r40, "2 + 2 = "
+  Const        r41, "Method"
+  Index        r42, r28, r41
+  Const        r20, 2
+  Move         r43, r20
+  CallV        r44, r42, 1, r43
+  Str          r45, r44
+  Add          r46, r40, r45
+  Print        r46
+  // print("2 + 3 = " + str(fn1(3)))
+  Const        r47, "2 + 3 = "
+  Const        r49, 3
+  Move         r48, r49
+  CallV        r50, r33, 1, r48
+  Str          r51, r50
+  Add          r52, r47, r51
+  Print        r52
+  // print("2 + 4 = " + str(fn2(a, 4)))
+  Const        r53, "2 + 4 = "
+  Move         r54, r28
+  Const        r56, 4
+  Move         r55, r56
+  CallV        r57, r39, 2, r54
+  Str          r58, r57
+  Add          r59, r53, r58
+  Print        r59
+  // print("3 + 5 = " + str(fn2(Foo{ value: 3 }, 5)))
+  Const        r60, "3 + 5 = "
+  Const        r49, 3
+  Const        r63, "__name"
+  Const        r64, "Foo"
+  Const        r65, "value"
+  Move         r66, r49
+  MakeClosure  r67, Foo.Method, 1, r66
+  // fun Method(b: int): int {
+  Const        r68, "Method"
+  // print("3 + 5 = " + str(fn2(Foo{ value: 3 }, 5)))
+  MakeMap      r69, 3, r63
+  Move         r61, r69
+  Const        r70, 5
+  Move         r62, r70
+  CallV        r71, r39, 2, r61
+  Str          r72, r71
+  Add          r73, r60, r72
+  Print        r73
+  Return       r0
+
+  // return fun(e: float): float => pow(b, e)
+func fn6 (regs=5)
+  // return fun(e: float): float => pow(b, e)
+  Move         r2, r0
+  Move         r3, r1
+  Call2        r4, pow, r2, r3
+  Return       r4
+
+  // return fun(b: float): float => pow(b, e)
+func fn7 (regs=5)
+  // return fun(b: float): float => pow(b, e)
+  Move         r2, r1
+  Move         r3, r0
+  Call2        r4, pow, r2, r3
+  Return       r4
+
+  // let fn1 = fun(b: int): int => a.Method(b)
+func fn8 (regs=8)
+  // let fn1 = fun(b: int): int => a.Method(b)
+  Const        r4, "Method"
+  Index        r5, r0, r4
+  Move         r6, r3
+  CallV        r7, r5, 1, r6
+  Return       r7
+
+  // let fn2 = fun(f: Foo, b: int): int => f.Method(b)
+func fn9 (regs=10)
+  // let fn2 = fun(f: Foo, b: int): int => f.Method(b)
+  Const        r6, "Method"
+  Index        r7, r4, r6
+  Move         r8, r5
+  CallV        r9, r7, 1, r8
+  Return       r9
