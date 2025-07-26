@@ -389,6 +389,7 @@ type TypeDeclStmt struct {
 	Name     string
 	Fields   []Param
 	Variants []Variant
+	Methods  []*FunStmt
 }
 
 func (t *TypeDeclStmt) emit(w io.Writer) {
@@ -426,6 +427,15 @@ func (t *TypeDeclStmt) emit(w io.Writer) {
 		fmt.Fprintf(w, "var %s: %s", escapeName(f.Name), typ)
 	}
 	fmt.Fprint(w, ")")
+	if len(t.Methods) > 0 {
+		fmt.Fprint(w, " {\n")
+		for _, m := range t.Methods {
+			fmt.Fprint(w, "  ")
+			m.emit(w)
+			fmt.Fprint(w, "\n")
+		}
+		fmt.Fprint(w, "}")
+	}
 }
 
 func (s *VarStmt) emit(w io.Writer) {
@@ -854,6 +864,12 @@ func (n *Name) emit(w io.Writer) {
 		return
 	}
 	fmt.Fprint(w, escapeName(n.Name))
+}
+
+type FunRef struct{ Name string }
+
+func (f *FunRef) emit(w io.Writer) {
+	fmt.Fprintf(w, "%s _", escapeName(f.Name))
 }
 
 // ListLit represents a mutable list using ArrayBuffer.
@@ -1801,6 +1817,14 @@ func convertStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 		for _, m := range st.Type.Members {
 			if m.Field != nil {
 				td.Fields = append(td.Fields, Param{Name: m.Field.Name, Type: toScalaType(m.Field.Type)})
+			} else if m.Method != nil {
+				ms, err := convertFunStmt(m.Method, env)
+				if err != nil {
+					return nil, err
+				}
+				if fn, ok := ms.(*FunStmt); ok {
+					td.Methods = append(td.Methods, fn)
+				}
 			}
 		}
 		typeDecls = append(typeDecls, td)
@@ -2444,6 +2468,15 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 			return nil, fmt.Errorf("unsupported postfix")
 		}
 	}
+	if len(pf.Ops) == 0 {
+		if n, ok := expr.(*Name); ok && env != nil {
+			if typ, err := env.GetVar(n.Name); err == nil {
+				if _, ok2 := typ.(types.FuncType); ok2 {
+					return &FunRef{Name: n.Name}, nil
+				}
+			}
+		}
+	}
 	return expr, nil
 }
 
@@ -2640,6 +2673,16 @@ func convertCall(c *parser.CallExpr, env *types.Env) (Expr, error) {
 		}
 	case "append":
 		if len(args) == 2 {
+			listType := inferTypeWithEnv(args[0], env)
+			if strings.HasPrefix(listType, "ArrayBuffer[") {
+				elemTyp := strings.TrimSuffix(strings.TrimPrefix(listType, "ArrayBuffer["), "]")
+				if elemTyp != "" {
+					et := inferTypeWithEnv(args[1], env)
+					if et == "" || et == "Any" || et != elemTyp {
+						args[1] = &CastExpr{Value: args[1], Type: elemTyp}
+					}
+				}
+			}
 			return &AppendExpr{List: args[0], Elem: args[1]}, nil
 		}
 	case "contains":
@@ -2878,10 +2921,16 @@ func convertStructLiteral(sl *parser.StructLiteral, env *types.Env) (Expr, error
 				break
 			}
 		}
+		var ex Expr
+		var err error
 		if exprNode == nil {
-			return nil, fmt.Errorf("missing field %s", name)
+			ex = defaultExpr(toScalaTypeFromType(st.Fields[name]))
+		} else {
+			ex, err = convertExpr(exprNode, env)
+			if err != nil {
+				return nil, err
+			}
 		}
-		ex, err := convertExpr(exprNode, env)
 		if err != nil {
 			return nil, err
 		}
@@ -3761,6 +3810,20 @@ func toScalaTypeFromType(t types.Type) string {
 		return fmt.Sprintf("ArrayBuffer[%s]", toScalaTypeFromType(tt.Elem))
 	case types.MapType:
 		return fmt.Sprintf("scala.collection.mutable.Map[%s,%s]", toScalaTypeFromType(tt.Key), toScalaTypeFromType(tt.Value))
+	case types.FuncType:
+		parts := make([]string, len(tt.Params))
+		for i, p := range tt.Params {
+			s := toScalaTypeFromType(p)
+			if s == "" {
+				s = "Any"
+			}
+			parts[i] = s
+		}
+		ret := toScalaTypeFromType(tt.Return)
+		if ret == "" {
+			ret = "Any"
+		}
+		return fmt.Sprintf("(%s) => %s", strings.Join(parts, ", "), ret)
 	case types.StructType:
 		if tt.Name != "" {
 			return tt.Name
@@ -3774,8 +3837,8 @@ func elementType(container string) string {
 	if strings.HasPrefix(container, "ArrayBuffer[") {
 		return strings.TrimSuffix(strings.TrimPrefix(container, "ArrayBuffer["), "]")
 	}
-	if strings.HasPrefix(container, "Map[") {
-		parts := strings.TrimSuffix(strings.TrimPrefix(container, "Map["), "]")
+	if strings.HasPrefix(container, "Map[") || strings.HasPrefix(container, "scala.collection.mutable.Map[") {
+		parts := strings.TrimSuffix(container[strings.Index(container, "[")+1:], "]")
 		kv := strings.SplitN(parts, ",", 2)
 		if len(kv) == 2 {
 			return strings.TrimSpace(kv[1])
@@ -3849,8 +3912,8 @@ func inferType(e Expr) string {
 			}
 			return "Any"
 		}
-		if strings.HasPrefix(t, "Map[") {
-			parts := strings.TrimSuffix(strings.TrimPrefix(t, "Map["), "]")
+		if strings.HasPrefix(t, "Map[") || strings.HasPrefix(t, "scala.collection.mutable.Map[") {
+			parts := strings.TrimSuffix(t[strings.Index(t, "[")+1:], "]")
 			kv := strings.SplitN(parts, ",", 2)
 			if len(kv) == 2 {
 				valType := strings.TrimSpace(kv[1])
@@ -3966,8 +4029,8 @@ func inferTypeWithEnv(e Expr, env *types.Env) string {
 				}
 				return "Any"
 			}
-			if strings.HasPrefix(t, "Map[") {
-				parts := strings.TrimSuffix(strings.TrimPrefix(t, "Map["), "]")
+			if strings.HasPrefix(t, "Map[") || strings.HasPrefix(t, "scala.collection.mutable.Map[") {
+				parts := strings.TrimSuffix(t[strings.Index(t, "[")+1:], "]")
 				kv := strings.SplitN(parts, ",", 2)
 				if len(kv) == 2 {
 					valType := strings.TrimSpace(kv[1])

@@ -1,0 +1,7 @@
+exit status 1
+/workspace/mochi/tests/rosetta/transpiler/Scala/catalan-numbers-pascals-triangle.scala:56: error: type mismatch;
+ found   : scala.math.BigInt
+ required: Int
+      val cat: Int = t((i + BigInt(1)).toInt) - t((i).toInt)
+                                              ^
+one error found
