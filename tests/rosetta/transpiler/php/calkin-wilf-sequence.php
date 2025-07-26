@@ -1,5 +1,20 @@
 <?php
 ini_set('memory_limit', '-1');
+$now_seed = 0;
+$now_seeded = false;
+$s = getenv('MOCHI_NOW_SEED');
+if ($s !== false && $s !== '') {
+    $now_seed = intval($s);
+    $now_seeded = true;
+}
+function _now() {
+    global $now_seed, $now_seeded;
+    if ($now_seeded) {
+        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
+        return $now_seed;
+    }
+    return hrtime(true);
+}
 function _gcd($a, $b) {
     if (function_exists('bcadd')) {
         if (bccomp($a, '0') < 0) $a = bcsub('0', $a);
@@ -97,12 +112,12 @@ function repeat($s, $n) {
 function parseIntStr($s, $base = 10) {
     return intval($s, intval($base));
 }
-function bigrat($a, $b) {
-  global $calkinWilf, $toContinued, $termNumber, $commatize, $main;
-  return _div((_bigrat($a)), (_bigrat($b)));
-}
-function calkinWilf($n) {
-  global $bigrat, $toContinued, $termNumber, $commatize, $main;
+$__start_mem = memory_get_usage();
+$__start = _now();
+  function bigrat($a, $b) {
+  return _div((_bigrat($a, null)), (_bigrat($b, null)));
+};
+  function calkinWilf($n) {
   $seq = [];
   $seq = array_merge($seq, [bigrat(1, 1)]);
   $i = 1;
@@ -112,37 +127,35 @@ function calkinWilf($n) {
   $b = denom($prev);
   $f = $a / $b;
   $t = bigrat($f, 1);
-  $t = _mul($t, (_bigrat(2)));
+  $t = _mul($t, (_bigrat(2, null)));
   $t = _sub($t, $prev);
-  $t = _add($t, (_bigrat(1)));
-  $t = _div((_bigrat(1)), $t);
+  $t = _add($t, (_bigrat(1, null)));
+  $t = _div((_bigrat(1, null)), $t);
   $seq = array_merge($seq, [$t]);
   $i = $i + 1;
 };
   return $seq;
-}
-function toContinued($r) {
-  global $bigrat, $calkinWilf, $termNumber, $commatize, $main;
+};
+  function toContinued($r) {
   $a = num($r);
   $b = denom($r);
   $res = [];
   while (true) {
   $res = array_merge($res, [intval(($a / $b))]);
-  $t = $a % $b;
+  $t = fmod($a, $b);
   $a = $b;
   $b = $t;
   if ($a == 1) {
   break;
 }
 };
-  if (count($res) % 2 == 0) {
+  if (fmod(count($res), 2) == 0) {
   $res[count($res) - 1] = $res[count($res) - 1] - 1;
   $res = array_merge($res, [1]);
 }
   return $res;
-}
-function termNumber($cf) {
-  global $bigrat, $calkinWilf, $toContinued, $commatize, $main;
+};
+  function termNumber($cf) {
   $b = '';
   $d = '1';
   foreach ($cf as $n) {
@@ -154,9 +167,8 @@ function termNumber($cf) {
 }
 };
   return parseIntStr($b, 2);
-}
-function commatize($n) {
-  global $bigrat, $calkinWilf, $toContinued, $termNumber, $main;
+};
+  function commatize($n) {
   $s = _str($n);
   $out = '';
   $i = 0;
@@ -180,9 +192,8 @@ function commatize($n) {
   $out = '-' . $out;
 }
   return $out;
-}
-function main() {
-  global $bigrat, $calkinWilf, $toContinued, $termNumber, $commatize;
+};
+  function main() {
   $cw = calkinWilf(20);
   echo rtrim('The first 20 terms of the Calkin-Wilf sequnence are:'), PHP_EOL;
   $i = 0;
@@ -199,5 +210,13 @@ function main() {
   $cf = toContinued($r);
   $tn = termNumber($cf);
   echo rtrim('' . _str(num($r)) . '/' . _str(denom($r)) . ' is the ' . commatize($tn) . 'th term of the sequence.'), PHP_EOL;
-}
-main();
+};
+  main();
+$__end = _now();
+$__end_mem = memory_get_usage();
+$__duration = intdiv($__end - $__start, 1000);
+$__mem_diff = max(0, $__end_mem - $__start_mem);
+$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
+$__j = json_encode($__bench, 128);
+$__j = str_replace("    ", "  ", $__j);
+echo $__j, PHP_EOL;;

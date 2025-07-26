@@ -1,6 +1,5 @@
-hello C
 {
-  "duration_us": 42,
+  "duration_us": 157,
   "memory_bytes": 96,
   "name": "main"
 }
