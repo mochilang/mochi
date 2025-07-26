@@ -2,9 +2,9 @@
 
 Generated Lua code for programs in `tests/rosetta/x/Mochi`. Each program has a `.lua` file produced by the transpiler and a `.out` file with its runtime output. Compilation or runtime errors are captured in `.error` files.
 
-Transpiled programs: 281/284
+Transpiled programs: 282/285
 
-Last updated: 2025-07-25 22:07 GMT+7
+Last updated: 2025-07-26 17:02 GMT+7
 
 Checklist:
 
@@ -285,12 +285,13 @@ Checklist:
 | 273 | date-manipulation | ✓ | 118µs | 2.1 KB |
 | 274 | day-of-the-week | ✓ | 51µs | 2.7 KB |
 | 275 | de-bruijn-sequences | ✓ | 2.607883s | 164.3 KB |
-| 276 | deal-cards-for-freecell | ✓ |  |  |
-| 277 | death-star | ✓ | 7.933ms | 984 B |
-| 278 | deceptive-numbers | ✓ | 2.491983s | 2.9 KB |
+| 276 | deal-cards-for-freecell | ✓ | 504µs | 2.9 KB |
+| 277 | death-star | ✓ | 11.168ms | 984 B |
+| 278 | deceptive-numbers | ✓ | 7.434189s | 2.9 KB |
 | 279 | deconvolution-1d-2 |   |  |  |
-| 280 | deconvolution-1d-3 | ✓ |  |  |
-| 281 | deconvolution-1d | ✓ | 142µs | 2.9 KB |
-| 282 | deepcopy-1 | ✓ | 73µs | 1.6 KB |
+| 280 | deconvolution-1d-3 | ✓ | 239µs | 1.1 KB |
+| 281 | deconvolution-1d | ✓ | 229µs | 2.9 KB |
+| 282 | deepcopy-1 | ✓ | 152µs | 1.6 KB |
 | 283 | define-a-primitive-data-type |   |  |  |
 | 284 | md5 |   |  |  |
+| 285 | delegates | ✓ | 46µs | 320 B |
