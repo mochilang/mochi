@@ -1174,6 +1174,18 @@ type CallExpr struct {
 	Var  bool
 }
 
+func isStringExpr(e Expr) bool {
+	switch t := e.(type) {
+	case *StringLit, *InterpString:
+		return true
+	case *CallExpr:
+		if strings.HasPrefix(t.Func, "String.") || t.Func == "Kernel.to_string" {
+			return true
+		}
+	}
+	return false
+}
+
 func (c *CallExpr) emit(w io.Writer) {
 	io.WriteString(w, c.Func)
 	if c.Var {
@@ -1874,7 +1886,7 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 				t := types.ResolveTypeRef(ld.Type, env)
 				env.SetVar(st.Let.Name, types.ListType{Elem: t}, false)
 			} else if st.Let.Value != nil {
-				t := types.TypeOfExprBasic(st.Let.Value, env)
+				t := types.TypeOfExpr(st.Let.Value, env)
 				if lt, ok := t.(types.ListType); ok {
 					if _, isAny := lt.Elem.(types.AnyType); isAny {
 						t = inferStaticType(val)
@@ -1923,7 +1935,7 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 				t := types.ResolveTypeRef(ld.Type, env)
 				env.SetVar(st.Var.Name, types.ListType{Elem: t}, true)
 			} else if st.Var.Value != nil {
-				t := types.TypeOfExprBasic(st.Var.Value, env)
+				t := types.TypeOfExpr(st.Var.Value, env)
 				if lt, ok := t.(types.ListType); ok {
 					if _, isAny := lt.Elem.(types.AnyType); isAny {
 						t = inferStaticType(val)
@@ -2322,8 +2334,11 @@ func compileForStmt(fs *parser.ForStmt, env *types.Env) (Stmt, error) {
 	}
 	src := start
 	if fs.RangeEnd == nil {
-		if _, ok := types.TypeOfExprBasic(fs.Source, env).(types.MapType); ok {
+		switch types.TypeOfExprBasic(fs.Source, env).(type) {
+		case types.MapType:
 			src = &CallExpr{Func: "Map.keys", Args: []Expr{start}}
+		case types.StringType:
+			src = &CallExpr{Func: "String.graphemes", Args: []Expr{start}}
 		}
 	}
 	if end != nil {
@@ -3185,7 +3200,15 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 				if err != nil {
 					return nil, err
 				}
-				diff = &BinaryExpr{Left: end, Op: "-", Right: start}
+				left := end
+				right := start
+				if _, ok := left.(*BinaryExpr); ok {
+					left = &GroupExpr{Expr: left}
+				}
+				if _, ok := right.(*BinaryExpr); ok {
+					right = &GroupExpr{Expr: right}
+				}
+				diff = &BinaryExpr{Left: left, Op: "-", Right: right}
 			} else {
 				var lengthCall *CallExpr
 				switch typ.(type) {
@@ -3416,7 +3439,7 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 				t := types.TypeOfExpr(p.Call.Args[0], env)
 				if _, ok := t.(types.MapType); ok {
 					name = "map_size"
-				} else if types.IsStringType(t) {
+				} else if types.IsStringType(t) || isStringExpr(args[0]) {
 					name = "String.length"
 				} else if v, ok := isSimpleIdent(p.Call.Args[0]); ok {
 					if vt, err := env.GetVar(v); err == nil && types.IsStringType(vt) {
@@ -3494,6 +3517,18 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 			if len(args) == 3 {
 				diff := &BinaryExpr{Left: args[2], Op: "-", Right: &GroupExpr{Expr: args[1]}}
 				return &CallExpr{Func: "String.slice", Args: []Expr{args[0], args[1], diff}}, nil
+			}
+		case "padStart":
+			if len(args) == 3 {
+				return &CallExpr{Func: "String.pad_leading", Args: args}, nil
+			}
+		case "num":
+			if len(args) == 1 {
+				return &CallExpr{Func: "elem", Args: []Expr{args[0], &NumberLit{Value: "0"}}}, nil
+			}
+		case "denom":
+			if len(args) == 1 {
+				return &CallExpr{Func: "elem", Args: []Expr{args[0], &NumberLit{Value: "1"}}}, nil
 			}
 		case "exists":
 			if len(args) == 1 {
