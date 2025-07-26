@@ -128,6 +128,27 @@ local function _sha256(bs)
 end
 `
 
+const helperMD5 = `
+local function _md5(bs)
+  local tmp = os.tmpname()
+  local f = assert(io.open(tmp, 'wb'))
+  for i = 1, #bs do
+    f:write(string.char(bs[i]))
+  end
+  f:close()
+  local p = io.popen('md5sum ' .. tmp)
+  local out = p:read('*l') or ''
+  p:close()
+  os.remove(tmp)
+  local hex = string.sub(out, 1, 32)
+  local res = {}
+  for i = 1, #hex, 2 do
+    res[#res+1] = tonumber(string.sub(hex, i, i+1), 16)
+  end
+  return res
+end
+`
+
 const helperIndexOf = `
 local function _indexOf(s, ch)
   if type(s) == 'string' then
@@ -149,6 +170,9 @@ end
 
 const helperParseIntStr = `
 local function _parseIntStr(str)
+  if type(str) == 'table' then
+    str = table.concat(str)
+  end
   local n = tonumber(str, 10)
   if n == nil then return 0 end
   return math.floor(n)
@@ -516,6 +540,12 @@ func (c *CallExpr) emit(w io.Writer) {
 		io.WriteString(w, ")")
 	case "sha256":
 		io.WriteString(w, "_sha256(")
+		if len(c.Args) > 0 {
+			c.Args[0].emit(w)
+		}
+		io.WriteString(w, ")")
+	case "MD5Hex":
+		io.WriteString(w, "(function(bs) local res=_md5(bs) local t={} for i=1,#res do t[#t+1]=string.format('%02x',res[i]) end return table.concat(t) end)(")
 		if len(c.Args) > 0 {
 			c.Args[0].emit(w)
 		}
@@ -2361,6 +2391,8 @@ func collectHelpers(p *Program) map[string]bool {
 				used["padStart"] = true
 			case "sha256":
 				used["sha256"] = true
+			case "MD5Hex":
+				used["md5"] = true
 			case "indexOf":
 				used["indexOf"] = true
 			case "split":
@@ -2533,6 +2565,9 @@ func Emit(p *Program) []byte {
 	}
 	if used["sha256"] {
 		b.WriteString(helperSHA256)
+	}
+	if used["md5"] {
+		b.WriteString(helperMD5)
 	}
 	if used["indexOf"] {
 		b.WriteString(helperIndexOf)
@@ -3404,14 +3439,26 @@ func convertForStmt(fs *parser.ForStmt) (Stmt, error) {
 	if err != nil {
 		return nil, err
 	}
+	var elemType types.Type = types.AnyType{}
+	if lt, ok := exprType(iter).(types.ListType); ok {
+		elemType = lt.Elem
+	} else if _, ok := exprType(iter).(types.StringType); ok {
+		elemType = types.StringType{}
+	}
+	child := types.NewEnv(currentEnv)
+	child.SetVar(fs.Name, elemType, true)
+	prev := currentEnv
+	currentEnv = child
 	var body []Stmt
 	for _, st := range fs.Body {
 		s, err := convertStmt(st)
 		if err != nil {
+			currentEnv = prev
 			return nil, err
 		}
 		body = append(body, s)
 	}
+	currentEnv = prev
 	return &ForInStmt{Name: fs.Name, Iterable: iter, Body: body}, nil
 }
 

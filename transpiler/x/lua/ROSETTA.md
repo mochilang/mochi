@@ -2,9 +2,9 @@
 
 Generated Lua code for programs in `tests/rosetta/x/Mochi`. Each program has a `.lua` file produced by the transpiler and a `.out` file with its runtime output. Compilation or runtime errors are captured in `.error` files.
 
-Transpiled programs: 300/332
+Transpiled programs: 330/332
 
-Last updated: 2025-07-26 19:27 GMT+7
+Last updated: 2025-07-26 20:07 GMT+7
 
 Checklist:
 
@@ -312,33 +312,33 @@ Checklist:
 | 300 | dice-game-probabilities-2 | ✓ | 11.084ms | 952 B |
 | 301 | digital-root-multiplicative-digital-root | ✓ | 10.641ms | 984 B |
 | 302 | dijkstras-algorithm | ✓ | 138µs | 1.9 KB |
-| 303 | dinesmans-multiple-dwelling-problem |   |  |  |
-| 304 | dining-philosophers-1 |   |  |  |
-| 305 | dining-philosophers-2 |   |  |  |
-| 306 | disarium-numbers |   |  |  |
-| 307 | discordian-date |   |  |  |
-| 308 | display-a-linear-combination |   |  |  |
-| 309 | display-an-outline-as-a-nested-table |   |  |  |
-| 310 | distance-and-bearing |   |  |  |
-| 311 | distributed-programming |   |  |  |
-| 312 | diversity-prediction-theorem |   |  |  |
-| 313 | documentation |   |  |  |
-| 314 | doomsday-rule |   |  |  |
-| 315 | dot-product |   |  |  |
-| 316 | doubly-linked-list-definition-1 |   |  |  |
-| 317 | doubly-linked-list-definition-2 |   |  |  |
-| 318 | doubly-linked-list-element-definition |   |  |  |
-| 319 | doubly-linked-list-traversal |   |  |  |
-| 320 | dragon-curve |   |  |  |
-| 321 | draw-a-clock |   |  |  |
-| 322 | draw-a-cuboid |   |  |  |
-| 323 | draw-a-pixel-1 |   |  |  |
-| 324 | draw-a-rotating-cube |   |  |  |
-| 325 | draw-a-sphere |   |  |  |
-| 326 | dutch-national-flag-problem |   |  |  |
-| 327 | dynamic-variable-names |   |  |  |
-| 328 | earliest-difference-between-prime-gaps |   |  |  |
-| 329 | eban-numbers |   |  |  |
-| 330 | echo-server |   |  |  |
-| 331 | ekg-sequence-convergence |   |  |  |
-| 332 | md5 |   |  |  |
+| 303 | dinesmans-multiple-dwelling-problem | ✓ | 52µs | 2.3 KB |
+| 304 | dining-philosophers-1 | ✓ | 101µs | 288 B |
+| 305 | dining-philosophers-2 | ✓ | 140µs | 288 B |
+| 306 | disarium-numbers | ✓ | 25.768407s | 432 B |
+| 307 | discordian-date | ✓ | 96µs | 1.6 KB |
+| 308 | display-a-linear-combination | ✓ | 178µs | 440 B |
+| 309 | display-an-outline-as-a-nested-table | ✓ | 469µs | 592 B |
+| 310 | distance-and-bearing | ✓ | 388µs | 11.1 KB |
+| 311 | distributed-programming | ✓ | 48µs | 288 B |
+| 312 | diversity-prediction-theorem | ✓ | 91µs | 552 B |
+| 313 | documentation | ✓ | 4µs | 312 B |
+| 314 | doomsday-rule | ✓ | 77µs | 968 B |
+| 315 | dot-product | ✓ | 85µs | 400 B |
+| 316 | doubly-linked-list-definition-1 | ✓ | 2µs | 248 B |
+| 317 | doubly-linked-list-definition-2 | ✓ | 64µs | 592 B |
+| 318 | doubly-linked-list-element-definition | ✓ | 45µs | 2.4 KB |
+| 319 | doubly-linked-list-traversal | ✓ | 52µs | 1.7 KB |
+| 320 | dragon-curve | ✓ | 935µs | 5.3 KB |
+| 321 | draw-a-clock | ✓ | 56µs | 349 B |
+| 322 | draw-a-cuboid | ✓ | 685µs | 3.8 KB |
+| 323 | draw-a-pixel-1 | ✓ | 242.422ms | 1.9 MB |
+| 324 | draw-a-rotating-cube | ✓ | 9.455ms | 7.6 KB |
+| 325 | draw-a-sphere | ✓ | 14.838ms | 544 B |
+| 326 | dutch-national-flag-problem | ✓ | 79µs | 560 B |
+| 327 | dynamic-variable-names | ✓ | 92µs | 240 B |
+| 328 | earliest-difference-between-prime-gaps | ✓ | 308µs | 3.8 KB |
+| 329 | eban-numbers | ✓ | 99.735ms | 776 B |
+| 330 | echo-server | ✓ | 45µs | 400 B |
+| 331 | ekg-sequence-convergence | ✓ | 42.161ms |  |
+| 332 | md5 | ✓ | 1.688ms | 840 B |
