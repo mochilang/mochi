@@ -1,0 +1,173 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun gcd(a: int, b: int): int {
+func gcd (regs=12)
+  // var x = a
+  Move         r2, r0
+  // if x < 0 { x = -x }
+  Const        r3, 0
+  Less         r4, r2, r3
+  JumpIfFalse  r4, L0
+  Neg          r5, r2
+  Move         r2, r5
+L0:
+  // var y = b
+  Move         r6, r1
+  // if y < 0 { y = -y }
+  Const        r3, 0
+  Less         r7, r6, r3
+  JumpIfFalse  r7, L1
+  Neg          r8, r6
+  Move         r6, r8
+L1:
+  // while y != 0 {
+  Const        r3, 0
+  NotEqual     r9, r6, r3
+  JumpIfFalse  r9, L2
+  // let t = x % y
+  Mod          r10, r2, r6
+  Move         r11, r10
+  // x = y
+  Move         r2, r6
+  // y = t
+  Move         r6, r11
+  // while y != 0 {
+  Jump         L1
+L2:
+  // return x
+  Return       r2
+
+  // fun parseRational(s: string): map<string, int> {
+func parseRational (regs=47)
+  // var intPart = 0
+  Const        r1, 0
+  Move         r2, r1
+  // var fracPart = 0
+  Const        r1, 0
+  Move         r3, r1
+  // var denom = 1
+  Const        r4, 1
+  Move         r5, r4
+  // var afterDot = false
+  Const        r6, false
+  Move         r7, r6
+  // var i = 0
+  Const        r1, 0
+  Move         r8, r1
+L4:
+  // while i < len(s) {
+  Len          r9, r0
+  LessInt      r10, r8, r9
+  JumpIfFalse  r10, L0
+  // let ch = substring(s, i, i+1)
+  Const        r4, 1
+  AddInt       r11, r8, r4
+  Slice        r12, r0, r8, r11
+  Move         r13, r12
+  // if ch == "." {
+  Const        r14, "."
+  Equal        r15, r13, r14
+  JumpIfFalse  r15, L1
+  // afterDot = true
+  Const        r16, true
+  Move         r7, r16
+  // if ch == "." {
+  Jump         L2
+L1:
+  // let d = int(ch) - int("0")
+  Sub          r19, r17, r18
+  Move         r20, r19
+  // if !afterDot {
+  Not          r21, r7
+  JumpIfFalse  r21, L3
+  // intPart = intPart * 10 + d
+  Const        r22, 10
+  MulInt       r23, r2, r22
+  Add          r24, r23, r20
+  Move         r2, r24
+  // if !afterDot {
+  Jump         L2
+L3:
+  // fracPart = fracPart * 10 + d
+  Const        r22, 10
+  MulInt       r25, r3, r22
+  Add          r26, r25, r20
+  Move         r3, r26
+  // denom = denom * 10
+  Const        r22, 10
+  MulInt       r27, r5, r22
+  Move         r5, r27
+L2:
+  // i = i + 1
+  Const        r4, 1
+  AddInt       r28, r8, r4
+  Move         r8, r28
+  // while i < len(s) {
+  Jump         L4
+L0:
+  // var num = intPart * denom + fracPart
+  Mul          r29, r2, r5
+  Add          r30, r29, r3
+  Move         r31, r30
+  // let g = gcd(num, denom)
+  Move         r32, r31
+  Move         r33, r5
+  Call2        r34, gcd, r32, r33
+  Move         r35, r34
+  // return {"num": (num / g) as int, "den": (denom / g) as int}
+  Const        r36, "num"
+  Div          r37, r31, r35
+  Cast         r38, r37, int
+  Const        r39, "den"
+  Div          r40, r5, r35
+  Cast         r41, r40, int
+  Move         r42, r36
+  Move         r43, r38
+  Move         r44, r39
+  Move         r45, r41
+  MakeMap      r46, 2, r42
+  Return       r46
+
+  // fun main() {
+func main (regs=26)
+  // let inputs = ["0.9054054", "0.518518", "0.75"]
+  Const        r0, ["0.9054054", "0.518518", "0.75"]
+  Move         r1, r0
+  // for s in inputs {
+  Const        r2, ["0.9054054", "0.518518", "0.75"]
+  IterPrep     r3, r2
+  Len          r4, r3
+  Const        r5, 0
+L1:
+  LessInt      r6, r5, r4
+  JumpIfFalse  r6, L0
+  Index        r7, r3, r5
+  Move         r8, r7
+  // let r = parseRational(s)
+  Move         r9, r8
+  Call         r10, parseRational, r9
+  Move         r11, r10
+  // print(s + " = " + str(r["num"]) + "/" + str(r["den"]))
+  Const        r12, " = "
+  Add          r13, r8, r12
+  Const        r14, "num"
+  Index        r15, r11, r14
+  Str          r16, r15
+  Add          r17, r13, r16
+  Const        r18, "/"
+  Add          r19, r17, r18
+  Const        r20, "den"
+  Index        r21, r11, r20
+  Str          r22, r21
+  Add          r23, r19, r22
+  Print        r23
+  // for s in inputs {
+  Const        r24, 1
+  AddInt       r25, r5, r24
+  Move         r5, r25
+  Jump         L1
+L0:
+  Return       r0

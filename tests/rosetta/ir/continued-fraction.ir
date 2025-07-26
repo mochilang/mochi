@@ -1,0 +1,236 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun newTerm(a: int, b: int): map<string, int> {
+func newTerm (regs=9)
+  // return {"a": a, "b": b}
+  Const        r2, "a"
+  Const        r3, "b"
+  Move         r4, r2
+  Move         r5, r0
+  Move         r6, r3
+  Move         r7, r1
+  MakeMap      r8, 2, r4
+  Return       r8
+
+  // fun cfSqrt2(nTerms: int): list<map<string, int>> {
+func cfSqrt2 (regs=16)
+  // var f: list<map<string, int>> = []
+  Const        r1, []
+  Move         r2, r1
+  // var n = 0
+  Const        r3, 0
+  Move         r4, r3
+L1:
+  // while n < nTerms {
+  Less         r5, r4, r0
+  JumpIfFalse  r5, L0
+  // f = append(f, newTerm(2, 1))
+  Const        r8, 2
+  Move         r6, r8
+  Const        r9, 1
+  Move         r7, r9
+  Call2        r10, newTerm, r6, r7
+  Append       r11, r2, r10
+  Move         r2, r11
+  // n = n + 1
+  Const        r9, 1
+  AddInt       r12, r4, r9
+  Move         r4, r12
+  // while n < nTerms {
+  Jump         L1
+L0:
+  // if nTerms > 0 { f[0]["a"] = 1 }
+  Const        r3, 0
+  Less         r13, r3, r0
+  JumpIfFalse  r13, L2
+  Const        r3, 0
+  Index        r14, r2, r3
+  Const        r9, 1
+  Const        r15, "a"
+  SetIndex     r14, r15, r9
+L2:
+  // return f
+  Return       r2
+
+  // fun cfNap(nTerms: int): list<map<string, int>> {
+func cfNap (regs=20)
+  // var f: list<map<string, int>> = []
+  Const        r1, []
+  Move         r2, r1
+  // var n = 0
+  Const        r3, 0
+  Move         r4, r3
+L1:
+  // while n < nTerms {
+  Less         r5, r4, r0
+  JumpIfFalse  r5, L0
+  // f = append(f, newTerm(n, n - 1))
+  Move         r6, r4
+  Const        r8, 1
+  SubInt       r9, r4, r8
+  Move         r7, r9
+  Call2        r10, newTerm, r6, r7
+  Append       r11, r2, r10
+  Move         r2, r11
+  // n = n + 1
+  Const        r8, 1
+  AddInt       r12, r4, r8
+  Move         r4, r12
+  // while n < nTerms {
+  Jump         L1
+L0:
+  // if nTerms > 0 { f[0]["a"] = 2 }
+  Const        r3, 0
+  Less         r13, r3, r0
+  JumpIfFalse  r13, L2
+  Const        r3, 0
+  Index        r14, r2, r3
+  Const        r15, 2
+  Const        r16, "a"
+  SetIndex     r14, r16, r15
+L2:
+  // if nTerms > 1 { f[1]["b"] = 1 }
+  Const        r8, 1
+  Less         r17, r8, r0
+  JumpIfFalse  r17, L3
+  Const        r8, 1
+  Index        r18, r2, r8
+  Const        r8, 1
+  Const        r19, "b"
+  SetIndex     r18, r19, r8
+L3:
+  // return f
+  Return       r2
+
+  // fun cfPi(nTerms: int): list<map<string, int>> {
+func cfPi (regs=22)
+  // var f: list<map<string, int>> = []
+  Const        r1, []
+  Move         r2, r1
+  // var n = 0
+  Const        r3, 0
+  Move         r4, r3
+L1:
+  // while n < nTerms {
+  Less         r5, r4, r0
+  JumpIfFalse  r5, L0
+  // let g = 2 * n - 1
+  Const        r6, 2
+  MulInt       r7, r6, r4
+  Const        r8, 1
+  SubInt       r9, r7, r8
+  Move         r10, r9
+  // f = append(f, newTerm(6, g * g))
+  Const        r13, 6
+  Move         r11, r13
+  MulInt       r14, r10, r10
+  Move         r12, r14
+  Call2        r15, newTerm, r11, r12
+  Append       r16, r2, r15
+  Move         r2, r16
+  // n = n + 1
+  Const        r8, 1
+  AddInt       r17, r4, r8
+  Move         r4, r17
+  // while n < nTerms {
+  Jump         L1
+L0:
+  // if nTerms > 0 { f[0]["a"] = 3 }
+  Const        r3, 0
+  Less         r18, r3, r0
+  JumpIfFalse  r18, L2
+  Const        r3, 0
+  Index        r19, r2, r3
+  Const        r20, 3
+  Const        r21, "a"
+  SetIndex     r19, r21, r20
+L2:
+  // return f
+  Return       r2
+
+  // fun real(f: list<map<string, int>>): float {
+func real (regs=26)
+  // var r = 0.0
+  Const        r1, 0.0
+  Move         r2, r1
+  // var i = len(f) - 1
+  Len          r3, r0
+  Const        r4, 1
+  SubInt       r5, r3, r4
+  Move         r6, r5
+L1:
+  // while i > 0 {
+  Const        r7, 0
+  LessInt      r8, r7, r6
+  JumpIfFalse  r8, L0
+  // r = (f[i]["b"] as float) / ((f[i]["a"] as float) + r)
+  Index        r9, r0, r6
+  Const        r10, "b"
+  Index        r11, r9, r10
+  Cast         r12, r11, float
+  Index        r13, r0, r6
+  Const        r14, "a"
+  Index        r15, r13, r14
+  Cast         r16, r15, float
+  AddFloat     r17, r16, r2
+  DivFloat     r18, r12, r17
+  Move         r2, r18
+  // i = i - 1
+  Const        r4, 1
+  SubInt       r19, r6, r4
+  Move         r6, r19
+  // while i > 0 {
+  Jump         L1
+L0:
+  // if len(f) > 0 { r = r + (f[0]["a"] as float) }
+  Len          r20, r0
+  Const        r7, 0
+  LessInt      r21, r7, r20
+  JumpIfFalse  r21, L2
+  Const        r7, 0
+  Index        r22, r0, r7
+  Const        r14, "a"
+  Index        r23, r22, r14
+  Cast         r24, r23, float
+  AddFloat     r25, r2, r24
+  Move         r2, r25
+L2:
+  // return r
+  Return       r2
+
+  // fun main() {
+func main (regs=22)
+  // print("sqrt2: " + str(real(cfSqrt2(20))))
+  Const        r0, "sqrt2: "
+  Const        r3, 20
+  Move         r2, r3
+  Call         r4, cfSqrt2, r2
+  Move         r1, r4
+  Call         r5, real, r1
+  Str          r6, r5
+  Add          r7, r0, r6
+  Print        r7
+  // print("nap:   " + str(real(cfNap(20))))
+  Const        r8, "nap:   "
+  Const        r3, 20
+  Move         r10, r3
+  Call         r11, cfNap, r10
+  Move         r9, r11
+  Call         r12, real, r9
+  Str          r13, r12
+  Add          r14, r8, r13
+  Print        r14
+  // print("pi:    " + str(real(cfPi(20))))
+  Const        r15, "pi:    "
+  Const        r3, 20
+  Move         r17, r3
+  Call         r18, cfPi, r17
+  Move         r16, r18
+  Call         r19, real, r16
+  Str          r20, r19
+  Add          r21, r15, r20
+  Print        r21
+  Return       r0

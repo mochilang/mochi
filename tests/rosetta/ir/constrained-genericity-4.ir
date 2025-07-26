@@ -1,0 +1,56 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun peelFirstEat(p: PeelFirst) {
+func peelFirstEat (regs=7)
+  // print("mm, that " + p.value + " was good!")
+  Const        r1, "mm, that "
+  Const        r2, "value"
+  Index        r3, r0, r2
+  Add          r4, r1, r3
+  Const        r5, " was good!"
+  Add          r6, r4, r5
+  Print        r6
+  Return       r0
+
+  // fun main() {
+func main (regs=28)
+  // PeelFirst{ value: "banana" },
+  Const        r2, "banana"
+  Const        r3, "__name"
+  Const        r4, "PeelFirst"
+  Const        r5, "value"
+  Move         r6, r2
+  MakeMap      r7, 2, r3
+  Move         r0, r7
+  // PeelFirst{ value: "mango" }
+  Const        r8, "mango"
+  Const        r9, "__name"
+  Const        r10, "PeelFirst"
+  Const        r11, "value"
+  Move         r12, r8
+  MakeMap      r13, 2, r9
+  Move         r1, r13
+  // items: [
+  MakeList     r14, 2, r0
+  // var fb: Foodbox = Foodbox{
+  Const        r15, "__name"
+  Const        r16, "Foodbox"
+  // items: [
+  Const        r17, "items"
+  Move         r18, r14
+  // var fb: Foodbox = Foodbox{
+  MakeMap      r19, 2, r15
+  Move         r20, r19
+  // var f0 = fb.items[0]
+  Const        r21, "items"
+  Index        r22, r20, r21
+  Const        r23, 0
+  Index        r24, r22, r23
+  Move         r25, r24
+  // peelFirstEat(f0)
+  Move         r26, r25
+  Call         r27, peelFirstEat, r26
+  Return       r0

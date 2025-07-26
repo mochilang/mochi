@@ -1,0 +1,278 @@
+func main (regs=107)
+  // let nPts = 100
+  Const        r14, 100
+  Move         r0, r14
+  SetGlobal    0,0,0,0
+  // let rMin = 10
+  Const        r15, 10
+  Move         r1, r15
+  SetGlobal    1,1,0,0
+  // let rMax = 15
+  Const        r16, 15
+  Move         r2, r16
+  SetGlobal    2,2,0,0
+  // let span = rMax + 1 + rMax
+  Const        r16, 15
+  Const        r17, 1
+  AddInt       r18, r16, r17
+  Const        r16, 15
+  AddInt       r19, r18, r16
+  Cast         r20, r19, bigint
+  Move         r3, r20
+  SetGlobal    3,3,0,0
+  // var poss: list<list<int>> = []
+  Const        r21, []
+  Move         r4, r21
+  SetGlobal    4,4,0,0
+  // let min2 = rMin * rMin
+  Const        r15, 10
+  Const        r15, 10
+  MulInt       r22, r15, r15
+  Cast         r23, r22, bigint
+  Move         r5, r23
+  SetGlobal    5,5,0,0
+  // let max2 = rMax * rMax
+  Const        r16, 15
+  Const        r16, 15
+  MulInt       r24, r16, r16
+  Cast         r25, r24, bigint
+  Move         r6, r25
+  SetGlobal    6,6,0,0
+  // var y = -rMax
+  Const        r16, 15
+  NegInt       r26, r16
+  Move         r7, r26
+  SetGlobal    7,7,0,0
+L5:
+  // while y <= rMax {
+  Const        r16, 15
+  LessEqInt    r27, r7, r16
+  JumpIfFalse  r27, L0
+  // var x = -rMax
+  Const        r16, 15
+  NegInt       r28, r16
+  Move         r29, r28
+L4:
+  // while x <= rMax {
+  Const        r16, 15
+  LessEqInt    r30, r29, r16
+  JumpIfFalse  r30, L1
+  // let r2 = x * x + y * y
+  MulInt       r31, r29, r29
+  MulInt       r32, r7, r7
+  AddInt       r33, r31, r32
+  Move         r34, r33
+  // if r2 >= min2 && r2 <= max2 {
+  Const        r35, 100
+  LessEq       r36, r35, r34
+  Const        r37, 225
+  LessEq       r38, r34, r37
+  Move         r39, r36
+  JumpIfFalse  r39, L2
+  Move         r39, r38
+L2:
+  JumpIfFalse  r39, L3
+  // poss = append(poss, [x, y])
+  Move         r40, r29
+  Move         r41, r7
+  MakeList     r42, 2, r40
+  Append       r43, r4, r42
+  Move         r4, r43
+  SetGlobal    4,4,0,0
+L3:
+  // x = x + 1
+  Const        r17, 1
+  AddInt       r44, r29, r17
+  Move         r29, r44
+  // while x <= rMax {
+  Jump         L4
+L1:
+  // y = y + 1
+  Const        r17, 1
+  AddInt       r45, r7, r17
+  Move         r7, r45
+  SetGlobal    7,7,0,0
+  // while y <= rMax {
+  Jump         L5
+L0:
+  // print(str(len(poss)) + " possible points")
+  Len          r46, r4
+  Str          r47, r46
+  Const        r48, " possible points"
+  Add          r49, r47, r48
+  Print        r49
+  // var rows: list<list<string>> = []
+  Const        r21, []
+  Move         r8, r21
+  SetGlobal    8,8,0,0
+  // var r = 0
+  Const        r50, 0
+  Move         r9, r50
+  SetGlobal    9,9,0,0
+L9:
+  // while r < span {
+  Const        r51, 31
+  Less         r52, r9, r51
+  JumpIfFalse  r52, L6
+  // var row: list<string> = []
+  Const        r21, []
+  Move         r53, r21
+  // var c = 0
+  Const        r50, 0
+  Move         r54, r50
+L8:
+  // while c < span * 2 {
+  Const        r51, 31
+  Const        r55, 2
+  Mul          r56, r51, r55
+  Less         r57, r54, r56
+  JumpIfFalse  r57, L7
+  // row = append(row, " ")
+  Const        r58, " "
+  Append       r59, r53, r58
+  Move         r53, r59
+  // c = c + 1
+  Const        r17, 1
+  AddInt       r60, r54, r17
+  Move         r54, r60
+  // while c < span * 2 {
+  Jump         L8
+L7:
+  // rows = append(rows, row)
+  Append       r61, r8, r53
+  Move         r8, r61
+  SetGlobal    8,8,0,0
+  // r = r + 1
+  Const        r17, 1
+  AddInt       r62, r9, r17
+  Move         r9, r62
+  SetGlobal    9,9,0,0
+  // while r < span {
+  Jump         L9
+L6:
+  // var u = 0
+  Const        r50, 0
+  Move         r10, r50
+  SetGlobal    10,10,0,0
+  // var seen: map<string, bool> = {}
+  Const        r63, {}
+  Move         r11, r63
+  SetGlobal    11,11,0,0
+  // var n = 0
+  Const        r50, 0
+  Move         r12, r50
+  SetGlobal    12,12,0,0
+L12:
+  // while n < nPts {
+  Const        r14, 100
+  LessInt      r64, r12, r14
+  JumpIfFalse  r64, L10
+  // var i = now() % len(poss)
+  Now          r65
+  Len          r66, r4
+  ModInt       r67, r65, r66
+  Move         r68, r67
+  // let x = poss[i][0]
+  Index        r69, r4, r68
+  Const        r50, 0
+  Index        r70, r69, r50
+  Move         r71, r70
+  // let yy = poss[i][1]
+  Index        r72, r4, r68
+  Const        r17, 1
+  Index        r73, r72, r17
+  Move         r74, r73
+  // let row = yy + rMax
+  Const        r16, 15
+  Add          r75, r74, r16
+  Move         r76, r75
+  // let col = (x + rMax) * 2
+  Const        r16, 15
+  Add          r77, r71, r16
+  Const        r55, 2
+  Mul          r78, r77, r55
+  Move         r79, r78
+  // rows[row][col] = "*"
+  Index        r80, r8, r76
+  Const        r81, "*"
+  SetIndex     r80, r79, r81
+  SetGlobal    8,8,0,0
+  // let key = str(row) + "," + str(col)
+  Str          r82, r76
+  Const        r83, ","
+  Add          r84, r82, r83
+  Str          r85, r79
+  Add          r86, r84, r85
+  Move         r87, r86
+  // if !seen[key] {
+  Index        r88, r11, r87
+  Not          r89, r88
+  JumpIfFalse  r89, L11
+  // seen[key] = true
+  Const        r90, true
+  SetIndex     r11, r87, r90
+  SetGlobal    11,11,0,0
+  // u = u + 1
+  Const        r17, 1
+  AddInt       r91, r10, r17
+  Move         r10, r91
+  SetGlobal    10,10,0,0
+L11:
+  // n = n + 1
+  Const        r17, 1
+  AddInt       r92, r12, r17
+  Move         r12, r92
+  SetGlobal    12,12,0,0
+  // while n < nPts {
+  Jump         L12
+L10:
+  // var i2 = 0
+  Const        r50, 0
+  Move         r13, r50
+  SetGlobal    13,13,0,0
+L16:
+  // while i2 < span {
+  Const        r51, 31
+  Less         r93, r13, r51
+  JumpIfFalse  r93, L13
+  // var line = ""
+  Const        r94, ""
+  Move         r95, r94
+  // var j = 0
+  Const        r50, 0
+  Move         r96, r50
+L15:
+  // while j < span * 2 {
+  Const        r51, 31
+  Const        r55, 2
+  Mul          r97, r51, r55
+  Less         r98, r96, r97
+  JumpIfFalse  r98, L14
+  // line = line + rows[i2][j]
+  Index        r99, r8, r13
+  Index        r100, r99, r96
+  Add          r101, r95, r100
+  Move         r95, r101
+  // j = j + 1
+  Const        r17, 1
+  AddInt       r102, r96, r17
+  Move         r96, r102
+  // while j < span * 2 {
+  Jump         L15
+L14:
+  // print(line)
+  Print        r95
+  // i2 = i2 + 1
+  Const        r17, 1
+  AddInt       r103, r13, r17
+  Move         r13, r103
+  SetGlobal    13,13,0,0
+  // while i2 < span {
+  Jump         L16
+L13:
+  // print(str(u) + " unique points")
+  Str          r104, r10
+  Const        r105, " unique points"
+  Add          r106, r104, r105
+  Print        r106
+  Return       r0
