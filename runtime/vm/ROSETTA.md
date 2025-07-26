@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated IR and outputs from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/ir`.
-Last updated: 2025-07-26 14:57 UTC
+Last updated: 2025-07-26 16:52 UTC
 
-## Rosetta Golden Test Checklist (248/332)
+## Rosetta Golden Test Checklist (251/332)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 116µs | 11.7 KB |
@@ -270,9 +270,9 @@ Last updated: 2025-07-26 14:57 UTC
 | 261 | csv-to-html-translation-3 | ✓ | 450µs | 3.5 KB |
 | 262 | csv-to-html-translation-4 | ✓ | 399µs | 2.3 KB |
 | 263 | csv-to-html-translation-5 | ✓ | 4.737ms | 609.1 KB |
-| 264 | cuban-primes |   |  |  |
-| 265 | cullen-and-woodall-numbers |   |  |  |
-| 266 | cumulative-standard-deviation |   |  |  |
+| 264 | cuban-primes | ✓ |  |  |
+| 265 | cullen-and-woodall-numbers | ✓ | 247µs | 264.5 KB |
+| 266 | cumulative-standard-deviation | ✓ | 124µs | 72.6 KB |
 | 267 | currency |   |  |  |
 | 268 | currying |   |  |  |
 | 269 | curzon-numbers |   |  |  |
