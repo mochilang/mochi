@@ -1,0 +1,8 @@
+exit status 2
+File "/workspace/mochi/tests/rosetta/transpiler/OCaml/arithmetic-evaluation.ml", line 1:
+Warning 24 [bad-module-name]: bad source file name: "Arithmetic-evaluation" is not a valid module name.
+File "/workspace/mochi/tests/rosetta/transpiler/OCaml/arithmetic-evaluation.ml", line 68, characters 21-56:
+68 |   n := (((!n * 10) + String.sub (str) !i ((!i + 1) - !i)) - 48);
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Error: This expression has type string but an expression was expected of type
+         int

@@ -1,0 +1,8 @@
+exit status 2
+File "/workspace/mochi/tests/rosetta/transpiler/OCaml/arithmetic-geometric-mean.ml", line 1:
+Warning 24 [bad-module-name]: bad source file name: "Arithmetic-geometric-mean" is not a valid module name.
+File "/workspace/mochi/tests/rosetta/transpiler/OCaml/arithmetic-geometric-mean.ml", line 82, characters 24-36:
+82 |   let newG = sqrtApprox ((!a *. !g)) in
+                             ^^^^^^^^^^^^
+Error: This expression has type float but an expression was expected of type
+         'a ref

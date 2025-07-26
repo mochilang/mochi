@@ -28,6 +28,7 @@ var usesNow bool
 var usesLookupHost bool
 var usesDynMath bool
 var usesMem bool
+var usesBigInt bool
 var benchMain bool
 var funcMutations = map[string]map[string]bool{}
 var rootEnv *types.Env
@@ -464,6 +465,9 @@ func ocamlType(t string) string {
 		return "string"
 	case "bool":
 		return "bool"
+	case "bigint":
+		usesBigInt = true
+		return "Z.t"
 	default:
 		if strings.HasPrefix(t, "map-") {
 			inner := strings.TrimPrefix(t, "map-")
@@ -492,6 +496,9 @@ func typeString(t types.Type) string {
 		return "string"
 	case types.BoolType:
 		return "bool"
+	case types.BigIntType:
+		usesBigInt = true
+		return "bigint"
 	case types.ListType:
 		elem := typeString(tt.Elem)
 		if elem == "" {
@@ -539,7 +546,7 @@ func sanitizeIdent(s string) string {
 		return s + "_"
 	}
 	if len(s) > 0 && s[0] >= 'A' && s[0] <= 'Z' {
-		return strings.ToLower(s)
+		return "_" + strings.ToLower(s)
 	}
 	return s
 }
@@ -921,6 +928,11 @@ func (s *StrBuiltin) emit(w io.Writer) {
 	switch s.Typ {
 	case "float":
 		io.WriteString(w, "(string_of_float (")
+		s.Expr.emit(w)
+		io.WriteString(w, "))")
+	case "bigint":
+		usesBigInt = true
+		io.WriteString(w, "(Z.to_string (")
 		s.Expr.emit(w)
 		io.WriteString(w, "))")
 	default:
@@ -1955,13 +1967,31 @@ type CastExpr struct {
 func (c *CastExpr) emit(w io.Writer) {
 	switch c.Type {
 	case "str_to_int":
-		io.WriteString(w, "int_of_string ")
-		c.Expr.emit(w)
+		if s, ok := c.Expr.(*SubstringBuiltin); ok {
+			io.WriteString(w, "Char.code (String.get (")
+			s.Str.emit(w)
+			io.WriteString(w, ") ")
+			s.Start.emit(w)
+			io.WriteString(w, ")")
+		} else {
+			io.WriteString(w, "int_of_string ")
+			c.Expr.emit(w)
+		}
 	case "float_to_int":
-		io.WriteString(w, "int_of_float ")
+		io.WriteString(w, "int_of_float (")
 		c.Expr.emit(w)
+		io.WriteString(w, ")")
 	case "int_to_float":
-		io.WriteString(w, "float_of_int ")
+		io.WriteString(w, "float_of_int (")
+		c.Expr.emit(w)
+		io.WriteString(w, ")")
+	case "int_to_big":
+		usesBigInt = true
+		io.WriteString(w, "Z.of_int ")
+		c.Expr.emit(w)
+	case "big_to_int":
+		usesBigInt = true
+		io.WriteString(w, "Z.to_int ")
 		c.Expr.emit(w)
 	case "int_to_obj":
 		io.WriteString(w, "Obj.repr (")
@@ -1987,15 +2017,33 @@ func (c *CastExpr) emit(w io.Writer) {
 func (c *CastExpr) emitPrint(w io.Writer) {
 	switch c.Type {
 	case "str_to_int":
-		io.WriteString(w, "string_of_int (int_of_string ")
-		c.Expr.emit(w)
-		io.WriteString(w, ")")
+		if s, ok := c.Expr.(*SubstringBuiltin); ok {
+			io.WriteString(w, "string_of_int (Char.code (String.get (")
+			s.Str.emit(w)
+			io.WriteString(w, ") ")
+			s.Start.emit(w)
+			io.WriteString(w, ")))")
+		} else {
+			io.WriteString(w, "string_of_int (int_of_string ")
+			c.Expr.emit(w)
+			io.WriteString(w, ")")
+		}
 	case "float_to_int":
-		io.WriteString(w, "string_of_int (int_of_float ")
+		io.WriteString(w, "string_of_int (int_of_float (")
+		c.Expr.emit(w)
+		io.WriteString(w, "))")
+	case "int_to_float":
+		io.WriteString(w, "string_of_float (float_of_int (")
+		c.Expr.emit(w)
+		io.WriteString(w, "))")
+	case "int_to_big":
+		usesBigInt = true
+		io.WriteString(w, "Z.to_string (Z.of_int ")
 		c.Expr.emit(w)
 		io.WriteString(w, ")")
-	case "int_to_float":
-		io.WriteString(w, "string_of_float (float_of_int ")
+	case "big_to_int":
+		usesBigInt = true
+		io.WriteString(w, "string_of_int (Z.to_int ")
 		c.Expr.emit(w)
 		io.WriteString(w, ")")
 	case "int_to_obj":
@@ -2201,6 +2249,85 @@ type DynBinaryExpr struct {
 }
 
 func (b *BinaryExpr) emit(w io.Writer) {
+	if b.Typ == "bigint" {
+		usesBigInt = true
+		switch b.Op {
+		case "+":
+			io.WriteString(w, "(Z.add ")
+			b.Left.emit(w)
+			io.WriteString(w, " ")
+			b.Right.emit(w)
+			io.WriteString(w, ")")
+		case "-":
+			io.WriteString(w, "(Z.sub ")
+			b.Left.emit(w)
+			io.WriteString(w, " ")
+			b.Right.emit(w)
+			io.WriteString(w, ")")
+		case "*":
+			io.WriteString(w, "(Z.mul ")
+			b.Left.emit(w)
+			io.WriteString(w, " ")
+			b.Right.emit(w)
+			io.WriteString(w, ")")
+		case "/":
+			io.WriteString(w, "(Z.div ")
+			b.Left.emit(w)
+			io.WriteString(w, " ")
+			b.Right.emit(w)
+			io.WriteString(w, ")")
+		case "%":
+			io.WriteString(w, "(Z.rem ")
+			b.Left.emit(w)
+			io.WriteString(w, " ")
+			b.Right.emit(w)
+			io.WriteString(w, ")")
+		case "==":
+			io.WriteString(w, "(Z.equal ")
+			b.Left.emit(w)
+			io.WriteString(w, " ")
+			b.Right.emit(w)
+			io.WriteString(w, ")")
+		case "!=":
+			io.WriteString(w, "(not (Z.equal ")
+			b.Left.emit(w)
+			io.WriteString(w, " ")
+			b.Right.emit(w)
+			io.WriteString(w, "))")
+		case "<":
+			io.WriteString(w, "((Z.compare ")
+			b.Left.emit(w)
+			io.WriteString(w, " ")
+			b.Right.emit(w)
+			io.WriteString(w, ") < 0)")
+		case "<=":
+			io.WriteString(w, "((Z.compare ")
+			b.Left.emit(w)
+			io.WriteString(w, " ")
+			b.Right.emit(w)
+			io.WriteString(w, ") <= 0)")
+		case ">":
+			io.WriteString(w, "((Z.compare ")
+			b.Left.emit(w)
+			io.WriteString(w, " ")
+			b.Right.emit(w)
+			io.WriteString(w, ") > 0)")
+		case ">=":
+			io.WriteString(w, "((Z.compare ")
+			b.Left.emit(w)
+			io.WriteString(w, " ")
+			b.Right.emit(w)
+			io.WriteString(w, ") >= 0)")
+		default:
+			io.WriteString(w, "(Z.add ")
+			b.Left.emit(w)
+			io.WriteString(w, " ")
+			b.Right.emit(w)
+			io.WriteString(w, ")")
+		}
+		return
+	}
+
 	op := b.Op
 	if b.Op == "%" {
 		op = "mod"
@@ -2225,7 +2352,7 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		}
 	}
 	fmt.Fprintf(w, "(")
-	if b.Typ == "float" && b.Ltyp == "int" {
+	if (b.Typ == "float" || b.Ltyp == "float" || b.Rtyp == "float") && b.Ltyp == "int" {
 		io.WriteString(w, "float_of_int (")
 		b.Left.emit(w)
 		io.WriteString(w, ")")
@@ -2233,7 +2360,7 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		b.Left.emit(w)
 	}
 	fmt.Fprintf(w, " %s ", op)
-	if b.Typ == "float" && b.Rtyp == "int" {
+	if (b.Typ == "float" || b.Ltyp == "float" || b.Rtyp == "float") && b.Rtyp == "int" {
 		io.WriteString(w, "float_of_int (")
 		b.Right.emit(w)
 		io.WriteString(w, ")")
@@ -2252,6 +2379,10 @@ func (b *BinaryExpr) emitPrint(w io.Writer) {
 		b.emit(w)
 	case "float":
 		io.WriteString(w, "string_of_float ")
+		b.emit(w)
+	case "bigint":
+		usesBigInt = true
+		io.WriteString(w, "Z.to_string ")
 		b.emit(w)
 	default:
 		io.WriteString(w, "string_of_int ")
@@ -2392,6 +2523,9 @@ func defaultValueExpr(typ string) Expr {
 		return &StringLit{Value: ""}
 	case "float":
 		return &FloatLit{Value: 0}
+	case "bigint":
+		usesBigInt = true
+		return &RawExpr{Code: "(Z.of_int 0)"}
 	case "list":
 		return &ListLit{Elems: nil}
 	case "map":
@@ -2543,18 +2677,31 @@ func transpileStmt(st *parser.Statement, env *types.Env, vars map[string]VarInfo
 		var expr Expr
 		var typ string
 		var err error
+		var valTyp string
 		if st.Let.Value != nil {
-			expr, typ, err = convertExpr(st.Let.Value, env, vars)
+			expr, valTyp, err = convertExpr(st.Let.Value, env, vars)
 			if err != nil {
 				return nil, err
 			}
-		} else if st.Let.Type != nil {
+		}
+		if st.Let.Type != nil {
 			typ = typeRefString(st.Let.Type)
 			if typ == "" {
 				typ = "int"
 			}
-			expr = defaultValueExpr(typ)
 		} else {
+			typ = valTyp
+		}
+		if expr == nil {
+			expr = defaultValueExpr(typ)
+		}
+		if typ != "" && valTyp != "" && typ != valTyp {
+			if typ == "bigint" && valTyp == "int" {
+				expr = &CastExpr{Expr: expr, Type: "int_to_big"}
+			} else if typ == "int" && valTyp == "bigint" {
+				expr = &CastExpr{Expr: expr, Type: "big_to_int"}
+			}
+		} else if typ == "" {
 			return nil, fmt.Errorf("let without value not supported")
 		}
 		vinfo := VarInfo{typ: typ}
@@ -2571,6 +2718,7 @@ func transpileStmt(st *parser.Statement, env *types.Env, vars map[string]VarInfo
 	case st.Var != nil:
 		var expr Expr
 		var typ string
+		var valTyp string
 		if st.Var.Type != nil {
 			typ = typeRefString(st.Var.Type)
 		}
@@ -2579,6 +2727,7 @@ func transpileStmt(st *parser.Statement, env *types.Env, vars map[string]VarInfo
 			if err != nil {
 				return nil, err
 			}
+			valTyp = typVal
 			if typ == "" {
 				typ = typVal
 			}
@@ -2591,6 +2740,14 @@ func transpileStmt(st *parser.Statement, env *types.Env, vars map[string]VarInfo
 		if typ == "" {
 			typ = "int"
 		}
+		if typ != "" && valTyp != "" && typ != valTyp {
+			if typ == "bigint" && valTyp == "int" {
+				expr = &CastExpr{Expr: expr, Type: "int_to_big"}
+			} else if typ == "int" && valTyp == "bigint" {
+				expr = &CastExpr{Expr: expr, Type: "big_to_int"}
+			}
+		}
+
 		vinfo := VarInfo{typ: typ, ref: true}
 		if strings.HasPrefix(typ, "func-") {
 			vinfo.ret = strings.TrimPrefix(typ, "func-")
@@ -2908,10 +3065,9 @@ func transpileStmt(st *parser.Statement, env *types.Env, vars map[string]VarInfo
 			if p.Type != nil {
 				typ := typeRefString(p.Type)
 				if typ == "int" || typ == "float" {
-					exprCode := fmt.Sprintf("(Obj.magic %s : %s)", sanitizeIdent(p.Name), typ)
+					exprCode := fmt.Sprintf("(Obj.magic !%s : %s)", sanitizeIdent(p.Name), typ)
 					if mutated[p.Name] {
-						expr := &RawExpr{Code: strings.ReplaceAll(exprCode, sanitizeIdent(p.Name), fmt.Sprintf("!%s", sanitizeIdent(p.Name)))}
-						casts = append(casts, &AssignStmt{Name: p.Name, Expr: expr})
+						casts = append(casts, &AssignStmt{Name: p.Name, Expr: &RawExpr{Code: exprCode}})
 					} else {
 						casts = append(casts, &LetStmt{Name: p.Name, Expr: &RawExpr{Code: exprCode}})
 					}
@@ -3003,6 +3159,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	usesLookupHost = false
 	usesDynMath = false
 	usesMem = false
+	usesBigInt = false
 	pr := &Program{}
 	vars := map[string]VarInfo{}
 	stmts, err := transpileStmts(prog.Statements, env, vars)
@@ -3159,11 +3316,20 @@ func convertBinary(b *parser.BinaryExpr, env *types.Env, vars map[string]VarInfo
 				left = &FuncCall{Name: "__show", Args: []Expr{left}, Ret: "string"}
 				ltyp = "string"
 				resTyp = "string"
+			} else if ltyp == "bigint" || rtyp == "bigint" {
+				resTyp = "bigint"
 			} else if ltyp == "float" || rtyp == "float" {
 				resTyp = "float"
 			} else if ltyp == "" || rtyp == "" {
 				resTyp = ""
 			} else {
+				if ltyp == "int" && rtyp == "string" {
+					right = &CastExpr{Expr: right, Type: "str_to_int"}
+					rtyp = "int"
+				} else if rtyp == "int" && ltyp == "string" {
+					left = &CastExpr{Expr: left, Type: "str_to_int"}
+					ltyp = "int"
+				}
 				resTyp = "int"
 			}
 		case "==", "!=", "<", "<=", ">", ">=", "&&", "||", "in", "union", "union_all", "except", "intersect":
@@ -3665,6 +3831,10 @@ func convertPostfix(p *parser.PostfixExpr, env *types.Env, vars map[string]VarIn
 			target := typeRefString(op.Cast.Type)
 			if typ == "string" && target == "int" {
 				expr = &CastExpr{Expr: expr, Type: target}
+			} else if target == "int" && typ == "bigint" {
+				expr = &CastExpr{Expr: expr, Type: "big_to_int"}
+			} else if typ == "int" && target == "bigint" {
+				expr = &CastExpr{Expr: expr, Type: "int_to_big"}
 			} else if target == "int" && typ != "int" {
 				expr = &CastExpr{Expr: expr, Type: "obj_to_int"}
 			} else if target == "float" && typ != "float" && typ != "int" {
@@ -4020,10 +4190,9 @@ func convertFunExpr(fn *parser.FunExpr, env *types.Env, vars map[string]VarInfo)
 			if p.Type != nil {
 				typ := typeRefString(p.Type)
 				if typ == "int" || typ == "float" {
-					exprCode := fmt.Sprintf("(Obj.magic %s : %s)", sanitizeIdent(p.Name), typ)
+					exprCode := fmt.Sprintf("(Obj.magic !%s : %s)", sanitizeIdent(p.Name), typ)
 					if mutated[p.Name] {
-						expr := &RawExpr{Code: strings.ReplaceAll(exprCode, sanitizeIdent(p.Name), fmt.Sprintf("!%s", sanitizeIdent(p.Name)))}
-						casts = append(casts, &AssignStmt{Name: p.Name, Expr: expr})
+						casts = append(casts, &AssignStmt{Name: p.Name, Expr: &RawExpr{Code: exprCode}})
 					} else {
 						casts = append(casts, &LetStmt{Name: p.Name, Expr: &RawExpr{Code: exprCode}})
 					}
@@ -4044,10 +4213,9 @@ func convertFunExpr(fn *parser.FunExpr, env *types.Env, vars map[string]VarInfo)
 			if p.Type != nil {
 				typ := typeRefString(p.Type)
 				if typ == "int" || typ == "float" {
-					exprCode := fmt.Sprintf("(Obj.magic %s : %s)", sanitizeIdent(p.Name), typ)
+					exprCode := fmt.Sprintf("(Obj.magic !%s : %s)", sanitizeIdent(p.Name), typ)
 					if mutated[p.Name] {
-						expr := &RawExpr{Code: strings.ReplaceAll(exprCode, sanitizeIdent(p.Name), fmt.Sprintf("!%s", sanitizeIdent(p.Name)))}
-						casts = append(casts, &AssignStmt{Name: p.Name, Expr: expr})
+						casts = append(casts, &AssignStmt{Name: p.Name, Expr: &RawExpr{Code: exprCode}})
 					} else {
 						casts = append(casts, &LetStmt{Name: p.Name, Expr: &RawExpr{Code: exprCode}})
 					}
@@ -4286,7 +4454,7 @@ func convertCall(c *parser.CallExpr, env *types.Env, vars map[string]VarInfo) (E
 			return nil, "", err
 		}
 		switch typ {
-		case "int", "float":
+		case "int", "float", "bigint":
 			return &StrBuiltin{Expr: arg, Typ: typ}, "string", nil
 		default:
 			return &FuncCall{Name: "__show", Args: []Expr{arg}, Ret: "string"}, "string", nil
