@@ -1,0 +1,189 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun pow_big(base: bigint, exp: int): bigint {
+func pow_big (regs=15)
+  // var result: bigint = 1
+  Const        r2, 1
+  Move         r3, r2
+  // var b: bigint = base
+  Move         r4, r0
+  // var e = exp
+  Move         r5, r1
+L2:
+  // while e > 0 {
+  Const        r6, 0
+  Less         r7, r6, r5
+  JumpIfFalse  r7, L0
+  // if e % 2 == 1 { result = result * b }
+  Const        r8, 2
+  Mod          r9, r5, r8
+  Const        r2, 1
+  Equal        r10, r9, r2
+  JumpIfFalse  r10, L1
+  Mul          r11, r3, r4
+  Move         r3, r11
+L1:
+  // b = b * b
+  Mul          r12, r4, r4
+  Move         r4, r12
+  // e = (e / 2) as int
+  Const        r8, 2
+  Div          r13, r5, r8
+  Cast         r14, r13, int
+  Move         r5, r14
+  // while e > 0 {
+  Jump         L2
+L0:
+  // return result
+  Return       r3
+
+  // fun cullen(n: int): bigint {
+func cullen (regs=10)
+  // let two_n = pow_big(2 as bigint, n)
+  Const        r3, 2
+  Move         r1, r3
+  Move         r2, r0
+  Call2        r4, pow_big, r1, r2
+  Move         r5, r4
+  // return (two_n * (n as bigint)) + (1 as bigint)
+  Cast         r6, r0, any
+  Mul          r7, r5, r6
+  Const        r8, 1
+  Add          r9, r7, r8
+  Return       r9
+
+  // fun woodall(n: int): bigint {
+func woodall (regs=5)
+  // return cullen(n) - (2 as bigint)
+  Move         r1, r0
+  Call         r2, cullen, r1
+  Const        r3, 2
+  Sub          r4, r2, r3
+  Return       r4
+
+  // fun show_list(xs: list<bigint>): string {
+func show_list (regs=17)
+  // var line = ""
+  Const        r1, ""
+  Move         r2, r1
+  // var i = 0
+  Const        r3, 0
+  Move         r4, r3
+L2:
+  // while i < len(xs) {
+  Len          r5, r0
+  LessInt      r6, r4, r5
+  JumpIfFalse  r6, L0
+  // line = line + str(xs[i])
+  Index        r7, r0, r4
+  Str          r8, r7
+  Add          r9, r2, r8
+  Move         r2, r9
+  // if i < len(xs) - 1 { line = line + " " }
+  Len          r10, r0
+  Const        r11, 1
+  SubInt       r12, r10, r11
+  LessInt      r13, r4, r12
+  JumpIfFalse  r13, L1
+  Const        r14, " "
+  Add          r15, r2, r14
+  Move         r2, r15
+L1:
+  // i = i + 1
+  Const        r11, 1
+  AddInt       r16, r4, r11
+  Move         r4, r16
+  // while i < len(xs) {
+  Jump         L2
+L0:
+  // return line
+  Return       r2
+
+  // fun main() {
+func main (regs=34)
+  // var cnums: list<bigint> = []
+  Const        r0, []
+  Move         r1, r0
+  // var i = 1
+  Const        r2, 1
+  Move         r3, r2
+L1:
+  // while i <= 20 {
+  Const        r4, 20
+  LessEqInt    r5, r3, r4
+  JumpIfFalse  r5, L0
+  // cnums = append(cnums, cullen(i))
+  Move         r6, r3
+  Call         r7, cullen, r6
+  Append       r8, r1, r7
+  Move         r1, r8
+  // i = i + 1
+  Const        r2, 1
+  AddInt       r9, r3, r2
+  Move         r3, r9
+  // while i <= 20 {
+  Jump         L1
+L0:
+  // print("First 20 Cullen numbers (n * 2^n + 1):")
+  Const        r10, "First 20 Cullen numbers (n * 2^n + 1):"
+  Print        r10
+  // print(show_list(cnums))
+  Move         r11, r1
+  Call         r12, show_list, r11
+  Print        r12
+  // var wnums: list<bigint> = []
+  Const        r0, []
+  Move         r13, r0
+  // i = 1
+  Const        r2, 1
+  Move         r3, r2
+L3:
+  // while i <= 20 {
+  Const        r4, 20
+  LessEqInt    r14, r3, r4
+  JumpIfFalse  r14, L2
+  // wnums = append(wnums, woodall(i))
+  Move         r15, r3
+  Call         r16, woodall, r15
+  Append       r17, r13, r16
+  Move         r13, r17
+  // i = i + 1
+  Const        r2, 1
+  AddInt       r18, r3, r2
+  Move         r3, r18
+  // while i <= 20 {
+  Jump         L3
+L2:
+  // print("\nFirst 20 Woodall numbers (n * 2^n - 1):")
+  Const        r19, "\nFirst 20 Woodall numbers (n * 2^n - 1):"
+  Print        r19
+  // print(show_list(wnums))
+  Move         r20, r13
+  Call         r21, show_list, r20
+  Print        r21
+  // let cprimes = [1 as bigint, 141 as bigint, 4713 as bigint, 5795 as bigint, 6611 as bigint]
+  Const        r22, [1, 141, 4713, 5795, 6611]
+  Move         r23, r22
+  // print("\nFirst 5 Cullen primes (in terms of n):")
+  Const        r24, "\nFirst 5 Cullen primes (in terms of n):"
+  Print        r24
+  // print(show_list(cprimes))
+  Const        r26, [1, 141, 4713, 5795, 6611]
+  Move         r25, r26
+  Call         r27, show_list, r25
+  Print        r27
+  // let wprimes = [2 as bigint,3 as bigint,6 as bigint,30 as bigint,75 as bigint,81 as bigint,115 as bigint,123 as bigint,249 as bigint,362 as bigint,384 as bigint,462 as bigint]
+  Const        r28, [2, 3, 6, 30, 75, 81, 115, 123, 249, 362, 384, 462]
+  Move         r29, r28
+  // print("\nFirst 12 Woodall primes (in terms of n):")
+  Const        r30, "\nFirst 12 Woodall primes (in terms of n):"
+  Print        r30
+  // print(show_list(wprimes))
+  Const        r32, [2, 3, 6, 30, 75, 81, 115, 123, 249, 362, 384, 462]
+  Move         r31, r32
+  Call         r33, show_list, r31
+  Print        r33
+  Return       r0
