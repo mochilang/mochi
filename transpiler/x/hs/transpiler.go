@@ -918,7 +918,11 @@ func (c *ContinueStmt) emit(w io.Writer) {
 
 func (b *BenchStmt) emit(w io.Writer) {
 	writeIndent(w)
-	io.WriteString(w, "do\n")
+	if indent == "" {
+		fmt.Fprintf(w, "%s = do\n", safeName(b.Name))
+	} else {
+		io.WriteString(w, "do\n")
+	}
 	pushIndent()
 	writeIndent(w)
 	io.WriteString(w, "start <- _now\n")
@@ -2739,7 +2743,20 @@ func Transpile(prog *parser.Program, env *types.Env, benchMain bool) (*Program, 
 		needJSON = true
 		usesNow = true
 		usesMem = true
-		h.Stmts = []Stmt{&BenchStmt{Name: "main", Body: h.Stmts}}
+		renamed := false
+		for i := range h.Funcs {
+			if h.Funcs[i].Name == "main" {
+				h.Funcs[i].Name = "mainEntry"
+				renamed = true
+				break
+			}
+		}
+		if renamed {
+			body := []Stmt{&ExprStmt{Expr: &CallExpr{Fun: &NameRef{Name: "mainEntry"}}}}
+			h.Funcs = append(h.Funcs, Func{Name: "main", Body: []Stmt{&BenchStmt{Name: "main", Body: body}}})
+		} else {
+			h.Stmts = []Stmt{&BenchStmt{Name: "main", Body: h.Stmts}}
+		}
 	}
 	// attach struct type declarations
 	for _, tdecl := range structDefs {
