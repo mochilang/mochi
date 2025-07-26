@@ -77,7 +77,11 @@ func transpileAndRun(src string) ([]byte, error) {
 	if err := os.WriteFile(cFile, code, 0o644); err != nil {
 		return nil, err
 	}
-	if out, err := exec.Command(cc, cFile, "-o", exe).CombinedOutput(); err != nil {
+	args := []string{cFile, "-o", exe}
+	if bytes.Contains(code, []byte("<math.h>")) {
+		args = append(args, "-lm")
+	}
+	if out, err := exec.Command(cc, args...).CombinedOutput(); err != nil {
 		return nil, fmt.Errorf("compile failed: %v: %s", err, string(out))
 	}
 	cmd := exec.Command(exe)

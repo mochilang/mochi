@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"math"
 	"os/exec"
 	"sort"
 	"strconv"
@@ -1533,6 +1534,15 @@ func (b *BinaryExpr) emitExpr(w io.Writer) {
 			return
 		}
 	}
+	if b.Op == "%" && (exprIsFloat(b.Left) || exprIsFloat(b.Right) || inferExprType(currentEnv, b.Left) == "double" || inferExprType(currentEnv, b.Right) == "double") {
+		markMath()
+		io.WriteString(w, "fmod(")
+		b.Left.emitExpr(w)
+		io.WriteString(w, ", ")
+		b.Right.emitExpr(w)
+		io.WriteString(w, ")")
+		return
+	}
 	if b.Op == "+" && (exprIsString(b.Left) || exprIsString(b.Right)) {
 		needStrConcat = true
 		io.WriteString(w, "str_concat(")
@@ -1971,7 +1981,7 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("}\n\n")
 	}
 	if needSubstring {
-		buf.WriteString("static char* _substring(const char *s, int start, int end) {\n")
+		buf.WriteString("static const char* _substring(const char *s, int start, int end) {\n")
 		buf.WriteString("    int len = (int)strlen(s);\n")
 		buf.WriteString("    if (start < 0) start = 0;\n")
 		buf.WriteString("    if (end > len) end = len;\n")
@@ -2514,6 +2524,30 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 		declType := ""
 		if s.Let.Type != nil {
 			declType = cTypeFromMochiType(types.ResolveTypeRef(s.Let.Type, env))
+		}
+		if declType == "" {
+			if ue, ok := valExpr.(*UnaryExpr); ok {
+				switch ue.Op {
+				case "(int)":
+					declType = "int"
+				case "(double)":
+					declType = "double"
+				case "(const char*)":
+					declType = "const char*"
+				}
+			} else if s.Let.Value != nil && s.Let.Value.Binary != nil {
+				u := s.Let.Value.Binary.Left
+				if u != nil && len(u.Ops) == 0 && u.Value != nil && len(u.Value.Ops) == 1 && u.Value.Ops[0].Cast != nil && u.Value.Ops[0].Cast.Type != nil && u.Value.Ops[0].Cast.Type.Simple != nil {
+					switch *u.Value.Ops[0].Cast.Type.Simple {
+					case "int":
+						declType = "int"
+					case "float":
+						declType = "double"
+					case "string":
+						declType = "const char*"
+					}
+				}
+			}
 		}
 		if declType == "" {
 			declType = inferCType(env, s.Let.Name, valExpr)
@@ -4527,6 +4561,10 @@ func evalFloat(e Expr) (float64, bool) {
 				if right != 0 {
 					return left / right, true
 				}
+			case "%":
+				if right != 0 {
+					return math.Mod(left, right), true
+				}
 			}
 		}
 	}
@@ -4780,7 +4818,7 @@ func exprIsString(e Expr) bool {
 		_, ok := constStrings[v.Name]
 		return ok
 	case *CallExpr:
-		if v.Func == "str" || v.Func == "substring" || v.Func == "json" {
+		if v.Func == "str" || v.Func == "substring" || v.Func == "_substring" || v.Func == "json" {
 			return true
 		}
 		if fn, ok := currentEnv.GetFunc(v.Func); ok && fn.Return != nil && fn.Return.Simple != nil {
@@ -4989,6 +5027,14 @@ func inferExprType(env *types.Env, e Expr) string {
 		}
 		return "int"
 	case *UnaryExpr:
+		switch v.Op {
+		case "(int)":
+			return "int"
+		case "(double)":
+			return "double"
+		case "(const char*)":
+			return "const char*"
+		}
 		return inferExprType(env, v.Expr)
 	}
 	if _, ok := evalString(e); ok {
