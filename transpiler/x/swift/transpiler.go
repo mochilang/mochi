@@ -1230,6 +1230,31 @@ func (c *CallExpr) emit(w io.Writer) {
 			fmt.Fprint(w, ".lowercased())")
 			return
 		}
+	case "indexOf":
+		if len(c.Args) == 2 {
+			fmt.Fprint(w, "(")
+			fmt.Fprint(w, "String(describing: ")
+			c.Args[0].emit(w)
+			fmt.Fprint(w, ").firstIndex(of: Character(String(describing: ")
+			c.Args[1].emit(w)
+			fmt.Fprint(w, ")))?.utf16Offset(in: String(describing: ")
+			c.Args[0].emit(w)
+			fmt.Fprint(w, ") ) ?? -1")
+			fmt.Fprint(w, ")")
+			return
+		}
+	case "parseIntStr":
+		if len(c.Args) == 1 || len(c.Args) == 2 {
+			fmt.Fprint(w, "Int(String(describing: ")
+			c.Args[0].emit(w)
+			fmt.Fprint(w, ")")
+			if len(c.Args) == 2 {
+				fmt.Fprint(w, ", radix: ")
+				c.Args[1].emit(w)
+			}
+			fmt.Fprint(w, ")!")
+			return
+		}
 	case "contains":
 		if len(c.Args) == 2 {
 			fmt.Fprint(w, "(")
@@ -1459,6 +1484,27 @@ func exprString(e Expr) string {
 func isAnyType(t types.Type) bool {
 	_, ok := t.(types.AnyType)
 	return ok
+}
+
+func structForField(env *types.Env, field string) (types.StructType, bool) {
+	if env == nil {
+		return types.StructType{}, false
+	}
+	var found types.StructType
+	count := 0
+	for _, st := range env.Structs() {
+		if _, ok := st.Fields[field]; ok {
+			found = st
+			count++
+			if count > 1 {
+				return types.StructType{}, false
+			}
+		}
+	}
+	if count == 1 {
+		return found, true
+	}
+	return types.StructType{}, false
 }
 
 // Emit returns the Swift source for the program.
@@ -2179,9 +2225,11 @@ func convertFunDecl(env *types.Env, f *parser.FunStmt) (Stmt, error) {
 	}
 
 	child := types.NewEnv(env)
-	var retT types.Type = types.AnyType{}
+	var retT types.Type
 	if f.Return != nil {
 		retT = types.ResolveTypeRef(f.Return, env)
+	} else {
+		retT = types.VoidType{}
 	}
 	child.SetVar("$retType", retT, false)
 	mutFlags := make([]bool, len(f.Params))
@@ -2227,11 +2275,15 @@ func convertReturnStmt(env *types.Env, r *parser.ReturnStmt) (Stmt, error) {
 	}
 	if env != nil {
 		if rt, err := env.GetVar("$retType"); err == nil {
-			typ := swiftTypeOf(rt)
-			if typ != "Any" {
-				ex = &CastExpr{Expr: ex, Type: typ + "!"}
-			} else if lit, ok := ex.(*LitExpr); ok && lit.Value == "nil" {
-				ex = &RawStmt{Code: "nil as Any?"}
+			if _, ok := rt.(types.VoidType); ok {
+				ex = nil
+			} else {
+				typ := swiftTypeOf(rt)
+				if typ != "Any" {
+					ex = &CastExpr{Expr: ex, Type: typ + "!"}
+				} else if lit, ok := ex.(*LitExpr); ok && lit.Value == "nil" {
+					ex = &RawStmt{Code: "nil as Any?"}
+				}
 			}
 		}
 	}
@@ -2680,6 +2732,13 @@ func boolAsInt(e *parser.Expr) bool {
 	return false
 }
 
+func isBoolLitExpr(e Expr) bool {
+	if l, ok := e.(*LitExpr); ok && !l.IsString {
+		return l.Value == "true" || l.Value == "false"
+	}
+	return false
+}
+
 func convertExpr(env *types.Env, e *parser.Expr) (Expr, error) {
 	if e == nil || e.Binary == nil {
 		return nil, fmt.Errorf("unsupported expression")
@@ -2754,6 +2813,17 @@ func convertExpr(env *types.Env, e *parser.Expr) (Expr, error) {
 
 		switch op {
 		case "==", "!=", "<", "<=", ">", ">=":
+			if types.IsStringType(ltyp) && isBoolLitExpr(right) {
+				if lit, ok := right.(*LitExpr); ok {
+					right = &LitExpr{Value: lit.Value, IsString: true}
+					rtyp = types.StringType{}
+				}
+			} else if types.IsStringType(rtyp) && isBoolLitExpr(left) {
+				if lit, ok := left.(*LitExpr); ok {
+					left = &LitExpr{Value: lit.Value, IsString: true}
+					ltyp = types.StringType{}
+				}
+			}
 			if types.IsAnyType(ltyp) && types.IsAnyType(rtyp) {
 				ls := exprString(left)
 				rs := exprString(right)
@@ -3028,6 +3098,12 @@ func convertPostfix(env *types.Env, p *parser.PostfixExpr) (Expr, error) {
 		}
 		for i, f := range tail {
 			if _, ok := t.(types.StructType); ok || t == nil || isAnyType(t) {
+				if isAnyType(t) {
+					if st, ok := structForField(env, f); ok {
+						expr = &CastExpr{Expr: expr, Type: st.Name}
+						t = st
+					}
+				}
 				expr = &FieldExpr{Target: expr, Name: f}
 				if st, ok := t.(types.StructType); ok {
 					if ft, ok := st.Fields[f]; ok {

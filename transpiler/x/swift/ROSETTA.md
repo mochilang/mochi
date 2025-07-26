@@ -2,8 +2,8 @@
 
 Generated Swift code for Mochi Rosetta programs in `tests/rosetta/x/Mochi`. Outputs are stored in `tests/rosetta/transpiler/Swift`. Errors are captured in `.error` files.
 
-Completed: 114/332
-Last updated: 2025-07-27 00:41 +0700
+Completed: 124/332
+Last updated: 2025-07-27 01:13 +0700
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -134,16 +134,16 @@ Last updated: 2025-07-27 00:41 +0700
 | 125 | bitmap-read-a-ppm-file |   |  |  |
 | 126 | bitmap-read-an-image-through-a-pipe |   |  |  |
 | 127 | bitmap-write-a-ppm-file | ✓ | 273µs | 3.1 MB |
-| 128 | bitmap |   |  |  |
-| 129 | bitwise-io-1 |   |  |  |
-| 130 | bitwise-io-2 |   |  |  |
-| 131 | bitwise-operations |   |  |  |
-| 132 | blum-integer |   |  |  |
-| 133 | boolean-values |   |  |  |
-| 134 | box-the-compass |   |  |  |
-| 135 | boyer-moore-string-search |   |  |  |
-| 136 | brazilian-numbers |   |  |  |
-| 137 | break-oo-privacy |   |  |  |
+| 128 | bitmap | ✓ | 326.859ms | 4.9 MB |
+| 129 | bitwise-io-1 | ✓ | 239µs | 3.1 MB |
+| 130 | bitwise-io-2 | ✓ | 586µs | 3.2 MB |
+| 131 | bitwise-operations | ✓ | 115µs | 2.9 MB |
+| 132 | blum-integer | ✓ | 345µs | 3.2 MB |
+| 133 | boolean-values | ✓ | 275µs | 3.1 MB |
+| 134 | box-the-compass | ✓ | 431µs | 3.6 MB |
+| 135 | boyer-moore-string-search | ✓ | 1.153ms | 3.1 MB |
+| 136 | brazilian-numbers | ✓ | 11.218513s | 3.2 MB |
+| 137 | break-oo-privacy | ✓ | 177µs | 3.2 MB |
 | 138 | brilliant-numbers |   |  |  |
 | 139 | brownian-tree |   |  |  |
 | 140 | bulls-and-cows-player |   |  |  |
