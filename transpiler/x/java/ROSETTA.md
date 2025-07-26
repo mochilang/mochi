@@ -1,9 +1,9 @@
 # Java Rosetta Transpiler Output
 
 Generated Java code for programs in `tests/rosetta/x/Mochi`. Each program has a `.java` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
-Last updated: 2025-07-26 09:33 GMT+7
+Last updated: 2025-07-26 09:59 GMT+7
 
-## Rosetta Checklist (102/284)
+## Rosetta Checklist (110/284)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 23.0ms | 245.84KB |
@@ -111,14 +111,14 @@ Last updated: 2025-07-26 09:33 GMT+7
 | 103 | bell-numbers | ✓ | 53.0ms | 64.29KB |
 | 104 | benfords-law | ✓ | 91.0ms | 106.47KB |
 | 105 | bernoulli-numbers | ✓ | 335.0ms | 104.32KB |
-| 106 | best-shuffle |   |  |  |
-| 107 | bifid-cipher |   |  |  |
-| 108 | bin-given-limits |   |  |  |
-| 109 | binary-digits |   |  |  |
-| 110 | binary-search |   |  |  |
-| 111 | binary-strings |   |  |  |
-| 112 | bioinformatics-base-count |   |  |  |
-| 113 | bioinformatics-global-alignment |   |  |  |
+| 106 | best-shuffle | ✓ | 60.0ms | 101.66KB |
+| 107 | bifid-cipher | ✓ | 65.0ms | 100.41KB |
+| 108 | bin-given-limits | ✓ | 68.0ms | 122.30KB |
+| 109 | binary-digits | ✓ | 28.0ms | 32.82KB |
+| 110 | binary-search | ✓ | 48.0ms | 79.30KB |
+| 111 | binary-strings | ✓ | 37.0ms | 47.36KB |
+| 112 | bioinformatics-base-count | ✓ | 50.0ms | 81.38KB |
+| 113 | bioinformatics-global-alignment | ✓ | 770.0ms | 91.08KB |
 | 114 | bioinformatics-sequence-mutation |   |  |  |
 | 115 | biorhythms |   |  |  |
 | 116 | bitcoin-address-validation |   |  |  |
