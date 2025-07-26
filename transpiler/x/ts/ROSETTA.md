@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated TypeScript code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/TypeScript`.
-Last updated: 2025-07-25 22:54 UTC
+Last updated: 2025-07-26 02:24 UTC
 
 ## Rosetta Golden Test Checklist (282/284)
 | Index | Name | Status | Duration | Memory |
@@ -146,17 +146,17 @@ Last updated: 2025-07-25 22:54 UTC
 | 137 | brilliant-numbers | ✓ | 58.808563s | 129.2 MB |
 | 138 | brownian-tree | ✓ | 17.721714s | 14.4 MB |
 | 139 | bulls-and-cows-player | ✓ | 1.604ms | 3.6 MB |
-| 140 | bulls-and-cows | ✓ |  | 512.0 KB |
-| 141 | burrows-wheeler-transform | ✓ | 571.223ms | 8.0 MB |
-| 142 | caesar-cipher-1 | ✓ | 571.223ms | 128.0 KB |
-| 143 | caesar-cipher-2 | ✓ | 571.223ms | 128.0 KB |
-| 144 | calculating-the-value-of-e | ✓ | 571.223ms | 128.0 KB |
-| 145 | calendar---for-real-programmers-1 | ✓ | 571.223ms | 5.4 MB |
-| 146 | calendar---for-real-programmers-2 | ✓ | 571.223ms | 5.1 MB |
-| 147 | calendar | ✓ | 571.223ms | 5.4 MB |
-| 148 | calkin-wilf-sequence | ✓ | 1.04ms | 512.0 KB |
-| 149 | call-a-foreign-language-function | ✓ | 299µs |  |
-| 150 | call-a-function-1 | ✓ | 4µs |  |
+| 140 | bulls-and-cows | ✓ | 1.141558s | 512.0 KB |
+| 141 | burrows-wheeler-transform | ✓ | 1.015568s | 7.9 MB |
+| 142 | caesar-cipher-1 | ✓ | 1.015568s | 128.0 KB |
+| 143 | caesar-cipher-2 | ✓ | 1.015568s | 128.0 KB |
+| 144 | calculating-the-value-of-e | ✓ | 1.015568s | 128.0 KB |
+| 145 | calendar---for-real-programmers-1 | ✓ | 1.015568s | 3.4 MB |
+| 146 | calendar---for-real-programmers-2 | ✓ | 1.015568s | 3.0 MB |
+| 147 | calendar | ✓ | 1.015568s | 3.1 MB |
+| 148 | calkin-wilf-sequence | ✓ | 1.015568s | 384.0 KB |
+| 149 | call-a-foreign-language-function | ✓ | 1.015568s | 128.0 KB |
+| 150 | call-a-function-1 | ✓ | 1.015568s |  |
 | 151 | call-a-function-10 | ✓ | 41µs |  |
 | 152 | call-a-function-11 | ✓ | 594µs |  |
 | 153 | call-a-function-12 | ✓ | 5.379ms |  |
