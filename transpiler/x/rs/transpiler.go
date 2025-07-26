@@ -1060,8 +1060,9 @@ func (n *NameRef) emit(w io.Writer) {
 		}
 		switch typ {
 		case "i64", "bool", "f64":
-			io.WriteString(w, "*")
+			io.WriteString(w, "(*")
 			io.WriteString(w, name)
+			io.WriteString(w, ")")
 		default:
 			io.WriteString(w, name)
 			io.WriteString(w, ".clone()")
@@ -1333,7 +1334,7 @@ func (b *BinaryExpr) emit(w io.Writer) {
 			io.WriteString(w, b.Op)
 			io.WriteString(w, " ")
 			b.Right.emit(w)
-			io.WriteString(w, ")")
+			io.WriteString(w, ".as_str())")
 			return
 		}
 		if (lt == "f64" || containsFloat(b.Left)) && rt == "i64" {
@@ -2461,10 +2462,9 @@ func compileForStmt(n *parser.ForStmt) (Stmt, error) {
 	}
 	byRef := false
 	if t := inferType(iter); strings.HasPrefix(t, "Vec<") {
+		byRef = true
 		elem := strings.TrimSuffix(strings.TrimPrefix(t, "Vec<"), ">")
-		if elem == "String" {
-			byRef = false
-		} else if strings.HasPrefix(elem, "Vec<") || strings.HasPrefix(elem, "HashMap<") {
+		if strings.HasPrefix(elem, "Vec<") || strings.HasPrefix(elem, "HashMap<") {
 			byRef = true
 		} else if _, ok := structTypes[elem]; ok {
 			byRef = true
@@ -2510,9 +2510,7 @@ func compileForStmt(n *parser.ForStmt) (Stmt, error) {
 			if typ == "String" {
 				varTypes[n.Name] = "String"
 				stringVars[n.Name] = true
-				byRef = false
-			} else if byRef {
-				varTypes[n.Name] = "&" + typ
+				byRef = true
 			} else {
 				varTypes[n.Name] = typ
 			}
@@ -4622,8 +4620,20 @@ func writeForStmt(buf *bytes.Buffer, s *ForStmt, indent int) {
 		s.Iter.emit(buf)
 	}
 	buf.WriteString(" {\n")
+	oldClone := cloneVars
+	if s.ByRef {
+		if cloneVars == nil {
+			cloneVars = map[string]bool{s.Var: true}
+		} else {
+			cloneVars = copyBoolMap(cloneVars)
+			cloneVars[s.Var] = true
+		}
+	}
 	for _, st := range s.Body {
 		writeStmt(buf, st, indent+1)
+	}
+	if s.ByRef {
+		cloneVars = oldClone
 	}
 	for i := 0; i < indent; i++ {
 		buf.WriteString("    ")

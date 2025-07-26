@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Rust code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/Rust`.
-Last updated: 2025-07-26 16:59 UTC
+Last updated: 2025-07-26 22:52 UTC
 
-## Rosetta Golden Test Checklist (47/332)
+## Rosetta Golden Test Checklist (50/426)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 109µs | 3.2 MB |
@@ -50,19 +50,19 @@ Last updated: 2025-07-26 16:59 UTC
 | 41 | align-columns |   |  |  |
 | 42 | aliquot-sequence-classifications | ✓ | 43.475ms |  |
 | 43 | almkvist-giullera-formula-for-pi |   |  |  |
-| 44 | almost-prime | ✓ | 82µs |  |
-| 45 | amb | ✓ | 21µs |  |
-| 46 | amicable-pairs | ✓ | 361.482ms | 344.0 KB |
-| 47 | anagrams-deranged-anagrams |   |  |  |
-| 48 | anagrams |   |  |  |
-| 49 | angle-difference-between-two-bearings-1 | ✓ | 25µs |  |
-| 50 | angle-difference-between-two-bearings-2 | ✓ | 30µs |  |
-| 51 | angles-geometric-normalization-and-conversion |   |  |  |
-| 52 | animate-a-pendulum | ✓ | 23µs |  |
-| 53 | animation | ✓ | 108µs |  |
-| 54 | anonymous-recursion-1 | ✓ | 24µs |  |
-| 55 | anonymous-recursion-2 | ✓ | 33µs |  |
-| 56 | anonymous-recursion | ✓ | 29µs |  |
+| 44 | almost-prime | ✓ | 129µs |  |
+| 45 | amb | ✓ | 105µs |  |
+| 46 | amicable-pairs | ✓ | 2.424242s | 344.0 KB |
+| 47 | anagrams-deranged-anagrams | ✓ | 169µs |  |
+| 48 | anagrams | ✓ | 586µs |  |
+| 49 | angle-difference-between-two-bearings-1 | ✓ | 45µs |  |
+| 50 | angle-difference-between-two-bearings-2 | ✓ | 111µs |  |
+| 51 | angles-geometric-normalization-and-conversion | ✓ | 229µs |  |
+| 52 | animate-a-pendulum | ✓ | 22µs |  |
+| 53 | animation | ✓ | 160µs |  |
+| 54 | anonymous-recursion-1 | ✓ | 41µs |  |
+| 55 | anonymous-recursion-2 | ✓ | 45µs |  |
+| 56 | anonymous-recursion | ✓ | 27µs |  |
 | 57 | anti-primes |   |  |  |
 | 58 | append-a-record-to-the-end-of-a-text-file |   |  |  |
 | 59 | apply-a-callback-to-an-array-1 |   |  |  |
@@ -337,5 +337,99 @@ Last updated: 2025-07-26 16:59 UTC
 | 328 | earliest-difference-between-prime-gaps |   |  |  |
 | 329 | eban-numbers |   |  |  |
 | 330 | echo-server |   |  |  |
-| 331 | ekg-sequence-convergence |   |  |  |
-| 332 | md5 |   |  |  |
+| 331 | eertree |   |  |  |
+| 332 | egyptian-division |   |  |  |
+| 333 | ekg-sequence-convergence |   |  |  |
+| 334 | element-wise-operations |   |  |  |
+| 335 | elementary-cellular-automaton-infinite-length |   |  |  |
+| 336 | elementary-cellular-automaton-random-number-generator |   |  |  |
+| 337 | elementary-cellular-automaton |   |  |  |
+| 338 | elliptic-curve-arithmetic |   |  |  |
+| 339 | elliptic-curve-digital-signature-algorithm |   |  |  |
+| 340 | emirp-primes |   |  |  |
+| 341 | empty-directory |   |  |  |
+| 342 | empty-program |   |  |  |
+| 343 | empty-string-1 |   |  |  |
+| 344 | empty-string-2 |   |  |  |
+| 345 | enforced-immutability |   |  |  |
+| 346 | entropy-1 |   |  |  |
+| 347 | entropy-2 |   |  |  |
+| 348 | entropy-narcissist |   |  |  |
+| 349 | enumerations-1 |   |  |  |
+| 350 | enumerations-2 |   |  |  |
+| 351 | enumerations-3 |   |  |  |
+| 352 | enumerations-4 |   |  |  |
+| 353 | environment-variables-1 |   |  |  |
+| 354 | environment-variables-2 |   |  |  |
+| 355 | equal-prime-and-composite-sums |   |  |  |
+| 356 | equilibrium-index |   |  |  |
+| 357 | erd-s-nicolas-numbers |   |  |  |
+| 358 | erd-s-selfridge-categorization-of-primes |   |  |  |
+| 359 | esthetic-numbers |   |  |  |
+| 360 | events |   |  |  |
+| 361 | evolutionary-algorithm |   |  |  |
+| 362 | exceptions-catch-an-exception-thrown-in-a-nested-call |   |  |  |
+| 363 | exceptions |   |  |  |
+| 364 | executable-library |   |  |  |
+| 365 | execute-a-markov-algorithm |   |  |  |
+| 366 | execute-a-system-command |   |  |  |
+| 367 | execute-brain- |   |  |  |
+| 368 | execute-computer-zero |   |  |  |
+| 369 | execute-hq9+ |   |  |  |
+| 370 | execute-snusp |   |  |  |
+| 371 | exponentiation-operator |   |  |  |
+| 372 | exponentiation-order |   |  |  |
+| 373 | exponentiation-with-infix-operators-in-or-operating-on-the-base |   |  |  |
+| 374 | extend-your-language |   |  |  |
+| 375 | extensible-prime-generator |   |  |  |
+| 376 | extreme-floating-point-values |   |  |  |
+| 377 | faces-from-a-mesh |   |  |  |
+| 378 | fasta-format |   |  |  |
+| 379 | faulhabers-triangle |   |  |  |
+| 380 | feigenbaum-constant-calculation |   |  |  |
+| 381 | fermat-numbers |   |  |  |
+| 382 | fibonacci-n-step-number-sequences |   |  |  |
+| 383 | fibonacci-sequence-1 |   |  |  |
+| 384 | fibonacci-sequence-2 |   |  |  |
+| 385 | fibonacci-sequence-3 |   |  |  |
+| 386 | fibonacci-sequence-4 |   |  |  |
+| 387 | fibonacci-word-fractal |   |  |  |
+| 388 | fibonacci-word |   |  |  |
+| 389 | file-extension-is-in-extensions-list |   |  |  |
+| 390 | file-input-output-1 |   |  |  |
+| 391 | file-input-output-2 |   |  |  |
+| 392 | file-modification-time |   |  |  |
+| 393 | file-size-distribution |   |  |  |
+| 394 | file-size |   |  |  |
+| 395 | filter |   |  |  |
+| 396 | find-chess960-starting-position-identifier |   |  |  |
+| 397 | find-common-directory-path |   |  |  |
+| 398 | find-duplicate-files |   |  |  |
+| 399 | find-if-a-point-is-within-a-triangle |   |  |  |
+| 400 | find-largest-left-truncatable-prime-in-a-given-base |   |  |  |
+| 401 | find-limit-of-recursion |   |  |  |
+| 402 | find-palindromic-numbers-in-both-binary-and-ternary-bases |   |  |  |
+| 403 | find-the-intersection-of-a-line-with-a-plane |   |  |  |
+| 404 | find-the-intersection-of-two-lines |   |  |  |
+| 405 | find-the-last-sunday-of-each-month |   |  |  |
+| 406 | find-the-missing-permutation |   |  |  |
+| 407 | fivenum-1 |   |  |  |
+| 408 | fivenum-2 |   |  |  |
+| 409 | fixed-length-records-1 |   |  |  |
+| 410 | fixed-length-records-2 |   |  |  |
+| 411 | fizzbuzz-1 |   |  |  |
+| 412 | fizzbuzz-2 |   |  |  |
+| 413 | flatten-a-list-1 |   |  |  |
+| 414 | flatten-a-list-2 |   |  |  |
+| 415 | flipping-bits-game |   |  |  |
+| 416 | flow-control-structures-1 |   |  |  |
+| 417 | flow-control-structures-2 |   |  |  |
+| 418 | flow-control-structures-3 |   |  |  |
+| 419 | flow-control-structures-4 |   |  |  |
+| 420 | floyd-warshall-algorithm |   |  |  |
+| 421 | floyds-triangle |   |  |  |
+| 422 | forest-fire |   |  |  |
+| 423 | fork |   |  |  |
+| 424 | ftp |   |  |  |
+| 425 | general-fizzbuzz |   |  |  |
+| 426 | md5 |   |  |  |
