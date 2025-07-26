@@ -1,0 +1,35 @@
+// Translated from Go version in tests/rosetta/x/Go/erd-s-nicolas-numbers.go
+// WARNING: This program uses a large amount of memory and time for
+// maxNumber = 100000000.
+// It mirrors the sieve-based approach from the Go example.
+
+const maxNumber = 100000000
+
+var dsum: list<int> = []
+var dcount: list<int> = []
+var i = 0
+while i <= maxNumber {
+  dsum = append(dsum, 1)
+  dcount = append(dcount, 1)
+  i = i + 1
+}
+
+fun pad8(n: int): string {
+  var s = str(n)
+  while len(s) < 8 { s = " " + s }
+  return s
+}
+
+i = 2
+while i <= maxNumber {
+  var j = i + i
+  while j <= maxNumber {
+    if dsum[j] == j {
+      print(pad8(j) + " equals the sum of its first " + str(dcount[j]) + " divisors")
+    }
+    dsum[j] = dsum[j] + i
+    dcount[j] = dcount[j] + 1
+    j = j + i
+  }
+  i = i + 1
+}
