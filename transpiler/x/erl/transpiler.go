@@ -114,6 +114,51 @@ mochi_parse_int_str(S) ->
     try list_to_integer(S) catch _:_ -> 0 end.
 `
 
+const helperBigRat = `
+mochi_gcd(A, B) ->
+    A1 = abs(A),
+    B1 = abs(B),
+    case B1 of
+        0 -> A1;
+        _ -> mochi_gcd(B1, A1 rem B1)
+    end.
+
+mochi_bigrat(N) -> mochi_bigrat(N, 1);
+mochi_bigrat({Num, Den}) -> mochi_bigrat(Num, Den);
+mochi_bigrat(N, D) ->
+    D0 = case D of undefined -> 1; _ -> D end,
+    case D0 < 0 of
+        true -> mochi_bigrat(-N, -D0);
+        false ->
+            G = mochi_gcd(N, D0),
+            {N div G, D0 div G}
+    end.
+
+mochi_num({N,_}) -> N.
+mochi_denom({_,D}) -> D.
+mochi_add(A, B) ->
+    mochi_bigrat(mochi_num(A)*mochi_denom(B) + mochi_num(B)*mochi_denom(A), mochi_denom(A)*mochi_denom(B)).
+mochi_sub(A, B) ->
+    mochi_bigrat(mochi_num(A)*mochi_denom(B) - mochi_num(B)*mochi_denom(A), mochi_denom(A)*mochi_denom(B)).
+mochi_mul(A, B) ->
+    mochi_bigrat(mochi_num(A)*mochi_num(B), mochi_denom(A)*mochi_denom(B)).
+mochi_div(A, B) ->
+    mochi_bigrat(mochi_num(A)*mochi_denom(B), mochi_denom(A)*mochi_num(B)).
+mochi_cmp(A, B) ->
+    mochi_num(A)*mochi_denom(B) - mochi_num(B)*mochi_denom(A).
+Num(X) -> mochi_num(X).
+Denom(X) -> mochi_denom(X).
+Repeat(S, N) -> mochi_repeat(S, N).
+`
+
+const helperRepeat = `
+mochi_repeat(S, N) when is_binary(S) ->
+    binary:copy(S, mochi_to_int(N));
+mochi_repeat(S, N) when is_list(S) ->
+    string:copies(S, mochi_to_int(N));
+mochi_repeat(_, _) -> [].
+`
+
 var useNow bool
 var useLookupHost bool
 var useToInt bool
@@ -122,6 +167,8 @@ var usePadStart bool
 var useSHA256 bool
 var useIndexOf bool
 var useParseIntStr bool
+var useBigRat bool
+var useRepeat bool
 var mutatedFuncs map[string]int
 var benchMain bool
 
@@ -147,6 +194,8 @@ type Program struct {
 	UseSHA256       bool
 	UseIndexOf      bool
 	UseParseIntStr  bool
+	UseBigRat       bool
+	UseRepeat       bool
 }
 
 // context tracks variable aliases to emulate mutable variables.
@@ -1149,6 +1198,19 @@ func isIntExpr(e Expr, env *types.Env, ctx *context) bool {
 		}
 	}
 	return false
+}
+
+func isBigRatType(t types.Type) bool {
+	_, ok := t.(types.BigRatType)
+	return ok
+}
+
+func ensureBigRatExpr(e Expr, t types.Type) Expr {
+	if isBigRatType(t) {
+		return e
+	}
+	useBigRat = true
+	return &CallExpr{Func: "mochi_bigrat", Args: []Expr{e}}
 }
 
 func isBoolExpr(e Expr, env *types.Env, ctx *context) bool {
@@ -2666,7 +2728,7 @@ func mapOp(op string) string {
 
 func builtinFunc(name string) bool {
 	switch name {
-	case "print", "append", "avg", "count", "len", "str", "sum", "min", "max", "values", "keys", "exists", "contains", "sha256", "json", "now", "input", "int", "abs", "upper", "lower", "indexOf", "parseIntStr", "indexof", "parseintstr", "pow":
+	case "print", "append", "avg", "count", "len", "str", "sum", "min", "max", "values", "keys", "exists", "contains", "sha256", "json", "now", "input", "int", "abs", "upper", "lower", "indexOf", "parseIntStr", "indexof", "parseintstr", "pow", "repeat", "bigrat", "num", "denom":
 		return true
 	default:
 		return false
@@ -2842,6 +2904,8 @@ func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, erro
 	useSHA256 = false
 	useIndexOf = false
 	useParseIntStr = false
+	useBigRat = false
+	useRepeat = false
 	mutatedFuncs = map[string]int{
 		"topple":  0,
 		"fill":    0,
@@ -2878,6 +2942,8 @@ func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, erro
 	p.UseSHA256 = useSHA256
 	p.UseIndexOf = useIndexOf
 	p.UseParseIntStr = useParseIntStr
+	p.UseBigRat = useBigRat
+	p.UseRepeat = useRepeat
 	return p, nil
 }
 
@@ -3959,10 +4025,52 @@ func convertBinary(b *parser.BinaryExpr, env *types.Env, ctx *context) (Expr, er
 						op = "++"
 					}
 				}
+				if (op == "+" || op == "-" || op == "*" || op == "/" || op == "<" || op == "<=" || op == ">" || op == ">=" || op == "==" || op == "!=") &&
+					(isBigRatType(typesList[i]) || isBigRatType(typesList[i+1])) {
+					useBigRat = true
+					l = ensureBigRatExpr(l, typesList[i])
+					r = ensureBigRatExpr(r, typesList[i+1])
+					var fn string
+					switch op {
+					case "+":
+						fn = "mochi_add"
+					case "-":
+						fn = "mochi_sub"
+					case "*":
+						fn = "mochi_mul"
+					case "/":
+						fn = "mochi_div"
+					case "<":
+						exprs[i] = &BinaryExpr{Left: &CallExpr{Func: "mochi_cmp", Args: []Expr{l, r}}, Op: "<", Right: &IntLit{Value: 0}}
+						goto doneop
+					case "<=":
+						exprs[i] = &BinaryExpr{Left: &CallExpr{Func: "mochi_cmp", Args: []Expr{l, r}}, Op: "<=", Right: &IntLit{Value: 0}}
+						goto doneop
+					case ">":
+						exprs[i] = &BinaryExpr{Left: &CallExpr{Func: "mochi_cmp", Args: []Expr{l, r}}, Op: ">", Right: &IntLit{Value: 0}}
+						goto doneop
+					case ">=":
+						exprs[i] = &BinaryExpr{Left: &CallExpr{Func: "mochi_cmp", Args: []Expr{l, r}}, Op: ">=", Right: &IntLit{Value: 0}}
+						goto doneop
+					case "==":
+						exprs[i] = &BinaryExpr{Left: &CallExpr{Func: "mochi_cmp", Args: []Expr{l, r}}, Op: "==", Right: &IntLit{Value: 0}}
+						goto doneop
+					case "!=":
+						exprs[i] = &BinaryExpr{Left: &CallExpr{Func: "mochi_cmp", Args: []Expr{l, r}}, Op: "/=", Right: &IntLit{Value: 0}}
+						goto doneop
+					}
+					if fn != "" {
+						exprs[i] = &CallExpr{Func: fn, Args: []Expr{l, r}}
+						typesList[i] = types.BigRatType{}
+						goto doneappend
+					}
+				}
 				exprs[i] = &BinaryExpr{Left: l, Op: op, Right: r}
+			doneop:
 				exprs = append(exprs[:i+1], exprs[i+2:]...)
 				typesList = append(typesList[:i+1], typesList[i+2:]...)
 				ops = append(ops[:i], ops[i+1:]...)
+			doneappend:
 			} else {
 				i++
 			}
@@ -4135,6 +4243,9 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env, ctx *context) (Expr,
 				case "float":
 					// use Erlang float/1 conversion
 					expr = &CallExpr{Func: "float", Args: []Expr{expr}}
+				case "bigrat":
+					useBigRat = true
+					expr = &CallExpr{Func: "mochi_bigrat", Args: []Expr{expr}}
 				default:
 					// other casts are currently no-ops
 				}
@@ -4501,6 +4612,18 @@ func convertPrimary(p *parser.Primary, env *types.Env, ctx *context) (Expr, erro
 		} else if ce.Func == "indexof" && len(ce.Args) == 2 {
 			useIndexOf = true
 			return &CallExpr{Func: "mochi_index_of", Args: ce.Args}, nil
+		} else if ce.Func == "repeat" && len(ce.Args) == 2 {
+			useRepeat = true
+			return &CallExpr{Func: "mochi_repeat", Args: ce.Args}, nil
+		} else if ce.Func == "bigrat" && (len(ce.Args) == 1 || len(ce.Args) == 2) {
+			useBigRat = true
+			return &CallExpr{Func: "mochi_bigrat", Args: ce.Args}, nil
+		} else if ce.Func == "num" && len(ce.Args) == 1 {
+			useBigRat = true
+			return &CallExpr{Func: "mochi_num", Args: ce.Args}, nil
+		} else if ce.Func == "denom" && len(ce.Args) == 1 {
+			useBigRat = true
+			return &CallExpr{Func: "mochi_denom", Args: ce.Args}, nil
 		} else if ce.Func == "parseintstr" && (len(ce.Args) == 1 || len(ce.Args) == 2) {
 			useParseIntStr = true
 			return &CallExpr{Func: "mochi_parse_int_str", Args: ce.Args[:1]}, nil
@@ -5620,6 +5743,14 @@ func (p *Program) Emit() []byte {
 	}
 	if p.UseParseIntStr {
 		buf.WriteString(helperParseIntStr)
+		buf.WriteString("\n")
+	}
+	if p.UseBigRat {
+		buf.WriteString(helperBigRat)
+		buf.WriteString("\n")
+	}
+	if p.UseRepeat {
+		buf.WriteString(helperRepeat)
 		buf.WriteString("\n")
 	}
 	for _, f := range p.Funs {

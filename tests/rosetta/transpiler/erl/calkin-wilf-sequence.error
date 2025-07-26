@@ -1,0 +1,46 @@
+exit status 127
+/workspace/mochi/tests/rosetta/transpiler/erl/calkin-wilf-sequence.erl:49:19: variable 'Num' is unbound
+%   49|             A_2 = Num(Prev),
+%     |                   ^
+
+/workspace/mochi/tests/rosetta/transpiler/erl/calkin-wilf-sequence.erl:50:19: variable 'Denom' is unbound
+%   50|             B_2 = Denom(Prev),
+%     |                   ^
+
+/workspace/mochi/tests/rosetta/transpiler/erl/calkin-wilf-sequence.erl:69:15: variable 'Num_2' is unbound
+%   69|         A_3 = Num_2(R),
+%     |               ^
+
+/workspace/mochi/tests/rosetta/transpiler/erl/calkin-wilf-sequence.erl:70:15: variable 'Denom_2' is unbound
+%   70|         B_3 = Denom_2(R),
+%     |               ^
+
+/workspace/mochi/tests/rosetta/transpiler/erl/calkin-wilf-sequence.erl:110:20: variable 'Repeat' is unbound
+%  110|             B_6 = (Repeat(D, N_2) ++ B_5),
+%     |                    ^
+
+/workspace/mochi/tests/rosetta/transpiler/erl/calkin-wilf-sequence.erl:176:54: variable 'Num_3' is unbound
+%  176|             S_4 = lists:flatten(io_lib:format("~p", [Num_3(R_2)])),
+%     |                                                      ^
+
+/workspace/mochi/tests/rosetta/transpiler/erl/calkin-wilf-sequence.erl:177:19: variable 'Denom_3' is unbound
+%  177|             case (Denom_3(R_2) /= 1) of
+%     |                   ^
+
+/workspace/mochi/tests/rosetta/transpiler/erl/calkin-wilf-sequence.erl:192:76: variable 'Num_4' is unbound
+%  192|         io:format("~ts~n", [(((((("" ++ lists:flatten(io_lib:format("~p", [Num_4(R_3)]))) ++ "/") ++ lists:flatten(io_lib:format("~p", [Denom_4(R_3)]))) ++ " is the ") ++ commatize(Tn)) ++ "th term of the sequence.")]),
+%     |                                                                            ^
+
+/workspace/mochi/tests/rosetta/transpiler/erl/calkin-wilf-sequence.erl:192:137: variable 'Denom_4' is unbound
+%  192|         io:format("~ts~n", [(((((("" ++ lists:flatten(io_lib:format("~p", [Num_4(R_3)]))) ++ "/") ++ lists:flatten(io_lib:format("~p", [Denom_4(R_3)]))) ++ " is the ") ++ commatize(Tn)) ++ "th term of the sequence.")]),
+%     |                                                                                                                                         ^
+
+/workspace/mochi/tests/rosetta/transpiler/erl/calkin-wilf-sequence.erl:158:19: Warning: variable 'Neg_3' exported from 'case' (line 131, column 9)
+%  158| {Cnt_4, I_5, N_3, Neg_3, Out_4, S_3} = Fun_4(Cnt, I_4, N_3, Neg_3, Out, S_3),
+%     |                   ^
+
+/workspace/mochi/tests/rosetta/transpiler/erl/calkin-wilf-sequence.erl:158:33: Warning: variable 'S_3' exported from 'case' (line 131, column 9)
+%  158| {Cnt_4, I_5, N_3, Neg_3, Out_4, S_3} = Fun_4(Cnt, I_4, N_3, Neg_3, Out, S_3),
+%     |                                 ^
+
+escript: There were compilation errors.
