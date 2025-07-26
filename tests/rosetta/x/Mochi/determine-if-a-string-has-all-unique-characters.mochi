@@ -1,0 +1,79 @@
+// Mochi implementation of Rosetta "Determine if a string has all unique characters" task
+// Translated from Go version in tests/rosetta/x/Go/determine-if-a-string-has-all-unique-characters.go
+
+fun indexOf(s: string, ch: string, start: int): int {
+  var i = start
+  while i < len(s) {
+    if substring(s, i, i+1) == ch { return i }
+    i = i + 1
+  }
+  return -1
+}
+
+fun ord(ch: string): int {
+  let digits = "0123456789"
+  var idx = indexOf(digits, ch, 0)
+  if idx >= 0 { return 48 + idx }
+  if ch == "X" { return 0x58 }
+  if ch == "é" { return 0xE9 }
+  if ch == "😍" { return 0x1F60D }
+  if ch == "🐡" { return 0x1F421 }
+  return 0
+}
+
+fun toHex(n: int): string {
+  let digits = "0123456789ABCDEF"
+  if n == 0 { return "0" }
+  var v = n
+  var out = ""
+  while v > 0 {
+    let d = v % 16
+    out = digits[d:d+1] + out
+    v = v / 16
+  }
+  return out
+}
+
+fun analyze(s: string) {
+  let le = len(s)
+  print("Analyzing \"" + s + "\" which has a length of " + str(le) + ":")
+  if le > 1 {
+    var i = 0
+    while i < le - 1 {
+      var j = i + 1
+      while j < le {
+        if substring(s, j, j+1) == substring(s, i, i+1) {
+          let ch = substring(s, i, i+1)
+          print("  Not all characters in the string are unique.")
+          print("  '" + ch + "' (0x" + lower(toHex(ord(ch))) + ") is duplicated at positions " + str(i+1) + " and " + str(j+1) + ".\n")
+          return
+        }
+        j = j + 1
+      }
+      i = i + 1
+    }
+  }
+  print("  All characters in the string are unique.\n")
+}
+
+fun main() {
+  let strings = [
+    "",
+    ".",
+    "abcABC",
+    "XYZ ZYX",
+    "1234567890ABCDEFGHIJKLMN0PQRSTUVWXYZ",
+    "01234567890ABCDEFGHIJKLMN0PQRSTUVWXYZ0X",
+    "hétérogénéité",
+    "🎆🎃🎇🎈",
+    "😍😀🙌💃😍🙌",
+    "🐠🐟🐡🦈🐬🐳🐋🐡",
+  ]
+  var i = 0
+  while i < count(strings) {
+    analyze(strings[i])
+    i = i + 1
+  }
+}
+
+main()
