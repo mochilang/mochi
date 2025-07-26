@@ -1,50 +1,50 @@
-## Progress (2025-07-26 21:35 +0700)
-- Commit c8ee96595a: scheme rosetta: benchmark big ints
+## Progress (2025-07-26 22:01 +0700)
+- Commit 1346d45a32: remove obsolete error file
 - Generated Scheme for 78/100 programs
 - Updated README checklist and outputs
 
-## Progress (2025-07-26 21:35 +0700)
-- Commit c2ef00a235: scheme rosetta: benchmark approximate equality
+## Progress (2025-07-26 22:01 +0700)
+- Commit 1346d45a32: remove obsolete error file
 - Generated Scheme for 78/100 programs
 - Updated README checklist and outputs
 
-## Progress (2025-07-26 21:34 +0700)
-- Commit 184f709d8b: scheme rosetta: benchmark digital filter
+## Progress (2025-07-26 21:59 +0700)
+- Commit 289349687d: scheme rosetta: benchmark averages-arithmetic-mean
 - Generated Scheme for 78/100 programs
 - Updated README checklist and outputs
 
-## Progress (2025-07-26 21:34 +0700)
-- Commit b7435a4cb4: scheme rosetta: benchmark apply callback 2
+## Progress (2025-07-26 21:59 +0700)
+- Commit 289349687d: scheme rosetta: benchmark averages-arithmetic-mean
 - Generated Scheme for 78/100 programs
 - Updated README checklist and outputs
 
-## Progress (2025-07-26 21:34 +0700)
-- Commit 7f21aca148: scheme rosetta: benchmark apply callback 1
+## Progress (2025-07-26 21:59 +0700)
+- Commit 38a4f346fd: scheme rosetta: fix division for floats
 - Generated Scheme for 78/100 programs
 - Updated README checklist and outputs
 
-## Progress (2025-07-26 21:34 +0700)
-- Commit 50025a81c0: scheme rosetta: benchmark append record
+## Progress (2025-07-26 21:56 +0700)
+- Commit 3797161ffa: scheme rosetta: benchmark attractive-numbers
 - Generated Scheme for 78/100 programs
 - Updated README checklist and outputs
 
-## Progress (2025-07-26 21:33 +0700)
-- Commit d685c06035: scheme rosetta: benchmark anti-primes
+## Progress (2025-07-26 21:56 +0700)
+- Commit 3797161ffa: scheme rosetta: benchmark attractive-numbers
 - Generated Scheme for 78/100 programs
 - Updated README checklist and outputs
 
-## Progress (2025-07-26 21:33 +0700)
-- Commit b2d56ae812: scheme rosetta: benchmark anonymous recursion
+## Progress (2025-07-26 21:56 +0700)
+- Commit 085ccda454: scheme rosetta: benchmark atomic-updates
 - Generated Scheme for 78/100 programs
 - Updated README checklist and outputs
 
-## Progress (2025-07-26 21:32 +0700)
-- Commit 206b21b790: scheme rosetta: benchmark anonymous recursion 2
+## Progress (2025-07-26 21:55 +0700)
+- Commit a1b09d31a3: scheme rosetta: benchmark associative-array-merging
 - Generated Scheme for 78/100 programs
 - Updated README checklist and outputs
 
-## Progress (2025-07-26 21:32 +0700)
-- Commit 765b85d2d4: scheme rosetta: benchmark anonymous recursion 1
+## Progress (2025-07-26 21:55 +0700)
+- Commit fe66c6b836: scheme rosetta: update README
 - Generated Scheme for 78/100 programs
 - Updated README checklist and outputs
 

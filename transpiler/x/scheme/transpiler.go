@@ -2104,22 +2104,18 @@ func makeBinaryTyped(op string, left, right Node, lt, rt types.Type) Node {
 		return ok
 	}
 	if op == "/" {
-		if _, ok := lt.(types.FloatType); ok {
-			return &List{Elems: []Node{Symbol("/"), left, right}}
-		}
-		if _, ok := rt.(types.FloatType); ok {
-			return &List{Elems: []Node{Symbol("/"), left, right}}
-		}
+		// Use generic division which works for both integers and
+		// floating point numbers. Using `quotient` here would require
+		// integer arguments and can fail when the type information is
+		// lost during transpilation.
+		return &List{Elems: []Node{Symbol("/"), left, right}}
 	}
 	if op == "%" {
-		if _, ok := lt.(types.FloatType); ok {
-			needBase = true
-			return &List{Elems: []Node{Symbol("fmod"), left, right}}
-		}
-		if _, ok := rt.(types.FloatType); ok {
-			needBase = true
-			return &List{Elems: []Node{Symbol("fmod"), left, right}}
-		}
+		// Similar to division, prefer the generic floating point modulo
+		// to avoid type errors when operands are not guaranteed to be
+		// integers.
+		needBase = true
+		return &List{Elems: []Node{Symbol("fmod"), left, right}}
 	}
 	if isStrType(lt) || isStrType(rt) {
 		switch op {
