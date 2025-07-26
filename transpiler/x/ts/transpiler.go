@@ -2443,6 +2443,9 @@ func convertForStmt(f *parser.ForStmt, env *types.Env) (Stmt, error) {
 		if err != nil {
 			return nil, err
 		}
+		if env != nil {
+			env.SetVar(f.Name, types.IntType{}, true)
+		}
 		body, err := convertStmtList(f.Body)
 		if err != nil {
 			return nil, err
@@ -2453,16 +2456,27 @@ func convertForStmt(f *parser.ForStmt, env *types.Env) (Stmt, error) {
 	if err != nil {
 		return nil, err
 	}
+	var elemType types.Type
+	keys := false
+	if env != nil {
+		switch t := types.ExprType(f.Source, env).(type) {
+		case types.MapType:
+			keys = true
+			elemType = t.Key
+		case types.ListType:
+			elemType = t.Elem
+		case types.GroupType:
+			elemType = t.Elem
+		case types.StringType:
+			elemType = types.StringType{}
+		}
+		if elemType != nil {
+			env.SetVar(f.Name, elemType, true)
+		}
+	}
 	body, err := convertStmtList(f.Body)
 	if err != nil {
 		return nil, err
-	}
-	keys := false
-	if env != nil {
-		switch types.ExprType(f.Source, env).(type) {
-		case types.MapType:
-			keys = true
-		}
 	}
 	return &ForInStmt{Name: f.Name, Iterable: iterable, Body: body, Keys: keys}, nil
 }
@@ -3545,6 +3559,11 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		case "pow":
 			if len(args) != 2 {
 				return nil, fmt.Errorf("pow expects two arguments")
+			}
+			if transpileEnv != nil {
+				if _, ok := transpileEnv.GetFunc("pow"); ok {
+					return &CallExpr{Func: "pow", Args: args}, nil
+				}
 			}
 			return &CallExpr{Func: "Math.pow", Args: args}, nil
 		case "substr":

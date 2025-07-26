@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated TypeScript code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/TypeScript`.
-Last updated: 2025-07-26 02:36 UTC
+Last updated: 2025-07-26 03:00 UTC
 
-## Rosetta Golden Test Checklist (282/284)
+## Rosetta Golden Test Checklist (283/284)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 1.595ms | 512.0 KB |
@@ -209,11 +209,11 @@ Last updated: 2025-07-26 02:36 UTC
 | 200 | cholesky-decomposition-1 | ✓ | 3.307ms | 128.0 KB |
 | 201 | cholesky-decomposition | ✓ | 1.78ms | 256.0 KB |
 | 202 | chowla-numbers | ✓ | 534µs |  |
-| 203 | church-numerals-1 | ✓ | 1.127ms | 128.0 KB |
+| 203 | church-numerals-1 | ✓ | 1.013ms |  |
 | 204 | church-numerals-2 | ✓ | 32µs |  |
 | 205 | circles-of-given-radius-through-two-points | ✓ | 3.048ms | 512.0 KB |
 | 206 | circular-primes | ✓ | 6.315ms | 1.1 MB |
-| 207 | cistercian-numerals |   |  |  |
+| 207 | cistercian-numerals | ✓ | 9.823ms | 1.9 MB |
 | 208 | comma-quibbling | ✓ | 780µs |  |
 | 209 | compiler-virtual-machine-interpreter | ✓ | 3.639ms | 384.0 KB |
 | 210 | composite-numbers-k-with-no-single-digit-factors-whose-factors-are-all-substrings-of-k | ✓ | 17.314176s | 77.5 MB |
@@ -231,7 +231,7 @@ Last updated: 2025-07-26 02:36 UTC
 | 222 | conditional-structures-7 | ✓ | 8µs |  |
 | 223 | conditional-structures-8 | ✓ | 7µs |  |
 | 224 | conditional-structures-9 | ✓ | 8µs |  |
-| 225 | consecutive-primes-with-ascending-or-descending-differences | ✓ |  |  |
+| 225 | consecutive-primes-with-ascending-or-descending-differences | ✓ | 87.816ms | 14.8 MB |
 | 226 | constrained-genericity-1 | ✓ | 8µs |  |
 | 227 | constrained-genericity-2 | ✓ | 7µs |  |
 | 228 | constrained-genericity-3 | ✓ | 8µs |  |
