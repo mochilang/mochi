@@ -8,16 +8,9 @@ Freely distributed under the Apache 2.0 Open Source License
 
 /workspace/mochi/tests/rosetta/transpiler/FS/adfgvx-cipher.fs(125,44): error FS0001: The type 'obj' does not support a conversion to the type 'int'
 
-/workspace/mochi/tests/rosetta/transpiler/FS/adfgvx-cipher.fs(150,35): error FS0001: This expression was expected to have type
-    'a []    
-but here has type
-    string    
-
-/workspace/mochi/tests/rosetta/transpiler/FS/adfgvx-cipher.fs(150,68): error FS0001: This expression was expected to have type
+/workspace/mochi/tests/rosetta/transpiler/FS/adfgvx-cipher.fs(150,50): error FS0001: This expression was expected to have type
     'a []    
 but here has type
     string    
 
 /workspace/mochi/tests/rosetta/transpiler/FS/adfgvx-cipher.fs(151,42): error FS0001: The type ''a []' does not match the type 'string'
-
-/workspace/mochi/tests/rosetta/transpiler/FS/adfgvx-cipher.fs(286,39): error FS0001: The type 'char' does not match the type 'string'

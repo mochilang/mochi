@@ -1,4 +1,4 @@
-// Generated 2025-07-25 09:51 +0000
+// Generated 2025-07-26 19:29 +0700
 
 exception Return
 
@@ -20,6 +20,16 @@ let _now () =
         int (System.DateTime.UtcNow.Ticks % 2147483647L)
 
 _initNow()
+let _substring (s:string) (start:int) (finish:int) =
+    let len = String.length s
+    let mutable st = if start < 0 then len + start else start
+    let mutable en = if finish < 0 then len + finish else finish
+    if st < 0 then st <- 0
+    if st > len then st <- len
+    if en > len then en <- len
+    if st > en then st <- en
+    s.Substring(st, en - st)
+
 let rec pow_big (``base``: bigint) (exp: int) =
     let mutable __ret : bigint = Unchecked.defaultof<bigint>
     let mutable ``base`` = ``base``
@@ -29,7 +39,7 @@ let rec pow_big (``base``: bigint) (exp: int) =
         let mutable b: bigint = ``base``
         let mutable e: int = exp
         while e > 0 do
-            if (e % 2) = 1 then
+            if (((e % 2 + 2) % 2)) = 1 then
                 result <- result * b
             b <- b * b
             e <- int (e / 2)
@@ -81,7 +91,7 @@ let rec ackermann2 (m: bigint) (n: bigint) =
                 let r: bigint = pow_big (bigint 2) (int n)
                 __ret <- ((bigint 8) * r) - (bigint 3)
                 raise Return
-        if (bit_len n) = 0 then
+        if (int (bit_len n)) = 0 then
             __ret <- ackermann2 (m - (bigint 1)) (bigint 1)
             raise Return
         __ret <- ackermann2 (m - (bigint 1)) (ackermann2 m (n - (bigint 1)))
@@ -100,12 +110,12 @@ and show (m: int) (n: int) =
             printfn "%s" ((((("A(" + (string m)) + ", ") + (string n)) + ") = Error: ") + err)
             __ret <- ()
             raise Return
-        if (bit_len res) <= 256 then
+        if (int (bit_len res)) <= 256 then
             printfn "%s" ((((("A(" + (string m)) + ", ") + (string n)) + ") = ") + (string res))
         else
             let s: string = string res
-            let pre: string = s.Substring(0, 20 - 0)
-            let suf: string = s.Substring((String.length s) - 20, (String.length s) - ((String.length s) - 20))
+            let pre: string = _substring s 0 20
+            let suf: string = _substring s ((String.length s) - 20) (String.length s)
             printfn "%s" ((((((((("A(" + (string m)) + ", ") + (string n)) + ") = ") + (string (String.length s))) + " digits starting/ending with: ") + pre) + "...") + suf)
         __ret
     with
