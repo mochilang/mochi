@@ -1,0 +1,6 @@
+// Mochi translation of Rosetta "Enumerations" task variant 2
+// Explicit numeric constants
+
+let apple = 0
+let banana = 1
+let cherry = 2
