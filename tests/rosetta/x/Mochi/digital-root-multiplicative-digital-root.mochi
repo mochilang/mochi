@@ -1,0 +1,85 @@
+// Mochi translation of Rosetta "Digital root/Multiplicative digital root" task
+// Based on Go version in tests/rosetta/x/Go/digital-root-multiplicative-digital-root.go
+
+type MDRResult { mp: int, mdr: int }
+
+fun pad(s: string, width: int): string {
+  var out = s
+  while len(out) < width {
+    out = " " + out
+  }
+  return out
+}
+
+fun mult(n: bigint, base: int): bigint {
+  var m: bigint = 1
+  var x: bigint = n
+  let b: bigint = base as bigint
+  while x > 0 as bigint {
+    m = m * (x % b)
+    x = x / b
+  }
+  return m
+}
+
+fun multDigitalRoot(n: bigint, base: int): MDRResult {
+  var m: bigint = n
+  var mp = 0
+  let b: bigint = base as bigint
+  while m >= b {
+    m = mult(m, base)
+    mp = mp + 1
+  }
+  return MDRResult{ mp: mp, mdr: (m as int) }
+}
+
+fun main() {
+  let base = 10
+  let size = 5
+
+  print(pad("Number", 20) + " " + pad("MDR", 3) + " " + pad("MP", 3))
+
+  let nums: list<bigint> = [
+    123321 as bigint,
+    7739 as bigint,
+    893 as bigint,
+    899998 as bigint,
+    3778888999 as bigint,
+    277777788888899 as bigint
+  ]
+  var i = 0
+  while i < len(nums) {
+    let n = nums[i]
+    let r = multDigitalRoot(n, base)
+    print(pad(str(n), 20) + " " + pad(str(r.mdr), 3) + " " + pad(str(r.mp), 3))
+    i = i + 1
+  }
+  print("")
+
+  var list: list<list<int>> = []
+  var idx = 0
+  while idx < base {
+    list = append(list, [])
+    idx = idx + 1
+  }
+  var cnt = size * base
+  var n: bigint = 0
+  let b: bigint = base as bigint
+  while cnt > 0 {
+    let r = multDigitalRoot(n, base)
+    let mdr = r.mdr
+    if len(list[mdr]) < size {
+      list[mdr] = append(list[mdr], n as int)
+      cnt = cnt - 1
+    }
+    n = n + 1 as bigint
+  }
+  print("MDR: First")
+  var j = 0
+  while j < base {
+    print(pad(str(j), 3) + ": " + str(list[j]))
+    j = j + 1
+  }
+}
+
+main()
