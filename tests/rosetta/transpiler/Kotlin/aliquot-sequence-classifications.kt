@@ -1,6 +1,32 @@
 import java.math.BigInteger
 
-val THRESHOLD: Long = 140737488355328
+var _nowSeed = 0L
+var _nowSeeded = false
+fun _now(): Int {
+    if (!_nowSeeded) {
+        System.getenv("MOCHI_NOW_SEED")?.toLongOrNull()?.let {
+            _nowSeed = it
+            _nowSeeded = true
+        }
+    }
+    return if (_nowSeeded) {
+        _nowSeed = (_nowSeed * 1664525 + 1013904223) % 2147483647
+        kotlin.math.abs(_nowSeed.toInt())
+    } else {
+        kotlin.math.abs(System.nanoTime().toInt())
+    }
+}
+
+fun toJson(v: Any?): String = when (v) {
+    null -> "null"
+    is String -> "\"" + v.replace("\"", "\\\"") + "\""
+    is Boolean, is Number -> v.toString()
+    is Map<*, *> -> v.entries.joinToString(prefix = "{", postfix = "}") { toJson(it.key.toString()) + ":" + toJson(it.value) }
+    is Iterable<*> -> v.joinToString(prefix = "[", postfix = "]") { toJson(it) }
+    else -> toJson(v.toString())
+}
+
+val THRESHOLD: Long = 140737488355328L
 fun indexOf(xs: MutableList<Int>, value: Int): Int {
     var i: Int = 0
     while (i < xs.size) {
@@ -29,9 +55,9 @@ fun intSqrt(n: Int): Int {
         return 0
     }
     var x: Int = n
-    var y: BigInteger = (x + 1) / 2
-    while ((y as Number).toDouble() < x) {
-        x = y as Int
+    var y: Int = (x + 1) / 2
+    while (y < x) {
+        x = y
         y = (x + (n / x)) / 2
     }
     return x
@@ -80,8 +106,8 @@ fun classifySequence(k: Int): MutableMap<String, Any?> {
                             aliquot = "Aspiring"
                         } else {
                             if ((contains(seq.subList(1, maxOf(1, n - 2)), last)) as Boolean) {
-                                val idx: Int = indexOf(seq, last)
-                                aliquot = ("Cyclic[" + ((n - 1) - idx).toString()) + "]"
+                                val idx: Any? = indexOf(seq, last)
+                                aliquot = ("Cyclic[" + ((n - 1) - (idx as Int)).toString()) + "]"
                             } else {
                                 if ((n == 16) || (last > THRESHOLD)) {
                                     aliquot = "Non-Terminating"
@@ -147,11 +173,23 @@ fun user_main(): Unit {
         i = i + 1
     }
     println("")
-    val big: Int = 15355717786080
-    val r: MutableMap<String, Any?> = classifySequence(big)
+    val big: Long = 15355717786080L
+    val r: MutableMap<String, Any?> = classifySequence(big.toInt())
     println((((big.toString() + ": ") + padRight(((r)["aliquot"] as Any?).toString(), 15)) + " ") + joinWithCommas(((r)["seq"] as Any?) as MutableList<Int>))
 }
 
 fun main() {
-    user_main()
+    run {
+        System.gc()
+        val _startMem = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()
+        val _start = _now()
+        user_main()
+        System.gc()
+        val _end = _now()
+        val _endMem = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()
+        val _durationUs = (_end - _start) / 1000
+        val _memDiff = kotlin.math.abs(_endMem - _startMem)
+        val _res = mapOf("duration_us" to _durationUs, "memory_bytes" to _memDiff, "name" to "main")
+        println(toJson(_res))
+    }
 }

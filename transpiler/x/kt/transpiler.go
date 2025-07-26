@@ -430,11 +430,22 @@ func (f *FuncLit) emit(w io.Writer) {
 // StringLit represents a quoted string literal.
 type StringLit struct{ Value string }
 
-func (s *StringLit) emit(w io.Writer) { fmt.Fprintf(w, "%q", s.Value) }
+func (s *StringLit) emit(w io.Writer) {
+	escaped := strings.ReplaceAll(s.Value, "$", "\\$")
+	q := strconv.Quote(escaped)
+	q = strings.ReplaceAll(q, "\\\\$", "\\$")
+	io.WriteString(w, q)
+}
 
 type IntLit struct{ Value int64 }
 
-func (i *IntLit) emit(w io.Writer) { fmt.Fprintf(w, "%d", i.Value) }
+func (i *IntLit) emit(w io.Writer) {
+	if i.Value > 2147483647 || i.Value < -2147483648 {
+		fmt.Fprintf(w, "%dL", i.Value)
+	} else {
+		fmt.Fprintf(w, "%d", i.Value)
+	}
+}
 
 type FloatLit struct{ Value float64 }
 
@@ -647,7 +658,7 @@ func (c *CastExpr) emit(w io.Writer) {
 		c.Value.emit(w)
 	}
 	switch c.Type {
-	case "int":
+	case "int", "Int":
 		io.WriteString(w, ".toInt()")
 	case "float":
 		io.WriteString(w, ".toDouble()")
@@ -2645,12 +2656,22 @@ func convertStmts(env *types.Env, list []*parser.Statement) ([]Stmt, error) {
 						}
 					}
 				}
+				if typ == "Int" {
+					if lit, ok := v.(*IntLit); ok {
+						if lit.Value > 2147483647 || lit.Value < -2147483648 {
+							typ = "Long"
+						}
+					}
+				}
 				if typ == "Any" {
 					// allow Kotlin to infer a more precise type
 					typ = ""
 				}
 				if typ == "MutableMap<Any, Any>" {
 					typ = "MutableMap<String, Any>"
+				}
+				if typ == "BigInteger" && guessType(v) == "Int" {
+					typ = "Int"
 				}
 			}
 			if s.Let.Type != nil {
@@ -2664,7 +2685,17 @@ func convertStmts(env *types.Env, list []*parser.Statement) ([]Stmt, error) {
 				if s.Let.Type != nil {
 					tt = types.ResolveTypeRef(s.Let.Type, env)
 				} else if t := types.CheckExprType(s.Let.Value, env); t != nil {
-					tt = t
+					if typ == "Int" {
+						if _, ok := t.(types.BigIntType); ok {
+							tt = types.IntType{}
+						} else {
+							tt = t
+						}
+					} else if typ == "Long" {
+						tt = types.Int64Type{}
+					} else {
+						tt = t
+					}
 				} else {
 					switch typ {
 					case "Int":
@@ -2768,6 +2799,9 @@ func convertStmts(env *types.Env, list []*parser.Statement) ([]Stmt, error) {
 				if typ == "MutableMap<Any, Any>" {
 					typ = "MutableMap<String, Any>"
 				}
+				if typ == "BigInteger" && guessType(v) == "Int" {
+					typ = "Int"
+				}
 			}
 			if s.Var.Type != nil {
 				if _, ok := v.(*MapLit); ok {
@@ -2780,7 +2814,17 @@ func convertStmts(env *types.Env, list []*parser.Statement) ([]Stmt, error) {
 				if s.Var.Type != nil {
 					tt = types.ResolveTypeRef(s.Var.Type, env)
 				} else if t := types.CheckExprType(s.Var.Value, env); t != nil {
-					tt = t
+					if typ == "Int" {
+						if _, ok := t.(types.BigIntType); ok {
+							tt = types.IntType{}
+						} else {
+							tt = t
+						}
+					} else if typ == "Long" {
+						tt = types.Int64Type{}
+					} else {
+						tt = t
+					}
 				} else {
 					switch typ {
 					case "Int":
