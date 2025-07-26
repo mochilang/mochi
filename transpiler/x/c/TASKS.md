@@ -1,5 +1,5 @@
-## Progress (2025-07-27 01:21 +0700)
-- Commit 03914c291d: c rosetta: add arithmetic-rational
+## Progress (2025-07-27 06:00 +0700)
+- Commit 08cd97b5b6: erlang: compile rosetta tasks 200-229
 - Regenerated golden files - 81/104 vm valid programs passing
 
 ## Progress (2025-07-22 14:12 +0700)

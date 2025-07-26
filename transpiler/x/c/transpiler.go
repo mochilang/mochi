@@ -563,12 +563,47 @@ func (d *DeclStmt) emit(w io.Writer, indent int) {
 	} else if strings.HasSuffix(typ, "[]") {
 		base := strings.TrimSuffix(typ, "[]")
 		if lst, ok := d.Value.(*ListLit); ok {
+			if indent == 0 {
+				fmt.Fprintf(w, "%s %s[%d] = {", base, d.Name, len(lst.Elems))
+				for i, e := range lst.Elems {
+					if i > 0 {
+						io.WriteString(w, ", ")
+					}
+					if base == "const char*" {
+						switch v := e.(type) {
+						case *IntLit:
+							fmt.Fprintf(w, "\"%d\"", v.Value)
+						case *FloatLit:
+							fmt.Fprintf(w, "\"%g\"", v.Value)
+						default:
+							e.emitExpr(w)
+						}
+					} else {
+						e.emitExpr(w)
+					}
+				}
+				io.WriteString(w, "};\n")
+				writeIndent(w, indent)
+				fmt.Fprintf(w, "size_t %s_len = %d;\n", d.Name, len(lst.Elems))
+				return
+			}
 			io.WriteString(w, base)
 			fmt.Fprintf(w, " *%s = malloc(%d * sizeof(%s));\n", d.Name, len(lst.Elems), base)
 			for i, e := range lst.Elems {
 				writeIndent(w, indent)
 				fmt.Fprintf(w, "%s[%d] = ", d.Name, i)
-				e.emitExpr(w)
+				if base == "const char*" {
+					switch v := e.(type) {
+					case *IntLit:
+						fmt.Fprintf(w, "\"%d\"", v.Value)
+					case *FloatLit:
+						fmt.Fprintf(w, "\"%g\"", v.Value)
+					default:
+						e.emitExpr(w)
+					}
+				} else {
+					e.emitExpr(w)
+				}
 				io.WriteString(w, ";\n")
 			}
 			writeIndent(w, indent)
@@ -2649,7 +2684,16 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 		currentVarName = ""
 		declType := ""
 		if s.Let.Type != nil {
-			declType = cTypeFromMochiType(types.ResolveTypeRef(s.Let.Type, env))
+			rt := types.ResolveTypeRef(s.Let.Type, env)
+			if lt, ok := rt.(types.ListType); ok {
+				if _, ok2 := lt.Elem.(types.AnyType); ok2 {
+					declType = "const char*[]"
+				} else {
+					declType = cTypeFromMochiType(rt)
+				}
+			} else {
+				declType = cTypeFromMochiType(rt)
+			}
 		}
 		if declType == "" {
 			if ue, ok := valExpr.(*UnaryExpr); ok {
@@ -2826,7 +2870,8 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 		currentVarName = s.Var.Name
 		var valExpr Expr
 		if s.Var.Type != nil {
-			if _, ok := types.ResolveTypeRef(s.Var.Type, env).(types.MapType); ok {
+			rt := types.ResolveTypeRef(s.Var.Type, env)
+			if _, ok := rt.(types.MapType); ok {
 				if ml := mapLiteral(s.Var.Value); ml != nil && len(ml.Items) == 0 {
 					valExpr = &MapLit{Items: nil}
 				}
@@ -2837,7 +2882,16 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 		}
 		declType := ""
 		if s.Var.Type != nil {
-			declType = cTypeFromMochiType(types.ResolveTypeRef(s.Var.Type, env))
+			rt := types.ResolveTypeRef(s.Var.Type, env)
+			if lt, ok := rt.(types.ListType); ok {
+				if _, ok2 := lt.Elem.(types.AnyType); ok2 {
+					declType = "const char*[]"
+				} else {
+					declType = cTypeFromMochiType(rt)
+				}
+			} else {
+				declType = cTypeFromMochiType(rt)
+			}
 		}
 		if declType == "" {
 			switch valExpr.(type) {
@@ -5257,6 +5311,8 @@ func cTypeFromMochiType(t types.Type) string {
 		return "int"
 	case types.BoolType:
 		return "int"
+	case types.AnyType:
+		return "const char*"
 	case types.StructType:
 		return tt.Name
 	case types.ListType:
