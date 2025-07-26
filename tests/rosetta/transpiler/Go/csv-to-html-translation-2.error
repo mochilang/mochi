@@ -1,0 +1,4 @@
+exit status 1
+# command-line-arguments
+../../../tests/rosetta/transpiler/Go/csv-to-html-translation-2.go:90:3: undefined: th
+../../../tests/rosetta/transpiler/Go/csv-to-html-translation-2.go:91:3: undefined: i

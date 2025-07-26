@@ -1,7 +1,7 @@
 # Go Rosetta Transpiler Output
 
-Completed programs: 227/332
-Last updated: 2025-07-27 00:51 +0700
+Completed programs: 246/341
+Last updated: 2025-07-27 01:29 +0700
 
 Checklist:
 
@@ -238,7 +238,7 @@ Checklist:
 | 229 | constrained-genericity-3 | ✓ | 159.0µs | 0B |
 | 230 | constrained-genericity-4 | ✓ | 304.0µs | 1000B |
 | 231 | constrained-random-points-on-a-circle-1 | ✓ | 828.0µs | 396.15KB |
-| 232 | constrained-random-points-on-a-circle-2 | ✓ | 689.0µs | 365.91KB |
+| 232 | constrained-random-points-on-a-circle-2 | ✓ | 805.0µs | 365.86KB |
 | 233 | continued-fraction | ✓ | 85.0µs | 17.68KB |
 | 234 | convert-decimal-number-to-rational | ✓ | 62.0µs | 1.86KB |
 | 235 | convert-seconds-to-compound-duration | ✓ | 63.0µs | 1.13KB |
@@ -247,25 +247,25 @@ Checklist:
 | 238 | copy-a-string-1 | ✓ | 9.0µs | 0B |
 | 239 | copy-a-string-2 | ✓ | 61.0µs | 1.10KB |
 | 240 | copy-stdin-to-stdout-1 | ✓ | 153.0µs | 4.96KB |
-| 241 | copy-stdin-to-stdout-2 |   |  |  |
-| 242 | count-in-factors |   |  |  |
-| 243 | count-in-octal-1 |   |  |  |
-| 244 | count-in-octal-2 |   |  |  |
-| 245 | count-in-octal-3 |   |  |  |
-| 246 | count-in-octal-4 |   |  |  |
-| 247 | count-occurrences-of-a-substring |   |  |  |
-| 248 | count-the-coins-1 |   |  |  |
-| 249 | count-the-coins-2 |   |  |  |
-| 250 | cramers-rule |   |  |  |
-| 251 | crc-32-1 |   |  |  |
-| 252 | crc-32-2 |   |  |  |
-| 253 | create-a-file-on-magnetic-tape |   |  |  |
-| 254 | create-a-file |   |  |  |
-| 255 | create-a-two-dimensional-array-at-runtime-1 |   |  |  |
-| 256 | create-an-html-table |   |  |  |
-| 257 | create-an-object-at-a-given-address |   |  |  |
-| 258 | csv-data-manipulation |   |  |  |
-| 259 | csv-to-html-translation-1 |   |  |  |
+| 241 | copy-stdin-to-stdout-2 | ✓ | 66.0µs | 4.96KB |
+| 242 | count-in-factors | ✓ | 169.0µs | 3.44KB |
+| 243 | count-in-octal-1 | ✓ | 123.0µs | 3.54KB |
+| 244 | count-in-octal-2 | ✓ | 67.0ms | 2.32MB |
+| 245 | count-in-octal-3 | ✓ | 70.0µs | 1.89KB |
+| 246 | count-in-octal-4 | ✓ | 56.0µs | 1.20KB |
+| 247 | count-occurrences-of-a-substring | ✓ | 78.0µs | 968B |
+| 248 | count-the-coins-1 | ✓ | 58.0µs | 1.27KB |
+| 249 | count-the-coins-2 | ✓ | 80.0µs | 25.66KB |
+| 250 | cramers-rule | ✓ | 100.0µs | 20.26KB |
+| 251 | crc-32-1 | ✓ | 142.0µs | 12.37KB |
+| 252 | crc-32-2 | ✓ | 385.0µs | 12.37KB |
+| 253 | create-a-file-on-magnetic-tape | ✓ | 79.0µs | 32B |
+| 254 | create-a-file | ✓ | 52.0µs | 1.12KB |
+| 255 | create-a-two-dimensional-array-at-runtime-1 | ✓ | 97.0µs | 1.31KB |
+| 256 | create-an-html-table | ✓ | 82.0µs | 1.55KB |
+| 257 | create-an-object-at-a-given-address | ✓ | 493.0µs | 3.68KB |
+| 258 | csv-data-manipulation | ✓ | 78.0µs | 1.79KB |
+| 259 | csv-to-html-translation-1 | ✓ | 78.0µs | 3.03KB |
 | 260 | csv-to-html-translation-2 |   |  |  |
 | 261 | csv-to-html-translation-3 |   |  |  |
 | 262 | csv-to-html-translation-4 |   |  |  |
@@ -337,5 +337,14 @@ Checklist:
 | 328 | earliest-difference-between-prime-gaps |   |  |  |
 | 329 | eban-numbers |   |  |  |
 | 330 | echo-server |   |  |  |
-| 331 | ekg-sequence-convergence |   |  |  |
-| 332 | md5 |   |  |  |
+| 331 | eertree |   |  |  |
+| 332 | egyptian-division |   |  |  |
+| 333 | ekg-sequence-convergence |   |  |  |
+| 334 | element-wise-operations |   |  |  |
+| 335 | elementary-cellular-automaton-infinite-length |   |  |  |
+| 336 | elementary-cellular-automaton-random-number-generator |   |  |  |
+| 337 | elementary-cellular-automaton |   |  |  |
+| 338 | elliptic-curve-arithmetic |   |  |  |
+| 339 | emirp-primes |   |  |  |
+| 340 | empty-directory |   |  |  |
+| 341 | md5 |   |  |  |

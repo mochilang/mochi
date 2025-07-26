@@ -76,6 +76,7 @@ var (
 	mainFuncName   string
 	fieldTypeGuess map[string]string
 	benchMain      bool
+	declTypes      map[string]string
 )
 
 // SetBenchMain configures whether the generated main function is wrapped in a
@@ -1837,7 +1838,7 @@ func (a *AssertExpr) emit(w io.Writer) {
 	}
 	if strings.HasPrefix(a.Type, "[]") {
 		elem := a.Type[2:]
-		fmt.Fprintf(w, "func(v any) []%s { if vv, ok := v.([]%s); ok { return vv }; if arr, ok := v.([]any); ok && len(arr)==0 { return []%s{} }; return v.([]%s) }(", elem, elem, elem, elem)
+		fmt.Fprintf(w, "func(v any) []%s { if v == nil { return nil }; if vv, ok := v.([]%s); ok { return vv }; if arr, ok := v.([]any); ok { out := make([]%s, len(arr)); for i, e := range arr { out[i] = e.(%s) }; return out }; return v.([]%s) }(", elem, elem, elem, elem, elem)
 		a.Expr.emit(w)
 		fmt.Fprint(w, ")")
 		return
@@ -1883,6 +1884,7 @@ func Transpile(p *parser.Program, env *types.Env, benchMain bool) (*Program, err
 	structCount = 0
 	mainFuncName = ""
 	fieldTypeGuess = map[string]string{}
+	declTypes = map[string]string{}
 	for name, st := range env.Structs() {
 		_ = name
 		for fn, ft := range st.Fields {
@@ -2231,6 +2233,7 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 				}
 			}
 			vd := &VarDecl{Name: st.Let.Name, Type: typ, Value: e, Global: global}
+			declTypes[st.Let.Name] = typ
 			if vd.Global && vd.Value != nil {
 				extraDecls = append(extraDecls, &AssignStmt{Name: vd.Name, Value: vd.Value})
 				vd.Value = nil
@@ -2375,6 +2378,7 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 				}
 			}
 			vd := &VarDecl{Name: st.Var.Name, Type: typ, Value: e, Global: global}
+			declTypes[st.Var.Name] = typ
 			if vd.Global && vd.Value != nil {
 				extraDecls = append(extraDecls, &AssignStmt{Name: vd.Name, Value: vd.Value})
 				vd.Value = nil
@@ -4806,6 +4810,9 @@ func compilePrimary(p *parser.Primary, env *types.Env, base string) (Expr, error
 				args[0] = &CallExpr{Func: "fmt.Sprint", Args: []Expr{args[0]}}
 			}
 			return &CallExpr{Func: "_substr", Args: []Expr{args[0], args[1], args[2]}}, nil
+		case "split":
+			usesStrings = true
+			return &CallExpr{Func: "strings.Split", Args: []Expr{args[0], args[1]}}, nil
 		case "sha256":
 			if len(args) != 1 {
 				return nil, fmt.Errorf("sha256 expects one argument")
@@ -4889,6 +4896,15 @@ func compilePrimary(p *parser.Primary, env *types.Env, base string) (Expr, error
 							if gt != "" && gt != "any" {
 								args[i] = &AssertExpr{Expr: args[i], Type: gt}
 							}
+						} else if atList, ok2 := at.(types.ListType); ok2 {
+							if _, ok3 := mt.(types.ListType); ok3 {
+								if _, isAny := atList.Elem.(types.AnyType); isAny {
+									gt := toGoTypeFromType(mt)
+									if gt != "" && gt != "any" {
+										args[i] = &AssertExpr{Expr: args[i], Type: gt}
+									}
+								}
+							}
 						}
 						if _, ok := at.(types.BigIntType); ok {
 							if _, ok2 := mt.(types.IntType); ok2 {
@@ -4910,6 +4926,14 @@ func compilePrimary(p *parser.Primary, env *types.Env, base string) (Expr, error
 											lit.Body[j] = &ExprStmt{Expr: rs.Value}
 										}
 									}
+								}
+							}
+						}
+						if vr, ok := args[i].(*VarRef); ok {
+							if dtyp, ok2 := declTypes[vr.Name]; ok2 {
+								gt := toGoTypeFromType(mt)
+								if dtyp != gt && strings.Contains(dtyp, "any") && gt != "" && gt != "any" {
+									args[i] = &AssertExpr{Expr: args[i], Type: gt}
 								}
 							}
 						}
