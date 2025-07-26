@@ -1,0 +1,33 @@
+Triangle (0.0, 0.0), (5.0, 0.0), (0.0, 5.0) and
+Triangle (0.0, 0.0), (5.0, 0.0), (0.0, 6.0)
+overlap
+
+Triangle (0.0, 0.0), (0.0, 5.0), (5.0, 0.0) and
+Triangle (0.0, 0.0), (0.0, 5.0), (5.0, 0.0)
+do not overlap
+
+Triangle (0.0, 0.0), (5.0, 0.0), (0.0, 5.0) and
+Triangle (-10.0, 0.0), (-5.0, 0.0), (-1.0, 6.0)
+do not overlap
+
+Triangle (0.0, 0.0), (5.0, 0.0), (2.5, 5.0) and
+Triangle (0.0, 4.0), (2.5, -1.0), (5.0, 4.0)
+overlap
+
+Triangle (0.0, 0.0), (1.0, 1.0), (0.0, 2.0) and
+Triangle (2.0, 1.0), (3.0, 0.0), (3.0, 2.0)
+do not overlap
+
+Triangle (0.0, 0.0), (1.0, 1.0), (0.0, 2.0) and
+Triangle (2.0, 1.0), (3.0, -2.0), (3.0, 4.0)
+do not overlap
+
+Triangle (0.0, 0.0), (1.0, 0.0), (0.0, 1.0) and
+Triangle (1.0, 0.0), (2.0, 0.0), (1.0, 1.1)
+which have only a single corner in contact, if boundary points collide
+do not overlap
+
+Triangle (0.0, 0.0), (1.0, 0.0), (0.0, 1.0) and
+Triangle (1.0, 0.0), (2.0, 0.0), (1.0, 1.1)
+which have only a single corner in contact, if boundary points do not collide
+overlap
