@@ -768,7 +768,11 @@ func (fe *ForEachStmt) emit(w io.Writer) {
 		}
 		fmt.Fprintf(w, " {\n    %s := string(_ch)\n", fe.Name)
 	} else {
-		fmt.Fprintf(w, "for _, %s := range ", fe.Name)
+		if fe.Name == "_" {
+			fmt.Fprint(w, "for range ")
+		} else {
+			fmt.Fprintf(w, "for _, %s := range ", fe.Name)
+		}
 		if fe.Iterable != nil {
 			fe.Iterable.emit(w)
 		}
@@ -1815,8 +1819,19 @@ func (a *AssertExpr) emit(w io.Writer) {
 			return
 		}
 	}
-	a.Expr.emit(w)
-	fmt.Fprintf(w, ".(%s)", a.Type)
+	switch a.Type {
+	case "[]int":
+		fmt.Fprint(w, "_toIntSlice(")
+		a.Expr.emit(w)
+		fmt.Fprint(w, ")")
+	case "[][]int":
+		fmt.Fprint(w, "_toIntSliceList(")
+		a.Expr.emit(w)
+		fmt.Fprint(w, ")")
+	default:
+		a.Expr.emit(w)
+		fmt.Fprintf(w, ".(%s)", a.Type)
+	}
 }
 
 // Transpile converts a Mochi program to a minimal Go AST.
@@ -3714,6 +3729,7 @@ func compileReturnStmt(rs *parser.ReturnStmt, env *types.Env) (Stmt, error) {
 				ll.ElemType = ret[2:]
 				exprType = ret
 			}
+			updateListLitType(ll, toTypeFromGoType(ret))
 			wrapFuncList(ll, env)
 		}
 		if ml, ok := val.(*MapLit); ok && strings.HasPrefix(ret, "map[") {
@@ -5451,6 +5467,19 @@ func Emit(prog *Program, bench bool) []byte {
 		buf.WriteString("    }\n")
 		buf.WriteString("}\n\n")
 	}
+	buf.WriteString("func _toIntSlice(v any) []int {\n")
+	buf.WriteString("    switch t := v.(type) {\n")
+	buf.WriteString("    case []int: return t\n")
+	buf.WriteString("    case []any:\n        res := make([]int, len(t))\n        for i, v := range t {\n            switch n := v.(type) {\n            case int: res[i] = n\n            case int64: res[i] = int(n)\n            case float64: res[i] = int(n)\n            }\n        }\n        return res\n")
+	buf.WriteString("    default: return nil\n")
+	buf.WriteString("    }\n}\n\n")
+
+	buf.WriteString("func _toIntSliceList(v any) [][]int {\n")
+	buf.WriteString("    switch t := v.(type) {\n")
+	buf.WriteString("    case [][]int: return t\n")
+	buf.WriteString("    case []any:\n        res := make([][]int, len(t))\n        for i, v := range t {\n            res[i] = _toIntSlice(v)\n        }\n        return res\n")
+	buf.WriteString("    default: return nil\n")
+	buf.WriteString("    }\n}\n\n")
 	if prog.UseSHA256 {
 		buf.WriteString("func _sha256(bs []int) []int {\n")
 		buf.WriteString("    b := make([]byte, len(bs))\n")

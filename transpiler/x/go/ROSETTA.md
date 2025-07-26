@@ -1,7 +1,7 @@
 # Go Rosetta Transpiler Output
 
-Completed programs: 153/284
-Last updated: 2025-07-26 09:13 +0700
+Completed programs: 158/284
+Last updated: 2025-07-26 10:56 +0700
 
 Checklist:
 
@@ -175,11 +175,11 @@ Checklist:
 | 166 | camel-case-and-snake-case |   |  |  |
 | 167 | canny-edge-detector |   |  |  |
 | 168 | canonicalize-cidr |   |  |  |
-| 169 | cantor-set |   |  |  |
-| 170 | carmichael-3-strong-pseudoprimes |   |  |  |
-| 171 | cartesian-product-of-two-or-more-lists-1 |   |  |  |
-| 172 | cartesian-product-of-two-or-more-lists-2 |   |  |  |
-| 173 | cartesian-product-of-two-or-more-lists-3 |   |  |  |
+| 169 | cantor-set | ✓ | 1.0ms | 195.69KB |
+| 170 | carmichael-3-strong-pseudoprimes | ✓ | 1.0ms | 7.96KB |
+| 171 | cartesian-product-of-two-or-more-lists-1 | ✓ | 383.0µs | 2.23KB |
+| 172 | cartesian-product-of-two-or-more-lists-2 | ✓ | 1.1ms | 10.30KB |
+| 173 | cartesian-product-of-two-or-more-lists-3 | ✓ | 879.0µs | 12.81KB |
 | 174 | cartesian-product-of-two-or-more-lists-4 |   |  |  |
 | 175 | case-sensitivity-of-identifiers |   |  |  |
 | 176 | casting-out-nines |   |  |  |
