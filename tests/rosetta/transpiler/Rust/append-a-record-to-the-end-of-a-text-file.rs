@@ -37,28 +37,19 @@ fn _mem() -> i64 {
 fn main() {
         let _start_mem: i64 = _mem();
     let _start: i64 = _now();
-    fn fib(mut n: i64) -> i64 {
-    if (n < 2) {
-        return n
-    }
-    let mut a: i64 = 0;
-    let mut b: i64 = 1;
-    let mut i: i64 = 1;
-    while (i < n) {
-        let t: i64 = (a + b);
-        a = b;
-        b = t;
-        i = (i + 1);
-    }
-    return b
+    fn writeTwo() -> Vec<String> {
+    return vec![String::from("jsmith:x:1001:1000:Joe Smith,Room 1007,(234)555-8917,(234)555-0077,jsmith@rosettacode.org:/home/jsmith:/bin/bash"), String::from("jdoe:x:1002:1000:Jane Doe,Room 1004,(234)555-8914,(234)555-0044,jdoe@rosettacode.org:/home/jsmith:/bin/bash")]
+};
+    fn appendOneMore(mut lines: Vec<String>) -> Vec<String> {
+    return { let mut v = lines.clone(); v.push(String::from("xyz:x:1003:1000:X Yz,Room 1003,(234)555-8913,(234)555-0033,xyz@rosettacode.org:/home/xyz:/bin/bash")); v }
 };
     fn mochi_main() {
-    for i in vec![-1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10] {
-        if (i < 0) {
-            println!("{}", format!("{}{}", format!("{}{}", "fib(", i.to_string()), ") returned error: negative n is forbidden"));
-        } else {
-            println!("{}", format!("{}{}", format!("{}{}", format!("{}{}", "fib(", i.to_string()), ") = "), fib(i).to_string()));
-        }
+    let mut lines: Vec<String> = writeTwo();
+    lines = appendOneMore(lines.clone());
+    if (((lines.len() as i64) >= 3) && (lines[2 as usize].clone().as_str() == "xyz:x:1003:1000:X Yz,Room 1003,(234)555-8913,(234)555-0033,xyz@rosettacode.org:/home/xyz:/bin/bash")) {
+        println!("{}", "append okay");
+    } else {
+        println!("{}", "it didn't work");
     }
 };
     mochi_main();

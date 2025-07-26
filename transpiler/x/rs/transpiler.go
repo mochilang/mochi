@@ -1205,6 +1205,9 @@ func (a *AssignStmt) emit(w io.Writer) {
 		io.WriteString(w, name)
 		io.WriteString(w, " = ")
 		a.Expr.emit(w)
+		if inferType(a.Expr) == "String" {
+			io.WriteString(w, ".clone()")
+		}
 	}
 }
 
@@ -1256,7 +1259,11 @@ func (s *IndexAssignStmt) emit(w io.Writer) {
 			}
 			idx.Index.emit(w)
 			io.WriteString(w, ".clone(), ")
+			vt := inferType(s.Value)
 			s.Value.emit(w)
+			if vt == "String" {
+				io.WriteString(w, ".clone()")
+			}
 			io.WriteString(w, ")")
 			indexLHS = old
 			return
@@ -1333,6 +1340,9 @@ func (b *BinaryExpr) emit(w io.Writer) {
 			io.WriteString(w, b.Op)
 			io.WriteString(w, " ")
 			b.Right.emit(w)
+			if _, ok := literalStringExpr(b.Right); !ok {
+				io.WriteString(w, ".as_str()")
+			}
 			io.WriteString(w, ")")
 			return
 		}
@@ -2455,6 +2465,11 @@ func compileForStmt(n *parser.ForStmt) (Stmt, error) {
 	iter, err := compileExpr(n.Source)
 	if nr, ok := iter.(*NameRef); ok && groupVars[nr.Name] {
 		iter = &FieldExpr{Receiver: iter, Name: "items"}
+	}
+	if _, ok := iter.(*NameRef); ok {
+		if t := inferType(iter); strings.HasPrefix(t, "Vec<") {
+			iter = &MethodCallExpr{Receiver: iter, Name: "clone"}
+		}
 	}
 	if err != nil {
 		return nil, err

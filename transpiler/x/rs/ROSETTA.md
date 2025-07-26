@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Rust code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/Rust`.
-Last updated: 2025-07-26 16:59 UTC
+Last updated: 2025-07-26 18:52 UTC
 
-## Rosetta Golden Test Checklist (47/332)
+## Rosetta Golden Test Checklist (52/425)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 109µs | 3.2 MB |
@@ -50,21 +50,21 @@ Last updated: 2025-07-26 16:59 UTC
 | 41 | align-columns |   |  |  |
 | 42 | aliquot-sequence-classifications | ✓ | 43.475ms |  |
 | 43 | almkvist-giullera-formula-for-pi |   |  |  |
-| 44 | almost-prime | ✓ | 82µs |  |
-| 45 | amb | ✓ | 21µs |  |
-| 46 | amicable-pairs | ✓ | 361.482ms | 344.0 KB |
-| 47 | anagrams-deranged-anagrams |   |  |  |
-| 48 | anagrams |   |  |  |
-| 49 | angle-difference-between-two-bearings-1 | ✓ | 25µs |  |
-| 50 | angle-difference-between-two-bearings-2 | ✓ | 30µs |  |
-| 51 | angles-geometric-normalization-and-conversion |   |  |  |
-| 52 | animate-a-pendulum | ✓ | 23µs |  |
-| 53 | animation | ✓ | 108µs |  |
-| 54 | anonymous-recursion-1 | ✓ | 24µs |  |
-| 55 | anonymous-recursion-2 | ✓ | 33µs |  |
-| 56 | anonymous-recursion | ✓ | 29µs |  |
-| 57 | anti-primes |   |  |  |
-| 58 | append-a-record-to-the-end-of-a-text-file |   |  |  |
+| 44 | almost-prime | ✓ | 108µs |  |
+| 45 | amb | ✓ | 75µs |  |
+| 46 | amicable-pairs | ✓ | 2.447003s | 344.0 KB |
+| 47 | anagrams-deranged-anagrams | ✓ | 221µs |  |
+| 48 | anagrams | ✓ | 302µs |  |
+| 49 | angle-difference-between-two-bearings-1 | ✓ | 79µs |  |
+| 50 | angle-difference-between-two-bearings-2 | ✓ | 72µs |  |
+| 51 | angles-geometric-normalization-and-conversion | ✓ | 215µs |  |
+| 52 | animate-a-pendulum | ✓ | 25µs |  |
+| 53 | animation | ✓ | 190µs |  |
+| 54 | anonymous-recursion-1 | ✓ | 103µs |  |
+| 55 | anonymous-recursion-2 | ✓ | 43µs |  |
+| 56 | anonymous-recursion | ✓ | 44µs |  |
+| 57 | anti-primes | ✓ | 34.903ms |  |
+| 58 | append-a-record-to-the-end-of-a-text-file | ✓ | 29µs |  |
 | 59 | apply-a-callback-to-an-array-1 |   |  |  |
 | 60 | apply-a-callback-to-an-array-2 |   |  |  |
 | 61 | apply-a-digital-filter-direct-form-ii-transposed- |   |  |  |
@@ -337,5 +337,98 @@ Last updated: 2025-07-26 16:59 UTC
 | 328 | earliest-difference-between-prime-gaps |   |  |  |
 | 329 | eban-numbers |   |  |  |
 | 330 | echo-server |   |  |  |
-| 331 | ekg-sequence-convergence |   |  |  |
-| 332 | md5 |   |  |  |
+| 331 | eertree |   |  |  |
+| 332 | egyptian-division |   |  |  |
+| 333 | ekg-sequence-convergence |   |  |  |
+| 334 | element-wise-operations |   |  |  |
+| 335 | elementary-cellular-automaton-infinite-length |   |  |  |
+| 336 | elementary-cellular-automaton-random-number-generator |   |  |  |
+| 337 | elementary-cellular-automaton |   |  |  |
+| 338 | elliptic-curve-arithmetic |   |  |  |
+| 339 | elliptic-curve-digital-signature-algorithm |   |  |  |
+| 340 | emirp-primes |   |  |  |
+| 341 | empty-directory |   |  |  |
+| 342 | empty-program |   |  |  |
+| 343 | empty-string-1 |   |  |  |
+| 344 | empty-string-2 |   |  |  |
+| 345 | enforced-immutability |   |  |  |
+| 346 | entropy-1 |   |  |  |
+| 347 | entropy-2 |   |  |  |
+| 348 | entropy-narcissist |   |  |  |
+| 349 | enumerations-1 |   |  |  |
+| 350 | enumerations-2 |   |  |  |
+| 351 | enumerations-3 |   |  |  |
+| 352 | enumerations-4 |   |  |  |
+| 353 | environment-variables-1 |   |  |  |
+| 354 | environment-variables-2 |   |  |  |
+| 355 | equal-prime-and-composite-sums |   |  |  |
+| 356 | equilibrium-index |   |  |  |
+| 357 | erd-s-nicolas-numbers |   |  |  |
+| 358 | erd-s-selfridge-categorization-of-primes |   |  |  |
+| 359 | events |   |  |  |
+| 360 | evolutionary-algorithm |   |  |  |
+| 361 | exceptions-catch-an-exception-thrown-in-a-nested-call |   |  |  |
+| 362 | exceptions |   |  |  |
+| 363 | executable-library |   |  |  |
+| 364 | execute-a-markov-algorithm |   |  |  |
+| 365 | execute-a-system-command |   |  |  |
+| 366 | execute-brain- |   |  |  |
+| 367 | execute-computer-zero |   |  |  |
+| 368 | execute-hq9+ |   |  |  |
+| 369 | execute-snusp |   |  |  |
+| 370 | exponentiation-operator |   |  |  |
+| 371 | exponentiation-order |   |  |  |
+| 372 | exponentiation-with-infix-operators-in-or-operating-on-the-base |   |  |  |
+| 373 | extend-your-language |   |  |  |
+| 374 | extensible-prime-generator |   |  |  |
+| 375 | extreme-floating-point-values |   |  |  |
+| 376 | faces-from-a-mesh |   |  |  |
+| 377 | fasta-format |   |  |  |
+| 378 | faulhabers-triangle |   |  |  |
+| 379 | feigenbaum-constant-calculation |   |  |  |
+| 380 | fermat-numbers |   |  |  |
+| 381 | fibonacci-n-step-number-sequences |   |  |  |
+| 382 | fibonacci-sequence-1 |   |  |  |
+| 383 | fibonacci-sequence-2 |   |  |  |
+| 384 | fibonacci-sequence-3 |   |  |  |
+| 385 | fibonacci-sequence-4 |   |  |  |
+| 386 | fibonacci-word-fractal |   |  |  |
+| 387 | fibonacci-word |   |  |  |
+| 388 | file-extension-is-in-extensions-list |   |  |  |
+| 389 | file-input-output-1 |   |  |  |
+| 390 | file-input-output-2 |   |  |  |
+| 391 | file-modification-time |   |  |  |
+| 392 | file-size-distribution |   |  |  |
+| 393 | file-size |   |  |  |
+| 394 | filter |   |  |  |
+| 395 | find-chess960-starting-position-identifier |   |  |  |
+| 396 | find-common-directory-path |   |  |  |
+| 397 | find-duplicate-files |   |  |  |
+| 398 | find-if-a-point-is-within-a-triangle |   |  |  |
+| 399 | find-largest-left-truncatable-prime-in-a-given-base |   |  |  |
+| 400 | find-limit-of-recursion |   |  |  |
+| 401 | find-palindromic-numbers-in-both-binary-and-ternary-bases |   |  |  |
+| 402 | find-the-intersection-of-a-line-with-a-plane |   |  |  |
+| 403 | find-the-intersection-of-two-lines |   |  |  |
+| 404 | find-the-last-sunday-of-each-month |   |  |  |
+| 405 | find-the-missing-permutation |   |  |  |
+| 406 | fivenum-1 |   |  |  |
+| 407 | fivenum-2 |   |  |  |
+| 408 | fixed-length-records-1 |   |  |  |
+| 409 | fixed-length-records-2 |   |  |  |
+| 410 | fizzbuzz-1 |   |  |  |
+| 411 | fizzbuzz-2 |   |  |  |
+| 412 | flatten-a-list-1 |   |  |  |
+| 413 | flatten-a-list-2 |   |  |  |
+| 414 | flipping-bits-game |   |  |  |
+| 415 | flow-control-structures-1 |   |  |  |
+| 416 | flow-control-structures-2 |   |  |  |
+| 417 | flow-control-structures-3 |   |  |  |
+| 418 | flow-control-structures-4 |   |  |  |
+| 419 | floyd-warshall-algorithm |   |  |  |
+| 420 | floyds-triangle |   |  |  |
+| 421 | forest-fire |   |  |  |
+| 422 | fork |   |  |  |
+| 423 | ftp |   |  |  |
+| 424 | general-fizzbuzz |   |  |  |
+| 425 | md5 |   |  |  |
