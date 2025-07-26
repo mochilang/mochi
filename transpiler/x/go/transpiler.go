@@ -719,15 +719,19 @@ type ForRangeStmt struct {
 }
 
 func (fr *ForRangeStmt) emit(w io.Writer) {
-	fmt.Fprintf(w, "for %s := ", fr.Name)
+	name := fr.Name
+	if name == "_" {
+		name = "_i"
+	}
+	fmt.Fprintf(w, "for %s := ", name)
 	if fr.Start != nil {
 		fr.Start.emit(w)
 	}
-	fmt.Fprintf(w, "; %s < ", fr.Name)
+	fmt.Fprintf(w, "; %s < ", name)
 	if fr.End != nil {
 		fr.End.emit(w)
 	}
-	fmt.Fprintf(w, "; %s++ {\n", fr.Name)
+	fmt.Fprintf(w, "; %s++ {\n", name)
 	for _, st := range fr.Body {
 		fmt.Fprint(w, "    ")
 		st.emit(w)
@@ -1905,9 +1909,10 @@ func Transpile(p *parser.Program, env *types.Env, benchMain bool) (*Program, err
 				}
 			}
 			initTypes[vd.Name] = vd.Type
-			if ll, ok2 := vd.Value.(*ListLit); ok2 && ll.ElemType == "any" && len(ll.Elems) == 0 {
+			if ll, ok2 := vd.Value.(*ListLit); ok2 {
 				if strings.HasPrefix(vd.Type, "[]") && vd.Type != "[]any" {
 					ll.ElemType = strings.TrimPrefix(vd.Type, "[]")
+					updateListLitType(ll, toTypeFromGoType(vd.Type))
 				}
 			}
 		}
@@ -1915,9 +1920,10 @@ func Transpile(p *parser.Program, env *types.Env, benchMain bool) (*Program, err
 	for _, st := range gp.Stmts {
 		if as, ok := st.(*AssignStmt); ok {
 			if typ, ok2 := initTypes[as.Name]; ok2 {
-				if ll, ok3 := as.Value.(*ListLit); ok3 && ll.ElemType == "any" && len(ll.Elems) == 0 {
+				if ll, ok3 := as.Value.(*ListLit); ok3 {
 					if strings.HasPrefix(typ, "[]") && typ != "[]any" {
 						ll.ElemType = strings.TrimPrefix(typ, "[]")
+						updateListLitType(ll, toTypeFromGoType(typ))
 					}
 				}
 			}
