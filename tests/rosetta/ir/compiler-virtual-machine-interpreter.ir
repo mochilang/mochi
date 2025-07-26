@@ -1,0 +1,935 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun parseIntStr(str: string): int {
+func parseIntStr (regs=30)
+  // var i = 0
+  Const        r1, 0
+  Move         r2, r1
+  // var neg = false
+  Const        r3, false
+  Move         r4, r3
+  // if len(str) > 0 && str[0:1] == "-" {
+  Len          r5, r0
+  Const        r1, 0
+  LessInt      r6, r1, r5
+  Const        r1, 0
+  Move         r7, r1
+  Const        r9, 1
+  Move         r8, r9
+  Slice        r10, r0, r7, r8
+  Const        r11, "-"
+  Equal        r12, r10, r11
+  Move         r13, r6
+  JumpIfFalse  r13, L0
+  Move         r13, r12
+L0:
+  JumpIfFalse  r13, L1
+  // neg = true
+  Const        r14, true
+  Move         r4, r14
+  // i = 1
+  Const        r9, 1
+  Move         r2, r9
+L1:
+  // var n = 0
+  Const        r1, 0
+  Move         r15, r1
+  // let digits = {
+  Const        r16, {"0": 0, "1": 1, "2": 2, "3": 3, "4": 4, "5": 5, "6": 6, "7": 7, "8": 8, "9": 9}
+  Move         r17, r16
+L3:
+  // while i < len(str) {
+  Len          r18, r0
+  LessInt      r19, r2, r18
+  JumpIfFalse  r19, L2
+  // n = n * 10 + digits[str[i:i+1]]
+  Const        r20, 10
+  MulInt       r21, r15, r20
+  Move         r22, r2
+  Const        r9, 1
+  AddInt       r24, r2, r9
+  Move         r23, r24
+  Slice        r25, r0, r22, r23
+  Index        r26, r17, r25
+  Add          r27, r21, r26
+  Move         r15, r27
+  // i = i + 1
+  Const        r9, 1
+  AddInt       r28, r2, r9
+  Move         r2, r28
+  // while i < len(str) {
+  Jump         L3
+L2:
+  // if neg { n = -n }
+  JumpIfFalse  r4, L4
+  Neg          r29, r15
+  Move         r15, r29
+L4:
+  // return n
+  Return       r15
+
+  // fun fields(s: string): list<string> {
+func fields (regs=28)
+  // var words: list<string> = []
+  Const        r1, []
+  Move         r2, r1
+  // var cur = ""
+  Const        r3, ""
+  Move         r4, r3
+  // var i = 0
+  Const        r5, 0
+  Move         r6, r5
+L4:
+  // while i < len(s) {
+  Len          r7, r0
+  LessInt      r8, r6, r7
+  JumpIfFalse  r8, L0
+  // let ch = substring(s, i, i+1)
+  Const        r9, 1
+  AddInt       r10, r6, r9
+  Slice        r11, r0, r6, r10
+  Move         r12, r11
+  // if ch == " " || ch == "\t" || ch == "\n" {
+  Const        r13, " "
+  Equal        r14, r12, r13
+  Const        r15, "\t"
+  Equal        r16, r12, r15
+  Const        r17, "\n"
+  Equal        r18, r12, r17
+  Move         r19, r14
+  JumpIfTrue   r19, L1
+  Move         r19, r16
+  JumpIfTrue   r19, L1
+  Move         r19, r18
+L1:
+  JumpIfFalse  r19, L2
+  // if len(cur) > 0 {
+  Len          r20, r4
+  Const        r5, 0
+  LessInt      r21, r5, r20
+  JumpIfFalse  r21, L3
+  // words = append(words, cur)
+  Append       r22, r2, r4
+  Move         r2, r22
+  // cur = ""
+  Const        r3, ""
+  Move         r4, r3
+  // if ch == " " || ch == "\t" || ch == "\n" {
+  Jump         L3
+L2:
+  // cur = cur + ch
+  Add          r23, r4, r12
+  Move         r4, r23
+L3:
+  // i = i + 1
+  Const        r9, 1
+  AddInt       r24, r6, r9
+  Move         r6, r24
+  // while i < len(s) {
+  Jump         L4
+L0:
+  // if len(cur) > 0 { words = append(words, cur) }
+  Len          r25, r4
+  Const        r5, 0
+  LessInt      r26, r5, r25
+  JumpIfFalse  r26, L5
+  Append       r27, r2, r4
+  Move         r2, r27
+L5:
+  // return words
+  Return       r2
+
+  // fun unescape(s: string): string {
+func unescape (regs=39)
+  // var out = ""
+  Const        r1, ""
+  Move         r2, r1
+  // var i = 0
+  Const        r3, 0
+  Move         r4, r3
+L4:
+  // while i < len(s) {
+  Len          r5, r0
+  LessInt      r6, r4, r5
+  JumpIfFalse  r6, L0
+  // if s[i:i+1] == "\\" && i+1 < len(s) {
+  Move         r7, r4
+  Const        r9, 1
+  AddInt       r10, r4, r9
+  Move         r8, r10
+  Slice        r11, r0, r7, r8
+  Const        r9, 1
+  AddInt       r12, r4, r9
+  Len          r13, r0
+  LessInt      r14, r12, r13
+  Const        r15, "\\"
+  Equal        r16, r11, r15
+  Move         r17, r16
+  JumpIfFalse  r17, L1
+  Move         r17, r14
+L1:
+  JumpIfFalse  r17, L2
+  // let c = s[i+1:i+2]
+  Const        r9, 1
+  AddInt       r19, r4, r9
+  Move         r18, r19
+  Const        r21, 2
+  AddInt       r22, r4, r21
+  Move         r20, r22
+  Slice        r23, r0, r18, r20
+  Move         r24, r23
+  // if c == "n" {
+  Const        r25, "n"
+  Equal        r26, r24, r25
+  JumpIfFalse  r26, L3
+  // out = out + "\n"
+  Const        r27, "\n"
+  Add          r28, r2, r27
+  Move         r2, r28
+  // i = i + 2
+  Const        r21, 2
+  AddInt       r29, r4, r21
+  Move         r4, r29
+  // continue
+  Jump         L4
+L3:
+  // } else if c == "\\" {
+  Const        r15, "\\"
+  Equal        r30, r24, r15
+  JumpIfFalse  r30, L2
+  // out = out + "\\"
+  Const        r15, "\\"
+  Add          r31, r2, r15
+  Move         r2, r31
+  // i = i + 2
+  Const        r21, 2
+  AddInt       r32, r4, r21
+  Move         r4, r32
+  // continue
+  Jump         L4
+L2:
+  // out = out + s[i:i+1]
+  Move         r33, r4
+  Const        r9, 1
+  AddInt       r35, r4, r9
+  Move         r34, r35
+  Slice        r36, r0, r33, r34
+  Add          r37, r2, r36
+  Move         r2, r37
+  // i = i + 1
+  Const        r9, 1
+  AddInt       r38, r4, r9
+  Move         r4, r38
+  // while i < len(s) {
+  Jump         L4
+L0:
+  // return out
+  Return       r2
+
+  // fun parseProgram(src: string): map<string, any> {
+func parseProgram (regs=114)
+  // let lines = split(src, "\n")
+  Move         r1, r0
+  Const        r3, "\n"
+  Move         r2, r3
+  Call2        r4, split, r1, r2
+  Move         r5, r4
+  // let header = fields(lines[0])
+  Const        r7, 0
+  Index        r8, r5, r7
+  Move         r6, r8
+  Call         r9, fields, r6
+  Move         r10, r9
+  // let dataSize = parseIntStr(header[1])
+  Const        r12, 1
+  Index        r13, r10, r12
+  Move         r11, r13
+  Call         r14, parseIntStr, r11
+  Move         r15, r14
+  // let nStrings = parseIntStr(header[3])
+  Const        r17, 3
+  Index        r18, r10, r17
+  Move         r16, r18
+  Call         r19, parseIntStr, r16
+  Move         r20, r19
+  // var stringPool: list<string> = []
+  Const        r21, []
+  Move         r22, r21
+  // var i = 1
+  Const        r12, 1
+  Move         r23, r12
+L2:
+  // while i <= nStrings {
+  LessEq       r24, r23, r20
+  JumpIfFalse  r24, L0
+  // let s = lines[i]
+  Index        r25, r5, r23
+  Move         r26, r25
+  // if len(s) > 0 {
+  Len          r27, r26
+  Const        r7, 0
+  LessInt      r28, r7, r27
+  JumpIfFalse  r28, L1
+  // stringPool = append(stringPool, unescape(s[1:len(s)-1]))
+  Const        r12, 1
+  Move         r30, r12
+  Len          r32, r26
+  Const        r12, 1
+  SubInt       r33, r32, r12
+  Move         r31, r33
+  Slice        r34, r26, r30, r31
+  Move         r29, r34
+  Call         r35, unescape, r29
+  Append       r36, r22, r35
+  Move         r22, r36
+L1:
+  // i = i + 1
+  Const        r12, 1
+  AddInt       r37, r23, r12
+  Move         r23, r37
+  // while i <= nStrings {
+  Jump         L2
+L0:
+  // var code: list<map<string, any>> = []
+  Const        r21, []
+  Move         r38, r21
+  // var addrMap: map<int, int> = {}
+  Const        r39, {}
+  Move         r40, r39
+L10:
+  // while i < len(lines) {
+  Len          r41, r5
+  LessInt      r42, r23, r41
+  JumpIfFalse  r42, L3
+  // let line = trim(lines[i])
+  Index        r44, r5, r23
+  Move         r43, r44
+  Call         r45, trim, r43
+  Move         r46, r45
+  // if len(line) == 0 { break }
+  Len          r47, r46
+  Const        r7, 0
+  EqualInt     r48, r47, r7
+  JumpIfFalse  r48, L4
+  Jump         L3
+L4:
+  // let parts = fields(line)
+  Move         r49, r46
+  Call         r50, fields, r49
+  Move         r51, r50
+  // let addr = parseIntStr(parts[0])
+  Const        r7, 0
+  Index        r53, r51, r7
+  Move         r52, r53
+  Call         r54, parseIntStr, r52
+  Move         r55, r54
+  // let op = parts[1]
+  Const        r12, 1
+  Index        r56, r51, r12
+  Move         r57, r56
+  // var arg = 0
+  Const        r7, 0
+  Move         r58, r7
+  // if op == "push" {
+  Const        r59, "push"
+  Equal        r60, r57, r59
+  JumpIfFalse  r60, L5
+  // arg = parseIntStr(parts[2])
+  Const        r62, 2
+  Index        r63, r51, r62
+  Move         r61, r63
+  Call         r64, parseIntStr, r61
+  Move         r58, r64
+  // if op == "push" {
+  Jump         L6
+L5:
+  // } else if op == "fetch" || op == "store" {
+  Const        r65, "fetch"
+  Equal        r66, r57, r65
+  Const        r67, "store"
+  Equal        r68, r57, r67
+  Move         r69, r66
+  JumpIfTrue   r69, L7
+  Move         r69, r68
+L7:
+  JumpIfFalse  r69, L8
+  // arg = parseIntStr(parts[2][1:len(parts[2])-1])
+  Const        r62, 2
+  Index        r71, r51, r62
+  Const        r12, 1
+  Move         r72, r12
+  Const        r62, 2
+  Index        r74, r51, r62
+  Len          r75, r74
+  Const        r12, 1
+  SubInt       r76, r75, r12
+  Move         r73, r76
+  Slice        r77, r71, r72, r73
+  Move         r70, r77
+  Call         r78, parseIntStr, r70
+  Move         r58, r78
+  // } else if op == "fetch" || op == "store" {
+  Jump         L6
+L8:
+  // } else if op == "jmp" || op == "jz" {
+  Const        r79, "jmp"
+  Equal        r80, r57, r79
+  Const        r81, "jz"
+  Equal        r82, r57, r81
+  Move         r83, r80
+  JumpIfTrue   r83, L9
+  Move         r83, r82
+L9:
+  JumpIfFalse  r83, L6
+  // arg = parseIntStr(parts[3])
+  Const        r17, 3
+  Index        r85, r51, r17
+  Move         r84, r85
+  Call         r86, parseIntStr, r84
+  Move         r58, r86
+L6:
+  // code = append(code, {"addr": addr, "op": op, "arg": arg})
+  Const        r87, "addr"
+  Const        r88, "op"
+  Const        r89, "arg"
+  Move         r90, r87
+  Move         r91, r55
+  Move         r92, r88
+  Move         r93, r57
+  Move         r94, r89
+  Move         r95, r58
+  MakeMap      r96, 3, r90
+  Append       r97, r38, r96
+  Move         r38, r97
+  // addrMap[addr] = len(code) - 1
+  Len          r98, r38
+  Const        r12, 1
+  SubInt       r99, r98, r12
+  SetIndex     r40, r55, r99
+  // i = i + 1
+  Const        r12, 1
+  AddInt       r100, r23, r12
+  Move         r23, r100
+  // while i < len(lines) {
+  Jump         L10
+L3:
+  // return {"dataSize": dataSize, "strings": stringPool, "code": code, "addrMap": addrMap}
+  Const        r101, "dataSize"
+  Const        r102, "strings"
+  Const        r103, "code"
+  Const        r104, "addrMap"
+  Move         r105, r101
+  Move         r106, r15
+  Move         r107, r102
+  Move         r108, r22
+  Move         r109, r103
+  Move         r110, r38
+  Move         r111, r104
+  Move         r112, r40
+  MakeMap      r113, 4, r105
+  Return       r113
+
+  // fun runVM(prog: map<string, any>) {
+func runVM (regs=108)
+  // var data: list<int> = []
+  Const        r1, []
+  Move         r2, r1
+  // var i = 0
+  Const        r3, 0
+  Move         r4, r3
+L1:
+  // while i < prog["dataSize"] {
+  Const        r5, "dataSize"
+  Index        r6, r0, r5
+  Less         r7, r4, r6
+  JumpIfFalse  r7, L0
+  // data = append(data, 0)
+  Const        r3, 0
+  Append       r8, r2, r3
+  Move         r2, r8
+  // i = i + 1
+  Const        r9, 1
+  AddInt       r10, r4, r9
+  Move         r4, r10
+  // while i < prog["dataSize"] {
+  Jump         L1
+L0:
+  // var stack: list<int> = []
+  Const        r1, []
+  Move         r11, r1
+  // var pc = 0
+  Const        r3, 0
+  Move         r12, r3
+  // let code = prog["code"]
+  Const        r13, "code"
+  Index        r14, r0, r13
+  Move         r15, r14
+  // let addrMap = prog["addrMap"]
+  Const        r16, "addrMap"
+  Index        r17, r0, r16
+  Move         r18, r17
+  // let pool = prog["strings"]
+  Const        r19, "strings"
+  Index        r20, r0, r19
+  Move         r21, r20
+L4:
+  // while pc < len(code) {
+  Len          r22, r15
+  LessInt      r23, r12, r22
+  JumpIfFalse  r23, L2
+  // let inst = code[pc]
+  Index        r24, r15, r12
+  Move         r25, r24
+  // let op = inst["op"]
+  Const        r26, "op"
+  Index        r27, r25, r26
+  Move         r28, r27
+  // let arg = inst["arg"]
+  Const        r29, "arg"
+  Index        r30, r25, r29
+  Move         r31, r30
+  // if op == "push" {
+  Const        r32, "push"
+  Equal        r33, r28, r32
+  JumpIfFalse  r33, L3
+  // stack = append(stack, arg)
+  Append       r34, r11, r31
+  Move         r11, r34
+  // pc = pc + 1
+  Const        r9, 1
+  AddInt       r35, r12, r9
+  Move         r12, r35
+  // continue
+  Jump         L4
+L3:
+  // if op == "store" {
+  Const        r36, "store"
+  Equal        r37, r28, r36
+  JumpIfFalse  r37, L5
+  // data[arg] = stack[len(stack)-1]
+  Len          r38, r11
+  Const        r9, 1
+  SubInt       r39, r38, r9
+  Index        r40, r11, r39
+  SetIndex     r2, r31, r40
+  // stack = slice(stack, 0, len(stack)-1)
+  Move         r11, r41
+  // pc = pc + 1
+  Const        r9, 1
+  AddInt       r42, r12, r9
+  Move         r12, r42
+  // continue
+  Jump         L4
+L5:
+  // if op == "fetch" {
+  Const        r43, "fetch"
+  Equal        r44, r28, r43
+  JumpIfFalse  r44, L6
+  // stack = append(stack, data[arg])
+  Index        r45, r2, r31
+  Append       r46, r11, r45
+  Move         r11, r46
+  // pc = pc + 1
+  Const        r9, 1
+  AddInt       r47, r12, r9
+  Move         r12, r47
+  // continue
+  Jump         L4
+L6:
+  // if op == "add" {
+  Const        r48, "add"
+  Equal        r49, r28, r48
+  JumpIfFalse  r49, L7
+  // stack[len(stack)-2] = stack[len(stack)-2] + stack[len(stack)-1]
+  Len          r50, r11
+  Const        r51, 2
+  SubInt       r52, r50, r51
+  Index        r53, r11, r52
+  Len          r54, r11
+  Const        r9, 1
+  SubInt       r55, r54, r9
+  Index        r56, r11, r55
+  Add          r57, r53, r56
+  Len          r58, r11
+  Const        r51, 2
+  SubInt       r59, r58, r51
+  SetIndex     r11, r59, r57
+  // stack = slice(stack, 0, len(stack)-1)
+  Move         r11, r60
+  // pc = pc + 1
+  Const        r9, 1
+  AddInt       r61, r12, r9
+  Move         r12, r61
+  // continue
+  Jump         L4
+L7:
+  // if op == "lt" {
+  Const        r62, "lt"
+  Equal        r63, r28, r62
+  JumpIfFalse  r63, L8
+  // var v = 0
+  Const        r3, 0
+  Move         r64, r3
+  // if stack[len(stack)-2] < stack[len(stack)-1] { v = 1 }
+  Len          r65, r11
+  Const        r51, 2
+  SubInt       r66, r65, r51
+  Index        r67, r11, r66
+  Len          r68, r11
+  Const        r9, 1
+  SubInt       r69, r68, r9
+  Index        r70, r11, r69
+  Less         r71, r67, r70
+  JumpIfFalse  r71, L9
+  Const        r9, 1
+  Move         r64, r9
+L9:
+  // stack[len(stack)-2] = v
+  Len          r72, r11
+  Const        r51, 2
+  SubInt       r73, r72, r51
+  SetIndex     r11, r73, r64
+  // stack = slice(stack, 0, len(stack)-1)
+  Move         r11, r74
+  // pc = pc + 1
+  Const        r9, 1
+  AddInt       r75, r12, r9
+  Move         r12, r75
+  // continue
+  Jump         L4
+L8:
+  // if op == "jz" {
+  Const        r76, "jz"
+  Equal        r77, r28, r76
+  JumpIfFalse  r77, L10
+  // let v = stack[len(stack)-1]
+  Len          r78, r11
+  Const        r9, 1
+  SubInt       r79, r78, r9
+  Index        r80, r11, r79
+  Move         r81, r80
+  // stack = slice(stack, 0, len(stack)-1)
+  Move         r11, r82
+  // if v == 0 {
+  Const        r3, 0
+  Equal        r83, r81, r3
+  JumpIfFalse  r83, L11
+  // pc = addrMap[arg]
+  Index        r84, r18, r31
+  Move         r12, r84
+  // if v == 0 {
+  Jump         L4
+L11:
+  // pc = pc + 1
+  Const        r9, 1
+  Add          r85, r12, r9
+  Move         r12, r85
+  // continue
+  Jump         L4
+L10:
+  // if op == "jmp" {
+  Const        r86, "jmp"
+  Equal        r87, r28, r86
+  JumpIfFalse  r87, L12
+  // pc = addrMap[arg]
+  Index        r88, r18, r31
+  Move         r12, r88
+  // continue
+  Jump         L4
+L12:
+  // if op == "prts" {
+  Const        r89, "prts"
+  Equal        r90, r28, r89
+  JumpIfFalse  r90, L13
+  // print(pool[stack[len(stack)-1]])
+  Len          r91, r11
+  Const        r9, 1
+  SubInt       r92, r91, r9
+  Index        r93, r11, r92
+  Index        r94, r21, r93
+  Print        r94
+  // stack = slice(stack, 0, len(stack)-1)
+  Move         r11, r95
+  // pc = pc + 1
+  Const        r9, 1
+  Add          r96, r12, r9
+  Move         r12, r96
+  // continue
+  Jump         L4
+L13:
+  // if op == "prti" {
+  Const        r97, "prti"
+  Equal        r98, r28, r97
+  JumpIfFalse  r98, L14
+  // print(str(stack[len(stack)-1]))
+  Len          r99, r11
+  Const        r9, 1
+  SubInt       r100, r99, r9
+  Index        r101, r11, r100
+  Str          r102, r101
+  Print        r102
+  // stack = slice(stack, 0, len(stack)-1)
+  Move         r11, r103
+  // pc = pc + 1
+  Const        r9, 1
+  Add          r104, r12, r9
+  Move         r12, r104
+  // continue
+  Jump         L4
+L14:
+  // if op == "halt" {
+  Const        r105, "halt"
+  Equal        r106, r28, r105
+  JumpIfFalse  r106, L15
+  // break
+  Jump         L2
+L15:
+  // pc = pc + 1
+  Const        r9, 1
+  Add          r107, r12, r9
+  Move         r12, r107
+  // while pc < len(code) {
+  Jump         L4
+L2:
+  Return       r0
+
+  // fun trim(s: string): string {
+func trim (regs=38)
+  // var start = 0
+  Const        r1, 0
+  Move         r2, r1
+L3:
+  // while start < len(s) && (s[start:start+1] == " " || s[start:start+1] == "\t") { start = start + 1 }
+  Len          r3, r0
+  LessInt      r4, r2, r3
+  Move         r5, r4
+  JumpIfFalse  r5, L0
+  Move         r6, r2
+  Const        r8, 1
+  AddInt       r9, r2, r8
+  Move         r7, r9
+  Slice        r10, r0, r6, r7
+  Const        r11, " "
+  Equal        r12, r10, r11
+  Move         r13, r2
+  Const        r8, 1
+  AddInt       r15, r2, r8
+  Move         r14, r15
+  Slice        r16, r0, r13, r14
+  Const        r17, "\t"
+  Equal        r18, r16, r17
+  Move         r19, r12
+  JumpIfTrue   r19, L1
+  Move         r19, r18
+L1:
+  Move         r5, r19
+L0:
+  JumpIfFalse  r5, L2
+  Const        r8, 1
+  AddInt       r20, r2, r8
+  Move         r2, r20
+  Jump         L3
+L2:
+  // var end = len(s)
+  Len          r21, r0
+  Move         r22, r21
+L7:
+  // while end > start && (s[end-1:end] == " " || s[end-1:end] == "\t") { end = end - 1 }
+  LessInt      r23, r2, r22
+  Move         r24, r23
+  JumpIfFalse  r24, L4
+  Const        r8, 1
+  SubInt       r26, r22, r8
+  Move         r25, r26
+  Move         r27, r22
+  Slice        r28, r0, r25, r27
+  Const        r11, " "
+  Equal        r29, r28, r11
+  Const        r8, 1
+  SubInt       r31, r22, r8
+  Move         r30, r31
+  Move         r32, r22
+  Slice        r33, r0, r30, r32
+  Const        r17, "\t"
+  Equal        r34, r33, r17
+  Move         r35, r29
+  JumpIfTrue   r35, L5
+  Move         r35, r34
+L5:
+  Move         r24, r35
+L4:
+  JumpIfFalse  r24, L6
+  Const        r8, 1
+  SubInt       r36, r22, r8
+  Move         r22, r36
+  Jump         L7
+L6:
+  // return substring(s, start, end)
+  Slice        r37, r0, r2, r22
+  Return       r37
+
+  // fun split(s: string, sep: string): list<string> {
+func split (regs=30)
+  // var parts: list<string> = []
+  Const        r2, []
+  Move         r3, r2
+  // var cur = ""
+  Const        r4, ""
+  Move         r5, r4
+  // var i = 0
+  Const        r6, 0
+  Move         r7, r6
+L3:
+  // while i < len(s) {
+  Len          r8, r0
+  LessInt      r9, r7, r8
+  JumpIfFalse  r9, L0
+  // if len(sep) > 0 && i+len(sep) <= len(s) && substring(s, i, i+len(sep)) == sep {
+  Len          r10, r1
+  Len          r11, r1
+  AddInt       r12, r7, r11
+  Const        r6, 0
+  LessInt      r13, r6, r10
+  Len          r14, r0
+  LessEqInt    r15, r12, r14
+  Len          r16, r1
+  AddInt       r17, r7, r16
+  Slice        r18, r0, r7, r17
+  Equal        r19, r18, r1
+  Move         r20, r13
+  JumpIfFalse  r20, L1
+  Move         r20, r15
+  JumpIfFalse  r20, L1
+  Move         r20, r19
+L1:
+  JumpIfFalse  r20, L2
+  // parts = append(parts, cur)
+  Append       r21, r3, r5
+  Move         r3, r21
+  // cur = ""
+  Const        r4, ""
+  Move         r5, r4
+  // i = i + len(sep)
+  Len          r22, r1
+  AddInt       r23, r7, r22
+  Move         r7, r23
+  // if len(sep) > 0 && i+len(sep) <= len(s) && substring(s, i, i+len(sep)) == sep {
+  Jump         L3
+L2:
+  // cur = cur + substring(s, i, i+1)
+  Const        r24, 1
+  AddInt       r25, r7, r24
+  Slice        r26, r0, r7, r25
+  Add          r27, r5, r26
+  Move         r5, r27
+  // i = i + 1
+  Const        r24, 1
+  AddInt       r28, r7, r24
+  Move         r7, r28
+  // while i < len(s) {
+  Jump         L3
+L0:
+  // parts = append(parts, cur)
+  Append       r29, r3, r5
+  Move         r3, r29
+  // return parts
+  Return       r3
+
+  // fun main() {
+func main (regs=48)
+  // "Datasize: 1 Strings: 2\n" +
+  Const        r0, "Datasize: 1 Strings: 2\n"
+  // "\"count is: \"\n" +
+  Const        r1, "\"count is: \"\n"
+  // "Datasize: 1 Strings: 2\n" +
+  Const        r2, "Datasize: 1 Strings: 2\n\"count is: \"\n"
+  // "\"\\n\"\n" +
+  Const        r3, "\"\\n\"\n"
+  // "\"count is: \"\n" +
+  Const        r4, "Datasize: 1 Strings: 2\n\"count is: \"\n\"\\n\"\n"
+  // "    0 push  1\n" +
+  Const        r5, "    0 push  1\n"
+  // "\"\\n\"\n" +
+  Const        r6, "Datasize: 1 Strings: 2\n\"count is: \"\n\"\\n\"\n    0 push  1\n"
+  // "    5 store [0]\n" +
+  Const        r7, "    5 store [0]\n"
+  // "    0 push  1\n" +
+  Const        r8, "Datasize: 1 Strings: 2\n\"count is: \"\n\"\\n\"\n    0 push  1\n    5 store [0]\n"
+  // "   10 fetch [0]\n" +
+  Const        r9, "   10 fetch [0]\n"
+  // "    5 store [0]\n" +
+  Const        r10, "Datasize: 1 Strings: 2\n\"count is: \"\n\"\\n\"\n    0 push  1\n    5 store [0]\n   10 fetch [0]\n"
+  // "   15 push  10\n" +
+  Const        r11, "   15 push  10\n"
+  // "   10 fetch [0]\n" +
+  Const        r12, "Datasize: 1 Strings: 2\n\"count is: \"\n\"\\n\"\n    0 push  1\n    5 store [0]\n   10 fetch [0]\n   15 push  10\n"
+  // "   20 lt\n" +
+  Const        r13, "   20 lt\n"
+  // "   15 push  10\n" +
+  Const        r14, "Datasize: 1 Strings: 2\n\"count is: \"\n\"\\n\"\n    0 push  1\n    5 store [0]\n   10 fetch [0]\n   15 push  10\n   20 lt\n"
+  // "   21 jz     (43) 65\n" +
+  Const        r15, "   21 jz     (43) 65\n"
+  // "   20 lt\n" +
+  Const        r16, "Datasize: 1 Strings: 2\n\"count is: \"\n\"\\n\"\n    0 push  1\n    5 store [0]\n   10 fetch [0]\n   15 push  10\n   20 lt\n   21 jz     (43) 65\n"
+  // "   26 push  0\n" +
+  Const        r17, "   26 push  0\n"
+  // "   21 jz     (43) 65\n" +
+  Const        r18, "Datasize: 1 Strings: 2\n\"count is: \"\n\"\\n\"\n    0 push  1\n    5 store [0]\n   10 fetch [0]\n   15 push  10\n   20 lt\n   21 jz     (43) 65\n   26 push  0\n"
+  // "   31 prts\n" +
+  Const        r19, "   31 prts\n"
+  // "   26 push  0\n" +
+  Const        r20, "Datasize: 1 Strings: 2\n\"count is: \"\n\"\\n\"\n    0 push  1\n    5 store [0]\n   10 fetch [0]\n   15 push  10\n   20 lt\n   21 jz     (43) 65\n   26 push  0\n   31 prts\n"
+  // "   32 fetch [0]\n" +
+  Const        r21, "   32 fetch [0]\n"
+  // "   31 prts\n" +
+  Const        r22, "Datasize: 1 Strings: 2\n\"count is: \"\n\"\\n\"\n    0 push  1\n    5 store [0]\n   10 fetch [0]\n   15 push  10\n   20 lt\n   21 jz     (43) 65\n   26 push  0\n   31 prts\n   32 fetch [0]\n"
+  // "   37 prti\n" +
+  Const        r23, "   37 prti\n"
+  // "   32 fetch [0]\n" +
+  Const        r24, "Datasize: 1 Strings: 2\n\"count is: \"\n\"\\n\"\n    0 push  1\n    5 store [0]\n   10 fetch [0]\n   15 push  10\n   20 lt\n   21 jz     (43) 65\n   26 push  0\n   31 prts\n   32 fetch [0]\n   37 prti\n"
+  // "   38 push  1\n" +
+  Const        r25, "   38 push  1\n"
+  // "   37 prti\n" +
+  Const        r26, "Datasize: 1 Strings: 2\n\"count is: \"\n\"\\n\"\n    0 push  1\n    5 store [0]\n   10 fetch [0]\n   15 push  10\n   20 lt\n   21 jz     (43) 65\n   26 push  0\n   31 prts\n   32 fetch [0]\n   37 prti\n   38 push  1\n"
+  // "   43 prts\n" +
+  Const        r27, "   43 prts\n"
+  // "   38 push  1\n" +
+  Const        r28, "Datasize: 1 Strings: 2\n\"count is: \"\n\"\\n\"\n    0 push  1\n    5 store [0]\n   10 fetch [0]\n   15 push  10\n   20 lt\n   21 jz     (43) 65\n   26 push  0\n   31 prts\n   32 fetch [0]\n   37 prti\n   38 push  1\n   43 prts\n"
+  // "   44 fetch [0]\n" +
+  Const        r29, "   44 fetch [0]\n"
+  // "   43 prts\n" +
+  Const        r30, "Datasize: 1 Strings: 2\n\"count is: \"\n\"\\n\"\n    0 push  1\n    5 store [0]\n   10 fetch [0]\n   15 push  10\n   20 lt\n   21 jz     (43) 65\n   26 push  0\n   31 prts\n   32 fetch [0]\n   37 prti\n   38 push  1\n   43 prts\n   44 fetch [0]\n"
+  // "   49 push  1\n" +
+  Const        r31, "   49 push  1\n"
+  // "   44 fetch [0]\n" +
+  Const        r32, "Datasize: 1 Strings: 2\n\"count is: \"\n\"\\n\"\n    0 push  1\n    5 store [0]\n   10 fetch [0]\n   15 push  10\n   20 lt\n   21 jz     (43) 65\n   26 push  0\n   31 prts\n   32 fetch [0]\n   37 prti\n   38 push  1\n   43 prts\n   44 fetch [0]\n   49 push  1\n"
+  // "   54 add\n" +
+  Const        r33, "   54 add\n"
+  // "   49 push  1\n" +
+  Const        r34, "Datasize: 1 Strings: 2\n\"count is: \"\n\"\\n\"\n    0 push  1\n    5 store [0]\n   10 fetch [0]\n   15 push  10\n   20 lt\n   21 jz     (43) 65\n   26 push  0\n   31 prts\n   32 fetch [0]\n   37 prti\n   38 push  1\n   43 prts\n   44 fetch [0]\n   49 push  1\n   54 add\n"
+  // "   55 store [0]\n" +
+  Const        r35, "   55 store [0]\n"
+  // "   54 add\n" +
+  Const        r36, "Datasize: 1 Strings: 2\n\"count is: \"\n\"\\n\"\n    0 push  1\n    5 store [0]\n   10 fetch [0]\n   15 push  10\n   20 lt\n   21 jz     (43) 65\n   26 push  0\n   31 prts\n   32 fetch [0]\n   37 prti\n   38 push  1\n   43 prts\n   44 fetch [0]\n   49 push  1\n   54 add\n   55 store [0]\n"
+  // "   60 jmp    (-51) 10\n" +
+  Const        r37, "   60 jmp    (-51) 10\n"
+  // "   55 store [0]\n" +
+  Const        r38, "Datasize: 1 Strings: 2\n\"count is: \"\n\"\\n\"\n    0 push  1\n    5 store [0]\n   10 fetch [0]\n   15 push  10\n   20 lt\n   21 jz     (43) 65\n   26 push  0\n   31 prts\n   32 fetch [0]\n   37 prti\n   38 push  1\n   43 prts\n   44 fetch [0]\n   49 push  1\n   54 add\n   55 store [0]\n   60 jmp    (-51) 10\n"
+  // "   65 halt\n"
+  Const        r39, "   65 halt\n"
+  // "   60 jmp    (-51) 10\n" +
+  Const        r40, "Datasize: 1 Strings: 2\n\"count is: \"\n\"\\n\"\n    0 push  1\n    5 store [0]\n   10 fetch [0]\n   15 push  10\n   20 lt\n   21 jz     (43) 65\n   26 push  0\n   31 prts\n   32 fetch [0]\n   37 prti\n   38 push  1\n   43 prts\n   44 fetch [0]\n   49 push  1\n   54 add\n   55 store [0]\n   60 jmp    (-51) 10\n   65 halt\n"
+  // let programText =
+  Move         r41, r40
+  // let prog = parseProgram(programText)
+  Const        r43, "Datasize: 1 Strings: 2\n\"count is: \"\n\"\\n\"\n    0 push  1\n    5 store [0]\n   10 fetch [0]\n   15 push  10\n   20 lt\n   21 jz     (43) 65\n   26 push  0\n   31 prts\n   32 fetch [0]\n   37 prti\n   38 push  1\n   43 prts\n   44 fetch [0]\n   49 push  1\n   54 add\n   55 store [0]\n   60 jmp    (-51) 10\n   65 halt\n"
+  Move         r42, r43
+  Call         r44, parseProgram, r42
+  Move         r45, r44
+  // runVM(prog)
+  Move         r46, r45
+  Call         r47, runVM, r46
+  Return       r0
