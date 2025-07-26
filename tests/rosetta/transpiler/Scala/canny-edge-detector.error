@@ -1,0 +1,37 @@
+exit status 1
+/workspace/mochi/tests/rosetta/transpiler/Scala/canny-edge-detector.scala:83: error: type mismatch;
+ found   : Double(1.0)
+ required: scala.math.BigInt
+      val hx: ArrayBuffer[ArrayBuffer[Double]] = ArrayBuffer(ArrayBuffer(BigInt(0) - 1.0, 0.0, 1.0), ArrayBuffer(BigInt(0) - 2.0, 0.0, 2.0), ArrayBuffer(BigInt(0) - 1.0, 0.0, 1.0))
+                                                                                     ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/canny-edge-detector.scala:83: error: type mismatch;
+ found   : Double(2.0)
+ required: scala.math.BigInt
+      val hx: ArrayBuffer[ArrayBuffer[Double]] = ArrayBuffer(ArrayBuffer(BigInt(0) - 1.0, 0.0, 1.0), ArrayBuffer(BigInt(0) - 2.0, 0.0, 2.0), ArrayBuffer(BigInt(0) - 1.0, 0.0, 1.0))
+                                                                                                                             ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/canny-edge-detector.scala:83: error: type mismatch;
+ found   : Double(1.0)
+ required: scala.math.BigInt
+      val hx: ArrayBuffer[ArrayBuffer[Double]] = ArrayBuffer(ArrayBuffer(BigInt(0) - 1.0, 0.0, 1.0), ArrayBuffer(BigInt(0) - 2.0, 0.0, 2.0), ArrayBuffer(BigInt(0) - 1.0, 0.0, 1.0))
+                                                                                                                                                                     ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/canny-edge-detector.scala:84: error: type mismatch;
+ found   : Double(1.0)
+ required: scala.math.BigInt
+      val hy: ArrayBuffer[ArrayBuffer[Double]] = ArrayBuffer(ArrayBuffer(1.0, 2.0, 1.0), ArrayBuffer(0.0, 0.0, 0.0), ArrayBuffer(BigInt(0) - 1.0, BigInt(0) - 2.0, BigInt(0) - 1.0))
+                                                                                                                                             ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/canny-edge-detector.scala:84: error: type mismatch;
+ found   : Double(2.0)
+ required: scala.math.BigInt
+      val hy: ArrayBuffer[ArrayBuffer[Double]] = ArrayBuffer(ArrayBuffer(1.0, 2.0, 1.0), ArrayBuffer(0.0, 0.0, 0.0), ArrayBuffer(BigInt(0) - 1.0, BigInt(0) - 2.0, BigInt(0) - 1.0))
+                                                                                                                                                              ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/canny-edge-detector.scala:84: error: type mismatch;
+ found   : Double(1.0)
+ required: scala.math.BigInt
+      val hy: ArrayBuffer[ArrayBuffer[Double]] = ArrayBuffer(ArrayBuffer(1.0, 2.0, 1.0), ArrayBuffer(0.0, 0.0, 0.0), ArrayBuffer(BigInt(0) - 1.0, BigInt(0) - 2.0, BigInt(0) - 1.0))
+                                                                                                                                                                               ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/canny-edge-detector.scala:95: error: type mismatch;
+ found   : Double
+ required: Int
+          val g: Int = gx((y).toInt)((x).toInt) * gx((y).toInt)((x).toInt) + gy((y).toInt)((x).toInt) * gy((y).toInt)((x).toInt)
+                                                                           ^
+7 errors found

@@ -1,0 +1,12 @@
+exit status 1
+/workspace/mochi/tests/rosetta/transpiler/Scala/casting-out-nines.scala:52: error: type mismatch;
+ found   : scala.math.BigInt
+ required: Int
+              if (digits.slice(j, (j + BigInt(1)).toInt) == s.slice((i).toInt, (i + BigInt(1)).toInt)) {
+                               ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/casting-out-nines.scala:112: error: type mismatch;
+ found   : scala.math.BigInt
+ required: String
+            val k = tc.getOrElse("kaprekar", null.asInstanceOf[Any]).asInstanceOf[Map[String,Any]](i)
+                                                                                                   ^
+two errors found

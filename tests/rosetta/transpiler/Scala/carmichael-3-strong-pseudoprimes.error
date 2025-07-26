@@ -1,0 +1,34 @@
+exit status 1
+/workspace/mochi/tests/rosetta/transpiler/Scala/carmichael-3-strong-pseudoprimes.scala:80: error: overloaded method value % with alternatives:
+  (x: Double)Double <and>
+  (x: Float)Double <and>
+  (x: Long)Double <and>
+  (x: Int)Double <and>
+  (x: Char)Double <and>
+  (x: Short)Double <and>
+  (x: Byte)Double
+ cannot be applied to (BigInt)
+              if (((h3 + p1).toString.toDouble * (p1 - BigInt(1)).toString.toDouble % d == BigInt(0) && mod(((BigInt(0) - p1) * p1).asInstanceOf[BigInt], h3.asInstanceOf[BigInt]) == d.toString.toDouble % h3.toString.toDouble).asInstanceOf[Boolean]) {
+                                                                                    ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/carmichael-3-strong-pseudoprimes.scala:81: error: overloaded method value / with alternatives:
+  (x: Double)Double <and>
+  (x: Float)Double <and>
+  (x: Long)Double <and>
+  (x: Int)Double <and>
+  (x: Char)Double <and>
+  (x: Short)Double <and>
+  (x: Byte)Double
+ cannot be applied to (BigInt)
+                val p2: Double = BigInt(1) + (p1 - BigInt(1)).toString.toDouble * (h3 + p1).toString.toDouble / d
+                                                                                                              ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/carmichael-3-strong-pseudoprimes.scala:85: error: type mismatch;
+ found   : Double
+ required: scala.math.BigInt
+                val p3: Double = BigInt(1) + (p1 * p2).toString.toDouble / h3.toString.toDouble
+                                                   ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/carmichael-3-strong-pseudoprimes.scala:92: error: type mismatch;
+ found   : Double
+ required: scala.math.BigInt
+                val c = p1 * p2 * p3
+                             ^
+four errors found

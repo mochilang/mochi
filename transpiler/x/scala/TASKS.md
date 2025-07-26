@@ -1,3 +1,311 @@
+## Progress (2025-07-26 09:28 +0700)
+- scala transpiler: handle big int indexing and map updates
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-26 09:28 +0700)
+- scala transpiler: handle big int indexing and map updates
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-26 09:28 +0700)
+- scala transpiler: handle big int indexing and map updates
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-26 09:28 +0700)
+- scala transpiler: handle big int indexing and map updates
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-26 09:28 +0700)
+- scala transpiler: handle big int indexing and map updates
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-26 09:28 +0700)
+- scala transpiler: handle big int indexing and map updates
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-26 09:28 +0700)
+- scala transpiler: handle big int indexing and map updates
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-26 09:28 +0700)
+- scala transpiler: handle big int indexing and map updates
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-26 09:28 +0700)
+- scala transpiler: handle big int indexing and map updates
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-26 09:28 +0700)
+- scala transpiler: handle big int indexing and map updates
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-26 09:28 +0700)
+- scala transpiler: handle big int indexing and map updates
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-26 09:28 +0700)
+- scala transpiler: handle big int indexing and map updates
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-26 09:28 +0700)
+- scala transpiler: handle big int indexing and map updates
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-26 09:28 +0700)
+- scala transpiler: handle big int indexing and map updates
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-26 09:28 +0700)
+- scala transpiler: handle big int indexing and map updates
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-26 09:28 +0700)
+- scala transpiler: handle big int indexing and map updates
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-26 09:28 +0700)
+- scala transpiler: handle big int indexing and map updates
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-26 09:28 +0700)
+- scala transpiler: handle big int indexing and map updates
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-26 09:28 +0700)
+- scala transpiler: handle big int indexing and map updates
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-26 09:28 +0700)
+- scala transpiler: handle big int indexing and map updates
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-26 09:28 +0700)
+- scala transpiler: handle big int indexing and map updates
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-26 09:28 +0700)
+- scala transpiler: handle big int indexing and map updates
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-26 09:28 +0700)
+- scala transpiler: handle big int indexing and map updates
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-26 09:28 +0700)
+- scala transpiler: handle big int indexing and map updates
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-26 09:28 +0700)
+- scala transpiler: handle big int indexing and map updates
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-26 09:28 +0700)
+- scala transpiler: handle big int indexing and map updates
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-26 09:28 +0700)
+- scala transpiler: handle big int indexing and map updates
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-26 09:28 +0700)
+- scala transpiler: handle big int indexing and map updates
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-26 09:28 +0700)
+- scala transpiler: handle big int indexing and map updates
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-26 09:28 +0700)
+- scala transpiler: handle big int indexing and map updates
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-26 09:28 +0700)
+- scala transpiler: handle big int indexing and map updates
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-26 09:28 +0700)
+- scala transpiler: handle big int indexing and map updates
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-26 09:28 +0700)
+- scala transpiler: handle big int indexing and map updates
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-26 09:28 +0700)
+- scala transpiler: handle big int indexing and map updates
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-26 09:28 +0700)
+- scala transpiler: handle big int indexing and map updates
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-26 09:28 +0700)
+- scala transpiler: handle big int indexing and map updates
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-26 09:28 +0700)
+- scala transpiler: handle big int indexing and map updates
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-26 09:28 +0700)
+- scala transpiler: handle big int indexing and map updates
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-26 09:28 +0700)
+- scala transpiler: handle big int indexing and map updates
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-26 09:28 +0700)
+- scala transpiler: handle big int indexing and map updates
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-26 09:28 +0700)
+- scala transpiler: handle big int indexing and map updates
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-26 09:28 +0700)
+- scala transpiler: handle big int indexing and map updates
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-26 09:28 +0700)
+- scala transpiler: handle big int indexing and map updates
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-26 09:28 +0700)
+- scala transpiler: handle big int indexing and map updates
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-26 09:28 +0700)
+- scala transpiler: handle big int indexing and map updates
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-26 09:28 +0700)
+- scala transpiler: handle big int indexing and map updates
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-26 09:28 +0700)
+- scala transpiler: handle big int indexing and map updates
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-26 09:28 +0700)
+- scala transpiler: handle big int indexing and map updates
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-26 09:28 +0700)
+- scala transpiler: handle big int indexing and map updates
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-26 09:28 +0700)
+- scala transpiler: handle big int indexing and map updates
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-26 09:28 +0700)
+- scala transpiler: handle big int indexing and map updates
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-26 09:28 +0700)
+- scala transpiler: handle big int indexing and map updates
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-26 09:28 +0700)
+- scala transpiler: handle big int indexing and map updates
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-26 09:28 +0700)
+- scala transpiler: handle big int indexing and map updates
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-26 09:28 +0700)
+- scala transpiler: handle big int indexing and map updates
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-26 09:28 +0700)
+- scala transpiler: handle big int indexing and map updates
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-26 09:28 +0700)
+- scala transpiler: handle big int indexing and map updates
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-26 09:28 +0700)
+- scala transpiler: handle big int indexing and map updates
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-26 09:28 +0700)
+- scala transpiler: handle big int indexing and map updates
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-26 09:28 +0700)
+- scala transpiler: handle big int indexing and map updates
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-26 09:28 +0700)
+- scala transpiler: handle big int indexing and map updates
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-26 09:28 +0700)
+- scala transpiler: handle big int indexing and map updates
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-26 09:28 +0700)
+- scala transpiler: handle big int indexing and map updates
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-26 09:28 +0700)
+- scala transpiler: handle big int indexing and map updates
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-26 09:28 +0700)
+- scala transpiler: handle big int indexing and map updates
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-26 09:28 +0700)
+- scala transpiler: handle big int indexing and map updates
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-26 09:28 +0700)
+- scala transpiler: handle big int indexing and map updates
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-26 09:28 +0700)
+- scala transpiler: handle big int indexing and map updates
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-26 09:28 +0700)
+- scala transpiler: handle big int indexing and map updates
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-26 09:28 +0700)
+- scala transpiler: handle big int indexing and map updates
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-26 09:28 +0700)
+- scala transpiler: handle big int indexing and map updates
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-26 09:28 +0700)
+- scala transpiler: handle big int indexing and map updates
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-26 09:28 +0700)
+- scala transpiler: handle big int indexing and map updates
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-26 09:28 +0700)
+- scala transpiler: handle big int indexing and map updates
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-26 09:28 +0700)
+- scala transpiler: handle big int indexing and map updates
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-26 09:28 +0700)
+- scala transpiler: handle big int indexing and map updates
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-26 09:28 +0700)
+- scala transpiler: handle big int indexing and map updates
+- Regenerated golden files - 93/104 vm valid programs passing
+
 ## Progress (2025-07-26 05:29 +0700)
 - swift transpiler: handle map index casts
 - Regenerated golden files - 93/104 vm valid programs passing

@@ -1,0 +1,12 @@
+exit status 1
+/workspace/mochi/tests/rosetta/transpiler/Scala/canonicalize-cidr.scala:47: error: type mismatch;
+ found   : scala.math.BigInt
+ required: Int
+        if ((((sep).size > BigInt(0) && (i + (sep).size).asInstanceOf[Int] <= (s).size).asInstanceOf[Boolean] && s.slice(i, (i + (sep).size).toInt) == sep).asInstanceOf[Boolean]) {
+                                                                                                                         ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/canonicalize-cidr.scala:113: error: type mismatch;
+ found   : Double
+ required: scala.math.BigInt
+        n = (n * BigInt(2)).toString.toDouble + (_parseIntStr(bits.slice((i).toInt, (i + BigInt(1)).toInt), BigInt(10))).toString.toDouble
+                                              ^
+two errors found

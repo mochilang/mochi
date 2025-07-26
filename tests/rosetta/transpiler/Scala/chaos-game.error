@@ -1,0 +1,16 @@
+exit status 1
+/workspace/mochi/tests/rosetta/transpiler/Scala/chaos-game.scala:39: error: type mismatch;
+ found   : Double
+ required: scala.math.BigInt
+    val height: BigInt = width.toString.toDouble * 0.86602540378
+                                                 ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/chaos-game.scala:65: error: overloaded method value apply with alternatives:
+  (x: java.math.BigInteger)scala.math.BigInt <and>
+  (x: String)scala.math.BigInt <and>
+  (x: Array[Byte])scala.math.BigInt <and>
+  (l: Long)scala.math.BigInt <and>
+  (i: Int)scala.math.BigInt
+ cannot be applied to (scala.math.BigInt)
+      val idx: BigInt = BigInt(r((BigInt(1)).toInt))
+                        ^
+two errors found

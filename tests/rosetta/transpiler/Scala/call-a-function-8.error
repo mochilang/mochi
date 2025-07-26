@@ -1,0 +1,5 @@
+exit status 1
+/workspace/mochi/tests/rosetta/transpiler/Scala/call-a-function-8.scala:49: error: _ must follow method; cannot follow fn.type
+      mapString("Spaces removed", (fn _).asInstanceOf[(String) => String])
+                                   ^
+one error found

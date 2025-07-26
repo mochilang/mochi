@@ -2,8 +2,8 @@
 
 Generated Scala code for Rosetta tasks in `tests/rosetta/x/Mochi`. Each program has a `.scala` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
 
-## Golden Test Checklist (145/284)
-_Last updated: 2025-07-26 09:24 +0700_
+## Golden Test Checklist (164/284)
+_Last updated: 2025-07-26 09:48 +0700_
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -163,36 +163,36 @@ _Last updated: 2025-07-26 09:24 +0700_
 | 154 | call-a-function-2 | ✓ | 3µs | 8.7 MB |
 | 155 | call-a-function-3 | ✓ | 7µs | 8.7 MB |
 | 156 | call-a-function-4 | ✓ | 1µs | 8.7 MB |
-| 157 | call-a-function-5 | error |  |  |
-| 158 | call-a-function-6 |   |  |  |
-| 159 | call-a-function-7 |   |  |  |
-| 160 | call-a-function-8 |   |  |  |
-| 161 | call-a-function-9 |   |  |  |
-| 162 | call-an-object-method-1 |   |  |  |
-| 163 | call-an-object-method-2 |   |  |  |
-| 164 | call-an-object-method-3 |   |  |  |
-| 165 | call-an-object-method |   |  |  |
-| 166 | camel-case-and-snake-case |   |  |  |
-| 167 | canny-edge-detector |   |  |  |
-| 168 | canonicalize-cidr |   |  |  |
-| 169 | cantor-set |   |  |  |
-| 170 | carmichael-3-strong-pseudoprimes |   |  |  |
-| 171 | cartesian-product-of-two-or-more-lists-1 |   |  |  |
-| 172 | cartesian-product-of-two-or-more-lists-2 |   |  |  |
-| 173 | cartesian-product-of-two-or-more-lists-3 |   |  |  |
-| 174 | cartesian-product-of-two-or-more-lists-4 |   |  |  |
-| 175 | case-sensitivity-of-identifiers |   |  |  |
-| 176 | casting-out-nines |   |  |  |
-| 177 | catalan-numbers-1 |   |  |  |
-| 178 | catalan-numbers-2 |   |  |  |
-| 179 | catalan-numbers-pascals-triangle |   |  |  |
-| 180 | catamorphism |   |  |  |
-| 181 | catmull-clark-subdivision-surface |   |  |  |
-| 182 | chaocipher |   |  |  |
-| 183 | chaos-game |   |  |  |
-| 184 | character-codes-1 |   |  |  |
-| 185 | character-codes-2 |   |  |  |
-| 186 | character-codes-3 |   |  |  |
+| 157 | call-a-function-5 | ✓ | 3µs | 8.7 MB |
+| 158 | call-a-function-6 | ✓ | 9µs | 8.7 MB |
+| 159 | call-a-function-7 | ✓ |  | 8.7 MB |
+| 160 | call-a-function-8 | error |  |  |
+| 161 | call-a-function-9 | ✓ | 3µs | 8.7 MB |
+| 162 | call-an-object-method-1 | ✓ | 1µs | 8.7 MB |
+| 163 | call-an-object-method-2 | ✓ | 2µs | 8.7 MB |
+| 164 | call-an-object-method-3 | ✓ | 1µs | 8.7 MB |
+| 165 | call-an-object-method | ✓ | 1µs | 8.7 MB |
+| 166 | camel-case-and-snake-case | error |  |  |
+| 167 | canny-edge-detector | error |  |  |
+| 168 | canonicalize-cidr | error |  |  |
+| 169 | cantor-set | error |  |  |
+| 170 | carmichael-3-strong-pseudoprimes | error |  |  |
+| 171 | cartesian-product-of-two-or-more-lists-1 | ✓ | 4µs | 8.7 MB |
+| 172 | cartesian-product-of-two-or-more-lists-2 | ✓ | 12µs | 8.7 MB |
+| 173 | cartesian-product-of-two-or-more-lists-3 | ✓ | 11µs | 8.7 MB |
+| 174 | cartesian-product-of-two-or-more-lists-4 | error |  |  |
+| 175 | case-sensitivity-of-identifiers | ✓ | 5µs | 8.7 MB |
+| 176 | casting-out-nines | error |  |  |
+| 177 | catalan-numbers-1 | ✓ | 17µs | 8.7 MB |
+| 178 | catalan-numbers-2 | ✓ | 20µs | 8.7 MB |
+| 179 | catalan-numbers-pascals-triangle | error |  |  |
+| 180 | catamorphism | ✓ | 4µs | 8.7 MB |
+| 181 | catmull-clark-subdivision-surface | error |  |  |
+| 182 | chaocipher | ✓ | 7µs | 8.7 MB |
+| 183 | chaos-game | error |  |  |
+| 184 | character-codes-1 | ✓ | 3µs | 8.7 MB |
+| 185 | character-codes-2 | ✓ | 3µs | 8.7 MB |
+| 186 | character-codes-3 | ✓ | 17µs | 8.7 MB |
 | 187 | character-codes-4 |   |  |  |
 | 188 | character-codes-5 |   |  |  |
 | 189 | chat-server |   |  |  |

@@ -1,0 +1,7 @@
+exit status 1
+/workspace/mochi/tests/rosetta/transpiler/Scala/cantor-set.scala:53: error: type mismatch;
+ found   : scala.math.BigInt
+ required: Int
+      return s.slice((BigInt(0)).toInt, idx) + ch + s.slice((idx + BigInt(1)).toInt, (s).size)
+                                        ^
+one error found
