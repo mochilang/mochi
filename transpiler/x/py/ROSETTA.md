@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Python code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/Python`.
-Last updated: 2025-07-26 19:59 GMT+7
+Last updated: 2025-07-26 21:34 GMT+7
 
-## Rosetta Golden Test Checklist (317/332)
+## Rosetta Golden Test Checklist (318/332)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 161.0µs | 12.50MB |
@@ -338,4 +338,4 @@ Last updated: 2025-07-26 19:59 GMT+7
 | 329 | eban-numbers | ✓ | 38.0ms | 12.89MB |
 | 330 | echo-server | ✓ | 14.0µs | 12.42MB |
 | 331 | ekg-sequence-convergence | ✓ | 11.0ms | 13.64MB |
-| 332 | md5 | error |  |  |
+| 332 | md5 | ✓ | 36.0µs | 13.87MB |
