@@ -34,9 +34,9 @@ fun fib(n: Int): Int {
     var b: Int = 1
     var i: Int = 1
     while (i < n) {
-        val t: BigInteger = a + b
+        val t: Int = a + b
         a = b
-        b = t as Int
+        b = t
         i = i + 1
     }
     return b

@@ -41,7 +41,7 @@ fun main() {
             var i: Int = 0
             while (i < msg.length) {
                 val idx: Int = (shift + i) % msg.length
-                line = line + msg.substring(idx, idx.add(1.toBigInteger()))
+                line = line + msg.substring(idx, idx + 1)
                 i = i + 1
             }
             println(line)
