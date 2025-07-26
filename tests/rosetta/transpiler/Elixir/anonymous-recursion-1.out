@@ -8,7 +8,7 @@ fib 10 = 55
 fib 40 = 102334155
 fib undefined for negative numbers
 {
-  "duration_us": 299,
-  "memory_bytes": 322488,
+  "duration_us": 361,
+  "memory_bytes": 190792,
   "name": "main"
 }

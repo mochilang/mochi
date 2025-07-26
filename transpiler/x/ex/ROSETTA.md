@@ -2,8 +2,8 @@
 
 Generated Elixir code from Mochi Rosetta programs lives in `tests/rosetta/transpiler/Elixir`.
 
-## Rosetta Test Checklist (54/332)
-_Last updated: 2025-07-26 19:01 +0700_
+## Rosetta Test Checklist (56/332)
+_Last updated: 2025-07-26 13:02 +0000_
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | 100-doors-2 | ✓ |  |  |
@@ -57,17 +57,17 @@ _Last updated: 2025-07-26 19:01 +0700_
 | 49 | angle-difference-between-two-bearings-1 | ✓ |  |  |
 | 50 | angle-difference-between-two-bearings-2 | ✓ |  |  |
 | 51 | angles-geometric-normalization-and-conversion | ✓ |  |  |
-| 52 | animate-a-pendulum | ✓ | 3.89ms | 264.6 KB |
-| 53 | animation |  |  |  |
-| 54 | anonymous-recursion-1 | ✓ | 299us | 314.9 KB |
-| 55 | anonymous-recursion-2 | ✓ | 425us | 287.6 KB |
-| 56 | anonymous-recursion | ✓ | 536us | 416.8 KB |
-| 57 | anti-primes |  |  |  |
-| 58 | append-a-record-to-the-end-of-a-text-file | ✓ | 196us | 322.4 KB |
-| 59 | apply-a-callback-to-an-array-1 | ✓ | 306us | 409.9 KB |
-| 60 | apply-a-callback-to-an-array-2 | ✓ | 1.92ms | 340.8 KB |
-| 61 | apply-a-digital-filter-direct-form-ii-transposed- | ✓ | 3.68ms | 464.2 KB |
-| 62 | approximate-equality | ✓ | 1.64ms | 532.4 KB |
+| 52 | animate-a-pendulum | ✓ | 5.08ms | 346.4 KB |
+| 53 | animation | ✓ | 1.87ms | 44.1 KB |
+| 54 | anonymous-recursion-1 | ✓ | 361us | 186.3 KB |
+| 55 | anonymous-recursion-2 | ✓ | 674us | 77.4 KB |
+| 56 | anonymous-recursion | ✓ | 1.64ms | 507.1 KB |
+| 57 | anti-primes | ✓ | 101.76ms | 20.3 KB |
+| 58 | append-a-record-to-the-end-of-a-text-file | ✓ | 131us | 284.7 KB |
+| 59 | apply-a-callback-to-an-array-1 | ✓ | 748us | 171.4 KB |
+| 60 | apply-a-callback-to-an-array-2 | ✓ | 23.67ms | 320.7 KB |
+| 61 | apply-a-digital-filter-direct-form-ii-transposed- | ✓ | 6.80ms | 20.0 KB |
+| 62 | approximate-equality | ✓ | 2.29ms | 415.0 KB |
 | 63 | arbitrary-precision-integers-included- | ✓ | 1.22ms | 350.1 KB |
 | 64 | archimedean-spiral |  |  |  |
 | 65 | arena-storage-pool |  |  |  |

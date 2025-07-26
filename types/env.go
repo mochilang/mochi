@@ -280,45 +280,52 @@ func (e *Env) GetFunc(name string) (*parser.FunStmt, bool) {
 func (e *Env) Copy() *Env {
 	newEnv := &Env{
 		parent:  nil, // flatten parent chain
-		types:   make(map[string]Type, len(e.types)),
-		mut:     make(map[string]bool, len(e.mut)),
-		values:  make(map[string]any, len(e.values)),
-		funcs:   make(map[string]*parser.FunStmt, len(e.funcs)),
-		structs: make(map[string]StructType, len(e.structs)),
-		unions:  make(map[string]UnionType, len(e.unions)),
-		streams: make(map[string]StructType, len(e.streams)),
-		agents:  make(map[string]*parser.AgentDecl, len(e.agents)),
-		models:  make(map[string]ModelSpec, len(e.models)),
+		types:   make(map[string]Type),
+		mut:     make(map[string]bool),
+		values:  make(map[string]any),
+		funcs:   make(map[string]*parser.FunStmt),
+		structs: make(map[string]StructType),
+		unions:  make(map[string]UnionType),
+		streams: make(map[string]StructType),
+		agents:  make(map[string]*parser.AgentDecl),
+		models:  make(map[string]ModelSpec),
 		output:  e.output,
 		input:   e.input,
 	}
-	for k, v := range e.types {
-		newEnv.types[k] = v
+	var merge func(*Env)
+	merge = func(env *Env) {
+		if env.parent != nil {
+			merge(env.parent)
+		}
+		for k, v := range env.types {
+			newEnv.types[k] = v
+		}
+		for k, v := range env.mut {
+			newEnv.mut[k] = v
+		}
+		for k, v := range env.values {
+			newEnv.values[k] = v
+		}
+		for k, v := range env.funcs {
+			newEnv.funcs[k] = v
+		}
+		for k, v := range env.structs {
+			newEnv.structs[k] = v
+		}
+		for k, v := range env.unions {
+			newEnv.unions[k] = v
+		}
+		for k, v := range env.streams {
+			newEnv.streams[k] = v
+		}
+		for k, v := range env.agents {
+			newEnv.agents[k] = v
+		}
+		for k, v := range env.models {
+			newEnv.models[k] = v
+		}
 	}
-	for k, v := range e.mut {
-		newEnv.mut[k] = v
-	}
-	for k, v := range e.values {
-		newEnv.values[k] = v
-	}
-	for k, v := range e.funcs {
-		newEnv.funcs[k] = v
-	}
-	for k, v := range e.structs {
-		newEnv.structs[k] = v
-	}
-	for k, v := range e.unions {
-		newEnv.unions[k] = v
-	}
-	for k, v := range e.streams {
-		newEnv.streams[k] = v
-	}
-	for k, v := range e.agents {
-		newEnv.agents[k] = v
-	}
-	for k, v := range e.models {
-		newEnv.models[k] = v
-	}
+	merge(e)
 	return newEnv
 }
 

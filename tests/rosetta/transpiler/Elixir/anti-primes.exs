@@ -44,29 +44,70 @@ defmodule Main do
       true -> Enum.slice(base, start, len)
     end
   end
-  def writeTwo() do
+  def countDivisors(n) do
     try do
-      throw {:return, ["jsmith:x:1001:1000:Joe Smith,Room 1007,(234)555-8917,(234)555-0077,jsmith@rosettacode.org:/home/jsmith:/bin/bash", "jdoe:x:1002:1000:Jane Doe,Room 1004,(234)555-8914,(234)555-0044,jdoe@rosettacode.org:/home/jsmith:/bin/bash"]}
-    catch
-      {:return, val} -> val
-    end
-  end
-  def appendOneMore(lines) do
-    try do
-      throw {:return, (lines ++ ["xyz:x:1003:1000:X Yz,Room 1003,(234)555-8913,(234)555-0033,xyz@rosettacode.org:/home/xyz:/bin/bash"])}
+      if n < 2 do
+        throw {:return, 1}
+      end
+      count = 2
+      i = 2
+      while_fun = fn while_fun, count, i ->
+        if i <= div(n, 2) do
+          {count} = if rem(n, i) == 0 do
+            count = count + 1
+            {count}
+          else
+            {count}
+          end
+          i = i + 1
+          while_fun.(while_fun, count, i)
+        else
+          {count, i}
+        end
+      end
+      {count, i} = try do
+          while_fun.(while_fun, count, i)
+        catch
+          :break -> {count, i}
+        end
+
+      throw {:return, count}
     catch
       {:return, val} -> val
     end
   end
   def main() do
     try do
-      lines = writeTwo()
-      lines = appendOneMore(lines)
-      if length(lines) >= 3 && Enum.at(lines, 2) == "xyz:x:1003:1000:X Yz,Room 1003,(234)555-8913,(234)555-0033,xyz@rosettacode.org:/home/xyz:/bin/bash" do
-        IO.puts("append okay")
-      else
-        IO.puts("it didn't work")
+      IO.puts("The first 20 anti-primes are:")
+      maxDiv = 0
+      count = 0
+      n = 1
+      line = ""
+      while_fun_2 = fn while_fun_2, count, line, maxDiv, n ->
+        if count < 20 do
+          d = countDivisors(n)
+          {count, line, maxDiv} = if d > maxDiv do
+            line = ((line <> to_string(n)) <> " ")
+            maxDiv = d
+            count = count + 1
+            {count, line, maxDiv}
+          else
+            {count, line, maxDiv}
+          end
+          n = n + 1
+          while_fun_2.(while_fun_2, count, line, maxDiv, n)
+        else
+          {count, line, maxDiv, n}
+        end
       end
+      {count, line, maxDiv, n} = try do
+          while_fun_2.(while_fun_2, count, line, maxDiv, n)
+        catch
+          :break -> {count, line, maxDiv, n}
+        end
+
+      line = String.slice(line, 0, String.length(line) - 1 - (0))
+      IO.puts(line)
     catch
       {:return, val} -> val
     end

@@ -19,7 +19,7 @@
 0.38544587388103213
 0.6517708392695865
 {
-  "duration_us": 3683,
-  "memory_bytes": 475336,
+  "duration_us": 6800,
+  "memory_bytes": 20432,
   "name": "main"
 }
