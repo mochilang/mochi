@@ -2,7 +2,7 @@
 
 Generated Pascal code for Rosetta tasks lives under `tests/rosetta/transpiler/Pascal`.
 
-## Rosetta Checklist (21/332) - updated 2025-07-26 12:36 UTC
+## Rosetta Checklist (22/332) - updated 2025-07-26 12:56 UTC
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 571.223ms | 128 B |
@@ -30,7 +30,7 @@ Generated Pascal code for Rosetta tasks lives under `tests/rosetta/transpiler/Pa
 | 23 | abelian-sandpile-model | ✓ | 2µs | 2.7 KB |
 | 24 | abstract-type |   |  |  |
 | 25 | abundant-deficient-and-perfect-number-classifications | ✓ | 1.135ms |  |
-| 26 | abundant-odd-numbers |   |  |  |
+| 26 | abundant-odd-numbers | ✓ | 835µs | 384 B |
 | 27 | accumulator-factory |   |  |  |
 | 28 | achilles-numbers |   |  |  |
 | 29 | ackermann-function-2 |   |  |  |
