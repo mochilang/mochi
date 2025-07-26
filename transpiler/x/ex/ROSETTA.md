@@ -2,8 +2,8 @@
 
 Generated Elixir code from Mochi Rosetta programs lives in `tests/rosetta/transpiler/Elixir`.
 
-## Rosetta Test Checklist (54/332)
-_Last updated: 2025-07-26 19:01 +0700_
+## Rosetta Test Checklist (65/332)
+_Last updated: 2025-07-26 19:45 +0700_
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | 100-doors-2 | ✓ |  |  |
@@ -69,20 +69,20 @@ _Last updated: 2025-07-26 19:01 +0700_
 | 61 | apply-a-digital-filter-direct-form-ii-transposed- | ✓ | 3.68ms | 464.2 KB |
 | 62 | approximate-equality | ✓ | 1.64ms | 532.4 KB |
 | 63 | arbitrary-precision-integers-included- | ✓ | 1.22ms | 350.1 KB |
-| 64 | archimedean-spiral |  |  |  |
-| 65 | arena-storage-pool |  |  |  |
-| 66 | arithmetic-complex |  |  |  |
-| 67 | arithmetic-derivative |  |  |  |
+| 64 | archimedean-spiral | ✓ | 18.57ms | 39.6 KB |
+| 65 | arena-storage-pool | ✓ | 1.26ms | 665.4 KB |
+| 66 | arithmetic-complex | ✓ | 7.35ms | 2.1 MB |
+| 67 | arithmetic-derivative | ✓ | 2.68ms | 2.6 MB |
 | 68 | arithmetic-evaluation |  |  |  |
-| 69 | arithmetic-geometric-mean-calculate-pi |  |  |  |
-| 70 | arithmetic-geometric-mean |  |  |  |
-| 71 | arithmetic-integer-1 |  |  |  |
-| 72 | arithmetic-integer-2 |  |  |  |
+| 69 | arithmetic-geometric-mean-calculate-pi | ✓ | 1.98ms | 454.1 KB |
+| 70 | arithmetic-geometric-mean | ✓ | 1.87ms | 289.4 KB |
+| 71 | arithmetic-integer-1 | ✓ | 184us | 139.5 KB |
+| 72 | arithmetic-integer-2 | ✓ | 513us | 323.5 KB |
 | 73 | arithmetic-numbers |  |  |  |
 | 74 | arithmetic-rational |  |  |  |
-| 75 | array-concatenation |  |  |  |
-| 76 | array-length |  |  |  |
-| 77 | arrays |  |  |  |
+| 75 | array-concatenation | ✓ | 3.18ms | 310.4 KB |
+| 76 | array-length | ✓ | 2.34ms | 315.2 KB |
+| 77 | arrays | ✓ | 5.94ms | 528.0 KB |
 | 78 | ascending-primes |  |  |  |
 | 79 | ascii-art-diagram-converter |  |  |  |
 | 80 | assertions |  |  |  |

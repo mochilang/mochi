@@ -1,0 +1,20 @@
+len(a) = 5
+a = []
+a = []
+a[0] = 3
+s = []
+len(s) = 4  cap(s) = 5
+s = []
+a = []
+s = []
+s = []
+len(s) = 8  cap(s) = 10
+a = []
+s = []
+s = []
+len(s) = 8  cap(s) = 8
+{
+  "duration_us": 5942,
+  "memory_bytes": 540704,
+  "name": "main"
+}
