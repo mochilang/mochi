@@ -65,6 +65,7 @@ var (
 	usesSubstring bool
 	usesSHA256    bool
 	benchMain     bool
+	currentReturn string
 )
 
 // SetBenchMain configures whether the generated main function is wrapped in a
@@ -1397,37 +1398,46 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		return
 	}
 	if b.Op == "%" {
+		lt := inferType(b.Left)
+		rt := inferType(b.Right)
+		left := b.Left
+		right := b.Right
+		if rt == "int64" && lt == "int" {
+			left = &CastExpr{Expr: left, Type: "int64"}
+		} else if lt == "int64" && rt == "int" {
+			right = &CastExpr{Expr: right, Type: "int64"}
+		}
 		io.WriteString(w, "((")
-		if needsParen(b.Left) {
+		if needsParen(left) {
 			io.WriteString(w, "(")
-			b.Left.emit(w)
+			left.emit(w)
 			io.WriteString(w, ")")
 		} else {
-			b.Left.emit(w)
+			left.emit(w)
 		}
 		io.WriteString(w, " % ")
-		if needsParen(b.Right) {
+		if needsParen(right) {
 			io.WriteString(w, "(")
-			b.Right.emit(w)
+			right.emit(w)
 			io.WriteString(w, ")")
 		} else {
-			b.Right.emit(w)
+			right.emit(w)
 		}
 		io.WriteString(w, " + ")
-		if needsParen(b.Right) {
+		if needsParen(right) {
 			io.WriteString(w, "(")
-			b.Right.emit(w)
+			right.emit(w)
 			io.WriteString(w, ")")
 		} else {
-			b.Right.emit(w)
+			right.emit(w)
 		}
 		io.WriteString(w, ") % ")
-		if needsParen(b.Right) {
+		if needsParen(right) {
 			io.WriteString(w, "(")
-			b.Right.emit(w)
+			right.emit(w)
 			io.WriteString(w, ")")
 		} else {
-			b.Right.emit(w)
+			right.emit(w)
 		}
 		io.WriteString(w, ")")
 		return
@@ -1746,6 +1756,9 @@ func inferType(e Expr) string {
 			}
 			if (lt == "bigint" && rt == "int") || (lt == "int" && rt == "bigint") || (lt == "bigint" && rt == "bigint") {
 				return "bigint"
+			}
+			if (lt == "int" && rt == "int64") || (lt == "int64" && rt == "int") {
+				return "int64"
 			}
 			if v.Op == "+" && (lt == "string" || rt == "string") {
 				return "string"
@@ -2117,11 +2130,20 @@ func (c *CastExpr) emit(w io.Writer) {
 			c.Expr.emit(w)
 		}
 	case "int":
-		if t := inferType(c.Expr); t == "obj" || t == "" {
+		if t := inferType(c.Expr); t == "obj" {
 			io.WriteString(w, "unbox<int> ")
 		} else {
 			io.WriteString(w, "int ")
 		}
+		if needsParen(c.Expr) {
+			io.WriteString(w, "(")
+			c.Expr.emit(w)
+			io.WriteString(w, ")")
+		} else {
+			c.Expr.emit(w)
+		}
+	case "int64":
+		io.WriteString(w, "int64 ")
 		if needsParen(c.Expr) {
 			io.WriteString(w, "(")
 			c.Expr.emit(w)
@@ -2269,6 +2291,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	usesReturn = false
 	usesSubstring = false
 	usesSHA256 = false
+	currentReturn = ""
 	p := &Program{}
 	for _, st := range prog.Statements {
 		conv, err := convertStmt(st)
@@ -2596,6 +2619,12 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 			if err != nil {
 				return nil, err
 			}
+			if currentReturn != "" {
+				t := inferType(e)
+				if t != currentReturn {
+					e = &CastExpr{Expr: e, Type: fsTypeFromString(currentReturn)}
+				}
+			}
 		}
 		usesReturn = true
 		return &ReturnStmt{Expr: e}, nil
@@ -2617,15 +2646,6 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 					varTypes[p.Name] = fsType(t)
 				}
 			}
-		}
-		body := make([]Stmt, len(st.Fun.Body))
-		for i, s := range st.Fun.Body {
-			cs, err := convertStmt(s)
-			if err != nil {
-				varTypes = save
-				return nil, err
-			}
-			body[i] = cs
 		}
 		params := make([]string, len(st.Fun.Params))
 		paramTypes := make([]string, len(st.Fun.Params))
@@ -2650,6 +2670,19 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 				}
 			}
 		}
+		prevReturn := currentReturn
+		currentReturn = retType
+		body := make([]Stmt, len(st.Fun.Body))
+		for i, s := range st.Fun.Body {
+			cs, err := convertStmt(s)
+			if err != nil {
+				varTypes = save
+				currentReturn = prevReturn
+				return nil, err
+			}
+			body[i] = cs
+		}
+		currentReturn = prevReturn
 		varTypes = save
 		if benchMain && st.Fun.Name == "main" {
 			usesNow = true
