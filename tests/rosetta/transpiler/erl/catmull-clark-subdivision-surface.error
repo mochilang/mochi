@@ -1,0 +1,9 @@
+exit status 127
+escript: exception error: an error occurred when evaluating an arithmetic expression
+  in operator  +/2
+     called as "0,1" + 1
+  in call from main:'-cmcsubdiv/2-Fun_29_loop/15-2-'/15 (/workspace/mochi/tests/rosetta/transpiler/erl/catmull-clark-subdivision-surface.erl, line 579)
+  in call from main:cmcsubdiv/2 (/workspace/mochi/tests/rosetta/transpiler/erl/catmull-clark-subdivision-surface.erl, line 613)
+  in call from main:'-main/0-Fun_31_loop/5-0-'/5 (/workspace/mochi/tests/rosetta/transpiler/erl/catmull-clark-subdivision-surface.erl, line 654)
+  in call from main:main/0 (/workspace/mochi/tests/rosetta/transpiler/erl/catmull-clark-subdivision-surface.erl, line 662)
+  in call from main:main/1 (/workspace/mochi/tests/rosetta/transpiler/erl/catmull-clark-subdivision-surface.erl, line 688)

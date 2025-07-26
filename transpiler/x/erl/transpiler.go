@@ -304,7 +304,9 @@ func (c *context) newAlias(name string) string {
 	}
 	c.counter[name]++
 	alias := sanitize(name)
-	if c.counter[name] > 1 {
+	if _, exists := c.orig[alias]; exists {
+		alias = fmt.Sprintf("%s_%d", alias, c.counter[name])
+	} else if c.counter[name] > 1 {
 		alias = fmt.Sprintf("%s_%d", alias, c.counter[name])
 	}
 	c.alias[name] = alias
@@ -1369,13 +1371,10 @@ func isMapExpr(e Expr, env *types.Env, ctx *context) bool {
 					return false
 				}
 			}
-			// when type information is unavailable, assume map
-			return true
+			// if type information is unavailable, default to list
+			return false
 		}
 	case *CallExpr:
-		if v.Func == "maps:get" {
-			return true
-		}
 		if v.Func == "erlang:get" && len(v.Args) == 1 {
 			if a, ok := v.Args[0].(*AtomLit); ok {
 				name := strings.Trim(a.Name, "'")
@@ -1391,8 +1390,15 @@ func isMapExpr(e Expr, env *types.Env, ctx *context) bool {
 				}
 			}
 		}
+		if ctx != nil {
+			name := ctx.original(v.Func)
+			if ctx.isMapVar(name) {
+				return true
+			}
+		}
 		if env != nil {
-			if fn, ok := env.GetFunc(v.Func); ok && fn.Return != nil {
+			name := strings.ToLower(v.Func)
+			if fn, ok := env.GetFunc(name); ok && fn.Return != nil {
 				if fn.Return.Generic != nil && fn.Return.Generic.Name == "map" {
 					return true
 				}
@@ -2454,7 +2460,7 @@ func (b *BreakStmt) emit(w io.Writer) {
 }
 func (c *ContinueStmt) emit(w io.Writer) {
 	if len(c.Args) == 0 {
-		io.WriteString(w, "throw(continue)")
+		io.WriteString(w, "throw({continue})")
 		return
 	}
 	io.WriteString(w, "throw({continue")
@@ -2468,12 +2474,12 @@ func (c *ContinueStmt) emit(w io.Writer) {
 func (cs *CallStmt) emit(w io.Writer) { cs.Call.emit(w) }
 
 func (b *BenchStmt) emit(w io.Writer) {
-	io.WriteString(w, "Start = mochi_now(),\n    StartMem = erlang:memory(total)")
+	io.WriteString(w, "BenchStart = mochi_now(),\n    BenchStartMem = erlang:memory(total)")
 	for _, st := range b.Body {
 		io.WriteString(w, ",\n    ")
 		st.emit(w)
 	}
-	fmt.Fprintf(w, ",\n    End = mochi_now(),\n    EndMem = erlang:memory(total),\n    DurationUs = (End - Start) div 1000,\n    MemBytes = erlang:abs(EndMem - StartMem),\n    io:format(\"{~n  \\\"duration_us\\\": ~p,~n  \\\"memory_bytes\\\": ~p,~n  \\\"name\\\": \\\"%s\\\"~n}\n\", [DurationUs, MemBytes])", b.Name)
+	fmt.Fprintf(w, ",\n    BenchEnd = mochi_now(),\n    BenchEndMem = erlang:memory(total),\n    DurationUs = (BenchEnd - BenchStart) div 1000,\n    MemBytes = erlang:abs(BenchEndMem - BenchStartMem),\n    io:format(\"{~n  \\\"duration_us\\\": ~p,~n  \\\"memory_bytes\\\": ~p,~n  \\\"name\\\": \\\"%s\\\"~n}\n\", [DurationUs, MemBytes])", b.Name)
 }
 
 func isNameRef(e Expr, name string) bool {
@@ -3806,29 +3812,10 @@ func convertFunStmt(fn *parser.FunStmt, env *types.Env, ctx *context) (*FuncDecl
 
 func convertFunStmtAsExpr(fn *parser.FunStmt, env *types.Env, ctx *context) (Expr, error) {
 	child := types.NewEnv(env)
-	// Similar to convertFunStmt, start with a clean context carrying only
-	// global information. This avoids leaking aliases from previous scopes
-	// into anonymous functions.
-	fctx := newContext(ctx.baseDir)
-	fctx.counter = ctx.counter
-	if len(ctx.constVal) > 0 {
-		fctx.constVal = make(map[string]Expr, len(ctx.constVal))
-		for k, v := range ctx.constVal {
-			fctx.constVal[k] = v
-		}
-	}
-	if len(ctx.autoMod) > 0 {
-		fctx.autoMod = make(map[string]string, len(ctx.autoMod))
-		for k, v := range ctx.autoMod {
-			fctx.autoMod[k] = v
-		}
-	}
-	if len(ctx.globals) > 0 {
-		fctx.globals = make(map[string]bool, len(ctx.globals))
-		for k, v := range ctx.globals {
-			fctx.globals[k] = v
-		}
-	}
+	// Clone the current context so that aliases for surrounding variables are
+	// preserved inside the anonymous function. This allows nested functions to
+	// reference and mutate variables from the outer scope correctly.
+	fctx := ctx.clone()
 	if a, ok := ctx.alias[fn.Name]; ok {
 		fctx.alias[fn.Name] = a
 	}
@@ -3879,6 +3866,9 @@ func convertFunStmtAsExpr(fn *parser.FunStmt, env *types.Env, ctx *context) (Exp
 	}
 	if ret == nil {
 		ret = &AtomLit{Name: "nil"}
+	}
+	if fn.Return != nil && fn.Return.Generic != nil && fn.Return.Generic.Name == "map" {
+		ctx.setMapVar(fn.Name, true)
 	}
 	return &AnonFunc{Name: ctx.current(fn.Name), Params: params, Body: stmts, Return: ret}, nil
 }
