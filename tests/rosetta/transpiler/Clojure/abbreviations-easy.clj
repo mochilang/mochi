@@ -25,6 +25,17 @@
   (do (def table (str (str (str (str (str (str "Add ALTer  BAckup Bottom  CAppend Change SCHANGE  CInsert CLAst COMPress Copy " "COUnt COVerlay CURsor DELete CDelete Down DUPlicate Xedit EXPand EXTract Find ") "NFind NFINDUp NFUp CFind FINdup FUp FOrward GET Help HEXType Input POWerinput ") " Join SPlit SPLTJOIN  LOAD  Locate CLocate  LOWercase UPPercase  LPrefix MACRO ") "MErge MODify MOve MSG Next Overlay PARSE PREServe PURge PUT PUTD  Query  QUIT ") "READ  RECover REFRESH RENum REPeat  Replace CReplace  RESet  RESTore  RGTLEFT ") "RIght LEft  SAVE  SET SHift SI  SORT  SOS  STAck STATus  TOP TRAnsfer TypeUp ")) (def commands (fields table)) (def mins []) (def i 0) (while (< i (count commands)) (do (def count_v 0) (def j 0) (def cmd (nth commands i)) (while (< j (count cmd)) (do (def ch (subs cmd j (+ j 1))) (when (and (>= (compare ch "A") 0) (<= (compare ch "Z") 0)) (def count_v (+ count_v 1))) (def j (+ j 1)))) (def mins (conj mins count_v)) (def i (+ i 1)))) (def sentence "riG   rePEAT copies  put mo   rest    types   fup.    6       poweRin") (def words (fields sentence)) (def results (validate commands words mins)) (def out1 "user words:  ") (def k 0) (while (< k (count words)) (do (def out1 (str (str out1 (padRight (nth words k) (count (nth results k)))) " ")) (def k (+ k 1)))) (println out1) (println (str "full words:  " (join results " ")))))
 
 (defn -main []
-  (main))
+  (let [rt (Runtime/getRuntime)
+    start-mem (- (.totalMemory rt) (.freeMemory rt))
+    start (System/nanoTime)]
+      (main)
+      (System/gc)
+      (let [end (System/nanoTime)
+        end-mem (- (.totalMemory rt) (.freeMemory rt))
+        duration-us (quot (- end start) 1000)
+        memory-bytes (Math/abs ^long (- end-mem start-mem))]
+        (println (str "{\n  \"duration_us\": " duration-us ",\n  \"memory_bytes\": " memory-bytes ",\n  \"name\": \"main\"\n}"))
+      )
+    ))
 
 (-main)
