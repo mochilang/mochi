@@ -2156,11 +2156,15 @@ func (i *IfStmt) emit(w io.Writer) {
 	io.WriteString(w, "case ")
 	i.Cond.emit(w)
 	io.WriteString(w, " of\n        true -> ")
-	for idx, st := range i.Then {
-		if idx > 0 {
-			io.WriteString(w, ",\n            ")
+	if len(i.Then) == 0 {
+		io.WriteString(w, "ok")
+	} else {
+		for idx, st := range i.Then {
+			if idx > 0 {
+				io.WriteString(w, ",\n            ")
+			}
+			st.emit(w)
 		}
-		st.emit(w)
 	}
 	if len(i.Else) > 0 {
 		io.WriteString(w, ";\n        _ -> ")
@@ -3374,6 +3378,9 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context, top bool) (
 			}
 			return []Stmt{&CallStmt{Call: c}}, nil
 		}
+		if _, ok := e.(*AtomLit); ok {
+			return nil, nil
+		}
 		return nil, fmt.Errorf("unsupported expression")
 	case st.Break != nil:
 		if len(loopStack) == 0 {
@@ -4178,6 +4185,10 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env, ctx *context) (Expr,
 		usePadStart = true
 		return &CallExpr{Func: "mochi_pad_start", Args: args}, nil
 	}
+	if pf.Target != nil && pf.Target.Selector != nil && len(pf.Target.Selector.Tail) == 1 && len(pf.Ops) == 1 && pf.Ops[0].Call != nil {
+		// method calls are currently no-ops in the Erlang transpiler
+		return &AtomLit{Name: "nil"}, nil
+	}
 	expr, err := convertPrimary(pf.Target, env, ctx)
 	if err != nil {
 		return nil, err
@@ -4366,6 +4377,18 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env, ctx *context) (Expr,
 			}
 			usePadStart = true
 			expr = &CallExpr{Func: "mochi_pad_start", Args: args}
+			i++
+		case op.Field != nil && i+1 < len(pf.Ops) && pf.Ops[i+1].Call != nil:
+			call := pf.Ops[i+1].Call
+			args := []Expr{expr}
+			for _, a := range call.Args {
+				ae, err := convertExpr(a, env, ctx)
+				if err != nil {
+					return nil, err
+				}
+				args = append(args, ae)
+			}
+			expr = &CallExpr{Func: op.Field.Name, Args: args}
 			i++
 		case op.Field != nil:
 			field := op.Field.Name

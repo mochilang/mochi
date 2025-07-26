@@ -1,0 +1,10 @@
+exit status 127
+/workspace/mochi/tests/rosetta/transpiler/erl/call-an-object-method-2.erl:33:17: variable 'Sn_2' is unbound
+%   33|         Sn_3 = (Sn_2 + 1),
+%     |                 ^
+
+/workspace/mochi/tests/rosetta/transpiler/erl/call-an-object-method-2.erl:50:9: variable 'Sn_4' is unbound
+%   50|         Sn_4
+%     |         ^
+
+escript: There were compilation errors.
