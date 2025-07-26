@@ -200,8 +200,8 @@ func header() []byte {
 	loc, _ := time.LoadLocation("Asia/Bangkok")
 	prelude := ""
 	if needBase {
-               prelude += "(import (only (scheme base) call/cc when list-ref list-set!))\n"
-               prelude += "(import (rename (scheme base) (list _list)))\n"
+		prelude += "(import (only (scheme base) call/cc when list-ref list-set!))\n"
+		prelude += "(import (rename (scheme base) (list _list)))\n"
 		prelude += "(import (scheme time))\n"
 	}
 	// Always import string helpers for functions like string-contains
@@ -266,6 +266,10 @@ func header() []byte {
 	prelude += "\n(define (upper s) (string-upcase s))"
 	prelude += "\n(define (lower s) (string-downcase s))"
 	prelude += "\n(define (fmod a b) (- a (* (floor (/ a b)) b)))"
+	prelude += "\n(define (_gt a b) (cond ((and (number? a) (number? b)) (> a b)) ((and (string? a) (string? b)) (string>? a b)) (else (> a b))))"
+	prelude += "\n(define (_lt a b) (cond ((and (number? a) (number? b)) (< a b)) ((and (string? a) (string? b)) (string<? a b)) (else (< a b))))"
+	prelude += "\n(define (_ge a b) (cond ((and (number? a) (number? b)) (>= a b)) ((and (string? a) (string? b)) (string>=? a b)) (else (>= a b))))"
+	prelude += "\n(define (_le a b) (cond ((and (number? a) (number? b)) (<= a b)) ((and (string? a) (string? b)) (string<=? a b)) (else (<= a b))))"
 	if usesInput {
 		prelude += "\n(define (_input)\n  (let ((l (read-line)))\n    (if (eof-object? l) \"\" l)))"
 	}
@@ -997,7 +1001,31 @@ func convertParserPostfix(pf *parser.PostfixExpr) (Node, error) {
 		}
 	}
 	// handle selector like `x.contains()` parsed as part of target
-	if pf.Target.Selector != nil && len(pf.Target.Selector.Tail) == 1 && pf.Target.Selector.Tail[0] == "contains" && len(pf.Ops) > 0 && pf.Ops[0].Call != nil {
+	if pf.Target.Selector != nil && len(pf.Target.Selector.Tail) == 1 && pf.Target.Selector.Tail[0] == "get" && len(pf.Ops) > 0 && pf.Ops[0].Call != nil {
+		rootPrim := &parser.Primary{Selector: &parser.SelectorExpr{Root: pf.Target.Selector.Root}}
+		node, err = convertParserPrimary(rootPrim)
+		if err != nil {
+			return nil, err
+		}
+		call := pf.Ops[0].Call
+		if len(call.Args) != 1 && len(call.Args) != 2 {
+			return nil, fmt.Errorf("get expects 1 or 2 args")
+		}
+		keyArg, err := convertParserExpr(call.Args[0])
+		if err != nil {
+			return nil, err
+		}
+		var defArg Node = voidSym()
+		if len(call.Args) == 2 {
+			defArg, err = convertParserExpr(call.Args[1])
+			if err != nil {
+				return nil, err
+			}
+		}
+		needHash = true
+		node = &List{Elems: []Node{Symbol("hash-table-ref/default"), node, keyArg, defArg}}
+		pf = &parser.PostfixExpr{Target: rootPrim, Ops: pf.Ops[1:]}
+	} else if pf.Target.Selector != nil && len(pf.Target.Selector.Tail) == 1 && pf.Target.Selector.Tail[0] == "contains" && len(pf.Ops) > 0 && pf.Ops[0].Call != nil {
 		rootPrim := &parser.Primary{Selector: &parser.SelectorExpr{Root: pf.Target.Selector.Root}}
 		node, err = convertParserPrimary(rootPrim)
 		if err != nil {
@@ -1067,7 +1095,7 @@ func convertParserPostfix(pf *parser.PostfixExpr) (Node, error) {
 					cond,
 				}}
 			} else if t.Simple != nil && *t.Simple == "string" {
-				node = &List{Elems: []Node{Symbol("number->string"), node}}
+				node = &List{Elems: []Node{Symbol("to-str"), node}}
 			} // ignore other casts
 		case op.Field != nil && op.Field.Name == "contains" && i+1 < len(pf.Ops) && pf.Ops[i+1].Call != nil:
 			call := pf.Ops[i+1].Call
@@ -1096,6 +1124,25 @@ func convertParserPostfix(pf *parser.PostfixExpr) (Node, error) {
 			}
 			needHash = true
 			node = &List{Elems: []Node{Symbol("hash-table-keys"), node}}
+			i++
+		case op.Field != nil && op.Field.Name == "get" && i+1 < len(pf.Ops) && pf.Ops[i+1].Call != nil:
+			call := pf.Ops[i+1].Call
+			if len(call.Args) != 1 && len(call.Args) != 2 {
+				return nil, fmt.Errorf("get expects 1 or 2 args")
+			}
+			keyArg, err := convertParserExpr(call.Args[0])
+			if err != nil {
+				return nil, err
+			}
+			var defArg Node = voidSym()
+			if len(call.Args) == 2 {
+				defArg, err = convertParserExpr(call.Args[1])
+				if err != nil {
+					return nil, err
+				}
+			}
+			needHash = true
+			node = &List{Elems: []Node{Symbol("hash-table-ref/default"), node, keyArg, defArg}}
 			i++
 		default:
 			return nil, fmt.Errorf("unsupported postfix")
@@ -2102,6 +2149,22 @@ func makeBinaryTyped(op string, left, right Node, lt, rt types.Type) Node {
 			return &List{Elems: []Node{Symbol("eq?"), left, right}}
 		case "!=":
 			return &List{Elems: []Node{Symbol("not"), &List{Elems: []Node{Symbol("eq?"), left, right}}}}
+		}
+	}
+	isAnyType := func(t types.Type) bool {
+		_, ok := t.(types.AnyType)
+		return ok
+	}
+	if isAnyType(lt) || isAnyType(rt) {
+		switch op {
+		case "<":
+			return &List{Elems: []Node{Symbol("_lt"), left, right}}
+		case "<=":
+			return &List{Elems: []Node{Symbol("_le"), left, right}}
+		case ">":
+			return &List{Elems: []Node{Symbol("_gt"), left, right}}
+		case ">=":
+			return &List{Elems: []Node{Symbol("_ge"), left, right}}
 		}
 	}
 	return makeBinary(op, left, right)
