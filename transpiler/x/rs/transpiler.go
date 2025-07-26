@@ -871,11 +871,20 @@ func (a *AppendExpr) emit(w io.Writer) {
 	io.WriteString(w, ".clone(); v.push(")
 	lt := inferType(a.List)
 	if lt == "Vec<String>" {
-		io.WriteString(w, "String::from(")
 		a.Elem.emit(w)
-		io.WriteString(w, ")")
+		io.WriteString(w, ".to_string()")
 	} else {
-		a.Elem.emit(w)
+		if _, ok := a.Elem.(*NameRef); ok {
+			et := inferType(a.Elem)
+			if et != "i64" && et != "bool" && et != "f64" && !strings.HasPrefix(et, "&") {
+				a.Elem.emit(w)
+				io.WriteString(w, ".clone()")
+			} else {
+				a.Elem.emit(w)
+			}
+		} else {
+			a.Elem.emit(w)
+		}
 	}
 	io.WriteString(w, "); v }")
 }
@@ -1204,7 +1213,17 @@ func (a *AssignStmt) emit(w io.Writer) {
 	} else {
 		io.WriteString(w, name)
 		io.WriteString(w, " = ")
-		a.Expr.emit(w)
+		if _, ok := a.Expr.(*NameRef); ok {
+			typ := inferType(a.Expr)
+			if typ != "i64" && typ != "bool" && typ != "f64" && !strings.HasPrefix(typ, "&") {
+				a.Expr.emit(w)
+				io.WriteString(w, ".clone()")
+			} else {
+				a.Expr.emit(w)
+			}
+		} else {
+			a.Expr.emit(w)
+		}
 	}
 }
 
@@ -1333,7 +1352,7 @@ func (b *BinaryExpr) emit(w io.Writer) {
 			io.WriteString(w, b.Op)
 			io.WriteString(w, " ")
 			b.Right.emit(w)
-			io.WriteString(w, ")")
+			io.WriteString(w, ".as_str())")
 			return
 		}
 		if (lt == "f64" || containsFloat(b.Left)) && rt == "i64" {
@@ -1866,11 +1885,12 @@ type IfStmt struct {
 
 // ForStmt represents `for x in iter {}` or a range loop.
 type ForStmt struct {
-	Var   string
-	Iter  Expr
-	End   Expr // nil unless range loop
-	Body  []Stmt
-	ByRef bool
+	Var      string
+	Iter     Expr
+	End      Expr // nil unless range loop
+	Body     []Stmt
+	ByRef    bool
+	IterType string
 }
 
 func (i *IfStmt) emit(w io.Writer) {}
@@ -2460,8 +2480,9 @@ func compileForStmt(n *parser.ForStmt) (Stmt, error) {
 		return nil, err
 	}
 	byRef := false
-	if t := inferType(iter); strings.HasPrefix(t, "Vec<") {
-		elem := strings.TrimSuffix(strings.TrimPrefix(t, "Vec<"), ">")
+	itType := inferType(iter)
+	if strings.HasPrefix(itType, "Vec<") {
+		elem := strings.TrimSuffix(strings.TrimPrefix(itType, "Vec<"), ">")
 		if elem == "String" {
 			byRef = false
 		} else if strings.HasPrefix(elem, "Vec<") || strings.HasPrefix(elem, "HashMap<") {
@@ -2469,8 +2490,8 @@ func compileForStmt(n *parser.ForStmt) (Stmt, error) {
 		} else if _, ok := structTypes[elem]; ok {
 			byRef = true
 		}
-	} else if strings.HasPrefix(t, "HashMap<") {
-		parts := strings.TrimPrefix(t, "HashMap<")
+	} else if strings.HasPrefix(itType, "HashMap<") {
+		parts := strings.TrimPrefix(itType, "HashMap<")
 		if idx := strings.Index(parts, ","); idx > 0 {
 			kt := strings.TrimSpace(parts[:idx])
 			iter = &MethodCallExpr{Receiver: iter, Name: "keys"}
@@ -2504,9 +2525,8 @@ func compileForStmt(n *parser.ForStmt) (Stmt, error) {
 		}
 	}
 	if _, ok := varTypes[n.Name]; !ok {
-		t := inferType(iter)
-		if strings.HasPrefix(t, "Vec<") {
-			typ := strings.TrimSuffix(strings.TrimPrefix(t, "Vec<"), ">")
+		if strings.HasPrefix(itType, "Vec<") {
+			typ := strings.TrimSuffix(strings.TrimPrefix(itType, "Vec<"), ">")
 			if typ == "String" {
 				varTypes[n.Name] = "String"
 				stringVars[n.Name] = true
@@ -2520,7 +2540,7 @@ func compileForStmt(n *parser.ForStmt) (Stmt, error) {
 			varTypes[n.Name] = "i64"
 		}
 	}
-	return &ForStmt{Var: n.Name, Iter: iter, End: end, Body: body, ByRef: byRef}, nil
+	return &ForStmt{Var: n.Name, Iter: iter, End: end, Body: body, ByRef: byRef, IterType: itType}, nil
 }
 
 func compileBenchBlock(b *parser.BenchBlock) (Stmt, error) {
@@ -2641,7 +2661,7 @@ func compileUpdateStmt(u *parser.UpdateStmt) (Stmt, error) {
 	} else {
 		body = append(body, updates...)
 	}
-	loop := &ForStmt{Var: idxVar, Iter: start, End: end, Body: body}
+	loop := &ForStmt{Var: idxVar, Iter: start, End: end, Body: body, IterType: "i64"}
 	decl := &VarDecl{Name: u.Target, Expr: &NameRef{Name: u.Target, Type: varTypes[u.Target]}, Mutable: true}
 	return &MultiStmt{Stmts: []Stmt{decl, loop}}, nil
 }
@@ -4618,8 +4638,15 @@ func writeForStmt(buf *bytes.Buffer, s *ForStmt, indent int) {
 	} else {
 		if s.ByRef {
 			buf.WriteString("&")
+			s.Iter.emit(buf)
+		} else {
+			if _, ok := s.Iter.(*NameRef); ok && strings.HasPrefix(s.IterType, "Vec<") {
+				s.Iter.emit(buf)
+				buf.WriteString(".clone()")
+			} else {
+				s.Iter.emit(buf)
+			}
 		}
-		s.Iter.emit(buf)
 	}
 	buf.WriteString(" {\n")
 	for _, st := range s.Body {
