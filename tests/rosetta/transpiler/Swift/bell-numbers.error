@@ -1,0 +1,88 @@
+exit status 1
+/tmp/TestSwiftTranspiler_Rosetta_Golden2747876805/001/main.swift:148:48: warning: forced cast of 'BigInt' to same type has no effect
+146 |         i = 2
+147 |         while (i < n) {
+148 |             tri[i][0] = (tri[(i - 1)][(i - 2)] as! BigInt)
+    |                                                `- warning: forced cast of 'BigInt' to same type has no effect
+149 |             var j: Int = 1
+150 |             while (j < i) {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2747876805/001/main.swift:151:54: warning: forced cast of 'BigInt' to same type has no effect
+149 |             var j: Int = 1
+150 |             while (j < i) {
+151 |                 tri[i][j] = BigInt(((tri[i][(j - 1)] as! BigInt) + (tri[(i - 1)][(j - 1)] as! BigInt)))
+    |                                                      `- warning: forced cast of 'BigInt' to same type has no effect
+152 |                 j = Int((j + 1))
+153 |             }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2747876805/001/main.swift:151:91: warning: forced cast of 'BigInt' to same type has no effect
+149 |             var j: Int = 1
+150 |             while (j < i) {
+151 |                 tri[i][j] = BigInt(((tri[i][(j - 1)] as! BigInt) + (tri[(i - 1)][(j - 1)] as! BigInt)))
+    |                                                                                           `- warning: forced cast of 'BigInt' to same type has no effect
+152 |                 j = Int((j + 1))
+153 |             }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2747876805/001/main.swift:156:21: warning: forced cast of '[[BigInt]]' to same type has no effect
+154 |             i = Int((i + 1))
+155 |         }
+156 |         return (tri as! [[BigInt]])
+    |                     `- warning: forced cast of '[[BigInt]]' to same type has no effect
+157 |     }
+158 |     func main() {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2747876805/001/main.swift:159:36: warning: forced cast of '[[BigInt]]' to same type has no effect
+157 |     }
+158 |     func main() {
+159 |         let bt = (bellTriangle(51) as! [[BigInt]])
+    |                                    `- warning: forced cast of '[[BigInt]]' to same type has no effect
+160 |         print(_p("First fifteen and fiftieth Bell numbers:"))
+161 |         for i in 1..<16 {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2747876805/001/main.swift:162:49: error: cannot find '_padStart' in scope
+160 |         print(_p("First fifteen and fiftieth Bell numbers:"))
+161 |         for i in 1..<16 {
+162 |             print(_p(((("" + String(describing: _padStart(String(_p(i)), 2, " "))) + ": ") + _p((bt[i][0] as! BigInt)))))
+    |                                                 `- error: cannot find '_padStart' in scope
+163 |         }
+164 |         print(_p(("50: " + _p((bt[50][0] as! BigInt)))))
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2747876805/001/main.swift:162:107: warning: forced cast of 'BigInt' to same type has no effect
+160 |         print(_p("First fifteen and fiftieth Bell numbers:"))
+161 |         for i in 1..<16 {
+162 |             print(_p(((("" + String(describing: _padStart(String(_p(i)), 2, " "))) + ": ") + _p((bt[i][0] as! BigInt)))))
+    |                                                                                                           `- warning: forced cast of 'BigInt' to same type has no effect
+163 |         }
+164 |         print(_p(("50: " + _p((bt[50][0] as! BigInt)))))
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2747876805/001/main.swift:164:42: warning: forced cast of 'BigInt' to same type has no effect
+162 |             print(_p(((("" + String(describing: _padStart(String(_p(i)), 2, " "))) + ": ") + _p((bt[i][0] as! BigInt)))))
+163 |         }
+164 |         print(_p(("50: " + _p((bt[50][0] as! BigInt)))))
+    |                                          `- warning: forced cast of 'BigInt' to same type has no effect
+165 |         print(_p(""))
+166 |         print(_p("The first ten rows of Bell's triangle:"))
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2747876805/001/main.swift:168:35: warning: forced cast of '[BigInt]' to same type has no effect
+166 |         print(_p("The first ten rows of Bell's triangle:"))
+167 |         for i in 1..<11 {
+168 |             print(_p("[" + (bt[i] as! [BigInt]).map{ String(describing: $0) }.joined(separator: ",") + "]"))
+    |                                   `- warning: forced cast of '[BigInt]' to same type has no effect
+169 |         }
+170 |     }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2747876805/001/main.swift:171:5: warning: using '_' to ignore the result of a Void-returning function is redundant
+169 |         }
+170 |     }
+171 |     _ = main()
+    |     `- warning: using '_' to ignore the result of a Void-returning function is redundant
+172 |     let _benchEnd = _now()
+173 |     let _benchMemEnd = _mem()
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2747876805/001/main.swift:69:17: warning: variable 'a' was never mutated; consider changing to 'let' constant
+ 67 |         var result: [UInt32] = []
+ 68 |         for i in 0..<lhs.digits.count {
+ 69 |             var a = Int64(lhs.digits[i]) - borrow
+    |                 `- warning: variable 'a' was never mutated; consider changing to 'let' constant
+ 70 |             let b = i < rhs.digits.count ? Int64(rhs.digits[i]) : 0
+ 71 |             var diff = a - b

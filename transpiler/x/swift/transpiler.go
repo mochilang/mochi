@@ -31,6 +31,7 @@ var usesInt bool
 var usesKeys bool
 var usesMem bool
 var usesBigInt bool
+var usesPad bool
 var funcMutParams map[string][]bool
 var funcInOutParams map[string][]bool
 
@@ -40,7 +41,7 @@ var swiftKeywords = map[string]struct{}{
 	"protocol": {}, "subscript": {}, "typealias": {}, "var": {}, "break": {},
 	"case": {}, "continue": {}, "default": {}, "defer": {}, "do": {}, "else": {},
 	"fallthrough": {}, "for": {}, "guard": {}, "if": {}, "in": {}, "repeat": {},
-	"return": {}, "switch": {}, "where": {}, "while": {},
+	"return": {}, "switch": {}, "where": {}, "while": {}, "is": {},
 }
 
 func esc(name string) string {
@@ -60,6 +61,7 @@ type Program struct {
 	UseKeys       bool
 	UseMem        bool
 	UseBigInt     bool
+	UsePad        bool
 }
 
 type Stmt interface{ emit(io.Writer) }
@@ -941,12 +943,26 @@ func (c *CastExpr) emit(w io.Writer) {
 	}
 	switch t {
 	case "Int", "Int64", "Double", "String", "Bool", "BigInt":
+		if t == "Int" {
+			if inner, ok := c.Expr.(*CastExpr); ok && inner.Type == "Any" {
+				if _, ok := inner.Expr.(*IndexExpr); ok {
+					fmt.Fprint(w, "(")
+					inner.Expr.emit(w)
+					fmt.Fprint(w, " as! Int)")
+					return
+				}
+			}
+		}
 		if ce, ok := c.Expr.(*CallExpr); ok && t == "String" && ce.Func == "str" {
 			c.Expr.emit(w)
 			return
 		}
 		if force {
-			if _, ok := c.Expr.(*IndexExpr); ok {
+			if t == "Bool" {
+				fmt.Fprint(w, "(")
+				c.Expr.emit(w)
+				fmt.Fprint(w, " as! Bool)")
+			} else if _, ok := c.Expr.(*IndexExpr); ok {
 				fmt.Fprint(w, "(")
 				c.Expr.emit(w)
 				fmt.Fprintf(w, " as! %s)", t)
@@ -1109,6 +1125,18 @@ func (c *CallExpr) emit(w io.Writer) {
 	case "input":
 		if len(c.Args) == 0 {
 			fmt.Fprint(w, "(readLine() ?? \"\")")
+			return
+		}
+	case "padStart":
+		if len(c.Args) == 3 {
+			fmt.Fprint(w, "_padStart(")
+			c.Args[0].emit(w)
+			fmt.Fprint(w, ", ")
+			c.Args[1].emit(w)
+			fmt.Fprint(w, ", ")
+			c.Args[2].emit(w)
+			fmt.Fprint(w, ")")
+			usesPad = true
 			return
 		}
 	case "append":
@@ -1453,6 +1481,13 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("    Array(m.keys)\n")
 		buf.WriteString("}\n")
 	}
+	if p.UsePad {
+		buf.WriteString("func _padStart(_ s: String, _ w: Int, _ p: String) -> String {\n")
+		buf.WriteString("    var out = s\n")
+		buf.WriteString("    while out.count < w { out = p + out }\n")
+		buf.WriteString("    return out\n")
+		buf.WriteString("}\n")
+	}
 	if p.UseMem {
 		buf.WriteString("func _mem() -> Int {\n")
 		buf.WriteString("    if let status = try? String(contentsOfFile: \"/proc/self/status\") {\n")
@@ -1596,6 +1631,7 @@ func Transpile(env *types.Env, prog *parser.Program, benchMain bool) (*Program, 
 	usesKeys = false
 	usesMem = false
 	usesBigInt = false
+	usesPad = false
 	funcMutParams = map[string][]bool{}
 	funcInOutParams = map[string][]bool{}
 	p := &Program{}
@@ -1616,6 +1652,7 @@ func Transpile(env *types.Env, prog *parser.Program, benchMain bool) (*Program, 
 	p.UseKeys = usesKeys
 	p.UseMem = usesMem
 	p.UseBigInt = usesBigInt
+	p.UsePad = usesPad
 	return p, nil
 }
 
@@ -2589,10 +2626,22 @@ func convertExpr(env *types.Env, e *parser.Expr) (Expr, error) {
 				(types.IsListType(rtyp) && types.IsStructType(rtyp.(types.ListType).Elem)) {
 				left = &RawStmt{Code: fmt.Sprintf("String(describing: %s)", exprString(left))}
 				right = &RawStmt{Code: fmt.Sprintf("String(describing: %s)", exprString(right))}
-			} else if types.IsIntType(ltyp) && types.IsAnyType(rtyp) {
+			} else if func() bool {
+				rt := rtyp
+				if ot, ok := rtyp.(types.OptionType); ok {
+					rt = ot.Elem
+				}
+				return types.IsIntType(ltyp) && types.IsAnyType(rt)
+			}() {
 				right = &CastExpr{Expr: right, Type: "Int!"}
 				rtyp = types.IntType{}
-			} else if types.IsIntType(rtyp) && types.IsAnyType(ltyp) {
+			} else if func() bool {
+				lt := ltyp
+				if ot, ok := ltyp.(types.OptionType); ok {
+					lt = ot.Elem
+				}
+				return types.IsIntType(rtyp) && types.IsAnyType(lt)
+			}() {
 				left = &CastExpr{Expr: left, Type: "Int!"}
 				ltyp = types.IntType{}
 			} else if types.IsBoolType(ltyp) && types.IsAnyType(rtyp) {
@@ -3055,7 +3104,11 @@ func convertPostfix(env *types.Env, p *parser.PostfixExpr) (Expr, error) {
 		if _, ok := expr.(*FieldExpr); !ok {
 			switch {
 			case types.IsIntType(t):
-				expr = &CastExpr{Expr: expr, Type: "Int"}
+				if _, ok := expr.(*IndexExpr); ok {
+					expr = &CastExpr{Expr: expr, Type: "Int!"}
+				} else {
+					expr = &CastExpr{Expr: expr, Type: "Int"}
+				}
 			case types.IsInt64Type(t):
 				expr = &CastExpr{Expr: expr, Type: "Int64"}
 			case types.IsFloatType(t):
