@@ -1,0 +1,13 @@
+# Rosetta Code task: Distributed-programming
+# Simplified example without networking.
+
+fun tax(cents: int): int {
+  if cents < 0 {
+    panic("Negative amounts not allowed")
+  }
+  return (cents * 5 + 50) / 100
+}
+
+let amount = 300
+let result = tax(amount)
+print("tax on " + str(amount) + " cents is " + str(result) + " cents")
