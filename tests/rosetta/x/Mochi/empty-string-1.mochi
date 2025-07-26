@@ -1,0 +1,15 @@
+// Mochi translation of Rosetta task "Empty-string" (variant 1)
+// Demonstrates creating and testing empty strings.
+
+fun main() {
+  var s: string
+  var s2 = ""
+  s = ""
+
+  print(s == "")
+  print(len(s) == 0)
+  print(s != "")
+  print(len(s) != 0)
+}
+
+main()
