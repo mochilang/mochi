@@ -1,0 +1,62 @@
+// Mochi translation of Rosetta "Nim game" task
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var neg = false
+  if len(str) > 0 && str[0:1] == "-" {
+    neg = true
+    i = 1
+  }
+  var n = 0
+  let digits = {
+    "0": 0,
+    "1": 1,
+    "2": 2,
+    "3": 3,
+    "4": 4,
+    "5": 5,
+    "6": 6,
+    "7": 7,
+    "8": 8,
+    "9": 9,
+  }
+  while i < len(str) {
+    n = n * 10 + digits[str[i:i+1]]
+    i = i + 1
+  }
+  if neg { n = -n }
+  return n
+}
+
+fun showTokens(tokens: int) {
+  print("Tokens remaining " + str(tokens))
+}
+
+fun main() {
+  var tokens = 12
+  var done = false
+  while !done {
+    showTokens(tokens)
+    print("")
+    print("How many tokens 1, 2 or 3?")
+    let line = input()
+    var t = 0
+    if len(line) > 0 { t = parseIntStr(line) }
+    if t < 1 || t > 3 {
+      print("\nMust be a number between 1 and 3, try again.\n")
+    } else {
+      var ct = 4 - t
+      var s = "s"
+      if ct == 1 { s = "" }
+      print("  Computer takes " + str(ct) + " token" + s + "\n\n")
+      tokens = tokens - 4
+    }
+    if tokens == 0 {
+      showTokens(0)
+      print("  Computer wins!")
+      done = true
+    }
+  }
+}
+
+main()
