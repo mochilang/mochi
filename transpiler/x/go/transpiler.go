@@ -307,6 +307,39 @@ func (fd *FuncDecl) emit(w io.Writer) {
 	fmt.Fprint(w, "}")
 }
 
+type MethodDecl struct {
+	Receiver string
+	Name     string
+	Params   []ParamDecl
+	Return   string
+	Body     []Stmt
+}
+
+func (md *MethodDecl) emit(w io.Writer) {
+	fmt.Fprintf(w, "func (s *%s) %s(", md.Receiver, md.Name)
+	for i, p := range md.Params {
+		if i > 0 {
+			fmt.Fprint(w, ", ")
+		}
+		if p.Type != "" {
+			fmt.Fprintf(w, "%s %s", p.Name, p.Type)
+		} else {
+			fmt.Fprint(w, p.Name)
+		}
+	}
+	fmt.Fprint(w, ")")
+	if md.Return != "" {
+		fmt.Fprintf(w, " %s", md.Return)
+	}
+	fmt.Fprint(w, " {\n")
+	for _, st := range md.Body {
+		fmt.Fprint(w, "    ")
+		st.emit(w)
+		fmt.Fprint(w, "\n")
+	}
+	fmt.Fprint(w, "}")
+}
+
 type FuncLit struct {
 	Params []ParamDecl
 	Return string
@@ -436,6 +469,24 @@ func (c *CallExpr) emit(w io.Writer) {
 	fmt.Fprint(w, c.Func)
 	fmt.Fprint(w, "(")
 	for i, a := range c.Args {
+		if i > 0 {
+			fmt.Fprint(w, ", ")
+		}
+		a.emit(w)
+	}
+	fmt.Fprint(w, ")")
+}
+
+type MethodCallExpr struct {
+	Target Expr
+	Method string
+	Args   []Expr
+}
+
+func (m *MethodCallExpr) emit(w io.Writer) {
+	m.Target.emit(w)
+	fmt.Fprintf(w, ".%s(", m.Method)
+	for i, a := range m.Args {
 		if i > 0 {
 			fmt.Fprint(w, ", ")
 		}
@@ -2298,7 +2349,41 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 			for i, n := range stype.Order {
 				fields[i] = ParamDecl{Name: n, Type: toGoTypeFromType(stype.Fields[n])}
 			}
-			return &TypeDeclStmt{Name: st.Type.Name, Fields: fields}, nil
+			decls := []Stmt{&TypeDeclStmt{Name: st.Type.Name, Fields: fields}}
+			for name, meth := range stype.Methods {
+				child := types.NewEnv(env)
+				for fname, ft := range stype.Fields {
+					child.SetVar(fname, ft, true)
+				}
+				for _, m := range stype.Methods {
+					child.SetVar(m.Decl.Name, m.Type, true)
+				}
+				for _, p := range meth.Decl.Params {
+					var pt types.Type = types.AnyType{}
+					if p.Type != nil {
+						pt = types.ResolveTypeRef(p.Type, env)
+					}
+					child.SetVar(p.Name, pt, true)
+				}
+				body, err := compileStmts(meth.Decl.Body, child)
+				if err != nil {
+					return nil, err
+				}
+				params := make([]ParamDecl, len(meth.Decl.Params))
+				for i, p := range meth.Decl.Params {
+					typ := toGoType(p.Type, env)
+					if typ == "" {
+						if t, err := child.GetVar(p.Name); err == nil {
+							typ = toGoTypeFromType(t)
+						}
+					}
+					params[i] = ParamDecl{Name: p.Name, Type: typ}
+				}
+				ret := toGoType(meth.Decl.Return, env)
+				decls = append(decls, &MethodDecl{Receiver: st.Type.Name, Name: name, Params: params, Return: ret, Body: body})
+			}
+			extraDecls = append(extraDecls, decls...)
+			return nil, nil
 		}
 	case st.Assign != nil:
 		if len(st.Assign.Index) == 1 && st.Assign.Index[0].Colon == nil && st.Assign.Index[0].Colon2 == nil && len(st.Assign.Field) == 0 {
@@ -4108,6 +4193,11 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env, base string) (Expr, 
 			}
 			return &CallExpr{Func: full, Args: args}, nil
 		}
+		recv := expr
+		if pf.Target != nil && pf.Target.Selector != nil {
+			recv = &VarRef{Name: pf.Target.Selector.Root}
+		}
+		return &MethodCallExpr{Target: recv, Method: method, Args: args}, nil
 		switch method {
 		case "contains":
 			rec := pf.Target
@@ -5388,6 +5478,9 @@ func Emit(prog *Program, bench bool) []byte {
 		case *FuncDecl:
 			st.emit(&buf)
 			buf.WriteString("\n\n")
+		case *MethodDecl:
+			st.emit(&buf)
+			buf.WriteString("\n\n")
 		case *VarDecl:
 			if st.Global {
 				st.emit(&buf)
@@ -5403,6 +5496,9 @@ func Emit(prog *Program, bench bool) []byte {
 				continue
 			}
 			if _, ok := s.(*FuncDecl); ok {
+				continue
+			}
+			if _, ok := s.(*MethodDecl); ok {
 				continue
 			}
 			if _, ok := s.(*TypeDeclStmt); ok {
@@ -5421,6 +5517,9 @@ func Emit(prog *Program, bench bool) []byte {
 				continue
 			}
 			if _, ok := s.(*FuncDecl); ok {
+				continue
+			}
+			if _, ok := s.(*MethodDecl); ok {
 				continue
 			}
 			if _, ok := s.(*TypeDeclStmt); ok {
