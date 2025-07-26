@@ -1,4 +1,38 @@
-## Progress (2025-07-26 19:01 +0700)
+## Progress (2025-07-26 13:04 UTC)
+- java rosetta: add index 136 (a882059ca6)
+
+- java rosetta: add index 136 (a882059ca6)
+
+- java rosetta: add index 135 (7e203b682e)
+
+- java rosetta: add index 135 (7e203b682e)
+
+- java rosetta: add index 134 (0eb7e7dbe3)
+
+- java rosetta: add index 134 (0eb7e7dbe3)
+
+- java rosetta: add index 133 (f45bc058e4)
+
+- java rosetta: add index 133 (f45bc058e4)
+
+- java rosetta: add index 132 (c7f2363914)
+
+- java rosetta: add index 132 (c7f2363914)
+
+- java rosetta: add index 132 (c7f2363914)
+
+- java transpiler: add precedence handling and update rosetta index 131 (4ab1376d7a)
+
+- java transpiler: add precedence handling and update rosetta index 131 (4ab1376d7a)
+
+- transpiler/java: support map fields and pow2 mod (209ba756b3)
+
+- transpiler/java: support map fields and pow2 mod (209ba756b3)
+
+- transpiler/java: support map fields and pow2 mod (209ba756b3)
+
+- transpiler/java: support map fields and pow2 mod (209ba756b3)
+
 - ex transpiler: handle float mod and module globals (ea0c01187b)
 
 - ex transpiler: handle float mod and module globals (ea0c01187b)

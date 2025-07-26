@@ -3230,6 +3230,11 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 			if l, ok := e.(*ListLit); ok && l.ElemType == "" && strings.HasSuffix(currentFuncReturn, "[]") {
 				l.ElemType = strings.TrimSuffix(currentFuncReturn, "[]")
 			}
+			if currentFuncReturn == "" || currentFuncReturn == "void" {
+				if _, ok := e.(*NullLit); ok {
+					e = nil
+				}
+			}
 		}
 		return &ReturnStmt{Expr: e}, nil
 	case s.While != nil:
@@ -3421,79 +3426,141 @@ func compileUpdateStmt(u *parser.UpdateStmt) (Stmt, error) {
 	return &UpdateStmt{Target: u.Target, Fields: fields, Values: values, Cond: cond}, nil
 }
 
+func applyBinaryOp(left Expr, op *parser.BinaryOp, right Expr) (Expr, error) {
+	switch op.Op {
+	case "+":
+		if isArrayExpr(left) && isArrayExpr(right) {
+			return &UnionAllExpr{Left: left, Right: right}, nil
+		}
+		fallthrough
+	case "-", "*", "/", "%", "==", "!=", "<", "<=", ">", ">=", "&&", "||":
+		if op.Op == "==" || op.Op == "!=" {
+			if bl, ok := right.(*BoolLit); ok && isStringExpr(left) {
+				if bl.Value {
+					right = &StringLit{Value: "true"}
+				} else {
+					right = &StringLit{Value: "false"}
+				}
+			} else if bl, ok := left.(*BoolLit); ok && isStringExpr(right) {
+				if bl.Value {
+					left = &StringLit{Value: "true"}
+				} else {
+					left = &StringLit{Value: "false"}
+				}
+			}
+		}
+		if op.Op == "%" {
+			lt := inferType(left)
+			rt := inferType(right)
+			if lt != "double" && lt != "float" && rt != "double" && rt != "float" && lt != "bigint" && rt != "bigint" {
+				if ce, ok := right.(*CallExpr); ok && ce.Func == "pow2" && len(ce.Args) == 1 {
+					needModPow2 = true
+					return &CallExpr{Func: "_modPow2", Args: []Expr{left, ce.Args[0]}}, nil
+				}
+				return &CallExpr{Func: "Math.floorMod", Args: []Expr{left, right}}, nil
+			}
+		}
+		return &BinaryExpr{Left: left, Op: op.Op, Right: right}, nil
+	case "in":
+		if isStringExpr(right) {
+			return &MethodCallExpr{Target: right, Name: "contains", Args: []Expr{left}}, nil
+		}
+		if isArrayExpr(right) {
+			elem := arrayElemType(right)
+			if elem == "int" {
+				lam := &LambdaExpr{Params: []Param{{Name: "x", Type: "int"}}, Body: []Stmt{&ReturnStmt{Expr: &BinaryExpr{Left: &VarExpr{Name: "x"}, Op: "==", Right: left}}}}
+				stream := &CallExpr{Func: "java.util.Arrays.stream", Args: []Expr{right}}
+				return &MethodCallExpr{Target: stream, Name: "anyMatch", Args: []Expr{lam}}, nil
+			}
+			arr := &CallExpr{Func: "java.util.Arrays.asList", Args: []Expr{right}}
+			return &MethodCallExpr{Target: arr, Name: "contains", Args: []Expr{left}}, nil
+		}
+		if isListExpr(right) {
+			return &MethodCallExpr{Target: right, Name: "contains", Args: []Expr{left}}, nil
+		}
+		if isMapExpr(right) || inferType(right) == "map" {
+			return &MethodCallExpr{Target: right, Name: "containsKey", Args: []Expr{left}}, nil
+		}
+		return nil, fmt.Errorf("unsupported binary op: %s", op.Op)
+	case "union":
+		if op.All {
+			return &UnionAllExpr{Left: left, Right: right}, nil
+		}
+		return &UnionExpr{Left: left, Right: right}, nil
+	case "except":
+		return &ExceptExpr{Left: left, Right: right}, nil
+	case "intersect":
+		return &IntersectExpr{Left: left, Right: right}, nil
+	default:
+		return nil, fmt.Errorf("unsupported binary op: %s", op.Op)
+	}
+}
+
 func compileExpr(e *parser.Expr) (Expr, error) {
 	if e == nil || e.Binary == nil {
 		return nil, fmt.Errorf("unsupported expression")
 	}
+
 	left, err := compileUnary(e.Binary.Left)
 	if err != nil {
 		return nil, err
 	}
-	expr := left
-	for _, op := range e.Binary.Right {
-		r, err := compilePostfix(op.Right)
+
+	operands := []Expr{left}
+	var operators []*parser.BinaryOp
+
+	for _, part := range e.Binary.Right {
+		rhs, err := compileUnary(&parser.Unary{Value: part.Right})
 		if err != nil {
 			return nil, err
 		}
-		switch op.Op {
-		case "+":
-			if isArrayExpr(expr) && isArrayExpr(r) {
-				expr = &UnionAllExpr{Left: expr, Right: r}
-				continue
+		operators = append(operators, part)
+		operands = append(operands, rhs)
+	}
+
+	levels := [][]string{
+		{"*", "/", "%"},
+		{"+", "-"},
+		{"<", "<=", ">", ">="},
+		{"==", "!=", "in"},
+		{"&&"},
+		{"||"},
+		{"union", "union_all", "except", "intersect"},
+	}
+
+	contains := func(list []string, op string) bool {
+		for _, v := range list {
+			if v == op {
+				return true
 			}
-			fallthrough
-		case "-", "*", "/", "%", "==", "!=", "<", "<=", ">", ">=", "&&", "||":
-			if op.Op == "%" {
-				lt := inferType(expr)
-				rt := inferType(r)
-				if lt != "double" && lt != "float" && rt != "double" && rt != "float" && lt != "bigint" && rt != "bigint" {
-					if ce, ok := r.(*CallExpr); ok && ce.Func == "pow2" && len(ce.Args) == 1 {
-						needModPow2 = true
-						expr = &CallExpr{Func: "_modPow2", Args: []Expr{expr, ce.Args[0]}}
-					} else {
-						expr = &CallExpr{Func: "Math.floorMod", Args: []Expr{expr, r}}
-					}
-				} else {
-					expr = &BinaryExpr{Left: expr, Op: op.Op, Right: r}
+		}
+		return false
+	}
+
+	for _, level := range levels {
+		for i := 0; i < len(operators); {
+			name := operators[i].Op
+			if operators[i].Op == "union" && operators[i].All {
+				name = "union_all"
+			}
+			if contains(level, name) {
+				ex, err := applyBinaryOp(operands[i], operators[i], operands[i+1])
+				if err != nil {
+					return nil, err
 				}
-				continue
-			}
-			expr = &BinaryExpr{Left: expr, Op: op.Op, Right: r}
-		case "in":
-			if isStringExpr(r) {
-				expr = &MethodCallExpr{Target: r, Name: "contains", Args: []Expr{expr}}
-			} else if isArrayExpr(r) {
-				elem := arrayElemType(r)
-				if elem == "int" {
-					lam := &LambdaExpr{Params: []Param{{Name: "x", Type: "int"}}, Body: []Stmt{&ReturnStmt{Expr: &BinaryExpr{Left: &VarExpr{Name: "x"}, Op: "==", Right: expr}}}}
-					stream := &CallExpr{Func: "java.util.Arrays.stream", Args: []Expr{r}}
-					expr = &MethodCallExpr{Target: stream, Name: "anyMatch", Args: []Expr{lam}}
-				} else {
-					arr := &CallExpr{Func: "java.util.Arrays.asList", Args: []Expr{r}}
-					expr = &MethodCallExpr{Target: arr, Name: "contains", Args: []Expr{expr}}
-				}
-			} else if isListExpr(r) {
-				expr = &MethodCallExpr{Target: r, Name: "contains", Args: []Expr{expr}}
-			} else if isMapExpr(r) || inferType(r) == "map" {
-				expr = &MethodCallExpr{Target: r, Name: "containsKey", Args: []Expr{expr}}
+				operands[i] = ex
+				operands = append(operands[:i+1], operands[i+2:]...)
+				operators = append(operators[:i], operators[i+1:]...)
 			} else {
-				return nil, fmt.Errorf("unsupported binary op: %s", op.Op)
+				i++
 			}
-		case "union":
-			if op.All {
-				expr = &UnionAllExpr{Left: expr, Right: r}
-			} else {
-				expr = &UnionExpr{Left: expr, Right: r}
-			}
-		case "except":
-			expr = &ExceptExpr{Left: expr, Right: r}
-		case "intersect":
-			expr = &IntersectExpr{Left: expr, Right: r}
-		default:
-			return nil, fmt.Errorf("unsupported binary op: %s", op.Op)
 		}
 	}
-	return expr, nil
+
+	if len(operands) != 1 {
+		return nil, fmt.Errorf("unexpected expression state")
+	}
+	return operands[0], nil
 }
 
 func compileUnary(u *parser.Unary) (Expr, error) {
