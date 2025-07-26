@@ -1965,9 +1965,44 @@ type FieldExpr struct {
 }
 
 func (f *FieldExpr) emit(w io.Writer) {
-	f.Target.emit(w)
-	io.WriteString(w, ".")
-	io.WriteString(w, fsIdent(f.Name))
+	t := inferType(f.Target)
+	if strings.HasPrefix(t, "Map<") || t == "map" || t == "obj" || t == "" {
+		valT := mapValueType(t)
+		if id, ok := f.Target.(*IdentExpr); ok {
+			if vt := id.Type; vt != "" {
+				if alt := mapValueType(vt); alt != "obj" {
+					valT = alt
+				}
+			}
+			if vt, ok2 := varTypes[id.Name]; ok2 {
+				if alt := mapValueType(vt); alt != "obj" {
+					valT = alt
+				}
+			}
+		}
+		if t == "obj" || t == "" {
+			io.WriteString(w, "((")
+			f.Target.emit(w)
+			io.WriteString(w, " :?> Map<string, obj>).[")
+		} else {
+			f.Target.emit(w)
+			io.WriteString(w, ".[")
+		}
+		fmt.Fprintf(w, "%q", f.Name)
+		io.WriteString(w, "]")
+		if t == "obj" || t == "" {
+			io.WriteString(w, ")")
+		}
+		if valT != "obj" {
+			io.WriteString(w, " |> unbox<")
+			io.WriteString(w, valT)
+			io.WriteString(w, ">")
+		}
+	} else {
+		f.Target.emit(w)
+		io.WriteString(w, ".")
+		io.WriteString(w, fsIdent(f.Name))
+	}
 }
 
 // MethodCallExpr represents a method invocation target.method(args).
