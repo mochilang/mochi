@@ -2,8 +2,8 @@
 
 Generated Scala code for Rosetta tasks in `tests/rosetta/x/Mochi`. Each program has a `.scala` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
 
-## Golden Test Checklist (167/284)
-_Last updated: 2025-07-26 09:55 +0700_
+## Golden Test Checklist (176/285)
+_Last updated: 2025-07-26 17:29 +0700_
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -196,17 +196,17 @@ _Last updated: 2025-07-26 09:55 +0700_
 | 187 | character-codes-4 | ✓ | 3µs | 8.7 MB |
 | 188 | character-codes-5 | ✓ | 3µs | 8.7 MB |
 | 189 | chat-server | ✓ | 3µs | 8.7 MB |
-| 190 | check-machin-like-formulas |   |  |  |
-| 191 | check-that-file-exists |   |  |  |
-| 192 | checkpoint-synchronization-1 |   |  |  |
-| 193 | checkpoint-synchronization-2 |   |  |  |
-| 194 | checkpoint-synchronization-3 |   |  |  |
-| 195 | checkpoint-synchronization-4 |   |  |  |
-| 196 | chernicks-carmichael-numbers |   |  |  |
-| 197 | cheryls-birthday |   |  |  |
-| 198 | chinese-remainder-theorem |   |  |  |
-| 199 | chinese-zodiac |   |  |  |
-| 200 | cholesky-decomposition-1 |   |  |  |
+| 190 | check-machin-like-formulas | ✓ | 32µs | 8.7 MB |
+| 191 | check-that-file-exists | ✓ | 4µs | 8.7 MB |
+| 192 | checkpoint-synchronization-1 | ✓ | 17µs | 8.7 MB |
+| 193 | checkpoint-synchronization-2 | ✓ | 16µs | 8.7 MB |
+| 194 | checkpoint-synchronization-3 | ✓ | 17µs | 8.7 MB |
+| 195 | checkpoint-synchronization-4 | ✓ | 20µs | 8.7 MB |
+| 196 | chernicks-carmichael-numbers | ✓ | 2.23ms | 8.7 MB |
+| 197 | cheryls-birthday | ✓ | 5µs | 8.7 MB |
+| 198 | chinese-remainder-theorem | ✓ | 22µs | 8.7 MB |
+| 199 | chinese-zodiac | error |  |  |
+| 200 | cholesky-decomposition-1 | error |  |  |
 | 201 | cholesky-decomposition |   |  |  |
 | 202 | chowla-numbers |   |  |  |
 | 203 | church-numerals-1 |   |  |  |
@@ -291,3 +291,4 @@ _Last updated: 2025-07-26 09:55 +0700_
 | 282 | deepcopy-1 |   |  |  |
 | 283 | define-a-primitive-data-type |   |  |  |
 | 284 | md5 |   |  |  |
+| 285 | delegates |   |  |  |
