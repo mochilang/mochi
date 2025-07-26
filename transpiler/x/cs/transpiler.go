@@ -82,6 +82,7 @@ var usesDict bool
 var usesLinq bool
 var usesJson bool
 var usesNow bool
+var usesSHA256 bool
 var usesInput bool
 var usesMem bool
 var usesBigInt bool
@@ -178,6 +179,18 @@ func (s *LetStmt) emit(w io.Writer) {
 		t = vt
 	} else if vt, ok := finalVarTypes[s.Name]; ok && vt != "" && !strings.HasPrefix(vt, "fn/") {
 		t = vt
+	}
+	if fl, ok := s.Value.(*FunLit); ok {
+		if t == "" || t == "object" {
+			t = typeOfExpr(fl)
+		}
+		if t == "" {
+			t = "Action"
+		}
+		fmt.Fprintf(w, "%s %s = null;\n", t, name)
+		fmt.Fprintf(w, "%s = ", name)
+		fl.emit(w)
+		return
 	}
 	if t != "" && t != "object" {
 		fmt.Fprintf(w, "%s %s = ", t, name)
@@ -1580,6 +1593,9 @@ func typeOfExpr(e Expr) string {
 }
 
 func mapTypes(m *MapLit) (string, string) {
+	if m.KeyType != "" && m.ValType != "" {
+		return m.KeyType, m.ValType
+	}
 	keyType := m.KeyType
 	valType := m.ValType
 	for i, it := range m.Items {
@@ -1614,7 +1630,7 @@ func listType(l *ListLit) string {
 		return "object[]"
 	}
 	elemType := ""
-	for i, e := range l.Elems {
+	for _, e := range l.Elems {
 		t := typeOfExpr(e)
 		if t == "" {
 			switch v := e.(type) {
@@ -1628,10 +1644,14 @@ func listType(l *ListLit) string {
 				}
 			}
 		}
-		if i == 0 {
+		if t == "object[]" || t == "object" || t == "" {
+			continue
+		}
+		if elemType == "" {
 			elemType = t
 		} else if elemType != t {
 			elemType = ""
+			break
 		}
 	}
 	if elemType == "" {
@@ -1678,6 +1698,7 @@ func (ix *IndexExpr) emit(w io.Writer) {
 		if len(arr) == 2 {
 			valType = strings.TrimSpace(arr[1])
 		}
+		fmt.Fprint(w, "(")
 		ix.Target.emit(w)
 		fmt.Fprint(w, ".ContainsKey(")
 		ix.Index.emit(w)
@@ -1698,6 +1719,7 @@ func (ix *IndexExpr) emit(w io.Writer) {
 		default:
 			fmt.Fprint(w, "null")
 		}
+		fmt.Fprint(w, ")")
 		return
 	}
 	if targetType == "string" {
@@ -2676,6 +2698,18 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 			if err != nil {
 				return nil, err
 			}
+			if ml, ok := val.(*MapLit); ok && currentReturnType != "" && strings.HasPrefix(currentReturnType, "Dictionary<") {
+				parts := strings.TrimPrefix(strings.TrimSuffix(currentReturnType, ">"), "Dictionary<")
+				arr := strings.Split(parts, ",")
+				if len(arr) == 2 {
+					if ml.KeyType == "" {
+						ml.KeyType = strings.TrimSpace(arr[0])
+					}
+					if ml.ValType == "" {
+						ml.ValType = strings.TrimSpace(arr[1])
+					}
+				}
+			}
 			if l, ok := val.(*ListLit); ok && len(l.Elems) == 0 && strings.HasSuffix(currentReturnType, "[]") {
 				if l.ElemType == "" || l.ElemType == "object[]" {
 					l.ElemType = currentReturnType
@@ -3129,6 +3163,15 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			if len(args) == 1 {
 				return &MethodCallExpr{Target: args[0], Name: "ToLower", Args: nil}, nil
 			}
+		case "contains":
+			if len(args) == 2 {
+				return &ContainsExpr{Str: args[0], Sub: args[1]}, nil
+			}
+		case "sha256":
+			if len(args) == 1 {
+				usesSHA256 = true
+				return &CallExpr{Func: "_sha256", Args: args}, nil
+			}
 		case "input":
 			if len(args) == 0 {
 				usesInput = true
@@ -3145,6 +3188,10 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 				return &MaxExpr{Arg: args[0]}, nil
 			}
 		case "substring":
+			if len(args) == 3 {
+				return &SubstringExpr{Str: args[0], Start: args[1], End: args[2]}, nil
+			}
+		case "substr":
 			if len(args) == 3 {
 				return &SubstringExpr{Str: args[0], Start: args[1], End: args[2]}, nil
 			}
@@ -3183,6 +3230,14 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 		}
 		lit := &ListLit{Elems: elems}
 		lit.ElemType = listType(lit)
+		if strings.HasSuffix(lit.ElemType, "[]") {
+			inner := strings.TrimSuffix(lit.ElemType, "[]")
+			for _, e := range elems {
+				if l2, ok := e.(*ListLit); ok && len(l2.Elems) == 0 && (l2.ElemType == "" || l2.ElemType == "object[]") {
+					l2.ElemType = inner
+				}
+			}
+		}
 		return lit, nil
 	case p.Map != nil:
 		items := make([]MapItem, len(p.Map.Items))
@@ -3771,6 +3826,9 @@ func Emit(prog *Program) []byte {
 	if usesBigInt {
 		buf.WriteString("using System.Numerics;\n")
 	}
+	if usesSHA256 {
+		buf.WriteString("using System.Security.Cryptography;\n")
+	}
 	if usesInput {
 		buf.WriteString("using System.IO;\n")
 	}
@@ -3835,6 +3893,17 @@ func Emit(prog *Program) []byte {
 	if usesMem {
 		buf.WriteString("\tstatic long _mem() {\n")
 		buf.WriteString("\t\treturn GC.GetTotalMemory(false);\n")
+		buf.WriteString("\t}\n")
+	}
+	if usesSHA256 {
+		buf.WriteString("\tstatic long[] _sha256(long[] bs) {\n")
+		buf.WriteString("\t\tusing var sha = System.Security.Cryptography.SHA256.Create();\n")
+		buf.WriteString("\t\tvar bytes = new byte[bs.Length];\n")
+		buf.WriteString("\t\tfor (int i = 0; i < bs.Length; i++) bytes[i] = (byte)bs[i];\n")
+		buf.WriteString("\t\tvar hash = sha.ComputeHash(bytes);\n")
+		buf.WriteString("\t\tvar res = new long[hash.Length];\n")
+		buf.WriteString("\t\tfor (int i = 0; i < hash.Length; i++) res[i] = hash[i];\n")
+		buf.WriteString("\t\treturn res;\n")
 		buf.WriteString("\t}\n")
 	}
 	if usesInput {
