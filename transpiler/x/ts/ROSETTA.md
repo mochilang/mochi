@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated TypeScript code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/TypeScript`.
-Last updated: 2025-07-26 10:34 UTC
+Last updated: 2025-07-26 12:37 UTC
 
-## Rosetta Golden Test Checklist (299/332)
+## Rosetta Golden Test Checklist (319/332)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 1.595ms | 512.0 KB |
@@ -307,26 +307,26 @@ Last updated: 2025-07-26 10:34 UTC
 | 298 | determine-sentence-type | ✓ | 1.418ms | 256.0 KB |
 | 299 | dice-game-probabilities-1 | ✓ | 10.055ms | 7.2 MB |
 | 300 | dice-game-probabilities-2 | ✓ | 11.001ms | 5.8 MB |
-| 301 | digital-root-multiplicative-digital-root |   |  |  |
-| 302 | dijkstras-algorithm |   |  |  |
-| 303 | dinesmans-multiple-dwelling-problem |   |  |  |
-| 304 | dining-philosophers-1 |   |  |  |
-| 305 | dining-philosophers-2 |   |  |  |
-| 306 | disarium-numbers |   |  |  |
-| 307 | discordian-date |   |  |  |
-| 308 | display-a-linear-combination |   |  |  |
-| 309 | display-an-outline-as-a-nested-table |   |  |  |
-| 310 | distance-and-bearing |   |  |  |
-| 311 | distributed-programming |   |  |  |
-| 312 | diversity-prediction-theorem |   |  |  |
-| 313 | documentation |   |  |  |
-| 314 | doomsday-rule |   |  |  |
-| 315 | dot-product |   |  |  |
-| 316 | doubly-linked-list-definition-1 |   |  |  |
-| 317 | doubly-linked-list-definition-2 |   |  |  |
-| 318 | doubly-linked-list-element-definition |   |  |  |
-| 319 | doubly-linked-list-traversal |   |  |  |
-| 320 | dragon-curve |   |  |  |
+| 301 | digital-root-multiplicative-digital-root | ✓ | 16.861ms | 10.0 MB |
+| 302 | dijkstras-algorithm | ✓ | 1.568ms | 128.0 KB |
+| 303 | dinesmans-multiple-dwelling-problem | ✓ | 1.316ms | 128.0 KB |
+| 304 | dining-philosophers-1 | ✓ | 2.554ms | 128.0 KB |
+| 305 | dining-philosophers-2 | ✓ | 3.62ms | 256.0 KB |
+| 306 | disarium-numbers | ✓ | 354.098ms | 10.9 MB |
+| 307 | discordian-date | ✓ | 1.681ms | 128.0 KB |
+| 308 | display-a-linear-combination | ✓ | 1.614ms | 128.0 KB |
+| 309 | display-an-outline-as-a-nested-table | ✓ | 1.871ms | 128.0 KB |
+| 310 | distance-and-bearing | ✓ | 5.349ms | 3.1 MB |
+| 311 | distributed-programming | ✓ | 616µs |  |
+| 312 | diversity-prediction-theorem | ✓ | 1.402ms | 256.0 KB |
+| 313 | documentation | ✓ | 6µs |  |
+| 314 | doomsday-rule | ✓ | 1.676ms |  |
+| 315 | dot-product | ✓ | 638µs |  |
+| 316 | doubly-linked-list-definition-1 | ✓ | 8µs |  |
+| 317 | doubly-linked-list-definition-2 | ✓ | 1.027ms | 128.0 KB |
+| 318 | doubly-linked-list-element-definition | ✓ | 690µs |  |
+| 319 | doubly-linked-list-traversal | ✓ | 714µs | 128.0 KB |
+| 320 | dragon-curve | ✓ | 1.801ms | 128.0 KB |
 | 321 | draw-a-clock |   |  |  |
 | 322 | draw-a-cuboid |   |  |  |
 | 323 | draw-a-pixel-1 |   |  |  |
