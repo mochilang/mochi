@@ -1,9 +1,9 @@
 # Java Rosetta Transpiler Output
 
 Generated Java code for programs in `tests/rosetta/x/Mochi`. Each program has a `.java` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
-Last updated: 2025-07-27 01:10 GMT+7
+Last updated: 2025-07-27 01:59 GMT+7
 
-## Rosetta Checklist (145/332)
+## Rosetta Checklist (148/341)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 23.0ms | 245.84KB |
@@ -166,9 +166,9 @@ Last updated: 2025-07-27 01:10 GMT+7
 | 158 | call-a-function-5 | ✓ | 20.0ms | 720B |
 | 159 | call-a-function-6 | ✓ | 51.0ms | 84.13KB |
 | 160 | call-a-function-7 | ✓ | 19.0ms | 0B |
-| 161 | call-a-function-8 |   |  |  |
-| 162 | call-a-function-9 |   |  |  |
-| 163 | call-an-object-method-1 |   |  |  |
+| 161 | call-a-function-8 | ✓ | 17.0ms | 46.48KB |
+| 162 | call-a-function-9 | ✓ | 18.0ms | 45.91KB |
+| 163 | call-an-object-method-1 | ✓ | 7.0ms | 0B |
 | 164 | call-an-object-method-2 |   |  |  |
 | 165 | call-an-object-method-3 |   |  |  |
 | 166 | call-an-object-method |   |  |  |
@@ -336,5 +336,14 @@ Last updated: 2025-07-27 01:10 GMT+7
 | 328 | earliest-difference-between-prime-gaps |   |  |  |
 | 329 | eban-numbers |   |  |  |
 | 330 | echo-server |   |  |  |
-| 331 | ekg-sequence-convergence |   |  |  |
-| 332 | md5 |   |  |  |
+| 331 | eertree |   |  |  |
+| 332 | egyptian-division |   |  |  |
+| 333 | ekg-sequence-convergence |   |  |  |
+| 334 | element-wise-operations |   |  |  |
+| 335 | elementary-cellular-automaton-infinite-length |   |  |  |
+| 336 | elementary-cellular-automaton-random-number-generator |   |  |  |
+| 337 | elementary-cellular-automaton |   |  |  |
+| 338 | elliptic-curve-arithmetic |   |  |  |
+| 339 | emirp-primes |   |  |  |
+| 340 | empty-directory |   |  |  |
+| 341 | md5 |   |  |  |
