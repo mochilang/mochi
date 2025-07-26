@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Python code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/Python`.
-Last updated: 2025-07-26 17:37 GMT+7
+Last updated: 2025-07-26 19:25 GMT+7
 
-## Rosetta Golden Test Checklist (275/332)
+## Rosetta Golden Test Checklist (287/332)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 161.0µs | 12.50MB |
@@ -15,14 +15,14 @@ Last updated: 2025-07-26 17:37 GMT+7
 | 6 | 15-puzzle-solver | ✓ | 10.0µs | 12.04MB |
 | 7 | 2048 | ✓ | 2.0ms | 13.80MB |
 | 8 | 21-game | ✓ | 70.0µs | 12.98MB |
-| 9 | 24-game-solve | error | 41.0ms | 13.88MB |
+| 9 | 24-game-solve | ✓ | 41.0ms | 13.88MB |
 | 10 | 24-game | ✓ |  |  |
 | 11 | 4-rings-or-4-squares-puzzle | ✓ | 28.0ms | 12.36MB |
 | 12 | 9-billion-names-of-god-the-integer | ✓ | 10.67s | 233.76MB |
 | 13 | 99-bottles-of-beer-2 | ✓ | 12.0ms | 13.84MB |
 | 14 | 99-bottles-of-beer | ✓ | 455.0µs | 12.65MB |
 | 15 | DNS-query | ✓ | 935.0ms | 12.37MB |
-| 16 | Duffinian-numbers |   |  |  |
+| 16 | Duffinian-numbers | ✓ |  |  |
 | 17 | a+b | ✓ | 107.0µs | 12.21MB |
 | 18 | abbreviations-automatic | ✓ | 4.0ms | 13.73MB |
 | 19 | abbreviations-easy | ✓ | 779.0µs | 13.69MB |
@@ -297,16 +297,16 @@ Last updated: 2025-07-26 17:37 GMT+7
 | 288 | descending-primes | ✓ | 2.0ms | 15.26MB |
 | 289 | detect-division-by-zero | ✓ | 12.0µs | 15.26MB |
 | 290 | determine-if-a-string-has-all-the-same-characters | ✓ | 120.0µs | 15.26MB |
-| 291 | determine-if-a-string-has-all-unique-characters |   |  |  |
-| 292 | determine-if-a-string-is-collapsible |   |  |  |
-| 293 | determine-if-a-string-is-numeric-1 |   |  |  |
-| 294 | determine-if-a-string-is-numeric-2 |   |  |  |
-| 295 | determine-if-a-string-is-squeezable |   |  |  |
-| 296 | determine-if-only-one-instance-is-running |   |  |  |
-| 297 | determine-if-two-triangles-overlap |   |  |  |
-| 298 | determine-sentence-type |   |  |  |
-| 299 | dice-game-probabilities-1 |   |  |  |
-| 300 | dice-game-probabilities-2 |   |  |  |
+| 291 | determine-if-a-string-has-all-unique-characters | ✓ | 188.0µs | 13.41MB |
+| 292 | determine-if-a-string-is-collapsible | ✓ | 162.0µs | 12.96MB |
+| 293 | determine-if-a-string-is-numeric-1 | ✓ | 28.0µs | 12.72MB |
+| 294 | determine-if-a-string-is-numeric-2 | ✓ | 15.0µs | 12.44MB |
+| 295 | determine-if-a-string-is-squeezable | ✓ | 332.0µs | 12.49MB |
+| 296 | determine-if-only-one-instance-is-running | ✓ | 30.0µs | 12.30MB |
+| 297 | determine-if-two-triangles-overlap | ✓ | 202.0µs | 13.80MB |
+| 298 | determine-sentence-type | ✓ | 57.0µs | 13.06MB |
+| 299 | dice-game-probabilities-1 | ✓ | 91.0ms | 12.68MB |
+| 300 | dice-game-probabilities-2 | ✓ | 9.0ms | 12.23MB |
 | 301 | digital-root-multiplicative-digital-root |   |  |  |
 | 302 | dijkstras-algorithm |   |  |  |
 | 303 | dinesmans-multiple-dwelling-problem |   |  |  |
