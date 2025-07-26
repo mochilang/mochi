@@ -1,0 +1,68 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun divCheck(x: int, y: int): DivResult {
+func divCheck (regs=21)
+  // if y == 0 { return DivResult{ q: 0, ok: false } }
+  Const        r2, 0
+  Equal        r3, r1, r2
+  JumpIfFalse  r3, L0
+  Const        r2, 0
+  Const        r4, false
+  Const        r5, "__name"
+  Const        r6, "DivResult"
+  Const        r7, "q"
+  Move         r8, r2
+  Const        r9, "ok"
+  Move         r10, r4
+  MakeMap      r11, 3, r5
+  Return       r11
+L0:
+  // return DivResult{ q: x / y, ok: true }
+  Div          r12, r0, r1
+  Const        r13, true
+  Const        r14, "__name"
+  Const        r15, "DivResult"
+  Const        r16, "q"
+  Move         r17, r12
+  Const        r18, "ok"
+  Move         r19, r13
+  MakeMap      r20, 3, r14
+  Return       r20
+
+  // fun printResult(r: DivResult) {
+func printResult (regs=10)
+  // print(str(r.q) + " " + str(r.ok))
+  Const        r1, "q"
+  Index        r2, r0, r1
+  Str          r3, r2
+  Const        r4, " "
+  Add          r5, r3, r4
+  Const        r6, "ok"
+  Index        r7, r0, r6
+  Str          r8, r7
+  Add          r9, r5, r8
+  Print        r9
+  Return       r0
+
+  // fun main() {
+func main (regs=13)
+  // printResult(divCheck(3, 2))
+  Const        r3, 3
+  Move         r1, r3
+  Const        r4, 2
+  Move         r2, r4
+  Call2        r5, divCheck, r1, r2
+  Move         r0, r5
+  Call         r6, printResult, r0
+  // printResult(divCheck(3, 0))
+  Const        r3, 3
+  Move         r8, r3
+  Const        r10, 0
+  Move         r9, r10
+  Call2        r11, divCheck, r8, r9
+  Move         r7, r11
+  Call         r12, printResult, r7
+  Return       r0
