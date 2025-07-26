@@ -1,15 +1,41 @@
+var _nowSeed = 0L
+var _nowSeeded = false
+fun _now(): Long {
+    if (!_nowSeeded) {
+        System.getenv("MOCHI_NOW_SEED")?.toLongOrNull()?.let {
+            _nowSeed = it
+            _nowSeeded = true
+        }
+    }
+    return if (_nowSeeded) {
+        _nowSeed = (_nowSeed * 1664525 + 1013904223) % 2147483647
+        kotlin.math.abs(_nowSeed)
+    } else {
+        kotlin.math.abs(System.nanoTime())
+    }
+}
+
+fun toJson(v: Any?): String = when (v) {
+    null -> "null"
+    is String -> "\"" + v.replace("\"", "\\\"") + "\""
+    is Boolean, is Number -> v.toString()
+    is Map<*, *> -> v.entries.joinToString(prefix = "{", postfix = "}") { toJson(it.key.toString()) + ":" + toJson(it.value) }
+    is Iterable<*> -> v.joinToString(prefix = "[", postfix = "]") { toJson(it) }
+    else -> toJson(v.toString())
+}
+
 fun primeFactors(n: Int): MutableList<Int> {
     var factors: MutableList<Int> = mutableListOf()
     var x: Int = n
     while ((x % 2) == 0) {
         factors = run { val _tmp = factors.toMutableList(); _tmp.add(2); _tmp } as MutableList<Int>
-        x = x / 2.toInt()
+        x = (x / 2).toInt()
     }
     var p: Int = 3
     while ((p * p) <= x) {
         while ((x % p) == 0) {
             factors = run { val _tmp = factors.toMutableList(); _tmp.add(p); _tmp } as MutableList<Int>
-            x = x / p.toInt()
+            x = (x / p).toInt()
         }
         p = p + 2
     }
@@ -40,7 +66,7 @@ fun D(n: Double): Double {
     if (n < 10000000000000000000.0) {
         factors = primeFactors(n.toInt())
     } else {
-        val g: Int = n / 100.0.toInt()
+        val g: Int = (n / 100.0).toInt()
         factors = primeFactors(g)
         factors = run { val _tmp = factors.toMutableList(); _tmp.add(2); _tmp } as MutableList<Int>
         factors = run { val _tmp = factors.toMutableList(); _tmp.add(2); _tmp } as MutableList<Int>
@@ -52,10 +78,10 @@ fun D(n: Double): Double {
         return 1.0
     }
     if (c == 2) {
-        return factors[0] + factors[1].toDouble()
+        return (factors[0] + factors[1]).toDouble()
     }
-    val d: Double = n / factors[0].toDouble()
-    return (D(d) * factors[0].toDouble()) + d
+    val d: Double = n / (factors[0]).toDouble()
+    return (D(d) * (factors[0]).toDouble()) + d
 }
 
 fun pad(n: Int): String {
@@ -70,7 +96,7 @@ fun user_main(): Unit {
     var vals: MutableList<Int> = mutableListOf()
     var n: Int = 0 - 99
     while (n < 101) {
-        vals = run { val _tmp = vals.toMutableList(); _tmp.add(D(n.toDouble()).toInt()); _tmp } as MutableList<Int>
+        vals = run { val _tmp = vals.toMutableList(); _tmp.add((D(n.toDouble())).toInt()); _tmp } as MutableList<Int>
         n = n + 1
     }
     var i: Int = 0
@@ -102,5 +128,17 @@ fun user_main(): Unit {
 }
 
 fun main() {
-    user_main()
+    run {
+        System.gc()
+        val _startMem = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()
+        val _start = _now()
+        user_main()
+        System.gc()
+        val _end = _now()
+        val _endMem = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()
+        val _durationUs = (_end - _start) / 1000
+        val _memDiff = kotlin.math.abs(_endMem - _startMem)
+        val _res = mapOf("duration_us" to _durationUs, "memory_bytes" to _memDiff, "name" to "main")
+        println(toJson(_res))
+    }
 }

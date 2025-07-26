@@ -641,6 +641,15 @@ type CastExpr struct {
 }
 
 func (c *CastExpr) emit(w io.Writer) {
+	if inner, ok := c.Value.(*CastExpr); ok && inner.Type == "Any?" {
+		c.Value = inner.Value
+	}
+	if ll, ok := c.Value.(*ListLit); ok && strings.HasPrefix(c.Type, "MutableList<") {
+		elemType := strings.TrimSuffix(strings.TrimPrefix(c.Type, "MutableList<"), ">")
+		tll := &TypedListLit{ElemType: elemType, Elems: ll.Elems}
+		tll.emit(w)
+		return
+	}
 	needParens := false
 	switch c.Value.(type) {
 	case *BinaryExpr, *CastExpr, *IndexExpr, *CallExpr, *FieldExpr,
@@ -4217,7 +4226,20 @@ func convertPostfix(env *types.Env, p *parser.PostfixExpr) (Expr, error) {
 				}
 				switch ctype {
 				case "int", "float", "string":
-					expr = &CastExpr{Value: expr, Type: ctype}
+					if ix, ok := expr.(*IndexExpr); ok {
+						if ix.Type == "" || ix.Type == "Any" || ix.Type == "Any?" {
+							kt := map[string]string{"int": "Int", "float": "Double", "string": "String"}[ctype]
+							if kt == "" {
+								kt = ctype
+							}
+							ix.Type = kt
+							expr = ix
+						} else {
+							expr = &CastExpr{Value: expr, Type: ctype}
+						}
+					} else {
+						expr = &CastExpr{Value: expr, Type: ctype}
+					}
 				default:
 					if ml, ok := expr.(*MapLit); ok {
 						names := make([]string, len(ml.Items))

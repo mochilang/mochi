@@ -2,9 +2,9 @@
 
 Generated Kotlin sources for Rosetta Code tests are stored in `tests/rosetta/transpiler/Kotlin`.
 
-Last updated: 2025-07-26 17:18 +0700
+Last updated: 2025-07-26 19:30 +0700
 
-Completed tasks: **60/332**
+Completed tasks: **66/332**
 
 ### Checklist
 | Index | Name | Status | Duration | Memory |
@@ -71,16 +71,16 @@ Completed tasks: **60/332**
 | 60 | apply-a-callback-to-an-array-2 | ✓ | 21.43ms | 128.2 KB |
 | 61 | apply-a-digital-filter-direct-form-ii-transposed- | ✓ | 9.07ms | 131.2 KB |
 | 62 | approximate-equality | ✓ | 19.54ms | 119.9 KB |
-| 63 | arbitrary-precision-integers-included- | ✓ |  |  |
-| 64 | archimedean-spiral | ✓ |  |  |
-| 65 | arena-storage-pool |  |  |  |
-| 66 | arithmetic-complex | ✓ |  |  |
-| 67 | arithmetic-derivative |  |  |  |
-| 68 | arithmetic-evaluation |  |  |  |
-| 69 | arithmetic-geometric-mean-calculate-pi | ✓ |  |  |
-| 70 | arithmetic-geometric-mean |  |  |  |
-| 71 | arithmetic-integer-1 |  |  |  |
-| 72 | arithmetic-integer-2 |  |  |  |
+| 63 | arbitrary-precision-integers-included- | ✓ | 61.69ms | 823.6 KB |
+| 64 | archimedean-spiral | ✓ | 20.34ms | 130.2 KB |
+| 65 | arena-storage-pool | ✓ | 33.26ms | 127.2 KB |
+| 66 | arithmetic-complex | ✓ | 16.13ms | 126.4 KB |
+| 67 | arithmetic-derivative | ✓ | 35.42ms | 130.4 KB |
+| 68 | arithmetic-evaluation | ✓ | 14.23ms | 137.1 KB |
+| 69 | arithmetic-geometric-mean-calculate-pi | ✓ | 10.88ms | 130.6 KB |
+| 70 | arithmetic-geometric-mean | ✓ | 12.15ms | 130.6 KB |
+| 71 | arithmetic-integer-1 | ✓ | 12.68ms | 140.1 KB |
+| 72 | arithmetic-integer-2 | ✓ | 10.42ms | 140.1 KB |
 | 73 | arithmetic-numbers |  |  |  |
 | 74 | arithmetic-rational |  |  |  |
 | 75 | array-concatenation |  |  |  |
