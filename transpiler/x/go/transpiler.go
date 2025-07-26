@@ -1914,11 +1914,16 @@ func Transpile(p *parser.Program, env *types.Env, benchMain bool) (*Program, err
 					ll.ElemType = strings.TrimPrefix(vd.Type, "[]")
 				}
 			}
+			if vd.Value != nil {
+				applyType(vd.Value, toTypeFromGoType(vd.Type))
+			}
 		}
 	}
 	for _, st := range gp.Stmts {
 		if as, ok := st.(*AssignStmt); ok {
 			if typ, ok2 := initTypes[as.Name]; ok2 {
+				t := toTypeFromGoType(typ)
+				applyType(as.Value, t)
 				if ll, ok3 := as.Value.(*ListLit); ok3 && ll.ElemType == "any" && len(ll.Elems) == 0 {
 					if strings.HasPrefix(typ, "[]") && typ != "[]any" {
 						ll.ElemType = strings.TrimPrefix(typ, "[]")
@@ -6141,6 +6146,35 @@ func wrapFuncList(ll *ListLit, env *types.Env) {
 						ll.Elems[i] = &FuncLit{Body: []Stmt{&ExprStmt{Expr: &CallExpr{Func: vr.Name}}}}
 					}
 				}
+			}
+		}
+	}
+}
+
+// applyType recursively applies the provided Mochi type to the generated
+// expression, filling in any missing list or map element types. This is used
+// after type checking once the final variable type is known.
+func applyType(expr Expr, t types.Type) {
+	switch tt := t.(type) {
+	case types.ListType:
+		if ll, ok := expr.(*ListLit); ok {
+			if ll.ElemType == "" || strings.Contains(ll.ElemType, "any") {
+				ll.ElemType = toGoTypeFromType(tt.Elem)
+			}
+			for _, el := range ll.Elems {
+				applyType(el, tt.Elem)
+			}
+		}
+	case types.MapType:
+		if ml, ok := expr.(*MapLit); ok {
+			if ml.KeyType == "" || strings.Contains(ml.KeyType, "any") {
+				ml.KeyType = toGoTypeFromType(tt.Key)
+			}
+			if ml.ValueType == "" || strings.Contains(ml.ValueType, "any") {
+				ml.ValueType = toGoTypeFromType(tt.Value)
+			}
+			for _, v := range ml.Values {
+				applyType(v, tt.Value)
 			}
 		}
 	}
