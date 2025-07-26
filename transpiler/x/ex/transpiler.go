@@ -42,6 +42,11 @@ var builtinAliases map[string]string
 // globalVars tracks variables defined before the first function declaration.
 var globalVars map[string]struct{}
 
+func isGlobalVar(name string) bool {
+	_, ok := globalVars[name]
+	return ok
+}
+
 var loopCounter int
 
 func moduleAttrName(name string) string {
@@ -1727,16 +1732,16 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 		}
 		if _, err := env.GetVar(st.Var.Name); err != nil {
 			if _, ok := val.(*AnonFun); ok {
-				env.SetVar(st.Var.Name, types.FuncType{}, false)
+				env.SetVar(st.Var.Name, types.FuncType{}, true)
 			} else if st.Var.Type != nil {
-				env.SetVar(st.Var.Name, types.ResolveTypeRef(st.Var.Type, env), false)
+				env.SetVar(st.Var.Name, types.ResolveTypeRef(st.Var.Type, env), true)
 			} else if ld := extractLoadExpr(st.Var.Value); ld != nil && ld.Type != nil {
 				t := types.ResolveTypeRef(ld.Type, env)
-				env.SetVar(st.Var.Name, types.ListType{Elem: t}, false)
+				env.SetVar(st.Var.Name, types.ListType{Elem: t}, true)
 			} else if st.Var.Value != nil {
-				env.SetVar(st.Var.Name, types.TypeOfExprBasic(st.Var.Value, env), false)
+				env.SetVar(st.Var.Name, types.TypeOfExprBasic(st.Var.Value, env), true)
 			} else {
-				env.SetVar(st.Var.Name, inferStaticType(val), false)
+				env.SetVar(st.Var.Name, inferStaticType(val), true)
 			}
 		}
 		return &LetStmt{Name: st.Var.Name, Value: val}, nil
@@ -2017,7 +2022,7 @@ func gatherMutVars(stmts []Stmt, env *types.Env) []string {
 					break
 				}
 				if _, err := env.IsMutable(t.Name); err == nil {
-					if _, ok := globalVars[t.Name]; !ok {
+					if !moduleMode || !isGlobalVar(t.Name) {
 						set[t.Name] = struct{}{}
 					}
 				}
@@ -2027,7 +2032,7 @@ func gatherMutVars(stmts []Stmt, env *types.Env) []string {
 						continue
 					}
 					if _, err := env.IsMutable(v); err == nil {
-						if _, ok := globalVars[v]; !ok {
+						if !moduleMode || !isGlobalVar(v) {
 							set[v] = struct{}{}
 						}
 					}
@@ -2973,6 +2978,8 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 			}
 			if op.Field.Name == "get" {
 				expr = &CallExpr{Func: "Map.get", Args: append([]Expr{expr}, args...)}
+			} else if op.Field.Name == "padStart" {
+				expr = &CallExpr{Func: "String.pad_leading", Args: append([]Expr{expr}, args...)}
 			} else if v, ok := expr.(*VarRef); ok {
 				methodName := v.Name + "." + op.Field.Name
 				expr = &CallExpr{Func: methodName, Args: args}
@@ -3065,27 +3072,45 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 					str := &CallExpr{Func: "Kernel.to_string", Args: []Expr{args[0]}}
 					return &CallExpr{Func: "IO.puts", Args: []Expr{str}}, nil
 				}
-			} else {
-				parts := make([]interface{}, 0, len(args)*2-1)
-				for i, a := range args {
-					if i > 0 {
-						parts = append(parts, " ")
+			} else if len(args) == 2 {
+				if _, ok := types.TypeOfExprBasic(p.Call.Args[1], env).(types.BoolType); ok {
+					newline, ok2 := literalBool(p.Call.Args[1])
+					if !ok2 {
+						newline = true
 					}
-					if s, ok := a.(*StringLit); ok {
-						parts = append(parts, s.Value)
-					} else {
-						t := types.TypeOfExprBasic(p.Call.Args[i], env)
-						switch t.(type) {
-						case types.StringType, types.IntType, types.FloatType, types.BoolType:
-							parts = append(parts, a)
-						default:
-							parts = append(parts, &CallExpr{Func: "Kernel.to_string", Args: []Expr{a}})
-						}
+					t := types.TypeOfExprBasic(p.Call.Args[0], env)
+					var arg Expr
+					switch t.(type) {
+					case types.StringType, types.IntType, types.FloatType, types.BoolType:
+						arg = args[0]
+					default:
+						arg = &CallExpr{Func: "Kernel.to_string", Args: []Expr{args[0]}}
+					}
+					if newline {
+						return &CallExpr{Func: "IO.puts", Args: []Expr{arg}}, nil
+					}
+					return &CallExpr{Func: "IO.write", Args: []Expr{arg}}, nil
+				}
+			}
+			parts := make([]interface{}, 0, len(args)*2-1)
+			for i, a := range args {
+				if i > 0 {
+					parts = append(parts, " ")
+				}
+				if s, ok := a.(*StringLit); ok {
+					parts = append(parts, s.Value)
+				} else {
+					t := types.TypeOfExprBasic(p.Call.Args[i], env)
+					switch t.(type) {
+					case types.StringType, types.IntType, types.FloatType, types.BoolType:
+						parts = append(parts, a)
+					default:
+						parts = append(parts, &CallExpr{Func: "Kernel.to_string", Args: []Expr{a}})
 					}
 				}
-				str := &InterpString{Parts: parts}
-				return &CallExpr{Func: "IO.puts", Args: []Expr{str}}, nil
 			}
+			str := &InterpString{Parts: parts}
+			return &CallExpr{Func: "IO.puts", Args: []Expr{str}}, nil
 		case "count":
 			name = "Enum.count"
 			if len(args) == 1 {
@@ -3607,6 +3632,24 @@ func literalString(e *parser.Expr) (string, bool) {
 		return p.Target.Selector.Root, true
 	}
 	return "", false
+}
+
+func literalBool(e *parser.Expr) (bool, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return false, false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil {
+		return false, false
+	}
+	p := u.Value
+	if len(p.Ops) > 0 || p.Target == nil {
+		return false, false
+	}
+	if p.Target.Lit != nil && p.Target.Lit.Bool != nil {
+		return bool(*p.Target.Lit.Bool), true
+	}
+	return false, false
 }
 
 func extractSaveExpr(e *parser.Expr) *parser.SaveExpr {

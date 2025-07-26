@@ -1,0 +1,9 @@
+run: exit status 1
+** (SyntaxError) invalid syntax found on /workspace/mochi/tests/rosetta/transpiler/Elixir/calkin-wilf-sequence.exs:203:63:
+     error: syntax error before: '<>'
+     │
+ 203 │           IO.puts(Kernel.to_string(((((i + trunc(1)), 2, " ") <> ": ") <> s)))
+     │                                                               ^
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/calkin-wilf-sequence.exs:203:63
+    (elixir 1.18.3) lib/code.ex:1525: Code.require_file/2
