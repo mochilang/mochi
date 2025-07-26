@@ -1,0 +1,77 @@
+// Mochi translation of Go "Doomsday rule" example
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var neg = false
+  if len(str) > 0 && str[0:1] == "-" {
+    neg = true
+    i = 1
+  }
+  var n = 0
+  let digits = {
+    "0": 0,
+    "1": 1,
+    "2": 2,
+    "3": 3,
+    "4": 4,
+    "5": 5,
+    "6": 6,
+    "7": 7,
+    "8": 8,
+    "9": 9,
+  }
+  while i < len(str) {
+    n = n * 10 + digits[str[i:i+1]]
+    i = i + 1
+  }
+  if neg { n = -n }
+  return n
+}
+
+let days = [
+  "Sunday",
+  "Monday",
+  "Tuesday",
+  "Wednesday",
+  "Thursday",
+  "Friday",
+  "Saturday",
+]
+
+fun anchorDay(y: int): int {
+  return (2 + 5 * (y % 4) + 4 * (y % 100) + 6 * (y % 400)) % 7
+}
+
+fun isLeapYear(y: int): bool {
+  return y % 4 == 0 && (y % 100 != 0 || y % 400 == 0)
+}
+
+let firstDaysCommon = [3,7,7,4,2,6,4,1,5,3,7,5]
+let firstDaysLeap =   [4,1,7,4,2,6,4,1,5,3,7,5]
+
+fun main() {
+  let dates = [
+    "1800-01-06",
+    "1875-03-29",
+    "1915-12-07",
+    "1970-12-23",
+    "2043-05-14",
+    "2077-02-12",
+    "2101-04-02",
+  ]
+
+  print("Days of week given by Doomsday rule:")
+  for date in dates {
+    let y = parseIntStr(date[0:4])
+    let m = parseIntStr(date[5:7]) - 1
+    let d = parseIntStr(date[8:10])
+    let a = anchorDay(y)
+    var f = firstDaysCommon[m]
+    if isLeapYear(y) { f = firstDaysLeap[m] }
+    var w = d - f
+    if w < 0 { w = 7 + w }
+    let dow = (a + w) % 7
+    print(date + " -> " + days[dow])
+  }
+}
+main()
