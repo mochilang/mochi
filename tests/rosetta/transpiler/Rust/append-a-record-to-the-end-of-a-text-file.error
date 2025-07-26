@@ -1,0 +1,78 @@
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/append-a-record-to-the-end-of-a-text-file.rs:42:2
+   |
+42 | };
+   |  ^ help: remove this semicolon
+   |
+   = note: `#[warn(redundant_semicolons)]` on by default
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/append-a-record-to-the-end-of-a-text-file.rs:45:2
+   |
+45 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/append-a-record-to-the-end-of-a-text-file.rs:54:2
+   |
+54 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/append-a-record-to-the-end-of-a-text-file.rs:49:8
+   |
+49 | ...if (((lines.len() as i64) >= 3) && (lines[2 as usize].clone().as_str() == "xyz:x:1003:1000:X Yz,Room 1003,(234)555-8913,(234)555-0033,xyz@rosettacode.org:/home/xyz:/bin/bash".as_str())) {
+   |       ^                                                                                                                                                                                    ^
+   |
+   = note: `#[warn(unused_parens)]` on by default
+help: remove these parentheses
+   |
+49 -     if (((lines.len() as i64) >= 3) && (lines[2 as usize].clone().as_str() == "xyz:x:1003:1000:X Yz,Room 1003,(234)555-8913,(234)555-0033,xyz@rosettacode.org:/home/xyz:/bin/bash".as_str())) {
+49 +     if ((lines.len() as i64) >= 3) && (lines[2 as usize].clone().as_str() == "xyz:x:1003:1000:X Yz,Room 1003,(234)555-8913,(234)555-0033,xyz@rosettacode.org:/home/xyz:/bin/bash".as_str()) {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/append-a-record-to-the-end-of-a-text-file.rs:58:28
+   |
+58 |     let duration_us: i64 = ((_end - _start) / 1000);
+   |                            ^                      ^
+   |
+help: remove these parentheses
+   |
+58 -     let duration_us: i64 = ((_end - _start) / 1000);
+58 +     let duration_us: i64 = (_end - _start) / 1000;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/append-a-record-to-the-end-of-a-text-file.rs:59:29
+   |
+59 |     let memory_bytes: i64 = (_end_mem - _start_mem);
+   |                             ^                     ^
+   |
+help: remove these parentheses
+   |
+59 -     let memory_bytes: i64 = (_end_mem - _start_mem);
+59 +     let memory_bytes: i64 = _end_mem - _start_mem;
+   |
+
+error[E0658]: use of unstable library feature `str_as_str`
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/append-a-record-to-the-end-of-a-text-file.rs:49:180
+   |
+49 | ...555-8913,(234)555-0033,xyz@rosettacode.org:/home/xyz:/bin/bash".as_str())) {
+   |                                                                    ^^^^^^
+   |
+   = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/append-a-record-to-the-end-of-a-text-file.rs:43:22
+   |
+43 |     fn appendOneMore(mut lines: Vec<String>) -> Vec<String> {
+   |                      ----^^^^^
+   |                      |
+   |                      help: remove this `mut`
+   |
+   = note: `#[warn(unused_mut)]` on by default
+
+error: aborting due to 1 previous error; 7 warnings emitted
+
+For more information about this error, try `rustc --explain E0658`.

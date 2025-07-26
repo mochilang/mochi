@@ -2462,12 +2462,27 @@ func compileForStmt(n *parser.ForStmt) (Stmt, error) {
 	byRef := false
 	if t := inferType(iter); strings.HasPrefix(t, "Vec<") {
 		elem := strings.TrimSuffix(strings.TrimPrefix(t, "Vec<"), ">")
-		if elem == "String" {
-			byRef = false
-		} else if strings.HasPrefix(elem, "Vec<") || strings.HasPrefix(elem, "HashMap<") {
+		if elem == "String" || strings.HasPrefix(elem, "Vec<") || strings.HasPrefix(elem, "HashMap<") || func() bool { _, ok := structTypes[elem]; return ok }() {
 			byRef = true
-		} else if _, ok := structTypes[elem]; ok {
-			byRef = true
+		}
+		if !byRef {
+			if _, ok := iter.(*NameRef); ok {
+				iter = &MethodCallExpr{Receiver: iter, Name: "clone"}
+			}
+		}
+		if _, ok := varTypes[n.Name]; !ok {
+			if elem == "String" {
+				stringVars[n.Name] = true
+				if byRef {
+					varTypes[n.Name] = "&String"
+				} else {
+					varTypes[n.Name] = "String"
+				}
+			} else if byRef {
+				varTypes[n.Name] = "&" + elem
+			} else {
+				varTypes[n.Name] = elem
+			}
 		}
 	} else if strings.HasPrefix(t, "HashMap<") {
 		parts := strings.TrimPrefix(t, "HashMap<")

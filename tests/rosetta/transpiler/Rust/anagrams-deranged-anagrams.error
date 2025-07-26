@@ -246,6 +246,36 @@ help: consider dereferencing the borrow
 53 |             if (*arr[j as usize].clone().as_str() > arr[(j + 1) as usize].clone()) {
    |                 +
 
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/anagrams-deranged-anagrams.rs:95:38
+   |
+95 |             m.insert(k.clone(), vec![w]);
+   |                                      ^- help: try using a conversion method: `.to_string()`
+   |                                      |
+   |                                      expected `String`, found `&String`
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/anagrams-deranged-anagrams.rs:101:22
+    |
+87  |     let mut w1 = String::from("");
+    |                  ---------------- expected due to this value
+...
+101 |                 w1 = c;
+    |                      ^- help: try using a conversion method: `.to_string()`
+    |                      |
+    |                      expected `String`, found `&String`
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/anagrams-deranged-anagrams.rs:102:22
+    |
+88  |     let mut w2 = String::from("");
+    |                  ---------------- expected due to this value
+...
+102 |                 w2 = w;
+    |                      ^- help: try using a conversion method: `.to_string()`
+    |                      |
+    |                      expected `String`, found `&String`
+
 warning: variable does not need to be mutable
   --> /workspace/mochi/tests/rosetta/transpiler/Rust/anagrams-deranged-anagrams.rs:70:17
    |
@@ -264,49 +294,6 @@ warning: variable does not need to be mutable
    |                                |
    |                                help: remove this `mut`
 
-warning: variable does not need to be mutable
-  --> /workspace/mochi/tests/rosetta/transpiler/Rust/anagrams-deranged-anagrams.rs:84:9
-   |
-84 |     let mut words: Vec<String> = vec![String::from("constitutionalism"), String::from("misconstitutional")];
-   |         ----^^^^^
-   |         |
-   |         help: remove this `mut`
+error: aborting due to 4 previous errors; 23 warnings emitted
 
-error[E0382]: use of moved value: `w`
-   --> /workspace/mochi/tests/rosetta/transpiler/Rust/anagrams-deranged-anagrams.rs:106:86
-    |
-89  |     for w in words {
-    |         -
-    |         |
-    |         this reinitialization might get skipped
-    |         move occurs because `w` has type `String`, which does not implement the `Copy` trait
-...
-98  |         for c in m[k.as_str()].clone() {
-    |         ------------------------------ inside of this loop
-...
-102 |                 w2 = w;
-    |                      - value moved here
-...
-106 |         m.insert(k.clone(), { let mut v = m[k.as_str()].clone(); v.push(String::from(w)); v });
-    |                                                                                      ^ value used here after move
-    |
-note: verify that your loop breaking logic is correct
-   --> /workspace/mochi/tests/rosetta/transpiler/Rust/anagrams-deranged-anagrams.rs:103:17
-    |
-89  |     for w in words {
-    |     --------------
-...
-98  |         for c in m[k.as_str()].clone() {
-    |         ------------------------------
-...
-103 |                 break
-    |                 ^^^^^ this `break` exits the loop at line 98
-help: consider cloning the value if the performance cost is acceptable
-    |
-102 |                 w2 = w.clone();
-    |                       ++++++++
-
-error: aborting due to 2 previous errors; 24 warnings emitted
-
-Some errors have detailed explanations: E0308, E0382.
-For more information about an error, try `rustc --explain E0308`.
+For more information about this error, try `rustc --explain E0308`.
