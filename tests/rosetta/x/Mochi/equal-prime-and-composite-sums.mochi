@@ -1,0 +1,83 @@
+fun commatize(n: int): string {
+  var s = str(n)
+  var i = len(s) - 3
+  while i >= 1 {
+    s = s[0:i] + "," + s[i:len(s)]
+    i = i - 3
+  }
+  return s
+}
+
+fun primeSieve(n: int): list<bool> {
+  var sieve: list<bool> = []
+  var i = 0
+  while i <= n {
+    sieve = append(sieve, false)
+    i = i + 1
+  }
+  sieve[0] = true
+  sieve[1] = true
+  var p = 2
+  while p * p <= n {
+    if !sieve[p] {
+      var m = p * p
+      while m <= n {
+        sieve[m] = true
+        m = m + p
+      }
+    }
+    p = p + 1
+  }
+  return sieve
+}
+
+fun search(xs: list<int>, target: int): int {
+  var low = 0
+  var high = len(xs)
+  while low < high {
+    var mid = (low + high) / 2
+    if xs[mid] < target {
+      low = mid + 1
+    } else {
+      high = mid
+    }
+  }
+  return low
+}
+
+fun main() {
+  let limit = 45000
+  let compMap = primeSieve(limit)
+  var compSums: list<int> = []
+  var primeSums: list<int> = []
+  var csum = 0
+  var psum = 0
+  var i = 2
+  while i <= limit {
+    if compMap[i] {
+      csum = csum + i
+      compSums = append(compSums, csum)
+    } else {
+      psum = psum + i
+      primeSums = append(primeSums, psum)
+    }
+    i = i + 1
+  }
+
+  print("Sum        | Prime Index | Composite Index")
+  print("------------------------------------------")
+  var idx = 0
+  while idx < len(primeSums) {
+    let s = primeSums[idx]
+    let j = search(compSums, s)
+    if j < len(compSums) && compSums[j] == s {
+      let sumStr = commatize(s).padStart(10, " ")
+      let piStr = commatize(idx + 1).padStart(11, " ")
+      let ciStr = commatize(j + 1).padStart(15, " ")
+      print(sumStr + " | " + piStr + " | " + ciStr)
+    }
+    idx = idx + 1
+  }
+}
+
+main()
