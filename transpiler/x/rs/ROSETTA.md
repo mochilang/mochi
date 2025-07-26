@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Rust code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/Rust`.
-Last updated: 2025-07-26 16:18 UTC
+Last updated: 2025-07-26 16:59 UTC
 
-## Rosetta Golden Test Checklist (37/332)
+## Rosetta Golden Test Checklist (47/332)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 109µs | 3.2 MB |
@@ -50,19 +50,19 @@ Last updated: 2025-07-26 16:18 UTC
 | 41 | align-columns |   |  |  |
 | 42 | aliquot-sequence-classifications | ✓ | 43.475ms |  |
 | 43 | almkvist-giullera-formula-for-pi |   |  |  |
-| 44 | almost-prime |   |  |  |
-| 45 | amb |   |  |  |
-| 46 | amicable-pairs |   |  |  |
+| 44 | almost-prime | ✓ | 82µs |  |
+| 45 | amb | ✓ | 21µs |  |
+| 46 | amicable-pairs | ✓ | 361.482ms | 344.0 KB |
 | 47 | anagrams-deranged-anagrams |   |  |  |
 | 48 | anagrams |   |  |  |
-| 49 | angle-difference-between-two-bearings-1 |   |  |  |
-| 50 | angle-difference-between-two-bearings-2 |   |  |  |
+| 49 | angle-difference-between-two-bearings-1 | ✓ | 25µs |  |
+| 50 | angle-difference-between-two-bearings-2 | ✓ | 30µs |  |
 | 51 | angles-geometric-normalization-and-conversion |   |  |  |
-| 52 | animate-a-pendulum |   |  |  |
-| 53 | animation |   |  |  |
-| 54 | anonymous-recursion-1 |   |  |  |
-| 55 | anonymous-recursion-2 |   |  |  |
-| 56 | anonymous-recursion |   |  |  |
+| 52 | animate-a-pendulum | ✓ | 23µs |  |
+| 53 | animation | ✓ | 108µs |  |
+| 54 | anonymous-recursion-1 | ✓ | 24µs |  |
+| 55 | anonymous-recursion-2 | ✓ | 33µs |  |
+| 56 | anonymous-recursion | ✓ | 29µs |  |
 | 57 | anti-primes |   |  |  |
 | 58 | append-a-record-to-the-end-of-a-text-file |   |  |  |
 | 59 | apply-a-callback-to-an-array-1 |   |  |  |

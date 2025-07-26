@@ -1,0 +1,372 @@
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/anagrams.rs:69:2
+   |
+69 | };
+   |  ^ help: remove this semicolon
+   |
+   = note: `#[warn(redundant_semicolons)]` on by default
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/anagrams.rs:96:2
+   |
+96 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/anagrams.rs:130:2
+    |
+130 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/anagrams.rs:44:11
+   |
+44 |     while (i < (s.len() as i64)) {
+   |           ^                    ^
+   |
+   = note: `#[warn(unused_parens)]` on by default
+help: remove these parentheses
+   |
+44 -     while (i < (s.len() as i64)) {
+44 +     while i < (s.len() as i64) {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/anagrams.rs:46:13
+   |
+46 |         i = (i + 1);
+   |             ^     ^
+   |
+help: remove these parentheses
+   |
+46 -         i = (i + 1);
+46 +         i = i + 1;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/anagrams.rs:48:17
+   |
+48 |     let mut n = (arr.len() as i64);
+   |                 ^                ^
+   |
+help: remove these parentheses
+   |
+48 -     let mut n = (arr.len() as i64);
+48 +     let mut n = arr.len() as i64;
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/anagrams.rs:50:11
+   |
+50 |     while (m < n) {
+   |           ^     ^
+   |
+help: remove these parentheses
+   |
+50 -     while (m < n) {
+50 +     while m < n {
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/anagrams.rs:52:15
+   |
+52 |         while (j < (n - 1)) {
+   |               ^           ^
+   |
+help: remove these parentheses
+   |
+52 -         while (j < (n - 1)) {
+52 +         while j < (n - 1) {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/anagrams.rs:53:16
+   |
+53 |             if (arr[j as usize].clone().as_str() > arr[(j + 1) as usize].clone()) {
+   |                ^                                                                ^
+   |
+help: remove these parentheses
+   |
+53 -             if (arr[j as usize].clone().as_str() > arr[(j + 1) as usize].clone()) {
+53 +             if arr[j as usize].clone().as_str() > arr[(j + 1) as usize].clone() {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/anagrams.rs:58:17
+   |
+58 |             j = (j + 1);
+   |                 ^     ^
+   |
+help: remove these parentheses
+   |
+58 -             j = (j + 1);
+58 +             j = j + 1;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/anagrams.rs:60:13
+   |
+60 |         m = (m + 1);
+   |             ^     ^
+   |
+help: remove these parentheses
+   |
+60 -         m = (m + 1);
+60 +         m = m + 1;
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/anagrams.rs:64:11
+   |
+64 |     while (i < n) {
+   |           ^     ^
+   |
+help: remove these parentheses
+   |
+64 -     while (i < n) {
+64 +     while i < n {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/anagrams.rs:66:13
+   |
+66 |         i = (i + 1);
+   |             ^     ^
+   |
+help: remove these parentheses
+   |
+66 -         i = (i + 1);
+66 +         i = i + 1;
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/anagrams.rs:73:11
+   |
+73 |     while ((tmp.len() as i64) > 0) {
+   |           ^                      ^
+   |
+help: remove these parentheses
+   |
+73 -     while ((tmp.len() as i64) > 0) {
+73 +     while (tmp.len() as i64) > 0 {
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/anagrams.rs:77:15
+   |
+77 |         while (i < (tmp.len() as i64)) {
+   |               ^                      ^
+   |
+help: remove these parentheses
+   |
+77 -         while (i < (tmp.len() as i64)) {
+77 +         while i < (tmp.len() as i64) {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/anagrams.rs:78:16
+   |
+78 |             if (tmp[i as usize].clone().as_str() < min) {
+   |                ^                                      ^
+   |
+help: remove these parentheses
+   |
+78 -             if (tmp[i as usize].clone().as_str() < min) {
+78 +             if tmp[i as usize].clone().as_str() < min {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/anagrams.rs:82:17
+   |
+82 |             i = (i + 1);
+   |                 ^     ^
+   |
+help: remove these parentheses
+   |
+82 -             i = (i + 1);
+82 +             i = i + 1;
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/anagrams.rs:87:15
+   |
+87 |         while (j < (tmp.len() as i64)) {
+   |               ^                      ^
+   |
+help: remove these parentheses
+   |
+87 -         while (j < (tmp.len() as i64)) {
+87 +         while j < (tmp.len() as i64) {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/anagrams.rs:88:16
+   |
+88 |             if (j != idx) {
+   |                ^        ^
+   |
+help: remove these parentheses
+   |
+88 -             if (j != idx) {
+88 +             if j != idx {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/anagrams.rs:91:17
+   |
+91 |             j = (j + 1);
+   |                 ^     ^
+   |
+help: remove these parentheses
+   |
+91 -             j = (j + 1);
+91 +             j = j + 1;
+   |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/anagrams.rs:108:12
+    |
+108 |         if ((groups[k.as_str()].clone().len() as i64) > maxLen) {
+    |            ^                                                  ^
+    |
+help: remove these parentheses
+    |
+108 -         if ((groups[k.as_str()].clone().len() as i64) > maxLen) {
+108 +         if (groups[k.as_str()].clone().len() as i64) > maxLen {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/anagrams.rs:109:22
+    |
+109 |             maxLen = (groups[k.as_str()].clone().len() as i64);
+    |                      ^                                       ^
+    |
+help: remove these parentheses
+    |
+109 -             maxLen = (groups[k.as_str()].clone().len() as i64);
+109 +             maxLen = groups[k.as_str()].clone().len() as i64;
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/anagrams.rs:115:12
+    |
+115 |         if ((groups[k.as_str()].clone().len() as i64) == maxLen) {
+    |            ^                                                   ^
+    |
+help: remove these parentheses
+    |
+115 -         if ((groups[k.as_str()].clone().len() as i64) == maxLen) {
+115 +         if (groups[k.as_str()].clone().len() as i64) == maxLen {
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/anagrams.rs:120:23
+    |
+120 |                 while (i < (g.len() as i64)) {
+    |                       ^                    ^
+    |
+help: remove these parentheses
+    |
+120 -                 while (i < (g.len() as i64)) {
+120 +                 while i < (g.len() as i64) {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/anagrams.rs:122:25
+    |
+122 |                     i = (i + 1);
+    |                         ^     ^
+    |
+help: remove these parentheses
+    |
+122 -                     i = (i + 1);
+122 +                     i = i + 1;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/anagrams.rs:134:28
+    |
+134 |     let duration_us: i64 = ((_end - _start) / 1000);
+    |                            ^                      ^
+    |
+help: remove these parentheses
+    |
+134 -     let duration_us: i64 = ((_end - _start) / 1000);
+134 +     let duration_us: i64 = (_end - _start) / 1000;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/anagrams.rs:135:29
+    |
+135 |     let memory_bytes: i64 = (_end_mem - _start_mem);
+    |                             ^                     ^
+    |
+help: remove these parentheses
+    |
+135 -     let memory_bytes: i64 = (_end_mem - _start_mem);
+135 +     let memory_bytes: i64 = _end_mem - _start_mem;
+    |
+
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/anagrams.rs:53:52
+   |
+53 |             if (arr[j as usize].clone().as_str() > arr[(j + 1) as usize].clone()) {
+   |                                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `&str`, found `String`
+   |
+help: consider dereferencing the borrow
+   |
+53 |             if (*arr[j as usize].clone().as_str() > arr[(j + 1) as usize].clone()) {
+   |                 +
+
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/anagrams.rs:78:52
+   |
+78 |             if (tmp[i as usize].clone().as_str() < min) {
+   |                                                    ^^^ expected `&str`, found `String`
+   |
+help: consider dereferencing the borrow
+   |
+78 |             if (*tmp[i as usize].clone().as_str() < min) {
+   |                 +
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/anagrams.rs:98:9
+   |
+98 |     let mut words: Vec<String> = vec![String::from("abel"), String::from("able"), String::from("bale"), String::from("bela"), String::fro...
+   |         ----^^^^^
+   |         |
+   |         help: remove this `mut`
+   |
+   = note: `#[warn(unused_mut)]` on by default
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/anagrams.rs:117:21
+    |
+117 |                 let mut g: Vec<String> = sortStrings(groups[k.as_str()].clone());
+    |                     ----^
+    |                     |
+    |                     help: remove this `mut`
+
+error[E0382]: use of moved value: `words`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/anagrams.rs:113:14
+    |
+98  |     let mut words: Vec<String> = vec![String::from("abel"), String::from("able"), String::from("bale"), String::from("bela"), String::fro...
+    |         --------- move occurs because `words` has type `Vec<String>`, which does not implement the `Copy` trait
+...
+101 |     for w in words {
+    |              ----- `words` moved due to this implicit call to `.into_iter()`
+...
+113 |     for w in words {
+    |              ^^^^^ value used here after move
+    |
+note: `into_iter` takes ownership of the receiver `self`, which moves `words`
+   --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/core/src/iter/traits/collect.rs:313:18
+help: consider iterating over a slice of the `Vec<String>`'s content to avoid moving into the `for` loop
+    |
+101 |     for w in &words {
+    |              +
+
+error: aborting due to 3 previous errors; 29 warnings emitted
+
+Some errors have detailed explanations: E0308, E0382.
+For more information about an error, try `rustc --explain E0308`.
