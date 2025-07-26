@@ -1,0 +1,100 @@
+// Mochi implementation of Rosetta "Dynamic variable names" task
+// Translated from Go version in tests/rosetta/x/Go/dynamic-variable-names.go
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var neg = false
+  if len(str) > 0 && str[0:1] == "-" {
+    neg = true
+    i = 1
+  }
+  var n = 0
+  let digits = {
+    "0": 0,
+    "1": 1,
+    "2": 2,
+    "3": 3,
+    "4": 4,
+    "5": 5,
+    "6": 6,
+    "7": 7,
+    "8": 8,
+    "9": 9,
+  }
+  while i < len(str) {
+    n = n * 10 + digits[str[i:i+1]]
+    i = i + 1
+  }
+  if neg { n = -n }
+  return n
+}
+
+fun main() {
+  var n = 0
+  while n < 1 || n > 5 {
+    print("How many integer variables do you want to create (max 5) : ")
+    let line = input()
+    if len(line) > 0 {
+      n = parseIntStr(line)
+    }
+  }
+  var vars: map<string, int> = {}
+  print("OK, enter the variable names and their values, below\n")
+  var i = 1
+  while i <= n {
+    print("\n  Variable " + str(i) + "\n")
+    print("    Name  : ")
+    let name = input()
+    if name in vars {
+      print("  Sorry, you've already created a variable of that name, try again")
+      continue
+    }
+    var value = 0
+    while true {
+      print("    Value : ")
+      let valstr = input()
+      if len(valstr) == 0 {
+        print("  Not a valid integer, try again")
+        continue
+      }
+      var ok = true
+      var j = 0
+      var neg = false
+      if valstr[0:1] == "-" {
+        neg = true
+        j = 1
+      }
+      while j < len(valstr) {
+        let ch = valstr[j:j+1]
+        if ch < "0" || ch > "9" {
+          ok = false
+          break
+        }
+        j = j + 1
+      }
+      if !ok {
+        print("  Not a valid integer, try again")
+        continue
+      }
+      value = parseIntStr(valstr)
+      break
+    }
+    vars[name] = value
+    i = i + 1
+  }
+  print("\nEnter q to quit")
+  while true {
+    print("\nWhich variable do you want to inspect : ")
+    let name = input()
+    if lower(name) == "q" {
+      return
+    }
+    if name in vars {
+      print("It's value is " + str(vars[name]))
+    } else {
+      print("Sorry there's no variable of that name, try again")
+    }
+  }
+}
+
+main()
