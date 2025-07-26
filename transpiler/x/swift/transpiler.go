@@ -614,6 +614,26 @@ func (as *ArrayStringExpr) emit(w io.Writer) {
 	fmt.Fprint(w, ".map{ String(describing: $0) }.joined(separator: \",\") + \"]\"")
 }
 
+// LenExpr renders a length expression, optionally casting to String first.
+type LenExpr struct {
+	Value    Expr
+	AsString bool
+}
+
+func (le *LenExpr) emit(w io.Writer) {
+	fmt.Fprint(w, "(")
+	if le.AsString {
+		fmt.Fprint(w, "String(describing: ")
+		le.Value.emit(w)
+		fmt.Fprint(w, ").count")
+	} else {
+		fmt.Fprint(w, "(")
+		le.Value.emit(w)
+		fmt.Fprint(w, ").count")
+	}
+	fmt.Fprint(w, ")")
+}
+
 // queryFrom represents a secondary source in a query expression.
 type queryFrom struct {
 	Var string
@@ -1189,9 +1209,9 @@ func (c *CallExpr) emit(w io.Writer) {
 		}
 	case "substring":
 		if len(c.Args) == 3 {
-			fmt.Fprint(w, "String(Array(")
+			fmt.Fprint(w, "String(Array(String(describing: ")
 			c.Args[0].emit(w)
-			fmt.Fprint(w, ")[")
+			fmt.Fprint(w, "))[")
 			c.Args[1].emit(w)
 			fmt.Fprint(w, "..<")
 			c.Args[2].emit(w)
@@ -3582,6 +3602,18 @@ func convertPrimary(env *types.Env, pr *parser.Primary) (Expr, error) {
 			if n, ok := evalLenConst(pr.Call.Args[0]); ok {
 				return &LitExpr{Value: fmt.Sprintf("%d", n), IsString: false}, nil
 			}
+			arg, err := convertExpr(env, pr.Call.Args[0])
+			if err != nil {
+				return nil, err
+			}
+			asStr := true
+			if env != nil {
+				t := types.TypeOfExpr(pr.Call.Args[0], env)
+				if types.IsListType(t) || types.IsMapType(t) || types.IsStringType(t) {
+					asStr = false
+				}
+			}
+			return &LenExpr{Value: arg, AsString: asStr}, nil
 		}
 		if pr.Call.Func == "str" && len(pr.Call.Args) == 1 {
 			arg, err := convertExpr(env, pr.Call.Args[0])
