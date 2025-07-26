@@ -1,3 +1,67 @@
+## Progress (2025-07-26 17:02 +0700)
+- release: v0.10.41
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-26 17:02 +0700)
+- release: v0.10.41
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-26 17:02 +0700)
+- release: v0.10.41
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-26 17:02 +0700)
+- release: v0.10.41
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-26 17:02 +0700)
+- release: v0.10.41
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-26 17:02 +0700)
+- release: v0.10.41
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-26 17:02 +0700)
+- release: v0.10.41
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-26 17:02 +0700)
+- release: v0.10.41
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-26 17:02 +0700)
+- release: v0.10.41
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-26 17:02 +0700)
+- release: v0.10.41
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-26 17:02 +0700)
+- release: v0.10.41
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-26 17:02 +0700)
+- release: v0.10.41
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-26 17:02 +0700)
+- release: v0.10.41
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-26 17:02 +0700)
+- release: v0.10.41
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-26 17:02 +0700)
+- release: v0.10.41
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-26 17:02 +0700)
+- release: v0.10.41
+- Regenerated golden files - 104/104 vm valid programs passing
+
 ## Progress (2025-07-26 11:07 +0700)
 - scala: handle BigRat casts and unary minus
 - Regenerated golden files - 104/104 vm valid programs passing

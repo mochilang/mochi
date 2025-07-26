@@ -1,7 +1,7 @@
 # Go Rosetta Transpiler Output
 
-Completed programs: 172/285
-Last updated: 2025-07-26 16:52 +0700
+Completed programs: 178/285
+Last updated: 2025-07-26 17:02 +0700
 
 Checklist:
 
@@ -190,12 +190,12 @@ Checklist:
 | 181 | catmull-clark-subdivision-surface | ✓ | 1.0ms | 38.61KB |
 | 182 | chaocipher | ✓ | 164.0µs | 8.95KB |
 | 183 | chaos-game | ✓ | 434.0µs | 219.61KB |
-| 184 | character-codes-1 |   |  |  |
-| 185 | character-codes-2 |   |  |  |
-| 186 | character-codes-3 |   |  |  |
-| 187 | character-codes-4 |   |  |  |
-| 188 | character-codes-5 |   |  |  |
-| 189 | chat-server |   |  |  |
+| 184 | character-codes-1 | ✓ | 545.0µs | 984B |
+| 185 | character-codes-2 | ✓ | 366.0µs | 968B |
+| 186 | character-codes-3 | ✓ | 343.0µs | 1.20KB |
+| 187 | character-codes-4 | ✓ | 492.0µs | 984B |
+| 188 | character-codes-5 | ✓ | 371.0µs | 1000B |
+| 189 | chat-server | ✓ | 281.0µs | 1.26KB |
 | 190 | check-machin-like-formulas |   |  |  |
 | 191 | check-that-file-exists |   |  |  |
 | 192 | checkpoint-synchronization-1 |   |  |  |

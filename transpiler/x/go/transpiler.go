@@ -1903,7 +1903,7 @@ func Transpile(p *parser.Program, env *types.Env, benchMain bool) (*Program, err
 		if vd, ok := st.(*VarDecl); ok {
 			if t, err := env.GetVar(vd.Name); err == nil {
 				if gt := toGoTypeFromType(t); gt != "" {
-					if vd.Type == "" || vd.Type == "any" || vd.Type == "[]any" {
+					if vd.Type == "" || strings.Contains(vd.Type, "any") {
 						vd.Type = gt
 					}
 				}
@@ -4816,6 +4816,10 @@ func compilePrimary(p *parser.Primary, env *types.Env, base string) (Expr, error
 				if lt, ok := v.(types.ListType); ok {
 					if _, ok2 := lt.Elem.(types.MapType); ok2 {
 						skipStruct = true
+					} else if lt2, ok3 := lt.Elem.(types.ListType); ok3 {
+						if _, ok4 := lt2.Elem.(types.MapType); ok4 {
+							skipStruct = true
+						}
 					}
 				}
 			}
@@ -4859,12 +4863,12 @@ func compilePrimary(p *parser.Primary, env *types.Env, base string) (Expr, error
 		elems := make([]Expr, len(p.List.Elems))
 		elemType := "any"
 		if len(p.List.Elems) > 0 {
-			var base types.Type
+			var baseType types.Type
 			same := true
 			allMap := true
 			allStrKeys := true
 			for i, e := range p.List.Elems {
-				ex, err := compileExpr(e, env, "")
+				ex, err := compileExpr(e, env, base)
 				if err != nil {
 					return nil, err
 				}
@@ -4885,19 +4889,19 @@ func compilePrimary(p *parser.Primary, env *types.Env, base string) (Expr, error
 				}
 				elems[i] = ex
 				et := types.ExprType(e, env)
-				if base == nil {
+				if baseType == nil {
 					if !types.ContainsAny(et) {
-						base = et
+						baseType = et
 					}
-				} else if !types.EqualTypes(base, et) && !types.ContainsAny(et) {
+				} else if !types.EqualTypes(baseType, et) && !types.ContainsAny(et) {
 					same = false
 				}
 			}
-			if same && base != nil {
-				tname := toGoTypeFromType(base)
+			if same && baseType != nil {
+				tname := toGoTypeFromType(baseType)
 				if tname != "" && tname != "any" {
 					elemType = tname
-					if lt, ok := base.(types.ListType); ok {
+					if lt, ok := baseType.(types.ListType); ok {
 						for i, e := range elems {
 							if ll, ok2 := e.(*ListLit); ok2 && ll.ElemType == "any" && len(ll.Elems) == 0 {
 								ll.ElemType = toGoTypeFromType(lt.Elem)
