@@ -44,53 +44,32 @@ defmodule Main do
       true -> Enum.slice(base, start, len)
     end
   end
-  def sqrtApprox(x) do
-    try do
-      guess = x
-      i = 0
-      while_fun = fn while_fun, guess, i ->
-        if i < 20 do
-          guess = (guess + x / guess) / 2.0
-          i = i + 1
-          while_fun.(while_fun, guess, i)
-        else
-          {guess, i}
-        end
-      end
-      {guess, i} = try do
-          while_fun.(while_fun, guess, i)
-        catch
-          :break -> {guess, i}
-        end
-
-      throw {:return, guess}
-    catch
-      {:return, val} -> val
-    end
-  end
-  Process.put(:n, 10)
-  Process.put(:sum, 0.0)
-  Process.put(:x, 1)
   def main() do
     mem_start = _mem()
     t_start = _now()
-    while_fun_2 = fn while_fun_2 ->
-      if Process.get(:x) <= Process.get(:n) do
-        Process.put(:sum, Process.get(:sum) + (Process.get(:x)) * (Process.get(:x)))
-        Process.put(:x, Process.get(:x) + 1)
-        while_fun_2.(while_fun_2)
+    target = 269696
+    modulus = 1000000
+    n = 1
+    while_fun = fn while_fun, n ->
+      if true do
+        square = n * n
+        ending = rem(square, modulus)
+        if ending == target do
+          IO.puts(((("The smallest number whose square ends with " <> Kernel.to_string(target)) <> " is ") <> Kernel.to_string(n)))
+          throw :break
+        end
+        n = n + 1
+        while_fun.(while_fun, n)
       else
-        nil
+        n
       end
     end
-    try do
-      while_fun_2.(while_fun_2)
-    catch
-      :break -> nil
-    end
+    n = try do
+        while_fun.(while_fun, n)
+      catch
+        :break -> n
+      end
 
-    Process.put(:rms, Main.sqrtApprox(Process.get(:sum) / (Process.get(:n))))
-    IO.puts(Kernel.to_string(Process.get(:rms)))
     duration_us = div(_now() - t_start, 1000)
     mem_diff = abs(_mem() - mem_start)
     IO.puts("{\n  \"duration_us\": #{duration_us},\n  \"memory_bytes\": #{mem_diff},\n  \"name\": \"main\"\n}")

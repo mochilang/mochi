@@ -1,0 +1,16 @@
+: ok
+][: not ok
+[[]]: ok
+][][][: not ok
+[[[]]][]: ok
+[][]][][][: not ok
+[[[][][]]][]: ok
+][[]][]][[]][[: not ok
+[[][[][]]][][][]: ok
+][[[]]]]][][[[][][: not ok
+(): not ok
+{
+  "duration_us": 1091,
+  "memory_bytes": 400464,
+  "name": "main"
+}

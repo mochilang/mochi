@@ -62,12 +62,57 @@ run: exit status 1
      │
      └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/avl-tree.exs:284:8: Main.indentStr/1
 
-    error: imported Kernel.node/1 conflicts with local function
+    warning: function _slice/3 is unused
     │
- 47 │   def node(data) do
-    │       ^
+ 40 │   defp _slice(base, start, len) do
+    │        ~
     │
-    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/avl-tree.exs:47:7: Main (module)
+    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/avl-tree.exs:40:8: Main (module)
 
-** (CompileError) /workspace/mochi/tests/rosetta/transpiler/Elixir/avl-tree.exs: cannot compile module Main (errors have been logged)
+    warning: function _now/0 is unused
+    │
+  3 │   defp _now() do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/avl-tree.exs:3:8: Main (module)
 
+    warning: function _mem/0 is unused
+    │
+ 28 │   defp _mem() do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/avl-tree.exs:28:8: Main (module)
+
+    warning: function _lookup_host/1 is unused
+    │
+ 31 │   defp _lookup_host(host) do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/avl-tree.exs:31:8: Main (module)
+
+Empty tree:
+"null"
+
+Insert test:
+** (FunctionClauseError) no function clause matching in List.replace_at/3    
+    
+    The following arguments were given to List.replace_at/3:
+    
+        # 1
+        %{"Balance" => 0, "Data" => 3, "Link" => [nil, nil]}
+    
+        # 2
+        "Balance"
+    
+        # 3
+        -1
+    
+    Attempted function clauses (showing 1 out of 1):
+    
+        def replace_at(+list+, +index+, +value+) when -is_list(list)- and -is_integer(index)-
+    
+    (elixir 1.18.3) lib/list.ex:814: List.replace_at/3
+    /workspace/mochi/tests/rosetta/transpiler/Elixir/avl-tree.exs:162: Main.insertR/2
+    /workspace/mochi/tests/rosetta/transpiler/Elixir/avl-tree.exs:176: Main.insert/2
+    /workspace/mochi/tests/rosetta/transpiler/Elixir/avl-tree.exs:343: Main.main/0
+    /workspace/mochi/tests/rosetta/transpiler/Elixir/avl-tree.exs:361: (file)

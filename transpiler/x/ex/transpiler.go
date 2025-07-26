@@ -42,14 +42,14 @@ func sanitizeIdent(name string) string {
 
 func sanitizeFuncName(name string) string {
 	if len(name) > 0 && name[0] >= 'A' && name[0] <= 'Z' {
-		return strings.ToLower(name)
+		name = strings.ToLower(name)
 	}
 	return sanitizeIdent(name)
 }
 
 func sanitizeCallName(name string) string {
 	if len(name) > 0 && name[0] >= 'A' && name[0] <= 'Z' {
-		return strings.ToLower(name)
+		name = strings.ToLower(name)
 	}
 	return sanitizeIdent(name)
 }
@@ -2167,7 +2167,6 @@ func compileIfStmt(is *parser.IfStmt, env *types.Env) (Stmt, error) {
 	if err != nil {
 		return nil, err
 	}
-	envBefore := env.Copy()
 	thenStmts := make([]Stmt, 0, len(is.Then))
 	for _, s := range is.Then {
 		st, err := compileStmt(s, env)
@@ -2196,7 +2195,9 @@ func compileIfStmt(is *parser.IfStmt, env *types.Env) (Stmt, error) {
 			}
 		}
 	}
-	vars := gatherMutVars(append(append([]Stmt{}, thenStmts...), elseStmts...), envBefore)
+	// Use the current environment when gathering mutated variables so that
+	// variables defined in outer scopes are recognized as mutable.
+	vars := gatherMutVars(append(append([]Stmt{}, thenStmts...), elseStmts...), env)
 	return &IfStmt{Cond: cond, Then: thenStmts, Else: elseStmts, Vars: vars}, nil
 }
 
@@ -2222,8 +2223,11 @@ func compileWhileStmt(ws *parser.WhileStmt, env *types.Env) (Stmt, error) {
 	check = func(sts []Stmt) {
 		for _, st := range sts {
 			switch t := st.(type) {
-			case *BreakStmt, *ContinueStmt:
+			case *ContinueStmt:
+				// require wrapping in try/catch when continue is used
 				simple = false
+			case *BreakStmt:
+				// break can bubble up without try/catch
 			case *IfStmt:
 				check(t.Then)
 				check(t.Else)
@@ -3692,6 +3696,21 @@ func inferStaticType(e Expr) types.Type {
 			}
 		}
 		return types.MapType{Key: kt, Value: vt}
+	case *CastExpr:
+		switch v.Type {
+		case "int":
+			return types.IntType{}
+		case "string":
+			return types.StringType{}
+		case "bool":
+			return types.BoolType{}
+		case "list":
+			return types.ListType{Elem: types.AnyType{}}
+		case "map":
+			return types.MapType{Key: types.AnyType{}, Value: types.AnyType{}}
+		default:
+			return types.AnyType{}
+		}
 	case *LoadExpr:
 		return types.ListType{Elem: types.MapType{Key: types.StringType{}, Value: types.AnyType{}}}
 	case *NilLit:
