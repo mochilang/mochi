@@ -1,0 +1,85 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun dot(x: list<int>, y: list<int>): DotResult {
+func dot (regs=32)
+  // if len(x) != len(y) { return DotResult{ value: 0, ok: false } }
+  Len          r2, r0
+  Len          r3, r1
+  NotEqual     r4, r2, r3
+  JumpIfFalse  r4, L0
+  Const        r5, 0
+  Const        r6, false
+  Const        r7, "__name"
+  Const        r8, "DotResult"
+  Const        r9, "value"
+  Move         r10, r5
+  Const        r11, "ok"
+  Move         r12, r6
+  MakeMap      r13, 3, r7
+  Return       r13
+L0:
+  // var sum = 0
+  Const        r5, 0
+  Move         r14, r5
+  // var i = 0
+  Const        r5, 0
+  Move         r15, r5
+L2:
+  // while i < len(x) {
+  Len          r16, r0
+  LessInt      r17, r15, r16
+  JumpIfFalse  r17, L1
+  // sum = sum + x[i] * y[i]
+  Index        r18, r0, r15
+  Index        r19, r1, r15
+  Mul          r20, r18, r19
+  Add          r21, r14, r20
+  Move         r14, r21
+  // i = i + 1
+  Const        r22, 1
+  AddInt       r23, r15, r22
+  Move         r15, r23
+  // while i < len(x) {
+  Jump         L2
+L1:
+  // return DotResult{ value: sum, ok: true }
+  Const        r24, true
+  Const        r25, "__name"
+  Const        r26, "DotResult"
+  Const        r27, "value"
+  Move         r28, r14
+  Const        r29, "ok"
+  Move         r30, r24
+  MakeMap      r31, 3, r25
+  Return       r31
+
+  // fun main() {
+func main (regs=13)
+  // let r = dot([1, 3, -5], [4, -2, -1])
+  Const        r2, [1, 3, -5]
+  Move         r0, r2
+  Const        r3, [4, -2, -1]
+  Move         r1, r3
+  Call2        r4, dot, r0, r1
+  Move         r5, r4
+  // if !r.ok {
+  Const        r6, "ok"
+  Index        r7, r5, r6
+  Not          r8, r7
+  JumpIfFalse  r8, L0
+  // print("incompatible lengths")
+  Const        r9, "incompatible lengths"
+  Print        r9
+  // if !r.ok {
+  Jump         L1
+L0:
+  // print(str(r.value))
+  Const        r10, "value"
+  Index        r11, r5, r10
+  Str          r12, r11
+  Print        r12
+L1:
+  Return       r0
