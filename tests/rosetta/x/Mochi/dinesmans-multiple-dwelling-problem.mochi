@@ -1,0 +1,44 @@
+// Dinesman's multiple-dwelling problem in Mochi
+
+fun absInt(n: int): int {
+  if n < 0 { return -n }
+  return n
+}
+
+fun main() {
+  var b = 1
+  while b <= 5 {
+    if b != 5 {
+      var c = 1
+      while c <= 5 {
+        if c != 1 && c != b {
+          var f = 1
+          while f <= 5 {
+            if f != 1 && f != 5 && f != b && f != c && absInt(f - c) > 1 {
+              var m = 1
+              while m <= 5 {
+                if m != b && m != c && m != f && m > c {
+                  var s = 1
+                  while s <= 5 {
+                    if s != b && s != c && s != f && s != m && absInt(s - f) > 1 {
+                      print("Baker in " + str(b) + ", Cooper in " + str(c) + ", Fletcher in " + str(f) + ", Miller in " + str(m) + ", Smith in " + str(s) + ".")
+                      return
+                    }
+                    s = s + 1
+                  }
+                }
+                m = m + 1
+              }
+            }
+            f = f + 1
+          }
+        }
+        c = c + 1
+      }
+    }
+    b = b + 1
+  }
+  print("No solution found.")
+}
+
+main()
