@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated TypeScript code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/TypeScript`.
-Last updated: 2025-07-26 13:32 UTC
+Last updated: 2025-07-26 14:25 UTC
 
-## Rosetta Golden Test Checklist (330/332)
+## Rosetta Golden Test Checklist (331/332)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 1.595ms | 512.0 KB |
@@ -22,7 +22,7 @@ Last updated: 2025-07-26 13:32 UTC
 | 13 | 99-bottles-of-beer-2 | ✓ | 21.361ms | 5.3 MB |
 | 14 | 99-bottles-of-beer | ✓ | 14.585ms | 3.5 MB |
 | 15 | DNS-query | ✓ | 631µs | 128.0 KB |
-| 16 | Duffinian-numbers |   |  |  |
+| 16 | Duffinian-numbers | ✓ | 29.238ms | 11.9 MB |
 | 17 | a+b | ✓ | 1.936ms | 512.0 KB |
 | 18 | abbreviations-automatic | ✓ | 25.499ms | 5.2 MB |
 | 19 | abbreviations-easy | ✓ | 6.557ms | 384.0 KB |
@@ -329,13 +329,13 @@ Last updated: 2025-07-26 13:32 UTC
 | 320 | dragon-curve | ✓ | 1.801ms | 128.0 KB |
 | 321 | draw-a-clock | ✓ | 743µs | 128.0 KB |
 | 322 | draw-a-cuboid | ✓ | 3.326ms | 128.0 KB |
-| 323 | draw-a-pixel-1 | ✓ | 15.11ms | 9.9 MB |
-| 324 | draw-a-rotating-cube | ✓ | 7.667ms | 3.6 MB |
-| 325 | draw-a-sphere | ✓ | 16.525ms | 10.8 MB |
-| 326 | dutch-national-flag-problem | ✓ | 1.073ms | 128.0 KB |
-| 327 | dynamic-variable-names | ✓ | 2.378ms | 512.0 KB |
-| 328 | earliest-difference-between-prime-gaps | ✓ | 3.677ms | 512.0 KB |
-| 329 | eban-numbers | ✓ | 30.75ms | 12.5 MB |
-| 330 | echo-server | ✓ | 639µs | 128.0 KB |
-| 331 | ekg-sequence-convergence | ✓ | 4.206ms | 3.2 MB |
-| 332 | md5 | ✓ | 928µs | 384.0 KB |
+| 323 | draw-a-pixel-1 | ✓ | 15.23ms | 9.9 MB |
+| 324 | draw-a-rotating-cube | ✓ | 5.77ms | 3.5 MB |
+| 325 | draw-a-sphere | ✓ | 15.694ms | 10.3 MB |
+| 326 | dutch-national-flag-problem | ✓ | 1.22ms | 128.0 KB |
+| 327 | dynamic-variable-names | ✓ | 2.196ms | 640.0 KB |
+| 328 | earliest-difference-between-prime-gaps | ✓ | 3.822ms | 512.0 KB |
+| 329 | eban-numbers | ✓ | 35.78ms | 11.8 MB |
+| 330 | echo-server | ✓ | 610µs |  |
+| 331 | ekg-sequence-convergence | ✓ | 9.102ms | 4.6 MB |
+| 332 | md5 | ✓ | 1.194ms | 256.0 KB |
