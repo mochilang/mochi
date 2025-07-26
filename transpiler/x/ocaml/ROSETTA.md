@@ -2,7 +2,7 @@
 
 This directory contains OCaml code generated from Rosetta Code programs in `tests/rosetta/x/Mochi`.
 
-Completed programs: 60/332
+Completed programs: 63/332
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -76,10 +76,10 @@ Completed programs: 60/332
 | 68 | arithmetic-evaluation | error |  |  |
 | 69 | arithmetic-geometric-mean-calculate-pi | ✓ | 45.0µs | 5.76KB |
 | 70 | arithmetic-geometric-mean | error |  |  |
-| 71 | arithmetic-integer-1 |   |  |  |
-| 72 | arithmetic-integer-2 |   |  |  |
+| 71 | arithmetic-integer-1 | ✓ | 130.0µs | 848B |
+| 72 | arithmetic-integer-2 | ✓ | 146.0µs | 1.12KB |
 | 73 | arithmetic-numbers |   |  |  |
-| 74 | arithmetic-rational |   |  |  |
+| 74 | arithmetic-rational | ✓ | 202.0µs | 3.00KB |
 | 75 | array-concatenation |   |  |  |
 | 76 | array-length |   |  |  |
 | 77 | arrays |   |  |  |
@@ -338,4 +338,4 @@ Completed programs: 60/332
 | 330 | echo-server |   |  |  |
 | 331 | ekg-sequence-convergence |   |  |  |
 | 332 | md5 |   |  |  |
-Last updated 2025-07-26 19:01 +0700
+Last updated 2025-07-26 13:39 UTC

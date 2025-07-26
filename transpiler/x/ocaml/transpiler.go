@@ -2186,6 +2186,17 @@ type RawExpr struct{ Code string }
 func (r *RawExpr) emit(w io.Writer)      { io.WriteString(w, r.Code) }
 func (r *RawExpr) emitPrint(w io.Writer) { io.WriteString(w, r.Code) }
 
+// RefExpr produces an OCaml reference to the wrapped expression.
+type RefExpr struct{ Expr Expr }
+
+func (r *RefExpr) emit(w io.Writer) {
+	io.WriteString(w, "(ref (")
+	r.Expr.emit(w)
+	io.WriteString(w, "))")
+}
+
+func (r *RefExpr) emitPrint(w io.Writer) { r.emit(w) }
+
 // IgnoreExpr wraps an expression with OCaml's [ignore] to discard its result.
 type IgnoreExpr struct{ Expr Expr }
 
@@ -4745,12 +4756,7 @@ func convertCall(c *parser.CallExpr, env *types.Env, vars map[string]VarInfo) (E
 			if err != nil {
 				return nil, "", err
 			}
-			if mut != nil && i < len(fn.Params) && mut[fn.Params[i].Name] {
-				// pass reference without dereferencing
-				if n, ok := ex.(*Name); ok {
-					ex = &Name{Ident: n.Ident, Typ: n.Typ, Ref: false}
-				}
-			} else if i < len(fn.Params) {
+			if i < len(fn.Params) {
 				ptyp := typeRefString(fn.Params[i].Type)
 				if ts := typeString(types.ResolveTypeRef(fn.Params[i].Type, env)); ts != "" {
 					ptyp = ts
@@ -4766,6 +4772,22 @@ func convertCall(c *parser.CallExpr, env *types.Env, vars map[string]VarInfo) (E
 						ex = &CastExpr{Expr: ex, Type: "int_to_obj"}
 					case "float":
 						ex = &CastExpr{Expr: ex, Type: "float_to_obj"}
+					}
+				}
+
+				needsRef := mut != nil && mut[fn.Params[i].Name]
+				if ptyp == "int" || ptyp == "float" {
+					needsRef = true
+				}
+				if needsRef {
+					if n, ok := ex.(*Name); ok {
+						if info, ok2 := vars[n.Ident]; ok2 && info.ref {
+							ex = &Name{Ident: n.Ident, Typ: n.Typ, Ref: false}
+							needsRef = false
+						}
+					}
+					if needsRef {
+						ex = &RefExpr{Expr: ex}
 					}
 				}
 			}
