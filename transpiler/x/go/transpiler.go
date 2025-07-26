@@ -4933,6 +4933,14 @@ func compilePrimary(p *parser.Primary, env *types.Env, base string) (Expr, error
 					}
 				}
 			}
+			if elemType == "any" || elemType == "[]any" {
+				for i, ex := range elems {
+					if ll, ok := ex.(*ListLit); ok && ll.ElemType != "any" {
+						ll.ElemType = "any"
+						elems[i] = ll
+					}
+				}
+			}
 		}
 		return &ListLit{ElemType: elemType, Elems: elems}, nil
 	case p.Map != nil:
