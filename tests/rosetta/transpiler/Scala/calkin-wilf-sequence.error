@@ -1,0 +1,15 @@
+exit status 1
+/workspace/mochi/tests/rosetta/transpiler/Scala/calkin-wilf-sequence.scala:157: error: reassignment to val
+          s = s + "/" + String.valueOf(denom(r))
+            ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/calkin-wilf-sequence.scala:159: error: type mismatch;
+ found   : scala.math.BigInt
+ required: String
+        println(_padStart(i + BigInt(1), BigInt(2), " ") + ": " + s)
+                            ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/calkin-wilf-sequence.scala:159: error: type mismatch;
+ found   : scala.math.BigInt
+ required: Int
+        println(_padStart(i + BigInt(1), BigInt(2), " ") + ": " + s)
+                                               ^
+three errors found
