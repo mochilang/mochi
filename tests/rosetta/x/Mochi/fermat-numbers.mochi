@@ -1,0 +1,28 @@
+// Precomputed first 8 Fermat numbers and their prime factors
+fun main() {
+  let nums = [
+    "3", "5", "17", "257", "65537",
+    "4294967297",
+    "18446744073709551617",
+    "340282366920938463463374607431768211457"
+  ]
+  print("First 8 Fermat numbers:")
+  for n in nums { print(n) }
+  let factors = [
+    "3",
+    "5",
+    "17",
+    "257",
+    "65537",
+    "641 6700417",
+    "274177 67280421310721",
+    "59649589127497217 5704689200685129054721"
+  ]
+  print("\nFactors:")
+  var i = 0
+  while i < len(nums) {
+    print("F" + str(i) + " = " + factors[i])
+    i = i + 1
+  }
+}
+main()

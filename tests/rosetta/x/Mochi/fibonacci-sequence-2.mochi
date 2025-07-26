@@ -1,0 +1,13 @@
+fun fib(n: int): bigint {
+  if n < 2 { return n as bigint }
+  var a: bigint = 0
+  var b: bigint = 1
+  var i = n
+  i = i - 1
+  while i > 0 {
+    a = a + b
+    a, b = b, a
+    i = i - 1
+  }
+  return b
+}

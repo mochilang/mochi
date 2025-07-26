@@ -1,0 +1,9 @@
+var fs: map<string,string> = {"input.txt": "example"}
+fun copyFile(out: string, inp: string) {
+  fs[out] = fs[inp]
+}
+fun main() {
+  copyFile("output.txt", "input.txt")
+  print(fs["output.txt"])
+}
+main()

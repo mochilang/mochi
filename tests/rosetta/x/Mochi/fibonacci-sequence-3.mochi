@@ -1,0 +1,18 @@
+fun fibNumber(): fun(): int {
+  var a = 0
+  var b = 1
+  return fun(): int {
+    a, b = b, a + b
+    return a
+  }
+}
+fun fibSequence(n: int): int {
+  let f = fibNumber()
+  var r = 0
+  var i = 0
+  while i < n {
+    r = f()
+    i = i + 1
+  }
+  return r
+}
