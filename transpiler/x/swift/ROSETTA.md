@@ -3,7 +3,7 @@
 Generated Swift code for Mochi Rosetta programs in `tests/rosetta/x/Mochi`. Outputs are stored in `tests/rosetta/transpiler/Swift`. Errors are captured in `.error` files.
 
 Completed: 61/284
-Last updated: 2025-07-26 05:13 +0700
+Last updated: 2025-07-26 09:28 +0700
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -68,11 +68,11 @@ Last updated: 2025-07-26 05:13 +0700
 | 59 | apply-a-callback-to-an-array-2 | ✓ | 217µs | 3.1 MB |
 | 60 | apply-a-digital-filter-direct-form-ii-transposed- | ✓ | 173µs | 3.1 MB |
 | 61 | approximate-equality | ✓ | 146µs | 3.0 MB |
-| 62 | arbitrary-precision-integers-included- | ✓ | 27.687685s | 7.2 MB |
-| 63 | archimedean-spiral | ✓ | 1.559ms | 3.0 MB |
-| 64 | arena-storage-pool | ✓ | 299µs | 3.1 MB |
-| 65 | arithmetic-complex | ✓ | 195µs | 3.1 MB |
-| 66 | arithmetic-derivative | ✓ | 687µs | 3.2 MB |
+| 62 | arbitrary-precision-integers-included- | ✓ | 34.397413s | 7.2 MB |
+| 63 | archimedean-spiral | ✓ | 2.152ms | 3.2 MB |
+| 64 | arena-storage-pool | ✓ | 360µs | 3.1 MB |
+| 65 | arithmetic-complex | ✓ | 272µs | 3.2 MB |
+| 66 | arithmetic-derivative | ✓ | 1.023ms | 3.3 MB |
 | 67 | arithmetic-evaluation |   |  |  |
 | 68 | arithmetic-geometric-mean-calculate-pi |   |  |  |
 | 69 | arithmetic-geometric-mean |   |  |  |

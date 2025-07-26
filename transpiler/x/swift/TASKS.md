@@ -1,5 +1,5 @@
-## Progress (2025-07-26 05:13 +0700)
-- swift: transpile rosetta indices 62-65
+## Progress (2025-07-26 09:28 +0700)
+- scala transpiler: handle big int indexing and map updates
 - Generated golden tests for 102/104 programs
 - Updated README checklist and output artifacts
 
