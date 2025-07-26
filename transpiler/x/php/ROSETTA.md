@@ -2,9 +2,9 @@
 
 Generated PHP code from Mochi Rosetta tasks lives in `tests/rosetta/transpiler/php`.
 
-Last updated: 2025-07-26 21:30 +0700
+Last updated: 2025-07-26 21:53 +0700
 
-## Checklist (266/332)
+## Checklist (270/332)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 142µs | 136 B |
@@ -167,26 +167,26 @@ Last updated: 2025-07-26 21:30 +0700
 | 158 | call-a-function-5 | ✓ | 38µs | 96 B |
 | 159 | call-a-function-6 | ✓ | 43µs | 96 B |
 | 160 | call-a-function-7 | ✓ | 1µs | 64 B |
-| 161 | call-a-function-8 | ✓ |  |  |
-| 162 | call-a-function-9 | ✓ |  |  |
+| 161 | call-a-function-8 | ✓ | 13µs | 64 B |
+| 162 | call-a-function-9 | ✓ | 8µs | 64 B |
 | 163 | call-an-object-method-1 | ✓ | 1µs | 128 B |
-| 164 | call-an-object-method-2 | ✓ |  |  |
-| 165 | call-an-object-method-3 |   |  |  |
-| 166 | call-an-object-method |   |  |  |
-| 167 | camel-case-and-snake-case | ✓ |  |  |
-| 168 | canny-edge-detector | ✓ |  |  |
-| 169 | canonicalize-cidr |   |  |  |
-| 170 | cantor-set | ✓ |  |  |
-| 171 | carmichael-3-strong-pseudoprimes | ✓ |  |  |
-| 172 | cartesian-product-of-two-or-more-lists-1 | ✓ |  |  |
-| 173 | cartesian-product-of-two-or-more-lists-2 | ✓ |  |  |
-| 174 | cartesian-product-of-two-or-more-lists-3 | ✓ |  |  |
-| 175 | cartesian-product-of-two-or-more-lists-4 |   |  |  |
-| 176 | case-sensitivity-of-identifiers | ✓ |  |  |
-| 177 | casting-out-nines | ✓ |  |  |
-| 178 | catalan-numbers-1 | ✓ |  |  |
-| 179 | catalan-numbers-2 | ✓ |  |  |
-| 180 | catalan-numbers-pascals-triangle | ✓ |  |  |
+| 164 | call-an-object-method-2 | ✓ | 8µs | 1.9 KB |
+| 165 | call-an-object-method-3 | ✓ | 33µs | 184 B |
+| 166 | call-an-object-method | ✓ | 52µs | 184 B |
+| 167 | camel-case-and-snake-case | ✓ | 129µs | 96 B |
+| 168 | canny-edge-detector | ✓ | 91µs | 128 B |
+| 169 | canonicalize-cidr | ✓ | 157µs | 128 B |
+| 170 | cantor-set | ✓ | 134µs | 1.7 KB |
+| 171 | carmichael-3-strong-pseudoprimes | ✓ | 1.587ms | 96 B |
+| 172 | cartesian-product-of-two-or-more-lists-1 | ✓ | 37µs | 96 B |
+| 173 | cartesian-product-of-two-or-more-lists-2 | ✓ | 107µs | 96 B |
+| 174 | cartesian-product-of-two-or-more-lists-3 | ✓ | 53µs | 96 B |
+| 175 | cartesian-product-of-two-or-more-lists-4 | ✓ | 25µs | 96 B |
+| 176 | case-sensitivity-of-identifiers | ✓ | 64µs | 888 B |
+| 177 | casting-out-nines | ✓ | 1.313ms | 2.7 KB |
+| 178 | catalan-numbers-1 | ✓ | 79µs | 96 B |
+| 179 | catalan-numbers-2 | ✓ | 97µs | 96 B |
+| 180 | catalan-numbers-pascals-triangle | ✓ | 63µs | 792 B |
 | 181 | catamorphism | ✓ |  |  |
 | 182 | catmull-clark-subdivision-surface | ✓ |  |  |
 | 183 | chaocipher | ✓ |  |  |

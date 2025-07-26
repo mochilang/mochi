@@ -7,6 +7,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"sort"
 	"strconv"
 	"strings"
 
@@ -218,6 +219,9 @@ var phpReserved = map[string]struct{}{
 	"crc32":       {},
 	"xor":         {},
 	"trim":        {},
+	"copy":        {},
+	"new":         {},
+	"New":         {},
 }
 
 // phpReservedVar lists variable names that cannot be used directly in PHP
@@ -455,6 +459,181 @@ func gatherLocals(stmts []Stmt, locals map[string]struct{}) {
 			locals[s.Name] = struct{}{}
 		}
 	}
+}
+
+func freeVars(body []Stmt, params []string) []string {
+	locals := map[string]struct{}{}
+	gatherLocals(body, locals)
+	for _, p := range params {
+		locals[p] = struct{}{}
+	}
+	seen := map[string]struct{}{}
+
+	var rootVar func(Expr) string
+	rootVar = func(e Expr) string {
+		switch t := e.(type) {
+		case *Var:
+			return t.Name
+		case *IndexExpr:
+			return rootVar(t.X)
+		default:
+			return ""
+		}
+	}
+
+	var walkExpr func(Expr)
+	walkExpr = func(e Expr) {
+		switch ex := e.(type) {
+		case *Var:
+			if _, ok := locals[ex.Name]; !ok {
+				seen[ex.Name] = struct{}{}
+			}
+		case *IndexExpr:
+			if name := rootVar(ex.X); name != "" {
+				if _, ok := locals[name]; !ok {
+					seen[name] = struct{}{}
+				}
+			}
+			walkExpr(ex.X)
+			walkExpr(ex.Index)
+		case *SliceExpr:
+			walkExpr(ex.X)
+			if ex.Start != nil {
+				walkExpr(ex.Start)
+			}
+			if ex.End != nil {
+				walkExpr(ex.End)
+			}
+		case *UnaryExpr:
+			walkExpr(ex.X)
+		case *BinaryExpr:
+			walkExpr(ex.Left)
+			walkExpr(ex.Right)
+		case *CondExpr:
+			walkExpr(ex.Cond)
+			walkExpr(ex.Then)
+			walkExpr(ex.Else)
+		case *MatchExpr:
+			walkExpr(ex.Target)
+			for _, a := range ex.Arms {
+				walkExpr(a.Pattern)
+				walkExpr(a.Result)
+			}
+		case *UnionMatchExpr:
+			walkExpr(ex.Target)
+			for _, c := range ex.Cases {
+				walkExpr(c.Result)
+			}
+		case *QueryExpr:
+			if ex.Select != nil {
+				walkExpr(ex.Select)
+			}
+			if ex.Where != nil {
+				walkExpr(ex.Where)
+			}
+		case *GroupByExpr:
+			if ex.Key != nil {
+				walkExpr(ex.Key)
+			}
+			if ex.Where != nil {
+				walkExpr(ex.Where)
+			}
+			if ex.Select != nil {
+				walkExpr(ex.Select)
+			}
+			if ex.Having != nil {
+				walkExpr(ex.Having)
+			}
+		case *RightJoinExpr:
+			walkExpr(ex.Select)
+			walkExpr(ex.Cond)
+		case *LeftJoinExpr:
+			walkExpr(ex.Select)
+			walkExpr(ex.Cond)
+		case *OuterJoinExpr:
+			walkExpr(ex.Select)
+			walkExpr(ex.Cond)
+		case *SumExpr:
+			walkExpr(ex.List)
+		case *SubstringExpr:
+			walkExpr(ex.Str)
+			walkExpr(ex.Start)
+			if ex.End != nil {
+				walkExpr(ex.End)
+			}
+		}
+	}
+
+	var walkStmt func(Stmt)
+	walkStmt = func(s Stmt) {
+		switch st := s.(type) {
+		case *IndexAssignStmt:
+			if name := rootVar(st.Target); name != "" {
+				if _, ok := locals[name]; !ok {
+					seen[name] = struct{}{}
+				}
+			}
+			walkExpr(st.Value)
+		case *ExprStmt:
+			walkExpr(st.Expr)
+		case *LetStmt:
+			if st.Value != nil {
+				walkExpr(st.Value)
+			}
+		case *VarStmt:
+			if st.Value != nil {
+				walkExpr(st.Value)
+			}
+		case *IfStmt:
+			for _, t := range st.Then {
+				walkStmt(t)
+			}
+			for _, e := range st.Else {
+				walkStmt(e)
+			}
+		case *WhileStmt:
+			for _, b := range st.Body {
+				walkStmt(b)
+			}
+		case *ForRangeStmt:
+			for _, b := range st.Body {
+				walkStmt(b)
+			}
+		case *ForEachStmt:
+			for _, b := range st.Body {
+				walkStmt(b)
+			}
+		case *QueryLetStmt:
+			if st.Query != nil {
+				walkExpr(st.Query.Select)
+				walkExpr(st.Query.Where)
+			}
+		case *ReturnStmt:
+			if st.Value != nil {
+				walkExpr(st.Value)
+			}
+		case *SaveStmt:
+			walkExpr(st.Src)
+		case *UpdateStmt:
+			for _, v := range st.Values {
+				walkExpr(v)
+			}
+			if st.Cond != nil {
+				walkExpr(st.Cond)
+			}
+		}
+	}
+
+	for _, st := range body {
+		walkStmt(st)
+	}
+
+	vars := make([]string, 0, len(seen))
+	for n := range seen {
+		vars = append(vars, n)
+	}
+	sort.Strings(vars)
+	return vars
 }
 
 func markRefParams(body []Stmt, params []string) []bool {
@@ -2735,16 +2914,25 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		}
 		funcStack = funcStack[:len(funcStack)-1]
 		refFlags = markRefParams(body, params)
-		uses := []string{}
+		outer := map[string]struct{}{}
 		for _, frame := range funcStack {
-			uses = append(uses, frame...)
+			for _, v := range frame {
+				outer[v] = struct{}{}
+			}
 		}
-		if len(globalNames) > 0 {
-			for _, g := range globalNames {
-				if _, ok := globalFuncs[g]; ok {
+		fv := freeVars(body, params)
+		uses := []string{}
+		for _, n := range fv {
+			if _, ok := outer[n]; !ok {
+				continue
+			}
+			if _, ok := globalSet[n]; ok {
+				if _, fn := globalFuncs[n]; fn {
 					continue
 				}
-				uses = append(uses, "&"+g)
+				uses = append(uses, "&"+n)
+			} else {
+				uses = append(uses, n)
 			}
 		}
 		return &ClosureExpr{Params: params, RefParams: refFlags, Uses: uses, Body: body}, nil

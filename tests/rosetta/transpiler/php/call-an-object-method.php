@@ -17,30 +17,17 @@ function _now() {
 }
 $__start_mem = memory_get_usage();
 $__start = _now();
-  function f() {
-  return [0, 0.0];
+  function Box_TellSecret($self) {
+  global $box;
+  return $secret;
 };
-  function g($a, $b) {
-  return 0;
+  function mochi_New() {
+  global $box;
+  $b = ['Contents' => 'rabbit', 'secret' => 1];
+  return $b;
 };
-  function h($s, $nums) {
-};
-  function main() {
-  $ab = f();
-  $a = $ab[0];
-  $b = $ab[1];
-  $cb = f()[1];
-  $d = g($a, $cb);
-  $e = g($d, $b);
-  $i = g($d, 2.0);
-  $list = [];
-  $list = array_merge($list, [$a]);
-  $list = array_merge($list, [$d]);
-  $list = array_merge($list, [$e]);
-  $list = array_merge($list, [$i]);
-  $i = count($list);
-};
-  main();
+  $box = mochi_New();
+  Box_TellSecret($box);
 $__end = _now();
 $__end_mem = memory_get_usage();
 $__duration = intdiv($__end - $__start, 1000);

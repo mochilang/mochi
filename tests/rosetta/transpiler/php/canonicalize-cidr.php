@@ -1,5 +1,20 @@
 <?php
 ini_set('memory_limit', '-1');
+$now_seed = 0;
+$now_seeded = false;
+$s = getenv('MOCHI_NOW_SEED');
+if ($s !== false && $s !== '') {
+    $now_seed = intval($s);
+    $now_seeded = true;
+}
+function _now() {
+    global $now_seed, $now_seeded;
+    if ($now_seeded) {
+        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
+        return $now_seed;
+    }
+    return hrtime(true);
+}
 function _str($x) {
     if (is_array($x)) {
         $isList = array_keys($x) === range(0, count($x) - 1);
@@ -22,8 +37,18 @@ function repeat($s, $n) {
 function parseIntStr($s, $base = 10) {
     return intval($s, intval($base));
 }
-function split($s, $sep) {
-  global $mochi_join, $repeat, $parseIntStr, $toBinary, $binToInt, $padRight, $canonicalize, $tests;
+function _intdiv($a, $b) {
+    if (function_exists('bcdiv')) {
+        $sa = is_int($a) ? strval($a) : sprintf('%.0f', $a);
+        $sb = is_int($b) ? strval($b) : sprintf('%.0f', $b);
+        return intval(bcdiv($sa, $sb, 0));
+    }
+    return intdiv($a, $b);
+}
+$__start_mem = memory_get_usage();
+$__start = _now();
+  function split($s, $sep) {
+  global $tests;
   $parts = [];
   $cur = '';
   $i = 0;
@@ -39,9 +64,9 @@ function split($s, $sep) {
 };
   $parts = array_merge($parts, [$cur]);
   return $parts;
-}
-function mochi_join($xs, $sep) {
-  global $split, $repeat, $parseIntStr, $toBinary, $binToInt, $padRight, $canonicalize, $tests;
+};
+  function mochi_join($xs, $sep) {
+  global $tests;
   $res = '';
   $i = 0;
   while ($i < count($xs)) {
@@ -52,9 +77,9 @@ function mochi_join($xs, $sep) {
   $i = $i + 1;
 };
   return $res;
-}
-function repeat($ch, $n) {
-  global $split, $mochi_join, $parseIntStr, $toBinary, $binToInt, $padRight, $canonicalize, $tests;
+};
+  function mochi_repeat($ch, $n) {
+  global $tests;
   $out = '';
   $i = 0;
   while ($i < $n) {
@@ -62,9 +87,9 @@ function repeat($ch, $n) {
   $i = $i + 1;
 };
   return $out;
-}
-function parseIntStr($str) {
-  global $split, $mochi_join, $repeat, $toBinary, $binToInt, $padRight, $canonicalize, $tests;
+};
+  function mochi_parseIntStr($str) {
+  global $tests;
   $i = 0;
   $neg = false;
   if (strlen($str) > 0 && substr($str, 0, 1 - 0) == '-') {
@@ -81,21 +106,21 @@ function parseIntStr($str) {
   $n = -$n;
 }
   return $n;
-}
-function toBinary($n, $bits) {
-  global $split, $mochi_join, $repeat, $parseIntStr, $binToInt, $padRight, $canonicalize, $tests;
+};
+  function toBinary($n, $bits) {
+  global $tests;
   $b = '';
   $val = $n;
   $i = 0;
   while ($i < $bits) {
   $b = _str($val % 2) . $b;
-  $val = intval((intdiv($val, 2)));
+  $val = intval((_intdiv($val, 2)));
   $i = $i + 1;
 };
   return $b;
-}
-function binToInt($bits) {
-  global $split, $mochi_join, $repeat, $parseIntStr, $toBinary, $padRight, $canonicalize, $tests;
+};
+  function binToInt($bits) {
+  global $tests;
   $n = 0;
   $i = 0;
   while ($i < strlen($bits)) {
@@ -103,22 +128,22 @@ function binToInt($bits) {
   $i = $i + 1;
 };
   return $n;
-}
-function padRight($s, $width) {
-  global $split, $mochi_join, $repeat, $parseIntStr, $toBinary, $binToInt, $canonicalize, $tests;
+};
+  function padRight($s, $width) {
+  global $tests;
   $out = $s;
   while (strlen($out) < $width) {
   $out = $out . ' ';
 };
   return $out;
-}
-function canonicalize($cidr) {
-  global $split, $mochi_join, $repeat, $parseIntStr, $toBinary, $binToInt, $padRight, $tests;
-  $parts = split($cidr, '/');
+};
+  function canonicalize($cidr) {
+  global $tests;
+  $parts = explode('/', $cidr);
   $dotted = $parts[0];
   $size = parseIntStr($parts[1], 10);
   $binParts = [];
-  foreach (split($dotted, '.') as $p) {
+  foreach (explode('.', $dotted) as $p) {
   $binParts = array_merge($binParts, [toBinary(parseIntStr($p, 10), 8)]);
 };
   $binary = mochi_join($binParts, '');
@@ -130,8 +155,16 @@ function canonicalize($cidr) {
   $i = $i + 8;
 };
   return mochi_join($canonParts, '.') . '/' . $parts[1];
-}
-$tests = ['87.70.141.1/22', '36.18.154.103/12', '62.62.197.11/29', '67.137.119.181/4', '161.214.74.21/24', '184.232.176.184/18'];
-foreach ($tests as $t) {
+};
+  $tests = ['87.70.141.1/22', '36.18.154.103/12', '62.62.197.11/29', '67.137.119.181/4', '161.214.74.21/24', '184.232.176.184/18'];
+  foreach ($tests as $t) {
   echo rtrim(padRight($t, 18) . ' -> ' . canonicalize($t)), PHP_EOL;
 }
+$__end = _now();
+$__end_mem = memory_get_usage();
+$__duration = intdiv($__end - $__start, 1000);
+$__mem_diff = max(0, $__end_mem - $__start_mem);
+$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
+$__j = json_encode($__bench, 128);
+$__j = str_replace("    ", "  ", $__j);
+echo $__j, PHP_EOL;;

@@ -1,4 +1,4 @@
-The following are Carmichael munbers for p1 <= 61:
+The following are Carmichael munbers for p1 <= 61:\n
 p1     p2      p3     product
 ==     ==      ==     =======
  3     11      17     561
@@ -70,3 +70,8 @@ p1     p2      p3     product
 61    271     571     9439201
 61    241     421     6189121
 61   3361    4021     824389441
+{
+  "duration_us": 1587,
+  "memory_bytes": 96,
+  "name": "main"
+}
