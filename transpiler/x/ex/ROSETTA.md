@@ -2,8 +2,8 @@
 
 Generated Elixir code from Mochi Rosetta programs lives in `tests/rosetta/transpiler/Elixir`.
 
-## Rosetta Test Checklist (76/332)
-_Last updated: 2025-07-26 23:50 +0700_
+## Rosetta Test Checklist (85/358)
+_Last updated: 2025-07-26 18:41 +0000_
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | 100-doors-2 | ✓ |  |  |
@@ -97,16 +97,16 @@ _Last updated: 2025-07-26 23:50 +0700_
 | 89 | averages-median-1 | ✓ | 2.11ms | 354.6 KB |
 | 90 | averages-median-2 | ✓ | 1.60ms | 207.1 KB |
 | 91 | averages-median-3 |  |  |  |
-| 92 | averages-mode |  |  |  |
-| 93 | averages-pythagorean-means |  |  |  |
-| 94 | averages-root-mean-square |  |  |  |
-| 95 | averages-simple-moving-average |  |  |  |
+| 92 | averages-mode | ✓ |  |  |
+| 93 | averages-pythagorean-means | ✓ | 1.66ms | 326.7 KB |
+| 94 | averages-root-mean-square | ✓ | 2.46ms | 97.3 KB |
+| 95 | averages-simple-moving-average | ✓ | 3.76ms | 780.6 KB |
 | 96 | avl-tree |  |  |  |
-| 97 | b-zier-curves-intersections |  |  |  |
-| 98 | babbage-problem |  |  |  |
-| 99 | babylonian-spiral |  |  |  |
-| 100 | balanced-brackets |  |  |  |
-| 101 | balanced-ternary |  |  |  |
+| 97 | b-zier-curves-intersections | ✓ | 2.92ms | 26.8 KB |
+| 98 | babbage-problem | ✓ | 230us | 889.4 KB |
+| 99 | babylonian-spiral | ✓ | 2.51ms | 2.0 MB |
+| 100 | balanced-brackets | ✓ | 1.09ms | 391.1 KB |
+| 101 | balanced-ternary | ✓ | 2.97ms | 296.1 KB |
 | 102 | barnsley-fern |  |  |  |
 | 103 | base64-decode-data |  |  |  |
 | 104 | bell-numbers |  |  |  |
@@ -336,5 +336,31 @@ _Last updated: 2025-07-26 23:50 +0700_
 | 328 | earliest-difference-between-prime-gaps |  |  |  |
 | 329 | eban-numbers |  |  |  |
 | 330 | echo-server |  |  |  |
-| 331 | ekg-sequence-convergence |  |  |  |
-| 332 | md5 |  |  |  |
+| 331 | eertree |  |  |  |
+| 332 | egyptian-division |  |  |  |
+| 333 | ekg-sequence-convergence |  |  |  |
+| 334 | element-wise-operations |  |  |  |
+| 335 | elementary-cellular-automaton-infinite-length |  |  |  |
+| 336 | elementary-cellular-automaton-random-number-generator |  |  |  |
+| 337 | elementary-cellular-automaton |  |  |  |
+| 338 | elliptic-curve-arithmetic |  |  |  |
+| 339 | elliptic-curve-digital-signature-algorithm |  |  |  |
+| 340 | emirp-primes |  |  |  |
+| 341 | empty-directory |  |  |  |
+| 342 | empty-program |  |  |  |
+| 343 | empty-string-1 |  |  |  |
+| 344 | empty-string-2 |  |  |  |
+| 345 | enforced-immutability |  |  |  |
+| 346 | entropy-1 |  |  |  |
+| 347 | entropy-2 |  |  |  |
+| 348 | entropy-narcissist |  |  |  |
+| 349 | enumerations-1 |  |  |  |
+| 350 | enumerations-2 |  |  |  |
+| 351 | enumerations-3 |  |  |  |
+| 352 | enumerations-4 |  |  |  |
+| 353 | environment-variables-1 |  |  |  |
+| 354 | environment-variables-2 |  |  |  |
+| 355 | equal-prime-and-composite-sums |  |  |  |
+| 356 | equilibrium-index |  |  |  |
+| 357 | erd-s-nicolas-numbers |  |  |  |
+| 358 | md5 |  |  |  |

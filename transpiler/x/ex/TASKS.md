@@ -1,5 +1,5 @@
-## Progress (2025-07-26 23:50 +0700)
-- Commit 5ac7308a75: rb transpiler: add split builtin and update rosetta outputs
+## Progress (2025-07-27 01:41 +0700)
+- Commit 17e8d3b58d: ex transpiler: handle env parents for if
 - Generated Elixir for 102/104 programs
 - Updated README checklist and outputs
 - Improved code emission and type inference
