@@ -4234,6 +4234,16 @@ func convertPostfix(p *parser.PostfixExpr) (Expr, error) {
 								expr = &BinaryExpr{Left: args[0], Op: "+", Right: args[1]}
 								replaced = true
 							}
+						case "MD5Hex":
+							if n.Name == "testpkg" && len(args) == 1 {
+								if currentImports != nil {
+									currentImports["hashlib"] = true
+								}
+								enc := &CallExpr{Func: &FieldExpr{Target: args[0], Name: "encode"}}
+								md5Call := &CallExpr{Func: &FieldExpr{Target: &Name{Name: "hashlib"}, Name: "md5"}, Args: []Expr{enc}}
+								expr = &CallExpr{Func: &FieldExpr{Target: md5Call, Name: "hexdigest"}}
+								replaced = true
+							}
 						case "FifteenPuzzleExample":
 							if n.Name == "testpkg" && len(args) == 0 {
 								expr = &StringLit{Value: "Solution found in 52 moves: rrrulddluuuldrurdddrullulurrrddldluurddlulurruldrdrd"}
