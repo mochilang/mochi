@@ -1,0 +1,33 @@
+Triangle (0, 0), (5, 0), (0, 5) and
+Triangle (0, 0), (5, 0), (0, 6)
+overlap
+
+Triangle (0, 0), (0, 5), (5, 0) and
+Triangle (0, 0), (0, 5), (5, 0)
+do not overlap
+
+Triangle (0, 0), (5, 0), (0, 5) and
+Triangle (-10, 0), (-5, 0), (-1, 6)
+do not overlap
+
+Triangle (0, 0), (5, 0), (2.5, 5) and
+Triangle (0, 4), (2.5, -1), (5, 4)
+overlap
+
+Triangle (0, 0), (1, 1), (0, 2) and
+Triangle (2, 1), (3, 0), (3, 2)
+do not overlap
+
+Triangle (0, 0), (1, 1), (0, 2) and
+Triangle (2, 1), (3, -2), (3, 4)
+do not overlap
+
+Triangle (0, 0), (1, 0), (0, 1) and
+Triangle (1, 0), (2, 0), (1, 1.1)
+which have only a single corner in contact, if boundary points collide
+do not overlap
+
+Triangle (0, 0), (1, 0), (0, 1) and
+Triangle (1, 0), (2, 0), (1, 1.1)
+which have only a single corner in contact, if boundary points do not collide
+overlap
