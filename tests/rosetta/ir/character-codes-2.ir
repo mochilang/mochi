@@ -1,0 +1,67 @@
+func main (regs=7)
+  // print(str(ord("A")))
+  Const        r1, "A"
+  Move         r0, r1
+  Call         r2, ord, r0
+  Str          r3, r2
+  Print        r3
+  // print(chr(65))
+  Const        r5, 65
+  Move         r4, r5
+  Call         r6, chr, r4
+  Print        r6
+  Return       r0
+
+  // fun ord(ch: string): int {
+func ord (regs=11)
+  // if ch == "a" { return 97 }
+  Const        r1, "a"
+  Equal        r2, r0, r1
+  JumpIfFalse  r2, L0
+  Const        r3, 97
+  Return       r3
+L0:
+  // if ch == "π" { return 960 }
+  Const        r4, "π"
+  Equal        r5, r0, r4
+  JumpIfFalse  r5, L1
+  Const        r6, 960
+  Return       r6
+L1:
+  // if ch == "A" { return 65 }
+  Const        r7, "A"
+  Equal        r8, r0, r7
+  JumpIfFalse  r8, L2
+  Const        r9, 65
+  Return       r9
+L2:
+  // return 0
+  Const        r10, 0
+  Return       r10
+
+  // fun chr(n: int): string {
+func chr (regs=11)
+  // if n == 97 { return "a" }
+  Const        r1, 97
+  Equal        r2, r0, r1
+  JumpIfFalse  r2, L0
+  Const        r3, "a"
+  Return       r3
+L0:
+  // if n == 960 { return "π" }
+  Const        r4, 960
+  Equal        r5, r0, r4
+  JumpIfFalse  r5, L1
+  Const        r6, "π"
+  Return       r6
+L1:
+  // if n == 65 { return "A" }
+  Const        r7, 65
+  Equal        r8, r0, r7
+  JumpIfFalse  r8, L2
+  Const        r9, "A"
+  Return       r9
+L2:
+  // return "?"
+  Const        r10, "?"
+  Return       r10

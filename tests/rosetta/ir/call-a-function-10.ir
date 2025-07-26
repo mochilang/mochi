@@ -1,0 +1,38 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun main() {
+func main (regs=15)
+  // var list: list<int> = []
+  Const        r0, []
+  Move         r1, r0
+  // var a = 1
+  Const        r2, 1
+  Move         r3, r2
+  // var d = 2
+  Const        r4, 2
+  Move         r5, r4
+  // var e = 3
+  Const        r6, 3
+  Move         r7, r6
+  // var i = 4
+  Const        r8, 4
+  Move         r9, r8
+  // list = append(list, a)
+  Append       r10, r1, r3
+  Move         r1, r10
+  // list = append(list, d)
+  Append       r11, r1, r5
+  Move         r1, r11
+  // list = append(list, e)
+  Append       r12, r1, r7
+  Move         r1, r12
+  // list = append(list, i)
+  Append       r13, r1, r9
+  Move         r1, r13
+  // i = len(list)
+  Len          r14, r1
+  Move         r9, r14
+  Return       r0

@@ -1,0 +1,89 @@
+func main (regs=8)
+  // let funcs = newFactory()
+  Call         r3, newFactory, 
+  Move         r0, r3
+  SetGlobal    0,0,0,0
+  // let New = funcs[0]
+  Const        r4, 0
+  Index        r5, r0, r4
+  Move         r1, r5
+  SetGlobal    1,1,0,0
+  // let Count = funcs[1]
+  Const        r6, 1
+  Index        r7, r0, r6
+  Move         r2, r7
+  SetGlobal    2,2,0,0
+  Return       r0
+
+  // fun newFactory(): list<fun()> {
+func newFactory (regs=18)
+  // var sn = 0
+  Const        r3, 0
+  Move         r4, r3
+  // fun New(): Box {
+  Move         r5, r2
+  Move         r6, r1
+  Move         r7, r0
+  Move         r8, r4
+  MakeClosure  r9, New, 4, r5
+  // fun Count(): int { return sn }
+  Move         r10, r2
+  Move         r11, r9
+  Move         r12, r0
+  Move         r13, r4
+  MakeClosure  r14, Count, 4, r10
+  // return [New, Count]
+  Move         r15, r9
+  Move         r16, r14
+  MakeList     r17, 2, r15
+  Return       r17
+
+  // fun New(): Box {
+func New (regs=23)
+  // sn = sn + 1
+  Const        r7, 1
+  Add          r8, r6, r7
+  Move         r6, r8
+  // var b = Box{ secret: sn }
+  Const        r9, "__name"
+  Const        r10, "Box"
+  Const        r11, "secret"
+  Move         r12, r6
+  MakeClosure  r13, main, 2, r0
+  // fun TellSecret(): int {
+  Const        r14, "TellSecret"
+  // var b = Box{ secret: sn }
+  MakeMap      r15, 3, r9
+  Move         r16, r15
+  // if sn == 1 {
+  Const        r7, 1
+  Equal        r17, r6, r7
+  JumpIfFalse  r17, L0
+  // b.Contents = "rabbit"
+  Const        r18, "rabbit"
+  Const        r19, "Contents"
+  SetIndex     r16, r19, r18
+  // if sn == 1 {
+  Jump         L1
+L0:
+  // } else if sn == 2 {
+  Const        r20, 2
+  Equal        r21, r6, r20
+  JumpIfFalse  r21, L1
+  // b.Contents = "rock"
+  Const        r22, "rock"
+  Const        r19, "Contents"
+  SetIndex     r16, r19, r22
+L1:
+  // return b
+  Return       r16
+
+  // fun Count(): int { return sn }
+func Count (regs=7)
+  // fun Count(): int { return sn }
+  Return       r6
+
+  // fun TellSecret(): int {
+func Box.TellSecret (regs=5)
+  // return secret
+  Return       r4

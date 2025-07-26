@@ -1,0 +1,34 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun f(): list<any> {
+func f (regs=1)
+  // return [0, 0.0]
+  Const        r0, [0, 0.0]
+  Return       r0
+
+  // fun g(a: int, b: float): int {
+func g (regs=3)
+  // return 0
+  Const        r2, 0
+  Return       r2
+
+  // fun h(s: string, nums: list<int>) {
+func h (regs=2)
+  Return       r0
+
+  // fun main() {
+func main (regs=6)
+  // if 2 * g(1, 3.0) + 4 > 0 {
+  Const        r0, 2
+  Const        r1, 0
+  MulInt       r2, r0, r1
+  Const        r3, 4
+  AddInt       r4, r2, r3
+  Const        r1, 0
+  LessInt      r5, r1, r4
+  JumpIfFalse  r5, L0
+L0:
+  Return       r0

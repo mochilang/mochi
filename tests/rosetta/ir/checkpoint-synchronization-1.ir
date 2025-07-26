@@ -1,0 +1,74 @@
+func main (regs=37)
+  // var partList = ["A", "B", "C", "D"]
+  Const        r2, ["A", "B", "C", "D"]
+  Move         r0, r2
+  SetGlobal    0,0,0,0
+  // var nAssemblies = 3
+  Const        r3, 3
+  Move         r1, r3
+  SetGlobal    1,1,0,0
+  // for cycle in 1..(nAssemblies + 1) {
+  Const        r4, 1
+  Const        r4, 1
+  AddInt       r5, r1, r4
+  Move         r6, r4
+L5:
+  LessInt      r7, r6, r5
+  JumpIfFalse  r7, L0
+  // print("begin assembly cycle " + str(cycle))
+  Const        r8, "begin assembly cycle "
+  Str          r9, r6
+  Add          r10, r8, r9
+  Print        r10
+  // for p in partList {
+  IterPrep     r11, r0
+  Len          r12, r11
+  Const        r13, 0
+L2:
+  LessInt      r14, r13, r12
+  JumpIfFalse  r14, L1
+  Index        r15, r11, r13
+  Move         r16, r15
+  // print(p + " worker begins part")
+  Const        r17, " worker begins part"
+  Add          r18, r16, r17
+  Print        r18
+  // for p in partList {
+  Const        r19, 1
+  AddInt       r20, r13, r19
+  Move         r13, r20
+  Jump         L2
+L1:
+  // for p in partList {
+  IterPrep     r21, r0
+  Len          r22, r21
+  Const        r23, 0
+L4:
+  LessInt      r24, r23, r22
+  JumpIfFalse  r24, L3
+  Index        r25, r21, r23
+  Move         r16, r25
+  // print(p + " worker completes part")
+  Const        r26, " worker completes part"
+  Add          r27, r16, r26
+  Print        r27
+  // for p in partList {
+  Const        r28, 1
+  AddInt       r29, r23, r28
+  Move         r23, r29
+  Jump         L4
+L3:
+  // print("assemble.  cycle " + str(cycle) + " complete")
+  Const        r30, "assemble.  cycle "
+  Str          r31, r6
+  Add          r32, r30, r31
+  Const        r33, " complete"
+  Add          r34, r32, r33
+  Print        r34
+  // for cycle in 1..(nAssemblies + 1) {
+  Const        r35, 1
+  AddInt       r36, r6, r35
+  Move         r6, r36
+  Jump         L5
+L0:
+  Return       r0

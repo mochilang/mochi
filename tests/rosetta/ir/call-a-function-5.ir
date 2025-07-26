@@ -1,0 +1,46 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun doIt(p: map<string,int>): int {
+func doIt (regs=12)
+  // var b = 0
+  Const        r1, 0
+  Move         r2, r1
+  // if "b" in p { b = p["b"] }
+  Const        r3, "b"
+  In           r4, r3, r0
+  JumpIfFalse  r4, L0
+  Const        r3, "b"
+  Index        r5, r0, r3
+  Move         r2, r5
+L0:
+  // return p["a"] + b + p["c"]
+  Const        r6, "a"
+  Index        r7, r0, r6
+  Add          r8, r7, r2
+  Const        r9, "c"
+  Index        r10, r0, r9
+  Add          r11, r8, r10
+  Return       r11
+
+  // fun main() {
+func main (regs=9)
+  // var p: map<string,int> = {}
+  Const        r0, {}
+  Move         r1, r0
+  // p["a"] = 1
+  Const        r2, 1
+  Const        r3, "a"
+  SetIndex     r1, r3, r2
+  // p["c"] = 9
+  Const        r4, 9
+  Const        r5, "c"
+  SetIndex     r1, r5, r4
+  // print(str(doIt(p)))
+  Move         r6, r1
+  Call         r7, doIt, r6
+  Str          r8, r7
+  Print        r8
+  Return       r0

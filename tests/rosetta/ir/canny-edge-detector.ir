@@ -1,0 +1,373 @@
+func main (regs=3)
+  // let PI = 3.141592653589793
+  Const        r1, 3.141592653589793
+  Move         r0, r1
+  SetGlobal    0,0,0,0
+  // main()
+  Call         r2, main, 
+  Return       r0
+
+  // fun conv2d(img: list<list<float>>, k: list<list<float>>): list<list<float>> {
+func conv2d (regs=52)
+  // let h = len(img)
+  Len          r3, r1
+  Move         r4, r3
+  // let w = len(img[0])
+  Const        r5, 0
+  Index        r6, r1, r5
+  Len          r7, r6
+  Move         r8, r7
+  // let n = len(k)
+  Len          r9, r2
+  Move         r10, r9
+  // let half = n / 2
+  Const        r11, 2
+  DivInt       r12, r10, r11
+  Move         r13, r12
+  // var out: list<list<float>> = []
+  Const        r14, []
+  Move         r15, r14
+  // var y = 0
+  Const        r5, 0
+  Move         r16, r5
+L11:
+  // while y < h {
+  LessInt      r17, r16, r4
+  JumpIfFalse  r17, L0
+  // var row: list<float> = []
+  Const        r14, []
+  Move         r18, r14
+  // var x = 0
+  Const        r5, 0
+  Move         r19, r5
+L10:
+  // while x < w {
+  LessInt      r20, r19, r8
+  JumpIfFalse  r20, L1
+  // var sum = 0.0
+  Const        r21, 0.0
+  Move         r22, r21
+  // var j = 0
+  Const        r5, 0
+  Move         r23, r5
+L9:
+  // while j < n {
+  LessInt      r24, r23, r10
+  JumpIfFalse  r24, L2
+  // var i = 0
+  Const        r5, 0
+  Move         r25, r5
+L8:
+  // while i < n {
+  LessInt      r26, r25, r10
+  JumpIfFalse  r26, L3
+  // var yy = y + j - half
+  AddInt       r27, r16, r23
+  SubInt       r28, r27, r13
+  Move         r29, r28
+  // if yy < 0 { yy = 0 }
+  Const        r5, 0
+  LessInt      r30, r29, r5
+  JumpIfFalse  r30, L4
+  Const        r5, 0
+  Move         r29, r5
+L4:
+  // if yy >= h { yy = h - 1 }
+  LessEqInt    r31, r4, r29
+  JumpIfFalse  r31, L5
+  Const        r32, 1
+  SubInt       r33, r4, r32
+  Move         r29, r33
+L5:
+  // var xx = x + i - half
+  AddInt       r34, r19, r25
+  SubInt       r35, r34, r13
+  Move         r36, r35
+  // if xx < 0 { xx = 0 }
+  Const        r5, 0
+  LessInt      r37, r36, r5
+  JumpIfFalse  r37, L6
+  Const        r5, 0
+  Move         r36, r5
+L6:
+  // if xx >= w { xx = w - 1 }
+  LessEqInt    r38, r8, r36
+  JumpIfFalse  r38, L7
+  Const        r32, 1
+  SubInt       r39, r8, r32
+  Move         r36, r39
+L7:
+  // sum = sum + img[yy][xx] * k[j][i]
+  Index        r40, r1, r29
+  Index        r41, r40, r36
+  Index        r42, r2, r23
+  Index        r43, r42, r25
+  Mul          r44, r41, r43
+  AddFloat     r45, r22, r44
+  Move         r22, r45
+  // i = i + 1
+  Const        r32, 1
+  AddInt       r46, r25, r32
+  Move         r25, r46
+  // while i < n {
+  Jump         L8
+L3:
+  // j = j + 1
+  Const        r32, 1
+  AddInt       r47, r23, r32
+  Move         r23, r47
+  // while j < n {
+  Jump         L9
+L2:
+  // row = append(row, sum)
+  Append       r48, r18, r22
+  Move         r18, r48
+  // x = x + 1
+  Const        r32, 1
+  AddInt       r49, r19, r32
+  Move         r19, r49
+  // while x < w {
+  Jump         L10
+L1:
+  // out = append(out, row)
+  Append       r50, r15, r18
+  Move         r15, r50
+  // y = y + 1
+  Const        r32, 1
+  AddInt       r51, r16, r32
+  Move         r16, r51
+  // while y < h {
+  Jump         L11
+L0:
+  // return out
+  Return       r15
+
+  // fun gradient(img: list<list<float>>): list<list<float>> {
+func gradient (regs=46)
+  // let hx = [[-1.0,0.0,1.0],[-2.0,0.0,2.0],[-1.0,0.0,1.0]]
+  Const        r2, [[-1.0, 0.0, 1.0], [-2.0, 0.0, 2.0], [-1.0, 0.0, 1.0]]
+  Move         r3, r2
+  // let hy = [[1.0,2.0,1.0],[0.0,0.0,0.0],[-1.0,-2.0,-1.0]]
+  Const        r4, [[1.0, 2.0, 1.0], [0.0, 0.0, 0.0], [-1.0, -2.0, -1.0]]
+  Move         r5, r4
+  // var gx = conv2d(img, hx)
+  Move         r6, r1
+  Const        r8, [[-1.0, 0.0, 1.0], [-2.0, 0.0, 2.0], [-1.0, 0.0, 1.0]]
+  Move         r7, r8
+  Call2        r9, conv2d, r6, r7
+  Move         r10, r9
+  // var gy = conv2d(img, hy)
+  Move         r11, r1
+  Const        r13, [[1.0, 2.0, 1.0], [0.0, 0.0, 0.0], [-1.0, -2.0, -1.0]]
+  Move         r12, r13
+  Call2        r14, conv2d, r11, r12
+  Move         r15, r14
+  // var h = len(img)
+  Len          r16, r1
+  Move         r17, r16
+  // var w = len(img[0])
+  Const        r18, 0
+  Index        r19, r1, r18
+  Len          r20, r19
+  Move         r21, r20
+  // var out: list<list<float>> = []
+  Const        r22, []
+  Move         r23, r22
+  // var y = 0
+  Const        r18, 0
+  Move         r24, r18
+L3:
+  // while y < h {
+  LessInt      r25, r24, r17
+  JumpIfFalse  r25, L0
+  // var row: list<float> = []
+  Const        r22, []
+  Move         r26, r22
+  // var x = 0
+  Const        r18, 0
+  Move         r27, r18
+L2:
+  // while x < w {
+  LessInt      r28, r27, r21
+  JumpIfFalse  r28, L1
+  // let g = gx[y][x]*gx[y][x] + gy[y][x]*gy[y][x]
+  Index        r29, r10, r24
+  Index        r30, r29, r27
+  Index        r31, r10, r24
+  Index        r32, r31, r27
+  Mul          r33, r30, r32
+  Index        r34, r15, r24
+  Index        r35, r34, r27
+  Index        r36, r15, r24
+  Index        r37, r36, r27
+  Mul          r38, r35, r37
+  Add          r39, r33, r38
+  Move         r40, r39
+  // row = append(row, g)
+  Append       r41, r26, r40
+  Move         r26, r41
+  // x = x + 1
+  Const        r42, 1
+  AddInt       r43, r27, r42
+  Move         r27, r43
+  // while x < w {
+  Jump         L2
+L1:
+  // out = append(out, row)
+  Append       r44, r23, r26
+  Move         r23, r44
+  // y = y + 1
+  Const        r42, 1
+  AddInt       r45, r24, r42
+  Move         r24, r45
+  // while y < h {
+  Jump         L3
+L0:
+  // return out
+  Return       r23
+
+  // fun threshold(g: list<list<float>>, t: float): list<list<int>> {
+func threshold (regs=25)
+  // var h = len(g)
+  Len          r3, r1
+  Move         r4, r3
+  // var w = len(g[0])
+  Const        r5, 0
+  Index        r6, r1, r5
+  Len          r7, r6
+  Move         r8, r7
+  // var out: list<list<int>> = []
+  Const        r9, []
+  Move         r10, r9
+  // var y = 0
+  Const        r5, 0
+  Move         r11, r5
+L5:
+  // while y < h {
+  LessInt      r12, r11, r4
+  JumpIfFalse  r12, L0
+  // var row: list<int> = []
+  Const        r9, []
+  Move         r13, r9
+  // var x = 0
+  Const        r5, 0
+  Move         r14, r5
+L4:
+  // while x < w {
+  LessInt      r15, r14, r8
+  JumpIfFalse  r15, L1
+  // if g[y][x] >= t { row = append(row, 1) } else { row = append(row, 0) }
+  Index        r16, r1, r11
+  Index        r17, r16, r14
+  LessEq       r18, r2, r17
+  JumpIfFalse  r18, L2
+  Const        r19, 1
+  Append       r20, r13, r19
+  Move         r13, r20
+  Jump         L3
+L2:
+  Const        r5, 0
+  Append       r21, r13, r5
+  Move         r13, r21
+L3:
+  // x = x + 1
+  Const        r19, 1
+  AddInt       r22, r14, r19
+  Move         r14, r22
+  // while x < w {
+  Jump         L4
+L1:
+  // out = append(out, row)
+  Append       r23, r10, r13
+  Move         r10, r23
+  // y = y + 1
+  Const        r19, 1
+  AddInt       r24, r11, r19
+  Move         r11, r24
+  // while y < h {
+  Jump         L5
+L0:
+  // return out
+  Return       r10
+
+  // fun printMatrix(m: list<list<int>>) {
+func printMatrix (regs=25)
+  // var y = 0
+  Const        r2, 0
+  Move         r3, r2
+L4:
+  // while y < len(m) {
+  Len          r4, r1
+  LessInt      r5, r3, r4
+  JumpIfFalse  r5, L0
+  // var line = ""
+  Const        r6, ""
+  Move         r7, r6
+  // var x = 0
+  Const        r2, 0
+  Move         r8, r2
+L3:
+  // while x < len(m[0]) {
+  Const        r2, 0
+  Index        r9, r1, r2
+  Len          r10, r9
+  LessInt      r11, r8, r10
+  JumpIfFalse  r11, L1
+  // line = line + str(m[y][x])
+  Index        r12, r1, r3
+  Index        r13, r12, r8
+  Str          r14, r13
+  Add          r15, r7, r14
+  Move         r7, r15
+  // if x < len(m[0]) - 1 { line = line + " " }
+  Const        r2, 0
+  Index        r16, r1, r2
+  Len          r17, r16
+  Const        r18, 1
+  SubInt       r19, r17, r18
+  LessInt      r20, r8, r19
+  JumpIfFalse  r20, L2
+  Const        r21, " "
+  Add          r22, r7, r21
+  Move         r7, r22
+L2:
+  // x = x + 1
+  Const        r18, 1
+  AddInt       r23, r8, r18
+  Move         r8, r23
+  // while x < len(m[0]) {
+  Jump         L3
+L1:
+  // print(line)
+  Print        r7
+  // y = y + 1
+  Const        r18, 1
+  AddInt       r24, r3, r18
+  Move         r3, r24
+  // while y < len(m) {
+  Jump         L4
+L0:
+  Return       r0
+
+  // fun main() {
+func main (regs=15)
+  // let img = [
+  Const        r1, [[0.0, 0.0, 0.0, 0.0, 0.0], [0.0, 255.0, 255.0, 255.0, 0.0], [0.0, 255.0, 255.0, 255.0, 0.0], [0.0, 255.0, 255.0, 255.0, 0.0], [0.0, 0.0, 0.0, 0.0, 0.0]]
+  Move         r2, r1
+  // let g = gradient(img)
+  Const        r4, [[0.0, 0.0, 0.0, 0.0, 0.0], [0.0, 255.0, 255.0, 255.0, 0.0], [0.0, 255.0, 255.0, 255.0, 0.0], [0.0, 255.0, 255.0, 255.0, 0.0], [0.0, 0.0, 0.0, 0.0, 0.0]]
+  Move         r3, r4
+  Call         r5, gradient, r3
+  Move         r6, r5
+  // let edges = threshold(g, 1020.0*1020.0)  // compare squared magnitude
+  Move         r7, r6
+  Const        r9, 1020.0
+  Const        r9, 1020.0
+  MulFloat     r10, r9, r9
+  Move         r8, r10
+  Call2        r11, threshold, r7, r8
+  Move         r12, r11
+  // printMatrix(edges)
+  Move         r13, r12
+  Call         r14, printMatrix, r13
+  Return       r0

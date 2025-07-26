@@ -1,0 +1,223 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun indexOf(s: string, ch: string): int {
+func indexOf (regs=14)
+  // var i = 0
+  Const        r2, 0
+  Move         r3, r2
+L2:
+  // while i < len(s) {
+  Len          r4, r0
+  LessInt      r5, r3, r4
+  JumpIfFalse  r5, L0
+  // if s[i:i+1] == ch {
+  Move         r6, r3
+  Const        r8, 1
+  AddInt       r9, r3, r8
+  Move         r7, r9
+  Slice        r10, r0, r6, r7
+  Equal        r11, r10, r1
+  JumpIfFalse  r11, L1
+  // return i
+  Return       r3
+L1:
+  // i = i + 1
+  Const        r8, 1
+  AddInt       r12, r3, r8
+  Move         r3, r12
+  // while i < len(s) {
+  Jump         L2
+L0:
+  // return -1
+  Const        r8, 1
+  NegInt       r13, r8
+  Return       r13
+
+  // fun rotate(s: string, n: int): string {
+func rotate (regs=9)
+  // return s[n:] + s[:n]
+  Move         r2, r1
+  Const        r3, nil
+  Slice        r4, r0, r2, r3
+  Const        r5, nil
+  Move         r6, r1
+  Slice        r7, r0, r5, r6
+  Add          r8, r4, r7
+  Return       r8
+
+  // fun scrambleLeft(s: string): string {
+func scrambleLeft (regs=20)
+  // return s[0:1] + s[2:14] + s[1:2] + s[14:]
+  Const        r2, 0
+  Move         r1, r2
+  Const        r4, 1
+  Move         r3, r4
+  Slice        r5, r0, r1, r3
+  Const        r7, 2
+  Move         r6, r7
+  Const        r9, 14
+  Move         r8, r9
+  Slice        r10, r0, r6, r8
+  Add          r11, r5, r10
+  Const        r4, 1
+  Move         r12, r4
+  Const        r7, 2
+  Move         r13, r7
+  Slice        r14, r0, r12, r13
+  Add          r15, r11, r14
+  Const        r9, 14
+  Move         r16, r9
+  Const        r17, nil
+  Slice        r18, r0, r16, r17
+  Add          r19, r15, r18
+  Return       r19
+
+  // fun scrambleRight(s: string): string {
+func scrambleRight (regs=25)
+  // return s[1:3] + s[4:15] + s[3:4] + s[15:] + s[0:1]
+  Const        r2, 1
+  Move         r1, r2
+  Const        r4, 3
+  Move         r3, r4
+  Slice        r5, r0, r1, r3
+  Const        r7, 4
+  Move         r6, r7
+  Const        r9, 15
+  Move         r8, r9
+  Slice        r10, r0, r6, r8
+  Add          r11, r5, r10
+  Const        r4, 3
+  Move         r12, r4
+  Const        r7, 4
+  Move         r13, r7
+  Slice        r14, r0, r12, r13
+  Add          r15, r11, r14
+  Const        r9, 15
+  Move         r16, r9
+  Const        r17, nil
+  Slice        r18, r0, r16, r17
+  Add          r19, r15, r18
+  Const        r21, 0
+  Move         r20, r21
+  Const        r2, 1
+  Move         r22, r2
+  Slice        r23, r0, r20, r22
+  Add          r24, r19, r23
+  Return       r24
+
+  // fun chao(text: string, encode: bool): string {
+func chao (regs=46)
+  // var left = "HXUCZVAMDSLKPEFJRIGTWOBNYQ"
+  Const        r2, "HXUCZVAMDSLKPEFJRIGTWOBNYQ"
+  Move         r3, r2
+  // var right = "PTLNBQDEOYSFAVZKGJRIHWXUMC"
+  Const        r4, "PTLNBQDEOYSFAVZKGJRIHWXUMC"
+  Move         r5, r4
+  // var out = ""
+  Const        r6, ""
+  Move         r7, r6
+  // var i = 0
+  Const        r8, 0
+  Move         r9, r8
+L3:
+  // while i < len(text) {
+  Len          r10, r0
+  LessInt      r11, r9, r10
+  JumpIfFalse  r11, L0
+  // let ch = text[i:i+1]
+  Move         r12, r9
+  Const        r14, 1
+  AddInt       r15, r9, r14
+  Move         r13, r15
+  Slice        r16, r0, r12, r13
+  Move         r17, r16
+  // var idx = 0
+  Const        r8, 0
+  Move         r18, r8
+  // if encode {
+  JumpIfFalse  r1, L1
+  // idx = indexOf(right, ch)
+  Move         r19, r5
+  Move         r20, r17
+  Call2        r21, indexOf, r19, r20
+  Move         r18, r21
+  // out = out + left[idx:idx+1]
+  Move         r22, r18
+  Const        r14, 1
+  Add          r24, r18, r14
+  Move         r23, r24
+  Slice        r25, r3, r22, r23
+  Add          r26, r7, r25
+  Move         r7, r26
+  // if encode {
+  Jump         L2
+L1:
+  // idx = indexOf(left, ch)
+  Move         r27, r3
+  Move         r28, r17
+  Call2        r29, indexOf, r27, r28
+  Move         r18, r29
+  // out = out + right[idx:idx+1]
+  Move         r30, r18
+  Const        r14, 1
+  Add          r32, r18, r14
+  Move         r31, r32
+  Slice        r33, r5, r30, r31
+  Add          r34, r7, r33
+  Move         r7, r34
+L2:
+  // left = rotate(left, idx)
+  Move         r35, r3
+  Move         r36, r18
+  Call2        r37, rotate, r35, r36
+  Move         r3, r37
+  // right = rotate(right, idx)
+  Move         r38, r5
+  Move         r39, r18
+  Call2        r40, rotate, r38, r39
+  Move         r5, r40
+  // left = scrambleLeft(left)
+  Move         r41, r3
+  Call         r42, scrambleLeft, r41
+  Move         r3, r42
+  // right = scrambleRight(right)
+  Move         r43, r5
+  Call         r44, scrambleRight, r43
+  Move         r5, r44
+  // i = i + 1
+  Const        r14, 1
+  AddInt       r45, r9, r14
+  Move         r9, r45
+  // while i < len(text) {
+  Jump         L3
+L0:
+  // return out
+  Return       r7
+
+  // fun main() {
+func main (regs=11)
+  // let plain = "WELLDONEISBETTERTHANWELLSAID"
+  Const        r0, "WELLDONEISBETTERTHANWELLSAID"
+  Move         r1, r0
+  // let cipher = chao(plain, true)
+  Const        r0, "WELLDONEISBETTERTHANWELLSAID"
+  Move         r2, r0
+  Const        r4, true
+  Move         r3, r4
+  Call2        r5, chao, r2, r3
+  Move         r6, r5
+  // print(plain)
+  Const        r0, "WELLDONEISBETTERTHANWELLSAID"
+  Print        r0
+  // print(cipher)
+  Print        r6
+  // print(chao(cipher, false))
+  Move         r7, r6
+  Const        r9, false
+  Move         r8, r9
+  Call2        r10, chao, r7, r8
+  Print        r10
+  Return       r0

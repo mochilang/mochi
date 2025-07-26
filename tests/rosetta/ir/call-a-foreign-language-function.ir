@@ -1,0 +1,24 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun strdup(s: string): string {
+func strdup (regs=3)
+  // return s + ""
+  Const        r1, ""
+  Add          r2, r0, r1
+  Return       r2
+
+  // fun main() {
+func main (regs=3)
+  // let go1 = "hello C"
+  Const        r0, "hello C"
+  Move         r1, r0
+  // let c2 = strdup(go1)
+  Const        r0, "hello C"
+  Move         r2, r0
+  // print(c2)
+  Const        r0, "hello C"
+  Print        r0
+  Return       r0

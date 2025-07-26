@@ -1,0 +1,82 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun mapString(s: string, f: fun(string): string): string {
+func mapString (regs=17)
+  // var out = ""
+  Const        r2, ""
+  Move         r3, r2
+  // var i = 0
+  Const        r4, 0
+  Move         r5, r4
+L1:
+  // while i < len(s) {
+  Len          r6, r0
+  LessInt      r7, r5, r6
+  JumpIfFalse  r7, L0
+  // out = out + f(s[i:i+1])
+  Move         r9, r5
+  Const        r11, 1
+  AddInt       r12, r5, r11
+  Move         r10, r12
+  Slice        r13, r0, r9, r10
+  Move         r8, r13
+  CallV        r14, r1, 1, r8
+  Add          r15, r3, r14
+  Move         r3, r15
+  // i = i + 1
+  Const        r11, 1
+  AddInt       r16, r5, r11
+  Move         r5, r16
+  // while i < len(s) {
+  Jump         L1
+L0:
+  // return out
+  Return       r3
+
+  // fun main() {
+func main (regs=18)
+  // let fn = fun(r: string): string => if r == " " { "" } else { r }
+  MakeClosure  r0, fn3, 0, r0
+  Move         r1, r0
+  // mapString("Spaces removed", fn)
+  Const        r4, "Spaces removed"
+  Move         r2, r4
+  Move         r3, r1
+  Call2        r5, mapString, r2, r3
+  // mapString("Test", fun(r: string): string => lower(r))
+  Const        r8, "Test"
+  Move         r6, r8
+  Move         r9, r1
+  MakeClosure  r10, fn4, 1, r9
+  Move         r7, r10
+  Call2        r11, mapString, r6, r7
+  // mapString("shift", fun(r: string): string => r)
+  Const        r14, "shift"
+  Move         r12, r14
+  Move         r15, r1
+  MakeClosure  r16, fn5, 1, r15
+  Move         r13, r16
+  Call2        r17, mapString, r12, r13
+  Return       r0
+
+  // let fn = fun(r: string): string => if r == " " { "" } else { r }
+func fn3 (regs=5)
+  // let fn = fun(r: string): string => if r == " " { "" } else { r }
+  Const        r1, " "
+  Equal        r2, r0, r1
+  Const        r3, ""
+  Select       4,2,3,0
+  Return       r4
+
+  // mapString("Test", fun(r: string): string => lower(r))
+func fn4 (regs=3)
+  // mapString("Test", fun(r: string): string => lower(r))
+  Lower        r2, r1
+  Return       r2
+
+  // mapString("shift", fun(r: string): string => r)
+func fn5 (regs=2)
+  Return       r1

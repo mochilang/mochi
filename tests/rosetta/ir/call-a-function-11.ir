@@ -1,0 +1,62 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun zeroval(ival: int): int {
+func zeroval (regs=3)
+  // var x = ival
+  Move         r1, r0
+  // x = 0
+  Const        r2, 0
+  Move         r1, r2
+  // return x
+  Return       r1
+
+  // fun zeroptr(ref: list<int>) {
+func zeroptr (regs=2)
+  // ref[0] = 0
+  Const        r1, 0
+  Const        r1, 0
+  SetIndex     r0, r1, r1
+  Return       r0
+
+  // fun main() {
+func main (regs=22)
+  // var i = 1
+  Const        r0, 1
+  Move         r1, r0
+  // print("initial: " + str(i))
+  Const        r2, "initial: "
+  Str          r3, r1
+  Add          r4, r2, r3
+  Print        r4
+  // let tmp = zeroval(i)
+  Move         r5, r1
+  Call         r6, zeroval, r5
+  Move         r7, r6
+  // print("zeroval: " + str(i))
+  Const        r8, "zeroval: "
+  Str          r9, r1
+  Add          r10, r8, r9
+  Print        r10
+  // var box = [i]
+  Move         r11, r1
+  MakeList     r12, 1, r11
+  Move         r13, r12
+  // zeroptr(box)
+  Move         r14, r13
+  Call         r15, zeroptr, r14
+  // i = box[0]
+  Const        r16, 0
+  Index        r17, r13, r16
+  Move         r1, r17
+  // print("zeroptr: " + str(i))
+  Const        r18, "zeroptr: "
+  Str          r19, r1
+  Add          r20, r18, r19
+  Print        r20
+  // print("pointer: 0")
+  Const        r21, "pointer: 0"
+  Print        r21
+  Return       r0

@@ -1,0 +1,37 @@
+func main (regs=7)
+  // var box = New()
+  Call         r1, New, 
+  Move         r0, r1
+  SetGlobal    0,0,0,0
+  // box.TellSecret()
+  Const        r2, "Contents"
+  Index        r3, r0, r2
+  Const        r4, "secret"
+  Index        r5, r0, r4
+  Call         r6, Box.TellSecret, r3, r4
+  Return       r0
+
+  // fun TellSecret(): int {
+func Box.TellSecret (regs=3)
+  // return secret
+  Return       r2
+
+  // fun New(): Box {
+func New (regs=13)
+  // var b = Box{ Contents: "rabbit", secret: 1 }
+  Const        r1, "rabbit"
+  Const        r2, 1
+  Const        r3, "__name"
+  Const        r4, "Box"
+  Const        r5, "Contents"
+  Move         r6, r1
+  Const        r7, "secret"
+  Move         r8, r2
+  MakeClosure  r9, Box.TellSecret, 2, r6
+  // fun TellSecret(): int {
+  Const        r10, "TellSecret"
+  // var b = Box{ Contents: "rabbit", secret: 1 }
+  MakeMap      r11, 4, r3
+  Move         r12, r11
+  // return b
+  Return       r12

@@ -1,0 +1,139 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun removeName(names: list<string>, name: string): list<string> {
+func removeName (regs=14)
+  // var out: list<string> = []
+  Const        r2, []
+  Move         r3, r2
+  // for n in names {
+  IterPrep     r4, r0
+  Len          r5, r4
+  Const        r6, 0
+L2:
+  LessInt      r7, r6, r5
+  JumpIfFalse  r7, L0
+  Index        r8, r4, r6
+  Move         r9, r8
+  // if n != name {
+  NotEqual     r10, r9, r1
+  JumpIfFalse  r10, L1
+  // out = append(out, n)
+  Append       r11, r3, r9
+  Move         r3, r11
+L1:
+  // for n in names {
+  Const        r12, 1
+  AddInt       r13, r6, r12
+  Move         r6, r13
+  Jump         L2
+L0:
+  // return out
+  Return       r3
+
+  // fun main() {
+func main (regs=37)
+  // var clients: list<string> = []
+  Const        r0, []
+  Move         r1, r0
+  // fun broadcast(msg: string) {
+  Move         r2, r1
+  MakeClosure  r3, broadcast, 1, r2
+  // fun add(name: string) {
+  Move         r4, r3
+  Move         r5, r1
+  MakeClosure  r6, add, 2, r4
+  // fun send(name: string, msg: string) {
+  Move         r7, r6
+  Move         r8, r3
+  Move         r9, r1
+  MakeClosure  r10, send, 3, r7
+  // fun remove(name: string) {
+  Move         r11, r6
+  Move         r12, r3
+  Move         r13, r1
+  Move         r14, r10
+  MakeClosure  r15, remove, 4, r11
+  // add("Alice")
+  Const        r17, "Alice"
+  Move         r16, r17
+  CallV        r18, r6, 1, r16
+  // add("Bob")
+  Const        r20, "Bob"
+  Move         r19, r20
+  CallV        r21, r6, 1, r19
+  // send("Alice", "Hello Bob!")
+  Const        r17, "Alice"
+  Move         r22, r17
+  Const        r24, "Hello Bob!"
+  Move         r23, r24
+  CallV        r25, r10, 2, r22
+  // send("Bob", "Hi Alice!")
+  Const        r20, "Bob"
+  Move         r26, r20
+  Const        r28, "Hi Alice!"
+  Move         r27, r28
+  CallV        r29, r10, 2, r26
+  // remove("Bob")
+  Const        r20, "Bob"
+  Move         r30, r20
+  CallV        r31, r15, 1, r30
+  // remove("Alice")
+  Const        r17, "Alice"
+  Move         r32, r17
+  CallV        r33, r15, 1, r32
+  // broadcast("Server stopping!\n")
+  Const        r35, "Server stopping!\n"
+  Move         r34, r35
+  CallV        r36, r3, 1, r34
+  Return       r0
+
+  // fun broadcast(msg: string) {
+func broadcast (regs=2)
+  // print(msg)
+  Print        r1
+  Return       r0
+
+  // fun add(name: string) {
+func add (regs=10)
+  // clients = append(clients, name)
+  Append       r3, r1, r2
+  Move         r1, r3
+  // broadcast("+++ \"" + name + "\" connected +++\n")
+  Const        r5, "+++ \""
+  Add          r6, r5, r2
+  Const        r7, "\" connected +++\n"
+  Add          r8, r6, r7
+  Move         r4, r8
+  CallV        r9, r0, 1, r4
+  Return       r0
+
+  // fun send(name: string, msg: string) {
+func send (regs=12)
+  // broadcast(name + "> " + msg + "\n")
+  Const        r6, "> "
+  Add          r7, r3, r6
+  Add          r8, r7, r4
+  Const        r9, "\n"
+  Add          r10, r8, r9
+  Move         r5, r10
+  CallV        r11, r1, 1, r5
+  Return       r0
+
+  // fun remove(name: string) {
+func remove (regs=14)
+  // clients = removeName(clients, name)
+  Move         r5, r2
+  Move         r6, r4
+  Call2        r7, removeName, r5, r6
+  Move         r2, r7
+  // broadcast("--- \"" + name + "\" disconnected ---\n")
+  Const        r9, "--- \""
+  Add          r10, r9, r4
+  Const        r11, "\" disconnected ---\n"
+  Add          r12, r10, r11
+  Move         r8, r12
+  CallV        r13, r1, 1, r8
+  Return       r0

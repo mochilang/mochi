@@ -1,0 +1,316 @@
+func main (regs=68)
+  // let testCases = [
+  Const        r2, [{"base": 10, "begin": "1", "end": "100", "kaprekar": ["1", "9", "45", "55", "99"]}, {"base": 17, "begin": "10", "end": "gg", "kaprekar": ["3d", "d4", "gg"]}]
+  Move         r0, r2
+  SetGlobal    0,0,0,0
+  // var idx = 0
+  Const        r3, 0
+  Move         r1, r3
+  SetGlobal    1,1,0,0
+L8:
+  // while idx < len(testCases) {
+  Const        r4, 2
+  LessInt      r5, r1, r4
+  JumpIfFalse  r5, L0
+  // let tc = testCases[idx]
+  Index        r6, r0, r1
+  Move         r7, r6
+  // print("\nTest case base = " + str(tc["base"]) + ", begin = " + tc["begin"] + ", end = " + tc["end"] + ":")
+  Const        r8, "\nTest case base = "
+  Const        r9, "base"
+  Index        r10, r7, r9
+  Str          r11, r10
+  Add          r12, r8, r11
+  Const        r13, ", begin = "
+  Add          r14, r12, r13
+  Const        r15, "begin"
+  Index        r16, r7, r15
+  Add          r17, r14, r16
+  Const        r18, ", end = "
+  Add          r19, r17, r18
+  Const        r20, "end"
+  Index        r21, r7, r20
+  Add          r22, r19, r21
+  Const        r23, ":"
+  Add          r24, r22, r23
+  Print        r24
+  // let s = subset(tc["base"], tc["begin"], tc["end"])
+  Const        r9, "base"
+  Index        r28, r7, r9
+  Move         r25, r28
+  Const        r15, "begin"
+  Index        r29, r7, r15
+  Move         r26, r29
+  Const        r20, "end"
+  Index        r30, r7, r20
+  Move         r27, r30
+  Call         r31, subset, r25, r26, r27
+  Move         r32, r31
+  // print("Subset:  " + str(s))
+  Const        r33, "Subset:  "
+  Str          r34, r32
+  Add          r35, r33, r34
+  Print        r35
+  // print("Kaprekar:" + str(tc["kaprekar"]))
+  Const        r36, "Kaprekar:"
+  Const        r37, "kaprekar"
+  Index        r38, r7, r37
+  Str          r39, r38
+  Add          r40, r36, r39
+  Print        r40
+  // var sx = 0
+  Const        r3, 0
+  Move         r41, r3
+  // var valid = true
+  Const        r42, true
+  Move         r43, r42
+  // var i = 0
+  Const        r3, 0
+  Move         r44, r3
+L6:
+  // while i < len(tc["kaprekar"]) {
+  Const        r37, "kaprekar"
+  Index        r45, r7, r37
+  Len          r46, r45
+  LessInt      r47, r44, r46
+  JumpIfFalse  r47, L1
+  // let k = tc["kaprekar"][i]
+  Const        r37, "kaprekar"
+  Index        r48, r7, r37
+  Index        r49, r48, r44
+  Move         r50, r49
+  // var found = false
+  Const        r51, false
+  Move         r52, r51
+L4:
+  // while sx < len(s) {
+  Len          r53, r32
+  LessInt      r54, r41, r53
+  JumpIfFalse  r54, L2
+  // if s[sx] == k {
+  Index        r55, r32, r41
+  Equal        r56, r55, r50
+  JumpIfFalse  r56, L3
+  // found = true
+  Const        r42, true
+  Move         r52, r42
+  // sx = sx + 1
+  Const        r57, 1
+  AddInt       r58, r41, r57
+  Move         r41, r58
+  // break
+  Jump         L2
+L3:
+  // sx = sx + 1
+  Const        r57, 1
+  AddInt       r59, r41, r57
+  Move         r41, r59
+  // while sx < len(s) {
+  Jump         L4
+L2:
+  // if !found {
+  Not          r60, r52
+  JumpIfFalse  r60, L5
+  // print("Fail:" + k + " not in subset")
+  Const        r61, "Fail:"
+  Add          r62, r61, r50
+  Const        r63, " not in subset"
+  Add          r64, r62, r63
+  Print        r64
+  // valid = false
+  Const        r51, false
+  Move         r43, r51
+  // break
+  Jump         L1
+L5:
+  // i = i + 1
+  Const        r57, 1
+  AddInt       r65, r44, r57
+  Move         r44, r65
+  // while i < len(tc["kaprekar"]) {
+  Jump         L6
+L1:
+  // if valid { print("Valid subset.") }
+  JumpIfFalse  r43, L7
+  Const        r66, "Valid subset."
+  Print        r66
+L7:
+  // idx = idx + 1
+  Const        r57, 1
+  AddInt       r67, r1, r57
+  Move         r1, r67
+  SetGlobal    1,1,0,0
+  // while idx < len(testCases) {
+  Jump         L8
+L0:
+  Return       r0
+
+  // fun parseIntBase(s: string, base: int): int {
+func parseIntBase (regs=27)
+  // let digits = "0123456789abcdefghijklmnopqrstuvwxyz"
+  Const        r4, "0123456789abcdefghijklmnopqrstuvwxyz"
+  Move         r5, r4
+  // var n = 0
+  Const        r6, 0
+  Move         r7, r6
+  // var i = 0
+  Const        r6, 0
+  Move         r8, r6
+L4:
+  // while i < len(s) {
+  Len          r9, r2
+  LessInt      r10, r8, r9
+  JumpIfFalse  r10, L0
+  // var j = 0
+  Const        r6, 0
+  Move         r11, r6
+  // var v = 0
+  Const        r6, 0
+  Move         r12, r6
+L3:
+  // while j < len(digits) {
+  Const        r13, 36
+  LessInt      r14, r11, r13
+  JumpIfFalse  r14, L1
+  // if substring(digits, j, j+1) == s[i:i+1] {
+  Const        r4, "0123456789abcdefghijklmnopqrstuvwxyz"
+  Const        r15, 1
+  AddInt       r16, r11, r15
+  Slice        r17, r4, r11, r16
+  Move         r18, r8
+  Const        r15, 1
+  AddInt       r20, r8, r15
+  Move         r19, r20
+  Slice        r21, r2, r18, r19
+  Equal        r22, r17, r21
+  JumpIfFalse  r22, L2
+  // v = j
+  Move         r12, r11
+  // break
+  Jump         L1
+L2:
+  // j = j + 1
+  Const        r15, 1
+  AddInt       r23, r11, r15
+  Move         r11, r23
+  // while j < len(digits) {
+  Jump         L3
+L1:
+  // n = n * base + v
+  Mul          r24, r7, r3
+  Add          r25, r24, r12
+  Move         r7, r25
+  // i = i + 1
+  Const        r15, 1
+  AddInt       r26, r8, r15
+  Move         r8, r26
+  // while i < len(s) {
+  Jump         L4
+L0:
+  // return n
+  Return       r7
+
+  // fun intToBase(n: int, base: int): string {
+func intToBase (regs=22)
+  // let digits = "0123456789abcdefghijklmnopqrstuvwxyz"
+  Const        r4, "0123456789abcdefghijklmnopqrstuvwxyz"
+  Move         r5, r4
+  // if n == 0 { return "0" }
+  Const        r6, 0
+  Equal        r7, r2, r6
+  JumpIfFalse  r7, L0
+  Const        r8, "0"
+  Return       r8
+L0:
+  // var out = ""
+  Const        r9, ""
+  Move         r10, r9
+  // var v = n
+  Move         r11, r2
+L2:
+  // while v > 0 {
+  Const        r6, 0
+  Less         r12, r6, r11
+  JumpIfFalse  r12, L1
+  // let d = v % base
+  Mod          r13, r11, r3
+  Move         r14, r13
+  // out = digits[d:d+1] + out
+  Move         r15, r14
+  Const        r17, 1
+  Add          r18, r14, r17
+  Move         r16, r18
+  Slice        r19, r5, r15, r16
+  Add          r20, r19, r10
+  Move         r10, r20
+  // v = v / base
+  Div          r21, r11, r3
+  Move         r11, r21
+  // while v > 0 {
+  Jump         L2
+L1:
+  // return out
+  Return       r10
+
+  // fun subset(base: int, begin: string, end: string): list<string> {
+func subset (regs=41)
+  // var b = parseIntBase(begin, base)
+  Move         r5, r3
+  Move         r6, r2
+  Call2        r7, parseIntBase, r5, r6
+  Move         r8, r7
+  // var e = parseIntBase(end, base)
+  Move         r9, r4
+  Move         r10, r2
+  Call2        r11, parseIntBase, r9, r10
+  Move         r12, r11
+  // var out: list<string> = []
+  Const        r13, []
+  Move         r14, r13
+  // var k = b
+  Move         r15, r8
+L2:
+  // while k <= e {
+  LessEq       r16, r15, r12
+  JumpIfFalse  r16, L0
+  // let ks = intToBase(k, base)
+  Move         r17, r15
+  Move         r18, r2
+  Call2        r19, intToBase, r17, r18
+  Move         r20, r19
+  // let mod = base - 1
+  Const        r21, 1
+  Sub          r22, r2, r21
+  Move         r23, r22
+  // let r1 = parseIntBase(ks, base) % mod
+  Move         r24, r20
+  Move         r25, r2
+  Call2        r26, parseIntBase, r24, r25
+  Mod          r27, r26, r23
+  Move         r28, r27
+  // let r2 = (parseIntBase(ks, base) * parseIntBase(ks, base)) % mod
+  Move         r29, r20
+  Move         r30, r2
+  Call2        r31, parseIntBase, r29, r30
+  Move         r32, r20
+  Move         r33, r2
+  Call2        r34, parseIntBase, r32, r33
+  Mul          r35, r31, r34
+  Mod          r36, r35, r23
+  Move         r37, r36
+  // if r1 == r2 {
+  Equal        r38, r28, r37
+  JumpIfFalse  r38, L1
+  // out = append(out, ks)
+  Append       r39, r14, r20
+  Move         r14, r39
+L1:
+  // k = k + 1
+  Const        r21, 1
+  Add          r40, r15, r21
+  Move         r15, r40
+  // while k <= e {
+  Jump         L2
+L0:
+  // return out
+  Return       r14

@@ -1,0 +1,61 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun catalanRec(n: int): int {
+func catalanRec (regs=19)
+  // if n == 0 { return 1 }
+  Const        r1, 0
+  Equal        r2, r0, r1
+  JumpIfFalse  r2, L0
+  Const        r3, 1
+  Return       r3
+L0:
+  // var t1 = 2 * n
+  Const        r4, 2
+  Mul          r5, r4, r0
+  Move         r6, r5
+  // var t2 = t1 - 1
+  Const        r3, 1
+  Sub          r7, r6, r3
+  Move         r8, r7
+  // var t3 = 2 * t2
+  Const        r4, 2
+  Mul          r9, r4, r8
+  Move         r10, r9
+  // var t5 = t3 * catalanRec(n - 1)
+  Const        r3, 1
+  Sub          r12, r0, r3
+  Move         r11, r12
+  Call         r13, catalanRec, r11
+  Mul          r14, r10, r13
+  Move         r15, r14
+  // return (t5 / (n + 1)) as int
+  Const        r3, 1
+  Add          r16, r0, r3
+  Div          r17, r15, r16
+  Cast         r18, r17, int
+  Return       r18
+
+  // fun main() {
+func main (regs=9)
+  // for i in 1..16 {
+  Const        r0, 1
+  Const        r1, 16
+  Move         r2, r0
+L1:
+  LessInt      r3, r2, r1
+  JumpIfFalse  r3, L0
+  // print(str(catalanRec(i)))
+  Move         r4, r2
+  Call         r5, catalanRec, r4
+  Str          r6, r5
+  Print        r6
+  // for i in 1..16 {
+  Const        r7, 1
+  AddInt       r8, r2, r7
+  Move         r2, r8
+  Jump         L1
+L0:
+  Return       r0

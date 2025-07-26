@@ -1,0 +1,288 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun listStr(xs: list<int>): string {
+func listStr (regs=19)
+  // var s = "["
+  Const        r1, "["
+  Move         r2, r1
+  // var i = 0
+  Const        r3, 0
+  Move         r4, r3
+L2:
+  // while i < len(xs) {
+  Len          r5, r0
+  LessInt      r6, r4, r5
+  JumpIfFalse  r6, L0
+  // s = s + str(xs[i])
+  Index        r7, r0, r4
+  Str          r8, r7
+  Add          r9, r2, r8
+  Move         r2, r9
+  // if i < len(xs)-1 { s = s + " " }
+  Len          r10, r0
+  Const        r11, 1
+  SubInt       r12, r10, r11
+  LessInt      r13, r4, r12
+  JumpIfFalse  r13, L1
+  Const        r14, " "
+  Add          r15, r2, r14
+  Move         r2, r15
+L1:
+  // i = i + 1
+  Const        r11, 1
+  AddInt       r16, r4, r11
+  Move         r4, r16
+  // while i < len(xs) {
+  Jump         L2
+L0:
+  // s = s + "]"
+  Const        r17, "]"
+  Add          r18, r2, r17
+  Move         r2, r18
+  // return s
+  Return       r2
+
+  // fun llStr(lst: list<list<int>>): string {
+func llStr (regs=20)
+  // var s = "["
+  Const        r1, "["
+  Move         r2, r1
+  // var i = 0
+  Const        r3, 0
+  Move         r4, r3
+L2:
+  // while i < len(lst) {
+  Len          r5, r0
+  LessInt      r6, r4, r5
+  JumpIfFalse  r6, L0
+  // s = s + listStr(lst[i])
+  Index        r8, r0, r4
+  Move         r7, r8
+  Call         r9, listStr, r7
+  Add          r10, r2, r9
+  Move         r2, r10
+  // if i < len(lst)-1 { s = s + " " }
+  Len          r11, r0
+  Const        r12, 1
+  SubInt       r13, r11, r12
+  LessInt      r14, r4, r13
+  JumpIfFalse  r14, L1
+  Const        r15, " "
+  Add          r16, r2, r15
+  Move         r2, r16
+L1:
+  // i = i + 1
+  Const        r12, 1
+  AddInt       r17, r4, r12
+  Move         r4, r17
+  // while i < len(lst) {
+  Jump         L2
+L0:
+  // s = s + "]"
+  Const        r18, "]"
+  Add          r19, r2, r18
+  Move         r2, r19
+  // return s
+  Return       r2
+
+  // fun copy(xs: list<int>): list<int> {
+func copy (regs=12)
+  // var out: list<int> = []
+  Const        r1, []
+  Move         r2, r1
+  // for v in xs { out = append(out, v) }
+  IterPrep     r3, r0
+  Len          r4, r3
+  Const        r5, 0
+L1:
+  LessInt      r6, r5, r4
+  JumpIfFalse  r6, L0
+  Index        r7, r3, r5
+  Move         r8, r7
+  Append       r9, r2, r8
+  Move         r2, r9
+  Const        r10, 1
+  AddInt       r11, r5, r10
+  Move         r5, r11
+  Jump         L1
+L0:
+  // return out
+  Return       r2
+
+  // fun cartN(lists: any): list<list<int>> {
+func cartN (regs=43)
+  // if lists == null { return [] }
+  Const        r1, nil
+  Equal        r2, r0, r1
+  JumpIfFalse  r2, L0
+  Const        r3, []
+  Return       r3
+L0:
+  // let a = lists as list<list<int>>
+  Cast         r4, r0, [[int]]
+  Move         r5, r4
+  // if len(a) == 0 { return [[]] }
+  Len          r6, r5
+  Const        r7, 0
+  EqualInt     r8, r6, r7
+  JumpIfFalse  r8, L1
+  Const        r9, [[]]
+  Return       r9
+L1:
+  // var out: list<list<int>> = []
+  Const        r3, []
+  Move         r10, r3
+  // let last = len(a) - 1
+  Len          r11, r5
+  Const        r12, 1
+  SubInt       r13, r11, r12
+  Move         r14, r13
+  // let left = cartN(a[:last])
+  Const        r16, nil
+  Move         r17, r14
+  Slice        r18, r5, r16, r17
+  Move         r15, r18
+  Call         r19, cartN, r15
+  Move         r20, r19
+  // for p in left {
+  IterPrep     r21, r20
+  Len          r22, r21
+  Const        r23, 0
+L5:
+  LessInt      r24, r23, r22
+  JumpIfFalse  r24, L2
+  Index        r25, r21, r23
+  Move         r26, r25
+  // for x in a[last] {
+  Index        r27, r5, r14
+  IterPrep     r28, r27
+  Len          r29, r28
+  Const        r30, 0
+L4:
+  LessInt      r31, r30, r29
+  JumpIfFalse  r31, L3
+  Index        r32, r28, r30
+  Move         r33, r32
+  // var row = copy(p)
+  Move         r34, r26
+  Call         r35, copy, r34
+  Move         r36, r35
+  // row = append(row, x)
+  Append       r37, r36, r33
+  Move         r36, r37
+  // out = append(out, row)
+  Append       r38, r10, r36
+  Move         r10, r38
+  // for x in a[last] {
+  Const        r39, 1
+  AddInt       r40, r30, r39
+  Move         r30, r40
+  Jump         L4
+L3:
+  // for p in left {
+  Const        r41, 1
+  AddInt       r42, r23, r41
+  Move         r23, r42
+  Jump         L5
+L2:
+  // return out
+  Return       r10
+
+  // fun main() {
+func main (regs=58)
+  // print(llStr(cartN([[1,2],[3,4]])))
+  Const        r2, [[1, 2], [3, 4]]
+  Move         r1, r2
+  Call         r3, cartN, r1
+  Move         r0, r3
+  Call         r4, llStr, r0
+  Print        r4
+  // print(llStr(cartN([[3,4],[1,2]])))
+  Const        r7, [[3, 4], [1, 2]]
+  Move         r6, r7
+  Call         r8, cartN, r6
+  Move         r5, r8
+  Call         r9, llStr, r5
+  Print        r9
+  // print(llStr(cartN([[1,2],[]])))
+  Const        r12, [[1, 2], []]
+  Move         r11, r12
+  Call         r13, cartN, r11
+  Move         r10, r13
+  Call         r14, llStr, r10
+  Print        r14
+  // print(llStr(cartN([[],[1,2]])))
+  Const        r17, [[], [1, 2]]
+  Move         r16, r17
+  Call         r18, cartN, r16
+  Move         r15, r18
+  Call         r19, llStr, r15
+  Print        r19
+  // print("")
+  Const        r20, ""
+  Print        r20
+  // print("[")
+  Const        r21, "["
+  Print        r21
+  // for p in cartN([[1776,1789],[7,12],[4,14,23],[0,1]]) {
+  Const        r23, [[1776, 1789], [7, 12], [4, 14, 23], [0, 1]]
+  Move         r22, r23
+  Call         r24, cartN, r22
+  IterPrep     r25, r24
+  Len          r26, r25
+  Const        r27, 0
+L1:
+  LessInt      r28, r27, r26
+  JumpIfFalse  r28, L0
+  Index        r29, r25, r27
+  Move         r30, r29
+  // print(" "+listStr(p))
+  Const        r31, " "
+  Move         r32, r30
+  Call         r33, listStr, r32
+  Add          r34, r31, r33
+  Print        r34
+  // for p in cartN([[1776,1789],[7,12],[4,14,23],[0,1]]) {
+  Const        r35, 1
+  AddInt       r36, r27, r35
+  Move         r27, r36
+  Jump         L1
+L0:
+  // print("]")
+  Const        r37, "]"
+  Print        r37
+  // print(llStr(cartN([[1,2,3],[30],[500,100]])))
+  Const        r40, [[1, 2, 3], [30], [500, 100]]
+  Move         r39, r40
+  Call         r41, cartN, r39
+  Move         r38, r41
+  Call         r42, llStr, r38
+  Print        r42
+  // print(llStr(cartN([[1,2,3],[],[500,100]])))
+  Const        r45, [[1, 2, 3], [], [500, 100]]
+  Move         r44, r45
+  Call         r46, cartN, r44
+  Move         r43, r46
+  Call         r47, llStr, r43
+  Print        r47
+  // print("")
+  Const        r20, ""
+  Print        r20
+  // print(llStr(cartN(null)))
+  Const        r50, nil
+  Move         r49, r50
+  Call         r51, cartN, r49
+  Move         r48, r51
+  Call         r52, llStr, r48
+  Print        r52
+  // print(llStr(cartN([])))
+  Const        r55, []
+  Move         r54, r55
+  Call         r56, cartN, r54
+  Move         r53, r56
+  Call         r57, llStr, r53
+  Print        r57
+  Return       r0

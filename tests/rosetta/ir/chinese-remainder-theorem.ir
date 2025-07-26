@@ -1,0 +1,162 @@
+func main (regs=13)
+  // let n = [3,5,7]
+  Const        r3, [3, 5, 7]
+  Move         r0, r3
+  SetGlobal    0,0,0,0
+  // let a = [2,3,2]
+  Const        r4, [2, 3, 2]
+  Move         r1, r4
+  SetGlobal    1,1,0,0
+  // let res = crt(a,n)
+  Const        r7, [2, 3, 2]
+  Move         r5, r7
+  Const        r8, [3, 5, 7]
+  Move         r6, r8
+  Call2        r9, crt, r5, r6
+  Move         r2, r9
+  SetGlobal    2,2,0,0
+  // print(str(res) + " <nil>")
+  Str          r10, r2
+  Const        r11, " <nil>"
+  Add          r12, r10, r11
+  Print        r12
+  Return       r0
+
+  // fun egcd(a: int, b: int): list<int> {
+func egcd (regs=30)
+  // if a == 0 { return [b, 0, 1] }
+  Const        r5, 0
+  Equal        r6, r3, r5
+  JumpIfFalse  r6, L0
+  Move         r7, r4
+  Const        r5, 0
+  Move         r8, r5
+  Const        r10, 1
+  Move         r9, r10
+  MakeList     r11, 3, r7
+  Return       r11
+L0:
+  // let res = egcd(b % a, a)
+  Mod          r14, r4, r3
+  Move         r12, r14
+  Move         r13, r3
+  Call2        r15, egcd, r12, r13
+  Move         r2, r15
+  SetGlobal    2,2,0,0
+  // let g = res[0]
+  Const        r5, 0
+  Index        r16, r2, r5
+  Move         r17, r16
+  // let x1 = res[1]
+  Const        r10, 1
+  Index        r18, r2, r10
+  Move         r19, r18
+  // let y1 = res[2]
+  Const        r20, 2
+  Index        r21, r2, r20
+  Move         r22, r21
+  // return [g, y1 - (b / a) * x1, x1]
+  Move         r23, r17
+  Div          r26, r4, r3
+  Mul          r27, r26, r19
+  Sub          r28, r22, r27
+  Move         r24, r28
+  Move         r25, r19
+  MakeList     r29, 3, r23
+  Return       r29
+
+  // fun modInv(a: int, m: int): int {
+func modInv (regs=17)
+  // let r = egcd(a, m)
+  Move         r5, r3
+  Move         r6, r4
+  Call2        r7, egcd, r5, r6
+  Move         r8, r7
+  // if r[0] != 1 { return 0 }
+  Const        r9, 0
+  Index        r10, r8, r9
+  Const        r11, 1
+  NotEqual     r12, r10, r11
+  JumpIfFalse  r12, L0
+  Const        r9, 0
+  Return       r9
+L0:
+  // let x = r[1]
+  Const        r11, 1
+  Index        r13, r8, r11
+  Move         r14, r13
+  // if x < 0 { return x + m }
+  Const        r9, 0
+  Less         r15, r14, r9
+  JumpIfFalse  r15, L1
+  Add          r16, r14, r4
+  Return       r16
+L1:
+  // return x
+  Return       r14
+
+  // fun crt(a: list<int>, n: list<int>): int {
+func crt (regs=33)
+  // var prod = 1
+  Const        r5, 1
+  Move         r6, r5
+  // var i = 0
+  Const        r7, 0
+  Move         r8, r7
+L1:
+  // while i < len(n) {
+  Len          r9, r4
+  LessInt      r10, r8, r9
+  JumpIfFalse  r10, L0
+  // prod = prod * n[i]
+  Index        r11, r4, r8
+  Mul          r12, r6, r11
+  Move         r6, r12
+  // i = i + 1
+  Const        r5, 1
+  AddInt       r13, r8, r5
+  Move         r8, r13
+  // while i < len(n) {
+  Jump         L1
+L0:
+  // var x = 0
+  Const        r7, 0
+  Move         r14, r7
+  // i = 0
+  Const        r7, 0
+  Move         r8, r7
+L3:
+  // while i < len(n) {
+  Len          r15, r4
+  LessInt      r16, r8, r15
+  JumpIfFalse  r16, L2
+  // let ni = n[i]
+  Index        r17, r4, r8
+  Move         r18, r17
+  // let ai = a[i]
+  Index        r19, r3, r8
+  Move         r20, r19
+  // let p = prod / ni
+  Div          r21, r6, r18
+  Move         r22, r21
+  // let inv = modInv(p % ni, ni)
+  Mod          r25, r22, r18
+  Move         r23, r25
+  Move         r24, r18
+  Call2        r26, modInv, r23, r24
+  Move         r27, r26
+  // x = x + ai * inv * p
+  Mul          r28, r20, r27
+  Mul          r29, r28, r22
+  Add          r30, r14, r29
+  Move         r14, r30
+  // i = i + 1
+  Const        r5, 1
+  AddInt       r31, r8, r5
+  Move         r8, r31
+  // while i < len(n) {
+  Jump         L3
+L2:
+  // return x % prod
+  Mod          r32, r14, r6
+  Return       r32

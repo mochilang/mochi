@@ -1,0 +1,173 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun main() {
+func main (regs=73)
+  // var pkg_dog = "Salt"
+  Const        r0, "Salt"
+  Move         r1, r0
+  // var Dog = "Pepper"
+  Const        r2, "Pepper"
+  Move         r3, r2
+  // var pkg_DOG = "Mustard"
+  Const        r4, "Mustard"
+  Move         r5, r4
+  // fun packageSees(d1: string, d2: string, d3: string): map<string, bool> {
+  Move         r6, r3
+  Move         r7, r5
+  Move         r8, r1
+  MakeClosure  r9, packageSees, 3, r6
+  // var d = packageSees(pkg_dog, Dog, pkg_DOG)
+  Move         r10, r1
+  Move         r11, r3
+  Move         r12, r5
+  CallV        r13, r9, 3, r10
+  Move         r14, r13
+  // print("There are " + str(len(d)) + " dogs.\n")
+  Const        r15, "There are "
+  Len          r16, r14
+  Str          r17, r16
+  Add          r18, r15, r17
+  Const        r19, " dogs.\n"
+  Add          r20, r18, r19
+  Print        r20
+  // var dog = "Benjamin"
+  Const        r21, "Benjamin"
+  Move         r22, r21
+  // d = packageSees(pkg_dog, Dog, pkg_DOG)
+  Move         r23, r1
+  Move         r24, r3
+  Move         r25, r5
+  CallV        r26, r9, 3, r23
+  Move         r14, r26
+  // print("Main sees:   " + dog + " " + Dog + " " + pkg_DOG)
+  Const        r27, "Main sees:   "
+  Add          r28, r27, r22
+  Const        r29, " "
+  Add          r30, r28, r29
+  Add          r31, r30, r3
+  Const        r29, " "
+  Add          r32, r31, r29
+  Add          r33, r32, r5
+  Print        r33
+  // d["dog"] = true
+  Const        r34, true
+  Const        r35, "dog"
+  SetIndex     r14, r35, r34
+  // d["Dog"] = true
+  Const        r34, true
+  Const        r36, "Dog"
+  SetIndex     r14, r36, r34
+  // d["pkg_DOG"] = true
+  Const        r34, true
+  Const        r37, "pkg_DOG"
+  SetIndex     r14, r37, r34
+  // print("There are " + str(len(d)) + " dogs.\n")
+  Const        r15, "There are "
+  Len          r38, r14
+  Str          r39, r38
+  Add          r40, r15, r39
+  Const        r19, " dogs.\n"
+  Add          r41, r40, r19
+  Print        r41
+  // Dog = "Samba"
+  Const        r42, "Samba"
+  Move         r3, r42
+  // d = packageSees(pkg_dog, Dog, pkg_DOG)
+  Move         r43, r1
+  Move         r44, r3
+  Move         r45, r5
+  CallV        r46, r9, 3, r43
+  Move         r14, r46
+  // print("Main sees:   " + dog + " " + Dog + " " + pkg_DOG)
+  Const        r27, "Main sees:   "
+  Add          r47, r27, r22
+  Const        r29, " "
+  Add          r48, r47, r29
+  Add          r49, r48, r3
+  Const        r29, " "
+  Add          r50, r49, r29
+  Add          r51, r50, r5
+  Print        r51
+  // d["dog"] = true
+  Const        r34, true
+  Const        r35, "dog"
+  SetIndex     r14, r35, r34
+  // d["Dog"] = true
+  Const        r34, true
+  Const        r36, "Dog"
+  SetIndex     r14, r36, r34
+  // d["pkg_DOG"] = true
+  Const        r34, true
+  Const        r37, "pkg_DOG"
+  SetIndex     r14, r37, r34
+  // print("There are " + str(len(d)) + " dogs.\n")
+  Const        r15, "There are "
+  Len          r52, r14
+  Str          r53, r52
+  Add          r54, r15, r53
+  Const        r19, " dogs.\n"
+  Add          r55, r54, r19
+  Print        r55
+  // var DOG = "Bernie"
+  Const        r56, "Bernie"
+  Move         r57, r56
+  // d = packageSees(pkg_dog, Dog, pkg_DOG)
+  Move         r58, r1
+  Move         r59, r3
+  Move         r60, r5
+  CallV        r61, r9, 3, r58
+  Move         r14, r61
+  // print("Main sees:   " + dog + " " + Dog + " " + DOG)
+  Const        r27, "Main sees:   "
+  Add          r62, r27, r22
+  Const        r29, " "
+  Add          r63, r62, r29
+  Add          r64, r63, r3
+  Const        r29, " "
+  Add          r65, r64, r29
+  Add          r66, r65, r57
+  Print        r66
+  // d["dog"] = true
+  Const        r34, true
+  Const        r35, "dog"
+  SetIndex     r14, r35, r34
+  // d["Dog"] = true
+  Const        r34, true
+  Const        r36, "Dog"
+  SetIndex     r14, r36, r34
+  // d["pkg_DOG"] = true
+  Const        r34, true
+  Const        r37, "pkg_DOG"
+  SetIndex     r14, r37, r34
+  // d["DOG"] = true
+  Const        r34, true
+  Const        r67, "DOG"
+  SetIndex     r14, r67, r34
+  // print("There are " + str(len(d)) + " dogs.")
+  Const        r15, "There are "
+  Len          r68, r14
+  Str          r69, r68
+  Add          r70, r15, r69
+  Const        r71, " dogs."
+  Add          r72, r70, r71
+  Print        r72
+  Return       r0
+
+  // fun packageSees(d1: string, d2: string, d3: string): map<string, bool> {
+func packageSees (regs=14)
+  // print("Package sees: " + d1 + " " + d2 + " " + d3)
+  Const        r6, "Package sees: "
+  Add          r7, r6, r3
+  Const        r8, " "
+  Add          r9, r7, r8
+  Add          r10, r9, r4
+  Const        r8, " "
+  Add          r11, r10, r8
+  Add          r12, r11, r5
+  Print        r12
+  // return {"pkg_dog": true, "Dog": true, "pkg_DOG": true}
+  Const        r13, {"Dog": true, "pkg_DOG": true, "pkg_dog": true}
+  Return       r13

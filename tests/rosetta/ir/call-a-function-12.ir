@@ -1,0 +1,76 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun mkAdd(a: int): fun(int): int {
+func mkAdd (regs=3)
+  // return fun(b: int): int => a + b
+  Move         r1, r0
+  MakeClosure  r2, fn2, 1, r1
+  Return       r2
+
+  // return fun(b: int): int => a + b
+func fn2 (regs=3)
+  // return fun(b: int): int => a + b
+  Add          r2, r0, r1
+  Return       r2
+
+  // fun mysum(x: int, y: int): int { return x + y }
+func mysum (regs=3)
+  // fun mysum(x: int, y: int): int { return x + y }
+  Add          r2, r0, r1
+  Return       r2
+
+  // fun partialSum(x: int): fun(int): int {
+func partialSum (regs=3)
+  // return fun(y: int): int => mysum(x, y)
+  Move         r1, r0
+  MakeClosure  r2, fn5, 1, r1
+  Return       r2
+
+  // return fun(y: int): int => mysum(x, y)
+func fn5 (regs=5)
+  // return fun(y: int): int => mysum(x, y)
+  Move         r2, r0
+  Move         r3, r1
+  Call2        r4, mysum, r2, r3
+  Return       r4
+
+  // fun main() {
+func main (regs=26)
+  // let add2 = mkAdd(2)
+  Const        r1, 2
+  Move         r0, r1
+  Call         r2, mkAdd, r0
+  Move         r3, r2
+  // let add3 = mkAdd(3)
+  Const        r5, 3
+  Move         r4, r5
+  Call         r6, mkAdd, r4
+  Move         r7, r6
+  // print(str(add2(5)) + " " + str(add3(6)))
+  Const        r9, 5
+  Move         r8, r9
+  CallV        r10, r3, 1, r8
+  Str          r11, r10
+  Const        r12, " "
+  Add          r13, r11, r12
+  Const        r15, 6
+  Move         r14, r15
+  CallV        r16, r7, 1, r14
+  Str          r17, r16
+  Add          r18, r13, r17
+  Print        r18
+  // let partial = partialSum(13)
+  Const        r20, 13
+  Move         r19, r20
+  Call         r21, partialSum, r19
+  Move         r22, r21
+  // print(str(partial(5)))
+  Const        r9, 5
+  Move         r23, r9
+  CallV        r24, r22, 1, r23
+  Str          r25, r24
+  Print        r25
+  Return       r0
