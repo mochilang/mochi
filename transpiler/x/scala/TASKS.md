@@ -1,3 +1,23 @@
+## Progress (2025-07-26 09:55 +0700)
+- scala: transpile rosetta program 188
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-26 09:55 +0700)
+- scala: transpile rosetta program 187
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-26 09:51 +0700)
+- remove obsolete error file
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-26 09:51 +0700)
+- remove obsolete error file
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-26 09:51 +0700)
+- remove obsolete error file
+- Regenerated golden files - 93/104 vm valid programs passing
+
 ## Progress (2025-07-26 09:28 +0700)
 - scala transpiler: handle big int indexing and map updates
 - Regenerated golden files - 93/104 vm valid programs passing
