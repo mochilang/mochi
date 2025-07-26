@@ -71,6 +71,7 @@ var (
 	netAliases       map[string]struct{}
 	structMutable    map[string]bool
 	currentRetType   string
+	inFunc           bool
 )
 
 // GetStructOrder returns the generated struct names (for testing).
@@ -392,9 +393,15 @@ func (s *VarStmt) emit(w io.Writer) error {
 	typ := s.Type
 	if typ == "" {
 		typ = inferType(s.Value)
-		if _, ok := s.Value.(*IndexExpr); ok && strings.HasSuffix(typ, "?") {
-			typ = strings.TrimSuffix(typ, "?")
+	}
+	if inFunc {
+		valType := inferType(s.Value)
+		if valType != "" && valType != typ {
+			typ = valType
 		}
+	}
+	if _, ok := s.Value.(*IndexExpr); ok && strings.HasSuffix(typ, "?") {
+		typ = strings.TrimSuffix(typ, "?")
 	}
 	nextStructHint = ""
 	if n, ok := s.Value.(*Name); ok && n.Name == "null" && !strings.HasSuffix(typ, "?") {
@@ -497,6 +504,11 @@ func (s *AssignStmt) emit(w io.Writer) error {
 		_, err := io.WriteString(w, ")")
 		return err
 	}
+	if ll, ok := s.Value.(*ListLit); ok && len(ll.Elems) == 0 && strings.HasPrefix(targetType, "List<") {
+		elem := strings.TrimSuffix(strings.TrimPrefix(targetType, "List<"), ">")
+		_, err := io.WriteString(w, "<"+elem+">[]")
+		return err
+	}
 	return s.Value.emit(w)
 }
 
@@ -511,9 +523,15 @@ func (s *LetStmt) emit(w io.Writer) error {
 	typ := s.Type
 	if typ == "" {
 		typ = inferType(s.Value)
-		if _, ok := s.Value.(*IndexExpr); ok && strings.HasSuffix(typ, "?") {
-			typ = strings.TrimSuffix(typ, "?")
+	}
+	if inFunc {
+		valType := inferType(s.Value)
+		if valType != "" && valType != typ {
+			typ = valType
 		}
+	}
+	if _, ok := s.Value.(*IndexExpr); ok && strings.HasSuffix(typ, "?") {
+		typ = strings.TrimSuffix(typ, "?")
 	}
 	nextStructHint = ""
 	localVarTypes[s.Name] = typ
@@ -763,6 +781,12 @@ func (f *FuncDecl) emit(w io.Writer) error {
 	}
 	savedRet := currentRetType
 	currentRetType = retType
+	inFunc = true
+	// Save current variable type map to avoid leaking local definitions
+	savedVars := map[string]string{}
+	for k, v := range localVarTypes {
+		savedVars[k] = v
+	}
 	if _, err := io.WriteString(w, retType+" "+f.Name+"("); err != nil {
 		return err
 	}
@@ -811,6 +835,16 @@ func (f *FuncDecl) emit(w io.Writer) error {
 			delete(localVarTypes, n)
 		}
 	}
+	// Restore variable type map to state before entering the function
+	for k := range localVarTypes {
+		if _, ok := savedVars[k]; !ok {
+			delete(localVarTypes, k)
+		}
+	}
+	for k, v := range savedVars {
+		localVarTypes[k] = v
+	}
+	inFunc = false
 	currentRetType = savedRet
 	_, err := io.WriteString(w, "}")
 	return err

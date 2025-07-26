@@ -22,8 +22,20 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
+String _substr(String s, int start, int end) {
+  var n = s.length;
+  if (start < 0) start += n;
+  if (end < 0) end += n;
+  if (start < 0) start = 0;
+  if (start > n) start = n;
+  if (end < 0) end = 0;
+  if (end > n) end = n;
+  if (start > end) start = end;
+  return s.substring(start, end);
+}
+
 List<int> sieve(int limit) {
-  List<int> spf = [];
+  List<int> spf = <int>[];
   int i = 0;
   while (i <= limit) {
     spf = [...spf, 0];
@@ -49,7 +61,7 @@ List<int> sieve(int limit) {
 }
 
 List<int> primesFrom(List<int> spf, int limit) {
-  List<int> primes = [];
+  List<int> primes = <int>[];
   int i = 3;
   while (i <= limit) {
     if (spf[i] == i) {
@@ -74,7 +86,7 @@ String commatize(int n) {
   int i = s.length - 1;
   int c = 0;
   while (i >= 0) {
-    out = s.substring(i, i + 1) + out;
+    out = _substr(s, i, i + 1) + out;
     c = c + 1;
     if (c % 3 == 0 && i > 0) {
     out = "," + out;
@@ -95,7 +107,7 @@ int primeCount(List<int> primes, int last, List<int> spf) {
     hi = mid;
   }
   }
-  int count = lo + 1;
+  var count = lo + 1;
   if (spf[last] != last) {
     count = count - 1;
   }
@@ -119,7 +131,7 @@ List<int> arithmeticNumbers(int limit, List<int> spf) {
   }
     int cnt = 0;
     int power = p;
-    int sum = 1;
+    var sum = 1;
     while (x % p == 0) {
     x = x ~/ p;
     cnt = cnt + 1;
@@ -139,10 +151,10 @@ List<int> arithmeticNumbers(int limit, List<int> spf) {
 }
 
 void main() {
-  final int limit = 1228663;
-  final List<int> spf = sieve(limit);
-  final List<int> primes = primesFrom(spf, limit);
-  final List<int> arr = arithmeticNumbers(1000000, spf);
+  int limit = 1228663;
+  List<int> spf = sieve(limit);
+  List<int> primes = primesFrom(spf, limit);
+  List<int> arr = arithmeticNumbers(1000000, spf);
   print("The first 100 arithmetic numbers are:");
   int i = 0;
   while (i < 100) {
@@ -159,11 +171,11 @@ void main() {
     i = i + 10;
   }
   for (var x in [1000, 10000, 100000, 1000000]) {
-    final int last = arr[x - 1];
-    final String lastc = commatize(last);
+    int last = arr[x - 1];
+    String lastc = commatize(last);
     print("\nThe " + commatize(x) + "th arithmetic number is: " + lastc);
-    final int pc = primeCount(primes, last, spf);
-    final int comp = x - pc - 1;
+    int pc = primeCount(primes, last, spf);
+    int comp = x - pc - 1;
     print("The count of such numbers <= " + lastc + " which are composite is " + commatize(comp) + ".");
   }
 }

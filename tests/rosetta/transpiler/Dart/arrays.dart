@@ -22,6 +22,18 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
+String _substr(String s, int start, int end) {
+  var n = s.length;
+  if (start < 0) start += n;
+  if (end < 0) end += n;
+  if (start < 0) start = 0;
+  if (start > n) start = n;
+  if (end < 0) end = 0;
+  if (end > n) end = n;
+  if (start > end) start = end;
+  return s.substring(start, end);
+}
+
 String listStr(List<int> xs) {
   String s = "[";
   int i = 0;
@@ -36,6 +48,9 @@ String listStr(List<int> xs) {
   return s;
 }
 
+List<int> a = [0, 0, 0, 0, 0];
+List<int> s = a.sublist(0, 4);
+int cap_s = 5;
 void main() {
   var _benchMem0 = ProcessInfo.currentRss;
   var _benchSw = Stopwatch()..start();
@@ -43,14 +58,11 @@ void main() {
   {
   var _benchMem0 = ProcessInfo.currentRss;
   var _benchSw = Stopwatch()..start();
-  List<int> a = [0, 0, 0, 0, 0];
   print("len(a) = " + (a.length).toString());
   print("a = " + listStr(a));
   a[0] = 3;
   print("a = " + listStr(a));
   print("a[0] = " + (a[0]).toString());
-  List<int> s = a.sublist(0, 4);
-  int cap_s = 5;
   print("s = " + listStr(s));
   print("len(s) = " + (s.length).toString() + "  cap(s) = " + (cap_s).toString());
   s = a.sublist(0, 5);
@@ -68,7 +80,7 @@ void main() {
   a[4] = -1;
   print("a = " + listStr(a));
   print("s = " + listStr(s));
-  s = [];
+  s = <int>[];
   for (int i = 0; i < 8; i++) {
     s = [...s, 0];
   }
