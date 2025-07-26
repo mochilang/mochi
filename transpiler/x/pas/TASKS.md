@@ -1,3 +1,60 @@
+## Progress (2025-07-26 17:02 +0700)
+- release: v0.10.41 (progress 88/104)
+
+## Progress (2025-07-26 17:02 +0700)
+- release: v0.10.41 (progress 88/104)
+
+## Progress (2025-07-26 17:02 +0700)
+- release: v0.10.41 (progress 88/104)
+
+## Progress (2025-07-26 17:02 +0700)
+- release: v0.10.41 (progress 88/104)
+
+## Progress (2025-07-26 17:02 +0700)
+- release: v0.10.41 (progress 88/104)
+
+## Progress (2025-07-26 17:02 +0700)
+- release: v0.10.41 (progress 88/104)
+
+## Progress (2025-07-26 17:02 +0700)
+- release: v0.10.41 (progress 88/104)
+
+## Progress (2025-07-26 17:02 +0700)
+- release: v0.10.41 (progress 88/104)
+
+## Progress (2025-07-26 17:02 +0700)
+- release: v0.10.41 (progress 88/104)
+
+## Progress (2025-07-26 17:02 +0700)
+- release: v0.10.41 (progress 88/104)
+
+## Progress (2025-07-26 17:02 +0700)
+- release: v0.10.41 (progress 88/104)
+
+## Progress (2025-07-26 17:02 +0700)
+- release: v0.10.41 (progress 88/104)
+
+## Progress (2025-07-26 17:02 +0700)
+- release: v0.10.41 (progress 88/104)
+
+## Progress (2025-07-26 17:02 +0700)
+- release: v0.10.41 (progress 88/104)
+
+## Progress (2025-07-26 17:02 +0700)
+- release: v0.10.41 (progress 88/104)
+
+## Progress (2025-07-26 17:02 +0700)
+- release: v0.10.41 (progress 88/104)
+
+## Progress (2025-07-26 17:02 +0700)
+- release: v0.10.41 (progress 88/104)
+
+## Progress (2025-07-26 17:02 +0700)
+- release: v0.10.41 (progress 88/104)
+
+## Progress (2025-07-26 17:02 +0700)
+- release: v0.10.41 (progress 88/104)
+
 ## Progress (2025-07-25 21:32 +0700)
 - pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
 

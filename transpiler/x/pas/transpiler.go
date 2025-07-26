@@ -114,6 +114,7 @@ type Program struct {
 	Vars          []VarDecl
 	Records       []RecordDef
 	ArrayAliases  map[string]string
+	LateAliases   map[string]string
 	UseFGL        bool
 	Stmts         []Stmt
 	UseSysUtils   bool
@@ -818,17 +819,36 @@ func (p *Program) Emit() []byte {
 	if p.UseFGL {
 		uses = append(uses, "fgl")
 	}
+	if p.NeedShowList || p.NeedShowList2 {
+		if p.ArrayAliases == nil {
+			p.ArrayAliases = make(map[string]string)
+		}
+		if _, ok := p.ArrayAliases["integer"]; !ok {
+			p.ArrayAliases["integer"] = "IntArray"
+		}
+	}
+	if p.NeedShowList2 {
+		if p.ArrayAliases == nil {
+			p.ArrayAliases = make(map[string]string)
+		}
+		if _, ok := p.ArrayAliases["IntArray"]; !ok {
+			p.ArrayAliases["IntArray"] = "IntArrayArray"
+		}
+	}
 	if len(uses) > 0 {
 		fmt.Fprintf(&buf, "uses %s;\n", strings.Join(uses, ", "))
 	}
-	if len(p.ArrayAliases) > 0 {
-		keys := make([]string, 0, len(p.ArrayAliases))
-		for elem := range p.ArrayAliases {
+	if len(p.LateAliases) > 0 {
+		keys := make([]string, 0, len(p.LateAliases))
+		for elem := range p.LateAliases {
 			keys = append(keys, elem)
 		}
 		sort.Slice(keys, func(i, j int) bool { return len(keys[i]) < len(keys[j]) })
 		for _, elem := range keys {
-			alias := p.ArrayAliases[elem]
+			if _, ok := p.ArrayAliases[elem]; ok {
+				continue
+			}
+			alias := p.LateAliases[elem]
 			fmt.Fprintf(&buf, "type %s = array of %s;\n", alias, elem)
 		}
 	}
@@ -893,6 +913,17 @@ end;
 			fmt.Fprintf(&buf, "  %s: %s;\n", f.Name, f.Type)
 		}
 		buf.WriteString("end;\n")
+	}
+	if len(p.ArrayAliases) > 0 {
+		keys := make([]string, 0, len(p.ArrayAliases))
+		for elem := range p.ArrayAliases {
+			keys = append(keys, elem)
+		}
+		sort.Slice(keys, func(i, j int) bool { return len(keys[i]) < len(keys[j]) })
+		for _, elem := range keys {
+			alias := p.ArrayAliases[elem]
+			fmt.Fprintf(&buf, "type %s = array of %s;\n", alias, elem)
+		}
 	}
 	if len(p.Vars) > 0 {
 		buf.WriteString("var\n")
@@ -4240,7 +4271,13 @@ func (p *Program) addArrayAlias(elem string) string {
 	if p.ArrayAliases == nil {
 		p.ArrayAliases = make(map[string]string)
 	}
+	if p.LateAliases == nil {
+		p.LateAliases = make(map[string]string)
+	}
 	if name, ok := p.ArrayAliases[elem]; ok {
+		return name
+	}
+	if name, ok := p.LateAliases[elem]; ok {
 		return name
 	}
 	for strings.HasPrefix(elem, "array of ") {
@@ -4255,9 +4292,22 @@ func (p *Program) addArrayAlias(elem string) string {
 	case "boolean":
 		alias = "BoolArray"
 	default:
-		alias = strings.Title(elem) + "Array"
+		if len(elem) > 0 && strings.ToUpper(elem[:1]) == elem[:1] {
+			alias = elem + "Array"
+		} else {
+			alias = strings.Title(elem) + "Array"
+		}
 	}
-	p.ArrayAliases[elem] = alias
+	switch elem {
+	case "integer", "string", "boolean", "real", "Variant":
+		p.ArrayAliases[elem] = alias
+	default:
+		if _, ok := p.ArrayAliases[elem]; ok || (len(elem) > 0 && strings.ToUpper(elem[:1]) == elem[:1]) {
+			p.ArrayAliases[elem] = alias
+		} else {
+			p.LateAliases[elem] = alias
+		}
+	}
 	return alias
 }
 

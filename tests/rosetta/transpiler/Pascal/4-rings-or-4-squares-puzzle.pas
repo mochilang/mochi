@@ -1,8 +1,6 @@
 {$mode objfpc}
 program Main;
 uses SysUtils, fgl;
-type IntArray = array of integer;
-type IntArrayArray = array of IntArray;
 var _nowSeed: int64 = 0;
 var _nowSeeded: boolean = false;
 procedure init_now();
@@ -57,6 +55,8 @@ type Anon1 = record
   count: integer;
   list: array of IntArray;
 end;
+type IntArray = array of integer;
+type IntArrayArray = array of IntArray;
 var
   bench_start_0: integer;
   bench_dur_0: integer;
