@@ -1,7 +1,7 @@
 # Go Rosetta Transpiler Output
 
-Completed programs: 170/285
-Last updated: 2025-07-26 11:58 +0700
+Completed programs: 172/285
+Last updated: 2025-07-26 16:52 +0700
 
 Checklist:
 
@@ -188,8 +188,8 @@ Checklist:
 | 179 | catalan-numbers-pascals-triangle | ✓ | 472.0µs | 1.98KB |
 | 180 | catamorphism | ✓ | 773.0µs | 1000B |
 | 181 | catmull-clark-subdivision-surface | ✓ | 1.0ms | 38.61KB |
-| 182 | chaocipher |   |  |  |
-| 183 | chaos-game |   |  |  |
+| 182 | chaocipher | ✓ | 164.0µs | 8.95KB |
+| 183 | chaos-game | ✓ | 434.0µs | 219.61KB |
 | 184 | character-codes-1 |   |  |  |
 | 185 | character-codes-2 |   |  |  |
 | 186 | character-codes-3 |   |  |  |
