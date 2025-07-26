@@ -2,8 +2,8 @@
 
 Generated Swift code for Mochi Rosetta programs in `tests/rosetta/x/Mochi`. Outputs are stored in `tests/rosetta/transpiler/Swift`. Errors are captured in `.error` files.
 
-Completed: 95/332
-Last updated: 2025-07-26 19:01 +0700
+Completed: 101/332
+Last updated: 2025-07-26 20:38 +0700
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -103,12 +103,12 @@ Last updated: 2025-07-26 19:01 +0700
 | 94 | averages-root-mean-square | ✓ | 658µs | 3.2 MB |
 | 95 | averages-simple-moving-average | ✓ | 278µs | 3.1 MB |
 | 96 | avl-tree |   |  |  |
-| 97 | b-zier-curves-intersections |   |  |  |
-| 98 | babbage-problem |   |  |  |
-| 99 | babylonian-spiral |   |  |  |
-| 100 | balanced-brackets |   |  |  |
-| 101 | balanced-ternary |   |  |  |
-| 102 | barnsley-fern |   |  |  |
+| 97 | b-zier-curves-intersections | ✓ | 3.494ms | 3.0 MB |
+| 98 | babbage-problem | ✓ | 277µs | 3.2 MB |
+| 99 | babylonian-spiral | ✓ | 741µs | 3.4 MB |
+| 100 | balanced-brackets | ✓ | 242µs | 3.4 MB |
+| 101 | balanced-ternary | ✓ | 386µs | 3.5 MB |
+| 102 | barnsley-fern | ✓ | 6.76ms | 3.3 MB |
 | 103 | base64-decode-data |   |  |  |
 | 104 | bell-numbers |   |  |  |
 | 105 | benfords-law |   |  |  |
