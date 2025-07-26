@@ -3,7 +3,7 @@
 Generated Scheme code for Rosetta Code tasks under `tests/rosetta/x/Mochi`.
 
 ## Checklist (106/332)
-Last updated: 2025-07-26 14:35 UTC
+Last updated: 2025-07-26 15:02 UTC
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -71,31 +71,31 @@ Last updated: 2025-07-26 14:35 UTC
 | 62 | approximate-equality | ✓ | 264µs | 12.4 MB |
 | 63 | arbitrary-precision-integers-included- | ✓ | 16.958798s | 12.8 MB |
 | 64 | archimedean-spiral | ✓ | 150.029ms | 13.0 MB |
-| 65 | arena-storage-pool | ✓ |  |  |
-| 66 | arithmetic-complex | ✓ |  |  |
-| 67 | arithmetic-derivative | ✓ |  |  |
-| 68 | arithmetic-evaluation | ✓ |  |  |
-| 69 | arithmetic-geometric-mean-calculate-pi | ✓ |  |  |
-| 70 | arithmetic-geometric-mean | ✓ |  |  |
-| 71 | arithmetic-integer-1 | ✓ |  |  |
-| 72 | arithmetic-integer-2 | ✓ |  |  |
+| 65 | arena-storage-pool | ✓ | 241µs | 12.5 MB |
+| 66 | arithmetic-complex | ✓ | 227µs | 12.6 MB |
+| 67 | arithmetic-derivative | ✓ | 7.576ms | 13.7 MB |
+| 68 | arithmetic-evaluation | ✓ | 241µs | 13.3 MB |
+| 69 | arithmetic-geometric-mean-calculate-pi | ✓ | 77µs | 12.7 MB |
+| 70 | arithmetic-geometric-mean | ✓ | 71µs | 12.3 MB |
+| 71 | arithmetic-integer-1 | ✓ | 175µs | 12.7 MB |
+| 72 | arithmetic-integer-2 | ✓ | 177µs | 12.5 MB |
 | 73 | arithmetic-numbers | ✓ |  |  |
-| 74 | arithmetic-rational | ✓ |  |  |
-| 75 | array-concatenation | ✓ |  |  |
-| 76 | array-length | ✓ |  |  |
-| 77 | arrays | ✓ |  |  |
-| 78 | ascending-primes | ✓ |  |  |
-| 79 | ascii-art-diagram-converter | ✓ |  |  |
-| 80 | assertions | ✓ |  |  |
-| 81 | associative-array-creation | ✓ |  |  |
-| 82 | associative-array-iteration | ✓ |  |  |
-| 83 | associative-array-merging | ✓ |  |  |
-| 84 | atomic-updates | ✓ |  |  |
-| 85 | attractive-numbers | ✓ |  |  |
-| 86 | average-loop-length | ✓ |  |  |
-| 87 | averages-arithmetic-mean | ✓ |  |  |
-| 88 | averages-mean-time-of-day |   |  |  |
-| 89 | averages-median-1 | ✓ | 73µs | 12.5 MB |
+| 74 | arithmetic-rational | ✓ | 4.71ms | 12.9 MB |
+| 75 | array-concatenation | ✓ | 140µs | 12.7 MB |
+| 76 | array-length | ✓ | 16µs | 12.1 MB |
+| 77 | arrays | ✓ | 803µs | 12.6 MB |
+| 78 | ascending-primes | ✓ | 40.582ms | 12.5 MB |
+| 79 | ascii-art-diagram-converter | ✓ | 18µs | 12.9 MB |
+| 80 | assertions | ✓ | 78µs | 12.1 MB |
+| 81 | associative-array-creation | ✓ | 452µs | 12.6 MB |
+| 82 | associative-array-iteration | ✓ | 178µs | 12.3 MB |
+| 83 | associative-array-merging | ✓ | 434µs | 12.5 MB |
+| 84 | atomic-updates | ✓ | 1.04ms | 12.9 MB |
+| 85 | attractive-numbers | ✓ | 5.286ms | 13.0 MB |
+| 86 | average-loop-length | ✓ | 2.668943s | 16.7 MB |
+| 87 | averages-arithmetic-mean | ✓ | 646µs | 12.4 MB |
+| 88 | averages-mean-time-of-day | ✓ | 213µs | 13.7 MB |
+| 89 | averages-median-1 |   | 73µs | 12.5 MB |
 | 90 | averages-median-2 | ✓ | 68µs | 12.6 MB |
 | 91 | averages-median-3 | ✓ | 105µs | 12.6 MB |
 | 92 | averages-mode | ✓ | 120µs | 12.7 MB |
