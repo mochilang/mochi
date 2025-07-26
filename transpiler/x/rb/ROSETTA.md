@@ -2,9 +2,9 @@
 
 Generated Ruby code from Mochi Rosetta tasks lives in `tests/rosetta/transpiler/rb`.
 
-Last updated: 2025-07-26 15:06 UTC
+Last updated: 2025-07-26 16:03 UTC
 
-## Checklist (225/332)
+## Checklist (246/332)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 195µs | 36.2 KB |
@@ -238,27 +238,27 @@ Last updated: 2025-07-26 15:06 UTC
 | 229 | constrained-genericity-3 | ✓ | 28µs | 1.1 KB |
 | 230 | constrained-genericity-4 | ✓ | 108µs | 12.7 KB |
 | 231 | constrained-random-points-on-a-circle-1 | ✓ | 4.166ms | 1.0 MB |
-| 232 | constrained-random-points-on-a-circle-2 |   |  |  |
-| 233 | continued-fraction |   |  |  |
-| 234 | convert-decimal-number-to-rational |   |  |  |
-| 235 | convert-seconds-to-compound-duration |   |  |  |
-| 236 | convex-hull |   |  |  |
-| 237 | conways-game-of-life |   |  |  |
-| 238 | copy-a-string-1 |   |  |  |
-| 239 | copy-a-string-2 |   |  |  |
-| 240 | copy-stdin-to-stdout-1 |   |  |  |
-| 241 | copy-stdin-to-stdout-2 |   |  |  |
-| 242 | count-in-factors |   |  |  |
-| 243 | count-in-octal-1 |   |  |  |
-| 244 | count-in-octal-2 |   |  |  |
-| 245 | count-in-octal-3 |   |  |  |
-| 246 | count-in-octal-4 |   |  |  |
-| 247 | count-occurrences-of-a-substring |   |  |  |
-| 248 | count-the-coins-1 |   |  |  |
-| 249 | count-the-coins-2 |   |  |  |
-| 250 | cramers-rule |   |  |  |
-| 251 | crc-32-1 |   |  |  |
-| 252 | crc-32-2 |   |  |  |
+| 232 | constrained-random-points-on-a-circle-2 | ✓ | 1.965ms | 1.7 MB |
+| 233 | continued-fraction | ✓ | 82µs | 30.5 KB |
+| 234 | convert-decimal-number-to-rational | ✓ | 45µs | 14.3 KB |
+| 235 | convert-seconds-to-compound-duration | ✓ | 22µs | 10.5 KB |
+| 236 | convex-hull | ✓ | 173µs | 26.5 KB |
+| 237 | conways-game-of-life | ✓ | 1.297435s | 1.5 MB |
+| 238 | copy-a-string-1 | ✓ | 1µs | 512 B |
+| 239 | copy-a-string-2 | ✓ | 35µs | 9.4 KB |
+| 240 | copy-stdin-to-stdout-1 | ✓ | 57µs | 17.3 KB |
+| 241 | copy-stdin-to-stdout-2 | ✓ | 55µs | 17.4 KB |
+| 242 | count-in-factors | ✓ | 1.745ms | 29.2 KB |
+| 243 | count-in-octal-1 | ✓ | 211µs | 55.6 KB |
+| 244 | count-in-octal-2 | ✓ | 219.848ms | -25260 B |
+| 245 | count-in-octal-3 | ✓ | 55µs | 19.1 KB |
+| 246 | count-in-octal-4 | ✓ | 36µs | 13.1 KB |
+| 247 | count-occurrences-of-a-substring | ✓ | 46µs | 10.5 KB |
+| 248 | count-the-coins-1 | ✓ | 44µs | 10.7 KB |
+| 249 | count-the-coins-2 | ✓ | 3.336ms | 3.9 MB |
+| 250 | cramers-rule | ✓ | 259µs | 103.7 KB |
+| 251 | crc-32-1 | ✓ | 3.957ms | 304.5 KB |
+| 252 | crc-32-2 | ✓ | 3.912ms | 304.6 KB |
 | 253 | create-a-file-on-magnetic-tape |   |  |  |
 | 254 | create-a-file |   |  |  |
 | 255 | create-a-two-dimensional-array-at-runtime-1 |   |  |  |
