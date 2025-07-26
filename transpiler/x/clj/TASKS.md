@@ -1,3 +1,55 @@
+## Progress (2025-07-26 17:02 +0700)
+- release: v0.10.41
+- Regenerated golden files - 101/104 vm valid programs passing
+
+## Progress (2025-07-26 17:02 +0700)
+- release: v0.10.41
+- Regenerated golden files - 101/104 vm valid programs passing
+
+## Progress (2025-07-26 17:02 +0700)
+- release: v0.10.41
+- Regenerated golden files - 101/104 vm valid programs passing
+
+## Progress (2025-07-26 17:02 +0700)
+- release: v0.10.41
+- Regenerated golden files - 101/104 vm valid programs passing
+
+## Progress (2025-07-26 17:02 +0700)
+- release: v0.10.41
+- Regenerated golden files - 101/104 vm valid programs passing
+
+## Progress (2025-07-26 17:02 +0700)
+- release: v0.10.41
+- Regenerated golden files - 101/104 vm valid programs passing
+
+## Progress (2025-07-26 17:02 +0700)
+- release: v0.10.41
+- Regenerated golden files - 101/104 vm valid programs passing
+
+## Progress (2025-07-26 17:02 +0700)
+- release: v0.10.41
+- Regenerated golden files - 101/104 vm valid programs passing
+
+## Progress (2025-07-26 17:02 +0700)
+- release: v0.10.41
+- Regenerated golden files - 101/104 vm valid programs passing
+
+## Progress (2025-07-26 17:02 +0700)
+- release: v0.10.41
+- Regenerated golden files - 101/104 vm valid programs passing
+
+## Progress (2025-07-26 17:02 +0700)
+- release: v0.10.41
+- Regenerated golden files - 101/104 vm valid programs passing
+
+## Progress (2025-07-26 17:02 +0700)
+- release: v0.10.41
+- Regenerated golden files - 101/104 vm valid programs passing
+
+## Progress (2025-07-26 17:02 +0700)
+- release: v0.10.41
+- Regenerated golden files - 101/104 vm valid programs passing
+
 ## Progress (2025-07-25 21:06 +0700)
 - ts: update rosetta outputs 148-177
 - Regenerated golden files - 101/104 vm valid programs passing
