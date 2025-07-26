@@ -1,0 +1,9 @@
+/workspace/mochi/tests/rosetta/transpiler/erl/call-a-function-9.erl:57:15: Warning: the result of calling length/1 is ignored (suppress the warning by assigning the expression to the _ variable)
+%   57|         I_2 = length(List_5),
+%     |               ^
+
+{
+  "duration_us": 17170,
+  "memory_bytes": 505496,
+  "name": "main"
+}
