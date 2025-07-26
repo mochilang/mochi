@@ -772,7 +772,14 @@ func (f *ForStmt) emit(w io.Writer, indent int) {
 			typ = "int"
 		}
 		writeIndent(w, indent+1)
-		fmt.Fprintf(w, "%s %s = %s[__i];\n", typ, f.Var, f.ListVar)
+		if strings.HasSuffix(typ, "[]") {
+			base := strings.TrimSuffix(typ, "[]")
+			fmt.Fprintf(w, "%s %s[%s_lens[__i]];\n", base, f.Var, f.ListVar)
+			writeIndent(w, indent+1)
+			fmt.Fprintf(w, "memcpy(%s, %s[__i], sizeof(%s[__i]));\n", f.Var, f.ListVar, f.ListVar)
+		} else {
+			fmt.Fprintf(w, "%s %s = %s[__i];\n", typ, f.Var, f.ListVar)
+		}
 		for _, s := range f.Body {
 			s.emit(w, indent+1)
 		}
@@ -2276,6 +2283,10 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 				name = "user_main"
 				funcAliases["main"] = "user_main"
 			}
+			if name == "abs" { // avoid conflict with stdlib
+				funcAliases[name] = "user_abs"
+				name = "user_abs"
+			}
 			fun, err := compileFunction(env, name, fnExpr)
 			if err != nil {
 				return nil, err
@@ -2612,6 +2623,15 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 		}
 		if declType == "" {
 			declType = inferCType(env, s.Let.Name, valExpr)
+		}
+		if declType == "int[]" {
+			if lst, ok := valExpr.(*ListLit); ok && len(lst.Elems) > 0 {
+				if sub, ok2 := lst.Elems[0].(*ListLit); ok2 && len(sub.Elems) > 0 {
+					if inferExprType(env, sub.Elems[0]) == "double" {
+						declType = "double[][]"
+					}
+				}
+			}
 		}
 		if strings.Contains(declType, "double") {
 			markMath()
@@ -3050,18 +3070,32 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 				typStr := inferExprType(env, convertExpr(s.For.Source))
 				if strings.HasSuffix(typStr, "[]") {
 					elemType := strings.TrimSuffix(typStr, "[]")
-					switch elemType {
-					case "int":
-						env.SetVarDeep(s.For.Name, types.IntType{}, true)
-					case "double":
-						env.SetVarDeep(s.For.Name, types.FloatType{}, true)
-					case "const char*":
-						env.SetVarDeep(s.For.Name, types.StringType{}, true)
-					default:
-						if st, ok := env.GetStruct(elemType); ok {
-							env.SetVarDeep(s.For.Name, st, true)
-						} else {
+					if strings.HasSuffix(elemType, "[]") {
+						base := strings.TrimSuffix(elemType, "[]")
+						switch base {
+						case "int":
+							env.SetVarDeep(s.For.Name, types.ListType{Elem: types.IntType{}}, true)
+						case "double":
+							env.SetVarDeep(s.For.Name, types.ListType{Elem: types.FloatType{}}, true)
+						case "const char*":
+							env.SetVarDeep(s.For.Name, types.ListType{Elem: types.StringType{}}, true)
+						default:
 							env.SetVarDeep(s.For.Name, types.AnyType{}, true)
+						}
+					} else {
+						switch elemType {
+						case "int":
+							env.SetVarDeep(s.For.Name, types.IntType{}, true)
+						case "double":
+							env.SetVarDeep(s.For.Name, types.FloatType{}, true)
+						case "const char*":
+							env.SetVarDeep(s.For.Name, types.StringType{}, true)
+						default:
+							if st, ok := env.GetStruct(elemType); ok {
+								env.SetVarDeep(s.For.Name, st, true)
+							} else {
+								env.SetVarDeep(s.For.Name, types.AnyType{}, true)
+							}
 						}
 					}
 					body, err := compileStmts(env, s.For.Body)
