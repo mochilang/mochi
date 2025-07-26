@@ -514,6 +514,12 @@ func (l *ListLit) emit(w io.Writer) {
 			io.WriteString(w, ", ")
 		}
 		e.emit(w)
+		et := inferType(e)
+		if et != "" && et != "i64" && et != "bool" && et != "f64" {
+			if _, ok := e.(*StringLit); !ok {
+				io.WriteString(w, ".clone()")
+			}
+		}
 	}
 	io.WriteString(w, "]")
 }
@@ -871,11 +877,22 @@ func (a *AppendExpr) emit(w io.Writer) {
 	io.WriteString(w, ".clone(); v.push(")
 	lt := inferType(a.List)
 	if lt == "Vec<String>" {
-		io.WriteString(w, "String::from(")
-		a.Elem.emit(w)
-		io.WriteString(w, ")")
+		if inferType(a.Elem) == "String" {
+			a.Elem.emit(w)
+			io.WriteString(w, ".clone()")
+		} else {
+			io.WriteString(w, "String::from(")
+			a.Elem.emit(w)
+			io.WriteString(w, ")")
+		}
 	} else {
 		a.Elem.emit(w)
+		et := inferType(a.Elem)
+		if et != "" && et != "i64" && et != "bool" && et != "f64" {
+			if _, ok := a.Elem.(*StringLit); !ok {
+				io.WriteString(w, ".clone()")
+			}
+		}
 	}
 	io.WriteString(w, "); v }")
 }
@@ -1200,11 +1217,31 @@ func (a *AssignStmt) emit(w io.Writer) {
 		io.WriteString(w, name)
 		io.WriteString(w, ".lock().unwrap()")
 		io.WriteString(w, " = ")
-		a.Expr.emit(w)
+		if nr, ok := a.Expr.(*NameRef); ok {
+			vt := inferType(a.Expr)
+			if vt != "" && vt != "i64" && vt != "bool" && vt != "f64" {
+				io.WriteString(w, rustIdent(nr.Name))
+				io.WriteString(w, ".clone()")
+			} else {
+				a.Expr.emit(w)
+			}
+		} else {
+			a.Expr.emit(w)
+		}
 	} else {
 		io.WriteString(w, name)
 		io.WriteString(w, " = ")
-		a.Expr.emit(w)
+		if nr, ok := a.Expr.(*NameRef); ok {
+			vt := inferType(a.Expr)
+			if vt != "" && vt != "i64" && vt != "bool" && vt != "f64" {
+				io.WriteString(w, rustIdent(nr.Name))
+				io.WriteString(w, ".clone()")
+			} else {
+				a.Expr.emit(w)
+			}
+		} else {
+			a.Expr.emit(w)
+		}
 	}
 }
 
@@ -1257,6 +1294,12 @@ func (s *IndexAssignStmt) emit(w io.Writer) {
 			idx.Index.emit(w)
 			io.WriteString(w, ".clone(), ")
 			s.Value.emit(w)
+			vt := inferType(s.Value)
+			if vt != "" && vt != "i64" && vt != "bool" && vt != "f64" {
+				if _, ok := s.Value.(*StringLit); !ok {
+					io.WriteString(w, ".clone()")
+				}
+			}
 			io.WriteString(w, ")")
 			indexLHS = old
 			return
@@ -1333,6 +1376,7 @@ func (b *BinaryExpr) emit(w io.Writer) {
 			io.WriteString(w, b.Op)
 			io.WriteString(w, " ")
 			b.Right.emit(w)
+			io.WriteString(w, ".as_str()")
 			io.WriteString(w, ")")
 			return
 		}
@@ -2461,13 +2505,14 @@ func compileForStmt(n *parser.ForStmt) (Stmt, error) {
 	}
 	byRef := false
 	if t := inferType(iter); strings.HasPrefix(t, "Vec<") {
+		byRef = true
 		elem := strings.TrimSuffix(strings.TrimPrefix(t, "Vec<"), ">")
 		if elem == "String" {
-			byRef = false
+			// keep element type as String
 		} else if strings.HasPrefix(elem, "Vec<") || strings.HasPrefix(elem, "HashMap<") {
-			byRef = true
+			// reference complex element types
 		} else if _, ok := structTypes[elem]; ok {
-			byRef = true
+			// reference struct types
 		}
 	} else if strings.HasPrefix(t, "HashMap<") {
 		parts := strings.TrimPrefix(t, "HashMap<")
@@ -2508,9 +2553,12 @@ func compileForStmt(n *parser.ForStmt) (Stmt, error) {
 		if strings.HasPrefix(t, "Vec<") {
 			typ := strings.TrimSuffix(strings.TrimPrefix(t, "Vec<"), ">")
 			if typ == "String" {
-				varTypes[n.Name] = "String"
 				stringVars[n.Name] = true
-				byRef = false
+				if byRef {
+					varTypes[n.Name] = "&String"
+				} else {
+					varTypes[n.Name] = "String"
+				}
 			} else if byRef {
 				varTypes[n.Name] = "&" + typ
 			} else {
@@ -4617,9 +4665,12 @@ func writeForStmt(buf *bytes.Buffer, s *ForStmt, indent int) {
 		s.End.emit(buf)
 	} else {
 		if s.ByRef {
-			buf.WriteString("&")
+			buf.WriteString("(")
+			s.Iter.emit(buf)
+			buf.WriteString(".clone())")
+		} else {
+			s.Iter.emit(buf)
 		}
-		s.Iter.emit(buf)
 	}
 	buf.WriteString(" {\n")
 	for _, st := range s.Body {

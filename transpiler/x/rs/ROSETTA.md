@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Rust code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/Rust`.
-Last updated: 2025-07-26 16:59 UTC
+Last updated: 2025-07-26 18:18 UTC
 
-## Rosetta Golden Test Checklist (47/332)
+## Rosetta Golden Test Checklist (50/344)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 109µs | 3.2 MB |
@@ -50,16 +50,16 @@ Last updated: 2025-07-26 16:59 UTC
 | 41 | align-columns |   |  |  |
 | 42 | aliquot-sequence-classifications | ✓ | 43.475ms |  |
 | 43 | almkvist-giullera-formula-for-pi |   |  |  |
-| 44 | almost-prime | ✓ | 82µs |  |
-| 45 | amb | ✓ | 21µs |  |
-| 46 | amicable-pairs | ✓ | 361.482ms | 344.0 KB |
-| 47 | anagrams-deranged-anagrams |   |  |  |
-| 48 | anagrams |   |  |  |
-| 49 | angle-difference-between-two-bearings-1 | ✓ | 25µs |  |
-| 50 | angle-difference-between-two-bearings-2 | ✓ | 30µs |  |
-| 51 | angles-geometric-normalization-and-conversion |   |  |  |
-| 52 | animate-a-pendulum | ✓ | 23µs |  |
-| 53 | animation | ✓ | 108µs |  |
+| 44 | almost-prime | ✓ | 119µs |  |
+| 45 | amb | ✓ | 96µs |  |
+| 46 | amicable-pairs | ✓ | 2.387127s | 344.0 KB |
+| 47 | anagrams-deranged-anagrams | ✓ | 186µs |  |
+| 48 | anagrams | ✓ | 315µs |  |
+| 49 | angle-difference-between-two-bearings-1 | ✓ | 36µs |  |
+| 50 | angle-difference-between-two-bearings-2 | ✓ | 45µs |  |
+| 51 | angles-geometric-normalization-and-conversion | ✓ | 192µs |  |
+| 52 | animate-a-pendulum | ✓ | 60µs |  |
+| 53 | animation | ✓ | 166µs |  |
 | 54 | anonymous-recursion-1 | ✓ | 24µs |  |
 | 55 | anonymous-recursion-2 | ✓ | 33µs |  |
 | 56 | anonymous-recursion | ✓ | 29µs |  |
@@ -337,5 +337,17 @@ Last updated: 2025-07-26 16:59 UTC
 | 328 | earliest-difference-between-prime-gaps |   |  |  |
 | 329 | eban-numbers |   |  |  |
 | 330 | echo-server |   |  |  |
-| 331 | ekg-sequence-convergence |   |  |  |
-| 332 | md5 |   |  |  |
+| 331 | eertree |   |  |  |
+| 332 | egyptian-division |   |  |  |
+| 333 | ekg-sequence-convergence |   |  |  |
+| 334 | element-wise-operations |   |  |  |
+| 335 | elementary-cellular-automaton-infinite-length |   |  |  |
+| 336 | elementary-cellular-automaton-random-number-generator |   |  |  |
+| 337 | elementary-cellular-automaton |   |  |  |
+| 338 | elliptic-curve-arithmetic |   |  |  |
+| 339 | elliptic-curve-digital-signature-algorithm |   |  |  |
+| 340 | emirp-primes |   |  |  |
+| 341 | empty-directory |   |  |  |
+| 342 | empty-program |   |  |  |
+| 343 | enforced-immutability |   |  |  |
+| 344 | md5 |   |  |  |
