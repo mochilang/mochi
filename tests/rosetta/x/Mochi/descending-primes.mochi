@@ -1,0 +1,48 @@
+// Mochi translation of Go "Descending primes" example.
+// Generate all primes whose digits are in strictly descending order using digits 9..1.
+
+fun isPrime(n: int): bool {
+  if n < 2 { return false }
+  if n % 2 == 0 { return n == 2 }
+  var d = 3
+  while d * d <= n {
+    if n % d == 0 { return false }
+    d = d + 2
+  }
+  return true
+}
+
+let digits = [9,8,7,6,5,4,3,2,1]
+
+fun gen(idx: int, cur: int, used: bool): list<int> {
+  if idx == len(digits) {
+    if used && isPrime(cur) { return [cur] }
+    return []
+  }
+  let with = gen(idx + 1, cur * 10 + digits[idx], true)
+  let without = gen(idx + 1, cur, used)
+  return with union all without
+}
+
+var primes: list<int> = gen(0, 0, false)
+
+fun pad(n: int, width: int): string {
+  var s = str(n)
+  while len(s) < width {
+    s = " " + s
+  }
+  return s
+}
+
+print("There are " + str(len(primes)) + " descending primes, namely:")
+var i = 0
+var line = ""
+while i < len(primes) {
+  line = line + pad(primes[i], 8) + " "
+  if (i + 1) % 10 == 0 {
+    print(substring(line, 0, len(line)-1))
+    line = ""
+  }
+  i = i + 1
+}
+if len(line) > 0 { print(substring(line, 0, len(line)-1)) }
