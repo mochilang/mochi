@@ -1814,6 +1814,13 @@ func inferType(e Expr) string {
 		if strings.HasSuffix(v.Func, "FifteenPuzzleExample") {
 			return "string"
 		}
+		if transpileEnv != nil {
+			if fv, err := transpileEnv.GetVar(v.Func); err == nil {
+				if ft, ok := fv.(types.FuncType); ok {
+					return fsType(ft.Return)
+				}
+			}
+		}
 	case *MethodCallExpr:
 		switch v.Name {
 		case "contains", "Contains":
@@ -2464,6 +2471,15 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 			declared = inferQueryType(st.Let.Value.Binary.Left.Value.Target.Query)
 		} else {
 			declared = inferType(e)
+			if declared == "array" {
+				if id, ok := e.(*IdentExpr); ok {
+					if id.Type != "" && id.Type != "array" {
+						declared = id.Type
+					} else if t, ok2 := varTypes[id.Name]; ok2 && t != "array" {
+						declared = t
+					}
+				}
+			}
 			if declared == "" {
 				if ix, ok := e.(*IndexExpr); ok {
 					if t := elemTypeOf(ix.Target); t != "" {
@@ -2527,6 +2543,15 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 			declared = inferQueryType(st.Var.Value.Binary.Left.Value.Target.Query)
 		} else {
 			declared = inferType(e)
+			if declared == "array" {
+				if id, ok := e.(*IdentExpr); ok {
+					if id.Type != "" && id.Type != "array" {
+						declared = id.Type
+					} else if t, ok2 := varTypes[id.Name]; ok2 && t != "array" {
+						declared = t
+					}
+				}
+			}
 			if declared == "" {
 				if ix, ok := e.(*IndexExpr); ok {
 					if t := elemTypeOf(ix.Target); t != "" {

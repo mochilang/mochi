@@ -1,4 +1,4 @@
-// Generated 2025-07-25 09:51 +0000
+// Generated 2025-07-26 19:29 +0700
 
 exception Return
 
@@ -50,12 +50,12 @@ and ackermann2 (m: int) (n: int) =
             __ret <- (2 * n) + 3
             raise Return
         if m = 3 then
-            __ret <- (8 * (pow 2 n)) - 3
+            __ret <- int ((int (8 * (int (pow 2 n)))) - 3)
             raise Return
         if n = 0 then
-            __ret <- ackermann2 (m - 1) 1
+            __ret <- int (ackermann2 (m - 1) 1)
             raise Return
-        __ret <- ackermann2 (m - 1) (ackermann2 m (n - 1))
+        __ret <- int (ackermann2 (m - 1) (int (ackermann2 m (n - 1))))
         raise Return
         __ret
     with

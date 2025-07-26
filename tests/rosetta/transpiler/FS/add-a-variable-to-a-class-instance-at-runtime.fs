@@ -1,4 +1,4 @@
-// Generated 2025-07-25 09:57 +0000
+// Generated 2025-07-26 19:29 +0700
 
 exception Return
 
@@ -48,7 +48,7 @@ let rec main () =
             printfn "%s" "Which field do you want to inspect ? "
             let name: string = System.Console.ReadLine()
             if Map.containsKey name (ss.runtimeFields) then
-                let value: string = (defaultArg (Map.tryFind name ss.runtimeFields) Unchecked.defaultof<string>)
+                let value: string = ss.runtimeFields.[name] |> unbox<string>
                 printfn "%s" (("Its value is '" + value) + "'")
                 __ret <- ()
                 raise Return
