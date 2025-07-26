@@ -2,8 +2,8 @@
 
 Generated Swift code for Mochi Rosetta programs in `tests/rosetta/x/Mochi`. Outputs are stored in `tests/rosetta/transpiler/Swift`. Errors are captured in `.error` files.
 
-Completed: 120/332
-Last updated: 2025-07-27 00:00 +0700
+Completed: 114/332
+Last updated: 2025-07-27 00:41 +0700
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -126,21 +126,21 @@ Last updated: 2025-07-27 00:00 +0700
 | 117 | bitcoin-address-validation |   |  |  |
 | 118 | bitmap-b-zier-curves-cubic |   |  |  |
 | 119 | bitmap-b-zier-curves-quadratic |   |  |  |
-| 120 | bitmap-bresenhams-line-algorithm | ✓ | 208µs | 3.1 MB |
-| 121 | bitmap-flood-fill | ✓ | 146µs | 3.0 MB |
-| 122 | bitmap-histogram | ✓ | 320µs | 3.2 MB |
-| 123 | bitmap-midpoint-circle-algorithm | ✓ | 370µs | 3.2 MB |
+| 120 | bitmap-bresenhams-line-algorithm |   |  |  |
+| 121 | bitmap-flood-fill |   |  |  |
+| 122 | bitmap-histogram |   |  |  |
+| 123 | bitmap-midpoint-circle-algorithm |   |  |  |
 | 124 | bitmap-ppm-conversion-through-a-pipe |   |  |  |
 | 125 | bitmap-read-a-ppm-file |   |  |  |
-| 126 | bitmap-read-an-image-through-a-pipe | ✓ | 476µs | 3.5 MB |
-| 127 | bitmap-write-a-ppm-file |   |  |  |
+| 126 | bitmap-read-an-image-through-a-pipe |   |  |  |
+| 127 | bitmap-write-a-ppm-file | ✓ | 273µs | 3.1 MB |
 | 128 | bitmap |   |  |  |
 | 129 | bitwise-io-1 |   |  |  |
 | 130 | bitwise-io-2 |   |  |  |
 | 131 | bitwise-operations |   |  |  |
-| 132 | blum-integer | ✓ | 372µs | 3.0 MB |
+| 132 | blum-integer |   |  |  |
 | 133 | boolean-values |   |  |  |
-| 134 | box-the-compass | ✓ | 401µs | 3.2 MB |
+| 134 | box-the-compass |   |  |  |
 | 135 | boyer-moore-string-search |   |  |  |
 | 136 | brazilian-numbers |   |  |  |
 | 137 | break-oo-privacy |   |  |  |
