@@ -1,0 +1,20 @@
+// Mochi translation of Rosetta "Filter" task.
+// Demonstrates filtering a list of integers for even values.
+
+fun even(xs: list<int>): list<int> {
+  var r: list<int> = []
+  for x in xs {
+    if x % 2 == 0 { r = append(r, x) }
+  }
+  return r
+}
+
+fun main() {
+  var a = [1,2,3,4,5,6,7,8,9,10]
+  print(a)
+  let b = even(a)
+  print(b)
+  print(a) // original unchanged
+}
+
+main()

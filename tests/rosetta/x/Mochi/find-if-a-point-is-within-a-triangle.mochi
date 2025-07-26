@@ -1,0 +1,44 @@
+// Mochi version of "Find if a point is within a triangle".
+
+fun abs(x: float): float {
+  if x < 0.0 { return -x }
+  return x
+}
+
+fun area(x1: float, y1: float, x2: float, y2: float, x3: float, y3: float): float {
+  return abs((x1*(y2-y3) + x2*(y3-y1) + x3*(y1-y2)) / 2.0)
+}
+
+fun pointInTriangle(x1: float, y1: float, x2: float, y2: float, x3: float, y3: float, x: float, y: float): bool {
+  let A = area(x1,y1,x2,y2,x3,y3)
+  let A1 = area(x, y, x2, y2, x3, y3)
+  let A2 = area(x1,y1,x, y, x3, y3)
+  let A3 = area(x1,y1,x2,y2,x, y)
+  let diff = (abs((A1+A2+A3) - A) as float)
+  if diff < 0.0001 { return true }
+  return false
+}
+
+fun main() {
+  let tri1 = [[3.0/2, 12.0/5], [51.0/10, -31.0/10], [-19.0/5, 1.2]]
+  print("Triangle is " + str(tri1))
+  for pt in [[0.0,0.0],[0.0,1.0],[3.0,1.0]] {
+    let ok = pointInTriangle(tri1[0][0],tri1[0][1],tri1[1][0],tri1[1][1],tri1[2][0],tri1[2][1], pt[0], pt[1])
+    print("Point " + str(pt) + " is within triangle? " + str(ok))
+  }
+  print("")
+  var tri2 = [[1.0/10,1.0/9],[100.0/8,100.0/3],[100.0/4,100.0/9]]
+  print("Triangle is " + str(tri2))
+  let x = tri2[0][0] + (3.0/7)*(tri2[1][0]-tri2[0][0])
+  let y = tri2[0][1] + (3.0/7)*(tri2[1][1]-tri2[0][1])
+  let pt = [x,y]
+  var ok = pointInTriangle(tri2[0][0],tri2[0][1],tri2[1][0],tri2[1][1],tri2[2][0],tri2[2][1], x, y)
+  print("Point " + str(pt) + " is within triangle ? " + str(ok))
+  print("")
+  tri2 = [[1.0/10,1.0/9],[100.0/8,100.0/3],[-100.0/8,100.0/6]]
+  print("Triangle is " + str(tri2))
+  ok = pointInTriangle(tri2[0][0],tri2[0][1],tri2[1][0],tri2[1][1],tri2[2][0],tri2[2][1], x, y)
+  print("Point " + str(pt) + " is within triangle ? " + str(ok))
+}
+
+main()

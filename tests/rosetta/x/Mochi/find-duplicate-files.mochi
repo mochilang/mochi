@@ -1,0 +1,33 @@
+// Mochi version of "Find duplicate files".
+// Uses a fake filesystem represented by a map of path to contents.
+
+fun findDuplicates(fs: map<string, string>, paths: list<string>): list<list<string>> {
+  var seen: map<string, string> = {}
+  var dups: list<list<string>> = []
+  for path in paths {
+    let content = fs[path]
+    if content in seen {
+      dups = append(dups, [seen[content], path])
+    } else {
+      seen[content] = path
+    }
+  }
+  return dups
+}
+
+fun main() {
+  var fs: map<string, string> = {
+    "a.txt": "hello",
+    "b.txt": "world",
+    "c.txt": "hello",
+    "d.txt": "foo",
+    "e.txt": "world"
+  }
+  let paths = ["a.txt", "b.txt", "c.txt", "d.txt", "e.txt"]
+  let dups = findDuplicates(fs, paths)
+  for pair in dups {
+    print(pair[0] + " <==> " + pair[1])
+  }
+}
+
+main()
