@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated IR and outputs from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/ir`.
-Last updated: 2025-07-26 03:26 UTC
+Last updated: 2025-07-26 04:00 UTC
 
 ## Rosetta Golden Test Checklist (201/284)
 | Index | Name | Status | Duration | Memory |
@@ -212,7 +212,7 @@ Last updated: 2025-07-26 03:26 UTC
 | 203 | church-numerals-1 |   |  |  |
 | 204 | church-numerals-2 | ✓ | 22µs | 136 B |
 | 205 | circles-of-given-radius-through-two-points | ✓ |  |  |
-| 206 | circular-primes | ✓ |  |  |
+| 206 | circular-primes | ✓ | 16.751ms | 63.6 KB |
 | 207 | cistercian-numerals | ✓ |  |  |
 | 208 | comma-quibbling |   |  |  |
 | 209 | compiler-virtual-machine-interpreter |   |  |  |
