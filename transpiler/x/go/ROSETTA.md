@@ -1,7 +1,7 @@
 # Go Rosetta Transpiler Output
 
-Completed programs: 217/332
-Last updated: 2025-07-27 00:10 +0700
+Completed programs: 228/332
+Last updated: 2025-07-27 00:51 +0700
 
 Checklist:
 
@@ -238,17 +238,17 @@ Checklist:
 | 229 | constrained-genericity-3 | ✓ | 159.0µs | 0B |
 | 230 | constrained-genericity-4 | ✓ | 304.0µs | 1000B |
 | 231 | constrained-random-points-on-a-circle-1 |   |  |  |
-| 232 | constrained-random-points-on-a-circle-2 |   |  |  |
-| 233 | continued-fraction |   |  |  |
-| 234 | convert-decimal-number-to-rational |   |  |  |
-| 235 | convert-seconds-to-compound-duration |   |  |  |
-| 236 | convex-hull |   |  |  |
-| 237 | conways-game-of-life |   |  |  |
-| 238 | copy-a-string-1 |   |  |  |
-| 239 | copy-a-string-2 |   |  |  |
-| 240 | copy-stdin-to-stdout-1 |   |  |  |
-| 241 | copy-stdin-to-stdout-2 |   |  |  |
-| 242 | count-in-factors |   |  |  |
+| 232 | constrained-random-points-on-a-circle-2 | ✓ | 3.0ms | 182.70KB |
+| 233 | continued-fraction | ✓ | 848.0µs | 17.68KB |
+| 234 | convert-decimal-number-to-rational | ✓ | 797.0µs | 1.86KB |
+| 235 | convert-seconds-to-compound-duration | ✓ | 610.0µs | 1.15KB |
+| 236 | convex-hull | ✓ | 550.0µs | 2.52KB |
+| 237 | conways-game-of-life | ✓ | 286.0ms | 3.16MB |
+| 238 | copy-a-string-1 | ✓ | 185.0µs | 0B |
+| 239 | copy-a-string-2 | ✓ | 599.0µs | 1.10KB |
+| 240 | copy-stdin-to-stdout-1 | ✓ | 416.0µs | 4.96KB |
+| 241 | copy-stdin-to-stdout-2 | ✓ | 423.0µs | 4.96KB |
+| 242 | count-in-factors | ✓ | 836.0µs | 3.44KB |
 | 243 | count-in-octal-1 |   |  |  |
 | 244 | count-in-octal-2 |   |  |  |
 | 245 | count-in-octal-3 |   |  |  |

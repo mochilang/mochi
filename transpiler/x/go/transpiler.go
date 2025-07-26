@@ -2066,22 +2066,15 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 		}
 		return &ExprStmt{Expr: e}, nil
 	case st.Let != nil:
-		var typ string
-		var declaredType types.Type
-		if st.Let.Type != nil {
-			typ = toGoType(st.Let.Type, env)
-			declaredType = types.ResolveTypeRef(st.Let.Type, env)
-			env.SetVar(st.Let.Name, declaredType, false)
-		} else if env == topEnv {
-			if t, err := env.GetVar(st.Let.Name); err == nil {
-				if _, ok := t.(types.FuncType); !ok {
-					typ = toGoTypeFromType(t)
-					declaredType = t
-				}
-			}
-		}
-		if st.Let.Value != nil {
-			e, err := compileExpr(st.Let.Value, env, st.Let.Name)
+               var typ string
+               var declaredType types.Type
+               if st.Let.Type != nil {
+                       typ = toGoType(st.Let.Type, env)
+                       declaredType = types.ResolveTypeRef(st.Let.Type, env)
+                       env.SetVar(st.Let.Name, declaredType, false)
+               }
+               if st.Let.Value != nil {
+                       e, err := compileExpr(st.Let.Value, env, st.Let.Name)
 			if err != nil {
 				return nil, err
 			}
