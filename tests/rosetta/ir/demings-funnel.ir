@@ -1,0 +1,257 @@
+func main (regs=5)
+  // var dxs = [
+  Const        r2, [-0.533, 0.27, 0.859, -0.043, -0.205, -0.127, -0.071, 0.275, 1.251, -0.231, -0.401, 0.269, 0.491, 0.951, 1.15, 0.001, -0.382, 0.161, 0.915, 2.08, -2.337, 0.034, -0.126, 0.014, 0.709, 0.129, -1.093, -0.483, -1.193, 0.02, -0.051, 0.047, -0.095, 0.695, 0.34, -0.182, 0.287, 0.213, -0.423, -0.021, -0.134, 1.798, 0.021, -1.099, -0.361, 1.636, -1.134, 1.315, 0.201, 0.034, 0.097, -0.17, 0.054, -0.553, -0.024, -0.181, -0.7, -0.361, -0.789, 0.279, -0.174, -0.009, -0.323, -0.658, 0.348, -0.528, 0.881, 0.021, -0.853, 0.157, 0.648, 1.774, -1.043, 0.051, 0.021, 0.247, -0.31, 0.171, 0.0, 0.106, 0.024, -0.386, 0.962, 0.765, -0.125, -0.289, 0.521, 0.017, 0.281, -0.749, -0.149, -2.436, -0.909, 0.394, -0.113, -0.598, 0.443, -0.521, -0.799, 0.087]
+  Move         r0, r2
+  SetGlobal    0,0,0,0
+  // var dys = [
+  Const        r3, [0.136, 0.717, 0.459, -0.225, 1.392, 0.385, 0.121, -0.395, 0.49, -0.682, -0.065, 0.242, -0.288, 0.658, 0.459, 0.0, 0.426, 0.205, -0.765, -2.188, -0.742, -0.01, 0.089, 0.208, 0.585, 0.633, -0.444, -0.351, -1.087, 0.199, 0.701, 0.096, -0.025, -0.868, 1.051, 0.157, 0.216, 0.162, 0.249, -0.007, 0.009, 0.508, -0.79, 0.723, 0.881, -0.508, 0.393, -0.226, 0.71, 0.038, -0.217, 0.831, 0.48, 0.407, 0.447, -0.295, 1.126, 0.38, 0.549, -0.445, -0.046, 0.428, -0.074, 0.217, -0.822, 0.491, 1.347, -0.141, 1.23, -0.044, 0.079, 0.219, 0.698, 0.275, 0.056, 0.031, 0.421, 0.064, 0.721, 0.104, -0.729, 0.65, -1.103, 0.154, -1.72, 0.051, -0.385, 0.477, 1.537, -0.901, 0.939, -0.411, 0.341, -0.411, 0.106, 0.224, -0.947, -1.424, -0.542, -1.032]
+  Move         r1, r3
+  SetGlobal    1,1,0,0
+  // main()
+  Call         r4, main, 
+  Return       r0
+
+  // fun sqrtApprox(x: float): float {
+func sqrtApprox (regs=16)
+  // if x <= 0.0 { return 0.0 }
+  Const        r3, 0.0
+  LessEqFloat  r4, r2, r3
+  JumpIfFalse  r4, L0
+  Const        r3, 0.0
+  Return       r3
+L0:
+  // var g = x
+  Move         r5, r2
+  // var i = 0
+  Const        r6, 0
+  Move         r7, r6
+L2:
+  // while i < 20 {
+  Const        r8, 20
+  LessInt      r9, r7, r8
+  JumpIfFalse  r9, L1
+  // g = (g + x / g) / 2.0
+  Div          r10, r2, r5
+  Add          r11, r5, r10
+  Const        r12, 2.0
+  DivFloat     r13, r11, r12
+  Move         r5, r13
+  // i = i + 1
+  Const        r14, 1
+  AddInt       r15, r7, r14
+  Move         r7, r15
+  // while i < 20 {
+  Jump         L2
+L1:
+  // return g
+  Return       r5
+
+  // fun funnel(fa: list<float>, r: fun(float,float): float): list<float> {
+func funnel (regs=21)
+  // var x = 0.0
+  Const        r4, 0.0
+  Move         r5, r4
+  // var result = []
+  Const        r6, []
+  Move         r7, r6
+  // var i = 0
+  Const        r8, 0
+  Move         r9, r8
+L1:
+  // while i < len(fa) {
+  Len          r10, r2
+  LessInt      r11, r9, r10
+  JumpIfFalse  r11, L0
+  // let f = fa[i]
+  Index        r12, r2, r9
+  Move         r13, r12
+  // result = append(result, x + f)
+  AddFloat     r14, r5, r13
+  Append       r15, r7, r14
+  Move         r7, r15
+  // x = r(x, f)
+  Move         r16, r5
+  Move         r17, r13
+  CallV        r18, r3, 2, r16
+  Move         r5, r18
+  // i = i + 1
+  Const        r19, 1
+  AddInt       r20, r9, r19
+  Move         r9, r20
+  // while i < len(fa) {
+  Jump         L1
+L0:
+  // return result
+  Return       r7
+
+  // fun mean(fa: list<float>): float {
+func mean (regs=16)
+  // var sum = 0.0
+  Const        r3, 0.0
+  Move         r4, r3
+  // var i = 0
+  Const        r5, 0
+  Move         r6, r5
+L1:
+  // while i < len(fa) {
+  Len          r7, r2
+  LessInt      r8, r6, r7
+  JumpIfFalse  r8, L0
+  // sum = sum + fa[i]
+  Index        r9, r2, r6
+  AddFloat     r10, r4, r9
+  Move         r4, r10
+  // i = i + 1
+  Const        r11, 1
+  AddInt       r12, r6, r11
+  Move         r6, r12
+  // while i < len(fa) {
+  Jump         L1
+L0:
+  // return sum / (len(fa) as float)
+  Len          r13, r2
+  Cast         r14, r13, float
+  DivFloat     r15, r4, r14
+  Return       r15
+
+  // fun stdDev(fa: list<float>): float {
+func stdDev (regs=25)
+  // let m = mean(fa)
+  Move         r3, r2
+  Call         r4, mean, r3
+  Move         r5, r4
+  // var sum = 0.0
+  Const        r6, 0.0
+  Move         r7, r6
+  // var i = 0
+  Const        r8, 0
+  Move         r9, r8
+L1:
+  // while i < len(fa) {
+  Len          r10, r2
+  LessInt      r11, r9, r10
+  JumpIfFalse  r11, L0
+  // let d = fa[i] - m
+  Index        r12, r2, r9
+  Sub          r13, r12, r5
+  Move         r14, r13
+  // sum = sum + d * d
+  Mul          r15, r14, r14
+  AddFloat     r16, r7, r15
+  Move         r7, r16
+  // i = i + 1
+  Const        r17, 1
+  AddInt       r18, r9, r17
+  Move         r9, r18
+  // while i < len(fa) {
+  Jump         L1
+L0:
+  // let r = sqrtApprox(sum / (len(fa) as float))
+  Len          r20, r2
+  Cast         r21, r20, float
+  DivFloat     r22, r7, r21
+  Move         r19, r22
+  Call         r23, sqrtApprox, r19
+  Move         r24, r23
+  // return r
+  Return       r24
+
+  // fun experiment(label: string, r: fun(float,float): float) {
+func experiment (regs=36)
+  // let rxs = funnel(dxs, r)
+  Move         r4, r0
+  Move         r5, r3
+  Call2        r6, funnel, r4, r5
+  Move         r7, r6
+  // let rys = funnel(dys, r)
+  Move         r8, r1
+  Move         r9, r3
+  Call2        r10, funnel, r8, r9
+  Move         r11, r10
+  // print(label + "  :      x        y")
+  Const        r12, "  :      x        y"
+  Add          r13, r2, r12
+  Print        r13
+  // print("Mean    :  " + str(mean(rxs)) + ", " + str(mean(rys)))
+  Const        r14, "Mean    :  "
+  Move         r15, r7
+  Call         r16, mean, r15
+  Str          r17, r16
+  Add          r18, r14, r17
+  Const        r19, ", "
+  Add          r20, r18, r19
+  Move         r21, r11
+  Call         r22, mean, r21
+  Str          r23, r22
+  Add          r24, r20, r23
+  Print        r24
+  // print("Std Dev :  " + str(stdDev(rxs)) + ", " + str(stdDev(rys)))
+  Const        r25, "Std Dev :  "
+  Move         r26, r7
+  Call         r27, stdDev, r26
+  Str          r28, r27
+  Add          r29, r25, r28
+  Const        r19, ", "
+  Add          r30, r29, r19
+  Move         r31, r11
+  Call         r32, stdDev, r31
+  Str          r33, r32
+  Add          r34, r30, r33
+  Print        r34
+  // print("")
+  Const        r35, ""
+  Print        r35
+  Return       r0
+
+  // fun main() {
+func main (regs=22)
+  // experiment("Rule 1", fun(x: float, y: float): float => 0.0)
+  Const        r4, "Rule 1"
+  Move         r2, r4
+  MakeClosure  r5, fn7, 0, r0
+  Move         r3, r5
+  Call2        r6, experiment, r2, r3
+  // experiment("Rule 2", fun(x: float, dz: float): float => -dz)
+  Const        r9, "Rule 2"
+  Move         r7, r9
+  MakeClosure  r10, fn8, 0, r0
+  Move         r8, r10
+  Call2        r11, experiment, r7, r8
+  // experiment("Rule 3", fun(z: float, dz: float): float => -(z + dz))
+  Const        r14, "Rule 3"
+  Move         r12, r14
+  MakeClosure  r15, fn9, 0, r0
+  Move         r13, r15
+  Call2        r16, experiment, r12, r13
+  // experiment("Rule 4", fun(z: float, dz: float): float => z + dz)
+  Const        r19, "Rule 4"
+  Move         r17, r19
+  MakeClosure  r20, fn10, 0, r0
+  Move         r18, r20
+  Call2        r21, experiment, r17, r18
+  Return       r0
+
+  // experiment("Rule 1", fun(x: float, y: float): float => 0.0)
+func fn7 (regs=5)
+  // experiment("Rule 1", fun(x: float, y: float): float => 0.0)
+  Const        r4, 0.0
+  Return       r4
+
+  // experiment("Rule 2", fun(x: float, dz: float): float => -dz)
+func fn8 (regs=5)
+  // experiment("Rule 2", fun(x: float, dz: float): float => -dz)
+  Neg          r4, r3
+  Return       r4
+
+  // experiment("Rule 3", fun(z: float, dz: float): float => -(z + dz))
+func fn9 (regs=6)
+  // experiment("Rule 3", fun(z: float, dz: float): float => -(z + dz))
+  Add          r4, r2, r3
+  Neg          r5, r4
+  Return       r5
+
+  // experiment("Rule 4", fun(z: float, dz: float): float => z + dz)
+func fn10 (regs=5)
+  // experiment("Rule 4", fun(z: float, dz: float): float => z + dz)
+  Add          r4, r2, r3
+  Return       r4

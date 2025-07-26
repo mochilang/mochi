@@ -1,0 +1,232 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun indexOf(s: string, ch: string): int {
+func indexOf (regs=12)
+  // var i = 0
+  Const        r2, 0
+  Move         r3, r2
+L2:
+  // while i < len(s) {
+  Len          r4, r0
+  LessInt      r5, r3, r4
+  JumpIfFalse  r5, L0
+  // if substring(s, i, i+1) == ch { return i }
+  Const        r6, 1
+  AddInt       r7, r3, r6
+  Slice        r8, r0, r3, r7
+  Equal        r9, r8, r1
+  JumpIfFalse  r9, L1
+  Return       r3
+L1:
+  // i = i + 1
+  Const        r6, 1
+  AddInt       r10, r3, r6
+  Move         r3, r10
+  // while i < len(s) {
+  Jump         L2
+L0:
+  // return -1
+  Const        r6, 1
+  NegInt       r11, r6
+  Return       r11
+
+  // fun fmt1(x: float): string {
+func fmt1 (regs=20)
+  // var y = ((x * 10.0) + 0.5) as int as float / 10.0
+  Const        r1, 10.0
+  MulFloat     r2, r0, r1
+  Const        r3, 0.5
+  AddFloat     r4, r2, r3
+  Cast         r5, r4, int
+  Cast         r6, r5, float
+  Const        r1, 10.0
+  DivFloat     r7, r6, r1
+  Move         r8, r7
+  // var s = str(y)
+  Str          r9, r8
+  Move         r10, r9
+  // let dot = indexOf(s, ".")
+  Move         r11, r10
+  Const        r13, "."
+  Move         r12, r13
+  Call2        r14, indexOf, r11, r12
+  Move         r15, r14
+  // if dot < 0 { s = s + ".0" }
+  Const        r16, 0
+  Less         r17, r15, r16
+  JumpIfFalse  r17, L0
+  Const        r18, ".0"
+  Add          r19, r10, r18
+  Move         r10, r19
+L0:
+  // return s
+  Return       r10
+
+  // fun printColumnMatrix(xs: list<float>) {
+func printColumnMatrix (regs=33)
+  // if len(xs) == 0 { return }
+  Len          r1, r0
+  Const        r2, 0
+  EqualInt     r3, r1, r2
+  JumpIfFalse  r3, L0
+  Return       r0
+L0:
+  // print("\u23A1" + fmt1(xs[0]) + "\u23A4")
+  Const        r4, "⎡"
+  Const        r2, 0
+  Index        r6, r0, r2
+  Move         r5, r6
+  Call         r7, fmt1, r5
+  Add          r8, r4, r7
+  Const        r9, "⎤"
+  Add          r10, r8, r9
+  Print        r10
+  // var i = 1
+  Const        r11, 1
+  Move         r12, r11
+L2:
+  // while i < len(xs) - 1 {
+  Len          r13, r0
+  Const        r11, 1
+  SubInt       r14, r13, r11
+  LessInt      r15, r12, r14
+  JumpIfFalse  r15, L1
+  // print("\u23A2" + fmt1(xs[i]) + "\u23A5")
+  Const        r16, "⎢"
+  Index        r18, r0, r12
+  Move         r17, r18
+  Call         r19, fmt1, r17
+  Add          r20, r16, r19
+  Const        r21, "⎥"
+  Add          r22, r20, r21
+  Print        r22
+  // i = i + 1
+  Const        r11, 1
+  AddInt       r23, r12, r11
+  Move         r12, r23
+  // while i < len(xs) - 1 {
+  Jump         L2
+L1:
+  // print("\u23A3 " + fmt1(xs[len(xs)-1]) + "\u23A6")
+  Const        r24, "⎣ "
+  Len          r26, r0
+  Const        r11, 1
+  SubInt       r27, r26, r11
+  Index        r28, r0, r27
+  Move         r25, r28
+  Call         r29, fmt1, r25
+  Add          r30, r24, r29
+  Const        r31, "⎦"
+  Add          r32, r30, r31
+  Print        r32
+  Return       r0
+
+  // fun deconv(g: list<float>, f: list<float>): list<float> {
+func deconv (regs=33)
+  // var h: list<float> = []
+  Const        r2, []
+  Move         r3, r2
+  // var n = 0
+  Const        r4, 0
+  Move         r5, r4
+  // let hn = len(g) - len(f) + 1
+  Len          r6, r0
+  Len          r7, r1
+  SubInt       r8, r6, r7
+  Const        r9, 1
+  AddInt       r10, r8, r9
+  Move         r11, r10
+L4:
+  // while n < hn {
+  LessInt      r12, r5, r11
+  JumpIfFalse  r12, L0
+  // var v = g[n]
+  Index        r13, r0, r5
+  Move         r14, r13
+  // var lower = 0
+  Const        r4, 0
+  Move         r15, r4
+  // if n >= len(f) { lower = n - len(f) + 1 }
+  Len          r16, r1
+  LessEqInt    r17, r16, r5
+  JumpIfFalse  r17, L1
+  Len          r18, r1
+  SubInt       r19, r5, r18
+  Const        r9, 1
+  AddInt       r20, r19, r9
+  Move         r15, r20
+L1:
+  // var i = lower
+  Move         r21, r15
+L3:
+  // while i < n {
+  LessInt      r22, r21, r5
+  JumpIfFalse  r22, L2
+  // v = v - h[i] * f[n - i]
+  Index        r23, r3, r21
+  SubInt       r24, r5, r21
+  Index        r25, r1, r24
+  Mul          r26, r23, r25
+  Sub          r27, r14, r26
+  Move         r14, r27
+  // i = i + 1
+  Const        r9, 1
+  AddInt       r28, r21, r9
+  Move         r21, r28
+  // while i < n {
+  Jump         L3
+L2:
+  // v = v / f[0]
+  Const        r4, 0
+  Index        r29, r1, r4
+  Div          r30, r14, r29
+  Move         r14, r30
+  // h = append(h, v)
+  Append       r31, r3, r14
+  Move         r3, r31
+  // n = n + 1
+  Const        r9, 1
+  AddInt       r32, r5, r9
+  Move         r5, r32
+  // while n < hn {
+  Jump         L4
+L0:
+  // return h
+  Return       r3
+
+  // fun main() {
+func main (regs=19)
+  // let h = [-8.0, -9.0, -3.0, -1.0, -6.0, 7.0]
+  Const        r0, [-8.0, -9.0, -3.0, -1.0, -6.0, 7.0]
+  Move         r1, r0
+  // let f = [-3.0, -6.0, -1.0, 8.0, -6.0, 3.0, -1.0, -9.0, -9.0, 3.0, -2.0, 5.0, 2.0, -2.0, -7.0, -1.0]
+  Const        r2, [-3.0, -6.0, -1.0, 8.0, -6.0, 3.0, -1.0, -9.0, -9.0, 3.0, -2.0, 5.0, 2.0, -2.0, -7.0, -1.0]
+  Move         r3, r2
+  // let g = [24.0, 75.0, 71.0, -34.0, 3.0, 22.0, -45.0, 23.0, 245.0, 25.0, 52.0, 25.0, -67.0, -96.0, 96.0, 31.0, 55.0, 36.0, 29.0, -43.0, -7.0]
+  Const        r4, [24.0, 75.0, 71.0, -34.0, 3.0, 22.0, -45.0, 23.0, 245.0, 25.0, 52.0, 25.0, -67.0, -96.0, 96.0, 31.0, 55.0, 36.0, 29.0, -43.0, -7.0]
+  Move         r5, r4
+  // print("deconv(g, f) =")
+  Const        r6, "deconv(g, f) ="
+  Print        r6
+  // printColumnMatrix(deconv(g, f))
+  Move         r8, r5
+  Move         r9, r3
+  Call2        r10, deconv, r8, r9
+  Move         r7, r10
+  Call         r11, printColumnMatrix, r7
+  // print("")
+  Const        r12, ""
+  Print        r12
+  // print("deconv(g, h) =")
+  Const        r13, "deconv(g, h) ="
+  Print        r13
+  // printColumnMatrix(deconv(g, h))
+  Move         r15, r5
+  Move         r16, r1
+  Call2        r17, deconv, r15, r16
+  Move         r14, r17
+  Call         r18, printColumnMatrix, r14
+  Return       r0

@@ -1,0 +1,193 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun TinyAdd(t1: TinyInt, t2: TinyInt): TinyInt {
+func TinyAdd (regs=8)
+  // return NewTinyInt(t1.value + t2.value)
+  Const        r3, "value"
+  Index        r4, r0, r3
+  Const        r3, "value"
+  Index        r5, r1, r3
+  Add          r6, r4, r5
+  Move         r2, r6
+  Call         r7, NewTinyInt, r2
+  Return       r7
+
+  // fun TinySub(t1: TinyInt, t2: TinyInt): TinyInt {
+func TinySub (regs=8)
+  // return NewTinyInt(t1.value - t2.value)
+  Const        r3, "value"
+  Index        r4, r0, r3
+  Const        r3, "value"
+  Index        r5, r1, r3
+  Sub          r6, r4, r5
+  Move         r2, r6
+  Call         r7, NewTinyInt, r2
+  Return       r7
+
+  // fun TinyMul(t1: TinyInt, t2: TinyInt): TinyInt {
+func TinyMul (regs=8)
+  // return NewTinyInt(t1.value * t2.value)
+  Const        r3, "value"
+  Index        r4, r0, r3
+  Const        r3, "value"
+  Index        r5, r1, r3
+  Mul          r6, r4, r5
+  Move         r2, r6
+  Call         r7, NewTinyInt, r2
+  Return       r7
+
+  // fun TinyDiv(t1: TinyInt, t2: TinyInt): TinyInt {
+func TinyDiv (regs=8)
+  // return NewTinyInt(t1.value / t2.value)
+  Const        r3, "value"
+  Index        r4, r0, r3
+  Const        r3, "value"
+  Index        r5, r1, r3
+  Div          r6, r4, r5
+  Move         r2, r6
+  Call         r7, NewTinyInt, r2
+  Return       r7
+
+  // fun TinyRem(t1: TinyInt, t2: TinyInt): TinyInt {
+func TinyRem (regs=8)
+  // return NewTinyInt(t1.value % t2.value)
+  Const        r3, "value"
+  Index        r4, r0, r3
+  Const        r3, "value"
+  Index        r5, r1, r3
+  Mod          r6, r4, r5
+  Move         r2, r6
+  Call         r7, NewTinyInt, r2
+  Return       r7
+
+  // fun TinyInc(t1: TinyInt): TinyInt {
+func TinyInc (regs=7)
+  // return TinyAdd(t1, NewTinyInt(1))
+  Move         r1, r0
+  Const        r4, 1
+  Move         r3, r4
+  Call         r5, NewTinyInt, r3
+  Move         r2, r5
+  Call2        r6, TinyAdd, r1, r2
+  Return       r6
+
+  // fun TinyDec(t1: TinyInt): TinyInt {
+func TinyDec (regs=7)
+  // return TinySub(t1, NewTinyInt(1))
+  Move         r1, r0
+  Const        r4, 1
+  Move         r3, r4
+  Call         r5, NewTinyInt, r3
+  Move         r2, r5
+  Call2        r6, TinySub, r1, r2
+  Return       r6
+
+  // fun NewTinyInt(i: int): TinyInt {
+func NewTinyInt (regs=10)
+  // if i < 1 { i = 1 }
+  Const        r1, 1
+  Less         r2, r0, r1
+  JumpIfFalse  r2, L0
+  Const        r1, 1
+  Move         r0, r1
+  Jump         L1
+L0:
+  // else if i > 10 { i = 10 }
+  Const        r3, 10
+  LessInt      r4, r3, r0
+  JumpIfFalse  r4, L1
+  Const        r3, 10
+  Move         r0, r3
+L1:
+  // return TinyInt{ value: i }
+  Const        r5, "__name"
+  Const        r6, "TinyInt"
+  Const        r7, "value"
+  Move         r8, r0
+  MakeMap      r9, 2, r5
+  Return       r9
+
+  // fun main() {
+func main (regs=57)
+  // let t1 = NewTinyInt(6)
+  Const        r1, 6
+  Move         r0, r1
+  Call         r2, NewTinyInt, r0
+  Move         r3, r2
+  // let t2 = NewTinyInt(3)
+  Const        r5, 3
+  Move         r4, r5
+  Call         r6, NewTinyInt, r4
+  Move         r7, r6
+  // print("t1      = " + str(t1.value))
+  Const        r8, "t1      = "
+  Const        r9, "value"
+  Index        r10, r3, r9
+  Str          r11, r10
+  Add          r12, r8, r11
+  Print        r12
+  // print("t2      = " + str(t2.value))
+  Const        r13, "t2      = "
+  Const        r9, "value"
+  Index        r14, r7, r9
+  Str          r15, r14
+  Add          r16, r13, r15
+  Print        r16
+  // print("t1 + t2 = " + str(TinyAdd(t1, t2).value))
+  Const        r17, "t1 + t2 = "
+  Move         r18, r3
+  Move         r19, r7
+  Call2        r20, TinyAdd, r18, r19
+  Str          r21, r20
+  Add          r22, r17, r21
+  Print        r22
+  // print("t1 - t2 = " + str(TinySub(t1, t2).value))
+  Const        r23, "t1 - t2 = "
+  Move         r24, r3
+  Move         r25, r7
+  Call2        r26, TinySub, r24, r25
+  Str          r27, r26
+  Add          r28, r23, r27
+  Print        r28
+  // print("t1 * t2 = " + str(TinyMul(t1, t2).value))
+  Const        r29, "t1 * t2 = "
+  Move         r30, r3
+  Move         r31, r7
+  Call2        r32, TinyMul, r30, r31
+  Str          r33, r32
+  Add          r34, r29, r33
+  Print        r34
+  // print("t1 / t2 = " + str(TinyDiv(t1, t2).value))
+  Const        r35, "t1 / t2 = "
+  Move         r36, r3
+  Move         r37, r7
+  Call2        r38, TinyDiv, r36, r37
+  Str          r39, r38
+  Add          r40, r35, r39
+  Print        r40
+  // print("t1 % t2 = " + str(TinyRem(t1, t2).value))
+  Const        r41, "t1 % t2 = "
+  Move         r42, r3
+  Move         r43, r7
+  Call2        r44, TinyRem, r42, r43
+  Str          r45, r44
+  Add          r46, r41, r45
+  Print        r46
+  // print("t1 + 1  = " + str(TinyInc(t1).value))
+  Const        r47, "t1 + 1  = "
+  Move         r48, r3
+  Call         r49, TinyInc, r48
+  Str          r50, r49
+  Add          r51, r47, r50
+  Print        r51
+  // print("t1 - 1  = " + str(TinyDec(t1).value))
+  Const        r52, "t1 - 1  = "
+  Move         r53, r3
+  Call         r54, TinyDec, r53
+  Str          r55, r54
+  Add          r56, r52, r55
+  Print        r56
+  Return       r0

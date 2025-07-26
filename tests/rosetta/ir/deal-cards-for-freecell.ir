@@ -1,0 +1,183 @@
+func main (regs=18)
+  // var seed = 1
+  Const        r3, 1
+  Move         r0, r3
+  SetGlobal    0,0,0,0
+  // let suits = "CDHS"
+  Const        r4, "CDHS"
+  Move         r1, r4
+  SetGlobal    1,1,0,0
+  // let nums = "A23456789TJQK"
+  Const        r5, "A23456789TJQK"
+  Move         r2, r5
+  SetGlobal    2,2,0,0
+  // print("")
+  Const        r6, ""
+  Print        r6
+  // print("Game #1")
+  Const        r7, "Game #1"
+  Print        r7
+  // show(deal(1))
+  Const        r3, 1
+  Move         r9, r3
+  Call         r10, deal, r9
+  Move         r8, r10
+  Call         r11, show, r8
+  // print("")
+  Const        r6, ""
+  Print        r6
+  // print("Game #617")
+  Const        r12, "Game #617"
+  Print        r12
+  // show(deal(617))
+  Const        r15, 617
+  Move         r14, r15
+  Call         r16, deal, r14
+  Move         r13, r16
+  Call         r17, show, r13
+  Return       r0
+
+  // fun rnd(): int {
+func rnd (regs=11)
+  // seed = (seed * 214013 + 2531011) % 2147483648
+  Const        r3, 214013
+  Mul          r4, r0, r3
+  Const        r5, 2531011
+  Add          r6, r4, r5
+  Const        r7, 2147483648
+  Mod          r8, r6, r7
+  Move         r0, r8
+  SetGlobal    0,0,0,0
+  // return seed / 65536
+  Const        r9, 65536
+  Div          r10, r0, r9
+  Return       r10
+
+  // fun deal(game: int): list<int> {
+func deal (regs=25)
+  // seed = game
+  Move         r0, r3
+  SetGlobal    0,0,0,0
+  // var deck: list<int> = []
+  Const        r4, []
+  Move         r5, r4
+  // var i = 0
+  Const        r6, 0
+  Move         r7, r6
+L1:
+  // while i < 52 {
+  Const        r8, 52
+  LessInt      r9, r7, r8
+  JumpIfFalse  r9, L0
+  // deck = append(deck, 51 - i)
+  Const        r10, 51
+  SubInt       r11, r10, r7
+  Append       r12, r5, r11
+  Move         r5, r12
+  // i = i + 1
+  Const        r13, 1
+  AddInt       r14, r7, r13
+  Move         r7, r14
+  // while i < 52 {
+  Jump         L1
+L0:
+  // i = 0
+  Const        r6, 0
+  Move         r7, r6
+L3:
+  // while i < 51 {
+  Const        r10, 51
+  LessInt      r15, r7, r10
+  JumpIfFalse  r15, L2
+  // let j = 51 - (rnd() % (52 - i))
+  Const        r10, 51
+  Call         r16, rnd, 
+  Const        r8, 52
+  SubInt       r17, r8, r7
+  Mod          r18, r16, r17
+  Sub          r19, r10, r18
+  Move         r20, r19
+  // let tmp = deck[i]
+  Index        r21, r5, r7
+  Move         r22, r21
+  // deck[i] = deck[j]
+  Index        r23, r5, r20
+  SetIndex     r5, r7, r23
+  // deck[j] = tmp
+  SetIndex     r5, r20, r22
+  // i = i + 1
+  Const        r13, 1
+  AddInt       r24, r7, r13
+  Move         r7, r24
+  // while i < 51 {
+  Jump         L3
+L2:
+  // return deck
+  Return       r5
+
+  // fun show(cards: list<int>) {
+func show (regs=35)
+  // var i = 0
+  Const        r4, 0
+  Move         r5, r4
+  // var line = ""
+  Const        r6, ""
+  Move         r7, r6
+L3:
+  // while i < len(cards) {
+  Len          r8, r3
+  LessInt      r9, r5, r8
+  JumpIfFalse  r9, L0
+  // let c = cards[i]
+  Index        r10, r3, r5
+  Move         r11, r10
+  // line = line + " " + substring(nums, c / 4, c / 4 + 1) + substring(suits, c % 4, c % 4 + 1)
+  Const        r12, " "
+  Add          r13, r7, r12
+  Const        r14, 4
+  Div          r15, r11, r14
+  Const        r14, 4
+  Div          r16, r11, r14
+  Const        r17, 1
+  Add          r18, r16, r17
+  Slice        r19, r2, r15, r18
+  Add          r20, r13, r19
+  Const        r14, 4
+  Mod          r21, r11, r14
+  Const        r14, 4
+  Mod          r22, r11, r14
+  Const        r17, 1
+  Add          r23, r22, r17
+  Slice        r24, r1, r21, r23
+  Add          r25, r20, r24
+  Move         r7, r25
+  // if (i + 1) % 8 == 0 || i + 1 == len(cards) {
+  Const        r17, 1
+  AddInt       r26, r5, r17
+  Const        r27, 8
+  ModInt       r28, r26, r27
+  Const        r17, 1
+  AddInt       r29, r5, r17
+  Const        r4, 0
+  EqualInt     r30, r28, r4
+  Len          r31, r3
+  EqualInt     r32, r29, r31
+  Move         r33, r30
+  JumpIfTrue   r33, L1
+  Move         r33, r32
+L1:
+  JumpIfFalse  r33, L2
+  // print(line)
+  Print        r7
+  // line = ""
+  Const        r6, ""
+  Move         r7, r6
+L2:
+  // i = i + 1
+  Const        r17, 1
+  AddInt       r34, r5, r17
+  Move         r5, r34
+  // while i < len(cards) {
+  Jump         L3
+L0:
+  Return       r0

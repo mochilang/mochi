@@ -1,37 +1,36 @@
-func main (regs=19)
+func main (regs=18)
   // let candidates = ["037833100","17275R102","38259P508","594918104","68389X106","68389X105"]
   Const        r1, ["037833100", "17275R102", "38259P508", "594918104", "68389X106", "68389X105"]
   Move         r0, r1
   SetGlobal    0,0,0,0
   // for cand in candidates {
-  Const        r2, ["037833100", "17275R102", "38259P508", "594918104", "68389X106", "68389X105"]
-  IterPrep     r3, r2
-  Len          r4, r3
-  Const        r5, 0
+  IterPrep     r2, r0
+  Len          r3, r2
+  Const        r4, 0
 L2:
-  LessInt      r6, r5, r4
-  JumpIfFalse  r6, L0
-  Index        r7, r3, r5
-  Move         r8, r7
+  LessInt      r5, r4, r3
+  JumpIfFalse  r5, L0
+  Index        r6, r2, r4
+  Move         r7, r6
   // var b = "incorrect"
-  Const        r9, "incorrect"
-  Move         r10, r9
+  Const        r8, "incorrect"
+  Move         r9, r8
   // if isCusip(cand) { b = "correct" }
-  Move         r11, r8
-  Call         r12, isCusip, r11
-  JumpIfFalse  r12, L1
-  Const        r13, "correct"
-  Move         r10, r13
+  Move         r10, r7
+  Call         r11, isCusip, r10
+  JumpIfFalse  r11, L1
+  Const        r12, "correct"
+  Move         r9, r12
 L1:
   // print(cand + " -> " + b)
-  Const        r14, " -> "
-  Add          r15, r8, r14
-  Add          r16, r15, r10
-  Print        r16
+  Const        r13, " -> "
+  Add          r14, r7, r13
+  Add          r15, r14, r9
+  Print        r15
   // for cand in candidates {
-  Const        r17, 1
-  AddInt       r18, r5, r17
-  Move         r5, r18
+  Const        r16, 1
+  AddInt       r17, r4, r16
+  Move         r4, r17
   Jump         L2
 L0:
   Return       r0

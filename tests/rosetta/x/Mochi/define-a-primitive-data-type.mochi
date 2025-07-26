@@ -3,34 +3,34 @@
 
 type TinyInt {
   value: int
+}
 
-  fun Add(t2: TinyInt): TinyInt {
-    return NewTinyInt(value + t2.value)
-  }
+fun TinyAdd(t1: TinyInt, t2: TinyInt): TinyInt {
+  return NewTinyInt(t1.value + t2.value)
+}
 
-  fun Sub(t2: TinyInt): TinyInt {
-    return NewTinyInt(value - t2.value)
-  }
+fun TinySub(t1: TinyInt, t2: TinyInt): TinyInt {
+  return NewTinyInt(t1.value - t2.value)
+}
 
-  fun Mul(t2: TinyInt): TinyInt {
-    return NewTinyInt(value * t2.value)
-  }
+fun TinyMul(t1: TinyInt, t2: TinyInt): TinyInt {
+  return NewTinyInt(t1.value * t2.value)
+}
 
-  fun Div(t2: TinyInt): TinyInt {
-    return NewTinyInt(value / t2.value)
-  }
+fun TinyDiv(t1: TinyInt, t2: TinyInt): TinyInt {
+  return NewTinyInt(t1.value / t2.value)
+}
 
-  fun Rem(t2: TinyInt): TinyInt {
-    return NewTinyInt(value % t2.value)
-  }
+fun TinyRem(t1: TinyInt, t2: TinyInt): TinyInt {
+  return NewTinyInt(t1.value % t2.value)
+}
 
-  fun Inc(): TinyInt {
-    return Add(NewTinyInt(1))
-  }
+fun TinyInc(t1: TinyInt): TinyInt {
+  return TinyAdd(t1, NewTinyInt(1))
+}
 
-  fun Dec(): TinyInt {
-    return Sub(NewTinyInt(1))
-  }
+fun TinyDec(t1: TinyInt): TinyInt {
+  return TinySub(t1, NewTinyInt(1))
 }
 
 fun NewTinyInt(i: int): TinyInt {
@@ -45,13 +45,13 @@ fun main() {
 
   print("t1      = " + str(t1.value))
   print("t2      = " + str(t2.value))
-  print("t1 + t2 = " + str(t1.Add(t2).value))
-  print("t1 - t2 = " + str(t1.Sub(t2).value))
-  print("t1 * t2 = " + str(t1.Mul(t2).value))
-  print("t1 / t2 = " + str(t1.Div(t2).value))
-  print("t1 % t2 = " + str(t1.Rem(t2).value))
-  print("t1 + 1  = " + str(t1.Inc().value))
-  print("t1 - 1  = " + str(t1.Dec().value))
+  print("t1 + t2 = " + str(TinyAdd(t1, t2).value))
+  print("t1 - t2 = " + str(TinySub(t1, t2).value))
+  print("t1 * t2 = " + str(TinyMul(t1, t2).value))
+  print("t1 / t2 = " + str(TinyDiv(t1, t2).value))
+  print("t1 % t2 = " + str(TinyRem(t1, t2).value))
+  print("t1 + 1  = " + str(TinyInc(t1).value))
+  print("t1 - 1  = " + str(TinyDec(t1).value))
 }
 
 main()

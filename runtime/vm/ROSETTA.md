@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated IR and outputs from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/ir`.
-Last updated: 2025-07-26 17:58 UTC
+Last updated: 2025-07-26 23:21 UTC
 
-## Rosetta Golden Test Checklist (255/332)
+## Rosetta Golden Test Checklist (274/436)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 116µs | 11.7 KB |
@@ -273,26 +273,26 @@ Last updated: 2025-07-26 17:58 UTC
 | 264 | cuban-primes | ✓ |  |  |
 | 265 | cullen-and-woodall-numbers | ✓ |  |  |
 | 266 | cumulative-standard-deviation | ✓ | 147µs | 72.6 KB |
-| 267 | currency | ✓ |  |  |
-| 268 | currying | ✓ |  |  |
-| 269 | curzon-numbers | ✓ |  |  |
-| 270 | cusip | ✓ |  |  |
-| 271 | cyclops-numbers |   |  |  |
-| 272 | damm-algorithm |   |  |  |
-| 273 | date-format |   |  |  |
-| 274 | date-manipulation |   |  |  |
-| 275 | day-of-the-week |   |  |  |
-| 276 | de-bruijn-sequences |   |  |  |
-| 277 | deal-cards-for-freecell |   |  |  |
-| 278 | death-star |   |  |  |
-| 279 | deceptive-numbers |   |  |  |
+| 267 | currency | ✓ | 4.4ms |  |
+| 268 | currying | ✓ | 36µs | 5.6 KB |
+| 269 | curzon-numbers | ✓ | 643.9ms |  |
+| 270 | cusip | ✓ | 5.693ms | 51.4 KB |
+| 271 | cyclops-numbers | ✓ | 65µs | 136 B |
+| 272 | damm-algorithm | ✓ | 117µs | 17.7 KB |
+| 273 | date-format | ✓ | 62µs | 14.3 KB |
+| 274 | date-manipulation | ✓ | 2.636ms | 474.3 KB |
+| 275 | day-of-the-week | ✓ | 287µs | 590.6 KB |
+| 276 | de-bruijn-sequences | ✓ | 11.190441s | 841.6 KB |
+| 277 | deal-cards-for-freecell | ✓ | 573µs | 641.2 KB |
+| 278 | death-star | ✓ | 72.595ms | 1010.0 KB |
+| 279 | deceptive-numbers | ✓ | 26.387003s |  |
 | 280 | deconvolution-1d-2 |   |  |  |
-| 281 | deconvolution-1d-3 |   |  |  |
-| 282 | deconvolution-1d |   |  |  |
-| 283 | deepcopy-1 |   |  |  |
-| 284 | define-a-primitive-data-type |   |  |  |
-| 285 | delegates |   |  |  |
-| 286 | demings-funnel |   |  |  |
+| 281 | deconvolution-1d-3 | ✓ | 333µs | 153.3 KB |
+| 282 | deconvolution-1d | ✓ | 172µs | 66.1 KB |
+| 283 | deepcopy-1 | ✓ | 271µs | 62.1 KB |
+| 284 | define-a-primitive-data-type | ✓ | 111µs | 48.8 KB |
+| 285 | delegates | ✓ | 129µs | 14.3 KB |
+| 286 | demings-funnel | ✓ | 4.557ms | 677.4 KB |
 | 287 | department-numbers |   |  |  |
 | 288 | descending-primes |   |  |  |
 | 289 | detect-division-by-zero | ✓ |  |  |
@@ -336,6 +336,110 @@ Last updated: 2025-07-26 17:58 UTC
 | 327 | dynamic-variable-names |   |  |  |
 | 328 | earliest-difference-between-prime-gaps |   |  |  |
 | 329 | eban-numbers |   |  |  |
-| 330 | echo-server |   |  |  |
-| 331 | ekg-sequence-convergence |   |  |  |
-| 332 | md5 |   |  |  |
+| 330 | ecdsa-example |   |  |  |
+| 331 | echo-server |   |  |  |
+| 332 | eertree |   |  |  |
+| 333 | egyptian-division |   |  |  |
+| 334 | ekg-sequence-convergence |   |  |  |
+| 335 | element-wise-operations |   |  |  |
+| 336 | elementary-cellular-automaton-infinite-length |   |  |  |
+| 337 | elementary-cellular-automaton-random-number-generator |   |  |  |
+| 338 | elementary-cellular-automaton |   |  |  |
+| 339 | elliptic-curve-arithmetic |   |  |  |
+| 340 | elliptic-curve-digital-signature-algorithm |   |  |  |
+| 341 | emirp-primes |   |  |  |
+| 342 | empty-directory |   |  |  |
+| 343 | empty-program |   |  |  |
+| 344 | empty-string-1 |   |  |  |
+| 345 | empty-string-2 |   |  |  |
+| 346 | enforced-immutability | ✓ |  |  |
+| 347 | entropy-1 | ✓ |  |  |
+| 348 | entropy-2 | ✓ |  |  |
+| 349 | entropy-narcissist |   |  |  |
+| 350 | enumerations-1 |   |  |  |
+| 351 | enumerations-2 |   |  |  |
+| 352 | enumerations-3 |   |  |  |
+| 353 | enumerations-4 |   |  |  |
+| 354 | environment-variables-1 |   |  |  |
+| 355 | environment-variables-2 |   |  |  |
+| 356 | equal-prime-and-composite-sums |   |  |  |
+| 357 | equilibrium-index | ✓ |  |  |
+| 358 | erd-s-nicolas-numbers |   |  |  |
+| 359 | erd-s-selfridge-categorization-of-primes |   |  |  |
+| 360 | esthetic-numbers |   |  |  |
+| 361 | events |   |  |  |
+| 362 | evolutionary-algorithm |   |  |  |
+| 363 | exceptions-catch-an-exception-thrown-in-a-nested-call |   |  |  |
+| 364 | exceptions |   |  |  |
+| 365 | executable-library |   |  |  |
+| 366 | execute-a-markov-algorithm |   |  |  |
+| 367 | execute-a-system-command |   |  |  |
+| 368 | execute-brain- |   |  |  |
+| 369 | execute-computer-zero |   |  |  |
+| 370 | execute-hq9+ |   |  |  |
+| 371 | execute-snusp |   |  |  |
+| 372 | exponentiation-operator |   |  |  |
+| 373 | exponentiation-order |   |  |  |
+| 374 | exponentiation-with-infix-operators-in-or-operating-on-the-base |   |  |  |
+| 375 | extend-your-language |   |  |  |
+| 376 | extensible-prime-generator |   |  |  |
+| 377 | extreme-floating-point-values |   |  |  |
+| 378 | faces-from-a-mesh |   |  |  |
+| 379 | fasta-format |   |  |  |
+| 380 | faulhabers-triangle |   |  |  |
+| 381 | feigenbaum-constant-calculation |   |  |  |
+| 382 | fermat-numbers |   |  |  |
+| 383 | fibonacci-n-step-number-sequences |   |  |  |
+| 384 | fibonacci-sequence-1 |   |  |  |
+| 385 | fibonacci-sequence-2 |   |  |  |
+| 386 | fibonacci-sequence-3 |   |  |  |
+| 387 | fibonacci-sequence-4 |   |  |  |
+| 388 | fibonacci-word-fractal |   |  |  |
+| 389 | fibonacci-word |   |  |  |
+| 390 | file-extension-is-in-extensions-list |   |  |  |
+| 391 | file-input-output-1 |   |  |  |
+| 392 | file-input-output-2 |   |  |  |
+| 393 | file-modification-time |   |  |  |
+| 394 | file-size-distribution |   |  |  |
+| 395 | file-size |   |  |  |
+| 396 | filter |   |  |  |
+| 397 | find-chess960-starting-position-identifier |   |  |  |
+| 398 | find-common-directory-path |   |  |  |
+| 399 | find-duplicate-files |   |  |  |
+| 400 | find-if-a-point-is-within-a-triangle |   |  |  |
+| 401 | find-largest-left-truncatable-prime-in-a-given-base |   |  |  |
+| 402 | find-limit-of-recursion |   |  |  |
+| 403 | find-palindromic-numbers-in-both-binary-and-ternary-bases |   |  |  |
+| 404 | find-the-intersection-of-a-line-with-a-plane |   |  |  |
+| 405 | find-the-intersection-of-two-lines |   |  |  |
+| 406 | find-the-last-sunday-of-each-month |   |  |  |
+| 407 | find-the-missing-permutation |   |  |  |
+| 408 | fivenum-1 |   |  |  |
+| 409 | fivenum-2 |   |  |  |
+| 410 | fixed-length-records-1 |   |  |  |
+| 411 | fixed-length-records-2 |   |  |  |
+| 412 | fizzbuzz-1 |   |  |  |
+| 413 | fizzbuzz-2 |   |  |  |
+| 414 | flatten-a-list-1 |   |  |  |
+| 415 | flatten-a-list-2 |   |  |  |
+| 416 | flipping-bits-game |   |  |  |
+| 417 | flow-control-structures-1 |   |  |  |
+| 418 | flow-control-structures-2 |   |  |  |
+| 419 | flow-control-structures-3 |   |  |  |
+| 420 | flow-control-structures-4 |   |  |  |
+| 421 | floyd-warshall-algorithm |   |  |  |
+| 422 | floyds-triangle |   |  |  |
+| 423 | forest-fire |   |  |  |
+| 424 | fork |   |  |  |
+| 425 | ftp |   |  |  |
+| 426 | gamma-function |   |  |  |
+| 427 | general-fizzbuzz |   |  |  |
+| 428 | generic-swap |   |  |  |
+| 429 | get-system-command-output |   |  |  |
+| 430 | giuga-numbers |   |  |  |
+| 431 | globally-replace-text-in-several-files |   |  |  |
+| 432 | goldbachs-comet |   |  |  |
+| 433 | golden-ratio-convergence |   |  |  |
+| 434 | graph-colouring |   |  |  |
+| 435 | gray-code |   |  |  |
+| 436 | md5 |   |  |  |

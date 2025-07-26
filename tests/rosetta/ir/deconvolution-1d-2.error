@@ -1,0 +1,8 @@
+type: error[T003]: unknown function: real
+  --> /workspace/mochi/tests/rosetta/x/Mochi/deconvolution-1d-2.mochi:98:22
+
+ 98 |   out = append(out, (real(ht[0]) as float))
+    |                      ^
+
+help:
+  Ensure the function is defined before it's called.

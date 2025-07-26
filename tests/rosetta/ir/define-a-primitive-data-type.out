@@ -1,0 +1,9 @@
+t1      = 6
+t2      = 3
+t1 + t2 = map[__name:TinyInt value:9]
+t1 - t2 = map[__name:TinyInt value:3]
+t1 * t2 = map[__name:TinyInt value:10]
+t1 / t2 = map[__name:TinyInt value:2]
+t1 % t2 = map[__name:TinyInt value:1]
+t1 + 1  = map[__name:TinyInt value:7]
+t1 - 1  = map[__name:TinyInt value:5]

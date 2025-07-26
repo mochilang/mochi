@@ -1,0 +1,72 @@
+func main (regs=15)
+  // var a = Delegator{ delegate: {} }
+  Const        r1, {}
+  Const        r2, "__name"
+  Const        r3, "Delegator"
+  Const        r4, "delegate"
+  Move         r5, r1
+  MakeMap      r6, 2, r2
+  Move         r0, r6
+  SetGlobal    0,0,0,0
+  // print(operation(a))
+  Move         r7, r0
+  Call         r8, operation, r7
+  Print        r8
+  // a.delegate = {}
+  Const        r1, {}
+  Const        r9, "delegate"
+  SetIndex     r0, r9, r1
+  SetGlobal    0,0,0,0
+  // print(operation(a))
+  Move         r10, r0
+  Call         r11, operation, r10
+  Print        r11
+  // a.delegate = newDelegate()
+  Call         r12, newDelegate, 
+  Const        r9, "delegate"
+  SetIndex     r0, r9, r12
+  SetGlobal    0,0,0,0
+  // print(operation(a))
+  Move         r13, r0
+  Call         r14, operation, r13
+  Print        r14
+  Return       r0
+
+  // fun operation(d: Delegator): string {
+func operation (regs=10)
+  // if "thing" in d.delegate {
+  Const        r2, "thing"
+  Const        r3, "delegate"
+  Index        r4, r1, r3
+  In           r5, r2, r4
+  JumpIfFalse  r5, L0
+  // return d.delegate["thing"]()
+  Const        r3, "delegate"
+  Index        r6, r1, r3
+  Const        r2, "thing"
+  Index        r7, r6, r2
+  CallV        r8, r7, 0, r0
+  Return       r8
+L0:
+  // return "default implementation"
+  Const        r9, "default implementation"
+  Return       r9
+
+  // fun newDelegate(): map<string, Fn> {
+func newDelegate (regs=6)
+  // var m: map<string, Fn> = {}
+  Const        r1, {}
+  Move         r2, r1
+  // m["thing"] = fun(): string { return "delegate implementation" }
+  Move         r3, r2
+  MakeClosure  r4, fn3, 1, r3
+  Const        r5, "thing"
+  SetIndex     r2, r5, r4
+  // return m
+  Return       r2
+
+  // m["thing"] = fun(): string { return "delegate implementation" }
+func fn3 (regs=3)
+  // m["thing"] = fun(): string { return "delegate implementation" }
+  Const        r2, "delegate implementation"
+  Return       r2

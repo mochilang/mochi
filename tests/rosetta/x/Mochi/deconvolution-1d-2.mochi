@@ -40,7 +40,7 @@ fun fft(arr: list<complex>): list<complex> {
   var res: list<complex> = []
   var k = 0
   while k < size {
-  var sum: complex = 0 + 0i
+  var sum: complex = (0 as complex)
     var t = 0
     while t < n {
       let angle = -2.0 * PI * (k as float) * (t as float) / (size as float)
@@ -58,7 +58,7 @@ fun ifft(arr: list<complex>): list<complex> {
   var out: list<complex> = []
   var k = 0
   while k < n {
-  var sum: complex = 0 + 0i
+  var sum: complex = (0 as complex)
     var t = 0
     while t < n {
       let angle = 2.0 * PI * (k as float) * (t as float) / (n as float)
@@ -77,13 +77,13 @@ fun deconv(g: list<float>, f: list<float>): list<float> {
   var g2: list<complex> = []
   var i = 0
   while i < n {
-    if i < len(g) { g2 = append(g2, (g[i] as complex)) } else { g2 = append(g2, 0 + 0i) }
+    if i < len(g) { g2 = append(g2, (g[i] as complex)) } else { g2 = append(g2, (0 as complex)) }
     i = i + 1
   }
   var f2: list<complex> = []
   i = 0
   while i < n {
-    if i < len(f) { f2 = append(f2, (f[i] as complex)) } else { f2 = append(f2, 0 + 0i) }
+    if i < len(f) { f2 = append(f2, (f[i] as complex)) } else { f2 = append(f2, (0 as complex)) }
     i = i + 1
   }
   let gt = fft(g2)

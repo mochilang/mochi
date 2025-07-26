@@ -1,0 +1,153 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun listToStringInts(xs: list<float>): string {
+func listToStringInts (regs=20)
+  // var s = "["
+  Const        r1, "["
+  Move         r2, r1
+  // var i = 0
+  Const        r3, 0
+  Move         r4, r3
+L2:
+  // while i < len(xs) {
+  Len          r5, r0
+  LessInt      r6, r4, r5
+  JumpIfFalse  r6, L0
+  // s = s + str(xs[i] as int)
+  Index        r7, r0, r4
+  Cast         r8, r7, int
+  Str          r9, r8
+  Add          r10, r2, r9
+  Move         r2, r10
+  // if i < len(xs) - 1 { s = s + " " }
+  Len          r11, r0
+  Const        r12, 1
+  SubInt       r13, r11, r12
+  LessInt      r14, r4, r13
+  JumpIfFalse  r14, L1
+  Const        r15, " "
+  Add          r16, r2, r15
+  Move         r2, r16
+L1:
+  // i = i + 1
+  Const        r12, 1
+  AddInt       r17, r4, r12
+  Move         r4, r17
+  // while i < len(xs) {
+  Jump         L2
+L0:
+  // return s + "]"
+  Const        r18, "]"
+  Add          r19, r2, r18
+  Return       r19
+
+  // fun deconv(g: list<float>, f: list<float>): list<float> {
+func deconv (regs=33)
+  // var h: list<float> = []
+  Const        r2, []
+  Move         r3, r2
+  // var n = 0
+  Const        r4, 0
+  Move         r5, r4
+  // let hn = len(g) - len(f) + 1
+  Len          r6, r0
+  Len          r7, r1
+  SubInt       r8, r6, r7
+  Const        r9, 1
+  AddInt       r10, r8, r9
+  Move         r11, r10
+L4:
+  // while n < hn {
+  LessInt      r12, r5, r11
+  JumpIfFalse  r12, L0
+  // var v = g[n]
+  Index        r13, r0, r5
+  Move         r14, r13
+  // var lower = 0
+  Const        r4, 0
+  Move         r15, r4
+  // if n >= len(f) { lower = n - len(f) + 1 }
+  Len          r16, r1
+  LessEqInt    r17, r16, r5
+  JumpIfFalse  r17, L1
+  Len          r18, r1
+  SubInt       r19, r5, r18
+  Const        r9, 1
+  AddInt       r20, r19, r9
+  Move         r15, r20
+L1:
+  // var i = lower
+  Move         r21, r15
+L3:
+  // while i < n {
+  LessInt      r22, r21, r5
+  JumpIfFalse  r22, L2
+  // v = v - h[i] * f[n - i]
+  Index        r23, r3, r21
+  SubInt       r24, r5, r21
+  Index        r25, r1, r24
+  Mul          r26, r23, r25
+  Sub          r27, r14, r26
+  Move         r14, r27
+  // i = i + 1
+  Const        r9, 1
+  AddInt       r28, r21, r9
+  Move         r21, r28
+  // while i < n {
+  Jump         L3
+L2:
+  // v = v / f[0]
+  Const        r4, 0
+  Index        r29, r1, r4
+  Div          r30, r14, r29
+  Move         r14, r30
+  // h = append(h, v)
+  Append       r31, r3, r14
+  Move         r3, r31
+  // n = n + 1
+  Const        r9, 1
+  AddInt       r32, r5, r9
+  Move         r5, r32
+  // while n < hn {
+  Jump         L4
+L0:
+  // return h
+  Return       r3
+
+  // fun main() {
+func main (regs=20)
+  // let h = [-8.0, -9.0, -3.0, -1.0, -6.0, 7.0]
+  Const        r0, [-8.0, -9.0, -3.0, -1.0, -6.0, 7.0]
+  Move         r1, r0
+  // let f = [-3.0, -6.0, -1.0, 8.0, -6.0, 3.0, -1.0, -9.0, -9.0, 3.0, -2.0, 5.0, 2.0, -2.0, -7.0, -1.0]
+  Const        r2, [-3.0, -6.0, -1.0, 8.0, -6.0, 3.0, -1.0, -9.0, -9.0, 3.0, -2.0, 5.0, 2.0, -2.0, -7.0, -1.0]
+  Move         r3, r2
+  // let g = [24.0, 75.0, 71.0, -34.0, 3.0, 22.0, -45.0, 23.0, 245.0, 25.0, 52.0, 25.0, -67.0, -96.0, 96.0, 31.0, 55.0, 36.0, 29.0, -43.0, -7.0]
+  Const        r4, [24.0, 75.0, 71.0, -34.0, 3.0, 22.0, -45.0, 23.0, 245.0, 25.0, 52.0, 25.0, -67.0, -96.0, 96.0, 31.0, 55.0, 36.0, 29.0, -43.0, -7.0]
+  Move         r5, r4
+  // print(listToStringInts(h))
+  Move         r6, r1
+  Call         r7, listToStringInts, r6
+  Print        r7
+  // print(listToStringInts(deconv(g, f)))
+  Move         r9, r5
+  Move         r10, r3
+  Call2        r11, deconv, r9, r10
+  Move         r8, r11
+  Call         r12, listToStringInts, r8
+  Print        r12
+  // print(listToStringInts(f))
+  Move         r13, r3
+  Call         r14, listToStringInts, r13
+  Print        r14
+  // print(listToStringInts(deconv(g, h)))
+  Move         r16, r5
+  Move         r17, r1
+  Call2        r18, deconv, r16, r17
+  Move         r15, r18
+  Call         r19, listToStringInts, r15
+  Print        r19
+  Return       r0
