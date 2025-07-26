@@ -1,11 +1,16 @@
 Package sees: Salt Pepper Mustard
-There are 3 dogs.
+There are 3 dogs.\n
 Package sees: Salt Pepper Mustard
 Main sees:   Benjamin Pepper Mustard
-There are 4 dogs.
+There are 4 dogs.\n
 Package sees: Salt Samba Mustard
 Main sees:   Benjamin Samba Mustard
-There are 4 dogs.
+There are 4 dogs.\n
 Package sees: Salt Samba Mustard
 Main sees:   Benjamin Samba Bernie
 There are 5 dogs.
+{
+  "duration_us": 64,
+  "memory_bytes": 888,
+  "name": "main"
+}

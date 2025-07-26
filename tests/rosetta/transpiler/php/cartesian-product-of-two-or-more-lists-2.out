@@ -34,3 +34,8 @@
 
 []
 []
+{
+  "duration_us": 107,
+  "memory_bytes": 96,
+  "name": "main"
+}

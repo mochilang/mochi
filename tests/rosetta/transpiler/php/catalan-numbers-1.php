@@ -1,5 +1,20 @@
 <?php
 ini_set('memory_limit', '-1');
+$now_seed = 0;
+$now_seeded = false;
+$s = getenv('MOCHI_NOW_SEED');
+if ($s !== false && $s !== '') {
+    $now_seed = intval($s);
+    $now_seeded = true;
+}
+function _now() {
+    global $now_seed, $now_seeded;
+    if ($now_seeded) {
+        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
+        return $now_seed;
+    }
+    return hrtime(true);
+}
 function _str($x) {
     if (is_array($x)) {
         $isList = array_keys($x) === range(0, count($x) - 1);
@@ -16,8 +31,17 @@ function _str($x) {
     if ($x === null) return 'null';
     return strval($x);
 }
-function binom($n, $k) {
-  global $catalan, $main;
+function _intdiv($a, $b) {
+    if (function_exists('bcdiv')) {
+        $sa = is_int($a) ? strval($a) : sprintf('%.0f', $a);
+        $sb = is_int($b) ? strval($b) : sprintf('%.0f', $b);
+        return intval(bcdiv($sa, $sb, 0));
+    }
+    return intdiv($a, $b);
+}
+$__start_mem = memory_get_usage();
+$__start = _now();
+  function binom($n, $k) {
   if ($k < 0 || $k > $n) {
   return 0;
 }
@@ -30,18 +54,24 @@ function binom($n, $k) {
   while ($i < $kk) {
   $res = ($res * ($n - $i));
   $i = $i + 1;
-  $res = intval((intdiv($res, $i)));
+  $res = intval((_intdiv($res, $i)));
 };
   return $res;
-}
-function catalan($n) {
-  global $binom, $main;
-  return intval((binom(2 * $n, $n) / ($n + 1)));
-}
-function main() {
-  global $binom, $catalan;
-  for ($i = 0; $i < 15; $i++) {
-  echo rtrim(json_encode(_str(catalan($i)), 1344)), PHP_EOL;
 };
-}
-main();
+  function catalan($n) {
+  return intval((binom(2 * $n, $n) / ($n + 1)));
+};
+  function main() {
+  for ($i = 0; $i < 15; $i++) {
+  echo rtrim(_str(catalan($i))), PHP_EOL;
+};
+};
+  main();
+$__end = _now();
+$__end_mem = memory_get_usage();
+$__duration = intdiv($__end - $__start, 1000);
+$__mem_diff = max(0, $__end_mem - $__start_mem);
+$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
+$__j = json_encode($__bench, 128);
+$__j = str_replace("    ", "  ", $__j);
+echo $__j, PHP_EOL;;
