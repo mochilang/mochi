@@ -26,3 +26,9 @@ p2:  {0.1234 0.9876}
 r:  0
    Coincident points with r==0.0 describe a degenerate circle.
    Center:  {0.1234 0.9876}
+
+{
+  "duration_us": 148,
+  "memory_bytes": 760,
+  "name": "main"
+}

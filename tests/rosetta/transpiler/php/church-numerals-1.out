@@ -5,3 +5,8 @@ three * four -> 12
 three ^ four -> 81
 four ^ three -> 64
 5 -> five    -> 5
+{
+  "duration_us": 341,
+  "memory_bytes": 3232,
+  "name": "main"
+}

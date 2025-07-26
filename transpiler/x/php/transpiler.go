@@ -561,6 +561,15 @@ func freeVars(body []Stmt, params []string) []string {
 			if ex.End != nil {
 				walkExpr(ex.End)
 			}
+		case *CallExpr:
+			if _, builtin := builtinNames[ex.Func]; !builtin {
+				if _, ok := locals[ex.Func]; !ok {
+					seen[ex.Func] = struct{}{}
+				}
+			}
+			for _, a := range ex.Args {
+				walkExpr(a)
+			}
 		}
 	}
 
@@ -2933,6 +2942,44 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				uses = append(uses, "&"+n)
 			} else {
 				uses = append(uses, n)
+			}
+		}
+		for n := range outer {
+			found := false
+			for _, u := range uses {
+				if u == n || u == "&"+n {
+					found = true
+					break
+				}
+			}
+			if found {
+				continue
+			}
+			if _, ok := globalSet[n]; ok {
+				if _, fn := globalFuncs[n]; fn {
+					continue
+				}
+				uses = append(uses, "&"+n)
+			} else {
+				uses = append(uses, n)
+			}
+		}
+		for _, n := range fv {
+			present := false
+			for _, u := range uses {
+				if u == n || u == "&"+n {
+					present = true
+					break
+				}
+			}
+			if present {
+				continue
+			}
+			if _, ok := globalSet[n]; ok {
+				if _, fn := globalFuncs[n]; fn {
+					continue
+				}
+				uses = append(uses, "&"+n)
 			}
 		}
 		return &ClosureExpr{Params: params, RefParams: refFlags, Uses: uses, Body: body}, nil

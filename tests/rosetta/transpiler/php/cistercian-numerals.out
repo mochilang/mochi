@@ -133,3 +133,9 @@ x     x   x   x   x x
 x   x     x     x   x
 x x       x   x   x x
 x x x x x x x x x x x
+
+{
+  "duration_us": 503,
+  "memory_bytes": 70544,
+  "name": "main"
+}

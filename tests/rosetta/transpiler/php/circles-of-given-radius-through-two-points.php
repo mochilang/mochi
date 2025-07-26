@@ -1,5 +1,20 @@
 <?php
 ini_set('memory_limit', '-1');
+$now_seed = 0;
+$now_seeded = false;
+$s = getenv('MOCHI_NOW_SEED');
+if ($s !== false && $s !== '') {
+    $now_seed = intval($s);
+    $now_seeded = true;
+}
+function _now() {
+    global $now_seed, $now_seeded;
+    if ($now_seeded) {
+        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
+        return $now_seed;
+    }
+    return hrtime(true);
+}
 function _str($x) {
     if (is_array($x)) {
         $isList = array_keys($x) === range(0, count($x) - 1);
@@ -16,7 +31,9 @@ function _str($x) {
     if ($x === null) return 'null';
     return strval($x);
 }
-function sqrtApprox($x) {
+$__start_mem = memory_get_usage();
+$__start = _now();
+  function sqrtApprox($x) {
   global $Two, $R0, $Co, $CoR0, $Diam, $Far, $td, $p1, $p2, $r, $res, $c1, $c2, $caseStr;
   $g = $x;
   $i = 0;
@@ -25,18 +42,18 @@ function sqrtApprox($x) {
   $i = $i + 1;
 };
   return $g;
-}
-function mochi_hypot($x, $y) {
+};
+  function mochi_hypot($x, $y) {
   global $Two, $R0, $Co, $CoR0, $Diam, $Far, $td, $p1, $p2, $r, $res, $c1, $c2, $caseStr;
   return sqrtApprox($x * $x + $y * $y);
-}
-$Two = 'Two circles.';
-$R0 = 'R==0.0 does not describe circles.';
-$Co = 'Coincident points describe an infinite number of circles.';
-$CoR0 = 'Coincident points with r==0.0 describe a degenerate circle.';
-$Diam = 'Points form a diameter and describe only a single circle.';
-$Far = 'Points too far apart to form circles.';
-function circles($p1, $p2, $r) {
+};
+  $Two = 'Two circles.';
+  $R0 = 'R==0.0 does not describe circles.';
+  $Co = 'Coincident points describe an infinite number of circles.';
+  $CoR0 = 'Coincident points with r==0.0 describe a degenerate circle.';
+  $Diam = 'Points form a diameter and describe only a single circle.';
+  $Far = 'Points too far apart to form circles.';
+  function circles($p1, $p2, $r) {
   global $Two, $R0, $Co, $CoR0, $Diam, $Far, $td, $res, $c1, $c2, $caseStr;
   if ($p1['x'] == $p2['x'] && $p1['y'] == $p2['y']) {
   if ($r == 0.0) {
@@ -61,9 +78,9 @@ function circles($p1, $p2, $r) {
   $ox = $d * $dx / $q;
   $oy = $d * $dy / $q;
   return [['x' => $m['x'] - $oy, 'y' => $m['y'] + $ox], ['x' => $m['x'] + $oy, 'y' => $m['y'] - $ox], 'Two circles.'];
-}
-$td = [[['x' => 0.1234, 'y' => 0.9876], ['x' => 0.8765, 'y' => 0.2345], 2.0], [['x' => 0.0, 'y' => 2.0], ['x' => 0.0, 'y' => 0.0], 1.0], [['x' => 0.1234, 'y' => 0.9876], ['x' => 0.1234, 'y' => 0.9876], 2.0], [['x' => 0.1234, 'y' => 0.9876], ['x' => 0.8765, 'y' => 0.2345], 0.5], [['x' => 0.1234, 'y' => 0.9876], ['x' => 0.1234, 'y' => 0.9876], 0.0]];
-foreach ($td as $tc) {
+};
+  $td = [[['x' => 0.1234, 'y' => 0.9876], ['x' => 0.8765, 'y' => 0.2345], 2.0], [['x' => 0.0, 'y' => 2.0], ['x' => 0.0, 'y' => 0.0], 1.0], [['x' => 0.1234, 'y' => 0.9876], ['x' => 0.1234, 'y' => 0.9876], 2.0], [['x' => 0.1234, 'y' => 0.9876], ['x' => 0.8765, 'y' => 0.2345], 0.5], [['x' => 0.1234, 'y' => 0.9876], ['x' => 0.1234, 'y' => 0.9876], 0.0]];
+  foreach ($td as $tc) {
   $p1 = $tc[0];
   $p2 = $tc[1];
   $r = $tc[2];
@@ -85,3 +102,11 @@ foreach ($td as $tc) {
 }
   echo rtrim(''), PHP_EOL;
 }
+$__end = _now();
+$__end_mem = memory_get_usage();
+$__duration = intdiv($__end - $__start, 1000);
+$__mem_diff = max(0, $__end_mem - $__start_mem);
+$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
+$__j = json_encode($__bench, 128);
+$__j = str_replace("    ", "  ", $__j);
+echo $__j, PHP_EOL;;
