@@ -1,3 +1,35 @@
+## Progress (2025-07-26 11:07 +0700)
+- scala: handle BigRat casts and unary minus
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-26 11:07 +0700)
+- scala: handle BigRat casts and unary minus
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-26 11:07 +0700)
+- scala: handle BigRat casts and unary minus
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-26 11:07 +0700)
+- scala: handle BigRat casts and unary minus
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-26 11:07 +0700)
+- scala: handle BigRat casts and unary minus
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-26 11:07 +0700)
+- scala: handle BigRat casts and unary minus
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-26 11:07 +0700)
+- scala: handle BigRat casts and unary minus
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-26 11:07 +0700)
+- scala: handle BigRat casts and unary minus
+- Regenerated golden files - 104/104 vm valid programs passing
+
 ## Progress (2025-07-26 10:43 +0700)
 - fs transpiler: fix modulo int64 casting
 - Regenerated golden files - 104/104 vm valid programs passing

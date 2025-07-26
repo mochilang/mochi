@@ -1,7 +1,7 @@
 # Go Rosetta Transpiler Output
 
-Completed programs: 157/284
-Last updated: 2025-07-26 10:43 +0700
+Completed programs: 163/285
+Last updated: 2025-07-26 11:07 +0700
 
 Checklist:
 
@@ -175,12 +175,12 @@ Checklist:
 | 166 | camel-case-and-snake-case |   |  |  |
 | 167 | canny-edge-detector |   |  |  |
 | 168 | canonicalize-cidr |   |  |  |
-| 169 | cantor-set |   |  |  |
-| 170 | carmichael-3-strong-pseudoprimes |   |  |  |
-| 171 | cartesian-product-of-two-or-more-lists-1 |   |  |  |
-| 172 | cartesian-product-of-two-or-more-lists-2 |   |  |  |
-| 173 | cartesian-product-of-two-or-more-lists-3 |   |  |  |
-| 174 | cartesian-product-of-two-or-more-lists-4 |   |  |  |
+| 169 | cantor-set | ✓ | 338.0µs | 195.69KB |
+| 170 | carmichael-3-strong-pseudoprimes | ✓ | 545.0µs | 7.96KB |
+| 171 | cartesian-product-of-two-or-more-lists-1 | ✓ | 60.0µs | 2.23KB |
+| 172 | cartesian-product-of-two-or-more-lists-2 | ✓ | 539.0µs | 10.30KB |
+| 173 | cartesian-product-of-two-or-more-lists-3 | ✓ | 165.0µs | 12.81KB |
+| 174 | cartesian-product-of-two-or-more-lists-4 | ✓ | 134.0µs | 12.91KB |
 | 175 | case-sensitivity-of-identifiers |   |  |  |
 | 176 | casting-out-nines |   |  |  |
 | 177 | catalan-numbers-1 |   |  |  |
@@ -291,3 +291,4 @@ Checklist:
 | 282 | deepcopy-1 |   |  |  |
 | 283 | define-a-primitive-data-type |   |  |  |
 | 284 | md5 |   |  |  |
+| 285 | delegates |   |  |  |
