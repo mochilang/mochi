@@ -1,0 +1,24 @@
+/workspace/mochi/tests/rosetta/transpiler/erl/catalan-numbers-1.erl:62:10: Warning: variable 'Kk_3' exported from 'case' (line 45, column 9)
+%   62| {I_2, K, Kk_3, N, Res_3} = Fun(I, K, Kk_3, N, Res),
+%     |          ^
+
+1
+1
+2
+5
+14
+42
+132
+429
+1430
+4862
+16796
+58786
+208012
+742900
+2674440
+{
+  "duration_us": 4479,
+  "memory_bytes": 27400,
+  "name": "main"
+}
