@@ -2,7 +2,7 @@
 
 This directory stores C++ code generated from Mochi programs in `tests/rosetta/x/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.cpp` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (97/284) - Last updated 2025-07-26 09:30 +0700:
+Checklist of programs that currently transpile and run (100/284) - Last updated 2025-07-26 09:44 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | 100-doors-2 | ✓ | 222.0µs | 13.12MB |
@@ -118,9 +118,9 @@ Checklist of programs that currently transpile and run (97/284) - Last updated 2
 | 111 | binary-strings |   |  |  |
 | 112 | bioinformatics-base-count | ✓ | 433.0µs | 13.55MB |
 | 113 | bioinformatics-global-alignment | ✓ | 20.78s | 14.31MB |
-| 114 | bioinformatics-sequence-mutation |   |  |  |
-| 115 | biorhythms |   |  |  |
-| 116 | bitcoin-address-validation |   |  |  |
+| 114 | bioinformatics-sequence-mutation | ✓ | 58.0ms | 14.24MB |
+| 115 | biorhythms | ✓ | 316.0µs | 14.71MB |
+| 116 | bitcoin-address-validation | ✓ | 1.0ms | 13.25MB |
 | 117 | bitmap-b-zier-curves-cubic |   |  |  |
 | 118 | bitmap-b-zier-curves-quadratic |   |  |  |
 | 119 | bitmap-bresenhams-line-algorithm | ✓ | 80.0µs | 13.12MB |
