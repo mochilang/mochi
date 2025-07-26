@@ -1,3 +1,19 @@
+## Progress (2025-07-27 01:56 +0700)
+- rosetta: add csv to html translation 4
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-27 01:56 +0700)
+- rosetta: add csv to html translation 3
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-27 01:56 +0700)
+- transpiler/go: handle local assignments
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-27 01:43 +0700)
+- transpiler: add go split builtin and process more rosetta programs
+- Regenerated golden files - 104/104 vm valid programs passing
+
 ## Progress (2025-07-27 01:22 +0700)
 - go transpiler: handle bigint comparisons with int
 - Regenerated golden files - 104/104 vm valid programs passing

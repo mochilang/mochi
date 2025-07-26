@@ -2240,7 +2240,7 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 				vd.Value = nil
 			}
 			if env != topEnv {
-				return &StmtList{List: []Stmt{vd, &AssignStmt{Name: "_", Value: &VarRef{Name: st.Let.Name}}}}, nil
+				return vd, nil
 			}
 			return vd, nil
 		}
@@ -2391,7 +2391,7 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 				vd.Value = nil
 			}
 			if env != topEnv {
-				return &StmtList{List: []Stmt{vd, &AssignStmt{Name: "_", Value: &VarRef{Name: st.Var.Name}}}}, nil
+				return vd, nil
 			}
 			return vd, nil
 		}
@@ -5519,6 +5519,12 @@ func Emit(prog *Program, bench bool) []byte {
 		prog.UseRuntime = true
 	}
 	var buf bytes.Buffer
+	globalVars := map[string]bool{}
+	for _, s := range prog.Stmts {
+		if vd, ok := s.(*VarDecl); ok && vd.Global {
+			globalVars[vd.Name] = true
+		}
+	}
 	buf.WriteString("//go:build ignore\n\n")
 	buf.Write(meta.Header("//"))
 	buf.WriteString("package main\n\n")
@@ -5735,6 +5741,9 @@ func Emit(prog *Program, bench bool) []byte {
 			if _, ok := s.(*UnionDeclStmt); ok {
 				continue
 			}
+			if as, ok := s.(*AssignStmt); ok && !globalVars[as.Name] {
+				continue
+			}
 			bs.Body = append(bs.Body, s)
 		}
 		bs.emit(&buf)
@@ -5754,6 +5763,9 @@ func Emit(prog *Program, bench bool) []byte {
 				continue
 			}
 			if _, ok := s.(*UnionDeclStmt); ok {
+				continue
+			}
+			if as, ok := s.(*AssignStmt); ok && !globalVars[as.Name] {
 				continue
 			}
 			buf.WriteString("    ")
