@@ -679,15 +679,30 @@ func (f *FormatListExpr) emit(w io.Writer) {
 }
 
 func (p *PrintExpr) emit(w io.Writer) {
-	io.WriteString(w, "console.log(")
-	for i, a := range p.Args {
+	args := p.Args
+	newline := true
+	if len(args) > 0 {
+		if b, ok := args[len(args)-1].(*BoolLit); ok {
+			newline = b.Value
+			args = args[:len(args)-1]
+		}
+	}
+	if !newline {
+		io.WriteString(w, "_stdout_write(")
+	} else {
+		io.WriteString(w, "console.log(")
+	}
+	if len(args) == 0 {
+		io.WriteString(w, "\"\"")
+	}
+	for i, a := range args {
 		if i > 0 {
-			io.WriteString(w, ", ")
+			io.WriteString(w, " + \" \" + ")
 		}
 		if a != nil {
 			a.emit(w)
 		} else {
-			io.WriteString(w, "null")
+			io.WriteString(w, "\"\"")
 		}
 	}
 	io.WriteString(w, ")")
@@ -1600,6 +1615,22 @@ func (v *VarDecl) emit(w io.Writer) {
 }
 
 func (a *AssignStmt) emit(w io.Writer) {
+	if ap, ok := a.Expr.(*AppendExpr); ok {
+		if nr, ok2 := ap.List.(*NameRef); ok2 && nr.Name == a.Name {
+			io.WriteString(w, safeName(a.Name))
+			io.WriteString(w, ".push(")
+			if ap.Elem != nil {
+				ap.Elem.emit(w)
+			}
+			io.WriteString(w, ")")
+			if b, ok := w.(interface{ WriteByte(byte) error }); ok {
+				b.WriteByte(';')
+			} else {
+				io.WriteString(w, ";")
+			}
+			return
+		}
+	}
 	io.WriteString(w, safeName(a.Name))
 	io.WriteString(w, " = ")
 	a.Expr.emit(w)
@@ -3370,6 +3401,11 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 					if isListType(types.ExprType(p.Call.Args[i], transpileEnv)) {
 						args[i] = &FormatListExpr{Value: a}
 					}
+				}
+			}
+			if len(args) > 0 {
+				if b, ok := args[len(args)-1].(*BoolLit); ok && !b.Value {
+					useStdout = true
 				}
 			}
 			return &PrintExpr{Args: args}, nil
