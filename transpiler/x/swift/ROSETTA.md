@@ -2,8 +2,8 @@
 
 Generated Swift code for Mochi Rosetta programs in `tests/rosetta/x/Mochi`. Outputs are stored in `tests/rosetta/transpiler/Swift`. Errors are captured in `.error` files.
 
-Completed: 56/284
-Last updated: 2025-07-26 04:52 +0700
+Completed: 66/284
+Last updated: 2025-07-26 05:15 +0700
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -68,16 +68,16 @@ Last updated: 2025-07-26 04:52 +0700
 | 59 | apply-a-callback-to-an-array-2 | ✓ | 217µs | 3.1 MB |
 | 60 | apply-a-digital-filter-direct-form-ii-transposed- | ✓ | 173µs | 3.1 MB |
 | 61 | approximate-equality | ✓ | 146µs | 3.0 MB |
-| 62 | arbitrary-precision-integers-included- |   |  |  |
-| 63 | archimedean-spiral |   |  |  |
-| 64 | arena-storage-pool |   |  |  |
-| 65 | arithmetic-complex |   |  |  |
-| 66 | arithmetic-derivative |   |  |  |
-| 67 | arithmetic-evaluation |   |  |  |
-| 68 | arithmetic-geometric-mean-calculate-pi |   |  |  |
-| 69 | arithmetic-geometric-mean |   |  |  |
-| 70 | arithmetic-integer-1 |   |  |  |
-| 71 | arithmetic-integer-2 |   |  |  |
+| 62 | arbitrary-precision-integers-included- | ✓ | 38.317676s | 7.2 MB |
+| 63 | archimedean-spiral | ✓ | 2.159ms | 3.1 MB |
+| 64 | arena-storage-pool | ✓ | 348µs | 3.3 MB |
+| 65 | arithmetic-complex | ✓ | 218µs | 3.2 MB |
+| 66 | arithmetic-derivative | ✓ |  |  |
+| 67 | arithmetic-evaluation | ✓ |  |  |
+| 68 | arithmetic-geometric-mean-calculate-pi | ✓ |  |  |
+| 69 | arithmetic-geometric-mean | ✓ |  |  |
+| 70 | arithmetic-integer-1 | ✓ |  |  |
+| 71 | arithmetic-integer-2 | ✓ |  |  |
 | 72 | arithmetic-numbers |   |  |  |
 | 73 | arithmetic-rational |   |  |  |
 | 74 | array-concatenation |   |  |  |
@@ -291,23 +291,3 @@ Last updated: 2025-07-26 04:52 +0700
 | 282 | deepcopy-1 |   |  |  |
 | 283 | define-a-primitive-data-type |   |  |  |
 | 284 | md5 |   |  |  |
-\n## Progress Checklist
-- [x] 43 almost-prime
-- [x] 44 amb
-- [x] 45 amicable-pairs
-- [x] 46 anagrams-deranged-anagrams
-- [x] 47 anagrams
-- [x] 48 angle-difference-between-two-bearings-1
-- [x] 49 angle-difference-between-two-bearings-2
-- [x] 50 angles-geometric-normalization-and-conversion
-- [x] 51 animate-a-pendulum
-- [x] 52 animation
-- [x] 53 anonymous-recursion-1
-- [x] 54 anonymous-recursion-2
-- [x] 55 anonymous-recursion
-- [x] 56 anti-primes
-- [x] 57 append-a-record-to-the-end-of-a-text-file
-- [x] 58 apply-a-callback-to-an-array-1
-- [x] 59 apply-a-callback-to-an-array-2
-- [x] 60 apply-a-digital-filter-direct-form-ii-transposed-
-- [x] 61 approximate-equality

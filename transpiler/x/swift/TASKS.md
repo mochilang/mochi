@@ -1,5 +1,5 @@
-## Progress (2025-07-26 04:52 +0700)
-- swift: record progress checklist for indices 43-61
+## Progress (2025-07-26 05:15 +0700)
+- transpiler/java: handle local var types
 - Generated golden tests for 102/104 programs
 - Updated README checklist and output artifacts
 

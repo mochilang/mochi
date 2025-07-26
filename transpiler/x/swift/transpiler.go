@@ -922,7 +922,18 @@ func (c *CastExpr) emit(w io.Writer) {
 		t = strings.TrimSuffix(t, "!")
 	}
 	switch t {
-	case "Int", "Int64", "Double", "String", "Bool", "BigInt":
+	case "Int":
+		usesInt = true
+		if force {
+			fmt.Fprint(w, "(")
+			c.Expr.emit(w)
+			fmt.Fprint(w, " as! Int)")
+		} else {
+			fmt.Fprint(w, "_int(")
+			c.Expr.emit(w)
+			fmt.Fprint(w, ")")
+		}
+	case "Int64", "Double", "String", "Bool", "BigInt":
 		if ce, ok := c.Expr.(*CallExpr); ok && t == "String" && ce.Func == "str" {
 			c.Expr.emit(w)
 			return
@@ -1409,7 +1420,10 @@ func (p *Program) Emit() []byte {
 	}
 	if p.UseInt {
 		buf.WriteString("func _int(_ v: Any) -> Int {\n")
-		buf.WriteString("    if let s = v as? String { return Int(s) ?? 0 }\n")
+		buf.WriteString("    if let s = v as? String {\n")
+		buf.WriteString("        if s.count == 1 { return Int(s.unicodeScalars.first!.value) }\n")
+		buf.WriteString("        return Int(s) ?? 0\n")
+		buf.WriteString("    }\n")
 		buf.WriteString("    if let i = v as? Int { return i }\n")
 		buf.WriteString("    if let i = v as? Int64 { return Int(i) }\n")
 		buf.WriteString("    if let d = v as? Double { return Int(d) }\n")
@@ -2794,7 +2808,7 @@ func convertPostfix(env *types.Env, p *parser.PostfixExpr) (Expr, error) {
 
 	var baseType types.Type
 	if env != nil {
-		baseType = types.TypeOfPrimaryBasic(p.Target, env)
+		baseType = types.TypeOfPrimary(p.Target, env)
 	}
 	for i := 0; i < len(p.Ops); i++ {
 		op := p.Ops[i]
@@ -2876,7 +2890,7 @@ func convertPostfix(env *types.Env, p *parser.PostfixExpr) (Expr, error) {
 				case types.ListType:
 					baseType = bt.Elem
 				default:
-					baseType = types.AnyType{}
+					// preserve current baseType
 				}
 			}
 			continue
@@ -2955,6 +2969,9 @@ func convertPostfix(env *types.Env, p *parser.PostfixExpr) (Expr, error) {
 				}
 			} else {
 				expr = &CastExpr{Expr: expr, Type: typ}
+			}
+			if typ == "Int" {
+				usesInt = true
 			}
 			continue
 		}
