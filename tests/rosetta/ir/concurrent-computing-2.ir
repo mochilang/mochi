@@ -1,0 +1,60 @@
+func main (regs=11)
+  // for w in shuffle(["Enjoy", "Rosetta", "Code"]) {
+  Const        r1, ["Enjoy", "Rosetta", "Code"]
+  Move         r0, r1
+  Call         r2, shuffle, r0
+  IterPrep     r3, r2
+  Len          r4, r3
+  Const        r5, 0
+L1:
+  LessInt      r6, r5, r4
+  JumpIfFalse  r6, L0
+  Index        r7, r3, r5
+  Move         r8, r7
+  // print(w)
+  Print        r8
+  // for w in shuffle(["Enjoy", "Rosetta", "Code"]) {
+  Const        r9, 1
+  AddInt       r10, r5, r9
+  Move         r5, r10
+  Jump         L1
+L0:
+  Return       r0
+
+  // fun shuffle(xs: list<string>): list<string> {
+func shuffle (regs=16)
+  // var arr = xs
+  Move         r1, r0
+  // var i = len(arr) - 1
+  Len          r2, r1
+  Const        r3, 1
+  SubInt       r4, r2, r3
+  Move         r5, r4
+L1:
+  // while i > 0 {
+  Const        r6, 0
+  LessInt      r7, r6, r5
+  JumpIfFalse  r7, L0
+  // let j = now() % (i + 1)
+  Now          r8
+  Const        r3, 1
+  AddInt       r9, r5, r3
+  ModInt       r10, r8, r9
+  Move         r11, r10
+  // let tmp = arr[i]
+  Index        r12, r1, r5
+  Move         r13, r12
+  // arr[i] = arr[j]
+  Index        r14, r1, r11
+  SetIndex     r1, r5, r14
+  // arr[j] = tmp
+  SetIndex     r1, r11, r13
+  // i = i - 1
+  Const        r3, 1
+  SubInt       r15, r5, r3
+  Move         r5, r15
+  // while i > 0 {
+  Jump         L1
+L0:
+  // return arr
+  Return       r1

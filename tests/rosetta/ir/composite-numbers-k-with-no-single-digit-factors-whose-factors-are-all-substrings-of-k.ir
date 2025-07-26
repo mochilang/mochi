@@ -1,0 +1,398 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun primeFactors(n: int): list<int> {
+func primeFactors (regs=24)
+  // var factors: list<int> = []
+  Const        r1, []
+  Move         r2, r1
+  // var x = n
+  Move         r3, r0
+L1:
+  // while x % 2 == 0 {
+  Const        r4, 2
+  Mod          r5, r3, r4
+  Const        r6, 0
+  Equal        r7, r5, r6
+  JumpIfFalse  r7, L0
+  // factors = append(factors, 2)
+  Const        r4, 2
+  Append       r8, r2, r4
+  Move         r2, r8
+  // x = (x / 2) as int
+  Const        r4, 2
+  Div          r9, r3, r4
+  Cast         r10, r9, int
+  Move         r3, r10
+  // while x % 2 == 0 {
+  Jump         L1
+L0:
+  // var p = 3
+  Const        r11, 3
+  Move         r12, r11
+L5:
+  // while p * p <= x {
+  MulInt       r13, r12, r12
+  LessEq       r14, r13, r3
+  JumpIfFalse  r14, L2
+L4:
+  // while x % p == 0 {
+  Mod          r15, r3, r12
+  Const        r6, 0
+  Equal        r16, r15, r6
+  JumpIfFalse  r16, L3
+  // factors = append(factors, p)
+  Append       r17, r2, r12
+  Move         r2, r17
+  // x = (x / p) as int
+  Div          r18, r3, r12
+  Cast         r19, r18, int
+  Move         r3, r19
+  // while x % p == 0 {
+  Jump         L4
+L3:
+  // p = p + 2
+  Const        r4, 2
+  AddInt       r20, r12, r4
+  Move         r12, r20
+  // while p * p <= x {
+  Jump         L5
+L2:
+  // if x > 1 {
+  Const        r21, 1
+  Less         r22, r21, r3
+  JumpIfFalse  r22, L6
+  // factors = append(factors, x)
+  Append       r23, r2, r3
+  Move         r2, r23
+L6:
+  // return factors
+  Return       r2
+
+  // fun commatize(n: int): string {
+func commatize (regs=24)
+  // var s = str(n)
+  Str          r1, r0
+  Move         r2, r1
+  // var out = ""
+  Const        r3, ""
+  Move         r4, r3
+  // var i = len(s) - 1
+  Len          r5, r2
+  Const        r6, 1
+  SubInt       r7, r5, r6
+  Move         r8, r7
+  // var c = 0
+  Const        r9, 0
+  Move         r10, r9
+L3:
+  // while i >= 0 {
+  Const        r9, 0
+  LessEqInt    r11, r9, r8
+  JumpIfFalse  r11, L0
+  // out = substring(s, i, i+1) + out
+  Const        r6, 1
+  AddInt       r12, r8, r6
+  Slice        r13, r2, r8, r12
+  Add          r14, r13, r4
+  Move         r4, r14
+  // c = c + 1
+  Const        r6, 1
+  AddInt       r15, r10, r6
+  Move         r10, r15
+  // if c % 3 == 0 && i > 0 { out = "," + out }
+  Const        r16, 3
+  ModInt       r17, r10, r16
+  Const        r9, 0
+  LessInt      r18, r9, r8
+  Const        r9, 0
+  EqualInt     r19, r17, r9
+  Move         r20, r19
+  JumpIfFalse  r20, L1
+  Move         r20, r18
+L1:
+  JumpIfFalse  r20, L2
+  Const        r21, ","
+  Add          r22, r21, r4
+  Move         r4, r22
+L2:
+  // i = i - 1
+  Const        r6, 1
+  SubInt       r23, r8, r6
+  Move         r8, r23
+  // while i >= 0 {
+  Jump         L3
+L0:
+  // return out
+  Return       r4
+
+  // fun indexOf(s: string, sub: string): int {
+func indexOf (regs=15)
+  // var i = 0
+  Const        r2, 0
+  Move         r3, r2
+L2:
+  // while i + len(sub) <= len(s) {
+  Len          r4, r1
+  AddInt       r5, r3, r4
+  Len          r6, r0
+  LessEqInt    r7, r5, r6
+  JumpIfFalse  r7, L0
+  // if substring(s, i, i+len(sub)) == sub { return i }
+  Len          r8, r1
+  AddInt       r9, r3, r8
+  Slice        r10, r0, r3, r9
+  Equal        r11, r10, r1
+  JumpIfFalse  r11, L1
+  Return       r3
+L1:
+  // i = i + 1
+  Const        r12, 1
+  AddInt       r13, r3, r12
+  Move         r3, r13
+  // while i + len(sub) <= len(s) {
+  Jump         L2
+L0:
+  // return -1
+  Const        r12, 1
+  NegInt       r14, r12
+  Return       r14
+
+  // fun pad10(s: string): string {
+func pad10 (regs=7)
+  // var str = s
+  Move         r1, r0
+L1:
+  // while len(str) < 10 { str = " " + str }
+  Len          r2, r1
+  Const        r3, 10
+  LessInt      r4, r2, r3
+  JumpIfFalse  r4, L0
+  Const        r5, " "
+  Add          r6, r5, r1
+  Move         r1, r6
+  Jump         L1
+L0:
+  // return str
+  Return       r1
+
+  // fun trimRightStr(s: string): string {
+func trimRightStr (regs=13)
+  // var end = len(s)
+  Len          r1, r0
+  Move         r2, r1
+L2:
+  // while end > 0 && substring(s, end-1, end) == " " { end = end - 1 }
+  Const        r3, 0
+  LessInt      r4, r3, r2
+  Const        r5, 1
+  SubInt       r6, r2, r5
+  Slice        r7, r0, r6, r2
+  Const        r8, " "
+  Equal        r9, r7, r8
+  Move         r10, r4
+  JumpIfFalse  r10, L0
+  Move         r10, r9
+L0:
+  JumpIfFalse  r10, L1
+  Const        r5, 1
+  SubInt       r11, r2, r5
+  Move         r2, r11
+  Jump         L2
+L1:
+  // return substring(s, 0, end)
+  Const        r3, 0
+  Slice        r12, r0, r3, r2
+  Return       r12
+
+  // fun main() {
+func main (regs=94)
+  // var res: list<int> = []
+  Const        r0, []
+  Move         r1, r0
+  // var count = 0
+  Const        r2, 0
+  Move         r3, r2
+  // var k = 11 * 11
+  Const        r4, 11
+  Const        r4, 11
+  MulInt       r5, r4, r4
+  Move         r6, r5
+L3:
+  // while count < 20 {
+  Const        r7, 20
+  LessInt      r8, r3, r7
+  JumpIfFalse  r8, L0
+  // if k % 3 == 0 || k % 5 == 0 || k % 7 == 0 {
+  Const        r9, 3
+  ModInt       r10, r6, r9
+  Const        r11, 5
+  ModInt       r12, r6, r11
+  Const        r13, 7
+  ModInt       r14, r6, r13
+  Const        r2, 0
+  EqualInt     r15, r10, r2
+  Const        r2, 0
+  EqualInt     r16, r12, r2
+  Const        r2, 0
+  EqualInt     r17, r14, r2
+  Move         r18, r15
+  JumpIfTrue   r18, L1
+  Move         r18, r16
+  JumpIfTrue   r18, L1
+  Move         r18, r17
+L1:
+  JumpIfFalse  r18, L2
+  // k = k + 2
+  Const        r19, 2
+  AddInt       r20, r6, r19
+  Move         r6, r20
+  // continue
+  Jump         L3
+L2:
+  // let factors = primeFactors(k)
+  Move         r21, r6
+  Call         r22, primeFactors, r21
+  Move         r23, r22
+  // if len(factors) > 1 {
+  Len          r24, r23
+  Const        r25, 1
+  LessInt      r26, r25, r24
+  JumpIfFalse  r26, L4
+  // let s = str(k)
+  Str          r27, r6
+  Move         r28, r27
+  // var includesAll = true
+  Const        r29, true
+  Move         r30, r29
+  // var prev = -1
+  Const        r25, 1
+  NegInt       r31, r25
+  Move         r32, r31
+  // for f in factors {
+  IterPrep     r33, r23
+  Len          r34, r33
+  Const        r35, 0
+L9:
+  LessInt      r36, r35, r34
+  JumpIfFalse  r36, L5
+  Index        r37, r33, r35
+  Move         r38, r37
+  // if f == prev { continue }
+  Equal        r39, r38, r32
+  JumpIfFalse  r39, L6
+  Jump         L7
+L6:
+  // let fs = str(f)
+  Str          r40, r38
+  Move         r41, r40
+  // if indexOf(s, fs) == (-1) {
+  Move         r42, r28
+  Move         r43, r41
+  Call2        r44, indexOf, r42, r43
+  Const        r45, -1
+  Equal        r46, r44, r45
+  JumpIfFalse  r46, L8
+  // includesAll = false
+  Const        r47, false
+  Move         r30, r47
+  // break
+  Jump         L5
+L8:
+  // prev = f
+  Move         r32, r38
+L7:
+  // for f in factors {
+  Const        r48, 1
+  AddInt       r49, r35, r48
+  Move         r35, r49
+  Jump         L9
+L5:
+  // if includesAll {
+  JumpIfFalse  r30, L4
+  // res = append(res, k)
+  Append       r50, r1, r6
+  Move         r1, r50
+  // count = count + 1
+  Const        r25, 1
+  AddInt       r51, r3, r25
+  Move         r3, r51
+L4:
+  // k = k + 2
+  Const        r19, 2
+  AddInt       r52, r6, r19
+  Move         r6, r52
+  // while count < 20 {
+  Jump         L3
+L0:
+  // var line = ""
+  Const        r53, ""
+  Move         r54, r53
+  // for e in res[0:10] { line = line + pad10(commatize(e)) + " " }
+  Const        r2, 0
+  Move         r55, r2
+  Const        r57, 10
+  Move         r56, r57
+  Slice        r58, r1, r55, r56
+  IterPrep     r59, r58
+  Len          r60, r59
+  Const        r61, 0
+L11:
+  LessInt      r62, r61, r60
+  JumpIfFalse  r62, L10
+  Index        r63, r59, r61
+  Move         r64, r63
+  Move         r66, r64
+  Call         r67, commatize, r66
+  Move         r65, r67
+  Call         r68, pad10, r65
+  Add          r69, r54, r68
+  Const        r70, " "
+  Add          r71, r69, r70
+  Move         r54, r71
+  Const        r72, 1
+  AddInt       r73, r61, r72
+  Move         r61, r73
+  Jump         L11
+L10:
+  // print(trimRightStr(line))
+  Move         r74, r54
+  Call         r75, trimRightStr, r74
+  Print        r75
+  // line = ""
+  Const        r53, ""
+  Move         r54, r53
+  // for e in res[10:20] { line = line + pad10(commatize(e)) + " " }
+  Const        r57, 10
+  Move         r76, r57
+  Const        r7, 20
+  Move         r77, r7
+  Slice        r78, r1, r76, r77
+  IterPrep     r79, r78
+  Len          r80, r79
+  Const        r81, 0
+L13:
+  LessInt      r82, r81, r80
+  JumpIfFalse  r82, L12
+  Index        r83, r79, r81
+  Move         r64, r83
+  Move         r85, r64
+  Call         r86, commatize, r85
+  Move         r84, r86
+  Call         r87, pad10, r84
+  Add          r88, r54, r87
+  Const        r70, " "
+  Add          r89, r88, r70
+  Move         r54, r89
+  Const        r90, 1
+  AddInt       r91, r81, r90
+  Move         r81, r91
+  Jump         L13
+L12:
+  // print(trimRightStr(line))
+  Move         r92, r54
+  Call         r93, trimRightStr, r92
+  Print        r93
+  Return       r0

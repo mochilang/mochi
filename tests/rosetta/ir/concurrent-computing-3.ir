@@ -1,0 +1,82 @@
+func main (regs=18)
+  // var i = 0
+  Const        r1, 0
+  Move         r0, r1
+  SetGlobal    0,0,0,0
+L3:
+  // while i < 3 {
+  Const        r2, 3
+  LessInt      r3, r0, r2
+  JumpIfFalse  r3, L0
+  // print("")
+  Const        r4, ""
+  Print        r4
+  // for w in shuffle(["Enjoy", "Rosetta", "Code"]) {
+  Const        r6, ["Enjoy", "Rosetta", "Code"]
+  Move         r5, r6
+  Call         r7, shuffle, r5
+  IterPrep     r8, r7
+  Len          r9, r8
+  Const        r10, 0
+L2:
+  LessInt      r11, r10, r9
+  JumpIfFalse  r11, L1
+  Index        r12, r8, r10
+  Move         r13, r12
+  // print(w)
+  Print        r13
+  // for w in shuffle(["Enjoy", "Rosetta", "Code"]) {
+  Const        r14, 1
+  AddInt       r15, r10, r14
+  Move         r10, r15
+  Jump         L2
+L1:
+  // i = i + 1
+  Const        r16, 1
+  AddInt       r17, r0, r16
+  Move         r0, r17
+  SetGlobal    0,0,0,0
+  // while i < 3 {
+  Jump         L3
+L0:
+  Return       r0
+
+  // fun shuffle(xs: list<string>): list<string> {
+func shuffle (regs=16)
+  // var arr = xs
+  Move         r2, r1
+  // var i = len(arr) - 1
+  Len          r3, r2
+  Const        r4, 1
+  SubInt       r5, r3, r4
+  Move         r0, r5
+  SetGlobal    0,0,0,0
+L1:
+  // while i > 0 {
+  Const        r6, 0
+  LessInt      r7, r6, r0
+  JumpIfFalse  r7, L0
+  // let j = now() % (i + 1)
+  Now          r8
+  Const        r4, 1
+  AddInt       r9, r0, r4
+  ModInt       r10, r8, r9
+  Move         r11, r10
+  // let tmp = arr[i]
+  Index        r12, r2, r0
+  Move         r13, r12
+  // arr[i] = arr[j]
+  Index        r14, r2, r11
+  SetIndex     r2, r0, r14
+  // arr[j] = tmp
+  SetIndex     r2, r11, r13
+  // i = i - 1
+  Const        r4, 1
+  SubInt       r15, r0, r4
+  Move         r0, r15
+  SetGlobal    0,0,0,0
+  // while i > 0 {
+  Jump         L1
+L0:
+  // return arr
+  Return       r2

@@ -1,0 +1,19 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun example10() {
+func example10 (regs=2)
+  // while true {
+  Const        r0, true
+  // print("I'm off!")
+  Const        r1, "I'm off!"
+  Print        r1
+  Return       r0
+
+  // fun main() {
+func main (regs=1)
+  // example10()
+  Call         r0, example10, 
+  Return       r0
