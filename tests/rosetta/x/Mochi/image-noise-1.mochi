@@ -1,0 +1,29 @@
+// Mochi implementation of Rosetta "Image noise" task
+// Generates a single 320x240 frame of random black and white pixels.
+// This program produces no textual output.
+
+fun nextRand(seed: int): int {
+  return (seed * 1664525 + 1013904223) % 2147483647
+}
+
+fun genNoise(width: int, height: int, seed: int): list<any> {
+  var img: list<list<int>> = []
+  var y = 0
+  var s = seed
+  while y < height {
+    var row: list<int> = []
+    var x = 0
+    while x < width {
+      s = nextRand(s)
+      row = append(row, s % 2)
+      x = x + 1
+    }
+    img = append(img, row)
+    y = y + 1
+  }
+  return [img, s]
+}
+
+var seed = now()
+var res = genNoise(320, 240, seed)
+// The generated image data is stored in res[0]; res[1] holds the next seed.
