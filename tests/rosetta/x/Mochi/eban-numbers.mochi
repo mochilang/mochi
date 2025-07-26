@@ -1,0 +1,73 @@
+let vals = [0,2,4,6,30,32,34,36,40,42,44,46,50,52,54,56,60,62,64,66]
+let billions = [0,2,4,6]
+
+fun ebanNumbers(start: int, stop: int): list<int> {
+  var nums: list<int> = []
+  for b in billions {
+    for m in vals {
+      for t in vals {
+        for r in vals {
+          let n = b*1000000000 + m*1000000 + t*1000 + r
+          if (n >= start) && (n <= stop) {
+            nums = append(nums, n)
+          }
+        }
+      }
+    }
+  }
+  return nums
+}
+
+fun countEban(start: int, stop: int): int {
+  var count = 0
+  for b in billions {
+    for m in vals {
+      for t in vals {
+        for r in vals {
+          let n = b*1000000000 + m*1000000 + t*1000 + r
+          if (n >= start) && (n <= stop) {
+            count = count + 1
+          }
+        }
+      }
+    }
+  }
+  return count
+}
+
+fun main() {
+  let ranges = [
+    [2, 1000, true],
+    [1000, 4000, true],
+    [2, 10000, false],
+    [2, 100000, false],
+    [2, 1000000, false],
+    [2, 10000000, false],
+    [2, 100000000, false],
+    [2, 1000000000, false],
+  ]
+  for rg in ranges {
+    let start = rg[0] as int
+    let stop = rg[1] as int
+    let show = rg[2] as bool
+    if start == 2 {
+      print("eban numbers up to and including " + str(stop) + ":")
+    } else {
+      print("eban numbers between " + str(start) + " and " + str(stop) + " (inclusive):")
+    }
+    if show {
+      let nums = ebanNumbers(start, stop)
+      var line = ""
+      var i = 0
+      while i < len(nums) {
+        line = line + str(nums[i]) + " "
+        i = i + 1
+      }
+      if len(line) > 0 { print(substring(line, 0, len(line)-1)) }
+    }
+    let c = countEban(start, stop)
+    print("count = " + str(c) + "\n")
+  }
+}
+
+main()
