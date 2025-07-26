@@ -39,28 +39,30 @@ type UnionDef struct {
 }
 
 type Program struct {
-	Structs   []StructDef
-	Unions    []UnionDef
-	Stmts     []Stmt
-	UseNow    bool
-	UseBreak  bool
-	UseReturn bool
+	Structs      []StructDef
+	Unions       []UnionDef
+	Stmts        []Stmt
+	UseNow       bool
+	UseBreak     bool
+	UseReturn    bool
+	UseSubstring bool
 }
 
 // varTypes holds the inferred type for each variable defined during
 // transpilation. It is reset for every call to Transpile.
 var (
-	varTypes     map[string]string
-	structDefs   []StructDef
-	unionDefs    []UnionDef
-	structCount  int
-	transpileEnv *types.Env
-	neededOpens  map[string]bool
-	indentLevel  int
-	usesNow      bool
-	usesBreak    bool
-	usesReturn   bool
-	benchMain    bool
+	varTypes      map[string]string
+	structDefs    []StructDef
+	unionDefs     []UnionDef
+	structCount   int
+	transpileEnv  *types.Env
+	neededOpens   map[string]bool
+	indentLevel   int
+	usesNow       bool
+	usesBreak     bool
+	usesReturn    bool
+	usesSubstring bool
+	benchMain     bool
 )
 
 // SetBenchMain configures whether the generated main function is wrapped in a
@@ -92,6 +94,17 @@ let _now () =
         int _nowSeed
     else
         int (System.DateTime.UtcNow.Ticks % 2147483647L)
+`
+
+const helperSubstring = `let _substring (s:string) (start:int) (finish:int) =
+    let len = String.length s
+    let mutable st = if start < 0 then len + start else start
+    let mutable en = if finish < 0 then len + finish else finish
+    if st < 0 then st <- 0
+    if st > len then st <- len
+    if en > len then en <- len
+    if st > en then st <- en
+    s.Substring(st, en - st)
 `
 
 func writeIndent(w io.Writer) {
@@ -1003,12 +1016,30 @@ type SubstringExpr struct {
 }
 
 func (s *SubstringExpr) emit(w io.Writer) {
-	s.Str.emit(w)
-	io.WriteString(w, ".Substring(")
-	s.Start.emit(w)
-	io.WriteString(w, ", ")
-	(&BinaryExpr{Left: s.End, Op: "-", Right: s.Start}).emit(w)
-	io.WriteString(w, ")")
+	io.WriteString(w, "_substring ")
+	if needsParen(s.Str) {
+		io.WriteString(w, "(")
+		s.Str.emit(w)
+		io.WriteString(w, ")")
+	} else {
+		s.Str.emit(w)
+	}
+	io.WriteString(w, " ")
+	if needsParen(s.Start) {
+		io.WriteString(w, "(")
+		s.Start.emit(w)
+		io.WriteString(w, ")")
+	} else {
+		s.Start.emit(w)
+	}
+	io.WriteString(w, " ")
+	if needsParen(s.End) {
+		io.WriteString(w, "(")
+		s.End.emit(w)
+		io.WriteString(w, ")")
+	} else {
+		s.End.emit(w)
+	}
 }
 
 type IfStmt struct {
@@ -2139,6 +2170,10 @@ func Emit(prog *Program) []byte {
 		buf.WriteString(helperNow)
 		buf.WriteString("\n_initNow()\n")
 	}
+	if prog.UseSubstring {
+		buf.WriteString(helperSubstring)
+		buf.WriteString("\n")
+	}
 	for _, st := range prog.Structs {
 		fmt.Fprintf(&buf, "type %s = {\n", fsIdent(st.Name))
 		for _, f := range st.Fields {
@@ -2220,6 +2255,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	usesNow = false
 	usesBreak = false
 	usesReturn = false
+	usesSubstring = false
 	p := &Program{}
 	for _, st := range prog.Statements {
 		conv, err := convertStmt(st)
@@ -2256,6 +2292,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	p.UseNow = usesNow
 	p.UseBreak = usesBreak
 	p.UseReturn = usesReturn
+	p.UseSubstring = usesSubstring
 	return p, nil
 }
 
@@ -2468,11 +2505,18 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 		if err != nil {
 			return nil, err
 		}
-		if t := inferType(e); t != "" {
+		t := inferType(e)
+		if t != "" {
 			cur := varTypes[st.Assign.Name]
 			if cur == "" || cur == "array" || cur == "map" {
 				varTypes[st.Assign.Name] = t
+				cur = t
 			}
+			if cur != "" && cur != t && cur != "obj" {
+				e = &CastExpr{Expr: e, Type: fsTypeFromString(cur)}
+			}
+		} else if vt := varTypes[st.Assign.Name]; vt != "" && vt != "obj" {
+			e = &CastExpr{Expr: e, Type: fsTypeFromString(vt)}
 		}
 		return &AssignStmt{Name: st.Assign.Name, Expr: e}, nil
 	case st.Assign != nil && (len(st.Assign.Index) > 0 || len(st.Assign.Field) > 0):
@@ -2940,6 +2984,7 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			if len(args) != 3 {
 				return nil, fmt.Errorf("substring expects 3 args")
 			}
+			usesSubstring = true
 			return &SubstringExpr{Str: args[0], Start: args[1], End: args[2]}, nil
 		case "upper":
 			if len(args) != 1 {

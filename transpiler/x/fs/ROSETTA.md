@@ -2,7 +2,7 @@
 
 This file is auto-generated from rosetta tests.
 
-## Rosetta Golden Test Checklist (125/284)
+## Rosetta Golden Test Checklist (127/284)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 151µs | 41.3 KB |
@@ -117,8 +117,8 @@ This file is auto-generated from rosetta tests.
 | 110 | binary-search | ✓ | 209µs | 41.5 KB |
 | 111 | binary-strings | ✓ | 660µs | 62.5 KB |
 | 112 | bioinformatics-base-count | ✓ | 210µs | 42.9 KB |
-| 113 | bioinformatics-global-alignment |   |  |  |
-| 114 | bioinformatics-sequence-mutation |   |  |  |
+| 113 | bioinformatics-global-alignment | ✓ |  |  |
+| 114 | bioinformatics-sequence-mutation | ✓ |  |  |
 | 115 | biorhythms |   |  |  |
 | 116 | bitcoin-address-validation |   |  |  |
 | 117 | bitmap-b-zier-curves-cubic |   |  |  |
@@ -290,4 +290,4 @@ This file is auto-generated from rosetta tests.
 | 283 | define-a-primitive-data-type |   |  |  |
 | 284 | md5 |   |  |  |
 
-Last updated: 2025-07-26 05:05 +0700
+Last updated: 2025-07-26 02:24 +0000
