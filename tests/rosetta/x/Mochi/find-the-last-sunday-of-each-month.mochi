@@ -1,0 +1,49 @@
+fun leapYear(y: int): bool {
+  return (y % 4 == 0 && y % 100 != 0) || (y % 400 == 0)
+}
+
+fun monthDays(y: int, m: int): int {
+  var days = [0,31,28,31,30,31,30,31,31,30,31,30,31]
+  if m == 2 && leapYear(y) { return 29 }
+  return days[m]
+}
+
+fun zeller(y: int, m: int, d: int): int {
+  var mm = m
+  var yy = y
+  if mm < 3 {
+    mm = mm + 12
+    yy = yy - 1
+  }
+  let K = yy % 100
+  let J = yy / 100
+  let h = (d + (13*(mm+1))/5 + K + K/4 + J/4 + 5*J) % 7
+  return (h + 6) % 7
+}
+
+fun lastSunday(y: int, m: int): int {
+  var day = monthDays(y, m)
+  while day > 0 && zeller(y, m, day) != 0 {
+    day = day - 1
+  }
+  return day
+}
+
+fun monthName(m: int): string {
+  var names = ["", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+  return names[m]
+}
+
+fun main() {
+  let year = int(input())
+  print("Last Sundays of each month of " + str(year))
+  print("==================================")
+  var m = 1
+  while m <= 12 {
+    let day = lastSunday(year, m)
+    print(monthName(m) + ": " + str(day))
+    m = m + 1
+  }
+}
+
+main()
