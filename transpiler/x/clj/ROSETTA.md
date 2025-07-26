@@ -1,7 +1,7 @@
 # Clojure Rosetta Transpiler
 
 Completed: 20/332
-Last updated: 2025-07-26 19:36 +0700
+Last updated: 2025-07-26 19:58 +0700
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -23,9 +23,9 @@ Last updated: 2025-07-26 19:36 +0700
 | 16 | Duffinian-numbers |   |  |  |
 | 17 | a+b | ✓ | 13.848ms | 18.3 MB |
 | 18 | abbreviations-automatic |   |  |  |
-| 19 | abbreviations-easy | ✓ |  |  |
+| 19 | abbreviations-easy | ✓ | 48.779ms | 22.1 MB |
 | 20 | abbreviations-simple |   |  |  |
-| 21 | abc-problem | ✓ |  |  |
+| 21 | abc-problem | ✓ | 46.947ms | 20.6 MB |
 | 22 | abelian-sandpile-model-identity | ✓ |  |  |
 | 23 | abelian-sandpile-model |   |  |  |
 | 24 | abstract-type | ✓ |  |  |
