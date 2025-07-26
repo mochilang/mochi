@@ -1,0 +1,67 @@
+fun padLeft(n: int, width: int): string {
+  var s = str(n)
+  while len(s) < width {
+    s = " " + s
+  }
+  return s
+}
+
+fun squeeze(s: string, ch: string): string {
+  var out = ""
+  var prev = false
+  var i = 0
+  while i < len(s) {
+    let c = substring(s, i, i+1)
+    if c == ch {
+      if !prev {
+        out = out + c
+        prev = true
+      }
+    } else {
+      out = out + c
+      prev = false
+    }
+    i = i + 1
+  }
+  return out
+}
+
+let strings = [
+  "",
+  "\"If I were two-faced, would I be wearing this one?\" --- Abraham Lincoln ",
+  "..1111111111111111111111111111111111111111111111111111111111111117777888",
+  "I never give 'em hell, I just tell the truth, and they think it's hell. ",
+  "                                                   ---  Harry S Truman  ",
+  "The better the 4-wheel drive, the further you'll be from help when ya get stuck!",
+  "headmistressship",
+  "aardvark",
+  "😍😀🙌💃😍😍😍🙌",
+]
+
+let chars = [
+  [" "],
+  ["-"],
+  ["7"],
+  ["."],
+  [" ", "-", "r"],
+  ["e"],
+  ["s"],
+  ["a"],
+  ["😍"],
+]
+
+var i = 0
+while i < len(strings) {
+  var j = 0
+  let s = strings[i]
+  while j < len(chars[i]) {
+    let c = chars[i][j]
+    let ss = squeeze(s, c)
+    print("specified character = '" + c + "'")
+    print("original : length = " + padLeft(len(s), 2) + ", string = «««" + s + "»»»")
+    print("squeezed : length = " + padLeft(len(ss), 2) + ", string = «««" + ss + "»»»")
+    print("")
+    j = j + 1
+  }
+  i = i + 1
+}
