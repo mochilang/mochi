@@ -505,6 +505,138 @@ func (bs *BenchStmt) emit(w io.Writer, indent int) {
 }
 
 func (fs *ForStmt) emit(w io.Writer, indent int) {
+	globalOnly := true
+	for _, v := range fs.Vars {
+		if !isGlobalVar(v) {
+			globalOnly = false
+			break
+		}
+	}
+	if len(fs.Vars) > 0 && fs.End == nil && fs.Simple && !globalOnly {
+		for i := 0; i < indent; i++ {
+			io.WriteString(w, "  ")
+		}
+		io.WriteString(w, "{")
+		for i, v := range fs.Vars {
+			if i > 0 {
+				io.WriteString(w, ", ")
+			}
+			io.WriteString(w, v)
+		}
+		io.WriteString(w, "} = Enum.reduce(")
+		fs.Source.emit(w)
+		io.WriteString(w, ", {")
+		for i, v := range fs.Vars {
+			if i > 0 {
+				io.WriteString(w, ", ")
+			}
+			io.WriteString(w, v)
+		}
+		io.WriteString(w, "}, fn ")
+		io.WriteString(w, fs.Name)
+		io.WriteString(w, ", {")
+		for i, v := range fs.Vars {
+			if i > 0 {
+				io.WriteString(w, ", ")
+			}
+			io.WriteString(w, v)
+		}
+		io.WriteString(w, "} ->\n")
+		for _, st := range fs.Body {
+			st.emit(w, indent+1)
+			io.WriteString(w, "\n")
+		}
+		for i := 0; i < indent+1; i++ {
+			io.WriteString(w, "  ")
+		}
+		io.WriteString(w, "{")
+		for i, v := range fs.Vars {
+			if i > 0 {
+				io.WriteString(w, ", ")
+			}
+			io.WriteString(w, v)
+		}
+		io.WriteString(w, "}\n")
+		for i := 0; i < indent; i++ {
+			io.WriteString(w, "  ")
+		}
+		io.WriteString(w, "end)")
+		return
+	}
+	if len(fs.Vars) > 0 && fs.End == nil && !fs.Simple && !globalOnly {
+		for i := 0; i < indent; i++ {
+			io.WriteString(w, "  ")
+		}
+		io.WriteString(w, "{")
+		for i, v := range fs.Vars {
+			if i > 0 {
+				io.WriteString(w, ", ")
+			}
+			io.WriteString(w, v)
+		}
+		io.WriteString(w, "} = Enum.reduce(")
+		fs.Source.emit(w)
+		io.WriteString(w, ", {")
+		for i, v := range fs.Vars {
+			if i > 0 {
+				io.WriteString(w, ", ")
+			}
+			io.WriteString(w, v)
+		}
+		io.WriteString(w, "}, fn ")
+		io.WriteString(w, fs.Name)
+		io.WriteString(w, ", {")
+		for i, v := range fs.Vars {
+			if i > 0 {
+				io.WriteString(w, ", ")
+			}
+			io.WriteString(w, v)
+		}
+		io.WriteString(w, "} ->\n")
+		for i := 0; i < indent+1; i++ {
+			io.WriteString(w, "  ")
+		}
+		io.WriteString(w, "try do\n")
+		for _, st := range fs.Body {
+			st.emit(w, indent+2)
+			io.WriteString(w, "\n")
+		}
+		for i := 0; i < indent+1; i++ {
+			io.WriteString(w, "  ")
+		}
+		io.WriteString(w, "catch\n")
+		for i := 0; i < indent+2; i++ {
+			io.WriteString(w, "  ")
+		}
+		io.WriteString(w, ":continue -> {")
+		for i, v := range fs.Vars {
+			if i > 0 {
+				io.WriteString(w, ", ")
+			}
+			io.WriteString(w, v)
+		}
+		io.WriteString(w, "}\n")
+		for i := 0; i < indent+1; i++ {
+			io.WriteString(w, "  ")
+		}
+		io.WriteString(w, "end\n")
+		for i := 0; i < indent+1; i++ {
+			io.WriteString(w, "  ")
+		}
+		io.WriteString(w, "{")
+		for i, v := range fs.Vars {
+			if i > 0 {
+				io.WriteString(w, ", ")
+			}
+			io.WriteString(w, v)
+		}
+		io.WriteString(w, "}\n")
+		for i := 0; i < indent; i++ {
+			io.WriteString(w, "  ")
+		}
+		io.WriteString(w, "end)")
+		return
+	}
 	if len(fs.Vars) > 0 && fs.End != nil && fs.Simple {
 		if fs.Simple {
 			for i := 0; i < indent; i++ {
@@ -945,11 +1077,19 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		return
 	}
 	if b.Op == "%" {
-		io.WriteString(w, "rem(")
-		b.Left.emit(w)
-		io.WriteString(w, ", ")
-		b.Right.emit(w)
-		io.WriteString(w, ")")
+		if isInt(b.Left) && isInt(b.Right) {
+			io.WriteString(w, "rem(")
+			b.Left.emit(w)
+			io.WriteString(w, ", ")
+			b.Right.emit(w)
+			io.WriteString(w, ")")
+		} else {
+			io.WriteString(w, ":math.fmod(")
+			b.Left.emit(w)
+			io.WriteString(w, ", ")
+			b.Right.emit(w)
+			io.WriteString(w, ")")
+		}
 		return
 	}
 	if b.Op == "+" && (b.StrConcat || isString(b.Left) || isString(b.Right)) {
@@ -1847,19 +1987,16 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 		if st.If.ElseIf == nil && len(st.If.Then) == 1 && len(st.If.Else) == 1 {
 			th := st.If.Then[0]
 			el := st.If.Else[0]
-			if th.Assign != nil && el.Assign != nil &&
-				th.Assign.Name == el.Assign.Name &&
-				len(th.Assign.Index) == 0 && len(th.Assign.Field) == 0 &&
-				len(el.Assign.Index) == 0 && len(el.Assign.Field) == 0 {
+			if th.Assign != nil && el.Assign != nil && th.Assign.Name == el.Assign.Name {
 				cond, err := compileExpr(st.If.Cond, env)
 				if err != nil {
 					return nil, err
 				}
-				thenExpr, err := compileExpr(th.Assign.Value, env)
+				thenExpr, err := compileAssignExpr(th.Assign, env)
 				if err != nil {
 					return nil, err
 				}
-				elseExpr, err := compileExpr(el.Assign.Value, env)
+				elseExpr, err := compileAssignExpr(el.Assign, env)
 				if err != nil {
 					return nil, err
 				}
@@ -2156,6 +2293,38 @@ func compileBenchStmt(bb *parser.BenchBlock, env *types.Env) (Stmt, error) {
 	}
 	name := strings.Trim(bb.Name, "\"")
 	return &BenchStmt{Name: name, Body: body}, nil
+}
+
+func compileAssignExpr(as *parser.AssignStmt, env *types.Env) (Expr, error) {
+	if len(as.Index) == 0 && len(as.Field) == 0 {
+		return compileExpr(as.Value, env)
+	}
+	if len(as.Field) == 1 && len(as.Index) == 0 {
+		val, err := compileExpr(as.Value, env)
+		if err != nil {
+			return nil, err
+		}
+		key := &AtomLit{Name: ":" + as.Field[0].Name}
+		return &CallExpr{Func: "Map.put", Args: []Expr{&VarRef{Name: as.Name}, key, val}}, nil
+	}
+	if len(as.Index) == 1 && len(as.Field) == 0 {
+		idx, err := compileExpr(as.Index[0].Start, env)
+		if err != nil {
+			return nil, err
+		}
+		val, err := compileExpr(as.Value, env)
+		if err != nil {
+			return nil, err
+		}
+		t, _ := env.GetVar(as.Name)
+		switch t.(type) {
+		case types.MapType:
+			return &CallExpr{Func: "Map.put", Args: []Expr{&VarRef{Name: as.Name}, idx, val}}, nil
+		default:
+			return &CallExpr{Func: "List.replace_at", Args: []Expr{&VarRef{Name: as.Name}, idx, val}}, nil
+		}
+	}
+	return nil, fmt.Errorf("unsupported assign expression")
 }
 
 func compileUpdateStmt(us *parser.UpdateStmt, env *types.Env) (Stmt, error) {

@@ -1,0 +1,116 @@
+run: exit status 1
+    warning: variable "seed" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 14 │               seed = v
+    │               ~
+    │
+    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/animation.exs:14:15: Main._now/0
+
+    warning: variable "seeded" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 15 │               seeded = true
+    │               ~
+    │
+    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/animation.exs:15:15: Main._now/0
+
+    warning: variable "clicks" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 78 │           clicks = clicks + 1
+    │           ~
+    │
+    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/animation.exs:78:11: Main.main/0
+
+    warning: variable "inc" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 77 │           inc = String.length(msg) - inc
+    │           ~
+    │
+    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/animation.exs:77:11: Main.main/0
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 67 │         {i, line} = try do
+    │          ~
+    │
+    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/animation.exs:67:10: Main.main/0
+
+    warning: variable "clicks" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 85 │     {clicks, frames, inc, shift} = try do
+    │      ~~~~~~
+    │
+    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/animation.exs:85:6: Main.main/0
+
+    warning: variable "frames" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 85 │     {clicks, frames, inc, shift} = try do
+    │              ~~~~~~
+    │
+    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/animation.exs:85:14: Main.main/0
+
+    warning: variable "inc" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 85 │     {clicks, frames, inc, shift} = try do
+    │                      ~~~
+    │
+    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/animation.exs:85:22: Main.main/0
+
+    warning: variable "shift" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 85 │     {clicks, frames, inc, shift} = try do
+    │                           ~~~~~
+    │
+    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/animation.exs:85:27: Main.main/0
+
+    warning: function _slice/3 is unused
+    │
+ 40 │   defp _slice(base, start, len) do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/animation.exs:40:8: Main (module)
+
+    warning: function _now/0 is unused
+    │
+  3 │   defp _now() do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/animation.exs:3:8: Main (module)
+
+    warning: function _mem/0 is unused
+    │
+ 28 │   defp _mem() do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/animation.exs:28:8: Main (module)
+
+    warning: function _lookup_host/1 is unused
+    │
+ 31 │   defp _lookup_host(host) do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/animation.exs:31:8: Main (module)
+
+** (FunctionClauseError) no function clause matching in String.slice/3    
+    
+    The following arguments were given to String.slice/3:
+    
+        # 1
+        "Hello World! "
+    
+        # 2
+        0.0
+    
+        # 3
+        1.0
+    
+    Attempted function clauses (showing 3 out of 3):
+    
+        def slice(+_+, +_+, -0-)
+        def slice(+string+, +start+, +length+) when +is_binary(string)+ and -is_integer(start)- and -is_integer(length)- and +start >= 0+ and +length >= 0+
+        def slice(+string+, +start+, +length+) when +is_binary(string)+ and -is_integer(start)- and -is_integer(length)- and -start < 0- and +length >= 0+
+    
+    (elixir 1.18.3) lib/string.ex:2333: String.slice/3
+    /workspace/mochi/tests/rosetta/transpiler/Elixir/animation.exs:60: anonymous fn/4 in Main.main/0
+    /workspace/mochi/tests/rosetta/transpiler/Elixir/animation.exs:68: anonymous fn/5 in Main.main/0
+    /workspace/mochi/tests/rosetta/transpiler/Elixir/animation.exs:86: Main.main/0
+    /workspace/mochi/tests/rosetta/transpiler/Elixir/animation.exs:93: (file)
