@@ -56,11 +56,24 @@ var globalRenameBack map[string]string
 var localVarStack []map[string]bool
 var currentFuncLocals map[string]bool
 var currentFuncRet string
+var currentParamTypes map[string]string
 var indexLHS bool
 var refMode bool
 var forceMap map[*parser.MapLiteral]bool
 var useLazy bool
 var useRefCell bool
+var rustReserved = map[string]bool{
+	"as": true, "break": true, "const": true, "continue": true, "crate": true,
+	"else": true, "enum": true, "extern": true, "false": true, "fn": true,
+	"for": true, "if": true, "impl": true, "in": true, "let": true, "loop": true,
+	"match": true, "mod": true, "move": true, "mut": true, "pub": true,
+	"ref": true, "return": true, "self": true, "Self": true, "static": true,
+	"struct": true, "super": true, "trait": true, "true": true, "type": true,
+	"unsafe": true, "use": true, "where": true, "while": true, "async": true,
+	"await": true, "dyn": true, "abstract": true, "become": true, "box": true,
+	"do": true, "final": true, "macro": true, "override": true, "priv": true,
+	"typeof": true, "unsized": true, "virtual": true, "yield": true, "try": true,
+}
 
 func VarTypes() map[string]string { return varTypes }
 
@@ -829,6 +842,29 @@ type AppendExpr struct {
 	Elem Expr
 }
 
+// MapGetExpr represents m.get(key, default).
+type MapGetExpr struct {
+	Map     Expr
+	Key     Expr
+	Default Expr
+}
+
+func (g *MapGetExpr) emit(w io.Writer) {
+	io.WriteString(w, "{ ")
+	g.Map.emit(w)
+	io.WriteString(w, ".get(")
+	if inferType(g.Key) != "String" {
+		io.WriteString(w, "&")
+	}
+	g.Key.emit(w)
+	if inferType(g.Key) == "String" {
+		io.WriteString(w, ".as_str()")
+	}
+	io.WriteString(w, ").cloned().unwrap_or(")
+	g.Default.emit(w)
+	io.WriteString(w, ") }")
+}
+
 func (a *AppendExpr) emit(w io.Writer) {
 	io.WriteString(w, "{ let mut v = ")
 	a.List.emit(w)
@@ -1043,6 +1079,14 @@ func (n *NameRef) emit(w io.Writer) {
 			return
 		}
 	}
+	if indexLHS {
+		if pt, ok := currentParamTypes[n.Name]; ok && strings.HasPrefix(pt, "&") {
+			io.WriteString(w, "(*")
+			io.WriteString(w, rustIdent(name))
+			io.WriteString(w, ")")
+			return
+		}
+	}
 	if boxVars[n.Name] && !patternMode {
 		io.WriteString(w, name)
 		return
@@ -1057,7 +1101,7 @@ func (n *NameRef) emit(w io.Writer) {
 		fmt.Fprintf(w, "%s::%s", ut.Name, n.Name)
 		return
 	}
-	io.WriteString(w, name)
+	io.WriteString(w, rustIdent(name))
 }
 
 type VarDecl struct {
@@ -1086,7 +1130,7 @@ func (v *VarDecl) emit(w io.Writer) {
 			useLazy = true
 			useRefCell = true
 			io.WriteString(w, "static ")
-			io.WriteString(w, v.Name)
+			io.WriteString(w, rustIdent(v.Name))
 			io.WriteString(w, ": LazyLock<Mutex<")
 			io.WriteString(w, typ)
 			io.WriteString(w, ">> = LazyLock::new(|| Mutex::new(")
@@ -1095,7 +1139,7 @@ func (v *VarDecl) emit(w io.Writer) {
 			return
 		}
 		io.WriteString(w, "static mut ")
-		io.WriteString(w, v.Name)
+		io.WriteString(w, rustIdent(v.Name))
 		io.WriteString(w, ": ")
 		io.WriteString(w, typ)
 		io.WriteString(w, " = ")
@@ -1107,7 +1151,7 @@ func (v *VarDecl) emit(w io.Writer) {
 	if v.Mutable {
 		io.WriteString(w, "mut ")
 	}
-	io.WriteString(w, v.Name)
+	io.WriteString(w, rustIdent(v.Name))
 	if v.Type != "" {
 		io.WriteString(w, ": ")
 		io.WriteString(w, v.Type)
@@ -2425,6 +2469,18 @@ func compileForStmt(n *parser.ForStmt) (Stmt, error) {
 		} else if _, ok := structTypes[elem]; ok {
 			byRef = true
 		}
+	} else if strings.HasPrefix(t, "HashMap<") {
+		parts := strings.TrimPrefix(t, "HashMap<")
+		if idx := strings.Index(parts, ","); idx > 0 {
+			kt := strings.TrimSpace(parts[:idx])
+			iter = &MethodCallExpr{Receiver: iter, Name: "keys"}
+			if kt == "String" || kt == "&str" {
+				varTypes[n.Name] = "String"
+				stringVars[n.Name] = true
+			} else {
+				varTypes[n.Name] = kt
+			}
+		}
 	}
 	var end Expr
 	if n.RangeEnd != nil {
@@ -2649,9 +2705,11 @@ func compileFunStmt(fn *parser.FunStmt) (Stmt, error) {
 		mapVars = prevMapVars
 		stringVars = prevStringVars
 		currentFuncRet = prevRet
+		currentParamTypes = nil
 	}()
 	locals := map[string]bool{}
 	currentFuncLocals = map[string]bool{}
+	currentParamTypes = map[string]string{}
 	params := make([]Param, len(fn.Params))
 	typList := make([]string, len(fn.Params))
 	for i, p := range fn.Params {
@@ -2679,6 +2737,7 @@ func compileFunStmt(fn *parser.FunStmt) (Stmt, error) {
 			}
 		}
 		params[i] = Param{Name: p.Name, Type: sigType}
+		currentParamTypes[p.Name] = sigType
 		locals[p.Name] = true
 		currentFuncLocals[p.Name] = true
 		typList[i] = sigType
@@ -3034,7 +3093,11 @@ func compilePostfix(p *parser.PostfixExpr) (Expr, error) {
 				args[i] = ex
 			}
 			if fe, ok := expr.(*FieldExpr); ok {
-				expr = &MethodCallExpr{Receiver: fe.Receiver, Name: fe.Name, Args: args}
+				if fe.Name == "get" && len(args) == 2 {
+					expr = &MapGetExpr{Map: fe.Receiver, Key: args[0], Default: args[1]}
+				} else {
+					expr = &MethodCallExpr{Receiver: fe.Receiver, Name: fe.Name, Args: args}
+				}
 			} else if id, ok := expr.(*NameRef); ok {
 				expr = &CallExpr{Func: id.Name, Args: args}
 			} else {
@@ -3212,11 +3275,27 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			for i := 0; i < len(args) && i < len(paramTypes); i++ {
 				if strings.HasPrefix(pts[i], "&mut ") {
 					if _, isUnary := args[i].(*UnaryExpr); !isUnary {
-						args[i] = &UnaryExpr{Op: "&mut", Expr: args[i]}
+						if nr, ok := args[i].(*NameRef); ok {
+							if pt, ok2 := currentParamTypes[nr.Name]; ok2 && strings.HasPrefix(pt, "&") {
+								// already a reference
+							} else {
+								args[i] = &UnaryExpr{Op: "&mut", Expr: args[i]}
+							}
+						} else {
+							args[i] = &UnaryExpr{Op: "&mut", Expr: args[i]}
+						}
 					}
 				} else if strings.HasPrefix(pts[i], "&") {
 					if _, isUnary := args[i].(*UnaryExpr); !isUnary {
-						args[i] = &UnaryExpr{Op: "&", Expr: args[i]}
+						if nr, ok := args[i].(*NameRef); ok {
+							if pt, ok2 := currentParamTypes[nr.Name]; ok2 && strings.HasPrefix(pt, "&") {
+								// already reference
+							} else {
+								args[i] = &UnaryExpr{Op: "&", Expr: args[i]}
+							}
+						} else {
+							args[i] = &UnaryExpr{Op: "&", Expr: args[i]}
+						}
 					}
 				} else if pts[i] == "String" {
 					if _, ok := args[i].(*StringLit); ok || inferType(args[i]) != "String" {
@@ -3953,6 +4032,16 @@ func inferType(e Expr) string {
 		return inferType(e.(*PopExpr).List)
 	case *ExistsExpr:
 		return "bool"
+	case *MapGetExpr:
+		ct := inferType(ex.Map)
+		if strings.HasPrefix(ct, "HashMap<") {
+			parts := strings.TrimPrefix(ct, "HashMap<")
+			if idx := strings.Index(parts, ","); idx > 0 {
+				vt := strings.TrimSuffix(parts[idx+1:], ">")
+				return strings.TrimSpace(vt)
+			}
+		}
+		return "i64"
 	case *BinaryExpr:
 		switch ex.Op {
 		case "<", "<=", ">", ">=", "==", "!=", "&&", "||", "in":
@@ -4520,7 +4609,7 @@ func writeWhileStmt(buf *bytes.Buffer, s *WhileStmt, indent int) {
 
 func writeForStmt(buf *bytes.Buffer, s *ForStmt, indent int) {
 	buf.WriteString("for ")
-	buf.WriteString(s.Var)
+	buf.WriteString(rustIdent(s.Var))
 	buf.WriteString(" in ")
 	if s.End != nil {
 		s.Iter.emit(buf)
@@ -5022,6 +5111,9 @@ func rustIdent(name string) string {
 	}
 	if !unicode.IsLetter(rune(ident[0])) && ident[0] != '_' {
 		ident = "_" + ident
+	}
+	if rustReserved[ident] {
+		ident = "r#" + ident
 	}
 	return ident
 }
