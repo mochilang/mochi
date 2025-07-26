@@ -1685,6 +1685,13 @@ func convertStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 		typ := toScalaType(st.Let.Type)
 		if typ == "" {
 			typ = inferTypeWithEnv(e, env)
+			if b, ok := e.(*BinaryExpr); ok && b.Op == "+" {
+				lt := inferTypeWithEnv(b.Left, env)
+				rt := inferTypeWithEnv(b.Right, env)
+				if lt == "String" || rt == "String" {
+					typ = "String"
+				}
+			}
 			if typ == "Any" {
 				typ = ""
 			}
@@ -1752,7 +1759,11 @@ func convertStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 				typ = ""
 			}
 			if b, ok := e.(*BinaryExpr); ok && b.Op == "+" {
-				if _, ok1 := b.Left.(*IndexExpr); ok1 {
+				lt := inferTypeWithEnv(b.Left, env)
+				rt := inferTypeWithEnv(b.Right, env)
+				if lt == "String" || rt == "String" {
+					typ = "String"
+				} else if _, ok1 := b.Left.(*IndexExpr); ok1 {
 					typ = ""
 				} else if _, ok2 := b.Right.(*IndexExpr); ok2 {
 					typ = ""
@@ -1766,6 +1777,11 @@ func convertStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 			}
 			if typ == "Int" && isBigIntExpr(e) {
 				typ = "BigInt"
+			}
+			if typ == "" {
+				if it := inferTypeWithEnv(e, env); it == "String" {
+					typ = "String"
+				}
 			}
 			if n, ok := e.(*Name); ok && n.Name == "null" {
 				typ = "Any"
@@ -4091,7 +4107,15 @@ func isBigIntExpr(e Expr) bool {
 		return localVarTypes[v.Name] == "BigInt"
 	case *BinaryExpr:
 		if v.Op == "+" || v.Op == "-" || v.Op == "*" || v.Op == "/" || v.Op == "%" {
-			return true
+			lt := inferType(v.Left)
+			rt := inferType(v.Right)
+			if lt == "String" || rt == "String" {
+				return false
+			}
+			if lt == "BigInt" || rt == "BigInt" {
+				return true
+			}
+			return isBigIntExpr(v.Left) || isBigIntExpr(v.Right)
 		}
 		return isBigIntExpr(v.Left) || isBigIntExpr(v.Right)
 	case *CastExpr:
