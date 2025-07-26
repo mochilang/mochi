@@ -3444,7 +3444,16 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 				return &CallExpr{Func: "String.downcase", Args: []Expr{args[0]}}, nil
 			}
 		case "str":
-			name = "to_string"
+			if len(args) == 1 {
+				t := types.TypeOfExprBasic(p.Call.Args[0], env)
+				switch t.(type) {
+				case types.StringType, types.IntType, types.FloatType, types.BoolType:
+					return &CallExpr{Func: "Kernel.to_string", Args: []Expr{args[0]}}, nil
+				default:
+					return &CallExpr{Func: "Kernel.inspect", Args: []Expr{args[0]}}, nil
+				}
+			}
+			name = "Kernel.inspect"
 		case "append":
 			if len(args) == 2 {
 				list := args[0]

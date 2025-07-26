@@ -1,5 +1,5 @@
-## Progress (2025-07-26 17:36 +0700)
-- Commit 3e356fab70: transpiler/ex: handle map index assignment in conditional
+## Progress (2025-07-26 23:06 +0700)
+- Commit 1e5831a5bc: transpiler/rb: generate outputs for rosetta indices 233-252
 - Generated Elixir for 102/104 programs
 - Updated README checklist and outputs
 - Improved code emission and type inference
