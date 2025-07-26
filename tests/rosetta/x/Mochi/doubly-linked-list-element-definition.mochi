@@ -1,0 +1,28 @@
+// Mochi translation of Rosetta "Doubly-linked-list Element definition" task
+// Defines a Node type with next and prev pointers and iteration helpers
+
+type Node {
+  value: any
+  prev: any
+  next: any
+}
+
+fun iterForward(n: any): list<any> {
+  var vals: list<any> = []
+  var cur = n
+  while cur != null {
+    vals = append(vals, cur.value)
+    cur = cur.next
+  }
+  return vals
+}
+
+fun iterBackward(n: any): list<any> {
+  var vals: list<any> = []
+  var cur = n
+  while cur != null {
+    vals = append(vals, cur.value)
+    cur = cur.prev
+  }
+  return vals
+}
