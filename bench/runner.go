@@ -17,12 +17,15 @@ import (
 
 	"github.com/fatih/color"
 
-	ccode "mochi/compiler/x/c"
-	gocode "mochi/compiler/x/go"
-	pycode "mochi/compiler/x/python"
-	tscode "mochi/compiler/x/ts"
+	gotools "mochi/compiler/x/go"
+	pytools "mochi/compiler/x/python"
+	tstools "mochi/compiler/x/ts"
 	"mochi/parser"
 	"mochi/runtime/vm"
+	ccode "mochi/transpiler/x/c"
+	gocode "mochi/transpiler/x/go"
+	pycode "mochi/transpiler/x/py"
+	tscode "mochi/transpiler/x/ts"
 	"mochi/types"
 )
 
@@ -94,7 +97,7 @@ func Benchmarks(tempDir, mochiBin string) []Bench {
 		// Temporarily disable PyPy and Cython benchmarks
 		// templates = append(templates, Template{Lang: "mochi_pypy", Path: path, Suffix: suffix, Command: []string{"pypy3"}})
 		// templates = append(templates, Template{Lang: "mochi_cython", Path: path, Suffix: suffix, Command: nil})
-		templates = append(templates, Template{Lang: "mochi_ts", Path: path, Suffix: suffix, Command: []string{"deno", "run", "--quiet"}})
+		templates = append(templates, Template{Lang: "mochi_ts", Path: path, Suffix: suffix, Command: []string{"deno", "run", "--allow-env", "--quiet"}})
 
 		benches = append(benches, generateBenchmarks(tempDir, category, name, cfg, templates)...)
 		return nil
@@ -198,11 +201,11 @@ func Run() {
 		fmt.Println("🔎 Temp files kept at:", tempDir)
 	}
 
-	mochiBin, err := gocode.EnsureMochi()
+	mochiBin, err := gotools.EnsureMochi()
 	if err != nil {
 		panic(err)
 	}
-	if err := pycode.EnsurePython(); err != nil {
+	if err := pytools.EnsurePython(); err != nil {
 		panic(err)
 	}
 	// Temporarily disable PyPy and Cython benchmarks
@@ -212,7 +215,7 @@ func Run() {
 	// if err := pycode.EnsureCython(); err != nil {
 	//      panic(err)
 	// }
-	if err := tscode.EnsureDeno(); err != nil {
+	if err := tstools.EnsureDeno(); err != nil {
 		panic(err)
 	}
 	// Skip C compiler check in this environment
@@ -378,8 +381,42 @@ func pow(base, exp int) int {
 	return result
 }
 
+// stripJSONCall removes a trailing json({ ... }) block from the given Mochi
+// source file and returns the path to a temporary cleaned file.
+func stripJSONCall(path string) (string, error) {
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return "", err
+	}
+	lines := strings.Split(string(data), "\n")
+	var out []string
+	skip := false
+	for _, line := range lines {
+		if strings.Contains(line, "json({") {
+			skip = true
+			continue
+		}
+		if skip {
+			if strings.Contains(line, "})") {
+				skip = false
+			}
+			continue
+		}
+		out = append(out, line)
+	}
+	tmp := path + ".tmp"
+	if err := os.WriteFile(tmp, []byte(strings.Join(out, "\n")), 0644); err != nil {
+		return "", err
+	}
+	return tmp, nil
+}
+
 func compileToGo(mochiFile, goFile string) error {
-	prog, err := parser.Parse(mochiFile)
+	cleaned, err := stripJSONCall(mochiFile)
+	if err != nil {
+		return err
+	}
+	prog, err := parser.Parse(cleaned)
 	if err != nil {
 		return err
 	}
@@ -387,16 +424,22 @@ func compileToGo(mochiFile, goFile string) error {
 	if errs := types.Check(prog, typeEnv); len(errs) > 0 {
 		return fmt.Errorf("type error: %v", errs[0])
 	}
-	c := gocode.New(typeEnv)
-	code, err := c.Compile(prog)
+	gocode.SetBenchMain(true)
+	p, err := gocode.Transpile(prog, typeEnv, true)
 	if err != nil {
 		return err
 	}
+	code := gocode.Emit(p, true)
+	os.Remove(cleaned)
 	return os.WriteFile(goFile, code, 0644)
 }
 
 func compileToPy(mochiFile, pyFile string) error {
-	prog, err := parser.Parse(mochiFile)
+	cleaned, err := stripJSONCall(mochiFile)
+	if err != nil {
+		return err
+	}
+	prog, err := parser.Parse(cleaned)
 	if err != nil {
 		return err
 	}
@@ -404,16 +447,24 @@ func compileToPy(mochiFile, pyFile string) error {
 	if errs := types.Check(prog, typeEnv); len(errs) > 0 {
 		return fmt.Errorf("type error: %v", errs[0])
 	}
-	c := pycode.New(typeEnv)
-	code, err := c.Compile(prog)
+	p, err := pycode.Transpile(prog, typeEnv, true)
 	if err != nil {
 		return err
 	}
-	return os.WriteFile(pyFile, code, 0644)
+	var buf bytes.Buffer
+	if err := pycode.Emit(&buf, p, true); err != nil {
+		return err
+	}
+	os.Remove(cleaned)
+	return os.WriteFile(pyFile, buf.Bytes(), 0644)
 }
 
 func compileToTs(mochiFile, tsFile string) error {
-	prog, err := parser.Parse(mochiFile)
+	cleaned, err := stripJSONCall(mochiFile)
+	if err != nil {
+		return err
+	}
+	prog, err := parser.Parse(cleaned)
 	if err != nil {
 		return err
 	}
@@ -421,28 +472,37 @@ func compileToTs(mochiFile, tsFile string) error {
 	if errs := types.Check(prog, typeEnv); len(errs) > 0 {
 		return fmt.Errorf("type error: %v", errs[0])
 	}
-	c := tscode.New(typeEnv, filepath.Dir(mochiFile))
-	code, err := c.Compile(prog)
+	p, err := tscode.Transpile(prog, typeEnv, true)
 	if err != nil {
 		return err
 	}
+	code := tscode.Emit(p)
+	os.Remove(cleaned)
 	return os.WriteFile(tsFile, code, 0644)
 }
 
 func compileToC(mochiFile, cFile, binFile string) error {
-	prog, err := parser.Parse(mochiFile)
+	cleaned, err := stripJSONCall(mochiFile)
 	if err != nil {
+		return err
+	}
+	prog, err := parser.Parse(cleaned)
+	if err != nil {
+		os.Remove(cleaned)
 		return err
 	}
 	typeEnv := types.NewEnv(nil)
 	if errs := types.Check(prog, typeEnv); len(errs) > 0 {
+		os.Remove(cleaned)
 		return fmt.Errorf("type error: %v", errs[0])
 	}
-	c := ccode.New(typeEnv)
-	code, err := c.Compile(prog)
+	os.Remove(cleaned)
+	ccode.SetBenchMain(true)
+	p, err := ccode.Transpile(typeEnv, prog)
 	if err != nil {
 		return err
 	}
+	code := p.Emit()
 	if err := os.WriteFile(cFile, code, 0644); err != nil {
 		return err
 	}

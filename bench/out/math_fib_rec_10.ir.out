@@ -1,51 +1,56 @@
-func main (regs=19)
+func main (regs=20)
   // let n = 10
-  Const        r0, 10
-  Move         r1, r0
+  Const        r4, 10
+  Move         r0, r4
+  SetGlobal    0,0,0,0
   // let start = now()
-  Now          r2
-  Move         r3, r2
+  Now          r5
+  Move         r1, r5
+  SetGlobal    1,1,0,0
   // let result = fib(n)
-  Const        r0, 10
-  Move         r4, r0
-  Call         r5, fib, r4
-  Move         r6, r5
+  Const        r4, 10
+  Move         r6, r4
+  Call         r7, fib, r6
+  Move         r2, r7
+  SetGlobal    2,2,0,0
   // let duration = (now() - start) / 1000
-  Now          r7
-  SubInt       r8, r7, r3
-  Const        r9, 1000
-  DivInt       r10, r8, r9
-  Move         r11, r10
+  Now          r8
+  SubInt       r9, r8, r1
+  Const        r10, 1000
+  DivInt       r11, r9, r10
+  Cast         r12, r11, bigint
+  Move         r3, r12
+  SetGlobal    3,3,0,0
   // "duration_us": duration,
-  Const        r12, "duration_us"
+  Const        r13, "duration_us"
   // "output": result,
-  Const        r13, "output"
+  Const        r14, "output"
   // "duration_us": duration,
-  Move         r14, r12
-  Move         r15, r11
+  Move         r15, r13
+  Move         r16, r3
   // "output": result,
-  Move         r16, r13
-  Move         r17, r6
+  Move         r17, r14
+  Move         r18, r2
   // json({
-  MakeMap      r18, 2, r14
-  JSON         r18
+  MakeMap      r19, 2, r15
+  JSON         r19
   Return       r0
 
   // fun fib(n: int): int {
 func fib (regs=15)
   // if n <= 1 { return n }
   Const        r5, 1
-  LessEq       r6, r0, r5
+  LessEq       r6, r4, r5
   JumpIfFalse  r6, L0
-  Return       r0
+  Return       r4
 L0:
   // return fib(n - 1) + fib(n - 2)
   Const        r5, 1
-  Sub          r8, r0, r5
+  Sub          r8, r4, r5
   Move         r7, r8
   Call         r9, fib, r7
   Const        r11, 2
-  Sub          r12, r0, r11
+  Sub          r12, r4, r11
   Move         r10, r12
   Call         r13, fib, r10
   Add          r14, r9, r13
