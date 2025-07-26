@@ -1,0 +1,13 @@
+exit status 1
+# command-line-arguments
+../../../tests/rosetta/transpiler/Go/church-numerals-1.go:35:9: invalid operation: func(x any) any {…} (value of type func(x any) any) is not an interface
+../../../tests/rosetta/transpiler/Go/church-numerals-1.go:41:9: invalid operation: func(f func(any) any) func(any) any {…} (value of type func(f func(any) any) func(any) any) is not an interface
+../../../tests/rosetta/transpiler/Go/church-numerals-1.go:42:10: invalid operation: func(x any) any {…} (value of type func(x any) any) is not an interface
+../../../tests/rosetta/transpiler/Go/church-numerals-1.go:49:9: invalid operation: func(f func(any) any) func(any) any {…} (value of type func(f func(any) any) func(any) any) is not an interface
+../../../tests/rosetta/transpiler/Go/church-numerals-1.go:50:10: invalid operation: func(x any) any {…} (value of type func(x any) any) is not an interface
+../../../tests/rosetta/transpiler/Go/church-numerals-1.go:57:9: invalid operation: func(f func(any) any) func(any) any {…} (value of type func(f func(any) any) func(any) any) is not an interface
+../../../tests/rosetta/transpiler/Go/church-numerals-1.go:58:10: invalid operation: func(x any) any {…} (value of type func(x any) any) is not an interface
+../../../tests/rosetta/transpiler/Go/church-numerals-1.go:75:9: invalid operation: prod (variable of type func(func(any) any) func(any) any) is not an interface
+../../../tests/rosetta/transpiler/Go/church-numerals-1.go:88:10: invalid operation: zero (value of type func(f func(any) any) func(any) any) is not an interface
+../../../tests/rosetta/transpiler/Go/church-numerals-1.go:90:9: invalid operation: succ(intToChurch((i - 1))) (value of type func(func(any) any) func(any) any) is not an interface
+../../../tests/rosetta/transpiler/Go/church-numerals-1.go:90:9: too many errors

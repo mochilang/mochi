@@ -1,7 +1,7 @@
 # Go Rosetta Transpiler Output
 
-Completed programs: 179/332
-Last updated: 2025-07-26 17:25 +0700
+Completed programs: 191/332
+Last updated: 2025-07-26 19:01 +0700
 
 Checklist:
 
@@ -196,20 +196,20 @@ Checklist:
 | 187 | character-codes-3 | ✓ | 343.0µs | 1.20KB |
 | 188 | character-codes-4 | ✓ | 492.0µs | 984B |
 | 189 | character-codes-5 | ✓ | 371.0µs | 1000B |
-| 190 | chat-server | ✓ | 210.0µs | 1.26KB |
+| 190 | chat-server | ✓ | 281.0µs | 1.26KB |
 | 191 | check-machin-like-formulas | ✓ | 12.0ms | 1.22MB |
-| 192 | check-that-file-exists |   |  |  |
-| 193 | checkpoint-synchronization-1 |   |  |  |
-| 194 | checkpoint-synchronization-2 |   |  |  |
-| 195 | checkpoint-synchronization-3 |   |  |  |
-| 196 | checkpoint-synchronization-4 |   |  |  |
-| 197 | chernicks-carmichael-numbers |   |  |  |
-| 198 | cheryls-birthday |   |  |  |
-| 199 | chinese-remainder-theorem |   |  |  |
-| 200 | chinese-zodiac |   |  |  |
-| 201 | cholesky-decomposition-1 |   |  |  |
-| 202 | cholesky-decomposition |   |  |  |
-| 203 | chowla-numbers |   |  |  |
+| 192 | check-that-file-exists | ✓ | 69.0µs | 1.17KB |
+| 193 | checkpoint-synchronization-1 | ✓ | 79.0µs | 2.24KB |
+| 194 | checkpoint-synchronization-2 | ✓ | 78.0µs | 2.54KB |
+| 195 | checkpoint-synchronization-3 | ✓ | 114.0µs | 2.83KB |
+| 196 | checkpoint-synchronization-4 | ✓ | 115.0µs | 3.58KB |
+| 197 | chernicks-carmichael-numbers | ✓ | 114.0ms | 3.02MB |
+| 198 | cheryls-birthday | ✓ | 79.0µs | 2.01KB |
+| 199 | chinese-remainder-theorem | ✓ | 101.0µs | 1.17KB |
+| 200 | chinese-zodiac | ✓ | 137.0µs | 1.99KB |
+| 201 | cholesky-decomposition-1 | ✓ | 120.0µs | 6.08KB |
+| 202 | cholesky-decomposition | ✓ | 72.0µs | 4.12KB |
+| 203 | chowla-numbers | ✓ | 64.0µs | 1.90KB |
 | 204 | church-numerals-1 |   |  |  |
 | 205 | church-numerals-2 |   |  |  |
 | 206 | circles-of-given-radius-through-two-points |   |  |  |

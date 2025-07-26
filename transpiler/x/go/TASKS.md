@@ -1,3 +1,83 @@
+## Progress (2025-07-26 19:01 +0700)
+- ex transpiler: handle float mod and module globals
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-26 19:01 +0700)
+- ex transpiler: handle float mod and module globals
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-26 19:01 +0700)
+- ex transpiler: handle float mod and module globals
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-26 19:01 +0700)
+- ex transpiler: handle float mod and module globals
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-26 19:01 +0700)
+- ex transpiler: handle float mod and module globals
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-26 19:01 +0700)
+- ex transpiler: handle float mod and module globals
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-26 19:01 +0700)
+- ex transpiler: handle float mod and module globals
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-26 19:01 +0700)
+- ex transpiler: handle float mod and module globals
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-26 19:01 +0700)
+- ex transpiler: handle float mod and module globals
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-26 19:01 +0700)
+- ex transpiler: handle float mod and module globals
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-26 19:01 +0700)
+- ex transpiler: handle float mod and module globals
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-26 19:01 +0700)
+- ex transpiler: handle float mod and module globals
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-26 19:01 +0700)
+- ex transpiler: handle float mod and module globals
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-26 19:01 +0700)
+- ex transpiler: handle float mod and module globals
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-26 19:01 +0700)
+- ex transpiler: handle float mod and module globals
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-26 19:01 +0700)
+- ex transpiler: handle float mod and module globals
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-26 19:01 +0700)
+- ex transpiler: handle float mod and module globals
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-26 19:01 +0700)
+- ex transpiler: handle float mod and module globals
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-26 19:01 +0700)
+- ex transpiler: handle float mod and module globals
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-26 19:01 +0700)
+- ex transpiler: handle float mod and module globals
+- Regenerated golden files - 104/104 vm valid programs passing
+
 ## Progress (2025-07-26 17:02 +0700)
 - release: v0.10.41
 - Regenerated golden files - 104/104 vm valid programs passing
