@@ -1,4 +1,42 @@
-## Progress (2025-07-26 10:05 +0700)
+## Progress (2025-07-26 19:01 +0700)
+- ex transpiler: handle float mod and module globals (ea0c01187b)
+
+- ex transpiler: handle float mod and module globals (ea0c01187b)
+
+- ex transpiler: handle float mod and module globals (ea0c01187b)
+
+- ex transpiler: handle float mod and module globals (ea0c01187b)
+
+- ex transpiler: handle float mod and module globals (ea0c01187b)
+
+- ex transpiler: handle float mod and module globals (ea0c01187b)
+
+- ex transpiler: handle float mod and module globals (ea0c01187b)
+
+- ex transpiler: handle float mod and module globals (ea0c01187b)
+
+- ex transpiler: handle float mod and module globals (ea0c01187b)
+
+- ex transpiler: handle float mod and module globals (ea0c01187b)
+
+- ex transpiler: handle float mod and module globals (ea0c01187b)
+
+- ex transpiler: handle float mod and module globals (ea0c01187b)
+
+- ex transpiler: handle float mod and module globals (ea0c01187b)
+
+- ex transpiler: handle float mod and module globals (ea0c01187b)
+
+- ex transpiler: handle float mod and module globals (ea0c01187b)
+
+- ex transpiler: handle float mod and module globals (ea0c01187b)
+
+- ex transpiler: handle float mod and module globals (ea0c01187b)
+
+- ex transpiler: handle float mod and module globals (ea0c01187b)
+
+- ex transpiler: handle float mod and module globals (ea0c01187b)
+
 - transpiler: update java rosetta results and fixes (cda463b2a1)
 
 - transpiler: update java rosetta results and fixes (cda463b2a1)

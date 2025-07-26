@@ -38,6 +38,7 @@ var needMem bool
 var needPadStart bool
 var needSHA256 bool
 var needBigRat bool
+var needModPow2 bool
 var pyMathAliases map[string]bool
 var builtinAliases map[string]string
 var structDefs map[string]map[string]string
@@ -448,6 +449,11 @@ func inferType(e Expr) string {
 		if t, ok := fieldTypeFromVar(ex.Target, ex.Name); ok {
 			return t
 		}
+		if fields := mapFieldsForExpr(ex.Target); fields != nil {
+			if t, ok := fields[ex.Name]; ok {
+				return t
+			}
+		}
 	case *MapLit:
 		return "map"
 	case *LambdaExpr:
@@ -556,6 +562,8 @@ func inferType(e Expr) string {
 			return "String"
 		case "_sha256":
 			return "int[]"
+		case "Math.floorMod":
+			return "int"
 		default:
 			if t, ok := funcRet[ex.Func]; ok {
 				return t
@@ -1698,7 +1706,15 @@ func (f *FieldExpr) emit(w io.Writer) {
 		}
 	}
 	if isMapExpr(f.Target) {
-		fmt.Fprint(w, "((Integer) (")
+		castType := "Object"
+		if fields := mapFieldsForExpr(f.Target); fields != nil {
+			if t, ok := fields[f.Name]; ok {
+				if jt := javaType(t); jt != "" {
+					castType = jt
+				}
+			}
+		}
+		fmt.Fprintf(w, "((%s) (", castType)
 		f.Target.emit(w)
 		fmt.Fprint(w, ".get(")
 		(&StringLit{Value: f.Name}).emit(w)
@@ -2707,6 +2723,7 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	needPadStart = false
 	needSHA256 = false
 	needBigRat = false
+	needModPow2 = false
 	pyMathAliases = map[string]bool{}
 	builtinAliases = map[string]string{}
 	structDefs = map[string]map[string]string{}
@@ -3430,7 +3447,12 @@ func compileExpr(e *parser.Expr) (Expr, error) {
 				lt := inferType(expr)
 				rt := inferType(r)
 				if lt != "double" && lt != "float" && rt != "double" && rt != "float" && lt != "bigint" && rt != "bigint" {
-					expr = &CallExpr{Func: "Math.floorMod", Args: []Expr{expr, r}}
+					if ce, ok := r.(*CallExpr); ok && ce.Func == "pow2" && len(ce.Args) == 1 {
+						needModPow2 = true
+						expr = &CallExpr{Func: "_modPow2", Args: []Expr{expr, ce.Args[0]}}
+					} else {
+						expr = &CallExpr{Func: "Math.floorMod", Args: []Expr{expr, r}}
+					}
 				} else {
 					expr = &BinaryExpr{Left: expr, Op: op.Op, Right: r}
 				}
@@ -3813,6 +3835,15 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 		if name == "lower" && len(args) == 1 {
 			return &MethodCallExpr{Target: args[0], Name: "toLowerCase", Args: nil}, nil
 		}
+		if name == "indexOf" && len(args) == 2 {
+			return &MethodCallExpr{Target: args[0], Name: "indexOf", Args: []Expr{args[1]}}, nil
+		}
+		if name == "parseIntStr" && (len(args) == 1 || len(args) == 2) {
+			if len(args) == 1 {
+				return &CallExpr{Func: "Integer.parseInt", Args: []Expr{args[0]}}, nil
+			}
+			return &CallExpr{Func: "Integer.parseInt", Args: []Expr{args[0], args[1]}}, nil
+		}
 		if name == "padStart" && len(args) == 3 {
 			needPadStart = true
 			return &CallExpr{Func: "_padStart", Args: args}, nil
@@ -3976,14 +4007,20 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			if err != nil {
 				return nil, err
 			}
-			if ml, ok := v.(*MapLit); ok && st.Fields != nil {
+			if st.Fields != nil {
 				if ft, ok2 := st.Fields[f.Name]; ok2 {
 					if mt, ok3 := ft.(types.MapType); ok3 {
-						if ml.KeyType == "" {
-							ml.KeyType = toJavaTypeFromType(mt.Key)
+						if ml, ok4 := v.(*MapLit); ok4 {
+							if ml.KeyType == "" {
+								ml.KeyType = toJavaTypeFromType(mt.Key)
+							}
+							if ml.ValueType == "" {
+								ml.ValueType = toJavaTypeFromType(mt.Value)
+							}
 						}
-						if ml.ValueType == "" {
-							ml.ValueType = toJavaTypeFromType(mt.Value)
+					} else if lt, ok3 := ft.(types.ListType); ok3 {
+						if ll, ok4 := v.(*ListLit); ok4 && ll.ElemType == "" {
+							ll.ElemType = toJavaTypeFromType(lt.Elem)
 						}
 					}
 				}
@@ -4694,6 +4731,12 @@ func Emit(prog *Program) []byte {
 		buf.WriteString("    }\n")
 		buf.WriteString("    static java.math.BigInteger _num(Object x) { return (x instanceof BigRat) ? ((BigRat)x).num : _toBigInt(x); }\n")
 		buf.WriteString("    static java.math.BigInteger _denom(Object x) { return (x instanceof BigRat) ? ((BigRat)x).den : java.math.BigInteger.ONE; }\n")
+	}
+	if needModPow2 {
+		buf.WriteString("\n    static int _modPow2(int v, int n) {\n")
+		buf.WriteString("        long mask = (1L << n) - 1L;\n")
+		buf.WriteString("        return (int)(((long)v) & mask);\n")
+		buf.WriteString("    }\n")
 	}
 	buf.WriteString("}\n")
 	return formatJava(buf.Bytes())
