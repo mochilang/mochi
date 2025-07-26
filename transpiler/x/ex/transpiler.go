@@ -631,7 +631,7 @@ func (fs *ForStmt) emit(w io.Writer, indent int) {
 		for i := 0; i < indent; i++ {
 			io.WriteString(w, "  ")
 		}
-		io.WriteString(w, "end")
+		io.WriteString(w, "end)")
 		return
 	}
 	if len(fs.Vars) > 0 && fs.End == nil && fs.Simple {
@@ -756,7 +756,7 @@ func (fs *ForStmt) emit(w io.Writer, indent int) {
 		for i := 0; i < indent; i++ {
 			io.WriteString(w, "  ")
 		}
-		io.WriteString(w, "end")
+		io.WriteString(w, "end)")
 		return
 	}
 	if fs.Simple {
@@ -1041,6 +1041,7 @@ type BinaryExpr struct {
 	MapIn     bool
 	StrConcat bool
 	IntDiv    bool
+	FloatOp   bool
 }
 
 func (b *BinaryExpr) emit(w io.Writer) {
@@ -1062,8 +1063,11 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		return false
 	}
 	isFloat := func(e Expr) bool {
-		if n, ok := e.(*NumberLit); ok {
-			return strings.Contains(n.Value, ".")
+		switch t := e.(type) {
+		case *NumberLit:
+			return strings.Contains(t.Value, ".")
+		case *BinaryExpr:
+			return t.FloatOp
 		}
 		return false
 	}
@@ -1076,7 +1080,7 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		return
 	}
 	if b.Op == "%" {
-		if isFloat(b.Left) || isFloat(b.Right) {
+		if b.FloatOp || isFloat(b.Left) || isFloat(b.Right) {
 			io.WriteString(w, ":math.fmod(")
 		} else {
 			io.WriteString(w, "rem(")
@@ -1741,6 +1745,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	res := &Program{}
 	builtinAliases = make(map[string]string)
 	globalVars = make(map[string]struct{})
+	moduleMode = false
 	for _, st := range prog.Statements {
 		if st.Import != nil && st.Import.Lang != nil {
 			alias := st.Import.As
@@ -1771,7 +1776,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 			}
 		}
 		if st.Fun != nil {
-			// presence of a function means we are in module mode
+			moduleMode = true
 		}
 		if st.Let != nil {
 			globalVars[st.Let.Name] = struct{}{}
@@ -2958,7 +2963,20 @@ func compileBinary(b *parser.BinaryExpr, env *types.Env) (Expr, error) {
 					fn := &AnonFun{Params: []string{param}, Body: []Stmt{&ExprStmt{Expr: cond}}}
 					expr = &CallExpr{Func: "Enum.filter", Args: []Expr{operands[i], fn}}
 				default:
-					bin := &BinaryExpr{Left: operands[i], Op: opName, Right: operands[i+1]}
+					leftFloat := types.IsFloatType(typesSlice[i])
+					if !leftFloat {
+						if be, ok := operands[i].(*BinaryExpr); ok {
+							leftFloat = be.FloatOp
+						}
+					}
+					rightFloat := types.IsFloatType(typesSlice[i+1])
+					if !rightFloat {
+						if be, ok := operands[i+1].(*BinaryExpr); ok {
+							rightFloat = be.FloatOp
+						}
+					}
+					floatOp := leftFloat || rightFloat
+					bin := &BinaryExpr{Left: operands[i], Op: opName, Right: operands[i+1], FloatOp: floatOp}
 					if opName == "in" {
 						if _, ok := types.TypeOfPostfix(ops[i].Right, env).(types.MapType); ok {
 							bin.MapIn = true
