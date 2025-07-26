@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated TypeScript code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/TypeScript`.
-Last updated: 2025-07-26 12:37 UTC
+Last updated: 2025-07-26 13:31 UTC
 
-## Rosetta Golden Test Checklist (319/332)
+## Rosetta Golden Test Checklist (331/332)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 1.595ms | 512.0 KB |
@@ -22,7 +22,7 @@ Last updated: 2025-07-26 12:37 UTC
 | 13 | 99-bottles-of-beer-2 | ✓ | 21.361ms | 5.3 MB |
 | 14 | 99-bottles-of-beer | ✓ | 14.585ms | 3.5 MB |
 | 15 | DNS-query | ✓ | 631µs | 128.0 KB |
-| 16 | Duffinian-numbers |   |  |  |
+| 16 | Duffinian-numbers | ✓ | 29.167ms | 12.0 MB |
 | 17 | a+b | ✓ | 1.936ms | 512.0 KB |
 | 18 | abbreviations-automatic | ✓ | 25.499ms | 5.2 MB |
 | 19 | abbreviations-easy | ✓ | 6.557ms | 384.0 KB |
@@ -327,15 +327,15 @@ Last updated: 2025-07-26 12:37 UTC
 | 318 | doubly-linked-list-element-definition | ✓ | 690µs |  |
 | 319 | doubly-linked-list-traversal | ✓ | 714µs | 128.0 KB |
 | 320 | dragon-curve | ✓ | 1.801ms | 128.0 KB |
-| 321 | draw-a-clock |   |  |  |
-| 322 | draw-a-cuboid |   |  |  |
-| 323 | draw-a-pixel-1 |   |  |  |
-| 324 | draw-a-rotating-cube |   |  |  |
-| 325 | draw-a-sphere |   |  |  |
-| 326 | dutch-national-flag-problem |   |  |  |
-| 327 | dynamic-variable-names |   |  |  |
-| 328 | earliest-difference-between-prime-gaps |   |  |  |
-| 329 | eban-numbers |   |  |  |
-| 330 | echo-server |   |  |  |
-| 331 | ekg-sequence-convergence |   |  |  |
+| 321 | draw-a-clock | ✓ | 708µs |  |
+| 322 | draw-a-cuboid | ✓ | 2.842ms | 128.0 KB |
+| 323 | draw-a-pixel-1 | ✓ | 16.964ms | 9.9 MB |
+| 324 | draw-a-rotating-cube | ✓ | 6.88ms | 3.5 MB |
+| 325 | draw-a-sphere | ✓ | 20.13ms | 10.6 MB |
+| 326 | dutch-national-flag-problem | ✓ | 1.551ms | 128.0 KB |
+| 327 | dynamic-variable-names | ✓ | 2.051ms | 512.0 KB |
+| 328 | earliest-difference-between-prime-gaps | ✓ | 3.369ms | 384.0 KB |
+| 329 | eban-numbers | ✓ | 31.481ms | 11.9 MB |
+| 330 | echo-server | ✓ | 666µs |  |
+| 331 | ekg-sequence-convergence | ✓ | 6.31ms | 4.5 MB |
 | 332 | md5 | ✓ | 636µs | 256.0 KB |
