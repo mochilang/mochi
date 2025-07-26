@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated TypeScript code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/TypeScript`.
-Last updated: 2025-07-26 13:32 UTC
+Last updated: 2025-07-26 14:34 UTC
 
-## Rosetta Golden Test Checklist (330/332)
+## Rosetta Golden Test Checklist (331/332)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 1.595ms | 512.0 KB |
@@ -22,7 +22,7 @@ Last updated: 2025-07-26 13:32 UTC
 | 13 | 99-bottles-of-beer-2 | ✓ | 21.361ms | 5.3 MB |
 | 14 | 99-bottles-of-beer | ✓ | 14.585ms | 3.5 MB |
 | 15 | DNS-query | ✓ | 631µs | 128.0 KB |
-| 16 | Duffinian-numbers |   |  |  |
+| 16 | Duffinian-numbers | ✓ | 10.042ms | 12.0 MB |
 | 17 | a+b | ✓ | 1.936ms | 512.0 KB |
 | 18 | abbreviations-automatic | ✓ | 25.499ms | 5.2 MB |
 | 19 | abbreviations-easy | ✓ | 6.557ms | 384.0 KB |
@@ -338,4 +338,4 @@ Last updated: 2025-07-26 13:32 UTC
 | 329 | eban-numbers | ✓ | 30.75ms | 12.5 MB |
 | 330 | echo-server | ✓ | 639µs | 128.0 KB |
 | 331 | ekg-sequence-convergence | ✓ | 4.206ms | 3.2 MB |
-| 332 | md5 | ✓ | 928µs | 384.0 KB |
+| 332 | md5 | ✓ | 636µs | 256.0 KB |
