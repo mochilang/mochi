@@ -1,0 +1,32 @@
+let width = 320
+let height = 240
+var seed = now() % 2147483647
+
+fun nextRand(): int {
+  seed = (seed * 1664525 + 1013904223) % 2147483647
+  return seed
+}
+
+fun randBit(): int {
+  let r = nextRand()
+  if r % 2 == 0 { return 0 }
+  return 255
+}
+
+print("P2")
+print(str(width) + " " + str(height))
+print("255")
+
+var y = 0
+while y < height {
+  var line = ""
+  var x = 0
+  while x < width {
+    let val = randBit()
+    line = line + str(val)
+    if x < width - 1 { line = line + " " }
+    x = x + 1
+  }
+  print(line)
+  y = y + 1
+}
