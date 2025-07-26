@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated IR and outputs from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/ir`.
-Last updated: 2025-07-26 03:26 UTC
+Last updated: 2025-07-26 03:53 UTC
 
-## Rosetta Golden Test Checklist (201/284)
+## Rosetta Golden Test Checklist (202/284)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 116µs | 11.7 KB |
@@ -211,10 +211,10 @@ Last updated: 2025-07-26 03:26 UTC
 | 202 | chowla-numbers | ✓ |  |  |
 | 203 | church-numerals-1 |   |  |  |
 | 204 | church-numerals-2 | ✓ | 22µs | 136 B |
-| 205 | circles-of-given-radius-through-two-points | ✓ |  |  |
-| 206 | circular-primes | ✓ |  |  |
+| 205 | circles-of-given-radius-through-two-points | ✓ | 237µs | 157.6 KB |
+| 206 | circular-primes | ✓ | 6.883ms | 1.6 MB |
 | 207 | cistercian-numerals | ✓ |  |  |
-| 208 | comma-quibbling |   |  |  |
+| 208 | comma-quibbling | ✓ | 50µs | 21.5 KB |
 | 209 | compiler-virtual-machine-interpreter |   |  |  |
 | 210 | composite-numbers-k-with-no-single-digit-factors-whose-factors-are-all-substrings-of-k |   |  |  |
 | 211 | compound-data-type |   |  |  |

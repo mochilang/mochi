@@ -1,0 +1,122 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun quibble(items: list<string>): string {
+func quibble (regs=42)
+  // let n = len(items)
+  Len          r1, r0
+  Move         r2, r1
+  // if n == 0 {
+  Const        r3, 0
+  EqualInt     r4, r2, r3
+  JumpIfFalse  r4, L0
+  // return "{}"
+  Const        r5, "{}"
+  Return       r5
+L0:
+  // } else if n == 1 {
+  Const        r6, 1
+  EqualInt     r7, r2, r6
+  JumpIfFalse  r7, L1
+  // return "{" + items[0] + "}"
+  Const        r8, "{"
+  Const        r3, 0
+  Index        r9, r0, r3
+  Add          r10, r8, r9
+  Const        r11, "}"
+  Add          r12, r10, r11
+  Return       r12
+L1:
+  // } else if n == 2 {
+  Const        r13, 2
+  EqualInt     r14, r2, r13
+  JumpIfFalse  r14, L2
+  // return "{" + items[0] + " and " + items[1] + "}"
+  Const        r8, "{"
+  Const        r3, 0
+  Index        r15, r0, r3
+  Add          r16, r8, r15
+  Const        r17, " and "
+  Add          r18, r16, r17
+  Const        r6, 1
+  Index        r19, r0, r6
+  Add          r20, r18, r19
+  Const        r11, "}"
+  Add          r21, r20, r11
+  Return       r21
+L2:
+  // var prefix = ""
+  Const        r22, ""
+  Move         r23, r22
+  // for i in 0..n-1 {
+  Const        r3, 0
+  Const        r6, 1
+  SubInt       r24, r2, r6
+  Move         r25, r3
+L6:
+  LessInt      r26, r25, r24
+  JumpIfFalse  r26, L3
+  // if i == n-1 {
+  Const        r6, 1
+  SubInt       r27, r2, r6
+  EqualInt     r28, r25, r27
+  JumpIfFalse  r28, L4
+  // break
+  Jump         L3
+L4:
+  // if i > 0 { prefix = prefix + ", " }
+  Const        r3, 0
+  LessInt      r29, r3, r25
+  JumpIfFalse  r29, L5
+  Const        r30, ", "
+  Add          r31, r23, r30
+  Move         r23, r31
+L5:
+  // prefix = prefix + items[i]
+  Index        r32, r0, r25
+  Add          r33, r23, r32
+  Move         r23, r33
+  // for i in 0..n-1 {
+  Const        r34, 1
+  AddInt       r35, r25, r34
+  Move         r25, r35
+  Jump         L6
+L3:
+  // return "{" + prefix + " and " + items[n-1] + "}"
+  Const        r8, "{"
+  Add          r36, r8, r23
+  Const        r17, " and "
+  Add          r37, r36, r17
+  Const        r6, 1
+  SubInt       r38, r2, r6
+  Index        r39, r0, r38
+  Add          r40, r37, r39
+  Const        r11, "}"
+  Add          r41, r40, r11
+  Return       r41
+
+  // fun main() {
+func main (regs=12)
+  // print(quibble([]))
+  Const        r1, []
+  Move         r0, r1
+  Call         r2, quibble, r0
+  Print        r2
+  // print(quibble(["ABC"]))
+  Const        r4, ["ABC"]
+  Move         r3, r4
+  Call         r5, quibble, r3
+  Print        r5
+  // print(quibble(["ABC", "DEF"]))
+  Const        r7, ["ABC", "DEF"]
+  Move         r6, r7
+  Call         r8, quibble, r6
+  Print        r8
+  // print(quibble(["ABC", "DEF", "G", "H"]))
+  Const        r10, ["ABC", "DEF", "G", "H"]
+  Move         r9, r10
+  Call         r11, quibble, r9
+  Print        r11
+  Return       r0
