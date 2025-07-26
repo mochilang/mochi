@@ -1,0 +1,82 @@
+# Mochi translation of Rosetta "Dijkstra's algorithm" task
+# Based on Go version downloaded to tests/rosetta/x/Go/dijkstras-algorithm.go
+
+let INF = 1000000000
+
+var graph: map<string, map<string, int>> = {}
+fun addEdge(u: string, v: string, w: int) {
+  if !(u in graph) { graph[u] = {} }
+  graph[u][v] = w
+  if !(v in graph) { graph[v] = {} }
+}
+
+fun removeAt(xs: list<string>, idx: int): list<string> {
+  var out: list<string> = []
+  var i = 0
+  for x in xs {
+    if i != idx { out = append(out, x) }
+    i = i + 1
+  }
+  return out
+}
+
+fun dijkstra(source: string): map<string, any> {
+  var dist: map<string, int> = {}
+  var prev: map<string, string> = {}
+  for v in graph {
+    dist[v] = INF
+    prev[v] = ""
+  }
+  dist[source] = 0
+  var q: list<string> = []
+  for v in graph { q = append(q, v) }
+  while len(q) > 0 {
+    var bestIdx = 0
+    var u = q[0]
+    var i = 1
+    while i < len(q) {
+      let v = q[i]
+      if dist[v] < dist[u] { u = v; bestIdx = i }
+      i = i + 1
+    }
+    q = removeAt(q, bestIdx)
+    for v in graph[u] {
+      let alt = dist[u] + graph[u][v]
+      if alt < dist[v] {
+        dist[v] = alt
+        prev[v] = u
+      }
+    }
+  }
+  return {"dist": dist, "prev": prev}
+}
+
+fun path(prev: map<string,string>, v: string): string {
+  var s = v
+  var cur = v
+  while prev[cur] != "" {
+    cur = prev[cur]
+    s = cur + s
+  }
+  return s
+}
+
+fun main() {
+  addEdge("a", "b", 7)
+  addEdge("a", "c", 9)
+  addEdge("a", "f", 14)
+  addEdge("b", "c", 10)
+  addEdge("b", "d", 15)
+  addEdge("c", "d", 11)
+  addEdge("c", "f", 2)
+  addEdge("d", "e", 6)
+  addEdge("e", "f", 9)
+
+  let res = dijkstra("a")
+  let dist = res["dist"] as map<string,int>
+  let prev = res["prev"] as map<string,string>
+  print("Distance to e: " + str(dist["e"]) + ", Path: " + path(prev, "e"))
+  print("Distance to f: " + str(dist["f"]) + ", Path: " + path(prev, "f"))
+}
+
+main()
