@@ -13,6 +13,7 @@ import (
 	"path/filepath"
 	"reflect"
 	"sort"
+	"strconv"
 	"strings"
 
 	"gopkg.in/yaml.v3"
@@ -2374,28 +2375,13 @@ func (sli *SliceExpr) emit(w io.Writer) {
 type StringLit struct{ Value string }
 
 func javaQuote(s string) string {
-	var b strings.Builder
-	for _, r := range s {
-		switch r {
-		case '\n':
-			b.WriteString("\n")
-		case '\r':
-			b.WriteString("\r")
-		case '\t':
-			b.WriteString("\t")
-		case '\\':
-			b.WriteString("\\\\")
-		case '"':
-			b.WriteString("\\\"")
-		default:
-			if r < 32 || r == 0x7f {
-				fmt.Fprintf(&b, "\\u%04x", r)
-			} else {
-				b.WriteRune(r)
-			}
-		}
+	// strconv.Quote handles all escape sequences for us. Strip
+	// the surrounding quotes to get the encoded string literal.
+	q := strconv.Quote(s)
+	if len(q) >= 2 {
+		return q[1 : len(q)-1]
 	}
-	return b.String()
+	return q
 }
 
 func (s *StringLit) emit(w io.Writer) {

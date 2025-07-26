@@ -1,4 +1,12 @@
-## Progress (2025-07-26 13:04 UTC)
+## Progress (2025-07-26 16:00 UTC)
+- java rosetta: add index 147 (0ddfd3c2ae)
+
+- java rosetta: add index 146 (44cc49527e)
+
+- java transpiler: fix string quoting and handle string index (aaab57f936)
+
+- java transpiler: fix string quoting and handle string index (aaab57f936)
+
 - java rosetta: add index 136 (a882059ca6)
 
 - java rosetta: add index 136 (a882059ca6)
