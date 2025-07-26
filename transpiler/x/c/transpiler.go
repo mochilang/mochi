@@ -819,11 +819,11 @@ func (f *ForStmt) emit(w io.Writer, indent int) {
 			writeIndent(w, indent+1)
 			fmt.Fprintf(w, "size_t %s = %d;\n", lenName, len(f.List))
 			writeIndent(w, indent+1)
-			fmt.Fprintf(w, "for (size_t i = 0; i < %s; i++) {\n", lenName)
+			fmt.Fprintf(w, "for (size_t __i = 0; __i < %s; __i++) {\n", lenName)
 			writeIndent(w, indent+2)
 			fmt.Fprintf(w, "%s %s[%d] = {0};\n", base, f.Var, subLen)
 			writeIndent(w, indent+2)
-			fmt.Fprintf(w, "memcpy(%s, %s[i], sizeof(%s[i]));\n", f.Var, arrName, arrName)
+			fmt.Fprintf(w, "memcpy(%s, %s[__i], sizeof(%s[__i]));\n", f.Var, arrName, arrName)
 		} else {
 			fmt.Fprintf(w, "%s %s[] = {", typ, arrName)
 			for i, e := range f.List {
@@ -836,11 +836,11 @@ func (f *ForStmt) emit(w io.Writer, indent int) {
 			writeIndent(w, indent+1)
 			fmt.Fprintf(w, "size_t %s = sizeof(%s) / sizeof(%s[0]);\n", lenName, arrName, arrName)
 			writeIndent(w, indent+1)
-			io.WriteString(w, "for (size_t i = 0; i < ")
+			io.WriteString(w, "for (size_t __i = 0; __i < ")
 			io.WriteString(w, lenName)
-			io.WriteString(w, "; i++) {\n")
+			io.WriteString(w, "; __i++) {\n")
 			writeIndent(w, indent+2)
-			fmt.Fprintf(w, "%s %s = %s[i];\n", typ, f.Var, arrName)
+			fmt.Fprintf(w, "%s %s = %s[__i];\n", typ, f.Var, arrName)
 		}
 		for _, s := range f.Body {
 			s.emit(w, indent+2)
