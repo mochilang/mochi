@@ -1,0 +1,82 @@
+# Mochi implementation of Rosetta "Eertree" task
+# Based on Go version in tests/rosetta/x/Go/eertree.go
+
+let EVEN_ROOT = 0
+let ODD_ROOT = 1
+
+fun newNode(len: int): map<string, any> {
+  return {"length": len, "edges": {}, "suffix": 0}
+}
+
+fun eertree(s: string): list<map<string, any>> {
+  var tree: list<map<string, any>> = []
+  tree = append(tree, {"length": 0, "suffix": ODD_ROOT, "edges": {}})
+  tree = append(tree, {"length": -1, "suffix": ODD_ROOT, "edges": {}})
+  var suffix = ODD_ROOT
+  var i = 0
+  while i < len(s) {
+    let c = s[i:i+1]
+    var n = suffix
+    var k = 0
+    while true {
+      k = tree[n]["length"] as int
+      let b = i - k - 1
+      if b >= 0 && s[b:b+1] == c { break }
+      n = tree[n]["suffix"] as int
+    }
+    var edges = tree[n]["edges"] as map<string, int>
+    if c in edges {
+      suffix = edges[c]
+      i = i + 1
+      continue
+    }
+    suffix = len(tree)
+    tree = append(tree, newNode(k + 2))
+    edges[c] = suffix
+    tree[n]["edges"] = edges
+    if (tree[suffix]["length"] as int) == 1 {
+      tree[suffix]["suffix"] = 0
+      i = i + 1
+      continue
+    }
+    while true {
+      n = tree[n]["suffix"] as int
+      let b = i - (tree[n]["length"] as int) - 1
+      if b >= 0 && s[b:b+1] == c { break }
+    }
+    var en = tree[n]["edges"] as map<string, int>
+    tree[suffix]["suffix"] = en[c]
+    i = i + 1
+  }
+  return tree
+}
+
+fun child(tree: list<map<string, any>>, idx: int, p: string, acc: list<string>): list<string> {
+  var edges = tree[idx]["edges"] as map<string, int>
+  for ch in edges {
+    let nxt = edges[ch]
+    let pal = ch + p + ch
+    acc = append(acc, pal)
+    acc = child(tree, nxt, pal, acc)
+  }
+  return acc
+}
+
+fun subPalindromes(tree: list<map<string, any>>): list<string> {
+  var res: list<string> = []
+  res = child(tree, EVEN_ROOT, "", res)
+  var oEdges = tree[ODD_ROOT]["edges"] as map<string, int>
+  for ch in oEdges {
+    res = append(res, ch)
+    res = child(tree, oEdges[ch], ch, res)
+  }
+  return res
+}
+
+fun main() {
+  let tree = eertree("eertree")
+  let subs = subPalindromes(tree)
+  print(str(subs))
+}
+
+main()
