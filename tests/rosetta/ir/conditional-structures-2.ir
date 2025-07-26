@@ -1,0 +1,16 @@
+func main (regs=1)
+  Return       r0
+
+  // fun example2(flag: bool) {
+func example2 (regs=2)
+  // if flag {
+  JumpIfFalse  r0, L0
+  // null
+  Const        r1, nil
+  // if flag {
+  Jump         L1
+L0:
+  // null
+  Const        r1, nil
+L1:
+  Return       r0
