@@ -2788,6 +2788,9 @@ func (fc *funcCompiler) compileStmt(s *parser.Statement) error {
 	case s.Fun != nil:
 		captureNames := make([]string, 0, len(fc.vars))
 		for name := range fc.vars {
+			if _, ok := fc.comp.globals[name]; ok {
+				continue
+			}
 			captureNames = append(captureNames, name)
 		}
 		sort.Strings(captureNames)
@@ -3564,6 +3567,9 @@ func (fc *funcCompiler) compilePrimary(p *parser.Primary) int {
 	if p.FunExpr != nil {
 		captureNames := make([]string, 0, len(fc.vars))
 		for name := range fc.vars {
+			if _, ok := fc.comp.globals[name]; ok {
+				continue
+			}
 			captureNames = append(captureNames, name)
 		}
 		sort.Strings(captureNames)
