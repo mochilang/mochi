@@ -1,7 +1,7 @@
 # Go Rosetta Transpiler Output
 
-Completed programs: 202/332
-Last updated: 2025-07-26 23:43 +0700
+Completed programs: 217/332
+Last updated: 2025-07-27 00:10 +0700
 
 Checklist:
 
@@ -222,21 +222,21 @@ Checklist:
 | 213 | concurrent-computing-1 | ✓ | 43.0µs | 984B |
 | 214 | concurrent-computing-2 | ✓ | 107.0µs | 984B |
 | 215 | concurrent-computing-3 | ✓ | 95.0µs | 1.05KB |
-| 216 | conditional-structures-1 |   |  |  |
-| 217 | conditional-structures-10 |   |  |  |
-| 218 | conditional-structures-2 |   |  |  |
-| 219 | conditional-structures-3 |   |  |  |
-| 220 | conditional-structures-4 |   |  |  |
-| 221 | conditional-structures-5 |   |  |  |
-| 222 | conditional-structures-6 |   |  |  |
-| 223 | conditional-structures-7 |   |  |  |
-| 224 | conditional-structures-8 |   |  |  |
-| 225 | conditional-structures-9 |   |  |  |
-| 226 | consecutive-primes-with-ascending-or-descending-differences |   |  |  |
-| 227 | constrained-genericity-1 |   |  |  |
-| 228 | constrained-genericity-2 |   |  |  |
-| 229 | constrained-genericity-3 |   |  |  |
-| 230 | constrained-genericity-4 |   |  |  |
+| 216 | conditional-structures-1 | ✓ | 138.0µs | 0B |
+| 217 | conditional-structures-10 | ✓ | 305.0µs | 952B |
+| 218 | conditional-structures-2 | ✓ | 26.0µs | 0B |
+| 219 | conditional-structures-3 | ✓ | 142.0µs | 0B |
+| 220 | conditional-structures-4 | ✓ | 237.0µs | 0B |
+| 221 | conditional-structures-5 | ✓ | 251.0µs | 0B |
+| 222 | conditional-structures-6 | ✓ | 153.0µs | 0B |
+| 223 | conditional-structures-7 | ✓ | 232.0µs | 0B |
+| 224 | conditional-structures-8 | ✓ | 172.0µs | 0B |
+| 225 | conditional-structures-9 | ✓ | 131.0µs | 0B |
+| 226 | consecutive-primes-with-ascending-or-descending-differences | ✓ | 39.0ms | 3.57MB |
+| 227 | constrained-genericity-1 | ✓ | 161.0µs | 0B |
+| 228 | constrained-genericity-2 | ✓ | 224.0µs | 0B |
+| 229 | constrained-genericity-3 | ✓ | 159.0µs | 0B |
+| 230 | constrained-genericity-4 | ✓ | 304.0µs | 1000B |
 | 231 | constrained-random-points-on-a-circle-1 |   |  |  |
 | 232 | constrained-random-points-on-a-circle-2 |   |  |  |
 | 233 | continued-fraction |   |  |  |

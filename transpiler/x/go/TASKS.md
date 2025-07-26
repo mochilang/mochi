@@ -1,3 +1,87 @@
+## Progress (2025-07-27 00:10 +0700)
+- transpiler: fix struct field refs; rosetta add constrained-genericity-3
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-27 00:10 +0700)
+- transpiler: fix struct field refs; rosetta add constrained-genericity-3
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-27 00:07 +0700)
+- rosetta: add constrained-genericity-2
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-27 00:07 +0700)
+- rosetta: add constrained-genericity-2
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-27 00:07 +0700)
+- rosetta: add constrained-genericity-2
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-27 00:07 +0700)
+- rosetta: add constrained-genericity-2
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-27 00:07 +0700)
+- rosetta: add constrained-genericity-2
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-27 00:06 +0700)
+- rosetta: add constrained-genericity-1
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-27 00:06 +0700)
+- rosetta: add consecutive-primes differences
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-27 00:06 +0700)
+- rosetta: add conditional-structures-9
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-27 00:05 +0700)
+- rosetta: add conditional-structures-8
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-27 00:05 +0700)
+- rosetta: add conditional-structures-7
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-27 00:05 +0700)
+- rosetta: add conditional-structures-6
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-27 00:04 +0700)
+- rosetta: add conditional-structures-5
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-27 00:04 +0700)
+- rosetta: add conditional-structures-4
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-27 00:04 +0700)
+- rosetta: add conditional-structures-3
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-27 00:04 +0700)
+- rosetta: add conditional-structures-2
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-27 00:03 +0700)
+- rosetta: add conditional-structures-10
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-27 00:03 +0700)
+- go transpiler: handle standalone null expression
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-26 23:59 +0700)
+- go transpiler: support slice built-in and struct field casting
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-26 23:59 +0700)
+- go transpiler: support slice built-in and struct field casting
+- Regenerated golden files - 104/104 vm valid programs passing
+
 ## Progress (2025-07-26 23:43 +0700)
 - transpiler: fix map returns
 - Regenerated golden files - 104/104 vm valid programs passing
