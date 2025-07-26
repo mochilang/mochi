@@ -3167,6 +3167,17 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			if len(args) == 2 {
 				return &ContainsExpr{Str: args[0], Sub: args[1]}, nil
 			}
+		case "indexOf":
+			if len(args) == 2 {
+				return &MethodCallExpr{Target: args[0], Name: "IndexOf", Args: []Expr{args[1]}}, nil
+			}
+		case "parseIntStr":
+			switch len(args) {
+			case 1:
+				return &CallExpr{Func: "Convert.ToInt64", Args: []Expr{args[0]}}, nil
+			case 2:
+				return &CallExpr{Func: "Convert.ToInt64", Args: []Expr{args[0], args[1]}}, nil
+			}
 		case "sha256":
 			if len(args) == 1 {
 				usesSHA256 = true
@@ -3273,6 +3284,13 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 					if mt, ok3 := ft.(types.MapType); ok3 {
 						ml.KeyType = csTypeFromType(mt.Key)
 						ml.ValType = csTypeFromType(mt.Value)
+					}
+				}
+			}
+			if list, ok := val.(*ListLit); ok && len(list.Elems) == 0 {
+				if ft, ok2 := st.Fields[f.Name]; ok2 {
+					if lt, ok3 := ft.(types.ListType); ok3 {
+						list.ElemType = fmt.Sprintf("%s[]", csTypeFromType(lt.Elem))
 					}
 				}
 			}
