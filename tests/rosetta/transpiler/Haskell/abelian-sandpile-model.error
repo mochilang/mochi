@@ -1,0 +1,157 @@
+run: exit status 1
+
+/workspace/mochi/tests/rosetta/transpiler/Haskell/abelian-sandpile-model.hs:70:33: error:
+    • Couldn't match type ‘[[a0]]’ with ‘()’
+      Expected: IORef ()
+        Actual: IORef [[a0]]
+    • In the first argument of ‘deref’, namely ‘b’
+      In the first argument of ‘return’, namely ‘((deref b))’
+      In the expression: return ((deref b))
+    • Relevant bindings include
+        b :: IORef [[a0]]
+          (bound at /workspace/mochi/tests/rosetta/transpiler/Haskell/abelian-sandpile-model.hs:52:5)
+   |
+70 |             else return ((deref b))
+   |                                 ^
+
+/workspace/mochi/tests/rosetta/transpiler/Haskell/abelian-sandpile-model.hs:74:1: error:
+    • Couldn't match type: IORef [[a]]
+                     with: [[a]]
+      Expected: [[a]] -> Int -> Int -> [[a]]
+        Actual: IORef [[a]] -> Int -> Int -> IO [[a]]
+    • Relevant bindings include
+        handlePile :: [[a]] -> Int -> Int -> [[a]]
+          (bound at /workspace/mochi/tests/rosetta/transpiler/Haskell/abelian-sandpile-model.hs:74:1)
+   |
+74 | handlePile pile x y = do
+   | ^^^^^^^^^^^^^^^^^^^^^^^^...
+
+/workspace/mochi/tests/rosetta/transpiler/Haskell/abelian-sandpile-model.hs:146:25: error:
+    • Couldn't match expected type: IO ()
+                  with actual type: [[a3]]
+    • In the second argument of ‘($!)’, namely
+        ‘(take hdim (deref pile)
+            ++
+              [take hdim (((deref pile) !! hdim))
+                 ++ [16] ++ drop (hdim + 1) (((deref pile) !! hdim))]
+                ++ drop (hdim + 1) (deref pile))’
+      In a stmt of a 'do' block:
+        writeIORef pile
+          $!
+            (take hdim (deref pile)
+               ++
+                 [take hdim (((deref pile) !! hdim))
+                    ++ [16] ++ drop (hdim + 1) (((deref pile) !! hdim))]
+                   ++ drop (hdim + 1) (deref pile))
+      In the expression:
+        do pile <- newIORef (newPile 16)
+           let hdim = 7
+           writeIORef pile
+             $!
+               (take hdim (deref pile)
+                  ++
+                    [take hdim (((deref pile) !! hdim))
+                       ++ [...] ++ drop (hdim + 1) (((deref pile) !! hdim))]
+                      ++ drop (hdim + 1) (deref pile))
+           writeIORef pile $! (handlePile (deref pile) hdim hdim)
+           ....
+    |
+146 |     writeIORef pile $! (take hdim (deref pile) ++ [take hdim (((deref pile) !! hdim)) ++ [16] ++ drop (hdim + 1) (((deref pile) !! hdim))] ++ drop (hdim + 1) (deref pile))
+    |                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+/workspace/mochi/tests/rosetta/transpiler/Haskell/abelian-sandpile-model.hs:146:42: error:
+    • Couldn't match type: IO ()
+                     with: [[a3]]
+      Expected: IORef [[a3]]
+        Actual: IORef (IO ())
+    • In the first argument of ‘deref’, namely ‘pile’
+      In the second argument of ‘take’, namely ‘(deref pile)’
+      In the first argument of ‘(++)’, namely ‘take hdim (deref pile)’
+    |
+146 |     writeIORef pile $! (take hdim (deref pile) ++ [take hdim (((deref pile) !! hdim)) ++ [16] ++ drop (hdim + 1) (((deref pile) !! hdim))] ++ drop (hdim + 1) (deref pile))
+    |                                          ^^^^
+
+/workspace/mochi/tests/rosetta/transpiler/Haskell/abelian-sandpile-model.hs:146:71: error:
+    • Couldn't match type: IO ()
+                     with: [[a3]]
+      Expected: IORef [[a3]]
+        Actual: IORef (IO ())
+    • In the first argument of ‘deref’, namely ‘pile’
+      In the first argument of ‘(!!)’, namely ‘(deref pile)’
+      In the second argument of ‘take’, namely ‘(((deref pile) !! hdim))’
+    |
+146 |     writeIORef pile $! (take hdim (deref pile) ++ [take hdim (((deref pile) !! hdim)) ++ [16] ++ drop (hdim + 1) (((deref pile) !! hdim))] ++ drop (hdim + 1) (deref pile))
+    |                                                                       ^^^^
+
+/workspace/mochi/tests/rosetta/transpiler/Haskell/abelian-sandpile-model.hs:146:123: error:
+    • Couldn't match type: IO ()
+                     with: [[a3]]
+      Expected: IORef [[a3]]
+        Actual: IORef (IO ())
+    • In the first argument of ‘deref’, namely ‘pile’
+      In the first argument of ‘(!!)’, namely ‘(deref pile)’
+      In the second argument of ‘drop’, namely ‘(((deref pile) !! hdim))’
+    |
+146 |     writeIORef pile $! (take hdim (deref pile) ++ [take hdim (((deref pile) !! hdim)) ++ [16] ++ drop (hdim + 1) (((deref pile) !! hdim))] ++ drop (hdim + 1) (deref pile))
+    |                                                                                                                           ^^^^
+
+/workspace/mochi/tests/rosetta/transpiler/Haskell/abelian-sandpile-model.hs:146:166: error:
+    • Couldn't match type: IO ()
+                     with: [[a3]]
+      Expected: IORef [[a3]]
+        Actual: IORef (IO ())
+    • In the first argument of ‘deref’, namely ‘pile’
+      In the second argument of ‘drop’, namely ‘(deref pile)’
+      In the second argument of ‘(++)’, namely
+        ‘drop (hdim + 1) (deref pile)’
+    |
+146 |     writeIORef pile $! (take hdim (deref pile) ++ [take hdim (((deref pile) !! hdim)) ++ [16] ++ drop (hdim + 1) (((deref pile) !! hdim))] ++ drop (hdim + 1) (deref pile))
+    |                                                                                                                                                                      ^^^^
+
+/workspace/mochi/tests/rosetta/transpiler/Haskell/abelian-sandpile-model.hs:147:25: error:
+    • Couldn't match expected type: IO ()
+                  with actual type: [[a1]]
+    • In the second argument of ‘($!)’, namely
+        ‘(handlePile (deref pile) hdim hdim)’
+      In a stmt of a 'do' block:
+        writeIORef pile $! (handlePile (deref pile) hdim hdim)
+      In the expression:
+        do pile <- newIORef (newPile 16)
+           let hdim = 7
+           writeIORef pile
+             $!
+               (take hdim (deref pile)
+                  ++
+                    [take hdim (((deref pile) !! hdim))
+                       ++ [...] ++ drop (hdim + 1) (((deref pile) !! hdim))]
+                      ++ drop (hdim + 1) (deref pile))
+           writeIORef pile $! (handlePile (deref pile) hdim hdim)
+           ....
+    |
+147 |     writeIORef pile $! (handlePile (deref pile) hdim hdim)
+    |                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+/workspace/mochi/tests/rosetta/transpiler/Haskell/abelian-sandpile-model.hs:147:43: error:
+    • Couldn't match type: IO ()
+                     with: [[a1]]
+      Expected: IORef [[a1]]
+        Actual: IORef (IO ())
+    • In the first argument of ‘deref’, namely ‘pile’
+      In the first argument of ‘handlePile’, namely ‘(deref pile)’
+      In the second argument of ‘($!)’, namely
+        ‘(handlePile (deref pile) hdim hdim)’
+    |
+147 |     writeIORef pile $! (handlePile (deref pile) hdim hdim)
+    |                                           ^^^^
+
+/workspace/mochi/tests/rosetta/transpiler/Haskell/abelian-sandpile-model.hs:148:21: error:
+    • Couldn't match type: IO ()
+                     with: [[Int]]
+      Expected: IORef [[Int]]
+        Actual: IORef (IO ())
+    • In the first argument of ‘deref’, namely ‘pile’
+      In the first argument of ‘drawPile’, namely ‘(deref pile)’
+      In a stmt of a 'do' block: drawPile (deref pile) 16
+    |
+148 |     drawPile (deref pile) 16
+    |                     ^^^^
