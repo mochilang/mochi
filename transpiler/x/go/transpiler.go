@@ -73,6 +73,7 @@ var (
 	currentRetType string
 	mainFuncName   string
 	fieldTypeGuess map[string]string
+	structVarGuess map[string]string
 	benchMain      bool
 )
 
@@ -1865,6 +1866,7 @@ func Transpile(p *parser.Program, env *types.Env, benchMain bool) (*Program, err
 	structCount = 0
 	mainFuncName = ""
 	fieldTypeGuess = map[string]string{}
+	structVarGuess = map[string]string{}
 	imports = map[string]string{}
 	gp := &Program{}
 	for _, stmt := range p.Statements {
@@ -2032,6 +2034,9 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 		e, err := compileExpr(st.Expr.Expr, env, "")
 		if err != nil {
 			return nil, err
+		}
+		if _, ok := e.(*NullLit); ok {
+			return nil, nil
 		}
 		return &ExprStmt{Expr: e}, nil
 	case st.Let != nil:
@@ -4208,6 +4213,35 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env, base string) (Expr, 
 				}
 			default:
 				if types.IsAnyType(t) {
+					if vr, ok2 := expr.(*VarRef); ok2 {
+						sn, ok3 := structVarGuess[vr.Name]
+						if !ok3 {
+							candidates := []string{}
+							for name, st := range topEnv.Structs() {
+								if _, ok := st.Fields[f]; ok {
+									candidates = append(candidates, name)
+								}
+							}
+							if len(candidates) == 1 {
+								sn = candidates[0]
+								structVarGuess[vr.Name] = sn
+								ok3 = true
+							}
+						}
+						if ok3 {
+							expr = &FieldExpr{X: &AssertExpr{Expr: expr, Type: sn}, Name: toGoFieldName(f)}
+							if st, ok4 := topEnv.GetStruct(sn); ok4 {
+								if ft, ok5 := st.Fields[f]; ok5 {
+									t = ft
+								} else {
+									t = types.AnyType{}
+								}
+							} else {
+								t = types.AnyType{}
+							}
+							continue
+						}
+					}
 					expr = &IndexExpr{X: &AssertExpr{Expr: expr, Type: "map[string]any"}, Index: &StringLit{Value: f}}
 					if gt, ok := fieldTypeGuess[f]; ok && gt != "" && gt != "any" {
 						expr = &AssertExpr{Expr: expr, Type: gt}
@@ -4813,6 +4847,9 @@ func compilePrimary(p *parser.Primary, env *types.Env, base string) (Expr, error
 							gt := toGoTypeFromType(mt)
 							if gt != "" && gt != "any" {
 								args[i] = &AssertExpr{Expr: args[i], Type: gt}
+							}
+							if vn := varName(p.Call.Args[i]); vn != "" {
+								structVarGuess[vn] = toGoTypeFromType(mt)
 							}
 						}
 						if _, ok := at.(types.BigIntType); ok {
@@ -5968,6 +6005,25 @@ func mapLiteral(e *parser.Expr) *parser.MapLiteral {
 		return nil
 	}
 	return v.Target.Map
+}
+
+func varName(e *parser.Expr) string {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return ""
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 || u.Value == nil {
+		return ""
+	}
+	v := u.Value
+	if len(v.Ops) != 0 || v.Target == nil {
+		return ""
+	}
+	sel := v.Target.Selector
+	if sel != nil && len(sel.Tail) == 0 {
+		return sel.Root
+	}
+	return ""
 }
 
 func isVarRef(e *parser.Expr, name string) bool {

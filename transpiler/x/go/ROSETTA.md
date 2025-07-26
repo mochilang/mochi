@@ -1,7 +1,7 @@
 # Go Rosetta Transpiler Output
 
-Completed programs: 191/332
-Last updated: 2025-07-26 19:01 +0700
+Completed programs: 207/332
+Last updated: 2025-07-26 23:47 +0700
 
 Checklist:
 
@@ -210,24 +210,24 @@ Checklist:
 | 201 | cholesky-decomposition-1 | ✓ | 120.0µs | 6.08KB |
 | 202 | cholesky-decomposition | ✓ | 72.0µs | 4.12KB |
 | 203 | chowla-numbers | ✓ | 64.0µs | 1.90KB |
-| 204 | church-numerals-1 |   |  |  |
+| 204 | church-numerals-1 | ✓ | 71.0µs | 6.12KB |
 | 205 | church-numerals-2 |   |  |  |
-| 206 | circles-of-given-radius-through-two-points |   |  |  |
-| 207 | circular-primes |   |  |  |
-| 208 | cistercian-numerals |   |  |  |
-| 209 | comma-quibbling |   |  |  |
+| 206 | circles-of-given-radius-through-two-points | ✓ | 693.0µs | 3.65KB |
+| 207 | circular-primes | ✓ | 1.0ms | 9.05KB |
+| 208 | cistercian-numerals | ✓ | 3.0ms | 88.73KB |
+| 209 | comma-quibbling | ✓ | 797.0µs | 1.11KB |
 | 210 | compiler-virtual-machine-interpreter |   |  |  |
-| 211 | composite-numbers-k-with-no-single-digit-factors-whose-factors-are-all-substrings-of-k |   |  |  |
-| 212 | compound-data-type |   |  |  |
-| 213 | concurrent-computing-1 |   |  |  |
-| 214 | concurrent-computing-2 |   |  |  |
-| 215 | concurrent-computing-3 |   |  |  |
-| 216 | conditional-structures-1 |   |  |  |
-| 217 | conditional-structures-10 |   |  |  |
-| 218 | conditional-structures-2 |   |  |  |
-| 219 | conditional-structures-3 |   |  |  |
-| 220 | conditional-structures-4 |   |  |  |
-| 221 | conditional-structures-5 |   |  |  |
+| 211 | composite-numbers-k-with-no-single-digit-factors-whose-factors-are-all-substrings-of-k | ✓ | 60.03s | 38.65KB |
+| 212 | compound-data-type | ✓ | 235.0µs | 0B |
+| 213 | concurrent-computing-1 | ✓ | 470.0µs | 984B |
+| 214 | concurrent-computing-2 | ✓ | 684.0µs | 984B |
+| 215 | concurrent-computing-3 | ✓ | 618.0µs | 1.05KB |
+| 216 | conditional-structures-1 | ✓ | 450.0µs | 0B |
+| 217 | conditional-structures-10 | ✓ | 537.0µs | 952B |
+| 218 | conditional-structures-2 | ✓ | 264.0µs | 0B |
+| 219 | conditional-structures-3 | ✓ | 261.0µs | 0B |
+| 220 | conditional-structures-4 | ✓ | 247.0µs | 0B |
+| 221 | conditional-structures-5 | ✓ | 231.0µs | 0B |
 | 222 | conditional-structures-6 |   |  |  |
 | 223 | conditional-structures-7 |   |  |  |
 | 224 | conditional-structures-8 |   |  |  |
