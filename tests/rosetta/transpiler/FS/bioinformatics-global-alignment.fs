@@ -1,4 +1,4 @@
-// Generated 2025-07-26 04:38 +0700
+// Generated 2025-07-26 05:21 +0700
 
 exception Break
 exception Continue
@@ -23,6 +23,19 @@ let _now () =
         int (System.DateTime.UtcNow.Ticks % 2147483647L)
 
 _initNow()
+let _substr (s: string) (start: int) (ed: int) =
+    let n = s.Length
+    let mutable start = start
+    let mutable ed = ed
+    if start < 0 then start <- start + n
+    if ed < 0 then ed <- ed + n
+    if start < 0 then start <- 0
+    if start > n then start <- n
+    if ed < 0 then ed <- 0
+    if ed > n then ed <- n
+    if start > ed then start <- ed
+    s.Substring(start, ed - start)
+
 let rec padLeft (s: string) (w: int) =
     let mutable __ret : string = Unchecked.defaultof<string>
     let mutable s = s
@@ -46,7 +59,7 @@ and indexOfFrom (s: string) (ch: string) (start: int) =
     try
         let mutable i: int = start
         while i < (String.length s) do
-            if (s.Substring(i, (i + 1) - i)) = ch then
+            if (unbox<string> (_substr s i (i + 1))) = ch then
                 __ret <- i
                 raise Return
             i <- i + 1
@@ -64,7 +77,7 @@ and containsStr (s: string) (sub: string) =
         let sl: int = String.length s
         let subl: int = String.length sub
         while i <= (sl - subl) do
-            if (s.Substring(i, (i + subl) - i)) = sub then
+            if (unbox<string> (_substr s i (i + subl))) = sub then
                 __ret <- true
                 raise Return
             i <- i + 1
@@ -136,12 +149,12 @@ and headTailOverlap (s1: string) (s2: string) =
     try
         let mutable start: int = 0
         while true do
-            let ix: int = indexOfFrom s1 (s2.Substring(0, 1 - 0)) start
+            let ix: int = indexOfFrom s1 (_substr s2 0 1) start
             if ix = (0 - 1) then
                 __ret <- 0
                 raise Return
             start <- ix
-            if (s2.Substring(0, ((String.length s1) - start) - 0)) = (s1.Substring(start, (String.length s1) - start)) then
+            if (_substr s2 0 ((String.length s1) - start)) = (_substr s1 start (String.length s1)) then
                 __ret <- (String.length s1) - start
                 raise Return
             start <- start + 1
@@ -206,7 +219,7 @@ and shortestCommonSuperstring (slist: string array) =
             let mutable i: int = 0
             while i < (int ((int (Array.length ss)) - 1)) do
                 let ov: int = headTailOverlap (unbox<string> (perm.[i])) (unbox<string> (perm.[i + 1]))
-                sup <- sup + (perm.[i + 1].Substring(ov, (Seq.length (perm.[i + 1])) - ov))
+                sup <- sup + (unbox<string> (_substr (perm.[i + 1]) ov (Seq.length (perm.[i + 1]))))
                 i <- i + 1
             if (String.length sup) < (String.length shortest) then
                 shortest <- sup
@@ -226,7 +239,7 @@ and printCounts (seq: string) =
         let mutable t: int = 0
         let mutable i: int = 0
         while i < (String.length seq) do
-            let ch: string = seq.Substring(i, (i + 1) - i)
+            let ch: string = _substr seq i (i + 1)
             if ch = "A" then
                 a <- a + 1
             else

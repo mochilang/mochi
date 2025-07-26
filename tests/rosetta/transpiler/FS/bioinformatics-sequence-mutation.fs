@@ -1,4 +1,4 @@
-// Generated 2025-07-26 04:38 +0700
+// Generated 2025-07-25 22:32 +0000
 
 exception Return
 
@@ -20,6 +20,19 @@ let _now () =
         int (System.DateTime.UtcNow.Ticks % 2147483647L)
 
 _initNow()
+let _substr (s: string) (start: int) (ed: int) =
+    let n = s.Length
+    let mutable start = start
+    let mutable ed = ed
+    if start < 0 then start <- start + n
+    if ed < 0 then ed <- ed + n
+    if start < 0 then start <- 0
+    if start > n then start <- n
+    if ed < 0 then ed <- 0
+    if ed > n then ed <- n
+    if start > ed then start <- ed
+    s.Substring(start, ed - start)
+
 let rec randInt (s: int) (n: int) =
     let mutable __ret : int array = Unchecked.defaultof<int array>
     let mutable s = s
@@ -56,9 +69,9 @@ and makeSeq (s: int) (le: int) =
         let mutable i: int = 0
         while i < le do
             let mutable r: int array = randInt s 4
-            s <- r.[0]
-            let idx: int = int (r.[1])
-            out <- out + (bases.Substring(idx, (idx + 1) - idx))
+            s <- unbox<int> (r.[0])
+            let idx: int = unbox<int> (r.[1])
+            out <- out + (unbox<string> (_substr bases idx (idx + 1)))
             i <- i + 1
         __ret <- [|box s; box out|]
         raise Return
@@ -74,25 +87,25 @@ and mutate (s: int) (dna: string) (w: int array) =
         let bases: string = "ACGT"
         let le: int = String.length dna
         let mutable r: int array = randInt s le
-        s <- r.[0]
-        let p: int = int (r.[1])
-        r <- randInt s 300
-        s <- r.[0]
-        let x: int = int (r.[1])
+        s <- unbox<int> (r.[0])
+        let p: int = unbox<int> (r.[1])
+        r <- unbox<int array> (randInt s 300)
+        s <- unbox<int> (r.[0])
+        let x: int = unbox<int> (r.[1])
         let mutable arr: string array = [||]
         let mutable i: int = 0
         while i < le do
-            arr <- Array.append arr [|dna.Substring(i, (i + 1) - i)|]
+            arr <- Array.append arr [|_substr dna i (i + 1)|]
             i <- i + 1
-        if x < (int (w.[0])) then
-            r <- randInt s 4
-            s <- r.[0]
-            let idx: int = int (r.[1])
-            let b: string = bases.Substring(idx, (idx + 1) - idx)
+        if x < (unbox<int> (w.[0])) then
+            r <- unbox<int array> (randInt s 4)
+            s <- unbox<int> (r.[0])
+            let idx: int = unbox<int> (r.[1])
+            let b: string = _substr bases idx (idx + 1)
             printfn "%s" (((((("  Change @" + (unbox<string> (padLeft (string p) 3))) + " '") + (unbox<string> (arr.[p]))) + "' to '") + b) + "'")
             arr.[p] <- b
         else
-            if x < (int ((w.[0]) + (w.[1]))) then
+            if x < (unbox<int> ((w.[0]) + (w.[1]))) then
                 printfn "%s" (((("  Delete @" + (unbox<string> (padLeft (string p) 3))) + " '") + (unbox<string> (arr.[p]))) + "'")
                 let mutable j: int = p
                 while j < (int ((int (Array.length arr)) - 1)) do
@@ -100,10 +113,10 @@ and mutate (s: int) (dna: string) (w: int array) =
                     j <- j + 1
                 arr <- Array.sub arr 0 ((int ((int (Array.length arr)) - 1)) - 0)
             else
-                r <- randInt s 4
-                s <- r.[0]
-                let idx2: int = int (r.[1])
-                let b: string = bases.Substring(idx2, (idx2 + 1) - idx2)
+                r <- unbox<int array> (randInt s 4)
+                s <- unbox<int> (r.[0])
+                let idx2: int = unbox<int> (r.[1])
+                let b: string = _substr bases idx2 (idx2 + 1)
                 arr <- Array.append arr [|""|]
                 let mutable j: int = (int (Array.length arr)) - 1
                 while j > p do
@@ -133,7 +146,7 @@ and prettyPrint (dna: string) (rowLen: int) =
             let mutable k: int = i + rowLen
             if k > le then
                 k <- le
-            printfn "%s" (((unbox<string> (padLeft (string i) 5)) + ": ") + (dna.Substring(i, k - i)))
+            printfn "%s" (((unbox<string> (padLeft (string i) 5)) + ": ") + (_substr dna i k))
             i <- i + rowLen
         let mutable a: int = 0
         let mutable c: int = 0
@@ -141,7 +154,7 @@ and prettyPrint (dna: string) (rowLen: int) =
         let mutable t: int = 0
         let mutable idx: int = 0
         while idx < le do
-            let ch: string = dna.Substring(idx, (idx + 1) - idx)
+            let ch: string = _substr dna idx (idx + 1)
             if ch = "A" then
                 a <- a + 1
             else
@@ -182,7 +195,7 @@ and main () =
         let __mem_start = System.GC.GetTotalMemory(true)
         let mutable seed: int = 1
         let mutable res: obj array = makeSeq seed 250
-        seed <- res.[0]
+        seed <- unbox<int> (res.[0])
         let mutable dna: string = unbox<string> (res.[1])
         prettyPrint dna 50
         let muts: int = 10
@@ -192,8 +205,8 @@ and main () =
         printfn "%s" (("MUTATIONS (" + (string muts)) + "):")
         let mutable i: int = 0
         while i < muts do
-            res <- mutate seed dna w
-            seed <- res.[0]
+            res <- unbox<obj array> (mutate seed dna w)
+            seed <- unbox<int> (res.[0])
             dna <- unbox<string> (res.[1])
             i <- i + 1
         printfn "%s" ""

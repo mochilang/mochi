@@ -45,6 +45,7 @@ type Program struct {
 	UseNow    bool
 	UseBreak  bool
 	UseReturn bool
+	UseSubstr bool
 }
 
 // varTypes holds the inferred type for each variable defined during
@@ -60,6 +61,7 @@ var (
 	usesNow      bool
 	usesBreak    bool
 	usesReturn   bool
+	usesSubstr   bool
 	benchMain    bool
 )
 
@@ -92,6 +94,20 @@ let _now () =
         int _nowSeed
     else
         int (System.DateTime.UtcNow.Ticks % 2147483647L)
+`
+
+const helperSubstr = `let _substr (s: string) (start: int) (ed: int) =
+    let n = s.Length
+    let mutable start = start
+    let mutable ed = ed
+    if start < 0 then start <- start + n
+    if ed < 0 then ed <- ed + n
+    if start < 0 then start <- 0
+    if start > n then start <- n
+    if ed < 0 then ed <- 0
+    if ed > n then ed <- n
+    if start > ed then start <- ed
+    s.Substring(start, ed - start)
 `
 
 func writeIndent(w io.Writer) {
@@ -1003,12 +1019,30 @@ type SubstringExpr struct {
 }
 
 func (s *SubstringExpr) emit(w io.Writer) {
-	s.Str.emit(w)
-	io.WriteString(w, ".Substring(")
-	s.Start.emit(w)
-	io.WriteString(w, ", ")
-	(&BinaryExpr{Left: s.End, Op: "-", Right: s.Start}).emit(w)
-	io.WriteString(w, ")")
+	io.WriteString(w, "_substr ")
+	if needsParen(s.Str) {
+		io.WriteString(w, "(")
+		s.Str.emit(w)
+		io.WriteString(w, ")")
+	} else {
+		s.Str.emit(w)
+	}
+	io.WriteString(w, " ")
+	if needsParen(s.Start) {
+		io.WriteString(w, "(")
+		s.Start.emit(w)
+		io.WriteString(w, ")")
+	} else {
+		s.Start.emit(w)
+	}
+	io.WriteString(w, " ")
+	if needsParen(s.End) {
+		io.WriteString(w, "(")
+		s.End.emit(w)
+		io.WriteString(w, ")")
+	} else {
+		s.End.emit(w)
+	}
 }
 
 type IfStmt struct {
@@ -1734,6 +1768,9 @@ func inferType(e Expr) string {
 		if strings.HasPrefix(t, "Map<") {
 			return mapValueType(t)
 		}
+		if t == "" || t == "array" {
+			return "obj"
+		}
 		return ""
 	case *MatchExpr:
 		if len(v.Cases) == 0 {
@@ -2042,18 +2079,36 @@ func (s *SliceExpr) emit(w io.Writer) {
 		}
 		return
 	}
-	s.Target.emit(w)
-	io.WriteString(w, ".Substring(")
-	start.emit(w)
-	io.WriteString(w, ", ")
-	var length Expr
-	if s.End != nil {
-		length = &BinaryExpr{Left: s.End, Op: "-", Right: start}
+	io.WriteString(w, "_substr ")
+	if needsParen(s.Target) {
+		io.WriteString(w, "(")
+		s.Target.emit(w)
+		io.WriteString(w, ")")
 	} else {
-		length = &BinaryExpr{Left: &CallExpr{Func: "String.length", Args: []Expr{s.Target}}, Op: "-", Right: start}
+		s.Target.emit(w)
 	}
-	length.emit(w)
-	io.WriteString(w, ")")
+	io.WriteString(w, " ")
+	if needsParen(start) {
+		io.WriteString(w, "(")
+		start.emit(w)
+		io.WriteString(w, ")")
+	} else {
+		start.emit(w)
+	}
+	io.WriteString(w, " ")
+	if s.End != nil {
+		if needsParen(s.End) {
+			io.WriteString(w, "(")
+			s.End.emit(w)
+			io.WriteString(w, ")")
+		} else {
+			s.End.emit(w)
+		}
+	} else {
+		io.WriteString(w, "(")
+		(&CallExpr{Func: "String.length", Args: []Expr{s.Target}}).emit(w)
+		io.WriteString(w, ")")
+	}
 }
 
 // CastExpr represents expr as type.
@@ -2139,6 +2194,10 @@ func Emit(prog *Program) []byte {
 		buf.WriteString(helperNow)
 		buf.WriteString("\n_initNow()\n")
 	}
+	if prog.UseSubstr {
+		buf.WriteString(helperSubstr)
+		buf.WriteString("\n")
+	}
 	for _, st := range prog.Structs {
 		fmt.Fprintf(&buf, "type %s = {\n", fsIdent(st.Name))
 		for _, f := range st.Fields {
@@ -2220,6 +2279,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	usesNow = false
 	usesBreak = false
 	usesReturn = false
+	usesSubstr = false
 	p := &Program{}
 	for _, st := range prog.Statements {
 		conv, err := convertStmt(st)
@@ -2256,6 +2316,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	p.UseNow = usesNow
 	p.UseBreak = usesBreak
 	p.UseReturn = usesReturn
+	p.UseSubstr = usesSubstr
 	return p, nil
 }
 
@@ -2459,6 +2520,11 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 			if cur == "" || cur == "array" || cur == "map" {
 				varTypes[st.Assign.Name] = t
 			}
+			if vt := varTypes[st.Assign.Name]; vt != "" && vt != "array" && vt != "map" && t == "obj" && vt != t {
+				e = &CastExpr{Expr: e, Type: vt}
+			}
+		} else if vt := varTypes[st.Assign.Name]; vt != "" && vt != "array" && vt != "map" {
+			e = &CastExpr{Expr: e, Type: vt}
 		}
 		return &AssignStmt{Name: st.Assign.Name, Expr: e}, nil
 	case st.Assign != nil && (len(st.Assign.Index) > 0 || len(st.Assign.Field) > 0):
@@ -2778,6 +2844,9 @@ func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
 				}
 			}
 			isStr := inferType(expr) == "string"
+			if isStr {
+				usesSubstr = true
+			}
 			expr = &SliceExpr{Target: expr, Start: start, End: end, IsString: isStr}
 		case op.Field != nil:
 			expr = &FieldExpr{Target: expr, Name: op.Field.Name}
@@ -2921,7 +2990,8 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			if len(args) != 3 {
 				return nil, fmt.Errorf("substring expects 3 args")
 			}
-			return &SubstringExpr{Str: args[0], Start: args[1], End: args[2]}, nil
+			usesSubstr = true
+			return &CallExpr{Func: "_substr", Args: []Expr{args[0], args[1], args[2]}}, nil
 		case "upper":
 			if len(args) != 1 {
 				return nil, fmt.Errorf("upper expects 1 arg")
