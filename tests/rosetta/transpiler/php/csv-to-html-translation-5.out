@@ -6,3 +6,8 @@
     <tr><td>Brians mother</td><td>I'm his mother; that's who!</td></tr>
     <tr><td>The multitude</td><td>Behold his mother! Behold his mother!</td></tr>
 </table>
+{
+  "duration_us": 151,
+  "memory_bytes": 2504,
+  "name": "main"
+}

@@ -31,15 +31,17 @@ function _str($x) {
     if ($x === null) return 'null';
     return strval($x);
 }
-$nPts = 100;
-$rMin = 10;
-$rMax = 15;
-$span = $rMax + 1 + $rMax;
-$poss = [];
-$min2 = $rMin * $rMin;
-$max2 = $rMax * $rMax;
-$y = -$rMax;
-while ($y <= $rMax) {
+$__start_mem = memory_get_usage();
+$__start = _now();
+  $nPts = 100;
+  $rMin = 10;
+  $rMax = 15;
+  $span = $rMax + 1 + $rMax;
+  $poss = [];
+  $min2 = $rMin * $rMin;
+  $max2 = $rMax * $rMax;
+  $y = -$rMax;
+  while ($y <= $rMax) {
   $x = -$rMax;
   while ($x <= $rMax) {
   $r2 = $x * $x + $y * $y;
@@ -50,10 +52,10 @@ while ($y <= $rMax) {
 };
   $y = $y + 1;
 }
-echo rtrim(_str(count($poss)) . ' possible points'), PHP_EOL;
-$rows = [];
-$r = 0;
-while ($r < $span) {
+  echo rtrim(_str(count($poss)) . ' possible points'), PHP_EOL;
+  $rows = [];
+  $r = 0;
+  while ($r < $span) {
   $row = [];
   $c = 0;
   while ($c < $span * 2) {
@@ -63,11 +65,11 @@ while ($r < $span) {
   $rows = array_merge($rows, [$row]);
   $r = $r + 1;
 }
-$u = 0;
-$seen = [];
-$n = 0;
-while ($n < $nPts) {
-  $i = _now() % count($poss);
+  $u = 0;
+  $seen = [];
+  $n = 0;
+  while ($n < $nPts) {
+  $i = fmod(_now(), count($poss));
   $x = $poss[$i][0];
   $yy = $poss[$i][1];
   $row = $yy + $rMax;
@@ -80,8 +82,8 @@ while ($n < $nPts) {
 }
   $n = $n + 1;
 }
-$i2 = 0;
-while ($i2 < $span) {
+  $i2 = 0;
+  while ($i2 < $span) {
   $line = '';
   $j = 0;
   while ($j < $span * 2) {
@@ -91,4 +93,12 @@ while ($i2 < $span) {
   echo rtrim($line), PHP_EOL;
   $i2 = $i2 + 1;
 }
-echo rtrim(_str($u) . ' unique points'), PHP_EOL;
+  echo rtrim(_str($u) . ' unique points'), PHP_EOL;
+$__end = _now();
+$__end_mem = memory_get_usage();
+$__duration = intdiv($__end - $__start, 1000);
+$__mem_diff = max(0, $__end_mem - $__start_mem);
+$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
+$__j = json_encode($__bench, 128);
+$__j = str_replace("    ", "  ", $__j);
+echo $__j, PHP_EOL;;

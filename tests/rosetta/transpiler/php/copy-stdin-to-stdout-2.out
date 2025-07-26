@@ -1,2 +1,7 @@
 foo
 bar
+{
+  "duration_us": 69,
+  "memory_bytes": 8288,
+  "name": "main"
+}

@@ -1,5 +1,20 @@
 <?php
 ini_set('memory_limit', '-1');
+$now_seed = 0;
+$now_seeded = false;
+$s = getenv('MOCHI_NOW_SEED');
+if ($s !== false && $s !== '') {
+    $now_seed = intval($s);
+    $now_seeded = true;
+}
+function _now() {
+    global $now_seed, $now_seeded;
+    if ($now_seeded) {
+        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
+        return $now_seed;
+    }
+    return hrtime(true);
+}
 function _str($x) {
     if (is_array($x)) {
         $isList = array_keys($x) === range(0, count($x) - 1);
@@ -16,10 +31,11 @@ function _str($x) {
     if ($x === null) return 'null';
     return strval($x);
 }
-function main() {
-  echo rtrim('enter rows cols: '), PHP_EOL;
-  $row = intval(trim(fgets(STDIN)));
-  $col = intval(trim(fgets(STDIN)));
+$__start_mem = memory_get_usage();
+$__start = _now();
+  function main() {
+  $row = 3;
+  $col = 4;
   $a = [];
   $i = 0;
   while ($i < $row) {
@@ -36,5 +52,13 @@ function main() {
   $a[intval(($row - 1))][intval(($col - 1))] = 7;
   echo rtrim('a[' . _str($row - 1) . '][' . _str($col - 1) . '] = ' . _str($a[intval(($row - 1))][intval(($col - 1))])), PHP_EOL;
   $a = null;
-}
-main();
+};
+  main();
+$__end = _now();
+$__end_mem = memory_get_usage();
+$__duration = intdiv($__end - $__start, 1000);
+$__mem_diff = max(0, $__end_mem - $__start_mem);
+$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
+$__j = json_encode($__bench, 128);
+$__j = str_replace("    ", "  ", $__j);
+echo $__j, PHP_EOL;;

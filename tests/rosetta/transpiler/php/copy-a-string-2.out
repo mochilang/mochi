@@ -3,3 +3,8 @@ pointer = 0
 *pointer = shark
 *pointer = jellyfish
 creature = jellyfish
+{
+  "duration_us": 69,
+  "memory_bytes": 312,
+  "name": "main"
+}

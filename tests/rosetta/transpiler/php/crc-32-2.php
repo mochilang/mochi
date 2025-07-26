@@ -1,5 +1,20 @@
 <?php
 ini_set('memory_limit', '-1');
+$now_seed = 0;
+$now_seeded = false;
+$s = getenv('MOCHI_NOW_SEED');
+if ($s !== false && $s !== '') {
+    $now_seed = intval($s);
+    $now_seeded = true;
+}
+function _now() {
+    global $now_seed, $now_seeded;
+    if ($now_seeded) {
+        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
+        return $now_seed;
+    }
+    return hrtime(true);
+}
 function _indexof($s, $sub) {
     $pos = strpos($s, $sub);
     return $pos === false ? -1 : $pos;
@@ -12,7 +27,9 @@ function _intdiv($a, $b) {
     }
     return intdiv($a, $b);
 }
-function mochi_xor($a, $b) {
+$__start_mem = memory_get_usage();
+$__start = _now();
+  function mochi_xor($a, $b) {
   global $table;
   $res = 0;
   $bit = 1;
@@ -29,8 +46,8 @@ function mochi_xor($a, $b) {
   $bit = $bit * 2;
 };
   return $res;
-}
-function rshift($x, $n) {
+};
+  function rshift($x, $n) {
   global $table;
   $v = $x;
   $i = 0;
@@ -39,8 +56,8 @@ function rshift($x, $n) {
   $i = $i + 1;
 };
   return $v;
-}
-function mochi_ord($ch) {
+};
+  function mochi_ord($ch) {
   global $table;
   $upper = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
   $lower = 'abcdefghijklmnopqrstuvwxyz';
@@ -56,8 +73,8 @@ function mochi_ord($ch) {
   return 32;
 }
   return 0;
-}
-function toHex($n) {
+};
+  function toHex($n) {
   global $table;
   $digits = '0123456789ABCDEF';
   if ($n == 0) {
@@ -71,8 +88,8 @@ function toHex($n) {
   $v = _intdiv($v, 16);
 };
   return $out;
-}
-function crc32Table() {
+};
+  function crc32Table() {
   $table = [];
   $i = 0;
   while ($i < 256) {
@@ -90,9 +107,9 @@ function crc32Table() {
   $i = $i + 1;
 };
   return $table;
-}
-$table = crc32Table();
-function mochi_crc32($s) {
+};
+  $table = crc32Table();
+  function mochi_crc32($s) {
   global $table;
   $crc = 4294967295;
   $i = 0;
@@ -103,12 +120,20 @@ function mochi_crc32($s) {
   $i = $i + 1;
 };
   return 4294967295 - $crc;
-}
-function main() {
+};
+  function main() {
   global $table;
   $s = 'The quick brown fox jumps over the lazy dog';
   $result = mochi_crc32($s);
   $hex = strtolower(toHex($result));
   echo rtrim($hex), PHP_EOL;
-}
-main();
+};
+  main();
+$__end = _now();
+$__end_mem = memory_get_usage();
+$__duration = intdiv($__end - $__start, 1000);
+$__mem_diff = max(0, $__end_mem - $__start_mem);
+$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
+$__j = json_encode($__bench, 128);
+$__j = str_replace("    ", "  ", $__j);
+echo $__j, PHP_EOL;;

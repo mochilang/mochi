@@ -1,1 +1,6 @@
-amount, ways to make change: 100 242
+amount, ways to make change: 10 4
+{
+  "duration_us": 122,
+  "memory_bytes": 96,
+  "name": "main"
+}

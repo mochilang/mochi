@@ -1,3 +1,8 @@
 sqrt2: 1.4142135623731
 nap:   2.718281828459
 pi:    3.1416238066678
+{
+  "duration_us": 138,
+  "memory_bytes": 96,
+  "name": "main"
+}

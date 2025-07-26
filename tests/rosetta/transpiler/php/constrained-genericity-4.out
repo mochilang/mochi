@@ -1,1 +1,6 @@
 mm, that banana was good!
+{
+  "duration_us": 75,
+  "memory_bytes": 96,
+  "name": "main"
+}
