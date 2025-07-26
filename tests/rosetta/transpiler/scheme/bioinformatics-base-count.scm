@@ -1,4 +1,4 @@
-;; Generated on 2025-07-25 21:06 +0700
+;; Generated on 2025-07-26 23:50 +0700
 (import (only (scheme base) call/cc when list-ref list-set!))
 (import (rename (scheme base) (list _list)))
 (import (scheme time))
@@ -36,6 +36,10 @@
 (define (upper s) (string-upcase s))
 (define (lower s) (string-downcase s))
 (define (fmod a b) (- a (* (floor (/ a b)) b)))
+(define (_gt a b) (cond ((and (number? a) (number? b)) (> a b)) ((and (string? a) (string? b)) (string>? a b)) (else (> a b))))
+(define (_lt a b) (cond ((and (number? a) (number? b)) (< a b)) ((and (string? a) (string? b)) (string<? a b)) (else (< a b))))
+(define (_ge a b) (cond ((and (number? a) (number? b)) (>= a b)) ((and (string? a) (string? b)) (string>=? a b)) (else (>= a b))))
+(define (_le a b) (cond ((and (number? a) (number? b)) (<= a b)) ((and (string? a) (string? b)) (string<=? a b)) (else (<= a b))))
 (let ((start8 (now)
 )
 )

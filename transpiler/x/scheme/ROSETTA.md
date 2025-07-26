@@ -2,8 +2,8 @@
 
 Generated Scheme code for Rosetta Code tasks under `tests/rosetta/x/Mochi`.
 
-## Checklist (106/332)
-Last updated: 2025-07-26 15:02 UTC
+## Checklist (119/332)
+Last updated: 2025-07-26 17:05 UTC
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -95,41 +95,41 @@ Last updated: 2025-07-26 15:02 UTC
 | 86 | average-loop-length | ✓ | 2.668943s | 16.7 MB |
 | 87 | averages-arithmetic-mean | ✓ | 646µs | 12.4 MB |
 | 88 | averages-mean-time-of-day | ✓ | 213µs | 13.7 MB |
-| 89 | averages-median-1 |   | 73µs | 12.5 MB |
+| 89 | averages-median-1 | ✓ | 73µs | 12.5 MB |
 | 90 | averages-median-2 | ✓ | 68µs | 12.6 MB |
 | 91 | averages-median-3 | ✓ | 105µs | 12.6 MB |
-| 92 | averages-mode | ✓ | 120µs | 12.7 MB |
-| 93 | averages-pythagorean-means | ✓ | 347µs | 12.7 MB |
-| 94 | averages-root-mean-square | ✓ | 52µs | 12.6 MB |
-| 95 | averages-simple-moving-average | ✓ | 860µs | 12.7 MB |
-| 96 | avl-tree | ✓ | 562µs | 13.7 MB |
-| 97 | b-zier-curves-intersections | ✓ | 33.826ms | 13.6 MB |
-| 98 | babbage-problem | ✓ | 10.348ms | 12.2 MB |
-| 99 | babylonian-spiral | ✓ | 5.686ms | 13.7 MB |
-| 100 | balanced-brackets | ✓ | 825µs | 12.6 MB |
+| 92 | averages-mode | ✓ | 90µs | 12.7 MB |
+| 93 | averages-pythagorean-means | ✓ | 261µs | 12.4 MB |
+| 94 | averages-root-mean-square | ✓ | 62µs | 12.3 MB |
+| 95 | averages-simple-moving-average | ✓ | 1.313ms | 12.7 MB |
+| 96 | avl-tree | ✓ | 812µs | 14.1 MB |
+| 97 | b-zier-curves-intersections | ✓ | 36.603ms | 13.9 MB |
+| 98 | babbage-problem | ✓ | 58.148ms | 12.1 MB |
+| 99 | babylonian-spiral | ✓ | 2.926ms | 13.7 MB |
+| 100 | balanced-brackets | ✓ | 422µs | 12.6 MB |
 | 101 | balanced-ternary | ✓ | 342µs | 13.8 MB |
-| 102 | barnsley-fern |   |  |  |
-| 103 | base64-decode-data |   |  |  |
-| 104 | bell-numbers |   |  |  |
-| 105 | benfords-law |   |  |  |
-| 106 | bernoulli-numbers |   |  |  |
-| 107 | best-shuffle | ✓ | 865µs | 13.0 MB |
-| 108 | bifid-cipher | ✓ | 10.302ms | 13.9 MB |
-| 109 | bin-given-limits | ✓ | 3.485ms | 13.8 MB |
+| 102 | barnsley-fern | ✓ | 159.234ms | 12.9 MB |
+| 103 | base64-decode-data | ✓ | 10.329ms | 15.3 MB |
+| 104 | bell-numbers | ✓ | 14.428ms | 13.1 MB |
+| 105 | benfords-law | ✓ | 61.908ms | 13.3 MB |
+| 106 | bernoulli-numbers | ✓ | 142.968ms | 12.6 MB |
+| 107 | best-shuffle | ✓ | 568µs | 12.9 MB |
+| 108 | bifid-cipher | ✓ | 5.874ms | 13.7 MB |
+| 109 | bin-given-limits | ✓ | 6.146ms | 13.7 MB |
 | 110 | binary-digits | ✓ | 603µs | 12.4 MB |
 | 111 | binary-search | ✓ | 69µs | 12.6 MB |
-| 112 | binary-strings | ✓ | 516µs | 12.9 MB |
-| 113 | bioinformatics-base-count | ✓ | 867µs | 12.6 MB |
+| 112 | binary-strings | ✓ | 225µs | 12.9 MB |
+| 113 | bioinformatics-base-count | ✓ | 1.33ms | 12.5 MB |
 | 114 | bioinformatics-global-alignment |   |  |  |
-| 115 | bioinformatics-sequence-mutation |   |  |  |
+| 115 | bioinformatics-sequence-mutation | ✓ | 102.386ms | 16.5 MB |
 | 116 | biorhythms |   |  |  |
-| 117 | bitcoin-address-validation |   |  |  |
+| 117 | bitcoin-address-validation | ✓ | 334µs | 12.6 MB |
 | 118 | bitmap-b-zier-curves-cubic | ✓ |  |  |
-| 119 | bitmap-b-zier-curves-quadratic |   |  |  |
-| 120 | bitmap-bresenhams-line-algorithm |   |  |  |
-| 121 | bitmap-flood-fill |   |  |  |
-| 122 | bitmap-histogram |   |  |  |
-| 123 | bitmap-midpoint-circle-algorithm |   |  |  |
+| 119 | bitmap-b-zier-curves-quadratic | ✓ |  |  |
+| 120 | bitmap-bresenhams-line-algorithm | ✓ | 224µs | 12.8 MB |
+| 121 | bitmap-flood-fill | ✓ | 55µs | 12.8 MB |
+| 122 | bitmap-histogram | ✓ | 380µs | 12.7 MB |
+| 123 | bitmap-midpoint-circle-algorithm | ✓ | 665µs | 12.7 MB |
 | 124 | bitmap-ppm-conversion-through-a-pipe |   |  |  |
 | 125 | bitmap-read-a-ppm-file |   |  |  |
 | 126 | bitmap-read-an-image-through-a-pipe |   |  |  |
