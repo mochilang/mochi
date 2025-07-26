@@ -1806,6 +1806,19 @@ func isMaybeString(e Expr) bool {
 	switch ex := e.(type) {
 	case *StringLit:
 		return true
+	case *Name:
+		if t, ok := localVarTypes[ex.Name]; ok {
+			if t == "String" || t == "dynamic" {
+				return true
+			}
+		}
+		if currentEnv != nil {
+			if vt, err := currentEnv.GetVar(ex.Name); err == nil {
+				if dt := dartType(vt); dt == "String" || dt == "dynamic" {
+					return true
+				}
+			}
+		}
 	case *CallExpr:
 		if n, ok := ex.Func.(*Name); ok {
 			switch n.Name {
