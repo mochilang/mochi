@@ -2,7 +2,7 @@
 
 This directory stores C++ code generated from Mochi programs in `tests/rosetta/x/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.cpp` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (77/284) - Last updated 2025-07-26 05:07 +0700:
+Checklist of programs that currently transpile and run (87/284) - Last updated 2025-07-26 05:38 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | 100-doors-2 | ✓ | 222.0µs | 13.12MB |
@@ -92,19 +92,19 @@ Checklist of programs that currently transpile and run (77/284) - Last updated 2
 | 85 | average-loop-length |   |  |  |
 | 86 | averages-arithmetic-mean |   |  |  |
 | 87 | averages-mean-time-of-day | ✓ | 284.0µs | 13.93MB |
-| 88 | averages-median-1 |   |  |  |
-| 89 | averages-median-2 |   |  |  |
-| 90 | averages-median-3 |   |  |  |
-| 91 | averages-mode |   |  |  |
-| 92 | averages-pythagorean-means |   |  |  |
-| 93 | averages-root-mean-square |   |  |  |
-| 94 | averages-simple-moving-average |   |  |  |
+| 88 | averages-median-1 | ✓ | 413.0µs | 12.78MB |
+| 89 | averages-median-2 | ✓ | 380.0µs | 12.90MB |
+| 90 | averages-median-3 | ✓ | 398.0µs | 13.63MB |
+| 91 | averages-mode | ✓ | 246.0µs | 13.37MB |
+| 92 | averages-pythagorean-means | ✓ | 421.0µs | 13.16MB |
+| 93 | averages-root-mean-square | ✓ | 326.0µs | 12.67MB |
+| 94 | averages-simple-moving-average | ✓ | 517.0µs | 12.86MB |
 | 95 | avl-tree |   |  |  |
-| 96 | b-zier-curves-intersections |   |  |  |
-| 97 | babbage-problem |   |  |  |
+| 96 | b-zier-curves-intersections | ✓ | 20.0ms | 14.11MB |
+| 97 | babbage-problem | ✓ | 374.0µs | 12.66MB |
 | 98 | babylonian-spiral |   |  |  |
 | 99 | balanced-brackets |   |  |  |
-| 100 | balanced-ternary |   |  |  |
+| 100 | balanced-ternary | ✓ | 344.0µs | 14.06MB |
 | 101 | barnsley-fern |   |  |  |
 | 102 | base64-decode-data |   |  |  |
 | 103 | bell-numbers |   |  |  |

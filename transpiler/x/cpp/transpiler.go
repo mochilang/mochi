@@ -35,7 +35,7 @@ var useNow bool
 var useMem bool
 var usesLookupHost bool
 var benchMain bool
-var reserved = map[string]bool{"this": true, "new": true}
+var reserved = map[string]bool{"this": true, "new": true, "double": true}
 var currentReturnType string
 var inReturn bool
 var mutatedParams map[string]bool
@@ -793,6 +793,8 @@ func (p *Program) write(w io.Writer) {
 func (f *Func) emit(w io.Writer) {
 	oldLocals := localTypes
 	localTypes = map[string]string{}
+	prevFn := inFunction
+	inFunction = true
 	for _, p := range f.Params {
 		if p.Type != "" {
 			localTypes[p.Name] = p.Type
@@ -817,7 +819,7 @@ func (f *Func) emit(w io.Writer) {
 				if p.ByVal {
 					io.WriteString(w, typ+" ")
 				} else {
-					io.WriteString(w, typ+"& ")
+					io.WriteString(w, "const "+typ+"& ")
 				}
 			} else {
 				io.WriteString(w, typ+" ")
@@ -833,6 +835,7 @@ func (f *Func) emit(w io.Writer) {
 		fmt.Fprintln(w, "    return 0;")
 	}
 	fmt.Fprintln(w, "}")
+	inFunction = prevFn
 	localTypes = oldLocals
 }
 
@@ -2521,7 +2524,13 @@ func (i *IfStmt) emit(w io.Writer, indent int) {
 		io.WriteString(w, "    ")
 	}
 	io.WriteString(w, "if (")
-	i.Cond.emit(w)
+	if exprType(i.Cond) == "std::any" {
+		io.WriteString(w, "std::any_cast<bool>(")
+		i.Cond.emit(w)
+		io.WriteString(w, ")")
+	} else {
+		i.Cond.emit(w)
+	}
 	io.WriteString(w, ") {\n")
 	for _, st := range i.Then {
 		st.emit(w, indent+1)
@@ -3674,7 +3683,7 @@ func convertPostfix(p *parser.PostfixExpr) (Expr, error) {
 					return nil, fmt.Errorf("unsupported call")
 				}
 			} else if vr, ok := expr.(*VarRef); ok {
-				expr = &CallExpr{Name: vr.Name, Args: args}
+				expr = &CallExpr{Name: safeName(vr.Name), Args: args}
 			} else {
 				return nil, fmt.Errorf("unsupported call")
 			}
@@ -4116,12 +4125,12 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 					for _, pa := range params {
 						callArgs = append(callArgs, &VarRef{Name: pa.Name})
 					}
-					call := &CallExpr{Name: p.Call.Func, Args: callArgs}
+					call := &CallExpr{Name: safeName(p.Call.Func), Args: callArgs}
 					return &LambdaExpr{Params: params, Body: call}, nil
 				}
 			}
 		}
-		return &CallExpr{Name: p.Call.Func, Args: args}, nil
+		return &CallExpr{Name: safeName(p.Call.Func), Args: args}, nil
 	case p.Selector != nil:
 		alias := p.Selector.Root
 		if kind, ok := builtinAliases[alias]; ok && len(p.Selector.Tail) == 1 {
