@@ -1,0 +1,546 @@
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/angles-geometric-normalization-and-conversion.rs:42:2
+   |
+42 | };
+   |  ^ help: remove this semicolon
+   |
+   = note: `#[warn(redundant_semicolons)]` on by default
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/angles-geometric-normalization-and-conversion.rs:45:2
+   |
+45 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/angles-geometric-normalization-and-conversion.rs:48:2
+   |
+48 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/angles-geometric-normalization-and-conversion.rs:51:2
+   |
+51 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/angles-geometric-normalization-and-conversion.rs:54:2
+   |
+54 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/angles-geometric-normalization-and-conversion.rs:57:2
+   |
+57 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/angles-geometric-normalization-and-conversion.rs:60:2
+   |
+60 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/angles-geometric-normalization-and-conversion.rs:63:2
+   |
+63 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/angles-geometric-normalization-and-conversion.rs:66:2
+   |
+66 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/angles-geometric-normalization-and-conversion.rs:69:2
+   |
+69 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/angles-geometric-normalization-and-conversion.rs:72:2
+   |
+72 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/angles-geometric-normalization-and-conversion.rs:75:2
+   |
+75 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/angles-geometric-normalization-and-conversion.rs:78:2
+   |
+78 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/angles-geometric-normalization-and-conversion.rs:81:2
+   |
+81 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/angles-geometric-normalization-and-conversion.rs:84:2
+   |
+84 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/angles-geometric-normalization-and-conversion.rs:87:2
+   |
+87 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/angles-geometric-normalization-and-conversion.rs:106:2
+    |
+106 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary parentheses around `return` value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/angles-geometric-normalization-and-conversion.rs:41:12
+   |
+41 |     return (d % 360.0)
+   |            ^         ^
+   |
+   = note: `#[warn(unused_parens)]` on by default
+help: remove these parentheses
+   |
+41 -     return (d % 360.0)
+41 +     return d % 360.0
+   |
+
+warning: unnecessary parentheses around `return` value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/angles-geometric-normalization-and-conversion.rs:44:12
+   |
+44 |     return (g % 400.0)
+   |            ^         ^
+   |
+help: remove these parentheses
+   |
+44 -     return (g % 400.0)
+44 +     return g % 400.0
+   |
+
+warning: unnecessary parentheses around `return` value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/angles-geometric-normalization-and-conversion.rs:47:12
+   |
+47 |     return (m % 6400.0)
+   |            ^          ^
+   |
+help: remove these parentheses
+   |
+47 -     return (m % 6400.0)
+47 +     return m % 6400.0
+   |
+
+warning: unnecessary parentheses around `return` value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/angles-geometric-normalization-and-conversion.rs:50:12
+   |
+50 |     return (r % (2.0 * 3.141592653589793))
+   |            ^                             ^
+   |
+help: remove these parentheses
+   |
+50 -     return (r % (2.0 * 3.141592653589793))
+50 +     return r % (2.0 * 3.141592653589793)
+   |
+
+warning: unnecessary parentheses around `return` value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/angles-geometric-normalization-and-conversion.rs:53:12
+   |
+53 |     return ((d2d(d) * 400.0) / 360.0)
+   |            ^                        ^
+   |
+help: remove these parentheses
+   |
+53 -     return ((d2d(d) * 400.0) / 360.0)
+53 +     return (d2d(d) * 400.0) / 360.0
+   |
+
+warning: unnecessary parentheses around `return` value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/angles-geometric-normalization-and-conversion.rs:56:12
+   |
+56 |     return ((d2d(d) * 6400.0) / 360.0)
+   |            ^                         ^
+   |
+help: remove these parentheses
+   |
+56 -     return ((d2d(d) * 6400.0) / 360.0)
+56 +     return (d2d(d) * 6400.0) / 360.0
+   |
+
+warning: unnecessary parentheses around `return` value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/angles-geometric-normalization-and-conversion.rs:59:12
+   |
+59 |     return ((d2d(d) * 3.141592653589793) / 180.0)
+   |            ^                                    ^
+   |
+help: remove these parentheses
+   |
+59 -     return ((d2d(d) * 3.141592653589793) / 180.0)
+59 +     return (d2d(d) * 3.141592653589793) / 180.0
+   |
+
+warning: unnecessary parentheses around `return` value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/angles-geometric-normalization-and-conversion.rs:62:12
+   |
+62 |     return ((g2g(g) * 360.0) / 400.0)
+   |            ^                        ^
+   |
+help: remove these parentheses
+   |
+62 -     return ((g2g(g) * 360.0) / 400.0)
+62 +     return (g2g(g) * 360.0) / 400.0
+   |
+
+warning: unnecessary parentheses around `return` value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/angles-geometric-normalization-and-conversion.rs:65:12
+   |
+65 |     return ((g2g(g) * 6400.0) / 400.0)
+   |            ^                         ^
+   |
+help: remove these parentheses
+   |
+65 -     return ((g2g(g) * 6400.0) / 400.0)
+65 +     return (g2g(g) * 6400.0) / 400.0
+   |
+
+warning: unnecessary parentheses around `return` value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/angles-geometric-normalization-and-conversion.rs:68:12
+   |
+68 |     return ((g2g(g) * 3.141592653589793) / 200.0)
+   |            ^                                    ^
+   |
+help: remove these parentheses
+   |
+68 -     return ((g2g(g) * 3.141592653589793) / 200.0)
+68 +     return (g2g(g) * 3.141592653589793) / 200.0
+   |
+
+warning: unnecessary parentheses around `return` value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/angles-geometric-normalization-and-conversion.rs:71:12
+   |
+71 |     return ((m2m(m) * 360.0) / 6400.0)
+   |            ^                         ^
+   |
+help: remove these parentheses
+   |
+71 -     return ((m2m(m) * 360.0) / 6400.0)
+71 +     return (m2m(m) * 360.0) / 6400.0
+   |
+
+warning: unnecessary parentheses around `return` value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/angles-geometric-normalization-and-conversion.rs:74:12
+   |
+74 |     return ((m2m(m) * 400.0) / 6400.0)
+   |            ^                         ^
+   |
+help: remove these parentheses
+   |
+74 -     return ((m2m(m) * 400.0) / 6400.0)
+74 +     return (m2m(m) * 400.0) / 6400.0
+   |
+
+warning: unnecessary parentheses around `return` value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/angles-geometric-normalization-and-conversion.rs:77:12
+   |
+77 |     return ((m2m(m) * 3.141592653589793) / 3200.0)
+   |            ^                                     ^
+   |
+help: remove these parentheses
+   |
+77 -     return ((m2m(m) * 3.141592653589793) / 3200.0)
+77 +     return (m2m(m) * 3.141592653589793) / 3200.0
+   |
+
+warning: unnecessary parentheses around `return` value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/angles-geometric-normalization-and-conversion.rs:80:12
+   |
+80 |     return ((r2r(r) * 180.0) / 3.141592653589793)
+   |            ^                                    ^
+   |
+help: remove these parentheses
+   |
+80 -     return ((r2r(r) * 180.0) / 3.141592653589793)
+80 +     return (r2r(r) * 180.0) / 3.141592653589793
+   |
+
+warning: unnecessary parentheses around `return` value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/angles-geometric-normalization-and-conversion.rs:83:12
+   |
+83 |     return ((r2r(r) * 200.0) / 3.141592653589793)
+   |            ^                                    ^
+   |
+help: remove these parentheses
+   |
+83 -     return ((r2r(r) * 200.0) / 3.141592653589793)
+83 +     return (r2r(r) * 200.0) / 3.141592653589793
+   |
+
+warning: unnecessary parentheses around `return` value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/angles-geometric-normalization-and-conversion.rs:86:12
+   |
+86 |     return ((r2r(r) * 3200.0) / 3.141592653589793)
+   |            ^                                     ^
+   |
+help: remove these parentheses
+   |
+86 -     return ((r2r(r) * 3200.0) / 3.141592653589793)
+86 +     return (r2r(r) * 3200.0) / 3.141592653589793
+   |
+
+warning: unnecessary parentheses around function argument
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/angles-geometric-normalization-and-conversion.rs:92:177
+   |
+92 | ...{}", format!("{}{}", format!("{}{}", a.to_string(), " "), d2d((a as f64)).to_string()), " "), d2g((a as f64)).to_string()), " "), d2m(...
+   |                                                                  ^        ^
+   |
+help: remove these parentheses
+   |
+92 -         println!("{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", a.to_string(), " "), d2d((a as f64)).to_string()), " "), d2g((a as f64)).to_string()), " "), d2m((a as f64)).to_string()), " "), d2r((a as f64)).to_string()));
+92 +         println!("{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", a.to_string(), " "), d2d(a as f64).to_string()), " "), d2g((a as f64)).to_string()), " "), d2m((a as f64)).to_string()), " "), d2r((a as f64)).to_string()));
+   |
+
+warning: unnecessary parentheses around function argument
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/angles-geometric-normalization-and-conversion.rs:92:213
+   |
+92 | ... a.to_string(), " "), d2d((a as f64)).to_string()), " "), d2g((a as f64)).to_string()), " "), d2m((a as f64)).to_string()), " "), d2r(...
+   |                                                                  ^        ^
+   |
+help: remove these parentheses
+   |
+92 -         println!("{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", a.to_string(), " "), d2d((a as f64)).to_string()), " "), d2g((a as f64)).to_string()), " "), d2m((a as f64)).to_string()), " "), d2r((a as f64)).to_string()));
+92 +         println!("{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", a.to_string(), " "), d2d((a as f64)).to_string()), " "), d2g(a as f64).to_string()), " "), d2m((a as f64)).to_string()), " "), d2r((a as f64)).to_string()));
+   |
+
+warning: unnecessary parentheses around function argument
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/angles-geometric-normalization-and-conversion.rs:92:249
+   |
+92 | ...).to_string()), " "), d2g((a as f64)).to_string()), " "), d2m((a as f64)).to_string()), " "), d2r((a as f64)).to_string()));
+   |                                                                  ^        ^
+   |
+help: remove these parentheses
+   |
+92 -         println!("{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", a.to_string(), " "), d2d((a as f64)).to_string()), " "), d2g((a as f64)).to_string()), " "), d2m((a as f64)).to_string()), " "), d2r((a as f64)).to_string()));
+92 +         println!("{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", a.to_string(), " "), d2d((a as f64)).to_string()), " "), d2g((a as f64)).to_string()), " "), d2m(a as f64).to_string()), " "), d2r((a as f64)).to_string()));
+   |
+
+warning: unnecessary parentheses around function argument
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/angles-geometric-normalization-and-conversion.rs:92:285
+   |
+92 | ...).to_string()), " "), d2m((a as f64)).to_string()), " "), d2r((a as f64)).to_string()));
+   |                                                                  ^        ^
+   |
+help: remove these parentheses
+   |
+92 -         println!("{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", a.to_string(), " "), d2d((a as f64)).to_string()), " "), d2g((a as f64)).to_string()), " "), d2m((a as f64)).to_string()), " "), d2r((a as f64)).to_string()));
+92 +         println!("{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", a.to_string(), " "), d2d((a as f64)).to_string()), " "), d2g((a as f64)).to_string()), " "), d2m((a as f64)).to_string()), " "), d2r(a as f64).to_string()));
+   |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/angles-geometric-normalization-and-conversion.rs:110:28
+    |
+110 |     let duration_us: i64 = ((_end - _start) / 1000);
+    |                            ^                      ^
+    |
+help: remove these parentheses
+    |
+110 -     let duration_us: i64 = ((_end - _start) / 1000);
+110 +     let duration_us: i64 = (_end - _start) / 1000;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/angles-geometric-normalization-and-conversion.rs:111:29
+    |
+111 |     let memory_bytes: i64 = (_end_mem - _start_mem);
+    |                             ^                     ^
+    |
+help: remove these parentheses
+    |
+111 -     let memory_bytes: i64 = (_end_mem - _start_mem);
+111 +     let memory_bytes: i64 = _end_mem - _start_mem;
+    |
+
+error[E0606]: casting `&f64` as `f64` is invalid
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/angles-geometric-normalization-and-conversion.rs:92:177
+   |
+92 | ...{}", format!("{}{}", format!("{}{}", a.to_string(), " "), d2d((a as f64)).to_string()), " "), d2g((a as f64)).to_string()), " "), d2m(...
+   |                                                                  ^^^^^^^^^^
+   |
+help: dereference the expression
+   |
+92 |         println!("{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", a.to_string(), " "), d2d((*a as f64)).to_string()), " "), d2g((a as f64)).to_string()), " "), d2m((a as f64)).to_string()), " "), d2r((a as f64)).to_string()));
+   |                                                                                                                                                                                  +
+
+error[E0606]: casting `&f64` as `f64` is invalid
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/angles-geometric-normalization-and-conversion.rs:92:213
+   |
+92 | ... a.to_string(), " "), d2d((a as f64)).to_string()), " "), d2g((a as f64)).to_string()), " "), d2m((a as f64)).to_string()), " "), d2r(...
+   |                                                                  ^^^^^^^^^^
+   |
+help: dereference the expression
+   |
+92 |         println!("{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", a.to_string(), " "), d2d((a as f64)).to_string()), " "), d2g((*a as f64)).to_string()), " "), d2m((a as f64)).to_string()), " "), d2r((a as f64)).to_string()));
+   |                                                                                                                                                                                                                      +
+
+error[E0606]: casting `&f64` as `f64` is invalid
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/angles-geometric-normalization-and-conversion.rs:92:249
+   |
+92 | ...).to_string()), " "), d2g((a as f64)).to_string()), " "), d2m((a as f64)).to_string()), " "), d2r((a as f64)).to_string()));
+   |                                                                  ^^^^^^^^^^
+   |
+help: dereference the expression
+   |
+92 |         println!("{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", a.to_string(), " "), d2d((a as f64)).to_string()), " "), d2g((a as f64)).to_string()), " "), d2m((*a as f64)).to_string()), " "), d2r((a as f64)).to_string()));
+   |                                                                                                                                                                                                                                                          +
+
+error[E0606]: casting `&f64` as `f64` is invalid
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/angles-geometric-normalization-and-conversion.rs:92:285
+   |
+92 | ...).to_string()), " "), d2m((a as f64)).to_string()), " "), d2r((a as f64)).to_string()));
+   |                                                                  ^^^^^^^^^^
+   |
+help: dereference the expression
+   |
+92 |         println!("{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", a.to_string(), " "), d2d((a as f64)).to_string()), " "), d2g((a as f64)).to_string()), " "), d2m((a as f64)).to_string()), " "), d2r((*a as f64)).to_string()));
+   |                                                                                                                                                                                                                                                                                              +
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/angles-geometric-normalization-and-conversion.rs:40:12
+   |
+40 |     fn d2d(mut d: f64) -> f64 {
+   |            ----^
+   |            |
+   |            help: remove this `mut`
+   |
+   = note: `#[warn(unused_mut)]` on by default
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/angles-geometric-normalization-and-conversion.rs:43:12
+   |
+43 |     fn g2g(mut g: f64) -> f64 {
+   |            ----^
+   |            |
+   |            help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/angles-geometric-normalization-and-conversion.rs:46:12
+   |
+46 |     fn m2m(mut m: f64) -> f64 {
+   |            ----^
+   |            |
+   |            help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/angles-geometric-normalization-and-conversion.rs:49:12
+   |
+49 |     fn r2r(mut r: f64) -> f64 {
+   |            ----^
+   |            |
+   |            help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/angles-geometric-normalization-and-conversion.rs:52:12
+   |
+52 |     fn d2g(mut d: f64) -> f64 {
+   |            ----^
+   |            |
+   |            help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/angles-geometric-normalization-and-conversion.rs:55:12
+   |
+55 |     fn d2m(mut d: f64) -> f64 {
+   |            ----^
+   |            |
+   |            help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/angles-geometric-normalization-and-conversion.rs:58:12
+   |
+58 |     fn d2r(mut d: f64) -> f64 {
+   |            ----^
+   |            |
+   |            help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/angles-geometric-normalization-and-conversion.rs:61:12
+   |
+61 |     fn g2d(mut g: f64) -> f64 {
+   |            ----^
+   |            |
+   |            help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/angles-geometric-normalization-and-conversion.rs:64:12
+   |
+64 |     fn g2m(mut g: f64) -> f64 {
+   |            ----^
+   |            |
+   |            help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/angles-geometric-normalization-and-conversion.rs:67:12
+   |
+67 |     fn g2r(mut g: f64) -> f64 {
+   |            ----^
+   |            |
+   |            help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/angles-geometric-normalization-and-conversion.rs:70:12
+   |
+70 |     fn m2d(mut m: f64) -> f64 {
+   |            ----^
+   |            |
+   |            help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/angles-geometric-normalization-and-conversion.rs:73:12
+   |
+73 |     fn m2g(mut m: f64) -> f64 {
+   |            ----^
+   |            |
+   |            help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/angles-geometric-normalization-and-conversion.rs:76:12
+   |
+76 |     fn m2r(mut m: f64) -> f64 {
+   |            ----^
+   |            |
+   |            help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/angles-geometric-normalization-and-conversion.rs:79:12
+   |
+79 |     fn r2d(mut r: f64) -> f64 {
+   |            ----^
+   |            |
+   |            help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/angles-geometric-normalization-and-conversion.rs:82:12
+   |
+82 |     fn r2g(mut r: f64) -> f64 {
+   |            ----^
+   |            |
+   |            help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/angles-geometric-normalization-and-conversion.rs:85:12
+   |
+85 |     fn r2m(mut r: f64) -> f64 {
+   |            ----^
+   |            |
+   |            help: remove this `mut`
+
+error: aborting due to 4 previous errors; 55 warnings emitted
+
+For more information about this error, try `rustc --explain E0606`.

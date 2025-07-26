@@ -61,8 +61,18 @@ var refMode bool
 var forceMap map[*parser.MapLiteral]bool
 var useLazy bool
 var useRefCell bool
+var paramSigStack []map[string]string
 
 func VarTypes() map[string]string { return varTypes }
+
+func paramSigType(name string) string {
+	for i := len(paramSigStack) - 1; i >= 0; i-- {
+		if t, ok := paramSigStack[i][name]; ok {
+			return t
+		}
+	}
+	return ""
+}
 
 func isLocal(name string) bool {
 	for i := len(localVarStack) - 1; i >= 0; i-- {
@@ -500,7 +510,11 @@ func (l *ListLit) emit(w io.Writer) {
 		if i > 0 {
 			io.WriteString(w, ", ")
 		}
-		e.emit(w)
+		if inferType(e) == "&String" {
+			(&StringCastExpr{Expr: e}).emit(w)
+		} else {
+			e.emit(w)
+		}
 	}
 	io.WriteString(w, "]")
 }
@@ -835,9 +849,22 @@ func (a *AppendExpr) emit(w io.Writer) {
 	io.WriteString(w, ".clone(); v.push(")
 	lt := inferType(a.List)
 	if lt == "Vec<String>" {
-		io.WriteString(w, "String::from(")
-		a.Elem.emit(w)
-		io.WriteString(w, ")")
+		et := inferType(a.Elem)
+		if _, ok := a.Elem.(*StringLit); ok {
+			io.WriteString(w, "String::from(")
+			a.Elem.emit(w)
+			io.WriteString(w, ")")
+		} else if et == "String" {
+			a.Elem.emit(w)
+			io.WriteString(w, ".clone()")
+		} else if et == "&String" {
+			a.Elem.emit(w)
+			io.WriteString(w, ".to_string()")
+		} else {
+			io.WriteString(w, "String::from(")
+			a.Elem.emit(w)
+			io.WriteString(w, ")")
+		}
 	} else {
 		a.Elem.emit(w)
 	}
@@ -1160,7 +1187,12 @@ func (a *AssignStmt) emit(w io.Writer) {
 	} else {
 		io.WriteString(w, name)
 		io.WriteString(w, " = ")
-		a.Expr.emit(w)
+		if _, ok := a.Expr.(*NameRef); ok && inferType(a.Expr) == "String" && inferType(&NameRef{Name: name}) == "String" {
+			a.Expr.emit(w)
+			io.WriteString(w, ".clone()")
+		} else {
+			a.Expr.emit(w)
+		}
 	}
 }
 
@@ -1289,6 +1321,7 @@ func (b *BinaryExpr) emit(w io.Writer) {
 			io.WriteString(w, b.Op)
 			io.WriteString(w, " ")
 			b.Right.emit(w)
+			io.WriteString(w, ".as_str()")
 			io.WriteString(w, ")")
 			return
 		}
@@ -2417,14 +2450,7 @@ func compileForStmt(n *parser.ForStmt) (Stmt, error) {
 	}
 	byRef := false
 	if t := inferType(iter); strings.HasPrefix(t, "Vec<") {
-		elem := strings.TrimSuffix(strings.TrimPrefix(t, "Vec<"), ">")
-		if elem == "String" {
-			byRef = false
-		} else if strings.HasPrefix(elem, "Vec<") || strings.HasPrefix(elem, "HashMap<") {
-			byRef = true
-		} else if _, ok := structTypes[elem]; ok {
-			byRef = true
-		}
+		byRef = true
 	}
 	var end Expr
 	if n.RangeEnd != nil {
@@ -2452,9 +2478,12 @@ func compileForStmt(n *parser.ForStmt) (Stmt, error) {
 		if strings.HasPrefix(t, "Vec<") {
 			typ := strings.TrimSuffix(strings.TrimPrefix(t, "Vec<"), ">")
 			if typ == "String" {
-				varTypes[n.Name] = "String"
-				stringVars[n.Name] = true
-				byRef = false
+				if byRef {
+					varTypes[n.Name] = "&String"
+				} else {
+					varTypes[n.Name] = "String"
+					stringVars[n.Name] = true
+				}
 			} else if byRef {
 				varTypes[n.Name] = "&" + typ
 			} else {
@@ -2645,6 +2674,9 @@ func compileFunStmt(fn *parser.FunStmt) (Stmt, error) {
 		if len(localVarStack) > 0 {
 			localVarStack = localVarStack[:len(localVarStack)-1]
 		}
+		if len(paramSigStack) > 0 {
+			paramSigStack = paramSigStack[:len(paramSigStack)-1]
+		}
 		varTypes = prevVarTypes
 		mapVars = prevMapVars
 		stringVars = prevStringVars
@@ -2654,6 +2686,7 @@ func compileFunStmt(fn *parser.FunStmt) (Stmt, error) {
 	currentFuncLocals = map[string]bool{}
 	params := make([]Param, len(fn.Params))
 	typList := make([]string, len(fn.Params))
+	sigMap := map[string]string{}
 	for i, p := range fn.Params {
 		typ := ""
 		if p.Type != nil {
@@ -2679,6 +2712,7 @@ func compileFunStmt(fn *parser.FunStmt) (Stmt, error) {
 			}
 		}
 		params[i] = Param{Name: p.Name, Type: sigType}
+		sigMap[p.Name] = sigType
 		locals[p.Name] = true
 		currentFuncLocals[p.Name] = true
 		typList[i] = sigType
@@ -2693,6 +2727,7 @@ func compileFunStmt(fn *parser.FunStmt) (Stmt, error) {
 		}
 	}
 	localVarStack = append(localVarStack, locals)
+	paramSigStack = append(paramSigStack, sigMap)
 	funParams[fn.Name] = len(fn.Params)
 	funParamTypes[fn.Name] = typList
 
@@ -3205,13 +3240,32 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 		if pts, ok := funParamTypes[name]; ok {
 			paramTypes = pts
 			for i := 0; i < len(args) && i < len(paramTypes); i++ {
+				argType := inferType(args[i])
 				if strings.HasPrefix(pts[i], "&mut ") {
-					if _, isUnary := args[i].(*UnaryExpr); !isUnary {
-						args[i] = &UnaryExpr{Op: "&mut", Expr: args[i]}
+					alreadyRef := strings.HasPrefix(argType, "&mut ")
+					if nr, ok := args[i].(*NameRef); ok {
+						st := paramSigType(nr.Name)
+						if strings.HasPrefix(st, "&") {
+							alreadyRef = true
+						}
+					}
+					if !alreadyRef {
+						if _, isUnary := args[i].(*UnaryExpr); !isUnary {
+							args[i] = &UnaryExpr{Op: "&mut", Expr: args[i]}
+						}
 					}
 				} else if strings.HasPrefix(pts[i], "&") {
-					if _, isUnary := args[i].(*UnaryExpr); !isUnary {
-						args[i] = &UnaryExpr{Op: "&", Expr: args[i]}
+					alreadyRef := strings.HasPrefix(argType, "&")
+					if nr, ok := args[i].(*NameRef); ok {
+						st := paramSigType(nr.Name)
+						if strings.HasPrefix(st, "&") {
+							alreadyRef = true
+						}
+					}
+					if !alreadyRef {
+						if _, isUnary := args[i].(*UnaryExpr); !isUnary {
+							args[i] = &UnaryExpr{Op: "&", Expr: args[i]}
+						}
 					}
 				} else if pts[i] == "String" {
 					if _, ok := args[i].(*StringLit); ok || inferType(args[i]) != "String" {
@@ -3219,6 +3273,8 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 					}
 				} else if pts[i] == "f64" && inferType(args[i]) == "i64" {
 					args[i] = &FloatCastExpr{Expr: args[i]}
+				} else if (pts[i] == "f64" || pts[i] == "i64") && strings.HasPrefix(argType, "&") {
+					args[i] = &UnaryExpr{Op: "*", Expr: args[i]}
 				} else if nr, ok := args[i].(*NameRef); ok && boxVars[nr.Name] && !strings.HasPrefix(pts[i], "Box<") {
 					args[i] = &UnaryExpr{Op: "*", Expr: &MethodCallExpr{Receiver: args[i], Name: "clone"}}
 				} else if _, ok := args[i].(*NameRef); ok && !strings.HasPrefix(pts[i], "&") && (pts[i] == "String" || strings.HasPrefix(pts[i], "Vec<") || strings.HasPrefix(pts[i], "HashMap<")) {
@@ -3278,9 +3334,9 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			}
 			elems[i] = ex
 		}
-		if len(elems) > 0 && inferType(elems[0]) == "String" {
+		if len(elems) > 0 && (inferType(elems[0]) == "String" || inferType(elems[0]) == "&String") {
 			for i, el := range elems {
-				if _, ok := el.(*StringLit); ok {
+				if _, ok := el.(*StringLit); ok || inferType(el) == "&String" {
 					elems[i] = &StringCastExpr{Expr: el}
 				}
 			}
