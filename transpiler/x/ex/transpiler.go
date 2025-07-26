@@ -3000,6 +3000,14 @@ func compileBinary(b *parser.BinaryExpr, env *types.Env) (Expr, error) {
 						}
 					}
 					floatOp := leftFloat || rightFloat
+					if opName == "+" {
+						if _, ok := typesSlice[i].(types.ListType); ok {
+							opName = "++"
+						}
+						if _, ok := typesSlice[i+1].(types.ListType); ok {
+							opName = "++"
+						}
+					}
 					bin := &BinaryExpr{Left: operands[i], Op: opName, Right: operands[i+1], FloatOp: floatOp}
 					if opName == "in" {
 						if _, ok := types.TypeOfPostfix(ops[i].Right, env).(types.MapType); ok {
@@ -3327,8 +3335,11 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 				switch t.(type) {
 				case types.StringType, types.IntType, types.FloatType, types.BoolType:
 					return &CallExpr{Func: "IO.puts", Args: []Expr{args[0]}}, nil
+				case types.MapType:
+					str := &CallExpr{Func: "Kernel.inspect", Args: []Expr{args[0]}}
+					return &CallExpr{Func: "IO.puts", Args: []Expr{str}}, nil
 				default:
-					str := &CallExpr{Func: "Kernel.to_string", Args: []Expr{args[0]}}
+					str := &CallExpr{Func: "Kernel.inspect", Args: []Expr{args[0]}}
 					return &CallExpr{Func: "IO.puts", Args: []Expr{str}}, nil
 				}
 			} else if len(args) == 2 {
@@ -3439,6 +3450,10 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 				list := args[0]
 				elemList := &ListLit{Elems: []Expr{args[1]}}
 				return &BinaryExpr{Left: list, Op: "++", Right: elemList}, nil
+			}
+		case "keys":
+			if len(args) == 1 {
+				return &CallExpr{Func: "Map.keys", Args: []Expr{args[0]}}, nil
 			}
 		case "now":
 			if len(args) == 0 {

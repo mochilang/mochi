@@ -82,39 +82,55 @@ defmodule Main do
       {:return, val} -> val
     end
   end
-  def gen(first, cand, digits) do
+  def countPrimeFactors(n) do
     try do
-      if digits == 0 do
-        if Main.isPrime(cand) do
-          Process.put(:asc, (Process.get(:asc) ++ [cand]))
-        end
-        throw {:return, nil}
+      if n == 1 do
+        throw {:return, 0}
       end
-      i = first
-      while_fun_2 = fn while_fun_2, i ->
-        if i < 10 do
-          Main.gen(i + 1, cand * 10 + i, digits - 1)
-          i = i + 1
-          while_fun_2.(while_fun_2, i)
+      if Main.isPrime(n) do
+        throw {:return, 1}
+      end
+      count = 0
+      f = 2
+      while_fun_2 = fn while_fun_2, count, f, n ->
+        if true do
+          if rem(n, f) == 0 do
+            count = count + 1
+            n = div(n, f)
+            if n == 1 do
+              throw {:return, count}
+            end
+            if Main.isPrime(n) do
+              f = n
+            end
+          else
+            if f >= 3 do
+              f = f + 2
+            else
+              f = 3
+            end
+          end
+          while_fun_2.(while_fun_2, count, f, n)
         else
-          i
+          {count, f, n}
         end
       end
-      i = try do
-          while_fun_2.(while_fun_2, i)
+      {count, f, n} = try do
+          while_fun_2.(while_fun_2, count, f, n)
         catch
-          :break -> i
+          :break -> {count, f, n}
         end
 
+      throw {:return, count}
     catch
       {:return, val} -> val
     end
   end
-  def pad(n, width) do
+  def pad4(n) do
     try do
       s = to_string(n)
       while_fun_3 = fn while_fun_3, s ->
-        if String.length(s) < width do
+        if String.length(s) < 4 do
           s = (" " <> s)
           while_fun_3.(while_fun_3, s)
         else
@@ -134,54 +150,45 @@ defmodule Main do
   end
   def main() do
     try do
-      digits = 1
-      while_fun_4 = fn while_fun_4, digits ->
-        if digits < 10 do
-          Main.gen(1, 0, digits)
-          digits = digits + 1
-          while_fun_4.(while_fun_4, digits)
-        else
-          digits
-        end
-      end
-      digits = try do
-          while_fun_4.(while_fun_4, digits)
-        catch
-          :break -> digits
-        end
-
-      IO.puts((("There are " <> to_string(length(Process.get(:asc)))) <> " ascending primes, namely:"))
-      i = 0
+      max = 120
+      IO.puts((("The attractive numbers up to and including " <> to_string(max)) <> " are:"))
+      count = 0
       line = ""
-      while_fun_5 = fn while_fun_5, i, line ->
-        if i < length(Process.get(:asc)) do
-          line = ((line <> Main.pad(Enum.at(Process.get(:asc), i), 8)) <> " ")
-          if rem((i + 1), 10) == 0 do
-            IO.puts(Kernel.to_string(String.slice(line, 0, String.length(line) - 1 - (0))))
-            line = ""
+      lineCount = 0
+      i = 1
+      while_fun_4 = fn while_fun_4, count, i, line, lineCount ->
+        if i <= max do
+          c = Main.countPrimeFactors(i)
+          if Main.isPrime(c) do
+            line = (line <> Main.pad4(i))
+            count = count + 1
+            lineCount = lineCount + 1
+            if lineCount == 20 do
+              IO.puts(line)
+              line = ""
+              lineCount = 0
+            end
           end
           i = i + 1
-          while_fun_5.(while_fun_5, i, line)
+          while_fun_4.(while_fun_4, count, i, line, lineCount)
         else
-          {i, line}
+          {count, i, line, lineCount}
         end
       end
-      {i, line} = try do
-          while_fun_5.(while_fun_5, i, line)
+      {count, i, line, lineCount} = try do
+          while_fun_4.(while_fun_4, count, i, line, lineCount)
         catch
-          :break -> {i, line}
+          :break -> {count, i, line, lineCount}
         end
 
-      if String.length(line) > 0 do
-        IO.puts(Kernel.to_string(String.slice(line, 0, String.length(line) - 1 - (0))))
+      if lineCount > 0 do
+        IO.puts(line)
       end
     catch
       {:return, val} -> val
     end
   end
-  Process.put(:asc, [])
   def bench_main() do
-    Process.put(:asc, [])
     mem_start = _mem()
     t_start = _now()
     main()

@@ -2,8 +2,8 @@
 
 Generated Elixir code from Mochi Rosetta programs lives in `tests/rosetta/transpiler/Elixir`.
 
-## Rosetta Test Checklist (65/332)
-_Last updated: 2025-07-26 19:45 +0700_
+## Rosetta Test Checklist (72/332)
+_Last updated: 2025-07-26 20:39 +0700_
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | 100-doors-2 | ✓ |  |  |
@@ -83,13 +83,13 @@ _Last updated: 2025-07-26 19:45 +0700_
 | 75 | array-concatenation | ✓ | 3.18ms | 310.4 KB |
 | 76 | array-length | ✓ | 2.34ms | 315.2 KB |
 | 77 | arrays | ✓ | 5.94ms | 528.0 KB |
-| 78 | ascending-primes |  |  |  |
-| 79 | ascii-art-diagram-converter |  |  |  |
-| 80 | assertions |  |  |  |
-| 81 | associative-array-creation |  |  |  |
-| 82 | associative-array-iteration |  |  |  |
-| 83 | associative-array-merging |  |  |  |
-| 84 | atomic-updates |  |  |  |
+| 78 | ascending-primes | ✓ | 3.58ms | 56.2 KB |
+| 79 | ascii-art-diagram-converter | ✓ | 1.90ms | 102.2 KB |
+| 80 | assertions | ✓ | 241us | 356.7 KB |
+| 81 | associative-array-creation | ✓ | 516us | 389.1 KB |
+| 82 | associative-array-iteration | ✓ | 872us | 331.4 KB |
+| 83 | associative-array-merging | ✓ | 9.87ms | 2.2 KB |
+| 84 | atomic-updates | ✓ | 6.50ms | 427.2 KB |
 | 85 | attractive-numbers |  |  |  |
 | 86 | average-loop-length |  |  |  |
 | 87 | averages-arithmetic-mean |  |  |  |
