@@ -2,9 +2,9 @@
 
 Generated Ruby code from Mochi Rosetta tasks lives in `tests/rosetta/transpiler/rb`.
 
-Last updated: 2025-07-26 10:33 UTC
+Last updated: 2025-07-26 12:34 UTC
 
-## Checklist (198/332)
+## Checklist (200/332)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 195µs | 36.2 KB |
@@ -150,61 +150,61 @@ Last updated: 2025-07-26 10:33 UTC
 | 141 | bulls-and-cows | ✓ |  |  |
 | 142 | burrows-wheeler-transform | ✓ | 571.223ms | 126.4 KB |
 | 143 | caesar-cipher-1 | ✓ | 571.223ms | 131.2 KB |
-| 144 | caesar-cipher-2 | ✓ |  |  |
-| 145 | calculating-the-value-of-e | ✓ |  |  |
-| 146 | calendar---for-real-programmers-1 | ✓ |  |  |
-| 147 | calendar---for-real-programmers-2 | ✓ |  |  |
-| 148 | calendar | ✓ |  |  |
-| 149 | calkin-wilf-sequence |   |  |  |
-| 150 | call-a-foreign-language-function | ✓ |  |  |
-| 151 | call-a-function-1 | ✓ | 4µs | 600 B |
-| 152 | call-a-function-10 | ✓ |  |  |
-| 153 | call-a-function-11 | ✓ |  |  |
-| 154 | call-a-function-12 | ✓ |  |  |
-| 155 | call-a-function-2 | ✓ |  |  |
-| 156 | call-a-function-3 | ✓ |  |  |
-| 157 | call-a-function-4 | ✓ |  |  |
-| 158 | call-a-function-5 | ✓ |  |  |
-| 159 | call-a-function-6 | ✓ |  |  |
-| 160 | call-a-function-7 | ✓ |  |  |
-| 161 | call-a-function-8 | ✓ |  |  |
-| 162 | call-a-function-9 | ✓ |  |  |
-| 163 | call-an-object-method-1 | ✓ |  |  |
-| 164 | call-an-object-method-2 | ✓ |  |  |
-| 165 | call-an-object-method-3 | ✓ |  |  |
-| 166 | call-an-object-method | ✓ |  |  |
-| 167 | camel-case-and-snake-case | ✓ |  |  |
-| 168 | canny-edge-detector | ✓ |  |  |
-| 169 | canonicalize-cidr | ✓ |  |  |
-| 170 | cantor-set | ✓ |  |  |
-| 171 | carmichael-3-strong-pseudoprimes | ✓ |  |  |
-| 172 | cartesian-product-of-two-or-more-lists-1 | ✓ |  |  |
-| 173 | cartesian-product-of-two-or-more-lists-2 | ✓ |  |  |
-| 174 | cartesian-product-of-two-or-more-lists-3 | ✓ |  |  |
-| 175 | cartesian-product-of-two-or-more-lists-4 | ✓ |  |  |
+| 144 | caesar-cipher-2 | ✓ | 394µs | 131.7 KB |
+| 145 | calculating-the-value-of-e | ✓ | 44µs | 10.0 KB |
+| 146 | calendar---for-real-programmers-1 | ✓ | 1.707ms | 241.7 KB |
+| 147 | calendar---for-real-programmers-2 | ✓ | 1.694ms | 241.7 KB |
+| 148 | calendar | ✓ | 1.673ms | 241.7 KB |
+| 149 | calkin-wilf-sequence | ✓ | 175µs | 37.3 KB |
+| 150 | call-a-foreign-language-function | ✓ | 22µs | 9.2 KB |
+| 151 | call-a-function-1 | ✓ | 12µs | 600 B |
+| 152 | call-a-function-10 | ✓ | 5µs | 912 B |
+| 153 | call-a-function-11 | ✓ | 30µs | 9.7 KB |
+| 154 | call-a-function-12 | ✓ | 32µs | 9.8 KB |
+| 155 | call-a-function-2 | ✓ | 47µs | 800 B |
+| 156 | call-a-function-3 | ✓ | 7µs | 1000 B |
+| 157 | call-a-function-4 | ✓ | 5µs | 720 B |
+| 158 | call-a-function-5 | ✓ | 25µs | 9.3 KB |
+| 159 | call-a-function-6 | ✓ | 41µs | 9.6 KB |
+| 160 | call-a-function-7 | ✓ | 11µs | 720 B |
+| 161 | call-a-function-8 | ✓ | 33µs | 4.5 KB |
+| 162 | call-a-function-9 | ✓ | 10µs | 1.2 KB |
+| 163 | call-an-object-method-1 | ✓ | 14µs | 1.3 KB |
+| 164 | call-an-object-method-2 | ✓ | 34µs | 1.5 KB |
+| 165 | call-an-object-method-3 | ✓ | 37µs | 1.9 KB |
+| 166 | call-an-object-method | ✓ | 30µs | 1.9 KB |
+| 167 | camel-case-and-snake-case | ✓ | 745µs | 204.0 KB |
+| 168 | canny-edge-detector | ✓ | 345µs | 29.7 KB |
+| 169 | canonicalize-cidr | ✓ | 754µs | 244.4 KB |
+| 170 | cantor-set | ✓ | 659µs | 195.7 KB |
+| 171 | carmichael-3-strong-pseudoprimes | ✓ | 6.706ms | 88.3 KB |
+| 172 | cartesian-product-of-two-or-more-lists-1 | ✓ | 56µs | 15.6 KB |
+| 173 | cartesian-product-of-two-or-more-lists-2 | ✓ | 217µs | 57.8 KB |
+| 174 | cartesian-product-of-two-or-more-lists-3 | ✓ | 283µs | 71.5 KB |
+| 175 | cartesian-product-of-two-or-more-lists-4 | ✓ | 242µs | 68.8 KB |
 | 176 | case-sensitivity-of-identifiers |   |  |  |
 | 177 | casting-out-nines |   |  |  |
-| 178 | catalan-numbers-1 | ✓ |  |  |
-| 179 | catalan-numbers-2 | ✓ |  |  |
-| 180 | catalan-numbers-pascals-triangle | ✓ |  |  |
-| 181 | catamorphism | ✓ |  |  |
-| 182 | catmull-clark-subdivision-surface |   |  |  |
-| 183 | chaocipher | ✓ |  |  |
-| 184 | chaos-game | ✓ |  |  |
-| 185 | character-codes-1 | ✓ |  |  |
-| 186 | character-codes-2 | ✓ |  |  |
-| 187 | character-codes-3 | ✓ |  |  |
-| 188 | character-codes-4 | ✓ |  |  |
-| 189 | character-codes-5 | ✓ |  |  |
-| 190 | chat-server | ✓ |  |  |
-| 191 | check-machin-like-formulas | ✓ |  |  |
-| 192 | check-that-file-exists | ✓ |  |  |
-| 193 | checkpoint-synchronization-1 | ✓ |  |  |
-| 194 | checkpoint-synchronization-2 | ✓ |  |  |
-| 195 | checkpoint-synchronization-3 | ✓ |  |  |
-| 196 | checkpoint-synchronization-4 | ✓ |  |  |
+| 178 | catalan-numbers-1 | ✓ | 55µs | 10.0 KB |
+| 179 | catalan-numbers-2 | ✓ | 78µs | 9.9 KB |
+| 180 | catalan-numbers-pascals-triangle | ✓ | 133µs | 15.3 KB |
+| 181 | catamorphism | ✓ | 35µs | 9.9 KB |
+| 182 | catmull-clark-subdivision-surface | ✓ | 913µs | 225.0 KB |
+| 183 | chaocipher | ✓ | 356µs | 94.3 KB |
+| 184 | chaos-game | ✓ | 12.215ms | 592.8 KB |
+| 185 | character-codes-1 | ✓ | 33µs | 9.0 KB |
+| 186 | character-codes-2 | ✓ | 21µs | 9.0 KB |
+| 187 | character-codes-3 | ✓ | 28µs | 10.4 KB |
+| 188 | character-codes-4 | ✓ | 26µs | 9.2 KB |
+| 189 | character-codes-5 | ✓ | 23µs | 9.0 KB |
+| 190 | chat-server | ✓ | 35µs | 11.6 KB |
+| 191 | check-machin-like-formulas | ✓ | 3.656ms | 179.2 KB |
+| 192 | check-that-file-exists | ✓ | 29µs | 10.3 KB |
+| 193 | checkpoint-synchronization-1 | ✓ | 59µs | 14.4 KB |
+| 194 | checkpoint-synchronization-2 | ✓ | 82µs | 17.2 KB |
+| 195 | checkpoint-synchronization-3 | ✓ | 82µs | 18.1 KB |
+| 196 | checkpoint-synchronization-4 | ✓ | 86µs | 25.1 KB |
 | 197 | chernicks-carmichael-numbers |   |  |  |
-| 198 | cheryls-birthday | ✓ |  |  |
+| 198 | cheryls-birthday | ✓ | 132µs | 16.0 KB |
 | 199 | chinese-remainder-theorem | ✓ |  |  |
 | 200 | chinese-zodiac |   |  |  |
 | 201 | cholesky-decomposition-1 | ✓ | 197µs | 27.8 KB |

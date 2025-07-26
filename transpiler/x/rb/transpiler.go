@@ -75,7 +75,7 @@ end
 
 const helperPadStart = `
 def _padStart(s, len, ch)
-  s.rjust(len, ch)
+  s.to_s.rjust(len, ch)
 end
 `
 
@@ -83,6 +83,12 @@ const helperIndexOf = `
 def _indexOf(s, ch)
   idx = s.index(ch)
   idx ? idx : -1
+end
+`
+
+const helperRepeat = `
+def _repeat(s, n)
+  s * n.to_i
 end
 `
 
@@ -1175,6 +1181,7 @@ var (
 	usesLookupHost  bool
 	usesSHA256      bool
 	usesIndexOf     bool
+	usesRepeat      bool
 	usesParseIntStr bool
 	usesMem         bool
 	benchMain       bool
@@ -2581,6 +2588,11 @@ func Emit(w io.Writer, p *Program) error {
 			return err
 		}
 	}
+	if usesRepeat {
+		if _, err := io.WriteString(w, helperRepeat+"\n"); err != nil {
+			return err
+		}
+	}
 	if usesParseIntStr {
 		if _, err := io.WriteString(w, helperParseIntStr+"\n"); err != nil {
 			return err
@@ -2613,6 +2625,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	usesLookupHost = false
 	usesSHA256 = false
 	usesIndexOf = false
+	usesRepeat = false
 	usesParseIntStr = false
 	usesMem = false
 	currentEnv = env
@@ -3691,6 +3704,12 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			}
 			usesIndexOf = true
 			return &CallExpr{Func: "_indexOf", Args: args}, nil
+		case "repeat":
+			if len(args) != 2 {
+				return nil, fmt.Errorf("repeat expects 2 args")
+			}
+			usesRepeat = true
+			return &CallExpr{Func: "_repeat", Args: args}, nil
 		case "parseIntStr":
 			usesParseIntStr = true
 			switch len(args) {

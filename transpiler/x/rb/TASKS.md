@@ -1,3 +1,838 @@
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 19:01 +0700)
+- Commit ea0c01187b: ex transpiler: handle float mod and module globals
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
 ## Progress (2025-07-26 17:02 +0700)
 - Commit e15ecbd596: release: v0.10.41
 - Generated Ruby for 104/104 programs
