@@ -98,6 +98,12 @@ def parseIntStr(str, base = 10)
 end
 `
 
+const helperSplit = `
+def _split(s, sep)
+  s.to_s.split(sep.to_s)
+end
+`
+
 const helperSHA256 = `
 require 'digest'
 def _sha256(bs)
@@ -1183,6 +1189,7 @@ var (
 	usesIndexOf     bool
 	usesRepeat      bool
 	usesParseIntStr bool
+	usesSplit       bool
 	usesMem         bool
 	benchMain       bool
 )
@@ -2629,6 +2636,11 @@ func Emit(w io.Writer, p *Program) error {
 			return err
 		}
 	}
+	if usesSplit {
+		if _, err := io.WriteString(w, helperSplit+"\n"); err != nil {
+			return err
+		}
+	}
 	if usesParseIntStr {
 		if _, err := io.WriteString(w, helperParseIntStr+"\n"); err != nil {
 			return err
@@ -2663,6 +2675,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	usesIndexOf = false
 	usesRepeat = false
 	usesParseIntStr = false
+	usesSplit = false
 	usesMem = false
 	currentEnv = env
 	topVars = map[string]bool{}
@@ -3720,21 +3733,21 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				return nil, fmt.Errorf("append takes two args")
 			}
 			return &AppendExpr{List: args[0], Elem: args[1]}, nil
-               case "substring":
-                       if len(args) != 3 {
-                               return nil, fmt.Errorf("substring expects 3 args")
-                       }
-                       return &SliceExpr{Target: args[0], Start: args[1], End: args[2]}, nil
-               case "substr":
-                       if len(args) != 3 {
-                               return nil, fmt.Errorf("substr expects 3 args")
-                       }
-                       return &SliceExpr{Target: args[0], Start: args[1], End: args[2]}, nil
-               case "slice":
-                       if len(args) != 3 {
-                               return nil, fmt.Errorf("slice expects 3 args")
-                       }
-                       return &SliceExpr{Target: args[0], Start: args[1], End: args[2]}, nil
+		case "substring":
+			if len(args) != 3 {
+				return nil, fmt.Errorf("substring expects 3 args")
+			}
+			return &SliceExpr{Target: args[0], Start: args[1], End: args[2]}, nil
+		case "substr":
+			if len(args) != 3 {
+				return nil, fmt.Errorf("substr expects 3 args")
+			}
+			return &SliceExpr{Target: args[0], Start: args[1], End: args[2]}, nil
+		case "slice":
+			if len(args) != 3 {
+				return nil, fmt.Errorf("slice expects 3 args")
+			}
+			return &SliceExpr{Target: args[0], Start: args[1], End: args[2]}, nil
 		case "upper":
 			if len(args) != 1 {
 				return nil, fmt.Errorf("upper expects 1 arg")
@@ -3762,6 +3775,12 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			}
 			usesRepeat = true
 			return &CallExpr{Func: "_repeat", Args: args}, nil
+		case "split":
+			if len(args) != 2 {
+				return nil, fmt.Errorf("split expects 2 args")
+			}
+			usesSplit = true
+			return &CallExpr{Func: "_split", Args: args}, nil
 		case "parseIntStr":
 			usesParseIntStr = true
 			switch len(args) {

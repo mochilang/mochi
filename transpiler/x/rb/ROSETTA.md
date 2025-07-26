@@ -2,9 +2,9 @@
 
 Generated Ruby code from Mochi Rosetta tasks lives in `tests/rosetta/transpiler/rb`.
 
-Last updated: 2025-07-26 16:03 UTC
+Last updated: 2025-07-26 16:12 UTC
 
-## Checklist (246/332)
+## Checklist (266/332)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 195µs | 36.2 KB |
@@ -259,26 +259,26 @@ Last updated: 2025-07-26 16:03 UTC
 | 250 | cramers-rule | ✓ | 259µs | 103.7 KB |
 | 251 | crc-32-1 | ✓ | 3.957ms | 304.5 KB |
 | 252 | crc-32-2 | ✓ | 3.912ms | 304.6 KB |
-| 253 | create-a-file-on-magnetic-tape |   |  |  |
-| 254 | create-a-file |   |  |  |
-| 255 | create-a-two-dimensional-array-at-runtime-1 |   |  |  |
-| 256 | create-an-html-table |   |  |  |
-| 257 | create-an-object-at-a-given-address |   |  |  |
-| 258 | csv-data-manipulation |   |  |  |
-| 259 | csv-to-html-translation-1 |   |  |  |
-| 260 | csv-to-html-translation-2 |   |  |  |
-| 261 | csv-to-html-translation-3 |   |  |  |
-| 262 | csv-to-html-translation-4 |   |  |  |
-| 263 | csv-to-html-translation-5 |   |  |  |
-| 264 | cuban-primes |   |  |  |
-| 265 | cullen-and-woodall-numbers |   |  |  |
-| 266 | cumulative-standard-deviation |   |  |  |
-| 267 | currency |   |  |  |
-| 268 | currying |   |  |  |
-| 269 | curzon-numbers |   |  |  |
-| 270 | cusip |   |  |  |
-| 271 | cyclops-numbers |   |  |  |
-| 272 | damm-algorithm |   |  |  |
+| 253 | create-a-file-on-magnetic-tape | ✓ | 103µs | 1.4 KB |
+| 254 | create-a-file | ✓ | 26µs | 10.4 KB |
+| 255 | create-a-two-dimensional-array-at-runtime-1 | ✓ | 48µs | 10.8 KB |
+| 256 | create-an-html-table | ✓ | 33µs | 13.4 KB |
+| 257 | create-an-object-at-a-given-address | ✓ | 126µs | 19.9 KB |
+| 258 | csv-data-manipulation | ✓ | 47µs | 17.7 KB |
+| 259 | csv-to-html-translation-1 | ✓ | 37µs | 20.3 KB |
+| 260 | csv-to-html-translation-2 | ✓ | 42µs | 20.6 KB |
+| 261 | csv-to-html-translation-3 | ✓ | 43µs | 10.0 KB |
+| 262 | csv-to-html-translation-4 | ✓ | 13µs | 9.8 KB |
+| 263 | csv-to-html-translation-5 | ✓ | 256µs | 97.1 KB |
+| 264 | cuban-primes | ✓ | 12.151457s | 224.9 KB |
+| 265 | cullen-and-woodall-numbers | ✓ | 76µs | 30.7 KB |
+| 266 | cumulative-standard-deviation | ✓ | 92µs | 13.0 KB |
+| 267 | currency | ✓ | 62µs | 20.6 KB |
+| 268 | currying | ✓ | 97µs | 12.0 KB |
+| 269 | curzon-numbers | ✓ | 104.244ms | 181.6 KB |
+| 270 | cusip | ✓ | 76µs | 19.8 KB |
+| 271 | cyclops-numbers | ✓ | 4µs | 856 B |
+| 272 | damm-algorithm | ✓ | 55µs | 16.2 KB |
 | 273 | date-format |   |  |  |
 | 274 | date-manipulation |   |  |  |
 | 275 | day-of-the-week |   |  |  |
