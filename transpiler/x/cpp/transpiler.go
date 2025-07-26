@@ -1331,7 +1331,7 @@ func (s *StrExpr) emit(w io.Writer) {
 		switch {
 		case strings.HasPrefix(typ, "std::vector<") || strings.HasPrefix(typ, "std::map<") || strings.HasPrefix(typ, "std::optional<"):
 			emitToStream(w, "ss", s.Value, 0)
-		case typ == "std::any":
+		case typ == "std::any" || typ == "auto":
 			io.WriteString(w, "any_to_stream(ss, ")
 			s.Value.emit(w)
 			io.WriteString(w, ");\n")
@@ -5834,6 +5834,12 @@ func exprType(e Expr) string {
 		t := exprType(v.Target)
 		if ft := structFieldType(t, v.Field); ft != "" {
 			return ft
+		}
+		if strings.HasPrefix(t, "std::map<") && strings.HasSuffix(t, ">") {
+			parts := strings.SplitN(strings.TrimSuffix(strings.TrimPrefix(t, "std::map<"), ">"), ",", 2)
+			if len(parts) == 2 {
+				return strings.TrimSpace(parts[1])
+			}
 		}
 		return "auto"
 	case *UnaryExpr:
