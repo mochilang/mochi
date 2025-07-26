@@ -1,2 +1,7 @@
 7 9
-"18"
+18
+{
+  "duration_us": 47,
+  "memory_bytes": 96,
+  "name": "main"
+}

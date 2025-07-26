@@ -2,7 +2,7 @@
 
 Generated PHP code from Mochi Rosetta tasks lives in `tests/rosetta/transpiler/php`.
 
-Last updated: 2025-07-26 21:14 +0700
+Last updated: 2025-07-26 21:30 +0700
 
 ## Checklist (266/332)
 | Index | Name | Status | Duration | Memory |
@@ -158,15 +158,15 @@ Last updated: 2025-07-26 21:14 +0700
 | 149 | calkin-wilf-sequence | ✓ | 589µs | 96 B |
 | 150 | call-a-foreign-language-function | ✓ | 42µs | 96 B |
 | 151 | call-a-function-1 | ✓ |  |  |
-| 152 | call-a-function-10 | ✓ |  |  |
-| 153 | call-a-function-11 | ✓ |  |  |
-| 154 | call-a-function-12 | ✓ |  |  |
-| 155 | call-a-function-2 | ✓ |  |  |
-| 156 | call-a-function-3 | ✓ |  |  |
-| 157 | call-a-function-4 | ✓ |  |  |
-| 158 | call-a-function-5 | ✓ |  |  |
-| 159 | call-a-function-6 | ✓ |  |  |
-| 160 | call-a-function-7 | ✓ |  |  |
+| 152 | call-a-function-10 | ✓ | 7µs | 64 B |
+| 153 | call-a-function-11 | ✓ | 49µs | 96 B |
+| 154 | call-a-function-12 | ✓ | 47µs | 96 B |
+| 155 | call-a-function-2 | ✓ | 6µs | 64 B |
+| 156 | call-a-function-3 | ✓ | 1µs | 64 B |
+| 157 | call-a-function-4 | ✓ | 6µs | 64 B |
+| 158 | call-a-function-5 | ✓ | 38µs | 96 B |
+| 159 | call-a-function-6 | ✓ | 43µs | 96 B |
+| 160 | call-a-function-7 | ✓ | 1µs | 64 B |
 | 161 | call-a-function-8 | ✓ |  |  |
 | 162 | call-a-function-9 | ✓ |  |  |
 | 163 | call-an-object-method-1 | ✓ | 1µs | 128 B |
