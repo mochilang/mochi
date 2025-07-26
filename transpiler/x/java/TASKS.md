@@ -1,4 +1,34 @@
-## Progress (2025-07-26 16:00 UTC)
+## Progress (2025-07-27 01:47 +0700)
+- transpiler/java: add rosetta outputs 150-160 (a489265a9d)
+
+- transpiler/java: add rosetta outputs 150-160 (a489265a9d)
+
+- transpiler/java: add rosetta outputs 150-160 (a489265a9d)
+
+- transpiler/java: add rosetta outputs 150-160 (a489265a9d)
+
+- transpiler/java: add rosetta outputs 150-160 (a489265a9d)
+
+- transpiler/java: add rosetta outputs 150-160 (a489265a9d)
+
+- transpiler/java: add rosetta outputs 150-160 (a489265a9d)
+
+- transpiler/java: add rosetta outputs 150-160 (a489265a9d)
+
+- transpiler/java: add rosetta outputs 150-160 (a489265a9d)
+
+- transpiler/java: add rosetta outputs 150-160 (a489265a9d)
+
+- transpiler/java: add rosetta outputs 150-160 (a489265a9d)
+
+- transpiler/java: add rosetta outputs 150-160 (a489265a9d)
+
+- transpiler/java: add rosetta outputs 150-160 (a489265a9d)
+
+- transpiler/java: add rosetta outputs 150-160 (a489265a9d)
+
+- transpiler/java: add rosetta outputs 150-160 (a489265a9d)
+
 - java rosetta: add index 147 (0ddfd3c2ae)
 
 - java rosetta: add index 146 (44cc49527e)

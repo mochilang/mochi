@@ -48,6 +48,8 @@ var funcMapFields map[string]map[string]string
 var mapVarFields map[string]map[string]string
 var benchMain bool
 var currentFuncReturn string
+var structMethods map[string][]*Function
+var structDecls map[string]*TypeDeclStmt
 
 // SetBenchMain configures whether the generated main function is wrapped in a
 // benchmark block when emitting code. When enabled, the program will print a
@@ -669,6 +671,7 @@ type TypeDeclStmt struct {
 	Name    string
 	Fields  []Param
 	Extends string
+	Methods []*Function
 }
 
 // InterfaceDeclStmt declares a simple interface type.
@@ -769,31 +772,53 @@ func (t *TypeDeclStmt) emit(w io.Writer, indent string) {
 		fmt.Fprintf(w, indent+"        this.%s = %s;\n", sanitize(f.Name), sanitize(f.Name))
 	}
 	fmt.Fprint(w, indent+"    }\n")
+	for _, m := range t.Methods {
+		fmt.Fprintf(w, indent+"    %s %s(", javaType(m.Return), m.Name)
+		for i, p := range m.Params {
+			if i > 0 {
+				fmt.Fprint(w, ", ")
+			}
+			typ := javaType(p.Type)
+			if typ == "" {
+				typ = p.Type
+			}
+			fmt.Fprintf(w, "%s %s", typ, sanitize(p.Name))
+		}
+		fmt.Fprint(w, ") {\n")
+		for _, st := range m.Body {
+			st.emit(w, indent+"        ")
+		}
+		fmt.Fprint(w, indent+"    }\n")
+	}
 	fmt.Fprint(w, indent+"    @Override public String toString() {\n")
-	fmt.Fprint(w, indent+"        return String.format(\"")
-	fmt.Fprint(w, "{")
-	for i, f := range t.Fields {
-		if i > 0 {
-			fmt.Fprint(w, ", ")
+	if len(t.Fields) == 0 {
+		fmt.Fprintf(w, indent+"        return \"%s{}\";\n", t.Name)
+	} else {
+		fmt.Fprint(w, indent+"        return String.format(\"")
+		fmt.Fprint(w, "{")
+		for i, f := range t.Fields {
+			if i > 0 {
+				fmt.Fprint(w, ", ")
+			}
+			typ := javaType(f.Type)
+			if typ == "" {
+				typ = f.Type
+			}
+			if typ == "String" {
+				fmt.Fprintf(w, "'%s': '%%s'", f.Name)
+			} else {
+				fmt.Fprintf(w, "'%s': %%s", f.Name)
+			}
 		}
-		typ := javaType(f.Type)
-		if typ == "" {
-			typ = f.Type
+		fmt.Fprint(w, "}\", ")
+		for i, f := range t.Fields {
+			if i > 0 {
+				fmt.Fprint(w, ", ")
+			}
+			fmt.Fprintf(w, "String.valueOf(%s)", f.Name)
 		}
-		if typ == "String" {
-			fmt.Fprintf(w, "'%s': '%%s'", f.Name)
-		} else {
-			fmt.Fprintf(w, "'%s': %%s", f.Name)
-		}
+		fmt.Fprint(w, ");\n")
 	}
-	fmt.Fprint(w, "}\", ")
-	for i, f := range t.Fields {
-		if i > 0 {
-			fmt.Fprint(w, ", ")
-		}
-		fmt.Fprintf(w, "String.valueOf(%s)", f.Name)
-	}
-	fmt.Fprint(w, ");\n")
 	fmt.Fprint(w, indent+"    }\n")
 	fmt.Fprint(w, indent+"}\n")
 }
@@ -1873,8 +1898,12 @@ func (k *KeysExpr) emit(w io.Writer) {
 func (a *AppendExpr) emit(w io.Writer) {
 	elem := a.ElemType
 	if elem == "" || elem == "Object" {
-		t := arrayElemType(a.List)
-		if t != "" {
+		if t := arrayElemType(a.List); t != "" {
+			elem = t
+		}
+	}
+	if elem == "" || elem == "Object" {
+		if t := inferType(a.Value); t != "" {
 			elem = t
 		}
 	}
@@ -1896,7 +1925,7 @@ func (a *AppendExpr) emit(w io.Writer) {
 		fmt.Fprint(w, "appendBool(")
 		a.List.emit(w)
 		fmt.Fprint(w, ", ")
-		a.Value.emit(w)
+		emitCastExpr(w, a.Value, "boolean")
 		fmt.Fprint(w, ")")
 		return
 	}
@@ -1904,7 +1933,7 @@ func (a *AppendExpr) emit(w io.Writer) {
 		fmt.Fprint(w, "java.util.stream.DoubleStream.concat(java.util.Arrays.stream(")
 		a.List.emit(w)
 		fmt.Fprint(w, "), java.util.stream.DoubleStream.of(")
-		a.Value.emit(w)
+		emitCastExpr(w, a.Value, "double")
 		fmt.Fprint(w, ")).toArray()")
 		return
 	}
@@ -1912,7 +1941,7 @@ func (a *AppendExpr) emit(w io.Writer) {
 		fmt.Fprint(w, "java.util.stream.IntStream.concat(java.util.Arrays.stream(")
 		a.List.emit(w)
 		fmt.Fprint(w, "), java.util.stream.IntStream.of(")
-		a.Value.emit(w)
+		emitCastExpr(w, a.Value, "int")
 		fmt.Fprint(w, ")).toArray()")
 		return
 	}
@@ -2741,12 +2770,47 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	pyMathAliases = map[string]bool{}
 	builtinAliases = map[string]string{}
 	structDefs = map[string]map[string]string{}
+	structMethods = map[string][]*Function{}
+	structDecls = map[string]*TypeDeclStmt{}
 	varDecls = map[string]*VarStmt{}
 	funcMapFields = map[string]map[string]string{}
 	mapVarFields = map[string]map[string]string{}
 	funcParams = map[string][]string{}
 	for _, s := range p.Statements {
 		if s.Fun != nil {
+			if strings.Contains(s.Fun.Name, ".") {
+				parts := strings.SplitN(s.Fun.Name, ".", 2)
+				recv := parts[0]
+				name := parts[1]
+				saved := varTypes
+				varTypes = copyMap(varTypes)
+				varDeclsSaved := varDecls
+				varDecls = map[string]*VarStmt{}
+				savedRet := currentFuncReturn
+				currentFuncReturn = typeRefString(s.Fun.Return)
+				for _, pa := range s.Fun.Params {
+					if t := typeRefString(pa.Type); t != "" {
+						varTypes[pa.Name] = t
+					}
+				}
+				body, err := compileStmts(s.Fun.Body)
+				if err != nil {
+					return nil, err
+				}
+				params := make([]Param, len(s.Fun.Params))
+				for i, p := range s.Fun.Params {
+					params[i] = Param{Name: p.Name, Type: typeRefString(p.Type)}
+				}
+				ret := currentFuncReturn
+				if ret == "" {
+					ret = inferReturnType(body)
+				}
+				structMethods[recv] = append(structMethods[recv], &Function{Name: name, Params: params, Return: ret, Body: body})
+				varTypes = saved
+				varDecls = varDeclsSaved
+				currentFuncReturn = savedRet
+				continue
+			}
 			saved := varTypes
 			varTypes = copyMap(varTypes)
 			for _, pa := range s.Fun.Params {
@@ -2804,6 +2868,11 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 		if len(extraDecls) > 0 {
 			prog.Stmts = append(prog.Stmts, extraDecls...)
 			extraDecls = nil
+		}
+	}
+	for name, td := range structDecls {
+		if ms, ok := structMethods[name]; ok {
+			td.Methods = ms
 		}
 	}
 	_ = env // reserved
@@ -3055,7 +3124,42 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 			for i, n := range st.Order {
 				fields[i] = Param{Name: n, Type: toJavaTypeFromType(st.Fields[n])}
 			}
-			return &TypeDeclStmt{Name: s.Type.Name, Fields: fields}, nil
+			var methods []*Function
+			for _, mem := range s.Type.Members {
+				if mem.Method != nil {
+					ms := mem.Method
+					saved := varTypes
+					varTypes = copyMap(varTypes)
+					savedDecls := varDecls
+					varDecls = map[string]*VarStmt{}
+					savedRet := currentFuncReturn
+					currentFuncReturn = typeRefString(ms.Return)
+					for _, pa := range ms.Params {
+						if t := typeRefString(pa.Type); t != "" {
+							varTypes[pa.Name] = t
+						}
+					}
+					body, err := compileStmts(ms.Body)
+					if err != nil {
+						return nil, err
+					}
+					params := make([]Param, len(ms.Params))
+					for i, p := range ms.Params {
+						params[i] = Param{Name: p.Name, Type: typeRefString(p.Type)}
+					}
+					ret := currentFuncReturn
+					if ret == "" {
+						ret = inferReturnType(body)
+					}
+					methods = append(methods, &Function{Name: ms.Name, Params: params, Return: ret, Body: body})
+					varTypes = saved
+					varDecls = savedDecls
+					currentFuncReturn = savedRet
+				}
+			}
+			td := &TypeDeclStmt{Name: s.Type.Name, Fields: fields, Methods: methods}
+			structDecls[s.Type.Name] = td
+			return td, nil
 		}
 		return nil, nil
 	case s.Fun != nil:
@@ -4037,7 +4141,9 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 				}
 				elems[i] = &StructLit{Name: name, Fields: vals, Names: st.Order}
 			}
-			extraDecls = append(extraDecls, &TypeDeclStmt{Name: name, Fields: fields})
+			td := &TypeDeclStmt{Name: name, Fields: fields}
+			extraDecls = append(extraDecls, td)
+			structDecls[name] = td
 			if structDefs != nil {
 				sf := make(map[string]string)
 				for _, f := range fields {
@@ -4158,6 +4264,15 @@ func compileFunExpr(fn *parser.FunExpr) (Expr, error) {
 	for i, p := range fn.Params {
 		params[i] = Param{Name: p.Name, Type: typeRefString(p.Type)}
 	}
+	saved := varTypes
+	varTypes = copyMap(varTypes)
+	savedDecls := varDecls
+	varDecls = map[string]*VarStmt{}
+	for _, p := range params {
+		if p.Type != "" {
+			varTypes[p.Name] = p.Type
+		}
+	}
 	var body []Stmt
 	if fn.ExprBody != nil {
 		ex, err := compileExpr(fn.ExprBody)
@@ -4182,7 +4297,10 @@ func compileFunExpr(fn *parser.FunExpr) (Expr, error) {
 	if ret == "" {
 		ret = inferReturnType(body)
 	}
-	return &LambdaExpr{Params: params, Body: body, Return: ret}, nil
+	lam := &LambdaExpr{Params: params, Body: body, Return: ret}
+	varTypes = saved
+	varDecls = savedDecls
+	return lam, nil
 }
 
 func compileMatchExpr(me *parser.MatchExpr) (Expr, error) {
@@ -4439,7 +4557,9 @@ func compileQueryExpr(q *parser.QueryExpr) (Expr, error) {
 			for i, n := range itemFields {
 				itemDecl[i] = Param{Name: n, Type: varTypes[n]}
 			}
-			extraDecls = append(extraDecls, &TypeDeclStmt{Name: itemName, Fields: itemDecl})
+			td := &TypeDeclStmt{Name: itemName, Fields: itemDecl}
+			extraDecls = append(extraDecls, td)
+			structDecls[itemName] = td
 			if structDefs != nil {
 				sf := make(map[string]string)
 				for _, p := range itemDecl {
@@ -4463,7 +4583,9 @@ func compileQueryExpr(q *parser.QueryExpr) (Expr, error) {
 			{Name: "key", Type: keyType},
 			{Name: "items", Type: fmt.Sprintf("java.util.List<%s>", itemName)},
 		}
-		extraDecls = append(extraDecls, &TypeDeclStmt{Name: groupName, Fields: gfields})
+		tdg := &TypeDeclStmt{Name: groupName, Fields: gfields}
+		extraDecls = append(extraDecls, tdg)
+		structDecls[groupName] = tdg
 		if structDefs != nil {
 			sf := map[string]string{"key": keyType, "items": fmt.Sprintf("java.util.List<%s>", itemName)}
 			structDefs[groupName] = sf
@@ -4520,7 +4642,9 @@ func compileQueryExpr(q *parser.QueryExpr) (Expr, error) {
 				fieldsDecl[i] = Param{Name: st.Order[i], Type: tname}
 				vals[i] = v
 			}
-			extraDecls = append(extraDecls, &TypeDeclStmt{Name: name, Fields: fieldsDecl})
+			td2 := &TypeDeclStmt{Name: name, Fields: fieldsDecl}
+			extraDecls = append(extraDecls, td2)
+			structDecls[name] = td2
 			if structDefs != nil {
 				sf := make(map[string]string)
 				for _, f := range fieldsDecl {
