@@ -35,7 +35,7 @@ var useNow bool
 var useMem bool
 var usesLookupHost bool
 var benchMain bool
-var reserved = map[string]bool{"this": true, "new": true, "double": true}
+var reserved = map[string]bool{"this": true, "new": true, "double": true, "char": true}
 var currentReturnType string
 var inReturn bool
 var mutatedParams map[string]bool
@@ -269,6 +269,13 @@ type SubstringExpr struct {
 	Value Expr
 	Start Expr
 	End   Expr
+}
+
+// PadStartExpr represents a simple padStart implementation.
+type PadStartExpr struct {
+	Value Expr
+	Width Expr
+	Pad   Expr
 }
 
 type CallExpr struct {
@@ -942,8 +949,14 @@ func (wst *WhileStmt) emit(w io.Writer, indent int) {
 }
 
 func (l *LenExpr) emit(w io.Writer) {
-	l.Value.emit(w)
-	io.WriteString(w, ".size()")
+	if exprType(l.Value) == "std::any" {
+		io.WriteString(w, "std::any_cast<std::string>(")
+		l.Value.emit(w)
+		io.WriteString(w, ").size()")
+	} else {
+		l.Value.emit(w)
+		io.WriteString(w, ".size()")
+	}
 }
 
 func (l *ListLit) emit(w io.Writer) {
@@ -1136,6 +1149,14 @@ func (s *SelectorExpr) emit(w io.Writer) {
 
 func (i *IndexExpr) emit(w io.Writer) {
 	t := exprType(i.Target)
+	if t == "std::string" {
+		io.WriteString(w, "std::string(1, ")
+		i.Target.emit(w)
+		io.WriteString(w, "[")
+		i.Index.emit(w)
+		io.WriteString(w, "])")
+		return
+	}
 	if t == "std::any" {
 		if currentProgram != nil {
 			currentProgram.addInclude("<any>")
@@ -1410,6 +1431,12 @@ func (c *CastExpr) emit(w io.Writer) {
 		io.WriteString(w, ")")
 		return
 	}
+	if c.Type == "std::string" && valType != "std::string" {
+		io.WriteString(w, "std::string(1, ")
+		c.Value.emit(w)
+		io.WriteString(w, ")")
+		return
+	}
 	if valType == "std::any" {
 		if c.Type == "auto" {
 			c.Type = "double"
@@ -1435,14 +1462,30 @@ func (c *CastExpr) emit(w io.Writer) {
 }
 
 func (s *SubstringExpr) emit(w io.Writer) {
-	s.Value.emit(w)
-	io.WriteString(w, ".substr(")
+	if exprType(s.Value) == "std::any" {
+		io.WriteString(w, "std::any_cast<std::string>(")
+		s.Value.emit(w)
+		io.WriteString(w, ").substr(")
+	} else {
+		s.Value.emit(w)
+		io.WriteString(w, ".substr(")
+	}
 	s.Start.emit(w)
 	io.WriteString(w, ", ")
 	s.End.emit(w)
 	io.WriteString(w, " - ")
 	s.Start.emit(w)
 	io.WriteString(w, ")")
+}
+
+func (p *PadStartExpr) emit(w io.Writer) {
+	io.WriteString(w, "([&]{ std::string __s = ")
+	p.Value.emit(w)
+	io.WriteString(w, "; while(__s.size() < ")
+	p.Width.emit(w)
+	io.WriteString(w, ") __s = ")
+	p.Pad.emit(w)
+	io.WriteString(w, " + __s; return __s; }())")
 }
 
 func (v *VarRef) emit(w io.Writer) {
@@ -4040,6 +4083,34 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				}
 				return &SubstringExpr{Value: v0, Start: v1, End: v2}, nil
 			}
+		case "padStart":
+			if len(p.Call.Args) == 3 {
+				v0, err := convertExpr(p.Call.Args[0])
+				if err != nil {
+					return nil, err
+				}
+				v1, err := convertExpr(p.Call.Args[1])
+				if err != nil {
+					return nil, err
+				}
+				v2, err := convertExpr(p.Call.Args[2])
+				if err != nil {
+					return nil, err
+				}
+				return &PadStartExpr{Value: v0, Width: v1, Pad: v2}, nil
+			}
+		case "contains":
+			if len(p.Call.Args) == 2 {
+				v0, err := convertExpr(p.Call.Args[0])
+				if err != nil {
+					return nil, err
+				}
+				v1, err := convertExpr(p.Call.Args[1])
+				if err != nil {
+					return nil, err
+				}
+				return &ContainsExpr{Value: v0, Sub: v1}, nil
+			}
 		case "exists":
 			if len(p.Call.Args) == 1 {
 				arg, err := convertExpr(p.Call.Args[0])
@@ -5611,6 +5682,9 @@ func exprType(e Expr) string {
 		return "std::map<auto, auto>"
 	case *IndexExpr:
 		t := exprType(v.Target)
+		if t == "std::string" {
+			return "std::string"
+		}
 		if strings.HasPrefix(t, "std::vector<") && strings.HasSuffix(t, ">") {
 			return strings.TrimSuffix(strings.TrimPrefix(t, "std::vector<"), ">")
 		}
@@ -5691,6 +5765,8 @@ func exprType(e Expr) string {
 			return "std::string"
 		}
 		return "auto"
+	case *PadStartExpr:
+		return "std::string"
 	case *SumExpr:
 		return "double"
 	case *MultiListComp:

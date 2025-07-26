@@ -2,7 +2,7 @@
 
 This directory stores C++ code generated from Mochi programs in `tests/rosetta/x/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.cpp` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (87/284) - Last updated 2025-07-26 05:38 +0700:
+Checklist of programs that currently transpile and run (97/284) - Last updated 2025-07-26 09:30 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | 100-doors-2 | ✓ | 222.0µs | 13.12MB |
@@ -105,25 +105,25 @@ Checklist of programs that currently transpile and run (87/284) - Last updated 2
 | 98 | babylonian-spiral |   |  |  |
 | 99 | balanced-brackets |   |  |  |
 | 100 | balanced-ternary | ✓ | 344.0µs | 14.06MB |
-| 101 | barnsley-fern |   |  |  |
-| 102 | base64-decode-data |   |  |  |
-| 103 | bell-numbers |   |  |  |
-| 104 | benfords-law |   |  |  |
+| 101 | barnsley-fern | ✓ | 99.0ms | 13.25MB |
+| 102 | base64-decode-data | ✓ | 31.0µs | 14.43MB |
+| 103 | bell-numbers | ✓ | 4.0ms | 13.08MB |
+| 104 | benfords-law | ✓ | 1.0ms | 13.87MB |
 | 105 | bernoulli-numbers |   |  |  |
 | 106 | best-shuffle |   |  |  |
 | 107 | bifid-cipher |   |  |  |
-| 108 | bin-given-limits |   |  |  |
-| 109 | binary-digits |   |  |  |
-| 110 | binary-search |   |  |  |
+| 108 | bin-given-limits | ✓ | 531.0µs | 14.12MB |
+| 109 | binary-digits | ✓ | 178.0µs | 12.68MB |
+| 110 | binary-search | ✓ | 63.0µs | 12.98MB |
 | 111 | binary-strings |   |  |  |
-| 112 | bioinformatics-base-count |   |  |  |
-| 113 | bioinformatics-global-alignment |   |  |  |
+| 112 | bioinformatics-base-count | ✓ | 433.0µs | 13.55MB |
+| 113 | bioinformatics-global-alignment | ✓ | 20.78s | 14.31MB |
 | 114 | bioinformatics-sequence-mutation |   |  |  |
 | 115 | biorhythms |   |  |  |
 | 116 | bitcoin-address-validation |   |  |  |
 | 117 | bitmap-b-zier-curves-cubic |   |  |  |
 | 118 | bitmap-b-zier-curves-quadratic |   |  |  |
-| 119 | bitmap-bresenhams-line-algorithm |   |  |  |
+| 119 | bitmap-bresenhams-line-algorithm | ✓ | 80.0µs | 13.12MB |
 | 120 | bitmap-flood-fill |   |  |  |
 | 121 | bitmap-histogram |   |  |  |
 | 122 | bitmap-midpoint-circle-algorithm |   |  |  |
