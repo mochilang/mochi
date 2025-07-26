@@ -2249,7 +2249,7 @@ func (b *BinaryExpr) emit(w io.Writer) {
 			currentProgram.addInclude("<any>")
 		}
 		io.WriteString(w, "(")
-		io.WriteString(w, "std::any_cast<"+rt+">(")
+		io.WriteString(w, "any_to_double(")
 		b.Left.emit(w)
 		io.WriteString(w, ") "+b.Op+" ")
 		b.Right.emit(w)
@@ -2282,7 +2282,7 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		}
 		io.WriteString(w, "(")
 		b.Left.emit(w)
-		io.WriteString(w, " "+b.Op+" std::any_cast<"+lt+">(")
+		io.WriteString(w, " "+b.Op+" any_to_double(")
 		b.Right.emit(w)
 		io.WriteString(w, "))")
 		return
@@ -3656,7 +3656,9 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 			if err != nil {
 				return nil, err
 			}
-			if exprType(val) == "std::any" && currentReturnType != "" && currentReturnType != "std::any" {
+			if _, ok := val.(*NullLit); ok && currentReturnType == "void" {
+				val = nil
+			} else if exprType(val) == "std::any" && currentReturnType != "" && currentReturnType != "std::any" {
 				val = &CastExpr{Value: val, Type: currentReturnType}
 			}
 		}
@@ -3762,6 +3764,27 @@ func convertBinary(b *parser.BinaryExpr) (Expr, error) {
 				l := operands[i]
 				r := operands[i+1]
 				var ex Expr
+				lt := exprType(l)
+				rt := exprType(r)
+				if (ops[i] == "==" || ops[i] == "!=") && lt == "std::string" && rt == "bool" {
+					if bl, ok := r.(*BoolLit); ok {
+						if bl.Value {
+							r = &StringLit{Value: "true"}
+						} else {
+							r = &StringLit{Value: "false"}
+						}
+						rt = "std::string"
+					}
+				} else if (ops[i] == "==" || ops[i] == "!=") && rt == "std::string" && lt == "bool" {
+					if bl, ok := l.(*BoolLit); ok {
+						if bl.Value {
+							l = &StringLit{Value: "true"}
+						} else {
+							l = &StringLit{Value: "false"}
+						}
+						lt = "std::string"
+					}
+				}
 				if ops[i] == "in" {
 					if currentProgram != nil {
 						currentProgram.addInclude("<algorithm>")
@@ -3859,6 +3882,8 @@ func convertPostfix(p *parser.PostfixExpr) (Expr, error) {
 				}
 				expr = &IndexExpr{Target: expr, Index: idx}
 			}
+		case op.Field != nil:
+			expr = &SelectorExpr{Target: expr, Field: op.Field.Name}
 		case op.Call != nil:
 			var args []Expr
 			for _, a := range op.Call.Args {
@@ -3921,6 +3946,9 @@ func convertPostfix(p *parser.PostfixExpr) (Expr, error) {
 							}
 						}
 					}
+					if sel.Field == "padStart" && len(args) == 2 {
+						expr = &PadStartExpr{Value: sel.Target, Width: args[0], Pad: args[1]}
+					}
 				}
 				if _, ok4 := expr.(*CallExpr); ok4 {
 					// already handled
@@ -3931,6 +3959,8 @@ func convertPostfix(p *parser.PostfixExpr) (Expr, error) {
 				} else if _, ok4 := expr.(*TrimSpaceExpr); ok4 {
 					// builtin handled
 				} else if _, ok4 := expr.(*KeysExpr); ok4 {
+					// builtin handled
+				} else if _, ok4 := expr.(*PadStartExpr); ok4 {
 					// builtin handled
 				} else {
 					return nil, fmt.Errorf("unsupported call")
