@@ -1,7 +1,7 @@
 # Rosetta C# Transpiler Output
 
-Completed programs: 83/284
-Last updated: 2025-07-25 14:26 UTC
+Completed programs: 115/284
+Last updated: 2025-07-26 09:54 +0700
 
 ## Checklist
 | Index | Name | Status | Duration | Memory |
@@ -91,48 +91,48 @@ Last updated: 2025-07-25 14:26 UTC
 | 83 | atomic-updates | ✓ | 2.968ms | 16.0MB |
 | 84 | attractive-numbers | ✓ | 2.697ms | 32.1MB |
 | 85 | average-loop-length | ✓ | 52.588ms | 11.7GB |
-| 86 | averages-arithmetic-mean |   |  |  |
-| 87 | averages-mean-time-of-day |   |  |  |
-| 88 | averages-median-1 |   |  |  |
-| 89 | averages-median-2 |   |  |  |
-| 90 | averages-median-3 |   |  |  |
-| 91 | averages-mode |   |  |  |
-| 92 | averages-pythagorean-means |   |  |  |
-| 93 | averages-root-mean-square |   |  |  |
-| 94 | averages-simple-moving-average |   |  |  |
+| 86 | averages-arithmetic-mean | ✓ | 10.67ms | 2.6GB |
+| 87 | averages-mean-time-of-day | ✓ | 8.313ms | 2.5GB |
+| 88 | averages-median-1 | ✓ | 8.209ms | 2.4GB |
+| 89 | averages-median-2 | ✓ | 8.385ms | 2.5GB |
+| 90 | averages-median-3 | ✓ | 10.765ms | 2.6GB |
+| 91 | averages-mode | ✓ | 1.187ms | 16.0MB |
+| 92 | averages-pythagorean-means | ✓ | 7.904ms | 1.7GB |
+| 93 | averages-root-mean-square | ✓ | 1.616ms | 1.7GB |
+| 94 | averages-simple-moving-average | ✓ | 8.337ms | 2.1GB |
 | 95 | avl-tree |   |  |  |
 | 96 | b-zier-curves-intersections |   |  |  |
-| 97 | babbage-problem |   |  |  |
+| 97 | babbage-problem | ✓ | 1.154ms | 16.0MB |
 | 98 | babylonian-spiral |   |  |  |
-| 99 | balanced-brackets |   |  |  |
-| 100 | balanced-ternary |   |  |  |
-| 101 | barnsley-fern |   |  |  |
+| 99 | balanced-brackets | ✓ | 5.441ms | 1.1GB |
+| 100 | balanced-ternary | ✓ | 7.368ms | 1.6GB |
+| 101 | barnsley-fern | ✓ | 4.064ms | 9.9GB |
 | 102 | base64-decode-data |   |  |  |
 | 103 | bell-numbers |   |  |  |
-| 104 | benfords-law |   |  |  |
+| 104 | benfords-law | ✓ | 8.442ms | 6.2GB |
 | 105 | bernoulli-numbers |   |  |  |
-| 106 | best-shuffle |   |  |  |
+| 106 | best-shuffle | ✓ | 11.697ms | 2.9GB |
 | 107 | bifid-cipher |   |  |  |
-| 108 | bin-given-limits |   |  |  |
-| 109 | binary-digits |   |  |  |
-| 110 | binary-search |   |  |  |
+| 108 | bin-given-limits | ✓ | 6.309ms | 1.2GB |
+| 109 | binary-digits | ✓ | 889µs | 16.0MB |
+| 110 | binary-search | ✓ | 8.933ms | 1.2GB |
 | 111 | binary-strings |   |  |  |
-| 112 | bioinformatics-base-count |   |  |  |
+| 112 | bioinformatics-base-count | ✓ | 8.273ms | 2.5GB |
 | 113 | bioinformatics-global-alignment |   |  |  |
 | 114 | bioinformatics-sequence-mutation |   |  |  |
-| 115 | biorhythms |   |  |  |
-| 116 | bitcoin-address-validation |   |  |  |
-| 117 | bitmap-b-zier-curves-cubic |   |  |  |
-| 118 | bitmap-b-zier-curves-quadratic |   |  |  |
-| 119 | bitmap-bresenhams-line-algorithm |   |  |  |
-| 120 | bitmap-flood-fill |   |  |  |
-| 121 | bitmap-histogram |   |  |  |
-| 122 | bitmap-midpoint-circle-algorithm |   |  |  |
-| 123 | bitmap-ppm-conversion-through-a-pipe |   |  |  |
-| 124 | bitmap-read-a-ppm-file |   |  |  |
-| 125 | bitmap-read-an-image-through-a-pipe |   |  |  |
-| 126 | bitmap-write-a-ppm-file |   |  |  |
-| 127 | bitmap |   |  |  |
+| 115 | biorhythms | ✓ | 8.766ms | 2.5GB |
+| 116 | bitcoin-address-validation | ✓ | 1.798ms | 69.0MB |
+| 117 | bitmap-b-zier-curves-cubic | ✓ | 10.31ms | 5.0GB |
+| 118 | bitmap-b-zier-curves-quadratic | ✓ | 11.462ms | 5.0GB |
+| 119 | bitmap-bresenhams-line-algorithm | ✓ | 1.084ms | 16.0MB |
+| 120 | bitmap-flood-fill | ✓ | 6.117ms | 1.2GB |
+| 121 | bitmap-histogram | ✓ | 10.27ms | 2.3GB |
+| 122 | bitmap-midpoint-circle-algorithm | ✓ | 879µs | 108.9MB |
+| 123 | bitmap-ppm-conversion-through-a-pipe | ✓ | 13.347ms | 20.0GB |
+| 124 | bitmap-read-a-ppm-file | ✓ | 968µs | 116.9MB |
+| 125 | bitmap-read-an-image-through-a-pipe | ✓ | 8.777ms | 2.4GB |
+| 126 | bitmap-write-a-ppm-file | ✓ | 1.237ms | 32.1MB |
+| 127 | bitmap | ✓ | 13.719ms | 21.5GB |
 | 128 | bitwise-io-1 |   |  |  |
 | 129 | bitwise-io-2 |   |  |  |
 | 130 | bitwise-operations |   |  |  |
