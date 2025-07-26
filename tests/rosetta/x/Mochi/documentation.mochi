@@ -1,0 +1,25 @@
+// Mochi translation of Rosetta "Documentation" task
+// Based on Go version in tests/rosetta/x/Go/documentation.go
+
+// Example serves as an example but does nothing useful.
+//
+// A package comment precedes the package clause and explains the purpose
+// of the package.
+
+// Exported variables.
+var X: int = 0  // lookie
+var Y: int = 0
+var Z: int = 0  // popular names
+
+/* XP does nothing.
+
+Here's a block comment. */
+fun XP() { // here we go!
+  // comments inside
+}
+
+// Non-exported.
+fun nonXP() {}
+
+// Doc not extracted.
+var MEMEME: int = 0
