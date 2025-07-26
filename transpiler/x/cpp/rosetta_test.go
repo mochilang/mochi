@@ -117,7 +117,12 @@ func TestCPPTranspiler_Rosetta_Golden(t *testing.T) {
 			return err
 		}
 		bin := filepath.Join(outDir, base)
-		if out, err := exec.Command("g++", codePath, "-std=c++20", "-o", bin).CombinedOutput(); err != nil {
+		args := []string{codePath, "-std=c++20"}
+		if ast.UseSHA256 {
+			args = append(args, "-lcrypto")
+		}
+		args = append(args, "-o", bin)
+		if out, err := exec.Command("g++", args...).CombinedOutput(); err != nil {
 			_ = os.WriteFile(errPath, append([]byte("compile: "+err.Error()+"\n"), out...), 0o644)
 			return err
 		}
@@ -143,16 +148,16 @@ func TestCPPTranspiler_Rosetta_Golden(t *testing.T) {
 		} else {
 			_ = os.Remove(errPath)
 		}
-                if bench {
-                        if updateEnabled() {
-                                outBytes := got
-                                if idx := bytes.LastIndexByte(outBytes, '{'); idx >= 0 {
-                                        outBytes = outBytes[idx:]
-                                }
-                                _ = os.WriteFile(benchPath, outBytes, 0o644)
-                        }
-                        return nil
-                }
+		if bench {
+			if updateEnabled() {
+				outBytes := got
+				if idx := bytes.LastIndexByte(outBytes, '{'); idx >= 0 {
+					outBytes = outBytes[idx:]
+				}
+				_ = os.WriteFile(benchPath, outBytes, 0o644)
+			}
+			return nil
+		}
 		if updateEnabled() {
 			_ = os.WriteFile(outPath, got, 0o644)
 			return nil

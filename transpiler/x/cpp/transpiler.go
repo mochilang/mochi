@@ -35,6 +35,7 @@ var useNow bool
 var useMem bool
 var usesLookupHost bool
 var benchMain bool
+var usesSHA256 bool
 var reserved = map[string]bool{"this": true, "new": true, "double": true, "char": true}
 var currentReturnType string
 var inReturn bool
@@ -80,6 +81,7 @@ type Program struct {
 	UseNow        bool
 	UseMem        bool
 	UseLookupHost bool
+	UseSHA256     bool
 }
 
 func (p *Program) addInclude(inc string) {
@@ -546,6 +548,9 @@ func (p *Program) write(w io.Writer) {
 		p.addInclude("<cstring>")
 		p.addInclude("<map>")
 	}
+	if p.UseSHA256 {
+		p.addInclude("<openssl/sha.h>")
+	}
 	usesAny := false
 	for _, inc := range p.Includes {
 		if inc == "<any>" {
@@ -611,14 +616,26 @@ func (p *Program) write(w io.Writer) {
 		fmt.Fprintln(w, "    return res;")
 		fmt.Fprintln(w, "}")
 	}
+	if p.UseSHA256 {
+		fmt.Fprintln(w, "static std::vector<int64_t> _sha256(const std::vector<int64_t>& bs) {")
+		fmt.Fprintln(w, "    unsigned char digest[SHA256_DIGEST_LENGTH];")
+		fmt.Fprintln(w, "    std::vector<unsigned char> data(bs.size());")
+		fmt.Fprintln(w, "    for(size_t i=0;i<bs.size();++i) data[i]=static_cast<unsigned char>(bs[i]);")
+		fmt.Fprintln(w, "    SHA256(data.data(), data.size(), digest);")
+		fmt.Fprintln(w, "    std::vector<int64_t> out(SHA256_DIGEST_LENGTH);")
+		fmt.Fprintln(w, "    for(int i=0;i<SHA256_DIGEST_LENGTH;i++) out[i]=digest[i];")
+		fmt.Fprintln(w, "    return out;")
+		fmt.Fprintln(w, "}")
+	}
 	if usesAny {
 		fmt.Fprintln(w, "static void any_to_stream(std::ostream& os, const std::any& val) {")
 		fmt.Fprintln(w, "    if(val.type() == typeid(int)) os << std::any_cast<int>(val);")
+		fmt.Fprintln(w, "    else if(val.type() == typeid(int64_t)) os << std::any_cast<int64_t>(val);")
 		fmt.Fprintln(w, "    else if(val.type() == typeid(double)) os << std::any_cast<double>(val);")
 		fmt.Fprintln(w, "    else if(val.type() == typeid(bool)) os << (std::any_cast<bool>(val) ? \"true\" : \"false\");")
 		fmt.Fprintln(w, "    else if(val.type() == typeid(std::string)) os << std::any_cast<std::string>(val);")
-		fmt.Fprintln(w, "    else if(val.type() == typeid(std::vector<int>)) { const auto& v = std::any_cast<const std::vector<int>&>(val); os << '['; for(size_t i=0;i<v.size();++i){ if(i>0) os << ', '; os << v[i]; } os << ']'; }")
-		fmt.Fprintln(w, "    else if(val.type() == typeid(std::vector<std::vector<int>>)) { const auto& vv = std::any_cast<const std::vector<std::vector<int>>&>(val); os << '['; for(size_t i=0;i<vv.size();++i){ if(i>0) os << ', '; const auto& v = vv[i]; os << '['; for(size_t j=0;j<v.size();++j){ if(j>0) os << ', '; os << v[j]; } os << ']'; } os << ']'; }")
+		fmt.Fprintln(w, "    else if(val.type() == typeid(std::vector<int64_t>)) { const auto& v = std::any_cast<const std::vector<int64_t>&>(val); os << '['; for(size_t i=0;i<v.size();++i){ if(i>0) os << ', '; os << v[i]; } os << ']'; }")
+		fmt.Fprintln(w, "    else if(val.type() == typeid(std::vector<std::vector<int64_t>>)) { const auto& vv = std::any_cast<const std::vector<std::vector<int64_t>>&>(val); os << '['; for(size_t i=0;i<vv.size();++i){ if(i>0) os << ', '; const auto& v = vv[i]; os << '['; for(size_t j=0;j<v.size();++j){ if(j>0) os << ', '; os << v[j]; } os << ']'; } os << ']'; }")
 		fmt.Fprintln(w, "    else if(val.type() == typeid(std::vector<std::string>)) { const auto& v = std::any_cast<const std::vector<std::string>&>(val); os << '['; for(size_t i=0;i<v.size();++i){ if(i>0) os << ', '; os << v[i]; } os << ']'; }")
 		fmt.Fprintln(w, "    else if(val.type() == typeid(std::vector<std::any>)) { const auto& v = std::any_cast<const std::vector<std::any>&>(val); os << '['; for(size_t i=0;i<v.size();++i){ if(i>0) os << ', '; any_to_stream(os, v[i]); } os << ']'; }")
 		fmt.Fprintln(w, "    else if(val.type() == typeid(std::map<std::string, std::any>)) { const auto& m = std::any_cast<const std::map<std::string, std::any>&>(val); os << '{'; bool first=true; for(const auto& p : m){ if(!first) os << ', '; first=false; os << p.first << ': '; any_to_stream(os, p.second); } os << '}'; }")
@@ -1163,14 +1180,14 @@ func (i *IndexExpr) emit(w io.Writer) {
 		}
 		idxType := exprType(i.Index)
 		resType := exprType(i)
-		if idxType == "int" {
+		if idxType == "int64_t" {
 			if resType == "auto" {
-				// The any value is cast to a vector<int>, so the
+				// The any value is cast to a vector<int64_t>, so the
 				// indexed result must be an int rather than a
 				// whole vector.
-				resType = "int"
+				resType = "int64_t"
 			}
-			io.WriteString(w, "std::any_cast<"+resType+">(std::any_cast<std::vector<int>>(")
+			io.WriteString(w, "std::any_cast<"+resType+">(std::any_cast<std::vector<int64_t>>(")
 			i.Target.emit(w)
 			io.WriteString(w, ")[")
 			i.Index.emit(w)
@@ -1274,7 +1291,7 @@ func (a *AppendExpr) emit(w io.Writer) {
 		}
 		valType = fmt.Sprintf("std::vector<%s>", et)
 	}
-	if strings.HasPrefix(valType, "std::vector<") && listType == "std::vector<int>" {
+	if strings.HasPrefix(valType, "std::vector<") && listType == "std::vector<int64_t>" {
 		listType = fmt.Sprintf("std::vector<%s>", valType)
 		if vr, ok := a.List.(*VarRef); ok && localTypes != nil {
 			localTypes[vr.Name] = listType
@@ -1431,7 +1448,7 @@ func (c *CastExpr) emit(w io.Writer) {
 		io.WriteString(w, ")")
 		return
 	}
-	if c.Type == "std::string" && valType != "std::string" {
+	if c.Type == "std::string" && valType != "std::string" && valType != "std::any" {
 		io.WriteString(w, "std::string(1, ")
 		c.Value.emit(w)
 		io.WriteString(w, ")")
@@ -2616,6 +2633,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	useNow = false
 	useMem = false
 	usesLookupHost = false
+	usesSHA256 = false
 	cp := &Program{Includes: []string{"<iostream>", "<string>"}, ListTypes: map[string]string{}, GlobalTypes: map[string]string{}}
 	currentProgram = cp
 	currentEnv = env
@@ -2968,8 +2986,8 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 				if ap, ok := val.(*AppendExpr); ok {
 					lt := exprType(ap.List)
 					et := exprType(ap.Elem)
-					if lt == "std::vector<int>" && strings.HasPrefix(et, "std::vector<") {
-						newType := "std::vector<std::vector<int>>"
+					if lt == "std::vector<int64_t>" && strings.HasPrefix(et, "std::vector<") {
+						newType := "std::vector<std::vector<int64_t>>"
 						if ls, ok2 := currentVarDecls[stmt.Assign.Name]; ok2 {
 							ls.Type = newType
 						}
@@ -3061,6 +3079,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	cp.UseNow = useNow
 	cp.UseMem = useMem
 	cp.UseLookupHost = usesLookupHost
+	cp.UseSHA256 = usesSHA256
 	hasMain := false
 	for _, fn := range cp.Functions {
 		if fn.Name == "main" {
@@ -3324,8 +3343,8 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 		if ap, ok := val.(*AppendExpr); ok {
 			lt := exprType(ap.List)
 			et := exprType(ap.Elem)
-			if lt == "std::vector<int>" && strings.HasPrefix(et, "std::vector<") {
-				newType := "std::vector<std::vector<int>>"
+			if lt == "std::vector<int64_t>" && strings.HasPrefix(et, "std::vector<") {
+				newType := "std::vector<std::vector<int64_t>>"
 				if ls, ok2 := currentVarDecls[s.Assign.Name]; ok2 {
 					ls.Type = newType
 				}
@@ -3825,7 +3844,7 @@ func convertFun(fn *parser.FunStmt) (*Func, error) {
 		localTypes[k] = v
 	}
 	currentVarDecls = map[string]*LetStmt{}
-	ret := "int"
+	ret := "int64_t"
 	if fn.Return == nil {
 		ret = "void"
 	} else if fn.Return.Simple != nil {
@@ -4045,6 +4064,15 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				}
 				return &KeysExpr{Map: arg}, nil
 			}
+		case "sha256":
+			if len(p.Call.Args) == 1 {
+				arg, err := convertExpr(p.Call.Args[0])
+				if err != nil {
+					return nil, err
+				}
+				usesSHA256 = true
+				return &CallExpr{Name: "_sha256", Args: []Expr{arg}}, nil
+			}
 		case "min":
 			if len(p.Call.Args) == 1 {
 				arg, err := convertExpr(p.Call.Args[0])
@@ -4125,7 +4153,7 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				if err != nil {
 					return nil, err
 				}
-				return &CastExpr{Value: arg, Type: "int"}, nil
+				return &CastExpr{Value: arg, Type: "int64_t"}, nil
 			}
 		case "float":
 			if len(p.Call.Args) == 1 {
@@ -4492,7 +4520,7 @@ func convertMatchExpr(me *parser.MatchExpr) (Expr, error) {
 	}
 	var def Expr = &StringLit{Value: ""}
 	switch {
-	case currentReturnType == "int":
+	case currentReturnType == "int64_t":
 		def = &IntLit{Value: 0}
 	case currentReturnType == "double":
 		def = &FloatLit{Value: 0}
@@ -5298,7 +5326,7 @@ func convertOuterJoinQuery(q *parser.QueryExpr, target string) (Expr, *StructDef
 func cppType(t string) string {
 	switch t {
 	case "int":
-		return "int"
+		return "int64_t"
 	case "float":
 		return "double"
 	case "bool":
@@ -5346,7 +5374,7 @@ func cppType(t string) string {
 func cppTypeFrom(tp types.Type) string {
 	switch t := tp.(type) {
 	case types.IntType:
-		return "int"
+		return "int64_t"
 	case types.Int64Type:
 		return "int64_t"
 	case types.BigIntType:
@@ -5468,7 +5496,7 @@ func guessType(e *parser.Expr) string {
 		if call := e.Binary.Left.Value.Target.Call; call != nil {
 			switch call.Func {
 			case "len":
-				return "int"
+				return "int64_t"
 			case "exists":
 				return "bool"
 			case "values":
@@ -5482,7 +5510,7 @@ func guessType(e *parser.Expr) string {
 					kt := strings.Split(parts, ",")[0]
 					return fmt.Sprintf("std::vector<%s>", strings.TrimSpace(kt))
 				}
-				return "std::vector<int>"
+				return "std::vector<int64_t>"
 			}
 		}
 		if pf := e.Binary.Left.Value; pf != nil && pf.Target.Selector != nil && len(pf.Ops) > 0 && pf.Ops[0].Call != nil {
@@ -5497,7 +5525,7 @@ func guessType(e *parser.Expr) string {
 					kt := strings.Split(parts, ",")[0]
 					return fmt.Sprintf("std::vector<%s>", strings.TrimSpace(kt))
 				}
-				return "std::vector<int>"
+				return "std::vector<int64_t>"
 			}
 		}
 	}
@@ -5519,7 +5547,7 @@ func guessType(e *parser.Expr) string {
 	}
 	if lit := pf.Target.Lit; lit != nil {
 		if lit.Int != nil {
-			return "int"
+			return "int64_t"
 		}
 		if lit.Float != nil {
 			return "double"
@@ -5606,7 +5634,7 @@ func defaultValueForType(t string) string {
 func exprType(e Expr) string {
 	switch v := e.(type) {
 	case *IntLit:
-		return "int"
+		return "int64_t"
 	case *FloatLit:
 		return "double"
 	case *BoolLit:
@@ -5666,7 +5694,7 @@ func exprType(e Expr) string {
 			}
 			return "std::vector<std::any>"
 		}
-		return "std::vector<int>"
+		return "std::vector<int64_t>"
 	case *MapLit:
 		if len(v.Keys) > 0 {
 			kt := exprType(v.Keys[0])
@@ -5728,8 +5756,8 @@ func exprType(e Expr) string {
 			if lt == rt {
 				return lt
 			}
-			if lt == "int" && rt == "int" {
-				return "int"
+			if lt == "int64_t" && rt == "int64_t" {
+				return "int64_t"
 			}
 			return "auto"
 		default:
@@ -5793,7 +5821,7 @@ func exprType(e Expr) string {
 				return fmt.Sprintf("std::vector<%s>", strings.TrimSpace(parts[0]))
 			}
 		}
-		return "std::vector<int>"
+		return "std::vector<int64_t>"
 	case *ExistsExpr:
 		return "bool"
 	}
