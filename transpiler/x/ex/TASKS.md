@@ -1,5 +1,5 @@
-## Progress (2025-07-26 10:08 +0700)
-- Commit 80ac952054: go transpiler: partial struct and function list fixes
+## Progress (2025-07-26 17:36 +0700)
+- Commit 3e356fab70: transpiler/ex: handle map index assignment in conditional
 - Generated Elixir for 102/104 programs
 - Updated README checklist and outputs
 - Improved code emission and type inference
