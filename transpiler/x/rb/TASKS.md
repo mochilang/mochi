@@ -1,3 +1,213 @@
+## Progress (2025-07-26 21:43 +0700)
+- Commit b66dd1d0ca: transpiler/rb: support method references and chained calls
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 21:43 +0700)
+- Commit b66dd1d0ca: transpiler/rb: support method references and chained calls
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 21:43 +0700)
+- Commit b66dd1d0ca: transpiler/rb: support method references and chained calls
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 21:43 +0700)
+- Commit b66dd1d0ca: transpiler/rb: support method references and chained calls
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 21:43 +0700)
+- Commit b66dd1d0ca: transpiler/rb: support method references and chained calls
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 21:43 +0700)
+- Commit b66dd1d0ca: transpiler/rb: support method references and chained calls
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 21:43 +0700)
+- Commit b66dd1d0ca: transpiler/rb: support method references and chained calls
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 21:43 +0700)
+- Commit b66dd1d0ca: transpiler/rb: support method references and chained calls
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 21:43 +0700)
+- Commit b66dd1d0ca: transpiler/rb: support method references and chained calls
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 21:43 +0700)
+- Commit b66dd1d0ca: transpiler/rb: support method references and chained calls
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 21:43 +0700)
+- Commit b66dd1d0ca: transpiler/rb: support method references and chained calls
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 21:43 +0700)
+- Commit b66dd1d0ca: transpiler/rb: support method references and chained calls
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 21:43 +0700)
+- Commit b66dd1d0ca: transpiler/rb: support method references and chained calls
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 21:43 +0700)
+- Commit b66dd1d0ca: transpiler/rb: support method references and chained calls
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 21:43 +0700)
+- Commit b66dd1d0ca: transpiler/rb: support method references and chained calls
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 21:43 +0700)
+- Commit b66dd1d0ca: transpiler/rb: support method references and chained calls
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 21:43 +0700)
+- Commit b66dd1d0ca: transpiler/rb: support method references and chained calls
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 21:43 +0700)
+- Commit b66dd1d0ca: transpiler/rb: support method references and chained calls
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 21:43 +0700)
+- Commit b66dd1d0ca: transpiler/rb: support method references and chained calls
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 21:43 +0700)
+- Commit b66dd1d0ca: transpiler/rb: support method references and chained calls
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 21:43 +0700)
+- Commit b66dd1d0ca: transpiler/rb: support method references and chained calls
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 21:43 +0700)
+- Commit b66dd1d0ca: transpiler/rb: support method references and chained calls
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 21:43 +0700)
+- Commit b66dd1d0ca: transpiler/rb: support method references and chained calls
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 21:43 +0700)
+- Commit b66dd1d0ca: transpiler/rb: support method references and chained calls
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 21:43 +0700)
+- Commit b66dd1d0ca: transpiler/rb: support method references and chained calls
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 21:43 +0700)
+- Commit b66dd1d0ca: transpiler/rb: support method references and chained calls
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 21:43 +0700)
+- Commit b66dd1d0ca: transpiler/rb: support method references and chained calls
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 21:43 +0700)
+- Commit b66dd1d0ca: transpiler/rb: support method references and chained calls
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 21:43 +0700)
+- Commit b66dd1d0ca: transpiler/rb: support method references and chained calls
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 21:43 +0700)
+- Commit b66dd1d0ca: transpiler/rb: support method references and chained calls
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 21:43 +0700)
+- Commit b66dd1d0ca: transpiler/rb: support method references and chained calls
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 21:43 +0700)
+- Commit b66dd1d0ca: transpiler/rb: support method references and chained calls
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 21:43 +0700)
+- Commit b66dd1d0ca: transpiler/rb: support method references and chained calls
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 21:43 +0700)
+- Commit b66dd1d0ca: transpiler/rb: support method references and chained calls
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 21:43 +0700)
+- Commit b66dd1d0ca: transpiler/rb: support method references and chained calls
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 21:43 +0700)
+- Commit b66dd1d0ca: transpiler/rb: support method references and chained calls
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 21:43 +0700)
+- Commit b66dd1d0ca: transpiler/rb: support method references and chained calls
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 21:43 +0700)
+- Commit b66dd1d0ca: transpiler/rb: support method references and chained calls
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 21:43 +0700)
+- Commit b66dd1d0ca: transpiler/rb: support method references and chained calls
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 21:43 +0700)
+- Commit b66dd1d0ca: transpiler/rb: support method references and chained calls
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 21:43 +0700)
+- Commit b66dd1d0ca: transpiler/rb: support method references and chained calls
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-26 21:43 +0700)
+- Commit b66dd1d0ca: transpiler/rb: support method references and chained calls
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
 ## Progress (2025-07-26 19:01 +0700)
 - Commit ea0c01187b: ex transpiler: handle float mod and module globals
 - Generated Ruby for 104/104 programs
