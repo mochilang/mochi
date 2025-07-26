@@ -1,0 +1,155 @@
+func main (regs=9)
+  // print(timeStr(7259))
+  Const        r1, 7259
+  Move         r0, r1
+  Call         r2, timeStr, r0
+  Print        r2
+  // print(timeStr(86400))
+  Const        r4, 86400
+  Move         r3, r4
+  Call         r5, timeStr, r3
+  Print        r5
+  // print(timeStr(6000000))
+  Const        r7, 6000000
+  Move         r6, r7
+  Call         r8, timeStr, r6
+  Print        r8
+  Return       r0
+
+  // fun timeStr(sec: int): string {
+func timeStr (regs=53)
+  // var wks = sec / 604800
+  Const        r1, 604800
+  Div          r2, r0, r1
+  Move         r3, r2
+  // sec = sec % 604800
+  Const        r1, 604800
+  Mod          r4, r0, r1
+  Move         r0, r4
+  // var ds = sec / 86400
+  Const        r5, 86400
+  Div          r6, r0, r5
+  Move         r7, r6
+  // sec = sec % 86400
+  Const        r5, 86400
+  Mod          r8, r0, r5
+  Move         r0, r8
+  // var hrs = sec / 3600
+  Const        r9, 3600
+  Div          r10, r0, r9
+  Move         r11, r10
+  // sec = sec % 3600
+  Const        r9, 3600
+  Mod          r12, r0, r9
+  Move         r0, r12
+  // var mins = sec / 60
+  Const        r13, 60
+  Div          r14, r0, r13
+  Move         r15, r14
+  // sec = sec % 60
+  Const        r13, 60
+  Mod          r16, r0, r13
+  Move         r0, r16
+  // var res = ""
+  Const        r17, ""
+  Move         r18, r17
+  // var comma = false
+  Const        r19, false
+  Move         r20, r19
+  // if wks != 0 {
+  Const        r21, 0
+  NotEqual     r22, r3, r21
+  JumpIfFalse  r22, L0
+  // res = res + str(wks) + " wk"
+  Str          r23, r3
+  Add          r24, r18, r23
+  Const        r25, " wk"
+  Add          r26, r24, r25
+  Move         r18, r26
+  // comma = true
+  Const        r27, true
+  Move         r20, r27
+L0:
+  // if ds != 0 {
+  Const        r21, 0
+  NotEqual     r28, r7, r21
+  JumpIfFalse  r28, L1
+  // if comma {
+  JumpIfFalse  r20, L2
+  // res = res + ", "
+  Const        r29, ", "
+  Add          r30, r18, r29
+  Move         r18, r30
+L2:
+  // res = res + str(ds) + " d"
+  Str          r31, r7
+  Add          r32, r18, r31
+  Const        r33, " d"
+  Add          r34, r32, r33
+  Move         r18, r34
+  // comma = true
+  Const        r27, true
+  Move         r20, r27
+L1:
+  // if hrs != 0 {
+  Const        r21, 0
+  NotEqual     r35, r11, r21
+  JumpIfFalse  r35, L3
+  // if comma {
+  JumpIfFalse  r20, L4
+  // res = res + ", "
+  Const        r29, ", "
+  Add          r36, r18, r29
+  Move         r18, r36
+L4:
+  // res = res + str(hrs) + " hr"
+  Str          r37, r11
+  Add          r38, r18, r37
+  Const        r39, " hr"
+  Add          r40, r38, r39
+  Move         r18, r40
+  // comma = true
+  Const        r27, true
+  Move         r20, r27
+L3:
+  // if mins != 0 {
+  Const        r21, 0
+  NotEqual     r41, r15, r21
+  JumpIfFalse  r41, L5
+  // if comma {
+  JumpIfFalse  r20, L6
+  // res = res + ", "
+  Const        r29, ", "
+  Add          r42, r18, r29
+  Move         r18, r42
+L6:
+  // res = res + str(mins) + " min"
+  Str          r43, r15
+  Add          r44, r18, r43
+  Const        r45, " min"
+  Add          r46, r44, r45
+  Move         r18, r46
+  // comma = true
+  Const        r27, true
+  Move         r20, r27
+L5:
+  // if sec != 0 {
+  Const        r21, 0
+  NotEqual     r47, r0, r21
+  JumpIfFalse  r47, L7
+  // if comma {
+  JumpIfFalse  r20, L8
+  // res = res + ", "
+  Const        r29, ", "
+  Add          r48, r18, r29
+  Move         r18, r48
+L8:
+  // res = res + str(sec) + " sec"
+  Str          r49, r0
+  Add          r50, r18, r49
+  Const        r51, " sec"
+  Add          r52, r50, r51
+  Move         r18, r52
+L7:
+  // return res
+  Return       r18

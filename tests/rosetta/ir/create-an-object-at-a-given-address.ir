@@ -1,0 +1,168 @@
+func main (regs=3)
+  // pointerDemo()
+  Call         r0, pointerDemo, 
+  // print("")
+  Const        r1, ""
+  Print        r1
+  // sliceDemo()
+  Call         r2, sliceDemo, 
+  Return       r0
+
+  // fun listStr(xs: list<int>): string {
+func listStr (regs=19)
+  // var s = "["
+  Const        r1, "["
+  Move         r2, r1
+  // var i = 0
+  Const        r3, 0
+  Move         r4, r3
+L2:
+  // while i < len(xs) {
+  Len          r5, r0
+  LessInt      r6, r4, r5
+  JumpIfFalse  r6, L0
+  // s = s + str(xs[i])
+  Index        r7, r0, r4
+  Str          r8, r7
+  Add          r9, r2, r8
+  Move         r2, r9
+  // if i < len(xs) - 1 { s = s + " " }
+  Len          r10, r0
+  Const        r11, 1
+  SubInt       r12, r10, r11
+  LessInt      r13, r4, r12
+  JumpIfFalse  r13, L1
+  Const        r14, " "
+  Add          r15, r2, r14
+  Move         r2, r15
+L1:
+  // i = i + 1
+  Const        r11, 1
+  AddInt       r16, r4, r11
+  Move         r4, r16
+  // while i < len(xs) {
+  Jump         L2
+L0:
+  // s = s + "]"
+  Const        r17, "]"
+  Add          r18, r2, r17
+  Move         r2, r18
+  // return s
+  Return       r2
+
+  // fun pointerDemo() {
+func pointerDemo (regs=18)
+  // print("Pointer:")
+  Const        r0, "Pointer:"
+  Print        r0
+  // var i = 0
+  Const        r1, 0
+  Move         r2, r1
+  // print("Before:")
+  Const        r3, "Before:"
+  Print        r3
+  // print("\t<address>: " + str(i) + ", " + str(i))
+  Const        r4, "\t<address>: "
+  Str          r5, r2
+  Add          r6, r4, r5
+  Const        r7, ", "
+  Add          r8, r6, r7
+  Str          r9, r2
+  Add          r10, r8, r9
+  Print        r10
+  // i = 3
+  Const        r11, 3
+  Move         r2, r11
+  // print("After:")
+  Const        r12, "After:"
+  Print        r12
+  // print("\t<address>: " + str(i) + ", " + str(i))
+  Const        r4, "\t<address>: "
+  Str          r13, r2
+  Add          r14, r4, r13
+  Const        r7, ", "
+  Add          r15, r14, r7
+  Str          r16, r2
+  Add          r17, r15, r16
+  Print        r17
+  Return       r0
+
+  // fun sliceDemo() {
+func sliceDemo (regs=35)
+  // print("Slice:")
+  Const        r0, "Slice:"
+  Print        r0
+  // var a = []
+  Const        r1, []
+  Move         r2, r1
+  // for _ in 0..10 {
+  Const        r3, 0
+  Const        r4, 10
+  Move         r5, r3
+L1:
+  LessInt      r6, r5, r4
+  JumpIfFalse  r6, L0
+  // a = append(a, 0)
+  Const        r3, 0
+  Append       r7, r2, r3
+  Move         r2, r7
+  // for _ in 0..10 {
+  Const        r8, 1
+  AddInt       r9, r5, r8
+  Move         r5, r9
+  Jump         L1
+L0:
+  // var s = a
+  Move         r10, r2
+  // print("Before:")
+  Const        r11, "Before:"
+  Print        r11
+  // print("\ts: " + listStr(s))
+  Const        r12, "\ts: "
+  Move         r13, r10
+  Call         r14, listStr, r13
+  Add          r15, r12, r14
+  Print        r15
+  // print("\ta: " + listStr(a))
+  Const        r16, "\ta: "
+  Move         r17, r2
+  Call         r18, listStr, r17
+  Add          r19, r16, r18
+  Print        r19
+  // var data = [65, 32, 115, 116, 114, 105, 110, 103, 46]
+  Const        r20, [65, 32, 115, 116, 114, 105, 110, 103, 46]
+  Move         r21, r20
+  // var idx = 0
+  Const        r3, 0
+  Move         r22, r3
+L3:
+  // while idx < len(data) {
+  Const        r23, 9
+  LessInt      r24, r22, r23
+  JumpIfFalse  r24, L2
+  // s[idx] = data[idx]
+  Index        r25, r21, r22
+  SetIndex     r10, r22, r25
+  // idx = idx + 1
+  Const        r26, 1
+  AddInt       r27, r22, r26
+  Move         r22, r27
+  // while idx < len(data) {
+  Jump         L3
+L2:
+  // print("After:")
+  Const        r28, "After:"
+  Print        r28
+  // print("\ts: " + listStr(s))
+  Const        r12, "\ts: "
+  Move         r29, r10
+  Call         r30, listStr, r29
+  Add          r31, r12, r30
+  Print        r31
+  // print("\ta: " + listStr(a))
+  Const        r16, "\ta: "
+  Move         r32, r2
+  Call         r33, listStr, r32
+  Add          r34, r16, r33
+  Print        r34
+  Return       r0

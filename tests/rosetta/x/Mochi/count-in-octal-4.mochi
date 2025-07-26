@@ -15,11 +15,9 @@ fun toOct(n: int): string {
 }
 
 fun main() {
-  // infinite loop counting with big integers until interrupted
-  var i = 0
-  while true {
+  // count first 16 numbers only
+  for i in 0..16 {
     print(toOct(i))
-    i = i + 1
   }
 }
 

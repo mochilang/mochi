@@ -1,0 +1,84 @@
+func main (regs=11)
+  // let amount = 1000
+  Const        r1, 1000
+  Move         r0, r1
+  SetGlobal    0,0,0,0
+  // print("amount, ways to make change: " + str(amount) + " " + str(countChange(amount)))
+  Const        r2, "amount, ways to make change: "
+  Const        r3, "1000"
+  Const        r4, "amount, ways to make change: 1000"
+  Const        r5, " "
+  Const        r6, "amount, ways to make change: 1000 "
+  Const        r1, 1000
+  Move         r7, r1
+  Call         r8, countChange, r7
+  Str          r9, r8
+  Add          r10, r6, r9
+  Print        r10
+  Return       r0
+
+  // fun countChange(amount: int): int {
+func countChange (regs=27)
+  // var ways: list<int> = []
+  Const        r2, []
+  Move         r3, r2
+  // var i = 0
+  Const        r4, 0
+  Move         r5, r4
+L1:
+  // while i <= amount {
+  LessEq       r6, r5, r1
+  JumpIfFalse  r6, L0
+  // ways = append(ways, 0)
+  Const        r4, 0
+  Append       r7, r3, r4
+  Move         r3, r7
+  // i = i + 1
+  Const        r8, 1
+  AddInt       r9, r5, r8
+  Move         r5, r9
+  // while i <= amount {
+  Jump         L1
+L0:
+  // ways[0] = 1
+  Const        r8, 1
+  Const        r4, 0
+  SetIndex     r3, r4, r8
+  // for coin in [100, 50, 25, 10, 5, 1] {
+  Const        r10, [100, 50, 25, 10, 5, 1]
+  IterPrep     r11, r10
+  Len          r12, r11
+  Const        r13, 0
+L5:
+  LessInt      r14, r13, r12
+  JumpIfFalse  r14, L2
+  Index        r15, r11, r13
+  Move         r16, r15
+  // var j = coin
+  Move         r17, r16
+L4:
+  // while j <= amount {
+  LessEq       r18, r17, r1
+  JumpIfFalse  r18, L3
+  // ways[j] = ways[j] + ways[j - coin]
+  Index        r19, r3, r17
+  Sub          r20, r17, r16
+  Index        r21, r3, r20
+  Add          r22, r19, r21
+  SetIndex     r3, r17, r22
+  // j = j + 1
+  Const        r8, 1
+  Add          r23, r17, r8
+  Move         r17, r23
+  // while j <= amount {
+  Jump         L4
+L3:
+  // for coin in [100, 50, 25, 10, 5, 1] {
+  Const        r24, 1
+  AddInt       r25, r13, r24
+  Move         r13, r25
+  Jump         L5
+L2:
+  // return ways[amount]
+  Index        r26, r3, r1
+  Return       r26

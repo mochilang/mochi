@@ -19,5 +19,5 @@ fun countChange(amount: int): int {
   return ways[amount]
 }
 
-let amount = 1000 * 100
+let amount = 1000
 print("amount, ways to make change: " + str(amount) + " " + str(countChange(amount)))

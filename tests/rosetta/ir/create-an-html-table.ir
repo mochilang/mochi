@@ -1,0 +1,97 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun main() {
+func main (regs=52)
+  // var rows: list<list<int>> = []
+  Const        r0, []
+  Move         r1, r0
+  // for i in 0..4 {
+  Const        r2, 0
+  Const        r3, 4
+  Move         r4, r2
+L1:
+  LessInt      r5, r4, r3
+  JumpIfFalse  r5, L0
+  // rows = append(rows, [i*3, i*3+1, i*3+2])
+  Const        r9, 3
+  MulInt       r10, r4, r9
+  Move         r6, r10
+  Const        r9, 3
+  MulInt       r11, r4, r9
+  Const        r12, 1
+  AddInt       r13, r11, r12
+  Move         r7, r13
+  Const        r9, 3
+  MulInt       r14, r4, r9
+  Const        r15, 2
+  AddInt       r16, r14, r15
+  Move         r8, r16
+  MakeList     r17, 3, r6
+  Append       r18, r1, r17
+  Move         r1, r18
+  // for i in 0..4 {
+  Const        r19, 1
+  AddInt       r20, r4, r19
+  Move         r4, r20
+  Jump         L1
+L0:
+  // print("<table>")
+  Const        r21, "<table>"
+  Print        r21
+  // print("    <tr><th></th><th>X</th><th>Y</th><th>Z</th></tr>")
+  Const        r22, "    <tr><th></th><th>X</th><th>Y</th><th>Z</th></tr>"
+  Print        r22
+  // var idx = 0
+  Const        r2, 0
+  Move         r23, r2
+  // for row in rows {
+  IterPrep     r24, r1
+  Len          r25, r24
+  Const        r26, 0
+L3:
+  LessInt      r27, r26, r25
+  JumpIfFalse  r27, L2
+  Index        r28, r24, r26
+  Move         r29, r28
+  // print("    <tr><td>" + str(idx) + "</td><td>" + str(row[0]) + "</td><td>" + str(row[1]) + "</td><td>" + str(row[2]) + "</td></tr>")
+  Const        r30, "    <tr><td>"
+  Str          r31, r23
+  Add          r32, r30, r31
+  Const        r33, "</td><td>"
+  Add          r34, r32, r33
+  Const        r2, 0
+  Index        r35, r29, r2
+  Str          r36, r35
+  Add          r37, r34, r36
+  Const        r33, "</td><td>"
+  Add          r38, r37, r33
+  Const        r12, 1
+  Index        r39, r29, r12
+  Str          r40, r39
+  Add          r41, r38, r40
+  Const        r33, "</td><td>"
+  Add          r42, r41, r33
+  Const        r15, 2
+  Index        r43, r29, r15
+  Str          r44, r43
+  Add          r45, r42, r44
+  Const        r46, "</td></tr>"
+  Add          r47, r45, r46
+  Print        r47
+  // idx = idx + 1
+  Const        r12, 1
+  AddInt       r48, r23, r12
+  Move         r23, r48
+  // for row in rows {
+  Const        r49, 1
+  AddInt       r50, r26, r49
+  Move         r26, r50
+  Jump         L3
+L2:
+  // print("</table>")
+  Const        r51, "</table>"
+  Print        r51
+  Return       r0

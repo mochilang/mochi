@@ -1,0 +1,116 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun gzipWriter(w: any): any { return w }
+func gzipWriter (regs=1)
+  // fun gzipWriter(w: any): any { return w }
+  Return       r0
+
+  // fun tarWriter(w: any): any { return w }
+func tarWriter (regs=1)
+  // fun tarWriter(w: any): any { return w }
+  Return       r0
+
+  // fun tarWriteHeader(w: any, hdr: map<string, any>) {}
+func tarWriteHeader (regs=2)
+  Return       r0
+
+  // fun tarWrite(w: any, data: string) {}
+func tarWrite (regs=2)
+  Return       r0
+
+  // fun main() {
+func main (regs=47)
+  // let filename = "TAPE.FILE"   // name inside the archive
+  Const        r0, "TAPE.FILE"
+  Move         r1, r0
+  // let data = ""               // file contents
+  Const        r2, ""
+  Move         r3, r2
+  // let outfile = ""            // destination path (ignored)
+  Const        r2, ""
+  Move         r4, r2
+  // let gzipFlag = false        // compress output
+  Const        r5, false
+  Move         r6, r5
+  // var w: any = null           // represents os.Stdout or a file handle
+  Const        r7, nil
+  Move         r8, r7
+  // if outfile != "" {          // would open outfile here
+  Const        r2, ""
+  Const        r2, ""
+  NotEqual     r9, r2, r2
+  JumpIfFalse  r9, L0
+  // w = null
+  Const        r7, nil
+  Move         r8, r7
+L0:
+  // if gzipFlag {               // wrap in gzip writer if requested
+  Const        r5, false
+  JumpIfFalse  r5, L1
+  // w = gzipWriter(w)
+  Move         r10, r8
+  Call         r11, gzipWriter, r10
+  Move         r8, r11
+L1:
+  // w = tarWriter(w)            // create tar writer
+  Move         r12, r8
+  Call         r13, tarWriter, r12
+  Move         r8, r13
+  // "Name": filename,
+  Const        r14, "Name"
+  Const        r0, "TAPE.FILE"
+  // "Mode": 0o660,
+  Const        r15, "Mode"
+  Const        r16, 432
+  // "Size": len(data),
+  Const        r17, "Size"
+  Const        r18, 0
+  // "ModTime": now(),
+  Const        r19, "ModTime"
+  Now          r20
+  // "Typeflag": 0,
+  Const        r21, "Typeflag"
+  Const        r18, 0
+  // "Uname": "guest",
+  Const        r22, "Uname"
+  Const        r23, "guest"
+  // "Gname": "guest",
+  Const        r24, "Gname"
+  Const        r23, "guest"
+  // "Name": filename,
+  Move         r25, r14
+  Move         r26, r0
+  // "Mode": 0o660,
+  Move         r27, r15
+  Move         r28, r16
+  // "Size": len(data),
+  Move         r29, r17
+  Move         r30, r18
+  // "ModTime": now(),
+  Move         r31, r19
+  Move         r32, r20
+  // "Typeflag": 0,
+  Move         r33, r21
+  Move         r34, r18
+  // "Uname": "guest",
+  Move         r35, r22
+  Move         r36, r23
+  // "Gname": "guest",
+  Move         r37, r24
+  Move         r38, r23
+  // var hdr: map<string, any> = {
+  MakeMap      r39, 7, r25
+  Move         r40, r39
+  // tarWriteHeader(w, hdr)
+  Move         r41, r8
+  Move         r42, r40
+  Call2        r43, tarWriteHeader, r41, r42
+  // tarWrite(w, data)
+  Move         r44, r8
+  Const        r2, ""
+  Move         r45, r2
+  Call2        r46, tarWrite, r44, r45
+  Return       r0
