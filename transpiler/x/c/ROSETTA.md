@@ -2,7 +2,7 @@
 
 This directory stores C code generated from Mochi programs in `tests/rosetta/x/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.c` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (42/332) - Last updated 2025-07-26 20:33 +0700:
+Checklist of programs that currently transpile and run (46/341) - Last updated 2025-07-27 00:32 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | 100-doors-2 | ✓ | 65us | 17.2 KB |
@@ -65,10 +65,10 @@ Checklist of programs that currently transpile and run (42/332) - Last updated 2
 | 58 | append-a-record-to-the-end-of-a-text-file | ✓ | 16us | 4.7 KB |
 | 59 | apply-a-callback-to-an-array-1 | ✓ | 357us | 4.8 KB |
 | 60 | apply-a-callback-to-an-array-2 |  |  |  |
-| 61 | apply-a-digital-filter-direct-form-ii-transposed- |  |  |  |
-| 62 | approximate-equality |  |  |  |
-| 63 | arbitrary-precision-integers-included- |  |  |  |
-| 64 | archimedean-spiral |  |  |  |
+| 61 | apply-a-digital-filter-direct-form-ii-transposed- | ✓ | 10us | 1.3 KB |
+| 62 | approximate-equality | ✓ | 42us | 6.3 KB |
+| 63 | arbitrary-precision-integers-included- | ✓ | 19us | 4.8 KB |
+| 64 | archimedean-spiral | ✓ | 819us | 13.8 KB |
 | 65 | arena-storage-pool |  |  |  |
 | 66 | arithmetic-complex |  |  |  |
 | 67 | arithmetic-derivative |  |  |  |
@@ -335,5 +335,14 @@ Checklist of programs that currently transpile and run (42/332) - Last updated 2
 | 328 | earliest-difference-between-prime-gaps |  |  |  |
 | 329 | eban-numbers |  |  |  |
 | 330 | echo-server |  |  |  |
-| 331 | ekg-sequence-convergence |  |  |  |
-| 332 | md5 |  |  |  |
+| 331 | eertree |  |  |  |
+| 332 | egyptian-division |  |  |  |
+| 333 | ekg-sequence-convergence |  |  |  |
+| 334 | element-wise-operations |  |  |  |
+| 335 | elementary-cellular-automaton-infinite-length |  |  |  |
+| 336 | elementary-cellular-automaton-random-number-generator |  |  |  |
+| 337 | elementary-cellular-automaton |  |  |  |
+| 338 | elliptic-curve-arithmetic |  |  |  |
+| 339 | emirp-primes |  |  |  |
+| 340 | empty-directory |  |  |  |
+| 341 | md5 |  |  |  |

@@ -2115,11 +2115,12 @@ func (p *Program) Emit() []byte {
 					needMapGetSL = true
 				}
 			}
-			fmt.Fprintf(&buf, "    %s %s;\n", typ, field)
-			if ft, ok := st.Fields[field]; ok {
-				if _, ok2 := ft.(types.ListType); ok2 {
-					fmt.Fprintf(&buf, "    size_t %s_len;\n", field)
-				}
+			if strings.HasSuffix(typ, "[]") {
+				base := strings.TrimSuffix(typ, "[]")
+				fmt.Fprintf(&buf, "    %s *%s;\n", base, field)
+				fmt.Fprintf(&buf, "    size_t %s_len;\n", field)
+			} else {
+				fmt.Fprintf(&buf, "    %s %s;\n", typ, field)
 			}
 		}
 		fmt.Fprintf(&buf, "};\n\n")
@@ -2781,11 +2782,19 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 		if valExpr == nil {
 			valExpr = convertExpr(s.Var.Value)
 		}
-		currentVarName = ""
 		declType := ""
 		if s.Var.Type != nil {
 			declType = cTypeFromMochiType(types.ResolveTypeRef(s.Var.Type, env))
 		}
+		if declType == "" {
+			switch valExpr.(type) {
+			case *FloatLit:
+				declType = "double"
+			case *IntLit:
+				declType = "int"
+			}
+		}
+		currentVarName = ""
 		if declType == "" {
 			declType = inferCType(env, s.Var.Name, valExpr)
 		}
@@ -3793,14 +3802,7 @@ func convertUnary(u *parser.Unary) Expr {
 				allStr = false
 			}
 		}
-		complexVal := false
-		for _, it := range items {
-			if strings.HasSuffix(inferExprType(currentEnv, it.Value), "[]") {
-				complexVal = true
-				break
-			}
-		}
-		if allStr && !complexVal {
+		if allStr {
 			if len(items) == 0 {
 				if currentVarName != "" {
 					if t, err := currentEnv.GetVar(currentVarName); err == nil {
