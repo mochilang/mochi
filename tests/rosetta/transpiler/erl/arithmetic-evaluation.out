@@ -1,6 +1,6 @@
 2*(3-1)+2*5 = 14
 {
-  "duration_us": 7157,
-  "memory_bytes": 361592,
+  "duration_us": 8443,
+  "memory_bytes": 3817136,
   "name": "main"
 }
