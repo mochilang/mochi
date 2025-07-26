@@ -44,6 +44,20 @@ var inReturn bool
 var mutatedParams map[string]bool
 var paramNames map[string]bool
 
+func isStructType(t string) bool {
+	if strings.HasPrefix(t, "std::") {
+		return false
+	}
+	if strings.Contains(t, "<") || strings.HasSuffix(t, "*") {
+		return false
+	}
+	switch t {
+	case "int64_t", "double", "bool", "std::string", "std::any":
+		return false
+	}
+	return t != ""
+}
+
 // SetBenchMain configures whether the generated main function is wrapped in a
 // benchmark block when emitting code.
 func SetBenchMain(v bool) { benchMain = v }
@@ -780,18 +794,14 @@ func (p *Program) write(w io.Writer) {
 			if typ == "" {
 				io.WriteString(w, "auto")
 			} else {
-				if strings.HasPrefix(typ, "std::vector<") {
+				if strings.HasPrefix(typ, "std::vector<") || strings.HasPrefix(typ, "std::map<") {
 					if p.ByVal {
 						io.WriteString(w, typ)
 					} else {
 						io.WriteString(w, "const "+typ+"&")
 					}
-				} else if strings.HasPrefix(typ, "std::map<") {
-					if p.ByVal {
-						io.WriteString(w, typ)
-					} else {
-						io.WriteString(w, "const "+typ+"&")
-					}
+				} else if isStructType(typ) {
+					io.WriteString(w, typ+"&")
 				} else {
 					io.WriteString(w, typ)
 				}
@@ -853,18 +863,14 @@ func (f *Func) emit(w io.Writer) {
 		if typ == "" {
 			io.WriteString(w, "auto ")
 		} else {
-			if strings.HasPrefix(typ, "std::vector<") {
+			if strings.HasPrefix(typ, "std::vector<") || strings.HasPrefix(typ, "std::map<") {
 				if p.ByVal {
 					io.WriteString(w, typ+" ")
 				} else {
 					io.WriteString(w, "const "+typ+"& ")
 				}
-			} else if strings.HasPrefix(typ, "std::map<") {
-				if p.ByVal {
-					io.WriteString(w, typ+" ")
-				} else {
-					io.WriteString(w, "const "+typ+"& ")
-				}
+			} else if isStructType(typ) {
+				io.WriteString(w, typ+"& ")
 			} else {
 				io.WriteString(w, typ+" ")
 			}
