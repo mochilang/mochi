@@ -2,9 +2,9 @@
 
 Generated PHP code from Mochi Rosetta tasks lives in `tests/rosetta/transpiler/php`.
 
-Last updated: 2025-07-26 23:46 +0700
+Last updated: 2025-07-27 00:34 +0700
 
-## Checklist (270/332)
+## Checklist (272/332)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 142µs | 136 B |
@@ -229,47 +229,47 @@ Last updated: 2025-07-26 23:46 +0700
 | 220 | conditional-structures-4 | ✓ | 1µs | 64 B |
 | 221 | conditional-structures-5 | ✓ |  |  |
 | 222 | conditional-structures-6 | ✓ |  |  |
-| 223 | conditional-structures-7 | ✓ |  |  |
+| 223 | conditional-structures-7 | ✓ | 1µs | 64 B |
 | 224 | conditional-structures-8 | ✓ |  |  |
-| 225 | conditional-structures-9 | ✓ |  |  |
+| 225 | conditional-structures-9 | ✓ | 1µs | 64 B |
 | 226 | consecutive-primes-with-ascending-or-descending-differences |   |  |  |
 | 227 | constrained-genericity-1 | ✓ |  |  |
 | 228 | constrained-genericity-2 | ✓ |  |  |
 | 229 | constrained-genericity-3 | ✓ |  |  |
-| 230 | constrained-genericity-4 | ✓ |  |  |
-| 231 | constrained-random-points-on-a-circle-1 | ✓ |  |  |
-| 232 | constrained-random-points-on-a-circle-2 | ✓ |  |  |
-| 233 | continued-fraction | ✓ |  |  |
-| 234 | convert-decimal-number-to-rational | ✓ |  |  |
-| 235 | convert-seconds-to-compound-duration | ✓ |  |  |
-| 236 | convex-hull | ✓ |  |  |
-| 237 | conways-game-of-life | ✓ |  |  |
-| 238 | copy-a-string-1 | ✓ |  |  |
-| 239 | copy-a-string-2 | ✓ |  |  |
-| 240 | copy-stdin-to-stdout-1 | ✓ |  |  |
-| 241 | copy-stdin-to-stdout-2 | ✓ |  |  |
-| 242 | count-in-factors | ✓ |  |  |
-| 243 | count-in-octal-1 | ✓ |  |  |
-| 244 | count-in-octal-2 | ✓ |  |  |
-| 245 | count-in-octal-3 |   |  |  |
-| 246 | count-in-octal-4 |   |  |  |
-| 247 | count-occurrences-of-a-substring | ✓ |  |  |
-| 248 | count-the-coins-1 | ✓ |  |  |
-| 249 | count-the-coins-2 | ✓ |  |  |
-| 250 | cramers-rule | ✓ |  |  |
-| 251 | crc-32-1 | ✓ |  |  |
-| 252 | crc-32-2 | ✓ |  |  |
-| 253 | create-a-file-on-magnetic-tape | ✓ |  |  |
-| 254 | create-a-file | ✓ |  |  |
-| 255 | create-a-two-dimensional-array-at-runtime-1 | ✓ |  |  |
-| 256 | create-an-html-table | ✓ |  |  |
-| 257 | create-an-object-at-a-given-address | ✓ |  |  |
-| 258 | csv-data-manipulation | ✓ |  |  |
-| 259 | csv-to-html-translation-1 | ✓ |  |  |
-| 260 | csv-to-html-translation-2 | ✓ |  |  |
-| 261 | csv-to-html-translation-3 | ✓ |  |  |
-| 262 | csv-to-html-translation-4 | ✓ |  |  |
-| 263 | csv-to-html-translation-5 | ✓ |  |  |
+| 230 | constrained-genericity-4 | ✓ | 75µs | 96 B |
+| 231 | constrained-random-points-on-a-circle-1 | ✓ | 851µs | 52.1 KB |
+| 232 | constrained-random-points-on-a-circle-2 | ✓ | 1.532ms | 149.5 KB |
+| 233 | continued-fraction | ✓ | 138µs | 96 B |
+| 234 | convert-decimal-number-to-rational | ✓ | 119µs | 96 B |
+| 235 | convert-seconds-to-compound-duration | ✓ | 151µs | 96 B |
+| 236 | convex-hull | ✓ | 149µs | 376 B |
+| 237 | conways-game-of-life | ✓ | 765.75ms | 128 B |
+| 238 | copy-a-string-1 | ✓ | 1µs | 64 B |
+| 239 | copy-a-string-2 | ✓ | 69µs | 312 B |
+| 240 | copy-stdin-to-stdout-1 | ✓ | 70µs | 8.1 KB |
+| 241 | copy-stdin-to-stdout-2 | ✓ | 69µs | 8.1 KB |
+| 242 | count-in-factors | ✓ | 732µs | 96 B |
+| 243 | count-in-octal-1 | ✓ | 566µs | 96 B |
+| 244 | count-in-octal-2 | ✓ | 224.512ms | 96 B |
+| 245 | count-in-octal-3 | ✓ | 263µs | 96 B |
+| 246 | count-in-octal-4 | ✓ | 94µs | 96 B |
+| 247 | count-occurrences-of-a-substring | ✓ | 64µs | 96 B |
+| 248 | count-the-coins-1 | ✓ | 122µs | 96 B |
+| 249 | count-the-coins-2 | ✓ | 1.263ms | 96 B |
+| 250 | cramers-rule | ✓ | 240µs | 1.6 KB |
+| 251 | crc-32-1 | ✓ | 23.529ms | 8.2 KB |
+| 252 | crc-32-2 | ✓ | 27.965ms | 8.2 KB |
+| 253 | create-a-file-on-magnetic-tape | ✓ | 43µs | 64 B |
+| 254 | create-a-file | ✓ | 72µs | 96 B |
+| 255 | create-a-two-dimensional-array-at-runtime-1 | ✓ | 120µs | 96 B |
+| 256 | create-an-html-table | ✓ | 91µs | 96 B |
+| 257 | create-an-object-at-a-given-address | ✓ | 97µs | 96 B |
+| 258 | csv-data-manipulation | ✓ | 207µs | 1.3 KB |
+| 259 | csv-to-html-translation-1 | ✓ | 103µs | 2.4 KB |
+| 260 | csv-to-html-translation-2 | ✓ | 171µs | 2.4 KB |
+| 261 | csv-to-html-translation-3 | ✓ | 47µs | 96 B |
+| 262 | csv-to-html-translation-4 | ✓ | 48µs | 96 B |
+| 263 | csv-to-html-translation-5 | ✓ | 151µs | 2.4 KB |
 | 264 | cuban-primes |   |  |  |
 | 265 | cullen-and-woodall-numbers | ✓ |  |  |
 | 266 | cumulative-standard-deviation | ✓ |  |  |

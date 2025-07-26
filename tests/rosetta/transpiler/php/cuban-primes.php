@@ -1,5 +1,20 @@
 <?php
 ini_set('memory_limit', '-1');
+$now_seed = 0;
+$now_seeded = false;
+$s = getenv('MOCHI_NOW_SEED');
+if ($s !== false && $s !== '') {
+    $now_seed = intval($s);
+    $now_seeded = true;
+}
+function _now() {
+    global $now_seed, $now_seeded;
+    if ($now_seeded) {
+        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
+        return $now_seed;
+    }
+    return hrtime(true);
+}
 function _str($x) {
     if (is_array($x)) {
         $isList = array_keys($x) === range(0, count($x) - 1);
@@ -24,7 +39,9 @@ function _intdiv($a, $b) {
     }
     return intdiv($a, $b);
 }
-function modPow($base, $exp, $m) {
+$__start_mem = memory_get_usage();
+$__start = _now();
+  function modPow($base, $exp, $m) {
   $result = 1 % $m;
   $b = $base % $m;
   $e = $exp;
@@ -36,8 +53,8 @@ function modPow($base, $exp, $m) {
   $e = intval((_intdiv($e, 2)));
 };
   return $result;
-}
-function isPrime($n) {
+};
+  function isPrime($n) {
   if ($n < 2) {
   return false;
 }
@@ -75,8 +92,8 @@ function isPrime($n) {
 }
 };
   return true;
-}
-function commatize($n) {
+};
+  function commatize($n) {
   $s = _str($n);
   $i = strlen($s) - 3;
   while ($i > 0) {
@@ -84,15 +101,15 @@ function commatize($n) {
   $i = $i - 3;
 };
   return $s;
-}
-function pad($s, $width) {
+};
+  function pad($s, $width) {
   $out = $s;
   while (strlen($out) < $width) {
   $out = ' ' . $out;
 };
   return $out;
-}
-function mochi_join($xs, $sep) {
+};
+  function mochi_join($xs, $sep) {
   $res = '';
   $i = 0;
   while ($i < count($xs)) {
@@ -103,8 +120,8 @@ function mochi_join($xs, $sep) {
   $i = $i + 1;
 };
   return $res;
-}
-function formatRow($row) {
+};
+  function formatRow($row) {
   $padded = [];
   $i = 0;
   while ($i < count($row)) {
@@ -112,8 +129,8 @@ function formatRow($row) {
   $i = $i + 1;
 };
   return '[' . mochi_join($padded, ' ') . ']';
-}
-function main() {
+};
+  function main() {
   $cubans = [];
   $cube1 = 1;
   $count = 0;
@@ -148,7 +165,14 @@ function main() {
   echo rtrim(formatRow($slice)), PHP_EOL;
   $row = $row + 1;
 };
-  echo rtrim('
-The 100,000th cuban prime is ' . commatize($cube100k)), PHP_EOL;
-}
-main();
+  echo rtrim('\nThe 100,000th cuban prime is ' . commatize($cube100k)), PHP_EOL;
+};
+  main();
+$__end = _now();
+$__end_mem = memory_get_usage();
+$__duration = intdiv($__end - $__start, 1000);
+$__mem_diff = max(0, $__end_mem - $__start_mem);
+$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
+$__j = json_encode($__bench, 128);
+$__j = str_replace("    ", "  ", $__j);
+echo $__j, PHP_EOL;;

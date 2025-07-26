@@ -31,13 +31,15 @@ function _str($x) {
     if ($x === null) return 'null';
     return strval($x);
 }
-$nPts = 100;
-$rMin = 10;
-$rMax = 15;
-$span = $rMax + 1 + $rMax;
-$rows = [];
-$r = 0;
-while ($r < $span) {
+$__start_mem = memory_get_usage();
+$__start = _now();
+  $nPts = 100;
+  $rMin = 10;
+  $rMax = 15;
+  $span = $rMax + 1 + $rMax;
+  $rows = [];
+  $r = 0;
+  while ($r < $span) {
   $row = [];
   $c = 0;
   while ($c < $span * 2) {
@@ -47,14 +49,14 @@ while ($r < $span) {
   $rows = array_merge($rows, [$row]);
   $r = $r + 1;
 }
-$u = 0;
-$seen = [];
-$min2 = $rMin * $rMin;
-$max2 = $rMax * $rMax;
-$n = 0;
-while ($n < $nPts) {
-  $x = _now() % $span - $rMax;
-  $y = _now() % $span - $rMax;
+  $u = 0;
+  $seen = [];
+  $min2 = $rMin * $rMin;
+  $max2 = $rMax * $rMax;
+  $n = 0;
+  while ($n < $nPts) {
+  $x = fmod(_now(), $span) - $rMax;
+  $y = fmod(_now(), $span) - $rMax;
   $rs = $x * $x + $y * $y;
   if ($rs < $min2 || $rs > $max2) {
   continue;
@@ -69,8 +71,8 @@ while ($n < $nPts) {
   $u = $u + 1;
 }
 }
-$i = 0;
-while ($i < $span) {
+  $i = 0;
+  while ($i < $span) {
   $line = '';
   $j = 0;
   while ($j < $span * 2) {
@@ -80,4 +82,12 @@ while ($i < $span) {
   echo rtrim($line), PHP_EOL;
   $i = $i + 1;
 }
-echo rtrim(_str($u) . ' unique points'), PHP_EOL;
+  echo rtrim(_str($u) . ' unique points'), PHP_EOL;
+$__end = _now();
+$__end_mem = memory_get_usage();
+$__duration = intdiv($__end - $__start, 1000);
+$__mem_diff = max(0, $__end_mem - $__start_mem);
+$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
+$__j = json_encode($__bench, 128);
+$__j = str_replace("    ", "  ", $__j);
+echo $__j, PHP_EOL;;

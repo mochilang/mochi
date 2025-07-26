@@ -1,13 +1,18 @@
 Pointer:
 Before:
-	<address>: 0, 0
+\t<address>: 0, 0
 After:
-	<address>: 3, 3
+\t<address>: 3, 3
 
 Slice:
 Before:
-	s: [0 0 0 0 0 0 0 0 0 0]
-	a: [0 0 0 0 0 0 0 0 0 0]
+\ts: [0 0 0 0 0 0 0 0 0 0]
+\ta: [0 0 0 0 0 0 0 0 0 0]
 After:
-	s: [65 32 115 116 114 105 110 103 46 0]
-	a: [0 0 0 0 0 0 0 0 0 0]
+\ts: [65 32 115 116 114 105 110 103 46 0]
+\ta: [0 0 0 0 0 0 0 0 0 0]
+{
+  "duration_us": 97,
+  "memory_bytes": 96,
+  "name": "main"
+}
