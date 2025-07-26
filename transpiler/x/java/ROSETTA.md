@@ -1,9 +1,9 @@
 # Java Rosetta Transpiler Output
 
 Generated Java code for programs in `tests/rosetta/x/Mochi`. Each program has a `.java` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
-Last updated: 2025-07-26 20:04 GMT+7
+Last updated: 2025-07-26 21:50 GMT+7
 
-## Rosetta Checklist (126/332)
+## Rosetta Checklist (132/332)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 23.0ms | 245.84KB |
@@ -144,13 +144,13 @@ Last updated: 2025-07-26 20:04 GMT+7
 | 136 | brazilian-numbers | ✓ | 3.49s | 72.62KB |
 | 137 | break-oo-privacy | ✓ | 50.0ms | 98.93KB |
 | 138 | brilliant-numbers |   |  |  |
-| 139 | brownian-tree |   |  |  |
-| 140 | bulls-and-cows-player |   |  |  |
+| 139 | brownian-tree | ✓ | 64.12s | 520.70KB |
+| 140 | bulls-and-cows-player | ✓ | 144.0ms | 67.21KB |
 | 141 | bulls-and-cows |   |  |  |
-| 142 | burrows-wheeler-transform |   |  |  |
-| 143 | caesar-cipher-1 |   |  |  |
-| 144 | caesar-cipher-2 |   |  |  |
-| 145 | calculating-the-value-of-e |   |  |  |
+| 142 | burrows-wheeler-transform | ✓ | 70.0ms | 104.86KB |
+| 143 | caesar-cipher-1 | ✓ | 51.0ms | 73.05KB |
+| 144 | caesar-cipher-2 | ✓ | 41.0ms | 73.05KB |
+| 145 | calculating-the-value-of-e | ✓ |  |  |
 | 146 | calendar---for-real-programmers-1 |   |  |  |
 | 147 | calendar---for-real-programmers-2 |   |  |  |
 | 148 | calendar |   |  |  |
