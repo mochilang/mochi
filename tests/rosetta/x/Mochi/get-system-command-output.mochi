@@ -1,0 +1,2 @@
+// Mochi currently lacks external process execution.
+print("Would run: ls -l and capture output")

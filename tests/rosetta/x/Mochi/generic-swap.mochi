@@ -1,0 +1,15 @@
+fun swap(a: any, b: any): list<any> {
+  return [b, a]
+}
+
+fun main() {
+  var a = 3
+  var b = "four"
+  print(str(a) + " " + str(b))
+  var res = swap(a, b)
+  a = res[0]
+  b = res[1]
+  print(str(a) + " " + str(b))
+}
+
+main()
