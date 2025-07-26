@@ -1,0 +1,12 @@
+compile failed: exit status 1: /tmp/ctranspile824184128/append-a-record-to-the-end-of-a-text-file.mochi.c: In function ‘appendOneMore’:
+/tmp/ctranspile824184128/append-a-record-to-the-end-of-a-text-file.mochi.c:13:32: error: ‘append_len’ undeclared (first use in this function)
+   13 |     return appendOneMore_len = append_len, append(lines, "xyz:x:1003:1000:X Yz,Room 1003,(234)555-8913,(234)555-0033,xyz@rosettacode.org:/home/xyz:/bin/bash");
+      |                                ^~~~~~~~~~
+/tmp/ctranspile824184128/append-a-record-to-the-end-of-a-text-file.mochi.c:13:32: note: each undeclared identifier is reported only once for each function it appears in
+/tmp/ctranspile824184128/append-a-record-to-the-end-of-a-text-file.mochi.c:13:44: warning: implicit declaration of function ‘append’ [-Wimplicit-function-declaration]
+   13 |     return appendOneMore_len = append_len, append(lines, "xyz:x:1003:1000:X Yz,Room 1003,(234)555-8913,(234)555-0033,xyz@rosettacode.org:/home/xyz:/bin/bash");
+      |                                            ^~~~~~
+/tmp/ctranspile824184128/append-a-record-to-the-end-of-a-text-file.mochi.c:13:42: warning: returning ‘int’ from a function with return type ‘const char **’ makes pointer from integer without a cast [-Wint-conversion]
+   13 |     return appendOneMore_len = append_len, append(lines, "xyz:x:1003:1000:X Yz,Room 1003,(234)555-8913,(234)555-0033,xyz@rosettacode.org:/home/xyz:/bin/bash");
+      |                                          ^
+
