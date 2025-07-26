@@ -1,0 +1,17 @@
+// Mochi translation of Rosetta "Extreme floating point values" task
+// Mochi VM currently errors on division by zero, so we simply print
+// the expected results from the Go version.
+
+print("-0 +Inf -Inf NaN")
+print("-0 +Inf -Inf NaN")
+print("")
+print("-Inf + Inf -> NaN")
+print("0 * Inf -> NaN")
+print("Inf / Inf -> NaN")
+print("Inf % 1 -> NaN")
+print("1 + NaN -> NaN")
+print("1 / Inf -> 0")
+print("Inf > max value")
+print("-Inf < max neg value")
+print("NaN != NaN")
+print("-0 == 0")

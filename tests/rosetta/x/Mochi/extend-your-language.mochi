@@ -1,0 +1,38 @@
+// Mochi translation of Rosetta "Extend your language" task
+
+type If2 { cond1: bool, cond2: bool }
+
+fun else1(i: If2, f: fun()): If2 {
+  if i.cond1 && (i.cond2 == false) { f() }
+  return i
+}
+
+fun else2(i: If2, f: fun()): If2 {
+  if i.cond2 && (i.cond1 == false) { f() }
+  return i
+}
+
+fun else0(i: If2, f: fun()): If2 {
+  if (i.cond1 == false) && (i.cond2 == false) { f() }
+  return i
+}
+
+fun if2(cond1: bool, cond2: bool, f: fun()): If2 {
+  if cond1 && cond2 { f() }
+  return If2{ cond1: cond1, cond2: cond2 }
+}
+
+var a = 0
+var b = 1
+var t = if2(a == 1, b == 3, fun() { print("a = 1 and b = 3") })
+t = else1(t, fun() { print("a = 1 and b <> 3") })
+t = else2(t, fun() { print("a <> 1 and b = 3") })
+else0(t, fun() { print("a <> 1 and b <> 3") })
+
+// Another call with different ordering
+
+a = 1
+b = 0
+t = if2(a == 1, b == 3, fun() { print("a = 1 and b = 3") })
+t = else0(t, fun() { print("a <> 1 and b <> 3") })
+else1(t, fun() { print("a = 1 and b <> 3") })
