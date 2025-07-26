@@ -151,29 +151,28 @@ type Program struct {
 
 // context tracks variable aliases to emulate mutable variables.
 type context struct {
-	alias      map[string]string
-	orig       map[string]string
-	counter    map[string]int
-	strVar     map[string]bool
-	listStrVar map[string]bool
-	floatVar   map[string]bool
-	mapVar     map[string]bool
-	boolVar    map[string]bool
-	strField   map[string]map[string]bool
-	boolField  map[string]map[string]bool
-	groups     map[string]groupInfo
-	constVal   map[string]Expr
-	autoMod    map[string]string
-	baseDir    string
-	globals    map[string]bool
-	params     map[string]bool
-	mutated    map[string]bool
+	alias     map[string]string
+	orig      map[string]string
+	counter   map[string]int
+	strVar    map[string]bool
+	floatVar  map[string]bool
+	mapVar    map[string]bool
+	boolVar   map[string]bool
+	strField  map[string]map[string]bool
+	boolField map[string]map[string]bool
+	groups    map[string]groupInfo
+	constVal  map[string]Expr
+	autoMod   map[string]string
+	baseDir   string
+	globals   map[string]bool
+	params    map[string]bool
+	mutated   map[string]bool
 }
 
 type groupInfo struct{ key, items string }
 
 func newContext(base string) *context {
-	return &context{alias: map[string]string{}, orig: map[string]string{}, counter: map[string]int{}, strVar: map[string]bool{}, listStrVar: map[string]bool{}, floatVar: map[string]bool{}, mapVar: map[string]bool{}, boolVar: map[string]bool{}, strField: map[string]map[string]bool{}, boolField: map[string]map[string]bool{}, groups: map[string]groupInfo{}, constVal: map[string]Expr{}, autoMod: map[string]string{}, baseDir: base, globals: map[string]bool{}, params: map[string]bool{}, mutated: map[string]bool{}}
+	return &context{alias: map[string]string{}, orig: map[string]string{}, counter: map[string]int{}, strVar: map[string]bool{}, floatVar: map[string]bool{}, mapVar: map[string]bool{}, boolVar: map[string]bool{}, strField: map[string]map[string]bool{}, boolField: map[string]map[string]bool{}, groups: map[string]groupInfo{}, constVal: map[string]Expr{}, autoMod: map[string]string{}, baseDir: base, globals: map[string]bool{}, params: map[string]bool{}, mutated: map[string]bool{}}
 }
 
 func (c *context) clone() *context {
@@ -210,10 +209,6 @@ func (c *context) clone() *context {
 	for k, v := range c.strVar {
 		strVar[k] = v
 	}
-	listStr := make(map[string]bool, len(c.listStrVar))
-	for k, v := range c.listStrVar {
-		listStr[k] = v
-	}
 	floatVar := make(map[string]bool, len(c.floatVar))
 	for k, v := range c.floatVar {
 		floatVar[k] = v
@@ -246,7 +241,7 @@ func (c *context) clone() *context {
 	for k, v := range c.mutated {
 		mut[k] = v
 	}
-	return &context{alias: alias, orig: orig, counter: counter, strVar: strVar, listStrVar: listStr, floatVar: floatVar, mapVar: mapVar, boolVar: boolVar, strField: fields, boolField: bfields, groups: groups, constVal: consts, autoMod: mods, baseDir: c.baseDir, globals: gl, params: params, mutated: mut}
+	return &context{alias: alias, orig: orig, counter: counter, strVar: strVar, floatVar: floatVar, mapVar: mapVar, boolVar: boolVar, strField: fields, boolField: bfields, groups: groups, constVal: consts, autoMod: mods, baseDir: c.baseDir, globals: gl, params: params, mutated: mut}
 }
 
 func (c *context) newAlias(name string) string {
@@ -315,16 +310,6 @@ func (c *context) setStringVar(name string, isStr bool) {
 		c.strVar = map[string]bool{}
 	}
 	c.strVar[name] = true
-}
-
-func (c *context) setListStringVar(name string, isListStr bool) {
-	if !isListStr {
-		return
-	}
-	if c.listStrVar == nil {
-		c.listStrVar = map[string]bool{}
-	}
-	c.listStrVar[name] = true
 }
 
 func (c *context) setMapVar(name string, isMap bool) {
@@ -417,10 +402,6 @@ func (c *context) autoModule(alias string) (string, bool) {
 
 func (c *context) isStringVar(name string) bool {
 	return c.strVar[name]
-}
-
-func (c *context) isListStringVar(name string) bool {
-	return c.listStrVar[name]
 }
 
 func (c *context) isMapVar(name string) bool {
@@ -1451,51 +1432,6 @@ func isListExpr(e Expr, env *types.Env, ctx *context) bool {
 	case *BinaryExpr:
 		if v.Op == "++" || v.Op == "+" {
 			return isListExpr(v.Left, env, ctx) && isListExpr(v.Right, env, ctx)
-		}
-	}
-	return false
-}
-
-func isListStringExpr(e Expr, env *types.Env, ctx *context) bool {
-	switch v := e.(type) {
-	case *ListLit:
-		if len(v.Elems) == 0 {
-			return false
-		}
-		for _, el := range v.Elems {
-			if !isStringExpr(el) {
-				return false
-			}
-		}
-		return true
-	case *NameRef:
-		name := v.Name
-		if ctx != nil {
-			name = ctx.original(v.Name)
-			if ctx.isListStringVar(name) {
-				return true
-			}
-		}
-		if env != nil {
-			if t, err := env.GetVar(name); err == nil {
-				if lt, ok := t.(types.ListType); ok {
-					if _, ok2 := lt.Elem.(types.StringType); ok2 {
-						return true
-					}
-				}
-			}
-		}
-	case *CallExpr:
-		if env != nil {
-			if t, err := env.GetVar(v.Func); err == nil {
-				if ft, ok := t.(types.FuncType); ok {
-					if lt, ok2 := ft.Return.(types.ListType); ok2 {
-						if _, ok3 := lt.Elem.(types.StringType); ok3 {
-							return true
-						}
-					}
-				}
-			}
 		}
 	}
 	return false
@@ -2956,7 +2892,6 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context, top bool) (
 		ctx.setStrFields(st.Let.Name, stringFields(e))
 		ctx.setBoolFields(st.Let.Name, boolFields(e, env, ctx))
 		ctx.setStringVar(st.Let.Name, isStringExpr(e))
-		ctx.setListStringVar(st.Let.Name, isListStringExpr(e, env, ctx))
 		ctx.setFloatVar(st.Let.Name, isFloatExpr(e, env, ctx) || (st.Let.Type != nil && st.Let.Type.Simple != nil && *st.Let.Type.Simple == "float"))
 		isMap := isMapExpr(e, env, ctx) || (st.Let.Type != nil && st.Let.Type.Generic != nil && st.Let.Type.Generic.Name == "map")
 		if !isMap {
@@ -2998,7 +2933,6 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context, top bool) (
 		ctx.setStrFields(st.Var.Name, stringFields(e))
 		ctx.setBoolFields(st.Var.Name, boolFields(e, env, ctx))
 		ctx.setStringVar(st.Var.Name, isStringExpr(e))
-		ctx.setListStringVar(st.Var.Name, isListStringExpr(e, env, ctx))
 		ctx.setFloatVar(st.Var.Name, isFloatExpr(e, env, ctx) || (st.Var.Type != nil && st.Var.Type.Simple != nil && *st.Var.Type.Simple == "float"))
 		isMapV := isMapExpr(e, env, ctx) || (st.Var.Type != nil && st.Var.Type.Generic != nil && st.Var.Type.Generic.Name == "map")
 		if !isMapV {
@@ -3051,7 +2985,6 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context, top bool) (
 		ctx.setStrFields(st.Assign.Name, stringFields(val))
 		ctx.setBoolFields(st.Assign.Name, boolFields(val, env, ctx))
 		ctx.setStringVar(st.Assign.Name, isStringExpr(val))
-		ctx.setListStringVar(st.Assign.Name, isListStringExpr(val, env, ctx))
 		ctx.setFloatVar(st.Assign.Name, isFloatExpr(val, env, ctx))
 		ctx.setMapVar(st.Assign.Name, isMapExpr(val, env, ctx))
 		ctx.setBoolVar(st.Assign.Name, isBoolExpr(val, env, ctx))
@@ -3427,7 +3360,6 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context, top bool) (
 		loopCtx.setStrFields(st.For.Name, stringFields(src))
 		loopCtx.setBoolFields(st.For.Name, boolFields(src, env, ctx))
 		loopCtx.setStringVar(st.For.Name, isStringExpr(src))
-		loopCtx.setListStringVar(st.For.Name, isListStringExpr(src, env, ctx))
 		loopCtx.setFloatVar(st.For.Name, isFloatExpr(src, env, ctx))
 		srcIsMap := isMapExpr(src, env, ctx)
 		if !srcIsMap {
@@ -4196,9 +4128,6 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env, ctx *context) (Expr,
 						}
 					}
 				}
-			}
-			if !isStr && isListStringExpr(expr, env, ctx) {
-				isStr = true
 			}
 			expr = &IndexExpr{Target: expr, Index: idx, Kind: kind, IsString: isStr}
 		case op.Index != nil && op.Index.Colon != nil && op.Index.Step == nil && op.Index.Colon2 == nil:
