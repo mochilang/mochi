@@ -1,0 +1,42 @@
+
+type Vector {
+  x: float
+  y: float
+  z: float
+}
+
+fun add(a: Vector, b: Vector): Vector {
+  return Vector{x: a.x + b.x, y: a.y + b.y, z: a.z + b.z}
+}
+
+fun sub(a: Vector, b: Vector): Vector {
+  return Vector{x: a.x - b.x, y: a.y - b.y, z: a.z - b.z}
+}
+
+fun mul(v: Vector, s: float): Vector {
+  return Vector{x: v.x * s, y: v.y * s, z: v.z * s}
+}
+
+fun dot(a: Vector, b: Vector): float {
+  return a.x * b.x + a.y * b.y + a.z * b.z
+}
+
+fun intersectPoint(rv: Vector, rp: Vector, pn: Vector, pp: Vector): Vector {
+  let diff = sub(rp, pp)
+  let prod1 = dot(diff, pn)
+  let prod2 = dot(rv, pn)
+  let prod3 = prod1 / prod2
+  return sub(rp, mul(rv, prod3))
+}
+
+fun main() {
+  let rv = Vector{x: 0.0, y: -1.0, z: -1.0}
+  let rp = Vector{x: 0.0, y: 0.0, z: 10.0}
+  let pn = Vector{x: 0.0, y: 0.0, z: 1.0}
+  let pp = Vector{x: 0.0, y: 0.0, z: 5.0}
+  let ip = intersectPoint(rv, rp, pn, pp)
+  print("The ray intersects the plane at (" + str(ip.x) + ", " + str(ip.y) + ", " + str(ip.z) + ")")
+}
+
+main()
+

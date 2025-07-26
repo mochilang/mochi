@@ -1,0 +1,33 @@
+
+type Point { x: float, y: float }
+
+type Line { slope: float, yint: float }
+
+fun createLine(a: Point, b: Point): Line {
+  let slope = (b.y - a.y) / (b.x - a.x)
+  let yint = a.y - slope * a.x
+  return Line{slope: slope, yint: yint}
+}
+
+fun evalX(l: Line, x: float): float {
+  return l.slope * x + l.yint
+}
+
+fun intersection(l1: Line, l2: Line): Point {
+  if l1.slope == l2.slope {
+    return Point{x: 0.0, y: 0.0}
+  }
+  let x = (l2.yint - l1.yint) / (l1.slope - l2.slope)
+  let y = evalX(l1, x)
+  return Point{x: x, y: y}
+}
+
+fun main() {
+  let l1 = createLine(Point{x:4.0, y:0.0}, Point{x:6.0, y:10.0})
+  let l2 = createLine(Point{x:0.0, y:3.0}, Point{x:10.0, y:7.0})
+  let p = intersection(l1, l2)
+  print("{" + str(p.x) + " " + str(p.y) + "}")
+}
+
+main()
+
