@@ -1,9 +1,9 @@
 # Java Rosetta Transpiler Output
 
 Generated Java code for programs in `tests/rosetta/x/Mochi`. Each program has a `.java` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
-Last updated: 2025-07-26 17:42 GMT+7
+Last updated: 2025-07-26 19:29 GMT+7
 
-## Rosetta Checklist (120/332)
+## Rosetta Checklist (119/332)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 23.0ms | 245.84KB |
@@ -127,15 +127,15 @@ Last updated: 2025-07-26 17:42 GMT+7
 | 119 | bitmap-b-zier-curves-quadratic | ✓ | 40.0ms | -2878472B |
 | 120 | bitmap-bresenhams-line-algorithm | ✓ | 22.0ms | 92.34KB |
 | 121 | bitmap-flood-fill |   |  |  |
-| 122 | bitmap-histogram | ✓ | 16.0ms | 54.98KB |
-| 123 | bitmap-midpoint-circle-algorithm | ✓ | 9.0ms | 5.04KB |
+| 122 | bitmap-histogram |   |  |  |
+| 123 | bitmap-midpoint-circle-algorithm |   |  |  |
 | 124 | bitmap-ppm-conversion-through-a-pipe |   |  |  |
 | 125 | bitmap-read-a-ppm-file |   |  |  |
-| 126 | bitmap-read-an-image-through-a-pipe | ✓ | 24.0ms | 41.38KB |
-| 127 | bitmap-write-a-ppm-file | ✓ | 33.0ms | 121.02KB |
-| 128 | bitmap |   |  |  |
-| 129 | bitwise-io-1 |   |  |  |
-| 130 | bitwise-io-2 |   |  |  |
+| 126 | bitmap-read-an-image-through-a-pipe |   |  |  |
+| 127 | bitmap-write-a-ppm-file |   |  |  |
+| 128 | bitmap | ✓ | 341.0ms | 115.98KB |
+| 129 | bitwise-io-1 | ✓ | 36.0ms | 55.18KB |
+| 130 | bitwise-io-2 | ✓ | 60.0ms | 125.30KB |
 | 131 | bitwise-operations |   |  |  |
 | 132 | blum-integer |   |  |  |
 | 133 | boolean-values |   |  |  |
