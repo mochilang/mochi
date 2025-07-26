@@ -1,0 +1,13 @@
+import go "mochi/runtime/ffi/go/testpkg" as testpkg auto
+
+let res = testpkg.ECDSAExample()
+print("Private key:\nD: " + res.D)
+print("\nPublic key:")
+print("X: " + res.X)
+print("Y: " + res.Y)
+print("\nMessage: Rosetta Code")
+print("Hash   : " + res.Hash)
+print("\nSignature:")
+print("R: " + res.R)
+print("S: " + res.S)
+print("\nSignature verified: " + str(res.Valid))
