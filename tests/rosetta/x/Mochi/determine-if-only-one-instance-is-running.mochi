@@ -1,0 +1,21 @@
+// Mochi translation of Rosetta "Determine if only one instance is running" task
+// Simplified using an in-memory lock file because the Mochi runtime lacks full
+// filesystem access.
+
+var lockExists = false
+
+fun startOnce() {
+  if lockExists {
+    print("an instance is already running")
+  } else {
+    lockExists = true
+    print("single instance started")
+  }
+}
+
+fun main() {
+  startOnce()
+  startOnce()
+}
+
+main()
