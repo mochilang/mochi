@@ -49,7 +49,10 @@ var mapVarFields map[string]map[string]string
 var benchMain bool
 var currentFuncReturn string
 var structMethods map[string][]*Function
+var refVars map[string]bool
+var scopeStack []map[string]*VarStmt
 var structDecls map[string]*TypeDeclStmt
+var disableStructList bool
 
 // SetBenchMain configures whether the generated main function is wrapped in a
 // benchmark block when emitting code. When enabled, the program will print a
@@ -77,6 +80,8 @@ func currentEnv() *types.Env {
 
 func sanitize(name string) string {
 	switch name {
+	case "_":
+		return "_v"
 	case "this":
 		return "this_"
 	case "new":
@@ -1112,12 +1117,43 @@ func (s *VarStmt) emit(w io.Writer, indent string) {
 	if typ == "" {
 		typ = "Object"
 	}
-	fmt.Fprint(w, javaType(typ)+" "+s.Name)
+	jt := javaType(typ)
+	if refVars[s.Name] {
+		if jt == "" {
+			jt = typ
+		}
+		fmt.Fprintf(w, "%s[] %s", jt, sanitize(s.Name))
+		if s.Expr != nil {
+			fmt.Fprint(w, " = new "+jt+"[]{")
+			emitCastExpr(w, s.Expr, typ)
+			fmt.Fprint(w, "}")
+		} else {
+			fmt.Fprint(w, " = new "+jt+"[]{")
+			fmt.Fprint(w, defaultValue(jt))
+			fmt.Fprint(w, "}")
+		}
+		fmt.Fprint(w, ";\n")
+		return
+	}
+	fmt.Fprint(w, jt+" "+sanitize(s.Name))
 	if s.Expr != nil {
 		fmt.Fprint(w, " = ")
 		emitCastExpr(w, s.Expr, typ)
 	}
 	fmt.Fprint(w, ";\n")
+}
+
+func defaultValue(t string) string {
+	switch t {
+	case "int", "Integer":
+		return "0"
+	case "double", "float", "float64", "Double":
+		return "0"
+	case "boolean", "Boolean":
+		return "false"
+	default:
+		return "null"
+	}
 }
 
 type AssignStmt struct {
@@ -1127,7 +1163,11 @@ type AssignStmt struct {
 }
 
 func (s *AssignStmt) emit(w io.Writer, indent string) {
-	fmt.Fprint(w, indent+sanitize(s.Name)+" = ")
+	fmt.Fprint(w, indent+sanitize(s.Name))
+	if refVars[s.Name] {
+		fmt.Fprint(w, "[0]")
+	}
+	fmt.Fprint(w, " = ")
 	typ := s.Type
 	if typ == "" {
 		if vs, ok := varDecls[s.Name]; ok {
@@ -1278,7 +1318,7 @@ func (fe *ForEachStmt) emit(w io.Writer, indent string) {
 		fmt.Fprint(w, indent+"for (int _i = 0; _i < ")
 		fe.Iterable.emit(w)
 		fmt.Fprint(w, ".length(); _i++) {\n")
-		fmt.Fprintf(w, indent+"    %s %s = ", t, fe.Name)
+		fmt.Fprintf(w, indent+"    %s %s = ", t, sanitize(fe.Name))
 		fe.Iterable.emit(w)
 		fmt.Fprint(w, ".substring(_i, _i + 1);\n")
 		for _, st := range fe.Body {
@@ -1288,10 +1328,11 @@ func (fe *ForEachStmt) emit(w io.Writer, indent string) {
 		return
 	}
 	typ := javaType(fe.ElemType)
+	name := sanitize(fe.Name)
 	if typ == "" {
-		fmt.Fprint(w, indent+"for (var "+fe.Name+" : ")
+		fmt.Fprint(w, indent+"for (var "+name+" : ")
 	} else {
-		fmt.Fprintf(w, indent+"for (%s %s : ", typ, fe.Name)
+		fmt.Fprintf(w, indent+"for (%s %s : ", typ, name)
 	}
 	fe.Iterable.emit(w)
 	if fe.IsMap {
@@ -1723,7 +1764,14 @@ type VarExpr struct {
 	Type string
 }
 
-func (v *VarExpr) emit(w io.Writer) { fmt.Fprint(w, sanitize(v.Name)) }
+func (v *VarExpr) emit(w io.Writer) {
+	name := sanitize(v.Name)
+	if refVars[v.Name] {
+		fmt.Fprint(w, name+"[0]")
+	} else {
+		fmt.Fprint(w, name)
+	}
+}
 
 // FieldExpr represents obj.field access.
 type FieldExpr struct {
@@ -2781,6 +2829,9 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	structMethods = map[string][]*Function{}
 	structDecls = map[string]*TypeDeclStmt{}
 	varDecls = map[string]*VarStmt{}
+	refVars = map[string]bool{}
+	scopeStack = []map[string]*VarStmt{varDecls}
+	disableStructList = false
 	funcMapFields = map[string]map[string]string{}
 	mapVarFields = map[string]map[string]string{}
 	funcParams = map[string][]string{}
@@ -2793,6 +2844,7 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 				saved := varTypes
 				varTypes = copyMap(varTypes)
 				varDeclsSaved := varDecls
+				scopeStack = append(scopeStack, varDecls)
 				varDecls = map[string]*VarStmt{}
 				savedRet := currentFuncReturn
 				currentFuncReturn = typeRefString(s.Fun.Return)
@@ -2816,6 +2868,7 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 				structMethods[recv] = append(structMethods[recv], &Function{Name: name, Params: params, Return: ret, Body: body})
 				varTypes = saved
 				varDecls = varDeclsSaved
+				scopeStack = scopeStack[:len(scopeStack)-1]
 				currentFuncReturn = savedRet
 				continue
 			}
@@ -2827,6 +2880,7 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 				}
 			}
 			savedDecls := varDecls
+			scopeStack = append(scopeStack, varDecls)
 			varDecls = map[string]*VarStmt{}
 			savedRet := currentFuncReturn
 			currentFuncReturn = typeRefString(s.Fun.Return)
@@ -2863,6 +2917,7 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 			prog.Funcs = append(prog.Funcs, &Function{Name: s.Fun.Name, Params: params, Return: ret, Body: body})
 			varTypes = saved
 			varDecls = savedDecls
+			scopeStack = scopeStack[:len(scopeStack)-1]
 			currentFuncReturn = savedRet
 			continue
 		}
@@ -2974,7 +3029,9 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 			}
 			if t != "" {
 				varTypes[s.Let.Name] = t
-				varDecls[s.Let.Name] = &VarStmt{Name: s.Let.Name, Type: t, Expr: e}
+				vs := &VarStmt{Name: s.Let.Name, Type: t, Expr: e}
+				varDecls[s.Let.Name] = vs
+				scopeStack[len(scopeStack)-1][s.Let.Name] = vs
 			}
 			if ml, ok := e.(*MapLit); ok {
 				if len(ml.Fields) > 0 {
@@ -3025,16 +3082,24 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 		}
 		if t != "" {
 			varTypes[s.Let.Name] = t
-			varDecls[s.Let.Name] = &VarStmt{Name: s.Let.Name, Type: t}
+			vs := &VarStmt{Name: s.Let.Name, Type: t}
+			varDecls[s.Let.Name] = vs
+			scopeStack[len(scopeStack)-1][s.Let.Name] = vs
 		}
 		return &LetStmt{Name: s.Let.Name, Type: t}, nil
 	case s.Var != nil:
 		if s.Var.Value != nil {
+			t := typeRefString(s.Var.Type)
+			savedDisable := disableStructList
+			if strings.Contains(t, "Map") {
+				disableStructList = true
+			}
 			e, err := compileExpr(s.Var.Value)
+			disableStructList = savedDisable
 			if err != nil {
 				return nil, err
 			}
-			t := typeRefString(s.Var.Type)
+
 			if t == "" {
 				if s.Var.Type != nil && s.Var.Type.Generic != nil && s.Var.Type.Generic.Name == "list" && topEnv != nil {
 					t = toJavaTypeFromType(types.ExprType(s.Var.Value, currentEnv()))
@@ -3099,6 +3164,7 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 			}
 			vs := &VarStmt{Name: s.Var.Name, Type: t, Expr: e}
 			varDecls[s.Var.Name] = vs
+			scopeStack[len(scopeStack)-1][s.Var.Name] = vs
 			return vs, nil
 		}
 		t := typeRefString(s.Var.Type)
@@ -3112,6 +3178,7 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 		}
 		vs := &VarStmt{Name: s.Var.Name, Type: t}
 		varDecls[s.Var.Name] = vs
+		scopeStack[len(scopeStack)-1][s.Var.Name] = vs
 		return vs, nil
 	case s.Type != nil:
 		if len(s.Type.Variants) > 0 {
@@ -3199,6 +3266,14 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 			e, err := compileExpr(s.Assign.Value)
 			if err != nil {
 				return nil, err
+			}
+			if _, ok := varDecls[s.Assign.Name]; !ok && len(scopeStack) > 0 {
+				for i := len(scopeStack) - 1; i >= 0; i-- {
+					if _, ok2 := scopeStack[i][s.Assign.Name]; ok2 {
+						refVars[s.Assign.Name] = true
+						break
+					}
+				}
 			}
 			if ap, ok := e.(*AppendExpr); ok {
 				vt := inferType(ap.Value)
@@ -3356,6 +3431,12 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 			if l, ok := e.(*ListLit); ok && strings.HasSuffix(currentFuncReturn, "[]") {
 				if l.ElemType == "" {
 					l.ElemType = strings.TrimSuffix(currentFuncReturn, "[]")
+				}
+				inner := strings.TrimSuffix(l.ElemType, "[]")
+				for _, el := range l.Elems {
+					if ll, ok2 := el.(*ListLit); ok2 && ll.ElemType == "" {
+						ll.ElemType = inner
+					}
 				}
 				if l.ElemType == "fn():void" {
 					for i, el := range l.Elems {
@@ -4179,7 +4260,23 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			}
 			elems[i] = ex
 		}
-		return &ListLit{Elems: elems}, nil
+		lt := ""
+		for _, el := range elems {
+			t := inferType(el)
+			if t != "" {
+				lt = t
+				break
+			}
+		}
+		if strings.HasSuffix(lt, "[]") {
+			inner := strings.TrimSuffix(lt, "[]")
+			for _, el := range elems {
+				if ll, ok := el.(*ListLit); ok && ll.ElemType == "" {
+					ll.ElemType = inner
+				}
+			}
+		}
+		return &ListLit{ElemType: lt, Elems: elems}, nil
 	case p.Map != nil:
 		ml := p.Map
 		keys := make([]Expr, len(ml.Items))
@@ -4307,6 +4404,7 @@ func compileFunExpr(fn *parser.FunExpr) (Expr, error) {
 	saved := varTypes
 	varTypes = copyMap(varTypes)
 	savedDecls := varDecls
+	scopeStack = append(scopeStack, varDecls)
 	varDecls = map[string]*VarStmt{}
 	for _, p := range params {
 		if p.Type != "" {
@@ -4340,6 +4438,7 @@ func compileFunExpr(fn *parser.FunExpr) (Expr, error) {
 	lam := &LambdaExpr{Params: params, Body: body, Return: ret}
 	varTypes = saved
 	varDecls = savedDecls
+	scopeStack = scopeStack[:len(scopeStack)-1]
 	return lam, nil
 }
 
@@ -5137,6 +5236,9 @@ func mapLiteral(e *parser.Expr) *parser.MapLiteral {
 }
 
 func inferStructFromList(ll *parser.ListLiteral) (st types.StructType, ok bool) {
+	if disableStructList {
+		return types.StructType{}, false
+	}
 	if ll == nil || len(ll.Elems) == 0 {
 		return types.StructType{}, false
 	}
