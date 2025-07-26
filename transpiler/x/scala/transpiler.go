@@ -38,6 +38,8 @@ var useLookupHost bool
 var needsPadStart bool
 var needsSHA256 bool
 var needsBigRat bool
+var needsRepeat bool
+var needsParseIntStr bool
 var builtinAliases map[string]string
 var localVarTypes map[string]string
 var returnTypeStack []string
@@ -444,6 +446,17 @@ type AssignStmt struct {
 }
 
 func (s *AssignStmt) emit(w io.Writer) {
+	if ix, ok := s.Target.(*IndexExpr); ok {
+		if strings.HasPrefix(ix.Container, "Map[") || strings.HasPrefix(ix.Container, "scala.collection.mutable.Map[") {
+			ix.Value.emit(w)
+			fmt.Fprint(w, ".update(")
+			ix.Index.emit(w)
+			fmt.Fprint(w, ", ")
+			s.Value.emit(w)
+			fmt.Fprint(w, ")")
+			return
+		}
+	}
 	s.Target.emit(w)
 	fmt.Fprint(w, " = ")
 	s.Value.emit(w)
@@ -868,7 +881,7 @@ type MapEntry struct {
 type MapLit struct{ Items []MapEntry }
 
 func (m *MapLit) emit(w io.Writer) {
-	fmt.Fprint(w, "Map(")
+	fmt.Fprint(w, "scala.collection.mutable.Map(")
 	for i, it := range m.Items {
 		if i > 0 {
 			fmt.Fprint(w, ", ")
@@ -920,10 +933,20 @@ type IndexExpr struct {
 }
 
 func (idx *IndexExpr) emit(w io.Writer) {
-	if strings.HasPrefix(idx.Container, "Map[") && idx.Container != "Any" {
+	castIndex := strings.HasPrefix(idx.Container, "ArrayBuffer[") || idx.Container == "String"
+	emitIndex := func() {
+		if castIndex {
+			fmt.Fprint(w, "(")
+			idx.Index.emit(w)
+			fmt.Fprint(w, ").toInt")
+		} else {
+			idx.Index.emit(w)
+		}
+	}
+	if (strings.HasPrefix(idx.Container, "Map[") || strings.HasPrefix(idx.Container, "scala.collection.mutable.Map[")) && idx.Container != "Any" {
 		idx.Value.emit(w)
 		fmt.Fprint(w, ".getOrElse(")
-		idx.Index.emit(w)
+		emitIndex()
 		fmt.Fprint(w, ", ")
 		t := idx.Type
 		if t == "" {
@@ -933,7 +956,7 @@ func (idx *IndexExpr) emit(w io.Writer) {
 	} else if idx.Container == "Any" {
 		if (idx.ForceMap) || (func() bool {
 			if prev, ok := idx.Value.(*IndexExpr); ok {
-				return strings.HasPrefix(prev.Container, "Map[")
+				return strings.HasPrefix(prev.Container, "Map[") || strings.HasPrefix(prev.Container, "scala.collection.mutable.Map[")
 			}
 			return false
 		}()) {
@@ -943,7 +966,7 @@ func (idx *IndexExpr) emit(w io.Writer) {
 			} else {
 				fmt.Fprint(w, ".asInstanceOf[Map[String,Any]](")
 			}
-			idx.Index.emit(w)
+			emitIndex()
 			fmt.Fprint(w, ")")
 		} else {
 			idx.Value.emit(w)
@@ -952,20 +975,20 @@ func (idx *IndexExpr) emit(w io.Writer) {
 			} else {
 				fmt.Fprint(w, ".asInstanceOf[ArrayBuffer[Any]](")
 			}
-			idx.Index.emit(w)
+			emitIndex()
 			fmt.Fprint(w, ")")
 		}
 	} else if idx.Container == "String" {
 		idx.Value.emit(w)
 		fmt.Fprint(w, ".slice(")
-		idx.Index.emit(w)
+		emitIndex()
 		fmt.Fprint(w, ", ")
-		idx.Index.emit(w)
+		emitIndex()
 		fmt.Fprint(w, " + 1)")
 	} else {
 		idx.Value.emit(w)
 		fmt.Fprint(w, "(")
-		idx.Index.emit(w)
+		emitIndex()
 		fmt.Fprint(w, ")")
 	}
 	if idx.Type != "" && idx.Type != "Any" &&
@@ -986,9 +1009,13 @@ type SliceExpr struct {
 func (s *SliceExpr) emit(w io.Writer) {
 	s.Value.emit(w)
 	fmt.Fprint(w, ".slice(")
+	fmt.Fprint(w, "(")
 	s.Start.emit(w)
+	fmt.Fprint(w, ").toInt")
 	fmt.Fprint(w, ", ")
+	fmt.Fprint(w, "(")
 	s.End.emit(w)
+	fmt.Fprint(w, ").toInt")
 	fmt.Fprint(w, ")")
 }
 
@@ -1001,9 +1028,13 @@ type CastExpr struct {
 func (c *CastExpr) emit(w io.Writer) {
 	if c.Type == "bigint" || c.Type == "int" {
 		needsBigInt = true
-		fmt.Fprint(w, "BigInt(")
-		c.Value.emit(w)
-		fmt.Fprint(w, ")")
+		if isBigIntExpr(c.Value) {
+			c.Value.emit(w)
+		} else {
+			fmt.Fprint(w, "BigInt(")
+			c.Value.emit(w)
+			fmt.Fprint(w, ")")
+		}
 		return
 	}
 	switch c.Value.(type) {
@@ -1049,9 +1080,21 @@ type SubstringExpr struct {
 func (s *SubstringExpr) emit(w io.Writer) {
 	s.Value.emit(w)
 	fmt.Fprint(w, ".slice(")
-	s.Start.emit(w)
+	if isBigIntExpr(s.Start) {
+		fmt.Fprint(w, "(")
+		s.Start.emit(w)
+		fmt.Fprint(w, ").toInt")
+	} else {
+		s.Start.emit(w)
+	}
 	fmt.Fprint(w, ", ")
-	s.End.emit(w)
+	if isBigIntExpr(s.End) {
+		fmt.Fprint(w, "(")
+		s.End.emit(w)
+		fmt.Fprint(w, ").toInt")
+	} else {
+		s.End.emit(w)
+	}
 	fmt.Fprint(w, ")")
 }
 
@@ -1458,6 +1501,12 @@ func Emit(p *Program) []byte {
 		buf.WriteString("    while (out.length < width) { out = pad + out }\n")
 		buf.WriteString("    out\n")
 		buf.WriteString("  }\n\n")
+	}
+	if needsRepeat {
+		buf.WriteString("  private def _repeat(s: String, n: BigInt): String = s * n.toInt\n\n")
+	}
+	if needsParseIntStr {
+		buf.WriteString("  private def _parseIntStr(s: String, base: BigInt): BigInt = BigInt(s, base.toInt)\n\n")
 	}
 	if needsSHA256 {
 		buf.WriteString("  private def _sha256(bytes: Array[Byte]): ArrayBuffer[Int] = {\n")
@@ -1921,7 +1970,11 @@ func convertBinary(b *parser.BinaryExpr, env *types.Env) (Expr, error) {
 				lt := inferTypeWithEnv(left, env)
 				rt := inferTypeWithEnv(right, env)
 				if lt != "Double" && lt != "Float" && rt != "Double" && rt != "Float" {
-					ex = &CallExpr{Fn: &Name{Name: "Math.floorMod"}, Args: []Expr{left, right}}
+					if lt == "BigInt" || rt == "BigInt" {
+						ex = &BinaryExpr{Left: left, Op: "%", Right: right}
+					} else {
+						ex = &CallExpr{Fn: &Name{Name: "Math.floorMod"}, Args: []Expr{left, right}}
+					}
 				} else {
 					ex = &BinaryExpr{Left: left, Op: op, Right: right}
 				}
@@ -2631,6 +2684,19 @@ func convertCall(c *parser.CallExpr, env *types.Env) (Expr, error) {
 		if len(args) == 3 {
 			needsPadStart = true
 			return &CallExpr{Fn: &Name{Name: "_padStart"}, Args: args}, nil
+		}
+	case "repeat":
+		if len(args) == 2 {
+			needsRepeat = true
+			return &CallExpr{Fn: &Name{Name: "_repeat"}, Args: args[:2]}, nil
+		}
+	case "parseIntStr":
+		if len(args) >= 1 && len(args) <= 2 {
+			needsParseIntStr = true
+			if len(args) == 1 {
+				args = append(args, &IntLit{Value: 10})
+			}
+			return &CallExpr{Fn: &Name{Name: "_parseIntStr"}, Args: args[:2]}, nil
 		}
 	case "sum":
 		if len(args) == 1 {
@@ -3652,7 +3718,7 @@ func toScalaType(t *parser.TypeRef) string {
 			if v == "" {
 				v = "Any"
 			}
-			return fmt.Sprintf("Map[%s,%s]", k, v)
+			return fmt.Sprintf("scala.collection.mutable.Map[%s,%s]", k, v)
 		}
 	}
 	if t.Fun != nil {
@@ -3694,7 +3760,7 @@ func toScalaTypeFromType(t types.Type) string {
 	case types.ListType:
 		return fmt.Sprintf("ArrayBuffer[%s]", toScalaTypeFromType(tt.Elem))
 	case types.MapType:
-		return fmt.Sprintf("Map[%s,%s]", toScalaTypeFromType(tt.Key), toScalaTypeFromType(tt.Value))
+		return fmt.Sprintf("scala.collection.mutable.Map[%s,%s]", toScalaTypeFromType(tt.Key), toScalaTypeFromType(tt.Value))
 	case types.StructType:
 		if tt.Name != "" {
 			return tt.Name
@@ -3924,6 +3990,26 @@ func inferTypeWithEnv(e Expr, env *types.Env) string {
 		}
 	}
 	return ""
+}
+
+func isBigIntExpr(e Expr) bool {
+	switch v := e.(type) {
+	case *IntLit:
+		return true
+	case *Name:
+		return localVarTypes[v.Name] == "BigInt"
+	case *BinaryExpr:
+		if v.Op == "+" || v.Op == "-" || v.Op == "*" || v.Op == "/" || v.Op == "%" {
+			return true
+		}
+		return isBigIntExpr(v.Left) || isBigIntExpr(v.Right)
+	case *CastExpr:
+		if strings.ToLower(v.Type) == "bigint" || strings.ToLower(v.Type) == "int" {
+			return true
+		}
+		return isBigIntExpr(v.Value)
+	}
+	return false
 }
 
 // defaultExpr returns a zero value expression for the given Scala type.

@@ -2,8 +2,8 @@
 
 Generated Scala code for Rosetta tasks in `tests/rosetta/x/Mochi`. Each program has a `.scala` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
 
-## Golden Test Checklist (134/284)
-_Last updated: 2025-07-26 05:17 +0700_
+## Golden Test Checklist (145/284)
+_Last updated: 2025-07-26 09:24 +0700_
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -151,19 +151,19 @@ _Last updated: 2025-07-26 05:17 +0700_
 | 142 | caesar-cipher-1 | ✓ | 8µs | 8.7 MB |
 | 143 | caesar-cipher-2 | ✓ | 11µs | 8.7 MB |
 | 144 | calculating-the-value-of-e | error |  |  |
-| 145 | calendar---for-real-programmers-1 |   |  |  |
-| 146 | calendar---for-real-programmers-2 |   |  |  |
-| 147 | calendar |   |  |  |
-| 148 | calkin-wilf-sequence |   |  |  |
-| 149 | call-a-foreign-language-function |   |  |  |
-| 150 | call-a-function-1 |   |  |  |
-| 151 | call-a-function-10 |   |  |  |
-| 152 | call-a-function-11 |   |  |  |
-| 153 | call-a-function-12 |   |  |  |
-| 154 | call-a-function-2 |   |  |  |
-| 155 | call-a-function-3 |   |  |  |
-| 156 | call-a-function-4 |   |  |  |
-| 157 | call-a-function-5 |   |  |  |
+| 145 | calendar---for-real-programmers-1 | ✓ | 56µs | 8.7 MB |
+| 146 | calendar---for-real-programmers-2 | ✓ | 47µs | 8.7 MB |
+| 147 | calendar | ✓ | 54µs | 8.7 MB |
+| 148 | calkin-wilf-sequence | error |  |  |
+| 149 | call-a-foreign-language-function | ✓ | 2µs | 8.7 MB |
+| 150 | call-a-function-1 | ✓ |  | 8.7 MB |
+| 151 | call-a-function-10 | ✓ | 1µs | 8.7 MB |
+| 152 | call-a-function-11 | ✓ | 3µs | 8.7 MB |
+| 153 | call-a-function-12 | ✓ | 3µs | 8.7 MB |
+| 154 | call-a-function-2 | ✓ | 3µs | 8.7 MB |
+| 155 | call-a-function-3 | ✓ | 7µs | 8.7 MB |
+| 156 | call-a-function-4 | ✓ | 1µs | 8.7 MB |
+| 157 | call-a-function-5 | error |  |  |
 | 158 | call-a-function-6 |   |  |  |
 | 159 | call-a-function-7 |   |  |  |
 | 160 | call-a-function-8 |   |  |  |
