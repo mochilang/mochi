@@ -35,6 +35,7 @@ type Program struct {
 	UseTime      bool
 	UseInput     bool
 	UseSubstr    bool
+	UseSlice     bool
 	UseFloatConv bool
 	UsePadStart  bool
 	UseSHA256    bool
@@ -57,6 +58,7 @@ var (
 	usesTime       bool
 	usesInput      bool
 	usesSubstr     bool
+	usesSlice      bool
 	usesFloatConv  bool
 	usesPadStart   bool
 	usesSHA256     bool
@@ -98,6 +100,15 @@ func structNameFromVar(name string) string {
 		name = name[:len(name)-1]
 	}
 	return toPascalCase(name)
+}
+
+func guessStructForField(field string) string {
+	for name, st := range topEnv.Structs() {
+		if _, ok := st.Fields[field]; ok {
+			return name
+		}
+	}
+	return ""
 }
 
 var commonInitialisms = []string{"ID", "URL", "HTTP", "JSON", "XML", "SQL", "UID", "UUID"}
@@ -1851,6 +1862,7 @@ func Transpile(p *parser.Program, env *types.Env, benchMain bool) (*Program, err
 	usesTime = false
 	usesInput = false
 	usesSubstr = false
+	usesSlice = false
 	usesFloatConv = false
 	usesPadStart = false
 	usesSHA256 = false
@@ -1865,6 +1877,14 @@ func Transpile(p *parser.Program, env *types.Env, benchMain bool) (*Program, err
 	structCount = 0
 	mainFuncName = ""
 	fieldTypeGuess = map[string]string{}
+	for name, st := range env.Structs() {
+		_ = name
+		for fn, ft := range st.Fields {
+			if _, ok := fieldTypeGuess[fn]; !ok {
+				fieldTypeGuess[fn] = toGoTypeFromType(ft)
+			}
+		}
+	}
 	imports = map[string]string{}
 	gp := &Program{}
 	for _, stmt := range p.Statements {
@@ -1890,6 +1910,7 @@ func Transpile(p *parser.Program, env *types.Env, benchMain bool) (*Program, err
 	gp.UseTime = usesTime
 	gp.UseInput = usesInput
 	gp.UseSubstr = usesSubstr
+	gp.UseSlice = usesSlice
 	gp.UseFloatConv = usesFloatConv
 	gp.UsePadStart = usesPadStart
 	gp.UseRepeat = usesRepeat
@@ -4208,12 +4229,25 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env, base string) (Expr, 
 				}
 			default:
 				if types.IsAnyType(t) {
-					expr = &IndexExpr{X: &AssertExpr{Expr: expr, Type: "map[string]any"}, Index: &StringLit{Value: f}}
-					if gt, ok := fieldTypeGuess[f]; ok && gt != "" && gt != "any" {
-						expr = &AssertExpr{Expr: expr, Type: gt}
-						t = toTypeFromGoType(gt)
+					if stName := guessStructForField(f); stName != "" {
+						expr = &FieldExpr{X: &AssertExpr{Expr: expr, Type: stName}, Name: toGoFieldName(f)}
+						if st, ok := topEnv.GetStruct(stName); ok {
+							if ft, ok2 := st.Fields[f]; ok2 {
+								t = ft
+							} else {
+								t = types.AnyType{}
+							}
+						} else {
+							t = types.AnyType{}
+						}
 					} else {
-						t = types.AnyType{}
+						expr = &IndexExpr{X: &AssertExpr{Expr: expr, Type: "map[string]any"}, Index: &StringLit{Value: f}}
+						if gt, ok := fieldTypeGuess[f]; ok && gt != "" && gt != "any" {
+							expr = &AssertExpr{Expr: expr, Type: gt}
+							t = toTypeFromGoType(gt)
+						} else {
+							t = types.AnyType{}
+						}
 					}
 				} else {
 					expr = &FieldExpr{X: expr, Name: toGoFieldName(f)}
@@ -4724,6 +4758,9 @@ func compilePrimary(p *parser.Primary, env *types.Env, base string) (Expr, error
 			usesRepeat = true
 			usesStrings = true
 			return &CallExpr{Func: "_repeat", Args: args[:2]}, nil
+		case "slice":
+			usesSlice = true
+			return &CallExpr{Func: "_slice", Args: args[:3]}, nil
 		case "substring", "substr":
 			usesSubstr = true
 			if types.IsAnyType(types.TypeOfExpr(p.Call.Args[0], env)) {
@@ -5246,8 +5283,14 @@ func toTypeFromGoType(s string) types.Type {
 		return types.BigRatType{}
 	case strings.HasPrefix(s, "[]"):
 		return types.ListType{Elem: toTypeFromGoType(s[2:])}
-	case strings.HasPrefix(s, "map[string]"):
-		return types.MapType{Key: types.StringType{}, Value: toTypeFromGoType(s[len("map[string]"):])}
+	case strings.HasPrefix(s, "map["):
+		end := strings.IndexByte(s, ']')
+		if end > 4 {
+			key := s[4:end]
+			val := s[end+1:]
+			return types.MapType{Key: toTypeFromGoType(key), Value: toTypeFromGoType(val)}
+		}
+		return types.AnyType{}
 	case strings.HasPrefix(s, "*"):
 		return types.OptionType{Elem: toTypeFromGoType(s[1:])}
 	default:
@@ -5509,6 +5552,15 @@ func Emit(prog *Program, bench bool) []byte {
 		buf.WriteString("    if start > len(r) { start = len(r) }\n")
 		buf.WriteString("    if end < start { end = start }\n")
 		buf.WriteString("    return string(r[start:end])\n")
+		buf.WriteString("}\n\n")
+	}
+	if prog.UseSlice {
+		buf.WriteString("func _slice[T any](s []T, start, end int) []T {\n")
+		buf.WriteString("    if start < 0 { start = 0 }\n")
+		buf.WriteString("    if end > len(s) { end = len(s) }\n")
+		buf.WriteString("    if start > len(s) { start = len(s) }\n")
+		buf.WriteString("    if end < start { end = start }\n")
+		buf.WriteString("    return s[start:end]\n")
 		buf.WriteString("}\n\n")
 	}
 	if prog.UsePadStart {
