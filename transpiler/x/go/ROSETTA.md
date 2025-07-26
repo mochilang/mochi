@@ -1,7 +1,7 @@
 # Go Rosetta Transpiler Output
 
-Completed programs: 191/332
-Last updated: 2025-07-26 19:01 +0700
+Completed programs: 202/332
+Last updated: 2025-07-26 23:43 +0700
 
 Checklist:
 
@@ -210,18 +210,18 @@ Checklist:
 | 201 | cholesky-decomposition-1 | ✓ | 120.0µs | 6.08KB |
 | 202 | cholesky-decomposition | ✓ | 72.0µs | 4.12KB |
 | 203 | chowla-numbers | ✓ | 64.0µs | 1.90KB |
-| 204 | church-numerals-1 |   |  |  |
+| 204 | church-numerals-1 | ✓ | 71.0µs | 6.12KB |
 | 205 | church-numerals-2 |   |  |  |
-| 206 | circles-of-given-radius-through-two-points |   |  |  |
-| 207 | circular-primes |   |  |  |
-| 208 | cistercian-numerals |   |  |  |
-| 209 | comma-quibbling |   |  |  |
-| 210 | compiler-virtual-machine-interpreter |   |  |  |
-| 211 | composite-numbers-k-with-no-single-digit-factors-whose-factors-are-all-substrings-of-k |   |  |  |
-| 212 | compound-data-type |   |  |  |
-| 213 | concurrent-computing-1 |   |  |  |
-| 214 | concurrent-computing-2 |   |  |  |
-| 215 | concurrent-computing-3 |   |  |  |
+| 206 | circles-of-given-radius-through-two-points | ✓ | 108.0µs | 3.65KB |
+| 207 | circular-primes | ✓ | 97.0µs | 9.05KB |
+| 208 | cistercian-numerals | ✓ | 438.0µs | 88.75KB |
+| 209 | comma-quibbling | ✓ | 59.0µs | 1.11KB |
+| 210 | compiler-virtual-machine-interpreter | ✓ | 1.0ms | 734.23KB |
+| 211 | composite-numbers-k-with-no-single-digit-factors-whose-factors-are-all-substrings-of-k | ✓ | 14.22s | 3.60MB |
+| 212 | compound-data-type | ✓ | 31.0µs | 0B |
+| 213 | concurrent-computing-1 | ✓ | 43.0µs | 984B |
+| 214 | concurrent-computing-2 | ✓ | 107.0µs | 984B |
+| 215 | concurrent-computing-3 | ✓ | 95.0µs | 1.05KB |
 | 216 | conditional-structures-1 |   |  |  |
 | 217 | conditional-structures-10 |   |  |  |
 | 218 | conditional-structures-2 |   |  |  |
