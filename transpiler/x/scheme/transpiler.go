@@ -270,6 +270,12 @@ func header() []byte {
 	prelude += "\n(define (_lt a b) (cond ((and (number? a) (number? b)) (< a b)) ((and (string? a) (string? b)) (string<? a b)) (else (< a b))))"
 	prelude += "\n(define (_ge a b) (cond ((and (number? a) (number? b)) (>= a b)) ((and (string? a) (string? b)) (string>=? a b)) (else (>= a b))))"
 	prelude += "\n(define (_le a b) (cond ((and (number? a) (number? b)) (<= a b)) ((and (string? a) (string? b)) (string<=? a b)) (else (<= a b))))"
+	prelude += `
+(define (padStart s width pad)
+  (let loop ((out s))
+    (if (< (string-length out) width)
+        (loop (string-append pad out))
+        out)))`
 	if usesInput {
 		prelude += "\n(define (_input)\n  (let ((l (read-line)))\n    (if (eof-object? l) \"\" l)))"
 	}
@@ -448,6 +454,7 @@ func convertForStmt(fs *parser.ForStmt) (Node, error) {
 	currentEnv.SetVar(fs.Name, types.AnyType{}, true)
 
 	var iter Node
+	isString := false
 	var start Node
 	var end Node
 	var err error
@@ -469,9 +476,13 @@ func convertForStmt(fs *parser.ForStmt) (Node, error) {
 			currentEnv = prevEnv
 			return nil, err
 		}
-		if _, ok := types.ExprType(fs.Source, prevEnv).(types.MapType); ok {
+		switch types.ExprType(fs.Source, prevEnv).(type) {
+		case types.MapType:
 			needHash = true
 			iter = &List{Elems: []Node{Symbol("hash-table-keys"), iter}}
+		case types.StringType:
+			iter = &List{Elems: []Node{Symbol("string->list"), iter}}
+			isString = true
 		}
 	}
 	loopVar := Symbol("xs")
@@ -513,7 +524,13 @@ func convertForStmt(fs *parser.ForStmt) (Node, error) {
 			&List{Elems: []Node{
 				Symbol("begin"),
 				&List{Elems: []Node{
-					Symbol("let"), &List{Elems: []Node{&List{Elems: []Node{Symbol(fs.Name), &List{Elems: []Node{Symbol("car"), loopVar}}}}}},
+					Symbol("let"),
+					&List{Elems: []Node{&List{Elems: []Node{Symbol(fs.Name), func() Node {
+						if isString {
+							return &List{Elems: []Node{Symbol("string"), &List{Elems: []Node{Symbol("car"), loopVar}}}}
+						}
+						return &List{Elems: []Node{Symbol("car"), loopVar}}
+					}()}}}},
 					bodyNode,
 				}},
 				&List{Elems: []Node{loopSym, &List{Elems: []Node{Symbol("cdr"), loopVar}}}},
@@ -1085,9 +1102,9 @@ func convertParserPostfix(pf *parser.PostfixExpr) (Node, error) {
 				x := gensym("v")
 				cond := &List{Elems: []Node{
 					Symbol("cond"),
-					&List{Elems: []Node{&List{Elems: []Node{Symbol("string?"), Symbol(x)}}, &List{Elems: []Node{Symbol("inexact->exact"), &List{Elems: []Node{Symbol("string->number"), Symbol(x)}}}}}},
+					&List{Elems: []Node{&List{Elems: []Node{Symbol("string?"), Symbol(x)}}, &List{Elems: []Node{Symbol("inexact->exact"), &List{Elems: []Node{Symbol("floor"), &List{Elems: []Node{Symbol("string->number"), Symbol(x)}}}}}}}},
 					&List{Elems: []Node{&List{Elems: []Node{Symbol("boolean?"), Symbol(x)}}, &List{Elems: []Node{Symbol("if"), Symbol(x), IntLit(1), IntLit(0)}}}},
-					&List{Elems: []Node{Symbol("else"), &List{Elems: []Node{Symbol("inexact->exact"), Symbol(x)}}}},
+					&List{Elems: []Node{Symbol("else"), &List{Elems: []Node{Symbol("inexact->exact"), &List{Elems: []Node{Symbol("floor"), Symbol(x)}}}}}},
 				}}
 				node = &List{Elems: []Node{
 					Symbol("let"),
@@ -2384,6 +2401,16 @@ func convertCall(target Node, call *parser.CallOp) (Node, error) {
 			return nil, fmt.Errorf("exists expects 1 arg")
 		}
 		return &List{Elems: []Node{Symbol("if"), &List{Elems: []Node{Symbol("null?"), args[0]}}, StringLit("false"), StringLit("true")}}, nil
+	case "num":
+		if len(args) != 1 {
+			return nil, fmt.Errorf("num expects 1 arg")
+		}
+		return &List{Elems: []Node{Symbol("numerator"), args[0]}}, nil
+	case "denom":
+		if len(args) != 1 {
+			return nil, fmt.Errorf("denom expects 1 arg")
+		}
+		return &List{Elems: []Node{Symbol("denominator"), args[0]}}, nil
 	case "int":
 		if len(args) != 1 {
 			return nil, fmt.Errorf("int expects 1 arg")
@@ -2391,9 +2418,9 @@ func convertCall(target Node, call *parser.CallOp) (Node, error) {
 		x := gensym("v")
 		cond := &List{Elems: []Node{
 			Symbol("cond"),
-			&List{Elems: []Node{&List{Elems: []Node{Symbol("string?"), Symbol(x)}}, &List{Elems: []Node{Symbol("inexact->exact"), &List{Elems: []Node{Symbol("string->number"), Symbol(x)}}}}}},
+			&List{Elems: []Node{&List{Elems: []Node{Symbol("string?"), Symbol(x)}}, &List{Elems: []Node{Symbol("inexact->exact"), &List{Elems: []Node{Symbol("floor"), &List{Elems: []Node{Symbol("string->number"), Symbol(x)}}}}}}}},
 			&List{Elems: []Node{&List{Elems: []Node{Symbol("boolean?"), Symbol(x)}}, &List{Elems: []Node{Symbol("if"), Symbol(x), IntLit(1), IntLit(0)}}}},
-			&List{Elems: []Node{Symbol("else"), &List{Elems: []Node{Symbol("inexact->exact"), Symbol(x)}}}},
+			&List{Elems: []Node{Symbol("else"), &List{Elems: []Node{Symbol("inexact->exact"), &List{Elems: []Node{Symbol("floor"), Symbol(x)}}}}}},
 		}}
 		return &List{Elems: []Node{
 			Symbol("let"),
