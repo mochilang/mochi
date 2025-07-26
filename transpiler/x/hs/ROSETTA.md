@@ -1,8 +1,8 @@
-# Rosetta Haskell Transpiler (13/284 succeeded)
+# Rosetta Haskell Transpiler (14/284 succeeded)
 
 Generated Haskell code for Rosetta Mochi programs. Each `.hs` file is in `tests/rosetta/transpiler/Haskell` with matching `.out` output. Failures produce a `.error` file.
 
-Last updated: 2025-07-25 12:29 GMT+7
+Last updated: 2025-07-26 09:17 GMT+7
 
 ## Checklist
 | Index | Name | Status | Duration | Memory |
@@ -29,7 +29,7 @@ Last updated: 2025-07-25 12:29 GMT+7
 | 20 | abc-problem |  |  |  |
 | 21 | abelian-sandpile-model-identity |  |  |  |
 | 22 | abelian-sandpile-model |  |  |  |
-| 23 | abstract-type |  |  |  |
+| 23 | abstract-type | ✓ |  |  |
 | 24 | abundant-deficient-and-perfect-number-classifications |  |  |  |
 | 25 | abundant-odd-numbers |  |  |  |
 | 26 | accumulator-factory |  |  |  |

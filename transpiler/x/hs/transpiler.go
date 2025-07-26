@@ -145,11 +145,6 @@ func shouldWrapCall(name string) bool {
 	if strings.Contains(name, ".") {
 		return false
 	}
-	if envInfo != nil {
-		if _, ok := envInfo.GetFunc(name); ok {
-			return true
-		}
-	}
 	return false
 }
 
@@ -708,6 +703,17 @@ type ForStmt struct {
 	VarMutated bool
 }
 
+// ForExpr is like ForStmt but used in expression position and
+// returns a value when the loop finishes normally.
+type ForExpr struct {
+	Name       string
+	From       Expr
+	To         Expr
+	Body       []Stmt
+	End        Expr
+	VarMutated bool
+}
+
 // WhileStmt repeats a block while a condition is true.
 type WhileStmt struct {
 	Var  string
@@ -884,6 +890,9 @@ func (r *ReturnStmt) emit(w io.Writer) {
 	switch ex := r.Expr.(type) {
 	case *WhileExpr:
 		// WhileExpr already yields an IO action, so avoid wrapping
+		r.Expr.emit(w)
+	case *ForExpr:
+		// ForExpr already yields an IO action
 		r.Expr.emit(w)
 	case *IntLit:
 		if ex.Value == "0" {
@@ -1265,6 +1274,80 @@ func (we *WhileExpr) emit(w io.Writer) {
 		io.WriteString(w, safeName(we.Var))
 	}
 	io.WriteString(w, ")")
+	currentLoop = prevLoop
+	loopArgs = prevArgs
+}
+
+func (fe *ForExpr) emit(w io.Writer) {
+	name := "loop"
+	prevLoop := currentLoop
+	prevArgs := loopArgs
+	currentLoop = name
+	loopArgs = " xs"
+	io.WriteString(w, "(let\n")
+	pushIndent()
+	writeIndent(w)
+	io.WriteString(w, name+" [] = return (")
+	if fe.End != nil {
+		fe.End.emit(w)
+	} else {
+		io.WriteString(w, "()")
+	}
+	io.WriteString(w, ")\n")
+	writeIndent(w)
+	io.WriteString(w, name+" ("+safeName(fe.Name)+":xs) = do\n")
+	pushIndent()
+	if len(fe.Body) == 1 {
+		if is, ok := fe.Body[0].(*IfStmt); ok && len(is.Then) == 1 && len(is.Else) == 0 {
+			writeIndent(w)
+			io.WriteString(w, "if ")
+			is.Cond.emit(w)
+			io.WriteString(w, " then ")
+			if ret, ok2 := is.Then[0].(*ReturnStmt); ok2 {
+				ret.emit(w)
+			} else {
+				io.WriteString(w, "return ()")
+			}
+			io.WriteString(w, " else ")
+			io.WriteString(w, name)
+			io.WriteString(w, " xs\n")
+		} else {
+			for _, st := range fe.Body {
+				st.emit(w)
+				io.WriteString(w, "\n")
+			}
+			writeIndent(w)
+			io.WriteString(w, name+" xs\n")
+		}
+	} else {
+		for _, st := range fe.Body {
+			st.emit(w)
+			io.WriteString(w, "\n")
+		}
+		writeIndent(w)
+		io.WriteString(w, name+" xs\n")
+	}
+	popIndent()
+	writeIndent(w)
+	io.WriteString(w, "in ")
+	io.WriteString(w, name)
+	io.WriteString(w, " ")
+	if fe.To != nil {
+		io.WriteString(w, "[")
+		fe.From.emit(w)
+		io.WriteString(w, " .. (")
+		fe.To.emit(w)
+		io.WriteString(w, " - 1)]")
+	} else if isMapExpr(fe.From) {
+		needDataMap = true
+		io.WriteString(w, "(Map.keys ")
+		fe.From.emit(w)
+		io.WriteString(w, ")")
+	} else {
+		fe.From.emit(w)
+	}
+	io.WriteString(w, ")")
+	popIndent()
 	currentLoop = prevLoop
 	loopArgs = prevArgs
 }
@@ -4086,7 +4169,21 @@ func convertStmtList(list []*parser.Statement) ([]Stmt, error) {
 			if err != nil {
 				return nil, err
 			}
-			out = append(out, s)
+			if i+1 < len(list) && list[i+1].Return != nil {
+				endExpr, err := convertExpr(list[i+1].Return.Value)
+				if err != nil {
+					return nil, err
+				}
+				if fs, ok := s.(*ForStmt); ok {
+					fe := &ForExpr{Name: fs.Name, From: fs.From, To: fs.To, Body: fs.Body, End: endExpr, VarMutated: fs.VarMutated}
+					out = append(out, &ReturnStmt{Expr: fe})
+					i++
+				} else {
+					out = append(out, s)
+				}
+			} else {
+				out = append(out, s)
+			}
 		case st.Bench != nil:
 			s, err := convertBenchBlock(st.Bench)
 			if err != nil {
