@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Python code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/Python`.
-Last updated: 2025-07-26 19:25 GMT+7
+Last updated: 2025-07-26 19:59 GMT+7
 
-## Rosetta Golden Test Checklist (287/332)
+## Rosetta Golden Test Checklist (317/332)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 161.0µs | 12.50MB |
@@ -22,7 +22,7 @@ Last updated: 2025-07-26 19:25 GMT+7
 | 13 | 99-bottles-of-beer-2 | ✓ | 12.0ms | 13.84MB |
 | 14 | 99-bottles-of-beer | ✓ | 455.0µs | 12.65MB |
 | 15 | DNS-query | ✓ | 935.0ms | 12.37MB |
-| 16 | Duffinian-numbers | ✓ |  |  |
+| 16 | Duffinian-numbers |   |  |  |
 | 17 | a+b | ✓ | 107.0µs | 12.21MB |
 | 18 | abbreviations-automatic | ✓ | 4.0ms | 13.73MB |
 | 19 | abbreviations-easy | ✓ | 779.0µs | 13.69MB |
@@ -307,35 +307,35 @@ Last updated: 2025-07-26 19:25 GMT+7
 | 298 | determine-sentence-type | ✓ | 57.0µs | 13.06MB |
 | 299 | dice-game-probabilities-1 | ✓ | 91.0ms | 12.68MB |
 | 300 | dice-game-probabilities-2 | ✓ | 9.0ms | 12.23MB |
-| 301 | digital-root-multiplicative-digital-root |   |  |  |
-| 302 | dijkstras-algorithm |   |  |  |
-| 303 | dinesmans-multiple-dwelling-problem |   |  |  |
-| 304 | dining-philosophers-1 |   |  |  |
-| 305 | dining-philosophers-2 |   |  |  |
-| 306 | disarium-numbers |   |  |  |
-| 307 | discordian-date |   |  |  |
-| 308 | display-a-linear-combination |   |  |  |
-| 309 | display-an-outline-as-a-nested-table |   |  |  |
-| 310 | distance-and-bearing |   |  |  |
-| 311 | distributed-programming |   |  |  |
-| 312 | diversity-prediction-theorem |   |  |  |
-| 313 | documentation |   |  |  |
-| 314 | doomsday-rule |   |  |  |
-| 315 | dot-product |   |  |  |
-| 316 | doubly-linked-list-definition-1 |   |  |  |
-| 317 | doubly-linked-list-definition-2 |   |  |  |
-| 318 | doubly-linked-list-element-definition |   |  |  |
-| 319 | doubly-linked-list-traversal |   |  |  |
-| 320 | dragon-curve |   |  |  |
-| 321 | draw-a-clock |   |  |  |
-| 322 | draw-a-cuboid |   |  |  |
-| 323 | draw-a-pixel-1 |   |  |  |
-| 324 | draw-a-rotating-cube |   |  |  |
-| 325 | draw-a-sphere |   |  |  |
-| 326 | dutch-national-flag-problem |   |  |  |
-| 327 | dynamic-variable-names |   |  |  |
-| 328 | earliest-difference-between-prime-gaps |   |  |  |
-| 329 | eban-numbers |   |  |  |
-| 330 | echo-server |   |  |  |
-| 331 | ekg-sequence-convergence |   |  |  |
+| 301 | digital-root-multiplicative-digital-root | ✓ | 14.0ms | 12.84MB |
+| 302 | dijkstras-algorithm | ✓ | 31.0µs | 12.94MB |
+| 303 | dinesmans-multiple-dwelling-problem | ✓ |  |  |
+| 304 | dining-philosophers-1 | ✓ | 36.0µs | 12.90MB |
+| 305 | dining-philosophers-2 | ✓ | 36.0µs | 12.74MB |
+| 306 | disarium-numbers | ✓ | 7.44s | 13.05MB |
+| 307 | discordian-date | ✓ | 48.0µs | 13.43MB |
+| 308 | display-a-linear-combination | ✓ | 72.0µs | 13.30MB |
+| 309 | display-an-outline-as-a-nested-table | ✓ | 211.0µs | 13.88MB |
+| 310 | distance-and-bearing | ✓ | 422.0µs | 14.59MB |
+| 311 | distributed-programming | ✓ | 11.0µs | 12.42MB |
+| 312 | diversity-prediction-theorem | ✓ | 35.0µs | 13.19MB |
+| 313 | documentation | ✓ | 2.0µs | 11.60MB |
+| 314 | doomsday-rule | ✓ | 51.0µs | 13.06MB |
+| 315 | dot-product | ✓ | 12.0µs | 12.62MB |
+| 316 | doubly-linked-list-definition-1 | ✓ | 876.0µs | 12.39MB |
+| 317 | doubly-linked-list-definition-2 | ✓ | 21.0µs | 13.96MB |
+| 318 | doubly-linked-list-element-definition | ✓ | 16.0µs | 12.93MB |
+| 319 | doubly-linked-list-traversal | ✓ | 18.0µs | 13.25MB |
+| 320 | dragon-curve | ✓ | 685.0µs | 12.22MB |
+| 321 | draw-a-clock | ✓ | 69.0µs | 12.86MB |
+| 322 | draw-a-cuboid | ✓ | 316.0µs | 12.84MB |
+| 323 | draw-a-pixel-1 | ✓ | 66.0ms | 12.34MB |
+| 324 | draw-a-rotating-cube | ✓ | 2.0ms | 13.48MB |
+| 325 | draw-a-sphere | ✓ | 17.0ms | 12.73MB |
+| 326 | dutch-national-flag-problem | ✓ | 34.0µs | 13.29MB |
+| 327 | dynamic-variable-names | ✓ |  |  |
+| 328 | earliest-difference-between-prime-gaps | ✓ | 118.0µs | 12.93MB |
+| 329 | eban-numbers | ✓ | 38.0ms | 12.89MB |
+| 330 | echo-server | ✓ | 14.0µs | 12.42MB |
+| 331 | ekg-sequence-convergence | ✓ | 11.0ms | 13.64MB |
 | 332 | md5 | error |  |  |
