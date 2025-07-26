@@ -1,0 +1,77 @@
+// Mochi translation of Rosetta "Diversity prediction theorem" task
+// Translated from Go version in tests/rosetta/x/Go/diversity-prediction-theorem.go
+
+fun pow10(n: int): float {
+  var r: float = 1.0
+  var i = 0
+  while i < n {
+    r = r * 10.0
+    i = i + 1
+  }
+  return r
+}
+
+fun formatFloat(f: float, prec: int): string {
+  let scale = pow10(prec)
+  let scaled = (f * scale) + 0.5
+  var n = (scaled as int)
+  var digits = str(n)
+  while len(digits) <= prec {
+    digits = "0" + digits
+  }
+  let intPart = substring(digits, 0, len(digits) - prec)
+  let fracPart = substring(digits, len(digits) - prec, len(digits))
+  return intPart + "." + fracPart
+}
+
+fun padLeft(s: string, w: int): string {
+  var res = ""
+  var n = w - len(s)
+  while n > 0 {
+    res = res + " "
+    n = n - 1
+  }
+  return res + s
+}
+
+fun averageSquareDiff(f: float, preds: list<float>): float {
+  var av = 0.0
+  var i = 0
+  while i < len(preds) {
+    av = av + (preds[i] - f) * (preds[i] - f)
+    i = i + 1
+  }
+  av = av / (len(preds) as float)
+  return av
+}
+
+fun diversityTheorem(truth: float, preds: list<float>): list<float> {
+  var av = 0.0
+  var i = 0
+  while i < len(preds) {
+    av = av + preds[i]
+    i = i + 1
+  }
+  av = av / (len(preds) as float)
+  let avErr = averageSquareDiff(truth, preds)
+  let crowdErr = (truth - av) * (truth - av)
+  let div = averageSquareDiff(av, preds)
+  return [avErr, crowdErr, div]
+}
+
+fun main() {
+  let predsArray = [[48.0, 47.0, 51.0], [48.0, 47.0, 51.0, 42.0]]
+  let truth = 49.0
+  var i = 0
+  while i < len(predsArray) {
+    let preds = predsArray[i]
+    let res = diversityTheorem(truth, preds)
+    print("Average-error : " + padLeft(formatFloat(res[0], 3), 6))
+    print("Crowd-error   : " + padLeft(formatFloat(res[1], 3), 6))
+    print("Diversity     : " + padLeft(formatFloat(res[2], 3), 6))
+    print("")
+    i = i + 1
+  }
+}
+
+main()
