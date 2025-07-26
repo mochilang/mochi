@@ -2,12 +2,12 @@
 
 Generated Scala code for Rosetta tasks in `tests/rosetta/x/Mochi`. Each program has a `.scala` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
 
-## Golden Test Checklist (133/284)
-_Last updated: 2025-07-26 04:52 +0700_
+## Golden Test Checklist (134/284)
+_Last updated: 2025-07-26 05:34 +0700_
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
-| 1 | 100-doors-2 | ✓ | 7µs | 8.7 MB |
+| 1 | 100-doors-2 | ✓ | 6µs | 8.7 MB |
 | 2 | 100-doors-3 | ✓ | 5µs | 8.7 MB |
 | 3 | 100-doors | ✓ | 8µs | 8.7 MB |
 | 4 | 100-prisoners | ✓ | 4.792ms | 8.7 MB |
@@ -117,12 +117,12 @@ _Last updated: 2025-07-26 04:52 +0700_
 | 108 | bin-given-limits | ✓ | 10µs | 3.5 MB |
 | 109 | binary-digits | ✓ | 2µs | 3.5 MB |
 | 110 | binary-search | ✓ | 5µs | 3.5 MB |
-| 111 | binary-strings |   |  |  |
+| 111 | binary-strings | ✓ | 5µs | 8.7 MB |
 | 112 | bioinformatics-base-count | ✓ | 4µs | 8.7 MB |
-| 113 | bioinformatics-global-alignment | ✓ | 199µs | 8.7 MB |
-| 114 | bioinformatics-sequence-mutation | ✓ | 21µs | 8.7 MB |
-| 115 | biorhythms | ✓ | 11µs | 8.7 MB |
-| 116 | bitcoin-address-validation | ✓ | 25µs | 8.9 MB |
+| 113 | bioinformatics-global-alignment | ✓ | 170µs | 8.7 MB |
+| 114 | bioinformatics-sequence-mutation | ✓ | 15µs | 8.7 MB |
+| 115 | biorhythms | ✓ | 12µs | 8.7 MB |
+| 116 | bitcoin-address-validation | ✓ | 85µs | 8.9 MB |
 | 117 | bitmap-b-zier-curves-cubic | error |  |  |
 | 118 | bitmap-b-zier-curves-quadratic | error |  |  |
 | 119 | bitmap-bresenhams-line-algorithm | ✓ | 7µs | 8.7 MB |

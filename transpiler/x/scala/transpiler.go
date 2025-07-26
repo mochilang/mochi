@@ -934,30 +934,23 @@ func (idx *IndexExpr) emit(w io.Writer) {
 		}
 		fmt.Fprintf(w, "null.asInstanceOf[%s])", t)
 	} else if idx.Container == "Any" {
-		if (idx.ForceMap) || (func() bool {
-			if prev, ok := idx.Value.(*IndexExpr); ok {
-				return strings.HasPrefix(prev.Container, "Map[")
-			}
-			return false
-		}()) {
-			idx.Value.emit(w)
+		mapIndex := idx.ForceMap || inferType(idx.Index) == "String"
+		idx.Value.emit(w)
+		if mapIndex {
 			if idx.Type != "" {
 				fmt.Fprintf(w, ".asInstanceOf[Map[String,%s]](", idx.Type)
 			} else {
 				fmt.Fprint(w, ".asInstanceOf[Map[String,Any]](")
 			}
-			idx.Index.emit(w)
-			fmt.Fprint(w, ")")
 		} else {
-			idx.Value.emit(w)
 			if idx.Type != "" {
 				fmt.Fprintf(w, ".asInstanceOf[ArrayBuffer[%s]](", idx.Type)
 			} else {
 				fmt.Fprint(w, ".asInstanceOf[ArrayBuffer[Any]](")
 			}
-			idx.Index.emit(w)
-			fmt.Fprint(w, ")")
 		}
+		idx.Index.emit(w)
+		fmt.Fprint(w, ")")
 	} else if idx.Container == "String" {
 		idx.Value.emit(w)
 		fmt.Fprint(w, ".slice(")
