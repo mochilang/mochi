@@ -918,6 +918,17 @@ type Expr interface {
 	emitPrint(io.Writer)
 }
 
+// RefExpr wraps a value in OCaml's [ref] constructor.
+type RefExpr struct{ Value Expr }
+
+func (r *RefExpr) emit(w io.Writer) {
+	io.WriteString(w, "ref (")
+	r.Value.emit(w)
+	io.WriteString(w, ")")
+}
+
+func (r *RefExpr) emitPrint(w io.Writer) { r.emit(w) }
+
 // StrBuiltin represents a call to the builtin str() function.
 type StrBuiltin struct {
 	Expr Expr
@@ -2931,11 +2942,8 @@ func transpileStmt(st *parser.Statement, env *types.Env, vars map[string]VarInfo
 		} else if strings.HasPrefix(iterTyp, "list") {
 			vtyp = "int"
 		}
-		if strings.HasPrefix(iterTyp, "map-") {
-			parts := strings.Split(iterTyp, "-")
-			if len(parts) >= 3 {
-				vtyp = parts[1]
-			}
+		if strings.HasPrefix(iterTyp, "map") {
+			vtyp = "string"
 		}
 		vars[st.For.Name] = VarInfo{typ: vtyp}
 		body, err := transpileStmts(st.For.Body, env, vars)
@@ -3065,7 +3073,12 @@ func transpileStmt(st *parser.Statement, env *types.Env, vars map[string]VarInfo
 			if p.Type != nil {
 				typ := typeRefString(p.Type)
 				if typ == "int" || typ == "float" {
-					exprCode := fmt.Sprintf("(Obj.magic !%s : %s)", sanitizeIdent(p.Name), typ)
+					exprCode := ""
+					if mutated[p.Name] {
+						exprCode = fmt.Sprintf("(Obj.magic !%s : %s)", sanitizeIdent(p.Name), typ)
+					} else {
+						exprCode = fmt.Sprintf("(Obj.magic %s : %s)", sanitizeIdent(p.Name), typ)
+					}
 					if mutated[p.Name] {
 						casts = append(casts, &AssignStmt{Name: p.Name, Expr: &RawExpr{Code: exprCode}})
 					} else {
@@ -4749,6 +4762,8 @@ func convertCall(c *parser.CallExpr, env *types.Env, vars map[string]VarInfo) (E
 				// pass reference without dereferencing
 				if n, ok := ex.(*Name); ok {
 					ex = &Name{Ident: n.Ident, Typ: n.Typ, Ref: false}
+				} else {
+					ex = &RefExpr{Value: ex}
 				}
 			} else if i < len(fn.Params) {
 				ptyp := typeRefString(fn.Params[i].Type)

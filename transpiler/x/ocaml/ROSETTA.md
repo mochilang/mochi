@@ -47,7 +47,7 @@ Completed programs: 60/332
 | 39 | aks-test-for-primes | ✓ | 94.0µs | 6.47KB |
 | 40 | algebraic-data-types | error |  |  |
 | 41 | align-columns | ✓ | 248.0µs | 50.18KB |
-| 42 | aliquot-sequence-classifications | ✓ |  |  |
+| 42 | aliquot-sequence-classifications | ✓ | 300.0ms | 62.69KB |
 | 43 | almkvist-giullera-formula-for-pi | error |  |  |
 | 44 | almost-prime | ✓ |  |  |
 | 45 | amb | ✓ |  |  |
@@ -338,4 +338,4 @@ Completed programs: 60/332
 | 330 | echo-server |   |  |  |
 | 331 | ekg-sequence-convergence |   |  |  |
 | 332 | md5 |   |  |  |
-Last updated 2025-07-26 19:01 +0700
+Last updated 2025-07-26 12:59 UTC
