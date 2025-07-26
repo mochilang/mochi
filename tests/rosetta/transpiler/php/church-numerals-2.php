@@ -1,5 +1,20 @@
 <?php
 ini_set('memory_limit', '-1');
+$now_seed = 0;
+$now_seeded = false;
+$s = getenv('MOCHI_NOW_SEED');
+if ($s !== false && $s !== '') {
+    $now_seed = intval($s);
+    $now_seeded = true;
+}
+function _now() {
+    global $now_seed, $now_seeded;
+    if ($now_seeded) {
+        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
+        return $now_seed;
+    }
+    return hrtime(true);
+}
 function _str($x) {
     if (is_array($x)) {
         $isList = array_keys($x) === range(0, count($x) - 1);
@@ -16,39 +31,41 @@ function _str($x) {
     if ($x === null) return 'null';
     return strval($x);
 }
-function id($x) {
+$__start_mem = memory_get_usage();
+$__start = _now();
+  function id($x) {
   return $x;
-}
-function compose($f, $g) {
+};
+  function compose($f, $g) {
   return function($x) use ($f, $g) {
   return $f($g($x));
 };
-}
-function zero() {
+};
+  function zero() {
   return function($f) {
   return 'id';
 };
-}
-function one() {
+};
+  function one() {
   return 'id';
-}
-function succ($n) {
+};
+  function succ($n) {
   return function($f) use ($n) {
   return compose($f, $n($f));
 };
-}
-function plus($m, $n) {
+};
+  function plus($m, $n) {
   return function($f) use ($m, $n) {
   return compose($m($f), $n($f));
 };
-}
-function mult($m, $n) {
+};
+  function mult($m, $n) {
   return compose($m, $n);
-}
-function mochi_exp($m, $n) {
+};
+  function mochi_exp($m, $n) {
   return $n($m);
-}
-function toInt($x) {
+};
+  function toInt($x) {
   $counter = 0;
   $fCounter = function($f) use (&$fCounter, $x, $counter) {
   $counter = $counter + 1;
@@ -56,8 +73,8 @@ function toInt($x) {
 };
   call_user_func($x($fCounter), 'id');
   return $counter;
-}
-function toStr($x) {
+};
+  function toStr($x) {
   $s = '';
   $fCounter = function($f) use (&$fCounter, $x, $s) {
   $s = $s . '|';
@@ -65,8 +82,8 @@ function toStr($x) {
 };
   call_user_func($x($fCounter), 'id');
   return $s;
-}
-function main() {
+};
+  function main() {
   echo rtrim('zero = ' . _str(toInt(zero()))), PHP_EOL;
   $onev = one();
   echo rtrim('one = ' . _str(toInt($onev))), PHP_EOL;
@@ -79,5 +96,12 @@ function main() {
   $eight = mochi_exp($two, $three);
   echo rtrim('eight = ' . _str(toInt($eight))), PHP_EOL;
   echo rtrim('toStr(four) = ' . toStr($four)), PHP_EOL;
-}
-main();
+};
+$__end = _now();
+$__end_mem = memory_get_usage();
+$__duration = intdiv($__end - $__start, 1000);
+$__mem_diff = max(0, $__end_mem - $__start_mem);
+$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
+$__j = json_encode($__bench, 128);
+$__j = str_replace("    ", "  ", $__j);
+echo $__j, PHP_EOL;;

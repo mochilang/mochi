@@ -2,7 +2,7 @@
 
 Generated PHP code from Mochi Rosetta tasks lives in `tests/rosetta/transpiler/php`.
 
-Last updated: 2025-07-26 23:06 +0700
+Last updated: 2025-07-26 23:46 +0700
 
 ## Checklist (270/332)
 | Index | Name | Status | Duration | Memory |
@@ -207,26 +207,26 @@ Last updated: 2025-07-26 23:06 +0700
 | 198 | cheryls-birthday | ✓ | 159µs | 1.2 KB |
 | 199 | chinese-remainder-theorem | ✓ | 84µs | 160 B |
 | 200 | chinese-zodiac | ✓ | 196µs | 600 B |
-| 201 | cholesky-decomposition-1 | ✓ |  |  |
-| 202 | cholesky-decomposition | ✓ |  |  |
-| 203 | chowla-numbers | ✓ |  |  |
-| 204 | church-numerals-1 | ✓ |  |  |
+| 201 | cholesky-decomposition-1 | ✓ | 168µs | 96 B |
+| 202 | cholesky-decomposition | ✓ | 157µs | 96 B |
+| 203 | chowla-numbers | ✓ | 44µs | 96 B |
+| 204 | church-numerals-1 | ✓ | 341µs | 3.2 KB |
 | 205 | church-numerals-2 | ✓ |  |  |
-| 206 | circles-of-given-radius-through-two-points | ✓ |  |  |
-| 207 | circular-primes | ✓ |  |  |
-| 208 | cistercian-numerals | ✓ |  |  |
-| 209 | comma-quibbling | ✓ |  |  |
-| 210 | compiler-virtual-machine-interpreter | ✓ |  |  |
-| 211 | composite-numbers-k-with-no-single-digit-factors-whose-factors-are-all-substrings-of-k | ✓ |  |  |
-| 212 | compound-data-type | ✓ |  |  |
-| 213 | concurrent-computing-1 | ✓ |  |  |
-| 214 | concurrent-computing-2 | ✓ |  |  |
-| 215 | concurrent-computing-3 | ✓ |  |  |
+| 206 | circles-of-given-radius-through-two-points | ✓ | 148µs | 760 B |
+| 207 | circular-primes | ✓ | 464µs | 17.1 KB |
+| 208 | cistercian-numerals | ✓ | 503µs | 68.9 KB |
+| 209 | comma-quibbling | ✓ | 73µs | 96 B |
+| 210 | compiler-virtual-machine-interpreter | ✓ | 307µs | 144 B |
+| 211 | composite-numbers-k-with-no-single-digit-factors-whose-factors-are-all-substrings-of-k | ✓ | 1m55.55573s | 96 B |
+| 212 | compound-data-type | ✓ | 1µs | 64 B |
+| 213 | concurrent-computing-1 | ✓ | 60µs | 96 B |
+| 214 | concurrent-computing-2 | ✓ | 70µs | 96 B |
+| 215 | concurrent-computing-3 | ✓ | 81µs | 96 B |
 | 216 | conditional-structures-1 | ✓ |  |  |
-| 217 | conditional-structures-10 | ✓ |  |  |
-| 218 | conditional-structures-2 | ✓ |  |  |
-| 219 | conditional-structures-3 | ✓ |  |  |
-| 220 | conditional-structures-4 | ✓ |  |  |
+| 217 | conditional-structures-10 | ✓ | 62µs | 96 B |
+| 218 | conditional-structures-2 | ✓ | 1µs | 64 B |
+| 219 | conditional-structures-3 | ✓ | 1µs | 64 B |
+| 220 | conditional-structures-4 | ✓ | 1µs | 64 B |
 | 221 | conditional-structures-5 | ✓ |  |  |
 | 222 | conditional-structures-6 | ✓ |  |  |
 | 223 | conditional-structures-7 | ✓ |  |  |
