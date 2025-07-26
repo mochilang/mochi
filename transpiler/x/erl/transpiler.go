@@ -763,6 +763,12 @@ type AnonFunc struct {
 	Return Expr
 }
 
+// FunRef represents a function reference.
+type FunRef struct {
+	Name  string
+	Arity int
+}
+
 // LetStmt represents a variable binding.
 type LetStmt struct {
 	Name string
@@ -780,6 +786,12 @@ type CallExpr struct {
 	Func          string
 	Args          []Expr
 	ReturnsString bool
+}
+
+// ApplyExpr represents calling a function-valued expression.
+type ApplyExpr struct {
+	Fun  Expr
+	Args []Expr
 }
 
 // BinaryExpr is a binary operation.
@@ -983,7 +995,7 @@ type BreakStmt struct{ Args []string }
 type ContinueStmt struct{ Args []string }
 
 // CallStmt represents a standalone function call.
-type CallStmt struct{ Call *CallExpr }
+type CallStmt struct{ Call Expr }
 
 // BenchStmt represents a benchmark block.
 type BenchStmt struct {
@@ -1859,19 +1871,6 @@ func (c *CallExpr) emit(w io.Writer) {
 				return
 			}
 		}
-	case "pow":
-		io.WriteString(w, "math:pow(")
-		if len(c.Args) > 0 {
-			c.Args[0].emit(w)
-		}
-		io.WriteString(w, ", ")
-		if len(c.Args) > 1 {
-			c.Args[1].emit(w)
-		} else {
-			io.WriteString(w, "0")
-		}
-		io.WriteString(w, ")")
-		return
 	case "min":
 		io.WriteString(w, "lists:min(")
 		if len(c.Args) > 0 {
@@ -2138,6 +2137,33 @@ func (c *CaseExpr) emit(w io.Writer) {
 }
 
 func (n *NameRef) emit(w io.Writer) { io.WriteString(w, n.Name) }
+
+func (f *FunRef) emit(w io.Writer) {
+	fmt.Fprintf(w, "fun %s/%d", f.Name, f.Arity)
+}
+
+func (a *ApplyExpr) emit(w io.Writer) {
+	need := false
+	switch a.Fun.(type) {
+	case *CallExpr, *ApplyExpr:
+		need = true
+	}
+	if need {
+		io.WriteString(w, "(")
+		a.Fun.emit(w)
+		io.WriteString(w, ")")
+	} else {
+		a.Fun.emit(w)
+	}
+	io.WriteString(w, "(")
+	for i, arg := range a.Args {
+		if i > 0 {
+			io.WriteString(w, ", ")
+		}
+		arg.emit(w)
+	}
+	io.WriteString(w, ")")
+}
 
 func (i *IntLit) emit(w io.Writer) { fmt.Fprintf(w, "%d", i.Value) }
 
@@ -2747,7 +2773,7 @@ func mapOp(op string) string {
 
 func builtinFunc(name string) bool {
 	switch name {
-	case "print", "append", "avg", "count", "len", "str", "sum", "min", "max", "values", "keys", "exists", "contains", "sha256", "json", "now", "input", "int", "abs", "upper", "lower", "indexOf", "parseIntStr", "indexof", "parseintstr", "pow", "repeat", "bigrat", "num", "denom":
+	case "print", "append", "avg", "count", "len", "str", "sum", "min", "max", "values", "keys", "exists", "contains", "sha256", "json", "now", "input", "int", "abs", "upper", "lower", "indexOf", "parseIntStr", "indexof", "parseintstr", "repeat", "bigrat", "num", "denom":
 		return true
 	default:
 		return false
@@ -3392,6 +3418,8 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context, top bool) (
 				}
 			}
 			return []Stmt{&CallStmt{Call: c}}, nil
+		} else if ae, ok := e.(*ApplyExpr); ok {
+			return []Stmt{&CallStmt{Call: ae}}, nil
 		}
 		if _, ok := e.(*AtomLit); ok {
 			return nil, nil
@@ -4227,30 +4255,27 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env, ctx *context) (Expr,
 					continue
 				}
 			}
-			ce := &CallExpr{}
-			if nr, ok := expr.(*NameRef); ok {
-				ce.Func = nr.Name
-			} else if c, ok := expr.(*CallExpr); ok {
-				ce.Func = c.Func
-				ce.Args = append(ce.Args, c.Args...)
-			} else {
-				return nil, fmt.Errorf("unsupported postfix")
-			}
-			for _, a := range op.Call.Args {
+			args := make([]Expr, len(op.Call.Args))
+			for j, a := range op.Call.Args {
 				ae, err := convertExpr(a, env, ctx)
 				if err != nil {
 					return nil, err
 				}
-				ce.Args = append(ce.Args, ae)
+				args[j] = ae
 			}
-			if t, err := env.GetVar(ce.Func); err == nil {
-				if ft, ok := t.(types.FuncType); ok {
-					if _, ok := ft.Return.(types.StringType); ok {
-						ce.ReturnsString = true
+			if nr, ok := expr.(*NameRef); ok {
+				ce := &CallExpr{Func: nr.Name, Args: args}
+				if t, err := env.GetVar(ce.Func); err == nil {
+					if ft, ok := t.(types.FuncType); ok {
+						if _, ok := ft.Return.(types.StringType); ok {
+							ce.ReturnsString = true
+						}
 					}
 				}
+				expr = ce
+			} else {
+				expr = &ApplyExpr{Fun: expr, Args: args}
 			}
-			expr = ce
 		case op.Cast != nil:
 			if op.Cast.Type != nil && op.Cast.Type.Simple != nil {
 				switch *op.Cast.Type.Simple {
@@ -4456,6 +4481,15 @@ func convertPrimary(p *parser.Primary, env *types.Env, ctx *context) (Expr, erro
 				call.ReturnsString = true
 			}
 			return call, nil
+		}
+		if t, err := env.GetVar(p.Selector.Root); err == nil {
+			if ft, ok := t.(types.FuncType); ok && !ctx.isGlobal(p.Selector.Root) && ctx.alias[p.Selector.Root] == "" {
+				if fn, ok := env.GetFunc(p.Selector.Root); ok {
+					name := strings.ToLower(fn.Name)
+					return &FunRef{Name: name, Arity: len(fn.Params)}, nil
+				}
+				_ = ft
+			}
 		}
 		nr := &NameRef{Name: ctx.current(p.Selector.Root)}
 		if t, err := env.GetVar(p.Selector.Root); err == nil {
