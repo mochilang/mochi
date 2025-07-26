@@ -32,25 +32,54 @@ begin
   h := GetFPCHeapStatus;
   _mem := h.CurrHeapUsed;
 end;
-function _input(): string;
-var s: string;
-begin
-  if EOF(Input) then s := '' else ReadLn(s);
-  _input := s;
-end;
 var
   bench_start_0: integer;
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
+  pfacSum_sum: integer;
+  pfacSum_p: integer;
+  main_d: integer;
   main_a: integer;
-  main_b: integer;
+  main_pnum: integer;
+  main_i: integer;
+  main_j: integer;
+function pfacSum(i: integer): integer; forward;
 procedure main(); forward;
+function pfacSum(i: integer): integer;
+begin
+  pfacSum_sum := 0;
+  pfacSum_p := 1;
+  while pfacSum_p <= (i div 2) do begin
+  if (i mod pfacSum_p) = 0 then begin
+  pfacSum_sum := pfacSum_sum + pfacSum_p;
+end;
+  pfacSum_p := pfacSum_p + 1;
+end;
+  exit(pfacSum_sum);
+end;
 procedure main();
 begin
-  main_a := StrToInt(_input());
-  main_b := StrToInt(_input());
-  writeln(main_a + main_b);
+  main_d := 0;
+  main_a := 0;
+  main_pnum := 0;
+  main_i := 1;
+  while main_i <= 20000 do begin
+  main_j := pfacSum(main_i);
+  if main_j < main_i then begin
+  main_d := main_d + 1;
+end;
+  if main_j = main_i then begin
+  main_pnum := main_pnum + 1;
+end;
+  if main_j > main_i then begin
+  main_a := main_a + 1;
+end;
+  main_i := main_i + 1;
+end;
+  writeln(('There are ' + IntToStr(main_d)) + ' deficient numbers between 1 and 20000');
+  writeln(('There are ' + IntToStr(main_a)) + ' abundant numbers  between 1 and 20000');
+  writeln(('There are ' + IntToStr(main_pnum)) + ' perfect numbers between 1 and 20000');
 end;
 begin
   init_now();

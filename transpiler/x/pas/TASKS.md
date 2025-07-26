@@ -1,3 +1,108 @@
+## Progress (2025-07-26 19:01 +0700)
+- ex transpiler: handle float mod and module globals (progress 88/104)
+
+## Progress (2025-07-26 19:01 +0700)
+- ex transpiler: handle float mod and module globals (progress 88/104)
+
+## Progress (2025-07-26 19:01 +0700)
+- ex transpiler: handle float mod and module globals (progress 88/104)
+
+## Progress (2025-07-26 19:01 +0700)
+- ex transpiler: handle float mod and module globals (progress 88/104)
+
+## Progress (2025-07-26 19:01 +0700)
+- ex transpiler: handle float mod and module globals (progress 88/104)
+
+## Progress (2025-07-26 19:01 +0700)
+- ex transpiler: handle float mod and module globals (progress 88/104)
+
+## Progress (2025-07-26 19:01 +0700)
+- ex transpiler: handle float mod and module globals (progress 88/104)
+
+## Progress (2025-07-26 19:01 +0700)
+- ex transpiler: handle float mod and module globals (progress 88/104)
+
+## Progress (2025-07-26 19:01 +0700)
+- ex transpiler: handle float mod and module globals (progress 88/104)
+
+## Progress (2025-07-26 19:01 +0700)
+- ex transpiler: handle float mod and module globals (progress 88/104)
+
+## Progress (2025-07-26 19:01 +0700)
+- ex transpiler: handle float mod and module globals (progress 88/104)
+
+## Progress (2025-07-26 19:01 +0700)
+- ex transpiler: handle float mod and module globals (progress 88/104)
+
+## Progress (2025-07-26 19:01 +0700)
+- ex transpiler: handle float mod and module globals (progress 88/104)
+
+## Progress (2025-07-26 19:01 +0700)
+- ex transpiler: handle float mod and module globals (progress 88/104)
+
+## Progress (2025-07-26 19:01 +0700)
+- ex transpiler: handle float mod and module globals (progress 88/104)
+
+## Progress (2025-07-26 19:01 +0700)
+- ex transpiler: handle float mod and module globals (progress 88/104)
+
+## Progress (2025-07-26 19:01 +0700)
+- ex transpiler: handle float mod and module globals (progress 88/104)
+
+## Progress (2025-07-26 19:01 +0700)
+- ex transpiler: handle float mod and module globals (progress 88/104)
+
+## Progress (2025-07-26 19:01 +0700)
+- ex transpiler: handle float mod and module globals (progress 88/104)
+
+## Progress (2025-07-26 19:01 +0700)
+- ex transpiler: handle float mod and module globals (progress 88/104)
+
+## Progress (2025-07-26 19:01 +0700)
+- ex transpiler: handle float mod and module globals (progress 88/104)
+
+## Progress (2025-07-26 19:01 +0700)
+- ex transpiler: handle float mod and module globals (progress 88/104)
+
+## Progress (2025-07-26 19:01 +0700)
+- ex transpiler: handle float mod and module globals (progress 88/104)
+
+## Progress (2025-07-26 19:01 +0700)
+- ex transpiler: handle float mod and module globals (progress 88/104)
+
+## Progress (2025-07-26 19:01 +0700)
+- ex transpiler: handle float mod and module globals (progress 88/104)
+
+## Progress (2025-07-26 19:01 +0700)
+- ex transpiler: handle float mod and module globals (progress 88/104)
+
+## Progress (2025-07-26 19:01 +0700)
+- ex transpiler: handle float mod and module globals (progress 88/104)
+
+## Progress (2025-07-26 19:01 +0700)
+- ex transpiler: handle float mod and module globals (progress 88/104)
+
+## Progress (2025-07-26 19:01 +0700)
+- ex transpiler: handle float mod and module globals (progress 88/104)
+
+## Progress (2025-07-26 19:01 +0700)
+- ex transpiler: handle float mod and module globals (progress 88/104)
+
+## Progress (2025-07-26 19:01 +0700)
+- ex transpiler: handle float mod and module globals (progress 88/104)
+
+## Progress (2025-07-26 19:01 +0700)
+- ex transpiler: handle float mod and module globals (progress 88/104)
+
+## Progress (2025-07-26 19:01 +0700)
+- ex transpiler: handle float mod and module globals (progress 88/104)
+
+## Progress (2025-07-26 19:01 +0700)
+- ex transpiler: handle float mod and module globals (progress 88/104)
+
+## Progress (2025-07-26 19:01 +0700)
+- ex transpiler: handle float mod and module globals (progress 88/104)
+
 ## Progress (2025-07-26 17:02 +0700)
 - release: v0.10.41 (progress 88/104)
 
