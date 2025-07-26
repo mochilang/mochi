@@ -1,0 +1,8 @@
+compile: exit status 1
+/tmp/TestJavaTranspiler_Rosetta_Goldenbitmap-b-zier-curves-cubic3340706997/001/Main.java:46: error: array required, but Object found
+((Object)b.get("data"))[y][x] = p;
+                       ^
+/tmp/TestJavaTranspiler_Rosetta_Goldenbitmap-b-zier-curves-cubic3340706997/001/Main.java:57: error: array required, but Object found
+((Object)b.get("data"))[y][x] = p;
+                       ^
+2 errors

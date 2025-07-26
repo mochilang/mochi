@@ -1,4 +1,32 @@
-## Progress (2025-07-26 09:37 +0700)
+## Progress (2025-07-26 10:05 +0700)
+- transpiler: update java rosetta results and fixes (cda463b2a1)
+
+- transpiler: update java rosetta results and fixes (cda463b2a1)
+
+- transpiler: update java rosetta results and fixes (cda463b2a1)
+
+- transpiler: update java rosetta results and fixes (cda463b2a1)
+
+- transpiler: update java rosetta results and fixes (cda463b2a1)
+
+- transpiler: update java rosetta results and fixes (cda463b2a1)
+
+- transpiler: update java rosetta results and fixes (cda463b2a1)
+
+- transpiler: update java rosetta results and fixes (cda463b2a1)
+
+- transpiler: update java rosetta results and fixes (cda463b2a1)
+
+- transpiler: update java rosetta results and fixes (cda463b2a1)
+
+- transpiler: update java rosetta results and fixes (cda463b2a1)
+
+- transpiler: update java rosetta results and fixes (cda463b2a1)
+
+- transpiler: update java rosetta results and fixes (cda463b2a1)
+
+- transpiler: update java rosetta results and fixes (cda463b2a1)
+
 - fs transpiler: cast assignments (b3f6557d1b)
 
 - fs transpiler: cast assignments (b3f6557d1b)
