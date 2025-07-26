@@ -45,6 +45,8 @@ type Program struct {
 	UseNow    bool
 	UseBreak  bool
 	UseReturn bool
+	UseSubstr bool
+	UseSHA256 bool
 }
 
 // varTypes holds the inferred type for each variable defined during
@@ -60,6 +62,8 @@ var (
 	usesNow      bool
 	usesBreak    bool
 	usesReturn   bool
+	usesSubstr   bool
+	usesSHA256   bool
 	benchMain    bool
 )
 
@@ -92,6 +96,24 @@ let _now () =
         int _nowSeed
     else
         int (System.DateTime.UtcNow.Ticks % 2147483647L)
+`
+
+const helperSubstr = `let _substr (s:string) (start:int) (end_:int) =
+    let n = s.Length
+    let mutable start = start
+    let mutable finish = end_
+    if start < 0 then start <- 0
+    if finish > n then finish <- n
+    if start > n then start <- n
+    if finish < start then finish <- start
+    s.Substring(start, finish - start)
+`
+
+const helperSHA256 = `let _sha256 (bs:int array) =
+    let sha = System.Security.Cryptography.SHA256.Create()
+    let bytes = Array.map byte bs
+    let hash = sha.ComputeHash(bytes)
+    Array.map int hash
 `
 
 func writeIndent(w io.Writer) {
@@ -1850,6 +1872,11 @@ func (i *IndexExpr) emit(w io.Writer) {
 		io.WriteString(w, ".[")
 		i.Index.emit(w)
 		io.WriteString(w, "]")
+		if elem := elemTypeOf(i.Target); elem != "" && elem != "obj" {
+			io.WriteString(w, " |> unbox<")
+			io.WriteString(w, elem)
+			io.WriteString(w, ">")
+		}
 		return
 	}
 	if t == "string" {
@@ -2065,7 +2092,7 @@ type CastExpr struct {
 func (c *CastExpr) emit(w io.Writer) {
 	switch c.Type {
 	case "float":
-		if t := inferType(c.Expr); t == "obj" {
+		if t := inferType(c.Expr); t == "obj" || t == "" {
 			io.WriteString(w, "unbox<float> ")
 		} else {
 			io.WriteString(w, "float ")
@@ -2078,7 +2105,7 @@ func (c *CastExpr) emit(w io.Writer) {
 			c.Expr.emit(w)
 		}
 	case "int":
-		if t := inferType(c.Expr); t == "obj" {
+		if t := inferType(c.Expr); t == "obj" || t == "" {
 			io.WriteString(w, "unbox<int> ")
 		} else {
 			io.WriteString(w, "int ")
@@ -2091,7 +2118,7 @@ func (c *CastExpr) emit(w io.Writer) {
 			c.Expr.emit(w)
 		}
 	case "bigint":
-		if t := inferType(c.Expr); t == "obj" {
+		if t := inferType(c.Expr); t == "obj" || t == "" {
 			io.WriteString(w, "unbox<bigint> ")
 		} else {
 			io.WriteString(w, "bigint ")
@@ -2138,6 +2165,14 @@ func Emit(prog *Program) []byte {
 	if prog.UseNow {
 		buf.WriteString(helperNow)
 		buf.WriteString("\n_initNow()\n")
+	}
+	if prog.UseSubstr {
+		buf.WriteString(helperSubstr)
+		buf.WriteString("\n")
+	}
+	if prog.UseSHA256 {
+		buf.WriteString(helperSHA256)
+		buf.WriteString("\n")
 	}
 	for _, st := range prog.Structs {
 		fmt.Fprintf(&buf, "type %s = {\n", fsIdent(st.Name))
@@ -2220,6 +2255,8 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	usesNow = false
 	usesBreak = false
 	usesReturn = false
+	usesSubstr = false
+	usesSHA256 = false
 	p := &Program{}
 	for _, st := range prog.Statements {
 		conv, err := convertStmt(st)
@@ -2256,6 +2293,8 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	p.UseNow = usesNow
 	p.UseBreak = usesBreak
 	p.UseReturn = usesReturn
+	p.UseSubstr = usesSubstr
+	p.UseSHA256 = usesSHA256
 	return p, nil
 }
 
@@ -2458,6 +2497,13 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 			cur := varTypes[st.Assign.Name]
 			if cur == "" || cur == "array" || cur == "map" {
 				varTypes[st.Assign.Name] = t
+			}
+		}
+		if ix, ok := e.(*IndexExpr); ok {
+			tgtType := elemTypeOf(ix.Target)
+			want := varTypes[st.Assign.Name]
+			if tgtType == "obj" && want != "" && want != "obj" {
+				e = &CastExpr{Expr: e, Type: want}
 			}
 		}
 		return &AssignStmt{Name: st.Assign.Name, Expr: e}, nil
@@ -2917,11 +2963,34 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				neededOpens["System"] = true
 				return &CallExpr{Func: "System.Console.ReadLine", Args: nil}, nil
 			}
+		case "contains":
+			if len(args) != 2 {
+				return nil, fmt.Errorf("contains expects 2 args")
+			}
+			ctyp := inferType(args[0])
+			switch ctyp {
+			case "string":
+				return &MethodCallExpr{Target: args[0], Name: "Contains", Args: []Expr{args[1]}}, nil
+			case "array":
+				return &CallExpr{Func: "Array.contains", Args: []Expr{args[1], args[0]}}, nil
+			case "map":
+				return &CallExpr{Func: "Map.containsKey", Args: []Expr{args[1], args[0]}}, nil
+			default:
+				return &CallExpr{Func: "Seq.contains", Args: []Expr{args[1], args[0]}}, nil
+			}
+		case "sha256":
+			if len(args) != 1 {
+				return nil, fmt.Errorf("sha256 expects 1 arg")
+			}
+			usesSHA256 = true
+			neededOpens["System.Security.Cryptography"] = true
+			return &CallExpr{Func: "_sha256", Args: args}, nil
 		case "substring":
 			if len(args) != 3 {
 				return nil, fmt.Errorf("substring expects 3 args")
 			}
-			return &SubstringExpr{Str: args[0], Start: args[1], End: args[2]}, nil
+			usesSubstr = true
+			return &CallExpr{Func: "_substr", Args: []Expr{args[0], args[1], args[2]}}, nil
 		case "upper":
 			if len(args) != 1 {
 				return nil, fmt.Errorf("upper expects 1 arg")

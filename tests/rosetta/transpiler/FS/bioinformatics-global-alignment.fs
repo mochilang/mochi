@@ -1,28 +1,20 @@
-// Generated 2025-07-26 04:38 +0700
+// Generated 2025-07-26 05:17 +0700
 
 exception Break
 exception Continue
 
 exception Return
 
-let mutable _nowSeed:int64 = 0L
-let mutable _nowSeeded = false
-let _initNow () =
-    let s = System.Environment.GetEnvironmentVariable("MOCHI_NOW_SEED")
-    if System.String.IsNullOrEmpty(s) |> not then
-        match System.Int32.TryParse(s) with
-        | true, v ->
-            _nowSeed <- int64 v
-            _nowSeeded <- true
-        | _ -> ()
-let _now () =
-    if _nowSeeded then
-        _nowSeed <- (_nowSeed * 1664525L + 1013904223L) % 2147483647L
-        int _nowSeed
-    else
-        int (System.DateTime.UtcNow.Ticks % 2147483647L)
+let _substr (s:string) (start:int) (end_:int) =
+    let n = s.Length
+    let mutable start = start
+    let mutable finish = end_
+    if start < 0 then start <- 0
+    if finish > n then finish <- n
+    if start > n then start <- n
+    if finish < start then finish <- start
+    s.Substring(start, finish - start)
 
-_initNow()
 let rec padLeft (s: string) (w: int) =
     let mutable __ret : string = Unchecked.defaultof<string>
     let mutable s = s
@@ -46,7 +38,7 @@ and indexOfFrom (s: string) (ch: string) (start: int) =
     try
         let mutable i: int = start
         while i < (String.length s) do
-            if (s.Substring(i, (i + 1) - i)) = ch then
+            if (unbox<string> (_substr s i (i + 1))) = ch then
                 __ret <- i
                 raise Return
             i <- i + 1
@@ -64,7 +56,7 @@ and containsStr (s: string) (sub: string) =
         let sl: int = String.length s
         let subl: int = String.length sub
         while i <= (sl - subl) do
-            if (s.Substring(i, (i + subl) - i)) = sub then
+            if (unbox<string> (_substr s i (i + subl))) = sub then
                 __ret <- true
                 raise Return
             i <- i + 1
@@ -141,7 +133,7 @@ and headTailOverlap (s1: string) (s2: string) =
                 __ret <- 0
                 raise Return
             start <- ix
-            if (s2.Substring(0, ((String.length s1) - start) - 0)) = (s1.Substring(start, (String.length s1) - start)) then
+            if (_substr s2 0 ((String.length s1) - start)) = (_substr s1 start (String.length s1)) then
                 __ret <- (String.length s1) - start
                 raise Return
             start <- start + 1
@@ -206,7 +198,7 @@ and shortestCommonSuperstring (slist: string array) =
             let mutable i: int = 0
             while i < (int ((int (Array.length ss)) - 1)) do
                 let ov: int = headTailOverlap (unbox<string> (perm.[i])) (unbox<string> (perm.[i + 1]))
-                sup <- sup + (perm.[i + 1].Substring(ov, (Seq.length (perm.[i + 1])) - ov))
+                sup <- sup + (unbox<string> (_substr (perm.[i + 1]) ov (Seq.length (perm.[i + 1]))))
                 i <- i + 1
             if (String.length sup) < (String.length shortest) then
                 shortest <- sup
@@ -226,7 +218,7 @@ and printCounts (seq: string) =
         let mutable t: int = 0
         let mutable i: int = 0
         while i < (String.length seq) do
-            let ch: string = seq.Substring(i, (i + 1) - i)
+            let ch: string = _substr seq i (i + 1)
             if ch = "A" then
                 a <- a + 1
             else
@@ -254,16 +246,10 @@ and printCounts (seq: string) =
 and main () =
     let mutable __ret : unit = Unchecked.defaultof<unit>
     try
-        let __bench_start = _now()
-        let __mem_start = System.GC.GetTotalMemory(true)
         let tests: string array array = [|[|"TA"; "AAG"; "TA"; "GAA"; "TA"|]; [|"CATTAGGG"; "ATTAG"; "GGG"; "TA"|]; [|"AAGAUGGA"; "GGAGCGCAUC"; "AUCGCAAUAAGGA"|]; [|"ATGAAATGGATGTTCTGAGTTGGTCAGTCCCAATGTGCGGGGTTTCTTTTAGTACGTCGGGAGTGGTATTAT"; "GGTCGATTCTGAGGACAAAGGTCAAGATGGAGCGCATCGAACGCAATAAGGATCATTTGATGGGACGTTTCGTCGACAAAGT"; "CTATGTTCTTATGAAATGGATGTTCTGAGTTGGTCAGTCCCAATGTGCGGGGTTTCTTTTAGTACGTCGGGAGTGGTATTATA"; "TGCTTTCCAATTATGTAAGCGTTCCGAGACGGGGTGGTCGATTCTGAGGACAAAGGTCAAGATGGAGCGCATC"; "AACGCAATAAGGATCATTTGATGGGACGTTTCGTCGACAAAGTCTTGTTTCGAGAGTAACGGCTACCGTCTT"; "GCGCATCGAACGCAATAAGGATCATTTGATGGGACGTTTCGTCGACAAAGTCTTGTTTCGAGAGTAACGGCTACCGTC"; "CGTTTCGTCGACAAAGTCTTGTTTCGAGAGTAACGGCTACCGTCTTCGATTCTGCTTATAACACTATGTTCT"; "TGCTTTCCAATTATGTAAGCGTTCCGAGACGGGGTGGTCGATTCTGAGGACAAAGGTCAAGATGGAGCGCATC"; "CGTAAAAAATTACAACGTCCTTTGGCTATCTCTTAAACTCCTGCTAAATGCTCGTGC"; "GATGGAGCGCATCGAACGCAATAAGGATCATTTGATGGGACGTTTCGTCGACAAAGTCTTGTTTCGAGAGTAACGGCTACCGTCTTCGATT"; "TTTCCAATTATGTAAGCGTTCCGAGACGGGGTGGTCGATTCTGAGGACAAAGGTCAAGATGGAGCGCATC"; "CTATGTTCTTATGAAATGGATGTTCTGAGTTGGTCAGTCCCAATGTGCGGGGTTTCTTTTAGTACGTCGGGAGTGGTATTATA"; "TCTCTTAAACTCCTGCTAAATGCTCGTGCTTTCCAATTATGTAAGCGTTCCGAGACGGGGTGGTCGATTCTGAGGACAAAGGTCAAGA"|]|]
         for seqs in tests do
             let scs: string = shortestCommonSuperstring (unbox<string array> seqs)
             printCounts scs
-        let __bench_end = _now()
-        let __mem_end = System.GC.GetTotalMemory(true)
-        printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)
-
         __ret
     with
         | Return -> __ret

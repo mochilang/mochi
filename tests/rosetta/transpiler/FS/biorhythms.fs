@@ -1,25 +1,7 @@
-// Generated 2025-07-26 04:38 +0700
+// Generated 2025-07-26 05:17 +0700
 
 exception Return
 
-let mutable _nowSeed:int64 = 0L
-let mutable _nowSeeded = false
-let _initNow () =
-    let s = System.Environment.GetEnvironmentVariable("MOCHI_NOW_SEED")
-    if System.String.IsNullOrEmpty(s) |> not then
-        match System.Int32.TryParse(s) with
-        | true, v ->
-            _nowSeed <- int64 v
-            _nowSeeded <- true
-        | _ -> ()
-let _now () =
-    if _nowSeeded then
-        _nowSeed <- (_nowSeed * 1664525L + 1013904223L) % 2147483647L
-        int _nowSeed
-    else
-        int (System.DateTime.UtcNow.Ticks % 2147483647L)
-
-_initNow()
 let PI: float = 3.141592653589793
 let TWO_PI: float = 6.283185307179586
 let rec sinApprox (x: float) =
@@ -81,7 +63,7 @@ and parseIntStr (str: string) =
         let mutable n: int = 0
         let digits: Map<string, int> = Map.ofList [("0", 0); ("1", 1); ("2", 2); ("3", 3); ("4", 4); ("5", 5); ("6", 6); ("7", 7); ("8", 8); ("9", 9)]
         while i < (String.length str) do
-            n <- (n * 10) + (int (digits.[(str.Substring(i, (i + 1) - i))] |> unbox<int>))
+            n <- (n * 10) + (unbox<int> (digits.[(str.Substring(i, (i + 1) - i))] |> unbox<int>))
             i <- i + 1
         if neg then
             n <- -n
@@ -143,7 +125,7 @@ and addDays (y: int) (m: int) (d: int) (n: int) =
             let mutable i: int = 0
             while i < n do
                 dd <- dd + 1
-                if dd > (int (daysInMonth yy mm)) then
+                if dd > (unbox<int> (daysInMonth yy mm)) then
                     dd <- 1
                     mm <- mm + 1
                     if mm > 12 then
@@ -213,7 +195,7 @@ and biorhythms (birth: string) (target: string) =
         let ty: int = tparts.[0]
         let tm: int = tparts.[1]
         let td: int = tparts.[2]
-        let diff: int = absInt (int ((day ty tm td) - (day by bm bd)))
+        let diff: int = absInt (unbox<int> ((day ty tm td) - (day by bm bd)))
         printfn "%s" ((("Born " + birth) + ", Target ") + target)
         printfn "%s" ("Day " + (string diff))
         let cycles: string array = [|"Physical day "; "Emotional day"; "Mental day   "|]
@@ -226,7 +208,7 @@ and biorhythms (birth: string) (target: string) =
             let position: int = ((diff % length + length) % length)
             let quadrant: int = (position * 4) / length
             let mutable percent: float = sinApprox (((2.0 * PI) * (float position)) / (float length))
-            percent <- (float (floor (percent * 1000.0))) / 10.0
+            percent <- (unbox<float> (floor (percent * 1000.0))) / 10.0
             let mutable description: string = ""
             if percent > 95.0 then
                 description <- " peak"
@@ -234,7 +216,7 @@ and biorhythms (birth: string) (target: string) =
                 if percent < (-95.0) then
                     description <- " valley"
                 else
-                    if (float (absFloat percent)) < 5.0 then
+                    if (unbox<float> (absFloat percent)) < 5.0 then
                         description <- " critical transition"
                     else
                         let daysToAdd: int = (((quadrant + 1) * length) / 4) - position
@@ -246,7 +228,7 @@ and biorhythms (birth: string) (target: string) =
                         let trend = (quadrants.[quadrant]).[0]
                         let next = (quadrants.[quadrant]).[1]
                         let mutable pct: string = string percent
-                        if not (contains pct ".") then
+                        if not (pct.Contains(".")) then
                             pct <- pct + ".0"
                         description <- (((((((" " + pct) + "% (") + (unbox<string> trend)) + ", next ") + (unbox<string> next)) + " ") + transition) + ")"
             let mutable posStr: string = string position
@@ -261,18 +243,12 @@ and biorhythms (birth: string) (target: string) =
 and main () =
     let mutable __ret : unit = Unchecked.defaultof<unit>
     try
-        let __bench_start = _now()
-        let __mem_start = System.GC.GetTotalMemory(true)
         let pairs: string array array = [|[|"1943-03-09"; "1972-07-11"|]; [|"1809-01-12"; "1863-11-19"|]; [|"1809-02-12"; "1863-11-19"|]|]
         let mutable idx: int = 0
-        while idx < (int (Array.length pairs)) do
+        while idx < (unbox<int> (Array.length pairs)) do
             let p: string array = pairs.[idx]
             biorhythms (unbox<string> (p.[0])) (unbox<string> (p.[1]))
             idx <- idx + 1
-        let __bench_end = _now()
-        let __mem_end = System.GC.GetTotalMemory(true)
-        printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)
-
         __ret
     with
         | Return -> __ret

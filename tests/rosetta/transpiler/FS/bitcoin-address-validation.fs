@@ -1,6 +1,14 @@
-// Generated 2025-07-26 04:38 +0700
+// Generated 2025-07-26 05:17 +0700
 
 exception Return
+
+let _sha256 (bs:int array) =
+    let sha = System.Security.Cryptography.SHA256.Create()
+    let bytes = Array.map byte bs
+    let hash = sha.ComputeHash(bytes)
+    Array.map int hash
+
+open System.Security.Cryptography
 
 let rec indexOf (s: string) (ch: string) =
     let mutable __ret : int = Unchecked.defaultof<int>
@@ -37,7 +45,7 @@ and set58 (addr: string) =
                 raise Return
             let mutable j: int = 24
             while j >= 0 do
-                c <- c + (int (58 * (int (a.[j]))))
+                c <- c + (unbox<int> (58 * (unbox<int> (a.[j]))))
                 a.[j] <- ((c % 256 + 256) % 256)
                 c <- int (c / 256)
                 j <- j - 1
@@ -54,8 +62,8 @@ and doubleSHA256 (bs: int array) =
     let mutable __ret : int array = Unchecked.defaultof<int array>
     let mutable bs = bs
     try
-        let first: int array = sha256 bs
-        __ret <- sha256 first
+        let first: int array = _sha256 bs
+        __ret <- _sha256 first
         raise Return
         __ret
     with
@@ -75,10 +83,10 @@ and validA58 (addr: string) =
     let mutable addr = addr
     try
         let a: int array = set58 addr
-        if (int (Array.length a)) <> 25 then
+        if (unbox<int> (Array.length a)) <> 25 then
             __ret <- false
             raise Return
-        if (int (a.[0])) <> 0 then
+        if (unbox<int> (a.[0])) <> 0 then
             __ret <- false
             raise Return
         let sum: int array = computeChecksum a

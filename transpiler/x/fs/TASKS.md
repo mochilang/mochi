@@ -1,3 +1,7 @@
+## Progress (2025-07-26 05:17 +0700)
+- go: update rosetta transpiler outputs 138-147 and add repeat builtin
+- Generated F# for 103/104 programs (103 passing)
+
 ## Progress (2025-07-26 04:38 +0700)
 - fs transpiler: add index 85
 - Generated F# for 103/104 programs (103 passing)

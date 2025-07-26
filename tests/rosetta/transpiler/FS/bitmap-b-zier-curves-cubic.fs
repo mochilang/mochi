@@ -1,4 +1,4 @@
-// Generated 2025-07-26 04:38 +0700
+// Generated 2025-07-26 05:17 +0700
 
 exception Break
 exception Continue
@@ -50,8 +50,8 @@ and setPx (b: Map<string, obj>) (x: int) (y: int) (p: Pixel) =
     let mutable y = y
     let mutable p = p
     try
-        let cols: int = int (b.["cols"])
-        let rows: int = int (b.["rows"])
+        let cols: int = unbox<int> (b.["cols"])
+        let rows: int = unbox<int> (b.["rows"])
         if (((x >= 0) && (x < cols)) && (y >= 0)) && (y < rows) then
             b <- Map.add "data" (Map.add y (Map.add x p ((b.["data"]).[y])) (b.["data"])) b
         __ret
@@ -62,8 +62,8 @@ and fill (b: Map<string, obj>) (p: Pixel) =
     let mutable b = b
     let mutable p = p
     try
-        let cols: int = int (b.["cols"])
-        let rows: int = int (b.["rows"])
+        let cols: int = unbox<int> (b.["cols"])
+        let rows: int = unbox<int> (b.["rows"])
         let mutable y: int = 0
         while y < rows do
             let mutable x: int = 0
