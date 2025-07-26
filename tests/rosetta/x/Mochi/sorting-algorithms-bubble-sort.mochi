@@ -1,0 +1,27 @@
+fun bubbleSort(a: list<int>): list<int> {
+  var arr = a
+  var itemCount = len(arr) - 1
+  while true {
+    var hasChanged = false
+    var index = 0
+    while index < itemCount {
+      if arr[index] > arr[index+1] {
+        let tmp = arr[index]
+        arr[index] = arr[index+1]
+        arr[index+1] = tmp
+        hasChanged = true
+      }
+      index = index + 1
+    }
+    if !hasChanged {
+      break
+    }
+    itemCount = itemCount - 1
+  }
+  return arr
+}
+
+var list = [31, 41, 59, 26, 53, 58, 97, 93, 23, 84]
+print("unsorted: " + str(list))
+list = bubbleSort(list)
+print("sorted!  " + str(list))
