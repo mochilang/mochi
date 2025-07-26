@@ -1,0 +1,181 @@
+// Mochi implementation of Rosetta "Distance and Bearing" task
+// Calculates distance and bearing from a fixed position to the 20 nearest airports.
+
+let PI = 3.141592653589793
+
+fun sinApprox(x: float): float {
+  var term = x
+  var sum = x
+  var n = 1
+  while n <= 8 {
+    let denom = ((2*n) * (2*n + 1)) as float
+    term = -term * x * x / denom
+    sum = sum + term
+    n = n + 1
+  }
+  return sum
+}
+
+fun cosApprox(x: float): float {
+  var term = 1.0
+  var sum = 1.0
+  var n = 1
+  while n <= 8 {
+    let denom = ((2*n - 1) * (2*n)) as float
+    term = -term * x * x / denom
+    sum = sum + term
+    n = n + 1
+  }
+  return sum
+}
+
+fun atanApprox(x: float): float {
+  if x > 1.0 { return PI/2.0 - x/(x*x + 0.28) }
+  if x < (-1.0) { return -PI/2.0 - x/(x*x + 0.28) }
+  return x/(1.0 + 0.28*x*x)
+}
+
+fun atan2Approx(y: float, x: float): float {
+  if x > 0.0 {
+    let r = atanApprox(y/x)
+    return r
+  }
+  if x < 0.0 {
+    if y >= 0.0 { return atanApprox(y/x) + PI }
+    return atanApprox(y/x) - PI
+  }
+  if y > 0.0 { return PI/2.0 }
+  if y < 0.0 { return -PI/2.0 }
+  return 0.0
+}
+
+fun sqrtApprox(x: float): float {
+  var guess = x
+  var i = 0
+  while i < 10 {
+    guess = (guess + x / guess) / 2.0
+    i = i + 1
+  }
+  return guess
+}
+
+fun rad(x: float): float { return x * PI / 180.0 }
+fun deg(x: float): float { return x * 180.0 / PI }
+
+fun distance(lat1: float, lon1: float, lat2: float, lon2: float): float {
+  let phi1 = rad(lat1)
+  let phi2 = rad(lat2)
+  let dphi = rad(lat2 - lat1)
+  let dlambda = rad(lon2 - lon1)
+  let sdphi = sinApprox(dphi / 2)
+  let sdlambda = sinApprox(dlambda / 2)
+  let a = sdphi * sdphi + cosApprox(phi1) * cosApprox(phi2) * sdlambda * sdlambda
+  let c = 2 * atan2Approx(sqrtApprox(a), sqrtApprox(1 - a))
+  return (6371.0 / 1.852) * c
+}
+
+fun bearing(lat1: float, lon1: float, lat2: float, lon2: float): float {
+  let phi1 = rad(lat1)
+  let phi2 = rad(lat2)
+  let dl = rad(lon2 - lon1)
+  let y = sinApprox(dl) * cosApprox(phi2)
+  let x = cosApprox(phi1) * sinApprox(phi2) - sinApprox(phi1) * cosApprox(phi2) * cosApprox(dl)
+  let br = deg(atan2Approx(y, x))
+  if br < 0 { br = br + 360 }
+  return br
+}
+
+type Airport {
+  name: string
+  country: string
+  icao: string
+  lat: float
+  lon: float
+}
+
+let airports = [
+  Airport{ name: "Koksijde Air Base", country: "Belgium", icao: "EBFN", lat: 51.090301513671875, lon: 2.652780055999756 },
+  Airport{ name: "Ostend-Bruges International Airport", country: "Belgium", icao: "EBOS", lat: 51.198898315399994, lon: 2.8622200489 },
+  Airport{ name: "Kent International Airport", country: "United Kingdom", icao: "EGMH", lat: 51.342201, lon: 1.34611 },
+  Airport{ name: "Calais-Dunkerque Airport", country: "France", icao: "LFAC", lat: 50.962100982666016, lon: 1.954759955406189 },
+  Airport{ name: "Westkapelle heliport", country: "Belgium", icao: "EBKW", lat: 51.32222366333, lon: 3.2930560112 },
+  Airport{ name: "Lympne Airport", country: "United Kingdom", icao: "EGMK", lat: 51.08, lon: 1.013 },
+  Airport{ name: "Ursel Air Base", country: "Belgium", icao: "EBUL", lat: 51.14419937133789, lon: 3.475559949874878 },
+  Airport{ name: "Southend Airport", country: "United Kingdom", icao: "EGMC", lat: 51.5713996887207, lon: 0.6955559849739075 },
+  Airport{ name: "Merville-Calonne Airport", country: "France", icao: "LFQT", lat: 50.61840057373047, lon: 2.642240047454834 },
+  Airport{ name: "Wevelgem Airport", country: "Belgium", icao: "EBKT", lat: 50.817199707, lon: 3.20472002029 },
+  Airport{ name: "Midden-Zeeland Airport", country: "Netherlands", icao: "EHMZ", lat: 51.5121994019, lon: 3.73111009598 },
+  Airport{ name: "Lydd Airport", country: "United Kingdom", icao: "EGMD", lat: 50.95610046386719, lon: 0.9391670227050781 },
+  Airport{ name: "RAF Wattisham", country: "United Kingdom", icao: "EGUW", lat: 52.1273002625, lon: 0.956264019012 },
+  Airport{ name: "Beccles Airport", country: "United Kingdom", icao: "EGSM", lat: 52.435298919699996, lon: 1.6183300018300002 },
+  Airport{ name: "Lille/Marcq-en-Baroeul Airport", country: "France", icao: "LFQO", lat: 50.687198638916016, lon: 3.0755600929260254 },
+  Airport{ name: "Lashenden (Headcorn) Airfield", country: "United Kingdom", icao: "EGKH", lat: 51.156898, lon: 0.641667 },
+  Airport{ name: "Le Touquet-Côte d'Opale Airport", country: "France", icao: "LFAT", lat: 50.517398834228516, lon: 1.6205899715423584 },
+  Airport{ name: "Rochester Airport", country: "United Kingdom", icao: "EGTO", lat: 51.351898193359375, lon: 0.5033329725265503 },
+  Airport{ name: "Lille-Lesquin Airport", country: "France", icao: "LFQQ", lat: 50.563332, lon: 3.086886 },
+  Airport{ name: "Thurrock Airfield", country: "United Kingdom", icao: "EGMT", lat: 51.537505, lon: 0.367634 },
+]
+
+fun floor(x: float): float {
+  var i = x as int
+  if (i as float) > x { i = i - 1 }
+  return i as float
+}
+
+fun pow10(n: int): float {
+  var p = 1.0
+  var i = 0
+  while i < n {
+    p = p * 10.0
+    i = i + 1
+  }
+  return p
+}
+
+fun round(x: float, n: int): float {
+  let m = pow10(n)
+  return floor(x * m + 0.5) / m
+}
+
+fun sortByDistance(xs: list<list<any>>): list<list<any>> {
+  var arr = xs
+  var i = 1
+  while i < len(arr) {
+    var j = i
+    while j > 0 && arr[j-1][0] > arr[j][0] {
+      let tmp = arr[j-1]
+      arr[j-1] = arr[j]
+      arr[j] = tmp
+      j = j - 1
+    }
+    i = i + 1
+  }
+  return arr
+}
+
+fun main() {
+  let planeLat = 51.514669
+  let planeLon = 2.198581
+  var results: list<list<any>> = []
+  for ap in airports {
+    let d = distance(planeLat, planeLon, ap.lat, ap.lon)
+    let b = bearing(planeLat, planeLon, ap.lat, ap.lon)
+    results = append(results, [d, b, ap])
+  }
+  results = sortByDistance(results)
+
+  print("Distance Bearing ICAO Country               Airport")
+  print("--------------------------------------------------------------")
+  var i = 0
+  while i < len(results) {
+    let r = results[i]
+    let ap = r[2]
+    let dist = r[0]
+    let bear = r[1]
+    let line = str(round(dist,1)) + "\t" + str(round(bear,0)) + "\t" + ap.icao + "\t" + ap.country + " " + ap.name
+    print(line)
+    i = i + 1
+  }
+}
+
+main()
