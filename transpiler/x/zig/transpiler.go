@@ -47,6 +47,7 @@ var useLookupHost bool
 var useAscii bool
 var useMem bool
 var variantTags map[string]int
+var globalInits []Stmt
 
 // when true, wrap the generated main function in a benchmark block
 var benchMain bool
@@ -267,6 +268,15 @@ type MapEntry struct {
 type MapLit struct {
 	Entries    []MapEntry
 	StructName string
+}
+
+func isConstExpr(e Expr) bool {
+	switch e.(type) {
+	case *IntLit, *FloatLit, *StringLit, *BoolLit, *NullLit, *ListLit, *MapLit:
+		return true
+	default:
+		return false
+	}
 }
 
 type AppendExpr struct {
@@ -1014,8 +1024,7 @@ func (p *Program) Emit() []byte {
 	}
 	if useInput {
 		buf.WriteString("\nfn _input() []const u8 {\n")
-		buf.WriteString("    var buf: [4096]u8 = undefined;\n")
-		buf.WriteString("    var reader = std.io.bufferedReader(std.fs.File.stdin().reader(&buf));\n")
+		buf.WriteString("    var reader = std.io.bufferedReaderSize(4096, std.io.getStdIn().reader());\n")
 		buf.WriteString("    const opt_line = reader.reader().readUntilDelimiterOrEofAlloc(std.heap.page_allocator, '\\n', 1 << 20) catch return \"\";\n")
 		buf.WriteString("    const line = opt_line orelse return \"\";\n")
 		buf.WriteString("    if (line.len > 0 and line[line.len - 1] == '\\n') {\n")
@@ -1115,6 +1124,22 @@ func (v *VarDecl) emit(w io.Writer, indent int) {
 	kw := "const"
 	if v.Mutable {
 		kw = "var"
+	}
+	if lit, ok := v.Value.(*ListLit); ok && v.Mutable && v.Type == "" {
+		elem := lit.ElemType
+		if elem == "" {
+			elem = "i64"
+		}
+		fmt.Fprintf(w, "%s %s: [%d]%s = [", kw, v.Name, len(lit.Elems), elem)
+		fmt.Fprintf(w, "%d]%s{", len(lit.Elems), elem)
+		for i, e := range lit.Elems {
+			if i > 0 {
+				io.WriteString(w, ", ")
+			}
+			e.emit(w)
+		}
+		io.WriteString(w, "};\n")
+		return
 	}
 	fmt.Fprintf(w, "%s %s", kw, v.Name)
 	if v.Type != "" {
@@ -3106,6 +3131,10 @@ func compileStmt(s *parser.Statement, prog *parser.Program) (Stmt, error) {
 		} else if vd.Type == "" {
 			varTypes[s.Let.Name] = zigTypeFromExpr(expr)
 		}
+		if funDepth == 0 && !isConstExpr(expr) {
+			vd.Value = nil
+			globalInits = append(globalInits, &AssignStmt{Name: s.Let.Name, Value: expr})
+		}
 		return vd, nil
 	case s.Var != nil:
 		var expr Expr
@@ -3141,6 +3170,10 @@ func compileStmt(s *parser.Statement, prog *parser.Program) (Stmt, error) {
 			varTypes[s.Var.Name] = vd.Type
 		} else if vd.Type == "" {
 			varTypes[s.Var.Name] = zigTypeFromExpr(expr)
+		}
+		if funDepth == 0 && !isConstExpr(expr) {
+			vd.Value = nil
+			globalInits = append(globalInits, &AssignStmt{Name: s.Var.Name, Value: expr})
 		}
 		return vd, nil
 	case s.Assign != nil && len(s.Assign.Index) == 0 && len(s.Assign.Field) == 0:

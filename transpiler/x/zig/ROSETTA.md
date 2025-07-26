@@ -2,21 +2,21 @@
 
 Generated Zig code for Rosetta tasks lives under `tests/rosetta/transpiler/Zig`.
 
-Last updated: 2025-07-27 00:44 +0700
+Last updated: 2025-07-27 01:40 +0700
 
-## Program Checklist (51/332)
+## Program Checklist (56/341)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 8.923ms |  |
 | 2 | 100-doors-3 | ✓ | 1.867ms |  |
 | 3 | 100-doors | ✓ | 6.642ms |  |
 | 4 | 100-prisoners | ✓ | 20.054171s | 2.9 GB |
-| 5 | 15-puzzle-game |   |  |  |
-| 6 | 15-puzzle-solver |   |  |  |
+| 5 | 15-puzzle-game | ✓ | 718µs |  |
+| 6 | 15-puzzle-solver | ✓ | 36µs |  |
 | 7 | 2048 |   |  |  |
-| 8 | 21-game |   |  |  |
-| 9 | 24-game-solve |   |  |  |
-| 10 | 24-game |   |  |  |
+| 8 | 21-game | ✓ |  |  |
+| 9 | 24-game-solve | ✓ |  |  |
+| 10 | 24-game | ✓ |  |  |
 | 11 | 4-rings-or-4-squares-puzzle | ✓ |  |  |
 | 12 | 9-billion-names-of-god-the-integer | ✓ |  |  |
 | 13 | 99-bottles-of-beer-2 | ✓ |  |  |
@@ -337,5 +337,14 @@ Last updated: 2025-07-27 00:44 +0700
 | 328 | earliest-difference-between-prime-gaps |   |  |  |
 | 329 | eban-numbers |   |  |  |
 | 330 | echo-server |   |  |  |
-| 331 | ekg-sequence-convergence |   |  |  |
-| 332 | md5 |   |  |  |
+| 331 | eertree |   |  |  |
+| 332 | egyptian-division |   |  |  |
+| 333 | ekg-sequence-convergence |   |  |  |
+| 334 | element-wise-operations |   |  |  |
+| 335 | elementary-cellular-automaton-infinite-length |   |  |  |
+| 336 | elementary-cellular-automaton-random-number-generator |   |  |  |
+| 337 | elementary-cellular-automaton |   |  |  |
+| 338 | elliptic-curve-arithmetic |   |  |  |
+| 339 | emirp-primes |   |  |  |
+| 340 | empty-directory |   |  |  |
+| 341 | md5 |   |  |  |
