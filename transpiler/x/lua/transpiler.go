@@ -3609,12 +3609,35 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 	case st.Type != nil:
 		ms := &MultiStmt{}
 		var fields []string
+		methods := map[string]types.Method{}
 		if st.Type.Members != nil {
 			for _, m := range st.Type.Members {
 				if m.Field != nil {
 					fields = append(fields, m.Field.Name)
 				}
 			}
+			// predeclare methods so they are available during translation
+			for _, m := range st.Type.Members {
+				if m.Method != nil {
+					params := []types.Type{types.StructType{Name: st.Type.Name}}
+					for _, p := range m.Method.Params {
+						if p.Type != nil {
+							params = append(params, types.ResolveTypeRef(p.Type, currentEnv))
+						} else {
+							params = append(params, types.AnyType{})
+						}
+					}
+					var ret types.Type = types.VoidType{}
+					if m.Method.Return != nil {
+						ret = types.ResolveTypeRef(m.Method.Return, currentEnv)
+					}
+					ft := types.FuncType{Params: params, Return: ret}
+					methods[m.Method.Name] = types.Method{Decl: m.Method, Type: ft}
+					currentEnv.SetVar(m.Method.Name, ft, true)
+				}
+			}
+			stInfo := types.StructType{Name: st.Type.Name, Methods: methods}
+			currentEnv.SetStruct(st.Type.Name, stInfo)
 			for _, m := range st.Type.Members {
 				if m.Method != nil {
 					fn, err := convertMethodStmt(m.Method, st.Type.Name, fields)
