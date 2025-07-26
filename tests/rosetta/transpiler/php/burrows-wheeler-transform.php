@@ -1,9 +1,26 @@
 <?php
 ini_set('memory_limit', '-1');
-$stx = '';
-$etx = '';
-function contains($s, $ch) {
-  global $stx, $etx, $sortStrings, $bwt, $ibwt, $makePrintable, $main;
+$now_seed = 0;
+$now_seeded = false;
+$s = getenv('MOCHI_NOW_SEED');
+if ($s !== false && $s !== '') {
+    $now_seed = intval($s);
+    $now_seeded = true;
+}
+function _now() {
+    global $now_seed, $now_seeded;
+    if ($now_seeded) {
+        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
+        return $now_seed;
+    }
+    return hrtime(true);
+}
+$__start_mem = memory_get_usage();
+$__start = _now();
+  $stx = '';
+  $etx = '';
+  function contains($s, $ch) {
+  global $stx, $etx;
   $i = 0;
   while ($i < strlen($s)) {
   if (substr($s, $i, $i + 1 - $i) == $ch) {
@@ -12,9 +29,9 @@ function contains($s, $ch) {
   $i = $i + 1;
 };
   return false;
-}
-function sortStrings($xs) {
-  global $stx, $etx, $contains, $bwt, $ibwt, $makePrintable, $main;
+};
+  function sortStrings($xs) {
+  global $stx, $etx;
   $arr = $xs;
   $n = count($arr);
   $i = 0;
@@ -31,10 +48,10 @@ function sortStrings($xs) {
   $i = $i + 1;
 };
   return $arr;
-}
-function bwt($s) {
-  global $stx, $etx, $contains, $sortStrings, $ibwt, $makePrintable, $main;
-  if (contains($s, $stx) || contains($s, $etx)) {
+};
+  function bwt($s) {
+  global $stx, $etx;
+  if (str_contains($s, $stx) || str_contains($s, $etx)) {
   return ['err' => true, 'res' => ''];
 }
   $s = $stx . $s . $etx;
@@ -50,13 +67,13 @@ function bwt($s) {
   $last = '';
   $i = 0;
   while ($i < $le) {
-  $last = $last . substr($table[$i], $le - 1, $le - $le - 1);
+  $last = $last . substr($table[$i], $le - 1, $le - ($le - 1));
   $i = $i + 1;
 };
   return ['err' => false, 'res' => $last];
-}
-function ibwt($r) {
-  global $stx, $etx, $contains, $sortStrings, $bwt, $makePrintable, $main;
+};
+  function ibwt($r) {
+  global $stx, $etx;
   $le = strlen($r);
   $table = [];
   $i = 0;
@@ -76,15 +93,15 @@ function ibwt($r) {
 };
   $i = 0;
   while ($i < $le) {
-  if (substr($table[$i], $le - 1, $le - $le - 1) == $etx) {
+  if (substr($table[$i], $le - 1, $le - ($le - 1)) == $etx) {
   return substr($table[$i], 1, $le - 1 - 1);
 }
   $i = $i + 1;
 };
   return '';
-}
-function makePrintable($s) {
-  global $stx, $etx, $contains, $sortStrings, $bwt, $ibwt, $main;
+};
+  function makePrintable($s) {
+  global $stx, $etx;
   $out = '';
   $i = 0;
   while ($i < strlen($s)) {
@@ -101,9 +118,9 @@ function makePrintable($s) {
   $i = $i + 1;
 };
   return $out;
-}
-function main() {
-  global $stx, $etx, $contains, $sortStrings, $bwt, $ibwt, $makePrintable;
+};
+  function main() {
+  global $stx, $etx;
   $examples = ['banana', 'appellee', 'dogwood', 'TO BE OR NOT TO BE OR WANT TO BE OR NOT?', 'SIX.MIXED.PIXIES.SIFT.SIXTY.PIXIE.DUST.BOXES', 'ABC'];
   foreach ($examples as $t) {
   echo rtrim(makePrintable($t)), PHP_EOL;
@@ -119,5 +136,13 @@ function main() {
 }
   echo rtrim(''), PHP_EOL;
 };
-}
-main();
+};
+  main();
+$__end = _now();
+$__end_mem = memory_get_usage();
+$__duration = intdiv($__end - $__start, 1000);
+$__mem_diff = max(0, $__end_mem - $__start_mem);
+$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
+$__j = json_encode($__bench, 128);
+$__j = str_replace("    ", "  ", $__j);
+echo $__j, PHP_EOL;;

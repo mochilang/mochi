@@ -1,5 +1,5 @@
-[SNOOPY]
-                                  1969
+[SNOOPY]\n
+                                  1969\n
        January false
        February false
         March false
@@ -718,3 +718,10 @@
  false
  false
  false
+
+
+{
+  "duration_us": 693,
+  "memory_bytes": 128,
+  "name": "main"
+}

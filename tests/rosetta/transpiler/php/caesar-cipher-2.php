@@ -1,5 +1,20 @@
 <?php
 ini_set('memory_limit', '-1');
+$now_seed = 0;
+$now_seeded = false;
+$s = getenv('MOCHI_NOW_SEED');
+if ($s !== false && $s !== '') {
+    $now_seed = intval($s);
+    $now_seeded = true;
+}
+function _now() {
+    global $now_seed, $now_seeded;
+    if ($now_seeded) {
+        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
+        return $now_seed;
+    }
+    return hrtime(true);
+}
 function _str($x) {
     if (is_array($x)) {
         $isList = array_keys($x) === range(0, count($x) - 1);
@@ -20,8 +35,9 @@ function _indexof($s, $sub) {
     $pos = strpos($s, $sub);
     return $pos === false ? -1 : $pos;
 }
-function indexOf($s, $ch) {
-  global $mochi_ord, $mochi_chr, $shiftRune, $encipher, $decipher, $main;
+$__start_mem = memory_get_usage();
+$__start = _now();
+  function indexOf($s, $ch) {
   $i = 0;
   while ($i < strlen($s)) {
   if (substr($s, $i, $i + 1 - $i) == $ch) {
@@ -30,9 +46,8 @@ function indexOf($s, $ch) {
   $i = $i + 1;
 };
   return -1;
-}
-function mochi_ord($ch) {
-  global $indexOf, $mochi_chr, $shiftRune, $encipher, $decipher, $main;
+};
+  function mochi_ord($ch) {
   $upper = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
   $lower = 'abcdefghijklmnopqrstuvwxyz';
   $idx = _indexof($upper, $ch);
@@ -44,31 +59,28 @@ function mochi_ord($ch) {
   return 97 + $idx;
 }
   return 0;
-}
-function mochi_chr($n) {
-  global $indexOf, $mochi_ord, $shiftRune, $encipher, $decipher, $main;
+};
+  function mochi_chr($n) {
   $upper = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
   $lower = 'abcdefghijklmnopqrstuvwxyz';
   if ($n >= 65 && $n < 91) {
-  return substr($upper, $n - 65, $n - 64 - $n - 65);
+  return substr($upper, $n - 65, $n - 64 - ($n - 65));
 }
   if ($n >= 97 && $n < 123) {
-  return substr($lower, $n - 97, $n - 96 - $n - 97);
+  return substr($lower, $n - 97, $n - 96 - ($n - 97));
 }
   return '?';
-}
-function shiftRune($r, $k) {
-  global $indexOf, $mochi_ord, $mochi_chr, $encipher, $decipher, $main;
+};
+  function shiftRune($r, $k) {
   if ($r >= 'a' && $r <= 'z') {
-  return mochi_chr(((mochi_ord($r) - 97 + $k) % 26) + 97);
+  return mochi_chr((fmod((mochi_ord($r) - 97 + $k), 26)) + 97);
 }
   if ($r >= 'A' && $r <= 'Z') {
-  return mochi_chr(((mochi_ord($r) - 65 + $k) % 26) + 65);
+  return mochi_chr((fmod((mochi_ord($r) - 65 + $k), 26)) + 65);
 }
   return $r;
-}
-function encipher($s, $k) {
-  global $indexOf, $mochi_ord, $mochi_chr, $shiftRune, $decipher, $main;
+};
+  function encipher($s, $k) {
   $out = '';
   $i = 0;
   while ($i < strlen($s)) {
@@ -76,13 +88,11 @@ function encipher($s, $k) {
   $i = $i + 1;
 };
   return $out;
-}
-function decipher($s, $k) {
-  global $indexOf, $mochi_ord, $mochi_chr, $shiftRune, $encipher, $main;
+};
+  function decipher($s, $k) {
   return encipher($s, (26 - $k % 26) % 26);
-}
-function main() {
-  global $indexOf, $mochi_ord, $mochi_chr, $shiftRune, $encipher, $decipher;
+};
+  function main() {
   $pt = 'The five boxing wizards jump quickly';
   echo rtrim('Plaintext: ' . $pt), PHP_EOL;
   foreach ([0, 1, 7, 25, 26] as $key) {
@@ -95,5 +105,13 @@ function main() {
   echo rtrim('  Enciphered: ' . $ct), PHP_EOL;
   echo rtrim('  Deciphered: ' . decipher($ct, $key)), PHP_EOL;
 };
-}
-main();
+};
+  main();
+$__end = _now();
+$__end_mem = memory_get_usage();
+$__duration = intdiv($__end - $__start, 1000);
+$__mem_diff = max(0, $__end_mem - $__start_mem);
+$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
+$__j = json_encode($__bench, 128);
+$__j = str_replace("    ", "  ", $__j);
+echo $__j, PHP_EOL;;

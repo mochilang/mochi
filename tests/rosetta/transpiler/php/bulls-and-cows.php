@@ -36,7 +36,6 @@ function _indexof($s, $sub) {
     return $pos === false ? -1 : $pos;
 }
 function indexOf($s, $ch) {
-  global $mochi_shuffle, $main;
   $i = 0;
   while ($i < strlen($s)) {
   if (substr($s, $i, $i + 1 - $i) == $ch) {
@@ -47,11 +46,10 @@ function indexOf($s, $ch) {
   return -1;
 }
 function mochi_shuffle($xs) {
-  global $indexOf, $main;
   $arr = $xs;
   $i = count($arr) - 1;
   while ($i > 0) {
-  $j = _now() % ($i + 1);
+  $j = fmod(_now(), ($i + 1));
   $tmp = $arr[$i];
   $arr[$i] = $arr[$j];
   $arr[$j] = $tmp;
@@ -60,7 +58,6 @@ function mochi_shuffle($xs) {
   return $arr;
 }
 function main() {
-  global $indexOf, $mochi_shuffle;
   echo rtrim('Cows and Bulls'), PHP_EOL;
   echo rtrim('Guess four digit number of unique digits in the range 1 to 9.'), PHP_EOL;
   echo rtrim('A correct digit but not in the correct place is a cow.'), PHP_EOL;
