@@ -64,6 +64,9 @@ var usesLookupHost bool
 // usesInput reports whether the input helper is required.
 var usesInput bool
 
+// usesPrintf reports whether Text.Printf is required.
+var usesPrintf bool
+
 // groupVars tracks variables that represent groups.
 var groupVars map[string]bool
 
@@ -811,7 +814,20 @@ func (l *LetStmt) emit(w io.Writer) {
 		needIORef = true
 		io.WriteString(w, name+" <- newIORef (")
 		expr := maybeWrapUnsafe(l.Expr)
-		expr.emit(w)
+		switch lit := expr.(type) {
+		case *IntLit:
+			fmt.Fprintf(w, "%s :: Int", lit.Value)
+		case *FloatLit:
+			fmt.Fprintf(w, "%s :: Double", lit.Value)
+		case *BoolLit:
+			if lit.Value {
+				io.WriteString(w, "True :: Bool")
+			} else {
+				io.WriteString(w, "False :: Bool")
+			}
+		default:
+			expr.emit(w)
+		}
 		io.WriteString(w, ")")
 		return
 	}
@@ -946,12 +962,7 @@ func (b *BenchStmt) emit(w io.Writer) {
 	writeIndent(w)
 	io.WriteString(w, "memEnd <- _mem\n")
 	writeIndent(w)
-	io.WriteString(w, "let benchData = Aeson.object [")
-	io.WriteString(w, "\"duration_us\" Aeson..= ((end - start) `div` 1000), ")
-	io.WriteString(w, "\"memory_bytes\" Aeson..= memEnd, ")
-	fmt.Fprintf(w, "\"name\" Aeson..= (%q :: String)]\n", b.Name)
-	writeIndent(w)
-	io.WriteString(w, "BSL.putStrLn (Pretty.encodePretty' Pretty.defConfig{Pretty.confIndent = Pretty.Spaces 2} benchData)\n")
+	fmt.Fprintf(w, "printf \"{\\\"duration_us\\\":%%d,\\\"memory_bytes\\\":%%d,\\\"name\\\":\\\"%s\\\"}\\n\" ((end - start) `div` 1000) memEnd\n", b.Name)
 	popIndent()
 }
 
@@ -2067,7 +2078,7 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		emitMaybeFloat(left, false)
 		return
 	}
-	wantFloat := b.Ops[0].Op == "/" || isFloatExpr(left) || isFloatExpr(b.Ops[0].Right)
+	wantFloat := isFloatExpr(left) || isFloatExpr(b.Ops[0].Right)
 	emitMaybeFloat(left, wantFloat)
 	for i, op := range b.Ops {
 		io.WriteString(w, " ")
@@ -2083,7 +2094,11 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		case "%":
 			io.WriteString(w, "`mod`")
 		case "/":
-			io.WriteString(w, "/")
+			if isIntExpr(left) && isIntExpr(op.Right) && !wantFloat {
+				io.WriteString(w, "`div`")
+			} else {
+				io.WriteString(w, "/")
+			}
 		case "in":
 			if isMapExpr(op.Right) {
 				needDataMap = true
@@ -2112,7 +2127,7 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		emitMaybeFloat(op.Right, wantFloat)
 		left = op.Right
 		if i+1 < len(b.Ops) {
-			wantFloat = b.Ops[i+1].Op == "/" || isFloatExpr(left) || isFloatExpr(b.Ops[i+1].Right)
+			wantFloat = isFloatExpr(left) || isFloatExpr(b.Ops[i+1].Right)
 		}
 	}
 }
@@ -2306,7 +2321,7 @@ func inferVarFromSource(name string, src Expr) {
 	}
 }
 
-func header(withList, withMap, withJSON, withTrace, withIORef, withNow, withLookupHost, withMem bool) string {
+func header(withList, withMap, withJSON, withTrace, withIORef, withNow, withLookupHost, withMem, withPrintf bool) string {
 	out, err := exec.Command("git", "log", "-1", "--date=iso-strict", "--format=%cd").Output()
 	ts := time.Now()
 	if err == nil {
@@ -2340,6 +2355,9 @@ func header(withList, withMap, withJSON, withTrace, withIORef, withNow, withLook
 		h += "import qualified Data.Aeson as Aeson\n"
 		h += "import qualified Data.Aeson.Encode.Pretty as Pretty\n"
 		h += "import qualified Data.ByteString.Lazy.Char8 as BSL\n"
+	}
+	if withPrintf {
+		h += "import Text.Printf (printf)\n"
 	}
 	if withTrace {
 		h += "import Debug.Trace (trace)\n"
@@ -2410,7 +2428,7 @@ func header(withList, withMap, withJSON, withTrace, withIORef, withNow, withLook
 // Emit generates formatted Haskell code.
 func Emit(p *Program, bench bool) []byte {
 	if bench {
-		needJSON = true
+		usesPrintf = true
 		usesNow = true
 		usesMem = true
 		needIORef = true
@@ -2436,7 +2454,7 @@ func Emit(p *Program, bench bool) []byte {
 		}
 	}
 	var buf bytes.Buffer
-	buf.WriteString(header(needDataList, needDataMap, needJSON, needTrace, needIORef, usesNow, usesLookupHost, usesMem))
+	buf.WriteString(header(needDataList, needDataMap, needJSON, needTrace, needIORef, usesNow, usesLookupHost, usesMem, usesPrintf))
 	if needGroupBy {
 		buf.WriteString(groupPrelude())
 		buf.WriteByte('\n')
@@ -2535,6 +2553,7 @@ func Transpile(prog *parser.Program, env *types.Env, benchMain bool) (*Program, 
 	needIORef = false
 	usesNow = false
 	usesMem = false
+	usesPrintf = false
 	usesLookupHost = false
 	usesInput = false
 	groupVars = map[string]bool{}
@@ -2752,7 +2771,7 @@ func Transpile(prog *parser.Program, env *types.Env, benchMain bool) (*Program, 
 		}
 	}
 	if benchMain {
-		needJSON = true
+		usesPrintf = true
 		usesNow = true
 		usesMem = true
 		needIORef = true
