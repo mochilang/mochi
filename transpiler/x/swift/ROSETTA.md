@@ -2,8 +2,8 @@
 
 Generated Swift code for Mochi Rosetta programs in `tests/rosetta/x/Mochi`. Outputs are stored in `tests/rosetta/transpiler/Swift`. Errors are captured in `.error` files.
 
-Completed: 111/332
-Last updated: 2025-07-26 22:57 +0700
+Completed: 120/332
+Last updated: 2025-07-27 00:00 +0700
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -121,26 +121,26 @@ Last updated: 2025-07-26 22:57 +0700
 | 112 | binary-strings | ✓ |  |  |
 | 113 | bioinformatics-base-count | ✓ |  |  |
 | 114 | bioinformatics-global-alignment | ✓ |  |  |
-| 115 | bioinformatics-sequence-mutation |   |  |  |
-| 116 | biorhythms |   |  |  |
+| 115 | bioinformatics-sequence-mutation | ✓ | 17.401ms | 3.3 MB |
+| 116 | biorhythms | ✓ | 436µs | 3.3 MB |
 | 117 | bitcoin-address-validation |   |  |  |
 | 118 | bitmap-b-zier-curves-cubic |   |  |  |
 | 119 | bitmap-b-zier-curves-quadratic |   |  |  |
-| 120 | bitmap-bresenhams-line-algorithm |   |  |  |
-| 121 | bitmap-flood-fill |   |  |  |
-| 122 | bitmap-histogram |   |  |  |
-| 123 | bitmap-midpoint-circle-algorithm |   |  |  |
+| 120 | bitmap-bresenhams-line-algorithm | ✓ | 208µs | 3.1 MB |
+| 121 | bitmap-flood-fill | ✓ | 146µs | 3.0 MB |
+| 122 | bitmap-histogram | ✓ | 320µs | 3.2 MB |
+| 123 | bitmap-midpoint-circle-algorithm | ✓ | 370µs | 3.2 MB |
 | 124 | bitmap-ppm-conversion-through-a-pipe |   |  |  |
 | 125 | bitmap-read-a-ppm-file |   |  |  |
-| 126 | bitmap-read-an-image-through-a-pipe |   |  |  |
+| 126 | bitmap-read-an-image-through-a-pipe | ✓ | 476µs | 3.5 MB |
 | 127 | bitmap-write-a-ppm-file |   |  |  |
 | 128 | bitmap |   |  |  |
 | 129 | bitwise-io-1 |   |  |  |
 | 130 | bitwise-io-2 |   |  |  |
 | 131 | bitwise-operations |   |  |  |
-| 132 | blum-integer |   |  |  |
+| 132 | blum-integer | ✓ | 372µs | 3.0 MB |
 | 133 | boolean-values |   |  |  |
-| 134 | box-the-compass |   |  |  |
+| 134 | box-the-compass | ✓ | 401µs | 3.2 MB |
 | 135 | boyer-moore-string-search |   |  |  |
 | 136 | brazilian-numbers |   |  |  |
 | 137 | break-oo-privacy |   |  |  |

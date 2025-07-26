@@ -964,13 +964,11 @@ func (c *CastExpr) emit(w io.Writer) {
 	switch t {
 	case "Int", "Int64", "Double", "String", "Bool", "BigInt":
 		if t == "Int" {
-			if inner, ok := c.Expr.(*CastExpr); ok && inner.Type == "Any" {
-				if _, ok := inner.Expr.(*IndexExpr); ok {
-					fmt.Fprint(w, "(")
-					inner.Expr.emit(w)
-					fmt.Fprint(w, " as! Int)")
-					return
-				}
+			if inner, ok := c.Expr.(*CastExpr); ok && (inner.Type == "Any" || strings.Contains(inner.Type, "Any")) {
+				fmt.Fprint(w, "(")
+				inner.Expr.emit(w)
+				fmt.Fprint(w, " as! Int)")
+				return
 			}
 		}
 		if ce, ok := c.Expr.(*CallExpr); ok && t == "String" && ce.Func == "str" {
@@ -1230,6 +1228,15 @@ func (c *CallExpr) emit(w io.Writer) {
 			fmt.Fprint(w, "(")
 			c.Args[0].emit(w)
 			fmt.Fprint(w, ".lowercased())")
+			return
+		}
+	case "contains":
+		if len(c.Args) == 2 {
+			fmt.Fprint(w, "(")
+			c.Args[0].emit(w)
+			fmt.Fprint(w, ".contains(")
+			c.Args[1].emit(w)
+			fmt.Fprint(w, "))")
 			return
 		}
 	case "now":
