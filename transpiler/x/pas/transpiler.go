@@ -571,9 +571,9 @@ func (s *SliceExpr) emit(w io.Writer) {
 	if s.End != nil && s.Start != nil {
 		io.WriteString(w, "(")
 		s.End.emit(w)
-		io.WriteString(w, " - ")
+		io.WriteString(w, " - (")
 		s.Start.emit(w)
-		io.WriteString(w, ")")
+		io.WriteString(w, "))")
 	} else if s.End != nil {
 		s.End.emit(w)
 	} else {
@@ -838,6 +838,17 @@ func (p *Program) Emit() []byte {
 	if len(uses) > 0 {
 		fmt.Fprintf(&buf, "uses %s;\n", strings.Join(uses, ", "))
 	}
+	if len(p.ArrayAliases) > 0 {
+		keys := make([]string, 0, len(p.ArrayAliases))
+		for elem := range p.ArrayAliases {
+			keys = append(keys, elem)
+		}
+		sort.Slice(keys, func(i, j int) bool { return len(keys[i]) < len(keys[j]) })
+		for _, elem := range keys {
+			alias := p.ArrayAliases[elem]
+			fmt.Fprintf(&buf, "type %s = array of %s;\n", alias, elem)
+		}
+	}
 	if len(p.LateAliases) > 0 {
 		keys := make([]string, 0, len(p.LateAliases))
 		for elem := range p.LateAliases {
@@ -868,6 +879,7 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("function _input(): string;\nvar s: string;\nbegin\n  if EOF(Input) then s := '' else ReadLn(s);\n  _input := s;\nend;\n")
 	}
 	if p.UseLookupHost {
+		buf.WriteString("type VariantArray = array of Variant;\n")
 		buf.WriteString(`function _lookup_host(name: string): VariantArray;
 begin
   SetLength(Result, 3);
@@ -876,6 +888,7 @@ begin
   Result[2] := '210.155.141.200';
 end;
 `)
+		delete(p.ArrayAliases, "Variant")
 	}
 	if p.NeedContains {
 		buf.WriteString("function contains(xs: array of integer; v: integer): boolean;\nvar i: integer;\nbegin\n  for i := 0 to High(xs) do begin\n    if xs[i] = v then begin\n      contains := true; exit;\n    end;\n  end;\n  contains := false;\nend;\n")
@@ -914,17 +927,6 @@ end;
 		}
 		buf.WriteString("end;\n")
 	}
-	if len(p.ArrayAliases) > 0 {
-		keys := make([]string, 0, len(p.ArrayAliases))
-		for elem := range p.ArrayAliases {
-			keys = append(keys, elem)
-		}
-		sort.Slice(keys, func(i, j int) bool { return len(keys[i]) < len(keys[j]) })
-		for _, elem := range keys {
-			alias := p.ArrayAliases[elem]
-			fmt.Fprintf(&buf, "type %s = array of %s;\n", alias, elem)
-		}
-	}
 	if len(p.Vars) > 0 {
 		buf.WriteString("var\n")
 		for _, v := range p.Vars {
@@ -937,6 +939,24 @@ end;
 				typ = "array of Variant"
 			}
 			fmt.Fprintf(&buf, "  %s: %s;\n", v.Name, typ)
+		}
+	}
+	for _, f := range p.Funs {
+		if f.ReturnType == "" {
+			fmt.Fprintf(&buf, "procedure %s(", f.Name)
+		} else {
+			fmt.Fprintf(&buf, "function %s(", f.Name)
+		}
+		for i, p := range f.Params {
+			if i > 0 {
+				io.WriteString(&buf, "; ")
+			}
+			io.WriteString(&buf, p)
+		}
+		if f.ReturnType == "" {
+			io.WriteString(&buf, "); forward;\n")
+		} else {
+			fmt.Fprintf(&buf, "): %s; forward;\n", f.ReturnType)
 		}
 	}
 	for _, f := range p.Funs {
@@ -3702,7 +3722,15 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 		pushScope()
 		currentFunc = name
 		for _, pa := range p.FunExpr.Params {
-			params = append(params, pa.Name)
+			typ := "integer"
+			if pa.Type != nil {
+				typ = typeFromRef(pa.Type)
+				if strings.HasPrefix(typ, "array of ") {
+					elem := strings.TrimPrefix(typ, "array of ")
+					typ = currProg.addArrayAlias(elem)
+				}
+			}
+			params = append(params, fmt.Sprintf("%s: %s", pa.Name, typ))
 			child.SetVar(pa.Name, types.AnyType{}, true)
 			currentScope()[pa.Name] = pa.Name
 		}

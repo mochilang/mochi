@@ -2,7 +2,7 @@
 
 Generated Pascal code for Rosetta tasks lives under `tests/rosetta/transpiler/Pascal`.
 
-## Rosetta Checklist (16/332) - updated 2025-07-26 10:33 UTC
+## Rosetta Checklist (21/332) - updated 2025-07-26 12:36 UTC
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 571.223ms | 128 B |
@@ -15,21 +15,21 @@ Generated Pascal code for Rosetta tasks lives under `tests/rosetta/transpiler/Pa
 | 8 | 21-game | ✓ | 1µs |  |
 | 9 | 24-game-solve | ✓ | 1µs | 1.1 KB |
 | 10 | 24-game | ✓ | 1µs | 64 B |
-| 11 | 4-rings-or-4-squares-puzzle |   | 44µs | 202.3 KB |
+| 11 | 4-rings-or-4-squares-puzzle | ✓ | 44µs | 202.3 KB |
 | 12 | 9-billion-names-of-god-the-integer |   |  |  |
 | 13 | 99-bottles-of-beer-2 | ✓ |  |  |
 | 14 | 99-bottles-of-beer | ✓ |  |  |
 | 15 | DNS-query | ✓ |  |  |
-| 16 | Duffinian-numbers |   |  |  |
+| 16 | Duffinian-numbers | ✓ | 78µs | 5.3 KB |
 | 17 | a+b | ✓ |  |  |
 | 18 | abbreviations-automatic | ✓ |  |  |
 | 19 | abbreviations-easy | ✓ |  |  |
 | 20 | abbreviations-simple |   |  |  |
 | 21 | abc-problem |   |  |  |
-| 22 | abelian-sandpile-model-identity |   |  |  |
-| 23 | abelian-sandpile-model |   |  |  |
+| 22 | abelian-sandpile-model-identity | ✓ | 1µs | 1.1 KB |
+| 23 | abelian-sandpile-model | ✓ | 2µs | 2.7 KB |
 | 24 | abstract-type |   |  |  |
-| 25 | abundant-deficient-and-perfect-number-classifications |   |  |  |
+| 25 | abundant-deficient-and-perfect-number-classifications | ✓ | 1.135ms |  |
 | 26 | abundant-odd-numbers |   |  |  |
 | 27 | accumulator-factory |   |  |  |
 | 28 | achilles-numbers |   |  |  |
