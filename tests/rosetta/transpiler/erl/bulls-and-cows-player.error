@@ -1,0 +1,17 @@
+exit status 127
+Cows and bulls/player
+You think of four digit number of unique digits in the range 1 to 9.
+I guess.  You score my guess:
+    A correct digit but not in the correct place is a cow.
+    A correct digit in the correct place is a bull.
+You give my score as two numbers separated with a space.
+escript: exception error: an error occurred when evaluating an arithmetic expression
+  in operator  +/2
+     called as "1" + "2"
+  in call from main:'-makepatterns/0-Fun_3_loop/6-3-'/6 (/workspace/mochi/tests/rosetta/transpiler/erl/bulls-and-cows-player.erl, line 132)
+  in call from main:'-makepatterns/0-Fun_5_loop/5-2-'/5 (/workspace/mochi/tests/rosetta/transpiler/erl/bulls-and-cows-player.erl, line 141)
+  in call from main:'-makepatterns/0-Fun_7_loop/4-1-'/4 (/workspace/mochi/tests/rosetta/transpiler/erl/bulls-and-cows-player.erl, line 154)
+  in call from main:'-makepatterns/0-Fun_8_loop/3-0-'/3 (/workspace/mochi/tests/rosetta/transpiler/erl/bulls-and-cows-player.erl, line 167)
+  in call from main:makepatterns/0 (/workspace/mochi/tests/rosetta/transpiler/erl/bulls-and-cows-player.erl, line 173)
+  in call from main:main/0 (/workspace/mochi/tests/rosetta/transpiler/erl/bulls-and-cows-player.erl, line 180)
+  in call from main:main/1 (/workspace/mochi/tests/rosetta/transpiler/erl/bulls-and-cows-player.erl, line 296)

@@ -3556,7 +3556,30 @@ func convertIfStmt(n *parser.IfStmt, env *types.Env, ctx *context) (*IfStmt, err
 
 func convertFunStmt(fn *parser.FunStmt, env *types.Env, ctx *context) (*FuncDecl, error) {
 	child := types.NewEnv(env)
-	fctx := ctx.clone()
+	// functions should start with a fresh context that only carries over
+	// global information to avoid leaking aliases from previous top level
+	// statements. This prevents spurious parameters from being added to
+	// generated loop helpers.
+	fctx := newContext(ctx.baseDir)
+	fctx.counter = ctx.counter
+	if len(ctx.constVal) > 0 {
+		fctx.constVal = make(map[string]Expr, len(ctx.constVal))
+		for k, v := range ctx.constVal {
+			fctx.constVal[k] = v
+		}
+	}
+	if len(ctx.autoMod) > 0 {
+		fctx.autoMod = make(map[string]string, len(ctx.autoMod))
+		for k, v := range ctx.autoMod {
+			fctx.autoMod[k] = v
+		}
+	}
+	if len(ctx.globals) > 0 {
+		fctx.globals = make(map[string]bool, len(ctx.globals))
+		for k, v := range ctx.globals {
+			fctx.globals[k] = v
+		}
+	}
 	params := make([]string, len(fn.Params))
 	for i, p := range fn.Params {
 		params[i] = fctx.newAlias(p.Name)
@@ -3670,7 +3693,29 @@ func convertFunStmt(fn *parser.FunStmt, env *types.Env, ctx *context) (*FuncDecl
 
 func convertFunStmtAsExpr(fn *parser.FunStmt, env *types.Env, ctx *context) (Expr, error) {
 	child := types.NewEnv(env)
-	fctx := ctx.clone()
+	// Similar to convertFunStmt, start with a clean context carrying only
+	// global information. This avoids leaking aliases from previous scopes
+	// into anonymous functions.
+	fctx := newContext(ctx.baseDir)
+	fctx.counter = ctx.counter
+	if len(ctx.constVal) > 0 {
+		fctx.constVal = make(map[string]Expr, len(ctx.constVal))
+		for k, v := range ctx.constVal {
+			fctx.constVal[k] = v
+		}
+	}
+	if len(ctx.autoMod) > 0 {
+		fctx.autoMod = make(map[string]string, len(ctx.autoMod))
+		for k, v := range ctx.autoMod {
+			fctx.autoMod[k] = v
+		}
+	}
+	if len(ctx.globals) > 0 {
+		fctx.globals = make(map[string]bool, len(ctx.globals))
+		for k, v := range ctx.globals {
+			fctx.globals[k] = v
+		}
+	}
 	if a, ok := ctx.alias[fn.Name]; ok {
 		fctx.alias[fn.Name] = a
 	}
@@ -4074,6 +4119,15 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env, ctx *context) (Expr,
 				isStr = true
 			} else if _, ok := idx.(*StringLit); ok {
 				kind = "map"
+			}
+			if !isStr {
+				if t := exprType(expr, env, ctx); t != nil {
+					if lt, ok := t.(types.ListType); ok {
+						if _, ok2 := lt.Elem.(types.StringType); ok2 {
+							isStr = true
+						}
+					}
+				}
 			}
 			expr = &IndexExpr{Target: expr, Index: idx, Kind: kind, IsString: isStr}
 		case op.Index != nil && op.Index.Colon != nil && op.Index.Step == nil && op.Index.Colon2 == nil:
