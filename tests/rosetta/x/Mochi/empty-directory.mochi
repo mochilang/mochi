@@ -1,0 +1,24 @@
+// Mochi translation of Rosetta "Empty-directory" task
+// Simulates a minimal filesystem as Mochi lacks standard directory APIs.
+
+fun isEmptyDir(fs: map<string, list<string>>, name: string): bool {
+  if name in fs {
+    return len(fs[name]) == 0
+  }
+  // non-existent directories are considered empty
+  return true
+}
+
+fun main() {
+  var fs: map<string, list<string>> = {}
+  fs["/tmp"] = []
+  fs["/var"] = ["log"]
+
+  if isEmptyDir(fs, "/tmp") {
+    print("/tmp is empty")
+  } else {
+    print("/tmp is not empty")
+  }
+}
+
+main()
