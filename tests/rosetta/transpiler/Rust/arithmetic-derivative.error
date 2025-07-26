@@ -1,0 +1,487 @@
+warning: unnecessary parentheses around `while` condition
+ --> /workspace/mochi/tests/rosetta/transpiler/Rust/arithmetic-derivative.rs:5:11
+  |
+5 |     while ((x % 2) == 0) {
+  |           ^            ^
+  |
+  = note: `#[warn(unused_parens)]` on by default
+help: remove these parentheses
+  |
+5 -     while ((x % 2) == 0) {
+5 +     while (x % 2) == 0 {
+  |
+
+warning: unnecessary parentheses around assigned value
+ --> /workspace/mochi/tests/rosetta/transpiler/Rust/arithmetic-derivative.rs:7:13
+  |
+7 |         x = (x / 2);
+  |             ^     ^
+  |
+help: remove these parentheses
+  |
+7 -         x = (x / 2);
+7 +         x = x / 2;
+  |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/arithmetic-derivative.rs:10:11
+   |
+10 |     while ((p * p) <= x) {
+   |           ^            ^
+   |
+help: remove these parentheses
+   |
+10 -     while ((p * p) <= x) {
+10 +     while (p * p) <= x {
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/arithmetic-derivative.rs:11:15
+   |
+11 |         while ((x % p) == 0) {
+   |               ^            ^
+   |
+help: remove these parentheses
+   |
+11 -         while ((x % p) == 0) {
+11 +         while (x % p) == 0 {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/arithmetic-derivative.rs:13:17
+   |
+13 |             x = (x / p);
+   |                 ^     ^
+   |
+help: remove these parentheses
+   |
+13 -             x = (x / p);
+13 +             x = x / p;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/arithmetic-derivative.rs:15:13
+   |
+15 |         p = (p + 2);
+   |             ^     ^
+   |
+help: remove these parentheses
+   |
+15 -         p = (p + 2);
+15 +         p = p + 2;
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/arithmetic-derivative.rs:17:8
+   |
+17 |     if (x > 1) {
+   |        ^     ^
+   |
+help: remove these parentheses
+   |
+17 -     if (x > 1) {
+17 +     if x > 1 {
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/arithmetic-derivative.rs:26:11
+   |
+26 |     while (i < n) {
+   |           ^     ^
+   |
+help: remove these parentheses
+   |
+26 -     while (i < n) {
+26 +     while i < n {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/arithmetic-derivative.rs:28:13
+   |
+28 |         i = (i + 1);
+   |             ^     ^
+   |
+help: remove these parentheses
+   |
+28 -         i = (i + 1);
+28 +         i = i + 1;
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/arithmetic-derivative.rs:34:8
+   |
+34 |     if (n < 0.0) {
+   |        ^       ^
+   |
+help: remove these parentheses
+   |
+34 -     if (n < 0.0) {
+34 +     if n < 0.0 {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/arithmetic-derivative.rs:37:8
+   |
+37 |     if (n < 2.0) {
+   |        ^       ^
+   |
+help: remove these parentheses
+   |
+37 -     if (n < 2.0) {
+37 +     if n < 2.0 {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/arithmetic-derivative.rs:41:8
+   |
+41 |     if (n < 10000000000000000000.0) {
+   |        ^                          ^
+   |
+help: remove these parentheses
+   |
+41 -     if (n < 10000000000000000000.0) {
+41 +     if n < 10000000000000000000.0 {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/arithmetic-derivative.rs:44:22
+   |
+44 |         let g: f64 = (n / 100.0);
+   |                      ^         ^
+   |
+help: remove these parentheses
+   |
+44 -         let g: f64 = (n / 100.0);
+44 +         let g: f64 = n / 100.0;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/arithmetic-derivative.rs:51:13
+   |
+51 |     let c = (factors.len() as i64);
+   |             ^                    ^
+   |
+help: remove these parentheses
+   |
+51 -     let c = (factors.len() as i64);
+51 +     let c = factors.len() as i64;
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/arithmetic-derivative.rs:52:8
+   |
+52 |     if (c == 1) {
+   |        ^      ^
+   |
+help: remove these parentheses
+   |
+52 -     if (c == 1) {
+52 +     if c == 1 {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/arithmetic-derivative.rs:55:8
+   |
+55 |     if (c == 2) {
+   |        ^      ^
+   |
+help: remove these parentheses
+   |
+55 -     if (c == 2) {
+55 +     if c == 2 {
+   |
+
+warning: unnecessary parentheses around `return` value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/arithmetic-derivative.rs:56:16
+   |
+56 |         return (factors[0 as usize] + factors[1 as usize])
+   |                ^                                         ^
+   |
+help: remove these parentheses
+   |
+56 -         return (factors[0 as usize] + factors[1 as usize])
+56 +         return factors[0 as usize] + factors[1 as usize]
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/arithmetic-derivative.rs:58:18
+   |
+58 |     let d: f64 = (n / (factors[0 as usize] as f64));
+   |                  ^                                ^
+   |
+help: remove these parentheses
+   |
+58 -     let d: f64 = (n / (factors[0 as usize] as f64));
+58 +     let d: f64 = n / (factors[0 as usize] as f64);
+   |
+
+warning: unnecessary parentheses around `return` value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/arithmetic-derivative.rs:59:12
+   |
+59 |     return ((D(d) * (factors[0 as usize] as f64)) + d)
+   |            ^                                         ^
+   |
+help: remove these parentheses
+   |
+59 -     return ((D(d) * (factors[0 as usize] as f64)) + d)
+59 +     return (D(d) * (factors[0 as usize] as f64)) + d
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/arithmetic-derivative.rs:64:11
+   |
+64 |     while ((s.len() as i64) < 4) {
+   |           ^                    ^
+   |
+help: remove these parentheses
+   |
+64 -     while ((s.len() as i64) < 4) {
+64 +     while (s.len() as i64) < 4 {
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/arithmetic-derivative.rs:73:11
+   |
+73 |     while (n < 101) {
+   |           ^       ^
+   |
+help: remove these parentheses
+   |
+73 -     while (n < 101) {
+73 +     while n < 101 {
+   |
+
+warning: unnecessary parentheses around function argument
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/arithmetic-derivative.rs:74:53
+   |
+74 |         vals = { let mut v = vals.clone(); v.push(D((n as f64))); v };
+   |                                                     ^        ^
+   |
+help: remove these parentheses
+   |
+74 -         vals = { let mut v = vals.clone(); v.push(D((n as f64))); v };
+74 +         vals = { let mut v = vals.clone(); v.push(D(n as f64)); v };
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/arithmetic-derivative.rs:75:13
+   |
+75 |         n = (n + 1);
+   |             ^     ^
+   |
+help: remove these parentheses
+   |
+75 -         n = (n + 1);
+75 +         n = n + 1;
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/arithmetic-derivative.rs:78:11
+   |
+78 |     while (i < (vals.len() as i64)) {
+   |           ^                       ^
+   |
+help: remove these parentheses
+   |
+78 -     while (i < (vals.len() as i64)) {
+78 +     while i < (vals.len() as i64) {
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/arithmetic-derivative.rs:81:15
+   |
+81 |         while (j < 10) {
+   |               ^      ^
+   |
+help: remove these parentheses
+   |
+81 -         while (j < 10) {
+81 +         while j < 10 {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/arithmetic-derivative.rs:83:16
+   |
+83 |             if (j < 9) {
+   |                ^     ^
+   |
+help: remove these parentheses
+   |
+83 -             if (j < 9) {
+83 +             if j < 9 {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/arithmetic-derivative.rs:86:17
+   |
+86 |             j = (j + 1);
+   |                 ^     ^
+   |
+help: remove these parentheses
+   |
+86 -             j = (j + 1);
+86 +             j = j + 1;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/arithmetic-derivative.rs:89:13
+   |
+89 |         i = (i + 10);
+   |             ^      ^
+   |
+help: remove these parentheses
+   |
+89 -         i = (i + 10);
+89 +         i = i + 10;
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/arithmetic-derivative.rs:93:11
+   |
+93 |     while (m < 21) {
+   |           ^      ^
+   |
+help: remove these parentheses
+   |
+93 -     while (m < 21) {
+93 +     while m < 21 {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/arithmetic-derivative.rs:94:15
+   |
+94 |         pow = (pow * 10.0);
+   |               ^          ^
+   |
+help: remove these parentheses
+   |
+94 -         pow = (pow * 10.0);
+94 +         pow = pow * 10.0;
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/arithmetic-derivative.rs:96:12
+   |
+96 |         if ((exp.len() as i64) < 2) {
+   |            ^                      ^
+   |
+help: remove these parentheses
+   |
+96 -         if ((exp.len() as i64) < 2) {
+96 +         if (exp.len() as i64) < 2 {
+   |
+
+warning: unnecessary parentheses around function argument
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/arithmetic-derivative.rs:99:80
+   |
+99 |         let mut res = format!("{}{}", m.to_string(), repeat(String::from("0"), (m - 1)));
+   |                                                                                ^     ^
+   |
+help: remove these parentheses
+   |
+99 -         let mut res = format!("{}{}", m.to_string(), repeat(String::from("0"), (m - 1)));
+99 +         let mut res = format!("{}{}", m.to_string(), repeat(String::from("0"), m - 1));
+   |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/arithmetic-derivative.rs:101:13
+    |
+101 |         m = (m + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+101 -         m = (m + 1);
+101 +         m = m + 1;
+    |
+
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/arithmetic-derivative.rs:42:32
+   |
+42 |         factors = primeFactors(n);
+   |                   ------------ ^ expected `i64`, found `f64`
+   |                   |
+   |                   arguments to this function are incorrect
+   |
+note: function defined here
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/arithmetic-derivative.rs:2:4
+   |
+2  | fn primeFactors(mut n: i64) -> Vec<i64> {
+   |    ^^^^^^^^^^^^ ----------
+
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/arithmetic-derivative.rs:45:32
+   |
+45 |         factors = primeFactors(g);
+   |                   ------------ ^ expected `i64`, found `f64`
+   |                   |
+   |                   arguments to this function are incorrect
+   |
+note: function defined here
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/arithmetic-derivative.rs:2:4
+   |
+2  | fn primeFactors(mut n: i64) -> Vec<i64> {
+   |    ^^^^^^^^^^^^ ----------
+
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/arithmetic-derivative.rs:56:16
+   |
+33 | fn D(mut n: f64) -> f64 {
+   |                     --- expected `f64` because of return type
+...
+56 |         return (factors[0 as usize] + factors[1 as usize])
+   |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `f64`, found `i64`
+   |
+help: you can convert an `i64` to an `f64`, producing the floating point representation of the integer, rounded if necessary
+   |
+56 |         return ((factors[0 as usize] + factors[1 as usize])) as f64
+   |                +                                           ++++++++
+
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/arithmetic-derivative.rs:74:51
+   |
+74 |         vals = { let mut v = vals.clone(); v.push(D((n as f64))); v };
+   |                                              ---- ^^^^^^^^^^^^^ expected `i64`, found `f64`
+   |                                              |
+   |                                              arguments to this method are incorrect
+   |
+note: method defined here
+  --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/alloc/src/vec/mod.rs:2442:12
+
+warning: variable does not need to be mutable
+ --> /workspace/mochi/tests/rosetta/transpiler/Rust/arithmetic-derivative.rs:2:17
+  |
+2 | fn primeFactors(mut n: i64) -> Vec<i64> {
+  |                 ----^
+  |                 |
+  |                 help: remove this `mut`
+  |
+  = note: `#[warn(unused_mut)]` on by default
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/arithmetic-derivative.rs:23:11
+   |
+23 | fn repeat(mut ch: String, mut n: i64) -> String {
+   |           ----^^
+   |           |
+   |           help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/arithmetic-derivative.rs:23:27
+   |
+23 | fn repeat(mut ch: String, mut n: i64) -> String {
+   |                           ----^
+   |                           |
+   |                           help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/arithmetic-derivative.rs:62:8
+   |
+62 | fn pad(mut n: i64) -> String {
+   |        ----^
+   |        |
+   |        help: remove this `mut`
+
+error: aborting due to 4 previous errors; 37 warnings emitted
+
+For more information about this error, try `rustc --explain E0308`.

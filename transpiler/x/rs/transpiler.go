@@ -2725,7 +2725,11 @@ func compileFunStmt(fn *parser.FunStmt) (Stmt, error) {
 			typ = "f64"
 		}
 		sigType := typ
-		if strings.HasPrefix(typ, "Vec<") {
+		if strings.HasPrefix(typ, "impl FnMut(") {
+			sigType = "&mut " + typ
+		} else if strings.HasPrefix(typ, "impl Fn(") {
+			sigType = "&" + typ
+		} else if strings.HasPrefix(typ, "Vec<") {
 			mut := paramMutated(fn.Body, p.Name)
 			if mut && (fn.Return == nil || rustTypeRef(fn.Return) != typ) {
 				sigType = "&mut " + typ
@@ -2849,6 +2853,9 @@ func compileFunStmt(fn *parser.FunStmt) (Stmt, error) {
 		}
 	}
 	name := fn.Name
+	if name == "abs" {
+		useAbs = false
+	}
 	if name == "main" {
 		mainFuncName = "mochi_main"
 		name = mainFuncName
@@ -3150,7 +3157,15 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			return &FloatCastExpr{Expr: args[0]}, nil
 		}
 		if name == "abs" && len(args) == 1 {
-			useAbs = true
+			if curEnv != nil {
+				if _, ok := curEnv.GetFunc("abs"); ok {
+					// use user-defined function
+				} else {
+					useAbs = true
+				}
+			} else {
+				useAbs = true
+			}
 			funReturns[name] = "f64"
 			if inferType(args[0]) != "f64" {
 				args[0] = &FloatCastExpr{Expr: args[0]}
@@ -4079,6 +4094,9 @@ func inferType(e Expr) string {
 		}
 	case *IndexExpr:
 		ct := inferType(ex.Target)
+		if strings.HasPrefix(ct, "&") {
+			ct = strings.TrimPrefix(ct, "&")
+		}
 		if strings.HasPrefix(ct, "Vec<") {
 			return strings.TrimSuffix(strings.TrimPrefix(ct, "Vec<"), ">")
 		}
@@ -4244,7 +4262,7 @@ func rustType(t string) string {
 	case "float":
 		return "f64"
 	case "any":
-		return "f64"
+		return "()"
 	case "bool":
 		return "bool"
 	case "string":
@@ -4283,7 +4301,22 @@ func rustTypeRef(tr *parser.TypeRef) string {
 		}
 	}
 	if tr.Fun != nil {
-		return "fn"
+		var pts []string
+		for _, p := range tr.Fun.Params {
+			t := rustTypeRef(p)
+			if t == "" {
+				t = "i64"
+			}
+			pts = append(pts, t)
+		}
+		rt := "()"
+		if tr.Fun.Return != nil {
+			r := rustTypeRef(tr.Fun.Return)
+			if r != "" {
+				rt = r
+			}
+		}
+		return fmt.Sprintf("impl FnMut(%s) -> %s", strings.Join(pts, ", "), rt)
 	}
 	return "i64"
 }

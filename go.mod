@@ -1,6 +1,6 @@
 module mochi
 
-go 1.24.4
+go 1.24.3
 
 require (
 	github.com/alecthomas/participle/v2 v2.1.4

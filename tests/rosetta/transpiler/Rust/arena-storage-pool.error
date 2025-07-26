@@ -1,0 +1,157 @@
+error[E0106]: missing lifetime specifier
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/arena-storage-pool.rs:22:40
+   |
+22 | fn poolGet(mut p: Vec<i64>) -> HashMap<&str, Vec<i64>> {
+   |                                        ^ expected named lifetime parameter
+   |
+   = help: this function's return type contains a borrowed value, but there is no value for it to be borrowed from
+help: consider using the `'static` lifetime, but this is uncommon unless you're returning a borrowed value from a `const` or a `static`
+   |
+22 | fn poolGet(mut p: Vec<i64>) -> HashMap<&'static str, Vec<i64>> {
+   |                                         +++++++
+help: instead, you are more likely to want to change the argument to be borrowed...
+   |
+22 | fn poolGet(mut p: &Vec<i64>) -> HashMap<&str, Vec<i64>> {
+   |                   +
+help: ...or alternatively, you might want to return an owned value
+   |
+22 - fn poolGet(mut p: Vec<i64>) -> HashMap<&str, Vec<i64>> {
+22 + fn poolGet(mut p: Vec<i64>) -> HashMap<String, Vec<i64>> {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/arena-storage-pool.rs:23:8
+   |
+23 |     if ((p.len() as i64) == 0) {
+   |        ^                     ^
+   |
+   = note: `#[warn(unused_parens)]` on by default
+help: remove these parentheses
+   |
+23 -     if ((p.len() as i64) == 0) {
+23 +     if (p.len() as i64) == 0 {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/arena-storage-pool.rs:27:15
+   |
+27 |     let idx = ((p.len() as i64) - 1);
+   |               ^                    ^
+   |
+help: remove these parentheses
+   |
+27 -     let idx = ((p.len() as i64) - 1);
+27 +     let idx = (p.len() as i64) - 1;
+   |
+
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/arena-storage-pool.rs:30:76
+   |
+30 |     return HashMap::from([(String::from("pool"), p), (String::from("val"), v)])
+   |                                                                            ^ expected `Vec<i64>`, found `i64`
+   |
+   = note: expected struct `Vec<i64>`
+                found type `i64`
+
+error[E0658]: use of unstable library feature `str_as_str`
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/arena-storage-pool.rs:47:24
+   |
+47 |     pool = res1["pool".as_str()].clone();
+   |                        ^^^^^^
+   |
+   = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0658]: use of unstable library feature `str_as_str`
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/arena-storage-pool.rs:48:20
+   |
+48 |     i = res1["val".as_str()].clone();
+   |                    ^^^^^^
+   |
+   = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0658]: use of unstable library feature `str_as_str`
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/arena-storage-pool.rs:50:24
+   |
+50 |     pool = res2["pool".as_str()].clone();
+   |                        ^^^^^^
+   |
+   = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0658]: use of unstable library feature `str_as_str`
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/arena-storage-pool.rs:51:20
+   |
+51 |     j = res2["val".as_str()].clone();
+   |                    ^^^^^^
+   |
+   = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0658]: use of unstable library feature `str_as_str`
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/arena-storage-pool.rs:61:24
+   |
+61 |     pool = res3["pool".as_str()].clone();
+   |                        ^^^^^^
+   |
+   = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0658]: use of unstable library feature `str_as_str`
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/arena-storage-pool.rs:62:20
+   |
+62 |     i = res3["val".as_str()].clone();
+   |                    ^^^^^^
+   |
+   = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0658]: use of unstable library feature `str_as_str`
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/arena-storage-pool.rs:64:24
+   |
+64 |     pool = res4["pool".as_str()].clone();
+   |                        ^^^^^^
+   |
+   = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0658]: use of unstable library feature `str_as_str`
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/arena-storage-pool.rs:65:20
+   |
+65 |     j = res4["val".as_str()].clone();
+   |                    ^^^^^^
+   |
+   = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/arena-storage-pool.rs:18:12
+   |
+18 | fn poolPut(mut p: Vec<i64>, mut x: i64) -> Vec<i64> {
+   |            ----^
+   |            |
+   |            help: remove this `mut`
+   |
+   = note: `#[warn(unused_mut)]` on by default
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/arena-storage-pool.rs:18:29
+   |
+18 | fn poolPut(mut p: Vec<i64>, mut x: i64) -> Vec<i64> {
+   |                             ----^
+   |                             |
+   |                             help: remove this `mut`
+
+warning: unused variable: `p`
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/arena-storage-pool.rs:33:18
+   |
+33 | fn clearPool(mut p: Vec<i64>) -> Vec<i64> {
+   |                  ^ help: if this is intentional, prefix it with an underscore: `_p`
+   |
+   = note: `#[warn(unused_variables)]` on by default
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/arena-storage-pool.rs:33:14
+   |
+33 | fn clearPool(mut p: Vec<i64>) -> Vec<i64> {
+   |              ----^
+   |              |
+   |              help: remove this `mut`
+
+error: aborting due to 10 previous errors; 6 warnings emitted
+
+Some errors have detailed explanations: E0106, E0308, E0658.
+For more information about an error, try `rustc --explain E0106`.
