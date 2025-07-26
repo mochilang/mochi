@@ -36,6 +36,8 @@ var useMem bool
 var usesLookupHost bool
 var benchMain bool
 var usesSHA256 bool
+var usesIndexOf bool
+var usesParseIntStr bool
 var reserved = map[string]bool{"this": true, "new": true, "double": true, "char": true}
 var currentReturnType string
 var inReturn bool
@@ -82,6 +84,8 @@ type Program struct {
 	UseMem        bool
 	UseLookupHost bool
 	UseSHA256     bool
+	UseIndexOf    bool
+	UseParseInt   bool
 }
 
 func (p *Program) addInclude(inc string) {
@@ -552,6 +556,9 @@ func (p *Program) write(w io.Writer) {
 	if p.UseSHA256 {
 		p.addInclude("<openssl/sha.h>")
 	}
+	if p.UseParseInt {
+		p.addInclude("<cstdlib>")
+	}
 	usesAny := false
 	for _, inc := range p.Includes {
 		if inc == "<any>" {
@@ -617,6 +624,17 @@ func (p *Program) write(w io.Writer) {
 		fmt.Fprintln(w, "    return res;")
 		fmt.Fprintln(w, "}")
 	}
+	if p.UseIndexOf {
+		fmt.Fprintln(w, "static int _indexOf(const std::string& s, const std::string& ch) {")
+		fmt.Fprintln(w, "    auto pos = s.find(ch);")
+		fmt.Fprintln(w, "    return pos == std::string::npos ? -1 : static_cast<int>(pos);")
+		fmt.Fprintln(w, "}")
+	}
+	if p.UseParseInt {
+		fmt.Fprintln(w, "static int _parseIntStr(const std::string& s, int base) {")
+		fmt.Fprintln(w, "    return static_cast<int>(strtol(s.c_str(), nullptr, base));")
+		fmt.Fprintln(w, "}")
+	}
 	if p.UseSHA256 {
 		fmt.Fprintln(w, "static std::vector<int64_t> _sha256(const std::vector<int64_t>& bs) {")
 		fmt.Fprintln(w, "    unsigned char digest[SHA256_DIGEST_LENGTH];")
@@ -661,7 +679,11 @@ func (p *Program) write(w io.Writer) {
 
 	fmt.Fprintln(w, "template<typename T> std::string _to_string(const T& v) {")
 	fmt.Fprintln(w, "    std::ostringstream ss;")
-	fmt.Fprintln(w, "    ss << std::boolalpha << v;")
+	fmt.Fprintln(w, "    if constexpr(std::is_same_v<T, std::any>) {")
+	fmt.Fprintln(w, "        any_to_stream(ss, v);")
+	fmt.Fprintln(w, "    } else {")
+	fmt.Fprintln(w, "        ss << std::boolalpha << v;")
+	fmt.Fprintln(w, "    }")
 	fmt.Fprintln(w, "    return ss.str();")
 	fmt.Fprintln(w, "}")
 	for _, st := range p.Structs {
@@ -1149,6 +1171,16 @@ func (u *UnaryExpr) emit(w io.Writer) {
 
 func (s *SelectorExpr) emit(w io.Writer) {
 	t := exprType(s.Target)
+	if t == "std::any" {
+		if st := structNameByField(s.Field); st != "" {
+			io.WriteString(w, "std::any_cast<"+st+">(")
+			s.Target.emit(w)
+			io.WriteString(w, ")")
+			io.WriteString(w, ".")
+			io.WriteString(w, s.Field)
+			return
+		}
+	}
 	if strings.HasPrefix(t, "std::map<") {
 		s.Target.emit(w)
 		io.WriteString(w, "[\"")
@@ -2728,6 +2760,8 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	useMem = false
 	usesLookupHost = false
 	usesSHA256 = false
+	usesIndexOf = false
+	usesParseIntStr = false
 	cp := &Program{Includes: []string{"<iostream>", "<string>"}, ListTypes: map[string]string{}, GlobalTypes: map[string]string{}}
 	currentProgram = cp
 	currentEnv = env
@@ -3174,6 +3208,8 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	cp.UseMem = useMem
 	cp.UseLookupHost = usesLookupHost
 	cp.UseSHA256 = usesSHA256
+	cp.UseIndexOf = usesIndexOf
+	cp.UseParseInt = usesParseIntStr
 	hasMain := false
 	for _, fn := range cp.Functions {
 		if fn.Name == "main" {
@@ -4245,6 +4281,39 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 					return nil, err
 				}
 				return &ContainsExpr{Value: v0, Sub: v1}, nil
+			}
+		case "indexOf":
+			if len(p.Call.Args) == 2 {
+				v0, err := convertExpr(p.Call.Args[0])
+				if err != nil {
+					return nil, err
+				}
+				v1, err := convertExpr(p.Call.Args[1])
+				if err != nil {
+					return nil, err
+				}
+				usesIndexOf = true
+				return &CallExpr{Name: "_indexOf", Args: []Expr{v0, v1}}, nil
+			}
+		case "parseIntStr":
+			if len(p.Call.Args) == 1 {
+				v0, err := convertExpr(p.Call.Args[0])
+				if err != nil {
+					return nil, err
+				}
+				usesParseIntStr = true
+				return &CallExpr{Name: "_parseIntStr", Args: []Expr{v0, &IntLit{Value: 10}}}, nil
+			} else if len(p.Call.Args) == 2 {
+				v0, err := convertExpr(p.Call.Args[0])
+				if err != nil {
+					return nil, err
+				}
+				v1, err := convertExpr(p.Call.Args[1])
+				if err != nil {
+					return nil, err
+				}
+				usesParseIntStr = true
+				return &CallExpr{Name: "_parseIntStr", Args: []Expr{v0, v1}}, nil
 			}
 		case "exists":
 			if len(p.Call.Args) == 1 {
@@ -5832,6 +5901,18 @@ func exprType(e Expr) string {
 		return "auto"
 	case *SelectorExpr:
 		t := exprType(v.Target)
+		if t == "std::any" {
+			if st := structNameByField(v.Field); st != "" {
+				return structFieldType(st, v.Field)
+			}
+			return "std::any"
+		}
+		if strings.HasPrefix(t, "std::map<") && strings.HasSuffix(t, ">") {
+			parts := strings.SplitN(strings.TrimSuffix(strings.TrimPrefix(t, "std::map<"), ">"), ",", 2)
+			if len(parts) == 2 {
+				return strings.TrimSpace(parts[1])
+			}
+		}
 		if ft := structFieldType(t, v.Field); ft != "" {
 			return ft
 		}
@@ -6031,6 +6112,24 @@ func structFieldType(stName, field string) string {
 		}
 	}
 	return "auto"
+}
+
+func structNameByField(field string) string {
+	if currentProgram != nil {
+		var found string
+		for _, st := range currentProgram.Structs {
+			for _, f := range st.Fields {
+				if f.Name == field {
+					if found != "" {
+						return ""
+					}
+					found = st.Name
+				}
+			}
+		}
+		return found
+	}
+	return ""
 }
 
 func convertTypeDecl(td *parser.TypeDecl) (*StructDef, error) {
