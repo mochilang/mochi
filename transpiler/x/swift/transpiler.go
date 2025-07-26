@@ -1687,37 +1687,152 @@ func Transpile(env *types.Env, prog *parser.Program, benchMain bool) (*Program, 
 	return p, nil
 }
 
-func findUpdatedVars(list []*parser.Statement, vars map[string]bool) {
+func findUpdatedVars(env *types.Env, list []*parser.Statement, vars map[string]bool) {
+	var scanExpr func(*parser.Expr)
+
+	scanCall := func(fn string, args []*parser.Expr) {
+		if flags, ok := funcMutParams[fn]; ok {
+			for i, a := range args {
+				if i < len(flags) && flags[i] {
+					if name := rootNameExpr(a); name != "" {
+						vars[name] = true
+					}
+				}
+				scanExpr(a)
+			}
+			return
+		}
+		for _, a := range args {
+			scanExpr(a)
+		}
+	}
+
+	var scanPrimary func(*parser.Primary)
+	scanPrimary = func(p *parser.Primary) {
+		if p == nil {
+			return
+		}
+		if p.Call != nil {
+			scanCall(p.Call.Func, p.Call.Args)
+			return
+		}
+		if p.Group != nil {
+			scanExpr(p.Group)
+		}
+	}
+
+	var scanPostfix func(*parser.PostfixExpr)
+	scanPostfix = func(pe *parser.PostfixExpr) {
+		if pe == nil {
+			return
+		}
+		scanPrimary(pe.Target)
+		for _, op := range pe.Ops {
+			if op.Call != nil {
+				fn := rootNamePostfix(pe)
+				scanCall(fn, op.Call.Args)
+			}
+			if op.Index != nil {
+				if op.Index.Start != nil {
+					scanExpr(op.Index.Start)
+				}
+				if op.Index.End != nil {
+					scanExpr(op.Index.End)
+				}
+				if op.Index.Step != nil {
+					scanExpr(op.Index.Step)
+				}
+			}
+		}
+	}
+
+	scanUnary := func(u *parser.Unary) {
+		if u == nil {
+			return
+		}
+		scanPostfix(u.Value)
+	}
+
+	scanExpr = func(e *parser.Expr) {
+		if e == nil {
+			return
+		}
+		if e.Binary != nil {
+			scanUnary(e.Binary.Left)
+			for _, op := range e.Binary.Right {
+				scanPostfix(op.Right)
+			}
+		}
+	}
+
 	for _, st := range list {
 		switch {
 		case st.Update != nil:
 			vars[st.Update.Target] = true
 		case st.Assign != nil:
 			vars[st.Assign.Name] = true
+		case st.Expr != nil:
+			scanExpr(st.Expr.Expr)
+		case st.Return != nil:
+			scanExpr(st.Return.Value)
+		case st.Let != nil:
+			scanExpr(st.Let.Value)
+		case st.Var != nil:
+			scanExpr(st.Var.Value)
 		case st.If != nil:
-			findUpdatedVars(st.If.Then, vars)
+			findUpdatedVars(env, st.If.Then, vars)
 			if st.If.Else != nil {
-				findUpdatedVars(st.If.Else, vars)
+				findUpdatedVars(env, st.If.Else, vars)
 			}
 			if st.If.ElseIf != nil {
 				child := &parser.Statement{If: st.If.ElseIf}
-				findUpdatedVars([]*parser.Statement{child}, vars)
+				findUpdatedVars(env, []*parser.Statement{child}, vars)
 			}
 		case st.For != nil:
-			findUpdatedVars(st.For.Body, vars)
+			findUpdatedVars(env, st.For.Body, vars)
 		case st.While != nil:
-			findUpdatedVars(st.While.Body, vars)
+			findUpdatedVars(env, st.While.Body, vars)
 		case st.Test != nil:
-			findUpdatedVars(st.Test.Body, vars)
+			findUpdatedVars(env, st.Test.Body, vars)
 		case st.Fun != nil:
-			findUpdatedVars(st.Fun.Body, vars)
+			findUpdatedVars(env, st.Fun.Body, vars)
 		}
 	}
 }
 
+func rootNameExpr(e *parser.Expr) string {
+	if e == nil {
+		return ""
+	}
+	if e.Binary != nil {
+		return rootNameUnary(e.Binary.Left)
+	}
+	return ""
+}
+
+func rootNameUnary(u *parser.Unary) string {
+	if u == nil {
+		return ""
+	}
+	return rootNamePostfix(u.Value)
+}
+
+func rootNamePostfix(pe *parser.PostfixExpr) string {
+	if pe == nil {
+		return ""
+	}
+	if pe.Target != nil && pe.Target.Selector != nil {
+		return pe.Target.Selector.Root
+	}
+	if pe.Target != nil && pe.Target.Group != nil {
+		return rootNameExpr(pe.Target.Group)
+	}
+	return ""
+}
+
 func convertStmts(env *types.Env, list []*parser.Statement) ([]Stmt, error) {
 	updated := map[string]bool{}
-	findUpdatedVars(list, updated)
+	findUpdatedVars(env, list, updated)
 	var out []Stmt
 	for _, st := range list {
 		cs, err := convertStmt(env, st)
@@ -2044,7 +2159,7 @@ func convertIfStmt(env *types.Env, i *parser.IfStmt) (Stmt, error) {
 func convertFunDecl(env *types.Env, f *parser.FunStmt) (Stmt, error) {
 	fn := &FunDecl{Name: f.Name, Ret: toSwiftType(f.Return)}
 	updated := map[string]bool{}
-	findUpdatedVars(f.Body, updated)
+	findUpdatedVars(env, f.Body, updated)
 	// register function type for calls (and recursion)
 	if env != nil {
 		var params []types.Type
@@ -2938,6 +3053,9 @@ func convertPostfix(env *types.Env, p *parser.PostfixExpr) (Expr, error) {
 						}
 					}
 				}
+				if st, ok := t.(types.StructType); ok {
+					expr = &CastExpr{Expr: expr, Type: st.Name}
+				}
 			}
 		}
 	}
@@ -2997,21 +3115,23 @@ func convertPostfix(env *types.Env, p *parser.PostfixExpr) (Expr, error) {
 			}
 			isStr := false
 			force := false
+			skipUpdate := false
 			if env != nil {
 				if types.IsStringType(baseType) {
 					isStr = true
 				}
 				if m, ok := baseType.(types.MapType); ok {
-					// return optional value when key may be missing
 					baseType = types.OptionType{Elem: m.Value}
 					force = true
 				} else if l, ok := baseType.(types.ListType); ok {
 					baseType = l.Elem
+					if i+1 < len(p.Ops) && p.Ops[i+1].Index != nil {
+						if _, ok2 := baseType.(types.ListType); ok2 {
+							skipUpdate = true
+						}
+					}
 				} else if _, ok := baseType.(types.StructType); ok {
-					// treat struct like a dictionary when indexed dynamically
-					expr = &CastExpr{Expr: expr, Type: "[String: Any]"}
 					baseType = types.AnyType{}
-					force = true
 				}
 			}
 			if env != nil && types.IsAnyType(baseType) {
@@ -3024,7 +3144,7 @@ func convertPostfix(env *types.Env, p *parser.PostfixExpr) (Expr, error) {
 			} else {
 				expr = &IndexExpr{Base: expr, Index: idx, AsString: isStr, Force: force}
 			}
-			if env != nil {
+			if env != nil && !skipUpdate {
 				// update baseType after indexing
 				switch bt := baseType.(type) {
 				case types.OptionType:
