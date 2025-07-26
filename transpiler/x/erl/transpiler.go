@@ -114,6 +114,16 @@ mochi_parse_int_str(S) ->
     try list_to_integer(S) catch _:_ -> 0 end.
 `
 
+const helperNot = `
+mochi_not(X) ->
+    case X of
+        true -> false;
+        false -> true;
+        nil -> true;
+        _ -> false
+    end.
+`
+
 const helperBigRat = `
 mochi_gcd(A, B) ->
     A1 = abs(A),
@@ -169,6 +179,7 @@ var useIndexOf bool
 var useParseIntStr bool
 var useBigRat bool
 var useRepeat bool
+var useNot bool
 var mutatedFuncs map[string]int
 var benchMain bool
 
@@ -196,6 +207,7 @@ type Program struct {
 	UseParseIntStr  bool
 	UseBigRat       bool
 	UseRepeat       bool
+	UseNot          bool
 }
 
 // context tracks variable aliases to emulate mutable variables.
@@ -1272,7 +1284,7 @@ func isBoolExpr(e Expr, env *types.Env, ctx *context) bool {
 			}
 		}
 	case *CallExpr:
-		if v.Func == "maps:is_key" || v.Func == "mochi_member" || v.Func == "string:str" {
+		if v.Func == "maps:is_key" || v.Func == "mochi_member" || v.Func == "string:str" || v.Func == "mochi_not" {
 			return true
 		}
 		if env != nil {
@@ -2951,6 +2963,7 @@ func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, erro
 	useParseIntStr = false
 	useBigRat = false
 	useRepeat = false
+	useNot = false
 	mutatedFuncs = map[string]int{
 		"topple":  0,
 		"fill":    0,
@@ -2989,6 +3002,7 @@ func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, erro
 	p.UseParseIntStr = useParseIntStr
 	p.UseBigRat = useBigRat
 	p.UseRepeat = useRepeat
+	p.UseNot = useNot
 	return p, nil
 }
 
@@ -3258,12 +3272,16 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context, top bool) (
 				kind = "map"
 			}
 		}
+		kind2 := "list"
+		if _, ok := idx2.(*StringLit); ok {
+			kind2 = "map"
+		}
 		var stmts []Stmt
 		// extract inner value
 		inner := &IndexExpr{Target: &NameRef{Name: old}, Index: idx1, Kind: kind}
 		stmts = append(stmts, &LetStmt{Name: tmp, Expr: inner})
 		// update inner
-		if kind == "map" {
+		if kind2 == "map" {
 			stmts = append(stmts, &MapAssignStmt{Name: tmp2, Old: tmp, Key: idx2, Value: val})
 		} else {
 			stmts = append(stmts, &ListAssignStmt{Name: tmp2, Old: tmp, Index: idx2, Value: val})
@@ -4133,7 +4151,12 @@ func convertUnary(u *parser.Unary, env *types.Env, ctx *context) (Expr, error) {
 	}
 	for i := len(u.Ops) - 1; i >= 0; i-- {
 		op := u.Ops[i]
-		expr = &UnaryExpr{Op: op, Expr: expr}
+		if op == "!" {
+			useNot = true
+			expr = &CallExpr{Func: "mochi_not", Args: []Expr{expr}}
+		} else {
+			expr = &UnaryExpr{Op: op, Expr: expr}
+		}
 	}
 	return expr, nil
 }
@@ -4303,32 +4326,38 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env, ctx *context) (Expr,
 			}
 			kind := "list"
 			isStr := false
-			if isMapExpr(expr, env, ctx) {
-				kind = "map"
-				if fieldIsString(expr, idx, env, ctx) {
+			if t := exprType(expr, env, ctx); t != nil {
+				switch tt := t.(type) {
+				case types.MapType, types.StructType:
+					kind = "map"
+				case types.StringType:
+					kind = "string"
 					isStr = true
-				}
-			} else if isStringExpr(expr) {
-				kind = "string"
-				isStr = true
-			} else if _, ok := idx.(*StringLit); ok {
-				kind = "map"
-			}
-			if !isStr {
-				if t := exprType(expr, env, ctx); t != nil {
-					if lt, ok := t.(types.ListType); ok {
-						if _, ok2 := lt.Elem.(types.StringType); ok2 {
-							isStr = true
-						}
+				case types.ListType:
+					if _, ok := tt.Elem.(types.StringType); ok {
+						isStr = true
 					}
 				}
-				if !isStr {
-					if nr, ok := expr.(*NameRef); ok {
-						name := nr.Name
-						if ctx != nil {
-							name = ctx.original(nr.Name)
-						}
-						if ctx != nil && ctx.isListStrVar(name) {
+			}
+			if kind == "list" {
+				if isMapExpr(expr, env, ctx) {
+					kind = "map"
+					if fieldIsString(expr, idx, env, ctx) {
+						isStr = true
+					}
+				} else if isStringExpr(expr) {
+					kind = "string"
+					isStr = true
+				} else if _, ok := idx.(*StringLit); ok {
+					kind = "map"
+				}
+			}
+			if !isStr {
+				if nr, ok := expr.(*NameRef); ok {
+					name := nr.Name
+					if ctx != nil {
+						name = ctx.original(nr.Name)
+						if ctx.isListStrVar(name) {
 							isStr = true
 						}
 					}
@@ -5815,6 +5844,10 @@ func (p *Program) Emit() []byte {
 	}
 	if p.UseRepeat {
 		buf.WriteString(helperRepeat)
+		buf.WriteString("\n")
+	}
+	if p.UseNot {
+		buf.WriteString(helperNot)
 		buf.WriteString("\n")
 	}
 	for _, f := range p.Funs {
