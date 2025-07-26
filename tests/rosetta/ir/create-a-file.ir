@@ -1,0 +1,87 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun createFile(fs: map<string, bool>, fn: string) {
+func createFile (regs=12)
+  // if fn in fs {
+  In           r2, r1, r0
+  JumpIfFalse  r2, L0
+  // print("open " + fn + ": file exists")
+  Const        r3, "open "
+  Add          r4, r3, r1
+  Const        r5, ": file exists"
+  Add          r6, r4, r5
+  Print        r6
+  // if fn in fs {
+  Jump         L1
+L0:
+  // fs[fn] = false
+  Const        r7, false
+  SetIndex     r0, r1, r7
+  // print("file " + fn + " created!")
+  Const        r8, "file "
+  Add          r9, r8, r1
+  Const        r10, " created!"
+  Add          r11, r9, r10
+  Print        r11
+L1:
+  Return       r0
+
+  // fun createDir(fs: map<string, bool>, dn: string) {
+func createDir (regs=12)
+  // if dn in fs {
+  In           r2, r1, r0
+  JumpIfFalse  r2, L0
+  // print("mkdir " + dn + ": file exists")
+  Const        r3, "mkdir "
+  Add          r4, r3, r1
+  Const        r5, ": file exists"
+  Add          r6, r4, r5
+  Print        r6
+  // if dn in fs {
+  Jump         L1
+L0:
+  // fs[dn] = true
+  Const        r7, true
+  SetIndex     r0, r1, r7
+  // print("directory " + dn + " created!")
+  Const        r8, "directory "
+  Add          r9, r8, r1
+  Const        r10, " created!"
+  Add          r11, r9, r10
+  Print        r11
+L1:
+  Return       r0
+
+  // fun main() {
+func main (regs=19)
+  // var fs: map<string, bool> = {}
+  Const        r0, {}
+  Move         r1, r0
+  // fs["docs"] = true
+  Const        r2, true
+  Const        r3, "docs"
+  SetIndex     r1, r3, r2
+  // createFile(fs, "input.txt")
+  Move         r4, r1
+  Const        r6, "input.txt"
+  Move         r5, r6
+  Call2        r7, createFile, r4, r5
+  // createFile(fs, "/input.txt")
+  Move         r8, r1
+  Const        r10, "/input.txt"
+  Move         r9, r10
+  Call2        r11, createFile, r8, r9
+  // createDir(fs, "docs")
+  Move         r12, r1
+  Const        r3, "docs"
+  Move         r13, r3
+  Call2        r14, createDir, r12, r13
+  // createDir(fs, "/docs")
+  Move         r15, r1
+  Const        r17, "/docs"
+  Move         r16, r17
+  Call2        r18, createDir, r15, r16
+  Return       r0

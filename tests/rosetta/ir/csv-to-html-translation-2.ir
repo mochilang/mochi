@@ -1,0 +1,201 @@
+func main (regs=101)
+  // let c = "Character,Speech\n" +
+  Const        r3, "Character,Speech\n"
+  // "The multitude,The messiah! Show us the messiah!\n" +
+  Const        r4, "The multitude,The messiah! Show us the messiah!\n"
+  // let c = "Character,Speech\n" +
+  Const        r5, "Character,Speech\nThe multitude,The messiah! Show us the messiah!\n"
+  // "Brians mother,<angry>Now you listen here! He's not the messiah; he's a very naughty boy! Now go away!</angry>\n" +
+  Const        r6, "Brians mother,<angry>Now you listen here! He's not the messiah; he's a very naughty boy! Now go away!</angry>\n"
+  // "The multitude,The messiah! Show us the messiah!\n" +
+  Const        r7, "Character,Speech\nThe multitude,The messiah! Show us the messiah!\nBrians mother,<angry>Now you listen here! He's not the messiah; he's a very naughty boy! Now go away!</angry>\n"
+  // "The multitude,Who are you?\n" +
+  Const        r8, "The multitude,Who are you?\n"
+  // "Brians mother,<angry>Now you listen here! He's not the messiah; he's a very naughty boy! Now go away!</angry>\n" +
+  Const        r9, "Character,Speech\nThe multitude,The messiah! Show us the messiah!\nBrians mother,<angry>Now you listen here! He's not the messiah; he's a very naughty boy! Now go away!</angry>\nThe multitude,Who are you?\n"
+  // "Brians mother,I'm his mother; that's who!\n" +
+  Const        r10, "Brians mother,I'm his mother; that's who!\n"
+  // "The multitude,Who are you?\n" +
+  Const        r11, "Character,Speech\nThe multitude,The messiah! Show us the messiah!\nBrians mother,<angry>Now you listen here! He's not the messiah; he's a very naughty boy! Now go away!</angry>\nThe multitude,Who are you?\nBrians mother,I'm his mother; that's who!\n"
+  // "The multitude,Behold his mother! Behold his mother!"
+  Const        r12, "The multitude,Behold his mother! Behold his mother!"
+  // "Brians mother,I'm his mother; that's who!\n" +
+  Const        r13, "Character,Speech\nThe multitude,The messiah! Show us the messiah!\nBrians mother,<angry>Now you listen here! He's not the messiah; he's a very naughty boy! Now go away!</angry>\nThe multitude,Who are you?\nBrians mother,I'm his mother; that's who!\nThe multitude,Behold his mother! Behold his mother!"
+  // let c = "Character,Speech\n" +
+  Move         r0, r13
+  SetGlobal    0,0,0,0
+  // var rows: list<list<string>> = []
+  Const        r14, []
+  Move         r1, r14
+  SetGlobal    1,1,0,0
+  // for line in split(c, "\n") { rows = append(rows, split(line, ",")) }
+  IterPrep     r16, r15
+  Len          r17, r16
+  Const        r18, 0
+L1:
+  LessInt      r19, r18, r17
+  JumpIfFalse  r19, L0
+  Index        r20, r16, r18
+  Move         r21, r20
+  Append       r23, r1, r22
+  Move         r1, r23
+  SetGlobal    1,1,0,0
+  Const        r24, 1
+  AddInt       r25, r18, r24
+  Move         r18, r25
+  Jump         L1
+L0:
+  // let headings = true
+  Const        r26, true
+  Move         r2, r26
+  SetGlobal    2,2,0,0
+  // print("<table>")
+  Const        r27, "<table>"
+  Print        r27
+  // if headings {
+  Const        r26, true
+  JumpIfFalse  r26, L2
+  // if len(rows) > 0 {
+  Len          r28, r1
+  Const        r29, 0
+  LessInt      r30, r29, r28
+  JumpIfFalse  r30, L3
+  // var th = ""
+  Const        r31, ""
+  Move         r32, r31
+  // for h in rows[0] { th = th + "<th>" + h + "</th>" }
+  Const        r29, 0
+  Index        r33, r1, r29
+  IterPrep     r34, r33
+  Len          r35, r34
+  Const        r36, 0
+L5:
+  LessInt      r37, r36, r35
+  JumpIfFalse  r37, L4
+  Index        r38, r34, r36
+  Move         r39, r38
+  Const        r40, "<th>"
+  Add          r41, r32, r40
+  Add          r42, r41, r39
+  Const        r43, "</th>"
+  Add          r44, r42, r43
+  Move         r32, r44
+  Const        r45, 1
+  AddInt       r46, r36, r45
+  Move         r36, r46
+  Jump         L5
+L4:
+  // print("   <thead>")
+  Const        r47, "   <thead>"
+  Print        r47
+  // print("      <tr>" + th + "</tr>")
+  Const        r48, "      <tr>"
+  Add          r49, r48, r32
+  Const        r50, "</tr>"
+  Add          r51, r49, r50
+  Print        r51
+  // print("   </thead>")
+  Const        r52, "   </thead>"
+  Print        r52
+  // print("   <tbody>")
+  Const        r53, "   <tbody>"
+  Print        r53
+  // var i = 1
+  Const        r54, 1
+  Move         r55, r54
+L9:
+  // while i < len(rows) {
+  Len          r56, r1
+  LessInt      r57, r55, r56
+  JumpIfFalse  r57, L6
+  // var cells = ""
+  Const        r31, ""
+  Move         r58, r31
+  // for cell in rows[i] { cells = cells + "<td>" + cell + "</td>" }
+  Index        r59, r1, r55
+  IterPrep     r60, r59
+  Len          r61, r60
+  Const        r62, 0
+L8:
+  LessInt      r63, r62, r61
+  JumpIfFalse  r63, L7
+  Index        r64, r60, r62
+  Move         r65, r64
+  Const        r66, "<td>"
+  Add          r67, r58, r66
+  Add          r68, r67, r65
+  Const        r69, "</td>"
+  Add          r70, r68, r69
+  Move         r58, r70
+  Const        r71, 1
+  AddInt       r72, r62, r71
+  Move         r62, r72
+  Jump         L8
+L7:
+  // print("      <tr>" + cells + "</tr>")
+  Const        r48, "      <tr>"
+  Add          r73, r48, r58
+  Const        r50, "</tr>"
+  Add          r74, r73, r50
+  Print        r74
+  // i = i + 1
+  Const        r54, 1
+  AddInt       r75, r55, r54
+  Move         r55, r75
+  // while i < len(rows) {
+  Jump         L9
+L6:
+  // print("   </tbody>")
+  Const        r76, "   </tbody>"
+  Print        r76
+  // if headings {
+  Jump         L3
+L2:
+  // for row in rows {
+  IterPrep     r77, r1
+  Len          r78, r77
+  Const        r79, 0
+L12:
+  LessInt      r80, r79, r78
+  JumpIfFalse  r80, L3
+  Index        r81, r77, r79
+  Move         r82, r81
+  // var cells = ""
+  Const        r31, ""
+  Move         r83, r31
+  // for cell in row { cells = cells + "<td>" + cell + "</td>" }
+  IterPrep     r84, r82
+  Len          r85, r84
+  Const        r86, 0
+L11:
+  LessInt      r87, r86, r85
+  JumpIfFalse  r87, L10
+  Index        r88, r84, r86
+  Move         r89, r88
+  Const        r66, "<td>"
+  Add          r90, r83, r66
+  Add          r91, r90, r89
+  Const        r69, "</td>"
+  Add          r92, r91, r69
+  Move         r83, r92
+  Const        r93, 1
+  AddInt       r94, r86, r93
+  Move         r86, r94
+  Jump         L11
+L10:
+  // print("    <tr>" + cells + "</tr>")
+  Const        r95, "    <tr>"
+  Add          r96, r95, r83
+  Const        r50, "</tr>"
+  Add          r97, r96, r50
+  Print        r97
+  // for row in rows {
+  Const        r98, 1
+  AddInt       r99, r79, r98
+  Move         r79, r99
+  Jump         L12
+L3:
+  // print("</table>")
+  Const        r100, "</table>"
+  Print        r100
+  Return       r0

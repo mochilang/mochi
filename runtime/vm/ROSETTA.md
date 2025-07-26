@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated IR and outputs from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/ir`.
-Last updated: 2025-07-26 13:53 UTC
+Last updated: 2025-07-26 14:57 UTC
 
-## Rosetta Golden Test Checklist (219/332)
+## Rosetta Golden Test Checklist (248/332)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 116µs | 11.7 KB |
@@ -240,36 +240,36 @@ Last updated: 2025-07-26 13:53 UTC
 | 231 | constrained-random-points-on-a-circle-1 | ✓ | 33.713ms |  |
 | 232 | constrained-random-points-on-a-circle-2 | ✓ | 74.269ms | 2.2 MB |
 | 233 | continued-fraction | ✓ | 792µs | 317.6 KB |
-| 234 | convert-decimal-number-to-rational |   |  |  |
-| 235 | convert-seconds-to-compound-duration |   |  |  |
-| 236 | convex-hull |   |  |  |
-| 237 | conways-game-of-life |   |  |  |
-| 238 | copy-a-string-1 |   |  |  |
-| 239 | copy-a-string-2 |   |  |  |
-| 240 | copy-stdin-to-stdout-1 | ✓ |  |  |
-| 241 | copy-stdin-to-stdout-2 |   |  |  |
-| 242 | count-in-factors |   |  |  |
-| 243 | count-in-octal-1 |   |  |  |
-| 244 | count-in-octal-2 |   |  |  |
-| 245 | count-in-octal-3 |   |  |  |
-| 246 | count-in-octal-4 |   |  |  |
-| 247 | count-occurrences-of-a-substring |   |  |  |
-| 248 | count-the-coins-1 |   |  |  |
-| 249 | count-the-coins-2 |   |  |  |
-| 250 | cramers-rule |   |  |  |
-| 251 | crc-32-1 |   |  |  |
-| 252 | crc-32-2 |   |  |  |
-| 253 | create-a-file-on-magnetic-tape |   |  |  |
-| 254 | create-a-file |   |  |  |
-| 255 | create-a-two-dimensional-array-at-runtime-1 |   |  |  |
-| 256 | create-an-html-table |   |  |  |
-| 257 | create-an-object-at-a-given-address |   |  |  |
-| 258 | csv-data-manipulation |   |  |  |
-| 259 | csv-to-html-translation-1 |   |  |  |
-| 260 | csv-to-html-translation-2 |   |  |  |
-| 261 | csv-to-html-translation-3 |   |  |  |
-| 262 | csv-to-html-translation-4 |   |  |  |
-| 263 | csv-to-html-translation-5 |   |  |  |
+| 234 | convert-decimal-number-to-rational | ✓ |  |  |
+| 235 | convert-seconds-to-compound-duration | ✓ | 360µs | 19.8 KB |
+| 236 | convex-hull | ✓ | 2.537ms | 424.6 KB |
+| 237 | conways-game-of-life | ✓ | 16.545665s | 429.3 KB |
+| 238 | copy-a-string-1 | ✓ | 332µs | 376 B |
+| 239 | copy-a-string-2 | ✓ | 367µs | 2.7 KB |
+| 240 | copy-stdin-to-stdout-1 | ✓ | 582µs | 728 B |
+| 241 | copy-stdin-to-stdout-2 | ✓ | 291µs | 840 B |
+| 242 | count-in-factors | ✓ | 7.765ms | 112.2 KB |
+| 243 | count-in-octal-1 | ✓ | 1.354ms | 314.0 KB |
+| 244 | count-in-octal-2 | ✓ | 375.123ms | 1.7 MB |
+| 245 | count-in-octal-3 | ✓ | 737µs | 23.0 KB |
+| 246 | count-in-octal-4 | ✓ | 421µs | 40.1 KB |
+| 247 | count-occurrences-of-a-substring | ✓ | 412µs | 7.5 KB |
+| 248 | count-the-coins-1 | ✓ | 713µs | 21.9 KB |
+| 249 | count-the-coins-2 | ✓ | 91.004ms | 971.5 KB |
+| 250 | cramers-rule | ✓ | 3.823ms | 1.4 MB |
+| 251 | crc-32-1 | ✓ | 58.741ms | 660.0 KB |
+| 252 | crc-32-2 | ✓ | 49.144ms | 2.4 MB |
+| 253 | create-a-file-on-magnetic-tape | ✓ | 262µs | 7.8 KB |
+| 254 | create-a-file | ✓ | 517µs | 10.6 KB |
+| 255 | create-a-two-dimensional-array-at-runtime-1 | ✓ | 346µs | 12.5 KB |
+| 256 | create-an-html-table | ✓ | 837µs | 11.9 KB |
+| 257 | create-an-object-at-a-given-address | ✓ | 1.281ms | 32.7 KB |
+| 258 | csv-data-manipulation | ✓ | 1.009ms | 64.7 KB |
+| 259 | csv-to-html-translation-1 | ✓ | 650µs | 6.1 KB |
+| 260 | csv-to-html-translation-2 | ✓ | 651µs | 12.1 KB |
+| 261 | csv-to-html-translation-3 | ✓ | 450µs | 3.5 KB |
+| 262 | csv-to-html-translation-4 | ✓ | 399µs | 2.3 KB |
+| 263 | csv-to-html-translation-5 | ✓ | 4.737ms | 609.1 KB |
 | 264 | cuban-primes |   |  |  |
 | 265 | cullen-and-woodall-numbers |   |  |  |
 | 266 | cumulative-standard-deviation |   |  |  |

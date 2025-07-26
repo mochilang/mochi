@@ -1,0 +1,9 @@
+func main (regs=3)
+  // var src = "Hello"
+  Const        r2, "Hello"
+  Move         r0, r2
+  SetGlobal    0,0,0,0
+  // var dst = src
+  Move         r1, r0
+  SetGlobal    1,1,0,0
+  Return       r0

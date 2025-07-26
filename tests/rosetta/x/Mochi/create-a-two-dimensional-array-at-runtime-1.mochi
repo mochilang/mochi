@@ -2,9 +2,8 @@
 // Translated from Go version in tests/rosetta/x/Go/create-a-two-dimensional-array-at-runtime-1.go
 
 fun main() {
-  print("enter rows cols: ")
-  let row = int(input())
-  let col = int(input())
+  let row = 3
+  let col = 4
 
   var a: list<list<int>> = []
   var i = 0

@@ -1,0 +1,428 @@
+func main (regs=3)
+  // var seed = 1
+  Const        r1, 1
+  Move         r0, r1
+  SetGlobal    0,0,0,0
+  // main()
+  Call         r2, main, 
+  Return       r0
+
+  // fun randN(n: int): int {
+func randN (regs=9)
+  // seed = (seed * 1664525 + 1013904223) % 2147483647
+  Const        r2, 1664525
+  Mul          r3, r0, r2
+  Const        r4, 1013904223
+  Add          r5, r3, r4
+  Const        r6, 2147483647
+  Mod          r7, r5, r6
+  Move         r0, r7
+  SetGlobal    0,0,0,0
+  // return seed % n
+  Mod          r8, r0, r1
+  Return       r8
+
+  // fun newField(w: int, h: int): Field {
+func newField (regs=26)
+  // var rows: list<list<bool>> = []
+  Const        r3, []
+  Move         r4, r3
+  // var y = 0
+  Const        r5, 0
+  Move         r6, r5
+L3:
+  // while y < h {
+  Less         r7, r6, r2
+  JumpIfFalse  r7, L0
+  // var row: list<bool> = []
+  Const        r3, []
+  Move         r8, r3
+  // var x = 0
+  Const        r5, 0
+  Move         r9, r5
+L2:
+  // while x < w {
+  Less         r10, r9, r1
+  JumpIfFalse  r10, L1
+  // row = append(row, false)
+  Const        r11, false
+  Append       r12, r8, r11
+  Move         r8, r12
+  // x = x + 1
+  Const        r13, 1
+  AddInt       r14, r9, r13
+  Move         r9, r14
+  // while x < w {
+  Jump         L2
+L1:
+  // rows = append(rows, row)
+  Append       r15, r4, r8
+  Move         r4, r15
+  // y = y + 1
+  Const        r13, 1
+  AddInt       r16, r6, r13
+  Move         r6, r16
+  // while y < h {
+  Jump         L3
+L0:
+  // return Field{ s: rows, w: w, h: h }
+  Const        r17, "__name"
+  Const        r18, "Field"
+  Const        r19, "s"
+  Move         r20, r4
+  Const        r21, "w"
+  Move         r22, r1
+  Const        r23, "h"
+  Move         r24, r2
+  MakeMap      r25, 4, r17
+  Return       r25
+
+  // fun setCell(f: Field, x: int, y: int, b: bool) {
+func setCell (regs=10)
+  // var rows = f.s
+  Const        r5, "s"
+  Index        r6, r1, r5
+  Move         r7, r6
+  // var row = rows[y]
+  Index        r8, r7, r3
+  Move         r9, r8
+  // row[x] = b
+  SetIndex     r9, r2, r4
+  // rows[y] = row
+  SetIndex     r7, r3, r9
+  // f.s = rows
+  Const        r5, "s"
+  SetIndex     r1, r5, r7
+  Return       r0
+
+  // fun state(f: Field, x: int, y: int): bool {
+func state (regs=21)
+L1:
+  // while y < 0 { y = y + f.h }
+  Const        r4, 0
+  Less         r5, r3, r4
+  JumpIfFalse  r5, L0
+  Const        r6, "h"
+  Index        r7, r1, r6
+  Add          r8, r3, r7
+  Move         r3, r8
+  Jump         L1
+L0:
+  // while x < 0 { x = x + f.w }
+  Const        r4, 0
+  Less         r9, r2, r4
+  JumpIfFalse  r9, L2
+  Const        r10, "w"
+  Index        r11, r1, r10
+  Add          r12, r2, r11
+  Move         r2, r12
+  Jump         L0
+L2:
+  // return f.s[y % f.h][x % f.w]
+  Const        r13, "s"
+  Index        r14, r1, r13
+  Const        r6, "h"
+  Index        r15, r1, r6
+  Mod          r16, r3, r15
+  Index        r17, r14, r16
+  Const        r10, "w"
+  Index        r18, r1, r10
+  Mod          r19, r2, r18
+  Index        r20, r17, r19
+  Return       r20
+
+  // fun nextState(f: Field, x: int, y: int): bool {
+func nextState (regs=37)
+  // var count = 0
+  Const        r4, 0
+  Move         r5, r4
+  // var dy = -1
+  Const        r6, 1
+  NegInt       r7, r6
+  Move         r8, r7
+L6:
+  // while dy <= 1 {
+  Const        r6, 1
+  LessEqInt    r9, r8, r6
+  JumpIfFalse  r9, L0
+  // var dx = -1
+  Const        r6, 1
+  NegInt       r10, r6
+  Move         r11, r10
+L5:
+  // while dx <= 1 {
+  Const        r6, 1
+  LessEqInt    r12, r11, r6
+  JumpIfFalse  r12, L1
+  // if !(dx == 0 && dy == 0) && state(f, x+dx, y+dy) {
+  Const        r4, 0
+  EqualInt     r13, r11, r4
+  Const        r4, 0
+  EqualInt     r14, r8, r4
+  Move         r15, r13
+  JumpIfFalse  r15, L2
+  Move         r15, r14
+L2:
+  Not          r16, r15
+  Move         r17, r16
+  JumpIfFalse  r17, L3
+  Move         r18, r1
+  Add          r21, r2, r11
+  Move         r19, r21
+  Add          r22, r3, r8
+  Move         r20, r22
+  Call         r23, state, r18, r19, r20
+  Move         r17, r23
+L3:
+  JumpIfFalse  r17, L4
+  // count = count + 1
+  Const        r6, 1
+  AddInt       r24, r5, r6
+  Move         r5, r24
+L4:
+  // dx = dx + 1
+  Const        r6, 1
+  AddInt       r25, r11, r6
+  Move         r11, r25
+  // while dx <= 1 {
+  Jump         L5
+L1:
+  // dy = dy + 1
+  Const        r6, 1
+  AddInt       r26, r8, r6
+  Move         r8, r26
+  // while dy <= 1 {
+  Jump         L6
+L0:
+  // return count == 3 || (count == 2 && state(f, x, y))
+  Const        r27, 3
+  EqualInt     r28, r5, r27
+  Move         r29, r28
+  JumpIfTrue   r29, L7
+  Const        r30, 2
+  EqualInt     r31, r5, r30
+  Move         r32, r31
+  JumpIfFalse  r32, L8
+  Move         r33, r1
+  Move         r34, r2
+  Move         r35, r3
+  Call         r36, state, r33, r34, r35
+  Move         r32, r36
+L8:
+  Move         r29, r32
+L7:
+  Return       r29
+
+  // fun newLife(w: int, h: int): Life {
+func newLife (regs=39)
+  // var a = newField(w, h)
+  Move         r3, r1
+  Move         r4, r2
+  Call2        r5, newField, r3, r4
+  Move         r6, r5
+  // var i = 0
+  Const        r7, 0
+  Move         r8, r7
+L1:
+  // while i < (w * h / 2) {
+  Mul          r9, r1, r2
+  Const        r10, 2
+  Div          r11, r9, r10
+  Less         r12, r8, r11
+  JumpIfFalse  r12, L0
+  // setCell(a, randN(w), randN(h), true)
+  Move         r13, r6
+  Move         r17, r1
+  Call         r18, randN, r17
+  Move         r14, r18
+  Move         r19, r2
+  Call         r20, randN, r19
+  Move         r15, r20
+  Const        r21, true
+  Move         r16, r21
+  Call         r22, setCell, r13, r14, r15, r16
+  // i = i + 1
+  Const        r23, 1
+  AddInt       r24, r8, r23
+  Move         r8, r24
+  // while i < (w * h / 2) {
+  Jump         L1
+L0:
+  // return Life{ a: a, b: newField(w, h), w: w, h: h }
+  Move         r25, r1
+  Move         r26, r2
+  Call2        r27, newField, r25, r26
+  Const        r28, "__name"
+  Const        r29, "Life"
+  Const        r30, "a"
+  Move         r31, r6
+  Const        r32, "b"
+  Move         r33, r27
+  Const        r34, "w"
+  Move         r35, r1
+  Const        r36, "h"
+  Move         r37, r2
+  MakeMap      r38, 5, r28
+  Return       r38
+
+  // fun step(l: Life) {
+func step (regs=30)
+  // var y = 0
+  Const        r2, 0
+  Move         r3, r2
+L3:
+  // while y < l.h {
+  Const        r4, "h"
+  Index        r5, r1, r4
+  Less         r6, r3, r5
+  JumpIfFalse  r6, L0
+  // var x = 0
+  Const        r2, 0
+  Move         r7, r2
+L2:
+  // while x < l.w {
+  Const        r8, "w"
+  Index        r9, r1, r8
+  Less         r10, r7, r9
+  JumpIfFalse  r10, L1
+  // setCell(l.b, x, y, nextState(l.a, x, y))
+  Const        r15, "b"
+  Index        r16, r1, r15
+  Move         r11, r16
+  Move         r12, r7
+  Move         r13, r3
+  Const        r20, "a"
+  Index        r21, r1, r20
+  Move         r17, r21
+  Move         r18, r7
+  Move         r19, r3
+  Call         r22, nextState, r17, r18, r19
+  Move         r14, r22
+  Call         r23, setCell, r11, r12, r13, r14
+  // x = x + 1
+  Const        r24, 1
+  AddInt       r25, r7, r24
+  Move         r7, r25
+  // while x < l.w {
+  Jump         L2
+L1:
+  // y = y + 1
+  Const        r24, 1
+  AddInt       r26, r3, r24
+  Move         r3, r26
+  // while y < l.h {
+  Jump         L3
+L0:
+  // var tmp = l.a
+  Const        r20, "a"
+  Index        r27, r1, r20
+  Move         r28, r27
+  // l.a = l.b
+  Const        r15, "b"
+  Index        r29, r1, r15
+  Const        r20, "a"
+  SetIndex     r1, r20, r29
+  // l.b = tmp
+  Const        r15, "b"
+  SetIndex     r1, r15, r28
+  Return       r0
+
+  // fun lifeString(l: Life): string {
+func lifeString (regs=28)
+  // var out = ""
+  Const        r2, ""
+  Move         r3, r2
+  // var y = 0
+  Const        r4, 0
+  Move         r5, r4
+L5:
+  // while y < l.h {
+  Const        r6, "h"
+  Index        r7, r1, r6
+  Less         r8, r5, r7
+  JumpIfFalse  r8, L0
+  // var x = 0
+  Const        r4, 0
+  Move         r9, r4
+L4:
+  // while x < l.w {
+  Const        r10, "w"
+  Index        r11, r1, r10
+  Less         r12, r9, r11
+  JumpIfFalse  r12, L1
+  // if state(l.a, x, y) {
+  Const        r16, "a"
+  Index        r17, r1, r16
+  Move         r13, r17
+  Move         r14, r9
+  Move         r15, r5
+  Call         r18, state, r13, r14, r15
+  JumpIfFalse  r18, L2
+  // out = out + "*"
+  Const        r19, "*"
+  Add          r20, r3, r19
+  Move         r3, r20
+  // if state(l.a, x, y) {
+  Jump         L3
+L2:
+  // out = out + " "
+  Const        r21, " "
+  Add          r22, r3, r21
+  Move         r3, r22
+L3:
+  // x = x + 1
+  Const        r23, 1
+  AddInt       r24, r9, r23
+  Move         r9, r24
+  // while x < l.w {
+  Jump         L4
+L1:
+  // out = out + "\n"
+  Const        r25, "\n"
+  Add          r26, r3, r25
+  Move         r3, r26
+  // y = y + 1
+  Const        r23, 1
+  AddInt       r27, r5, r23
+  Move         r5, r27
+  // while y < l.h {
+  Jump         L5
+L0:
+  // return out
+  Return       r3
+
+  // fun main() {
+func main (regs=18)
+  // var l = newLife(80, 15)
+  Const        r3, 80
+  Move         r1, r3
+  Const        r4, 15
+  Move         r2, r4
+  Call2        r5, newLife, r1, r2
+  Move         r6, r5
+  // var i = 0
+  Const        r7, 0
+  Move         r8, r7
+L1:
+  // while i < 300 {
+  Const        r9, 300
+  LessInt      r10, r8, r9
+  JumpIfFalse  r10, L0
+  // step(l)
+  Move         r11, r6
+  Call         r12, step, r11
+  // print("\x0c")
+  Const        r13, "\f"
+  Print        r13
+  // print(lifeString(l))
+  Move         r14, r6
+  Call         r15, lifeString, r14
+  Print        r15
+  // i = i + 1
+  Const        r16, 1
+  AddInt       r17, r8, r16
+  Move         r8, r17
+  // while i < 300 {
+  Jump         L1
+L0:
+  Return       r0

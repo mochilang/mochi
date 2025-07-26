@@ -1,0 +1,44 @@
+func main (regs=17)
+  // var creature = "shark"
+  Const        r2, "shark"
+  Move         r0, r2
+  SetGlobal    0,0,0,0
+  // var pointer = [creature]
+  Move         r3, r0
+  MakeList     r4, 1, r3
+  Move         r1, r4
+  SetGlobal    1,1,0,0
+  // print("creature = " + creature)
+  Const        r5, "creature = "
+  Add          r6, r5, r0
+  Print        r6
+  // print("pointer = 0")
+  Const        r7, "pointer = 0"
+  Print        r7
+  // print("*pointer = " + pointer[0])
+  Const        r8, "*pointer = "
+  Const        r9, 0
+  Index        r10, r1, r9
+  Add          r11, r8, r10
+  Print        r11
+  // pointer[0] = "jellyfish"
+  Const        r12, "jellyfish"
+  Const        r9, 0
+  SetIndex     r1, r9, r12
+  SetGlobal    1,1,0,0
+  // creature = pointer[0]
+  Const        r9, 0
+  Index        r13, r1, r9
+  Move         r0, r13
+  SetGlobal    0,0,0,0
+  // print("*pointer = " + pointer[0])
+  Const        r8, "*pointer = "
+  Const        r9, 0
+  Index        r14, r1, r9
+  Add          r15, r8, r14
+  Print        r15
+  // print("creature = " + creature)
+  Const        r5, "creature = "
+  Add          r16, r5, r0
+  Print        r16
+  Return       r0

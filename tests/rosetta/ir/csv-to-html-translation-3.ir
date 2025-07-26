@@ -1,0 +1,38 @@
+func main (regs=12)
+  // print("<table>")
+  Const        r0, "<table>"
+  Print        r0
+  // print("   <thead>")
+  Const        r1, "   <thead>"
+  Print        r1
+  // print("      <tr><th>Character</th><th>Speech</th></tr>")
+  Const        r2, "      <tr><th>Character</th><th>Speech</th></tr>"
+  Print        r2
+  // print("   </thead>")
+  Const        r3, "   </thead>"
+  Print        r3
+  // print("   <tbody>")
+  Const        r4, "   <tbody>"
+  Print        r4
+  // print("      <tr><td>The multitude</td><td>The messiah! Show us the messiah!</td></tr>")
+  Const        r5, "      <tr><td>The multitude</td><td>The messiah! Show us the messiah!</td></tr>"
+  Print        r5
+  // print("      <tr><td>Brians mother</td><td>&lt;angry&gt;Now you listen here! He&#39;s not the messiah; he&#39;s a very naughty boy! Now go away!&lt;/angry&gt;</td></tr>")
+  Const        r6, "      <tr><td>Brians mother</td><td>&lt;angry&gt;Now you listen here! He&#39;s not the messiah; he&#39;s a very naughty boy! Now go away!&lt;/angry&gt;</td></tr>"
+  Print        r6
+  // print("      <tr><td>The multitude</td><td>Who are you?</td></tr>")
+  Const        r7, "      <tr><td>The multitude</td><td>Who are you?</td></tr>"
+  Print        r7
+  // print("      <tr><td>Brians mother</td><td>I&#39;m his mother; that&#39;s who!</td></tr>")
+  Const        r8, "      <tr><td>Brians mother</td><td>I&#39;m his mother; that&#39;s who!</td></tr>"
+  Print        r8
+  // print("      <tr><td>The multitude</td><td>Behold his mother! Behold his mother!</td></tr>")
+  Const        r9, "      <tr><td>The multitude</td><td>Behold his mother! Behold his mother!</td></tr>"
+  Print        r9
+  // print("   </tbody>")
+  Const        r10, "   </tbody>"
+  Print        r10
+  // print("</table>")
+  Const        r11, "</table>"
+  Print        r11
+  Return       r0

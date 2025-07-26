@@ -1,0 +1,91 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun toOct(n: int): string {
+func toOct (regs=20)
+  // if n == 0 { return "0" }
+  Const        r1, 0
+  Equal        r2, r0, r1
+  JumpIfFalse  r2, L0
+  Const        r3, "0"
+  Return       r3
+L0:
+  // let digits = "01234567"
+  Const        r4, "01234567"
+  Move         r5, r4
+  // var out = ""
+  Const        r6, ""
+  Move         r7, r6
+  // var v = n
+  Move         r8, r0
+L2:
+  // while v > 0 {
+  Const        r1, 0
+  Less         r9, r1, r8
+  JumpIfFalse  r9, L1
+  // let d = v % 8
+  Const        r10, 8
+  Mod          r11, r8, r10
+  Move         r12, r11
+  // out = digits[d:d+1] + out
+  Move         r13, r12
+  Const        r15, 1
+  Add          r16, r12, r15
+  Move         r14, r16
+  Slice        r17, r5, r13, r14
+  Add          r18, r17, r7
+  Move         r7, r18
+  // v = v / 8
+  Const        r10, 8
+  Div          r19, r8, r10
+  Move         r8, r19
+  // while v > 0 {
+  Jump         L2
+L1:
+  // return out
+  Return       r7
+
+  // fun main() {
+func main (regs=16)
+  // var i = 0.0
+  Const        r0, 0.0
+  Move         r1, r0
+L3:
+  // while true {
+  Const        r2, true
+  // print(toOct(i as int))
+  Cast         r4, r1, int
+  Move         r3, r4
+  Call         r5, toOct, r3
+  Print        r5
+  // if i == 3.0 {
+  Const        r6, 3.0
+  EqualFloat   r7, r1, r6
+  JumpIfFalse  r7, L0
+  // i = 9007199254740992.0 - 4.0  // skip to near the end
+  Const        r8, 9007199254740992.0
+  Const        r9, 4.0
+  Const        r10, 9007199254740988.0
+  Move         r1, r10
+  // print("...")
+  Const        r11, "..."
+  Print        r11
+L0:
+  // let next = i + 1.0
+  Const        r12, 1.0
+  AddFloat     r13, r1, r12
+  Move         r14, r13
+  // if next == i {
+  EqualFloat   r15, r14, r1
+  JumpIfFalse  r15, L1
+  // break
+  Jump         L2
+L1:
+  // i = next
+  Move         r1, r14
+  // while true {
+  Jump         L3
+L2:
+  Return       r0

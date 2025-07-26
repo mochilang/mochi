@@ -1,0 +1,542 @@
+func main (regs=200)
+  // Point{x:16, y:3}, Point{x:12, y:17}, Point{x:0, y:6}, Point{x: -4, y: -6},
+  Const        r22, 16
+  Const        r23, 3
+  Const        r24, "__name"
+  Const        r25, "Point"
+  Const        r26, "x"
+  Move         r27, r22
+  Const        r28, "y"
+  Move         r29, r23
+  MakeMap      r30, 3, r24
+  Move         r2, r30
+  Const        r31, 12
+  Const        r32, 17
+  Const        r33, "__name"
+  Const        r34, "Point"
+  Const        r35, "x"
+  Move         r36, r31
+  Const        r37, "y"
+  Move         r38, r32
+  MakeMap      r39, 3, r33
+  Move         r3, r39
+  Const        r40, 0
+  Const        r41, 6
+  Const        r42, "__name"
+  Const        r43, "Point"
+  Const        r44, "x"
+  Move         r45, r40
+  Const        r46, "y"
+  Move         r47, r41
+  MakeMap      r48, 3, r42
+  Move         r4, r48
+  Const        r49, 4
+  NegInt       r50, r49
+  Const        r41, 6
+  NegInt       r51, r41
+  Const        r52, "__name"
+  Const        r53, "Point"
+  Const        r54, "x"
+  Move         r55, r50
+  Const        r56, "y"
+  Move         r57, r51
+  MakeMap      r58, 3, r52
+  Move         r5, r58
+  // Point{x:16, y:6}, Point{x:16, y: -7}, Point{x:16, y: -3}, Point{x:17, y: -4},
+  Const        r22, 16
+  Const        r41, 6
+  Const        r59, "__name"
+  Const        r60, "Point"
+  Const        r61, "x"
+  Move         r62, r22
+  Const        r63, "y"
+  Move         r64, r41
+  MakeMap      r65, 3, r59
+  Move         r6, r65
+  Const        r22, 16
+  Const        r66, 7
+  Const        r67, -7
+  Const        r68, "__name"
+  Const        r69, "Point"
+  Const        r70, "x"
+  Move         r71, r22
+  Const        r72, "y"
+  Move         r73, r67
+  MakeMap      r74, 3, r68
+  Move         r7, r74
+  Const        r22, 16
+  Const        r23, 3
+  NegInt       r75, r23
+  Const        r76, "__name"
+  Const        r77, "Point"
+  Const        r78, "x"
+  Move         r79, r22
+  Const        r80, "y"
+  Move         r81, r75
+  MakeMap      r82, 3, r76
+  Move         r8, r82
+  Const        r32, 17
+  Const        r49, 4
+  NegInt       r83, r49
+  Const        r84, "__name"
+  Const        r85, "Point"
+  Const        r86, "x"
+  Move         r87, r32
+  Const        r88, "y"
+  Move         r89, r83
+  MakeMap      r90, 3, r84
+  Move         r9, r90
+  // Point{x:5, y:19}, Point{x:19, y: -8}, Point{x:3, y:16}, Point{x:12, y:13},
+  Const        r91, 5
+  Const        r92, 19
+  Const        r93, "__name"
+  Const        r94, "Point"
+  Const        r95, "x"
+  Move         r96, r91
+  Const        r97, "y"
+  Move         r98, r92
+  MakeMap      r99, 3, r93
+  Move         r10, r99
+  Const        r92, 19
+  Const        r100, 8
+  Const        r101, -8
+  Const        r102, "__name"
+  Const        r103, "Point"
+  Const        r104, "x"
+  Move         r105, r92
+  Const        r106, "y"
+  Move         r107, r101
+  MakeMap      r108, 3, r102
+  Move         r11, r108
+  Const        r23, 3
+  Const        r22, 16
+  Const        r109, "__name"
+  Const        r110, "Point"
+  Const        r111, "x"
+  Move         r112, r23
+  Const        r113, "y"
+  Move         r114, r22
+  MakeMap      r115, 3, r109
+  Move         r12, r115
+  Const        r31, 12
+  Const        r116, 13
+  Const        r117, "__name"
+  Const        r118, "Point"
+  Const        r119, "x"
+  Move         r120, r31
+  Const        r121, "y"
+  Move         r122, r116
+  MakeMap      r123, 3, r117
+  Move         r13, r123
+  // Point{x:3, y: -4}, Point{x:17, y:5}, Point{x: -3, y:15}, Point{x: -3, y: -9},
+  Const        r23, 3
+  Const        r49, 4
+  NegInt       r124, r49
+  Const        r125, "__name"
+  Const        r126, "Point"
+  Const        r127, "x"
+  Move         r128, r23
+  Const        r129, "y"
+  Move         r130, r124
+  MakeMap      r131, 3, r125
+  Move         r14, r131
+  Const        r32, 17
+  Const        r91, 5
+  Const        r132, "__name"
+  Const        r133, "Point"
+  Const        r134, "x"
+  Move         r135, r32
+  Const        r136, "y"
+  Move         r137, r91
+  MakeMap      r138, 3, r132
+  Move         r15, r138
+  Const        r23, 3
+  NegInt       r139, r23
+  Const        r140, 15
+  Const        r141, "__name"
+  Const        r142, "Point"
+  Const        r143, "x"
+  Move         r144, r139
+  Const        r145, "y"
+  Move         r146, r140
+  MakeMap      r147, 3, r141
+  Move         r16, r147
+  Const        r23, 3
+  NegInt       r148, r23
+  Const        r149, 9
+  NegInt       r150, r149
+  Const        r151, "__name"
+  Const        r152, "Point"
+  Const        r153, "x"
+  Move         r154, r148
+  Const        r155, "y"
+  Move         r156, r150
+  MakeMap      r157, 3, r151
+  Move         r17, r157
+  // Point{x:0, y:11}, Point{x: -9, y: -3}, Point{x: -4, y: -2}, Point{x:12, y:10},
+  Const        r40, 0
+  Const        r158, 11
+  Const        r159, "__name"
+  Const        r160, "Point"
+  Const        r161, "x"
+  Move         r162, r40
+  Const        r163, "y"
+  Move         r164, r158
+  MakeMap      r165, 3, r159
+  Move         r18, r165
+  Const        r149, 9
+  NegInt       r166, r149
+  Const        r23, 3
+  NegInt       r167, r23
+  Const        r168, "__name"
+  Const        r169, "Point"
+  Const        r170, "x"
+  Move         r171, r166
+  Const        r172, "y"
+  Move         r173, r167
+  MakeMap      r174, 3, r168
+  Move         r19, r174
+  Const        r49, 4
+  NegInt       r175, r49
+  Const        r176, 2
+  Const        r177, -2
+  Const        r178, "__name"
+  Const        r179, "Point"
+  Const        r180, "x"
+  Move         r181, r175
+  Const        r182, "y"
+  Move         r183, r177
+  MakeMap      r184, 3, r178
+  Move         r20, r184
+  Const        r31, 12
+  Const        r185, 10
+  Const        r186, "__name"
+  Const        r187, "Point"
+  Const        r188, "x"
+  Move         r189, r31
+  Const        r190, "y"
+  Move         r191, r185
+  MakeMap      r192, 3, r186
+  Move         r21, r192
+  // let pts: list<Point> = [
+  MakeList     r193, 20, r2
+  Move         r0, r193
+  SetGlobal    0,0,0,0
+  // let hull = convexHull(pts)
+  Move         r194, r0
+  Call         r195, convexHull, r194
+  Move         r1, r195
+  SetGlobal    1,1,0,0
+  // print("Convex Hull: " + hullStr(hull))
+  Const        r196, "Convex Hull: "
+  Move         r197, r1
+  Call         r198, hullStr, r197
+  Add          r199, r196, r198
+  Print        r199
+  Return       r0
+
+  // fun ccw(a: Point, b: Point, c: Point): bool {
+func ccw (regs=24)
+  // let lhs = (b.x - a.x) * (c.y - a.y)
+  Const        r5, "x"
+  Index        r6, r3, r5
+  Const        r5, "x"
+  Index        r7, r2, r5
+  Sub          r8, r6, r7
+  Const        r9, "y"
+  Index        r10, r4, r9
+  Const        r9, "y"
+  Index        r11, r2, r9
+  Sub          r12, r10, r11
+  Mul          r13, r8, r12
+  Move         r14, r13
+  // let rhs = (b.y - a.y) * (c.x - a.x)
+  Const        r9, "y"
+  Index        r15, r3, r9
+  Const        r9, "y"
+  Index        r16, r2, r9
+  Sub          r17, r15, r16
+  Const        r5, "x"
+  Index        r18, r4, r5
+  Const        r5, "x"
+  Index        r19, r2, r5
+  Sub          r20, r18, r19
+  Mul          r21, r17, r20
+  Move         r22, r21
+  // return lhs > rhs
+  Less         r23, r22, r14
+  Return       r23
+
+  // fun sortPoints(ps: list<Point>): list<Point> {
+func sortPoints (regs=34)
+  // var arr = ps
+  Move         r3, r2
+  // var n = len(arr)
+  Len          r4, r3
+  Move         r5, r4
+  // var i = 0
+  Const        r6, 0
+  Move         r7, r6
+L6:
+  // while i < n {
+  LessInt      r8, r7, r5
+  JumpIfFalse  r8, L0
+  // var j = 0
+  Const        r6, 0
+  Move         r9, r6
+L5:
+  // while j < n - 1 {
+  Const        r10, 1
+  SubInt       r11, r5, r10
+  LessInt      r12, r9, r11
+  JumpIfFalse  r12, L1
+  // let p = arr[j]
+  Index        r13, r3, r9
+  Move         r14, r13
+  // let q = arr[j+1]
+  Const        r10, 1
+  AddInt       r15, r9, r10
+  Index        r16, r3, r15
+  Move         r17, r16
+  // if p.x > q.x || (p.x == q.x && p.y > q.y) {
+  Const        r18, "x"
+  Index        r19, r14, r18
+  Const        r18, "x"
+  Index        r20, r17, r18
+  Less         r21, r20, r19
+  Move         r22, r21
+  JumpIfTrue   r22, L2
+  Const        r18, "x"
+  Index        r23, r14, r18
+  Const        r24, "y"
+  Index        r25, r14, r24
+  Const        r24, "y"
+  Index        r26, r17, r24
+  Less         r27, r26, r25
+  Const        r18, "x"
+  Index        r28, r17, r18
+  Equal        r29, r23, r28
+  Move         r30, r29
+  JumpIfFalse  r30, L3
+  Move         r30, r27
+L3:
+  Move         r22, r30
+L2:
+  JumpIfFalse  r22, L4
+  // arr[j] = q
+  SetIndex     r3, r9, r17
+  // arr[j+1] = p
+  Const        r10, 1
+  AddInt       r31, r9, r10
+  SetIndex     r3, r31, r14
+L4:
+  // j = j + 1
+  Const        r10, 1
+  AddInt       r32, r9, r10
+  Move         r9, r32
+  // while j < n - 1 {
+  Jump         L5
+L1:
+  // i = i + 1
+  Const        r10, 1
+  AddInt       r33, r7, r10
+  Move         r7, r33
+  // while i < n {
+  Jump         L6
+L0:
+  // return arr
+  Return       r3
+
+  // fun convexHull(ps: list<Point>): list<Point> {
+func convexHull (regs=73)
+  // ps = sortPoints(ps)
+  Move         r3, r2
+  Call         r4, sortPoints, r3
+  Move         r2, r4
+  // var h: list<Point> = []
+  Const        r5, []
+  Move         r6, r5
+  // for pt in ps {
+  IterPrep     r7, r2
+  Len          r8, r7
+  Const        r9, 0
+L4:
+  LessInt      r10, r9, r8
+  JumpIfFalse  r10, L0
+  Index        r11, r7, r9
+  Move         r12, r11
+L3:
+  // while len(h) >= 2 && ccw(h[len(h)-2], h[len(h)-1], pt) == false {
+  Len          r13, r6
+  Const        r14, 2
+  LessEqInt    r15, r14, r13
+  Len          r19, r6
+  Const        r14, 2
+  SubInt       r20, r19, r14
+  Index        r21, r6, r20
+  Move         r16, r21
+  Len          r22, r6
+  Const        r23, 1
+  SubInt       r24, r22, r23
+  Index        r25, r6, r24
+  Move         r17, r25
+  Move         r18, r12
+  Call         r26, ccw, r16, r17, r18
+  Const        r27, false
+  Equal        r28, r26, r27
+  Move         r29, r15
+  JumpIfFalse  r29, L1
+  Move         r29, r28
+L1:
+  JumpIfFalse  r29, L2
+  // h = h[:len(h)-1]
+  Const        r30, nil
+  Len          r32, r6
+  Const        r23, 1
+  SubInt       r33, r32, r23
+  Move         r31, r33
+  Slice        r34, r6, r30, r31
+  Move         r6, r34
+  // while len(h) >= 2 && ccw(h[len(h)-2], h[len(h)-1], pt) == false {
+  Jump         L3
+L2:
+  // h = append(h, pt)
+  Append       r35, r6, r12
+  Move         r6, r35
+  // for pt in ps {
+  Const        r36, 1
+  AddInt       r37, r9, r36
+  Move         r9, r37
+  Jump         L4
+L0:
+  // var i = len(ps) - 2
+  Len          r38, r2
+  Const        r14, 2
+  SubInt       r39, r38, r14
+  Move         r40, r39
+  // let t = len(h) + 1
+  Len          r41, r6
+  Const        r23, 1
+  AddInt       r42, r41, r23
+  Move         r43, r42
+L9:
+  // while i >= 0 {
+  Const        r44, 0
+  LessEqInt    r45, r44, r40
+  JumpIfFalse  r45, L5
+  // let pt = ps[i]
+  Index        r46, r2, r40
+  Move         r12, r46
+L8:
+  // while len(h) >= t && ccw(h[len(h)-2], h[len(h)-1], pt) == false {
+  Len          r47, r6
+  LessEqInt    r48, r43, r47
+  Len          r52, r6
+  Const        r14, 2
+  SubInt       r53, r52, r14
+  Index        r54, r6, r53
+  Move         r49, r54
+  Len          r55, r6
+  Const        r23, 1
+  SubInt       r56, r55, r23
+  Index        r57, r6, r56
+  Move         r50, r57
+  Move         r51, r12
+  Call         r58, ccw, r49, r50, r51
+  Const        r27, false
+  Equal        r59, r58, r27
+  Move         r60, r48
+  JumpIfFalse  r60, L6
+  Move         r60, r59
+L6:
+  JumpIfFalse  r60, L7
+  // h = h[:len(h)-1]
+  Const        r61, nil
+  Len          r63, r6
+  Const        r23, 1
+  SubInt       r64, r63, r23
+  Move         r62, r64
+  Slice        r65, r6, r61, r62
+  Move         r6, r65
+  // while len(h) >= t && ccw(h[len(h)-2], h[len(h)-1], pt) == false {
+  Jump         L8
+L7:
+  // h = append(h, pt)
+  Append       r66, r6, r12
+  Move         r6, r66
+  // i = i - 1
+  Const        r23, 1
+  SubInt       r67, r40, r23
+  Move         r40, r67
+  // while i >= 0 {
+  Jump         L9
+L5:
+  // return h[:len(h)-1]
+  Const        r68, nil
+  Len          r70, r6
+  Const        r23, 1
+  SubInt       r71, r70, r23
+  Move         r69, r71
+  Slice        r72, r6, r68, r69
+  Return       r72
+
+  // fun pointStr(p: Point): string {
+func pointStr (regs=16)
+  // return "(" + str(p.x) + "," + str(p.y) + ")"
+  Const        r3, "("
+  Const        r4, "x"
+  Index        r5, r2, r4
+  Str          r6, r5
+  Add          r7, r3, r6
+  Const        r8, ","
+  Add          r9, r7, r8
+  Const        r10, "y"
+  Index        r11, r2, r10
+  Str          r12, r11
+  Add          r13, r9, r12
+  Const        r14, ")"
+  Add          r15, r13, r14
+  Return       r15
+
+  // fun hullStr(h: list<Point>): string {
+func hullStr (regs=22)
+  // var s = "["
+  Const        r3, "["
+  Move         r4, r3
+  // var i = 0
+  Const        r5, 0
+  Move         r6, r5
+L2:
+  // while i < len(h) {
+  Len          r7, r2
+  LessInt      r8, r6, r7
+  JumpIfFalse  r8, L0
+  // s = s + pointStr(h[i])
+  Index        r10, r2, r6
+  Move         r9, r10
+  Call         r11, pointStr, r9
+  Add          r12, r4, r11
+  Move         r4, r12
+  // if i < len(h) - 1 { s = s + " " }
+  Len          r13, r2
+  Const        r14, 1
+  SubInt       r15, r13, r14
+  LessInt      r16, r6, r15
+  JumpIfFalse  r16, L1
+  Const        r17, " "
+  Add          r18, r4, r17
+  Move         r4, r18
+L1:
+  // i = i + 1
+  Const        r14, 1
+  AddInt       r19, r6, r14
+  Move         r6, r19
+  // while i < len(h) {
+  Jump         L2
+L0:
+  // s = s + "]"
+  Const        r20, "]"
+  Add          r21, r4, r20
+  Move         r4, r21
+  // return s
+  Return       r4

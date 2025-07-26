@@ -1,0 +1,230 @@
+func main (regs=63)
+  // let c = "Character,Speech\n" +
+  Const        r2, "Character,Speech\n"
+  // "The multitude,The messiah! Show us the messiah!\n" +
+  Const        r3, "The multitude,The messiah! Show us the messiah!\n"
+  // let c = "Character,Speech\n" +
+  Const        r4, "Character,Speech\nThe multitude,The messiah! Show us the messiah!\n"
+  // "Brians mother,<angry>Now you listen here! He's not the messiah; he's a very naughty boy! Now go away!</angry>\n" +
+  Const        r5, "Brians mother,<angry>Now you listen here! He's not the messiah; he's a very naughty boy! Now go away!</angry>\n"
+  // "The multitude,The messiah! Show us the messiah!\n" +
+  Const        r6, "Character,Speech\nThe multitude,The messiah! Show us the messiah!\nBrians mother,<angry>Now you listen here! He's not the messiah; he's a very naughty boy! Now go away!</angry>\n"
+  // "The multitude,Who are you?\n" +
+  Const        r7, "The multitude,Who are you?\n"
+  // "Brians mother,<angry>Now you listen here! He's not the messiah; he's a very naughty boy! Now go away!</angry>\n" +
+  Const        r8, "Character,Speech\nThe multitude,The messiah! Show us the messiah!\nBrians mother,<angry>Now you listen here! He's not the messiah; he's a very naughty boy! Now go away!</angry>\nThe multitude,Who are you?\n"
+  // "Brians mother,I'm his mother; that's who!\n" +
+  Const        r9, "Brians mother,I'm his mother; that's who!\n"
+  // "The multitude,Who are you?\n" +
+  Const        r10, "Character,Speech\nThe multitude,The messiah! Show us the messiah!\nBrians mother,<angry>Now you listen here! He's not the messiah; he's a very naughty boy! Now go away!</angry>\nThe multitude,Who are you?\nBrians mother,I'm his mother; that's who!\n"
+  // "The multitude,Behold his mother! Behold his mother!"
+  Const        r11, "The multitude,Behold his mother! Behold his mother!"
+  // "Brians mother,I'm his mother; that's who!\n" +
+  Const        r12, "Character,Speech\nThe multitude,The messiah! Show us the messiah!\nBrians mother,<angry>Now you listen here! He's not the messiah; he's a very naughty boy! Now go away!</angry>\nThe multitude,Who are you?\nBrians mother,I'm his mother; that's who!\nThe multitude,Behold his mother! Behold his mother!"
+  // let c = "Character,Speech\n" +
+  Move         r0, r12
+  SetGlobal    0,0,0,0
+  // var rows: list<list<string>> = []
+  Const        r13, []
+  Move         r1, r13
+  SetGlobal    1,1,0,0
+  // for line in split(c, "\n") {
+  Const        r16, "Character,Speech\nThe multitude,The messiah! Show us the messiah!\nBrians mother,<angry>Now you listen here! He's not the messiah; he's a very naughty boy! Now go away!</angry>\nThe multitude,Who are you?\nBrians mother,I'm his mother; that's who!\nThe multitude,Behold his mother! Behold his mother!"
+  Move         r14, r16
+  Const        r17, "\n"
+  Move         r15, r17
+  Call2        r18, split, r14, r15
+  IterPrep     r19, r18
+  Len          r20, r19
+  Const        r21, 0
+L1:
+  LessInt      r22, r21, r20
+  JumpIfFalse  r22, L0
+  Index        r23, r19, r21
+  Move         r24, r23
+  // rows = append(rows, split(line, ","))
+  Move         r25, r24
+  Const        r27, ","
+  Move         r26, r27
+  Call2        r28, split, r25, r26
+  Append       r29, r1, r28
+  Move         r1, r29
+  SetGlobal    1,1,0,0
+  // for line in split(c, "\n") {
+  Const        r30, 1
+  AddInt       r31, r21, r30
+  Move         r21, r31
+  Jump         L1
+L0:
+  // print("<table>")
+  Const        r32, "<table>"
+  Print        r32
+  // for row in rows {
+  IterPrep     r33, r1
+  Len          r34, r33
+  Const        r35, 0
+L5:
+  LessInt      r36, r35, r34
+  JumpIfFalse  r36, L2
+  Index        r37, r33, r35
+  Move         r38, r37
+  // var cells = ""
+  Const        r39, ""
+  Move         r40, r39
+  // for cell in row {
+  IterPrep     r41, r38
+  Len          r42, r41
+  Const        r43, 0
+L4:
+  LessInt      r44, r43, r42
+  JumpIfFalse  r44, L3
+  Index        r45, r41, r43
+  Move         r46, r45
+  // cells = cells + "<td>" + htmlEscape(cell) + "</td>"
+  Const        r47, "<td>"
+  Add          r48, r40, r47
+  Move         r49, r46
+  Call         r50, htmlEscape, r49
+  Add          r51, r48, r50
+  Const        r52, "</td>"
+  Add          r53, r51, r52
+  Move         r40, r53
+  // for cell in row {
+  Const        r54, 1
+  AddInt       r55, r43, r54
+  Move         r43, r55
+  Jump         L4
+L3:
+  // print("    <tr>" + cells + "</tr>")
+  Const        r56, "    <tr>"
+  Add          r57, r56, r40
+  Const        r58, "</tr>"
+  Add          r59, r57, r58
+  Print        r59
+  // for row in rows {
+  Const        r60, 1
+  AddInt       r61, r35, r60
+  Move         r35, r61
+  Jump         L5
+L2:
+  // print("</table>")
+  Const        r62, "</table>"
+  Print        r62
+  Return       r0
+
+  // fun split(s: string, sep: string): list<string> {
+func split (regs=25)
+  // var out: list<string> = []
+  Const        r4, []
+  Move         r5, r4
+  // var start = 0
+  Const        r6, 0
+  Move         r7, r6
+  // var i = 0
+  Const        r6, 0
+  Move         r8, r6
+  // let n = len(sep)
+  Len          r9, r3
+  Move         r10, r9
+L2:
+  // while i <= len(s) - n {
+  Len          r11, r2
+  SubInt       r12, r11, r10
+  LessEqInt    r13, r8, r12
+  JumpIfFalse  r13, L0
+  // if substring(s, i, i + n) == sep {
+  AddInt       r14, r8, r10
+  Slice        r15, r2, r8, r14
+  Equal        r16, r15, r3
+  JumpIfFalse  r16, L1
+  // out = append(out, substring(s, start, i))
+  Slice        r17, r2, r7, r8
+  Append       r18, r5, r17
+  Move         r5, r18
+  // i = i + n
+  AddInt       r19, r8, r10
+  Move         r8, r19
+  // start = i
+  Move         r7, r8
+  // if substring(s, i, i + n) == sep {
+  Jump         L2
+L1:
+  // i = i + 1
+  Const        r20, 1
+  AddInt       r21, r8, r20
+  Move         r8, r21
+  // while i <= len(s) - n {
+  Jump         L2
+L0:
+  // out = append(out, substring(s, start, len(s)))
+  Len          r22, r2
+  Slice        r23, r2, r7, r22
+  Append       r24, r5, r23
+  Move         r5, r24
+  // return out
+  Return       r5
+
+  // fun htmlEscape(s: string): string {
+func htmlEscape (regs=27)
+  // var out = ""
+  Const        r3, ""
+  Move         r4, r3
+  // var i = 0
+  Const        r5, 0
+  Move         r6, r5
+L5:
+  // while i < len(s) {
+  Len          r7, r2
+  LessInt      r8, r6, r7
+  JumpIfFalse  r8, L0
+  // let ch = substring(s, i, i+1)
+  Const        r9, 1
+  AddInt       r10, r6, r9
+  Slice        r11, r2, r6, r10
+  Move         r12, r11
+  // if ch == "&" {
+  Const        r13, "&"
+  Equal        r14, r12, r13
+  JumpIfFalse  r14, L1
+  // out = out + "&amp;"
+  Const        r15, "&amp;"
+  Add          r16, r4, r15
+  Move         r4, r16
+  // if ch == "&" {
+  Jump         L2
+L1:
+  // } else if ch == "<" {
+  Const        r17, "<"
+  Equal        r18, r12, r17
+  JumpIfFalse  r18, L3
+  // out = out + "&lt;"
+  Const        r19, "&lt;"
+  Add          r20, r4, r19
+  Move         r4, r20
+  // } else if ch == "<" {
+  Jump         L2
+L3:
+  // } else if ch == ">" {
+  Const        r21, ">"
+  Equal        r22, r12, r21
+  JumpIfFalse  r22, L4
+  // out = out + "&gt;"
+  Const        r23, "&gt;"
+  Add          r24, r4, r23
+  Move         r4, r24
+  // } else if ch == ">" {
+  Jump         L2
+L4:
+  // out = out + ch
+  Add          r25, r4, r12
+  Move         r4, r25
+L2:
+  // i = i + 1
+  Const        r9, 1
+  AddInt       r26, r6, r9
+  Move         r6, r26
+  // while i < len(s) {
+  Jump         L5
+L0:
+  // return out
+  Return       r4

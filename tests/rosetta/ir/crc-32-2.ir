@@ -1,0 +1,309 @@
+func main (regs=3)
+  // let table = crc32Table()
+  Call         r1, crc32Table, 
+  Move         r0, r1
+  SetGlobal    0,0,0,0
+  // main()
+  Call         r2, main, 
+  Return       r0
+
+  // fun xor(a: int, b: int): int {
+func xor (regs=22)
+  // var res = 0
+  Const        r3, 0
+  Move         r4, r3
+  // var bit = 1
+  Const        r5, 1
+  Move         r6, r5
+  // var x = a
+  Move         r7, r1
+  // var y = b
+  Move         r8, r2
+L3:
+  // while x > 0 || y > 0 {
+  Const        r3, 0
+  Less         r9, r3, r7
+  Const        r3, 0
+  Less         r10, r3, r8
+  Move         r11, r9
+  JumpIfTrue   r11, L0
+  Move         r11, r10
+L0:
+  JumpIfFalse  r11, L1
+  // let abit = x % 2
+  Const        r12, 2
+  Mod          r13, r7, r12
+  Move         r14, r13
+  // let bbit = y % 2
+  Const        r12, 2
+  Mod          r15, r8, r12
+  Move         r16, r15
+  // if abit != bbit { res = res + bit }
+  NotEqual     r17, r14, r16
+  JumpIfFalse  r17, L2
+  AddInt       r18, r4, r6
+  Move         r4, r18
+L2:
+  // x = x / 2
+  Const        r12, 2
+  Div          r19, r7, r12
+  Move         r7, r19
+  // y = y / 2
+  Const        r12, 2
+  Div          r20, r8, r12
+  Move         r8, r20
+  // bit = bit * 2
+  Const        r12, 2
+  MulInt       r21, r6, r12
+  Move         r6, r21
+  // while x > 0 || y > 0 {
+  Jump         L3
+L1:
+  // return res
+  Return       r4
+
+  // fun rshift(x: int, n: int): int {
+func rshift (regs=11)
+  // var v = x
+  Move         r3, r1
+  // var i = 0
+  Const        r4, 0
+  Move         r5, r4
+L1:
+  // while i < n { v = v / 2; i = i + 1 }
+  Less         r6, r5, r2
+  JumpIfFalse  r6, L0
+  Const        r7, 2
+  Div          r8, r3, r7
+  Move         r3, r8
+  Const        r9, 1
+  AddInt       r10, r5, r9
+  Move         r5, r10
+  Jump         L1
+L0:
+  // return v
+  Return       r3
+
+  // fun ord(ch: string): int {
+func ord (regs=19)
+  // let upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+  Const        r2, "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+  Move         r3, r2
+  // let lower = "abcdefghijklmnopqrstuvwxyz"
+  Const        r4, "abcdefghijklmnopqrstuvwxyz"
+  Move         r5, r4
+  // var idx = indexOf(upper, ch)
+  Move         r7, r6
+  // if idx >= 0 { return 65 + idx }
+  Const        r8, 0
+  LessEq       r9, r8, r7
+  JumpIfFalse  r9, L0
+  Const        r10, 65
+  Add          r11, r10, r7
+  Return       r11
+L0:
+  // idx = indexOf(lower, ch)
+  Move         r7, r12
+  // if idx >= 0 { return 97 + idx }
+  Const        r8, 0
+  LessEq       r13, r8, r7
+  JumpIfFalse  r13, L1
+  Const        r14, 97
+  Add          r15, r14, r7
+  Return       r15
+L1:
+  // if ch == " " { return 32 }
+  Const        r16, " "
+  Equal        r17, r1, r16
+  JumpIfFalse  r17, L2
+  Const        r18, 32
+  Return       r18
+L2:
+  // return 0
+  Const        r8, 0
+  Return       r8
+
+  // fun toHex(n: int): string {
+func toHex (regs=21)
+  // let digits = "0123456789ABCDEF"
+  Const        r2, "0123456789ABCDEF"
+  Move         r3, r2
+  // if n == 0 { return "0" }
+  Const        r4, 0
+  Equal        r5, r1, r4
+  JumpIfFalse  r5, L0
+  Const        r6, "0"
+  Return       r6
+L0:
+  // var v = n
+  Move         r7, r1
+  // var out = ""
+  Const        r8, ""
+  Move         r9, r8
+L2:
+  // while v > 0 {
+  Const        r4, 0
+  Less         r10, r4, r7
+  JumpIfFalse  r10, L1
+  // let d = v % 16
+  Const        r11, 16
+  Mod          r12, r7, r11
+  Move         r13, r12
+  // out = digits[d:d+1] + out
+  Move         r14, r13
+  Const        r16, 1
+  Add          r17, r13, r16
+  Move         r15, r17
+  Slice        r18, r3, r14, r15
+  Add          r19, r18, r9
+  Move         r9, r19
+  // v = v / 16
+  Const        r11, 16
+  Div          r20, r7, r11
+  Move         r7, r20
+  // while v > 0 {
+  Jump         L2
+L1:
+  // return out
+  Return       r9
+
+  // fun crc32Table(): list<int> {
+func crc32Table (regs=27)
+  // var table: list<int> = []
+  Const        r1, []
+  Move         r0, r1
+  SetGlobal    0,0,0,0
+  // var i = 0
+  Const        r2, 0
+  Move         r3, r2
+L5:
+  // while i < 256 {
+  Const        r4, 256
+  LessInt      r5, r3, r4
+  JumpIfFalse  r5, L0
+  // var word = i
+  Move         r6, r3
+  // var j = 0
+  Const        r2, 0
+  Move         r7, r2
+L4:
+  // while j < 8 {
+  Const        r8, 8
+  LessInt      r9, r7, r8
+  JumpIfFalse  r9, L1
+  // if word % 2 == 1 {
+  Const        r10, 2
+  ModInt       r11, r6, r10
+  Const        r12, 1
+  EqualInt     r13, r11, r12
+  JumpIfFalse  r13, L2
+  // word = xor(rshift(word,1), 0xEDB88320)
+  Move         r16, r6
+  Const        r12, 1
+  Move         r17, r12
+  Call2        r18, rshift, r16, r17
+  Move         r14, r18
+  Const        r19, 3988292384
+  Move         r15, r19
+  Call2        r20, xor, r14, r15
+  Move         r6, r20
+  // if word % 2 == 1 {
+  Jump         L3
+L2:
+  // word = rshift(word,1)
+  Move         r21, r6
+  Const        r12, 1
+  Move         r22, r12
+  Call2        r23, rshift, r21, r22
+  Move         r6, r23
+L3:
+  // j = j + 1
+  Const        r12, 1
+  AddInt       r24, r7, r12
+  Move         r7, r24
+  // while j < 8 {
+  Jump         L4
+L1:
+  // table = append(table, word)
+  Append       r25, r0, r6
+  Move         r0, r25
+  SetGlobal    0,0,0,0
+  // i = i + 1
+  Const        r12, 1
+  AddInt       r26, r3, r12
+  Move         r3, r26
+  // while i < 256 {
+  Jump         L5
+L0:
+  // return table
+  Return       r0
+
+  // fun crc32(s: string): int {
+func crc32 (regs=32)
+  // var crc = 0xFFFFFFFF
+  Const        r2, 4294967295
+  Move         r3, r2
+  // var i = 0
+  Const        r4, 0
+  Move         r5, r4
+L1:
+  // while i < len(s) {
+  Len          r6, r1
+  LessInt      r7, r5, r6
+  JumpIfFalse  r7, L0
+  // let c = ord(s[i:i+1])
+  Move         r9, r5
+  Const        r11, 1
+  AddInt       r12, r5, r11
+  Move         r10, r12
+  Slice        r13, r1, r9, r10
+  Move         r8, r13
+  Call         r14, ord, r8
+  Move         r15, r14
+  // let idx = xor(crc % 256, c)
+  Const        r18, 256
+  ModInt       r19, r3, r18
+  Move         r16, r19
+  Move         r17, r15
+  Call2        r20, xor, r16, r17
+  Move         r21, r20
+  // crc = xor(table[idx], rshift(crc,8))
+  Index        r24, r0, r21
+  Move         r22, r24
+  Move         r25, r3
+  Const        r27, 8
+  Move         r26, r27
+  Call2        r28, rshift, r25, r26
+  Move         r23, r28
+  Call2        r29, xor, r22, r23
+  Move         r3, r29
+  // i = i + 1
+  Const        r11, 1
+  AddInt       r30, r5, r11
+  Move         r5, r30
+  // while i < len(s) {
+  Jump         L1
+L0:
+  // return 0xFFFFFFFF - crc
+  Const        r2, 4294967295
+  Sub          r31, r2, r3
+  Return       r31
+
+  // fun main() {
+func main (regs=10)
+  // let s = "The quick brown fox jumps over the lazy dog"
+  Const        r1, "The quick brown fox jumps over the lazy dog"
+  Move         r2, r1
+  // let result = crc32(s)
+  Const        r1, "The quick brown fox jumps over the lazy dog"
+  Move         r3, r1
+  Call         r4, crc32, r3
+  Move         r5, r4
+  // let hex = lower(toHex(result))
+  Move         r6, r5
+  Call         r7, toHex, r6
+  Lower        r8, r7
+  Move         r9, r8
+  // print(hex)
+  Print        r9
+  Return       r0

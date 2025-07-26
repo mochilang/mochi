@@ -1,0 +1,436 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun modPow(base: int, exp: int, m: int): int {
+func modPow (regs=20)
+  // var result = 1 % m
+  Const        r3, 1
+  Mod          r4, r3, r2
+  Move         r5, r4
+  // var b = base % m
+  Mod          r6, r0, r2
+  Move         r7, r6
+  // var e = exp
+  Move         r8, r1
+L2:
+  // while e > 0 {
+  Const        r9, 0
+  Less         r10, r9, r8
+  JumpIfFalse  r10, L0
+  // if e % 2 == 1 { result = (result * b) % m }
+  Const        r11, 2
+  Mod          r12, r8, r11
+  Const        r3, 1
+  Equal        r13, r12, r3
+  JumpIfFalse  r13, L1
+  Mul          r14, r5, r7
+  Mod          r15, r14, r2
+  Move         r5, r15
+L1:
+  // b = (b * b) % m
+  Mul          r16, r7, r7
+  Mod          r17, r16, r2
+  Move         r7, r17
+  // e = (e / 2) as int
+  Const        r11, 2
+  Div          r18, r8, r11
+  Cast         r19, r18, int
+  Move         r8, r19
+  // while e > 0 {
+  Jump         L2
+L0:
+  // return result
+  Return       r5
+
+  // fun isPrime(n: int): bool {
+func isPrime (regs=55)
+  // if n < 2 { return false }
+  Const        r1, 2
+  Less         r2, r0, r1
+  JumpIfFalse  r2, L0
+  Const        r3, false
+  Return       r3
+L0:
+  // for p in [2,3,5,7,11,13,17,19,23,29] {
+  Const        r4, [2, 3, 5, 7, 11, 13, 17, 19, 23, 29]
+  IterPrep     r5, r4
+  Len          r6, r5
+  Const        r7, 0
+L3:
+  LessInt      r8, r7, r6
+  JumpIfFalse  r8, L1
+  Index        r9, r5, r7
+  Move         r10, r9
+  // if n % p == 0 { return n == p }
+  Mod          r11, r0, r10
+  Const        r12, 0
+  Equal        r13, r11, r12
+  JumpIfFalse  r13, L2
+  Equal        r14, r0, r10
+  Return       r14
+L2:
+  // for p in [2,3,5,7,11,13,17,19,23,29] {
+  Const        r15, 1
+  AddInt       r16, r7, r15
+  Move         r7, r16
+  Jump         L3
+L1:
+  // var d = n - 1
+  Const        r17, 1
+  Sub          r18, r0, r17
+  Move         r19, r18
+  // var s = 0
+  Const        r12, 0
+  Move         r20, r12
+L5:
+  // while d % 2 == 0 {
+  Const        r1, 2
+  Mod          r21, r19, r1
+  Const        r12, 0
+  Equal        r22, r21, r12
+  JumpIfFalse  r22, L4
+  // d = d / 2
+  Const        r1, 2
+  Div          r23, r19, r1
+  Move         r19, r23
+  // s = s + 1
+  Const        r17, 1
+  AddInt       r24, r20, r17
+  Move         r20, r24
+  // while d % 2 == 0 {
+  Jump         L5
+L4:
+  // for a in [2,325,9375,28178,450775,9780504,1795265022] {
+  Const        r25, [2, 325, 9375, 28178, 450775, 9780504, 1795265022]
+  IterPrep     r26, r25
+  Len          r27, r26
+  Const        r28, 0
+L14:
+  LessInt      r29, r28, r27
+  JumpIfFalse  r29, L6
+  Index        r30, r26, r28
+  Move         r31, r30
+  // if a % n == 0 { return true }
+  Mod          r32, r31, r0
+  Const        r12, 0
+  Equal        r33, r32, r12
+  JumpIfFalse  r33, L7
+  Const        r34, true
+  Return       r34
+L7:
+  // var x = modPow(a, d, n)
+  Move         r35, r31
+  Move         r36, r19
+  Move         r37, r0
+  Call         r38, modPow, r35, r36, r37
+  Move         r39, r38
+  // if x == 1 || x == n - 1 { continue }
+  Const        r17, 1
+  Sub          r40, r0, r17
+  Const        r17, 1
+  Equal        r41, r39, r17
+  Equal        r42, r39, r40
+  Move         r43, r41
+  JumpIfTrue   r43, L8
+  Move         r43, r42
+L8:
+  JumpIfFalse  r43, L9
+  Jump         L10
+L9:
+  // var r = 1
+  Const        r17, 1
+  Move         r44, r17
+  // var passed = false
+  Const        r3, false
+  Move         r45, r3
+L13:
+  // while r < s {
+  LessInt      r46, r44, r20
+  JumpIfFalse  r46, L11
+  // x = (x * x) % n
+  Mul          r47, r39, r39
+  Mod          r48, r47, r0
+  Move         r39, r48
+  // if x == n - 1 {
+  Const        r17, 1
+  Sub          r49, r0, r17
+  Equal        r50, r39, r49
+  JumpIfFalse  r50, L12
+  // passed = true
+  Const        r34, true
+  Move         r45, r34
+  // break
+  Jump         L11
+L12:
+  // r = r + 1
+  Const        r17, 1
+  AddInt       r51, r44, r17
+  Move         r44, r51
+  // while r < s {
+  Jump         L13
+L11:
+  // if !passed { return false }
+  Not          r52, r45
+  JumpIfFalse  r52, L10
+  Const        r3, false
+  Return       r3
+L10:
+  // for a in [2,325,9375,28178,450775,9780504,1795265022] {
+  Const        r53, 1
+  AddInt       r54, r28, r53
+  Move         r28, r54
+  Jump         L14
+L6:
+  // return true
+  Const        r34, true
+  Return       r34
+
+  // fun commatize(n: int): string {
+func commatize (regs=16)
+  // var s = str(n)
+  Str          r1, r0
+  Move         r2, r1
+  // var i = len(s) - 3
+  Len          r3, r2
+  Const        r4, 3
+  SubInt       r5, r3, r4
+  Move         r6, r5
+L1:
+  // while i > 0 {
+  Const        r7, 0
+  LessInt      r8, r7, r6
+  JumpIfFalse  r8, L0
+  // s = substring(s, 0, i) + "," + substring(s, i, len(s))
+  Const        r7, 0
+  Slice        r9, r2, r7, r6
+  Const        r10, ","
+  Add          r11, r9, r10
+  Len          r12, r2
+  Slice        r13, r2, r6, r12
+  Add          r14, r11, r13
+  Move         r2, r14
+  // i = i - 3
+  Const        r4, 3
+  SubInt       r15, r6, r4
+  Move         r6, r15
+  // while i > 0 {
+  Jump         L1
+L0:
+  // return s
+  Return       r2
+
+  // fun pad(s: string, width: int): string {
+func pad (regs=7)
+  // var out = s
+  Move         r2, r0
+L1:
+  // while len(out) < width {
+  Len          r3, r2
+  Less         r4, r3, r1
+  JumpIfFalse  r4, L0
+  // out = " " + out
+  Const        r5, " "
+  Add          r6, r5, r2
+  Move         r2, r6
+  // while len(out) < width {
+  Jump         L1
+L0:
+  // return out
+  Return       r2
+
+  // fun join(xs: list<string>, sep: string): string {
+func join (regs=14)
+  // var res = ""
+  Const        r2, ""
+  Move         r3, r2
+  // var i = 0
+  Const        r4, 0
+  Move         r5, r4
+L2:
+  // while i < len(xs) {
+  Len          r6, r0
+  LessInt      r7, r5, r6
+  JumpIfFalse  r7, L0
+  // if i > 0 { res = res + sep }
+  Const        r4, 0
+  LessInt      r8, r4, r5
+  JumpIfFalse  r8, L1
+  Add          r9, r3, r1
+  Move         r3, r9
+L1:
+  // res = res + xs[i]
+  Index        r10, r0, r5
+  Add          r11, r3, r10
+  Move         r3, r11
+  // i = i + 1
+  Const        r12, 1
+  AddInt       r13, r5, r12
+  Move         r5, r13
+  // while i < len(xs) {
+  Jump         L2
+L0:
+  // return res
+  Return       r3
+
+  // fun formatRow(row: list<string>): string {
+func formatRow (regs=23)
+  // var padded: list<string> = []
+  Const        r1, []
+  Move         r2, r1
+  // var i = 0
+  Const        r3, 0
+  Move         r4, r3
+L1:
+  // while i < len(row) {
+  Len          r5, r0
+  LessInt      r6, r4, r5
+  JumpIfFalse  r6, L0
+  // padded = append(padded, pad(row[i], 9))
+  Index        r9, r0, r4
+  Move         r7, r9
+  Const        r10, 9
+  Move         r8, r10
+  Call2        r11, pad, r7, r8
+  Append       r12, r2, r11
+  Move         r2, r12
+  // i = i + 1
+  Const        r13, 1
+  AddInt       r14, r4, r13
+  Move         r4, r14
+  // while i < len(row) {
+  Jump         L1
+L0:
+  // return "[" + join(padded, " ") + "]"
+  Const        r15, "["
+  Move         r16, r2
+  Const        r18, " "
+  Move         r17, r18
+  Call2        r19, join, r16, r17
+  Add          r20, r15, r19
+  Const        r21, "]"
+  Add          r22, r20, r21
+  Return       r22
+
+  // fun main() {
+func main (regs=47)
+  // var cubans: list<string> = []
+  Const        r0, []
+  Move         r1, r0
+  // var cube1 = 1
+  Const        r2, 1
+  Move         r3, r2
+  // var count = 0
+  Const        r4, 0
+  Move         r5, r4
+  // var cube100k = 0
+  Const        r4, 0
+  Move         r6, r4
+  // var i = 1
+  Const        r2, 1
+  Move         r7, r2
+L3:
+  // while true {
+  Const        r8, true
+  // var j = i + 1
+  Const        r2, 1
+  AddInt       r9, r7, r2
+  Move         r10, r9
+  // var cube2 = j * j * j
+  MulInt       r11, r10, r10
+  MulInt       r12, r11, r10
+  Move         r13, r12
+  // var diff = cube2 - cube1
+  SubInt       r14, r13, r3
+  Move         r15, r14
+  // if isPrime(diff) {
+  Move         r16, r15
+  Call         r17, isPrime, r16
+  JumpIfFalse  r17, L0
+  // if count < 200 {
+  Const        r18, 200
+  LessInt      r19, r5, r18
+  JumpIfFalse  r19, L1
+  // cubans = append(cubans, commatize(diff))
+  Move         r20, r15
+  Call         r21, commatize, r20
+  Append       r22, r1, r21
+  Move         r1, r22
+L1:
+  // count = count + 1
+  Const        r2, 1
+  AddInt       r23, r5, r2
+  Move         r5, r23
+  // if count == 100000 {
+  Const        r24, 100000
+  EqualInt     r25, r5, r24
+  JumpIfFalse  r25, L0
+  // cube100k = diff
+  Move         r6, r15
+  // break
+  Jump         L2
+L0:
+  // cube1 = cube2
+  Move         r3, r13
+  // i = i + 1
+  Const        r2, 1
+  AddInt       r26, r7, r2
+  Move         r7, r26
+  // while true {
+  Jump         L3
+L2:
+  // print("The first 200 cuban primes are:-")
+  Const        r27, "The first 200 cuban primes are:-"
+  Print        r27
+  // var row = 0
+  Const        r4, 0
+  Move         r28, r4
+L7:
+  // while row < 20 {
+  Const        r29, 20
+  LessInt      r30, r28, r29
+  JumpIfFalse  r30, L4
+  // var slice: list<string> = []
+  Const        r0, []
+  Move         r31, r0
+  // var k = 0
+  Const        r4, 0
+  Move         r32, r4
+L6:
+  // while k < 10 {
+  Const        r33, 10
+  LessInt      r34, r32, r33
+  JumpIfFalse  r34, L5
+  // slice = append(slice, cubans[row * 10 + k])
+  Const        r33, 10
+  MulInt       r35, r28, r33
+  AddInt       r36, r35, r32
+  Index        r37, r1, r36
+  Append       r38, r31, r37
+  Move         r31, r38
+  // k = k + 1
+  Const        r2, 1
+  AddInt       r39, r32, r2
+  Move         r32, r39
+  // while k < 10 {
+  Jump         L6
+L5:
+  // print(formatRow(slice))
+  Move         r40, r31
+  Call         r41, formatRow, r40
+  Print        r41
+  // row = row + 1
+  Const        r2, 1
+  AddInt       r42, r28, r2
+  Move         r28, r42
+  // while row < 20 {
+  Jump         L7
+L4:
+  // print("\nThe 100,000th cuban prime is " + commatize(cube100k))
+  Const        r43, "\nThe 100,000th cuban prime is "
+  Move         r44, r6
+  Call         r45, commatize, r44
+  Add          r46, r43, r45
+  Print        r46
+  Return       r0
