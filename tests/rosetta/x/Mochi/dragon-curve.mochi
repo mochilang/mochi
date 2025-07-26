@@ -1,0 +1,21 @@
+// Generate the turning sequence for the Dragon curve
+// using an L-system approach. Prints the sequence of
+// 'L' and 'R' instructions after a fixed depth.
+
+let depth = 10
+var seq = "F"
+var i = 0
+while i < depth {
+  var rev = ""
+  var j = len(seq) - 1
+  while j >= 0 {
+    let c = substring(seq, j, j + 1)
+    if c == "L" { rev = rev + "R" }
+    else if c == "R" { rev = rev + "L" }
+    else { rev = rev + c }
+    j = j - 1
+  }
+  seq = seq + "L" + rev
+  i = i + 1
+}
+print(seq)
