@@ -1,0 +1,54 @@
+// Mochi translation of Rosetta "Determine sentence type" task
+// Based on Go version in tests/rosetta/x/Go/determine-sentence-type.go
+
+fun indexOf(s: string, ch: string): int {
+  var i = 0
+  while i < len(s) {
+    if substring(s, i, i+1) == ch {
+      return i
+    }
+    i = i + 1
+  }
+  return -1
+}
+
+fun join(xs: list<string>, sep: string): string {
+  var res = ""
+  var i = 0
+  while i < len(xs) {
+    if i > 0 { res = res + sep }
+    res = res + xs[i]
+    i = i + 1
+  }
+  return res
+}
+
+fun sentenceType(s: string): string {
+  if len(s) == 0 { return "" }
+  var types: list<string> = []
+  var i = 0
+  while i < len(s) {
+    let ch = substring(s, i, i+1)
+    if ch == "?" {
+      types = append(types, "Q")
+    } else if ch == "!" {
+      types = append(types, "E")
+    } else if ch == "." {
+      types = append(types, "S")
+    }
+    i = i + 1
+  }
+  let last = substring(s, len(s)-1, len(s))
+  if indexOf("?!.", last) == (-1) {
+    types = append(types, "N")
+  }
+  return join(types, "|")
+}
+
+fun main() {
+  var s = "hi there, how are you today? I'd like to present to you the washing machine 9001. You have been nominated to win one of these! Just make sure you don't break it"
+  var result = sentenceType(s)
+  print(result)
+}
+
+main()
