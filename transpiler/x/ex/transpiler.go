@@ -1595,6 +1595,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	res := &Program{}
 	builtinAliases = make(map[string]string)
 	globalVars = make(map[string]struct{})
+	funcsExist := false
 	for _, st := range prog.Statements {
 		if st.Import != nil && st.Import.Lang != nil {
 			alias := st.Import.As
@@ -1625,13 +1626,16 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 			}
 		}
 		if st.Fun != nil {
-			// presence of a function means we are in module mode
+			funcsExist = true
 		}
 		if st.Let != nil {
 			globalVars[st.Let.Name] = struct{}{}
 		} else if st.Var != nil {
 			globalVars[st.Var.Name] = struct{}{}
 		}
+	}
+	if !funcsExist {
+		globalVars = make(map[string]struct{})
 	}
 	for _, st := range prog.Statements {
 		stmt, err := compileStmt(st, env)
@@ -1727,16 +1731,16 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 		}
 		if _, err := env.GetVar(st.Var.Name); err != nil {
 			if _, ok := val.(*AnonFun); ok {
-				env.SetVar(st.Var.Name, types.FuncType{}, false)
+				env.SetVar(st.Var.Name, types.FuncType{}, true)
 			} else if st.Var.Type != nil {
-				env.SetVar(st.Var.Name, types.ResolveTypeRef(st.Var.Type, env), false)
+				env.SetVar(st.Var.Name, types.ResolveTypeRef(st.Var.Type, env), true)
 			} else if ld := extractLoadExpr(st.Var.Value); ld != nil && ld.Type != nil {
 				t := types.ResolveTypeRef(ld.Type, env)
-				env.SetVar(st.Var.Name, types.ListType{Elem: t}, false)
+				env.SetVar(st.Var.Name, types.ListType{Elem: t}, true)
 			} else if st.Var.Value != nil {
-				env.SetVar(st.Var.Name, types.TypeOfExprBasic(st.Var.Value, env), false)
+				env.SetVar(st.Var.Name, types.TypeOfExprBasic(st.Var.Value, env), true)
 			} else {
-				env.SetVar(st.Var.Name, inferStaticType(val), false)
+				env.SetVar(st.Var.Name, inferStaticType(val), true)
 			}
 		}
 		return &LetStmt{Name: st.Var.Name, Value: val}, nil
@@ -2016,20 +2020,16 @@ func gatherMutVars(stmts []Stmt, env *types.Env) []string {
 				if _, ok := locals[t.Name]; ok {
 					break
 				}
-				if _, err := env.IsMutable(t.Name); err == nil {
-					if _, ok := globalVars[t.Name]; !ok {
-						set[t.Name] = struct{}{}
-					}
+				if _, ok := globalVars[t.Name]; !ok {
+					set[t.Name] = struct{}{}
 				}
 			case *IfStmt:
 				for _, v := range t.Vars {
 					if _, ok := locals[v]; ok {
 						continue
 					}
-					if _, err := env.IsMutable(v); err == nil {
-						if _, ok := globalVars[v]; !ok {
-							set[v] = struct{}{}
-						}
+					if _, ok := globalVars[v]; !ok {
+						set[v] = struct{}{}
 					}
 				}
 				walk(t.Then)
@@ -3065,6 +3065,16 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 					str := &CallExpr{Func: "Kernel.to_string", Args: []Expr{args[0]}}
 					return &CallExpr{Func: "IO.puts", Args: []Expr{str}}, nil
 				}
+			} else if len(args) == 2 {
+				if b, ok := args[1].(*BoolLit); ok {
+					if b.Value {
+						return &CallExpr{Func: "IO.puts", Args: []Expr{args[0]}}, nil
+					}
+					return &CallExpr{Func: "IO.write", Args: []Expr{args[0]}}, nil
+				}
+				thenCall := &CallExpr{Func: "IO.puts", Args: []Expr{args[0]}}
+				elseCall := &CallExpr{Func: "IO.write", Args: []Expr{args[0]}}
+				return &CondExpr{Cond: args[1], Then: thenCall, Else: elseCall}, nil
 			} else {
 				parts := make([]interface{}, 0, len(args)*2-1)
 				for i, a := range args {

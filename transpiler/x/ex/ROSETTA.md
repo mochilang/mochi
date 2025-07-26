@@ -2,8 +2,8 @@
 
 Generated Elixir code from Mochi Rosetta programs lives in `tests/rosetta/transpiler/Elixir`.
 
-## Rosetta Test Checklist (37/284)
-_Last updated: 2025-07-26 05:21 +0700_
+## Rosetta Test Checklist (38/284)
+_Last updated: 2025-07-26 09:37 +0700_
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | 100-doors-2 | ✓ |  |  |
@@ -152,7 +152,7 @@ _Last updated: 2025-07-26 05:21 +0700_
 | 144 | calculating-the-value-of-e |  |  |  |
 | 145 | calendar---for-real-programmers-1 |  |  |  |
 | 146 | calendar---for-real-programmers-2 |  |  |  |
-| 147 | calendar |  |  |  |
+| 147 | calendar | ✓ | 11.53ms | 155.9 KB |
 | 148 | calkin-wilf-sequence |  |  |  |
 | 149 | call-a-foreign-language-function |  |  |  |
 | 150 | call-a-function-1 |  |  |  |
