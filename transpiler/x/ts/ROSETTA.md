@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated TypeScript code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/TypeScript`.
-Last updated: 2025-07-25 17:40 UTC
+Last updated: 2025-07-25 22:54 UTC
 
-## Rosetta Golden Test Checklist (281/284)
+## Rosetta Golden Test Checklist (282/284)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 1.595ms | 512.0 KB |
@@ -143,9 +143,9 @@ Last updated: 2025-07-25 17:40 UTC
 | 134 | boyer-moore-string-search | ✓ | 1.918ms | 128.0 KB |
 | 135 | brazilian-numbers | ✓ | 4.46147s | 9.2 MB |
 | 136 | break-oo-privacy | ✓ | 817µs |  |
-| 137 | brilliant-numbers |   |  |  |
-| 138 | brownian-tree | ✓ | 20.309268s | 21.3 MB |
-| 139 | bulls-and-cows-player | ✓ | 24.535ms | 16.3 MB |
+| 137 | brilliant-numbers | ✓ | 58.808563s | 129.2 MB |
+| 138 | brownian-tree | ✓ | 17.721714s | 14.4 MB |
+| 139 | bulls-and-cows-player | ✓ | 1.604ms | 3.6 MB |
 | 140 | bulls-and-cows | ✓ |  | 512.0 KB |
 | 141 | burrows-wheeler-transform | ✓ | 571.223ms | 8.0 MB |
 | 142 | caesar-cipher-1 | ✓ | 571.223ms | 128.0 KB |
