@@ -1,0 +1,5 @@
+run: exit status 254
+../../../tests/rosetta/transpiler/Dart/call-a-function-3.dart:26:21: Error: The argument type 'List<dynamic>' can't be assigned to the parameter type 'List<int>'.
+ - 'List' is from 'dart:core'.
+  h("ex1", <dynamic>[]);
+                    ^

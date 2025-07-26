@@ -2,38 +2,721 @@
 
                                   1969
 
-       January                   February                   March             
- Su Mo Tu We Th Fr Sa      Su Mo Tu We Th Fr Sa      Su Mo Tu We Th Fr Sa     
-           1  2  3  4                         1                         1     
-  5  6  7  8  9 10 11       2  3  4  5  6  7  8       2  3  4  5  6  7  8     
- 12 13 14 15 16 17 18       9 10 11 12 13 14 15       9 10 11 12 13 14 15     
- 19 20 21 22 23 24 25      16 17 18 19 20 21 22      16 17 18 19 20 21 22     
- 26 27 28 29 30 31         23 24 25 26 27 28         23 24 25 26 27 28 29     
-                                                     30 31                    
+       January             false
+       February            false
+        March              false
 
-        April                      May                       June             
- Su Mo Tu We Th Fr Sa      Su Mo Tu We Th Fr Sa      Su Mo Tu We Th Fr Sa     
-        1  2  3  4  5                   1  2  3       1  2  3  4  5  6  7     
-  6  7  8  9 10 11 12       4  5  6  7  8  9 10       8  9 10 11 12 13 14     
- 13 14 15 16 17 18 19      11 12 13 14 15 16 17      15 16 17 18 19 20 21     
- 20 21 22 23 24 25 26      18 19 20 21 22 23 24      22 23 24 25 26 27 28     
- 27 28 29 30               25 26 27 28 29 30 31      29 30                    
-                                                                              
+ Su false
+ Mo false
+ Tu false
+ We false
+ Th false
+ Fr false
+ Sa false
+      false
+ Su false
+ Mo false
+ Tu false
+ We false
+ Th false
+ Fr false
+ Sa false
+      false
+ Su false
+ Mo false
+ Tu false
+ We false
+ Th false
+ Fr false
+ Sa false
+      false
 
-         July                     August                  September           
- Su Mo Tu We Th Fr Sa      Su Mo Tu We Th Fr Sa      Su Mo Tu We Th Fr Sa     
-        1  2  3  4  5                      1  2          1  2  3  4  5  6     
-  6  7  8  9 10 11 12       3  4  5  6  7  8  9       7  8  9 10 11 12 13     
- 13 14 15 16 17 18 19      10 11 12 13 14 15 16      14 15 16 17 18 19 20     
- 20 21 22 23 24 25 26      17 18 19 20 21 22 23      21 22 23 24 25 26 27     
- 27 28 29 30 31            24 25 26 27 28 29 30      28 29 30                 
-                           31                                                 
+    false
+    false
+    false
+  1 false
+  2 false
+  3 false
+  4 false
+      false
+    false
+    false
+    false
+    false
+    false
+    false
+  1 false
+      false
+    false
+    false
+    false
+    false
+    false
+    false
+  1 false
+      false
 
-       October                   November                  December           
- Su Mo Tu We Th Fr Sa      Su Mo Tu We Th Fr Sa      Su Mo Tu We Th Fr Sa     
-           1  2  3  4                         1          1  2  3  4  5  6     
-  5  6  7  8  9 10 11       2  3  4  5  6  7  8       7  8  9 10 11 12 13     
- 12 13 14 15 16 17 18       9 10 11 12 13 14 15      14 15 16 17 18 19 20     
- 19 20 21 22 23 24 25      16 17 18 19 20 21 22      21 22 23 24 25 26 27     
- 26 27 28 29 30 31         23 24 25 26 27 28 29      28 29 30 31              
-                           30
+  5 false
+  6 false
+  7 false
+  8 false
+  9 false
+ 10 false
+ 11 false
+      false
+  2 false
+  3 false
+  4 false
+  5 false
+  6 false
+  7 false
+  8 false
+      false
+  2 false
+  3 false
+  4 false
+  5 false
+  6 false
+  7 false
+  8 false
+      false
+
+ 12 false
+ 13 false
+ 14 false
+ 15 false
+ 16 false
+ 17 false
+ 18 false
+      false
+  9 false
+ 10 false
+ 11 false
+ 12 false
+ 13 false
+ 14 false
+ 15 false
+      false
+  9 false
+ 10 false
+ 11 false
+ 12 false
+ 13 false
+ 14 false
+ 15 false
+      false
+
+ 19 false
+ 20 false
+ 21 false
+ 22 false
+ 23 false
+ 24 false
+ 25 false
+      false
+ 16 false
+ 17 false
+ 18 false
+ 19 false
+ 20 false
+ 21 false
+ 22 false
+      false
+ 16 false
+ 17 false
+ 18 false
+ 19 false
+ 20 false
+ 21 false
+ 22 false
+      false
+
+ 26 false
+ 27 false
+ 28 false
+ 29 false
+ 30 false
+ 31 false
+    false
+      false
+ 23 false
+ 24 false
+ 25 false
+ 26 false
+ 27 false
+ 28 false
+    false
+      false
+ 23 false
+ 24 false
+ 25 false
+ 26 false
+ 27 false
+ 28 false
+ 29 false
+      false
+
+    false
+    false
+    false
+    false
+    false
+    false
+    false
+      false
+    false
+    false
+    false
+    false
+    false
+    false
+    false
+      false
+ 30 false
+ 31 false
+    false
+    false
+    false
+    false
+    false
+      false
+
+
+        April              false
+         May               false
+         June              false
+
+ Su false
+ Mo false
+ Tu false
+ We false
+ Th false
+ Fr false
+ Sa false
+      false
+ Su false
+ Mo false
+ Tu false
+ We false
+ Th false
+ Fr false
+ Sa false
+      false
+ Su false
+ Mo false
+ Tu false
+ We false
+ Th false
+ Fr false
+ Sa false
+      false
+
+    false
+    false
+  1 false
+  2 false
+  3 false
+  4 false
+  5 false
+      false
+    false
+    false
+    false
+    false
+  1 false
+  2 false
+  3 false
+      false
+  1 false
+  2 false
+  3 false
+  4 false
+  5 false
+  6 false
+  7 false
+      false
+
+  6 false
+  7 false
+  8 false
+  9 false
+ 10 false
+ 11 false
+ 12 false
+      false
+  4 false
+  5 false
+  6 false
+  7 false
+  8 false
+  9 false
+ 10 false
+      false
+  8 false
+  9 false
+ 10 false
+ 11 false
+ 12 false
+ 13 false
+ 14 false
+      false
+
+ 13 false
+ 14 false
+ 15 false
+ 16 false
+ 17 false
+ 18 false
+ 19 false
+      false
+ 11 false
+ 12 false
+ 13 false
+ 14 false
+ 15 false
+ 16 false
+ 17 false
+      false
+ 15 false
+ 16 false
+ 17 false
+ 18 false
+ 19 false
+ 20 false
+ 21 false
+      false
+
+ 20 false
+ 21 false
+ 22 false
+ 23 false
+ 24 false
+ 25 false
+ 26 false
+      false
+ 18 false
+ 19 false
+ 20 false
+ 21 false
+ 22 false
+ 23 false
+ 24 false
+      false
+ 22 false
+ 23 false
+ 24 false
+ 25 false
+ 26 false
+ 27 false
+ 28 false
+      false
+
+ 27 false
+ 28 false
+ 29 false
+ 30 false
+    false
+    false
+    false
+      false
+ 25 false
+ 26 false
+ 27 false
+ 28 false
+ 29 false
+ 30 false
+ 31 false
+      false
+ 29 false
+ 30 false
+    false
+    false
+    false
+    false
+    false
+      false
+
+    false
+    false
+    false
+    false
+    false
+    false
+    false
+      false
+    false
+    false
+    false
+    false
+    false
+    false
+    false
+      false
+    false
+    false
+    false
+    false
+    false
+    false
+    false
+      false
+
+
+         July              false
+        August             false
+      September            false
+
+ Su false
+ Mo false
+ Tu false
+ We false
+ Th false
+ Fr false
+ Sa false
+      false
+ Su false
+ Mo false
+ Tu false
+ We false
+ Th false
+ Fr false
+ Sa false
+      false
+ Su false
+ Mo false
+ Tu false
+ We false
+ Th false
+ Fr false
+ Sa false
+      false
+
+    false
+    false
+  1 false
+  2 false
+  3 false
+  4 false
+  5 false
+      false
+    false
+    false
+    false
+    false
+    false
+  1 false
+  2 false
+      false
+    false
+  1 false
+  2 false
+  3 false
+  4 false
+  5 false
+  6 false
+      false
+
+  6 false
+  7 false
+  8 false
+  9 false
+ 10 false
+ 11 false
+ 12 false
+      false
+  3 false
+  4 false
+  5 false
+  6 false
+  7 false
+  8 false
+  9 false
+      false
+  7 false
+  8 false
+  9 false
+ 10 false
+ 11 false
+ 12 false
+ 13 false
+      false
+
+ 13 false
+ 14 false
+ 15 false
+ 16 false
+ 17 false
+ 18 false
+ 19 false
+      false
+ 10 false
+ 11 false
+ 12 false
+ 13 false
+ 14 false
+ 15 false
+ 16 false
+      false
+ 14 false
+ 15 false
+ 16 false
+ 17 false
+ 18 false
+ 19 false
+ 20 false
+      false
+
+ 20 false
+ 21 false
+ 22 false
+ 23 false
+ 24 false
+ 25 false
+ 26 false
+      false
+ 17 false
+ 18 false
+ 19 false
+ 20 false
+ 21 false
+ 22 false
+ 23 false
+      false
+ 21 false
+ 22 false
+ 23 false
+ 24 false
+ 25 false
+ 26 false
+ 27 false
+      false
+
+ 27 false
+ 28 false
+ 29 false
+ 30 false
+ 31 false
+    false
+    false
+      false
+ 24 false
+ 25 false
+ 26 false
+ 27 false
+ 28 false
+ 29 false
+ 30 false
+      false
+ 28 false
+ 29 false
+ 30 false
+    false
+    false
+    false
+    false
+      false
+
+    false
+    false
+    false
+    false
+    false
+    false
+    false
+      false
+ 31 false
+    false
+    false
+    false
+    false
+    false
+    false
+      false
+    false
+    false
+    false
+    false
+    false
+    false
+    false
+      false
+
+
+       October             false
+       November            false
+       December            false
+
+ Su false
+ Mo false
+ Tu false
+ We false
+ Th false
+ Fr false
+ Sa false
+      false
+ Su false
+ Mo false
+ Tu false
+ We false
+ Th false
+ Fr false
+ Sa false
+      false
+ Su false
+ Mo false
+ Tu false
+ We false
+ Th false
+ Fr false
+ Sa false
+      false
+
+    false
+    false
+    false
+  1 false
+  2 false
+  3 false
+  4 false
+      false
+    false
+    false
+    false
+    false
+    false
+    false
+  1 false
+      false
+    false
+  1 false
+  2 false
+  3 false
+  4 false
+  5 false
+  6 false
+      false
+
+  5 false
+  6 false
+  7 false
+  8 false
+  9 false
+ 10 false
+ 11 false
+      false
+  2 false
+  3 false
+  4 false
+  5 false
+  6 false
+  7 false
+  8 false
+      false
+  7 false
+  8 false
+  9 false
+ 10 false
+ 11 false
+ 12 false
+ 13 false
+      false
+
+ 12 false
+ 13 false
+ 14 false
+ 15 false
+ 16 false
+ 17 false
+ 18 false
+      false
+  9 false
+ 10 false
+ 11 false
+ 12 false
+ 13 false
+ 14 false
+ 15 false
+      false
+ 14 false
+ 15 false
+ 16 false
+ 17 false
+ 18 false
+ 19 false
+ 20 false
+      false
+
+ 19 false
+ 20 false
+ 21 false
+ 22 false
+ 23 false
+ 24 false
+ 25 false
+      false
+ 16 false
+ 17 false
+ 18 false
+ 19 false
+ 20 false
+ 21 false
+ 22 false
+      false
+ 21 false
+ 22 false
+ 23 false
+ 24 false
+ 25 false
+ 26 false
+ 27 false
+      false
+
+ 26 false
+ 27 false
+ 28 false
+ 29 false
+ 30 false
+ 31 false
+    false
+      false
+ 23 false
+ 24 false
+ 25 false
+ 26 false
+ 27 false
+ 28 false
+ 29 false
+      false
+ 28 false
+ 29 false
+ 30 false
+ 31 false
+    false
+    false
+    false
+      false
+
+    false
+    false
+    false
+    false
+    false
+    false
+    false
+      false
+ 30 false
+    false
+    false
+    false
+    false
+    false
+    false
+      false
+    false
+    false
+    false
+    false
+    false
+    false
+    false
+      false

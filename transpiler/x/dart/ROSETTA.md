@@ -2,7 +2,7 @@
 
 This directory contains Dart code generated from Mochi programs in `tests/rosetta/x/Mochi`. Each program has a `.dart` file and `.out` output. Compilation or runtime failures are captured in a `.error` file.
 
-Compiled and ran: 146/284
+Compiled and ran: 153/284
 
 ## Checklist
 | Index | Name | Status | Duration | Memory |
@@ -145,7 +145,7 @@ Compiled and ran: 146/284
 | 136 | break-oo-privacy | ✓ | 10.556ms | 12.1 MB |
 | 137 | brilliant-numbers | ✓ |  |  |
 | 138 | brownian-tree | ✓ |  |  |
-| 139 | bulls-and-cows-player |   |  |  |
+| 139 | bulls-and-cows-player | ✓ |  |  |
 | 140 | bulls-and-cows |   |  |  |
 | 141 | burrows-wheeler-transform | ✓ |  |  |
 | 142 | caesar-cipher-1 | ✓ |  |  |
@@ -155,12 +155,12 @@ Compiled and ran: 146/284
 | 146 | calendar---for-real-programmers-2 | ✓ |  |  |
 | 147 | calendar | ✓ | 14.477ms | 4.1 MB |
 | 148 | calkin-wilf-sequence | ✓ |  |  |
-| 149 | call-a-foreign-language-function |   |  |  |
-| 150 | call-a-function-1 |   |  |  |
-| 151 | call-a-function-10 |   |  |  |
-| 152 | call-a-function-11 |   |  |  |
-| 153 | call-a-function-12 |   |  |  |
-| 154 | call-a-function-2 |   |  |  |
+| 149 | call-a-foreign-language-function | ✓ |  |  |
+| 150 | call-a-function-1 | ✓ |  |  |
+| 151 | call-a-function-10 | ✓ |  |  |
+| 152 | call-a-function-11 | ✓ |  |  |
+| 153 | call-a-function-12 | ✓ |  |  |
+| 154 | call-a-function-2 | ✓ |  |  |
 | 155 | call-a-function-3 |   |  |  |
 | 156 | call-a-function-4 |   |  |  |
 | 157 | call-a-function-5 |   |  |  |
@@ -292,4 +292,4 @@ Compiled and ran: 146/284
 | 283 | define-a-primitive-data-type |   |  |  |
 | 284 | md5 |   |  |  |
 
-_Last updated: 2025-07-26 05:29 +0700_
+_Last updated: 2025-07-26 09:54 +0700_
