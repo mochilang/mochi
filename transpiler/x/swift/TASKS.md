@@ -1,5 +1,5 @@
-## Progress (2025-07-26 21:24 +0700)
-- swift: add padStart helper and partial rosetta
+## Progress (2025-07-26 21:41 +0700)
+- swift: support dynamic struct indexing
 - Generated golden tests for 102/104 programs
 - Updated README checklist and output artifacts
 
