@@ -3573,20 +3573,34 @@ func boolExprFor(e Expr, t types.Type) Expr {
 			}
 		}
 	}
-	if _, ok := t.(types.BoolType); ok {
-		return e
-	}
 	switch ex := e.(type) {
+	case *BinaryExpr:
+		switch ex.Op {
+		case "<", "<=", ">", ">=", "==", "!=":
+			if _, ok := ex.Left.(*BigBinaryExpr); ok {
+				ex.Left = &BigIntToIntExpr{Value: ex.Left}
+				return ex
+			}
+			if _, ok := ex.Right.(*BigBinaryExpr); ok {
+				ex.Right = &BigIntToIntExpr{Value: ex.Right}
+				return ex
+			}
+			if _, ok := t.(types.BoolType); ok {
+				return ex
+			}
+		case "&&", "||":
+			if _, ok := t.(types.BoolType); ok {
+				return ex
+			}
+		}
 	case *AssertExpr:
 		if ex.Type == "bool" {
 			return e
 		}
-	case *BinaryExpr:
-		switch ex.Op {
-		case "&&", "||", "==", "!=", "<", "<=", ">", ">=":
-			return e
-		}
 	case *NotExpr:
+		return e
+	}
+	if _, ok := t.(types.BoolType); ok {
 		return e
 	}
 	switch t.(type) {
@@ -4046,6 +4060,17 @@ func compileBinary(b *parser.BinaryExpr, env *types.Env, base string) (Expr, err
 							newExpr = &BigRatCmpExpr{Left: left, Op: ops[i].Op, Right: right}
 						}
 					}
+					if newExpr == nil && (ops[i].Op == "<" || ops[i].Op == "<=" || ops[i].Op == ">" || ops[i].Op == ">=" || ops[i].Op == "==" || ops[i].Op == "!=") {
+						liBig := isBigIntType(typesList[i])
+						riBig := isBigIntType(typesList[i+1])
+						if liBig && isIntType(typesList[i+1]) {
+							left = &BigIntToIntExpr{Value: left}
+							newExpr = &BinaryExpr{Left: left, Op: ops[i].Op, Right: right}
+						} else if riBig && isIntType(typesList[i]) {
+							right = &BigIntToIntExpr{Value: right}
+							newExpr = &BinaryExpr{Left: left, Op: ops[i].Op, Right: right}
+						}
+					}
 					if newExpr == nil && (isBigIntType(typesList[i]) || isBigIntType(typesList[i+1])) {
 						usesBigInt = true
 						left = ensureBigIntExpr(left, typesList[i])
@@ -4338,6 +4363,9 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env, base string) (Expr, 
 				iex, err := compileExpr(idx.Start, env, "")
 				if err != nil {
 					return nil, err
+				}
+				if isBigIntType(types.TypeOfExpr(idx.Start, env)) {
+					iex = &BigIntToIntExpr{Value: iex}
 				}
 				switch tt := t.(type) {
 				case types.StringType:
