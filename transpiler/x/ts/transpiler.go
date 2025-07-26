@@ -3541,10 +3541,15 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			}
 			return &SubstringExpr{Str: args[0], Start: args[1], End: args[2]}, nil
 		case "indexOf":
-			if len(args) != 2 {
-				return nil, fmt.Errorf("indexOf expects two arguments")
+			if len(args) < 2 || len(args) > 3 {
+				return nil, fmt.Errorf("indexOf expects two or three arguments")
 			}
-			return &MethodCallExpr{Target: args[0], Method: "indexOf", Args: []Expr{args[1]}}, nil
+			mc := &MethodCallExpr{Target: args[0], Method: "indexOf"}
+			mc.Args = append(mc.Args, args[1])
+			if len(args) == 3 {
+				mc.Args = append(mc.Args, args[2])
+			}
+			return mc, nil
 		case "repeat":
 			if transpileEnv != nil {
 				if _, ok := transpileEnv.GetFunc("repeat"); ok {
