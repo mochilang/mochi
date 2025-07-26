@@ -1,0 +1,95 @@
+// Mochi implementation of Rosetta "Descending primes" task
+
+fun isPrime(n: int): bool {
+  if n < 2 { return false }
+  if n % 2 == 0 { return n == 2 }
+  if n % 3 == 0 { return n == 3 }
+  var d = 5
+  while d * d <= n {
+    if n % d == 0 { return false }
+    d = d + 2
+    if n % d == 0 { return false }
+    d = d + 4
+  }
+  return true
+}
+
+
+fun pow(base: int, exp: int): int {
+  var result = 1
+  var i = 0
+  while i < exp {
+    result = result * base
+    i = i + 1
+  }
+  return result
+}
+
+fun sortInts(xs: list<int>): list<int> {
+  var res: list<int> = []
+  var tmp = xs
+  while len(tmp) > 0 {
+    var min = tmp[0]
+    var idx = 0
+    var i = 1
+    while i < len(tmp) {
+      if tmp[i] < min {
+        min = tmp[i]
+        idx = i
+      }
+      i = i + 1
+    }
+    res = append(res, min)
+    var out: list<int> = []
+    var j = 0
+    while j < len(tmp) {
+      if j != idx { out = append(out, tmp[j]) }
+      j = j + 1
+    }
+    tmp = out
+  }
+  return res
+}
+
+fun pad(n: int, width: int): string {
+  var s = str(n)
+  while len(s) < width {
+    s = " " + s
+  }
+  return s
+}
+
+fun main() {
+  var desc: list<int> = []
+  let max = pow(2, 9)
+  var mask = 1
+  while mask < max {
+    var n = 0
+    var m = mask
+    var d = 9
+    while d > 0 {
+      if m % 2 == 1 { n = n * 10 + d }
+      m = (m / 2) as int
+      d = d - 1
+    }
+    if isPrime(n) { desc = append(desc, n) }
+    mask = mask + 1
+  }
+  desc = sortInts(desc)
+  print("There are " + str(len(desc)) + " descending primes, namely:")
+  var i = 0
+  var line = ""
+  while i < len(desc) {
+    line = line + pad(desc[i], 8) + " "
+    if (i + 1) % 10 == 0 {
+      print(substring(line, 0, len(line)-1))
+      line = ""
+    }
+    i = i + 1
+  }
+  if len(line) > 0 {
+    print(substring(line, 0, len(line)-1))
+  }
+}
+
+main()
