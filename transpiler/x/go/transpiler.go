@@ -3743,23 +3743,23 @@ func compileReturnStmt(rs *parser.ReturnStmt, env *types.Env) (Stmt, error) {
 
 func compileFunStmt(fn *parser.FunStmt, env *types.Env) (Stmt, error) {
 	child := types.NewEnv(env)
-	// Ensure the outer environment knows about this function's type so that
-	// subsequent statements (like a return) can lookup the correct type.
-	if _, err := env.GetVar(fn.Name); err != nil {
-		paramTypes := make([]types.Type, len(fn.Params))
-		for i, p := range fn.Params {
-			if p.Type != nil {
-				paramTypes[i] = types.ResolveTypeRef(p.Type, env)
-			} else {
-				paramTypes[i] = types.AnyType{}
-			}
+	// Register this function's type in the outer environment so that nested
+	// references (including recursive ones) use the correct signature. Any
+	// existing entry is replaced to ensure inner functions aren't shadowed by
+	// variables with the same name defined elsewhere.
+	paramTypes := make([]types.Type, len(fn.Params))
+	for i, p := range fn.Params {
+		if p.Type != nil {
+			paramTypes[i] = types.ResolveTypeRef(p.Type, env)
+		} else {
+			paramTypes[i] = types.AnyType{}
 		}
-		var retT types.Type = types.AnyType{}
-		if fn.Return != nil {
-			retT = types.ResolveTypeRef(fn.Return, env)
-		}
-		env.SetVar(fn.Name, types.FuncType{Params: paramTypes, Return: retT}, false)
 	}
+	var retT types.Type = types.AnyType{}
+	if fn.Return != nil {
+		retT = types.ResolveTypeRef(fn.Return, env)
+	}
+	env.SetVar(fn.Name, types.FuncType{Params: paramTypes, Return: retT}, false)
 	for _, p := range fn.Params {
 		if p.Type != nil {
 			child.SetVar(p.Name, types.ResolveTypeRef(p.Type, env), true)

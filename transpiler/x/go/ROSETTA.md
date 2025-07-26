@@ -1,7 +1,7 @@
 # Go Rosetta Transpiler Output
 
-Completed programs: 153/284
-Last updated: 2025-07-26 09:13 +0700
+Completed programs: 157/284
+Last updated: 2025-07-26 10:43 +0700
 
 Checklist:
 
@@ -168,10 +168,10 @@ Checklist:
 | 159 | call-a-function-7 | ✓ | 25.0µs | 0B |
 | 160 | call-a-function-8 | ✓ | 202.0µs | 176B |
 | 161 | call-a-function-9 | ✓ | 29.0µs | 64B |
-| 162 | call-an-object-method-1 |   |  |  |
-| 163 | call-an-object-method-2 |   |  |  |
-| 164 | call-an-object-method-3 |   |  |  |
-| 165 | call-an-object-method |   |  |  |
+| 162 | call-an-object-method-1 | ✓ | 275.0µs | 0B |
+| 163 | call-an-object-method-2 | ✓ | 43.0µs | 96B |
+| 164 | call-an-object-method-3 | ✓ | 200.0µs | 0B |
+| 165 | call-an-object-method | ✓ | 206.0µs | 0B |
 | 166 | camel-case-and-snake-case |   |  |  |
 | 167 | canny-edge-detector |   |  |  |
 | 168 | canonicalize-cidr |   |  |  |
