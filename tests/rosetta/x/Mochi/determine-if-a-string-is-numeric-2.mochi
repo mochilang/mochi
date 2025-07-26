@@ -1,0 +1,21 @@
+// Mochi translation of Rosetta "Determine if a string is numeric" task (variant 2)
+// Checks if a string contains only decimal digits.
+
+fun isInt(s: string): bool {
+  if len(s) == 0 { return false }
+  for ch in s { if ch < "0" || ch > "9" { return false } }
+  return true
+}
+
+fun main() {
+  print("Are these strings integers?")
+  let v = "1"
+  var b = false
+  // emulate strconv.Atoi check
+  if isInt(v) { b = true }
+  print("  " + v + " -> " + str(b))
+  let i = "one"
+  print("  " + i + " -> " + str(isInt(i)))
+}
+
+main()
