@@ -1,0 +1,105 @@
+fun indexOf(s: string, ch: string): int {
+  var i = 0
+  while i < len(s) {
+    if substring(s, i, i+1) == ch {
+      return i
+    }
+    i = i + 1
+  }
+  return -1
+}
+
+fun floorf(x: float): float {
+  let y = x as int
+  return y as float
+}
+
+fun powf(base: float, exp: int): float {
+  var r = 1.0
+  var i = 0
+  while i < exp {
+    r = r * base
+    i = i + 1
+  }
+  return r
+}
+
+fun fmtF(x: float, width: int, prec: int): string {
+  let factor = powf(10.0, prec)
+  var y = floorf(x * factor + 0.5) / factor
+  var s = str(y)
+  let dot = indexOf(s, ".")
+  if dot == 0 - 1 {
+    s = s + "."
+    var j = 0
+    while j < prec {
+      s = s + "0"
+      j = j + 1
+    }
+  } else {
+    var decs = len(s) - dot - 1
+    while decs < prec {
+      s = s + "0"
+      decs = decs + 1
+    }
+  }
+  while len(s) < width {
+    s = " " + s
+  }
+  return s
+}
+
+fun expf(x: float): float {
+  if x < 0.0 { return 1.0 / expf(-x) }
+  var term = 1.0
+  var sum = 1.0
+  var i = 1
+  while i < 20 {
+    term = term * x / (i as float)
+    sum = sum + term
+    i = i + 1
+  }
+  return sum
+}
+
+fun eulerStep(f: fun(float, float): float, x: float, y: float, h: float): float {
+  return y + h * f(x, y)
+}
+
+fun newCoolingRate(k: float): fun(float): float {
+  return fun(dt: float): float { return -k * dt }
+}
+
+fun newTempFunc(k: float, ambient: float, initial: float): fun(float): float {
+  return fun(t: float): float {
+    return ambient + (initial - ambient) * expf(-k * t)
+  }
+}
+
+fun newCoolingRateDy(k: float, ambient: float): fun(float, float): float {
+  let cr = newCoolingRate(k)
+  return fun(_x: float, obj: float): float { return cr(obj - ambient) }
+}
+
+fun main() {
+  let k = 0.07
+  let tempRoom = 20.0
+  let tempObject = 100.0
+  let fcr = newCoolingRateDy(k, tempRoom)
+  let analytic = newTempFunc(k, tempRoom, tempObject)
+  for step in [2.0, 5.0, 10.0] {
+    print("Step size = " + fmtF(step, 0, 1))
+    print(" Time Euler's Analytic")
+    var temp = tempObject
+    var time = 0.0
+    while time <= 100.0 {
+      let line = fmtF(time, 5, 1) + " " + fmtF(temp, 7, 3) + " " + fmtF(analytic(time), 7, 3)
+      print(line)
+      temp = eulerStep(fcr, time, temp, step)
+      time = time + step
+    }
+    print("")
+  }
+}
+
+main()
