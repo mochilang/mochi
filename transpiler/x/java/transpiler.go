@@ -141,9 +141,17 @@ func javaType(t string) string {
 			start := strings.Index(t, "(") + 1
 			end := strings.Index(t, ")")
 			retIdx := strings.LastIndex(t, ":")
-			if start >= 0 && end > start && retIdx > end {
-				params := strings.Split(t[start:end], ",")
+			if start >= 0 && end >= start && retIdx > end {
+				paramsStr := t[start:end]
 				ret := t[retIdx+1:]
+				if paramsStr == "" {
+					if ret == "void" || ret == "" {
+						return "Runnable"
+					}
+					rt := javaBoxType(javaType(ret))
+					return fmt.Sprintf("java.util.function.Supplier<%s>", rt)
+				}
+				params := strings.Split(paramsStr, ",")
 				if len(params) == 1 {
 					pt := javaBoxType(javaType(params[0]))
 					if ret == "void" {
@@ -1015,7 +1023,7 @@ func (l *LambdaExpr) emit(w io.Writer) {
 	}
 	fmt.Fprint(w, "{\n")
 	for _, st := range l.Body {
-		st.emit(w, "    ")
+		st.emit(w, "        ")
 	}
 	fmt.Fprint(w, "}")
 }
@@ -3345,8 +3353,18 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 			if err != nil {
 				return nil, err
 			}
-			if l, ok := e.(*ListLit); ok && l.ElemType == "" && strings.HasSuffix(currentFuncReturn, "[]") {
-				l.ElemType = strings.TrimSuffix(currentFuncReturn, "[]")
+			if l, ok := e.(*ListLit); ok && strings.HasSuffix(currentFuncReturn, "[]") {
+				if l.ElemType == "" {
+					l.ElemType = strings.TrimSuffix(currentFuncReturn, "[]")
+				}
+				if l.ElemType == "fn():void" {
+					for i, el := range l.Elems {
+						if inferType(el) != "fn():void" {
+							call := &MethodCallExpr{Target: el, Name: "get", Args: nil}
+							l.Elems[i] = &LambdaExpr{Body: []Stmt{&ExprStmt{Expr: call}}, Return: "void"}
+						}
+					}
+				}
 			}
 			if currentFuncReturn == "" || currentFuncReturn == "void" {
 				if _, ok := e.(*NullLit); ok {
@@ -4190,39 +4208,61 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 		}
 		return &MapLit{Keys: keys, Values: vals, Fields: fields}, nil
 	case p.Struct != nil:
-		names := make([]string, len(p.Struct.Fields))
-		vals := make([]Expr, len(p.Struct.Fields))
 		var st types.StructType
 		if topEnv != nil {
 			if s, ok := topEnv.GetStruct(p.Struct.Name); ok {
 				st = s
 			}
 		}
-		for i, f := range p.Struct.Fields {
-			names[i] = f.Name
-			v, err := compileExpr(f.Value)
-			if err != nil {
-				return nil, err
-			}
-			if st.Fields != nil {
-				if ft, ok2 := st.Fields[f.Name]; ok2 {
-					if mt, ok3 := ft.(types.MapType); ok3 {
-						if ml, ok4 := v.(*MapLit); ok4 {
-							if ml.KeyType == "" {
-								ml.KeyType = toJavaTypeFromType(mt.Key)
+		fieldMap := map[string]*parser.Expr{}
+		for _, f := range p.Struct.Fields {
+			fv := f.Value
+			fieldMap[f.Name] = fv
+		}
+		names := make([]string, 0, len(st.Order))
+		vals := make([]Expr, 0, len(st.Order))
+		if st.Fields != nil {
+			for _, fname := range st.Order {
+				names = append(names, fname)
+				if fv, ok := fieldMap[fname]; ok {
+					v, err := compileExpr(fv)
+					if err != nil {
+						return nil, err
+					}
+					if ft, ok2 := st.Fields[fname]; ok2 {
+						if mt, ok3 := ft.(types.MapType); ok3 {
+							if ml, ok4 := v.(*MapLit); ok4 {
+								if ml.KeyType == "" {
+									ml.KeyType = toJavaTypeFromType(mt.Key)
+								}
+								if ml.ValueType == "" {
+									ml.ValueType = toJavaTypeFromType(mt.Value)
+								}
 							}
-							if ml.ValueType == "" {
-								ml.ValueType = toJavaTypeFromType(mt.Value)
+						} else if lt, ok3 := ft.(types.ListType); ok3 {
+							if ll, ok4 := v.(*ListLit); ok4 && ll.ElemType == "" {
+								ll.ElemType = toJavaTypeFromType(lt.Elem)
 							}
-						}
-					} else if lt, ok3 := ft.(types.ListType); ok3 {
-						if ll, ok4 := v.(*ListLit); ok4 && ll.ElemType == "" {
-							ll.ElemType = toJavaTypeFromType(lt.Elem)
 						}
 					}
+					vals = append(vals, v)
+				} else if ft, ok2 := st.Fields[fname]; ok2 {
+					vals = append(vals, zeroValueExpr(toJavaTypeFromType(ft)))
+				} else {
+					vals = append(vals, &NullLit{})
 				}
 			}
-			vals[i] = v
+		} else {
+			names = make([]string, len(p.Struct.Fields))
+			vals = make([]Expr, len(p.Struct.Fields))
+			for i, f := range p.Struct.Fields {
+				names[i] = f.Name
+				v, err := compileExpr(f.Value)
+				if err != nil {
+					return nil, err
+				}
+				vals[i] = v
+			}
 		}
 		return &StructLit{Name: p.Struct.Name, Fields: vals, Names: names}, nil
 	case p.FunExpr != nil:
@@ -5052,12 +5092,31 @@ func toJavaTypeFromType(t types.Type) string {
 		}
 		return fmt.Sprintf("java.util.Map<%s,%s>", javaBoxType(k), javaBoxType(v))
 	case types.FuncType:
-		if len(tt.Params) == 1 {
+		switch len(tt.Params) {
+		case 0:
+			rt := toJavaTypeFromType(tt.Return)
+			if rt == "" || rt == "void" {
+				return "Runnable"
+			}
+			return fmt.Sprintf("java.util.function.Supplier<%s>", javaBoxType(rt))
+		case 1:
 			pt := javaBoxType(toJavaTypeFromType(tt.Params[0]))
-			rt := javaBoxType(toJavaTypeFromType(tt.Return))
-			return fmt.Sprintf("java.util.function.Function<%s,%s>", pt, rt)
+			rt := toJavaTypeFromType(tt.Return)
+			if rt == "" || rt == "void" {
+				return fmt.Sprintf("java.util.function.Consumer<%s>", pt)
+			}
+			return fmt.Sprintf("java.util.function.Function<%s,%s>", pt, javaBoxType(rt))
+		case 2:
+			pt1 := javaBoxType(toJavaTypeFromType(tt.Params[0]))
+			pt2 := javaBoxType(toJavaTypeFromType(tt.Params[1]))
+			rt := toJavaTypeFromType(tt.Return)
+			if rt == "" || rt == "void" {
+				return fmt.Sprintf("java.util.function.BiConsumer<%s,%s>", pt1, pt2)
+			}
+			return fmt.Sprintf("java.util.function.BiFunction<%s,%s,%s>", pt1, pt2, javaBoxType(rt))
+		default:
+			return "java.util.function.Function"
 		}
-		return "java.util.function.Function"
 	}
 	return ""
 }
@@ -5325,6 +5384,21 @@ func substituteVars(e Expr, vars map[string]Expr) Expr {
 		return &ListLit{ElemType: ex.ElemType, Elems: elems}
 	default:
 		return ex
+	}
+}
+
+func zeroValueExpr(t string) Expr {
+	switch t {
+	case "int":
+		return &IntLit{Value: 0}
+	case "double":
+		return &FloatLit{Value: 0}
+	case "boolean":
+		return &BoolLit{Value: false}
+	case "String", "string":
+		return &StringLit{Value: ""}
+	default:
+		return &NullLit{}
 	}
 }
 
