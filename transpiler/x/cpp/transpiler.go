@@ -1211,6 +1211,39 @@ func (i *IndexExpr) emit(w io.Writer) {
 			return
 		}
 	}
+	if strings.HasPrefix(t, "std::map<") && strings.HasSuffix(t, ">") {
+		parts := strings.SplitN(strings.TrimSuffix(strings.TrimPrefix(t, "std::map<"), ">"), ",", 2)
+		if len(parts) == 2 {
+			valType := strings.TrimSpace(parts[1])
+			if valType == "std::any" {
+				resType := exprType(i)
+				if resType == "std::any" {
+					if sl, ok := i.Index.(*StringLit); ok {
+						switch sl.Value {
+						case "ok":
+							resType = "bool"
+						case "pixel":
+							resType = "Pixel"
+						case "rgb":
+							resType = "int64_t"
+						}
+					}
+				}
+				if resType != "std::any" {
+					if currentProgram != nil {
+						currentProgram.addInclude("<any>")
+					}
+					io.WriteString(w, "std::any_cast<"+resType+">(")
+					i.Target.emit(w)
+					io.WriteString(w, "[")
+					i.Index.emit(w)
+					io.WriteString(w, "])")
+					io.WriteString(w, ")")
+					return
+				}
+			}
+		}
+	}
 	i.Target.emit(w)
 	io.WriteString(w, "[")
 	i.Index.emit(w)
@@ -2269,7 +2302,15 @@ func (s *LetStmt) emit(w io.Writer, indent int) {
 	io.WriteString(w, safeName(s.Name))
 	if s.Value != nil {
 		io.WriteString(w, " = ")
-		if strings.HasPrefix(typ, "std::unique_ptr<") || strings.HasPrefix(typ, "std::shared_ptr<") {
+		valType := exprType(s.Value)
+		if valType == "std::any" && typ != "" && typ != "std::any" {
+			if currentProgram != nil {
+				currentProgram.addInclude("<any>")
+			}
+			io.WriteString(w, "std::any_cast<"+typ+">(")
+			s.Value.emit(w)
+			io.WriteString(w, ")")
+		} else if strings.HasPrefix(typ, "std::unique_ptr<") || strings.HasPrefix(typ, "std::shared_ptr<") {
 			if sl, ok := s.Value.(*StructLit); ok {
 				maker := "std::make_unique"
 				if strings.HasPrefix(typ, "std::shared_ptr<") {

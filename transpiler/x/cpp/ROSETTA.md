@@ -2,7 +2,7 @@
 
 This directory stores C++ code generated from Mochi programs in `tests/rosetta/x/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.cpp` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (107/332) - Last updated 2025-07-26 19:01 +0700:
+Checklist of programs that currently transpile and run (108/332) - Last updated 2025-07-26 19:27 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | 100-doors-2 | ✓ | 222.0µs | 13.12MB |
@@ -131,7 +131,7 @@ Checklist of programs that currently transpile and run (107/332) - Last updated 
 | 124 | bitmap-ppm-conversion-through-a-pipe |   |  |  |
 | 125 | bitmap-read-a-ppm-file | ✓ | 163.0µs | 14.37MB |
 | 126 | bitmap-read-an-image-through-a-pipe | ✓ | 47.0µs | 12.98MB |
-| 127 | bitmap-write-a-ppm-file |   |  |  |
+| 127 | bitmap-write-a-ppm-file | ✓ | 119.0µs | 13.36MB |
 | 128 | bitmap |   |  |  |
 | 129 | bitwise-io-1 |   |  |  |
 | 130 | bitwise-io-2 |   |  |  |
