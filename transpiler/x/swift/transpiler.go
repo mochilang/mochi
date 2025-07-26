@@ -962,6 +962,10 @@ func (c *CastExpr) emit(w io.Writer) {
 				fmt.Fprint(w, "(")
 				c.Expr.emit(w)
 				fmt.Fprint(w, " as! Bool)")
+			} else if t == "Double" {
+				fmt.Fprint(w, "Double(")
+				c.Expr.emit(w)
+				fmt.Fprint(w, ")")
 			} else if _, ok := c.Expr.(*IndexExpr); ok {
 				fmt.Fprint(w, "(")
 				c.Expr.emit(w)
@@ -3594,6 +3598,22 @@ func convertPrimary(env *types.Env, pr *parser.Primary) (Expr, error) {
 			usesKeys = true
 			return &CallExpr{Func: "_keys", Args: []Expr{arg}}, nil
 		}
+		if pr.Call.Func == "padStart" && len(pr.Call.Args) == 3 {
+			a0, err := convertExpr(env, pr.Call.Args[0])
+			if err != nil {
+				return nil, err
+			}
+			a1, err := convertExpr(env, pr.Call.Args[1])
+			if err != nil {
+				return nil, err
+			}
+			a2, err := convertExpr(env, pr.Call.Args[2])
+			if err != nil {
+				return nil, err
+			}
+			usesPad = true
+			return &CallExpr{Func: "_padStart", Args: []Expr{a0, a1, a2}}, nil
+		}
 		ce := &CallExpr{Func: pr.Call.Func}
 		var paramTypes []types.Type
 		if env != nil {
@@ -3792,6 +3812,8 @@ func toSwiftType(t *parser.TypeRef) string {
 		return "Int"
 	case "float":
 		return "Double"
+	case "bigrat":
+		return "Double"
 	case "string":
 		return "String"
 	case "bool":
@@ -3836,6 +3858,8 @@ func toSwiftOptionalType(t *parser.TypeRef) string {
 	case "int":
 		return "Int?"
 	case "float":
+		return "Double?"
+	case "bigrat":
 		return "Double?"
 	case "string":
 		return "String?"
