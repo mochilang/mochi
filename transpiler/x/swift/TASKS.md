@@ -1,5 +1,5 @@
-## Progress (2025-07-26 10:15 +0700)
-- swift rosetta: update docs
+## Progress (2025-07-26 19:01 +0700)
+- ex transpiler: handle float mod and module globals
 - Generated golden tests for 102/104 programs
 - Updated README checklist and output artifacts
 
