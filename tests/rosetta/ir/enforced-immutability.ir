@@ -1,0 +1,17 @@
+func main (regs=9)
+  // var s = "immutable"
+  Const        r2, "immutable"
+  Move         r0, r2
+  SetGlobal    0,0,0,0
+  // var s2 = "a" + s[1:]
+  Const        r3, "a"
+  Const        r5, 1
+  Move         r4, r5
+  Const        r6, nil
+  Const        r7, "mmutable"
+  Const        r8, "ammutable"
+  Move         r1, r8
+  SetGlobal    1,1,0,0
+  // print(s2)
+  Print        r1
+  Return       r0

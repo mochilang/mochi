@@ -1,0 +1,5 @@
+// Demonstrates strings are immutable by constructing a new string
+// rather than modifying the original.
+var s = "immutable"
+var s2 = "a" + s[1:]
+print(s2)
