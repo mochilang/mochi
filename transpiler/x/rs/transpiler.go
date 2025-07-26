@@ -2732,7 +2732,9 @@ func compileFunStmt(fn *parser.FunStmt) (Stmt, error) {
 			}
 		} else if typ != "" && typ != "i64" && typ != "bool" && typ != "f64" && typ != "String" {
 			mut := paramMutated(fn.Body, p.Name)
-			if !mut {
+			if strings.HasPrefix(typ, "impl FnMut(") {
+				sigType = "&mut " + typ
+			} else if !mut {
 				sigType = "&" + typ
 			}
 		}
@@ -2820,18 +2822,29 @@ func compileFunStmt(fn *parser.FunStmt) (Stmt, error) {
 	}
 	if ret == "" || strings.HasPrefix(ret, "HashMap") {
 		var out string
+		var structName string
 		for _, st := range body {
 			if r, ok := st.(*ReturnStmt); ok && r.Value != nil {
 				t := inferType(r.Value)
+				if sl, ok2 := r.Value.(*StructLit); ok2 {
+					if structName == "" {
+						structName = sl.Name
+					} else if structName != sl.Name {
+						structName = ""
+					}
+				} else {
+					structName = ""
+				}
 				if out == "" {
 					out = t
 				} else if out != t {
 					out = ""
-					break
 				}
 			}
 		}
-		if out != "" {
+		if structName != "" {
+			ret = structName
+		} else if out != "" {
 			ret = out
 		}
 	}
@@ -3104,7 +3117,15 @@ func compilePostfix(p *parser.PostfixExpr) (Expr, error) {
 				expr = &MethodCallExpr{Receiver: expr, Name: "apply", Args: args}
 			}
 		case op.Cast != nil:
-			// ignore casts
+			t := rustTypeRef(op.Cast.Type)
+			switch t {
+			case "i64":
+				expr = &IntCastExpr{Expr: expr}
+			case "f64":
+				expr = &FloatCastExpr{Expr: expr}
+			case "String":
+				expr = &StringCastExpr{Expr: expr}
+			}
 		default:
 			return nil, fmt.Errorf("unsupported postfix")
 		}
@@ -3387,22 +3408,6 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			usesHashMap = true
 			return &MapLit{Items: entries}, nil
 		}
-		if _, ok := types.InferSimpleMap(p.Map, curEnv); ok {
-			entries := make([]MapEntry, len(p.Map.Items))
-			for i, it := range p.Map.Items {
-				k, err := compileExpr(it.Key)
-				if err != nil {
-					return nil, err
-				}
-				v, err := compileExpr(it.Value)
-				if err != nil {
-					return nil, err
-				}
-				entries[i] = MapEntry{Key: k, Value: v}
-			}
-			usesHashMap = true
-			return &MapLit{Items: entries}, nil
-		}
 		if name, ok := structForMap[p.Map]; ok {
 			fields := make([]Expr, len(p.Map.Items))
 			names := make([]string, len(p.Map.Items))
@@ -3491,6 +3496,22 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 				}
 				return &StructLit{Name: name, Fields: vals, Names: names}, nil
 			}
+		}
+		if _, ok := types.InferSimpleMap(p.Map, curEnv); ok {
+			entries := make([]MapEntry, len(p.Map.Items))
+			for i, it := range p.Map.Items {
+				k, err := compileExpr(it.Key)
+				if err != nil {
+					return nil, err
+				}
+				v, err := compileExpr(it.Value)
+				if err != nil {
+					return nil, err
+				}
+				entries[i] = MapEntry{Key: k, Value: v}
+			}
+			usesHashMap = true
+			return &MapLit{Items: entries}, nil
 		}
 		entries := make([]MapEntry, len(p.Map.Items))
 		for i, it := range p.Map.Items {
@@ -4079,6 +4100,9 @@ func inferType(e Expr) string {
 		}
 	case *IndexExpr:
 		ct := inferType(ex.Target)
+		if strings.HasPrefix(ct, "&") {
+			ct = ct[1:]
+		}
 		if strings.HasPrefix(ct, "Vec<") {
 			return strings.TrimSuffix(strings.TrimPrefix(ct, "Vec<"), ">")
 		}
@@ -4261,6 +4285,9 @@ func rustTypeRef(tr *parser.TypeRef) string {
 		return ""
 	}
 	if tr.Simple != nil {
+		if *tr.Simple == "any" {
+			return "()"
+		}
 		return rustType(*tr.Simple)
 	}
 	if tr.Generic != nil {
@@ -4283,7 +4310,27 @@ func rustTypeRef(tr *parser.TypeRef) string {
 		}
 	}
 	if tr.Fun != nil {
-		return "fn"
+		var pts []string
+		for _, p := range tr.Fun.Params {
+			t := rustTypeRef(p)
+			if t == "" {
+				t = "i64"
+			}
+			pts = append(pts, t)
+		}
+		rt := "()"
+		if tr.Fun.Return != nil {
+			if tr.Fun.Return.Simple != nil && *tr.Fun.Return.Simple == "any" {
+				rt = "()"
+			} else {
+				r := rustTypeRef(tr.Fun.Return)
+				if r != "" {
+					rt = r
+				}
+			}
+		}
+		kw := "FnMut"
+		return fmt.Sprintf("impl %s(%s) -> %s", kw, strings.Join(pts, ", "), rt)
 	}
 	return "i64"
 }
