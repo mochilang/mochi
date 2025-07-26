@@ -1,0 +1,28 @@
+// Mochi translation of Rosetta "Delegates" task
+// Based on Go version downloaded from tests/rosetta/x/Go/delegates.go
+
+type Fn = fun(): string
+
+type Delegator { delegate: map<string, Fn> }
+
+fun operation(d: Delegator): string {
+  if "thing" in d.delegate {
+    return d.delegate["thing"]()
+  }
+  return "default implementation"
+}
+
+fun newDelegate(): map<string, Fn> {
+  var m: map<string, Fn> = {}
+  m["thing"] = fun(): string { return "delegate implementation" }
+  return m
+}
+
+var a = Delegator{ delegate: {} }
+print(operation(a))
+
+a.delegate = {}
+print(operation(a))
+
+a.delegate = newDelegate()
+print(operation(a))

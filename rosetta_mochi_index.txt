@@ -282,3 +282,4 @@
 282 deepcopy-1.mochi
 283 define-a-primitive-data-type.mochi
 284 md5.mochi
+285 delegates.mochi
