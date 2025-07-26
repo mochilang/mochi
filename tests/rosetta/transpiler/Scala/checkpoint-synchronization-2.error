@@ -1,0 +1,12 @@
+exit status 1
+/workspace/mochi/tests/rosetta/transpiler/Scala/checkpoint-synchronization-2.scala:10: error: type mismatch;
+ found   : scala.math.BigInt
+ required: Int
+      if (ch == upper.slice(i, (i + BigInt(1)).toInt)) {
+                            ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/checkpoint-synchronization-2.scala:11: error: type mismatch;
+ found   : scala.math.BigInt
+ required: Int
+        return lower.slice(i, (i + BigInt(1)).toInt)
+                           ^
+two errors found
