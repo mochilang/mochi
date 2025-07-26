@@ -1,0 +1,178 @@
+run: exit status 1
+    warning: variable "seed" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 14 │               seed = v
+    │               ~
+    │
+    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/arithmetic-evaluation.exs:14:15: Main._now/0
+
+    warning: variable "seeded" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 15 │               seeded = true
+    │               ~
+    │
+    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/arithmetic-evaluation.exs:15:15: Main._now/0
+
+    error: undefined variable "expr"
+    │
+ 51 │         if i < String.length(Map.get(p, expr, "")) && String.slice(p.expr, i, i + 1 - (i)) == " " do
+    │                                         ^^^^
+    │
+    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/arithmetic-evaluation.exs:51:41: Main.skipWS/1
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 83 │       {i, n} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/arithmetic-evaluation.exs:83:8: Main.parseIntStr/1
+
+    error: undefined variable "expr"
+    │
+ 99 │         if p.pos < String.length(Map.get(p, expr, "")) do
+    │                                             ^^^^
+    │
+    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/arithmetic-evaluation.exs:99:45: Main.parseNumber/1
+
+     warning: variable "p" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 103 │               p = Map.put(p, :pos, p.pos + 1)
+     │               ~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/arithmetic-evaluation.exs:103:15: Main.parseNumber/1
+
+     error: undefined variable "expr"
+     │
+ 130 │       {p} = if p.pos < String.length(Map.get(p, expr, "")) && String.slice(p.expr, p.pos, p.pos + 1 - (p.pos)) == "(" do
+     │                                                 ^^^^
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/arithmetic-evaluation.exs:130:49: Main.parseFactor/1
+
+     error: undefined variable "expr"
+     │
+ 136 │         {p} = if p.pos < String.length(Map.get(p, expr, "")) && String.slice(p.expr, p.pos, p.pos + 1 - (p.pos)) == ")" do
+     │                                                   ^^^^
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/arithmetic-evaluation.exs:136:51: Main.parseFactor/1
+
+     error: undefined variable "expr"
+     │
+ 147 │       {p} = if p.pos < String.length(Map.get(p, expr, "")) && String.slice(p.expr, p.pos, p.pos + 1 - (p.pos)) == "-" do
+     │                                                 ^^^^
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/arithmetic-evaluation.exs:147:49: Main.parseFactor/1
+
+     warning: variable "r" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 170 │             r = r * b
+     │             ~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/arithmetic-evaluation.exs:170:13: Main.powInt/2
+
+     warning: variable "b" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 179 │       {b, e, r} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/arithmetic-evaluation.exs:179:8: Main.powInt/2
+
+     warning: variable "e" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 179 │       {b, e, r} = try do
+     │           ~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/arithmetic-evaluation.exs:179:11: Main.powInt/2
+
+     error: undefined variable "expr"
+     │
+ 199 │             if p.pos < String.length(Map.get(p, expr, "")) && String.slice(p.expr, p.pos, p.pos + 1 - (p.pos)) == "^" do
+     │                                                 ^^^^
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/arithmetic-evaluation.exs:199:49: Main.parsePower/1
+
+     warning: variable "p" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 203 │               p = r2.p
+     │               ~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/arithmetic-evaluation.exs:203:15: Main.parsePower/1
+
+     warning: variable "v" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 204 │               v = Main.powInt(v, rhs)
+     │               ~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/arithmetic-evaluation.exs:204:15: Main.parsePower/1
+
+     error: undefined variable "expr"
+     │
+ 236 │             if p.pos < String.length(Map.get(p, expr, "")) do
+     │                                                 ^^^^
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/arithmetic-evaluation.exs:236:49: Main.parseTerm/1
+
+     warning: variable "p" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 242 │                 p = r2.p
+     │                 ~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/arithmetic-evaluation.exs:242:17: Main.parseTerm/1
+
+     warning: variable "v" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 243 │                 v = v * rhs
+     │                 ~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/arithmetic-evaluation.exs:243:17: Main.parseTerm/1
+
+     warning: variable "p" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 250 │                 p = r2.p
+     │                 ~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/arithmetic-evaluation.exs:250:17: Main.parseTerm/1
+
+     warning: variable "v" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 251 │                 v = v / trunc(rhs)
+     │                 ~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/arithmetic-evaluation.exs:251:17: Main.parseTerm/1
+
+     error: undefined variable "expr"
+     │
+ 284 │             if p.pos < String.length(Map.get(p, expr, "")) do
+     │                                                 ^^^^
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/arithmetic-evaluation.exs:284:49: Main.parseExpr/1
+
+     warning: variable "p" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 290 │                 p = r2.p
+     │                 ~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/arithmetic-evaluation.exs:290:17: Main.parseExpr/1
+
+     warning: variable "v" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 291 │                 v = v + rhs
+     │                 ~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/arithmetic-evaluation.exs:291:17: Main.parseExpr/1
+
+     warning: variable "p" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 298 │                 p = r2.p
+     │                 ~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/arithmetic-evaluation.exs:298:17: Main.parseExpr/1
+
+     warning: variable "v" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 299 │                 v = v - rhs
+     │                 ~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/arithmetic-evaluation.exs:299:17: Main.parseExpr/1
+
+** (CompileError) /workspace/mochi/tests/rosetta/transpiler/Elixir/arithmetic-evaluation.exs: cannot compile module Main (errors have been logged)
+

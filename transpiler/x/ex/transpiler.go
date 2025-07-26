@@ -38,6 +38,20 @@ func sanitizeIdent(name string) string {
 	return name
 }
 
+func sanitizeFuncName(name string) string {
+	if len(name) > 0 && name[0] >= 'A' && name[0] <= 'Z' {
+		return strings.ToLower(name)
+	}
+	return sanitizeIdent(name)
+}
+
+func sanitizeCallName(name string) string {
+	if len(name) > 0 && name[0] >= 'A' && name[0] <= 'Z' {
+		return strings.ToLower(name)
+	}
+	return sanitizeIdent(name)
+}
+
 var funcDepth int
 
 // builtinAliases maps import aliases to special built-in modules.
@@ -919,7 +933,7 @@ func (fn *FuncDecl) emit(w io.Writer, indent int) {
 		io.WriteString(w, "  ")
 	}
 	io.WriteString(w, "def ")
-	io.WriteString(w, sanitizeIdent(fn.Name))
+	io.WriteString(w, sanitizeFuncName(fn.Name))
 	io.WriteString(w, "(")
 	for i, p := range fn.Params {
 		if i > 0 {
@@ -3261,7 +3275,12 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 			}
 			args[i] = ex
 		}
-		name := sanitizeIdent(p.Call.Func)
+		name := sanitizeCallName(p.Call.Func)
+		if _, err := env.GetVar(name); err == nil {
+			if _, ok := env.GetFunc(p.Call.Func); ok {
+				name = "Main." + sanitizeFuncName(p.Call.Func)
+			}
+		}
 		if idx := strings.Index(name, "."); idx > 0 {
 			alias := name[:idx]
 			method := name[idx+1:]
@@ -3510,7 +3529,7 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 			}
 		}
 		for _, t := range p.Selector.Tail {
-			expr = &IndexExpr{Target: expr, Index: &AtomLit{Name: t}, UseMapSyntax: true}
+			expr = &IndexExpr{Target: expr, Index: &AtomLit{Name: ":" + t}, UseMapSyntax: true}
 		}
 		return expr, nil
 	case p.List != nil:
@@ -3708,7 +3727,7 @@ func sliceHelper(indent int) string {
 	buf.WriteString(pad + "defp _slice(base, start, len) do\n")
 	buf.WriteString(pad + "  cond do\n")
 	buf.WriteString(pad + "    is_binary(base) -> String.slice(base, start, len)\n")
-	buf.WriteString(pad + "    len == 1 -> Enum.at(base, start)\n")
+	buf.WriteString(pad + "    len == 1 -> Enum.slice(base, start, len)\n")
 	buf.WriteString(pad + "    true -> Enum.slice(base, start, len)\n")
 	buf.WriteString(pad + "  end\n")
 	buf.WriteString(pad + "end\n")
