@@ -1,0 +1,20 @@
+func main (regs=5)
+L2:
+  // while true {
+  Const        r0, true
+  // let line = input()
+  Input        r1
+  Move         r2, r1
+  // if line == "" {
+  Const        r3, ""
+  Equal        r4, r2, r3
+  JumpIfFalse  r4, L0
+  // break
+  Jump         L1
+L0:
+  // print(line)
+  Print        r2
+  // while true {
+  Jump         L2
+L1:
+  Return       r0
