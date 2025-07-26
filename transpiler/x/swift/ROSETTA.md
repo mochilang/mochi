@@ -2,8 +2,8 @@
 
 Generated Swift code for Mochi Rosetta programs in `tests/rosetta/x/Mochi`. Outputs are stored in `tests/rosetta/transpiler/Swift`. Errors are captured in `.error` files.
 
-Completed: 61/284
-Last updated: 2025-07-26 09:28 +0700
+Completed: 72/284
+Last updated: 2025-07-26 10:02 +0700
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -74,18 +74,18 @@ Last updated: 2025-07-26 09:28 +0700
 | 65 | arithmetic-complex | ✓ | 272µs | 3.2 MB |
 | 66 | arithmetic-derivative | ✓ | 1.023ms | 3.3 MB |
 | 67 | arithmetic-evaluation |   |  |  |
-| 68 | arithmetic-geometric-mean-calculate-pi |   |  |  |
-| 69 | arithmetic-geometric-mean |   |  |  |
-| 70 | arithmetic-integer-1 |   |  |  |
-| 71 | arithmetic-integer-2 |   |  |  |
+| 68 | arithmetic-geometric-mean-calculate-pi | ✓ | 311µs | 3.0 MB |
+| 69 | arithmetic-geometric-mean | ✓ | 239µs | 3.3 MB |
+| 70 | arithmetic-integer-1 | ✓ | 234µs | 2.8 MB |
+| 71 | arithmetic-integer-2 | ✓ | 196µs | 3.1 MB |
 | 72 | arithmetic-numbers |   |  |  |
-| 73 | arithmetic-rational |   |  |  |
-| 74 | array-concatenation |   |  |  |
-| 75 | array-length |   |  |  |
-| 76 | arrays |   |  |  |
-| 77 | ascending-primes |   |  |  |
-| 78 | ascii-art-diagram-converter |   |  |  |
-| 79 | assertions |   |  |  |
+| 73 | arithmetic-rational | ✓ | 299µs | 3.1 MB |
+| 74 | array-concatenation | ✓ | 568µs | 3.1 MB |
+| 75 | array-length | ✓ | 468µs | 3.2 MB |
+| 76 | arrays | ✓ | 554µs | 3.1 MB |
+| 77 | ascending-primes | ✓ | 893µs | 2.9 MB |
+| 78 | ascii-art-diagram-converter | ✓ | 273µs | 2.9 MB |
+| 79 | assertions | ✓ | 204µs | 3.0 MB |
 | 80 | associative-array-creation |   |  |  |
 | 81 | associative-array-iteration |   |  |  |
 | 82 | associative-array-merging |   |  |  |
