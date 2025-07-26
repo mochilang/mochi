@@ -1175,6 +1175,21 @@ func (i *IndexExpr) emit(w io.Writer) {
 		io.WriteString(w, "])")
 		return
 	}
+	if strings.HasPrefix(t, "std::map<") && strings.Contains(t, "std::any>") {
+		if currentProgram != nil {
+			currentProgram.addInclude("<any>")
+		}
+		resType := exprType(i)
+		if resType == "auto" || resType == "" {
+			resType = "std::any"
+		}
+		io.WriteString(w, "std::any_cast<"+resType+">(")
+		i.Target.emit(w)
+		io.WriteString(w, "[")
+		i.Index.emit(w)
+		io.WriteString(w, "])")
+		return
+	}
 	if t == "std::any" {
 		if currentProgram != nil {
 			currentProgram.addInclude("<any>")
