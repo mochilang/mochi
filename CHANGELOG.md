@@ -1,5 +1,22 @@
 # 📦 CHANGELOG.md
 
+## [0.10.41] – 2025-07-26T12:01:29+07:00
+
+### Added
+
+* Mochi solutions for many new Rosetta tasks including Dijkstra's algorithm and dining philosophers
+* Slice builtin and forward references in the VM with else-if and bigrat cast support
+* Transpiler updates across Go, F#, Scala, Swift, TypeScript, Java and C++ with new builtins and benchmark features
+* Benchmarks and golden outputs refreshed across languages
+
+### Changed
+
+* Improved index handling and casting logic in multiple backends
+* Documentation and progress logs updated for various transpilers
+
+### Fixed
+
+* Numerous compiler issues such as foreach handling in Go and int64 casts in F#
 ## [0.10.40] – 2025-07-25T10:01:54+07:00
 
 ### Added
