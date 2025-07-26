@@ -1,0 +1,45 @@
+// Mochi implementation of Rosetta "Doubly-linked list/Traversal" task
+// Simplified translation of Go version.
+
+var nodes: map<int, map<string, any>> = {}
+var head: int = 0 - 1
+var tail: int = 0 - 1
+
+fun listString(): string {
+  if head == 0 - 1 { return "<nil>" }
+  var r = "[" + nodes[head]["value"]
+  var id = nodes[head]["next"] as int
+  while id != 0 - 1 {
+    r = r + " " + nodes[id]["value"]
+    id = nodes[id]["next"] as int
+  }
+  r = r + "]"
+  return r
+}
+
+print(listString())
+
+# insert A
+nodes[0] = {"value":"A", "next": 0 - 1, "prev": 0 - 1}
+head = 0
+tail = 0
+
+# insert B at tail
+nodes[1] = {"value":"B", "next": 0 - 1, "prev": 0}
+nodes[0]["next"] = 1
+tail = 1
+print(listString())
+
+# insert C after A
+nodes[2] = {"value":"C", "next": 1, "prev": 0}
+nodes[1]["prev"] = 2
+nodes[0]["next"] = 2
+print(listString())
+
+var out = "From tail:"
+var id = tail
+while id != 0 - 1 {
+  out = out + " " + nodes[id]["value"]
+  id = nodes[id]["prev"] as int
+}
+print(out)
