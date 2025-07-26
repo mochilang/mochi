@@ -1,0 +1,136 @@
+// Mochi translation of Rosetta "Element-wise operations" task
+// Based on Go version in tests/rosetta/x/Go/element-wise-operations-*.go
+
+fun pow10(n: int): float {
+  var r: float = 1.0
+  var i = 0
+  while i < n {
+    r = r * 10.0
+    i = i + 1
+  }
+  return r
+}
+
+fun powf(base: float, exp: float): float {
+  if exp == 0.5 { // square root via Newton iteration
+    var guess = base
+    var i = 0
+    while i < 20 {
+      guess = (guess + base / guess) / 2.0
+      i = i + 1
+    }
+    return guess
+  }
+  var result = 1.0
+  var n = int(exp)
+  var i = 0
+  while i < n {
+    result = result * base
+    i = i + 1
+  }
+  return result
+}
+
+fun formatFloat(f: float, prec: int): string {
+  let scale = pow10(prec)
+  let scaled = (f * scale) + 0.5
+  var n = (scaled as int)
+  var digits = str(n)
+  while len(digits) <= prec {
+    digits = "0" + digits
+  }
+  let intPart = substring(digits, 0, len(digits) - prec)
+  let fracPart = substring(digits, len(digits) - prec, len(digits))
+  return intPart + "." + fracPart
+}
+
+fun padLeft(s: string, w: int): string {
+  var res = ""
+  var n = w - len(s)
+  while n > 0 {
+    res = res + " "
+    n = n - 1
+  }
+  return res + s
+}
+
+fun rowString(row: list<float>): string {
+  var s = "["
+  var i = 0
+  while i < len(row) {
+    s = s + padLeft(formatFloat(row[i], 3), 6)
+    if i < len(row) - 1 { s = s + " " }
+    i = i + 1
+  }
+  return s + "] "
+}
+
+fun printMatrix(heading: string, m: list<list<float>>) {
+  print(heading)
+  var i = 0
+  while i < len(m) {
+    print(rowString(m[i]))
+    i = i + 1
+  }
+}
+
+fun elementWiseMM(m1: list<list<float>>, m2: list<list<float>>, f: fun(float,float): float): list<list<float>> {
+  var z: list<list<float>> = []
+  var r = 0
+  while r < len(m1) {
+    var row: list<float> = []
+    var c = 0
+    while c < len(m1[r]) {
+      row = append(row, f(m1[r][c], m2[r][c]))
+      c = c + 1
+    }
+    z = append(z, row)
+    r = r + 1
+  }
+  return z
+}
+
+fun elementWiseMS(m: list<list<float>>, s: float, f: fun(float,float): float): list<list<float>> {
+  var z: list<list<float>> = []
+  var r = 0
+  while r < len(m) {
+    var row: list<float> = []
+    var c = 0
+    while c < len(m[r]) {
+      row = append(row, f(m[r][c], s))
+      c = c + 1
+    }
+    z = append(z, row)
+    r = r + 1
+  }
+  return z
+}
+
+fun add(a: float, b: float): float { return a + b }
+fun sub(a: float, b: float): float { return a - b }
+fun mul(a: float, b: float): float { return a * b }
+fun div(a: float, b: float): float { return a / b }
+fun exp(a: float, b: float): float { return powf(a, b) }
+
+fun main() {
+  let m1 = [[3.0, 1.0, 4.0], [1.0, 5.0, 9.0]]
+  let m2 = [[2.0, 7.0, 1.0], [8.0, 2.0, 8.0]]
+  printMatrix("m1:", m1)
+  printMatrix("m2:", m2)
+  print("")
+  printMatrix("m1 + m2:", elementWiseMM(m1, m2, add))
+  printMatrix("m1 - m2:", elementWiseMM(m1, m2, sub))
+  printMatrix("m1 * m2:", elementWiseMM(m1, m2, mul))
+  printMatrix("m1 / m2:", elementWiseMM(m1, m2, div))
+  printMatrix("m1 ^ m2:", elementWiseMM(m1, m2, exp))
+  print("")
+  let s = 0.5
+  print("s: " + str(s))
+  printMatrix("m1 + s:", elementWiseMS(m1, s, add))
+  printMatrix("m1 - s:", elementWiseMS(m1, s, sub))
+  printMatrix("m1 * s:", elementWiseMS(m1, s, mul))
+  printMatrix("m1 / s:", elementWiseMS(m1, s, div))
+  printMatrix("m1 ^ s:", elementWiseMS(m1, s, exp))
+}
+
+main()
