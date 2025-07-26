@@ -1,0 +1,130 @@
+// Mochi implementation of Rosetta "Esthetic numbers" task
+// Translated from Go version in tests/rosetta/x/Go/esthetic-numbers.go
+
+let digits = "0123456789abcdef"
+
+fun toBase(n: int, b: int): string {
+  if n == 0 { return "0" }
+  var v = n
+  var out = ""
+  while v > 0 {
+    let d = v % b
+    out = digits[d:d+1] + out
+    v = v / b
+  }
+  return out
+}
+
+fun uabs(a: int, b: int): int { if a > b { return a - b } return b - a }
+
+fun isEsthetic(n: int, b: int): bool {
+  if n == 0 { return false }
+  var i = n % b
+  n = n / b
+  while n > 0 {
+    let j = n % b
+    if uabs(i, j) != 1 { return false }
+    n = n / b
+    i = j
+  }
+  return true
+}
+
+var esths: list<int> = []
+
+fun dfs(n: int, m: int, i: int) {
+  if i >= n && i <= m { esths = append(esths, i) }
+  if i == 0 || i > m { return }
+  let d = i % 10
+  let i1 = i * 10 + d - 1
+  let i2 = i1 + 2
+  if d == 0 {
+    dfs(n, m, i2)
+  } else if d == 9 {
+    dfs(n, m, i1)
+  } else {
+    dfs(n, m, i1)
+    dfs(n, m, i2)
+  }
+}
+
+fun commatize(n: int): string {
+  var s = str(n)
+  var i = len(s) - 3
+  while i >= 1 {
+    s = s[0:i] + "," + s[i:len(s)]
+    i = i - 3
+  }
+  return s
+}
+
+fun listEsths(n: int, n2: int, m: int, m2: int, perLine: int, showAll: bool) {
+  esths = []
+  var i = 0
+  while i < 10 { dfs(n2, m2, i); i = i + 1 }
+  let le = len(esths)
+  print("Base 10: " + commatize(le) + " esthetic numbers between " + commatize(n) + " and " + commatize(m) + ":")
+  if showAll {
+    var c = 0
+    var line = ""
+    for v in esths {
+      if len(line) > 0 { line = line + " " }
+      line = line + str(v)
+      c = c + 1
+      if c % perLine == 0 { print(line); line = "" }
+    }
+    if len(line) > 0 { print(line) }
+  } else {
+    var line = ""
+    var idx = 0
+    while idx < perLine {
+      if len(line) > 0 { line = line + " " }
+      line = line + str(esths[idx])
+      idx = idx + 1
+    }
+    print(line)
+    print("............")
+    line = ""
+    idx = le - perLine
+    while idx < le {
+      if len(line) > 0 { line = line + " " }
+      line = line + str(esths[idx])
+      idx = idx + 1
+    }
+    print(line)
+  }
+  print("")
+}
+
+fun main() {
+  var b = 2
+  while b <= 16 {
+    let start = 4 * b
+    let stop = 6 * b
+    print("Base " + str(b) + ": " + str(start) + "th to " + str(stop) + "th esthetic numbers:")
+    var n = 1
+    var c = 0
+    var line = ""
+    while c < stop {
+      if isEsthetic(n, b) {
+        c = c + 1
+        if c >= start {
+          if len(line) > 0 { line = line + " " }
+          line = line + toBase(n, b)
+        }
+      }
+      n = n + 1
+    }
+    print(line)
+    print("")
+    b = b + 1
+  }
+
+  listEsths(1000, 1010, 9999, 9898, 16, true)
+  listEsths(100000000, 101010101, 130000000, 123456789, 9, true)
+  listEsths(100000000000, 101010101010, 130000000000, 123456789898, 7, false)
+  listEsths(100000000000000, 101010101010101, 130000000000000, 123456789898989, 5, false)
+  listEsths(100000000000000000, 101010101010101010, 130000000000000000, 123456789898989898, 4, false)
+}
+
+main()
