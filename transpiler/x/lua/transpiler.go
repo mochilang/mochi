@@ -28,6 +28,7 @@ var continueLabels []string
 var structCount int
 var funcDepth int
 var benchMainFlag bool
+var currentStruct string
 
 // SetBenchMain configures whether the generated main function is wrapped in a
 // benchmark block when emitting code. When enabled, programs print a JSON
@@ -2869,14 +2870,31 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 					hasFT = true
 					ce.ParamTypes = ft.Params
 				}
+			} else if currentStruct != "" {
+				if st, ok := currentEnv.GetStruct(currentStruct); ok {
+					if m, ok := st.Methods[p.Call.Func]; ok {
+						ft = m.Type
+						hasFT = true
+						ce.ParamTypes = ft.Params
+					}
+				}
 			}
 		}
+		insertedSelf := false
 		for _, a := range p.Call.Args {
 			ae, err := convertExpr(a)
 			if err != nil {
 				return nil, err
 			}
 			ce.Args = append(ce.Args, ae)
+		}
+		if hasFT && currentStruct != "" && len(ft.Params) > 0 {
+			if stParam, ok := ft.Params[0].(types.StructType); ok && stParam.Name == currentStruct {
+				if len(ce.Args) == len(ft.Params)-1 {
+					ce.Args = append([]Expr{&Ident{Name: "self"}}, ce.Args...)
+					insertedSelf = true
+				}
+			}
 		}
 		switch p.Call.Func {
 		case "append", "avg", "sum", "contains", "len", "count", "now", "sha256", "indexOf", "parseIntStr", "repeat":
@@ -2887,10 +2905,14 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			return ce, nil
 		}
 		if hasFT {
-			if len(p.Call.Args) < len(ft.Params) {
+			argCount := len(p.Call.Args)
+			if insertedSelf {
+				argCount++
+			}
+			if argCount < len(ft.Params) {
 				params := []string{}
-				for i := len(p.Call.Args); i < len(ft.Params); i++ {
-					params = append(params, fmt.Sprintf("p%d", i-len(p.Call.Args)))
+				for i := argCount; i < len(ft.Params); i++ {
+					params = append(params, fmt.Sprintf("p%d", i-argCount))
 				}
 				args := append([]Expr{}, ce.Args...)
 				for _, p := range params {
@@ -3537,11 +3559,15 @@ func convertFunStmt(fs *parser.FunStmt) (Stmt, error) {
 	return f, nil
 }
 
-func convertMethodStmt(fs *parser.FunStmt, fields []string) (Stmt, error) {
+func convertMethodStmt(fs *parser.FunStmt, structName string, fields []string) (Stmt, error) {
 	f := &FunStmt{Name: fs.Name}
 	child := types.NewEnv(currentEnv)
 	f.Params = append(f.Params, "self")
-	child.SetVar("self", types.AnyType{}, false)
+	if structName != "" {
+		child.SetVar("self", types.StructType{Name: structName}, false)
+	} else {
+		child.SetVar("self", types.AnyType{}, false)
+	}
 	for _, p := range fs.Params {
 		f.Params = append(f.Params, p.Name)
 		if p.Type != nil {
@@ -3551,6 +3577,8 @@ func convertMethodStmt(fs *parser.FunStmt, fields []string) (Stmt, error) {
 		}
 	}
 	prev := currentEnv
+	prevStruct := currentStruct
+	currentStruct = structName
 	currentEnv = child
 	funcDepth++
 	// preload fields as locals
@@ -3562,6 +3590,7 @@ func convertMethodStmt(fs *parser.FunStmt, fields []string) (Stmt, error) {
 		s, err := convertStmt(st)
 		if err != nil {
 			currentEnv = prev
+			currentStruct = prevStruct
 			funcDepth--
 			return nil, err
 		}
@@ -3588,7 +3617,7 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 			}
 			for _, m := range st.Type.Members {
 				if m.Method != nil {
-					fn, err := convertMethodStmt(m.Method, fields)
+					fn, err := convertMethodStmt(m.Method, st.Type.Name, fields)
 					if err != nil {
 						return nil, err
 					}
