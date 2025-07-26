@@ -28,3 +28,8 @@ C worker completed c
 D worker begins part
 D worker completed d
 abcd assembled.  cycle 3 complete
+{
+  "duration_us": 86,
+  "memory_bytes": 128,
+  "name": "main"
+}

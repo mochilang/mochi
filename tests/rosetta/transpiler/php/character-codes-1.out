@@ -1,2 +1,7 @@
-"97"
-"960"
+97
+960
+{
+  "duration_us": 43,
+  "memory_bytes": 96,
+  "name": "main"
+}

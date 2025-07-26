@@ -1,5 +1,20 @@
 <?php
 ini_set('memory_limit', '-1');
+$now_seed = 0;
+$now_seeded = false;
+$s = getenv('MOCHI_NOW_SEED');
+if ($s !== false && $s !== '') {
+    $now_seed = intval($s);
+    $now_seeded = true;
+}
+function _now() {
+    global $now_seed, $now_seeded;
+    if ($now_seeded) {
+        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
+        return $now_seed;
+    }
+    return hrtime(true);
+}
 function _str($x) {
     if (is_array($x)) {
         $isList = array_keys($x) === range(0, count($x) - 1);
@@ -20,8 +35,9 @@ function _indexof($s, $sub) {
     $pos = strpos($s, $sub);
     return $pos === false ? -1 : $pos;
 }
-function indexOf($s, $ch) {
-  global $fmt4, $fmt2, $sumPoint, $mulPoint, $divPoint, $centerPoint, $getFacePoints, $sortEdges, $getEdgesFaces, $getEdgePoints, $getAvgFacePoints, $getAvgMidEdges, $getPointsFaces, $getNewPoints, $mochi_key, $cmcSubdiv, $formatPoint, $formatFace, $main;
+$__start_mem = memory_get_usage();
+$__start = _now();
+  function indexOf($s, $ch) {
   $i = 0;
   while ($i < strlen($s)) {
   if (substr($s, $i, $i + 1 - $i) == $ch) {
@@ -30,9 +46,8 @@ function indexOf($s, $ch) {
   $i = $i + 1;
 };
   return -1;
-}
-function fmt4($x) {
-  global $indexOf, $fmt2, $sumPoint, $mulPoint, $divPoint, $centerPoint, $getFacePoints, $sortEdges, $getEdgesFaces, $getEdgePoints, $getAvgFacePoints, $getAvgMidEdges, $getPointsFaces, $getNewPoints, $mochi_key, $cmcSubdiv, $formatPoint, $formatFace, $main;
+};
+  function fmt4($x) {
   $y = $x * 10000.0;
   if ($y >= 0) {
   $y = $y + 0.5;
@@ -59,33 +74,27 @@ function fmt4($x) {
   $s = ' ' . $s;
 }
   return $s;
-}
-function fmt2($n) {
-  global $indexOf, $fmt4, $sumPoint, $mulPoint, $divPoint, $centerPoint, $getFacePoints, $sortEdges, $getEdgesFaces, $getEdgePoints, $getAvgFacePoints, $getAvgMidEdges, $getPointsFaces, $getNewPoints, $mochi_key, $cmcSubdiv, $formatPoint, $formatFace, $main;
+};
+  function fmt2($n) {
   $s = _str($n);
   if (strlen($s) < 2) {
   return ' ' . $s;
 }
   return $s;
-}
-function sumPoint($p1, $p2) {
-  global $indexOf, $fmt4, $fmt2, $mulPoint, $divPoint, $centerPoint, $getFacePoints, $sortEdges, $getEdgesFaces, $getEdgePoints, $getAvgFacePoints, $getAvgMidEdges, $getPointsFaces, $getNewPoints, $mochi_key, $cmcSubdiv, $formatPoint, $formatFace, $main;
+};
+  function sumPoint($p1, $p2) {
   return ['x' => $p1['x'] + $p2['x'], 'y' => $p1['y'] + $p2['y'], 'z' => $p1['z'] + $p2['z']];
-}
-function mulPoint($p, $m) {
-  global $indexOf, $fmt4, $fmt2, $sumPoint, $divPoint, $centerPoint, $getFacePoints, $sortEdges, $getEdgesFaces, $getEdgePoints, $getAvgFacePoints, $getAvgMidEdges, $getPointsFaces, $getNewPoints, $mochi_key, $cmcSubdiv, $formatPoint, $formatFace, $main;
+};
+  function mulPoint($p, $m) {
   return ['x' => $p['x'] * $m, 'y' => $p['y'] * $m, 'z' => $p['z'] * $m];
-}
-function divPoint($p, $d) {
-  global $indexOf, $fmt4, $fmt2, $sumPoint, $mulPoint, $centerPoint, $getFacePoints, $sortEdges, $getEdgesFaces, $getEdgePoints, $getAvgFacePoints, $getAvgMidEdges, $getPointsFaces, $getNewPoints, $mochi_key, $cmcSubdiv, $formatPoint, $formatFace, $main;
+};
+  function divPoint($p, $d) {
   return mulPoint($p, 1.0 / $d);
-}
-function centerPoint($p1, $p2) {
-  global $indexOf, $fmt4, $fmt2, $sumPoint, $mulPoint, $divPoint, $getFacePoints, $sortEdges, $getEdgesFaces, $getEdgePoints, $getAvgFacePoints, $getAvgMidEdges, $getPointsFaces, $getNewPoints, $mochi_key, $cmcSubdiv, $formatPoint, $formatFace, $main;
+};
+  function centerPoint($p1, $p2) {
   return divPoint(sumPoint($p1, $p2), 2.0);
-}
-function getFacePoints($points, $faces) {
-  global $indexOf, $fmt4, $fmt2, $sumPoint, $mulPoint, $divPoint, $centerPoint, $sortEdges, $getEdgesFaces, $getEdgePoints, $getAvgFacePoints, $getAvgMidEdges, $getPointsFaces, $getNewPoints, $mochi_key, $cmcSubdiv, $formatPoint, $formatFace, $main;
+};
+  function getFacePoints($points, $faces) {
   $facePoints = [];
   $i = 0;
   while ($i < count($faces)) {
@@ -99,9 +108,8 @@ function getFacePoints($points, $faces) {
   $i = $i + 1;
 };
   return $facePoints;
-}
-function sortEdges($edges) {
-  global $indexOf, $fmt4, $fmt2, $sumPoint, $mulPoint, $divPoint, $centerPoint, $getFacePoints, $getEdgesFaces, $getEdgePoints, $getAvgFacePoints, $getAvgMidEdges, $getPointsFaces, $getNewPoints, $mochi_key, $cmcSubdiv, $formatPoint, $formatFace, $main;
+};
+  function sortEdges($edges) {
   $res = [];
   $tmp = $edges;
   while (count($tmp) > 0) {
@@ -128,9 +136,8 @@ function sortEdges($edges) {
   $tmp = $out;
 };
   return $res;
-}
-function getEdgesFaces($points, $faces) {
-  global $indexOf, $fmt4, $fmt2, $sumPoint, $mulPoint, $divPoint, $centerPoint, $getFacePoints, $sortEdges, $getEdgePoints, $getAvgFacePoints, $getAvgMidEdges, $getPointsFaces, $getNewPoints, $mochi_key, $cmcSubdiv, $formatPoint, $formatFace, $main;
+};
+  function getEdgesFaces($points, $faces) {
   $edges = [];
   $fnum = 0;
   while ($fnum < count($faces)) {
@@ -179,9 +186,8 @@ function getEdgesFaces($points, $faces) {
   $edgesCenters = array_merge($edgesCenters, [['pn1' => $me[0], 'pn2' => $me[1], 'fn1' => $me[2], 'fn2' => $me[3], 'cp' => $cp]]);
 };
   return $edgesCenters;
-}
-function getEdgePoints($points, $edgesFaces, $facePoints) {
-  global $indexOf, $fmt4, $fmt2, $sumPoint, $mulPoint, $divPoint, $centerPoint, $getFacePoints, $sortEdges, $getEdgesFaces, $getAvgFacePoints, $getAvgMidEdges, $getPointsFaces, $getNewPoints, $mochi_key, $cmcSubdiv, $formatPoint, $formatFace, $main;
+};
+  function getEdgePoints($points, $edgesFaces, $facePoints) {
   $edgePoints = [];
   $i = 0;
   while ($i < count($edgesFaces)) {
@@ -197,9 +203,8 @@ function getEdgePoints($points, $edgesFaces, $facePoints) {
   $i = $i + 1;
 };
   return $edgePoints;
-}
-function getAvgFacePoints($points, $faces, $facePoints) {
-  global $indexOf, $fmt4, $fmt2, $sumPoint, $mulPoint, $divPoint, $centerPoint, $getFacePoints, $sortEdges, $getEdgesFaces, $getEdgePoints, $getAvgMidEdges, $getPointsFaces, $getNewPoints, $mochi_key, $cmcSubdiv, $formatPoint, $formatFace, $main;
+};
+  function getAvgFacePoints($points, $faces, $facePoints) {
   $numP = count($points);
   $temp = [];
   $i = 0;
@@ -224,9 +229,8 @@ function getAvgFacePoints($points, $faces, $facePoints) {
   $j = $j + 1;
 };
   return $avg;
-}
-function getAvgMidEdges($points, $edgesFaces) {
-  global $indexOf, $fmt4, $fmt2, $sumPoint, $mulPoint, $divPoint, $centerPoint, $getFacePoints, $sortEdges, $getEdgesFaces, $getEdgePoints, $getAvgFacePoints, $getPointsFaces, $getNewPoints, $mochi_key, $cmcSubdiv, $formatPoint, $formatFace, $main;
+};
+  function getAvgMidEdges($points, $edgesFaces) {
   $numP = count($points);
   $temp = [];
   $i = 0;
@@ -250,9 +254,8 @@ function getAvgMidEdges($points, $edgesFaces) {
   $j = $j + 1;
 };
   return $avg;
-}
-function getPointsFaces($points, $faces) {
-  global $indexOf, $fmt4, $fmt2, $sumPoint, $mulPoint, $divPoint, $centerPoint, $getFacePoints, $sortEdges, $getEdgesFaces, $getEdgePoints, $getAvgFacePoints, $getAvgMidEdges, $getNewPoints, $mochi_key, $cmcSubdiv, $formatPoint, $formatFace, $main;
+};
+  function getPointsFaces($points, $faces) {
   $pf = [];
   $i = 0;
   while ($i < count($points)) {
@@ -267,9 +270,8 @@ function getPointsFaces($points, $faces) {
   $fnum = $fnum + 1;
 };
   return $pf;
-}
-function getNewPoints($points, $pf, $afp, $ame) {
-  global $indexOf, $fmt4, $fmt2, $sumPoint, $mulPoint, $divPoint, $centerPoint, $getFacePoints, $sortEdges, $getEdgesFaces, $getEdgePoints, $getAvgFacePoints, $getAvgMidEdges, $getPointsFaces, $mochi_key, $cmcSubdiv, $formatPoint, $formatFace, $main;
+};
+  function getNewPoints($points, $pf, $afp, $ame) {
   $newPts = [];
   $i = 0;
   while ($i < count($points)) {
@@ -285,16 +287,14 @@ function getNewPoints($points, $pf, $afp, $ame) {
   $i = $i + 1;
 };
   return $newPts;
-}
-function mochi_key($a, $b) {
-  global $indexOf, $fmt4, $fmt2, $sumPoint, $mulPoint, $divPoint, $centerPoint, $getFacePoints, $sortEdges, $getEdgesFaces, $getEdgePoints, $getAvgFacePoints, $getAvgMidEdges, $getPointsFaces, $getNewPoints, $cmcSubdiv, $formatPoint, $formatFace, $main;
+};
+  function mochi_key($a, $b) {
   if ($a < $b) {
   return _str($a) . ',' . _str($b);
 }
   return _str($b) . ',' . _str($a);
-}
-function cmcSubdiv($points, $faces) {
-  global $indexOf, $fmt4, $fmt2, $sumPoint, $mulPoint, $divPoint, $centerPoint, $getFacePoints, $sortEdges, $getEdgesFaces, $getEdgePoints, $getAvgFacePoints, $getAvgMidEdges, $getPointsFaces, $getNewPoints, $mochi_key, $formatPoint, $formatFace, $main;
+};
+  function cmcSubdiv($points, $faces) {
   $facePoints = getFacePoints($points, $faces);
   $edgesFaces = getEdgesFaces($points, $faces);
   $edgePoints = getEdgePoints($points, $edgesFaces, $facePoints);
@@ -340,13 +340,11 @@ function cmcSubdiv($points, $faces) {
   $fnum = $fnum + 1;
 };
   return [$newPoints, $newFaces];
-}
-function formatPoint($p) {
-  global $indexOf, $fmt4, $fmt2, $sumPoint, $mulPoint, $divPoint, $centerPoint, $getFacePoints, $sortEdges, $getEdgesFaces, $getEdgePoints, $getAvgFacePoints, $getAvgMidEdges, $getPointsFaces, $getNewPoints, $mochi_key, $cmcSubdiv, $formatFace, $main;
+};
+  function formatPoint($p) {
   return '[' . fmt4($p['x']) . ' ' . fmt4($p['y']) . ' ' . fmt4($p['z']) . ']';
-}
-function formatFace($f) {
-  global $indexOf, $fmt4, $fmt2, $sumPoint, $mulPoint, $divPoint, $centerPoint, $getFacePoints, $sortEdges, $getEdgesFaces, $getEdgePoints, $getAvgFacePoints, $getAvgMidEdges, $getPointsFaces, $getNewPoints, $mochi_key, $cmcSubdiv, $formatPoint, $main;
+};
+  function formatFace($f) {
   if (count($f) == 0) {
   return '[]';
 }
@@ -358,9 +356,8 @@ function formatFace($f) {
 };
   $s = $s . ']';
   return $s;
-}
-function main() {
-  global $indexOf, $fmt4, $fmt2, $sumPoint, $mulPoint, $divPoint, $centerPoint, $getFacePoints, $sortEdges, $getEdgesFaces, $getEdgePoints, $getAvgFacePoints, $getAvgMidEdges, $getPointsFaces, $getNewPoints, $mochi_key, $cmcSubdiv, $formatPoint, $formatFace;
+};
+  function main() {
   $inputPoints = [['x' => -1.0, 'y' => 1.0, 'z' => 1.0], ['x' => -1.0, 'y' => -1.0, 'z' => 1.0], ['x' => 1.0, 'y' => -1.0, 'z' => 1.0], ['x' => 1.0, 'y' => 1.0, 'z' => 1.0], ['x' => 1.0, 'y' => -1.0, 'z' => -1.0], ['x' => 1.0, 'y' => 1.0, 'z' => -1.0], ['x' => -1.0, 'y' => -1.0, 'z' => -1.0], ['x' => -1.0, 'y' => 1.0, 'z' => -1.0]];
   $inputFaces = [[0, 1, 2, 3], [3, 2, 4, 5], [5, 4, 6, 7], [7, 0, 3, 5], [7, 6, 1, 0], [6, 1, 2, 4]];
   $outputPoints = $inputPoints;
@@ -379,5 +376,13 @@ function main() {
   foreach ($outputFaces as $f) {
   echo rtrim(formatFace($f)), PHP_EOL;
 };
-}
-main();
+};
+  main();
+$__end = _now();
+$__end_mem = memory_get_usage();
+$__duration = intdiv($__end - $__start, 1000);
+$__mem_diff = max(0, $__end_mem - $__start_mem);
+$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
+$__j = json_encode($__bench, 128);
+$__j = str_replace("    ", "  ", $__j);
+echo $__j, PHP_EOL;;

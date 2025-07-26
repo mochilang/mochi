@@ -36,3 +36,8 @@ A worker stopped
 B worker stopped
 C worker stopped
 D worker stopped
+{
+  "duration_us": 94,
+  "memory_bytes": 128,
+  "name": "main"
+}
