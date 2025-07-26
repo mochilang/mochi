@@ -1,0 +1,117 @@
+// Mochi translation of Rosetta "Doubly-linked list/Definition" example
+// Translated from Go version in tests/rosetta/x/Go/doubly-linked-list-definition-2.go
+
+// List represented as a map so that updates propagate across functions.
+// Each node is also a map storing integer ids for next/prev links.
+
+fun newList(): map<string, any> {
+  return {"nodes": {}, "head": 0, "tail": 0, "nextID": 1}
+}
+
+fun newNode(l: map<string, any>, v: any): map<string, any> {
+  let id = l["nextID"] as int
+  l["nextID"] = id + 1
+  var nodes = l["nodes"] as map<int, map<string, any>>
+  let n = {"id": id, "value": v, "next": 0, "prev": 0}
+  nodes[id] = n
+  l["nodes"] = nodes
+  return n
+}
+
+fun pushFront(l: map<string, any>, v: any): map<string, any> {
+  var n = newNode(l, v)
+  n["next"] = l["head"]
+  if (l["head"] as int) != 0 {
+    var nodes = l["nodes"] as map<int, map<string, any>>
+    var h = nodes[l["head"] as int]
+    h["prev"] = n["id"]
+    nodes[h["id"] as int] = h
+    l["nodes"] = nodes
+  } else {
+    l["tail"] = n["id"]
+  }
+  l["head"] = n["id"]
+  var nodes2 = l["nodes"] as map<int, map<string, any>>
+  nodes2[n["id"] as int] = n
+  l["nodes"] = nodes2
+  return n
+}
+
+fun pushBack(l: map<string, any>, v: any): map<string, any> {
+  var n = newNode(l, v)
+  n["prev"] = l["tail"]
+  if (l["tail"] as int) != 0 {
+    var nodes = l["nodes"] as map<int, map<string, any>>
+    var t = nodes[l["tail"] as int]
+    t["next"] = n["id"]
+    nodes[t["id"] as int] = t
+    l["nodes"] = nodes
+  } else {
+    l["head"] = n["id"]
+  }
+  l["tail"] = n["id"]
+  var nodes2 = l["nodes"] as map<int, map<string, any>>
+  nodes2[n["id"] as int] = n
+  l["nodes"] = nodes2
+  return n
+}
+
+fun insertBefore(l: map<string, any>, refID: int, v: any): map<string, any> {
+  if refID == 0 { return pushFront(l, v) }
+  var nodes = l["nodes"] as map<int, map<string, any>>
+  var ref = nodes[refID]
+  var n = newNode(l, v)
+  n["prev"] = ref["prev"]
+  n["next"] = ref["id"]
+  if (ref["prev"] as int) != 0 {
+    var p = nodes[ref["prev"] as int]
+    p["next"] = n["id"]
+    nodes[p["id"] as int] = p
+  } else {
+    l["head"] = n["id"]
+  }
+  ref["prev"] = n["id"]
+  nodes[refID] = ref
+  nodes[n["id"] as int] = n
+  l["nodes"] = nodes
+  return n
+}
+
+fun insertAfter(l: map<string, any>, refID: int, v: any): map<string, any> {
+  if refID == 0 { return pushBack(l, v) }
+  var nodes = l["nodes"] as map<int, map<string, any>>
+  var ref = nodes[refID]
+  var n = newNode(l, v)
+  n["next"] = ref["next"]
+  n["prev"] = ref["id"]
+  if (ref["next"] as int) != 0 {
+    var nx = nodes[ref["next"] as int]
+    nx["prev"] = n["id"]
+    nodes[nx["id"] as int] = nx
+  } else {
+    l["tail"] = n["id"]
+  }
+  ref["next"] = n["id"]
+  nodes[refID] = ref
+  nodes[n["id"] as int] = n
+  l["nodes"] = nodes
+  return n
+}
+
+fun main() {
+  var l = newList()
+  var e4 = pushBack(l, 4)
+  var e1 = pushFront(l, 1)
+  insertBefore(l, e4["id"] as int, 3)
+  insertAfter(l, e1["id"] as int, "two")
+
+  var id = l["head"] as int
+  var nodes = l["nodes"] as map<int, map<string, any>>
+  while id != 0 {
+    let node = nodes[id]
+    print(str(node["value"]))
+    id = node["next"] as int
+  }
+}
+
+main()

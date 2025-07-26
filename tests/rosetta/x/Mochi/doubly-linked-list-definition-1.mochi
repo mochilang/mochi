@@ -1,0 +1,18 @@
+// Mochi translation of Rosetta "Doubly-linked list/Definition" snippet
+// Translated from Go version in tests/rosetta/x/Go/doubly-linked-list-definition-1.go
+
+type dlNode {
+  value: int
+  next: any
+  prev: any
+}
+
+// Field 'members' allows loops to be prevented.  All nodes
+// inserted should be added to members.  Code that operates
+// on the list can check any pointer against members to
+// find out if the pointer is already in the list.
+type dlList {
+  members: map<any,int>
+  head: any
+  tail: any
+}
