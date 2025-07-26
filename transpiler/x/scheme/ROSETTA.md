@@ -3,7 +3,7 @@
 Generated Scheme code for Rosetta Code tasks under `tests/rosetta/x/Mochi`.
 
 ## Checklist (106/332)
-Last updated: 2025-07-26 12:36 UTC
+Last updated: 2025-07-26 14:35 UTC
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -50,27 +50,27 @@ Last updated: 2025-07-26 12:36 UTC
 | 41 | align-columns | ✓ | 7.149ms | 13.4 MB |
 | 42 | aliquot-sequence-classifications | ✓ | 33.191454s | 13.2 MB |
 | 43 | almkvist-giullera-formula-for-pi |   |  |  |
-| 44 | almost-prime | ✓ |  |  |
-| 45 | amb | ✓ |  |  |
+| 44 | almost-prime | ✓ | 29.95ms | 12.6 MB |
+| 45 | amb | ✓ | 270µs | 12.6 MB |
 | 46 | amicable-pairs | ✓ |  |  |
-| 47 | anagrams-deranged-anagrams | ✓ |  |  |
-| 48 | anagrams | ✓ |  |  |
-| 49 | angle-difference-between-two-bearings-1 | ✓ |  |  |
-| 50 | angle-difference-between-two-bearings-2 | ✓ |  |  |
-| 51 | angles-geometric-normalization-and-conversion | ✓ |  |  |
-| 52 | animate-a-pendulum | ✓ |  |  |
-| 53 | animation | ✓ |  |  |
-| 54 | anonymous-recursion-1 | ✓ |  |  |
-| 55 | anonymous-recursion-2 | ✓ |  |  |
-| 56 | anonymous-recursion | ✓ |  |  |
-| 57 | anti-primes | ✓ |  |  |
-| 58 | append-a-record-to-the-end-of-a-text-file | ✓ |  |  |
-| 59 | apply-a-callback-to-an-array-1 | ✓ |  |  |
-| 60 | apply-a-callback-to-an-array-2 | ✓ |  |  |
-| 61 | apply-a-digital-filter-direct-form-ii-transposed- | ✓ |  |  |
-| 62 | approximate-equality | ✓ |  |  |
-| 63 | arbitrary-precision-integers-included- | ✓ |  |  |
-| 64 | archimedean-spiral | ✓ |  |  |
+| 47 | anagrams-deranged-anagrams | ✓ | 1.59ms | 12.2 MB |
+| 48 | anagrams | ✓ | 2.332ms | 12.8 MB |
+| 49 | angle-difference-between-two-bearings-1 | ✓ | 125µs | 12.5 MB |
+| 50 | angle-difference-between-two-bearings-2 | ✓ | 196µs | 12.8 MB |
+| 51 | angles-geometric-normalization-and-conversion | ✓ | 3.789ms | 13.0 MB |
+| 52 | animate-a-pendulum | ✓ | 191µs | 12.7 MB |
+| 53 | animation | ✓ | 649µs | 12.3 MB |
+| 54 | anonymous-recursion-1 | ✓ | 337µs | 12.7 MB |
+| 55 | anonymous-recursion-2 | ✓ | 305µs | 12.6 MB |
+| 56 | anonymous-recursion | ✓ | 4.272ms | 12.5 MB |
+| 57 | anti-primes | ✓ | 35.858076s | 12.6 MB |
+| 58 | append-a-record-to-the-end-of-a-text-file | ✓ | 67µs | 12.2 MB |
+| 59 | apply-a-callback-to-an-array-1 | ✓ | 48µs | 12.0 MB |
+| 60 | apply-a-callback-to-an-array-2 | ✓ | 458µs | 12.4 MB |
+| 61 | apply-a-digital-filter-direct-form-ii-transposed- | ✓ | 610µs | 12.3 MB |
+| 62 | approximate-equality | ✓ | 264µs | 12.4 MB |
+| 63 | arbitrary-precision-integers-included- | ✓ | 16.958798s | 12.8 MB |
+| 64 | archimedean-spiral | ✓ | 150.029ms | 13.0 MB |
 | 65 | arena-storage-pool | ✓ |  |  |
 | 66 | arithmetic-complex | ✓ |  |  |
 | 67 | arithmetic-derivative | ✓ |  |  |
