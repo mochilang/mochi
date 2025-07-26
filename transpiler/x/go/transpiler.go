@@ -3620,8 +3620,17 @@ func compileReturnStmt(rs *parser.ReturnStmt, env *types.Env) (Stmt, error) {
 			}
 		}
 		if exprType != ret {
-			if ae, ok := val.(*AssertExpr); !(ok && ae.Type == ret) {
-				val = &AssertExpr{Expr: val, Type: ret}
+			if ret == "*big.Rat" {
+				if _, ok := val.(*BigRatBinaryExpr); ok {
+					exprType = ret
+				} else if ce, ok2 := val.(*CallExpr); ok2 && ce.Func == "_bigrat" {
+					exprType = ret
+				}
+			}
+			if exprType != ret {
+				if ae, ok := val.(*AssertExpr); !(ok && ae.Type == ret) {
+					val = &AssertExpr{Expr: val, Type: ret}
+				}
 			}
 		}
 	}
@@ -4343,6 +4352,29 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env, base string) (Expr, 
 				return nil, fmt.Errorf("unsupported postfix")
 			}
 		} else if op.Field != nil {
+			if op.Field.Name == "padStart" && i+1 < len(pf.Ops) && pf.Ops[i+1].Call != nil {
+				call := pf.Ops[i+1].Call
+				args := make([]Expr, len(call.Args)+1)
+				arg0 := expr
+				if _, ok := t.(types.StringType); !ok {
+					usesPrint = true
+					arg0 = &CallExpr{Func: "fmt.Sprint", Args: []Expr{arg0}}
+				}
+				args[0] = arg0
+				for j, a := range call.Args {
+					ex, err := compileExpr(a, env, "")
+					if err != nil {
+						return nil, err
+					}
+					args[j+1] = ex
+				}
+				usesPadStart = true
+				usesStrings = true
+				expr = &CallExpr{Func: "_padStart", Args: args[:3]}
+				t = types.StringType{}
+				i++
+				continue
+			}
 			if pf.Target != nil && pf.Target.Selector != nil {
 				if _, ok := imports[pf.Target.Selector.Root]; ok && i+1 < len(pf.Ops) && pf.Ops[i+1].Call != nil {
 					args := make([]Expr, len(pf.Ops[i+1].Call.Args))
