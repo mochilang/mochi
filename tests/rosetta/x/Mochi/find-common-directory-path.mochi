@@ -1,0 +1,60 @@
+// Mochi version of "Find common directory path".
+
+fun splitPath(p: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(p) {
+    if substring(p, i, i+1) == "/" {
+      if cur != "" { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + substring(p, i, i+1)
+    }
+    i = i + 1
+  }
+  if cur != "" { parts = append(parts, cur) }
+  return parts
+}
+
+fun joinPath(parts: list<string>): string {
+  var s = ""
+  var i = 0
+  while i < len(parts) {
+    s = s + "/" + parts[i]
+    i = i + 1
+  }
+  return s
+}
+
+fun commonPrefix(paths: list<string>): string {
+  if len(paths) == 0 { return "" }
+  var base = splitPath(paths[0])
+  var i = 0
+  var prefix: list<string> = []
+  while i < len(base) {
+    let comp = base[i]
+    var ok = true
+    for p in paths {
+        let parts = splitPath(p)
+        if i >= len(parts) || parts[i] != comp { ok = false; break }
+    }
+    if ok { prefix = append(prefix, comp) } else { break }
+    i = i + 1
+  }
+  return joinPath(prefix)
+}
+
+fun main() {
+  let paths = [
+    "/home/user1/tmp/coverage/test",
+    "/home/user1/tmp/covert/operator",
+    "/home/user1/tmp/coven/members",
+    "/home//user1/tmp/coventry",
+    "/home/user1/././tmp/covertly/foo",
+    "/home/bob/../user1/tmp/coved/bar"
+  ]
+  let c = commonPrefix(paths)
+  if c == "" { print("No common path") } else { print("Common path: " + c) }
+}
+
+main()

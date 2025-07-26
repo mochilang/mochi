@@ -1,0 +1,21 @@
+// Mochi translation of Rosetta "File size" task
+// Since Mochi's VM doesn't have a real filesystem, we simulate
+// one with a map from path to file size in bytes.
+
+fun printSize(fs: map<string, int>, path: string) {
+  if path in fs {
+    print(str(fs[path]))
+  } else {
+    print("stat " + path + ": no such file or directory")
+  }
+}
+
+fun main() {
+  var fs: map<string, int> = {}
+  fs["input.txt"] = 123
+  // only input.txt exists in our fake filesystem
+  printSize(fs, "input.txt")
+  printSize(fs, "/input.txt")
+}
+
+main()

@@ -1,0 +1,102 @@
+// Mochi version of "Find Chess960 starting position identifier".
+// Implements the same algorithm as the Go example.
+
+var glyphs = "♜♞♝♛♚♖♘♗♕♔"
+var g2lMap: map<string, string> = {
+  "♜": "R", "♞": "N", "♝": "B", "♛": "Q", "♚": "K",
+  "♖": "R", "♘": "N", "♗": "B", "♕": "Q", "♔": "K"
+}
+var names: map<string, string> = {"R": "rook", "N": "knight", "B": "bishop", "Q": "queen", "K": "king"}
+var ntable: map<string, int> = {"01":0, "02":1, "03":2, "04":3, "12":4, "13":5, "14":6, "23":7, "24":8, "34":9}
+
+fun indexOf(s: string, sub: string): int {
+  var i = 0
+  while i <= len(s) - len(sub) {
+    if substring(s, i, i+len(sub)) == sub { return i }
+    i = i + 1
+  }
+  return -1
+}
+
+fun strReplace(s: string, old: string, new: string): string {
+  var res = ""
+  var i = 0
+  while i < len(s) {
+    if len(old) > 0 && i + len(old) <= len(s) && substring(s, i, i+len(old)) == old {
+      res = res + new
+      i = i + len(old)
+    } else {
+      res = res + substring(s, i, i+1)
+      i = i + 1
+    }
+  }
+  return res
+}
+
+fun g2l(pieces: string): string {
+  var lets = ""
+  var i = 0
+  while i < len(pieces) {
+    let ch = substring(pieces, i, i+1)
+    lets = lets + g2lMap[ch]
+    i = i + 1
+  }
+  return lets
+}
+
+fun spid(pieces: string): int {
+  pieces = g2l(pieces)
+  if len(pieces) != 8 { return -1 }
+  for one in ["K", "Q"] {
+    var count = 0
+    var i = 0
+    while i < len(pieces) {
+      if substring(pieces, i, i+1) == one { count = count + 1 }
+      i = i + 1
+    }
+    if count != 1 { return -1 }
+  }
+  for two in ["R", "N", "B"] {
+    var count = 0
+    var i = 0
+    while i < len(pieces) {
+      if substring(pieces, i, i+1) == two { count = count + 1 }
+      i = i + 1
+    }
+    if count != 2 { return -1 }
+  }
+  let r1 = indexOf(pieces, "R")
+  let r2 = indexOf(substring(pieces, r1+1, len(pieces)), "R") + r1 + 1
+  let k  = indexOf(pieces, "K")
+  if k < r1 || k > r2 { return -1 }
+  let b1 = indexOf(pieces, "B")
+  let b2 = indexOf(substring(pieces, b1+1, len(pieces)), "B") + b1 + 1
+  if (b2 - b1) % 2 == 0 { return -1 }
+
+  var piecesN = strReplace(pieces, "Q", "")
+  piecesN = strReplace(piecesN, "B", "")
+  let n1 = indexOf(piecesN, "N")
+  let n2 = indexOf(substring(piecesN, n1+1, len(piecesN)), "N") + n1 + 1
+  let np = str(n1) + str(n2)
+  let N = ntable[np]
+
+  var piecesQ = strReplace(pieces, "B", "")
+  let Q = indexOf(piecesQ, "Q")
+
+  var D = indexOf("0246", str(b1))
+  var L = indexOf("1357", str(b2))
+  if D == (0 - 1) {
+    D = indexOf("0246", str(b2))
+    L = indexOf("1357", str(b1))
+  }
+
+  return 96*N + 16*Q + 4*D + L
+}
+
+fun main() {
+  for pieces in ["♕♘♖♗♗♘♔♖", "♖♘♗♕♔♗♘♖", "♖♕♘♗♗♔♖♘", "♖♘♕♗♗♔♖♘"] {
+    print(pieces + " or " + g2l(pieces) + " has SP-ID of " + str(spid(pieces)))
+  }
+}
+
+main()

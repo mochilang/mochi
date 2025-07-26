@@ -1,0 +1,55 @@
+// Mochi version of "File size distribution".
+// Uses a fake list of file sizes and groups them by powers of ten.
+
+fun log10floor(n: int): int {
+  var p = 0
+  var v = n
+  while v >= 10 {
+    v = (v / 10) as int
+    p = p + 1
+  }
+  return p
+}
+
+fun commatize(n: int): string {
+  var s = str(n)
+  var res = ""
+  var i = 0
+  while i < len(s) {
+    if i > 0 && (len(s)-i) % 3 == 0 { res = res + "," }
+    res = res + substring(s, i, i+1)
+    i = i + 1
+  }
+  return res
+}
+
+fun showDistribution(sizes: list<int>) {
+  var bins: list<int> = []
+  var i = 0
+  while i < 12 { bins = append(bins, 0); i = i + 1 }
+  var total = 0
+  for sz in sizes {
+    total = total + sz
+    var idx = 0
+    if sz > 0 { idx = log10floor(sz) + 1 }
+    bins[idx] = bins[idx] + 1
+  }
+  print("File size distribution:\n")
+  i = 0
+  while i < len(bins) {
+    var prefix = "  "
+    if i > 0 { prefix = "+ " }
+    print(prefix + "Files less than 10 ^ " + str(i) + " bytes : " + str(bins[i]))
+    i = i + 1
+  }
+  print("                                  -----")
+  print("= Total number of files         : " + str(len(sizes)))
+  print("  Total size of files           : " + commatize(total) + " bytes")
+}
+
+fun main() {
+  let sizes = [0, 1, 9, 10, 99, 100, 1234, 50000, 730000, 8200000]
+  showDistribution(sizes)
+}
+
+main()

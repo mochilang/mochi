@@ -1,0 +1,37 @@
+// Mochi simplified version of left truncatable primes.
+
+fun isPrime(n: int): bool {
+  if n < 2 { return false }
+  var i = 2
+  while i * i <= n {
+    if n % i == 0 { return false }
+    i = i + 1
+  }
+  return true
+}
+
+fun search(base: int, prefix: int, depth: int, limit: int, max: int): int {
+  var best = max
+  var d = 1
+  while d < base {
+    let val = prefix * base + d
+    if isPrime(val) {
+      if val > best { best = val }
+      if depth + 1 < limit { best = search(base, val, depth+1, limit, best) }
+    }
+    d = d + 1
+  }
+  return best
+}
+
+fun largest(base: int): int { return search(base, 0, 0, 6, 0) }
+
+fun main() {
+  var b = 3
+  while b <= 10 {
+    print(str(b) + ": " + str(largest(b)))
+    b = b + 1
+  }
+}
+
+main()
