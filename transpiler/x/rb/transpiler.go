@@ -3720,16 +3720,21 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				return nil, fmt.Errorf("append takes two args")
 			}
 			return &AppendExpr{List: args[0], Elem: args[1]}, nil
-		case "substring":
-			if len(args) != 3 {
-				return nil, fmt.Errorf("substring expects 3 args")
-			}
-			return &SliceExpr{Target: args[0], Start: args[1], End: args[2]}, nil
-		case "substr":
-			if len(args) != 3 {
-				return nil, fmt.Errorf("substr expects 3 args")
-			}
-			return &SliceExpr{Target: args[0], Start: args[1], End: args[2]}, nil
+               case "substring":
+                       if len(args) != 3 {
+                               return nil, fmt.Errorf("substring expects 3 args")
+                       }
+                       return &SliceExpr{Target: args[0], Start: args[1], End: args[2]}, nil
+               case "substr":
+                       if len(args) != 3 {
+                               return nil, fmt.Errorf("substr expects 3 args")
+                       }
+                       return &SliceExpr{Target: args[0], Start: args[1], End: args[2]}, nil
+               case "slice":
+                       if len(args) != 3 {
+                               return nil, fmt.Errorf("slice expects 3 args")
+                       }
+                       return &SliceExpr{Target: args[0], Start: args[1], End: args[2]}, nil
 		case "upper":
 			if len(args) != 1 {
 				return nil, fmt.Errorf("upper expects 1 arg")

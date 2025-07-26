@@ -2,9 +2,9 @@
 
 Generated Ruby code from Mochi Rosetta tasks lives in `tests/rosetta/transpiler/rb`.
 
-Last updated: 2025-07-26 14:35 UTC
+Last updated: 2025-07-26 15:06 UTC
 
-## Checklist (205/332)
+## Checklist (225/332)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 195µs | 36.2 KB |
@@ -22,7 +22,7 @@ Last updated: 2025-07-26 14:35 UTC
 | 13 | 99-bottles-of-beer-2 | ✓ | 30.784ms | 70.4 KB |
 | 14 | 99-bottles-of-beer | ✓ | 387µs | 93.9 KB |
 | 15 | DNS-query | ✓ | 843.276ms | 80.9 KB |
-| 16 | Duffinian-numbers | ✓ |  |  |
+| 16 | Duffinian-numbers |   |  |  |
 | 17 | a+b | ✓ | 46µs | 17.7 KB |
 | 18 | abbreviations-automatic | ✓ | 12.098ms | 2.5 KB |
 | 19 | abbreviations-easy | ✓ | 1.094ms | 359.8 KB |
@@ -207,37 +207,37 @@ Last updated: 2025-07-26 14:35 UTC
 | 198 | cheryls-birthday | ✓ | 132µs | 16.0 KB |
 | 199 | chinese-remainder-theorem | ✓ |  |  |
 | 200 | chinese-zodiac | ✓ | 65µs | 18.6 KB |
-| 201 | cholesky-decomposition-1 | ✓ | 138µs | 27.8 KB |
-| 202 | cholesky-decomposition | ✓ | 130µs | 22.2 KB |
-| 203 | chowla-numbers | ✓ | 13µs | 8.8 KB |
+| 201 | cholesky-decomposition-1 | ✓ | 197µs | 27.8 KB |
+| 202 | cholesky-decomposition | ✓ | 161µs | 22.2 KB |
+| 203 | chowla-numbers | ✓ | 46µs | 8.8 KB |
 | 204 | church-numerals-1 | ✓ | 182µs | 34.3 KB |
 | 205 | church-numerals-2 | ✓ | 4µs | 856 B |
-| 206 | circles-of-given-radius-through-two-points | ✓ | 172µs | 25.9 KB |
-| 207 | circular-primes | ✓ | 189µs | 214.3 KB |
+| 206 | circles-of-given-radius-through-two-points | ✓ | 230µs | 25.9 KB |
+| 207 | circular-primes | ✓ | 428µs | 214.3 KB |
 | 208 | cistercian-numerals | ✓ | 947µs | 515.7 KB |
-| 209 | comma-quibbling | ✓ | 48µs | 10.9 KB |
-| 210 | compiler-virtual-machine-interpreter |   |  |  |
-| 211 | composite-numbers-k-with-no-single-digit-factors-whose-factors-are-all-substrings-of-k |   |  |  |
-| 212 | compound-data-type |   |  |  |
-| 213 | concurrent-computing-1 |   |  |  |
-| 214 | concurrent-computing-2 |   |  |  |
-| 215 | concurrent-computing-3 |   |  |  |
-| 216 | conditional-structures-1 |   |  |  |
-| 217 | conditional-structures-10 |   |  |  |
-| 218 | conditional-structures-2 |   |  |  |
-| 219 | conditional-structures-3 |   |  |  |
-| 220 | conditional-structures-4 |   |  |  |
-| 221 | conditional-structures-5 |   |  |  |
-| 222 | conditional-structures-6 |   |  |  |
-| 223 | conditional-structures-7 |   |  |  |
-| 224 | conditional-structures-8 |   |  |  |
-| 225 | conditional-structures-9 |   |  |  |
+| 209 | comma-quibbling | ✓ | 88µs | 10.9 KB |
+| 210 | compiler-virtual-machine-interpreter | ✓ | 799µs | 214.3 KB |
+| 211 | composite-numbers-k-with-no-single-digit-factors-whose-factors-are-all-substrings-of-k | ✓ |  |  |
+| 212 | compound-data-type | ✓ | 26µs | 1.2 KB |
+| 213 | concurrent-computing-1 | ✓ | 55µs | 9.0 KB |
+| 214 | concurrent-computing-2 | ✓ | 28µs | 9.0 KB |
+| 215 | concurrent-computing-3 | ✓ | 35µs | 9.4 KB |
+| 216 | conditional-structures-1 | ✓ | 2µs | 472 B |
+| 217 | conditional-structures-10 | ✓ | 20µs | 8.9 KB |
+| 218 | conditional-structures-2 | ✓ | 2µs | 472 B |
+| 219 | conditional-structures-3 | ✓ | 2µs | 472 B |
+| 220 | conditional-structures-4 | ✓ | 3µs | 600 B |
+| 221 | conditional-structures-5 | ✓ | 2µs | 472 B |
+| 222 | conditional-structures-6 | ✓ | 3µs | 472 B |
+| 223 | conditional-structures-7 | ✓ | 4µs | 600 B |
+| 224 | conditional-structures-8 | ✓ | 2µs | 472 B |
+| 225 | conditional-structures-9 | ✓ | 2µs | 472 B |
 | 226 | consecutive-primes-with-ascending-or-descending-differences |   |  |  |
-| 227 | constrained-genericity-1 |   |  |  |
-| 228 | constrained-genericity-2 |   |  |  |
-| 229 | constrained-genericity-3 |   |  |  |
-| 230 | constrained-genericity-4 |   |  |  |
-| 231 | constrained-random-points-on-a-circle-1 |   |  |  |
+| 227 | constrained-genericity-1 | ✓ | 26µs | 1.1 KB |
+| 228 | constrained-genericity-2 | ✓ | 24µs | 1.1 KB |
+| 229 | constrained-genericity-3 | ✓ | 28µs | 1.1 KB |
+| 230 | constrained-genericity-4 | ✓ | 108µs | 12.7 KB |
+| 231 | constrained-random-points-on-a-circle-1 | ✓ | 4.166ms | 1.0 MB |
 | 232 | constrained-random-points-on-a-circle-2 |   |  |  |
 | 233 | continued-fraction |   |  |  |
 | 234 | convert-decimal-number-to-rational |   |  |  |
