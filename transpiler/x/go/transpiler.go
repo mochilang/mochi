@@ -36,6 +36,7 @@ type Program struct {
 	UseInput     bool
 	UseSubstr    bool
 	UseSlice     bool
+	UseSplit     bool
 	UseFloatConv bool
 	UsePadStart  bool
 	UseSHA256    bool
@@ -59,6 +60,7 @@ var (
 	usesInput      bool
 	usesSubstr     bool
 	usesSlice      bool
+	usesSplit      bool
 	usesFloatConv  bool
 	usesPadStart   bool
 	usesSHA256     bool
@@ -1837,7 +1839,7 @@ func (a *AssertExpr) emit(w io.Writer) {
 	}
 	if strings.HasPrefix(a.Type, "[]") {
 		elem := a.Type[2:]
-		fmt.Fprintf(w, "func(v any) []%s { if vv, ok := v.([]%s); ok { return vv }; if arr, ok := v.([]any); ok && len(arr)==0 { return []%s{} }; return v.([]%s) }(", elem, elem, elem, elem)
+		fmt.Fprintf(w, "func(v any) []%s { if v == nil { return nil }; if vv, ok := v.([]%s); ok { return vv }; if arr, ok := v.([]any); ok { if len(arr)==0 { return []%s{} }; out := make([]%s, len(arr)); for i, x := range arr { out[i] = x.(%s) }; return out }; return v.([]%s) }(", elem, elem, elem, elem, elem, elem)
 		a.Expr.emit(w)
 		fmt.Fprint(w, ")")
 		return
@@ -1869,6 +1871,7 @@ func Transpile(p *parser.Program, env *types.Env, benchMain bool) (*Program, err
 	usesInput = false
 	usesSubstr = false
 	usesSlice = false
+	usesSplit = false
 	usesFloatConv = false
 	usesPadStart = false
 	usesSHA256 = false
@@ -1917,6 +1920,7 @@ func Transpile(p *parser.Program, env *types.Env, benchMain bool) (*Program, err
 	gp.UseInput = usesInput
 	gp.UseSubstr = usesSubstr
 	gp.UseSlice = usesSlice
+	gp.UseSplit = usesSplit
 	gp.UseFloatConv = usesFloatConv
 	gp.UsePadStart = usesPadStart
 	gp.UseRepeat = usesRepeat
@@ -2249,6 +2253,13 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 			declaredType = types.ResolveTypeRef(st.Var.Type, env)
 			env.SetVar(st.Var.Name, declaredType, true)
 		} else if env == topEnv {
+			if t, err := env.GetVar(st.Var.Name); err == nil {
+				if _, ok := t.(types.FuncType); !ok {
+					typ = toGoTypeFromType(t)
+					declaredType = t
+				}
+			}
+		} else {
 			if t, err := env.GetVar(st.Var.Name); err == nil {
 				if _, ok := t.(types.FuncType); !ok {
 					typ = toGoTypeFromType(t)
@@ -4799,6 +4810,10 @@ func compilePrimary(p *parser.Primary, env *types.Env, base string) (Expr, error
 		case "slice":
 			usesSlice = true
 			return &CallExpr{Func: "_slice", Args: args[:3]}, nil
+		case "split":
+			usesSplit = true
+			usesStrings = true
+			return &CallExpr{Func: "_split", Args: args[:2]}, nil
 		case "substring", "substr":
 			usesSubstr = true
 			if types.IsAnyType(types.TypeOfExpr(p.Call.Args[0], env)) {
@@ -4899,6 +4914,12 @@ func compilePrimary(p *parser.Primary, env *types.Env, base string) (Expr, error
 						if ll, ok := args[i].(*ListLit); ok {
 							if lt, ok2 := mt.(types.ListType); ok2 && ll.ElemType == "any" && len(ll.Elems) == 0 {
 								ll.ElemType = toGoTypeFromType(lt.Elem)
+							}
+						}
+						if lt, ok := mt.(types.ListType); ok {
+							gt := toGoTypeFromType(lt.Elem)
+							if gt != "" && gt != "any" {
+								args[i] = &AssertExpr{Expr: args[i], Type: "[]" + gt}
 							}
 						}
 						if lit, ok := args[i].(*FuncLit); ok {
@@ -5599,6 +5620,12 @@ func Emit(prog *Program, bench bool) []byte {
 		buf.WriteString("    if start > len(s) { start = len(s) }\n")
 		buf.WriteString("    if end < start { end = start }\n")
 		buf.WriteString("    return s[start:end]\n")
+		buf.WriteString("}\n\n")
+	}
+	if prog.UseSplit {
+		buf.WriteString("func _split(s, sep string) []string {\n")
+		buf.WriteString("    if sep == \"\" { sep = \" \" }\n")
+		buf.WriteString("    return strings.Split(s, sep)\n")
 		buf.WriteString("}\n\n")
 	}
 	if prog.UsePadStart {

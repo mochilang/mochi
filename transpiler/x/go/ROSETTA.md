@@ -1,7 +1,7 @@
 # Go Rosetta Transpiler Output
 
-Completed programs: 227/332
-Last updated: 2025-07-27 00:51 +0700
+Completed programs: 246/332
+Last updated: 2025-07-27 01:22 +0700
 
 Checklist:
 
@@ -247,25 +247,25 @@ Checklist:
 | 238 | copy-a-string-1 | ✓ | 9.0µs | 0B |
 | 239 | copy-a-string-2 | ✓ | 61.0µs | 1.10KB |
 | 240 | copy-stdin-to-stdout-1 | ✓ | 153.0µs | 4.96KB |
-| 241 | copy-stdin-to-stdout-2 |   |  |  |
-| 242 | count-in-factors |   |  |  |
-| 243 | count-in-octal-1 |   |  |  |
-| 244 | count-in-octal-2 |   |  |  |
-| 245 | count-in-octal-3 |   |  |  |
-| 246 | count-in-octal-4 |   |  |  |
-| 247 | count-occurrences-of-a-substring |   |  |  |
-| 248 | count-the-coins-1 |   |  |  |
-| 249 | count-the-coins-2 |   |  |  |
-| 250 | cramers-rule |   |  |  |
-| 251 | crc-32-1 |   |  |  |
-| 252 | crc-32-2 |   |  |  |
-| 253 | create-a-file-on-magnetic-tape |   |  |  |
-| 254 | create-a-file |   |  |  |
-| 255 | create-a-two-dimensional-array-at-runtime-1 |   |  |  |
-| 256 | create-an-html-table |   |  |  |
-| 257 | create-an-object-at-a-given-address |   |  |  |
-| 258 | csv-data-manipulation |   |  |  |
-| 259 | csv-to-html-translation-1 |   |  |  |
+| 241 | copy-stdin-to-stdout-2 | ✓ | 60.0µs | 4.96KB |
+| 242 | count-in-factors | ✓ | 215.0µs | 3.44KB |
+| 243 | count-in-octal-1 | ✓ | 172.0µs | 3.54KB |
+| 244 | count-in-octal-2 | ✓ | 65.0ms | 2.32MB |
+| 245 | count-in-octal-3 | ✓ | 67.0µs | 1.89KB |
+| 246 | count-in-octal-4 | ✓ | 57.0µs | 1.20KB |
+| 247 | count-occurrences-of-a-substring | ✓ | 60.0µs | 968B |
+| 248 | count-the-coins-1 | ✓ | 63.0µs | 1.27KB |
+| 249 | count-the-coins-2 | ✓ | 293.0µs | 25.66KB |
+| 250 | cramers-rule | ✓ | 82.0µs | 20.26KB |
+| 251 | crc-32-1 | ✓ | 173.0µs | 12.37KB |
+| 252 | crc-32-2 | ✓ | 332.0µs | 12.37KB |
+| 253 | create-a-file-on-magnetic-tape | ✓ | 36.0µs | 32B |
+| 254 | create-a-file | ✓ | 302.0µs | 1.12KB |
+| 255 | create-a-two-dimensional-array-at-runtime-1 | ✓ | 54.0µs | 1.31KB |
+| 256 | create-an-html-table | ✓ | 58.0µs | 1.55KB |
+| 257 | create-an-object-at-a-given-address | ✓ | 93.0µs | 3.68KB |
+| 258 | csv-data-manipulation | ✓ | 158.0µs | 1.79KB |
+| 259 | csv-to-html-translation-1 | ✓ | 79.0µs | 3.03KB |
 | 260 | csv-to-html-translation-2 |   |  |  |
 | 261 | csv-to-html-translation-3 |   |  |  |
 | 262 | csv-to-html-translation-4 |   |  |  |
