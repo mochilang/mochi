@@ -811,7 +811,20 @@ func (l *LetStmt) emit(w io.Writer) {
 		needIORef = true
 		io.WriteString(w, name+" <- newIORef (")
 		expr := maybeWrapUnsafe(l.Expr)
-		expr.emit(w)
+		switch lit := expr.(type) {
+		case *IntLit:
+			fmt.Fprintf(w, "%s :: Int", lit.Value)
+		case *FloatLit:
+			fmt.Fprintf(w, "%s :: Double", lit.Value)
+		case *BoolLit:
+			if lit.Value {
+				io.WriteString(w, "True :: Bool")
+			} else {
+				io.WriteString(w, "False :: Bool")
+			}
+		default:
+			expr.emit(w)
+		}
 		io.WriteString(w, ")")
 		return
 	}
@@ -2067,7 +2080,7 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		emitMaybeFloat(left, false)
 		return
 	}
-	wantFloat := b.Ops[0].Op == "/" || isFloatExpr(left) || isFloatExpr(b.Ops[0].Right)
+	wantFloat := isFloatExpr(left) || isFloatExpr(b.Ops[0].Right)
 	emitMaybeFloat(left, wantFloat)
 	for i, op := range b.Ops {
 		io.WriteString(w, " ")
@@ -2083,7 +2096,11 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		case "%":
 			io.WriteString(w, "`mod`")
 		case "/":
-			io.WriteString(w, "/")
+			if isIntExpr(left) && isIntExpr(op.Right) && !wantFloat {
+				io.WriteString(w, "`div`")
+			} else {
+				io.WriteString(w, "/")
+			}
 		case "in":
 			if isMapExpr(op.Right) {
 				needDataMap = true
@@ -2112,7 +2129,7 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		emitMaybeFloat(op.Right, wantFloat)
 		left = op.Right
 		if i+1 < len(b.Ops) {
-			wantFloat = b.Ops[i+1].Op == "/" || isFloatExpr(left) || isFloatExpr(b.Ops[i+1].Right)
+			wantFloat = isFloatExpr(left) || isFloatExpr(b.Ops[i+1].Right)
 		}
 	}
 }
