@@ -2,8 +2,8 @@
 
 Generated Elixir code from Mochi Rosetta programs lives in `tests/rosetta/transpiler/Elixir`.
 
-## Rosetta Test Checklist (85/358)
-_Last updated: 2025-07-26 18:41 +0000_
+## Rosetta Test Checklist (95/436)
+_Last updated: 2025-07-27 05:59 +0700_
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | 100-doors-2 | ✓ |  |  |
@@ -11,7 +11,7 @@ _Last updated: 2025-07-26 18:41 +0000_
 | 3 | 100-doors | ✓ |  |  |
 | 4 | 100-prisoners | ✓ |  |  |
 | 5 | 15-puzzle-game | ✓ |  |  |
-| 6 | 15-puzzle-solver | ✓ | 140us | 370.3 KB |
+| 6 | 15-puzzle-solver | ✓ |  |  |
 | 7 | 2048 | ✓ | 19.28ms | 6.2 MB |
 | 8 | 21-game |  |  |  |
 | 9 | 24-game-solve | ✓ | 2.93ms | 6.3 MB |
@@ -107,16 +107,16 @@ _Last updated: 2025-07-26 18:41 +0000_
 | 99 | babylonian-spiral | ✓ | 2.51ms | 2.0 MB |
 | 100 | balanced-brackets | ✓ | 1.09ms | 391.1 KB |
 | 101 | balanced-ternary | ✓ | 2.97ms | 296.1 KB |
-| 102 | barnsley-fern |  |  |  |
-| 103 | base64-decode-data |  |  |  |
-| 104 | bell-numbers |  |  |  |
-| 105 | benfords-law |  |  |  |
-| 106 | bernoulli-numbers |  |  |  |
-| 107 | best-shuffle |  |  |  |
-| 108 | bifid-cipher |  |  |  |
-| 109 | bin-given-limits |  |  |  |
-| 110 | binary-digits |  |  |  |
-| 111 | binary-search |  |  |  |
+| 102 | barnsley-fern | ✓ |  |  |
+| 103 | base64-decode-data | ✓ |  |  |
+| 104 | bell-numbers | ✓ |  |  |
+| 105 | benfords-law | ✓ |  |  |
+| 106 | bernoulli-numbers | ✓ |  |  |
+| 107 | best-shuffle | ✓ |  |  |
+| 108 | bifid-cipher | ✓ |  |  |
+| 109 | bin-given-limits | ✓ |  |  |
+| 110 | binary-digits | ✓ |  |  |
+| 111 | binary-search | ✓ |  |  |
 | 112 | binary-strings |  |  |  |
 | 113 | bioinformatics-base-count |  |  |  |
 | 114 | bioinformatics-global-alignment |  |  |  |
@@ -335,32 +335,110 @@ _Last updated: 2025-07-26 18:41 +0000_
 | 327 | dynamic-variable-names |  |  |  |
 | 328 | earliest-difference-between-prime-gaps |  |  |  |
 | 329 | eban-numbers |  |  |  |
-| 330 | echo-server |  |  |  |
-| 331 | eertree |  |  |  |
-| 332 | egyptian-division |  |  |  |
-| 333 | ekg-sequence-convergence |  |  |  |
-| 334 | element-wise-operations |  |  |  |
-| 335 | elementary-cellular-automaton-infinite-length |  |  |  |
-| 336 | elementary-cellular-automaton-random-number-generator |  |  |  |
-| 337 | elementary-cellular-automaton |  |  |  |
-| 338 | elliptic-curve-arithmetic |  |  |  |
-| 339 | elliptic-curve-digital-signature-algorithm |  |  |  |
-| 340 | emirp-primes |  |  |  |
-| 341 | empty-directory |  |  |  |
-| 342 | empty-program |  |  |  |
-| 343 | empty-string-1 |  |  |  |
-| 344 | empty-string-2 |  |  |  |
-| 345 | enforced-immutability |  |  |  |
-| 346 | entropy-1 |  |  |  |
-| 347 | entropy-2 |  |  |  |
-| 348 | entropy-narcissist |  |  |  |
-| 349 | enumerations-1 |  |  |  |
-| 350 | enumerations-2 |  |  |  |
-| 351 | enumerations-3 |  |  |  |
-| 352 | enumerations-4 |  |  |  |
-| 353 | environment-variables-1 |  |  |  |
-| 354 | environment-variables-2 |  |  |  |
-| 355 | equal-prime-and-composite-sums |  |  |  |
-| 356 | equilibrium-index |  |  |  |
-| 357 | erd-s-nicolas-numbers |  |  |  |
-| 358 | md5 |  |  |  |
+| 330 | ecdsa-example |  |  |  |
+| 331 | echo-server |  |  |  |
+| 332 | eertree |  |  |  |
+| 333 | egyptian-division |  |  |  |
+| 334 | ekg-sequence-convergence |  |  |  |
+| 335 | element-wise-operations |  |  |  |
+| 336 | elementary-cellular-automaton-infinite-length |  |  |  |
+| 337 | elementary-cellular-automaton-random-number-generator |  |  |  |
+| 338 | elementary-cellular-automaton |  |  |  |
+| 339 | elliptic-curve-arithmetic |  |  |  |
+| 340 | elliptic-curve-digital-signature-algorithm |  |  |  |
+| 341 | emirp-primes |  |  |  |
+| 342 | empty-directory |  |  |  |
+| 343 | empty-program |  |  |  |
+| 344 | empty-string-1 |  |  |  |
+| 345 | empty-string-2 |  |  |  |
+| 346 | enforced-immutability |  |  |  |
+| 347 | entropy-1 |  |  |  |
+| 348 | entropy-2 |  |  |  |
+| 349 | entropy-narcissist |  |  |  |
+| 350 | enumerations-1 |  |  |  |
+| 351 | enumerations-2 |  |  |  |
+| 352 | enumerations-3 |  |  |  |
+| 353 | enumerations-4 |  |  |  |
+| 354 | environment-variables-1 |  |  |  |
+| 355 | environment-variables-2 |  |  |  |
+| 356 | equal-prime-and-composite-sums |  |  |  |
+| 357 | equilibrium-index |  |  |  |
+| 358 | erd-s-nicolas-numbers |  |  |  |
+| 359 | erd-s-selfridge-categorization-of-primes |  |  |  |
+| 360 | esthetic-numbers |  |  |  |
+| 361 | events |  |  |  |
+| 362 | evolutionary-algorithm |  |  |  |
+| 363 | exceptions-catch-an-exception-thrown-in-a-nested-call |  |  |  |
+| 364 | exceptions |  |  |  |
+| 365 | executable-library |  |  |  |
+| 366 | execute-a-markov-algorithm |  |  |  |
+| 367 | execute-a-system-command |  |  |  |
+| 368 | execute-brain- |  |  |  |
+| 369 | execute-computer-zero |  |  |  |
+| 370 | execute-hq9+ |  |  |  |
+| 371 | execute-snusp |  |  |  |
+| 372 | exponentiation-operator |  |  |  |
+| 373 | exponentiation-order |  |  |  |
+| 374 | exponentiation-with-infix-operators-in-or-operating-on-the-base |  |  |  |
+| 375 | extend-your-language |  |  |  |
+| 376 | extensible-prime-generator |  |  |  |
+| 377 | extreme-floating-point-values |  |  |  |
+| 378 | faces-from-a-mesh |  |  |  |
+| 379 | fasta-format |  |  |  |
+| 380 | faulhabers-triangle |  |  |  |
+| 381 | feigenbaum-constant-calculation |  |  |  |
+| 382 | fermat-numbers |  |  |  |
+| 383 | fibonacci-n-step-number-sequences |  |  |  |
+| 384 | fibonacci-sequence-1 |  |  |  |
+| 385 | fibonacci-sequence-2 |  |  |  |
+| 386 | fibonacci-sequence-3 |  |  |  |
+| 387 | fibonacci-sequence-4 |  |  |  |
+| 388 | fibonacci-word-fractal |  |  |  |
+| 389 | fibonacci-word |  |  |  |
+| 390 | file-extension-is-in-extensions-list |  |  |  |
+| 391 | file-input-output-1 |  |  |  |
+| 392 | file-input-output-2 |  |  |  |
+| 393 | file-modification-time |  |  |  |
+| 394 | file-size-distribution |  |  |  |
+| 395 | file-size |  |  |  |
+| 396 | filter |  |  |  |
+| 397 | find-chess960-starting-position-identifier |  |  |  |
+| 398 | find-common-directory-path |  |  |  |
+| 399 | find-duplicate-files |  |  |  |
+| 400 | find-if-a-point-is-within-a-triangle |  |  |  |
+| 401 | find-largest-left-truncatable-prime-in-a-given-base |  |  |  |
+| 402 | find-limit-of-recursion |  |  |  |
+| 403 | find-palindromic-numbers-in-both-binary-and-ternary-bases |  |  |  |
+| 404 | find-the-intersection-of-a-line-with-a-plane |  |  |  |
+| 405 | find-the-intersection-of-two-lines |  |  |  |
+| 406 | find-the-last-sunday-of-each-month |  |  |  |
+| 407 | find-the-missing-permutation |  |  |  |
+| 408 | fivenum-1 |  |  |  |
+| 409 | fivenum-2 |  |  |  |
+| 410 | fixed-length-records-1 |  |  |  |
+| 411 | fixed-length-records-2 |  |  |  |
+| 412 | fizzbuzz-1 |  |  |  |
+| 413 | fizzbuzz-2 |  |  |  |
+| 414 | flatten-a-list-1 |  |  |  |
+| 415 | flatten-a-list-2 |  |  |  |
+| 416 | flipping-bits-game |  |  |  |
+| 417 | flow-control-structures-1 |  |  |  |
+| 418 | flow-control-structures-2 |  |  |  |
+| 419 | flow-control-structures-3 |  |  |  |
+| 420 | flow-control-structures-4 |  |  |  |
+| 421 | floyd-warshall-algorithm |  |  |  |
+| 422 | floyds-triangle |  |  |  |
+| 423 | forest-fire |  |  |  |
+| 424 | fork |  |  |  |
+| 425 | ftp |  |  |  |
+| 426 | gamma-function |  |  |  |
+| 427 | general-fizzbuzz |  |  |  |
+| 428 | generic-swap |  |  |  |
+| 429 | get-system-command-output |  |  |  |
+| 430 | giuga-numbers |  |  |  |
+| 431 | globally-replace-text-in-several-files |  |  |  |
+| 432 | goldbachs-comet |  |  |  |
+| 433 | golden-ratio-convergence |  |  |  |
+| 434 | graph-colouring |  |  |  |
+| 435 | gray-code |  |  |  |
+| 436 | md5 |  |  |  |

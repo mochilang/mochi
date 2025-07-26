@@ -88,6 +88,11 @@ func uniqueWhileName() string {
 	return fmt.Sprintf("while_fun_%d", loopCounter)
 }
 
+func isBigRat(t types.Type) bool {
+	_, ok := t.(types.BigRatType)
+	return ok
+}
+
 // moduleMode is true when emitting a module with functions.
 var moduleMode bool
 
@@ -1010,7 +1015,7 @@ type CondExpr struct {
 }
 
 func (c *CondExpr) emit(w io.Writer) {
-	io.WriteString(w, "if ")
+	io.WriteString(w, "(if ")
 	c.Cond.emit(w)
 	io.WriteString(w, ", do: ")
 	c.Then.emit(w)
@@ -1018,6 +1023,7 @@ func (c *CondExpr) emit(w io.Writer) {
 		io.WriteString(w, ", else: ")
 		c.Else.emit(w)
 	}
+	io.WriteString(w, ")")
 }
 
 // CaseExpr represents a simple match/case expression.
@@ -1661,6 +1667,10 @@ func (c *CastExpr) emit(w io.Writer) {
 			c.Expr.emit(w)
 			io.WriteString(w, ")")
 		}
+	case "bigrat":
+		io.WriteString(w, "_bigrat(")
+		c.Expr.emit(w)
+		io.WriteString(w, ")")
 	default:
 		c.Expr.emit(w)
 	}
@@ -1689,6 +1699,8 @@ func Emit(p *Program, benchMain bool) []byte {
 	buf.WriteString(memHelper(1))
 	buf.WriteString(lookupHostHelper(1))
 	buf.WriteString(sliceHelper(1))
+	buf.WriteString(lenHelper(1))
+	buf.WriteString(bigRatHelper(1))
 	var globals []Stmt
 	var funcs []Stmt
 	var main []Stmt
@@ -2944,7 +2956,15 @@ func compileUnary(u *parser.Unary, env *types.Env) (Expr, error) {
 		return nil, err
 	}
 	for i := len(u.Ops) - 1; i >= 0; i-- {
-		expr = &UnaryExpr{Op: u.Ops[i], Expr: expr}
+		op := u.Ops[i]
+		if op == "-" {
+			part := &parser.Unary{Value: u.Value, Ops: u.Ops[:i+1]}
+			if _, ok := types.TypeOfUnary(part, env).(types.BigRatType); ok {
+				expr = &CallExpr{Func: "_bigrat_neg", Args: []Expr{expr}}
+				continue
+			}
+		}
+		expr = &UnaryExpr{Op: op, Expr: expr}
 	}
 	return expr, nil
 }
@@ -3008,45 +3028,52 @@ func compileBinary(b *parser.BinaryExpr, env *types.Env) (Expr, error) {
 					fn := &AnonFun{Params: []string{param}, Body: []Stmt{&ExprStmt{Expr: cond}}}
 					expr = &CallExpr{Func: "Enum.filter", Args: []Expr{operands[i], fn}}
 				default:
-					leftFloat := types.IsFloatType(typesSlice[i])
-					if !leftFloat {
-						if be, ok := operands[i].(*BinaryExpr); ok {
-							leftFloat = be.FloatOp
+					if (opName == "+" || opName == "-" || opName == "*" || opName == "/") &&
+						(isBigRat(typesSlice[i]) || isBigRat(typesSlice[i+1])) {
+						fn := map[string]string{"+": "_bigrat_add", "-": "_bigrat_sub", "*": "_bigrat_mul", "/": "_bigrat_div"}[opName]
+						expr = &CallExpr{Func: fn, Args: []Expr{operands[i], operands[i+1]}}
+						typesSlice[i] = types.BigRatType{}
+					} else {
+						leftFloat := types.IsFloatType(typesSlice[i])
+						if !leftFloat {
+							if be, ok := operands[i].(*BinaryExpr); ok {
+								leftFloat = be.FloatOp
+							}
 						}
+						rightFloat := types.IsFloatType(typesSlice[i+1])
+						if !rightFloat {
+							if be, ok := operands[i+1].(*BinaryExpr); ok {
+								rightFloat = be.FloatOp
+							}
+						}
+						floatOp := leftFloat || rightFloat
+						if opName == "+" {
+							if _, ok := typesSlice[i].(types.ListType); ok {
+								opName = "++"
+							}
+							if _, ok := typesSlice[i+1].(types.ListType); ok {
+								opName = "++"
+							}
+						}
+						bin := &BinaryExpr{Left: operands[i], Op: opName, Right: operands[i+1], FloatOp: floatOp}
+						if opName == "in" {
+							if _, ok := types.TypeOfPostfix(ops[i].Right, env).(types.MapType); ok {
+								bin.MapIn = true
+							}
+						} else if opName == "+" {
+							if _, ok := typesSlice[i].(types.StringType); ok {
+								bin.StrConcat = true
+							}
+							if _, ok := typesSlice[i+1].(types.StringType); ok {
+								bin.StrConcat = true
+							}
+						} else if opName == "/" {
+							if types.IsIntType(typesSlice[i]) && types.IsIntType(typesSlice[i+1]) {
+								bin.IntDiv = true
+							}
+						}
+						expr = bin
 					}
-					rightFloat := types.IsFloatType(typesSlice[i+1])
-					if !rightFloat {
-						if be, ok := operands[i+1].(*BinaryExpr); ok {
-							rightFloat = be.FloatOp
-						}
-					}
-					floatOp := leftFloat || rightFloat
-					if opName == "+" {
-						if _, ok := typesSlice[i].(types.ListType); ok {
-							opName = "++"
-						}
-						if _, ok := typesSlice[i+1].(types.ListType); ok {
-							opName = "++"
-						}
-					}
-					bin := &BinaryExpr{Left: operands[i], Op: opName, Right: operands[i+1], FloatOp: floatOp}
-					if opName == "in" {
-						if _, ok := types.TypeOfPostfix(ops[i].Right, env).(types.MapType); ok {
-							bin.MapIn = true
-						}
-					} else if opName == "+" {
-						if _, ok := typesSlice[i].(types.StringType); ok {
-							bin.StrConcat = true
-						}
-						if _, ok := typesSlice[i+1].(types.StringType); ok {
-							bin.StrConcat = true
-						}
-					} else if opName == "/" {
-						if types.IsIntType(typesSlice[i]) && types.IsIntType(typesSlice[i+1]) {
-							bin.IntDiv = true
-						}
-					}
-					expr = bin
 				}
 				operands[i] = expr
 				if b, ok := expr.(*BinaryExpr); ok && b.Op == "+" && b.StrConcat {
@@ -3447,6 +3474,9 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 					}
 				}
 			}
+			if name == "length" {
+				name = "_len"
+			}
 		case "sum":
 			name = "Enum.sum"
 		case "min":
@@ -3833,6 +3863,58 @@ func lookupHostHelper(indent int) string {
 	buf.WriteString(pad + "    {:error, reason} ->\n")
 	buf.WriteString(pad + "      [nil, reason]\n")
 	buf.WriteString(pad + "  end\n")
+	buf.WriteString(pad + "end\n")
+	return buf.String()
+}
+
+func lenHelper(indent int) string {
+	var buf bytes.Buffer
+	pad := strings.Repeat("  ", indent)
+	buf.WriteString(pad + "defp _len(x) do\n")
+	buf.WriteString(pad + "  (if is_binary(x), do: String.length(x), else: length(x))\n")
+	buf.WriteString(pad + "end\n")
+	return buf.String()
+}
+
+func bigRatHelper(indent int) string {
+	var buf bytes.Buffer
+	pad := strings.Repeat("  ", indent)
+	buf.WriteString(pad + "defp _bigrat(v) do\n")
+	buf.WriteString(pad + "  _bigrat(v, 1)\n")
+	buf.WriteString(pad + "end\n")
+	buf.WriteString(pad + "defp _bigrat(n, d) do\n")
+	buf.WriteString(pad + "  g = Integer.gcd(n, d)\n")
+	buf.WriteString(pad + "  n = div(n, g)\n")
+	buf.WriteString(pad + "  d = div(d, g)\n")
+	buf.WriteString(pad + "  if d < 0 do\n")
+	buf.WriteString(pad + "    {-n, -d}\n")
+	buf.WriteString(pad + "  else\n")
+	buf.WriteString(pad + "    {n, d}\n")
+	buf.WriteString(pad + "  end\n")
+	buf.WriteString(pad + "end\n")
+	buf.WriteString(pad + "defp _bigrat_add(a, b) do\n")
+	buf.WriteString(pad + "  {an, ad} = a\n")
+	buf.WriteString(pad + "  {bn, bd} = b\n")
+	buf.WriteString(pad + "  _bigrat(an * bd + ad * bn, ad * bd)\n")
+	buf.WriteString(pad + "end\n")
+	buf.WriteString(pad + "defp _bigrat_sub(a, b) do\n")
+	buf.WriteString(pad + "  {an, ad} = a\n")
+	buf.WriteString(pad + "  {bn, bd} = b\n")
+	buf.WriteString(pad + "  _bigrat(an * bd - ad * bn, ad * bd)\n")
+	buf.WriteString(pad + "end\n")
+	buf.WriteString(pad + "defp _bigrat_mul(a, b) do\n")
+	buf.WriteString(pad + "  {an, ad} = a\n")
+	buf.WriteString(pad + "  {bn, bd} = b\n")
+	buf.WriteString(pad + "  _bigrat(an * bn, ad * bd)\n")
+	buf.WriteString(pad + "end\n")
+	buf.WriteString(pad + "defp _bigrat_div(a, b) do\n")
+	buf.WriteString(pad + "  {an, ad} = a\n")
+	buf.WriteString(pad + "  {bn, bd} = b\n")
+	buf.WriteString(pad + "  _bigrat(an * bd, ad * bn)\n")
+	buf.WriteString(pad + "end\n")
+	buf.WriteString(pad + "defp _bigrat_neg(a) do\n")
+	buf.WriteString(pad + "  {n, d} = a\n")
+	buf.WriteString(pad + "  {-n, d}\n")
 	buf.WriteString(pad + "end\n")
 	return buf.String()
 }
