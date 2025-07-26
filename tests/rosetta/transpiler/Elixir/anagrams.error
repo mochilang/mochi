@@ -1,0 +1,153 @@
+run: exit status 1
+    warning: variable "seed" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 14 │               seed = v
+    │               ~
+    │
+    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/anagrams.exs:14:15: Main._now/0
+
+    warning: variable "seeded" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 15 │               seeded = true
+    │               ~
+    │
+    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/anagrams.exs:15:15: Main._now/0
+
+    warning: variable "arr" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 76 │                 arr = List.replace_at(arr, j + 1, tmp)
+    │                 ~
+    │
+    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/anagrams.exs:76:17: Main.sortRunes/1
+
+    warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 84 │           {arr, j} = try do
+    │                 ~
+    │
+    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/anagrams.exs:84:17: Main.sortRunes/1
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 60 │       {arr, i} = try do
+    │             ~
+    │
+    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/anagrams.exs:60:13: Main.sortRunes/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 113 │       {i, out} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/anagrams.exs:113:8: Main.sortRunes/1
+
+    warning: variable "m" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 96 │       {arr, m} = try do
+    │             ~
+    │
+    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/anagrams.exs:96:13: Main.sortRunes/1
+
+     warning: variable "idx" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 137 │                 idx = i
+     │                 ~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/anagrams.exs:137:17: Main.sortStrings/1
+
+     warning: variable "min" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 136 │                 min = Enum.at(tmp, i)
+     │                 ~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/anagrams.exs:136:17: Main.sortStrings/1
+
+     warning: variable "out" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 157 │                 out = (out ++ [Enum.at(tmp, j)])
+     │                 ~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/anagrams.exs:157:17: Main.sortStrings/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 145 │           {i, idx, min} = try do
+     │            ~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/anagrams.exs:145:12: Main.sortStrings/1
+
+     warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 165 │           {j, out} = try do
+     │            ~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/anagrams.exs:165:12: Main.sortStrings/1
+
+     warning: variable "tmp" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 177 │       {res, tmp} = try do
+     │             ~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/anagrams.exs:177:13: Main.sortStrings/1
+
+     warning: variable "groups" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 198 │           groups = Map.put(groups, k, (groups[k] ++ [w]))
+     │           ~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/anagrams.exs:198:11: Main.main/0
+
+     warning: variable "groups" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 196 │           groups = Map.put(groups, k, [w])
+     │           ~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/anagrams.exs:196:11: Main.main/0
+
+     warning: variable "maxLen" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 201 │           maxLen = length(Map.get(groups, k, []))
+     │           ~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/anagrams.exs:201:11: Main.main/0
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 221 │             {i, line} = try do
+     │              ~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/anagrams.exs:221:14: Main.main/0
+
+     warning: variable "printed" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 229 │             printed = Map.put(printed, k, true)
+     │             ~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/anagrams.exs:229:13: Main.main/0
+
+    warning: function _slice/3 is unused
+    │
+ 40 │   defp _slice(base, start, len) do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/anagrams.exs:40:8: Main (module)
+
+    warning: function _lookup_host/1 is unused
+    │
+ 31 │   defp _lookup_host(host) do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/anagrams.exs:31:8: Main (module)
+
+** (ArgumentError) errors were found at the given arguments:
+
+  * 1st argument: not a list
+
+    :erlang.length(nil)
+    /workspace/mochi/tests/rosetta/transpiler/Elixir/anagrams.exs:129: anonymous fn/3 in Main.sortStrings/1
+    /workspace/mochi/tests/rosetta/transpiler/Elixir/anagrams.exs:178: Main.sortStrings/1
+    /workspace/mochi/tests/rosetta/transpiler/Elixir/anagrams.exs:209: anonymous fn/1 in Main.main/0
+    (elixir 1.18.3) lib/enum.ex:987: Enum."-each/2-lists^foreach/1-0-"/2
+    /workspace/mochi/tests/rosetta/transpiler/Elixir/anagrams.exs:205: Main.main/0
+    /workspace/mochi/tests/rosetta/transpiler/Elixir/anagrams.exs:240: Main.bench_main/0
+    /workspace/mochi/tests/rosetta/transpiler/Elixir/anagrams.exs:246: (file)
