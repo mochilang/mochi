@@ -1,0 +1,10 @@
+exit status 127
+/workspace/mochi/tests/rosetta/transpiler/erl/brownian-tree.erl:66:45: variable 'Grid_2' is unbound
+%   66| {Dy_2, Grid_2, Tmp_2, X_4, Y_2} = Fun_4(Dy, Grid_2, Tmp_2, X_4, Y_2),
+%     |                                             ^
+
+/workspace/mochi/tests/rosetta/transpiler/erl/brownian-tree.erl:66:53: variable 'Tmp_2' is unbound
+%   66| {Dy_2, Grid_2, Tmp_2, X_4, Y_2} = Fun_4(Dy, Grid_2, Tmp_2, X_4, Y_2),
+%     |                                                     ^
+
+escript: There were compilation errors.
