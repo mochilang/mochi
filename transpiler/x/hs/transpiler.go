@@ -935,12 +935,7 @@ func (b *BenchStmt) emit(w io.Writer) {
 	writeIndent(w)
 	io.WriteString(w, "memEnd <- _mem\n")
 	writeIndent(w)
-	io.WriteString(w, "let benchData = Aeson.object [")
-	io.WriteString(w, "\"duration_us\" Aeson..= ((end - start) `div` 1000), ")
-	io.WriteString(w, "\"memory_bytes\" Aeson..= memEnd, ")
-	fmt.Fprintf(w, "\"name\" Aeson..= (%q :: String)]\n", b.Name)
-	writeIndent(w)
-	io.WriteString(w, "BSL.putStrLn (Pretty.encodePretty' Pretty.defConfig{Pretty.confIndent = Pretty.Spaces 2} benchData)\n")
+	fmt.Fprintf(w, "putStrLn (\"{\\n  \\\"duration_us\\\": \" ++ show ((end - start) `div` 1000) ++ \",\\n  \\\"memory_bytes\\\": \" ++ show memEnd ++ \",\\n  \\\"name\\\": \\\"%s\\\"\\n}\")\n", b.Name)
 	popIndent()
 }
 
@@ -2399,7 +2394,6 @@ func header(withList, withMap, withJSON, withTrace, withIORef, withNow, withLook
 // Emit generates formatted Haskell code.
 func Emit(p *Program, bench bool) []byte {
 	if bench {
-		needJSON = true
 		usesNow = true
 		usesMem = true
 		p.Stmts = []Stmt{&BenchStmt{Name: "main", Body: p.Stmts}}
@@ -2740,7 +2734,6 @@ func Transpile(prog *parser.Program, env *types.Env, benchMain bool) (*Program, 
 		}
 	}
 	if benchMain {
-		needJSON = true
 		usesNow = true
 		usesMem = true
 		renamed := false
@@ -4008,7 +4001,6 @@ func convertBenchBlock(b *parser.BenchBlock) (Stmt, error) {
 		return nil, err
 	}
 	usesNow = true
-	needJSON = true
 	name := strings.Trim(b.Name, "\"")
 	return &BenchStmt{Name: name, Body: body}, nil
 }

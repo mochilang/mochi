@@ -2,12 +2,12 @@
 
 Generated Haskell code for Rosetta Mochi programs. Each `.hs` file is in `tests/rosetta/transpiler/Haskell` with matching `.out` output. Failures produce a `.error` file.
 
-Last updated: 2025-07-26 09:17 GMT+7
+Last updated: 2025-07-26 10:06 GMT+7
 
 ## Checklist
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
-| 1 | 100-doors-2 | ✓ | 5.004ms | 35.0 MB |
+| 1 | 100-doors-2 | ✓ | 2.423ms | 33.0 MB |
 | 2 | 100-doors-3 | ✓ |  |  |
 | 3 | 100-doors | ✓ |  |  |
 | 4 | 100-prisoners | ✓ |  |  |
