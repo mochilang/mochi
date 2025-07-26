@@ -1,0 +1,45 @@
+// Mochi implementation of Rosetta "Determine if a string is collapsible" task
+// Translated from Go version in tests/rosetta/x/Go/determine-if-a-string-is-collapsible.go
+
+fun collapse(s: string): list<any> {
+  var i = 0
+  var prev = ""
+  var res = ""
+  var orig = len(s)
+  while i < len(s) {
+    let ch = substring(s, i, i + 1)
+    if ch != prev {
+      res = res + ch
+      prev = ch
+    }
+    i = i + 1
+  }
+  return [res, orig, len(res)]
+}
+
+fun main() {
+  let strings = [
+    "",
+    "\"If I were two-faced, would I be wearing this one?\" --- Abraham Lincoln ",
+    "..111111111111111111111111111111111111111111111111111111111111111777888",
+    "I never give 'em hell, I just tell the truth, and they think it's hell. ",
+    "                                                   ---  Harry S Truman ",
+    "The better the 4-wheel drive, the further you'll be from help when ya get stuck!",
+    "headmistressship",
+    "aardvark",
+    "😍😀🙌💃😍😍😍🙌",
+  ]
+  var idx = 0
+  while idx < len(strings) {
+    let s = strings[idx]
+    let r = collapse(s)
+    let cs = r[0]
+    let olen = r[1]
+    let clen = r[2]
+    print("original : length = " + str(olen) + ", string = «««" + s + "»»»")
+    print("collapsed: length = " + str(clen) + ", string = «««" + cs + "»»»\n")
+    idx = idx + 1
+  }
+}
+
+main()
