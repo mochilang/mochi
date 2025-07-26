@@ -1,0 +1,290 @@
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/arbitrary-precision-integers-included-.rs:63:2
+   |
+63 | };
+   |  ^ help: remove this semicolon
+   |
+   = note: `#[warn(redundant_semicolons)]` on by default
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/arbitrary-precision-integers-included-.rs:76:2
+   |
+76 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/arbitrary-precision-integers-included-.rs:77:34
+   |
+77 |         static mut g_e1: i64 = 0;;
+   |                                  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/arbitrary-precision-integers-included-.rs:78:34
+   |
+78 |         static mut g_e2: i64 = 0;;
+   |                                  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/arbitrary-precision-integers-included-.rs:79:36
+   |
+79 |         static mut g_base: i64 = 0;;
+   |                                    ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/arbitrary-precision-integers-included-.rs:80:33
+   |
+80 |         static mut g_x: i64 = 0;;
+   |                                 ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/arbitrary-precision-integers-included-.rs:81:33
+   |
+81 |         static mut g_s: i64 = 0;;
+   |                                 ^ help: remove this semicolon
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/arbitrary-precision-integers-included-.rs:55:11
+   |
+55 |     while (e > 0) {
+   |           ^     ^
+   |
+   = note: `#[warn(unused_parens)]` on by default
+help: remove these parentheses
+   |
+55 -     while (e > 0) {
+55 +     while e > 0 {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/arbitrary-precision-integers-included-.rs:56:12
+   |
+56 |         if ((e % 2) == 1) {
+   |            ^            ^
+   |
+help: remove these parentheses
+   |
+56 -         if ((e % 2) == 1) {
+56 +         if (e % 2) == 1 {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/arbitrary-precision-integers-included-.rs:57:22
+   |
+57 |             result = (result * b);
+   |                      ^          ^
+   |
+help: remove these parentheses
+   |
+57 -             result = (result * b);
+57 +             result = result * b;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/arbitrary-precision-integers-included-.rs:59:13
+   |
+59 |         b = (b * b);
+   |             ^     ^
+   |
+help: remove these parentheses
+   |
+59 -         b = (b * b);
+59 +         b = b * b;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/arbitrary-precision-integers-included-.rs:60:13
+   |
+60 |         e = (e / 2);
+   |             ^     ^
+   |
+help: remove these parentheses
+   |
+60 -         e = (e / 2);
+60 +         e = e / 2;
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/arbitrary-precision-integers-included-.rs:68:11
+   |
+68 |     while (e > 0) {
+   |           ^     ^
+   |
+help: remove these parentheses
+   |
+68 -     while (e > 0) {
+68 +     while e > 0 {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/arbitrary-precision-integers-included-.rs:69:12
+   |
+69 |         if ((e % 2) == 1) {
+   |            ^            ^
+   |
+help: remove these parentheses
+   |
+69 -         if ((e % 2) == 1) {
+69 +         if (e % 2) == 1 {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/arbitrary-precision-integers-included-.rs:70:22
+   |
+70 |             result = (result * b);
+   |                      ^          ^
+   |
+help: remove these parentheses
+   |
+70 -             result = (result * b);
+70 +             result = result * b;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/arbitrary-precision-integers-included-.rs:72:13
+   |
+72 |         b = (b * b);
+   |             ^     ^
+   |
+help: remove these parentheses
+   |
+72 -         b = (b * b);
+72 +         b = b * b;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/arbitrary-precision-integers-included-.rs:73:13
+   |
+73 |         e = (e / 2);
+   |             ^     ^
+   |
+help: remove these parentheses
+   |
+73 -         e = (e / 2);
+73 +         e = e / 2;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/arbitrary-precision-integers-included-.rs:85:32
+   |
+85 |         let duration_us: i64 = ((_end - _start) / 1000);
+   |                                ^                      ^
+   |
+help: remove these parentheses
+   |
+85 -         let duration_us: i64 = ((_end - _start) / 1000);
+85 +         let duration_us: i64 = (_end - _start) / 1000;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/arbitrary-precision-integers-included-.rs:86:33
+   |
+86 |         let memory_bytes: i64 = (_end_mem - _start_mem);
+   |                                 ^                     ^
+   |
+help: remove these parentheses
+   |
+86 -         let memory_bytes: i64 = (_end_mem - _start_mem);
+86 +         let memory_bytes: i64 = _end_mem - _start_mem;
+   |
+
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/arbitrary-precision-integers-included-.rs:48:15
+   |
+48 |         g_s = g_x.to_string();
+   |               ^^^^^^^^^^^^^^^ expected `i64`, found `String`
+...
+81 |         static mut g_s: i64 = 0;;
+   |                         --- expected due to this type
+   |
+help: try removing the method call
+   |
+48 -         g_s = g_x.to_string();
+48 +         g_s = g_x;
+   |
+
+error[E0599]: no method named `len` found for type `i64` in the current scope
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/arbitrary-precision-integers-included-.rs:82:77
+   |
+82 | ...   println!("{}", format!("{} {} {} {} {} {}", "5^(4^(3^2)) has", (g_s.len() as i64), "digits:", { let tmp = &g_s; tmp.chars().skip(0 ...
+   |                                                                           ^^^
+   |
+help: there is a method `le` with a similar name, but with different arguments
+  --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/core/src/cmp.rs:1400:5
+
+error[E0599]: no method named `chars` found for reference `&i64` in the current scope
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/arbitrary-precision-integers-included-.rs:82:125
+   |
+82 | ..._s.len() as i64), "digits:", { let tmp = &g_s; tmp.chars().skip(0 as usize).take((20 - 0) as usize).collect::<String>() }, "...", { le...
+   |                                                       ^^^^^ method not found in `&i64`
+
+error[E0599]: no method named `chars` found for reference `&i64` in the current scope
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/arbitrary-precision-integers-included-.rs:82:226
+   |
+82 | ...ollect::<String>() }, "...", { let tmp = &g_s; tmp.chars().skip(((g_s.len() as i64) - 20) as usize).take(((g_s.len() as i64) - ((g_s.l...
+   |                                                       ^^^^^ method not found in `&i64`
+
+error[E0599]: no method named `len` found for type `i64` in the current scope
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/arbitrary-precision-integers-included-.rs:82:245
+   |
+82 | ...t::<String>() }, "...", { let tmp = &g_s; tmp.chars().skip(((g_s.len() as i64) - 20) as usize).take(((g_s.len() as i64) - ((g_s.len() ...
+   |                                                                     ^^^
+   |
+help: there is a method `le` with a similar name, but with different arguments
+  --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/core/src/cmp.rs:1400:5
+
+error[E0599]: no method named `len` found for type `i64` in the current scope
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/arbitrary-precision-integers-included-.rs:82:286
+   |
+82 | ... tmp.chars().skip(((g_s.len() as i64) - 20) as usize).take(((g_s.len() as i64) - ((g_s.len() as i64) - 20)) as usize).collect::<String...
+   |                                                                     ^^^
+   |
+help: there is a method `le` with a similar name, but with different arguments
+  --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/core/src/cmp.rs:1400:5
+
+error[E0599]: no method named `len` found for type `i64` in the current scope
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/arbitrary-precision-integers-included-.rs:82:308
+   |
+82 | ...s.len() as i64) - 20) as usize).take(((g_s.len() as i64) - ((g_s.len() as i64) - 20)) as usize).collect::<String>() }).trim_end());
+   |                                                                     ^^^
+   |
+help: there is a method `le` with a similar name, but with different arguments
+  --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/core/src/cmp.rs:1400:5
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/arbitrary-precision-integers-included-.rs:51:27
+   |
+51 |         unsafe fn pow_int(mut base: i64, mut exp: i64) -> i64 {
+   |                           ----^^^^
+   |                           |
+   |                           help: remove this `mut`
+   |
+   = note: `#[warn(unused_mut)]` on by default
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/arbitrary-precision-integers-included-.rs:51:42
+   |
+51 |         unsafe fn pow_int(mut base: i64, mut exp: i64) -> i64 {
+   |                                          ----^^^
+   |                                          |
+   |                                          help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/arbitrary-precision-integers-included-.rs:64:27
+   |
+64 |         unsafe fn pow_big(mut base: i64, mut exp: i64) -> i64 {
+   |                           ----^^^^
+   |                           |
+   |                           help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/arbitrary-precision-integers-included-.rs:64:42
+   |
+64 |         unsafe fn pow_big(mut base: i64, mut exp: i64) -> i64 {
+   |                                          ----^^^
+   |                                          |
+   |                                          help: remove this `mut`
+
+error: aborting due to 7 previous errors; 23 warnings emitted
+
+Some errors have detailed explanations: E0308, E0599.
+For more information about an error, try `rustc --explain E0308`.

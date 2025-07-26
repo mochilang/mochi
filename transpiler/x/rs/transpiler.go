@@ -1348,11 +1348,17 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		if lt == "String" && rt == "String" {
 			io.WriteString(w, "(")
 			b.Left.emit(w)
-			io.WriteString(w, ".as_str() ")
+			if _, ok := b.Left.(*StringLit); !ok {
+				io.WriteString(w, ".as_str()")
+			}
+			io.WriteString(w, " ")
 			io.WriteString(w, b.Op)
 			io.WriteString(w, " ")
 			b.Right.emit(w)
-			io.WriteString(w, ".as_str())")
+			if _, ok := b.Right.(*StringLit); !ok {
+				io.WriteString(w, ".as_str()")
+			}
+			io.WriteString(w, ")")
 			return
 		}
 		if (lt == "f64" || containsFloat(b.Left)) && rt == "i64" {
@@ -2745,7 +2751,25 @@ func compileFunStmt(fn *parser.FunStmt) (Stmt, error) {
 			typ = "f64"
 		}
 		sigType := typ
-		if strings.HasPrefix(typ, "Vec<") {
+		if typ == "fn" && p.Type != nil && p.Type.Fun != nil {
+			var pts []string
+			for _, pa := range p.Type.Fun.Params {
+				t := "i64"
+				if pa.Simple != nil || pa.Generic != nil {
+					t = rustTypeRef(pa)
+				}
+				pts = append(pts, t)
+			}
+			rt := "()"
+			if p.Type.Fun.Return != nil {
+				r := rustTypeRef(p.Type.Fun.Return)
+				if r != "" {
+					rt = r
+				}
+			}
+			typ = fmt.Sprintf("impl FnMut(%s) -> %s", strings.Join(pts, ", "), rt)
+			sigType = "&mut " + typ
+		} else if strings.HasPrefix(typ, "Vec<") {
 			mut := paramMutated(fn.Body, p.Name)
 			if mut && (fn.Return == nil || rustTypeRef(fn.Return) != typ) {
 				sigType = "&mut " + typ
@@ -3658,6 +3682,9 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 				return nil, err
 			}
 			expr = e
+			if ret == "f64" && inferType(expr) == "" {
+				ret = ""
+			}
 		}
 		return &FunLit{Params: params, Return: ret, Expr: expr}, nil
 	case p.Match != nil:
@@ -4099,6 +4126,9 @@ func inferType(e Expr) string {
 		}
 	case *IndexExpr:
 		ct := inferType(ex.Target)
+		if strings.HasPrefix(ct, "&") {
+			ct = ct[1:]
+		}
 		if strings.HasPrefix(ct, "Vec<") {
 			return strings.TrimSuffix(strings.TrimPrefix(ct, "Vec<"), ">")
 		}
