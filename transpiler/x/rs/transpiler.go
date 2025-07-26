@@ -50,6 +50,7 @@ var funcDepth int
 var usesInput bool
 var usesInt bool
 var useAbs bool
+var useMutex bool
 var builtinAliases map[string]string
 var globalRenames map[string]string
 var globalRenameBack map[string]string
@@ -129,6 +130,7 @@ type Program struct {
 	UseInput    bool
 	UseInt      bool
 	UseAbs      bool
+	UseMutex    bool
 	Types       []TypeDecl
 	Globals     []*VarDecl
 }
@@ -573,6 +575,9 @@ func (i *IndexExpr) emit(w io.Writer) {
 	case *NameRef:
 		if mapVars[t.Name] || strings.HasPrefix(inferType(i.Target), "HashMap") {
 			t.emit(w)
+			if globalVars[t.Name] {
+				io.WriteString(w, ".lock().unwrap()")
+			}
 			io.WriteString(w, "[")
 			if inferType(i.Index) != "String" {
 				io.WriteString(w, "&")
@@ -609,6 +614,9 @@ func (i *IndexExpr) emit(w io.Writer) {
 	}
 	i.Target.emit(w)
 	if strings.HasPrefix(inferType(i.Target), "HashMap") {
+		if nr, ok := i.Target.(*NameRef); ok && globalVars[nr.Name] {
+			io.WriteString(w, ".lock().unwrap()")
+		}
 		io.WriteString(w, "[")
 		i.Index.emit(w)
 		if inferType(i.Index) == "String" {
@@ -635,8 +643,13 @@ func (i *IndexExpr) emit(w io.Writer) {
 	}
 	if !indexLHS {
 		et := ""
-		if t := inferType(i.Target); strings.HasPrefix(t, "Vec<") {
+		if t := strings.TrimPrefix(inferType(i.Target), "&"); strings.HasPrefix(t, "Vec<") {
 			et = strings.TrimSuffix(strings.TrimPrefix(t, "Vec<"), ">")
+		} else if strings.HasPrefix(strings.TrimPrefix(inferType(i.Target), "&"), "HashMap<") {
+			parts := strings.Split(strings.TrimSuffix(strings.TrimPrefix(strings.TrimPrefix(inferType(i.Target), "&"), "HashMap<"), ">"), ",")
+			if len(parts) == 2 {
+				et = strings.TrimSpace(parts[1])
+			}
 		}
 		if et != "" && et != "i64" && et != "bool" && et != "f64" {
 			io.WriteString(w, ".clone()")
@@ -995,6 +1008,10 @@ func (n *NameRef) emit(w io.Writer) {
 			typ = varTypes[n.Name]
 		}
 		if globalVars[n.Name] && !indexLHS && typ != "" && typ != "i64" && typ != "bool" && typ != "f64" && typ != "String" && !strings.HasPrefix(typ, "&") {
+			if strings.HasPrefix(typ, "HashMap") {
+				io.WriteString(w, name)
+				return
+			}
 			io.WriteString(w, name)
 			io.WriteString(w, ".clone()")
 			return
@@ -1027,9 +1044,7 @@ type VarDecl struct {
 
 func (v *VarDecl) emit(w io.Writer) {
 	if v.Global {
-		io.WriteString(w, "static mut ")
-		io.WriteString(w, v.Name)
-		io.WriteString(w, ": ")
+		io.WriteString(w, "static ")
 		typ := v.Type
 		if typ == "" {
 			typ = varTypes[v.Name]
@@ -1042,10 +1057,20 @@ func (v *VarDecl) emit(w io.Writer) {
 		if typ == "" {
 			typ = "i64"
 		}
-		io.WriteString(w, typ)
-		io.WriteString(w, " = ")
-		io.WriteString(w, zeroValue(typ))
-		io.WriteString(w, ";")
+		if !strings.HasPrefix(typ, "HashMap<") {
+			io.WriteString(w, "mut ")
+		}
+		io.WriteString(w, v.Name)
+		io.WriteString(w, ": ")
+		if strings.HasPrefix(typ, "HashMap<") {
+			useMutex = true
+			fmt.Fprintf(w, "LazyLock<Mutex<%s>> = LazyLock::new(|| Mutex::new(HashMap::new()));", typ)
+		} else {
+			io.WriteString(w, typ)
+			io.WriteString(w, " = ")
+			io.WriteString(w, zeroValue(typ))
+			io.WriteString(w, ";")
+		}
 		return
 	}
 	io.WriteString(w, "let ")
@@ -1137,6 +1162,9 @@ func (s *IndexAssignStmt) emit(w io.Writer) {
 		}
 		if strings.HasPrefix(inferType(idx.Target), "HashMap") {
 			idx.Target.emit(w)
+			if nr, ok := idx.Target.(*NameRef); ok && globalVars[nr.Name] {
+				io.WriteString(w, ".lock().unwrap()")
+			}
 			io.WriteString(w, ".insert(")
 			idx.Index.emit(w)
 			io.WriteString(w, ".clone(), ")
@@ -1244,6 +1272,9 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		}
 		if strings.HasPrefix(rt, "HashMap") {
 			b.Right.emit(w)
+			if nr, ok := b.Right.(*NameRef); ok && globalVars[nr.Name] {
+				io.WriteString(w, ".lock().unwrap()")
+			}
 			io.WriteString(w, ".contains_key(&")
 			b.Left.emit(w)
 			io.WriteString(w, ")")
@@ -1771,6 +1802,7 @@ func Transpile(p *parser.Program, env *types.Env, benchMain bool) (*Program, err
 	usesInput = false
 	usesInt = false
 	useAbs = false
+	useMutex = false
 	mapVars = make(map[string]bool)
 	stringVars = make(map[string]bool)
 	groupVars = make(map[string]bool)
@@ -1831,6 +1863,7 @@ func Transpile(p *parser.Program, env *types.Env, benchMain bool) (*Program, err
 	prog.UseInput = usesInput
 	prog.UseInt = usesInt
 	prog.UseAbs = useAbs
+	prog.UseMutex = useMutex
 	return prog, nil
 }
 
@@ -1974,6 +2007,9 @@ func compileStmt(stmt *parser.Statement) (Stmt, error) {
 			globalRenameBack[newName] = stmt.Let.Name
 			vd.Name = newName
 			globalVars[stmt.Let.Name] = true
+			if strings.HasPrefix(typ, "HashMap") {
+				useMutex = true
+			}
 		} else {
 			if len(localVarStack) > 0 {
 				localVarStack[len(localVarStack)-1][stmt.Let.Name] = true
@@ -2084,6 +2120,9 @@ func compileStmt(stmt *parser.Statement) (Stmt, error) {
 			globalRenameBack[newName] = stmt.Var.Name
 			vd.Name = newName
 			globalVars[stmt.Var.Name] = true
+			if strings.HasPrefix(typ, "HashMap") {
+				useMutex = true
+			}
 		} else {
 			if len(localVarStack) > 0 {
 				localVarStack[len(localVarStack)-1][stmt.Var.Name] = true
@@ -4375,6 +4414,9 @@ func Emit(prog *Program) []byte {
 	if prog.UsesHashMap {
 		buf.WriteString("use std::collections::HashMap;\n")
 	}
+	if prog.UseMutex {
+		buf.WriteString("use std::sync::{LazyLock, Mutex};\n")
+	}
 	if prog.UseTime {
 		buf.WriteString("use std::sync::atomic::{AtomicBool, AtomicI64, Ordering};\n")
 		buf.WriteString("use std::time::{SystemTime, UNIX_EPOCH};\n")
@@ -4465,6 +4507,9 @@ func Emit(prog *Program) []byte {
 	}
 	for _, g := range prog.Globals {
 		if g.Expr != nil {
+			if strings.HasPrefix(g.Type, "HashMap") {
+				continue
+			}
 			for i := 0; i < indent; i++ {
 				buf.WriteString("    ")
 			}
