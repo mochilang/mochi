@@ -1,0 +1,133 @@
+compile: exit status 1
+/workspace/mochi/tests/rosetta/transpiler/CPP/bitmap.cpp:20:181: warning: multi-character character constant [-Wmultichar]
+   20 |     else if(val.type() == typeid(std::vector<int64_t>)) { const auto& v = std::any_cast<const std::vector<int64_t>&>(val); os << '['; for(size_t i=0;i<v.size();++i){ if(i>0) os << ', '; os << v[i]; } os << ']'; }
+      |                                                                                                                                                                                     ^~~~
+/workspace/mochi/tests/rosetta/transpiler/CPP/bitmap.cpp:21:209: warning: multi-character character constant [-Wmultichar]
+   21 |     else if(val.type() == typeid(std::vector<std::vector<int64_t>>)) { const auto& vv = std::any_cast<const std::vector<std::vector<int64_t>>&>(val); os << '['; for(size_t i=0;i<vv.size();++i){ if(i>0) os << ', '; const auto& v = vv[i]; os << '['; for(size_t j=0;j<v.size();++j){ if(j>0) os << ', '; os << v[j]; } os << ']'; } os << ']'; }
+      |                                                                                                                                                                                                                 ^~~~
+/workspace/mochi/tests/rosetta/transpiler/CPP/bitmap.cpp:21:295: warning: multi-character character constant [-Wmultichar]
+   21 |     else if(val.type() == typeid(std::vector<std::vector<int64_t>>)) { const auto& vv = std::any_cast<const std::vector<std::vector<int64_t>>&>(val); os << '['; for(size_t i=0;i<vv.size();++i){ if(i>0) os << ', '; const auto& v = vv[i]; os << '['; for(size_t j=0;j<v.size();++j){ if(j>0) os << ', '; os << v[j]; } os << ']'; } os << ']'; }
+      |                                                                                                                                                                                                                                                                                                       ^~~~
+/workspace/mochi/tests/rosetta/transpiler/CPP/bitmap.cpp:22:189: warning: multi-character character constant [-Wmultichar]
+   22 |     else if(val.type() == typeid(std::vector<std::string>)) { const auto& v = std::any_cast<const std::vector<std::string>&>(val); os << '['; for(size_t i=0;i<v.size();++i){ if(i>0) os << ', '; os << v[i]; } os << ']'; }
+      |                                                                                                                                                                                             ^~~~
+/workspace/mochi/tests/rosetta/transpiler/CPP/bitmap.cpp:23:183: warning: multi-character character constant [-Wmultichar]
+   23 |     else if(val.type() == typeid(std::vector<std::any>)) { const auto& v = std::any_cast<const std::vector<std::any>&>(val); os << '['; for(size_t i=0;i<v.size();++i){ if(i>0) os << ', '; any_to_stream(os, v[i]); } os << ']'; }
+      |                                                                                                                                                                                       ^~~~
+/workspace/mochi/tests/rosetta/transpiler/CPP/bitmap.cpp:24:215: warning: multi-character character constant [-Wmultichar]
+   24 |     else if(val.type() == typeid(std::map<std::string, std::any>)) { const auto& m = std::any_cast<const std::map<std::string, std::any>&>(val); os << '{'; bool first=true; for(const auto& p : m){ if(!first) os << ', '; first=false; os << p.first << ': '; any_to_stream(os, p.second); } os << '}'; }
+      |                                                                                                                                                                                                                       ^~~~
+/workspace/mochi/tests/rosetta/transpiler/CPP/bitmap.cpp:24:251: warning: multi-character character constant [-Wmultichar]
+   24 |     else if(val.type() == typeid(std::map<std::string, std::any>)) { const auto& m = std::any_cast<const std::map<std::string, std::any>&>(val); os << '{'; bool first=true; for(const auto& p : m){ if(!first) os << ', '; first=false; os << p.first << ': '; any_to_stream(os, p.second); } os << '}'; }
+      |                                                                                                                                                                                                                                                           ^~~~
+/workspace/mochi/tests/rosetta/transpiler/CPP/bitmap.cpp: In function ‘std::map<std::__cxx11::basic_string<char>, std::any> GetPxRgb(Bitmap, int64_t, int64_t)’:
+/workspace/mochi/tests/rosetta/transpiler/CPP/bitmap.cpp:169:9: error: no match for ‘operator!’ (operand type is ‘std::map<std::__cxx11::basic_string<char>, std::any>::mapped_type’ {aka ‘std::any’})
+  169 |     if (!r["ok"]) {
+/workspace/mochi/tests/rosetta/transpiler/CPP/bitmap.cpp:169:9: note: candidate: ‘operator!(bool)’ (built-in)
+/workspace/mochi/tests/rosetta/transpiler/CPP/bitmap.cpp:169:9: note:   no known conversion for argument 1 from ‘std::map<std::__cxx11::basic_string<char>, std::any>::mapped_type’ {aka ‘std::any’} to ‘bool’
+/workspace/mochi/tests/rosetta/transpiler/CPP/bitmap.cpp:172:116: error: cannot convert ‘std::map<std::__cxx11::basic_string<char>, std::any>::mapped_type’ {aka ‘std::any’} to ‘int64_t’ {aka ‘long int’} in initialization
+  172 |     return std::map<std::string, std::any>{{"ok", std::any(true)}, {"rgb", std::any(rgbFromPixel((Pixel)(r["pixel"])))}};
+      |                                                                                                                    ^
+/workspace/mochi/tests/rosetta/transpiler/CPP/bitmap.cpp:172:120: error: no matching function for call to ‘std::map<std::__cxx11::basic_string<char>, std::any>::map(<brace-enclosed initializer list>)’
+  172 |     return std::map<std::string, std::any>{{"ok", std::any(true)}, {"rgb", std::any(rgbFromPixel((Pixel)(r["pixel"])))}};
+      |                                                                                                                        ^
+In file included from /usr/include/c++/13/map:63,
+                 from /workspace/mochi/tests/rosetta/transpiler/CPP/bitmap.cpp:5:
+/usr/include/c++/13/bits/stl_map.h:302:9: note: candidate: ‘template<class _InputIterator> std::map<_Key, _Tp, _Compare, _Alloc>::map(_InputIterator, _InputIterator, const _Compare&, const allocator_type&) [with _Key = std::__cxx11::basic_string<char>; _Tp = std::any; _Compare = std::less<std::__cxx11::basic_string<char> >; _Alloc = std::allocator<std::pair<const std::__cxx11::basic_string<char>, std::any> >]’
+  302 |         map(_InputIterator __first, _InputIterator __last,
+      |         ^~~
+/usr/include/c++/13/bits/stl_map.h:302:9: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/rosetta/transpiler/CPP/bitmap.cpp:172:120: note:   candidate expects 4 arguments, 2 provided
+  172 |     return std::map<std::string, std::any>{{"ok", std::any(true)}, {"rgb", std::any(rgbFromPixel((Pixel)(r["pixel"])))}};
+      |                                                                                                                        ^
+/usr/include/c++/13/bits/stl_map.h:285:9: note: candidate: ‘template<class _InputIterator> std::map<_Key, _Tp, _Compare, _Alloc>::map(_InputIterator, _InputIterator) [with _Key = std::__cxx11::basic_string<char>; _Tp = std::any; _Compare = std::less<std::__cxx11::basic_string<char> >; _Alloc = std::allocator<std::pair<const std::__cxx11::basic_string<char>, std::any> >]’
+  285 |         map(_InputIterator __first, _InputIterator __last)
+      |         ^~~
+/usr/include/c++/13/bits/stl_map.h:285:9: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/rosetta/transpiler/CPP/bitmap.cpp:172:120: note:   couldn’t deduce template parameter ‘_InputIterator’
+  172 |     return std::map<std::string, std::any>{{"ok", std::any(true)}, {"rgb", std::any(rgbFromPixel((Pixel)(r["pixel"])))}};
+      |                                                                                                                        ^
+/usr/include/c++/13/bits/stl_map.h:268:9: note: candidate: ‘template<class _InputIterator> std::map<_Key, _Tp, _Compare, _Alloc>::map(_InputIterator, _InputIterator, const allocator_type&) [with _Key = std::__cxx11::basic_string<char>; _Tp = std::any; _Compare = std::less<std::__cxx11::basic_string<char> >; _Alloc = std::allocator<std::pair<const std::__cxx11::basic_string<char>, std::any> >]’
+  268 |         map(_InputIterator __first, _InputIterator __last,
+      |         ^~~
+/usr/include/c++/13/bits/stl_map.h:268:9: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/rosetta/transpiler/CPP/bitmap.cpp:172:120: note:   candidate expects 3 arguments, 2 provided
+  172 |     return std::map<std::string, std::any>{{"ok", std::any(true)}, {"rgb", std::any(rgbFromPixel((Pixel)(r["pixel"])))}};
+      |                                                                                                                        ^
+/usr/include/c++/13/bits/stl_map.h:262:7: note: candidate: ‘std::map<_Key, _Tp, _Compare, _Alloc>::map(std::initializer_list<std::pair<const _Key, _Tp> >, const allocator_type&) [with _Key = std::__cxx11::basic_string<char>; _Tp = std::any; _Compare = std::less<std::__cxx11::basic_string<char> >; _Alloc = std::allocator<std::pair<const std::__cxx11::basic_string<char>, std::any> >; allocator_type = std::allocator<std::pair<const std::__cxx11::basic_string<char>, std::any> >]’
+  262 |       map(initializer_list<value_type> __l, const allocator_type& __a)
+      |       ^~~
+/usr/include/c++/13/bits/stl_map.h:262:40: note:   no known conversion for argument 1 from ‘<brace-enclosed initializer list>’ to ‘std::initializer_list<std::pair<const std::__cxx11::basic_string<char>, std::any> >’
+  262 |       map(initializer_list<value_type> __l, const allocator_type& __a)
+      |           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~
+/usr/include/c++/13/bits/stl_map.h:256:7: note: candidate: ‘std::map<_Key, _Tp, _Compare, _Alloc>::map(std::map<_Key, _Tp, _Compare, _Alloc>&&, std::__type_identity_t<_Alloc>&) [with _Key = std::__cxx11::basic_string<char>; _Tp = std::any; _Compare = std::less<std::__cxx11::basic_string<char> >; _Alloc = std::allocator<std::pair<const std::__cxx11::basic_string<char>, std::any> >; std::__type_identity_t<_Alloc> = std::allocator<std::pair<const std::__cxx11::basic_string<char>, std::any> >]’
+  256 |       map(map&& __m, const __type_identity_t<allocator_type>& __a)
+      |       ^~~
+/usr/include/c++/13/bits/stl_map.h:256:17: note:   no known conversion for argument 1 from ‘<brace-enclosed initializer list>’ to ‘std::map<std::__cxx11::basic_string<char>, std::any>&&’
+  256 |       map(map&& __m, const __type_identity_t<allocator_type>& __a)
+      |           ~~~~~~^~~
+/usr/include/c++/13/bits/stl_map.h:252:7: note: candidate: ‘std::map<_Key, _Tp, _Compare, _Alloc>::map(const std::map<_Key, _Tp, _Compare, _Alloc>&, std::__type_identity_t<_Alloc>&) [with _Key = std::__cxx11::basic_string<char>; _Tp = std::any; _Compare = std::less<std::__cxx11::basic_string<char> >; _Alloc = std::allocator<std::pair<const std::__cxx11::basic_string<char>, std::any> >; std::__type_identity_t<_Alloc> = std::allocator<std::pair<const std::__cxx11::basic_string<char>, std::any> >]’
+  252 |       map(const map& __m, const __type_identity_t<allocator_type>& __a)
+      |       ^~~
+/usr/include/c++/13/bits/stl_map.h:252:22: note:   no known conversion for argument 1 from ‘<brace-enclosed initializer list>’ to ‘const std::map<std::__cxx11::basic_string<char>, std::any>&’
+  252 |       map(const map& __m, const __type_identity_t<allocator_type>& __a)
+      |           ~~~~~~~~~~~^~~
+/usr/include/c++/13/bits/stl_map.h:248:7: note: candidate: ‘std::map<_Key, _Tp, _Compare, _Alloc>::map(const allocator_type&) [with _Key = std::__cxx11::basic_string<char>; _Tp = std::any; _Compare = std::less<std::__cxx11::basic_string<char> >; _Alloc = std::allocator<std::pair<const std::__cxx11::basic_string<char>, std::any> >; allocator_type = std::allocator<std::pair<const std::__cxx11::basic_string<char>, std::any> >]’
+  248 |       map(const allocator_type& __a)
+      |       ^~~
+/usr/include/c++/13/bits/stl_map.h:248:7: note:   candidate expects 1 argument, 2 provided
+/usr/include/c++/13/bits/stl_map.h:240:7: note: candidate: ‘std::map<_Key, _Tp, _Compare, _Alloc>::map(std::initializer_list<std::pair<const _Key, _Tp> >, const _Compare&, const allocator_type&) [with _Key = std::__cxx11::basic_string<char>; _Tp = std::any; _Compare = std::less<std::__cxx11::basic_string<char> >; _Alloc = std::allocator<std::pair<const std::__cxx11::basic_string<char>, std::any> >; allocator_type = std::allocator<std::pair<const std::__cxx11::basic_string<char>, std::any> >]’
+  240 |       map(initializer_list<value_type> __l,
+      |       ^~~
+/usr/include/c++/13/bits/stl_map.h:240:40: note:   no known conversion for argument 1 from ‘<brace-enclosed initializer list>’ to ‘std::initializer_list<std::pair<const std::__cxx11::basic_string<char>, std::any> >’
+  240 |       map(initializer_list<value_type> __l,
+      |           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~
+/usr/include/c++/13/bits/stl_map.h:227:7: note: candidate: ‘std::map<_Key, _Tp, _Compare, _Alloc>::map(std::map<_Key, _Tp, _Compare, _Alloc>&&) [with _Key = std::__cxx11::basic_string<char>; _Tp = std::any; _Compare = std::less<std::__cxx11::basic_string<char> >; _Alloc = std::allocator<std::pair<const std::__cxx11::basic_string<char>, std::any> >]’
+  227 |       map(map&&) = default;
+      |       ^~~
+/usr/include/c++/13/bits/stl_map.h:227:7: note:   candidate expects 1 argument, 2 provided
+/usr/include/c++/13/bits/stl_map.h:219:7: note: candidate: ‘std::map<_Key, _Tp, _Compare, _Alloc>::map(const std::map<_Key, _Tp, _Compare, _Alloc>&) [with _Key = std::__cxx11::basic_string<char>; _Tp = std::any; _Compare = std::less<std::__cxx11::basic_string<char> >; _Alloc = std::allocator<std::pair<const std::__cxx11::basic_string<char>, std::any> >]’
+  219 |       map(const map&) = default;
+      |       ^~~
+/usr/include/c++/13/bits/stl_map.h:219:7: note:   candidate expects 1 argument, 2 provided
+/usr/include/c++/13/bits/stl_map.h:206:7: note: candidate: ‘std::map<_Key, _Tp, _Compare, _Alloc>::map(const _Compare&, const allocator_type&) [with _Key = std::__cxx11::basic_string<char>; _Tp = std::any; _Compare = std::less<std::__cxx11::basic_string<char> >; _Alloc = std::allocator<std::pair<const std::__cxx11::basic_string<char>, std::any> >; allocator_type = std::allocator<std::pair<const std::__cxx11::basic_string<char>, std::any> >]’
+  206 |       map(const _Compare& __comp,
+      |       ^~~
+/usr/include/c++/13/bits/stl_map.h:206:27: note:   no known conversion for argument 1 from ‘<brace-enclosed initializer list>’ to ‘const std::less<std::__cxx11::basic_string<char> >&’
+  206 |       map(const _Compare& __comp,
+      |           ~~~~~~~~~~~~~~~~^~~~~~
+/usr/include/c++/13/bits/stl_map.h:197:7: note: candidate: ‘std::map<_Key, _Tp, _Compare, _Alloc>::map() [with _Key = std::__cxx11::basic_string<char>; _Tp = std::any; _Compare = std::less<std::__cxx11::basic_string<char> >; _Alloc = std::allocator<std::pair<const std::__cxx11::basic_string<char>, std::any> >]’
+  197 |       map() = default;
+      |       ^~~
+/usr/include/c++/13/bits/stl_map.h:197:7: note:   candidate expects 0 arguments, 2 provided
+/workspace/mochi/tests/rosetta/transpiler/CPP/bitmap.cpp: In function ‘int main()’:
+/workspace/mochi/tests/rosetta/transpiler/CPP/bitmap.cpp:197:17: error: could not convert ‘c1.std::map<std::__cxx11::basic_string<char>, std::any>::operator[](std::__cxx11::basic_string<char>(((const char*)"ok"), std::allocator<char>()))’ from ‘std::map<std::__cxx11::basic_string<char>, std::any>::mapped_type’ {aka ‘std::any’} to ‘bool’
+  197 |     if (c1["ok"]) {
+      |                 ^
+      |                 |
+      |                 std::map<std::__cxx11::basic_string<char>, std::any>::mapped_type {aka std::any}
+/workspace/mochi/tests/rosetta/transpiler/CPP/bitmap.cpp:198:87: error: cannot convert ‘std::map<std::__cxx11::basic_string<char>, std::any>::mapped_type’ {aka ‘std::any’} to ‘int64_t’ {aka ‘long int’} in initialization
+  198 |         std::cout << (std::string("Pixel at (0,0) is ") + pixelStr((Pixel)(c1["pixel"])));
+      |                                                                                       ^
+/workspace/mochi/tests/rosetta/transpiler/CPP/bitmap.cpp:201:17: error: could not convert ‘c2.std::map<std::__cxx11::basic_string<char>, std::any>::operator[](std::__cxx11::basic_string<char>(((const char*)"ok"), std::allocator<char>()))’ from ‘std::map<std::__cxx11::basic_string<char>, std::any>::mapped_type’ {aka ‘std::any’} to ‘bool’
+  201 |     if (c2["ok"]) {
+      |                 ^
+      |                 |
+      |                 std::map<std::__cxx11::basic_string<char>, std::any>::mapped_type {aka std::any}
+/workspace/mochi/tests/rosetta/transpiler/CPP/bitmap.cpp:202:89: error: cannot convert ‘std::map<std::__cxx11::basic_string<char>, std::any>::mapped_type’ {aka ‘std::any’} to ‘int64_t’ {aka ‘long int’} in initialization
+  202 |         std::cout << (std::string("Pixel at (10,20) is ") + pixelStr((Pixel)(c2["pixel"])));
+      |                                                                                         ^
+/workspace/mochi/tests/rosetta/transpiler/CPP/bitmap.cpp:205:17: error: could not convert ‘c3.std::map<std::__cxx11::basic_string<char>, std::any>::operator[](std::__cxx11::basic_string<char>(((const char*)"ok"), std::allocator<char>()))’ from ‘std::map<std::__cxx11::basic_string<char>, std::any>::mapped_type’ {aka ‘std::any’} to ‘bool’
+  205 |     if (c3["ok"]) {
+      |                 ^
+      |                 |
+      |                 std::map<std::__cxx11::basic_string<char>, std::any>::mapped_type {aka std::any}
+/workspace/mochi/tests/rosetta/transpiler/CPP/bitmap.cpp:207:23: error: ‘class std::any’ has no member named ‘R’
+  207 |         auto r16 = (p.R * 257);
+      |                       ^
+/workspace/mochi/tests/rosetta/transpiler/CPP/bitmap.cpp:208:23: error: ‘class std::any’ has no member named ‘G’
+  208 |         auto g16 = (p.G * 257);
+      |                       ^
+/workspace/mochi/tests/rosetta/transpiler/CPP/bitmap.cpp:209:23: error: ‘class std::any’ has no member named ‘B’
+  209 |         auto b16 = (p.B * 257);
+      |                       ^
