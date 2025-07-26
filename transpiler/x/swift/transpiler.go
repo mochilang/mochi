@@ -331,12 +331,21 @@ func (v *VarDecl) emit(w io.Writer) {
 		kw = "let"
 	}
 	fmt.Fprint(w, kw+" "+esc(v.Name))
-	if v.Type != "" {
-		fmt.Fprintf(w, ": %s", v.Type)
+	typ := v.Type
+	if typ == "" {
+		switch v.Expr.(type) {
+		case *MapLit:
+			typ = "[String: Any]"
+		case *ArrayLit:
+			typ = "[Any]"
+		}
+	}
+	if typ != "" {
+		fmt.Fprintf(w, ": %s", typ)
 	}
 	if v.Expr != nil {
 		fmt.Fprint(w, " = ")
-		if v.Type == "BigInt" {
+		if typ == "BigInt" {
 			fmt.Fprint(w, "BigInt(")
 			v.Expr.emit(w)
 			fmt.Fprint(w, ")")
@@ -518,7 +527,11 @@ func (m *MapLit) emit(w io.Writer) {
 		}
 		m.Keys[i].emit(w)
 		fmt.Fprint(w, ": ")
-		m.Values[i].emit(w)
+		if al, ok := m.Values[i].(*ArrayLit); ok && len(al.Elems) == 0 {
+			fmt.Fprint(w, "[] as [Any]")
+		} else {
+			m.Values[i].emit(w)
+		}
 	}
 	fmt.Fprint(w, "]")
 }
@@ -905,9 +918,12 @@ func (s *SliceExpr) emit(w io.Writer) {
 
 func (c *CastExpr) emit(w io.Writer) {
 	// avoid noisy casts when the expression is already a literal
-	if _, ok := c.Expr.(*LitExpr); ok {
-		c.Expr.emit(w)
-		return
+	if lit, ok := c.Expr.(*LitExpr); ok {
+		typ := strings.TrimSuffix(c.Type, "!")
+		if typ != "BigInt" {
+			lit.emit(w)
+			return
+		}
 	}
 	if inner, ok := c.Expr.(*CastExpr); ok {
 		t1 := strings.TrimSuffix(c.Type, "!")
@@ -1524,6 +1540,17 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("        }\n")
 		buf.WriteString("        return false\n")
 		buf.WriteString("    }\n")
+		buf.WriteString("    static func >(lhs: BigInt, rhs: BigInt) -> Bool { return rhs < lhs }\n")
+		buf.WriteString("    static func <=(lhs: BigInt, rhs: BigInt) -> Bool { return !(rhs < lhs) }\n")
+		buf.WriteString("    static func >=(lhs: BigInt, rhs: BigInt) -> Bool { return !(lhs < rhs) }\n")
+		buf.WriteString("    static func /(lhs: BigInt, rhs: BigInt) -> BigInt {\n")
+		buf.WriteString("        return BigInt(lhs.toInt() / rhs.toInt())\n")
+		buf.WriteString("    }\n")
+		buf.WriteString("    static func %(lhs: BigInt, rhs: BigInt) -> BigInt {\n")
+		buf.WriteString("        return BigInt(lhs.toInt() % rhs.toInt())\n")
+		buf.WriteString("    }\n")
+		buf.WriteString("    static func +(lhs: BigInt, rhs: Int) -> BigInt { return lhs + BigInt(rhs) }\n")
+		buf.WriteString("    static func +(lhs: Int, rhs: BigInt) -> BigInt { return BigInt(lhs) + rhs }\n")
 		buf.WriteString("    static func ==(lhs: BigInt, rhs: BigInt) -> Bool { lhs.digits == rhs.digits }\n")
 		buf.WriteString("    var description: String {\n")
 		buf.WriteString("        if digits.isEmpty { return \"0\" }\n")
@@ -1532,6 +1559,7 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("        return s\n")
 		buf.WriteString("    }\n")
 		buf.WriteString("}\n")
+		buf.WriteString("extension Int { init(_ b: BigInt) { self = b.toInt() } }\n")
 	}
 	needJSON := false
 	for _, st := range p.Stmts {
@@ -1738,8 +1766,15 @@ func convertStmt(env *types.Env, st *parser.Statement) (Stmt, error) {
 			} else if env != nil {
 				t := types.TypeOfExpr(st.Var.Value, env)
 				typ = swiftTypeOf(t)
-				if !types.IsEmptyListLiteral(st.Var.Value) && !isEmptyMapLiteral(st.Var.Value) {
-					typ = ""
+			}
+			if typ == "" {
+				if _, ok := ex.(*MapLit); ok {
+					typ = "[String: Any]"
+				} else if al, ok := ex.(*ArrayLit); ok {
+					typ = "[Any]"
+					if len(al.Elems) == 0 {
+						ex = &RawStmt{Code: "[]"}
+					}
 				}
 			}
 		} else if st.Var.Type != nil {
@@ -1829,7 +1864,7 @@ func convertStmt(env *types.Env, st *parser.Statement) (Stmt, error) {
 				cur = t
 			}
 		}
-		for _, idx := range st.Assign.Index {
+		for j, idx := range st.Assign.Index {
 			if idx.Start == nil || idx.Colon != nil || idx.End != nil || idx.Colon2 != nil || idx.Step != nil {
 				return nil, fmt.Errorf("unsupported index")
 			}
@@ -1837,12 +1872,17 @@ func convertStmt(env *types.Env, st *parser.Statement) (Stmt, error) {
 			if err != nil {
 				return nil, err
 			}
+			isLast := j == len(st.Assign.Index)-1 && len(st.Assign.Field) == 0
 			if mt, ok := cur.(types.MapType); ok {
 				cur = mt.Value
+				force := !isLast
+				lhs = &IndexExpr{Base: lhs, Index: ix, Force: force}
 			} else if lt, ok := cur.(types.ListType); ok {
 				cur = lt.Elem
+				lhs = &IndexExpr{Base: lhs, Index: ix}
+			} else {
+				lhs = &IndexExpr{Base: lhs, Index: ix}
 			}
-			lhs = &IndexExpr{Base: lhs, Index: ix}
 		}
 		for _, f := range st.Assign.Field {
 			if stt, ok := cur.(types.StructType); ok {
@@ -2884,6 +2924,7 @@ func convertPostfix(env *types.Env, p *parser.PostfixExpr) (Expr, error) {
 				if m, ok := baseType.(types.MapType); ok {
 					// return optional value when key may be missing
 					baseType = types.OptionType{Elem: m.Value}
+					force = true
 				} else if l, ok := baseType.(types.ListType); ok {
 					baseType = l.Elem
 				}
