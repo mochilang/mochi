@@ -2,8 +2,8 @@
 
 Generated Scheme code for Rosetta Code tasks under `tests/rosetta/x/Mochi`.
 
-## Checklist (119/332)
-Last updated: 2025-07-26 17:05 UTC
+## Checklist (125/332)
+Last updated: 2025-07-26 18:10 UTC
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -130,12 +130,12 @@ Last updated: 2025-07-26 17:05 UTC
 | 121 | bitmap-flood-fill | ✓ | 55µs | 12.8 MB |
 | 122 | bitmap-histogram | ✓ | 380µs | 12.7 MB |
 | 123 | bitmap-midpoint-circle-algorithm | ✓ | 665µs | 12.7 MB |
-| 124 | bitmap-ppm-conversion-through-a-pipe |   |  |  |
-| 125 | bitmap-read-a-ppm-file |   |  |  |
-| 126 | bitmap-read-an-image-through-a-pipe |   |  |  |
-| 127 | bitmap-write-a-ppm-file |   |  |  |
-| 128 | bitmap |   |  |  |
-| 129 | bitwise-io-1 |   |  |  |
+| 124 | bitmap-ppm-conversion-through-a-pipe | ✓ | 31.100337s | 128.5 MB |
+| 125 | bitmap-read-a-ppm-file | ✓ | 3.049ms | 14.1 MB |
+| 126 | bitmap-read-an-image-through-a-pipe | ✓ | 562µs | 12.6 MB |
+| 127 | bitmap-write-a-ppm-file | ✓ | 522µs | 13.1 MB |
+| 128 | bitmap | ✓ | 12.02626s | 104.9 MB |
+| 129 | bitwise-io-1 | ✓ | 759µs | 13.2 MB |
 | 130 | bitwise-io-2 |   |  |  |
 | 131 | bitwise-operations |   |  |  |
 | 132 | blum-integer |   |  |  |

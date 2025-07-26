@@ -2391,9 +2391,9 @@ func convertCall(target Node, call *parser.CallOp) (Node, error) {
 			return nil, fmt.Errorf("%s expects 1 arg", sym)
 		}
 		return &List{Elems: []Node{Symbol("apply"), Symbol(string(sym)), args[0]}}, nil
-	case "substring":
+	case "substring", "substr":
 		if len(args) != 3 {
-			return nil, fmt.Errorf("substring expects 3 args")
+			return nil, fmt.Errorf("%s expects 3 args", sym)
 		}
 		return &List{Elems: []Node{Symbol("substring"), args[0], args[1], args[2]}}, nil
 	case "exists":
