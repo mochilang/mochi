@@ -24,8 +24,10 @@ import (
 )
 
 var elixirReserved = map[string]struct{}{
-	"fn":  {},
-	"abs": {},
+	"fn":   {},
+	"abs":  {},
+	"end":  {},
+	"node": {},
 }
 
 func sanitizeIdent(name string) string {
@@ -242,7 +244,7 @@ func (s *IfStmt) emit(w io.Writer, indent int) {
 			if i > 0 {
 				io.WriteString(w, ", ")
 			}
-			io.WriteString(w, v)
+			io.WriteString(w, sanitizeIdent(v))
 		}
 		io.WriteString(w, "} = if ")
 	} else {
@@ -263,7 +265,7 @@ func (s *IfStmt) emit(w io.Writer, indent int) {
 			if i > 0 {
 				io.WriteString(w, ", ")
 			}
-			io.WriteString(w, v)
+			io.WriteString(w, sanitizeIdent(v))
 		}
 		io.WriteString(w, "}\n")
 	}
@@ -285,7 +287,7 @@ func (s *IfStmt) emit(w io.Writer, indent int) {
 				if i > 0 {
 					io.WriteString(w, ", ")
 				}
-				io.WriteString(w, v)
+				io.WriteString(w, sanitizeIdent(v))
 			}
 			io.WriteString(w, "}\n")
 		}
