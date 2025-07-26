@@ -1,5 +1,5 @@
-## Progress (2025-07-26 10:02 +0700)
-- swift rosetta: transpile index 79
+## Progress (2025-07-26 10:15 +0700)
+- swift rosetta: update docs
 - Generated golden tests for 102/104 programs
 - Updated README checklist and output artifacts
 
