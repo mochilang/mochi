@@ -1,0 +1,34 @@
+// Mochi translation of Rosetta "Doubly-linked-list/Element definition" task
+// Simple node struct using a map to hold links.
+
+fun Node(value: string, next: any, prev: any): map<string, any> {
+  return { "value": value, "next": next, "prev": prev }
+}
+
+fun main() {
+  var a = Node("A", null, null)
+  var b = Node("B", null, a)
+  a["next"] = b
+  var c = Node("C", null, b)
+  b["next"] = c
+
+  var p = a
+  var line = ""
+  while p != null {
+    line = line + (p["value"] as string)
+    p = p["next"]
+    if p != null { line = line + " " }
+  }
+  print(line)
+
+  p = c
+  line = ""
+  while p != null {
+    line = line + (p["value"] as string)
+    p = p["prev"]
+    if p != null { line = line + " " }
+  }
+  print(line)
+}
+
+main()
