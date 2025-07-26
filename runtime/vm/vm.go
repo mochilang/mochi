@@ -3791,6 +3791,13 @@ func (fc *funcCompiler) compilePrimary(p *parser.Primary) int {
 			dst := fc.newReg()
 			fc.emit(p.Pos, Instr{Op: OpSlice, A: dst, B: str, C: start, D: end})
 			return dst
+		case "slice":
+			src := fc.compileExpr(p.Call.Args[0])
+			start := fc.compileExpr(p.Call.Args[1])
+			end := fc.compileExpr(p.Call.Args[2])
+			dst := fc.newReg()
+			fc.emit(p.Pos, Instr{Op: OpSlice, A: dst, B: src, C: start, D: end})
+			return dst
 		case "substr":
 			str := fc.compileExpr(p.Call.Args[0])
 			start := fc.compileExpr(p.Call.Args[1])
@@ -6972,6 +6979,23 @@ func (fc *funcCompiler) foldCallValue(call *parser.CallExpr) (Value, bool) {
 				out[i], out[j] = out[j], out[i]
 			}
 			return Value{Tag: ValueList, List: out}, true
+		}
+		return Value{}, false
+	case "slice":
+		if len(args) != 3 {
+			return Value{}, false
+		}
+		src, start, end := args[0], args[1], args[2]
+		if src.Tag == ValueList && start.Tag == ValueInt && end.Tag == ValueInt {
+			lo, hi := clampSlice(len(src.List), start.Int, end.Int)
+			out := make([]Value, hi-lo)
+			copy(out, src.List[lo:hi])
+			return Value{Tag: ValueList, List: out}, true
+		}
+		if src.Tag == ValueStr && start.Tag == ValueInt && end.Tag == ValueInt {
+			r := []rune(src.Str)
+			lo, hi := clampSlice(len(r), start.Int, end.Int)
+			return Value{Tag: ValueStr, Str: string(r[lo:hi])}, true
 		}
 		return Value{}, false
 	case "substring":

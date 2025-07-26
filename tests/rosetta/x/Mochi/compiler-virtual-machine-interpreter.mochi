@@ -112,6 +112,7 @@ fun runVM(prog: map<string, any>) {
   let code = prog["code"]
   let addrMap = prog["addrMap"]
   let pool = prog["strings"]
+  var line = ""
   while pc < len(code) {
     let inst = code[pc]
     let op = inst["op"]
@@ -161,13 +162,18 @@ fun runVM(prog: map<string, any>) {
       continue
     }
     if op == "prts" {
-      print(pool[stack[len(stack)-1]])
+      let s = pool[stack[len(stack)-1]]
       stack = slice(stack, 0, len(stack)-1)
+      if s != "\n" {
+        line = line + s
+      }
       pc = pc + 1
       continue
     }
     if op == "prti" {
-      print(str(stack[len(stack)-1]))
+      line = line + str(stack[len(stack)-1])
+      print(line)
+      line = ""
       stack = slice(stack, 0, len(stack)-1)
       pc = pc + 1
       continue
