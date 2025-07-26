@@ -1,7 +1,7 @@
 # Clojure Rosetta Transpiler
 
-Completed: 20/332
-Last updated: 2025-07-26 19:58 +0700
+Completed: 20/341
+Last updated: 2025-07-27 01:03 +0700
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -13,7 +13,7 @@ Last updated: 2025-07-26 19:58 +0700
 | 6 | 15-puzzle-solver | ✓ | 50.367ms | 17.6 MB |
 | 7 | 2048 |   |  |  |
 | 8 | 21-game |   |  |  |
-| 9 | 24-game-solve | ✓ | 128.127ms | 23.3 MB |
+| 9 | 24-game-solve | ✓ | 73.371ms | 22.9 MB |
 | 10 | 24-game |   |  |  |
 | 11 | 4-rings-or-4-squares-puzzle |   |  |  |
 | 12 | 9-billion-names-of-god-the-integer | ✓ | 7.099292s | 46.6 MB |
@@ -335,5 +335,14 @@ Last updated: 2025-07-26 19:58 +0700
 | 328 | earliest-difference-between-prime-gaps |   |  |  |
 | 329 | eban-numbers |   |  |  |
 | 330 | echo-server |   |  |  |
-| 331 | ekg-sequence-convergence |   |  |  |
-| 332 | md5 |   |  |  |
+| 331 | eertree |   |  |  |
+| 332 | egyptian-division |   |  |  |
+| 333 | ekg-sequence-convergence |   |  |  |
+| 334 | element-wise-operations |   |  |  |
+| 335 | elementary-cellular-automaton-infinite-length |   |  |  |
+| 336 | elementary-cellular-automaton-random-number-generator |   |  |  |
+| 337 | elementary-cellular-automaton |   |  |  |
+| 338 | elliptic-curve-arithmetic |   |  |  |
+| 339 | emirp-primes |   |  |  |
+| 340 | empty-directory |   |  |  |
+| 341 | md5 |   |  |  |

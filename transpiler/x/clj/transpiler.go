@@ -613,6 +613,7 @@ var renameVars map[string]string
 var reservedNames = map[string]bool{
 	"count": true,
 	"in":    true,
+	"rest":  true,
 }
 
 // builtin replacements for some heavy numeric helpers
