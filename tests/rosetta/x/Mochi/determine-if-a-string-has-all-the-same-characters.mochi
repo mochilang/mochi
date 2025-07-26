@@ -1,0 +1,70 @@
+// Mochi translation of "Determine if a string has all the same characters"
+
+fun ord(ch: string): int {
+  if ch == "5" { return 0x35 }
+  if ch == "T" { return 0x54 }
+  if ch == " " { return 0x20 }
+  if ch == "é" { return 0xe9 }
+  if ch == "🐺" { return 0x1f43a }
+  return 0
+}
+
+fun hex(n: int): string {
+  let digits = "0123456789abcdef"
+  if n == 0 { return "0x0" }
+  var m = n
+  var out = ""
+  while m > 0 {
+    let d = m % 16
+    out = substring(digits, d, d+1) + out
+    m = m / 16
+  }
+  return "0x" + out
+}
+
+fun quote(s: string): string {
+  return "'" + s + "'"
+}
+
+fun analyze(s: string) {
+  let le = len(s)
+  print("Analyzing " + quote(s) + " which has a length of " + str(le) + ":")
+  if le > 1 {
+    var i = 1
+    while i < le {
+      let cur = substring(s, i, i+1)
+      let prev = substring(s, i-1, i)
+      if cur != prev {
+        print("  Not all characters in the string are the same.")
+        print("  " + quote(cur) + " (" + hex(ord(cur)) + ") is different at position " + str(i+1) + ".")
+        print("")
+        return
+      }
+      i = i + 1
+    }
+  }
+  print("  All characters in the string are the same.")
+  print("")
+}
+
+fun main() {
+  let strings = [
+    "",
+    "   ",
+    "2",
+    "333",
+    ".55",
+    "tttTTT",
+    "4444 444k",
+    "pépé",
+    "🐶🐶🐺🐶",
+    "🎄🎄🎄🎄"
+  ]
+  var i = 0
+  while i < len(strings) {
+    analyze(strings[i])
+    i = i + 1
+  }
+}
+
+main()
