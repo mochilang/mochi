@@ -287,6 +287,7 @@ type FunStmt struct {
 	Params []string
 	Body   []Stmt
 	Env    *types.Env
+	Local  bool
 }
 type ReturnStmt struct{ Value Expr }
 
@@ -930,6 +931,9 @@ func (f *FunStmt) emit(w io.Writer) {
 	prev := currentEnv
 	if f.Env != nil {
 		currentEnv = f.Env
+	}
+	if f.Local {
+		io.WriteString(w, "local ")
 	}
 	io.WriteString(w, "function ")
 	io.WriteString(w, sanitizeName(f.Name))
@@ -3715,7 +3719,8 @@ func convertUpdateStmt(u *parser.UpdateStmt) (Stmt, error) {
 }
 
 func convertFunStmt(fs *parser.FunStmt) (Stmt, error) {
-	f := &FunStmt{Name: fs.Name}
+	local := funcDepth > 0
+	f := &FunStmt{Name: fs.Name, Local: local}
 	child := types.NewEnv(currentEnv)
 	for _, p := range fs.Params {
 		f.Params = append(f.Params, p.Name)
@@ -3744,7 +3749,8 @@ func convertFunStmt(fs *parser.FunStmt) (Stmt, error) {
 }
 
 func convertMethodStmt(fs *parser.FunStmt, structName string, fields []string) (Stmt, error) {
-	f := &FunStmt{Name: fs.Name}
+	local := funcDepth > 0
+	f := &FunStmt{Name: fs.Name, Local: local}
 	child := types.NewEnv(currentEnv)
 	f.Params = append(f.Params, "self")
 	if structName != "" {
