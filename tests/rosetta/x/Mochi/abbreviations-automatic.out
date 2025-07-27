@@ -1,4 +1,4 @@
- 2  Sunday Monday Tuesday Wednesday Thursday Friday Saturday
+2  Sunday Monday Tuesday Wednesday Thursday Friday Saturday
  2  Sondag Maandag Dinsdag Woensdag Donderdag Vrydag Saterdag
  4  E_djelë E_hënë E_martë E_mërkurë E_enjte E_premte E_shtunë
  2  Ehud Segno Maksegno Erob Hamus Arbe Kedame
@@ -96,3 +96,8 @@
 12  xing-_qi-_tiàn xing-_qi-_yi-. xing-_qi-_èr xing-_qi-_san-. xing-_qi-_sì xing-_qi-_wuv. xing-_qi-_liù
  4  djadomingu djaluna djamars djarason djaweps djabièrnè djasabra
  2  Killachau Atichau Quoyllurchau Illapachau Chaskachau Kuychichau Intichau
+{
+  "duration_us": 20459,
+  "memory_bytes": -855536,
+  "name": "main"
+}
