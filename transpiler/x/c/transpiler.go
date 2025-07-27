@@ -72,6 +72,7 @@ var (
 	needListAppendStr       bool
 	needListAppendPtr       bool
 	needListAppendStrPtr    bool
+	needListAppendDouble    bool
 	needListAppendDoublePtr bool
 	needListAppendDoubleNew bool
 	needListAppendStrNew    bool
@@ -383,9 +384,34 @@ func (c *CallStmt) emit(w io.Writer, indent int) {
 		}
 		return
 	}
+	var pre string
+	var tmpName string
+	var tmpLen string
+	if len(c.Args) > 0 {
+		if ce, ok := c.Args[0].(*CallExpr); ok {
+			if ret, ok2 := funcReturnTypes[ce.Func]; ok2 && strings.HasSuffix(ret, "[]") {
+				tmpName = fmt.Sprintf("__tmp%d", tempCounter)
+				tempCounter++
+				var buf bytes.Buffer
+				ce.emitExpr(&buf)
+				decl := ret
+				if strings.HasSuffix(ret, "[]") {
+					decl = strings.TrimSuffix(ret, "[]") + "*"
+				}
+				pre = fmt.Sprintf("%s %s = %s;\n", decl, tmpName, buf.String())
+				varTypes[tmpName] = ret
+				tmpLen = ce.Func + "_len"
+			}
+		}
+	}
+	if pre != "" {
+		writeIndent(w, indent)
+		io.WriteString(w, pre)
+	}
 	writeIndent(w, indent)
 	io.WriteString(w, c.Func)
 	io.WriteString(w, "(")
+	first := true
 	for i, a := range c.Args {
 		if i > 0 {
 			io.WriteString(w, ", ")
@@ -393,6 +419,18 @@ func (c *CallStmt) emit(w io.Writer, indent int) {
 		var paramType string
 		if types, ok := funcParamTypes[c.Func]; ok && i < len(types) {
 			paramType = types[i]
+		}
+		if i == 0 && tmpName != "" {
+			io.WriteString(w, tmpName)
+			if strings.HasSuffix(paramType, "[]") {
+				io.WriteString(w, ", ")
+				io.WriteString(w, tmpLen)
+			}
+			first = false
+			continue
+		}
+		if !first && i >= 0 {
+			// already wrote comma above
 		}
 		if strings.HasPrefix(paramType, "struct ") && strings.HasSuffix(paramType, "*") {
 			io.WriteString(w, "&")
@@ -672,6 +710,12 @@ func (a *AssignStmt) emit(w io.Writer, indent int) {
 			case "int":
 				needListAppendInt = true
 				fmt.Fprintf(w, "%s = list_append_int(%s, &%s_len, ", a.Name, a.Name, a.Name)
+				call.Args[1].emitExpr(w)
+				io.WriteString(w, ");\n")
+				return
+			case "double":
+				needListAppendDouble = true
+				fmt.Fprintf(w, "%s = list_append_double(%s, &%s_len, ", a.Name, a.Name, a.Name)
 				call.Args[1].emitExpr(w)
 				io.WriteString(w, ");\n")
 				return
@@ -987,6 +1031,9 @@ func exprIsFloat(e Expr) bool {
 	case *FloatLit:
 		return true
 	case *UnaryExpr:
+		if v.Op == "(double)" {
+			return true
+		}
 		return exprIsFloat(v.Expr)
 	case *BinaryExpr:
 		if v.Op == "+" || v.Op == "-" || v.Op == "*" || v.Op == "/" {
@@ -2076,6 +2123,14 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("    return res;\n")
 		buf.WriteString("}\n\n")
 	}
+	if needListAppendDouble {
+		buf.WriteString("static double* list_append_double(double *arr, size_t *len, double val) {\n")
+		buf.WriteString("    arr = realloc(arr, (*len + 1) * sizeof(double));\n")
+		buf.WriteString("    arr[*len] = val;\n")
+		buf.WriteString("    (*len)++;\n")
+		buf.WriteString("    return arr;\n")
+		buf.WriteString("}\n\n")
+	}
 	if needListAppendDoubleNew {
 		buf.WriteString("static double* list_append_double_new(const double *arr, size_t len, double val) {\n")
 		buf.WriteString("    double *res = malloc((len + 1) * sizeof(double));\n")
@@ -2456,6 +2511,7 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 	needListAppendStr = false
 	needListAppendPtr = false
 	needListAppendStrPtr = false
+	needListAppendDouble = false
 	needListAppendDoublePtr = false
 	needListAppendDoubleNew = false
 	needListAppendStrNew = false
@@ -3423,12 +3479,11 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 					return &ForStmt{Var: s.For.Name, ListVar: listVar, LenVar: lenVar, ElemType: keyT, Body: body}, nil
 				}
 				typStr := inferExprType(env, convertExpr(s.For.Source))
-				if strings.HasSuffix(typStr, "[]") {
+				if keyT, ok := mapKeyTypes[name]; ok {
 					body, err := compileStmts(env, s.For.Body)
 					if err != nil {
 						return nil, err
 					}
-					keyT := mapKeyTypes[name]
 					switch keyT {
 					case "const char*":
 						env.SetVarDeep(s.For.Name, types.StringType{}, true)
