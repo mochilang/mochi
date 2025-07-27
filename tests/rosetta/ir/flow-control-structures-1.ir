@@ -1,0 +1,22 @@
+func main (regs=7)
+  // var i = 0
+  Const        r1, 0
+  Move         r0, r1
+  SetGlobal    0,0,0,0
+L1:
+  // while i < 3 {
+  Const        r2, 3
+  LessInt      r3, r0, r2
+  JumpIfFalse  r3, L0
+  // print("loop")
+  Const        r4, "loop"
+  Print        r4
+  // i = i + 1
+  Const        r5, 1
+  AddInt       r6, r0, r5
+  Move         r0, r6
+  SetGlobal    0,0,0,0
+  // while i < 3 {
+  Jump         L1
+L0:
+  Return       r0

@@ -1,0 +1,20 @@
+func main (regs=9)
+  // for s in ["alpha", "beta", "gamma"] {
+  Const        r0, ["alpha", "beta", "gamma"]
+  IterPrep     r1, r0
+  Len          r2, r1
+  Const        r3, 0
+L1:
+  LessInt      r4, r3, r2
+  JumpIfFalse  r4, L0
+  Index        r5, r1, r3
+  Move         r6, r5
+  // print(s)
+  Print        r6
+  // for s in ["alpha", "beta", "gamma"] {
+  Const        r7, 1
+  AddInt       r8, r3, r7
+  Move         r3, r8
+  Jump         L1
+L0:
+  Return       r0

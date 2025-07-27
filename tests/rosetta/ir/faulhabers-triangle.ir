@@ -3,24 +3,352 @@ func main (regs=1)
   Call         r0, main, 
   Return       r0
 
-  // fun main() {
-func main (regs=10)
-  // var lines = [
-  Const        r0, ["    1", "  1/2    1/2", "  1/6    1/2    1/3", "    0    1/4    1/2    1/4", "-1/30      0    1/3    1/2    1/5", "    0  -1/12      0   5/12    1/2    1/6", " 1/42      0   -1/6      0    1/2    1/2    1/7", "    0   1/12      0  -7/24      0   7/12    1/2    1/8", "-1/30      0    2/9      0  -7/15      0    2/3    1/2    1/9", "    0  -3/20      0    1/2      0  -7/10      0    3/4    1/2   1/10", "", "56056972216555580111030077961944183400198333273050000"]
-  Move         r1, r0
-  // for line in lines { print(line) }
-  IterPrep     r2, r1
-  Len          r3, r2
-  Const        r4, 0
-L1:
-  LessInt      r5, r4, r3
+  // fun bernoulli(n: int): bigrat {
+func bernoulli (regs=27)
+  // var a: list<bigrat> = []
+  Const        r1, []
+  Move         r2, r1
+  // var m = 0
+  Const        r3, 0
+  Move         r4, r3
+L3:
+  // while m <= n {
+  LessEq       r5, r4, r0
   JumpIfFalse  r5, L0
-  Index        r6, r2, r4
-  Move         r7, r6
-  Print        r7
+  // a = append(a, 1 as bigrat / ((m + 1) as bigrat))
+  Const        r6, 1
+  Cast         r7, r6, bigrat
+  Const        r6, 1
+  AddInt       r8, r4, r6
+  Cast         r9, r8, bigrat
+  Div          r10, r7, r9
+  Append       r11, r2, r10
+  Move         r2, r11
+  // var j = m
+  Move         r12, r4
+L2:
+  // while j >= 1 {
+  Const        r6, 1
+  LessEqInt    r13, r6, r12
+  JumpIfFalse  r13, L1
+  // a[j-1] = (j as bigrat) * (a[j-1] - a[j])
+  Cast         r14, r12, bigrat
+  Const        r6, 1
+  SubInt       r15, r12, r6
+  Index        r16, r2, r15
+  Index        r17, r2, r12
+  Sub          r18, r16, r17
+  Mul          r19, r14, r18
+  Const        r6, 1
+  SubInt       r20, r12, r6
+  SetIndex     r2, r20, r19
+  // j = j - 1
+  Const        r6, 1
+  SubInt       r21, r12, r6
+  Move         r12, r21
+  // while j >= 1 {
+  Jump         L2
+L1:
+  // m = m + 1
+  Const        r6, 1
+  AddInt       r22, r4, r6
+  Move         r4, r22
+  // while m <= n {
+  Jump         L3
+L0:
+  // if n != 1 { return a[0] }
+  Const        r6, 1
+  NotEqual     r23, r0, r6
+  JumpIfFalse  r23, L4
+  Const        r3, 0
+  Index        r24, r2, r3
+  Return       r24
+L4:
+  // return -a[0]
+  Const        r3, 0
+  Index        r25, r2, r3
+  Neg          r26, r25
+  Return       r26
+
+  // fun binom(n: int, k: int): bigint {
+func binom (regs=20)
+  // if k < 0 || k > n { return 0 as bigint }
+  Const        r2, 0
+  Less         r3, r1, r2
+  Less         r4, r0, r1
+  Move         r5, r3
+  JumpIfTrue   r5, L0
+  Move         r5, r4
+L0:
+  JumpIfFalse  r5, L1
+  Const        r2, 0
+  Return       r2
+L1:
+  // var kk = k
+  Move         r6, r1
+  // if kk > n - kk { kk = n - kk }
+  Sub          r7, r0, r6
+  Less         r8, r7, r6
+  JumpIfFalse  r8, L2
+  Sub          r9, r0, r6
+  Move         r6, r9
+L2:
+  // var res: bigint = 1
+  Const        r10, 1
+  Move         r11, r10
+  // var i = 0
+  Const        r2, 0
+  Move         r12, r2
+L4:
+  // while i < kk {
+  Less         r13, r12, r6
+  JumpIfFalse  r13, L3
+  // res = res * ((n - i) as bigint)
+  Sub          r14, r0, r12
+  Cast         r15, r14, any
+  Mul          r16, r11, r15
+  Move         r11, r16
+  // i = i + 1
+  Const        r10, 1
+  AddInt       r17, r12, r10
+  Move         r12, r17
+  // res = res / (i as bigint)
+  Cast         r18, r12, any
+  Div          r19, r11, r18
+  Move         r11, r19
+  // while i < kk {
+  Jump         L4
+L3:
+  // return res
+  Return       r11
+
+  // fun faulhaberRow(p: int): list<bigrat> {
+func faulhaberRow (regs=33)
+  // var coeffs: list<bigrat> = []
+  Const        r1, []
+  Move         r2, r1
+  // var i = 0
+  Const        r3, 0
+  Move         r4, r3
+L1:
+  // while i <= p {
+  LessEq       r5, r4, r0
+  JumpIfFalse  r5, L0
+  // coeffs = append(coeffs, 0 as bigrat)
+  Const        r3, 0
+  Cast         r6, r3, bigrat
+  Append       r7, r2, r6
+  Move         r2, r7
+  // i = i + 1
   Const        r8, 1
   AddInt       r9, r4, r8
   Move         r4, r9
+  // while i <= p {
   Jump         L1
 L0:
+  // var j = 0
+  Const        r3, 0
+  Move         r10, r3
+  // var sign = -1
+  Const        r8, 1
+  NegInt       r11, r8
+  Move         r12, r11
+L4:
+  // while j <= p {
+  LessEq       r13, r10, r0
+  JumpIfFalse  r13, L2
+  // sign = -sign
+  NegInt       r14, r12
+  Move         r12, r14
+  // var c: bigrat = 1 as bigrat / ((p + 1) as bigrat)
+  Const        r8, 1
+  Cast         r15, r8, bigrat
+  Const        r8, 1
+  Add          r16, r0, r8
+  Cast         r17, r16, bigrat
+  Div          r18, r15, r17
+  Move         r19, r18
+  // if sign < 0 { c = -c }
+  Const        r3, 0
+  LessInt      r20, r12, r3
+  JumpIfFalse  r20, L3
+  Neg          r21, r19
+  Move         r19, r21
+L3:
+  // c = c * (binom(p + 1, j) as bigrat)
+  Const        r8, 1
+  Add          r24, r0, r8
+  Move         r22, r24
+  Move         r23, r10
+  Call2        r25, binom, r22, r23
+  Cast         r26, r25, bigrat
+  Mul          r27, r19, r26
+  Move         r19, r27
+  // c = c * bernoulli(j)
+  Move         r28, r10
+  Call         r29, bernoulli, r28
+  Mul          r30, r19, r29
+  Move         r19, r30
+  // coeffs[p - j] = c
+  Sub          r31, r0, r10
+  SetIndex     r2, r31, r19
+  // j = j + 1
+  Const        r8, 1
+  AddInt       r32, r10, r8
+  Move         r10, r32
+  // while j <= p {
+  Jump         L4
+L2:
+  // return coeffs
+  Return       r2
+
+  // fun ratStr(r: bigrat): string {
+func ratStr (regs=12)
+  // let s = str(r)
+  Str          r1, r0
+  Move         r2, r1
+  // if endsWith(s, "/1") { return substr(s, 0, len(s)-2) }
+  Move         r3, r2
+  Const        r5, "/1"
+  Move         r4, r5
+  Call2        r6, endsWith, r3, r4
+  JumpIfFalse  r6, L0
+  Const        r7, 0
+  Len          r8, r2
+  Const        r9, 2
+  SubInt       r10, r8, r9
+  Slice        r11, r2, r7, r10
+  Return       r11
+L0:
+  // return s
+  Return       r2
+
+  // fun endsWith(s: string, suf: string): bool {
+func endsWith (regs=12)
+  // if len(s) < len(suf) { return false }
+  Len          r2, r0
+  Len          r3, r1
+  LessInt      r4, r2, r3
+  JumpIfFalse  r4, L0
+  Const        r5, false
+  Return       r5
+L0:
+  // return substring(s, len(s)-len(suf), len(s)) == suf
+  Len          r6, r0
+  Len          r7, r1
+  SubInt       r8, r6, r7
+  Len          r9, r0
+  Slice        r10, r0, r8, r9
+  Equal        r11, r10, r1
+  Return       r11
+
+  // fun main() {
+func main (regs=49)
+  // var p = 0
+  Const        r0, 0
+  Move         r1, r0
+L4:
+  // while p < 10 {
+  Const        r2, 10
+  LessInt      r3, r1, r2
+  JumpIfFalse  r3, L0
+  // let row = faulhaberRow(p)
+  Move         r4, r1
+  Call         r5, faulhaberRow, r4
+  Move         r6, r5
+  // var line = ""
+  Const        r7, ""
+  Move         r8, r7
+  // var idx = 0
+  Const        r0, 0
+  Move         r9, r0
+L3:
+  // while idx < len(row) {
+  Len          r10, r6
+  LessInt      r11, r9, r10
+  JumpIfFalse  r11, L1
+  // line = line + padStart(ratStr(row[idx]), 5, " ")
+  Index        r13, r6, r9
+  Move         r12, r13
+  Call         r14, ratStr, r12
+  Const        r15, 5
+  Const        r16, " "
+  PadStart     r17, r14, r15, r16
+  Add          r18, r8, r17
+  Move         r8, r18
+  // if idx < len(row) - 1 { line = line + "  " }
+  Len          r19, r6
+  Const        r20, 1
+  SubInt       r21, r19, r20
+  LessInt      r22, r9, r21
+  JumpIfFalse  r22, L2
+  Const        r23, "  "
+  Add          r24, r8, r23
+  Move         r8, r24
+L2:
+  // idx = idx + 1
+  Const        r20, 1
+  AddInt       r25, r9, r20
+  Move         r9, r25
+  // while idx < len(row) {
+  Jump         L3
+L1:
+  // print(line)
+  Print        r8
+  // p = p + 1
+  Const        r20, 1
+  AddInt       r26, r1, r20
+  Move         r1, r26
+  // while p < 10 {
+  Jump         L4
+L0:
+  // print("")
+  Const        r7, ""
+  Print        r7
+  // let k = 17
+  Const        r27, 17
+  Move         r28, r27
+  // let coeffs = faulhaberRow(k)
+  Move         r29, r28
+  Call         r30, faulhaberRow, r29
+  Move         r31, r30
+  // var nn: bigrat = 1000 as bigrat
+  Const        r32, 1000
+  Cast         r33, r32, bigrat
+  Move         r34, r33
+  // var np: bigrat = 1 as bigrat
+  Const        r20, 1
+  Cast         r35, r20, bigrat
+  Move         r36, r35
+  // var sum: bigrat = 0 as bigrat
+  Const        r0, 0
+  Cast         r37, r0, bigrat
+  Move         r38, r37
+  // var i = 0
+  Const        r0, 0
+  Move         r39, r0
+L6:
+  // while i < len(coeffs) {
+  Len          r40, r31
+  LessInt      r41, r39, r40
+  JumpIfFalse  r41, L5
+  // np = np * nn
+  Mul          r42, r36, r34
+  Move         r36, r42
+  // sum = sum + coeffs[i] * np
+  Index        r43, r31, r39
+  Mul          r44, r43, r36
+  Add          r45, r38, r44
+  Move         r38, r45
+  // i = i + 1
+  Const        r20, 1
+  AddInt       r46, r39, r20
+  Move         r39, r46
+  // while i < len(coeffs) {
+  Jump         L6
+L5:
+  // print(ratStr(sum))
+  Move         r47, r38
+  Call         r48, ratStr, r47
+  Print        r48
   Return       r0

@@ -1,0 +1,18 @@
+func main (regs=7)
+  // for i in 0..3 {
+  Const        r0, 0
+  Const        r1, 3
+  Move         r2, r0
+L1:
+  LessInt      r3, r2, r1
+  JumpIfFalse  r3, L0
+  // print("0")
+  Const        r4, "0"
+  Print        r4
+  // for i in 0..3 {
+  Const        r5, 1
+  AddInt       r6, r2, r5
+  Move         r2, r6
+  Jump         L1
+L0:
+  Return       r0

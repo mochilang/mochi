@@ -1,0 +1,78 @@
+func main (regs=11)
+  // var board = [[1,0,1],[0,1,0],[1,1,0]]
+  Const        r1, [[1, 0, 1], [0, 1, 0], [1, 1, 0]]
+  Move         r0, r1
+  SetGlobal    0,0,0,0
+  // board = flipRow(board, 1)
+  Move         r2, r0
+  Const        r4, 1
+  Move         r3, r4
+  Call2        r5, flipRow, r2, r3
+  Move         r0, r5
+  SetGlobal    0,0,0,0
+  // board = flipCol(board, 2)
+  Move         r6, r0
+  Const        r8, 2
+  Move         r7, r8
+  Call2        r9, flipCol, r6, r7
+  Move         r0, r9
+  SetGlobal    0,0,0,0
+  // print(str(board))
+  Str          r10, r0
+  Print        r10
+  Return       r0
+
+  // fun flipRow(b: list<list<int>>, r: int): list<list<int>> {
+func flipRow (regs=14)
+  // var row = 0
+  Const        r3, 0
+  Move         r4, r3
+L1:
+  // while row < len(b[r]) {
+  Index        r5, r1, r2
+  Len          r6, r5
+  LessInt      r7, r4, r6
+  JumpIfFalse  r7, L0
+  // b[r][row] = 1 - b[r][row]
+  Index        r8, r1, r2
+  Const        r9, 1
+  Index        r10, r1, r2
+  Index        r11, r10, r4
+  Sub          r12, r9, r11
+  SetIndex     r8, r4, r12
+  // row = row + 1
+  Const        r9, 1
+  AddInt       r13, r4, r9
+  Move         r4, r13
+  // while row < len(b[r]) {
+  Jump         L1
+L0:
+  // return b
+  Return       r1
+
+  // fun flipCol(b: list<list<int>>, c: int): list<list<int>> {
+func flipCol (regs=13)
+  // var i = 0
+  Const        r3, 0
+  Move         r4, r3
+L1:
+  // while i < len(b) {
+  Len          r5, r1
+  LessInt      r6, r4, r5
+  JumpIfFalse  r6, L0
+  // b[i][c] = 1 - b[i][c]
+  Index        r7, r1, r4
+  Const        r8, 1
+  Index        r9, r1, r4
+  Index        r10, r9, r2
+  Sub          r11, r8, r10
+  SetIndex     r7, r2, r11
+  // i = i + 1
+  Const        r8, 1
+  AddInt       r12, r4, r8
+  Move         r4, r12
+  // while i < len(b) {
+  Jump         L1
+L0:
+  // return b
+  Return       r1

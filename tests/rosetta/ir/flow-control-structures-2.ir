@@ -1,0 +1,15 @@
+func main (regs=2)
+  // process()
+  Call         r0, process, 
+  // print("done")
+  Const        r1, "done"
+  Print        r1
+  Return       r0
+
+  // fun process() {
+func process (regs=2)
+  // var opened = true
+  Const        r0, true
+  Move         r1, r0
+  // return
+  Return       r0

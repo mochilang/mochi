@@ -1,0 +1,55 @@
+func main (regs=20)
+  // for i in 1..101 {
+  Const        r0, 1
+  Const        r1, 101
+  Move         r2, r0
+L5:
+  LessInt      r3, r2, r1
+  JumpIfFalse  r3, L0
+  // if i % 15 == 0 {
+  Const        r4, 15
+  ModInt       r5, r2, r4
+  Const        r6, 0
+  EqualInt     r7, r5, r6
+  JumpIfFalse  r7, L1
+  // print("FizzBuzz")
+  Const        r8, "FizzBuzz"
+  Print        r8
+  // if i % 15 == 0 {
+  Jump         L2
+L1:
+  // } else if i % 3 == 0 {
+  Const        r9, 3
+  ModInt       r10, r2, r9
+  Const        r6, 0
+  EqualInt     r11, r10, r6
+  JumpIfFalse  r11, L3
+  // print("Fizz")
+  Const        r12, "Fizz"
+  Print        r12
+  // } else if i % 3 == 0 {
+  Jump         L2
+L3:
+  // } else if i % 5 == 0 {
+  Const        r13, 5
+  ModInt       r14, r2, r13
+  Const        r6, 0
+  EqualInt     r15, r14, r6
+  JumpIfFalse  r15, L4
+  // print("Buzz")
+  Const        r16, "Buzz"
+  Print        r16
+  // } else if i % 5 == 0 {
+  Jump         L2
+L4:
+  // print(str(i))
+  Str          r17, r2
+  Print        r17
+L2:
+  // for i in 1..101 {
+  Const        r18, 1
+  AddInt       r19, r2, r18
+  Move         r2, r19
+  Jump         L5
+L0:
+  Return       r0

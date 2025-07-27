@@ -1,0 +1,58 @@
+func main (regs=12)
+  // let records = [
+  Const        r1, ["abcdefgh", "ijklmnop", "qrstuvwx"]
+  Move         r0, r1
+  SetGlobal    0,0,0,0
+  // for r in records {
+  IterPrep     r2, r0
+  Len          r3, r2
+  Const        r4, 0
+L1:
+  LessInt      r5, r4, r3
+  JumpIfFalse  r5, L0
+  Index        r6, r2, r4
+  Move         r7, r6
+  // print(reverseStr(r))
+  Move         r8, r7
+  Call         r9, reverseStr, r8
+  Print        r9
+  // for r in records {
+  Const        r10, 1
+  AddInt       r11, r4, r10
+  Move         r4, r11
+  Jump         L1
+L0:
+  Return       r0
+
+  // fun reverseStr(s: string): string {
+func reverseStr (regs=16)
+  // var out = ""
+  Const        r2, ""
+  Move         r3, r2
+  // var i = len(s) - 1
+  Len          r4, r1
+  Const        r5, 1
+  SubInt       r6, r4, r5
+  Move         r7, r6
+L1:
+  // while i >= 0 {
+  Const        r8, 0
+  LessEqInt    r9, r8, r7
+  JumpIfFalse  r9, L0
+  // out = out + s[i:i+1]
+  Move         r10, r7
+  Const        r5, 1
+  AddInt       r12, r7, r5
+  Move         r11, r12
+  Slice        r13, r1, r10, r11
+  Add          r14, r3, r13
+  Move         r3, r14
+  // i = i - 1
+  Const        r5, 1
+  SubInt       r15, r7, r5
+  Move         r7, r15
+  // while i >= 0 {
+  Jump         L1
+L0:
+  // return out
+  Return       r3

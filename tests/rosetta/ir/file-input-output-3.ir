@@ -1,0 +1,51 @@
+func main (regs=3)
+  // var fs: map<string,string> = {"input.txt": "example"}
+  Const        r1, {"input.txt": "example"}
+  Move         r0, r1
+  SetGlobal    0,0,0,0
+  // main()
+  Call         r2, main, 
+  Return       r0
+
+  // fun copyFile(out: string, inp: string) {
+func copyFile (regs=15)
+  // var s = ""
+  Const        r3, ""
+  Move         r4, r3
+  // for ch in fs[inp] {
+  Index        r5, r0, r2
+  IterPrep     r6, r5
+  Len          r7, r6
+  Const        r8, 0
+L1:
+  LessInt      r9, r8, r7
+  JumpIfFalse  r9, L0
+  Index        r10, r6, r8
+  Move         r11, r10
+  // s = s + ch
+  Add          r12, r4, r11
+  Move         r4, r12
+  // for ch in fs[inp] {
+  Const        r13, 1
+  AddInt       r14, r8, r13
+  Move         r8, r14
+  Jump         L1
+L0:
+  // fs[out] = s
+  SetIndex     r0, r1, r4
+  SetGlobal    0,0,0,0
+  Return       r0
+
+  // fun main() {
+func main (regs=7)
+  // copyFile("output.txt", "input.txt")
+  Const        r3, "output.txt"
+  Move         r1, r3
+  Const        r4, "input.txt"
+  Move         r2, r4
+  Call2        r5, copyFile, r1, r2
+  // print(fs["output.txt"])
+  Const        r3, "output.txt"
+  Index        r6, r0, r3
+  Print        r6
+  Return       r0

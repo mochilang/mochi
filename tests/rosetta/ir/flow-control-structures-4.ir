@@ -1,0 +1,13 @@
+func main (regs=6)
+  // var phone1 = true
+  Const        r2, true
+  Move         r0, r2
+  SetGlobal    0,0,0,0
+  // var phone2 = false
+  Const        r3, false
+  Move         r1, r3
+  SetGlobal    1,1,0,0
+  // print("talk on phone one")
+  Const        r4, "talk on phone one"
+  Print        r4
+  Return       r0
