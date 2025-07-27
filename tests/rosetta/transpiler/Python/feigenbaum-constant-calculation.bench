@@ -1,1 +1,5 @@
-i       d
+{
+  "duration_us": 21383,
+  "memory_bytes": 13365248,
+  "name": "main"
+}

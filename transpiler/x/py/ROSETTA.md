@@ -2,81 +2,81 @@
 
 This checklist is auto-generated.
 Generated Python code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/Python`.
-Last updated: 2025-07-27 16:34 GMT+7
+Last updated: 2025-07-27 17:39 GMT+7
 
-## Rosetta Golden Test Checklist (337/465)
+## Rosetta Golden Test Checklist (400/465)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 161.0µs | 12.50MB |
 | 2 | 100-doors-3 | ✓ | 126.0µs | 12.43MB |
 | 3 | 100-doors | ✓ | 272.0µs | 12.62MB |
-| 4 | 100-prisoners | error | 554.0ms | 12.85MB |
+| 4 | 100-prisoners | ✓ | 554.0ms | 12.85MB |
 | 5 | 15-puzzle-game | ✓ | 205.0µs | 13.59MB |
 | 6 | 15-puzzle-solver | ✓ | 10.0µs | 12.04MB |
-| 7 | 2048 | error | 2.0ms | 13.80MB |
+| 7 | 2048 | ✓ | 2.0ms | 13.80MB |
 | 8 | 21-game | ✓ | 70.0µs | 12.98MB |
-| 9 | 24-game-solve | error | 41.0ms | 13.88MB |
-| 10 | 24-game | error |  |  |
+| 9 | 24-game-solve | ✓ | 41.0ms | 13.88MB |
+| 10 | 24-game | ✓ |  |  |
 | 11 | 4-rings-or-4-squares-puzzle | ✓ | 28.0ms | 12.36MB |
-| 12 | 9-billion-names-of-god-the-integer | error | 10.67s | 233.76MB |
-| 13 | 99-bottles-of-beer-2 | error | 12.0ms | 13.84MB |
-| 14 | 99-bottles-of-beer | error | 455.0µs | 12.65MB |
+| 12 | 9-billion-names-of-god-the-integer | ✓ | 10.67s | 233.76MB |
+| 13 | 99-bottles-of-beer-2 | ✓ | 12.0ms | 13.84MB |
+| 14 | 99-bottles-of-beer | ✓ | 455.0µs | 12.65MB |
 | 15 | DNS-query | ✓ | 935.0ms | 12.37MB |
-| 16 | Duffinian-numbers | error |  |  |
+| 16 | Duffinian-numbers |   |  |  |
 | 17 | a+b | ✓ | 107.0µs | 12.21MB |
-| 18 | abbreviations-automatic | error | 4.0ms | 13.73MB |
-| 19 | abbreviations-easy | error | 779.0µs | 13.69MB |
-| 20 | abbreviations-simple | error | 1.0ms | 13.32MB |
-| 21 | abc-problem | error | 356.0µs | 12.68MB |
-| 22 | abelian-sandpile-model-identity | error | 326.0µs | 13.69MB |
-| 23 | abelian-sandpile-model | error | 104.0µs | 12.97MB |
-| 24 | abstract-type | error | 14.0µs | 12.84MB |
+| 18 | abbreviations-automatic | ✓ | 4.0ms | 13.73MB |
+| 19 | abbreviations-easy | ✓ | 779.0µs | 13.69MB |
+| 20 | abbreviations-simple | ✓ | 1.0ms | 13.32MB |
+| 21 | abc-problem | ✓ | 356.0µs | 12.68MB |
+| 22 | abelian-sandpile-model-identity | ✓ | 326.0µs | 13.69MB |
+| 23 | abelian-sandpile-model | ✓ | 104.0µs | 12.97MB |
+| 24 | abstract-type | ✓ | 14.0µs | 12.84MB |
 | 25 | abundant-deficient-and-perfect-number-classifications | ✓ | 8.15s | 12.81MB |
-| 26 | abundant-odd-numbers | error | 7.08s | 13.03MB |
-| 27 | accumulator-factory | error | 16.0µs | 12.63MB |
-| 28 | achilles-numbers | error | 12.0ms | 13.82MB |
-| 29 | ackermann-function-2 | error | 13.0µs | 12.55MB |
-| 30 | ackermann-function-3 | error | 104.05s | 13.17MB |
-| 31 | ackermann-function | error | 738.0µs | 12.44MB |
-| 32 | active-directory-connect | error | 10.0µs | 12.55MB |
-| 33 | active-directory-search-for-a-user | error | 10.0µs | 12.73MB |
-| 34 | active-object | error | 426.0µs | 12.62MB |
+| 26 | abundant-odd-numbers | ✓ | 7.08s | 13.03MB |
+| 27 | accumulator-factory | ✓ | 16.0µs | 12.63MB |
+| 28 | achilles-numbers | ✓ | 12.0ms | 13.82MB |
+| 29 | ackermann-function-2 | ✓ | 13.0µs | 12.55MB |
+| 30 | ackermann-function-3 | ✓ | 104.05s | 13.17MB |
+| 31 | ackermann-function | ✓ | 738.0µs | 12.44MB |
+| 32 | active-directory-connect | ✓ | 10.0µs | 12.55MB |
+| 33 | active-directory-search-for-a-user | ✓ | 10.0µs | 12.73MB |
+| 34 | active-object | ✓ | 426.0µs | 12.62MB |
 | 35 | add-a-variable-to-a-class-instance-at-runtime | ✓ |  |  |
-| 36 | additive-primes | error | 173.0µs | 12.87MB |
+| 36 | additive-primes | ✓ | 173.0µs | 12.87MB |
 | 37 | address-of-a-variable | ✓ | 13.0µs | 12.24MB |
-| 38 | adfgvx-cipher | error | 323.0µs | 14.45MB |
-| 39 | aks-test-for-primes | error | 134.0µs | 12.74MB |
-| 40 | algebraic-data-types | error | 100.0µs | 13.87MB |
-| 41 | align-columns | error | 199.0µs | 13.43MB |
+| 38 | adfgvx-cipher | ✓ | 323.0µs | 14.45MB |
+| 39 | aks-test-for-primes | ✓ | 134.0µs | 12.74MB |
+| 40 | algebraic-data-types | ✓ | 100.0µs | 13.87MB |
+| 41 | align-columns | ✓ | 199.0µs | 13.43MB |
 | 42 | aliquot-sequence-classifications | ✓ | 923.0ms | 14.07MB |
 | 43 | almkvist-giullera-formula-for-pi | error |  |  |
-| 44 | almost-prime | error | 442.0µs | 12.69MB |
+| 44 | almost-prime | ✓ | 442.0µs | 12.69MB |
 | 45 | amb | ✓ | 22.0µs | 12.82MB |
 | 46 | amicable-pairs | ✓ | 9.12s | 13.15MB |
-| 47 | anagrams-deranged-anagrams | error | 90.0µs | 12.92MB |
-| 48 | anagrams | error | 260.0µs | 13.45MB |
-| 49 | angle-difference-between-two-bearings-1 | error | 26.0µs | 12.72MB |
-| 50 | angle-difference-between-two-bearings-2 | error | 34.0µs | 13.00MB |
-| 51 | angles-geometric-normalization-and-conversion | error | 181.0µs | 13.42MB |
-| 52 | animate-a-pendulum | error | 71.0µs | 13.00MB |
+| 47 | anagrams-deranged-anagrams | ✓ | 90.0µs | 12.92MB |
+| 48 | anagrams | ✓ | 260.0µs | 13.45MB |
+| 49 | angle-difference-between-two-bearings-1 | ✓ | 26.0µs | 12.72MB |
+| 50 | angle-difference-between-two-bearings-2 | ✓ | 34.0µs | 13.00MB |
+| 51 | angles-geometric-normalization-and-conversion | ✓ | 181.0µs | 13.42MB |
+| 52 | animate-a-pendulum | ✓ | 71.0µs | 13.00MB |
 | 53 | animation | ✓ | 621.0µs | 12.75MB |
 | 54 | anonymous-recursion-1 | ✓ | 24.0µs | 12.91MB |
 | 55 | anonymous-recursion-2 | ✓ | 28.0µs | 12.94MB |
 | 56 | anonymous-recursion | ✓ | 46.0µs | 12.41MB |
-| 57 | anti-primes | error | 1.15s | 12.66MB |
-| 58 | append-a-record-to-the-end-of-a-text-file | error | 10.0µs | 12.54MB |
+| 57 | anti-primes | ✓ | 1.15s | 12.66MB |
+| 58 | append-a-record-to-the-end-of-a-text-file | ✓ | 10.0µs | 12.54MB |
 | 59 | apply-a-callback-to-an-array-1 | ✓ | 11.0µs | 12.46MB |
-| 60 | apply-a-callback-to-an-array-2 | error | 47.0µs | 12.68MB |
-| 61 | apply-a-digital-filter-direct-form-ii-transposed- | error | 76.0µs | 12.87MB |
-| 62 | approximate-equality | error | 54.0µs | 13.19MB |
-| 63 | arbitrary-precision-integers-included- | error | 487.0ms | 12.93MB |
-| 64 | archimedean-spiral | error | 27.0ms | 13.20MB |
-| 65 | arena-storage-pool | error | 19.0µs | 12.84MB |
+| 60 | apply-a-callback-to-an-array-2 | ✓ | 47.0µs | 12.68MB |
+| 61 | apply-a-digital-filter-direct-form-ii-transposed- | ✓ | 76.0µs | 12.87MB |
+| 62 | approximate-equality | ✓ | 54.0µs | 13.19MB |
+| 63 | arbitrary-precision-integers-included- | ✓ | 487.0ms | 12.93MB |
+| 64 | archimedean-spiral | ✓ | 27.0ms | 13.20MB |
+| 65 | arena-storage-pool | ✓ | 19.0µs | 12.84MB |
 | 66 | arithmetic-complex | error |  |  |
-| 67 | arithmetic-derivative | error | 685.0µs | 12.94MB |
-| 68 | arithmetic-evaluation | error | 110.0µs | 13.86MB |
-| 69 | arithmetic-geometric-mean-calculate-pi | error | 25.0µs | 12.94MB |
-| 70 | arithmetic-geometric-mean | error | 25.0µs | 12.85MB |
+| 67 | arithmetic-derivative | ✓ | 685.0µs | 12.94MB |
+| 68 | arithmetic-evaluation | ✓ | 110.0µs | 13.86MB |
+| 69 | arithmetic-geometric-mean-calculate-pi | ✓ | 25.0µs | 12.94MB |
+| 70 | arithmetic-geometric-mean | ✓ | 25.0µs | 12.85MB |
 | 71 | arithmetic-integer-1 | ✓ | 19.0µs | 12.35MB |
 | 72 | arithmetic-integer-2 | ✓ | 17.0µs | 12.75MB |
 | 73 | arithmetic-numbers | ✓ |  |  |
@@ -368,26 +368,26 @@ Last updated: 2025-07-27 16:34 GMT+7
 | 359 | erd-s-selfridge-categorization-of-primes | ✓ | 9.0ms | 13.67MB |
 | 360 | esthetic-numbers | ✓ |  |  |
 | 361 | ethiopian-multiplication | ✓ | 12.0µs | 12.71MB |
-| 362 | euclid-mullin-sequence | error |  |  |
-| 363 | euler-method | ✓ | 680.0µs | 13.74MB |
-| 364 | eulers-constant-0.5772... | ✓ | 16.0ms | 12.80MB |
-| 365 | eulers-identity | ✓ | 43.0µs | 13.37MB |
-| 366 | eulers-sum-of-powers-conjecture | ✓ | 324.0ms | 15.36MB |
-| 367 | evaluate-binomial-coefficients | ✓ | 19.0µs | 12.65MB |
-| 368 | even-or-odd | ✓ | 150.0µs | 12.92MB |
-| 369 | events | ✓ | 21.0µs | 12.62MB |
-| 370 | evolutionary-algorithm | ✓ | 154.0ms | 12.74MB |
-| 371 | exceptions-catch-an-exception-thrown-in-a-nested-call | ✓ | 19.0µs | 13.28MB |
-| 372 | exceptions | ✓ | 14.0µs | 12.70MB |
-| 373 | executable-library | ✓ | 3.50s | 12.54MB |
-| 374 | execute-a-markov-algorithm | ✓ | 8.0ms | 14.37MB |
-| 375 | execute-a-system-command | ✓ | 21.0ms | 12.06MB |
-| 376 | execute-brain- | error |  |  |
-| 377 | execute-computer-zero-1 | ✓ | 855.0µs | 14.45MB |
-| 378 | execute-computer-zero | error |  |  |
-| 379 | execute-hq9+ | ✓ | 484.0µs | 13.23MB |
-| 380 | execute-snusp | ✓ | 9.0µs | 11.80MB |
-| 381 | exponentiation-operator-2 | ✓ | 80.0µs | 12.80MB |
+| 362 | euclid-mullin-sequence | ✓ |  |  |
+| 363 | euler-method | ✓ |  |  |
+| 364 | eulers-constant-0.5772... | ✓ |  |  |
+| 365 | eulers-identity | ✓ |  |  |
+| 366 | eulers-sum-of-powers-conjecture | ✓ |  |  |
+| 367 | evaluate-binomial-coefficients | ✓ |  |  |
+| 368 | even-or-odd | ✓ |  |  |
+| 369 | events | ✓ | 15.0µs | 12.59MB |
+| 370 | evolutionary-algorithm | ✓ |  |  |
+| 371 | exceptions-catch-an-exception-thrown-in-a-nested-call | ✓ |  |  |
+| 372 | exceptions | ✓ |  |  |
+| 373 | executable-library | ✓ | 2.40s | 12.93MB |
+| 374 | execute-a-markov-algorithm | ✓ |  |  |
+| 375 | execute-a-system-command | ✓ | 7.0µs | 11.79MB |
+| 376 | execute-brain- | ✓ |  |  |
+| 377 | execute-computer-zero-1 |   |  |  |
+| 378 | execute-computer-zero | ✓ |  |  |
+| 379 | execute-hq9+ | ✓ |  |  |
+| 380 | execute-snusp | ✓ | 7.0µs | 12.09MB |
+| 381 | exponentiation-operator-2 |   |  |  |
 | 382 | exponentiation-operator | ✓ | 58.0µs | 13.11MB |
 | 383 | exponentiation-order | ✓ | 14.0µs | 12.63MB |
 | 384 | exponentiation-with-infix-operators-in-or-operating-on-the-base | ✓ |  |  |
@@ -396,36 +396,36 @@ Last updated: 2025-07-27 16:34 GMT+7
 | 387 | extreme-floating-point-values | ✓ | 13.0µs | 12.53MB |
 | 388 | faces-from-a-mesh-2 |   |  |  |
 | 389 | faces-from-a-mesh | ✓ | 526.0µs | 14.11MB |
-| 390 | factorial-base-numbers-indexing-permutations-of-a-collection |   |  |  |
-| 391 | factorial-primes |   |  |  |
-| 392 | factorial |   |  |  |
-| 393 | factorions |   |  |  |
-| 394 | factors-of-a-mersenne-number |   |  |  |
-| 395 | factors-of-an-integer |   |  |  |
-| 396 | fairshare-between-two-and-more |   |  |  |
-| 397 | farey-sequence |   |  |  |
-| 398 | fast-fourier-transform |   |  |  |
-| 399 | fasta-format | ✓ | 12.0µs | 12.72MB |
-| 400 | faulhabers-formula |   |  |  |
-| 401 | faulhabers-triangle | ✓ | 15.0µs | 12.57MB |
-| 402 | feigenbaum-constant-calculation | ✓ |  |  |
-| 403 | fermat-numbers | ✓ | 20.0µs | 12.78MB |
-| 404 | fibonacci-n-step-number-sequences | ✓ |  |  |
-| 405 | fibonacci-sequence-1 | ✓ | 1.0µs | 12.38MB |
-| 406 | fibonacci-sequence-2 | ✓ | 1.0µs | 12.55MB |
-| 407 | fibonacci-sequence-3 |   |  |  |
-| 408 | fibonacci-sequence-4 | ✓ |  |  |
-| 409 | fibonacci-word-fractal | ✓ |  |  |
-| 410 | fibonacci-word | ✓ |  |  |
-| 411 | file-extension-is-in-extensions-list | ✓ |  |  |
-| 412 | file-input-output-1 | ✓ | 8.0µs | 12.40MB |
-| 413 | file-input-output-2 | ✓ | 7.0µs | 12.54MB |
-| 414 | file-modification-time | ✓ | 10.0µs | 12.71MB |
-| 415 | file-size-distribution | ✓ |  |  |
-| 416 | file-size |   |  |  |
-| 417 | filter |   |  |  |
-| 418 | find-chess960-starting-position-identifier |   |  |  |
-| 419 | find-common-directory-path |   |  |  |
+| 390 | factorial-base-numbers-indexing-permutations-of-a-collection | ✓ | 4.0ms | 14.07MB |
+| 391 | factorial-primes | ✓ | 16.0ms | 12.93MB |
+| 392 | factorial | ✓ | 367.0µs | 12.61MB |
+| 393 | factorions | ✓ | 12.33s | 12.61MB |
+| 394 | factors-of-a-mersenne-number | ✓ | 32.36s | 12.67MB |
+| 395 | factors-of-an-integer | ✓ | 72.15s | 12.87MB |
+| 396 | fairshare-between-two-and-more | ✓ | 46.12s | 13.78MB |
+| 397 | farey-sequence | ✓ | 1.0ms | 13.06MB |
+| 398 | fast-fourier-transform | ✓ | 208.0µs | 14.37MB |
+| 399 | fasta-format | ✓ | 51.0µs | 13.31MB |
+| 400 | faulhabers-formula | ✓ | 3.0ms | 12.93MB |
+| 401 | faulhabers-triangle | ✓ | 19.0µs | 12.42MB |
+| 402 | feigenbaum-constant-calculation | ✓ | 21.0ms | 12.75MB |
+| 403 | fermat-numbers | ✓ | 32.0µs | 12.81MB |
+| 404 | fibonacci-n-step-number-sequences | ✓ | 68.0µs | 13.44MB |
+| 405 | fibonacci-sequence-1 | ✓ | 1.0µs | 12.70MB |
+| 406 | fibonacci-sequence-2 | ✓ | 1.0µs | 13.06MB |
+| 407 | fibonacci-sequence-3 | ✓ | 3.0µs | 12.95MB |
+| 408 | fibonacci-sequence-4 | ✓ | 25.0µs | 12.67MB |
+| 409 | fibonacci-word-fractal | ✓ | 417.0µs | 12.68MB |
+| 410 | fibonacci-word | ✓ | 17.21s | 131.93MB |
+| 411 | file-extension-is-in-extensions-list | ✓ | 110.0µs | 13.36MB |
+| 412 | file-input-output-1 | ✓ | 10.0µs | 12.62MB |
+| 413 | file-input-output-2 | ✓ | 10.0µs | 12.81MB |
+| 414 | file-modification-time | ✓ | 15.0µs | 12.69MB |
+| 415 | file-size-distribution | ✓ | 78.0µs | 13.12MB |
+| 416 | file-size | ✓ | 13.0µs | 12.75MB |
+| 417 | filter | ✓ | 24.0µs | 12.93MB |
+| 418 | find-chess960-starting-position-identifier | ✓ | 208.0µs | 13.93MB |
+| 419 | find-common-directory-path | ✓ | 244.0µs | 13.37MB |
 | 420 | find-duplicate-files |   |  |  |
 | 421 | find-if-a-point-is-within-a-triangle |   |  |  |
 | 422 | find-largest-left-truncatable-prime-in-a-given-base |   |  |  |
