@@ -836,6 +836,15 @@ func (v *ValuesExpr) emit(w io.Writer) {
 	io.WriteString(w, ".values().cloned().collect::<Vec<_>>(); v.sort(); v }")
 }
 
+// KeysExpr represents a call to the `keys` builtin on a map.
+type KeysExpr struct{ Map Expr }
+
+func (k *KeysExpr) emit(w io.Writer) {
+	io.WriteString(w, "{ let mut v = ")
+	k.Map.emit(w)
+	io.WriteString(w, ".keys().cloned().collect::<Vec<_>>(); v.sort(); v }")
+}
+
 // AppendExpr represents a call to the `append` builtin on a list.
 type AppendExpr struct {
 	List Expr
@@ -2017,10 +2026,18 @@ func compileStmt(stmt *parser.Statement) (Stmt, error) {
 		var err error
 		emptyList := false
 		if stmt.Let.Value != nil {
-			if ml := mapLiteralExpr(stmt.Let.Value); ml != nil && curEnv != nil {
-				if t, err := curEnv.GetVar(stmt.Let.Name); err == nil {
-					rt := rustTypeFromType(t)
-					if strings.HasPrefix(rt, "HashMap") {
+			if ml := mapLiteralExpr(stmt.Let.Value); ml != nil {
+				if curEnv != nil {
+					if t, err := curEnv.GetVar(stmt.Let.Name); err == nil {
+						rt := rustTypeFromType(t)
+						if strings.HasPrefix(rt, "HashMap") {
+							forceMap[ml] = true
+						}
+					}
+				}
+				if stmt.Let.Type != nil {
+					typ := rustTypeRef(stmt.Let.Type)
+					if strings.HasPrefix(typ, "HashMap") {
 						forceMap[ml] = true
 					}
 				}
@@ -2064,6 +2081,13 @@ func compileStmt(stmt *parser.Statement) (Stmt, error) {
 		typ := ""
 		if stmt.Let.Type != nil {
 			typ = rustTypeRef(stmt.Let.Type)
+			if stmt.Let.Type.Generic != nil && stmt.Let.Type.Generic.Name == "map" {
+				if len(stmt.Let.Type.Generic.Args) == 2 {
+					if stmt.Let.Type.Generic.Args[1].Simple != nil && *stmt.Let.Type.Generic.Args[1].Simple == "any" {
+						typ = ""
+					}
+				}
+			}
 			if strings.HasPrefix(typ, "HashMap") {
 				mapVars[stmt.Let.Name] = true
 			}
@@ -2159,10 +2183,18 @@ func compileStmt(stmt *parser.Statement) (Stmt, error) {
 		var err error
 		emptyList := false
 		if stmt.Var.Value != nil {
-			if ml := mapLiteralExpr(stmt.Var.Value); ml != nil && curEnv != nil {
-				if t, err := curEnv.GetVar(stmt.Var.Name); err == nil {
-					rt := rustTypeFromType(t)
-					if strings.HasPrefix(rt, "HashMap") {
+			if ml := mapLiteralExpr(stmt.Var.Value); ml != nil {
+				if curEnv != nil {
+					if t, err := curEnv.GetVar(stmt.Var.Name); err == nil {
+						rt := rustTypeFromType(t)
+						if strings.HasPrefix(rt, "HashMap") {
+							forceMap[ml] = true
+						}
+					}
+				}
+				if stmt.Var.Type != nil {
+					typ := rustTypeRef(stmt.Var.Type)
+					if strings.HasPrefix(typ, "HashMap") {
 						forceMap[ml] = true
 					}
 				}
@@ -2206,6 +2238,13 @@ func compileStmt(stmt *parser.Statement) (Stmt, error) {
 		typ := ""
 		if stmt.Var.Type != nil {
 			typ = rustTypeRef(stmt.Var.Type)
+			if stmt.Var.Type.Generic != nil && stmt.Var.Type.Generic.Name == "map" {
+				if len(stmt.Var.Type.Generic.Args) == 2 {
+					if stmt.Var.Type.Generic.Args[1].Simple != nil && *stmt.Var.Type.Generic.Args[1].Simple == "any" {
+						typ = ""
+					}
+				}
+			}
 			if strings.HasPrefix(typ, "HashMap") {
 				mapVars[stmt.Var.Name] = true
 			}
@@ -3269,6 +3308,8 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 				switch a := args[0].(type) {
 				case *ValuesExpr:
 					args[0] = &JoinExpr{List: a}
+				case *KeysExpr:
+					args[0] = &JoinExpr{List: a}
 				case *MapLit, *AppendExpr, *ListLit:
 					fmtStr = "{:?}"
 				case *SliceExpr:
@@ -3311,6 +3352,9 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 		}
 		if name == "values" && len(args) == 1 {
 			return &ValuesExpr{Map: args[0]}, nil
+		}
+		if name == "keys" && len(args) == 1 {
+			return &KeysExpr{Map: args[0]}, nil
 		}
 		if name == "append" && len(args) == 2 {
 			return &AppendExpr{List: args[0], Elem: args[1]}, nil
@@ -4099,6 +4143,19 @@ func inferType(e Expr) string {
 			}
 		}
 		return "Vec<i64>"
+	case *KeysExpr:
+		mt := inferType(ex.Map)
+		if strings.HasPrefix(mt, "HashMap<") {
+			parts := strings.TrimPrefix(mt, "HashMap<")
+			if idx := strings.Index(parts, ","); idx > 0 {
+				kt := strings.TrimSpace(parts[:idx])
+				if kt == "&str" {
+					kt = "String"
+				}
+				return fmt.Sprintf("Vec<%s>", kt)
+			}
+		}
+		return "Vec<String>"
 	case *AppendExpr:
 		return inferType(e.(*AppendExpr).List)
 	case *PopExpr:
@@ -5015,6 +5072,8 @@ func exprNode(e Expr) *ast.Node {
 		return &ast.Node{Kind: "str", Children: []*ast.Node{exprNode(ex.Arg)}}
 	case *ValuesExpr:
 		return &ast.Node{Kind: "values", Children: []*ast.Node{exprNode(ex.Map)}}
+	case *KeysExpr:
+		return &ast.Node{Kind: "keys", Children: []*ast.Node{exprNode(ex.Map)}}
 	case *AppendExpr:
 		return &ast.Node{Kind: "append", Children: []*ast.Node{exprNode(ex.List), exprNode(ex.Elem)}}
 	case *AvgExpr:
