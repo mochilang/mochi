@@ -1,1 +1,5 @@
-transpile error: unsupported expression statement
+run error: exit status 1
+/workspace/mochi/tests/rosetta/transpiler/Racket/call-an-object-method-1.rkt:45:1: ValueMethod: unbound identifier
+  in: ValueMethod
+  location...:
+   /workspace/mochi/tests/rosetta/transpiler/Racket/call-an-object-method-1.rkt:45:1
