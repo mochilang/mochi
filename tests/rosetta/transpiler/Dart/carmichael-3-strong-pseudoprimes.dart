@@ -34,14 +34,64 @@ String _substr(String s, int start, int end) {
   return s.substring(start, end);
 }
 
-int width = 81;
-int height = 5;
-List<String> lines = <String>[];
-String setChar(String s, int idx, String ch) {
-  return _substr(s, 0, idx) + ch + _substr(s, idx + 1, s.length);
+int mod(int n, int m) {
+  return (n % m + m) % m;
 }
 
-List<Map<String, int>> stack = [{"start": 0, "len": width, "index": 1}];
+bool isPrime(int n) {
+  if (n < 2) {
+    return false;
+  }
+  if (n % 2 == 0) {
+    return n == 2;
+  }
+  if (n % 3 == 0) {
+    return n == 3;
+  }
+  int d = 5;
+  while (d * d <= n) {
+    if (n % d == 0) {
+    return false;
+  }
+    d = d + 2;
+    if (n % d == 0) {
+    return false;
+  }
+    d = d + 4;
+  }
+  return true;
+}
+
+String pad(int n, int width) {
+  String s = (n).toString();
+  while (s.length < width) {
+    s = " " + s;
+  }
+  return s;
+}
+
+void carmichael(int p1) {
+  for (int h3 = 2; h3 < p1; h3++) {
+    for (int d = 1; d < h3 + p1; d++) {
+    if ((h3 + p1) * (p1 - 1) % d == 0 && mod(-p1 * p1, h3) == d % h3) {
+    num p2 = 1 + (p1 - 1) * (h3 + p1) ~/ d;
+    if (!isPrime((p2).toInt())) {
+    continue;
+  };
+    num p3 = 1 + p1 * p2 / h3;
+    if (!isPrime((p3).toInt())) {
+    continue;
+  };
+    if (p2 * p3 % (p1 - 1) != 1) {
+    continue;
+  };
+    num c = p1 * p2 * p3;
+    print(pad(p1, 2) + "   " + pad((p2).toInt(), 4) + "   " + pad((p3).toInt(), 5) + "     " + (c).toString());
+  }
+  }
+  }
+}
+
 void main() {
   var _benchMem0 = ProcessInfo.currentRss;
   var _benchSw = Stopwatch()..start();
@@ -49,39 +99,13 @@ void main() {
   {
   var _benchMem0 = ProcessInfo.currentRss;
   var _benchSw = Stopwatch()..start();
-  for (int i = 0; i < height; i++) {
-    String row = "";
-    int j = 0;
-    while (j < width) {
-    row = row + "*";
-    j = j + 1;
+  print("The following are Carmichael munbers for p1 <= 61:\n");
+  print("p1     p2      p3     product");
+  print("==     ==      ==     =======");
+  for (int p1 = 2; p1 < 62; p1++) {
+    if (isPrime(p1)) {
+    carmichael(p1);
   }
-    lines = [...lines, row];
-  }
-  while (stack.length > 0) {
-    Map<String, int> frame = stack[stack.length - 1];
-    stack = stack.sublist(0, stack.length - 1);
-    int start = frame["start"]!;
-    int lenSeg = frame["len"]!;
-    int index = frame["index"]!;
-    int seg = lenSeg ~/ 3 as int;
-    if (seg == 0) {
-    continue;
-  }
-    int i = index;
-    while (i < height) {
-    int j = start + seg;
-    while (j < start + 2 * seg) {
-    lines[i] = setChar(lines[i], j, " ");
-    j = j + 1;
-  }
-    i = i + 1;
-  }
-    stack = [...stack, {"start": start, "len": seg, "index": index + 1}];
-    stack = [...stack, {"start": start + seg * 2, "len": seg, "index": index + 1}];
-  }
-  for (var line in lines) {
-    print(line);
   }
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;

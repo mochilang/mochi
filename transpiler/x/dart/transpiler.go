@@ -1168,6 +1168,16 @@ func (c *CallExpr) emit(w io.Writer) error {
 			return err
 		}
 	}
+	var paramTypes []string
+	if n, ok := c.Func.(*Name); ok && currentEnv != nil {
+		if fn, ok := currentEnv.GetFunc(n.Name); ok {
+			paramTypes = make([]string, len(fn.Params))
+			for i, p := range fn.Params {
+				paramTypes[i] = typeRefString(p.Type)
+			}
+		}
+	}
+
 	if err := c.Func.emit(w); err != nil {
 		return err
 	}
@@ -1180,8 +1190,20 @@ func (c *CallExpr) emit(w io.Writer) error {
 				return err
 			}
 		}
-		if err := a.emit(w); err != nil {
-			return err
+		if i < len(paramTypes) && paramTypes[i] == "int" && inferType(a) == "num" {
+			if _, err := io.WriteString(w, "("); err != nil {
+				return err
+			}
+			if err := a.emit(w); err != nil {
+				return err
+			}
+			if _, err := io.WriteString(w, ").toInt()"); err != nil {
+				return err
+			}
+		} else {
+			if err := a.emit(w); err != nil {
+				return err
+			}
 		}
 	}
 	_, err := io.WriteString(w, ")")
@@ -1931,6 +1953,17 @@ func (c *CastExpr) emit(w io.Writer) error {
 			if err != nil {
 				return err
 			}
+			if strings.HasPrefix(c.Type, "List<") {
+				if _, err := io.WriteString(w, c.Type+".from("); err != nil {
+					return err
+				}
+				if err := c.Value.emit(w); err != nil {
+					return err
+				}
+				_, err := io.WriteString(w, ")")
+				return err
+			}
+
 			if err := c.Value.emit(w); err != nil {
 				return err
 			}
@@ -3885,6 +3918,9 @@ func convertStmtInternal(st *parser.Statement) (Stmt, error) {
 		if typ == "" && e != nil {
 			typ = inferType(e)
 		}
+		if _, ok := e.(*IndexExpr); ok && strings.HasSuffix(typ, "?") {
+			typ = strings.TrimSuffix(typ, "?")
+		}
 		if typ != "" {
 			localVarTypes[name] = typ
 		}
@@ -3909,6 +3945,9 @@ func convertStmtInternal(st *parser.Statement) (Stmt, error) {
 		}
 		if typ == "" && e != nil {
 			typ = inferType(e)
+		}
+		if _, ok := e.(*IndexExpr); ok && strings.HasSuffix(typ, "?") {
+			typ = strings.TrimSuffix(typ, "?")
 		}
 		if typ != "" {
 			localVarTypes[name] = typ

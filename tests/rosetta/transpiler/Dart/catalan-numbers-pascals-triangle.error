@@ -1,0 +1,7 @@
+run: exit status 254
+../../../tests/rosetta/transpiler/Dart/catalan-numbers-pascals-triangle.dart:46:19: Error: Undefined name '_'.
+  for (int _ = 0; _ < n + 2; _++) {
+                  ^
+../../../tests/rosetta/transpiler/Dart/catalan-numbers-pascals-triangle.dart:46:30: Error: Getter not found: '_'.
+  for (int _ = 0; _ < n + 2; _++) {
+                             ^
