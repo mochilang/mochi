@@ -2,9 +2,9 @@
 
 Generated Ruby code from Mochi Rosetta tasks lives in `tests/rosetta/transpiler/rb`.
 
-Last updated: 2025-07-26 18:08 UTC
+Last updated: 2025-07-27 09:16 UTC
 
-## Checklist (306/341)
+## Checklist (315/465)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 195µs | 36.2 KB |
@@ -300,26 +300,26 @@ Last updated: 2025-07-26 18:08 UTC
 | 291 | determine-if-a-string-has-all-unique-characters | ✓ | 254µs | 86.7 KB |
 | 292 | determine-if-a-string-is-collapsible | ✓ | 208µs | 75.3 KB |
 | 293 | determine-if-a-string-is-numeric-1 | ✓ | 37µs | 13.7 KB |
-| 294 | determine-if-a-string-is-numeric-2 |   |  |  |
-| 295 | determine-if-a-string-is-squeezable |   |  |  |
-| 296 | determine-if-only-one-instance-is-running |   |  |  |
-| 297 | determine-if-two-triangles-overlap |   |  |  |
-| 298 | determine-sentence-type |   |  |  |
-| 299 | dice-game-probabilities-1 |   |  |  |
-| 300 | dice-game-probabilities-2 |   |  |  |
-| 301 | digital-root-multiplicative-digital-root |   |  |  |
-| 302 | dijkstras-algorithm |   |  |  |
-| 303 | dinesmans-multiple-dwelling-problem | ✓ | 53µs | 10.5 KB |
-| 304 | dining-philosophers-1 | ✓ | 69µs | 14.8 KB |
-| 305 | dining-philosophers-2 | ✓ | 68µs | 14.8 KB |
-| 306 | disarium-numbers | ✓ | 13.401643s | 564.4 KB |
-| 307 | discordian-date | ✓ | 72µs | 20.2 KB |
-| 308 | display-a-linear-combination | ✓ | 146µs | 33.7 KB |
-| 309 | display-an-outline-as-a-nested-table | ✓ | 347µs | 145.1 KB |
-| 310 | distance-and-bearing | ✓ | 1.162ms | 49.0 KB |
-| 311 | distributed-programming | ✓ | 31µs | 9.3 KB |
-| 312 | diversity-prediction-theorem | ✓ | 78µs | 13.4 KB |
-| 313 | documentation | ✓ | 5µs | 472 B |
+| 294 | determine-if-a-string-is-numeric-2 | ✓ | 60µs | 10.2 KB |
+| 295 | determine-if-a-string-is-squeezable | ✓ | 453µs | 112.9 KB |
+| 296 | determine-if-only-one-instance-is-running | ✓ | 21µs | 9.0 KB |
+| 297 | determine-if-two-triangles-overlap | ✓ | 301µs | 56.8 KB |
+| 298 | determine-sentence-type | ✓ | 119µs | 41.8 KB |
+| 299 | dice-game-probabilities-1 | ✓ | 212.461ms | 74.2 KB |
+| 300 | dice-game-probabilities-2 | ✓ | 11.432ms | 9.2 KB |
+| 301 | digital-root-multiplicative-digital-root | ✓ | 17.804ms | 260.8 KB |
+| 302 | dijkstras-algorithm | ✓ | 71µs | 15.4 KB |
+| 303 | dinesmans-multiple-dwelling-problem | ✓ | 46µs | 10.5 KB |
+| 304 | dining-philosophers-1 | ✓ | 58µs | 14.8 KB |
+| 305 | dining-philosophers-2 | ✓ | 58µs | 14.8 KB |
+| 306 | disarium-numbers | ✓ | 14.034869s | -4020 B |
+| 307 | discordian-date | ✓ | 75µs | 20.2 KB |
+| 308 | display-a-linear-combination | ✓ | 137µs | 33.7 KB |
+| 309 | display-an-outline-as-a-nested-table | ✓ | 358µs | 145.1 KB |
+| 310 | distance-and-bearing | ✓ | 1.237ms | 49.0 KB |
+| 311 | distributed-programming | ✓ | 41µs | 9.3 KB |
+| 312 | diversity-prediction-theorem | ✓ | 103µs | 13.4 KB |
+| 313 | documentation | ✓ | 4µs | 472 B |
 | 314 | doomsday-rule | ✓ | 91µs | 28.6 KB |
 | 315 | dot-product | ✓ | 51µs | 10.5 KB |
 | 316 | doubly-linked-list-definition-1 | ✓ | 53µs | 2.1 KB |
@@ -336,15 +336,139 @@ Last updated: 2025-07-26 18:08 UTC
 | 327 | dynamic-variable-names |   |  |  |
 | 328 | earliest-difference-between-prime-gaps |   |  |  |
 | 329 | eban-numbers |   |  |  |
-| 330 | echo-server |   |  |  |
-| 331 | eertree |   |  |  |
-| 332 | egyptian-division |   |  |  |
-| 333 | ekg-sequence-convergence |   |  |  |
-| 334 | element-wise-operations |   |  |  |
-| 335 | elementary-cellular-automaton-infinite-length |   |  |  |
-| 336 | elementary-cellular-automaton-random-number-generator |   |  |  |
-| 337 | elementary-cellular-automaton |   |  |  |
-| 338 | elliptic-curve-arithmetic |   |  |  |
-| 339 | emirp-primes |   |  |  |
-| 340 | empty-directory |   |  |  |
-| 341 | md5 |   |  |  |
+| 330 | ecdsa-example |   |  |  |
+| 331 | echo-server |   |  |  |
+| 332 | eertree |   |  |  |
+| 333 | egyptian-division |   |  |  |
+| 334 | ekg-sequence-convergence |   |  |  |
+| 335 | element-wise-operations |   |  |  |
+| 336 | elementary-cellular-automaton-infinite-length |   |  |  |
+| 337 | elementary-cellular-automaton-random-number-generator |   |  |  |
+| 338 | elementary-cellular-automaton |   |  |  |
+| 339 | elliptic-curve-arithmetic |   |  |  |
+| 340 | elliptic-curve-digital-signature-algorithm |   |  |  |
+| 341 | emirp-primes |   |  |  |
+| 342 | empty-directory |   |  |  |
+| 343 | empty-program |   |  |  |
+| 344 | empty-string-1 |   |  |  |
+| 345 | empty-string-2 |   |  |  |
+| 346 | enforced-immutability |   |  |  |
+| 347 | entropy-1 |   |  |  |
+| 348 | entropy-2 |   |  |  |
+| 349 | entropy-narcissist |   |  |  |
+| 350 | enumerations-1 |   |  |  |
+| 351 | enumerations-2 |   |  |  |
+| 352 | enumerations-3 |   |  |  |
+| 353 | enumerations-4 |   |  |  |
+| 354 | environment-variables-1 |   |  |  |
+| 355 | environment-variables-2 |   |  |  |
+| 356 | equal-prime-and-composite-sums |   |  |  |
+| 357 | equilibrium-index |   |  |  |
+| 358 | erd-s-nicolas-numbers |   |  |  |
+| 359 | erd-s-selfridge-categorization-of-primes |   |  |  |
+| 360 | esthetic-numbers |   |  |  |
+| 361 | ethiopian-multiplication |   |  |  |
+| 362 | euclid-mullin-sequence |   |  |  |
+| 363 | euler-method |   |  |  |
+| 364 | eulers-constant-0.5772... |   |  |  |
+| 365 | eulers-identity |   |  |  |
+| 366 | eulers-sum-of-powers-conjecture |   |  |  |
+| 367 | evaluate-binomial-coefficients |   |  |  |
+| 368 | even-or-odd |   |  |  |
+| 369 | events |   |  |  |
+| 370 | evolutionary-algorithm |   |  |  |
+| 371 | exceptions-catch-an-exception-thrown-in-a-nested-call |   |  |  |
+| 372 | exceptions |   |  |  |
+| 373 | executable-library |   |  |  |
+| 374 | execute-a-markov-algorithm |   |  |  |
+| 375 | execute-a-system-command |   |  |  |
+| 376 | execute-brain- |   |  |  |
+| 377 | execute-computer-zero-1 |   |  |  |
+| 378 | execute-computer-zero |   |  |  |
+| 379 | execute-hq9+ |   |  |  |
+| 380 | execute-snusp |   |  |  |
+| 381 | exponentiation-operator-2 |   |  |  |
+| 382 | exponentiation-operator |   |  |  |
+| 383 | exponentiation-order |   |  |  |
+| 384 | exponentiation-with-infix-operators-in-or-operating-on-the-base |   |  |  |
+| 385 | extend-your-language |   |  |  |
+| 386 | extensible-prime-generator |   |  |  |
+| 387 | extreme-floating-point-values |   |  |  |
+| 388 | faces-from-a-mesh-2 |   |  |  |
+| 389 | faces-from-a-mesh |   |  |  |
+| 390 | factorial-base-numbers-indexing-permutations-of-a-collection |   |  |  |
+| 391 | factorial-primes |   |  |  |
+| 392 | factorial |   |  |  |
+| 393 | factorions |   |  |  |
+| 394 | factors-of-a-mersenne-number |   |  |  |
+| 395 | factors-of-an-integer |   |  |  |
+| 396 | fairshare-between-two-and-more |   |  |  |
+| 397 | farey-sequence |   |  |  |
+| 398 | fast-fourier-transform |   |  |  |
+| 399 | fasta-format |   |  |  |
+| 400 | faulhabers-formula |   |  |  |
+| 401 | faulhabers-triangle |   |  |  |
+| 402 | feigenbaum-constant-calculation |   |  |  |
+| 403 | fermat-numbers |   |  |  |
+| 404 | fibonacci-n-step-number-sequences |   |  |  |
+| 405 | fibonacci-sequence-1 |   |  |  |
+| 406 | fibonacci-sequence-2 |   |  |  |
+| 407 | fibonacci-sequence-3 |   |  |  |
+| 408 | fibonacci-sequence-4 |   |  |  |
+| 409 | fibonacci-word-fractal |   |  |  |
+| 410 | fibonacci-word |   |  |  |
+| 411 | file-extension-is-in-extensions-list |   |  |  |
+| 412 | file-input-output-1 |   |  |  |
+| 413 | file-input-output-2 |   |  |  |
+| 414 | file-modification-time |   |  |  |
+| 415 | file-size-distribution |   |  |  |
+| 416 | file-size |   |  |  |
+| 417 | filter |   |  |  |
+| 418 | find-chess960-starting-position-identifier |   |  |  |
+| 419 | find-common-directory-path |   |  |  |
+| 420 | find-duplicate-files |   |  |  |
+| 421 | find-if-a-point-is-within-a-triangle |   |  |  |
+| 422 | find-largest-left-truncatable-prime-in-a-given-base |   |  |  |
+| 423 | find-limit-of-recursion |   |  |  |
+| 424 | find-palindromic-numbers-in-both-binary-and-ternary-bases |   |  |  |
+| 425 | find-the-intersection-of-a-line-with-a-plane |   |  |  |
+| 426 | find-the-intersection-of-two-lines |   |  |  |
+| 427 | find-the-last-sunday-of-each-month |   |  |  |
+| 428 | find-the-missing-permutation |   |  |  |
+| 429 | fivenum-1 |   |  |  |
+| 430 | fivenum-2 |   |  |  |
+| 431 | fixed-length-records-1 |   |  |  |
+| 432 | fixed-length-records-2 |   |  |  |
+| 433 | fizzbuzz-1 |   |  |  |
+| 434 | fizzbuzz-2 |   |  |  |
+| 435 | flatten-a-list-1 |   |  |  |
+| 436 | flatten-a-list-2 |   |  |  |
+| 437 | flipping-bits-game |   |  |  |
+| 438 | flow-control-structures-1 |   |  |  |
+| 439 | flow-control-structures-2 |   |  |  |
+| 440 | flow-control-structures-3 |   |  |  |
+| 441 | flow-control-structures-4 |   |  |  |
+| 442 | floyd-warshall-algorithm |   |  |  |
+| 443 | floyds-triangle |   |  |  |
+| 444 | forest-fire |   |  |  |
+| 445 | fork |   |  |  |
+| 446 | ftp |   |  |  |
+| 447 | gamma-function |   |  |  |
+| 448 | general-fizzbuzz |   |  |  |
+| 449 | generic-swap |   |  |  |
+| 450 | get-system-command-output |   |  |  |
+| 451 | giuga-numbers |   |  |  |
+| 452 | globally-replace-text-in-several-files |   |  |  |
+| 453 | goldbachs-comet |   |  |  |
+| 454 | golden-ratio-convergence |   |  |  |
+| 455 | graph-colouring |   |  |  |
+| 456 | gray-code |   |  |  |
+| 457 | http |   |  |  |
+| 458 | image-noise |   |  |  |
+| 459 | loops-increment-loop-index-within-loop-body |   |  |  |
+| 460 | md5 |   |  |  |
+| 461 | nim-game |   |  |  |
+| 462 | plasma-effect |   |  |  |
+| 463 | sorting-algorithms-bubble-sort |   |  |  |
+| 464 | window-management |   |  |  |
+| 465 | zumkeller-numbers |   |  |  |

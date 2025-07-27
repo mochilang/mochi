@@ -1765,7 +1765,11 @@ func (f *ForInStmt) emit(e *emitter) {
 	if f.CharEach {
 		io.WriteString(e.w, ".each_char do |")
 	} else {
-		io.WriteString(e.w, ".each do |")
+		if _, ok := f.Iterable.(*IndexExpr); ok {
+			io.WriteString(e.w, ".each_key do |")
+		} else {
+			io.WriteString(e.w, ".each do |")
+		}
 	}
 	pushScope(f.Name)
 	io.WriteString(e.w, f.Name)
