@@ -1,0 +1,8 @@
+type: error[T002]: undefined variable: const
+  --> /workspace/mochi/tests/rosetta/x/Mochi/erd-s-nicolas-numbers.mochi:6:1
+
+  6 | const maxNumber = 100000000
+    | ^
+
+help:
+  Check if the variable was declared in this scope.

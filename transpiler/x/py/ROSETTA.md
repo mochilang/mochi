@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Python code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/Python`.
-Last updated: 2025-07-27 11:48 GMT+7
+Last updated: 2025-07-27 12:32 GMT+7
 
-## Rosetta Golden Test Checklist (338/452)
+## Rosetta Golden Test Checklist (340/452)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 161.0µs | 12.50MB |
@@ -360,11 +360,11 @@ Last updated: 2025-07-27 11:48 GMT+7
 | 351 | enumerations-2 | ✓ | 2.0µs | 12.40MB |
 | 352 | enumerations-3 | ✓ | 3.0µs | 12.37MB |
 | 353 | enumerations-4 | ✓ | 2.0µs | 12.25MB |
-| 354 | environment-variables-1 |   |  |  |
-| 355 | environment-variables-2 |   |  |  |
-| 356 | equal-prime-and-composite-sums |   |  |  |
-| 357 | equilibrium-index |   |  |  |
-| 358 | erd-s-nicolas-numbers |   |  |  |
+| 354 | environment-variables-1 | ✓ |  |  |
+| 355 | environment-variables-2 | ✓ |  |  |
+| 356 | equal-prime-and-composite-sums | error |  |  |
+| 357 | equilibrium-index | error |  |  |
+| 358 | erd-s-nicolas-numbers | error |  |  |
 | 359 | erd-s-selfridge-categorization-of-primes |   |  |  |
 | 360 | esthetic-numbers |   |  |  |
 | 361 | ethiopian-multiplication |   |  |  |

@@ -3,7 +3,7 @@
 // maxNumber = 100000000.
 // It mirrors the sieve-based approach from the Go example.
 
-const maxNumber = 100000000
+let maxNumber = 100000000
 
 var dsum: list<int> = []
 var dcount: list<int> = []
