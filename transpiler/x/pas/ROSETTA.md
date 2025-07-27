@@ -2,7 +2,7 @@
 
 Generated Pascal code for Rosetta tasks lives under `tests/rosetta/transpiler/Pascal`.
 
-## Rosetta Checklist (27/467) - updated 2025-07-27 14:58 UTC
+## Rosetta Checklist (28/467) - updated 2025-07-27 15:31 UTC
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 571.223ms | 128 B |
@@ -39,7 +39,7 @@ Generated Pascal code for Rosetta tasks lives under `tests/rosetta/transpiler/Pa
 | 32 | active-directory-connect | ✓ |  |  |
 | 33 | active-directory-search-for-a-user | ✓ |  |  |
 | 34 | active-object | ✓ | 1µs |  |
-| 35 | add-a-variable-to-a-class-instance-at-runtime |   |  |  |
+| 35 | add-a-variable-to-a-class-instance-at-runtime | ✓ | 1µs | 2.7 KB |
 | 36 | additive-primes |   |  |  |
 | 37 | address-of-a-variable |   |  |  |
 | 38 | adfgvx-cipher |   |  |  |
