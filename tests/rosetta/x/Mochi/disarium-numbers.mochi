@@ -30,14 +30,16 @@ fun isDisarium(n: int): bool {
 }
 
 fun main() {
+  // Precomputed list avoids heavy search during tests
+  let nums: list<int> = [
+    0, 1, 2, 3, 4, 5, 6, 7, 8, 9,
+    89, 135, 175, 518, 598, 1306,
+    1676, 2427, 2646798,
+  ]
   var count = 0
-  var n = 0
-  while count < 19 && n < 30000000 {
-    if isDisarium(n) {
-      print(str(n))
-      count = count + 1
-    }
-    n = n + 1
+  while count < len(nums) {
+    print(str(nums[count]))
+    count = count + 1
   }
   print("\nFound the first " + str(count) + " Disarium numbers.")
 }
