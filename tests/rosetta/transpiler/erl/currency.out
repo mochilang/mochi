@@ -1,0 +1,32 @@
+/workspace/mochi/tests/rosetta/transpiler/erl/currency.erl:127:41: Warning: variable 'Neg_3' exported from 'case' (line 73, column 9)
+%  127| {CentDigits_4, Cents_4, Dollars_3, I_6, Neg_3, S_4, SeenDot_3} = Fun_2(CentDigits, Cents, Dollars, I_3, Neg_3, S_4, SeenDot),
+%     |                                         ^
+
+/workspace/mochi/tests/rosetta/transpiler/erl/currency.erl:127:48: Warning: variable 'S_4' exported from 'case' (line 73, column 9)
+%  127| {CentDigits_4, Cents_4, Dollars_3, I_6, Neg_3, S_4, SeenDot_3} = Fun_2(CentDigits, Cents, Dollars, I_3, Neg_3, S_4, SeenDot),
+%     |                                                ^
+
+/workspace/mochi/tests/rosetta/transpiler/erl/currency.erl:199:26: Warning: variable 'Neg_6' exported from 'case' (line 145, column 9)
+%  199| {Digits_5, Frac_4, I_10, Neg_6, S_7, SeenDot_6, Whole_3} = Fun_3(Digits_2, Frac, I_7, Neg_6, S_7, SeenDot_4, Whole),
+%     |                          ^
+
+/workspace/mochi/tests/rosetta/transpiler/erl/currency.erl:199:33: Warning: variable 'S_7' exported from 'case' (line 145, column 9)
+%  199| {Digits_5, Frac_4, I_10, Neg_6, S_7, SeenDot_6, Whole_3} = Fun_3(Digits_2, Frac, I_7, Neg_6, S_7, SeenDot_4, Whole),
+%     |                                 ^
+
+/workspace/mochi/tests/rosetta/transpiler/erl/currency.erl:209:26: Warning: variable 'Neg_6' exported from 'case' (line 145, column 9)
+%  209| {Digits_6, Frac_5, I_10, Neg_6, S_7, SeenDot_6, Whole_3} = Fun_4(Digits_5, Frac_4, I_10, Neg_6, S_7, SeenDot_6, Whole_3),
+%     |                          ^
+
+/workspace/mochi/tests/rosetta/transpiler/erl/currency.erl:209:33: Warning: variable 'S_7' exported from 'case' (line 145, column 9)
+%  209| {Digits_6, Frac_5, I_10, Neg_6, S_7, SeenDot_6, Whole_3} = Fun_4(Digits_5, Frac_4, I_10, Neg_6, S_7, SeenDot_6, Whole_3),
+%     |                                 ^
+
+Total before tax:   22000000000000005.72
+             Tax:    1683000000000000.44
+           Total:   23683000000000006.16
+{
+  "duration_us": 4826,
+  "memory_bytes": 77016,
+  "name": "main"
+}

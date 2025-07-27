@@ -1163,6 +1163,9 @@ func isFloatExpr(e Expr, env *types.Env, ctx *context) bool {
 		return isFloatExpr(v.Expr, env, ctx)
 	case *BinaryExpr:
 		if v.Op == "/" {
+			if isIntExpr(v.Left, env, ctx) && isIntExpr(v.Right, env, ctx) {
+				return false
+			}
 			return true
 		}
 		return isFloatExpr(v.Left, env, ctx) || isFloatExpr(v.Right, env, ctx)
@@ -1218,13 +1221,36 @@ func isIntExpr(e Expr, env *types.Env, ctx *context) bool {
 		return isIntExpr(v.Expr, env, ctx)
 	case *BinaryExpr:
 		return isIntExpr(v.Left, env, ctx) && isIntExpr(v.Right, env, ctx)
-	case *NameRef:
-		if env != nil {
-			name := v.Name
-			if ctx != nil {
-				name = ctx.original(v.Name)
+	case *CallExpr:
+		if v.Func == "erlang:get" && len(v.Args) == 1 {
+			if a, ok := v.Args[0].(*AtomLit); ok {
+				name := strings.Trim(a.Name, "'")
+				if ctx != nil {
+					if ctx.isFloatVar(name) || ctx.isStringVar(name) || ctx.isBoolVar(name) || ctx.isMapVar(name) || ctx.isListStrVar(name) {
+						return false
+					}
+					return true
+				}
 			}
-			if t, err := env.GetVar(name); err == nil {
+		}
+	case *NameRef:
+		if ctx != nil {
+			name := ctx.original(v.Name)
+			if ctx.isFloatVar(name) || ctx.isStringVar(name) || ctx.isBoolVar(name) || ctx.isMapVar(name) || ctx.isListStrVar(name) {
+				return false
+			}
+			if env != nil {
+				if t, err := env.GetVar(name); err == nil {
+					switch t.(type) {
+					case types.IntType, types.Int64Type, types.BigIntType:
+						return true
+					}
+				}
+			}
+			return true
+		}
+		if env != nil {
+			if t, err := env.GetVar(v.Name); err == nil {
 				switch t.(type) {
 				case types.IntType, types.Int64Type, types.BigIntType:
 					return true
@@ -2785,7 +2811,7 @@ func mapOp(op string) string {
 
 func builtinFunc(name string) bool {
 	switch name {
-	case "print", "append", "avg", "count", "len", "str", "sum", "min", "max", "values", "keys", "exists", "contains", "sha256", "json", "now", "input", "int", "abs", "upper", "lower", "indexOf", "parseIntStr", "indexof", "parseintstr", "repeat", "bigrat", "num", "denom":
+	case "print", "append", "avg", "count", "len", "str", "sum", "min", "max", "values", "keys", "exists", "contains", "sha256", "json", "now", "input", "int", "abs", "upper", "lower", "indexOf", "parseIntStr", "indexof", "parseintstr", "repeat", "bigrat", "num", "denom", "split":
 		return true
 	default:
 		return false
@@ -2885,6 +2911,16 @@ func sanitize(name string) string {
 		return "V"
 	}
 	return strings.ToUpper(name[:1]) + name[1:]
+}
+
+func sanitizeFuncName(name string) string {
+	lower := strings.ToLower(name)
+	switch lower {
+	case "div", "rem", "band", "bor", "bxor", "bnot", "bsl", "bsr", "and", "or", "xor", "not", "when", "case", "catch", "end", "fun", "if", "receive", "try", "of", "after":
+		return lower + "_fn"
+	default:
+		return lower
+	}
 }
 
 func literalString(e *parser.Expr) (string, bool) {
@@ -3816,7 +3852,7 @@ func convertFunStmt(fn *parser.FunStmt, env *types.Env, ctx *context) (*FuncDecl
 			return nil, err
 		}
 		ret = &IfExpr{Cond: cond, Then: thenExpr, Else: elseExpr}
-		name := strings.ToLower(fn.Name)
+		name := sanitizeFuncName(fn.Name)
 		return &FuncDecl{Name: name, Params: params, Body: stmts, Return: ret}, nil
 	}
 	for i, st := range fn.Body {
@@ -3871,7 +3907,7 @@ func convertFunStmt(fn *parser.FunStmt, env *types.Env, ctx *context) (*FuncDecl
 	if fn.Name == "topple" && len(params) > 0 && isZeroExpr(ret) {
 		ret = &NameRef{Name: params[0]}
 	}
-	name := strings.ToLower(fn.Name)
+	name := sanitizeFuncName(fn.Name)
 	return &FuncDecl{Name: name, Params: params, Body: stmts, Return: ret}, nil
 }
 
@@ -4506,6 +4542,10 @@ func convertPrimary(p *parser.Primary, env *types.Env, ctx *context) (Expr, erro
 				return &MapLit{Items: []MapItem{{Key: &StringLit{Value: "tag"}, Value: &StringLit{Value: strings.ToLower(p.Selector.Root)}}}}, nil
 			}
 		}
+		if fn, ok := env.GetFunc(p.Selector.Root); ok {
+			name := sanitizeFuncName(fn.Name)
+			return &FunRef{Name: name, Arity: len(fn.Params)}, nil
+		}
 		if ctx.isGlobal(p.Selector.Root) {
 			call := &CallExpr{Func: "erlang:get", Args: []Expr{&AtomLit{Name: fmt.Sprintf("'%s'", p.Selector.Root)}}}
 			if ctx.isStringVar(p.Selector.Root) {
@@ -4516,7 +4556,7 @@ func convertPrimary(p *parser.Primary, env *types.Env, ctx *context) (Expr, erro
 		if t, err := env.GetVar(p.Selector.Root); err == nil {
 			if ft, ok := t.(types.FuncType); ok && !ctx.isGlobal(p.Selector.Root) && ctx.alias[p.Selector.Root] == "" {
 				if fn, ok := env.GetFunc(p.Selector.Root); ok {
-					name := strings.ToLower(fn.Name)
+					name := sanitizeFuncName(fn.Name)
 					return &FunRef{Name: name, Arity: len(fn.Params)}, nil
 				}
 				_ = ft
@@ -4634,7 +4674,11 @@ func convertPrimary(p *parser.Primary, env *types.Env, ctx *context) (Expr, erro
 			}
 		}
 		if !varCall {
-			name = strings.ToLower(name)
+			if fn, ok := env.GetFunc(name); ok {
+				name = sanitizeFuncName(fn.Name)
+			} else {
+				name = strings.ToLower(name)
+			}
 		}
 		ce := &CallExpr{Func: name}
 		for _, a := range p.Call.Args {
@@ -4708,6 +4752,8 @@ func convertPrimary(p *parser.Primary, env *types.Env, ctx *context) (Expr, erro
 		} else if ce.Func == "repeat" && len(ce.Args) == 2 {
 			useRepeat = true
 			return &CallExpr{Func: "mochi_repeat", Args: ce.Args}, nil
+		} else if ce.Func == "split" && len(ce.Args) == 2 {
+			return &CallExpr{Func: "string:tokens", Args: ce.Args}, nil
 		} else if ce.Func == "bigrat" && (len(ce.Args) == 1 || len(ce.Args) == 2) {
 			useBigRat = true
 			return &CallExpr{Func: "mochi_bigrat", Args: ce.Args}, nil

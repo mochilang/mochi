@@ -1,0 +1,9 @@
+file input.txt created!
+file /input.txt created!
+mkdir docs: file exists
+directory /docs created!
+{
+  "duration_us": 3950,
+  "memory_bytes": 161608,
+  "name": "main"
+}

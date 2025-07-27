@@ -1,0 +1,11 @@
+2^8 = 256
+4³ = 64
+2 + 2 = nil
+2 + 3 = nil
+2 + 4 = nil
+3 + 5 = nil
+{
+  "duration_us": 12405,
+  "memory_bytes": 347216,
+  "name": "main"
+}

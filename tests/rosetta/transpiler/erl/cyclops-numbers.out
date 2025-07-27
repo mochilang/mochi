@@ -1,0 +1,9 @@
+/workspace/mochi/tests/rosetta/transpiler/erl/cyclops-numbers.erl:183:21: Warning: variable 'Neg_3' exported from 'case' (line 164, column 9)
+%  183| {Digits, I_12, N_5, Neg_3, Str} = Fun_6(Digits, I_11, N_4, Neg_3, Str),
+%     |                     ^
+
+{
+  "duration_us": 3111,
+  "memory_bytes": 6071680,
+  "name": "main"
+}

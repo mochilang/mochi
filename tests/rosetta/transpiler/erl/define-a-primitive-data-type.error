@@ -1,0 +1,3 @@
+exit status 127
+/workspace/mochi/tests/rosetta/transpiler/erl/define-a-primitive-data-type.erl:49:123: syntax error before: '('
+escript: There were compilation errors.
