@@ -1,5 +1,20 @@
 <?php
 ini_set('memory_limit', '-1');
+$now_seed = 0;
+$now_seeded = false;
+$s = getenv('MOCHI_NOW_SEED');
+if ($s !== false && $s !== '') {
+    $now_seed = intval($s);
+    $now_seeded = true;
+}
+function _now() {
+    global $now_seed, $now_seeded;
+    if ($now_seeded) {
+        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
+        return $now_seed;
+    }
+    return hrtime(true);
+}
 function _str($x) {
     if (is_array($x)) {
         $isList = array_keys($x) === range(0, count($x) - 1);
@@ -24,7 +39,9 @@ function _intdiv($a, $b) {
     }
     return intdiv($a, $b);
 }
-function mochi_ord($ch) {
+$__start_mem = memory_get_usage();
+$__start = _now();
+  function mochi_ord($ch) {
   if ($ch == '5') {
   return 53;
 }
@@ -41,8 +58,8 @@ function mochi_ord($ch) {
   return 128058;
 }
   return 0;
-}
-function hex($n) {
+};
+  function hex($n) {
   $digits = '0123456789abcdef';
   if ($n == 0) {
   return '0x0';
@@ -55,11 +72,11 @@ function hex($n) {
   $m = _intdiv($m, 16);
 };
   return '0x' . $out;
-}
-function quote($s) {
+};
+  function quote($s) {
   return '\'' . $s . '\'';
-}
-function analyze($s) {
+};
+  function analyze($s) {
   $le = strlen($s);
   echo rtrim('Analyzing ' . quote($s) . ' which has a length of ' . _str($le) . ':'), PHP_EOL;
   if ($le > 1) {
@@ -78,13 +95,21 @@ function analyze($s) {
 }
   echo rtrim('  All characters in the string are the same.'), PHP_EOL;
   echo rtrim(''), PHP_EOL;
-}
-function main() {
+};
+  function main() {
   $strings = ['', '   ', '2', '333', '.55', 'tttTTT', '4444 444k', 'pépé', '🐶🐶🐺🐶', '🎄🎄🎄🎄'];
   $i = 0;
   while ($i < count($strings)) {
   analyze($strings[$i]);
   $i = $i + 1;
 };
-}
-main();
+};
+  main();
+$__end = _now();
+$__end_mem = memory_get_usage();
+$__duration = intdiv($__end - $__start, 1000);
+$__mem_diff = max(0, $__end_mem - $__start_mem);
+$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
+$__j = json_encode($__bench, 128);
+$__j = str_replace("    ", "  ", $__j);
+echo $__j, PHP_EOL;;

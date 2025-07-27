@@ -33,3 +33,9 @@ Analyzing '🐶🐶🐺🐶' which has a length of 16:
 Analyzing '🎄🎄🎄🎄' which has a length of 16:
   Not all characters in the string are the same.
   '' (0x0) is different at position 2.
+
+{
+  "duration_us": 80,
+  "memory_bytes": 96,
+  "name": "main"
+}

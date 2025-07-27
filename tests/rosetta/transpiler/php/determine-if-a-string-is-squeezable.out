@@ -41,3 +41,9 @@ squeezed : length =  7, string = «««ardvark»»»
 specified character = '😍'
 original : length = 32, string = «««😍😀🙌💃😍😍😍🙌»»»
 squeezed : length = 32, string = «««😍😀🙌💃😍😍😍🙌»»»
+
+{
+  "duration_us": 115,
+  "memory_bytes": 352,
+  "name": "main"
+}

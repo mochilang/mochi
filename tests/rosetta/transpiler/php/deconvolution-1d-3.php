@@ -1,5 +1,20 @@
 <?php
 ini_set('memory_limit', '-1');
+$now_seed = 0;
+$now_seeded = false;
+$s = getenv('MOCHI_NOW_SEED');
+if ($s !== false && $s !== '') {
+    $now_seed = intval($s);
+    $now_seeded = true;
+}
+function _now() {
+    global $now_seed, $now_seeded;
+    if ($now_seeded) {
+        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
+        return $now_seed;
+    }
+    return hrtime(true);
+}
 function _str($x) {
     if (is_array($x)) {
         $isList = array_keys($x) === range(0, count($x) - 1);
@@ -20,7 +35,9 @@ function _indexof($s, $sub) {
     $pos = strpos($s, $sub);
     return $pos === false ? -1 : $pos;
 }
-function indexOf($s, $ch) {
+$__start_mem = memory_get_usage();
+$__start = _now();
+  function indexOf($s, $ch) {
   $i = 0;
   while ($i < strlen($s)) {
   if (substr($s, $i, $i + 1 - $i) == $ch) {
@@ -29,8 +46,8 @@ function indexOf($s, $ch) {
   $i = $i + 1;
 };
   return -1;
-}
-function fmt1($x) {
+};
+  function fmt1($x) {
   $y = floatval(intval((($x * 10.0) + 0.5))) / 10.0;
   $s = _str($y);
   $dot = _indexof($s, '.');
@@ -38,8 +55,8 @@ function fmt1($x) {
   $s = $s . '.0';
 }
   return $s;
-}
-function printColumnMatrix($xs) {
+};
+  function printColumnMatrix($xs) {
   if (count($xs) == 0) {
   return;
 }
@@ -50,8 +67,8 @@ function printColumnMatrix($xs) {
   $i = $i + 1;
 };
   echo rtrim('⎣ ' . fmt1($xs[count($xs) - 1]) . '⎦'), PHP_EOL;
-}
-function deconv($g, $f) {
+};
+  function deconv($g, $f) {
   $h = [];
   $n = 0;
   $hn = count($g) - count($f) + 1;
@@ -71,8 +88,8 @@ function deconv($g, $f) {
   $n = $n + 1;
 };
   return $h;
-}
-function main() {
+};
+  function main() {
   $h = [-8.0, -9.0, -3.0, -1.0, -6.0, 7.0];
   $f = [-3.0, -6.0, -1.0, 8.0, -6.0, 3.0, -1.0, -9.0, -9.0, 3.0, -2.0, 5.0, 2.0, -2.0, -7.0, -1.0];
   $g = [24.0, 75.0, 71.0, -34.0, 3.0, 22.0, -45.0, 23.0, 245.0, 25.0, 52.0, 25.0, -67.0, -96.0, 96.0, 31.0, 55.0, 36.0, 29.0, -43.0, -7.0];
@@ -81,5 +98,13 @@ function main() {
   echo rtrim(''), PHP_EOL;
   echo rtrim('deconv(g, h) ='), PHP_EOL;
   printColumnMatrix(deconv($g, $h));
-}
-main();
+};
+  main();
+$__end = _now();
+$__end_mem = memory_get_usage();
+$__duration = intdiv($__end - $__start, 1000);
+$__mem_diff = max(0, $__end_mem - $__start_mem);
+$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
+$__j = json_encode($__bench, 128);
+$__j = str_replace("    ", "  ", $__j);
+echo $__j, PHP_EOL;;

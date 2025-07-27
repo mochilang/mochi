@@ -23,3 +23,8 @@ deconv(g, h) =
 ⎢-1.9⎥
 ⎢-6.9⎥
 ⎣ -0.9⎦
+{
+  "duration_us": 94,
+  "memory_bytes": 96,
+  "name": "main"
+}

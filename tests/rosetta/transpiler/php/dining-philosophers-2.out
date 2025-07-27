@@ -60,3 +60,8 @@ Russell thinking
 Russell satisfied
 Russell left the table
 table empty
+{
+  "duration_us": 82,
+  "memory_bytes": 96,
+  "name": "main"
+}

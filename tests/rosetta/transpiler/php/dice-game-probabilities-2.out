@@ -1,2 +1,7 @@
-0.578
-0.615
+0.575
+0.665
+{
+  "duration_us": 2301,
+  "memory_bytes": 96,
+  "name": "main"
+}

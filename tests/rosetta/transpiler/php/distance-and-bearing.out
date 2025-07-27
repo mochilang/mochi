@@ -1,0 +1,27 @@
+Distance Bearing ICAO Country               Airport
+--------------------------------------------------------------
+"30.7\\t146\\tEBFN\\tBelgium Koksijde Air Base"
+"31.3\\t127\\tEBOS\\tBelgium Ostend-Bruges International Airport"
+"33.6\\t252\\tEGMH\\tUnited Kingdom Kent International Airport"
+"34.4\\t196\\tLFAC\\tFrance Calais-Dunkerque Airport"
+"42.6\\t105\\tEBKW\\tBelgium Westkapelle heliport"
+"51.6\\t240\\tEGMK\\tUnited Kingdom Lympne Airport"
+"52.8\\t115\\tEBUL\\tBelgium Ursel Air Base"
+"56.2\\t274\\tEGMC\\tUnited Kingdom Southend Airport"
+"56.4\\t162\\tLFQT\\tFrance Merville-Calonne Airport"
+"56.5\\t137\\tEBKT\\tBelgium Wevelgem Airport"
+"57.3\\t90\\tEHMZ\\tNetherlands Midden-Zeeland Airport"
+"58\\t235\\tEGMD\\tUnited Kingdom Lydd Airport"
+"59\\t309\\tEGUW\\tUnited Kingdom RAF Wattisham"
+"59.3\\t339\\tEGSM\\tUnited Kingdom Beccles Airport"
+"59.7\\t146\\tLFQO\\tFrance Lille/Marcq-en-Baroeul Airport"
+"62.2\\t250\\tEGKH\\tUnited Kingdom Lashenden (Headcorn) Airfield"
+"63.7\\t200\\tLFAT\\tFrance Le Touquet-Côte d'Opale Airport"
+"64.2\\t262\\tEGTO\\tUnited Kingdom Rochester Airport"
+"66.2\\t149\\tLFQQ\\tFrance Lille-Lesquin Airport"
+"68.4\\t272\\tEGMT\\tUnited Kingdom Thurrock Airfield"
+{
+  "duration_us": 191,
+  "memory_bytes": 160,
+  "name": "main"
+}

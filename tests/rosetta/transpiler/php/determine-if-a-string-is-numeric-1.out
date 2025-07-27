@@ -5,3 +5,8 @@ Are these strings numeric?
   1e2 -> true
   NaN -> true
   rose -> false
+{
+  "duration_us": 135,
+  "memory_bytes": 96,
+  "name": "main"
+}

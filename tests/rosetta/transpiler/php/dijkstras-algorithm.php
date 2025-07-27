@@ -1,5 +1,20 @@
 <?php
 ini_set('memory_limit', '-1');
+$now_seed = 0;
+$now_seeded = false;
+$s = getenv('MOCHI_NOW_SEED');
+if ($s !== false && $s !== '') {
+    $now_seed = intval($s);
+    $now_seeded = true;
+}
+function _now() {
+    global $now_seed, $now_seeded;
+    if ($now_seeded) {
+        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
+        return $now_seed;
+    }
+    return hrtime(true);
+}
 function _str($x) {
     if (is_array($x)) {
         $isList = array_keys($x) === range(0, count($x) - 1);
@@ -16,9 +31,11 @@ function _str($x) {
     if ($x === null) return 'null';
     return strval($x);
 }
-$INF = 1000000000;
-$graph = [];
-function addEdge($u, $v, $w) {
+$__start_mem = memory_get_usage();
+$__start = _now();
+  $INF = 1000000000;
+  $graph = [];
+  function addEdge($u, $v, $w) {
   global $INF, $graph;
   if (!(array_key_exists($u, $graph))) {
   $graph[$u] = [];
@@ -27,8 +44,8 @@ function addEdge($u, $v, $w) {
   if (!(array_key_exists($v, $graph))) {
   $graph[$v] = [];
 }
-}
-function removeAt($xs, $idx) {
+};
+  function removeAt($xs, $idx) {
   global $INF, $graph;
   $out = [];
   $i = 0;
@@ -39,8 +56,8 @@ function removeAt($xs, $idx) {
   $i = $i + 1;
 };
   return $out;
-}
-function dijkstra($source) {
+};
+  function dijkstra($source) {
   global $INF, $graph;
   $dist = [];
   $prev = [];
@@ -75,8 +92,8 @@ function dijkstra($source) {
 };
 };
   return ['dist' => $dist, 'prev' => $prev];
-}
-function path($prev, $v) {
+};
+  function path($prev, $v) {
   global $INF, $graph;
   $s = $v;
   $cur = $v;
@@ -85,8 +102,8 @@ function path($prev, $v) {
   $s = $cur . $s;
 };
   return $s;
-}
-function main() {
+};
+  function main() {
   global $INF, $graph;
   addEdge('a', 'b', 7);
   addEdge('a', 'c', 9);
@@ -102,5 +119,13 @@ function main() {
   $prev = $res['prev'];
   echo rtrim('Distance to e: ' . _str($dist['e']) . ', Path: ' . path($prev, 'e')), PHP_EOL;
   echo rtrim('Distance to f: ' . _str($dist['f']) . ', Path: ' . path($prev, 'f')), PHP_EOL;
-}
-main();
+};
+  main();
+$__end = _now();
+$__end_mem = memory_get_usage();
+$__duration = intdiv($__end - $__start, 1000);
+$__mem_diff = max(0, $__end_mem - $__start_mem);
+$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
+$__j = json_encode($__bench, 128);
+$__j = str_replace("    ", "  ", $__j);
+echo $__j, PHP_EOL;;
