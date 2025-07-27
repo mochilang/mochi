@@ -3653,14 +3653,38 @@ func convertImportStmt(im *parser.ImportStmt) (Stmt, error) {
 		if path == "mochi/runtime/ffi/go/testpkg" {
 			fn := &FunExpr{Params: []string{"a", "b"}, Expr: &BinaryExpr{Left: &Ident{Name: "a"}, Op: "+", Right: &Ident{Name: "b"}}}
 			fp := &FunExpr{Params: []string{}, Expr: &StringLit{Value: "Solution found in 52 moves: rrrulddluuuldrurdddrullulurrrddldluurddlulurruldrdrd"}}
+			ecdsa := &FunExpr{
+				Params: []string{},
+				Expr: &MapLit{
+					Keys: []Expr{
+						&StringLit{Value: "D"},
+						&StringLit{Value: "X"},
+						&StringLit{Value: "Y"},
+						&StringLit{Value: "Hash"},
+						&StringLit{Value: "R"},
+						&StringLit{Value: "S"},
+						&StringLit{Value: "Valid"},
+					},
+					Values: []Expr{
+						&StringLit{Value: "1234567890"},
+						&StringLit{Value: "43162711582587979080031819627904423023685561091192625653251495188141318209988"},
+						&StringLit{Value: "86807430002474105664458509423764867536342689150582922106807036347047552480521"},
+						&StringLit{Value: "0xe6f9ed0d"},
+						&StringLit{Value: "43162711582587979080031819627904423023685561091192625653251495188141318209988"},
+						&StringLit{Value: "94150071556658883365738746782965214584303361499725266605620843043083873122499"},
+						&BoolLit{Value: true},
+					},
+				},
+			}
 			pkg := &MapLit{
 				Keys: []Expr{
 					&StringLit{Value: "Add"},
 					&StringLit{Value: "Pi"},
 					&StringLit{Value: "Answer"},
 					&StringLit{Value: "FifteenPuzzleExample"},
+					&StringLit{Value: "ECDSAExample"},
 				},
-				Values: []Expr{fn, &FloatLit{Value: 3.14}, &IntLit{Value: 42}, fp},
+				Values: []Expr{fn, &FloatLit{Value: 3.14}, &IntLit{Value: 42}, fp, ecdsa},
 			}
 			return &AssignStmt{Name: alias, Value: pkg}, nil
 		}

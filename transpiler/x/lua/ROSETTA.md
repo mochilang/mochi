@@ -2,9 +2,9 @@
 
 Generated Lua code for programs in `tests/rosetta/x/Mochi`. Each program has a `.lua` file produced by the transpiler and a `.out` file with its runtime output. Compilation or runtime errors are captured in `.error` files.
 
-Transpiled programs: 459/467
+Transpiled programs: 466/467
 
-Last updated: 2025-07-28 00:29 GMT+7
+Last updated: 2025-07-28 00:49 GMT+7
 
 Checklist:
 
@@ -139,11 +139,11 @@ Checklist:
 | 127 | bitmap-write-a-ppm-file | ✓ | 342µs | 552 B |
 | 128 | bitmap | ✓ | 1.436116s | 808 B |
 | 129 | bitwise-io-1 | ✓ | 129µs | 744 B |
-| 130 | bitwise-io-2 |   | 430µs | 1.7 KB |
+| 130 | bitwise-io-2 | ✓ | 430µs | 1.7 KB |
 | 131 | bitwise-operations | ✓ | 88µs | 872 B |
 | 132 | blum-integer | ✓ | 925µs | 520 B |
 | 133 | boolean-values | ✓ | 126µs | 328 B |
-| 134 | box-the-compass |   | 264µs | 1.5 KB |
+| 134 | box-the-compass | ✓ | 264µs | 1.5 KB |
 | 135 | boyer-moore-string-search | ✓ | 363µs | 4.0 KB |
 | 136 | brazilian-numbers | ✓ | 2m58.01392s | 472 B |
 | 137 | break-oo-privacy | ✓ | 117µs | 448 B |
@@ -289,7 +289,7 @@ Checklist:
 | 277 | deal-cards-for-freecell | ✓ | 504µs | 2.9 KB |
 | 278 | death-star | ✓ | 11.168ms | 984 B |
 | 279 | deceptive-numbers | ✓ | 7.434189s | 2.9 KB |
-| 280 | deconvolution-1d-2 |   |  |  |
+| 280 | deconvolution-1d-2 | ✓ | 318µs | 1.2 KB |
 | 281 | deconvolution-1d-3 | ✓ | 239µs | 1.1 KB |
 | 282 | deconvolution-1d | ✓ | 229µs | 2.9 KB |
 | 283 | deepcopy-1 | ✓ | 152µs | 1.6 KB |
@@ -339,9 +339,9 @@ Checklist:
 | 327 | dynamic-variable-names | ✓ | 92µs | 240 B |
 | 328 | earliest-difference-between-prime-gaps | ✓ | 308µs | 3.8 KB |
 | 329 | eban-numbers | ✓ | 99.735ms | 776 B |
-| 330 | ecdsa-example |   |  |  |
+| 330 | ecdsa-example | ✓ | 29µs | 664 B |
 | 331 | echo-server | ✓ | 45µs | 400 B |
-| 332 | eertree |   |  |  |
+| 332 | eertree | ✓ | 83µs | 2.4 KB |
 | 333 | egyptian-division | ✓ | 138µs | 2.9 KB |
 | 334 | ekg-sequence-convergence | ✓ | 41.956ms | 2.4 KB |
 | 335 | element-wise-operations | ✓ | 725µs | 1.4 KB |
@@ -418,13 +418,13 @@ Checklist:
 | 406 | fibonacci-sequence-2 | ✓ | 2µs | 104 B |
 | 407 | fibonacci-sequence-3 | ✓ | 2µs | 136 B |
 | 408 | fibonacci-sequence-4 | ✓ | 92µs | 912 B |
-| 409 | fibonacci-sequence-5 |   |  |  |
+| 409 | fibonacci-sequence-5 | ✓ | 221µs | 3.4 KB |
 | 410 | fibonacci-word-fractal | ✓ | 114µs | 840 B |
 | 411 | fibonacci-word | ✓ | 32.21922s | 1.4 KB |
 | 412 | file-extension-is-in-extensions-list | ✓ | 333µs | 1.2 KB |
 | 413 | file-input-output-1 | ✓ | 26µs | 328 B |
 | 414 | file-input-output-2 | ✓ | 28µs | 368 B |
-| 415 | file-input-output-3 |   |  |  |
+| 415 | file-input-output-3 | ✓ | 33µs | 1.0 KB |
 | 416 | file-modification-time | ✓ | 31µs | 1.1 KB |
 | 417 | file-size-distribution | ✓ | 118µs | 1.0 KB |
 | 418 | file-size | ✓ | 41µs | 848 B |
