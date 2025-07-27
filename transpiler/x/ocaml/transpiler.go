@@ -1450,11 +1450,11 @@ func (mi *MapIndexExpr) emit(w io.Writer) {
 		}
 		io.WriteString(w, ")")
 	} else {
-		io.WriteString(w, "(List.assoc (")
+		io.WriteString(w, "(try List.assoc (")
 		mi.Key.emit(w)
 		io.WriteString(w, ") ")
 		mi.Map.emit(w)
-		io.WriteString(w, ")")
+		io.WriteString(w, " with Not_found -> (Obj.magic 0))")
 	}
 }
 
@@ -2851,7 +2851,7 @@ func transpileStmt(st *parser.Statement, env *types.Env, vars map[string]VarInfo
 			upd := buildListUpdate(listExpr, indices, valExpr)
 			return &AssignStmt{Name: st.Assign.Name, Expr: upd}, nil
 		}
-		if valTyp != "" {
+		if valTyp != "" && info.typ == "" {
 			info.typ = valTyp
 			vars[st.Assign.Name] = info
 		}

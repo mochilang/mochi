@@ -2,7 +2,7 @@
 
 This directory contains OCaml code generated from Rosetta Code programs in `tests/rosetta/x/Mochi`.
 
-Completed programs: 69/465
+Completed programs: 87/465
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -86,37 +86,37 @@ Completed programs: 69/465
 | 78 | ascending-primes | ✓ | 591.0µs | 142.52KB |
 | 79 | ascii-art-diagram-converter | ✓ | 46.0µs | 208B |
 | 80 | assertions | ✓ | 25.0µs | 208B |
-| 81 | associative-array-creation | error |  |  |
-| 82 | associative-array-iteration |   |  |  |
-| 83 | associative-array-merging |   |  |  |
-| 84 | atomic-updates |   |  |  |
-| 85 | attractive-numbers |   |  |  |
-| 86 | average-loop-length |   |  |  |
-| 87 | averages-arithmetic-mean |   |  |  |
-| 88 | averages-mean-time-of-day |   |  |  |
-| 89 | averages-median-1 |   |  |  |
-| 90 | averages-median-2 |   |  |  |
-| 91 | averages-median-3 |   |  |  |
-| 92 | averages-mode |   |  |  |
-| 93 | averages-pythagorean-means |   |  |  |
-| 94 | averages-root-mean-square |   |  |  |
-| 95 | averages-simple-moving-average |   |  |  |
-| 96 | avl-tree |   |  |  |
-| 97 | b-zier-curves-intersections |   |  |  |
-| 98 | babbage-problem |   |  |  |
-| 99 | babylonian-spiral |   |  |  |
-| 100 | balanced-brackets |   |  |  |
-| 101 | balanced-ternary |   |  |  |
-| 102 | barnsley-fern |   |  |  |
-| 103 | base64-decode-data |   |  |  |
-| 104 | bell-numbers |   |  |  |
-| 105 | benfords-law |   |  |  |
-| 106 | bernoulli-numbers |   |  |  |
-| 107 | best-shuffle |   |  |  |
-| 108 | bifid-cipher |   |  |  |
-| 109 | bin-given-limits |   |  |  |
-| 110 | binary-digits |   |  |  |
-| 111 | binary-search |   |  |  |
+| 81 | associative-array-creation | ✓ | 136.0µs | 368B |
+| 82 | associative-array-iteration | ✓ | 125.0µs | 1.29KB |
+| 83 | associative-array-merging | error |  |  |
+| 84 | atomic-updates | ✓ | 253.0µs | 21.29KB |
+| 85 | attractive-numbers | ✓ |  |  |
+| 86 | average-loop-length | ✓ | 898.0ms | 554.03MB |
+| 87 | averages-arithmetic-mean | error |  |  |
+| 88 | averages-mean-time-of-day | ✓ | 195.0µs | 8.58KB |
+| 89 | averages-median-1 | ✓ | 286.0µs | 4.15KB |
+| 90 | averages-median-2 | ✓ | 198.0µs | 3.38KB |
+| 91 | averages-median-3 | error |  |  |
+| 92 | averages-mode | ✓ | 138.0µs | 2.66KB |
+| 93 | averages-pythagorean-means | ✓ | 220.0µs | 12.70KB |
+| 94 | averages-root-mean-square | ✓ | 128.0µs | 912B |
+| 95 | averages-simple-moving-average | ✓ | 446.0µs | 18.70KB |
+| 96 | avl-tree | error |  |  |
+| 97 | b-zier-curves-intersections | error |  |  |
+| 98 | babbage-problem | ✓ | 1.0ms | 440B |
+| 99 | babylonian-spiral | error |  |  |
+| 100 | balanced-brackets | ✓ | 557.0µs | 76.14KB |
+| 101 | balanced-ternary | error |  |  |
+| 102 | barnsley-fern | ✓ |  |  |
+| 103 | base64-decode-data | error |  |  |
+| 104 | bell-numbers | error |  |  |
+| 105 | benfords-law | error |  |  |
+| 106 | bernoulli-numbers | error |  |  |
+| 107 | best-shuffle | error |  |  |
+| 108 | bifid-cipher | error |  |  |
+| 109 | bin-given-limits | ✓ | 2.0ms | 163.36KB |
+| 110 | binary-digits | ✓ | 137.0µs | 1.73KB |
+| 111 | binary-search | ✓ | 126.0µs | 552B |
 | 112 | binary-strings |   |  |  |
 | 113 | bioinformatics-base-count |   |  |  |
 | 114 | bioinformatics-global-alignment |   |  |  |
@@ -471,4 +471,4 @@ Completed programs: 69/465
 | 463 | sorting-algorithms-bubble-sort |   |  |  |
 | 464 | window-management |   |  |  |
 | 465 | zumkeller-numbers |   |  |  |
-Last updated 2025-07-27 09:31 UTC
+Last updated 2025-07-27 17:23 +0700
