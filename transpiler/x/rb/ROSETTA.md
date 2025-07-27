@@ -2,9 +2,9 @@
 
 Generated Ruby code from Mochi Rosetta tasks lives in `tests/rosetta/transpiler/rb`.
 
-Last updated: 2025-07-27 15:23 UTC
+Last updated: 2025-07-27 15:40 UTC
 
-## Checklist (362/467)
+## Checklist (384/467)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 195µs | 36.2 KB |
@@ -368,7 +368,7 @@ Last updated: 2025-07-27 15:23 UTC
 | 359 | erd-s-selfridge-categorization-of-primes | ✓ | 9.245ms | 225.1 KB |
 | 360 | esthetic-numbers | ✓ | 1.522139s | 29.9 MB |
 | 361 | ethiopian-multiplication |   |  |  |
-| 362 | euclid-mullin-sequence |   |  |  |
+| 362 | euclid-mullin-sequence | ✓ |  |  |
 | 363 | euler-method | ✓ | 1.248ms | 78.9 KB |
 | 364 | eulers-constant-0.5772... | ✓ | 29.7ms | 9.5 KB |
 | 365 | eulers-identity | ✓ | 146µs | 12.2 KB |
@@ -386,27 +386,27 @@ Last updated: 2025-07-27 15:23 UTC
 | 377 | execute-computer-zero-1 | ✓ | 1.573ms | 496.1 KB |
 | 378 | execute-computer-zero | ✓ | 88µs | 10.6 KB |
 | 379 | execute-hq9+ | ✓ | 421µs | 103.1 KB |
-| 380 | execute-snusp |   |  |  |
-| 381 | exponentiation-operator-2 |   |  |  |
-| 382 | exponentiation-operator |   |  |  |
-| 383 | exponentiation-order |   |  |  |
-| 384 | exponentiation-with-infix-operators-in-or-operating-on-the-base |   |  |  |
-| 385 | extend-your-language |   |  |  |
-| 386 | extensible-prime-generator |   |  |  |
-| 387 | extreme-floating-point-values |   |  |  |
-| 388 | faces-from-a-mesh-2 |   |  |  |
-| 389 | faces-from-a-mesh |   |  |  |
-| 390 | factorial-base-numbers-indexing-permutations-of-a-collection |   |  |  |
-| 391 | factorial-primes |   |  |  |
-| 392 | factorial |   |  |  |
-| 393 | factorions |   |  |  |
-| 394 | factors-of-a-mersenne-number |   |  |  |
-| 395 | factors-of-an-integer |   |  |  |
-| 396 | fairshare-between-two-and-more |   |  |  |
-| 397 | farey-sequence |   |  |  |
-| 398 | fast-fourier-transform |   |  |  |
-| 399 | fasta-format |   |  |  |
-| 400 | faulhabers-formula |   |  |  |
+| 380 | execute-snusp | ✓ | 15µs | 8.8 KB |
+| 381 | exponentiation-operator-2 | ✓ | 71µs | 15.5 KB |
+| 382 | exponentiation-operator | ✓ | 88µs | 15.1 KB |
+| 383 | exponentiation-order | ✓ | 23µs | 9.2 KB |
+| 384 | exponentiation-with-infix-operators-in-or-operating-on-the-base | ✓ | 54µs | 20.4 KB |
+| 385 | extend-your-language | ✓ | 60µs | 11.5 KB |
+| 386 | extensible-prime-generator | ✓ | 148.637ms | 12.0 MB |
+| 387 | extreme-floating-point-values | ✓ | 129µs | 34.7 KB |
+| 388 | faces-from-a-mesh-2 | ✓ | 129µs | 29.1 KB |
+| 389 | faces-from-a-mesh | ✓ | 128µs | 29.0 KB |
+| 390 | factorial-base-numbers-indexing-permutations-of-a-collection | ✓ | 5.534ms | 362.8 KB |
+| 391 | factorial-primes | ✓ | 12.559ms | 14.3 KB |
+| 392 | factorial | ✓ | 439µs | 379.5 KB |
+| 393 | factorions | ✓ | 7.203043s | 14.2 KB |
+| 394 | factors-of-a-mersenne-number | ✓ | 1.440694s | 18.3 MB |
+| 395 | factors-of-an-integer | ✓ | 51.887589s | 19.9 KB |
+| 396 | fairshare-between-two-and-more | ✓ | 2.778182s | 14.8 MB |
+| 397 | farey-sequence | ✓ | 1.178ms | 213.6 KB |
+| 398 | fast-fourier-transform | ✓ | 1.038ms | 43.8 KB |
+| 399 | fasta-format | ✓ | 76µs | 30.9 KB |
+| 400 | faulhabers-formula | ✓ | 300µs | 159.1 KB |
 | 401 | faulhabers-triangle |   |  |  |
 | 402 | feigenbaum-constant-calculation |   |  |  |
 | 403 | fermat-numbers |   |  |  |
