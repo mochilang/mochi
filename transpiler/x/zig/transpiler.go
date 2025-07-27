@@ -78,6 +78,25 @@ func toSnakeCase(s string) string {
 	return buf.String()
 }
 
+func zigIdent(s string) string {
+	s = toSnakeCase(s)
+	var buf strings.Builder
+	for i, r := range s {
+		if unicode.IsLetter(r) || r == '_' || (unicode.IsDigit(r) && i > 0) {
+			buf.WriteRune(r)
+		} else if unicode.IsDigit(r) && i == 0 {
+			buf.WriteByte('_')
+			buf.WriteRune(r)
+		} else {
+			fmt.Fprintf(&buf, "_%x", r)
+		}
+	}
+	if buf.Len() == 0 {
+		return "_"
+	}
+	return buf.String()
+}
+
 // Program represents a Zig source file with one or more functions.
 type Field struct {
 	Name string
@@ -741,7 +760,7 @@ func (m *MapLit) emit(w io.Writer) {
 				io.WriteString(w, ", ")
 			}
 			if k, ok := e.Key.(*StringLit); ok {
-				fmt.Fprintf(w, ".%s = ", toSnakeCase(k.Value))
+				fmt.Fprintf(w, ".%s = ", zigIdent(k.Value))
 			}
 			e.Value.emit(w)
 		}
@@ -1820,7 +1839,39 @@ func (c *CallExpr) emit(w io.Writer) {
 			} else if v, ok := c.Args[0].(*VarRef); ok && mapVars[v.Name] {
 				io.WriteString(w, "blk: { var it = ")
 				v.emit(w)
-				io.WriteString(w, ".iterator(); var arr = std.ArrayList(i64).init(std.heap.page_allocator); while (it.next()) |kv| { arr.append(kv.value) catch unreachable; } break :blk arr.toOwnedSlice(); }")
+				io.WriteString(w, ".iterator(); var arr = std.ArrayList(i64).init(std.heap.page_allocator); while (it.next()) |kv| { arr.append(kv.value) catch unreachable; } break :blk arr.toOwnedSlice() catch unreachable; }")
+			} else {
+				io.WriteString(w, "[]i64{}")
+			}
+		} else {
+			io.WriteString(w, "[]i64{}")
+		}
+	case "keys":
+		if len(c.Args) == 1 {
+			if m, ok := c.Args[0].(*MapLit); ok {
+				keys := make([]Expr, len(m.Entries))
+				for i, e := range m.Entries {
+					keys[i] = e.Key
+				}
+				(&ListLit{Elems: keys, ElemType: "[]const u8"}).emit(w)
+			} else if v, ok := c.Args[0].(*VarRef); ok {
+				if ml, ok2 := varDecls[v.Name]; ok2 {
+					if m, ok3 := ml.Value.(*MapLit); ok3 && m.StructName != "" {
+						keys := make([]Expr, len(m.Entries))
+						for i, e := range m.Entries {
+							keys[i] = e.Key
+						}
+						(&ListLit{Elems: keys, ElemType: "[]const u8"}).emit(w)
+						break
+					}
+				}
+				if mapVars[v.Name] {
+					io.WriteString(w, "blk: { var it = ")
+					v.emit(w)
+					io.WriteString(w, ".keyIterator(); var arr = std.ArrayList([]const u8).init(std.heap.page_allocator); while (it.next()) |k| { arr.append(k.*) catch unreachable; } break :blk arr.toOwnedSlice() catch unreachable; }")
+				} else {
+					io.WriteString(w, "[]i64{}")
+				}
 			} else {
 				io.WriteString(w, "[]i64{}")
 			}
@@ -2538,13 +2589,6 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			entries[i] = MapEntry{Key: k, Value: v}
 		}
 		ml := &MapLit{Entries: entries}
-		if fields, ok := mapFields(ml); ok {
-			structName := fmt.Sprintf("Map%d", len(structDefs))
-			if _, exists := structDefs[structName]; !exists {
-				structDefs[structName] = &StructDef{Name: structName, Fields: fields}
-			}
-			ml.StructName = structName
-		}
 		return ml, nil
 	case p.Struct != nil:
 		entries := make([]MapEntry, len(p.Struct.Fields))
@@ -2782,7 +2826,7 @@ func mapFields(m *MapLit) ([]Field, bool) {
 		if !ok {
 			return nil, false
 		}
-		fields[i] = Field{Name: toSnakeCase(key.Value), Type: zigTypeFromExpr(e.Value)}
+		fields[i] = Field{Name: zigIdent(key.Value), Type: zigTypeFromExpr(e.Value)}
 	}
 	return fields, true
 }

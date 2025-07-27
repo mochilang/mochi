@@ -2,9 +2,9 @@
 
 Generated Zig code for Rosetta tasks lives under `tests/rosetta/transpiler/Zig`.
 
-Last updated: 2025-07-27 15:57 +0700
+Last updated: 2025-07-27 16:50 +0700
 
-## Program Checklist (58/465)
+## Program Checklist (59/465)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 8.923ms |  |
@@ -77,18 +77,18 @@ Last updated: 2025-07-27 15:57 +0700
 | 68 | arithmetic-evaluation |   |  |  |
 | 69 | arithmetic-geometric-mean-calculate-pi |   |  |  |
 | 70 | arithmetic-geometric-mean |   |  |  |
-| 71 | arithmetic-integer-1 |   | 263µs |  |
-| 72 | arithmetic-integer-2 |   | 182µs |  |
+| 71 | arithmetic-integer-1 |   |  |  |
+| 72 | arithmetic-integer-2 |   |  |  |
 | 73 | arithmetic-numbers |   |  |  |
-| 74 | arithmetic-rational |   | 306µs |  |
+| 74 | arithmetic-rational |   |  |  |
 | 75 | array-concatenation |   |  |  |
 | 76 | array-length |   |  |  |
 | 77 | arrays |   |  |  |
 | 78 | ascending-primes |   |  |  |
-| 79 | ascii-art-diagram-converter | ✓ | 59µs |  |
+| 79 | ascii-art-diagram-converter | ✓ |  |  |
 | 80 | assertions | ✓ |  |  |
 | 81 | associative-array-creation |   |  |  |
-| 82 | associative-array-iteration |   |  |  |
+| 82 | associative-array-iteration | ✓ | 177µs |  |
 | 83 | associative-array-merging |   |  |  |
 | 84 | atomic-updates |   |  |  |
 | 85 | attractive-numbers |   |  |  |
