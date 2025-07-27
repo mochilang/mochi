@@ -129,6 +129,8 @@ type Func struct {
 	Params     []Param
 	ReturnType string
 	Body       []Stmt
+	Receiver   string
+	RecFields  map[string]bool
 }
 
 type Stmt interface{ emit(io.Writer, int) }
@@ -895,6 +897,12 @@ func (f *Func) emit(w io.Writer) {
 	localTypes = map[string]string{}
 	prevFn := inFunction
 	inFunction = true
+	prevRecv := currentReceiver
+	prevFields := currentReceiverFields
+	if f.Receiver != "" {
+		currentReceiver = f.Receiver
+		currentReceiverFields = f.RecFields
+	}
 	for _, p := range f.Params {
 		if p.Type != "" {
 			localTypes[p.Name] = p.Type
@@ -939,6 +947,8 @@ func (f *Func) emit(w io.Writer) {
 	fmt.Fprintln(w, "}")
 	inFunction = prevFn
 	localTypes = oldLocals
+	currentReceiver = prevRecv
+	currentReceiverFields = prevFields
 }
 
 func (s *PrintStmt) emit(w io.Writer, indent int) {
@@ -1056,7 +1066,18 @@ func (l *LenExpr) emit(w io.Writer) {
 
 func (l *ListLit) emit(w io.Writer) {
 	if len(l.Elems) == 0 {
-		io.WriteString(w, "{}")
+		elemTyp := l.ElemType
+		if elemTyp == "" {
+			listTyp := exprType(l)
+			elemTyp = elementTypeFromListType(listTyp)
+			if elemTyp == "auto" || elemTyp == "" {
+				elemTyp = "std::any"
+				if currentProgram != nil {
+					currentProgram.addInclude("<any>")
+				}
+			}
+		}
+		io.WriteString(w, "std::vector<"+elemTyp+">{}")
 		return
 	}
 	elemTyp := l.ElemType
@@ -2453,34 +2474,38 @@ func (s *LetStmt) emit(w io.Writer, indent int) {
 	}
 	io.WriteString(w, safeName(s.Name))
 	if s.Value != nil {
-		io.WriteString(w, " = ")
-		valType := exprType(s.Value)
-		if valType == "std::any" && typ != "" && typ != "std::any" {
-			if currentProgram != nil {
-				currentProgram.addInclude("<any>")
-			}
-			io.WriteString(w, "std::any_cast<"+typ+">(")
-			s.Value.emit(w)
-			io.WriteString(w, ")")
-		} else if strings.HasPrefix(typ, "std::unique_ptr<") || strings.HasPrefix(typ, "std::shared_ptr<") {
-			if sl, ok := s.Value.(*StructLit); ok {
-				maker := "std::make_unique"
-				if strings.HasPrefix(typ, "std::shared_ptr<") {
-					maker = "std::make_shared"
+		if l, ok := s.Value.(*ListLit); ok && len(l.Elems) == 0 && typ != "" {
+			io.WriteString(w, " = {}")
+		} else {
+			io.WriteString(w, " = ")
+			valType := exprType(s.Value)
+			if valType == "std::any" && typ != "" && typ != "std::any" {
+				if currentProgram != nil {
+					currentProgram.addInclude("<any>")
 				}
-				fmt.Fprintf(w, "%s<%s>(", maker, sl.Name)
-				for i, f := range sl.Fields {
-					if i > 0 {
-						io.WriteString(w, ", ")
-					}
-					f.Value.emit(w)
-				}
+				io.WriteString(w, "std::any_cast<"+typ+">(")
+				s.Value.emit(w)
 				io.WriteString(w, ")")
+			} else if strings.HasPrefix(typ, "std::unique_ptr<") || strings.HasPrefix(typ, "std::shared_ptr<") {
+				if sl, ok := s.Value.(*StructLit); ok {
+					maker := "std::make_unique"
+					if strings.HasPrefix(typ, "std::shared_ptr<") {
+						maker = "std::make_shared"
+					}
+					fmt.Fprintf(w, "%s<%s>(", maker, sl.Name)
+					for i, f := range sl.Fields {
+						if i > 0 {
+							io.WriteString(w, ", ")
+						}
+						f.Value.emit(w)
+					}
+					io.WriteString(w, ")")
+				} else {
+					s.Value.emit(w)
+				}
 			} else {
 				s.Value.emit(w)
 			}
-		} else {
-			s.Value.emit(w)
 		}
 	} else if typ != "" {
 		io.WriteString(w, " = ")
@@ -2658,6 +2683,11 @@ func (r *ReturnStmt) emit(w io.Writer, indent int) {
 	}
 	io.WriteString(w, "return")
 	if r.Value != nil {
+		if l, ok := r.Value.(*ListLit); ok && len(l.Elems) == 0 && r.Type != "" {
+			io.WriteString(w, " {};")
+			io.WriteString(w, "\n")
+			return
+		}
 		io.WriteString(w, " ")
 		if strings.HasPrefix(r.Type, "std::unique_ptr<") || strings.HasPrefix(r.Type, "std::shared_ptr<") {
 			if sl, ok := r.Value.(*StructLit); ok {
@@ -4236,7 +4266,20 @@ func convertFun(fn *parser.FunStmt) (*Func, error) {
 	defer func() { currentReturnType = prevRet }()
 	paramNames = nil
 	mutatedParams = nil
-	return &Func{Name: fn.Name, Params: params, ReturnType: ret, Body: body}, nil
+	f := &Func{Name: fn.Name, Params: params, ReturnType: ret, Body: body}
+	if currentReceiver != "" {
+		f.Receiver = currentReceiver
+		if len(currentReceiverFields) > 0 {
+			rf := make(map[string]bool)
+			for k, v := range currentReceiverFields {
+				if v {
+					rf[k] = true
+				}
+			}
+			f.RecFields = rf
+		}
+	}
+	return f, nil
 }
 
 func convertFunLambda(fn *parser.FunStmt) (*BlockLambda, error) {

@@ -1,3 +1,8 @@
+## Progress (2025-07-27 19:09 +0700)
+- cpp: support receiver field access
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
 ## Progress (2025-07-27 15:57 +0700)
 - vm: add pow builtin and update rosetta outputs
 - Generated C++ for 103/104 programs
