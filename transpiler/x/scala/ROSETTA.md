@@ -2,8 +2,8 @@
 
 Generated Scala code for Rosetta tasks in `tests/rosetta/x/Mochi`. Each program has a `.scala` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
 
-## Golden Test Checklist (224/467)
-_Last updated: 2025-07-27 22:22 +0700_
+## Golden Test Checklist (225/467)
+_Last updated: 2025-07-27 23:43 +0700_
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -278,7 +278,7 @@ _Last updated: 2025-07-27 22:22 +0700_
 | 269 | curzon-numbers | ✓ | 414µs | 8.7 MB |
 | 270 | cusip | error |  |  |
 | 271 | cyclops-numbers |   |  |  |
-| 272 | damm-algorithm |   |  |  |
+| 272 | damm-algorithm | ✓ | 8µs | 8.7 MB |
 | 273 | date-format |   |  |  |
 | 274 | date-manipulation |   |  |  |
 | 275 | day-of-the-week |   |  |  |
