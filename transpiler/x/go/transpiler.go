@@ -2609,6 +2609,7 @@ func compileStmts(list []*parser.Statement, env *types.Env) ([]Stmt, error) {
 			out = append(out, st)
 		}
 	}
+	out = removeUnusedLocals(out)
 	return out, nil
 }
 
@@ -4858,6 +4859,12 @@ func compilePrimary(p *parser.Primary, env *types.Env, base string) (Expr, error
 						for i := 1; i < len(args); i++ {
 							if types.IsAnyType(types.TypeOfExpr(p.Call.Args[i], env)) {
 								args[i] = &AssertExpr{Expr: args[i], Type: et}
+							} else if ll, ok2 := args[i].(*ListLit); ok2 && ll.ElemType == "any" && len(ll.Elems) == 0 {
+								if strings.HasPrefix(et, "[]") {
+									ll.ElemType = strings.TrimPrefix(et, "[]")
+								} else {
+									ll.ElemType = et
+								}
 							}
 						}
 					}
@@ -6509,4 +6516,160 @@ func substituteFieldRefsStmt(s Stmt, recv string, fields map[string]bool) Stmt {
 		}
 	}
 	return s
+}
+
+// exprUses reports whether the expression references the given variable name.
+func exprUses(name string, e Expr) bool {
+	switch t := e.(type) {
+	case *VarRef:
+		return t.Name == name
+	case *BinaryExpr:
+		return exprUses(name, t.Left) || exprUses(name, t.Right)
+	case *BigBinaryExpr:
+		return exprUses(name, t.Left) || exprUses(name, t.Right)
+	case *CallExpr:
+		if t.FuncExpr != nil && exprUses(name, t.FuncExpr) {
+			return true
+		}
+		for _, a := range t.Args {
+			if exprUses(name, a) {
+				return true
+			}
+		}
+	case *MethodCallExpr:
+		if exprUses(name, t.Target) {
+			return true
+		}
+		for _, a := range t.Args {
+			if exprUses(name, a) {
+				return true
+			}
+		}
+	case *IndexExpr:
+		return exprUses(name, t.X) || exprUses(name, t.Index)
+	case *SliceExpr:
+		if exprUses(name, t.X) {
+			return true
+		}
+		if t.Start != nil && exprUses(name, t.Start) {
+			return true
+		}
+		if t.End != nil && exprUses(name, t.End) {
+			return true
+		}
+	case *FieldExpr:
+		return exprUses(name, t.X)
+	case *NotExpr:
+		return exprUses(name, t.Expr)
+	case *AssertExpr:
+		return exprUses(name, t.Expr)
+	case *ListLit:
+		for _, el := range t.Elems {
+			if exprUses(name, el) {
+				return true
+			}
+		}
+	case *MapLit:
+		for i := range t.Keys {
+			if exprUses(name, t.Keys[i]) || exprUses(name, t.Values[i]) {
+				return true
+			}
+		}
+	case *StructLit:
+		for _, f := range t.Fields {
+			if exprUses(name, f) {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+// stmtsUse reports whether any of the statements reference the given variable.
+func stmtsUse(name string, stmts []Stmt) bool {
+	for _, st := range stmts {
+		switch s := st.(type) {
+		case *VarDecl:
+			if exprUses(name, s.Value) {
+				return true
+			}
+		case *AssignStmt:
+			if s.Name == name || exprUses(name, s.Value) {
+				return true
+			}
+		case *ExprStmt:
+			if exprUses(name, s.Expr) {
+				return true
+			}
+		case *IfStmt:
+			if exprUses(name, s.Cond) || stmtsUse(name, s.Then) || stmtsUse(name, s.Else) {
+				return true
+			}
+		case *WhileStmt:
+			if exprUses(name, s.Cond) || stmtsUse(name, s.Body) {
+				return true
+			}
+		case *ForEachStmt:
+			if s.Name != name {
+				if exprUses(name, s.Iterable) || stmtsUse(name, s.Body) {
+					return true
+				}
+			}
+		case *ForRangeStmt:
+			if s.Name != name {
+				if (s.Start != nil && exprUses(name, s.Start)) || (s.End != nil && exprUses(name, s.End)) {
+					return true
+				}
+				if stmtsUse(name, s.Body) {
+					return true
+				}
+			}
+		case *SetStmt:
+			if exprUses(name, s.Target) || exprUses(name, s.Value) {
+				return true
+			}
+		case *IndexAssignStmt:
+			if s.Name == name || exprUses(name, s.Index) || exprUses(name, s.Value) {
+				return true
+			}
+		case *UpdateStmt:
+			if s.Target == name {
+				return true
+			}
+			if exprUses(name, s.Cond) {
+				return true
+			}
+			for _, v := range s.Values {
+				if exprUses(name, v) {
+					return true
+				}
+			}
+		case *BenchStmt:
+			if stmtsUse(name, s.Body) {
+				return true
+			}
+		case *PrintStmt:
+			for _, a := range s.Args {
+				if exprUses(name, a) {
+					return true
+				}
+			}
+		}
+	}
+	return false
+}
+
+// removeUnusedLocals scans the statement list and appends `_ = name` after
+// any local variable declaration that is never referenced later.
+func removeUnusedLocals(stmts []Stmt) []Stmt {
+	for i := 0; i < len(stmts); i++ {
+		if vd, ok := stmts[i].(*VarDecl); ok && !vd.Global {
+			if !stmtsUse(vd.Name, stmts[i+1:]) {
+				assign := &AssignStmt{Name: "_", Value: &VarRef{Name: vd.Name}}
+				stmts = append(stmts[:i+1], append([]Stmt{assign}, stmts[i+1:]...)...)
+				i++
+			}
+		}
+	}
+	return stmts
 }
