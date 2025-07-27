@@ -27,7 +27,7 @@ public class Main {
         int s = 0;
         while (Math.floorMod(d, 2) == 0) {
             d = d / 2;
-            s = s + String.valueOf(1);
+            s = s + 1;
         }
         for (int a : new int[]{2, 325, 9375, 28178, 450775, 9780504, 1795265022}) {
             if (Math.floorMod(a, n) == 0) {
