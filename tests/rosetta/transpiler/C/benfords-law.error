@@ -1,0 +1,15 @@
+compile failed: exit status 1: /tmp/ctranspile724717010/benfords-law.mochi.c: In function ‘_mem’:
+/tmp/ctranspile724717010/benfords-law.mochi.c:61:12: warning: ‘mallinfo’ is deprecated [-Wdeprecated-declarations]
+   61 |     struct mallinfo mi = mallinfo();
+      |            ^~~~~~~~
+In file included from /tmp/ctranspile724717010/benfords-law.mochi.c:5:
+/usr/include/malloc.h:114:24: note: declared here
+  114 | extern struct mallinfo mallinfo (void) __THROW __MALLOC_DEPRECATED;
+      |                        ^~~~~~~~
+/tmp/ctranspile724717010/benfords-law.mochi.c: In function ‘show’:
+/tmp/ctranspile724717010/benfords-law.mochi.c:163:17: error: ‘nums_keys’ undeclared (first use in this function); did you mean ‘nums_len’?
+  163 |         int n = nums_keys[__i];
+      |                 ^~~~~~~~~
+      |                 nums_len
+/tmp/ctranspile724717010/benfords-law.mochi.c:163:17: note: each undeclared identifier is reported only once for each function it appears in
+

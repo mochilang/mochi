@@ -1,0 +1,122 @@
+compile failed: exit status 1: /tmp/ctranspile4090397559/bifid-cipher.mochi.c: In function ‘_mem’:
+/tmp/ctranspile4090397559/bifid-cipher.mochi.c:94:12: warning: ‘mallinfo’ is deprecated [-Wdeprecated-declarations]
+   94 |     struct mallinfo mi = mallinfo();
+      |            ^~~~~~~~
+In file included from /tmp/ctranspile4090397559/bifid-cipher.mochi.c:5:
+/usr/include/malloc.h:114:24: note: declared here
+  114 | extern struct mallinfo mallinfo (void) __THROW __MALLOC_DEPRECATED;
+      |                        ^~~~~~~~
+/tmp/ctranspile4090397559/bifid-cipher.mochi.c: In function ‘square_to_maps’:
+/tmp/ctranspile4090397559/bifid-cipher.mochi.c:128:31: warning: initialization of ‘const char ***’ from incompatible pointer type ‘const int **’ [-Wincompatible-pointer-types]
+  128 |     MapSL emap = { emap_keys, emap_vals, emap_lens, emap_len };
+      |                               ^~~~~~~~~
+/tmp/ctranspile4090397559/bifid-cipher.mochi.c:128:31: note: (near initialization for ‘emap.vals’)
+/tmp/ctranspile4090397559/bifid-cipher.mochi.c:140:17: error: array subscript is not an integer
+  140 |             emap[ch] = (int[]){ x, y };
+      |                 ^
+/tmp/ctranspile4090397559/bifid-cipher.mochi.c:146:25: error: incompatible types when initializing type ‘int’ using type ‘MapSL’
+  146 |     return (Anon1){.e = emap, .d = dmap};
+      |                         ^~~~
+/tmp/ctranspile4090397559/bifid-cipher.mochi.c:146:36: error: incompatible types when initializing type ‘int’ using type ‘MapSS’
+  146 |     return (Anon1){.e = emap, .d = dmap};
+      |                                    ^~~~
+/tmp/ctranspile4090397559/bifid-cipher.mochi.c: In function ‘remove_space’:
+/tmp/ctranspile4090397559/bifid-cipher.mochi.c:155:53: error: ‘emap_keys’ undeclared (first use in this function)
+  155 |         if ((strcmp(ch, " ") != 0) && (contains_str(emap_keys, emap_len, ch))) {
+      |                                                     ^~~~~~~~~
+/tmp/ctranspile4090397559/bifid-cipher.mochi.c:155:53: note: each undeclared identifier is reported only once for each function it appears in
+/tmp/ctranspile4090397559/bifid-cipher.mochi.c:155:64: error: ‘emap_len’ undeclared (first use in this function)
+  155 |         if ((strcmp(ch, " ") != 0) && (contains_str(emap_keys, emap_len, ch))) {
+      |                                                                ^~~~~~~~
+/tmp/ctranspile4090397559/bifid-cipher.mochi.c: In function ‘encrypt’:
+/tmp/ctranspile4090397559/bifid-cipher.mochi.c:173:51: error: subscripted value is neither array nor pointer nor vector
+  173 |         row0 = list_append_int(row0, &row0_len, xy[0]);
+      |                                                   ^
+/tmp/ctranspile4090397559/bifid-cipher.mochi.c:174:51: error: subscripted value is neither array nor pointer nor vector
+  174 |         row1 = list_append_int(row1, &row1_len, xy[1]);
+      |                                                   ^
+/tmp/ctranspile4090397559/bifid-cipher.mochi.c:178:17: error: ‘row1_keys’ undeclared (first use in this function); did you mean ‘row1_len’?
+  178 |         int v = row1_keys[__i];
+      |                 ^~~~~~~~~
+      |                 row1_len
+/tmp/ctranspile4090397559/bifid-cipher.mochi.c: In function ‘decrypt’:
+/tmp/ctranspile4090397559/bifid-cipher.mochi.c:199:57: error: subscripted value is neither array nor pointer nor vector
+  199 |         coords = list_append_int(coords, &coords_len, xy[0]);
+      |                                                         ^
+/tmp/ctranspile4090397559/bifid-cipher.mochi.c:200:57: error: subscripted value is neither array nor pointer nor vector
+  200 |         coords = list_append_int(coords, &coords_len, xy[1]);
+      |                                                         ^
+/tmp/ctranspile4090397559/bifid-cipher.mochi.c: In function ‘user_main’:
+/tmp/ctranspile4090397559/bifid-cipher.mochi.c:239:33: warning: passing argument 1 of ‘square_to_maps’ from incompatible pointer type [-Wincompatible-pointer-types]
+  239 |     Anon1 maps = square_to_maps(squareRosetta, squareRosetta_len, squareRosetta_lens, squareRosetta_len);
+      |                                 ^~~~~~~~~~~~~
+      |                                 |
+      |                                 const char * (*)[5]
+/tmp/ctranspile4090397559/bifid-cipher.mochi.c:123:38: note: expected ‘const char ***’ but argument is of type ‘const char * (*)[5]’
+  123 | Anon1 square_to_maps(const char* * * square, size_t square_len, size_t* square_lens, size_t square_lens_len) {
+      |                      ~~~~~~~~~~~~~~~~^~~~~~
+/tmp/ctranspile4090397559/bifid-cipher.mochi.c:244:48: error: incompatible type for argument 3 of ‘encrypt’
+  244 |     const char* s = encrypt(textRosetta, emap, dmap);
+      |                                                ^~~~
+      |                                                |
+      |                                                int
+/tmp/ctranspile4090397559/bifid-cipher.mochi.c:163:55: note: expected ‘MapSS’ but argument is of type ‘int’
+  163 | const char* encrypt(const char* text, int emap, MapSS dmap) {
+      |                                                 ~~~~~~^~~~
+/tmp/ctranspile4090397559/bifid-cipher.mochi.c:246:26: error: incompatible type for argument 3 of ‘decrypt’
+  246 |     s = decrypt(s, emap, dmap);
+      |                          ^~~~
+      |                          |
+      |                          int
+/tmp/ctranspile4090397559/bifid-cipher.mochi.c:191:55: note: expected ‘MapSS’ but argument is of type ‘int’
+  191 | const char* decrypt(const char* text, int emap, MapSS dmap) {
+      |                                                 ~~~~~~^~~~
+/tmp/ctranspile4090397559/bifid-cipher.mochi.c:248:27: warning: passing argument 1 of ‘square_to_maps’ from incompatible pointer type [-Wincompatible-pointer-types]
+  248 |     maps = square_to_maps(squareWikipedia, squareWikipedia_len, squareWikipedia_lens, squareWikipedia_len);
+      |                           ^~~~~~~~~~~~~~~
+      |                           |
+      |                           const char * (*)[5]
+/tmp/ctranspile4090397559/bifid-cipher.mochi.c:123:38: note: expected ‘const char ***’ but argument is of type ‘const char * (*)[5]’
+  123 | Anon1 square_to_maps(const char* * * square, size_t square_len, size_t* square_lens, size_t square_lens_len) {
+      |                      ~~~~~~~~~~~~~~~~^~~~~~
+/tmp/ctranspile4090397559/bifid-cipher.mochi.c:253:38: error: incompatible type for argument 3 of ‘encrypt’
+  253 |     s = encrypt(textWikipedia, emap, dmap);
+      |                                      ^~~~
+      |                                      |
+      |                                      int
+/tmp/ctranspile4090397559/bifid-cipher.mochi.c:163:55: note: expected ‘MapSS’ but argument is of type ‘int’
+  163 | const char* encrypt(const char* text, int emap, MapSS dmap) {
+      |                                                 ~~~~~~^~~~
+/tmp/ctranspile4090397559/bifid-cipher.mochi.c:255:26: error: incompatible type for argument 3 of ‘decrypt’
+  255 |     s = decrypt(s, emap, dmap);
+      |                          ^~~~
+      |                          |
+      |                          int
+/tmp/ctranspile4090397559/bifid-cipher.mochi.c:191:55: note: expected ‘MapSS’ but argument is of type ‘int’
+  191 | const char* decrypt(const char* text, int emap, MapSS dmap) {
+      |                                                 ~~~~~~^~~~
+/tmp/ctranspile4090397559/bifid-cipher.mochi.c:257:27: warning: passing argument 1 of ‘square_to_maps’ from incompatible pointer type [-Wincompatible-pointer-types]
+  257 |     maps = square_to_maps(squareWikipedia, squareWikipedia_len, squareWikipedia_lens, squareWikipedia_len);
+      |                           ^~~~~~~~~~~~~~~
+      |                           |
+      |                           const char * (*)[5]
+/tmp/ctranspile4090397559/bifid-cipher.mochi.c:123:38: note: expected ‘const char ***’ but argument is of type ‘const char * (*)[5]’
+  123 | Anon1 square_to_maps(const char* * * square, size_t square_len, size_t* square_lens, size_t square_lens_len) {
+      |                      ~~~~~~~~~~~~~~~~^~~~~~
+/tmp/ctranspile4090397559/bifid-cipher.mochi.c:262:33: error: incompatible type for argument 3 of ‘encrypt’
+  262 |     s = encrypt(textTest, emap, dmap);
+      |                                 ^~~~
+      |                                 |
+      |                                 int
+/tmp/ctranspile4090397559/bifid-cipher.mochi.c:163:55: note: expected ‘MapSS’ but argument is of type ‘int’
+  163 | const char* encrypt(const char* text, int emap, MapSS dmap) {
+      |                                                 ~~~~~~^~~~
+/tmp/ctranspile4090397559/bifid-cipher.mochi.c:264:26: error: incompatible type for argument 3 of ‘decrypt’
+  264 |     s = decrypt(s, emap, dmap);
+      |                          ^~~~
+      |                          |
+      |                          int
+/tmp/ctranspile4090397559/bifid-cipher.mochi.c:191:55: note: expected ‘MapSS’ but argument is of type ‘int’
+  191 | const char* decrypt(const char* text, int emap, MapSS dmap) {
+      |                                                 ~~~~~~^~~~
+

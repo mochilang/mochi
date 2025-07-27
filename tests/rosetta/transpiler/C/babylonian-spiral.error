@@ -1,0 +1,102 @@
+compile failed: exit status 1: /tmp/ctranspile2380428933/babylonian-spiral.mochi.c: In function ‘_mem’:
+/tmp/ctranspile2380428933/babylonian-spiral.mochi.c:86:12: warning: ‘mallinfo’ is deprecated [-Wdeprecated-declarations]
+   86 |     struct mallinfo mi = mallinfo();
+      |            ^~~~~~~~
+In file included from /tmp/ctranspile2380428933/babylonian-spiral.mochi.c:5:
+/usr/include/malloc.h:114:24: note: declared here
+  114 | extern struct mallinfo mallinfo (void) __THROW __MALLOC_DEPRECATED;
+      |                        ^~~~~~~~
+/tmp/ctranspile2380428933/babylonian-spiral.mochi.c: In function ‘step’:
+/tmp/ctranspile2380428933/babylonian-spiral.mochi.c:142:35: error: incompatible type for argument 3 of ‘push’
+  142 |         h = push(h, h_len, (Anon1){.s = nv * nv, .a = nv, .b = 0});
+      |                                   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |                                   |
+      |                                   Anon1
+/tmp/ctranspile2380428933/babylonian-spiral.mochi.c:128:39: note: expected ‘int’ but argument is of type ‘Anon1’
+  128 | int * push(int * h, size_t h_len, int it) {
+      |                                   ~~~~^~
+/tmp/ctranspile2380428933/babylonian-spiral.mochi.c:154:101: error: ‘it_keys’ undeclared (first use in this function)
+  154 |         v = list_append_intptr(v, &v_len, ({int *tmp = malloc(2 * sizeof(int)); tmp[0] = map_get_si(it_keys, it_vals, it_len, "a"); tmp[1] = map_get_si(it_keys, it_vals, it_len, "b"); tmp;}));
+      |                                                                                                     ^~~~~~~
+/tmp/ctranspile2380428933/babylonian-spiral.mochi.c:154:101: note: each undeclared identifier is reported only once for each function it appears in
+/tmp/ctranspile2380428933/babylonian-spiral.mochi.c:154:110: error: ‘it_vals’ undeclared (first use in this function)
+  154 |         v = list_append_intptr(v, &v_len, ({int *tmp = malloc(2 * sizeof(int)); tmp[0] = map_get_si(it_keys, it_vals, it_len, "a"); tmp[1] = map_get_si(it_keys, it_vals, it_len, "b"); tmp;}));
+      |                                                                                                              ^~~~~~~
+/tmp/ctranspile2380428933/babylonian-spiral.mochi.c:154:119: error: ‘it_len’ undeclared (first use in this function); did you mean ‘v_len’?
+  154 |         v = list_append_intptr(v, &v_len, ({int *tmp = malloc(2 * sizeof(int)); tmp[0] = map_get_si(it_keys, it_vals, it_len, "a"); tmp[1] = map_get_si(it_keys, it_vals, it_len, "b"); tmp;}));
+      |                                                                                                                       ^~~~~~
+      |                                                                                                                       v_len
+/tmp/ctranspile2380428933/babylonian-spiral.mochi.c:166:17: error: ‘v_keys’ undeclared (first use in this function); did you mean ‘v_lens’?
+  166 |         int p = v_keys[__i];
+      |                 ^~~~~~
+      |                 v_lens
+/tmp/ctranspile2380428933/babylonian-spiral.mochi.c:167:52: warning: passing argument 3 of ‘list_append_intptr’ makes pointer from integer without a cast [-Wint-conversion]
+  167 |         list = list_append_intptr(list, &list_len, p);
+      |                                                    ^
+      |                                                    |
+      |                                                    int
+/tmp/ctranspile2380428933/babylonian-spiral.mochi.c:50:62: note: expected ‘int *’ but argument is of type ‘int’
+   50 | static int** list_append_intptr(int **arr, size_t *len, int *val) {
+      |                                                         ~~~~~^~~
+/tmp/ctranspile2380428933/babylonian-spiral.mochi.c:168:64: error: ‘p_len’ undeclared (first use in this function); did you mean ‘v_len’?
+  168 |         list_lens = list_append_szt(list_lens, &list_lens_len, p_len);
+      |                                                                ^~~~~
+      |                                                                v_len
+/tmp/ctranspile2380428933/babylonian-spiral.mochi.c:175:17: error: ‘temp_keys’ undeclared (first use in this function); did you mean ‘temp_lens’?
+  175 |         int p = temp_keys[__i];
+      |                 ^~~~~~~~~
+      |                 temp_lens
+/tmp/ctranspile2380428933/babylonian-spiral.mochi.c:176:14: error: subscripted value is neither array nor pointer nor vector
+  176 |         if (p[0] != p[1]) {
+      |              ^
+/tmp/ctranspile2380428933/babylonian-spiral.mochi.c:176:22: error: subscripted value is neither array nor pointer nor vector
+  176 |         if (p[0] != p[1]) {
+      |                      ^
+/tmp/ctranspile2380428933/babylonian-spiral.mochi.c:177:104: error: subscripted value is neither array nor pointer nor vector
+  177 |             list = list_append_intptr(list, &list_len, ({int *tmp = malloc(2 * sizeof(int)); tmp[0] = p[1]; tmp[1] = p[0]; tmp;}));
+      |                                                                                                        ^
+/tmp/ctranspile2380428933/babylonian-spiral.mochi.c:177:119: error: subscripted value is neither array nor pointer nor vector
+  177 |             list = list_append_intptr(list, &list_len, ({int *tmp = malloc(2 * sizeof(int)); tmp[0] = p[1]; tmp[1] = p[0]; tmp;}));
+      |                                                                                                                       ^
+/tmp/ctranspile2380428933/babylonian-spiral.mochi.c:184:14: error: subscripted value is neither array nor pointer nor vector
+  184 |         if (p[1] != 0) {
+      |              ^
+/tmp/ctranspile2380428933/babylonian-spiral.mochi.c:185:104: error: subscripted value is neither array nor pointer nor vector
+  185 |             list = list_append_intptr(list, &list_len, ({int *tmp = malloc(2 * sizeof(int)); tmp[0] = p[0]; tmp[1] = -(p[1]); tmp;}));
+      |                                                                                                        ^
+/tmp/ctranspile2380428933/babylonian-spiral.mochi.c:185:121: error: subscripted value is neither array nor pointer nor vector
+  185 |             list = list_append_intptr(list, &list_len, ({int *tmp = malloc(2 * sizeof(int)); tmp[0] = p[0]; tmp[1] = -(p[1]); tmp;}));
+      |                                                                                                                         ^
+/tmp/ctranspile2380428933/babylonian-spiral.mochi.c:192:14: error: subscripted value is neither array nor pointer nor vector
+  192 |         if (p[0] != 0) {
+      |              ^
+/tmp/ctranspile2380428933/babylonian-spiral.mochi.c:193:106: error: subscripted value is neither array nor pointer nor vector
+  193 |             list = list_append_intptr(list, &list_len, ({int *tmp = malloc(2 * sizeof(int)); tmp[0] = -(p[0]); tmp[1] = p[1]; tmp;}));
+      |                                                                                                          ^
+/tmp/ctranspile2380428933/babylonian-spiral.mochi.c:193:122: error: subscripted value is neither array nor pointer nor vector
+  193 |             list = list_append_intptr(list, &list_len, ({int *tmp = malloc(2 * sizeof(int)); tmp[0] = -(p[0]); tmp[1] = p[1]; tmp;}));
+      |                                                                                                                          ^
+/tmp/ctranspile2380428933/babylonian-spiral.mochi.c:201:17: error: ‘list_keys’ undeclared (first use in this function); did you mean ‘list_lens’?
+  201 |         int p = list_keys[__i];
+      |                 ^~~~~~~~~
+      |                 list_lens
+/tmp/ctranspile2380428933/babylonian-spiral.mochi.c:202:23: error: subscripted value is neither array nor pointer nor vector
+  202 |         int cross = (p[0] * dir[1]) - (p[1] * dir[0]);
+      |                       ^
+/tmp/ctranspile2380428933/babylonian-spiral.mochi.c:202:41: error: subscripted value is neither array nor pointer nor vector
+  202 |         int cross = (p[0] * dir[1]) - (p[1] * dir[0]);
+      |                                         ^
+/tmp/ctranspile2380428933/babylonian-spiral.mochi.c:204:25: error: subscripted value is neither array nor pointer nor vector
+  204 |             int dot = (p[0] * dir[0]) + (p[1] * dir[1]);
+      |                         ^
+/tmp/ctranspile2380428933/babylonian-spiral.mochi.c:204:43: error: subscripted value is neither array nor pointer nor vector
+  204 |             int dot = (p[0] * dir[0]) + (p[1] * dir[1]);
+      |                                           ^
+/tmp/ctranspile2380428933/babylonian-spiral.mochi.c:207:22: warning: assignment to ‘int *’ from ‘int’ makes pointer from integer without a cast [-Wint-conversion]
+  207 |                 best = p;
+      |                      ^
+/tmp/ctranspile2380428933/babylonian-spiral.mochi.c: In function ‘positions’:
+/tmp/ctranspile2380428933/babylonian-spiral.mochi.c:231:13: error: assignment to expression with array type
+  231 |         dir = st.d;
+      |             ^
+

@@ -1,0 +1,280 @@
+compile failed: exit status 1: /tmp/ctranspile1354763015/avl-tree.mochi.c: In function ‘_mem’:
+/tmp/ctranspile1354763015/avl-tree.mochi.c:62:12: warning: ‘mallinfo’ is deprecated [-Wdeprecated-declarations]
+   62 |     struct mallinfo mi = mallinfo();
+      |            ^~~~~~~~
+In file included from /tmp/ctranspile1354763015/avl-tree.mochi.c:5:
+/usr/include/malloc.h:114:24: note: declared here
+  114 | extern struct mallinfo mallinfo (void) __THROW __MALLOC_DEPRECATED;
+      |                        ^~~~~~~~
+/tmp/ctranspile1354763015/avl-tree.mochi.c: In function ‘Node’:
+/tmp/ctranspile1354763015/avl-tree.mochi.c:93:12: error: incompatible types when returning type ‘int’ but ‘MapSS’ was expected
+   93 |     return 0;
+      |            ^
+/tmp/ctranspile1354763015/avl-tree.mochi.c: In function ‘setLink’:
+/tmp/ctranspile1354763015/avl-tree.mochi.c:102:10: error: subscripted value is neither array nor pointer nor vector
+  102 |     links[dir] = v;
+      |          ^
+/tmp/ctranspile1354763015/avl-tree.mochi.c:103:48: error: incompatible type for argument 5 of ‘map_set_ss’
+  103 |     map_set_ss(n.keys, n.vals, &n.len, "Link", links);
+      |                                                ^~~~~
+      |                                                |
+      |                                                MapSS
+/tmp/ctranspile1354763015/avl-tree.mochi.c:33:106: note: expected ‘const char *’ but argument is of type ‘MapSS’
+   33 | static void map_set_ss(const char *keys[], const char *vals[], size_t *len, const char *key, const char *val) {
+      |                                                                                              ~~~~~~~~~~~~^~~
+/tmp/ctranspile1354763015/avl-tree.mochi.c: In function ‘single’:
+/tmp/ctranspile1354763015/avl-tree.mochi.c:112:29: error: incompatible type for argument 3 of ‘setLink’
+  112 |     setLink(root, opp(dir), getLink(tmp, dir));
+      |                             ^~~~~~~~~~~~~~~~~
+      |                             |
+      |                             MapSS
+/tmp/ctranspile1354763015/avl-tree.mochi.c:100:35: note: expected ‘int’ but argument is of type ‘MapSS’
+  100 | int setLink(MapSS n, int dir, int v) {
+      |                               ~~~~^
+/tmp/ctranspile1354763015/avl-tree.mochi.c:113:23: error: incompatible type for argument 3 of ‘setLink’
+  113 |     setLink(tmp, dir, root);
+      |                       ^~~~
+      |                       |
+      |                       MapSS
+/tmp/ctranspile1354763015/avl-tree.mochi.c:100:35: note: expected ‘int’ but argument is of type ‘MapSS’
+  100 | int setLink(MapSS n, int dir, int v) {
+      |                               ~~~~^
+/tmp/ctranspile1354763015/avl-tree.mochi.c: In function ‘user_double’:
+/tmp/ctranspile1354763015/avl-tree.mochi.c:119:43: error: incompatible type for argument 3 of ‘setLink’
+  119 |     setLink(getLink(root, opp(dir)), dir, getLink(tmp, opp(dir)));
+      |                                           ^~~~~~~~~~~~~~~~~~~~~~
+      |                                           |
+      |                                           MapSS
+/tmp/ctranspile1354763015/avl-tree.mochi.c:100:35: note: expected ‘int’ but argument is of type ‘MapSS’
+  100 | int setLink(MapSS n, int dir, int v) {
+      |                               ~~~~^
+/tmp/ctranspile1354763015/avl-tree.mochi.c:120:28: error: incompatible type for argument 3 of ‘setLink’
+  120 |     setLink(tmp, opp(dir), getLink(root, opp(dir)));
+      |                            ^~~~~~~~~~~~~~~~~~~~~~~
+      |                            |
+      |                            MapSS
+/tmp/ctranspile1354763015/avl-tree.mochi.c:100:35: note: expected ‘int’ but argument is of type ‘MapSS’
+  100 | int setLink(MapSS n, int dir, int v) {
+      |                               ~~~~^
+/tmp/ctranspile1354763015/avl-tree.mochi.c:121:29: error: incompatible type for argument 3 of ‘setLink’
+  121 |     setLink(root, opp(dir), tmp);
+      |                             ^~~
+      |                             |
+      |                             MapSS
+/tmp/ctranspile1354763015/avl-tree.mochi.c:100:35: note: expected ‘int’ but argument is of type ‘MapSS’
+  100 | int setLink(MapSS n, int dir, int v) {
+      |                               ~~~~^
+/tmp/ctranspile1354763015/avl-tree.mochi.c:123:29: error: incompatible type for argument 3 of ‘setLink’
+  123 |     setLink(root, opp(dir), getLink(tmp, dir));
+      |                             ^~~~~~~~~~~~~~~~~
+      |                             |
+      |                             MapSS
+/tmp/ctranspile1354763015/avl-tree.mochi.c:100:35: note: expected ‘int’ but argument is of type ‘MapSS’
+  100 | int setLink(MapSS n, int dir, int v) {
+      |                               ~~~~^
+/tmp/ctranspile1354763015/avl-tree.mochi.c:124:23: error: incompatible type for argument 3 of ‘setLink’
+  124 |     setLink(tmp, dir, root);
+      |                       ^~~~
+      |                       |
+      |                       MapSS
+/tmp/ctranspile1354763015/avl-tree.mochi.c:100:35: note: expected ‘int’ but argument is of type ‘MapSS’
+  100 | int setLink(MapSS n, int dir, int v) {
+      |                               ~~~~^
+/tmp/ctranspile1354763015/avl-tree.mochi.c: In function ‘adjustBalance’:
+/tmp/ctranspile1354763015/avl-tree.mochi.c:135:61: warning: comparison between pointer and integer
+  135 |         if (map_get_ss(nn.keys, nn.vals, nn.len, "Balance") == bal) {
+      |                                                             ^~
+/tmp/ctranspile1354763015/avl-tree.mochi.c:136:68: warning: passing argument 5 of ‘map_set_ss’ makes pointer from integer without a cast [-Wint-conversion]
+  136 |             map_set_ss(root.keys, root.vals, &root.len, "Balance", -(bal));
+      |                                                                    ^~~~~~
+      |                                                                    |
+      |                                                                    int
+/tmp/ctranspile1354763015/avl-tree.mochi.c:33:106: note: expected ‘const char *’ but argument is of type ‘int’
+   33 | static void map_set_ss(const char *keys[], const char *vals[], size_t *len, const char *key, const char *val) {
+      |                                                                                              ~~~~~~~~~~~~^~~
+/tmp/ctranspile1354763015/avl-tree.mochi.c:140:59: warning: passing argument 5 of ‘map_set_ss’ makes pointer from integer without a cast [-Wint-conversion]
+  140 |             map_set_ss(n.keys, n.vals, &n.len, "Balance", bal);
+      |                                                           ^~~
+      |                                                           |
+      |                                                           int
+/tmp/ctranspile1354763015/avl-tree.mochi.c:33:106: note: expected ‘const char *’ but argument is of type ‘int’
+   33 | static void map_set_ss(const char *keys[], const char *vals[], size_t *len, const char *key, const char *val) {
+      |                                                                                              ~~~~~~~~~~~~^~~
+/tmp/ctranspile1354763015/avl-tree.mochi.c:143:7: error: array subscript is not an integer
+  143 |     nn["Balance"] = 0;
+      |       ^
+/tmp/ctranspile1354763015/avl-tree.mochi.c: In function ‘insertBalance’:
+/tmp/ctranspile1354763015/avl-tree.mochi.c:149:54: warning: comparison between pointer and integer
+  149 |     if (map_get_ss(n.keys, n.vals, n.len, "Balance") == bal) {
+      |                                                      ^~
+/tmp/ctranspile1354763015/avl-tree.mochi.c: In function ‘insertR’:
+/tmp/ctranspile1354763015/avl-tree.mochi.c:159:9: error: expected expression before ‘)’ token
+  159 |     if () {
+      |         ^
+/tmp/ctranspile1354763015/avl-tree.mochi.c:160:32: error: incompatible types when initializing type ‘int’ using type ‘MapSS’
+  160 |         return (Anon1){.node = Node(data), .done = 0};
+      |                                ^~~~
+/tmp/ctranspile1354763015/avl-tree.mochi.c:167:29: error: incompatible type for argument 1 of ‘getLink’
+  167 |     int r = insertR(getLink(node, dir), data);
+      |                             ^~~~
+      |                             |
+      |                             int
+/tmp/ctranspile1354763015/avl-tree.mochi.c:96:21: note: expected ‘MapSS’ but argument is of type ‘int’
+   96 | MapSS getLink(MapSS n, int dir) {
+      |               ~~~~~~^
+/tmp/ctranspile1354763015/avl-tree.mochi.c:168:13: error: incompatible type for argument 1 of ‘setLink’
+  168 |     setLink(node, dir, r["node"]);
+      |             ^~~~
+      |             |
+      |             int
+/tmp/ctranspile1354763015/avl-tree.mochi.c:100:19: note: expected ‘MapSS’ but argument is of type ‘int’
+  100 | int setLink(MapSS n, int dir, int v) {
+      |             ~~~~~~^
+/tmp/ctranspile1354763015/avl-tree.mochi.c:172:5: warning: assignment of read-only location ‘"Balance"[node]’
+  172 |     node["Balance"] = (int)(node["Balance"]) + ((2 * dir) - 1);
+      |     ^~~~
+/tmp/ctranspile1354763015/avl-tree.mochi.c:179:42: error: incompatible type for argument 1 of ‘insertBalance’
+  179 |     return (Anon1){.node = insertBalance(node, dir), .done = 1};
+      |                                          ^~~~
+      |                                          |
+      |                                          int
+/tmp/ctranspile1354763015/avl-tree.mochi.c:146:27: note: expected ‘MapSS’ but argument is of type ‘int’
+  146 | MapSS insertBalance(MapSS root, int dir) {
+      |                     ~~~~~~^~~~
+/tmp/ctranspile1354763015/avl-tree.mochi.c: In function ‘removeBalance’:
+/tmp/ctranspile1354763015/avl-tree.mochi.c:190:54: warning: comparison between pointer and integer
+  190 |     if (map_get_ss(n.keys, n.vals, n.len, "Balance") == -(bal)) {
+      |                                                      ^~
+/tmp/ctranspile1354763015/avl-tree.mochi.c:193:32: error: incompatible types when initializing type ‘int’ using type ‘MapSS’
+  193 |         return (Anon1){.node = single(root, dir), .done = 0};
+      |                                ^~~~~~
+/tmp/ctranspile1354763015/avl-tree.mochi.c:195:54: warning: comparison between pointer and integer
+  195 |     if (map_get_ss(n.keys, n.vals, n.len, "Balance") == bal) {
+      |                                                      ^~
+/tmp/ctranspile1354763015/avl-tree.mochi.c:197:32: error: incompatible types when initializing type ‘int’ using type ‘MapSS’
+  197 |         return (Anon1){.node = user_double(root, dir), .done = 0};
+      |                                ^~~~~~~~~~~
+/tmp/ctranspile1354763015/avl-tree.mochi.c:199:60: warning: passing argument 5 of ‘map_set_ss’ makes pointer from integer without a cast [-Wint-conversion]
+  199 |     map_set_ss(root.keys, root.vals, &root.len, "Balance", -(bal));
+      |                                                            ^~~~~~
+      |                                                            |
+      |                                                            int
+/tmp/ctranspile1354763015/avl-tree.mochi.c:33:106: note: expected ‘const char *’ but argument is of type ‘int’
+   33 | static void map_set_ss(const char *keys[], const char *vals[], size_t *len, const char *key, const char *val) {
+      |                                                                                              ~~~~~~~~~~~~^~~
+/tmp/ctranspile1354763015/avl-tree.mochi.c:200:51: warning: passing argument 5 of ‘map_set_ss’ makes pointer from integer without a cast [-Wint-conversion]
+  200 |     map_set_ss(n.keys, n.vals, &n.len, "Balance", bal);
+      |                                                   ^~~
+      |                                                   |
+      |                                                   int
+/tmp/ctranspile1354763015/avl-tree.mochi.c:33:106: note: expected ‘const char *’ but argument is of type ‘int’
+   33 | static void map_set_ss(const char *keys[], const char *vals[], size_t *len, const char *key, const char *val) {
+      |                                                                                              ~~~~~~~~~~~~^~~
+/tmp/ctranspile1354763015/avl-tree.mochi.c:201:28: error: incompatible types when initializing type ‘int’ using type ‘MapSS’
+  201 |     return (Anon1){.node = single(root, dir), .done = 1};
+      |                            ^~~~~~
+/tmp/ctranspile1354763015/avl-tree.mochi.c: In function ‘removeR’:
+/tmp/ctranspile1354763015/avl-tree.mochi.c:205:9: error: expected expression before ‘)’ token
+  205 |     if () {
+      |         ^
+/tmp/ctranspile1354763015/avl-tree.mochi.c:206:16: error: incompatible types when returning type ‘int’ but ‘Anon1’ was expected
+  206 |         return 0;
+      |                ^
+/tmp/ctranspile1354763015/avl-tree.mochi.c:210:13: error: expected expression before ‘)’ token
+  210 |         if () {
+      |             ^
+/tmp/ctranspile1354763015/avl-tree.mochi.c:211:44: error: incompatible type for argument 1 of ‘getLink’
+  211 |             return (Anon1){.node = getLink(node, 1), .done = 0};
+      |                                            ^~~~
+      |                                            |
+      |                                            int
+/tmp/ctranspile1354763015/avl-tree.mochi.c:96:21: note: expected ‘MapSS’ but argument is of type ‘int’
+   96 | MapSS getLink(MapSS n, int dir) {
+      |               ~~~~~~^
+/tmp/ctranspile1354763015/avl-tree.mochi.c:213:13: error: expected expression before ‘)’ token
+  213 |         if () {
+      |             ^
+/tmp/ctranspile1354763015/avl-tree.mochi.c:214:44: error: incompatible type for argument 1 of ‘getLink’
+  214 |             return (Anon1){.node = getLink(node, 0), .done = 0};
+      |                                            ^~~~
+      |                                            |
+      |                                            int
+/tmp/ctranspile1354763015/avl-tree.mochi.c:96:21: note: expected ‘MapSS’ but argument is of type ‘int’
+   96 | MapSS getLink(MapSS n, int dir) {
+      |               ~~~~~~^
+/tmp/ctranspile1354763015/avl-tree.mochi.c:216:30: error: incompatible type for argument 1 of ‘getLink’
+  216 |         MapSS heir = getLink(node, 0);
+      |                              ^~~~
+      |                              |
+      |                              int
+/tmp/ctranspile1354763015/avl-tree.mochi.c:96:21: note: expected ‘MapSS’ but argument is of type ‘int’
+   96 | MapSS getLink(MapSS n, int dir) {
+      |               ~~~~~~^
+/tmp/ctranspile1354763015/avl-tree.mochi.c:217:16: error: expected expression before ‘)’ token
+  217 |         while () {
+      |                ^
+/tmp/ctranspile1354763015/avl-tree.mochi.c:220:9: warning: assignment of read-only location ‘"Data"[node]’
+  220 |         node["Data"] = map_get_ss(heir.keys, heir.vals, heir.len, "Data");
+      |         ^~~~
+/tmp/ctranspile1354763015/avl-tree.mochi.c:220:22: warning: assignment to ‘char’ from ‘const char *’ makes integer from pointer without a cast [-Wint-conversion]
+  220 |         node["Data"] = map_get_ss(heir.keys, heir.vals, heir.len, "Data");
+      |                      ^
+/tmp/ctranspile1354763015/avl-tree.mochi.c:221:20: error: ‘MapSS’ has no member named ‘Data’
+  221 |         data = heir.Data;
+      |                    ^
+/tmp/ctranspile1354763015/avl-tree.mochi.c:227:29: error: incompatible type for argument 1 of ‘getLink’
+  227 |     int r = removeR(getLink(node, dir), data);
+      |                             ^~~~
+      |                             |
+      |                             int
+/tmp/ctranspile1354763015/avl-tree.mochi.c:96:21: note: expected ‘MapSS’ but argument is of type ‘int’
+   96 | MapSS getLink(MapSS n, int dir) {
+      |               ~~~~~~^
+/tmp/ctranspile1354763015/avl-tree.mochi.c:228:13: error: incompatible type for argument 1 of ‘setLink’
+  228 |     setLink(node, dir, r["node"]);
+      |             ^~~~
+      |             |
+      |             int
+/tmp/ctranspile1354763015/avl-tree.mochi.c:100:19: note: expected ‘MapSS’ but argument is of type ‘int’
+  100 | int setLink(MapSS n, int dir, int v) {
+      |             ~~~~~~^
+/tmp/ctranspile1354763015/avl-tree.mochi.c:232:5: warning: assignment of read-only location ‘"Balance"[node]’
+  232 |     node["Balance"] = ((int)(node["Balance"]) + 1) - (2 * dir);
+      |     ^~~~
+/tmp/ctranspile1354763015/avl-tree.mochi.c:239:26: error: incompatible type for argument 1 of ‘removeBalance’
+  239 |     return removeBalance(node, dir);
+      |                          ^~~~
+      |                          |
+      |                          int
+/tmp/ctranspile1354763015/avl-tree.mochi.c:187:27: note: expected ‘MapSS’ but argument is of type ‘int’
+  187 | Anon1 removeBalance(MapSS root, int dir) {
+      |                     ~~~~~~^~~~
+/tmp/ctranspile1354763015/avl-tree.mochi.c: In function ‘dumpNode’:
+/tmp/ctranspile1354763015/avl-tree.mochi.c:259:9: error: expected expression before ‘)’ token
+  259 |     if () {
+      |         ^
+/tmp/ctranspile1354763015/avl-tree.mochi.c:262:13: error: ‘line’ undeclared (first use in this function)
+  262 |             line = str_concat(line, ",");
+      |             ^~~~
+/tmp/ctranspile1354763015/avl-tree.mochi.c:262:13: note: each undeclared identifier is reported only once for each function it appears in
+/tmp/ctranspile1354763015/avl-tree.mochi.c:270:26: error: incompatible type for argument 1 of ‘getLink’
+  270 |         dumpNode(getLink(node, 0), indent + 6, 1);
+      |                          ^~~~
+      |                          |
+      |                          int
+/tmp/ctranspile1354763015/avl-tree.mochi.c:96:21: note: expected ‘MapSS’ but argument is of type ‘int’
+   96 | MapSS getLink(MapSS n, int dir) {
+      |               ~~~~~~^
+/tmp/ctranspile1354763015/avl-tree.mochi.c:271:26: error: incompatible type for argument 1 of ‘getLink’
+  271 |         dumpNode(getLink(node, 1), indent + 6, 0);
+      |                          ^~~~
+      |                          |
+      |                          int
+/tmp/ctranspile1354763015/avl-tree.mochi.c:96:21: note: expected ‘MapSS’ but argument is of type ‘int’
+   96 | MapSS getLink(MapSS n, int dir) {
+      |               ~~~~~~^
+/tmp/ctranspile1354763015/avl-tree.mochi.c: In function ‘user_main’:
+/tmp/ctranspile1354763015/avl-tree.mochi.c:302:5: warning: assignment of read-only location ‘"Balance"[t]’
+  302 |     t["Balance"] = 0;
+      |     ^
+
