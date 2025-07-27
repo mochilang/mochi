@@ -1049,9 +1049,9 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("}\n")
 	}
 	if useConcat {
-		buf.WriteString("\nfn _concat_string(a: []const u8, b: []const u8) []const u8 {\n")
+		buf.WriteString("\nfn _concat_string(s1: []const u8, s2: []const u8) []const u8 {\n")
 		buf.WriteString("    const alloc = std.heap.page_allocator;\n")
-		buf.WriteString("    return std.mem.concat(alloc, u8, &[_][]const u8{ a, b }) catch unreachable;\n")
+		buf.WriteString("    return std.mem.concat(alloc, u8, &[_][]const u8{ s1, s2 }) catch unreachable;\n")
 		buf.WriteString("}\n")
 	}
 	if useInput {
@@ -1183,6 +1183,10 @@ func (v *VarDecl) emit(w io.Writer, indent int) {
 	fmt.Fprintf(w, "%s %s", kw, v.Name)
 	if v.Type != "" {
 		fmt.Fprintf(w, ": %s", v.Type)
+	} else if v.Value != nil {
+		typ := zigTypeFromExpr(v.Value)
+		fmt.Fprintf(w, ": %s", typ)
+		varTypes[v.Name] = typ
 	} else if t, ok := varTypes[v.Name]; ok && t != "" {
 		fmt.Fprintf(w, ": %s", t)
 	} else if v.Mutable {
@@ -1284,7 +1288,7 @@ func (s *SaveStmt) emit(w io.Writer, indent int) {
 		}
 		io.WriteString(w, ") |row| {\n")
 		writeIndent(w, indent+1)
-		io.WriteString(w, "const __j = std.fmt.allocPrint(std.heap.page_allocator, \"{f}\", .{std.json.fmt(row, .{})}) catch unreachable;\n")
+		io.WriteString(w, "const __j = std.json.stringifyAlloc(std.heap.page_allocator, row, .{}) catch unreachable;\n")
 		writeIndent(w, indent+1)
 		fmt.Fprintf(w, "const _tmp = std.mem.replaceOwned(u8, std.heap.page_allocator, __j, %q, %q) catch unreachable;\n", ":", ": ")
 		writeIndent(w, indent+1)
@@ -1307,13 +1311,13 @@ func (s *SaveStmt) emit(w io.Writer, indent int) {
 
 func (j *JSONStmt) emit(w io.Writer, indent int) {
 	writeIndent(w, indent)
-	io.WriteString(w, "const __j = std.fmt.allocPrint(std.heap.page_allocator, \"{f}\", .{std.json.fmt(")
+	io.WriteString(w, "const __j = std.json.stringifyAlloc(std.heap.page_allocator, ")
 	if j.Value != nil {
 		j.Value.emit(w)
 	} else {
 		io.WriteString(w, "null")
 	}
-	io.WriteString(w, ", .{})}) catch unreachable;\n")
+	io.WriteString(w, ", .{}) catch unreachable;\n")
 	writeIndent(w, indent)
 	io.WriteString(w, "std.debug.print(\"{s}\\n\", .{__j});\n")
 	writeIndent(w, indent)
@@ -1716,7 +1720,7 @@ func (b *BenchStmt) emit(w io.Writer, indent int) {
 	writeIndent(w, indent)
 	fmt.Fprintf(w, "const __bench = .{ .duration_us = __duration_us, .memory_bytes = __memory_bytes, .name = \"%s\" };\n", b.Name)
 	writeIndent(w, indent)
-	io.WriteString(w, "const __bj = std.fmt.allocPrint(std.heap.page_allocator, \"{f}\", .{std.json.fmt(__bench, .{ .whitespace = .indent_2 })}) catch unreachable;\n")
+	io.WriteString(w, "const __bj = std.json.stringifyAlloc(std.heap.page_allocator, __bench, .{ .whitespace = .indent_2 }) catch unreachable;\n")
 	writeIndent(w, indent)
 	io.WriteString(w, "std.debug.print(\"{s}\\n\", .{__bj});\n")
 	writeIndent(w, indent)
