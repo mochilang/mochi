@@ -944,6 +944,16 @@ func (a *AppendExpr) emit(w io.Writer) {
 	a.Elem.emit(w)
 }
 
+// SpreadExpr represents `seq: _*` used for varargs.
+type SpreadExpr struct{ Value Expr }
+
+func (s *SpreadExpr) emit(w io.Writer) {
+	if s.Value != nil {
+		s.Value.emit(w)
+	}
+	fmt.Fprint(w, ": _*")
+}
+
 // IndexExpr represents x[i] which becomes x(i) in Scala.
 type IndexExpr struct {
 	Value     Expr
@@ -2789,6 +2799,11 @@ func convertCall(c *parser.CallExpr, env *types.Env) (Expr, error) {
 			needsRepeat = true
 			return &CallExpr{Fn: &Name{Name: "_repeat"}, Args: args[:2]}, nil
 		}
+	case "split":
+		if len(args) == 2 {
+			call := &CallExpr{Fn: &FieldExpr{Receiver: args[0], Name: "split"}, Args: []Expr{args[1]}}
+			return &CallExpr{Fn: &Name{Name: "ArrayBuffer"}, Args: []Expr{&SpreadExpr{Value: call}}}, nil
+		}
 	case "parseIntStr":
 		if len(args) >= 1 && len(args) <= 2 {
 			needsParseIntStr = true
@@ -3624,6 +3639,10 @@ func convertWhileStmt(ws *parser.WhileStmt, env *types.Env) (Stmt, error) {
 }
 
 func convertForStmt(fs *parser.ForStmt, env *types.Env) (Stmt, error) {
+	saved := localVarTypes
+	localVarTypes = copyMap(localVarTypes)
+	defer func() { localVarTypes = saved }()
+
 	if fs.RangeEnd != nil {
 		start, err := convertExpr(fs.Source, env)
 		if err != nil {
@@ -3647,6 +3666,18 @@ func convertForStmt(fs *parser.ForStmt, env *types.Env) (Stmt, error) {
 	if err != nil {
 		return nil, err
 	}
+	var child *types.Env
+	if env != nil {
+		child = types.NewEnv(env)
+	}
+	itType := inferTypeWithEnv(iter, env)
+	if strings.HasPrefix(itType, "ArrayBuffer[") {
+		elem := strings.TrimSuffix(strings.TrimPrefix(itType, "ArrayBuffer["), "]")
+		if elem == "" {
+			elem = "Any"
+		}
+		localVarTypes[fs.Name] = elem
+	}
 	if n, ok := iter.(*Name); ok && env != nil {
 		if typ, err := env.GetVar(n.Name); err == nil {
 			if _, ok := typ.(types.MapType); ok {
@@ -3658,7 +3689,7 @@ func convertForStmt(fs *parser.ForStmt, env *types.Env) (Stmt, error) {
 	}
 	var body []Stmt
 	for _, st := range fs.Body {
-		s, err := convertStmt(st, env)
+		s, err := convertStmt(st, child)
 		if err != nil {
 			return nil, err
 		}
