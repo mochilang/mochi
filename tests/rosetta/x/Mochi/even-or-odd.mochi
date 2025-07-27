@@ -1,0 +1,66 @@
+// Mochi translation of Rosetta "Even or odd" task
+
+fun parseBigInt(str: string): bigint {
+  var i = 0
+  var neg = false
+  if len(str) > 0 && substring(str, 0, 1) == "-" {
+    neg = true
+    i = 1
+  }
+  var n: bigint = 0
+  while i < len(str) {
+    let ch = substring(str, i, i+1)
+    let d = ch as int
+    n = n * (10 as bigint) + (d as bigint)
+    i = i + 1
+  }
+  if neg { n = -n }
+  return n
+}
+
+fun pad(n: int, width: int): string {
+  var s = str(n)
+  while len(s) < width { s = " " + s }
+  return s
+}
+
+fun showInt(n: int) {
+  var line = "Testing integer " + pad(n, 3) + ":  "
+  if n % 2 == 0 {
+    line = line + "even "
+  } else {
+    line = line + " odd "
+  }
+  if n % 2 == 0 {
+    line = line + "even"
+  } else {
+    line = line + " odd"
+  }
+  print(line)
+}
+
+fun showBig(s: string) {
+  let b = parseBigInt(s)
+  var line = "Testing big integer " + str(b) + ":  "
+  if b % (2 as bigint) == 0 as bigint {
+    line = line + "even"
+  } else {
+    line = line + "odd"
+  }
+  print(line)
+}
+
+fun main() {
+  showInt(-2)
+  showInt(-1)
+  showInt(0)
+  showInt(1)
+  showInt(2)
+  showBig("-222222222222222222222222222222222222")
+  showBig("-1")
+  showBig("0")
+  showBig("1")
+  showBig("222222222222222222222222222222222222")
+}
+
+main()
