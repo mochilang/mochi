@@ -42,6 +42,8 @@ var useBench bool
 var useStdout bool
 var useHas bool
 var useFetch bool
+var funcDepth int
+var returnOutsideFunc bool
 
 var reserved = map[string]bool{
 	"break": true, "case": true, "catch": true, "class": true, "const": true,
@@ -168,6 +170,15 @@ type ForInStmt struct {
 type BenchStmt struct {
 	Name string
 	Body []Stmt
+}
+
+// IIFEStmt wraps a series of statements in an immediately invoked
+// function expression. It is used when top-level statements need to
+// contain return statements which are not valid in the global scope of
+// TypeScript.
+type IIFEStmt struct {
+	Body  []Stmt
+	Async bool
 }
 
 type Expr interface {
@@ -1561,6 +1572,19 @@ func (b *BenchStmt) emit(w io.Writer) {
 	io.WriteString(w, "})();\n")
 }
 
+func (i *IIFEStmt) emit(w io.Writer) {
+	if i.Async && useFetch {
+		io.WriteString(w, "(async () => {\n")
+	} else {
+		io.WriteString(w, "(() => {\n")
+	}
+	iw := &indentWriter{w: w, indent: "  "}
+	for _, st := range i.Body {
+		emitStmt(iw, st, 1)
+	}
+	io.WriteString(w, "})();")
+}
+
 func (u *UpdateStmt) emit(w io.Writer) {
 	io.WriteString(w, "for (let i = 0; i < ")
 	io.WriteString(w, u.Target)
@@ -1991,6 +2015,8 @@ func Transpile(prog *parser.Program, env *types.Env, benchMain bool) (*Program, 
 	useStdout = false
 	useHas = false
 	useFetch = false
+	funcDepth = 0
+	returnOutsideFunc = false
 	defer func() {
 		transpileEnv = nil
 		generatedTypes = nil
@@ -2006,6 +2032,8 @@ func Transpile(prog *parser.Program, env *types.Env, benchMain bool) (*Program, 
 		useStdout = false
 		useHas = false
 		useFetch = false
+		funcDepth = 0
+		returnOutsideFunc = false
 	}()
 	tsProg := &Program{}
 	mainDefined := false
@@ -2213,6 +2241,19 @@ function sha256(bs: number[]): number[] {
 	}
 	if len(prelude) > 0 {
 		tsProg.Stmts = append(prelude, tsProg.Stmts...)
+	}
+	if returnOutsideFunc && !benchMain {
+		var body []Stmt
+		var decls []Stmt
+		for _, st := range tsProg.Stmts {
+			switch st.(type) {
+			case *InterfaceDecl, *TypeAlias, *FuncDecl, *VarDecl:
+				decls = append(decls, st)
+			default:
+				body = append(body, st)
+			}
+		}
+		tsProg.Stmts = append(decls, &IIFEStmt{Body: body, Async: useFetch})
 	}
 	return tsProg, nil
 }
@@ -2450,6 +2491,9 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 				return nil, err
 			}
 		}
+		if funcDepth == 0 {
+			returnOutsideFunc = true
+		}
 		return &ReturnStmt{Value: e}, nil
 	case s.Break != nil:
 		return &BreakStmt{}, nil
@@ -2473,7 +2517,9 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 		}
 		prev := transpileEnv
 		transpileEnv = child
+		funcDepth++
 		body, err := convertStmtList(s.Fun.Body)
+		funcDepth--
 		transpileEnv = prev
 		if err != nil {
 			return nil, err
@@ -2701,7 +2747,9 @@ func convertTypeDecl(td *parser.TypeDecl) (Stmt, error) {
 			}
 			prev := transpileEnv
 			transpileEnv = child
+			funcDepth++
 			body, err := convertStmtList(m.Method.Body)
+			funcDepth--
 			transpileEnv = prev
 			if err != nil {
 				return nil, err

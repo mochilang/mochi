@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated TypeScript code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/TypeScript`.
-Last updated: 2025-07-27 14:45 UTC
+Last updated: 2025-07-27 15:04 UTC
 
 ## Rosetta Golden Test Checklist (445/467)
 | Index | Name | Status | Duration | Memory |
@@ -357,13 +357,13 @@ Last updated: 2025-07-27 14:45 UTC
 | 348 | entropy-2 | ✓ | 426µs | 128.0 KB |
 | 349 | entropy-narcissist | ✓ | 673µs | 256.0 KB |
 | 350 | enumerations-1 | ✓ | 3µs |  |
-| 351 | enumerations-2 | ✓ | 3µs |  |
-| 352 | enumerations-3 | ✓ | 3µs |  |
-| 353 | enumerations-4 | ✓ | 3µs |  |
-| 354 | environment-variables-1 | ✓ | 280µs | 128.0 KB |
-| 355 | environment-variables-2 | ✓ | 619µs | 128.0 KB |
-| 356 | equal-prime-and-composite-sums | ✓ | 6.458ms | 11.1 MB |
-| 357 | equilibrium-index | ✓ | 3.579ms | 9.0 MB |
+| 351 | enumerations-2 | ✓ | 10µs |  |
+| 352 | enumerations-3 | ✓ | 5µs |  |
+| 353 | enumerations-4 | ✓ | 7µs |  |
+| 354 | environment-variables-1 | ✓ | 553µs |  |
+| 355 | environment-variables-2 | ✓ | 1.973ms | 128.0 KB |
+| 356 | equal-prime-and-composite-sums | ✓ | 22.945ms | 11.0 MB |
+| 357 | equilibrium-index | ✓ | 12.006ms | 9.7 MB |
 | 358 | erd-s-nicolas-numbers |   |  |  |
 | 359 | erd-s-selfridge-categorization-of-primes | ✓ | 23.746ms | 5.5 MB |
 | 360 | esthetic-numbers | ✓ | 58.334ms | 12.3 MB |
