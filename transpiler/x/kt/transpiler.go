@@ -442,7 +442,13 @@ func (s *StringLit) emit(w io.Writer) { fmt.Fprintf(w, "%q", s.Value) }
 
 type IntLit struct{ Value int64 }
 
-func (i *IntLit) emit(w io.Writer) { fmt.Fprintf(w, "%d", i.Value) }
+func (i *IntLit) emit(w io.Writer) {
+	if i.Value > 2147483647 || i.Value < -2147483648 {
+		fmt.Fprintf(w, "%dL", i.Value)
+	} else {
+		fmt.Fprintf(w, "%d", i.Value)
+	}
+}
 
 type FloatLit struct{ Value float64 }
 
@@ -487,8 +493,11 @@ func (ix *IndexExpr) emit(w io.Writer) {
 	}
 	idxType := guessType(ix.Index)
 
-	isMap := strings.HasPrefix(baseType, "MutableMap<") || (ix.ForceBang && idxType != "Int")
+	isMap := strings.HasPrefix(baseType, "MutableMap<")
 	isList := strings.HasPrefix(baseType, "MutableList<")
+	if !isMap && !isList && ix.ForceBang && idxType != "Int" {
+		isMap = true
+	}
 
 	dynamicCast := ""
 	if !isMap && !isList && (baseType == "" || baseType == "Any" || baseType == "Any?") {
@@ -821,15 +830,27 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		e.emit(w)
 	}
 	if bigOp {
-		if _, ok := b.Left.(*BinaryExpr); ok {
-			io.WriteString(w, "(")
-			b.Left.emit(w)
-			io.WriteString(w, ")")
-		} else {
-			b.Left.emit(w)
-		}
 		if leftType != "BigInteger" {
-			io.WriteString(w, ".toBigInteger()")
+			io.WriteString(w, "(")
+			if _, ok := b.Left.(*BinaryExpr); ok {
+				io.WriteString(w, "(")
+				b.Left.emit(w)
+				io.WriteString(w, ")")
+			} else {
+				b.Left.emit(w)
+			}
+			if leftType == "Any" || leftType == "Any?" {
+				io.WriteString(w, " as Int")
+			}
+			io.WriteString(w, ").toBigInteger()")
+		} else {
+			if _, ok := b.Left.(*BinaryExpr); ok {
+				io.WriteString(w, "(")
+				b.Left.emit(w)
+				io.WriteString(w, ")")
+			} else {
+				b.Left.emit(w)
+			}
 		}
 		switch b.Op {
 		case "+":
@@ -842,6 +863,9 @@ func (b *BinaryExpr) emit(w io.Writer) {
 				b.Right.emit(w)
 			}
 			if rightType != "BigInteger" {
+				if rightType == "Any" || rightType == "Any?" {
+					io.WriteString(w, " as Int")
+				}
 				io.WriteString(w, ".toBigInteger()")
 			}
 			io.WriteString(w, ")")
@@ -855,6 +879,9 @@ func (b *BinaryExpr) emit(w io.Writer) {
 				b.Right.emit(w)
 			}
 			if rightType != "BigInteger" {
+				if rightType == "Any" || rightType == "Any?" {
+					io.WriteString(w, " as Int")
+				}
 				io.WriteString(w, ".toBigInteger()")
 			}
 			io.WriteString(w, ")")
@@ -868,6 +895,9 @@ func (b *BinaryExpr) emit(w io.Writer) {
 				b.Right.emit(w)
 			}
 			if rightType != "BigInteger" {
+				if rightType == "Any" || rightType == "Any?" {
+					io.WriteString(w, " as Int")
+				}
 				io.WriteString(w, ".toBigInteger()")
 			}
 			io.WriteString(w, ")")
@@ -881,6 +911,9 @@ func (b *BinaryExpr) emit(w io.Writer) {
 				b.Right.emit(w)
 			}
 			if rightType != "BigInteger" {
+				if rightType == "Any" || rightType == "Any?" {
+					io.WriteString(w, " as Int")
+				}
 				io.WriteString(w, ".toBigInteger()")
 			}
 			io.WriteString(w, ")")
@@ -894,6 +927,9 @@ func (b *BinaryExpr) emit(w io.Writer) {
 				b.Right.emit(w)
 			}
 			if rightType != "BigInteger" {
+				if rightType == "Any" || rightType == "Any?" {
+					io.WriteString(w, " as Int")
+				}
 				io.WriteString(w, ".toBigInteger()")
 			}
 			io.WriteString(w, ")")
@@ -1260,13 +1296,25 @@ func (s *SliceExpr) emit(w io.Writer) {
 		io.WriteString(w, ".subList(")
 	}
 	if s.Start != nil {
-		s.Start.emit(w)
+		if guessType(s.Start) == "BigInteger" {
+			io.WriteString(w, "(")
+			s.Start.emit(w)
+			io.WriteString(w, ").toInt()")
+		} else {
+			s.Start.emit(w)
+		}
 	} else {
 		io.WriteString(w, "0")
 	}
 	io.WriteString(w, ", ")
 	if s.End != nil {
-		s.End.emit(w)
+		if guessType(s.End) == "BigInteger" {
+			io.WriteString(w, "(")
+			s.End.emit(w)
+			io.WriteString(w, ").toInt()")
+		} else {
+			s.End.emit(w)
+		}
 	} else {
 		s.Value.emit(w)
 		if s.IsString {
@@ -2789,10 +2837,7 @@ func convertStmts(env *types.Env, list []*parser.Statement) ([]Stmt, error) {
 					typ = ""
 				}
 				if ix, ok := v.(*IndexExpr); ok {
-					tgt := guessType(ix.Target)
-					if strings.HasPrefix(tgt, "MutableMap<") && !strings.HasSuffix(typ, "?") {
-						typ += "?"
-					}
+					_ = ix
 				}
 				if typ == "BigInteger" {
 					typ = "Int"
@@ -4235,10 +4280,7 @@ func convertPostfix(env *types.Env, p *parser.PostfixExpr) (Expr, error) {
 				tname = "MutableMap<String, Any>"
 			}
 			force := true
-			if baseIsMap {
-				force = false
-				tname = ""
-			} else if tname == "" {
+			if tname == "" {
 				force = false
 			}
 			expr = &IndexExpr{Target: expr, Index: idx, Type: tname, ForceBang: force}
@@ -4760,7 +4802,20 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 // Emit returns formatted Kotlin source code for prog.
 func Emit(prog *Program) []byte {
 	var buf bytes.Buffer
+	// import helpers must appear before other declarations
 	for _, h := range prog.Helpers {
+		if strings.HasPrefix(h, "import ") {
+			buf.WriteString(h)
+			if !strings.HasSuffix(h, "\n") {
+				buf.WriteString("\n")
+			}
+			buf.WriteString("\n")
+		}
+	}
+	for _, h := range prog.Helpers {
+		if strings.HasPrefix(h, "import ") {
+			continue
+		}
 		buf.WriteString(h)
 		if !strings.HasSuffix(h, "\n") {
 			buf.WriteString("\n")

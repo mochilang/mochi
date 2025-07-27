@@ -2,9 +2,9 @@
 
 Generated Kotlin sources for Rosetta Code tests are stored in `tests/rosetta/transpiler/Kotlin`.
 
-Last updated: 2025-07-28 00:37 +0700
+Last updated: 2025-07-28 00:51 +0700
 
-Completed tasks: **78/467**
+Completed tasks: **87/467**
 
 ### Checklist
 | Index | Name | Status | Duration | Memory |
@@ -98,16 +98,16 @@ Completed tasks: **78/467**
 | 87 | averages-arithmetic-mean | ✓ | 12.80ms | 110.5 KB |
 | 88 | averages-mean-time-of-day | ✓ | 23.52ms | 124.8 KB |
 | 89 | averages-median-1 | ✓ | 10.06ms | 113.8 KB |
-| 90 | averages-median-2 |  |  |  |
-| 91 | averages-median-3 |  |  |  |
-| 92 | averages-mode |  |  |  |
-| 93 | averages-pythagorean-means |  |  |  |
-| 94 | averages-root-mean-square |  |  |  |
-| 95 | averages-simple-moving-average |  |  |  |
+| 90 | averages-median-2 | ✓ |  |  |
+| 91 | averages-median-3 | ✓ |  |  |
+| 92 | averages-mode | ✓ |  |  |
+| 93 | averages-pythagorean-means | ✓ |  |  |
+| 94 | averages-root-mean-square | ✓ |  |  |
+| 95 | averages-simple-moving-average | ✓ |  |  |
 | 96 | avl-tree |  |  |  |
-| 97 | b-zier-curves-intersections |  |  |  |
-| 98 | babbage-problem |  |  |  |
-| 99 | babylonian-spiral |  |  |  |
+| 97 | b-zier-curves-intersections | ✓ |  |  |
+| 98 | babbage-problem | ✓ |  |  |
+| 99 | babylonian-spiral | ✓ |  |  |
 | 100 | balanced-brackets |  |  |  |
 | 101 | balanced-ternary |  |  |  |
 | 102 | barnsley-fern |  |  |  |
