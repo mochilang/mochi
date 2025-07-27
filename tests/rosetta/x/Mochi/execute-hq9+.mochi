@@ -1,15 +1,36 @@
+fun bottles(n: int): string {
+  if n == 0 { return "No more bottles" }
+  if n == 1 { return "1 bottle" }
+  return str(n) + " bottles"
+}
+
+fun sing99() {
+  var i = 99
+  while i > 0 {
+    print(bottles(i) + " of beer on the wall")
+    print(bottles(i) + " of beer")
+    print("Take one down, pass it around")
+    print(bottles(i - 1) + " of beer on the wall")
+    i = i - 1
+  }
+}
+
 fun run(code: string) {
   var acc = 0
-  for ch in code {
-    if ch == "H" { print("Hello, world!") }
+  var i = 0
+  while i < len(code) {
+    let ch = substring(code, i, i + 1)
+    if ch == "H" { print("Hello, World!") }
     else if ch == "Q" { print(code) }
-    else if ch == "9" { print("99 Bottles of Beer") }
+    else if ch == "9" { sing99() }
     else if ch == "+" { acc = acc + 1 }
+    i = i + 1
   }
 }
 
 fun main() {
-  run("HQ9+")
+  let code = input()
+  run(code)
 }
 
 main()
