@@ -1,3 +1,148 @@
+## Progress (2025-07-27 15:57 +0700)
+- Commit cfcddb7bda: vm: add pow builtin and update rosetta outputs
+- Generated Racket for 99/100 programs
+- Updated README checklist
+
+## Progress (2025-07-27 15:57 +0700)
+- Commit cfcddb7bda: vm: add pow builtin and update rosetta outputs
+- Generated Racket for 99/100 programs
+- Updated README checklist
+
+## Progress (2025-07-27 15:57 +0700)
+- Commit cfcddb7bda: vm: add pow builtin and update rosetta outputs
+- Generated Racket for 99/100 programs
+- Updated README checklist
+
+## Progress (2025-07-27 15:57 +0700)
+- Commit cfcddb7bda: vm: add pow builtin and update rosetta outputs
+- Generated Racket for 99/100 programs
+- Updated README checklist
+
+## Progress (2025-07-27 15:57 +0700)
+- Commit cfcddb7bda: vm: add pow builtin and update rosetta outputs
+- Generated Racket for 99/100 programs
+- Updated README checklist
+
+## Progress (2025-07-27 15:57 +0700)
+- Commit cfcddb7bda: vm: add pow builtin and update rosetta outputs
+- Generated Racket for 99/100 programs
+- Updated README checklist
+
+## Progress (2025-07-27 15:57 +0700)
+- Commit cfcddb7bda: vm: add pow builtin and update rosetta outputs
+- Generated Racket for 99/100 programs
+- Updated README checklist
+
+## Progress (2025-07-27 15:57 +0700)
+- Commit cfcddb7bda: vm: add pow builtin and update rosetta outputs
+- Generated Racket for 99/100 programs
+- Updated README checklist
+
+## Progress (2025-07-27 15:57 +0700)
+- Commit cfcddb7bda: vm: add pow builtin and update rosetta outputs
+- Generated Racket for 99/100 programs
+- Updated README checklist
+
+## Progress (2025-07-27 15:57 +0700)
+- Commit cfcddb7bda: vm: add pow builtin and update rosetta outputs
+- Generated Racket for 99/100 programs
+- Updated README checklist
+
+## Progress (2025-07-27 15:57 +0700)
+- Commit cfcddb7bda: vm: add pow builtin and update rosetta outputs
+- Generated Racket for 99/100 programs
+- Updated README checklist
+
+## Progress (2025-07-27 15:57 +0700)
+- Commit cfcddb7bda: vm: add pow builtin and update rosetta outputs
+- Generated Racket for 99/100 programs
+- Updated README checklist
+
+## Progress (2025-07-27 15:57 +0700)
+- Commit cfcddb7bda: vm: add pow builtin and update rosetta outputs
+- Generated Racket for 99/100 programs
+- Updated README checklist
+
+## Progress (2025-07-27 15:57 +0700)
+- Commit cfcddb7bda: vm: add pow builtin and update rosetta outputs
+- Generated Racket for 99/100 programs
+- Updated README checklist
+
+## Progress (2025-07-27 15:57 +0700)
+- Commit cfcddb7bda: vm: add pow builtin and update rosetta outputs
+- Generated Racket for 99/100 programs
+- Updated README checklist
+
+## Progress (2025-07-27 15:57 +0700)
+- Commit cfcddb7bda: vm: add pow builtin and update rosetta outputs
+- Generated Racket for 99/100 programs
+- Updated README checklist
+
+## Progress (2025-07-27 15:57 +0700)
+- Commit cfcddb7bda: vm: add pow builtin and update rosetta outputs
+- Generated Racket for 99/100 programs
+- Updated README checklist
+
+## Progress (2025-07-27 15:57 +0700)
+- Commit cfcddb7bda: vm: add pow builtin and update rosetta outputs
+- Generated Racket for 99/100 programs
+- Updated README checklist
+
+## Progress (2025-07-27 15:57 +0700)
+- Commit cfcddb7bda: vm: add pow builtin and update rosetta outputs
+- Generated Racket for 99/100 programs
+- Updated README checklist
+
+## Progress (2025-07-27 15:57 +0700)
+- Commit cfcddb7bda: vm: add pow builtin and update rosetta outputs
+- Generated Racket for 99/100 programs
+- Updated README checklist
+
+## Progress (2025-07-27 15:57 +0700)
+- Commit cfcddb7bda: vm: add pow builtin and update rosetta outputs
+- Generated Racket for 99/100 programs
+- Updated README checklist
+
+## Progress (2025-07-27 15:57 +0700)
+- Commit cfcddb7bda: vm: add pow builtin and update rosetta outputs
+- Generated Racket for 99/100 programs
+- Updated README checklist
+
+## Progress (2025-07-27 15:57 +0700)
+- Commit cfcddb7bda: vm: add pow builtin and update rosetta outputs
+- Generated Racket for 99/100 programs
+- Updated README checklist
+
+## Progress (2025-07-27 15:57 +0700)
+- Commit cfcddb7bda: vm: add pow builtin and update rosetta outputs
+- Generated Racket for 99/100 programs
+- Updated README checklist
+
+## Progress (2025-07-27 15:57 +0700)
+- Commit cfcddb7bda: vm: add pow builtin and update rosetta outputs
+- Generated Racket for 99/100 programs
+- Updated README checklist
+
+## Progress (2025-07-27 15:57 +0700)
+- Commit cfcddb7bda: vm: add pow builtin and update rosetta outputs
+- Generated Racket for 99/100 programs
+- Updated README checklist
+
+## Progress (2025-07-27 15:57 +0700)
+- Commit cfcddb7bda: vm: add pow builtin and update rosetta outputs
+- Generated Racket for 99/100 programs
+- Updated README checklist
+
+## Progress (2025-07-27 15:57 +0700)
+- Commit cfcddb7bda: vm: add pow builtin and update rosetta outputs
+- Generated Racket for 99/100 programs
+- Updated README checklist
+
+## Progress (2025-07-27 15:57 +0700)
+- Commit cfcddb7bda: vm: add pow builtin and update rosetta outputs
+- Generated Racket for 99/100 programs
+- Updated README checklist
+
 ## Progress (2025-07-26 19:01 +0700)
 - Commit ea0c01187b: ex transpiler: handle float mod and module globals
 - Generated Racket for 99/100 programs
