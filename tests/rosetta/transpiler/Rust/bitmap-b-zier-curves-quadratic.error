@@ -1,0 +1,953 @@
+error[E0106]: missing lifetime specifier
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/bitmap-b-zier-curves-quadratic.rs:72:70
+   |
+72 |         unsafe fn newBitmap(mut cols: i64, mut rows: i64) -> HashMap<&str, i64> {
+   |                                                                      ^ expected named lifetime parameter
+   |
+   = help: this function's return type contains a borrowed value, but there is no value for it to be borrowed from
+help: consider using the `'static` lifetime, but this is uncommon unless you're returning a borrowed value from a `const` or a `static`
+   |
+72 |         unsafe fn newBitmap(mut cols: i64, mut rows: i64) -> HashMap<&'static str, i64> {
+   |                                                                       +++++++
+help: instead, you are more likely to want to change one of the arguments to be borrowed...
+   |
+72 |         unsafe fn newBitmap(mut cols: &i64, mut rows: &i64) -> HashMap<&str, i64> {
+   |                                       +               +
+help: ...or alternatively, you might want to return an owned value
+   |
+72 -         unsafe fn newBitmap(mut cols: i64, mut rows: i64) -> HashMap<&str, i64> {
+72 +         unsafe fn newBitmap(mut cols: i64, mut rows: i64) -> HashMap<String, i64> {
+   |
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/bitmap-b-zier-curves-quadratic.rs:65:37
+   |
+65 |         static mut g_b2Seg: i64 = 0;;
+   |                                     ^ help: remove this semicolon
+   |
+   = note: `#[warn(redundant_semicolons)]` on by default
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/bitmap-b-zier-curves-quadratic.rs:71:2
+   |
+71 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/bitmap-b-zier-curves-quadratic.rs:86:2
+   |
+86 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/bitmap-b-zier-curves-quadratic.rs:93:2
+   |
+93 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/bitmap-b-zier-curves-quadratic.rs:106:2
+    |
+106 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/bitmap-b-zier-curves-quadratic.rs:109:2
+    |
+109 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/bitmap-b-zier-curves-quadratic.rs:143:2
+    |
+143 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/bitmap-b-zier-curves-quadratic.rs:181:2
+    |
+181 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/bitmap-b-zier-curves-quadratic.rs:182:104
+    |
+182 |         static g_b: LazyLock<Mutex<HashMap<&str, i64>>> = LazyLock::new(|| Mutex::new(HashMap::new()));;
+    |                                                                                                        ^ help: remove this semicolon
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/bitmap-b-zier-curves-quadratic.rs:67:18
+   |
+67 |     let r: i64 = ((rgb / 65536) % 256);
+   |                  ^                   ^
+   |
+   = note: `#[warn(unused_parens)]` on by default
+help: remove these parentheses
+   |
+67 -     let r: i64 = ((rgb / 65536) % 256);
+67 +     let r: i64 = (rgb / 65536) % 256;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/bitmap-b-zier-curves-quadratic.rs:68:18
+   |
+68 |     let g: i64 = ((rgb / 256) % 256);
+   |                  ^                 ^
+   |
+help: remove these parentheses
+   |
+68 -     let g: i64 = ((rgb / 256) % 256);
+68 +     let g: i64 = (rgb / 256) % 256;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/bitmap-b-zier-curves-quadratic.rs:69:18
+   |
+69 |     let b: i64 = (rgb % 256);
+   |                  ^         ^
+   |
+help: remove these parentheses
+   |
+69 -     let b: i64 = (rgb % 256);
+69 +     let b: i64 = rgb % 256;
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/bitmap-b-zier-curves-quadratic.rs:75:11
+   |
+75 |     while (y < rows) {
+   |           ^        ^
+   |
+help: remove these parentheses
+   |
+75 -     while (y < rows) {
+75 +     while y < rows {
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/bitmap-b-zier-curves-quadratic.rs:78:15
+   |
+78 |         while (x < cols) {
+   |               ^        ^
+   |
+help: remove these parentheses
+   |
+78 -         while (x < cols) {
+78 +         while x < cols {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/bitmap-b-zier-curves-quadratic.rs:80:17
+   |
+80 |             x = (x + 1);
+   |                 ^     ^
+   |
+help: remove these parentheses
+   |
+80 -             x = (x + 1);
+80 +             x = x + 1;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/bitmap-b-zier-curves-quadratic.rs:83:13
+   |
+83 |         y = (y + 1);
+   |             ^     ^
+   |
+help: remove these parentheses
+   |
+83 -         y = (y + 1);
+83 +         y = y + 1;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/bitmap-b-zier-curves-quadratic.rs:88:21
+   |
+88 |     let cols: i64 = (b.lock().unwrap()["cols".as_str()] as i64);
+   |                     ^                                         ^
+   |
+help: remove these parentheses
+   |
+88 -     let cols: i64 = (b.lock().unwrap()["cols".as_str()] as i64);
+88 +     let cols: i64 = b.lock().unwrap()["cols".as_str()] as i64;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/bitmap-b-zier-curves-quadratic.rs:89:21
+   |
+89 |     let rows: i64 = (b.lock().unwrap()["rows".as_str()] as i64);
+   |                     ^                                         ^
+   |
+help: remove these parentheses
+   |
+89 -     let rows: i64 = (b.lock().unwrap()["rows".as_str()] as i64);
+89 +     let rows: i64 = b.lock().unwrap()["rows".as_str()] as i64;
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/bitmap-b-zier-curves-quadratic.rs:90:8
+   |
+90 |     if ((((x >= 0) && (x < cols)) && (y >= 0)) && (y < rows)) {
+   |        ^                                                    ^
+   |
+help: remove these parentheses
+   |
+90 -     if ((((x >= 0) && (x < cols)) && (y >= 0)) && (y < rows)) {
+90 +     if (((x >= 0) && (x < cols)) && (y >= 0)) && (y < rows) {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/bitmap-b-zier-curves-quadratic.rs:95:21
+   |
+95 |     let cols: i64 = (b.lock().unwrap()["cols".as_str()] as i64);
+   |                     ^                                         ^
+   |
+help: remove these parentheses
+   |
+95 -     let cols: i64 = (b.lock().unwrap()["cols".as_str()] as i64);
+95 +     let cols: i64 = b.lock().unwrap()["cols".as_str()] as i64;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/bitmap-b-zier-curves-quadratic.rs:96:21
+   |
+96 |     let rows: i64 = (b.lock().unwrap()["rows".as_str()] as i64);
+   |                     ^                                         ^
+   |
+help: remove these parentheses
+   |
+96 -     let rows: i64 = (b.lock().unwrap()["rows".as_str()] as i64);
+96 +     let rows: i64 = b.lock().unwrap()["rows".as_str()] as i64;
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/bitmap-b-zier-curves-quadratic.rs:98:11
+   |
+98 |     while (y < rows) {
+   |           ^        ^
+   |
+help: remove these parentheses
+   |
+98 -     while (y < rows) {
+98 +     while y < rows {
+   |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/bitmap-b-zier-curves-quadratic.rs:100:15
+    |
+100 |         while (x < cols) {
+    |               ^        ^
+    |
+help: remove these parentheses
+    |
+100 -         while (x < cols) {
+100 +         while x < cols {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/bitmap-b-zier-curves-quadratic.rs:102:17
+    |
+102 |             x = (x + 1);
+    |                 ^     ^
+    |
+help: remove these parentheses
+    |
+102 -             x = (x + 1);
+102 +             x = x + 1;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/bitmap-b-zier-curves-quadratic.rs:104:13
+    |
+104 |         y = (y + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+104 -         y = (y + 1);
+104 +         y = y + 1;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/bitmap-b-zier-curves-quadratic.rs:111:23
+    |
+111 |     let mut dx: i64 = (x1 - x0);
+    |                       ^       ^
+    |
+help: remove these parentheses
+    |
+111 -     let mut dx: i64 = (x1 - x0);
+111 +     let mut dx: i64 = x1 - x0;
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/bitmap-b-zier-curves-quadratic.rs:112:8
+    |
+112 |     if (dx < 0) {
+    |        ^      ^
+    |
+help: remove these parentheses
+    |
+112 -     if (dx < 0) {
+112 +     if dx < 0 {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/bitmap-b-zier-curves-quadratic.rs:115:23
+    |
+115 |     let mut dy: i64 = (y1 - y0);
+    |                       ^       ^
+    |
+help: remove these parentheses
+    |
+115 -     let mut dy: i64 = (y1 - y0);
+115 +     let mut dy: i64 = y1 - y0;
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/bitmap-b-zier-curves-quadratic.rs:116:8
+    |
+116 |     if (dy < 0) {
+    |        ^      ^
+    |
+help: remove these parentheses
+    |
+116 -     if (dy < 0) {
+116 +     if dy < 0 {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/bitmap-b-zier-curves-quadratic.rs:120:8
+    |
+120 |     if (x0 < x1) {
+    |        ^       ^
+    |
+help: remove these parentheses
+    |
+120 -     if (x0 < x1) {
+120 +     if x0 < x1 {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/bitmap-b-zier-curves-quadratic.rs:124:8
+    |
+124 |     if (y0 < y1) {
+    |        ^       ^
+    |
+help: remove these parentheses
+    |
+124 -     if (y0 < y1) {
+124 +     if y0 < y1 {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/bitmap-b-zier-curves-quadratic.rs:127:24
+    |
+127 |     let mut err: i64 = (dx - dy);
+    |                        ^       ^
+    |
+help: remove these parentheses
+    |
+127 -     let mut err: i64 = (dx - dy);
+127 +     let mut err: i64 = dx - dy;
+    |
+
+warning: denote infinite loops with `loop { ... }`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/bitmap-b-zier-curves-quadratic.rs:128:5
+    |
+128 |     while true {
+    |     ^^^^^^^^^^ help: use `loop`
+    |
+    = note: `#[warn(while_true)]` on by default
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/bitmap-b-zier-curves-quadratic.rs:130:12
+    |
+130 |         if ((x0 == x1) && (y0 == y1)) {
+    |            ^                        ^
+    |
+help: remove these parentheses
+    |
+130 -         if ((x0 == x1) && (y0 == y1)) {
+130 +         if (x0 == x1) && (y0 == y1) {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/bitmap-b-zier-curves-quadratic.rs:133:23
+    |
+133 |         let e2: i64 = (2 * err);
+    |                       ^       ^
+    |
+help: remove these parentheses
+    |
+133 -         let e2: i64 = (2 * err);
+133 +         let e2: i64 = 2 * err;
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/bitmap-b-zier-curves-quadratic.rs:134:12
+    |
+134 |         if (e2 > (0 - dy)) {
+    |            ^             ^
+    |
+help: remove these parentheses
+    |
+134 -         if (e2 > (0 - dy)) {
+134 +         if e2 > (0 - dy) {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/bitmap-b-zier-curves-quadratic.rs:135:19
+    |
+135 |             err = (err - dy);
+    |                   ^        ^
+    |
+help: remove these parentheses
+    |
+135 -             err = (err - dy);
+135 +             err = err - dy;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/bitmap-b-zier-curves-quadratic.rs:136:18
+    |
+136 |             x0 = (x0 + sx);
+    |                  ^       ^
+    |
+help: remove these parentheses
+    |
+136 -             x0 = (x0 + sx);
+136 +             x0 = x0 + sx;
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/bitmap-b-zier-curves-quadratic.rs:138:12
+    |
+138 |         if (e2 < dx) {
+    |            ^       ^
+    |
+help: remove these parentheses
+    |
+138 -         if (e2 < dx) {
+138 +         if e2 < dx {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/bitmap-b-zier-curves-quadratic.rs:139:19
+    |
+139 |             err = (err + dx);
+    |                   ^        ^
+    |
+help: remove these parentheses
+    |
+139 -             err = (err + dx);
+139 +             err = err + dx;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/bitmap-b-zier-curves-quadratic.rs:140:18
+    |
+140 |             y0 = (y0 + sy);
+    |                  ^       ^
+    |
+help: remove these parentheses
+    |
+140 -             y0 = (y0 + sy);
+140 +             y0 = y0 + sy;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/bitmap-b-zier-curves-quadratic.rs:148:11
+    |
+148 |     while (i <= g_b2Seg) {
+    |           ^            ^
+    |
+help: remove these parentheses
+    |
+148 -     while (i <= g_b2Seg) {
+148 +     while i <= g_b2Seg {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/bitmap-b-zier-curves-quadratic.rs:151:13
+    |
+151 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+151 -         i = (i + 1);
+151 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/bitmap-b-zier-curves-quadratic.rs:153:20
+    |
+153 |     let fx1: f64 = (x1 as f64);
+    |                    ^         ^
+    |
+help: remove these parentheses
+    |
+153 -     let fx1: f64 = (x1 as f64);
+153 +     let fx1: f64 = x1 as f64;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/bitmap-b-zier-curves-quadratic.rs:154:20
+    |
+154 |     let fy1: f64 = (y1 as f64);
+    |                    ^         ^
+    |
+help: remove these parentheses
+    |
+154 -     let fy1: f64 = (y1 as f64);
+154 +     let fy1: f64 = y1 as f64;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/bitmap-b-zier-curves-quadratic.rs:155:20
+    |
+155 |     let fx2: f64 = (x2 as f64);
+    |                    ^         ^
+    |
+help: remove these parentheses
+    |
+155 -     let fx2: f64 = (x2 as f64);
+155 +     let fx2: f64 = x2 as f64;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/bitmap-b-zier-curves-quadratic.rs:156:20
+    |
+156 |     let fy2: f64 = (y2 as f64);
+    |                    ^         ^
+    |
+help: remove these parentheses
+    |
+156 -     let fy2: f64 = (y2 as f64);
+156 +     let fy2: f64 = y2 as f64;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/bitmap-b-zier-curves-quadratic.rs:157:20
+    |
+157 |     let fx3: f64 = (x3 as f64);
+    |                    ^         ^
+    |
+help: remove these parentheses
+    |
+157 -     let fx3: f64 = (x3 as f64);
+157 +     let fx3: f64 = x3 as f64;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/bitmap-b-zier-curves-quadratic.rs:158:20
+    |
+158 |     let fy3: f64 = (y3 as f64);
+    |                    ^         ^
+    |
+help: remove these parentheses
+    |
+158 -     let fy3: f64 = (y3 as f64);
+158 +     let fy3: f64 = y3 as f64;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/bitmap-b-zier-curves-quadratic.rs:160:11
+    |
+160 |     while (i <= g_b2Seg) {
+    |           ^            ^
+    |
+help: remove these parentheses
+    |
+160 -     while (i <= g_b2Seg) {
+160 +     while i <= g_b2Seg {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/bitmap-b-zier-curves-quadratic.rs:161:22
+    |
+161 |         let c: f64 = ((i as f64) / (g_b2Seg as f64));
+    |                      ^                             ^
+    |
+help: remove these parentheses
+    |
+161 -         let c: f64 = ((i as f64) / (g_b2Seg as f64));
+161 +         let c: f64 = (i as f64) / (g_b2Seg as f64);
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/bitmap-b-zier-curves-quadratic.rs:162:26
+    |
+162 |         let mut a: f64 = (1.0 - c);
+    |                          ^       ^
+    |
+help: remove these parentheses
+    |
+162 -         let mut a: f64 = (1.0 - c);
+162 +         let mut a: f64 = 1.0 - c;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/bitmap-b-zier-curves-quadratic.rs:163:27
+    |
+163 |         let mut a2: f64 = (a * a);
+    |                           ^     ^
+    |
+help: remove these parentheses
+    |
+163 -         let mut a2: f64 = (a * a);
+163 +         let mut a2: f64 = a * a;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/bitmap-b-zier-curves-quadratic.rs:164:27
+    |
+164 |         let mut b2: f64 = ((2.0 * c) * a);
+    |                           ^             ^
+    |
+help: remove these parentheses
+    |
+164 -         let mut b2: f64 = ((2.0 * c) * a);
+164 +         let mut b2: f64 = (2.0 * c) * a;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/bitmap-b-zier-curves-quadratic.rs:165:27
+    |
+165 |         let mut c2: f64 = (c * c);
+    |                           ^     ^
+    |
+help: remove these parentheses
+    |
+165 -         let mut c2: f64 = (c * c);
+165 +         let mut c2: f64 = c * c;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/bitmap-b-zier-curves-quadratic.rs:166:26
+    |
+166 |         px[i as usize] = ((((a2 * fx1) + (b2 * fx2)) + (c2 * fx3)) as i64);
+    |                          ^                                               ^
+    |
+help: remove these parentheses
+    |
+166 -         px[i as usize] = ((((a2 * fx1) + (b2 * fx2)) + (c2 * fx3)) as i64);
+166 +         px[i as usize] = (((a2 * fx1) + (b2 * fx2)) + (c2 * fx3)) as i64;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/bitmap-b-zier-curves-quadratic.rs:167:26
+    |
+167 |         py[i as usize] = ((((a2 * fy1) + (b2 * fy2)) + (c2 * fy3)) as i64);
+    |                          ^                                               ^
+    |
+help: remove these parentheses
+    |
+167 -         py[i as usize] = ((((a2 * fy1) + (b2 * fy2)) + (c2 * fy3)) as i64);
+167 +         py[i as usize] = (((a2 * fy1) + (b2 * fy2)) + (c2 * fy3)) as i64;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/bitmap-b-zier-curves-quadratic.rs:168:13
+    |
+168 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+168 -         i = (i + 1);
+168 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/bitmap-b-zier-curves-quadratic.rs:173:11
+    |
+173 |     while (i <= g_b2Seg) {
+    |           ^            ^
+    |
+help: remove these parentheses
+    |
+173 -     while (i <= g_b2Seg) {
+173 +     while i <= g_b2Seg {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/bitmap-b-zier-curves-quadratic.rs:179:13
+    |
+179 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+179 -         i = (i + 1);
+179 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/bitmap-b-zier-curves-quadratic.rs:187:32
+    |
+187 |         let duration_us: i64 = ((_end - _start) / 1000);
+    |                                ^                      ^
+    |
+help: remove these parentheses
+    |
+187 -         let duration_us: i64 = ((_end - _start) / 1000);
+187 +         let duration_us: i64 = (_end - _start) / 1000;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/bitmap-b-zier-curves-quadratic.rs:188:33
+    |
+188 |         let memory_bytes: i64 = (_end_mem - _start_mem);
+    |                                 ^                     ^
+    |
+help: remove these parentheses
+    |
+188 -         let memory_bytes: i64 = (_end_mem - _start_mem);
+188 +         let memory_bytes: i64 = _end_mem - _start_mem;
+    |
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/bitmap-b-zier-curves-quadratic.rs:183:17
+    |
+183 |         fillRgb(&g_b, 14614575);
+    |         ------- ^^^^ expected `&HashMap<String, f64>`, found `&LazyLock<Mutex<HashMap<&str, i64>>>`
+    |         |
+    |         arguments to this function are incorrect
+    |
+    = note: expected reference `&HashMap<String, f64>`
+               found reference `&LazyLock<Mutex<HashMap<&'static str, i64>>>`
+note: function defined here
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/bitmap-b-zier-curves-quadratic.rs:107:19
+    |
+107 |         unsafe fn fillRgb(b: &HashMap<String, f64>, mut rgb: i64) {
+    |                   ^^^^^^^ ------------------------
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/bitmap-b-zier-curves-quadratic.rs:184:17
+    |
+184 |         bezier2(&g_b, 20, 150, 500, -100, 300, 280, &pixelFromRgb(4165615));
+    |         ------- ^^^^ expected `&HashMap<String, f64>`, found `&LazyLock<Mutex<HashMap<&str, i64>>>`
+    |         |
+    |         arguments to this function are incorrect
+    |
+    = note: expected reference `&HashMap<String, f64>`
+               found reference `&LazyLock<Mutex<HashMap<&'static str, i64>>>`
+note: function defined here
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/bitmap-b-zier-curves-quadratic.rs:144:19
+    |
+144 | ...   unsafe fn bezier2(b: &HashMap<String, f64>, mut x1: i64, mut y1: i64, mut x2: i64, mut y2: i64, mut x3: i64, mut y3: i64, p: &Pixel) {
+    |                 ^^^^^^^ ------------------------
+
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/bitmap-b-zier-curves-quadratic.rs:85:110
+   |
+85 |     return HashMap::from([(String::from("cols"), cols), (String::from("rows"), rows), (String::from("data"), d)])
+   |                                                                                                              ^ expected `i64`, found `Vec<Vec<Pixel>>`
+   |
+   = note: expected type `i64`
+            found struct `Vec<Vec<Pixel>>`
+
+error[E0599]: no method named `lock` found for struct `HashMap` in the current scope
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/bitmap-b-zier-curves-quadratic.rs:88:24
+   |
+88 |     let cols: i64 = (b.lock().unwrap()["cols".as_str()] as i64);
+   |                        ^^^^ method not found in `HashMap<String, f64>`
+
+error[E0658]: use of unstable library feature `str_as_str`
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/bitmap-b-zier-curves-quadratic.rs:88:47
+   |
+88 |     let cols: i64 = (b.lock().unwrap()["cols".as_str()] as i64);
+   |                                               ^^^^^^
+   |
+   = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0599]: no method named `lock` found for struct `HashMap` in the current scope
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/bitmap-b-zier-curves-quadratic.rs:89:24
+   |
+89 |     let rows: i64 = (b.lock().unwrap()["rows".as_str()] as i64);
+   |                        ^^^^ method not found in `HashMap<String, f64>`
+
+error[E0658]: use of unstable library feature `str_as_str`
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/bitmap-b-zier-curves-quadratic.rs:89:47
+   |
+89 |     let rows: i64 = (b.lock().unwrap()["rows".as_str()] as i64);
+   |                                               ^^^^^^
+   |
+   = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0599]: no method named `lock` found for struct `HashMap` in the current scope
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/bitmap-b-zier-curves-quadratic.rs:91:11
+   |
+91 |         b.lock().unwrap()["data".as_str()][y][x] = p;
+   |           ^^^^ method not found in `HashMap<String, f64>`
+
+error[E0658]: use of unstable library feature `str_as_str`
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/bitmap-b-zier-curves-quadratic.rs:91:34
+   |
+91 |         b.lock().unwrap()["data".as_str()][y][x] = p;
+   |                                  ^^^^^^
+   |
+   = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0599]: no method named `lock` found for struct `HashMap` in the current scope
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/bitmap-b-zier-curves-quadratic.rs:95:24
+   |
+95 |     let cols: i64 = (b.lock().unwrap()["cols".as_str()] as i64);
+   |                        ^^^^ method not found in `HashMap<String, f64>`
+
+error[E0658]: use of unstable library feature `str_as_str`
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/bitmap-b-zier-curves-quadratic.rs:95:47
+   |
+95 |     let cols: i64 = (b.lock().unwrap()["cols".as_str()] as i64);
+   |                                               ^^^^^^
+   |
+   = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0599]: no method named `lock` found for struct `HashMap` in the current scope
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/bitmap-b-zier-curves-quadratic.rs:96:24
+   |
+96 |     let rows: i64 = (b.lock().unwrap()["rows".as_str()] as i64);
+   |                        ^^^^ method not found in `HashMap<String, f64>`
+
+error[E0658]: use of unstable library feature `str_as_str`
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/bitmap-b-zier-curves-quadratic.rs:96:47
+   |
+96 |     let rows: i64 = (b.lock().unwrap()["rows".as_str()] as i64);
+   |                                               ^^^^^^
+   |
+   = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0599]: no method named `lock` found for struct `HashMap` in the current scope
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/bitmap-b-zier-curves-quadratic.rs:101:15
+    |
+101 |             b.lock().unwrap()["data".as_str()][y][x] = p;
+    |               ^^^^ method not found in `HashMap<String, f64>`
+
+error[E0658]: use of unstable library feature `str_as_str`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/bitmap-b-zier-curves-quadratic.rs:101:38
+    |
+101 |             b.lock().unwrap()["data".as_str()][y][x] = p;
+    |                                      ^^^^^^
+    |
+    = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/bitmap-b-zier-curves-quadratic.rs:66:32
+   |
+66 |         unsafe fn pixelFromRgb(mut rgb: i64) -> Pixel {
+   |                                ----^^^
+   |                                |
+   |                                help: remove this `mut`
+   |
+   = note: `#[warn(unused_mut)]` on by default
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/bitmap-b-zier-curves-quadratic.rs:107:53
+    |
+107 |         unsafe fn fillRgb(b: &HashMap<String, f64>, mut rgb: i64) {
+    |                                                     ----^^^
+    |                                                     |
+    |                                                     help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/bitmap-b-zier-curves-quadratic.rs:110:76
+    |
+110 |         unsafe fn line(b: &HashMap<String, f64>, mut x0: i64, mut y0: i64, mut x1: i64, mut y1: i64, p: &Pixel) {
+    |                                                                            ----^^
+    |                                                                            |
+    |                                                                            help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/bitmap-b-zier-curves-quadratic.rs:110:89
+    |
+110 |         unsafe fn line(b: &HashMap<String, f64>, mut x0: i64, mut y0: i64, mut x1: i64, mut y1: i64, p: &Pixel) {
+    |                                                                                         ----^^
+    |                                                                                         |
+    |                                                                                         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/bitmap-b-zier-curves-quadratic.rs:144:53
+    |
+144 | ...   unsafe fn bezier2(b: &HashMap<String, f64>, mut x1: i64, mut y1: i64, mut x2: i64, mut y2: i64, mut x3: i64, mut y3: i64, p: &Pixel) {
+    |                                                   ----^^
+    |                                                   |
+    |                                                   help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/bitmap-b-zier-curves-quadratic.rs:144:66
+    |
+144 | ...   unsafe fn bezier2(b: &HashMap<String, f64>, mut x1: i64, mut y1: i64, mut x2: i64, mut y2: i64, mut x3: i64, mut y3: i64, p: &Pixel) {
+    |                                                                ----^^
+    |                                                                |
+    |                                                                help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/bitmap-b-zier-curves-quadratic.rs:144:79
+    |
+144 | ...   unsafe fn bezier2(b: &HashMap<String, f64>, mut x1: i64, mut y1: i64, mut x2: i64, mut y2: i64, mut x3: i64, mut y3: i64, p: &Pixel) {
+    |                                                                             ----^^
+    |                                                                             |
+    |                                                                             help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/bitmap-b-zier-curves-quadratic.rs:144:92
+    |
+144 | ...   unsafe fn bezier2(b: &HashMap<String, f64>, mut x1: i64, mut y1: i64, mut x2: i64, mut y2: i64, mut x3: i64, mut y3: i64, p: &Pixel) {
+    |                                                                                          ----^^
+    |                                                                                          |
+    |                                                                                          help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/bitmap-b-zier-curves-quadratic.rs:144:105
+    |
+144 | ...   unsafe fn bezier2(b: &HashMap<String, f64>, mut x1: i64, mut y1: i64, mut x2: i64, mut y2: i64, mut x3: i64, mut y3: i64, p: &Pixel) {
+    |                                                                                                       ----^^
+    |                                                                                                       |
+    |                                                                                                       help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/bitmap-b-zier-curves-quadratic.rs:144:118
+    |
+144 | ... mut y1: i64, mut x2: i64, mut y2: i64, mut x3: i64, mut y3: i64, p: &Pixel) {
+    |                                                         ----^^
+    |                                                         |
+    |                                                         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/bitmap-b-zier-curves-quadratic.rs:162:13
+    |
+162 |         let mut a: f64 = (1.0 - c);
+    |             ----^
+    |             |
+    |             help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/bitmap-b-zier-curves-quadratic.rs:163:13
+    |
+163 |         let mut a2: f64 = (a * a);
+    |             ----^^
+    |             |
+    |             help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/bitmap-b-zier-curves-quadratic.rs:164:13
+    |
+164 |         let mut b2: f64 = ((2.0 * c) * a);
+    |             ----^^
+    |             |
+    |             help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/bitmap-b-zier-curves-quadratic.rs:165:13
+    |
+165 |         let mut c2: f64 = (c * c);
+    |             ----^^
+    |             |
+    |             help: remove this `mut`
+
+error: aborting due to 16 previous errors; 76 warnings emitted
+
+Some errors have detailed explanations: E0106, E0308, E0599, E0658.
+For more information about an error, try `rustc --explain E0106`.

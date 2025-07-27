@@ -1,0 +1,739 @@
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/base64-decode-data.rs:57:2
+   |
+57 | };
+   |  ^ help: remove this semicolon
+   |
+   = note: `#[warn(redundant_semicolons)]` on by default
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/base64-decode-data.rs:75:2
+   |
+75 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/base64-decode-data.rs:103:2
+    |
+103 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/base64-decode-data.rs:130:2
+    |
+130 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/base64-decode-data.rs:141:2
+    |
+141 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/base64-decode-data.rs:150:2
+    |
+150 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/base64-decode-data.rs:176:2
+    |
+176 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/base64-decode-data.rs:199:2
+    |
+199 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/base64-decode-data.rs:200:50
+    |
+200 |         static mut g_msg: String = String::new();;
+    |                                                  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/base64-decode-data.rs:202:50
+    |
+202 |         static mut g_enc: String = String::new();;
+    |                                                  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/base64-decode-data.rs:204:50
+    |
+204 |         static mut g_dec: String = String::new();;
+    |                                                  ^ help: remove this semicolon
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/base64-decode-data.rs:50:11
+   |
+50 |     while (i < (s.len() as i64)) {
+   |           ^                    ^
+   |
+   = note: `#[warn(unused_parens)]` on by default
+help: remove these parentheses
+   |
+50 -     while (i < (s.len() as i64)) {
+50 +     while i < (s.len() as i64) {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/base64-decode-data.rs:51:12
+   |
+51 |         if (s.chars().nth(i as usize).unwrap() == ch) {
+   |            ^                                        ^
+   |
+help: remove these parentheses
+   |
+51 -         if (s.chars().nth(i as usize).unwrap() == ch) {
+51 +         if s.chars().nth(i as usize).unwrap() == ch {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/base64-decode-data.rs:54:13
+   |
+54 |         i = (i + 1);
+   |             ^     ^
+   |
+help: remove these parentheses
+   |
+54 -         i = (i + 1);
+54 +         i = i + 1;
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/base64-decode-data.rs:61:8
+   |
+61 |     if (((str.len() as i64) > 0) && (str.chars().nth(0 as usize).unwrap() == "-")) {
+   |        ^                                                                         ^
+   |
+help: remove these parentheses
+   |
+61 -     if (((str.len() as i64) > 0) && (str.chars().nth(0 as usize).unwrap() == "-")) {
+61 +     if ((str.len() as i64) > 0) && (str.chars().nth(0 as usize).unwrap() == "-") {
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/base64-decode-data.rs:67:11
+   |
+67 |     while (i < (str.len() as i64)) {
+   |           ^                      ^
+   |
+help: remove these parentheses
+   |
+67 -     while (i < (str.len() as i64)) {
+67 +     while i < (str.len() as i64) {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/base64-decode-data.rs:68:13
+   |
+68 |         n = ((n * 10) + digits[str.chars().nth(i as usize).unwrap()]);
+   |             ^                                                       ^
+   |
+help: remove these parentheses
+   |
+68 -         n = ((n * 10) + digits[str.chars().nth(i as usize).unwrap()]);
+68 +         n = (n * 10) + digits[str.chars().nth(i as usize).unwrap()];
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/base64-decode-data.rs:69:13
+   |
+69 |         i = (i + 1);
+   |             ^     ^
+   |
+help: remove these parentheses
+   |
+69 -         i = (i + 1);
+69 +         i = i + 1;
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/base64-decode-data.rs:80:8
+   |
+80 |     if (idx >= 0) {
+   |        ^        ^
+   |
+help: remove these parentheses
+   |
+80 -     if (idx >= 0) {
+80 +     if idx >= 0 {
+   |
+
+warning: unnecessary parentheses around `return` value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/base64-decode-data.rs:81:16
+   |
+81 |         return (65 + idx)
+   |                ^        ^
+   |
+help: remove these parentheses
+   |
+81 -         return (65 + idx)
+81 +         return 65 + idx
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/base64-decode-data.rs:84:8
+   |
+84 |     if (idx >= 0) {
+   |        ^        ^
+   |
+help: remove these parentheses
+   |
+84 -     if (idx >= 0) {
+84 +     if idx >= 0 {
+   |
+
+warning: unnecessary parentheses around `return` value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/base64-decode-data.rs:85:16
+   |
+85 |         return (97 + idx)
+   |                ^        ^
+   |
+help: remove these parentheses
+   |
+85 -         return (97 + idx)
+85 +         return 97 + idx
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/base64-decode-data.rs:87:8
+   |
+87 |     if ((ch.as_str() >= "0") && (ch.as_str() <= "9")) {
+   |        ^                                            ^
+   |
+help: remove these parentheses
+   |
+87 -     if ((ch.as_str() >= "0") && (ch.as_str() <= "9")) {
+87 +     if (ch.as_str() >= "0") && (ch.as_str() <= "9") {
+   |
+
+warning: unnecessary parentheses around `return` value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/base64-decode-data.rs:88:16
+   |
+88 |         return (48 + parseIntStr(ch))
+   |                ^                    ^
+   |
+help: remove these parentheses
+   |
+88 -         return (48 + parseIntStr(ch))
+88 +         return 48 + parseIntStr(ch)
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/base64-decode-data.rs:90:8
+   |
+90 |     if (ch.as_str() == "+") {
+   |        ^                  ^
+   |
+help: remove these parentheses
+   |
+90 -     if (ch.as_str() == "+") {
+90 +     if ch.as_str() == "+" {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/base64-decode-data.rs:93:8
+   |
+93 |     if (ch.as_str() == "/") {
+   |        ^                  ^
+   |
+help: remove these parentheses
+   |
+93 -     if (ch.as_str() == "/") {
+93 +     if ch.as_str() == "/" {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/base64-decode-data.rs:96:8
+   |
+96 |     if (ch.as_str() == " ") {
+   |        ^                  ^
+   |
+help: remove these parentheses
+   |
+96 -     if (ch.as_str() == " ") {
+96 +     if ch.as_str() == " " {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/base64-decode-data.rs:99:8
+   |
+99 |     if (ch.as_str() == "=") {
+   |        ^                  ^
+   |
+help: remove these parentheses
+   |
+99 -     if (ch.as_str() == "=") {
+99 +     if ch.as_str() == "=" {
+   |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/base64-decode-data.rs:107:8
+    |
+107 |     if ((n >= 65) && (n < 91)) {
+    |        ^                     ^
+    |
+help: remove these parentheses
+    |
+107 -     if ((n >= 65) && (n < 91)) {
+107 +     if (n >= 65) && (n < 91) {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/base64-decode-data.rs:110:8
+    |
+110 |     if ((n >= 97) && (n < 123)) {
+    |        ^                      ^
+    |
+help: remove these parentheses
+    |
+110 -     if ((n >= 97) && (n < 123)) {
+110 +     if (n >= 97) && (n < 123) {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/base64-decode-data.rs:113:8
+    |
+113 |     if ((n >= 48) && (n < 58)) {
+    |        ^                     ^
+    |
+help: remove these parentheses
+    |
+113 -     if ((n >= 48) && (n < 58)) {
+113 +     if (n >= 48) && (n < 58) {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/base64-decode-data.rs:117:8
+    |
+117 |     if (n == 43) {
+    |        ^       ^
+    |
+help: remove these parentheses
+    |
+117 -     if (n == 43) {
+117 +     if n == 43 {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/base64-decode-data.rs:120:8
+    |
+120 |     if (n == 47) {
+    |        ^       ^
+    |
+help: remove these parentheses
+    |
+120 -     if (n == 47) {
+120 +     if n == 47 {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/base64-decode-data.rs:123:8
+    |
+123 |     if (n == 32) {
+    |        ^       ^
+    |
+help: remove these parentheses
+    |
+123 -     if (n == 32) {
+123 +     if n == 32 {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/base64-decode-data.rs:126:8
+    |
+126 |     if (n == 61) {
+    |        ^       ^
+    |
+help: remove these parentheses
+    |
+126 -     if (n == 61) {
+126 +     if n == 61 {
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/base64-decode-data.rs:135:11
+    |
+135 |     while (i < bits) {
+    |           ^        ^
+    |
+help: remove these parentheses
+    |
+135 -     while (i < bits) {
+135 +     while i < bits {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/base64-decode-data.rs:137:15
+    |
+137 |         val = (val / 2);
+    |               ^       ^
+    |
+help: remove these parentheses
+    |
+137 -         val = (val / 2);
+137 +         val = val / 2;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/base64-decode-data.rs:138:13
+    |
+138 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+138 -         i = (i + 1);
+138 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/base64-decode-data.rs:145:11
+    |
+145 |     while (i < (bits.len() as i64)) {
+    |           ^                       ^
+    |
+help: remove these parentheses
+    |
+145 -     while (i < (bits.len() as i64)) {
+145 +     while i < (bits.len() as i64) {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/base64-decode-data.rs:146:13
+    |
+146 |         n = ((n * 2) + parseIntStr(bits[i as usize..(i + 1) as usize].to_string()));
+    |             ^                                                                     ^
+    |
+help: remove these parentheses
+    |
+146 -         n = ((n * 2) + parseIntStr(bits[i as usize..(i + 1) as usize].to_string()));
+146 +         n = (n * 2) + parseIntStr(bits[i as usize..(i + 1) as usize].to_string());
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/base64-decode-data.rs:147:13
+    |
+147 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+147 -         i = (i + 1);
+147 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/base64-decode-data.rs:157:11
+    |
+157 |     while (((bin.len() as i64) % 6) != 0) {
+    |           ^                             ^
+    |
+help: remove these parentheses
+    |
+157 -     while (((bin.len() as i64) % 6) != 0) {
+157 +     while ((bin.len() as i64) % 6) != 0 {
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/base64-decode-data.rs:162:11
+    |
+162 |     while (i < (bin.len() as i64)) {
+    |           ^                      ^
+    |
+help: remove these parentheses
+    |
+162 -     while (i < (bin.len() as i64)) {
+162 +     while i < (bin.len() as i64) {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/base64-decode-data.rs:166:13
+    |
+166 |         i = (i + 6);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+166 -         i = (i + 6);
+166 +         i = i + 6;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/base64-decode-data.rs:168:20
+    |
+168 |     let pad: i64 = ((3 - ((text.len() as i64) % 3)) % 3);
+    |                    ^                                   ^
+    |
+help: remove these parentheses
+    |
+168 -     let pad: i64 = ((3 - ((text.len() as i64) % 3)) % 3);
+168 +     let pad: i64 = (3 - ((text.len() as i64) % 3)) % 3;
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/base64-decode-data.rs:169:8
+    |
+169 |     if (pad == 1) {
+    |        ^        ^
+    |
+help: remove these parentheses
+    |
+169 -     if (pad == 1) {
+169 +     if pad == 1 {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/base64-decode-data.rs:172:8
+    |
+172 |     if (pad == 2) {
+    |        ^        ^
+    |
+help: remove these parentheses
+    |
+172 -     if (pad == 2) {
+172 +     if pad == 2 {
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/base64-decode-data.rs:181:11
+    |
+181 |     while (i < (enc.len() as i64)) {
+    |           ^                      ^
+    |
+help: remove these parentheses
+    |
+181 -     while (i < (enc.len() as i64)) {
+181 +     while i < (enc.len() as i64) {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/base64-decode-data.rs:183:12
+    |
+183 |         if (ch == "=") {
+    |            ^         ^
+    |
+help: remove these parentheses
+    |
+183 -         if (ch == "=") {
+183 +         if ch == "=" {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/base64-decode-data.rs:188:13
+    |
+188 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+188 -         i = (i + 1);
+188 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/base64-decode-data.rs:192:11
+    |
+192 |     while ((i + 8) <= (bin.len() as i64)) {
+    |           ^                             ^
+    |
+help: remove these parentheses
+    |
+192 -     while ((i + 8) <= (bin.len() as i64)) {
+192 +     while (i + 8) <= (bin.len() as i64) {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/base64-decode-data.rs:196:13
+    |
+196 |         i = (i + 8);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+196 -         i = (i + 8);
+196 +         i = i + 8;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/base64-decode-data.rs:208:32
+    |
+208 |         let duration_us: i64 = ((_end - _start) / 1000);
+    |                                ^                      ^
+    |
+help: remove these parentheses
+    |
+208 -         let duration_us: i64 = ((_end - _start) / 1000);
+208 +         let duration_us: i64 = (_end - _start) / 1000;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/base64-decode-data.rs:209:33
+    |
+209 |         let memory_bytes: i64 = (_end_mem - _start_mem);
+    |                                 ^                     ^
+    |
+help: remove these parentheses
+    |
+209 -         let memory_bytes: i64 = (_end_mem - _start_mem);
+209 +         let memory_bytes: i64 = _end_mem - _start_mem;
+    |
+
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/base64-decode-data.rs:51:51
+   |
+51 |         if (s.chars().nth(i as usize).unwrap() == ch) {
+   |             ----------------------------------    ^^ expected `char`, found `String`
+   |             |
+   |             expected because this is `char`
+
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/base64-decode-data.rs:61:78
+   |
+61 |     if (((str.len() as i64) > 0) && (str.chars().nth(0 as usize).unwrap() == "-")) {
+   |                                      ------------------------------------    ^^^ expected `char`, found `&str`
+   |                                      |
+   |                                      expected because this is `char`
+   |
+help: if you meant to write a `char` literal, use single quotes
+   |
+61 -     if (((str.len() as i64) > 0) && (str.chars().nth(0 as usize).unwrap() == "-")) {
+61 +     if (((str.len() as i64) > 0) && (str.chars().nth(0 as usize).unwrap() == '-')) {
+   |
+
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/base64-decode-data.rs:68:32
+   |
+68 |         n = ((n * 10) + digits[str.chars().nth(i as usize).unwrap()]);
+   |                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `&_`, found `char`
+   |
+   = note: expected reference `&_`
+                   found type `char`
+help: consider borrowing here
+   |
+68 |         n = ((n * 10) + digits[&str.chars().nth(i as usize).unwrap()]);
+   |                                +
+
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/base64-decode-data.rs:77:22
+   |
+77 |     let upper: i64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+   |                ---   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `i64`, found `&str`
+   |                |
+   |                expected due to this
+
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/base64-decode-data.rs:78:22
+   |
+78 |     let lower: i64 = "abcdefghijklmnopqrstuvwxyz";
+   |                ---   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `i64`, found `&str`
+   |                |
+   |                expected due to this
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/base64-decode-data.rs:105:22
+    |
+105 |     let upper: i64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    |                ---   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `i64`, found `&str`
+    |                |
+    |                expected due to this
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/base64-decode-data.rs:106:22
+    |
+106 |     let lower: i64 = "abcdefghijklmnopqrstuvwxyz";
+    |                ---   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `i64`, found `&str`
+    |                |
+    |                expected due to this
+
+error[E0608]: cannot index into a value of type `i64`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/base64-decode-data.rs:108:21
+    |
+108 |         return upper[(n - 65)..(n - 64)].to_vec().to_string()
+    |                     ^^^^^^^^^^^^^^^^^^^^
+
+error[E0608]: cannot index into a value of type `i64`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/base64-decode-data.rs:111:21
+    |
+111 |         return lower[(n - 97)..(n - 96)].to_vec().to_string()
+    |                     ^^^^^^^^^^^^^^^^^^^^
+
+error[E0277]: `String` is not an iterator
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/base64-decode-data.rs:154:15
+    |
+154 |     for ch in text {
+    |               ^^^^ `String` is not an iterator; try calling `.chars()` or `.bytes()`
+    |
+    = help: the trait `Iterator` is not implemented for `String`
+    = note: required for `String` to implement `IntoIterator`
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/base64-decode-data.rs:183:19
+    |
+183 |         if (ch == "=") {
+    |             --    ^^^ expected `char`, found `&str`
+    |             |
+    |             expected because this is `char`
+    |
+help: if you meant to write a `char` literal, use single quotes
+    |
+183 -         if (ch == "=") {
+183 +         if (ch == '=') {
+    |
+
+error[E0507]: cannot move out of static item `g_msg`
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/base64-decode-data.rs:44:30
+   |
+44 |         g_enc = base64Encode(g_msg).clone();
+   |                              ^^^^^ move occurs because `g_msg` has type `String`, which does not implement the `Copy` trait
+   |
+help: consider cloning the value if the performance cost is acceptable
+   |
+44 |         g_enc = base64Encode(g_msg.clone()).clone();
+   |                                   ++++++++
+
+error[E0507]: cannot move out of static item `g_enc`
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/base64-decode-data.rs:45:30
+   |
+45 |         g_dec = base64Decode(g_enc).clone();
+   |                              ^^^^^ move occurs because `g_enc` has type `String`, which does not implement the `Copy` trait
+   |
+help: consider cloning the value if the performance cost is acceptable
+   |
+45 |         g_dec = base64Decode(g_enc.clone()).clone();
+   |                                   ++++++++
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/base64-decode-data.rs:131:28
+    |
+131 |         unsafe fn toBinary(mut n: i64, mut bits: i64) -> String {
+    |                            ----^
+    |                            |
+    |                            help: remove this `mut`
+    |
+    = note: `#[warn(unused_mut)]` on by default
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/base64-decode-data.rs:131:40
+    |
+131 |         unsafe fn toBinary(mut n: i64, mut bits: i64) -> String {
+    |                                        ----^^^^
+    |                                        |
+    |                                        help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/base64-decode-data.rs:142:28
+    |
+142 |         unsafe fn binToInt(mut bits: String) -> i64 {
+    |                            ----^^^^
+    |                            |
+    |                            help: remove this `mut`
+
+error: aborting due to 13 previous errors; 57 warnings emitted
+
+Some errors have detailed explanations: E0277, E0308, E0507, E0608.
+For more information about an error, try `rustc --explain E0277`.

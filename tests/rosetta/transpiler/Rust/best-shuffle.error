@@ -1,0 +1,389 @@
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/best-shuffle.rs:42:2
+   |
+42 | };
+   |  ^ help: remove this semicolon
+   |
+   = note: `#[warn(redundant_semicolons)]` on by default
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/best-shuffle.rs:67:2
+   |
+67 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/best-shuffle.rs:107:2
+    |
+107 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/best-shuffle.rs:120:2
+    |
+120 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary parentheses around `return` value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/best-shuffle.rs:41:12
+   |
+41 |     return (((seed * 1664525) + 1013904223) % 2147483647)
+   |            ^                                            ^
+   |
+   = note: `#[warn(unused_parens)]` on by default
+help: remove these parentheses
+   |
+41 -     return (((seed * 1664525) + 1013904223) % 2147483647)
+41 +     return ((seed * 1664525) + 1013904223) % 2147483647
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/best-shuffle.rs:46:11
+   |
+46 |     while (i < (s.len() as i64)) {
+   |           ^                    ^
+   |
+help: remove these parentheses
+   |
+46 -     while (i < (s.len() as i64)) {
+46 +     while i < (s.len() as i64) {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/best-shuffle.rs:48:13
+   |
+48 |         i = (i + 1);
+   |             ^     ^
+   |
+help: remove these parentheses
+   |
+48 -         i = (i + 1);
+48 +         i = i + 1;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/best-shuffle.rs:51:19
+   |
+51 |     let mut idx = ((chars.len() as i64) - 1);
+   |                   ^                        ^
+   |
+help: remove these parentheses
+   |
+51 -     let mut idx = ((chars.len() as i64) - 1);
+51 +     let mut idx = (chars.len() as i64) - 1;
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/best-shuffle.rs:52:11
+   |
+52 |     while (idx > 0) {
+   |           ^       ^
+   |
+help: remove these parentheses
+   |
+52 -     while (idx > 0) {
+52 +     while idx > 0 {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/best-shuffle.rs:54:26
+   |
+54 |         let mut j: i64 = (sd % (idx + 1));
+   |                          ^              ^
+   |
+help: remove these parentheses
+   |
+54 -         let mut j: i64 = (sd % (idx + 1));
+54 +         let mut j: i64 = sd % (idx + 1);
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/best-shuffle.rs:58:15
+   |
+58 |         idx = (idx - 1);
+   |               ^       ^
+   |
+help: remove these parentheses
+   |
+58 -         idx = (idx - 1);
+58 +         idx = idx - 1;
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/best-shuffle.rs:62:11
+   |
+62 |     while (i < (chars.len() as i64)) {
+   |           ^                        ^
+   |
+help: remove these parentheses
+   |
+62 -     while (i < (chars.len() as i64)) {
+62 +     while i < (chars.len() as i64) {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/best-shuffle.rs:64:13
+   |
+64 |         i = (i + 1);
+   |             ^     ^
+   |
+help: remove these parentheses
+   |
+64 -         i = (i + 1);
+64 +         i = i + 1;
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/best-shuffle.rs:74:11
+   |
+74 |     while (i < (t.len() as i64)) {
+   |           ^                    ^
+   |
+help: remove these parentheses
+   |
+74 -     while (i < (t.len() as i64)) {
+74 +     while i < (t.len() as i64) {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/best-shuffle.rs:76:13
+   |
+76 |         i = (i + 1);
+   |             ^     ^
+   |
+help: remove these parentheses
+   |
+76 -         i = (i + 1);
+76 +         i = i + 1;
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/best-shuffle.rs:79:11
+   |
+79 |     while (i < (arr.len() as i64)) {
+   |           ^                      ^
+   |
+help: remove these parentheses
+   |
+79 -     while (i < (arr.len() as i64)) {
+79 +     while i < (arr.len() as i64) {
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/best-shuffle.rs:81:15
+   |
+81 |         while (j < (arr.len() as i64)) {
+   |               ^                      ^
+   |
+help: remove these parentheses
+   |
+81 -         while (j < (arr.len() as i64)) {
+81 +         while j < (arr.len() as i64) {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/best-shuffle.rs:82:16
+   |
+82 | ...if (((i != j) && (arr[i as usize].clone().as_str() != { let tmp = &s; tmp.chars().skip(j as usize).take(((j + 1) - j) as usize).collect::<String>() }.as_str())) && (arr[j as usize].clone().as_str() != { let tmp = &s; tmp.chars().skip(i as usize).take(((i + 1) - i) as usize).collect::<String>() }.as_str())) {
+   |       ^                                                                                                                                                                                                                                                                                                              ^
+   |
+help: remove these parentheses
+   |
+82 -             if (((i != j) && (arr[i as usize].clone().as_str() != { let tmp = &s; tmp.chars().skip(j as usize).take(((j + 1) - j) as usize).collect::<String>() }.as_str())) && (arr[j as usize].clone().as_str() != { let tmp = &s; tmp.chars().skip(i as usize).take(((i + 1) - i) as usize).collect::<String>() }.as_str())) {
+82 +             if ((i != j) && (arr[i as usize].clone().as_str() != { let tmp = &s; tmp.chars().skip(j as usize).take(((j + 1) - j) as usize).collect::<String>() }.as_str())) && (arr[j as usize].clone().as_str() != { let tmp = &s; tmp.chars().skip(i as usize).take(((i + 1) - i) as usize).collect::<String>() }.as_str()) {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/best-shuffle.rs:88:17
+   |
+88 |             j = (j + 1);
+   |                 ^     ^
+   |
+help: remove these parentheses
+   |
+88 -             j = (j + 1);
+88 +             j = j + 1;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/best-shuffle.rs:90:13
+   |
+90 |         i = (i + 1);
+   |             ^     ^
+   |
+help: remove these parentheses
+   |
+90 -         i = (i + 1);
+90 +         i = i + 1;
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/best-shuffle.rs:94:11
+   |
+94 |     while (i < (arr.len() as i64)) {
+   |           ^                      ^
+   |
+help: remove these parentheses
+   |
+94 -     while (i < (arr.len() as i64)) {
+94 +     while i < (arr.len() as i64) {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/best-shuffle.rs:95:12
+   |
+95 | ...if (arr[i as usize].clone().as_str() == { let tmp = &s; tmp.chars().skip(i as usize).take(((i + 1) - i) as usize).collect::<String>() }.as_str()) {
+   |       ^                                                                                                                                            ^
+   |
+help: remove these parentheses
+   |
+95 -         if (arr[i as usize].clone().as_str() == { let tmp = &s; tmp.chars().skip(i as usize).take(((i + 1) - i) as usize).collect::<String>() }.as_str()) {
+95 +         if arr[i as usize].clone().as_str() == { let tmp = &s; tmp.chars().skip(i as usize).take(((i + 1) - i) as usize).collect::<String>() }.as_str() {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/best-shuffle.rs:96:21
+   |
+96 |             count = (count + 1);
+   |                     ^         ^
+   |
+help: remove these parentheses
+   |
+96 -             count = (count + 1);
+96 +             count = count + 1;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/best-shuffle.rs:98:13
+   |
+98 |         i = (i + 1);
+   |             ^     ^
+   |
+help: remove these parentheses
+   |
+98 -         i = (i + 1);
+98 +         i = i + 1;
+   |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/best-shuffle.rs:102:11
+    |
+102 |     while (i < (arr.len() as i64)) {
+    |           ^                      ^
+    |
+help: remove these parentheses
+    |
+102 -     while (i < (arr.len() as i64)) {
+102 +     while i < (arr.len() as i64) {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/best-shuffle.rs:104:13
+    |
+104 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+104 -         i = (i + 1);
+104 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/best-shuffle.rs:112:11
+    |
+112 |     while (i < (ts.len() as i64)) {
+    |           ^                     ^
+    |
+help: remove these parentheses
+    |
+112 -     while (i < (ts.len() as i64)) {
+112 +     while i < (ts.len() as i64) {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/best-shuffle.rs:118:13
+    |
+118 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+118 -         i = (i + 1);
+118 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/best-shuffle.rs:124:28
+    |
+124 |     let duration_us: i64 = ((_end - _start) / 1000);
+    |                            ^                      ^
+    |
+help: remove these parentheses
+    |
+124 -     let duration_us: i64 = ((_end - _start) / 1000);
+124 +     let duration_us: i64 = (_end - _start) / 1000;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/best-shuffle.rs:125:29
+    |
+125 |     let memory_bytes: i64 = (_end_mem - _start_mem);
+    |                             ^                     ^
+    |
+help: remove these parentheses
+    |
+125 -     let memory_bytes: i64 = (_end_mem - _start_mem);
+125 +     let memory_bytes: i64 = _end_mem - _start_mem;
+    |
+
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/best-shuffle.rs:66:17
+   |
+66 |     return vec![res, sd]
+   |                 ^^^ expected `f64`, found `String`
+
+error[E0599]: no method named `len` found for type `f64` in the current scope
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/best-shuffle.rs:74:19
+   |
+74 |     while (i < (t.len() as i64)) {
+   |                   ^^^
+   |
+help: there is a method `le` with a similar name, but with different arguments
+  --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/core/src/cmp.rs:1400:5
+
+error[E0599]: no method named `chars` found for reference `&f64` in the current scope
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/best-shuffle.rs:75:71
+   |
+75 | ...   arr = { let mut _v = arr.clone(); _v.push({ let tmp = &t; tmp.chars().skip(i as usize).take(((i + 1) - i) as usize).collect::<Strin...
+   |                                                                     ^^^^^ method not found in `&f64`
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/best-shuffle.rs:106:17
+    |
+106 |     return vec![out, sd, count]
+    |                 ^^^ expected `f64`, found `String`
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/best-shuffle.rs:115:16
+    |
+110 |     let mut seed: i64 = 1;
+    |                   --- expected due to this type
+...
+115 |         seed = r[1 as usize];
+    |                ^^^^^^^^^^^^^ expected `i64`, found `f64`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/best-shuffle.rs:40:17
+   |
+40 |     fn nextRand(mut seed: i64) -> i64 {
+   |                 ----^^^^
+   |                 |
+   |                 help: remove this `mut`
+   |
+   = note: `#[warn(unused_mut)]` on by default
+
+error: aborting due to 5 previous errors; 31 warnings emitted
+
+Some errors have detailed explanations: E0308, E0599.
+For more information about an error, try `rustc --explain E0308`.

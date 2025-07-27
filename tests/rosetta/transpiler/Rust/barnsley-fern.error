@@ -1,0 +1,543 @@
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/barnsley-fern.rs:75:38
+   |
+75 |         static mut g_xMin: f64 = 0.0;;
+   |                                      ^ help: remove this semicolon
+   |
+   = note: `#[warn(redundant_semicolons)]` on by default
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/barnsley-fern.rs:76:38
+   |
+76 |         static mut g_xMax: f64 = 0.0;;
+   |                                      ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/barnsley-fern.rs:77:38
+   |
+77 |         static mut g_yMin: f64 = 0.0;;
+   |                                      ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/barnsley-fern.rs:78:38
+   |
+78 |         static mut g_yMax: f64 = 0.0;;
+   |                                      ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/barnsley-fern.rs:79:37
+   |
+79 |         static mut g_width: i64 = 0;;
+   |                                     ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/barnsley-fern.rs:80:37
+   |
+80 |         static mut g_nIter: i64 = 0;;
+   |                                     ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/barnsley-fern.rs:81:36
+   |
+81 |         static mut g_dx: f64 = 0.0;;
+   |                                    ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/barnsley-fern.rs:82:36
+   |
+82 |         static mut g_dy: f64 = 0.0;;
+   |                                    ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/barnsley-fern.rs:83:38
+   |
+83 |         static mut g_height: i64 = 0;;
+   |                                      ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/barnsley-fern.rs:84:58
+   |
+84 |         static mut g_grid: Vec<Vec<String>> = Vec::new();;
+   |                                                          ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/barnsley-fern.rs:85:35
+   |
+85 |         static mut g_row: i64 = 0;;
+   |                                   ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/barnsley-fern.rs:96:36
+   |
+96 |         static mut g_seed: i64 = 0;;
+   |                                    ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/barnsley-fern.rs:100:2
+    |
+100 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/barnsley-fern.rs:101:35
+    |
+101 |         static mut g_x: f64 = 0.0;;
+    |                                   ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/barnsley-fern.rs:102:35
+    |
+102 |         static mut g_y: f64 = 0.0;;
+    |                                   ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/barnsley-fern.rs:103:34
+    |
+103 |         static mut g_ix: i64 = 0;;
+    |                                  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/barnsley-fern.rs:104:34
+    |
+104 |         static mut g_iy: i64 = 0;;
+    |                                  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/barnsley-fern.rs:108:33
+    |
+108 |         static mut g_i: i64 = 0;;
+    |                                 ^ help: remove this semicolon
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/barnsley-fern.rs:62:16
+   |
+62 |         g_dx = (g_xMax - g_xMin);
+   |                ^               ^
+   |
+   = note: `#[warn(unused_parens)]` on by default
+help: remove these parentheses
+   |
+62 -         g_dx = (g_xMax - g_xMin);
+62 +         g_dx = g_xMax - g_xMin;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/barnsley-fern.rs:63:16
+   |
+63 |         g_dy = (g_yMax - g_yMin);
+   |                ^               ^
+   |
+help: remove these parentheses
+   |
+63 -         g_dy = (g_yMax - g_yMin);
+63 +         g_dy = g_yMax - g_yMin;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/barnsley-fern.rs:64:20
+   |
+64 |         g_height = ((((g_width as f64) * g_dy) as f64) / g_dx);
+   |                    ^                                         ^
+   |
+help: remove these parentheses
+   |
+64 -         g_height = ((((g_width as f64) * g_dy) as f64) / g_dx);
+64 +         g_height = (((g_width as f64) * g_dy) as f64) / g_dx;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/barnsley-fern.rs:70:16
+   |
+70 |         g_ix = ((((g_width as f64) * (g_x - g_xMin)) / g_dx) as i64);
+   |                ^                                                   ^
+   |
+help: remove these parentheses
+   |
+70 -         g_ix = ((((g_width as f64) * (g_x - g_xMin)) / g_dx) as i64);
+70 +         g_ix = (((g_width as f64) * (g_x - g_xMin)) / g_dx) as i64;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/barnsley-fern.rs:71:16
+   |
+71 |         g_iy = ((((g_height as f64) * (g_yMax - g_y)) / g_dy) as i64);
+   |                ^                                                    ^
+   |
+help: remove these parentheses
+   |
+71 -         g_iy = ((((g_height as f64) * (g_yMax - g_y)) / g_dy) as i64);
+71 +         g_iy = (((g_height as f64) * (g_yMax - g_y)) / g_dy) as i64;
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/barnsley-fern.rs:86:15
+   |
+86 |         while (g_row < g_height) {
+   |               ^                ^
+   |
+help: remove these parentheses
+   |
+86 -         while (g_row < g_height) {
+86 +         while g_row < g_height {
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/barnsley-fern.rs:89:19
+   |
+89 |             while (col < g_width) {
+   |                   ^             ^
+   |
+help: remove these parentheses
+   |
+89 -             while (col < g_width) {
+89 +             while col < g_width {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/barnsley-fern.rs:91:23
+   |
+91 |                 col = (col + 1);
+   |                       ^       ^
+   |
+help: remove these parentheses
+   |
+91 -                 col = (col + 1);
+91 +                 col = col + 1;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/barnsley-fern.rs:94:21
+   |
+94 |             g_row = (g_row + 1);
+   |                     ^         ^
+   |
+help: remove these parentheses
+   |
+94 -             g_row = (g_row + 1);
+94 +             g_row = g_row + 1;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/barnsley-fern.rs:98:21
+   |
+98 |     let next: i64 = (((s * 1664525) + 1013904223) % 2147483647);
+   |                     ^                                         ^
+   |
+help: remove these parentheses
+   |
+98 -     let next: i64 = (((s * 1664525) + 1013904223) % 2147483647);
+98 +     let next: i64 = ((s * 1664525) + 1013904223) % 2147483647;
+   |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/barnsley-fern.rs:105:12
+    |
+105 |         if ((((g_ix >= 0) && (g_ix < g_width)) && (g_iy >= 0)) && (g_iy < g_height)) {
+    |            ^                                                                       ^
+    |
+help: remove these parentheses
+    |
+105 -         if ((((g_ix >= 0) && (g_ix < g_width)) && (g_iy >= 0)) && (g_iy < g_height)) {
+105 +         if (((g_ix >= 0) && (g_ix < g_width)) && (g_iy >= 0)) && (g_iy < g_height) {
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/barnsley-fern.rs:109:15
+    |
+109 |         while (g_i < g_nIter) {
+    |               ^             ^
+    |
+help: remove these parentheses
+    |
+109 -         while (g_i < g_nIter) {
+109 +         while g_i < g_nIter {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/barnsley-fern.rs:113:16
+    |
+113 |             if (r < 85) {
+    |                ^      ^
+    |
+help: remove these parentheses
+    |
+113 -             if (r < 85) {
+113 +             if r < 85 {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/barnsley-fern.rs:114:31
+    |
+114 |                 let nx: f64 = ((0.85 * g_x) + (0.04 * g_y));
+    |                               ^                           ^
+    |
+help: remove these parentheses
+    |
+114 -                 let nx: f64 = ((0.85 * g_x) + (0.04 * g_y));
+114 +                 let nx: f64 = (0.85 * g_x) + (0.04 * g_y);
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/barnsley-fern.rs:115:31
+    |
+115 |                 let ny: f64 = (((-0.04 * g_x) + (0.85 * g_y)) + 1.6);
+    |                               ^                                    ^
+    |
+help: remove these parentheses
+    |
+115 -                 let ny: f64 = (((-0.04 * g_x) + (0.85 * g_y)) + 1.6);
+115 +                 let ny: f64 = ((-0.04 * g_x) + (0.85 * g_y)) + 1.6;
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/barnsley-fern.rs:118:23
+    |
+118 |             } else if (r < 92) {
+    |                       ^      ^
+    |
+help: remove these parentheses
+    |
+118 -             } else if (r < 92) {
+118 +             } else if r < 92 {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/barnsley-fern.rs:119:31
+    |
+119 |                 let nx: f64 = ((0.2 * g_x) - (0.26 * g_y));
+    |                               ^                          ^
+    |
+help: remove these parentheses
+    |
+119 -                 let nx: f64 = ((0.2 * g_x) - (0.26 * g_y));
+119 +                 let nx: f64 = (0.2 * g_x) - (0.26 * g_y);
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/barnsley-fern.rs:120:31
+    |
+120 |                 let ny: f64 = (((0.23 * g_x) + (0.22 * g_y)) + 1.6);
+    |                               ^                                   ^
+    |
+help: remove these parentheses
+    |
+120 -                 let ny: f64 = (((0.23 * g_x) + (0.22 * g_y)) + 1.6);
+120 +                 let ny: f64 = ((0.23 * g_x) + (0.22 * g_y)) + 1.6;
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/barnsley-fern.rs:123:23
+    |
+123 |             } else if (r < 99) {
+    |                       ^      ^
+    |
+help: remove these parentheses
+    |
+123 -             } else if (r < 99) {
+123 +             } else if r < 99 {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/barnsley-fern.rs:124:31
+    |
+124 |                 let nx: f64 = ((-0.15 * g_x) + (0.28 * g_y));
+    |                               ^                            ^
+    |
+help: remove these parentheses
+    |
+124 -                 let nx: f64 = ((-0.15 * g_x) + (0.28 * g_y));
+124 +                 let nx: f64 = (-0.15 * g_x) + (0.28 * g_y);
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/barnsley-fern.rs:125:31
+    |
+125 |                 let ny: f64 = (((0.26 * g_x) + (0.24 * g_y)) + 0.44);
+    |                               ^                                    ^
+    |
+help: remove these parentheses
+    |
+125 -                 let ny: f64 = (((0.26 * g_x) + (0.24 * g_y)) + 0.44);
+125 +                 let ny: f64 = ((0.26 * g_x) + (0.24 * g_y)) + 0.44;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/barnsley-fern.rs:130:23
+    |
+130 |                 g_y = (0.16 * g_y);
+    |                       ^          ^
+    |
+help: remove these parentheses
+    |
+130 -                 g_y = (0.16 * g_y);
+130 +                 g_y = 0.16 * g_y;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/barnsley-fern.rs:132:20
+    |
+132 |             g_ix = ((((g_width as f64) * (g_x - g_xMin)) / g_dx) as i64);
+    |                    ^                                                   ^
+    |
+help: remove these parentheses
+    |
+132 -             g_ix = ((((g_width as f64) * (g_x - g_xMin)) / g_dx) as i64);
+132 +             g_ix = (((g_width as f64) * (g_x - g_xMin)) / g_dx) as i64;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/barnsley-fern.rs:133:20
+    |
+133 |             g_iy = ((((g_height as f64) * (g_yMax - g_y)) / g_dy) as i64);
+    |                    ^                                                    ^
+    |
+help: remove these parentheses
+    |
+133 -             g_iy = ((((g_height as f64) * (g_yMax - g_y)) / g_dy) as i64);
+133 +             g_iy = (((g_height as f64) * (g_yMax - g_y)) / g_dy) as i64;
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/barnsley-fern.rs:134:16
+    |
+134 |             if ((((g_ix >= 0) && (g_ix < g_width)) && (g_iy >= 0)) && (g_iy < g_height)) {
+    |                ^                                                                       ^
+    |
+help: remove these parentheses
+    |
+134 -             if ((((g_ix >= 0) && (g_ix < g_width)) && (g_iy >= 0)) && (g_iy < g_height)) {
+134 +             if (((g_ix >= 0) && (g_ix < g_width)) && (g_iy >= 0)) && (g_iy < g_height) {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/barnsley-fern.rs:137:19
+    |
+137 |             g_i = (g_i + 1);
+    |                   ^       ^
+    |
+help: remove these parentheses
+    |
+137 -             g_i = (g_i + 1);
+137 +             g_i = g_i + 1;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/barnsley-fern.rs:140:15
+    |
+140 |         while (g_row < g_height) {
+    |               ^                ^
+    |
+help: remove these parentheses
+    |
+140 -         while (g_row < g_height) {
+140 +         while g_row < g_height {
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/barnsley-fern.rs:143:19
+    |
+143 |             while (col < g_width) {
+    |                   ^             ^
+    |
+help: remove these parentheses
+    |
+143 -             while (col < g_width) {
+143 +             while col < g_width {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/barnsley-fern.rs:145:23
+    |
+145 |                 col = (col + 1);
+    |                       ^       ^
+    |
+help: remove these parentheses
+    |
+145 -                 col = (col + 1);
+145 +                 col = col + 1;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/barnsley-fern.rs:148:21
+    |
+148 |             g_row = (g_row + 1);
+    |                     ^         ^
+    |
+help: remove these parentheses
+    |
+148 -             g_row = (g_row + 1);
+148 +             g_row = g_row + 1;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/barnsley-fern.rs:152:32
+    |
+152 |         let duration_us: i64 = ((_end - _start) / 1000);
+    |                                ^                      ^
+    |
+help: remove these parentheses
+    |
+152 -         let duration_us: i64 = ((_end - _start) / 1000);
+152 +         let duration_us: i64 = (_end - _start) / 1000;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/barnsley-fern.rs:153:33
+    |
+153 |         let memory_bytes: i64 = (_end_mem - _start_mem);
+    |                                 ^                     ^
+    |
+help: remove these parentheses
+    |
+153 -         let memory_bytes: i64 = (_end_mem - _start_mem);
+153 +         let memory_bytes: i64 = _end_mem - _start_mem;
+    |
+
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/barnsley-fern.rs:64:20
+   |
+64 |         g_height = ((((g_width as f64) * g_dy) as f64) / g_dx);
+   |                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `i64`, found `f64`
+...
+83 |         static mut g_height: i64 = 0;;
+   |                              --- expected due to this type
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/barnsley-fern.rs:106:52
+    |
+106 |             g_grid[g_iy as usize][g_ix as usize] = "*";
+    |             ------------------------------------   ^^^- help: try using a conversion method: `.to_string()`
+    |             |                                      |
+    |             |                                      expected `String`, found `&str`
+    |             expected due to the type of this binding
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/barnsley-fern.rs:135:56
+    |
+135 |                 g_grid[g_iy as usize][g_ix as usize] = "*";
+    |                 ------------------------------------   ^^^- help: try using a conversion method: `.to_string()`
+    |                 |                                      |
+    |                 |                                      expected `String`, found `&str`
+    |                 expected due to the type of this binding
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/barnsley-fern.rs:97:27
+   |
+97 |         unsafe fn randInt(mut s: i64, mut n: i64) -> Vec<i64> {
+   |                           ----^
+   |                           |
+   |                           help: remove this `mut`
+   |
+   = note: `#[warn(unused_mut)]` on by default
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/barnsley-fern.rs:97:39
+   |
+97 |         unsafe fn randInt(mut s: i64, mut n: i64) -> Vec<i64> {
+   |                                       ----^
+   |                                       |
+   |                                       help: remove this `mut`
+
+error: aborting due to 3 previous errors; 52 warnings emitted
+
+For more information about this error, try `rustc --explain E0308`.
