@@ -1,0 +1,413 @@
+error[E0106]: missing lifetime specifier
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/bifid-cipher.rs:41:64
+   |
+41 |     fn square_to_maps(mut square: Vec<Vec<String>>) -> HashMap<&str, HashMap<String, Vec<i64>>> {
+   |                                                                ^ expected named lifetime parameter
+   |
+   = help: this function's return type contains a borrowed value, but there is no value for it to be borrowed from
+help: consider using the `'static` lifetime, but this is uncommon unless you're returning a borrowed value from a `const` or a `static`
+   |
+41 |     fn square_to_maps(mut square: Vec<Vec<String>>) -> HashMap<&'static str, HashMap<String, Vec<i64>>> {
+   |                                                                 +++++++
+help: instead, you are more likely to want to change the argument to be borrowed...
+   |
+41 |     fn square_to_maps(mut square: &Vec<Vec<String>>) -> HashMap<&str, HashMap<String, Vec<i64>>> {
+   |                                   +
+help: ...or alternatively, you might want to return an owned value
+   |
+41 -     fn square_to_maps(mut square: Vec<Vec<String>>) -> HashMap<&str, HashMap<String, Vec<i64>>> {
+41 +     fn square_to_maps(mut square: Vec<Vec<String>>) -> HashMap<String, HashMap<String, Vec<i64>>> {
+   |
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/bifid-cipher.rs:57:2
+   |
+57 | };
+   |  ^ help: remove this semicolon
+   |
+   = note: `#[warn(redundant_semicolons)]` on by default
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/bifid-cipher.rs:70:2
+   |
+70 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/bifid-cipher.rs:94:2
+   |
+94 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/bifid-cipher.rs:126:2
+    |
+126 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/bifid-cipher.rs:160:2
+    |
+160 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/bifid-cipher.rs:45:11
+   |
+45 |     while (x < (square.len() as i64)) {
+   |           ^                         ^
+   |
+   = note: `#[warn(unused_parens)]` on by default
+help: remove these parentheses
+   |
+45 -     while (x < (square.len() as i64)) {
+45 +     while x < (square.len() as i64) {
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/bifid-cipher.rs:48:15
+   |
+48 |         while (y < (row.len() as i64)) {
+   |               ^                      ^
+   |
+help: remove these parentheses
+   |
+48 -         while (y < (row.len() as i64)) {
+48 +         while y < (row.len() as i64) {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/bifid-cipher.rs:52:17
+   |
+52 |             y = (y + 1);
+   |                 ^     ^
+   |
+help: remove these parentheses
+   |
+52 -             y = (y + 1);
+52 +             y = y + 1;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/bifid-cipher.rs:54:13
+   |
+54 |         x = (x + 1);
+   |             ^     ^
+   |
+help: remove these parentheses
+   |
+54 -         x = (x + 1);
+54 +         x = x + 1;
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/bifid-cipher.rs:62:11
+   |
+62 |     while (i < (s.len() as i64)) {
+   |           ^                    ^
+   |
+help: remove these parentheses
+   |
+62 -     while (i < (s.len() as i64)) {
+62 +     while i < (s.len() as i64) {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/bifid-cipher.rs:64:12
+   |
+64 |         if ((ch.as_str() != " ") && emap.contains_key(&ch)) {
+   |            ^                                              ^
+   |
+help: remove these parentheses
+   |
+64 -         if ((ch.as_str() != " ") && emap.contains_key(&ch)) {
+64 +         if (ch.as_str() != " ") && emap.contains_key(&ch) {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/bifid-cipher.rs:67:13
+   |
+67 |         i = (i + 1);
+   |             ^     ^
+   |
+help: remove these parentheses
+   |
+67 -         i = (i + 1);
+67 +         i = i + 1;
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/bifid-cipher.rs:76:11
+   |
+76 |     while (i < (text.len() as i64)) {
+   |           ^                       ^
+   |
+help: remove these parentheses
+   |
+76 -     while (i < (text.len() as i64)) {
+76 +     while i < (text.len() as i64) {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/bifid-cipher.rs:81:13
+   |
+81 |         i = (i + 1);
+   |             ^     ^
+   |
+help: remove these parentheses
+   |
+81 -         i = (i + 1);
+81 +         i = i + 1;
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/bifid-cipher.rs:88:11
+   |
+88 |     while (j < (row0.len() as i64)) {
+   |           ^                       ^
+   |
+help: remove these parentheses
+   |
+88 -     while (j < (row0.len() as i64)) {
+88 +     while j < (row0.len() as i64) {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/bifid-cipher.rs:91:13
+   |
+91 |         j = (j + 2);
+   |             ^     ^
+   |
+help: remove these parentheses
+   |
+91 -         j = (j + 2);
+91 +         j = j + 2;
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/bifid-cipher.rs:99:11
+   |
+99 |     while (i < (text.len() as i64)) {
+   |           ^                       ^
+   |
+help: remove these parentheses
+   |
+99 -     while (i < (text.len() as i64)) {
+99 +     while i < (text.len() as i64) {
+   |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/bifid-cipher.rs:104:13
+    |
+104 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+104 -         i = (i + 1);
+104 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/bifid-cipher.rs:106:20
+    |
+106 |     let mut half = ((coords.len() as i64) / 2);
+    |                    ^                         ^
+    |
+help: remove these parentheses
+    |
+106 -     let mut half = ((coords.len() as i64) / 2);
+106 +     let mut half = (coords.len() as i64) / 2;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/bifid-cipher.rs:110:11
+    |
+110 |     while (idx < half) {
+    |           ^          ^
+    |
+help: remove these parentheses
+    |
+110 -     while (idx < half) {
+110 +     while idx < half {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/bifid-cipher.rs:112:15
+    |
+112 |         idx = (idx + 1);
+    |               ^       ^
+    |
+help: remove these parentheses
+    |
+112 -         idx = (idx + 1);
+112 +         idx = idx + 1;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/bifid-cipher.rs:114:11
+    |
+114 |     while (idx < (coords.len() as i64)) {
+    |           ^                           ^
+    |
+help: remove these parentheses
+    |
+114 -     while (idx < (coords.len() as i64)) {
+114 +     while idx < (coords.len() as i64) {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/bifid-cipher.rs:116:15
+    |
+116 |         idx = (idx + 1);
+    |               ^       ^
+    |
+help: remove these parentheses
+    |
+116 -         idx = (idx + 1);
+116 +         idx = idx + 1;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/bifid-cipher.rs:120:11
+    |
+120 |     while (j < half) {
+    |           ^        ^
+    |
+help: remove these parentheses
+    |
+120 -     while (j < half) {
+120 +     while j < half {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/bifid-cipher.rs:123:13
+    |
+123 |         j = (j + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+123 -         j = (j + 1);
+123 +         j = j + 1;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/bifid-cipher.rs:164:28
+    |
+164 |     let duration_us: i64 = ((_end - _start) / 1000);
+    |                            ^                      ^
+    |
+help: remove these parentheses
+    |
+164 -     let duration_us: i64 = ((_end - _start) / 1000);
+164 +     let duration_us: i64 = (_end - _start) / 1000;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/bifid-cipher.rs:165:29
+    |
+165 |     let memory_bytes: i64 = (_end_mem - _start_mem);
+    |                             ^                     ^
+    |
+help: remove these parentheses
+    |
+165 -     let memory_bytes: i64 = (_end_mem - _start_mem);
+165 +     let memory_bytes: i64 = _end_mem - _start_mem;
+    |
+
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/bifid-cipher.rs:56:74
+   |
+56 |     return HashMap::from([(String::from("e"), emap), (String::from("d"), dmap)])
+   |                                                                          ^^^^ expected `HashMap<String, Vec<i64>>`, found `HashMap<String, String>`
+   |
+   = note: expected struct `HashMap<_, Vec<i64>>`
+              found struct `HashMap<_, String>`
+
+error[E0658]: use of unstable library feature `str_as_str`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/bifid-cipher.rs:134:56
+    |
+134 |     let mut emap: HashMap<String, Vec<i64>> = maps["e".as_str()].clone();
+    |                                                        ^^^^^^
+    |
+    = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0658]: use of unstable library feature `str_as_str`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/bifid-cipher.rs:135:56
+    |
+135 |     let mut dmap: HashMap<String, Vec<i64>> = maps["d".as_str()].clone();
+    |                                                        ^^^^^^
+    |
+    = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0658]: use of unstable library feature `str_as_str`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/bifid-cipher.rs:143:21
+    |
+143 |     emap = maps["e".as_str()].clone();
+    |                     ^^^^^^
+    |
+    = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0658]: use of unstable library feature `str_as_str`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/bifid-cipher.rs:144:21
+    |
+144 |     dmap = maps["d".as_str()].clone();
+    |                     ^^^^^^
+    |
+    = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0658]: use of unstable library feature `str_as_str`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/bifid-cipher.rs:152:21
+    |
+152 |     emap = maps["e".as_str()].clone();
+    |                     ^^^^^^
+    |
+    = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0658]: use of unstable library feature `str_as_str`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/bifid-cipher.rs:153:21
+    |
+153 |     dmap = maps["d".as_str()].clone();
+    |                     ^^^^^^
+    |
+    = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/bifid-cipher.rs:58:21
+   |
+58 |     fn remove_space(mut text: String, emap: &HashMap<String, Vec<i64>>) -> String {
+   |                     ----^^^^
+   |                     |
+   |                     help: remove this `mut`
+   |
+   = note: `#[warn(unused_mut)]` on by default
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/bifid-cipher.rs:78:13
+   |
+78 |         let mut xy: Vec<i64> = emap[ch.as_str()].clone();
+   |             ----^^
+   |             |
+   |             help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/bifid-cipher.rs:101:13
+    |
+101 |         let mut xy: Vec<i64> = emap[ch.as_str()].clone();
+    |             ----^^
+    |             |
+    |             help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/bifid-cipher.rs:106:9
+    |
+106 |     let mut half = ((coords.len() as i64) / 2);
+    |         ----^^^^
+    |         |
+    |         help: remove this `mut`
+
+error: aborting due to 8 previous errors; 31 warnings emitted
+
+Some errors have detailed explanations: E0106, E0308, E0658.
+For more information about an error, try `rustc --explain E0106`.

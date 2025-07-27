@@ -1,0 +1,639 @@
+warning: unused import: `std::collections::HashMap`
+ --> /workspace/mochi/tests/rosetta/transpiler/Rust/balanced-ternary.rs:2:5
+  |
+2 | use std::collections::HashMap;
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` on by default
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/balanced-ternary.rs:77:2
+   |
+77 | };
+   |  ^ help: remove this semicolon
+   |
+   = note: `#[warn(redundant_semicolons)]` on by default
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/balanced-ternary.rs:100:2
+    |
+100 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/balanced-ternary.rs:121:2
+    |
+121 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/balanced-ternary.rs:143:2
+    |
+143 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/balanced-ternary.rs:154:2
+    |
+154 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/balanced-ternary.rs:163:2
+    |
+163 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/balanced-ternary.rs:166:2
+    |
+166 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/balanced-ternary.rs:169:2
+    |
+169 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/balanced-ternary.rs:176:2
+    |
+176 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/balanced-ternary.rs:182:2
+    |
+182 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/balanced-ternary.rs:193:2
+    |
+193 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/balanced-ternary.rs:73:11
+   |
+73 | ...le ((i < (s.len() as i64)) && ({ let tmp = &s; tmp.chars().skip(i as usize).take(((i + 1) - i) as usize).collect::<String>() }.as_str() == "0")) {
+   |       ^                                                                                                                                           ^
+   |
+   = note: `#[warn(unused_parens)]` on by default
+help: remove these parentheses
+   |
+73 -     while ((i < (s.len() as i64)) && ({ let tmp = &s; tmp.chars().skip(i as usize).take(((i + 1) - i) as usize).collect::<String>() }.as_str() == "0")) {
+73 +     while (i < (s.len() as i64)) && ({ let tmp = &s; tmp.chars().skip(i as usize).take(((i + 1) - i) as usize).collect::<String>() }.as_str() == "0") {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/balanced-ternary.rs:74:13
+   |
+74 |         i = (i + 1);
+   |             ^     ^
+   |
+help: remove these parentheses
+   |
+74 -         i = (i + 1);
+74 +         i = i + 1;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/balanced-ternary.rs:81:17
+   |
+81 |     let mut i = ((s.len() as i64) - 1);
+   |                 ^                    ^
+   |
+help: remove these parentheses
+   |
+81 -     let mut i = ((s.len() as i64) - 1);
+81 +     let mut i = (s.len() as i64) - 1;
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/balanced-ternary.rs:82:11
+   |
+82 |     while (i >= 0) {
+   |           ^      ^
+   |
+help: remove these parentheses
+   |
+82 -     while (i >= 0) {
+82 +     while i >= 0 {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/balanced-ternary.rs:84:12
+   |
+84 |         if (ch.as_str() == "+") {
+   |            ^                  ^
+   |
+help: remove these parentheses
+   |
+84 -         if (ch.as_str() == "+") {
+84 +         if ch.as_str() == "+" {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/balanced-ternary.rs:87:16
+   |
+87 |             if (ch.as_str() == "0") {
+   |                ^                  ^
+   |
+help: remove these parentheses
+   |
+87 -             if (ch.as_str() == "0") {
+87 +             if ch.as_str() == "0" {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/balanced-ternary.rs:90:20
+   |
+90 |                 if (ch.as_str() == "-") {
+   |                    ^                  ^
+   |
+help: remove these parentheses
+   |
+90 -                 if (ch.as_str() == "-") {
+90 +                 if ch.as_str() == "-" {
+   |
+
+warning: unnecessary parentheses around method argument
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/balanced-ternary.rs:91:59
+   |
+91 |                     b = { let mut _v = b.clone(); _v.push((0 - 1)); _v };
+   |                                                           ^     ^
+   |
+help: remove these parentheses
+   |
+91 -                     b = { let mut _v = b.clone(); _v.push((0 - 1)); _v };
+91 +                     b = { let mut _v = b.clone(); _v.push(0 - 1); _v };
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/balanced-ternary.rs:97:13
+   |
+97 |         i = (i - 1);
+   |             ^     ^
+   |
+help: remove these parentheses
+   |
+97 -         i = (i - 1);
+97 +         i = i - 1;
+   |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/balanced-ternary.rs:102:8
+    |
+102 |     if ((b.len() as i64) == 0) {
+    |        ^                     ^
+    |
+help: remove these parentheses
+    |
+102 -     if ((b.len() as i64) == 0) {
+102 +     if (b.len() as i64) == 0 {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/balanced-ternary.rs:106:17
+    |
+106 |     let mut i = ((b.len() as i64) - 1);
+    |                 ^                    ^
+    |
+help: remove these parentheses
+    |
+106 -     let mut i = ((b.len() as i64) - 1);
+106 +     let mut i = (b.len() as i64) - 1;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/balanced-ternary.rs:107:11
+    |
+107 |     while (i >= 0) {
+    |           ^      ^
+    |
+help: remove these parentheses
+    |
+107 -     while (i >= 0) {
+107 +     while i >= 0 {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/balanced-ternary.rs:109:12
+    |
+109 |         if (d == (0 - 1)) {
+    |            ^            ^
+    |
+help: remove these parentheses
+    |
+109 -         if (d == (0 - 1)) {
+109 +         if d == (0 - 1) {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/balanced-ternary.rs:112:16
+    |
+112 |             if (d == 0) {
+    |                ^      ^
+    |
+help: remove these parentheses
+    |
+112 -             if (d == 0) {
+112 +             if d == 0 {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/balanced-ternary.rs:118:13
+    |
+118 |         i = (i - 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+118 -         i = (i - 1);
+118 +         i = i - 1;
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/balanced-ternary.rs:123:8
+    |
+123 |     if (i == 0) {
+    |        ^      ^
+    |
+help: remove these parentheses
+    |
+123 -     if (i == 0) {
+123 +     if i == 0 {
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/balanced-ternary.rs:128:11
+    |
+128 |     while (n != 0) {
+    |           ^      ^
+    |
+help: remove these parentheses
+    |
+128 -     while (n != 0) {
+128 +     while n != 0 {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/balanced-ternary.rs:129:26
+    |
+129 |         let mut m: i64 = (n % 3);
+    |                          ^     ^
+    |
+help: remove these parentheses
+    |
+129 -         let mut m: i64 = (n % 3);
+129 +         let mut m: i64 = n % 3;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/balanced-ternary.rs:130:13
+    |
+130 |         n = (n / 3);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+130 -         n = (n / 3);
+130 +         n = n / 3;
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/balanced-ternary.rs:131:12
+    |
+131 |         if (m == 2) {
+    |            ^      ^
+    |
+help: remove these parentheses
+    |
+131 -         if (m == 2) {
+131 +         if m == 2 {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/balanced-ternary.rs:132:17
+    |
+132 |             m = (0 - 1);
+    |                 ^     ^
+    |
+help: remove these parentheses
+    |
+132 -             m = (0 - 1);
+132 +             m = 0 - 1;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/balanced-ternary.rs:133:17
+    |
+133 |             n = (n + 1);
+    |                 ^     ^
+    |
+help: remove these parentheses
+    |
+133 -             n = (n + 1);
+133 +             n = n + 1;
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/balanced-ternary.rs:135:16
+    |
+135 |             if (m == (0 - 2)) {
+    |                ^            ^
+    |
+help: remove these parentheses
+    |
+135 -             if (m == (0 - 2)) {
+135 +             if m == (0 - 2) {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/balanced-ternary.rs:137:21
+    |
+137 |                 n = (n - 1);
+    |                     ^     ^
+    |
+help: remove these parentheses
+    |
+137 -                 n = (n - 1);
+137 +                 n = n - 1;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/balanced-ternary.rs:148:11
+    |
+148 |     while (i < (b.len() as i64)) {
+    |           ^                    ^
+    |
+help: remove these parentheses
+    |
+148 -     while (i < (b.len() as i64)) {
+148 +     while i < (b.len() as i64) {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/balanced-ternary.rs:149:13
+    |
+149 |         r = (r + (b[i as usize] * pt));
+    |             ^                        ^
+    |
+help: remove these parentheses
+    |
+149 -         r = (r + (b[i as usize] * pt));
+149 +         r = r + (b[i as usize] * pt);
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/balanced-ternary.rs:150:14
+    |
+150 |         pt = (pt * 3);
+    |              ^      ^
+    |
+help: remove these parentheses
+    |
+150 -         pt = (pt * 3);
+150 +         pt = pt * 3;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/balanced-ternary.rs:151:13
+    |
+151 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+151 -         i = (i + 1);
+151 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/balanced-ternary.rs:158:11
+    |
+158 |     while (i < (b.len() as i64)) {
+    |           ^                    ^
+    |
+help: remove these parentheses
+    |
+158 -     while (i < (b.len() as i64)) {
+158 +     while i < (b.len() as i64) {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/balanced-ternary.rs:160:13
+    |
+160 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+160 -         i = (i + 1);
+160 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around function argument
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/balanced-ternary.rs:165:18
+    |
+165 |     return btInt((btToInt(a.clone()) + btToInt(b.clone())))
+    |                  ^                                       ^
+    |
+help: remove these parentheses
+    |
+165 -     return btInt((btToInt(a.clone()) + btToInt(b.clone())))
+165 +     return btInt(btToInt(a.clone()) + btToInt(b.clone()))
+    |
+
+warning: unnecessary parentheses around function argument
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/balanced-ternary.rs:168:18
+    |
+168 |     return btInt((btToInt(a.clone()) * btToInt(b.clone())))
+    |                  ^                                       ^
+    |
+help: remove these parentheses
+    |
+168 -     return btInt((btToInt(a.clone()) * btToInt(b.clone())))
+168 +     return btInt(btToInt(a.clone()) * btToInt(b.clone()))
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/balanced-ternary.rs:172:11
+    |
+172 |     while ((r.len() as i64) < w) {
+    |           ^                    ^
+    |
+help: remove these parentheses
+    |
+172 -     while ((r.len() as i64) < w) {
+172 +     while (r.len() as i64) < w {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/balanced-ternary.rs:197:28
+    |
+197 |     let duration_us: i64 = ((_end - _start) / 1000);
+    |                            ^                      ^
+    |
+help: remove these parentheses
+    |
+197 -     let duration_us: i64 = ((_end - _start) / 1000);
+197 +     let duration_us: i64 = (_end - _start) / 1000;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/balanced-ternary.rs:198:29
+    |
+198 |     let memory_bytes: i64 = (_end_mem - _start_mem);
+    |                             ^                     ^
+    |
+help: remove these parentheses
+    |
+198 -     let memory_bytes: i64 = (_end_mem - _start_mem);
+198 +     let memory_bytes: i64 = _end_mem - _start_mem;
+    |
+
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/balanced-ternary.rs:93:28
+   |
+78 |     fn btString(mut s: String) -> Map1 {
+   |                                   ---- expected `Map1` because of return type
+...
+93 |                     return Map {bt: vec![], ok: false}
+   |                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `Map1`, found `Map`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/balanced-ternary.rs:71:22
+   |
+71 |     fn trimLeftZeros(mut s: String) -> String {
+   |                      ----^
+   |                      |
+   |                      help: remove this `mut`
+   |
+   = note: `#[warn(unused_mut)]` on by default
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/balanced-ternary.rs:101:19
+    |
+101 |     fn btToString(mut b: Vec<i64>) -> String {
+    |                   ----^
+    |                   |
+    |                   help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/balanced-ternary.rs:122:14
+    |
+122 |     fn btInt(mut i: i64) -> Vec<i64> {
+    |              ----^
+    |              |
+    |              help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/balanced-ternary.rs:144:16
+    |
+144 |     fn btToInt(mut b: Vec<i64>) -> i64 {
+    |                ----^
+    |                |
+    |                help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/balanced-ternary.rs:155:14
+    |
+155 |     fn btNeg(mut b: Vec<i64>) -> Vec<i64> {
+    |              ----^
+    |              |
+    |              help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/balanced-ternary.rs:164:14
+    |
+164 |     fn btAdd(mut a: Vec<i64>, mut b: Vec<i64>) -> Vec<i64> {
+    |              ----^
+    |              |
+    |              help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/balanced-ternary.rs:164:31
+    |
+164 |     fn btAdd(mut a: Vec<i64>, mut b: Vec<i64>) -> Vec<i64> {
+    |                               ----^
+    |                               |
+    |                               help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/balanced-ternary.rs:167:14
+    |
+167 |     fn btMul(mut a: Vec<i64>, mut b: Vec<i64>) -> Vec<i64> {
+    |              ----^
+    |              |
+    |              help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/balanced-ternary.rs:167:31
+    |
+167 |     fn btMul(mut a: Vec<i64>, mut b: Vec<i64>) -> Vec<i64> {
+    |                               ----^
+    |                               |
+    |                               help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/balanced-ternary.rs:170:16
+    |
+170 |     fn padLeft(mut s: String, mut w: i64) -> String {
+    |                ----^
+    |                |
+    |                help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/balanced-ternary.rs:170:31
+    |
+170 |     fn padLeft(mut s: String, mut w: i64) -> String {
+    |                               ----^
+    |                               |
+    |                               help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/balanced-ternary.rs:177:13
+    |
+177 |     fn show(mut label: String, mut b: Vec<i64>) {
+    |             ----^^^^^
+    |             |
+    |             help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/balanced-ternary.rs:177:32
+    |
+177 |     fn show(mut label: String, mut b: Vec<i64>) {
+    |                                ----^
+    |                                |
+    |                                help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/balanced-ternary.rs:185:9
+    |
+185 |     let mut a: Vec<i64> = ares.bt;
+    |         ----^
+    |         |
+    |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/balanced-ternary.rs:186:9
+    |
+186 |     let mut b: Vec<i64> = btInt(-436);
+    |         ----^
+    |         |
+    |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/balanced-ternary.rs:188:9
+    |
+188 |     let mut c: Vec<i64> = cres.bt;
+    |         ----^
+    |         |
+    |         help: remove this `mut`
+
+error: aborting due to 1 previous error; 63 warnings emitted
+
+For more information about this error, try `rustc --explain E0308`.

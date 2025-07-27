@@ -1,0 +1,190 @@
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/bernoulli-numbers.rs:53:2
+   |
+53 | };
+   |  ^ help: remove this semicolon
+   |
+   = note: `#[warn(redundant_semicolons)]` on by default
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/bernoulli-numbers.rs:60:2
+   |
+60 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/bernoulli-numbers.rs:43:11
+   |
+43 |     while (m <= n) {
+   |           ^      ^
+   |
+   = note: `#[warn(unused_parens)]` on by default
+help: remove these parentheses
+   |
+43 -     while (m <= n) {
+43 +     while m <= n {
+   |
+
+warning: unnecessary parentheses around method argument
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/bernoulli-numbers.rs:44:47
+   |
+44 |         a = { let mut _v = a.clone(); _v.push((1 / (m + 1))); _v };
+   |                                               ^           ^
+   |
+help: remove these parentheses
+   |
+44 -         a = { let mut _v = a.clone(); _v.push((1 / (m + 1))); _v };
+44 +         a = { let mut _v = a.clone(); _v.push(1 / (m + 1)); _v };
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/bernoulli-numbers.rs:46:15
+   |
+46 |         while (j >= 1) {
+   |               ^      ^
+   |
+help: remove these parentheses
+   |
+46 -         while (j >= 1) {
+46 +         while j >= 1 {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/bernoulli-numbers.rs:47:35
+   |
+47 |             a[(j - 1) as usize] = (j * (a[(j - 1) as usize] - a[j as usize]));
+   |                                   ^                                         ^
+   |
+help: remove these parentheses
+   |
+47 -             a[(j - 1) as usize] = (j * (a[(j - 1) as usize] - a[j as usize]));
+47 +             a[(j - 1) as usize] = j * (a[(j - 1) as usize] - a[j as usize]);
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/bernoulli-numbers.rs:48:17
+   |
+48 |             j = (j - 1);
+   |                 ^     ^
+   |
+help: remove these parentheses
+   |
+48 -             j = (j - 1);
+48 +             j = j - 1;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/bernoulli-numbers.rs:50:13
+   |
+50 |         m = (m + 1);
+   |             ^     ^
+   |
+help: remove these parentheses
+   |
+50 -         m = (m + 1);
+50 +         m = m + 1;
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/bernoulli-numbers.rs:56:11
+   |
+56 |     while ((out.len() as i64) < width) {
+   |           ^                          ^
+   |
+help: remove these parentheses
+   |
+56 -     while ((out.len() as i64) < width) {
+56 +     while (out.len() as i64) < width {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/bernoulli-numbers.rs:63:12
+   |
+63 |         if (num(b) != 0) {
+   |            ^           ^
+   |
+help: remove these parentheses
+   |
+63 -         if (num(b) != 0) {
+63 +         if num(b) != 0 {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/bernoulli-numbers.rs:71:28
+   |
+71 |     let duration_us: i64 = ((_end - _start) / 1000);
+   |                            ^                      ^
+   |
+help: remove these parentheses
+   |
+71 -     let duration_us: i64 = ((_end - _start) / 1000);
+71 +     let duration_us: i64 = (_end - _start) / 1000;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/bernoulli-numbers.rs:72:29
+   |
+72 |     let memory_bytes: i64 = (_end_mem - _start_mem);
+   |                             ^                     ^
+   |
+help: remove these parentheses
+   |
+72 -     let memory_bytes: i64 = (_end_mem - _start_mem);
+72 +     let memory_bytes: i64 = _end_mem - _start_mem;
+   |
+
+error[E0425]: cannot find function `num` in this scope
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/bernoulli-numbers.rs:63:13
+   |
+63 |         if (num(b) != 0) {
+   |             ^^^ not found in this scope
+
+error[E0425]: cannot find function `num` in this scope
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/bernoulli-numbers.rs:64:26
+   |
+64 |             let numStr = num(b).to_string();
+   |                          ^^^ not found in this scope
+
+error[E0425]: cannot find function `denom` in this scope
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/bernoulli-numbers.rs:65:26
+   |
+65 |             let denStr = denom(b).to_string();
+   |                          ^^^^^ not found in this scope
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/bernoulli-numbers.rs:40:18
+   |
+40 |     fn bernoulli(mut n: i64) -> i64 {
+   |                  ----^
+   |                  |
+   |                  help: remove this `mut`
+   |
+   = note: `#[warn(unused_mut)]` on by default
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/bernoulli-numbers.rs:54:17
+   |
+54 |     fn padStart(mut s: String, mut width: i64, mut pad: String) -> String {
+   |                 ----^
+   |                 |
+   |                 help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/bernoulli-numbers.rs:54:32
+   |
+54 |     fn padStart(mut s: String, mut width: i64, mut pad: String) -> String {
+   |                                ----^^^^^
+   |                                |
+   |                                help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/bernoulli-numbers.rs:54:48
+   |
+54 |     fn padStart(mut s: String, mut width: i64, mut pad: String) -> String {
+   |                                                ----^^^
+   |                                                |
+   |                                                help: remove this `mut`
+
+error: aborting due to 3 previous errors; 16 warnings emitted
+
+For more information about this error, try `rustc --explain E0425`.

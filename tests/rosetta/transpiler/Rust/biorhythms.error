@@ -1,0 +1,960 @@
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/biorhythms.rs:46:36
+   |
+46 |         static mut g_PI: f64 = 0.0;;
+   |                                    ^ help: remove this semicolon
+   |
+   = note: `#[warn(redundant_semicolons)]` on by default
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/biorhythms.rs:47:40
+   |
+47 |         static mut g_TWO_PI: f64 = 0.0;;
+   |                                        ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/biorhythms.rs:59:2
+   |
+59 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/biorhythms.rs:66:2
+   |
+66 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/biorhythms.rs:72:2
+   |
+72 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/biorhythms.rs:78:2
+   |
+78 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/biorhythms.rs:96:2
+   |
+96 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/biorhythms.rs:102:2
+    |
+102 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/biorhythms.rs:111:2
+    |
+111 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/biorhythms.rs:116:2
+    |
+116 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/biorhythms.rs:151:2
+    |
+151 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/biorhythms.rs:157:2
+    |
+157 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/biorhythms.rs:160:2
+    |
+160 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/biorhythms.rs:166:2
+    |
+166 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/biorhythms.rs:220:2
+    |
+220 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/biorhythms.rs:229:2
+    |
+229 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/biorhythms.rs:52:11
+   |
+52 |     while (n <= 8) {
+   |           ^      ^
+   |
+   = note: `#[warn(unused_parens)]` on by default
+help: remove these parentheses
+   |
+52 -     while (n <= 8) {
+52 +     while n <= 8 {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/biorhythms.rs:53:26
+   |
+53 |         let denom: f64 = (((2 * n) * ((2 * n) + 1)) as f64);
+   |                          ^                                ^
+   |
+help: remove these parentheses
+   |
+53 -         let denom: f64 = (((2 * n) * ((2 * n) + 1)) as f64);
+53 +         let denom: f64 = ((2 * n) * ((2 * n) + 1)) as f64;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/biorhythms.rs:54:16
+   |
+54 |         term = (((-term * x) * x) / denom);
+   |                ^                         ^
+   |
+help: remove these parentheses
+   |
+54 -         term = (((-term * x) * x) / denom);
+54 +         term = ((-term * x) * x) / denom;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/biorhythms.rs:55:15
+   |
+55 |         sum = (sum + term);
+   |               ^          ^
+   |
+help: remove these parentheses
+   |
+55 -         sum = (sum + term);
+55 +         sum = sum + term;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/biorhythms.rs:56:13
+   |
+56 |         n = (n + 1);
+   |             ^     ^
+   |
+help: remove these parentheses
+   |
+56 -         n = (n + 1);
+56 +         n = n + 1;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/biorhythms.rs:61:22
+   |
+61 |     let mut i: i64 = (x as i64);
+   |                      ^        ^
+   |
+help: remove these parentheses
+   |
+61 -     let mut i: i64 = (x as i64);
+61 +     let mut i: i64 = x as i64;
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/biorhythms.rs:62:8
+   |
+62 |     if ((i as f64) > x) {
+   |        ^              ^
+   |
+help: remove these parentheses
+   |
+62 -     if ((i as f64) > x) {
+62 +     if (i as f64) > x {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/biorhythms.rs:63:13
+   |
+63 |         i = (i - 1);
+   |             ^     ^
+   |
+help: remove these parentheses
+   |
+63 -         i = (i - 1);
+63 +         i = i - 1;
+   |
+
+warning: unnecessary parentheses around `return` value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/biorhythms.rs:65:12
+   |
+65 |     return (i as f64)
+   |            ^        ^
+   |
+help: remove these parentheses
+   |
+65 -     return (i as f64)
+65 +     return i as f64
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/biorhythms.rs:68:8
+   |
+68 |     if (x < 0.0) {
+   |        ^       ^
+   |
+help: remove these parentheses
+   |
+68 -     if (x < 0.0) {
+68 +     if x < 0.0 {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/biorhythms.rs:74:8
+   |
+74 |     if (n < 0) {
+   |        ^     ^
+   |
+help: remove these parentheses
+   |
+74 -     if (n < 0) {
+74 +     if n < 0 {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/biorhythms.rs:82:8
+   |
+82 |     if (((str.len() as i64) > 0) && (str[0 as usize..1 as usize].to_string().as_str() == "-")) {
+   |        ^                                                                                     ^
+   |
+help: remove these parentheses
+   |
+82 -     if (((str.len() as i64) > 0) && (str[0 as usize..1 as usize].to_string().as_str() == "-")) {
+82 +     if ((str.len() as i64) > 0) && (str[0 as usize..1 as usize].to_string().as_str() == "-") {
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/biorhythms.rs:88:11
+   |
+88 |     while (i < (str.len() as i64)) {
+   |           ^                      ^
+   |
+help: remove these parentheses
+   |
+88 -     while (i < (str.len() as i64)) {
+88 +     while i < (str.len() as i64) {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/biorhythms.rs:89:13
+   |
+89 |         n = ((n * 10) + digits[str[i as usize..(i + 1) as usize].to_string().as_str()]);
+   |             ^                                                                         ^
+   |
+help: remove these parentheses
+   |
+89 -         n = ((n * 10) + digits[str[i as usize..(i + 1) as usize].to_string().as_str()]);
+89 +         n = (n * 10) + digits[str[i as usize..(i + 1) as usize].to_string().as_str()];
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/biorhythms.rs:90:13
+   |
+90 |         i = (i + 1);
+   |             ^     ^
+   |
+help: remove these parentheses
+   |
+90 -         i = (i + 1);
+90 +         i = i + 1;
+   |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/biorhythms.rs:104:8
+    |
+104 |     if ((y % 400) == 0) {
+    |        ^              ^
+    |
+help: remove these parentheses
+    |
+104 -     if ((y % 400) == 0) {
+104 +     if (y % 400) == 0 {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/biorhythms.rs:107:8
+    |
+107 |     if ((y % 100) == 0) {
+    |        ^              ^
+    |
+help: remove these parentheses
+    |
+107 -     if ((y % 100) == 0) {
+107 +     if (y % 100) == 0 {
+    |
+
+warning: unnecessary parentheses around `return` value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/biorhythms.rs:110:12
+    |
+110 |     return ((y % 4) == 0)
+    |            ^            ^
+    |
+help: remove these parentheses
+    |
+110 -     return ((y % 4) == 0)
+110 +     return (y % 4) == 0
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/biorhythms.rs:121:8
+    |
+121 |     if (n >= 0) {
+    |        ^      ^
+    |
+help: remove these parentheses
+    |
+121 -     if (n >= 0) {
+121 +     if n >= 0 {
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/biorhythms.rs:123:15
+    |
+123 |         while (i < n) {
+    |               ^     ^
+    |
+help: remove these parentheses
+    |
+123 -         while (i < n) {
+123 +         while i < n {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/biorhythms.rs:124:18
+    |
+124 |             dd = (dd + 1);
+    |                  ^      ^
+    |
+help: remove these parentheses
+    |
+124 -             dd = (dd + 1);
+124 +             dd = dd + 1;
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/biorhythms.rs:125:16
+    |
+125 |             if (dd > daysInMonth(yy, mm)) {
+    |                ^                        ^
+    |
+help: remove these parentheses
+    |
+125 -             if (dd > daysInMonth(yy, mm)) {
+125 +             if dd > daysInMonth(yy, mm) {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/biorhythms.rs:127:22
+    |
+127 |                 mm = (mm + 1);
+    |                      ^      ^
+    |
+help: remove these parentheses
+    |
+127 -                 mm = (mm + 1);
+127 +                 mm = mm + 1;
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/biorhythms.rs:128:20
+    |
+128 |                 if (mm > 12) {
+    |                    ^       ^
+    |
+help: remove these parentheses
+    |
+128 -                 if (mm > 12) {
+128 +                 if mm > 12 {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/biorhythms.rs:130:26
+    |
+130 |                     yy = (yy + 1);
+    |                          ^      ^
+    |
+help: remove these parentheses
+    |
+130 -                     yy = (yy + 1);
+130 +                     yy = yy + 1;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/biorhythms.rs:133:17
+    |
+133 |             i = (i + 1);
+    |                 ^     ^
+    |
+help: remove these parentheses
+    |
+133 -             i = (i + 1);
+133 +             i = i + 1;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/biorhythms.rs:137:15
+    |
+137 |         while (i > n) {
+    |               ^     ^
+    |
+help: remove these parentheses
+    |
+137 -         while (i > n) {
+137 +         while i > n {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/biorhythms.rs:138:18
+    |
+138 |             dd = (dd - 1);
+    |                  ^      ^
+    |
+help: remove these parentheses
+    |
+138 -             dd = (dd - 1);
+138 +             dd = dd - 1;
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/biorhythms.rs:139:16
+    |
+139 |             if (dd < 1) {
+    |                ^      ^
+    |
+help: remove these parentheses
+    |
+139 -             if (dd < 1) {
+139 +             if dd < 1 {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/biorhythms.rs:140:22
+    |
+140 |                 mm = (mm - 1);
+    |                      ^      ^
+    |
+help: remove these parentheses
+    |
+140 -                 mm = (mm - 1);
+140 +                 mm = mm - 1;
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/biorhythms.rs:141:20
+    |
+141 |                 if (mm < 1) {
+    |                    ^      ^
+    |
+help: remove these parentheses
+    |
+141 -                 if (mm < 1) {
+141 +                 if mm < 1 {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/biorhythms.rs:143:26
+    |
+143 |                     yy = (yy - 1);
+    |                          ^      ^
+    |
+help: remove these parentheses
+    |
+143 -                     yy = (yy - 1);
+143 +                     yy = yy - 1;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/biorhythms.rs:147:17
+    |
+147 |             i = (i - 1);
+    |                 ^     ^
+    |
+help: remove these parentheses
+    |
+147 -             i = (i - 1);
+147 +             i = i - 1;
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/biorhythms.rs:153:8
+    |
+153 |     if (n < 10) {
+    |        ^      ^
+    |
+help: remove these parentheses
+    |
+153 -     if (n < 10) {
+153 +     if n < 10 {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/biorhythms.rs:162:22
+    |
+162 |     let part1: i64 = (367 * y);
+    |                      ^       ^
+    |
+help: remove these parentheses
+    |
+162 -     let part1: i64 = (367 * y);
+162 +     let part1: i64 = 367 * y;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/biorhythms.rs:163:22
+    |
+163 |     let part2: i64 = ((7 * (y + ((m + 9) / 12))) / 4);
+    |                      ^                              ^
+    |
+help: remove these parentheses
+    |
+163 -     let part2: i64 = ((7 * (y + ((m + 9) / 12))) / 4);
+163 +     let part2: i64 = (7 * (y + ((m + 9) / 12))) / 4;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/biorhythms.rs:164:22
+    |
+164 |     let part3: i64 = ((275 * m) / 9);
+    |                      ^             ^
+    |
+help: remove these parentheses
+    |
+164 -     let part3: i64 = ((275 * m) / 9);
+164 +     let part3: i64 = (275 * m) / 9;
+    |
+
+warning: unnecessary parentheses around `return` value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/biorhythms.rs:165:12
+    |
+165 |     return ((((part1 - part2) + part3) + d) - 730530)
+    |            ^                                        ^
+    |
+help: remove these parentheses
+    |
+165 -     return ((((part1 - part2) + part3) + d) - 730530)
+165 +     return (((part1 - part2) + part3) + d) - 730530
+    |
+
+warning: unnecessary parentheses around function argument
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/biorhythms.rs:176:28
+    |
+176 |     let diff: i64 = absInt((day(ty, tm, td) - day(by, bm, bd)));
+    |                            ^                                 ^
+    |
+help: remove these parentheses
+    |
+176 -     let diff: i64 = absInt((day(ty, tm, td) - day(by, bm, bd)));
+176 +     let diff: i64 = absInt(day(ty, tm, td) - day(by, bm, bd));
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/biorhythms.rs:183:11
+    |
+183 |     while (i < 3) {
+    |           ^     ^
+    |
+help: remove these parentheses
+    |
+183 -     while (i < 3) {
+183 +     while i < 3 {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/biorhythms.rs:186:29
+    |
+186 |         let position: i64 = (diff % length);
+    |                             ^             ^
+    |
+help: remove these parentheses
+    |
+186 -         let position: i64 = (diff % length);
+186 +         let position: i64 = diff % length;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/biorhythms.rs:187:29
+    |
+187 |         let quadrant: i64 = ((position * 4) / length);
+    |                             ^                       ^
+    |
+help: remove these parentheses
+    |
+187 -         let quadrant: i64 = ((position * 4) / length);
+187 +         let quadrant: i64 = (position * 4) / length;
+    |
+
+warning: unnecessary parentheses around function argument
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/biorhythms.rs:188:42
+    |
+188 |         let mut percent: f64 = sinApprox((((2.0 * g_PI) * (position as f64)) / (length as f64)));
+    |                                          ^                                                    ^
+    |
+help: remove these parentheses
+    |
+188 -         let mut percent: f64 = sinApprox((((2.0 * g_PI) * (position as f64)) / (length as f64)));
+188 +         let mut percent: f64 = sinApprox(((2.0 * g_PI) * (position as f64)) / (length as f64));
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/biorhythms.rs:189:19
+    |
+189 |         percent = (floor((percent * 1000.0)) / 10.0);
+    |                   ^                                ^
+    |
+help: remove these parentheses
+    |
+189 -         percent = (floor((percent * 1000.0)) / 10.0);
+189 +         percent = floor((percent * 1000.0)) / 10.0;
+    |
+
+warning: unnecessary parentheses around function argument
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/biorhythms.rs:189:26
+    |
+189 |         percent = (floor((percent * 1000.0)) / 10.0);
+    |                          ^                ^
+    |
+help: remove these parentheses
+    |
+189 -         percent = (floor((percent * 1000.0)) / 10.0);
+189 +         percent = (floor(percent * 1000.0) / 10.0);
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/biorhythms.rs:191:12
+    |
+191 |         if (percent > 95.0) {
+    |            ^              ^
+    |
+help: remove these parentheses
+    |
+191 -         if (percent > 95.0) {
+191 +         if percent > 95.0 {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/biorhythms.rs:193:19
+    |
+193 |         } else if (percent < -95.0) {
+    |                   ^               ^
+    |
+help: remove these parentheses
+    |
+193 -         } else if (percent < -95.0) {
+193 +         } else if percent < -95.0 {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/biorhythms.rs:195:19
+    |
+195 |         } else if (absFloat(percent) < 5.0) {
+    |                   ^                       ^
+    |
+help: remove these parentheses
+    |
+195 -         } else if (absFloat(percent) < 5.0) {
+195 +         } else if absFloat(percent) < 5.0 {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/biorhythms.rs:198:34
+    |
+198 |             let daysToAdd: i64 = ((((quadrant + 1) * length) / 4) - position);
+    |                                  ^                                          ^
+    |
+help: remove these parentheses
+    |
+198 -             let daysToAdd: i64 = ((((quadrant + 1) * length) / 4) - position);
+198 +             let daysToAdd: i64 = (((quadrant + 1) * length) / 4) - position;
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/biorhythms.rs:213:12
+    |
+213 |         if (position < 10) {
+    |            ^             ^
+    |
+help: remove these parentheses
+    |
+213 -         if (position < 10) {
+213 +         if position < 10 {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/biorhythms.rs:217:13
+    |
+217 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+217 -         i = (i + 1);
+217 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/biorhythms.rs:224:11
+    |
+224 |     while (idx < (pairs.len() as i64)) {
+    |           ^                          ^
+    |
+help: remove these parentheses
+    |
+224 -     while (idx < (pairs.len() as i64)) {
+224 +     while idx < (pairs.len() as i64) {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/biorhythms.rs:227:15
+    |
+227 |         idx = (idx + 1);
+    |               ^       ^
+    |
+help: remove these parentheses
+    |
+227 -         idx = (idx + 1);
+227 +         idx = idx + 1;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/biorhythms.rs:233:32
+    |
+233 |         let duration_us: i64 = ((_end - _start) / 1000);
+    |                                ^                      ^
+    |
+help: remove these parentheses
+    |
+233 -         let duration_us: i64 = ((_end - _start) / 1000);
+233 +         let duration_us: i64 = (_end - _start) / 1000;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/biorhythms.rs:234:33
+    |
+234 |         let memory_bytes: i64 = (_end_mem - _start_mem);
+    |                                 ^                     ^
+    |
+help: remove these parentheses
+    |
+234 -         let memory_bytes: i64 = (_end_mem - _start_mem);
+234 +         let memory_bytes: i64 = _end_mem - _start_mem;
+    |
+
+error[E0425]: cannot find function `contains` in this scope
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/biorhythms.rs:207:17
+    |
+207 |             if !contains(pct, ".") {
+    |                 ^^^^^^^^ not found in this scope
+    |
+help: use the `.` operator to call the method `contains` on `&str`
+    |
+207 -             if !contains(pct, ".") {
+207 +             if !pct.contains(".") {
+    |
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/biorhythms.rs:48:29
+   |
+48 |         unsafe fn sinApprox(mut x: f64) -> f64 {
+   |                             ----^
+   |                             |
+   |                             help: remove this `mut`
+   |
+   = note: `#[warn(unused_mut)]` on by default
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/biorhythms.rs:60:25
+   |
+60 |         unsafe fn floor(mut x: f64) -> f64 {
+   |                         ----^
+   |                         |
+   |                         help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/biorhythms.rs:67:28
+   |
+67 |         unsafe fn absFloat(mut x: f64) -> f64 {
+   |                            ----^
+   |                            |
+   |                            help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/biorhythms.rs:73:26
+   |
+73 |         unsafe fn absInt(mut n: i64) -> i64 {
+   |                          ----^
+   |                          |
+   |                          help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/biorhythms.rs:79:31
+   |
+79 |         unsafe fn parseIntStr(mut str: String) -> i64 {
+   |                               ----^^^
+   |                               |
+   |                               help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/biorhythms.rs:97:29
+   |
+97 |         unsafe fn parseDate(mut s: String) -> Vec<i64> {
+   |                             ----^
+   |                             |
+   |                             help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/biorhythms.rs:103:24
+    |
+103 |         unsafe fn leap(mut y: i64) -> bool {
+    |                        ----^
+    |                        |
+    |                        help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/biorhythms.rs:112:31
+    |
+112 |         unsafe fn daysInMonth(mut y: i64, mut m: i64) -> i64 {
+    |                               ----^
+    |                               |
+    |                               help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/biorhythms.rs:112:43
+    |
+112 |         unsafe fn daysInMonth(mut y: i64, mut m: i64) -> i64 {
+    |                                           ----^
+    |                                           |
+    |                                           help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/biorhythms.rs:114:9
+    |
+114 |     let mut lengths: Vec<i64> = vec![31, feb, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+    |         ----^^^^^^^
+    |         |
+    |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/biorhythms.rs:117:27
+    |
+117 |         unsafe fn addDays(mut y: i64, mut m: i64, mut d: i64, mut n: i64) -> Vec<i64> {
+    |                           ----^
+    |                           |
+    |                           help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/biorhythms.rs:117:39
+    |
+117 |         unsafe fn addDays(mut y: i64, mut m: i64, mut d: i64, mut n: i64) -> Vec<i64> {
+    |                                       ----^
+    |                                       |
+    |                                       help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/biorhythms.rs:117:51
+    |
+117 |         unsafe fn addDays(mut y: i64, mut m: i64, mut d: i64, mut n: i64) -> Vec<i64> {
+    |                                                   ----^
+    |                                                   |
+    |                                                   help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/biorhythms.rs:117:63
+    |
+117 |         unsafe fn addDays(mut y: i64, mut m: i64, mut d: i64, mut n: i64) -> Vec<i64> {
+    |                                                               ----^
+    |                                                               |
+    |                                                               help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/biorhythms.rs:152:24
+    |
+152 |         unsafe fn pad2(mut n: i64) -> String {
+    |                        ----^
+    |                        |
+    |                        help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/biorhythms.rs:158:30
+    |
+158 |         unsafe fn dateString(mut y: i64, mut m: i64, mut d: i64) -> String {
+    |                              ----^
+    |                              |
+    |                              help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/biorhythms.rs:158:42
+    |
+158 |         unsafe fn dateString(mut y: i64, mut m: i64, mut d: i64) -> String {
+    |                                          ----^
+    |                                          |
+    |                                          help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/biorhythms.rs:158:54
+    |
+158 |         unsafe fn dateString(mut y: i64, mut m: i64, mut d: i64) -> String {
+    |                                                      ----^
+    |                                                      |
+    |                                                      help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/biorhythms.rs:161:23
+    |
+161 |         unsafe fn day(mut y: i64, mut m: i64, mut d: i64) -> i64 {
+    |                       ----^
+    |                       |
+    |                       help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/biorhythms.rs:161:35
+    |
+161 |         unsafe fn day(mut y: i64, mut m: i64, mut d: i64) -> i64 {
+    |                                   ----^
+    |                                   |
+    |                                   help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/biorhythms.rs:161:47
+    |
+161 |         unsafe fn day(mut y: i64, mut m: i64, mut d: i64) -> i64 {
+    |                                               ----^
+    |                                               |
+    |                                               help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/biorhythms.rs:222:9
+    |
+222 |     let mut pairs: Vec<Vec<String>> = vec![vec![String::from("1943-03-09"), String::from("1972-07-11")], vec![String::from("1809-01-12"),...
+    |         ----^^^^^
+    |         |
+    |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/biorhythms.rs:225:13
+    |
+225 |         let mut p: Vec<String> = pairs[idx as usize].clone();
+    |             ----^
+    |             |
+    |             help: remove this `mut`
+
+error: aborting due to 1 previous error; 94 warnings emitted
+
+For more information about this error, try `rustc --explain E0425`.
