@@ -67,6 +67,8 @@ var (
 	benchMain     bool
 	currentReturn string
 	methodDefs    []Stmt
+	currentFields map[string]string
+	currentStruct string
 )
 
 // SetBenchMain configures whether the generated main function is wrapped in a
@@ -2377,6 +2379,8 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	usesSubstring = false
 	usesSHA256 = false
 	currentReturn = ""
+	currentFields = nil
+	currentStruct = ""
 	p := &Program{}
 	for _, st := range prog.Statements {
 		conv, err := convertStmt(st)
@@ -2552,6 +2556,12 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 			}
 		}
 		fsDecl := fsTypeFromString(declared)
+		if fsDecl == "unit" || fsDecl == "unit array" {
+			fsDecl = ""
+		}
+		if fsDecl == "unit" || fsDecl == "unit array" {
+			fsDecl = ""
+		}
 		if strings.HasPrefix(fsDecl, "Map<") {
 			switch v := e.(type) {
 			case *StructLit:
@@ -2814,6 +2824,18 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 			if vt, err := transpileEnv.GetVar(st.Fun.Name); err == nil {
 				if ft, ok := vt.(types.FuncType); ok {
 					retType = fsType(ft.Return)
+				}
+			}
+		}
+		if (retType == "" || retType == "unit") && st.Fun.Return != nil {
+			if t := typeRefString(st.Fun.Return); t != "" {
+				retType = t
+			}
+		}
+		if retType == "unit array" && st.Fun.Return != nil && st.Fun.Return.Generic != nil {
+			if st.Fun.Return.Generic.Name == "list" && len(st.Fun.Return.Generic.Args) > 0 {
+				if st.Fun.Return.Generic.Args[0].Fun != nil {
+					retType = "obj array"
 				}
 			}
 		}
@@ -3325,12 +3347,29 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			}
 		}
 		elems := make([]Expr, len(p.List.Elems))
+		types := make([]string, len(p.List.Elems))
+		same := true
+		prev := ""
 		for i, e := range p.List.Elems {
 			ex, err := convertExpr(e)
 			if err != nil {
 				return nil, err
 			}
 			elems[i] = ex
+			t := inferType(ex)
+			types[i] = t
+			if i == 0 {
+				prev = t
+			} else if t != prev {
+				same = false
+			}
+		}
+		if !same || prev == "" {
+			for i, ex := range elems {
+				if types[i] != "obj" {
+					elems[i] = &CallExpr{Func: "box", Args: []Expr{ex}}
+				}
+			}
 		}
 		return &ListLit{Elems: elems}, nil
 	case p.Struct != nil:
@@ -3354,6 +3393,23 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				return nil, err
 			}
 			fields[i] = StructFieldExpr{Name: f.Name, Value: v}
+		}
+		if transpileEnv != nil && p.Struct.Name != "" {
+			if st, ok := transpileEnv.GetStruct(p.Struct.Name); ok {
+				provided := map[string]Expr{}
+				for _, f := range fields {
+					provided[f.Name] = f.Value
+				}
+				complete := make([]StructFieldExpr, len(st.Order))
+				for i, name := range st.Order {
+					if v, ok := provided[name]; ok {
+						complete[i] = StructFieldExpr{Name: name, Value: v}
+					} else {
+						complete[i] = StructFieldExpr{Name: name, Value: &DefaultOfExpr{Type: fsType(st.Fields[name])}}
+					}
+				}
+				fields = complete
+			}
 		}
 		return &StructLit{Name: p.Struct.Name, Fields: fields}, nil
 	case p.Map != nil:
@@ -3448,6 +3504,11 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		typ := ""
 		if t, ok := varTypes[p.Selector.Root]; ok {
 			typ = t
+		} else if currentFields != nil && len(p.Selector.Tail) == 0 {
+			if _, ok := currentFields[p.Selector.Root]; ok {
+				target := &IdentExpr{Name: "self", Type: currentStruct}
+				return &FieldExpr{Target: target, Name: p.Selector.Root}, nil
+			}
 		}
 		expr := Expr(&IdentExpr{Name: p.Selector.Root, Type: typ})
 		for _, name := range p.Selector.Tail {
@@ -3712,7 +3773,16 @@ func convertTypeDecl(td *parser.TypeDecl) error {
 		param := &parser.Param{Name: selfName, Type: selfType}
 		fn.Params = append([]*parser.Param{param}, fn.Params...)
 		stmt := &parser.Statement{Fun: &fn}
+		saveFields := currentFields
+		saveStruct := currentStruct
+		currentFields = map[string]string{}
+		currentStruct = td.Name
+		for _, f := range st.Order {
+			currentFields[f] = fsType(st.Fields[f])
+		}
 		fs, err := convertStmt(stmt)
+		currentFields = saveFields
+		currentStruct = saveStruct
 		if err != nil {
 			return err
 		}
