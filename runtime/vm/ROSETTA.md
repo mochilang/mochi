@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated IR and outputs from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/ir`.
-Last updated: 2025-07-27 06:52 UTC
+Last updated: 2025-07-27 08:09 UTC
 
-## Rosetta Golden Test Checklist (341/453)
+## Rosetta Golden Test Checklist (342/453)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 116µs | 11.7 KB |
@@ -388,7 +388,7 @@ Last updated: 2025-07-27 06:52 UTC
 | 379 | execute-hq9+ |   |  |  |
 | 380 | execute-snusp |   |  |  |
 | 381 | exponentiation-operator |   |  |  |
-| 382 | exponentiation-order |   |  |  |
+| 382 | exponentiation-order | ✓ |  |  |
 | 383 | exponentiation-with-infix-operators-in-or-operating-on-the-base |   |  |  |
 | 384 | extend-your-language |   |  |  |
 | 385 | extensible-prime-generator |   |  |  |

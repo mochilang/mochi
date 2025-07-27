@@ -1,5 +1,6 @@
 //go:build ignore
 // +build ignore
+// downloaded via tools/rosetta; task 343
 
 package main
 
