@@ -62,6 +62,11 @@ var refMode bool
 var forceMap map[*parser.MapLiteral]bool
 var useLazy bool
 var useRefCell bool
+
+// lockedMap indicates a global HashMap currently locked for update.
+// When set, IndexExpr will reference the temporary `_map` variable instead of
+// taking a new lock.
+var lockedMap string
 var rustReserved = map[string]bool{
 	"as": true, "break": true, "const": true, "continue": true, "crate": true,
 	"else": true, "enum": true, "extern": true, "false": true, "fn": true,
@@ -590,7 +595,9 @@ func (i *IndexExpr) emit(w io.Writer) {
 	switch t := i.Target.(type) {
 	case *NameRef:
 		if mapVars[t.Name] || strings.HasPrefix(inferType(i.Target), "HashMap") {
-			if globalVars[t.Name] {
+			if lockedMap != "" && lockedMap == t.Name {
+				io.WriteString(w, "_map")
+			} else if globalVars[t.Name] {
 				name := t.Name
 				if newName, ok := globalRenames[t.Name]; ok && !isLocal(t.Name) {
 					name = newName
@@ -1267,12 +1274,21 @@ func (s *IndexAssignStmt) emit(w io.Writer) {
 				if newName, ok := globalRenames[nr.Name]; ok && !isLocal(nr.Name) {
 					name = newName
 				}
+				io.WriteString(w, "{ let mut _map = ")
 				io.WriteString(w, name)
-				io.WriteString(w, ".lock().unwrap().insert(")
-			} else {
-				idx.Target.emit(w)
-				io.WriteString(w, ".insert(")
+				io.WriteString(w, ".lock().unwrap(); let _val = ")
+				lockedMap = nr.Name
+				s.Value.emit(w)
+				lockedMap = ""
+				io.WriteString(w, "; _map.insert(")
+				idx.Index.emit(w)
+				io.WriteString(w, ".clone(), _val); }")
+				indexLHS = old
+				return
 			}
+			// local hash map
+			idx.Target.emit(w)
+			io.WriteString(w, ".insert(")
 			idx.Index.emit(w)
 			io.WriteString(w, ".clone(), ")
 			s.Value.emit(w)
