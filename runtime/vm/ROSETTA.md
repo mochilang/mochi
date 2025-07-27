@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated IR and outputs from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/ir`.
-Last updated: 2025-07-27 06:52 UTC
+Last updated: 2025-07-27 08:05 UTC
 
 ## Rosetta Golden Test Checklist (341/453)
 | Index | Name | Status | Duration | Memory |

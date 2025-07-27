@@ -1,0 +1,101 @@
+let PI = 3.141592653589793
+
+type Complex {
+  re: float
+  im: float
+}
+
+fun sinApprox(x: float): float {
+  var term = x
+  var sum = x
+  var n = 1
+  while n <= 10 {
+    let denom = ((2*n) * (2*n+1)) as float
+    term = -term * x * x / denom
+    sum = sum + term
+    n = n + 1
+  }
+  return sum
+}
+
+fun cosApprox(x: float): float {
+  var term = 1.0
+  var sum = 1.0
+  var n = 1
+  while n <= 10 {
+    let denom = ((2*n-1)*(2*n)) as float
+    term = -term * x * x / denom
+    sum = sum + term
+    n = n + 1
+  }
+  return sum
+}
+
+fun cis(x: float): Complex {
+  return Complex { re: cosApprox(x), im: sinApprox(x) }
+}
+
+fun add(a: Complex, b: Complex): Complex {
+  return Complex { re: a.re + b.re, im: a.im + b.im }
+}
+
+fun sub(a: Complex, b: Complex): Complex {
+  return Complex { re: a.re - b.re, im: a.im - b.im }
+}
+
+fun mul(a: Complex, b: Complex): Complex {
+  return Complex {
+    re: a.re * b.re - a.im * b.im,
+    im: a.re * b.im + a.im * b.re,
+  }
+}
+
+fun ditfft2Rec(x: list<float>, y: list<Complex>, offX: int, offY: int, n: int, s: int) {
+  if n == 1 {
+    y[offY] = Complex { re: x[offX], im: 0.0 }
+    return
+  }
+  ditfft2Rec(x, y, offX, offY, n/2, 2*s)
+  ditfft2Rec(x, y, offX+s, offY+n/2, n/2, 2*s)
+  var k = 0
+  while k < n/2 {
+    let angle = -2.0 * PI * (k as float) / (n as float)
+    let tf = mul(cis(angle), y[offY+k+n/2])
+    let a = add(y[offY+k], tf)
+    let b = sub(y[offY+k], tf)
+    y[offY+k] = a
+    y[offY+k+n/2] = b
+    k = k + 1
+  }
+}
+
+fun ditfft2(x: list<float>, y: list<Complex>, n: int, s: int) {
+  ditfft2Rec(x, y, 0, 0, n, s)
+}
+
+fun main() {
+  let x: list<float> = [1.0,1.0,1.0,1.0,0.0,0.0,0.0,0.0]
+  var y: list<Complex> = []
+  var i=0
+  while i < len(x) {
+    y = append(y, Complex { re: 0.0, im: 0.0 })
+    i = i + 1
+  }
+  ditfft2(x, y, len(x), 1)
+  for c in y {
+    var line = pad(fmt(c.re),8)
+    if c.im >= 0 {
+      line = line + "+" + fmt(c.im)
+    } else {
+      line = line + fmt(c.im)
+    }
+    print(line)
+  }
+}
+
+fun pad(s: string, w: int): string { var t=s; while len(t)<w { t=" "+t }; return t }
+fun fmt(x: float): string { var y=floorf(x*10000.0+0.5)/10000.0; var s=str(y); var dot=indexOf(s,"."); if dot==0-1 { s=s+".0000" } else { var d=len(s)-dot-1; while d<4 { s=s+"0"; d=d+1 } } return s }
+fun floorf(x: float): float { let y = x as int; return y as float }
+fun indexOf(s: string, ch: string): int { var i=0; while i<len(s){ if substring(s,i,i+1)==ch {return i} i=i+1 } return 0-1 }
+
+main()
