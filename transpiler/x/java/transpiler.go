@@ -238,13 +238,25 @@ func javaBoxType(t string) string {
 func mapValueType(t string) string {
 	if i := strings.Index(t, "Map<"); i >= 0 {
 		rest := t[i+4:]
-		if j := strings.Index(rest, ">"); j >= 0 {
-			rest = rest[:j]
+		depth := 1
+		j := 0
+		comma := -1
+		for j < len(rest) && depth > 0 {
+			switch rest[j] {
+			case '<':
+				depth++
+			case '>':
+				depth--
+			case ',':
+				if depth == 1 && comma < 0 {
+					comma = j
+				}
+			}
+			j++
 		}
-		parts := strings.SplitN(rest, ",", 2)
-		if len(parts) == 2 {
-			v := strings.TrimSpace(parts[1])
-			switch v {
+		if comma >= 0 {
+			val := strings.TrimSpace(rest[comma+1 : j-1])
+			switch val {
 			case "Integer":
 				return "int"
 			case "Double":
@@ -252,7 +264,7 @@ func mapValueType(t string) string {
 			case "Boolean":
 				return "boolean"
 			default:
-				return v
+				return val
 			}
 		}
 	}
@@ -262,12 +274,24 @@ func mapValueType(t string) string {
 func mapKeyType(t string) string {
 	if i := strings.Index(t, "Map<"); i >= 0 {
 		rest := t[i+4:]
-		if j := strings.Index(rest, ">"); j >= 0 {
-			rest = rest[:j]
+		depth := 1
+		j := 0
+		comma := -1
+		for j < len(rest) && depth > 0 {
+			switch rest[j] {
+			case '<':
+				depth++
+			case '>':
+				depth--
+			case ',':
+				if depth == 1 && comma < 0 {
+					comma = j
+				}
+			}
+			j++
 		}
-		parts := strings.SplitN(rest, ",", 2)
-		if len(parts) == 2 {
-			k := strings.TrimSpace(parts[0])
+		if comma >= 0 {
+			k := strings.TrimSpace(rest[:comma])
 			switch k {
 			case "Integer":
 				return "int"
@@ -325,6 +349,14 @@ func emitCastExpr(w io.Writer, e Expr, typ string) {
 					fmt.Fprint(w, ")")
 					return
 				}
+			}
+		case *MapLit:
+			if strings.Contains(typ, "Map") {
+				jt := javaType(typ)
+				fmt.Fprintf(w, "((%s)(", jt)
+				e.emit(w)
+				fmt.Fprint(w, "))")
+				return
 			}
 		}
 	}
@@ -1264,7 +1296,25 @@ func (s *IndexAssignStmt) emit(w io.Writer, indent string) {
 			fmt.Fprint(w, ".put(")
 			s.Indices[0].emit(w)
 			fmt.Fprint(w, ", ")
-			s.Expr.emit(w)
+			valType := mapValueType(inferType(s.Target))
+			if strings.Contains(valType, "Map") {
+				if inner := mapValueType(valType); inner != "" {
+					valType = inner
+				}
+			}
+			if valType != "" {
+				if ml, ok := s.Expr.(*MapLit); ok && ml.ValueType == "" {
+					kt := mapKeyType(inferType(s.Target))
+					oldKT, oldVT := ml.KeyType, ml.ValueType
+					ml.KeyType, ml.ValueType = kt, valType
+					ml.emit(w)
+					ml.KeyType, ml.ValueType = oldKT, oldVT
+				} else {
+					emitCastExpr(w, s.Expr, valType)
+				}
+			} else {
+				s.Expr.emit(w)
+			}
 			fmt.Fprint(w, ");\n")
 			return
 		}
@@ -1276,66 +1326,53 @@ func (s *IndexAssignStmt) emit(w io.Writer, indent string) {
 			return
 		}
 	}
-	if len(s.Indices) > 1 && isMapExpr(s.Target) {
-		ix := &IndexExpr{Target: s.Target, Index: s.Indices[0], IsMap: true}
-		if key, ok := s.Indices[0].(*StringLit); ok {
-			if fields := mapFieldsForExpr(s.Target); fields != nil {
-				if t, ok2 := fields[key.Value]; ok2 {
-					ix.ResultType = t
-				}
-			}
-		}
-		ix.emit(w)
-		for _, idx := range s.Indices[1:] {
-			fmt.Fprint(w, "[")
-			idx.emit(w)
-			fmt.Fprint(w, "]")
-		}
-		fmt.Fprint(w, " = ")
-		elem := arrayElemType(ix)
-		for i := 1; i < len(s.Indices); i++ {
-			if strings.HasSuffix(elem, "[]") {
-				elem = strings.TrimSuffix(elem, "[]")
-			} else {
-				elem = ""
-				break
-			}
-		}
-		emitCastExpr(w, s.Expr, elem)
-		fmt.Fprint(w, ";\n")
-		return
-	}
 	if len(s.Indices) > 1 {
 		base := s.Target
 		for i := 0; i < len(s.Indices)-1; i++ {
 			base = &IndexExpr{Target: base, Index: s.Indices[i], IsMap: isMapExpr(base)}
 		}
+		last := s.Indices[len(s.Indices)-1]
 		if isMapExpr(base) {
 			base.emit(w)
 			fmt.Fprint(w, ".put(")
-			s.Indices[len(s.Indices)-1].emit(w)
+			last.emit(w)
 			fmt.Fprint(w, ", ")
-			s.Expr.emit(w)
+			valType := mapValueType(inferType(base))
+			if strings.Contains(valType, "Map") {
+				if inner := mapValueType(valType); inner != "" {
+					valType = inner
+				}
+			}
+			if valType != "" {
+				if ml, ok := s.Expr.(*MapLit); ok && ml.ValueType == "" {
+					kt := mapKeyType(inferType(base))
+					oldKT, oldVT := ml.KeyType, ml.ValueType
+					ml.KeyType, ml.ValueType = kt, valType
+					ml.emit(w)
+					ml.KeyType, ml.ValueType = oldKT, oldVT
+				} else {
+					emitCastExpr(w, s.Expr, valType)
+				}
+			} else {
+				s.Expr.emit(w)
+			}
 			fmt.Fprint(w, ");\n")
 			return
 		}
+		base.emit(w)
+		fmt.Fprint(w, "[")
+		last.emit(w)
+		fmt.Fprint(w, "] = ")
+		elem := arrayElemType(base)
+		emitCastExpr(w, s.Expr, elem)
+		fmt.Fprint(w, ";\n")
+		return
 	}
 	s.Target.emit(w)
-	for _, idx := range s.Indices {
-		fmt.Fprint(w, "[")
-		idx.emit(w)
-		fmt.Fprint(w, "]")
-	}
-	fmt.Fprint(w, " = ")
+	fmt.Fprint(w, "[")
+	s.Indices[0].emit(w)
+	fmt.Fprint(w, "] = ")
 	elem := arrayElemType(s.Target)
-	for i := 1; i < len(s.Indices); i++ {
-		if strings.HasSuffix(elem, "[]") {
-			elem = strings.TrimSuffix(elem, "[]")
-		} else {
-			elem = ""
-			break
-		}
-	}
 	emitCastExpr(w, s.Expr, elem)
 	fmt.Fprint(w, ";\n")
 }
@@ -2492,7 +2529,7 @@ func (ix *IndexExpr) emit(w io.Writer) {
 				defVal = "false"
 			}
 		}
-		fmt.Fprintf(w, "((%s)", castType)
+		fmt.Fprintf(w, "((%s)(", castType)
 		if isMapExpr(ix.Target) {
 			ix.Target.emit(w)
 		} else {
@@ -2500,6 +2537,7 @@ func (ix *IndexExpr) emit(w io.Writer) {
 			ix.Target.emit(w)
 			fmt.Fprint(w, ")")
 		}
+		fmt.Fprint(w, ")")
 		if useDefault {
 			fmt.Fprint(w, ".getOrDefault(")
 			ix.Index.emit(w)
@@ -2528,8 +2566,9 @@ func (ix *IndexExpr) emit(w io.Writer) {
 		if ix.ResultType != "" {
 			castType = javaType(ix.ResultType)
 		}
-		fmt.Fprintf(w, "((%s)", castType)
+		fmt.Fprintf(w, "((%s)(", castType)
 		ix.Target.emit(w)
+		fmt.Fprint(w, ")")
 		fmt.Fprint(w, ".get(")
 		ix.Index.emit(w)
 		fmt.Fprint(w, "))")
@@ -3725,6 +3764,11 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 			if t, ok := varTypes[it.Name]; ok && (t == "map" || strings.HasPrefix(t, "java.util.Map")) {
 				isMap = true
 				keyType = mapKeyType(t)
+			}
+		default:
+			if isMapExpr(iter) {
+				isMap = true
+				keyType = mapKeyType(inferType(iter))
 			}
 		}
 		elemType := ""
