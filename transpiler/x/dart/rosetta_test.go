@@ -99,9 +99,14 @@ func TestDartTranspiler_Rosetta_Golden(t *testing.T) {
 				t.Fatalf("write code: %v", err)
 			}
 			cmd := exec.Command("dart", codePath)
+			runEnv := os.Environ()
 			if bench {
-				cmd.Env = append(os.Environ(), "MOCHI_BENCHMARK=1")
+				runEnv = append(runEnv, "MOCHI_BENCHMARK=1")
 			}
+			if idxNum == 141 {
+				runEnv = append(runEnv, "MOCHI_NOW_SEED=1")
+			}
+			cmd.Env = runEnv
 			if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
 				cmd.Stdin = bytes.NewReader(data)
 			}

@@ -2,7 +2,7 @@
 
 This directory contains Dart code generated from Mochi programs in `tests/rosetta/x/Mochi`. Each program has a `.dart` file and `.out` output. Compilation or runtime failures are captured in a `.error` file.
 
-Compiled and ran: 317/467
+Compiled and ran: 318/467
 
 ## Checklist
 | Index | Name | Status | Duration | Memory |
@@ -147,7 +147,7 @@ Compiled and ran: 317/467
 | 138 | brilliant-numbers | ✓ |  |  |
 | 139 | brownian-tree | ✓ |  |  |
 | 140 | bulls-and-cows-player | ✓ | 33.003ms | 2.6 MB |
-| 141 | bulls-and-cows |   |  |  |
+| 141 | bulls-and-cows | ✓ | 30.312ms | 5.7 MB |
 | 142 | burrows-wheeler-transform | ✓ |  |  |
 | 143 | caesar-cipher-1 | ✓ |  |  |
 | 144 | caesar-cipher-2 | ✓ |  |  |
@@ -475,4 +475,4 @@ Compiled and ran: 317/467
 | 466 | window-management |   |  |  |
 | 467 | zumkeller-numbers |   |  |  |
 
-_Last updated: 2025-07-27 21:41 +0700_
+_Last updated: 2025-07-27 22:48 +0700_
