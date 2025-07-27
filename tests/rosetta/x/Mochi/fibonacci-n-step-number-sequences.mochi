@@ -1,3 +1,5 @@
+// Rosetta Code task 364: Fibonacci n-step number sequences
+
 fun show(xs: list<int>): string {
   var s = ""
   var i = 0

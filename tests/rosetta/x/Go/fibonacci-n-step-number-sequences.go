@@ -1,6 +1,8 @@
 //go:build ignore
 // +build ignore
 
+// Rosetta Code task 364: Fibonacci n-step number sequences
+
 package main
 
 import "fmt"
