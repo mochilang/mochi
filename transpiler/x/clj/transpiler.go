@@ -935,11 +935,47 @@ func transpileFunStmt(f *parser.FunStmt) (Node, error) {
 	stringListVars = make(map[string]bool)
 	renameVars = make(map[string]string)
 
+	mutated := map[string]bool{}
+	var checkAssign func([]*parser.Statement)
+	checkAssign = func(stmts []*parser.Statement) {
+		for _, st := range stmts {
+			switch {
+			case st.Assign != nil:
+				mutated[st.Assign.Name] = true
+			case st.If != nil:
+				checkAssign(st.If.Then)
+				if st.If.Else != nil {
+					checkAssign(st.If.Else)
+				}
+				for it := st.If.ElseIf; it != nil; it = it.ElseIf {
+					checkAssign(it.Then)
+					if it.Else != nil {
+						checkAssign(it.Else)
+					}
+				}
+			case st.While != nil:
+				checkAssign(st.While.Body)
+			case st.For != nil:
+				checkAssign(st.For.Body)
+			case st.Fun != nil:
+				checkAssign(st.Fun.Body)
+			}
+		}
+	}
+	checkAssign(f.Body)
+	paramInit := []Node{}
+
 	params := []Node{}
 	names := []string{}
 	for _, p := range f.Params {
 		newName := renameVar(p.Name)
-		params = append(params, Symbol(newName))
+		if mutated[p.Name] {
+			initName := newName + "_p"
+			params = append(params, Symbol(initName))
+			paramInit = append(paramInit, &List{Elems: []Node{Symbol("def"), Symbol(newName), Symbol(initName)}})
+		} else {
+			params = append(params, Symbol(newName))
+		}
 		names = append(names, newName)
 		if p.Type != nil && p.Type.Simple != nil {
 			if *p.Type.Simple == "string" {
@@ -954,7 +990,7 @@ func transpileFunStmt(f *parser.FunStmt) (Node, error) {
 		}
 	}
 	funParamsStack = append(funParamsStack, names)
-	body := []Node{}
+	body := append([]Node{}, paramInit...)
 	hasReturn := containsReturn(f.Body)
 	for i := 0; i < len(f.Body); i++ {
 		st := f.Body[i]
@@ -1905,6 +1941,8 @@ func transpileLiteral(l *parser.Literal) (Node, error) {
 			return Symbol("true"), nil
 		}
 		return Symbol("false"), nil
+	case l.Null:
+		return Symbol("nil"), nil
 	default:
 		return nil, fmt.Errorf("unsupported literal")
 	}

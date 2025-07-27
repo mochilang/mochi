@@ -1,3 +1,255 @@
+## Progress (2025-07-27 23:39 +0700)
+- clj transpiler: handle null literal
+- Regenerated golden files - 101/104 vm valid programs passing
+
+## Progress (2025-07-27 23:39 +0700)
+- clj transpiler: handle null literal
+- Regenerated golden files - 101/104 vm valid programs passing
+
+## Progress (2025-07-27 23:39 +0700)
+- clj transpiler: handle null literal
+- Regenerated golden files - 101/104 vm valid programs passing
+
+## Progress (2025-07-27 23:39 +0700)
+- clj transpiler: handle null literal
+- Regenerated golden files - 101/104 vm valid programs passing
+
+## Progress (2025-07-27 23:39 +0700)
+- clj transpiler: handle null literal
+- Regenerated golden files - 101/104 vm valid programs passing
+
+## Progress (2025-07-27 23:39 +0700)
+- clj transpiler: handle null literal
+- Regenerated golden files - 101/104 vm valid programs passing
+
+## Progress (2025-07-27 23:39 +0700)
+- clj transpiler: handle null literal
+- Regenerated golden files - 101/104 vm valid programs passing
+
+## Progress (2025-07-27 23:39 +0700)
+- clj transpiler: handle null literal
+- Regenerated golden files - 101/104 vm valid programs passing
+
+## Progress (2025-07-27 23:39 +0700)
+- clj transpiler: handle null literal
+- Regenerated golden files - 101/104 vm valid programs passing
+
+## Progress (2025-07-27 23:39 +0700)
+- clj transpiler: handle null literal
+- Regenerated golden files - 101/104 vm valid programs passing
+
+## Progress (2025-07-27 23:39 +0700)
+- clj transpiler: handle null literal
+- Regenerated golden files - 101/104 vm valid programs passing
+
+## Progress (2025-07-27 23:39 +0700)
+- clj transpiler: handle null literal
+- Regenerated golden files - 101/104 vm valid programs passing
+
+## Progress (2025-07-27 23:39 +0700)
+- clj transpiler: handle null literal
+- Regenerated golden files - 101/104 vm valid programs passing
+
+## Progress (2025-07-27 23:39 +0700)
+- clj transpiler: handle null literal
+- Regenerated golden files - 101/104 vm valid programs passing
+
+## Progress (2025-07-27 23:39 +0700)
+- clj transpiler: handle null literal
+- Regenerated golden files - 101/104 vm valid programs passing
+
+## Progress (2025-07-27 23:39 +0700)
+- clj transpiler: handle null literal
+- Regenerated golden files - 101/104 vm valid programs passing
+
+## Progress (2025-07-27 23:39 +0700)
+- clj transpiler: handle null literal
+- Regenerated golden files - 101/104 vm valid programs passing
+
+## Progress (2025-07-27 23:39 +0700)
+- clj transpiler: handle null literal
+- Regenerated golden files - 101/104 vm valid programs passing
+
+## Progress (2025-07-27 23:39 +0700)
+- clj transpiler: handle null literal
+- Regenerated golden files - 101/104 vm valid programs passing
+
+## Progress (2025-07-27 23:39 +0700)
+- clj transpiler: handle null literal
+- Regenerated golden files - 101/104 vm valid programs passing
+
+## Progress (2025-07-27 23:39 +0700)
+- clj transpiler: handle null literal
+- Regenerated golden files - 101/104 vm valid programs passing
+
+## Progress (2025-07-27 23:39 +0700)
+- clj transpiler: handle null literal
+- Regenerated golden files - 101/104 vm valid programs passing
+
+## Progress (2025-07-27 23:39 +0700)
+- clj transpiler: handle null literal
+- Regenerated golden files - 101/104 vm valid programs passing
+
+## Progress (2025-07-27 23:39 +0700)
+- clj transpiler: handle null literal
+- Regenerated golden files - 101/104 vm valid programs passing
+
+## Progress (2025-07-27 23:39 +0700)
+- clj transpiler: handle null literal
+- Regenerated golden files - 101/104 vm valid programs passing
+
+## Progress (2025-07-27 23:39 +0700)
+- clj transpiler: handle null literal
+- Regenerated golden files - 101/104 vm valid programs passing
+
+## Progress (2025-07-27 23:39 +0700)
+- clj transpiler: handle null literal
+- Regenerated golden files - 101/104 vm valid programs passing
+
+## Progress (2025-07-27 23:39 +0700)
+- clj transpiler: handle null literal
+- Regenerated golden files - 101/104 vm valid programs passing
+
+## Progress (2025-07-27 23:39 +0700)
+- clj transpiler: handle null literal
+- Regenerated golden files - 101/104 vm valid programs passing
+
+## Progress (2025-07-27 23:39 +0700)
+- clj transpiler: handle null literal
+- Regenerated golden files - 101/104 vm valid programs passing
+
+## Progress (2025-07-27 23:39 +0700)
+- clj transpiler: handle null literal
+- Regenerated golden files - 101/104 vm valid programs passing
+
+## Progress (2025-07-27 23:39 +0700)
+- clj transpiler: handle null literal
+- Regenerated golden files - 101/104 vm valid programs passing
+
+## Progress (2025-07-27 23:39 +0700)
+- clj transpiler: handle null literal
+- Regenerated golden files - 101/104 vm valid programs passing
+
+## Progress (2025-07-27 23:39 +0700)
+- clj transpiler: handle null literal
+- Regenerated golden files - 101/104 vm valid programs passing
+
+## Progress (2025-07-27 23:39 +0700)
+- clj transpiler: handle null literal
+- Regenerated golden files - 101/104 vm valid programs passing
+
+## Progress (2025-07-27 23:39 +0700)
+- clj transpiler: handle null literal
+- Regenerated golden files - 101/104 vm valid programs passing
+
+## Progress (2025-07-27 23:39 +0700)
+- clj transpiler: handle null literal
+- Regenerated golden files - 101/104 vm valid programs passing
+
+## Progress (2025-07-27 23:39 +0700)
+- clj transpiler: handle null literal
+- Regenerated golden files - 101/104 vm valid programs passing
+
+## Progress (2025-07-27 23:39 +0700)
+- clj transpiler: handle null literal
+- Regenerated golden files - 101/104 vm valid programs passing
+
+## Progress (2025-07-27 23:39 +0700)
+- clj transpiler: handle null literal
+- Regenerated golden files - 101/104 vm valid programs passing
+
+## Progress (2025-07-27 23:39 +0700)
+- clj transpiler: handle null literal
+- Regenerated golden files - 101/104 vm valid programs passing
+
+## Progress (2025-07-27 23:39 +0700)
+- clj transpiler: handle null literal
+- Regenerated golden files - 101/104 vm valid programs passing
+
+## Progress (2025-07-27 23:39 +0700)
+- clj transpiler: handle null literal
+- Regenerated golden files - 101/104 vm valid programs passing
+
+## Progress (2025-07-27 23:39 +0700)
+- clj transpiler: handle null literal
+- Regenerated golden files - 101/104 vm valid programs passing
+
+## Progress (2025-07-27 23:39 +0700)
+- clj transpiler: handle null literal
+- Regenerated golden files - 101/104 vm valid programs passing
+
+## Progress (2025-07-27 23:39 +0700)
+- clj transpiler: handle null literal
+- Regenerated golden files - 101/104 vm valid programs passing
+
+## Progress (2025-07-27 23:39 +0700)
+- clj transpiler: handle null literal
+- Regenerated golden files - 101/104 vm valid programs passing
+
+## Progress (2025-07-27 23:39 +0700)
+- clj transpiler: handle null literal
+- Regenerated golden files - 101/104 vm valid programs passing
+
+## Progress (2025-07-27 23:39 +0700)
+- clj transpiler: handle null literal
+- Regenerated golden files - 101/104 vm valid programs passing
+
+## Progress (2025-07-27 23:39 +0700)
+- clj transpiler: handle null literal
+- Regenerated golden files - 101/104 vm valid programs passing
+
+## Progress (2025-07-27 23:39 +0700)
+- clj transpiler: handle null literal
+- Regenerated golden files - 101/104 vm valid programs passing
+
+## Progress (2025-07-27 23:39 +0700)
+- clj transpiler: handle null literal
+- Regenerated golden files - 101/104 vm valid programs passing
+
+## Progress (2025-07-27 23:39 +0700)
+- clj transpiler: handle null literal
+- Regenerated golden files - 101/104 vm valid programs passing
+
+## Progress (2025-07-27 23:39 +0700)
+- clj transpiler: handle null literal
+- Regenerated golden files - 101/104 vm valid programs passing
+
+## Progress (2025-07-27 23:39 +0700)
+- clj transpiler: handle null literal
+- Regenerated golden files - 101/104 vm valid programs passing
+
+## Progress (2025-07-27 23:39 +0700)
+- clj transpiler: handle null literal
+- Regenerated golden files - 101/104 vm valid programs passing
+
+## Progress (2025-07-27 23:39 +0700)
+- clj transpiler: handle null literal
+- Regenerated golden files - 101/104 vm valid programs passing
+
+## Progress (2025-07-27 23:35 +0700)
+- update benchmarks and outputs
+- Regenerated golden files - 101/104 vm valid programs passing
+
+## Progress (2025-07-27 23:35 +0700)
+- update benchmarks and outputs
+- Regenerated golden files - 101/104 vm valid programs passing
+
+## Progress (2025-07-27 23:35 +0700)
+- update benchmarks and outputs
+- Regenerated golden files - 101/104 vm valid programs passing
+
+## Progress (2025-07-27 23:35 +0700)
+- update benchmarks and outputs
+- Regenerated golden files - 101/104 vm valid programs passing
+
+## Progress (2025-07-27 23:35 +0700)
+- update benchmarks and outputs
+- Regenerated golden files - 101/104 vm valid programs passing
+
+## Progress (2025-07-27 23:35 +0700)
+- update benchmarks and outputs
+- Regenerated golden files - 101/104 vm valid programs passing
+
 ## Progress (2025-07-27 22:27 +0700)
 - transpiler/clj: add array concatenation example
 - Regenerated golden files - 101/104 vm valid programs passing

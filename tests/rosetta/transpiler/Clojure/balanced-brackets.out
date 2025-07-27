@@ -1,0 +1,14 @@
+: ok
+][: not ok
+[]: ok
+]][[][: not ok
+[]: ok
+]][[][: not ok
+[]: ok
+][[]][: not ok
+[]: ok
+]][[][: not ok
+[]: ok
+[[]]][: not ok
+[[][[]]][]: ok
+(): not ok
