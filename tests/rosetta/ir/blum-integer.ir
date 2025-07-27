@@ -219,7 +219,7 @@ L1:
   Return       r3
 
   // fun main() {
-func main (regs=63)
+func main (regs=74)
   // var blum: list<int> = []
   Const        r0, []
   Move         r1, r0
@@ -235,7 +235,7 @@ func main (regs=63)
   // var bc = 0
   Const        r8, 0
   Move         r9, r8
-L9:
+L12:
   // while true {
   Const        r10, true
   // let p = firstPrimeFactor(i)
@@ -288,83 +288,119 @@ L2:
   Add          r35, r34, r6
   Const        r8, 0
   SetIndex     r3, r8, r35
+  Jump         L4
 L3:
+  // else if d == 3 { counts[1] = counts[1] + 1 }
+  Const        r16, 3
+  EqualInt     r36, r32, r16
+  JumpIfFalse  r36, L5
+  Const        r6, 1
+  Index        r37, r3, r6
+  Const        r6, 1
+  Add          r38, r37, r6
+  Const        r6, 1
+  SetIndex     r3, r6, r38
+  Jump         L4
+L5:
+  // else if d == 7 { counts[2] = counts[2] + 1 }
+  Const        r39, 7
+  EqualInt     r40, r32, r39
+  JumpIfFalse  r40, L6
+  Const        r41, 2
+  Index        r42, r3, r41
+  Const        r6, 1
+  Add          r43, r42, r6
+  Const        r41, 2
+  SetIndex     r3, r41, r43
+  Jump         L4
+L6:
+  // else if d == 9 { counts[3] = counts[3] + 1 }
+  Const        r44, 9
+  EqualInt     r45, r32, r44
+  JumpIfFalse  r45, L4
+  Const        r16, 3
+  Index        r46, r3, r16
+  Const        r6, 1
+  Add          r47, r46, r6
+  Const        r16, 3
+  SetIndex     r3, r16, r47
+L4:
   // bc = bc + 1
   Const        r6, 1
-  AddInt       r36, r9, r6
-  Move         r9, r36
+  AddInt       r48, r9, r6
+  Move         r9, r48
   // if bc == 50 {
   Const        r27, 50
-  EqualInt     r37, r9, r27
-  JumpIfFalse  r37, L0
+  EqualInt     r49, r9, r27
+  JumpIfFalse  r49, L0
   // print("First 50 Blum integers:")
-  Const        r38, "First 50 Blum integers:"
-  Print        r38
+  Const        r50, "First 50 Blum integers:"
+  Print        r50
   // var idx = 0
   Const        r8, 0
-  Move         r39, r8
-L7:
+  Move         r51, r8
+L10:
   // while idx < 50 {
   Const        r27, 50
-  LessInt      r40, r39, r27
-  JumpIfFalse  r40, L4
+  LessInt      r52, r51, r27
+  JumpIfFalse  r52, L7
   // var line = ""
-  Const        r41, ""
-  Move         r42, r41
+  Const        r53, ""
+  Move         r54, r53
   // var j = 0
   Const        r8, 0
-  Move         r43, r8
-L6:
+  Move         r55, r8
+L9:
   // while j < 10 {
   Const        r30, 10
-  LessInt      r44, r43, r30
-  JumpIfFalse  r44, L5
+  LessInt      r56, r55, r30
+  JumpIfFalse  r56, L8
   // line = line + padLeft(blum[idx],3) + " "
-  Index        r47, r1, r39
-  Move         r45, r47
+  Index        r59, r1, r51
+  Move         r57, r59
   Const        r16, 3
-  Move         r46, r16
-  Call2        r48, padLeft, r45, r46
-  Add          r49, r42, r48
-  Const        r50, " "
-  Add          r51, r49, r50
-  Move         r42, r51
+  Move         r58, r16
+  Call2        r60, padLeft, r57, r58
+  Add          r61, r54, r60
+  Const        r62, " "
+  Add          r63, r61, r62
+  Move         r54, r63
   // idx = idx + 1
   Const        r6, 1
-  AddInt       r52, r39, r6
-  Move         r39, r52
+  AddInt       r64, r51, r6
+  Move         r51, r64
   // j = j + 1
   Const        r6, 1
-  AddInt       r53, r43, r6
-  Move         r43, r53
+  AddInt       r65, r55, r6
+  Move         r55, r65
   // while j < 10 {
-  Jump         L6
-L5:
-  // print(substring(line,0,len(line)-1))
-  Const        r8, 0
-  Len          r54, r42
-  Const        r6, 1
-  SubInt       r55, r54, r6
-  Slice        r56, r42, r8, r55
-  Print        r56
-  // while idx < 50 {
-  Jump         L7
-L0:
-  // if i % 5 == 3 { i = i + 4 } else { i = i + 2 }
-  Const        r57, 5
-  ModInt       r58, r7, r57
-  Const        r16, 3
-  EqualInt     r59, r58, r16
-  JumpIfFalse  r59, L8
-  Const        r14, 4
-  AddInt       r60, r7, r14
-  Move         r7, r60
   Jump         L9
 L8:
-  Const        r61, 2
-  AddInt       r62, r7, r61
-  Move         r7, r62
+  // print(substring(line,0,len(line)-1))
+  Const        r8, 0
+  Len          r66, r54
+  Const        r6, 1
+  SubInt       r67, r66, r6
+  Slice        r68, r54, r8, r67
+  Print        r68
+  // while idx < 50 {
+  Jump         L10
+L0:
+  // if i % 5 == 3 { i = i + 4 } else { i = i + 2 }
+  Const        r69, 5
+  ModInt       r70, r7, r69
+  Const        r16, 3
+  EqualInt     r71, r70, r16
+  JumpIfFalse  r71, L11
+  Const        r14, 4
+  AddInt       r72, r7, r14
+  Move         r7, r72
+  Jump         L12
+L11:
+  Const        r41, 2
+  AddInt       r73, r7, r41
+  Move         r7, r73
   // while true {
-  Jump         L9
-L4:
+  Jump         L12
+L7:
   Return       r0

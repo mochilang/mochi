@@ -846,14 +846,12 @@ func Example (regs=70)
   Const        r0, "This is a test."
   Move         r1, r0
   // let msgBytes = bytesOfStr(message)
-  Const        r0, "This is a test."
-  Move         r2, r0
+  Move         r2, r1
   Call         r3, bytesOfStr, r2
   Move         r4, r3
   // print("\"" + message + "\" as bytes: " + bytesToDec(msgBytes))
   Const        r5, "\""
-  Const        r0, "This is a test."
-  Add          r6, r5, r0
+  Add          r6, r5, r1
   Const        r7, "\" as bytes: "
   Add          r8, r6, r7
   Move         r9, r4

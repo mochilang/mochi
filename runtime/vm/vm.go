@@ -2575,6 +2575,13 @@ func (c *compiler) compileNamedFunExpr(name string, fn *parser.FunExpr, captures
 	fc.fn.Name = name
 	fc.fn.Line = fn.Pos.Line
 	fc.fn.NumParams = len(captures) + len(fn.Params)
+	// expose global variables to the function body so assignments work
+	for gname, gidx := range c.globals {
+		fc.vars[gname] = gidx
+	}
+	if len(c.globals) > fc.fn.NumRegs {
+		fc.fn.NumRegs = len(c.globals)
+	}
 	fc.idx = len(c.globals)
 	for _, name := range captures {
 		idx := fc.newReg()

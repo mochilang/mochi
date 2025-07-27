@@ -184,8 +184,7 @@ L4:
   Equal        r53, r52, r44
   JumpIfFalse  r53, L5
   // if indexOf(valid, cg) == (-1) {
-  Const        r20, "123456789"
-  Move         r54, r20
+  Move         r54, r21
   Move         r55, r40
   Call2        r56, indexOf, r54, r55
   Const        r44, -1

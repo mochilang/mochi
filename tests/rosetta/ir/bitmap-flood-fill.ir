@@ -1,0 +1,134 @@
+func main (regs=27)
+  // var grid: list<list<string>> = [
+  Const        r1, [[".", ".", ".", ".", "."], [".", "#", "#", "#", "."], [".", "#", ".", "#", "."], [".", "#", "#", "#", "."], [".", ".", ".", ".", "."]]
+  Move         r0, r1
+  SetGlobal    0,0,0,0
+  // flood(2, 2, "o")
+  Const        r5, 2
+  Move         r2, r5
+  Const        r5, 2
+  Move         r3, r5
+  Const        r6, "o"
+  Move         r4, r6
+  Call         r7, flood, r2, r3, r4
+  // for row in grid {
+  IterPrep     r8, r0
+  Len          r9, r8
+  Const        r10, 0
+L3:
+  LessInt      r11, r10, r9
+  JumpIfFalse  r11, L0
+  Index        r12, r8, r10
+  Move         r13, r12
+  // var line = ""
+  Const        r14, ""
+  Move         r15, r14
+  // for ch in row { line = line + ch }
+  IterPrep     r16, r13
+  Len          r17, r16
+  Const        r18, 0
+L2:
+  LessInt      r19, r18, r17
+  JumpIfFalse  r19, L1
+  Index        r20, r16, r18
+  Move         r21, r20
+  Add          r22, r15, r21
+  Move         r15, r22
+  Const        r23, 1
+  AddInt       r24, r18, r23
+  Move         r18, r24
+  Jump         L2
+L1:
+  // print(line)
+  Print        r15
+  // for row in grid {
+  Const        r25, 1
+  AddInt       r26, r10, r25
+  Move         r10, r26
+  Jump         L3
+L0:
+  Return       r0
+
+  // fun flood(x: int, y: int, repl: string) {
+func flood (regs=16)
+  // let target = grid[y][x]
+  Index        r4, r0, r2
+  Index        r5, r4, r1
+  Move         r6, r5
+  // if target == repl { return }
+  Equal        r7, r6, r3
+  JumpIfFalse  r7, L0
+  Return       r0
+L0:
+  // fun ff(px: int, py: int) {
+  Move         r8, r3
+  Move         r9, r6
+  Move         r10, r1
+  Move         r11, r2
+  MakeClosure  r12, ff, 4, r8
+  // ff(x, y)
+  Move         r13, r1
+  Move         r14, r2
+  CallV        r15, r12, 2, r13
+  Return       r0
+
+  // fun ff(px: int, py: int) {
+func ff (regs=37)
+  // if px < 0 || py < 0 || py >= len(grid) || px >= len(grid[0]) { return }
+  Const        r7, 0
+  Less         r8, r5, r7
+  Const        r7, 0
+  Less         r9, r6, r7
+  Len          r10, r0
+  LessEq       r11, r10, r6
+  Const        r7, 0
+  Index        r12, r0, r7
+  Len          r13, r12
+  LessEq       r14, r13, r5
+  Move         r15, r8
+  JumpIfTrue   r15, L0
+  Move         r15, r9
+  JumpIfTrue   r15, L0
+  Move         r15, r11
+  JumpIfTrue   r15, L0
+  Move         r15, r14
+L0:
+  JumpIfFalse  r15, L1
+  Return       r0
+L1:
+  // if grid[py][px] != target { return }
+  Index        r16, r0, r6
+  Index        r17, r16, r5
+  NotEqual     r18, r17, r2
+  JumpIfFalse  r18, L2
+  Return       r0
+L2:
+  // grid[py][px] = repl
+  Index        r19, r0, r6
+  SetIndex     r19, r5, r1
+  SetGlobal    0,0,0,0
+  // ff(px - 1, py)
+  Const        r22, 1
+  Sub          r23, r5, r22
+  Move         r20, r23
+  Move         r21, r6
+  Call2        r24, ff, r20, r21
+  // ff(px + 1, py)
+  Const        r22, 1
+  Add          r27, r5, r22
+  Move         r25, r27
+  Move         r26, r6
+  Call2        r28, ff, r25, r26
+  // ff(px, py - 1)
+  Move         r29, r5
+  Const        r22, 1
+  Sub          r31, r6, r22
+  Move         r30, r31
+  Call2        r32, ff, r29, r30
+  // ff(px, py + 1)
+  Move         r33, r5
+  Const        r22, 1
+  Add          r35, r6, r22
+  Move         r34, r35
+  Call2        r36, ff, r33, r34
+  Return       r0

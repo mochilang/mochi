@@ -1,4 +1,6 @@
 func main (regs=1)
+  // main()
+  Call         r0, main, 
   Return       r0
 
   // fun bellTriangle(n: int): list<list<bigint>> {
@@ -106,7 +108,7 @@ L4:
   Return       r2
 
   // fun main() {
-func main (regs=33)
+func main (regs=36)
   // let bt = bellTriangle(51)
   Const        r1, 51
   Move         r0, r1
@@ -124,50 +126,54 @@ L1:
   JumpIfFalse  r8, L0
   // print("" + padStart(str(i), 2, " ") + ": " + str(bt[i][0]))
   Const        r9, ""
-  Add          r11, r9, r10
-  Const        r12, ": "
-  Add          r13, r11, r12
-  Index        r14, r3, r7
-  Const        r15, 0
-  Index        r16, r14, r15
-  Str          r17, r16
-  Add          r18, r13, r17
-  Print        r18
+  Str          r10, r7
+  Const        r11, 2
+  Const        r12, " "
+  PadStart     r13, r10, r11, r12
+  Add          r14, r9, r13
+  Const        r15, ": "
+  Add          r16, r14, r15
+  Index        r17, r3, r7
+  Const        r18, 0
+  Index        r19, r17, r18
+  Str          r20, r19
+  Add          r21, r16, r20
+  Print        r21
   // for i in 1..16 {
-  Const        r19, 1
-  AddInt       r20, r7, r19
-  Move         r7, r20
+  Const        r22, 1
+  AddInt       r23, r7, r22
+  Move         r7, r23
   Jump         L1
 L0:
   // print("50: " + str(bt[50][0]))
-  Const        r21, "50: "
-  Const        r22, 50
-  Index        r23, r3, r22
-  Const        r15, 0
-  Index        r24, r23, r15
-  Str          r25, r24
-  Add          r26, r21, r25
-  Print        r26
+  Const        r24, "50: "
+  Const        r25, 50
+  Index        r26, r3, r25
+  Const        r18, 0
+  Index        r27, r26, r18
+  Str          r28, r27
+  Add          r29, r24, r28
+  Print        r29
   // print("")
   Const        r9, ""
   Print        r9
   // print("The first ten rows of Bell's triangle:")
-  Const        r27, "The first ten rows of Bell's triangle:"
-  Print        r27
-  // for i in 1..11 {
-  Const        r5, 1
-  Const        r28, 11
-  Move         r7, r5
-L3:
-  LessInt      r29, r7, r28
-  JumpIfFalse  r29, L2
-  // print(bt[i])
-  Index        r30, r3, r7
+  Const        r30, "The first ten rows of Bell's triangle:"
   Print        r30
   // for i in 1..11 {
-  Const        r31, 1
-  AddInt       r32, r7, r31
-  Move         r7, r32
+  Const        r5, 1
+  Const        r31, 11
+  Move         r7, r5
+L3:
+  LessInt      r32, r7, r31
+  JumpIfFalse  r32, L2
+  // print(bt[i])
+  Index        r33, r3, r7
+  Print        r33
+  // for i in 1..11 {
+  Const        r34, 1
+  AddInt       r35, r7, r34
+  Move         r7, r35
   Jump         L3
 L2:
   Return       r0

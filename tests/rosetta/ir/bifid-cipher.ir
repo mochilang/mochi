@@ -1,4 +1,6 @@
 func main (regs=1)
+  // main()
+  Call         r0, main, 
   Return       r0
 
   // fun square_to_maps(square: list<list<string>>): map<string, any> {
@@ -90,15 +92,15 @@ L3:
   Move         r11, r13
   Slice        r14, r3, r10, r11
   Move         r15, r14
-  // if ch != " " && ch in emap { out = out + ch }
+  // if ch != " " && (ch in emap) { out = out + ch }
   Const        r16, " "
   NotEqual     r17, r15, r16
-  In           r18, r15, r1
-  Move         r19, r17
-  JumpIfFalse  r19, L1
-  Move         r19, r18
+  Move         r18, r17
+  JumpIfFalse  r18, L1
+  In           r19, r15, r1
+  Move         r18, r19
 L1:
-  JumpIfFalse  r19, L2
+  JumpIfFalse  r18, L2
   Add          r20, r5, r15
   Move         r5, r20
 L2:
@@ -335,7 +337,7 @@ L5:
   Return       r42
 
   // fun main() {
-func main (regs=70)
+func main (regs=67)
   // let squareRosetta = [
   Const        r0, [["A", "B", "C", "D", "E"], ["F", "G", "H", "I", "K"], ["L", "M", "N", "O", "P"], ["Q", "R", "S", "T", "U"], ["V", "W", "X", "Y", "Z"], ["J", "1", "2", "3", "4"]]
   Move         r1, r0
@@ -352,129 +354,120 @@ func main (regs=70)
   Const        r8, "The invasion will start on the first of January"
   Move         r9, r8
   // var maps = square_to_maps(squareRosetta)
-  Const        r11, [["A", "B", "C", "D", "E"], ["F", "G", "H", "I", "K"], ["L", "M", "N", "O", "P"], ["Q", "R", "S", "T", "U"], ["V", "W", "X", "Y", "Z"], ["J", "1", "2", "3", "4"]]
-  Move         r10, r11
-  Call         r12, square_to_maps, r10
-  Move         r13, r12
+  Move         r10, r1
+  Call         r11, square_to_maps, r10
+  Move         r12, r11
   // var emap = maps["e"]
-  Const        r14, "e"
-  Index        r15, r13, r14
-  Move         r16, r15
+  Const        r13, "e"
+  Index        r14, r12, r13
+  Move         r15, r14
   // var dmap = maps["d"]
-  Const        r17, "d"
-  Index        r18, r13, r17
-  Move         r19, r18
+  Const        r16, "d"
+  Index        r17, r12, r16
+  Move         r18, r17
   // print("from Rosettacode")
-  Const        r20, "from Rosettacode"
-  Print        r20
+  Const        r19, "from Rosettacode"
+  Print        r19
   // print("original:\t " + textRosetta)
-  Const        r21, "original:\t "
-  Const        r4, "0ATTACKATDAWN"
-  Add          r22, r21, r4
-  Print        r22
+  Const        r20, "original:\t "
+  Add          r21, r20, r5
+  Print        r21
   // var s = encrypt(textRosetta, emap, dmap)
-  Const        r4, "0ATTACKATDAWN"
-  Move         r23, r4
-  Move         r24, r16
-  Move         r25, r19
-  Call         r26, encrypt, r23, r24, r25
-  Move         r27, r26
+  Move         r22, r5
+  Move         r23, r15
+  Move         r24, r18
+  Call         r25, encrypt, r22, r23, r24
+  Move         r26, r25
   // print("codiert:\t " + s)
-  Const        r28, "codiert:\t "
-  Add          r29, r28, r27
-  Print        r29
+  Const        r27, "codiert:\t "
+  Add          r28, r27, r26
+  Print        r28
   // s = decrypt(s, emap, dmap)
-  Move         r30, r27
-  Move         r31, r16
-  Move         r32, r19
-  Call         r33, decrypt, r30, r31, r32
-  Move         r27, r33
+  Move         r29, r26
+  Move         r30, r15
+  Move         r31, r18
+  Call         r32, decrypt, r29, r30, r31
+  Move         r26, r32
   // print("and back:\t " + s)
-  Const        r34, "and back:\t "
-  Add          r35, r34, r27
-  Print        r35
+  Const        r33, "and back:\t "
+  Add          r34, r33, r26
+  Print        r34
   // maps = square_to_maps(squareWikipedia)
-  Const        r37, [["B", "G", "W", "K", "Z"], ["Q", "P", "N", "D", "S"], ["I", "O", "A", "X", "E"], ["F", "C", "L", "U", "M"], ["T", "H", "Y", "V", "R"], ["J", "1", "2", "3", "4"]]
-  Move         r36, r37
-  Call         r38, square_to_maps, r36
-  Move         r13, r38
+  Move         r35, r3
+  Call         r36, square_to_maps, r35
+  Move         r12, r36
   // emap = maps["e"]
-  Const        r14, "e"
-  Index        r39, r13, r14
-  Move         r16, r39
+  Const        r13, "e"
+  Index        r37, r12, r13
+  Move         r15, r37
   // dmap = maps["d"]
-  Const        r17, "d"
-  Index        r40, r13, r17
-  Move         r19, r40
+  Const        r16, "d"
+  Index        r38, r12, r16
+  Move         r18, r38
   // print("from Wikipedia")
-  Const        r41, "from Wikipedia"
-  Print        r41
+  Const        r39, "from Wikipedia"
+  Print        r39
   // print("original:\t " + textWikipedia)
-  Const        r21, "original:\t "
-  Const        r6, "FLEEATONCE"
-  Add          r42, r21, r6
-  Print        r42
+  Const        r20, "original:\t "
+  Add          r40, r20, r7
+  Print        r40
   // s = encrypt(textWikipedia, emap, dmap)
-  Const        r6, "FLEEATONCE"
-  Move         r43, r6
-  Move         r44, r16
-  Move         r45, r19
-  Call         r46, encrypt, r43, r44, r45
-  Move         r27, r46
+  Move         r41, r7
+  Move         r42, r15
+  Move         r43, r18
+  Call         r44, encrypt, r41, r42, r43
+  Move         r26, r44
   // print("codiert:\t " + s)
-  Const        r28, "codiert:\t "
-  Add          r47, r28, r27
-  Print        r47
+  Const        r27, "codiert:\t "
+  Add          r45, r27, r26
+  Print        r45
   // s = decrypt(s, emap, dmap)
-  Move         r48, r27
-  Move         r49, r16
-  Move         r50, r19
-  Call         r51, decrypt, r48, r49, r50
-  Move         r27, r51
+  Move         r46, r26
+  Move         r47, r15
+  Move         r48, r18
+  Call         r49, decrypt, r46, r47, r48
+  Move         r26, r49
   // print("and back:\t " + s)
-  Const        r34, "and back:\t "
-  Add          r52, r34, r27
-  Print        r52
+  Const        r33, "and back:\t "
+  Add          r50, r33, r26
+  Print        r50
   // maps = square_to_maps(squareWikipedia)
-  Const        r54, [["B", "G", "W", "K", "Z"], ["Q", "P", "N", "D", "S"], ["I", "O", "A", "X", "E"], ["F", "C", "L", "U", "M"], ["T", "H", "Y", "V", "R"], ["J", "1", "2", "3", "4"]]
-  Move         r53, r54
-  Call         r55, square_to_maps, r53
-  Move         r13, r55
+  Move         r51, r3
+  Call         r52, square_to_maps, r51
+  Move         r12, r52
   // emap = maps["e"]
-  Const        r14, "e"
-  Index        r56, r13, r14
-  Move         r16, r56
+  Const        r13, "e"
+  Index        r53, r12, r13
+  Move         r15, r53
   // dmap = maps["d"]
-  Const        r17, "d"
-  Index        r57, r13, r17
-  Move         r19, r57
+  Const        r16, "d"
+  Index        r54, r12, r16
+  Move         r18, r54
   // print("from Rosettacode long part")
-  Const        r58, "from Rosettacode long part"
-  Print        r58
+  Const        r55, "from Rosettacode long part"
+  Print        r55
   // print("original:\t " + textTest)
-  Const        r21, "original:\t "
-  Const        r8, "The invasion will start on the first of January"
-  Add          r59, r21, r8
-  Print        r59
+  Const        r20, "original:\t "
+  Add          r56, r20, r9
+  Print        r56
   // s = encrypt(textTest, emap, dmap)
-  Const        r8, "The invasion will start on the first of January"
-  Move         r60, r8
-  Move         r61, r16
-  Move         r62, r19
-  Call         r63, encrypt, r60, r61, r62
-  Move         r27, r63
+  Move         r57, r9
+  Move         r58, r15
+  Move         r59, r18
+  Call         r60, encrypt, r57, r58, r59
+  Move         r26, r60
   // print("codiert:\t " + s)
-  Const        r28, "codiert:\t "
-  Add          r64, r28, r27
-  Print        r64
+  Const        r27, "codiert:\t "
+  Add          r61, r27, r26
+  Print        r61
   // s = decrypt(s, emap, dmap)
-  Move         r65, r27
-  Move         r66, r16
-  Move         r67, r19
-  Call         r68, decrypt, r65, r66, r67
-  Move         r27, r68
+  Move         r62, r26
+  Move         r63, r15
+  Move         r64, r18
+  Call         r65, decrypt, r62, r63, r64
+  Move         r26, r65
   // print("and back:\t " + s)
-  Const        r34, "and back:\t "
-  Add          r69, r34, r27
-  Print        r69
+  Const        r33, "and back:\t "
+  Add          r66, r33, r26
+  Print        r66
   Return       r0

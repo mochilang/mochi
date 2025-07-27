@@ -1,4 +1,4 @@
-func main (regs=4)
+func main (regs=5)
   // let PI: float = 3.141592653589793
   Const        r2, 3.141592653589793
   Move         r0, r2
@@ -7,6 +7,8 @@ func main (regs=4)
   Const        r3, 6.283185307179586
   Move         r1, r3
   SetGlobal    1,1,0,0
+  // main()
+  Call         r4, main, 
   Return       r0
 
   // fun sinApprox(x: float): float {
@@ -434,7 +436,7 @@ func day (regs=30)
   Return       r29
 
   // fun biorhythms(birth: string, target: string) {
-func biorhythms (regs=95)
+func biorhythms (regs=148)
   // let bparts = parseDate(birth)
   Move         r4, r2
   Call         r5, parseDate, r4
@@ -504,7 +506,7 @@ func biorhythms (regs=95)
   // var i = 0
   Const        r7, 0
   Move         r51, r7
-L3:
+L7:
   // while i < 3 {
   Const        r52, 3
   LessInt      r53, r51, r52
@@ -551,30 +553,123 @@ L3:
   // description = " peak"
   Const        r83, " peak"
   Move         r80, r83
+  // if percent > 95.0 {
+  Jump         L2
 L1:
-  // var posStr = str(position)
-  Str          r84, r59
-  Move         r85, r84
-  // if position < 10 { posStr = " " + posStr }
-  Const        r86, 10
-  Less         r87, r59, r86
-  JumpIfFalse  r87, L2
-  Const        r88, " "
-  Add          r89, r88, r85
-  Move         r85, r89
+  // } else if percent < (-95.0) {
+  Const        r84, -95.0
+  LessFloat    r85, r72, r84
+  JumpIfFalse  r85, L3
+  // description = " valley"
+  Const        r86, " valley"
+  Move         r80, r86
+  // } else if percent < (-95.0) {
+  Jump         L2
+L3:
+  // } else if absFloat(percent) < 5.0 {
+  Move         r87, r72
+  Call         r88, absFloat, r87
+  Const        r89, 5.0
+  LessFloat    r90, r88, r89
+  JumpIfFalse  r90, L4
+  // description = " critical transition"
+  Const        r91, " critical transition"
+  Move         r80, r91
+  // } else if absFloat(percent) < 5.0 {
+  Jump         L2
+L4:
+  // let daysToAdd = (quadrant + 1) * length / 4 - position
+  Const        r10, 1
+  Add          r92, r63, r10
+  Mul          r93, r92, r55
+  Const        r60, 4
+  Div          r94, r93, r60
+  Sub          r95, r94, r59
+  Move         r96, r95
+  // let res = addDays(ty, tm, td, daysToAdd)
+  Move         r97, r20
+  Move         r98, r22
+  Move         r99, r24
+  Move         r100, r96
+  Call         r101, addDays, r97, r98, r99, r100
+  Move         r102, r101
+  // let ny = res[0]
+  Const        r7, 0
+  Index        r103, r102, r7
+  Move         r104, r103
+  // let nm = res[1]
+  Const        r10, 1
+  Index        r105, r102, r10
+  Move         r106, r105
+  // let nd = res[2]
+  Const        r13, 2
+  Index        r107, r102, r13
+  Move         r108, r107
+  // let transition = dateString(ny, nm, nd)
+  Move         r109, r104
+  Move         r110, r106
+  Move         r111, r108
+  Call         r112, dateString, r109, r110, r111
+  Move         r113, r112
+  // let trend = quadrants[quadrant][0]
+  Index        r114, r50, r63
+  Const        r7, 0
+  Index        r115, r114, r7
+  Move         r116, r115
+  // let next = quadrants[quadrant][1]
+  Index        r117, r50, r63
+  Const        r10, 1
+  Index        r118, r117, r10
+  Move         r119, r118
+  // var pct = str(percent)
+  Str          r120, r72
+  Move         r121, r120
+  // if !contains(pct, ".") { pct = pct + ".0" }
+  Not          r123, r122
+  JumpIfFalse  r123, L5
+  Const        r124, ".0"
+  Add          r125, r121, r124
+  Move         r121, r125
+L5:
+  // description = " " + pct + "% (" + trend + ", next " + next + " " + transition + ")"
+  Const        r126, " "
+  Add          r127, r126, r121
+  Const        r128, "% ("
+  Add          r129, r127, r128
+  Add          r130, r129, r116
+  Const        r131, ", next "
+  Add          r132, r130, r131
+  Add          r133, r132, r119
+  Const        r126, " "
+  Add          r134, r133, r126
+  Add          r135, r134, r113
+  Const        r136, ")"
+  Add          r137, r135, r136
+  Move         r80, r137
 L2:
+  // var posStr = str(position)
+  Str          r138, r59
+  Move         r139, r138
+  // if position < 10 { posStr = " " + posStr }
+  Const        r140, 10
+  Less         r141, r59, r140
+  JumpIfFalse  r141, L6
+  Const        r126, " "
+  Add          r142, r126, r139
+  Move         r139, r142
+L6:
   // print(cycle + posStr + " : " + description)
-  Add          r90, r57, r85
-  Const        r91, " : "
-  Add          r92, r90, r91
-  Add          r93, r92, r80
-  Print        r93
+  Add          r143, r57, r139
+  Const        r144, " : "
+  Add          r145, r143, r144
+  Add          r146, r145, r80
+  Print        r146
   // i = i + 1
   Const        r10, 1
-  AddInt       r94, r51, r10
-  Move         r51, r94
+  AddInt       r147, r51, r10
+  Move         r51, r147
   // while i < 3 {
-  Jump         L3
+  Jump         L7
 L0:
   // print("")
   Const        r79, ""

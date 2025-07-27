@@ -210,7 +210,7 @@ L0:
   Return       r3
 
   // fun main() {
-func main (regs=78)
+func main (regs=85)
   // print("Cows and bulls/player\n" +
   Const        r0, "Cows and bulls/player\n"
   // "You think of four digit number of unique digits in the range 1 to 9.\n" +
@@ -238,7 +238,7 @@ func main (regs=78)
   // var patterns = makePatterns()
   Call         r11, makePatterns, 
   Move         r12, r11
-L14:
+L15:
   // while true {
   Const        r13, true
   JumpIfFalse  r13, L0
@@ -292,130 +292,150 @@ L5:
   EqualInt     r37, r35, r36
   JumpIfFalse  r37, L3
   // let c = int(toks[0])
-  Move         r39, r38
+  Const        r15, 0
+  Index        r38, r34, r15
+  Cast         r39, r38, int
+  Move         r40, r39
   // let b = int(toks[1])
-  Move         r41, r40
+  Const        r21, 1
+  Index        r41, r34, r21
+  Cast         r42, r41, int
+  Move         r43, r42
   // if c >= 0 && c <= 4 && b >= 0 && b <= 4 && c + b <= 4 {
-  Add          r42, r39, r41
+  Add          r44, r40, r43
   Const        r15, 0
-  LessEq       r43, r15, r39
-  Const        r44, 4
-  LessEq       r45, r39, r44
+  LessEq       r45, r15, r40
+  Const        r46, 4
+  LessEq       r47, r40, r46
   Const        r15, 0
-  LessEq       r46, r15, r41
-  Const        r44, 4
-  LessEq       r47, r41, r44
-  Const        r44, 4
-  LessEq       r48, r42, r44
-  Move         r49, r43
-  JumpIfFalse  r49, L4
-  Move         r49, r45
-  JumpIfFalse  r49, L4
-  Move         r49, r46
-  JumpIfFalse  r49, L4
-  Move         r49, r47
-  JumpIfFalse  r49, L4
-  Move         r49, r48
+  LessEq       r48, r15, r43
+  Const        r46, 4
+  LessEq       r49, r43, r46
+  Const        r46, 4
+  LessEq       r50, r44, r46
+  Move         r51, r45
+  JumpIfFalse  r51, L4
+  Move         r51, r47
+  JumpIfFalse  r51, L4
+  Move         r51, r48
+  JumpIfFalse  r51, L4
+  Move         r51, r49
+  JumpIfFalse  r51, L4
+  Move         r51, r50
 L4:
-  JumpIfFalse  r49, L3
+  JumpIfFalse  r51, L3
   // cows = c
-  Move         r24, r39
+  Move         r24, r40
   // bulls = b
-  Move         r25, r41
+  Move         r25, r43
   // break
   Jump         L2
 L3:
   // print("Score guess as two numbers: cows bulls")
-  Const        r50, "Score guess as two numbers: cows bulls"
-  Print        r50
+  Const        r52, "Score guess as two numbers: cows bulls"
+  Print        r52
   // while true {
   Jump         L5
 L2:
   // if bulls == 4 {
-  Const        r44, 4
-  Equal        r51, r25, r44
-  JumpIfFalse  r51, L6
+  Const        r46, 4
+  Equal        r53, r25, r46
+  JumpIfFalse  r53, L6
   // print("I did it. :)")
-  Const        r52, "I did it. :)"
-  Print        r52
+  Const        r54, "I did it. :)"
+  Print        r54
   // return
   Return       r0
 L6:
   // var next: list<string> = []
-  Const        r53, []
-  Move         r54, r53
+  Const        r55, []
+  Move         r56, r55
   // var idx = 0
   Const        r15, 0
-  Move         r55, r15
-L13:
+  Move         r57, r15
+L14:
   // while idx < len(patterns) {
-  Len          r56, r12
-  LessInt      r57, r55, r56
-  JumpIfFalse  r57, L7
+  Len          r58, r12
+  LessInt      r59, r57, r58
+  JumpIfFalse  r59, L7
   // let pat = patterns[idx]
-  Index        r58, r12, r55
-  Move         r59, r58
+  Index        r60, r12, r57
+  Move         r61, r60
   // var c = 0
   Const        r15, 0
-  Move         r60, r15
+  Move         r62, r15
   // var b = 0
   Const        r15, 0
-  Move         r61, r15
+  Move         r63, r15
   // var i = 0
   Const        r15, 0
-  Move         r62, r15
-L10:
+  Move         r64, r15
+L11:
   // while i < 4 {
-  Const        r44, 4
-  LessInt      r63, r62, r44
-  JumpIfFalse  r63, L8
+  Const        r46, 4
+  LessInt      r65, r64, r46
+  JumpIfFalse  r65, L8
   // let cg = substring(guess, i, i + 1)
   Const        r21, 1
-  AddInt       r64, r62, r21
-  Slice        r65, r19, r62, r64
-  Move         r66, r65
+  AddInt       r66, r64, r21
+  Slice        r67, r19, r64, r66
+  Move         r68, r67
   // let cp = substring(pat, i, i + 1)
   Const        r21, 1
-  AddInt       r67, r62, r21
-  Slice        r68, r59, r62, r67
-  Move         r69, r68
+  AddInt       r69, r64, r21
+  Slice        r70, r61, r64, r69
+  Move         r71, r70
   // if cg == cp {
-  Equal        r70, r66, r69
-  JumpIfFalse  r70, L9
+  Equal        r72, r68, r71
+  JumpIfFalse  r72, L9
   // b = b + 1
   Const        r21, 1
-  AddInt       r71, r61, r21
-  Move         r61, r71
+  AddInt       r73, r63, r21
+  Move         r63, r73
+  // if cg == cp {
+  Jump         L10
 L9:
+  // } else if indexOf(pat, cg) >= 0 {
+  Move         r74, r61
+  Move         r75, r68
+  Call2        r76, indexOf, r74, r75
+  Const        r15, 0
+  LessEq       r77, r15, r76
+  JumpIfFalse  r77, L10
+  // c = c + 1
+  Const        r21, 1
+  AddInt       r78, r62, r21
+  Move         r62, r78
+L10:
   // i = i + 1
   Const        r21, 1
-  AddInt       r72, r62, r21
-  Move         r62, r72
+  AddInt       r79, r64, r21
+  Move         r64, r79
   // while i < 4 {
-  Jump         L10
+  Jump         L11
 L8:
   // if c == cows && b == bulls {
-  Equal        r73, r60, r24
-  Equal        r74, r61, r25
-  Move         r75, r73
-  JumpIfFalse  r75, L11
-  Move         r75, r74
-L11:
-  JumpIfFalse  r75, L12
-  // next = append(next, pat)
-  Append       r76, r54, r59
-  Move         r54, r76
+  Equal        r80, r62, r24
+  Equal        r81, r63, r25
+  Move         r82, r80
+  JumpIfFalse  r82, L12
+  Move         r82, r81
 L12:
+  JumpIfFalse  r82, L13
+  // next = append(next, pat)
+  Append       r83, r56, r61
+  Move         r56, r83
+L13:
   // idx = idx + 1
   Const        r21, 1
-  AddInt       r77, r55, r21
-  Move         r55, r77
+  AddInt       r84, r57, r21
+  Move         r57, r84
   // while idx < len(patterns) {
-  Jump         L13
+  Jump         L14
 L7:
   // patterns = next
-  Move         r12, r54
+  Move         r12, r56
   // while true {
-  Jump         L14
+  Jump         L15
 L0:
   Return       r0
