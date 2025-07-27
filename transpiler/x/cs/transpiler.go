@@ -87,6 +87,7 @@ var usesInput bool
 var usesMem bool
 var usesBigInt bool
 var currentReturnType string
+var currentReturnVoid bool
 var globalDecls map[string]*Global
 var mutatedVars map[string]bool
 var blockDepth int
@@ -707,6 +708,25 @@ func (c *CmpExpr) emit(w io.Writer) {
 		fmt.Fprint(w, ")")
 		return
 	}
+	if (c.Op == "==" || c.Op == "!=") && ((isStringExpr(c.Left) && isBoolExpr(c.Right)) || (isBoolExpr(c.Left) && isStringExpr(c.Right))) {
+		if isBoolExpr(c.Left) {
+			fmt.Fprint(w, "Convert.ToString(")
+			c.Left.emit(w)
+			fmt.Fprint(w, ")")
+		} else {
+			c.Left.emit(w)
+		}
+		fmt.Fprintf(w, " %s ", c.Op)
+		if isBoolExpr(c.Right) {
+			fmt.Fprint(w, "Convert.ToString(")
+			c.Right.emit(w)
+			fmt.Fprint(w, ")")
+		} else {
+			c.Right.emit(w)
+		}
+		fmt.Fprint(w, ")")
+		return
+	}
 	c.Left.emit(w)
 	fmt.Fprintf(w, " %s ", c.Op)
 	c.Right.emit(w)
@@ -1043,6 +1063,11 @@ func isStringExpr(e Expr) bool {
 			return true
 		}
 		if ret, ok := funRets[ex.Func]; ok && ret == "string" {
+			return true
+		}
+	case *MethodCallExpr:
+		switch ex.Name {
+		case "ToLower", "ToUpper", "Trim", "TrimStart", "TrimEnd", "Replace", "Substring":
 			return true
 		}
 	case *RawExpr:
@@ -1546,6 +1571,8 @@ func typeOfExpr(e Expr) string {
 		}
 	case *MethodCallExpr:
 		switch ex.Name {
+		case "ToLower", "ToUpper", "Trim", "TrimStart", "TrimEnd", "Replace", "Substring":
+			return "string"
 		case "ToArray":
 			t := typeOfExpr(ex.Target)
 			if strings.HasSuffix(t, "[]") {
@@ -2079,6 +2106,14 @@ func compileExpr(e *parser.Expr) (Expr, error) {
 	apply := func(left Expr, op string, right Expr) Expr {
 		switch op {
 		case "==", "!=", "<", "<=", ">", ">=":
+			if (op == "==" || op == "!=") && ((isStringExpr(left) && isBoolExpr(right)) || (isBoolExpr(left) && isStringExpr(right))) {
+				if bl, ok := left.(*BoolLit); ok {
+					left = &StringLit{Value: map[bool]string{true: "true", false: "false"}[bl.Value]}
+				}
+				if br, ok := right.(*BoolLit); ok {
+					right = &StringLit{Value: map[bool]string{true: "true", false: "false"}[br.Value]}
+				}
+			}
 			return &CmpExpr{Op: op, Left: left, Right: right}
 		case "&&", "||":
 			return &BoolOpExpr{Op: op, Left: left, Right: right}
@@ -2213,6 +2248,21 @@ func compilePostfix(p *parser.PostfixExpr) (Expr, error) {
 						return nil, fmt.Errorf("unsupported method call")
 					}
 					expr = &MapGetExpr{Target: fe.Target, Key: args[0], Default: args[1]}
+				} else if fe.Name == "padStart" {
+					if len(args) == 2 {
+						var ch Expr
+						if lit, ok := args[1].(*StringLit); ok && len(lit.Value) > 0 {
+							ch = &RawExpr{Code: fmt.Sprintf("'%c'", []rune(lit.Value)[0]), Type: "char"}
+						} else {
+							ch = &CallExpr{Func: "Convert.ToChar", Args: []Expr{args[1]}}
+						}
+						expr = &MethodCallExpr{Target: fe.Target, Name: "PadLeft", Args: []Expr{args[0], ch}}
+					} else if len(args) == 1 {
+						ch := &RawExpr{Code: "' '", Type: "char"}
+						expr = &MethodCallExpr{Target: fe.Target, Name: "PadLeft", Args: []Expr{args[0], ch}}
+					} else {
+						return nil, fmt.Errorf("unsupported method call")
+					}
 				} else {
 					expr = &MethodCallExpr{Target: fe.Target, Name: fe.Name, Args: args}
 				}
@@ -2607,9 +2657,11 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 		ptypes := make([]string, len(s.Fun.Params))
 		savedAliases := cloneStringMap(varAliases)
 		savedRet := currentReturnType
+		savedVoid := currentReturnVoid
 		defer func() {
 			varAliases = savedAliases
 			currentReturnType = savedRet
+			currentReturnVoid = savedVoid
 		}()
 		// save global variable maps so local declarations don't leak
 		savedAll := cloneStringMap(varTypes)
@@ -2619,10 +2671,14 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 		saved := make(map[string]string)
 		savedStr := make(map[string]bool)
 		for i, p := range s.Fun.Params {
-			params[i] = p.Name
+			alias := fmt.Sprintf("%s_%d", p.Name, aliasCounter)
+			aliasCounter++
+			params[i] = alias
 			ptypes[i] = csType(p.Type)
 			saved[p.Name] = varTypes[p.Name]
 			varTypes[p.Name] = ptypes[i]
+			varAliases[p.Name] = alias
+			varTypes[alias] = ptypes[i]
 			savedStr[p.Name] = stringVars[p.Name]
 			if ptypes[i] == "string" {
 				stringVars[p.Name] = true
@@ -2632,6 +2688,7 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 		}
 		retType := csType(s.Fun.Return)
 		currentReturnType = retType
+		currentReturnVoid = s.Fun.Return == nil
 		var body []Stmt
 		if prog != nil && blockDepth > 0 {
 			prog = nil
@@ -2726,6 +2783,11 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 						val = &RawExpr{Code: fmt.Sprintf("(%s)"+exprString(val), ct), Type: ct}
 					}
 				}
+			}
+		}
+		if currentReturnVoid {
+			if rv, ok := val.(*RawExpr); ok && rv.Code == "null" {
+				val = nil
 			}
 		}
 		return &ReturnStmt{Value: val}, nil
@@ -3170,6 +3232,11 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 		case "indexOf":
 			if len(args) == 2 {
 				return &MethodCallExpr{Target: args[0], Name: "IndexOf", Args: []Expr{args[1]}}, nil
+			}
+		case "pow":
+			if len(args) == 2 {
+				code := fmt.Sprintf("(long)Math.Pow(%s, %s)", exprString(args[0]), exprString(args[1]))
+				return &RawExpr{Code: code, Type: "long"}, nil
 			}
 		case "parseIntStr":
 			switch len(args) {
@@ -3865,7 +3932,7 @@ func Emit(prog *Program) []byte {
 	buf.WriteString("\n")
 
 	for _, st := range prog.Structs {
-                fmt.Fprintf(&buf, "class %s {\n", st.Name)
+		fmt.Fprintf(&buf, "class %s {\n", st.Name)
 		for _, f := range st.Fields {
 			fmt.Fprintf(&buf, "    public %s %s;\n", f.Type, f.Name)
 		}
