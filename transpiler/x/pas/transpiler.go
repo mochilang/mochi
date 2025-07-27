@@ -1665,12 +1665,21 @@ func convertBody(env *types.Env, body []*parser.Statement, varTypes map[string]s
 				if err != nil {
 					return nil, err
 				}
-				if vd.Type == "" {
-					if t := inferType(ex); t != "" {
-						vd.Type = t
+				if rec, ok := ex.(*RecordLit); ok {
+					if vd.Type == "" {
+						vd.Type = rec.Type
 					}
+					for _, f := range rec.Fields {
+						out = append(out, &AssignStmt{Name: fmt.Sprintf("%s.%s", name, f.Name), Expr: f.Expr})
+					}
+				} else {
+					if vd.Type == "" {
+						if t := inferType(ex); t != "" {
+							vd.Type = t
+						}
+					}
+					out = append(out, &AssignStmt{Name: name, Expr: ex})
 				}
-				out = append(out, &AssignStmt{Name: name, Expr: ex})
 			}
 			if !hasVar(vd.Name) {
 				currProg.Vars = append(currProg.Vars, vd)
@@ -3230,6 +3239,10 @@ func typeFromRef(tr *parser.TypeRef) string {
 	if tr.Generic != nil && tr.Generic.Name == "map" && len(tr.Generic.Args) == 2 {
 		key := typeFromRef(tr.Generic.Args[0])
 		val := typeFromRef(tr.Generic.Args[1])
+		if strings.HasPrefix(val, "array of ") {
+			alias := currProg.addArrayAlias(strings.TrimPrefix(val, "array of "))
+			val = alias
+		}
 		if key == "any" {
 			key = "Variant"
 		}
@@ -3624,15 +3637,15 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 		}
 		return &ListLit{Elems: elems}, nil
 	case p.Struct != nil:
-		var args []Expr
+		var fields []FieldExpr
 		for _, it := range p.Struct.Fields {
 			val, err := convertExpr(env, it.Value)
 			if err != nil {
 				return nil, err
 			}
-			args = append(args, val)
+			fields = append(fields, FieldExpr{Name: it.Name, Expr: val})
 		}
-		return &CallExpr{Name: ctorName(p.Struct.Name), Args: args}, nil
+		return &RecordLit{Type: p.Struct.Name, Fields: fields}, nil
 	case p.Map != nil:
 		var fields []FieldExpr
 		var rec []Field
@@ -3653,10 +3666,10 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 				elem := strings.TrimPrefix(ftype, "array of ")
 				if strings.HasPrefix(elem, "array of ") {
 					alias := currProg.addArrayAlias(strings.TrimPrefix(elem, "array of "))
-					ftype = "array of " + alias
+					ftype = alias
 				} else {
 					alias := currProg.addArrayAlias(elem)
-					ftype = "array of " + alias
+					ftype = alias
 				}
 			}
 			fields = append(fields, FieldExpr{Name: key, Expr: val})

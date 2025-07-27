@@ -1,0 +1,42 @@
+Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
+Copyright (c) 1993-2021 by Florian Klaempfl and others
+Target OS: Linux for x86-64
+Compiling /workspace/mochi/tests/rosetta/transpiler/Pascal/ackermann-function-3.pas
+ackermann-function-3.pas(5,19) Error: Identifier not found "bigint"
+ackermann-function-3.pas(5,25) Error: Error in type definition
+ackermann-function-3.pas(6,14) Error: Identifier not found "bigint"
+ackermann-function-3.pas(6,20) Error: Error in type definition
+ackermann-function-3.pas(8,14) Error: Identifier not found "bigint"
+ackermann-function-3.pas(8,20) Error: Error in type definition
+ackermann-function-3.pas(13,17) Error: Identifier not found "bigint"
+ackermann-function-3.pas(13,23) Error: Error in type definition
+ackermann-function-3.pas(14,13) Error: Identifier not found "bigint"
+ackermann-function-3.pas(14,19) Error: Error in type definition
+ackermann-function-3.pas(18,30) Error: Identifier not found "bigint"
+ackermann-function-3.pas(18,53) Error: Identifier not found "bigint"
+ackermann-function-3.pas(19,27) Error: Identifier not found "bigint"
+ackermann-function-3.pas(20,30) Error: Identifier not found "bigint"
+ackermann-function-3.pas(20,41) Error: Identifier not found "bigint"
+ackermann-function-3.pas(20,50) Error: Identifier not found "bigint"
+ackermann-function-3.pas(23,30) Error: Identifier not found "bigint"
+ackermann-function-3.pas(23,53) Error: Identifier not found "bigint"
+ackermann-function-3.pas(37,27) Error: Identifier not found "bigint"
+ackermann-function-3.pas(41,19) Error: Operator is not overloaded: "<erroneous type>" > "ShortInt"
+ackermann-function-3.pas(47,30) Error: Identifier not found "bigint"
+ackermann-function-3.pas(47,41) Error: Identifier not found "bigint"
+ackermann-function-3.pas(47,50) Error: Identifier not found "bigint"
+ackermann-function-3.pas(52,8) Error: Operator is not overloaded: "<erroneous type>" <= "ShortInt"
+ackermann-function-3.pas(53,27) Error: Incompatible type for arg no. 1: Got "<erroneous type>", expected "Extended"
+ackermann-function-3.pas(55,10) Error: Operator is not overloaded: "<erroneous type>" + "ShortInt"
+ackermann-function-3.pas(58,10) Error: Operator is not overloaded: "<erroneous type>" + "ShortInt"
+ackermann-function-3.pas(61,11) Error: Operator is not overloaded: "ShortInt" * "<erroneous type>"
+ackermann-function-3.pas(69,37) Error: Incompatible type for arg no. 1: Got "<erroneous type>", expected "Extended"
+ackermann-function-3.pas(70,11) Error: Operator is not overloaded: "ShortInt" * "<erroneous type>"
+ackermann-function-3.pas(74,27) Error: Incompatible type for arg no. 2: Got "ShortInt", expected "<erroneous type>"
+ackermann-function-3.pas(76,45) Error: Incompatible type for arg no. 2: Got "Int64", expected "<erroneous type>"
+ackermann-function-3.pas(81,30) Error: Incompatible type for arg no. 2: Got "LongInt", expected "<erroneous type>"
+ackermann-function-3.pas(87,87) Error: Incompatible type for arg no. 1: Got "<erroneous type>", expected "QWord"
+ackermann-function-3.pas(89,30) Error: Incompatible type for arg no. 1: Got "<erroneous type>", expected "QWord"
+ackermann-function-3.pas(110) Fatal: There were 35 errors compiling module, stopping
+Fatal: Compilation aborted
+Error: /usr/bin/ppcx64 returned an error exitcode
