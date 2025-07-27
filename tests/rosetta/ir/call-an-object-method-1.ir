@@ -2,28 +2,28 @@ func main (regs=29)
   // var myValue = Foo{}
   Const        r2, "__name"
   Const        r3, "Foo"
-  MakeClosure  r4, Foo.ValueMethod, 0, r0
   // fun ValueMethod(x: int) {}
-  Const        r5, "ValueMethod"
+  Const        r4, "ValueMethod"
   // var myValue = Foo{}
-  MakeClosure  r6, Foo.PointerMethod, 0, r0
+  MakeClosure  r5, Foo.ValueMethod, 0, r0
   // fun PointerMethod(x: int) {}
-  Const        r7, "PointerMethod"
+  Const        r6, "PointerMethod"
   // var myValue = Foo{}
+  MakeClosure  r7, Foo.PointerMethod, 0, r0
   MakeMap      r8, 3, r2
   Move         r0, r8
   SetGlobal    0,0,0,0
   // var myPointer = Foo{}
   Const        r9, "__name"
   Const        r10, "Foo"
-  MakeClosure  r11, Foo.ValueMethod, 0, r0
   // fun ValueMethod(x: int) {}
-  Const        r12, "ValueMethod"
+  Const        r11, "ValueMethod"
   // var myPointer = Foo{}
-  MakeClosure  r13, Foo.PointerMethod, 0, r0
+  MakeClosure  r12, Foo.ValueMethod, 0, r0
   // fun PointerMethod(x: int) {}
-  Const        r14, "PointerMethod"
+  Const        r13, "PointerMethod"
   // var myPointer = Foo{}
+  MakeClosure  r14, Foo.PointerMethod, 0, r0
   MakeMap      r15, 3, r9
   Move         r1, r15
   SetGlobal    1,1,0,0

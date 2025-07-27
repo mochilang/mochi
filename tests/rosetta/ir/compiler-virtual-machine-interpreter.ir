@@ -886,7 +886,7 @@ L0:
   Return       r3
 
   // fun main() {
-func main (regs=48)
+func main (regs=47)
   // "Datasize: 1 Strings: 2\n" +
   Const        r0, "Datasize: 1 Strings: 2\n"
   // "\"count is: \"\n" +
@@ -972,11 +972,10 @@ func main (regs=48)
   // let programText =
   Move         r41, r40
   // let prog = parseProgram(programText)
-  Const        r43, "Datasize: 1 Strings: 2\n\"count is: \"\n\"\\n\"\n    0 push  1\n    5 store [0]\n   10 fetch [0]\n   15 push  10\n   20 lt\n   21 jz     (43) 65\n   26 push  0\n   31 prts\n   32 fetch [0]\n   37 prti\n   38 push  1\n   43 prts\n   44 fetch [0]\n   49 push  1\n   54 add\n   55 store [0]\n   60 jmp    (-51) 10\n   65 halt\n"
-  Move         r42, r43
-  Call         r44, parseProgram, r42
-  Move         r45, r44
+  Move         r42, r41
+  Call         r43, parseProgram, r42
+  Move         r44, r43
   // runVM(prog)
-  Move         r46, r45
-  Call         r47, runVM, r46
+  Move         r45, r44
+  Call         r46, runVM, r45
   Return       r0

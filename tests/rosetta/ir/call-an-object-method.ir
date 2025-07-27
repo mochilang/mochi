@@ -27,10 +27,10 @@ func New (regs=13)
   Move         r6, r1
   Const        r7, "secret"
   Move         r8, r2
-  MakeClosure  r9, Box.TellSecret, 2, r6
   // fun TellSecret(): int {
-  Const        r10, "TellSecret"
+  Const        r9, "TellSecret"
   // var b = Box{ Contents: "rabbit", secret: 1 }
+  MakeClosure  r10, Box.TellSecret, 2, r6
   MakeMap      r11, 4, r3
   Move         r12, r11
   // return b

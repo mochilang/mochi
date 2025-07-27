@@ -1,4 +1,4 @@
-func main (regs=13)
+func main (regs=11)
   // let n = [3,5,7]
   Const        r3, [3, 5, 7]
   Move         r0, r3
@@ -8,18 +8,16 @@ func main (regs=13)
   Move         r1, r4
   SetGlobal    1,1,0,0
   // let res = crt(a,n)
-  Const        r7, [2, 3, 2]
-  Move         r5, r7
-  Const        r8, [3, 5, 7]
-  Move         r6, r8
-  Call2        r9, crt, r5, r6
-  Move         r2, r9
+  Move         r5, r1
+  Move         r6, r0
+  Call2        r7, crt, r5, r6
+  Move         r2, r7
   SetGlobal    2,2,0,0
   // print(str(res) + " <nil>")
-  Str          r10, r2
-  Const        r11, " <nil>"
-  Add          r12, r10, r11
-  Print        r12
+  Str          r8, r2
+  Const        r9, " <nil>"
+  Add          r10, r8, r9
+  Print        r10
   Return       r0
 
   // fun egcd(a: int, b: int): list<int> {

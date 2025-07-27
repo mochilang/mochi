@@ -1,4 +1,4 @@
-func main (regs=51)
+func main (regs=50)
   // var n: list<list<string>> = []
   Const        r3, []
   Move         r0, r3
@@ -14,88 +14,87 @@ func main (regs=51)
   Move         r2, r6
   SetGlobal    2,2,0,0
   // for number in numbers {
-  Const        r7, [0, 1, 20, 300, 4000, 5555, 6789, 9999]
-  IterPrep     r8, r7
-  Len          r9, r8
-  Const        r10, 0
+  IterPrep     r7, r2
+  Len          r8, r7
+  Const        r9, 0
 L5:
-  LessInt      r11, r10, r9
-  JumpIfFalse  r11, L0
-  Index        r12, r8, r10
-  Move         r13, r12
+  LessInt      r10, r9, r8
+  JumpIfFalse  r10, L0
+  Index        r11, r7, r9
+  Move         r12, r11
   // initN()
-  Call         r14, initN, 
+  Call         r13, initN, 
   // print(str(number) + ":")
-  Str          r15, r13
-  Const        r16, ":"
-  Add          r17, r15, r16
-  Print        r17
+  Str          r14, r12
+  Const        r15, ":"
+  Add          r16, r14, r15
+  Print        r16
   // var num = number
-  Move         r18, r13
+  Move         r17, r12
   // let thousands = num / 1000
-  Const        r19, 1000
-  Div          r20, r18, r19
-  Move         r21, r20
+  Const        r18, 1000
+  Div          r19, r17, r18
+  Move         r20, r19
   // num = num % 1000
-  Const        r19, 1000
-  Mod          r22, r18, r19
-  Move         r18, r22
+  Const        r18, 1000
+  Mod          r21, r17, r18
+  Move         r17, r21
   // let hundreds = num / 100
-  Const        r23, 100
-  Div          r24, r18, r23
-  Move         r25, r24
+  Const        r22, 100
+  Div          r23, r17, r22
+  Move         r24, r23
   // num = num % 100
-  Const        r23, 100
-  Mod          r26, r18, r23
-  Move         r18, r26
+  Const        r22, 100
+  Mod          r25, r17, r22
+  Move         r17, r25
   // let tens = num / 10
-  Const        r27, 10
-  Div          r28, r18, r27
-  Move         r29, r28
+  Const        r26, 10
+  Div          r27, r17, r26
+  Move         r28, r27
   // let ones = num % 10
-  Const        r27, 10
-  Mod          r30, r18, r27
-  Move         r31, r30
+  Const        r26, 10
+  Mod          r29, r17, r26
+  Move         r30, r29
   // if thousands > 0 { draw[thousands*1000]() }
-  Const        r32, 0
-  Less         r33, r32, r21
-  JumpIfFalse  r33, L1
-  Const        r19, 1000
-  Mul          r34, r21, r19
-  Index        r35, r1, r34
-  CallV        r36, r35, 0, r0
+  Const        r31, 0
+  Less         r32, r31, r20
+  JumpIfFalse  r32, L1
+  Const        r18, 1000
+  Mul          r33, r20, r18
+  Index        r34, r1, r33
+  CallV        r35, r34, 0, r0
 L1:
   // if hundreds > 0 { draw[hundreds*100]() }
-  Const        r32, 0
-  Less         r37, r32, r25
-  JumpIfFalse  r37, L2
-  Const        r23, 100
-  Mul          r38, r25, r23
-  Index        r39, r1, r38
-  CallV        r40, r39, 0, r0
+  Const        r31, 0
+  Less         r36, r31, r24
+  JumpIfFalse  r36, L2
+  Const        r22, 100
+  Mul          r37, r24, r22
+  Index        r38, r1, r37
+  CallV        r39, r38, 0, r0
 L2:
   // if tens > 0 { draw[tens*10]() }
-  Const        r32, 0
-  Less         r41, r32, r29
-  JumpIfFalse  r41, L3
-  Const        r27, 10
-  Mul          r42, r29, r27
-  Index        r43, r1, r42
-  CallV        r44, r43, 0, r0
+  Const        r31, 0
+  Less         r40, r31, r28
+  JumpIfFalse  r40, L3
+  Const        r26, 10
+  Mul          r41, r28, r26
+  Index        r42, r1, r41
+  CallV        r43, r42, 0, r0
 L3:
   // if ones > 0 { draw[ones]() }
-  Const        r32, 0
-  Less         r45, r32, r31
-  JumpIfFalse  r45, L4
-  Index        r46, r1, r31
-  CallV        r47, r46, 0, r0
+  Const        r31, 0
+  Less         r44, r31, r30
+  JumpIfFalse  r44, L4
+  Index        r45, r1, r30
+  CallV        r46, r45, 0, r0
 L4:
   // printNumeral()
-  Call         r48, printNumeral, 
+  Call         r47, printNumeral, 
   // for number in numbers {
-  Const        r49, 1
-  AddInt       r50, r10, r49
-  Move         r10, r50
+  Const        r48, 1
+  AddInt       r49, r9, r48
+  Move         r9, r49
   Jump         L5
 L0:
   Return       r0
@@ -226,711 +225,187 @@ L0:
   Return       r0
 
   // fun initDraw() {
-func initDraw (regs=183)
+func initDraw (regs=75)
   // draw[1] = fun() { horiz(6,10,0) }
-  Move         r3, r1
-  Move         r4, r0
-  Move         r5, r2
-  MakeClosure  r6, fn7, 3, r3
-  Const        r7, 1
-  SetIndex     r1, r7, r6
+  MakeClosure  r3, fn8, 0, r0
+  Const        r4, 1
+  SetIndex     r1, r4, r3
   SetGlobal    1,1,0,0
   // draw[2] = fun() { horiz(6,10,4) }
-  Move         r8, r1
-  Move         r9, r0
-  Move         r10, r2
-  MakeClosure  r11, fn8, 3, r8
-  Const        r12, 2
+  MakeClosure  r5, fn9, 0, r0
+  Const        r6, 2
+  SetIndex     r1, r6, r5
+  SetGlobal    1,1,0,0
+  // draw[3] = fun() { diagd(6,10,0) }
+  MakeClosure  r7, fn10, 0, r0
+  Const        r8, 3
+  SetIndex     r1, r8, r7
+  SetGlobal    1,1,0,0
+  // draw[4] = fun() { diagu(6,10,4) }
+  MakeClosure  r9, fn11, 0, r0
+  Const        r10, 4
+  SetIndex     r1, r10, r9
+  SetGlobal    1,1,0,0
+  // draw[5] = fun() { draw[1](); draw[4]() }
+  MakeClosure  r11, fn12, 0, r0
+  Const        r12, 5
   SetIndex     r1, r12, r11
   SetGlobal    1,1,0,0
-  // draw[3] = fun() { diagd(6,10,0) }
-  Move         r13, r1
-  Move         r14, r0
-  Move         r15, r2
-  MakeClosure  r16, fn9, 3, r13
-  Const        r17, 3
-  SetIndex     r1, r17, r16
+  // draw[6] = fun() { verti(0,4,10) }
+  MakeClosure  r13, fn13, 0, r0
+  Const        r14, 6
+  SetIndex     r1, r14, r13
   SetGlobal    1,1,0,0
-  // draw[4] = fun() { diagu(6,10,4) }
-  Move         r18, r1
-  Move         r19, r0
-  Move         r20, r2
-  MakeClosure  r21, fn10, 3, r18
-  Const        r22, 4
+  // draw[7] = fun() { draw[1](); draw[6]() }
+  MakeClosure  r15, fn14, 0, r0
+  Const        r16, 7
+  SetIndex     r1, r16, r15
+  SetGlobal    1,1,0,0
+  // draw[8] = fun() { draw[2](); draw[6]() }
+  MakeClosure  r17, fn15, 0, r0
+  Const        r18, 8
+  SetIndex     r1, r18, r17
+  SetGlobal    1,1,0,0
+  // draw[9] = fun() { draw[1](); draw[8]() }
+  MakeClosure  r19, fn16, 0, r0
+  Const        r20, 9
+  SetIndex     r1, r20, r19
+  SetGlobal    1,1,0,0
+  // draw[10] = fun() { horiz(0,4,0) }
+  MakeClosure  r21, fn17, 0, r0
+  Const        r22, 10
   SetIndex     r1, r22, r21
   SetGlobal    1,1,0,0
-  // draw[5] = fun() { draw[1](); draw[4]() }
-  Move         r23, r1
-  Move         r24, r0
-  Move         r25, r2
-  MakeClosure  r26, fn11, 3, r23
-  Const        r27, 5
-  SetIndex     r1, r27, r26
+  // draw[20] = fun() { horiz(0,4,4) }
+  MakeClosure  r23, fn18, 0, r0
+  Const        r24, 20
+  SetIndex     r1, r24, r23
   SetGlobal    1,1,0,0
-  // draw[6] = fun() { verti(0,4,10) }
-  Move         r28, r1
-  Move         r29, r0
-  Move         r30, r2
-  MakeClosure  r31, fn12, 3, r28
-  Const        r32, 6
+  // draw[30] = fun() { diagu(0,4,4) }
+  MakeClosure  r25, fn19, 0, r0
+  Const        r26, 30
+  SetIndex     r1, r26, r25
+  SetGlobal    1,1,0,0
+  // draw[40] = fun() { diagd(0,4,0) }
+  MakeClosure  r27, fn20, 0, r0
+  Const        r28, 40
+  SetIndex     r1, r28, r27
+  SetGlobal    1,1,0,0
+  // draw[50] = fun() { draw[10](); draw[40]() }
+  MakeClosure  r29, fn21, 0, r0
+  Const        r30, 50
+  SetIndex     r1, r30, r29
+  SetGlobal    1,1,0,0
+  // draw[60] = fun() { verti(0,4,0) }
+  MakeClosure  r31, fn22, 0, r0
+  Const        r32, 60
   SetIndex     r1, r32, r31
   SetGlobal    1,1,0,0
-  // draw[7] = fun() { draw[1](); draw[6]() }
-  Move         r33, r1
-  Move         r34, r0
-  Move         r35, r2
-  MakeClosure  r36, fn13, 3, r33
-  Const        r37, 7
-  SetIndex     r1, r37, r36
+  // draw[70] = fun() { draw[10](); draw[60]() }
+  MakeClosure  r33, fn23, 0, r0
+  Const        r34, 70
+  SetIndex     r1, r34, r33
   SetGlobal    1,1,0,0
-  // draw[8] = fun() { draw[2](); draw[6]() }
-  Move         r38, r1
-  Move         r39, r0
-  Move         r40, r2
-  MakeClosure  r41, fn14, 3, r38
-  Const        r42, 8
+  // draw[80] = fun() { draw[20](); draw[60]() }
+  MakeClosure  r35, fn24, 0, r0
+  Const        r36, 80
+  SetIndex     r1, r36, r35
+  SetGlobal    1,1,0,0
+  // draw[90] = fun() { draw[10](); draw[80]() }
+  MakeClosure  r37, fn25, 0, r0
+  Const        r38, 90
+  SetIndex     r1, r38, r37
+  SetGlobal    1,1,0,0
+  // draw[100] = fun() { horiz(6,10,14) }
+  MakeClosure  r39, fn26, 0, r0
+  Const        r40, 100
+  SetIndex     r1, r40, r39
+  SetGlobal    1,1,0,0
+  // draw[200] = fun() { horiz(6,10,10) }
+  MakeClosure  r41, fn27, 0, r0
+  Const        r42, 200
   SetIndex     r1, r42, r41
   SetGlobal    1,1,0,0
-  // draw[9] = fun() { draw[1](); draw[8]() }
-  Move         r43, r1
-  Move         r44, r0
-  Move         r45, r2
-  MakeClosure  r46, fn15, 3, r43
-  Const        r47, 9
-  SetIndex     r1, r47, r46
+  // draw[300] = fun() { diagu(6,10,14) }
+  MakeClosure  r43, fn28, 0, r0
+  Const        r44, 300
+  SetIndex     r1, r44, r43
   SetGlobal    1,1,0,0
-  // draw[10] = fun() { horiz(0,4,0) }
-  Move         r48, r1
-  Move         r49, r0
-  Move         r50, r2
-  MakeClosure  r51, fn16, 3, r48
-  Const        r52, 10
+  // draw[400] = fun() { diagd(6,10,10) }
+  MakeClosure  r45, fn29, 0, r0
+  Const        r46, 400
+  SetIndex     r1, r46, r45
+  SetGlobal    1,1,0,0
+  // draw[500] = fun() { draw[100](); draw[400]() }
+  MakeClosure  r47, fn30, 0, r0
+  Const        r48, 500
+  SetIndex     r1, r48, r47
+  SetGlobal    1,1,0,0
+  // draw[600] = fun() { verti(10,14,10) }
+  MakeClosure  r49, fn31, 0, r0
+  Const        r50, 600
+  SetIndex     r1, r50, r49
+  SetGlobal    1,1,0,0
+  // draw[700] = fun() { draw[100](); draw[600]() }
+  MakeClosure  r51, fn32, 0, r0
+  Const        r52, 700
   SetIndex     r1, r52, r51
   SetGlobal    1,1,0,0
-  // draw[20] = fun() { horiz(0,4,4) }
-  Move         r53, r1
-  Move         r54, r0
-  Move         r55, r2
-  MakeClosure  r56, fn17, 3, r53
-  Const        r57, 20
-  SetIndex     r1, r57, r56
+  // draw[800] = fun() { draw[200](); draw[600]() }
+  MakeClosure  r53, fn33, 0, r0
+  Const        r54, 800
+  SetIndex     r1, r54, r53
   SetGlobal    1,1,0,0
-  // draw[30] = fun() { diagu(0,4,4) }
-  Move         r58, r1
-  Move         r59, r0
-  Move         r60, r2
-  MakeClosure  r61, fn18, 3, r58
-  Const        r62, 30
+  // draw[900] = fun() { draw[100](); draw[800]() }
+  MakeClosure  r55, fn34, 0, r0
+  Const        r56, 900
+  SetIndex     r1, r56, r55
+  SetGlobal    1,1,0,0
+  // draw[1000] = fun() { horiz(0,4,14) }
+  MakeClosure  r57, fn35, 0, r0
+  Const        r58, 1000
+  SetIndex     r1, r58, r57
+  SetGlobal    1,1,0,0
+  // draw[2000] = fun() { horiz(0,4,10) }
+  MakeClosure  r59, fn36, 0, r0
+  Const        r60, 2000
+  SetIndex     r1, r60, r59
+  SetGlobal    1,1,0,0
+  // draw[3000] = fun() { diagd(0,4,10) }
+  MakeClosure  r61, fn37, 0, r0
+  Const        r62, 3000
   SetIndex     r1, r62, r61
   SetGlobal    1,1,0,0
-  // draw[40] = fun() { diagd(0,4,0) }
-  Move         r63, r1
-  Move         r64, r0
-  Move         r65, r2
-  MakeClosure  r66, fn19, 3, r63
-  Const        r67, 40
-  SetIndex     r1, r67, r66
+  // draw[4000] = fun() { diagu(0,4,14) }
+  MakeClosure  r63, fn38, 0, r0
+  Const        r64, 4000
+  SetIndex     r1, r64, r63
   SetGlobal    1,1,0,0
-  // draw[50] = fun() { draw[10](); draw[40]() }
-  Move         r68, r1
-  Move         r69, r0
-  Move         r70, r2
-  MakeClosure  r71, fn20, 3, r68
-  Const        r72, 50
+  // draw[5000] = fun() { draw[1000](); draw[4000]() }
+  MakeClosure  r65, fn39, 0, r0
+  Const        r66, 5000
+  SetIndex     r1, r66, r65
+  SetGlobal    1,1,0,0
+  // draw[6000] = fun() { verti(10,14,0) }
+  MakeClosure  r67, fn40, 0, r0
+  Const        r68, 6000
+  SetIndex     r1, r68, r67
+  SetGlobal    1,1,0,0
+  // draw[7000] = fun() { draw[1000](); draw[6000]() }
+  MakeClosure  r69, fn41, 0, r0
+  Const        r70, 7000
+  SetIndex     r1, r70, r69
+  SetGlobal    1,1,0,0
+  // draw[8000] = fun() { draw[2000](); draw[6000]() }
+  MakeClosure  r71, fn42, 0, r0
+  Const        r72, 8000
   SetIndex     r1, r72, r71
   SetGlobal    1,1,0,0
-  // draw[60] = fun() { verti(0,4,0) }
-  Move         r73, r1
-  Move         r74, r0
-  Move         r75, r2
-  MakeClosure  r76, fn21, 3, r73
-  Const        r77, 60
-  SetIndex     r1, r77, r76
-  SetGlobal    1,1,0,0
-  // draw[70] = fun() { draw[10](); draw[60]() }
-  Move         r78, r1
-  Move         r79, r0
-  Move         r80, r2
-  MakeClosure  r81, fn22, 3, r78
-  Const        r82, 70
-  SetIndex     r1, r82, r81
-  SetGlobal    1,1,0,0
-  // draw[80] = fun() { draw[20](); draw[60]() }
-  Move         r83, r1
-  Move         r84, r0
-  Move         r85, r2
-  MakeClosure  r86, fn23, 3, r83
-  Const        r87, 80
-  SetIndex     r1, r87, r86
-  SetGlobal    1,1,0,0
-  // draw[90] = fun() { draw[10](); draw[80]() }
-  Move         r88, r1
-  Move         r89, r0
-  Move         r90, r2
-  MakeClosure  r91, fn24, 3, r88
-  Const        r92, 90
-  SetIndex     r1, r92, r91
-  SetGlobal    1,1,0,0
-  // draw[100] = fun() { horiz(6,10,14) }
-  Move         r93, r1
-  Move         r94, r0
-  Move         r95, r2
-  MakeClosure  r96, fn25, 3, r93
-  Const        r97, 100
-  SetIndex     r1, r97, r96
-  SetGlobal    1,1,0,0
-  // draw[200] = fun() { horiz(6,10,10) }
-  Move         r98, r1
-  Move         r99, r0
-  Move         r100, r2
-  MakeClosure  r101, fn26, 3, r98
-  Const        r102, 200
-  SetIndex     r1, r102, r101
-  SetGlobal    1,1,0,0
-  // draw[300] = fun() { diagu(6,10,14) }
-  Move         r103, r1
-  Move         r104, r0
-  Move         r105, r2
-  MakeClosure  r106, fn27, 3, r103
-  Const        r107, 300
-  SetIndex     r1, r107, r106
-  SetGlobal    1,1,0,0
-  // draw[400] = fun() { diagd(6,10,10) }
-  Move         r108, r1
-  Move         r109, r0
-  Move         r110, r2
-  MakeClosure  r111, fn28, 3, r108
-  Const        r112, 400
-  SetIndex     r1, r112, r111
-  SetGlobal    1,1,0,0
-  // draw[500] = fun() { draw[100](); draw[400]() }
-  Move         r113, r1
-  Move         r114, r0
-  Move         r115, r2
-  MakeClosure  r116, fn29, 3, r113
-  Const        r117, 500
-  SetIndex     r1, r117, r116
-  SetGlobal    1,1,0,0
-  // draw[600] = fun() { verti(10,14,10) }
-  Move         r118, r1
-  Move         r119, r0
-  Move         r120, r2
-  MakeClosure  r121, fn30, 3, r118
-  Const        r122, 600
-  SetIndex     r1, r122, r121
-  SetGlobal    1,1,0,0
-  // draw[700] = fun() { draw[100](); draw[600]() }
-  Move         r123, r1
-  Move         r124, r0
-  Move         r125, r2
-  MakeClosure  r126, fn31, 3, r123
-  Const        r127, 700
-  SetIndex     r1, r127, r126
-  SetGlobal    1,1,0,0
-  // draw[800] = fun() { draw[200](); draw[600]() }
-  Move         r128, r1
-  Move         r129, r0
-  Move         r130, r2
-  MakeClosure  r131, fn32, 3, r128
-  Const        r132, 800
-  SetIndex     r1, r132, r131
-  SetGlobal    1,1,0,0
-  // draw[900] = fun() { draw[100](); draw[800]() }
-  Move         r133, r1
-  Move         r134, r0
-  Move         r135, r2
-  MakeClosure  r136, fn33, 3, r133
-  Const        r137, 900
-  SetIndex     r1, r137, r136
-  SetGlobal    1,1,0,0
-  // draw[1000] = fun() { horiz(0,4,14) }
-  Move         r138, r1
-  Move         r139, r0
-  Move         r140, r2
-  MakeClosure  r141, fn34, 3, r138
-  Const        r142, 1000
-  SetIndex     r1, r142, r141
-  SetGlobal    1,1,0,0
-  // draw[2000] = fun() { horiz(0,4,10) }
-  Move         r143, r1
-  Move         r144, r0
-  Move         r145, r2
-  MakeClosure  r146, fn35, 3, r143
-  Const        r147, 2000
-  SetIndex     r1, r147, r146
-  SetGlobal    1,1,0,0
-  // draw[3000] = fun() { diagd(0,4,10) }
-  Move         r148, r1
-  Move         r149, r0
-  Move         r150, r2
-  MakeClosure  r151, fn36, 3, r148
-  Const        r152, 3000
-  SetIndex     r1, r152, r151
-  SetGlobal    1,1,0,0
-  // draw[4000] = fun() { diagu(0,4,14) }
-  Move         r153, r1
-  Move         r154, r0
-  Move         r155, r2
-  MakeClosure  r156, fn37, 3, r153
-  Const        r157, 4000
-  SetIndex     r1, r157, r156
-  SetGlobal    1,1,0,0
-  // draw[5000] = fun() { draw[1000](); draw[4000]() }
-  Move         r158, r1
-  Move         r159, r0
-  Move         r160, r2
-  MakeClosure  r161, fn38, 3, r158
-  Const        r162, 5000
-  SetIndex     r1, r162, r161
-  SetGlobal    1,1,0,0
-  // draw[6000] = fun() { verti(10,14,0) }
-  Move         r163, r1
-  Move         r164, r0
-  Move         r165, r2
-  MakeClosure  r166, fn39, 3, r163
-  Const        r167, 6000
-  SetIndex     r1, r167, r166
-  SetGlobal    1,1,0,0
-  // draw[7000] = fun() { draw[1000](); draw[6000]() }
-  Move         r168, r1
-  Move         r169, r0
-  Move         r170, r2
-  MakeClosure  r171, fn40, 3, r168
-  Const        r172, 7000
-  SetIndex     r1, r172, r171
-  SetGlobal    1,1,0,0
-  // draw[8000] = fun() { draw[2000](); draw[6000]() }
-  Move         r173, r1
-  Move         r174, r0
-  Move         r175, r2
-  MakeClosure  r176, fn41, 3, r173
-  Const        r177, 8000
-  SetIndex     r1, r177, r176
-  SetGlobal    1,1,0,0
   // draw[9000] = fun() { draw[1000](); draw[8000]() }
-  Move         r178, r1
-  Move         r179, r0
-  Move         r180, r2
-  MakeClosure  r181, fn42, 3, r178
-  Const        r182, 9000
-  SetIndex     r1, r182, r181
+  MakeClosure  r73, fn43, 0, r0
+  Const        r74, 9000
+  SetIndex     r1, r74, r73
   SetGlobal    1,1,0,0
-  Return       r0
-
-  // draw[1] = fun() { horiz(6,10,0) }
-func fn7 (regs=13)
-  // draw[1] = fun() { horiz(6,10,0) }
-  Const        r9, 6
-  Move         r6, r9
-  Const        r10, 10
-  Move         r7, r10
-  Const        r11, 0
-  Move         r8, r11
-  Call         r12, horiz, r6, r7, r8
-  Return       r0
-
-  // draw[2] = fun() { horiz(6,10,4) }
-func fn8 (regs=13)
-  // draw[2] = fun() { horiz(6,10,4) }
-  Const        r9, 6
-  Move         r6, r9
-  Const        r10, 10
-  Move         r7, r10
-  Const        r11, 4
-  Move         r8, r11
-  Call         r12, horiz, r6, r7, r8
-  Return       r0
-
-  // draw[3] = fun() { diagd(6,10,0) }
-func fn9 (regs=13)
-  // draw[3] = fun() { diagd(6,10,0) }
-  Const        r9, 6
-  Move         r6, r9
-  Const        r10, 10
-  Move         r7, r10
-  Const        r11, 0
-  Move         r8, r11
-  Call         r12, diagd, r6, r7, r8
-  Return       r0
-
-  // draw[4] = fun() { diagu(6,10,4) }
-func fn10 (regs=13)
-  // draw[4] = fun() { diagu(6,10,4) }
-  Const        r9, 6
-  Move         r6, r9
-  Const        r10, 10
-  Move         r7, r10
-  Const        r11, 4
-  Move         r8, r11
-  Call         r12, diagu, r6, r7, r8
-  Return       r0
-
-  // draw[5] = fun() { draw[1](); draw[4]() }
-func fn11 (regs=12)
-  // draw[5] = fun() { draw[1](); draw[4]() }
-  Const        r6, 1
-  Index        r7, r3, r6
-  CallV        r8, r7, 0, r0
-  Const        r9, 4
-  Index        r10, r3, r9
-  CallV        r11, r10, 0, r0
-  Return       r0
-
-  // draw[6] = fun() { verti(0,4,10) }
-func fn12 (regs=13)
-  // draw[6] = fun() { verti(0,4,10) }
-  Const        r9, 0
-  Move         r6, r9
-  Const        r10, 4
-  Move         r7, r10
-  Const        r11, 10
-  Move         r8, r11
-  Call         r12, verti, r6, r7, r8
-  Return       r0
-
-  // draw[7] = fun() { draw[1](); draw[6]() }
-func fn13 (regs=12)
-  // draw[7] = fun() { draw[1](); draw[6]() }
-  Const        r6, 1
-  Index        r7, r3, r6
-  CallV        r8, r7, 0, r0
-  Const        r9, 6
-  Index        r10, r3, r9
-  CallV        r11, r10, 0, r0
-  Return       r0
-
-  // draw[8] = fun() { draw[2](); draw[6]() }
-func fn14 (regs=12)
-  // draw[8] = fun() { draw[2](); draw[6]() }
-  Const        r6, 2
-  Index        r7, r3, r6
-  CallV        r8, r7, 0, r0
-  Const        r9, 6
-  Index        r10, r3, r9
-  CallV        r11, r10, 0, r0
-  Return       r0
-
-  // draw[9] = fun() { draw[1](); draw[8]() }
-func fn15 (regs=12)
-  // draw[9] = fun() { draw[1](); draw[8]() }
-  Const        r6, 1
-  Index        r7, r3, r6
-  CallV        r8, r7, 0, r0
-  Const        r9, 8
-  Index        r10, r3, r9
-  CallV        r11, r10, 0, r0
-  Return       r0
-
-  // draw[10] = fun() { horiz(0,4,0) }
-func fn16 (regs=12)
-  // draw[10] = fun() { horiz(0,4,0) }
-  Const        r9, 0
-  Move         r6, r9
-  Const        r10, 4
-  Move         r7, r10
-  Const        r9, 0
-  Move         r8, r9
-  Call         r11, horiz, r6, r7, r8
-  Return       r0
-
-  // draw[20] = fun() { horiz(0,4,4) }
-func fn17 (regs=12)
-  // draw[20] = fun() { horiz(0,4,4) }
-  Const        r9, 0
-  Move         r6, r9
-  Const        r10, 4
-  Move         r7, r10
-  Const        r10, 4
-  Move         r8, r10
-  Call         r11, horiz, r6, r7, r8
-  Return       r0
-
-  // draw[30] = fun() { diagu(0,4,4) }
-func fn18 (regs=12)
-  // draw[30] = fun() { diagu(0,4,4) }
-  Const        r9, 0
-  Move         r6, r9
-  Const        r10, 4
-  Move         r7, r10
-  Const        r10, 4
-  Move         r8, r10
-  Call         r11, diagu, r6, r7, r8
-  Return       r0
-
-  // draw[40] = fun() { diagd(0,4,0) }
-func fn19 (regs=12)
-  // draw[40] = fun() { diagd(0,4,0) }
-  Const        r9, 0
-  Move         r6, r9
-  Const        r10, 4
-  Move         r7, r10
-  Const        r9, 0
-  Move         r8, r9
-  Call         r11, diagd, r6, r7, r8
-  Return       r0
-
-  // draw[50] = fun() { draw[10](); draw[40]() }
-func fn20 (regs=12)
-  // draw[50] = fun() { draw[10](); draw[40]() }
-  Const        r6, 10
-  Index        r7, r3, r6
-  CallV        r8, r7, 0, r0
-  Const        r9, 40
-  Index        r10, r3, r9
-  CallV        r11, r10, 0, r0
-  Return       r0
-
-  // draw[60] = fun() { verti(0,4,0) }
-func fn21 (regs=12)
-  // draw[60] = fun() { verti(0,4,0) }
-  Const        r9, 0
-  Move         r6, r9
-  Const        r10, 4
-  Move         r7, r10
-  Const        r9, 0
-  Move         r8, r9
-  Call         r11, verti, r6, r7, r8
-  Return       r0
-
-  // draw[70] = fun() { draw[10](); draw[60]() }
-func fn22 (regs=12)
-  // draw[70] = fun() { draw[10](); draw[60]() }
-  Const        r6, 10
-  Index        r7, r3, r6
-  CallV        r8, r7, 0, r0
-  Const        r9, 60
-  Index        r10, r3, r9
-  CallV        r11, r10, 0, r0
-  Return       r0
-
-  // draw[80] = fun() { draw[20](); draw[60]() }
-func fn23 (regs=12)
-  // draw[80] = fun() { draw[20](); draw[60]() }
-  Const        r6, 20
-  Index        r7, r3, r6
-  CallV        r8, r7, 0, r0
-  Const        r9, 60
-  Index        r10, r3, r9
-  CallV        r11, r10, 0, r0
-  Return       r0
-
-  // draw[90] = fun() { draw[10](); draw[80]() }
-func fn24 (regs=12)
-  // draw[90] = fun() { draw[10](); draw[80]() }
-  Const        r6, 10
-  Index        r7, r3, r6
-  CallV        r8, r7, 0, r0
-  Const        r9, 80
-  Index        r10, r3, r9
-  CallV        r11, r10, 0, r0
-  Return       r0
-
-  // draw[100] = fun() { horiz(6,10,14) }
-func fn25 (regs=13)
-  // draw[100] = fun() { horiz(6,10,14) }
-  Const        r9, 6
-  Move         r6, r9
-  Const        r10, 10
-  Move         r7, r10
-  Const        r11, 14
-  Move         r8, r11
-  Call         r12, horiz, r6, r7, r8
-  Return       r0
-
-  // draw[200] = fun() { horiz(6,10,10) }
-func fn26 (regs=12)
-  // draw[200] = fun() { horiz(6,10,10) }
-  Const        r9, 6
-  Move         r6, r9
-  Const        r10, 10
-  Move         r7, r10
-  Const        r10, 10
-  Move         r8, r10
-  Call         r11, horiz, r6, r7, r8
-  Return       r0
-
-  // draw[300] = fun() { diagu(6,10,14) }
-func fn27 (regs=13)
-  // draw[300] = fun() { diagu(6,10,14) }
-  Const        r9, 6
-  Move         r6, r9
-  Const        r10, 10
-  Move         r7, r10
-  Const        r11, 14
-  Move         r8, r11
-  Call         r12, diagu, r6, r7, r8
-  Return       r0
-
-  // draw[400] = fun() { diagd(6,10,10) }
-func fn28 (regs=12)
-  // draw[400] = fun() { diagd(6,10,10) }
-  Const        r9, 6
-  Move         r6, r9
-  Const        r10, 10
-  Move         r7, r10
-  Const        r10, 10
-  Move         r8, r10
-  Call         r11, diagd, r6, r7, r8
-  Return       r0
-
-  // draw[500] = fun() { draw[100](); draw[400]() }
-func fn29 (regs=12)
-  // draw[500] = fun() { draw[100](); draw[400]() }
-  Const        r6, 100
-  Index        r7, r3, r6
-  CallV        r8, r7, 0, r0
-  Const        r9, 400
-  Index        r10, r3, r9
-  CallV        r11, r10, 0, r0
-  Return       r0
-
-  // draw[600] = fun() { verti(10,14,10) }
-func fn30 (regs=12)
-  // draw[600] = fun() { verti(10,14,10) }
-  Const        r9, 10
-  Move         r6, r9
-  Const        r10, 14
-  Move         r7, r10
-  Const        r9, 10
-  Move         r8, r9
-  Call         r11, verti, r6, r7, r8
-  Return       r0
-
-  // draw[700] = fun() { draw[100](); draw[600]() }
-func fn31 (regs=12)
-  // draw[700] = fun() { draw[100](); draw[600]() }
-  Const        r6, 100
-  Index        r7, r3, r6
-  CallV        r8, r7, 0, r0
-  Const        r9, 600
-  Index        r10, r3, r9
-  CallV        r11, r10, 0, r0
-  Return       r0
-
-  // draw[800] = fun() { draw[200](); draw[600]() }
-func fn32 (regs=12)
-  // draw[800] = fun() { draw[200](); draw[600]() }
-  Const        r6, 200
-  Index        r7, r3, r6
-  CallV        r8, r7, 0, r0
-  Const        r9, 600
-  Index        r10, r3, r9
-  CallV        r11, r10, 0, r0
-  Return       r0
-
-  // draw[900] = fun() { draw[100](); draw[800]() }
-func fn33 (regs=12)
-  // draw[900] = fun() { draw[100](); draw[800]() }
-  Const        r6, 100
-  Index        r7, r3, r6
-  CallV        r8, r7, 0, r0
-  Const        r9, 800
-  Index        r10, r3, r9
-  CallV        r11, r10, 0, r0
-  Return       r0
-
-  // draw[1000] = fun() { horiz(0,4,14) }
-func fn34 (regs=13)
-  // draw[1000] = fun() { horiz(0,4,14) }
-  Const        r9, 0
-  Move         r6, r9
-  Const        r10, 4
-  Move         r7, r10
-  Const        r11, 14
-  Move         r8, r11
-  Call         r12, horiz, r6, r7, r8
-  Return       r0
-
-  // draw[2000] = fun() { horiz(0,4,10) }
-func fn35 (regs=13)
-  // draw[2000] = fun() { horiz(0,4,10) }
-  Const        r9, 0
-  Move         r6, r9
-  Const        r10, 4
-  Move         r7, r10
-  Const        r11, 10
-  Move         r8, r11
-  Call         r12, horiz, r6, r7, r8
-  Return       r0
-
-  // draw[3000] = fun() { diagd(0,4,10) }
-func fn36 (regs=13)
-  // draw[3000] = fun() { diagd(0,4,10) }
-  Const        r9, 0
-  Move         r6, r9
-  Const        r10, 4
-  Move         r7, r10
-  Const        r11, 10
-  Move         r8, r11
-  Call         r12, diagd, r6, r7, r8
-  Return       r0
-
-  // draw[4000] = fun() { diagu(0,4,14) }
-func fn37 (regs=13)
-  // draw[4000] = fun() { diagu(0,4,14) }
-  Const        r9, 0
-  Move         r6, r9
-  Const        r10, 4
-  Move         r7, r10
-  Const        r11, 14
-  Move         r8, r11
-  Call         r12, diagu, r6, r7, r8
-  Return       r0
-
-  // draw[5000] = fun() { draw[1000](); draw[4000]() }
-func fn38 (regs=12)
-  // draw[5000] = fun() { draw[1000](); draw[4000]() }
-  Const        r6, 1000
-  Index        r7, r3, r6
-  CallV        r8, r7, 0, r0
-  Const        r9, 4000
-  Index        r10, r3, r9
-  CallV        r11, r10, 0, r0
-  Return       r0
-
-  // draw[6000] = fun() { verti(10,14,0) }
-func fn39 (regs=13)
-  // draw[6000] = fun() { verti(10,14,0) }
-  Const        r9, 10
-  Move         r6, r9
-  Const        r10, 14
-  Move         r7, r10
-  Const        r11, 0
-  Move         r8, r11
-  Call         r12, verti, r6, r7, r8
-  Return       r0
-
-  // draw[7000] = fun() { draw[1000](); draw[6000]() }
-func fn40 (regs=12)
-  // draw[7000] = fun() { draw[1000](); draw[6000]() }
-  Const        r6, 1000
-  Index        r7, r3, r6
-  CallV        r8, r7, 0, r0
-  Const        r9, 6000
-  Index        r10, r3, r9
-  CallV        r11, r10, 0, r0
-  Return       r0
-
-  // draw[8000] = fun() { draw[2000](); draw[6000]() }
-func fn41 (regs=12)
-  // draw[8000] = fun() { draw[2000](); draw[6000]() }
-  Const        r6, 2000
-  Index        r7, r3, r6
-  CallV        r8, r7, 0, r0
-  Const        r9, 6000
-  Index        r10, r3, r9
-  CallV        r11, r10, 0, r0
-  Return       r0
-
-  // draw[9000] = fun() { draw[1000](); draw[8000]() }
-func fn42 (regs=12)
-  // draw[9000] = fun() { draw[1000](); draw[8000]() }
-  Const        r6, 1000
-  Index        r7, r3, r6
-  CallV        r8, r7, 0, r0
-  Const        r9, 8000
-  Index        r10, r3, r9
-  CallV        r11, r10, 0, r0
   Return       r0
 
   // fun printNumeral() {
@@ -980,4 +455,420 @@ L0:
   // print("")
   Const        r7, ""
   Print        r7
+  Return       r0
+
+  // draw[1] = fun() { horiz(6,10,0) }
+func fn8 (regs=10)
+  // draw[1] = fun() { horiz(6,10,0) }
+  Const        r6, 6
+  Move         r3, r6
+  Const        r7, 10
+  Move         r4, r7
+  Const        r8, 0
+  Move         r5, r8
+  Call         r9, horiz, r3, r4, r5
+  Return       r0
+
+  // draw[2] = fun() { horiz(6,10,4) }
+func fn9 (regs=10)
+  // draw[2] = fun() { horiz(6,10,4) }
+  Const        r6, 6
+  Move         r3, r6
+  Const        r7, 10
+  Move         r4, r7
+  Const        r8, 4
+  Move         r5, r8
+  Call         r9, horiz, r3, r4, r5
+  Return       r0
+
+  // draw[3] = fun() { diagd(6,10,0) }
+func fn10 (regs=10)
+  // draw[3] = fun() { diagd(6,10,0) }
+  Const        r6, 6
+  Move         r3, r6
+  Const        r7, 10
+  Move         r4, r7
+  Const        r8, 0
+  Move         r5, r8
+  Call         r9, diagd, r3, r4, r5
+  Return       r0
+
+  // draw[4] = fun() { diagu(6,10,4) }
+func fn11 (regs=10)
+  // draw[4] = fun() { diagu(6,10,4) }
+  Const        r6, 6
+  Move         r3, r6
+  Const        r7, 10
+  Move         r4, r7
+  Const        r8, 4
+  Move         r5, r8
+  Call         r9, diagu, r3, r4, r5
+  Return       r0
+
+  // draw[5] = fun() { draw[1](); draw[4]() }
+func fn12 (regs=9)
+  // draw[5] = fun() { draw[1](); draw[4]() }
+  Const        r3, 1
+  Index        r4, r1, r3
+  CallV        r5, r4, 0, r0
+  Const        r6, 4
+  Index        r7, r1, r6
+  CallV        r8, r7, 0, r0
+  Return       r0
+
+  // draw[6] = fun() { verti(0,4,10) }
+func fn13 (regs=10)
+  // draw[6] = fun() { verti(0,4,10) }
+  Const        r6, 0
+  Move         r3, r6
+  Const        r7, 4
+  Move         r4, r7
+  Const        r8, 10
+  Move         r5, r8
+  Call         r9, verti, r3, r4, r5
+  Return       r0
+
+  // draw[7] = fun() { draw[1](); draw[6]() }
+func fn14 (regs=9)
+  // draw[7] = fun() { draw[1](); draw[6]() }
+  Const        r3, 1
+  Index        r4, r1, r3
+  CallV        r5, r4, 0, r0
+  Const        r6, 6
+  Index        r7, r1, r6
+  CallV        r8, r7, 0, r0
+  Return       r0
+
+  // draw[8] = fun() { draw[2](); draw[6]() }
+func fn15 (regs=9)
+  // draw[8] = fun() { draw[2](); draw[6]() }
+  Const        r3, 2
+  Index        r4, r1, r3
+  CallV        r5, r4, 0, r0
+  Const        r6, 6
+  Index        r7, r1, r6
+  CallV        r8, r7, 0, r0
+  Return       r0
+
+  // draw[9] = fun() { draw[1](); draw[8]() }
+func fn16 (regs=9)
+  // draw[9] = fun() { draw[1](); draw[8]() }
+  Const        r3, 1
+  Index        r4, r1, r3
+  CallV        r5, r4, 0, r0
+  Const        r6, 8
+  Index        r7, r1, r6
+  CallV        r8, r7, 0, r0
+  Return       r0
+
+  // draw[10] = fun() { horiz(0,4,0) }
+func fn17 (regs=9)
+  // draw[10] = fun() { horiz(0,4,0) }
+  Const        r6, 0
+  Move         r3, r6
+  Const        r7, 4
+  Move         r4, r7
+  Const        r6, 0
+  Move         r5, r6
+  Call         r8, horiz, r3, r4, r5
+  Return       r0
+
+  // draw[20] = fun() { horiz(0,4,4) }
+func fn18 (regs=9)
+  // draw[20] = fun() { horiz(0,4,4) }
+  Const        r6, 0
+  Move         r3, r6
+  Const        r7, 4
+  Move         r4, r7
+  Const        r7, 4
+  Move         r5, r7
+  Call         r8, horiz, r3, r4, r5
+  Return       r0
+
+  // draw[30] = fun() { diagu(0,4,4) }
+func fn19 (regs=9)
+  // draw[30] = fun() { diagu(0,4,4) }
+  Const        r6, 0
+  Move         r3, r6
+  Const        r7, 4
+  Move         r4, r7
+  Const        r7, 4
+  Move         r5, r7
+  Call         r8, diagu, r3, r4, r5
+  Return       r0
+
+  // draw[40] = fun() { diagd(0,4,0) }
+func fn20 (regs=9)
+  // draw[40] = fun() { diagd(0,4,0) }
+  Const        r6, 0
+  Move         r3, r6
+  Const        r7, 4
+  Move         r4, r7
+  Const        r6, 0
+  Move         r5, r6
+  Call         r8, diagd, r3, r4, r5
+  Return       r0
+
+  // draw[50] = fun() { draw[10](); draw[40]() }
+func fn21 (regs=9)
+  // draw[50] = fun() { draw[10](); draw[40]() }
+  Const        r3, 10
+  Index        r4, r1, r3
+  CallV        r5, r4, 0, r0
+  Const        r6, 40
+  Index        r7, r1, r6
+  CallV        r8, r7, 0, r0
+  Return       r0
+
+  // draw[60] = fun() { verti(0,4,0) }
+func fn22 (regs=9)
+  // draw[60] = fun() { verti(0,4,0) }
+  Const        r6, 0
+  Move         r3, r6
+  Const        r7, 4
+  Move         r4, r7
+  Const        r6, 0
+  Move         r5, r6
+  Call         r8, verti, r3, r4, r5
+  Return       r0
+
+  // draw[70] = fun() { draw[10](); draw[60]() }
+func fn23 (regs=9)
+  // draw[70] = fun() { draw[10](); draw[60]() }
+  Const        r3, 10
+  Index        r4, r1, r3
+  CallV        r5, r4, 0, r0
+  Const        r6, 60
+  Index        r7, r1, r6
+  CallV        r8, r7, 0, r0
+  Return       r0
+
+  // draw[80] = fun() { draw[20](); draw[60]() }
+func fn24 (regs=9)
+  // draw[80] = fun() { draw[20](); draw[60]() }
+  Const        r3, 20
+  Index        r4, r1, r3
+  CallV        r5, r4, 0, r0
+  Const        r6, 60
+  Index        r7, r1, r6
+  CallV        r8, r7, 0, r0
+  Return       r0
+
+  // draw[90] = fun() { draw[10](); draw[80]() }
+func fn25 (regs=9)
+  // draw[90] = fun() { draw[10](); draw[80]() }
+  Const        r3, 10
+  Index        r4, r1, r3
+  CallV        r5, r4, 0, r0
+  Const        r6, 80
+  Index        r7, r1, r6
+  CallV        r8, r7, 0, r0
+  Return       r0
+
+  // draw[100] = fun() { horiz(6,10,14) }
+func fn26 (regs=10)
+  // draw[100] = fun() { horiz(6,10,14) }
+  Const        r6, 6
+  Move         r3, r6
+  Const        r7, 10
+  Move         r4, r7
+  Const        r8, 14
+  Move         r5, r8
+  Call         r9, horiz, r3, r4, r5
+  Return       r0
+
+  // draw[200] = fun() { horiz(6,10,10) }
+func fn27 (regs=9)
+  // draw[200] = fun() { horiz(6,10,10) }
+  Const        r6, 6
+  Move         r3, r6
+  Const        r7, 10
+  Move         r4, r7
+  Const        r7, 10
+  Move         r5, r7
+  Call         r8, horiz, r3, r4, r5
+  Return       r0
+
+  // draw[300] = fun() { diagu(6,10,14) }
+func fn28 (regs=10)
+  // draw[300] = fun() { diagu(6,10,14) }
+  Const        r6, 6
+  Move         r3, r6
+  Const        r7, 10
+  Move         r4, r7
+  Const        r8, 14
+  Move         r5, r8
+  Call         r9, diagu, r3, r4, r5
+  Return       r0
+
+  // draw[400] = fun() { diagd(6,10,10) }
+func fn29 (regs=9)
+  // draw[400] = fun() { diagd(6,10,10) }
+  Const        r6, 6
+  Move         r3, r6
+  Const        r7, 10
+  Move         r4, r7
+  Const        r7, 10
+  Move         r5, r7
+  Call         r8, diagd, r3, r4, r5
+  Return       r0
+
+  // draw[500] = fun() { draw[100](); draw[400]() }
+func fn30 (regs=9)
+  // draw[500] = fun() { draw[100](); draw[400]() }
+  Const        r3, 100
+  Index        r4, r1, r3
+  CallV        r5, r4, 0, r0
+  Const        r6, 400
+  Index        r7, r1, r6
+  CallV        r8, r7, 0, r0
+  Return       r0
+
+  // draw[600] = fun() { verti(10,14,10) }
+func fn31 (regs=9)
+  // draw[600] = fun() { verti(10,14,10) }
+  Const        r6, 10
+  Move         r3, r6
+  Const        r7, 14
+  Move         r4, r7
+  Const        r6, 10
+  Move         r5, r6
+  Call         r8, verti, r3, r4, r5
+  Return       r0
+
+  // draw[700] = fun() { draw[100](); draw[600]() }
+func fn32 (regs=9)
+  // draw[700] = fun() { draw[100](); draw[600]() }
+  Const        r3, 100
+  Index        r4, r1, r3
+  CallV        r5, r4, 0, r0
+  Const        r6, 600
+  Index        r7, r1, r6
+  CallV        r8, r7, 0, r0
+  Return       r0
+
+  // draw[800] = fun() { draw[200](); draw[600]() }
+func fn33 (regs=9)
+  // draw[800] = fun() { draw[200](); draw[600]() }
+  Const        r3, 200
+  Index        r4, r1, r3
+  CallV        r5, r4, 0, r0
+  Const        r6, 600
+  Index        r7, r1, r6
+  CallV        r8, r7, 0, r0
+  Return       r0
+
+  // draw[900] = fun() { draw[100](); draw[800]() }
+func fn34 (regs=9)
+  // draw[900] = fun() { draw[100](); draw[800]() }
+  Const        r3, 100
+  Index        r4, r1, r3
+  CallV        r5, r4, 0, r0
+  Const        r6, 800
+  Index        r7, r1, r6
+  CallV        r8, r7, 0, r0
+  Return       r0
+
+  // draw[1000] = fun() { horiz(0,4,14) }
+func fn35 (regs=10)
+  // draw[1000] = fun() { horiz(0,4,14) }
+  Const        r6, 0
+  Move         r3, r6
+  Const        r7, 4
+  Move         r4, r7
+  Const        r8, 14
+  Move         r5, r8
+  Call         r9, horiz, r3, r4, r5
+  Return       r0
+
+  // draw[2000] = fun() { horiz(0,4,10) }
+func fn36 (regs=10)
+  // draw[2000] = fun() { horiz(0,4,10) }
+  Const        r6, 0
+  Move         r3, r6
+  Const        r7, 4
+  Move         r4, r7
+  Const        r8, 10
+  Move         r5, r8
+  Call         r9, horiz, r3, r4, r5
+  Return       r0
+
+  // draw[3000] = fun() { diagd(0,4,10) }
+func fn37 (regs=10)
+  // draw[3000] = fun() { diagd(0,4,10) }
+  Const        r6, 0
+  Move         r3, r6
+  Const        r7, 4
+  Move         r4, r7
+  Const        r8, 10
+  Move         r5, r8
+  Call         r9, diagd, r3, r4, r5
+  Return       r0
+
+  // draw[4000] = fun() { diagu(0,4,14) }
+func fn38 (regs=10)
+  // draw[4000] = fun() { diagu(0,4,14) }
+  Const        r6, 0
+  Move         r3, r6
+  Const        r7, 4
+  Move         r4, r7
+  Const        r8, 14
+  Move         r5, r8
+  Call         r9, diagu, r3, r4, r5
+  Return       r0
+
+  // draw[5000] = fun() { draw[1000](); draw[4000]() }
+func fn39 (regs=9)
+  // draw[5000] = fun() { draw[1000](); draw[4000]() }
+  Const        r3, 1000
+  Index        r4, r1, r3
+  CallV        r5, r4, 0, r0
+  Const        r6, 4000
+  Index        r7, r1, r6
+  CallV        r8, r7, 0, r0
+  Return       r0
+
+  // draw[6000] = fun() { verti(10,14,0) }
+func fn40 (regs=10)
+  // draw[6000] = fun() { verti(10,14,0) }
+  Const        r6, 10
+  Move         r3, r6
+  Const        r7, 14
+  Move         r4, r7
+  Const        r8, 0
+  Move         r5, r8
+  Call         r9, verti, r3, r4, r5
+  Return       r0
+
+  // draw[7000] = fun() { draw[1000](); draw[6000]() }
+func fn41 (regs=9)
+  // draw[7000] = fun() { draw[1000](); draw[6000]() }
+  Const        r3, 1000
+  Index        r4, r1, r3
+  CallV        r5, r4, 0, r0
+  Const        r6, 6000
+  Index        r7, r1, r6
+  CallV        r8, r7, 0, r0
+  Return       r0
+
+  // draw[8000] = fun() { draw[2000](); draw[6000]() }
+func fn42 (regs=9)
+  // draw[8000] = fun() { draw[2000](); draw[6000]() }
+  Const        r3, 2000
+  Index        r4, r1, r3
+  CallV        r5, r4, 0, r0
+  Const        r6, 6000
+  Index        r7, r1, r6
+  CallV        r8, r7, 0, r0
+  Return       r0
+
+  // draw[9000] = fun() { draw[1000](); draw[8000]() }
+func fn43 (regs=9)
+  // draw[9000] = fun() { draw[1000](); draw[8000]() }
+  Const        r3, 1000
+  Index        r4, r1, r3
+  CallV        r5, r4, 0, r0
+  Const        r6, 8000
+  Index        r7, r1, r6
+  CallV        r8, r7, 0, r0
   Return       r0
