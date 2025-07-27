@@ -2312,6 +2312,13 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 		if transpileEnv != nil {
 			transpileEnv.SetVar(s.Let.Name, t, false)
 		}
+		if _, ok := t.(types.BigIntType); ok {
+			if n, ok2 := e.(*NumberLit); ok2 {
+				if !strings.HasSuffix(n.Value, "n") {
+					n.Value = strings.TrimSuffix(n.Value, ".0") + "n"
+				}
+			}
+		}
 		if q, ok := e.(*QueryExprJS); ok && q.ElemType != "" {
 			typeStr = q.ElemType + "[]"
 		}
@@ -2363,6 +2370,13 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 		typeStr := tsType(t)
 		if transpileEnv != nil {
 			transpileEnv.SetVar(s.Var.Name, t, true)
+		}
+		if _, ok := t.(types.BigIntType); ok {
+			if n, ok2 := e.(*NumberLit); ok2 {
+				if !strings.HasSuffix(n.Value, "n") {
+					n.Value = strings.TrimSuffix(n.Value, ".0") + "n"
+				}
+			}
 		}
 		if q, ok := e.(*QueryExprJS); ok && q.ElemType != "" {
 			typeStr = q.ElemType + "[]"
@@ -3256,8 +3270,13 @@ func convertBinary(b *parser.BinaryExpr) (Expr, error) {
 			operands[i] = &IntersectExpr{Left: operands[i], Right: operands[i+1]}
 		default:
 			if ops[i] == "/" && (isIntType(typesArr[i]) && isIntType(typesArr[i+1]) || (isVarIntExpr(operands[i]) && isIntLitExpr(operands[i+1])) || (isIntLitExpr(operands[i]) && isIntLitExpr(operands[i+1]))) && !(isFloatLitExpr(operands[i]) || isFloatLitExpr(operands[i+1])) {
-				operands[i] = &IntDivExpr{Left: operands[i], Right: operands[i+1]}
-				typesArr[i] = types.IntType{}
+				if isBigIntType(typesArr[i]) || isBigIntType(typesArr[i+1]) {
+					operands[i] = &BinaryExpr{Left: operands[i], Op: "/", Right: operands[i+1]}
+					typesArr[i] = types.BigIntType{}
+				} else {
+					operands[i] = &IntDivExpr{Left: operands[i], Right: operands[i+1]}
+					typesArr[i] = types.IntType{}
+				}
 			} else {
 				operands[i] = &BinaryExpr{Left: operands[i], Op: ops[i], Right: operands[i+1]}
 				switch ops[i] {
@@ -3962,6 +3981,11 @@ func convertMatchExpr(me *parser.MatchExpr) (Expr, error) {
 func convertLiteral(l *parser.Literal) (Expr, error) {
 	switch {
 	case l.Int != nil:
+		if lt := literalType(l); lt != nil {
+			if _, ok := lt.(types.BigIntType); ok {
+				return &NumberLit{Value: fmt.Sprintf("%dn", *l.Int)}, nil
+			}
+		}
 		return &NumberLit{Value: fmt.Sprintf("%d", *l.Int)}, nil
 	case l.Float != nil:
 		return &NumberLit{Value: formatFloat(*l.Float)}, nil
@@ -3989,6 +4013,8 @@ func zeroValue(t *parser.TypeRef, env *types.Env) Expr {
 	switch typ.(type) {
 	case types.IntType, types.FloatType:
 		return &NumberLit{Value: "0"}
+	case types.BigIntType:
+		return &NumberLit{Value: "0n"}
 	case types.BoolType:
 		return &BoolLit{Value: false}
 	case types.StringType:
@@ -4037,10 +4063,20 @@ func inferLiteralType(e *parser.Expr, env *types.Env) (types.Type, bool) {
 	return nil, false
 }
 
+func literalType(l *parser.Literal) types.Type {
+	expr := &parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: &parser.PostfixExpr{Target: &parser.Primary{Lit: l}}}}}
+	if transpileEnv == nil {
+		return types.ExprType(expr, nil)
+	}
+	return types.CheckExprType(expr, transpileEnv)
+}
+
 func tsType(t types.Type) string {
 	switch tt := t.(type) {
-	case types.IntType, types.Int64Type, types.FloatType, types.BigIntType, types.BigRatType:
+	case types.IntType, types.Int64Type, types.FloatType, types.BigRatType:
 		return "number"
+	case types.BigIntType:
+		return "bigint"
 	case types.BoolType:
 		return "boolean"
 	case types.StringType:
@@ -4285,6 +4321,17 @@ func isBoolExpr(e *parser.Expr) bool {
 		return false
 	}
 	return isBoolType(types.CheckExprType(e, transpileEnv))
+}
+
+func isBigIntType(t types.Type) bool {
+	switch t.(type) {
+	case types.BigIntType:
+		return true
+	case types.OptionType:
+		return isBigIntType(t.(types.OptionType).Elem)
+	default:
+		return false
+	}
 }
 
 func isSimpleIdent(e *parser.Expr) (string, bool) {
