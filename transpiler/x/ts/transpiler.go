@@ -41,6 +41,7 @@ var useParseIntStr bool
 var useBench bool
 var useStdout bool
 var useHas bool
+var useFetch bool
 
 var reserved = map[string]bool{
 	"break": true, "case": true, "catch": true, "class": true, "const": true,
@@ -80,6 +81,16 @@ type ReturnStmt struct {
 	Value Expr
 }
 
+// AwaitExpr represents awaiting a promise.
+type AwaitExpr struct {
+	X Expr
+}
+
+func (a *AwaitExpr) emit(w io.Writer) {
+	io.WriteString(w, "await ")
+	a.X.emit(w)
+}
+
 // FuncDecl represents a function definition.
 type FuncDecl struct {
 	Name       string
@@ -87,6 +98,7 @@ type FuncDecl struct {
 	ParamTypes []string
 	ReturnType string
 	Body       []Stmt
+	Async      bool
 }
 
 // TypeAlias represents `type Name = { ... }` declarations.
@@ -1529,7 +1541,11 @@ func (s *SaveStmt) emit(w io.Writer) {
 }
 
 func (b *BenchStmt) emit(w io.Writer) {
-	io.WriteString(w, "(() => {\n")
+	if useFetch {
+		io.WriteString(w, "(async () => {\n")
+	} else {
+		io.WriteString(w, "(() => {\n")
+	}
 	io.WriteString(w, "  const _startMem = _mem()\n")
 	io.WriteString(w, "  const _start = _now()\n")
 	iw := &indentWriter{w: w, indent: "  "}
@@ -1736,7 +1752,11 @@ func (r *ReturnStmt) emit(w io.Writer) {
 }
 
 func (f *FuncDecl) emit(w io.Writer) {
-	io.WriteString(w, "function ")
+	if f.Async {
+		io.WriteString(w, "async function ")
+	} else {
+		io.WriteString(w, "function ")
+	}
 	io.WriteString(w, safeName(f.Name))
 	io.WriteString(w, "(")
 	for i, p := range f.Params {
@@ -1966,6 +1986,7 @@ func Transpile(prog *parser.Program, env *types.Env, benchMain bool) (*Program, 
 	useParseIntStr = false
 	useStdout = false
 	useHas = false
+	useFetch = false
 	defer func() {
 		transpileEnv = nil
 		generatedTypes = nil
@@ -1980,6 +2001,7 @@ func Transpile(prog *parser.Program, env *types.Env, benchMain bool) (*Program, 
 		useParseIntStr = false
 		useStdout = false
 		useHas = false
+		useFetch = false
 	}()
 	tsProg := &Program{}
 	mainDefined := false
@@ -2012,6 +2034,9 @@ func Transpile(prog *parser.Program, env *types.Env, benchMain bool) (*Program, 
 			switch st.(type) {
 			case *InterfaceDecl, *TypeAlias, *FuncDecl:
 				prelude = append(prelude, st)
+				if fd, ok := st.(*FuncDecl); ok && fd.Name == "main" && useFetch {
+					fd.Async = true
+				}
 			case *VarDecl:
 				prelude = append(prelude, st)
 			default:
@@ -2019,7 +2044,11 @@ func Transpile(prog *parser.Program, env *types.Env, benchMain bool) (*Program, 
 			}
 		}
 		if mainDefined && !mainCalled {
-			mainStmts = append(mainStmts, &ExprStmt{Expr: &CallExpr{Func: "main"}})
+			if useFetch {
+				mainStmts = append(mainStmts, &ExprStmt{Expr: &AwaitExpr{X: &CallExpr{Func: "main"}}})
+			} else {
+				mainStmts = append(mainStmts, &ExprStmt{Expr: &CallExpr{Func: "main"}})
+			}
 		}
 		tsProg.Stmts = []Stmt{&BenchStmt{Name: "main", Body: mainStmts}}
 		useBench = true
@@ -2145,6 +2174,22 @@ function sha256(bs: number[]): number[] {
   } else {
     console.log(s);
   }
+}`})
+	}
+	if useFetch {
+		prelude = append(prelude, &RawStmt{Code: `async function _fetch(url: string, opts?: any): Promise<any> {
+  const init: RequestInit = { method: opts?.method ?? 'GET' };
+  if (opts?.headers) init.headers = opts.headers;
+  if (opts && 'body' in opts) init.body = JSON.stringify(opts.body);
+  if (opts?.query) {
+    const qs = new URLSearchParams();
+    for (const [k, v] of Object.entries(opts.query)) qs.set(k, String(v));
+    const sep = url.includes('?') ? '&' : '?';
+    url = url + sep + qs.toString();
+  }
+  const resp = await fetch(url, init);
+  const text = await resp.text();
+  try { return JSON.parse(text); } catch { return text; }
 }`})
 	}
 	if len(prelude) > 0 {
@@ -2404,7 +2449,7 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 		if s.Fun.Return != nil {
 			retType = tsType(types.ResolveTypeRef(s.Fun.Return, transpileEnv))
 		}
-		return &FuncDecl{Name: s.Fun.Name, Params: params, ParamTypes: typesArr, ReturnType: retType, Body: body}, nil
+		return &FuncDecl{Name: s.Fun.Name, Params: params, ParamTypes: typesArr, ReturnType: retType, Body: body, Async: useFetch}, nil
 	case s.If != nil:
 		return convertIfStmt(s.If, transpileEnv)
 	case s.While != nil:
@@ -2635,7 +2680,7 @@ func convertTypeDecl(td *parser.TypeDecl) (Stmt, error) {
 			if m.Method.Return != nil {
 				retType = tsType(types.ResolveTypeRef(m.Method.Return, transpileEnv))
 			}
-			prelude = append(prelude, &FuncDecl{Name: td.Name + "_" + m.Method.Name, Params: params, ParamTypes: paramTypes, ReturnType: retType, Body: body})
+			prelude = append(prelude, &FuncDecl{Name: td.Name + "_" + m.Method.Name, Params: params, ParamTypes: paramTypes, ReturnType: retType, Body: body, Async: useFetch})
 		}
 	}
 	return &InterfaceDecl{Name: td.Name, Fields: fields}, nil
@@ -3554,6 +3599,11 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			// Math.trunc mirrors Mochi's int() which drops the
 			// fractional part without rounding.
 			return &CallExpr{Func: "Math.trunc", Args: args}, nil
+		case "float":
+			if len(args) != 1 {
+				return nil, fmt.Errorf("float expects one argument")
+			}
+			return &CallExpr{Func: "Number", Args: args}, nil
 		case "split":
 			if len(args) != 2 {
 				return nil, fmt.Errorf("split expects two arguments")
@@ -3736,6 +3786,20 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		// query explicitly requires one, so map literals on their own
 		// can remain anonymous objects.
 		return &MapLit{Entries: entries}, nil
+	case p.Fetch != nil:
+		urlExpr, err := convertExpr(p.Fetch.URL)
+		if err != nil {
+			return nil, err
+		}
+		useFetch = true
+		if p.Fetch.With != nil {
+			withExpr, err := convertExpr(p.Fetch.With)
+			if err != nil {
+				return nil, err
+			}
+			return &AwaitExpr{X: &CallExpr{Func: "_fetch", Args: []Expr{urlExpr, withExpr}}}, nil
+		}
+		return &AwaitExpr{X: &CallExpr{Func: "_fetch", Args: []Expr{urlExpr}}}, nil
 	case p.Load != nil:
 		format := parseFormat(p.Load.With)
 		path := ""

@@ -1,0 +1,5 @@
+run: exit status 1
+[0m[1m[31merror[0m: Uncaught SyntaxError: Unexpected reserved word
+  let todo: Todo = await _fetch("https://jsonplaceholder.typicode.com/todos/1");
+[0m[31m                   ^[0m
+    at [0m[1m[3m<anonymous>[0m ([0m[36mfile:///workspace/mochi/tests/rosetta/transpiler/TypeScript/http.ts[0m:[0m[33m5[0m:[0m[33m20[0m)
