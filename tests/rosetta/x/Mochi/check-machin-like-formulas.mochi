@@ -37,7 +37,7 @@ fun format(ts: list<map<string,int>>): string {
 fun tanEval(coef: int, f: bigrat): bigrat {
   if coef == 1 { return f }
   if coef < 0 { return -(tanEval(-coef, f)) as bigrat }
-  let ca = coef / 2
+  let ca = (coef / 2) as int
   let cb = coef - ca
   let a = tanEval(ca, f)
   let b = tanEval(cb, f)
@@ -49,7 +49,7 @@ fun tans(m: list<map<string,int>>): bigrat {
     let t = m[0]
     return tanEval(t["a"], br(t["n"], t["d"]))
   }
-  let half = len(m)/2
+  let half = (len(m)/2) as int
   let a = tans(m[0:half])
   let b = tans(m[half:])
   return (a + b) as bigrat / (1 as bigrat - a*b) as bigrat

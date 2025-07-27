@@ -143,7 +143,7 @@ L0:
   Return       r15
 
   // fun gradient(img: list<list<float>>): list<list<float>> {
-func gradient (regs=46)
+func gradient (regs=44)
   // let hx = [[-1.0,0.0,1.0],[-2.0,0.0,2.0],[-1.0,0.0,1.0]]
   Const        r2, [[-1.0, 0.0, 1.0], [-2.0, 0.0, 2.0], [-1.0, 0.0, 1.0]]
   Move         r3, r2
@@ -152,79 +152,77 @@ func gradient (regs=46)
   Move         r5, r4
   // var gx = conv2d(img, hx)
   Move         r6, r1
-  Const        r8, [[-1.0, 0.0, 1.0], [-2.0, 0.0, 2.0], [-1.0, 0.0, 1.0]]
-  Move         r7, r8
-  Call2        r9, conv2d, r6, r7
-  Move         r10, r9
+  Move         r7, r3
+  Call2        r8, conv2d, r6, r7
+  Move         r9, r8
   // var gy = conv2d(img, hy)
-  Move         r11, r1
-  Const        r13, [[1.0, 2.0, 1.0], [0.0, 0.0, 0.0], [-1.0, -2.0, -1.0]]
-  Move         r12, r13
-  Call2        r14, conv2d, r11, r12
-  Move         r15, r14
+  Move         r10, r1
+  Move         r11, r5
+  Call2        r12, conv2d, r10, r11
+  Move         r13, r12
   // var h = len(img)
-  Len          r16, r1
-  Move         r17, r16
+  Len          r14, r1
+  Move         r15, r14
   // var w = len(img[0])
-  Const        r18, 0
-  Index        r19, r1, r18
-  Len          r20, r19
-  Move         r21, r20
+  Const        r16, 0
+  Index        r17, r1, r16
+  Len          r18, r17
+  Move         r19, r18
   // var out: list<list<float>> = []
-  Const        r22, []
-  Move         r23, r22
+  Const        r20, []
+  Move         r21, r20
   // var y = 0
-  Const        r18, 0
-  Move         r24, r18
+  Const        r16, 0
+  Move         r22, r16
 L3:
   // while y < h {
-  LessInt      r25, r24, r17
-  JumpIfFalse  r25, L0
+  LessInt      r23, r22, r15
+  JumpIfFalse  r23, L0
   // var row: list<float> = []
-  Const        r22, []
-  Move         r26, r22
+  Const        r20, []
+  Move         r24, r20
   // var x = 0
-  Const        r18, 0
-  Move         r27, r18
+  Const        r16, 0
+  Move         r25, r16
 L2:
   // while x < w {
-  LessInt      r28, r27, r21
-  JumpIfFalse  r28, L1
+  LessInt      r26, r25, r19
+  JumpIfFalse  r26, L1
   // let g = gx[y][x]*gx[y][x] + gy[y][x]*gy[y][x]
-  Index        r29, r10, r24
-  Index        r30, r29, r27
-  Index        r31, r10, r24
-  Index        r32, r31, r27
-  Mul          r33, r30, r32
-  Index        r34, r15, r24
-  Index        r35, r34, r27
-  Index        r36, r15, r24
-  Index        r37, r36, r27
-  Mul          r38, r35, r37
-  Add          r39, r33, r38
-  Move         r40, r39
+  Index        r27, r9, r22
+  Index        r28, r27, r25
+  Index        r29, r9, r22
+  Index        r30, r29, r25
+  Mul          r31, r28, r30
+  Index        r32, r13, r22
+  Index        r33, r32, r25
+  Index        r34, r13, r22
+  Index        r35, r34, r25
+  Mul          r36, r33, r35
+  Add          r37, r31, r36
+  Move         r38, r37
   // row = append(row, g)
-  Append       r41, r26, r40
-  Move         r26, r41
+  Append       r39, r24, r38
+  Move         r24, r39
   // x = x + 1
-  Const        r42, 1
-  AddInt       r43, r27, r42
-  Move         r27, r43
+  Const        r40, 1
+  AddInt       r41, r25, r40
+  Move         r25, r41
   // while x < w {
   Jump         L2
 L1:
   // out = append(out, row)
-  Append       r44, r23, r26
-  Move         r23, r44
+  Append       r42, r21, r24
+  Move         r21, r42
   // y = y + 1
-  Const        r42, 1
-  AddInt       r45, r24, r42
-  Move         r24, r45
+  Const        r40, 1
+  AddInt       r43, r22, r40
+  Move         r22, r43
   // while y < h {
   Jump         L3
 L0:
   // return out
-  Return       r23
+  Return       r21
 
   // fun threshold(g: list<list<float>>, t: float): list<list<int>> {
 func threshold (regs=25)
@@ -350,24 +348,23 @@ L0:
   Return       r0
 
   // fun main() {
-func main (regs=15)
+func main (regs=14)
   // let img = [
   Const        r1, [[0.0, 0.0, 0.0, 0.0, 0.0], [0.0, 255.0, 255.0, 255.0, 0.0], [0.0, 255.0, 255.0, 255.0, 0.0], [0.0, 255.0, 255.0, 255.0, 0.0], [0.0, 0.0, 0.0, 0.0, 0.0]]
   Move         r2, r1
   // let g = gradient(img)
-  Const        r4, [[0.0, 0.0, 0.0, 0.0, 0.0], [0.0, 255.0, 255.0, 255.0, 0.0], [0.0, 255.0, 255.0, 255.0, 0.0], [0.0, 255.0, 255.0, 255.0, 0.0], [0.0, 0.0, 0.0, 0.0, 0.0]]
-  Move         r3, r4
-  Call         r5, gradient, r3
-  Move         r6, r5
+  Move         r3, r2
+  Call         r4, gradient, r3
+  Move         r5, r4
   // let edges = threshold(g, 1020.0*1020.0)  // compare squared magnitude
-  Move         r7, r6
-  Const        r9, 1020.0
-  Const        r9, 1020.0
-  MulFloat     r10, r9, r9
-  Move         r8, r10
-  Call2        r11, threshold, r7, r8
-  Move         r12, r11
+  Move         r6, r5
+  Const        r8, 1020.0
+  Const        r8, 1020.0
+  MulFloat     r9, r8, r8
+  Move         r7, r9
+  Call2        r10, threshold, r6, r7
+  Move         r11, r10
   // printMatrix(edges)
-  Move         r13, r12
-  Call         r14, printMatrix, r13
+  Move         r12, r11
+  Call         r13, printMatrix, r12
   Return       r0

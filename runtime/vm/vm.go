@@ -8253,6 +8253,16 @@ func castValue(t types.Type, v any) (any, error) {
 			return x, nil
 		case float64:
 			return int(x), nil
+		case *big.Rat:
+			if x == nil {
+				return 0, nil
+			}
+			// truncate towards zero
+			n := new(big.Int).Quo(x.Num(), x.Denom())
+			if !n.IsInt64() {
+				return nil, fmt.Errorf("cannot cast %T to %s", v, t)
+			}
+			return int(n.Int64()), nil
 		case string:
 			n, err := strconv.Atoi(x)
 			if err != nil {
