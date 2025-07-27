@@ -1,0 +1,28 @@
+// Factorions in Mochi
+var facts = [1]
+var n = 1
+while n < 12 {
+  facts = append(facts, facts[n-1] * n)
+  n = n + 1
+}
+
+for b in 9..13 {
+  print("The factorions for base " + str(b) + " are:")
+  var line = ""
+  var i = 1
+  while i < 1500000 {
+    var m = i
+    var sum = 0
+    while m > 0 {
+      let d = m % b
+      sum = sum + facts[d]
+      m = m / b
+    }
+    if sum == i {
+      line = line + str(i) + " "
+    }
+    i = i + 1
+  }
+  print(line)
+  print("")
+}
