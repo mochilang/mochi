@@ -1,0 +1,9 @@
+run: exit status 254
+../../../tests/rosetta/transpiler/Dart/draw-a-clock.dart:82:13: Error: The argument type 'BigInt' can't be assigned to the parameter type 'int'.
+ - 'BigInt' is from 'dart:core'.
+  print(bin(hour, 8));
+            ^
+../../../tests/rosetta/transpiler/Dart/draw-a-clock.dart:84:13: Error: The argument type 'BigInt' can't be assigned to the parameter type 'int'.
+ - 'BigInt' is from 'dart:core'.
+  print(bin(min, 8));
+            ^

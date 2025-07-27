@@ -1,0 +1,4 @@
+run: exit status 254
+../../../tests/rosetta/transpiler/Dart/ecdsa-example.dart:37:11: Error: Undefined name 'testpkg'.
+var res = testpkg.ECDSAExample();
+          ^^^^^^^
