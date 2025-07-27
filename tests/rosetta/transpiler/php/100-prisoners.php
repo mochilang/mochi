@@ -37,7 +37,7 @@ $__start = _now();
   $arr = $xs;
   $i = 99;
   while ($i > 0) {
-  $j = _now() % ($i + 1);
+  $j = fmod(_now(), ($i + 1));
   $tmp = $arr[$i];
   $arr[$i] = $arr[$j];
   $arr[$j] = $tmp;
@@ -81,9 +81,9 @@ $__start = _now();
 };
   $d = 0;
   while ($d < 50) {
-  $n = _now() % 100;
+  $n = fmod(_now(), 100);
   while ($opened[$n]) {
-  $n = _now() % 100;
+  $n = fmod(_now(), 100);
 };
   $opened[$n] = true;
   if ($drawers[$n] == $p) {

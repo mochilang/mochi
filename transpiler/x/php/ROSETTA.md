@@ -2,15 +2,15 @@
 
 Generated PHP code from Mochi Rosetta tasks lives in `tests/rosetta/transpiler/php`.
 
-Last updated: 2025-07-28 00:33 +0700
+Last updated: 2025-07-28 00:58 +0700
 
-## Checklist (442/467)
+## Checklist (460/467)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
-| 1 | 100-doors-2 | ✓ | 154µs | 136 B |
-| 2 | 100-doors-3 | ✓ | 571.223ms | 224 B |
-| 3 | 100-doors | ✓ | 571.223ms | 2.7 KB |
-| 4 | 100-prisoners | ✓ |  |  |
+| 1 | 100-doors-2 | ✓ | 76µs | 136 B |
+| 2 | 100-doors-3 | ✓ | 20µs | 224 B |
+| 3 | 100-doors | ✓ | 71µs | 2.7 KB |
+| 4 | 100-prisoners | ✓ | 181.581ms | 96 B |
 | 5 | 15-puzzle-game | ✓ |  |  |
 | 6 | 15-puzzle-solver | ✓ | 571.223ms | 1.2 KB |
 | 7 | 2048 | ✓ |  |  |
@@ -456,21 +456,21 @@ Last updated: 2025-07-28 00:33 +0700
 | 447 | fork | ✓ | 50µs | 128 B |
 | 448 | ftp | ✓ | 126µs | 160 B |
 | 449 | gamma-function | ✓ | 136µs | 128 B |
-| 450 | general-fizzbuzz |   |  |  |
-| 451 | generic-swap |   |  |  |
-| 452 | get-system-command-output |   |  |  |
-| 453 | giuga-numbers |   |  |  |
-| 454 | globally-replace-text-in-several-files |   |  |  |
-| 455 | goldbachs-comet |   |  |  |
-| 456 | golden-ratio-convergence |   |  |  |
-| 457 | graph-colouring |   |  |  |
-| 458 | gray-code |   |  |  |
-| 459 | http |   |  |  |
-| 460 | image-noise |   |  |  |
-| 461 | loops-increment-loop-index-within-loop-body |   |  |  |
-| 462 | md5 |   |  |  |
-| 463 | nim-game |   |  |  |
-| 464 | plasma-effect |   |  |  |
-| 465 | sorting-algorithms-bubble-sort |   |  |  |
-| 466 | window-management |   |  |  |
-| 467 | zumkeller-numbers |   |  |  |
+| 450 | general-fizzbuzz | ✓ | 52µs | 96 B |
+| 451 | generic-swap | ✓ | 42µs | 96 B |
+| 452 | get-system-command-output | ✓ | 32µs | 96 B |
+| 453 | giuga-numbers | ✓ | 72µs | 96 B |
+| 454 | globally-replace-text-in-several-files | ✓ | 34µs | 96 B |
+| 455 | goldbachs-comet | ✓ | 2.094ms | 96 B |
+| 456 | golden-ratio-convergence | ✓ | 66µs | 96 B |
+| 457 | graph-colouring | ✓ | 20µs | 96 B |
+| 458 | gray-code | ✓ | 572µs | 96 B |
+| 459 | http | ✓ | 22.437ms | 536 B |
+| 460 | image-noise | ✓ | 19.732ms | 1.3 KB |
+| 461 | loops-increment-loop-index-within-loop-body | ✓ | 155.361ms | 128 B |
+| 462 | md5 | ✓ | 11µs | 1.2 KB |
+| 463 | nim-game | ✓ | 55µs | 8.1 KB |
+| 464 | plasma-effect | ✓ | 24.149ms | 480 B |
+| 465 | sorting-algorithms-bubble-sort | ✓ | 54µs | 504 B |
+| 466 | window-management | ✓ | 51µs | 96 B |
+| 467 | zumkeller-numbers | ✓ | 5.397036s | 96 B |
