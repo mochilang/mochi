@@ -32,7 +32,11 @@ fun isDisarium(n: int): bool {
 fun main() {
   var count = 0
   var n = 0
-  while count < 19 && n < 30000000 {
+  # The original Rosetta implementation searched up to 30 million which
+  # takes quite a while in the interpreter. 2.6 million is enough to
+  # discover the first 19 Disarium numbers, so cap the search here to keep
+  # the example runtime reasonable.
+  while count < 19 && n < 3000000 {
     if isDisarium(n) {
       print(str(n))
       count = count + 1
