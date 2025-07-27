@@ -158,6 +158,13 @@ const helperIndexOf = `function _indexof($s, $sub) {
     return $pos === false ? -1 : $pos;
 }`
 
+const helperEnviron = `function _environ() {
+    $vars = getenv();
+    $list = [];
+    foreach ($vars as $k => $v) { $list[] = "$k=$v"; }
+    return $list;
+}`
+
 const helperRepeat = `function repeat($s, $n) {
     return str_repeat($s, intval($n));
 }`
@@ -220,6 +227,7 @@ var usesRepeat bool
 var usesParseIntStr bool
 var usesIntDiv bool
 var usesSHA256 bool
+var usesEnviron bool
 var usesBigIntOps bool
 var benchMain bool
 var extraStmts []Stmt
@@ -252,6 +260,7 @@ var phpReserved = map[string]struct{}{
 	"copy":        {},
 	"new":         {},
 	"New":         {},
+	"echo":        {},
 }
 
 // phpReservedVar lists variable names that cannot be used directly in PHP
@@ -2119,6 +2128,11 @@ func Emit(w io.Writer, p *Program) error {
 			return err
 		}
 	}
+	if usesEnviron {
+		if _, err := io.WriteString(w, helperEnviron+"\n"); err != nil {
+			return err
+		}
+	}
 	hasMain := false
 	mainCalled := false
 	for _, s := range p.Stmts {
@@ -2171,6 +2185,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	usesParseIntStr = false
 	usesIntDiv = false
 	usesSHA256 = false
+	usesEnviron = false
 	usesBigIntOps = false
 	defer func() { transpileEnv = nil }()
 	p := &Program{Env: env}
@@ -2741,6 +2756,9 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			if isListExpr(args[0]) {
 				return &CallExpr{Func: "in_array", Args: []Expr{args[1], args[0]}}, nil
 			}
+			if isMapExpr(args[0]) {
+				return &CallExpr{Func: "array_key_exists", Args: []Expr{args[1], args[0]}}, nil
+			}
 			return nil, fmt.Errorf("contains on unsupported type")
 		} else if name == "int" {
 			if len(args) != 1 {
@@ -3069,10 +3087,21 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		if len(p.Selector.Tail) > 0 {
 			return nil, fmt.Errorf("selector tail not supported")
 		}
-		if _, ok := globalFuncs[p.Selector.Root]; ok {
-			return &StringLit{Value: p.Selector.Root}, nil
+		name := p.Selector.Root
+		lookup := name
+		if newName, ok := renameMap[name]; ok {
+			lookup = newName
 		}
-		return &Var{Name: p.Selector.Root}, nil
+		if _, ok := globalFuncs[lookup]; ok {
+			if newName, ok := renameMap[name]; ok {
+				name = newName
+			}
+			return &StringLit{Value: name}, nil
+		}
+		if newName, ok := renameMap[name]; ok {
+			name = newName
+		}
+		return &Var{Name: name}, nil
 	case p.Group != nil:
 		ex, err := convertExpr(p.Group)
 		if err != nil {
@@ -4501,6 +4530,14 @@ func convertImport(im *parser.ImportStmt) (Stmt, error) {
 		usesLookupHost = true
 		items := []MapEntry{
 			{Key: &StringLit{Value: "LookupHost"}, Value: &StringLit{Value: "_lookup_host"}},
+		}
+		return &LetStmt{Name: alias, Value: &MapLit{Items: items}}, nil
+	}
+	if lang == "go" && im.Auto && path == "os" {
+		usesEnviron = true
+		items := []MapEntry{
+			{Key: &StringLit{Value: "Getenv"}, Value: &StringLit{Value: "getenv"}},
+			{Key: &StringLit{Value: "Environ"}, Value: &StringLit{Value: "_environ"}},
 		}
 		return &LetStmt{Name: alias, Value: &MapLit{Items: items}}, nil
 	}

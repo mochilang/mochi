@@ -2,9 +2,9 @@
 
 Generated PHP code from Mochi Rosetta tasks lives in `tests/rosetta/transpiler/php`.
 
-Last updated: 2025-07-27 21:58 +0700
+Last updated: 2025-07-27 23:37 +0700
 
-## Checklist (324/467)
+## Checklist (353/467)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 154µs | 136 B |
@@ -337,36 +337,36 @@ Last updated: 2025-07-27 21:58 +0700
 | 328 | earliest-difference-between-prime-gaps | ✓ | 50µs | 96 B |
 | 329 | eban-numbers | ✓ | 11.691ms | 160 B |
 | 330 | ecdsa-example |   |  |  |
-| 331 | echo-server |   |  |  |
-| 332 | eertree |   |  |  |
-| 333 | egyptian-division |   |  |  |
-| 334 | ekg-sequence-convergence |   |  |  |
-| 335 | element-wise-operations |   |  |  |
-| 336 | elementary-cellular-automaton-infinite-length |   |  |  |
-| 337 | elementary-cellular-automaton-random-number-generator |   |  |  |
-| 338 | elementary-cellular-automaton |   |  |  |
-| 339 | elliptic-curve-arithmetic |   |  |  |
-| 340 | elliptic-curve-digital-signature-algorithm |   |  |  |
-| 341 | emirp-primes |   |  |  |
-| 342 | empty-directory |   |  |  |
-| 343 | empty-program |   |  |  |
-| 344 | empty-string-1 |   |  |  |
-| 345 | empty-string-2 |   |  |  |
-| 346 | enforced-immutability |   |  |  |
-| 347 | entropy-1 |   |  |  |
-| 348 | entropy-2 |   |  |  |
-| 349 | entropy-narcissist |   |  |  |
-| 350 | enumerations-1 |   |  |  |
-| 351 | enumerations-2 |   |  |  |
-| 352 | enumerations-3 |   |  |  |
-| 353 | enumerations-4 |   |  |  |
-| 354 | environment-variables-1 |   |  |  |
-| 355 | environment-variables-2 |   |  |  |
-| 356 | equal-prime-and-composite-sums |   |  |  |
-| 357 | equilibrium-index |   |  |  |
+| 331 | echo-server | ✓ | 47µs | 96 B |
+| 332 | eertree | ✓ | 218µs | 160 B |
+| 333 | egyptian-division | ✓ | 106µs | 96 B |
+| 334 | ekg-sequence-convergence | ✓ | 3.216ms | 96 B |
+| 335 | element-wise-operations | ✓ | 242µs | 96 B |
+| 336 | elementary-cellular-automaton-infinite-length | ✓ | 1.037ms | 96 B |
+| 337 | elementary-cellular-automaton-random-number-generator | ✓ | 5.46ms | 1.9 KB |
+| 338 | elementary-cellular-automaton | ✓ | 542µs | 96 B |
+| 339 | elliptic-curve-arithmetic | ✓ | 138µs | 128 B |
+| 340 | elliptic-curve-digital-signature-algorithm | ✓ | 52µs | 96 B |
+| 341 | emirp-primes | ✓ | 769.364ms | 96 B |
+| 342 | empty-directory | ✓ | 71µs | 96 B |
+| 343 | empty-program | ✓ | 1µs | 64 B |
+| 344 | empty-string-1 | ✓ | 44µs | 96 B |
+| 345 | empty-string-2 | ✓ | 65µs | 96 B |
+| 346 | enforced-immutability | ✓ | 54µs | 136 B |
+| 347 | entropy-1 | ✓ | 148µs | 96 B |
+| 348 | entropy-2 | ✓ | 111µs | 96 B |
+| 349 | entropy-narcissist | ✓ | 280µs | 128 B |
+| 350 | enumerations-1 | ✓ | 1µs | 64 B |
+| 351 | enumerations-2 | ✓ | 1µs | 64 B |
+| 352 | enumerations-3 | ✓ | 2µs | 64 B |
+| 353 | enumerations-4 | ✓ | 1µs | 64 B |
+| 354 | environment-variables-1 | ✓ | 78µs | 96 B |
+| 355 | environment-variables-2 | ✓ | 138µs | 240 B |
+| 356 | equal-prime-and-composite-sums | ✓ | 3.631558s | 96 B |
+| 357 | equilibrium-index | ✓ | 99.763ms | 128 B |
 | 358 | erd-s-nicolas-numbers |   |  |  |
-| 359 | erd-s-selfridge-categorization-of-primes |   |  |  |
-| 360 | esthetic-numbers |   |  |  |
+| 359 | erd-s-selfridge-categorization-of-primes | ✓ | 6.188ms | 40.2 KB |
+| 360 | esthetic-numbers | ✓ | 2.166134s | 1.0 MB |
 | 361 | ethiopian-multiplication |   |  |  |
 | 362 | euclid-mullin-sequence |   |  |  |
 | 363 | euler-method |   |  |  |
