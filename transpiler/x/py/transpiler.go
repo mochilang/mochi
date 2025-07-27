@@ -39,6 +39,7 @@ var (
 	usesIndexOf       bool
 	usesSubstr        bool
 	usesCallable      bool
+	usesEnviron       bool
 )
 
 const helperNow = `
@@ -67,6 +68,11 @@ def _lookup_host(host):
         return socket.gethostbyname_ex(host)[2], None
     except Exception as e:
         return [], e
+`
+
+const helperEnviron = `
+def _environ():
+    return [f"{k}={v}" for k, v in os.environ.items()]
 `
 
 const helperIndexOf = `
@@ -2791,6 +2797,11 @@ func Emit(w io.Writer, p *Program, bench bool) error {
 			return err
 		}
 	}
+	if usesEnviron {
+		if _, err := io.WriteString(w, helperEnviron+"\n"); err != nil {
+			return err
+		}
+	}
 	// no runtime helpers required
 	for _, s := range p.Stmts {
 		switch st := s.(type) {
@@ -3048,6 +3059,7 @@ func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, erro
 	usesLookupHost = false
 	usesIndexOf = false
 	usesCallable = false
+	usesEnviron = false
 	p := &Program{}
 	for _, st := range prog.Statements {
 		switch {
@@ -3515,6 +3527,34 @@ func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, erro
 		default:
 			return nil, fmt.Errorf("unsupported statement")
 		}
+	}
+	var hasReturn func([]Stmt) bool
+	hasReturn = func(list []Stmt) bool {
+		for _, s := range list {
+			switch st := s.(type) {
+			case *ReturnStmt:
+				return true
+			case *WhileStmt:
+				if hasReturn(st.Body) {
+					return true
+				}
+			case *ForStmt:
+				if hasReturn(st.Body) {
+					return true
+				}
+			case *IfStmt:
+				if hasReturn(st.Then) || hasReturn(st.Else) {
+					return true
+				}
+			case *FuncDef:
+				// ignore
+			}
+		}
+		return false
+	}
+	needMain := hasReturn(p.Stmts)
+	if needMain {
+		p.Stmts = []Stmt{&FuncDef{Name: "main", Body: p.Stmts}, &ExprStmt{Expr: &CallExpr{Func: &Name{Name: "main"}}}}
 	}
 	if bench {
 		found := false
@@ -4268,6 +4308,17 @@ func convertPostfix(p *parser.PostfixExpr) (Expr, error) {
 									currentImports["socket"] = true
 								}
 								expr = &CallExpr{Func: &Name{Name: "_lookup_host"}, Args: args}
+								replaced = true
+							}
+						case "Getenv":
+							if n.Name == "os" && len(args) == 1 {
+								expr = &CallExpr{Func: &FieldExpr{Target: &Name{Name: "os"}, Name: "getenv"}, Args: args}
+								replaced = true
+							}
+						case "Environ":
+							if n.Name == "os" && len(args) == 0 {
+								usesEnviron = true
+								expr = &CallExpr{Func: &Name{Name: "_environ"}}
 								replaced = true
 							}
 						}

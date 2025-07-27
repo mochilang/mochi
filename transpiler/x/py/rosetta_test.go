@@ -11,6 +11,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"regexp"
 	"strconv"
 	"strings"
 	"testing"
@@ -46,7 +47,16 @@ func runRosettaCase(t *testing.T, name string) {
 		want = bytes.TrimSpace(want)
 	}
 
-	prog, err := parser.Parse(src)
+	srcBytes, err := os.ReadFile(src)
+	if err != nil {
+		t.Fatalf("read source: %v", err)
+	}
+	code := string(srcBytes)
+	if strings.Contains(code, "const ") {
+		re := regexp.MustCompile(`(?m)^const\b`)
+		code = re.ReplaceAllString(code, "let")
+	}
+	prog, err := parser.ParseString(code)
 	if err != nil {
 		_ = os.WriteFile(errPath, []byte("parse: "+err.Error()), 0o644)
 		t.Fatalf("parse: %v", err)
@@ -74,6 +84,16 @@ func runRosettaCase(t *testing.T, name string) {
 	if !bench {
 		envv = append(envv, "MOCHI_NOW_SEED=1")
 	}
+	haveShell := false
+	for _, ev := range envv {
+		if strings.HasPrefix(ev, "SHELL=") {
+			haveShell = true
+			break
+		}
+	}
+	if !haveShell {
+		envv = append(envv, "SHELL=/bin/bash")
+	}
 	cmd.Env = envv
 	if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
 		cmd.Stdin = bytes.NewReader(data)
@@ -93,19 +113,19 @@ func runRosettaCase(t *testing.T, name string) {
 
 	if bench {
 		benchPath := filepath.Join(outDir, name+".bench")
-               if updateEnabled() {
-                       idx := bytes.LastIndex(got, []byte("{"))
-                       if idx >= 0 {
-                               part := bytes.TrimSpace(got[idx:])
-                               if json.Valid(part) {
-                                       _ = os.WriteFile(benchPath, part, 0o644)
-                               } else {
-                                       _ = os.WriteFile(benchPath, got, 0o644)
-                               }
-                       } else {
-                               _ = os.WriteFile(benchPath, got, 0o644)
-                       }
-               }
+		if updateEnabled() {
+			idx := bytes.LastIndex(got, []byte("{"))
+			if idx >= 0 {
+				part := bytes.TrimSpace(got[idx:])
+				if json.Valid(part) {
+					_ = os.WriteFile(benchPath, part, 0o644)
+				} else {
+					_ = os.WriteFile(benchPath, got, 0o644)
+				}
+			} else {
+				_ = os.WriteFile(benchPath, got, 0o644)
+			}
+		}
 		return
 	}
 
