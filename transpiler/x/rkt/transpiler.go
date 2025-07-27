@@ -262,11 +262,15 @@ type IfStmt struct {
 func (i *IfStmt) emit(w io.Writer) {
 	io.WriteString(w, "(if ")
 	i.Cond.emit(w)
-	io.WriteString(w, " (let ()\n")
-	for _, s := range i.Then {
-		s.emit(w)
+	if len(i.Then) > 0 {
+		io.WriteString(w, " (let ()\n")
+		for _, s := range i.Then {
+			s.emit(w)
+		}
+		io.WriteString(w, ")")
+	} else {
+		io.WriteString(w, " (void)")
 	}
-	io.WriteString(w, ")")
 	if len(i.Else) > 0 {
 		io.WriteString(w, " (let ()\n")
 		for _, s := range i.Else {
@@ -486,8 +490,12 @@ func (f *FunDecl) emit(w io.Writer) {
 		fmt.Fprintf(w, " %s", sanitizeName(p))
 	}
 	io.WriteString(w, ")\n  (let/ec _return (begin\n")
-	for _, st := range f.Body {
-		st.emit(w)
+	if len(f.Body) == 0 {
+		io.WriteString(w, "    (void)\n")
+	} else {
+		for _, st := range f.Body {
+			st.emit(w)
+		}
 	}
 	io.WriteString(w, "))\n")
 	io.WriteString(w, ")\n")
@@ -1266,7 +1274,9 @@ func header() string {
 	hdr += "(define (upper s) (string-upcase s))\n"
 	hdr += "(define (lower s) (string-downcase s))\n"
 	hdr += "(define (sublist lst start end)\n  (if (string? lst)\n      (substring lst start end)\n      (take (drop lst start) (- end start))))\n\n"
-	hdr += "(define (pad-start s width ch)\n  (if (< (string-length s) width)\n      (string-append (make-string (- width (string-length s)) (string-ref ch 0)) s)\n      s))\n"
+	hdr += "(define (pad-start s width ch)\n  (let ([s (format \"~a\" s)])\n    (if (< (string-length s) width)\n        (string-append (make-string (- width (string-length s)) (string-ref ch 0)) s)\n        s)))\n"
+	hdr += "(define (_repeat s n)\n  (cond\n    [(string? s) (apply string-append (make-list (int n) s))]\n    [(list? s) (apply append (make-list (int n) s))]\n    [else '()]))\n"
+	hdr += "(define (_parse-int-str s base) (int (string->number s base)))\n"
 	hdr += "(define (_sha256 bs) (bytes->list (sha256-bytes (list->bytes bs))))\n"
 	hdr += "(define (num r) (numerator r))\n"
 	hdr += "(define (denom r) (denominator r))\n"
@@ -1696,7 +1706,11 @@ func convertStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 			}
 			return &ExprStmt{Expr: expr}, nil
 		}
-		return nil, fmt.Errorf("unsupported expression statement")
+		expr, err := convertExpr(st.Expr.Expr, env)
+		if err != nil {
+			return nil, err
+		}
+		return &ExprStmt{Expr: expr}, nil
 	case st.Update != nil:
 		up, err := convertUpdateStmt(st.Update, env)
 		if err != nil {
@@ -2335,6 +2349,15 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 							expr = &CallExpr{Func: "pad-start", Args: []Expr{n.Target, arg1, arg2}}
 							break
 						}
+					} else if lit.Value == "repeat" {
+						if len(op.Call.Args) == 1 {
+							arg1, err := convertExpr(op.Call.Args[0], env)
+							if err != nil {
+								return nil, err
+							}
+							expr = &CallExpr{Func: "_repeat", Args: []Expr{n.Target, arg1}}
+							break
+						}
 					} else if lit.Value == "get" {
 						if len(op.Call.Args) == 2 {
 							key, err := convertExpr(op.Call.Args[0], env)
@@ -2349,7 +2372,18 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 							break
 						}
 					}
-					return nil, fmt.Errorf("unsupported call %s", lit.Value)
+					// treat as regular method call
+					methodArgs := []Expr{n.Target}
+					for _, a := range op.Call.Args {
+						arg, err := convertExpr(a, env)
+						if err != nil {
+							return nil, err
+						}
+						methodArgs = append(methodArgs, arg)
+					}
+					expr = &CallExpr{Func: lit.Value, Args: methodArgs}
+					break
+					//return nil, fmt.Errorf("unsupported call %s", lit.Value)
 				}
 				return nil, fmt.Errorf("unsupported call")
 			default:
@@ -2671,6 +2705,19 @@ func convertCall(c *parser.CallExpr, env *types.Env) (Expr, error) {
 		if len(args) == 3 {
 			// args[0]=string, args[1]=length, args[2]=pad string
 			return &CallExpr{Func: "pad-start", Args: args}, nil
+		}
+	case "repeat":
+		if len(args) == 2 {
+			return &CallExpr{Func: "_repeat", Args: args}, nil
+		}
+	case "parseIntStr":
+		if len(args) == 1 || len(args) == 2 {
+			v0 := args[0]
+			var v1 Expr = &IntLit{Value: 10}
+			if len(args) == 2 {
+				v1 = args[1]
+			}
+			return &CallExpr{Func: "_parse-int-str", Args: []Expr{v0, v1}}, nil
 		}
 	case "min":
 		if len(args) == 1 {

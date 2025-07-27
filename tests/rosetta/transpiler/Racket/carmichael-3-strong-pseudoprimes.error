@@ -3,10 +3,11 @@ modulo: contract violation
   expected: integer?
   given: 35/2
   context...:
-   /workspace/mochi/tests/rosetta/transpiler/Racket/carmichael-3-strong-pseudoprimes.rkt:39:2
-   /workspace/mochi/tests/rosetta/transpiler/Racket/carmichael-3-strong-pseudoprimes.rkt:80:2: loop
-   /workspace/mochi/tests/rosetta/transpiler/Racket/carmichael-3-strong-pseudoprimes.rkt:76:0
-   /workspace/mochi/tests/rosetta/transpiler/Racket/carmichael-3-strong-pseudoprimes.rkt:108:0
+   /workspace/mochi/tests/rosetta/transpiler/Racket/carmichael-3-strong-pseudoprimes.rkt:49:2
+   /workspace/mochi/tests/rosetta/transpiler/Racket/carmichael-3-strong-pseudoprimes.rkt:90:2: loop
+   /workspace/mochi/tests/rosetta/transpiler/Racket/carmichael-3-strong-pseudoprimes.rkt:86:0
+   /workspace/mochi/tests/rosetta/transpiler/Racket/carmichael-3-strong-pseudoprimes.rkt:118:0
+   /workspace/mochi/tests/rosetta/transpiler/Racket/carmichael-3-strong-pseudoprimes.rkt:42:0
    body of "/workspace/mochi/tests/rosetta/transpiler/Racket/carmichael-3-strong-pseudoprimes.rkt"
 The following are Carmichael munbers for p1 <= 61:
 
