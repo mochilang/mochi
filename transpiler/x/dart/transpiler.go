@@ -478,13 +478,14 @@ func (s *VarStmt) emit(w io.Writer) error {
 		}
 	}
 	if s.Value != nil {
-		if ll, ok := s.Value.(*ListLit); ok && len(ll.Elems) == 0 && strings.HasPrefix(typ, "List<") {
-			elem := strings.TrimSuffix(strings.TrimPrefix(typ, "List<"), ">")
+		baseType := strings.TrimSuffix(typ, "?")
+		if ll, ok := s.Value.(*ListLit); ok && len(ll.Elems) == 0 && strings.HasPrefix(baseType, "List<") {
+			elem := strings.TrimSuffix(strings.TrimPrefix(baseType, "List<"), ">")
 			_, err := io.WriteString(w, " = <"+elem+">[]")
 			return err
 		}
-		if ml, ok := s.Value.(*MapLit); ok && len(ml.Entries) == 0 && strings.HasPrefix(typ, "Map<") {
-			kv := strings.TrimSuffix(strings.TrimPrefix(typ, "Map<"), ">")
+		if ml, ok := s.Value.(*MapLit); ok && len(ml.Entries) == 0 && strings.HasPrefix(baseType, "Map<") {
+			kv := strings.TrimSuffix(strings.TrimPrefix(baseType, "Map<"), ">")
 			_, err := io.WriteString(w, " = <"+kv+">{}")
 			return err
 		}
@@ -561,7 +562,7 @@ func (s *AssignStmt) emit(w io.Writer) error {
 	if _, err := io.WriteString(w, " = "); err != nil {
 		return err
 	}
-	targetType := inferType(s.Target)
+	targetType := strings.TrimSuffix(inferType(s.Target), "?")
 	if targetType == "BigInt" && inferType(s.Value) == "int" {
 		if lit, ok := s.Value.(*IntLit); ok {
 			_, err := fmt.Fprintf(w, "BigInt.from(%d)", lit.Value)
@@ -576,13 +577,14 @@ func (s *AssignStmt) emit(w io.Writer) error {
 		_, err := io.WriteString(w, ")")
 		return err
 	}
-	if ll, ok := s.Value.(*ListLit); ok && len(ll.Elems) == 0 && strings.HasPrefix(targetType, "List<") {
-		elem := strings.TrimSuffix(strings.TrimPrefix(targetType, "List<"), ">")
+	baseType := strings.TrimSuffix(targetType, "?")
+	if ll, ok := s.Value.(*ListLit); ok && len(ll.Elems) == 0 && strings.HasPrefix(baseType, "List<") {
+		elem := strings.TrimSuffix(strings.TrimPrefix(baseType, "List<"), ">")
 		_, err := io.WriteString(w, "<"+elem+">[]")
 		return err
 	}
-	if ml, ok := s.Value.(*MapLit); ok && len(ml.Entries) == 0 && strings.HasPrefix(targetType, "Map<") {
-		kv := strings.TrimSuffix(strings.TrimPrefix(targetType, "Map<"), ">")
+	if ml, ok := s.Value.(*MapLit); ok && len(ml.Entries) == 0 && strings.HasPrefix(baseType, "Map<") {
+		kv := strings.TrimSuffix(strings.TrimPrefix(baseType, "Map<"), ">")
 		_, err := io.WriteString(w, "<"+kv+">{}")
 		return err
 	}
@@ -1372,8 +1374,12 @@ type ListLit struct {
 }
 
 func (l *ListLit) emit(w io.Writer) error {
-	if len(l.Elems) == 0 && l.ElemType != "" {
-		_, err := io.WriteString(w, "<"+l.ElemType+">[]")
+	if len(l.Elems) == 0 {
+		if l.ElemType != "" {
+			_, err := io.WriteString(w, "<"+l.ElemType+">[]")
+			return err
+		}
+		_, err := io.WriteString(w, "[]")
 		return err
 	}
 	allNull := true
@@ -3474,7 +3480,12 @@ func inferType(e Expr) string {
 		if strings.HasPrefix(lt, "List<") && strings.HasSuffix(lt, ">") {
 			elem := strings.TrimSuffix(strings.TrimPrefix(lt, "List<"), ">")
 			vt := inferType(ex.Value)
-			if vt == elem || vt == "dynamic" {
+			if strings.HasPrefix(vt, "List<") && strings.HasSuffix(vt, ">") {
+				vElem := strings.TrimSuffix(strings.TrimPrefix(vt, "List<"), ">")
+				if vElem == elem || vElem == "dynamic" {
+					return lt
+				}
+			} else if vt == elem || vt == "dynamic" {
 				return lt
 			}
 			return "List<dynamic>"
@@ -3489,7 +3500,7 @@ func inferType(e Expr) string {
 	case *ValuesExpr:
 		return "List<dynamic>"
 	case *NotNilExpr:
-		return inferType(ex.X)
+		return strings.TrimSuffix(inferType(ex.X), "?")
 	case *StrExpr, *FormatList:
 		return "String"
 	default:
@@ -3976,6 +3987,12 @@ func convertForStmt(fst *parser.ForStmt) (Stmt, error) {
 	iter, err := convertExpr(fst.Source)
 	if err != nil {
 		return nil, err
+	}
+	if iex, ok := iter.(*IndexExpr); ok {
+		if strings.HasPrefix(strings.TrimSuffix(inferType(iex.Target), "?"), "Map<") {
+			iex.NoBang = true
+			iter = &NotNilExpr{X: iex}
+		}
 	}
 	elem := "dynamic"
 	t := inferType(iter)
@@ -4536,7 +4553,12 @@ func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
 					return nil, err
 				}
 				iex := &IndexExpr{Target: expr, Index: idx}
-				expr = iex
+				if strings.HasPrefix(strings.TrimSuffix(inferType(expr), "?"), "Map<") {
+					iex.NoBang = true
+					expr = &NotNilExpr{X: iex}
+				} else {
+					expr = iex
+				}
 			}
 		case op.Field != nil:
 			// method call if next op is call
@@ -4671,6 +4693,15 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			val, err := convertExpr(p.Call.Args[1])
 			if err != nil {
 				return nil, err
+			}
+			if ll, ok := val.(*ListLit); ok && len(ll.Elems) == 0 && ll.ElemType == "" {
+				lt := inferType(list)
+				if strings.HasPrefix(lt, "List<") && strings.HasSuffix(lt, ">") {
+					elem := strings.TrimSuffix(strings.TrimPrefix(lt, "List<"), ">")
+					if !strings.HasPrefix(elem, "List<") && elem != "dynamic" {
+						ll.ElemType = elem
+					}
+				}
 			}
 			return &AppendExpr{List: list, Value: val}, nil
 		}
