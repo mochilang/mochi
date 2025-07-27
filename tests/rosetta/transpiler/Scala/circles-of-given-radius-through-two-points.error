@@ -1,0 +1,35 @@
+exit status 1
+/workspace/mochi/tests/rosetta/transpiler/Scala/circles-of-given-radius-through-two-points.scala:63: error: type mismatch;
+ found   : scala.math.BigInt
+ required: Int
+      val p1 = tc(BigInt(0))
+                        ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/circles-of-given-radius-through-two-points.scala:64: error: type mismatch;
+ found   : scala.math.BigInt
+ required: Int
+      val p2 = tc(BigInt(1))
+                        ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/circles-of-given-radius-through-two-points.scala:65: error: type mismatch;
+ found   : scala.math.BigInt
+ required: Int
+      val r = tc(BigInt(2))
+                       ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/circles-of-given-radius-through-two-points.scala:75: error: value x is not a member of Any
+        println("   Center:  {" + String.valueOf(c1.x) + " " + String.valueOf(c1.y) + "}")
+                                                    ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/circles-of-given-radius-through-two-points.scala:75: error: value y is not a member of Any
+        println("   Center:  {" + String.valueOf(c1.x) + " " + String.valueOf(c1.y) + "}")
+                                                                                 ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/circles-of-given-radius-through-two-points.scala:78: error: value x is not a member of Any
+          println("   Center 1:  {" + String.valueOf(c1.x) + " " + String.valueOf(c1.y) + "}")
+                                                        ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/circles-of-given-radius-through-two-points.scala:78: error: value y is not a member of Any
+          println("   Center 1:  {" + String.valueOf(c1.x) + " " + String.valueOf(c1.y) + "}")
+                                                                                     ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/circles-of-given-radius-through-two-points.scala:79: error: value x is not a member of Any
+          println("   Center 2:  {" + String.valueOf(c2.x) + " " + String.valueOf(c2.y) + "}")
+                                                        ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/circles-of-given-radius-through-two-points.scala:79: error: value y is not a member of Any
+          println("   Center 2:  {" + String.valueOf(c2.x) + " " + String.valueOf(c2.y) + "}")
+                                                                                     ^
+9 errors found
