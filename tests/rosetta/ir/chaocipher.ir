@@ -203,15 +203,13 @@ func main (regs=11)
   Const        r0, "WELLDONEISBETTERTHANWELLSAID"
   Move         r1, r0
   // let cipher = chao(plain, true)
-  Const        r0, "WELLDONEISBETTERTHANWELLSAID"
-  Move         r2, r0
+  Move         r2, r1
   Const        r4, true
   Move         r3, r4
   Call2        r5, chao, r2, r3
   Move         r6, r5
   // print(plain)
-  Const        r0, "WELLDONEISBETTERTHANWELLSAID"
-  Print        r0
+  Print        r1
   // print(cipher)
   Print        r6
   // print(chao(cipher, false))

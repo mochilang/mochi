@@ -173,10 +173,9 @@ L3:
   LessInt      r14, r11, r13
   JumpIfFalse  r14, L1
   // if substring(digits, j, j+1) == s[i:i+1] {
-  Const        r4, "0123456789abcdefghijklmnopqrstuvwxyz"
   Const        r15, 1
   AddInt       r16, r11, r15
-  Slice        r17, r4, r11, r16
+  Slice        r17, r5, r11, r16
   Move         r18, r8
   Const        r15, 1
   AddInt       r20, r8, r15
