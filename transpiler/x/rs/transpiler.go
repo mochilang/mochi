@@ -50,6 +50,7 @@ var funcDepth int
 var usesInput bool
 var usesInt bool
 var useAbs bool
+var useSHA256 bool
 var builtinAliases map[string]string
 var globalRenames map[string]string
 var globalRenameBack map[string]string
@@ -150,6 +151,7 @@ type Program struct {
 	UseInput    bool
 	UseInt      bool
 	UseAbs      bool
+	UseSHA256   bool
 	UseLazy     bool
 	UseRefCell  bool
 	Types       []TypeDecl
@@ -1988,6 +1990,7 @@ func Transpile(p *parser.Program, env *types.Env, benchMain bool) (*Program, err
 	usesInput = false
 	usesInt = false
 	useAbs = false
+	useSHA256 = false
 	useLazy = false
 	useRefCell = false
 	mapVars = make(map[string]bool)
@@ -2051,6 +2054,7 @@ func Transpile(p *parser.Program, env *types.Env, benchMain bool) (*Program, err
 	prog.UseInput = usesInput
 	prog.UseInt = usesInt
 	prog.UseAbs = useAbs
+	prog.UseSHA256 = useSHA256
 	prog.UseLazy = useLazy
 	prog.UseRefCell = useRefCell
 	return prog, nil
@@ -3307,6 +3311,12 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 				return &CallExpr{Func: "abs", Args: []Expr{args[0]}}, nil
 			}
 		}
+		if name == "sha256" && len(args) == 1 {
+			useSHA256 = true
+			funReturns[name] = "Vec<i64>"
+			funReturns["_sha256"] = "Vec<i64>"
+			return &CallExpr{Func: "_sha256", Args: args}, nil
+		}
 		if ut, ok := curEnv.FindUnionByVariant(name); ok {
 			st, _ := curEnv.GetStruct(name)
 			fields := make([]Expr, len(args))
@@ -3418,6 +3428,10 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 		}
 		if name == "lower" && len(args) == 1 {
 			return &LowerExpr{Value: args[0]}, nil
+		}
+		if name == "contains" && len(args) == 2 {
+			funReturns[name] = "bool"
+			return &MethodCallExpr{Receiver: args[0], Name: "contains", Args: []Expr{args[1]}}, nil
 		}
 		var paramTypes []string
 		if pts, ok := funParamTypes[name]; ok {
@@ -4278,7 +4292,7 @@ func inferType(e Expr) string {
 		if strings.HasPrefix(ct, "Vec<") {
 			return ct
 		}
-		if ct == "String" {
+		if ct == "String" || ct == "&str" {
 			return "String"
 		}
 		return ct
@@ -4821,6 +4835,10 @@ func Emit(prog *Program) []byte {
 	if prog.UseInput {
 		buf.WriteString("use std::io::{self, Read};\n")
 	}
+	if prog.UseSHA256 {
+		buf.WriteString("use std::process::{Command, Stdio};\n")
+		buf.WriteString("use std::io::Write;\n")
+	}
 	if useMath {
 		buf.WriteString("mod math {\n")
 		buf.WriteString("    pub const pi: f64 = std::f64::consts::PI;\n")
@@ -4881,6 +4899,28 @@ func Emit(prog *Program) []byte {
 	}
 	if prog.UseAbs {
 		buf.WriteString("fn abs(x: f64) -> f64 { x.abs() }\n")
+	}
+	if prog.UseSHA256 {
+		buf.WriteString("fn _sha256(bs: Vec<i64>) -> Vec<i64> {\n")
+		buf.WriteString("    let mut child = Command::new(\"sha256sum\")\n")
+		buf.WriteString("        .stdin(Stdio::piped())\n")
+		buf.WriteString("        .stdout(Stdio::piped())\n")
+		buf.WriteString("        .spawn().unwrap();\n")
+		buf.WriteString("    {\n")
+		buf.WriteString("        let mut stdin = child.stdin.take().unwrap();\n")
+		buf.WriteString("        for b in bs.iter() { stdin.write_all(&[*b as u8]).unwrap(); }\n")
+		buf.WriteString("    }\n")
+		buf.WriteString("    let out = child.wait_with_output().unwrap();\n")
+		buf.WriteString("    let hex = String::from_utf8_lossy(&out.stdout);\n")
+		buf.WriteString("    let mut bytes = Vec::new();\n")
+		buf.WriteString("    if let Some(part) = hex.split_whitespace().next() {\n")
+		buf.WriteString("        for i in 0..32 {\n")
+		buf.WriteString("            let byte = u8::from_str_radix(&part[i*2..i*2+2], 16).unwrap();\n")
+		buf.WriteString("            bytes.push(byte as i64);\n")
+		buf.WriteString("        }\n")
+		buf.WriteString("    }\n")
+		buf.WriteString("    bytes\n")
+		buf.WriteString("}\n")
 	}
 	for _, d := range prog.Types {
 		d.emit(&buf)
