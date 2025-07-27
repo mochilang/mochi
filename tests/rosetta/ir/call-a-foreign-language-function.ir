@@ -19,6 +19,5 @@ func main (regs=3)
   Const        r0, "hello C"
   Move         r2, r0
   // print(c2)
-  Const        r0, "hello C"
-  Print        r0
+  Print        r2
   Return       r0

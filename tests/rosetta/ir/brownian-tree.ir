@@ -25,8 +25,7 @@ func main (regs=73)
   SetGlobal    5,5,0,0
 L3:
   // while y < h {
-  Const        r8, 300
-  LessInt      r13, r5, r8
+  LessInt      r13, r5, r1
   JumpIfFalse  r13, L0
   // var row: list<int> = []
   Const        r11, []
@@ -36,8 +35,7 @@ L3:
   Move         r15, r12
 L2:
   // while x < w {
-  Const        r7, 400
-  LessInt      r16, r15, r7
+  LessInt      r16, r15, r0
   JumpIfFalse  r16, L1
   // row = append(row, 0)
   Const        r12, 0
@@ -63,15 +61,12 @@ L1:
   Jump         L3
 L0:
   // grid[h/3][w/3] = frost
-  Const        r8, 300
   Const        r22, 3
-  DivInt       r23, r8, r22
+  DivInt       r23, r1, r22
   Index        r24, r4, r23
-  Const        r10, 255
-  Const        r7, 400
   Const        r22, 3
-  DivInt       r25, r7, r22
-  SetIndex     r24, r25, r10
+  DivInt       r25, r0, r22
+  SetIndex     r24, r25, r3
   SetGlobal    4,4,0,0
   // var a = 0
   Const        r12, 0
@@ -79,24 +74,20 @@ L0:
   SetGlobal    6,6,0,0
 L10:
   // while a < n {
-  Const        r9, 15000
-  LessInt      r26, r6, r9
+  LessInt      r26, r6, r2
   JumpIfFalse  r26, L4
   // var px = now() % w
   Now          r27
-  Const        r7, 400
-  ModInt       r28, r27, r7
+  ModInt       r28, r27, r0
   Move         r29, r28
   // var py = now() % h
   Now          r30
-  Const        r8, 300
-  ModInt       r31, r30, r8
+  ModInt       r31, r30, r1
   Move         r32, r31
   // if grid[py][px] == frost {
   Index        r33, r4, r32
   Index        r34, r33, r29
-  Const        r10, 255
-  Equal        r35, r34, r10
+  Equal        r35, r34, r3
   JumpIfFalse  r35, L5
   // var lost = false
   Const        r36, false
@@ -136,8 +127,7 @@ L7:
   // if grid[py][px] != frost { break }
   Index        r51, r4, r32
   Index        r52, r51, r29
-  Const        r10, 255
-  NotEqual     r53, r52, r10
+  NotEqual     r53, r52, r3
   JumpIfFalse  r53, L8
 L6:
   // if lost { continue }
@@ -186,8 +176,7 @@ L11:
 L9:
   // grid[py][px] = frost
   Index        r71, r4, r32
-  Const        r10, 255
-  SetIndex     r71, r29, r10
+  SetIndex     r71, r29, r3
   SetGlobal    4,4,0,0
   // a = a + 1
   Const        r18, 1

@@ -679,7 +679,7 @@ L0:
   Return       r6
 
   // fun writeP3(b: Bitmap): string {
-func writeP3 (regs=71)
+func writeP3 (regs=68)
   // let h: int = b.h
   Const        r4, "h"
   Index        r5, r3, r4
@@ -743,46 +743,43 @@ L2:
   Const        r46, "R"
   Index        r47, r41, r46
   Move         r44, r47
-  Const        r48, {"0": 0, "1": 1, "2": 2, "3": 3, "4": 4, "5": 5, "6": 6, "7": 7, "8": 8, "9": 9}
-  Move         r45, r48
-  Call2        r49, pad, r44, r45
-  Add          r50, r43, r49
+  Move         r45, r15
+  Call2        r48, pad, r44, r45
+  Add          r49, r43, r48
   Const        r19, " "
-  Add          r51, r50, r19
-  Const        r54, "G"
-  Index        r55, r41, r54
-  Move         r52, r55
-  Const        r56, {"0": 0, "1": 1, "2": 2, "3": 3, "4": 4, "5": 5, "6": 6, "7": 7, "8": 8, "9": 9}
-  Move         r53, r56
-  Call2        r57, pad, r52, r53
-  Add          r58, r51, r57
+  Add          r50, r49, r19
+  Const        r53, "G"
+  Index        r54, r41, r53
+  Move         r51, r54
+  Move         r52, r15
+  Call2        r55, pad, r51, r52
+  Add          r56, r50, r55
   Const        r19, " "
-  Add          r59, r58, r19
-  Const        r62, "B"
-  Index        r63, r41, r62
-  Move         r60, r63
-  Const        r64, {"0": 0, "1": 1, "2": 2, "3": 3, "4": 4, "5": 5, "6": 6, "7": 7, "8": 8, "9": 9}
-  Move         r61, r64
-  Call2        r65, pad, r60, r61
-  Add          r66, r59, r65
-  Move         r34, r66
+  Add          r57, r56, r19
+  Const        r60, "B"
+  Index        r61, r41, r60
+  Move         r58, r61
+  Move         r59, r15
+  Call2        r62, pad, r58, r59
+  Add          r63, r57, r62
+  Move         r34, r63
   // x = x + 1
   Const        r28, 1
-  AddInt       r67, r35, r28
-  Move         r35, r67
+  AddInt       r64, r35, r28
+  Move         r35, r64
   // while x < w {
   Jump         L2
 L1:
   // out = out + line + "\n"
-  Add          r68, r2, r34
+  Add          r65, r2, r34
   Const        r23, "\n"
-  Add          r69, r68, r23
-  Move         r2, r69
+  Add          r66, r65, r23
+  Move         r2, r66
   SetGlobal    2,2,0,0
   // y = y - 1
   Const        r28, 1
-  Sub          r70, r30, r28
-  Move         r30, r70
+  Sub          r67, r30, r28
+  Move         r30, r67
   // while y >= 0 {
   Jump         L3
 L0:

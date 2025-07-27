@@ -4,8 +4,7 @@ func main (regs=16)
   Move         r0, r2
   SetGlobal    0,0,0,0
   // let img = parsePpm(ppmData)
-  Const        r2, "P3\n2 2\n1\n0 1 1 0 1 0 0 1 1 1 0 0\n"
-  Move         r3, r2
+  Move         r3, r0
   Call         r4, parsePpm, r3
   Move         r1, r4
   SetGlobal    1,1,0,0

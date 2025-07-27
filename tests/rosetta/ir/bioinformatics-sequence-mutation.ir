@@ -1,4 +1,6 @@
 func main (regs=1)
+  // main()
+  Call         r0, main, 
   Return       r0
 
   // fun randInt(s: int, n: int): list<int> {
@@ -78,10 +80,9 @@ L1:
   Cast         r17, r16, int
   Move         r18, r17
   // out = out + substring(bases, idx, idx + 1)
-  Const        r2, "ACGT"
   Const        r15, 1
   Add          r19, r18, r15
-  Slice        r20, r2, r18, r19
+  Slice        r20, r3, r18, r19
   Add          r21, r5, r20
   Move         r5, r21
   // i = i + 1
@@ -98,7 +99,7 @@ L0:
   Return       r25
 
   // fun mutate(s: int, dna: string, w: list<int>): list<any> {
-func mutate (regs=72)
+func mutate (regs=125)
   // let bases = "ACGT"
   Const        r3, "ACGT"
   Move         r4, r3
@@ -178,10 +179,9 @@ L0:
   Cast         r41, r40, int
   Move         r42, r41
   // let b = substring(bases, idx, idx+1)
-  Const        r3, "ACGT"
   Const        r13, 1
   Add          r43, r42, r13
-  Slice        r44, r3, r42, r43
+  Slice        r44, r4, r42, r43
   Move         r45, r44
   // print("  Change @" + padLeft(str(p), 3) + " '" + arr[p] + "' to '" + b + "'")
   Const        r46, "  Change @"
@@ -203,34 +203,154 @@ L0:
   Print        r61
   // arr[p] = b
   SetIndex     r26, r16, r45
+  // if x < w[0] {
+  Jump         L3
 L2:
+  // } else if x < w[0] + w[1] {
+  Const        r11, 0
+  Index        r62, r2, r11
+  Const        r13, 1
+  Index        r63, r2, r13
+  Add          r64, r62, r63
+  Less         r65, r24, r64
+  JumpIfFalse  r65, L4
+  // print("  Delete @" + padLeft(str(p), 3) + " '" + arr[p] + "'")
+  Const        r66, "  Delete @"
+  Str          r69, r16
+  Move         r67, r69
+  Const        r50, 3
+  Move         r68, r50
+  Call2        r70, padLeft, r67, r68
+  Add          r71, r66, r70
+  Const        r53, " '"
+  Add          r72, r71, r53
+  Index        r73, r26, r16
+  Add          r74, r72, r73
+  Const        r60, "'"
+  Add          r75, r74, r60
+  Print        r75
+  // var j = p
+  Move         r76, r16
+L6:
+  // while j < len(arr) - 1 {
+  Len          r77, r26
+  Const        r13, 1
+  SubInt       r78, r77, r13
+  Less         r79, r76, r78
+  JumpIfFalse  r79, L5
+  // arr[j] = arr[j+1]
+  Const        r13, 1
+  Add          r80, r76, r13
+  Index        r81, r26, r80
+  SetIndex     r26, r76, r81
+  // j = j + 1
+  Const        r13, 1
+  Add          r82, r76, r13
+  Move         r76, r82
+  // while j < len(arr) - 1 {
+  Jump         L6
+L5:
+  // arr = arr[0:len(arr)-1]
+  Const        r11, 0
+  Move         r83, r11
+  Len          r85, r26
+  Const        r13, 1
+  SubInt       r86, r85, r13
+  Move         r84, r86
+  Slice        r87, r26, r83, r84
+  Move         r26, r87
+  // } else if x < w[0] + w[1] {
+  Jump         L3
+L4:
+  // r = randInt(s, 4)
+  Move         r88, r0
+  Const        r37, 4
+  Move         r89, r37
+  Call2        r90, randInt, r88, r89
+  Move         r10, r90
+  // s = r[0]
+  Const        r11, 0
+  Index        r91, r10, r11
+  Move         r0, r91
+  // let idx2 = r[1] as int
+  Const        r13, 1
+  Index        r92, r10, r13
+  Cast         r93, r92, int
+  Move         r94, r93
+  // let b = substring(bases, idx2, idx2+1)
+  Const        r13, 1
+  Add          r95, r94, r13
+  Slice        r96, r4, r94, r95
+  Move         r97, r96
+  // arr = append(arr, "")
+  Const        r98, ""
+  Append       r99, r26, r98
+  Move         r26, r99
+  // var j = len(arr) - 1
+  Len          r100, r26
+  Const        r13, 1
+  SubInt       r101, r100, r13
+  Move         r102, r101
+L8:
+  // while j > p {
+  Less         r103, r16, r102
+  JumpIfFalse  r103, L7
+  // arr[j] = arr[j-1]
+  Const        r13, 1
+  SubInt       r104, r102, r13
+  Index        r105, r26, r104
+  SetIndex     r26, r102, r105
+  // j = j - 1
+  Const        r13, 1
+  SubInt       r106, r102, r13
+  Move         r102, r106
+  // while j > p {
+  Jump         L8
+L7:
+  // print("  Insert @" + padLeft(str(p), 3) + " '" + b + "'")
+  Const        r107, "  Insert @"
+  Str          r110, r16
+  Move         r108, r110
+  Const        r50, 3
+  Move         r109, r50
+  Call2        r111, padLeft, r108, r109
+  Add          r112, r107, r111
+  Const        r53, " '"
+  Add          r113, r112, r53
+  Add          r114, r113, r97
+  Const        r60, "'"
+  Add          r115, r114, r60
+  Print        r115
+  // arr[p] = b
+  SetIndex     r26, r16, r97
+L3:
   // var out = ""
-  Const        r62, ""
-  Move         r63, r62
+  Const        r98, ""
+  Move         r116, r98
   // i = 0
   Const        r11, 0
   Move         r27, r11
-L4:
+L10:
   // while i < len(arr) {
-  Len          r64, r26
-  LessInt      r65, r27, r64
-  JumpIfFalse  r65, L3
+  Len          r117, r26
+  LessInt      r118, r27, r117
+  JumpIfFalse  r118, L9
   // out = out + arr[i]
-  Index        r66, r26, r27
-  Add          r67, r63, r66
-  Move         r63, r67
+  Index        r119, r26, r27
+  Add          r120, r116, r119
+  Move         r116, r120
   // i = i + 1
   Const        r13, 1
-  AddInt       r68, r27, r13
-  Move         r27, r68
+  AddInt       r121, r27, r13
+  Move         r27, r121
   // while i < len(arr) {
-  Jump         L4
-L3:
+  Jump         L10
+L9:
   // return [s, out]
-  Move         r69, r0
-  Move         r70, r63
-  MakeList     r71, 2, r69
-  Return       r71
+  Move         r122, r0
+  Move         r123, r116
+  MakeList     r124, 2, r122
+  Return       r124
 
   // fun prettyPrint(dna: string, rowLen: int) {
 func prettyPrint (regs=78)
@@ -420,7 +540,7 @@ func wstring (regs=20)
   Return       r19
 
   // fun main() {
-func main (regs=44)
+func main (regs=42)
   // var seed = 1
   Const        r0, 1
   Move         r1, r0
@@ -434,7 +554,7 @@ func main (regs=44)
   Const        r7, 0
   Index        r8, r6, r7
   Move         r1, r8
-  // var dna = res[1] as string
+  // var dna: string = res[1] as string
   Const        r0, 1
   Index        r9, r6, r0
   Cast         r10, r9, string
@@ -454,54 +574,51 @@ func main (regs=44)
   Const        r20, "\nWEIGHTS (ex 300):"
   Print        r20
   // print(wstring(w))
-  Const        r22, [100, 100, 100]
-  Move         r21, r22
-  Call         r23, wstring, r21
-  Print        r23
+  Move         r21, r19
+  Call         r22, wstring, r21
+  Print        r22
   // print("MUTATIONS (" + str(muts) + "):")
-  Const        r24, "MUTATIONS ("
-  Const        r25, "10"
-  Const        r26, "MUTATIONS (10"
-  Const        r27, "):"
-  Const        r28, "MUTATIONS (10):"
-  Print        r28
+  Const        r23, "MUTATIONS ("
+  Const        r24, "10"
+  Const        r25, "MUTATIONS (10"
+  Const        r26, "):"
+  Const        r27, "MUTATIONS (10):"
+  Print        r27
   // var i = 0
   Const        r7, 0
-  Move         r29, r7
+  Move         r28, r7
 L1:
   // while i < muts {
-  Const        r16, 10
-  LessInt      r30, r29, r16
-  JumpIfFalse  r30, L0
+  LessInt      r29, r28, r17
+  JumpIfFalse  r29, L0
   // res = mutate(seed, dna, w)
-  Move         r31, r1
-  Move         r32, r11
-  Const        r34, [100, 100, 100]
-  Move         r33, r34
-  Call         r35, mutate, r31, r32, r33
-  Move         r6, r35
+  Move         r30, r1
+  Move         r31, r11
+  Move         r32, r19
+  Call         r33, mutate, r30, r31, r32
+  Move         r6, r33
   // seed = res[0]
   Const        r7, 0
-  Index        r36, r6, r7
-  Move         r1, r36
+  Index        r34, r6, r7
+  Move         r1, r34
   // dna = res[1] as string
   Const        r0, 1
-  Index        r37, r6, r0
-  Cast         r38, r37, string
-  Move         r11, r38
+  Index        r35, r6, r0
+  Cast         r36, r35, string
+  Move         r11, r36
   // i = i + 1
   Const        r0, 1
-  AddInt       r39, r29, r0
-  Move         r29, r39
+  AddInt       r37, r28, r0
+  Move         r28, r37
   // while i < muts {
   Jump         L1
 L0:
   // print("")
-  Const        r40, ""
-  Print        r40
+  Const        r38, ""
+  Print        r38
   // prettyPrint(dna, 50)
-  Move         r41, r11
+  Move         r39, r11
   Const        r14, 50
-  Move         r42, r14
-  Call2        r43, prettyPrint, r41, r42
+  Move         r40, r14
+  Call2        r41, prettyPrint, r39, r40
   Return       r0

@@ -165,7 +165,7 @@ L3:
   Return       r23
 
   // fun main() {
-func main (regs=43)
+func main (regs=50)
   // var kinds = [" ", " odd ", " prime "]
   Const        r0, [" ", " odd ", " prime "]
   Move         r1, r0
@@ -173,7 +173,7 @@ func main (regs=43)
   IterPrep     r2, r1
   Len          r3, r2
   Const        r4, 0
-L4:
+L6:
   LessInt      r5, r4, r3
   JumpIfFalse  r5, L0
   Index        r6, r2, r4
@@ -190,13 +190,14 @@ L4:
   // var n = 7
   Const        r14, 7
   Move         r15, r14
-L3:
+L4:
   // while true {
   Const        r16, true
+  JumpIfFalse  r16, L1
   // if isBrazilian(n) {
   Move         r17, r15
   Call         r18, isBrazilian, r17
-  JumpIfFalse  r18, L1
+  JumpIfFalse  r18, L2
   // print(str(n) + " ")
   Str          r19, r15
   Const        r20, " "
@@ -209,13 +210,13 @@ L3:
   // if c == 20 {
   Const        r24, 20
   EqualInt     r25, r13, r24
-  JumpIfFalse  r25, L1
+  JumpIfFalse  r25, L2
   // print("\n")
   Const        r26, "\n"
   Print        r26
   // break
-  Jump         L2
-L1:
+  Jump         L1
+L2:
   // if kind == " " {
   Const        r20, " "
   Equal        r27, r7, r20
@@ -224,47 +225,72 @@ L1:
   Const        r22, 1
   AddInt       r28, r15, r22
   Move         r15, r28
-  // while true {
-  Jump         L3
-L2:
-  // for kind in kinds {
-  Const        r29, 1
-  AddInt       r30, r4, r29
-  Move         r4, r30
+  // if kind == " " {
   Jump         L4
+L3:
+  // } else if kind == " odd " {
+  Const        r29, " odd "
+  Equal        r30, r7, r29
+  JumpIfFalse  r30, L5
+  // n = n + 2
+  Const        r31, 2
+  AddInt       r32, r15, r31
+  Move         r15, r32
+  // } else if kind == " odd " {
+  Jump         L4
+L5:
+  // while true {
+  Const        r16, true
+  JumpIfFalse  r16, L4
+  // n = n + 2
+  Const        r31, 2
+  AddInt       r33, r15, r31
+  Move         r15, r33
+  // if isPrime(n) {
+  Move         r34, r15
+  Call         r35, isPrime, r34
+  JumpIfFalse  r35, L5
+  // break
+  Jump         L4
+L1:
+  // for kind in kinds {
+  Const        r36, 1
+  AddInt       r37, r4, r36
+  Move         r4, r37
+  Jump         L6
 L0:
   // var n = 7
   Const        r14, 7
-  Move         r31, r14
+  Move         r38, r14
   // var c = 0
   Const        r12, 0
-  Move         r32, r12
-L7:
+  Move         r39, r12
+L9:
   // while c < 100000 {
-  Const        r33, 100000
-  LessInt      r34, r32, r33
-  JumpIfFalse  r34, L5
+  Const        r40, 100000
+  LessInt      r41, r39, r40
+  JumpIfFalse  r41, L7
   // if isBrazilian(n) {
-  Move         r35, r31
-  Call         r36, isBrazilian, r35
-  JumpIfFalse  r36, L6
+  Move         r42, r38
+  Call         r43, isBrazilian, r42
+  JumpIfFalse  r43, L8
   // c = c + 1
   Const        r22, 1
-  AddInt       r37, r32, r22
-  Move         r32, r37
-L6:
+  AddInt       r44, r39, r22
+  Move         r39, r44
+L8:
   // n = n + 1
   Const        r22, 1
-  AddInt       r38, r31, r22
-  Move         r31, r38
+  AddInt       r45, r38, r22
+  Move         r38, r45
   // while c < 100000 {
-  Jump         L7
-L5:
+  Jump         L9
+L7:
   // print("The 100,000th Brazilian number: " + str(n - 1))
-  Const        r39, "The 100,000th Brazilian number: "
+  Const        r46, "The 100,000th Brazilian number: "
   Const        r22, 1
-  SubInt       r40, r31, r22
-  Str          r41, r40
-  Add          r42, r39, r41
-  Print        r42
+  SubInt       r47, r38, r22
+  Str          r48, r47
+  Add          r49, r46, r48
+  Print        r49
   Return       r0

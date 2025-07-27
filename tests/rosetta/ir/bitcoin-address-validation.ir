@@ -89,8 +89,7 @@ L7:
   Slice        r18, r0, r15, r16
   Move         r19, r18
   // var c = indexOf(tmpl, ch)
-  Const        r1, "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz"
-  Move         r20, r1
+  Move         r20, r2
   Move         r21, r19
   Call2        r22, indexOf, r20, r21
   Move         r23, r22

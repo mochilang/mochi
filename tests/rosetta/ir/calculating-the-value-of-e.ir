@@ -44,8 +44,7 @@ L0:
   // if absf(term) < epsilon { break }
   Move         r16, r4
   Call         r17, absf, r16
-  Const        r5, 0.000000000000001
-  LessFloat    r18, r17, r5
+  LessFloat    r18, r17, r0
   JumpIfFalse  r18, L0
   // print("e = " + formatFloat(e, 15))
   Const        r19, "e = "

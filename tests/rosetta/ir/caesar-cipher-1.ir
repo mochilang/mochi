@@ -43,8 +43,7 @@ func ord (regs=19)
   Const        r3, "abcdefghijklmnopqrstuvwxyz"
   Move         r4, r3
   // var idx = indexOf(upper, ch)
-  Const        r1, "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-  Move         r5, r1
+  Move         r5, r2
   Move         r6, r0
   Call2        r7, indexOf, r5, r6
   Move         r8, r7
@@ -57,8 +56,7 @@ func ord (regs=19)
   Return       r12
 L0:
   // idx = indexOf(lower, ch)
-  Const        r3, "abcdefghijklmnopqrstuvwxyz"
-  Move         r13, r3
+  Move         r13, r4
   Move         r14, r0
   Call2        r15, indexOf, r13, r14
   Move         r8, r15
@@ -232,8 +230,7 @@ func main (regs=36)
   Move         r1, r0
   // print("Plaintext: " + pt)
   Const        r2, "Plaintext: "
-  Const        r0, "The five boxing wizards jump quickly"
-  Add          r3, r2, r0
+  Const        r3, "Plaintext: The five boxing wizards jump quickly"
   Print        r3
   // for key in [0,1,7,25,26] {
   Const        r4, [0, 1, 7, 25, 26]
@@ -266,8 +263,7 @@ L1:
   Jump         L3
 L2:
   // let ct = encipher(pt, key)
-  Const        r0, "The five boxing wizards jump quickly"
-  Move         r21, r0
+  Move         r21, r1
   Move         r22, r10
   Call2        r23, encipher, r21, r22
   Move         r24, r23

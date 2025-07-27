@@ -199,10 +199,9 @@ L0:
   Return       r19
 L1:
   // return substring(letters, idx, idx + 1)
-  Const        r9, "abcdefghijklmnopqrstuvwxyz"
   Const        r20, 1
   Add          r21, r13, r20
-  Slice        r22, r9, r13, r21
+  Slice        r22, r10, r13, r21
   Return       r22
 
   // fun fromBytes(bs: list<int>): string {

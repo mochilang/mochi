@@ -431,6 +431,8 @@ L4:
   LessEqInt    r41, r39, r40
   JumpIfFalse  r41, L3
   // let limit = pow(10, k)
+  Const        r33, 10
+  Pow          r42, r33, r39
   Move         r43, r42
   // let r2 = getBrilliant(k, limit, true)
   Move         r44, r39
