@@ -1528,7 +1528,7 @@ func (s *SaveStmt) emit(w io.Writer) {
 }
 
 func (b *BenchStmt) emit(w io.Writer) {
-	io.WriteString(w, "{\n")
+	io.WriteString(w, "(() => {\n")
 	io.WriteString(w, "  const _startMem = _mem()\n")
 	io.WriteString(w, "  const _start = _now()\n")
 	iw := &indentWriter{w: w, indent: "  "}
@@ -1541,7 +1541,7 @@ func (b *BenchStmt) emit(w io.Writer) {
 	io.WriteString(w, "  const _endMem = _mem()\n")
 	io.WriteString(w, "  const _memory_bytes = Math.max(0, _endMem - _startMem)\n")
 	fmt.Fprintf(w, "  console.log(JSON.stringify({\n    \"duration_us\": _duration_us,\n    \"memory_bytes\": _memory_bytes,\n    \"name\": %q\n  }, null, \"  \"))\n", b.Name)
-	io.WriteString(w, "}\n")
+	io.WriteString(w, "})();\n")
 }
 
 func (u *UpdateStmt) emit(w io.Writer) {
@@ -2308,6 +2308,32 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 			case "net":
 				expr := &RawExpr{Code: "{ LookupHost: (_host:string)=>[[], null] }"}
 				return &VarDecl{Name: alias, Expr: expr, Const: true}, nil
+			case "os":
+				expr := &RawExpr{Code: `{
+  Getenv: (name: string): string => {
+    if (typeof Deno !== 'undefined') {
+      return Deno.env.get(name) ?? "";
+    }
+    if (typeof process !== 'undefined') {
+      return process.env[name] || "";
+    }
+    return "";
+  },
+  Environ: (): string[] => {
+    if (typeof Deno !== 'undefined') {
+      try {
+        return Object.entries(Deno.env.toObject()).map(([k, v]) => k + "=" + v);
+      } catch (_e) {
+        return [];
+      }
+    }
+    if (typeof process !== 'undefined') {
+      return Object.entries(process.env).map(([k, v]) => k + "=" + v);
+    }
+    return [];
+  }
+}`}
+				return &VarDecl{Name: alias, Expr: expr, Const: true}, nil
 			}
 		}
 		return nil, nil
@@ -2910,45 +2936,45 @@ func postfixExprType(p *parser.PostfixExpr) types.Type {
 }
 
 func isMapExpr(p *parser.PostfixExpr) bool {
-        if p == nil || p.Target == nil {
-                return false
-        }
-        if p.Target.Map != nil {
-                return true
-        }
-        if sel := p.Target.Selector; sel != nil && transpileEnv != nil {
-                if t, err := transpileEnv.GetVar(sel.Root); err == nil {
-                        if _, ok := t.(types.MapType); ok {
-                                return true
-                        }
-                }
-        }
-        if transpileEnv != nil {
-                t := types.CheckExprType(&parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: p}}}, transpileEnv)
-                if _, ok := t.(types.MapType); ok {
-                        return true
-                }
-        }
-        return false
+	if p == nil || p.Target == nil {
+		return false
+	}
+	if p.Target.Map != nil {
+		return true
+	}
+	if sel := p.Target.Selector; sel != nil && transpileEnv != nil {
+		if t, err := transpileEnv.GetVar(sel.Root); err == nil {
+			if _, ok := t.(types.MapType); ok {
+				return true
+			}
+		}
+	}
+	if transpileEnv != nil {
+		t := types.CheckExprType(&parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: p}}}, transpileEnv)
+		if _, ok := t.(types.MapType); ok {
+			return true
+		}
+	}
+	return false
 }
 
 func isMapIntKey(p *parser.PostfixExpr) bool {
-        if p == nil || p.Target == nil || transpileEnv == nil {
-                return false
-        }
-        t := types.CheckExprType(&parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: p}}}, transpileEnv)
-        if mt, ok := t.(types.MapType); ok {
-                return isIntType(mt.Key)
-        }
-        return false
+	if p == nil || p.Target == nil || transpileEnv == nil {
+		return false
+	}
+	t := types.CheckExprType(&parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: p}}}, transpileEnv)
+	if mt, ok := t.(types.MapType); ok {
+		return isIntType(mt.Key)
+	}
+	return false
 }
 
 func isIntType(t types.Type) bool {
-        switch t.(type) {
-        case types.IntType, types.Int64Type, types.BigIntType:
-                return true
-        }
-        return false
+	switch t.(type) {
+	case types.IntType, types.Int64Type, types.BigIntType:
+		return true
+	}
+	return false
 }
 
 func isIntLitExpr(e Expr) bool {
@@ -3248,20 +3274,20 @@ func convertPostfix(p *parser.PostfixExpr) (expr Expr, err error) {
 				if err != nil {
 					return nil, err
 				}
-                                if keyStr, isStr := literalString(idxExpr); !isStr {
-                                        if isMapIntKey(partial) || !isMapExpr(partial) {
-                                                if be, ok := idx.(*BinaryExpr); ok && be.Op == "*" && isMapIntKey(partial) {
-                                                        be.Left = &CallExpr{Func: "Math.trunc", Args: []Expr{be.Left}}
-                                                        idx = be
-                                                } else {
-                                                        idx = &CallExpr{Func: "Math.trunc", Args: []Expr{idx}}
-                                                }
-                                        }
-                                } else {
-                                        _ = keyStr // avoid unused variable warnings
-                                }
-                                expr = &IndexExpr{Target: expr, Index: idx}
-                        }
+				if keyStr, isStr := literalString(idxExpr); !isStr {
+					if isMapIntKey(partial) || !isMapExpr(partial) {
+						if be, ok := idx.(*BinaryExpr); ok && be.Op == "*" && isMapIntKey(partial) {
+							be.Left = &CallExpr{Func: "Math.trunc", Args: []Expr{be.Left}}
+							idx = be
+						} else {
+							idx = &CallExpr{Func: "Math.trunc", Args: []Expr{idx}}
+						}
+					}
+				} else {
+					_ = keyStr // avoid unused variable warnings
+				}
+				expr = &IndexExpr{Target: expr, Index: idx}
+			}
 		case op.Call != nil:
 			args := make([]Expr, len(op.Call.Args))
 			for i, a := range op.Call.Args {
