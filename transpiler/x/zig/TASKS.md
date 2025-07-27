@@ -1,3 +1,168 @@
+## Progress (2025-07-27 15:57 +0700)
+- Commit cfcddb7bda: vm: add pow builtin and update rosetta outputs
+- Generated Zig for 98/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 15:57 +0700)
+- Commit cfcddb7bda: vm: add pow builtin and update rosetta outputs
+- Generated Zig for 98/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 15:57 +0700)
+- Commit cfcddb7bda: vm: add pow builtin and update rosetta outputs
+- Generated Zig for 98/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 15:57 +0700)
+- Commit cfcddb7bda: vm: add pow builtin and update rosetta outputs
+- Generated Zig for 98/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 15:57 +0700)
+- Commit cfcddb7bda: vm: add pow builtin and update rosetta outputs
+- Generated Zig for 98/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 15:57 +0700)
+- Commit cfcddb7bda: vm: add pow builtin and update rosetta outputs
+- Generated Zig for 98/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 15:57 +0700)
+- Commit cfcddb7bda: vm: add pow builtin and update rosetta outputs
+- Generated Zig for 98/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 15:57 +0700)
+- Commit cfcddb7bda: vm: add pow builtin and update rosetta outputs
+- Generated Zig for 98/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 15:57 +0700)
+- Commit cfcddb7bda: vm: add pow builtin and update rosetta outputs
+- Generated Zig for 98/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 15:57 +0700)
+- Commit cfcddb7bda: vm: add pow builtin and update rosetta outputs
+- Generated Zig for 98/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 15:57 +0700)
+- Commit cfcddb7bda: vm: add pow builtin and update rosetta outputs
+- Generated Zig for 98/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 15:57 +0700)
+- Commit cfcddb7bda: vm: add pow builtin and update rosetta outputs
+- Generated Zig for 98/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 15:57 +0700)
+- Commit cfcddb7bda: vm: add pow builtin and update rosetta outputs
+- Generated Zig for 98/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 15:57 +0700)
+- Commit cfcddb7bda: vm: add pow builtin and update rosetta outputs
+- Generated Zig for 98/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 15:57 +0700)
+- Commit cfcddb7bda: vm: add pow builtin and update rosetta outputs
+- Generated Zig for 98/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 15:57 +0700)
+- Commit cfcddb7bda: vm: add pow builtin and update rosetta outputs
+- Generated Zig for 98/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 15:57 +0700)
+- Commit cfcddb7bda: vm: add pow builtin and update rosetta outputs
+- Generated Zig for 98/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 15:57 +0700)
+- Commit cfcddb7bda: vm: add pow builtin and update rosetta outputs
+- Generated Zig for 98/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 15:57 +0700)
+- Commit cfcddb7bda: vm: add pow builtin and update rosetta outputs
+- Generated Zig for 98/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 15:57 +0700)
+- Commit cfcddb7bda: vm: add pow builtin and update rosetta outputs
+- Generated Zig for 98/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 15:57 +0700)
+- Commit cfcddb7bda: vm: add pow builtin and update rosetta outputs
+- Generated Zig for 98/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 15:57 +0700)
+- Commit cfcddb7bda: vm: add pow builtin and update rosetta outputs
+- Generated Zig for 98/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 15:57 +0700)
+- Commit cfcddb7bda: vm: add pow builtin and update rosetta outputs
+- Generated Zig for 98/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 15:57 +0700)
+- Commit cfcddb7bda: vm: add pow builtin and update rosetta outputs
+- Generated Zig for 98/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 15:57 +0700)
+- Commit cfcddb7bda: vm: add pow builtin and update rosetta outputs
+- Generated Zig for 98/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 15:57 +0700)
+- Commit cfcddb7bda: vm: add pow builtin and update rosetta outputs
+- Generated Zig for 98/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 15:57 +0700)
+- Commit cfcddb7bda: vm: add pow builtin and update rosetta outputs
+- Generated Zig for 98/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 15:57 +0700)
+- Commit cfcddb7bda: vm: add pow builtin and update rosetta outputs
+- Generated Zig for 98/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 15:57 +0700)
+- Commit cfcddb7bda: vm: add pow builtin and update rosetta outputs
+- Generated Zig for 98/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 15:57 +0700)
+- Commit cfcddb7bda: vm: add pow builtin and update rosetta outputs
+- Generated Zig for 98/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 15:57 +0700)
+- Commit cfcddb7bda: vm: add pow builtin and update rosetta outputs
+- Generated Zig for 98/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 15:57 +0700)
+- Commit cfcddb7bda: vm: add pow builtin and update rosetta outputs
+- Generated Zig for 98/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 15:57 +0700)
+- Commit cfcddb7bda: vm: add pow builtin and update rosetta outputs
+- Generated Zig for 98/104 programs
+- Updated README checklist and outputs
+
 ## Progress (2025-07-27 01:40 +0700)
 - Commit 4d4eafa8fa: zig: fix input helper and mutable list init
 - Generated Zig for 98/104 programs
