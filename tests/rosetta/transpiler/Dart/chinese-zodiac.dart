@@ -63,7 +63,7 @@ void main() {
   {
   var _benchMem0 = ProcessInfo.currentRss;
   var _benchSw = Stopwatch()..start();
-  for (var yr in [1935, 1938, 1968, 1972, 1976]) {
+  for (int yr in [1935, 1938, 1968, 1972, 1976]) {
     Info r = cz(yr, animal, yinYang, element, stemChArr, branchChArr);
     print((yr).toString() + ": " + r.element + " " + r.animal + ", " + r.yinYang + ", Cycle year " + (r.cycle).toString() + " " + r.stemBranch);
   }

@@ -35,8 +35,8 @@ String _substr(String s, int start, int end) {
 }
 
 String lower(String ch) {
-  var upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-  var lower = "abcdefghijklmnopqrstuvwxyz";
+  String upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  String lower = "abcdefghijklmnopqrstuvwxyz";
   int i = 0;
   while (i < upper.length) {
     if (ch == _substr(upper, i, i + 1)) {
@@ -59,7 +59,7 @@ void main() {
   for (int cycle = 1; cycle < nAssemblies + 1; cycle++) {
     print("begin assembly cycle " + (cycle).toString());
     String a = "";
-    for (var p in partList) {
+    for (String p in partList) {
     print(p + " worker begins part");
     print(p + " worker completed " + p.toLowerCase());
     a = a + p.toLowerCase();

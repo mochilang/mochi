@@ -4107,8 +4107,8 @@ func convertForStmt(fst *parser.ForStmt) (Stmt, error) {
 	}
 	if iex, ok := iter.(*IndexExpr); ok {
 		if strings.HasPrefix(strings.TrimSuffix(inferType(iex.Target), "?"), "Map<") {
-			iex.NoBang = true
-			iter = &NotNilExpr{X: iex}
+			// Preserve nil result for absent keys.
+			iter = iex
 		}
 	}
 	elem := "dynamic"
@@ -4560,9 +4560,8 @@ func convertAssignTarget(as *parser.AssignStmt) (Expr, error) {
 			if typ == "" {
 				typ = localVarTypes[baseName]
 			}
-			if typ != "" {
-				structMutable[typ] = true
-			}
+			// Struct fields are mutable by default in Dart, so we
+			// don't need to track mutability for assignments.
 		}
 	}
 	return expr, nil
@@ -4714,8 +4713,10 @@ func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
 				}
 				iex := &IndexExpr{Target: expr, Index: idx}
 				if strings.HasPrefix(strings.TrimSuffix(inferType(expr), "?"), "Map<") {
-					iex.NoBang = true
-					expr = &NotNilExpr{X: iex}
+					// Map indexing returns null when the key is absent.
+					// Do not assert non-nil so that the caller can
+					// handle the default value emitted by IndexExpr.
+					expr = iex
 				} else {
 					expr = iex
 				}

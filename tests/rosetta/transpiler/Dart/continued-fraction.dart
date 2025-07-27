@@ -85,11 +85,11 @@ num real(List<Map<String, int>> f) {
   num r = 0.0;
   int i = f.length - 1;
   while (i > 0) {
-    r = (f[i]["b"]! as num) / ((f[i]["a"]! as num) + r);
+    r = ((f[i]["b"] ?? 0) as num) / (((f[i]["a"] ?? 0) as num) + r);
     i = i - 1;
   }
   if (f.length > 0) {
-    r = r + (f[0]["a"]! as num);
+    r = r + ((f[0]["a"] ?? 0) as num);
   }
   return r;
 }
@@ -112,7 +112,6 @@ void _start() {
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "main"}));
 }
-  _main();
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "_start"}));

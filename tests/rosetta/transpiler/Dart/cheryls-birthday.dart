@@ -42,7 +42,7 @@ class Birthday {
 
 bool monthUnique(Birthday b, List<Birthday> list) {
   int c = 0;
-  for (var x in list) {
+  for (Birthday x in list) {
     if (x.month == b.month) {
     c = c + 1;
   }
@@ -52,7 +52,7 @@ bool monthUnique(Birthday b, List<Birthday> list) {
 
 bool dayUnique(Birthday b, List<Birthday> list) {
   int c = 0;
-  for (var x in list) {
+  for (Birthday x in list) {
     if (x.day == b.day) {
     c = c + 1;
   }
@@ -61,7 +61,7 @@ bool dayUnique(Birthday b, List<Birthday> list) {
 }
 
 bool monthWithUniqueDay(Birthday b, List<Birthday> list) {
-  for (var x in list) {
+  for (Birthday x in list) {
     if (x.month == b.month && dayUnique(x, list)) {
     return true;
   }
@@ -86,22 +86,22 @@ void main() {
   {
   var _benchMem0 = ProcessInfo.currentRss;
   var _benchSw = Stopwatch()..start();
-  for (var bd in choices) {
+  for (Birthday bd in choices) {
     if (!monthUnique(bd, choices)) {
     filtered = [...filtered, bd];
   }
   }
-  for (var bd in filtered) {
+  for (Birthday bd in filtered) {
     if (!monthWithUniqueDay(bd, filtered)) {
     filtered2 = [...filtered2, bd];
   }
   }
-  for (var bd in filtered2) {
+  for (Birthday bd in filtered2) {
     if (dayUnique(bd, filtered2)) {
     filtered3 = [...filtered3, bd];
   }
   }
-  for (var bd in filtered3) {
+  for (Birthday bd in filtered3) {
     if (monthUnique(bd, filtered3)) {
     filtered4 = [...filtered4, bd];
   }

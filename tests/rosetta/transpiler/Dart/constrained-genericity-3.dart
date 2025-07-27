@@ -39,6 +39,10 @@ class PeelFirst {
   PeelFirst({required this.value});
 }
 
+void PeelFirst_eat(PeelFirst self) {
+  print("mm, that " + self.value + " was good!");
+}
+
 void main() {
   var _benchMem0 = ProcessInfo.currentRss;
   var _benchSw = Stopwatch()..start();
