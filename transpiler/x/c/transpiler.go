@@ -342,6 +342,7 @@ type ForStmt struct {
 	End      Expr
 	List     []Expr
 	ListVar  string
+	LenVar   string
 	ElemType string
 	Body     []Stmt
 }
@@ -775,8 +776,13 @@ func (f *ForStmt) emit(w io.Writer, indent int) {
 	if f.ListVar != "" {
 		writeIndent(w, indent)
 		io.WriteString(w, "for (size_t __i = 0; __i < ")
-		io.WriteString(w, f.ListVar)
-		io.WriteString(w, "_len; __i++) {\n")
+		if f.LenVar != "" {
+			io.WriteString(w, f.LenVar)
+		} else {
+			io.WriteString(w, f.ListVar)
+			io.WriteString(w, "_len")
+		}
+		io.WriteString(w, "; __i++) {\n")
 		typ := f.ElemType
 		if typ == "" {
 			typ = "int"
@@ -3174,6 +3180,22 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 		}
 		list, ok := convertListExpr(s.For.Source)
 		if !ok {
+			if name := callVarName(s.For.Source, "keys"); name != "" && isMapVar(name) {
+				body, err := compileStmts(env, s.For.Body)
+				if err != nil {
+					return nil, err
+				}
+				keyT := mapKeyTypes[name]
+				switch keyT {
+				case "const char*":
+					env.SetVarDeep(s.For.Name, types.StringType{}, true)
+				case "int":
+					env.SetVarDeep(s.For.Name, types.IntType{}, true)
+				default:
+					env.SetVarDeep(s.For.Name, types.AnyType{}, true)
+				}
+				return &ForStmt{Var: s.For.Name, ListVar: name + "_keys", LenVar: name + "_len", ElemType: keyT, Body: body}, nil
+			}
 			if keys, ok2 := convertMapKeysExpr(s.For.Source); ok2 {
 				list = keys
 				ok = true
@@ -3192,7 +3214,7 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 					default:
 						env.SetVarDeep(s.For.Name, types.AnyType{}, true)
 					}
-					return &ForStmt{Var: s.For.Name, ListVar: name + "_keys", ElemType: keyT, Body: body}, nil
+					return &ForStmt{Var: s.For.Name, ListVar: name + "_keys", LenVar: name + "_len", ElemType: keyT, Body: body}, nil
 				}
 				typStr := inferExprType(env, convertExpr(s.For.Source))
 				if strings.HasSuffix(typStr, "[]") {
@@ -3209,7 +3231,7 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 					default:
 						env.SetVarDeep(s.For.Name, types.AnyType{}, true)
 					}
-					return &ForStmt{Var: s.For.Name, ListVar: name + "_keys", ElemType: keyT, Body: body}, nil
+					return &ForStmt{Var: s.For.Name, ListVar: name + "_keys", LenVar: name + "_len", ElemType: keyT, Body: body}, nil
 				}
 				if strings.HasSuffix(typStr, "[]") {
 					elemType := strings.TrimSuffix(typStr, "[]")
@@ -5905,6 +5927,18 @@ func exprVarName(e *parser.Expr) string {
 	if ex := convertExpr(e); ex != nil {
 		if vr, ok := ex.(*VarRef); ok {
 			return vr.Name
+		}
+	}
+	return ""
+}
+
+func callVarName(e *parser.Expr, name string) string {
+	if e == nil || e.Binary == nil || e.Binary.Left == nil || e.Binary.Left.Value == nil || e.Binary.Left.Value.Target == nil {
+		return ""
+	}
+	if call := e.Binary.Left.Value.Target.Call; call != nil {
+		if call.Func == name && len(call.Args) == 1 {
+			return varName(call.Args[0])
 		}
 	}
 	return ""
