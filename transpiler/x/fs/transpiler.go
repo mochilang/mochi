@@ -251,7 +251,7 @@ func typeRefString(t *parser.TypeRef) string {
 }
 
 func fsIdent(name string) string {
-	keywords := map[string]bool{"and": true, "as": true, "assert": true, "begin": true,
+    keywords := map[string]bool{"and": true, "as": true, "assert": true, "begin": true,
 		"class": true, "default": true, "delegate": true, "do": true, "done": true,
 		"downcast": true, "downto": true, "elif": true, "else": true, "end": true,
 		"exception": true, "extern": true, "false": true, "finally": true, "for": true,
@@ -263,7 +263,7 @@ func fsIdent(name string) string {
 		"private": true, "public": true, "rec": true, "return": true, "sig": true, "static": true,
 		"struct": true, "then": true, "to": true, "true": true, "try": true, "type": true,
 		"upcast": true, "use": true, "val": true, "void": true, "when": true, "while": true,
-		"with": true, "yield": true}
+                "with": true, "yield": true, "mod": true}
 	if keywords[name] || strings.ContainsAny(name, "- ") {
 		return "``" + name + "``"
 	}
@@ -1894,7 +1894,12 @@ func isList(e Expr) bool {
 }
 
 func (c *CallExpr) emit(w io.Writer) {
-	io.WriteString(w, c.Func)
+        name := c.Func
+        if strings.ContainsAny(name, " \"") {
+                io.WriteString(w, name)
+        } else {
+                io.WriteString(w, fsIdent(name))
+        }
 	if len(c.Args) == 0 {
 		io.WriteString(w, "()")
 		return
