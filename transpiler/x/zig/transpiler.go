@@ -1043,7 +1043,7 @@ func (p *Program) Emit() []byte {
 	if useStr {
 		buf.WriteString("\nfn _str(v: anytype) []const u8 {\n")
 		buf.WriteString("    if (@TypeOf(v) == f64 or @TypeOf(v) == f32) {\n")
-		buf.WriteString("        return std.fmt.allocPrint(std.heap.page_allocator, \"{d:.1}\", .{v}) catch unreachable;\n")
+		buf.WriteString("        return std.fmt.allocPrint(std.heap.page_allocator, \"{d}\", .{v}) catch unreachable;\n")
 		buf.WriteString("    }\n")
 		buf.WriteString("    return std.fmt.allocPrint(std.heap.page_allocator, \"{any}\", .{v}) catch unreachable;\n")
 		buf.WriteString("}\n")
@@ -1183,11 +1183,20 @@ func (v *VarDecl) emit(w io.Writer, indent int) {
 	fmt.Fprintf(w, "%s %s", kw, v.Name)
 	if v.Type != "" {
 		fmt.Fprintf(w, ": %s", v.Type)
-	} else if t, ok := varTypes[v.Name]; ok && t != "" {
-		fmt.Fprintf(w, ": %s", t)
-	} else if v.Mutable {
-		if _, ok := v.Value.(*IntLit); ok {
-			io.WriteString(w, ": i64")
+	} else {
+		exprType := zigTypeFromExpr(v.Value)
+		if t, ok := varTypes[v.Name]; ok && t != "" {
+			if t == "i64" && exprType != "i64" {
+				fmt.Fprintf(w, ": %s", exprType)
+			} else {
+				fmt.Fprintf(w, ": %s", t)
+			}
+		} else if exprType != "" {
+			fmt.Fprintf(w, ": %s", exprType)
+		} else if v.Mutable {
+			if _, ok := v.Value.(*IntLit); ok {
+				io.WriteString(w, ": i64")
+			}
 		}
 	}
 	io.WriteString(w, " = ")
