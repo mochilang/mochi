@@ -48,14 +48,14 @@ void main() {
   }
   t[1] = 1;
   for (int i = 1; i < n + 1; i++) {
-    var j = i;
-    while (j.toString().compareTo(1.toString()) > 0) {
+    int j = i;
+    while (j > 1) {
     t[j] = t[j] + t[j - 1];
     j = j - 1;
   }
     t[i + 1 as int] = t[i];
     j = i + 1;
-    while (j.toString().compareTo(1.toString()) > 0) {
+    while (j > 1) {
     t[j] = t[j] + t[j - 1];
     j = j - 1;
   }

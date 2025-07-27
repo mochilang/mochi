@@ -36,7 +36,7 @@ String _substr(String s, int start, int end) {
 
 List<String> removeName(List<String> names, String name) {
   List<String> out = <String>[];
-  for (var n in names) {
+  for (String n in names) {
     if (n != name) {
     out = [...out, n];
   }
@@ -81,7 +81,6 @@ void _start() {
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "main"}));
 }
-  _main();
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "_start"}));

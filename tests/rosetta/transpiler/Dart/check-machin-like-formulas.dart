@@ -119,7 +119,7 @@ void main() {
   {
   var _benchMem0 = ProcessInfo.currentRss;
   var _benchSw = Stopwatch()..start();
-  for (var ts in testCases) {
+  for (List<Map<String, int>> ts in testCases) {
     print("tan " + format(ts) + " = " + (tans(ts)).toString());
   }
   _benchSw.stop();

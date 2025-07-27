@@ -64,27 +64,27 @@ String llStr(List<List<int>> lst) {
 
 List<List<int>> cartN(dynamic lists) {
   if (lists == null) {
-    return (<dynamic>[] as List).map((e) => List<int>.from(e)).toList();
+    return ([] as List).map((e) => List<int>.from(e)).toList();
   }
   List<List<int>> a = (lists as List).map((e) => List<int>.from(e)).toList();
   if (a.length == 0) {
-    return ([<dynamic>[]] as List).map((e) => List<int>.from(e)).toList();
+    return ([[]] as List).map((e) => List<int>.from(e)).toList();
   }
   int c = 1;
-  for (var xs in a) {
+  for (List<int> xs in a) {
     c = c * xs.length;
   }
   if (c == 0) {
-    return (<dynamic>[] as List).map((e) => List<int>.from(e)).toList();
+    return ([] as List).map((e) => List<int>.from(e)).toList();
   }
   List<List<int>> res = <List<int>>[];
   List<int> idx = <int>[];
-  for (var _ in a) {
+  for (List<int> __ in a) {
     idx = [...idx, 0];
   }
   int n = a.length;
-  var count = 0;
-  while (count.toString().compareTo(c.toString()) < 0) {
+  int count = 0;
+  while (count < c) {
     List<int> row = <int>[];
     int j = 0;
     while (j < n) {
@@ -109,19 +109,19 @@ List<List<int>> cartN(dynamic lists) {
 void _main() {
   print(llStr(cartN([[1, 2], [3, 4]])));
   print(llStr(cartN([[3, 4], [1, 2]])));
-  print(llStr(cartN([[1, 2], <dynamic>[]])));
-  print(llStr(cartN([<dynamic>[], [1, 2]])));
+  print(llStr(cartN([[1, 2], []])));
+  print(llStr(cartN([[], [1, 2]])));
   print("");
   print("[");
-  for (var p in cartN([[1776, 1789], [7, 12], [4, 14, 23], [0, 1]])) {
+  for (List<int> p in cartN([[1776, 1789], [7, 12], [4, 14, 23], [0, 1]])) {
     print(" " + listStr(p));
   }
   print("]");
   print(llStr(cartN([[1, 2, 3], [30], [500, 100]])));
-  print(llStr(cartN([[1, 2, 3], <dynamic>[], [500, 100]])));
+  print(llStr(cartN([[1, 2, 3], [], [500, 100]])));
   print("");
   print(llStr(cartN(null)));
-  print(llStr(cartN(<dynamic>[])));
+  print(llStr(cartN([])));
 }
 
 void _start() {
@@ -136,7 +136,6 @@ void _start() {
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "main"}));
 }
-  _main();
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "_start"}));

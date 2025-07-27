@@ -35,9 +35,13 @@ String _substr(String s, int start, int end) {
 }
 
 class Box {
-  String Contents;
-  int secret;
-  Box({required this.Contents, required this.secret});
+  String? Contents;
+  int? secret;
+  Box({this.Contents, this.secret});
+}
+
+int Box_TellSecret(Box self) {
+  return (self.secret)!;
 }
 
 List<dynamic> newFactory() {
@@ -57,7 +61,7 @@ List<dynamic> newFactory() {
   int Count() {
   return sn;
 }
-  return List<dynamic>.from([New, Count]);
+  return [New, Count];
 }
 
 List<dynamic> funcs = newFactory();

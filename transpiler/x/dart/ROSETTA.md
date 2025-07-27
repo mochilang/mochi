@@ -2,7 +2,7 @@
 
 This directory contains Dart code generated from Mochi programs in `tests/rosetta/x/Mochi`. Each program has a `.dart` file and `.out` output. Compilation or runtime failures are captured in a `.error` file.
 
-Compiled and ran: 318/467
+Compiled and ran: 322/467
 
 ## Checklist
 | Index | Name | Status | Duration | Memory |
@@ -169,36 +169,36 @@ Compiled and ran: 318/467
 | 160 | call-a-function-7 | ✓ | 15.983ms | 10.2 MB |
 | 161 | call-a-function-8 | ✓ | 21.696ms | 10.9 MB |
 | 162 | call-a-function-9 | ✓ | 8.76ms | 72.0 KB |
-| 163 | call-an-object-method-1 |   |  |  |
-| 164 | call-an-object-method-2 |   |  |  |
-| 165 | call-an-object-method-3 |   |  |  |
-| 166 | call-an-object-method |   |  |  |
-| 167 | camel-case-and-snake-case | ✓ | 10.976ms | 592.0 KB |
-| 168 | canny-edge-detector | ✓ | 9.693ms | 692.0 KB |
-| 169 | canonicalize-cidr | ✓ | 22.858ms | 10.7 MB |
-| 170 | cantor-set | ✓ | 21.667ms | 10.7 MB |
-| 171 | carmichael-3-strong-pseudoprimes | ✓ | 24.205ms | 10.1 MB |
-| 172 | cartesian-product-of-two-or-more-lists-1 | ✓ | 24.229ms | 10.8 MB |
-| 173 | cartesian-product-of-two-or-more-lists-2 | ✓ | 15.147ms | 4.4 MB |
-| 174 | cartesian-product-of-two-or-more-lists-3 | ✓ | 16.791ms | 4.6 MB |
-| 175 | cartesian-product-of-two-or-more-lists-4 | ✓ | 16.402ms | 4.4 MB |
-| 176 | case-sensitivity-of-identifiers | ✓ | 25.478ms | 10.1 MB |
-| 177 | casting-out-nines | ✓ | 19.128ms | 5.2 MB |
-| 178 | catalan-numbers-1 | ✓ | 10.435ms | 3.1 MB |
-| 179 | catalan-numbers-2 | ✓ | 10.396ms | 2.9 MB |
-| 180 | catalan-numbers-pascals-triangle | ✓ | 14.606ms | 1.4 MB |
-| 181 | catamorphism | ✓ | 18.476ms | 4.6 MB |
-| 182 | catmull-clark-subdivision-surface | ✓ | 21.307ms | 5.0 MB |
-| 183 | chaocipher | ✓ | 12.067ms | 2.5 MB |
-| 184 | chaos-game | ✓ | 35.351ms | 8.5 MB |
-| 185 | character-codes-1 | ✓ | 23.455ms | 11.2 MB |
-| 186 | character-codes-2 | ✓ | 22.218ms | 10.9 MB |
-| 187 | character-codes-3 | ✓ | 21.838ms | 11.3 MB |
-| 188 | character-codes-4 | ✓ | 20.778ms | 11.0 MB |
-| 189 | character-codes-5 | ✓ | 25.567ms | 9.8 MB |
-| 190 | chat-server | ✓ | 21.404ms | 10.4 MB |
-| 191 | check-machin-like-formulas | ✓ | 169.05ms | 220.0 KB |
-| 192 | check-that-file-exists | ✓ | 22.911ms | 11.0 MB |
+| 163 | call-an-object-method-1 | ✓ | 9.237ms | 2.9 MB |
+| 164 | call-an-object-method-2 | ✓ | 14.826ms | 1.3 MB |
+| 165 | call-an-object-method-3 | ✓ | 10.28ms | 3.2 MB |
+| 166 | call-an-object-method | ✓ | 9.607ms | 2.9 MB |
+| 167 | camel-case-and-snake-case | ✓ | 17.995ms | 3.1 MB |
+| 168 | canny-edge-detector | ✓ | 16.849ms | 2.4 MB |
+| 169 | canonicalize-cidr | ✓ | 14.425ms | 4.0 MB |
+| 170 | cantor-set | ✓ | 16.598ms | 1.6 MB |
+| 171 | carmichael-3-strong-pseudoprimes | ✓ | 17.476ms | 5.0 MB |
+| 172 | cartesian-product-of-two-or-more-lists-1 | ✓ | 11.596ms | 3.1 MB |
+| 173 | cartesian-product-of-two-or-more-lists-2 | ✓ | 14.995ms | 4.2 MB |
+| 174 | cartesian-product-of-two-or-more-lists-3 | ✓ | 16.136ms | 4.0 MB |
+| 175 | cartesian-product-of-two-or-more-lists-4 | ✓ | 15.944ms | 4.0 MB |
+| 176 | case-sensitivity-of-identifiers | ✓ | 21.694ms | 10.5 MB |
+| 177 | casting-out-nines | ✓ | 18.598ms | 5.1 MB |
+| 178 | catalan-numbers-1 | ✓ | 10.481ms | 2.8 MB |
+| 179 | catalan-numbers-2 | ✓ | 15.899ms | 9.7 MB |
+| 180 | catalan-numbers-pascals-triangle | ✓ | 16.486ms | 1.5 MB |
+| 181 | catamorphism | ✓ | 15.93ms | 1.5 MB |
+| 182 | catmull-clark-subdivision-surface | ✓ | 20.149ms | 4.0 MB |
+| 183 | chaocipher | ✓ | 14.276ms | 1.7 MB |
+| 184 | chaos-game | ✓ | 32.413ms | 10.1 MB |
+| 185 | character-codes-1 | ✓ | 22.027ms | 11.0 MB |
+| 186 | character-codes-2 | ✓ | 15.018ms | 1.9 MB |
+| 187 | character-codes-3 | ✓ | 18.438ms | 9.7 MB |
+| 188 | character-codes-4 | ✓ | 21.439ms | 10.8 MB |
+| 189 | character-codes-5 | ✓ | 14.85ms | 136.0 KB |
+| 190 | chat-server | ✓ | 23.322ms | 11.2 MB |
+| 191 | check-machin-like-formulas | ✓ | 168.301ms | 1.2 MB |
+| 192 | check-that-file-exists | ✓ | 15.87ms | 2.1 MB |
 | 193 | checkpoint-synchronization-1 | ✓ | 10.425ms | 3.0 MB |
 | 194 | checkpoint-synchronization-2 | ✓ | 21.72ms | 11.0 MB |
 | 195 | checkpoint-synchronization-3 | ✓ | 24.496ms | 10.8 MB |
@@ -475,4 +475,4 @@ Compiled and ran: 318/467
 | 466 | window-management |   |  |  |
 | 467 | zumkeller-numbers |   |  |  |
 
-_Last updated: 2025-07-27 23:34 +0700_
+_Last updated: 2025-07-27 23:56 +0700_
