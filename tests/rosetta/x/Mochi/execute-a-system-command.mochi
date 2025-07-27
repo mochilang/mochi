@@ -1,5 +1,8 @@
 // Mochi translation of Rosetta "Execute a system command" task
-// Mochi currently lacks support for running external processes.
-// This example simply prints the command that would be executed.
+// Runs the command "ls -l" and prints its output using Python's subprocess module.
 
-print("Would run: ls -l")
+import python "subprocess" as subprocess
+extern fun subprocess.getoutput(cmd: string): string
+
+let out = subprocess.getoutput("ls -l")
+print(out)
