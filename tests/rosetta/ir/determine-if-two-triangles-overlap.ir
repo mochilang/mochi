@@ -1,0 +1,1048 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun fmt1(f: float): string {
+func fmt1 (regs=19)
+  // var s = str(f)
+  Str          r1, r0
+  Move         r2, r1
+  // let idx = indexOf(s, ".")
+  Move         r4, r3
+  // if idx < 0 {
+  Const        r5, 0
+  Less         r6, r4, r5
+  JumpIfFalse  r6, L0
+  // s = s + ".0"
+  Const        r7, ".0"
+  Add          r8, r2, r7
+  Move         r2, r8
+  // if idx < 0 {
+  Jump         L1
+L0:
+  // var need = idx + 2
+  Const        r9, 2
+  Add          r10, r4, r9
+  Move         r11, r10
+  // if len(s) > need {
+  Len          r12, r2
+  Less         r13, r11, r12
+  JumpIfFalse  r13, L2
+  // s = substring(s, 0, need)
+  Const        r5, 0
+  Slice        r14, r2, r5, r11
+  Move         r2, r14
+  // if len(s) > need {
+  Jump         L1
+L2:
+  // while len(s) < need {
+  Len          r15, r2
+  Less         r16, r15, r11
+  JumpIfFalse  r16, L1
+  // s = s + "0"
+  Const        r17, "0"
+  Add          r18, r2, r17
+  Move         r2, r18
+  // while len(s) < need {
+  Jump         L2
+L1:
+  // return s
+  Return       r2
+
+  // fun pointStr(p: Point): string {
+func pointStr (regs=16)
+  // return "(" + fmt1(p.x) + ", " + fmt1(p.y) + ")"
+  Const        r1, "("
+  Const        r3, "x"
+  Index        r4, r0, r3
+  Move         r2, r4
+  Call         r5, fmt1, r2
+  Add          r6, r1, r5
+  Const        r7, ", "
+  Add          r8, r6, r7
+  Const        r10, "y"
+  Index        r11, r0, r10
+  Move         r9, r11
+  Call         r12, fmt1, r9
+  Add          r13, r8, r12
+  Const        r14, ")"
+  Add          r15, r13, r14
+  Return       r15
+
+  // fun triangleStr(t: Triangle): string {
+func triangleStr (regs=20)
+  // return "Triangle " + pointStr(t.p1) + ", " + pointStr(t.p2) + ", " + pointStr(t.p3)
+  Const        r1, "Triangle "
+  Const        r3, "p1"
+  Index        r4, r0, r3
+  Move         r2, r4
+  Call         r5, pointStr, r2
+  Add          r6, r1, r5
+  Const        r7, ", "
+  Add          r8, r6, r7
+  Const        r10, "p2"
+  Index        r11, r0, r10
+  Move         r9, r11
+  Call         r12, pointStr, r9
+  Add          r13, r8, r12
+  Const        r7, ", "
+  Add          r14, r13, r7
+  Const        r16, "p3"
+  Index        r17, r0, r16
+  Move         r15, r17
+  Call         r18, pointStr, r15
+  Add          r19, r14, r18
+  Return       r19
+
+  // fun orient(a: Point, b: Point, c: Point): float {
+func orient (regs=20)
+  // return (b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x)
+  Const        r3, "x"
+  Index        r4, r1, r3
+  Const        r3, "x"
+  Index        r5, r0, r3
+  Sub          r6, r4, r5
+  Const        r7, "y"
+  Index        r8, r2, r7
+  Const        r7, "y"
+  Index        r9, r0, r7
+  Sub          r10, r8, r9
+  Mul          r11, r6, r10
+  Const        r7, "y"
+  Index        r12, r1, r7
+  Const        r7, "y"
+  Index        r13, r0, r7
+  Sub          r14, r12, r13
+  Const        r3, "x"
+  Index        r15, r2, r3
+  Const        r3, "x"
+  Index        r16, r0, r3
+  Sub          r17, r15, r16
+  Mul          r18, r14, r17
+  Sub          r19, r11, r18
+  Return       r19
+
+  // fun pointInTri(p: Point, t: Triangle, onBoundary: bool): bool {
+func pointInTri (regs=46)
+  // let d1 = orient(p, t.p1, t.p2)
+  Move         r3, r0
+  Const        r6, "p1"
+  Index        r7, r1, r6
+  Move         r4, r7
+  Const        r8, "p2"
+  Index        r9, r1, r8
+  Move         r5, r9
+  Call         r10, orient, r3, r4, r5
+  Move         r11, r10
+  // let d2 = orient(p, t.p2, t.p3)
+  Move         r12, r0
+  Const        r8, "p2"
+  Index        r15, r1, r8
+  Move         r13, r15
+  Const        r16, "p3"
+  Index        r17, r1, r16
+  Move         r14, r17
+  Call         r18, orient, r12, r13, r14
+  Move         r19, r18
+  // let d3 = orient(p, t.p3, t.p1)
+  Move         r20, r0
+  Const        r16, "p3"
+  Index        r23, r1, r16
+  Move         r21, r23
+  Const        r6, "p1"
+  Index        r24, r1, r6
+  Move         r22, r24
+  Call         r25, orient, r20, r21, r22
+  Move         r26, r25
+  // var hasNeg = d1 < 0.0 || d2 < 0.0 || d3 < 0.0
+  Const        r27, 0.0
+  LessFloat    r28, r11, r27
+  Const        r27, 0.0
+  LessFloat    r29, r19, r27
+  Const        r27, 0.0
+  LessFloat    r30, r26, r27
+  Move         r31, r28
+  JumpIfTrue   r31, L0
+  Move         r31, r29
+  JumpIfTrue   r31, L0
+  Move         r31, r30
+L0:
+  Move         r32, r31
+  // var hasPos = d1 > 0.0 || d2 > 0.0 || d3 > 0.0
+  Const        r27, 0.0
+  LessFloat    r33, r27, r11
+  Const        r27, 0.0
+  LessFloat    r34, r27, r19
+  Const        r27, 0.0
+  LessFloat    r35, r27, r26
+  Move         r36, r33
+  JumpIfTrue   r36, L1
+  Move         r36, r34
+  JumpIfTrue   r36, L1
+  Move         r36, r35
+L1:
+  Move         r37, r36
+  // if onBoundary {
+  JumpIfFalse  r2, L2
+  // return !(hasNeg && hasPos)
+  Move         r38, r32
+  JumpIfFalse  r38, L3
+  Move         r38, r37
+L3:
+  Not          r39, r38
+  Return       r39
+L2:
+  // return !(hasNeg && hasPos) && d1 != 0.0 && d2 != 0.0 && d3 != 0.0
+  Move         r40, r32
+  JumpIfFalse  r40, L4
+  Move         r40, r37
+L4:
+  Not          r41, r40
+  Const        r27, 0.0
+  NotEqual     r42, r11, r27
+  Const        r27, 0.0
+  NotEqual     r43, r19, r27
+  Const        r27, 0.0
+  NotEqual     r44, r26, r27
+  Move         r45, r41
+  JumpIfFalse  r45, L5
+  Move         r45, r42
+  JumpIfFalse  r45, L5
+  Move         r45, r43
+  JumpIfFalse  r45, L5
+  Move         r45, r44
+L5:
+  Return       r45
+
+  // fun edgeCheck(a0: Point, a1: Point, bs: list<Point>, onBoundary: bool): bool {
+func edgeCheck (regs=34)
+  // let d0 = orient(a0, a1, bs[0])
+  Move         r4, r0
+  Move         r5, r1
+  Const        r7, 0
+  Index        r8, r2, r7
+  Move         r6, r8
+  Call         r9, orient, r4, r5, r6
+  Move         r10, r9
+  // let d1 = orient(a0, a1, bs[1])
+  Move         r11, r0
+  Move         r12, r1
+  Const        r14, 1
+  Index        r15, r2, r14
+  Move         r13, r15
+  Call         r16, orient, r11, r12, r13
+  Move         r17, r16
+  // let d2 = orient(a0, a1, bs[2])
+  Move         r18, r0
+  Move         r19, r1
+  Const        r21, 2
+  Index        r22, r2, r21
+  Move         r20, r22
+  Call         r23, orient, r18, r19, r20
+  Move         r24, r23
+  // if onBoundary {
+  JumpIfFalse  r3, L0
+  // return d0 <= 0.0 && d1 <= 0.0 && d2 <= 0.0
+  Const        r25, 0.0
+  LessEqFloat  r26, r10, r25
+  Const        r25, 0.0
+  LessEqFloat  r27, r17, r25
+  Const        r25, 0.0
+  LessEqFloat  r28, r24, r25
+  Move         r29, r26
+  JumpIfFalse  r29, L1
+  Move         r29, r27
+  JumpIfFalse  r29, L1
+  Move         r29, r28
+L1:
+  Return       r29
+L0:
+  // return d0 < 0.0 && d1 < 0.0 && d2 < 0.0
+  Const        r25, 0.0
+  LessFloat    r30, r10, r25
+  Const        r25, 0.0
+  LessFloat    r31, r17, r25
+  Const        r25, 0.0
+  LessFloat    r32, r24, r25
+  Move         r33, r30
+  JumpIfFalse  r33, L2
+  Move         r33, r31
+  JumpIfFalse  r33, L2
+  Move         r33, r32
+L2:
+  Return       r33
+
+  // fun triTri2D(t1: Triangle, t2: Triangle, onBoundary: bool): bool {
+func triTri2D (regs=52)
+  // let a = [t1.p1, t1.p2, t1.p3]
+  Const        r6, "p1"
+  Index        r7, r0, r6
+  Move         r3, r7
+  Const        r8, "p2"
+  Index        r9, r0, r8
+  Move         r4, r9
+  Const        r10, "p3"
+  Index        r11, r0, r10
+  Move         r5, r11
+  MakeList     r12, 3, r3
+  Move         r13, r12
+  // let b = [t2.p1, t2.p2, t2.p3]
+  Const        r6, "p1"
+  Index        r17, r1, r6
+  Move         r14, r17
+  Const        r8, "p2"
+  Index        r18, r1, r8
+  Move         r15, r18
+  Const        r10, "p3"
+  Index        r19, r1, r10
+  Move         r16, r19
+  MakeList     r20, 3, r14
+  Move         r21, r20
+  // var i = 0
+  Const        r22, 0
+  Move         r23, r22
+L2:
+  // while i < 3 {
+  Const        r24, 3
+  LessInt      r25, r23, r24
+  JumpIfFalse  r25, L0
+  // let j = (i + 1) % 3
+  Const        r26, 1
+  AddInt       r27, r23, r26
+  Const        r24, 3
+  ModInt       r28, r27, r24
+  Move         r29, r28
+  // if edgeCheck(a[i], a[j], b, onBoundary) {
+  Index        r34, r13, r23
+  Move         r30, r34
+  Index        r35, r13, r29
+  Move         r31, r35
+  Move         r32, r21
+  Move         r33, r2
+  Call         r36, edgeCheck, r30, r31, r32, r33
+  JumpIfFalse  r36, L1
+  // return false
+  Const        r37, false
+  Return       r37
+L1:
+  // i = i + 1
+  Const        r26, 1
+  AddInt       r38, r23, r26
+  Move         r23, r38
+  // while i < 3 {
+  Jump         L2
+L0:
+  // i = 0
+  Const        r22, 0
+  Move         r23, r22
+L5:
+  // while i < 3 {
+  Const        r24, 3
+  LessInt      r39, r23, r24
+  JumpIfFalse  r39, L3
+  // let j = (i + 1) % 3
+  Const        r26, 1
+  AddInt       r40, r23, r26
+  Const        r24, 3
+  ModInt       r41, r40, r24
+  Move         r42, r41
+  // if edgeCheck(b[i], b[j], a, onBoundary) {
+  Index        r47, r21, r23
+  Move         r43, r47
+  Index        r48, r21, r42
+  Move         r44, r48
+  Move         r45, r13
+  Move         r46, r2
+  Call         r49, edgeCheck, r43, r44, r45, r46
+  JumpIfFalse  r49, L4
+  // return false
+  Const        r37, false
+  Return       r37
+L4:
+  // i = i + 1
+  Const        r26, 1
+  AddInt       r50, r23, r26
+  Move         r23, r50
+  // while i < 3 {
+  Jump         L5
+L3:
+  // return true
+  Const        r51, true
+  Return       r51
+
+  // fun iff(cond: bool, a: string, b: string): string { if cond { return a } else { return b } }
+func iff (regs=3)
+  // fun iff(cond: bool, a: string, b: string): string { if cond { return a } else { return b } }
+  JumpIfFalse  r0, L0
+  Return       r1
+L0:
+  Return       r2
+
+  // fun main() {
+func main (regs=469)
+  // var t1 = Triangle{ p1: Point{x:0.0, y:0.0}, p2: Point{x:5.0, y:0.0}, p3: Point{x:0.0, y:5.0} }
+  Const        r0, 0.0
+  Const        r0, 0.0
+  Const        r1, "__name"
+  Const        r2, "Point"
+  Const        r3, "x"
+  Move         r4, r0
+  Const        r5, "y"
+  Move         r6, r0
+  MakeMap      r7, 3, r1
+  Const        r8, 5.0
+  Const        r0, 0.0
+  Const        r9, "__name"
+  Const        r10, "Point"
+  Const        r11, "x"
+  Move         r12, r8
+  Const        r13, "y"
+  Move         r14, r0
+  MakeMap      r15, 3, r9
+  Const        r0, 0.0
+  Const        r8, 5.0
+  Const        r16, "__name"
+  Const        r17, "Point"
+  Const        r18, "x"
+  Move         r19, r0
+  Const        r20, "y"
+  Move         r21, r8
+  MakeMap      r22, 3, r16
+  Const        r23, "__name"
+  Const        r24, "Triangle"
+  Const        r25, "p1"
+  Move         r26, r7
+  Const        r27, "p2"
+  Move         r28, r15
+  Const        r29, "p3"
+  Move         r30, r22
+  MakeMap      r31, 4, r23
+  Move         r32, r31
+  // var t2 = Triangle{ p1: Point{x:0.0, y:0.0}, p2: Point{x:5.0, y:0.0}, p3: Point{x:0.0, y:6.0} }
+  Const        r0, 0.0
+  Const        r0, 0.0
+  Const        r33, "__name"
+  Const        r34, "Point"
+  Const        r35, "x"
+  Move         r36, r0
+  Const        r37, "y"
+  Move         r38, r0
+  MakeMap      r39, 3, r33
+  Const        r8, 5.0
+  Const        r0, 0.0
+  Const        r40, "__name"
+  Const        r41, "Point"
+  Const        r42, "x"
+  Move         r43, r8
+  Const        r44, "y"
+  Move         r45, r0
+  MakeMap      r46, 3, r40
+  Const        r0, 0.0
+  Const        r47, 6.0
+  Const        r48, "__name"
+  Const        r49, "Point"
+  Const        r50, "x"
+  Move         r51, r0
+  Const        r52, "y"
+  Move         r53, r47
+  MakeMap      r54, 3, r48
+  Const        r55, "__name"
+  Const        r56, "Triangle"
+  Const        r57, "p1"
+  Move         r58, r39
+  Const        r59, "p2"
+  Move         r60, r46
+  Const        r61, "p3"
+  Move         r62, r54
+  MakeMap      r63, 4, r55
+  Move         r64, r63
+  // print(triangleStr(t1) + " and")
+  Move         r65, r32
+  Call         r66, triangleStr, r65
+  Const        r67, " and"
+  Add          r68, r66, r67
+  Print        r68
+  // print(triangleStr(t2))
+  Move         r69, r64
+  Call         r70, triangleStr, r69
+  Print        r70
+  // var overlapping = triTri2D(t1, t2, true)
+  Move         r71, r32
+  Move         r72, r64
+  Const        r74, true
+  Move         r73, r74
+  Call         r75, triTri2D, r71, r72, r73
+  Move         r76, r75
+  // print(iff(overlapping, "overlap", "do not overlap"))
+  Move         r77, r76
+  Const        r80, "overlap"
+  Move         r78, r80
+  Const        r81, "do not overlap"
+  Move         r79, r81
+  Call         r82, iff, r77, r78, r79
+  Print        r82
+  // print("")
+  Const        r83, ""
+  Print        r83
+  // t1 = Triangle{ p1: Point{x:0.0, y:0.0}, p2: Point{x:0.0, y:5.0}, p3: Point{x:5.0, y:0.0} }
+  Const        r0, 0.0
+  Const        r0, 0.0
+  Const        r84, "__name"
+  Const        r85, "Point"
+  Const        r86, "x"
+  Move         r87, r0
+  Const        r88, "y"
+  Move         r89, r0
+  MakeMap      r90, 3, r84
+  Const        r0, 0.0
+  Const        r8, 5.0
+  Const        r91, "__name"
+  Const        r92, "Point"
+  Const        r93, "x"
+  Move         r94, r0
+  Const        r95, "y"
+  Move         r96, r8
+  MakeMap      r97, 3, r91
+  Const        r8, 5.0
+  Const        r0, 0.0
+  Const        r98, "__name"
+  Const        r99, "Point"
+  Const        r100, "x"
+  Move         r101, r8
+  Const        r102, "y"
+  Move         r103, r0
+  MakeMap      r104, 3, r98
+  Const        r105, "__name"
+  Const        r106, "Triangle"
+  Const        r107, "p1"
+  Move         r108, r90
+  Const        r109, "p2"
+  Move         r110, r97
+  Const        r111, "p3"
+  Move         r112, r104
+  MakeMap      r113, 4, r105
+  Move         r32, r113
+  // t2 = t1
+  Move         r64, r32
+  // print(triangleStr(t1) + " and")
+  Move         r114, r32
+  Call         r115, triangleStr, r114
+  Const        r67, " and"
+  Add          r116, r115, r67
+  Print        r116
+  // print(triangleStr(t2))
+  Move         r117, r64
+  Call         r118, triangleStr, r117
+  Print        r118
+  // overlapping = triTri2D(t1, t2, true)
+  Move         r119, r32
+  Move         r120, r64
+  Const        r74, true
+  Move         r121, r74
+  Call         r122, triTri2D, r119, r120, r121
+  Move         r76, r122
+  // print(iff(overlapping, "overlap (reversed)", "do not overlap"))
+  Move         r123, r76
+  Const        r126, "overlap (reversed)"
+  Move         r124, r126
+  Const        r81, "do not overlap"
+  Move         r125, r81
+  Call         r127, iff, r123, r124, r125
+  Print        r127
+  // print("")
+  Const        r83, ""
+  Print        r83
+  // t1 = Triangle{ p1: Point{x:0.0, y:0.0}, p2: Point{x:5.0, y:0.0}, p3: Point{x:0.0, y:5.0} }
+  Const        r0, 0.0
+  Const        r0, 0.0
+  Const        r128, "__name"
+  Const        r129, "Point"
+  Const        r130, "x"
+  Move         r131, r0
+  Const        r132, "y"
+  Move         r133, r0
+  MakeMap      r134, 3, r128
+  Const        r8, 5.0
+  Const        r0, 0.0
+  Const        r135, "__name"
+  Const        r136, "Point"
+  Const        r137, "x"
+  Move         r138, r8
+  Const        r139, "y"
+  Move         r140, r0
+  MakeMap      r141, 3, r135
+  Const        r0, 0.0
+  Const        r8, 5.0
+  Const        r142, "__name"
+  Const        r143, "Point"
+  Const        r144, "x"
+  Move         r145, r0
+  Const        r146, "y"
+  Move         r147, r8
+  MakeMap      r148, 3, r142
+  Const        r149, "__name"
+  Const        r150, "Triangle"
+  Const        r151, "p1"
+  Move         r152, r134
+  Const        r153, "p2"
+  Move         r154, r141
+  Const        r155, "p3"
+  Move         r156, r148
+  MakeMap      r157, 4, r149
+  Move         r32, r157
+  // t2 = Triangle{ p1: Point{x: -10.0, y: 0.0}, p2: Point{x: -5.0, y: 0.0}, p3: Point{x: -1.0, y: 6.0} }
+  Const        r158, 10.0
+  Const        r159, -10.0
+  Const        r0, 0.0
+  Const        r160, "__name"
+  Const        r161, "Point"
+  Const        r162, "x"
+  Move         r163, r159
+  Const        r164, "y"
+  Move         r165, r0
+  MakeMap      r166, 3, r160
+  Const        r8, 5.0
+  NegFloat     r167, r8
+  Const        r0, 0.0
+  Const        r168, "__name"
+  Const        r169, "Point"
+  Const        r170, "x"
+  Move         r171, r167
+  Const        r172, "y"
+  Move         r173, r0
+  MakeMap      r174, 3, r168
+  Const        r175, 1.0
+  NegFloat     r176, r175
+  Const        r47, 6.0
+  Const        r177, "__name"
+  Const        r178, "Point"
+  Const        r179, "x"
+  Move         r180, r176
+  Const        r181, "y"
+  Move         r182, r47
+  MakeMap      r183, 3, r177
+  Const        r184, "__name"
+  Const        r185, "Triangle"
+  Const        r186, "p1"
+  Move         r187, r166
+  Const        r188, "p2"
+  Move         r189, r174
+  Const        r190, "p3"
+  Move         r191, r183
+  MakeMap      r192, 4, r184
+  Move         r64, r192
+  // print(triangleStr(t1) + " and")
+  Move         r193, r32
+  Call         r194, triangleStr, r193
+  Const        r67, " and"
+  Add          r195, r194, r67
+  Print        r195
+  // print(triangleStr(t2))
+  Move         r196, r64
+  Call         r197, triangleStr, r196
+  Print        r197
+  // overlapping = triTri2D(t1, t2, true)
+  Move         r198, r32
+  Move         r199, r64
+  Const        r74, true
+  Move         r200, r74
+  Call         r201, triTri2D, r198, r199, r200
+  Move         r76, r201
+  // print(iff(overlapping, "overlap", "do not overlap"))
+  Move         r202, r76
+  Const        r80, "overlap"
+  Move         r203, r80
+  Const        r81, "do not overlap"
+  Move         r204, r81
+  Call         r205, iff, r202, r203, r204
+  Print        r205
+  // print("")
+  Const        r83, ""
+  Print        r83
+  // t1.p3 = Point{x:2.5, y:5.0}
+  Const        r206, 2.5
+  Const        r8, 5.0
+  Const        r207, "__name"
+  Const        r208, "Point"
+  Const        r209, "x"
+  Move         r210, r206
+  Const        r211, "y"
+  Move         r212, r8
+  MakeMap      r213, 3, r207
+  Const        r214, "p3"
+  SetIndex     r32, r214, r213
+  // t2 = Triangle{ p1: Point{x:0.0, y:4.0}, p2: Point{x:2.5, y: -1.0}, p3: Point{x:5.0, y:4.0} }
+  Const        r0, 0.0
+  Const        r215, 4.0
+  Const        r216, "__name"
+  Const        r217, "Point"
+  Const        r218, "x"
+  Move         r219, r0
+  Const        r220, "y"
+  Move         r221, r215
+  MakeMap      r222, 3, r216
+  Const        r206, 2.5
+  Const        r175, 1.0
+  NegFloat     r223, r175
+  Const        r224, "__name"
+  Const        r225, "Point"
+  Const        r226, "x"
+  Move         r227, r206
+  Const        r228, "y"
+  Move         r229, r223
+  MakeMap      r230, 3, r224
+  Const        r8, 5.0
+  Const        r215, 4.0
+  Const        r231, "__name"
+  Const        r232, "Point"
+  Const        r233, "x"
+  Move         r234, r8
+  Const        r235, "y"
+  Move         r236, r215
+  MakeMap      r237, 3, r231
+  Const        r238, "__name"
+  Const        r239, "Triangle"
+  Const        r240, "p1"
+  Move         r241, r222
+  Const        r242, "p2"
+  Move         r243, r230
+  Const        r244, "p3"
+  Move         r245, r237
+  MakeMap      r246, 4, r238
+  Move         r64, r246
+  // print(triangleStr(t1) + " and")
+  Move         r247, r32
+  Call         r248, triangleStr, r247
+  Const        r67, " and"
+  Add          r249, r248, r67
+  Print        r249
+  // print(triangleStr(t2))
+  Move         r250, r64
+  Call         r251, triangleStr, r250
+  Print        r251
+  // overlapping = triTri2D(t1, t2, true)
+  Move         r252, r32
+  Move         r253, r64
+  Const        r74, true
+  Move         r254, r74
+  Call         r255, triTri2D, r252, r253, r254
+  Move         r76, r255
+  // print(iff(overlapping, "overlap", "do not overlap"))
+  Move         r256, r76
+  Const        r80, "overlap"
+  Move         r257, r80
+  Const        r81, "do not overlap"
+  Move         r258, r81
+  Call         r259, iff, r256, r257, r258
+  Print        r259
+  // print("")
+  Const        r83, ""
+  Print        r83
+  // t1 = Triangle{ p1: Point{x:0.0, y:0.0}, p2: Point{x:1.0, y:1.0}, p3: Point{x:0.0, y:2.0} }
+  Const        r0, 0.0
+  Const        r0, 0.0
+  Const        r260, "__name"
+  Const        r261, "Point"
+  Const        r262, "x"
+  Move         r263, r0
+  Const        r264, "y"
+  Move         r265, r0
+  MakeMap      r266, 3, r260
+  Const        r175, 1.0
+  Const        r175, 1.0
+  Const        r267, "__name"
+  Const        r268, "Point"
+  Const        r269, "x"
+  Move         r270, r175
+  Const        r271, "y"
+  Move         r272, r175
+  MakeMap      r273, 3, r267
+  Const        r0, 0.0
+  Const        r274, 2.0
+  Const        r275, "__name"
+  Const        r276, "Point"
+  Const        r277, "x"
+  Move         r278, r0
+  Const        r279, "y"
+  Move         r280, r274
+  MakeMap      r281, 3, r275
+  Const        r282, "__name"
+  Const        r283, "Triangle"
+  Const        r284, "p1"
+  Move         r285, r266
+  Const        r286, "p2"
+  Move         r287, r273
+  Const        r288, "p3"
+  Move         r289, r281
+  MakeMap      r290, 4, r282
+  Move         r32, r290
+  // t2 = Triangle{ p1: Point{x:2.0, y:1.0}, p2: Point{x:3.0, y:0.0}, p3: Point{x:3.0, y:2.0} }
+  Const        r274, 2.0
+  Const        r175, 1.0
+  Const        r291, "__name"
+  Const        r292, "Point"
+  Const        r293, "x"
+  Move         r294, r274
+  Const        r295, "y"
+  Move         r296, r175
+  MakeMap      r297, 3, r291
+  Const        r298, 3.0
+  Const        r0, 0.0
+  Const        r299, "__name"
+  Const        r300, "Point"
+  Const        r301, "x"
+  Move         r302, r298
+  Const        r303, "y"
+  Move         r304, r0
+  MakeMap      r305, 3, r299
+  Const        r298, 3.0
+  Const        r274, 2.0
+  Const        r306, "__name"
+  Const        r307, "Point"
+  Const        r308, "x"
+  Move         r309, r298
+  Const        r310, "y"
+  Move         r311, r274
+  MakeMap      r312, 3, r306
+  Const        r313, "__name"
+  Const        r314, "Triangle"
+  Const        r315, "p1"
+  Move         r316, r297
+  Const        r317, "p2"
+  Move         r318, r305
+  Const        r319, "p3"
+  Move         r320, r312
+  MakeMap      r321, 4, r313
+  Move         r64, r321
+  // print(triangleStr(t1) + " and")
+  Move         r322, r32
+  Call         r323, triangleStr, r322
+  Const        r67, " and"
+  Add          r324, r323, r67
+  Print        r324
+  // print(triangleStr(t2))
+  Move         r325, r64
+  Call         r326, triangleStr, r325
+  Print        r326
+  // overlapping = triTri2D(t1, t2, true)
+  Move         r327, r32
+  Move         r328, r64
+  Const        r74, true
+  Move         r329, r74
+  Call         r330, triTri2D, r327, r328, r329
+  Move         r76, r330
+  // print(iff(overlapping, "overlap", "do not overlap"))
+  Move         r331, r76
+  Const        r80, "overlap"
+  Move         r332, r80
+  Const        r81, "do not overlap"
+  Move         r333, r81
+  Call         r334, iff, r331, r332, r333
+  Print        r334
+  // print("")
+  Const        r83, ""
+  Print        r83
+  // t2 = Triangle{ p1: Point{x:2.0, y:1.0}, p2: Point{x:3.0, y: -2.0}, p3: Point{x:3.0, y:4.0} }
+  Const        r274, 2.0
+  Const        r175, 1.0
+  Const        r335, "__name"
+  Const        r336, "Point"
+  Const        r337, "x"
+  Move         r338, r274
+  Const        r339, "y"
+  Move         r340, r175
+  MakeMap      r341, 3, r335
+  Const        r298, 3.0
+  Const        r274, 2.0
+  NegFloat     r342, r274
+  Const        r343, "__name"
+  Const        r344, "Point"
+  Const        r345, "x"
+  Move         r346, r298
+  Const        r347, "y"
+  Move         r348, r342
+  MakeMap      r349, 3, r343
+  Const        r298, 3.0
+  Const        r215, 4.0
+  Const        r350, "__name"
+  Const        r351, "Point"
+  Const        r352, "x"
+  Move         r353, r298
+  Const        r354, "y"
+  Move         r355, r215
+  MakeMap      r356, 3, r350
+  Const        r357, "__name"
+  Const        r358, "Triangle"
+  Const        r359, "p1"
+  Move         r360, r341
+  Const        r361, "p2"
+  Move         r362, r349
+  Const        r363, "p3"
+  Move         r364, r356
+  MakeMap      r365, 4, r357
+  Move         r64, r365
+  // print(triangleStr(t1) + " and")
+  Move         r366, r32
+  Call         r367, triangleStr, r366
+  Const        r67, " and"
+  Add          r368, r367, r67
+  Print        r368
+  // print(triangleStr(t2))
+  Move         r369, r64
+  Call         r370, triangleStr, r369
+  Print        r370
+  // overlapping = triTri2D(t1, t2, true)
+  Move         r371, r32
+  Move         r372, r64
+  Const        r74, true
+  Move         r373, r74
+  Call         r374, triTri2D, r371, r372, r373
+  Move         r76, r374
+  // print(iff(overlapping, "overlap", "do not overlap"))
+  Move         r375, r76
+  Const        r80, "overlap"
+  Move         r376, r80
+  Const        r81, "do not overlap"
+  Move         r377, r81
+  Call         r378, iff, r375, r376, r377
+  Print        r378
+  // print("")
+  Const        r83, ""
+  Print        r83
+  // t1 = Triangle{ p1: Point{x:0.0, y:0.0}, p2: Point{x:1.0, y:0.0}, p3: Point{x:0.0, y:1.0} }
+  Const        r0, 0.0
+  Const        r0, 0.0
+  Const        r379, "__name"
+  Const        r380, "Point"
+  Const        r381, "x"
+  Move         r382, r0
+  Const        r383, "y"
+  Move         r384, r0
+  MakeMap      r385, 3, r379
+  Const        r175, 1.0
+  Const        r0, 0.0
+  Const        r386, "__name"
+  Const        r387, "Point"
+  Const        r388, "x"
+  Move         r389, r175
+  Const        r390, "y"
+  Move         r391, r0
+  MakeMap      r392, 3, r386
+  Const        r0, 0.0
+  Const        r175, 1.0
+  Const        r393, "__name"
+  Const        r394, "Point"
+  Const        r395, "x"
+  Move         r396, r0
+  Const        r397, "y"
+  Move         r398, r175
+  MakeMap      r399, 3, r393
+  Const        r400, "__name"
+  Const        r401, "Triangle"
+  Const        r402, "p1"
+  Move         r403, r385
+  Const        r404, "p2"
+  Move         r405, r392
+  Const        r406, "p3"
+  Move         r407, r399
+  MakeMap      r408, 4, r400
+  Move         r32, r408
+  // t2 = Triangle{ p1: Point{x:1.0, y:0.0}, p2: Point{x:2.0, y:0.0}, p3: Point{x:1.0, y:1.1} }
+  Const        r175, 1.0
+  Const        r0, 0.0
+  Const        r409, "__name"
+  Const        r410, "Point"
+  Const        r411, "x"
+  Move         r412, r175
+  Const        r413, "y"
+  Move         r414, r0
+  MakeMap      r415, 3, r409
+  Const        r274, 2.0
+  Const        r0, 0.0
+  Const        r416, "__name"
+  Const        r417, "Point"
+  Const        r418, "x"
+  Move         r419, r274
+  Const        r420, "y"
+  Move         r421, r0
+  MakeMap      r422, 3, r416
+  Const        r175, 1.0
+  Const        r423, 1.1
+  Const        r424, "__name"
+  Const        r425, "Point"
+  Const        r426, "x"
+  Move         r427, r175
+  Const        r428, "y"
+  Move         r429, r423
+  MakeMap      r430, 3, r424
+  Const        r431, "__name"
+  Const        r432, "Triangle"
+  Const        r433, "p1"
+  Move         r434, r415
+  Const        r435, "p2"
+  Move         r436, r422
+  Const        r437, "p3"
+  Move         r438, r430
+  MakeMap      r439, 4, r431
+  Move         r64, r439
+  // print(triangleStr(t1) + " and")
+  Move         r440, r32
+  Call         r441, triangleStr, r440
+  Const        r67, " and"
+  Add          r442, r441, r67
+  Print        r442
+  // print(triangleStr(t2))
+  Move         r443, r64
+  Call         r444, triangleStr, r443
+  Print        r444
+  // print("which have only a single corner in contact, if boundary points collide")
+  Const        r445, "which have only a single corner in contact, if boundary points collide"
+  Print        r445
+  // overlapping = triTri2D(t1, t2, true)
+  Move         r446, r32
+  Move         r447, r64
+  Const        r74, true
+  Move         r448, r74
+  Call         r449, triTri2D, r446, r447, r448
+  Move         r76, r449
+  // print(iff(overlapping, "overlap", "do not overlap"))
+  Move         r450, r76
+  Const        r80, "overlap"
+  Move         r451, r80
+  Const        r81, "do not overlap"
+  Move         r452, r81
+  Call         r453, iff, r450, r451, r452
+  Print        r453
+  // print("")
+  Const        r83, ""
+  Print        r83
+  // print(triangleStr(t1) + " and")
+  Move         r454, r32
+  Call         r455, triangleStr, r454
+  Const        r67, " and"
+  Add          r456, r455, r67
+  Print        r456
+  // print(triangleStr(t2))
+  Move         r457, r64
+  Call         r458, triangleStr, r457
+  Print        r458
+  // print("which have only a single corner in contact, if boundary points do not collide")
+  Const        r459, "which have only a single corner in contact, if boundary points do not collide"
+  Print        r459
+  // overlapping = triTri2D(t1, t2, false)
+  Move         r460, r32
+  Move         r461, r64
+  Const        r463, false
+  Move         r462, r463
+  Call         r464, triTri2D, r460, r461, r462
+  Move         r76, r464
+  // print(iff(overlapping, "overlap", "do not overlap"))
+  Move         r465, r76
+  Const        r80, "overlap"
+  Move         r466, r80
+  Const        r81, "do not overlap"
+  Move         r467, r81
+  Call         r468, iff, r465, r466, r467
+  Print        r468
+  Return       r0

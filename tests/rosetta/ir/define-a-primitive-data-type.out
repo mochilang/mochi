@@ -1,0 +1,9 @@
+t1      = 6
+t2      = 3
+t1 + t2 = map[Add:0xc000080460 Dec:0xc0000803e0 Div:0xc000080340 Inc:0xc0000803c0 Mul:0xc000080260 Rem:0xc000080360 Sub:0xc000080480 __name:TinyInt value:9]
+t1 - t2 = map[Add:0xc0000806a0 Dec:0xc000080660 Div:0xc0000805a0 Inc:0xc000080640 Mul:0xc000080580 Rem:0xc0000805c0 Sub:0xc0000806c0 __name:TinyInt value:3]
+t1 * t2 = map[Add:0xc000080920 Dec:0xc000080900 Div:0xc000080880 Inc:0xc0000808c0 Mul:0xc000080840 Rem:0xc0000808a0 Sub:0xc000080940 __name:TinyInt value:10]
+t1 / t2 = map[Add:0xc000080ae0 Dec:0xc000080ac0 Div:0xc000080a60 Inc:0xc000080aa0 Mul:0xc000080a40 Rem:0xc000080a80 Sub:0xc000080b00 __name:TinyInt value:2]
+t1 % t2 = map[Add:0xc000080d40 Dec:0xc000080d20 Div:0xc000080cc0 Inc:0xc000080d00 Mul:0xc000080c40 Rem:0xc000080ce0 Sub:0xc000080d60 __name:TinyInt value:1]
+t1 + 1  = <nil>
+t1 - 1  = <nil>

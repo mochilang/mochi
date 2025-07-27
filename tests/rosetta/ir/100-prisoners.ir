@@ -281,8 +281,7 @@ L2:
   Index        r23, r19, r21
   Move         r24, r23
   // doTrials(trials, np, strat)
-  Const        r0, 1000
-  Move         r25, r0
+  Move         r25, r1
   Move         r26, r8
   Move         r27, r24
   Call         r28, doTrials, r25, r26, r27
