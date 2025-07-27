@@ -2,8 +2,8 @@ var fs: map<string,int> = {"input.txt": 0}
 fun main() {
   let old = fs["input.txt"]
   print("mod time was: " + str(old))
-  let mtime = now()
-  let mtime = now()
+  var mtime = now()
+  mtime = now()
   fs["input.txt"] = mtime as int
   print("mod time now: " + str(mtime))
 }

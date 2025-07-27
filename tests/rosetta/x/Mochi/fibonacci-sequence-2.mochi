@@ -5,8 +5,9 @@ fun fib(n: int): bigint {
   var i = n
   i = i - 1
   while i > 0 {
-    a = a + b
-    a, b = b, a
+    let tmp = a + b
+    a = b
+    b = tmp
     i = i - 1
   }
   return b
