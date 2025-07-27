@@ -1,0 +1,78 @@
+func main (regs=33)
+  // let a = powInt(5, powInt(3, 2))
+  Const        r5, 5
+  Move         r3, r5
+  Const        r8, 3
+  Move         r6, r8
+  Const        r9, 2
+  Move         r7, r9
+  Call2        r10, powInt, r6, r7
+  Move         r4, r10
+  Call2        r11, powInt, r3, r4
+  Move         r0, r11
+  SetGlobal    0,0,0,0
+  // let b = powInt(powInt(5, 3), 2)
+  Const        r5, 5
+  Move         r14, r5
+  Const        r8, 3
+  Move         r15, r8
+  Call2        r16, powInt, r14, r15
+  Move         r12, r16
+  Const        r9, 2
+  Move         r13, r9
+  Call2        r17, powInt, r12, r13
+  Move         r1, r17
+  SetGlobal    1,1,0,0
+  // let c = powInt(5, powInt(3, 2))
+  Const        r5, 5
+  Move         r18, r5
+  Const        r8, 3
+  Move         r20, r8
+  Const        r9, 2
+  Move         r21, r9
+  Call2        r22, powInt, r20, r21
+  Move         r19, r22
+  Call2        r23, powInt, r18, r19
+  Move         r2, r23
+  SetGlobal    2,2,0,0
+  // print("5^3^2   = " + str(a))
+  Const        r24, "5^3^2   = "
+  Str          r25, r0
+  Add          r26, r24, r25
+  Print        r26
+  // print("(5^3)^2 = " + str(b))
+  Const        r27, "(5^3)^2 = "
+  Str          r28, r1
+  Add          r29, r27, r28
+  Print        r29
+  // print("5^(3^2) = " + str(c))
+  Const        r30, "5^(3^2) = "
+  Str          r31, r2
+  Add          r32, r30, r31
+  Print        r32
+  Return       r0
+
+  // fun powInt(b: int, p: int): int {
+func powInt (regs=12)
+  // var r = 1
+  Const        r5, 1
+  Move         r6, r5
+  // var i = 0
+  Const        r7, 0
+  Move         r8, r7
+L1:
+  // while i < p {
+  Less         r9, r8, r4
+  JumpIfFalse  r9, L0
+  // r = r * b
+  Mul          r10, r6, r3
+  Move         r6, r10
+  // i = i + 1
+  Const        r5, 1
+  AddInt       r11, r8, r5
+  Move         r8, r11
+  // while i < p {
+  Jump         L1
+L0:
+  // return r
+  Return       r6

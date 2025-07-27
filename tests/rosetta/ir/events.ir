@@ -1,0 +1,44 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun main() {
+func main (regs=15)
+  // print("program start")
+  Const        r0, "program start"
+  Print        r0
+  // var ev = Event{set: false}
+  Const        r1, false
+  Const        r2, "__name"
+  Const        r3, "Event"
+  Const        r4, "set"
+  Move         r5, r1
+  MakeMap      r6, 2, r2
+  Move         r7, r6
+  // print("program sleeping")
+  Const        r8, "program sleeping"
+  Print        r8
+  // print("task start")
+  Const        r9, "task start"
+  Print        r9
+  // ev.set = true
+  Const        r10, true
+  Const        r11, "set"
+  SetIndex     r7, r11, r10
+  // print("program signaling event")
+  Const        r12, "program signaling event"
+  Print        r12
+  // if ev.set {
+  Const        r11, "set"
+  Index        r13, r7, r11
+  JumpIfFalse  r13, L0
+  // print("event reset by task")
+  Const        r14, "event reset by task"
+  Print        r14
+  // ev.set = false
+  Const        r1, false
+  Const        r11, "set"
+  SetIndex     r7, r11, r1
+L0:
+  Return       r0

@@ -1,0 +1,175 @@
+func main (regs=88)
+  // var ops = ["-x.p(e)", "-(x).p(e)", "(-x).p(e)", "-(x.p(e))"]
+  Const        r1, ["-x.p(e)", "-(x).p(e)", "(-x).p(e)", "-(x.p(e))"]
+  Move         r0, r1
+  SetGlobal    0,0,0,0
+  // for x in [-5.0, 5.0] {
+  Const        r2, [-5.0, 5.0]
+  IterPrep     r3, r2
+  Len          r4, r3
+  Const        r5, 0
+L3:
+  LessInt      r6, r5, r4
+  JumpIfFalse  r6, L0
+  Index        r7, r3, r5
+  Move         r8, r7
+  // for e in [2.0, 3.0] {
+  Const        r9, [2.0, 3.0]
+  IterPrep     r10, r9
+  Len          r11, r10
+  Const        r12, 0
+L2:
+  LessInt      r13, r12, r11
+  JumpIfFalse  r13, L1
+  Index        r14, r10, r12
+  Move         r15, r14
+  // let a = -p(x, e)
+  Move         r16, r8
+  Move         r17, r15
+  Call2        r18, p, r16, r17
+  Neg          r19, r18
+  Move         r20, r19
+  // let b = -(p(x, e))
+  Move         r21, r8
+  Move         r22, r15
+  Call2        r23, p, r21, r22
+  Neg          r24, r23
+  Move         r25, r24
+  // let c = p(-x, e)
+  Neg          r28, r8
+  Move         r26, r28
+  Move         r27, r15
+  Call2        r29, p, r26, r27
+  Move         r30, r29
+  // let d = -(p(x, e))
+  Move         r31, r8
+  Move         r32, r15
+  Call2        r33, p, r31, r32
+  Neg          r34, r33
+  Move         r35, r34
+  // print("x = " + (if x < 0 {""} else {" "}) + str((x as int)) + " e = " + str((e as int)) + " | " +
+  Const        r36, "x = "
+  Const        r37, 0
+  Less         r38, r8, r37
+  Const        r39, ""
+  Const        r40, " "
+  Select       41,38,39,40
+  Add          r42, r36, r41
+  Cast         r43, r8, int
+  Str          r44, r43
+  Add          r45, r42, r44
+  Const        r46, " e = "
+  Add          r47, r45, r46
+  Cast         r48, r15, int
+  Str          r49, r48
+  Add          r50, r47, r49
+  Const        r51, " | "
+  Add          r52, r50, r51
+  // ops[0] + " = " + padInt(a) + " | " +
+  Const        r37, 0
+  Index        r53, r0, r37
+  // print("x = " + (if x < 0 {""} else {" "}) + str((x as int)) + " e = " + str((e as int)) + " | " +
+  Add          r54, r52, r53
+  // ops[0] + " = " + padInt(a) + " | " +
+  Const        r55, " = "
+  Add          r56, r54, r55
+  Move         r57, r20
+  Call         r58, padInt, r57
+  Add          r59, r56, r58
+  Const        r51, " | "
+  Add          r60, r59, r51
+  // ops[1] + " = " + padInt(b) + " | " +
+  Const        r61, 1
+  Const        r62, "-(x).p(e)"
+  // ops[0] + " = " + padInt(a) + " | " +
+  Add          r63, r60, r62
+  // ops[1] + " = " + padInt(b) + " | " +
+  Const        r55, " = "
+  Add          r64, r63, r55
+  Move         r65, r25
+  Call         r66, padInt, r65
+  Add          r67, r64, r66
+  Const        r51, " | "
+  Add          r68, r67, r51
+  // ops[2] + " = " + padInt(c) + " | " +
+  Const        r69, 2
+  Const        r70, "(-x).p(e)"
+  // ops[1] + " = " + padInt(b) + " | " +
+  Add          r71, r68, r70
+  // ops[2] + " = " + padInt(c) + " | " +
+  Const        r55, " = "
+  Add          r72, r71, r55
+  Move         r73, r30
+  Call         r74, padInt, r73
+  Add          r75, r72, r74
+  Const        r51, " | "
+  Add          r76, r75, r51
+  // ops[3] + " = " + padInt(d))
+  Const        r77, 3
+  Const        r78, "-(x.p(e))"
+  // ops[2] + " = " + padInt(c) + " | " +
+  Add          r79, r76, r78
+  // ops[3] + " = " + padInt(d))
+  Const        r55, " = "
+  Add          r80, r79, r55
+  Move         r81, r35
+  Call         r82, padInt, r81
+  Add          r83, r80, r82
+  // print("x = " + (if x < 0 {""} else {" "}) + str((x as int)) + " e = " + str((e as int)) + " | " +
+  Print        r83
+  // for e in [2.0, 3.0] {
+  Const        r84, 1
+  AddInt       r85, r12, r84
+  Move         r12, r85
+  Jump         L2
+L1:
+  // for x in [-5.0, 5.0] {
+  Const        r86, 1
+  AddInt       r87, r5, r86
+  Move         r5, r87
+  Jump         L3
+L0:
+  Return       r0
+
+  // fun p(x: float, e: float): float {
+func p (regs=12)
+  // var r = 1.0
+  Const        r3, 1.0
+  Move         r4, r3
+  // var i = 0
+  Const        r5, 0
+  Move         r6, r5
+L1:
+  // while i < (e as int) {
+  Cast         r7, r2, int
+  Less         r8, r6, r7
+  JumpIfFalse  r8, L0
+  // r = r * x
+  MulFloat     r9, r4, r1
+  Move         r4, r9
+  // i = i + 1
+  Const        r10, 1
+  AddInt       r11, r6, r10
+  Move         r6, r11
+  // while i < (e as int) {
+  Jump         L1
+L0:
+  // return r
+  Return       r4
+
+  // fun padInt(f: float): string {
+func padInt (regs=9)
+  // let s = str((f as int))
+  Cast         r2, r1, int
+  Str          r3, r2
+  Move         r4, r3
+  // if f >= 0 { return " " + s }
+  Const        r5, 0
+  LessEq       r6, r5, r1
+  JumpIfFalse  r6, L0
+  Const        r7, " "
+  Add          r8, r7, r4
+  Return       r8
+L0:
+  // return s
+  Return       r4

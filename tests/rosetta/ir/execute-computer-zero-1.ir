@@ -1,0 +1,767 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun trim(s: string): string {
+func trim (regs=38)
+  // var start = 0
+  Const        r1, 0
+  Move         r2, r1
+L3:
+  // while start < len(s) && (s[start:start+1] == " " || s[start:start+1] == "\t") {
+  Len          r3, r0
+  LessInt      r4, r2, r3
+  Move         r5, r4
+  JumpIfFalse  r5, L0
+  Move         r6, r2
+  Const        r8, 1
+  AddInt       r9, r2, r8
+  Move         r7, r9
+  Slice        r10, r0, r6, r7
+  Const        r11, " "
+  Equal        r12, r10, r11
+  Move         r13, r2
+  Const        r8, 1
+  AddInt       r15, r2, r8
+  Move         r14, r15
+  Slice        r16, r0, r13, r14
+  Const        r17, "\t"
+  Equal        r18, r16, r17
+  Move         r19, r12
+  JumpIfTrue   r19, L1
+  Move         r19, r18
+L1:
+  Move         r5, r19
+L0:
+  JumpIfFalse  r5, L2
+  // start = start + 1
+  Const        r8, 1
+  AddInt       r20, r2, r8
+  Move         r2, r20
+  // while start < len(s) && (s[start:start+1] == " " || s[start:start+1] == "\t") {
+  Jump         L3
+L2:
+  // var end = len(s)
+  Len          r21, r0
+  Move         r22, r21
+L7:
+  // while end > start && (s[end-1:end] == " " || s[end-1:end] == "\t") {
+  LessInt      r23, r2, r22
+  Move         r24, r23
+  JumpIfFalse  r24, L4
+  Const        r8, 1
+  SubInt       r26, r22, r8
+  Move         r25, r26
+  Move         r27, r22
+  Slice        r28, r0, r25, r27
+  Const        r11, " "
+  Equal        r29, r28, r11
+  Const        r8, 1
+  SubInt       r31, r22, r8
+  Move         r30, r31
+  Move         r32, r22
+  Slice        r33, r0, r30, r32
+  Const        r17, "\t"
+  Equal        r34, r33, r17
+  Move         r35, r29
+  JumpIfTrue   r35, L5
+  Move         r35, r34
+L5:
+  Move         r24, r35
+L4:
+  JumpIfFalse  r24, L6
+  // end = end - 1
+  Const        r8, 1
+  SubInt       r36, r22, r8
+  Move         r22, r36
+  // while end > start && (s[end-1:end] == " " || s[end-1:end] == "\t") {
+  Jump         L7
+L6:
+  // return substring(s, start, end)
+  Slice        r37, r0, r2, r22
+  Return       r37
+
+  // fun split(s: string, sep: string): list<string> {
+func split (regs=30)
+  // var parts: list<string> = []
+  Const        r2, []
+  Move         r3, r2
+  // var cur = ""
+  Const        r4, ""
+  Move         r5, r4
+  // var i = 0
+  Const        r6, 0
+  Move         r7, r6
+L3:
+  // while i < len(s) {
+  Len          r8, r0
+  LessInt      r9, r7, r8
+  JumpIfFalse  r9, L0
+  // if len(sep) > 0 && i + len(sep) <= len(s) && substring(s, i, i+len(sep)) == sep {
+  Len          r10, r1
+  Len          r11, r1
+  AddInt       r12, r7, r11
+  Const        r6, 0
+  LessInt      r13, r6, r10
+  Len          r14, r0
+  LessEqInt    r15, r12, r14
+  Len          r16, r1
+  AddInt       r17, r7, r16
+  Slice        r18, r0, r7, r17
+  Equal        r19, r18, r1
+  Move         r20, r13
+  JumpIfFalse  r20, L1
+  Move         r20, r15
+  JumpIfFalse  r20, L1
+  Move         r20, r19
+L1:
+  JumpIfFalse  r20, L2
+  // parts = append(parts, cur)
+  Append       r21, r3, r5
+  Move         r3, r21
+  // cur = ""
+  Const        r4, ""
+  Move         r5, r4
+  // i = i + len(sep)
+  Len          r22, r1
+  AddInt       r23, r7, r22
+  Move         r7, r23
+  // if len(sep) > 0 && i + len(sep) <= len(s) && substring(s, i, i+len(sep)) == sep {
+  Jump         L3
+L2:
+  // cur = cur + substring(s, i, i+1)
+  Const        r24, 1
+  AddInt       r25, r7, r24
+  Slice        r26, r0, r7, r25
+  Add          r27, r5, r26
+  Move         r5, r27
+  // i = i + 1
+  Const        r24, 1
+  AddInt       r28, r7, r24
+  Move         r7, r28
+  // while i < len(s) {
+  Jump         L3
+L0:
+  // parts = append(parts, cur)
+  Append       r29, r3, r5
+  Move         r3, r29
+  // return parts
+  Return       r3
+
+  // fun splitWS(s: string): list<string> {
+func splitWS (regs=26)
+  // var out: list<string> = []
+  Const        r1, []
+  Move         r2, r1
+  // var cur = ""
+  Const        r3, ""
+  Move         r4, r3
+  // var i = 0
+  Const        r5, 0
+  Move         r6, r5
+L4:
+  // while i < len(s) {
+  Len          r7, r0
+  LessInt      r8, r6, r7
+  JumpIfFalse  r8, L0
+  // let ch = substring(s, i, i+1)
+  Const        r9, 1
+  AddInt       r10, r6, r9
+  Slice        r11, r0, r6, r10
+  Move         r12, r11
+  // if ch == " " || ch == "\t" {
+  Const        r13, " "
+  Equal        r14, r12, r13
+  Const        r15, "\t"
+  Equal        r16, r12, r15
+  Move         r17, r14
+  JumpIfTrue   r17, L1
+  Move         r17, r16
+L1:
+  JumpIfFalse  r17, L2
+  // if len(cur) > 0 { out = append(out, cur); cur = "" }
+  Len          r18, r4
+  Const        r5, 0
+  LessInt      r19, r5, r18
+  JumpIfFalse  r19, L3
+  Append       r20, r2, r4
+  Move         r2, r20
+  Const        r3, ""
+  Move         r4, r3
+  // if ch == " " || ch == "\t" {
+  Jump         L3
+L2:
+  // cur = cur + ch
+  Add          r21, r4, r12
+  Move         r4, r21
+L3:
+  // i = i + 1
+  Const        r9, 1
+  AddInt       r22, r6, r9
+  Move         r6, r22
+  // while i < len(s) {
+  Jump         L4
+L0:
+  // if len(cur) > 0 { out = append(out, cur) }
+  Len          r23, r4
+  Const        r5, 0
+  LessInt      r24, r5, r23
+  JumpIfFalse  r24, L5
+  Append       r25, r2, r4
+  Move         r2, r25
+L5:
+  // return out
+  Return       r2
+
+  // fun indexOf(s: string, ch: string): int {
+func indexOf (regs=12)
+  // var i = 0
+  Const        r2, 0
+  Move         r3, r2
+L2:
+  // while i < len(s) {
+  Len          r4, r0
+  LessInt      r5, r3, r4
+  JumpIfFalse  r5, L0
+  // if substring(s, i, i+1) == ch { return i }
+  Const        r6, 1
+  AddInt       r7, r3, r6
+  Slice        r8, r0, r3, r7
+  Equal        r9, r8, r1
+  JumpIfFalse  r9, L1
+  Return       r3
+L1:
+  // i = i + 1
+  Const        r6, 1
+  AddInt       r10, r3, r6
+  Move         r3, r10
+  // while i < len(s) {
+  Jump         L2
+L0:
+  // return -1
+  Const        r6, 1
+  NegInt       r11, r6
+  Return       r11
+
+  // fun parseIntStr(str: string): int {
+func parseIntStr (regs=30)
+  // var i = 0
+  Const        r1, 0
+  Move         r2, r1
+  // var neg = false
+  Const        r3, false
+  Move         r4, r3
+  // if len(str) > 0 && str[0:1] == "-" { neg = true; i = 1 }
+  Len          r5, r0
+  Const        r1, 0
+  LessInt      r6, r1, r5
+  Const        r1, 0
+  Move         r7, r1
+  Const        r9, 1
+  Move         r8, r9
+  Slice        r10, r0, r7, r8
+  Const        r11, "-"
+  Equal        r12, r10, r11
+  Move         r13, r6
+  JumpIfFalse  r13, L0
+  Move         r13, r12
+L0:
+  JumpIfFalse  r13, L1
+  Const        r14, true
+  Move         r4, r14
+  Const        r9, 1
+  Move         r2, r9
+L1:
+  // var n = 0
+  Const        r1, 0
+  Move         r15, r1
+  // let digits = {
+  Const        r16, {"0": 0, "1": 1, "2": 2, "3": 3, "4": 4, "5": 5, "6": 6, "7": 7, "8": 8, "9": 9}
+  Move         r17, r16
+L3:
+  // while i < len(str) {
+  Len          r18, r0
+  LessInt      r19, r2, r18
+  JumpIfFalse  r19, L2
+  // n = n * 10 + digits[str[i:i+1]]
+  Const        r20, 10
+  MulInt       r21, r15, r20
+  Move         r22, r2
+  Const        r9, 1
+  AddInt       r24, r2, r9
+  Move         r23, r24
+  Slice        r25, r0, r22, r23
+  Index        r26, r17, r25
+  Add          r27, r21, r26
+  Move         r15, r27
+  // i = i + 1
+  Const        r9, 1
+  AddInt       r28, r2, r9
+  Move         r2, r28
+  // while i < len(str) {
+  Jump         L3
+L2:
+  // if neg { n = -n }
+  JumpIfFalse  r4, L4
+  Neg          r29, r15
+  Move         r15, r29
+L4:
+  // return n
+  Return       r15
+
+  // fun parseAsm(asm: string): map<string, any> {
+func parseAsm (regs=86)
+  // let lines = split(asm, "\n")
+  Move         r1, r0
+  Const        r3, "\n"
+  Move         r2, r3
+  Call2        r4, split, r1, r2
+  Move         r5, r4
+  // var instrs: list<Instruction> = []
+  Const        r6, []
+  Move         r7, r6
+  // var labels: map<string,int> = {}
+  Const        r8, {}
+  Move         r9, r8
+  // var lineNum = 0
+  Const        r10, 0
+  Move         r11, r10
+  // var i = 0
+  Const        r10, 0
+  Move         r12, r10
+L7:
+  // while i < len(lines) {
+  Len          r13, r5
+  LessInt      r14, r12, r13
+  JumpIfFalse  r14, L0
+  // var line = lines[i]
+  Index        r15, r5, r12
+  Move         r16, r15
+  // if indexOf(line, ";") != (-1) {
+  Move         r17, r16
+  Const        r19, ";"
+  Move         r18, r19
+  Call2        r20, indexOf, r17, r18
+  Const        r21, -1
+  NotEqual     r22, r20, r21
+  JumpIfFalse  r22, L1
+  // line = substring(line, 0, indexOf(line, ";"))
+  Const        r10, 0
+  Move         r23, r16
+  Const        r19, ";"
+  Move         r24, r19
+  Call2        r25, indexOf, r23, r24
+  Slice        r26, r16, r10, r25
+  Move         r16, r26
+L1:
+  // line = trim(line)
+  Move         r27, r16
+  Call         r28, trim, r27
+  Move         r16, r28
+  // var label = ""
+  Const        r29, ""
+  Move         r30, r29
+  // if indexOf(line, ":") != (-1) {
+  Move         r31, r16
+  Const        r33, ":"
+  Move         r32, r33
+  Call2        r34, indexOf, r31, r32
+  Const        r21, -1
+  NotEqual     r35, r34, r21
+  JumpIfFalse  r35, L2
+  // let idx = indexOf(line, ":")
+  Move         r36, r16
+  Const        r33, ":"
+  Move         r37, r33
+  Call2        r38, indexOf, r36, r37
+  Move         r39, r38
+  // label = trim(substring(line, 0, idx))
+  Const        r10, 0
+  Slice        r41, r16, r10, r39
+  Move         r40, r41
+  Call         r42, trim, r40
+  Move         r30, r42
+  // line = trim(substring(line, idx+1, len(line)))
+  Const        r44, 1
+  Add          r45, r39, r44
+  Len          r46, r16
+  Slice        r47, r16, r45, r46
+  Move         r43, r47
+  Call         r48, trim, r43
+  Move         r16, r48
+L2:
+  // var opcode = ""
+  Const        r29, ""
+  Move         r49, r29
+  // var arg = ""
+  Const        r29, ""
+  Move         r50, r29
+  // if len(line) > 0 {
+  Len          r51, r16
+  Const        r10, 0
+  LessInt      r52, r10, r51
+  JumpIfFalse  r52, L3
+  // let parts = splitWS(line)
+  Move         r53, r16
+  Call         r54, splitWS, r53
+  Move         r55, r54
+  // if len(parts) > 0 { opcode = parts[0] }
+  Len          r56, r55
+  Const        r10, 0
+  LessInt      r57, r10, r56
+  JumpIfFalse  r57, L4
+  Const        r10, 0
+  Index        r58, r55, r10
+  Move         r49, r58
+L4:
+  // if len(parts) > 1 { arg = parts[1] }
+  Len          r59, r55
+  Const        r44, 1
+  LessInt      r60, r44, r59
+  JumpIfFalse  r60, L5
+  Const        r44, 1
+  Index        r61, r55, r44
+  Move         r50, r61
+  Jump         L3
+L5:
+  // let ops = {"NOP":0,"LDA":1,"STA":2,"ADD":3,"SUB":4,"BRZ":5,"JMP":6,"STP":7}
+  Const        r62, {"ADD": 3, "BRZ": 5, "JMP": 6, "LDA": 1, "NOP": 0, "STA": 2, "STP": 7, "SUB": 4}
+  Move         r63, r62
+  // if !(opcode in ops) {
+  In           r64, r49, r63
+  Not          r65, r64
+  JumpIfFalse  r65, L3
+  // arg = opcode
+  Move         r50, r49
+  // opcode = ""
+  Const        r29, ""
+  Move         r49, r29
+L3:
+  // if label != "" { labels[label] = lineNum }
+  Const        r29, ""
+  NotEqual     r66, r30, r29
+  JumpIfFalse  r66, L6
+  SetIndex     r9, r30, r11
+L6:
+  // instrs = append(instrs, Instruction{Label:label, Opcode:opcode, Arg:arg})
+  Const        r67, "__name"
+  Const        r68, "Instruction"
+  Const        r69, "Label"
+  Move         r70, r30
+  Const        r71, "Opcode"
+  Move         r72, r49
+  Const        r73, "Arg"
+  Move         r74, r50
+  MakeMap      r75, 4, r67
+  Append       r76, r7, r75
+  Move         r7, r76
+  // lineNum = lineNum + 1
+  Const        r44, 1
+  AddInt       r77, r11, r44
+  Move         r11, r77
+  // i = i + 1
+  Const        r44, 1
+  AddInt       r78, r12, r44
+  Move         r12, r78
+  // while i < len(lines) {
+  Jump         L7
+L0:
+  // return {"instructions": instrs, "labels": labels}
+  Const        r79, "instructions"
+  Const        r80, "labels"
+  Move         r81, r79
+  Move         r82, r7
+  Move         r83, r80
+  Move         r84, r9
+  MakeMap      r85, 2, r81
+  Return       r85
+
+  // fun compile(p: map<string, any>): list<int> {
+func compile (regs=46)
+  // let instrs = p["instructions"] as list<Instruction>
+  Const        r1, "instructions"
+  Index        r2, r0, r1
+  Cast         r3, r2, [Instruction]
+  Move         r4, r3
+  // let labels = p["labels"] as map<string,int>
+  Const        r5, "labels"
+  Index        r6, r0, r5
+  Cast         r7, r6, {string: int}
+  Move         r8, r7
+  // var bytecode: list<int> = []
+  Const        r9, []
+  Move         r10, r9
+  // var i = 0
+  Const        r11, 0
+  Move         r12, r11
+  // let opcodes = {"NOP":0,"LDA":1,"STA":2,"ADD":3,"SUB":4,"BRZ":5,"JMP":6,"STP":7}
+  Const        r13, {"ADD": 3, "BRZ": 5, "JMP": 6, "LDA": 1, "NOP": 0, "STA": 2, "STP": 7, "SUB": 4}
+  Move         r14, r13
+L4:
+  // while i < len(instrs) {
+  Len          r15, r4
+  LessInt      r16, r12, r15
+  JumpIfFalse  r16, L0
+  // let ins = instrs[i]
+  Index        r17, r4, r12
+  Move         r18, r17
+  // var arg = 0
+  Const        r11, 0
+  Move         r19, r11
+  // if ins.Arg != "" {
+  Const        r20, "Arg"
+  Index        r21, r18, r20
+  Const        r22, ""
+  NotEqual     r23, r21, r22
+  JumpIfFalse  r23, L1
+  // if ins.Arg in labels { arg = labels[ins.Arg] }
+  Const        r20, "Arg"
+  Index        r24, r18, r20
+  In           r25, r24, r8
+  JumpIfFalse  r25, L2
+  Const        r20, "Arg"
+  Index        r26, r18, r20
+  Index        r27, r8, r26
+  Move         r19, r27
+  Jump         L1
+L2:
+  // else { arg = parseIntStr(ins.Arg) }
+  Const        r20, "Arg"
+  Index        r29, r18, r20
+  Move         r28, r29
+  Call         r30, parseIntStr, r28
+  Move         r19, r30
+L1:
+  // var code = 0
+  Const        r11, 0
+  Move         r31, r11
+  // if ins.Opcode != "" { code = opcodes[ins.Opcode] }
+  Const        r32, "Opcode"
+  Index        r33, r18, r32
+  Const        r22, ""
+  NotEqual     r34, r33, r22
+  JumpIfFalse  r34, L3
+  Const        r32, "Opcode"
+  Index        r35, r18, r32
+  Index        r36, r14, r35
+  Move         r31, r36
+L3:
+  // bytecode = append(bytecode, code * 32 + arg)
+  Const        r37, 32
+  Mul          r38, r31, r37
+  Add          r39, r38, r19
+  Append       r40, r10, r39
+  Move         r10, r40
+  // i = i + 1
+  Const        r41, 1
+  AddInt       r42, r12, r41
+  Move         r12, r42
+  // while i < len(instrs) {
+  Jump         L4
+L0:
+  // while len(bytecode) < 32 { bytecode = append(bytecode, 0) }
+  Len          r43, r10
+  Const        r37, 32
+  LessInt      r44, r43, r37
+  JumpIfFalse  r44, L5
+  Const        r11, 0
+  Append       r45, r10, r11
+  Move         r10, r45
+  Jump         L0
+L5:
+  // return bytecode
+  Return       r10
+
+  // fun floorMod(a: int, b: int): int {
+func floorMod (regs=7)
+  // var r = a % b
+  Mod          r2, r0, r1
+  Move         r3, r2
+  // if r < 0 { r = r + b }
+  Const        r4, 0
+  Less         r5, r3, r4
+  JumpIfFalse  r5, L0
+  Add          r6, r3, r1
+  Move         r3, r6
+L0:
+  // return r
+  Return       r3
+
+  // fun run(bytecode: list<int>): int {
+func run (regs=49)
+  // var acc = 0
+  Const        r1, 0
+  Move         r2, r1
+  // var pc = 0
+  Const        r1, 0
+  Move         r3, r1
+  // var mem: list<int> = []
+  Const        r4, []
+  Move         r5, r4
+  // var i = 0
+  Const        r1, 0
+  Move         r6, r1
+L1:
+  // while i < len(bytecode) {
+  Len          r7, r0
+  LessInt      r8, r6, r7
+  JumpIfFalse  r8, L0
+  // mem = append(mem, bytecode[i])
+  Index        r9, r0, r6
+  Append       r10, r5, r9
+  Move         r5, r10
+  // i = i + 1
+  Const        r11, 1
+  AddInt       r12, r6, r11
+  Move         r6, r12
+  // while i < len(bytecode) {
+  Jump         L1
+L0:
+  // while pc < 32 {
+  Const        r13, 32
+  LessInt      r14, r3, r13
+  JumpIfFalse  r14, L2
+  // let op = mem[pc] / 32
+  Index        r15, r5, r3
+  Const        r13, 32
+  Div          r16, r15, r13
+  Move         r17, r16
+  // let arg = mem[pc] % 32
+  Index        r18, r5, r3
+  Const        r13, 32
+  Mod          r19, r18, r13
+  Move         r20, r19
+  // pc = pc + 1
+  Const        r11, 1
+  AddInt       r21, r3, r11
+  Move         r3, r21
+  // if op == 0 {
+  Const        r1, 0
+  Equal        r22, r17, r1
+  JumpIfFalse  r22, L3
+  // continue
+  Jump         L0
+L3:
+  // } else if op == 1 {
+  Const        r11, 1
+  Equal        r23, r17, r11
+  JumpIfFalse  r23, L4
+  // acc = mem[arg]
+  Index        r24, r5, r20
+  Move         r2, r24
+  // } else if op == 1 {
+  Jump         L0
+L4:
+  // } else if op == 2 {
+  Const        r25, 2
+  Equal        r26, r17, r25
+  JumpIfFalse  r26, L5
+  // mem[arg] = acc
+  SetIndex     r5, r20, r2
+  // } else if op == 2 {
+  Jump         L0
+L5:
+  // } else if op == 3 {
+  Const        r27, 3
+  Equal        r28, r17, r27
+  JumpIfFalse  r28, L6
+  // acc = floorMod(acc + mem[arg], 256)
+  Index        r31, r5, r20
+  Add          r32, r2, r31
+  Move         r29, r32
+  Const        r33, 256
+  Move         r30, r33
+  Call2        r34, floorMod, r29, r30
+  Move         r2, r34
+  // } else if op == 3 {
+  Jump         L0
+L6:
+  // } else if op == 4 {
+  Const        r35, 4
+  Equal        r36, r17, r35
+  JumpIfFalse  r36, L7
+  // acc = floorMod(acc - mem[arg], 256)
+  Index        r39, r5, r20
+  Sub          r40, r2, r39
+  Move         r37, r40
+  Const        r33, 256
+  Move         r38, r33
+  Call2        r41, floorMod, r37, r38
+  Move         r2, r41
+  // } else if op == 4 {
+  Jump         L0
+L7:
+  // } else if op == 5 {
+  Const        r42, 5
+  Equal        r43, r17, r42
+  JumpIfFalse  r43, L8
+  // if acc == 0 { pc = arg }
+  Const        r1, 0
+  Equal        r44, r2, r1
+  JumpIfFalse  r44, L0
+  Move         r3, r20
+  // } else if op == 5 {
+  Jump         L0
+L8:
+  // } else if op == 6 {
+  Const        r45, 6
+  Equal        r46, r17, r45
+  JumpIfFalse  r46, L9
+  // pc = arg
+  Move         r3, r20
+  // } else if op == 6 {
+  Jump         L0
+L9:
+  // } else if op == 7 {
+  Const        r47, 7
+  Equal        r48, r17, r47
+  JumpIfFalse  r48, L2
+L2:
+  // return acc
+  Return       r2
+
+  // fun execute(asm: string): int {
+func execute (regs=9)
+  // let parsed = parseAsm(asm)
+  Move         r1, r0
+  Call         r2, parseAsm, r1
+  Move         r3, r2
+  // let bc = compile(parsed)
+  Move         r4, r3
+  Call         r5, compile, r4
+  Move         r6, r5
+  // return run(bc)
+  Move         r7, r6
+  Call         r8, run, r7
+  Return       r8
+
+  // fun main() {
+func main (regs=13)
+  // let examples = [
+  Const        r0, ["LDA   x\nADD   y       ; accumulator = x + y\nSTP\nx:            2\ny:            2", "loop:   LDA   prodt\n        ADD   x\n        STA   prodt\n        LDA   y\n        SUB   one\n        STA   y\n        BRZ   done\n        JMP   loop\ndone:   LDA   prodt   ; to display it\n        STP\nx:            8\ny:            7\nprodt:        0\none:          1", "loop:   LDA   n\n        STA   temp\n        ADD   m\n        STA   n\n        LDA   temp\n        STA   m\n        LDA   count\n        SUB   one\n        BRZ   done\n        STA   count\n        JMP   loop\ndone:   LDA   n       ; to display it\n        STP\nm:            1\nn:            1\ntemp:         0\ncount:        8       ; valid range: 1-11\none:          1", "start:  LDA   load\nADD   car     ; head of list\nSTA   ldcar\nADD   one\nSTA   ldcdr   ; next CONS cell\nldcar:  NOP\nSTA   value\nldcdr:  NOP\nBRZ   done    ; 0 stands for NIL\nSTA   car\nJMP   start\ndone:   LDA   value   ; CAR of last CONS\nSTP\nload:   LDA   0\nvalue:        0\ncar:          28\none:          1\n                        ; order of CONS cells\n                        ; in memory\n                        ; does not matter\n        6\n        0       ; 0 stands for NIL\n        2       ; (CADR ls)\n        26      ; (CDDR ls) -- etc.\n        5\n        20\n        3\n        30\n        1       ; value of (CAR ls)\n        22      ; points to (CDR ls)\n        4\n        24", "LDA  3\nSUB  4\nSTP  0\n         0\n         255", "LDA  3\nSUB  4\nSTP  0\n                0\n                1", "LDA  3\nADD  4\nSTP  0\n                1\n                255"]
+  Move         r1, r0
+  // var i = 0
+  Const        r2, 0
+  Move         r3, r2
+L1:
+  // while i < len(examples) {
+  Const        r4, 7
+  LessInt      r5, r3, r4
+  JumpIfFalse  r5, L0
+  // let res = execute(examples[i])
+  Index        r7, r1, r3
+  Move         r6, r7
+  Call         r8, execute, r6
+  Move         r9, r8
+  // print(str(res))
+  Str          r10, r9
+  Print        r10
+  // i = i + 1
+  Const        r11, 1
+  AddInt       r12, r3, r11
+  Move         r3, r12
+  // while i < len(examples) {
+  Jump         L1
+L0:
+  Return       r0

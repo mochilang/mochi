@@ -1,0 +1,258 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun makeInf(): float {
+func makeInf (regs=10)
+  // var x = 1.0
+  Const        r0, 1.0
+  Move         r1, r0
+  // var i = 0
+  Const        r2, 0
+  Move         r3, r2
+L1:
+  // while i < 400 {
+  Const        r4, 400
+  LessInt      r5, r3, r4
+  JumpIfFalse  r5, L0
+  // x = x * 10.0
+  Const        r6, 10.0
+  MulFloat     r7, r1, r6
+  Move         r1, r7
+  // i = i + 1
+  Const        r8, 1
+  AddInt       r9, r3, r8
+  Move         r3, r9
+  // while i < 400 {
+  Jump         L1
+L0:
+  // return x
+  Return       r1
+
+  // fun makeMax(): float {
+func makeMax (regs=10)
+  // var x = 1.0
+  Const        r0, 1.0
+  Move         r1, r0
+  // var i = 0
+  Const        r2, 0
+  Move         r3, r2
+L1:
+  // while i < 308 {
+  Const        r4, 308
+  LessInt      r5, r3, r4
+  JumpIfFalse  r5, L0
+  // x = x * 10.0
+  Const        r6, 10.0
+  MulFloat     r7, r1, r6
+  Move         r1, r7
+  // i = i + 1
+  Const        r8, 1
+  AddInt       r9, r3, r8
+  Move         r3, r9
+  // while i < 308 {
+  Jump         L1
+L0:
+  // return x
+  Return       r1
+
+  // fun isNaN(x: float): bool { return x != x }
+func isNaN (regs=2)
+  // fun isNaN(x: float): bool { return x != x }
+  NotEqual     r1, r0, r0
+  Return       r1
+
+  // fun validateNaN(n: float, op: string) {
+func validateNaN (regs=12)
+  // if isNaN(n) { print(op + " -> NaN") } else { print("!!! Expected NaN from", op, " Found", n) }
+  Move         r2, r0
+  Call         r3, isNaN, r2
+  JumpIfFalse  r3, L0
+  Const        r4, " -> NaN"
+  Add          r5, r1, r4
+  Print        r5
+  Jump         L1
+L0:
+  Const        r10, "!!! Expected NaN from"
+  Move         r6, r10
+  Move         r7, r1
+  Const        r11, " Found"
+  Move         r8, r11
+  Move         r9, r0
+  PrintN       r6, 4, r6
+L1:
+  Return       r0
+
+  // fun validateZero(n: float, op: string) {
+func validateZero (regs=12)
+  // if n == 0 { print(op + " -> 0") } else { print("!!! Expected 0 from", op, " Found", n) }
+  Const        r2, 0
+  Equal        r3, r0, r2
+  JumpIfFalse  r3, L0
+  Const        r4, " -> 0"
+  Add          r5, r1, r4
+  Print        r5
+  Jump         L1
+L0:
+  Const        r10, "!!! Expected 0 from"
+  Move         r6, r10
+  Move         r7, r1
+  Const        r11, " Found"
+  Move         r8, r11
+  Move         r9, r0
+  PrintN       r6, 4, r6
+L1:
+  Return       r0
+
+  // fun validateGT(a: float, b: float, op: string) {
+func validateGT (regs=9)
+  // if a > b { print(op) } else { print("!!! Expected", op, " Found not true.") }
+  Less         r3, r1, r0
+  JumpIfFalse  r3, L0
+  Print        r2
+  Jump         L1
+L0:
+  Const        r7, "!!! Expected"
+  Move         r4, r7
+  Move         r5, r2
+  Const        r8, " Found not true."
+  Move         r6, r8
+  PrintN       r4, 3, r4
+L1:
+  Return       r0
+
+  // fun validateNE(a: float, b: float, op: string) {
+func validateNE (regs=9)
+  // if a == b { print("!!! Expected", op, " Found not true.") } else { print(op) }
+  Equal        r3, r0, r1
+  JumpIfFalse  r3, L0
+  Const        r7, "!!! Expected"
+  Move         r4, r7
+  Move         r5, r2
+  Const        r8, " Found not true."
+  Move         r6, r8
+  PrintN       r4, 3, r4
+  Jump         L1
+L0:
+  Print        r2
+L1:
+  Return       r0
+
+  // fun validateEQ(a: float, b: float, op: string) {
+func validateEQ (regs=9)
+  // if a == b { print(op) } else { print("!!! Expected", op, " Found not true.") }
+  Equal        r3, r0, r1
+  JumpIfFalse  r3, L0
+  Print        r2
+  Jump         L1
+L0:
+  Const        r7, "!!! Expected"
+  Move         r4, r7
+  Move         r5, r2
+  Const        r8, " Found not true."
+  Move         r6, r8
+  PrintN       r4, 3, r4
+L1:
+  Return       r0
+
+  // fun main() {
+func main (regs=72)
+  // let negZero = -0.0
+  Const        r0, 0.0
+  NegFloat     r1, r0
+  Move         r2, r1
+  // let posInf = makeInf()
+  Call         r3, makeInf, 
+  Move         r4, r3
+  // let negInf = -posInf
+  Neg          r5, r4
+  Move         r6, r5
+  // let nan = posInf / posInf
+  Div          r7, r4, r4
+  Move         r8, r7
+  // let maxVal = makeMax()
+  Call         r9, makeMax, 
+  Move         r10, r9
+  // print(negZero, posInf, negInf, nan)
+  Move         r11, r2
+  Move         r12, r4
+  Move         r13, r6
+  Move         r14, r8
+  PrintN       r11, 4, r11
+  // print(negZero, posInf, negInf, nan)
+  Move         r15, r2
+  Move         r16, r4
+  Move         r17, r6
+  Move         r18, r8
+  PrintN       r15, 4, r15
+  // print("")
+  Const        r19, ""
+  Print        r19
+  // validateNaN(negInf + posInf, "-Inf + Inf")
+  Add          r22, r6, r4
+  Move         r20, r22
+  Const        r23, "-Inf + Inf"
+  Move         r21, r23
+  Call2        r24, validateNaN, r20, r21
+  // validateNaN(0.0 * posInf, "0 * Inf")
+  Const        r0, 0.0
+  MulFloat     r27, r0, r4
+  Move         r25, r27
+  Const        r28, "0 * Inf"
+  Move         r26, r28
+  Call2        r29, validateNaN, r25, r26
+  // validateNaN(posInf / posInf, "Inf / Inf")
+  Div          r32, r4, r4
+  Move         r30, r32
+  Const        r33, "Inf / Inf"
+  Move         r31, r33
+  Call2        r34, validateNaN, r30, r31
+  // validateNaN(posInf % 1.0, "Inf % 1")
+  Const        r37, 1.0
+  ModFloat     r38, r4, r37
+  Move         r35, r38
+  Const        r39, "Inf % 1"
+  Move         r36, r39
+  Call2        r40, validateNaN, r35, r36
+  // validateNaN(1.0 + nan, "1 + NaN")
+  Const        r37, 1.0
+  AddFloat     r43, r37, r8
+  Move         r41, r43
+  Const        r44, "1 + NaN"
+  Move         r42, r44
+  Call2        r45, validateNaN, r41, r42
+  // validateZero(1.0 / posInf, "1 / Inf")
+  Const        r37, 1.0
+  DivFloat     r48, r37, r4
+  Move         r46, r48
+  Const        r49, "1 / Inf"
+  Move         r47, r49
+  Call2        r50, validateZero, r46, r47
+  // validateGT(posInf, maxVal, "Inf > max value")
+  Move         r51, r4
+  Move         r52, r10
+  Const        r54, "Inf > max value"
+  Move         r53, r54
+  Call         r55, validateGT, r51, r52, r53
+  // validateGT(-maxVal, negInf, "-Inf < max neg value")
+  Neg          r59, r10
+  Move         r56, r59
+  Move         r57, r6
+  Const        r60, "-Inf < max neg value"
+  Move         r58, r60
+  Call         r61, validateGT, r56, r57, r58
+  // validateNE(nan, nan, "NaN != NaN")
+  Move         r62, r8
+  Move         r63, r8
+  Const        r65, "NaN != NaN"
+  Move         r64, r65
+  Call         r66, validateNE, r62, r63, r64
+  // validateEQ(negZero, 0.0, "-0 == 0")
+  Move         r67, r2
+  Const        r0, 0.0
+  Move         r68, r0
+  Const        r70, "-0 == 0"
+  Move         r69, r70
+  Call         r71, validateEQ, r67, r68, r69
+  Return       r0

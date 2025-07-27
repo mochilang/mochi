@@ -1,0 +1,328 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun chr(n: int): string {
+func chr (regs=43)
+  // let upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+  Const        r1, "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+  Move         r2, r1
+  // let lower = "abcdefghijklmnopqrstuvwxyz"
+  Const        r3, "abcdefghijklmnopqrstuvwxyz"
+  Move         r4, r3
+  // if n >= 65 && n < 91 { return upper[n-65:n-64] }
+  Const        r5, 65
+  LessEq       r6, r5, r0
+  Const        r7, 91
+  Less         r8, r0, r7
+  Move         r9, r6
+  JumpIfFalse  r9, L0
+  Move         r9, r8
+L0:
+  JumpIfFalse  r9, L1
+  Const        r5, 65
+  Sub          r11, r0, r5
+  Move         r10, r11
+  Const        r13, 64
+  Sub          r14, r0, r13
+  Move         r12, r14
+  Slice        r15, r2, r10, r12
+  Return       r15
+L1:
+  // if n >= 97 && n < 123 { return lower[n-97:n-96] }
+  Const        r16, 97
+  LessEq       r17, r16, r0
+  Const        r18, 123
+  Less         r19, r0, r18
+  Move         r20, r17
+  JumpIfFalse  r20, L2
+  Move         r20, r19
+L2:
+  JumpIfFalse  r20, L3
+  Const        r16, 97
+  Sub          r22, r0, r16
+  Move         r21, r22
+  Const        r24, 96
+  Sub          r25, r0, r24
+  Move         r23, r25
+  Slice        r26, r4, r21, r23
+  Return       r26
+L3:
+  // if n == 32 { return " " }
+  Const        r27, 32
+  Equal        r28, r0, r27
+  JumpIfFalse  r28, L4
+  Const        r29, " "
+  Return       r29
+L4:
+  // if n == 33 { return "!" }
+  Const        r30, 33
+  Equal        r31, r0, r30
+  JumpIfFalse  r31, L5
+  Const        r32, "!"
+  Return       r32
+L5:
+  // if n == 44 { return "," }
+  Const        r33, 44
+  Equal        r34, r0, r33
+  JumpIfFalse  r34, L6
+  Const        r35, ","
+  Return       r35
+L6:
+  // if n == 13 { return "" }
+  Const        r36, 13
+  Equal        r37, r0, r36
+  JumpIfFalse  r37, L7
+  Const        r38, ""
+  Return       r38
+L7:
+  // if n == 10 { return "\n" }
+  Const        r39, 10
+  Equal        r40, r0, r39
+  JumpIfFalse  r40, L8
+  Const        r41, "\n"
+  Return       r41
+L8:
+  // return "?"
+  Const        r42, "?"
+  Return       r42
+
+  // fun bf(dLen: int, code: string): string {
+func bf (regs=77)
+  // var ds: list<int> = []
+  Const        r2, []
+  Move         r3, r2
+  // for i in 0..dLen {
+  Const        r4, 0
+  Move         r5, r4
+L1:
+  LessInt      r6, r5, r0
+  JumpIfFalse  r6, L0
+  // ds = append(ds, 0)
+  Const        r4, 0
+  Append       r7, r3, r4
+  Move         r3, r7
+  // for i in 0..dLen {
+  Const        r8, 1
+  AddInt       r9, r5, r8
+  Move         r5, r9
+  Jump         L1
+L0:
+  // var dp = 0
+  Const        r4, 0
+  Move         r10, r4
+  // var ip = 0
+  Const        r4, 0
+  Move         r11, r4
+  // var out = ""
+  Const        r12, ""
+  Move         r13, r12
+L15:
+  // while ip < len(code) {
+  Len          r14, r1
+  LessInt      r15, r11, r14
+  JumpIfFalse  r15, L2
+  // let ch = code[ip:ip+1]
+  Move         r16, r11
+  Const        r18, 1
+  AddInt       r19, r11, r18
+  Move         r17, r19
+  Slice        r20, r1, r16, r17
+  Move         r21, r20
+  // if ch == ">" {
+  Const        r22, ">"
+  Equal        r23, r21, r22
+  JumpIfFalse  r23, L3
+  // dp = dp + 1
+  Const        r18, 1
+  AddInt       r24, r10, r18
+  Move         r10, r24
+  // if ch == ">" {
+  Jump         L4
+L3:
+  // } else if ch == "<" {
+  Const        r25, "<"
+  Equal        r26, r21, r25
+  JumpIfFalse  r26, L5
+  // dp = dp - 1
+  Const        r18, 1
+  SubInt       r27, r10, r18
+  Move         r10, r27
+  // } else if ch == "<" {
+  Jump         L4
+L5:
+  // } else if ch == "+" {
+  Const        r28, "+"
+  Equal        r29, r21, r28
+  JumpIfFalse  r29, L6
+  // ds[dp] = ds[dp] + 1
+  Index        r30, r3, r10
+  Const        r18, 1
+  Add          r31, r30, r18
+  SetIndex     r3, r10, r31
+  // } else if ch == "+" {
+  Jump         L4
+L6:
+  // } else if ch == "-" {
+  Const        r32, "-"
+  Equal        r33, r21, r32
+  JumpIfFalse  r33, L7
+  // ds[dp] = ds[dp] - 1
+  Index        r34, r3, r10
+  Const        r18, 1
+  Sub          r35, r34, r18
+  SetIndex     r3, r10, r35
+  // } else if ch == "-" {
+  Jump         L4
+L7:
+  // } else if ch == "." {
+  Const        r36, "."
+  Equal        r37, r21, r36
+  JumpIfFalse  r37, L8
+  // out = out + chr(ds[dp])
+  Index        r39, r3, r10
+  Move         r38, r39
+  Call         r40, chr, r38
+  Add          r41, r13, r40
+  Move         r13, r41
+  // } else if ch == "." {
+  Jump         L4
+L8:
+  // } else if ch == "," {
+  Const        r42, ","
+  Equal        r43, r21, r42
+  JumpIfFalse  r43, L9
+  Jump         L4
+L9:
+  // } else if ch == "[" {
+  Const        r44, "["
+  Equal        r45, r21, r44
+  JumpIfFalse  r45, L10
+  // if ds[dp] == 0 {
+  Index        r46, r3, r10
+  Const        r4, 0
+  Equal        r47, r46, r4
+  JumpIfFalse  r47, L4
+  // var nc = 1
+  Const        r18, 1
+  Move         r48, r18
+L12:
+  // while nc > 0 {
+  Const        r4, 0
+  LessInt      r49, r4, r48
+  JumpIfFalse  r49, L4
+  // ip = ip + 1
+  Const        r18, 1
+  AddInt       r50, r11, r18
+  Move         r11, r50
+  // let cc = code[ip:ip+1]
+  Move         r51, r11
+  Const        r18, 1
+  AddInt       r53, r11, r18
+  Move         r52, r53
+  Slice        r54, r1, r51, r52
+  Move         r55, r54
+  // if cc == "[" { nc = nc + 1 }
+  Const        r44, "["
+  Equal        r56, r55, r44
+  JumpIfFalse  r56, L11
+  Const        r18, 1
+  AddInt       r57, r48, r18
+  Move         r48, r57
+  Jump         L12
+L11:
+  // else if cc == "]" { nc = nc - 1 }
+  Const        r58, "]"
+  Equal        r59, r55, r58
+  JumpIfFalse  r59, L12
+  Const        r18, 1
+  SubInt       r60, r48, r18
+  Move         r48, r60
+  // while nc > 0 {
+  Jump         L12
+L10:
+  // } else if ch == "]" {
+  Const        r58, "]"
+  Equal        r61, r21, r58
+  JumpIfFalse  r61, L4
+  // if ds[dp] != 0 {
+  Index        r62, r3, r10
+  Const        r4, 0
+  NotEqual     r63, r62, r4
+  JumpIfFalse  r63, L4
+  // var nc = 1
+  Const        r18, 1
+  Move         r64, r18
+L14:
+  // while nc > 0 {
+  Const        r4, 0
+  LessInt      r65, r4, r64
+  JumpIfFalse  r65, L4
+  // ip = ip - 1
+  Const        r18, 1
+  SubInt       r66, r11, r18
+  Move         r11, r66
+  // let cc = code[ip:ip+1]
+  Move         r67, r11
+  Const        r18, 1
+  AddInt       r69, r11, r18
+  Move         r68, r69
+  Slice        r70, r1, r67, r68
+  Move         r71, r70
+  // if cc == "]" { nc = nc + 1 }
+  Const        r58, "]"
+  Equal        r72, r71, r58
+  JumpIfFalse  r72, L13
+  Const        r18, 1
+  AddInt       r73, r64, r18
+  Move         r64, r73
+  Jump         L14
+L13:
+  // else if cc == "[" { nc = nc - 1 }
+  Const        r44, "["
+  Equal        r74, r71, r44
+  JumpIfFalse  r74, L14
+  Const        r18, 1
+  SubInt       r75, r64, r18
+  Move         r64, r75
+  // while nc > 0 {
+  Jump         L14
+L4:
+  // ip = ip + 1
+  Const        r18, 1
+  AddInt       r76, r11, r18
+  Move         r11, r76
+  // while ip < len(code) {
+  Jump         L15
+L2:
+  // return out
+  Return       r13
+
+  // fun main() {
+func main (regs=13)
+  // let prog = "++++++++++[>+>+++>++++>+++++++>++++++++>+++++++++>++\n" +
+  Const        r0, "++++++++++[>+>+++>++++>+++++++>++++++++>+++++++++>++\n"
+  // "++++++++>+++++++++++>++++++++++++<<<<<<<<<-]>>>>+.>>>\n" +
+  Const        r1, "++++++++>+++++++++++>++++++++++++<<<<<<<<<-]>>>>+.>>>\n"
+  // let prog = "++++++++++[>+>+++>++++>+++++++>++++++++>+++++++++>++\n" +
+  Const        r2, "++++++++++[>+>+++>++++>+++++++>++++++++>+++++++++>++\n++++++++>+++++++++++>++++++++++++<<<<<<<<<-]>>>>+.>>>\n"
+  // ">+..<.<++++++++.>>>+.<<+.<<<<++++.<++.>>>+++++++.>>>.+++.\n" +
+  Const        r3, ">+..<.<++++++++.>>>+.<<+.<<<<++++.<++.>>>+++++++.>>>.+++.\n"
+  // "++++++++>+++++++++++>++++++++++++<<<<<<<<<-]>>>>+.>>>\n" +
+  Const        r4, "++++++++++[>+>+++>++++>+++++++>++++++++>+++++++++>++\n++++++++>+++++++++++>++++++++++++<<<<<<<<<-]>>>>+.>>>\n>+..<.<++++++++.>>>+.<<+.<<<<++++.<++.>>>+++++++.>>>.+++.\n"
+  // "<+++++++.--------.<<<<<+.<+++.---."
+  Const        r5, "<+++++++.--------.<<<<<+.<+++.---."
+  // ">+..<.<++++++++.>>>+.<<+.<<<<++++.<++.>>>+++++++.>>>.+++.\n" +
+  Const        r6, "++++++++++[>+>+++>++++>+++++++>++++++++>+++++++++>++\n++++++++>+++++++++++>++++++++++++<<<<<<<<<-]>>>>+.>>>\n>+..<.<++++++++.>>>+.<<+.<<<<++++.<++.>>>+++++++.>>>.+++.\n<+++++++.--------.<<<<<+.<+++.---."
+  // let prog = "++++++++++[>+>+++>++++>+++++++>++++++++>+++++++++>++\n" +
+  Move         r7, r6
+  // let out = bf(10, prog)
+  Const        r10, 10
+  Move         r8, r10
+  Move         r9, r7
+  Call2        r11, bf, r8, r9
+  Move         r12, r11
+  // print(out)
+  Print        r12
+  Return       r0

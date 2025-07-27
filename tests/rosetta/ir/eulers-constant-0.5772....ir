@@ -1,0 +1,133 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun ln(x: float): float {
+func ln (regs=34)
+  // var k = 0.0
+  Const        r1, 0.0
+  Move         r2, r1
+  // var v = x
+  Move         r3, r0
+L1:
+  // while v >= 2.0 {
+  Const        r4, 2.0
+  LessEqFloat  r5, r4, r3
+  JumpIfFalse  r5, L0
+  // v = v / 2.0
+  Const        r4, 2.0
+  DivFloat     r6, r3, r4
+  Move         r3, r6
+  // k = k + 1.0
+  Const        r7, 1.0
+  AddFloat     r8, r2, r7
+  Move         r2, r8
+  // while v >= 2.0 {
+  Jump         L1
+L0:
+  // while v < 1.0 {
+  Const        r7, 1.0
+  LessFloat    r9, r3, r7
+  JumpIfFalse  r9, L2
+  // v = v * 2.0
+  Const        r4, 2.0
+  MulFloat     r10, r3, r4
+  Move         r3, r10
+  // k = k - 1.0
+  Const        r7, 1.0
+  SubFloat     r11, r2, r7
+  Move         r2, r11
+  // while v < 1.0 {
+  Jump         L0
+L2:
+  // let z = (v - 1.0) / (v + 1.0)
+  Const        r7, 1.0
+  SubFloat     r12, r3, r7
+  Const        r7, 1.0
+  AddFloat     r13, r3, r7
+  DivFloat     r14, r12, r13
+  Move         r15, r14
+  // var zpow = z
+  Move         r16, r15
+  // var sum = z
+  Move         r17, r15
+  // var i = 3
+  Const        r18, 3
+  Move         r19, r18
+L4:
+  // while i <= 9 {
+  Const        r20, 9
+  LessEqInt    r21, r19, r20
+  JumpIfFalse  r21, L3
+  // zpow = zpow * z * z
+  MulFloat     r22, r16, r15
+  MulFloat     r23, r22, r15
+  Move         r16, r23
+  // sum = sum + zpow / (i as float)
+  Cast         r24, r19, float
+  DivFloat     r25, r16, r24
+  AddFloat     r26, r17, r25
+  Move         r17, r26
+  // i = i + 2
+  Const        r27, 2
+  AddInt       r28, r19, r27
+  Move         r19, r28
+  // while i <= 9 {
+  Jump         L4
+L3:
+  // let ln2 = 0.6931471805599453
+  Const        r29, 0.6931471805599453
+  Move         r30, r29
+  // return (k * ln2) + 2.0 * sum
+  MulFloat     r31, r2, r30
+  Const        r4, 2.0
+  MulFloat     r32, r4, r17
+  AddFloat     r33, r31, r32
+  Return       r33
+
+  // fun harmonic(n: int): float {
+func harmonic (regs=11)
+  // var sum = 0.0
+  Const        r1, 0.0
+  Move         r2, r1
+  // var i = 1
+  Const        r3, 1
+  Move         r4, r3
+L1:
+  // while i <= n {
+  LessEq       r5, r4, r0
+  JumpIfFalse  r5, L0
+  // sum = sum + 1.0 / (i as float)
+  Const        r6, 1.0
+  Cast         r7, r4, float
+  DivFloat     r8, r6, r7
+  AddFloat     r9, r2, r8
+  Move         r2, r9
+  // i = i + 1
+  Const        r3, 1
+  AddInt       r10, r4, r3
+  Move         r4, r10
+  // while i <= n {
+  Jump         L1
+L0:
+  // return sum
+  Return       r2
+
+  // fun main() {
+func main (regs=10)
+  // let n = 100000
+  Const        r0, 100000
+  Move         r1, r0
+  // let gamma = harmonic(n) - ln(n as float)
+  Move         r2, r1
+  Call         r3, harmonic, r2
+  Cast         r5, r1, float
+  Move         r4, r5
+  Call         r6, ln, r4
+  Sub          r7, r3, r6
+  Move         r8, r7
+  // print(str(gamma))
+  Str          r9, r8
+  Print        r9
+  Return       r0

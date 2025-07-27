@@ -1,0 +1,183 @@
+func main (regs=1)
+  // libMain()
+  Call         r0, libMain, 
+  Return       r0
+
+  // fun hailstone(n: int): list<int> {
+func hailstone (regs=16)
+  // var seq: list<int> = []
+  Const        r1, []
+  Move         r2, r1
+  // var x = n
+  Move         r3, r0
+  // seq = append(seq, x)
+  Append       r4, r2, r3
+  Move         r2, r4
+L3:
+  // while x > 1 {
+  Const        r5, 1
+  Less         r6, r5, r3
+  JumpIfFalse  r6, L0
+  // if x % 2 == 0 {
+  Const        r7, 2
+  Mod          r8, r3, r7
+  Const        r9, 0
+  Equal        r10, r8, r9
+  JumpIfFalse  r10, L1
+  // x = x / 2
+  Const        r7, 2
+  Div          r11, r3, r7
+  Move         r3, r11
+  // if x % 2 == 0 {
+  Jump         L2
+L1:
+  // x = 3 * x + 1
+  Const        r12, 3
+  Mul          r13, r12, r3
+  Const        r5, 1
+  Add          r14, r13, r5
+  Move         r3, r14
+L2:
+  // seq = append(seq, x)
+  Append       r15, r2, r3
+  Move         r2, r15
+  // while x > 1 {
+  Jump         L3
+L0:
+  // return seq
+  Return       r2
+
+  // fun listString(xs: list<int>): string {
+func listString (regs=19)
+  // var s = "["
+  Const        r1, "["
+  Move         r2, r1
+  // var i = 0
+  Const        r3, 0
+  Move         r4, r3
+L2:
+  // while i < len(xs) {
+  Len          r5, r0
+  LessInt      r6, r4, r5
+  JumpIfFalse  r6, L0
+  // s = s + str(xs[i])
+  Index        r7, r0, r4
+  Str          r8, r7
+  Add          r9, r2, r8
+  Move         r2, r9
+  // if i < len(xs) - 1 { s = s + " " }
+  Len          r10, r0
+  Const        r11, 1
+  SubInt       r12, r10, r11
+  LessInt      r13, r4, r12
+  JumpIfFalse  r13, L1
+  Const        r14, " "
+  Add          r15, r2, r14
+  Move         r2, r15
+L1:
+  // i = i + 1
+  Const        r11, 1
+  AddInt       r16, r4, r11
+  Move         r4, r16
+  // while i < len(xs) {
+  Jump         L2
+L0:
+  // s = s + "]"
+  Const        r17, "]"
+  Add          r18, r2, r17
+  Move         r2, r18
+  // return s
+  Return       r2
+
+  // fun libMain() {
+func libMain (regs=50)
+  // let seq = hailstone(27)
+  Const        r1, 27
+  Move         r0, r1
+  Call         r2, hailstone, r0
+  Move         r3, r2
+  // print("")
+  Const        r4, ""
+  Print        r4
+  // print("Hailstone sequence for the number 27:")
+  Const        r5, "Hailstone sequence for the number 27:"
+  Print        r5
+  // print("  has " + str(len(seq)) + " elements")
+  Const        r6, "  has "
+  Len          r7, r3
+  Str          r8, r7
+  Add          r9, r6, r8
+  Const        r10, " elements"
+  Add          r11, r9, r10
+  Print        r11
+  // print("  starts with " + listString(seq[0:4]))
+  Const        r12, "  starts with "
+  Const        r15, 0
+  Move         r14, r15
+  Const        r17, 4
+  Move         r16, r17
+  Slice        r18, r3, r14, r16
+  Move         r13, r18
+  Call         r19, listString, r13
+  Add          r20, r12, r19
+  Print        r20
+  // print("  ends with " + listString(seq[len(seq)-4:len(seq)]))
+  Const        r21, "  ends with "
+  Len          r24, r3
+  Const        r17, 4
+  SubInt       r25, r24, r17
+  Move         r23, r25
+  Len          r27, r3
+  Move         r26, r27
+  Slice        r28, r3, r23, r26
+  Move         r22, r28
+  Call         r29, listString, r22
+  Add          r30, r21, r29
+  Print        r30
+  // var longest = 0
+  Const        r15, 0
+  Move         r31, r15
+  // var length = 0
+  Const        r15, 0
+  Move         r32, r15
+  // var i = 1
+  Const        r33, 1
+  Move         r34, r33
+L2:
+  // while i < 100000 {
+  Const        r35, 100000
+  LessInt      r36, r34, r35
+  JumpIfFalse  r36, L0
+  // let l = len(hailstone(i))
+  Move         r37, r34
+  Call         r38, hailstone, r37
+  Len          r39, r38
+  Move         r40, r39
+  // if l > length {
+  LessInt      r41, r32, r40
+  JumpIfFalse  r41, L1
+  // longest = i
+  Move         r31, r34
+  // length = l
+  Move         r32, r40
+L1:
+  // i = i + 1
+  Const        r33, 1
+  AddInt       r42, r34, r33
+  Move         r34, r42
+  // while i < 100000 {
+  Jump         L2
+L0:
+  // print("")
+  Const        r4, ""
+  Print        r4
+  // print(str(longest) + " has the longest Hailstone sequence, its length being " + str(length) + ".")
+  Str          r43, r31
+  Const        r44, " has the longest Hailstone sequence, its length being "
+  Add          r45, r43, r44
+  Str          r46, r32
+  Add          r47, r45, r46
+  Const        r48, "."
+  Add          r49, r47, r48
+  Print        r49
+  Return       r0

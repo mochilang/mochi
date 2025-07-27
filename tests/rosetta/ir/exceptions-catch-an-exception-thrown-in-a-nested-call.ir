@@ -1,0 +1,150 @@
+func main (regs=3)
+  // var bazCall = 0
+  Const        r1, 0
+  Move         r0, r1
+  SetGlobal    0,0,0,0
+  // main()
+  Call         r2, main, 
+  Return       r0
+
+  // fun baz(): string {
+func baz (regs=13)
+  // bazCall = bazCall + 1
+  Const        r1, 1
+  Add          r2, r0, r1
+  Move         r0, r2
+  SetGlobal    0,0,0,0
+  // print("baz: start")
+  Const        r3, "baz: start"
+  Print        r3
+  // if bazCall == 1 {
+  Const        r1, 1
+  Equal        r4, r0, r1
+  JumpIfFalse  r4, L0
+  // print("baz: raising U0")
+  Const        r5, "baz: raising U0"
+  Print        r5
+  // return "U0"
+  Const        r6, "U0"
+  Return       r6
+L0:
+  // if bazCall == 2 {
+  Const        r7, 2
+  Equal        r8, r0, r7
+  JumpIfFalse  r8, L1
+  // print("baz: raising U1")
+  Const        r9, "baz: raising U1"
+  Print        r9
+  // return "U1"
+  Const        r10, "U1"
+  Return       r10
+L1:
+  // print("baz: end")
+  Const        r11, "baz: end"
+  Print        r11
+  // return ""
+  Const        r12, ""
+  Return       r12
+
+  // fun bar(): string {
+func bar (regs=9)
+  // print("bar: start")
+  Const        r1, "bar: start"
+  Print        r1
+  // let err = baz()
+  Call         r2, baz, 
+  Move         r3, r2
+  // if len(err) > 0 {
+  Len          r4, r3
+  Const        r5, 0
+  LessInt      r6, r5, r4
+  JumpIfFalse  r6, L0
+  // return err
+  Return       r3
+L0:
+  // print("bar: end")
+  Const        r7, "bar: end"
+  Print        r7
+  // return ""
+  Const        r8, ""
+  Return       r8
+
+  // fun foo(): string {
+func foo (regs=16)
+  // print("foo: start")
+  Const        r1, "foo: start"
+  Print        r1
+  // var err = bar()
+  Call         r2, bar, 
+  Move         r3, r2
+  // if err == "U0" {
+  Const        r4, "U0"
+  Equal        r5, r3, r4
+  JumpIfFalse  r5, L0
+  // print("foo: caught U0")
+  Const        r6, "foo: caught U0"
+  Print        r6
+  // if err == "U0" {
+  Jump         L1
+L0:
+  // } else if len(err) > 0 {
+  Len          r7, r3
+  Const        r8, 0
+  LessInt      r9, r8, r7
+  JumpIfFalse  r9, L1
+  // return err
+  Return       r3
+L1:
+  // err = bar()
+  Call         r10, bar, 
+  Move         r3, r10
+  // if err == "U0" {
+  Const        r4, "U0"
+  Equal        r11, r3, r4
+  JumpIfFalse  r11, L2
+  // print("foo: caught U0")
+  Const        r6, "foo: caught U0"
+  Print        r6
+  // if err == "U0" {
+  Jump         L3
+L2:
+  // } else if len(err) > 0 {
+  Len          r12, r3
+  Const        r8, 0
+  LessInt      r13, r8, r12
+  JumpIfFalse  r13, L3
+  // return err
+  Return       r3
+L3:
+  // print("foo: end")
+  Const        r14, "foo: end"
+  Print        r14
+  // return ""
+  Const        r15, ""
+  Return       r15
+
+  // fun main() {
+func main (regs=10)
+  // print("main: start")
+  Const        r1, "main: start"
+  Print        r1
+  // let err = foo()
+  Call         r2, foo, 
+  Move         r3, r2
+  // if len(err) > 0 {
+  Len          r4, r3
+  Const        r5, 0
+  LessInt      r6, r5, r4
+  JumpIfFalse  r6, L0
+  // print("main: unhandled " + err)
+  Const        r7, "main: unhandled "
+  Add          r8, r7, r3
+  Print        r8
+  // if len(err) > 0 {
+  Jump         L1
+L0:
+  // print("main: success")
+  Const        r9, "main: success"
+  Print        r9
+L1:
+  Return       r0

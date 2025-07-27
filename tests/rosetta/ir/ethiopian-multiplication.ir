@@ -1,0 +1,72 @@
+func main (regs=8)
+  // print("17 ethiopian 34 = " + str(ethMulti(17, 34)))
+  Const        r0, "17 ethiopian 34 = "
+  Const        r3, 17
+  Move         r1, r3
+  Const        r4, 34
+  Move         r2, r4
+  Call2        r5, ethMulti, r1, r2
+  Str          r6, r5
+  Add          r7, r0, r6
+  Print        r7
+  Return       r0
+
+  // fun halve(i: int): int {
+func halve (regs=3)
+  // return i / 2
+  Const        r1, 2
+  Div          r2, r0, r1
+  Return       r2
+
+  // fun double(i: int): int {
+func double (regs=3)
+  // return i * 2
+  Const        r1, 2
+  Mul          r2, r0, r1
+  Return       r2
+
+  // fun isEven(i: int): bool {
+func isEven (regs=5)
+  // return i % 2 == 0
+  Const        r1, 2
+  Mod          r2, r0, r1
+  Const        r3, 0
+  Equal        r4, r2, r3
+  Return       r4
+
+  // fun ethMulti(i: int, j: int): int {
+func ethMulti (regs=15)
+  // var r = 0
+  Const        r2, 0
+  Move         r3, r2
+  // var x = i
+  Move         r4, r0
+  // var y = j
+  Move         r5, r1
+L2:
+  // while x > 0 {
+  Const        r2, 0
+  Less         r6, r2, r4
+  JumpIfFalse  r6, L0
+  // if !isEven(x) {
+  Move         r7, r4
+  Call         r8, isEven, r7
+  Not          r9, r8
+  JumpIfFalse  r9, L1
+  // r = r + y
+  Add          r10, r3, r5
+  Move         r3, r10
+L1:
+  // x = halve(x)
+  Move         r11, r4
+  Call         r12, halve, r11
+  Move         r4, r12
+  // y = double(y)
+  Move         r13, r5
+  Call         r14, double, r13
+  Move         r5, r14
+  // while x > 0 {
+  Jump         L2
+L0:
+  // return r
+  Return       r3

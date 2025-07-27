@@ -1,0 +1,353 @@
+func main (regs=28)
+  // var zero: bigint = 0
+  Const        r9, 0
+  Cast         r10, r9, bigint
+  Move         r0, r10
+  SetGlobal    0,0,0,0
+  // var one: bigint = 1
+  Const        r11, 1
+  Cast         r12, r11, bigint
+  Move         r1, r12
+  SetGlobal    1,1,0,0
+  // var two: bigint = 2
+  Const        r13, 2
+  Cast         r14, r13, bigint
+  Move         r2, r14
+  SetGlobal    2,2,0,0
+  // var three: bigint = 3
+  Const        r15, 3
+  Cast         r16, r15, bigint
+  Move         r3, r16
+  SetGlobal    3,3,0,0
+  // var four: bigint = 4
+  Const        r17, 4
+  Cast         r18, r17, bigint
+  Move         r4, r18
+  SetGlobal    4,4,0,0
+  // var five: bigint = 5
+  Const        r19, 5
+  Cast         r20, r19, bigint
+  Move         r5, r20
+  SetGlobal    5,5,0,0
+  // var six: bigint = 6
+  Const        r21, 6
+  Cast         r22, r21, bigint
+  Move         r6, r22
+  SetGlobal    6,6,0,0
+  // var ten: bigint = 10
+  Const        r23, 10
+  Cast         r24, r23, bigint
+  Move         r7, r24
+  SetGlobal    7,7,0,0
+  // var k100: bigint = 100000
+  Const        r25, 100000
+  Cast         r26, r25, bigint
+  Move         r8, r26
+  SetGlobal    8,8,0,0
+  // main()
+  Call         r27, main, 
+  Return       r0
+
+  // fun gcd(a: bigint, b: bigint): bigint {
+func gcd (regs=16)
+  // var x: bigint = a
+  Move         r11, r9
+  // var y: bigint = b
+  Move         r12, r10
+L1:
+  // while y != zero {
+  NotEqual     r13, r12, r0
+  JumpIfFalse  r13, L0
+  // var t: bigint = x % y
+  Mod          r14, r11, r12
+  Move         r15, r14
+  // x = y
+  Move         r11, r12
+  // y = t
+  Move         r12, r15
+  // while y != zero {
+  Jump         L1
+L0:
+  // return x
+  Return       r11
+
+  // fun absBig(x: bigint): bigint {
+func absBig (regs=12)
+  // if x < zero { return zero - x }
+  Less         r10, r9, r0
+  JumpIfFalse  r10, L0
+  Sub          r11, r0, r9
+  Return       r11
+L0:
+  // return x
+  Return       r9
+
+  // fun pollardRho(n: bigint, c: bigint): bigint {
+func pollardRho (regs=45)
+  // fun g(x: bigint, y: bigint): bigint {
+  Move         r11, r10
+  Move         r12, r9
+  MakeClosure  r13, g, 2, r11
+  // var x: bigint = 2
+  Const        r14, 2
+  Move         r15, r14
+  // var y: bigint = 2
+  Const        r14, 2
+  Move         r16, r14
+  // var z: bigint = 1
+  Const        r17, 1
+  Move         r18, r17
+  // var d: bigint = 0
+  Const        r19, 0
+  Move         r20, r19
+  // var count = 0
+  Const        r19, 0
+  Move         r21, r19
+L0:
+  // while true {
+  Const        r22, true
+  // x = g(x, n)
+  Move         r23, r15
+  Move         r24, r9
+  CallV        r25, r13, 2, r23
+  Move         r15, r25
+  // y = g(g(y, n), n)
+  Move         r28, r16
+  Move         r29, r9
+  CallV        r30, r13, 2, r28
+  Move         r26, r30
+  Move         r27, r9
+  CallV        r31, r13, 2, r26
+  Move         r16, r31
+  // d = absBig(x - y)
+  Sub          r33, r15, r16
+  Move         r32, r33
+  Call         r34, absBig, r32
+  Move         r20, r34
+  // d = d % n
+  Mod          r35, r20, r9
+  Move         r20, r35
+  // z = z * d
+  Mul          r36, r18, r20
+  Move         r18, r36
+  // count = count + 1
+  Const        r17, 1
+  AddInt       r37, r21, r17
+  Move         r21, r37
+  // if count == 100 {
+  Const        r38, 100
+  EqualInt     r39, r21, r38
+  JumpIfFalse  r39, L0
+  // d = gcd(z, n)
+  Move         r40, r18
+  Move         r41, r9
+  Call2        r42, gcd, r40, r41
+  Move         r20, r42
+  // if d != one { break }
+  NotEqual     r43, r20, r1
+  JumpIfFalse  r43, L1
+  Jump         L2
+L1:
+  // z = one
+  Move         r18, r1
+  // count = 0
+  Const        r19, 0
+  Move         r21, r19
+  // while true {
+  Jump         L0
+L2:
+  // if d == n { return zero }
+  Equal        r44, r20, r9
+  JumpIfFalse  r44, L3
+  Return       r0
+L3:
+  // return d
+  Return       r20
+
+  // fun smallestPrimeFactorWheel(n: bigint, max: bigint): bigint {
+func smallestPrimeFactorWheel (regs=42)
+  // if n % two == zero { return two }
+  Mod          r11, r9, r2
+  Equal        r12, r11, r0
+  JumpIfFalse  r12, L0
+  Return       r2
+L0:
+  // if n % three == zero { return three }
+  Mod          r13, r9, r3
+  Equal        r14, r13, r0
+  JumpIfFalse  r14, L1
+  Return       r3
+L1:
+  // if n % five == zero { return five }
+  Mod          r15, r9, r5
+  Equal        r16, r15, r0
+  JumpIfFalse  r16, L2
+  Return       r5
+L2:
+  // var k: bigint = 7
+  Const        r17, 7
+  Move         r18, r17
+  // let inc: list<bigint> = [four, two, four, two, four, six, two, six]
+  Move         r19, r4
+  Move         r20, r2
+  Move         r21, r4
+  Move         r22, r2
+  Move         r23, r4
+  Move         r24, r6
+  Move         r25, r2
+  Move         r26, r6
+  MakeList     r27, 8, r19
+  Move         r28, r27
+  // var i = 0
+  Const        r29, 0
+  Move         r30, r29
+L6:
+  // while k * k <= n {
+  MulInt       r31, r18, r18
+  LessEq       r32, r31, r9
+  JumpIfFalse  r32, L3
+  // if n % k == zero { return k }
+  Mod          r33, r9, r18
+  Equal        r34, r33, r0
+  JumpIfFalse  r34, L4
+  Return       r18
+L4:
+  // k = k + inc[i]
+  Index        r35, r28, r30
+  Add          r36, r18, r35
+  Move         r18, r36
+  // if k > max { break }
+  Less         r37, r10, r18
+  JumpIfFalse  r37, L5
+  Jump         L3
+L5:
+  // i = (i + 1) % 8
+  Const        r38, 1
+  AddInt       r39, r30, r38
+  Const        r40, 8
+  ModInt       r41, r39, r40
+  Move         r30, r41
+  // while k * k <= n {
+  Jump         L6
+L3:
+  // return zero
+  Return       r0
+
+  // fun smallestPrimeFactor(n: bigint): bigint {
+func smallestPrimeFactor (regs=36)
+  // var s = smallestPrimeFactorWheel(n, k100)
+  Move         r10, r9
+  Move         r11, r8
+  Call2        r12, smallestPrimeFactorWheel, r10, r11
+  Move         r13, r12
+  // if s != zero { return s }
+  NotEqual     r14, r13, r0
+  JumpIfFalse  r14, L0
+  Return       r13
+L0:
+  // var c: bigint = 1
+  Const        r15, 1
+  Move         r16, r15
+L3:
+  // while true {
+  Const        r17, true
+  // let d = pollardRho(n, c)
+  Move         r18, r9
+  Move         r19, r16
+  Call2        r20, pollardRho, r18, r19
+  Move         r21, r20
+  // if d == zero {
+  Equal        r22, r21, r0
+  JumpIfFalse  r22, L1
+  // if c == ten { return n }
+  Equal        r23, r16, r7
+  JumpIfFalse  r23, L2
+  Return       r9
+L2:
+  // c = c + one
+  Add          r24, r16, r1
+  Move         r16, r24
+  // if d == zero {
+  Jump         L3
+L1:
+  // let factor = smallestPrimeFactorWheel(d, d)
+  Move         r25, r21
+  Move         r26, r21
+  Call2        r27, smallestPrimeFactorWheel, r25, r26
+  Move         r28, r27
+  // let s2 = smallestPrimeFactorWheel(n / d, factor)
+  Div          r31, r9, r21
+  Move         r29, r31
+  Move         r30, r28
+  Call2        r32, smallestPrimeFactorWheel, r29, r30
+  Move         r33, r32
+  // if s2 != zero {
+  NotEqual     r34, r33, r0
+  JumpIfFalse  r34, L4
+  // if s2 < factor { return s2 } else { return factor }
+  Less         r35, r33, r28
+  JumpIfFalse  r35, L5
+  Return       r33
+L5:
+  Return       r28
+L4:
+  // return factor
+  Return       r28
+
+  // fun main() {
+func main (regs=28)
+  // let k = 19
+  Const        r9, 19
+  Move         r10, r9
+  // print("First " + str(k) + " terms of the Euclid\u2013Mullin sequence:")
+  Const        r11, "First "
+  Const        r12, "19"
+  Const        r13, "First 19"
+  Const        r14, " terms of the Euclid–Mullin sequence:"
+  Const        r15, "First 19 terms of the Euclid–Mullin sequence:"
+  Print        r15
+  // print(2)
+  Const        r16, 2
+  Print        r16
+  // var prod: bigint = 2
+  Const        r16, 2
+  Move         r17, r16
+  // var count = 1
+  Const        r18, 1
+  Move         r19, r18
+L1:
+  // while count < k {
+  LessInt      r20, r19, r10
+  JumpIfFalse  r20, L0
+  // let z: bigint = prod + one
+  Add          r21, r17, r1
+  Move         r22, r21
+  // let t: bigint = smallestPrimeFactor(z)
+  Move         r23, r22
+  Call         r24, smallestPrimeFactor, r23
+  Move         r25, r24
+  // print(t)
+  Print        r25
+  // prod = prod * t
+  Mul          r26, r17, r25
+  Move         r17, r26
+  // count = count + 1
+  Const        r18, 1
+  AddInt       r27, r19, r18
+  Move         r19, r27
+  // while count < k {
+  Jump         L1
+L0:
+  Return       r0
+
+  // fun g(x: bigint, y: bigint): bigint {
+func g (regs=17)
+  // var x2: bigint = x * x
+  Mul          r13, r11, r11
+  Move         r14, r13
+  // x2 = x2 + c
+  Add          r15, r14, r9
+  Move         r14, r15
+  // return x2 % y
+  Mod          r16, r14, r12
+  Return       r16

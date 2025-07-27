@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated IR and outputs from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/ir`.
-Last updated: 2025-07-27 08:54 UTC
+Last updated: 2025-07-27 09:18 UTC
 
-## Rosetta Golden Test Checklist (342/465)
+## Rosetta Golden Test Checklist (372/465)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 116µs | 11.7 KB |
@@ -365,37 +365,37 @@ Last updated: 2025-07-27 08:54 UTC
 | 356 | equal-prime-and-composite-sums | ✓ |  |  |
 | 357 | equilibrium-index | ✓ | 2.793365s | 1.9 MB |
 | 358 | erd-s-nicolas-numbers |   |  |  |
-| 359 | erd-s-selfridge-categorization-of-primes |   |  |  |
-| 360 | esthetic-numbers |   |  |  |
-| 361 | ethiopian-multiplication |   |  |  |
-| 362 | euclid-mullin-sequence |   |  |  |
-| 363 | euler-method |   |  |  |
-| 364 | eulers-constant-0.5772... |   |  |  |
-| 365 | eulers-identity |   |  |  |
-| 366 | eulers-sum-of-powers-conjecture | ✓ |  |  |
-| 367 | evaluate-binomial-coefficients |   |  |  |
-| 368 | even-or-odd |   |  |  |
-| 369 | events |   |  |  |
-| 370 | evolutionary-algorithm |   |  |  |
-| 371 | exceptions-catch-an-exception-thrown-in-a-nested-call |   |  |  |
-| 372 | exceptions |   |  |  |
-| 373 | executable-library |   |  |  |
-| 374 | execute-a-markov-algorithm |   |  |  |
-| 375 | execute-a-system-command |   |  |  |
-| 376 | execute-brain- |   |  |  |
-| 377 | execute-computer-zero-1 |   |  |  |
-| 378 | execute-computer-zero |   |  |  |
-| 379 | execute-hq9+ |   |  |  |
-| 380 | execute-snusp |   |  |  |
-| 381 | exponentiation-operator-2 |   |  |  |
-| 382 | exponentiation-operator |   |  |  |
-| 383 | exponentiation-order |   |  |  |
-| 384 | exponentiation-with-infix-operators-in-or-operating-on-the-base |   |  |  |
-| 385 | extend-your-language |   |  |  |
-| 386 | extensible-prime-generator |   |  |  |
-| 387 | extreme-floating-point-values |   |  |  |
-| 388 | faces-from-a-mesh-2 |   |  |  |
-| 389 | faces-from-a-mesh |   |  |  |
+| 359 | erd-s-selfridge-categorization-of-primes | ✓ | 2.685141s | 2.0 MB |
+| 360 | esthetic-numbers | ✓ |  |  |
+| 361 | ethiopian-multiplication | ✓ | 105µs | 14.7 KB |
+| 362 | euclid-mullin-sequence | ✓ |  |  |
+| 363 | euler-method | ✓ | 5.758ms | 661.9 KB |
+| 364 | eulers-constant-0.5772... | ✓ | 38.614ms | 362.2 KB |
+| 365 | eulers-identity | ✓ | 100µs | 34.0 KB |
+| 366 | eulers-sum-of-powers-conjecture | ✓ | 1.614504s | 26.4 MB |
+| 367 | evaluate-binomial-coefficients | ✓ | 188µs | 24.4 KB |
+| 368 | even-or-odd | ✓ | 344µs | 120.1 KB |
+| 369 | events | ✓ | 47µs | 3.3 KB |
+| 370 | evolutionary-algorithm | ✓ | 655.748ms |  |
+| 371 | exceptions-catch-an-exception-thrown-in-a-nested-call | ✓ | 113µs | 9.9 KB |
+| 372 | exceptions | ✓ | 189µs | 2.9 KB |
+| 373 | executable-library | ✓ |  |  |
+| 374 | execute-a-markov-algorithm | ✓ | 37.505ms |  |
+| 375 | execute-a-system-command | ✓ | 299.52ms | 30.5 KB |
+| 376 | execute-brain- | ✓ | 2.888ms |  |
+| 377 | execute-computer-zero-1 | ✓ | 12.877ms | 712.6 KB |
+| 378 | execute-computer-zero | ✓ | 377µs | 192.9 KB |
+| 379 | execute-hq9+ | ✓ | 382µs | 449.5 KB |
+| 380 | execute-snusp | ✓ | 35µs | 328 B |
+| 381 | exponentiation-operator-2 | ✓ | 324µs | 93.1 KB |
+| 382 | exponentiation-operator | ✓ | 142µs | 100.7 KB |
+| 383 | exponentiation-order | ✓ | 171µs | 22.2 KB |
+| 384 | exponentiation-with-infix-operators-in-or-operating-on-the-base | ✓ | 290µs | 66.8 KB |
+| 385 | extend-your-language | ✓ | 116µs | 28.0 KB |
+| 386 | extensible-prime-generator | ✓ | 3.576129s | 1.2 MB |
+| 387 | extreme-floating-point-values | ✓ | 536µs |  |
+| 388 | faces-from-a-mesh-2 | ✓ | 545µs | 277.7 KB |
+| 389 | faces-from-a-mesh | ✓ | 413µs | 399.4 KB |
 | 390 | factorial-base-numbers-indexing-permutations-of-a-collection |   |  |  |
 | 391 | factorial-primes |   |  |  |
 | 392 | factorial |   |  |  |
