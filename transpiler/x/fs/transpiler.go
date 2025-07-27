@@ -67,6 +67,7 @@ var (
 	benchMain     bool
 	currentReturn string
 	methodDefs    []Stmt
+	currentStruct string
 )
 
 // SetBenchMain configures whether the generated main function is wrapped in a
@@ -256,6 +257,7 @@ func fsIdent(name string) string {
 		"downcast": true, "downto": true, "elif": true, "else": true, "end": true,
 		"exception": true, "extern": true, "false": true, "finally": true, "for": true,
 		"fun": true, "function": true, "if": true, "in": true, "inherit": true,
+		"mod":    true,
 		"base":   true,
 		"inline": true, "interface": true, "internal": true, "lazy": true, "let": true,
 		"match": true, "member": true, "module": true, "mutable": true, "namespace": true,
@@ -326,6 +328,22 @@ func structFieldNames(name string) ([]string, bool) {
 		}
 	}
 	return nil, false
+}
+
+func currentStructHasField(field string) (string, bool) {
+	if currentStruct == "" {
+		return "", false
+	}
+	for _, sd := range structDefs {
+		if sd.Name == currentStruct {
+			for _, f := range sd.Fields {
+				if f.Name == field {
+					return f.Type, true
+				}
+			}
+		}
+	}
+	return "", false
 }
 
 func addStructDef(name string, st types.StructType) {
@@ -2107,6 +2125,14 @@ func (m *MethodCallExpr) emit(w io.Writer) {
 	}
 
 	typ := inferType(m.Target)
+	if typ == "string" && len(m.Args) == 0 && (m.Name == "ToLower" || m.Name == "ToUpper") {
+		m.Target.emit(w)
+		io.WriteString(w, ".")
+		io.WriteString(w, m.Name)
+		io.WriteString(w, "()")
+		return
+	}
+
 	if typ != "" && typ != "obj" {
 		io.WriteString(w, fsIdent(typ+"_"+mapMethod(m.Name)))
 		io.WriteString(w, " ")
@@ -2616,6 +2642,20 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 		if sl, ok := e.(*StructLit); ok && sl.Name != "" {
 			declared = sl.Name
 		}
+		if strings.Contains(declared, "Map<") {
+			if ll, ok := e.(*ListLit); ok {
+				for i, el := range ll.Elems {
+					if sl, ok2 := el.(*StructLit); ok2 {
+						items := make([][2]Expr, len(sl.Fields))
+						for j, f := range sl.Fields {
+							items[j] = [2]Expr{&StringLit{Value: f.Name}, f.Value}
+						}
+						ll.Elems[i] = &MapLit{Items: items}
+					}
+				}
+				e = ll
+			}
+		}
 		if declared == "array" {
 			if ll, ok := e.(*ListLit); ok {
 				if t := simpleListType(ll); t != "" {
@@ -2777,6 +2817,9 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 				}
 			}
 		}
+		if retType == "" && st.Fun.Return != nil {
+			retType = fsType(types.ResolveTypeRef(st.Fun.Return, transpileEnv))
+		}
 		prevReturn := currentReturn
 		currentReturn = retType
 		body := make([]Stmt, len(st.Fun.Body))
@@ -2788,6 +2831,16 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 				return nil, err
 			}
 			body[i] = cs
+		}
+		if currentStruct != "" {
+			if fields, ok := structFieldNames(currentStruct); ok {
+				pre := make([]Stmt, len(fields))
+				for i, f := range fields {
+					t, _ := structFieldType(currentStruct, f)
+					pre[i] = &LetStmt{Name: f, Expr: &FieldExpr{Target: &IdentExpr{Name: "self", Type: currentStruct}, Name: f}, Type: t}
+				}
+				body = append(pre, body...)
+			}
 		}
 		currentReturn = prevReturn
 		varTypes = save
@@ -3011,7 +3064,7 @@ func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
 				expr = &MethodCallExpr{Target: fe.Target, Name: fe.Name, Args: args}
 			} else {
 				if id, ok := expr.(*IdentExpr); ok {
-					expr = &CallExpr{Func: id.Name, Args: args}
+					expr = &CallExpr{Func: fsIdent(id.Name), Args: args}
 				} else {
 					return nil, fmt.Errorf("unsupported postfix")
 				}
@@ -3221,7 +3274,7 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 					}
 				}
 			}
-			return &CallExpr{Func: p.Call.Func, Args: args}, nil
+			return &CallExpr{Func: fsIdent(p.Call.Func), Args: args}, nil
 		}
 	case p.If != nil:
 		return convertIfExpr(p.If)
@@ -3672,7 +3725,19 @@ func convertTypeDecl(td *parser.TypeDecl) error {
 		param := &parser.Param{Name: selfName, Type: selfType}
 		fn.Params = append([]*parser.Param{param}, fn.Params...)
 		stmt := &parser.Statement{Fun: &fn}
+		prevStruct := currentStruct
+		currentStruct = td.Name
+		save := varTypes
+		varTypes = copyMap(varTypes)
+		for _, f := range td.Members {
+			if f.Field != nil {
+				ft := types.ResolveTypeRef(f.Field.Type, transpileEnv)
+				varTypes[f.Field.Name] = fsType(ft)
+			}
+		}
 		fs, err := convertStmt(stmt)
+		varTypes = save
+		currentStruct = prevStruct
 		if err != nil {
 			return err
 		}

@@ -1,3 +1,11 @@
+## Progress (2025-07-27 15:19 +0000)
+- fs transpiler: support struct field locals
+- Generated F# for 103/104 programs (103 passing)
+
+## Progress (2025-07-27 22:06 +0700)
+- dart rosetta: fix bench main detection
+- Generated F# for 103/104 programs (103 passing)
+
 ## Progress (2025-07-27 17:18 +0700)
 - fs transpiler: handle typed lambdas and append elem cast
 - Generated F# for 103/104 programs (103 passing)
