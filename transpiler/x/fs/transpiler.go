@@ -2552,6 +2552,26 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 			}
 		}
 		fsDecl := fsTypeFromString(declared)
+		if strings.HasPrefix(fsDecl, "Map<") {
+			switch v := e.(type) {
+			case *StructLit:
+				items := make([][2]Expr, len(v.Fields))
+				for i, f := range v.Fields {
+					items[i] = [2]Expr{&StringLit{Value: f.Name}, f.Value}
+				}
+				e = &MapLit{Items: items}
+			case *ListLit:
+				for i, el := range v.Elems {
+					if sl, ok := el.(*StructLit); ok {
+						items := make([][2]Expr, len(sl.Fields))
+						for j, f := range sl.Fields {
+							items[j] = [2]Expr{&StringLit{Value: f.Name}, f.Value}
+						}
+						v.Elems[i] = &MapLit{Items: items}
+					}
+				}
+			}
+		}
 		if _, ok := e.(*NullLit); ok && fsDecl != "" {
 			e = &DefaultOfExpr{Type: fsDecl}
 		} else if fsDecl == "bigint" {
@@ -2624,6 +2644,26 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 			}
 		}
 		fsDecl := fsTypeFromString(declared)
+		if strings.Contains(fsDecl, "Map<") {
+			switch v := e.(type) {
+			case *StructLit:
+				items := make([][2]Expr, len(v.Fields))
+				for i, f := range v.Fields {
+					items[i] = [2]Expr{&StringLit{Value: f.Name}, f.Value}
+				}
+				e = &MapLit{Items: items}
+			case *ListLit:
+				for i, el := range v.Elems {
+					if sl, ok := el.(*StructLit); ok {
+						items := make([][2]Expr, len(sl.Fields))
+						for j, f := range sl.Fields {
+							items[j] = [2]Expr{&StringLit{Value: f.Name}, f.Value}
+						}
+						v.Elems[i] = &MapLit{Items: items}
+					}
+				}
+			}
+		}
 		if _, ok := e.(*NullLit); ok && fsDecl != "" {
 			e = &DefaultOfExpr{Type: fsDecl}
 		} else if fsDecl == "bigint" {
