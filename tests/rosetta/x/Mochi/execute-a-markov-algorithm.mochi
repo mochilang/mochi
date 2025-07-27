@@ -1,6 +1,131 @@
+fun split(s: string, sep: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    if len(sep) > 0 && i+len(sep) <= len(s) && substring(s, i, i+len(sep)) == sep {
+      parts = append(parts, cur)
+      cur = ""
+      i = i + len(sep)
+    } else {
+      cur = cur + substring(s, i, i+1)
+      i = i + 1
+    }
+  }
+  parts = append(parts, cur)
+  return parts
+}
+
+fun trimSpace(s: string): string {
+  var start = 0
+  while start < len(s) && (s[start:start+1] == " " || s[start:start+1] == "\t") {
+    start = start + 1
+  }
+  var end = len(s)
+  while end > start && (s[end-1:end] == " " || s[end-1:end] == "\t") {
+    end = end - 1
+  }
+  return s[start:end]
+}
+
+fun indexOfSub(s: string, sub: string): int {
+  if len(sub) == 0 { return 0 }
+  var i = 0
+  while i + len(sub) <= len(s) {
+    if substring(s, i, i+len(sub)) == sub { return i }
+    i = i + 1
+  }
+  return 0 - 1
+}
+
+fun parseRules(rs: string): map<string, any> {
+  var rules: list<map<string, any>> = []
+  for line in split(rs, "\n") {
+    var ln = line
+    let hash = indexOfSub(ln, "#")
+    if hash >= 0 { ln = ln[:hash] }
+    ln = trimSpace(ln)
+    if len(ln) == 0 { continue }
+    var arrow = 0 - 1
+    var j = 0
+    while j+2 <= len(ln) {
+      if substring(ln, j, j+2) == "->" {
+        var pre = j > 0 && (ln[j-1:j] == " " || ln[j-1:j] == "\t")
+        var post = j+2 < len(ln) && (ln[j+2:j+3] == " " || ln[j+2:j+3] == "\t")
+        if pre && post { arrow = j; break }
+      }
+      j = j + 1
+    }
+    if arrow < 0 { arrow = indexOfSub(ln, "->") }
+    if arrow < 0 { return {"ok": false} }
+    var pat = trimSpace(ln[:arrow])
+    var rest = trimSpace(ln[arrow+2:len(ln)])
+    var term = false
+    if len(rest) > 0 && rest[0:1] == "." {
+      term = true
+      rest = rest[1:len(rest)]
+    }
+    var rep = rest
+    rules = append(rules, {"pat": pat, "rep": rep, "term": term})
+  }
+  return {"ok": true, "rules": rules}
+}
+
+fun runRules(rules: list<map<string, any>>, s: string): string {
+  var changed = true
+  while changed {
+    changed = false
+    var i = 0
+    while i < len(rules) {
+      let r = rules[i]
+      let pat = r["pat"]
+      let rep = r["rep"]
+      let term = r["term"]
+      let idx = indexOfSub(s, pat)
+      if idx >= 0 {
+        s = s[:idx] + rep + s[idx+len(pat):]
+        changed = true
+        if term { return s }
+        break
+      }
+      i = i + 1
+    }
+  }
+  return s
+}
+
+fun interpret(ruleset: string, input: string): map<string, any> {
+  let p = parseRules(ruleset)
+  if !p["ok"] { return {"ok": false, "out": ""} }
+  let out = runRules(p["rules"], input)
+  return {"ok": true, "out": out}
+}
+
+var testSet = [
+  {"ruleSet": "# This rules file is extracted from Wikipedia:\n# http://en.wikipedia.org/wiki/Markov_Algorithm\nA -> apple\nB -> bag\nS -> shop\nT -> the\nthe shop -> my brother\na never used -> .terminating rule\n", "sample": "I bought a B of As from T S.", "output": "I bought a bag of apples from my brother."},
+  {"ruleSet": "# Slightly modified from the rules on Wikipedia\nA -> apple\nB -> bag\nS -> .shop\nT -> the\nthe shop -> my brother\na never used -> .terminating rule\n", "sample": "I bought a B of As from T S.", "output": "I bought a bag of apples from T shop."},
+  {"ruleSet": "# BNF Syntax testing rules\nA -> apple\nWWWW -> with\nBgage -> ->.*\nB -> bag\n->.* -> money\nW -> WW\nS -> .shop\nT -> the\nthe shop -> my brother\na never used -> .terminating rule\n", "sample": "I bought a B of As W my Bgage from T S.", "output": "I bought a bag of apples with my money from T shop."},
+  {"ruleSet": "### Unary Multiplication Engine, for testing Markov Algorithm implementations\n### By Donal Fellows.\n# Unary addition engine\n_+1 -> _1+\n1+1 -> 11+\n# Pass for converting from the splitting of multiplication into ordinary\n# addition\n1! -> !1\n,! -> !+\n_! -> _\n# Unary multiplication by duplicating left side, right side times\n1*1 -> x,@y\n1x -> xX\nX, -> 1,1\nX1 -> 1X\n_x -> _X\n,x -> ,X\ny1 -> 1y\ny_ -> _\n# Next phase of applying\n1@1 -> x,@y\n1@_ -> @_\n,@_ -> !_\n++ -> +\n# Termination cleanup for addition\n_1 -> 1\n1+_ -> 1\n_+_ ->\n", "sample": "_1111*11111_", "output": "11111111111111111111"},
+  {"ruleSet": "# Turing machine: three-state busy beaver\n#\n# state A, symbol 0 => write 1, move right, new state B\nA0 -> 1B\n# state A, symbol 1 => write 1, move left, new state C\n0A1 -> C01\n1A1 -> C11\n# state B, symbol 0 => write 1, move left, new state A\n0B0 -> A01\n1B0 -> A11\n# state B, symbol 1 => write 1, move right, new state B\nB1 -> 1B\n# state C, symbol 0 => write 1, move left, new state B\n0C0 -> B01\n1C0 -> B11\n# state C, symbol 1 => write 1, move left, halt\n0C1 -> H01\n1C1 -> H11\n", "sample": "000000A000000", "output": "00011H1111000"}
+]
+
 fun main() {
-  print("validating 5 test cases")
-  print("no failures")
+  print("validating " + str(len(testSet)) + " test cases")
+  var failures = false
+  var i = 0
+  while i < len(testSet) {
+    let tc = testSet[i]
+    let res = interpret(tc["ruleSet"], tc["sample"])
+    if !res["ok"] {
+      print("test " + str(i+1) + " invalid ruleset")
+      failures = true
+    } else if res["out"] != tc["output"] {
+      print("test " + str(i+1) + ": got " + res["out"] + ", want " + tc["output"])
+      failures = true
+    }
+    i = i + 1
+  }
+  if !failures { print("no failures") }
 }
 
 main()
