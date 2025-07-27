@@ -1,0 +1,7 @@
+a <> 1 and b <> 3
+a = 1 and b <> 3
+{
+  "duration_us": 27,
+  "memory_bytes": 568,
+  "name": "main"
+}
