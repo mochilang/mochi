@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Rust code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/Rust`.
-Last updated: 2025-07-27 15:42 UTC
+Last updated: 2025-07-27 16:50 UTC
 
-## Rosetta Golden Test Checklist (87/467)
+## Rosetta Golden Test Checklist (89/467)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 109µs | 3.2 MB |
@@ -122,8 +122,8 @@ Last updated: 2025-07-27 15:42 UTC
 | 113 | bioinformatics-base-count | ✓ | 97µs |  |
 | 114 | bioinformatics-global-alignment | ✓ | 8.254982s | 8.3 MB |
 | 115 | bioinformatics-sequence-mutation | ✓ | 16.24ms | 92.0 KB |
-| 116 | biorhythms |   |  |  |
-| 117 | bitcoin-address-validation |   |  |  |
+| 116 | biorhythms | ✓ | 133µs |  |
+| 117 | bitcoin-address-validation | ✓ | 24.58ms |  |
 | 118 | bitmap-b-zier-curves-cubic |   |  |  |
 | 119 | bitmap-b-zier-curves-quadratic |   |  |  |
 | 120 | bitmap-bresenhams-line-algorithm | ✓ | 13µs |  |
