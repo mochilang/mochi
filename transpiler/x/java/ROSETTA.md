@@ -1,9 +1,9 @@
 # Java Rosetta Transpiler Output
 
 Generated Java code for programs in `tests/rosetta/x/Mochi`. Each program has a `.java` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
-Last updated: 2025-07-27 20:44 GMT+7
+Last updated: 2025-07-27 21:06 GMT+7
 
-## Rosetta Checklist (189/467)
+## Rosetta Checklist (205/467)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 23.0ms | 245.84KB |
@@ -253,22 +253,22 @@ Last updated: 2025-07-27 20:44 GMT+7
 | 245 | count-in-octal-3 | ✓ | 25.0ms | 32.87KB |
 | 246 | count-in-octal-4 | ✓ | 38.0ms | 32.87KB |
 | 247 | count-occurrences-of-a-substring | ✓ | 19.0ms | 608B |
-| 248 | count-the-coins-1 |   |  |  |
-| 249 | count-the-coins-2 |   |  |  |
-| 250 | cramers-rule |   |  |  |
-| 251 | crc-32-1 |   |  |  |
-| 252 | crc-32-2 |   |  |  |
-| 253 | create-a-file-on-magnetic-tape |   |  |  |
-| 254 | create-a-file |   |  |  |
-| 255 | create-a-two-dimensional-array-at-runtime-1 |   |  |  |
-| 256 | create-an-html-table |   |  |  |
-| 257 | create-an-object-at-a-given-address |   |  |  |
-| 258 | csv-data-manipulation |   |  |  |
-| 259 | csv-to-html-translation-1 |   |  |  |
-| 260 | csv-to-html-translation-2 |   |  |  |
-| 261 | csv-to-html-translation-3 |   |  |  |
-| 262 | csv-to-html-translation-4 |   |  |  |
-| 263 | csv-to-html-translation-5 |   |  |  |
+| 248 | count-the-coins-1 | ✓ | 29.0ms | 92.72KB |
+| 249 | count-the-coins-2 | ✓ | 40.0ms | 92.79KB |
+| 250 | cramers-rule | ✓ | 13.0ms | 18.30KB |
+| 251 | crc-32-1 | ✓ | 9.0ms | 656B |
+| 252 | crc-32-2 | ✓ | 8.0ms | 2.30KB |
+| 253 | create-a-file-on-magnetic-tape | ✓ | 6.0ms | 728B |
+| 254 | create-a-file | ✓ | 25.0ms | 70.23KB |
+| 255 | create-a-two-dimensional-array-at-runtime-1 | ✓ | 41.0ms | 102.07KB |
+| 256 | create-an-html-table | ✓ | 27.0ms | 86.33KB |
+| 257 | create-an-object-at-a-given-address | ✓ | 30.0ms | 96.82KB |
+| 258 | csv-data-manipulation | ✓ | 20.0ms | 51.52KB |
+| 259 | csv-to-html-translation-1 | ✓ | 29.0ms | 87.33KB |
+| 260 | csv-to-html-translation-2 | ✓ | 29.0ms | 88.36KB |
+| 261 | csv-to-html-translation-3 | ✓ | 7.0ms | 1.51KB |
+| 262 | csv-to-html-translation-4 | ✓ | 8.0ms | 1.27KB |
+| 263 | csv-to-html-translation-5 | ✓ | 31.0ms | 89.14KB |
 | 264 | cuban-primes |   |  |  |
 | 265 | cullen-and-woodall-numbers |   |  |  |
 | 266 | cumulative-standard-deviation |   |  |  |

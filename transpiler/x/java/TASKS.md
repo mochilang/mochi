@@ -1,4 +1,114 @@
-## Progress (2025-07-27 12:06 UTC)
+## Progress (2025-07-27 13:49 UTC)
+- java: add rosetta program 248 (c56bde5cfc)
+
+- java: add rosetta program 248 (c56bde5cfc)
+
+- java: add rosetta program 248 (c56bde5cfc)
+
+- java: add rosetta program 248 (c56bde5cfc)
+
+- java: add rosetta program 248 (c56bde5cfc)
+
+- java: add rosetta program 248 (c56bde5cfc)
+
+- java: add rosetta program 248 (c56bde5cfc)
+
+- java: add rosetta program 248 (c56bde5cfc)
+
+- java: add rosetta program 248 (c56bde5cfc)
+
+- java: add rosetta program 248 (c56bde5cfc)
+
+- java: add rosetta program 248 (c56bde5cfc)
+
+- java: add rosetta program 248 (c56bde5cfc)
+
+- java: add rosetta program 248 (c56bde5cfc)
+
+- java: add rosetta program 248 (c56bde5cfc)
+
+- java: add rosetta program 248 (c56bde5cfc)
+
+- java: add rosetta program 248 (c56bde5cfc)
+
+- java: add rosetta program 248 (c56bde5cfc)
+
+- java: add rosetta program 248 (c56bde5cfc)
+
+- java: add rosetta program 248 (c56bde5cfc)
+
+- java: add rosetta program 248 (c56bde5cfc)
+
+- java: add rosetta program 248 (c56bde5cfc)
+
+- java: add rosetta program 248 (c56bde5cfc)
+
+- java: add rosetta program 248 (c56bde5cfc)
+
+- java: add rosetta program 248 (c56bde5cfc)
+
+- java: add rosetta program 248 (c56bde5cfc)
+
+- java: add rosetta program 248 (c56bde5cfc)
+
+- java: add rosetta program 248 (c56bde5cfc)
+
+- java: add rosetta program 248 (c56bde5cfc)
+
+- java: add rosetta program 248 (c56bde5cfc)
+
+- java: add rosetta program 248 (c56bde5cfc)
+
+- java: add rosetta program 248 (c56bde5cfc)
+
+- java: add rosetta program 248 (c56bde5cfc)
+
+- java: add rosetta program 248 (c56bde5cfc)
+
+- java: add rosetta program 248 (c56bde5cfc)
+
+- java: add rosetta program 248 (c56bde5cfc)
+
+- java: add rosetta program 248 (c56bde5cfc)
+
+- java: add rosetta program 248 (c56bde5cfc)
+
+- java: add rosetta program 248 (c56bde5cfc)
+
+- java: add rosetta program 248 (c56bde5cfc)
+
+- java: add rosetta program 248 (c56bde5cfc)
+
+- java: add rosetta program 248 (c56bde5cfc)
+
+- java: add rosetta program 248 (c56bde5cfc)
+
+- java: add rosetta program 248 (c56bde5cfc)
+
+- java: add rosetta program 248 (c56bde5cfc)
+
+- java: add rosetta program 248 (c56bde5cfc)
+
+- java: add rosetta program 248 (c56bde5cfc)
+
+- java: add rosetta program 248 (c56bde5cfc)
+
+- java: add rosetta program 248 (c56bde5cfc)
+
+- java: add rosetta program 248 (c56bde5cfc)
+
+- java: add rosetta program 248 (c56bde5cfc)
+
+- java: add rosetta program 248 (c56bde5cfc)
+
+- java: add rosetta program 248 (c56bde5cfc)
+
+- java: add rosetta program 247 (c3d9e949a5)
+
+- java: add rosetta program 247 (c3d9e949a5)
+
+- java: add rosetta program 247 (c3d9e949a5)
+
 - java transpiler: add cholesky-decomposition (0fa0fa08a3)
 
 - java transpiler: add cholesky-decomposition (0fa0fa08a3)
