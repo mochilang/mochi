@@ -1,4 +1,4 @@
-func main (regs=58)
+func main (regs=53)
   // let animal = ["Rat","Ox","Tiger","Rabbit","Dragon","Snake","Horse","Goat","Monkey","Rooster","Dog","Pig"]
   Const        r5, ["Rat", "Ox", "Tiger", "Rabbit", "Dragon", "Snake", "Horse", "Goat", "Monkey", "Rooster", "Dog", "Pig"]
   Move         r0, r5
@@ -31,51 +31,46 @@ L1:
   Move         r16, r15
   // let r = cz(yr, animal, yinYang, element, stemChArr, branchChArr)
   Move         r17, r16
-  Const        r23, ["Rat", "Ox", "Tiger", "Rabbit", "Dragon", "Snake", "Horse", "Goat", "Monkey", "Rooster", "Dog", "Pig"]
-  Move         r18, r23
-  Const        r24, ["Yang", "Yin"]
-  Move         r19, r24
-  Const        r25, ["Wood", "Fire", "Earth", "Metal", "Water"]
-  Move         r20, r25
-  Const        r26, ["甲", "乙", "丙", "丁", "戊", "己", "庚", "辛", "壬", "癸"]
-  Move         r21, r26
-  Const        r27, ["子", "丑", "寅", "卯", "辰", "巳", "午", "未", "申", "酉", "戌", "亥"]
-  Move         r22, r27
-  Call         r28, cz, r17, r18, r19, r20, r21, r22
-  Move         r29, r28
+  Move         r18, r0
+  Move         r19, r1
+  Move         r20, r2
+  Move         r21, r3
+  Move         r22, r4
+  Call         r23, cz, r17, r18, r19, r20, r21, r22
+  Move         r24, r23
   // print(str(yr) + ": " + r.element + " " + r.animal + ", " + r.yinYang + ", Cycle year " + str(r.cycle) + " " + r.stemBranch)
-  Str          r30, r16
-  Const        r31, ": "
+  Str          r25, r16
+  Const        r26, ": "
+  Add          r27, r25, r26
+  Const        r28, "element"
+  Index        r29, r24, r28
+  Add          r30, r27, r29
+  Const        r31, " "
   Add          r32, r30, r31
-  Const        r33, "element"
-  Index        r34, r29, r33
+  Const        r33, "animal"
+  Index        r34, r24, r33
   Add          r35, r32, r34
-  Const        r36, " "
+  Const        r36, ", "
   Add          r37, r35, r36
-  Const        r38, "animal"
-  Index        r39, r29, r38
+  Const        r38, "yinYang"
+  Index        r39, r24, r38
   Add          r40, r37, r39
-  Const        r41, ", "
+  Const        r41, ", Cycle year "
   Add          r42, r40, r41
-  Const        r43, "yinYang"
-  Index        r44, r29, r43
-  Add          r45, r42, r44
-  Const        r46, ", Cycle year "
-  Add          r47, r45, r46
-  Const        r48, "cycle"
-  Index        r49, r29, r48
-  Str          r50, r49
-  Add          r51, r47, r50
-  Const        r36, " "
-  Add          r52, r51, r36
-  Const        r53, "stemBranch"
-  Index        r54, r29, r53
-  Add          r55, r52, r54
-  Print        r55
+  Const        r43, "cycle"
+  Index        r44, r24, r43
+  Str          r45, r44
+  Add          r46, r42, r45
+  Const        r31, " "
+  Add          r47, r46, r31
+  Const        r48, "stemBranch"
+  Index        r49, r24, r48
+  Add          r50, r47, r49
+  Print        r50
   // for yr in [1935,1938,1968,1972,1976] {
-  Const        r56, 1
-  AddInt       r57, r13, r56
-  Move         r13, r57
+  Const        r51, 1
+  AddInt       r52, r13, r51
+  Move         r13, r52
   Jump         L1
 L0:
   Return       r0

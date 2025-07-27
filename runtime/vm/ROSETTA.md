@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated IR and outputs from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/ir`.
-Last updated: 2025-07-27 15:19 UTC
+Last updated: 2025-07-27 15:37 UTC
 
 ## Rosetta Golden Test Checklist (450/467)
 | Index | Name | Status | Duration | Memory |
@@ -157,66 +157,66 @@ Last updated: 2025-07-27 15:19 UTC
 | 148 | calendar | ✓ | 1.201ms | 542.7 KB |
 | 149 | calkin-wilf-sequence |   |  |  |
 | 150 | call-a-foreign-language-function | ✓ | 658µs | 6.7 KB |
-| 151 | call-a-function-1 | ✓ | 86µs | 136 B |
-| 152 | call-a-function-10 | ✓ | 73µs |  |
-| 153 | call-a-function-11 | ✓ | 81µs | 3.9 KB |
-| 154 | call-a-function-12 | ✓ | 62µs | 8.2 KB |
-| 155 | call-a-function-2 | ✓ | 64µs | 2.2 KB |
-| 156 | call-a-function-3 | ✓ | 94µs | 4.7 KB |
-| 157 | call-a-function-4 | ✓ | 74µs | 3.0 KB |
-| 158 | call-a-function-5 | ✓ | 37µs | 3.9 KB |
-| 159 | call-a-function-6 | ✓ | 40µs | 4.8 KB |
-| 160 | call-a-function-7 | ✓ | 20µs | 840 B |
-| 161 | call-a-function-8 | ✓ | 69µs | 29.1 KB |
-| 162 | call-a-function-9 | ✓ | 88µs | 8.4 KB |
-| 163 | call-an-object-method-1 | ✓ | 81µs | 11.2 KB |
-| 164 | call-an-object-method-2 | ✓ | 71µs | 4.4 KB |
-| 165 | call-an-object-method-3 | ✓ | 693µs | 5.6 KB |
-| 166 | call-an-object-method | ✓ | 73µs | 5.6 KB |
-| 167 | camel-case-and-snake-case | ✓ | 738µs | 463.0 KB |
-| 168 | canny-edge-detector | ✓ | 388µs | 112.5 KB |
-| 169 | canonicalize-cidr | ✓ | 2.048ms | 559.1 KB |
-| 170 | cantor-set | ✓ | 3.246ms | 1.1 MB |
-| 171 | carmichael-3-strong-pseudoprimes | ✓ | 145.416ms |  |
-| 172 | cartesian-product-of-two-or-more-lists-1 | ✓ | 675µs | 47.7 KB |
-| 173 | cartesian-product-of-two-or-more-lists-2 | ✓ | 1.543ms | 426.9 KB |
-| 174 | cartesian-product-of-two-or-more-lists-3 | ✓ | 3.263ms | 470.4 KB |
-| 175 | cartesian-product-of-two-or-more-lists-4 | ✓ | 3.406ms | 649.9 KB |
-| 176 | case-sensitivity-of-identifiers | ✓ | 465µs | 23.5 KB |
-| 177 | casting-out-nines | ✓ | 43.17ms | 1008.0 KB |
-| 178 | catalan-numbers-1 | ✓ | 694µs | 127.7 KB |
-| 179 | catalan-numbers-2 | ✓ | 1.931ms | 449.3 KB |
-| 180 | catalan-numbers-pascals-triangle | ✓ | 1.421ms | 647.9 KB |
-| 181 | catamorphism | ✓ | 566µs | 30.4 KB |
-| 182 | catmull-clark-subdivision-surface | ✓ | 7.234ms | 814.8 KB |
-| 183 | chaocipher | ✓ | 6.207ms |  |
-| 184 | chaos-game | ✓ | 2.018587s |  |
-| 185 | character-codes-1 | ✓ | 502µs | 4.0 KB |
-| 186 | character-codes-2 | ✓ | 428µs | 3.8 KB |
-| 187 | character-codes-3 | ✓ | 691µs | 8.4 KB |
-| 188 | character-codes-4 | ✓ | 439µs | 8.8 KB |
-| 189 | character-codes-5 | ✓ | 302µs | 7.0 KB |
-| 190 | chat-server | ✓ | 671µs | 32.4 KB |
+| 151 | call-a-function-1 | ✓ | 11µs | 136 B |
+| 152 | call-a-function-10 | ✓ | 336µs | 4.0 KB |
+| 153 | call-a-function-11 | ✓ | 1.314ms | 3.9 KB |
+| 154 | call-a-function-12 | ✓ | 421µs | 8.7 KB |
+| 155 | call-a-function-2 | ✓ | 347µs | 2.2 KB |
+| 156 | call-a-function-3 | ✓ | 952µs | 4.7 KB |
+| 157 | call-a-function-4 | ✓ | 1.03ms | 3.0 KB |
+| 158 | call-a-function-5 | ✓ | 271µs | 4.2 KB |
+| 159 | call-a-function-6 | ✓ | 311µs | 4.8 KB |
+| 160 | call-a-function-7 | ✓ | 609µs | 1.0 KB |
+| 161 | call-a-function-8 | ✓ | 517µs | 36.0 KB |
+| 162 | call-a-function-9 | ✓ | 446µs | 8.4 KB |
+| 163 | call-an-object-method-1 | ✓ | 335µs | 11.2 KB |
+| 164 | call-an-object-method-2 | ✓ | 200µs | 3.2 KB |
+| 165 | call-an-object-method-3 | ✓ | 673µs | 5.6 KB |
+| 166 | call-an-object-method | ✓ | 463µs | 5.6 KB |
+| 167 | camel-case-and-snake-case | ✓ | 2.083ms | 680.9 KB |
+| 168 | canny-edge-detector | ✓ | 1.858ms | 454.2 KB |
+| 169 | canonicalize-cidr | ✓ | 5.415ms |  |
+| 170 | cantor-set | ✓ | 4.157ms |  |
+| 171 | carmichael-3-strong-pseudoprimes | ✓ | 126.434ms |  |
+| 172 | cartesian-product-of-two-or-more-lists-1 | ✓ | 579µs | 47.7 KB |
+| 173 | cartesian-product-of-two-or-more-lists-2 | ✓ | 2.016ms | 426.9 KB |
+| 174 | cartesian-product-of-two-or-more-lists-3 | ✓ | 1.936ms | 470.4 KB |
+| 175 | cartesian-product-of-two-or-more-lists-4 | ✓ | 1.959ms | 649.9 KB |
+| 176 | case-sensitivity-of-identifiers | ✓ | 556µs | 23.5 KB |
+| 177 | casting-out-nines | ✓ | 51.223ms |  |
+| 178 | catalan-numbers-1 | ✓ | 578µs | 127.7 KB |
+| 179 | catalan-numbers-2 | ✓ | 1.868ms | 449.3 KB |
+| 180 | catalan-numbers-pascals-triangle | ✓ | 1.541ms | 647.9 KB |
+| 181 | catamorphism | ✓ | 536µs | 30.4 KB |
+| 182 | catmull-clark-subdivision-surface | ✓ | 5.372ms | 764.3 KB |
+| 183 | chaocipher | ✓ | 2.262ms | 894.5 KB |
+| 184 | chaos-game | ✓ | 1.386947s |  |
+| 185 | character-codes-1 | ✓ | 444µs | 4.0 KB |
+| 186 | character-codes-2 | ✓ | 422µs | 3.8 KB |
+| 187 | character-codes-3 | ✓ | 407µs | 8.4 KB |
+| 188 | character-codes-4 | ✓ | 422µs | 8.8 KB |
+| 189 | character-codes-5 | ✓ | 482µs | 7.0 KB |
+| 190 | chat-server | ✓ | 533µs | 32.4 KB |
 | 191 | check-machin-like-formulas |   |  |  |
-| 192 | check-that-file-exists | ✓ | 43µs | 10.6 KB |
-| 193 | checkpoint-synchronization-1 | ✓ | 70µs | 8.4 KB |
-| 194 | checkpoint-synchronization-2 | ✓ | 46µs | 9.1 KB |
-| 195 | checkpoint-synchronization-3 | ✓ | 54µs | 11.0 KB |
-| 196 | checkpoint-synchronization-4 | ✓ | 58µs | 12.7 KB |
+| 192 | check-that-file-exists | ✓ | 438µs | 11.2 KB |
+| 193 | checkpoint-synchronization-1 | ✓ | 355µs | 12.5 KB |
+| 194 | checkpoint-synchronization-2 | ✓ | 399µs | 11.4 KB |
+| 195 | checkpoint-synchronization-3 | ✓ | 469µs | 14.5 KB |
+| 196 | checkpoint-synchronization-4 | ✓ | 515µs | 16.6 KB |
 | 197 | chernicks-carmichael-numbers | ✓ | 7.787037s |  |
-| 198 | cheryls-birthday | ✓ | 2.42ms | 341.3 KB |
-| 199 | chinese-remainder-theorem | ✓ | 114µs | 43.0 KB |
-| 200 | chinese-zodiac | ✓ | 74µs | 53.1 KB |
-| 201 | cholesky-decomposition-1 | ✓ | 909µs | 117.4 KB |
-| 202 | cholesky-decomposition | ✓ |  |  |
-| 203 | chowla-numbers | ✓ |  |  |
+| 198 | cheryls-birthday | ✓ | 1.966ms | 425.7 KB |
+| 199 | chinese-remainder-theorem | ✓ | 826µs | 48.3 KB |
+| 200 | chinese-zodiac | ✓ | 254µs | 57.9 KB |
+| 201 | cholesky-decomposition-1 | ✓ | 980µs | 188.1 KB |
+| 202 | cholesky-decomposition | ✓ | 1.585ms |  |
+| 203 | chowla-numbers | ✓ | 420µs | 1.1 KB |
 | 204 | church-numerals-1 |   |  |  |
-| 205 | church-numerals-2 | ✓ | 22µs | 136 B |
-| 206 | circles-of-given-radius-through-two-points | ✓ | 237µs | 157.6 KB |
-| 207 | circular-primes | ✓ | 6.883ms | 1.6 MB |
+| 205 | church-numerals-2 | ✓ | 244µs | 136 B |
+| 206 | circles-of-given-radius-through-two-points | ✓ | 1.294ms | 195.5 KB |
+| 207 | circular-primes | ✓ | 17.457ms | 1.8 MB |
 | 208 | cistercian-numerals | ✓ |  |  |
-| 209 | comma-quibbling | ✓ | 50µs | 21.5 KB |
-| 210 | compiler-virtual-machine-interpreter | ✓ | 1.224ms | 1.2 MB |
+| 209 | comma-quibbling | ✓ | 677µs | 22.5 KB |
+| 210 | compiler-virtual-machine-interpreter | ✓ | 4.182ms | 1.5 MB |
 | 211 | composite-numbers-k-with-no-single-digit-factors-whose-factors-are-all-substrings-of-k | ✓ |  |  |
 | 212 | compound-data-type | ✓ | 30µs | 136 B |
 | 213 | concurrent-computing-1 | ✓ | 32µs | 3.5 KB |

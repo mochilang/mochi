@@ -7,13 +7,7 @@ func main (regs=1)
 func mkAdd (regs=3)
   // return fun(b: int): int => a + b
   Move         r1, r0
-  MakeClosure  r2, fn2, 1, r1
-  Return       r2
-
-  // return fun(b: int): int => a + b
-func fn2 (regs=3)
-  // return fun(b: int): int => a + b
-  Add          r2, r0, r1
+  MakeClosure  r2, fn5, 1, r1
   Return       r2
 
   // fun mysum(x: int, y: int): int { return x + y }
@@ -26,16 +20,8 @@ func mysum (regs=3)
 func partialSum (regs=3)
   // return fun(y: int): int => mysum(x, y)
   Move         r1, r0
-  MakeClosure  r2, fn5, 1, r1
+  MakeClosure  r2, fn6, 1, r1
   Return       r2
-
-  // return fun(y: int): int => mysum(x, y)
-func fn5 (regs=5)
-  // return fun(y: int): int => mysum(x, y)
-  Move         r2, r0
-  Move         r3, r1
-  Call2        r4, mysum, r2, r3
-  Return       r4
 
   // fun main() {
 func main (regs=26)
@@ -74,3 +60,17 @@ func main (regs=26)
   Str          r25, r24
   Print        r25
   Return       r0
+
+  // return fun(b: int): int => a + b
+func fn5 (regs=3)
+  // return fun(b: int): int => a + b
+  Add          r2, r0, r1
+  Return       r2
+
+  // return fun(y: int): int => mysum(x, y)
+func fn6 (regs=5)
+  // return fun(y: int): int => mysum(x, y)
+  Move         r2, r0
+  Move         r3, r1
+  Call2        r4, mysum, r2, r3
+  Return       r4

@@ -123,16 +123,14 @@ L2:
   LessInt      r10, r8, r9
   JumpIfFalse  r10, L0
   // if ch == substring(up, i, i+1) { return substring(low, i, i+1) }
-  Const        r3, "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
   Const        r11, 1
   AddInt       r12, r8, r11
-  Slice        r13, r3, r8, r12
+  Slice        r13, r4, r8, r12
   Equal        r14, r2, r13
   JumpIfFalse  r14, L1
-  Const        r5, "abcdefghijklmnopqrstuvwxyz"
   Const        r11, 1
   AddInt       r15, r8, r11
-  Slice        r16, r5, r8, r15
+  Slice        r16, r6, r8, r15
   Return       r16
 L1:
   // i = i + 1

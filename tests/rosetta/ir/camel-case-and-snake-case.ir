@@ -448,7 +448,7 @@ L19:
   Return       r73
 
   // fun main() {
-func main (regs=38)
+func main (regs=36)
   // let samples = [
   Const        r0, ["snakeCase", "snake_case", "snake-case", "snake case", "snake CASE", "snake.case", "variable_10_case", "variable10Case", "ɛrgo rE tHis", "hurry-up-joe!", "c://my-docs/happy_Flag-Day/12.doc", " spaces "]
   Move         r1, r0
@@ -456,63 +456,61 @@ func main (regs=38)
   Const        r2, "=== To snake_case ==="
   Print        r2
   // for s in samples {
-  Const        r3, ["snakeCase", "snake_case", "snake-case", "snake case", "snake CASE", "snake.case", "variable_10_case", "variable10Case", "ɛrgo rE tHis", "hurry-up-joe!", "c://my-docs/happy_Flag-Day/12.doc", " spaces "]
-  IterPrep     r4, r3
-  Len          r5, r4
-  Const        r6, 0
+  IterPrep     r3, r1
+  Len          r4, r3
+  Const        r5, 0
 L1:
-  LessInt      r7, r6, r5
-  JumpIfFalse  r7, L0
-  Index        r8, r4, r6
-  Move         r9, r8
+  LessInt      r6, r5, r4
+  JumpIfFalse  r6, L0
+  Index        r7, r3, r5
+  Move         r8, r7
   // print(padLeft(s, 34) + " => " + camelToSnake(s))
-  Move         r10, r9
-  Const        r12, 34
-  Move         r11, r12
-  Call2        r13, padLeft, r10, r11
-  Const        r14, " => "
-  Add          r15, r13, r14
-  Move         r16, r9
-  Call         r17, camelToSnake, r16
-  Add          r18, r15, r17
-  Print        r18
+  Move         r9, r8
+  Const        r11, 34
+  Move         r10, r11
+  Call2        r12, padLeft, r9, r10
+  Const        r13, " => "
+  Add          r14, r12, r13
+  Move         r15, r8
+  Call         r16, camelToSnake, r15
+  Add          r17, r14, r16
+  Print        r17
   // for s in samples {
-  Const        r19, 1
-  AddInt       r20, r6, r19
-  Move         r6, r20
+  Const        r18, 1
+  AddInt       r19, r5, r18
+  Move         r5, r19
   Jump         L1
 L0:
   // print("")
-  Const        r21, ""
-  Print        r21
+  Const        r20, ""
+  Print        r20
   // print("=== To camelCase ===")
-  Const        r22, "=== To camelCase ==="
-  Print        r22
+  Const        r21, "=== To camelCase ==="
+  Print        r21
   // for s in samples {
-  Const        r23, ["snakeCase", "snake_case", "snake-case", "snake case", "snake CASE", "snake.case", "variable_10_case", "variable10Case", "ɛrgo rE tHis", "hurry-up-joe!", "c://my-docs/happy_Flag-Day/12.doc", " spaces "]
-  IterPrep     r24, r23
-  Len          r25, r24
-  Const        r26, 0
+  IterPrep     r22, r1
+  Len          r23, r22
+  Const        r24, 0
 L3:
-  LessInt      r27, r26, r25
-  JumpIfFalse  r27, L2
-  Index        r28, r24, r26
-  Move         r9, r28
+  LessInt      r25, r24, r23
+  JumpIfFalse  r25, L2
+  Index        r26, r22, r24
+  Move         r8, r26
   // print(padLeft(s, 34) + " => " + snakeToCamel(s))
-  Move         r29, r9
-  Const        r12, 34
-  Move         r30, r12
-  Call2        r31, padLeft, r29, r30
-  Const        r14, " => "
-  Add          r32, r31, r14
-  Move         r33, r9
-  Call         r34, snakeToCamel, r33
-  Add          r35, r32, r34
-  Print        r35
+  Move         r27, r8
+  Const        r11, 34
+  Move         r28, r11
+  Call2        r29, padLeft, r27, r28
+  Const        r13, " => "
+  Add          r30, r29, r13
+  Move         r31, r8
+  Call         r32, snakeToCamel, r31
+  Add          r33, r30, r32
+  Print        r33
   // for s in samples {
-  Const        r36, 1
-  AddInt       r37, r26, r36
-  Move         r26, r37
+  Const        r34, 1
+  AddInt       r35, r24, r34
+  Move         r24, r35
   Jump         L3
 L2:
   Return       r0

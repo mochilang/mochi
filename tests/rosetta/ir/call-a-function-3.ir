@@ -20,7 +20,7 @@ func h (regs=2)
   Return       r0
 
   // fun main() {
-func main (regs=22)
+func main (regs=21)
   // h("ex1", [])
   Const        r2, "ex1"
   Move         r0, r2
@@ -45,7 +45,6 @@ func main (regs=22)
   // h("ex4", list)
   Const        r19, "ex4"
   Move         r17, r19
-  Const        r20, [1, 2, 3, 4]
-  Move         r18, r20
-  Call2        r21, h, r17, r18
+  Move         r18, r16
+  Call2        r20, h, r17, r18
   Return       r0

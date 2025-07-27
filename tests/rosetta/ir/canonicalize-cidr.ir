@@ -1,33 +1,32 @@
-func main (regs=20)
+func main (regs=19)
   // let tests = [
   Const        r1, ["87.70.141.1/22", "36.18.154.103/12", "62.62.197.11/29", "67.137.119.181/4", "161.214.74.21/24", "184.232.176.184/18"]
   Move         r0, r1
   SetGlobal    0,0,0,0
   // for t in tests {
-  Const        r2, ["87.70.141.1/22", "36.18.154.103/12", "62.62.197.11/29", "67.137.119.181/4", "161.214.74.21/24", "184.232.176.184/18"]
-  IterPrep     r3, r2
-  Len          r4, r3
-  Const        r5, 0
+  IterPrep     r2, r0
+  Len          r3, r2
+  Const        r4, 0
 L1:
-  LessInt      r6, r5, r4
-  JumpIfFalse  r6, L0
-  Index        r7, r3, r5
-  Move         r8, r7
+  LessInt      r5, r4, r3
+  JumpIfFalse  r5, L0
+  Index        r6, r2, r4
+  Move         r7, r6
   // print(padRight(t, 18) + " -> " + canonicalize(t))
-  Move         r9, r8
-  Const        r11, 18
-  Move         r10, r11
-  Call2        r12, padRight, r9, r10
-  Const        r13, " -> "
-  Add          r14, r12, r13
-  Move         r15, r8
-  Call         r16, canonicalize, r15
-  Add          r17, r14, r16
-  Print        r17
+  Move         r8, r7
+  Const        r10, 18
+  Move         r9, r10
+  Call2        r11, padRight, r8, r9
+  Const        r12, " -> "
+  Add          r13, r11, r12
+  Move         r14, r7
+  Call         r15, canonicalize, r14
+  Add          r16, r13, r15
+  Print        r16
   // for t in tests {
-  Const        r18, 1
-  AddInt       r19, r5, r18
-  Move         r5, r19
+  Const        r17, 1
+  AddInt       r18, r4, r17
+  Move         r4, r18
   Jump         L1
 L0:
   Return       r0
