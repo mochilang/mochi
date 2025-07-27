@@ -1,0 +1,701 @@
+func main (regs=3)
+  // let months = {
+  Const        r1, {"April": 4, "August": 8, "December": 12, "February": 2, "January": 1, "July": 7, "June": 6, "March": 3, "May": 5, "November": 11, "October": 10, "September": 9}
+  Move         r0, r1
+  SetGlobal    0,0,0,0
+  // main()
+  Call         r2, main, 
+  Return       r0
+
+  // fun isLeap(y: int): bool {
+func isLeap (regs=14)
+  // if y % 400 == 0 { return true }
+  Const        r2, 400
+  Mod          r3, r1, r2
+  Const        r4, 0
+  Equal        r5, r3, r4
+  JumpIfFalse  r5, L0
+  Const        r6, true
+  Return       r6
+L0:
+  // if y % 100 == 0 { return false }
+  Const        r7, 100
+  Mod          r8, r1, r7
+  Const        r4, 0
+  Equal        r9, r8, r4
+  JumpIfFalse  r9, L1
+  Const        r10, false
+  Return       r10
+L1:
+  // return y % 4 == 0
+  Const        r11, 4
+  Mod          r12, r1, r11
+  Const        r4, 0
+  Equal        r13, r12, r4
+  Return       r13
+
+  // fun daysInMonth(y: int, m: int): int {
+func daysInMonth (regs=28)
+  // let feb = if isLeap(y) { 29 } else { 28 }
+  Move         r3, r1
+  Call         r4, isLeap, r3
+  Const        r5, 29
+  Const        r6, 28
+  Select       7,4,5,6
+  Move         r8, r7
+  // let lengths = [31, feb, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+  Const        r21, 31
+  Move         r9, r21
+  Move         r10, r8
+  Const        r21, 31
+  Move         r11, r21
+  Const        r22, 30
+  Move         r12, r22
+  Const        r21, 31
+  Move         r13, r21
+  Const        r22, 30
+  Move         r14, r22
+  Const        r21, 31
+  Move         r15, r21
+  Const        r21, 31
+  Move         r16, r21
+  Const        r22, 30
+  Move         r17, r22
+  Const        r21, 31
+  Move         r18, r21
+  Const        r22, 30
+  Move         r19, r22
+  Const        r21, 31
+  Move         r20, r21
+  MakeList     r23, 12, r9
+  Move         r24, r23
+  // return lengths[m-1]
+  Const        r25, 1
+  Sub          r26, r2, r25
+  Index        r27, r24, r26
+  Return       r27
+
+  // fun daysBeforeYear(y: int): int {
+func daysBeforeYear (regs=14)
+  // var days = 0
+  Const        r2, 0
+  Move         r3, r2
+  // var yy = 1970
+  Const        r4, 1970
+  Move         r5, r4
+L2:
+  // while yy < y {
+  Less         r6, r5, r1
+  JumpIfFalse  r6, L0
+  // days = days + 365
+  Const        r7, 365
+  AddInt       r8, r3, r7
+  Move         r3, r8
+  // if isLeap(yy) { days = days + 1 }
+  Move         r9, r5
+  Call         r10, isLeap, r9
+  JumpIfFalse  r10, L1
+  Const        r11, 1
+  AddInt       r12, r3, r11
+  Move         r3, r12
+L1:
+  // yy = yy + 1
+  Const        r11, 1
+  AddInt       r13, r5, r11
+  Move         r5, r13
+  // while yy < y {
+  Jump         L2
+L0:
+  // return days
+  Return       r3
+
+  // fun daysBeforeMonth(y: int, m: int): int {
+func daysBeforeMonth (regs=13)
+  // var days = 0
+  Const        r3, 0
+  Move         r4, r3
+  // var mm = 1
+  Const        r5, 1
+  Move         r6, r5
+L1:
+  // while mm < m {
+  Less         r7, r6, r2
+  JumpIfFalse  r7, L0
+  // days = days + daysInMonth(y, mm)
+  Move         r8, r1
+  Move         r9, r6
+  Call2        r10, daysInMonth, r8, r9
+  Add          r11, r4, r10
+  Move         r4, r11
+  // mm = mm + 1
+  Const        r5, 1
+  AddInt       r12, r6, r5
+  Move         r6, r12
+  // while mm < m {
+  Jump         L1
+L0:
+  // return days
+  Return       r4
+
+  // fun epochSeconds(y: int, m: int, d: int, h: int, mi: int): int {
+func epochSeconds (regs=24)
+  // let days = daysBeforeYear(y) + daysBeforeMonth(y, m) + (d - 1)
+  Move         r6, r1
+  Call         r7, daysBeforeYear, r6
+  Move         r8, r1
+  Move         r9, r2
+  Call2        r10, daysBeforeMonth, r8, r9
+  Add          r11, r7, r10
+  Const        r12, 1
+  Sub          r13, r3, r12
+  Add          r14, r11, r13
+  Move         r15, r14
+  // return days * 86400 + h * 3600 + mi * 60
+  Const        r16, 86400
+  Mul          r17, r15, r16
+  Const        r18, 3600
+  Mul          r19, r4, r18
+  Const        r20, 60
+  Mul          r21, r5, r20
+  Add          r22, r17, r19
+  Add          r23, r22, r21
+  Return       r23
+
+  // fun fromEpoch(sec: int): list<int> {
+func fromEpoch (regs=43)
+  // var days = sec / 86400
+  Const        r2, 86400
+  Div          r3, r1, r2
+  Move         r4, r3
+  // var rem = sec % 86400
+  Const        r2, 86400
+  Mod          r5, r1, r2
+  Move         r6, r5
+  // var y = 1970
+  Const        r7, 1970
+  Move         r8, r7
+L1:
+  // while true {
+  Const        r9, true
+  JumpIfFalse  r9, L0
+  // let dy = if isLeap(y) { 366 } else { 365 }
+  Move         r10, r8
+  Call         r11, isLeap, r10
+  Const        r12, 366
+  Const        r13, 365
+  Select       14,11,12,13
+  Move         r15, r14
+  // if days >= dy {
+  LessEq       r16, r15, r4
+  JumpIfFalse  r16, L0
+  // days = days - dy
+  Sub          r17, r4, r15
+  Move         r4, r17
+  // y = y + 1
+  Const        r18, 1
+  AddInt       r19, r8, r18
+  Move         r8, r19
+  // if days >= dy {
+  Jump         L1
+L0:
+  // var m = 1
+  Const        r18, 1
+  Move         r20, r18
+L3:
+  // while true {
+  Const        r9, true
+  JumpIfFalse  r9, L2
+  // let dim = daysInMonth(y, m)
+  Move         r21, r8
+  Move         r22, r20
+  Call2        r23, daysInMonth, r21, r22
+  Move         r24, r23
+  // if days >= dim {
+  LessEq       r25, r24, r4
+  JumpIfFalse  r25, L2
+  // days = days - dim
+  Sub          r26, r4, r24
+  Move         r4, r26
+  // m = m + 1
+  Const        r18, 1
+  AddInt       r27, r20, r18
+  Move         r20, r27
+  // if days >= dim {
+  Jump         L3
+L2:
+  // let d = days + 1
+  Const        r18, 1
+  Add          r28, r4, r18
+  Move         r29, r28
+  // let h = rem / 3600
+  Const        r30, 3600
+  Div          r31, r6, r30
+  Move         r32, r31
+  // let mi = (rem % 3600) / 60
+  Const        r30, 3600
+  Mod          r33, r6, r30
+  Const        r34, 60
+  Div          r35, r33, r34
+  Move         r36, r35
+  // return [y, m, d, h, mi]
+  Move         r37, r8
+  Move         r38, r20
+  Move         r39, r29
+  Move         r40, r32
+  Move         r41, r36
+  MakeList     r42, 5, r37
+  Return       r42
+
+  // fun pad2(n: int): string {
+func pad2 (regs=8)
+  // if n < 10 { return "0" + str(n) }
+  Const        r2, 10
+  Less         r3, r1, r2
+  JumpIfFalse  r3, L0
+  Const        r4, "0"
+  Str          r5, r1
+  Add          r6, r4, r5
+  Return       r6
+L0:
+  // return str(n)
+  Str          r7, r1
+  Return       r7
+
+  // fun absInt(n: int): int { if n < 0 { return -n } return n }
+func absInt (regs=5)
+  // fun absInt(n: int): int { if n < 0 { return -n } return n }
+  Const        r2, 0
+  Less         r3, r1, r2
+  JumpIfFalse  r3, L0
+  Neg          r4, r1
+  Return       r4
+L0:
+  Return       r1
+
+  // fun formatDate(parts: list<int>, offset: int, abbr: string): string {
+func formatDate (regs=62)
+  // let y = parts[0]
+  Const        r4, 0
+  Index        r5, r1, r4
+  Move         r6, r5
+  // let m = parts[1]
+  Const        r7, 1
+  Index        r8, r1, r7
+  Move         r9, r8
+  // let d = parts[2]
+  Const        r10, 2
+  Index        r11, r1, r10
+  Move         r12, r11
+  // let h = parts[3]
+  Const        r13, 3
+  Index        r14, r1, r13
+  Move         r15, r14
+  // let mi = parts[4]
+  Const        r16, 4
+  Index        r17, r1, r16
+  Move         r18, r17
+  // var sign = "+"
+  Const        r19, "+"
+  Move         r20, r19
+  // if offset < 0 {
+  Const        r4, 0
+  Less         r21, r2, r4
+  JumpIfFalse  r21, L0
+  // sign = "-"
+  Const        r22, "-"
+  Move         r20, r22
+L0:
+  // let off = absInt(offset) / 60
+  Move         r23, r2
+  Call         r24, absInt, r23
+  Const        r25, 60
+  Div          r26, r24, r25
+  Move         r27, r26
+  // let offh = pad2(off / 60)
+  Const        r25, 60
+  Div          r29, r27, r25
+  Move         r28, r29
+  Call         r30, pad2, r28
+  Move         r31, r30
+  // let offm = pad2(off % 60)
+  Const        r25, 60
+  Mod          r33, r27, r25
+  Move         r32, r33
+  Call         r34, pad2, r32
+  Move         r35, r34
+  // return str(y) + "-" + pad2(m) + "-" + pad2(d) + " " + pad2(h) + ":" + pad2(mi) + ":00 " + sign + offh + offm + " " + abbr
+  Str          r36, r6
+  Const        r22, "-"
+  Add          r37, r36, r22
+  Move         r38, r9
+  Call         r39, pad2, r38
+  Add          r40, r37, r39
+  Const        r22, "-"
+  Add          r41, r40, r22
+  Move         r42, r12
+  Call         r43, pad2, r42
+  Add          r44, r41, r43
+  Const        r45, " "
+  Add          r46, r44, r45
+  Move         r47, r15
+  Call         r48, pad2, r47
+  Add          r49, r46, r48
+  Const        r50, ":"
+  Add          r51, r49, r50
+  Move         r52, r18
+  Call         r53, pad2, r52
+  Add          r54, r51, r53
+  Const        r55, ":00 "
+  Add          r56, r54, r55
+  Add          r57, r56, r20
+  Add          r58, r57, r31
+  Add          r59, r58, r35
+  Const        r45, " "
+  Add          r60, r59, r45
+  Add          r61, r60, r3
+  Return       r61
+
+  // fun parseIntStr(str: string): int {
+func parseIntStr (regs=27)
+  // var i = 0
+  Const        r2, 0
+  Move         r3, r2
+  // var neg = false
+  Const        r4, false
+  Move         r5, r4
+  // if len(str) > 0 && substring(str,0,1) == "-" {
+  Len          r6, r1
+  Const        r2, 0
+  LessInt      r7, r2, r6
+  Const        r2, 0
+  Const        r8, 1
+  Slice        r9, r1, r2, r8
+  Const        r10, "-"
+  Equal        r11, r9, r10
+  Move         r12, r7
+  JumpIfFalse  r12, L0
+  Move         r12, r11
+L0:
+  JumpIfFalse  r12, L1
+  // neg = true
+  Const        r13, true
+  Move         r5, r13
+  // i = 1
+  Const        r8, 1
+  Move         r3, r8
+L1:
+  // var n = 0
+  Const        r2, 0
+  Move         r14, r2
+  // let digits = {
+  Const        r15, {"0": 0, "1": 1, "2": 2, "3": 3, "4": 4, "5": 5, "6": 6, "7": 7, "8": 8, "9": 9}
+  Move         r16, r15
+L3:
+  // while i < len(str) {
+  Len          r17, r1
+  LessInt      r18, r3, r17
+  JumpIfFalse  r18, L2
+  // n = n*10 + digits[substring(str,i,i+1)]
+  Const        r19, 10
+  MulInt       r20, r14, r19
+  Const        r8, 1
+  AddInt       r21, r3, r8
+  Slice        r22, r1, r3, r21
+  Index        r23, r16, r22
+  Add          r24, r20, r23
+  Move         r14, r24
+  // i = i + 1
+  Const        r8, 1
+  AddInt       r25, r3, r8
+  Move         r3, r25
+  // while i < len(str) {
+  Jump         L3
+L2:
+  // if neg { n = -n }
+  JumpIfFalse  r5, L4
+  Neg          r26, r14
+  Move         r14, r26
+L4:
+  // return n
+  Return       r14
+
+  // fun indexOf(s: string, ch: string): int {
+func indexOf (regs=13)
+  // var i = 0
+  Const        r3, 0
+  Move         r4, r3
+L2:
+  // while i < len(s) {
+  Len          r5, r1
+  LessInt      r6, r4, r5
+  JumpIfFalse  r6, L0
+  // if substring(s, i, i+1) == ch { return i }
+  Const        r7, 1
+  AddInt       r8, r4, r7
+  Slice        r9, r1, r4, r8
+  Equal        r10, r9, r2
+  JumpIfFalse  r10, L1
+  Return       r4
+L1:
+  // i = i + 1
+  Const        r7, 1
+  AddInt       r11, r4, r7
+  Move         r4, r11
+  // while i < len(s) {
+  Jump         L2
+L0:
+  // return -1
+  Const        r7, 1
+  NegInt       r12, r7
+  Return       r12
+
+  // fun parseTime(s: string): list<int> {
+func parseTime (regs=40)
+  // let c = indexOf(s, ":")
+  Move         r2, r1
+  Const        r4, ":"
+  Move         r3, r4
+  Call2        r5, indexOf, r2, r3
+  Move         r6, r5
+  // let h = parseIntStr(substring(s, 0, c))
+  Const        r8, 0
+  Slice        r9, r1, r8, r6
+  Move         r7, r9
+  Call         r10, parseIntStr, r7
+  Move         r11, r10
+  // let mi = parseIntStr(substring(s, c+1, c+3))
+  Const        r13, 1
+  Add          r14, r6, r13
+  Const        r15, 3
+  Add          r16, r6, r15
+  Slice        r17, r1, r14, r16
+  Move         r12, r17
+  Call         r18, parseIntStr, r12
+  Move         r19, r18
+  // let ampm = substring(s, len(s)-2, len(s))
+  Len          r20, r1
+  Const        r21, 2
+  SubInt       r22, r20, r21
+  Len          r23, r1
+  Slice        r24, r1, r22, r23
+  Move         r25, r24
+  // var hh = h
+  Move         r26, r11
+  // if ampm == "pm" && h != 12 { hh = h + 12 }
+  Const        r27, "pm"
+  Equal        r28, r25, r27
+  Const        r29, 12
+  NotEqual     r30, r11, r29
+  Move         r31, r28
+  JumpIfFalse  r31, L0
+  Move         r31, r30
+L0:
+  JumpIfFalse  r31, L1
+  Const        r29, 12
+  Add          r32, r11, r29
+  Move         r26, r32
+L1:
+  // if ampm == "am" && h == 12 { hh = 0 }
+  Const        r33, "am"
+  Equal        r34, r25, r33
+  Const        r29, 12
+  Equal        r35, r11, r29
+  Move         r36, r34
+  JumpIfFalse  r36, L2
+  Move         r36, r35
+L2:
+  JumpIfFalse  r36, L3
+  Const        r8, 0
+  Move         r26, r8
+L3:
+  // return [hh, mi]
+  Move         r37, r26
+  Move         r38, r19
+  MakeList     r39, 2, r37
+  Return       r39
+
+  // fun main() {
+func main (regs=111)
+  // let input = "March 7 2009 7:30pm EST"
+  Const        r1, "March 7 2009 7:30pm EST"
+  Move         r2, r1
+  // print("Input:              " + input)
+  Const        r3, "Input:              "
+  Const        r4, "Input:              March 7 2009 7:30pm EST"
+  Print        r4
+  // let parts = []
+  Const        r5, []
+  Move         r6, r5
+  // var cur = ""
+  Const        r7, ""
+  Move         r8, r7
+  // var i = 0
+  Const        r9, 0
+  Move         r10, r9
+L3:
+  // while i < len(input) {
+  Const        r11, 23
+  LessInt      r12, r10, r11
+  JumpIfFalse  r12, L0
+  // let ch = substring(input, i, i+1)
+  Const        r13, 1
+  AddInt       r14, r10, r13
+  Slice        r15, r2, r10, r14
+  Move         r16, r15
+  // if ch == " " {
+  Const        r17, " "
+  Equal        r18, r16, r17
+  JumpIfFalse  r18, L1
+  // if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+  Len          r19, r8
+  Const        r9, 0
+  LessInt      r20, r9, r19
+  JumpIfFalse  r20, L2
+  Append       r21, r6, r8
+  Move         r6, r21
+  Const        r7, ""
+  Move         r8, r7
+  // if ch == " " {
+  Jump         L2
+L1:
+  // cur = cur + ch
+  Add          r22, r8, r16
+  Move         r8, r22
+L2:
+  // i = i + 1
+  Const        r13, 1
+  AddInt       r23, r10, r13
+  Move         r10, r23
+  // while i < len(input) {
+  Jump         L3
+L0:
+  // if len(cur) > 0 { parts = append(parts, cur) }
+  Len          r24, r8
+  Const        r9, 0
+  LessInt      r25, r9, r24
+  JumpIfFalse  r25, L4
+  Append       r26, r6, r8
+  Move         r6, r26
+L4:
+  // let month = months[parts[0]]
+  Const        r9, 0
+  Index        r27, r6, r9
+  Index        r28, r0, r27
+  Move         r29, r28
+  // let day = parseIntStr(parts[1])
+  Const        r13, 1
+  Index        r31, r6, r13
+  Move         r30, r31
+  Call         r32, parseIntStr, r30
+  Move         r33, r32
+  // let year = parseIntStr(parts[2])
+  Const        r35, 2
+  Index        r36, r6, r35
+  Move         r34, r36
+  Call         r37, parseIntStr, r34
+  Move         r38, r37
+  // let tm = parseTime(parts[3])
+  Const        r40, 3
+  Index        r41, r6, r40
+  Move         r39, r41
+  Call         r42, parseTime, r39
+  Move         r43, r42
+  // let hour = tm[0]
+  Const        r9, 0
+  Index        r44, r43, r9
+  Move         r45, r44
+  // let minute = tm[1]
+  Const        r13, 1
+  Index        r46, r43, r13
+  Move         r47, r46
+  // let tz = parts[4]
+  Const        r48, 4
+  Index        r49, r6, r48
+  Move         r50, r49
+  // let zoneOffsets = { "EST": -18000, "EDT": -14400, "MST": -25200 }
+  Const        r51, {"EDT": -14400, "EST": -18000, "MST": -25200}
+  Move         r52, r51
+  // let local = epochSeconds(year, month, day, hour, minute)
+  Move         r53, r38
+  Move         r54, r29
+  Move         r55, r33
+  Move         r56, r45
+  Move         r57, r47
+  Call         r58, epochSeconds, r53, r54, r55, r56, r57
+  Move         r59, r58
+  // let utc = local - zoneOffsets[tz]
+  Index        r60, r52, r50
+  Sub          r61, r59, r60
+  Move         r62, r61
+  // let utc12 = utc + 43200
+  Const        r63, 43200
+  Add          r64, r62, r63
+  Move         r65, r64
+  // let startDST = epochSeconds(2009,3,8,7,0)
+  Const        r71, 2009
+  Move         r66, r71
+  Const        r40, 3
+  Move         r67, r40
+  Const        r72, 8
+  Move         r68, r72
+  Const        r73, 7
+  Move         r69, r73
+  Const        r9, 0
+  Move         r70, r9
+  Call         r74, epochSeconds, r66, r67, r68, r69, r70
+  Move         r75, r74
+  // var offEast = -18000
+  Const        r76, 18000
+  Const        r77, -18000
+  Move         r78, r77
+  // if utc12 >= startDST {
+  LessEq       r79, r75, r65
+  JumpIfFalse  r79, L5
+  // offEast = -14400
+  Const        r80, 14400
+  Const        r81, -14400
+  Move         r78, r81
+L5:
+  // let eastParts = fromEpoch(utc12 + offEast)
+  Add          r83, r65, r78
+  Move         r82, r83
+  Call         r84, fromEpoch, r82
+  Move         r85, r84
+  // var eastAbbr = "EST"
+  Const        r86, "EST"
+  Move         r87, r86
+  // if offEast == (-14400) {
+  Const        r88, -14400
+  EqualInt     r89, r78, r88
+  JumpIfFalse  r89, L6
+  // eastAbbr = "EDT"
+  Const        r90, "EDT"
+  Move         r87, r90
+L6:
+  // print("+12 hrs:            " + formatDate(eastParts, offEast, eastAbbr))
+  Const        r91, "+12 hrs:            "
+  Move         r92, r85
+  Move         r93, r78
+  Move         r94, r87
+  Call         r95, formatDate, r92, r93, r94
+  Add          r96, r91, r95
+  Print        r96
+  // let offAZ = -25200
+  Const        r97, 25200
+  Const        r98, -25200
+  Move         r99, r98
+  // let azParts = fromEpoch(utc12 + offAZ)
+  Add          r101, r65, r99
+  Move         r100, r101
+  Call         r102, fromEpoch, r100
+  Move         r103, r102
+  // print("+12 hrs in Arizona: " + formatDate(azParts, offAZ, "MST"))
+  Const        r104, "+12 hrs in Arizona: "
+  Move         r105, r103
+  Move         r106, r99
+  Const        r108, "MST"
+  Move         r107, r108
+  Call         r109, formatDate, r105, r106, r107
+  Add          r110, r104, r109
+  Print        r110
+  Return       r0

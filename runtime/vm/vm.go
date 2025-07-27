@@ -3500,9 +3500,9 @@ func (fc *funcCompiler) compilePrimary(p *parser.Primary) int {
 				if len(caps) > 0 {
 					startCap = caps[0]
 				}
+				kreg := fc.freshConst(m.Decl.Pos, Value{Tag: ValueStr, Str: m.Decl.Name})
 				clReg := fc.newReg()
 				fc.emit(p.Pos, Instr{Op: OpMakeClosure, A: clReg, B: idx, C: len(caps), D: startCap})
-				kreg := fc.freshConst(m.Decl.Pos, Value{Tag: ValueStr, Str: m.Decl.Name})
 				regs = append(regs, kreg, clReg)
 			}
 		}

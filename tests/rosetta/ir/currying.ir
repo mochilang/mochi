@@ -83,10 +83,10 @@ func main (regs=74)
   Const        r22, "Foo"
   Const        r23, "value"
   Move         r24, r20
-  MakeClosure  r25, Foo.Method, 1, r24
   // fun Method(b: int): int {
-  Const        r26, "Method"
+  Const        r25, "Method"
   // var a = Foo{ value: 2 }
+  MakeClosure  r26, Foo.Method, 1, r24
   MakeMap      r27, 3, r21
   Move         r28, r27
   // let fn1 = fun(b: int): int => a.Method(b)
@@ -136,10 +136,10 @@ func main (regs=74)
   Const        r64, "Foo"
   Const        r65, "value"
   Move         r66, r49
-  MakeClosure  r67, Foo.Method, 1, r66
   // fun Method(b: int): int {
-  Const        r68, "Method"
+  Const        r67, "Method"
   // print("3 + 5 = " + str(fn2(Foo{ value: 3 }, 5)))
+  MakeClosure  r68, Foo.Method, 1, r66
   MakeMap      r69, 3, r63
   Move         r61, r69
   Const        r70, 5
