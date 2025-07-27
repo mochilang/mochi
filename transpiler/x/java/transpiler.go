@@ -226,7 +226,10 @@ func javaBoxType(t string) string {
 			}
 			return jt + "[]"
 		}
-		return "Object"
+		if t == "" {
+			return "Object"
+		}
+		return t
 	}
 }
 
@@ -3135,6 +3138,19 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 					t = inferType(e)
 				}
 			}
+			if t == "" {
+				if lam, ok := e.(*LambdaExpr); ok {
+					ptypes := make([]string, len(lam.Params))
+					for i, p := range lam.Params {
+						ptypes[i] = p.Type
+					}
+					ret := lam.Return
+					if ret == "" {
+						ret = "void"
+					}
+					t = fmt.Sprintf("fn(%s):%s", strings.Join(ptypes, ","), ret)
+				}
+			}
 			if t != "" {
 				varTypes[s.Let.Name] = t
 				vs := &VarStmt{Name: s.Let.Name, Type: t, Expr: e}
@@ -4198,7 +4214,13 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 				}
 				return &MethodCallExpr{Target: &VarExpr{Name: name}, Name: method, Args: args}, nil
 			}
-			if strings.HasPrefix(t, "java.util.function.Function") {
+			if strings.HasPrefix(t, "java.util.function.Supplier") {
+				return &MethodCallExpr{Target: &VarExpr{Name: name}, Name: "get", Args: args}, nil
+			}
+			if strings.HasPrefix(t, "java.util.function.BiConsumer") || strings.HasPrefix(t, "java.util.function.Consumer") {
+				return &MethodCallExpr{Target: &VarExpr{Name: name}, Name: "accept", Args: args}, nil
+			}
+			if strings.HasPrefix(t, "java.util.function.Function") || strings.HasPrefix(t, "java.util.function.BiFunction") {
 				return &MethodCallExpr{Target: &VarExpr{Name: name}, Name: "apply", Args: args}, nil
 			}
 		}

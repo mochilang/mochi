@@ -1,0 +1,7 @@
+compile: exit status 1
+/tmp/TestJavaTranspiler_Rosetta_Goldendeepcopy-12122761638/001/Main.java:54: error: for-each not applicable to expression type
+        for (var k : c.m) {
+                      ^
+  required: array or java.lang.Iterable
+  found:    Map<Integer,Boolean>
+1 error

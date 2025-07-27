@@ -1,0 +1,8 @@
+compile: exit status 1
+/tmp/TestJavaTranspiler_Rosetta_Goldendetermine-if-a-string-is-collapsible2532363644/001/Main.java:16: error: incompatible types: int cannot be converted to String
+        return new String[]{res, orig, res.length()};
+                                 ^
+/tmp/TestJavaTranspiler_Rosetta_Goldendetermine-if-a-string-is-collapsible2532363644/001/Main.java:16: error: incompatible types: int cannot be converted to String
+        return new String[]{res, orig, res.length()};
+                                                 ^
+2 errors
