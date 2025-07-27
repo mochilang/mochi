@@ -2552,7 +2552,7 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 			_ = list // do not convert mutable vars to structs
 		}
 		if mp, ok := val.(*MapLit); ok {
-			if len(mp.Items) == 0 && s.Var.Type != nil && s.Var.Type.Generic != nil && s.Var.Type.Generic.Name == "map" && len(s.Var.Type.Generic.Args) == 2 {
+			if s.Var.Type != nil && s.Var.Type.Generic != nil && s.Var.Type.Generic.Name == "map" && len(s.Var.Type.Generic.Args) == 2 {
 				mp.KeyType = csType(s.Var.Type.Generic.Args[0])
 				mp.ValType = csType(s.Var.Type.Generic.Args[1])
 			}
@@ -2627,7 +2627,7 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 					list.ElemType = vt
 				}
 			}
-			if mp, ok := val.(*MapLit); ok && len(mp.Items) == 0 {
+			if mp, ok := val.(*MapLit); ok {
 				nameAlias := s.Assign.Name
 				if alias, ok := varAliases[nameAlias]; ok {
 					nameAlias = alias
@@ -2878,8 +2878,22 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 				if vt != ct && vt != "" {
 					if vt == "object[]" && strings.HasSuffix(ct, "[]") {
 						elem := strings.TrimSuffix(ct, "[]")
-						usesLinq = true
-						val = &RawExpr{Code: fmt.Sprintf("%s.Cast<%s>().ToArray()", exprString(val), elem), Type: ct}
+						if elem == "Action" {
+							if l, ok := val.(*ListLit); ok {
+								for i, e := range l.Elems {
+									if vr, ok2 := e.(*VarRef); ok2 {
+										call := &CallExpr{Func: vr.Name, Args: nil}
+										l.Elems[i] = &FunLit{ExprBody: call}
+									}
+								}
+								l.ElemType = ct
+								vt = ct
+							}
+						}
+						if vt != ct {
+							usesLinq = true
+							val = &RawExpr{Code: fmt.Sprintf("%s.Cast<%s>().ToArray()", exprString(val), elem), Type: ct}
+						}
 					} else {
 						val = &RawExpr{Code: fmt.Sprintf("(%s)"+exprString(val), ct), Type: ct}
 					}
@@ -4575,5 +4589,8 @@ func compileStructMethod(structName string, m types.Method) (*Function, error) {
 	varTypes = savedVT
 	stringVars = savedStr
 	retType := csType(m.Decl.Return)
+	if m.Decl.Return == nil {
+		retType = ""
+	}
 	return &Function{Name: m.Decl.Name, Params: params, ParamTypes: ptypes, ReturnType: retType, Body: body, Receiver: structName}, nil
 }
