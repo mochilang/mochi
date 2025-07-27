@@ -1,0 +1,101 @@
+exit status 1
+/workspace/mochi/tests/rosetta/transpiler/Scala/compiler-virtual-machine-interpreter.scala:126: error: type mismatch;
+ found   : Any
+ required: scala.math.BigInt
+    while (i < prog.getOrElse("dataSize", null.asInstanceOf[Any])) {
+                                                           ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/compiler-virtual-machine-interpreter.scala:141: error: type mismatch;
+ found   : scala.math.BigInt
+ required: Int
+          val inst = code.asInstanceOf[ArrayBuffer[Any]](pc)
+                                                         ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/compiler-virtual-machine-interpreter.scala:151: error: not found: value slice
+            stack = (slice(stack, BigInt(0), (stack).size - BigInt(1))).asInstanceOf[ArrayBuffer[BigInt]]
+                     ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/compiler-virtual-machine-interpreter.scala:151: error: overloaded method value - with alternatives:
+  (x: Double)Double <and>
+  (x: Float)Float <and>
+  (x: Long)Long <and>
+  (x: Int)Int <and>
+  (x: Char)Int <and>
+  (x: Short)Int <and>
+  (x: Byte)Int
+ cannot be applied to (scala.math.BigInt)
+            stack = (slice(stack, BigInt(0), (stack).size - BigInt(1))).asInstanceOf[ArrayBuffer[BigInt]]
+                                                          ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/compiler-virtual-machine-interpreter.scala:162: error: not found: value slice
+            stack = (slice(stack, BigInt(0), (stack).size - BigInt(1))).asInstanceOf[ArrayBuffer[BigInt]]
+                     ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/compiler-virtual-machine-interpreter.scala:162: error: overloaded method value - with alternatives:
+  (x: Double)Double <and>
+  (x: Float)Float <and>
+  (x: Long)Long <and>
+  (x: Int)Int <and>
+  (x: Char)Int <and>
+  (x: Short)Int <and>
+  (x: Byte)Int
+ cannot be applied to (scala.math.BigInt)
+            stack = (slice(stack, BigInt(0), (stack).size - BigInt(1))).asInstanceOf[ArrayBuffer[BigInt]]
+                                                          ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/compiler-virtual-machine-interpreter.scala:172: error: not found: value slice
+            stack = (slice(stack, BigInt(0), (stack).size - BigInt(1))).asInstanceOf[ArrayBuffer[BigInt]]
+                     ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/compiler-virtual-machine-interpreter.scala:172: error: overloaded method value - with alternatives:
+  (x: Double)Double <and>
+  (x: Float)Float <and>
+  (x: Long)Long <and>
+  (x: Int)Int <and>
+  (x: Char)Int <and>
+  (x: Short)Int <and>
+  (x: Byte)Int
+ cannot be applied to (scala.math.BigInt)
+            stack = (slice(stack, BigInt(0), (stack).size - BigInt(1))).asInstanceOf[ArrayBuffer[BigInt]]
+                                                          ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/compiler-virtual-machine-interpreter.scala:178: error: not found: value slice
+            stack = (slice(stack, BigInt(0), (stack).size - BigInt(1))).asInstanceOf[ArrayBuffer[BigInt]]
+                     ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/compiler-virtual-machine-interpreter.scala:178: error: overloaded method value - with alternatives:
+  (x: Double)Double <and>
+  (x: Float)Float <and>
+  (x: Long)Long <and>
+  (x: Int)Int <and>
+  (x: Char)Int <and>
+  (x: Short)Int <and>
+  (x: Byte)Int
+ cannot be applied to (scala.math.BigInt)
+            stack = (slice(stack, BigInt(0), (stack).size - BigInt(1))).asInstanceOf[ArrayBuffer[BigInt]]
+                                                          ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/compiler-virtual-machine-interpreter.scala:191: error: type mismatch;
+ found   : scala.math.BigInt
+ required: Int
+            val s = pool.asInstanceOf[ArrayBuffer[Any]](stack(((stack).size - BigInt(1)).toInt))
+                                                             ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/compiler-virtual-machine-interpreter.scala:192: error: not found: value slice
+            stack = (slice(stack, BigInt(0), (stack).size - BigInt(1))).asInstanceOf[ArrayBuffer[BigInt]]
+                     ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/compiler-virtual-machine-interpreter.scala:192: error: overloaded method value - with alternatives:
+  (x: Double)Double <and>
+  (x: Float)Float <and>
+  (x: Long)Long <and>
+  (x: Int)Int <and>
+  (x: Char)Int <and>
+  (x: Short)Int <and>
+  (x: Byte)Int
+ cannot be applied to (scala.math.BigInt)
+            stack = (slice(stack, BigInt(0), (stack).size - BigInt(1))).asInstanceOf[ArrayBuffer[BigInt]]
+                                                          ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/compiler-virtual-machine-interpreter.scala:203: error: not found: value slice
+            stack = (slice(stack, BigInt(0), (stack).size - BigInt(1))).asInstanceOf[ArrayBuffer[BigInt]]
+                     ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/compiler-virtual-machine-interpreter.scala:203: error: overloaded method value - with alternatives:
+  (x: Double)Double <and>
+  (x: Float)Float <and>
+  (x: Long)Long <and>
+  (x: Int)Int <and>
+  (x: Char)Int <and>
+  (x: Short)Int <and>
+  (x: Byte)Int
+ cannot be applied to (scala.math.BigInt)
+            stack = (slice(stack, BigInt(0), (stack).size - BigInt(1))).asInstanceOf[ArrayBuffer[BigInt]]
+                                                          ^
+15 errors found

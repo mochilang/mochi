@@ -1,3 +1,119 @@
+## Progress (2025-07-27 15:57 +0700)
+- vm: add pow builtin and update rosetta outputs
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-27 15:57 +0700)
+- vm: add pow builtin and update rosetta outputs
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-27 15:57 +0700)
+- vm: add pow builtin and update rosetta outputs
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-27 15:57 +0700)
+- vm: add pow builtin and update rosetta outputs
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-27 15:57 +0700)
+- vm: add pow builtin and update rosetta outputs
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-27 15:57 +0700)
+- vm: add pow builtin and update rosetta outputs
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-27 15:57 +0700)
+- vm: add pow builtin and update rosetta outputs
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-27 15:57 +0700)
+- vm: add pow builtin and update rosetta outputs
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-27 15:57 +0700)
+- vm: add pow builtin and update rosetta outputs
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-27 15:57 +0700)
+- vm: add pow builtin and update rosetta outputs
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-27 15:57 +0700)
+- vm: add pow builtin and update rosetta outputs
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-27 15:57 +0700)
+- vm: add pow builtin and update rosetta outputs
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-27 15:57 +0700)
+- vm: add pow builtin and update rosetta outputs
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-27 15:57 +0700)
+- vm: add pow builtin and update rosetta outputs
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-27 15:57 +0700)
+- vm: add pow builtin and update rosetta outputs
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-27 15:57 +0700)
+- vm: add pow builtin and update rosetta outputs
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-27 15:57 +0700)
+- vm: add pow builtin and update rosetta outputs
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-27 15:57 +0700)
+- vm: add pow builtin and update rosetta outputs
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-27 15:57 +0700)
+- vm: add pow builtin and update rosetta outputs
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-27 15:57 +0700)
+- vm: add pow builtin and update rosetta outputs
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-27 15:57 +0700)
+- vm: add pow builtin and update rosetta outputs
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-27 15:57 +0700)
+- vm: add pow builtin and update rosetta outputs
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-27 15:57 +0700)
+- vm: add pow builtin and update rosetta outputs
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-27 15:57 +0700)
+- vm: add pow builtin and update rosetta outputs
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-27 15:57 +0700)
+- vm: add pow builtin and update rosetta outputs
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-27 15:57 +0700)
+- vm: add pow builtin and update rosetta outputs
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-27 15:57 +0700)
+- vm: add pow builtin and update rosetta outputs
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-27 15:57 +0700)
+- vm: add pow builtin and update rosetta outputs
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-27 15:57 +0700)
+- vm: add pow builtin and update rosetta outputs
+- Regenerated golden files - 93/104 vm valid programs passing
+
 ## Progress (2025-07-26 21:16 +0700)
 - transpiler/python: update progress
 - Regenerated golden files - 93/104 vm valid programs passing

@@ -390,9 +390,14 @@ type TypeDeclStmt struct {
 	Fields   []Param
 	Variants []Variant
 	Methods  []*FunStmt
+	Alias    string
 }
 
 func (t *TypeDeclStmt) emit(w io.Writer) {
+	if t.Alias != "" {
+		fmt.Fprintf(w, "type %s = %s", escapeName(t.Name), t.Alias)
+		return
+	}
 	if len(t.Variants) > 0 {
 		fmt.Fprintf(w, "sealed trait %s\n", escapeName(t.Name))
 		for _, v := range t.Variants {
@@ -1044,12 +1049,12 @@ type CastExpr struct {
 func (c *CastExpr) emit(w io.Writer) {
 	if c.Type == "bigint" || c.Type == "int" {
 		needsBigInt = true
-		if isBigIntExpr(c.Value) {
+		if _, ok := c.Value.(*IntLit); ok || isBigIntExpr(c.Value) {
 			c.Value.emit(w)
 		} else {
-			fmt.Fprint(w, "BigInt(")
+			fmt.Fprint(w, "(")
 			c.Value.emit(w)
-			fmt.Fprint(w, ")")
+			fmt.Fprint(w, ").asInstanceOf[BigInt]")
 		}
 		return
 	}
@@ -1843,6 +1848,11 @@ func convertStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 			return nil, nil
 		}
 		td := &TypeDeclStmt{Name: st.Type.Name}
+		if st.Type.Alias != nil {
+			td.Alias = toScalaType(st.Type.Alias)
+			typeDecls = append(typeDecls, td)
+			return nil, nil
+		}
 		for _, m := range st.Type.Members {
 			if m.Field != nil {
 				td.Fields = append(td.Fields, Param{Name: m.Field.Name, Type: toScalaType(m.Field.Type)})
@@ -2516,7 +2526,9 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 		if n, ok := expr.(*Name); ok && env != nil {
 			if typ, err := env.GetVar(n.Name); err == nil {
 				if _, ok2 := typ.(types.FuncType); ok2 {
-					return &FunRef{Name: n.Name}, nil
+					if _, ok3 := env.GetFunc(n.Name); ok3 {
+						return &FunRef{Name: n.Name}, nil
+					}
 				}
 			}
 		}
@@ -2628,7 +2640,7 @@ func convertPrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 	case p.If != nil:
 		return convertIfExpr(p.If)
 	case p.FunExpr != nil:
-		return convertFunExpr(p.FunExpr)
+		return convertFunExpr(p.FunExpr, env)
 	case p.Group != nil:
 		return convertExpr(p.Group, env)
 	case p.Match != nil:
@@ -2893,12 +2905,12 @@ func convertLiteral(l *parser.Literal) (Expr, error) {
 	return nil, fmt.Errorf("unsupported literal")
 }
 
-func convertFunExpr(fe *parser.FunExpr) (Expr, error) {
+func convertFunExpr(fe *parser.FunExpr, env *types.Env) (Expr, error) {
 	saved := localVarTypes
 	localVarTypes = copyMap(localVarTypes)
 	defer func() { localVarTypes = saved }()
 
-	child := types.NewEnv(nil)
+	child := types.NewEnv(env)
 
 	f := &FunExpr{}
 	for _, p := range fe.Params {
@@ -2906,11 +2918,17 @@ func convertFunExpr(fe *parser.FunExpr) (Expr, error) {
 		f.Params = append(f.Params, Param{Name: p.Name, Type: typ})
 		if typ != "" {
 			localVarTypes[p.Name] = typ
-			child.SetVar(p.Name, types.ResolveTypeRef(p.Type, nil), true)
+			child.SetVar(p.Name, types.ResolveTypeRef(p.Type, env), true)
 		}
 	}
 	if fe.ExprBody != nil {
 		expr, err := convertExpr(fe.ExprBody, child)
+		if err != nil {
+			return nil, err
+		}
+		f.Expr = expr
+	} else if len(fe.BlockBody) == 1 && fe.BlockBody[0].Return != nil {
+		expr, err := convertExpr(fe.BlockBody[0].Return.Value, child)
 		if err != nil {
 			return nil, err
 		}
