@@ -270,6 +270,10 @@ func header() []byte {
 	prelude += "\n(define (_lt a b) (cond ((and (number? a) (number? b)) (< a b)) ((and (string? a) (string? b)) (string<? a b)) (else (< a b))))"
 	prelude += "\n(define (_ge a b) (cond ((and (number? a) (number? b)) (>= a b)) ((and (string? a) (string? b)) (string>=? a b)) (else (>= a b))))"
 	prelude += "\n(define (_le a b) (cond ((and (number? a) (number? b)) (<= a b)) ((and (string? a) (string? b)) (string<=? a b)) (else (<= a b))))"
+	prelude += "\n(define (indexOf s sub)" +
+		" (let ((cur (string-contains s sub)))" +
+		"   (if cur (string-cursor->index s cur) -1)))"
+	prelude += "\n(define (_display . args) (apply display args))"
 	prelude += `
 (define (padStart s width pad)
   (let loop ((out s))
@@ -576,9 +580,9 @@ func convertStmt(st *parser.Statement) (Node, error) {
 					if _, ok := types.ExprType(call.Args[i], currentEnv).(types.BoolType); ok {
 						a = &List{Elems: []Node{Symbol("if"), a, BoolLit(true), BoolLit(false)}}
 					}
-					forms = append(forms, &List{Elems: []Node{Symbol("display"), &List{Elems: []Node{Symbol("to-str"), a}}}})
+					forms = append(forms, &List{Elems: []Node{Symbol("_display"), &List{Elems: []Node{Symbol("to-str"), a}}}})
 					if i < len(args)-1 {
-						forms = append(forms, &List{Elems: []Node{Symbol("display"), StringLit(" ")}})
+						forms = append(forms, &List{Elems: []Node{Symbol("_display"), StringLit(" ")}})
 					}
 				}
 				forms = append(forms, &List{Elems: []Node{Symbol("newline")}})
@@ -588,7 +592,7 @@ func convertStmt(st *parser.Statement) (Node, error) {
 					return nil, fmt.Errorf("json expects 1 arg")
 				}
 				forms := []Node{Symbol("begin"),
-					&List{Elems: []Node{Symbol("display"), args[0]}},
+					&List{Elems: []Node{Symbol("_display"), args[0]}},
 					&List{Elems: []Node{Symbol("newline")}},
 				}
 				return &List{Elems: forms}, nil
@@ -778,7 +782,7 @@ func convertStmt(st *parser.Statement) (Node, error) {
 		}}
 		jsonCall := &List{Elems: []Node{
 			Symbol("begin"),
-			&List{Elems: []Node{Symbol("display"), jsonStr}},
+			&List{Elems: []Node{Symbol("_display"), jsonStr}},
 			&List{Elems: []Node{Symbol("newline")}},
 		}}
 		innerLet2 := &List{Elems: []Node{
@@ -873,7 +877,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 		}}
 		jsonCall := &List{Elems: []Node{
 			Symbol("begin"),
-			&List{Elems: []Node{Symbol("display"), jsonStr}},
+			&List{Elems: []Node{Symbol("_display"), jsonStr}},
 			&List{Elems: []Node{Symbol("newline")}},
 		}}
 		innerLet2 := &List{Elems: []Node{
@@ -1160,6 +1164,21 @@ func convertParserPostfix(pf *parser.PostfixExpr) (Node, error) {
 			}
 			needHash = true
 			node = &List{Elems: []Node{Symbol("hash-table-ref/default"), node, keyArg, defArg}}
+			i++
+		case op.Field != nil && op.Field.Name == "padStart" && i+1 < len(pf.Ops) && pf.Ops[i+1].Call != nil:
+			call := pf.Ops[i+1].Call
+			if len(call.Args) != 2 {
+				return nil, fmt.Errorf("padStart expects 2 args")
+			}
+			widthArg, err := convertParserExpr(call.Args[0])
+			if err != nil {
+				return nil, err
+			}
+			padArg, err := convertParserExpr(call.Args[1])
+			if err != nil {
+				return nil, err
+			}
+			node = &List{Elems: []Node{Symbol("padStart"), node, widthArg, padArg}}
 			i++
 		default:
 			return nil, fmt.Errorf("unsupported postfix")
@@ -2073,11 +2092,47 @@ func makeBinary(op string, left, right Node) Node {
 		return &List{Elems: []Node{Symbol(">="), left, right}}
 	case "==":
 		if isStr(left) || isStr(right) {
+			if isStr(left) {
+				if b, ok := right.(BoolLit); ok {
+					if bool(b) {
+						right = StringLit("true")
+					} else {
+						right = StringLit("false")
+					}
+				}
+			}
+			if isStr(right) {
+				if b, ok := left.(BoolLit); ok {
+					if bool(b) {
+						left = StringLit("true")
+					} else {
+						left = StringLit("false")
+					}
+				}
+			}
 			return &List{Elems: []Node{Symbol("string=?"), left, right}}
 		}
 		return &List{Elems: []Node{Symbol("equal?"), left, right}}
 	case "!=":
 		if isStr(left) || isStr(right) {
+			if isStr(left) {
+				if b, ok := right.(BoolLit); ok {
+					if bool(b) {
+						right = StringLit("true")
+					} else {
+						right = StringLit("false")
+					}
+				}
+			}
+			if isStr(right) {
+				if b, ok := left.(BoolLit); ok {
+					if bool(b) {
+						left = StringLit("true")
+					} else {
+						left = StringLit("false")
+					}
+				}
+			}
 			return &List{Elems: []Node{Symbol("not"), &List{Elems: []Node{Symbol("string=?"), left, right}}}}
 		}
 		return &List{Elems: []Node{Symbol("not"), &List{Elems: []Node{Symbol("equal?"), left, right}}}}
@@ -2120,21 +2175,42 @@ func makeBinaryTyped(op string, left, right Node, lt, rt types.Type) Node {
 		_, ok := t.(types.ListType)
 		return ok
 	}
+	isFloatType := func(t types.Type) bool {
+		_, ok := t.(types.FloatType)
+		return ok
+	}
 	if op == "/" {
-		// Use generic division which works for both integers and
-		// floating point numbers. Using `quotient` here would require
-		// integer arguments and can fail when the type information is
-		// lost during transpilation.
+		if !isFloatType(lt) && !isFloatType(rt) {
+			return &List{Elems: []Node{Symbol("quotient"), left, right}}
+		}
 		return &List{Elems: []Node{Symbol("/"), left, right}}
 	}
 	if op == "%" {
-		// Similar to division, prefer the generic floating point modulo
-		// to avoid type errors when operands are not guaranteed to be
-		// integers.
+		if !isFloatType(lt) && !isFloatType(rt) {
+			return &List{Elems: []Node{Symbol("modulo"), left, right}}
+		}
 		needBase = true
 		return &List{Elems: []Node{Symbol("fmod"), left, right}}
 	}
 	if isStrType(lt) || isStrType(rt) {
+		if isStrType(lt) {
+			if b, ok := right.(BoolLit); ok {
+				if bool(b) {
+					right = StringLit("true")
+				} else {
+					right = StringLit("false")
+				}
+			}
+		}
+		if isStrType(rt) {
+			if b, ok := left.(BoolLit); ok {
+				if bool(b) {
+					left = StringLit("true")
+				} else {
+					left = StringLit("false")
+				}
+			}
+		}
 		switch op {
 		case "+":
 			return &List{Elems: []Node{Symbol("string-append"), left, right}}
@@ -2299,7 +2375,7 @@ func isIntOne(n Node) bool {
 func convertCall(target Node, call *parser.CallOp) (Node, error) {
 	sym, ok := target.(Symbol)
 	if !ok {
-		return nil, fmt.Errorf("unsupported call")
+		return nil, fmt.Errorf("unsupported call: %T", target)
 	}
 	args := make([]Node, len(call.Args))
 	for i, a := range call.Args {
@@ -2331,9 +2407,9 @@ func convertCall(target Node, call *parser.CallOp) (Node, error) {
 			if _, ok := types.ExprType(call.Args[i], currentEnv).(types.BoolType); ok {
 				a = &List{Elems: []Node{Symbol("if"), a, BoolLit(true), BoolLit(false)}}
 			}
-			forms = append(forms, &List{Elems: []Node{Symbol("display"), &List{Elems: []Node{Symbol("to-str"), a}}}})
+			forms = append(forms, &List{Elems: []Node{Symbol("_display"), &List{Elems: []Node{Symbol("to-str"), a}}}})
 			if i < len(args)-1 {
-				forms = append(forms, &List{Elems: []Node{Symbol("display"), StringLit(" ")}})
+				forms = append(forms, &List{Elems: []Node{Symbol("_display"), StringLit(" ")}})
 			}
 		}
 		forms = append(forms, &List{Elems: []Node{Symbol("newline")}})
@@ -2401,6 +2477,11 @@ func convertCall(target Node, call *parser.CallOp) (Node, error) {
 			return nil, fmt.Errorf("exists expects 1 arg")
 		}
 		return &List{Elems: []Node{Symbol("if"), &List{Elems: []Node{Symbol("null?"), args[0]}}, StringLit("false"), StringLit("true")}}, nil
+	case "pow":
+		if len(args) != 2 {
+			return nil, fmt.Errorf("pow expects 2 args")
+		}
+		return &List{Elems: []Node{Symbol("expt"), args[0], args[1]}}, nil
 	case "num":
 		if len(args) != 1 {
 			return nil, fmt.Errorf("num expects 1 arg")
