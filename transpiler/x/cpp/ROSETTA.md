@@ -159,7 +159,7 @@ Checklist of programs that currently transpile and run (140/465) - Last updated 
 | 152 | call-a-function-10 | ✓ | 36.0µs | 12.54MB |
 | 153 | call-a-function-11 | ✓ | 311.0µs | 12.50MB |
 | 154 | call-a-function-12 | ✓ | 250.0µs | 12.89MB |
-| 155 | call-a-function-2 | ✓ |  |  |
+| 155 | call-a-function-2 | ✓ | 41.0µs | 12.65MB |
 | 156 | call-a-function-3 | ✓ |  |  |
 | 157 | call-a-function-4 | ✓ |  |  |
 | 158 | call-a-function-5 | ✓ |  |  |
