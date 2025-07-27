@@ -4684,8 +4684,11 @@ func convertPrimary(p *parser.Primary, env *types.Env, ctx *context) (Expr, erro
 			useToInt = true
 		}
 		name := p.Call.Func
+		nameLower := strings.ToLower(name)
 		var varCall bool
-		if !builtinFunc(name) {
+		if builtinFunc(nameLower) {
+			name = nameLower
+		} else {
 			if _, ok := ctx.alias[name]; ok {
 				name = ctx.current(name)
 				varCall = true
@@ -4695,12 +4698,12 @@ func convertPrimary(p *parser.Primary, env *types.Env, ctx *context) (Expr, erro
 					varCall = true
 				}
 			}
-		}
-		if !varCall {
-			if fn, ok := env.GetFunc(name); ok {
-				name = sanitizeFuncName(fn.Name)
-			} else {
-				name = strings.ToLower(name)
+			if !varCall {
+				if fn, ok := env.GetFunc(name); ok {
+					name = sanitizeFuncName(fn.Name)
+				} else {
+					name = strings.ToLower(name)
+				}
 			}
 		}
 		ce := &CallExpr{Func: name}
