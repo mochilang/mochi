@@ -16,3 +16,8 @@ Police  Sanitation  Fire
   6         5         1
 
 14 valid combinations
+{
+  "duration_us": 75,
+  "memory_bytes": 96,
+  "name": "main"
+}

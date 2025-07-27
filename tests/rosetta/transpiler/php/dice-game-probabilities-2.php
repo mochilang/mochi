@@ -31,7 +31,9 @@ function _str($x) {
     if ($x === null) return 'null';
     return strval($x);
 }
-function roll($nDice, $nSides) {
+$__start_mem = memory_get_usage();
+$__start = _now();
+  function roll($nDice, $nSides) {
   $sum = 0;
   $i = 0;
   while ($i < $nDice) {
@@ -39,8 +41,8 @@ function roll($nDice, $nSides) {
   $i = $i + 1;
 };
   return $sum;
-}
-function beats($n1, $s1, $n2, $s2, $trials) {
+};
+  function beats($n1, $s1, $n2, $s2, $trials) {
   $wins = 0;
   $i = 0;
   while ($i < $trials) {
@@ -50,6 +52,14 @@ function beats($n1, $s1, $n2, $s2, $trials) {
   $i = $i + 1;
 };
   return (floatval($wins)) / (floatval($trials));
-}
-echo rtrim(_str(beats(9, 4, 6, 6, 1000))), PHP_EOL;
-echo rtrim(_str(beats(5, 10, 7, 6, 1000))), PHP_EOL;
+};
+  echo rtrim(_str(beats(9, 4, 6, 6, 1000))), PHP_EOL;
+  echo rtrim(_str(beats(5, 10, 7, 6, 1000))), PHP_EOL;
+$__end = _now();
+$__end_mem = memory_get_usage();
+$__duration = intdiv($__end - $__start, 1000);
+$__mem_diff = max(0, $__end_mem - $__start_mem);
+$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
+$__j = json_encode($__bench, 128);
+$__j = str_replace("    ", "  ", $__j);
+echo $__j, PHP_EOL;;

@@ -8,3 +8,8 @@ There are 87 descending primes, namely:
 "   75431     7541      751      743     7321       73       71        7      653     6521"
 "     643     6421      641      631       61     5431      541       53      521        5"
 "     431       43      421       41       31        3        2"
+{
+  "duration_us": 685,
+  "memory_bytes": 2936,
+  "name": "main"
+}

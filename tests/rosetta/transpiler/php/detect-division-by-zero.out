@@ -1,2 +1,7 @@
 1 true
 0 false
+{
+  "duration_us": 46,
+  "memory_bytes": 96,
+  "name": "main"
+}

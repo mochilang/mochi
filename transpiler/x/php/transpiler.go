@@ -243,6 +243,7 @@ var phpReserved = map[string]struct{}{
 	"exp":         {},
 	"hypot":       {},
 	"floor":       {},
+	"round":       {},
 	"parseIntStr": {},
 	"repeat":      {},
 	"crc32":       {},

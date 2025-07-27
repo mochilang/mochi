@@ -1,2 +1,7 @@
 Distance to e: 26, Path: acde
 Distance to f: 11, Path: acf
+{
+  "duration_us": 63,
+  "memory_bytes": 2416,
+  "name": "main"
+}

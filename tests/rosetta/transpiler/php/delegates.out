@@ -1,3 +1,8 @@
 default implementation
 default implementation
 delegate implementation
+{
+  "duration_us": 46,
+  "memory_bytes": 1640,
+  "name": "main"
+}
