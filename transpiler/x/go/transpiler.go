@@ -4315,6 +4315,10 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env, base string) (Expr, 
 			}
 			args[i] = ex
 		}
+		if pf.Target.Selector != nil && pf.Target.Selector.Root == "stdout" && method == "write" {
+			usesPrint = true
+			return &CallExpr{Func: "fmt.Print", Args: args}, nil
+		}
 		if _, ok := imports[pf.Target.Selector.Root]; ok {
 			full := pf.Target.Selector.Root + "." + toGoFieldName(method)
 			if full == "net.LookupHost" && len(args) == 1 {
@@ -4386,6 +4390,13 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env, base string) (Expr, 
 					expr = &IndexExpr{X: expr, Index: iex}
 					t = tt.Elem
 				case types.MapType:
+					// automatically assert key type when indexing with `any`
+					if types.IsAnyType(types.TypeOfExpr(idx.Start, env)) {
+						kt := toGoTypeFromType(tt.Key)
+						if kt != "" && kt != "any" {
+							iex = &AssertExpr{Expr: iex, Type: kt}
+						}
+					}
 					expr = &IndexExpr{X: expr, Index: iex}
 					t = tt.Value
 					if _, ok := tt.Value.(types.AnyType); ok {
@@ -4618,6 +4629,22 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env, base string) (Expr, 
 				usesStrings = true
 				expr = &CallExpr{Func: "_padStart", Args: args[:3]}
 				t = types.StringType{}
+				i++
+				continue
+			}
+			if pf.Target != nil && pf.Target.Selector != nil && pf.Target.Selector.Root == "stdout" && op.Field.Name == "write" && i+1 < len(pf.Ops) && pf.Ops[i+1].Call != nil {
+				call := pf.Ops[i+1].Call
+				args := make([]Expr, len(call.Args))
+				for j, a := range call.Args {
+					ex, err := compileExpr(a, env, "")
+					if err != nil {
+						return nil, err
+					}
+					args[j] = ex
+				}
+				usesPrint = true
+				expr = &CallExpr{Func: "fmt.Print", Args: args}
+				t = types.AnyType{}
 				i++
 				continue
 			}
@@ -4860,6 +4887,9 @@ func compilePrimary(p *parser.Primary, env *types.Env, base string) (Expr, error
 			usesParseInt = true
 			if len(args) == 1 {
 				args = append(args, &IntLit{Value: 10})
+			}
+			if types.IsAnyType(types.TypeOfExpr(p.Call.Args[0], env)) {
+				args[0] = &AssertExpr{Expr: args[0], Type: "string"}
 			}
 			return &CallExpr{Func: "_parseIntStr", Args: []Expr{args[0], args[1]}}, nil
 		case "now":

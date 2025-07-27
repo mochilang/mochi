@@ -1,7 +1,7 @@
 # Go Rosetta Transpiler Output
 
-Completed programs: 250/341
-Last updated: 2025-07-27 01:56 +0700
+Completed programs: 272/465
+Last updated: 2025-07-27 16:30 +0700
 
 Checklist:
 
@@ -270,31 +270,31 @@ Checklist:
 | 261 | csv-to-html-translation-3 | ✓ | 113.0µs | 1.26KB |
 | 262 | csv-to-html-translation-4 | ✓ | 86.0µs | 1.24KB |
 | 263 | csv-to-html-translation-5 | ✓ | 214.0µs | 57.38KB |
-| 264 | cuban-primes |   |  |  |
-| 265 | cullen-and-woodall-numbers |   |  |  |
-| 266 | cumulative-standard-deviation |   |  |  |
-| 267 | currency |   |  |  |
-| 268 | currying |   |  |  |
-| 269 | curzon-numbers |   |  |  |
-| 270 | cusip |   |  |  |
-| 271 | cyclops-numbers |   |  |  |
-| 272 | damm-algorithm |   |  |  |
-| 273 | date-format |   |  |  |
+| 264 | cuban-primes | ✓ |  |  |
+| 265 | cullen-and-woodall-numbers | ✓ | 148.0µs | 34.53KB |
+| 266 | cumulative-standard-deviation | ✓ | 133.0µs | 1.20KB |
+| 267 | currency | ✓ | 65.0µs | 6.48KB |
+| 268 | currying | ✓ | 59.0µs | 1.13KB |
+| 269 | curzon-numbers | ✓ | 9.0ms | 24.74KB |
+| 270 | cusip | ✓ | 70.0µs | 1.25KB |
+| 271 | cyclops-numbers | ✓ | 45.0µs | 0B |
+| 272 | damm-algorithm | ✓ | 79.0µs | 2.90KB |
+| 273 | date-format | ✓ | 448.0µs | 1.06KB |
 | 274 | date-manipulation |   |  |  |
-| 275 | day-of-the-week |   |  |  |
-| 276 | de-bruijn-sequences |   |  |  |
-| 277 | deal-cards-for-freecell |   |  |  |
-| 278 | death-star |   |  |  |
-| 279 | deceptive-numbers |   |  |  |
-| 280 | deconvolution-1d-2 |   |  |  |
-| 281 | deconvolution-1d-3 |   |  |  |
-| 282 | deconvolution-1d |   |  |  |
-| 283 | deepcopy-1 |   |  |  |
+| 275 | day-of-the-week | ✓ | 72.0µs | 2.01KB |
+| 276 | de-bruijn-sequences | ✓ | 888.0ms | 3.06MB |
+| 277 | deal-cards-for-freecell | ✓ | 201.0µs | 4.87KB |
+| 278 | death-star | ✓ | 2.0ms | 2.07MB |
+| 279 | deceptive-numbers | ✓ | 27.0ms | 2.52MB |
+| 280 | deconvolution-1d-2 | ✓ | 96.0µs | 5.52KB |
+| 281 | deconvolution-1d-3 | ✓ | 94.0µs | 2.29KB |
+| 282 | deconvolution-1d | ✓ | 73.0µs | 3.95KB |
+| 283 | deepcopy-1 | ✓ | 70.0µs | 2.50KB |
 | 284 | define-a-primitive-data-type |   |  |  |
 | 285 | delegates |   |  |  |
-| 286 | demings-funnel |   |  |  |
-| 287 | department-numbers |   |  |  |
-| 288 | descending-primes |   |  |  |
+| 286 | demings-funnel | ✓ | 228.0µs | 52.11KB |
+| 287 | department-numbers | ✓ | 67.0µs | 1.57KB |
+| 288 | descending-primes | ✓ | 307.0µs | 22.73KB |
 | 289 | detect-division-by-zero |   |  |  |
 | 290 | determine-if-a-string-has-all-the-same-characters |   |  |  |
 | 291 | determine-if-a-string-has-all-unique-characters |   |  |  |
@@ -336,15 +336,139 @@ Checklist:
 | 327 | dynamic-variable-names |   |  |  |
 | 328 | earliest-difference-between-prime-gaps |   |  |  |
 | 329 | eban-numbers |   |  |  |
-| 330 | echo-server |   |  |  |
-| 331 | eertree |   |  |  |
-| 332 | egyptian-division |   |  |  |
-| 333 | ekg-sequence-convergence |   |  |  |
-| 334 | element-wise-operations |   |  |  |
-| 335 | elementary-cellular-automaton-infinite-length |   |  |  |
-| 336 | elementary-cellular-automaton-random-number-generator |   |  |  |
-| 337 | elementary-cellular-automaton |   |  |  |
-| 338 | elliptic-curve-arithmetic |   |  |  |
-| 339 | emirp-primes |   |  |  |
-| 340 | empty-directory |   |  |  |
-| 341 | md5 |   |  |  |
+| 330 | ecdsa-example |   |  |  |
+| 331 | echo-server |   |  |  |
+| 332 | eertree |   |  |  |
+| 333 | egyptian-division |   |  |  |
+| 334 | ekg-sequence-convergence |   |  |  |
+| 335 | element-wise-operations |   |  |  |
+| 336 | elementary-cellular-automaton-infinite-length |   |  |  |
+| 337 | elementary-cellular-automaton-random-number-generator |   |  |  |
+| 338 | elementary-cellular-automaton |   |  |  |
+| 339 | elliptic-curve-arithmetic |   |  |  |
+| 340 | elliptic-curve-digital-signature-algorithm |   |  |  |
+| 341 | emirp-primes |   |  |  |
+| 342 | empty-directory |   |  |  |
+| 343 | empty-program |   |  |  |
+| 344 | empty-string-1 |   |  |  |
+| 345 | empty-string-2 |   |  |  |
+| 346 | enforced-immutability |   |  |  |
+| 347 | entropy-1 |   |  |  |
+| 348 | entropy-2 |   |  |  |
+| 349 | entropy-narcissist |   |  |  |
+| 350 | enumerations-1 |   |  |  |
+| 351 | enumerations-2 |   |  |  |
+| 352 | enumerations-3 |   |  |  |
+| 353 | enumerations-4 |   |  |  |
+| 354 | environment-variables-1 |   |  |  |
+| 355 | environment-variables-2 |   |  |  |
+| 356 | equal-prime-and-composite-sums |   |  |  |
+| 357 | equilibrium-index |   |  |  |
+| 358 | erd-s-nicolas-numbers |   |  |  |
+| 359 | erd-s-selfridge-categorization-of-primes |   |  |  |
+| 360 | esthetic-numbers |   |  |  |
+| 361 | ethiopian-multiplication |   |  |  |
+| 362 | euclid-mullin-sequence |   |  |  |
+| 363 | euler-method |   |  |  |
+| 364 | eulers-constant-0.5772... |   |  |  |
+| 365 | eulers-identity |   |  |  |
+| 366 | eulers-sum-of-powers-conjecture |   |  |  |
+| 367 | evaluate-binomial-coefficients |   |  |  |
+| 368 | even-or-odd |   |  |  |
+| 369 | events |   |  |  |
+| 370 | evolutionary-algorithm |   |  |  |
+| 371 | exceptions-catch-an-exception-thrown-in-a-nested-call |   |  |  |
+| 372 | exceptions |   |  |  |
+| 373 | executable-library |   |  |  |
+| 374 | execute-a-markov-algorithm |   |  |  |
+| 375 | execute-a-system-command |   |  |  |
+| 376 | execute-brain- |   |  |  |
+| 377 | execute-computer-zero-1 |   |  |  |
+| 378 | execute-computer-zero |   |  |  |
+| 379 | execute-hq9+ |   |  |  |
+| 380 | execute-snusp |   |  |  |
+| 381 | exponentiation-operator-2 |   |  |  |
+| 382 | exponentiation-operator |   |  |  |
+| 383 | exponentiation-order |   |  |  |
+| 384 | exponentiation-with-infix-operators-in-or-operating-on-the-base |   |  |  |
+| 385 | extend-your-language |   |  |  |
+| 386 | extensible-prime-generator |   |  |  |
+| 387 | extreme-floating-point-values |   |  |  |
+| 388 | faces-from-a-mesh-2 |   |  |  |
+| 389 | faces-from-a-mesh |   |  |  |
+| 390 | factorial-base-numbers-indexing-permutations-of-a-collection |   |  |  |
+| 391 | factorial-primes |   |  |  |
+| 392 | factorial |   |  |  |
+| 393 | factorions |   |  |  |
+| 394 | factors-of-a-mersenne-number |   |  |  |
+| 395 | factors-of-an-integer |   |  |  |
+| 396 | fairshare-between-two-and-more |   |  |  |
+| 397 | farey-sequence |   |  |  |
+| 398 | fast-fourier-transform |   |  |  |
+| 399 | fasta-format |   |  |  |
+| 400 | faulhabers-formula |   |  |  |
+| 401 | faulhabers-triangle |   |  |  |
+| 402 | feigenbaum-constant-calculation |   |  |  |
+| 403 | fermat-numbers |   |  |  |
+| 404 | fibonacci-n-step-number-sequences |   |  |  |
+| 405 | fibonacci-sequence-1 |   |  |  |
+| 406 | fibonacci-sequence-2 |   |  |  |
+| 407 | fibonacci-sequence-3 |   |  |  |
+| 408 | fibonacci-sequence-4 |   |  |  |
+| 409 | fibonacci-word-fractal |   |  |  |
+| 410 | fibonacci-word |   |  |  |
+| 411 | file-extension-is-in-extensions-list |   |  |  |
+| 412 | file-input-output-1 |   |  |  |
+| 413 | file-input-output-2 |   |  |  |
+| 414 | file-modification-time |   |  |  |
+| 415 | file-size-distribution |   |  |  |
+| 416 | file-size |   |  |  |
+| 417 | filter |   |  |  |
+| 418 | find-chess960-starting-position-identifier |   |  |  |
+| 419 | find-common-directory-path |   |  |  |
+| 420 | find-duplicate-files |   |  |  |
+| 421 | find-if-a-point-is-within-a-triangle |   |  |  |
+| 422 | find-largest-left-truncatable-prime-in-a-given-base |   |  |  |
+| 423 | find-limit-of-recursion |   |  |  |
+| 424 | find-palindromic-numbers-in-both-binary-and-ternary-bases |   |  |  |
+| 425 | find-the-intersection-of-a-line-with-a-plane |   |  |  |
+| 426 | find-the-intersection-of-two-lines |   |  |  |
+| 427 | find-the-last-sunday-of-each-month |   |  |  |
+| 428 | find-the-missing-permutation |   |  |  |
+| 429 | fivenum-1 |   |  |  |
+| 430 | fivenum-2 |   |  |  |
+| 431 | fixed-length-records-1 |   |  |  |
+| 432 | fixed-length-records-2 |   |  |  |
+| 433 | fizzbuzz-1 |   |  |  |
+| 434 | fizzbuzz-2 |   |  |  |
+| 435 | flatten-a-list-1 |   |  |  |
+| 436 | flatten-a-list-2 |   |  |  |
+| 437 | flipping-bits-game |   |  |  |
+| 438 | flow-control-structures-1 |   |  |  |
+| 439 | flow-control-structures-2 |   |  |  |
+| 440 | flow-control-structures-3 |   |  |  |
+| 441 | flow-control-structures-4 |   |  |  |
+| 442 | floyd-warshall-algorithm |   |  |  |
+| 443 | floyds-triangle |   |  |  |
+| 444 | forest-fire |   |  |  |
+| 445 | fork |   |  |  |
+| 446 | ftp |   |  |  |
+| 447 | gamma-function |   |  |  |
+| 448 | general-fizzbuzz |   |  |  |
+| 449 | generic-swap |   |  |  |
+| 450 | get-system-command-output |   |  |  |
+| 451 | giuga-numbers |   |  |  |
+| 452 | globally-replace-text-in-several-files |   |  |  |
+| 453 | goldbachs-comet |   |  |  |
+| 454 | golden-ratio-convergence |   |  |  |
+| 455 | graph-colouring |   |  |  |
+| 456 | gray-code |   |  |  |
+| 457 | http |   |  |  |
+| 458 | image-noise |   |  |  |
+| 459 | loops-increment-loop-index-within-loop-body |   |  |  |
+| 460 | md5 |   |  |  |
+| 461 | nim-game |   |  |  |
+| 462 | plasma-effect |   |  |  |
+| 463 | sorting-algorithms-bubble-sort |   |  |  |
+| 464 | window-management |   |  |  |
+| 465 | zumkeller-numbers |   |  |  |
