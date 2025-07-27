@@ -59,6 +59,7 @@ var (
 	nextStructHint   string
 	usesJSON         bool
 	benchMain        bool
+	renameMain       bool
 	useNow           bool
 	useInput         bool
 	useLookupHost    bool
@@ -1206,6 +1207,20 @@ type CallExpr struct {
 	Args []Expr
 }
 
+// PanicExpr represents a call to panic that throws an exception.
+type PanicExpr struct{ Arg Expr }
+
+func (p *PanicExpr) emit(w io.Writer) error {
+	if _, err := io.WriteString(w, "throw Exception("); err != nil {
+		return err
+	}
+	if err := p.Arg.emit(w); err != nil {
+		return err
+	}
+	_, err := io.WriteString(w, ")")
+	return err
+}
+
 func (c *CallExpr) emit(w io.Writer) error {
 	if sel, ok := c.Func.(*SelectorExpr); ok {
 		if sel.Field == "keys" && len(c.Args) == 0 {
@@ -1282,7 +1297,7 @@ func (n *Name) emit(w io.Writer) error {
 		return err
 	}
 	name := n.Name
-	if benchMain && name == "main" {
+	if (benchMain || renameMain) && name == "main" {
 		name = "_main"
 	}
 	_, err := io.WriteString(w, name)
@@ -3771,7 +3786,7 @@ func Emit(w io.Writer, p *Program) error {
 	mainCalled := false
 	for _, st := range p.Stmts {
 		if fd, ok := st.(*FuncDecl); ok {
-			if fd.Name == "main" || (benchMain && fd.Name == "_main") {
+			if fd.Name == "main" || ((benchMain || renameMain) && fd.Name == "_main") {
 				hasMain = true
 			}
 			if err := fd.emit(w); err != nil {
@@ -3901,6 +3916,13 @@ func Transpile(prog *parser.Program, env *types.Env, bench, wrapMain bool) (*Pro
 	netAliases = map[string]struct{}{}
 	structMutable = map[string]bool{}
 	benchMain = bench
+	renameMain = false
+	for _, st := range prog.Statements {
+		if st.Fun != nil && st.Fun.Name == "main" {
+			renameMain = true
+			break
+		}
+	}
 	p := &Program{BenchMain: bench, WrapMain: wrapMain}
 	for _, st := range prog.Statements {
 		s, err := convertStmtInternal(st)
@@ -4307,7 +4329,7 @@ func convertStmtInternal(st *parser.Statement) (Stmt, error) {
 			}
 		}
 		name := sanitize(st.Fun.Name)
-		if benchMain && name == "main" {
+		if (benchMain || renameMain) && name == "main" {
 			name = "_main"
 		}
 		if rt := typeRefString(st.Fun.Return); rt != "" {
@@ -4790,6 +4812,13 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				return nil, err
 			}
 			return &CallExpr{Func: &SelectorExpr{Receiver: v, Field: "abs"}}, nil
+		}
+		if p.Call.Func == "panic" && len(p.Call.Args) == 1 {
+			arg, err := convertExpr(p.Call.Args[0])
+			if err != nil {
+				return nil, err
+			}
+			return &PanicExpr{Arg: arg}, nil
 		}
 		if p.Call.Func == "str" && len(p.Call.Args) == 1 {
 			v, err := convertExpr(p.Call.Args[0])

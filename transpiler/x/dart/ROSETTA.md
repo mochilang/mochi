@@ -2,7 +2,7 @@
 
 This directory contains Dart code generated from Mochi programs in `tests/rosetta/x/Mochi`. Each program has a `.dart` file and `.out` output. Compilation or runtime failures are captured in a `.error` file.
 
-Compiled and ran: 290/465
+Compiled and ran: 317/465
 
 ## Checklist
 | Index | Name | Status | Duration | Memory |
@@ -315,39 +315,39 @@ Compiled and ran: 290/465
 | 306 | disarium-numbers | ✓ | 916.675ms | 3.2 MB |
 | 307 | discordian-date | ✓ | 6.454ms | 68.0 KB |
 | 308 | display-a-linear-combination | ✓ | 6.787ms | 11.9 MB |
-| 309 | display-an-outline-as-a-nested-table |   |  |  |
-| 310 | distance-and-bearing |   |  |  |
-| 311 | distributed-programming |   |  |  |
-| 312 | diversity-prediction-theorem |   |  |  |
-| 313 | documentation |   |  |  |
-| 314 | doomsday-rule |   |  |  |
-| 315 | dot-product |   |  |  |
-| 316 | doubly-linked-list-definition-1 |   |  |  |
+| 309 | display-an-outline-as-a-nested-table | ✓ | 18.233ms | 4.4 MB |
+| 310 | distance-and-bearing | ✓ | 23.48ms | 4.3 MB |
+| 311 | distributed-programming | ✓ | 10.18ms | 6.2 MB |
+| 312 | diversity-prediction-theorem | ✓ | 23.809ms | 10.2 MB |
+| 313 | documentation | ✓ | 8.272ms | 2.3 MB |
+| 314 | doomsday-rule | ✓ | 19.946ms | 9.7 MB |
+| 315 | dot-product | ✓ | 15.738ms | 1.6 MB |
+| 316 | doubly-linked-list-definition-1 | ✓ | 8.21ms | 2.5 MB |
 | 317 | doubly-linked-list-definition-2 |   |  |  |
 | 318 | doubly-linked-list-element-definition |   |  |  |
-| 319 | doubly-linked-list-traversal |   |  |  |
-| 320 | dragon-curve |   |  |  |
+| 319 | doubly-linked-list-traversal | ✓ | 9.522ms | 2.2 MB |
+| 320 | dragon-curve | ✓ | 20.375ms | 8.5 MB |
 | 321 | draw-a-clock |   |  |  |
-| 322 | draw-a-cuboid |   |  |  |
-| 323 | draw-a-pixel-1 |   |  |  |
-| 324 | draw-a-rotating-cube |   |  |  |
-| 325 | draw-a-sphere |   |  |  |
-| 326 | dutch-national-flag-problem |   |  |  |
+| 322 | draw-a-cuboid | ✓ | 21.691ms | 10.2 MB |
+| 323 | draw-a-pixel-1 | ✓ | 88.33ms | 7.3 MB |
+| 324 | draw-a-rotating-cube | ✓ | 45.286ms | 12.0 MB |
+| 325 | draw-a-sphere | ✓ | 57.249ms | 236.0 KB |
+| 326 | dutch-national-flag-problem | ✓ | 25.566ms | 10.3 MB |
 | 327 | dynamic-variable-names |   |  |  |
-| 328 | earliest-difference-between-prime-gaps |   |  |  |
-| 329 | eban-numbers |   |  |  |
+| 328 | earliest-difference-between-prime-gaps | ✓ | 24.372ms | 10.2 MB |
+| 329 | eban-numbers | ✓ | 98.141ms | 2.8 MB |
 | 330 | ecdsa-example |   |  |  |
-| 331 | echo-server |   |  |  |
+| 331 | echo-server | ✓ | 9.818ms | 2.5 MB |
 | 332 | eertree |   |  |  |
-| 333 | egyptian-division |   |  |  |
-| 334 | ekg-sequence-convergence |   |  |  |
-| 335 | element-wise-operations |   |  |  |
-| 336 | elementary-cellular-automaton-infinite-length |   |  |  |
-| 337 | elementary-cellular-automaton-random-number-generator |   |  |  |
-| 338 | elementary-cellular-automaton |   |  |  |
-| 339 | elliptic-curve-arithmetic |   |  |  |
-| 340 | elliptic-curve-digital-signature-algorithm |   |  |  |
-| 341 | emirp-primes |   |  |  |
+| 333 | egyptian-division | ✓ | 25.209ms | 10.3 MB |
+| 334 | ekg-sequence-convergence | ✓ | 48.674ms | 3.0 MB |
+| 335 | element-wise-operations | ✓ | 20.871ms | 3.7 MB |
+| 336 | elementary-cellular-automaton-infinite-length | ✓ | 29.258ms | 4.7 MB |
+| 337 | elementary-cellular-automaton-random-number-generator | ✓ | 41.674ms | 3.1 MB |
+| 338 | elementary-cellular-automaton | ✓ | 26.435ms | 10.1 MB |
+| 339 | elliptic-curve-arithmetic | ✓ | 11.395ms | 2.6 MB |
+| 340 | elliptic-curve-digital-signature-algorithm | ✓ | 9.034ms | 2.8 MB |
+| 341 | emirp-primes | ✓ | 652.794ms | 5.6 MB |
 | 342 | empty-directory |   |  |  |
 | 343 | empty-program |   |  |  |
 | 344 | empty-string-1 |   |  |  |
@@ -473,4 +473,4 @@ Compiled and ran: 290/465
 | 464 | window-management |   |  |  |
 | 465 | zumkeller-numbers |   |  |  |
 
-_Last updated: 2025-07-27 16:25 +0700_
+_Last updated: 2025-07-27 17:10 +0700_
