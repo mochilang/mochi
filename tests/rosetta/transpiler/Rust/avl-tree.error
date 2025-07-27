@@ -1,0 +1,1483 @@
+warning: unnecessary parentheses around `return` value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:66:12
+   |
+66 |     return (1 - dir)
+   |            ^       ^
+   |
+   = note: `#[warn(unused_parens)]` on by default
+help: remove these parentheses
+   |
+66 -     return (1 - dir)
+66 +     return 1 - dir
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:90:8
+   |
+90 |     if (nn["Balance".as_str()] == 0) {
+   |        ^                           ^
+   |
+help: remove these parentheses
+   |
+90 -     if (nn["Balance".as_str()] == 0) {
+90 +     if nn["Balance".as_str()] == 0 {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:93:15
+   |
+93 |     } else if (nn["Balance".as_str()] == bal) {
+   |               ^                             ^
+   |
+help: remove these parentheses
+   |
+93 -     } else if (nn["Balance".as_str()] == bal) {
+93 +     } else if nn["Balance".as_str()] == bal {
+   |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:105:24
+    |
+105 |     let mut bal: i64 = ((2 * dir) - 1);
+    |                        ^             ^
+    |
+help: remove these parentheses
+    |
+105 -     let mut bal: i64 = ((2 * dir) - 1);
+105 +     let mut bal: i64 = (2 * dir) - 1;
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:106:8
+    |
+106 |     if (n["Balance".as_str()] == bal) {
+    |        ^                            ^
+    |
+help: remove these parentheses
+    |
+106 -     if (n["Balance".as_str()] == bal) {
+106 +     if n["Balance".as_str()] == bal {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:116:8
+    |
+116 |     if (root == Default::default()) {
+    |        ^                          ^
+    |
+help: remove these parentheses
+    |
+116 -     if (root == Default::default()) {
+116 +     if root == Default::default() {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:121:8
+    |
+121 |     if (node["Data".as_str()] < data) {
+    |        ^                            ^
+    |
+help: remove these parentheses
+    |
+121 -     if (node["Data".as_str()] < data) {
+121 +     if node["Data".as_str()] < data {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:129:23
+    |
+129 |     node["Balance"] = (node["Balance".as_str()] + ((2 * dir) - 1));
+    |                       ^                                          ^
+    |
+help: remove these parentheses
+    |
+129 -     node["Balance"] = (node["Balance".as_str()] + ((2 * dir) - 1));
+129 +     node["Balance"] = node["Balance".as_str()] + ((2 * dir) - 1);
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:130:8
+    |
+130 |     if (node["Balance".as_str()] == 0) {
+    |        ^                             ^
+    |
+help: remove these parentheses
+    |
+130 -     if (node["Balance".as_str()] == 0) {
+130 +     if node["Balance".as_str()] == 0 {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:133:8
+    |
+133 |     if ((node["Balance".as_str()] == 1) || (node["Balance".as_str()] == -1)) {
+    |        ^                                                                   ^
+    |
+help: remove these parentheses
+    |
+133 -     if ((node["Balance".as_str()] == 1) || (node["Balance".as_str()] == -1)) {
+133 +     if (node["Balance".as_str()] == 1) || (node["Balance".as_str()] == -1) {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:146:24
+    |
+146 |     let mut bal: i64 = ((2 * dir) - 1);
+    |                        ^             ^
+    |
+help: remove these parentheses
+    |
+146 -     let mut bal: i64 = ((2 * dir) - 1);
+146 +     let mut bal: i64 = (2 * dir) - 1;
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:147:8
+    |
+147 |     if (n["Balance".as_str()] == -bal) {
+    |        ^                             ^
+    |
+help: remove these parentheses
+    |
+147 -     if (n["Balance".as_str()] == -bal) {
+147 +     if n["Balance".as_str()] == -bal {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:152:8
+    |
+152 |     if (n["Balance".as_str()] == bal) {
+    |        ^                            ^
+    |
+help: remove these parentheses
+    |
+152 -     if (n["Balance".as_str()] == bal) {
+152 +     if n["Balance".as_str()] == bal {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:162:8
+    |
+162 |     if (root == Default::default()) {
+    |        ^                          ^
+    |
+help: remove these parentheses
+    |
+162 -     if (root == Default::default()) {
+162 +     if root == Default::default() {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:166:8
+    |
+166 |     if (node["Data".as_str()] == data) {
+    |        ^                             ^
+    |
+help: remove these parentheses
+    |
+166 -     if (node["Data".as_str()] == data) {
+166 +     if node["Data".as_str()] == data {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:167:12
+    |
+167 |         if (getLink(&node, 0) == Default::default()) {
+    |            ^                                       ^
+    |
+help: remove these parentheses
+    |
+167 -         if (getLink(&node, 0) == Default::default()) {
+167 +         if getLink(&node, 0) == Default::default() {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:170:12
+    |
+170 |         if (getLink(&node, 1) == Default::default()) {
+    |            ^                                       ^
+    |
+help: remove these parentheses
+    |
+170 -         if (getLink(&node, 1) == Default::default()) {
+170 +         if getLink(&node, 1) == Default::default() {
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:174:15
+    |
+174 |         while (getLink(&heir, 1) != Default::default()) {
+    |               ^                                       ^
+    |
+help: remove these parentheses
+    |
+174 -         while (getLink(&heir, 1) != Default::default()) {
+174 +         while getLink(&heir, 1) != Default::default() {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:181:8
+    |
+181 |     if (node["Data".as_str()] < data) {
+    |        ^                            ^
+    |
+help: remove these parentheses
+    |
+181 -     if (node["Data".as_str()] < data) {
+181 +     if node["Data".as_str()] < data {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:189:23
+    |
+189 |     node["Balance"] = ((node["Balance".as_str()] + 1) - (2 * dir));
+    |                       ^                                          ^
+    |
+help: remove these parentheses
+    |
+189 -     node["Balance"] = ((node["Balance".as_str()] + 1) - (2 * dir));
+189 +     node["Balance"] = (node["Balance".as_str()] + 1) - (2 * dir);
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:190:8
+    |
+190 |     if ((node["Balance".as_str()] == 1) || (node["Balance".as_str()] == -1)) {
+    |        ^                                                                   ^
+    |
+help: remove these parentheses
+    |
+190 -     if ((node["Balance".as_str()] == 1) || (node["Balance".as_str()] == -1)) {
+190 +     if (node["Balance".as_str()] == 1) || (node["Balance".as_str()] == -1) {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:193:8
+    |
+193 |     if (node["Balance".as_str()] == 0) {
+    |        ^                             ^
+    |
+help: remove these parentheses
+    |
+193 -     if (node["Balance".as_str()] == 0) {
+193 +     if node["Balance".as_str()] == 0 {
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:207:11
+    |
+207 |     while (i < n) {
+    |           ^     ^
+    |
+help: remove these parentheses
+    |
+207 -     while (i < n) {
+207 +     while i < n {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:209:13
+    |
+209 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+209 -         i = (i + 1);
+209 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:216:8
+    |
+216 |     if (node == Default::default()) {
+    |        ^                          ^
+    |
+help: remove these parentheses
+    |
+216 -     if (node == Default::default()) {
+216 +     if node == Default::default() {
+    |
+
+warning: unnecessary parentheses around function argument
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:224:82
+    |
+224 | ...   println!("{}", format!("{}{}", format!("{}{}", format!("{}{}", indentStr((indent + 3)), "\"Data\": "), node["Data".as_str()].to_str...
+    |                                                                                ^          ^
+    |
+help: remove these parentheses
+    |
+224 -         println!("{}", format!("{}{}", format!("{}{}", format!("{}{}", indentStr((indent + 3)), "\"Data\": "), node["Data".as_str()].to_string()), ","));
+224 +         println!("{}", format!("{}{}", format!("{}{}", format!("{}{}", indentStr(indent + 3), "\"Data\": "), node["Data".as_str()].to_string()), ","));
+    |
+
+warning: unnecessary parentheses around function argument
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:225:82
+    |
+225 | ...   println!("{}", format!("{}{}", format!("{}{}", format!("{}{}", indentStr((indent + 3)), "\"Balance\": "), node["Balance".as_str()]....
+    |                                                                                ^          ^
+    |
+help: remove these parentheses
+    |
+225 -         println!("{}", format!("{}{}", format!("{}{}", format!("{}{}", indentStr((indent + 3)), "\"Balance\": "), node["Balance".as_str()].to_string()), ","));
+225 +         println!("{}", format!("{}{}", format!("{}{}", format!("{}{}", indentStr(indent + 3), "\"Balance\": "), node["Balance".as_str()].to_string()), ","));
+    |
+
+warning: unnecessary parentheses around function argument
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:226:50
+    |
+226 |         println!("{}", format!("{}{}", indentStr((indent + 3)), "\"Link\": ["));
+    |                                                  ^          ^
+    |
+help: remove these parentheses
+    |
+226 -         println!("{}", format!("{}{}", indentStr((indent + 3)), "\"Link\": ["));
+226 +         println!("{}", format!("{}{}", indentStr(indent + 3), "\"Link\": ["));
+    |
+
+warning: unnecessary parentheses around function argument
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:227:37
+    |
+227 |         dumpNode(getLink(&node, 0), (indent + 6), true);
+    |                                     ^          ^
+    |
+help: remove these parentheses
+    |
+227 -         dumpNode(getLink(&node, 0), (indent + 6), true);
+227 +         dumpNode(getLink(&node, 0), indent + 6, true);
+    |
+
+warning: unnecessary parentheses around function argument
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:228:37
+    |
+228 |         dumpNode(getLink(&node, 1), (indent + 6), false);
+    |                                     ^          ^
+    |
+help: remove these parentheses
+    |
+228 -         dumpNode(getLink(&node, 1), (indent + 6), false);
+228 +         dumpNode(getLink(&node, 1), indent + 6, false);
+    |
+
+warning: unnecessary parentheses around function argument
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:229:50
+    |
+229 |         println!("{}", format!("{}{}", indentStr((indent + 3)), "]"));
+    |                                                  ^          ^
+    |
+help: remove these parentheses
+    |
+229 -         println!("{}", format!("{}{}", indentStr((indent + 3)), "]"));
+229 +         println!("{}", format!("{}{}", indentStr(indent + 3), "]"));
+    |
+
+error[E0658]: use of unstable library feature `str_as_str`
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:56:21
+   |
+56 |     return n["Link".as_str()][dir]
+   |                     ^^^^^^
+   |
+   = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0608]: cannot index into a value of type `f64`
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:56:30
+   |
+56 |     return n["Link".as_str()][dir]
+   |                              ^^^^^
+
+error[E0658]: use of unstable library feature `str_as_str`
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:60:35
+   |
+60 |     let mut links: f64 = n["Link".as_str()];
+   |                                   ^^^^^^
+   |
+   = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0608]: cannot index into a value of type `f64`
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:61:10
+   |
+61 |     links[dir] = v;
+   |          ^^^^^
+
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:62:14
+   |
+62 |     n.insert("Link".clone(), links);
+   |       ------ ^^^^^^^-----^^
+   |       |      |      |
+   |       |      |      help: try using a conversion method: `to_string`
+   |       |      expected `String`, found `&str`
+   |       arguments to this method are incorrect
+   |
+note: method defined here
+  --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/std/src/collections/hash/map.rs:1201:12
+
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:71:45
+   |
+71 |     setLink(root.clone(), opp(dir), getLink(&tmp, dir));
+   |                                     ------- ^^^^ expected `&HashMap<String, f64>`, found `&f64`
+   |                                     |
+   |                                     arguments to this function are incorrect
+   |
+   = note: expected reference `&HashMap<String, f64>`
+              found reference `&f64`
+note: function defined here
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:55:4
+   |
+55 | fn getLink(n: &HashMap<String, f64>, mut dir: i64) -> f64 {
+   |    ^^^^^^^ ------------------------
+
+error[E0308]: arguments to this function are incorrect
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:72:5
+   |
+72 |     setLink(tmp.clone(), dir, root);
+   |     ^^^^^^^ -----------       ---- unexpected argument #3 of type `&HashMap<String, f64>`
+   |             |
+   |             argument #1 of type `HashMap<String, f64>` is missing
+   |
+note: function defined here
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:59:4
+   |
+59 | fn setLink(mut n: HashMap<String, f64>, mut dir: i64, mut v: f64) {
+   |    ^^^^^^^ ---------------------------
+help: did you mean
+   |
+72 -     setLink(tmp.clone(), dir, root);
+72 +     setLink(/* HashMap<String, f64> */, dir, tmp.clone());
+   |
+
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:77:32
+   |
+77 |     let mut tmp: f64 = getLink(&getLink(root, opp(dir)), dir);
+   |                        ------- ^^^^^^^^^^^^^^^^^^^^^^^^ expected `&HashMap<String, f64>`, found `&f64`
+   |                        |
+   |                        arguments to this function are incorrect
+   |
+   = note: expected reference `&HashMap<String, f64>`
+              found reference `&f64`
+note: function defined here
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:55:4
+   |
+55 | fn getLink(n: &HashMap<String, f64>, mut dir: i64) -> f64 {
+   |    ^^^^^^^ ------------------------
+
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:78:51
+   |
+78 |     setLink(getLink(root, opp(dir)), dir, getLink(&tmp, opp(dir)));
+   |                                           ------- ^^^^ expected `&HashMap<String, f64>`, found `&f64`
+   |                                           |
+   |                                           arguments to this function are incorrect
+   |
+   = note: expected reference `&HashMap<String, f64>`
+              found reference `&f64`
+note: function defined here
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:55:4
+   |
+55 | fn getLink(n: &HashMap<String, f64>, mut dir: i64) -> f64 {
+   |    ^^^^^^^ ------------------------
+
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:78:13
+   |
+78 |     setLink(getLink(root, opp(dir)), dir, getLink(&tmp, opp(dir)));
+   |     ------- ^^^^^^^^^^^^^^^^^^^^^^^ expected `HashMap<String, f64>`, found `f64`
+   |     |
+   |     arguments to this function are incorrect
+   |
+   = note: expected struct `HashMap<String, f64>`
+                found type `f64`
+note: function defined here
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:59:4
+   |
+59 | fn setLink(mut n: HashMap<String, f64>, mut dir: i64, mut v: f64) {
+   |    ^^^^^^^ ---------------------------
+
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:79:13
+   |
+79 |     setLink(tmp.clone(), opp(dir), getLink(root, opp(dir)));
+   |     ------- ^^^^^^^^^^^ expected `HashMap<String, f64>`, found `f64`
+   |     |
+   |     arguments to this function are incorrect
+   |
+   = note: expected struct `HashMap<String, f64>`
+                found type `f64`
+note: function defined here
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:59:4
+   |
+59 | fn setLink(mut n: HashMap<String, f64>, mut dir: i64, mut v: f64) {
+   |    ^^^^^^^ ---------------------------
+
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:82:45
+   |
+82 |     setLink(root.clone(), opp(dir), getLink(&tmp, dir));
+   |                                     ------- ^^^^ expected `&HashMap<String, f64>`, found `&f64`
+   |                                     |
+   |                                     arguments to this function are incorrect
+   |
+   = note: expected reference `&HashMap<String, f64>`
+              found reference `&f64`
+note: function defined here
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:55:4
+   |
+55 | fn getLink(n: &HashMap<String, f64>, mut dir: i64) -> f64 {
+   |    ^^^^^^^ ------------------------
+
+error[E0308]: arguments to this function are incorrect
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:83:5
+   |
+83 |     setLink(tmp.clone(), dir, root);
+   |     ^^^^^^^ -----------       ---- unexpected argument #3 of type `&HashMap<String, f64>`
+   |             |
+   |             argument #1 of type `HashMap<String, f64>` is missing
+   |
+note: function defined here
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:59:4
+   |
+59 | fn setLink(mut n: HashMap<String, f64>, mut dir: i64, mut v: f64) {
+   |    ^^^^^^^ ---------------------------
+help: did you mean
+   |
+83 -     setLink(tmp.clone(), dir, root);
+83 +     setLink(/* HashMap<String, f64> */, dir, tmp.clone());
+   |
+
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:89:31
+   |
+89 |     let mut nn: f64 = getLink(&n, opp(dir));
+   |                       ------- ^^ expected `&HashMap<String, f64>`, found `&f64`
+   |                       |
+   |                       arguments to this function are incorrect
+   |
+   = note: expected reference `&HashMap<String, f64>`
+              found reference `&f64`
+note: function defined here
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:55:4
+   |
+55 | fn getLink(n: &HashMap<String, f64>, mut dir: i64) -> f64 {
+   |    ^^^^^^^ ------------------------
+
+error[E0658]: use of unstable library feature `str_as_str`
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:90:22
+   |
+90 |     if (nn["Balance".as_str()] == 0) {
+   |                      ^^^^^^
+   |
+   = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0608]: cannot index into a value of type `f64`
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:90:11
+   |
+90 |     if (nn["Balance".as_str()] == 0) {
+   |           ^^^^^^^^^^^^^^^^^^^^
+
+error[E0308]: arguments to this method are incorrect
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:91:14
+   |
+91 |         root.insert("Balance".clone(), 0);
+   |              ^^^^^^ -----------------  - expected `f64`, found integer
+   |                     |
+   |                     expected `String`, found `&str`
+   |
+help: the return type of this call is `{integer}` due to the type of the argument passed
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:91:9
+   |
+91 |         root.insert("Balance".clone(), 0);
+   |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^-^
+   |                                        |
+   |                                        this argument influences the return type of `insert`
+note: method defined here
+  --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/std/src/collections/hash/map.rs:1201:12
+help: try using a conversion method
+   |
+91 -         root.insert("Balance".clone(), 0);
+91 +         root.insert("Balance".to_string(), 0);
+   |
+help: use a float literal
+   |
+91 |         root.insert("Balance".clone(), 0.0);
+   |                                         ++
+
+error[E0608]: cannot index into a value of type `f64`
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:92:10
+   |
+92 |         n["Balance"] = 0;
+   |          ^^^^^^^^^^^
+
+error[E0658]: use of unstable library feature `str_as_str`
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:93:29
+   |
+93 |     } else if (nn["Balance".as_str()] == bal) {
+   |                             ^^^^^^
+   |
+   = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0608]: cannot index into a value of type `f64`
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:93:18
+   |
+93 |     } else if (nn["Balance".as_str()] == bal) {
+   |                  ^^^^^^^^^^^^^^^^^^^^
+
+error[E0308]: arguments to this method are incorrect
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:94:14
+   |
+94 |         root.insert("Balance".clone(), -bal);
+   |              ^^^^^^ -----------------  ---- expected `f64`, found `i64`
+   |                     |
+   |                     expected `String`, found `&str`
+   |
+help: the return type of this call is `i64` due to the type of the argument passed
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:94:9
+   |
+94 |         root.insert("Balance".clone(), -bal);
+   |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^----^
+   |                                        |
+   |                                        this argument influences the return type of `insert`
+note: method defined here
+  --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/std/src/collections/hash/map.rs:1201:12
+help: try using a conversion method
+   |
+94 -         root.insert("Balance".clone(), -bal);
+94 +         root.insert("Balance".to_string(), -bal);
+   |
+help: you can convert an `i64` to an `f64`, producing the floating point representation of the integer, rounded if necessary
+   |
+94 |         root.insert("Balance".clone(), (-bal) as f64);
+   |                                        +    ++++++++
+
+error[E0608]: cannot index into a value of type `f64`
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:95:10
+   |
+95 |         n["Balance"] = 0;
+   |          ^^^^^^^^^^^
+
+error[E0308]: arguments to this method are incorrect
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:97:14
+   |
+97 |         root.insert("Balance".clone(), 0);
+   |              ^^^^^^ -----------------  - expected `f64`, found integer
+   |                     |
+   |                     expected `String`, found `&str`
+   |
+help: the return type of this call is `{integer}` due to the type of the argument passed
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:97:9
+   |
+97 |         root.insert("Balance".clone(), 0);
+   |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^-^
+   |                                        |
+   |                                        this argument influences the return type of `insert`
+note: method defined here
+  --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/std/src/collections/hash/map.rs:1201:12
+help: try using a conversion method
+   |
+97 -         root.insert("Balance".clone(), 0);
+97 +         root.insert("Balance".to_string(), 0);
+   |
+help: use a float literal
+   |
+97 |         root.insert("Balance".clone(), 0.0);
+   |                                         ++
+
+error[E0608]: cannot index into a value of type `f64`
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:98:10
+   |
+98 |         n["Balance"] = bal;
+   |          ^^^^^^^^^^^
+
+error[E0608]: cannot index into a value of type `f64`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:100:7
+    |
+100 |     nn["Balance"] = 0;
+    |       ^^^^^^^^^^^
+
+error[E0658]: use of unstable library feature `str_as_str`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:106:21
+    |
+106 |     if (n["Balance".as_str()] == bal) {
+    |                     ^^^^^^
+    |
+    = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0608]: cannot index into a value of type `f64`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:106:10
+    |
+106 |     if (n["Balance".as_str()] == bal) {
+    |          ^^^^^^^^^^^^^^^^^^^^
+
+error[E0308]: arguments to this method are incorrect
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:107:14
+    |
+107 |         root.insert("Balance".clone(), 0);
+    |              ^^^^^^ -----------------  - expected `f64`, found integer
+    |                     |
+    |                     expected `String`, found `&str`
+    |
+help: the return type of this call is `{integer}` due to the type of the argument passed
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:107:9
+    |
+107 |         root.insert("Balance".clone(), 0);
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^-^
+    |                                        |
+    |                                        this argument influences the return type of `insert`
+note: method defined here
+   --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/std/src/collections/hash/map.rs:1201:12
+help: try using a conversion method
+    |
+107 -         root.insert("Balance".clone(), 0);
+107 +         root.insert("Balance".to_string(), 0);
+    |
+help: use a float literal
+    |
+107 |         root.insert("Balance".clone(), 0.0);
+    |                                         ++
+
+error[E0608]: cannot index into a value of type `f64`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:108:10
+    |
+108 |         n["Balance"] = 0;
+    |          ^^^^^^^^^^^
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:117:28
+    |
+117 |         return Map1 {node: Node(data), done: false}
+    |                            ^^^^^^^^^^ expected `HashMap<String, i64>`, found `Map`
+    |
+    = note: expected struct `HashMap<String, i64>`
+               found struct `Map`
+
+error[E0658]: use of unstable library feature `str_as_str`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:121:21
+    |
+121 |     if (node["Data".as_str()] < data) {
+    |                     ^^^^^^
+    |
+    = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0608]: cannot index into a value of type `f64`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:121:13
+    |
+121 |     if (node["Data".as_str()] < data) {
+    |             ^^^^^^^^^^^^^^^^^
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:124:55
+    |
+124 |     let mut r: HashMap<String, f64> = insertR(getLink(&node, dir), data);
+    |                                               ------- ^^^^^ expected `&HashMap<String, f64>`, found `&f64`
+    |                                               |
+    |                                               arguments to this function are incorrect
+    |
+    = note: expected reference `&HashMap<String, f64>`
+               found reference `&f64`
+note: function defined here
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:55:4
+    |
+55  | fn getLink(n: &HashMap<String, f64>, mut dir: i64) -> f64 {
+    |    ^^^^^^^ ------------------------
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:124:39
+    |
+124 |     let mut r: HashMap<String, f64> = insertR(getLink(&node, dir), data);
+    |                --------------------   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `HashMap<String, f64>`, found `Map1`
+    |                |
+    |                expected due to this
+    |
+    = note: expected struct `HashMap<String, f64>`
+               found struct `Map1`
+
+error[E0658]: use of unstable library feature `str_as_str`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:125:41
+    |
+125 |     setLink(node.clone(), dir, r["node".as_str()]);
+    |                                         ^^^^^^
+    |
+    = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:125:13
+    |
+125 |     setLink(node.clone(), dir, r["node".as_str()]);
+    |     ------- ^^^^^^^^^^^^ expected `HashMap<String, f64>`, found `f64`
+    |     |
+    |     arguments to this function are incorrect
+    |
+    = note: expected struct `HashMap<String, f64>`
+                 found type `f64`
+note: function defined here
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:59:4
+    |
+59  | fn setLink(mut n: HashMap<String, f64>, mut dir: i64, mut v: f64) {
+    |    ^^^^^^^ ---------------------------
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:127:16
+    |
+115 | fn insertR(mut root: f64, mut data: i64) -> Map1 {
+    |                                             ---- expected `Map1` because of return type
+...
+127 |         return Map2 {node: node, done: true}
+    |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `Map1`, found `Map2`
+
+error[E0608]: cannot index into a value of type `f64`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:129:9
+    |
+129 |     node["Balance"] = (node["Balance".as_str()] + ((2 * dir) - 1));
+    |         ^^^^^^^^^^^
+
+error[E0658]: use of unstable library feature `str_as_str`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:129:39
+    |
+129 |     node["Balance"] = (node["Balance".as_str()] + ((2 * dir) - 1));
+    |                                       ^^^^^^
+    |
+    = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0608]: cannot index into a value of type `f64`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:129:28
+    |
+129 |     node["Balance"] = (node["Balance".as_str()] + ((2 * dir) - 1));
+    |                            ^^^^^^^^^^^^^^^^^^^^
+
+error[E0658]: use of unstable library feature `str_as_str`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:130:24
+    |
+130 |     if (node["Balance".as_str()] == 0) {
+    |                        ^^^^^^
+    |
+    = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0608]: cannot index into a value of type `f64`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:130:13
+    |
+130 |     if (node["Balance".as_str()] == 0) {
+    |             ^^^^^^^^^^^^^^^^^^^^
+
+error[E0658]: use of unstable library feature `str_as_str`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:133:25
+    |
+133 |     if ((node["Balance".as_str()] == 1) || (node["Balance".as_str()] == -1)) {
+    |                         ^^^^^^
+    |
+    = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0608]: cannot index into a value of type `f64`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:133:14
+    |
+133 |     if ((node["Balance".as_str()] == 1) || (node["Balance".as_str()] == -1)) {
+    |              ^^^^^^^^^^^^^^^^^^^^
+
+error[E0658]: use of unstable library feature `str_as_str`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:133:60
+    |
+133 |     if ((node["Balance".as_str()] == 1) || (node["Balance".as_str()] == -1)) {
+    |                                                            ^^^^^^
+    |
+    = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0608]: cannot index into a value of type `f64`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:133:49
+    |
+133 |     if ((node["Balance".as_str()] == 1) || (node["Balance".as_str()] == -1)) {
+    |                                                 ^^^^^^^^^^^^^^^^^^^^
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:136:38
+    |
+136 |     return Map1 {node: insertBalance(node.clone(), dir), done: true}
+    |                        ------------- ^^^^^^^^^^^^ expected `HashMap<String, f64>`, found `f64`
+    |                        |
+    |                        arguments to this function are incorrect
+    |
+    = note: expected struct `HashMap<String, f64>`
+                 found type `f64`
+note: function defined here
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:103:4
+    |
+103 | fn insertBalance(mut root: HashMap<String, f64>, mut dir: i64) -> f64 {
+    |    ^^^^^^^^^^^^^ ------------------------------
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:136:24
+    |
+136 |     return Map1 {node: insertBalance(node.clone(), dir), done: true}
+    |                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `HashMap<String, i64>`, found `f64`
+    |
+    = note: expected struct `HashMap<String, i64>`
+                 found type `f64`
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:141:12
+    |
+139 | fn Insert(mut tree: f64, mut data: i64) -> f64 {
+    |                                            --- expected `f64` because of return type
+140 |     let r: Map1 = insertR(tree, data);
+141 |     return r.node
+    |            ^^^^^^ expected `f64`, found `HashMap<String, i64>`
+    |
+    = note: expected type `f64`
+             found struct `HashMap<String, i64>`
+
+error[E0658]: use of unstable library feature `str_as_str`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:147:21
+    |
+147 |     if (n["Balance".as_str()] == -bal) {
+    |                     ^^^^^^
+    |
+    = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0608]: cannot index into a value of type `f64`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:147:10
+    |
+147 |     if (n["Balance".as_str()] == -bal) {
+    |          ^^^^^^^^^^^^^^^^^^^^
+
+error[E0308]: arguments to this method are incorrect
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:148:14
+    |
+148 |         root.insert("Balance".clone(), 0);
+    |              ^^^^^^ -----------------  - expected `f64`, found integer
+    |                     |
+    |                     expected `String`, found `&str`
+    |
+help: the return type of this call is `{integer}` due to the type of the argument passed
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:148:9
+    |
+148 |         root.insert("Balance".clone(), 0);
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^-^
+    |                                        |
+    |                                        this argument influences the return type of `insert`
+note: method defined here
+   --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/std/src/collections/hash/map.rs:1201:12
+help: try using a conversion method
+    |
+148 -         root.insert("Balance".clone(), 0);
+148 +         root.insert("Balance".to_string(), 0);
+    |
+help: use a float literal
+    |
+148 |         root.insert("Balance".clone(), 0.0);
+    |                                         ++
+
+error[E0608]: cannot index into a value of type `f64`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:149:10
+    |
+149 |         n["Balance"] = 0;
+    |          ^^^^^^^^^^^
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:150:28
+    |
+150 |         return Map1 {node: single(&root, dir), done: false}
+    |                            ^^^^^^^^^^^^^^^^^^ expected `HashMap<String, i64>`, found `f64`
+    |
+    = note: expected struct `HashMap<String, i64>`
+                 found type `f64`
+
+error[E0658]: use of unstable library feature `str_as_str`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:152:21
+    |
+152 |     if (n["Balance".as_str()] == bal) {
+    |                     ^^^^^^
+    |
+    = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0608]: cannot index into a value of type `f64`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:152:10
+    |
+152 |     if (n["Balance".as_str()] == bal) {
+    |          ^^^^^^^^^^^^^^^^^^^^
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:154:28
+    |
+154 |         return Map1 {node: double(&root, dir), done: false}
+    |                            ^^^^^^^^^^^^^^^^^^ expected `HashMap<String, i64>`, found `f64`
+    |
+    = note: expected struct `HashMap<String, i64>`
+                 found type `f64`
+
+error[E0308]: arguments to this method are incorrect
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:156:10
+    |
+156 |     root.insert("Balance".clone(), -bal);
+    |          ^^^^^^ -----------------  ---- expected `f64`, found `i64`
+    |                 |
+    |                 expected `String`, found `&str`
+    |
+help: the return type of this call is `i64` due to the type of the argument passed
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:156:5
+    |
+156 |     root.insert("Balance".clone(), -bal);
+    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^----^
+    |                                    |
+    |                                    this argument influences the return type of `insert`
+note: method defined here
+   --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/std/src/collections/hash/map.rs:1201:12
+help: try using a conversion method
+    |
+156 -     root.insert("Balance".clone(), -bal);
+156 +     root.insert("Balance".to_string(), -bal);
+    |
+help: you can convert an `i64` to an `f64`, producing the floating point representation of the integer, rounded if necessary
+    |
+156 |     root.insert("Balance".clone(), (-bal) as f64);
+    |                                    +    ++++++++
+
+error[E0608]: cannot index into a value of type `f64`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:157:6
+    |
+157 |     n["Balance"] = bal;
+    |      ^^^^^^^^^^^
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:158:24
+    |
+158 |     return Map1 {node: single(&root, dir), done: true}
+    |                        ^^^^^^^^^^^^^^^^^^ expected `HashMap<String, i64>`, found `f64`
+    |
+    = note: expected struct `HashMap<String, i64>`
+                 found type `f64`
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:163:16
+    |
+161 | fn removeR(mut root: f64, mut data: i64) -> Map1 {
+    |                                             ---- expected `Map1` because of return type
+162 |     if (root == Default::default()) {
+163 |         return Map2 {node: Default::default(), done: false}
+    |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `Map1`, found `Map2`
+
+error[E0658]: use of unstable library feature `str_as_str`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:166:21
+    |
+166 |     if (node["Data".as_str()] == data) {
+    |                     ^^^^^^
+    |
+    = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0608]: cannot index into a value of type `f64`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:166:13
+    |
+166 |     if (node["Data".as_str()] == data) {
+    |             ^^^^^^^^^^^^^^^^^
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:167:21
+    |
+167 |         if (getLink(&node, 0) == Default::default()) {
+    |             ------- ^^^^^ expected `&HashMap<String, f64>`, found `&f64`
+    |             |
+    |             arguments to this function are incorrect
+    |
+    = note: expected reference `&HashMap<String, f64>`
+               found reference `&f64`
+note: function defined here
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:55:4
+    |
+55  | fn getLink(n: &HashMap<String, f64>, mut dir: i64) -> f64 {
+    |    ^^^^^^^ ------------------------
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:168:40
+    |
+168 |             return Map2 {node: getLink(&node, 1), done: false}
+    |                                ------- ^^^^^ expected `&HashMap<String, f64>`, found `&f64`
+    |                                |
+    |                                arguments to this function are incorrect
+    |
+    = note: expected reference `&HashMap<String, f64>`
+               found reference `&f64`
+note: function defined here
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:55:4
+    |
+55  | fn getLink(n: &HashMap<String, f64>, mut dir: i64) -> f64 {
+    |    ^^^^^^^ ------------------------
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:170:21
+    |
+170 |         if (getLink(&node, 1) == Default::default()) {
+    |             ------- ^^^^^ expected `&HashMap<String, f64>`, found `&f64`
+    |             |
+    |             arguments to this function are incorrect
+    |
+    = note: expected reference `&HashMap<String, f64>`
+               found reference `&f64`
+note: function defined here
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:55:4
+    |
+55  | fn getLink(n: &HashMap<String, f64>, mut dir: i64) -> f64 {
+    |    ^^^^^^^ ------------------------
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:171:40
+    |
+171 |             return Map2 {node: getLink(&node, 0), done: false}
+    |                                ------- ^^^^^ expected `&HashMap<String, f64>`, found `&f64`
+    |                                |
+    |                                arguments to this function are incorrect
+    |
+    = note: expected reference `&HashMap<String, f64>`
+               found reference `&f64`
+note: function defined here
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:55:4
+    |
+55  | fn getLink(n: &HashMap<String, f64>, mut dir: i64) -> f64 {
+    |    ^^^^^^^ ------------------------
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:173:37
+    |
+173 |         let mut heir: f64 = getLink(&node, 0);
+    |                             ------- ^^^^^ expected `&HashMap<String, f64>`, found `&f64`
+    |                             |
+    |                             arguments to this function are incorrect
+    |
+    = note: expected reference `&HashMap<String, f64>`
+               found reference `&f64`
+note: function defined here
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:55:4
+    |
+55  | fn getLink(n: &HashMap<String, f64>, mut dir: i64) -> f64 {
+    |    ^^^^^^^ ------------------------
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:174:24
+    |
+174 |         while (getLink(&heir, 1) != Default::default()) {
+    |                ------- ^^^^^ expected `&HashMap<String, f64>`, found `&f64`
+    |                |
+    |                arguments to this function are incorrect
+    |
+    = note: expected reference `&HashMap<String, f64>`
+               found reference `&f64`
+note: function defined here
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:55:4
+    |
+55  | fn getLink(n: &HashMap<String, f64>, mut dir: i64) -> f64 {
+    |    ^^^^^^^ ------------------------
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:175:28
+    |
+175 |             heir = getLink(&heir, 1);
+    |                    ------- ^^^^^ expected `&HashMap<String, f64>`, found `&f64`
+    |                    |
+    |                    arguments to this function are incorrect
+    |
+    = note: expected reference `&HashMap<String, f64>`
+               found reference `&f64`
+note: function defined here
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:55:4
+    |
+55  | fn getLink(n: &HashMap<String, f64>, mut dir: i64) -> f64 {
+    |    ^^^^^^^ ------------------------
+
+error[E0608]: cannot index into a value of type `f64`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:177:13
+    |
+177 |         node["Data"] = heir["Data".as_str()];
+    |             ^^^^^^^^
+
+error[E0658]: use of unstable library feature `str_as_str`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:177:36
+    |
+177 |         node["Data"] = heir["Data".as_str()];
+    |                                    ^^^^^^
+    |
+    = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0608]: cannot index into a value of type `f64`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:177:28
+    |
+177 |         node["Data"] = heir["Data".as_str()];
+    |                            ^^^^^^^^^^^^^^^^^
+
+error[E0658]: use of unstable library feature `str_as_str`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:178:28
+    |
+178 |         data = heir["Data".as_str()];
+    |                            ^^^^^^
+    |
+    = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0608]: cannot index into a value of type `f64`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:178:20
+    |
+178 |         data = heir["Data".as_str()];
+    |                    ^^^^^^^^^^^^^^^^^
+
+error[E0658]: use of unstable library feature `str_as_str`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:181:21
+    |
+181 |     if (node["Data".as_str()] < data) {
+    |                     ^^^^^^
+    |
+    = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0608]: cannot index into a value of type `f64`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:181:13
+    |
+181 |     if (node["Data".as_str()] < data) {
+    |             ^^^^^^^^^^^^^^^^^
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:184:55
+    |
+184 |     let mut r: HashMap<String, f64> = removeR(getLink(&node, dir), data);
+    |                                               ------- ^^^^^ expected `&HashMap<String, f64>`, found `&f64`
+    |                                               |
+    |                                               arguments to this function are incorrect
+    |
+    = note: expected reference `&HashMap<String, f64>`
+               found reference `&f64`
+note: function defined here
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:55:4
+    |
+55  | fn getLink(n: &HashMap<String, f64>, mut dir: i64) -> f64 {
+    |    ^^^^^^^ ------------------------
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:184:39
+    |
+184 |     let mut r: HashMap<String, f64> = removeR(getLink(&node, dir), data);
+    |                --------------------   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `HashMap<String, f64>`, found `Map1`
+    |                |
+    |                expected due to this
+    |
+    = note: expected struct `HashMap<String, f64>`
+               found struct `Map1`
+
+error[E0658]: use of unstable library feature `str_as_str`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:185:41
+    |
+185 |     setLink(node.clone(), dir, r["node".as_str()]);
+    |                                         ^^^^^^
+    |
+    = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:185:13
+    |
+185 |     setLink(node.clone(), dir, r["node".as_str()]);
+    |     ------- ^^^^^^^^^^^^ expected `HashMap<String, f64>`, found `f64`
+    |     |
+    |     arguments to this function are incorrect
+    |
+    = note: expected struct `HashMap<String, f64>`
+                 found type `f64`
+note: function defined here
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:59:4
+    |
+59  | fn setLink(mut n: HashMap<String, f64>, mut dir: i64, mut v: f64) {
+    |    ^^^^^^^ ---------------------------
+
+error[E0608]: cannot index into a value of type `f64`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:189:9
+    |
+189 |     node["Balance"] = ((node["Balance".as_str()] + 1) - (2 * dir));
+    |         ^^^^^^^^^^^
+
+error[E0658]: use of unstable library feature `str_as_str`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:189:40
+    |
+189 |     node["Balance"] = ((node["Balance".as_str()] + 1) - (2 * dir));
+    |                                        ^^^^^^
+    |
+    = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0608]: cannot index into a value of type `f64`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:189:29
+    |
+189 |     node["Balance"] = ((node["Balance".as_str()] + 1) - (2 * dir));
+    |                             ^^^^^^^^^^^^^^^^^^^^
+
+error[E0658]: use of unstable library feature `str_as_str`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:190:25
+    |
+190 |     if ((node["Balance".as_str()] == 1) || (node["Balance".as_str()] == -1)) {
+    |                         ^^^^^^
+    |
+    = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0608]: cannot index into a value of type `f64`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:190:14
+    |
+190 |     if ((node["Balance".as_str()] == 1) || (node["Balance".as_str()] == -1)) {
+    |              ^^^^^^^^^^^^^^^^^^^^
+
+error[E0658]: use of unstable library feature `str_as_str`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:190:60
+    |
+190 |     if ((node["Balance".as_str()] == 1) || (node["Balance".as_str()] == -1)) {
+    |                                                            ^^^^^^
+    |
+    = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0608]: cannot index into a value of type `f64`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:190:49
+    |
+190 |     if ((node["Balance".as_str()] == 1) || (node["Balance".as_str()] == -1)) {
+    |                                                 ^^^^^^^^^^^^^^^^^^^^
+
+error[E0658]: use of unstable library feature `str_as_str`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:193:24
+    |
+193 |     if (node["Balance".as_str()] == 0) {
+    |                        ^^^^^^
+    |
+    = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0608]: cannot index into a value of type `f64`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:193:13
+    |
+193 |     if (node["Balance".as_str()] == 0) {
+    |             ^^^^^^^^^^^^^^^^^^^^
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:196:26
+    |
+196 |     return removeBalance(node.clone(), dir)
+    |            ------------- ^^^^^^^^^^^^ expected `HashMap<String, f64>`, found `f64`
+    |            |
+    |            arguments to this function are incorrect
+    |
+    = note: expected struct `HashMap<String, f64>`
+                 found type `f64`
+note: function defined here
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:144:4
+    |
+144 | fn removeBalance(mut root: HashMap<String, f64>, mut dir: i64) -> Map1 {
+    |    ^^^^^^^^^^^^^ ------------------------------
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:201:12
+    |
+199 | fn Remove(mut tree: f64, mut data: i64) -> f64 {
+    |                                            --- expected `f64` because of return type
+200 |     let r: Map1 = removeR(tree, data);
+201 |     return r.node
+    |            ^^^^^^ expected `f64`, found `HashMap<String, i64>`
+    |
+    = note: expected type `f64`
+             found struct `HashMap<String, i64>`
+
+error[E0658]: use of unstable library feature `str_as_str`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:224:124
+    |
+224 | ...   println!("{}", format!("{}{}", format!("{}{}", format!("{}{}", indentStr((indent + 3)), "\"Data\": "), node["Data".as_str()].to_str...
+    |                                                                                                                          ^^^^^^
+    |
+    = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0608]: cannot index into a value of type `f64`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:224:116
+    |
+224 | ...   println!("{}", format!("{}{}", format!("{}{}", format!("{}{}", indentStr((indent + 3)), "\"Data\": "), node["Data".as_str()].to_str...
+    |                                                                                                                  ^^^^^^^^^^^^^^^^^
+
+error[E0658]: use of unstable library feature `str_as_str`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:225:130
+    |
+225 | ...   println!("{}", format!("{}{}", format!("{}{}", format!("{}{}", indentStr((indent + 3)), "\"Balance\": "), node["Balance".as_str()]....
+    |                                                                                                                                ^^^^^^
+    |
+    = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0608]: cannot index into a value of type `f64`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:225:119
+    |
+225 | ...!("{}{}", indentStr((indent + 3)), "\"Balance\": "), node["Balance".as_str()].to_string()), ","));
+    |                                                             ^^^^^^^^^^^^^^^^^^^^
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:227:26
+    |
+227 |         dumpNode(getLink(&node, 0), (indent + 6), true);
+    |                  ------- ^^^^^ expected `&HashMap<String, f64>`, found `&f64`
+    |                  |
+    |                  arguments to this function are incorrect
+    |
+    = note: expected reference `&HashMap<String, f64>`
+               found reference `&f64`
+note: function defined here
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:55:4
+    |
+55  | fn getLink(n: &HashMap<String, f64>, mut dir: i64) -> f64 {
+    |    ^^^^^^^ ------------------------
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:228:26
+    |
+228 |         dumpNode(getLink(&node, 1), (indent + 6), false);
+    |                  ------- ^^^^^ expected `&HashMap<String, f64>`, found `&f64`
+    |                  |
+    |                  arguments to this function are incorrect
+    |
+    = note: expected reference `&HashMap<String, f64>`
+               found reference `&f64`
+note: function defined here
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:55:4
+    |
+55  | fn getLink(n: &HashMap<String, f64>, mut dir: i64) -> f64 {
+    |    ^^^^^^^ ------------------------
+
+error[E0608]: cannot index into a value of type `f64`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:259:6
+    |
+259 |     t["Balance"] = 0;
+    |      ^^^^^^^^^^^
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:51:9
+   |
+51 | fn Node(mut data: i64) -> Map {
+   |         ----^^^^
+   |         |
+   |         help: remove this `mut`
+   |
+   = note: `#[warn(unused_mut)]` on by default
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:65:8
+   |
+65 | fn opp(mut dir: i64) -> i64 {
+   |        ----^^^
+   |        |
+   |        help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:204:14
+    |
+204 | fn indentStr(mut n: i64) -> String {
+    |              ----^
+    |              |
+    |              help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:238:9
+    |
+238 | fn dump(mut node: f64, mut indent: i64) {
+    |         ----^^^^
+    |         |
+    |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/avl-tree.rs:238:24
+    |
+238 | fn dump(mut node: f64, mut indent: i64) {
+    |                        ----^^^^^^
+    |                        |
+    |                        help: remove this `mut`
+
+error: aborting due to 99 previous errors; 36 warnings emitted
+
+Some errors have detailed explanations: E0308, E0608, E0658.
+For more information about an error, try `rustc --explain E0308`.
