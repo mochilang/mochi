@@ -2,7 +2,7 @@
 
 This directory contains OCaml code generated from Rosetta Code programs in `tests/rosetta/x/Mochi`.
 
-Completed programs: 98/467
+Completed programs: 105/467
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -123,8 +123,8 @@ Completed programs: 98/467
 | 115 | bioinformatics-sequence-mutation | ✓ | 42.0ms | 12.91MB |
 | 116 | biorhythms | ✓ | 231.0µs | 12.41KB |
 | 117 | bitcoin-address-validation | ✓ | 6.0ms | 1.14MB |
-| 118 | bitmap-b-zier-curves-cubic | error |  |  |
-| 119 | bitmap-b-zier-curves-quadratic | error |  |  |
+| 118 | bitmap-b-zier-curves-cubic |   |  |  |
+| 119 | bitmap-b-zier-curves-quadratic |   |  |  |
 | 120 | bitmap-bresenhams-line-algorithm | ✓ | 95.0µs | 2.37KB |
 | 121 | bitmap-flood-fill | ✓ | 40.0µs | 1.88KB |
 | 122 | bitmap-histogram | ✓ | 118.0µs | 3.66KB |
@@ -132,18 +132,18 @@ Completed programs: 98/467
 | 124 | bitmap-ppm-conversion-through-a-pipe | ✓ | 4.61s | 2.58GB |
 | 125 | bitmap-read-a-ppm-file | ✓ | 72.0µs | 9.01KB |
 | 126 | bitmap-read-an-image-through-a-pipe | ✓ | 106.0µs | 376B |
-| 127 | bitmap-write-a-ppm-file | error |  |  |
-| 128 | bitmap | error |  |  |
-| 129 | bitwise-io-1 | error |  |  |
-| 130 | bitwise-io-2 | error |  |  |
-| 131 | bitwise-operations |   |  |  |
-| 132 | blum-integer |   |  |  |
-| 133 | boolean-values |   |  |  |
-| 134 | box-the-compass |   |  |  |
-| 135 | boyer-moore-string-search |   |  |  |
-| 136 | brazilian-numbers |   |  |  |
-| 137 | break-oo-privacy |   |  |  |
-| 138 | brilliant-numbers |   |  |  |
+| 127 | bitmap-write-a-ppm-file |   |  |  |
+| 128 | bitmap |   |  |  |
+| 129 | bitwise-io-1 |   |  |  |
+| 130 | bitwise-io-2 |   |  |  |
+| 131 | bitwise-operations | ✓ | 49.0µs | 4.52KB |
+| 132 | blum-integer | ✓ | 245.0µs | 56.53KB |
+| 133 | boolean-values | ✓ | 22.0µs | 224B |
+| 134 | box-the-compass | ✓ | 232.0µs | 22.27KB |
+| 135 | boyer-moore-string-search | ✓ | 58.0µs | 8.48KB |
+| 136 | brazilian-numbers | ✓ | 48.07s | 10.46GB |
+| 137 | break-oo-privacy | ✓ | 54.0µs | 816B |
+| 138 | brilliant-numbers | error |  |  |
 | 139 | brownian-tree |   |  |  |
 | 140 | bulls-and-cows-player |   |  |  |
 | 141 | bulls-and-cows |   |  |  |
@@ -473,4 +473,4 @@ Completed programs: 98/467
 | 465 | sorting-algorithms-bubble-sort |   |  |  |
 | 466 | window-management |   |  |  |
 | 467 | zumkeller-numbers |   |  |  |
-Last updated 2025-07-27 22:15 +0700
+Last updated 2025-07-27 23:17 +0700

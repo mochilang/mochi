@@ -1013,7 +1013,11 @@ func (i *IndexOfBuiltin) emit(w io.Writer) {
 	io.WriteString(w, "(try String.index (")
 	i.Str.emit(w)
 	io.WriteString(w, ") ")
-	i.Sub.emit(w)
+	if lit, ok := i.Sub.(*StringLit); ok && len(lit.Value) == 1 {
+		fmt.Fprintf(w, "'%s'", lit.Value)
+	} else {
+		i.Sub.emit(w)
+	}
 	io.WriteString(w, " with Not_found -> -1)")
 }
 
@@ -1289,6 +1293,25 @@ type StringContainsBuiltin struct {
 	Str Expr
 	Sub Expr
 }
+
+// PadStartBuiltin represents s.padStart(len, pad)
+type PadStartBuiltin struct {
+	Str Expr
+	Len Expr
+	Pad Expr
+}
+
+func (p *PadStartBuiltin) emit(w io.Writer) {
+	io.WriteString(w, "(let s = ")
+	p.Str.emit(w)
+	io.WriteString(w, " in let l = ")
+	p.Len.emit(w)
+	io.WriteString(w, " in let pch = String.get (")
+	p.Pad.emit(w)
+	io.WriteString(w, ") 0 in let sl = String.length s in if sl >= l then s else String.make (l - sl) pch ^ s)")
+}
+
+func (p *PadStartBuiltin) emitPrint(w io.Writer) { p.emit(w) }
 
 func (s *StringContainsBuiltin) emit(w io.Writer) {
 	io.WriteString(w, "(let len_s = String.length ")
@@ -3460,6 +3483,13 @@ func convertBinary(b *parser.BinaryExpr, env *types.Env, vars map[string]VarInfo
 				resTyp = "int"
 			}
 		case "==", "!=", "<", "<=", ">", ">=", "&&", "||", "in", "union", "union_all", "except", "intersect":
+			if ltyp == "string" && rtyp == "bool" {
+				right = &FuncCall{Name: "string_of_bool", Args: []Expr{right}, Ret: "string"}
+				rtyp = "string"
+			} else if ltyp == "bool" && rtyp == "string" {
+				left = &FuncCall{Name: "string_of_bool", Args: []Expr{left}, Ret: "string"}
+				ltyp = "string"
+			}
 			resTyp = "bool"
 		}
 
@@ -3610,6 +3640,26 @@ func convertPostfix(p *parser.PostfixExpr, env *types.Env, vars map[string]VarIn
 			}
 			expr = &StringContainsBuiltin{Str: expr, Sub: arg}
 			typ = "bool"
+			i += 2
+			continue
+		case op.Field != nil && op.Field.Name == "padStart":
+			if i+1 >= len(p.Ops) || p.Ops[i+1].Call == nil || len(p.Ops[i+1].Call.Args) != 2 {
+				return nil, "", fmt.Errorf("padStart expects 2 args")
+			}
+			call := p.Ops[i+1].Call
+			argLen, lenTyp, err := convertExpr(call.Args[0], env, vars)
+			if err != nil {
+				return nil, "", err
+			}
+			argPad, padTyp, err := convertExpr(call.Args[1], env, vars)
+			if err != nil {
+				return nil, "", err
+			}
+			if typ != "string" || lenTyp != "int" || padTyp != "string" {
+				return nil, "", fmt.Errorf("padStart expects string.padStart(int,string)")
+			}
+			expr = &PadStartBuiltin{Str: expr, Len: argLen, Pad: argPad}
+			typ = "string"
 			i += 2
 			continue
 		case op.Field != nil && op.Field.Name == "keys":
@@ -4582,6 +4632,25 @@ func convertCall(c *parser.CallExpr, env *types.Env, vars map[string]VarInfo) (E
 		}
 		return &FuncCall{Name: name, Args: []Expr{arg}, Ret: "string"}, "string", nil
 	}
+	if c.Func == "pow" && len(c.Args) == 2 {
+		a1, t1, err := convertExpr(c.Args[0], env, vars)
+		if err != nil {
+			return nil, "", err
+		}
+		a2, t2, err := convertExpr(c.Args[1], env, vars)
+		if err != nil {
+			return nil, "", err
+		}
+		if t1 != "int" && t1 != "float" {
+			t1 = t1
+		}
+		_ = t1
+		if t2 != "int" && t2 != "float" {
+			t2 = t2
+		}
+		_ = t2
+		return &FuncCall{Name: "Float.pow", Args: []Expr{a1, a2}, Ret: "float"}, "float", nil
+	}
 	if c.Func == "str" && len(c.Args) == 1 {
 		arg, typ, err := convertExpr(c.Args[0], env, vars)
 		if err != nil {
@@ -4919,9 +4988,14 @@ func convertCall(c *parser.CallExpr, env *types.Env, vars map[string]VarInfo) (E
 				return nil, "", err
 			}
 			if mut != nil && i < len(fn.Params) && mut[fn.Params[i].Name] {
-				// pass reference without dereferencing
+				// pass reference without dereferencing when the caller
+				// variable is already a ref, otherwise create one
 				if n, ok := ex.(*Name); ok {
-					ex = &Name{Ident: n.Ident, Typ: n.Typ, Ref: false}
+					if info, ok2 := vars[n.Ident]; ok2 && info.ref {
+						ex = &Name{Ident: n.Ident, Typ: n.Typ, Ref: false}
+					} else {
+						ex = &RefExpr{Value: ex}
+					}
 				} else {
 					ex = &RefExpr{Value: ex}
 				}
