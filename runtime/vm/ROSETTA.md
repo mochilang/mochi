@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated IR and outputs from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/ir`.
-Last updated: 2025-07-27 08:54 UTC
+Last updated: 2025-07-27 09:31 UTC
 
-## Rosetta Golden Test Checklist (342/465)
+## Rosetta Golden Test Checklist (347/465)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 116µs | 11.7 KB |
@@ -365,11 +365,11 @@ Last updated: 2025-07-27 08:54 UTC
 | 356 | equal-prime-and-composite-sums | ✓ |  |  |
 | 357 | equilibrium-index | ✓ | 2.793365s | 1.9 MB |
 | 358 | erd-s-nicolas-numbers |   |  |  |
-| 359 | erd-s-selfridge-categorization-of-primes |   |  |  |
-| 360 | esthetic-numbers |   |  |  |
-| 361 | ethiopian-multiplication |   |  |  |
-| 362 | euclid-mullin-sequence |   |  |  |
-| 363 | euler-method |   |  |  |
+| 359 | erd-s-selfridge-categorization-of-primes | ✓ | 4.588061s | 1.9 MB |
+| 360 | esthetic-numbers | ✓ |  |  |
+| 361 | ethiopian-multiplication | ✓ | 430µs | 14.7 KB |
+| 362 | euclid-mullin-sequence | ✓ |  |  |
+| 363 | euler-method | ✓ | 13.496ms | 753.0 KB |
 | 364 | eulers-constant-0.5772... |   |  |  |
 | 365 | eulers-identity |   |  |  |
 | 366 | eulers-sum-of-powers-conjecture | ✓ |  |  |
