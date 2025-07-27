@@ -1,4 +1,6 @@
 func main (regs=1)
+  // main()
+  Call         r0, main, 
   Return       r0
 
   // fun powf(base: float, exp: int): float {
@@ -114,8 +116,7 @@ L0:
   Const        r16, 10.0
   Move         r17, r16
   // let a = sum / count
-  Const        r16, 10.0
-  DivFloat     r18, r1, r16
+  DivFloat     r18, r1, r17
   Move         r19, r18
   // let g = nthRoot(prod, 10)
   Move         r20, r4
@@ -124,8 +125,7 @@ L0:
   Call2        r22, nthRoot, r20, r21
   Move         r23, r22
   // let h = count / sumRecip
-  Const        r16, 10.0
-  DivFloat     r24, r16, r2
+  DivFloat     r24, r17, r2
   Move         r25, r24
   // print("A: " + str(a) + " G: " + str(g) + " H: " + str(h))
   Const        r26, "A: "

@@ -1,4 +1,6 @@
 func main (regs=1)
+  // main()
+  Call         r0, main, 
   Return       r0
 
   // fun sieve(limit: int): list<int> {
@@ -336,14 +338,12 @@ func main (regs=75)
   Const        r0, 1228663
   Move         r1, r0
   // let spf = sieve(limit)
-  Const        r0, 1228663
-  Move         r2, r0
+  Move         r2, r1
   Call         r3, sieve, r2
   Move         r4, r3
   // let primes = primesFrom(spf, limit)
   Move         r5, r4
-  Const        r0, 1228663
-  Move         r6, r0
+  Move         r6, r1
   Call2        r7, primesFrom, r5, r6
   Move         r8, r7
   // let arr = arithmeticNumbers(1000000, spf)

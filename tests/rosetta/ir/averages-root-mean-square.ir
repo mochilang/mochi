@@ -13,8 +13,7 @@ func main (regs=18)
   SetGlobal    2,2,0,0
 L1:
   // while x <= n {
-  Const        r4, 10
-  LessEqInt    r7, r2, r4
+  LessEqInt    r7, r2, r0
   JumpIfFalse  r7, L0
   // sum = sum + (x as float) * (x as float)
   Cast         r8, r2, float
@@ -32,7 +31,7 @@ L1:
   Jump         L1
 L0:
   // let rms = sqrtApprox(sum / (n as float))
-  Const        r14, 10.0
+  Cast         r14, r0, float
   DivFloat     r15, r1, r14
   Move         r13, r15
   Call         r16, sqrtApprox, r13

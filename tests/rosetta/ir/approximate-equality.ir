@@ -1,4 +1,6 @@
 func main (regs=1)
+  // main()
+  Call         r0, main, 
   Return       r0
 
   // fun abs(x: float): float {
@@ -34,7 +36,6 @@ func isClose (regs=18)
   Call         r6, abs, r4
   Move         r7, r6
   // let u = relTol * maxf(abs(a), abs(b))
-  Const        r2, 0.000000001
   Move         r10, r0
   Call         r11, abs, r10
   Move         r8, r11
@@ -42,7 +43,7 @@ func isClose (regs=18)
   Call         r13, abs, r12
   Move         r9, r13
   Call2        r14, maxf, r8, r9
-  MulFloat     r15, r2, r14
+  MulFloat     r15, r3, r14
   Move         r16, r15
   // return t <= u
   LessEqFloat  r17, r7, r16

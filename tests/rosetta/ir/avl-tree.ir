@@ -1,4 +1,6 @@
 func main (regs=1)
+  // main()
+  Call         r0, main, 
   Return       r0
 
   // fun Node(data: int): map<string, any> {
@@ -147,7 +149,7 @@ func double (regs=60)
   Return       r10
 
   // fun adjustBalance(root: map<string, any>, dir: int, bal: int) {
-func adjustBalance (regs=19)
+func adjustBalance (regs=22)
   // var n = getLink(root, dir) as map<string, any>
   Move         r3, r0
   Move         r4, r1
@@ -176,7 +178,33 @@ func adjustBalance (regs=19)
   Const        r17, 0
   Const        r15, "Balance"
   SetIndex     r7, r15, r17
+  // if nn["Balance"] == 0 {
+  Jump         L1
 L0:
+  // } else if nn["Balance"] == bal {
+  Const        r15, "Balance"
+  Index        r19, r14, r15
+  Equal        r20, r19, r2
+  JumpIfFalse  r20, L2
+  // root["Balance"] = -bal
+  Neg          r21, r2
+  Const        r15, "Balance"
+  SetIndex     r0, r15, r21
+  // n["Balance"] = 0
+  Const        r17, 0
+  Const        r15, "Balance"
+  SetIndex     r7, r15, r17
+  // } else if nn["Balance"] == bal {
+  Jump         L1
+L2:
+  // root["Balance"] = 0
+  Const        r17, 0
+  Const        r15, "Balance"
+  SetIndex     r0, r15, r17
+  // n["Balance"] = bal
+  Const        r15, "Balance"
+  SetIndex     r7, r15, r2
+L1:
   // nn["Balance"] = 0
   Const        r17, 0
   Const        r15, "Balance"

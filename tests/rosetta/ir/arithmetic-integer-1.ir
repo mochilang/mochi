@@ -1,8 +1,10 @@
 func main (regs=1)
+  // main()
+  Call         r0, main, 
   Return       r0
 
   // fun main() {
-func main (regs=36)
+func main (regs=43)
   // let a = 12
   Const        r0, 12
   Move         r1, r0
@@ -17,51 +19,57 @@ func main (regs=36)
   Add          r8, r6, r7
   Const        r9, " = "
   Add          r10, r8, r9
-  Const        r11, "20"
-  Add          r12, r10, r11
-  Print        r12
+  Const        r11, 20
+  Const        r12, "20"
+  Add          r13, r10, r12
+  Print        r13
   // print(str(a) + " - " + str(b) + " = " + str(a - b))
   Const        r4, "12"
-  Const        r13, " - "
-  Add          r14, r4, r13
+  Const        r14, " - "
+  Add          r15, r4, r14
   Const        r7, "8"
-  Add          r15, r14, r7
+  Add          r16, r15, r7
   Const        r9, " = "
-  Add          r16, r15, r9
-  Const        r17, "4"
-  Add          r18, r16, r17
-  Print        r18
+  Add          r17, r16, r9
+  Const        r18, 4
+  Const        r19, "4"
+  Add          r20, r17, r19
+  Print        r20
   // print(str(a) + " * " + str(b) + " = " + str(a * b))
   Const        r4, "12"
-  Const        r19, " * "
-  Add          r20, r4, r19
+  Const        r21, " * "
+  Add          r22, r4, r21
   Const        r7, "8"
-  Add          r21, r20, r7
+  Add          r23, r22, r7
   Const        r9, " = "
-  Add          r22, r21, r9
-  Const        r23, "96"
-  Add          r24, r22, r23
-  Print        r24
+  Add          r24, r23, r9
+  Const        r25, 96
+  Const        r26, "96"
+  Add          r27, r24, r26
+  Print        r27
   // print(str(a) + " / " + str(b) + " = " + str((a / b) as int))
   Const        r4, "12"
-  Const        r25, " / "
-  Add          r26, r4, r25
+  Const        r28, " / "
+  Add          r29, r4, r28
   Const        r7, "8"
-  Add          r27, r26, r7
+  Add          r30, r29, r7
   Const        r9, " = "
-  Add          r28, r27, r9
-  Const        r29, "1"
-  Add          r30, r28, r29
-  Print        r30
+  Add          r31, r30, r9
+  Const        r32, 1
+  Cast         r33, r32, int
+  Str          r34, r33
+  Add          r35, r31, r34
+  Print        r35
   // print(str(a) + " % " + str(b) + " = " + str(a % b))
   Const        r4, "12"
-  Const        r31, " % "
-  Add          r32, r4, r31
+  Const        r36, " % "
+  Add          r37, r4, r36
   Const        r7, "8"
-  Add          r33, r32, r7
+  Add          r38, r37, r7
   Const        r9, " = "
-  Add          r34, r33, r9
-  Const        r17, "4"
-  Add          r35, r34, r17
-  Print        r35
+  Add          r39, r38, r9
+  Const        r40, 4
+  Const        r41, "4"
+  Add          r42, r39, r41
+  Print        r42
   Return       r0

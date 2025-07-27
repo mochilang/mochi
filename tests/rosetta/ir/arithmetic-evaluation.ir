@@ -1,4 +1,6 @@
 func main (regs=1)
+  // main()
+  Call         r0, main, 
   Return       r0
 
   // fun skipWS(p: Parser): Parser {
@@ -144,7 +146,7 @@ L0:
   Return       r37
 
   // fun parseFactor(p: Parser): Res {
-func parseFactor (regs=80)
+func parseFactor (regs=81)
   // p = skipWS(p)
   Move         r1, r0
   Call         r2, skipWS, r1
@@ -180,117 +182,119 @@ L0:
   Const        r3, "pos"
   SetIndex     r0, r3, r19
   // var r = parseExpr(p)
-  Move         r21, r20
+  Move         r20, r0
+  Call         r21, parseExpr, r20
+  Move         r22, r21
   // var v = r.v
-  Const        r22, "v"
-  Index        r23, r21, r22
-  Move         r24, r23
+  Const        r23, "v"
+  Index        r24, r22, r23
+  Move         r25, r24
   // p = r.p
-  Const        r25, "p"
-  Index        r26, r21, r25
-  Move         r0, r26
+  Const        r26, "p"
+  Index        r27, r22, r26
+  Move         r0, r27
   // p = skipWS(p)
-  Move         r27, r0
-  Call         r28, skipWS, r27
-  Move         r0, r28
+  Move         r28, r0
+  Call         r29, skipWS, r28
+  Move         r0, r29
   // if p.pos < len(p.expr) && substring(p.expr, p.pos, p.pos+1) == ")" {
   Const        r3, "pos"
-  Index        r29, r0, r3
+  Index        r30, r0, r3
   Const        r5, "expr"
-  Index        r30, r0, r5
-  Len          r31, r30
-  Less         r32, r29, r31
+  Index        r31, r0, r5
+  Len          r32, r31
+  Less         r33, r30, r32
   Const        r5, "expr"
-  Index        r33, r0, r5
-  Const        r3, "pos"
-  Index        r34, r0, r3
+  Index        r34, r0, r5
   Const        r3, "pos"
   Index        r35, r0, r3
+  Const        r3, "pos"
+  Index        r36, r0, r3
   Const        r12, 1
-  Add          r36, r35, r12
-  Slice        r37, r33, r34, r36
-  Const        r38, ")"
-  Equal        r39, r37, r38
-  Move         r40, r32
-  JumpIfFalse  r40, L2
-  Move         r40, r39
+  Add          r37, r36, r12
+  Slice        r38, r34, r35, r37
+  Const        r39, ")"
+  Equal        r40, r38, r39
+  Move         r41, r33
+  JumpIfFalse  r41, L2
+  Move         r41, r40
 L2:
-  JumpIfFalse  r40, L3
+  JumpIfFalse  r41, L3
   // p.pos = p.pos + 1
   Const        r3, "pos"
-  Index        r41, r0, r3
+  Index        r42, r0, r3
   Const        r12, 1
-  Add          r42, r41, r12
+  Add          r43, r42, r12
   Const        r3, "pos"
-  SetIndex     r0, r3, r42
+  SetIndex     r0, r3, r43
 L3:
   // return Res{v: v, p: p}
-  Const        r43, "__name"
-  Const        r44, "Res"
-  Const        r45, "v"
-  Move         r46, r24
-  Const        r47, "p"
-  Move         r48, r0
-  MakeMap      r49, 3, r43
-  Return       r49
+  Const        r44, "__name"
+  Const        r45, "Res"
+  Const        r46, "v"
+  Move         r47, r25
+  Const        r48, "p"
+  Move         r49, r0
+  MakeMap      r50, 3, r44
+  Return       r50
 L1:
   // if p.pos < len(p.expr) && substring(p.expr, p.pos, p.pos+1) == "-" {
   Const        r3, "pos"
-  Index        r50, r0, r3
+  Index        r51, r0, r3
   Const        r5, "expr"
-  Index        r51, r0, r5
-  Len          r52, r51
-  Less         r53, r50, r52
+  Index        r52, r0, r5
+  Len          r53, r52
+  Less         r54, r51, r53
   Const        r5, "expr"
-  Index        r54, r0, r5
-  Const        r3, "pos"
-  Index        r55, r0, r3
+  Index        r55, r0, r5
   Const        r3, "pos"
   Index        r56, r0, r3
+  Const        r3, "pos"
+  Index        r57, r0, r3
   Const        r12, 1
-  Add          r57, r56, r12
-  Slice        r58, r54, r55, r57
-  Const        r59, "-"
-  Equal        r60, r58, r59
-  Move         r61, r53
-  JumpIfFalse  r61, L4
-  Move         r61, r60
+  Add          r58, r57, r12
+  Slice        r59, r55, r56, r58
+  Const        r60, "-"
+  Equal        r61, r59, r60
+  Move         r62, r54
+  JumpIfFalse  r62, L4
+  Move         r62, r61
 L4:
-  JumpIfFalse  r61, L5
+  JumpIfFalse  r62, L5
   // p.pos = p.pos + 1
   Const        r3, "pos"
-  Index        r62, r0, r3
+  Index        r63, r0, r3
   Const        r12, 1
-  Add          r63, r62, r12
+  Add          r64, r63, r12
   Const        r3, "pos"
-  SetIndex     r0, r3, r63
+  SetIndex     r0, r3, r64
   // var r = parseFactor(p)
-  Move         r64, r0
-  Call         r65, parseFactor, r64
-  Move         r66, r65
+  Move         r65, r0
+  Call         r66, parseFactor, r65
+  Move         r67, r66
   // var v = r.v
-  Const        r22, "v"
-  Index        r67, r66, r22
-  Move         r68, r67
+  Const        r23, "v"
+  Index        r68, r67, r23
+  Move         r69, r68
   // p = r.p
-  Const        r25, "p"
-  Index        r69, r66, r25
-  Move         r0, r69
+  Const        r26, "p"
+  Index        r70, r67, r26
+  Move         r0, r70
   // return Res{v: -v, p: p}
-  Neg          r70, r68
-  Const        r71, "__name"
-  Const        r72, "Res"
-  Const        r73, "v"
-  Move         r74, r70
-  Const        r75, "p"
-  Move         r76, r0
-  MakeMap      r77, 3, r71
-  Return       r77
+  Neg          r71, r69
+  Const        r72, "__name"
+  Const        r73, "Res"
+  Const        r74, "v"
+  Move         r75, r71
+  Const        r76, "p"
+  Move         r77, r0
+  MakeMap      r78, 3, r72
+  Return       r78
 L5:
   // return parseNumber(p)
-  Move         r78, r0
-  Call         r79, parseNumber, r78
-  Return       r79
+  Move         r79, r0
+  Call         r80, parseNumber, r79
+  Return       r80
 
   // fun powInt(base: int, exp: int): int {
 func powInt (regs=14)
@@ -653,11 +657,9 @@ func main (regs=8)
   Const        r0, "2*(3-1)+2*5"
   Move         r1, r0
   // print(expr + " = " + str(evalExpr(expr)))
-  Const        r0, "2*(3-1)+2*5"
   Const        r2, " = "
-  Add          r3, r0, r2
-  Const        r0, "2*(3-1)+2*5"
-  Move         r4, r0
+  Const        r3, "2*(3-1)+2*5 = "
+  Move         r4, r1
   Call         r5, evalExpr, r4
   Str          r6, r5
   Add          r7, r3, r6

@@ -1,14 +1,13 @@
-func main (regs=55)
+func main (regs=52)
   // let PI = 3.141592653589793
   Const        r10, 3.141592653589793
   Move         r0, r10
   SetGlobal    0,0,0,0
   // let degreesIncr = 0.1 * PI / 180.0
   Const        r11, 0.1
-  Const        r10, 3.141592653589793
-  MulFloat     r12, r11, r10
+  Const        r12, 0.3141592653589793
   Const        r13, 180.0
-  DivFloat     r14, r12, r13
+  Const        r14, 0.0017453292519943296
   Move         r1, r14
   SetGlobal    1,1,0,0
   // let turns = 2.0
@@ -17,88 +16,79 @@ func main (regs=55)
   SetGlobal    2,2,0,0
   // let stop = 360.0 * turns * 10.0 * degreesIncr
   Const        r16, 360.0
-  Const        r15, 2.0
-  MulFloat     r17, r16, r15
+  MulFloat     r17, r16, r2
   Const        r18, 10.0
   MulFloat     r19, r17, r18
-  Const        r20, 0.0017453292519943296
-  MulFloat     r21, r19, r20
-  Move         r3, r21
+  MulFloat     r20, r19, r1
+  Move         r3, r20
   SetGlobal    3,3,0,0
   // let width = 600.0
-  Const        r22, 600.0
-  Move         r4, r22
+  Const        r21, 600.0
+  Move         r4, r21
   SetGlobal    4,4,0,0
   // let centre = width / 2.0
-  Const        r22, 600.0
   Const        r15, 2.0
-  DivFloat     r23, r22, r15
-  Move         r5, r23
+  DivFloat     r22, r4, r15
+  Move         r5, r22
   SetGlobal    5,5,0,0
   // let a = 1.0
-  Const        r24, 1.0
-  Move         r6, r24
+  Const        r23, 1.0
+  Move         r6, r23
   SetGlobal    6,6,0,0
   // let b = 20.0
-  Const        r25, 20.0
-  Move         r7, r25
+  Const        r24, 20.0
+  Move         r7, r24
   SetGlobal    7,7,0,0
   // var theta = 0.0
-  Const        r26, 0.0
-  Move         r8, r26
+  Const        r25, 0.0
+  Move         r8, r25
   SetGlobal    8,8,0,0
   // var count = 0
-  Const        r27, 0
-  Move         r9, r27
+  Const        r26, 0
+  Move         r9, r26
   SetGlobal    9,9,0,0
 L2:
   // while theta < stop {
-  Const        r28, 12.566370614359172
-  LessFloat    r29, r8, r28
-  JumpIfFalse  r29, L0
+  LessFloat    r27, r8, r3
+  JumpIfFalse  r27, L0
   // let r = a + b * theta
-  Const        r24, 1.0
-  Const        r25, 20.0
-  MulFloat     r30, r25, r8
-  AddFloat     r31, r24, r30
-  Move         r32, r31
+  MulFloat     r28, r7, r8
+  AddFloat     r29, r6, r28
+  Move         r30, r29
   // let x = r * cosApprox(theta)
-  Move         r33, r8
-  Call         r34, cosApprox, r33
-  MulFloat     r35, r32, r34
-  Move         r36, r35
+  Move         r31, r8
+  Call         r32, cosApprox, r31
+  MulFloat     r33, r30, r32
+  Move         r34, r33
   // let y = r * sinApprox(theta)
-  Move         r37, r8
-  Call         r38, sinApprox, r37
-  MulFloat     r39, r32, r38
-  Move         r40, r39
+  Move         r35, r8
+  Call         r36, sinApprox, r35
+  MulFloat     r37, r30, r36
+  Move         r38, r37
   // if count % 100 == 0 {
-  Const        r41, 100
-  ModInt       r42, r9, r41
-  Const        r27, 0
-  EqualInt     r43, r42, r27
-  JumpIfFalse  r43, L1
+  Const        r39, 100
+  ModInt       r40, r9, r39
+  Const        r26, 0
+  EqualInt     r41, r40, r26
+  JumpIfFalse  r41, L1
   // print(str(centre + x) + "," + str(centre - y))
-  Const        r44, 300.0
-  AddFloat     r45, r44, r36
-  Str          r46, r45
-  Const        r47, ","
-  Add          r48, r46, r47
-  Const        r44, 300.0
-  SubFloat     r49, r44, r40
-  Str          r50, r49
-  Add          r51, r48, r50
-  Print        r51
+  AddFloat     r42, r5, r34
+  Str          r43, r42
+  Const        r44, ","
+  Add          r45, r43, r44
+  SubFloat     r46, r5, r38
+  Str          r47, r46
+  Add          r48, r45, r47
+  Print        r48
 L1:
   // theta = theta + degreesIncr
-  Const        r20, 0.0017453292519943296
-  AddFloat     r52, r8, r20
-  Move         r8, r52
+  AddFloat     r49, r8, r1
+  Move         r8, r49
   SetGlobal    8,8,0,0
   // count = count + 1
-  Const        r53, 1
-  AddInt       r54, r9, r53
-  Move         r9, r54
+  Const        r50, 1
+  AddInt       r51, r9, r50
+  Move         r9, r51
   SetGlobal    9,9,0,0
   // while theta < stop {
   Jump         L2

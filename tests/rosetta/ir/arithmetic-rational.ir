@@ -1,4 +1,6 @@
 func main (regs=1)
+  // main()
+  Call         r0, main, 
   Return       r0
 
   // fun intSqrt(x: int): int {
@@ -104,59 +106,58 @@ L0:
   Return       r2
 
   // fun main() {
-func main (regs=34)
+func main (regs=33)
   // let nums = [6, 28, 120, 496, 672, 8128, 30240, 32760, 523776]
   Const        r0, [6, 28, 120, 496, 672, 8128, 30240, 32760, 523776]
   Move         r1, r0
   // for n in nums {
-  Const        r2, [6, 28, 120, 496, 672, 8128, 30240, 32760, 523776]
-  IterPrep     r3, r2
-  Len          r4, r3
-  Const        r5, 0
+  IterPrep     r2, r1
+  Len          r3, r2
+  Const        r4, 0
 L3:
-  LessInt      r6, r5, r4
-  JumpIfFalse  r6, L0
-  Index        r7, r3, r5
-  Move         r8, r7
+  LessInt      r5, r4, r3
+  JumpIfFalse  r5, L0
+  Index        r6, r2, r4
+  Move         r7, r6
   // let s = sumRecip(n)
-  Move         r9, r8
-  Call         r10, sumRecip, r9
-  Move         r11, r10
+  Move         r8, r7
+  Call         r9, sumRecip, r8
+  Move         r10, r9
   // if s % n == 0 {
-  Mod          r12, r11, r8
-  Const        r13, 0
-  Equal        r14, r12, r13
-  JumpIfFalse  r14, L1
+  Mod          r11, r10, r7
+  Const        r12, 0
+  Equal        r13, r11, r12
+  JumpIfFalse  r13, L1
   // let val = s / n
-  Div          r15, r11, r8
-  Move         r16, r15
+  Div          r14, r10, r7
+  Move         r15, r14
   // var perfect = ""
-  Const        r17, ""
-  Move         r18, r17
+  Const        r16, ""
+  Move         r17, r16
   // if val == 1 { perfect = "perfect!" }
-  Const        r19, 1
-  Equal        r20, r16, r19
-  JumpIfFalse  r20, L2
-  Const        r21, "perfect!"
-  Move         r18, r21
+  Const        r18, 1
+  Equal        r19, r15, r18
+  JumpIfFalse  r19, L2
+  Const        r20, "perfect!"
+  Move         r17, r20
 L2:
   // print("Sum of recipr. factors of " + str(n) + " = " + str(val) + " exactly " + perfect)
-  Const        r22, "Sum of recipr. factors of "
-  Str          r23, r8
-  Add          r24, r22, r23
-  Const        r25, " = "
-  Add          r26, r24, r25
-  Str          r27, r16
-  Add          r28, r26, r27
-  Const        r29, " exactly "
-  Add          r30, r28, r29
-  Add          r31, r30, r18
-  Print        r31
+  Const        r21, "Sum of recipr. factors of "
+  Str          r22, r7
+  Add          r23, r21, r22
+  Const        r24, " = "
+  Add          r25, r23, r24
+  Str          r26, r15
+  Add          r27, r25, r26
+  Const        r28, " exactly "
+  Add          r29, r27, r28
+  Add          r30, r29, r17
+  Print        r30
 L1:
   // for n in nums {
-  Const        r32, 1
-  AddInt       r33, r5, r32
-  Move         r5, r33
+  Const        r31, 1
+  AddInt       r32, r4, r31
+  Move         r4, r32
   Jump         L3
 L0:
   Return       r0

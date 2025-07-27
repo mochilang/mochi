@@ -1,4 +1,6 @@
 func main (regs=1)
+  // main()
+  Call         r0, main, 
   Return       r0
 
   // fun mean(v: list<float>): map<string, any> {
@@ -48,59 +50,58 @@ L1:
   Return       r24
 
   // fun main() {
-func main (regs=31)
+func main (regs=30)
   // let sets = [
   Const        r0, [[], [3.0, 1.0, 4.0, 1.0, 5.0, 9.0], [100000000000000000000.0, 3.0, 1.0, 4.0, 1.0, 5.0, 9.0, -100000000000000000000.0], [10.0, 9.0, 8.0, 7.0, 6.0, 5.0, 4.0, 3.0, 2.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.11], [10.0, 20.0, 30.0, 40.0, 50.0, -100.0, 4.7, -1100.0]]
   Move         r1, r0
   // for v in sets {
-  Const        r2, [[], [3.0, 1.0, 4.0, 1.0, 5.0, 9.0], [100000000000000000000.0, 3.0, 1.0, 4.0, 1.0, 5.0, 9.0, -100000000000000000000.0], [10.0, 9.0, 8.0, 7.0, 6.0, 5.0, 4.0, 3.0, 2.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.11], [10.0, 20.0, 30.0, 40.0, 50.0, -100.0, 4.7, -1100.0]]
-  IterPrep     r3, r2
-  Len          r4, r3
-  Const        r5, 0
+  IterPrep     r2, r1
+  Len          r3, r2
+  Const        r4, 0
 L3:
-  LessInt      r6, r5, r4
-  JumpIfFalse  r6, L0
-  Index        r7, r3, r5
-  Move         r8, r7
+  LessInt      r5, r4, r3
+  JumpIfFalse  r5, L0
+  Index        r6, r2, r4
+  Move         r7, r6
   // print("Vector: " + str(v))
-  Const        r9, "Vector: "
-  Str          r10, r8
-  Add          r11, r9, r10
-  Print        r11
+  Const        r8, "Vector: "
+  Str          r9, r7
+  Add          r10, r8, r9
+  Print        r10
   // let r = mean(v)
-  Move         r12, r8
-  Call         r13, mean, r12
-  Move         r14, r13
+  Move         r11, r7
+  Call         r12, mean, r11
+  Move         r13, r12
   // if r["ok"] {
-  Const        r15, "ok"
-  Index        r16, r14, r15
-  JumpIfFalse  r16, L1
+  Const        r14, "ok"
+  Index        r15, r13, r14
+  JumpIfFalse  r15, L1
   // print("Mean of " + str(len(v)) + " numbers is " + str(r["mean"]))
-  Const        r17, "Mean of "
-  Len          r18, r8
-  Str          r19, r18
-  Add          r20, r17, r19
-  Const        r21, " numbers is "
-  Add          r22, r20, r21
-  Const        r23, "mean"
-  Index        r24, r14, r23
-  Str          r25, r24
-  Add          r26, r22, r25
-  Print        r26
+  Const        r16, "Mean of "
+  Len          r17, r7
+  Str          r18, r17
+  Add          r19, r16, r18
+  Const        r20, " numbers is "
+  Add          r21, r19, r20
+  Const        r22, "mean"
+  Index        r23, r13, r22
+  Str          r24, r23
+  Add          r25, r21, r24
+  Print        r25
   // if r["ok"] {
   Jump         L2
 L1:
   // print("Mean undefined")
-  Const        r27, "Mean undefined"
-  Print        r27
+  Const        r26, "Mean undefined"
+  Print        r26
 L2:
   // print("")
-  Const        r28, ""
-  Print        r28
+  Const        r27, ""
+  Print        r27
   // for v in sets {
-  Const        r29, 1
-  AddInt       r30, r5, r29
-  Move         r5, r30
+  Const        r28, 1
+  AddInt       r29, r4, r28
+  Move         r4, r29
   Jump         L3
 L0:
   Return       r0
