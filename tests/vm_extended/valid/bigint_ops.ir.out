@@ -1,4 +1,4 @@
-func main (regs=13)
+func main (regs=11)
   // let a: bigint = 10
   Const        r2, 10
   Cast         r3, r2, bigint
@@ -10,28 +10,18 @@ func main (regs=13)
   Move         r1, r5
   SetGlobal    1,1,0,0
   // print(a + b)
-  Const        r6, 10
-  Const        r7, 5
-  Add          r8, r6, r7
-  Print        r8
+  Add          r6, r0, r1
+  Print        r6
   // print(a - b)
-  Const        r6, 10
-  Const        r7, 5
-  Sub          r9, r6, r7
-  Print        r9
+  Sub          r7, r0, r1
+  Print        r7
   // print(a * b)
-  Const        r6, 10
-  Const        r7, 5
-  Mul          r10, r6, r7
-  Print        r10
+  Mul          r8, r0, r1
+  Print        r8
   // print(a / b)
-  Const        r6, 10
-  Const        r7, 5
-  Div          r11, r6, r7
-  Print        r11
+  Div          r9, r0, r1
+  Print        r9
   // print(a % b)
-  Const        r6, 10
-  Const        r7, 5
-  Mod          r12, r6, r7
-  Print        r12
+  Mod          r10, r0, r1
+  Print        r10
   Return       r0
