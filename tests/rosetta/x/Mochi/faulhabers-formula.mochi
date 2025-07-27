@@ -1,0 +1,58 @@
+fun bernoulli(n: int): bigrat {
+  var a: list<bigrat> = []
+  var m = 0
+  while m <= n {
+    a = append(a, 1 as bigrat / ((m + 1) as bigrat))
+    var j = m
+    while j >= 1 {
+      a[j-1] = (j as bigrat) * (a[j-1] - a[j])
+      j = j - 1
+    }
+    m = m + 1
+  }
+  return a[0]
+}
+
+fun binom(n: int, k: int): bigint {
+  if k < 0 || k > n { return 0 as bigint }
+  var kk = k
+  if kk > n - kk { kk = n - kk }
+  var res: bigint = 1
+  var i = 0
+  while i < kk {
+    res = res * ((n - i) as bigint)
+    i = i + 1
+    res = res / (i as bigint)
+  }
+  return res
+}
+
+fun coeff(p: int, j: int): bigrat {
+  let base: bigrat = 1 as bigrat / ((p + 1) as bigrat)
+  var c: bigrat = base
+  if j % 2 == 1 { c = -c }
+  c = c * (binom(p + 1, j) as bigrat)
+  c = c * bernoulli(j)
+  return c
+}
+
+fun main() {
+  var p = 0
+  while p < 10 {
+    var line = str(p) + " :"
+    var j = 0
+    while j <= p {
+      let c = coeff(p, j)
+      if str(c) != "0/1" {
+        line = line + " " + str(c) + "×n"
+        let exp = p + 1 - j
+        if exp > 1 { line = line + "^" + str(exp) }
+      }
+      j = j + 1
+    }
+    print(line)
+    p = p + 1
+  }
+}
+
+main()
