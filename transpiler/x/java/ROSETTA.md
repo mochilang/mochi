@@ -1,9 +1,9 @@
 # Java Rosetta Transpiler Output
 
 Generated Java code for programs in `tests/rosetta/x/Mochi`. Each program has a `.java` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
-Last updated: 2025-07-27 23:08 GMT+7
+Last updated: 2025-07-28 00:06 GMT+7
 
-## Rosetta Checklist (249/467)
+## Rosetta Checklist (255/467)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 23.0ms | 245.84KB |
@@ -308,12 +308,12 @@ Last updated: 2025-07-27 23:08 GMT+7
 | 300 | dice-game-probabilities-2 | ✓ | 16.0ms | 10.58KB |
 | 301 | digital-root-multiplicative-digital-root | ✓ | 75.0ms | 120.93KB |
 | 302 | dijkstras-algorithm |   |  |  |
-| 303 | dinesmans-multiple-dwelling-problem |   |  |  |
-| 304 | dining-philosophers-1 |   |  |  |
-| 305 | dining-philosophers-2 |   |  |  |
-| 306 | disarium-numbers |   |  |  |
-| 307 | discordian-date |   |  |  |
-| 308 | display-a-linear-combination |   |  |  |
+| 303 | dinesmans-multiple-dwelling-problem | ✓ | 31.0ms | 94.01KB |
+| 304 | dining-philosophers-1 | ✓ | 13.0ms | 38.70KB |
+| 305 | dining-philosophers-2 | ✓ | 14.0ms | 38.70KB |
+| 306 | disarium-numbers | ✓ | 1.58s | 83.91KB |
+| 307 | discordian-date | ✓ | 26.0ms | 101.55KB |
+| 308 | display-a-linear-combination | ✓ | 37.0ms | 101.29KB |
 | 309 | display-an-outline-as-a-nested-table |   |  |  |
 | 310 | distance-and-bearing |   |  |  |
 | 311 | distributed-programming |   |  |  |
