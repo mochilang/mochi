@@ -2,8 +2,8 @@
 
 Generated Scala code for Rosetta tasks in `tests/rosetta/x/Mochi`. Each program has a `.scala` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
 
-## Golden Test Checklist (188/465)
-_Last updated: 2025-07-27 16:19 +0700_
+## Golden Test Checklist (207/465)
+_Last updated: 2025-07-27 17:30 +0700_
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -228,37 +228,37 @@ _Last updated: 2025-07-27 16:19 +0700_
 | 219 | conditional-structures-3 | ✓ |  |  |
 | 220 | conditional-structures-4 | ✓ |  |  |
 | 221 | conditional-structures-5 | ✓ |  |  |
-| 222 | conditional-structures-6 |   |  |  |
-| 223 | conditional-structures-7 |   |  |  |
-| 224 | conditional-structures-8 |   |  |  |
-| 225 | conditional-structures-9 |   |  |  |
-| 226 | consecutive-primes-with-ascending-or-descending-differences |   |  |  |
-| 227 | constrained-genericity-1 |   |  |  |
-| 228 | constrained-genericity-2 |   |  |  |
-| 229 | constrained-genericity-3 |   |  |  |
-| 230 | constrained-genericity-4 |   |  |  |
-| 231 | constrained-random-points-on-a-circle-1 |   |  |  |
-| 232 | constrained-random-points-on-a-circle-2 |   |  |  |
-| 233 | continued-fraction |   |  |  |
-| 234 | convert-decimal-number-to-rational |   |  |  |
-| 235 | convert-seconds-to-compound-duration |   |  |  |
-| 236 | convex-hull |   |  |  |
-| 237 | conways-game-of-life |   |  |  |
-| 238 | copy-a-string-1 |   |  |  |
-| 239 | copy-a-string-2 |   |  |  |
-| 240 | copy-stdin-to-stdout-1 |   |  |  |
-| 241 | copy-stdin-to-stdout-2 |   |  |  |
-| 242 | count-in-factors |   |  |  |
-| 243 | count-in-octal-1 |   |  |  |
-| 244 | count-in-octal-2 |   |  |  |
-| 245 | count-in-octal-3 |   |  |  |
-| 246 | count-in-octal-4 |   |  |  |
-| 247 | count-occurrences-of-a-substring |   |  |  |
-| 248 | count-the-coins-1 |   |  |  |
-| 249 | count-the-coins-2 |   |  |  |
-| 250 | cramers-rule |   |  |  |
-| 251 | crc-32-1 |   |  |  |
-| 252 | crc-32-2 |   |  |  |
+| 222 | conditional-structures-6 | error |  |  |
+| 223 | conditional-structures-7 | ✓ |  | 8.7 MB |
+| 224 | conditional-structures-8 | ✓ |  | 8.7 MB |
+| 225 | conditional-structures-9 | ✓ |  | 8.7 MB |
+| 226 | consecutive-primes-with-ascending-or-descending-differences | error |  |  |
+| 227 | constrained-genericity-1 | ✓ |  | 8.7 MB |
+| 228 | constrained-genericity-2 | error |  |  |
+| 229 | constrained-genericity-3 | ✓ |  | 8.7 MB |
+| 230 | constrained-genericity-4 | ✓ | 3µs | 8.7 MB |
+| 231 | constrained-random-points-on-a-circle-1 | error |  |  |
+| 232 | constrained-random-points-on-a-circle-2 | error |  |  |
+| 233 | continued-fraction | ✓ | 10µs | 8.7 MB |
+| 234 | convert-decimal-number-to-rational | error |  |  |
+| 235 | convert-seconds-to-compound-duration | ✓ | 3µs | 8.7 MB |
+| 236 | convex-hull | ✓ | 21µs | 8.7 MB |
+| 237 | conways-game-of-life | ✓ | 851µs | 8.7 MB |
+| 238 | copy-a-string-1 | ✓ |  | 8.7 MB |
+| 239 | copy-a-string-2 | ✓ | 3µs | 8.7 MB |
+| 240 | copy-stdin-to-stdout-1 | ✓ | 15µs | 8.7 MB |
+| 241 | copy-stdin-to-stdout-2 | ✓ | 3µs | 8.7 MB |
+| 242 | count-in-factors | error |  |  |
+| 243 | count-in-octal-1 | ✓ | 23µs | 8.8 MB |
+| 244 | count-in-octal-2 | ✓ | 245µs | 8.7 MB |
+| 245 | count-in-octal-3 | error |  |  |
+| 246 | count-in-octal-4 | ✓ | 16µs | 8.8 MB |
+| 247 | count-occurrences-of-a-substring | error |  |  |
+| 248 | count-the-coins-1 | ✓ | 3µs | 8.7 MB |
+| 249 | count-the-coins-2 | ✓ | 33µs | 8.7 MB |
+| 250 | cramers-rule | error |  |  |
+| 251 | crc-32-1 | error |  |  |
+| 252 | crc-32-2 | error |  |  |
 | 253 | create-a-file-on-magnetic-tape |   |  |  |
 | 254 | create-a-file |   |  |  |
 | 255 | create-a-two-dimensional-array-at-runtime-1 |   |  |  |
