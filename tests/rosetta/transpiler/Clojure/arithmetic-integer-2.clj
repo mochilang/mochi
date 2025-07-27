@@ -1,0 +1,29 @@
+(ns main (:refer-clojure :exclude [main]))
+
+(require 'clojure.set)
+
+(defn in [x coll]
+  (cond (string? coll) (clojure.string/includes? coll x) (map? coll) (contains? coll x) (sequential? coll) (some (fn [e] (= e x)) coll) :else false))
+
+(def nowSeed (atom (let [s (System/getenv "MOCHI_NOW_SEED")] (if (and s (not (= s ""))) (Integer/parseInt s) 0))))
+
+(declare main)
+
+(defn main []
+  (do (def a 12345678) (def b 98765) (println (str (str (str (str (str a) " + ") (str b)) " = ") (str (+ a b)))) (println (str (str (str (str (str a) " - ") (str b)) " = ") (str (- a b)))) (println (str (str (str (str (str a) " * ") (str b)) " = ") (str (* a b)))) (println (str (str (str (str (str a) " quo ") (str b)) " = ") (str (int (/ a b))))) (println (str (str (str (str (str a) " rem ") (str b)) " = ") (str (mod a b))))))
+
+(defn -main []
+  (let [rt (Runtime/getRuntime)
+    start-mem (- (.totalMemory rt) (.freeMemory rt))
+    start (System/nanoTime)]
+      (main)
+      (System/gc)
+      (let [end (System/nanoTime)
+        end-mem (- (.totalMemory rt) (.freeMemory rt))
+        duration-us (quot (- end start) 1000)
+        memory-bytes (Math/abs ^long (- end-mem start-mem))]
+        (println (str "{\n  \"duration_us\": " duration-us ",\n  \"memory_bytes\": " memory-bytes ",\n  \"name\": \"main\"\n}"))
+      )
+    ))
+
+(-main)
