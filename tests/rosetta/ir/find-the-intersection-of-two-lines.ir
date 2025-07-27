@@ -1,0 +1,167 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun createLine(a: Point, b: Point): Line {
+func createLine (regs=24)
+  // let slope = (b.y - a.y) / (b.x - a.x)
+  Const        r2, "y"
+  Index        r3, r1, r2
+  Const        r2, "y"
+  Index        r4, r0, r2
+  Sub          r5, r3, r4
+  Const        r6, "x"
+  Index        r7, r1, r6
+  Const        r6, "x"
+  Index        r8, r0, r6
+  Sub          r9, r7, r8
+  Div          r10, r5, r9
+  Move         r11, r10
+  // let yint = a.y - slope * a.x
+  Const        r2, "y"
+  Index        r12, r0, r2
+  Const        r6, "x"
+  Index        r13, r0, r6
+  Mul          r14, r11, r13
+  Sub          r15, r12, r14
+  Move         r16, r15
+  // return Line{slope: slope, yint: yint}
+  Const        r17, "__name"
+  Const        r18, "Line"
+  Const        r19, "slope"
+  Move         r20, r11
+  Const        r21, "yint"
+  Move         r22, r16
+  MakeMap      r23, 3, r17
+  Return       r23
+
+  // fun evalX(l: Line, x: float): float {
+func evalX (regs=8)
+  // return l.slope * x + l.yint
+  Const        r2, "slope"
+  Index        r3, r0, r2
+  Mul          r4, r3, r1
+  Const        r5, "yint"
+  Index        r6, r0, r5
+  Add          r7, r4, r6
+  Return       r7
+
+  // fun intersection(l1: Line, l2: Line): Point {
+func intersection (regs=34)
+  // if l1.slope == l2.slope {
+  Const        r2, "slope"
+  Index        r3, r0, r2
+  Const        r2, "slope"
+  Index        r4, r1, r2
+  Equal        r5, r3, r4
+  JumpIfFalse  r5, L0
+  // return Point{x: 0.0, y: 0.0}
+  Const        r6, 0.0
+  Const        r6, 0.0
+  Const        r7, "__name"
+  Const        r8, "Point"
+  Const        r9, "x"
+  Move         r10, r6
+  Const        r11, "y"
+  Move         r12, r6
+  MakeMap      r13, 3, r7
+  Return       r13
+L0:
+  // let x = (l2.yint - l1.yint) / (l1.slope - l2.slope)
+  Const        r14, "yint"
+  Index        r15, r1, r14
+  Const        r14, "yint"
+  Index        r16, r0, r14
+  Sub          r17, r15, r16
+  Const        r2, "slope"
+  Index        r18, r0, r2
+  Const        r2, "slope"
+  Index        r19, r1, r2
+  Sub          r20, r18, r19
+  Div          r21, r17, r20
+  Move         r22, r21
+  // let y = evalX(l1, x)
+  Move         r23, r0
+  Move         r24, r22
+  Call2        r25, evalX, r23, r24
+  Move         r26, r25
+  // return Point{x: x, y: y}
+  Const        r27, "__name"
+  Const        r28, "Point"
+  Const        r29, "x"
+  Move         r30, r22
+  Const        r31, "y"
+  Move         r32, r26
+  MakeMap      r33, 3, r27
+  Return       r33
+
+  // fun main() {
+func main (regs=59)
+  // let l1 = createLine(Point{x:4.0, y:0.0}, Point{x:6.0, y:10.0})
+  Const        r2, 4.0
+  Const        r3, 0.0
+  Const        r4, "__name"
+  Const        r5, "Point"
+  Const        r6, "x"
+  Move         r7, r2
+  Const        r8, "y"
+  Move         r9, r3
+  MakeMap      r10, 3, r4
+  Move         r0, r10
+  Const        r11, 6.0
+  Const        r12, 10.0
+  Const        r13, "__name"
+  Const        r14, "Point"
+  Const        r15, "x"
+  Move         r16, r11
+  Const        r17, "y"
+  Move         r18, r12
+  MakeMap      r19, 3, r13
+  Move         r1, r19
+  Call2        r20, createLine, r0, r1
+  Move         r21, r20
+  // let l2 = createLine(Point{x:0.0, y:3.0}, Point{x:10.0, y:7.0})
+  Const        r3, 0.0
+  Const        r24, 3.0
+  Const        r25, "__name"
+  Const        r26, "Point"
+  Const        r27, "x"
+  Move         r28, r3
+  Const        r29, "y"
+  Move         r30, r24
+  MakeMap      r31, 3, r25
+  Move         r22, r31
+  Const        r12, 10.0
+  Const        r32, 7.0
+  Const        r33, "__name"
+  Const        r34, "Point"
+  Const        r35, "x"
+  Move         r36, r12
+  Const        r37, "y"
+  Move         r38, r32
+  MakeMap      r39, 3, r33
+  Move         r23, r39
+  Call2        r40, createLine, r22, r23
+  Move         r41, r40
+  // let p = intersection(l1, l2)
+  Move         r42, r21
+  Move         r43, r41
+  Call2        r44, intersection, r42, r43
+  Move         r45, r44
+  // print("{" + str(p.x) + " " + str(p.y) + "}")
+  Const        r46, "{"
+  Const        r47, "x"
+  Index        r48, r45, r47
+  Str          r49, r48
+  Add          r50, r46, r49
+  Const        r51, " "
+  Add          r52, r50, r51
+  Const        r53, "y"
+  Index        r54, r45, r53
+  Str          r55, r54
+  Add          r56, r52, r55
+  Const        r57, "}"
+  Add          r58, r56, r57
+  Print        r58
+  Return       r0

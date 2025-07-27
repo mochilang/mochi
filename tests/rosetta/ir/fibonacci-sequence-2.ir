@@ -1,0 +1,45 @@
+func main (regs=1)
+  Return       r0
+
+  // fun fib(n: int): bigint {
+func fib (regs=14)
+  // if n < 2 { return n as bigint }
+  Const        r1, 2
+  Less         r2, r0, r1
+  JumpIfFalse  r2, L0
+  Cast         r3, r0, any
+  Return       r3
+L0:
+  // var a: bigint = 0
+  Const        r4, 0
+  Move         r5, r4
+  // var b: bigint = 1
+  Const        r6, 1
+  Move         r7, r6
+  // var i = n
+  Move         r8, r0
+  // i = i - 1
+  Const        r6, 1
+  Sub          r9, r8, r6
+  Move         r8, r9
+L2:
+  // while i > 0 {
+  Const        r4, 0
+  Less         r10, r4, r8
+  JumpIfFalse  r10, L1
+  // let tmp = a + b
+  AddInt       r11, r5, r7
+  Move         r12, r11
+  // a = b
+  Move         r5, r7
+  // b = tmp
+  Move         r7, r12
+  // i = i - 1
+  Const        r6, 1
+  Sub          r13, r8, r6
+  Move         r8, r13
+  // while i > 0 {
+  Jump         L2
+L1:
+  // return b
+  Return       r7

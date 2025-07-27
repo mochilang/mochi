@@ -1,0 +1,88 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun findDuplicates(fs: map<string, string>, paths: list<string>): list<list<string>> {
+func findDuplicates (regs=22)
+  // var seen: map<string, string> = {}
+  Const        r2, {}
+  Move         r3, r2
+  // var dups: list<list<string>> = []
+  Const        r4, []
+  Move         r5, r4
+  // for path in paths {
+  IterPrep     r6, r1
+  Len          r7, r6
+  Const        r8, 0
+L3:
+  LessInt      r9, r8, r7
+  JumpIfFalse  r9, L0
+  Index        r10, r6, r8
+  Move         r11, r10
+  // let content = fs[path]
+  Index        r12, r0, r11
+  Move         r13, r12
+  // if content in seen {
+  In           r14, r13, r3
+  JumpIfFalse  r14, L1
+  // dups = append(dups, [seen[content], path])
+  Index        r17, r3, r13
+  Move         r15, r17
+  Move         r16, r11
+  MakeList     r18, 2, r15
+  Append       r19, r5, r18
+  Move         r5, r19
+  // if content in seen {
+  Jump         L2
+L1:
+  // seen[content] = path
+  SetIndex     r3, r13, r11
+L2:
+  // for path in paths {
+  Const        r20, 1
+  AddInt       r21, r8, r20
+  Move         r8, r21
+  Jump         L3
+L0:
+  // return dups
+  Return       r5
+
+  // fun main() {
+func main (regs=23)
+  // var fs: map<string, string> = {
+  Const        r0, {"a.txt": "hello", "b.txt": "world", "c.txt": "hello", "d.txt": "foo", "e.txt": "world"}
+  Move         r1, r0
+  // let paths = ["a.txt", "b.txt", "c.txt", "d.txt", "e.txt"]
+  Const        r2, ["a.txt", "b.txt", "c.txt", "d.txt", "e.txt"]
+  Move         r3, r2
+  // let dups = findDuplicates(fs, paths)
+  Move         r4, r1
+  Move         r5, r3
+  Call2        r6, findDuplicates, r4, r5
+  Move         r7, r6
+  // for pair in dups {
+  IterPrep     r8, r7
+  Len          r9, r8
+  Const        r10, 0
+L1:
+  LessInt      r11, r10, r9
+  JumpIfFalse  r11, L0
+  Index        r12, r8, r10
+  Move         r13, r12
+  // print(pair[0] + " <==> " + pair[1])
+  Const        r14, 0
+  Index        r15, r13, r14
+  Const        r16, " <==> "
+  Add          r17, r15, r16
+  Const        r18, 1
+  Index        r19, r13, r18
+  Add          r20, r17, r19
+  Print        r20
+  // for pair in dups {
+  Const        r21, 1
+  AddInt       r22, r10, r21
+  Move         r10, r22
+  Jump         L1
+L0:
+  Return       r0

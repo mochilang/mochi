@@ -1,0 +1,67 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun fib(n: int): list<int> {
+func fib (regs=13)
+  // var a = 0
+  Const        r1, 0
+  Move         r2, r1
+  // var b = 1
+  Const        r3, 1
+  Move         r4, r3
+  // var res: list<int> = []
+  Const        r5, []
+  Move         r6, r5
+  // var i = 0
+  Const        r1, 0
+  Move         r7, r1
+L1:
+  // while i < n {
+  Less         r8, r7, r0
+  JumpIfFalse  r8, L0
+  // res = append(res, a)
+  Append       r9, r6, r2
+  Move         r6, r9
+  // var tmp = a + b
+  AddInt       r10, r2, r4
+  Move         r11, r10
+  // a = b
+  Move         r2, r4
+  // i = i + 1
+  Const        r3, 1
+  AddInt       r12, r7, r3
+  Move         r7, r12
+  // b = tmp
+  Move         r4, r11
+  // while i < n {
+  Jump         L1
+L0:
+  // return res
+  Return       r6
+
+  // fun main() {
+func main (regs=13)
+  // let seq = fib(10)
+  Const        r1, 10
+  Move         r0, r1
+  Call         r2, fib, r0
+  Move         r3, r2
+  // for v in seq { print(str(v)) }
+  IterPrep     r4, r3
+  Len          r5, r4
+  Const        r6, 0
+L1:
+  LessInt      r7, r6, r5
+  JumpIfFalse  r7, L0
+  Index        r8, r4, r6
+  Move         r9, r8
+  Str          r10, r9
+  Print        r10
+  Const        r11, 1
+  AddInt       r12, r6, r11
+  Move         r6, r12
+  Jump         L1
+L0:
+  Return       r0

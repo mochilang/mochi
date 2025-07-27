@@ -1,0 +1,226 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun add(a: Vector, b: Vector): Vector {
+func add (regs=23)
+  // return Vector{x: a.x + b.x, y: a.y + b.y, z: a.z + b.z}
+  Const        r2, "x"
+  Index        r3, r0, r2
+  Const        r2, "x"
+  Index        r4, r1, r2
+  Add          r5, r3, r4
+  Const        r6, "y"
+  Index        r7, r0, r6
+  Const        r6, "y"
+  Index        r8, r1, r6
+  Add          r9, r7, r8
+  Const        r10, "z"
+  Index        r11, r0, r10
+  Const        r10, "z"
+  Index        r12, r1, r10
+  Add          r13, r11, r12
+  Const        r14, "__name"
+  Const        r15, "Vector"
+  Const        r16, "x"
+  Move         r17, r5
+  Const        r18, "y"
+  Move         r19, r9
+  Const        r20, "z"
+  Move         r21, r13
+  MakeMap      r22, 4, r14
+  Return       r22
+
+  // fun sub(a: Vector, b: Vector): Vector {
+func sub (regs=23)
+  // return Vector{x: a.x - b.x, y: a.y - b.y, z: a.z - b.z}
+  Const        r2, "x"
+  Index        r3, r0, r2
+  Const        r2, "x"
+  Index        r4, r1, r2
+  Sub          r5, r3, r4
+  Const        r6, "y"
+  Index        r7, r0, r6
+  Const        r6, "y"
+  Index        r8, r1, r6
+  Sub          r9, r7, r8
+  Const        r10, "z"
+  Index        r11, r0, r10
+  Const        r10, "z"
+  Index        r12, r1, r10
+  Sub          r13, r11, r12
+  Const        r14, "__name"
+  Const        r15, "Vector"
+  Const        r16, "x"
+  Move         r17, r5
+  Const        r18, "y"
+  Move         r19, r9
+  Const        r20, "z"
+  Move         r21, r13
+  MakeMap      r22, 4, r14
+  Return       r22
+
+  // fun mul(v: Vector, s: float): Vector {
+func mul (regs=20)
+  // return Vector{x: v.x * s, y: v.y * s, z: v.z * s}
+  Const        r2, "x"
+  Index        r3, r0, r2
+  Mul          r4, r3, r1
+  Const        r5, "y"
+  Index        r6, r0, r5
+  Mul          r7, r6, r1
+  Const        r8, "z"
+  Index        r9, r0, r8
+  Mul          r10, r9, r1
+  Const        r11, "__name"
+  Const        r12, "Vector"
+  Const        r13, "x"
+  Move         r14, r4
+  Const        r15, "y"
+  Move         r16, r7
+  Const        r17, "z"
+  Move         r18, r10
+  MakeMap      r19, 4, r11
+  Return       r19
+
+  // fun dot(a: Vector, b: Vector): float {
+func dot (regs=16)
+  // return a.x * b.x + a.y * b.y + a.z * b.z
+  Const        r2, "x"
+  Index        r3, r0, r2
+  Const        r2, "x"
+  Index        r4, r1, r2
+  Mul          r5, r3, r4
+  Const        r6, "y"
+  Index        r7, r0, r6
+  Const        r6, "y"
+  Index        r8, r1, r6
+  Mul          r9, r7, r8
+  Const        r10, "z"
+  Index        r11, r0, r10
+  Const        r10, "z"
+  Index        r12, r1, r10
+  Mul          r13, r11, r12
+  Add          r14, r5, r9
+  Add          r15, r14, r13
+  Return       r15
+
+  // fun intersectPoint(rv: Vector, rp: Vector, pn: Vector, pp: Vector): Vector {
+func intersectPoint (regs=24)
+  // let diff = sub(rp, pp)
+  Move         r4, r1
+  Move         r5, r3
+  Call2        r6, sub, r4, r5
+  Move         r7, r6
+  // let prod1 = dot(diff, pn)
+  Move         r8, r7
+  Move         r9, r2
+  Call2        r10, dot, r8, r9
+  Move         r11, r10
+  // let prod2 = dot(rv, pn)
+  Move         r12, r0
+  Move         r13, r2
+  Call2        r14, dot, r12, r13
+  Move         r15, r14
+  // let prod3 = prod1 / prod2
+  Div          r16, r11, r15
+  Move         r17, r16
+  // return sub(rp, mul(rv, prod3))
+  Move         r18, r1
+  Move         r20, r0
+  Move         r21, r17
+  Call2        r22, mul, r20, r21
+  Move         r19, r22
+  Call2        r23, sub, r18, r19
+  Return       r23
+
+  // fun main() {
+func main (regs=70)
+  // let rv = Vector{x: 0.0, y: -1.0, z: -1.0}
+  Const        r0, 0.0
+  Const        r1, 1.0
+  NegFloat     r2, r1
+  Const        r1, 1.0
+  NegFloat     r3, r1
+  Const        r4, "__name"
+  Const        r5, "Vector"
+  Const        r6, "x"
+  Move         r7, r0
+  Const        r8, "y"
+  Move         r9, r2
+  Const        r10, "z"
+  Move         r11, r3
+  MakeMap      r12, 4, r4
+  Move         r13, r12
+  // let rp = Vector{x: 0.0, y: 0.0, z: 10.0}
+  Const        r0, 0.0
+  Const        r0, 0.0
+  Const        r14, 10.0
+  Const        r15, "__name"
+  Const        r16, "Vector"
+  Const        r17, "x"
+  Move         r18, r0
+  Const        r19, "y"
+  Move         r20, r0
+  Const        r21, "z"
+  Move         r22, r14
+  MakeMap      r23, 4, r15
+  Move         r24, r23
+  // let pn = Vector{x: 0.0, y: 0.0, z: 1.0}
+  Const        r0, 0.0
+  Const        r0, 0.0
+  Const        r1, 1.0
+  Const        r25, "__name"
+  Const        r26, "Vector"
+  Const        r27, "x"
+  Move         r28, r0
+  Const        r29, "y"
+  Move         r30, r0
+  Const        r31, "z"
+  Move         r32, r1
+  MakeMap      r33, 4, r25
+  Move         r34, r33
+  // let pp = Vector{x: 0.0, y: 0.0, z: 5.0}
+  Const        r0, 0.0
+  Const        r0, 0.0
+  Const        r35, 5.0
+  Const        r36, "__name"
+  Const        r37, "Vector"
+  Const        r38, "x"
+  Move         r39, r0
+  Const        r40, "y"
+  Move         r41, r0
+  Const        r42, "z"
+  Move         r43, r35
+  MakeMap      r44, 4, r36
+  Move         r45, r44
+  // let ip = intersectPoint(rv, rp, pn, pp)
+  Move         r46, r13
+  Move         r47, r24
+  Move         r48, r34
+  Move         r49, r45
+  Call         r50, intersectPoint, r46, r47, r48, r49
+  Move         r51, r50
+  // print("The ray intersects the plane at (" + str(ip.x) + ", " + str(ip.y) + ", " + str(ip.z) + ")")
+  Const        r52, "The ray intersects the plane at ("
+  Const        r53, "x"
+  Index        r54, r51, r53
+  Str          r55, r54
+  Add          r56, r52, r55
+  Const        r57, ", "
+  Add          r58, r56, r57
+  Const        r59, "y"
+  Index        r60, r51, r59
+  Str          r61, r60
+  Add          r62, r58, r61
+  Const        r57, ", "
+  Add          r63, r62, r57
+  Const        r64, "z"
+  Index        r65, r51, r64
+  Str          r66, r65
+  Add          r67, r63, r66
+  Const        r68, ")"
+  Add          r69, r67, r68
+  Print        r69
+  Return       r0

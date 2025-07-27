@@ -1,0 +1,46 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun printSize(fs: map<string, int>, path: string) {
+func printSize (regs=9)
+  // if path in fs {
+  In           r2, r1, r0
+  JumpIfFalse  r2, L0
+  // print(str(fs[path]))
+  Index        r3, r0, r1
+  Str          r4, r3
+  Print        r4
+  // if path in fs {
+  Jump         L1
+L0:
+  // print("stat " + path + ": no such file or directory")
+  Const        r5, "stat "
+  Add          r6, r5, r1
+  Const        r7, ": no such file or directory"
+  Add          r8, r6, r7
+  Print        r8
+L1:
+  Return       r0
+
+  // fun main() {
+func main (regs=11)
+  // var fs: map<string, int> = {}
+  Const        r0, {}
+  Move         r1, r0
+  // fs["input.txt"] = 123
+  Const        r2, 123
+  Const        r3, "input.txt"
+  SetIndex     r1, r3, r2
+  // printSize(fs, "input.txt")
+  Move         r4, r1
+  Const        r3, "input.txt"
+  Move         r5, r3
+  Call2        r6, printSize, r4, r5
+  // printSize(fs, "/input.txt")
+  Move         r7, r1
+  Const        r9, "/input.txt"
+  Move         r8, r9
+  Call2        r10, printSize, r7, r8
+  Return       r0

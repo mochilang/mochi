@@ -1,0 +1,463 @@
+func main (regs=9)
+  // var glyphs = "♜♞♝♛♚♖♘♗♕♔"
+  Const        r4, "♜♞♝♛♚♖♘♗♕♔"
+  Move         r0, r4
+  SetGlobal    0,0,0,0
+  // var g2lMap: map<string, string> = {
+  Const        r5, {"♔": "K", "♕": "Q", "♖": "R", "♗": "B", "♘": "N", "♚": "K", "♛": "Q", "♜": "R", "♝": "B", "♞": "N"}
+  Move         r1, r5
+  SetGlobal    1,1,0,0
+  // var names: map<string, string> = {"R": "rook", "N": "knight", "B": "bishop", "Q": "queen", "K": "king"}
+  Const        r6, {"B": "bishop", "K": "king", "N": "knight", "Q": "queen", "R": "rook"}
+  Move         r2, r6
+  SetGlobal    2,2,0,0
+  // var ntable: map<string, int> = {"01":0, "02":1, "03":2, "04":3, "12":4, "13":5, "14":6, "23":7, "24":8, "34":9}
+  Const        r7, {"01": 0, "02": 1, "03": 2, "04": 3, "12": 4, "13": 5, "14": 6, "23": 7, "24": 8, "34": 9}
+  Move         r3, r7
+  SetGlobal    3,3,0,0
+  // main()
+  Call         r8, main, 
+  Return       r0
+
+  // fun indexOf(s: string, sub: string): int {
+func indexOf (regs=19)
+  // var i = 0
+  Const        r6, 0
+  Move         r7, r6
+L2:
+  // while i <= len(s) - len(sub) {
+  Len          r8, r4
+  Len          r9, r5
+  SubInt       r10, r8, r9
+  LessEqInt    r11, r7, r10
+  JumpIfFalse  r11, L0
+  // if substring(s, i, i+len(sub)) == sub { return i }
+  Len          r12, r5
+  AddInt       r13, r7, r12
+  Slice        r14, r4, r7, r13
+  Equal        r15, r14, r5
+  JumpIfFalse  r15, L1
+  Return       r7
+L1:
+  // i = i + 1
+  Const        r16, 1
+  AddInt       r17, r7, r16
+  Move         r7, r17
+  // while i <= len(s) - len(sub) {
+  Jump         L2
+L0:
+  // return -1
+  Const        r16, 1
+  NegInt       r18, r16
+  Return       r18
+
+  // fun strReplace(s: string, old: string, new: string): string {
+func strReplace (regs=32)
+  // var res = ""
+  Const        r7, ""
+  Move         r8, r7
+  // var i = 0
+  Const        r9, 0
+  Move         r10, r9
+L3:
+  // while i < len(s) {
+  Len          r11, r4
+  LessInt      r12, r10, r11
+  JumpIfFalse  r12, L0
+  // if len(old) > 0 && i + len(old) <= len(s) && substring(s, i, i+len(old)) == old {
+  Len          r13, r5
+  Len          r14, r5
+  AddInt       r15, r10, r14
+  Const        r9, 0
+  LessInt      r16, r9, r13
+  Len          r17, r4
+  LessEqInt    r18, r15, r17
+  Len          r19, r5
+  AddInt       r20, r10, r19
+  Slice        r21, r4, r10, r20
+  Equal        r22, r21, r5
+  Move         r23, r16
+  JumpIfFalse  r23, L1
+  Move         r23, r18
+  JumpIfFalse  r23, L1
+  Move         r23, r22
+L1:
+  JumpIfFalse  r23, L2
+  // res = res + new
+  Add          r24, r8, r6
+  Move         r8, r24
+  // i = i + len(old)
+  Len          r25, r5
+  AddInt       r26, r10, r25
+  Move         r10, r26
+  // if len(old) > 0 && i + len(old) <= len(s) && substring(s, i, i+len(old)) == old {
+  Jump         L3
+L2:
+  // res = res + substring(s, i, i+1)
+  Const        r27, 1
+  AddInt       r28, r10, r27
+  Slice        r29, r4, r10, r28
+  Add          r30, r8, r29
+  Move         r8, r30
+  // i = i + 1
+  Const        r27, 1
+  AddInt       r31, r10, r27
+  Move         r10, r31
+  // while i < len(s) {
+  Jump         L3
+L0:
+  // return res
+  Return       r8
+
+  // fun g2l(pieces: string): string {
+func g2l (regs=18)
+  // var lets = ""
+  Const        r5, ""
+  Move         r6, r5
+  // var i = 0
+  Const        r7, 0
+  Move         r8, r7
+L1:
+  // while i < len(pieces) {
+  Len          r9, r4
+  LessInt      r10, r8, r9
+  JumpIfFalse  r10, L0
+  // let ch = substring(pieces, i, i+1)
+  Const        r11, 1
+  AddInt       r12, r8, r11
+  Slice        r13, r4, r8, r12
+  Move         r14, r13
+  // lets = lets + g2lMap[ch]
+  Index        r15, r1, r14
+  Add          r16, r6, r15
+  Move         r6, r16
+  // i = i + 1
+  Const        r11, 1
+  AddInt       r17, r8, r11
+  Move         r8, r17
+  // while i < len(pieces) {
+  Jump         L1
+L0:
+  // return lets
+  Return       r6
+
+  // fun spid(pieces: string): int {
+func spid (regs=166)
+  // pieces = g2l(pieces)
+  Move         r5, r4
+  Call         r6, g2l, r5
+  Move         r4, r6
+  // if len(pieces) != 8 { return -1 }
+  Len          r7, r4
+  Const        r8, 8
+  NotEqual     r9, r7, r8
+  JumpIfFalse  r9, L0
+  Const        r10, 1
+  NegInt       r11, r10
+  Return       r11
+L0:
+  // for one in ["K", "Q"] {
+  Const        r12, ["K", "Q"]
+  IterPrep     r13, r12
+  Len          r14, r13
+  Const        r15, 0
+L6:
+  LessInt      r16, r15, r14
+  JumpIfFalse  r16, L1
+  Index        r17, r13, r15
+  Move         r18, r17
+  // var count = 0
+  Const        r19, 0
+  Move         r20, r19
+  // var i = 0
+  Const        r19, 0
+  Move         r21, r19
+L4:
+  // while i < len(pieces) {
+  Len          r22, r4
+  LessInt      r23, r21, r22
+  JumpIfFalse  r23, L2
+  // if substring(pieces, i, i+1) == one { count = count + 1 }
+  Const        r10, 1
+  AddInt       r24, r21, r10
+  Slice        r25, r4, r21, r24
+  Equal        r26, r25, r18
+  JumpIfFalse  r26, L3
+  Const        r10, 1
+  AddInt       r27, r20, r10
+  Move         r20, r27
+L3:
+  // i = i + 1
+  Const        r10, 1
+  AddInt       r28, r21, r10
+  Move         r21, r28
+  // while i < len(pieces) {
+  Jump         L4
+L2:
+  // if count != 1 { return -1 }
+  Const        r10, 1
+  NotEqual     r29, r20, r10
+  JumpIfFalse  r29, L5
+  Const        r10, 1
+  NegInt       r30, r10
+  Return       r30
+L5:
+  // for one in ["K", "Q"] {
+  Const        r31, 1
+  AddInt       r32, r15, r31
+  Move         r15, r32
+  Jump         L6
+L1:
+  // for two in ["R", "N", "B"] {
+  Const        r33, ["R", "N", "B"]
+  IterPrep     r34, r33
+  Len          r35, r34
+  Const        r36, 0
+L12:
+  LessInt      r37, r36, r35
+  JumpIfFalse  r37, L7
+  Index        r38, r34, r36
+  Move         r39, r38
+  // var count = 0
+  Const        r19, 0
+  Move         r40, r19
+  // var i = 0
+  Const        r19, 0
+  Move         r41, r19
+L10:
+  // while i < len(pieces) {
+  Len          r42, r4
+  LessInt      r43, r41, r42
+  JumpIfFalse  r43, L8
+  // if substring(pieces, i, i+1) == two { count = count + 1 }
+  Const        r10, 1
+  AddInt       r44, r41, r10
+  Slice        r45, r4, r41, r44
+  Equal        r46, r45, r39
+  JumpIfFalse  r46, L9
+  Const        r10, 1
+  AddInt       r47, r40, r10
+  Move         r40, r47
+L9:
+  // i = i + 1
+  Const        r10, 1
+  AddInt       r48, r41, r10
+  Move         r41, r48
+  // while i < len(pieces) {
+  Jump         L10
+L8:
+  // if count != 2 { return -1 }
+  Const        r49, 2
+  NotEqual     r50, r40, r49
+  JumpIfFalse  r50, L11
+  Const        r10, 1
+  NegInt       r51, r10
+  Return       r51
+L11:
+  // for two in ["R", "N", "B"] {
+  Const        r52, 1
+  AddInt       r53, r36, r52
+  Move         r36, r53
+  Jump         L12
+L7:
+  // let r1 = indexOf(pieces, "R")
+  Move         r54, r4
+  Const        r56, "R"
+  Move         r55, r56
+  Call2        r57, indexOf, r54, r55
+  Move         r58, r57
+  // let r2 = indexOf(substring(pieces, r1+1, len(pieces)), "R") + r1 + 1
+  Const        r10, 1
+  Add          r61, r58, r10
+  Len          r62, r4
+  Slice        r63, r4, r61, r62
+  Move         r59, r63
+  Const        r56, "R"
+  Move         r60, r56
+  Call2        r64, indexOf, r59, r60
+  Add          r65, r64, r58
+  Const        r10, 1
+  Add          r66, r65, r10
+  Move         r67, r66
+  // let k  = indexOf(pieces, "K")
+  Move         r68, r4
+  Const        r70, "K"
+  Move         r69, r70
+  Call2        r71, indexOf, r68, r69
+  Move         r72, r71
+  // if k < r1 || k > r2 { return -1 }
+  Less         r73, r72, r58
+  Less         r74, r67, r72
+  Move         r75, r73
+  JumpIfTrue   r75, L13
+  Move         r75, r74
+L13:
+  JumpIfFalse  r75, L14
+  Const        r10, 1
+  NegInt       r76, r10
+  Return       r76
+L14:
+  // let b1 = indexOf(pieces, "B")
+  Move         r77, r4
+  Const        r79, "B"
+  Move         r78, r79
+  Call2        r80, indexOf, r77, r78
+  Move         r81, r80
+  // let b2 = indexOf(substring(pieces, b1+1, len(pieces)), "B") + b1 + 1
+  Const        r10, 1
+  Add          r84, r81, r10
+  Len          r85, r4
+  Slice        r86, r4, r84, r85
+  Move         r82, r86
+  Const        r79, "B"
+  Move         r83, r79
+  Call2        r87, indexOf, r82, r83
+  Add          r88, r87, r81
+  Const        r10, 1
+  Add          r89, r88, r10
+  Move         r90, r89
+  // if (b2 - b1) % 2 == 0 { return -1 }
+  Sub          r91, r90, r81
+  Const        r49, 2
+  Mod          r92, r91, r49
+  Const        r19, 0
+  Equal        r93, r92, r19
+  JumpIfFalse  r93, L15
+  Const        r10, 1
+  NegInt       r94, r10
+  Return       r94
+L15:
+  // var piecesN = strReplace(pieces, "Q", "")
+  Move         r95, r4
+  Const        r98, "Q"
+  Move         r96, r98
+  Const        r99, ""
+  Move         r97, r99
+  Call         r100, strReplace, r95, r96, r97
+  Move         r101, r100
+  // piecesN = strReplace(piecesN, "B", "")
+  Move         r102, r101
+  Const        r79, "B"
+  Move         r103, r79
+  Const        r99, ""
+  Move         r104, r99
+  Call         r105, strReplace, r102, r103, r104
+  Move         r101, r105
+  // let n1 = indexOf(piecesN, "N")
+  Move         r106, r101
+  Const        r108, "N"
+  Move         r107, r108
+  Call2        r109, indexOf, r106, r107
+  Move         r110, r109
+  // let n2 = indexOf(substring(piecesN, n1+1, len(piecesN)), "N") + n1 + 1
+  Const        r10, 1
+  Add          r113, r110, r10
+  Len          r114, r101
+  Slice        r115, r101, r113, r114
+  Move         r111, r115
+  Const        r108, "N"
+  Move         r112, r108
+  Call2        r116, indexOf, r111, r112
+  Add          r117, r116, r110
+  Const        r10, 1
+  Add          r118, r117, r10
+  Move         r119, r118
+  // let np = str(n1) + str(n2)
+  Str          r120, r110
+  Str          r121, r119
+  Add          r122, r120, r121
+  Move         r123, r122
+  // let N = ntable[np]
+  Index        r124, r3, r123
+  Move         r125, r124
+  // var piecesQ = strReplace(pieces, "B", "")
+  Move         r126, r4
+  Const        r79, "B"
+  Move         r127, r79
+  Const        r99, ""
+  Move         r128, r99
+  Call         r129, strReplace, r126, r127, r128
+  Move         r130, r129
+  // let Q = indexOf(piecesQ, "Q")
+  Move         r131, r130
+  Const        r98, "Q"
+  Move         r132, r98
+  Call2        r133, indexOf, r131, r132
+  Move         r134, r133
+  // var D = indexOf("0246", str(b1))
+  Const        r137, "0246"
+  Move         r135, r137
+  Str          r138, r81
+  Move         r136, r138
+  Call2        r139, indexOf, r135, r136
+  Move         r140, r139
+  // var L = indexOf("1357", str(b2))
+  Const        r143, "1357"
+  Move         r141, r143
+  Str          r144, r90
+  Move         r142, r144
+  Call2        r145, indexOf, r141, r142
+  Move         r146, r145
+  // if D == (0 - 1) {
+  Const        r147, -1
+  Equal        r148, r140, r147
+  JumpIfFalse  r148, L16
+  // D = indexOf("0246", str(b2))
+  Const        r137, "0246"
+  Move         r149, r137
+  Str          r151, r90
+  Move         r150, r151
+  Call2        r152, indexOf, r149, r150
+  Move         r140, r152
+  // L = indexOf("1357", str(b1))
+  Const        r143, "1357"
+  Move         r153, r143
+  Str          r155, r81
+  Move         r154, r155
+  Call2        r156, indexOf, r153, r154
+  Move         r146, r156
+L16:
+  // return 96*N + 16*Q + 4*D + L
+  Const        r157, 96
+  Mul          r158, r157, r125
+  Const        r159, 16
+  Mul          r160, r159, r134
+  Const        r161, 4
+  Mul          r162, r161, r140
+  Add          r163, r158, r160
+  Add          r164, r163, r162
+  Add          r165, r164, r146
+  Return       r165
+
+  // fun main() {
+func main (regs=24)
+  // for pieces in ["♕♘♖♗♗♘♔♖", "♖♘♗♕♔♗♘♖", "♖♕♘♗♗♔♖♘", "♖♘♕♗♗♔♖♘"] {
+  Const        r4, ["♕♘♖♗♗♘♔♖", "♖♘♗♕♔♗♘♖", "♖♕♘♗♗♔♖♘", "♖♘♕♗♗♔♖♘"]
+  IterPrep     r5, r4
+  Len          r6, r5
+  Const        r7, 0
+L1:
+  LessInt      r8, r7, r6
+  JumpIfFalse  r8, L0
+  Index        r9, r5, r7
+  Move         r10, r9
+  // print(pieces + " or " + g2l(pieces) + " has SP-ID of " + str(spid(pieces)))
+  Const        r11, " or "
+  Add          r12, r10, r11
+  Move         r13, r10
+  Call         r14, g2l, r13
+  Add          r15, r12, r14
+  Const        r16, " has SP-ID of "
+  Add          r17, r15, r16
+  Move         r18, r10
+  Call         r19, spid, r18
+  Str          r20, r19
+  Add          r21, r17, r20
+  Print        r21
+  // for pieces in ["♕♘♖♗♗♘♔♖", "♖♘♗♕♔♗♘♖", "♖♕♘♗♗♔♖♘", "♖♘♕♗♗♔♖♘"] {
+  Const        r22, 1
+  AddInt       r23, r7, r22
+  Move         r7, r23
+  Jump         L1
+L0:
+  Return       r0

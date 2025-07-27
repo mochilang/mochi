@@ -1,0 +1,144 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun show(xs: list<int>): string {
+func show (regs=17)
+  // var s = ""
+  Const        r1, ""
+  Move         r2, r1
+  // var i = 0
+  Const        r3, 0
+  Move         r4, r3
+L2:
+  // while i < len(xs) {
+  Len          r5, r0
+  LessInt      r6, r4, r5
+  JumpIfFalse  r6, L0
+  // s = s + str(xs[i])
+  Index        r7, r0, r4
+  Str          r8, r7
+  Add          r9, r2, r8
+  Move         r2, r9
+  // if i < len(xs) - 1 { s = s + " " }
+  Len          r10, r0
+  Const        r11, 1
+  SubInt       r12, r10, r11
+  LessInt      r13, r4, r12
+  JumpIfFalse  r13, L1
+  Const        r14, " "
+  Add          r15, r2, r14
+  Move         r2, r15
+L1:
+  // i = i + 1
+  Const        r11, 1
+  AddInt       r16, r4, r11
+  Move         r4, r16
+  // while i < len(xs) {
+  Jump         L2
+L0:
+  // return s
+  Return       r2
+
+  // fun gen(init: list<int>, n: int): list<int> {
+func gen (regs=28)
+  // var b = init
+  Move         r2, r0
+  // var res: list<int> = []
+  Const        r3, []
+  Move         r4, r3
+  // var sum = 0
+  Const        r5, 0
+  Move         r6, r5
+  // for x in b { res = append(res, x); sum = sum + x }
+  IterPrep     r7, r2
+  Len          r8, r7
+  Const        r9, 0
+L1:
+  LessInt      r10, r9, r8
+  JumpIfFalse  r10, L0
+  Index        r11, r7, r9
+  Move         r12, r11
+  Append       r13, r4, r12
+  Move         r4, r13
+  Add          r14, r6, r12
+  Move         r6, r14
+  Const        r15, 1
+  AddInt       r16, r9, r15
+  Move         r9, r16
+  Jump         L1
+L0:
+  // while len(res) < n {
+  Len          r17, r4
+  Less         r18, r17, r1
+  JumpIfFalse  r18, L2
+  // var next = sum
+  Move         r19, r6
+  // res = append(res, next)
+  Append       r20, r4, r19
+  Move         r4, r20
+  // sum = sum + next - b[0]
+  Add          r21, r6, r19
+  Const        r5, 0
+  Index        r22, r2, r5
+  Sub          r23, r21, r22
+  Move         r6, r23
+  // b = append(slice(b,1,len(b)), next)
+  Const        r24, 1
+  Len          r25, r2
+  Slice        r26, r2, r24, r25
+  Append       r27, r26, r19
+  Move         r2, r27
+  // while len(res) < n {
+  Jump         L0
+L2:
+  // return res
+  Return       r4
+
+  // fun main() {
+func main (regs=34)
+  // let n = 10
+  Const        r0, 10
+  Move         r1, r0
+  // print(" Fibonacci: " + show(gen([1,1], n)))
+  Const        r2, " Fibonacci: "
+  Const        r6, [1, 1]
+  Move         r4, r6
+  Move         r5, r1
+  Call2        r7, gen, r4, r5
+  Move         r3, r7
+  Call         r8, show, r3
+  Add          r9, r2, r8
+  Print        r9
+  // print("Tribonacci: " + show(gen([1,1,2], n)))
+  Const        r10, "Tribonacci: "
+  Const        r14, [1, 1, 2]
+  Move         r12, r14
+  Move         r13, r1
+  Call2        r15, gen, r12, r13
+  Move         r11, r15
+  Call         r16, show, r11
+  Add          r17, r10, r16
+  Print        r17
+  // print("Tetranacci: " + show(gen([1,1,2,4], n)))
+  Const        r18, "Tetranacci: "
+  Const        r22, [1, 1, 2, 4]
+  Move         r20, r22
+  Move         r21, r1
+  Call2        r23, gen, r20, r21
+  Move         r19, r23
+  Call         r24, show, r19
+  Add          r25, r18, r24
+  Print        r25
+  // print("     Lucas: " + show(gen([2,1], n)))
+  Const        r26, "     Lucas: "
+  Const        r30, [2, 1]
+  Move         r28, r30
+  Move         r29, r1
+  Call2        r31, gen, r28, r29
+  Move         r27, r31
+  Call         r32, show, r27
+  Add          r33, r26, r32
+  Print        r33
+  Return       r0

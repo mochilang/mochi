@@ -1,0 +1,24 @@
+func main (regs=3)
+  // var fs: map<string,string> = {"input.txt": "example"}
+  Const        r1, {"input.txt": "example"}
+  Move         r0, r1
+  SetGlobal    0,0,0,0
+  // main()
+  Call         r2, main, 
+  Return       r0
+
+  // fun main() {
+func main (regs=6)
+  // let data = fs["input.txt"]
+  Const        r1, "input.txt"
+  Index        r2, r0, r1
+  Move         r3, r2
+  // fs["output.txt"] = data
+  Const        r4, "output.txt"
+  SetIndex     r0, r4, r3
+  SetGlobal    0,0,0,0
+  // print(fs["output.txt"])
+  Const        r4, "output.txt"
+  Index        r5, r0, r4
+  Print        r5
+  Return       r0

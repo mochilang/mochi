@@ -1,0 +1,191 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun leapYear(y: int): bool {
+func leapYear (regs=13)
+  // return (y % 4 == 0 && y % 100 != 0) || (y % 400 == 0)
+  Const        r1, 4
+  Mod          r2, r0, r1
+  Const        r3, 100
+  Mod          r4, r0, r3
+  Const        r5, 0
+  Equal        r6, r2, r5
+  Const        r5, 0
+  NotEqual     r7, r4, r5
+  Move         r8, r6
+  JumpIfFalse  r8, L0
+  Move         r8, r7
+L0:
+  Move         r9, r8
+  JumpIfTrue   r9, L1
+  Const        r10, 400
+  Mod          r11, r0, r10
+  Const        r5, 0
+  Equal        r12, r11, r5
+  Move         r9, r12
+L1:
+  Return       r9
+
+  // fun monthDays(y: int, m: int): int {
+func monthDays (regs=11)
+  // var days = [0,31,28,31,30,31,30,31,31,30,31,30,31]
+  Const        r2, [0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+  Move         r3, r2
+  // if m == 2 && leapYear(y) { return 29 }
+  Const        r4, 2
+  Equal        r5, r1, r4
+  Move         r6, r5
+  JumpIfFalse  r6, L0
+  Move         r7, r0
+  Call         r8, leapYear, r7
+  Move         r6, r8
+L0:
+  JumpIfFalse  r6, L1
+  Const        r9, 29
+  Return       r9
+L1:
+  // return days[m]
+  Index        r10, r3, r1
+  Return       r10
+
+  // fun zeller(y: int, m: int, d: int): int {
+func zeller (regs=36)
+  // var mm = m
+  Move         r3, r1
+  // var yy = y
+  Move         r4, r0
+  // if mm < 3 {
+  Const        r5, 3
+  Less         r6, r3, r5
+  JumpIfFalse  r6, L0
+  // mm = mm + 12
+  Const        r7, 12
+  Add          r8, r3, r7
+  Move         r3, r8
+  // yy = yy - 1
+  Const        r9, 1
+  Sub          r10, r4, r9
+  Move         r4, r10
+L0:
+  // let K = yy % 100
+  Const        r11, 100
+  Mod          r12, r4, r11
+  Move         r13, r12
+  // let J = yy / 100
+  Const        r11, 100
+  Div          r14, r4, r11
+  Move         r15, r14
+  // let h = (d + (13*(mm+1))/5 + K + K/4 + J/4 + 5*J) % 7
+  Const        r16, 13
+  Const        r9, 1
+  Add          r17, r3, r9
+  Mul          r18, r16, r17
+  Const        r19, 5
+  Div          r20, r18, r19
+  Const        r21, 4
+  Div          r22, r13, r21
+  Const        r21, 4
+  Div          r23, r15, r21
+  Const        r19, 5
+  Mul          r24, r19, r15
+  Add          r25, r2, r20
+  Add          r26, r25, r13
+  Add          r27, r26, r22
+  Add          r28, r27, r23
+  Add          r29, r28, r24
+  Const        r30, 7
+  Mod          r31, r29, r30
+  Move         r32, r31
+  // return (h + 6) % 7
+  Const        r33, 6
+  Add          r34, r32, r33
+  Const        r30, 7
+  Mod          r35, r34, r30
+  Return       r35
+
+  // fun lastSunday(y: int, m: int): int {
+func lastSunday (regs=16)
+  // var day = monthDays(y, m)
+  Move         r2, r0
+  Move         r3, r1
+  Call2        r4, monthDays, r2, r3
+  Move         r5, r4
+L2:
+  // while day > 0 && zeller(y, m, day) != 0 {
+  Const        r6, 0
+  Less         r7, r6, r5
+  Move         r8, r0
+  Move         r9, r1
+  Move         r10, r5
+  Call         r11, zeller, r8, r9, r10
+  Const        r6, 0
+  NotEqual     r12, r11, r6
+  Move         r13, r7
+  JumpIfFalse  r13, L0
+  Move         r13, r12
+L0:
+  JumpIfFalse  r13, L1
+  // day = day - 1
+  Const        r14, 1
+  Sub          r15, r5, r14
+  Move         r5, r15
+  // while day > 0 && zeller(y, m, day) != 0 {
+  Jump         L2
+L1:
+  // return day
+  Return       r5
+
+  // fun monthName(m: int): string {
+func monthName (regs=4)
+  // var names = ["", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+  Const        r1, ["", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+  Move         r2, r1
+  // return names[m]
+  Index        r3, r2, r0
+  Return       r3
+
+  // fun main() {
+func main (regs=22)
+  // let year = int(input())
+  Input        r0
+  Cast         r1, r0, int
+  Move         r2, r1
+  // print("Last Sundays of each month of " + str(year))
+  Const        r3, "Last Sundays of each month of "
+  Str          r4, r2
+  Add          r5, r3, r4
+  Print        r5
+  // print("==================================")
+  Const        r6, "=================================="
+  Print        r6
+  // var m = 1
+  Const        r7, 1
+  Move         r8, r7
+L1:
+  // while m <= 12 {
+  Const        r9, 12
+  LessEqInt    r10, r8, r9
+  JumpIfFalse  r10, L0
+  // let day = lastSunday(year, m)
+  Move         r11, r2
+  Move         r12, r8
+  Call2        r13, lastSunday, r11, r12
+  Move         r14, r13
+  // print(monthName(m) + ": " + str(day))
+  Move         r15, r8
+  Call         r16, monthName, r15
+  Const        r17, ": "
+  Add          r18, r16, r17
+  Str          r19, r14
+  Add          r20, r18, r19
+  Print        r20
+  // m = m + 1
+  Const        r7, 1
+  AddInt       r21, r8, r7
+  Move         r8, r21
+  // while m <= 12 {
+  Jump         L1
+L0:
+  Return       r0

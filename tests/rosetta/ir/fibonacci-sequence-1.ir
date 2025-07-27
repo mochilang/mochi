@@ -1,0 +1,22 @@
+func main (regs=1)
+  Return       r0
+
+  // fun fib(a: int): int {
+func fib (regs=11)
+  // if a < 2 { return a }
+  Const        r1, 2
+  Less         r2, r0, r1
+  JumpIfFalse  r2, L0
+  Return       r0
+L0:
+  // return fib(a - 1) + fib(a - 2)
+  Const        r4, 1
+  Sub          r5, r0, r4
+  Move         r3, r5
+  Call         r6, fib, r3
+  Const        r1, 2
+  Sub          r8, r0, r1
+  Move         r7, r8
+  Call         r9, fib, r7
+  Add          r10, r6, r9
+  Return       r10

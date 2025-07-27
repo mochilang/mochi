@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated IR and outputs from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/ir`.
-Last updated: 2025-07-27 09:18 UTC
+Last updated: 2025-07-27 09:44 UTC
 
-## Rosetta Golden Test Checklist (372/465)
+## Rosetta Golden Test Checklist (402/465)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 116µs | 11.7 KB |
@@ -405,38 +405,38 @@ Last updated: 2025-07-27 09:18 UTC
 | 396 | fairshare-between-two-and-more |   |  |  |
 | 397 | farey-sequence |   |  |  |
 | 398 | fast-fourier-transform | ✓ |  |  |
-| 399 | fasta-format |   |  |  |
-| 400 | faulhabers-formula |   |  |  |
-| 401 | faulhabers-triangle |   |  |  |
-| 402 | feigenbaum-constant-calculation |   |  |  |
-| 403 | fermat-numbers |   |  |  |
-| 404 | fibonacci-n-step-number-sequences |   |  |  |
-| 405 | fibonacci-sequence-1 |   |  |  |
-| 406 | fibonacci-sequence-2 |   |  |  |
-| 407 | fibonacci-sequence-3 |   |  |  |
-| 408 | fibonacci-sequence-4 |   |  |  |
-| 409 | fibonacci-word-fractal |   |  |  |
+| 399 | fasta-format | ✓ | 1.18ms | 114.9 KB |
+| 400 | faulhabers-formula | ✓ | 14.906ms |  |
+| 401 | faulhabers-triangle | ✓ | 350µs | 4.2 KB |
+| 402 | feigenbaum-constant-calculation | ✓ | 111.074ms |  |
+| 403 | fermat-numbers | ✓ | 439µs | 6.5 KB |
+| 404 | fibonacci-n-step-number-sequences | ✓ | 1.252ms | 127.1 KB |
+| 405 | fibonacci-sequence-1 | ✓ | 491µs | 136 B |
+| 406 | fibonacci-sequence-2 | ✓ | 413µs | 136 B |
+| 407 | fibonacci-sequence-3 | ✓ | 424µs | 136 B |
+| 408 | fibonacci-sequence-4 | ✓ | 562µs | 22.0 KB |
+| 409 | fibonacci-word-fractal | ✓ | 876µs | 130.2 KB |
 | 410 | fibonacci-word |   |  |  |
-| 411 | file-extension-is-in-extensions-list |   |  |  |
-| 412 | file-input-output-1 |   |  |  |
-| 413 | file-input-output-2 |   |  |  |
-| 414 | file-modification-time |   |  |  |
-| 415 | file-size-distribution |   |  |  |
-| 416 | file-size |   |  |  |
-| 417 | filter |   |  |  |
-| 418 | find-chess960-starting-position-identifier |   |  |  |
-| 419 | find-common-directory-path |   |  |  |
-| 420 | find-duplicate-files |   |  |  |
-| 421 | find-if-a-point-is-within-a-triangle |   |  |  |
-| 422 | find-largest-left-truncatable-prime-in-a-given-base |   |  |  |
-| 423 | find-limit-of-recursion |   |  |  |
+| 411 | file-extension-is-in-extensions-list | ✓ | 1.711ms | 204.0 KB |
+| 412 | file-input-output-1 | ✓ | 386µs | 3.5 KB |
+| 413 | file-input-output-2 | ✓ | 339µs | 4.5 KB |
+| 414 | file-modification-time | ✓ | 380µs | 4.7 KB |
+| 415 | file-size-distribution | ✓ | 846µs | 66.0 KB |
+| 416 | file-size | ✓ | 297µs | 5.3 KB |
+| 417 | filter | ✓ | 467µs | 9.9 KB |
+| 418 | find-chess960-starting-position-identifier | ✓ | 1.068ms | 463.9 KB |
+| 419 | find-common-directory-path | ✓ | 1.265ms | 278.8 KB |
+| 420 | find-duplicate-files | ✓ | 537µs | 8.9 KB |
+| 421 | find-if-a-point-is-within-a-triangle | ✓ | 802µs | 125.0 KB |
+| 422 | find-largest-left-truncatable-prime-in-a-given-base | ✓ | 57.029ms |  |
+| 423 | find-limit-of-recursion | ✓ | 57.06ms | 1.6 MB |
 | 424 | find-palindromic-numbers-in-both-binary-and-ternary-bases |   |  |  |
-| 425 | find-the-intersection-of-a-line-with-a-plane |   |  |  |
-| 426 | find-the-intersection-of-two-lines |   |  |  |
-| 427 | find-the-last-sunday-of-each-month |   |  |  |
-| 428 | find-the-missing-permutation |   |  |  |
-| 429 | fivenum-1 |   |  |  |
-| 430 | fivenum-2 |   |  |  |
+| 425 | find-the-intersection-of-a-line-with-a-plane | ✓ | 416µs | 33.0 KB |
+| 426 | find-the-intersection-of-two-lines | ✓ | 576µs | 27.2 KB |
+| 427 | find-the-last-sunday-of-each-month | ✓ | 1.194ms | 353.3 KB |
+| 428 | find-the-missing-permutation | ✓ | 1.014ms | 200.9 KB |
+| 429 | fivenum-1 | ✓ | 1.923ms | 309.3 KB |
+| 430 | fivenum-2 | ✓ | 1.612ms | 132.3 KB |
 | 431 | fixed-length-records-1 |   |  |  |
 | 432 | fixed-length-records-2 |   |  |  |
 | 433 | fizzbuzz-1 |   |  |  |

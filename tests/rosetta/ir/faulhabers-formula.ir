@@ -1,0 +1,225 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun bernoulli(n: int): bigrat {
+func bernoulli (regs=24)
+  // var a: list<bigrat> = []
+  Const        r1, []
+  Move         r2, r1
+  // var m = 0
+  Const        r3, 0
+  Move         r4, r3
+L3:
+  // while m <= n {
+  LessEq       r5, r4, r0
+  JumpIfFalse  r5, L0
+  // a = append(a, 1 as bigrat / ((m + 1) as bigrat))
+  Const        r6, 1
+  Cast         r7, r6, bigrat
+  Const        r6, 1
+  AddInt       r8, r4, r6
+  Cast         r9, r8, bigrat
+  Div          r10, r7, r9
+  Append       r11, r2, r10
+  Move         r2, r11
+  // var j = m
+  Move         r12, r4
+L2:
+  // while j >= 1 {
+  Const        r6, 1
+  LessEqInt    r13, r6, r12
+  JumpIfFalse  r13, L1
+  // a[j-1] = (j as bigrat) * (a[j-1] - a[j])
+  Cast         r14, r12, bigrat
+  Const        r6, 1
+  SubInt       r15, r12, r6
+  Index        r16, r2, r15
+  Index        r17, r2, r12
+  Sub          r18, r16, r17
+  Mul          r19, r14, r18
+  Const        r6, 1
+  SubInt       r20, r12, r6
+  SetIndex     r2, r20, r19
+  // j = j - 1
+  Const        r6, 1
+  SubInt       r21, r12, r6
+  Move         r12, r21
+  // while j >= 1 {
+  Jump         L2
+L1:
+  // m = m + 1
+  Const        r6, 1
+  AddInt       r22, r4, r6
+  Move         r4, r22
+  // while m <= n {
+  Jump         L3
+L0:
+  // return a[0]
+  Const        r3, 0
+  Index        r23, r2, r3
+  Return       r23
+
+  // fun binom(n: int, k: int): bigint {
+func binom (regs=20)
+  // if k < 0 || k > n { return 0 as bigint }
+  Const        r2, 0
+  Less         r3, r1, r2
+  Less         r4, r0, r1
+  Move         r5, r3
+  JumpIfTrue   r5, L0
+  Move         r5, r4
+L0:
+  JumpIfFalse  r5, L1
+  Const        r2, 0
+  Return       r2
+L1:
+  // var kk = k
+  Move         r6, r1
+  // if kk > n - kk { kk = n - kk }
+  Sub          r7, r0, r6
+  Less         r8, r7, r6
+  JumpIfFalse  r8, L2
+  Sub          r9, r0, r6
+  Move         r6, r9
+L2:
+  // var res: bigint = 1
+  Const        r10, 1
+  Move         r11, r10
+  // var i = 0
+  Const        r2, 0
+  Move         r12, r2
+L4:
+  // while i < kk {
+  Less         r13, r12, r6
+  JumpIfFalse  r13, L3
+  // res = res * ((n - i) as bigint)
+  Sub          r14, r0, r12
+  Cast         r15, r14, any
+  Mul          r16, r11, r15
+  Move         r11, r16
+  // i = i + 1
+  Const        r10, 1
+  AddInt       r17, r12, r10
+  Move         r12, r17
+  // res = res / (i as bigint)
+  Cast         r18, r12, any
+  Div          r19, r11, r18
+  Move         r11, r19
+  // while i < kk {
+  Jump         L4
+L3:
+  // return res
+  Return       r11
+
+  // fun coeff(p: int, j: int): bigrat {
+func coeff (regs=22)
+  // let base: bigrat = 1 as bigrat / ((p + 1) as bigrat)
+  Const        r2, 1
+  Cast         r3, r2, bigrat
+  Const        r2, 1
+  Add          r4, r0, r2
+  Cast         r5, r4, bigrat
+  Div          r6, r3, r5
+  Move         r7, r6
+  // var c: bigrat = base
+  Move         r8, r7
+  // if j % 2 == 1 { c = -c }
+  Const        r9, 2
+  Mod          r10, r1, r9
+  Const        r2, 1
+  Equal        r11, r10, r2
+  JumpIfFalse  r11, L0
+  Neg          r12, r8
+  Move         r8, r12
+L0:
+  // c = c * (binom(p + 1, j) as bigrat)
+  Const        r2, 1
+  Add          r15, r0, r2
+  Move         r13, r15
+  Move         r14, r1
+  Call2        r16, binom, r13, r14
+  Cast         r17, r16, bigrat
+  Mul          r18, r8, r17
+  Move         r8, r18
+  // c = c * bernoulli(j)
+  Move         r19, r1
+  Call         r20, bernoulli, r19
+  Mul          r21, r8, r20
+  Move         r8, r21
+  // return c
+  Return       r8
+
+  // fun main() {
+func main (regs=34)
+  // var p = 0
+  Const        r0, 0
+  Move         r1, r0
+L4:
+  // while p < 10 {
+  Const        r2, 10
+  LessInt      r3, r1, r2
+  JumpIfFalse  r3, L0
+  // var line = str(p) + " :"
+  Str          r4, r1
+  Const        r5, " :"
+  Add          r6, r4, r5
+  Move         r7, r6
+  // var j = 0
+  Const        r0, 0
+  Move         r8, r0
+L3:
+  // while j <= p {
+  LessEqInt    r9, r8, r1
+  JumpIfFalse  r9, L1
+  // let c = coeff(p, j)
+  Move         r10, r1
+  Move         r11, r8
+  Call2        r12, coeff, r10, r11
+  Move         r13, r12
+  // if str(c) != "0/1" {
+  Str          r14, r13
+  Const        r15, "0/1"
+  NotEqual     r16, r14, r15
+  JumpIfFalse  r16, L2
+  // line = line + " " + str(c) + "×n"
+  Const        r17, " "
+  Add          r18, r7, r17
+  Str          r19, r13
+  Add          r20, r18, r19
+  Const        r21, "×n"
+  Add          r22, r20, r21
+  Move         r7, r22
+  // let exp = p + 1 - j
+  Const        r23, 1
+  AddInt       r24, r1, r23
+  SubInt       r25, r24, r8
+  Move         r26, r25
+  // if exp > 1 { line = line + "^" + str(exp) }
+  Const        r23, 1
+  LessInt      r27, r23, r26
+  JumpIfFalse  r27, L2
+  Const        r28, "^"
+  Add          r29, r7, r28
+  Str          r30, r26
+  Add          r31, r29, r30
+  Move         r7, r31
+L2:
+  // j = j + 1
+  Const        r23, 1
+  AddInt       r32, r8, r23
+  Move         r8, r32
+  // while j <= p {
+  Jump         L3
+L1:
+  // print(line)
+  Print        r7
+  // p = p + 1
+  Const        r23, 1
+  AddInt       r33, r1, r23
+  Move         r1, r33
+  // while p < 10 {
+  Jump         L4
+L0:
+  Return       r0
