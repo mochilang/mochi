@@ -82,6 +82,7 @@ var (
 	needSubstring           bool
 	needAtoi                bool
 	needCharAt              bool
+	needPadStart            bool
 	needSliceInt            bool
 	needSliceDouble         bool
 
@@ -1962,6 +1963,19 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("    return out;\n")
 		buf.WriteString("}\n\n")
 	}
+	if needPadStart {
+		buf.WriteString("static char* _padStart(const char *s, int w, const char *pad) {\n")
+		buf.WriteString("    if (!pad || pad[0]==0) pad = \" \";\n")
+		buf.WriteString("    size_t len = strlen(s);\n")
+		buf.WriteString("    if (len >= (size_t)w) return strdup(s);\n")
+		buf.WriteString("    char fill = pad[0];\n")
+		buf.WriteString("    char *res = malloc(w + 1);\n")
+		buf.WriteString("    size_t padlen = w - len;\n")
+		buf.WriteString("    memset(res, fill, padlen);\n")
+		buf.WriteString("    memcpy(res + padlen, s, len + 1);\n")
+		buf.WriteString("    return res;\n")
+		buf.WriteString("}\n\n")
+	}
 	if needMapGetSL {
 		buf.WriteString("typedef struct { const char **keys; const char ***vals; size_t *lens; size_t len; } MapSL;\n\n")
 	}
@@ -2561,6 +2575,8 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 		needMem = true
 		mainFn.Body = []Stmt{&BenchStmt{Name: "main", Body: mainFn.Body}}
 	}
+	// retain variable type information for the synthesized main function
+	mainFn.VarTypes = varTypes
 	p.Functions = append(p.Functions, mainFn)
 	p.Globals = globals
 	return p, nil
@@ -3030,11 +3046,34 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 			declType = cTypeFromMochiType(types.ResolveTypeRef(s.Var.Type, env))
 		}
 		if declType == "" {
-			switch valExpr.(type) {
-			case *FloatLit:
-				declType = "double"
-			case *IntLit:
-				declType = "int"
+			if ue, ok := valExpr.(*UnaryExpr); ok {
+				switch ue.Op {
+				case "(int)":
+					declType = "int"
+				case "(double)":
+					declType = "double"
+				case "(const char*)":
+					declType = "const char*"
+				}
+			} else if s.Var.Value != nil && s.Var.Value.Binary != nil {
+				u := s.Var.Value.Binary.Left
+				if u != nil && len(u.Ops) == 0 && u.Value != nil && len(u.Value.Ops) == 1 && u.Value.Ops[0].Cast != nil && u.Value.Ops[0].Cast.Type != nil && u.Value.Ops[0].Cast.Type.Simple != nil {
+					switch *u.Value.Ops[0].Cast.Type.Simple {
+					case "int":
+						declType = "int"
+					case "float":
+						declType = "double"
+					case "string":
+						declType = "const char*"
+					}
+				}
+			} else {
+				switch valExpr.(type) {
+				case *FloatLit:
+					declType = "double"
+				case *IntLit:
+					declType = "int"
+				}
 			}
 		}
 		currentVarName = ""
@@ -3402,6 +3441,20 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 					return &ForStmt{Var: s.For.Name, ListVar: listVar, LenVar: lenVar, ElemType: keyT, Body: body}, nil
 				}
 				typStr := inferExprType(env, convertExpr(s.For.Source))
+				if typStr == "const char*" {
+					body, err := compileStmts(env, s.For.Body)
+					if err != nil {
+						return nil, err
+					}
+					idxVar := s.For.Name + "_i"
+					assign := &AssignStmt{Name: s.For.Name, Value: &CallExpr{Func: "_substring", Args: []Expr{convertExpr(s.For.Source), &VarRef{Name: idxVar}, &BinaryExpr{Left: &VarRef{Name: idxVar}, Op: "+", Right: &IntLit{Value: 1}}}}}
+					decl := &DeclStmt{Name: s.For.Name, Type: "const char*"}
+					body = append([]Stmt{decl, assign}, body...)
+					start := &IntLit{Value: 0}
+					end := &CallExpr{Func: "len", Args: []Expr{convertExpr(s.For.Source)}}
+					env.SetVarDeep(s.For.Name, types.StringType{}, true)
+					return &ForStmt{Var: idxVar, Start: start, End: end, Body: body}, nil
+				}
 				if strings.HasSuffix(typStr, "[]") {
 					body, err := compileStmts(env, s.For.Body)
 					if err != nil {
@@ -3839,7 +3892,11 @@ func compileFunction(env *types.Env, name string, fn *parser.FunExpr) (*Function
 	prevEnv := currentEnv
 	currentEnv = localEnv
 	prevVarTypes := varTypes
+	prevKeyTypes := mapKeyTypes
+	prevValTypes := mapValTypes
 	varTypes = make(map[string]string)
+	mapKeyTypes = make(map[string]string)
+	mapValTypes = make(map[string]string)
 	declStmts = map[string]*DeclStmt{}
 	var params []Param
 	var paramTypes []string
@@ -3943,6 +4000,8 @@ func compileFunction(env *types.Env, name string, fn *parser.FunExpr) (*Function
 	fnInfo := &Function{Name: name, Params: params, Body: body, Return: ret, VarTypes: varTypes}
 	currentEnv = prevEnv
 	varTypes = prevVarTypes
+	mapKeyTypes = prevKeyTypes
+	mapValTypes = prevValTypes
 	declStmts = nil
 	return fnInfo, nil
 }
@@ -4746,6 +4805,14 @@ func convertUnary(u *parser.Unary) Expr {
 			needLower = true
 			funcReturnTypes["str_lower"] = "const char*"
 			return &CallExpr{Func: "str_lower", Args: []Expr{arg}}
+		}
+		if call.Func == "padStart" && len(call.Args) == 3 {
+			arg0 := convertExpr(call.Args[0])
+			arg1 := convertExpr(call.Args[1])
+			arg2 := convertExpr(call.Args[2])
+			needPadStart = true
+			funcReturnTypes["_padStart"] = "const char*"
+			return &CallExpr{Func: "_padStart", Args: []Expr{arg0, arg1, arg2}}
 		}
 		if call.Func == "json" && len(call.Args) == 1 {
 			if val, ok := valueFromExpr(convertExpr(call.Args[0])); ok {
@@ -6166,6 +6233,11 @@ func callVarName(e *parser.Expr, name string) string {
 }
 
 func isMapVar(name string) bool {
+	if typ, ok := varTypes[name]; ok {
+		if strings.HasPrefix(typ, "Map") {
+			return true
+		}
+	}
 	_, ok := mapKeyTypes[name]
 	return ok
 }
