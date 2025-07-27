@@ -1,0 +1,7 @@
+empty
+not empty
+{
+  "duration_us": 65,
+  "memory_bytes": 96,
+  "name": "main"
+}
