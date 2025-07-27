@@ -64,18 +64,18 @@ String llStr(List<List<int>> lst) {
 
 List<List<int>> cartN(dynamic lists) {
   if (lists == null) {
-    return List<List<int>>.from(<dynamic>[]);
+    return (<dynamic>[] as List).map((e) => List<int>.from(e)).toList();
   }
-  List<List<int>> a = lists as List<List<int>>;
+  List<List<int>> a = (lists as List).map((e) => List<int>.from(e)).toList();
   if (a.length == 0) {
-    return List<List<int>>.from([<dynamic>[]]);
+    return ([<dynamic>[]] as List).map((e) => List<int>.from(e)).toList();
   }
   int c = 1;
   for (var xs in a) {
     c = c * xs.length;
   }
   if (c == 0) {
-    return List<List<int>>.from(<dynamic>[]);
+    return (<dynamic>[] as List).map((e) => List<int>.from(e)).toList();
   }
   List<List<int>> res = <List<int>>[];
   List<int> idx = <int>[];

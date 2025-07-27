@@ -75,11 +75,11 @@ List<int> concat(List<int> a, List<int> b) {
 
 List<List<int>> cartN(dynamic lists) {
   if (lists == null) {
-    return List<List<int>>.from(<dynamic>[]);
+    return (<dynamic>[] as List).map((e) => List<int>.from(e)).toList();
   }
-  List<List<int>> a = lists as List<List<int>>;
+  List<List<int>> a = (lists as List).map((e) => List<int>.from(e)).toList();
   if (a.length == 0) {
-    return List<List<int>>.from([<dynamic>[]]);
+    return ([<dynamic>[]] as List).map((e) => List<int>.from(e)).toList();
   }
   List<List<int>> out = <List<int>>[];
   List<List<int>> rest = cartN(a.sublist(1, a.length));

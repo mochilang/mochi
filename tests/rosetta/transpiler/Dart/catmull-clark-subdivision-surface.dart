@@ -374,7 +374,7 @@ List<dynamic> cmcSubdiv(List<Point> points, List<List<int>> faces) {
   }
     fnum = fnum + 1;
   }
-  return List<dynamic>.from([newPoints, newFaces]);
+  return [newPoints, newFaces];
 }
 
 String formatPoint(Point p) {
