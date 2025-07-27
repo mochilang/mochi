@@ -34,23 +34,19 @@ String _substr(String s, int start, int end) {
   return s.substring(start, end);
 }
 
-List<dynamic> f() {
-  return List<dynamic>.from([0, 0.0]);
-}
-
-int g(int a, num b) {
-  return 0;
-}
-
-void h(String s, List<int> nums) {
+int doIt(Map<String, int> p) {
+  int b = 0;
+  if (p.containsKey("b")) {
+    b = p["b"]!;
+  }
+  return (p["a"]! + b + p["c"]!).toInt();
 }
 
 void _main() {
-  h("ex1", <int>[]);
-  h("ex2", [1, 2]);
-  h("ex3", [1, 2, 3, 4]);
-  List<int> list = [1, 2, 3, 4];
-  h("ex4", list);
+  Map<String, int> p = <String, int>{};
+  p["a"] = 1;
+  p["c"] = 9;
+  print((doIt(p)).toString());
 }
 
 void _start() {

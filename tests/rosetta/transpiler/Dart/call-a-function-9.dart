@@ -46,11 +46,19 @@ void h(String s, List<int> nums) {
 }
 
 void _main() {
-  h("ex1", <int>[]);
-  h("ex2", [1, 2]);
-  h("ex3", [1, 2, 3, 4]);
-  List<int> list = [1, 2, 3, 4];
-  h("ex4", list);
+  List<dynamic> ab = f();
+  var a = ab[0];
+  var b = ab[1];
+  var cb = f()[1];
+  int d = g(a, cb);
+  int e = g(d, b);
+  int i = g(d, 2.0);
+  List<int> list = <int>[];
+  list = [...list, a];
+  list = [...list, d];
+  list = [...list, e];
+  list = [...list, i];
+  i = list.length;
 }
 
 void _start() {

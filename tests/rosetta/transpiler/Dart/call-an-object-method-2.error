@@ -1,0 +1,7 @@
+run: exit status 254
+../../../tests/rosetta/transpiler/Dart/call-an-object-method-2.dart:47:14: Error: Required named parameter 'Contents' must be provided.
+  Box b = Box(secret: sn);
+             ^
+../../../tests/rosetta/transpiler/Dart/call-an-object-method-2.dart:40:3: Context: Found this candidate, but the arguments don't match.
+  Box({required this.Contents, required this.secret});
+  ^^^
