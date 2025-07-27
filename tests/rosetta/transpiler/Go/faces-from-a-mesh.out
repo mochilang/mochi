@@ -1,0 +1,9 @@
+Perimeter format equality checks:
+  Q == R is true
+  U == V is true
+
+Edge to perimeter format translations:
+  E => Invalid edge format
+  F => Invalid edge format
+  G => Invalid edge format
+  H => Invalid edge format
