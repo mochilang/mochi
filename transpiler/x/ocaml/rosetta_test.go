@@ -75,7 +75,7 @@ func runCase(src, outDir string) ([]byte, error) {
 		return nil, err
 	}
 	exe := filepath.Join(outDir, base)
-	if out, err := exec.Command("ocamlc", "-I", "+zarith", "zarith.cma", codePath, "-o", exe).CombinedOutput(); err != nil {
+	if out, err := exec.Command("ocamlc", "-I", "+zarith", "-I", "+sha", "zarith.cma", "sha.cma", codePath, "-o", exe).CombinedOutput(); err != nil {
 		_ = os.WriteFile(errPath, append([]byte(err.Error()+"\n"), out...), 0o644)
 		return nil, err
 	}

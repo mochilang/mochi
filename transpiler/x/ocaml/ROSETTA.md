@@ -2,7 +2,7 @@
 
 This directory contains OCaml code generated from Rosetta Code programs in `tests/rosetta/x/Mochi`.
 
-Completed programs: 88/467
+Completed programs: 98/467
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -120,22 +120,22 @@ Completed programs: 88/467
 | 112 | binary-strings | ✓ | 108.0µs | 5.59KB |
 | 113 | bioinformatics-base-count | ✓ | 144.0µs | 10.45KB |
 | 114 | bioinformatics-global-alignment | ✓ | 1.45s | 463.61MB |
-| 115 | bioinformatics-sequence-mutation | error |  |  |
-| 116 | biorhythms |   |  |  |
-| 117 | bitcoin-address-validation |   |  |  |
-| 118 | bitmap-b-zier-curves-cubic |   |  |  |
-| 119 | bitmap-b-zier-curves-quadratic |   |  |  |
-| 120 | bitmap-bresenhams-line-algorithm |   |  |  |
-| 121 | bitmap-flood-fill |   |  |  |
-| 122 | bitmap-histogram |   |  |  |
-| 123 | bitmap-midpoint-circle-algorithm |   |  |  |
-| 124 | bitmap-ppm-conversion-through-a-pipe |   |  |  |
-| 125 | bitmap-read-a-ppm-file |   |  |  |
-| 126 | bitmap-read-an-image-through-a-pipe |   |  |  |
-| 127 | bitmap-write-a-ppm-file |   |  |  |
-| 128 | bitmap |   |  |  |
-| 129 | bitwise-io-1 |   |  |  |
-| 130 | bitwise-io-2 |   |  |  |
+| 115 | bioinformatics-sequence-mutation | ✓ | 42.0ms | 12.91MB |
+| 116 | biorhythms | ✓ | 231.0µs | 12.41KB |
+| 117 | bitcoin-address-validation | ✓ | 6.0ms | 1.14MB |
+| 118 | bitmap-b-zier-curves-cubic | error |  |  |
+| 119 | bitmap-b-zier-curves-quadratic | error |  |  |
+| 120 | bitmap-bresenhams-line-algorithm | ✓ | 95.0µs | 2.37KB |
+| 121 | bitmap-flood-fill | ✓ | 40.0µs | 1.88KB |
+| 122 | bitmap-histogram | ✓ | 118.0µs | 3.66KB |
+| 123 | bitmap-midpoint-circle-algorithm | ✓ | 366.0µs | 19.82KB |
+| 124 | bitmap-ppm-conversion-through-a-pipe | ✓ | 4.61s | 2.58GB |
+| 125 | bitmap-read-a-ppm-file | ✓ | 72.0µs | 9.01KB |
+| 126 | bitmap-read-an-image-through-a-pipe | ✓ | 106.0µs | 376B |
+| 127 | bitmap-write-a-ppm-file | error |  |  |
+| 128 | bitmap | error |  |  |
+| 129 | bitwise-io-1 | error |  |  |
+| 130 | bitwise-io-2 | error |  |  |
 | 131 | bitwise-operations |   |  |  |
 | 132 | blum-integer |   |  |  |
 | 133 | boolean-values |   |  |  |
@@ -473,4 +473,4 @@ Completed programs: 88/467
 | 465 | sorting-algorithms-bubble-sort |   |  |  |
 | 466 | window-management |   |  |  |
 | 467 | zumkeller-numbers |   |  |  |
-Last updated 2025-07-27 21:41 +0700
+Last updated 2025-07-27 22:15 +0700
