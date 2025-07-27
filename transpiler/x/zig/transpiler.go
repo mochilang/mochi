@@ -46,6 +46,9 @@ var useInput bool
 var useLookupHost bool
 var useAscii bool
 var useMem bool
+var usePrint bool
+var aliasStack []map[string]string
+var globalNames map[string]bool
 var variantTags map[string]int
 var globalInits []Stmt
 
@@ -110,6 +113,7 @@ type Func struct {
 	Params     []Param
 	ReturnType string
 	Body       []Stmt
+	Aliases    map[string]string
 }
 
 type Stmt interface{ emit(io.Writer, int) }
@@ -232,6 +236,15 @@ type VarRef struct {
 	Map  bool
 }
 
+func resolveAlias(name string) string {
+	for i := len(aliasStack) - 1; i >= 0; i-- {
+		if a, ok := aliasStack[i][name]; ok {
+			return a
+		}
+	}
+	return name
+}
+
 type BinaryExpr struct {
 	Left  Expr
 	Op    string
@@ -295,7 +308,7 @@ func (ae *AppendExpr) emit(w io.Writer) {
 	ae.List.emit(w)
 	io.WriteString(w, ") catch unreachable; _tmp.append(")
 	ae.Value.emit(w)
-	io.WriteString(w, ") catch unreachable; const res = _tmp.toOwnedSlice() catch unreachable; break :blk res; }")
+	io.WriteString(w, ") catch unreachable; const _res = _tmp.toOwnedSlice() catch unreachable; break :blk _res; }")
 }
 
 type FieldExpr struct {
@@ -1045,6 +1058,11 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("    return @as(i64, usage.maxrss) * 1024;\n")
 		buf.WriteString("}\n")
 	}
+	if usePrint {
+		buf.WriteString("\nfn _print(v: []const u8) void {\n")
+		buf.WriteString("    std.debug.print(\"{s}\\n\", .{v});\n")
+		buf.WriteString("}\n")
+	}
 	return buf.Bytes()
 }
 
@@ -1065,9 +1083,11 @@ func (f *Func) emit(w io.Writer) {
 		ret = "void"
 	}
 	fmt.Fprintf(w, ") %s {\n", ret)
+	aliasStack = append(aliasStack, f.Aliases)
 	for _, st := range f.Body {
 		st.emit(w, 1)
 	}
+	aliasStack = aliasStack[:len(aliasStack)-1]
 	fmt.Fprintln(w, "}")
 }
 
@@ -1153,7 +1173,11 @@ func (v *VarDecl) emit(w io.Writer, indent int) {
 	}
 	io.WriteString(w, " = ")
 	if v.Value == nil {
-		io.WriteString(w, "0")
+		if t, ok := varTypes[v.Name]; ok && strings.HasPrefix(t, "[]") {
+			fmt.Fprintf(w, "&[_]%s{}", t[2:])
+		} else {
+			io.WriteString(w, "0")
+		}
 	} else {
 		v.Value.emit(w)
 	}
@@ -1298,7 +1322,7 @@ func (f *FloatLit) emit(w io.Writer) {
 	}
 }
 
-func (v *VarRef) emit(w io.Writer) { io.WriteString(w, v.Name) }
+func (v *VarRef) emit(w io.Writer) { io.WriteString(w, resolveAlias(v.Name)) }
 
 func (b *BinaryExpr) emit(w io.Writer) {
 	if b.Op == "+" {
@@ -1842,6 +1866,17 @@ func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, erro
 	useLookupHost = false
 	useAscii = false
 	useMem = false
+	usePrint = false
+	aliasStack = nil
+	globalNames = map[string]bool{}
+	for _, st := range prog.Statements {
+		if st.Let != nil {
+			globalNames[st.Let.Name] = true
+		}
+		if st.Var != nil {
+			globalNames[st.Var.Name] = true
+		}
+	}
 	mutables := map[string]bool{}
 	collectMutables(prog.Statements, mutables)
 	constLists = map[string]*ListLit{}
@@ -2240,11 +2275,20 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 		funcCounter++
 		names := make([]string, len(p.FunExpr.Params))
 		params := make([]Param, len(p.FunExpr.Params))
+		aliases := map[string]string{}
+		aliasStack = append(aliasStack, aliases)
+		defer func() { aliasStack = aliasStack[:len(aliasStack)-1] }()
 		for i, par := range p.FunExpr.Params {
 			typ := toZigType(par.Type)
-			params[i] = Param{Name: par.Name, Type: typ}
-			names[i] = par.Name
-			varTypes[par.Name] = typ
+			name := par.Name
+			if globalNames[name] {
+				alias := name + "_param"
+				aliases[name] = alias
+				name = alias
+			}
+			params[i] = Param{Name: name, Type: typ}
+			names[i] = name
+			varTypes[name] = typ
 		}
 		funParamsStack = append(funParamsStack, names)
 		funDepth++
@@ -2252,7 +2296,14 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			funDepth--
 			funParamsStack = funParamsStack[:len(funParamsStack)-1]
 		}()
-		ret := toZigType(p.FunExpr.Return)
+		ret := ""
+		if p.FunExpr.Return != nil {
+			if p.FunExpr.Return.Simple != nil && *p.FunExpr.Return.Simple == "any" {
+				ret = ""
+			} else {
+				ret = toZigType(p.FunExpr.Return)
+			}
+		}
 		body := []Stmt{}
 		if p.FunExpr.ExprBody != nil {
 			expr, err := compileExpr(p.FunExpr.ExprBody)
@@ -2269,7 +2320,7 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 				body = append(body, s)
 			}
 		}
-		f := &Func{Name: name, Params: params, ReturnType: ret, Body: body}
+		f := &Func{Name: name, Params: params, ReturnType: ret, Body: body, Aliases: aliases}
 		funcReturns[name] = ret
 		if funDepth > 0 {
 			captured := []string{}
@@ -2347,6 +2398,12 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			}
 			useAscii = true
 			return &CallExpr{Func: "std.ascii.lowerString", Args: args}, nil
+		case "print":
+			if len(args) != 1 {
+				return nil, fmt.Errorf("print expects one argument")
+			}
+			usePrint = true
+			return &CallExpr{Func: "_print", Args: args}, nil
 		case "sum":
 			if len(args) == 1 {
 				if list, ok := args[0].(*ListLit); ok {
@@ -2977,6 +3034,17 @@ func toZigType(t *parser.TypeRef) string {
 	if t == nil {
 		return "i64"
 	}
+	if t.Fun != nil {
+		params := make([]string, len(t.Fun.Params))
+		for i, p := range t.Fun.Params {
+			params[i] = toZigType(p)
+		}
+		ret := "void"
+		if t.Fun.Return != nil {
+			ret = toZigType(t.Fun.Return)
+		}
+		return fmt.Sprintf("fn(%s) %s", strings.Join(params, ", "), ret)
+	}
 	if t.Simple != nil {
 		if alias, ok := typeAliases[*t.Simple]; ok {
 			return alias
@@ -3005,13 +3073,22 @@ func toZigType(t *parser.TypeRef) string {
 func compileFunStmt(fn *parser.FunStmt, prog *parser.Program) (*Func, error) {
 	names := make([]string, len(fn.Params))
 	params := make([]Param, len(fn.Params))
+	aliases := map[string]string{}
+	aliasStack = append(aliasStack, aliases)
+	defer func() { aliasStack = aliasStack[:len(aliasStack)-1] }()
 	for i, p := range fn.Params {
 		typ := toZigType(p.Type)
-		params[i] = Param{Name: p.Name, Type: typ}
-		names[i] = p.Name
-		varTypes[p.Name] = typ
+		name := p.Name
+		if globalNames[name] {
+			alias := name + "_param"
+			aliases[name] = alias
+			name = alias
+		}
+		params[i] = Param{Name: name, Type: typ}
+		names[i] = name
+		varTypes[name] = typ
 		if strings.HasPrefix(typ, "std.StringHashMap(") || strings.HasPrefix(typ, "std.AutoHashMap(") {
-			mapVars[p.Name] = true
+			mapVars[name] = true
 		}
 	}
 	funParamsStack = append(funParamsStack, names)
@@ -3039,7 +3116,7 @@ func compileFunStmt(fn *parser.FunStmt, prog *parser.Program) (*Func, error) {
 		mainFuncName = "mochi_main"
 		name = mainFuncName
 	}
-	f := &Func{Name: name, Params: params, ReturnType: ret, Body: body}
+	f := &Func{Name: name, Params: params, ReturnType: ret, Body: body, Aliases: aliases}
 	funcReturns[name] = ret
 	if funDepth > 1 {
 		captured := []string{}
