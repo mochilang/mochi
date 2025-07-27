@@ -1,3 +1,11 @@
+## Progress (2025-07-27 21:41 +0700)
+- remove old error file for deconvolution
+- Regenerated golden files - 101/104 vm valid programs passing
+
+## Progress (2025-07-27 21:41 +0700)
+- remove old error file for deconvolution
+- Regenerated golden files - 101/104 vm valid programs passing
+
 ## Progress (2025-07-27 17:28 +0700)
 - transpiler/clj: support user-defined functions
 - Regenerated golden files - 101/104 vm valid programs passing
