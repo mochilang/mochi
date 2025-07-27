@@ -103,6 +103,9 @@ var dartKeywords = map[string]struct{}{
 }
 
 func sanitize(name string) string {
+	if name == "_" {
+		return "__"
+	}
 	if _, ok := dartKeywords[name]; ok {
 		return "_" + name
 	}
@@ -153,6 +156,35 @@ func emitWithBigIntCast(w io.Writer, e Expr, from, to string) error {
 		return err
 	}
 	return e.emit(w)
+}
+
+// emitListConversion converts expr to the target list type recursively.
+func emitListConversion(w io.Writer, expr Expr, target string) error {
+	elem := strings.TrimSuffix(strings.TrimPrefix(target, "List<"), ">")
+	if strings.HasPrefix(elem, "List<") {
+		if _, err := io.WriteString(w, "("); err != nil {
+			return err
+		}
+		if err := expr.emit(w); err != nil {
+			return err
+		}
+		if _, err := io.WriteString(w, " as List).map((e) => "); err != nil {
+			return err
+		}
+		if err := emitListConversion(w, &Name{Name: "e"}, elem); err != nil {
+			return err
+		}
+		_, err := io.WriteString(w, ").toList()")
+		return err
+	}
+	if _, err := io.WriteString(w, "List<"+elem+">.from("); err != nil {
+		return err
+	}
+	if err := expr.emit(w); err != nil {
+		return err
+	}
+	_, err := io.WriteString(w, ")")
+	return err
 }
 
 // --- Simple Dart AST ---
@@ -628,14 +660,8 @@ func (s *ReturnStmt) emit(w io.Writer) error {
 			if _, err := io.WriteString(w, ").toInt()"); err != nil {
 				return err
 			}
-		} else if strings.HasPrefix(currentRetType, "List<") && valType == "List<dynamic>" {
-			if _, err := io.WriteString(w, "List<"+strings.TrimSuffix(strings.TrimPrefix(currentRetType, "List<"), ">")+">.from("); err != nil {
-				return err
-			}
-			if err := s.Value.emit(w); err != nil {
-				return err
-			}
-			if _, err := io.WriteString(w, ")"); err != nil {
+		} else if strings.HasPrefix(currentRetType, "List<") && valType != currentRetType {
+			if err := emitListConversion(w, s.Value, currentRetType); err != nil {
 				return err
 			}
 		} else {
@@ -890,6 +916,20 @@ type UnaryExpr struct {
 }
 
 func (u *UnaryExpr) emit(w io.Writer) error {
+	if u.Op == "-" {
+		t := inferType(u.X)
+		if t == "BigRat" {
+			useBigRat = true
+			if _, err := io.WriteString(w, "_neg("); err != nil {
+				return err
+			}
+			if err := u.X.emit(w); err != nil {
+				return err
+			}
+			_, err := io.WriteString(w, ")")
+			return err
+		}
+	}
 	if _, err := io.WriteString(w, u.Op); err != nil {
 		return err
 	}
@@ -2023,6 +2063,9 @@ func (c *CastExpr) emit(w io.Writer) error {
 		return err
 	}
 
+	if strings.HasPrefix(c.Type, "List<") && valType != c.Type {
+		return emitListConversion(w, c.Value, c.Type)
+	}
 	if err := c.Value.emit(w); err != nil {
 		return err
 	}
@@ -3462,7 +3505,7 @@ func Emit(w io.Writer, p *Program) error {
 		}
 	}
 	if useBigRat {
-		if _, err := io.WriteString(w, "class BigRat {\n  BigInt num;\n  BigInt den;\n  BigRat(this.num, [BigInt? d]) : den = d ?? BigInt.one {\n    if (den.isNegative) { num = -num; den = -den; }\n    var g = num.gcd(den);\n    num = num ~/ g;\n    den = den ~/ g;\n  }\n  BigRat add(BigRat o) => BigRat(num * o.den + o.num * den, den * o.den);\n  BigRat sub(BigRat o) => BigRat(num * o.den - o.num * den, den * o.den);\n  BigRat mul(BigRat o) => BigRat(num * o.num, den * o.den);\n  BigRat div(BigRat o) => BigRat(num * o.den, den * o.num);\n}\n\nBigRat _bigrat(dynamic n, [dynamic d]) {\n  if (n is BigRat && d == null) return BigRat(n.num, n.den);\n  BigInt numer;\n  BigInt denom = d == null ? BigInt.one : (d is BigInt ? d : BigInt.from((d as num).toInt()));\n  if (n is BigRat) { numer = n.num; denom = n.den; }\n  else if (n is BigInt) { numer = n; }\n  else if (n is int) { numer = BigInt.from(n); }\n  else if (n is num) { numer = BigInt.from(n.toInt()); }\n  else { numer = BigInt.zero; }\n  return BigRat(numer, denom);\n}\nBigInt _num(BigRat r) => r.num;\nBigInt _denom(BigRat r) => r.den;\nBigRat _add(BigRat a, BigRat b) => a.add(b);\nBigRat _sub(BigRat a, BigRat b) => a.sub(b);\nBigRat _mul(BigRat a, BigRat b) => a.mul(b);\nBigRat _div(BigRat a, BigRat b) => a.div(b);\n\n"); err != nil {
+		if _, err := io.WriteString(w, "class BigRat {\n  BigInt num;\n  BigInt den;\n  BigRat(this.num, [BigInt? d]) : den = d ?? BigInt.one {\n    if (den.isNegative) { num = -num; den = -den; }\n    var g = num.gcd(den);\n    num = num ~/ g;\n    den = den ~/ g;\n  }\n  BigRat add(BigRat o) => BigRat(num * o.den + o.num * den, den * o.den);\n  BigRat sub(BigRat o) => BigRat(num * o.den - o.num * den, den * o.den);\n  BigRat mul(BigRat o) => BigRat(num * o.num, den * o.den);\n  BigRat div(BigRat o) => BigRat(num * o.den, den * o.num);\n}\n\nBigRat _bigrat(dynamic n, [dynamic d]) {\n  if (n is BigRat && d == null) return BigRat(n.num, n.den);\n  BigInt numer;\n  BigInt denom = d == null ? BigInt.one : (d is BigInt ? d : BigInt.from((d as num).toInt()));\n  if (n is BigRat) { numer = n.num; denom = n.den; }\n  else if (n is BigInt) { numer = n; }\n  else if (n is int) { numer = BigInt.from(n); }\n  else if (n is num) { numer = BigInt.from(n.toInt()); }\n  else { numer = BigInt.zero; }\n  return BigRat(numer, denom);\n}\nBigInt _num(BigRat r) => r.num;\nBigInt _denom(BigRat r) => r.den;\nBigRat _add(BigRat a, BigRat b) => a.add(b);\nBigRat _sub(BigRat a, BigRat b) => a.sub(b);\nBigRat _mul(BigRat a, BigRat b) => a.mul(b);\nBigRat _div(BigRat a, BigRat b) => a.div(b);\nBigRat _neg(BigRat a) => BigRat(-a.num, a.den);\n\n"); err != nil {
 			return err
 		}
 	}

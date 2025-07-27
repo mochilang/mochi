@@ -34,43 +34,42 @@ String _substr(String s, int start, int end) {
   return s.substring(start, end);
 }
 
-int n = 15;
-List<int> t = <int>[];
-void main() {
+void printStat(Map<String, bool> fs, String path) {
+  if (fs.containsKey(path)) {
+    if (fs[path]!) {
+    print(path + " is a directory");
+  } else {
+    print(path + " is a file");
+  };
+  } else {
+    print("stat " + path + ": no such file or directory");
+  }
+}
+
+void _main() {
+  Map<String, bool> fs = <String, bool>{};
+  fs["docs"] = true;
+  for (var p in ["input.txt", "/input.txt", "docs", "/docs"]) {
+    printStat(fs, p);
+  }
+}
+
+void _start() {
   var _benchMem0 = ProcessInfo.currentRss;
   var _benchSw = Stopwatch()..start();
   _initNow();
   {
   var _benchMem0 = ProcessInfo.currentRss;
   var _benchSw = Stopwatch()..start();
-  for (int __ = 0; __ < n + 2; __++) {
-    t = [...t, 0];
-  }
-  t[1] = 1;
-  for (int i = 1; i < n + 1; i++) {
-    var j = i;
-    while (j.toString().compareTo(1.toString()) > 0) {
-    t[j] = t[j] + t[j - 1];
-    j = j - 1;
-  }
-    t[i + 1 as int] = t[i];
-    j = i + 1;
-    while (j.toString().compareTo(1.toString()) > 0) {
-    t[j] = t[j] + t[j - 1];
-    j = j - 1;
-  }
-    int cat = t[i + 1] - t[i];
-    if (i < 10) {
-    print(" " + (i).toString() + " : " + (cat).toString());
-  } else {
-    print((i).toString() + " : " + (cat).toString());
-  }
-  }
+  _main();
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "main"}));
 }
+  _main();
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
-  print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "main"}));
+  print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "_start"}));
 }
+
+void main() => _start();

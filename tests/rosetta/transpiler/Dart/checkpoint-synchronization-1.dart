@@ -34,8 +34,8 @@ String _substr(String s, int start, int end) {
   return s.substring(start, end);
 }
 
-int n = 15;
-List<int> t = <int>[];
+List<String> partList = ["A", "B", "C", "D"];
+int nAssemblies = 3;
 void main() {
   var _benchMem0 = ProcessInfo.currentRss;
   var _benchSw = Stopwatch()..start();
@@ -43,28 +43,15 @@ void main() {
   {
   var _benchMem0 = ProcessInfo.currentRss;
   var _benchSw = Stopwatch()..start();
-  for (int __ = 0; __ < n + 2; __++) {
-    t = [...t, 0];
+  for (int cycle = 1; cycle < nAssemblies + 1; cycle++) {
+    print("begin assembly cycle " + (cycle).toString());
+    for (var p in partList) {
+    print(p + " worker begins part");
   }
-  t[1] = 1;
-  for (int i = 1; i < n + 1; i++) {
-    var j = i;
-    while (j.toString().compareTo(1.toString()) > 0) {
-    t[j] = t[j] + t[j - 1];
-    j = j - 1;
+    for (var p in partList) {
+    print(p + " worker completes part");
   }
-    t[i + 1 as int] = t[i];
-    j = i + 1;
-    while (j.toString().compareTo(1.toString()) > 0) {
-    t[j] = t[j] + t[j - 1];
-    j = j - 1;
-  }
-    int cat = t[i + 1] - t[i];
-    if (i < 10) {
-    print(" " + (i).toString() + " : " + (cat).toString());
-  } else {
-    print((i).toString() + " : " + (cat).toString());
-  }
+    print("assemble.  cycle " + (cycle).toString() + " complete");
   }
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;

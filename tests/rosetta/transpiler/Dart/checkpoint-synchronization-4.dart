@@ -34,8 +34,8 @@ String _substr(String s, int start, int end) {
   return s.substring(start, end);
 }
 
-int n = 15;
-List<int> t = <int>[];
+int nMech = 5;
+int detailsPerMech = 4;
 void main() {
   var _benchMem0 = ProcessInfo.currentRss;
   var _benchSw = Stopwatch()..start();
@@ -43,28 +43,18 @@ void main() {
   {
   var _benchMem0 = ProcessInfo.currentRss;
   var _benchSw = Stopwatch()..start();
-  for (int __ = 0; __ < n + 2; __++) {
-    t = [...t, 0];
+  for (int mech = 1; mech < nMech + 1; mech++) {
+    var id = mech;
+    print("worker " + (id).toString() + " contracted to assemble " + (detailsPerMech).toString() + " details");
+    print("worker " + (id).toString() + " enters shop");
+    int d = 0;
+    while (d < detailsPerMech) {
+    print("worker " + (id).toString() + " assembling");
+    print("worker " + (id).toString() + " completed detail");
+    d = d + 1;
   }
-  t[1] = 1;
-  for (int i = 1; i < n + 1; i++) {
-    var j = i;
-    while (j.toString().compareTo(1.toString()) > 0) {
-    t[j] = t[j] + t[j - 1];
-    j = j - 1;
-  }
-    t[i + 1 as int] = t[i];
-    j = i + 1;
-    while (j.toString().compareTo(1.toString()) > 0) {
-    t[j] = t[j] + t[j - 1];
-    j = j - 1;
-  }
-    int cat = t[i + 1] - t[i];
-    if (i < 10) {
-    print(" " + (i).toString() + " : " + (cat).toString());
-  } else {
-    print((i).toString() + " : " + (cat).toString());
-  }
+    print("worker " + (id).toString() + " leaves shop");
+    print("mechanism " + (mech).toString() + " completed");
   }
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;

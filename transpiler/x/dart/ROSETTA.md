@@ -2,14 +2,14 @@
 
 This directory contains Dart code generated from Mochi programs in `tests/rosetta/x/Mochi`. Each program has a `.dart` file and `.out` output. Compilation or runtime failures are captured in a `.error` file.
 
-Compiled and ran: 178/452
+Compiled and ran: 190/452
 
 ## Checklist
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 10.076ms | 1.4 MB |
 | 2 | 100-doors-3 | ✓ | 7.194ms | 12.0 MB |
-| 3 | 100-doors |   |  |  |
+| 3 | 100-doors | ✓ |  |  |
 | 4 | 100-prisoners | ✓ | 276.736ms | 5.0 MB |
 | 5 | 15-puzzle-game | ✓ | 23.29ms | 192.0 KB |
 | 6 | 15-puzzle-solver | ✓ | 5.473ms | 10.6 MB |
@@ -179,30 +179,30 @@ Compiled and ran: 178/452
 | 170 | cantor-set | ✓ | 21.667ms | 10.7 MB |
 | 171 | carmichael-3-strong-pseudoprimes | ✓ | 24.205ms | 10.1 MB |
 | 172 | cartesian-product-of-two-or-more-lists-1 | ✓ | 24.229ms | 10.8 MB |
-| 173 | cartesian-product-of-two-or-more-lists-2 |   |  |  |
-| 174 | cartesian-product-of-two-or-more-lists-3 |   |  |  |
-| 175 | cartesian-product-of-two-or-more-lists-4 |   |  |  |
-| 176 | case-sensitivity-of-identifiers | ✓ | 19.029ms | 9.7 MB |
-| 177 | casting-out-nines | ✓ | 25.319ms | 4.3 MB |
-| 178 | catalan-numbers-1 | ✓ | 21.358ms | 10.9 MB |
-| 179 | catalan-numbers-2 | ✓ | 9.766ms | 2.6 MB |
-| 180 | catalan-numbers-pascals-triangle |   |  |  |
-| 181 | catamorphism | ✓ | 17.36ms | 10.1 MB |
-| 182 | catmull-clark-subdivision-surface | ✓ | 21.213ms | 6.1 MB |
-| 183 | chaocipher | ✓ | 16.995ms | 9.7 MB |
-| 184 | chaos-game | ✓ | 40.024ms | 4.7 MB |
-| 185 | character-codes-1 | ✓ | 17.589ms | 9.6 MB |
-| 186 | character-codes-2 | ✓ | 15.186ms | 10.0 MB |
-| 187 | character-codes-3 | ✓ | 17.195ms | 9.6 MB |
-| 188 | character-codes-4 | ✓ | 16.724ms | 10.3 MB |
-| 189 | character-codes-5 | ✓ | 14.404ms | 1.5 MB |
-| 190 | chat-server |   |  |  |
-| 191 | check-machin-like-formulas |   |  |  |
-| 192 | check-that-file-exists |   |  |  |
-| 193 | checkpoint-synchronization-1 |   |  |  |
-| 194 | checkpoint-synchronization-2 |   |  |  |
-| 195 | checkpoint-synchronization-3 |   |  |  |
-| 196 | checkpoint-synchronization-4 |   |  |  |
+| 173 | cartesian-product-of-two-or-more-lists-2 | ✓ | 15.147ms | 4.4 MB |
+| 174 | cartesian-product-of-two-or-more-lists-3 | ✓ | 16.791ms | 4.6 MB |
+| 175 | cartesian-product-of-two-or-more-lists-4 | ✓ | 16.402ms | 4.4 MB |
+| 176 | case-sensitivity-of-identifiers | ✓ | 25.478ms | 10.1 MB |
+| 177 | casting-out-nines | ✓ | 19.128ms | 5.2 MB |
+| 178 | catalan-numbers-1 | ✓ | 10.435ms | 3.1 MB |
+| 179 | catalan-numbers-2 | ✓ | 10.396ms | 2.9 MB |
+| 180 | catalan-numbers-pascals-triangle | ✓ | 14.606ms | 1.4 MB |
+| 181 | catamorphism | ✓ | 18.476ms | 4.6 MB |
+| 182 | catmull-clark-subdivision-surface | ✓ | 21.307ms | 5.0 MB |
+| 183 | chaocipher | ✓ | 12.067ms | 2.5 MB |
+| 184 | chaos-game | ✓ | 35.351ms | 8.5 MB |
+| 185 | character-codes-1 | ✓ | 23.455ms | 11.2 MB |
+| 186 | character-codes-2 | ✓ | 22.218ms | 10.9 MB |
+| 187 | character-codes-3 | ✓ | 21.838ms | 11.3 MB |
+| 188 | character-codes-4 | ✓ | 20.778ms | 11.0 MB |
+| 189 | character-codes-5 | ✓ | 25.567ms | 9.8 MB |
+| 190 | chat-server | ✓ | 21.404ms | 10.4 MB |
+| 191 | check-machin-like-formulas | ✓ | 169.05ms | 220.0 KB |
+| 192 | check-that-file-exists | ✓ | 22.911ms | 11.0 MB |
+| 193 | checkpoint-synchronization-1 | ✓ | 10.425ms | 3.0 MB |
+| 194 | checkpoint-synchronization-2 | ✓ | 21.72ms | 11.0 MB |
+| 195 | checkpoint-synchronization-3 | ✓ | 24.496ms | 10.8 MB |
+| 196 | checkpoint-synchronization-4 | ✓ | 15.258ms | 2.3 MB |
 | 197 | chernicks-carmichael-numbers |   |  |  |
 | 198 | cheryls-birthday |   |  |  |
 | 199 | chinese-remainder-theorem |   |  |  |
@@ -460,4 +460,4 @@ Compiled and ran: 178/452
 | 451 | window-management |   |  |  |
 | 452 | zumkeller-numbers |   |  |  |
 
-_Last updated: 2025-07-27 12:32 +0700_
+_Last updated: 2025-07-27 12:58 +0700_

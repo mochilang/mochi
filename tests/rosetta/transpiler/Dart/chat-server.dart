@@ -34,43 +34,57 @@ String _substr(String s, int start, int end) {
   return s.substring(start, end);
 }
 
-int n = 15;
-List<int> t = <int>[];
-void main() {
+List<String> removeName(List<String> names, String name) {
+  List<String> out = <String>[];
+  for (var n in names) {
+    if (n != name) {
+    out = [...out, n];
+  }
+  }
+  return out;
+}
+
+void _main() {
+  List<String> clients = <String>[];
+  void broadcast(String msg) {
+  print(msg);
+}
+  void add(String name) {
+  clients = [...clients, name];
+  broadcast("+++ \"" + name + "\" connected +++\n");
+}
+  void send(String name, String msg) {
+  broadcast(name + "> " + msg + "\n");
+}
+  void remove(String name) {
+  clients = removeName(clients, name);
+  broadcast("--- \"" + name + "\" disconnected ---\n");
+}
+  add("Alice");
+  add("Bob");
+  send("Alice", "Hello Bob!");
+  send("Bob", "Hi Alice!");
+  remove("Bob");
+  remove("Alice");
+  broadcast("Server stopping!\n");
+}
+
+void _start() {
   var _benchMem0 = ProcessInfo.currentRss;
   var _benchSw = Stopwatch()..start();
   _initNow();
   {
   var _benchMem0 = ProcessInfo.currentRss;
   var _benchSw = Stopwatch()..start();
-  for (int __ = 0; __ < n + 2; __++) {
-    t = [...t, 0];
-  }
-  t[1] = 1;
-  for (int i = 1; i < n + 1; i++) {
-    var j = i;
-    while (j.toString().compareTo(1.toString()) > 0) {
-    t[j] = t[j] + t[j - 1];
-    j = j - 1;
-  }
-    t[i + 1 as int] = t[i];
-    j = i + 1;
-    while (j.toString().compareTo(1.toString()) > 0) {
-    t[j] = t[j] + t[j - 1];
-    j = j - 1;
-  }
-    int cat = t[i + 1] - t[i];
-    if (i < 10) {
-    print(" " + (i).toString() + " : " + (cat).toString());
-  } else {
-    print((i).toString() + " : " + (cat).toString());
-  }
-  }
+  _main();
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "main"}));
 }
+  _main();
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
-  print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "main"}));
+  print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "_start"}));
 }
+
+void main() => _start();
