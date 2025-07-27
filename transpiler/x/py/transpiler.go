@@ -40,6 +40,7 @@ var (
 	usesIndexOf       bool
 	usesSubstr        bool
 	usesCallable      bool
+	usesFetch         bool
 	funcDepth         int
 )
 
@@ -82,6 +83,31 @@ def _index_of(xs, val):
 const helperSubstr = `
 def _substr(s, start, end):
     return s[start:end]
+`
+
+const helperFetch = `
+def _fetch(url: str, opts: dict[str, Any] | None) -> Any:
+    import urllib.request, urllib.parse, json
+    method = 'GET'
+    data = None
+    headers = {}
+    timeout = None
+    if opts:
+        method = opts.get('method', method)
+        if 'body' in opts:
+            data = json.dumps(opts['body']).encode()
+        if 'headers' in opts:
+            for k, v in dict(opts['headers']).items():
+                headers[k] = str(v)
+        if 'query' in opts:
+            q = urllib.parse.urlencode({k: str(v) for k, v in dict(opts['query']).items()})
+            sep = '&' if '?' in url else '?'
+            url = url + sep + q
+        timeout = opts.get('timeout', None)
+    req = urllib.request.Request(url, data=data, headers=headers, method=method)
+    with urllib.request.urlopen(req, timeout=timeout) as resp:
+        text = resp.read()
+    return json.loads(text)
 `
 
 var pyKeywords = map[string]bool{
@@ -2820,6 +2846,11 @@ func Emit(w io.Writer, p *Program, bench bool) error {
 			return err
 		}
 	}
+	if usesFetch {
+		if _, err := io.WriteString(w, helperFetch+"\n"); err != nil {
+			return err
+		}
+	}
 	// no runtime helpers required
 	for _, s := range p.Stmts {
 		switch st := s.(type) {
@@ -3083,6 +3114,7 @@ func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, erro
 	usesLookupHost = false
 	usesIndexOf = false
 	usesCallable = false
+	usesFetch = false
 	p := &Program{}
 	for _, st := range prog.Statements {
 		switch {
@@ -4779,6 +4811,30 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		return convertMatchExpr(p.Match)
 	case p.Query != nil:
 		return convertQueryExpr(p.Query)
+	case p.Fetch != nil:
+		urlExpr, err := convertExpr(p.Fetch.URL)
+		if err != nil {
+			return nil, err
+		}
+		usesFetch = true
+		if currentImports != nil {
+			currentImports["urllib.request"] = true
+			currentImports["json"] = true
+		}
+		args := []Expr{urlExpr}
+		if p.Fetch.With != nil {
+			withExpr, err := convertExpr(p.Fetch.With)
+			if err != nil {
+				return nil, err
+			}
+			if currentImports != nil {
+				currentImports["dataclasses"] = true
+			}
+			args = append(args, &CallExpr{Func: &Name{Name: "dict"}, Args: []Expr{withExpr}})
+		} else {
+			args = append(args, &Name{Name: "None"})
+		}
+		return &CallExpr{Func: &Name{Name: "_fetch"}, Args: args}, nil
 	case p.Load != nil:
 		format := parseFormat(p.Load.With)
 		path := ""
