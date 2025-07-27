@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated TypeScript code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/TypeScript`.
-Last updated: 2025-07-27 13:34 UTC
+Last updated: 2025-07-27 14:09 UTC
 
 ## Rosetta Golden Test Checklist (442/467)
 | Index | Name | Status | Duration | Memory |
@@ -207,56 +207,56 @@ Last updated: 2025-07-27 13:34 UTC
 | 198 | cheryls-birthday | ✓ | 1.038ms | 128.0 KB |
 | 199 | chinese-remainder-theorem | ✓ | 477µs |  |
 | 200 | chinese-zodiac | ✓ | 830µs | 128.0 KB |
-| 201 | cholesky-decomposition-1 | ✓ | 3.307ms | 128.0 KB |
-| 202 | cholesky-decomposition | ✓ | 1.78ms | 256.0 KB |
-| 203 | chowla-numbers | ✓ | 534µs |  |
-| 204 | church-numerals-1 | ✓ | 1.013ms |  |
-| 205 | church-numerals-2 | ✓ | 32µs |  |
-| 206 | circles-of-given-radius-through-two-points | ✓ | 3.048ms | 512.0 KB |
-| 207 | circular-primes | ✓ | 6.315ms | 1.1 MB |
-| 208 | cistercian-numerals | ✓ | 9.823ms | 1.9 MB |
-| 209 | comma-quibbling | ✓ | 871µs |  |
-| 210 | compiler-virtual-machine-interpreter | ✓ | 4.476ms | 384.0 KB |
-| 211 | composite-numbers-k-with-no-single-digit-factors-whose-factors-are-all-substrings-of-k | ✓ | 20.978996s | 42.8 MB |
-| 212 | compound-data-type | ✓ | 7µs |  |
-| 213 | concurrent-computing-1 | ✓ | 916µs | 128.0 KB |
-| 214 | concurrent-computing-2 | ✓ | 715µs | 128.0 KB |
-| 215 | concurrent-computing-3 | ✓ | 1.059ms |  |
+| 201 | cholesky-decomposition-1 | ✓ | 1.976ms | 256.0 KB |
+| 202 | cholesky-decomposition | ✓ | 1.744ms | 128.0 KB |
+| 203 | chowla-numbers | ✓ | 517µs |  |
+| 204 | church-numerals-1 | ✓ | 1.241ms | 128.0 KB |
+| 205 | church-numerals-2 | ✓ | 1.242ms | 128.0 KB |
+| 206 | circles-of-given-radius-through-two-points | ✓ | 3.686ms | 512.0 KB |
+| 207 | circular-primes | ✓ | 3.75ms | 640.0 KB |
+| 208 | cistercian-numerals | ✓ | 10.367ms | 1.9 MB |
+| 209 | comma-quibbling | ✓ | 755µs | 128.0 KB |
+| 210 | compiler-virtual-machine-interpreter | ✓ | 3.237ms | 384.0 KB |
+| 211 | composite-numbers-k-with-no-single-digit-factors-whose-factors-are-all-substrings-of-k | ✓ | 13.929961s | 42.8 MB |
+| 212 | compound-data-type | ✓ | 8µs |  |
+| 213 | concurrent-computing-1 | ✓ | 690µs |  |
+| 214 | concurrent-computing-2 | ✓ | 658µs | 128.0 KB |
+| 215 | concurrent-computing-3 | ✓ | 1.743ms |  |
 | 216 | conditional-structures-1 | ✓ | 7µs |  |
-| 217 | conditional-structures-10 | ✓ | 570µs |  |
-| 218 | conditional-structures-2 | ✓ | 8µs |  |
+| 217 | conditional-structures-10 | ✓ | 656µs |  |
+| 218 | conditional-structures-2 | ✓ | 7µs |  |
 | 219 | conditional-structures-3 | ✓ | 7µs |  |
-| 220 | conditional-structures-4 | ✓ | 6µs |  |
-| 221 | conditional-structures-5 | ✓ | 13µs |  |
+| 220 | conditional-structures-4 | ✓ | 8µs |  |
+| 221 | conditional-structures-5 | ✓ | 8µs |  |
 | 222 | conditional-structures-6 | ✓ | 8µs |  |
-| 223 | conditional-structures-7 | ✓ | 6µs |  |
-| 224 | conditional-structures-8 | ✓ | 7µs |  |
-| 225 | conditional-structures-9 | ✓ | 7µs |  |
-| 226 | consecutive-primes-with-ascending-or-descending-differences | ✓ | 73.596ms | 16.2 MB |
-| 227 | constrained-genericity-1 | ✓ | 7µs |  |
+| 223 | conditional-structures-7 | ✓ | 7µs |  |
+| 224 | conditional-structures-8 | ✓ | 9µs |  |
+| 225 | conditional-structures-9 | ✓ | 8µs |  |
+| 226 | consecutive-primes-with-ascending-or-descending-differences | ✓ | 71.422ms | 15.0 MB |
+| 227 | constrained-genericity-1 | ✓ | 9µs |  |
 | 228 | constrained-genericity-2 | ✓ | 7µs |  |
-| 229 | constrained-genericity-3 | ✓ | 6µs |  |
-| 230 | constrained-genericity-4 | ✓ | 600µs | 128.0 KB |
-| 231 | constrained-random-points-on-a-circle-1 | ✓ | 4.073ms | 3.1 MB |
-| 232 | constrained-random-points-on-a-circle-2 | ✓ | 3.781ms | 512.0 KB |
-| 233 | continued-fraction | ✓ | 1.536ms |  |
-| 234 | convert-decimal-number-to-rational | ✓ | 881µs | 128.0 KB |
-| 235 | convert-seconds-to-compound-duration | ✓ | 676µs | 128.0 KB |
-| 236 | convex-hull | ✓ | 627µs | 128.0 KB |
-| 237 | conways-game-of-life | ✓ | 79.224ms | 11.3 MB |
-| 238 | copy-a-string-1 | ✓ | 5µs |  |
-| 239 | copy-a-string-2 | ✓ | 597µs |  |
-| 240 | copy-stdin-to-stdout-1 | ✓ | 1.651ms | 384.0 KB |
-| 241 | copy-stdin-to-stdout-2 | ✓ | 1.787ms | 512.0 KB |
-| 242 | count-in-factors | ✓ | 4.147ms | 3.1 MB |
-| 243 | count-in-octal-1 | ✓ | 6.569ms | 512.0 KB |
-| 244 | count-in-octal-2 | ✓ | 252.15ms | 10.4 MB |
-| 245 | count-in-octal-3 | ✓ |  |  |
-| 246 | count-in-octal-4 | ✓ |  |  |
-| 247 | count-occurrences-of-a-substring | ✓ | 841µs | 128.0 KB |
-| 248 | count-the-coins-1 | ✓ | 2.19ms | 1.9 MB |
-| 249 | count-the-coins-2 | ✓ | 29.484ms | 11.0 MB |
-| 250 | cramers-rule | ✓ | 1.058ms | 128.0 KB |
+| 229 | constrained-genericity-3 | ✓ | 7µs |  |
+| 230 | constrained-genericity-4 | ✓ | 802µs | 128.0 KB |
+| 231 | constrained-random-points-on-a-circle-1 | ✓ | 7.293ms | 3.0 MB |
+| 232 | constrained-random-points-on-a-circle-2 | ✓ | 3.945ms | 384.0 KB |
+| 233 | continued-fraction | ✓ | 1.417ms |  |
+| 234 | convert-decimal-number-to-rational | ✓ | 962µs | 128.0 KB |
+| 235 | convert-seconds-to-compound-duration | ✓ | 750µs | 128.0 KB |
+| 236 | convex-hull | ✓ | 1.115ms |  |
+| 237 | conways-game-of-life | ✓ | 69.815ms | 11.6 MB |
+| 238 | copy-a-string-1 | ✓ | 6µs |  |
+| 239 | copy-a-string-2 | ✓ | 744µs |  |
+| 240 | copy-stdin-to-stdout-1 | ✓ | 1.53ms | 512.0 KB |
+| 241 | copy-stdin-to-stdout-2 | ✓ | 1.743ms | 512.0 KB |
+| 242 | count-in-factors | ✓ | 4.193ms | 2.5 MB |
+| 243 | count-in-octal-1 | ✓ | 3.985ms | 384.0 KB |
+| 244 | count-in-octal-2 | ✓ | 245.928ms | 10.5 MB |
+| 245 | count-in-octal-3 | ✓ | 1.142ms |  |
+| 246 | count-in-octal-4 | ✓ | 1.656ms | 128.0 KB |
+| 247 | count-occurrences-of-a-substring | ✓ | 686µs | 128.0 KB |
+| 248 | count-the-coins-1 | ✓ | 749µs |  |
+| 249 | count-the-coins-2 | ✓ | 2.427ms | 1.4 MB |
+| 250 | cramers-rule | ✓ | 1.544ms | 128.0 KB |
 | 251 | crc-32-1 | ✓ | 1.256ms | 2.2 MB |
 | 252 | crc-32-2 | ✓ | 2.145ms | 3.0 MB |
 | 253 | create-a-file-on-magnetic-tape | ✓ | 161µs |  |
