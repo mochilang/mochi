@@ -1856,7 +1856,11 @@ func emitStmt(w *indentWriter, s Stmt, level int) {
 		io.WriteString(w, "continue\n")
 	case *FuncDecl:
 		io.WriteString(w, pad)
-		io.WriteString(w, "function ")
+		if st.Async {
+			io.WriteString(w, "async function ")
+		} else {
+			io.WriteString(w, "function ")
+		}
 		io.WriteString(w, st.Name)
 		io.WriteString(w, "(")
 		for i, p := range st.Params {
@@ -2022,6 +2026,21 @@ func Transpile(prog *parser.Program, env *types.Env, benchMain bool) (*Program, 
 			return nil, err
 		}
 		tsProg.Stmts = append(tsProg.Stmts, stmt)
+	}
+
+	if !benchMain && useFetch {
+		for _, st := range tsProg.Stmts {
+			if fd, ok := st.(*FuncDecl); ok && fd.Name == "main" {
+				fd.Async = true
+			}
+		}
+		for i, st := range tsProg.Stmts {
+			if es, ok := st.(*ExprStmt); ok {
+				if call, ok2 := es.Expr.(*CallExpr); ok2 && call.Func == "main" && len(call.Args) == 0 {
+					tsProg.Stmts[i] = &ExprStmt{Expr: &AwaitExpr{X: call}}
+				}
+			}
+		}
 	}
 
 	if benchMain {
