@@ -1,12 +1,12 @@
-1 100-doors-2.mochi
-2 100-doors-3.mochi
-3 100-doors.mochi
-4 100-prisoners.mochi
-5 15-puzzle-game.mochi
-6 15-puzzle-solver.mochi
-7 2048.mochi
-8 21-game.mochi
-9 24-game-solve.mochi
+ 1 100-doors-2.mochi
+ 2 100-doors-3.mochi
+ 3 100-doors.mochi
+ 4 100-prisoners.mochi
+ 5 15-puzzle-game.mochi
+ 6 15-puzzle-solver.mochi
+ 7 2048.mochi
+ 8 21-game.mochi
+ 9 24-game-solve.mochi
 10 24-game.mochi
 11 4-rings-or-4-squares-puzzle.mochi
 12 9-billion-names-of-god-the-integer.mochi
