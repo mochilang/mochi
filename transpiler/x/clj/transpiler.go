@@ -720,6 +720,18 @@ func Transpile(prog *parser.Program, env *types.Env, benchMain bool) (*Program, 
 		pr.Forms = append(pr.Forms, decl)
 	}
 
+	// treat the -main body like a function for variable tracking
+	funDepth++
+	stringVars = make(map[string]bool)
+	stringListVars = make(map[string]bool)
+	renameVars = make(map[string]string)
+	defer func() {
+		funDepth--
+		stringVars = nil
+		stringListVars = nil
+		renameVars = nil
+	}()
+
 	body := []Node{}
 	for _, st := range prog.Statements {
 		if st.Fun != nil {
@@ -1167,6 +1179,9 @@ func isStringNode(n Node) bool {
 					return true
 				case "nth", "get":
 					if len(t.Elems) >= 2 {
+						if isStringListNode(t.Elems[1]) {
+							return true
+						}
 						if s, ok := t.Elems[1].(Symbol); ok && transpileEnv != nil {
 							if stringListVars != nil && stringListVars[string(s)] {
 								return true
@@ -1210,8 +1225,29 @@ func isStringListNode(n Node) bool {
 	case *List:
 		if len(t.Elems) > 0 {
 			if sym, ok := t.Elems[0].(Symbol); ok {
-				if sym == "fields" {
+				switch sym {
+				case "fields":
 					return true
+				case "nth", "get":
+					if len(t.Elems) >= 2 {
+						if isStringListNode(t.Elems[1]) {
+							return true
+						}
+						if s, ok := t.Elems[1].(Symbol); ok {
+							if stringListVars != nil && stringListVars[string(s)] {
+								return true
+							}
+							if transpileEnv != nil {
+								if typ, err := transpileEnv.GetVar(string(s)); err == nil {
+									if lt, ok := typ.(types.ListType); ok {
+										if _, ok := lt.Elem.(types.StringType); ok {
+											return true
+										}
+									}
+								}
+							}
+						}
+					}
 				}
 			}
 		}
@@ -1226,6 +1262,11 @@ func isStringListNode(n Node) bool {
 				if lt, ok := typ.(types.ListType); ok {
 					if _, ok := lt.Elem.(types.StringType); ok {
 						return true
+					}
+					if inner, ok := lt.Elem.(types.ListType); ok {
+						if _, ok := inner.Elem.(types.StringType); ok {
+							return true
+						}
 					}
 				}
 			}
