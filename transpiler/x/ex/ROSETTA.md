@@ -2,8 +2,8 @@
 
 Generated Elixir code from Mochi Rosetta programs lives in `tests/rosetta/transpiler/Elixir`.
 
-## Rosetta Test Checklist (110/467)
-_Last updated: 2025-07-27 22:38 +0700_
+## Rosetta Test Checklist (111/467)
+_Last updated: 2025-07-27 23:55 +0700_
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | 100-doors-2 | ✓ |  |  |
@@ -11,7 +11,7 @@ _Last updated: 2025-07-27 22:38 +0700_
 | 3 | 100-doors | ✓ |  |  |
 | 4 | 100-prisoners | ✓ |  |  |
 | 5 | 15-puzzle-game | ✓ |  |  |
-| 6 | 15-puzzle-solver | ✓ | 140us | 370.3 KB |
+| 6 | 15-puzzle-solver | ✓ |  |  |
 | 7 | 2048 | ✓ | 19.28ms | 6.2 MB |
 | 8 | 21-game |  |  |  |
 | 9 | 24-game-solve | ✓ | 2.93ms | 6.3 MB |
@@ -145,7 +145,7 @@ _Last updated: 2025-07-27 22:38 +0700_
 | 137 | break-oo-privacy | ✓ | 1.07ms | 687.0 KB |
 | 138 | brilliant-numbers |  |  |  |
 | 139 | brownian-tree |  |  |  |
-| 140 | bulls-and-cows-player |  |  |  |
+| 140 | bulls-and-cows-player | ✓ |  |  |
 | 141 | bulls-and-cows |  |  |  |
 | 142 | burrows-wheeler-transform |  |  |  |
 | 143 | caesar-cipher-1 |  |  |  |
