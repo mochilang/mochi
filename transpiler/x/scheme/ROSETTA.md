@@ -2,8 +2,8 @@
 
 Generated Scheme code for Rosetta Code tasks under `tests/rosetta/x/Mochi`.
 
-## Checklist (156/467)
-Last updated: 2025-07-27 16:21 UTC
+## Checklist (157/467)
+Last updated: 2025-07-27 16:35 UTC
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -169,7 +169,7 @@ Last updated: 2025-07-27 16:21 UTC
 | 160 | call-a-function-7 | ✓ | 571.223ms | 12.4 MB |
 | 161 | call-a-function-8 | ✓ | 571.223ms | 12.5 MB |
 | 162 | call-a-function-9 | ✓ | 571.223ms | 12.1 MB |
-| 163 | call-an-object-method-1 |   |  |  |
+| 163 | call-an-object-method-1 | ✓ | 571.223ms | 12.4 MB |
 | 164 | call-an-object-method-2 |   |  |  |
 | 165 | call-an-object-method-3 |   |  |  |
 | 166 | call-an-object-method |   |  |  |
