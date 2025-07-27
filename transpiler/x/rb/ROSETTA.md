@@ -2,9 +2,9 @@
 
 Generated Ruby code from Mochi Rosetta tasks lives in `tests/rosetta/transpiler/rb`.
 
-Last updated: 2025-07-27 15:47 UTC
+Last updated: 2025-07-27 16:15 UTC
 
-## Checklist (409/467)
+## Checklist (439/467)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 195µs | 36.2 KB |
@@ -437,36 +437,36 @@ Last updated: 2025-07-27 15:47 UTC
 | 428 | find-the-intersection-of-two-lines | ✓ | 73µs | 13.6 KB |
 | 429 | find-the-last-sunday-of-each-month |   |  |  |
 | 430 | find-the-missing-permutation | ✓ | 84µs | 26.2 KB |
-| 431 | fivenum-1 |   |  |  |
-| 432 | fivenum-2 |   |  |  |
-| 433 | fixed-length-records-1 |   |  |  |
-| 434 | fixed-length-records-2 |   |  |  |
-| 435 | fizzbuzz-1 |   |  |  |
-| 436 | fizzbuzz-2 |   |  |  |
-| 437 | flatten-a-list-1 |   |  |  |
-| 438 | flatten-a-list-2 |   |  |  |
-| 439 | flipping-bits-game |   |  |  |
-| 440 | flow-control-structures-1 |   |  |  |
-| 441 | flow-control-structures-2 |   |  |  |
-| 442 | flow-control-structures-3 |   |  |  |
-| 443 | flow-control-structures-4 |   |  |  |
-| 444 | floyd-warshall-algorithm |   |  |  |
-| 445 | floyds-triangle |   |  |  |
-| 446 | forest-fire |   |  |  |
-| 447 | fork |   |  |  |
-| 448 | ftp |   |  |  |
-| 449 | gamma-function |   |  |  |
-| 450 | general-fizzbuzz |   |  |  |
-| 451 | generic-swap |   |  |  |
-| 452 | get-system-command-output |   |  |  |
-| 453 | giuga-numbers |   |  |  |
-| 454 | globally-replace-text-in-several-files |   |  |  |
-| 455 | goldbachs-comet |   |  |  |
-| 456 | golden-ratio-convergence |   |  |  |
-| 457 | graph-colouring |   |  |  |
-| 458 | gray-code |   |  |  |
-| 459 | http |   |  |  |
-| 460 | image-noise |   |  |  |
+| 431 | fivenum-1 | ✓ | 216µs | 11.1 KB |
+| 432 | fivenum-2 | ✓ | 140µs | 15.5 KB |
+| 433 | fixed-length-records-1 | ✓ | 57µs | 11.9 KB |
+| 434 | fixed-length-records-2 | ✓ | 20µs | 8.9 KB |
+| 435 | fizzbuzz-1 | ✓ | 77µs | 12.8 KB |
+| 436 | fizzbuzz-2 | ✓ | 107µs | 73.7 KB |
+| 437 | flatten-a-list-1 | ✓ | 46µs | 10.3 KB |
+| 438 | flatten-a-list-2 | ✓ | 17µs | 8.8 KB |
+| 439 | flipping-bits-game | ✓ | 36µs | 10.1 KB |
+| 440 | flow-control-structures-1 | ✓ | 21µs | 8.9 KB |
+| 441 | flow-control-structures-2 | ✓ | 42µs | 8.8 KB |
+| 442 | flow-control-structures-3 | ✓ | 36µs | 9.0 KB |
+| 443 | flow-control-structures-4 | ✓ | 35µs | 8.8 KB |
+| 444 | floyd-warshall-algorithm | ✓ | 17µs | 8.8 KB |
+| 445 | floyds-triangle | ✓ | 124µs | 32.2 KB |
+| 446 | forest-fire | ✓ | 120µs | 14.5 KB |
+| 447 | fork | ✓ | 44µs | 9.2 KB |
+| 448 | ftp | ✓ | 80µs | 14.3 KB |
+| 449 | gamma-function | ✓ | 253µs | 12.2 KB |
+| 450 | general-fizzbuzz | ✓ | 45µs | 11.6 KB |
+| 451 | generic-swap | ✓ | 41µs | 9.5 KB |
+| 452 | get-system-command-output | ✓ | 31µs | 8.8 KB |
+| 453 | giuga-numbers | ✓ | 61µs | 12.0 KB |
+| 454 | globally-replace-text-in-several-files | ✓ | 31µs | 8.9 KB |
+| 455 | goldbachs-comet | ✓ | 14.471ms | 3.9 MB |
+| 456 | golden-ratio-convergence | ✓ | 55µs | 10.1 KB |
+| 457 | graph-colouring | ✓ | 36µs | 8.8 KB |
+| 458 | gray-code | ✓ | 433µs | 70.5 KB |
+| 459 | http | ✓ | 153.621ms | 410.2 KB |
+| 460 | image-noise | ✓ | 124ms | 2.3 MB |
 | 461 | loops-increment-loop-index-within-loop-body |   |  |  |
 | 462 | md5 |   |  |  |
 | 463 | nim-game |   |  |  |
