@@ -1,4 +1,4 @@
-(ns main (:refer-clojure :exclude [connect main]))
+(ns main (:refer-clojure :exclude [kPrime gen main]))
 
 (require 'clojure.set)
 
@@ -7,13 +7,16 @@
 
 (def nowSeed (atom (let [s (System/getenv "MOCHI_NOW_SEED")] (if (and s (not (= s ""))) (Integer/parseInt s) 0))))
 
-(declare connect main)
+(declare kPrime gen main)
 
-(defn connect [client]
-  (try (throw (ex-info "return" {:v (and (not= (:Host client) "") (> (:Port client) 0))})) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
+(defn kPrime [n k]
+  (try (do (def nf 0) (def i 2) (while (<= i n) (do (while (= (mod n i) 0) (do (when (= nf k) (throw (ex-info "return" {:v false}))) (def nf (+ nf 1)) (def n (/ n i)))) (def i (+ i 1)))) (throw (ex-info "return" {:v (= nf k)}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
+
+(defn gen [k count]
+  (try (do (def r []) (def n 2) (while (< (count r) count_v) (do (when (kPrime n k) (def r (conj r n))) (def n (+ n 1)))) (throw (ex-info "return" {:v r}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
 
 (defn main []
-  (do (def client {:Base "dc=example,dc=com" :Host "ldap.example.com" :Port 389 :UseSSL false :BindDN "uid=readonlyuser,ou=People,dc=example,dc=com" :BindPassword "readonlypassword" :UserFilter "(uid=%s)" :GroupFilter "(memberUid=%s)" :Attributes ["givenName" "sn" "mail" "uid"]}) (if (connect client) (println (str "Connected to " (:Host client))) (println "Failed to connect"))))
+  (do (def k 1) (while (<= k 5) (do (println (str (str (str k) " ") (str (gen k 10)))) (def k (+ k 1))))))
 
 (defn -main []
   (let [rt (Runtime/getRuntime)

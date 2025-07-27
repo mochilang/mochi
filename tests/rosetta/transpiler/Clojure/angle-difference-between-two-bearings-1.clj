@@ -1,4 +1,4 @@
-(ns main (:refer-clojure :exclude [connect main]))
+(ns main (:refer-clojure :exclude [angleDiff]))
 
 (require 'clojure.set)
 
@@ -7,19 +7,18 @@
 
 (def nowSeed (atom (let [s (System/getenv "MOCHI_NOW_SEED")] (if (and s (not (= s ""))) (Integer/parseInt s) 0))))
 
-(declare connect main)
+(declare angleDiff)
 
-(defn connect [client]
-  (try (throw (ex-info "return" {:v (and (not= (:Host client) "") (> (:Port client) 0))})) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
+(defn angleDiff [b1 b2]
+  (try (do (def d (- b2 b1)) (when (< d (- 0 180)) (throw (ex-info "return" {:v (+ d 360)}))) (if (> d 180) (- d 360) d)) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
 
-(defn main []
-  (do (def client {:Base "dc=example,dc=com" :Host "ldap.example.com" :Port 389 :UseSSL false :BindDN "uid=readonlyuser,ou=People,dc=example,dc=com" :BindPassword "readonlypassword" :UserFilter "(uid=%s)" :GroupFilter "(memberUid=%s)" :Attributes ["givenName" "sn" "mail" "uid"]}) (if (connect client) (println (str "Connected to " (:Host client))) (println "Failed to connect"))))
+(def testCases [[20 45] [(- 0 45) 45] [(- 0 85) 90] [(- 0 95) 90] [(- 0 45) 125] [(- 0 45) 145] [29.4803 (- 0 88.6381)] [(- 0 78.3251) (- 0 159.036)]])
 
 (defn -main []
   (let [rt (Runtime/getRuntime)
     start-mem (- (.totalMemory rt) (.freeMemory rt))
     start (System/nanoTime)]
-      (main)
+      (doseq [tc testCases] (println (angleDiff (nth tc 0) (nth tc 1))))
       (System/gc)
       (let [end (System/nanoTime)
         end-mem (- (.totalMemory rt) (.freeMemory rt))

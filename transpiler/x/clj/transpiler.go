@@ -1188,6 +1188,9 @@ func isMapNode(n Node) bool {
 			if sym, ok := t.Elems[0].(Symbol); ok && sym == "hash-map" {
 				return true
 			}
+			if _, ok := t.Elems[0].(Keyword); ok {
+				return true
+			}
 		}
 	case Symbol:
 		if transpileEnv != nil {
@@ -1390,6 +1393,22 @@ func transpilePostfix(p *parser.PostfixExpr) (Node, error) {
 			}
 			if isMapNode(n) || isStringNode(i) {
 				n = &List{Elems: []Node{Symbol("get"), n, i}}
+			} else if l, ok := n.(*List); ok && len(l.Elems) == 2 {
+				if kw, ok1 := l.Elems[0].(Keyword); ok1 {
+					if sym, ok2 := l.Elems[1].(Symbol); ok2 && transpileEnv != nil {
+						if typ, err := transpileEnv.GetVar(string(sym)); err == nil {
+							if st, ok := typ.(types.StructType); ok {
+								if ft, ok := st.Fields[string(kw)]; ok {
+									if _, ok := ft.(types.MapType); ok {
+										n = &List{Elems: []Node{Symbol("get"), n, i}}
+										break
+									}
+								}
+							}
+						}
+					}
+				}
+				n = &List{Elems: []Node{Symbol("nth"), n, i}}
 			} else {
 				n = &List{Elems: []Node{Symbol("nth"), n, i}}
 			}

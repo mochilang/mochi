@@ -2,6 +2,9 @@
 
 (require 'clojure.set)
 
+(defn in [x coll]
+  (cond (string? coll) (clojure.string/includes? coll x) (map? coll) (contains? coll x) (sequential? coll) (some (fn [e] (= e x)) coll) :else false))
+
 (def nowSeed (atom (let [s (System/getenv "MOCHI_NOW_SEED")] (if (and s (not (= s ""))) (Integer/parseInt s) 0))))
 
 (declare sinApprox)
@@ -24,8 +27,19 @@
 (def i2 1)
 
 (defn -main []
-  (while (<= i 200) (do (def t2 (* (double i) dt)) (def k2 (sinApprox (* t2 PI))) (def s (+ s (* (* (+ k1 k2) 0.5) (- t2 t1)))) (def t1 t2) (def k1 k2) (def i (+ i 1))))
-  (while (<= i2 50) (do (def t2 (+ 2 (* (double i2) dt))) (def k2 0) (def s (+ s (* (* (+ k1 k2) 0.5) (- t2 t1)))) (def t1 t2) (def k1 k2) (def i2 (+ i2 1))))
-  (println s))
+  (let [rt (Runtime/getRuntime)
+    start-mem (- (.totalMemory rt) (.freeMemory rt))
+    start (System/nanoTime)]
+      (while (<= i 200) (do (def t2 (* (double i) dt)) (def k2 (sinApprox (* t2 PI))) (def s (+ s (* (* (+ k1 k2) 0.5) (- t2 t1)))) (def t1 t2) (def k1 k2) (def i (+ i 1))))
+      (while (<= i2 50) (do (def t2 (+ 2 (* (double i2) dt))) (def k2 0) (def s (+ s (* (* (+ k1 k2) 0.5) (- t2 t1)))) (def t1 t2) (def k1 k2) (def i2 (+ i2 1))))
+      (println s)
+      (System/gc)
+      (let [end (System/nanoTime)
+        end-mem (- (.totalMemory rt) (.freeMemory rt))
+        duration-us (quot (- end start) 1000)
+        memory-bytes (Math/abs ^long (- end-mem start-mem))]
+        (println (str "{\n  \"duration_us\": " duration-us ",\n  \"memory_bytes\": " memory-bytes ",\n  \"name\": \"main\"\n}"))
+      )
+    ))
 
 (-main)

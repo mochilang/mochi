@@ -1,4 +1,4 @@
-(ns main (:refer-clojure :exclude [connect main]))
+(ns main)
 
 (require 'clojure.set)
 
@@ -7,19 +7,21 @@
 
 (def nowSeed (atom (let [s (System/getenv "MOCHI_NOW_SEED")] (if (and s (not (= s ""))) (Integer/parseInt s) 0))))
 
-(declare connect main)
+(def msg "Hello World! ")
 
-(defn connect [client]
-  (try (throw (ex-info "return" {:v (and (not= (:Host client) "") (> (:Port client) 0))})) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
+(def shift 0)
 
-(defn main []
-  (do (def client {:Base "dc=example,dc=com" :Host "ldap.example.com" :Port 389 :UseSSL false :BindDN "uid=readonlyuser,ou=People,dc=example,dc=com" :BindPassword "readonlypassword" :UserFilter "(uid=%s)" :GroupFilter "(memberUid=%s)" :Attributes ["givenName" "sn" "mail" "uid"]}) (if (connect client) (println (str "Connected to " (:Host client))) (println "Failed to connect"))))
+(def inc 1)
+
+(def clicks 0)
+
+(def frames 0)
 
 (defn -main []
   (let [rt (Runtime/getRuntime)
     start-mem (- (.totalMemory rt) (.freeMemory rt))
     start (System/nanoTime)]
-      (main)
+      (while (< clicks 5) (do (def line "") (def i 0) (while (< i (count msg)) (do (def idx (mod (+ shift i) (count msg))) (def line (str line (subs msg idx (+ idx 1)))) (def i (+ i 1)))) (println line) (def shift (mod (+ shift inc) (count msg))) (def frames (+ frames 1)) (when (= (mod frames (count msg)) 0) (do (def inc (- (count msg) inc)) (def clicks (+ clicks 1))))))
       (System/gc)
       (let [end (System/nanoTime)
         end-mem (- (.totalMemory rt) (.freeMemory rt))
