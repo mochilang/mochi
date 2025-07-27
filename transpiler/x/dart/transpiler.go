@@ -312,10 +312,19 @@ type ForInStmt struct {
 	Name     string
 	Iterable Expr
 	Body     []Stmt
+	ElemType string
 }
 
 func (f *ForInStmt) emit(out io.Writer) error {
-	if _, err := io.WriteString(out, "for (var "+f.Name+" in "); err != nil {
+	decl := "var"
+	if f.ElemType != "" && f.ElemType != "dynamic" {
+		decl = f.ElemType
+	}
+	saved := localVarTypes[f.Name]
+	if f.ElemType != "" {
+		localVarTypes[f.Name] = f.ElemType
+	}
+	if _, err := io.WriteString(out, "for ("+decl+" "+f.Name+" in "); err != nil {
 		return err
 	}
 	if f.Iterable != nil {
@@ -363,6 +372,11 @@ func (f *ForInStmt) emit(out io.Writer) error {
 	}
 	if _, err := io.WriteString(out, "  }"); err != nil {
 		return err
+	}
+	if saved != "" {
+		localVarTypes[f.Name] = saved
+	} else {
+		delete(localVarTypes, f.Name)
 	}
 	return nil
 }
@@ -429,7 +443,7 @@ type VarStmt struct {
 func (s *VarStmt) emit(w io.Writer) error {
 	nextStructHint = s.Name
 	typ := s.Type
-	if typ == "" {
+	if typ == "" || typ == "dynamic" {
 		typ = inferType(s.Value)
 		if strings.HasSuffix(typ, "?") {
 			typ = strings.TrimSuffix(typ, "?")
@@ -1622,6 +1636,7 @@ func (s *SliceExpr) emit(w io.Writer) error {
 func (i *IndexExpr) emit(w io.Writer) error {
 	t := inferType(i.Target)
 	wrap := false
+	needDefault := strings.HasPrefix(t, "Map<") && !i.NoBang
 	switch i.Target.(type) {
 	case *CastExpr:
 		wrap = true
@@ -1687,6 +1702,11 @@ func (i *IndexExpr) emit(w io.Writer) error {
 			return err
 		}
 	} else {
+		if needDefault {
+			if _, err := io.WriteString(w, "("); err != nil {
+				return err
+			}
+		}
 		if err := i.Target.emit(w); err != nil {
 			return err
 		}
@@ -1695,15 +1715,59 @@ func (i *IndexExpr) emit(w io.Writer) error {
 		return err
 	}
 	if i.Index != nil {
-		if err := i.Index.emit(w); err != nil {
-			return err
+		idxType := inferType(i.Index)
+		if idxType == "BigInt" {
+			if _, err := io.WriteString(w, "("); err != nil {
+				return err
+			}
+			if err := i.Index.emit(w); err != nil {
+				return err
+			}
+			if _, err := io.WriteString(w, ").toInt()"); err != nil {
+				return err
+			}
+		} else {
+			if err := i.Index.emit(w); err != nil {
+				return err
+			}
 		}
 	}
 	if _, err := io.WriteString(w, "]"); err != nil {
 		return err
 	}
-	if strings.HasPrefix(t, "Map<") && !i.NoBang {
-		_, err := io.WriteString(w, "!")
+	if strings.HasPrefix(t, "Map<") {
+		if !i.NoBang {
+			kv := strings.TrimSuffix(strings.TrimPrefix(t, "Map<"), ">")
+			parts := strings.SplitN(kv, ",", 2)
+			val := "null"
+			if len(parts) == 2 {
+				vt := strings.TrimSpace(parts[1])
+				switch vt {
+				case "int", "num":
+					val = "0"
+				case "bool":
+					val = "false"
+				case "String":
+					val = "\"\""
+				default:
+					val = "null"
+				}
+			}
+			_, err := io.WriteString(w, " ?? "+val)
+			if err != nil {
+				return err
+			}
+			if needDefault {
+				_, err = io.WriteString(w, ")")
+				if err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}
+	if needDefault {
+		_, err := io.WriteString(w, ")")
 		return err
 	}
 	return nil
@@ -1966,7 +2030,7 @@ func isMaybeString(e Expr) bool {
 	case *CallExpr:
 		if n, ok := ex.Func.(*Name); ok {
 			switch n.Name {
-			case "upper", "lower", "trim", "substr", "substring", "padStart", "repeat", "to_json", "str":
+			case "upper", "lower", "trim", "substr", "substring", "padStart", "repeat", "to_json", "str", "slice":
 				return true
 			}
 		}
@@ -3223,6 +3287,11 @@ func inferType(e Expr) string {
 				return "num"
 			case "upper", "lower", "trim", "substr", "substring", "padStart", "repeat", "to_json", "str":
 				return "String"
+			case "slice":
+				if len(ex.Args) > 0 {
+					return inferType(ex.Args[0])
+				}
+				return "List<dynamic>"
 			case "indexOf":
 				return "int"
 			case "min", "max":
@@ -3261,6 +3330,11 @@ func inferType(e Expr) string {
 			}
 			if sel.Field == "toUpperCase" || sel.Field == "toLowerCase" || sel.Field == "substring" || sel.Field == "substr" || sel.Field == "padLeft" || sel.Field == "padRight" {
 				return "String"
+			}
+			if sel.Field == "parse" {
+				if n, ok := sel.Receiver.(*Name); ok && n.Name == "int" {
+					return "int"
+				}
 			}
 			if sel.Field == "indexOf" {
 				return "int"
@@ -3388,8 +3462,9 @@ func walkTypes(s Stmt) {
 		nextStructHint = st.Name
 		typ := st.Type
 		if st.Value != nil {
-			if typ == "" {
-				typ = inferType(st.Value)
+			valType := inferType(st.Value)
+			if typ == "" || typ == "dynamic" {
+				typ = valType
 			}
 		}
 		if typ == "" {
@@ -3433,15 +3508,22 @@ func walkTypes(s Stmt) {
 		if strings.HasPrefix(t, "List<") && strings.HasSuffix(t, ">") {
 			elem = strings.TrimSuffix(strings.TrimPrefix(t, "List<"), ">")
 		}
-		saved := compVarTypes[st.Name]
+		savedComp := compVarTypes[st.Name]
 		compVarTypes[st.Name] = elem
+		savedLocal := localVarTypes[st.Name]
+		localVarTypes[st.Name] = elem
 		for _, b := range st.Body {
 			walkTypes(b)
 		}
-		if saved != "" {
-			compVarTypes[st.Name] = saved
+		if savedComp != "" {
+			compVarTypes[st.Name] = savedComp
 		} else {
 			delete(compVarTypes, st.Name)
+		}
+		if savedLocal != "" {
+			localVarTypes[st.Name] = savedLocal
+		} else {
+			delete(localVarTypes, st.Name)
 		}
 	case *UpdateStmt:
 		if st.Cond != nil {
@@ -3809,11 +3891,31 @@ func convertForStmt(fst *parser.ForStmt) (Stmt, error) {
 	if err != nil {
 		return nil, err
 	}
+	elem := "dynamic"
+	t := inferType(iter)
+	if strings.HasPrefix(t, "List<") && strings.HasSuffix(t, ">") {
+		elem = strings.TrimSuffix(strings.TrimPrefix(t, "List<"), ">")
+	} else if strings.HasPrefix(t, "Map<") && strings.HasSuffix(t, ">") {
+		kv := strings.TrimSuffix(strings.TrimPrefix(t, "Map<"), ">")
+		parts := strings.SplitN(kv, ",", 2)
+		if len(parts) > 0 {
+			elem = strings.TrimSpace(parts[0])
+		}
+	} else if t == "String" {
+		elem = "String"
+	}
+	saved := compVarTypes[fst.Name]
+	compVarTypes[fst.Name] = elem
 	body, err := convertStmtList(fst.Body)
 	if err != nil {
 		return nil, err
 	}
-	return &ForInStmt{Name: sanitize(fst.Name), Iterable: iter, Body: body}, nil
+	if saved != "" {
+		compVarTypes[fst.Name] = saved
+	} else {
+		delete(compVarTypes, fst.Name)
+	}
+	return &ForInStmt{Name: sanitize(fst.Name), Iterable: iter, Body: body, ElemType: elem}, nil
 }
 
 func convertUpdate(u *parser.UpdateStmt) (Stmt, error) {
@@ -4613,6 +4715,26 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			}
 			useSubstrClamp = true
 			return &SubstringExpr{Str: s0, Start: s1, End: s2}, nil
+		}
+		if p.Call.Func == "slice" && (len(p.Call.Args) == 2 || len(p.Call.Args) == 3) {
+			l0, err := convertExpr(p.Call.Args[0])
+			if err != nil {
+				return nil, err
+			}
+			s1, err := convertExpr(p.Call.Args[1])
+			if err != nil {
+				return nil, err
+			}
+			var args []Expr
+			args = append(args, s1)
+			if len(p.Call.Args) == 3 {
+				s2, err := convertExpr(p.Call.Args[2])
+				if err != nil {
+					return nil, err
+				}
+				args = append(args, s2)
+			}
+			return &CallExpr{Func: &SelectorExpr{Receiver: l0, Field: "sublist"}, Args: args}, nil
 		}
 		if p.Call.Func == "padStart" && len(p.Call.Args) == 3 {
 			s0, err := convertExpr(p.Call.Args[0])
