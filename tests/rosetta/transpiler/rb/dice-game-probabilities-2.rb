@@ -44,14 +44,28 @@ end
 
 start_mem = _mem()
 start = _now()
-  $X = 0
-  $Y = 0
-  $Z = 0
-  def XP()
+  def roll(nDice, nSides)
+    sum = 0
+    i = 0
+    while i < nDice
+      sum = _add(_add(sum, (_now() % nSides)), 1)
+      i = _add(i, 1)
+    end
+    return sum
   end
-  def nonXP()
+  def beats(n1, s1, n2, s2, trials)
+    wins = 0
+    i = 0
+    while i < trials
+      if roll(n1, s1) > roll(n2, s2)
+        wins = _add(wins, 1)
+      end
+      i = _add(i, 1)
+    end
+    return ((wins)) / ((trials))
   end
-  $MEMEME = 0
+  puts((beats(9, 4, 6, 6, 1000)).to_s)
+  puts((beats(5, 10, 7, 6, 1000)).to_s)
 end_time = _now()
 end_mem = _mem()
 result = {"duration_us" => ((end_time - start) / 1000), "memory_bytes" => (end_mem - start_mem), "name" => "main"}

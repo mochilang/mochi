@@ -44,14 +44,20 @@ end
 
 start_mem = _mem()
 start = _now()
-  $X = 0
-  $Y = 0
-  $Z = 0
-  def XP()
+  $lockExists = false
+  def startOnce()
+    if $lockExists
+      puts("an instance is already running")
+    else
+      $lockExists = true
+      puts("single instance started")
+    end
   end
-  def nonXP()
+  def main()
+    startOnce()
+    startOnce()
   end
-  $MEMEME = 0
+  main()
 end_time = _now()
 end_mem = _mem()
 result = {"duration_us" => ((end_time - start) / 1000), "memory_bytes" => (end_mem - start_mem), "name" => "main"}
