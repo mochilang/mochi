@@ -3505,9 +3505,16 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 		case "str":
 			if len(args) == 1 {
 				t := types.TypeOfExprBasic(p.Call.Args[0], env)
-				switch t.(type) {
+				switch tt := t.(type) {
 				case types.StringType, types.IntType, types.FloatType, types.BoolType:
 					return &CallExpr{Func: "Kernel.to_string", Args: []Expr{args[0]}}, nil
+				case types.ListType:
+					if _, ok := tt.Elem.(types.IntType); ok {
+						fmt := &CallExpr{Func: ":io_lib.format", Args: []Expr{&StringLit{Value: "~w"}, &ListLit{Elems: []Expr{args[0]}}}}
+						bin := &CallExpr{Func: "IO.iodata_to_binary", Args: []Expr{fmt}}
+						repl := &CallExpr{Func: "String.replace", Args: []Expr{bin, &StringLit{Value: ","}, &StringLit{Value: " "}}}
+						return repl, nil
+					}
 				default:
 					return &CallExpr{Func: "Kernel.inspect", Args: []Expr{args[0]}}, nil
 				}
