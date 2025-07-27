@@ -1,0 +1,67 @@
+func main (regs=6)
+  // floyd(5)
+  Const        r1, 5
+  Move         r0, r1
+  Call         r2, floyd, r0
+  // floyd(14)
+  Const        r4, 14
+  Move         r3, r4
+  Call         r5, floyd, r3
+  Return       r0
+
+  // fun floyd(n: int) {
+func floyd (regs=22)
+  // print("Floyd " + str(n) + ":")
+  Const        r1, "Floyd "
+  Str          r2, r0
+  Add          r3, r1, r2
+  Const        r4, ":"
+  Add          r5, r3, r4
+  Print        r5
+  // var num = 1
+  Const        r6, 1
+  Move         r7, r6
+  // var row = 1
+  Const        r6, 1
+  Move         r8, r6
+L3:
+  // while row <= n {
+  LessEq       r9, r8, r0
+  JumpIfFalse  r9, L0
+  // var col = 0
+  Const        r10, 0
+  Move         r11, r10
+  // var line = ""
+  Const        r12, ""
+  Move         r13, r12
+L2:
+  // while col < row {
+  LessInt      r14, r11, r8
+  JumpIfFalse  r14, L1
+  // line = line + str(num) + " "
+  Str          r15, r7
+  Add          r16, r13, r15
+  Const        r17, " "
+  Add          r18, r16, r17
+  Move         r13, r18
+  // num = num + 1
+  Const        r6, 1
+  AddInt       r19, r7, r6
+  Move         r7, r19
+  // col = col + 1
+  Const        r6, 1
+  AddInt       r20, r11, r6
+  Move         r11, r20
+  // while col < row {
+  Jump         L2
+L1:
+  // print(line)
+  Print        r13
+  // row = row + 1
+  Const        r6, 1
+  AddInt       r21, r8, r6
+  Move         r8, r21
+  // while row <= n {
+  Jump         L3
+L0:
+  Return       r0

@@ -1,0 +1,237 @@
+func main (regs=17)
+  // let xs = [-0.5, 0.1, 0.5, 1.0, 1.5, 2.0, 3.0, 10.0, 140.0, 170.0]
+  Const        r1, [-0.5, 0.1, 0.5, 1.0, 1.5, 2.0, 3.0, 10.0, 140.0, 170.0]
+  Move         r0, r1
+  SetGlobal    0,0,0,0
+  // for x in xs {
+  IterPrep     r2, r0
+  Len          r3, r2
+  Const        r4, 0
+L1:
+  LessInt      r5, r4, r3
+  JumpIfFalse  r5, L0
+  Index        r6, r2, r4
+  Move         r7, r6
+  // print(str(x) + " " + str(lanczos7(x)))
+  Str          r8, r7
+  Const        r9, " "
+  Add          r10, r8, r9
+  Move         r11, r7
+  Call         r12, lanczos7, r11
+  Str          r13, r12
+  Add          r14, r10, r13
+  Print        r14
+  // for x in xs {
+  Const        r15, 1
+  AddInt       r16, r4, r15
+  Move         r4, r16
+  Jump         L1
+L0:
+  Return       r0
+
+  // fun ln(x: float): float {
+func ln (regs=35)
+  // var k = 0.0
+  Const        r2, 0.0
+  Move         r3, r2
+  // var v = x
+  Move         r4, r1
+L1:
+  // while v >= 2.0 {
+  Const        r5, 2.0
+  LessEqFloat  r6, r5, r4
+  JumpIfFalse  r6, L0
+  // v = v / 2.0
+  Const        r5, 2.0
+  DivFloat     r7, r4, r5
+  Move         r4, r7
+  // k = k + 1.0
+  Const        r8, 1.0
+  AddFloat     r9, r3, r8
+  Move         r3, r9
+  // while v >= 2.0 {
+  Jump         L1
+L0:
+  // while v < 1.0 {
+  Const        r8, 1.0
+  LessFloat    r10, r4, r8
+  JumpIfFalse  r10, L2
+  // v = v * 2.0
+  Const        r5, 2.0
+  MulFloat     r11, r4, r5
+  Move         r4, r11
+  // k = k - 1.0
+  Const        r8, 1.0
+  SubFloat     r12, r3, r8
+  Move         r3, r12
+  // while v < 1.0 {
+  Jump         L0
+L2:
+  // let z = (v - 1.0) / (v + 1.0)
+  Const        r8, 1.0
+  SubFloat     r13, r4, r8
+  Const        r8, 1.0
+  AddFloat     r14, r4, r8
+  DivFloat     r15, r13, r14
+  Move         r16, r15
+  // var zpow = z
+  Move         r17, r16
+  // var sum = z
+  Move         r18, r16
+  // var i = 3
+  Const        r19, 3
+  Move         r20, r19
+L4:
+  // while i <= 9 {
+  Const        r21, 9
+  LessEqInt    r22, r20, r21
+  JumpIfFalse  r22, L3
+  // zpow = zpow * z * z
+  MulFloat     r23, r17, r16
+  MulFloat     r24, r23, r16
+  Move         r17, r24
+  // sum = sum + zpow / (i as float)
+  Cast         r25, r20, float
+  DivFloat     r26, r17, r25
+  AddFloat     r27, r18, r26
+  Move         r18, r27
+  // i = i + 2
+  Const        r28, 2
+  AddInt       r29, r20, r28
+  Move         r20, r29
+  // while i <= 9 {
+  Jump         L4
+L3:
+  // let ln2 = 0.6931471805599453
+  Const        r30, 0.6931471805599453
+  Move         r31, r30
+  // return (k * ln2) + 2.0 * sum
+  MulFloat     r32, r3, r31
+  Const        r5, 2.0
+  MulFloat     r33, r5, r18
+  AddFloat     r34, r32, r33
+  Return       r34
+
+  // fun expf(x: float): float {
+func expf (regs=14)
+  // var term = 1.0
+  Const        r2, 1.0
+  Move         r3, r2
+  // var sum = 1.0
+  Const        r2, 1.0
+  Move         r4, r2
+  // var i = 1
+  Const        r5, 1
+  Move         r6, r5
+L1:
+  // while i < 20 {
+  Const        r7, 20
+  LessInt      r8, r6, r7
+  JumpIfFalse  r8, L0
+  // term = term * x / float(i)
+  MulFloat     r9, r3, r1
+  DivFloat     r11, r9, r10
+  Move         r3, r11
+  // sum = sum + term
+  AddFloat     r12, r4, r3
+  Move         r4, r12
+  // i = i + 1
+  Const        r5, 1
+  AddInt       r13, r6, r5
+  Move         r6, r13
+  // while i < 20 {
+  Jump         L1
+L0:
+  // return sum
+  Return       r4
+
+  // fun powf(base: float, exp: float): float {
+func powf (regs=8)
+  // return expf(exp * ln(base))
+  Move         r4, r1
+  Call         r5, ln, r4
+  Mul          r6, r2, r5
+  Move         r3, r6
+  Call         r7, expf, r3
+  Return       r7
+
+  // fun lanczos7(z: float): float {
+func lanczos7 (regs=59)
+  // let t = z + 6.5
+  Const        r2, 6.5
+  AddFloat     r3, r1, r2
+  Move         r4, r3
+  // let x = 0.99999999999980993 +
+  Const        r5, 0.9999999999998099
+  // 676.5203681218851/z -
+  Const        r6, 676.5203681218851
+  DivFloat     r7, r6, r1
+  // 1259.1392167224028/(z+1.0) +
+  Const        r8, 1259.1392167224028
+  Const        r9, 1.0
+  AddFloat     r10, r1, r9
+  DivFloat     r11, r8, r10
+  // 771.32342877765313/(z+2.0) -
+  Const        r12, 771.3234287776531
+  Const        r13, 2.0
+  AddFloat     r14, r1, r13
+  DivFloat     r15, r12, r14
+  // 176.61502916214059/(z+3.0) +
+  Const        r16, 176.6150291621406
+  Const        r17, 3.0
+  AddFloat     r18, r1, r17
+  DivFloat     r19, r16, r18
+  // 12.507343278686905/(z+4.0) -
+  Const        r20, 12.507343278686905
+  Const        r21, 4.0
+  AddFloat     r22, r1, r21
+  DivFloat     r23, r20, r22
+  // 0.13857109526572012/(z+5.0) +
+  Const        r24, 0.13857109526572012
+  Const        r25, 5.0
+  AddFloat     r26, r1, r25
+  DivFloat     r27, r24, r26
+  // 0.0000099843695780195716/(z+6.0) +
+  Const        r28, 0.000009984369578019572
+  Const        r29, 6.0
+  AddFloat     r30, r1, r29
+  DivFloat     r31, r28, r30
+  // 0.00000015056327351493116/(z+7.0)
+  Const        r32, 0.00000015056327351493116
+  Const        r33, 7.0
+  AddFloat     r34, r1, r33
+  DivFloat     r35, r32, r34
+  // let x = 0.99999999999980993 +
+  AddFloat     r36, r5, r7
+  // 676.5203681218851/z -
+  SubFloat     r37, r36, r11
+  // 1259.1392167224028/(z+1.0) +
+  AddFloat     r38, r37, r15
+  // 771.32342877765313/(z+2.0) -
+  SubFloat     r39, r38, r19
+  // 176.61502916214059/(z+3.0) +
+  AddFloat     r40, r39, r23
+  // 12.507343278686905/(z+4.0) -
+  SubFloat     r41, r40, r27
+  // 0.13857109526572012/(z+5.0) +
+  AddFloat     r42, r41, r31
+  // 0.0000099843695780195716/(z+6.0) +
+  AddFloat     r43, r42, r35
+  // let x = 0.99999999999980993 +
+  Move         r44, r43
+  // return 2.5066282746310002 * powf(t, z-0.5) * powf(2.718281828459045, -t) * x
+  Const        r45, 2.5066282746310002
+  Move         r46, r4
+  Const        r48, 0.5
+  SubFloat     r49, r1, r48
+  Move         r47, r49
+  Call2        r50, powf, r46, r47
+  MulFloat     r51, r45, r50
+  Const        r54, 2.718281828459045
+  Move         r52, r54
+  NegFloat     r55, r4
+  Move         r53, r55
+  Call2        r56, powf, r52, r53
+  MulFloat     r57, r51, r56
+  MulFloat     r58, r57, r44
+  Return       r58

@@ -2,56 +2,56 @@
 
 This checklist is auto-generated.
 Generated IR and outputs from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/ir`.
-Last updated: 2025-07-27 13:18 UTC
+Last updated: 2025-07-27 14:03 UTC
 
-## Rosetta Golden Test Checklist (424/467)
+## Rosetta Golden Test Checklist (447/467)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
-| 1 | 100-doors-2 | ✓ | 116µs | 11.7 KB |
-| 2 | 100-doors-3 | ✓ | 184µs | 7.7 KB |
-| 3 | 100-doors | ✓ | 6.231ms | 851.8 KB |
-| 4 | 100-prisoners | ✓ | 4.224632s | 275.7 KB |
+| 1 | 100-doors-2 | ✓ | 119µs | 34.2 KB |
+| 2 | 100-doors-3 | ✓ | 587µs | 246.8 KB |
+| 3 | 100-doors | ✓ | 3.99ms | 1.0 MB |
+| 4 | 100-prisoners | ✓ | 4.546955s |  |
 | 5 | 15-puzzle-game | ✓ |  |  |
-| 6 | 15-puzzle-solver | ✓ | 917.949ms | 26.9 KB |
-| 7 | 2048 | ✓ | 5.393ms |  |
-| 8 | 21-game | ✓ | 386µs | 10.0 KB |
-| 9 | 24-game-solve | ✓ | 9.164ms |  |
-| 10 | 24-game | ✓ | 506µs | 17.0 KB |
-| 11 | 4-rings-or-4-squares-puzzle | ✓ | 511.101ms | 5.2 MB |
-| 12 | 9-billion-names-of-god-the-integer | ✓ | 14.291954s | 151.1 MB |
-| 13 | 99-bottles-of-beer-2 | ✓ | 48.933ms | 721.5 KB |
-| 14 | 99-bottles-of-beer | ✓ | 1.041ms | 434.1 KB |
-| 15 | DNS-query | ✓ | 1.129634s | 30.4 KB |
-| 16 | Duffinian-numbers |   |  |  |
-| 17 | a+b | ✓ | 184µs | 792 B |
-| 18 | abbreviations-automatic | ✓ | 14.043ms | 154.7 KB |
-| 19 | abbreviations-easy | ✓ | 4.772ms |  |
-| 20 | abbreviations-simple | ✓ | 5.16ms |  |
-| 21 | abc-problem | ✓ | 4.951ms |  |
-| 22 | abelian-sandpile-model-identity | ✓ | 323µs | 337.5 KB |
-| 23 | abelian-sandpile-model | ✓ | 198µs | 248 B |
-| 24 | abstract-type | ✓ | 82µs | 136 B |
+| 6 | 15-puzzle-solver | ✓ | 898.578ms | 27.4 KB |
+| 7 | 2048 | ✓ | 1.5ms |  |
+| 8 | 21-game | ✓ | 33µs | 10.4 KB |
+| 9 | 24-game-solve | ✓ | 195.779ms | 322.3 KB |
+| 10 | 24-game | ✓ | 89µs | 20.5 KB |
+| 11 | 4-rings-or-4-squares-puzzle | ✓ | 365.842ms | 3.9 MB |
+| 12 | 9-billion-names-of-god-the-integer | ✓ | 11.102605s | 149.9 MB |
+| 13 | 99-bottles-of-beer-2 | ✓ | 56.366ms | 1.8 MB |
+| 14 | 99-bottles-of-beer | ✓ | 352µs | 458.7 KB |
+| 15 | DNS-query | ✓ | 718.4ms | 30.9 KB |
+| 16 | Duffinian-numbers | ✓ | 1.405399s |  |
+| 17 | a+b | ✓ | 43µs | 1.2 KB |
+| 18 | abbreviations-automatic | ✓ | 47.498ms | 824.9 KB |
+| 19 | abbreviations-easy | ✓ | 3.309ms | 156.2 KB |
+| 20 | abbreviations-simple | ✓ | 4.623ms | 110.9 KB |
+| 21 | abc-problem | ✓ | 4.868ms |  |
+| 22 | abelian-sandpile-model-identity | ✓ | 1.261ms | 466.3 KB |
+| 23 | abelian-sandpile-model | ✓ | 554µs | 890.7 KB |
+| 24 | abstract-type | ✓ | 229µs | 23.6 KB |
 | 25 | abundant-deficient-and-perfect-number-classifications | ✓ | 194µs | 136 B |
 | 26 | abundant-odd-numbers | ✓ | 52µs | 136 B |
-| 27 | accumulator-factory | ✓ | 72µs | 136 B |
+| 27 | accumulator-factory | ✓ | 32µs | 8.3 KB |
 | 28 | achilles-numbers | ✓ | 67µs | 296 B |
-| 29 | ackermann-function-2 | ✓ | 50µs | 136 B |
+| 29 | ackermann-function-2 | ✓ | 67µs | 21.8 KB |
 | 30 | ackermann-function-3 | ✓ | 52µs | 248 B |
-| 31 | ackermann-function | ✓ | 37µs | 136 B |
-| 32 | active-directory-connect | ✓ | 742µs | 136 B |
-| 33 | active-directory-search-for-a-user | ✓ | 606µs | 136 B |
-| 34 | active-object | ✓ | 3.176ms | 667.9 KB |
-| 35 | add-a-variable-to-a-class-instance-at-runtime | ✓ | 490µs | 136 B |
-| 36 | additive-primes | ✓ | 532µs | 136 B |
-| 37 | address-of-a-variable | ✓ | 360µs | 600 B |
-| 38 | adfgvx-cipher | ✓ | 756µs | 472 B |
-| 39 | aks-test-for-primes | ✓ | 601µs | 136 B |
-| 40 | algebraic-data-types | ✓ | 1.589ms | 282.7 KB |
-| 41 | align-columns | ✓ | 12.064ms |  |
-| 42 | aliquot-sequence-classifications | ✓ | 684µs | 248 B |
+| 31 | ackermann-function | ✓ | 15.592ms | 2.6 MB |
+| 32 | active-directory-connect | ✓ | 53µs | 8.6 KB |
+| 33 | active-directory-search-for-a-user | ✓ | 32µs | 5.5 KB |
+| 34 | active-object | ✓ | 4.516ms |  |
+| 35 | add-a-variable-to-a-class-instance-at-runtime | ✓ | 36µs | 8.2 KB |
+| 36 | additive-primes | ✓ | 2.391ms |  |
+| 37 | address-of-a-variable | ✓ | 53µs | 600 B |
+| 38 | adfgvx-cipher |   | 756µs | 472 B |
+| 39 | aks-test-for-primes | ✓ | 657µs | 495.4 KB |
+| 40 | algebraic-data-types | ✓ | 286µs | 285.2 KB |
+| 41 | align-columns | ✓ | 3.297ms | 502.5 KB |
+| 42 | aliquot-sequence-classifications | ✓ | 5.972033s |  |
 | 43 | almkvist-giullera-formula-for-pi | ✓ | 766µs | 136 B |
-| 44 | almost-prime | ✓ | 664µs | 136 B |
-| 45 | amb | ✓ | 484µs | 136 B |
+| 44 | almost-prime | ✓ | 5.997ms | 64.7 KB |
+| 45 | amb | ✓ | 154µs | 48.5 KB |
 | 46 | amicable-pairs | ✓ | 546µs | 136 B |
 | 47 | anagrams-deranged-anagrams | ✓ | 402µs | 136 B |
 | 48 | anagrams | ✓ | 664µs | 136 B |
@@ -451,26 +451,26 @@ Last updated: 2025-07-27 13:18 UTC
 | 442 | flow-control-structures-3 | ✓ | 71µs | 1.4 KB |
 | 443 | flow-control-structures-4 | ✓ | 10µs | 808 B |
 | 444 | floyd-warshall-algorithm | ✓ | 74µs | 216 B |
-| 445 | floyds-triangle |   |  |  |
-| 446 | forest-fire |   |  |  |
-| 447 | fork |   |  |  |
-| 448 | ftp |   |  |  |
-| 449 | gamma-function |   |  |  |
-| 450 | general-fizzbuzz |   |  |  |
-| 451 | generic-swap |   |  |  |
-| 452 | get-system-command-output |   |  |  |
-| 453 | giuga-numbers |   |  |  |
-| 454 | globally-replace-text-in-several-files |   |  |  |
-| 455 | goldbachs-comet |   |  |  |
-| 456 | golden-ratio-convergence |   |  |  |
-| 457 | graph-colouring |   |  |  |
-| 458 | gray-code |   |  |  |
-| 459 | http |   |  |  |
-| 460 | image-noise |   |  |  |
-| 461 | loops-increment-loop-index-within-loop-body |   |  |  |
-| 462 | md5 |   |  |  |
-| 463 | nim-game |   |  |  |
-| 464 | plasma-effect |   |  |  |
-| 465 | sorting-algorithms-bubble-sort |   |  |  |
-| 466 | window-management |   |  |  |
-| 467 | zumkeller-numbers |   |  |  |
+| 445 | floyds-triangle | ✓ | 148µs | 51.9 KB |
+| 446 | forest-fire | ✓ | 137µs | 63.2 KB |
+| 447 | fork | ✓ | 32µs | 5.4 KB |
+| 448 | ftp | ✓ | 65µs | 23.7 KB |
+| 449 | gamma-function | ✓ | 316µs | 291.3 KB |
+| 450 | general-fizzbuzz | ✓ | 77µs | 24.5 KB |
+| 451 | generic-swap | ✓ | 48µs | 4.0 KB |
+| 452 | get-system-command-output | ✓ | 17µs | 216 B |
+| 453 | giuga-numbers | ✓ | 404µs | 57.3 KB |
+| 454 | globally-replace-text-in-several-files | ✓ | 17µs | 232 B |
+| 455 | goldbachs-comet | ✓ | 30.237ms | 280.3 KB |
+| 456 | golden-ratio-convergence | ✓ | 57µs | 20.0 KB |
+| 457 | graph-colouring | ✓ | 26µs | 216 B |
+| 458 | gray-code | ✓ | 4.084ms |  |
+| 459 | http | ✓ | 180.478ms | 647.3 KB |
+| 460 | image-noise | ✓ | 340.187ms | 397.8 KB |
+| 461 | loops-increment-loop-index-within-loop-body | ✓ | 11.477587s |  |
+| 462 | md5 | ✓ | 1.68366s | 182.5 KB |
+| 463 | nim-game | ✓ | 67µs | 21.5 KB |
+| 464 | plasma-effect | ✓ | 730.38ms |  |
+| 465 | sorting-algorithms-bubble-sort | ✓ | 87µs | 26.4 KB |
+| 466 | window-management | ✓ | 68µs | 64.1 KB |
+| 467 | zumkeller-numbers | ✓ |  |  |

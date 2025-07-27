@@ -1,0 +1,377 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun gcd(a: int, b: int): int {
+func gcd (regs=12)
+  // var x = a
+  Move         r2, r0
+  // if x < 0 { x = -x }
+  Const        r3, 0
+  Less         r4, r2, r3
+  JumpIfFalse  r4, L0
+  Neg          r5, r2
+  Move         r2, r5
+L0:
+  // var y = b
+  Move         r6, r1
+  // if y < 0 { y = -y }
+  Const        r3, 0
+  Less         r7, r6, r3
+  JumpIfFalse  r7, L1
+  Neg          r8, r6
+  Move         r6, r8
+L1:
+  // while y != 0 {
+  Const        r3, 0
+  NotEqual     r9, r6, r3
+  JumpIfFalse  r9, L2
+  // let t = x % y
+  Mod          r10, r2, r6
+  Move         r11, r10
+  // x = y
+  Move         r2, r6
+  // y = t
+  Move         r6, r11
+  // while y != 0 {
+  Jump         L1
+L2:
+  // return x
+  Return       r2
+
+  // fun divisors(n: int): list<int> {
+func divisors (regs=17)
+  // var divs: list<int> = []
+  Const        r1, []
+  Move         r2, r1
+  // var i = 1
+  Const        r3, 1
+  Move         r4, r3
+L2:
+  // while i * i <= n {
+  MulInt       r5, r4, r4
+  LessEq       r6, r5, r0
+  JumpIfFalse  r6, L0
+  // if n % i == 0 {
+  Mod          r7, r0, r4
+  Const        r8, 0
+  Equal        r9, r7, r8
+  JumpIfFalse  r9, L1
+  // divs = append(divs, i)
+  Append       r10, r2, r4
+  Move         r2, r10
+  // let j = (n / i) as int
+  Div          r11, r0, r4
+  Cast         r12, r11, int
+  Move         r13, r12
+  // if i != j { divs = append(divs, j) }
+  NotEqual     r14, r4, r13
+  JumpIfFalse  r14, L1
+  Append       r15, r2, r13
+  Move         r2, r15
+L1:
+  // i = i + 1
+  Const        r3, 1
+  AddInt       r16, r4, r3
+  Move         r4, r16
+  // while i * i <= n {
+  Jump         L2
+L0:
+  // return divs
+  Return       r2
+
+  // fun sum(xs: list<int>): int {
+func sum (regs=12)
+  // var s = 0
+  Const        r1, 0
+  Move         r2, r1
+  // for v in xs { s = s + v }
+  IterPrep     r3, r0
+  Len          r4, r3
+  Const        r5, 0
+L1:
+  LessInt      r6, r5, r4
+  JumpIfFalse  r6, L0
+  Index        r7, r3, r5
+  Move         r8, r7
+  Add          r9, r2, r8
+  Move         r2, r9
+  Const        r10, 1
+  AddInt       r11, r5, r10
+  Move         r5, r11
+  Jump         L1
+L0:
+  // return s
+  Return       r2
+
+  // fun isDuffinian(n: int): bool {
+func isDuffinian (regs=15)
+  // let divs = divisors(n)
+  Move         r1, r0
+  Call         r2, divisors, r1
+  Move         r3, r2
+  // if len(divs) <= 2 { return false }
+  Len          r4, r3
+  Const        r5, 2
+  LessEqInt    r6, r4, r5
+  JumpIfFalse  r6, L0
+  Const        r7, false
+  Return       r7
+L0:
+  // let sigma = sum(divs)
+  Sum          r8, r3
+  Move         r9, r8
+  // return gcd(sigma, n) == 1
+  Move         r10, r9
+  Move         r11, r0
+  Call2        r12, gcd, r10, r11
+  Const        r13, 1
+  Equal        r14, r12, r13
+  Return       r14
+
+  // fun pad(n: int, width: int): string {
+func pad (regs=8)
+  // var s = str(n)
+  Str          r2, r0
+  Move         r3, r2
+L1:
+  // while len(s) < width { s = " " + s }
+  Len          r4, r3
+  Less         r5, r4, r1
+  JumpIfFalse  r5, L0
+  Const        r6, " "
+  Add          r7, r6, r3
+  Move         r3, r7
+  Jump         L1
+L0:
+  // return s
+  Return       r3
+
+  // fun printTable(nums: list<int>, perRow: int, width: int) {
+func printTable (regs=27)
+  // var i = 0
+  Const        r3, 0
+  Move         r4, r3
+  // var line = ""
+  Const        r5, ""
+  Move         r6, r5
+L2:
+  // while i < len(nums) {
+  Len          r7, r0
+  LessInt      r8, r4, r7
+  JumpIfFalse  r8, L0
+  // line = line + " " + pad(nums[i], width)
+  Const        r9, " "
+  Add          r10, r6, r9
+  Index        r13, r0, r4
+  Move         r11, r13
+  Move         r12, r2
+  Call2        r14, pad, r11, r12
+  Add          r15, r10, r14
+  Move         r6, r15
+  // if (i + 1) % perRow == 0 {
+  Const        r16, 1
+  AddInt       r17, r4, r16
+  Mod          r18, r17, r1
+  Const        r3, 0
+  Equal        r19, r18, r3
+  JumpIfFalse  r19, L1
+  // print(substring(line, 1, len(line)))
+  Const        r16, 1
+  Len          r20, r6
+  Slice        r21, r6, r16, r20
+  Print        r21
+  // line = ""
+  Const        r5, ""
+  Move         r6, r5
+L1:
+  // i = i + 1
+  Const        r16, 1
+  AddInt       r22, r4, r16
+  Move         r4, r22
+  // while i < len(nums) {
+  Jump         L2
+L0:
+  // if len(line) > 0 { print(substring(line, 1, len(line))) }
+  Len          r23, r6
+  Const        r3, 0
+  LessInt      r24, r3, r23
+  JumpIfFalse  r24, L3
+  Const        r16, 1
+  Len          r25, r6
+  Slice        r26, r6, r16, r25
+  Print        r26
+L3:
+  Return       r0
+
+  // fun main() {
+func main (regs=70)
+  // var duff: list<int> = []
+  Const        r0, []
+  Move         r1, r0
+  // var n = 1
+  Const        r2, 1
+  Move         r3, r2
+L2:
+  // while len(duff) < 50 {
+  Len          r4, r1
+  Const        r5, 50
+  LessInt      r6, r4, r5
+  JumpIfFalse  r6, L0
+  // if isDuffinian(n) { duff = append(duff, n) }
+  Move         r7, r3
+  Call         r8, isDuffinian, r7
+  JumpIfFalse  r8, L1
+  Append       r9, r1, r3
+  Move         r1, r9
+L1:
+  // n = n + 1
+  Const        r2, 1
+  AddInt       r10, r3, r2
+  Move         r3, r10
+  // while len(duff) < 50 {
+  Jump         L2
+L0:
+  // print("First 50 Duffinian numbers:")
+  Const        r11, "First 50 Duffinian numbers:"
+  Print        r11
+  // printTable(duff, 10, 3)
+  Move         r12, r1
+  Const        r15, 10
+  Move         r13, r15
+  Const        r16, 3
+  Move         r14, r16
+  Call         r17, printTable, r12, r13, r14
+  // var triplets: list<string> = []
+  Const        r0, []
+  Move         r18, r0
+  // n = 1
+  Const        r2, 1
+  Move         r3, r2
+L6:
+  // while len(triplets) < 20 {
+  Len          r19, r18
+  Const        r20, 20
+  LessInt      r21, r19, r20
+  JumpIfFalse  r21, L3
+  // if isDuffinian(n) && isDuffinian(n+1) && isDuffinian(n+2) {
+  Move         r22, r3
+  Call         r23, isDuffinian, r22
+  Move         r24, r23
+  JumpIfFalse  r24, L4
+  Const        r2, 1
+  AddInt       r26, r3, r2
+  Move         r25, r26
+  Call         r27, isDuffinian, r25
+  Move         r24, r27
+  JumpIfFalse  r24, L4
+  Const        r29, 2
+  AddInt       r30, r3, r29
+  Move         r28, r30
+  Call         r31, isDuffinian, r28
+  Move         r24, r31
+L4:
+  JumpIfFalse  r24, L5
+  // triplets = append(triplets, "(" + str(n) + "," + str(n+1) + "," + str(n+2) + ")")
+  Const        r32, "("
+  Str          r33, r3
+  Add          r34, r32, r33
+  Const        r35, ","
+  Add          r36, r34, r35
+  Const        r2, 1
+  AddInt       r37, r3, r2
+  Str          r38, r37
+  Add          r39, r36, r38
+  Const        r35, ","
+  Add          r40, r39, r35
+  Const        r29, 2
+  AddInt       r41, r3, r29
+  Str          r42, r41
+  Add          r43, r40, r42
+  Const        r44, ")"
+  Add          r45, r43, r44
+  Append       r46, r18, r45
+  Move         r18, r46
+  // n = n + 3
+  Const        r16, 3
+  AddInt       r47, r3, r16
+  Move         r3, r47
+L5:
+  // n = n + 1
+  Const        r2, 1
+  AddInt       r48, r3, r2
+  Move         r3, r48
+  // while len(triplets) < 20 {
+  Jump         L6
+L3:
+  // print("\nFirst 20 Duffinian triplets:")
+  Const        r49, "\nFirst 20 Duffinian triplets:"
+  Print        r49
+  // var i = 0
+  Const        r50, 0
+  Move         r51, r50
+L11:
+  // while i < len(triplets) {
+  Len          r52, r18
+  LessInt      r53, r51, r52
+  JumpIfFalse  r53, L7
+  // var line = ""
+  Const        r54, ""
+  Move         r55, r54
+  // var j = 0
+  Const        r50, 0
+  Move         r56, r50
+L10:
+  // while j < 4 && i < len(triplets) {
+  Const        r57, 4
+  LessInt      r58, r56, r57
+  Len          r59, r18
+  LessInt      r60, r51, r59
+  Move         r61, r58
+  JumpIfFalse  r61, L8
+  Move         r61, r60
+L8:
+  JumpIfFalse  r61, L9
+  // line = line + padStr(triplets[i], 16)
+  Index        r64, r18, r51
+  Move         r62, r64
+  Const        r65, 16
+  Move         r63, r65
+  Call2        r66, padStr, r62, r63
+  Add          r67, r55, r66
+  Move         r55, r67
+  // j = j + 1
+  Const        r2, 1
+  AddInt       r68, r56, r2
+  Move         r56, r68
+  // i = i + 1
+  Const        r2, 1
+  AddInt       r69, r51, r2
+  Move         r51, r69
+  // while j < 4 && i < len(triplets) {
+  Jump         L10
+L9:
+  // print(line)
+  Print        r55
+  // while i < len(triplets) {
+  Jump         L11
+L7:
+  Return       r0
+
+  // fun padStr(s: string, width: int): string {
+func padStr (regs=7)
+  // var res = s
+  Move         r2, r0
+L1:
+  // while len(res) < width { res = res + " " }
+  Len          r3, r2
+  Less         r4, r3, r1
+  JumpIfFalse  r4, L0
+  Const        r5, " "
+  Add          r6, r2, r5
+  Move         r2, r6
+  Jump         L1
+L0:
+  // return res
+  Return       r2

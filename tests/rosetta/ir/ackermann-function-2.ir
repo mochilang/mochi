@@ -1,4 +1,6 @@
 func main (regs=1)
+  // main()
+  Call         r0, main, 
   Return       r0
 
   // fun pow(base: int, exp: int): int {
@@ -27,7 +29,7 @@ L0:
   Return       r3
 
   // fun ackermann2(m: int, n: int): int {
-func ackermann2 (regs=33)
+func ackermann2 (regs=31)
   // if m == 0 {
   Const        r2, 0
   Equal        r3, r0, r2
@@ -64,39 +66,37 @@ L2:
   // return 8 * pow(2, n) - 3
   Const        r14, 8
   Const        r7, 2
-  Move         r15, r7
-  Move         r16, r1
-  Call2        r17, pow, r15, r16
-  Mul          r18, r14, r17
+  Pow          r15, r7, r1
+  Mul          r16, r14, r15
   Const        r11, 3
-  Sub          r19, r18, r11
-  Return       r19
+  Sub          r17, r16, r11
+  Return       r17
 L3:
   // if n == 0 {
   Const        r2, 0
-  Equal        r20, r1, r2
-  JumpIfFalse  r20, L4
+  Equal        r18, r1, r2
+  JumpIfFalse  r18, L4
   // return ackermann2(m - 1, 1)
   Const        r4, 1
-  Sub          r23, r0, r4
-  Move         r21, r23
+  Sub          r21, r0, r4
+  Move         r19, r21
   Const        r4, 1
-  Move         r22, r4
-  Call2        r24, ackermann2, r21, r22
-  Return       r24
+  Move         r20, r4
+  Call2        r22, ackermann2, r19, r20
+  Return       r22
 L4:
   // return ackermann2(m - 1, ackermann2(m, n - 1))
   Const        r4, 1
-  Sub          r27, r0, r4
-  Move         r25, r27
-  Move         r28, r0
+  Sub          r25, r0, r4
+  Move         r23, r25
+  Move         r26, r0
   Const        r4, 1
-  Sub          r30, r1, r4
-  Move         r29, r30
-  Call2        r31, ackermann2, r28, r29
-  Move         r26, r31
-  Call2        r32, ackermann2, r25, r26
-  Return       r32
+  Sub          r28, r1, r4
+  Move         r27, r28
+  Call2        r29, ackermann2, r26, r27
+  Move         r24, r29
+  Call2        r30, ackermann2, r23, r24
+  Return       r30
 
   // fun main() {
 func main (regs=29)

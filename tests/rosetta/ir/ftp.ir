@@ -1,0 +1,169 @@
+func main (regs=5)
+  // let serverData = {
+  Const        r2, {"pub": {"readme.txt": "Hello from ftp.", "somefile.bin": "This is a file from the FTP server."}}
+  Move         r0, r2
+  SetGlobal    0,0,0,0
+  // let serverNames = {
+  Const        r3, {"pub": ["somefile.bin", "readme.txt"]}
+  Move         r1, r3
+  SetGlobal    1,1,0,0
+  // main()
+  Call         r4, main, 
+  Return       r0
+
+  // fun connect(hostport: string): FTPConn {
+func connect (regs=11)
+  // print("Connected to " + hostport)
+  Const        r3, "Connected to "
+  Add          r4, r3, r2
+  Print        r4
+  // return FTPConn{ dir: "/" }
+  Const        r5, "/"
+  Const        r6, "__name"
+  Const        r7, "FTPConn"
+  Const        r8, "dir"
+  Move         r9, r5
+  MakeMap      r10, 2, r6
+  Return       r10
+
+  // fun login(conn: FTPConn, user: string, pass: string) {
+func login (regs=7)
+  // print("Logged in as " + user)
+  Const        r5, "Logged in as "
+  Add          r6, r5, r3
+  Print        r6
+  Return       r0
+
+  // fun changeDir(conn: FTPConn, dir: string) {
+func changeDir (regs=5)
+  // conn.dir = dir
+  Const        r4, "dir"
+  SetIndex     r2, r4, r3
+  Return       r0
+
+  // fun list(conn: FTPConn): list<FileInfo> {
+func list (regs=34)
+  // let names = serverNames[conn.dir]
+  Const        r3, "dir"
+  Index        r4, r2, r3
+  Index        r5, r1, r4
+  Move         r6, r5
+  // let dataDir = serverData[conn.dir]
+  Const        r3, "dir"
+  Index        r7, r2, r3
+  Index        r8, r0, r7
+  Move         r9, r8
+  // var out: list<FileInfo> = []
+  Const        r10, []
+  Move         r11, r10
+  // for name in names {
+  IterPrep     r12, r6
+  Len          r13, r12
+  Const        r14, 0
+L1:
+  LessInt      r15, r14, r13
+  JumpIfFalse  r15, L0
+  Index        r16, r12, r14
+  Move         r17, r16
+  // let content = dataDir[name]
+  Index        r18, r9, r17
+  Move         r19, r18
+  // out = append(out, FileInfo{ name: name, size: len(content), kind: "file" })
+  Len          r20, r19
+  Const        r21, "file"
+  Const        r22, "__name"
+  Const        r23, "FileInfo"
+  Const        r24, "name"
+  Move         r25, r17
+  Const        r26, "size"
+  Move         r27, r20
+  Const        r28, "kind"
+  Move         r29, r21
+  MakeMap      r30, 4, r22
+  Append       r31, r11, r30
+  Move         r11, r31
+  // for name in names {
+  Const        r32, 1
+  AddInt       r33, r14, r32
+  Move         r14, r33
+  Jump         L1
+L0:
+  // return out
+  Return       r11
+
+  // fun retrieve(conn: FTPConn, name: string): string {
+func retrieve (regs=8)
+  // return serverData[conn.dir][name]
+  Const        r4, "dir"
+  Index        r5, r2, r4
+  Index        r6, r0, r5
+  Index        r7, r6, r3
+  Return       r7
+
+  // fun main() {
+func main (regs=47)
+  // let conn = connect("localhost:21")
+  Const        r3, "localhost:21"
+  Move         r2, r3
+  Call         r4, connect, r2
+  Move         r5, r4
+  // login(conn, "anonymous", "anonymous")
+  Move         r6, r5
+  Const        r9, "anonymous"
+  Move         r7, r9
+  Const        r9, "anonymous"
+  Move         r8, r9
+  Call         r10, login, r6, r7, r8
+  // changeDir(conn, "pub")
+  Move         r11, r5
+  Const        r13, "pub"
+  Move         r12, r13
+  Call2        r14, changeDir, r11, r12
+  // print(conn.dir)
+  Const        r15, "dir"
+  Index        r16, r5, r15
+  Print        r16
+  // let files = list(conn)
+  Move         r17, r5
+  Call         r18, list, r17
+  Move         r19, r18
+  // for f in files {
+  IterPrep     r20, r19
+  Len          r21, r20
+  Const        r22, 0
+L1:
+  LessInt      r23, r22, r21
+  JumpIfFalse  r23, L0
+  Index        r24, r20, r22
+  Move         r25, r24
+  // print(f.name + " " + str(f.size))
+  Const        r26, "name"
+  Index        r27, r25, r26
+  Const        r28, " "
+  Add          r29, r27, r28
+  Const        r30, "size"
+  Index        r31, r25, r30
+  Str          r32, r31
+  Add          r33, r29, r32
+  Print        r33
+  // for f in files {
+  Const        r34, 1
+  AddInt       r35, r22, r34
+  Move         r22, r35
+  Jump         L1
+L0:
+  // let data = retrieve(conn, "somefile.bin")
+  Move         r36, r5
+  Const        r38, "somefile.bin"
+  Move         r37, r38
+  Call2        r39, retrieve, r36, r37
+  Move         r40, r39
+  // print("Wrote " + str(len(data)) + " bytes to somefile.bin")
+  Const        r41, "Wrote "
+  Len          r42, r40
+  Str          r43, r42
+  Add          r44, r41, r43
+  Const        r45, " bytes to somefile.bin"
+  Add          r46, r44, r45
+  Print        r46
+  Return       r0

@@ -1,0 +1,5 @@
+func main (regs=1)
+  // print("Graph colouring example not implemented")
+  Const        r0, "Graph colouring example not implemented"
+  Print        r0
+  Return       r0

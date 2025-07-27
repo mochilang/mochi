@@ -1,8 +1,10 @@
-func main (regs=2)
+func main (regs=3)
   // var err = ""
   Const        r1, ""
   Move         r0, r1
   SetGlobal    0,0,0,0
+  // main()
+  Call         r2, main, 
   Return       r0
 
   // fun pow_big(base: bigint, exp: int): bigint {
@@ -82,6 +84,7 @@ L0:
   LessEq       r7, r1, r6
   JumpIfFalse  r7, L1
   // let mi = int(m)
+  Cast         r8, r1, int
   Move         r9, r8
   // if mi == 0 { return n + 1 }
   Const        r5, 0
@@ -136,6 +139,7 @@ L5:
   // let r = pow_big(2 as bigint, int(n))
   Const        r14, 2
   Move         r30, r14
+  Cast         r32, r2, int
   Move         r31, r32
   Call2        r33, pow_big, r30, r31
   Move         r34, r33

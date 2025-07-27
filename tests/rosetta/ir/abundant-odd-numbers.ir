@@ -1,4 +1,6 @@
 func main (regs=1)
+  // main()
+  Call         r0, main, 
   Return       r0
 
   // fun divisors(n: int): list<int> {
@@ -268,8 +270,7 @@ func main (regs=31)
   Move         r7, r11
   Const        r12, 0
   Move         r8, r12
-  Const        r0, 25
-  Move         r9, r0
+  Move         r9, r1
   Const        r13, false
   Move         r10, r13
   Call         r14, abundantOdd, r7, r8, r9, r10
@@ -279,8 +280,7 @@ func main (regs=31)
   Print        r16
   // abundantOdd(n, max, 1000, true)
   Move         r17, r15
-  Const        r0, 25
-  Move         r18, r0
+  Move         r18, r1
   Const        r21, 1000
   Move         r19, r21
   Const        r22, true

@@ -1,4 +1,4 @@
-func main (regs=4)
+func main (regs=5)
   // var adfgvx = "ADFGVX"
   Const        r2, "ADFGVX"
   Move         r0, r2
@@ -7,6 +7,8 @@ func main (regs=4)
   Const        r3, "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
   Move         r1, r3
   SetGlobal    1,1,0,0
+  // main()
+  Call         r4, main, 
   Return       r0
 
   // fun shuffleStr(s: string): string {
@@ -1042,14 +1044,12 @@ func main (regs=26)
   Move         r9, r8
   // print("\nPlaintext : " + plainText)
   Const        r10, "\nPlaintext : "
-  Const        r2, "ATTACKAT1200AM"
-  Add          r11, r10, r2
+  Const        r11, "\nPlaintext : ATTACKAT1200AM"
   Print        r11
   // let cipherText = encrypt(polybius, key, plainText)
   Move         r12, r5
   Move         r13, r9
-  Const        r2, "ATTACKAT1200AM"
-  Move         r14, r2
+  Move         r14, r3
   Call         r15, encrypt, r12, r13, r14
   Move         r16, r15
   // print("\nEncrypted : " + cipherText)

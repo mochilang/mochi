@@ -4,12 +4,16 @@ func main (regs=1)
   Return       r0
 
   // fun main() {
-func main (regs=5)
+func main (regs=7)
   // let a = int(input())
-  Move         r1, r0
+  Input        r0
+  Cast         r1, r0, int
+  Move         r2, r1
   // let b = int(input())
-  Move         r3, r2
+  Input        r3
+  Cast         r4, r3, int
+  Move         r5, r4
   // print(a + b)
-  Add          r4, r1, r3
-  Print        r4
+  Add          r6, r2, r5
+  Print        r6
   Return       r0
