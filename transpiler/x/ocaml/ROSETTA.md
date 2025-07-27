@@ -2,7 +2,7 @@
 
 This directory contains OCaml code generated from Rosetta Code programs in `tests/rosetta/x/Mochi`.
 
-Completed programs: 61/465
+Completed programs: 69/465
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -77,16 +77,16 @@ Completed programs: 61/465
 | 69 | arithmetic-geometric-mean-calculate-pi | ✓ | 45.0µs | 5.76KB |
 | 70 | arithmetic-geometric-mean | error |  |  |
 | 71 | arithmetic-integer-1 | ✓ | 93.0µs | 848B |
-| 72 | arithmetic-integer-2 |   |  |  |
+| 72 | arithmetic-integer-2 | ✓ | 37.0µs | 1.12KB |
 | 73 | arithmetic-numbers |   |  |  |
-| 74 | arithmetic-rational |   |  |  |
-| 75 | array-concatenation |   |  |  |
-| 76 | array-length |   |  |  |
-| 77 | arrays |   |  |  |
-| 78 | ascending-primes |   |  |  |
-| 79 | ascii-art-diagram-converter |   |  |  |
-| 80 | assertions |   |  |  |
-| 81 | associative-array-creation |   |  |  |
+| 74 | arithmetic-rational | ✓ | 67.0µs | 2.72KB |
+| 75 | array-concatenation | ✓ | 55.0µs | 4.38KB |
+| 76 | array-length | ✓ | 34.0µs | 696B |
+| 77 | arrays | ✓ | 68.0µs | 8.07KB |
+| 78 | ascending-primes | ✓ | 591.0µs | 142.52KB |
+| 79 | ascii-art-diagram-converter | ✓ | 46.0µs | 208B |
+| 80 | assertions | ✓ | 25.0µs | 208B |
+| 81 | associative-array-creation | error |  |  |
 | 82 | associative-array-iteration |   |  |  |
 | 83 | associative-array-merging |   |  |  |
 | 84 | atomic-updates |   |  |  |
@@ -471,4 +471,4 @@ Completed programs: 61/465
 | 463 | sorting-algorithms-bubble-sort |   |  |  |
 | 464 | window-management |   |  |  |
 | 465 | zumkeller-numbers |   |  |  |
-Last updated 2025-07-27 15:57 +0700
+Last updated 2025-07-27 09:31 UTC
