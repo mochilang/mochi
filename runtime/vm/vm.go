@@ -7729,18 +7729,26 @@ func formatValue(v Value) string {
 	}
 }
 
-func copyValue(v Value) Value {
+const maxCopyDepth = 1024
+
+func copyValue(v Value) Value { return copyValueDepth(v, 0) }
+
+func copyValueDepth(v Value, depth int) Value {
+	if depth > maxCopyDepth {
+		// Avoid runaway recursion on cyclic values.
+		return v
+	}
 	switch v.Tag {
 	case ValueList:
 		l := make([]Value, len(v.List))
 		for i, x := range v.List {
-			l[i] = copyValue(x)
+			l[i] = copyValueDepth(x, depth+1)
 		}
 		return Value{Tag: ValueList, List: l}
 	case ValueMap:
 		m := make(map[string]Value, len(v.Map))
 		for k, x := range v.Map {
-			m[k] = copyValue(x)
+			m[k] = copyValueDepth(x, depth+1)
 		}
 		return Value{Tag: ValueMap, Map: m}
 	default:
