@@ -1553,19 +1553,30 @@ func (l *ListLit) emit(w io.Writer) {
 	if arrType == "" {
 		if len(l.Elems) > 0 {
 			t := inferType(l.Elems[0])
-			if strings.HasSuffix(t, "[]") {
-				arrType = t
+			same := true
+			for _, el := range l.Elems[1:] {
+				if inferType(el) != t {
+					same = false
+					break
+				}
+			}
+			if same && t != "" {
+				if strings.HasSuffix(t, "[]") {
+					arrType = t
+				} else {
+					arrType = t
+					if arrType == "" {
+						arrType = "Object"
+					}
+					switch arrType {
+					case "string":
+						arrType = "String"
+					case "boolean":
+						arrType = "boolean"
+					}
+				}
 			} else {
-				arrType = t
-				if arrType == "" {
-					arrType = "Object"
-				}
-				switch arrType {
-				case "string":
-					arrType = "String"
-				case "boolean":
-					arrType = "boolean"
-				}
+				arrType = "Object"
 			}
 		} else {
 			arrType = "Object"
@@ -1578,11 +1589,22 @@ func (l *ListLit) emit(w io.Writer) {
 		}
 	}
 	raw := arrType
-	if idx := strings.Index(arrType, "<"); idx >= 0 {
-		raw = arrType[:idx]
-		fmt.Fprintf(w, "(%s[])new %s[]{", arrType, raw)
+	dims := 0
+	for strings.HasSuffix(raw, "[]") {
+		raw = strings.TrimSuffix(raw, "[]")
+		dims++
+	}
+	if idx := strings.Index(raw, "<"); idx >= 0 {
+		raw = raw[:idx]
+	}
+	if dims == 0 {
+		if strings.Contains(arrType, "<") {
+			fmt.Fprintf(w, "(%s[])new %s[]{", arrType, raw)
+		} else {
+			fmt.Fprintf(w, "new %s[]{", arrType)
+		}
 	} else {
-		fmt.Fprintf(w, "new %s[]{", arrType)
+		fmt.Fprintf(w, "new %s%s{", raw, strings.Repeat("[]", dims+1))
 	}
 	for i, e := range l.Elems {
 		if i > 0 {
@@ -3512,7 +3534,7 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 				}
 			}
 			if t := inferType(e); t != "" {
-				if cur, ok := varTypes[s.Assign.Name]; !ok || ((cur == "int[]" || cur == "Object[]") && t != cur) {
+				if cur, ok := varTypes[s.Assign.Name]; !ok || ((cur == "int[]" || cur == "Object[]") && t != cur && !(cur == "Object[]" && strings.Contains(t, "Map"))) {
 					varTypes[s.Assign.Name] = t
 					if vdecl != nil {
 						vdecl.Type = t
@@ -3775,7 +3797,7 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 			isMap = true
 			keyType = it.KeyType
 		case *VarExpr:
-			if t, ok := varTypes[it.Name]; ok && (t == "map" || strings.HasPrefix(t, "java.util.Map")) {
+			if t, ok := varTypes[it.Name]; ok && (t == "map" || (strings.HasPrefix(t, "java.util.Map") && !strings.HasSuffix(t, "[]"))) {
 				isMap = true
 				keyType = mapKeyType(t)
 			}
