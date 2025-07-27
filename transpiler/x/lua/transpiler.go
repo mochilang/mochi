@@ -2949,30 +2949,13 @@ func convertPostfix(p *parser.PostfixExpr) (Expr, error) {
 						// map stdout.write to io.write
 						expr = &CallExpr{Func: "io.write", Args: args}
 					} else {
-						// method call with receiver as first argument
-						args = append([]Expr{expr}, args...)
-						cexpr := &CallExpr{Func: op.Field.Name, Args: args}
-						if currentEnv != nil {
-							if t, err := currentEnv.GetVar(op.Field.Name); err == nil {
-								if ft, ok := t.(types.FuncType); ok {
-									cexpr.ParamTypes = ft.Params
-								}
-							}
-						}
-						expr = cexpr
+						// call function stored in a table field
+						fn := &IndexExpr{Target: expr, Index: &StringLit{Value: op.Field.Name}, Kind: "map"}
+						expr = &DynCallExpr{Fn: fn, Args: args}
 					}
 				} else {
-					// method call with receiver as first argument
-					args = append([]Expr{expr}, args...)
-					cexpr := &CallExpr{Func: op.Field.Name, Args: args}
-					if currentEnv != nil {
-						if t, err := currentEnv.GetVar(op.Field.Name); err == nil {
-							if ft, ok := t.(types.FuncType); ok {
-								cexpr.ParamTypes = ft.Params
-							}
-						}
-					}
-					expr = cexpr
+					fn := &IndexExpr{Target: expr, Index: &StringLit{Value: op.Field.Name}, Kind: "map"}
+					expr = &DynCallExpr{Fn: fn, Args: args}
 				}
 			} else {
 				expr = &IndexExpr{Target: expr, Index: &StringLit{Value: op.Field.Name}, Kind: "map"}
@@ -2997,17 +2980,8 @@ func convertPostfix(p *parser.PostfixExpr) (Expr, error) {
 				}
 				expr = cexpr
 			} else if ix, ok := expr.(*IndexExpr); ok {
-				if s, ok := ix.Index.(*StringLit); ok {
-					if root, ok := ix.Target.(*Ident); ok {
-						name := root.Name + "." + s.Value
-						cexpr := &CallExpr{Func: name, Args: args}
-						expr = cexpr
-					} else {
-						expr = &DynCallExpr{Fn: expr, Args: args}
-					}
-				} else {
-					expr = &DynCallExpr{Fn: expr, Args: args}
-				}
+				// Call a function stored in a table field
+				expr = &DynCallExpr{Fn: ix, Args: args}
 			} else {
 				expr = &DynCallExpr{Fn: expr, Args: args}
 			}
@@ -3091,6 +3065,12 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		case "substr":
 			ce.Func = "substring"
 			return ce, nil
+		}
+		if (!hasFT || len(ft.Params) == 0) && len(ce.Args) >= 1 {
+			if id, ok := ce.Args[0].(*Ident); ok {
+				fn := &IndexExpr{Target: id, Index: &StringLit{Value: p.Call.Func}, Kind: "map"}
+				return &DynCallExpr{Fn: fn, Args: ce.Args[1:]}, nil
+			}
 		}
 		if hasFT {
 			argCount := len(p.Call.Args)
