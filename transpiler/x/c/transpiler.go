@@ -564,17 +564,23 @@ func (d *DeclStmt) emit(w io.Writer, indent int) {
 	} else if strings.HasSuffix(typ, "[]") {
 		base := strings.TrimSuffix(typ, "[]")
 		if lst, ok := d.Value.(*ListLit); ok {
-			io.WriteString(w, base)
-			fmt.Fprintf(w, " %s[%d] = {", d.Name, len(lst.Elems))
-			for i, e := range lst.Elems {
-				if i > 0 {
-					io.WriteString(w, ", ")
+			if len(lst.Elems) > 0 {
+				io.WriteString(w, base)
+				fmt.Fprintf(w, " %s[%d] = {", d.Name, len(lst.Elems))
+				for i, e := range lst.Elems {
+					if i > 0 {
+						io.WriteString(w, ", ")
+					}
+					e.emitExpr(w)
 				}
-				e.emitExpr(w)
+				io.WriteString(w, "};\n")
+				writeIndent(w, indent)
+				fmt.Fprintf(w, "size_t %s_len = %d;\n", d.Name, len(lst.Elems))
+			} else {
+				fmt.Fprintf(w, "%s *%s = NULL;\n", base, d.Name)
+				writeIndent(w, indent)
+				fmt.Fprintf(w, "size_t %s_len = 0;\n", d.Name)
 			}
-			io.WriteString(w, "};\n")
-			writeIndent(w, indent)
-			fmt.Fprintf(w, "size_t %s_len = %d;\n", d.Name, len(lst.Elems))
 			return
 		}
 		if vr, ok := d.Value.(*VarRef); ok {
@@ -3171,8 +3177,40 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 			if keys, ok2 := convertMapKeysExpr(s.For.Source); ok2 {
 				list = keys
 				ok = true
-			} else if name := varName(s.For.Source); name != "" {
+			} else if name := exprVarName(s.For.Source); name != "" {
+				if isMapVar(name) {
+					body, err := compileStmts(env, s.For.Body)
+					if err != nil {
+						return nil, err
+					}
+					keyT := mapKeyTypes[name]
+					switch keyT {
+					case "const char*":
+						env.SetVarDeep(s.For.Name, types.StringType{}, true)
+					case "int":
+						env.SetVarDeep(s.For.Name, types.IntType{}, true)
+					default:
+						env.SetVarDeep(s.For.Name, types.AnyType{}, true)
+					}
+					return &ForStmt{Var: s.For.Name, ListVar: name + "_keys", ElemType: keyT, Body: body}, nil
+				}
 				typStr := inferExprType(env, convertExpr(s.For.Source))
+				if strings.HasSuffix(typStr, "[]") {
+					body, err := compileStmts(env, s.For.Body)
+					if err != nil {
+						return nil, err
+					}
+					keyT := mapKeyTypes[name]
+					switch keyT {
+					case "const char*":
+						env.SetVarDeep(s.For.Name, types.StringType{}, true)
+					case "int":
+						env.SetVarDeep(s.For.Name, types.IntType{}, true)
+					default:
+						env.SetVarDeep(s.For.Name, types.AnyType{}, true)
+					}
+					return &ForStmt{Var: s.For.Name, ListVar: name + "_keys", ElemType: keyT, Body: body}, nil
+				}
 				if strings.HasSuffix(typStr, "[]") {
 					elemType := strings.TrimSuffix(typStr, "[]")
 					if strings.HasSuffix(elemType, "[]") {
@@ -3608,6 +3646,14 @@ func compileFunction(env *types.Env, name string, fn *parser.FunExpr) (*Function
 		params = append(params, Param{Name: p.Name, Type: typ})
 		varTypes[p.Name] = typ
 		localEnv.SetVar(p.Name, mochiT, true)
+		if mt, ok := mochiT.(types.MapType); ok {
+			if _, ok2 := mt.Key.(types.StringType); ok2 {
+				mapKeyTypes[p.Name] = "const char*"
+			} else {
+				mapKeyTypes[p.Name] = "int"
+			}
+			mapValTypes[p.Name] = cTypeFromMochiType(mt.Value)
+		}
 		if strings.HasSuffix(typ, "[]") {
 			params = append(params, Param{Name: p.Name + "_len", Type: "size_t"})
 			varTypes[p.Name+"_len"] = "size_t"
@@ -3795,6 +3841,13 @@ func convertExpr(e *parser.Expr) Expr {
 			if l, ok := bin.Left.(*StringLit); ok {
 				if r, ok2 := bin.Right.(*StringLit); ok2 {
 					return &StringLit{Value: l.Value + r.Value}
+				}
+			}
+			if rl, ok := bin.Right.(*ListLit); ok && len(rl.Elems) == 1 {
+				if lv, ok2 := bin.Left.(*VarRef); ok2 {
+					if strings.HasSuffix(inferExprType(currentEnv, lv), "[]") {
+						return &CallExpr{Func: "append", Args: []Expr{bin.Left, rl.Elems[0]}}
+					}
 				}
 			}
 		}
@@ -5844,6 +5897,15 @@ func simpleVarName(e *parser.Expr) string {
 	p := u.Value
 	if p.Target != nil && p.Target.Selector != nil && len(p.Target.Selector.Tail) == 0 {
 		return p.Target.Selector.Root
+	}
+	return ""
+}
+
+func exprVarName(e *parser.Expr) string {
+	if ex := convertExpr(e); ex != nil {
+		if vr, ok := ex.(*VarRef); ok {
+			return vr.Name
+		}
 	}
 	return ""
 }
