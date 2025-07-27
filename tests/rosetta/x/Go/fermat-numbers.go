@@ -362,3 +362,4 @@ func main() {
     }
     fmt.Printf("\nTook %s\n", time.Since(start))
 }
+\n// Source downloaded via tools/rosetta
