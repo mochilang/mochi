@@ -1,3 +1,7 @@
+## Progress (2025-07-27 17:18 +0700)
+- fs transpiler: handle typed lambdas and append elem cast
+- Generated F# for 103/104 programs (103 passing)
+
 ## Progress (2025-07-27 10:08 +0000)
 - fs transpiler: add benchmark for call-a-function-3
 - Generated F# for 103/104 programs (103 passing)

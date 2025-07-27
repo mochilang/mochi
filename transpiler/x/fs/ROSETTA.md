@@ -2,7 +2,7 @@
 
 This file is auto-generated from rosetta tests.
 
-## Rosetta Golden Test Checklist (139/465)
+## Rosetta Golden Test Checklist (141/465)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 151µs | 41.3 KB |
@@ -166,8 +166,8 @@ This file is auto-generated from rosetta tests.
 | 159 | call-a-function-6 | ✓ | 234µs | 53.1 KB |
 | 160 | call-a-function-7 | ✓ | 6µs | 208 B |
 | 161 | call-a-function-8 | ✓ | 21µs | 14.6 KB |
-| 162 | call-a-function-9 |   |  |  |
-| 163 | call-an-object-method-1 |   |  |  |
+| 162 | call-a-function-9 | ✓ | 33µs | 15.5 KB |
+| 163 | call-an-object-method-1 | ✓ | 20µs | 12.1 KB |
 | 164 | call-an-object-method-2 |   |  |  |
 | 165 | call-an-object-method-3 |   |  |  |
 | 166 | call-an-object-method |   |  |  |
@@ -471,4 +471,4 @@ This file is auto-generated from rosetta tests.
 | 464 | window-management |   |  |  |
 | 465 | zumkeller-numbers |   |  |  |
 
-Last updated: 2025-07-27 10:08 +0000
+Last updated: 2025-07-27 17:18 +0700

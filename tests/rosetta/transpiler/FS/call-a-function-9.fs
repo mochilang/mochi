@@ -1,4 +1,4 @@
-// Generated 2025-07-27 10:08 +0000
+// Generated 2025-07-27 17:18 +0700
 
 exception Return
 
@@ -60,7 +60,7 @@ and main () =
         let e: int = g d (unbox<float> b)
         let mutable i: int = g d 2.0
         let mutable list: int array = [||]
-        list <- unbox<int array> (Array.append list [|a|])
+        list <- unbox<int array> (Array.append list [|unbox<int> a|])
         list <- unbox<int array> (Array.append list [|d|])
         list <- unbox<int array> (Array.append list [|e|])
         list <- unbox<int array> (Array.append list [|i|])
