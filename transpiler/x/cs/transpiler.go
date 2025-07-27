@@ -783,7 +783,13 @@ func (ie *InExpr) emit(w io.Writer) {
 // ExprStmt represents a statement consisting solely of an expression.
 type ExprStmt struct{ Expr Expr }
 
-func (s *ExprStmt) emit(w io.Writer) { s.Expr.emit(w) }
+func (s *ExprStmt) emit(w io.Writer) {
+	if r, ok := s.Expr.(*RawExpr); ok && r.Code == "null" {
+		// ignore stand-alone null statements
+		return
+	}
+	s.Expr.emit(w)
+}
 
 type CallExpr struct {
 	Func string
@@ -2052,6 +2058,19 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	importAliases = make(map[string]string)
 	varAliases = make(map[string]string)
 	aliasCounter = 0
+	// pre-register function signatures so calls to later functions know return types
+	for _, st := range p.Statements {
+		if fn := st.Fun; fn != nil {
+			ptypes := make([]string, len(fn.Params))
+			for i, p := range fn.Params {
+				ptypes[i] = csType(p.Type)
+			}
+			ret := csType(fn.Return)
+			varTypes[fn.Name] = fmt.Sprintf("fn/%d", len(ptypes))
+			funRets[fn.Name] = ret
+			funParams[fn.Name] = append([]string{}, ptypes...)
+		}
+	}
 	for _, st := range p.Statements {
 		s, err := compileStmt(prog, st)
 		if err != nil {
@@ -3149,6 +3168,27 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 		if alias, ok := varAliases[name]; ok {
 			name = alias
 		}
+		if types, ok := funParams[name]; ok {
+			for i, arg := range args {
+				if i >= len(types) {
+					break
+				}
+				expect := types[i]
+				if list, ok := arg.(*ListLit); ok && len(list.Elems) == 0 &&
+					(list.ElemType == "" || list.ElemType == "object[]") &&
+					strings.HasSuffix(expect, "[]") {
+					list.ElemType = expect
+				} else if mp, ok := arg.(*MapLit); ok && len(mp.Items) == 0 &&
+					strings.HasPrefix(expect, "Dictionary<") {
+					parts := strings.TrimPrefix(strings.TrimSuffix(expect, ">"), "Dictionary<")
+					arr := strings.Split(parts, ",")
+					if len(arr) == 2 {
+						mp.KeyType = strings.TrimSpace(arr[0])
+						mp.ValType = strings.TrimSpace(arr[1])
+					}
+				}
+			}
+		}
 		if name == "now" && len(args) == 0 {
 			usesNow = true
 			return &RawExpr{Code: "_now()", Type: "long"}, nil
@@ -3307,6 +3347,10 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 		case "substr":
 			if len(args) == 3 {
 				return &SubstringExpr{Str: args[0], Start: args[1], End: args[2]}, nil
+			}
+		case "slice":
+			if len(args) == 3 {
+				return &SliceExpr{Value: args[0], Start: args[1], End: args[2]}, nil
 			}
 		case "values":
 			if len(args) == 1 {

@@ -1,3 +1,207 @@
+## Progress (2025-07-27 13:26 +0700)
+- cs transpiler: support delegate call and array indexing (progress 103/104)
+
+## Progress (2025-07-27 13:26 +0700)
+- cs transpiler: support delegate call and array indexing (progress 103/104)
+
+## Progress (2025-07-27 13:26 +0700)
+- cs transpiler: support delegate call and array indexing (progress 103/104)
+
+## Progress (2025-07-27 13:26 +0700)
+- cs transpiler: support delegate call and array indexing (progress 103/104)
+
+## Progress (2025-07-27 13:26 +0700)
+- cs transpiler: support delegate call and array indexing (progress 103/104)
+
+## Progress (2025-07-27 13:26 +0700)
+- cs transpiler: support delegate call and array indexing (progress 103/104)
+
+## Progress (2025-07-27 13:26 +0700)
+- cs transpiler: support delegate call and array indexing (progress 103/104)
+
+## Progress (2025-07-27 13:26 +0700)
+- cs transpiler: support delegate call and array indexing (progress 103/104)
+
+## Progress (2025-07-27 13:26 +0700)
+- cs transpiler: support delegate call and array indexing (progress 103/104)
+
+## Progress (2025-07-27 13:26 +0700)
+- cs transpiler: support delegate call and array indexing (progress 103/104)
+
+## Progress (2025-07-27 13:26 +0700)
+- cs transpiler: support delegate call and array indexing (progress 103/104)
+
+## Progress (2025-07-27 13:26 +0700)
+- cs transpiler: support delegate call and array indexing (progress 103/104)
+
+## Progress (2025-07-27 13:26 +0700)
+- cs transpiler: support delegate call and array indexing (progress 103/104)
+
+## Progress (2025-07-27 13:26 +0700)
+- cs transpiler: support delegate call and array indexing (progress 103/104)
+
+## Progress (2025-07-27 13:26 +0700)
+- cs transpiler: support delegate call and array indexing (progress 103/104)
+
+## Progress (2025-07-27 13:26 +0700)
+- cs transpiler: support delegate call and array indexing (progress 103/104)
+
+## Progress (2025-07-27 13:26 +0700)
+- cs transpiler: support delegate call and array indexing (progress 103/104)
+
+## Progress (2025-07-27 13:26 +0700)
+- cs transpiler: support delegate call and array indexing (progress 103/104)
+
+## Progress (2025-07-27 13:26 +0700)
+- cs transpiler: support delegate call and array indexing (progress 103/104)
+
+## Progress (2025-07-27 13:26 +0700)
+- cs transpiler: support delegate call and array indexing (progress 103/104)
+
+## Progress (2025-07-27 13:26 +0700)
+- cs transpiler: support delegate call and array indexing (progress 103/104)
+
+## Progress (2025-07-27 13:26 +0700)
+- cs transpiler: support delegate call and array indexing (progress 103/104)
+
+## Progress (2025-07-27 13:26 +0700)
+- cs transpiler: support delegate call and array indexing (progress 103/104)
+
+## Progress (2025-07-27 13:26 +0700)
+- cs transpiler: support delegate call and array indexing (progress 103/104)
+
+## Progress (2025-07-27 13:26 +0700)
+- cs transpiler: support delegate call and array indexing (progress 103/104)
+
+## Progress (2025-07-27 13:26 +0700)
+- cs transpiler: support delegate call and array indexing (progress 103/104)
+
+## Progress (2025-07-27 13:26 +0700)
+- cs transpiler: support delegate call and array indexing (progress 103/104)
+
+## Progress (2025-07-27 13:26 +0700)
+- cs transpiler: support delegate call and array indexing (progress 103/104)
+
+## Progress (2025-07-27 13:26 +0700)
+- cs transpiler: support delegate call and array indexing (progress 103/104)
+
+## Progress (2025-07-27 13:26 +0700)
+- cs transpiler: support delegate call and array indexing (progress 103/104)
+
+## Progress (2025-07-27 13:26 +0700)
+- cs transpiler: support delegate call and array indexing (progress 103/104)
+
+## Progress (2025-07-27 13:26 +0700)
+- cs transpiler: support delegate call and array indexing (progress 103/104)
+
+## Progress (2025-07-27 13:26 +0700)
+- cs transpiler: support delegate call and array indexing (progress 103/104)
+
+## Progress (2025-07-27 13:26 +0700)
+- cs transpiler: support delegate call and array indexing (progress 103/104)
+
+## Progress (2025-07-27 13:26 +0700)
+- cs transpiler: support delegate call and array indexing (progress 103/104)
+
+## Progress (2025-07-27 13:26 +0700)
+- cs transpiler: support delegate call and array indexing (progress 103/104)
+
+## Progress (2025-07-27 13:26 +0700)
+- cs transpiler: support delegate call and array indexing (progress 103/104)
+
+## Progress (2025-07-27 13:26 +0700)
+- cs transpiler: support delegate call and array indexing (progress 103/104)
+
+## Progress (2025-07-27 13:26 +0700)
+- cs transpiler: support delegate call and array indexing (progress 103/104)
+
+## Progress (2025-07-27 13:26 +0700)
+- cs transpiler: support delegate call and array indexing (progress 103/104)
+
+## Progress (2025-07-27 13:26 +0700)
+- cs transpiler: support delegate call and array indexing (progress 103/104)
+
+## Progress (2025-07-27 13:26 +0700)
+- cs transpiler: support delegate call and array indexing (progress 103/104)
+
+## Progress (2025-07-27 13:26 +0700)
+- cs transpiler: support delegate call and array indexing (progress 103/104)
+
+## Progress (2025-07-27 13:26 +0700)
+- cs transpiler: support delegate call and array indexing (progress 103/104)
+
+## Progress (2025-07-27 13:26 +0700)
+- cs transpiler: support delegate call and array indexing (progress 103/104)
+
+## Progress (2025-07-27 13:26 +0700)
+- cs transpiler: support delegate call and array indexing (progress 103/104)
+
+## Progress (2025-07-27 13:26 +0700)
+- cs transpiler: support delegate call and array indexing (progress 103/104)
+
+## Progress (2025-07-27 13:26 +0700)
+- cs transpiler: support delegate call and array indexing (progress 103/104)
+
+## Progress (2025-07-27 13:26 +0700)
+- cs transpiler: support delegate call and array indexing (progress 103/104)
+
+## Progress (2025-07-27 13:26 +0700)
+- cs transpiler: support delegate call and array indexing (progress 103/104)
+
+## Progress (2025-07-27 13:26 +0700)
+- cs transpiler: support delegate call and array indexing (progress 103/104)
+
+## Progress (2025-07-27 13:26 +0700)
+- cs transpiler: support delegate call and array indexing (progress 103/104)
+
+## Progress (2025-07-27 13:26 +0700)
+- cs transpiler: support delegate call and array indexing (progress 103/104)
+
+## Progress (2025-07-27 13:26 +0700)
+- cs transpiler: support delegate call and array indexing (progress 103/104)
+
+## Progress (2025-07-27 13:26 +0700)
+- cs transpiler: support delegate call and array indexing (progress 103/104)
+
+## Progress (2025-07-27 13:26 +0700)
+- cs transpiler: support delegate call and array indexing (progress 103/104)
+
+## Progress (2025-07-27 13:26 +0700)
+- cs transpiler: support delegate call and array indexing (progress 103/104)
+
+## Progress (2025-07-27 13:26 +0700)
+- cs transpiler: support delegate call and array indexing (progress 103/104)
+
+## Progress (2025-07-27 13:26 +0700)
+- cs transpiler: support delegate call and array indexing (progress 103/104)
+
+## Progress (2025-07-27 13:26 +0700)
+- cs transpiler: support delegate call and array indexing (progress 103/104)
+
+## Progress (2025-07-27 13:26 +0700)
+- cs transpiler: support delegate call and array indexing (progress 103/104)
+
+## Progress (2025-07-27 13:26 +0700)
+- cs transpiler: support delegate call and array indexing (progress 103/104)
+
+## Progress (2025-07-27 13:26 +0700)
+- cs transpiler: support delegate call and array indexing (progress 103/104)
+
+## Progress (2025-07-27 13:26 +0700)
+- cs transpiler: support delegate call and array indexing (progress 103/104)
+
+## Progress (2025-07-27 13:26 +0700)
+- cs transpiler: support delegate call and array indexing (progress 103/104)
+
+## Progress (2025-07-27 13:26 +0700)
+- cs transpiler: support delegate call and array indexing (progress 103/104)
+
+## Progress (2025-07-27 13:26 +0700)
+- cs transpiler: support delegate call and array indexing (progress 103/104)
+
+## Progress (2025-07-27 13:26 +0700)
+- cs transpiler: support delegate call and array indexing (progress 103/104)
+
 ## Progress (2025-07-27 12:32 +0700)
 - transpiler/ts: support async fetch (progress 103/104)
 
@@ -961,6 +1165,74 @@
 
 ## Progress (2025-07-22 03:14 +0000)
 - cs transpiler: 100/102 tests compiled
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

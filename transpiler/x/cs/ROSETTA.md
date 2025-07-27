@@ -1,7 +1,7 @@
 # Rosetta C# Transpiler Output
 
 Completed programs: 176/453
-Last updated: 2025-07-27 13:02 +0700
+Last updated: 2025-07-27 13:26 +0700
 
 ## Checklist
 | Index | Name | Status | Duration | Memory |
@@ -176,84 +176,84 @@ Last updated: 2025-07-27 13:02 +0700
 | 168 | canny-edge-detector | ✓ | 469566h32m48.600175s | 1.2GB |
 | 169 | canonicalize-cidr | ✓ | 17.947ms | 2.4GB |
 | 170 | cantor-set |   |  |  |
-| 171 | carmichael-3-strong-pseudoprimes | ✓ | 3.115ms | 36.8MB |
+| 171 | carmichael-3-strong-pseudoprimes |   |  |  |
 | 172 | cartesian-product-of-two-or-more-lists-1 |   |  |  |
 | 173 | cartesian-product-of-two-or-more-lists-2 |   |  |  |
 | 174 | cartesian-product-of-two-or-more-lists-3 |   |  |  |
 | 175 | cartesian-product-of-two-or-more-lists-4 |   |  |  |
 | 176 | case-sensitivity-of-identifiers |   |  |  |
 | 177 | casting-out-nines |   |  |  |
-| 178 | catalan-numbers-1 | ✓ | 2.265ms | 16.0MB |
-| 179 | catalan-numbers-2 | ✓ | 2.411ms | 16.0MB |
-| 180 | catalan-numbers-pascals-triangle | ✓ | 2.598ms | 24.1MB |
-| 181 | catamorphism | ✓ | 2.509ms | 16.0MB |
-| 182 | catmull-clark-subdivision-surface | ✓ | 18.468ms | 2.1GB |
-| 183 | chaocipher | ✓ | 3.468ms | 69.0MB |
-| 184 | chaos-game | ✓ | 5.139ms | 5.8GB |
-| 185 | character-codes-1 | ✓ | 2.364ms | 16.0MB |
-| 186 | character-codes-2 | ✓ | 2.371ms | 16.0MB |
-| 187 | character-codes-3 | ✓ | 2.309ms | 16.0MB |
-| 188 | character-codes-4 | ✓ | 2.214ms | 16.0MB |
-| 189 | character-codes-5 | ✓ | 2.399ms | 16.0MB |
-| 190 | chat-server | ✓ | 2.767ms | 16.0MB |
+| 178 | catalan-numbers-1 |   |  |  |
+| 179 | catalan-numbers-2 |   |  |  |
+| 180 | catalan-numbers-pascals-triangle |   |  |  |
+| 181 | catamorphism |   |  |  |
+| 182 | catmull-clark-subdivision-surface |   |  |  |
+| 183 | chaocipher |   |  |  |
+| 184 | chaos-game |   |  |  |
+| 185 | character-codes-1 |   |  |  |
+| 186 | character-codes-2 |   |  |  |
+| 187 | character-codes-3 |   |  |  |
+| 188 | character-codes-4 |   |  |  |
+| 189 | character-codes-5 |   |  |  |
+| 190 | chat-server |   |  |  |
 | 191 | check-machin-like-formulas |   |  |  |
-| 192 | check-that-file-exists | ✓ | 2.475ms | 16.0MB |
-| 193 | checkpoint-synchronization-1 | ✓ | 2.323ms | 16.0MB |
-| 194 | checkpoint-synchronization-2 | ✓ | 4.025ms | 24.1MB |
-| 195 | checkpoint-synchronization-3 | ✓ | 4.055ms | 24.1MB |
-| 196 | checkpoint-synchronization-4 | ✓ | 2.479ms | 24.1MB |
-| 197 | chernicks-carmichael-numbers | ✓ | 34.289ms | 4.6GB |
-| 198 | cheryls-birthday | ✓ | 2.393ms | 16.0MB |
-| 199 | chinese-remainder-theorem | ✓ | 1.003ms | 1.3GB |
-| 200 | chinese-zodiac | ✓ | 2.36ms | 16.0MB |
-| 201 | cholesky-decomposition-1 | ✓ | 20.173ms | 2.5GB |
-| 202 | cholesky-decomposition | ✓ | 11.889ms | 1.2GB |
-| 203 | chowla-numbers | ✓ | 2.437ms | 16.0MB |
+| 192 | check-that-file-exists |   |  |  |
+| 193 | checkpoint-synchronization-1 |   |  |  |
+| 194 | checkpoint-synchronization-2 |   |  |  |
+| 195 | checkpoint-synchronization-3 |   |  |  |
+| 196 | checkpoint-synchronization-4 |   |  |  |
+| 197 | chernicks-carmichael-numbers |   |  |  |
+| 198 | cheryls-birthday |   |  |  |
+| 199 | chinese-remainder-theorem |   |  |  |
+| 200 | chinese-zodiac |   |  |  |
+| 201 | cholesky-decomposition-1 |   |  |  |
+| 202 | cholesky-decomposition |   |  |  |
+| 203 | chowla-numbers |   |  |  |
 | 204 | church-numerals-1 |   |  |  |
 | 205 | church-numerals-2 |   |  |  |
-| 206 | circles-of-given-radius-through-two-points | ✓ | 18.42ms | 3.0GB |
+| 206 | circles-of-given-radius-through-two-points |   |  |  |
 | 207 | circular-primes |   |  |  |
-| 208 | cistercian-numerals | ✓ | 3.647ms | 333.0MB |
-| 209 | comma-quibbling |   |  |  |
-| 210 | compiler-virtual-machine-interpreter |   |  |  |
-| 211 | composite-numbers-k-with-no-single-digit-factors-whose-factors-are-all-substrings-of-k |   |  |  |
-| 212 | compound-data-type |   |  |  |
-| 213 | concurrent-computing-1 |   |  |  |
-| 214 | concurrent-computing-2 |   |  |  |
-| 215 | concurrent-computing-3 |   |  |  |
-| 216 | conditional-structures-1 |   |  |  |
-| 217 | conditional-structures-10 |   |  |  |
+| 208 | cistercian-numerals |   |  |  |
+| 209 | comma-quibbling | ✓ | 13.958ms | 1.1GB |
+| 210 | compiler-virtual-machine-interpreter | ✓ | 27.012ms | 3.8GB |
+| 211 | composite-numbers-k-with-no-single-digit-factors-whose-factors-are-all-substrings-of-k | ✓ | 2.078605s | 12.7GB |
+| 212 | compound-data-type | ✓ |  |  |
+| 213 | concurrent-computing-1 | ✓ | 12.385ms | 1.0GB |
+| 214 | concurrent-computing-2 | ✓ | 11.094ms | 1.0GB |
+| 215 | concurrent-computing-3 | ✓ | 12.267ms | 1.0GB |
+| 216 | conditional-structures-1 | ✓ | 1µs |  |
+| 217 | conditional-structures-10 | ✓ | 2.313ms | 16.0MB |
 | 218 | conditional-structures-2 |   |  |  |
 | 219 | conditional-structures-3 |   |  |  |
-| 220 | conditional-structures-4 |   |  |  |
+| 220 | conditional-structures-4 | ✓ |  |  |
 | 221 | conditional-structures-5 |   |  |  |
 | 222 | conditional-structures-6 |   |  |  |
 | 223 | conditional-structures-7 |   |  |  |
 | 224 | conditional-structures-8 |   |  |  |
-| 225 | conditional-structures-9 |   |  |  |
+| 225 | conditional-structures-9 | ✓ | 1µs |  |
 | 226 | consecutive-primes-with-ascending-or-descending-differences |   |  |  |
 | 227 | constrained-genericity-1 |   |  |  |
 | 228 | constrained-genericity-2 |   |  |  |
-| 229 | constrained-genericity-3 |   |  |  |
+| 229 | constrained-genericity-3 | ✓ |  |  |
 | 230 | constrained-genericity-4 |   |  |  |
 | 231 | constrained-random-points-on-a-circle-1 |   |  |  |
 | 232 | constrained-random-points-on-a-circle-2 |   |  |  |
-| 233 | continued-fraction |   |  |  |
-| 234 | convert-decimal-number-to-rational |   |  |  |
-| 235 | convert-seconds-to-compound-duration |   |  |  |
-| 236 | convex-hull |   |  |  |
-| 237 | conways-game-of-life |   |  |  |
-| 238 | copy-a-string-1 |   |  |  |
-| 239 | copy-a-string-2 |   |  |  |
-| 240 | copy-stdin-to-stdout-1 |   |  |  |
-| 241 | copy-stdin-to-stdout-2 |   |  |  |
-| 242 | count-in-factors |   |  |  |
-| 243 | count-in-octal-1 |   |  |  |
-| 244 | count-in-octal-2 |   |  |  |
-| 245 | count-in-octal-3 |   |  |  |
-| 246 | count-in-octal-4 |   |  |  |
-| 247 | count-occurrences-of-a-substring |   |  |  |
-| 248 | count-the-coins-1 |   |  |  |
+| 233 | continued-fraction | ✓ | 15.111ms | 1.7GB |
+| 234 | convert-decimal-number-to-rational | ✓ | 11.717ms | 1.1GB |
+| 235 | convert-seconds-to-compound-duration | ✓ | 2.416ms | 16.0MB |
+| 236 | convex-hull | ✓ | 2.439ms | 1.3GB |
+| 237 | conways-game-of-life | ✓ | 25.486ms | 1.2GB |
+| 238 | copy-a-string-1 | ✓ |  |  |
+| 239 | copy-a-string-2 | ✓ | 2.487ms | 16.0MB |
+| 240 | copy-stdin-to-stdout-1 | ✓ | 2.948ms | 24.1MB |
+| 241 | copy-stdin-to-stdout-2 | ✓ | 2.668ms | 24.1MB |
+| 242 | count-in-factors | ✓ | 2.587ms | 24.1MB |
+| 243 | count-in-octal-1 | ✓ | 2.449ms | 24.1MB |
+| 244 | count-in-octal-2 | ✓ | 17.883ms | 17.3GB |
+| 245 | count-in-octal-3 | ✓ | 2.498ms | 16.0MB |
+| 246 | count-in-octal-4 | ✓ | 2.664ms | 16.0MB |
+| 247 | count-occurrences-of-a-substring | ✓ | 12.81ms | 1.2GB |
+| 248 | count-the-coins-1 | ✓ | 2.766ms | 16.0MB |
 | 249 | count-the-coins-2 |   |  |  |
 | 250 | cramers-rule |   |  |  |
 | 251 | crc-32-1 |   |  |  |
