@@ -1049,9 +1049,9 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("}\n")
 	}
 	if useConcat {
-		buf.WriteString("\nfn _concat_string(a: []const u8, b: []const u8) []const u8 {\n")
+		buf.WriteString("\nfn _concat_string(s1: []const u8, s2: []const u8) []const u8 {\n")
 		buf.WriteString("    const alloc = std.heap.page_allocator;\n")
-		buf.WriteString("    return std.mem.concat(alloc, u8, &[_][]const u8{ a, b }) catch unreachable;\n")
+		buf.WriteString("    return std.mem.concat(alloc, u8, &[_][]const u8{ s1, s2 }) catch unreachable;\n")
 		buf.WriteString("}\n")
 	}
 	if useInput {
@@ -3122,17 +3122,19 @@ func compileFunStmt(fn *parser.FunStmt, prog *parser.Program) (*Func, error) {
 	defer func() { aliasStack = aliasStack[:len(aliasStack)-1] }()
 	for i, p := range fn.Params {
 		typ := toZigType(p.Type)
-		name := p.Name
-		if globalNames[name] {
-			alias := name + "_param"
-			aliases[name] = alias
-			name = alias
+		orig := p.Name
+		outName := orig
+		if globalNames[orig] {
+			alias := orig + "_param"
+			aliases[orig] = alias
+			outName = alias
+			varTypes[orig] = typ
 		}
-		params[i] = Param{Name: name, Type: typ}
-		names[i] = name
-		varTypes[name] = typ
+		params[i] = Param{Name: outName, Type: typ}
+		names[i] = outName
+		varTypes[outName] = typ
 		if strings.HasPrefix(typ, "std.StringHashMap(") || strings.HasPrefix(typ, "std.AutoHashMap(") {
-			mapVars[name] = true
+			mapVars[outName] = true
 		}
 	}
 	funParamsStack = append(funParamsStack, names)
