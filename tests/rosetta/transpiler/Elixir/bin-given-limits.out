@@ -21,3 +21,9 @@ Example 2
 >= 591 and < 634 =  0
 >= 634 and < 720 =  0
 >= 720           = 58
+
+{
+  "duration_us": 1599,
+  "memory_bytes": 445584,
+  "name": "main"
+}
