@@ -2,7 +2,7 @@
 
 Generated Pascal code for Rosetta tasks lives under `tests/rosetta/transpiler/Pascal`.
 
-## Rosetta Checklist (25/465) - updated 2025-07-27 09:21 UTC
+## Rosetta Checklist (26/465) - updated 2025-07-27 10:21 UTC
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 571.223ms | 128 B |
@@ -33,11 +33,11 @@ Generated Pascal code for Rosetta tasks lives under `tests/rosetta/transpiler/Pa
 | 26 | abundant-odd-numbers | ✓ | 835µs | 384 B |
 | 27 | accumulator-factory |   |  |  |
 | 28 | achilles-numbers |   |  |  |
-| 29 | ackermann-function-2 | ✓ |  |  |
+| 29 | ackermann-function-2 | ✓ | 1µs |  |
 | 30 | ackermann-function-3 |   |  |  |
-| 31 | ackermann-function | ✓ |  |  |
-| 32 | active-directory-connect | ✓ |  |  |
-| 33 | active-directory-search-for-a-user |   |  |  |
+| 31 | ackermann-function | ✓ | 1µs |  |
+| 32 | active-directory-connect | ✓ | 1µs | 1.1 KB |
+| 33 | active-directory-search-for-a-user | ✓ | 1µs | 4.0 KB |
 | 34 | active-object |   |  |  |
 | 35 | add-a-variable-to-a-class-instance-at-runtime |   |  |  |
 | 36 | additive-primes |   |  |  |
