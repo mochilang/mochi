@@ -1,0 +1,21 @@
+func main (regs=1)
+  Return       r0
+
+  // fun example9() {
+func example9 (regs=2)
+L2:
+  // while true {
+  Const        r0, true
+  JumpIfFalse  r0, L0
+  // if true { break }
+  Const        r0, true
+  JumpIfFalse  r0, L1
+  Jump         L0
+L1:
+  // print("I want out!")
+  Const        r1, "I want out!"
+  Print        r1
+  // while true {
+  Jump         L2
+L0:
+  Return       r0

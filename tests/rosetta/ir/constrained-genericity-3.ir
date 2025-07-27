@@ -1,0 +1,12 @@
+func main (regs=1)
+  Return       r0
+
+  // fun eat() {
+func PeelFirst.eat (regs=5)
+  // print("mm, that " + value + " was good!")
+  Const        r1, "mm, that "
+  Add          r2, r1, r0
+  Const        r3, " was good!"
+  Add          r4, r2, r3
+  Print        r4
+  Return       r0

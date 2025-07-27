@@ -295,8 +295,7 @@ func main (regs=10)
   Const        r1, "The quick brown fox jumps over the lazy dog"
   Move         r2, r1
   // let result = crc32(s)
-  Const        r1, "The quick brown fox jumps over the lazy dog"
-  Move         r3, r1
+  Move         r3, r2
   Call         r4, crc32, r3
   Move         r5, r4
   // let hex = lower(toHex(result))

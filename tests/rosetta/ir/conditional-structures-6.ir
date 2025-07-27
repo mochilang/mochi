@@ -1,0 +1,40 @@
+func main (regs=1)
+  Return       r0
+
+  // fun example6(value: int) {
+func example6 (regs=11)
+  // 1 => null
+  Const        r3, 1
+  Equal        r2, r0, r3
+  JumpIfFalse  r2, L0
+  Const        r4, nil
+  Move         r1, r4
+  Jump         L1
+L0:
+  // 2 => null
+  Const        r6, 2
+  Equal        r5, r0, r6
+  JumpIfFalse  r5, L2
+  Const        r4, nil
+  Move         r1, r4
+  Jump         L1
+L2:
+  // 3 => null
+  Const        r8, 3
+  Equal        r7, r0, r8
+  JumpIfFalse  r7, L3
+  Const        r4, nil
+  Move         r1, r4
+  Jump         L1
+L3:
+  // 4 => null
+  Const        r10, 4
+  Equal        r9, r0, r10
+  JumpIfFalse  r9, L4
+  Const        r4, nil
+  Move         r1, r4
+  Jump         L1
+L4:
+  Const        r1, nil
+L1:
+  Return       r0

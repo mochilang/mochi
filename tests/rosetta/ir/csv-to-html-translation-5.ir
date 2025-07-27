@@ -1,4 +1,4 @@
-func main (regs=63)
+func main (regs=62)
   // let c = "Character,Speech\n" +
   Const        r2, "Character,Speech\n"
   // "The multitude,The messiah! Show us the messiah!\n" +
@@ -29,87 +29,86 @@ func main (regs=63)
   Move         r1, r13
   SetGlobal    1,1,0,0
   // for line in split(c, "\n") {
-  Const        r16, "Character,Speech\nThe multitude,The messiah! Show us the messiah!\nBrians mother,<angry>Now you listen here! He's not the messiah; he's a very naughty boy! Now go away!</angry>\nThe multitude,Who are you?\nBrians mother,I'm his mother; that's who!\nThe multitude,Behold his mother! Behold his mother!"
-  Move         r14, r16
-  Const        r17, "\n"
-  Move         r15, r17
-  Call2        r18, split, r14, r15
-  IterPrep     r19, r18
-  Len          r20, r19
-  Const        r21, 0
+  Move         r14, r0
+  Const        r16, "\n"
+  Move         r15, r16
+  Call2        r17, split, r14, r15
+  IterPrep     r18, r17
+  Len          r19, r18
+  Const        r20, 0
 L1:
-  LessInt      r22, r21, r20
-  JumpIfFalse  r22, L0
-  Index        r23, r19, r21
-  Move         r24, r23
+  LessInt      r21, r20, r19
+  JumpIfFalse  r21, L0
+  Index        r22, r18, r20
+  Move         r23, r22
   // rows = append(rows, split(line, ","))
-  Move         r25, r24
-  Const        r27, ","
-  Move         r26, r27
-  Call2        r28, split, r25, r26
-  Append       r29, r1, r28
-  Move         r1, r29
+  Move         r24, r23
+  Const        r26, ","
+  Move         r25, r26
+  Call2        r27, split, r24, r25
+  Append       r28, r1, r27
+  Move         r1, r28
   SetGlobal    1,1,0,0
   // for line in split(c, "\n") {
-  Const        r30, 1
-  AddInt       r31, r21, r30
-  Move         r21, r31
+  Const        r29, 1
+  AddInt       r30, r20, r29
+  Move         r20, r30
   Jump         L1
 L0:
   // print("<table>")
-  Const        r32, "<table>"
-  Print        r32
+  Const        r31, "<table>"
+  Print        r31
   // for row in rows {
-  IterPrep     r33, r1
-  Len          r34, r33
-  Const        r35, 0
+  IterPrep     r32, r1
+  Len          r33, r32
+  Const        r34, 0
 L5:
-  LessInt      r36, r35, r34
-  JumpIfFalse  r36, L2
-  Index        r37, r33, r35
-  Move         r38, r37
+  LessInt      r35, r34, r33
+  JumpIfFalse  r35, L2
+  Index        r36, r32, r34
+  Move         r37, r36
   // var cells = ""
-  Const        r39, ""
-  Move         r40, r39
+  Const        r38, ""
+  Move         r39, r38
   // for cell in row {
-  IterPrep     r41, r38
-  Len          r42, r41
-  Const        r43, 0
+  IterPrep     r40, r37
+  Len          r41, r40
+  Const        r42, 0
 L4:
-  LessInt      r44, r43, r42
-  JumpIfFalse  r44, L3
-  Index        r45, r41, r43
-  Move         r46, r45
+  LessInt      r43, r42, r41
+  JumpIfFalse  r43, L3
+  Index        r44, r40, r42
+  Move         r45, r44
   // cells = cells + "<td>" + htmlEscape(cell) + "</td>"
-  Const        r47, "<td>"
-  Add          r48, r40, r47
-  Move         r49, r46
-  Call         r50, htmlEscape, r49
-  Add          r51, r48, r50
-  Const        r52, "</td>"
-  Add          r53, r51, r52
-  Move         r40, r53
+  Const        r46, "<td>"
+  Add          r47, r39, r46
+  Move         r48, r45
+  Call         r49, htmlEscape, r48
+  Add          r50, r47, r49
+  Const        r51, "</td>"
+  Add          r52, r50, r51
+  Move         r39, r52
   // for cell in row {
-  Const        r54, 1
-  AddInt       r55, r43, r54
-  Move         r43, r55
+  Const        r53, 1
+  AddInt       r54, r42, r53
+  Move         r42, r54
   Jump         L4
 L3:
   // print("    <tr>" + cells + "</tr>")
-  Const        r56, "    <tr>"
-  Add          r57, r56, r40
-  Const        r58, "</tr>"
-  Add          r59, r57, r58
-  Print        r59
+  Const        r55, "    <tr>"
+  Add          r56, r55, r39
+  Const        r57, "</tr>"
+  Add          r58, r56, r57
+  Print        r58
   // for row in rows {
-  Const        r60, 1
-  AddInt       r61, r35, r60
-  Move         r35, r61
+  Const        r59, 1
+  AddInt       r60, r34, r59
+  Move         r34, r60
   Jump         L5
 L2:
   // print("</table>")
-  Const        r62, "</table>"
-  Print        r62
+  Const        r61, "</table>"
+  Print        r61
   Return       r0
 
   // fun split(s: string, sep: string): list<string> {

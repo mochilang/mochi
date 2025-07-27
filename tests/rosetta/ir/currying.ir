@@ -151,20 +151,16 @@ func main (regs=74)
   Return       r0
 
   // return fun(e: float): float => pow(b, e)
-func fn6 (regs=5)
+func fn6 (regs=3)
   // return fun(e: float): float => pow(b, e)
-  Move         r2, r0
-  Move         r3, r1
-  Call2        r4, pow, r2, r3
-  Return       r4
+  Pow          r2, r0, r1
+  Return       r2
 
   // return fun(b: float): float => pow(b, e)
-func fn7 (regs=5)
+func fn7 (regs=3)
   // return fun(b: float): float => pow(b, e)
-  Move         r2, r1
-  Move         r3, r0
-  Call2        r4, pow, r2, r3
-  Return       r4
+  Pow          r2, r1, r0
+  Return       r2
 
   // let fn1 = fun(b: int): int => a.Method(b)
 func fn8 (regs=8)

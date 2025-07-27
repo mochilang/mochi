@@ -103,7 +103,7 @@ L0:
   Return       r2
 
   // fun main() {
-func main (regs=34)
+func main (regs=32)
   // var cnums: list<bigint> = []
   Const        r0, []
   Move         r1, r0
@@ -171,19 +171,17 @@ L2:
   Const        r24, "\nFirst 5 Cullen primes (in terms of n):"
   Print        r24
   // print(show_list(cprimes))
-  Const        r26, [1, 141, 4713, 5795, 6611]
-  Move         r25, r26
-  Call         r27, show_list, r25
-  Print        r27
+  Move         r25, r23
+  Call         r26, show_list, r25
+  Print        r26
   // let wprimes = [2 as bigint,3 as bigint,6 as bigint,30 as bigint,75 as bigint,81 as bigint,115 as bigint,123 as bigint,249 as bigint,362 as bigint,384 as bigint,462 as bigint]
-  Const        r28, [2, 3, 6, 30, 75, 81, 115, 123, 249, 362, 384, 462]
-  Move         r29, r28
+  Const        r27, [2, 3, 6, 30, 75, 81, 115, 123, 249, 362, 384, 462]
+  Move         r28, r27
   // print("\nFirst 12 Woodall primes (in terms of n):")
-  Const        r30, "\nFirst 12 Woodall primes (in terms of n):"
-  Print        r30
+  Const        r29, "\nFirst 12 Woodall primes (in terms of n):"
+  Print        r29
   // print(show_list(wprimes))
-  Const        r32, [2, 3, 6, 30, 75, 81, 115, 123, 249, 362, 384, 462]
-  Move         r31, r32
-  Call         r33, show_list, r31
-  Print        r33
+  Move         r30, r28
+  Call         r31, show_list, r30
+  Print        r31
   Return       r0

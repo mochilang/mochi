@@ -1,0 +1,26 @@
+func main (regs=1)
+  Return       r0
+
+  // fun fetch_(): string { return "" }
+func fetch_ (regs=1)
+  // fun fetch_(): string { return "" }
+  Const        r0, ""
+  Return       r0
+
+  // fun example7() {
+func example7 (regs=6)
+  // let x = fetch_()
+  Const        r0, ""
+  Move         r1, r0
+  // if x == "cheese" {
+  Const        r2, "cheese"
+  Const        r3, false
+  // } else if someCondition() {
+  Const        r5, false
+  Return       r0
+
+  // fun someCondition(): bool { return false }
+func someCondition (regs=1)
+  // fun someCondition(): bool { return false }
+  Const        r0, false
+  Return       r0
