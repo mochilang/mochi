@@ -1,0 +1,8 @@
+run: exit status 1
+/workspace/mochi/tests/rosetta/transpiler/rb/file-input-output-3.rb:49:in `copyFile': undefined method `each_key' for "example":String (NoMethodError)
+
+    $fs[inp].each_key do |ch|
+            ^^^^^^^^^
+Did you mean?  each_byte
+	from /workspace/mochi/tests/rosetta/transpiler/rb/file-input-output-3.rb:55:in `main'
+	from /workspace/mochi/tests/rosetta/transpiler/rb/file-input-output-3.rb:59:in `<main>'

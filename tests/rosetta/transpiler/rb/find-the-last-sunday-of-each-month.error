@@ -1,0 +1,10 @@
+run: exit status 1
+/workspace/mochi/tests/rosetta/transpiler/rb/find-the-last-sunday-of-each-month.rb:72:in `zeller': uninitialized constant K (NameError)
+
+    h = (_add(_add(_add(_add(_add(d, (13 * (_add(mm, 1))) / 5), K), K / 4), J / 4), 5 * J)) % 7
+                                                                ^
+	from /workspace/mochi/tests/rosetta/transpiler/rb/find-the-last-sunday-of-each-month.rb:77:in `lastSunday'
+	from /workspace/mochi/tests/rosetta/transpiler/rb/find-the-last-sunday-of-each-month.rb:92:in `main'
+	from /workspace/mochi/tests/rosetta/transpiler/rb/find-the-last-sunday-of-each-month.rb:97:in `<main>'
+Last Sundays of each month of 2021
+==================================
