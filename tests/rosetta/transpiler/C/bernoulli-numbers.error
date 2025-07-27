@@ -1,0 +1,21 @@
+compile failed: exit status 1: /tmp/ctranspile4113305788/bernoulli-numbers.mochi.c: In function ‘_mem’:
+/tmp/ctranspile4113305788/bernoulli-numbers.mochi.c:53:12: warning: ‘mallinfo’ is deprecated [-Wdeprecated-declarations]
+   53 |     struct mallinfo mi = mallinfo();
+      |            ^~~~~~~~
+In file included from /tmp/ctranspile4113305788/bernoulli-numbers.mochi.c:5:
+/usr/include/malloc.h:114:24: note: declared here
+  114 | extern struct mallinfo mallinfo (void) __THROW __MALLOC_DEPRECATED;
+      |                        ^~~~~~~~
+/tmp/ctranspile4113305788/bernoulli-numbers.mochi.c: In function ‘main’:
+/tmp/ctranspile4113305788/bernoulli-numbers.mochi.c:91:17: warning: implicit declaration of function ‘num’ [-Wimplicit-function-declaration]
+   91 |             if (num(b) != 0) {
+      |                 ^~~
+/tmp/ctranspile4113305788/bernoulli-numbers.mochi.c:93:46: warning: implicit declaration of function ‘denom’ [-Wimplicit-function-declaration]
+   93 |                 const char* denStr = str_int(denom(b));
+      |                                              ^~~~~
+/usr/bin/ld: /tmp/ccoJWsZX.o: in function `main':
+bernoulli-numbers.mochi.c:(.text+0x447): undefined reference to `num'
+/usr/bin/ld: bernoulli-numbers.mochi.c:(.text+0x45e): undefined reference to `num'
+/usr/bin/ld: bernoulli-numbers.mochi.c:(.text+0x478): undefined reference to `denom'
+collect2: error: ld returned 1 exit status
+

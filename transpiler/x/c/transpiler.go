@@ -2491,6 +2491,22 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 				funcAliases[name] = "user_floorf"
 				name = "user_floorf"
 			}
+			if name == "powf" { // avoid conflict with stdlib
+				funcAliases[name] = "user_powf"
+				name = "user_powf"
+			}
+			if name == "double" { // avoid conflict with C keyword
+				funcAliases[name] = "user_double"
+				name = "user_double"
+			}
+			if name == "bsearch" { // avoid conflict with stdlib
+				funcAliases[name] = "user_bsearch"
+				name = "user_bsearch"
+			}
+			if name == "char" { // avoid conflict with C keyword
+				funcAliases[name] = "user_char"
+				name = "user_char"
+			}
 			fun, err := compileFunction(env, name, fnExpr)
 			if err != nil {
 				return nil, err

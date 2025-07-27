@@ -1,5 +1,5 @@
-## Progress (2025-07-27 17:33 +0700)
-- Commit fb61c2182f: transpiler/c: support float slice
+## Progress (2025-07-27 18:49 +0700)
+- Commit fb03eaa462: update error logs
 - Regenerated golden files - 81/104 vm valid programs passing
 
 ## Progress (2025-07-22 14:12 +0700)
