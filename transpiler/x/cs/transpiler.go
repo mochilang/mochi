@@ -1718,6 +1718,19 @@ func (ix *IndexExpr) emit(w io.Writer) {
 	}
 	targetType := typeOfExpr(ix.Target)
 	idxType := typeOfExpr(ix.Index)
+	if strings.HasSuffix(targetType, "[]") {
+		ix.Target.emit(w)
+		fmt.Fprint(w, "[")
+		if idxType != "int" {
+			fmt.Fprint(w, "(int)(")
+			ix.Index.emit(w)
+			fmt.Fprint(w, ")")
+		} else {
+			ix.Index.emit(w)
+		}
+		fmt.Fprint(w, "]")
+		return
+	}
 	if strings.HasPrefix(targetType, "Dictionary<") {
 		parts := strings.TrimPrefix(strings.TrimSuffix(targetType, ">"), "Dictionary<")
 		arr := strings.Split(parts, ",")
@@ -1764,7 +1777,7 @@ func (ix *IndexExpr) emit(w io.Writer) {
 	}
 	ix.Target.emit(w)
 	fmt.Fprint(w, "[")
-	if strings.HasSuffix(targetType, "[]") && idxType != "int" {
+	if idxType != "int" {
 		fmt.Fprint(w, "(int)(")
 		ix.Index.emit(w)
 		fmt.Fprint(w, ")")
@@ -2268,6 +2281,18 @@ func compilePostfix(p *parser.PostfixExpr) (Expr, error) {
 				}
 			} else if vr, ok := expr.(*VarRef); ok {
 				expr = &CallExpr{Func: vr.Name, Args: args}
+			} else if _, ok := expr.(*IndexExpr); ok {
+				var sb strings.Builder
+				sb.WriteString(exprString(expr))
+				sb.WriteString("(")
+				for i, a := range args {
+					if i > 0 {
+						sb.WriteString(", ")
+					}
+					sb.WriteString(exprString(a))
+				}
+				sb.WriteString(")")
+				expr = &RawExpr{Code: sb.String()}
 			} else {
 				return nil, fmt.Errorf("unsupported call")
 			}
@@ -2458,6 +2483,16 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 		if list, ok := val.(*ListLit); ok {
 			if s.Var.Type != nil && s.Var.Type.Generic != nil && s.Var.Type.Generic.Name == "list" && len(s.Var.Type.Generic.Args) == 1 {
 				list.ElemType = fmt.Sprintf("%s[]", csType(s.Var.Type.Generic.Args[0]))
+				if mt := s.Var.Type.Generic.Args[0]; mt.Generic != nil && mt.Generic.Name == "map" && len(mt.Generic.Args) == 2 {
+					kt := csType(mt.Generic.Args[0])
+					vt := csType(mt.Generic.Args[1])
+					for _, e := range list.Elems {
+						if mp, ok2 := e.(*MapLit); ok2 {
+							mp.KeyType = kt
+							mp.ValType = vt
+						}
+					}
+				}
 				varTypes[s.Var.Name] = list.ElemType
 			} else if len(list.Elems) == 0 {
 				list.ElemType = "object[]"

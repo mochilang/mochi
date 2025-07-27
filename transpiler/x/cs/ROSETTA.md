@@ -1,7 +1,7 @@
 # Rosetta C# Transpiler Output
 
-Completed programs: 147/452
-Last updated: 2025-07-27 12:32 +0700
+Completed programs: 176/453
+Last updated: 2025-07-27 13:02 +0700
 
 ## Checklist
 | Index | Name | Status | Duration | Memory |
@@ -174,46 +174,46 @@ Last updated: 2025-07-27 12:32 +0700
 | 166 | call-an-object-method |   |  |  |
 | 167 | camel-case-and-snake-case | ✓ | 469566h32m48.600175s | 1.2GB |
 | 168 | canny-edge-detector | ✓ | 469566h32m48.600175s | 1.2GB |
-| 169 | canonicalize-cidr |   |  |  |
+| 169 | canonicalize-cidr | ✓ | 17.947ms | 2.4GB |
 | 170 | cantor-set |   |  |  |
-| 171 | carmichael-3-strong-pseudoprimes |   |  |  |
+| 171 | carmichael-3-strong-pseudoprimes | ✓ | 3.115ms | 36.8MB |
 | 172 | cartesian-product-of-two-or-more-lists-1 |   |  |  |
 | 173 | cartesian-product-of-two-or-more-lists-2 |   |  |  |
 | 174 | cartesian-product-of-two-or-more-lists-3 |   |  |  |
 | 175 | cartesian-product-of-two-or-more-lists-4 |   |  |  |
 | 176 | case-sensitivity-of-identifiers |   |  |  |
 | 177 | casting-out-nines |   |  |  |
-| 178 | catalan-numbers-1 |   |  |  |
-| 179 | catalan-numbers-2 |   |  |  |
-| 180 | catalan-numbers-pascals-triangle |   |  |  |
-| 181 | catamorphism |   |  |  |
-| 182 | catmull-clark-subdivision-surface |   |  |  |
-| 183 | chaocipher |   |  |  |
-| 184 | chaos-game |   |  |  |
-| 185 | character-codes-1 |   |  |  |
-| 186 | character-codes-2 |   |  |  |
-| 187 | character-codes-3 |   |  |  |
-| 188 | character-codes-4 |   |  |  |
-| 189 | character-codes-5 |   |  |  |
-| 190 | chat-server |   |  |  |
+| 178 | catalan-numbers-1 | ✓ | 2.265ms | 16.0MB |
+| 179 | catalan-numbers-2 | ✓ | 2.411ms | 16.0MB |
+| 180 | catalan-numbers-pascals-triangle | ✓ | 2.598ms | 24.1MB |
+| 181 | catamorphism | ✓ | 2.509ms | 16.0MB |
+| 182 | catmull-clark-subdivision-surface | ✓ | 18.468ms | 2.1GB |
+| 183 | chaocipher | ✓ | 3.468ms | 69.0MB |
+| 184 | chaos-game | ✓ | 5.139ms | 5.8GB |
+| 185 | character-codes-1 | ✓ | 2.364ms | 16.0MB |
+| 186 | character-codes-2 | ✓ | 2.371ms | 16.0MB |
+| 187 | character-codes-3 | ✓ | 2.309ms | 16.0MB |
+| 188 | character-codes-4 | ✓ | 2.214ms | 16.0MB |
+| 189 | character-codes-5 | ✓ | 2.399ms | 16.0MB |
+| 190 | chat-server | ✓ | 2.767ms | 16.0MB |
 | 191 | check-machin-like-formulas |   |  |  |
-| 192 | check-that-file-exists |   |  |  |
-| 193 | checkpoint-synchronization-1 |   |  |  |
-| 194 | checkpoint-synchronization-2 |   |  |  |
-| 195 | checkpoint-synchronization-3 |   |  |  |
-| 196 | checkpoint-synchronization-4 |   |  |  |
-| 197 | chernicks-carmichael-numbers |   |  |  |
-| 198 | cheryls-birthday |   |  |  |
-| 199 | chinese-remainder-theorem |   |  |  |
-| 200 | chinese-zodiac |   |  |  |
-| 201 | cholesky-decomposition-1 |   |  |  |
-| 202 | cholesky-decomposition |   |  |  |
-| 203 | chowla-numbers |   |  |  |
+| 192 | check-that-file-exists | ✓ | 2.475ms | 16.0MB |
+| 193 | checkpoint-synchronization-1 | ✓ | 2.323ms | 16.0MB |
+| 194 | checkpoint-synchronization-2 | ✓ | 4.025ms | 24.1MB |
+| 195 | checkpoint-synchronization-3 | ✓ | 4.055ms | 24.1MB |
+| 196 | checkpoint-synchronization-4 | ✓ | 2.479ms | 24.1MB |
+| 197 | chernicks-carmichael-numbers | ✓ | 34.289ms | 4.6GB |
+| 198 | cheryls-birthday | ✓ | 2.393ms | 16.0MB |
+| 199 | chinese-remainder-theorem | ✓ | 1.003ms | 1.3GB |
+| 200 | chinese-zodiac | ✓ | 2.36ms | 16.0MB |
+| 201 | cholesky-decomposition-1 | ✓ | 20.173ms | 2.5GB |
+| 202 | cholesky-decomposition | ✓ | 11.889ms | 1.2GB |
+| 203 | chowla-numbers | ✓ | 2.437ms | 16.0MB |
 | 204 | church-numerals-1 |   |  |  |
 | 205 | church-numerals-2 |   |  |  |
-| 206 | circles-of-given-radius-through-two-points |   |  |  |
+| 206 | circles-of-given-radius-through-two-points | ✓ | 18.42ms | 3.0GB |
 | 207 | circular-primes |   |  |  |
-| 208 | cistercian-numerals |   |  |  |
+| 208 | cistercian-numerals | ✓ | 3.647ms | 333.0MB |
 | 209 | comma-quibbling |   |  |  |
 | 210 | compiler-virtual-machine-interpreter |   |  |  |
 | 211 | composite-numbers-k-with-no-single-digit-factors-whose-factors-are-all-substrings-of-k |   |  |  |
@@ -382,79 +382,80 @@ Last updated: 2025-07-27 12:32 +0700
 | 374 | execute-a-markov-algorithm |   |  |  |
 | 375 | execute-a-system-command |   |  |  |
 | 376 | execute-brain- |   |  |  |
-| 377 | execute-computer-zero |   |  |  |
-| 378 | execute-hq9+ |   |  |  |
-| 379 | execute-snusp |   |  |  |
-| 380 | exponentiation-operator |   |  |  |
-| 381 | exponentiation-order |   |  |  |
-| 382 | exponentiation-with-infix-operators-in-or-operating-on-the-base |   |  |  |
-| 383 | extend-your-language |   |  |  |
-| 384 | extensible-prime-generator |   |  |  |
-| 385 | extreme-floating-point-values |   |  |  |
-| 386 | faces-from-a-mesh |   |  |  |
-| 387 | fasta-format |   |  |  |
-| 388 | faulhabers-triangle |   |  |  |
-| 389 | feigenbaum-constant-calculation |   |  |  |
-| 390 | fermat-numbers |   |  |  |
-| 391 | fibonacci-n-step-number-sequences |   |  |  |
-| 392 | fibonacci-sequence-1 |   |  |  |
-| 393 | fibonacci-sequence-2 |   |  |  |
-| 394 | fibonacci-sequence-3 |   |  |  |
-| 395 | fibonacci-sequence-4 |   |  |  |
-| 396 | fibonacci-word-fractal |   |  |  |
-| 397 | fibonacci-word |   |  |  |
-| 398 | file-extension-is-in-extensions-list |   |  |  |
-| 399 | file-input-output-1 |   |  |  |
-| 400 | file-input-output-2 |   |  |  |
-| 401 | file-modification-time |   |  |  |
-| 402 | file-size-distribution |   |  |  |
-| 403 | file-size |   |  |  |
-| 404 | filter |   |  |  |
-| 405 | find-chess960-starting-position-identifier |   |  |  |
-| 406 | find-common-directory-path |   |  |  |
-| 407 | find-duplicate-files |   |  |  |
-| 408 | find-if-a-point-is-within-a-triangle |   |  |  |
-| 409 | find-largest-left-truncatable-prime-in-a-given-base |   |  |  |
-| 410 | find-limit-of-recursion |   |  |  |
-| 411 | find-palindromic-numbers-in-both-binary-and-ternary-bases |   |  |  |
-| 412 | find-the-intersection-of-a-line-with-a-plane |   |  |  |
-| 413 | find-the-intersection-of-two-lines |   |  |  |
-| 414 | find-the-last-sunday-of-each-month |   |  |  |
-| 415 | find-the-missing-permutation |   |  |  |
-| 416 | fivenum-1 |   |  |  |
-| 417 | fivenum-2 |   |  |  |
-| 418 | fixed-length-records-1 |   |  |  |
-| 419 | fixed-length-records-2 |   |  |  |
-| 420 | fizzbuzz-1 |   |  |  |
-| 421 | fizzbuzz-2 |   |  |  |
-| 422 | flatten-a-list-1 |   |  |  |
-| 423 | flatten-a-list-2 |   |  |  |
-| 424 | flipping-bits-game |   |  |  |
-| 425 | flow-control-structures-1 |   |  |  |
-| 426 | flow-control-structures-2 |   |  |  |
-| 427 | flow-control-structures-3 |   |  |  |
-| 428 | flow-control-structures-4 |   |  |  |
-| 429 | floyd-warshall-algorithm |   |  |  |
-| 430 | floyds-triangle |   |  |  |
-| 431 | forest-fire |   |  |  |
-| 432 | fork |   |  |  |
-| 433 | ftp |   |  |  |
-| 434 | gamma-function |   |  |  |
-| 435 | general-fizzbuzz |   |  |  |
-| 436 | generic-swap |   |  |  |
-| 437 | get-system-command-output |   |  |  |
-| 438 | giuga-numbers |   |  |  |
-| 439 | globally-replace-text-in-several-files |   |  |  |
-| 440 | goldbachs-comet |   |  |  |
-| 441 | golden-ratio-convergence |   |  |  |
-| 442 | graph-colouring |   |  |  |
-| 443 | gray-code |   |  |  |
-| 444 | http |   |  |  |
-| 445 | image-noise |   |  |  |
-| 446 | loops-increment-loop-index-within-loop-body |   |  |  |
-| 447 | md5 |   |  |  |
-| 448 | nim-game |   |  |  |
-| 449 | plasma-effect |   |  |  |
-| 450 | sorting-algorithms-bubble-sort |   |  |  |
-| 451 | window-management |   |  |  |
-| 452 | zumkeller-numbers |   |  |  |
+| 377 | execute-computer-zero-1 |   |  |  |
+| 378 | execute-computer-zero |   |  |  |
+| 379 | execute-hq9+ |   |  |  |
+| 380 | execute-snusp |   |  |  |
+| 381 | exponentiation-operator |   |  |  |
+| 382 | exponentiation-order |   |  |  |
+| 383 | exponentiation-with-infix-operators-in-or-operating-on-the-base |   |  |  |
+| 384 | extend-your-language |   |  |  |
+| 385 | extensible-prime-generator |   |  |  |
+| 386 | extreme-floating-point-values |   |  |  |
+| 387 | faces-from-a-mesh |   |  |  |
+| 388 | fasta-format |   |  |  |
+| 389 | faulhabers-triangle |   |  |  |
+| 390 | feigenbaum-constant-calculation |   |  |  |
+| 391 | fermat-numbers |   |  |  |
+| 392 | fibonacci-n-step-number-sequences |   |  |  |
+| 393 | fibonacci-sequence-1 |   |  |  |
+| 394 | fibonacci-sequence-2 |   |  |  |
+| 395 | fibonacci-sequence-3 |   |  |  |
+| 396 | fibonacci-sequence-4 |   |  |  |
+| 397 | fibonacci-word-fractal |   |  |  |
+| 398 | fibonacci-word |   |  |  |
+| 399 | file-extension-is-in-extensions-list |   |  |  |
+| 400 | file-input-output-1 |   |  |  |
+| 401 | file-input-output-2 |   |  |  |
+| 402 | file-modification-time |   |  |  |
+| 403 | file-size-distribution |   |  |  |
+| 404 | file-size |   |  |  |
+| 405 | filter |   |  |  |
+| 406 | find-chess960-starting-position-identifier |   |  |  |
+| 407 | find-common-directory-path |   |  |  |
+| 408 | find-duplicate-files |   |  |  |
+| 409 | find-if-a-point-is-within-a-triangle |   |  |  |
+| 410 | find-largest-left-truncatable-prime-in-a-given-base |   |  |  |
+| 411 | find-limit-of-recursion |   |  |  |
+| 412 | find-palindromic-numbers-in-both-binary-and-ternary-bases |   |  |  |
+| 413 | find-the-intersection-of-a-line-with-a-plane |   |  |  |
+| 414 | find-the-intersection-of-two-lines |   |  |  |
+| 415 | find-the-last-sunday-of-each-month |   |  |  |
+| 416 | find-the-missing-permutation |   |  |  |
+| 417 | fivenum-1 |   |  |  |
+| 418 | fivenum-2 |   |  |  |
+| 419 | fixed-length-records-1 |   |  |  |
+| 420 | fixed-length-records-2 |   |  |  |
+| 421 | fizzbuzz-1 |   |  |  |
+| 422 | fizzbuzz-2 |   |  |  |
+| 423 | flatten-a-list-1 |   |  |  |
+| 424 | flatten-a-list-2 |   |  |  |
+| 425 | flipping-bits-game |   |  |  |
+| 426 | flow-control-structures-1 |   |  |  |
+| 427 | flow-control-structures-2 |   |  |  |
+| 428 | flow-control-structures-3 |   |  |  |
+| 429 | flow-control-structures-4 |   |  |  |
+| 430 | floyd-warshall-algorithm |   |  |  |
+| 431 | floyds-triangle |   |  |  |
+| 432 | forest-fire |   |  |  |
+| 433 | fork |   |  |  |
+| 434 | ftp |   |  |  |
+| 435 | gamma-function |   |  |  |
+| 436 | general-fizzbuzz |   |  |  |
+| 437 | generic-swap |   |  |  |
+| 438 | get-system-command-output |   |  |  |
+| 439 | giuga-numbers |   |  |  |
+| 440 | globally-replace-text-in-several-files |   |  |  |
+| 441 | goldbachs-comet |   |  |  |
+| 442 | golden-ratio-convergence |   |  |  |
+| 443 | graph-colouring |   |  |  |
+| 444 | gray-code |   |  |  |
+| 445 | http |   |  |  |
+| 446 | image-noise |   |  |  |
+| 447 | loops-increment-loop-index-within-loop-body |   |  |  |
+| 448 | md5 |   |  |  |
+| 449 | nim-game |   |  |  |
+| 450 | plasma-effect |   |  |  |
+| 451 | sorting-algorithms-bubble-sort |   |  |  |
+| 452 | window-management |   |  |  |
+| 453 | zumkeller-numbers |   |  |  |
