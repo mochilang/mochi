@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Python code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/Python`.
-Last updated: 2025-07-27 22:30 GMT+7
+Last updated: 2025-07-27 22:41 GMT+7
 
-## Rosetta Golden Test Checklist (426/467)
+## Rosetta Golden Test Checklist (430/467)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 161.0µs | 12.50MB |
@@ -455,10 +455,10 @@ Last updated: 2025-07-27 22:30 GMT+7
 | 446 | forest-fire | ✓ | 53.0µs | 13.40MB |
 | 447 | fork | ✓ | 16.0µs | 12.80MB |
 | 448 | ftp | error |  |  |
-| 449 | gamma-function |   |  |  |
-| 450 | general-fizzbuzz |   |  |  |
-| 451 | generic-swap |   |  |  |
-| 452 | get-system-command-output |   |  |  |
+| 449 | gamma-function | ✓ | 148.0µs | 13.32MB |
+| 450 | general-fizzbuzz | ✓ | 47.0µs | 12.78MB |
+| 451 | generic-swap | ✓ | 13.0µs | 12.90MB |
+| 452 | get-system-command-output | ✓ | 10.0µs | 12.43MB |
 | 453 | giuga-numbers |   |  |  |
 | 454 | globally-replace-text-in-several-files |   |  |  |
 | 455 | goldbachs-comet |   |  |  |
