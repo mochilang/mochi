@@ -267,7 +267,7 @@ type AssignFieldStmt struct {
 
 func (a *AssignFieldStmt) emit(w io.Writer) {
 	a.Target.emit(w)
-	fmt.Fprintf(w, ".%s = ", a.Name)
+	fmt.Fprintf(w, ".%s = ", safeName(a.Name))
 	a.Value.emit(w)
 }
 
@@ -986,7 +986,7 @@ func (f *FieldExpr) emit(w io.Writer) {
 		fmt.Fprintf(w, "[\"%s\"]))", f.Name)
 	} else {
 		f.Target.emit(w)
-		fmt.Fprintf(w, ".%s", f.Name)
+		fmt.Fprintf(w, ".%s", safeName(f.Name))
 	}
 }
 
@@ -1871,7 +1871,7 @@ func (s *StructLit) emit(w io.Writer) {
 		if i > 0 {
 			fmt.Fprint(w, ", ")
 		}
-		fmt.Fprintf(w, "%s = ", f.Name)
+		fmt.Fprintf(w, "%s = ", safeName(f.Name))
 		f.Value.emit(w)
 	}
 	fmt.Fprint(w, "}")
@@ -2805,6 +2805,8 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 		retType := csType(s.Fun.Return)
 		currentReturnType = retType
 		currentReturnVoid = s.Fun.Return == nil
+		// record return type for local functions so callers can infer it
+		funRets[s.Fun.Name] = retType
 		var body []Stmt
 		if prog != nil && blockDepth > 0 {
 			prog = nil
@@ -4136,7 +4138,7 @@ func Emit(prog *Program) []byte {
 	for _, st := range prog.Structs {
 		fmt.Fprintf(&buf, "class %s {\n", st.Name)
 		for _, f := range st.Fields {
-			fmt.Fprintf(&buf, "    public %s %s;\n", f.Type, f.Name)
+			fmt.Fprintf(&buf, "    public %s %s;\n", f.Type, safeName(f.Name))
 		}
 		for _, m := range st.Methods {
 			buf.WriteString("    ")
@@ -4148,13 +4150,13 @@ func Emit(prog *Program) []byte {
 			if i > 0 {
 				buf.WriteString(", ")
 			}
-			fmt.Fprintf(&buf, "%s = ", f.Name)
+			fmt.Fprintf(&buf, "%s = ", safeName(f.Name))
 			if f.Type == "string" {
-				fmt.Fprintf(&buf, "\\\"{%s}\\\"", f.Name)
+				fmt.Fprintf(&buf, "\\\"{%s}\\\"", safeName(f.Name))
 			} else if f.Type == "double" {
-				fmt.Fprintf(&buf, "{%s.ToString(\"0.0\")}", f.Name)
+				fmt.Fprintf(&buf, "{%s.ToString(\"0.0\")}", safeName(f.Name))
 			} else {
-				fmt.Fprintf(&buf, "{%s}", f.Name)
+				fmt.Fprintf(&buf, "{%s}", safeName(f.Name))
 			}
 		}
 		buf.WriteString("}}\";\n")
