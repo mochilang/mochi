@@ -1,0 +1,113 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun collapse(s: string): list<any> {
+func collapse (regs=22)
+  // var i = 0
+  Const        r1, 0
+  Move         r2, r1
+  // var prev = ""
+  Const        r3, ""
+  Move         r4, r3
+  // var res = ""
+  Const        r3, ""
+  Move         r5, r3
+  // var orig = len(s)
+  Len          r6, r0
+  Move         r7, r6
+L2:
+  // while i < len(s) {
+  Len          r8, r0
+  LessInt      r9, r2, r8
+  JumpIfFalse  r9, L0
+  // let ch = substring(s, i, i + 1)
+  Const        r10, 1
+  AddInt       r11, r2, r10
+  Slice        r12, r0, r2, r11
+  Move         r13, r12
+  // if ch != prev {
+  NotEqual     r14, r13, r4
+  JumpIfFalse  r14, L1
+  // res = res + ch
+  Add          r15, r5, r13
+  Move         r5, r15
+  // prev = ch
+  Move         r4, r13
+L1:
+  // i = i + 1
+  Const        r10, 1
+  AddInt       r16, r2, r10
+  Move         r2, r16
+  // while i < len(s) {
+  Jump         L2
+L0:
+  // return [res, orig, len(res)]
+  Move         r17, r5
+  Move         r18, r7
+  Len          r20, r5
+  Move         r19, r20
+  MakeList     r21, 3, r17
+  Return       r21
+
+  // fun main() {
+func main (regs=35)
+  // let strings = [
+  Const        r0, ["", "\"If I were two-faced, would I be wearing this one?\" --- Abraham Lincoln ", "..111111111111111111111111111111111111111111111111111111111111111777888", "I never give 'em hell, I just tell the truth, and they think it's hell. ", "                                                   ---  Harry S Truman ", "The better the 4-wheel drive, the further you'll be from help when ya get stuck!", "headmistressship", "aardvark", "😍😀🙌💃😍😍😍🙌"]
+  Move         r1, r0
+  // var idx = 0
+  Const        r2, 0
+  Move         r3, r2
+L1:
+  // while idx < len(strings) {
+  Const        r4, 9
+  LessInt      r5, r3, r4
+  JumpIfFalse  r5, L0
+  // let s = strings[idx]
+  Index        r6, r1, r3
+  Move         r7, r6
+  // let r = collapse(s)
+  Move         r8, r7
+  Call         r9, collapse, r8
+  Move         r10, r9
+  // let cs = r[0]
+  Const        r2, 0
+  Index        r11, r10, r2
+  Move         r12, r11
+  // let olen = r[1]
+  Const        r13, 1
+  Index        r14, r10, r13
+  Move         r15, r14
+  // let clen = r[2]
+  Const        r16, 2
+  Index        r17, r10, r16
+  Move         r18, r17
+  // print("original : length = " + str(olen) + ", string = «««" + s + "»»»")
+  Const        r19, "original : length = "
+  Str          r20, r15
+  Add          r21, r19, r20
+  Const        r22, ", string = «««"
+  Add          r23, r21, r22
+  Add          r24, r23, r7
+  Const        r25, "»»»"
+  Add          r26, r24, r25
+  Print        r26
+  // print("collapsed: length = " + str(clen) + ", string = «««" + cs + "»»»\n")
+  Const        r27, "collapsed: length = "
+  Str          r28, r18
+  Add          r29, r27, r28
+  Const        r22, ", string = «««"
+  Add          r30, r29, r22
+  Add          r31, r30, r12
+  Const        r32, "»»»\n"
+  Add          r33, r31, r32
+  Print        r33
+  // idx = idx + 1
+  Const        r13, 1
+  AddInt       r34, r3, r13
+  Move         r3, r34
+  // while idx < len(strings) {
+  Jump         L1
+L0:
+  Return       r0

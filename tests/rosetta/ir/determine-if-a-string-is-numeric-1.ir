@@ -1,0 +1,225 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun isNumeric(s: string): bool {
+func isNumeric (regs=64)
+  // if s == "NaN" { return true }
+  Const        r1, "NaN"
+  Equal        r2, r0, r1
+  JumpIfFalse  r2, L0
+  Const        r3, true
+  Return       r3
+L0:
+  // var i = 0
+  Const        r4, 0
+  Move         r5, r4
+  // if len(s) == 0 { return false }
+  Len          r6, r0
+  Const        r4, 0
+  EqualInt     r7, r6, r4
+  JumpIfFalse  r7, L1
+  Const        r8, false
+  Return       r8
+L1:
+  // if s[0] == "+" || s[0] == "-" {
+  Const        r4, 0
+  Index        r9, r0, r4
+  Const        r10, "+"
+  Equal        r11, r9, r10
+  Const        r4, 0
+  Index        r12, r0, r4
+  Const        r13, "-"
+  Equal        r14, r12, r13
+  Move         r15, r11
+  JumpIfTrue   r15, L2
+  Move         r15, r14
+L2:
+  JumpIfFalse  r15, L3
+  // if len(s) == 1 { return false }
+  Len          r16, r0
+  Const        r17, 1
+  EqualInt     r18, r16, r17
+  JumpIfFalse  r18, L4
+  Const        r8, false
+  Return       r8
+L4:
+  // i = 1
+  Const        r17, 1
+  Move         r5, r17
+L3:
+  // var digits = false
+  Const        r8, false
+  Move         r19, r8
+  // var dot = false
+  Const        r8, false
+  Move         r20, r8
+L8:
+  // while i < len(s) {
+  Len          r21, r0
+  LessInt      r22, r5, r21
+  JumpIfFalse  r22, L5
+  // let ch = s[i]
+  Index        r23, r0, r5
+  Move         r24, r23
+  // if ch >= "0" && ch <= "9" {
+  Const        r25, "0"
+  LessEq       r26, r25, r24
+  Const        r27, "9"
+  LessEq       r28, r24, r27
+  Move         r29, r26
+  JumpIfFalse  r29, L6
+  Move         r29, r28
+L6:
+  JumpIfFalse  r29, L7
+  // digits = true
+  Const        r3, true
+  Move         r19, r3
+  // i = i + 1
+  Const        r17, 1
+  AddInt       r30, r5, r17
+  Move         r5, r30
+  // if ch >= "0" && ch <= "9" {
+  Jump         L8
+L7:
+  // } else if ch == "." && dot == false {
+  Const        r31, "."
+  Equal        r32, r24, r31
+  Const        r8, false
+  Equal        r33, r20, r8
+  Move         r34, r32
+  JumpIfFalse  r34, L9
+  Move         r34, r33
+L9:
+  JumpIfFalse  r34, L10
+  // dot = true
+  Const        r3, true
+  Move         r20, r3
+  // i = i + 1
+  Const        r17, 1
+  AddInt       r35, r5, r17
+  Move         r5, r35
+  // } else if ch == "." && dot == false {
+  Jump         L8
+L10:
+  // } else if (ch == "e" || ch == "E") && digits {
+  Const        r36, "e"
+  Equal        r37, r24, r36
+  Const        r38, "E"
+  Equal        r39, r24, r38
+  Move         r40, r37
+  JumpIfTrue   r40, L11
+  Move         r40, r39
+L11:
+  Move         r41, r40
+  JumpIfFalse  r41, L12
+  Move         r41, r19
+L12:
+  JumpIfFalse  r41, L13
+  // i = i + 1
+  Const        r17, 1
+  AddInt       r42, r5, r17
+  Move         r5, r42
+  // if i < len(s) && (s[i] == "+" || s[i] == "-") { i = i + 1 }
+  Len          r43, r0
+  LessInt      r44, r5, r43
+  Move         r45, r44
+  JumpIfFalse  r45, L14
+  Index        r46, r0, r5
+  Const        r10, "+"
+  Equal        r47, r46, r10
+  Index        r48, r0, r5
+  Const        r13, "-"
+  Equal        r49, r48, r13
+  Move         r50, r47
+  JumpIfTrue   r50, L15
+  Move         r50, r49
+L15:
+  Move         r45, r50
+L14:
+  JumpIfFalse  r45, L16
+  Const        r17, 1
+  AddInt       r51, r5, r17
+  Move         r5, r51
+L16:
+  // var ed = false
+  Const        r8, false
+  Move         r52, r8
+L19:
+  // while i < len(s) && s[i] >= "0" && s[i] <= "9" {
+  Len          r53, r0
+  LessInt      r54, r5, r53
+  Index        r55, r0, r5
+  Const        r25, "0"
+  LessEq       r56, r25, r55
+  Index        r57, r0, r5
+  Const        r27, "9"
+  LessEq       r58, r57, r27
+  Move         r59, r54
+  JumpIfFalse  r59, L17
+  Move         r59, r56
+  JumpIfFalse  r59, L17
+  Move         r59, r58
+L17:
+  JumpIfFalse  r59, L18
+  // ed = true
+  Const        r3, true
+  Move         r52, r3
+  // i = i + 1
+  Const        r17, 1
+  AddInt       r60, r5, r17
+  Move         r5, r60
+  // while i < len(s) && s[i] >= "0" && s[i] <= "9" {
+  Jump         L19
+L18:
+  // return ed && i == len(s)
+  Len          r61, r0
+  EqualInt     r62, r5, r61
+  Move         r63, r52
+  JumpIfFalse  r63, L20
+  Move         r63, r62
+L20:
+  Return       r63
+L13:
+  // return false
+  Const        r8, false
+  Return       r8
+L5:
+  // return digits
+  Return       r19
+
+  // fun main() {
+func main (regs=19)
+  // print("Are these strings numeric?")
+  Const        r0, "Are these strings numeric?"
+  Print        r0
+  // let strs = ["1", "3.14", "-100", "1e2", "NaN", "rose"]
+  Const        r1, ["1", "3.14", "-100", "1e2", "NaN", "rose"]
+  Move         r2, r1
+  // for s in strs {
+  IterPrep     r3, r2
+  Len          r4, r3
+  Const        r5, 0
+L1:
+  LessInt      r6, r5, r4
+  JumpIfFalse  r6, L0
+  Index        r7, r3, r5
+  Move         r8, r7
+  // print("  " + s + " -> " + str(isNumeric(s)))
+  Const        r9, "  "
+  Add          r10, r9, r8
+  Const        r11, " -> "
+  Add          r12, r10, r11
+  Move         r13, r8
+  Call         r14, isNumeric, r13
+  Str          r15, r14
+  Add          r16, r12, r15
+  Print        r16
+  // for s in strs {
+  Const        r17, 1
+  AddInt       r18, r5, r17
+  Move         r5, r18
+  Jump         L1
+L0:
+  Return       r0

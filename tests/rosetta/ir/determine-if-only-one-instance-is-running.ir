@@ -1,0 +1,36 @@
+func main (regs=3)
+  // var lockExists = false
+  Const        r1, false
+  Move         r0, r1
+  SetGlobal    0,0,0,0
+  // main()
+  Call         r2, main, 
+  Return       r0
+
+  // fun startOnce() {
+func startOnce (regs=4)
+  // if lockExists {
+  JumpIfFalse  r0, L0
+  // print("an instance is already running")
+  Const        r1, "an instance is already running"
+  Print        r1
+  // if lockExists {
+  Jump         L1
+L0:
+  // lockExists = true
+  Const        r2, true
+  Move         r0, r2
+  SetGlobal    0,0,0,0
+  // print("single instance started")
+  Const        r3, "single instance started"
+  Print        r3
+L1:
+  Return       r0
+
+  // fun main() {
+func main (regs=3)
+  // startOnce()
+  Call         r1, startOnce, 
+  // startOnce()
+  Call         r2, startOnce, 
+  Return       r0

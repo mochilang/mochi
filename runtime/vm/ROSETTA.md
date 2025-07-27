@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated IR and outputs from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/ir`.
-Last updated: 2025-07-27 04:44 UTC
+Last updated: 2025-07-27 05:21 UTC
 
-## Rosetta Golden Test Checklist (278/452)
+## Rosetta Golden Test Checklist (286/452)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 116µs | 11.7 KB |
@@ -296,14 +296,14 @@ Last updated: 2025-07-27 04:44 UTC
 | 287 | department-numbers | ✓ | 214µs | 60.8 KB |
 | 288 | descending-primes | ✓ | 29.936ms |  |
 | 289 | detect-division-by-zero | ✓ |  |  |
-| 290 | determine-if-a-string-has-all-the-same-characters |   |  |  |
-| 291 | determine-if-a-string-has-all-unique-characters |   |  |  |
-| 292 | determine-if-a-string-is-collapsible |   |  |  |
-| 293 | determine-if-a-string-is-numeric-1 |   |  |  |
-| 294 | determine-if-a-string-is-numeric-2 |   |  |  |
-| 295 | determine-if-a-string-is-squeezable |   |  |  |
-| 296 | determine-if-only-one-instance-is-running |   |  |  |
-| 297 | determine-if-two-triangles-overlap |   |  |  |
+| 290 | determine-if-a-string-has-all-the-same-characters | ✓ | 177µs | 110.3 KB |
+| 291 | determine-if-a-string-has-all-unique-characters | ✓ | 1.2ms | 408.7 KB |
+| 292 | determine-if-a-string-is-collapsible | ✓ | 509µs | 283.5 KB |
+| 293 | determine-if-a-string-is-numeric-1 | ✓ | 76µs | 54.5 KB |
+| 294 | determine-if-a-string-is-numeric-2 | ✓ | 38µs | 8.3 KB |
+| 295 | determine-if-a-string-is-squeezable | ✓ | 672µs | 429.6 KB |
+| 296 | determine-if-only-one-instance-is-running | ✓ | 35µs | 1.9 KB |
+| 297 | determine-if-two-triangles-overlap | ✓ | 513µs | 916.3 KB |
 | 298 | determine-sentence-type |   |  |  |
 | 299 | dice-game-probabilities-1 |   |  |  |
 | 300 | dice-game-probabilities-2 |   |  |  |
