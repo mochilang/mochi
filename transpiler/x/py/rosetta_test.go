@@ -93,19 +93,19 @@ func runRosettaCase(t *testing.T, name string) {
 
 	if bench {
 		benchPath := filepath.Join(outDir, name+".bench")
-               if updateEnabled() {
-                       idx := bytes.LastIndex(got, []byte("{"))
-                       if idx >= 0 {
-                               part := bytes.TrimSpace(got[idx:])
-                               if json.Valid(part) {
-                                       _ = os.WriteFile(benchPath, part, 0o644)
-                               } else {
-                                       _ = os.WriteFile(benchPath, got, 0o644)
-                               }
-                       } else {
-                               _ = os.WriteFile(benchPath, got, 0o644)
-                       }
-               }
+		if updateEnabled() {
+			idx := bytes.LastIndex(got, []byte("{"))
+			if idx >= 0 {
+				part := bytes.TrimSpace(got[idx:])
+				if json.Valid(part) {
+					_ = os.WriteFile(benchPath, part, 0o644)
+				} else {
+					_ = os.WriteFile(benchPath, got, 0o644)
+				}
+			} else {
+				_ = os.WriteFile(benchPath, got, 0o644)
+			}
+		}
 		return
 	}
 
@@ -121,6 +121,7 @@ func runRosettaCase(t *testing.T, name string) {
 
 func TestPyTranspiler_Rosetta_Golden(t *testing.T) {
 	root := repoRoot(t)
+	t.Cleanup(updateRosetta)
 	indexPath := filepath.Join(root, "tests", "rosetta", "x", "Mochi", "index.txt")
 	f, err := os.Open(indexPath)
 	if err != nil {
