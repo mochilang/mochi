@@ -1,9 +1,9 @@
 # Java Rosetta Transpiler Output
 
 Generated Java code for programs in `tests/rosetta/x/Mochi`. Each program has a `.java` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
-Last updated: 2025-07-27 19:16 GMT+7
+Last updated: 2025-07-27 20:44 GMT+7
 
-## Rosetta Checklist (173/467)
+## Rosetta Checklist (189/467)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 23.0ms | 245.84KB |
@@ -237,22 +237,22 @@ Last updated: 2025-07-27 19:16 GMT+7
 | 229 | constrained-genericity-3 | ✓ |  |  |
 | 230 | constrained-genericity-4 |   |  |  |
 | 231 | constrained-random-points-on-a-circle-1 | ✓ | 34.0ms | 104.09KB |
-| 232 | constrained-random-points-on-a-circle-2 |   |  |  |
-| 233 | continued-fraction |   |  |  |
-| 234 | convert-decimal-number-to-rational |   |  |  |
-| 235 | convert-seconds-to-compound-duration |   |  |  |
-| 236 | convex-hull |   |  |  |
-| 237 | conways-game-of-life |   |  |  |
-| 238 | copy-a-string-1 |   |  |  |
-| 239 | copy-a-string-2 |   |  |  |
-| 240 | copy-stdin-to-stdout-1 |   |  |  |
-| 241 | copy-stdin-to-stdout-2 |   |  |  |
-| 242 | count-in-factors |   |  |  |
-| 243 | count-in-octal-1 |   |  |  |
-| 244 | count-in-octal-2 |   |  |  |
-| 245 | count-in-octal-3 |   |  |  |
-| 246 | count-in-octal-4 |   |  |  |
-| 247 | count-occurrences-of-a-substring |   |  |  |
+| 232 | constrained-random-points-on-a-circle-2 | ✓ | 67.0ms | 121.77KB |
+| 233 | continued-fraction | ✓ | 31.0ms | 48.12KB |
+| 234 | convert-decimal-number-to-rational | ✓ | 45.0ms | 84.43KB |
+| 235 | convert-seconds-to-compound-duration | ✓ | 44.0ms | 81.18KB |
+| 236 | convex-hull | ✓ | 37.0ms | 49.32KB |
+| 237 | conways-game-of-life | ✓ | 388.0ms | 41.82KB |
+| 238 | copy-a-string-1 | ✓ | 18.0ms | 0B |
+| 239 | copy-a-string-2 | ✓ | 31.0ms | 38.00KB |
+| 240 | copy-stdin-to-stdout-1 | ✓ | 24.0ms | -1640B |
+| 241 | copy-stdin-to-stdout-2 | ✓ | 20.0ms | -1640B |
+| 242 | count-in-factors | ✓ | 49.0ms | 86.81KB |
+| 243 | count-in-octal-1 | ✓ | 30.0ms | 32.87KB |
+| 244 | count-in-octal-2 | ✓ | 221.0ms | 33.13KB |
+| 245 | count-in-octal-3 | ✓ | 25.0ms | 32.87KB |
+| 246 | count-in-octal-4 | ✓ | 38.0ms | 32.87KB |
+| 247 | count-occurrences-of-a-substring | ✓ | 19.0ms | 608B |
 | 248 | count-the-coins-1 |   |  |  |
 | 249 | count-the-coins-2 |   |  |  |
 | 250 | cramers-rule |   |  |  |

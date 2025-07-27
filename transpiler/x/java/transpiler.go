@@ -1288,6 +1288,21 @@ func (s *IndexAssignStmt) emit(w io.Writer, indent string) {
 		fmt.Fprint(w, ";\n")
 		return
 	}
+	if len(s.Indices) > 1 {
+		base := s.Target
+		for i := 0; i < len(s.Indices)-1; i++ {
+			base = &IndexExpr{Target: base, Index: s.Indices[i], IsMap: isMapExpr(base)}
+		}
+		if isMapExpr(base) {
+			base.emit(w)
+			fmt.Fprint(w, ".put(")
+			s.Indices[len(s.Indices)-1].emit(w)
+			fmt.Fprint(w, ", ")
+			s.Expr.emit(w)
+			fmt.Fprint(w, ");\n")
+			return
+		}
+	}
 	s.Target.emit(w)
 	for _, idx := range s.Indices {
 		fmt.Fprint(w, "[")
@@ -2419,16 +2434,30 @@ func (ix *IndexExpr) emit(w io.Writer) {
 		}
 		useDefault := false
 		defVal := "null"
-		switch castType {
-		case "int", "Integer":
+		mvType := mapValueType(inferType(ix.Target))
+		switch mvType {
+		case "int":
 			useDefault = true
 			defVal = "0"
-		case "double", "Double":
+		case "double":
 			useDefault = true
 			defVal = "0.0"
-		case "boolean", "Boolean":
+		case "boolean":
 			useDefault = true
 			defVal = "false"
+		}
+		if !useDefault {
+			switch castType {
+			case "int", "Integer":
+				useDefault = true
+				defVal = "0"
+			case "double", "Double":
+				useDefault = true
+				defVal = "0.0"
+			case "boolean", "Boolean":
+				useDefault = true
+				defVal = "false"
+			}
 		}
 		fmt.Fprintf(w, "((%s)", castType)
 		if isMapExpr(ix.Target) {
