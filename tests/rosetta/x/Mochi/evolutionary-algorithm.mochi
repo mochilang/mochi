@@ -1,5 +1,79 @@
+let target = "METHINKS IT IS LIKE A WEASEL"
+let chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ "
+var seed = 1
+
+fun randInt(s: int, n: int): list<int> {
+  let next = (s * 1664525 + 1013904223) % 2147483647
+  return [next, next % n]
+}
+
+fun randChar(): string {
+  var r = randInt(seed, len(chars))
+  seed = r[0]
+  let idx = r[1] as int
+  return substring(chars, idx, idx + 1)
+}
+
+fun randomString(n: int): string {
+  var s = ""
+  var i = 0
+  while i < n {
+    s = s + randChar()
+    i = i + 1
+  }
+  return s
+}
+
+fun fitness(s: string): int {
+  var h = 0
+  var i = 0
+  while i < len(target) {
+    if substring(s, i, i + 1) != substring(target, i, i + 1) {
+      h = h + 1
+    }
+    i = i + 1
+  }
+  return h
+}
+
+fun mutate(p: string): string {
+  var m = ""
+  var i = 0
+  while i < len(p) {
+    var r = randInt(seed, 20)
+    seed = r[0]
+    if r[1] == 0 {
+      m = m + randChar()
+    } else {
+      m = m + substring(p, i, i + 1)
+    }
+    i = i + 1
+  }
+  return m
+}
+
 fun main() {
-  print("METHINKS IT IS LIKE A WEASEL")
+  var parent = randomString(len(target))
+  print(parent)
+  var best = fitness(parent)
+  var done = false
+  while !done {
+    var i = 0
+    while i < 20 {
+      let child = mutate(parent)
+      let f = fitness(child)
+      if f < best {
+        best = f
+        parent = child
+        print(parent)
+        if best == 0 {
+          done = true
+          break
+        }
+      }
+      i = i + 1
+    }
+  }
 }
 
 main()
