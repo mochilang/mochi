@@ -260,7 +260,11 @@ type TypeDeclStmt struct {
 func (t *TypeDeclStmt) emit(w io.Writer) {
 	fmt.Fprintf(w, "type %s struct {\n", t.Name)
 	for _, f := range t.Fields {
-		fmt.Fprintf(w, "    %s %s `json:%q`\n", toGoFieldName(f.Name), f.Type, f.Name)
+		typ := f.Type
+		if typ == "" {
+			typ = "any"
+		}
+		fmt.Fprintf(w, "    %s %s `json:%q`\n", toGoFieldName(f.Name), typ, f.Name)
 	}
 	fmt.Fprint(w, "}")
 }
@@ -3786,6 +3790,9 @@ func compileReturnStmt(rs *parser.ReturnStmt, env *types.Env) (Stmt, error) {
 	ret := currentRetType
 	if ret != "" && ret != "any" {
 		exprType := toGoTypeFromType(types.ExprType(rs.Value, env))
+		if exprType == "" && strings.HasPrefix(ret, "map[") {
+			exprType = ret
+		}
 		if exprType == "" {
 			if um, ok := val.(*UnionMatchExpr); ok && um.Type != "" {
 				exprType = um.Type
@@ -3809,16 +3816,20 @@ func compileReturnStmt(rs *parser.ReturnStmt, env *types.Env) (Stmt, error) {
 			}
 		}
 		if exprType != ret {
-			if ret == "*big.Rat" {
-				if _, ok := val.(*BigRatBinaryExpr); ok {
-					exprType = ret
-				} else if ce, ok2 := val.(*CallExpr); ok2 && ce.Func == "_bigrat" {
-					exprType = ret
+			if exprType == "" && (strings.HasPrefix(ret, "map[") || strings.HasPrefix(ret, "[]")) {
+				// allow untyped map/list returns without assertion
+			} else {
+				if ret == "*big.Rat" {
+					if _, ok := val.(*BigRatBinaryExpr); ok {
+						exprType = ret
+					} else if ce, ok2 := val.(*CallExpr); ok2 && ce.Func == "_bigrat" {
+						exprType = ret
+					}
 				}
-			}
-			if exprType != ret {
-				if ae, ok := val.(*AssertExpr); !(ok && ae.Type == ret) {
-					val = &AssertExpr{Expr: val, Type: ret}
+				if exprType != ret {
+					if ae, ok := val.(*AssertExpr); !(ok && ae.Type == ret) {
+						val = &AssertExpr{Expr: val, Type: ret}
+					}
 				}
 			}
 		}
@@ -4081,6 +4092,16 @@ func compileBinary(b *parser.BinaryExpr, env *types.Env, base string) (Expr, err
 						} else if riBig && isIntType(typesList[i]) {
 							right = &BigIntToIntExpr{Value: right}
 							newExpr = &BinaryExpr{Left: left, Op: ops[i].Op, Right: right}
+						}
+						if newExpr == nil {
+							if _, ok := typesList[i].(types.AnyType); ok {
+								left = &CallExpr{Func: "_toFloat", Args: []Expr{left}}
+								usesFloatConv = true
+							}
+							if _, ok := typesList[i+1].(types.AnyType); ok {
+								right = &CallExpr{Func: "_toFloat", Args: []Expr{right}}
+								usesFloatConv = true
+							}
 						}
 					}
 					if newExpr == nil && (isBigIntType(typesList[i]) || isBigIntType(typesList[i+1])) {
