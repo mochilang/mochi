@@ -1,3 +1,147 @@
+## Progress (2025-07-27 22:38 +0700)
+- transpiler: improve struct field indexing and casting
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-27 22:38 +0700)
+- transpiler: improve struct field indexing and casting
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-27 22:38 +0700)
+- transpiler: improve struct field indexing and casting
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-27 22:38 +0700)
+- transpiler: improve struct field indexing and casting
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-27 22:38 +0700)
+- transpiler: improve struct field indexing and casting
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-27 22:38 +0700)
+- transpiler: improve struct field indexing and casting
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-27 22:38 +0700)
+- transpiler: improve struct field indexing and casting
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-27 22:38 +0700)
+- transpiler: improve struct field indexing and casting
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-27 22:38 +0700)
+- transpiler: improve struct field indexing and casting
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-27 22:38 +0700)
+- transpiler: improve struct field indexing and casting
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-27 22:38 +0700)
+- transpiler: improve struct field indexing and casting
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-27 22:38 +0700)
+- transpiler: improve struct field indexing and casting
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-27 22:38 +0700)
+- transpiler: improve struct field indexing and casting
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-27 22:38 +0700)
+- transpiler: improve struct field indexing and casting
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-27 22:38 +0700)
+- transpiler: improve struct field indexing and casting
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-27 22:38 +0700)
+- transpiler: improve struct field indexing and casting
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-27 22:38 +0700)
+- transpiler: improve struct field indexing and casting
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-27 22:38 +0700)
+- transpiler: improve struct field indexing and casting
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-27 22:38 +0700)
+- transpiler: improve struct field indexing and casting
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-27 22:38 +0700)
+- transpiler: improve struct field indexing and casting
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-27 22:38 +0700)
+- transpiler: improve struct field indexing and casting
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-27 22:38 +0700)
+- transpiler: improve struct field indexing and casting
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-27 22:38 +0700)
+- transpiler: improve struct field indexing and casting
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-27 22:38 +0700)
+- transpiler: improve struct field indexing and casting
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-27 22:38 +0700)
+- transpiler: improve struct field indexing and casting
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-27 22:38 +0700)
+- transpiler: improve struct field indexing and casting
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-27 22:38 +0700)
+- transpiler: improve struct field indexing and casting
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-27 22:38 +0700)
+- transpiler: improve struct field indexing and casting
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-27 22:38 +0700)
+- transpiler: improve struct field indexing and casting
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-27 22:38 +0700)
+- transpiler: improve struct field indexing and casting
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-27 22:38 +0700)
+- transpiler: improve struct field indexing and casting
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-27 22:38 +0700)
+- transpiler: improve struct field indexing and casting
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-27 22:38 +0700)
+- transpiler: improve struct field indexing and casting
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-27 22:38 +0700)
+- transpiler: improve struct field indexing and casting
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-27 22:38 +0700)
+- transpiler: improve struct field indexing and casting
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-27 22:38 +0700)
+- transpiler: improve struct field indexing and casting
+- Regenerated golden files - 104/104 vm valid programs passing
+
 ## Progress (2025-07-27 21:41 +0700)
 - remove old error file for deconvolution
 - Regenerated golden files - 104/104 vm valid programs passing

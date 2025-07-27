@@ -80,6 +80,7 @@ var (
 	mainFuncName   string
 	fieldTypeGuess map[string]string
 	benchMain      bool
+	varNameMap     map[string]string
 )
 
 // SetBenchMain configures whether the generated main function is wrapped in a
@@ -1863,6 +1864,12 @@ func (a *AssertExpr) emit(w io.Writer) {
 		return
 	}
 	if strings.HasPrefix(a.Type, "map[") {
+		if a.Type == "map[string]int" {
+			fmt.Fprint(w, "func(v any) map[string]int { if v == nil { return map[string]int{} }; if vv, ok := v.(map[string]int); ok { return vv }; out := make(map[string]int); if m, ok := v.(map[string]any); ok { for k, vv := range m { if vi, ok2 := vv.(int); ok2 { out[k] = vi } } }; return out }(")
+			a.Expr.emit(w)
+			fmt.Fprint(w, ")")
+			return
+		}
 		fmt.Fprintf(w, "func(v any) %s { if v == nil { return nil }; if vv, ok := v.(%s); ok { return vv }; return nil }(", a.Type, a.Type)
 		a.Expr.emit(w)
 		fmt.Fprint(w, ")")
@@ -1911,6 +1918,7 @@ func Transpile(p *parser.Program, env *types.Env, benchMain bool) (*Program, err
 	structCount = 0
 	mainFuncName = ""
 	fieldTypeGuess = map[string]string{}
+	varNameMap = map[string]string{}
 	for name, st := range env.Structs() {
 		_ = name
 		for fn, ft := range st.Fields {
@@ -2169,6 +2177,7 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 						}
 					}
 				}
+				updateListLitType(ll, valType)
 			}
 			if qe, ok := e.(*QueryExpr); ok && qe.ElemType != "" {
 				typ = "[]" + qe.ElemType
@@ -2265,13 +2274,18 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 				}
 			}
 			global := env == topEnv
+			name := st.Let.Name
+			if global && name == "init" {
+				varNameMap[name] = "_init"
+				name = "_init"
+			}
 			if global {
 				switch e.(type) {
 				case *QueryExpr, *GroupQueryExpr, *GroupJoinQueryExpr, *OuterJoinExpr:
 					global = false
 				}
 			}
-			vd := &VarDecl{Name: st.Let.Name, Type: typ, Value: e, Global: global}
+			vd := &VarDecl{Name: name, Type: typ, Value: e, Global: global}
 			if vd.Global && vd.Value != nil {
 				extraDecls = append(extraDecls, &AssignStmt{Name: vd.Name, Value: vd.Value})
 				vd.Value = nil
@@ -2281,7 +2295,12 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 			}
 			return vd, nil
 		}
-		return &VarDecl{Name: st.Let.Name, Type: typ, Global: env == topEnv}, nil
+		name := st.Let.Name
+		if env == topEnv && name == "init" {
+			varNameMap[name] = "_init"
+			name = "_init"
+		}
+		return &VarDecl{Name: name, Type: typ, Global: env == topEnv}, nil
 	case st.Var != nil:
 		var typ string
 		var declaredType types.Type
@@ -2422,7 +2441,12 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 					global = false
 				}
 			}
-			vd := &VarDecl{Name: st.Var.Name, Type: typ, Value: e, Global: global}
+			name := st.Var.Name
+			if global && name == "init" {
+				varNameMap[name] = "_init"
+				name = "_init"
+			}
+			vd := &VarDecl{Name: name, Type: typ, Value: e, Global: global}
 			if vd.Global && vd.Value != nil {
 				extraDecls = append(extraDecls, &AssignStmt{Name: vd.Name, Value: vd.Value})
 				vd.Value = nil
@@ -2432,7 +2456,12 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 			}
 			return vd, nil
 		}
-		return &VarDecl{Name: st.Var.Name, Type: typ, Global: env == topEnv}, nil
+		name := st.Var.Name
+		if env == topEnv && name == "init" {
+			varNameMap[name] = "_init"
+			name = "_init"
+		}
+		return &VarDecl{Name: name, Type: typ, Global: env == topEnv}, nil
 	case st.Type != nil:
 		if len(st.Type.Variants) > 0 {
 			if _, ok := env.GetUnion(st.Type.Name); ok {
@@ -2521,9 +2550,19 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 					if types.IsAnyType(lt.Elem) && !types.IsAnyType(elemT) {
 						env.SetVarDeep(st.Assign.Name, types.ListType{Elem: elemT}, true)
 					}
+				} else if mt, ok := vt.(types.MapType); ok {
+					if ll, ok2 := val.(*ListLit); ok2 && ll.ElemType == "any" && len(ll.Elems) == 0 {
+						if vl, ok3 := mt.Value.(types.ListType); ok3 {
+							ll.ElemType = toGoTypeFromType(vl.Elem)
+						}
+					}
 				}
 			}
-			return &IndexAssignStmt{Name: st.Assign.Name, Index: idx, Value: val}, nil
+			name := st.Assign.Name
+			if rn, ok := varNameMap[name]; ok {
+				name = rn
+			}
+			return &IndexAssignStmt{Name: name, Index: idx, Value: val}, nil
 		}
 		if len(st.Assign.Index) == 0 && len(st.Assign.Field) == 0 {
 			e, err := compileExpr(st.Assign.Value, env, st.Assign.Name)
@@ -2555,7 +2594,11 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 					}
 				}
 			}
-			return &AssignStmt{Name: st.Assign.Name, Value: e}, nil
+			name := st.Assign.Name
+			if rn, ok := varNameMap[name]; ok {
+				name = rn
+			}
+			return &AssignStmt{Name: name, Value: e}, nil
 		}
 		// build postfix expression for complex target
 		pf := &parser.PostfixExpr{Target: &parser.Primary{Selector: &parser.SelectorExpr{Root: st.Assign.Name}}}
@@ -5305,7 +5348,11 @@ func compilePrimary(p *parser.Primary, env *types.Env, base string) (Expr, error
 		if _, ok := env.FindUnionByVariant(p.Selector.Root); ok {
 			return &StructLit{Name: p.Selector.Root}, nil
 		}
-		return &VarRef{Name: p.Selector.Root}, nil
+		name := p.Selector.Root
+		if rn, ok := varNameMap[name]; ok {
+			name = rn
+		}
+		return &VarRef{Name: name}, nil
 	}
 	return nil, fmt.Errorf("unsupported primary")
 }

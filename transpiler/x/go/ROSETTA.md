@@ -1,7 +1,7 @@
 # Go Rosetta Transpiler Output
 
-Completed programs: 301/467
-Last updated: 2025-07-27 21:41 +0700
+Completed programs: 331/467
+Last updated: 2025-07-27 22:38 +0700
 
 Checklist:
 
@@ -323,36 +323,36 @@ Checklist:
 | 314 | doomsday-rule | ✓ | 420.0µs | 1.52KB |
 | 315 | dot-product | ✓ | 502.0µs | 952B |
 | 316 | doubly-linked-list-definition-1 | ✓ | 134.0µs | 0B |
-| 317 | doubly-linked-list-definition-2 |   |  |  |
-| 318 | doubly-linked-list-element-definition |   |  |  |
-| 319 | doubly-linked-list-traversal |   |  |  |
-| 320 | dragon-curve |   |  |  |
-| 321 | draw-a-clock |   |  |  |
-| 322 | draw-a-cuboid |   |  |  |
-| 323 | draw-a-pixel-1 |   |  |  |
-| 324 | draw-a-rotating-cube |   |  |  |
-| 325 | draw-a-sphere |   |  |  |
-| 326 | dutch-national-flag-problem |   |  |  |
-| 327 | dynamic-variable-names |   |  |  |
-| 328 | earliest-difference-between-prime-gaps |   |  |  |
-| 329 | eban-numbers |   |  |  |
-| 330 | ecdsa-example |   |  |  |
-| 331 | echo-server |   |  |  |
-| 332 | eertree |   |  |  |
-| 333 | egyptian-division |   |  |  |
-| 334 | ekg-sequence-convergence |   |  |  |
-| 335 | element-wise-operations |   |  |  |
-| 336 | elementary-cellular-automaton-infinite-length |   |  |  |
-| 337 | elementary-cellular-automaton-random-number-generator |   |  |  |
-| 338 | elementary-cellular-automaton |   |  |  |
-| 339 | elliptic-curve-arithmetic |   |  |  |
-| 340 | elliptic-curve-digital-signature-algorithm |   |  |  |
-| 341 | emirp-primes |   |  |  |
-| 342 | empty-directory |   |  |  |
-| 343 | empty-program |   |  |  |
-| 344 | empty-string-1 |   |  |  |
-| 345 | empty-string-2 |   |  |  |
-| 346 | enforced-immutability |   |  |  |
+| 317 | doubly-linked-list-definition-2 | ✓ | 89.0µs | 2.52KB |
+| 318 | doubly-linked-list-element-definition | ✓ | 47.0µs | 2.02KB |
+| 319 | doubly-linked-list-traversal | ✓ | 105.0µs | 2.32KB |
+| 320 | dragon-curve | ✓ | 4.0ms | 2.43MB |
+| 321 | draw-a-clock | ✓ | 53.0µs | 1.51KB |
+| 322 | draw-a-cuboid | ✓ | 149.0µs | 23.87KB |
+| 323 | draw-a-pixel-1 | ✓ | 3.0ms | 4.32MB |
+| 324 | draw-a-rotating-cube | ✓ | 974.0µs | 725.49KB |
+| 325 | draw-a-sphere | ✓ | 1.0ms | 174.49KB |
+| 326 | dutch-national-flag-problem | ✓ | 45.0µs | 1.98KB |
+| 327 | dynamic-variable-names | ✓ | 101.0µs | 5.02KB |
+| 328 | earliest-difference-between-prime-gaps | ✓ | 109.0µs | 5.13KB |
+| 329 | eban-numbers | ✓ | 653.0µs | 6.48KB |
+| 330 | ecdsa-example | ✓ | 305.0µs | 10.37KB |
+| 331 | echo-server | ✓ | 68.0µs | 1.10KB |
+| 332 | eertree | ✓ | 80.0µs | 6.70KB |
+| 333 | egyptian-division | ✓ | 59.0µs | 1.26KB |
+| 334 | ekg-sequence-convergence | ✓ | 950.0µs | 16.26KB |
+| 335 | element-wise-operations | ✓ | 111.0µs | 7.20KB |
+| 336 | elementary-cellular-automaton-infinite-length | ✓ | 928.0µs | 529.16KB |
+| 337 | elementary-cellular-automaton-random-number-generator | ✓ | 170.0µs | 81.80KB |
+| 338 | elementary-cellular-automaton | ✓ | 313.0µs | 11.30KB |
+| 339 | elliptic-curve-arithmetic | ✓ | 76.0µs | 1.82KB |
+| 340 | elliptic-curve-digital-signature-algorithm | ✓ | 142.0µs | 1.16KB |
+| 341 | emirp-primes | ✓ | 115.0ms | 353.33KB |
+| 342 | empty-directory | ✓ | 976.0µs | 952B |
+| 343 | empty-program | ✓ | 46.0µs | 0B |
+| 344 | empty-string-1 | ✓ | 75.0µs | 936B |
+| 345 | empty-string-2 | ✓ | 72.0µs | 952B |
+| 346 | enforced-immutability | ✓ | 41.0µs | 968B |
 | 347 | entropy-1 |   |  |  |
 | 348 | entropy-2 |   |  |  |
 | 349 | entropy-narcissist |   |  |  |
