@@ -149,6 +149,17 @@ local function _md5(bs)
 end
 `
 
+const helperGetOutput = `
+local function _getoutput(cmd)
+  local p = io.popen(cmd)
+  if not p then return '' end
+  local out = p:read('*a') or ''
+  p:close()
+  out = string.gsub(out, '\n$', '')
+  return out
+end
+`
+
 const helperEnviron = `
 local function _environ()
   local p = io.popen('env')
@@ -693,6 +704,21 @@ end)(`)
 			c.Args[0].emit(w)
 		}
 		io.WriteString(w, ")")
+	case "getoutput":
+		io.WriteString(w, "_getoutput(")
+		start := 0
+		if len(c.Args) > 1 {
+			if _, ok := c.Args[0].(*Ident); ok {
+				start = 1
+			}
+		}
+		for i := start; i < len(c.Args); i++ {
+			if i > start {
+				io.WriteString(w, ", ")
+			}
+			c.Args[i].emit(w)
+		}
+		io.WriteString(w, ")")
 	case "upper":
 		io.WriteString(w, "string.upper(")
 		if len(c.Args) > 0 {
@@ -1029,7 +1055,17 @@ func (b *BenchStmt) emit(w io.Writer) {
 	io.WriteString(w, "  collectgarbage()\n")
 	io.WriteString(w, "  local _bench_start_mem = collectgarbage('count') * 1024\n")
 	io.WriteString(w, "  local _bench_start = _now()\n")
+	var funs []Stmt
+	var rest []Stmt
 	for _, st := range b.Body {
+		if _, ok := st.(*FunStmt); ok {
+			funs = append(funs, st)
+		} else {
+			rest = append(rest, st)
+		}
+	}
+	stmts := append(funs, rest...)
+	for _, st := range stmts {
 		st.emit(w)
 		io.WriteString(w, "\n")
 	}
@@ -2407,6 +2443,8 @@ func collectHelpers(p *Program) map[string]bool {
 				used["sha256"] = true
 			case "MD5Hex":
 				used["md5"] = true
+			case "getoutput":
+				used["getoutput"] = true
 			case "indexOf":
 				used["indexOf"] = true
 			case "split":
@@ -2585,6 +2623,9 @@ func Emit(p *Program) []byte {
 	if used["md5"] {
 		b.WriteString(helperMD5)
 	}
+	if used["getoutput"] {
+		b.WriteString(helperGetOutput)
+	}
 	if used["indexOf"] {
 		b.WriteString(helperIndexOf)
 	}
@@ -2603,7 +2644,17 @@ func Emit(p *Program) []byte {
 
 	prevEnv := currentEnv
 	currentEnv = p.Env
-	for i, st := range p.Stmts {
+	var funs []Stmt
+	var rest []Stmt
+	for _, st := range p.Stmts {
+		if _, ok := st.(*FunStmt); ok {
+			funs = append(funs, st)
+		} else {
+			rest = append(rest, st)
+		}
+	}
+	stmts := append(funs, rest...)
+	for i, st := range stmts {
 		if i > 0 {
 			b.WriteByte('\n')
 		}

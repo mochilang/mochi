@@ -2,9 +2,9 @@
 
 Generated Lua code for programs in `tests/rosetta/x/Mochi`. Each program has a `.lua` file produced by the transpiler and a `.out` file with its runtime output. Compilation or runtime errors are captured in `.error` files.
 
-Transpiled programs: 357/465
+Transpiled programs: 387/465
 
-Last updated: 2025-07-27 16:28 GMT+7
+Last updated: 2025-07-27 16:50 GMT+7
 
 Checklist:
 
@@ -370,36 +370,36 @@ Checklist:
 | 358 | erd-s-nicolas-numbers | ✓ |  |  |
 | 359 | erd-s-selfridge-categorization-of-primes | ✓ | 23.051ms | 36.6 KB |
 | 360 | esthetic-numbers | ✓ | 32.245331s | 1.0 MB |
-| 361 | ethiopian-multiplication |   |  |  |
-| 362 | euclid-mullin-sequence |   |  |  |
-| 363 | euler-method |   |  |  |
-| 364 | eulers-constant-0.5772... |   |  |  |
-| 365 | eulers-identity |   |  |  |
-| 366 | eulers-sum-of-powers-conjecture |   |  |  |
-| 367 | evaluate-binomial-coefficients |   |  |  |
-| 368 | even-or-odd |   |  |  |
-| 369 | events |   |  |  |
-| 370 | evolutionary-algorithm |   |  |  |
-| 371 | exceptions-catch-an-exception-thrown-in-a-nested-call |   |  |  |
-| 372 | exceptions |   |  |  |
-| 373 | executable-library |   |  |  |
-| 374 | execute-a-markov-algorithm |   |  |  |
-| 375 | execute-a-system-command |   |  |  |
-| 376 | execute-brain- |   |  |  |
-| 377 | execute-computer-zero-1 |   |  |  |
-| 378 | execute-computer-zero |   |  |  |
-| 379 | execute-hq9+ |   |  |  |
-| 380 | execute-snusp |   |  |  |
-| 381 | exponentiation-operator-2 |   |  |  |
-| 382 | exponentiation-operator |   |  |  |
-| 383 | exponentiation-order |   |  |  |
-| 384 | exponentiation-with-infix-operators-in-or-operating-on-the-base |   |  |  |
-| 385 | extend-your-language |   |  |  |
-| 386 | extensible-prime-generator |   |  |  |
-| 387 | extreme-floating-point-values |   |  |  |
-| 388 | faces-from-a-mesh-2 |   |  |  |
-| 389 | faces-from-a-mesh |   |  |  |
-| 390 | factorial-base-numbers-indexing-permutations-of-a-collection |   |  |  |
+| 361 | ethiopian-multiplication | ✓ | 119µs | 200 B |
+| 362 | euclid-mullin-sequence | ✓ | 7.466ms | 1.2 KB |
+| 363 | euler-method | ✓ | 1.435ms | 1.2 KB |
+| 364 | eulers-constant-0.5772... | ✓ | 1.629ms | 168 B |
+| 365 | eulers-identity | ✓ | 114µs | 3.0 KB |
+| 366 | eulers-sum-of-powers-conjecture | ✓ | 165.05ms | 2.7 KB |
+| 367 | evaluate-binomial-coefficients | ✓ | 92µs | 136 B |
+| 368 | even-or-odd | ✓ | 210µs | 1.1 KB |
+| 369 | events | ✓ | 43µs | 104 B |
+| 370 | evolutionary-algorithm | ✓ | 156.615ms | 1.1 KB |
+| 371 | exceptions-catch-an-exception-thrown-in-a-nested-call | ✓ | 49µs | 1.0 KB |
+| 372 | exceptions | ✓ | 100µs | 912 B |
+| 373 | executable-library | ✓ | 28.479397s | 9.7 KB |
+| 374 | execute-a-markov-algorithm | ✓ | 27.295ms | 7.1 KB |
+| 375 | execute-a-system-command | ✓ | 322µs | 1.2 KB |
+| 376 | execute-brain- | ✓ | 482µs | 952 B |
+| 377 | execute-computer-zero-1 | ✓ | 2.375ms | 1.5 KB |
+| 378 | execute-computer-zero | ✓ | 195µs | 880 B |
+| 379 | execute-hq9+ | ✓ | 625µs | 3.0 KB |
+| 380 | execute-snusp | ✓ | 41µs | 104 B |
+| 381 | exponentiation-operator-2 | ✓ | 264µs | 2.9 KB |
+| 382 | exponentiation-operator | ✓ | 436µs | 2.8 KB |
+| 383 | exponentiation-order | ✓ | 92µs | 96 B |
+| 384 | exponentiation-with-infix-operators-in-or-operating-on-the-base | ✓ | 138µs | 2.9 KB |
+| 385 | extend-your-language | ✓ | 28µs | 1000 B |
+| 386 | extensible-prime-generator | ✓ | 1.969291s | 161.6 KB |
+| 387 | extreme-floating-point-values | ✓ | 163µs | 1.1 KB |
+| 388 | faces-from-a-mesh-2 | ✓ | 356µs | 1.3 KB |
+| 389 | faces-from-a-mesh | ✓ | 312µs | 3.8 KB |
+| 390 | factorial-base-numbers-indexing-permutations-of-a-collection | ✓ | 3.083ms | 2.6 KB |
 | 391 | factorial-primes |   |  |  |
 | 392 | factorial |   |  |  |
 | 393 | factorions |   |  |  |

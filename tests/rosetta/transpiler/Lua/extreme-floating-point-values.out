@@ -1,0 +1,13 @@
+0 0 0 -nan
+0 0 0 -nan
+
+!!! Expected NaN from -Inf + Inf  Found 0
+!!! Expected NaN from 0 * Inf  Found 0
+Inf / Inf -> NaN
+!!! Expected NaN from Inf % 1  Found 0
+1 + NaN -> NaN
+!!! Expected 0 from 1 / Inf  Found inf
+!!! Expected Inf > max value  Found not true.
+!!! Expected -Inf < max neg value  Found not true.
+NaN != NaN
+-0 == 0
