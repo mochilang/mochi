@@ -186,3 +186,4 @@ fun main() {
   print("\n\nFirst such number > 10 million is " + commatize(fpp[0]) + " at zero-based index " + commatize(fpp[1]))
 }
 
+main()
