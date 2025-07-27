@@ -957,12 +957,17 @@ func (s *LetStmt) emit(w io.Writer, indentLevel int) { // 'let' is immutable
 	}
 	io.WriteString(w, " = ")
 	if s.Type == "BigInteger" {
+		useHelper("importBigInt")
 		if _, ok := s.Value.(*IntLit); ok {
 			io.WriteString(w, "java.math.BigInteger.valueOf(")
 			s.Value.emit(w)
 			io.WriteString(w, ")")
 			return
 		}
+		io.WriteString(w, "(")
+		s.Value.emit(w)
+		io.WriteString(w, ").toBigInteger()")
+		return
 	}
 	s.Value.emit(w)
 }
@@ -981,12 +986,17 @@ func (s *VarStmt) emit(w io.Writer, indentLevel int) {
 	}
 	io.WriteString(w, " = ")
 	if s.Type == "BigInteger" {
+		useHelper("importBigInt")
 		if _, ok := s.Value.(*IntLit); ok {
 			io.WriteString(w, "java.math.BigInteger.valueOf(")
 			s.Value.emit(w)
 			io.WriteString(w, ")")
 			return
 		}
+		io.WriteString(w, "(")
+		s.Value.emit(w)
+		io.WriteString(w, ").toBigInteger()")
+		return
 	}
 	s.Value.emit(w)
 }
