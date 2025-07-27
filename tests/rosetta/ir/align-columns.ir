@@ -1,4 +1,4 @@
-func main (regs=28)
+func main (regs=27)
   // "Given$a$text$file$of$many$lines,$where$fields$within$a$line\n" +
   Const        r2, "Given$a$text$file$of$many$lines,$where$fields$within$a$line\n"
   // "are$delineated$by$a$single$'dollar'$character,$write$a$program\n" +
@@ -25,26 +25,25 @@ func main (regs=28)
   Move         r0, r12
   SetGlobal    0,0,0,0
   // let f = newFormatter(text)
-  Const        r14, "Given$a$text$file$of$many$lines,$where$fields$within$a$line\nare$delineated$by$a$single$'dollar'$character,$write$a$program\nthat$aligns$each$column$of$fields$by$ensuring$that$words$in$each\ncolumn$are$separated$by$at$least$one$space.\nFurther,$allow$for$each$word$in$a$column$to$be$either$left\njustified,$right$justified,$or$center$justified$within$its$column."
-  Move         r13, r14
-  Call         r15, newFormatter, r13
-  Move         r1, r15
+  Move         r13, r0
+  Call         r14, newFormatter, r13
+  Move         r1, r14
   SetGlobal    1,1,0,0
   // printFmt(f, 0)
-  Move         r16, r1
-  Const        r18, 0
-  Move         r17, r18
-  Call2        r19, printFmt, r16, r17
+  Move         r15, r1
+  Const        r17, 0
+  Move         r16, r17
+  Call2        r18, printFmt, r15, r16
   // printFmt(f, 1)
-  Move         r20, r1
-  Const        r22, 1
-  Move         r21, r22
-  Call2        r23, printFmt, r20, r21
+  Move         r19, r1
+  Const        r21, 1
+  Move         r20, r21
+  Call2        r22, printFmt, r19, r20
   // printFmt(f, 2)
-  Move         r24, r1
-  Const        r26, 2
-  Move         r25, r26
-  Call2        r27, printFmt, r24, r25
+  Move         r23, r1
+  Const        r25, 2
+  Move         r24, r25
+  Call2        r26, printFmt, r23, r24
   Return       r0
 
   // fun split(s: string, sep: string): list<string> {
@@ -216,7 +215,7 @@ L1:
   Return       r28
 
   // fun newFormatter(text: string): map<string, any> {
-func newFormatter (regs=47)
+func newFormatter (regs=49)
   // var lines = split(text, "\n")
   Move         r3, r2
   Const        r5, "\n"
@@ -265,7 +264,7 @@ L1:
   // var j = 0
   Const        r11, 0
   Move         r29, r11
-L5:
+L6:
   // while j < len(words) {
   Len          r30, r27
   LessInt      r31, r29, r30
@@ -281,30 +280,39 @@ L5:
   // width = append(width, wlen)
   Append       r37, r10, r34
   Move         r10, r37
+  // if j == len(width) {
+  Jump         L5
 L4:
+  // } else if wlen > width[j] {
+  Index        r38, r10, r29
+  Less         r39, r38, r34
+  JumpIfFalse  r39, L5
+  // width[j] = wlen
+  SetIndex     r10, r29, r34
+L5:
   // j = j + 1
   Const        r18, 1
-  AddInt       r38, r29, r18
-  Move         r29, r38
+  AddInt       r40, r29, r18
+  Move         r29, r40
   // while j < len(words) {
-  Jump         L5
+  Jump         L6
 L3:
   // i = i + 1
   Const        r18, 1
-  AddInt       r39, r12, r18
-  Move         r12, r39
+  AddInt       r41, r12, r18
+  Move         r12, r41
   // while i < len(lines) {
   Jump         L2
 L0:
   // return {"text": fmtLines, "width": width}
-  Const        r40, "text"
-  Const        r41, "width"
-  Move         r42, r40
-  Move         r43, r9
-  Move         r44, r41
-  Move         r45, r10
-  MakeMap      r46, 2, r42
-  Return       r46
+  Const        r42, "text"
+  Const        r43, "width"
+  Move         r44, r42
+  Move         r45, r9
+  Move         r46, r43
+  Move         r47, r10
+  MakeMap      r48, 2, r44
+  Return       r48
 
   // fun printFmt(f: map<string, any>, align: int) {
 func printFmt (regs=35)

@@ -2,15 +2,15 @@
 
 This checklist is auto-generated.
 Generated IR and outputs from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/ir`.
-Last updated: 2025-07-27 06:52 UTC
+Last updated: 2025-07-27 07:56 UTC
 
 ## Rosetta Golden Test Checklist (341/453)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
-| 1 | 100-doors-2 | ✓ | 116µs | 11.7 KB |
-| 2 | 100-doors-3 | ✓ | 184µs | 7.7 KB |
-| 3 | 100-doors | ✓ | 6.231ms | 851.8 KB |
-| 4 | 100-prisoners | ✓ | 4.224632s | 275.7 KB |
+| 1 | 100-doors-2 | ✓ | 204µs | 34.2 KB |
+| 2 | 100-doors-3 | ✓ | 519µs | 246.8 KB |
+| 3 | 100-doors | ✓ | 5.327ms | 978.0 KB |
+| 4 | 100-prisoners | ✓ | 4.31696s | 827.7 KB |
 | 5 | 15-puzzle-game | ✓ |  |  |
 | 6 | 15-puzzle-solver | ✓ | 917.949ms | 26.9 KB |
 | 7 | 2048 | ✓ | 5.393ms |  |
@@ -22,7 +22,7 @@ Last updated: 2025-07-27 06:52 UTC
 | 13 | 99-bottles-of-beer-2 | ✓ | 48.933ms | 721.5 KB |
 | 14 | 99-bottles-of-beer | ✓ | 1.041ms | 434.1 KB |
 | 15 | DNS-query | ✓ | 1.129634s | 30.4 KB |
-| 16 | Duffinian-numbers |   |  |  |
+| 16 | Duffinian-numbers | ✓ |  |  |
 | 17 | a+b | ✓ | 184µs | 792 B |
 | 18 | abbreviations-automatic | ✓ | 14.043ms | 154.7 KB |
 | 19 | abbreviations-easy | ✓ | 4.772ms |  |
@@ -44,7 +44,7 @@ Last updated: 2025-07-27 06:52 UTC
 | 35 | add-a-variable-to-a-class-instance-at-runtime | ✓ | 490µs | 136 B |
 | 36 | additive-primes | ✓ | 532µs | 136 B |
 | 37 | address-of-a-variable | ✓ | 360µs | 600 B |
-| 38 | adfgvx-cipher | ✓ | 756µs | 472 B |
+| 38 | adfgvx-cipher |   | 756µs | 472 B |
 | 39 | aks-test-for-primes | ✓ | 601µs | 136 B |
 | 40 | algebraic-data-types | ✓ | 1.589ms | 282.7 KB |
 | 41 | align-columns | ✓ | 12.064ms |  |

@@ -1,4 +1,6 @@
 func main (regs=1)
+  // main()
+  Call         r0, main, 
   Return       r0
 
   // fun bigTrim(a: list<int>): list<int> {
@@ -971,6 +973,7 @@ L5:
   JumpIfFalse  r74, L4
   Index        r75, r71, r73
   Move         r17, r75
+  Cast         r76, r17, int
   Append       r77, r70, r76
   Move         r70, r77
   Const        r78, 1
@@ -1310,8 +1313,7 @@ L10:
   Call         r98, bigFromInt, r97
   Move         r95, r98
   Const        r99, 2
-  Const        r79, 70
-  MulInt       r100, r99, r79
+  MulInt       r100, r99, r94
   AddInt       r101, r18, r100
   Move         r96, r101
   Call2        r102, bigMulPow10, r95, r96
@@ -1326,9 +1328,8 @@ L10:
   Move         r109, r86
   Call         r110, bigFromInt, r109
   Move         r107, r110
-  Const        r79, 70
   Const        r86, 1
-  AddInt       r111, r79, r86
+  AddInt       r111, r94, r86
   Move         r108, r111
   Call2        r112, bigMulPow10, r107, r108
   Move         r113, r112
@@ -1394,15 +1395,13 @@ L12:
   Move         r149, r148
   // if len(piStr) <= precision {
   Len          r150, r149
-  Const        r79, 70
-  LessEqInt    r151, r150, r79
+  LessEqInt    r151, r150, r94
   JumpIfFalse  r151, L15
   // piStr = repeat("0", precision - len(piStr) + 1) + piStr
   Const        r154, "0"
   Move         r152, r154
-  Const        r79, 70
   Len          r155, r149
-  SubInt       r156, r79, r155
+  SubInt       r156, r94, r155
   Const        r86, 1
   AddInt       r157, r156, r86
   Move         r153, r157
@@ -1413,14 +1412,12 @@ L15:
   // var out = substring(piStr, 0, len(piStr) - precision) + "." + substring(piStr, len(piStr) - precision, len(piStr))
   Const        r12, 0
   Len          r160, r149
-  Const        r79, 70
-  SubInt       r161, r160, r79
+  SubInt       r161, r160, r94
   Slice        r162, r149, r12, r161
   Const        r163, "."
   Add          r164, r162, r163
   Len          r165, r149
-  Const        r79, 70
-  SubInt       r166, r165, r79
+  SubInt       r166, r165, r94
   Len          r167, r149
   Slice        r168, r149, r166, r167
   Add          r169, r164, r168

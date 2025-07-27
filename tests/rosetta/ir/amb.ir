@@ -1,4 +1,6 @@
 func main (regs=1)
+  // main()
+  Call         r0, main, 
   Return       r0
 
   // fun amb(wordsets: list<list<string>>, res: list<string>, idx: int): bool {
@@ -80,7 +82,7 @@ L2:
   Return       r34
 
   // fun main() {
-func main (regs=32)
+func main (regs=31)
   // let wordset = [
   Const        r0, [["the", "that", "a"], ["frog", "elephant", "thing"], ["walked", "treaded", "grows"], ["slowly", "quickly"]]
   Move         r1, r0
@@ -107,51 +109,50 @@ L1:
   Jump         L1
 L0:
   // if amb(wordset, res, 0) {
-  Const        r15, [["the", "that", "a"], ["frog", "elephant", "thing"], ["walked", "treaded", "grows"], ["slowly", "quickly"]]
-  Move         r12, r15
+  Move         r12, r1
   Move         r13, r3
   Const        r4, 0
   Move         r14, r4
-  Call         r16, amb, r12, r13, r14
-  JumpIfFalse  r16, L2
+  Call         r15, amb, r12, r13, r14
+  JumpIfFalse  r15, L2
   // var out = "[" + res[0]
-  Const        r17, "["
+  Const        r16, "["
   Const        r4, 0
-  Index        r18, r3, r4
-  Add          r19, r17, r18
-  Move         r20, r19
+  Index        r17, r3, r4
+  Add          r18, r16, r17
+  Move         r19, r18
   // var j = 1
   Const        r10, 1
-  Move         r21, r10
+  Move         r20, r10
 L4:
   // while j < len(res) {
-  Len          r22, r3
-  LessInt      r23, r21, r22
-  JumpIfFalse  r23, L3
+  Len          r21, r3
+  LessInt      r22, r20, r21
+  JumpIfFalse  r22, L3
   // out = out + " " + res[j]
-  Const        r24, " "
-  Add          r25, r20, r24
-  Index        r26, r3, r21
-  Add          r27, r25, r26
-  Move         r20, r27
+  Const        r23, " "
+  Add          r24, r19, r23
+  Index        r25, r3, r20
+  Add          r26, r24, r25
+  Move         r19, r26
   // j = j + 1
   Const        r10, 1
-  AddInt       r28, r21, r10
-  Move         r21, r28
+  AddInt       r27, r20, r10
+  Move         r20, r27
   // while j < len(res) {
   Jump         L4
 L3:
   // out = out + "]"
-  Const        r29, "]"
-  Add          r30, r20, r29
-  Move         r20, r30
+  Const        r28, "]"
+  Add          r29, r19, r28
+  Move         r19, r29
   // print(out)
-  Print        r20
+  Print        r19
   // if amb(wordset, res, 0) {
   Jump         L5
 L2:
   // print("No amb found")
-  Const        r31, "No amb found"
-  Print        r31
+  Const        r30, "No amb found"
+  Print        r30
 L5:
   Return       r0

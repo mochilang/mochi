@@ -423,7 +423,7 @@ L0:
   Return       r4
 
   // fun main() {
-func main (regs=67)
+func main (regs=66)
   // let table = "" +
   Const        r0, ""
   // "add 1  alter 3  backup 2  bottom 1  Cappend 2  change 1  Schange  Cinsert 2  Clast 3 " +
@@ -464,84 +464,82 @@ func main (regs=67)
   Const        r18, "riG   rePEAT copies  put mo   rest    types   fup.    6\npoweRin"
   Move         r19, r18
   // let tbl = readTable(table)
-  Const        r21, "add 1  alter 3  backup 2  bottom 1  Cappend 2  change 1  Schange  Cinsert 2  Clast 3 compress 4 copy 2 count 3 Coverlay 3 cursor 3  delete 3 Cdelete 2  down 1  duplicate 3 xEdit 1 expand 3 extract 3  find 1 Nfind 2 Nfindup 6 NfUP 3 Cfind 2 findUP 3 fUP 2 forward 2  get  help 1 hexType 4  input 1 powerInput 3  join 1 split 2 spltJOIN load locate 1 Clocate 2 lowerCase 3 upperCase 3 Lprefix 2  macro  merge 2 modify 3 move 2 msg  next 1 overlay 1 parse preserve 4 purge 3 put putD query 1 quit  read recover 3 refresh renum 3 repeat 3 replace 1 Creplace 2 reset 3 restore 4 rgtLEFT right 2 left 2  save  set  shift 2  si  sort  sos  stack 3 status 4 top  transfer 3  type 1  up 1 "
-  Move         r20, r21
-  Call         r22, readTable, r20
-  Move         r23, r22
+  Move         r20, r17
+  Call         r21, readTable, r20
+  Move         r22, r21
   // let commands = tbl["commands"] as list<string>
-  Const        r24, "commands"
-  Index        r25, r23, r24
-  Cast         r26, r25, [string]
-  Move         r27, r26
+  Const        r23, "commands"
+  Index        r24, r22, r23
+  Cast         r25, r24, [string]
+  Move         r26, r25
   // let mins = tbl["mins"] as list<int>
-  Const        r28, "mins"
-  Index        r29, r23, r28
-  Cast         r30, r29, [int]
-  Move         r31, r30
+  Const        r27, "mins"
+  Index        r28, r22, r27
+  Cast         r29, r28, [int]
+  Move         r30, r29
   // let words = fields(sentence)
-  Const        r18, "riG   rePEAT copies  put mo   rest    types   fup.    6\npoweRin"
-  Move         r32, r18
-  Call         r33, fields, r32
-  Move         r34, r33
+  Move         r31, r19
+  Call         r32, fields, r31
+  Move         r33, r32
   // let results = validate(commands, mins, words)
-  Move         r35, r27
-  Move         r36, r31
-  Move         r37, r34
-  Call         r38, validate, r35, r36, r37
-  Move         r39, r38
+  Move         r34, r26
+  Move         r35, r30
+  Move         r36, r33
+  Call         r37, validate, r34, r35, r36
+  Move         r38, r37
   // var out1 = "user words:"
-  Const        r40, "user words:"
-  Move         r41, r40
+  Const        r39, "user words:"
+  Move         r40, r39
   // var k = 0
-  Const        r42, 0
-  Move         r43, r42
+  Const        r41, 0
+  Move         r42, r41
 L3:
   // while k < len(words) {
-  Len          r44, r34
-  LessInt      r45, r43, r44
-  JumpIfFalse  r45, L0
+  Len          r43, r33
+  LessInt      r44, r42, r43
+  JumpIfFalse  r44, L0
   // out1 = out1 + " "
-  Const        r46, " "
-  Add          r47, r41, r46
-  Move         r41, r47
+  Const        r45, " "
+  Add          r46, r40, r45
+  Move         r40, r46
   // if k < len(words) - 1 {
-  Len          r48, r34
-  Const        r49, 1
-  SubInt       r50, r48, r49
-  LessInt      r51, r43, r50
-  JumpIfFalse  r51, L1
+  Len          r47, r33
+  Const        r48, 1
+  SubInt       r49, r47, r48
+  LessInt      r50, r42, r49
+  JumpIfFalse  r50, L1
   // out1 = out1 + padRight(words[k], len(results[k]))
-  Index        r54, r34, r43
-  Move         r52, r54
-  Index        r55, r39, r43
-  Len          r56, r55
-  Move         r53, r56
-  Call2        r57, padRight, r52, r53
-  Add          r58, r41, r57
-  Move         r41, r58
+  Index        r53, r33, r42
+  Move         r51, r53
+  Index        r54, r38, r42
+  Len          r55, r54
+  Move         r52, r55
+  Call2        r56, padRight, r51, r52
+  Add          r57, r40, r56
+  Move         r40, r57
   // if k < len(words) - 1 {
   Jump         L2
 L1:
   // out1 = out1 + words[k]
-  Index        r59, r34, r43
-  Add          r60, r41, r59
-  Move         r41, r60
+  Index        r58, r33, r42
+  Add          r59, r40, r58
+  Move         r40, r59
 L2:
   // k = k + 1
-  Const        r49, 1
-  AddInt       r61, r43, r49
-  Move         r43, r61
+  Const        r48, 1
+  AddInt       r60, r42, r48
+  Move         r42, r60
   // while k < len(words) {
   Jump         L3
 L0:
   // print(out1)
-  Print        r41
+  Print        r40
   // print("full words: " + join(results, " "))
-  Const        r62, "full words: "
-  Move         r63, r39
-  Const        r46, " "
-  Move         r64, r46
-  Call2        r65, join, r63, r64
-  Add          r66, r62, r65
-  Print        r66
+  Const        r61, "full words: "
+  Move         r62, r38
+  Const        r45, " "
+  Move         r63, r45
+  Call2        r64, join, r62, r63
+  Add          r65, r61, r64
+  Print        r65
   Return       r0

@@ -1,4 +1,6 @@
 func main (regs=1)
+  // main()
+  Call         r0, main, 
   Return       r0
 
   // fun sortRunes(s: string): string {
@@ -152,7 +154,7 @@ L1:
   Return       r21
 
   // fun main() {
-func main (regs=49)
+func main (regs=48)
   // let words = [
   Const        r0, ["constitutionalism", "misconstitutional"]
   Move         r1, r0
@@ -169,85 +171,84 @@ func main (regs=49)
   Const        r6, ""
   Move         r8, r6
   // for w in words {
-  Const        r9, ["constitutionalism", "misconstitutional"]
-  IterPrep     r10, r9
-  Len          r11, r10
-  Const        r12, 0
+  IterPrep     r9, r1
+  Len          r10, r9
+  Const        r11, 0
 L7:
-  LessInt      r13, r12, r11
-  JumpIfFalse  r13, L0
-  Index        r14, r10, r12
-  Move         r15, r14
+  LessInt      r12, r11, r10
+  JumpIfFalse  r12, L0
+  Index        r13, r9, r11
+  Move         r14, r13
   // if len(w) <= bestLen { continue }
-  Len          r16, r15
-  LessEqInt    r17, r16, r5
-  JumpIfFalse  r17, L1
+  Len          r15, r14
+  LessEqInt    r16, r15, r5
+  JumpIfFalse  r16, L1
   Jump         L2
 L1:
   // let k = sortRunes(w)
-  Move         r18, r15
-  Call         r19, sortRunes, r18
-  Move         r20, r19
+  Move         r17, r14
+  Call         r18, sortRunes, r17
+  Move         r19, r18
   // if !(k in m) {
-  In           r21, r20, r3
-  Not          r22, r21
-  JumpIfFalse  r22, L3
+  In           r20, r19, r3
+  Not          r21, r20
+  JumpIfFalse  r21, L3
   // m[k] = [w]
-  Move         r23, r15
-  MakeList     r24, 1, r23
-  SetIndex     r3, r20, r24
+  Move         r22, r14
+  MakeList     r23, 1, r22
+  SetIndex     r3, r19, r23
   // continue
   Jump         L2
 L3:
   // for c in m[k] {
-  Index        r25, r3, r20
-  IterPrep     r26, r25
-  Len          r27, r26
-  Const        r28, 0
+  Index        r24, r3, r19
+  IterPrep     r25, r24
+  Len          r26, r25
+  Const        r27, 0
 L6:
-  LessInt      r29, r28, r27
-  JumpIfFalse  r29, L4
-  Index        r30, r26, r28
-  Move         r31, r30
+  LessInt      r28, r27, r26
+  JumpIfFalse  r28, L4
+  Index        r29, r25, r27
+  Move         r30, r29
   // if deranged(w, c) {
-  Move         r32, r15
-  Move         r33, r31
-  Call2        r34, deranged, r32, r33
-  JumpIfFalse  r34, L5
+  Move         r31, r14
+  Move         r32, r30
+  Call2        r33, deranged, r31, r32
+  JumpIfFalse  r33, L5
   // bestLen = len(w)
-  Len          r35, r15
-  Move         r5, r35
+  Len          r34, r14
+  Move         r5, r34
   // w1 = c
-  Move         r7, r31
+  Move         r7, r30
   // w2 = w
-  Move         r8, r15
+  Move         r8, r14
   // break
   Jump         L4
 L5:
   // for c in m[k] {
-  Const        r36, 1
-  AddInt       r37, r28, r36
-  Move         r28, r37
+  Const        r35, 1
+  AddInt       r36, r27, r35
+  Move         r27, r36
   Jump         L6
 L4:
   // m[k] = append(m[k], w)
-  Index        r38, r3, r20
-  Append       r39, r38, r15
-  SetIndex     r3, r20, r39
+  Index        r37, r3, r19
+  Append       r38, r37, r14
+  SetIndex     r3, r19, r38
 L2:
   // for w in words {
-  Const        r40, 1
-  AddInt       r41, r12, r40
-  Move         r12, r41
+  Const        r39, 1
+  AddInt       r40, r11, r39
+  Move         r11, r40
   Jump         L7
 L0:
   // print(w1 + " " + w2 + " : Length " + str(bestLen))
-  Const        r42, " "
-  Add          r43, r7, r42
-  Add          r44, r43, r8
-  Const        r45, " : Length "
-  Add          r46, r44, r45
-  Str          r47, r5
-  Add          r48, r46, r47
-  Print        r48
+  Const        r41, " "
+  Add          r42, r7, r41
+  Add          r43, r42, r8
+  Const        r44, " : Length "
+  Add          r45, r43, r44
+  Str          r46, r5
+  Add          r47, r45, r46
+  Print        r47
   Return       r0
