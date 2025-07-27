@@ -45,6 +45,8 @@ var currentReturnType string
 var inReturn bool
 var mutatedParams map[string]bool
 var paramNames map[string]bool
+var currentReceiver string
+var currentReceiverFields map[string]bool
 
 func isStructType(t string) bool {
 	if strings.HasPrefix(t, "std::") {
@@ -823,26 +825,32 @@ func (p *Program) write(w io.Writer) {
 	currentProgram = p
 	// declare function prototypes
 	for _, fn := range p.Functions {
+		skip := false
+		for _, p := range fn.Params {
+			if p.Type == "" || p.Type == "auto" {
+				skip = true
+				break
+			}
+		}
+		if skip {
+			continue
+		}
 		fmt.Fprintf(w, "%s %s(", fn.ReturnType, safeName(fn.Name))
 		for i, p := range fn.Params {
 			if i > 0 {
 				io.WriteString(w, ", ")
 			}
 			typ := p.Type
-			if typ == "" {
-				io.WriteString(w, "auto")
-			} else {
-				if strings.HasPrefix(typ, "std::vector<") || strings.HasPrefix(typ, "std::map<") {
-					if p.ByVal {
-						io.WriteString(w, typ)
-					} else {
-						io.WriteString(w, "const "+typ+"&")
-					}
-				} else if isStructType(typ) {
-					io.WriteString(w, typ+"&")
-				} else {
+			if strings.HasPrefix(typ, "std::vector<") || strings.HasPrefix(typ, "std::map<") {
+				if p.ByVal {
 					io.WriteString(w, typ)
+				} else {
+					io.WriteString(w, "const "+typ+"&")
 				}
+			} else if isStructType(typ) {
+				io.WriteString(w, typ+"&")
+			} else {
+				io.WriteString(w, typ)
 			}
 			io.WriteString(w, " ")
 			io.WriteString(w, safeName(p.Name))
@@ -900,6 +908,12 @@ func (f *Func) emit(w io.Writer) {
 		typ := p.Type
 		if typ == "" {
 			io.WriteString(w, "auto ")
+		} else if typ == "auto" {
+			if p.ByVal {
+				io.WriteString(w, "auto ")
+			} else {
+				io.WriteString(w, "auto&& ")
+			}
 		} else {
 			if strings.HasPrefix(typ, "std::vector<") || strings.HasPrefix(typ, "std::map<") {
 				if p.ByVal {
@@ -1331,6 +1345,13 @@ func (i *IndexExpr) emit(w io.Writer) {
 			}
 		}
 	}
+	if strings.HasPrefix(t, "std::map<") && strings.HasSuffix(t, ">") {
+		i.Target.emit(w)
+		io.WriteString(w, ".at(")
+		i.Index.emit(w)
+		io.WriteString(w, ")")
+		return
+	}
 	i.Target.emit(w)
 	io.WriteString(w, "[")
 	i.Index.emit(w)
@@ -1423,9 +1444,17 @@ func (a *AppendExpr) emit(w io.Writer) {
 	a.List.emit(w)
 	io.WriteString(w, "; __tmp.push_back(")
 	if et := valType; et != elemType && elemType != "auto" {
-		io.WriteString(w, "("+elemType+")")
+		if et == "std::any" {
+			io.WriteString(w, "std::any_cast<"+elemType+">(")
+			elem.emit(w)
+			io.WriteString(w, ")")
+		} else {
+			io.WriteString(w, "("+elemType+")")
+			elem.emit(w)
+		}
+	} else {
+		elem.emit(w)
 	}
-	elem.emit(w)
 	io.WriteString(w, "); return __tmp; }())")
 }
 
@@ -1649,6 +1678,12 @@ func (v *VarRef) emit(w io.Writer) {
 	if v.Name == "nil" {
 		io.WriteString(w, "std::any{}")
 		return
+	}
+	if currentReceiver != "" {
+		if currentReceiverFields[v.Name] {
+			io.WriteString(w, "self->"+safeName(v.Name))
+			return
+		}
 	}
 	io.WriteString(w, safeName(v.Name))
 }
@@ -4027,6 +4062,10 @@ func convertPostfix(p *parser.PostfixExpr) (Expr, error) {
 					// builtin handled
 				} else if _, ok4 := expr.(*PadStartExpr); ok4 {
 					// builtin handled
+				} else if sel2, ok4 := expr.(*SelectorExpr); ok4 && isStructType(exprType(sel2.Target)) {
+					methodName := exprType(sel2.Target) + "_" + sel2.Field
+					args = append([]Expr{sel2.Target}, args...)
+					expr = &CallExpr{Name: methodName, Args: args}
 				} else {
 					return nil, fmt.Errorf("unsupported call")
 				}
@@ -6340,14 +6379,39 @@ func convertTypeDecl(td *parser.TypeDecl) (*StructDef, error) {
 	}
 	st := &StructDef{Name: td.Name}
 	for _, m := range td.Members {
-		if m.Field == nil {
+		if m.Field != nil {
+			typ := "auto"
+			if m.Field.Type != nil {
+				typ = cppTypeFrom(types.ResolveTypeRef(m.Field.Type, currentEnv))
+			}
+			st.Fields = append(st.Fields, Param{Name: m.Field.Name, Type: typ})
+		} else if m.Method != nil {
+			fn := *m.Method
+			fn.Name = td.Name + "_" + fn.Name
+			selfType := td.Name
+			selfParam := &parser.Param{Name: "self", Type: &parser.TypeRef{Simple: &selfType}}
+			fn.Params = append([]*parser.Param{selfParam}, fn.Params...)
+			if currentProgram != nil {
+				prevRecv := currentReceiver
+				prevFields := currentReceiverFields
+				currentReceiver = td.Name
+				currentReceiverFields = map[string]bool{}
+				for _, f := range st.Fields {
+					currentReceiverFields[f.Name] = true
+				}
+				mf, err := convertFun(&fn)
+				if err != nil {
+					currentReceiver = prevRecv
+					currentReceiverFields = prevFields
+					return nil, err
+				}
+				currentProgram.Functions = append(currentProgram.Functions, mf)
+				currentReceiver = prevRecv
+				currentReceiverFields = prevFields
+			}
+		} else {
 			return nil, fmt.Errorf("unsupported type member")
 		}
-		typ := "auto"
-		if m.Field.Type != nil {
-			typ = cppTypeFrom(types.ResolveTypeRef(m.Field.Type, currentEnv))
-		}
-		st.Fields = append(st.Fields, Param{Name: m.Field.Name, Type: typ})
 	}
 	return st, nil
 }
