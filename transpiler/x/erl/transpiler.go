@@ -3818,6 +3818,10 @@ func convertFunStmt(fn *parser.FunStmt, env *types.Env, ctx *context) (*FuncDecl
 			child.SetVar(p.Name, types.ResolveTypeRef(p.Type, env), false)
 		} else {
 			child.SetVar(p.Name, types.AnyType{}, false)
+			name := ctx.original(p.Name)
+			if ctx.isMapVar(name) {
+				fctx.setMapVar(p.Name, true)
+			}
 		}
 		if p.Type != nil {
 			if p.Type.Simple != nil && *p.Type.Simple == "string" {
@@ -4407,7 +4411,7 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env, ctx *context) (Expr,
 				} else if isStringExpr(expr) {
 					kind = "string"
 					isStr = true
-				} else if _, ok := idx.(*StringLit); ok {
+				} else if _, ok := idx.(*StringLit); ok || isStringExpr(idx) {
 					kind = "map"
 				}
 			}
