@@ -3193,6 +3193,26 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		}
 		return &ListLit{Elems: elems}, nil
 	case p.Map != nil:
+		if envInfo != nil {
+			if _, ok := types.InferSimpleMap(p.Map, envInfo); ok {
+				needDataMap = true
+				var keys []Expr
+				var values []Expr
+				for _, it := range p.Map.Items {
+					ke, err := convertExpr(it.Key)
+					if err != nil {
+						return nil, err
+					}
+					keys = append(keys, ke)
+					ve, err := convertExpr(it.Value)
+					if err != nil {
+						return nil, err
+					}
+					values = append(values, ve)
+				}
+				return &MapLit{Keys: keys, Values: values}, nil
+			}
+		}
 		if len(p.Map.Items) >= 1 {
 			allConst := true
 			fields := make([]string, len(p.Map.Items))
@@ -3204,7 +3224,7 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 					allConst = false
 					break
 				}
-				fields[i] = key
+				fields[i] = safeName(key)
 				ve, err := convertExpr(it.Value)
 				if err != nil {
 					return nil, err
