@@ -1,17 +1,17 @@
 6 x 6 Polybius square:
   | A D F G V X
 ---------------
-A | 4 2 K R 3 Q 
-D | O J 9 1 X T 
-F | Z 0 B Y F 5 
-G | A H 7 L M D 
-V | N V C 6 S G 
-X | U P E 8 I W 
+A | F W T P 5 X 
+D | Z U 4 H J 7 
+F | B 6 E N 3 0 
+G | R 8 L K 2 I 
+V | 9 V C Q O M 
+X | A 1 D Y G S 
 
-The key is S1OZG0PYI
+The key is KIR29AJLZ
 
 Plaintext : ATTACKAT1200AM
 
-Encrypted : XDD AAD DAF VGG DFF GXG GFAV ADA XGD
+Encrypted : FXX AAF FAX AGV XFX XFGX AXA AGF VDV
 
 Decrypted : ATTACKAT1200AM
