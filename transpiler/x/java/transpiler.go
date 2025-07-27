@@ -3080,7 +3080,14 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 				}
 			}
 			if t == "" {
-				t = inferType(e)
+				if ix, ok := e.(*IndexExpr); ok {
+					if et := arrayElemType(ix.Target); et != "" {
+						t = et
+					}
+				}
+				if t == "" {
+					t = inferType(e)
+				}
 			}
 			if t != "" {
 				varTypes[s.Let.Name] = t
@@ -3255,7 +3262,17 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 		if st, ok := topEnv.GetStruct(s.Type.Name); ok {
 			fields := make([]Param, len(st.Order))
 			for i, n := range st.Order {
-				fields[i] = Param{Name: n, Type: toJavaTypeFromType(st.Fields[n])}
+				typ := toJavaTypeFromType(st.Fields[n])
+				if (typ == "Object" || typ == "Object[]") && s.Type != nil {
+					for _, mem := range s.Type.Members {
+						if mem.Field != nil && mem.Field.Name == n {
+							if t := typeRefString(mem.Field.Type); t != "" {
+								typ = t
+							}
+						}
+					}
+				}
+				fields[i] = Param{Name: n, Type: typ}
 			}
 			var methods []*Function
 			for _, mem := range s.Type.Members {
@@ -3292,6 +3309,13 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 			}
 			td := &TypeDeclStmt{Name: s.Type.Name, Fields: fields, Methods: methods}
 			structDecls[s.Type.Name] = td
+			if structDefs != nil {
+				sf := make(map[string]string)
+				for _, f := range fields {
+					sf[f.Name] = f.Type
+				}
+				structDefs[s.Type.Name] = sf
+			}
 			return td, nil
 		}
 		return nil, nil

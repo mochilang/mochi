@@ -1,0 +1,5 @@
+compile: exit status 1
+/tmp/TestJavaTranspiler_Rosetta_Goldenconditional-structures-64222319912/001/Main.java:3: error: not a statement
+        value == 1 ? null : value == 2 ? null : value == 3 ? null : null;
+                   ^
+1 error
