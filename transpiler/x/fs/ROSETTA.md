@@ -2,7 +2,7 @@
 
 This file is auto-generated from rosetta tests.
 
-## Rosetta Golden Test Checklist (170/467)
+## Rosetta Golden Test Checklist (172/467)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 151µs | 41.3 KB |
@@ -169,14 +169,14 @@ This file is auto-generated from rosetta tests.
 | 162 | call-a-function-9 | ✓ | 33µs | 15.5 KB |
 | 163 | call-an-object-method-1 | ✓ | 20µs | 12.1 KB |
 | 164 | call-an-object-method-2 |   |  |  |
-| 165 | call-an-object-method-3 | ✓ | 7µs | 328 B |
-| 166 | call-an-object-method | ✓ | 7µs | 328 B |
-| 167 | camel-case-and-snake-case | ✓ | 230µs | 57.4 KB |
-| 168 | canny-edge-detector | ✓ | 175µs | 49.2 KB |
-| 169 | canonicalize-cidr | ✓ | 255µs | 53.3 KB |
-| 170 | cantor-set | ✓ | 383µs | 63.9 KB |
-| 171 | carmichael-3-strong-pseudoprimes | ✓ | 264µs | 42.1 KB |
-| 172 | cartesian-product-of-two-or-more-lists-1 | ✓ | 161µs | 42.1 KB |
+| 165 | call-an-object-method-3 | ✓ | 27µs | 16.5 KB |
+| 166 | call-an-object-method | ✓ | 27µs | 2.8 KB |
+| 167 | camel-case-and-snake-case | ✓ | 453µs | 57.4 KB |
+| 168 | canny-edge-detector | ✓ | 385µs | 42.8 KB |
+| 169 | canonicalize-cidr | ✓ | 493µs | 67.3 KB |
+| 170 | cantor-set | ✓ | 811µs | 75.8 KB |
+| 171 | carmichael-3-strong-pseudoprimes | ✓ | 518µs | 46.1 KB |
+| 172 | cartesian-product-of-two-or-more-lists-1 | ✓ | 325µs | 48.0 KB |
 | 173 | cartesian-product-of-two-or-more-lists-2 | ✓ | 215µs | 54.1 KB |
 | 174 | cartesian-product-of-two-or-more-lists-3 |   |  |  |
 | 175 | cartesian-product-of-two-or-more-lists-4 |   |  |  |
@@ -206,8 +206,8 @@ This file is auto-generated from rosetta tests.
 | 199 | chinese-remainder-theorem | ✓ | 325µs | 54.2 KB |
 | 200 | chinese-zodiac | ✓ | 322µs | 49.6 KB |
 | 201 | cholesky-decomposition-1 |   |  |  |
-| 202 | cholesky-decomposition |   |  |  |
-| 203 | chowla-numbers |   |  |  |
+| 202 | cholesky-decomposition | ✓ | 316µs | 55.6 KB |
+| 203 | chowla-numbers | ✓ | 160µs | 41.6 KB |
 | 204 | church-numerals-1 |   |  |  |
 | 205 | church-numerals-2 |   |  |  |
 | 206 | circles-of-given-radius-through-two-points |   |  |  |
@@ -473,4 +473,4 @@ This file is auto-generated from rosetta tests.
 | 466 | window-management |   |  |  |
 | 467 | zumkeller-numbers |   |  |  |
 
-Last updated: 2025-07-27 23:36 +0700
+Last updated: 2025-07-28 00:39 +0700

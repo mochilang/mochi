@@ -38,7 +38,13 @@ type UnionDef struct {
 	Cases []UnionCase
 }
 
+type AliasDef struct {
+	Name string
+	Type string
+}
+
 type Program struct {
+	Aliases      []AliasDef
 	Structs      []StructDef
 	Unions       []UnionDef
 	Stmts        []Stmt
@@ -53,6 +59,7 @@ type Program struct {
 // transpilation. It is reset for every call to Transpile.
 var (
 	varTypes      map[string]string
+	aliasDefs     []AliasDef
 	structDefs    []StructDef
 	unionDefs     []UnionDef
 	structCount   int
@@ -224,6 +231,8 @@ func fsTypeFromString(s string) string {
 		return "string"
 	case "bigint":
 		return "bigint"
+	case "any":
+		return "obj"
 	default:
 		if strings.HasPrefix(s, "list<") && strings.HasSuffix(s, ">") {
 			elem := strings.TrimSuffix(strings.TrimPrefix(s, "list<"), ">")
@@ -912,13 +921,13 @@ func (q *QueryExpr) emit(w io.Writer) {
 	io.WriteString(w, " in ")
 	src := q.Src
 	if q.Sort != nil {
-		src = &CallExpr{Func: "List.sortBy", Args: []Expr{&LambdaExpr{Params: []string{fsIdent(q.Var)}, Expr: q.Sort}, src}}
+		src = &CallExpr{Func: &IdentExpr{Name: "List.sortBy"}, Args: []Expr{&LambdaExpr{Params: []string{fsIdent(q.Var)}, Expr: q.Sort}, src}}
 	}
 	if q.Skip != nil {
-		src = &CallExpr{Func: "List.skip", Args: []Expr{q.Skip, src}}
+		src = &CallExpr{Func: &IdentExpr{Name: "List.skip"}, Args: []Expr{q.Skip, src}}
 	}
 	if q.Take != nil {
-		src = &CallExpr{Func: "List.take", Args: []Expr{q.Take, src}}
+		src = &CallExpr{Func: &IdentExpr{Name: "List.take"}, Args: []Expr{q.Take, src}}
 	}
 	src.emit(w)
 	io.WriteString(w, " do")
@@ -1357,7 +1366,7 @@ func (s *LetStmt) emit(w io.Writer) {
 }
 
 type CallExpr struct {
-	Func string
+	Func Expr
 	Args []Expr
 }
 
@@ -1878,28 +1887,31 @@ func inferType(e Expr) string {
 		}
 		return t
 	case *CallExpr:
-		switch v.Func {
-		case "string":
-			return "string"
-		case "System.Console.ReadLine", "input":
-			return "string"
-		case "Seq.length", "List.length", "String.length":
-			return "int"
-		case "Seq.sum", "List.sum":
-			return "int"
-		case "Seq.averageBy float", "List.averageBy float":
-			return "float"
-		}
-		if strings.HasSuffix(v.Func, "FifteenPuzzleExample") {
-			return "string"
-		}
-		if transpileEnv != nil {
-			if fv, err := transpileEnv.GetVar(v.Func); err == nil {
-				if ft, ok := fv.(types.FuncType); ok {
-					return fsType(ft.Return)
+		if id, ok := v.Func.(*IdentExpr); ok {
+			switch id.Name {
+			case "string":
+				return "string"
+			case "System.Console.ReadLine", "input":
+				return "string"
+			case "Seq.length", "List.length", "String.length":
+				return "int"
+			case "Seq.sum", "List.sum":
+				return "int"
+			case "Seq.averageBy float", "List.averageBy float":
+				return "float"
+			}
+			if strings.HasSuffix(id.Name, "FifteenPuzzleExample") {
+				return "string"
+			}
+			if transpileEnv != nil {
+				if fv, err := transpileEnv.GetVar(id.Name); err == nil {
+					if ft, ok := fv.(types.FuncType); ok {
+						return fsType(ft.Return)
+					}
 				}
 			}
 		}
+		return ""
 	case *MethodCallExpr:
 		switch v.Name {
 		case "contains", "Contains":
@@ -1949,11 +1961,21 @@ func isList(e Expr) bool {
 }
 
 func (c *CallExpr) emit(w io.Writer) {
-	name := c.Func
-	if name == "mod" {
-		name = "``mod``"
+	if id, ok := c.Func.(*IdentExpr); ok {
+		name := id.Name
+		if name == "mod" {
+			name = "``mod``"
+		}
+		io.WriteString(w, name)
+	} else {
+		if needsParen(c.Func) {
+			io.WriteString(w, "(")
+			c.Func.emit(w)
+			io.WriteString(w, ")")
+		} else {
+			c.Func.emit(w)
+		}
 	}
-	io.WriteString(w, name)
 	if len(c.Args) == 0 {
 		io.WriteString(w, "()")
 		return
@@ -2252,7 +2274,7 @@ func (s *SliceExpr) emit(w io.Writer) {
 		if s.End != nil {
 			endLen = &BinaryExpr{Left: s.End, Op: "-", Right: start}
 		} else {
-			endLen = &BinaryExpr{Left: &CallExpr{Func: "Array.length", Args: []Expr{s.Target}}, Op: "-", Right: start}
+			endLen = &BinaryExpr{Left: &CallExpr{Func: &IdentExpr{Name: "Array.length"}, Args: []Expr{s.Target}}, Op: "-", Right: start}
 		}
 		if needsParen(endLen) {
 			io.WriteString(w, "(")
@@ -2271,7 +2293,7 @@ func (s *SliceExpr) emit(w io.Writer) {
 	if s.End != nil {
 		length = &BinaryExpr{Left: s.End, Op: "-", Right: start}
 	} else {
-		length = &BinaryExpr{Left: &CallExpr{Func: "String.length", Args: []Expr{s.Target}}, Op: "-", Right: start}
+		length = &BinaryExpr{Left: &CallExpr{Func: &IdentExpr{Name: "String.length"}, Args: []Expr{s.Target}}, Op: "-", Right: start}
 	}
 	length.emit(w)
 	io.WriteString(w, ")")
@@ -2432,6 +2454,9 @@ func Emit(prog *Program) []byte {
 		buf.WriteString(helperSHA256)
 		buf.WriteString("\n")
 	}
+	for _, al := range prog.Aliases {
+		fmt.Fprintf(&buf, "type %s = %s\n", fsIdent(al.Name), al.Type)
+	}
 	for _, st := range prog.Structs {
 		if len(st.Fields) == 0 {
 			fmt.Fprintf(&buf, "type %s() = class end\n", fsIdent(st.Name))
@@ -2510,6 +2535,7 @@ func header() string {
 func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	transpileEnv = env
 	varTypes = map[string]string{}
+	aliasDefs = nil
 	structDefs = nil
 	unionDefs = nil
 	structCount = 0
@@ -2534,6 +2560,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 		p.Stmts = append(methodDefs, p.Stmts...)
 		methodDefs = nil
 	}
+	p.Aliases = aliasDefs
 	p.Structs = structDefs
 	p.Unions = unionDefs
 	if len(neededOpens) > 0 {
@@ -2724,7 +2751,7 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 		} else if fsDecl != "" {
 			inferred := inferType(e)
 			if fsDecl == "obj" && inferred != "obj" {
-				e = &CallExpr{Func: "box", Args: []Expr{e}}
+				e = &CallExpr{Func: &IdentExpr{Name: "box"}, Args: []Expr{e}}
 			} else if inferred == "obj" && fsDecl != "obj" {
 				e = &CastExpr{Expr: e, Type: fsDecl}
 			}
@@ -2816,7 +2843,7 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 		} else if fsDecl != "" {
 			inferred := inferType(e)
 			if fsDecl == "obj" && inferred != "obj" {
-				e = &CallExpr{Func: "box", Args: []Expr{e}}
+				e = &CallExpr{Func: &IdentExpr{Name: "box"}, Args: []Expr{e}}
 			} else if inferred == "obj" && fsDecl != "obj" {
 				e = &CastExpr{Expr: e, Type: fsDecl}
 			}
@@ -2863,9 +2890,9 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 					mapVal := mapValueType(t)
 					v := val
 					if mapVal == "obj" && inferType(val) != "obj" {
-						v = &CallExpr{Func: "box", Args: []Expr{val}}
+						v = &CallExpr{Func: &IdentExpr{Name: "box"}, Args: []Expr{val}}
 					}
-					upd := &CallExpr{Func: "Map.add", Args: []Expr{target.(*IndexExpr).Index, v, &IdentExpr{Name: st.Assign.Name, Type: t}}}
+					upd := &CallExpr{Func: &IdentExpr{Name: "Map.add"}, Args: []Expr{target.(*IndexExpr).Index, v, &IdentExpr{Name: st.Assign.Name, Type: t}}}
 					return &AssignStmt{Name: st.Assign.Name, Expr: upd}, nil
 				}
 			}
@@ -3195,11 +3222,7 @@ func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
 			if fe, ok := expr.(*FieldExpr); ok {
 				expr = &MethodCallExpr{Target: fe.Target, Name: fe.Name, Args: args}
 			} else {
-				if id, ok := expr.(*IdentExpr); ok {
-					expr = &CallExpr{Func: id.Name, Args: args}
-				} else {
-					return nil, fmt.Errorf("unsupported postfix")
-				}
+				expr = &CallExpr{Func: expr, Args: args}
 			}
 		case op.Cast != nil && op.Cast.Type != nil:
 			expr = &CastExpr{Expr: expr, Type: typeRefString(op.Cast.Type)}
@@ -3227,41 +3250,41 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				switch inferType(args[0]) {
 				case "bool":
 					b := &IfExpr{Cond: args[0], Then: &IntLit{Value: 1}, Else: &IntLit{Value: 0}}
-					return &CallExpr{Func: "printfn \"%d\"", Args: []Expr{b}}, nil
+					return &CallExpr{Func: &IdentExpr{Name: "printfn \"%d\""}, Args: []Expr{b}}, nil
 				case "int":
-					return &CallExpr{Func: "printfn \"%d\"", Args: []Expr{args[0]}}, nil
+					return &CallExpr{Func: &IdentExpr{Name: "printfn \"%d\""}, Args: []Expr{args[0]}}, nil
 				case "float":
-					return &CallExpr{Func: "printfn \"%.1f\"", Args: []Expr{args[0]}}, nil
+					return &CallExpr{Func: &IdentExpr{Name: "printfn \"%.1f\""}, Args: []Expr{args[0]}}, nil
 				case "array":
-					mapped := &CallExpr{Func: "Array.map string", Args: []Expr{args[0]}}
-					concat := &CallExpr{Func: "String.concat", Args: []Expr{&StringLit{Value: " "}, &CallExpr{Func: "Array.toList", Args: []Expr{mapped}}}}
+					mapped := &CallExpr{Func: &IdentExpr{Name: "Array.map string"}, Args: []Expr{args[0]}}
+					concat := &CallExpr{Func: &IdentExpr{Name: "String.concat"}, Args: []Expr{&StringLit{Value: " "}, &CallExpr{Func: &IdentExpr{Name: "Array.toList"}, Args: []Expr{mapped}}}}
 					wrapped := &BinaryExpr{Left: &BinaryExpr{Left: &StringLit{Value: "["}, Op: "+", Right: concat}, Op: "+", Right: &StringLit{Value: "]"}}
-					return &CallExpr{Func: "printfn \"%s\"", Args: []Expr{wrapped}}, nil
+					return &CallExpr{Func: &IdentExpr{Name: "printfn \"%s\""}, Args: []Expr{wrapped}}, nil
 				case "string":
-					return &CallExpr{Func: "printfn \"%s\"", Args: []Expr{args[0]}}, nil
+					return &CallExpr{Func: &IdentExpr{Name: "printfn \"%s\""}, Args: []Expr{args[0]}}, nil
 				default:
-					return &CallExpr{Func: "printfn \"%A\"", Args: []Expr{args[0]}}, nil
+					return &CallExpr{Func: &IdentExpr{Name: "printfn \"%A\""}, Args: []Expr{args[0]}}, nil
 				}
 			}
 			elems := make([]Expr, len(args))
 			for i, a := range args {
 				switch inferType(a) {
 				case "bool":
-					elems[i] = &CallExpr{Func: "sprintf \"%b\"", Args: []Expr{a}}
+					elems[i] = &CallExpr{Func: &IdentExpr{Name: "sprintf \"%b\""}, Args: []Expr{a}}
 				case "int":
-					elems[i] = &CallExpr{Func: "sprintf \"%d\"", Args: []Expr{a}}
+					elems[i] = &CallExpr{Func: &IdentExpr{Name: "sprintf \"%d\""}, Args: []Expr{a}}
 				case "float":
-					elems[i] = &CallExpr{Func: "sprintf \"%.1f\"", Args: []Expr{a}}
+					elems[i] = &CallExpr{Func: &IdentExpr{Name: "sprintf \"%.1f\""}, Args: []Expr{a}}
 				case "array":
-					mapped := &CallExpr{Func: "Array.map string", Args: []Expr{a}}
-					elems[i] = &BinaryExpr{Left: &BinaryExpr{Left: &StringLit{Value: "["}, Op: "+", Right: &CallExpr{Func: "String.concat", Args: []Expr{&StringLit{Value: " "}, &CallExpr{Func: "Array.toList", Args: []Expr{mapped}}}}}, Op: "+", Right: &StringLit{Value: "]"}}
+					mapped := &CallExpr{Func: &IdentExpr{Name: "Array.map string"}, Args: []Expr{a}}
+					elems[i] = &BinaryExpr{Left: &BinaryExpr{Left: &StringLit{Value: "["}, Op: "+", Right: &CallExpr{Func: &IdentExpr{Name: "String.concat"}, Args: []Expr{&StringLit{Value: " "}, &CallExpr{Func: &IdentExpr{Name: "Array.toList"}, Args: []Expr{mapped}}}}}, Op: "+", Right: &StringLit{Value: "]"}}
 				default:
-					elems[i] = &CallExpr{Func: "sprintf \"%A\"", Args: []Expr{a}}
+					elems[i] = &CallExpr{Func: &IdentExpr{Name: "sprintf \"%A\""}, Args: []Expr{a}}
 				}
 			}
 			list := &ListLit{Elems: elems}
-			concat := &CallExpr{Func: "String.concat", Args: []Expr{&StringLit{Value: " "}, list}}
-			return &CallExpr{Func: "printfn \"%s\"", Args: []Expr{concat}}, nil
+			concat := &CallExpr{Func: &IdentExpr{Name: "String.concat"}, Args: []Expr{&StringLit{Value: " "}, list}}
+			return &CallExpr{Func: &IdentExpr{Name: "printfn \"%s\""}, Args: []Expr{concat}}, nil
 		case "count", "len":
 			fn := "Seq.length"
 			if len(args) == 1 {
@@ -3275,25 +3298,25 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				case "group":
 					if id, ok := args[0].(*IdentExpr); ok {
 						field := &FieldExpr{Target: id, Name: "items"}
-						return &CallExpr{Func: "Array.length", Args: []Expr{field}}, nil
+						return &CallExpr{Func: &IdentExpr{Name: "Array.length"}, Args: []Expr{field}}, nil
 					}
 				}
 			}
-			return &CallExpr{Func: fn, Args: args}, nil
+			return &CallExpr{Func: &IdentExpr{Name: fn}, Args: args}, nil
 		case "str":
-			return &CallExpr{Func: "string", Args: args}, nil
+			return &CallExpr{Func: &IdentExpr{Name: "string"}, Args: args}, nil
 		case "sum":
 			fn := "Seq.sum"
 			if len(args) == 1 && inferType(args[0]) == "array" {
 				fn = "Array.sum"
 			}
-			return &CallExpr{Func: fn, Args: args}, nil
+			return &CallExpr{Func: &IdentExpr{Name: fn}, Args: args}, nil
 		case "avg":
 			fn := "Seq.averageBy float"
 			if len(args) == 1 && inferType(args[0]) == "array" {
 				fn = "Array.averageBy float"
 			}
-			return &CallExpr{Func: fn, Args: args}, nil
+			return &CallExpr{Func: &IdentExpr{Name: fn}, Args: args}, nil
 		case "exists":
 			if len(args) != 1 {
 				return nil, fmt.Errorf("exists expects 1 arg")
@@ -3302,7 +3325,7 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			if inferType(args[0]) == "array" {
 				fn = "Array.isEmpty"
 			}
-			return &UnaryExpr{Op: "not", Expr: &CallExpr{Func: fn, Args: args}}, nil
+			return &UnaryExpr{Op: "not", Expr: &CallExpr{Func: &IdentExpr{Name: fn}, Args: args}}, nil
 		case "append":
 			if len(args) != 2 {
 				return nil, fmt.Errorf("append expects 2 args")
@@ -3317,12 +3340,12 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			if len(args) == 0 {
 				usesNow = true
 				neededOpens["System"] = true
-				return &CallExpr{Func: "_now", Args: nil}, nil
+				return &CallExpr{Func: &IdentExpr{Name: "_now"}, Args: nil}, nil
 			}
 		case "input":
 			if len(args) == 0 {
 				neededOpens["System"] = true
-				return &CallExpr{Func: "System.Console.ReadLine", Args: nil}, nil
+				return &CallExpr{Func: &IdentExpr{Name: "System.Console.ReadLine"}, Args: nil}, nil
 			}
 		case "substring", "substr":
 			if len(args) != 3 {
@@ -3349,11 +3372,11 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			case t == "string":
 				return &MethodCallExpr{Target: args[0], Name: "Contains", Args: []Expr{args[1]}}, nil
 			case t == "array":
-				return &CallExpr{Func: "Array.contains", Args: []Expr{args[1], args[0]}}, nil
+				return &CallExpr{Func: &IdentExpr{Name: "Array.contains"}, Args: []Expr{args[1], args[0]}}, nil
 			case t == "map":
-				return &CallExpr{Func: "Map.containsKey", Args: []Expr{args[1], args[0]}}, nil
+				return &CallExpr{Func: &IdentExpr{Name: "Map.containsKey"}, Args: []Expr{args[1], args[0]}}, nil
 			default:
-				return &CallExpr{Func: "Seq.contains", Args: []Expr{args[1], args[0]}}, nil
+				return &CallExpr{Func: &IdentExpr{Name: "Seq.contains"}, Args: []Expr{args[1], args[0]}}, nil
 			}
 		case "sha256":
 			if len(args) != 1 {
@@ -3361,25 +3384,25 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			}
 			usesSHA256 = true
 			neededOpens["System.Security.Cryptography"] = true
-			return &CallExpr{Func: "_sha256", Args: args}, nil
+			return &CallExpr{Func: &IdentExpr{Name: "_sha256"}, Args: args}, nil
 		case "keys":
 			if len(args) != 1 {
 				return nil, fmt.Errorf("keys expects 1 arg")
 			}
 			t := inferType(args[0])
 			if t == "map" {
-				inner := &CallExpr{Func: "Map.toList", Args: []Expr{args[0]}}
-				return &CallExpr{Func: "List.map fst", Args: []Expr{inner}}, nil
+				inner := &CallExpr{Func: &IdentExpr{Name: "Map.toList"}, Args: []Expr{args[0]}}
+				return &CallExpr{Func: &IdentExpr{Name: "List.map fst"}, Args: []Expr{inner}}, nil
 			}
-			return &CallExpr{Func: "Seq.map fst", Args: args}, nil
+			return &CallExpr{Func: &IdentExpr{Name: "Seq.map fst"}, Args: args}, nil
 		case "values":
 			if len(args) != 1 {
 				return nil, fmt.Errorf("values expects 1 arg")
 			}
 			t := inferType(args[0])
 			if t == "map" {
-				inner := &CallExpr{Func: "Map.toList", Args: []Expr{args[0]}}
-				return &CallExpr{Func: "List.map snd", Args: []Expr{inner}}, nil
+				inner := &CallExpr{Func: &IdentExpr{Name: "Map.toList"}, Args: []Expr{args[0]}}
+				return &CallExpr{Func: &IdentExpr{Name: "List.map snd"}, Args: []Expr{inner}}, nil
 			}
 			if fields, ok := structFieldNames(t); ok {
 				elems := make([]Expr, len(fields))
@@ -3388,7 +3411,7 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				}
 				return &ListLit{Elems: elems}, nil
 			}
-			return &CallExpr{Func: "Seq.map snd", Args: args}, nil
+			return &CallExpr{Func: &IdentExpr{Name: "Seq.map snd"}, Args: args}, nil
 		default:
 			if transpileEnv != nil {
 				if _, ok := transpileEnv.FindUnionByVariant(p.Call.Func); ok {
@@ -3406,7 +3429,7 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 					}
 				}
 			}
-			return &CallExpr{Func: p.Call.Func, Args: args}, nil
+			return &CallExpr{Func: &IdentExpr{Name: p.Call.Func}, Args: args}, nil
 		}
 	case p.If != nil:
 		return convertIfExpr(p.If)
@@ -3520,11 +3543,11 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		}
 		if !same {
 			for i := range items {
-				items[i][1] = &CallExpr{Func: "box", Args: []Expr{items[i][1]}}
+				items[i][1] = &CallExpr{Func: &IdentExpr{Name: "box"}, Args: []Expr{items[i][1]}}
 				types[i] = "obj"
 			}
 		} else if len(items) == 1 && types[0] != "obj" {
-			items[0][1] = &CallExpr{Func: "box", Args: []Expr{items[0][1]}}
+			items[0][1] = &CallExpr{Func: &IdentExpr{Name: "box"}, Args: []Expr{items[0][1]}}
 			types[0] = "obj"
 		}
 		return &MapLit{Items: items, Types: types}, nil
@@ -3722,11 +3745,11 @@ func buildListUpdate(list Expr, indexes []Expr, val Expr) Expr {
 	idx := indexes[0]
 	if len(indexes) == 1 {
 		lam := &LambdaExpr{Params: []string{"i", "x"}, Expr: &IfExpr{Cond: &BinaryExpr{Left: &IdentExpr{Name: "i"}, Op: "=", Right: idx}, Then: val, Else: &IdentExpr{Name: "x"}}}
-		return &CallExpr{Func: "List.mapi", Args: []Expr{lam, list}}
+		return &CallExpr{Func: &IdentExpr{Name: "List.mapi"}, Args: []Expr{lam, list}}
 	}
 	inner := buildListUpdate(&IndexExpr{Target: list, Index: idx}, indexes[1:], val)
 	lam := &LambdaExpr{Params: []string{"i", "x"}, Expr: &IfExpr{Cond: &BinaryExpr{Left: &IdentExpr{Name: "i"}, Op: "=", Right: idx}, Then: inner, Else: &IdentExpr{Name: "x"}}}
-	return &CallExpr{Func: "List.mapi", Args: []Expr{lam, list}}
+	return &CallExpr{Func: &IdentExpr{Name: "List.mapi"}, Args: []Expr{lam, list}}
 }
 
 func buildMapUpdate(m Expr, keys []Expr, val Expr) Expr {
@@ -3735,15 +3758,15 @@ func buildMapUpdate(m Expr, keys []Expr, val Expr) Expr {
 		mapVal := mapValueType(inferType(m))
 		v := val
 		if mapVal == "obj" && inferType(val) != "obj" {
-			v = &CallExpr{Func: "box", Args: []Expr{val}}
+			v = &CallExpr{Func: &IdentExpr{Name: "box"}, Args: []Expr{val}}
 		}
-		return &CallExpr{Func: "Map.add", Args: []Expr{key, v, m}}
+		return &CallExpr{Func: &IdentExpr{Name: "Map.add"}, Args: []Expr{key, v, m}}
 	}
 	inner := buildMapUpdate(&IndexExpr{Target: m, Index: key}, keys[1:], val)
 	if mapValueType(inferType(m)) == "obj" {
-		inner = &CallExpr{Func: "box", Args: []Expr{inner}}
+		inner = &CallExpr{Func: &IdentExpr{Name: "box"}, Args: []Expr{inner}}
 	}
-	return &CallExpr{Func: "Map.add", Args: []Expr{key, inner, m}}
+	return &CallExpr{Func: &IdentExpr{Name: "Map.add"}, Args: []Expr{key, inner, m}}
 }
 
 func convertUpdateStmt(u *parser.UpdateStmt) (Stmt, error) {
@@ -3797,6 +3820,11 @@ func convertUpdateStmt(u *parser.UpdateStmt) (Stmt, error) {
 }
 
 func convertTypeDecl(td *parser.TypeDecl) error {
+	if td.Alias != nil {
+		typ := fsType(types.ResolveTypeRef(td.Alias, transpileEnv))
+		aliasDefs = append(aliasDefs, AliasDef{Name: td.Name, Type: typ})
+		return nil
+	}
 	if len(td.Variants) > 0 {
 		u := UnionDef{Name: td.Name}
 		for _, v := range td.Variants {
@@ -3869,10 +3897,10 @@ func convertImport(im *parser.ImportStmt) (Stmt, error) {
 			return &ModuleDef{Open: true, Name: alias, Stmts: []Stmt{
 				&LetStmt{Name: "pi", Type: "float", Expr: &FieldExpr{Target: &IdentExpr{Name: "System.Math"}, Name: "PI"}},
 				&LetStmt{Name: "e", Type: "float", Expr: &FieldExpr{Target: &IdentExpr{Name: "System.Math"}, Name: "E"}},
-				&FunDef{Name: "sqrt", Params: []string{"x"}, Body: []Stmt{&ReturnStmt{Expr: &CallExpr{Func: "System.Math.Sqrt", Args: []Expr{&IdentExpr{Name: "x"}}}}}},
-				&FunDef{Name: "pow", Params: []string{"x", "y"}, Body: []Stmt{&ReturnStmt{Expr: &CallExpr{Func: "System.Math.Pow", Args: []Expr{&IdentExpr{Name: "x"}, &IdentExpr{Name: "y"}}}}}},
-				&FunDef{Name: "sin", Params: []string{"x"}, Body: []Stmt{&ReturnStmt{Expr: &CallExpr{Func: "System.Math.Sin", Args: []Expr{&IdentExpr{Name: "x"}}}}}},
-				&FunDef{Name: "log", Params: []string{"x"}, Body: []Stmt{&ReturnStmt{Expr: &CallExpr{Func: "System.Math.Log", Args: []Expr{&IdentExpr{Name: "x"}}}}}},
+				&FunDef{Name: "sqrt", Params: []string{"x"}, Body: []Stmt{&ReturnStmt{Expr: &CallExpr{Func: &IdentExpr{Name: "System.Math.Sqrt"}, Args: []Expr{&IdentExpr{Name: "x"}}}}}},
+				&FunDef{Name: "pow", Params: []string{"x", "y"}, Body: []Stmt{&ReturnStmt{Expr: &CallExpr{Func: &IdentExpr{Name: "System.Math.Pow"}, Args: []Expr{&IdentExpr{Name: "x"}, &IdentExpr{Name: "y"}}}}}},
+				&FunDef{Name: "sin", Params: []string{"x"}, Body: []Stmt{&ReturnStmt{Expr: &CallExpr{Func: &IdentExpr{Name: "System.Math.Sin"}, Args: []Expr{&IdentExpr{Name: "x"}}}}}},
+				&FunDef{Name: "log", Params: []string{"x"}, Body: []Stmt{&ReturnStmt{Expr: &CallExpr{Func: &IdentExpr{Name: "System.Math.Log"}, Args: []Expr{&IdentExpr{Name: "x"}}}}}},
 			}}, nil
 		}
 	case "go":
@@ -3900,14 +3928,14 @@ func convertImport(im *parser.ImportStmt) (Stmt, error) {
 			return &ModuleDef{Open: true, Name: alias, Stmts: []Stmt{
 				&OpenStmt{Name: "System.Net"},
 				&FunDef{Name: "LookupHost", Params: []string{"host"}, Return: "obj array", Body: []Stmt{
-					&LetStmt{Name: "addrs", Expr: &CallExpr{Func: "Dns.GetHostAddresses", Args: []Expr{&IdentExpr{Name: "host"}}}},
-					&LetStmt{Name: "mapped", Expr: &CallExpr{Func: "Array.map", Args: []Expr{
+					&LetStmt{Name: "addrs", Expr: &CallExpr{Func: &IdentExpr{Name: "Dns.GetHostAddresses"}, Args: []Expr{&IdentExpr{Name: "host"}}}},
+					&LetStmt{Name: "mapped", Expr: &CallExpr{Func: &IdentExpr{Name: "Array.map"}, Args: []Expr{
 						&LambdaExpr{Params: []string{"ip"}, Expr: &MethodCallExpr{Target: &IdentExpr{Name: "ip"}, Name: "ToString"}},
 						&IdentExpr{Name: "addrs"},
 					}}},
-					&LetStmt{Name: "lst", Expr: &CallExpr{Func: "Array.toList", Args: []Expr{&IdentExpr{Name: "mapped"}}}},
+					&LetStmt{Name: "lst", Expr: &CallExpr{Func: &IdentExpr{Name: "Array.toList"}, Args: []Expr{&IdentExpr{Name: "mapped"}}}},
 					&ReturnStmt{Expr: &ListLit{Elems: []Expr{
-						&CallExpr{Func: "box", Args: []Expr{&IdentExpr{Name: "lst"}}},
+						&CallExpr{Func: &IdentExpr{Name: "box"}, Args: []Expr{&IdentExpr{Name: "lst"}}},
 						&NullLit{},
 					}}},
 				}},
