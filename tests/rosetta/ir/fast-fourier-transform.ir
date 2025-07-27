@@ -1,0 +1,514 @@
+func main (regs=3)
+  // let PI = 3.141592653589793
+  Const        r1, 3.141592653589793
+  Move         r0, r1
+  SetGlobal    0,0,0,0
+  // main()
+  Call         r2, main, 
+  Return       r0
+
+  // fun sinApprox(x: float): float {
+func sinApprox (regs=21)
+  // var term = x
+  Move         r2, r1
+  // var sum = x
+  Move         r3, r1
+  // var n = 1
+  Const        r4, 1
+  Move         r5, r4
+L1:
+  // while n <= 10 {
+  Const        r6, 10
+  LessEqInt    r7, r5, r6
+  JumpIfFalse  r7, L0
+  // let denom = ((2*n) * (2*n+1)) as float
+  Const        r8, 2
+  MulInt       r9, r8, r5
+  Const        r8, 2
+  MulInt       r10, r8, r5
+  Const        r4, 1
+  AddInt       r11, r10, r4
+  MulInt       r12, r9, r11
+  Cast         r13, r12, float
+  Move         r14, r13
+  // term = -term * x * x / denom
+  Neg          r15, r2
+  Mul          r16, r15, r1
+  Mul          r17, r16, r1
+  Div          r18, r17, r14
+  Move         r2, r18
+  // sum = sum + term
+  Add          r19, r3, r2
+  Move         r3, r19
+  // n = n + 1
+  Const        r4, 1
+  AddInt       r20, r5, r4
+  Move         r5, r20
+  // while n <= 10 {
+  Jump         L1
+L0:
+  // return sum
+  Return       r3
+
+  // fun cosApprox(x: float): float {
+func cosApprox (regs=22)
+  // var term = 1.0
+  Const        r2, 1.0
+  Move         r3, r2
+  // var sum = 1.0
+  Const        r2, 1.0
+  Move         r4, r2
+  // var n = 1
+  Const        r5, 1
+  Move         r6, r5
+L1:
+  // while n <= 10 {
+  Const        r7, 10
+  LessEqInt    r8, r6, r7
+  JumpIfFalse  r8, L0
+  // let denom = ((2*n-1)*(2*n)) as float
+  Const        r9, 2
+  MulInt       r10, r9, r6
+  Const        r5, 1
+  SubInt       r11, r10, r5
+  Const        r9, 2
+  MulInt       r12, r9, r6
+  MulInt       r13, r11, r12
+  Cast         r14, r13, float
+  Move         r15, r14
+  // term = -term * x * x / denom
+  NegFloat     r16, r3
+  MulFloat     r17, r16, r1
+  MulFloat     r18, r17, r1
+  DivFloat     r19, r18, r15
+  Move         r3, r19
+  // sum = sum + term
+  AddFloat     r20, r4, r3
+  Move         r4, r20
+  // n = n + 1
+  Const        r5, 1
+  AddInt       r21, r6, r5
+  Move         r6, r21
+  // while n <= 10 {
+  Jump         L1
+L0:
+  // return sum
+  Return       r4
+
+  // fun cis(x: float): Complex {
+func cis (regs=13)
+  // return Complex { re: cosApprox(x), im: sinApprox(x) }
+  Move         r2, r1
+  Call         r3, cosApprox, r2
+  Move         r4, r1
+  Call         r5, sinApprox, r4
+  Const        r6, "__name"
+  Const        r7, "Complex"
+  Const        r8, "re"
+  Move         r9, r3
+  Const        r10, "im"
+  Move         r11, r5
+  MakeMap      r12, 3, r6
+  Return       r12
+
+  // fun add(a: Complex, b: Complex): Complex {
+func add (regs=18)
+  // return Complex { re: a.re + b.re, im: a.im + b.im }
+  Const        r3, "re"
+  Index        r4, r1, r3
+  Const        r3, "re"
+  Index        r5, r2, r3
+  Add          r6, r4, r5
+  Const        r7, "im"
+  Index        r8, r1, r7
+  Const        r7, "im"
+  Index        r9, r2, r7
+  Add          r10, r8, r9
+  Const        r11, "__name"
+  Const        r12, "Complex"
+  Const        r13, "re"
+  Move         r14, r6
+  Const        r15, "im"
+  Move         r16, r10
+  MakeMap      r17, 3, r11
+  Return       r17
+
+  // fun sub(a: Complex, b: Complex): Complex {
+func sub (regs=18)
+  // return Complex { re: a.re - b.re, im: a.im - b.im }
+  Const        r3, "re"
+  Index        r4, r1, r3
+  Const        r3, "re"
+  Index        r5, r2, r3
+  Sub          r6, r4, r5
+  Const        r7, "im"
+  Index        r8, r1, r7
+  Const        r7, "im"
+  Index        r9, r2, r7
+  Sub          r10, r8, r9
+  Const        r11, "__name"
+  Const        r12, "Complex"
+  Const        r13, "re"
+  Move         r14, r6
+  Const        r15, "im"
+  Move         r16, r10
+  MakeMap      r17, 3, r11
+  Return       r17
+
+  // fun mul(a: Complex, b: Complex): Complex {
+func mul (regs=26)
+  // re: a.re * b.re - a.im * b.im,
+  Const        r3, "re"
+  Index        r4, r1, r3
+  Const        r3, "re"
+  Index        r5, r2, r3
+  Mul          r6, r4, r5
+  Const        r7, "im"
+  Index        r8, r1, r7
+  Const        r7, "im"
+  Index        r9, r2, r7
+  Mul          r10, r8, r9
+  Sub          r11, r6, r10
+  // im: a.re * b.im + a.im * b.re,
+  Const        r3, "re"
+  Index        r12, r1, r3
+  Const        r7, "im"
+  Index        r13, r2, r7
+  Mul          r14, r12, r13
+  Const        r7, "im"
+  Index        r15, r1, r7
+  Const        r3, "re"
+  Index        r16, r2, r3
+  Mul          r17, r15, r16
+  Add          r18, r14, r17
+  // return Complex {
+  Const        r19, "__name"
+  Const        r20, "Complex"
+  // re: a.re * b.re - a.im * b.im,
+  Const        r21, "re"
+  Move         r22, r11
+  // im: a.re * b.im + a.im * b.re,
+  Const        r23, "im"
+  Move         r24, r18
+  // return Complex {
+  MakeMap      r25, 3, r19
+  Return       r25
+
+  // fun ditfft2Rec(x: list<float>, y: list<Complex>, offX: int, offY: int, n: int, s: int) {
+func ditfft2Rec (regs=79)
+  // if n == 1 {
+  Const        r7, 1
+  Equal        r8, r5, r7
+  JumpIfFalse  r8, L0
+  // y[offY] = Complex { re: x[offX], im: 0.0 }
+  Index        r9, r1, r3
+  Const        r10, 0.0
+  Const        r11, "__name"
+  Const        r12, "Complex"
+  Const        r13, "re"
+  Move         r14, r9
+  Const        r15, "im"
+  Move         r16, r10
+  MakeMap      r17, 3, r11
+  SetIndex     r2, r4, r17
+  // return
+  Return       r0
+L0:
+  // ditfft2Rec(x, y, offX, offY, n/2, 2*s)
+  Move         r18, r1
+  Move         r19, r2
+  Move         r20, r3
+  Move         r21, r4
+  Const        r24, 2
+  Div          r25, r5, r24
+  Move         r22, r25
+  Const        r24, 2
+  Mul          r26, r24, r6
+  Move         r23, r26
+  Call         r27, ditfft2Rec, r18, r19, r20, r21, r22, r23
+  // ditfft2Rec(x, y, offX+s, offY+n/2, n/2, 2*s)
+  Move         r28, r1
+  Move         r29, r2
+  Add          r34, r3, r6
+  Move         r30, r34
+  Const        r24, 2
+  Div          r35, r5, r24
+  Add          r36, r4, r35
+  Move         r31, r36
+  Const        r24, 2
+  Div          r37, r5, r24
+  Move         r32, r37
+  Const        r24, 2
+  Mul          r38, r24, r6
+  Move         r33, r38
+  Call         r39, ditfft2Rec, r28, r29, r30, r31, r32, r33
+  // var k = 0
+  Const        r40, 0
+  Move         r41, r40
+L2:
+  // while k < n/2 {
+  Const        r24, 2
+  Div          r42, r5, r24
+  Less         r43, r41, r42
+  JumpIfFalse  r43, L1
+  // let angle = -2.0 * PI * (k as float) / (n as float)
+  Const        r44, 2.0
+  Const        r45, -2.0
+  MulFloat     r46, r45, r0
+  Cast         r47, r41, float
+  MulFloat     r48, r46, r47
+  Cast         r49, r5, float
+  DivFloat     r50, r48, r49
+  Move         r51, r50
+  // let tf = mul(cis(angle), y[offY+k+n/2])
+  Move         r54, r51
+  Call         r55, cis, r54
+  Move         r52, r55
+  Const        r24, 2
+  Div          r56, r5, r24
+  Add          r57, r4, r41
+  Add          r58, r57, r56
+  Index        r59, r2, r58
+  Move         r53, r59
+  Call2        r60, mul, r52, r53
+  Move         r61, r60
+  // let a = add(y[offY+k], tf)
+  Add          r64, r4, r41
+  Index        r65, r2, r64
+  Move         r62, r65
+  Move         r63, r61
+  Call2        r66, add, r62, r63
+  Move         r67, r66
+  // let b = sub(y[offY+k], tf)
+  Add          r70, r4, r41
+  Index        r71, r2, r70
+  Move         r68, r71
+  Move         r69, r61
+  Call2        r72, sub, r68, r69
+  Move         r73, r72
+  // y[offY+k] = a
+  Add          r74, r4, r41
+  SetIndex     r2, r74, r67
+  // y[offY+k+n/2] = b
+  Const        r24, 2
+  Div          r75, r5, r24
+  Add          r76, r4, r41
+  Add          r77, r76, r75
+  SetIndex     r2, r77, r73
+  // k = k + 1
+  Const        r7, 1
+  AddInt       r78, r41, r7
+  Move         r41, r78
+  // while k < n/2 {
+  Jump         L2
+L1:
+  Return       r0
+
+  // fun ditfft2(x: list<float>, y: list<Complex>, n: int, s: int) {
+func ditfft2 (regs=13)
+  // ditfft2Rec(x, y, 0, 0, n, s)
+  Move         r5, r1
+  Move         r6, r2
+  Const        r11, 0
+  Move         r7, r11
+  Const        r11, 0
+  Move         r8, r11
+  Move         r9, r3
+  Move         r10, r4
+  Call         r12, ditfft2Rec, r5, r6, r7, r8, r9, r10
+  Return       r0
+
+  // fun main() {
+func main (regs=54)
+  // let x: list<float> = [1.0,1.0,1.0,1.0,0.0,0.0,0.0,0.0]
+  Const        r1, [1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0]
+  Move         r2, r1
+  // var y: list<Complex> = []
+  Const        r3, []
+  Move         r4, r3
+  // var i=0
+  Const        r5, 0
+  Move         r6, r5
+L1:
+  // while i < len(x) {
+  Const        r7, 8
+  LessInt      r8, r6, r7
+  JumpIfFalse  r8, L0
+  // y = append(y, Complex { re: 0.0, im: 0.0 })
+  Const        r9, 0.0
+  Const        r9, 0.0
+  Const        r10, "__name"
+  Const        r11, "Complex"
+  Const        r12, "re"
+  Move         r13, r9
+  Const        r14, "im"
+  Move         r15, r9
+  MakeMap      r16, 3, r10
+  Append       r17, r4, r16
+  Move         r4, r17
+  // i = i + 1
+  Const        r18, 1
+  AddInt       r19, r6, r18
+  Move         r6, r19
+  // while i < len(x) {
+  Jump         L1
+L0:
+  // ditfft2(x, y, len(x), 1)
+  Move         r20, r2
+  Move         r21, r4
+  Const        r7, 8
+  Move         r22, r7
+  Const        r18, 1
+  Move         r23, r18
+  Call         r24, ditfft2, r20, r21, r22, r23
+  // for c in y {
+  IterPrep     r25, r4
+  Len          r26, r25
+  Const        r27, 0
+L5:
+  LessInt      r28, r27, r26
+  JumpIfFalse  r28, L2
+  Index        r29, r25, r27
+  Move         r30, r29
+  // var line = pad(fmt(c.re),8)
+  Const        r34, "re"
+  Index        r35, r30, r34
+  Move         r33, r35
+  Call         r36, fmt, r33
+  Move         r31, r36
+  Const        r7, 8
+  Move         r32, r7
+  Call2        r37, pad, r31, r32
+  Move         r38, r37
+  // if c.im >= 0 {
+  Const        r39, "im"
+  Index        r40, r30, r39
+  Const        r5, 0
+  LessEq       r41, r5, r40
+  JumpIfFalse  r41, L3
+  // line = line + "+" + fmt(c.im)
+  Const        r42, "+"
+  Add          r43, r38, r42
+  Const        r39, "im"
+  Index        r45, r30, r39
+  Move         r44, r45
+  Call         r46, fmt, r44
+  Add          r47, r43, r46
+  Move         r38, r47
+  // if c.im >= 0 {
+  Jump         L4
+L3:
+  // line = line + fmt(c.im)
+  Const        r39, "im"
+  Index        r49, r30, r39
+  Move         r48, r49
+  Call         r50, fmt, r48
+  Add          r51, r38, r50
+  Move         r38, r51
+L4:
+  // print(line)
+  Print        r38
+  // for c in y {
+  Const        r52, 1
+  AddInt       r53, r27, r52
+  Move         r27, r53
+  Jump         L5
+L2:
+  Return       r0
+
+  // fun pad(s: string, w: int): string { var t=s; while len(t)<w { t=" "+t }; return t }
+func pad (regs=8)
+  // fun pad(s: string, w: int): string { var t=s; while len(t)<w { t=" "+t }; return t }
+  Move         r3, r1
+L1:
+  Len          r4, r3
+  Less         r5, r4, r2
+  JumpIfFalse  r5, L0
+  Const        r6, " "
+  Add          r7, r6, r3
+  Move         r3, r7
+  Jump         L1
+L0:
+  Return       r3
+
+  // fun fmt(x: float): string { var y=floorf(x*10000.0+0.5)/10000.0; var s=str(y); var dot=indexOf(s,"."); if dot==0-1 { s=s+".0000" } else { var d=len(s)-dot-1; while d<4 { s=s+"0"; d=d+1 } } return s }
+func fmt (regs=32)
+  // fun fmt(x: float): string { var y=floorf(x*10000.0+0.5)/10000.0; var s=str(y); var dot=indexOf(s,"."); if dot==0-1 { s=s+".0000" } else { var d=len(s)-dot-1; while d<4 { s=s+"0"; d=d+1 } } return s }
+  Const        r3, 10000.0
+  MulFloat     r4, r1, r3
+  Const        r5, 0.5
+  AddFloat     r6, r4, r5
+  Move         r2, r6
+  Call         r7, floorf, r2
+  Const        r3, 10000.0
+  DivFloat     r8, r7, r3
+  Move         r9, r8
+  Str          r10, r9
+  Move         r11, r10
+  Move         r12, r11
+  Const        r14, "."
+  Move         r13, r14
+  Call2        r15, indexOf, r12, r13
+  Move         r16, r15
+  Const        r17, 0
+  Const        r18, 1
+  SubInt       r19, r17, r18
+  Equal        r20, r16, r19
+  JumpIfFalse  r20, L0
+  Const        r21, ".0000"
+  Add          r22, r11, r21
+  Move         r11, r22
+  Jump         L1
+L0:
+  Len          r23, r11
+  Sub          r24, r23, r16
+  Const        r18, 1
+  Sub          r25, r24, r18
+  Move         r26, r25
+L2:
+  Const        r27, 4
+  Less         r28, r26, r27
+  JumpIfFalse  r28, L1
+  Const        r29, "0"
+  Add          r30, r11, r29
+  Move         r11, r30
+  Const        r18, 1
+  Add          r31, r26, r18
+  Move         r26, r31
+  Jump         L2
+L1:
+  Return       r11
+
+  // fun floorf(x: float): float { let y = x as int; return y as float }
+func floorf (regs=5)
+  // fun floorf(x: float): float { let y = x as int; return y as float }
+  Cast         r2, r1, int
+  Move         r3, r2
+  Cast         r4, r3, float
+  Return       r4
+
+  // fun indexOf(s: string, ch: string): int { var i=0; while i<len(s){ if substring(s,i,i+1)==ch {return i} i=i+1 } return 0-1 }
+func indexOf (regs=13)
+  // fun indexOf(s: string, ch: string): int { var i=0; while i<len(s){ if substring(s,i,i+1)==ch {return i} i=i+1 } return 0-1 }
+  Const        r3, 0
+  Move         r4, r3
+L2:
+  Len          r5, r1
+  LessInt      r6, r4, r5
+  JumpIfFalse  r6, L0
+  Const        r7, 1
+  AddInt       r8, r4, r7
+  Slice        r9, r1, r4, r8
+  Equal        r10, r9, r2
+  JumpIfFalse  r10, L1
+  Return       r4
+L1:
+  Const        r7, 1
+  AddInt       r11, r4, r7
+  Move         r4, r11
+  Jump         L2
+L0:
+  Const        r3, 0
+  Const        r7, 1
+  SubInt       r12, r3, r7
+  Return       r12
