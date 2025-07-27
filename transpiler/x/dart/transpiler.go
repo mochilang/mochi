@@ -718,6 +718,55 @@ type BenchStmt struct {
 	Body []Stmt
 }
 
+// stmtCallsMain reports whether the statement or any of its nested statements
+// contains a call to the `main` function with no arguments.
+func stmtCallsMain(st Stmt) bool {
+	switch s := st.(type) {
+	case *ExprStmt:
+		if call, ok := s.Expr.(*CallExpr); ok {
+			if name, ok := call.Func.(*Name); ok && name.Name == "main" && len(call.Args) == 0 {
+				return true
+			}
+		}
+	case *BenchStmt:
+		for _, b := range s.Body {
+			if stmtCallsMain(b) {
+				return true
+			}
+		}
+	case *IfStmt:
+		for _, st := range s.Then {
+			if stmtCallsMain(st) {
+				return true
+			}
+		}
+		for _, st := range s.Else {
+			if stmtCallsMain(st) {
+				return true
+			}
+		}
+	case *WhileStmt:
+		for _, st := range s.Body {
+			if stmtCallsMain(st) {
+				return true
+			}
+		}
+	case *ForRangeStmt:
+		for _, st := range s.Body {
+			if stmtCallsMain(st) {
+				return true
+			}
+		}
+	case *ForInStmt:
+		for _, st := range s.Body {
+			if stmtCallsMain(st) {
+				return true
+			}
+		}
+	}
+	return false
+}
+
 func (b *BenchStmt) emit(w io.Writer) error {
 	if _, err := io.WriteString(w, "{\n"); err != nil {
 		return err
@@ -3814,6 +3863,10 @@ func Emit(w io.Writer, p *Program) error {
 				if name, ok := call.Func.(*Name); ok && name.Name == "main" && len(call.Args) == 0 {
 					mainCalled = true
 				}
+			}
+		} else if bs, ok := st.(*BenchStmt); ok {
+			if stmtCallsMain(bs) {
+				mainCalled = true
 			}
 		}
 	}
