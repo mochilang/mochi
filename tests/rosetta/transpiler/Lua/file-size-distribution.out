@@ -1,0 +1,17 @@
+File size distribution:
+
+  Files less than 10 ^ 0 bytes : 1
++ Files less than 10 ^ 1 bytes : 2
++ Files less than 10 ^ 2 bytes : 2
++ Files less than 10 ^ 3 bytes : 1
++ Files less than 10 ^ 4 bytes : 1
++ Files less than 10 ^ 5 bytes : 1
++ Files less than 10 ^ 6 bytes : 1
++ Files less than 10 ^ 7 bytes : 1
++ Files less than 10 ^ 8 bytes : 0
++ Files less than 10 ^ 9 bytes : 0
++ Files less than 10 ^ 10 bytes : 0
++ Files less than 10 ^ 11 bytes : 0
+                                  -----
+= Total number of files         : 10
+  Total size of files           : 8,981,453 bytes

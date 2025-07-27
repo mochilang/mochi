@@ -225,6 +225,18 @@ local function _split(s, sep)
 end
 `
 
+const helperSubstring = `
+local function _substring(s, i, j)
+  i = i + 1
+  if j == nil then j = #s end
+  local si = utf8.offset(s, i)
+  if not si then return '' end
+  local sj = utf8.offset(s, j+1)
+  if not sj then sj = -1 end
+  return string.sub(s, si, sj-1)
+end
+`
+
 // Program represents a simple Lua program consisting of a sequence of
 // statements.
 type Program struct {
@@ -475,7 +487,7 @@ func (c *CallExpr) emit(w io.Writer) {
 		}
 		return
 	case "len", "count":
-		io.WriteString(w, "(function(v)\n  if type(v) == 'table' and v.items ~= nil then\n    return #v.items\n  elseif type(v) == 'table' and (v[1] == nil) then\n    local c = 0\n    for _ in pairs(v) do c = c + 1 end\n    return c\n  elseif type(v) == 'string' or type(v) == 'table' then\n    return #v\n  else\n    return 0\n  end\nend)(")
+		io.WriteString(w, "(function(v)\n  if type(v) == 'table' and v.items ~= nil then\n    return #v.items\n  elseif type(v) == 'table' and (v[1] == nil) then\n    local c = 0\n    for _ in pairs(v) do c = c + 1 end\n    return c\n  elseif type(v) == 'string' then\n    local l = utf8.len(v)\n    if l then return l end\n    return #v\n  elseif type(v) == 'table' then\n    return #v\n  else\n    return 0\n  end\nend)(")
 		if len(c.Args) > 0 {
 			c.Args[0].emit(w)
 		}
@@ -524,7 +536,7 @@ func (c *CallExpr) emit(w io.Writer) {
 			io.WriteString(w, ")")
 		}
 	case "substring":
-		io.WriteString(w, "string.sub(")
+		io.WriteString(w, "_substring(")
 		if len(c.Args) > 0 {
 			c.Args[0].emit(w)
 		}
@@ -532,7 +544,7 @@ func (c *CallExpr) emit(w io.Writer) {
 		if len(c.Args) > 1 {
 			c.Args[1].emit(w)
 		}
-		io.WriteString(w, " + 1, ")
+		io.WriteString(w, ", ")
 		if len(c.Args) > 2 {
 			c.Args[2].emit(w)
 		}
@@ -696,6 +708,20 @@ end)(`)
 		io.WriteString(w, ", ")
 		if len(c.Args) > 1 {
 			c.Args[1].emit(w)
+		}
+		io.WriteString(w, ")")
+	case "slice":
+		io.WriteString(w, "slice(")
+		if len(c.Args) > 0 {
+			c.Args[0].emit(w)
+		}
+		io.WriteString(w, ", ")
+		if len(c.Args) > 1 {
+			c.Args[1].emit(w)
+		}
+		io.WriteString(w, ", ")
+		if len(c.Args) > 2 {
+			c.Args[2].emit(w)
 		}
 		io.WriteString(w, ")")
 	case "parseIntStr":
@@ -2449,6 +2475,10 @@ func collectHelpers(p *Program) map[string]bool {
 				used["indexOf"] = true
 			case "split":
 				used["split"] = true
+			case "substring":
+				used["substring"] = true
+			case "slice":
+				used["slice"] = true
 			case "parseIntStr":
 				used["parseIntStr"] = true
 			case "_environ":
@@ -2637,6 +2667,9 @@ func Emit(p *Program) []byte {
 	}
 	if used["split"] {
 		b.WriteString(helperSplit)
+	}
+	if used["substring"] {
+		b.WriteString(helperSubstring)
 	}
 	if used["slice"] {
 		b.WriteString(helperSlice)
@@ -2858,6 +2891,18 @@ func convertPostfix(p *parser.PostfixExpr) (Expr, error) {
 				} else if id, ok := expr.(*Ident); ok {
 					if id.Name == "net" {
 						// treat as a namespaced function call for known package
+						name := id.Name + "." + op.Field.Name
+						cexpr := &CallExpr{Func: name, Args: args}
+						if currentEnv != nil {
+							if t, err := currentEnv.GetVar(name); err == nil {
+								if ft, ok := t.(types.FuncType); ok {
+									cexpr.ParamTypes = ft.Params
+								}
+							}
+						}
+						expr = cexpr
+					} else if id.Name == "math" {
+						// math functions map directly to the math package
 						name := id.Name + "." + op.Field.Name
 						cexpr := &CallExpr{Func: name, Args: args}
 						if currentEnv != nil {
