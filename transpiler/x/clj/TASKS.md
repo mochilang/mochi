@@ -1,3 +1,19 @@
+## Progress (2025-07-27 17:28 +0700)
+- transpiler/clj: support user-defined functions
+- Regenerated golden files - 101/104 vm valid programs passing
+
+## Progress (2025-07-27 17:22 +0700)
+- transpiler/clj: update Rosetta outputs and bench
+- Regenerated golden files - 101/104 vm valid programs passing
+
+## Progress (2025-07-27 17:22 +0700)
+- transpiler/clj: update Rosetta outputs and bench
+- Regenerated golden files - 101/104 vm valid programs passing
+
+## Progress (2025-07-27 17:22 +0700)
+- transpiler/clj: update Rosetta outputs and bench
+- Regenerated golden files - 101/104 vm valid programs passing
+
 ## Progress (2025-07-27 16:50 +0700)
 - php: support struct methods
 - Regenerated golden files - 101/104 vm valid programs passing
