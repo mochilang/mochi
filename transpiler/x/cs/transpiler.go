@@ -986,7 +986,7 @@ func (f *FieldExpr) emit(w io.Writer) {
 		fmt.Fprintf(w, "[\"%s\"]))", f.Name)
 	} else {
 		f.Target.emit(w)
-		fmt.Fprintf(w, ".%s", f.Name)
+		fmt.Fprintf(w, ".%s", safeName(f.Name))
 	}
 }
 
@@ -1871,7 +1871,7 @@ func (s *StructLit) emit(w io.Writer) {
 		if i > 0 {
 			fmt.Fprint(w, ", ")
 		}
-		fmt.Fprintf(w, "%s = ", f.Name)
+		fmt.Fprintf(w, "%s = ", safeName(f.Name))
 		f.Value.emit(w)
 	}
 	fmt.Fprint(w, "}")
@@ -1907,12 +1907,15 @@ func (a *AvgExpr) emit(w io.Writer) {
 type LenExpr struct{ Arg Expr }
 
 func (l *LenExpr) emit(w io.Writer) {
-	l.Arg.emit(w)
-	if isMapExpr(l.Arg) {
-		fmt.Fprint(w, ".Count")
-	} else {
+	t := typeOfExpr(l.Arg)
+	if t == "string" || isStringExpr(l.Arg) {
+		l.Arg.emit(w)
 		fmt.Fprint(w, ".Length")
+		return
 	}
+	fmt.Fprint(w, "((System.Collections.ICollection)(")
+	l.Arg.emit(w)
+	fmt.Fprint(w, ")).Count")
 }
 
 type SumExpr struct{ Arg Expr }
@@ -2358,8 +2361,10 @@ func compilePostfix(p *parser.PostfixExpr) (Expr, error) {
 			}
 		case op.Cast != nil && op.Cast.Type != nil:
 			if op.Cast.Type.Generic != nil && op.Cast.Type.Generic.Name == "list" && len(op.Cast.Type.Generic.Args) == 1 {
-				typ := fmt.Sprintf("%s[]", csType(op.Cast.Type.Generic.Args[0]))
-				expr = &RawExpr{Code: fmt.Sprintf("(%s)"+exprString(expr), typ), Type: typ}
+				elem := csType(op.Cast.Type.Generic.Args[0])
+				typ := fmt.Sprintf("%s[]", elem)
+				usesLinq = true
+				expr = &RawExpr{Code: fmt.Sprintf("Enumerable.ToArray(((IEnumerable)%s).Cast<%s>())", exprString(expr), elem), Type: typ}
 			} else if op.Cast.Type.Generic != nil && op.Cast.Type.Generic.Name == "map" && len(op.Cast.Type.Generic.Args) == 2 {
 				kt := csType(op.Cast.Type.Generic.Args[0])
 				vt := csType(op.Cast.Type.Generic.Args[1])
@@ -2868,10 +2873,23 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 					}
 				}
 			}
-			if l, ok := val.(*ListLit); ok && len(l.Elems) == 0 && strings.HasSuffix(currentReturnType, "[]") {
-				if l.ElemType == "" || l.ElemType == "object[]" {
+			if l, ok := val.(*ListLit); ok && strings.HasSuffix(currentReturnType, "[]") {
+				if len(l.Elems) == 0 {
+					if l.ElemType == "" || l.ElemType == "object[]" {
+						l.ElemType = currentReturnType
+					}
+				} else if l.ElemType == "" || l.ElemType == "object[]" {
 					l.ElemType = currentReturnType
 				}
+				inner := strings.TrimSuffix(currentReturnType, "[]")
+				if strings.HasSuffix(inner, "[]") {
+					for _, e := range l.Elems {
+						if l2, ok2 := e.(*ListLit); ok2 && len(l2.Elems) == 0 && (l2.ElemType == "" || l2.ElemType == "object[]" || l2.ElemType == "object") {
+							l2.ElemType = inner
+						}
+					}
+				}
+				return &ReturnStmt{Value: l}, nil
 			}
 			if ct := currentReturnType; ct != "" {
 				vt := typeOfExpr(val)
@@ -4108,7 +4126,7 @@ func Emit(prog *Program) []byte {
 	for _, st := range prog.Structs {
 		fmt.Fprintf(&buf, "class %s {\n", st.Name)
 		for _, f := range st.Fields {
-			fmt.Fprintf(&buf, "    public %s %s;\n", f.Type, f.Name)
+			fmt.Fprintf(&buf, "    public %s %s;\n", f.Type, safeName(f.Name))
 		}
 		for _, m := range st.Methods {
 			buf.WriteString("    ")
@@ -4120,13 +4138,13 @@ func Emit(prog *Program) []byte {
 			if i > 0 {
 				buf.WriteString(", ")
 			}
-			fmt.Fprintf(&buf, "%s = ", f.Name)
+			fmt.Fprintf(&buf, "%s = ", safeName(f.Name))
 			if f.Type == "string" {
-				fmt.Fprintf(&buf, "\\\"{%s}\\\"", f.Name)
+				fmt.Fprintf(&buf, "\\\"{%s}\\\"", safeName(f.Name))
 			} else if f.Type == "double" {
-				fmt.Fprintf(&buf, "{%s.ToString(\"0.0\")}", f.Name)
+				fmt.Fprintf(&buf, "{%s.ToString(\"0.0\")}", safeName(f.Name))
 			} else {
-				fmt.Fprintf(&buf, "{%s}", f.Name)
+				fmt.Fprintf(&buf, "{%s}", safeName(f.Name))
 			}
 		}
 		buf.WriteString("}}\";\n")
