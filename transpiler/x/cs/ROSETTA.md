@@ -1,7 +1,7 @@
 # Rosetta C# Transpiler Output
 
-Completed programs: 211/467
-Last updated: 2025-07-27 14:48 UTC
+Completed programs: 221/467
+Last updated: 2025-07-27 16:49 UTC
 
 ## Checklist
 | Index | Name | Status | Duration | Memory |
@@ -179,16 +179,16 @@ Last updated: 2025-07-27 14:48 UTC
 | 171 | carmichael-3-strong-pseudoprimes | ✓ | 4.03ms | 36.8KB |
 | 172 | cartesian-product-of-two-or-more-lists-1 | ✓ | 12.934ms | 1.1MB |
 | 173 | cartesian-product-of-two-or-more-lists-2 |   |  |  |
-| 174 | cartesian-product-of-two-or-more-lists-3 |   |  |  |
-| 175 | cartesian-product-of-two-or-more-lists-4 |   |  |  |
-| 176 | case-sensitivity-of-identifiers |   |  |  |
-| 177 | casting-out-nines |   |  |  |
-| 178 | catalan-numbers-1 |   |  |  |
-| 179 | catalan-numbers-2 |   |  |  |
-| 180 | catalan-numbers-pascals-triangle |   |  |  |
-| 181 | catamorphism |   |  |  |
-| 182 | catmull-clark-subdivision-surface |   |  |  |
-| 183 | chaocipher |   |  |  |
+| 174 | cartesian-product-of-two-or-more-lists-3 | ✓ | 7.21ms | 1.2MB |
+| 175 | cartesian-product-of-two-or-more-lists-4 | ✓ | 8.239ms | 1.2MB |
+| 176 | case-sensitivity-of-identifiers | ✓ | 969µs | 16.0KB |
+| 177 | casting-out-nines | ✓ | 7.272ms | 2.9MB |
+| 178 | catalan-numbers-1 | ✓ | 888µs | 16.0KB |
+| 179 | catalan-numbers-2 | ✓ | 884µs | 16.0KB |
+| 180 | catalan-numbers-pascals-triangle | ✓ | 1.042ms | 24.1KB |
+| 181 | catamorphism | ✓ | 985µs | 16.0KB |
+| 182 | catmull-clark-subdivision-surface | ✓ | 9.141ms | 2.1MB |
+| 183 | chaocipher | ✓ | 1.469ms | 69.0KB |
 | 184 | chaos-game |   |  |  |
 | 185 | character-codes-1 |   |  |  |
 | 186 | character-codes-2 |   |  |  |

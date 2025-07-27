@@ -986,7 +986,7 @@ func (f *FieldExpr) emit(w io.Writer) {
 		fmt.Fprintf(w, "[\"%s\"]))", f.Name)
 	} else {
 		f.Target.emit(w)
-		fmt.Fprintf(w, ".%s", f.Name)
+		fmt.Fprintf(w, ".%s", safeName(f.Name))
 	}
 }
 
@@ -1587,6 +1587,25 @@ func typeOfExpr(e Expr) string {
 		if ret, ok := funRets[ex.Func]; ok {
 			return ret
 		}
+		if t, ok := varTypes[ex.Func]; ok {
+			if strings.HasPrefix(t, "Func<") {
+				parts := strings.TrimSuffix(strings.TrimPrefix(t, "Func<"), ">")
+				arr := strings.Split(parts, ",")
+				if len(arr) > 0 {
+					return strings.TrimSpace(arr[len(arr)-1])
+				}
+			}
+		}
+		if t, ok := finalVarTypes[ex.Func]; ok {
+			if strings.HasPrefix(t, "Func<") {
+				parts := strings.TrimSuffix(strings.TrimPrefix(t, "Func<"), ">")
+				arr := strings.Split(parts, ",")
+				if len(arr) > 0 {
+					return strings.TrimSpace(arr[len(arr)-1])
+				}
+			}
+		}
+		return ""
 	case *MethodCallExpr:
 		switch ex.Name {
 		case "ToLower", "ToUpper", "Trim", "TrimStart", "TrimEnd", "Replace", "Substring":
@@ -1871,7 +1890,7 @@ func (s *StructLit) emit(w io.Writer) {
 		if i > 0 {
 			fmt.Fprint(w, ", ")
 		}
-		fmt.Fprintf(w, "%s = ", f.Name)
+		fmt.Fprintf(w, "%s = ", safeName(f.Name))
 		f.Value.emit(w)
 	}
 	fmt.Fprint(w, "}")
@@ -2480,6 +2499,12 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 		alias := fmt.Sprintf("%s_%d", s.Let.Name, aliasCounter)
 		aliasCounter++
 		varAliases[s.Let.Name] = alias
+		if mapVars[s.Let.Name] {
+			mapVars[alias] = true
+			if alias != s.Let.Name {
+				delete(mapVars, s.Let.Name)
+			}
+		}
 		if t, ok := varTypes[s.Let.Name]; ok {
 			varTypes[alias] = t
 			if alias != s.Let.Name {
@@ -2844,11 +2869,9 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 		mapVars = savedMap
 		stringVars = savedStrAll
 		mutatedVars = savedMut
-		if prog != nil && blockDepth == 0 {
-			varTypes[s.Fun.Name] = fmt.Sprintf("fn/%d", len(ptypes))
-			funRets[s.Fun.Name] = retType
-			funParams[s.Fun.Name] = append([]string{}, ptypes...)
-		}
+		varTypes[s.Fun.Name] = fmt.Sprintf("fn/%d", len(ptypes))
+		funRets[s.Fun.Name] = retType
+		funParams[s.Fun.Name] = append([]string{}, ptypes...)
 		if s.Fun.Return == nil {
 			retType = ""
 		}
@@ -4136,7 +4159,7 @@ func Emit(prog *Program) []byte {
 	for _, st := range prog.Structs {
 		fmt.Fprintf(&buf, "class %s {\n", st.Name)
 		for _, f := range st.Fields {
-			fmt.Fprintf(&buf, "    public %s %s;\n", f.Type, f.Name)
+			fmt.Fprintf(&buf, "    public %s %s;\n", f.Type, safeName(f.Name))
 		}
 		for _, m := range st.Methods {
 			buf.WriteString("    ")
@@ -4148,13 +4171,14 @@ func Emit(prog *Program) []byte {
 			if i > 0 {
 				buf.WriteString(", ")
 			}
-			fmt.Fprintf(&buf, "%s = ", f.Name)
+			sf := safeName(f.Name)
+			fmt.Fprintf(&buf, "%s = ", sf)
 			if f.Type == "string" {
-				fmt.Fprintf(&buf, "\\\"{%s}\\\"", f.Name)
+				fmt.Fprintf(&buf, "\\\"{%s}\\\"", sf)
 			} else if f.Type == "double" {
-				fmt.Fprintf(&buf, "{%s.ToString(\"0.0\")}", f.Name)
+				fmt.Fprintf(&buf, "{%s.ToString(\"0.0\")}", sf)
 			} else {
-				fmt.Fprintf(&buf, "{%s}", f.Name)
+				fmt.Fprintf(&buf, "{%s}", sf)
 			}
 		}
 		buf.WriteString("}}\";\n")
