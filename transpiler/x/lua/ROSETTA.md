@@ -2,17 +2,17 @@
 
 Generated Lua code for programs in `tests/rosetta/x/Mochi`. Each program has a `.lua` file produced by the transpiler and a `.out` file with its runtime output. Compilation or runtime errors are captured in `.error` files.
 
-Transpiled programs: 462/467
+Transpiled programs: 461/467
 
-Last updated: 2025-07-27 23:34 GMT+7
+Last updated: 2025-07-28 00:18 GMT+7
 
 Checklist:
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
-| 1 | 100-doors-2 | ✓ | 568.6ms | 2.7 KB |
-| 2 | 100-doors-3 | ✓ | 568.6ms | 2.1 KB |
-| 3 | 100-doors | ✓ | 568.6ms | 6.0 KB |
+| 1 | 100-doors-2 | ✓ | 219µs | 2.7 KB |
+| 2 | 100-doors-3 | ✓ | 102µs | 2.2 KB |
+| 3 | 100-doors | ✓ | 427µs | 6.0 KB |
 | 4 | 100-prisoners | ✓ | 244.151ms | 2.2 KB |
 | 5 | 15-puzzle-game | ✓ | 119.487ms | 1.9 KB |
 | 6 | 15-puzzle-solver | ✓ | 568.6ms | 224 B |
@@ -110,27 +110,27 @@ Checklist:
 | 98 | babbage-problem | ✓ | 1.363ms | 64 B |
 | 99 | babylonian-spiral | ✓ | 629µs | 1.1 KB |
 | 100 | balanced-brackets | ✓ | 129µs | 3.0 KB |
-| 101 | balanced-ternary | ✓ | 280µs | 1.3 KB |
-| 102 | barnsley-fern | ✓ | 15.654ms | 139.0 KB |
-| 103 | base64-decode-data | ✓ | 1.565ms | 1.3 KB |
-| 104 | bell-numbers | ✓ | 1.762ms | 960 B |
-| 105 | benfords-law | ✓ | 6.477ms | 20.0 KB |
-| 106 | bernoulli-numbers | ✓ | 72.698ms | 1.9 KB |
-| 107 | best-shuffle | ✓ | 285µs | 1.0 KB |
-| 108 | bifid-cipher | ✓ | 1.395ms | 2.3 KB |
-| 109 | bin-given-limits | ✓ | 710µs | 1.0 KB |
-| 110 | binary-digits | ✓ | 97µs | 2.7 KB |
-| 111 | binary-search | ✓ | 55µs | 952 B |
-| 112 | binary-strings | ✓ | 177µs | 1.8 KB |
-| 113 | bioinformatics-base-count | ✓ | 181µs | 1.3 KB |
-| 114 | bioinformatics-global-alignment | ✓ | 2.613976s | 84.4 KB |
-| 115 | bioinformatics-sequence-mutation | ✓ | 6.92ms | 4.9 KB |
-| 116 | biorhythms | ✓ | 144µs | 1.4 KB |
-| 117 | bitcoin-address-validation | ✓ | 1.579ms | 1.2 KB |
-| 118 | bitmap-b-zier-curves-cubic | ✓ | 1.430062s | 2.4 MB |
-| 119 | bitmap-b-zier-curves-quadratic | ✓ | 411.352ms | 2.4 MB |
-| 120 | bitmap-bresenhams-line-algorithm | ✓ | 289µs | 944 B |
-| 121 | bitmap-flood-fill | ✓ | 341µs | 3.9 KB |
+| 101 | balanced-ternary | ✓ | 274µs | 1.4 KB |
+| 102 | barnsley-fern | ✓ | 16.603ms | 139.0 KB |
+| 103 | base64-decode-data | ✓ | 1.172ms | 1.3 KB |
+| 104 | bell-numbers | ✓ | 1.879ms | 960 B |
+| 105 | benfords-law | ✓ | 7.263ms | 20.1 KB |
+| 106 | bernoulli-numbers | ✓ | 92.636ms | 1.9 KB |
+| 107 | best-shuffle | ✓ | 490µs | 1.1 KB |
+| 108 | bifid-cipher | ✓ | 1.178ms | 2.3 KB |
+| 109 | bin-given-limits | ✓ | 1.046ms | 1.0 KB |
+| 110 | binary-digits | ✓ | 149µs | 2.7 KB |
+| 111 | binary-search | ✓ | 147µs | 952 B |
+| 112 | binary-strings | ✓ | 253µs | 1.8 KB |
+| 113 | bioinformatics-base-count | ✓ | 692µs | 1.3 KB |
+| 114 | bioinformatics-global-alignment | ✓ | 6.505401s | 84.5 KB |
+| 115 | bioinformatics-sequence-mutation | ✓ | 9.705ms | 5.0 KB |
+| 116 | biorhythms | ✓ | 251µs | 1.4 KB |
+| 117 | bitcoin-address-validation | ✓ | 2.387ms | 1.2 KB |
+| 118 | bitmap-b-zier-curves-cubic | ✓ | 1.597654s | 2.4 MB |
+| 119 | bitmap-b-zier-curves-quadratic | ✓ | 1.572776s | 2.4 MB |
+| 120 | bitmap-bresenhams-line-algorithm | ✓ | 96µs | 944 B |
+| 121 | bitmap-flood-fill |   | 341µs | 3.9 KB |
 | 122 | bitmap-histogram | ✓ | 115µs | 1.0 KB |
 | 123 | bitmap-midpoint-circle-algorithm | ✓ | 500µs | 15.2 KB |
 | 124 | bitmap-ppm-conversion-through-a-pipe | ✓ | 1.501627s | 9.9 KB |
@@ -158,7 +158,7 @@ Checklist:
 | 146 | calendar---for-real-programmers-1 | ✓ | 1.431ms | 1003 B |
 | 147 | calendar---for-real-programmers-2 | ✓ | 1.337ms | 1003 B |
 | 148 | calendar | ✓ | 1.046ms | 1003 B |
-| 149 | calkin-wilf-sequence | ✓ | 206µs | 864 B |
+| 149 | calkin-wilf-sequence | ✓ | 615µs | 864 B |
 | 150 | call-a-foreign-language-function | ✓ | 35µs | 320 B |
 | 151 | call-a-function-1 | ✓ | 3µs | 344 B |
 | 152 | call-a-function-10 | ✓ | 15µs | 288 B |
