@@ -1,5 +1,6 @@
 //go:build ignore
 // +build ignore
+// Automatically downloaded using DownloadTaskByNumber
 
 package main
 import "fmt"

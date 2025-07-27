@@ -1,0 +1,22 @@
+// Mochi translation of Rosetta "Evaluate binomial coefficients" task
+
+fun binom(n: int, k: int): bigint {
+  if k < 0 || k > n { return 0 as bigint }
+  var kk = k
+  if kk > n - kk { kk = n - kk }
+  var res: bigint = 1
+  var i = 0
+  while i < kk {
+    res = res * ((n - i) as bigint)
+    i = i + 1
+    res = res / (i as bigint)
+  }
+  return res
+}
+
+fun main() {
+  print(str(binom(5, 3)))
+  print(str(binom(60, 30)))
+}
+
+main()
