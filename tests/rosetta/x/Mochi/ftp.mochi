@@ -1,7 +1,67 @@
-// Mochi translation of Rosetta "FTP" task
-// Networking and FTP libraries are not available, so this
-// example only prints the actions that would be performed.
+// Mochi implementation of Rosetta "FTP" task
+// The runtime lacks networking so this program simulates an FTP
+// server using in-memory data structures.
 
-print("Connect to localhost:21 as anonymous")
-print("Change directory to pub")
-print("List files and retrieve somefile.bin")
+type FileInfo {
+  name: string
+  size: int
+  kind: string
+}
+
+type FTPConn {
+  dir: string
+}
+
+let serverData = {
+  "pub": {
+    "somefile.bin": "This is a file from the FTP server.",
+    "readme.txt": "Hello from ftp."
+  }
+}
+
+let serverNames = {
+  "pub": ["somefile.bin", "readme.txt"]
+}
+
+fun connect(hostport: string): FTPConn {
+  print("Connected to " + hostport)
+  return FTPConn{ dir: "/" }
+}
+
+fun login(conn: FTPConn, user: string, pass: string) {
+  print("Logged in as " + user)
+}
+
+fun changeDir(conn: FTPConn, dir: string) {
+  conn.dir = dir
+}
+
+fun list(conn: FTPConn): list<FileInfo> {
+  let names = serverNames[conn.dir]
+  let dataDir = serverData[conn.dir]
+  var out: list<FileInfo> = []
+  for name in names {
+    let content = dataDir[name]
+    out = append(out, FileInfo{ name: name, size: len(content), kind: "file" })
+  }
+  return out
+}
+
+fun retrieve(conn: FTPConn, name: string): string {
+  return serverData[conn.dir][name]
+}
+
+fun main() {
+  let conn = connect("localhost:21")
+  login(conn, "anonymous", "anonymous")
+  changeDir(conn, "pub")
+  print(conn.dir)
+  let files = list(conn)
+  for f in files {
+    print(f.name + " " + str(f.size))
+  }
+  let data = retrieve(conn, "somefile.bin")
+  print("Wrote " + str(len(data)) + " bytes to somefile.bin")
+}
+
+main()

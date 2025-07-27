@@ -1,3 +1,6 @@
-Connect to localhost:21 as anonymous
-Change directory to pub
-List files and retrieve somefile.bin
+Connected to localhost:21
+Logged in as anonymous
+pub
+somefile.bin 35
+readme.txt 15
+Wrote 35 bytes to somefile.bin
