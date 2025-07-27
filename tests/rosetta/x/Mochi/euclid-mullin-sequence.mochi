@@ -1,0 +1,107 @@
+var zero: bigint = 0
+var one: bigint = 1
+var two: bigint = 2
+var three: bigint = 3
+var four: bigint = 4
+var five: bigint = 5
+var six: bigint = 6
+var ten: bigint = 10
+var k100: bigint = 100000
+
+fun gcd(a: bigint, b: bigint): bigint {
+  var x: bigint = a
+  var y: bigint = b
+  while y != zero {
+    var t: bigint = x % y
+    x = y
+    y = t
+  }
+  return x
+}
+
+fun absBig(x: bigint): bigint {
+  if x < zero { return zero - x }
+  return x
+}
+
+fun pollardRho(n: bigint, c: bigint): bigint {
+  fun g(x: bigint, y: bigint): bigint {
+    var x2: bigint = x * x
+    x2 = x2 + c
+    return x2 % y
+  }
+  var x: bigint = 2
+  var y: bigint = 2
+  var z: bigint = 1
+  var d: bigint = 0
+  var count = 0
+  while true {
+    x = g(x, n)
+    y = g(g(y, n), n)
+    d = absBig(x - y)
+    d = d % n
+    z = z * d
+    count = count + 1
+    if count == 100 {
+      d = gcd(z, n)
+      if d != one { break }
+      z = one
+      count = 0
+    }
+  }
+  if d == n { return zero }
+  return d
+}
+
+fun smallestPrimeFactorWheel(n: bigint, max: bigint): bigint {
+  if n % two == zero { return two }
+  if n % three == zero { return three }
+  if n % five == zero { return five }
+  var k: bigint = 7
+  let inc: list<bigint> = [four, two, four, two, four, six, two, six]
+  var i = 0
+  while k * k <= n {
+    if n % k == zero { return k }
+    k = k + inc[i]
+    if k > max { break }
+    i = (i + 1) % 8
+  }
+  return zero
+}
+
+fun smallestPrimeFactor(n: bigint): bigint {
+  var s = smallestPrimeFactorWheel(n, k100)
+  if s != zero { return s }
+  var c: bigint = 1
+  while true {
+    let d = pollardRho(n, c)
+    if d == zero {
+      if c == ten { return n }
+      c = c + one
+    } else {
+      let factor = smallestPrimeFactorWheel(d, d)
+      let s2 = smallestPrimeFactorWheel(n / d, factor)
+      if s2 != zero {
+        if s2 < factor { return s2 } else { return factor }
+      }
+      return factor
+    }
+  }
+}
+
+fun main() {
+  let k = 19
+  print("First " + str(k) + " terms of the Euclid\u2013Mullin sequence:")
+  print(2)
+  var prod: bigint = 2
+  var count = 1
+  while count < k {
+    let z: bigint = prod + one
+    let t: bigint = smallestPrimeFactor(z)
+    print(t)
+    prod = prod * t
+    count = count + 1
+  }
+}
+
+main()
