@@ -105,6 +105,18 @@ type RecordDef struct {
 	Fields []Field
 }
 
+type MapItem struct {
+	Key   Expr
+	Value Expr
+}
+
+type MapLitDef struct {
+	Name    string
+	KeyType string
+	ValType string
+	Items   []MapItem
+}
+
 func ctorName(name string) string { return "make" + name }
 
 // Program is a minimal Pascal AST consisting of a sequence of statements
@@ -131,6 +143,7 @@ type Program struct {
 	UseMem        bool
 	NeedBenchNow  bool
 	UseInput      bool
+	Maps          []MapLitDef
 }
 
 // Stmt represents a Pascal statement.
@@ -1559,6 +1572,7 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 		}
 	}
 	addConstructors(pr)
+	addMapConstructors(pr)
 	markSysUtils(pr)
 	currProg = nil
 	return pr, nil
@@ -3172,6 +3186,33 @@ func ensureRecord(fields []Field) string {
 	return name
 }
 
+func ensureMap(keyType, valType string, items []MapItem) string {
+	for _, m := range currProg.Maps {
+		if m.KeyType == keyType && m.ValType == valType && len(m.Items) == len(items) {
+			match := true
+			for i := range items {
+				// naive comparison only works for string keys and IntLits etc
+				lk, ok1 := items[i].Key.(*StringLit)
+				rk, ok2 := m.Items[i].Key.(*StringLit)
+				if !ok1 || !ok2 || lk.Value != rk.Value {
+					match = false
+					break
+				}
+			}
+			if match {
+				return m.Name
+			}
+		}
+	}
+	anonCounter++
+	name := fmt.Sprintf("Map%d", anonCounter)
+	currProg.Maps = append(currProg.Maps, MapLitDef{Name: name, KeyType: keyType, ValType: valType, Items: items})
+	if funcReturns != nil {
+		funcReturns[name] = fmt.Sprintf("specialize TFPGMap<%s, %s>", keyType, valType)
+	}
+	return name
+}
+
 func typeOf(e *parser.Expr, env *types.Env) string {
 	if id, ok := exprToIdent(e); ok {
 		if t, ok2 := currentVarTypes[id]; ok2 {
@@ -3214,16 +3255,7 @@ func typeFromRef(tr *parser.TypeRef) string {
 		return ""
 	}
 	if tr.Simple != nil {
-		switch *tr.Simple {
-		case "int":
-			return "integer"
-		case "string":
-			return "string"
-		case "bool":
-			return "boolean"
-		default:
-			return *tr.Simple
-		}
+		return typeFromSimple(*tr.Simple)
 	}
 	if tr.Generic != nil && tr.Generic.Name == "list" && len(tr.Generic.Args) == 1 {
 		elem := typeFromRef(tr.Generic.Args[0])
@@ -3270,6 +3302,8 @@ func typeFromSimple(s string) string {
 		return "string"
 	case "bool":
 		return "boolean"
+	case "float":
+		return "real"
 	default:
 		return s
 	}
@@ -3647,40 +3681,36 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 		}
 		return &RecordLit{Type: p.Struct.Name, Fields: fields}, nil
 	case p.Map != nil:
-		var fields []FieldExpr
-		var rec []Field
+		var items []MapItem
+		keyType := "string"
+		valType := ""
 		for _, it := range p.Map.Items {
 			val, err := convertExpr(env, it.Value)
 			if err != nil {
 				return nil, err
 			}
-			key, ok := exprToIdent(it.Key)
+			keyStr, ok := literalString(it.Key)
+			if !ok {
+				keyStr, ok = exprToIdent(it.Key)
+			}
 			if !ok {
 				return nil, fmt.Errorf("unsupported map key")
 			}
-			if len(key) > 0 && key[0] >= '0' && key[0] <= '9' {
-				key = "f" + key
+			items = append(items, MapItem{Key: &StringLit{Value: keyStr}, Value: val})
+			vt := inferType(val)
+			if valType == "" {
+				valType = vt
+			} else if vt != valType {
+				valType = "Variant"
 			}
-			ftype := inferType(val)
-			if strings.HasPrefix(ftype, "array of ") {
-				elem := strings.TrimPrefix(ftype, "array of ")
-				if strings.HasPrefix(elem, "array of ") {
-					alias := currProg.addArrayAlias(strings.TrimPrefix(elem, "array of "))
-					ftype = alias
-				} else {
-					alias := currProg.addArrayAlias(elem)
-					ftype = alias
-				}
-			}
-			fields = append(fields, FieldExpr{Name: key, Expr: val})
-			rec = append(rec, Field{Name: key, Type: ftype})
 		}
-		name := ensureRecord(rec)
-		var args []Expr
-		for _, f := range fields {
-			args = append(args, f.Expr)
+		if strings.HasPrefix(valType, "array of ") {
+			elem := strings.TrimPrefix(valType, "array of ")
+			valType = currProg.addArrayAlias(elem)
 		}
-		return &CallExpr{Name: ctorName(name), Args: args}, nil
+		currProg.UseFGL = true
+		mapName := ensureMap(keyType, valType, items)
+		return &CallExpr{Name: mapName}, nil
 	case p.Load != nil:
 		if p.Load.Path == nil || p.Load.Type == nil || p.Load.Type.Simple == nil {
 			return nil, fmt.Errorf("unsupported load")
@@ -4216,6 +4246,21 @@ func addConstructors(p *Program) {
 		p.Funs = append([]FunDecl{fn}, p.Funs...)
 		if funcReturns != nil {
 			funcReturns[fn.Name] = r.Name
+		}
+	}
+}
+
+func addMapConstructors(p *Program) {
+	for _, m := range p.Maps {
+		var body []Stmt
+		body = append(body, &AssignStmt{Name: "Result", Expr: &CallExpr{Name: fmt.Sprintf("specialize TFPGMap<%s, %s>.Create", m.KeyType, m.ValType)}})
+		for _, it := range m.Items {
+			body = append(body, &MapAssignStmt{Name: "Result", Key: it.Key, Expr: it.Value})
+		}
+		fn := FunDecl{Name: m.Name, ReturnType: fmt.Sprintf("specialize TFPGMap<%s, %s>", m.KeyType, m.ValType), Body: body}
+		p.Funs = append([]FunDecl{fn}, p.Funs...)
+		if funcReturns != nil {
+			funcReturns[fn.Name] = fn.ReturnType
 		}
 	}
 }
