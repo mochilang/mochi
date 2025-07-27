@@ -1,4 +1,4 @@
-func main (regs=21)
+func main (regs=18)
   // let a = [1.0, -0.00000000000000027756, 0.33333333, -0.00000000000000001850]
   Const        r5, [1.0, -0.00000000000000027756, 0.33333333, -0.0000000000000000185]
   Move         r0, r5
@@ -12,31 +12,28 @@ func main (regs=21)
   Move         r2, r7
   SetGlobal    2,2,0,0
   // let res = applyFilter(sig, a, b)
-  Const        r11, [-0.917843918645, 0.141984778794, 1.20536903482, 0.190286794412, -0.662370894973, -1.00700480494, -0.404707073677, 0.800482325044, 0.743500089861, 1.01090520172, 0.741527555207, 0.277841675195, 0.400833448236, -0.2085993586, -0.172842103641, -0.134316096293, 0.0259303398477, 0.490105989562, 0.549391221511, 0.9047198589]
-  Move         r8, r11
-  Const        r12, [1.0, -0.00000000000000027756, 0.33333333, -0.0000000000000000185]
-  Move         r9, r12
-  Const        r13, [0.16666667, 0.5, 0.5, 0.16666667]
-  Move         r10, r13
-  Call         r14, applyFilter, r8, r9, r10
-  Move         r3, r14
+  Move         r8, r2
+  Move         r9, r0
+  Move         r10, r1
+  Call         r11, applyFilter, r8, r9, r10
+  Move         r3, r11
   SetGlobal    3,3,0,0
   // var k = 0
-  Const        r15, 0
-  Move         r4, r15
+  Const        r12, 0
+  Move         r4, r12
   SetGlobal    4,4,0,0
 L1:
   // while k < len(res) {
-  Len          r16, r3
-  LessInt      r17, r4, r16
-  JumpIfFalse  r17, L0
+  Len          r13, r3
+  LessInt      r14, r4, r13
+  JumpIfFalse  r14, L0
   // print(res[k])
-  Index        r18, r3, r4
-  Print        r18
+  Index        r15, r3, r4
+  Print        r15
   // k = k + 1
-  Const        r19, 1
-  AddInt       r20, r4, r19
-  Move         r4, r20
+  Const        r16, 1
+  AddInt       r17, r4, r16
+  Move         r4, r17
   SetGlobal    4,4,0,0
   // while k < len(res) {
   Jump         L1

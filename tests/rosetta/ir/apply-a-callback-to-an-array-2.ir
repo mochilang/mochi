@@ -1,4 +1,6 @@
 func main (regs=1)
+  // main()
+  Call         r0, main, 
   Return       r0
 
   // fun each(xs: list<int>, f: fun(int)) {
@@ -50,26 +52,24 @@ L0:
   Return       r3
 
   // fun main() {
-func main (regs=15)
+func main (regs=13)
   // let s: list<int> = [1, 2, 3, 4, 5]
   Const        r0, [1, 2, 3, 4, 5]
   Move         r1, r0
   // each(s, fun(i: int): any => print(str(i * i)))
-  Const        r4, [1, 2, 3, 4, 5]
-  Move         r2, r4
-  Move         r5, r1
-  MakeClosure  r6, fn4, 1, r5
-  Move         r3, r6
-  Call2        r7, each, r2, r3
+  Move         r2, r1
+  Move         r4, r1
+  MakeClosure  r5, fn4, 1, r4
+  Move         r3, r5
+  Call2        r6, each, r2, r3
   // print(str(Map(s, fun(i: int): int => i * i)))
-  Const        r10, [1, 2, 3, 4, 5]
+  Move         r7, r1
+  Move         r9, r1
+  MakeClosure  r10, fn5, 1, r9
   Move         r8, r10
-  Move         r11, r1
-  MakeClosure  r12, fn5, 1, r11
-  Move         r9, r12
-  Call2        r13, Map, r8, r9
-  Str          r14, r13
-  Print        r14
+  Call2        r11, Map, r7, r8
+  Str          r12, r11
+  Print        r12
   Return       r0
 
   // each(s, fun(i: int): any => print(str(i * i)))

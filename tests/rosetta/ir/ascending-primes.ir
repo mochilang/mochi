@@ -1,8 +1,10 @@
-func main (regs=2)
+func main (regs=3)
   // var asc: list<int> = []
   Const        r1, []
   Move         r0, r1
   SetGlobal    0,0,0,0
+  // main()
+  Call         r2, main, 
   Return       r0
 
   // fun isPrime(n: int): bool {

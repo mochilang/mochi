@@ -1,8 +1,10 @@
-func main (regs=2)
+func main (regs=3)
   // var seed = 1
   Const        r1, 1
   Move         r0, r1
   SetGlobal    0,0,0,0
+  // main()
+  Call         r2, main, 
   Return       r0
 
   // fun prng(max: int): int {
@@ -103,14 +105,14 @@ L4:
   Return       r26
 
   // fun testBalanced(s: string) {
-func testBalanced (regs=22)
+func testBalanced (regs=28)
   // var open = 0
   Const        r2, 0
   Move         r3, r2
   // var i = 0
   Const        r2, 0
   Move         r4, r2
-L2:
+L5:
   // while i < len(s) {
   Len          r5, r1
   LessInt      r6, r4, r5
@@ -130,30 +132,61 @@ L2:
   Const        r9, 1
   AddInt       r15, r3, r9
   Move         r3, r15
+  // if c == "[" {
+  Jump         L2
 L1:
+  // } else if c == "]" {
+  Const        r16, "]"
+  Equal        r17, r12, r16
+  JumpIfFalse  r17, L3
+  // if open == 0 {
+  Const        r2, 0
+  EqualInt     r18, r3, r2
+  JumpIfFalse  r18, L4
+  // print(s + ": not ok")
+  Const        r19, ": not ok"
+  Add          r20, r1, r19
+  Print        r20
+  // return
+  Return       r0
+L4:
+  // open = open - 1
+  Const        r9, 1
+  SubInt       r21, r3, r9
+  Move         r3, r21
+  // } else if c == "]" {
+  Jump         L2
+L3:
+  // print(s + ": not ok")
+  Const        r19, ": not ok"
+  Add          r22, r1, r19
+  Print        r22
+  // return
+  Return       r0
+L2:
   // i = i + 1
   Const        r9, 1
-  AddInt       r16, r4, r9
-  Move         r4, r16
+  AddInt       r23, r4, r9
+  Move         r4, r23
   // while i < len(s) {
-  Jump         L2
+  Jump         L5
 L0:
   // if open == 0 {
   Const        r2, 0
-  EqualInt     r17, r3, r2
-  JumpIfFalse  r17, L3
+  EqualInt     r24, r3, r2
+  JumpIfFalse  r24, L6
   // print(s + ": ok")
-  Const        r18, ": ok"
-  Add          r19, r1, r18
-  Print        r19
+  Const        r25, ": ok"
+  Add          r26, r1, r25
+  Print        r26
   // if open == 0 {
-  Jump         L4
-L3:
+  Jump         L7
+L6:
   // print(s + ": not ok")
-  Const        r20, ": not ok"
-  Add          r21, r1, r20
-  Print        r21
-L4:
+  Const        r19, ": not ok"
+  Add          r27, r1, r19
+  Print        r27
+L7:
   Return       r0
 
   // fun main() {

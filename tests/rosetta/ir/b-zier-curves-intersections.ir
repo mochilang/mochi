@@ -1,4 +1,6 @@
 func main (regs=1)
+  // main()
+  Call         r0, main, 
   Return       r0
 
   // fun absf(x: float): float {
@@ -494,7 +496,7 @@ L0:
   Return       r27
 
   // fun findIntersects(p: QuadCurve, q: QuadCurve, tol: float, spacing: float): list<Point> {
-func findIntersects (regs=51)
+func findIntersects (regs=95)
   // var inters: list<Point> = []
   Const        r4, []
   Move         r5, r4
@@ -509,7 +511,7 @@ func findIntersects (regs=51)
   Move         r6, r13
   MakeList     r14, 1, r6
   Move         r15, r14
-L1:
+L2:
   // while len(workload) > 0 {
   Len          r16, r15
   Const        r17, 0
@@ -559,18 +561,96 @@ L1:
   Move         r47, r3
   Call         r48, seemsToBeDuplicate, r45, r46, r47
   Not          r49, r48
-  JumpIfFalse  r49, L1
+  JumpIfFalse  r49, L2
   // inters = append(inters, inter)
   Append       r50, r5, r44
   Move         r5, r50
+  // if acc {
+  Jump         L2
+L1:
+  // } else if !excl {
+  Not          r51, r37
+  JumpIfFalse  r51, L2
+  // let ps = subdivideQuadCurve(work["p"], 0.5)
+  Const        r7, "p"
+  Index        r54, r24, r7
+  Move         r52, r54
+  Const        r55, 0.5
+  Move         r53, r55
+  Call2        r56, subdivideQuadCurve, r52, r53
+  Move         r57, r56
+  // let qs = subdivideQuadCurve(work["q"], 0.5)
+  Const        r8, "q"
+  Index        r60, r24, r8
+  Move         r58, r60
+  Const        r55, 0.5
+  Move         r59, r55
+  Call2        r61, subdivideQuadCurve, r58, r59
+  Move         r62, r61
+  // let p0 = ps[0]
+  Const        r17, 0
+  Index        r63, r57, r17
+  Move         r64, r63
+  // let p1 = ps[1]
+  Const        r20, 1
+  Index        r65, r57, r20
+  Move         r66, r65
+  // let q0 = qs[0]
+  Const        r17, 0
+  Index        r67, r62, r17
+  Move         r68, r67
+  // let q1 = qs[1]
+  Const        r20, 1
+  Index        r69, r62, r20
+  Move         r70, r69
+  // workload = append(workload, {"p": p0, "q": q0})
+  Const        r7, "p"
+  Const        r8, "q"
+  Move         r71, r7
+  Move         r72, r64
+  Move         r73, r8
+  Move         r74, r68
+  MakeMap      r75, 2, r71
+  Append       r76, r15, r75
+  Move         r15, r76
+  // workload = append(workload, {"p": p0, "q": q1})
+  Const        r7, "p"
+  Const        r8, "q"
+  Move         r77, r7
+  Move         r78, r64
+  Move         r79, r8
+  Move         r80, r70
+  MakeMap      r81, 2, r77
+  Append       r82, r15, r81
+  Move         r15, r82
+  // workload = append(workload, {"p": p1, "q": q0})
+  Const        r7, "p"
+  Const        r8, "q"
+  Move         r83, r7
+  Move         r84, r66
+  Move         r85, r8
+  Move         r86, r68
+  MakeMap      r87, 2, r83
+  Append       r88, r15, r87
+  Move         r15, r88
+  // workload = append(workload, {"p": p1, "q": q1})
+  Const        r7, "p"
+  Const        r8, "q"
+  Move         r89, r7
+  Move         r90, r66
+  Move         r91, r8
+  Move         r92, r70
+  MakeMap      r93, 2, r89
+  Append       r94, r15, r93
+  Move         r15, r94
   // while len(workload) > 0 {
-  Jump         L1
+  Jump         L2
 L0:
   // return inters
   Return       r5
 
   // fun main() {
-func main (regs=92)
+func main (regs=91)
   // x: QuadSpline { c0: -1.0, c1: 0.0, c2: 1.0 },
   Const        r0, 1.0
   NegFloat     r1, r0
@@ -653,49 +733,46 @@ func main (regs=92)
   Const        r60, 0.0000001
   Move         r61, r60
   // let spacing = tol * 10.0
-  Const        r60, 0.0000001
   Const        r12, 10.0
-  MulFloat     r62, r60, r12
+  MulFloat     r62, r61, r12
   Move         r63, r62
   // let inters = findIntersects(p, q, tol, spacing)
   Move         r64, r29
   Move         r65, r59
-  Const        r60, 0.0000001
-  Move         r66, r60
-  Const        r68, 0.000001
-  Move         r67, r68
-  Call         r69, findIntersects, r64, r65, r66, r67
-  Move         r70, r69
+  Move         r66, r61
+  Move         r67, r63
+  Call         r68, findIntersects, r64, r65, r66, r67
+  Move         r69, r68
   // var i = 0
-  Const        r71, 0
-  Move         r72, r71
+  Const        r70, 0
+  Move         r71, r70
 L1:
   // while i < len(inters) {
-  Len          r73, r70
-  LessInt      r74, r72, r73
-  JumpIfFalse  r74, L0
+  Len          r72, r69
+  LessInt      r73, r71, r72
+  JumpIfFalse  r73, L0
   // let pt = inters[i]
-  Index        r75, r70, r72
-  Move         r76, r75
+  Index        r74, r69, r71
+  Move         r75, r74
   // print("(" + str(pt.x) + ", " + str(pt.y) + ")")
-  Const        r77, "("
-  Const        r78, "x"
-  Index        r79, r76, r78
-  Str          r80, r79
-  Add          r81, r77, r80
-  Const        r82, ", "
-  Add          r83, r81, r82
-  Const        r84, "y"
-  Index        r85, r76, r84
-  Str          r86, r85
-  Add          r87, r83, r86
-  Const        r88, ")"
-  Add          r89, r87, r88
-  Print        r89
+  Const        r76, "("
+  Const        r77, "x"
+  Index        r78, r75, r77
+  Str          r79, r78
+  Add          r80, r76, r79
+  Const        r81, ", "
+  Add          r82, r80, r81
+  Const        r83, "y"
+  Index        r84, r75, r83
+  Str          r85, r84
+  Add          r86, r82, r85
+  Const        r87, ")"
+  Add          r88, r86, r87
+  Print        r88
   // i = i + 1
-  Const        r90, 1
-  AddInt       r91, r72, r90
-  Move         r72, r91
+  Const        r89, 1
+  AddInt       r90, r71, r89
+  Move         r71, r90
   // while i < len(inters) {
   Jump         L1
 L0:

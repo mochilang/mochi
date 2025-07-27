@@ -1,4 +1,6 @@
 func main (regs=1)
+  // main()
+  Call         r0, main, 
   Return       r0
 
   // fun abs(x: float): float {
@@ -53,8 +55,7 @@ L1:
   Call         r6, abs, r4
   Move         r7, r0
   Call         r8, abs, r7
-  Const        r2, 0.00000000000001
-  MulFloat     r9, r8, r2
+  MulFloat     r9, r8, r3
   LessFloat    r10, r9, r6
   JumpIfFalse  r10, L0
   // let newA = (a + g) / 2.0

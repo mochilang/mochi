@@ -1,4 +1,6 @@
 func main (regs=1)
+  // main()
+  Call         r0, main, 
   Return       r0
 
   // fun isPrime(n: int): bool {
@@ -70,7 +72,7 @@ L3:
   Return       r23
 
   // fun countPrimeFactors(n: int): int {
-func countPrimeFactors (regs=17)
+func countPrimeFactors (regs=20)
   // if n == 1 { return 0 }
   Const        r1, 1
   Equal        r2, r0, r1
@@ -91,7 +93,7 @@ L1:
   // var f = 2
   Const        r7, 2
   Move         r8, r7
-L2:
+L4:
   // while true {
   Const        r9, true
   // if n % f == 0 {
@@ -115,10 +117,27 @@ L3:
   // if isPrime(n) { f = n }
   Move         r15, r0
   Call         r16, isPrime, r15
-  JumpIfFalse  r16, L2
+  JumpIfFalse  r16, L4
   Move         r8, r0
+  // if n % f == 0 {
+  Jump         L4
+L2:
+  // } else if f >= 3 {
+  Const        r17, 3
+  LessEq       r18, r17, r8
+  JumpIfFalse  r18, L5
+  // f = f + 2
+  Const        r7, 2
+  Add          r19, r8, r7
+  Move         r8, r19
+  // } else if f >= 3 {
+  Jump         L4
+L5:
+  // f = 3
+  Const        r17, 3
+  Move         r8, r17
   // while true {
-  Jump         L2
+  Jump         L4
 
   // fun pad4(n: int): string {
 func pad4 (regs=8)
@@ -167,8 +186,7 @@ func main (regs=29)
   Move         r13, r12
 L2:
   // while i <= max {
-  Const        r0, 120
-  LessEqInt    r14, r13, r0
+  LessEqInt    r14, r13, r1
   JumpIfFalse  r14, L0
   // let c = countPrimeFactors(i)
   Move         r15, r13

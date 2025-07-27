@@ -1,4 +1,6 @@
 func main (regs=1)
+  // main()
+  Call         r0, main, 
   Return       r0
 
   // fun absf(x: float): float {
@@ -181,8 +183,7 @@ func avgLen (regs=31)
   Move         r7, r3
 L5:
   // while t < tests {
-  Const        r1, 10000
-  LessInt      r8, r7, r1
+  LessInt      r8, r7, r2
   JumpIfFalse  r8, L0
   // var visited: list<bool> = []
   Const        r9, []
@@ -243,8 +244,7 @@ L3:
 L0:
   // return (sum as float) / tests
   Cast         r29, r4, float
-  Const        r1, 10000
-  Div          r30, r29, r1
+  Div          r30, r29, r2
   Return       r30
 
   // fun ana(n: int): float {
@@ -300,8 +300,7 @@ func main (regs=48)
   Move         r5, r4
 L1:
   // while n <= nmax {
-  Const        r0, 20
-  LessEqInt    r6, r5, r0
+  LessEqInt    r6, r5, r1
   JumpIfFalse  r6, L0
   // let a = avgLen(n)
   Move         r7, r5

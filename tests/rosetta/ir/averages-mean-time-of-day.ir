@@ -1,8 +1,10 @@
-func main (regs=2)
+func main (regs=3)
   // let PI = 3.141592653589793
   Const        r1, 3.141592653589793
   Move         r0, r1
   SetGlobal    0,0,0,0
+  // main()
+  Call         r2, main, 
   Return       r0
 
   // fun sinApprox(x: float): float {
@@ -198,10 +200,9 @@ L2:
   LessInt      r7, r5, r6
   JumpIfFalse  r7, L0
   // if substring(digits, i, i+1) == ch { return i }
-  Const        r2, "0123456789"
   Const        r8, 1
   AddInt       r9, r5, r8
-  Slice        r10, r2, r5, r9
+  Slice        r10, r3, r5, r9
   Equal        r11, r10, r1
   JumpIfFalse  r11, L1
   Return       r5
@@ -389,13 +390,12 @@ L2:
   Return       r63
 
   // fun main() {
-func main (regs=6)
+func main (regs=5)
   // let inputs = ["23:00:17", "23:40:20", "00:12:45", "00:17:19"]
   Const        r1, ["23:00:17", "23:40:20", "00:12:45", "00:17:19"]
   Move         r2, r1
   // print(meanTime(inputs))
-  Const        r4, ["23:00:17", "23:40:20", "00:12:45", "00:17:19"]
-  Move         r3, r4
-  Call         r5, meanTime, r3
-  Print        r5
+  Move         r3, r2
+  Call         r4, meanTime, r3
+  Print        r4
   Return       r0

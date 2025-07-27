@@ -1,4 +1,6 @@
 func main (regs=1)
+  // main()
+  Call         r0, main, 
   Return       r0
 
   // fun randOrder(seed: int, n: int): list<int> {
@@ -48,10 +50,9 @@ func main (regs=117)
   Move         r5, r4
   // for i in 0..nBuckets {
   Const        r6, 0
-  Const        r0, 10
   Move         r7, r6
 L1:
-  LessInt      r8, r7, r0
+  LessInt      r8, r7, r1
   JumpIfFalse  r8, L0
   // buckets = append(buckets, 0)
   Const        r6, 0
@@ -64,11 +65,9 @@ L1:
   Jump         L1
 L0:
   // var i = nBuckets
-  Const        r0, 10
-  Move         r7, r0
+  Move         r7, r1
   // var dist = initialSum
-  Const        r2, 1000
-  Move         r12, r2
+  Move         r12, r3
 L3:
   // while i > 0 {
   Const        r6, 0
@@ -120,8 +119,7 @@ L12:
   JumpIfFalse  r29, L4
   // var r = randOrder(seedOrder, nBuckets)
   Move         r30, r23
-  Const        r0, 10
-  Move         r31, r0
+  Move         r31, r1
   Call2        r32, randOrder, r30, r31
   Move         r33, r32
   // seedOrder = r[0]
@@ -135,8 +133,7 @@ L12:
   // var b2 = (b1 + 1) % nBuckets
   Const        r16, 1
   Add          r37, r36, r16
-  Const        r0, 10
-  Mod          r38, r37, r0
+  Mod          r38, r37, r1
   Move         r39, r38
   // let v1 = buckets[b1]
   Index        r40, r5, r36
@@ -199,8 +196,7 @@ L7:
   Move         r19, r67
   // r = randChaos(seedChaos, nBuckets)
   Move         r68, r25
-  Const        r0, 10
-  Move         r69, r0
+  Move         r69, r1
   Call2        r70, randChaos, r68, r69
   Move         r33, r70
   // seedChaos = r[0]
@@ -214,8 +210,7 @@ L7:
   // b2 = (b1 + 1) % nBuckets
   Const        r16, 1
   Add          r73, r36, r16
-  Const        r0, 10
-  Mod          r74, r73, r0
+  Mod          r74, r73, r1
   Move         r39, r74
   // r = randChaos(seedChaos, buckets[b1] + 1)
   Move         r75, r25
@@ -260,8 +255,7 @@ L9:
   Move         r92, r6
 L11:
   // while idx < nBuckets {
-  Const        r0, 10
-  LessInt      r93, r92, r0
+  LessInt      r93, r92, r1
   JumpIfFalse  r93, L10
   // sum = sum + buckets[idx]
   Index        r94, r5, r92

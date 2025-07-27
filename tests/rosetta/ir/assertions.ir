@@ -1,4 +1,6 @@
 func main (regs=1)
+  // main()
+  Call         r0, main, 
   Return       r0
 
   // fun main() {
@@ -7,18 +9,9 @@ func main (regs=6)
   Const        r0, 43
   Move         r1, r0
   // if x != 42 {
-  Const        r0, 43
   Const        r2, 42
-  NotEqual     r3, r0, r2
-  JumpIfFalse  r3, L0
+  Const        r3, true
   // print("Assertion failed")
   Const        r4, "Assertion failed"
   Print        r4
-  // if x != 42 {
-  Jump         L1
-L0:
-  // print("Assertion passed")
-  Const        r5, "Assertion passed"
-  Print        r5
-L1:
   Return       r0

@@ -1,8 +1,10 @@
 func main (regs=1)
+  // main()
+  Call         r0, main, 
   Return       r0
 
   // fun main() {
-func main (regs=37)
+func main (regs=43)
   // let a = 12345678
   Const        r0, 12345678
   Move         r1, r0
@@ -17,51 +19,57 @@ func main (regs=37)
   Add          r8, r6, r7
   Const        r9, " = "
   Add          r10, r8, r9
-  Const        r11, "12444443"
-  Add          r12, r10, r11
-  Print        r12
+  Const        r11, 12444443
+  Const        r12, "12444443"
+  Add          r13, r10, r12
+  Print        r13
   // print(str(a) + " - " + str(b) + " = " + str(a - b))
   Const        r4, "12345678"
-  Const        r13, " - "
-  Add          r14, r4, r13
+  Const        r14, " - "
+  Add          r15, r4, r14
   Const        r7, "98765"
-  Add          r15, r14, r7
+  Add          r16, r15, r7
   Const        r9, " = "
-  Add          r16, r15, r9
-  Const        r17, "12246913"
-  Add          r18, r16, r17
-  Print        r18
+  Add          r17, r16, r9
+  Const        r18, 12246913
+  Const        r19, "12246913"
+  Add          r20, r17, r19
+  Print        r20
   // print(str(a) + " * " + str(b) + " = " + str(a * b))
   Const        r4, "12345678"
-  Const        r19, " * "
-  Add          r20, r4, r19
+  Const        r21, " * "
+  Add          r22, r4, r21
   Const        r7, "98765"
-  Add          r21, r20, r7
+  Add          r23, r22, r7
   Const        r9, " = "
-  Add          r22, r21, r9
-  Const        r23, "1219320887670"
-  Add          r24, r22, r23
-  Print        r24
+  Add          r24, r23, r9
+  Const        r25, 1219320887670
+  Const        r26, "1219320887670"
+  Add          r27, r24, r26
+  Print        r27
   // print(str(a) + " quo " + str(b) + " = " + str((a / b) as int))
   Const        r4, "12345678"
-  Const        r25, " quo "
-  Add          r26, r4, r25
+  Const        r28, " quo "
+  Add          r29, r4, r28
   Const        r7, "98765"
-  Add          r27, r26, r7
+  Add          r30, r29, r7
   Const        r9, " = "
-  Add          r28, r27, r9
-  Const        r29, "125"
-  Add          r30, r28, r29
-  Print        r30
+  Add          r31, r30, r9
+  Const        r32, 125
+  Cast         r33, r32, int
+  Str          r34, r33
+  Add          r35, r31, r34
+  Print        r35
   // print(str(a) + " rem " + str(b) + " = " + str(a % b))
   Const        r4, "12345678"
-  Const        r31, " rem "
-  Add          r32, r4, r31
+  Const        r36, " rem "
+  Add          r37, r4, r36
   Const        r7, "98765"
-  Add          r33, r32, r7
+  Add          r38, r37, r7
   Const        r9, " = "
-  Add          r34, r33, r9
-  Const        r35, "53"
-  Add          r36, r34, r35
-  Print        r36
+  Add          r39, r38, r9
+  Const        r40, 53
+  Const        r41, "53"
+  Add          r42, r39, r41
+  Print        r42
   Return       r0

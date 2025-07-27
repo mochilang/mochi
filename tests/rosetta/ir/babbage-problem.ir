@@ -18,12 +18,10 @@ L2:
   MulInt       r7, r2, r2
   Move         r8, r7
   // let ending = square % modulus
-  Const        r4, 1000000
-  ModInt       r9, r8, r4
+  ModInt       r9, r8, r1
   Move         r10, r9
   // if ending == target {
-  Const        r3, 269696
-  EqualInt     r11, r10, r3
+  EqualInt     r11, r10, r0
   JumpIfFalse  r11, L0
   // print("The smallest number whose square ends with " + str(target) + " is " + str(n))
   Const        r12, "The smallest number whose square ends with "

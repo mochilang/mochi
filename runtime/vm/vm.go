@@ -8367,6 +8367,9 @@ func resolveTypeRef(t *parser.TypeRef, env *types.Env) types.Type {
 func castValue(t types.Type, v any) (any, error) {
 	switch tt := t.(type) {
 	case types.IntType, types.Int64Type:
+		if v == nil {
+			return 0, nil
+		}
 		switch x := v.(type) {
 		case int:
 			return x, nil
@@ -8430,6 +8433,9 @@ func castValue(t types.Type, v any) (any, error) {
 			return nil, fmt.Errorf("cannot cast %T to %s", v, t)
 		}
 	case types.FloatType:
+		if v == nil {
+			return 0.0, nil
+		}
 		switch x := v.(type) {
 		case float64:
 			return x, nil

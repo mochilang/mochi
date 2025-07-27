@@ -1,4 +1,6 @@
 func main (regs=1)
+  // main()
+  Call         r0, main, 
   Return       r0
 
   // fun merge(base: map<string, any>, update: map<string, any>): map<string, any> {
@@ -46,7 +48,7 @@ L2:
   Return       r3
 
   // fun main() {
-func main (regs=10)
+func main (regs=8)
   // let base: map<string, any> = {"name": "Rocket Skates", "price": 12.75, "color": "yellow"}
   Const        r0, {"color": "yellow", "name": "Rocket Skates", "price": 12.75}
   Move         r1, r0
@@ -54,12 +56,10 @@ func main (regs=10)
   Const        r2, {"color": "red", "price": 15.25, "year": 1974}
   Move         r3, r2
   // let result = merge(base, update)
-  Const        r6, {"color": "yellow", "name": "Rocket Skates", "price": 12.75}
-  Move         r4, r6
-  Const        r7, {"color": "red", "price": 15.25, "year": 1974}
-  Move         r5, r7
-  Call2        r8, merge, r4, r5
-  Move         r9, r8
+  Move         r4, r1
+  Move         r5, r3
+  Call2        r6, merge, r4, r5
+  Move         r7, r6
   // print(result)
-  Print        r9
+  Print        r7
   Return       r0
