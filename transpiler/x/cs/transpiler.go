@@ -80,6 +80,7 @@ var finalVarTypes map[string]string
 var structTypes map[string]types.StructType
 var funRets map[string]string
 var funParams map[string][]string
+var userFuncs map[string]bool
 var usesDict bool
 var usesLinq bool
 var usesJson bool
@@ -97,6 +98,7 @@ var importAliases map[string]string
 var varAliases map[string]string
 var aliasCounter int
 var usesFmt bool
+var envTypes map[string]types.Type
 
 // reserved lists C# reserved keywords that cannot be used as identifiers.
 var reserved = map[string]bool{
@@ -1260,6 +1262,9 @@ func csType(t *parser.TypeRef) string {
 		if st, ok := structTypes[*t.Simple]; ok {
 			return st.Name
 		}
+		if typ, ok := envTypes[*t.Simple]; ok {
+			return csTypeFromType(typ)
+		}
 		return "object"
 	}
 	if t.Generic != nil {
@@ -1316,6 +1321,19 @@ func csTypeFromType(t types.Type) string {
 		return csTypeFromType(tt.Elem)
 	case types.StructType:
 		return tt.Name
+	case types.FuncType:
+		parts := make([]string, 0, len(tt.Params))
+		for _, p := range tt.Params {
+			parts = append(parts, csTypeFromType(p))
+		}
+		if tt.Return != nil {
+			parts = append(parts, csTypeFromType(tt.Return))
+			return fmt.Sprintf("Func<%s>", strings.Join(parts, ", "))
+		}
+		if len(parts) == 0 {
+			return "Action"
+		}
+		return fmt.Sprintf("Action<%s>", strings.Join(parts, ", "))
 	default:
 		return "object"
 	}
@@ -2076,6 +2094,7 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	structTypes = env.Structs()
 	funRets = make(map[string]string)
 	funParams = make(map[string][]string)
+	userFuncs = make(map[string]bool)
 	usesDict = false
 	usesLinq = false
 	usesJson = false
@@ -2088,6 +2107,7 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	importAliases = make(map[string]string)
 	varAliases = make(map[string]string)
 	aliasCounter = 0
+	envTypes = env.Types()
 	for name, typ := range env.Types() {
 		if ft, ok := typ.(types.FuncType); ok {
 			params := make([]string, len(ft.Params))
@@ -2835,6 +2855,16 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 			}
 		}
 		blockDepth--
+		if len(body) == 1 {
+			if r, ok := body[0].(*ReturnStmt); ok && r.Value != nil {
+				vt := typeOfExpr(r.Value)
+				if strings.HasPrefix(retType, "Func<object, object>") && strings.HasPrefix(vt, "Func<") {
+					retType = vt
+					currentReturnType = vt
+					funRets[s.Fun.Name] = retType
+				}
+			}
+		}
 		for name, typ := range saved {
 			if typ == "" {
 				delete(varTypes, name)
@@ -2863,6 +2893,7 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 			varTypes[s.Fun.Name] = fmt.Sprintf("fn/%d", len(ptypes))
 			funRets[s.Fun.Name] = retType
 			funParams[s.Fun.Name] = append([]string{}, ptypes...)
+			userFuncs[s.Fun.Name] = true
 		}
 		if s.Fun.Return == nil {
 			retType = ""
@@ -3326,6 +3357,9 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 				return &FunLit{Params: params, ParamTypes: ptypes, ReturnType: ret, ExprBody: body}, nil
 			}
 		}
+		if userFuncs[name] {
+			return &CallExpr{Func: name, Args: args}, nil
+		}
 		switch name {
 		case "print":
 			name = "Console.WriteLine"
@@ -3609,6 +3643,11 @@ func compileFunExpr(f *parser.FunExpr) (Expr, error) {
 	var body []Stmt
 	var expr Expr
 	var err error
+	savedRet := currentReturnType
+	savedVoid := currentReturnVoid
+	currentReturnType = csType(f.Return)
+	currentReturnVoid = f.Return == nil
+	defer func() { currentReturnType = savedRet; currentReturnVoid = savedVoid }()
 	if f.ExprBody != nil {
 		expr, err = compileExpr(f.ExprBody)
 		if err != nil {

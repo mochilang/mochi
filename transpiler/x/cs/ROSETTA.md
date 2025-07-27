@@ -1,7 +1,7 @@
 # Rosetta C# Transpiler Output
 
-Completed programs: 240/467
-Last updated: 2025-07-27 16:57 UTC
+Completed programs: 241/467
+Last updated: 2025-07-27 17:34 UTC
 
 ## Checklist
 | Index | Name | Status | Duration | Memory |
@@ -209,7 +209,7 @@ Last updated: 2025-07-27 16:57 UTC
 | 201 | cholesky-decomposition-1 | ✓ | 20.535ms | 2.3MB |
 | 202 | cholesky-decomposition | ✓ | 12.64ms | 1.2MB |
 | 203 | chowla-numbers | ✓ | 2.539ms | 16.0KB |
-| 204 | church-numerals-1 |   |  |  |
+| 204 | church-numerals-1 | ✓ | 11.814ms | 1.1MB |
 | 205 | church-numerals-2 |   |  |  |
 | 206 | circles-of-given-radius-through-two-points |   |  |  |
 | 207 | circular-primes |   |  |  |
