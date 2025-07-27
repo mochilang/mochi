@@ -667,6 +667,13 @@ type UnaryExpr struct {
 }
 
 func (u *UnaryExpr) emit(w io.Writer) {
+	t := typeOfExpr(u.Val)
+	if (u.Op == "-" || u.Op == "+") && (t == "" || t == "object") {
+		fmt.Fprintf(w, "%s((dynamic)", u.Op)
+		u.Val.emit(w)
+		fmt.Fprint(w, ")")
+		return
+	}
 	fmt.Fprint(w, u.Op)
 	u.Val.emit(w)
 }
@@ -1928,12 +1935,20 @@ func (a *AppendExpr) emit(w io.Writer) {
 			}
 		}
 	}
+	elem := strings.TrimSuffix(t, "[]")
+	itemT := typeOfExpr(a.Item)
+	cast := ""
 	if t == "" || strings.HasSuffix(t, "object[]") {
-		fmt.Fprint(w, "(object)")
-		a.Item.emit(w)
-	} else {
-		a.Item.emit(w)
+		cast = "object"
+	} else if itemT == "" || itemT == "object" || itemT == "object[]" {
+		cast = elem
+	} else if itemT != elem {
+		cast = elem
 	}
+	if cast != "" {
+		fmt.Fprintf(w, "(%s)", cast)
+	}
+	a.Item.emit(w)
 	fmt.Fprint(w, ")))")
 }
 
@@ -2605,7 +2620,7 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 						}
 					}
 					t := typeOfExpr(item)
-					if t != "" {
+					if t != "" && t != "object" {
 						if vt == "" || vt == "object[]" {
 							varTypes[nameAlias] = t + "[]"
 						} else if strings.HasSuffix(vt, "[]") {
