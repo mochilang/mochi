@@ -1,23 +1,51 @@
-fun endsWith(s:string,suf:string):bool{ if len(s)<len(suf){return false}; return substring(s,len(s)-len(suf),len(s))==suf }
-fun lastIndexOf(s:string, sub:string):int{var idx=0-1; var i=0; while i<=len(s)-len(sub){ if substring(s,i,i+len(sub))==sub { idx=i }; i=i+1 }; return idx }
-let extensions = ["zip","rar","7z","gz","archive","A##","tar.bz2"]
+// Mochi implementation of Rosetta "File extension is in extensions list"
+
+fun endsWith(s: string, suf: string): bool {
+  if len(s) < len(suf) { return false }
+  return substring(s, len(s)-len(suf), len(s)) == suf
+}
+
+fun lastIndexOf(s: string, sub: string): int {
+  var idx = 0 - 1
+  var i = 0
+  while i <= len(s) - len(sub) {
+    if substring(s, i, i+len(sub)) == sub { idx = i }
+    i = i + 1
+  }
+  return idx
+}
+
+let extensions = ["zip", "rar", "7z", "gz", "archive", "A##", "tar.bz2"]
+
 fun fileExtInList(filename: string): list<any> {
   let fl = lower(filename)
-    for ext in extensions {
-      let ext2 = "." + lower(ext)
-      if endsWith(fl, ext2) { return [true, ext] }
-    }
+  for ext in extensions {
+    let ext2 = "." + lower(ext)
+    if endsWith(fl, ext2) { return [true, ext] }
+  }
   let idx = lastIndexOf(filename, ".")
   if idx != 0 - 1 {
     let t = substring(filename, idx+1, len(filename))
-    return [false, t]
+    if t != "" { return [false, t] }
+    return [false, "<empty>"]
   }
   return [false, "<none>"]
 }
+
+fun pad(s: string, w: int): string {
+  var t = s
+  while len(t) < w { t = t + " " }
+  return t
+}
+
 fun main() {
   print("The listed extensions are:")
   print(extensions)
-  let tests = ["MyData.a##","MyData.tar.Gz","MyData.gzip","MyData.7z.backup","MyData...","MyData","MyData_v1.0.tar.bz2","MyData_v1.0.bz2"]
+  let tests = [
+    "MyData.a##", "MyData.tar.Gz", "MyData.gzip",
+    "MyData.7z.backup", "MyData...", "MyData",
+    "MyData_v1.0.tar.bz2", "MyData_v1.0.bz2",
+  ]
   for t in tests {
     let res = fileExtInList(t)
     let ok = res[0] as bool
@@ -25,5 +53,5 @@ fun main() {
     print(pad(t,20) + " => " + str(ok) + "  (extension = " + ext + ")")
   }
 }
-fun pad(s:string,w:int):string{var t=s; while len(t)<w{t=t+" "}; return t}
+
 main()
