@@ -94,7 +94,7 @@ void main() {
   {
   var _benchMem0 = ProcessInfo.currentRss;
   var _benchSw = Stopwatch()..start();
-  for (var tc in td) {
+  for (List<dynamic> tc in td) {
     var p1 = tc[0];
     var p2 = tc[1];
     var r = tc[2];

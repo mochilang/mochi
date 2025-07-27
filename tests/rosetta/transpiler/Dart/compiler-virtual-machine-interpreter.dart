@@ -102,11 +102,11 @@ String unescape(String s) {
 Map<String, dynamic> parseProgram(String src) {
   List<String> lines = split(src, "\n");
   List<String> header = fields(lines[0]);
-  var dataSize = int.parse(header[1]);
-  var nStrings = int.parse(header[3]);
+  int dataSize = int.parse(header[1]);
+  int nStrings = int.parse(header[3]);
   List<String> stringPool = <String>[];
   int i = 1;
-  while (i.toString().compareTo(nStrings.toString()) <= 0) {
+  while (i <= nStrings) {
     String s = lines[i];
     if (s.length > 0) {
     stringPool = [...stringPool, unescape(_substr(s, 1, s.length - 1))];
@@ -121,7 +121,7 @@ Map<String, dynamic> parseProgram(String src) {
     break;
   }
     List<String> parts = fields(line);
-    var addr = int.parse(parts[0]);
+    int addr = int.parse(parts[0]);
     String op = parts[1];
     int arg = 0;
     if (op == "push") {
@@ -145,7 +145,7 @@ Map<String, dynamic> parseProgram(String src) {
 void runVM(Map<String, dynamic> prog) {
   List<int> data = <int>[];
   int i = 0;
-  while (i < prog["dataSize"]!) {
+  while (i.toString().compareTo(prog["dataSize"]!.toString()) < 0) {
     data = [...data, 0];
     i = i + 1;
   }
@@ -277,7 +277,6 @@ void _start() {
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "main"}));
 }
-  _main();
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "_start"}));

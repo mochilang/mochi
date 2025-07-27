@@ -119,7 +119,7 @@ void main() {
     q = q.sublist(1, q.length);
     fq = fq.sublist(1, fq.length);
     if (f != 2 && f != 5) {
-    for (var d in digits) {
+    for (int d in digits) {
     q = [...q, f * 10 + d];
     fq = [...fq, fd];
   };
@@ -129,7 +129,7 @@ void main() {
   print("\nThe next 4 circular primes, in repunit format, are:");
   print("[R(19) R(23) R(317) R(1031)]");
   print("\nThe following repunits are probably circular primes:");
-  for (var i in [5003, 9887, 15073, 25031, 35317, 49081]) {
+  for (int i in [5003, 9887, 15073, 25031, 35317, 49081]) {
     print("R(" + (i).toString() + ") : true");
   }
   _benchSw.stop();

@@ -56,20 +56,20 @@ void main() {
   {
   var _benchMem0 = ProcessInfo.currentRss;
   var _benchSw = Stopwatch()..start();
-  for (var p in partList) {
+  for (String p in partList) {
     print(p + " worker running");
   }
   for (int cycle = 1; cycle < nAssemblies + 1; cycle++) {
     print("begin assembly cycle " + (cycle).toString());
     String a = "";
-    for (var p in partList) {
+    for (String p in partList) {
     print(p + " worker begins part");
     print(p + " worker completed " + p.toLowerCase());
     a = a + p.toLowerCase();
   }
     print(a + " assembled.  cycle " + (cycle).toString() + " complete");
   }
-  for (var p in partList) {
+  for (String p in partList) {
     print(p + " worker stopped");
   }
   _benchSw.stop();

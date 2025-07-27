@@ -45,10 +45,10 @@ void main() {
   var _benchSw = Stopwatch()..start();
   for (int cycle = 1; cycle < nAssemblies + 1; cycle++) {
     print("begin assembly cycle " + (cycle).toString());
-    for (var p in partList) {
+    for (String p in partList) {
     print(p + " worker begins part");
   }
-    for (var p in partList) {
+    for (String p in partList) {
     print(p + " worker completes part");
   }
     print("assemble.  cycle " + (cycle).toString() + " complete");

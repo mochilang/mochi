@@ -123,19 +123,19 @@ int pow2(int k) {
 List<int> ccFactors(int n, int m) {
   int p = 6 * m + 1;
   if (!isPrime(p)) {
-    return List<int>.from(<dynamic>[]);
+    return List<int>.from([]);
   }
   List<int> prod = bigFromInt(p);
   p = 12 * m + 1;
   if (!isPrime(p)) {
-    return List<int>.from(<dynamic>[]);
+    return List<int>.from([]);
   }
   prod = bigMulSmall(prod, p);
   int i = 1;
   while (i <= n - 2) {
     p = pow2(i) * 9 * m + 1;
     if (!isPrime(p)) {
-    return List<int>.from(<dynamic>[]);
+    return List<int>.from([]);
   }
     prod = bigMulSmall(prod, p);
     i = i + 1;
@@ -151,9 +151,9 @@ void ccNumbers(int start, int end) {
     m = pow2(n - 4);
   }
     while (true) {
-    var num = ccFactors(n, m);
-    if (num.length > 0) {
-    print("a(" + (n).toString() + ") = " + bigToString(num));
+    List<int> _num = ccFactors(n, m);
+    if (_num.length > 0) {
+    print("a(" + (n).toString() + ") = " + bigToString(_num));
     break;
   }
     if (n <= 4) {

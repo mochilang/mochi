@@ -154,7 +154,7 @@ void _main() {
   int i = 0;
   while (i < 300) {
     step(l);
-    print("");
+");
     print(lifeString(l));
     i = i + 1;
   }
