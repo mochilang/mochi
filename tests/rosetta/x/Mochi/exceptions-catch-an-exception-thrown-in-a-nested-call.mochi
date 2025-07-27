@@ -1,5 +1,57 @@
+// Mochi translation of Go "exceptions-catch-an-exception-thrown-in-a-nested-call"
+// Simplified simulation without real exceptions.
+
+fun trace(indent: int, msg: string) {
+  var line = ""
+  var i = 0
+  while i < indent {
+    line = line + "  "
+    i = i + 1
+  }
+  print(line + msg)
+}
+
+fun runTry(callNum: int, handle: string): bool {
+  trace(2, "try: start")
+  trace(3, "bar: start")
+  trace(4, "baz: start")
+  if callNum == 1 {
+    trace(5, "baz: panicking with exception U0")
+    trace(4, "Panic mode!")
+    if handle == "U0" {
+      trace(4, "handling exception")
+      trace(5, "U0 handled")
+      trace(4, "panic over")
+      return true
+    }
+    trace(4, "can't recover this one!")
+    return false
+  }
+  trace(5, "baz: panicking with exception U1")
+  trace(4, "Panic mode!")
+  if handle == "U1" {
+    trace(4, "handling exception")
+    trace(5, "U1 handled")
+    trace(4, "panic over")
+    return true
+  }
+  trace(4, "can't recover this one!")
+  return false
+}
+
 fun main() {
-  print("demonstration of nested exceptions")
+  trace(0, "main: start")
+  trace(1, "foo: start")
+  var ok = runTry(1, "U0")
+  if ok {
+    ok = runTry(2, "U0")
+    if ok {
+      trace(1, "complete")
+      trace(0, "complete")
+      return
+    }
+  }
+  print("panic: U1")
 }
 
 main()

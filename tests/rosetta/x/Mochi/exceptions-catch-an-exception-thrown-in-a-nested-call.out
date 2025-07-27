@@ -1,1 +1,17 @@
-demonstration of nested exceptions
+main: start
+  foo: start
+    try: start
+      bar: start
+        baz: start
+          baz: panicking with exception U0
+        Panic mode!
+        handling exception
+          U0 handled
+        panic over
+    try: start
+      bar: start
+        baz: start
+          baz: panicking with exception U1
+        Panic mode!
+        can't recover this one!
+panic: U1

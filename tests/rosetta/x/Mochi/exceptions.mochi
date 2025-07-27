@@ -1,6 +1,24 @@
+// Mochi translation of Go "exceptions" example
+// Uses explicit checks instead of real exceptions.
+
+type IndexRes {
+  ok: bool
+  val: int
+}
+
+fun safeIndex(xs: list<int>, i: int): IndexRes {
+  if i < 0 || i >= len(xs) { return IndexRes{ ok: false, val: 0 } }
+  return IndexRes{ ok: true, val: xs[i] }
+}
+
 fun foo() {
   print("let's foo...")
-  print("Recovered from runtime error: index out of range [12] with length 0")
+  let r = safeIndex([], 12)
+  if !r.ok {
+    print("Recovered from runtime error: index out of range [12] with length 0")
+    return
+  }
+  print("there's no point in going on.")
 }
 
 fun main() {
