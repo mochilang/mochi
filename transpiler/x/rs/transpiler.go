@@ -2878,6 +2878,11 @@ func compileFunStmt(fn *parser.FunStmt) (Stmt, error) {
 		if out != "" {
 			ret = out
 		}
+		if strings.HasPrefix(ret, "HashMap") {
+			if name := findReturnStructSlice(body); name != "" {
+				ret = name
+			}
+		}
 	}
 	if ret == "String" {
 		for i, st := range body {
@@ -3148,7 +3153,17 @@ func compilePostfix(p *parser.PostfixExpr) (Expr, error) {
 				expr = &MethodCallExpr{Receiver: expr, Name: "apply", Args: args}
 			}
 		case op.Cast != nil:
-			// ignore casts
+			ct := rustTypeRef(op.Cast.Type)
+			switch ct {
+			case "i64":
+				expr = &IntCastExpr{Expr: expr}
+			case "f64":
+				expr = &FloatCastExpr{Expr: expr}
+			case "String":
+				expr = &StringCastExpr{Expr: expr}
+			default:
+				expr = &IntCastExpr{Expr: expr}
+			}
 		default:
 			return nil, fmt.Errorf("unsupported postfix")
 		}
@@ -5236,4 +5251,74 @@ func rewriteReturnStruct(st Stmt, name string, typ types.StructType) Stmt {
 	default:
 		return s
 	}
+}
+
+func findReturnStruct(st Stmt) string {
+	switch s := st.(type) {
+	case *ReturnStmt:
+		if s.Value == nil {
+			return ""
+		}
+		switch v := s.Value.(type) {
+		case *StructLit:
+			return v.Name
+		case *MapLit:
+			sig := make([]string, len(v.Items))
+			for i, it := range v.Items {
+				key, ok := it.Key.(*StringLit)
+				if !ok {
+					return ""
+				}
+				sig[i] = key.Value + ":" + inferType(it.Value)
+			}
+			name, ok := structSig[strings.Join(sig, ";")]
+			if ok {
+				return name
+			}
+		}
+	case *IfStmt:
+		for _, b := range s.Then {
+			if n := findReturnStruct(b); n != "" {
+				return n
+			}
+		}
+		for _, b := range s.Else {
+			if n := findReturnStruct(b); n != "" {
+				return n
+			}
+		}
+		if s.ElseIf != nil {
+			if n := findReturnStruct(s.ElseIf); n != "" {
+				return n
+			}
+		}
+	case *WhileStmt:
+		for _, b := range s.Body {
+			if n := findReturnStruct(b); n != "" {
+				return n
+			}
+		}
+	case *ForStmt:
+		for _, b := range s.Body {
+			if n := findReturnStruct(b); n != "" {
+				return n
+			}
+		}
+	case *MultiStmt:
+		for _, b := range s.Stmts {
+			if n := findReturnStruct(b); n != "" {
+				return n
+			}
+		}
+	}
+	return ""
+}
+
+func findReturnStructSlice(stmts []Stmt) string {
+	for _, s := range stmts {
+		if n := findReturnStruct(s); n != "" {
+			return n
+		}
+	}
+	return ""
 }
