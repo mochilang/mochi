@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated TypeScript code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/TypeScript`.
-Last updated: 2025-07-27 14:09 UTC
+Last updated: 2025-07-27 14:21 UTC
 
-## Rosetta Golden Test Checklist (442/467)
+## Rosetta Golden Test Checklist (443/467)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 5.905ms | 256.0 KB |
@@ -257,56 +257,56 @@ Last updated: 2025-07-27 14:09 UTC
 | 248 | count-the-coins-1 | ✓ | 749µs |  |
 | 249 | count-the-coins-2 | ✓ | 2.427ms | 1.4 MB |
 | 250 | cramers-rule | ✓ | 1.544ms | 128.0 KB |
-| 251 | crc-32-1 | ✓ | 1.256ms | 2.2 MB |
-| 252 | crc-32-2 | ✓ | 2.145ms | 3.0 MB |
-| 253 | create-a-file-on-magnetic-tape | ✓ | 161µs |  |
-| 254 | create-a-file | ✓ | 889µs | 128.0 KB |
-| 255 | create-a-two-dimensional-array-at-runtime-1 | ✓ | 1.79ms | 640.0 KB |
-| 256 | create-an-html-table | ✓ | 781µs | 128.0 KB |
-| 257 | create-an-object-at-a-given-address | ✓ | 1.65ms | 128.0 KB |
-| 258 | csv-data-manipulation | ✓ | 1.153ms | 128.0 KB |
-| 259 | csv-to-html-translation-1 | ✓ | 833µs |  |
-| 260 | csv-to-html-translation-2 | ✓ | 594µs | 256.0 KB |
-| 261 | csv-to-html-translation-3 | ✓ | 566µs |  |
-| 262 | csv-to-html-translation-4 | ✓ | 510µs | 128.0 KB |
-| 263 | csv-to-html-translation-5 | ✓ | 714µs | 128.0 KB |
+| 251 | crc-32-1 | ✓ | 644µs | 2.8 MB |
+| 252 | crc-32-2 | ✓ | 618µs | 3.1 MB |
+| 253 | create-a-file-on-magnetic-tape | ✓ | 61µs |  |
+| 254 | create-a-file | ✓ | 386µs |  |
+| 255 | create-a-two-dimensional-array-at-runtime-1 | ✓ | 343µs | 128.0 KB |
+| 256 | create-an-html-table | ✓ | 393µs |  |
+| 257 | create-an-object-at-a-given-address | ✓ | 518µs | 128.0 KB |
+| 258 | csv-data-manipulation | ✓ | 496µs | 128.0 KB |
+| 259 | csv-to-html-translation-1 | ✓ | 386µs | 128.0 KB |
+| 260 | csv-to-html-translation-2 | ✓ | 517µs | 128.0 KB |
+| 261 | csv-to-html-translation-3 | ✓ | 416µs | 128.0 KB |
+| 262 | csv-to-html-translation-4 | ✓ | 423µs |  |
+| 263 | csv-to-html-translation-5 | ✓ | 526µs | 128.0 KB |
 | 264 | cuban-primes | ✓ |  |  |
-| 265 | cullen-and-woodall-numbers | ✓ | 960µs | 384.0 KB |
-| 266 | cumulative-standard-deviation | ✓ | 735µs | 128.0 KB |
-| 267 | currency | ✓ | 823µs | 128.0 KB |
-| 268 | currying | ✓ | 792µs |  |
-| 269 | curzon-numbers | ✓ | 59.425ms | 10.9 MB |
-| 270 | cusip | ✓ | 648µs | 128.0 KB |
-| 271 | cyclops-numbers | ✓ | 4µs |  |
-| 272 | damm-algorithm | ✓ | 619µs |  |
-| 273 | date-format | ✓ | 530µs |  |
-| 274 | date-manipulation | ✓ | 1.346ms | 384.0 KB |
-| 275 | day-of-the-week | ✓ | 872µs | 384.0 KB |
-| 276 | de-bruijn-sequences | ✓ | 852.917ms | 81.2 MB |
-| 277 | deal-cards-for-freecell | ✓ | 1.429ms | 512.0 KB |
-| 278 | death-star | ✓ | 6.739ms | 10.5 MB |
+| 265 | cullen-and-woodall-numbers | ✓ | 778µs | 256.0 KB |
+| 266 | cumulative-standard-deviation | ✓ | 508µs |  |
+| 267 | currency | ✓ | 574µs | 128.0 KB |
+| 268 | currying | ✓ | 498µs |  |
+| 269 | curzon-numbers | ✓ | 39.401ms | 11.3 MB |
+| 270 | cusip | ✓ | 498µs | 128.0 KB |
+| 271 | cyclops-numbers | ✓ | 2.367764s | 105.5 MB |
+| 272 | damm-algorithm | ✓ | 886µs |  |
+| 273 | date-format | ✓ | 407µs | 128.0 KB |
+| 274 | date-manipulation | ✓ | 898µs | 512.0 KB |
+| 275 | day-of-the-week | ✓ | 681µs | 256.0 KB |
+| 276 | de-bruijn-sequences | ✓ | 23.53ms | 16.8 MB |
+| 277 | deal-cards-for-freecell | ✓ | 1.164ms | 384.0 KB |
+| 278 | death-star | ✓ | 4.929ms | 10.5 MB |
 | 279 | deceptive-numbers | ✓ |  |  |
-| 280 | deconvolution-1d-2 |   |  |  |
-| 281 | deconvolution-1d-3 | ✓ | 1.405ms | 384.0 KB |
-| 282 | deconvolution-1d | ✓ | 668µs | 128.0 KB |
-| 283 | deepcopy-1 | ✓ | 671µs | 128.0 KB |
-| 284 | define-a-primitive-data-type | ✓ | 670µs | 128.0 KB |
-| 285 | delegates | ✓ | 740µs |  |
-| 286 | demings-funnel | ✓ | 4.086ms | 2.0 MB |
-| 287 | department-numbers | ✓ | 1.032ms | 128.0 KB |
-| 288 | descending-primes | ✓ | 2.708ms | 768.0 KB |
-| 289 | detect-division-by-zero | ✓ | 632µs | 128.0 KB |
-| 290 | determine-if-a-string-has-all-the-same-characters | ✓ | 1.962ms | 256.0 KB |
-| 291 | determine-if-a-string-has-all-unique-characters | ✓ | 1.635ms | 256.0 KB |
-| 292 | determine-if-a-string-is-collapsible | ✓ | 1.826ms | 128.0 KB |
-| 293 | determine-if-a-string-is-numeric-1 | ✓ | 1.038ms | 128.0 KB |
-| 294 | determine-if-a-string-is-numeric-2 | ✓ | 712µs |  |
-| 295 | determine-if-a-string-is-squeezable | ✓ | 4.67ms | 384.0 KB |
-| 296 | determine-if-only-one-instance-is-running | ✓ | 643µs | 128.0 KB |
-| 297 | determine-if-two-triangles-overlap | ✓ | 3.563ms | 512.0 KB |
-| 298 | determine-sentence-type | ✓ | 1.418ms | 256.0 KB |
-| 299 | dice-game-probabilities-1 | ✓ | 10.055ms | 7.2 MB |
-| 300 | dice-game-probabilities-2 | ✓ | 11.001ms | 5.8 MB |
+| 280 | deconvolution-1d-2 | ✓ | 692µs | 384.0 KB |
+| 281 | deconvolution-1d-3 | ✓ | 891µs | 384.0 KB |
+| 282 | deconvolution-1d | ✓ | 528µs | 128.0 KB |
+| 283 | deepcopy-1 | ✓ | 423µs |  |
+| 284 | define-a-primitive-data-type | ✓ | 653µs |  |
+| 285 | delegates | ✓ | 366µs | 128.0 KB |
+| 286 | demings-funnel | ✓ | 1.21ms | 2.4 MB |
+| 287 | department-numbers | ✓ | 482µs | 128.0 KB |
+| 288 | descending-primes | ✓ | 793µs | 512.0 KB |
+| 289 | detect-division-by-zero | ✓ | 310µs | 128.0 KB |
+| 290 | determine-if-a-string-has-all-the-same-characters | ✓ | 1.257ms | 384.0 KB |
+| 291 | determine-if-a-string-has-all-unique-characters | ✓ | 782µs | 128.0 KB |
+| 292 | determine-if-a-string-is-collapsible | ✓ | 921µs | 128.0 KB |
+| 293 | determine-if-a-string-is-numeric-1 | ✓ | 518µs | 128.0 KB |
+| 294 | determine-if-a-string-is-numeric-2 | ✓ | 1.021ms |  |
+| 295 | determine-if-a-string-is-squeezable | ✓ | 687µs | 256.0 KB |
+| 296 | determine-if-only-one-instance-is-running | ✓ | 364µs |  |
+| 297 | determine-if-two-triangles-overlap | ✓ | 1.176ms | 512.0 KB |
+| 298 | determine-sentence-type | ✓ | 529µs | 256.0 KB |
+| 299 | dice-game-probabilities-1 | ✓ | 5.072ms | 7.4 MB |
+| 300 | dice-game-probabilities-2 | ✓ | 5.441ms | 7.9 MB |
 | 301 | digital-root-multiplicative-digital-root | ✓ | 16.861ms | 10.0 MB |
 | 302 | dijkstras-algorithm | ✓ | 1.568ms | 128.0 KB |
 | 303 | dinesmans-multiple-dwelling-problem | ✓ | 1.316ms | 128.0 KB |
