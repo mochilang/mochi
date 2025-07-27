@@ -2012,6 +2012,10 @@ func (c *CastExpr) emit(w io.Writer) {
 		io.WriteString(w, "Obj.repr (")
 		c.Expr.emit(w)
 		io.WriteString(w, ")")
+	case "list_to_obj":
+		io.WriteString(w, "List.map (fun v -> Obj.repr v) (")
+		c.Expr.emit(w)
+		io.WriteString(w, ")")
 	case "obj_to_int":
 		io.WriteString(w, "(Obj.magic ")
 		c.Expr.emit(w)
@@ -2063,6 +2067,10 @@ func (c *CastExpr) emitPrint(w io.Writer) {
 	case "float_to_obj":
 		io.WriteString(w, "string_of_float ")
 		c.Expr.emit(w)
+	case "list_to_obj":
+		io.WriteString(w, "__show (")
+		c.emit(w)
+		io.WriteString(w, ")")
 	case "obj_to_int":
 		io.WriteString(w, "string_of_int (Obj.magic ")
 		c.Expr.emit(w)
@@ -2555,6 +2563,10 @@ func defaultValueExpr(typ string) Expr {
 		return &ListLit{Elems: nil}
 	}
 	if strings.HasPrefix(typ, "map-") {
+		val := strings.TrimPrefix(typ, "map-")
+		if val != "" {
+			return &RawExpr{Code: fmt.Sprintf("([] : (string * %s) list)", ocamlType(val))}
+		}
 		return &MapLit{Items: nil}
 	}
 	return &IntLit{Value: 0}
@@ -2743,6 +2755,14 @@ func transpileStmt(st *parser.Statement, env *types.Env, vars map[string]VarInfo
 				typ = typVal
 			}
 			expr = valExpr
+			if valTyp == "" {
+				if r, ok := valExpr.(*RawExpr); ok && r.Code == "nil" {
+					if strings.HasPrefix(typ, "map-") || strings.HasPrefix(typ, "list-") {
+						expr = defaultValueExpr(typ)
+						valTyp = typ
+					}
+				}
+			}
 		} else if typ != "" {
 			expr = defaultValueExpr(typ)
 		} else {
@@ -4776,12 +4796,16 @@ func convertCall(c *parser.CallExpr, env *types.Env, vars map[string]VarInfo) (E
 				if ptyp == "float" && at == "int" {
 					ex = &CastExpr{Expr: ex, Type: "int_to_float"}
 				} else if ptyp == "" {
-					switch at {
-					case "int":
+					switch {
+					case at == "int":
 						ex = &CastExpr{Expr: ex, Type: "int_to_obj"}
-					case "float":
+					case at == "float":
 						ex = &CastExpr{Expr: ex, Type: "float_to_obj"}
+					case strings.HasPrefix(at, "list-"):
+						ex = &CastExpr{Expr: ex, Type: "list_to_obj"}
 					}
+				} else if ptyp == "list" && strings.HasPrefix(at, "list-") {
+					ex = &CastExpr{Expr: ex, Type: "list_to_obj"}
 				}
 			}
 			args[i] = ex
