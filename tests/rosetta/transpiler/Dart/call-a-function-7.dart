@@ -46,11 +46,8 @@ void h(String s, List<int> nums) {
 }
 
 void _main() {
-  h("ex1", <int>[]);
-  h("ex2", [1, 2]);
-  h("ex3", [1, 2, 3, 4]);
-  List<int> list = [1, 2, 3, 4];
-  h("ex4", list);
+  if (2 * g(1, 3.0) + 4 > 0) {
+  }
 }
 
 void _start() {

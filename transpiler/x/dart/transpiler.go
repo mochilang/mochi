@@ -394,11 +394,18 @@ func (s *VarStmt) emit(w io.Writer) error {
 	typ := s.Type
 	if typ == "" {
 		typ = inferType(s.Value)
+		if strings.HasSuffix(typ, "?") {
+			typ = strings.TrimSuffix(typ, "?")
+		}
 	}
-	if inFunc {
+	if inFunc && s.Type == "" {
 		valType := inferType(s.Value)
 		if valType != "" && valType != typ {
-			typ = valType
+			if strings.TrimSuffix(valType, "?") == typ {
+				// keep non-null type
+			} else {
+				typ = valType
+			}
 		}
 	}
 	if _, ok := s.Value.(*IndexExpr); ok && strings.HasSuffix(typ, "?") {
@@ -423,6 +430,18 @@ func (s *VarStmt) emit(w io.Writer) error {
 			elem := strings.TrimSuffix(strings.TrimPrefix(typ, "List<"), ">")
 			_, err := io.WriteString(w, " = <"+elem+">[]")
 			return err
+		}
+		if ml, ok := s.Value.(*MapLit); ok && len(ml.Entries) == 0 && strings.HasPrefix(typ, "Map<") {
+			kv := strings.TrimSuffix(strings.TrimPrefix(typ, "Map<"), ">")
+			_, err := io.WriteString(w, " = <"+kv+">{}")
+			return err
+		}
+		if n, ok := s.Value.(*Name); ok {
+			valType := inferType(s.Value)
+			if strings.HasSuffix(valType, "?") && !strings.HasSuffix(typ, "?") {
+				_, err := io.WriteString(w, " = "+n.Name+"!")
+				return err
+			}
 		}
 		if iex, ok := s.Value.(*IndexExpr); ok {
 			valType := inferType(s.Value)
@@ -510,6 +529,11 @@ func (s *AssignStmt) emit(w io.Writer) error {
 		_, err := io.WriteString(w, "<"+elem+">[]")
 		return err
 	}
+	if ml, ok := s.Value.(*MapLit); ok && len(ml.Entries) == 0 && strings.HasPrefix(targetType, "Map<") {
+		kv := strings.TrimSuffix(strings.TrimPrefix(targetType, "Map<"), ">")
+		_, err := io.WriteString(w, "<"+kv+">{}")
+		return err
+	}
 	return s.Value.emit(w)
 }
 
@@ -524,8 +548,11 @@ func (s *LetStmt) emit(w io.Writer) error {
 	typ := s.Type
 	if typ == "" {
 		typ = inferType(s.Value)
+		if strings.HasSuffix(typ, "?") {
+			typ = strings.TrimSuffix(typ, "?")
+		}
 	}
-	if inFunc {
+	if inFunc && s.Type == "" {
 		valType := inferType(s.Value)
 		if valType != "" && valType != typ {
 			typ = valType
@@ -1251,9 +1278,20 @@ func (b *BoolLit) emit(w io.Writer) error {
 }
 
 // ListLit represents a list literal.
-type ListLit struct{ Elems []Expr }
+// ListLit represents a list literal. ElemType is used for empty list literals
+// when a concrete element type is known from context (e.g. function
+// parameter type). When ElemType is non-empty and the list has no elements,
+// the literal will be emitted as `<ElemType>[]` to avoid `List<dynamic>`.
+type ListLit struct {
+	Elems    []Expr
+	ElemType string
+}
 
 func (l *ListLit) emit(w io.Writer) error {
+	if len(l.Elems) == 0 && l.ElemType != "" {
+		_, err := io.WriteString(w, "<"+l.ElemType+">[]")
+		return err
+	}
 	allNull := true
 	for _, e := range l.Elems {
 		if n, ok := e.(*Name); !ok || n.Name != "null" {
@@ -2694,6 +2732,9 @@ func inferType(e Expr) string {
 		return "dynamic"
 	case *ListLit:
 		if len(ex.Elems) == 0 {
+			if ex.ElemType != "" {
+				return "List<" + ex.ElemType + ">"
+			}
 			return "List<dynamic>"
 		}
 		typ := ""
@@ -4560,10 +4601,24 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			return &CallExpr{Func: &Name{Name: "_lookupHost"}, Args: []Expr{arg}}, nil
 		}
 		ce := &CallExpr{Func: &Name{p.Call.Func}}
-		for _, a := range p.Call.Args {
+		var paramTypes []string
+		if currentEnv != nil {
+			if fn, ok := currentEnv.GetFunc(p.Call.Func); ok {
+				for _, p := range fn.Params {
+					typ := dartType(types.ResolveTypeRef(p.Type, currentEnv))
+					paramTypes = append(paramTypes, typ)
+				}
+			}
+		}
+		for i, a := range p.Call.Args {
 			ex, err := convertExpr(a)
 			if err != nil {
 				return nil, err
+			}
+			if ll, ok := ex.(*ListLit); ok && len(ll.Elems) == 0 && ll.ElemType == "" {
+				if i < len(paramTypes) && strings.HasPrefix(paramTypes[i], "List<") {
+					ll.ElemType = strings.TrimSuffix(strings.TrimPrefix(paramTypes[i], "List<"), ">")
+				}
 			}
 			ce.Args = append(ce.Args, ex)
 		}

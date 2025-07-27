@@ -34,23 +34,21 @@ String _substr(String s, int start, int end) {
   return s.substring(start, end);
 }
 
-List<dynamic> f() {
-  return List<dynamic>.from([0, 0.0]);
-}
-
-int g(int a, num b) {
-  return 0;
-}
-
-void h(String s, List<int> nums) {
+String mapString(String s, dynamic f) {
+  String out = "";
+  int i = 0;
+  while (i < s.length) {
+    out = out + f(_substr(s, i, i + 1));
+    i = i + 1;
+  }
+  return out;
 }
 
 void _main() {
-  h("ex1", <int>[]);
-  h("ex2", [1, 2]);
-  h("ex3", [1, 2, 3, 4]);
-  List<int> list = [1, 2, 3, 4];
-  h("ex4", list);
+  var fn = ((r) => r == " " ? "" : r);
+  mapString("Spaces removed", fn);
+  mapString("Test", ((r) => r.toLowerCase()));
+  mapString("shift", ((r) => r));
 }
 
 void _start() {

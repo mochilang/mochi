@@ -1,0 +1,35 @@
+run: exit status 254
+../../../tests/rosetta/transpiler/Dart/call-an-object-method-1.dart:38:8: Error: Named parameter lists cannot be empty.
+Try adding a named parameter to the list.
+  Foo({});
+       ^
+../../../tests/rosetta/transpiler/Dart/call-an-object-method-1.dart:50:11: Error: The method 'ValueMethod' isn't defined for the class 'Foo'.
+ - 'Foo' is from '../../../tests/rosetta/transpiler/Dart/call-an-object-method-1.dart'.
+Try correcting the name to the name of an existing method, or defining a method named 'ValueMethod'.
+  myValue.ValueMethod(0);
+          ^^^^^^^^^^^
+../../../tests/rosetta/transpiler/Dart/call-an-object-method-1.dart:51:13: Error: The method 'PointerMethod' isn't defined for the class 'Foo'.
+ - 'Foo' is from '../../../tests/rosetta/transpiler/Dart/call-an-object-method-1.dart'.
+Try correcting the name to the name of an existing method, or defining a method named 'PointerMethod'.
+  myPointer.PointerMethod(0);
+            ^^^^^^^^^^^^^
+../../../tests/rosetta/transpiler/Dart/call-an-object-method-1.dart:52:13: Error: The method 'ValueMethod' isn't defined for the class 'Foo'.
+ - 'Foo' is from '../../../tests/rosetta/transpiler/Dart/call-an-object-method-1.dart'.
+Try correcting the name to the name of an existing method, or defining a method named 'ValueMethod'.
+  myPointer.ValueMethod(0);
+            ^^^^^^^^^^^
+../../../tests/rosetta/transpiler/Dart/call-an-object-method-1.dart:53:11: Error: The method 'PointerMethod' isn't defined for the class 'Foo'.
+ - 'Foo' is from '../../../tests/rosetta/transpiler/Dart/call-an-object-method-1.dart'.
+Try correcting the name to the name of an existing method, or defining a method named 'PointerMethod'.
+  myValue.PointerMethod(0);
+          ^^^^^^^^^^^^^
+../../../tests/rosetta/transpiler/Dart/call-an-object-method-1.dart:54:11: Error: The method 'ValueMethod' isn't defined for the class 'Foo'.
+ - 'Foo' is from '../../../tests/rosetta/transpiler/Dart/call-an-object-method-1.dart'.
+Try correcting the name to the name of an existing method, or defining a method named 'ValueMethod'.
+  myValue.ValueMethod(0);
+          ^^^^^^^^^^^
+../../../tests/rosetta/transpiler/Dart/call-an-object-method-1.dart:55:13: Error: The method 'PointerMethod' isn't defined for the class 'Foo'.
+ - 'Foo' is from '../../../tests/rosetta/transpiler/Dart/call-an-object-method-1.dart'.
+Try correcting the name to the name of an existing method, or defining a method named 'PointerMethod'.
+  myPointer.PointerMethod(0);
+            ^^^^^^^^^^^^^

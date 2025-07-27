@@ -34,23 +34,13 @@ String _substr(String s, int start, int end) {
   return s.substring(start, end);
 }
 
-List<dynamic> f() {
-  return List<dynamic>.from([0, 0.0]);
-}
-
-int g(int a, num b) {
-  return 0;
-}
-
-void h(String s, List<int> nums) {
+void gifEncode(dynamic out, dynamic img, Map<String, int> opts) {
 }
 
 void _main() {
-  h("ex1", <int>[]);
-  h("ex2", [1, 2]);
-  h("ex3", [1, 2, 3, 4]);
-  List<int> list = [1, 2, 3, 4];
-  h("ex4", list);
+  Map<String, int> opts = <String, int>{};
+  opts["NumColors"] = 16;
+  gifEncode(null, null, opts);
 }
 
 void _start() {

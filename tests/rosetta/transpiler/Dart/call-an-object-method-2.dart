@@ -34,41 +34,47 @@ String _substr(String s, int start, int end) {
   return s.substring(start, end);
 }
 
-List<dynamic> f() {
-  return List<dynamic>.from([0, 0.0]);
+class Box {
+  String Contents;
+  int secret;
+  Box({required this.Contents, required this.secret});
 }
 
-int g(int a, num b) {
-  return 0;
+List<dynamic> newFactory() {
+  int sn = 0;
+  Box New() {
+  sn = sn + 1;
+  Box b = Box(secret: sn);
+  if (sn == 1) {
+    b.Contents = "rabbit";
+  } else {
+    if (sn == 2) {
+    b.Contents = "rock";
+  };
+  }
+  return b;
+}
+  int Count() {
+  return sn;
+}
+  return List<dynamic>.from([New, Count]);
 }
 
-void h(String s, List<int> nums) {
-}
-
-void _main() {
-  h("ex1", <int>[]);
-  h("ex2", [1, 2]);
-  h("ex3", [1, 2, 3, 4]);
-  List<int> list = [1, 2, 3, 4];
-  h("ex4", list);
-}
-
-void _start() {
+List<dynamic> funcs = newFactory();
+var New = funcs[0];
+var Count = funcs[1];
+void main() {
   var _benchMem0 = ProcessInfo.currentRss;
   var _benchSw = Stopwatch()..start();
   _initNow();
   {
   var _benchMem0 = ProcessInfo.currentRss;
   var _benchSw = Stopwatch()..start();
-  _main();
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "main"}));
 }
-  _main();
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
-  print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "_start"}));
+  print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "main"}));
 }
-
-void main() => _start();

@@ -34,23 +34,16 @@ String _substr(String s, int start, int end) {
   return s.substring(start, end);
 }
 
-List<dynamic> f() {
-  return List<dynamic>.from([0, 0.0]);
-}
-
-int g(int a, num b) {
-  return 0;
-}
-
-void h(String s, List<int> nums) {
+void bar(int a, int b, int c) {
+  print((a).toString() + ", " + (b).toString() + ", " + (c).toString());
 }
 
 void _main() {
-  h("ex1", <int>[]);
-  h("ex2", [1, 2]);
-  h("ex3", [1, 2, 3, 4]);
-  List<int> list = [1, 2, 3, 4];
-  h("ex4", list);
+  Map<String, int> args = <String, int>{};
+  args["a"] = 3;
+  args["b"] = 2;
+  args["c"] = 1;
+  bar(args["a"]!, args["b"]!, args["c"]!);
 }
 
 void _start() {
