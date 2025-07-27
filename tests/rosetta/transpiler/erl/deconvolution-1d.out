@@ -1,0 +1,13 @@
+/workspace/mochi/tests/rosetta/transpiler/erl/deconvolution-1d.erl:85:20: Warning: variable 'Lower_3' exported from 'case' (line 70, column 13)
+%   85| {F, G, H, Hn, I_4, Lower_3, N, V_2} = Fun_2(F, G, H, Hn, I_3, Lower_3, N, V),
+%     |                    ^
+
+"[-8 -9 -3 -1 -6 7]"
+"[-8 -9 -3 -1 -6 7]"
+"[-3 -6 -1 8 -6 3 -1 -9 -9 3 -2 5 2 -2 -7 -1]"
+"[-3 -6 -1 8 -6 3 -1 -9 -9 3 -2 5 2 -2 -7 -1]"
+{
+  "duration_us": 4147,
+  "memory_bytes": 934312,
+  "name": "main"
+}

@@ -1,0 +1,10 @@
+creature = shark
+pointer = 0
+*pointer = shark
+*pointer = jellyfish
+creature = jellyfish
+{
+  "duration_us": 5784,
+  "memory_bytes": 189280,
+  "name": "main"
+}

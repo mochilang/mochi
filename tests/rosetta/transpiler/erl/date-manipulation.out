@@ -1,0 +1,12 @@
+/workspace/mochi/tests/rosetta/transpiler/erl/date-manipulation.erl:233:20: Warning: variable 'Neg_3' exported from 'case' (line 214, column 9)
+%  233| {Digits, I_4, N_4, Neg_3, Str} = Fun_5(Digits, I_3, N_3, Neg_3, Str),
+%     |                    ^
+
+Input:              March 7 2009 7:30pm EST
++12 hrs:            2009-04-06 08:30:00 -04.000.0 EDT
++12 hrs in Arizona: 2009-04-06 05:30:00 -07.000.0 MST
+{
+  "duration_us": 5394,
+  "memory_bytes": 3900320,
+  "name": "main"
+}

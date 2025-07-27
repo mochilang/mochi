@@ -1,0 +1,7 @@
+a[0][0] = 0
+a[2][3] = 7
+{
+  "duration_us": 6892,
+  "memory_bytes": 76904,
+  "name": "main"
+}
