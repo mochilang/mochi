@@ -1,3 +1,23 @@
+## Progress (2025-07-27 16:07 +0700)
+- transpiler(go): update rosetta result for abundant-odd-numbers
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-27 16:07 +0700)
+- transpiler(go): update rosetta result for abundant-odd-numbers
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-27 15:57 +0700)
+- vm: add pow builtin and update rosetta outputs
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-27 15:57 +0700)
+- vm: add pow builtin and update rosetta outputs
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-27 15:57 +0700)
+- vm: add pow builtin and update rosetta outputs
+- Regenerated golden files - 104/104 vm valid programs passing
+
 ## Progress (2025-07-27 01:56 +0700)
 - rosetta: add csv to html translation 4
 - Regenerated golden files - 104/104 vm valid programs passing
