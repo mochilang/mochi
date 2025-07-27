@@ -1,19 +1,96 @@
-// Simplified output for Faulhaber's triangle task
-fun main() {
-  var lines = [
-    "    1",
-    "  1/2    1/2",
-    "  1/6    1/2    1/3",
-    "    0    1/4    1/2    1/4",
-    "-1/30      0    1/3    1/2    1/5",
-    "    0  -1/12      0   5/12    1/2    1/6",
-    " 1/42      0   -1/6      0    1/2    1/2    1/7",
-    "    0   1/12      0  -7/24      0   7/12    1/2    1/8",
-    "-1/30      0    2/9      0  -7/15      0    2/3    1/2    1/9",
-    "    0  -3/20      0    1/2      0  -7/10      0    3/4    1/2   1/10",
-    "",
-    "56056972216555580111030077961944183400198333273050000"
-  ]
-  for line in lines { print(line) }
+// Implementation of Faulhaber's triangle using Bernoulli numbers.
+
+fun bernoulli(n: int): bigrat {
+  var a: list<bigrat> = []
+  var m = 0
+  while m <= n {
+    a = append(a, 1 as bigrat / ((m + 1) as bigrat))
+    var j = m
+    while j >= 1 {
+      a[j-1] = (j as bigrat) * (a[j-1] - a[j])
+      j = j - 1
+    }
+    m = m + 1
+  }
+  if n != 1 { return a[0] }
+  return -a[0]
 }
+
+fun binom(n: int, k: int): bigint {
+  if k < 0 || k > n { return 0 as bigint }
+  var kk = k
+  if kk > n - kk { kk = n - kk }
+  var res: bigint = 1
+  var i = 0
+  while i < kk {
+    res = res * ((n - i) as bigint)
+    i = i + 1
+    res = res / (i as bigint)
+  }
+  return res
+}
+
+fun faulhaberRow(p: int): list<bigrat> {
+  var coeffs: list<bigrat> = []
+  var i = 0
+  while i <= p {
+    coeffs = append(coeffs, 0 as bigrat)
+    i = i + 1
+  }
+  var j = 0
+  var sign = -1
+  while j <= p {
+    sign = -sign
+    var c: bigrat = 1 as bigrat / ((p + 1) as bigrat)
+    if sign < 0 { c = -c }
+    c = c * (binom(p + 1, j) as bigrat)
+    c = c * bernoulli(j)
+    coeffs[p - j] = c
+    j = j + 1
+  }
+  return coeffs
+}
+
+fun ratStr(r: bigrat): string {
+  let s = str(r)
+  if endsWith(s, "/1") { return substr(s, 0, len(s)-2) }
+  return s
+}
+
+fun endsWith(s: string, suf: string): bool {
+  if len(s) < len(suf) { return false }
+  return substring(s, len(s)-len(suf), len(s)) == suf
+}
+
+fun main() {
+  var p = 0
+  while p < 10 {
+    let row = faulhaberRow(p)
+    var line = ""
+    var idx = 0
+    while idx < len(row) {
+      line = line + padStart(ratStr(row[idx]), 5, " ")
+      if idx < len(row) - 1 { line = line + "  " }
+      idx = idx + 1
+    }
+    print(line)
+    p = p + 1
+  }
+
+  print("")
+
+  let k = 17
+  let coeffs = faulhaberRow(k)
+  var nn: bigrat = 1000 as bigrat
+  var np: bigrat = 1 as bigrat
+  var sum: bigrat = 0 as bigrat
+  var i = 0
+  while i < len(coeffs) {
+    np = np * nn
+    sum = sum + coeffs[i] * np
+    i = i + 1
+  }
+  print(ratStr(sum))
+}
+
 main()
