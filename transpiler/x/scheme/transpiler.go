@@ -597,6 +597,56 @@ func convertForStmt(fs *parser.ForStmt) (Node, error) {
 	return loopFn, nil
 }
 
+func convertFuncStmt(fs *parser.FunStmt, name string, withSelf bool) (Node, error) {
+	needBase = true
+	params := []Node{}
+	prevEnv := currentEnv
+	childEnv := types.NewEnv(currentEnv)
+	childEnv.SetVar(name, types.AnyType{}, false)
+	currentEnv = childEnv
+	if withSelf {
+		params = append(params, Symbol("self"))
+		childEnv.SetVar("self", types.AnyType{}, false)
+	}
+	for _, p := range fs.Params {
+		params = append(params, Symbol(p.Name))
+		var pt types.Type = types.AnyType{}
+		if p.Type != nil {
+			pt = types.ResolveTypeRef(p.Type, prevEnv)
+		}
+		childEnv.SetVar(p.Name, pt, true)
+	}
+	retSym := gensym("ret")
+	pushReturn(retSym)
+	bodyForms, err := convertStmts(fs.Body)
+	popReturn()
+	currentEnv = prevEnv
+	if prevEnv != nil {
+		prevEnv.SetVar(name, types.AnyType{}, false)
+	}
+	if err != nil {
+		return nil, err
+	}
+	var body Node
+	if len(bodyForms) == 1 {
+		body = bodyForms[0]
+	} else {
+		body = &List{Elems: append([]Node{Symbol("begin")}, bodyForms...)}
+	}
+	wrapped := &List{Elems: []Node{
+		Symbol("call/cc"),
+		&List{Elems: []Node{
+			Symbol("lambda"), &List{Elems: []Node{retSym}},
+			body,
+		}},
+	}}
+	return &List{Elems: []Node{
+		Symbol("define"),
+		&List{Elems: append([]Node{Symbol(name)}, params...)},
+		wrapped,
+	}}, nil
+}
+
 func convertStmt(st *parser.Statement) (Node, error) {
 	switch {
 	case st.Expr != nil:
@@ -739,49 +789,7 @@ func convertStmt(st *parser.Statement) (Node, error) {
 		needHash = true
 		return &List{Elems: []Node{Symbol("hash-table-set!"), target, StringLit(last.Name), val}}, nil
 	case st.Fun != nil:
-		needBase = true
-		params := []Node{}
-		prevEnv := currentEnv
-		childEnv := types.NewEnv(currentEnv)
-		childEnv.SetVar(st.Fun.Name, types.AnyType{}, false)
-		currentEnv = childEnv
-		for _, p := range st.Fun.Params {
-			params = append(params, Symbol(p.Name))
-			var pt types.Type = types.AnyType{}
-			if p.Type != nil {
-				pt = types.ResolveTypeRef(p.Type, prevEnv)
-			}
-			currentEnv.SetVar(p.Name, pt, true)
-		}
-		retSym := gensym("ret")
-		pushReturn(retSym)
-		bodyForms, err := convertStmts(st.Fun.Body)
-		popReturn()
-		currentEnv = prevEnv
-		if prevEnv != nil {
-			prevEnv.SetVar(st.Fun.Name, types.AnyType{}, false)
-		}
-		if err != nil {
-			return nil, err
-		}
-		var body Node
-		if len(bodyForms) == 1 {
-			body = bodyForms[0]
-		} else {
-			body = &List{Elems: append([]Node{Symbol("begin")}, bodyForms...)}
-		}
-		wrapped := &List{Elems: []Node{
-			Symbol("call/cc"),
-			&List{Elems: []Node{
-				Symbol("lambda"), &List{Elems: []Node{retSym}},
-				body,
-			}},
-		}}
-		return &List{Elems: []Node{
-			Symbol("define"),
-			&List{Elems: append([]Node{Symbol(st.Fun.Name)}, params...)},
-			wrapped,
-		}}, nil
+		return convertFuncStmt(st.Fun, st.Fun.Name, false)
 	case st.Return != nil:
 		var val Node = voidSym()
 		if st.Return.Value != nil {
@@ -843,7 +851,20 @@ func convertStmt(st *parser.Statement) (Node, error) {
 			&List{Elems: append([]Node{Symbol("begin")}, inner...)},
 		}}, nil
 	case st.Type != nil:
-		return nil, nil
+		var defs []Node
+		for _, m := range st.Type.Members {
+			if m.Method != nil {
+				fn, err := convertFuncStmt(m.Method, m.Method.Name, true)
+				if err != nil {
+					return nil, err
+				}
+				defs = append(defs, fn)
+			}
+		}
+		if len(defs) == 0 {
+			return nil, nil
+		}
+		return &List{Elems: append([]Node{Symbol("begin")}, defs...)}, nil
 	case st.Import != nil:
 		// imports have no effect in the Scheme transpiler
 		return nil, nil
@@ -1112,6 +1133,23 @@ func convertParserPostfix(pf *parser.PostfixExpr) (Node, error) {
 		needHash = true
 		node = &List{Elems: []Node{Symbol("hash-table-keys"), node}}
 		pf = &parser.PostfixExpr{Target: rootPrim, Ops: pf.Ops[1:]}
+	} else if pf.Target.Selector != nil && len(pf.Target.Selector.Tail) == 1 && len(pf.Ops) > 0 && pf.Ops[0].Call != nil {
+		rootPrim := &parser.Primary{Selector: &parser.SelectorExpr{Root: pf.Target.Selector.Root}}
+		objNode, err := convertParserPrimary(rootPrim)
+		if err != nil {
+			return nil, err
+		}
+		call := pf.Ops[0].Call
+		args := []Node{objNode}
+		for _, a := range call.Args {
+			n, err := convertParserExpr(a)
+			if err != nil {
+				return nil, err
+			}
+			args = append(args, n)
+		}
+		node = &List{Elems: append([]Node{Symbol(pf.Target.Selector.Tail[0])}, args...)}
+		pf = &parser.PostfixExpr{Target: rootPrim, Ops: pf.Ops[1:]}
 	} else {
 		node, err = convertParserPrimary(pf.Target)
 		if err != nil {
@@ -1216,6 +1254,18 @@ func convertParserPostfix(pf *parser.PostfixExpr) (Node, error) {
 				return nil, err
 			}
 			node = &List{Elems: []Node{Symbol("padStart"), &List{Elems: []Node{Symbol("to-str"), node}}, widthArg, padArg}}
+			i++
+		case op.Field != nil && i+1 < len(pf.Ops) && pf.Ops[i+1].Call != nil:
+			call := pf.Ops[i+1].Call
+			args := []Node{node}
+			for _, a := range call.Args {
+				n, err := convertParserExpr(a)
+				if err != nil {
+					return nil, err
+				}
+				args = append(args, n)
+			}
+			node = &List{Elems: append([]Node{Symbol(op.Field.Name)}, args...)}
 			i++
 		default:
 			return nil, fmt.Errorf("unsupported postfix")
