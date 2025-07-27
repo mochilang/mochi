@@ -2,8 +2,8 @@
 
 Generated Elixir code from Mochi Rosetta programs lives in `tests/rosetta/transpiler/Elixir`.
 
-## Rosetta Test Checklist (111/467)
-_Last updated: 2025-07-27 23:55 +0700_
+## Rosetta Test Checklist (118/467)
+_Last updated: 2025-07-28 00:36 +0700_
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | 100-doors-2 | ✓ |  |  |
@@ -11,7 +11,7 @@ _Last updated: 2025-07-27 23:55 +0700_
 | 3 | 100-doors | ✓ |  |  |
 | 4 | 100-prisoners | ✓ |  |  |
 | 5 | 15-puzzle-game | ✓ |  |  |
-| 6 | 15-puzzle-solver | ✓ |  |  |
+| 6 | 15-puzzle-solver | ✓ | 140us | 370.3 KB |
 | 7 | 2048 | ✓ | 19.28ms | 6.2 MB |
 | 8 | 21-game |  |  |  |
 | 9 | 24-game-solve | ✓ | 2.93ms | 6.3 MB |
@@ -147,15 +147,15 @@ _Last updated: 2025-07-27 23:55 +0700_
 | 139 | brownian-tree |  |  |  |
 | 140 | bulls-and-cows-player | ✓ |  |  |
 | 141 | bulls-and-cows |  |  |  |
-| 142 | burrows-wheeler-transform |  |  |  |
-| 143 | caesar-cipher-1 |  |  |  |
-| 144 | caesar-cipher-2 |  |  |  |
-| 145 | calculating-the-value-of-e |  |  |  |
-| 146 | calendar---for-real-programmers-1 |  |  |  |
-| 147 | calendar---for-real-programmers-2 | ✓ |  |  |
-| 148 | calendar | ✓ |  |  |
-| 149 | calkin-wilf-sequence |  |  |  |
-| 150 | call-a-foreign-language-function |  |  |  |
+| 142 | burrows-wheeler-transform | ✓ | 68.54ms | 1.2 MB |
+| 143 | caesar-cipher-1 | ✓ | 12.05ms | 1.7 MB |
+| 144 | caesar-cipher-2 | ✓ | 21.57ms | 806.4 KB |
+| 145 | calculating-the-value-of-e | ✓ | 971us | 125.5 KB |
+| 146 | calendar---for-real-programmers-1 | ✓ | 10.52ms | 2.3 MB |
+| 147 | calendar---for-real-programmers-2 | ✓ | 17.23ms | 2.5 MB |
+| 148 | calendar | ✓ | 9.83ms | 2.7 MB |
+| 149 | calkin-wilf-sequence | ✓ | 5.67ms | 370.5 KB |
+| 150 | call-a-foreign-language-function | ✓ | 160us | 392.2 KB |
 | 151 | call-a-function-1 |  |  |  |
 | 152 | call-a-function-10 |  |  |  |
 | 153 | call-a-function-11 |  |  |  |

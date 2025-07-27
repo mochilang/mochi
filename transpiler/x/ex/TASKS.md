@@ -1,5 +1,5 @@
-## Progress (2025-07-27 22:38 +0700)
-- Commit a71afebf48: transpiler: improve struct field indexing and casting
+## Progress (2025-07-28 00:36 +0700)
+- Commit 571e31d828: ex: support loop break values
 - Generated Elixir for 102/104 programs
 - Updated README checklist and outputs
 - Improved code emission and type inference
