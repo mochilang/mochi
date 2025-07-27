@@ -4234,6 +4234,10 @@ func isStringExpr(e Expr) bool {
 		if isStringExpr(v.X) {
 			return true
 		}
+	case *SubstringExpr:
+		if isStringExpr(v.Str) {
+			return true
+		}
 	}
 	return false
 }

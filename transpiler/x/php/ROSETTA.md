@@ -2,9 +2,9 @@
 
 Generated PHP code from Mochi Rosetta tasks lives in `tests/rosetta/transpiler/php`.
 
-Last updated: 2025-07-27 21:41 +0700
+Last updated: 2025-07-27 21:58 +0700
 
-## Checklist (323/467)
+## Checklist (324/467)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 154µs | 136 B |
@@ -335,7 +335,7 @@ Last updated: 2025-07-27 21:41 +0700
 | 326 | dutch-national-flag-problem | ✓ | 46µs | 96 B |
 | 327 | dynamic-variable-names | ✓ | 60µs | 8.1 KB |
 | 328 | earliest-difference-between-prime-gaps | ✓ | 50µs | 96 B |
-| 329 | eban-numbers |   |  |  |
+| 329 | eban-numbers | ✓ | 11.691ms | 160 B |
 | 330 | ecdsa-example |   |  |  |
 | 331 | echo-server |   |  |  |
 | 332 | eertree |   |  |  |
