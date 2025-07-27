@@ -4158,6 +4158,17 @@ func compileBinary(b *parser.BinaryExpr, env *types.Env, base string) (Expr, err
 							}
 						}
 					}
+					// auto convert unknown types to float64 for comparisons
+					if newExpr == nil && (ops[i].Op == "<" || ops[i].Op == "<=" || ops[i].Op == ">" || ops[i].Op == ">=") {
+						if _, ok := typesList[i].(types.AnyType); ok {
+							left = &CallExpr{Func: "_toFloat", Args: []Expr{left}}
+							usesFloatConv = true
+						}
+						if _, ok := typesList[i+1].(types.AnyType); ok {
+							right = &CallExpr{Func: "_toFloat", Args: []Expr{right}}
+							usesFloatConv = true
+						}
+					}
 					if newExpr == nil {
 						if ops[i].Op == "%" {
 							if _, ok := typesList[i].(types.FloatType); ok ||
@@ -5347,7 +5358,9 @@ func toGoTypeFromType(t types.Type) string {
 		return fmt.Sprintf("func(%s) %s", strings.Join(params, ", "), ret)
 	case types.OptionType:
 		return "*" + toGoTypeFromType(tt.Elem)
-	case types.AnyType, types.VoidType:
+	case types.AnyType:
+		return "any"
+	case types.VoidType:
 		return ""
 	}
 	return "any"
