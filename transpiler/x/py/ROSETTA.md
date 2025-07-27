@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Python code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/Python`.
-Last updated: 2025-07-28 00:02 GMT+7
+Last updated: 2025-07-28 00:52 GMT+7
 
-## Rosetta Golden Test Checklist (446/467)
+## Rosetta Golden Test Checklist (447/467)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 159.0µs | 12.75MB |
@@ -57,57 +57,57 @@ Last updated: 2025-07-28 00:02 GMT+7
 | 48 | anagrams | ✓ | 320.0µs | 13.80MB |
 | 49 | angle-difference-between-two-bearings-1 | ✓ | 34.0µs | 12.93MB |
 | 50 | angle-difference-between-two-bearings-2 | ✓ | 40.0µs | 13.18MB |
-| 51 | angles-geometric-normalization-and-conversion | ✓ | 181.0µs | 13.42MB |
-| 52 | animate-a-pendulum | ✓ | 71.0µs | 13.00MB |
-| 53 | animation | ✓ | 621.0µs | 12.75MB |
-| 54 | anonymous-recursion-1 | ✓ | 24.0µs | 12.91MB |
-| 55 | anonymous-recursion-2 | ✓ | 28.0µs | 12.94MB |
-| 56 | anonymous-recursion | ✓ | 46.0µs | 12.41MB |
-| 57 | anti-primes | ✓ | 1.15s | 12.66MB |
-| 58 | append-a-record-to-the-end-of-a-text-file | ✓ | 10.0µs | 12.54MB |
-| 59 | apply-a-callback-to-an-array-1 | ✓ | 11.0µs | 12.46MB |
-| 60 | apply-a-callback-to-an-array-2 | ✓ | 47.0µs | 12.68MB |
-| 61 | apply-a-digital-filter-direct-form-ii-transposed- | ✓ | 76.0µs | 12.87MB |
-| 62 | approximate-equality | ✓ | 54.0µs | 13.19MB |
-| 63 | arbitrary-precision-integers-included- | ✓ | 487.0ms | 12.93MB |
-| 64 | archimedean-spiral | ✓ | 27.0ms | 13.20MB |
-| 65 | arena-storage-pool | ✓ | 19.0µs | 12.84MB |
-| 66 | arithmetic-complex | error |  |  |
-| 67 | arithmetic-derivative | ✓ | 685.0µs | 12.94MB |
-| 68 | arithmetic-evaluation | ✓ | 110.0µs | 13.86MB |
-| 69 | arithmetic-geometric-mean-calculate-pi | ✓ | 25.0µs | 12.94MB |
-| 70 | arithmetic-geometric-mean | ✓ | 25.0µs | 12.85MB |
-| 71 | arithmetic-integer-1 | ✓ | 19.0µs | 12.35MB |
-| 72 | arithmetic-integer-2 | ✓ | 17.0µs | 12.75MB |
+| 51 | angles-geometric-normalization-and-conversion | ✓ | 185.0µs | 13.01MB |
+| 52 | animate-a-pendulum | ✓ | 70.0µs | 12.82MB |
+| 53 | animation | ✓ | 789.0µs | 12.72MB |
+| 54 | anonymous-recursion-1 | ✓ | 61.0µs | 12.85MB |
+| 55 | anonymous-recursion-2 | ✓ | 27.0µs | 13.00MB |
+| 56 | anonymous-recursion | ✓ | 69.0µs | 13.12MB |
+| 57 | anti-primes | ✓ | 878.0ms | 13.06MB |
+| 58 | append-a-record-to-the-end-of-a-text-file | ✓ | 9.0µs | 12.68MB |
+| 59 | apply-a-callback-to-an-array-1 | ✓ | 15.0µs | 12.59MB |
+| 60 | apply-a-callback-to-an-array-2 | ✓ | 19.0µs | 12.66MB |
+| 61 | apply-a-digital-filter-direct-form-ii-transposed- | ✓ | 74.0µs | 13.18MB |
+| 62 | approximate-equality | ✓ | 129.0µs | 12.86MB |
+| 63 | arbitrary-precision-integers-included- | ✓ | 501.0ms | 13.44MB |
+| 64 | archimedean-spiral | ✓ | 22.0ms | 12.65MB |
+| 65 | arena-storage-pool | ✓ | 17.0µs | 13.07MB |
+| 66 | arithmetic-complex | ✓ | 501.0µs | 12.75MB |
+| 67 | arithmetic-derivative | ✓ | 584.0µs | 13.46MB |
+| 68 | arithmetic-evaluation | ✓ | 119.0µs | 14.18MB |
+| 69 | arithmetic-geometric-mean-calculate-pi | ✓ | 71.0µs | 12.86MB |
+| 70 | arithmetic-geometric-mean | ✓ | 66.0µs | 13.04MB |
+| 71 | arithmetic-integer-1 | ✓ | 18.0µs | 12.80MB |
+| 72 | arithmetic-integer-2 | ✓ | 15.0µs | 12.75MB |
 | 73 | arithmetic-numbers | ✓ |  |  |
-| 74 | arithmetic-rational | ✓ | 150.0µs | 12.73MB |
-| 75 | array-concatenation | ✓ | 20.0µs | 13.09MB |
-| 76 | array-length | ✓ | 13.0µs | 12.34MB |
-| 77 | arrays | ✓ | 58.0µs | 12.86MB |
-| 78 | ascending-primes | ✓ | 1.0ms | 13.00MB |
-| 79 | ascii-art-diagram-converter | ✓ | 25.0µs | 13.03MB |
-| 80 | assertions | ✓ | 7.0µs | 11.61MB |
-| 81 | associative-array-creation | ✓ | 13.0µs | 12.74MB |
-| 82 | associative-array-iteration | ✓ | 19.0µs | 12.45MB |
-| 83 | associative-array-merging | ✓ | 28.0µs | 12.63MB |
-| 84 | atomic-updates | ✓ | 67.0µs | 12.54MB |
-| 85 | attractive-numbers | ✓ | 175.0µs | 12.98MB |
-| 86 | average-loop-length | ✓ | 505.0ms | 13.21MB |
-| 87 | averages-arithmetic-mean | ✓ | 67.0µs | 12.88MB |
-| 88 | averages-mean-time-of-day | ✓ | 70.0µs | 13.63MB |
-| 89 | averages-median-1 | ✓ | 30.0µs | 12.75MB |
-| 90 | averages-median-2 | ✓ | 29.0µs | 13.05MB |
-| 91 | averages-median-3 | ✓ | 43.0µs | 12.61MB |
-| 92 | averages-mode | ✓ | 38.0µs | 12.68MB |
-| 93 | averages-pythagorean-means | ✓ | 69.0µs | 12.59MB |
-| 94 | averages-root-mean-square | ✓ | 35.0µs | 12.31MB |
-| 95 | averages-simple-moving-average | ✓ | 158.0µs | 12.78MB |
-| 96 | avl-tree | ✓ | 199.0µs | 14.04MB |
-| 97 | b-zier-curves-intersections | ✓ | 6.0ms | 13.57MB |
-| 98 | babbage-problem | ✓ | 9.0ms | 11.99MB |
-| 99 | babylonian-spiral | ✓ | 384.0µs | 14.06MB |
-| 100 | balanced-brackets | ✓ | 137.0µs | 12.62MB |
-| 101 | balanced-ternary | ✓ | 97.0µs | 13.48MB |
+| 74 | arithmetic-rational | ✓ | 160.0µs | 13.06MB |
+| 75 | array-concatenation | ✓ | 23.0µs | 13.19MB |
+| 76 | array-length | ✓ | 12.0µs | 12.68MB |
+| 77 | arrays | ✓ | 59.0µs | 13.36MB |
+| 78 | ascending-primes | ✓ | 999.0µs | 13.01MB |
+| 79 | ascii-art-diagram-converter | ✓ | 24.0µs | 13.12MB |
+| 80 | assertions | ✓ | 6.0µs | 12.68MB |
+| 81 | associative-array-creation | ✓ | 12.0µs | 12.93MB |
+| 82 | associative-array-iteration | ✓ | 19.0µs | 12.76MB |
+| 83 | associative-array-merging | ✓ | 20.0µs | 13.00MB |
+| 84 | atomic-updates | ✓ | 66.0µs | 13.37MB |
+| 85 | attractive-numbers | ✓ | 130.0µs | 12.93MB |
+| 86 | average-loop-length | ✓ | 348.0ms | 13.32MB |
+| 87 | averages-arithmetic-mean | ✓ | 51.0µs | 13.38MB |
+| 88 | averages-mean-time-of-day | ✓ | 51.0µs | 13.94MB |
+| 89 | averages-median-1 | ✓ | 24.0µs | 12.75MB |
+| 90 | averages-median-2 | ✓ | 22.0µs | 13.12MB |
+| 91 | averages-median-3 | ✓ | 32.0µs | 13.17MB |
+| 92 | averages-mode | ✓ | 29.0µs | 13.34MB |
+| 93 | averages-pythagorean-means | ✓ | 50.0µs | 13.18MB |
+| 94 | averages-root-mean-square | ✓ | 23.0µs | 12.88MB |
+| 95 | averages-simple-moving-average | ✓ | 110.0µs | 12.87MB |
+| 96 | avl-tree | ✓ | 116.0µs | 14.23MB |
+| 97 | b-zier-curves-intersections | ✓ | 4.0ms | 14.10MB |
+| 98 | babbage-problem | ✓ | 4.0ms | 12.70MB |
+| 99 | babylonian-spiral | ✓ | 261.0µs | 13.80MB |
+| 100 | balanced-brackets | ✓ | 80.0µs | 12.69MB |
+| 101 | balanced-ternary | ✓ | 60.0µs | 13.80MB |
 | 102 | barnsley-fern | ✓ | 38.0ms | 13.06MB |
 | 103 | base64-decode-data | ✓ | 1.0ms | 13.99MB |
 | 104 | bell-numbers | ✓ | 885.0µs | 12.86MB |
