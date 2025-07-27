@@ -2,61 +2,61 @@
 
 This checklist is auto-generated.
 Generated IR and outputs from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/ir`.
-Last updated: 2025-07-27 14:03 UTC
+Last updated: 2025-07-27 14:25 UTC
 
 ## Rosetta Golden Test Checklist (447/467)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
-| 1 | 100-doors-2 | ✓ | 119µs | 34.2 KB |
-| 2 | 100-doors-3 | ✓ | 587µs | 246.8 KB |
-| 3 | 100-doors | ✓ | 3.99ms | 1.0 MB |
-| 4 | 100-prisoners | ✓ | 4.546955s |  |
+| 1 | 100-doors-2 | ✓ | 216µs | 34.2 KB |
+| 2 | 100-doors-3 | ✓ | 526µs | 246.9 KB |
+| 3 | 100-doors | ✓ | 10.926ms | 1.1 MB |
+| 4 | 100-prisoners | ✓ | 5.43561s |  |
 | 5 | 15-puzzle-game | ✓ |  |  |
-| 6 | 15-puzzle-solver | ✓ | 898.578ms | 27.4 KB |
-| 7 | 2048 | ✓ | 1.5ms |  |
-| 8 | 21-game | ✓ | 33µs | 10.4 KB |
-| 9 | 24-game-solve | ✓ | 195.779ms | 322.3 KB |
-| 10 | 24-game | ✓ | 89µs | 20.5 KB |
-| 11 | 4-rings-or-4-squares-puzzle | ✓ | 365.842ms | 3.9 MB |
+| 6 | 15-puzzle-solver | ✓ | 922.503ms | 26.9 KB |
+| 7 | 2048 | ✓ | 1.056ms | 857.7 KB |
+| 8 | 21-game | ✓ | 329µs | 10.4 KB |
+| 9 | 24-game-solve | ✓ | 326.853ms | 248.6 KB |
+| 10 | 24-game | ✓ | 84µs | 20.5 KB |
+| 11 | 4-rings-or-4-squares-puzzle | ✓ | 372.895ms | 3.8 MB |
 | 12 | 9-billion-names-of-god-the-integer | ✓ | 11.102605s | 149.9 MB |
-| 13 | 99-bottles-of-beer-2 | ✓ | 56.366ms | 1.8 MB |
-| 14 | 99-bottles-of-beer | ✓ | 352µs | 458.7 KB |
-| 15 | DNS-query | ✓ | 718.4ms | 30.9 KB |
-| 16 | Duffinian-numbers | ✓ | 1.405399s |  |
-| 17 | a+b | ✓ | 43µs | 1.2 KB |
-| 18 | abbreviations-automatic | ✓ | 47.498ms | 824.9 KB |
-| 19 | abbreviations-easy | ✓ | 3.309ms | 156.2 KB |
-| 20 | abbreviations-simple | ✓ | 4.623ms | 110.9 KB |
-| 21 | abc-problem | ✓ | 4.868ms |  |
-| 22 | abelian-sandpile-model-identity | ✓ | 1.261ms | 466.3 KB |
-| 23 | abelian-sandpile-model | ✓ | 554µs | 890.7 KB |
-| 24 | abstract-type | ✓ | 229µs | 23.6 KB |
+| 13 | 99-bottles-of-beer-2 | ✓ | 63.449ms | 263.2 KB |
+| 14 | 99-bottles-of-beer | ✓ | 429µs | 458.7 KB |
+| 15 | DNS-query | ✓ | 514.621ms | 30.3 KB |
+| 16 | Duffinian-numbers | ✓ | 1.280398s | 85.0 KB |
+| 17 | a+b | ✓ | 27µs | 1.2 KB |
+| 18 | abbreviations-automatic | ✓ | 21.035ms |  |
+| 19 | abbreviations-easy | ✓ | 3.313ms |  |
+| 20 | abbreviations-simple | ✓ | 5.901ms | 148.1 KB |
+| 21 | abc-problem | ✓ | 2.886ms |  |
+| 22 | abelian-sandpile-model-identity | ✓ | 475µs | 466.3 KB |
+| 23 | abelian-sandpile-model | ✓ | 734µs | 890.7 KB |
+| 24 | abstract-type | ✓ | 130µs | 23.6 KB |
 | 25 | abundant-deficient-and-perfect-number-classifications | ✓ | 194µs | 136 B |
 | 26 | abundant-odd-numbers | ✓ | 52µs | 136 B |
-| 27 | accumulator-factory | ✓ | 32µs | 8.3 KB |
+| 27 | accumulator-factory | ✓ | 42µs | 8.3 KB |
 | 28 | achilles-numbers | ✓ | 67µs | 296 B |
-| 29 | ackermann-function-2 | ✓ | 67µs | 21.8 KB |
+| 29 | ackermann-function-2 | ✓ | 32µs | 21.8 KB |
 | 30 | ackermann-function-3 | ✓ | 52µs | 248 B |
-| 31 | ackermann-function | ✓ | 15.592ms | 2.6 MB |
-| 32 | active-directory-connect | ✓ | 53µs | 8.6 KB |
-| 33 | active-directory-search-for-a-user | ✓ | 32µs | 5.5 KB |
-| 34 | active-object | ✓ | 4.516ms |  |
-| 35 | add-a-variable-to-a-class-instance-at-runtime | ✓ | 36µs | 8.2 KB |
-| 36 | additive-primes | ✓ | 2.391ms |  |
-| 37 | address-of-a-variable | ✓ | 53µs | 600 B |
+| 31 | ackermann-function | ✓ | 20.585ms | 1.8 MB |
+| 32 | active-directory-connect | ✓ | 46µs | 8.6 KB |
+| 33 | active-directory-search-for-a-user | ✓ | 119µs | 5.5 KB |
+| 34 | active-object | ✓ | 6.341ms |  |
+| 35 | add-a-variable-to-a-class-instance-at-runtime | ✓ | 141µs | 8.2 KB |
+| 36 | additive-primes | ✓ | 2.305ms |  |
+| 37 | address-of-a-variable | ✓ | 99µs | 600 B |
 | 38 | adfgvx-cipher |   | 756µs | 472 B |
-| 39 | aks-test-for-primes | ✓ | 657µs | 495.4 KB |
-| 40 | algebraic-data-types | ✓ | 286µs | 285.2 KB |
-| 41 | align-columns | ✓ | 3.297ms | 502.5 KB |
+| 39 | aks-test-for-primes | ✓ | 886µs | 495.4 KB |
+| 40 | algebraic-data-types | ✓ | 225µs | 285.2 KB |
+| 41 | align-columns | ✓ | 4.652ms | 453.1 KB |
 | 42 | aliquot-sequence-classifications | ✓ | 5.972033s |  |
 | 43 | almkvist-giullera-formula-for-pi | ✓ | 766µs | 136 B |
-| 44 | almost-prime | ✓ | 5.997ms | 64.7 KB |
-| 45 | amb | ✓ | 154µs | 48.5 KB |
+| 44 | almost-prime | ✓ | 5.841ms | 159.5 KB |
+| 45 | amb | ✓ | 110µs | 48.5 KB |
 | 46 | amicable-pairs | ✓ | 546µs | 136 B |
-| 47 | anagrams-deranged-anagrams | ✓ | 402µs | 136 B |
-| 48 | anagrams | ✓ | 664µs | 136 B |
-| 49 | angle-difference-between-two-bearings-1 | ✓ | 504µs | 19.2 KB |
-| 50 | angle-difference-between-two-bearings-2 | ✓ | 551µs | 26.6 KB |
+| 47 | anagrams-deranged-anagrams | ✓ | 1.772ms | 201.8 KB |
+| 48 | anagrams | ✓ | 1.626ms | 1.2 MB |
+| 49 | angle-difference-between-two-bearings-1 | ✓ | 51µs | 20.4 KB |
+| 50 | angle-difference-between-two-bearings-2 | ✓ | 76µs | 28.4 KB |
 | 51 | angles-geometric-normalization-and-conversion | ✓ | 593µs | 136 B |
 | 52 | animate-a-pendulum | ✓ | 718µs | 73.8 KB |
 | 53 | animation | ✓ | 701µs | 18.1 KB |

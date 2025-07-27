@@ -3,8 +3,3 @@
 4 unique solutions in 3 to 9
 9 6 4 5 3 7 8 9 6 5 4 3 8 7 8 7 3 5 4 6 9 7 8 3 4 5 6 9
 2860 non-unique solutions in 0 to 9
-{
-  "duration_us": 418184,
-  "memory_bytes": 4238008,
-  "name": "main"
-}

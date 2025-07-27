@@ -394,8 +394,3 @@ Take one down, pass it around
 1 bottle of beer
 Take one down, pass it around
 No more bottles of beer on the wall
-{
-  "duration_us": 445,
-  "memory_bytes": 469784,
-  "name": "main"
-}

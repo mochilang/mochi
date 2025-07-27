@@ -91,3 +91,9 @@ equals
 2 1 2 
 1 0 1 
 2 1 2 
+
+{
+  "duration_us": 791,
+  "memory_bytes": 477584,
+  "name": "main"
+}
