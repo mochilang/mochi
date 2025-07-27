@@ -562,6 +562,9 @@ func (s *SliceExpr) emit(w io.Writer) {
 	s.Target.emit(w)
 	io.WriteString(w, "[")
 	tgt := inferType(s.Target)
+	if tgt == "&str" {
+		tgt = "String"
+	}
 	if s.Start != nil {
 		s.Start.emit(w)
 		if tgt == "String" || strings.HasPrefix(tgt, "Vec<") {
@@ -668,7 +671,11 @@ func (i *IndexExpr) emit(w io.Writer) {
 			}
 		}
 	} else {
-		if strings.HasPrefix(inferType(i.Target), "Vec<") {
+		t := inferType(i.Target)
+		if strings.HasPrefix(t, "&Vec<") {
+			t = t[1:]
+		}
+		if strings.HasPrefix(t, "Vec<") {
 			io.WriteString(w, "[")
 			i.Index.emit(w)
 			if inferType(i.Index) != "usize" {
@@ -1365,14 +1372,18 @@ func (b *BinaryExpr) emit(w io.Writer) {
 			io.WriteString(w, "(")
 			b.Left.emit(w)
 			if _, ok := b.Left.(*StringLit); !ok {
-				io.WriteString(w, ".as_str()")
+				if nr, ok2 := b.Left.(*NameRef); !(ok2 && strings.HasPrefix(currentParamTypes[nr.Name], "&")) {
+					io.WriteString(w, ".as_str()")
+				}
 			}
 			io.WriteString(w, " ")
 			io.WriteString(w, b.Op)
 			io.WriteString(w, " ")
 			b.Right.emit(w)
 			if _, ok := b.Right.(*StringLit); !ok {
-				io.WriteString(w, ".as_str()")
+				if nr, ok2 := b.Right.(*NameRef); !(ok2 && strings.HasPrefix(currentParamTypes[nr.Name], "&")) {
+					io.WriteString(w, ".as_str()")
+				}
 			}
 			io.WriteString(w, ")")
 			return
@@ -2147,7 +2158,7 @@ func compileStmt(stmt *parser.Statement) (Stmt, error) {
 				e = &StringCastExpr{Expr: e}
 			}
 		}
-		mut := strings.HasPrefix(typ, "Vec<") || strings.HasPrefix(typ, "HashMap<") || strings.HasPrefix(varTypes[stmt.Let.Name], "impl FnMut(")
+		mut := true
 		vd := &VarDecl{Name: stmt.Let.Name, Expr: e, Type: typ, Mutable: mut}
 		if funcDepth == 0 && len(localVarStack) == 0 {
 			vd.Global = true
@@ -2479,12 +2490,19 @@ func compileWhileStmt(n *parser.WhileStmt) (Stmt, error) {
 		return nil, err
 	}
 	body := make([]Stmt, 0, len(n.Body))
-	for _, st := range n.Body {
+	for idx, st := range n.Body {
 		cs, err := compileStmt(st)
 		if err != nil {
 			return nil, err
 		}
 		if cs != nil {
+			if st.Let != nil {
+				if vd, ok := cs.(*VarDecl); ok {
+					if m, _ := stmtsMutate(n.Body[idx+1:], st.Let.Name); m {
+						vd.Mutable = true
+					}
+				}
+			}
 			body = append(body, cs)
 		}
 	}
@@ -2791,6 +2809,11 @@ func compileFunStmt(fn *parser.FunStmt) (Stmt, error) {
 			if mut && !assign && (fn.Return == nil || rustTypeRef(fn.Return) != typ) {
 				sigType = "&mut " + typ
 			}
+		} else if typ == "String" {
+			mut := paramMutated(fn.Body, p.Name)
+			if !mut {
+				sigType = "&str"
+			}
 		} else if typ != "" && typ != "i64" && typ != "bool" && typ != "f64" && typ != "String" {
 			mut := paramMutated(fn.Body, p.Name)
 			if !mut {
@@ -2803,7 +2826,11 @@ func compileFunStmt(fn *parser.FunStmt) (Stmt, error) {
 		currentFuncLocals[p.Name] = true
 		typList[i] = sigType
 		if typ != "" {
-			varTypes[p.Name] = typ
+			if sigType == "&str" {
+				varTypes[p.Name] = "&str"
+			} else {
+				varTypes[p.Name] = typ
+			}
 			if strings.HasPrefix(typ, "HashMap") {
 				mapVars[p.Name] = true
 			}
@@ -4197,6 +4224,9 @@ func inferType(e Expr) string {
 			return "String"
 		}
 		if t, ok := varTypes[ex.Name]; ok && t != "" {
+			if t == "&str" {
+				return "String"
+			}
 			return t
 		}
 		if mapVars[ex.Name] {
@@ -4683,13 +4713,15 @@ func writeIfStmt(buf *bytes.Buffer, s *IfStmt, indent int) {
 }
 
 func writeWhileStmt(buf *bytes.Buffer, s *WhileStmt, indent int) {
-	buf.WriteString("while ")
-	if s.Cond != nil {
-		s.Cond.emit(buf)
+	if b, ok := s.Cond.(*BoolLit); ok && b.Value {
+		buf.WriteString("loop {\n")
+	} else if s.Cond == nil {
+		buf.WriteString("loop {\n")
 	} else {
-		buf.WriteString("true")
+		buf.WriteString("while ")
+		s.Cond.emit(buf)
+		buf.WriteString(" {\n")
 	}
-	buf.WriteString(" {\n")
 	for _, st := range s.Body {
 		writeStmt(buf, st, indent+1)
 	}
