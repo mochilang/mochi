@@ -1,10 +1,19 @@
-fun foo() {
+fun foo(): string {
   print("let's foo...")
-  print("Recovered from runtime error: index out of range [12] with length 0")
+  var a: list<int> = []
+  if 12 >= len(a) {
+    // Return an error string similar to the Go runtime message
+    return "runtime error: index out of range [12] with length " + str(len(a))
+  }
+  a[12] = 0
+  return ""
 }
 
 fun main() {
-  foo()
+  let err = foo()
+  if len(err) > 0 {
+    print("Recovered from " + err)
+  }
   print("glad that's over.")
 }
 
