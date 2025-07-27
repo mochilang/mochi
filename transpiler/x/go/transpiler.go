@@ -2464,6 +2464,15 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 		return &VarDecl{Name: name, Type: typ, Global: env == topEnv}, nil
 	case st.Type != nil:
 		if len(st.Type.Variants) > 0 {
+			if len(st.Type.Variants) == 1 {
+				v := st.Type.Variants[0]
+				if len(v.Fields) == 0 {
+					switch v.Name {
+					case "int", "string", "bool", "float", "bigint", "bigrat":
+						return nil, nil
+					}
+				}
+			}
 			if _, ok := env.GetUnion(st.Type.Name); ok {
 				variants := make([]UnionVariant, 0, len(st.Type.Variants))
 				for _, v := range st.Type.Variants {
@@ -4654,6 +4663,13 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env, base string) (Expr, 
 			}
 			if op.Cast.Type.Simple != nil {
 				name := *op.Cast.Type.Simple
+				if at, ok := env.LookupType(name); ok {
+					if ut, ok2 := at.(types.UnionType); ok2 && len(ut.Variants) == 1 {
+						for vn := range ut.Variants {
+							name = vn
+						}
+					}
+				}
 				if name == "int" {
 					switch t.(type) {
 					case types.StringType:
@@ -5487,6 +5503,30 @@ func toGoTypeFromType(t types.Type) string {
 		return "*" + toGoTypeFromType(tt.Elem)
 	case types.AnyType, types.VoidType:
 		return ""
+	case types.UnionType:
+		if len(tt.Variants) == 1 {
+			for vn, st := range tt.Variants {
+				if len(st.Fields) == 0 {
+					switch vn {
+					case "int":
+						return "int"
+					case "string":
+						return "string"
+					case "bool":
+						return "bool"
+					case "float":
+						return "float64"
+					case "bigint":
+						usesBigInt = true
+						return "*big.Int"
+					case "bigrat":
+						usesBigRat = true
+						return "*big.Rat"
+					}
+				}
+			}
+		}
+		return "any"
 	}
 	return "any"
 }

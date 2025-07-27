@@ -1,0 +1,6 @@
+exit status 1
+# command-line-arguments
+../../../tests/rosetta/transpiler/Go/equilibrium-index.go:39:27: invalid operation: new(big.Int).Mul(seed, big.NewInt(int64(1664525))) + 1013904223 (mismatched types *big.Int and untyped int)
+../../../tests/rosetta/transpiler/Go/equilibrium-index.go:40:9: invalid operation: new(big.Int).Mod(seed, big.NewInt(int64(n))) (value of type *big.Int) is not an interface
+../../../tests/rosetta/transpiler/Go/equilibrium-index.go:101:28: invalid operation: new(big.Int).Mul(seed, big.NewInt(int64(1664525))) + 1013904223 (mismatched types *big.Int and untyped int)
+../../../tests/rosetta/transpiler/Go/equilibrium-index.go:102:32: invalid operation: new(big.Int).Mod(seed, big.NewInt(int64(1001))) - 500 (mismatched types *big.Int and untyped int)

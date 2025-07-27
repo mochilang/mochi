@@ -1,0 +1,3 @@
+exit status 1
+# command-line-arguments
+../../../tests/rosetta/transpiler/Go/execute-a-markov-algorithm.go:293:40: invalid operation: _toFloat(res["out"].(string)) != tc["output"] (mismatched types float64 and string)

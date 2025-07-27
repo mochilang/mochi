@@ -1,3 +1,183 @@
+## Progress (2025-07-27 23:47 +0700)
+- transpiler/go: support union aliases
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-27 23:47 +0700)
+- transpiler/go: support union aliases
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-27 23:47 +0700)
+- transpiler/go: support union aliases
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-27 23:47 +0700)
+- transpiler/go: support union aliases
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-27 23:47 +0700)
+- transpiler/go: support union aliases
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-27 23:47 +0700)
+- transpiler/go: support union aliases
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-27 23:47 +0700)
+- transpiler/go: support union aliases
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-27 23:47 +0700)
+- transpiler/go: support union aliases
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-27 23:47 +0700)
+- transpiler/go: support union aliases
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-27 23:47 +0700)
+- transpiler/go: support union aliases
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-27 23:47 +0700)
+- transpiler/go: support union aliases
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-27 23:47 +0700)
+- transpiler/go: support union aliases
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-27 23:47 +0700)
+- transpiler/go: support union aliases
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-27 23:47 +0700)
+- transpiler/go: support union aliases
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-27 23:47 +0700)
+- transpiler/go: support union aliases
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-27 23:47 +0700)
+- transpiler/go: support union aliases
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-27 23:47 +0700)
+- transpiler/go: support union aliases
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-27 23:47 +0700)
+- transpiler/go: support union aliases
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-27 23:47 +0700)
+- transpiler/go: support union aliases
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-27 23:47 +0700)
+- transpiler/go: support union aliases
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-27 23:47 +0700)
+- transpiler/go: support union aliases
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-27 23:47 +0700)
+- transpiler/go: support union aliases
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-27 23:47 +0700)
+- transpiler/go: support union aliases
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-27 23:47 +0700)
+- transpiler/go: support union aliases
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-27 23:47 +0700)
+- transpiler/go: support union aliases
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-27 23:47 +0700)
+- transpiler/go: support union aliases
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-27 23:47 +0700)
+- transpiler/go: support union aliases
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-27 23:47 +0700)
+- transpiler/go: support union aliases
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-27 23:47 +0700)
+- transpiler/go: support union aliases
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-27 23:47 +0700)
+- transpiler/go: support union aliases
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-27 23:47 +0700)
+- transpiler/go: support union aliases
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-27 23:47 +0700)
+- transpiler/go: support union aliases
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-27 23:47 +0700)
+- transpiler/go: support union aliases
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-27 23:32 +0700)
+- transpiler/go: add enumerations-2
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-27 23:32 +0700)
+- transpiler/go: add enumerations-2
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-27 23:32 +0700)
+- transpiler/go: add enumerations-2
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-27 23:32 +0700)
+- transpiler/go: add enumerations-2
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-27 23:32 +0700)
+- transpiler/go: add enumerations-2
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-27 23:32 +0700)
+- transpiler/go: add enumerations-2
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-27 23:32 +0700)
+- transpiler/go: add enumerations-1
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-27 23:31 +0700)
+- transpiler/go: add entropy-narcissist
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-27 23:31 +0700)
+- transpiler/go: add entropy-2
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-27 23:30 +0700)
+- transpiler/go: add entropy-1 program
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-27 23:26 +0700)
+- go transpiler: update rosetta outputs and fix map/list typing
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-27 23:26 +0700)
+- go transpiler: update rosetta outputs and fix map/list typing
+- Regenerated golden files - 104/104 vm valid programs passing
+
 ## Progress (2025-07-27 22:38 +0700)
 - transpiler: improve struct field indexing and casting
 - Regenerated golden files - 104/104 vm valid programs passing
