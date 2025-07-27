@@ -3493,7 +3493,11 @@ func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, erro
 						for _, p := range m.Method.Params {
 							params = append(params, p.Name)
 						}
-						globals := detectGlobals(body, menv, env.Parent())
+						genv := env.Parent()
+						if genv == nil {
+							genv = env
+						}
+						globals := detectGlobals(body, menv, genv)
 						nonlocals := detectNonlocals(body, menv, env)
 						nonlocals = filterNames(nonlocals, globals)
 						methods = append(methods, &FuncDef{Name: m.Method.Name, Params: params, Nonlocals: nonlocals, Globals: globals, Body: body})
@@ -3547,7 +3551,11 @@ func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, erro
 			for _, p := range st.Fun.Params {
 				params = append(params, p.Name)
 			}
-			globals := detectGlobals(body, fenv, env.Parent())
+			genv := env.Parent()
+			if genv == nil {
+				genv = env
+			}
+			globals := detectGlobals(body, fenv, genv)
 			nonlocals := detectNonlocals(body, fenv, env)
 			nonlocals = filterNames(nonlocals, globals)
 			p.Stmts = append(p.Stmts, &FuncDef{Name: st.Fun.Name, Params: params, Nonlocals: nonlocals, Globals: globals, Body: body})
@@ -3961,7 +3969,11 @@ func convertStmts(list []*parser.Statement, env *types.Env) ([]Stmt, error) {
 			for _, p := range s.Fun.Params {
 				params = append(params, p.Name)
 			}
-			globals := detectGlobals(b, fenv, env.Parent())
+			genv := env.Parent()
+			if genv == nil {
+				genv = env
+			}
+			globals := detectGlobals(b, fenv, genv)
 			nonlocals := detectNonlocals(b, fenv, env)
 			nonlocals = filterNames(nonlocals, globals)
 			out = append(out, &FuncDef{Name: s.Fun.Name, Params: params, Nonlocals: nonlocals, Globals: globals, Body: b})
@@ -4752,7 +4764,11 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		if err != nil {
 			return nil, err
 		}
-		globals := detectGlobals(body, fenv, currentEnv.Parent())
+		genv := currentEnv.Parent()
+		if genv == nil {
+			genv = currentEnv
+		}
+		globals := detectGlobals(body, fenv, genv)
 		nonlocals := detectNonlocals(body, fenv, currentEnv)
 		nonlocals = filterNames(nonlocals, globals)
 		extraFuncs = append(extraFuncs, &FuncDef{Name: genName, Params: params, Nonlocals: nonlocals, Globals: globals, Body: body})
