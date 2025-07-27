@@ -1,0 +1,269 @@
+func main (regs=9)
+  // let dayNames = ["Sweetmorn", "Boomtime", "Pungenday", "Prickle-Prickle", "Setting Orange"]
+  Const        r4, ["Sweetmorn", "Boomtime", "Pungenday", "Prickle-Prickle", "Setting Orange"]
+  Move         r0, r4
+  SetGlobal    0,0,0,0
+  // let seasons = ["Chaos", "Discord", "Confusion", "Bureaucracy", "The Aftermath"]
+  Const        r5, ["Chaos", "Discord", "Confusion", "Bureaucracy", "The Aftermath"]
+  Move         r1, r5
+  SetGlobal    1,1,0,0
+  // let holydays = [["Mungday", "Chaoflux"], ["Mojoday", "Discoflux"], ["Syaday", "Confuflux"], ["Zaraday", "Bureflux"], ["Maladay", "Afflux"]]
+  Const        r6, [["Mungday", "Chaoflux"], ["Mojoday", "Discoflux"], ["Syaday", "Confuflux"], ["Zaraday", "Bureflux"], ["Maladay", "Afflux"]]
+  Move         r2, r6
+  SetGlobal    2,2,0,0
+  // let daysBefore = [0,31,59,90,120,151,181,212,243,273,304,334]
+  Const        r7, [0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334]
+  Move         r3, r7
+  SetGlobal    3,3,0,0
+  // main()
+  Call         r8, main, 
+  Return       r0
+
+  // fun isLeap(y: int): bool {
+func isLeap (regs=17)
+  // if y % 400 == 0 { return true }
+  Const        r5, 400
+  Mod          r6, r4, r5
+  Const        r7, 0
+  Equal        r8, r6, r7
+  JumpIfFalse  r8, L0
+  Const        r9, true
+  Return       r9
+L0:
+  // if y % 100 == 0 { return false }
+  Const        r10, 100
+  Mod          r11, r4, r10
+  Const        r7, 0
+  Equal        r12, r11, r7
+  JumpIfFalse  r12, L1
+  Const        r13, false
+  Return       r13
+L1:
+  // return y % 4 == 0
+  Const        r14, 4
+  Mod          r15, r4, r14
+  Const        r7, 0
+  Equal        r16, r15, r7
+  Return       r16
+
+  // fun dayOfYear(y: int, m: int, d: int): int {
+func dayOfYear (regs=18)
+  // var doy = daysBefore[m-1] + d
+  Const        r7, 1
+  Sub          r8, r5, r7
+  Index        r9, r3, r8
+  Add          r10, r9, r6
+  Move         r11, r10
+  // if m > 2 && isLeap(y) { doy = doy + 1 }
+  Const        r12, 2
+  Less         r13, r12, r5
+  Move         r14, r13
+  JumpIfFalse  r14, L0
+  Move         r15, r4
+  Call         r16, isLeap, r15
+  Move         r14, r16
+L0:
+  JumpIfFalse  r14, L1
+  Const        r7, 1
+  Add          r17, r11, r7
+  Move         r11, r17
+L1:
+  // return doy
+  Return       r11
+
+  // fun ordinal(n: int): string {
+func ordinal (regs=29)
+  // var suff = "th"
+  Const        r5, "th"
+  Move         r6, r5
+  // let mod100 = n % 100
+  Const        r7, 100
+  Mod          r8, r4, r7
+  Move         r9, r8
+  // if mod100 < 11 || mod100 > 13 {
+  Const        r10, 11
+  Less         r11, r9, r10
+  Const        r12, 13
+  Less         r13, r12, r9
+  Move         r14, r11
+  JumpIfTrue   r14, L0
+  Move         r14, r13
+L0:
+  JumpIfFalse  r14, L1
+  // let r = n % 10
+  Const        r15, 10
+  Mod          r16, r4, r15
+  Move         r17, r16
+  // if r == 1 { suff = "st" }
+  Const        r18, 1
+  Equal        r19, r17, r18
+  JumpIfFalse  r19, L2
+  Const        r20, "st"
+  Move         r6, r20
+  Jump         L1
+L2:
+  // else if r == 2 { suff = "nd" }
+  Const        r21, 2
+  Equal        r22, r17, r21
+  JumpIfFalse  r22, L3
+  Const        r23, "nd"
+  Move         r6, r23
+  Jump         L1
+L3:
+  // else if r == 3 { suff = "rd" }
+  Const        r24, 3
+  Equal        r25, r17, r24
+  JumpIfFalse  r25, L1
+  Const        r26, "rd"
+  Move         r6, r26
+L1:
+  // return str(n) + suff
+  Str          r27, r4
+  Add          r28, r27, r6
+  Return       r28
+
+  // fun discordian(y: int, m: int, d: int): string {
+func discordian (regs=74)
+  // if isLeap(y) && m == 2 && d == 29 {
+  Move         r7, r4
+  Call         r8, isLeap, r7
+  Const        r9, 2
+  Equal        r10, r5, r9
+  Const        r11, 29
+  Equal        r12, r6, r11
+  Move         r13, r8
+  JumpIfFalse  r13, L0
+  Move         r13, r10
+  JumpIfFalse  r13, L0
+  Move         r13, r12
+L0:
+  JumpIfFalse  r13, L1
+  // return "St. Tib's Day, YOLD " + str(y + 1166)
+  Const        r14, "St. Tib's Day, YOLD "
+  Const        r15, 1166
+  Add          r16, r4, r15
+  Str          r17, r16
+  Add          r18, r14, r17
+  Return       r18
+L1:
+  // var doy = dayOfYear(y, m, d)
+  Move         r19, r4
+  Move         r20, r5
+  Move         r21, r6
+  Call         r22, dayOfYear, r19, r20, r21
+  Move         r23, r22
+  // if isLeap(y) && doy > 60 { doy = doy - 1 }
+  Move         r24, r4
+  Call         r25, isLeap, r24
+  Const        r26, 60
+  Less         r27, r26, r23
+  Move         r28, r25
+  JumpIfFalse  r28, L2
+  Move         r28, r27
+L2:
+  JumpIfFalse  r28, L3
+  Const        r29, 1
+  Sub          r30, r23, r29
+  Move         r23, r30
+L3:
+  // var idx = doy - 1
+  Const        r29, 1
+  Sub          r31, r23, r29
+  Move         r32, r31
+  // let season = idx / 73
+  Const        r33, 73
+  Div          r34, r32, r33
+  Move         r35, r34
+  // let day = idx % 73
+  Const        r33, 73
+  Mod          r36, r32, r33
+  Move         r37, r36
+  // var res = dayNames[idx % 5] + ", the " + ordinal(day + 1) + " day of " + seasons[season] + " in the YOLD " + str(y + 1166)
+  Const        r38, 5
+  Mod          r39, r32, r38
+  Index        r40, r0, r39
+  Const        r41, ", the "
+  Add          r42, r40, r41
+  Const        r29, 1
+  Add          r44, r37, r29
+  Move         r43, r44
+  Call         r45, ordinal, r43
+  Add          r46, r42, r45
+  Const        r47, " day of "
+  Add          r48, r46, r47
+  Index        r49, r1, r35
+  Add          r50, r48, r49
+  Const        r51, " in the YOLD "
+  Add          r52, r50, r51
+  Const        r15, 1166
+  Add          r53, r4, r15
+  Str          r54, r53
+  Add          r55, r52, r54
+  Move         r56, r55
+  // if day == 4 { res = res + ". Celebrate " + holydays[season][0] + "!" }
+  Const        r57, 4
+  Equal        r58, r37, r57
+  JumpIfFalse  r58, L4
+  Const        r59, ". Celebrate "
+  Add          r60, r56, r59
+  Index        r61, r2, r35
+  Const        r62, 0
+  Index        r63, r61, r62
+  Add          r64, r60, r63
+  Const        r65, "!"
+  Add          r66, r64, r65
+  Move         r56, r66
+L4:
+  // if day == 49 { res = res + ". Celebrate " + holydays[season][1] + "!" }
+  Const        r67, 49
+  Equal        r68, r37, r67
+  JumpIfFalse  r68, L5
+  Const        r59, ". Celebrate "
+  Add          r69, r56, r59
+  Index        r70, r2, r35
+  Const        r29, 1
+  Index        r71, r70, r29
+  Add          r72, r69, r71
+  Const        r65, "!"
+  Add          r73, r72, r65
+  Move         r56, r73
+L5:
+  // return res
+  Return       r56
+
+  // fun main() {
+func main (regs=22)
+  // let dates = [
+  Const        r4, [[2010, 7, 22], [2012, 2, 28], [2012, 2, 29], [2012, 3, 1], [2012, 12, 31], [2013, 1, 1], [2100, 12, 31], [2015, 10, 19], [2010, 1, 5], [2011, 5, 3], [2000, 3, 13]]
+  Move         r5, r4
+  // var i = 0
+  Const        r6, 0
+  Move         r7, r6
+L1:
+  // while i < len(dates) {
+  Const        r8, 11
+  LessInt      r9, r7, r8
+  JumpIfFalse  r9, L0
+  // let dt = dates[i]
+  Index        r10, r5, r7
+  Move         r11, r10
+  // print(discordian(dt[0], dt[1], dt[2]))
+  Const        r6, 0
+  Index        r15, r11, r6
+  Move         r12, r15
+  Const        r16, 1
+  Index        r17, r11, r16
+  Move         r13, r17
+  Const        r18, 2
+  Index        r19, r11, r18
+  Move         r14, r19
+  Call         r20, discordian, r12, r13, r14
+  Print        r20
+  // i = i + 1
+  Const        r16, 1
+  AddInt       r21, r7, r16
+  Move         r7, r21
+  // while i < len(dates) {
+  Jump         L1
+L0:
+  Return       r0

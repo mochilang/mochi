@@ -1,0 +1,271 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun pow10(n: int): float {
+func pow10 (regs=10)
+  // var r: float = 1.0
+  Const        r1, 1.0
+  Move         r2, r1
+  // var i = 0
+  Const        r3, 0
+  Move         r4, r3
+L1:
+  // while i < n {
+  Less         r5, r4, r0
+  JumpIfFalse  r5, L0
+  // r = r * 10.0
+  Const        r6, 10.0
+  MulFloat     r7, r2, r6
+  Move         r2, r7
+  // i = i + 1
+  Const        r8, 1
+  AddInt       r9, r4, r8
+  Move         r4, r9
+  // while i < n {
+  Jump         L1
+L0:
+  // return r
+  Return       r2
+
+  // fun formatFloat(f: float, prec: int): string {
+func formatFloat (regs=30)
+  // let scale = pow10(prec)
+  Move         r2, r1
+  Call         r3, pow10, r2
+  Move         r4, r3
+  // let scaled = (f * scale) + 0.5
+  Mul          r5, r0, r4
+  Const        r6, 0.5
+  AddFloat     r7, r5, r6
+  Move         r8, r7
+  // var n = (scaled as int)
+  Cast         r9, r8, int
+  Move         r10, r9
+  // var digits = str(n)
+  Str          r11, r10
+  Move         r12, r11
+L1:
+  // while len(digits) <= prec {
+  Len          r13, r12
+  LessEq       r14, r13, r1
+  JumpIfFalse  r14, L0
+  // digits = "0" + digits
+  Const        r15, "0"
+  Add          r16, r15, r12
+  Move         r12, r16
+  // while len(digits) <= prec {
+  Jump         L1
+L0:
+  // let intPart = substring(digits, 0, len(digits) - prec)
+  Const        r17, 0
+  Len          r18, r12
+  Sub          r19, r18, r1
+  Slice        r20, r12, r17, r19
+  Move         r21, r20
+  // let fracPart = substring(digits, len(digits) - prec, len(digits))
+  Len          r22, r12
+  Sub          r23, r22, r1
+  Len          r24, r12
+  Slice        r25, r12, r23, r24
+  Move         r26, r25
+  // return intPart + "." + fracPart
+  Const        r27, "."
+  Add          r28, r21, r27
+  Add          r29, r28, r26
+  Return       r29
+
+  // fun padLeft(s: string, w: int): string {
+func padLeft (regs=14)
+  // var res = ""
+  Const        r2, ""
+  Move         r3, r2
+  // var n = w - len(s)
+  Len          r4, r0
+  Sub          r5, r1, r4
+  Move         r6, r5
+L1:
+  // while n > 0 {
+  Const        r7, 0
+  Less         r8, r7, r6
+  JumpIfFalse  r8, L0
+  // res = res + " "
+  Const        r9, " "
+  Add          r10, r3, r9
+  Move         r3, r10
+  // n = n - 1
+  Const        r11, 1
+  Sub          r12, r6, r11
+  Move         r6, r12
+  // while n > 0 {
+  Jump         L1
+L0:
+  // return res + s
+  Add          r13, r3, r0
+  Return       r13
+
+  // fun averageSquareDiff(f: float, preds: list<float>): float {
+func averageSquareDiff (regs=19)
+  // var av = 0.0
+  Const        r2, 0.0
+  Move         r3, r2
+  // var i = 0
+  Const        r4, 0
+  Move         r5, r4
+L1:
+  // while i < len(preds) {
+  Len          r6, r1
+  LessInt      r7, r5, r6
+  JumpIfFalse  r7, L0
+  // av = av + (preds[i] - f) * (preds[i] - f)
+  Index        r8, r1, r5
+  Sub          r9, r8, r0
+  Index        r10, r1, r5
+  Sub          r11, r10, r0
+  Mul          r12, r9, r11
+  AddFloat     r13, r3, r12
+  Move         r3, r13
+  // i = i + 1
+  Const        r14, 1
+  AddInt       r15, r5, r14
+  Move         r5, r15
+  // while i < len(preds) {
+  Jump         L1
+L0:
+  // av = av / (len(preds) as float)
+  Len          r16, r1
+  Cast         r17, r16, float
+  DivFloat     r18, r3, r17
+  Move         r3, r18
+  // return av
+  Return       r3
+
+  // fun diversityTheorem(truth: float, preds: list<float>): list<float> {
+func diversityTheorem (regs=31)
+  // var av = 0.0
+  Const        r2, 0.0
+  Move         r3, r2
+  // var i = 0
+  Const        r4, 0
+  Move         r5, r4
+L1:
+  // while i < len(preds) {
+  Len          r6, r1
+  LessInt      r7, r5, r6
+  JumpIfFalse  r7, L0
+  // av = av + preds[i]
+  Index        r8, r1, r5
+  AddFloat     r9, r3, r8
+  Move         r3, r9
+  // i = i + 1
+  Const        r10, 1
+  AddInt       r11, r5, r10
+  Move         r5, r11
+  // while i < len(preds) {
+  Jump         L1
+L0:
+  // av = av / (len(preds) as float)
+  Len          r12, r1
+  Cast         r13, r12, float
+  DivFloat     r14, r3, r13
+  Move         r3, r14
+  // let avErr = averageSquareDiff(truth, preds)
+  Move         r15, r0
+  Move         r16, r1
+  Call2        r17, averageSquareDiff, r15, r16
+  Move         r18, r17
+  // let crowdErr = (truth - av) * (truth - av)
+  SubFloat     r19, r0, r3
+  SubFloat     r20, r0, r3
+  MulFloat     r21, r19, r20
+  Move         r22, r21
+  // let div = averageSquareDiff(av, preds)
+  Move         r23, r3
+  Move         r24, r1
+  Call2        r25, averageSquareDiff, r23, r24
+  Move         r26, r25
+  // return [avErr, crowdErr, div]
+  Move         r27, r18
+  Move         r28, r22
+  Move         r29, r26
+  MakeList     r30, 3, r27
+  Return       r30
+
+  // fun main() {
+func main (regs=46)
+  // let predsArray = [[48.0, 47.0, 51.0], [48.0, 47.0, 51.0, 42.0]]
+  Const        r0, [[48.0, 47.0, 51.0], [48.0, 47.0, 51.0, 42.0]]
+  Move         r1, r0
+  // let truth = 49.0
+  Const        r2, 49.0
+  Move         r3, r2
+  // var i = 0
+  Const        r4, 0
+  Move         r5, r4
+L1:
+  // while i < len(predsArray) {
+  Const        r6, 2
+  LessInt      r7, r5, r6
+  JumpIfFalse  r7, L0
+  // let preds = predsArray[i]
+  Index        r8, r1, r5
+  Move         r9, r8
+  // let res = diversityTheorem(truth, preds)
+  Move         r10, r3
+  Move         r11, r9
+  Call2        r12, diversityTheorem, r10, r11
+  Move         r13, r12
+  // print("Average-error : " + padLeft(formatFloat(res[0], 3), 6))
+  Const        r14, "Average-error : "
+  Const        r4, 0
+  Index        r19, r13, r4
+  Move         r17, r19
+  Const        r20, 3
+  Move         r18, r20
+  Call2        r21, formatFloat, r17, r18
+  Move         r15, r21
+  Const        r22, 6
+  Move         r16, r22
+  Call2        r23, padLeft, r15, r16
+  Add          r24, r14, r23
+  Print        r24
+  // print("Crowd-error   : " + padLeft(formatFloat(res[1], 3), 6))
+  Const        r25, "Crowd-error   : "
+  Const        r30, 1
+  Index        r31, r13, r30
+  Move         r28, r31
+  Const        r20, 3
+  Move         r29, r20
+  Call2        r32, formatFloat, r28, r29
+  Move         r26, r32
+  Const        r22, 6
+  Move         r27, r22
+  Call2        r33, padLeft, r26, r27
+  Add          r34, r25, r33
+  Print        r34
+  // print("Diversity     : " + padLeft(formatFloat(res[2], 3), 6))
+  Const        r35, "Diversity     : "
+  Const        r6, 2
+  Index        r40, r13, r6
+  Move         r38, r40
+  Const        r20, 3
+  Move         r39, r20
+  Call2        r41, formatFloat, r38, r39
+  Move         r36, r41
+  Const        r22, 6
+  Move         r37, r22
+  Call2        r42, padLeft, r36, r37
+  Add          r43, r35, r42
+  Print        r43
+  // print("")
+  Const        r44, ""
+  Print        r44
+  // i = i + 1
+  Const        r30, 1
+  AddInt       r45, r5, r30
+  Move         r5, r45
+  // while i < len(predsArray) {
+  Jump         L1
+L0:
+  Return       r0

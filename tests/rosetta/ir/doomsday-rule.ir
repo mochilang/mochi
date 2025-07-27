@@ -1,0 +1,222 @@
+func main (regs=7)
+  // let days = [
+  Const        r3, ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
+  Move         r0, r3
+  SetGlobal    0,0,0,0
+  // let firstDaysCommon = [3,7,7,4,2,6,4,1,5,3,7,5]
+  Const        r4, [3, 7, 7, 4, 2, 6, 4, 1, 5, 3, 7, 5]
+  Move         r1, r4
+  SetGlobal    1,1,0,0
+  // let firstDaysLeap =   [4,1,7,4,2,6,4,1,5,3,7,5]
+  Const        r5, [4, 1, 7, 4, 2, 6, 4, 1, 5, 3, 7, 5]
+  Move         r2, r5
+  SetGlobal    2,2,0,0
+  // main()
+  Call         r6, main, 
+  Return       r0
+
+  // fun parseIntStr(str: string): int {
+func parseIntStr (regs=33)
+  // var i = 0
+  Const        r4, 0
+  Move         r5, r4
+  // var neg = false
+  Const        r6, false
+  Move         r7, r6
+  // if len(str) > 0 && str[0:1] == "-" {
+  Len          r8, r3
+  Const        r4, 0
+  LessInt      r9, r4, r8
+  Const        r4, 0
+  Move         r10, r4
+  Const        r12, 1
+  Move         r11, r12
+  Slice        r13, r3, r10, r11
+  Const        r14, "-"
+  Equal        r15, r13, r14
+  Move         r16, r9
+  JumpIfFalse  r16, L0
+  Move         r16, r15
+L0:
+  JumpIfFalse  r16, L1
+  // neg = true
+  Const        r17, true
+  Move         r7, r17
+  // i = 1
+  Const        r12, 1
+  Move         r5, r12
+L1:
+  // var n = 0
+  Const        r4, 0
+  Move         r18, r4
+  // let digits = {
+  Const        r19, {"0": 0, "1": 1, "2": 2, "3": 3, "4": 4, "5": 5, "6": 6, "7": 7, "8": 8, "9": 9}
+  Move         r20, r19
+L3:
+  // while i < len(str) {
+  Len          r21, r3
+  LessInt      r22, r5, r21
+  JumpIfFalse  r22, L2
+  // n = n * 10 + digits[str[i:i+1]]
+  Const        r23, 10
+  MulInt       r24, r18, r23
+  Move         r25, r5
+  Const        r12, 1
+  AddInt       r27, r5, r12
+  Move         r26, r27
+  Slice        r28, r3, r25, r26
+  Index        r29, r20, r28
+  Add          r30, r24, r29
+  Move         r18, r30
+  // i = i + 1
+  Const        r12, 1
+  AddInt       r31, r5, r12
+  Move         r5, r31
+  // while i < len(str) {
+  Jump         L3
+L2:
+  // if neg { n = -n }
+  JumpIfFalse  r7, L4
+  Neg          r32, r18
+  Move         r18, r32
+L4:
+  // return n
+  Return       r18
+
+  // fun anchorDay(y: int): int {
+func anchorDay (regs=21)
+  // return (2 + 5 * (y % 4) + 4 * (y % 100) + 6 * (y % 400)) % 7
+  Const        r4, 2
+  Const        r5, 5
+  Const        r6, 4
+  Mod          r7, r3, r6
+  Mul          r8, r5, r7
+  Const        r6, 4
+  Const        r9, 100
+  Mod          r10, r3, r9
+  Mul          r11, r6, r10
+  Const        r12, 6
+  Const        r13, 400
+  Mod          r14, r3, r13
+  Mul          r15, r12, r14
+  Add          r16, r4, r8
+  Add          r17, r16, r11
+  Add          r18, r17, r15
+  Const        r19, 7
+  Mod          r20, r18, r19
+  Return       r20
+
+  // fun isLeapYear(y: int): bool {
+func isLeapYear (regs=16)
+  // return y % 4 == 0 && (y % 100 != 0 || y % 400 == 0)
+  Const        r4, 4
+  Mod          r5, r3, r4
+  Const        r6, 0
+  Equal        r7, r5, r6
+  Move         r8, r7
+  JumpIfFalse  r8, L0
+  Const        r9, 100
+  Mod          r10, r3, r9
+  Const        r11, 400
+  Mod          r12, r3, r11
+  Const        r6, 0
+  NotEqual     r13, r10, r6
+  Const        r6, 0
+  Equal        r14, r12, r6
+  Move         r15, r13
+  JumpIfTrue   r15, L1
+  Move         r15, r14
+L1:
+  Move         r8, r15
+L0:
+  Return       r8
+
+  // fun main() {
+func main (regs=59)
+  // let dates = [
+  Const        r3, ["1800-01-06", "1875-03-29", "1915-12-07", "1970-12-23", "2043-05-14", "2077-02-12", "2101-04-02"]
+  Move         r4, r3
+  // print("Days of week given by Doomsday rule:")
+  Const        r5, "Days of week given by Doomsday rule:"
+  Print        r5
+  // for date in dates {
+  IterPrep     r6, r4
+  Len          r7, r6
+  Const        r8, 0
+L3:
+  LessInt      r9, r8, r7
+  JumpIfFalse  r9, L0
+  Index        r10, r6, r8
+  Move         r11, r10
+  // let y = parseIntStr(date[0:4])
+  Const        r14, 0
+  Move         r13, r14
+  Const        r16, 4
+  Move         r15, r16
+  Slice        r17, r11, r13, r15
+  Move         r12, r17
+  Call         r18, parseIntStr, r12
+  Move         r19, r18
+  // let m = parseIntStr(date[5:7]) - 1
+  Const        r22, 5
+  Move         r21, r22
+  Const        r24, 7
+  Move         r23, r24
+  Slice        r25, r11, r21, r23
+  Move         r20, r25
+  Call         r26, parseIntStr, r20
+  Const        r27, 1
+  Sub          r28, r26, r27
+  Move         r29, r28
+  // let d = parseIntStr(date[8:10])
+  Const        r32, 8
+  Move         r31, r32
+  Const        r34, 10
+  Move         r33, r34
+  Slice        r35, r11, r31, r33
+  Move         r30, r35
+  Call         r36, parseIntStr, r30
+  Move         r37, r36
+  // let a = anchorDay(y)
+  Move         r38, r19
+  Call         r39, anchorDay, r38
+  Move         r40, r39
+  // var f = firstDaysCommon[m]
+  Index        r41, r1, r29
+  Move         r42, r41
+  // if isLeapYear(y) { f = firstDaysLeap[m] }
+  Move         r43, r19
+  Call         r44, isLeapYear, r43
+  JumpIfFalse  r44, L1
+  Index        r45, r2, r29
+  Move         r42, r45
+L1:
+  // var w = d - f
+  Sub          r46, r37, r42
+  Move         r47, r46
+  // if w < 0 { w = 7 + w }
+  Const        r14, 0
+  Less         r48, r47, r14
+  JumpIfFalse  r48, L2
+  Const        r24, 7
+  Add          r49, r24, r47
+  Move         r47, r49
+L2:
+  // let dow = (a + w) % 7
+  Add          r50, r40, r47
+  Const        r24, 7
+  Mod          r51, r50, r24
+  Move         r52, r51
+  // print(date + " -> " + days[dow])
+  Const        r53, " -> "
+  Add          r54, r11, r53
+  Index        r55, r0, r52
+  Add          r56, r54, r55
+  Print        r56
+  // for date in dates {
+  Const        r57, 1
+  AddInt       r58, r8, r57
+  Move         r8, r58
+  Jump         L3
+L0:
+  Return       r0

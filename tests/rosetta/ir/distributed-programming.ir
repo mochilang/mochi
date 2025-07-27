@@ -1,0 +1,38 @@
+func main (regs=14)
+  // let amount = 300
+  Const        r2, 300
+  Move         r0, r2
+  SetGlobal    0,0,0,0
+  // let result = tax(amount)
+  Move         r3, r0
+  Call         r4, tax, r3
+  Move         r1, r4
+  SetGlobal    1,1,0,0
+  // print("tax on " + str(amount) + " cents is " + str(result) + " cents")
+  Const        r5, "tax on "
+  Const        r6, "300"
+  Const        r7, "tax on 300"
+  Const        r8, " cents is "
+  Const        r9, "tax on 300 cents is "
+  Str          r10, r1
+  Add          r11, r9, r10
+  Const        r12, " cents"
+  Add          r13, r11, r12
+  Print        r13
+  Return       r0
+
+  // fun tax(cents: int): int {
+func tax (regs=12)
+  // if cents < 0 {
+  Const        r3, 0
+  Less         r4, r2, r3
+  JumpIfFalse  r4, L0
+L0:
+  // return (cents * 5 + 50) / 100
+  Const        r6, 5
+  Mul          r7, r2, r6
+  Const        r8, 50
+  Add          r9, r7, r8
+  Const        r10, 100
+  Div          r11, r9, r10
+  Return       r11

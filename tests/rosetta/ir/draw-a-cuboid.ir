@@ -1,0 +1,253 @@
+func main (regs=18)
+  // cuboid(2, 3, 4)
+  Const        r3, 2
+  Move         r0, r3
+  Const        r4, 3
+  Move         r1, r4
+  Const        r5, 4
+  Move         r2, r5
+  Call         r6, cuboid, r0, r1, r2
+  // print("")
+  Const        r7, ""
+  Print        r7
+  // cuboid(1, 1, 1)
+  Const        r11, 1
+  Move         r8, r11
+  Const        r11, 1
+  Move         r9, r11
+  Const        r11, 1
+  Move         r10, r11
+  Call         r12, cuboid, r8, r9, r10
+  // print("")
+  Const        r7, ""
+  Print        r7
+  // cuboid(6, 2, 1)
+  Const        r16, 6
+  Move         r13, r16
+  Const        r3, 2
+  Move         r14, r3
+  Const        r11, 1
+  Move         r15, r11
+  Call         r17, cuboid, r13, r14, r15
+  Return       r0
+
+  // fun repeat(ch: string, n: int): string {
+func repeat (regs=10)
+  // var s = ""
+  Const        r2, ""
+  Move         r3, r2
+  // var i = 0
+  Const        r4, 0
+  Move         r5, r4
+L1:
+  // while i < n {
+  Less         r6, r5, r1
+  JumpIfFalse  r6, L0
+  // s = s + ch
+  Add          r7, r3, r0
+  Move         r3, r7
+  // i = i + 1
+  Const        r8, 1
+  AddInt       r9, r5, r8
+  Move         r5, r9
+  // while i < n {
+  Jump         L1
+L0:
+  // return s
+  Return       r3
+
+  // fun cubLine(n: int, dx: int, dy: int, cde: string) {
+func cubLine (regs=39)
+  // var line = repeat(" ", n + 1) + cde[0:1]
+  Const        r6, " "
+  Move         r4, r6
+  Const        r7, 1
+  Add          r8, r0, r7
+  Move         r5, r8
+  Call2        r9, repeat, r4, r5
+  Const        r11, 0
+  Move         r10, r11
+  Const        r7, 1
+  Move         r12, r7
+  Slice        r13, r3, r10, r12
+  Add          r14, r9, r13
+  Move         r15, r14
+  // var d = 9 * dx - 1
+  Const        r16, 9
+  Mul          r17, r16, r1
+  Const        r7, 1
+  Sub          r18, r17, r7
+  Move         r19, r18
+L1:
+  // while d > 0 {
+  Const        r11, 0
+  Less         r20, r11, r19
+  JumpIfFalse  r20, L0
+  // line = line + cde[1:2]
+  Const        r7, 1
+  Move         r21, r7
+  Const        r23, 2
+  Move         r22, r23
+  Slice        r24, r3, r21, r22
+  Add          r25, r15, r24
+  Move         r15, r25
+  // d = d - 1
+  Const        r7, 1
+  Sub          r26, r19, r7
+  Move         r19, r26
+  // while d > 0 {
+  Jump         L1
+L0:
+  // line = line + cde[0:1]
+  Const        r11, 0
+  Move         r27, r11
+  Const        r7, 1
+  Move         r28, r7
+  Slice        r29, r3, r27, r28
+  Add          r30, r15, r29
+  Move         r15, r30
+  // line = line + repeat(" ", dy) + cde[2:]
+  Const        r6, " "
+  Move         r31, r6
+  Move         r32, r2
+  Call2        r33, repeat, r31, r32
+  Add          r34, r15, r33
+  Const        r23, 2
+  Move         r35, r23
+  Const        r36, nil
+  Slice        r37, r3, r35, r36
+  Add          r38, r34, r37
+  Move         r15, r38
+  // print(line)
+  Print        r15
+  Return       r0
+
+  // fun cuboid(dx: int, dy: int, dz: int) {
+func cuboid (regs=77)
+  // print("cuboid " + str(dx) + " " + str(dy) + " " + str(dz) + ":")
+  Const        r3, "cuboid "
+  Str          r4, r0
+  Add          r5, r3, r4
+  Const        r6, " "
+  Add          r7, r5, r6
+  Str          r8, r1
+  Add          r9, r7, r8
+  Const        r6, " "
+  Add          r10, r9, r6
+  Str          r11, r2
+  Add          r12, r10, r11
+  Const        r13, ":"
+  Add          r14, r12, r13
+  Print        r14
+  // cubLine(dy + 1, dx, 0, "+-")
+  Const        r19, 1
+  Add          r20, r1, r19
+  Move         r15, r20
+  Move         r16, r0
+  Const        r21, 0
+  Move         r17, r21
+  Const        r22, "+-"
+  Move         r18, r22
+  Call         r23, cubLine, r15, r16, r17, r18
+  // var i = 1
+  Const        r19, 1
+  Move         r24, r19
+L1:
+  // while i <= dy {
+  LessEq       r25, r24, r1
+  JumpIfFalse  r25, L0
+  // cubLine(dy - i + 1, dx, i - 1, "/ |")
+  Sub          r30, r1, r24
+  Const        r19, 1
+  Add          r31, r30, r19
+  Move         r26, r31
+  Move         r27, r0
+  Const        r19, 1
+  SubInt       r32, r24, r19
+  Move         r28, r32
+  Const        r33, "/ |"
+  Move         r29, r33
+  Call         r34, cubLine, r26, r27, r28, r29
+  // i = i + 1
+  Const        r19, 1
+  AddInt       r35, r24, r19
+  Move         r24, r35
+  // while i <= dy {
+  Jump         L1
+L0:
+  // cubLine(0, dx, dy, "+-|")
+  Const        r21, 0
+  Move         r36, r21
+  Move         r37, r0
+  Move         r38, r1
+  Const        r40, "+-|"
+  Move         r39, r40
+  Call         r41, cubLine, r36, r37, r38, r39
+  // var j = 4 * dz - dy - 2
+  Const        r42, 4
+  Mul          r43, r42, r2
+  Sub          r44, r43, r1
+  Const        r45, 2
+  Sub          r46, r44, r45
+  Move         r47, r46
+L3:
+  // while j > 0 {
+  Const        r21, 0
+  Less         r48, r21, r47
+  JumpIfFalse  r48, L2
+  // cubLine(0, dx, dy, "| |")
+  Const        r21, 0
+  Move         r49, r21
+  Move         r50, r0
+  Move         r51, r1
+  Const        r53, "| |"
+  Move         r52, r53
+  Call         r54, cubLine, r49, r50, r51, r52
+  // j = j - 1
+  Const        r19, 1
+  Sub          r55, r47, r19
+  Move         r47, r55
+  // while j > 0 {
+  Jump         L3
+L2:
+  // cubLine(0, dx, dy, "| +")
+  Const        r21, 0
+  Move         r56, r21
+  Move         r57, r0
+  Move         r58, r1
+  Const        r60, "| +"
+  Move         r59, r60
+  Call         r61, cubLine, r56, r57, r58, r59
+  // i = 1
+  Const        r19, 1
+  Move         r24, r19
+L5:
+  // while i <= dy {
+  LessEq       r62, r24, r1
+  JumpIfFalse  r62, L4
+  // cubLine(0, dx, dy - i, "| /")
+  Const        r21, 0
+  Move         r63, r21
+  Move         r64, r0
+  Sub          r67, r1, r24
+  Move         r65, r67
+  Const        r68, "| /"
+  Move         r66, r68
+  Call         r69, cubLine, r63, r64, r65, r66
+  // i = i + 1
+  Const        r19, 1
+  AddInt       r70, r24, r19
+  Move         r24, r70
+  // while i <= dy {
+  Jump         L5
+L4:
+  // cubLine(0, dx, 0, "+-\n")
+  Const        r21, 0
+  Move         r71, r21
+  Move         r72, r0
+  Const        r21, 0
+  Move         r73, r21
+  Const        r75, "+-\n"
+  Move         r74, r75
+  Call         r76, cubLine, r71, r72, r73, r74
+  Return       r0

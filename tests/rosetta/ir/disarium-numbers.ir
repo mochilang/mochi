@@ -1,0 +1,146 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun pow(base: int, exp: int): int {
+func pow (regs=9)
+  // var result = 1
+  Const        r2, 1
+  Move         r3, r2
+  // var i = 0
+  Const        r4, 0
+  Move         r5, r4
+L1:
+  // while i < exp {
+  Less         r6, r5, r1
+  JumpIfFalse  r6, L0
+  // result = result * base
+  Mul          r7, r3, r0
+  Move         r3, r7
+  // i = i + 1
+  Const        r2, 1
+  AddInt       r8, r5, r2
+  Move         r5, r8
+  // while i < exp {
+  Jump         L1
+L0:
+  // return result
+  Return       r3
+
+  // fun isDisarium(n: int): bool {
+func isDisarium (regs=28)
+  // var digits: list<int> = []
+  Const        r1, []
+  Move         r2, r1
+  // var x = n
+  Move         r3, r0
+  // if x == 0 { digits = append(digits, 0) }
+  Const        r4, 0
+  Equal        r5, r3, r4
+  JumpIfFalse  r5, L0
+  Const        r4, 0
+  Append       r6, r2, r4
+  Move         r2, r6
+L0:
+  // while x > 0 {
+  Const        r4, 0
+  Less         r7, r4, r3
+  JumpIfFalse  r7, L1
+  // digits = append(digits, x % 10)
+  Const        r8, 10
+  Mod          r9, r3, r8
+  Append       r10, r2, r9
+  Move         r2, r10
+  // x = (x / 10) as int
+  Const        r8, 10
+  Div          r11, r3, r8
+  Cast         r12, r11, int
+  Move         r3, r12
+  // while x > 0 {
+  Jump         L0
+L1:
+  // var sum = 0
+  Const        r4, 0
+  Move         r13, r4
+  // var pos = 1
+  Const        r14, 1
+  Move         r15, r14
+  // var i = len(digits) - 1
+  Len          r16, r2
+  Const        r14, 1
+  SubInt       r17, r16, r14
+  Move         r18, r17
+L3:
+  // while i >= 0 {
+  Const        r4, 0
+  LessEqInt    r19, r4, r18
+  JumpIfFalse  r19, L2
+  // sum = sum + pow(digits[i], pos)
+  Index        r22, r2, r18
+  Move         r20, r22
+  Move         r21, r15
+  Call2        r23, pow, r20, r21
+  Add          r24, r13, r23
+  Move         r13, r24
+  // pos = pos + 1
+  Const        r14, 1
+  AddInt       r25, r15, r14
+  Move         r15, r25
+  // i = i - 1
+  Const        r14, 1
+  SubInt       r26, r18, r14
+  Move         r18, r26
+  // while i >= 0 {
+  Jump         L3
+L2:
+  // return sum == n
+  Equal        r27, r13, r0
+  Return       r27
+
+  // fun main() {
+func main (regs=19)
+  // var count = 0
+  Const        r0, 0
+  Move         r1, r0
+  // var n = 0
+  Const        r0, 0
+  Move         r2, r0
+L3:
+  // while count < 19 && n < 30000000 {
+  Const        r3, 19
+  LessInt      r4, r1, r3
+  Const        r5, 30000000
+  LessInt      r6, r2, r5
+  Move         r7, r4
+  JumpIfFalse  r7, L0
+  Move         r7, r6
+L0:
+  JumpIfFalse  r7, L1
+  // if isDisarium(n) {
+  Move         r8, r2
+  Call         r9, isDisarium, r8
+  JumpIfFalse  r9, L2
+  // print(str(n))
+  Str          r10, r2
+  Print        r10
+  // count = count + 1
+  Const        r11, 1
+  AddInt       r12, r1, r11
+  Move         r1, r12
+L2:
+  // n = n + 1
+  Const        r11, 1
+  AddInt       r13, r2, r11
+  Move         r2, r13
+  // while count < 19 && n < 30000000 {
+  Jump         L3
+L1:
+  // print("\nFound the first " + str(count) + " Disarium numbers.")
+  Const        r14, "\nFound the first "
+  Str          r15, r1
+  Add          r16, r14, r15
+  Const        r17, " Disarium numbers."
+  Add          r18, r16, r17
+  Print        r18
+  Return       r0

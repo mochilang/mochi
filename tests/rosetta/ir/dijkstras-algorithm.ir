@@ -1,0 +1,349 @@
+func main (regs=5)
+  // let INF = 1000000000
+  Const        r2, 1000000000
+  Move         r0, r2
+  SetGlobal    0,0,0,0
+  // var graph: map<string, map<string, int>> = {}
+  Const        r3, {}
+  Move         r1, r3
+  SetGlobal    1,1,0,0
+  // main()
+  Call         r4, main, 
+  Return       r0
+
+  // fun addEdge(u: string, v: string, w: int) {
+func addEdge (regs=11)
+  // if !(u in graph) { graph[u] = {} }
+  In           r5, r2, r1
+  Not          r6, r5
+  JumpIfFalse  r6, L0
+  Const        r7, {}
+  SetIndex     r1, r2, r7
+  SetGlobal    1,1,0,0
+L0:
+  // graph[u][v] = w
+  Index        r8, r1, r2
+  SetIndex     r8, r3, r4
+  SetGlobal    1,1,0,0
+  // if !(v in graph) { graph[v] = {} }
+  In           r9, r3, r1
+  Not          r10, r9
+  JumpIfFalse  r10, L1
+  Const        r7, {}
+  SetIndex     r1, r3, r7
+  SetGlobal    1,1,0,0
+L1:
+  Return       r0
+
+  // fun removeAt(xs: list<string>, idx: int): list<string> {
+func removeAt (regs=20)
+  // var out: list<string> = []
+  Const        r4, []
+  Move         r5, r4
+  // var i = 0
+  Const        r6, 0
+  Move         r7, r6
+  // for x in xs {
+  IterPrep     r8, r2
+  Len          r9, r8
+  Const        r10, 0
+L2:
+  LessInt      r11, r10, r9
+  JumpIfFalse  r11, L0
+  Index        r12, r8, r10
+  Move         r13, r12
+  // if i != idx { out = append(out, x) }
+  NotEqual     r14, r7, r3
+  JumpIfFalse  r14, L1
+  Append       r15, r5, r13
+  Move         r5, r15
+L1:
+  // i = i + 1
+  Const        r16, 1
+  AddInt       r17, r7, r16
+  Move         r7, r17
+  // for x in xs {
+  Const        r18, 1
+  AddInt       r19, r10, r18
+  Move         r10, r19
+  Jump         L2
+L0:
+  // return out
+  Return       r5
+
+  // fun dijkstra(source: string): map<string, any> {
+func dijkstra (regs=65)
+  // var dist: map<string, int> = {}
+  Const        r3, {}
+  Move         r4, r3
+  // var prev: map<string, string> = {}
+  Const        r3, {}
+  Move         r5, r3
+  // for v in graph {
+  IterPrep     r6, r1
+  Len          r7, r6
+  Const        r8, 0
+L1:
+  LessInt      r9, r8, r7
+  JumpIfFalse  r9, L0
+  Index        r10, r6, r8
+  Move         r11, r10
+  // dist[v] = INF
+  SetIndex     r4, r11, r0
+  // prev[v] = ""
+  Const        r12, ""
+  SetIndex     r5, r11, r12
+  // for v in graph {
+  Const        r13, 1
+  AddInt       r14, r8, r13
+  Move         r8, r14
+  Jump         L1
+L0:
+  // dist[source] = 0
+  Const        r15, 0
+  SetIndex     r4, r2, r15
+  // var q: list<string> = []
+  Const        r16, []
+  Move         r17, r16
+  // for v in graph { q = append(q, v) }
+  IterPrep     r18, r1
+  Len          r19, r18
+  Const        r20, 0
+L3:
+  LessInt      r21, r20, r19
+  JumpIfFalse  r21, L2
+  Index        r22, r18, r20
+  Move         r11, r22
+  Append       r23, r17, r11
+  Move         r17, r23
+  Const        r24, 1
+  AddInt       r25, r20, r24
+  Move         r20, r25
+  Jump         L3
+L2:
+  // while len(q) > 0 {
+  Len          r26, r17
+  Const        r15, 0
+  LessInt      r27, r15, r26
+  JumpIfFalse  r27, L4
+  // var bestIdx = 0
+  Const        r15, 0
+  Move         r28, r15
+  // var u = q[0]
+  Const        r15, 0
+  Index        r29, r17, r15
+  Move         r30, r29
+  // var i = 1
+  Const        r31, 1
+  Move         r32, r31
+L7:
+  // while i < len(q) {
+  Len          r33, r17
+  LessInt      r34, r32, r33
+  JumpIfFalse  r34, L5
+  // let v = q[i]
+  Index        r35, r17, r32
+  Move         r11, r35
+  // if dist[v] < dist[u] { u = v; bestIdx = i }
+  Index        r36, r4, r11
+  Index        r37, r4, r30
+  Less         r38, r36, r37
+  JumpIfFalse  r38, L6
+  Move         r30, r11
+  Move         r28, r32
+L6:
+  // i = i + 1
+  Const        r31, 1
+  AddInt       r39, r32, r31
+  Move         r32, r39
+  // while i < len(q) {
+  Jump         L7
+L5:
+  // q = removeAt(q, bestIdx)
+  Move         r40, r17
+  Move         r41, r28
+  Call2        r42, removeAt, r40, r41
+  Move         r17, r42
+  // for v in graph[u] {
+  Index        r43, r1, r30
+  IterPrep     r44, r43
+  Len          r45, r44
+  Const        r46, 0
+L9:
+  LessInt      r47, r46, r45
+  JumpIfFalse  r47, L2
+  Index        r48, r44, r46
+  Move         r11, r48
+  // let alt = dist[u] + graph[u][v]
+  Index        r49, r4, r30
+  Index        r50, r1, r30
+  Index        r51, r50, r11
+  Add          r52, r49, r51
+  Move         r53, r52
+  // if alt < dist[v] {
+  Index        r54, r4, r11
+  Less         r55, r53, r54
+  JumpIfFalse  r55, L8
+  // dist[v] = alt
+  SetIndex     r4, r11, r53
+  // prev[v] = u
+  SetIndex     r5, r11, r30
+L8:
+  // for v in graph[u] {
+  Const        r56, 1
+  AddInt       r57, r46, r56
+  Move         r46, r57
+  Jump         L9
+L4:
+  // return {"dist": dist, "prev": prev}
+  Const        r58, "dist"
+  Const        r59, "prev"
+  Move         r60, r58
+  Move         r61, r4
+  Move         r62, r59
+  Move         r63, r5
+  MakeMap      r64, 2, r60
+  Return       r64
+
+  // fun path(prev: map<string,string>, v: string): string {
+func path (regs=11)
+  // var s = v
+  Move         r4, r3
+  // var cur = v
+  Move         r5, r3
+L1:
+  // while prev[cur] != "" {
+  Index        r6, r2, r5
+  Const        r7, ""
+  NotEqual     r8, r6, r7
+  JumpIfFalse  r8, L0
+  // cur = prev[cur]
+  Index        r9, r2, r5
+  Move         r5, r9
+  // s = cur + s
+  Add          r10, r5, r4
+  Move         r4, r10
+  // while prev[cur] != "" {
+  Jump         L1
+L0:
+  // return s
+  Return       r4
+
+  // fun main() {
+func main (regs=82)
+  // addEdge("a", "b", 7)
+  Const        r5, "a"
+  Move         r2, r5
+  Const        r6, "b"
+  Move         r3, r6
+  Const        r7, 7
+  Move         r4, r7
+  Call         r8, addEdge, r2, r3, r4
+  // addEdge("a", "c", 9)
+  Const        r5, "a"
+  Move         r9, r5
+  Const        r12, "c"
+  Move         r10, r12
+  Const        r13, 9
+  Move         r11, r13
+  Call         r14, addEdge, r9, r10, r11
+  // addEdge("a", "f", 14)
+  Const        r5, "a"
+  Move         r15, r5
+  Const        r18, "f"
+  Move         r16, r18
+  Const        r19, 14
+  Move         r17, r19
+  Call         r20, addEdge, r15, r16, r17
+  // addEdge("b", "c", 10)
+  Const        r6, "b"
+  Move         r21, r6
+  Const        r12, "c"
+  Move         r22, r12
+  Const        r24, 10
+  Move         r23, r24
+  Call         r25, addEdge, r21, r22, r23
+  // addEdge("b", "d", 15)
+  Const        r6, "b"
+  Move         r26, r6
+  Const        r29, "d"
+  Move         r27, r29
+  Const        r30, 15
+  Move         r28, r30
+  Call         r31, addEdge, r26, r27, r28
+  // addEdge("c", "d", 11)
+  Const        r12, "c"
+  Move         r32, r12
+  Const        r29, "d"
+  Move         r33, r29
+  Const        r35, 11
+  Move         r34, r35
+  Call         r36, addEdge, r32, r33, r34
+  // addEdge("c", "f", 2)
+  Const        r12, "c"
+  Move         r37, r12
+  Const        r18, "f"
+  Move         r38, r18
+  Const        r40, 2
+  Move         r39, r40
+  Call         r41, addEdge, r37, r38, r39
+  // addEdge("d", "e", 6)
+  Const        r29, "d"
+  Move         r42, r29
+  Const        r45, "e"
+  Move         r43, r45
+  Const        r46, 6
+  Move         r44, r46
+  Call         r47, addEdge, r42, r43, r44
+  // addEdge("e", "f", 9)
+  Const        r45, "e"
+  Move         r48, r45
+  Const        r18, "f"
+  Move         r49, r18
+  Const        r13, 9
+  Move         r50, r13
+  Call         r51, addEdge, r48, r49, r50
+  // let res = dijkstra("a")
+  Const        r5, "a"
+  Move         r52, r5
+  Call         r53, dijkstra, r52
+  Move         r54, r53
+  // let dist = res["dist"] as map<string,int>
+  Const        r55, "dist"
+  Index        r56, r54, r55
+  Cast         r57, r56, {string: int}
+  Move         r58, r57
+  // let prev = res["prev"] as map<string,string>
+  Const        r59, "prev"
+  Index        r60, r54, r59
+  Cast         r61, r60, {string: string}
+  Move         r62, r61
+  // print("Distance to e: " + str(dist["e"]) + ", Path: " + path(prev, "e"))
+  Const        r63, "Distance to e: "
+  Const        r45, "e"
+  Index        r64, r58, r45
+  Str          r65, r64
+  Add          r66, r63, r65
+  Const        r67, ", Path: "
+  Add          r68, r66, r67
+  Move         r69, r62
+  Const        r45, "e"
+  Move         r70, r45
+  Call2        r71, path, r69, r70
+  Add          r72, r68, r71
+  Print        r72
+  // print("Distance to f: " + str(dist["f"]) + ", Path: " + path(prev, "f"))
+  Const        r73, "Distance to f: "
+  Const        r18, "f"
+  Index        r74, r58, r18
+  Str          r75, r74
+  Add          r76, r73, r75
+  Const        r67, ", Path: "
+  Add          r77, r76, r67
+  Move         r78, r62
+  Const        r18, "f"
+  Move         r79, r18
+  Call2        r80, path, r78, r79
+  Add          r81, r77, r80
+  Print        r81
+  Return       r0

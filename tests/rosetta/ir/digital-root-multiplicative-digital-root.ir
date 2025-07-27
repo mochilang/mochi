@@ -1,0 +1,272 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun pad(s: string, width: int): string {
+func pad (regs=7)
+  // var out = s
+  Move         r2, r0
+L1:
+  // while len(out) < width {
+  Len          r3, r2
+  Less         r4, r3, r1
+  JumpIfFalse  r4, L0
+  // out = " " + out
+  Const        r5, " "
+  Add          r6, r5, r2
+  Move         r2, r6
+  // while len(out) < width {
+  Jump         L1
+L0:
+  // return out
+  Return       r2
+
+  // fun mult(n: bigint, base: int): bigint {
+func mult (regs=12)
+  // var m: bigint = 1
+  Const        r2, 1
+  Move         r3, r2
+  // var x: bigint = n
+  Move         r4, r0
+  // let b: bigint = base as bigint
+  Cast         r5, r1, any
+  Move         r6, r5
+L1:
+  // while x > 0 as bigint {
+  Const        r7, 0
+  Less         r8, r7, r4
+  JumpIfFalse  r8, L0
+  // m = m * (x % b)
+  Mod          r9, r4, r6
+  Mul          r10, r3, r9
+  Move         r3, r10
+  // x = x / b
+  Div          r11, r4, r6
+  Move         r4, r11
+  // while x > 0 as bigint {
+  Jump         L1
+L0:
+  // return m
+  Return       r3
+
+  // fun multDigitalRoot(n: bigint, base: int): MDRResult {
+func multDigitalRoot (regs=21)
+  // var m: bigint = n
+  Move         r2, r0
+  // var mp = 0
+  Const        r3, 0
+  Move         r4, r3
+  // let b: bigint = base as bigint
+  Cast         r5, r1, any
+  Move         r6, r5
+L1:
+  // while m >= b {
+  LessEq       r7, r6, r2
+  JumpIfFalse  r7, L0
+  // m = mult(m, base)
+  Move         r8, r2
+  Move         r9, r1
+  Call2        r10, mult, r8, r9
+  Move         r2, r10
+  // mp = mp + 1
+  Const        r11, 1
+  AddInt       r12, r4, r11
+  Move         r4, r12
+  // while m >= b {
+  Jump         L1
+L0:
+  // return MDRResult{ mp: mp, mdr: (m as int) }
+  Cast         r13, r2, int
+  Const        r14, "__name"
+  Const        r15, "MDRResult"
+  Const        r16, "mp"
+  Move         r17, r4
+  Const        r18, "mdr"
+  Move         r19, r13
+  MakeMap      r20, 3, r14
+  Return       r20
+
+  // fun main() {
+func main (regs=97)
+  // let base = 10
+  Const        r0, 10
+  Move         r1, r0
+  // let size = 5
+  Const        r2, 5
+  Move         r3, r2
+  // print(pad("Number", 20) + " " + pad("MDR", 3) + " " + pad("MP", 3))
+  Const        r6, "Number"
+  Move         r4, r6
+  Const        r7, 20
+  Move         r5, r7
+  Call2        r8, pad, r4, r5
+  Const        r9, " "
+  Add          r10, r8, r9
+  Const        r13, "MDR"
+  Move         r11, r13
+  Const        r14, 3
+  Move         r12, r14
+  Call2        r15, pad, r11, r12
+  Add          r16, r10, r15
+  Const        r9, " "
+  Add          r17, r16, r9
+  Const        r20, "MP"
+  Move         r18, r20
+  Const        r14, 3
+  Move         r19, r14
+  Call2        r21, pad, r18, r19
+  Add          r22, r17, r21
+  Print        r22
+  // let nums: list<bigint> = [
+  Const        r23, [123321, 7739, 893, 899998, 3778888999, 277777788888899]
+  Move         r24, r23
+  // var i = 0
+  Const        r25, 0
+  Move         r26, r25
+L1:
+  // while i < len(nums) {
+  Const        r27, 6
+  LessInt      r28, r26, r27
+  JumpIfFalse  r28, L0
+  // let n = nums[i]
+  Index        r29, r24, r26
+  Move         r30, r29
+  // let r = multDigitalRoot(n, base)
+  Move         r31, r30
+  Move         r32, r1
+  Call2        r33, multDigitalRoot, r31, r32
+  Move         r34, r33
+  // print(pad(str(n), 20) + " " + pad(str(r.mdr), 3) + " " + pad(str(r.mp), 3))
+  Str          r37, r30
+  Move         r35, r37
+  Const        r7, 20
+  Move         r36, r7
+  Call2        r38, pad, r35, r36
+  Const        r9, " "
+  Add          r39, r38, r9
+  Const        r42, "mdr"
+  Index        r43, r34, r42
+  Str          r44, r43
+  Move         r40, r44
+  Const        r14, 3
+  Move         r41, r14
+  Call2        r45, pad, r40, r41
+  Add          r46, r39, r45
+  Const        r9, " "
+  Add          r47, r46, r9
+  Const        r50, "mp"
+  Index        r51, r34, r50
+  Str          r52, r51
+  Move         r48, r52
+  Const        r14, 3
+  Move         r49, r14
+  Call2        r53, pad, r48, r49
+  Add          r54, r47, r53
+  Print        r54
+  // i = i + 1
+  Const        r55, 1
+  AddInt       r56, r26, r55
+  Move         r26, r56
+  // while i < len(nums) {
+  Jump         L1
+L0:
+  // print("")
+  Const        r57, ""
+  Print        r57
+  // var list: list<list<int>> = []
+  Const        r58, []
+  Move         r59, r58
+  // var idx = 0
+  Const        r25, 0
+  Move         r60, r25
+L3:
+  // while idx < base {
+  LessInt      r61, r60, r1
+  JumpIfFalse  r61, L2
+  // list = append(list, [])
+  Const        r58, []
+  Append       r62, r59, r58
+  Move         r59, r62
+  // idx = idx + 1
+  Const        r55, 1
+  AddInt       r63, r60, r55
+  Move         r60, r63
+  // while idx < base {
+  Jump         L3
+L2:
+  // var cnt = size * base
+  Const        r64, 50
+  Move         r65, r64
+  // var n: bigint = 0
+  Const        r25, 0
+  Move         r66, r25
+  // let b: bigint = base as bigint
+  Cast         r67, r1, any
+  Move         r68, r67
+L6:
+  // while cnt > 0 {
+  Const        r25, 0
+  LessInt      r69, r25, r65
+  JumpIfFalse  r69, L4
+  // let r = multDigitalRoot(n, base)
+  Move         r70, r66
+  Move         r71, r1
+  Call2        r72, multDigitalRoot, r70, r71
+  Move         r73, r72
+  // let mdr = r.mdr
+  Const        r42, "mdr"
+  Index        r74, r73, r42
+  Move         r75, r74
+  // if len(list[mdr]) < size {
+  Index        r76, r59, r75
+  Len          r77, r76
+  LessInt      r78, r77, r3
+  JumpIfFalse  r78, L5
+  // list[mdr] = append(list[mdr], n as int)
+  Index        r79, r59, r75
+  Cast         r80, r66, int
+  Append       r81, r79, r80
+  SetIndex     r59, r75, r81
+  // cnt = cnt - 1
+  Const        r55, 1
+  SubInt       r82, r65, r55
+  Move         r65, r82
+L5:
+  // n = n + 1 as bigint
+  Const        r55, 1
+  AddInt       r83, r66, r55
+  Move         r66, r83
+  // while cnt > 0 {
+  Jump         L6
+L4:
+  // print("MDR: First")
+  Const        r84, "MDR: First"
+  Print        r84
+  // var j = 0
+  Const        r25, 0
+  Move         r85, r25
+L8:
+  // while j < base {
+  LessInt      r86, r85, r1
+  JumpIfFalse  r86, L7
+  // print(pad(str(j), 3) + ": " + str(list[j]))
+  Str          r89, r85
+  Move         r87, r89
+  Const        r14, 3
+  Move         r88, r14
+  Call2        r90, pad, r87, r88
+  Const        r91, ": "
+  Add          r92, r90, r91
+  Index        r93, r59, r85
+  Str          r94, r93
+  Add          r95, r92, r94
+  Print        r95
+  // j = j + 1
+  Const        r55, 1
+  AddInt       r96, r85, r55
+  Move         r85, r96
+  // while j < base {
+  Jump         L8
+L7:
+  Return       r0

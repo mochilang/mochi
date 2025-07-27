@@ -1,0 +1,167 @@
+func main (regs=34)
+  // var nodes: map<int, map<string, any>> = {}
+  Const        r5, {}
+  Move         r0, r5
+  SetGlobal    0,0,0,0
+  // var head: int = 0 - 1
+  Const        r6, 0
+  Const        r7, 1
+  SubInt       r8, r6, r7
+  Move         r1, r8
+  SetGlobal    1,1,0,0
+  // var tail: int = 0 - 1
+  Const        r6, 0
+  Const        r7, 1
+  SubInt       r9, r6, r7
+  Move         r2, r9
+  SetGlobal    2,2,0,0
+  // print(listString())
+  Call         r10, listString, 
+  Print        r10
+  // nodes[0] = {"value":"A", "next": 0 - 1, "prev": 0 - 1}
+  Const        r11, {"next": -1, "prev": -1, "value": "A"}
+  Const        r6, 0
+  SetIndex     r0, r6, r11
+  SetGlobal    0,0,0,0
+  // head = 0
+  Const        r6, 0
+  Move         r1, r6
+  SetGlobal    1,1,0,0
+  // tail = 0
+  Const        r6, 0
+  Move         r2, r6
+  SetGlobal    2,2,0,0
+  // nodes[1] = {"value":"B", "next": 0 - 1, "prev": 0}
+  Const        r12, {"next": -1, "prev": 0, "value": "B"}
+  Const        r7, 1
+  SetIndex     r0, r7, r12
+  SetGlobal    0,0,0,0
+  // nodes[0]["next"] = 1
+  Const        r6, 0
+  Index        r13, r0, r6
+  Const        r7, 1
+  Const        r14, "next"
+  SetIndex     r13, r14, r7
+  SetGlobal    0,0,0,0
+  // tail = 1
+  Const        r7, 1
+  Move         r2, r7
+  SetGlobal    2,2,0,0
+  // print(listString())
+  Call         r15, listString, 
+  Print        r15
+  // nodes[2] = {"value":"C", "next": 1, "prev": 0}
+  Const        r16, {"next": 1, "prev": 0, "value": "C"}
+  Const        r17, 2
+  SetIndex     r0, r17, r16
+  SetGlobal    0,0,0,0
+  // nodes[1]["prev"] = 2
+  Const        r7, 1
+  Index        r18, r0, r7
+  Const        r17, 2
+  Const        r19, "prev"
+  SetIndex     r18, r19, r17
+  SetGlobal    0,0,0,0
+  // nodes[0]["next"] = 2
+  Const        r6, 0
+  Index        r20, r0, r6
+  Const        r17, 2
+  Const        r14, "next"
+  SetIndex     r20, r14, r17
+  SetGlobal    0,0,0,0
+  // print(listString())
+  Call         r21, listString, 
+  Print        r21
+  // var out = "From tail:"
+  Const        r22, "From tail:"
+  Move         r3, r22
+  SetGlobal    3,3,0,0
+  // var id = tail
+  Move         r4, r2
+  SetGlobal    4,4,0,0
+L1:
+  // while id != 0 - 1 {
+  Const        r6, 0
+  Const        r7, 1
+  SubInt       r23, r6, r7
+  NotEqual     r24, r4, r23
+  JumpIfFalse  r24, L0
+  // out = out + " " + nodes[id]["value"]
+  Const        r25, " "
+  Add          r26, r3, r25
+  Index        r27, r0, r4
+  Const        r28, "value"
+  Index        r29, r27, r28
+  Add          r30, r26, r29
+  Move         r3, r30
+  SetGlobal    3,3,0,0
+  // id = nodes[id]["prev"] as int
+  Index        r31, r0, r4
+  Const        r19, "prev"
+  Index        r32, r31, r19
+  Cast         r33, r32, int
+  Move         r4, r33
+  SetGlobal    4,4,0,0
+  // while id != 0 - 1 {
+  Jump         L1
+L0:
+  // print(out)
+  Print        r3
+  Return       r0
+
+  // fun listString(): string {
+func listString (regs=32)
+  // if head == 0 - 1 { return "<nil>" }
+  Const        r5, 0
+  Const        r6, 1
+  SubInt       r7, r5, r6
+  Equal        r8, r1, r7
+  JumpIfFalse  r8, L0
+  Const        r9, "<nil>"
+  Return       r9
+L0:
+  // var r = "[" + nodes[head]["value"]
+  Const        r10, "["
+  Index        r11, r0, r1
+  Const        r12, "value"
+  Index        r13, r11, r12
+  Add          r14, r10, r13
+  Move         r15, r14
+  // var id = nodes[head]["next"] as int
+  Index        r16, r0, r1
+  Const        r17, "next"
+  Index        r18, r16, r17
+  Cast         r19, r18, int
+  Move         r4, r19
+  SetGlobal    4,4,0,0
+L2:
+  // while id != 0 - 1 {
+  Const        r5, 0
+  Const        r6, 1
+  SubInt       r20, r5, r6
+  NotEqual     r21, r4, r20
+  JumpIfFalse  r21, L1
+  // r = r + " " + nodes[id]["value"]
+  Const        r22, " "
+  Add          r23, r15, r22
+  Index        r24, r0, r4
+  Const        r12, "value"
+  Index        r25, r24, r12
+  Add          r26, r23, r25
+  Move         r15, r26
+  // id = nodes[id]["next"] as int
+  Index        r27, r0, r4
+  Const        r17, "next"
+  Index        r28, r27, r17
+  Cast         r29, r28, int
+  Move         r4, r29
+  SetGlobal    4,4,0,0
+  // while id != 0 - 1 {
+  Jump         L2
+L1:
+  // r = r + "]"
+  Const        r30, "]"
+  Add          r31, r15, r30
+  Move         r15, r31
+  // return r
+  Return       r15
