@@ -62,8 +62,9 @@ type Global struct {
 }
 
 type StructDecl struct {
-	Name   string
-	Fields []StructField
+	Name    string
+	Fields  []StructField
+	Methods []*Function
 }
 
 type StructField struct {
@@ -455,6 +456,7 @@ type Function struct {
 	ParamTypes []string
 	ReturnType string
 	Body       []Stmt
+	Receiver   string
 }
 
 func (f *Function) emit(w io.Writer) {
@@ -463,7 +465,11 @@ func (f *Function) emit(w io.Writer) {
 		ret = "void"
 	}
 	saved := make(map[string]string)
-	fmt.Fprintf(w, "static %s %s(", ret, safeName(f.Name))
+	if f.Receiver != "" {
+		fmt.Fprintf(w, "public %s %s(", ret, safeName(f.Name))
+	} else {
+		fmt.Fprintf(w, "static %s %s(", ret, safeName(f.Name))
+	}
 	for i, p := range f.Params {
 		if i > 0 {
 			fmt.Fprint(w, ", ")
@@ -2104,7 +2110,22 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 			for i, n := range st.Order {
 				fields[i] = StructField{Name: n, Type: csTypeFromType(st.Fields[n])}
 			}
-			prog.Structs = append(prog.Structs, StructDecl{Name: name, Fields: fields})
+			var methods []*Function
+			if len(st.Methods) > 0 {
+				keys := make([]string, 0, len(st.Methods))
+				for m := range st.Methods {
+					keys = append(keys, m)
+				}
+				sort.Strings(keys)
+				for _, m := range keys {
+					fn, err := compileStructMethod(name, st.Methods[m])
+					if err != nil {
+						return nil, err
+					}
+					methods = append(methods, fn)
+				}
+			}
+			prog.Structs = append(prog.Structs, StructDecl{Name: name, Fields: fields, Methods: methods})
 		}
 	}
 	_ = env // env reserved for future use
@@ -2572,7 +2593,22 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 				for i, n := range st.Order {
 					fields[i] = StructField{Name: n, Type: csTypeFromType(st.Fields[n])}
 				}
-				prog.Structs = append(prog.Structs, StructDecl{Name: s.Type.Name, Fields: fields})
+				var methods []*Function
+				if len(st.Methods) > 0 {
+					keys := make([]string, 0, len(st.Methods))
+					for name := range st.Methods {
+						keys = append(keys, name)
+					}
+					sort.Strings(keys)
+					for _, name := range keys {
+						fn, err := compileStructMethod(s.Type.Name, st.Methods[name])
+						if err != nil {
+							return nil, err
+						}
+						methods = append(methods, fn)
+					}
+				}
+				prog.Structs = append(prog.Structs, StructDecl{Name: s.Type.Name, Fields: fields, Methods: methods})
 			}
 		}
 		return nil, nil
@@ -4060,6 +4096,11 @@ func Emit(prog *Program) []byte {
 		for _, f := range st.Fields {
 			fmt.Fprintf(&buf, "    public %s %s;\n", f.Type, f.Name)
 		}
+		for _, m := range st.Methods {
+			buf.WriteString("    ")
+			m.emit(&buf)
+			buf.WriteString("\n")
+		}
 		fmt.Fprintf(&buf, "    public override string ToString() => $\"%s {{", st.Name)
 		for i, f := range st.Fields {
 			if i > 0 {
@@ -4495,4 +4536,44 @@ func cloneBoolMap(src map[string]bool) map[string]bool {
 		dst[k] = v
 	}
 	return dst
+}
+
+func compileStructMethod(structName string, m types.Method) (*Function, error) {
+	params := make([]string, len(m.Decl.Params))
+	ptypes := make([]string, len(m.Decl.Params))
+	for i, p := range m.Decl.Params {
+		params[i] = p.Name
+		ptypes[i] = csType(p.Type)
+	}
+	savedVT := cloneStringMap(varTypes)
+	savedStr := cloneBoolMap(stringVars)
+	for fname, ft := range structTypes[structName].Fields {
+		t := csTypeFromType(ft)
+		varTypes[fname] = t
+		if t == "string" {
+			stringVars[fname] = true
+		}
+	}
+	for i, p := range params {
+		varTypes[p] = ptypes[i]
+		if ptypes[i] == "string" {
+			stringVars[p] = true
+		}
+	}
+	var body []Stmt
+	for _, st := range m.Decl.Body {
+		s, err := compileStmt(nil, st)
+		if err != nil {
+			varTypes = savedVT
+			stringVars = savedStr
+			return nil, err
+		}
+		if s != nil {
+			body = append(body, s)
+		}
+	}
+	varTypes = savedVT
+	stringVars = savedStr
+	retType := csType(m.Decl.Return)
+	return &Function{Name: m.Decl.Name, Params: params, ParamTypes: ptypes, ReturnType: retType, Body: body, Receiver: structName}, nil
 }
