@@ -4,7 +4,7 @@
 0 1 1 1 0
 0 0 1 0 0
 {
-  "duration_us": 6726,
-  "memory_bytes": 8104,
+  "duration_us": 22276,
+  "memory_bytes": 3653728,
   "name": "main"
 }

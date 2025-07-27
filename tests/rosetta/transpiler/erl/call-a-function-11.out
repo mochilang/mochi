@@ -3,7 +3,7 @@ zeroval: 1
 zeroptr: 0
 pointer: 0
 {
-  "duration_us": 27604,
-  "memory_bytes": 135296,
+  "duration_us": 20601,
+  "memory_bytes": 353368,
   "name": "main"
 }

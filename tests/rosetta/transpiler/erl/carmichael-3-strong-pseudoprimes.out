@@ -95,7 +95,7 @@ p1     p2      p3     product
 61    241     421     6189121
 61   3361    4021     824389441
 {
-  "duration_us": 11012,
-  "memory_bytes": 16296,
+  "duration_us": 29038,
+  "memory_bytes": 98056,
   "name": "main"
 }
