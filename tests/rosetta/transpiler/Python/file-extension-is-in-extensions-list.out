@@ -1,0 +1,10 @@
+The listed extensions are:
+['zip', 'rar', '7z', 'gz', 'archive', 'A##', 'tar.bz2']
+MyData.a##           => True  (extension = A##)
+MyData.tar.Gz        => True  (extension = gz)
+MyData.gzip          => False  (extension = gzip)
+MyData.7z.backup     => False  (extension = backup)
+MyData...            => False  (extension = )
+MyData               => False  (extension = <none>)
+MyData_v1.0.tar.bz2  => True  (extension = tar.bz2)
+MyData_v1.0.bz2      => False  (extension = bz2)

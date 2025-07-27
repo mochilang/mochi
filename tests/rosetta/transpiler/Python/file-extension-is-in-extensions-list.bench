@@ -1,2 +1,5 @@
-The listed extensions are:
-['zip', 'rar', '7z', 'gz', 'archive', 'A##', 'tar.bz2']
+{
+  "duration_us": 110,
+  "memory_bytes": 14004224,
+  "name": "main"
+}

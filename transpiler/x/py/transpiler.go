@@ -34,6 +34,7 @@ var (
 	currentImportLang map[string]string
 	currentEnv        *types.Env
 	structCounter     int
+	extraFuncs        []Stmt
 	usesNow           bool
 	usesLookupHost    bool
 	usesIndexOf       bool
@@ -177,10 +178,11 @@ type ReturnStmt struct {
 func (*ReturnStmt) isStmt() {}
 
 type FuncDef struct {
-	Name    string
-	Params  []string
-	Globals []string
-	Body    []Stmt
+	Name      string
+	Params    []string
+	Nonlocals []string
+	Globals   []string
+	Body      []Stmt
 }
 
 func (*FuncDef) isStmt() {}
@@ -3076,6 +3078,7 @@ func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, erro
 	currentImportLang = map[string]string{}
 	currentEnv = env
 	structCounter = 0
+	extraFuncs = nil
 	usesNow = false
 	usesLookupHost = false
 	usesIndexOf = false
@@ -3490,8 +3493,10 @@ func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, erro
 						for _, p := range m.Method.Params {
 							params = append(params, p.Name)
 						}
-						globals := detectGlobals(body, menv, env)
-						methods = append(methods, &FuncDef{Name: m.Method.Name, Params: params, Globals: globals, Body: body})
+						globals := detectGlobals(body, menv, env.Parent())
+						nonlocals := detectNonlocals(body, menv, env)
+						nonlocals = filterNames(nonlocals, globals)
+						methods = append(methods, &FuncDef{Name: m.Method.Name, Params: params, Nonlocals: nonlocals, Globals: globals, Body: body})
 					}
 				}
 				dc.Methods = methods
@@ -3542,8 +3547,10 @@ func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, erro
 			for _, p := range st.Fun.Params {
 				params = append(params, p.Name)
 			}
-			globals := detectGlobals(body, fenv, env)
-			p.Stmts = append(p.Stmts, &FuncDef{Name: st.Fun.Name, Params: params, Globals: globals, Body: body})
+			globals := detectGlobals(body, fenv, env.Parent())
+			nonlocals := detectNonlocals(body, fenv, env)
+			nonlocals = filterNames(nonlocals, globals)
+			p.Stmts = append(p.Stmts, &FuncDef{Name: st.Fun.Name, Params: params, Nonlocals: nonlocals, Globals: globals, Body: body})
 		default:
 			return nil, fmt.Errorf("unsupported statement")
 		}
@@ -3567,6 +3574,9 @@ func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, erro
 			currentImports["resource"] = true
 		}
 		usesNow = true
+	}
+	if len(extraFuncs) > 0 {
+		p.Stmts = append(extraFuncs, p.Stmts...)
 	}
 	_ = env // unused for now
 	return p, nil
@@ -3951,8 +3961,10 @@ func convertStmts(list []*parser.Statement, env *types.Env) ([]Stmt, error) {
 			for _, p := range s.Fun.Params {
 				params = append(params, p.Name)
 			}
-			globals := detectGlobals(b, fenv, env)
-			out = append(out, &FuncDef{Name: s.Fun.Name, Params: params, Globals: globals, Body: b})
+			globals := detectGlobals(b, fenv, env.Parent())
+			nonlocals := detectNonlocals(b, fenv, env)
+			nonlocals = filterNames(nonlocals, globals)
+			out = append(out, &FuncDef{Name: s.Fun.Name, Params: params, Nonlocals: nonlocals, Globals: globals, Body: b})
 		default:
 			return nil, fmt.Errorf("unsupported statement")
 		}
@@ -3998,6 +4010,61 @@ func detectGlobals(stmts []Stmt, local, global *types.Env) []string {
 	return out
 }
 
+func detectNonlocals(stmts []Stmt, local, parent *types.Env) []string {
+	if parent == nil {
+		return nil
+	}
+	names := map[string]bool{}
+	var walk func([]Stmt)
+	walk = func(list []Stmt) {
+		for _, s := range list {
+			switch st := s.(type) {
+			case *AssignStmt:
+				if _, ok := local.Types()[st.Name]; ok {
+					continue
+				}
+				if _, err := parent.GetVar(st.Name); err == nil {
+					names[st.Name] = true
+				}
+			case *WhileStmt:
+				walk(st.Body)
+			case *ForStmt:
+				walk(st.Body)
+			case *IfStmt:
+				walk(st.Then)
+				walk(st.Else)
+			}
+		}
+	}
+	walk(stmts)
+	if len(names) == 0 {
+		return nil
+	}
+	out := make([]string, 0, len(names))
+	for n := range names {
+		out = append(out, safeName(n))
+	}
+	sort.Strings(out)
+	return out
+}
+
+func filterNames(list, remove []string) []string {
+	if len(list) == 0 {
+		return list
+	}
+	rm := map[string]bool{}
+	for _, n := range remove {
+		rm[n] = true
+	}
+	out := make([]string, 0, len(list))
+	for _, n := range list {
+		if !rm[n] {
+			out = append(out, n)
+		}
+	}
+	return out
+}
+
 func convertExpr(e *parser.Expr) (Expr, error) {
 	if e == nil {
 		return nil, fmt.Errorf("nil expr")
@@ -4033,8 +4100,6 @@ func convertBinary(b *parser.BinaryExpr) (Expr, error) {
 	if len(ops) == 1 && ops[0] == "/" {
 		if isSumUnary(b.Left) && isSumPostfix(b.Right[0].Right) {
 			ops[0] = "//"
-		} else if isIntLike(inferPyType(operands[0], currentEnv)) && isIntLike(inferPyType(operands[1], currentEnv)) {
-			ops[0] = "//"
 		}
 	}
 
@@ -4050,7 +4115,9 @@ func convertBinary(b *parser.BinaryExpr) (Expr, error) {
 
 	apply := func(left Expr, op string, right Expr) Expr {
 		if op == "/" {
-			if isIntOnlyExpr(left, currentEnv) && isIntOnlyExpr(right, currentEnv) {
+			lt := inferPyType(left, currentEnv)
+			rt := inferPyType(right, currentEnv)
+			if isIntLike(lt) && isIntLike(rt) {
 				op = "//"
 			}
 		}
@@ -4673,22 +4740,23 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		}
 		return nil, fmt.Errorf("unsupported expression")
 	case p.FunExpr != nil && len(p.FunExpr.BlockBody) > 1:
-		exprs := []Expr{}
-		for _, st := range p.FunExpr.BlockBody {
-			if st.Expr == nil {
-				return nil, fmt.Errorf("unsupported expression")
-			}
-			e, err := convertExpr(st.Expr.Expr)
-			if err != nil {
-				return nil, err
-			}
-			exprs = append(exprs, e)
-		}
+		genName := fmt.Sprintf("_lambda%d", structCounter)
+		structCounter++
+		fenv := types.NewEnv(currentEnv)
 		var params []string
 		for _, pa := range p.FunExpr.Params {
 			params = append(params, pa.Name)
+			fenv.SetVar(pa.Name, types.AnyType{}, true)
 		}
-		return &LambdaExpr{Params: params, Expr: &ListLit{Elems: exprs}}, nil
+		body, err := convertStmts(p.FunExpr.BlockBody, fenv)
+		if err != nil {
+			return nil, err
+		}
+		globals := detectGlobals(body, fenv, currentEnv.Parent())
+		nonlocals := detectNonlocals(body, fenv, currentEnv)
+		nonlocals = filterNames(nonlocals, globals)
+		extraFuncs = append(extraFuncs, &FuncDef{Name: genName, Params: params, Nonlocals: nonlocals, Globals: globals, Body: body})
+		return &Name{Name: genName}, nil
 	case p.If != nil:
 		return convertIfExpr(p.If)
 	case p.Match != nil:
