@@ -4127,12 +4127,24 @@ func compileBinary(b *parser.BinaryExpr, env *types.Env, base string) (Expr, err
 					// auto convert unknown types to float64 for arithmetic
 					if newExpr == nil && (ops[i].Op == "+" || ops[i].Op == "-" || ops[i].Op == "*" || ops[i].Op == "/") {
 						if _, ok := typesList[i].(types.AnyType); ok {
-							left = &CallExpr{Func: "_toFloat", Args: []Expr{left}}
-							usesFloatConv = true
+							if ae, ok2 := left.(*AssertExpr); ok2 && ae.Type == "int" {
+								typesList[i] = types.IntType{}
+							} else if ae, ok2 := left.(*AssertExpr); ok2 && ae.Type == "float64" {
+								typesList[i] = types.FloatType{}
+							} else {
+								left = &CallExpr{Func: "_toFloat", Args: []Expr{left}}
+								usesFloatConv = true
+							}
 						}
 						if _, ok := typesList[i+1].(types.AnyType); ok {
-							right = &CallExpr{Func: "_toFloat", Args: []Expr{right}}
-							usesFloatConv = true
+							if ae, ok2 := right.(*AssertExpr); ok2 && ae.Type == "int" {
+								typesList[i+1] = types.IntType{}
+							} else if ae, ok2 := right.(*AssertExpr); ok2 && ae.Type == "float64" {
+								typesList[i+1] = types.FloatType{}
+							} else {
+								right = &CallExpr{Func: "_toFloat", Args: []Expr{right}}
+								usesFloatConv = true
+							}
 						}
 						if _, ok := typesList[i].(types.FloatType); ok {
 							if _, ok2 := typesList[i+1].(types.IntType); ok2 {
@@ -4377,6 +4389,11 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env, base string) (Expr, 
 				}
 				if isBigIntType(types.TypeOfExpr(idx.Start, env)) {
 					iex = &BigIntToIntExpr{Value: iex}
+				}
+				if mt, ok := t.(types.MapType); ok {
+					if types.IsStringType(mt.Key) && !types.IsStringType(types.TypeOfExpr(idx.Start, env)) {
+						iex = &AssertExpr{Expr: iex, Type: "string"}
+					}
 				}
 				switch tt := t.(type) {
 				case types.StringType:
@@ -4860,6 +4877,9 @@ func compilePrimary(p *parser.Primary, env *types.Env, base string) (Expr, error
 			usesParseInt = true
 			if len(args) == 1 {
 				args = append(args, &IntLit{Value: 10})
+			}
+			if !types.IsStringType(types.TypeOfExpr(p.Call.Args[0], env)) {
+				args[0] = &AssertExpr{Expr: args[0], Type: "string"}
 			}
 			return &CallExpr{Func: "_parseIntStr", Args: []Expr{args[0], args[1]}}, nil
 		case "now":
