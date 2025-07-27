@@ -2,9 +2,9 @@
 
 Generated Ruby code from Mochi Rosetta tasks lives in `tests/rosetta/transpiler/rb`.
 
-Last updated: 2025-07-27 15:40 UTC
+Last updated: 2025-07-27 15:47 UTC
 
-## Checklist (384/467)
+## Checklist (409/467)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 195µs | 36.2 KB |
@@ -407,36 +407,36 @@ Last updated: 2025-07-27 15:40 UTC
 | 398 | fast-fourier-transform | ✓ | 1.038ms | 43.8 KB |
 | 399 | fasta-format | ✓ | 76µs | 30.9 KB |
 | 400 | faulhabers-formula | ✓ | 300µs | 159.1 KB |
-| 401 | faulhabers-triangle |   |  |  |
-| 402 | feigenbaum-constant-calculation |   |  |  |
-| 403 | fermat-numbers |   |  |  |
-| 404 | fibonacci-n-step-number-sequences |   |  |  |
-| 405 | fibonacci-sequence-1 |   |  |  |
-| 406 | fibonacci-sequence-2 |   |  |  |
-| 407 | fibonacci-sequence-3 |   |  |  |
-| 408 | fibonacci-sequence-4 |   |  |  |
-| 409 | fibonacci-sequence-5 |   |  |  |
-| 410 | fibonacci-word-fractal |   |  |  |
+| 401 | faulhabers-triangle | ✓ | 680µs | 345.1 KB |
+| 402 | feigenbaum-constant-calculation | ✓ | 18.005ms | 13.8 KB |
+| 403 | fermat-numbers | ✓ | 228µs | 20.1 KB |
+| 404 | fibonacci-n-step-number-sequences | ✓ | 58µs | 26.6 KB |
+| 405 | fibonacci-sequence-1 | ✓ | 2µs | 472 B |
+| 406 | fibonacci-sequence-2 | ✓ | 2µs | 472 B |
+| 407 | fibonacci-sequence-3 | ✓ | 1µs | 472 B |
+| 408 | fibonacci-sequence-4 | ✓ | 24µs | 10.7 KB |
+| 409 | fibonacci-sequence-5 | ✓ | 56µs | 11.2 KB |
+| 410 | fibonacci-word-fractal | ✓ | 74µs | 129.0 KB |
 | 411 | fibonacci-word |   |  |  |
-| 412 | file-extension-is-in-extensions-list |   |  |  |
-| 413 | file-input-output-1 |   |  |  |
-| 414 | file-input-output-2 |   |  |  |
+| 412 | file-extension-is-in-extensions-list | ✓ | 115µs | 38.2 KB |
+| 413 | file-input-output-1 | ✓ | 31µs | 9.0 KB |
+| 414 | file-input-output-2 | ✓ | 31µs | 9.1 KB |
 | 415 | file-input-output-3 |   |  |  |
-| 416 | file-modification-time |   |  |  |
-| 417 | file-size-distribution |   |  |  |
-| 418 | file-size |   |  |  |
-| 419 | filter |   |  |  |
+| 416 | file-modification-time | ✓ | 27µs | 9.3 KB |
+| 417 | file-size-distribution | ✓ | 57µs | 19.7 KB |
+| 418 | file-size | ✓ | 37µs | 9.6 KB |
+| 419 | filter | ✓ | 58µs | 11.9 KB |
 | 420 | find-chess960-starting-position-identifier |   |  |  |
-| 421 | find-common-directory-path |   |  |  |
-| 422 | find-duplicate-files |   |  |  |
+| 421 | find-common-directory-path | ✓ | 280µs | 105.4 KB |
+| 422 | find-duplicate-files | ✓ | 26µs | 10.5 KB |
 | 423 | find-if-a-point-is-within-a-triangle |   |  |  |
-| 424 | find-largest-left-truncatable-prime-in-a-given-base |   |  |  |
-| 425 | find-limit-of-recursion |   |  |  |
-| 426 | find-palindromic-numbers-in-both-binary-and-ternary-bases |   |  |  |
-| 427 | find-the-intersection-of-a-line-with-a-plane |   |  |  |
-| 428 | find-the-intersection-of-two-lines |   |  |  |
+| 424 | find-largest-left-truncatable-prime-in-a-given-base | ✓ | 3.527ms | 10.9 KB |
+| 425 | find-limit-of-recursion | ✓ | 4.17ms | 28.9 KB |
+| 426 | find-palindromic-numbers-in-both-binary-and-ternary-bases | ✓ | 25.123303s | 404.7 KB |
+| 427 | find-the-intersection-of-a-line-with-a-plane | ✓ | 71µs | 13.2 KB |
+| 428 | find-the-intersection-of-two-lines | ✓ | 73µs | 13.6 KB |
 | 429 | find-the-last-sunday-of-each-month |   |  |  |
-| 430 | find-the-missing-permutation |   |  |  |
+| 430 | find-the-missing-permutation | ✓ | 84µs | 26.2 KB |
 | 431 | fivenum-1 |   |  |  |
 | 432 | fivenum-2 |   |  |  |
 | 433 | fixed-length-records-1 |   |  |  |

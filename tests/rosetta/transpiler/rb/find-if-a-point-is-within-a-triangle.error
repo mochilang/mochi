@@ -1,0 +1,10 @@
+run: exit status 1
+/workspace/mochi/tests/rosetta/transpiler/rb/find-if-a-point-is-within-a-triangle.rb:61:in `pointInTriangle': uninitialized constant A1 (NameError)
+
+    diff = ((abs((_add(_add(A1, A2), A3)) - A)).to_f)
+                            ^^
+	from /workspace/mochi/tests/rosetta/transpiler/rb/find-if-a-point-is-within-a-triangle.rb:71:in `block in main'
+	from /workspace/mochi/tests/rosetta/transpiler/rb/find-if-a-point-is-within-a-triangle.rb:70:in `each'
+	from /workspace/mochi/tests/rosetta/transpiler/rb/find-if-a-point-is-within-a-triangle.rb:70:in `main'
+	from /workspace/mochi/tests/rosetta/transpiler/rb/find-if-a-point-is-within-a-triangle.rb:88:in `<main>'
+Triangle is [[1.5, 2.4], [5.1, -3.1], [-3.8, 1.2]]

@@ -1,0 +1,10 @@
+run: exit status 1
+/workspace/mochi/tests/rosetta/transpiler/rb/fibonacci-word.rb:68:in `block in entropy': undefined local variable or method `math' for main:Object (NameError)
+
+      hm = _add(hm, c * (math.log(c) / math.log(2.0)))
+                         ^^^^
+	from /workspace/mochi/tests/rosetta/transpiler/rb/fibonacci-word.rb:66:in `each'
+	from /workspace/mochi/tests/rosetta/transpiler/rb/fibonacci-word.rb:66:in `entropy'
+	from /workspace/mochi/tests/rosetta/transpiler/rb/fibonacci-word.rb:90:in `main'
+	from /workspace/mochi/tests/rosetta/transpiler/rb/fibonacci-word.rb:144:in `<main>'
+  N   Length  Entropy      Word
