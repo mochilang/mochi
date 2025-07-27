@@ -1,0 +1,17 @@
+run: exit status 254
+../../../tests/rosetta/transpiler/Dart/create-an-object-at-a-given-address.dart:69:26: Error: The argument type 'List<dynamic>' can't be assigned to the parameter type 'List<int>'.
+ - 'List' is from 'dart:core'.
+  print("	s: " + listStr(s));
+         	               ^
+../../../tests/rosetta/transpiler/Dart/create-an-object-at-a-given-address.dart:70:26: Error: The argument type 'List<dynamic>' can't be assigned to the parameter type 'List<int>'.
+ - 'List' is from 'dart:core'.
+  print("	a: " + listStr(a));
+         	               ^
+../../../tests/rosetta/transpiler/Dart/create-an-object-at-a-given-address.dart:78:26: Error: The argument type 'List<dynamic>' can't be assigned to the parameter type 'List<int>'.
+ - 'List' is from 'dart:core'.
+  print("	s: " + listStr(s));
+         	               ^
+../../../tests/rosetta/transpiler/Dart/create-an-object-at-a-given-address.dart:79:26: Error: The argument type 'List<dynamic>' can't be assigned to the parameter type 'List<int>'.
+ - 'List' is from 'dart:core'.
+  print("	a: " + listStr(a));
+         	               ^

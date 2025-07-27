@@ -2,7 +2,7 @@
 
 This directory contains Dart code generated from Mochi programs in `tests/rosetta/x/Mochi`. Each program has a `.dart` file and `.out` output. Compilation or runtime failures are captured in a `.error` file.
 
-Compiled and ran: 240/453
+Compiled and ran: 269/453
 
 ## Checklist
 | Index | Name | Status | Duration | Memory |
@@ -254,46 +254,46 @@ Compiled and ran: 240/453
 | 245 | count-in-octal-3 | ✓ | 7.043ms | 592.0 KB |
 | 246 | count-in-octal-4 | ✓ | 5.808ms | 2.2 MB |
 | 247 | count-occurrences-of-a-substring | ✓ | 6.56ms | 360.0 KB |
-| 248 | count-the-coins-1 |   |  |  |
-| 249 | count-the-coins-2 |   |  |  |
-| 250 | cramers-rule |   |  |  |
-| 251 | crc-32-1 |   |  |  |
-| 252 | crc-32-2 |   |  |  |
+| 248 | count-the-coins-1 | ✓ | 16.551ms | 10.0 MB |
+| 249 | count-the-coins-2 | ✓ | 25.509ms | 9.9 MB |
+| 250 | cramers-rule | ✓ | 23.657ms | 9.6 MB |
+| 251 | crc-32-1 | ✓ | 27.363ms | 9.0 MB |
+| 252 | crc-32-2 | ✓ | 19.864ms | 4.1 MB |
 | 253 | create-a-file-on-magnetic-tape |   |  |  |
-| 254 | create-a-file |   |  |  |
+| 254 | create-a-file | ✓ | 10.753ms | 2.6 MB |
 | 255 | create-a-two-dimensional-array-at-runtime-1 |   |  |  |
-| 256 | create-an-html-table |   |  |  |
+| 256 | create-an-html-table | ✓ | 11.696ms | 3.4 MB |
 | 257 | create-an-object-at-a-given-address |   |  |  |
-| 258 | csv-data-manipulation |   |  |  |
+| 258 | csv-data-manipulation | ✓ | 15.913ms | 1.7 MB |
 | 259 | csv-to-html-translation-1 |   |  |  |
 | 260 | csv-to-html-translation-2 |   |  |  |
-| 261 | csv-to-html-translation-3 |   |  |  |
-| 262 | csv-to-html-translation-4 |   |  |  |
-| 263 | csv-to-html-translation-5 |   |  |  |
+| 261 | csv-to-html-translation-3 | ✓ | 15.705ms | 10.1 MB |
+| 262 | csv-to-html-translation-4 | ✓ | 16.665ms | 9.8 MB |
+| 263 | csv-to-html-translation-5 | ✓ | 22.571ms | 10.7 MB |
 | 264 | cuban-primes |   |  |  |
-| 265 | cullen-and-woodall-numbers |   |  |  |
-| 266 | cumulative-standard-deviation |   |  |  |
-| 267 | currency |   |  |  |
+| 265 | cullen-and-woodall-numbers | ✓ | 24.966ms | 9.2 MB |
+| 266 | cumulative-standard-deviation | ✓ | 20.514ms | 10.0 MB |
+| 267 | currency | ✓ | 22.44ms | 10.3 MB |
 | 268 | currying |   |  |  |
-| 269 | curzon-numbers |   |  |  |
-| 270 | cusip |   |  |  |
+| 269 | curzon-numbers | ✓ | 83.469ms | 2.4 MB |
+| 270 | cusip | ✓ | 18.272ms | 9.5 MB |
 | 271 | cyclops-numbers |   |  |  |
-| 272 | damm-algorithm |   |  |  |
-| 273 | date-format |   |  |  |
-| 274 | date-manipulation |   |  |  |
-| 275 | day-of-the-week |   |  |  |
-| 276 | de-bruijn-sequences |   |  |  |
+| 272 | damm-algorithm | ✓ | 22.729ms | 10.8 MB |
+| 273 | date-format | ✓ | 21.863ms | 10.2 MB |
+| 274 | date-manipulation | ✓ | 13.585ms | 3.8 MB |
+| 275 | day-of-the-week | ✓ | 16.127ms | 10.2 MB |
+| 276 | de-bruijn-sequences | ✓ | 1.371359s | 17.4 MB |
 | 277 | deal-cards-for-freecell |   |  |  |
-| 278 | death-star |   |  |  |
-| 279 | deceptive-numbers |   |  |  |
-| 280 | deconvolution-1d-2 |   |  |  |
-| 281 | deconvolution-1d-3 |   |  |  |
-| 282 | deconvolution-1d |   |  |  |
-| 283 | deepcopy-1 |   |  |  |
+| 278 | death-star | ✓ | 97.751ms | 8.3 MB |
+| 279 | deceptive-numbers | ✓ | 145.114ms | 6.5 MB |
+| 280 | deconvolution-1d-2 | ✓ | 24.426ms | 10.8 MB |
+| 281 | deconvolution-1d-3 | ✓ | 19.848ms | 9.2 MB |
+| 282 | deconvolution-1d | ✓ | 23.713ms | 10.1 MB |
+| 283 | deepcopy-1 | ✓ | 13.991ms | 3.9 MB |
 | 284 | define-a-primitive-data-type |   |  |  |
 | 285 | delegates |   |  |  |
-| 286 | demings-funnel |   |  |  |
-| 287 | department-numbers |   |  |  |
+| 286 | demings-funnel | ✓ | 25.395ms | 8.2 MB |
+| 287 | department-numbers | ✓ | 9.23ms | 2.4 MB |
 | 288 | descending-primes |   |  |  |
 | 289 | detect-division-by-zero |   |  |  |
 | 290 | determine-if-a-string-has-all-the-same-characters |   |  |  |
@@ -461,4 +461,4 @@ Compiled and ran: 240/453
 | 452 | window-management |   |  |  |
 | 453 | zumkeller-numbers |   |  |  |
 
-_Last updated: 2025-07-27 14:39 +0700_
+_Last updated: 2025-07-27 15:04 +0700_

@@ -1,0 +1,7 @@
+run: exit status 254
+../../../tests/rosetta/transpiler/Dart/csv-to-html-translation-1.dart:46:23: Error: Method not found: 'split'.
+  for (String line in split(c, "\n")) {
+                      ^^^^^
+../../../tests/rosetta/transpiler/Dart/csv-to-html-translation-1.dart:47:22: Error: Method not found: 'split'.
+    rows = [...rows, split(line, ",")];
+                     ^^^^^
