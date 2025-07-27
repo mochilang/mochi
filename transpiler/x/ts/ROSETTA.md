@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated TypeScript code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/TypeScript`.
-Last updated: 2025-07-27 04:56 UTC
+Last updated: 2025-07-27 05:29 UTC
 
-## Rosetta Golden Test Checklist (434/452)
+## Rosetta Golden Test Checklist (442/452)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 1.595ms | 512.0 KB |
@@ -450,12 +450,12 @@ Last updated: 2025-07-27 04:56 UTC
 | 441 | golden-ratio-convergence | ✓ | 471µs |  |
 | 442 | graph-colouring | ✓ | 273µs |  |
 | 443 | gray-code | ✓ | 1.305ms | 1.8 MB |
-| 444 | http |   |  |  |
-| 445 | image-noise |   |  |  |
-| 446 | loops-increment-loop-index-within-loop-body |   |  |  |
-| 447 | md5 | ✓ | 636µs | 256.0 KB |
-| 448 | nim-game |   |  |  |
-| 449 | plasma-effect |   |  |  |
-| 450 | sorting-algorithms-bubble-sort |   |  |  |
-| 451 | window-management |   |  |  |
-| 452 | zumkeller-numbers |   |  |  |
+| 444 | http | ✓ |  |  |
+| 445 | image-noise | ✓ | 8.558ms | 10.1 MB |
+| 446 | loops-increment-loop-index-within-loop-body | ✓ | 160.041ms | 9.6 MB |
+| 447 | md5 | ✓ | 495µs | 384.0 KB |
+| 448 | nim-game | ✓ | 970µs | 512.0 KB |
+| 449 | plasma-effect | ✓ | 5.884ms | 10.4 MB |
+| 450 | sorting-algorithms-bubble-sort | ✓ | 393µs | 128.0 KB |
+| 451 | window-management | ✓ | 546µs |  |
+| 452 | zumkeller-numbers | ✓ | 862.793ms | 12.2 MB |
