@@ -25,6 +25,17 @@
   (do (def vals []) (def n (- 99)) (while (< n 101) (do (def vals (conj vals (int (D (double n))))) (def n (+ n 1)))) (def i 0) (while (< i (count vals)) (do (def line "") (def j 0) (while (< j 10) (do (def line (str line (pad (nth vals (+ i j))))) (when (< j 9) (def line (str line " "))) (def j (+ j 1)))) (println line) (def i (+ i 10)))) (def pow 1.0) (def m 1) (while (< m 21) (do (def pow (* pow 10.0)) (def exp (str m)) (when (< (count exp) 2) (def exp (str exp " "))) (def res (str (str m) (repeat "0" (- m 1)))) (println (str (str (str "D(10^" exp) ") / 7 = ") res)) (def m (+ m 1))))))
 
 (defn -main []
-  (main))
+  (let [rt (Runtime/getRuntime)
+    start-mem (- (.totalMemory rt) (.freeMemory rt))
+    start (System/nanoTime)]
+      (main)
+      (System/gc)
+      (let [end (System/nanoTime)
+        end-mem (- (.totalMemory rt) (.freeMemory rt))
+        duration-us (quot (- end start) 1000)
+        memory-bytes (Math/abs ^long (- end-mem start-mem))]
+        (println (str "{\n  \"duration_us\": " duration-us ",\n  \"memory_bytes\": " memory-bytes ",\n  \"name\": \"main\"\n}"))
+      )
+    ))
 
 (-main)

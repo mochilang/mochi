@@ -1,7 +1,7 @@
 # Clojure Rosetta Transpiler
 
 Completed: 52/467
-Last updated: 2025-07-27 22:15 +0700
+Last updated: 2025-07-27 22:45 +0700
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -70,8 +70,8 @@ Last updated: 2025-07-27 22:15 +0700
 | 63 | arbitrary-precision-integers-included- |   |  |  |
 | 64 | archimedean-spiral |   |  |  |
 | 65 | arena-storage-pool | ✓ | 44.229ms | 20.2 MB |
-| 66 | arithmetic-complex | ✓ | 46.769ms | 20.4 MB |
-| 67 | arithmetic-derivative | ✓ | 107.461ms | 21.8 MB |
+| 66 | arithmetic-complex | ✓ | 19.014ms | 20.6 MB |
+| 67 | arithmetic-derivative | ✓ | 42.289ms | 22.0 MB |
 | 68 | arithmetic-evaluation |   |  |  |
 | 69 | arithmetic-geometric-mean-calculate-pi | ✓ | 44.656ms | 19.9 MB |
 | 70 | arithmetic-geometric-mean | ✓ |  |  |
