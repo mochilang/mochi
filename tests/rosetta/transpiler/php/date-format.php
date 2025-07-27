@@ -39,17 +39,19 @@ function _intdiv($a, $b) {
     }
     return intdiv($a, $b);
 }
-function pad2($n) {
+$__start_mem = memory_get_usage();
+$__start = _now();
+  function pad2($n) {
   if ($n < 10) {
   return '0' . _str($n);
 }
   return _str($n);
-}
-function weekdayName($z) {
+};
+  function weekdayName($z) {
   $names = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
   return $names[($z + 4) % 7];
-}
-function main() {
+};
+  function main() {
   $ts = intval((_now() / 1000000000));
   $days = intval((_intdiv($ts, 86400)));
   $z = $days + 719468;
@@ -70,5 +72,13 @@ function main() {
   $months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
   $line = weekdayName($days) . ', ' . $months[$m - 1] . ' ' . _str($d) . ', ' . _str($y);
   echo rtrim($line), PHP_EOL;
-}
-main();
+};
+  main();
+$__end = _now();
+$__end_mem = memory_get_usage();
+$__duration = intdiv($__end - $__start, 1000);
+$__mem_diff = max(0, $__end_mem - $__start_mem);
+$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
+$__j = json_encode($__bench, 128);
+$__j = str_replace("    ", "  ", $__j);
+echo $__j, PHP_EOL;;

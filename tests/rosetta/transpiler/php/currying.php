@@ -33,29 +33,47 @@ function _str($x) {
 }
 $__start_mem = memory_get_usage();
 $__start = _now();
-  function damm($s) {
-  $tbl = [[0, 3, 1, 7, 5, 9, 8, 6, 4, 2], [7, 0, 9, 2, 1, 5, 4, 8, 6, 3], [4, 2, 0, 6, 8, 7, 1, 3, 5, 9], [1, 7, 5, 0, 9, 8, 3, 4, 2, 6], [6, 1, 2, 3, 0, 4, 5, 9, 7, 8], [3, 6, 7, 4, 2, 0, 9, 5, 8, 1], [5, 8, 6, 9, 7, 2, 0, 1, 3, 4], [8, 9, 4, 5, 3, 6, 2, 0, 1, 7], [9, 4, 3, 8, 6, 1, 7, 2, 0, 5], [2, 5, 8, 1, 4, 3, 6, 7, 9, 0]];
-  $digits = ['0' => 0, '1' => 1, '2' => 2, '3' => 3, '4' => 4, '5' => 5, '6' => 6, '7' => 7, '8' => 8, '9' => 9];
-  $interim = 0;
+  function Foo_Method($self, $b) {
+  $value = $self['value'];
+  return $value + $b;
+};
+  function mochi_pow($base, $exp) {
+  $result = 1.0;
   $i = 0;
-  while ($i < strlen($s)) {
-  $digit = intval($digits[substr($s, $i, $i + 1 - $i)]);
-  $row = $tbl[$interim];
-  $interim = $row[$digit];
+  while ($i < intval($exp)) {
+  $result = $result * $base;
   $i = $i + 1;
 };
-  return $interim == 0;
+  return $result;
 };
-  function padLeft($s, $width) {
-  while (strlen($s) < $width) {
-  $s = ' ' . $s;
+  function PowN($b) {
+  return function($e) use ($b) {
+  return mochi_pow($b, $e);
 };
-  return $s;
+};
+  function PowE($e) {
+  return function($b) use ($e) {
+  return mochi_pow($b, $e);
+};
 };
   function main() {
-  foreach (['5724', '5727', '112946', '112949'] as $s) {
-  echo rtrim(padLeft($s, 6) . '  ' . _str(damm($s))), PHP_EOL;
+  $pow2 = PowN(2.0);
+  $cube = PowE(3.0);
+  echo rtrim('2^8 = ' . _str($pow2(8.0))), PHP_EOL;
+  echo rtrim('4³ = ' . _str($cube(4.0))), PHP_EOL;
+  $a = ['value' => 2];
+  $fn1 = null;
+$fn1 = function($b) use ($a, $pow2, $cube, $fn1) {
+  return Foo_Method($a, $b);
 };
+  $fn2 = null;
+$fn2 = function($f, $b) use ($a, $fn1, $fn2, $pow2, $cube) {
+  return Foo_Method($f, $b);
+};
+  echo rtrim('2 + 2 = ' . _str(Foo_Method($a, 2))), PHP_EOL;
+  echo rtrim('2 + 3 = ' . _str($fn1(3))), PHP_EOL;
+  echo rtrim('2 + 4 = ' . _str($fn2($a, 4))), PHP_EOL;
+  echo rtrim('3 + 5 = ' . _str($fn2(['value' => 3], 5))), PHP_EOL;
 };
   main();
 $__end = _now();

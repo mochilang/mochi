@@ -15,3 +15,8 @@ Game #617
  4C QS 9C 9H 7C 6H 2C 2S
  4S TS 2H 5D JC 6C JH QH
  JD KS KC 4H
+{
+  "duration_us": 328,
+  "memory_bytes": 192,
+  "name": "main"
+}

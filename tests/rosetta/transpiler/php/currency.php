@@ -1,5 +1,20 @@
 <?php
 ini_set('memory_limit', '-1');
+$now_seed = 0;
+$now_seeded = false;
+$s = getenv('MOCHI_NOW_SEED');
+if ($s !== false && $s !== '') {
+    $now_seed = intval($s);
+    $now_seeded = true;
+}
+function _now() {
+    global $now_seed, $now_seeded;
+    if ($now_seeded) {
+        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
+        return $now_seed;
+    }
+    return hrtime(true);
+}
 function _str($x) {
     if (is_array($x)) {
         $isList = array_keys($x) === range(0, count($x) - 1);
@@ -24,7 +39,9 @@ function _intdiv($a, $b) {
     }
     return intdiv($a, $b);
 }
-function parseIntDigits($s) {
+$__start_mem = memory_get_usage();
+$__start = _now();
+  function parseIntDigits($s) {
   $n = 0;
   $i = 0;
   $digits = ['0' => 0, '1' => 1, '2' => 2, '3' => 3, '4' => 4, '5' => 5, '6' => 6, '7' => 7, '8' => 8, '9' => 9];
@@ -37,8 +54,8 @@ function parseIntDigits($s) {
   $i = $i + 1;
 };
   return $n;
-}
-function parseDC($s) {
+};
+  function parseDC($s) {
   $neg = false;
   if (strlen($s) > 0 && substr($s, 0, 1 - 0) == '-') {
   $neg = true;
@@ -75,8 +92,8 @@ function parseDC($s) {
   $val = -$val;
 }
   return $val;
-}
-function parseRate($s) {
+};
+  function parseRate($s) {
   $neg = false;
   if (strlen($s) > 0 && substr($s, 0, 1 - 0) == '-') {
   $neg = true;
@@ -114,8 +131,8 @@ function parseRate($s) {
   $val = -$val;
 }
   return $val;
-}
-function dcString($dc) {
+};
+  function dcString($dc) {
   $d = _intdiv($dc, 100);
   $n = $dc;
   if ($n < 0) {
@@ -127,21 +144,21 @@ function dcString($dc) {
   $cstr = '0' . $cstr;
 }
   return _str($d) . '.' . $cstr;
-}
-function extend($dc, $n) {
+};
+  function extend($dc, $n) {
   return $dc * $n;
-}
-function tax($total, $rate) {
+};
+  function tax($total, $rate) {
   return intval((_intdiv(($total * $rate + 5000), 10000)));
-}
-function padLeft($s, $n) {
+};
+  function padLeft($s, $n) {
   $out = $s;
   while (strlen($out) < $n) {
   $out = ' ' . $out;
 };
   return $out;
-}
-function main() {
+};
+  function main() {
   $hp = parseDC('5.50');
   $mp = parseDC('2.86');
   $rate = parseRate('0.0765');
@@ -151,5 +168,13 @@ function main() {
   echo rtrim('Total before tax: ' . padLeft(dcString($totalBeforeTax), 22)), PHP_EOL;
   echo rtrim('             Tax: ' . padLeft(dcString($t), 22)), PHP_EOL;
   echo rtrim('           Total: ' . padLeft(dcString($total), 22)), PHP_EOL;
-}
-main();
+};
+  main();
+$__end = _now();
+$__end_mem = memory_get_usage();
+$__duration = intdiv($__end - $__start, 1000);
+$__mem_diff = max(0, $__end_mem - $__start_mem);
+$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
+$__j = json_encode($__bench, 128);
+$__j = str_replace("    ", "  ", $__j);
+echo $__j, PHP_EOL;;

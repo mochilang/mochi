@@ -1,3 +1,8 @@
 Total before tax:   22000000000000005.72
              Tax:    1683000000000000.26
            Total:   23683000000000005.98
+{
+  "duration_us": 83,
+  "memory_bytes": 96,
+  "name": "main"
+}
