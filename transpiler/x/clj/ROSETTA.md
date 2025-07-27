@@ -1,7 +1,7 @@
 # Clojure Rosetta Transpiler
 
-Completed: 65/467
-Last updated: 2025-07-27 22:40 +0700
+Completed: 68/467
+Last updated: 2025-07-27 23:04 +0700
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -81,25 +81,25 @@ Last updated: 2025-07-27 22:40 +0700
 | 74 | arithmetic-rational | ✓ | 64.993ms | 20.5 MB |
 | 75 | array-concatenation | ✓ | 77.149ms | 20.5 MB |
 | 76 | array-length | ✓ | 83.717ms | 18.3 MB |
-| 77 | arrays |   |  |  |
-| 78 | ascending-primes |   |  |  |
-| 79 | ascii-art-diagram-converter | ✓ | 48.062ms | 18.1 MB |
-| 80 | assertions | ✓ | 67.261ms | 18.1 MB |
+| 77 | arrays | ✓ | 22.914ms | 19.6 MB |
+| 78 | ascending-primes | ✓ | 19.607ms | 20.2 MB |
+| 79 | ascii-art-diagram-converter | ✓ | 15.277ms | 18.3 MB |
+| 80 | assertions | ✓ | 17.88ms | 18.1 MB |
 | 81 | associative-array-creation |   |  |  |
 | 82 | associative-array-iteration |   |  |  |
 | 83 | associative-array-merging |   |  |  |
-| 84 | atomic-updates | ✓ | 82.148ms | 21.8 MB |
+| 84 | atomic-updates | ✓ | 35.355ms | 21.9 MB |
 | 85 | attractive-numbers |   |  |  |
-| 86 | average-loop-length | ✓ | 4.039113s | 22.6 MB |
-| 87 | averages-arithmetic-mean | ✓ | 78.381ms | 19.9 MB |
+| 86 | average-loop-length | ✓ | 1.388492s | 22.7 MB |
+| 87 | averages-arithmetic-mean | ✓ | 35.275ms | 19.5 MB |
 | 88 | averages-mean-time-of-day |   | 48.938ms | 24.4 MB |
-| 89 | averages-median-1 | ✓ | 50.357ms | 19.5 MB |
-| 90 | averages-median-2 | ✓ | 61.708ms | 19.2 MB |
-| 91 | averages-median-3 | ✓ | 64.184ms | 20.3 MB |
-| 92 | averages-mode | ✓ | 80.905ms | 20.3 MB |
+| 89 | averages-median-1 | ✓ | 20.46ms | 19.8 MB |
+| 90 | averages-median-2 | ✓ | 20.305ms | 19.4 MB |
+| 91 | averages-median-3 | ✓ | 21.63ms | 20.2 MB |
+| 92 | averages-mode | ✓ | 26.757ms | 19.9 MB |
 | 93 | averages-pythagorean-means | ✓ |  |  |
-| 94 | averages-root-mean-square | ✓ | 63.592ms | 18.8 MB |
-| 95 | averages-simple-moving-average |   |  |  |
+| 94 | averages-root-mean-square | ✓ | 25.824ms | 18.8 MB |
+| 95 | averages-simple-moving-average | ✓ |  |  |
 | 96 | avl-tree |   |  |  |
 | 97 | b-zier-curves-intersections |   |  |  |
 | 98 | babbage-problem |   |  |  |
