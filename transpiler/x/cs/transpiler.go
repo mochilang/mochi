@@ -783,7 +783,12 @@ func (ie *InExpr) emit(w io.Writer) {
 // ExprStmt represents a statement consisting solely of an expression.
 type ExprStmt struct{ Expr Expr }
 
-func (s *ExprStmt) emit(w io.Writer) { s.Expr.emit(w) }
+func (s *ExprStmt) emit(w io.Writer) {
+	if r, ok := s.Expr.(*RawExpr); ok && strings.TrimSpace(r.Code) == "null" {
+		return
+	}
+	s.Expr.emit(w)
+}
 
 type CallExpr struct {
 	Func string
@@ -2052,6 +2057,16 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	importAliases = make(map[string]string)
 	varAliases = make(map[string]string)
 	aliasCounter = 0
+	for name, typ := range env.Types() {
+		if ft, ok := typ.(types.FuncType); ok {
+			params := make([]string, len(ft.Params))
+			for i, p := range ft.Params {
+				params[i] = csTypeFromType(p)
+			}
+			funParams[name] = params
+			funRets[name] = csTypeFromType(ft.Return)
+		}
+	}
 	for _, st := range p.Statements {
 		s, err := compileStmt(prog, st)
 		if err != nil {
@@ -3149,6 +3164,15 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 		if alias, ok := varAliases[name]; ok {
 			name = alias
 		}
+		if types, ok := funParams[name]; ok {
+			for i, arg := range args {
+				if list, ok2 := arg.(*ListLit); ok2 && len(list.Elems) == 0 && (list.ElemType == "" || list.ElemType == "object[]") {
+					if i < len(types) && strings.HasSuffix(types[i], "[]") {
+						list.ElemType = types[i]
+					}
+				}
+			}
+		}
 		if name == "now" && len(args) == 0 {
 			usesNow = true
 			return &RawExpr{Code: "_now()", Type: "long"}, nil
@@ -3299,6 +3323,10 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			if len(args) == 1 {
 				usesLinq = true
 				return &MaxExpr{Arg: args[0]}, nil
+			}
+		case "slice":
+			if len(args) == 3 {
+				return &SliceExpr{Value: args[0], Start: args[1], End: args[2]}, nil
 			}
 		case "substring":
 			if len(args) == 3 {
@@ -3506,6 +3534,36 @@ func compileMatchExpr(me *parser.MatchExpr) (Expr, error) {
 	body.WriteString("; ")
 	retType := "object"
 	for i, c := range me.Cases {
+		if lit, err := compileExpr(c.Pattern); err == nil {
+			switch lit.(type) {
+			case *IntLit, *StringLit, *BoolLit:
+				res, err := compileExpr(c.Result)
+				if err != nil {
+					return nil, err
+				}
+				t := typeOfExpr(res)
+				if t != "" {
+					if retType == "object" {
+						retType = t
+					} else if retType != t {
+						retType = "object"
+					}
+				}
+				if i > 0 {
+					body.WriteString(" else ")
+				}
+				body.WriteString("if (__t == ")
+				var lbuf bytes.Buffer
+				lit.emit(&lbuf)
+				body.WriteString(lbuf.String())
+				body.WriteString(") { ")
+				var rbuf bytes.Buffer
+				res.emit(&rbuf)
+				body.WriteString("return " + rbuf.String() + "; }")
+				continue
+			}
+		}
+
 		name, vars, ok := structPattern(c.Pattern)
 		if !ok {
 			return nil, fmt.Errorf("unsupported match pattern")

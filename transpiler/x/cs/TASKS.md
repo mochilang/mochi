@@ -1,3 +1,138 @@
+## Progress (2025-07-27 07:48 UTC)
+- transpiler/cs: predeclare funcs; add slice builtin (progress 103/104)
+
+## Progress (2025-07-27 07:48 UTC)
+- transpiler/cs: predeclare funcs; add slice builtin (progress 103/104)
+
+## Progress (2025-07-27 07:48 UTC)
+- transpiler/cs: predeclare funcs; add slice builtin (progress 103/104)
+
+## Progress (2025-07-27 07:48 UTC)
+- transpiler/cs: predeclare funcs; add slice builtin (progress 103/104)
+
+## Progress (2025-07-27 07:48 UTC)
+- transpiler/cs: predeclare funcs; add slice builtin (progress 103/104)
+
+## Progress (2025-07-27 07:48 UTC)
+- transpiler/cs: predeclare funcs; add slice builtin (progress 103/104)
+
+## Progress (2025-07-27 07:48 UTC)
+- transpiler/cs: predeclare funcs; add slice builtin (progress 103/104)
+
+## Progress (2025-07-27 07:48 UTC)
+- transpiler/cs: predeclare funcs; add slice builtin (progress 103/104)
+
+## Progress (2025-07-27 07:48 UTC)
+- transpiler/cs: predeclare funcs; add slice builtin (progress 103/104)
+
+## Progress (2025-07-27 07:48 UTC)
+- transpiler/cs: predeclare funcs; add slice builtin (progress 103/104)
+
+## Progress (2025-07-27 07:48 UTC)
+- transpiler/cs: predeclare funcs; add slice builtin (progress 103/104)
+
+## Progress (2025-07-27 07:48 UTC)
+- transpiler/cs: predeclare funcs; add slice builtin (progress 103/104)
+
+## Progress (2025-07-27 07:48 UTC)
+- transpiler/cs: predeclare funcs; add slice builtin (progress 103/104)
+
+## Progress (2025-07-27 07:48 UTC)
+- transpiler/cs: predeclare funcs; add slice builtin (progress 103/104)
+
+## Progress (2025-07-27 07:48 UTC)
+- transpiler/cs: predeclare funcs; add slice builtin (progress 103/104)
+
+## Progress (2025-07-27 07:48 UTC)
+- transpiler/cs: predeclare funcs; add slice builtin (progress 103/104)
+
+## Progress (2025-07-27 07:48 UTC)
+- transpiler/cs: predeclare funcs; add slice builtin (progress 103/104)
+
+## Progress (2025-07-27 07:48 UTC)
+- transpiler/cs: predeclare funcs; add slice builtin (progress 103/104)
+
+## Progress (2025-07-27 07:48 UTC)
+- transpiler/cs: predeclare funcs; add slice builtin (progress 103/104)
+
+## Progress (2025-07-27 07:48 UTC)
+- transpiler/cs: predeclare funcs; add slice builtin (progress 103/104)
+
+## Progress (2025-07-27 07:48 UTC)
+- transpiler/cs: predeclare funcs; add slice builtin (progress 103/104)
+
+## Progress (2025-07-27 07:48 UTC)
+- transpiler/cs: predeclare funcs; add slice builtin (progress 103/104)
+
+## Progress (2025-07-27 07:48 UTC)
+- transpiler/cs: predeclare funcs; add slice builtin (progress 103/104)
+
+## Progress (2025-07-27 07:48 UTC)
+- transpiler/cs: predeclare funcs; add slice builtin (progress 103/104)
+
+## Progress (2025-07-27 07:48 UTC)
+- transpiler/cs: predeclare funcs; add slice builtin (progress 103/104)
+
+## Progress (2025-07-27 07:48 UTC)
+- transpiler/cs: predeclare funcs; add slice builtin (progress 103/104)
+
+## Progress (2025-07-27 07:48 UTC)
+- transpiler/cs: predeclare funcs; add slice builtin (progress 103/104)
+
+## Progress (2025-07-27 07:48 UTC)
+- transpiler/cs: predeclare funcs; add slice builtin (progress 103/104)
+
+## Progress (2025-07-27 07:48 UTC)
+- transpiler/cs: predeclare funcs; add slice builtin (progress 103/104)
+
+## Progress (2025-07-27 07:48 UTC)
+- transpiler/cs: predeclare funcs; add slice builtin (progress 103/104)
+
+## Progress (2025-07-27 07:48 UTC)
+- transpiler/cs: predeclare funcs; add slice builtin (progress 103/104)
+
+## Progress (2025-07-27 07:48 UTC)
+- transpiler/cs: predeclare funcs; add slice builtin (progress 103/104)
+
+## Progress (2025-07-27 07:48 UTC)
+- transpiler/cs: predeclare funcs; add slice builtin (progress 103/104)
+
+## Progress (2025-07-27 07:48 UTC)
+- transpiler/cs: predeclare funcs; add slice builtin (progress 103/104)
+
+## Progress (2025-07-27 07:48 UTC)
+- transpiler/cs: predeclare funcs; add slice builtin (progress 103/104)
+
+## Progress (2025-07-27 07:48 UTC)
+- transpiler/cs: predeclare funcs; add slice builtin (progress 103/104)
+
+## Progress (2025-07-27 07:48 UTC)
+- transpiler/cs: predeclare funcs; add slice builtin (progress 103/104)
+
+## Progress (2025-07-27 07:48 UTC)
+- transpiler/cs: predeclare funcs; add slice builtin (progress 103/104)
+
+## Progress (2025-07-27 07:48 UTC)
+- transpiler/cs: predeclare funcs; add slice builtin (progress 103/104)
+
+## Progress (2025-07-27 07:48 UTC)
+- transpiler/cs: predeclare funcs; add slice builtin (progress 103/104)
+
+## Progress (2025-07-27 07:44 UTC)
+- transpiler/cs: fix empty list argument typing (progress 103/104)
+
+## Progress (2025-07-27 07:44 UTC)
+- transpiler/cs: fix empty list argument typing (progress 103/104)
+
+## Progress (2025-07-27 07:44 UTC)
+- transpiler/cs: fix empty list argument typing (progress 103/104)
+
+## Progress (2025-07-27 14:37 +0700)
+- transpiler: refresh rosetta progress timestamp (progress 103/104)
+
+## Progress (2025-07-27 14:37 +0700)
+- transpiler: refresh rosetta progress timestamp (progress 103/104)
+
 ## Progress (2025-07-27 12:32 +0700)
 - transpiler/ts: support async fetch (progress 103/104)
 
@@ -961,6 +1096,51 @@
 
 ## Progress (2025-07-22 03:14 +0000)
 - cs transpiler: 100/102 tests compiled
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
