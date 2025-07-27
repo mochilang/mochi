@@ -1,0 +1,69 @@
+// Mochi implementation of Rosetta "Farey sequence" task
+// Translated from Go version in tests/rosetta/x/Go/farey-sequence.go
+
+type Frac {
+  num: int
+  den: int
+}
+
+fun fracStr(f: Frac): string {
+  return str(f.num) + "/" + str(f.den)
+}
+
+fun gen(l: Frac, r: Frac, n: int, acc: list<Frac>): list<Frac> {
+  let m = Frac{ num: l.num + r.num, den: l.den + r.den }
+  if m.den <= n {
+    acc = gen(l, m, n, acc)
+    acc = append(acc, m)
+    acc = gen(m, r, n, acc)
+  }
+  return acc
+}
+
+fun totient(n: int): int {
+  var tot = n
+  var nn = n
+  var p = 2
+  while p * p <= nn {
+    if nn % p == 0 {
+      while nn % p == 0 {
+        nn = nn / p
+      }
+      tot = tot - tot / p
+    }
+    if p == 2 { p = 1 }
+    p = p + 2
+  }
+  if nn > 1 {
+    tot = tot - tot / nn
+  }
+  return tot
+}
+
+fun main() {
+  var n = 1
+  while n <= 11 {
+    let l = Frac{ num: 0, den: 1 }
+    let r = Frac{ num: 1, den: 1 }
+    var seq = gen(l, r, n, [])
+    var line = "F(" + str(n) + "): " + fracStr(l)
+    for f in seq { line = line + " " + fracStr(f) }
+    line = line + " " + fracStr(r)
+    print(line)
+    n = n + 1
+  }
+
+  var sum = 1
+  var i = 1
+  var next = 100
+  while i <= 1000 {
+    sum = sum + totient(i)
+    if i == next {
+      print("|F(" + str(i) + ")|: " + str(sum))
+      next = next + 100
+    }
+    i = i + 1
+  }
+}
+
+main()
