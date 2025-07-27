@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated TypeScript code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/TypeScript`.
-Last updated: 2025-07-27 10:18 UTC
+Last updated: 2025-07-27 11:47 UTC
 
 ## Rosetta Golden Test Checklist (442/465)
 | Index | Name | Status | Duration | Memory |
@@ -57,56 +57,56 @@ Last updated: 2025-07-27 10:18 UTC
 | 48 | anagrams | ✓ | 3.341ms | 544.0 KB |
 | 49 | angle-difference-between-two-bearings-1 | ✓ | 1.079ms | 128.0 KB |
 | 50 | angle-difference-between-two-bearings-2 | ✓ | 3.64ms | 384.0 KB |
-| 51 | angles-geometric-normalization-and-conversion | ✓ | 1.471ms | 512.0 KB |
-| 52 | animate-a-pendulum | ✓ | 687µs | 128.0 KB |
-| 53 | animation | ✓ | 1.145ms | 256.0 KB |
-| 54 | anonymous-recursion-1 | ✓ | 591µs | 128.0 KB |
-| 55 | anonymous-recursion-2 | ✓ | 5.577ms | 128.0 KB |
-| 56 | anonymous-recursion | ✓ | 649µs | 128.0 KB |
-| 57 | anti-primes | ✓ | 40.119ms | 7.7 MB |
-| 58 | append-a-record-to-the-end-of-a-text-file | ✓ | 491µs | 128.0 KB |
-| 59 | apply-a-callback-to-an-array-1 | ✓ | 424µs |  |
-| 60 | apply-a-callback-to-an-array-2 | ✓ | 614µs |  |
-| 61 | apply-a-digital-filter-direct-form-ii-transposed- | ✓ | 1.163ms | 128.0 KB |
-| 62 | approximate-equality | ✓ | 953µs | 384.0 KB |
-| 63 | arbitrary-precision-integers-included- | ✓ | 731µs | 256.0 KB |
-| 64 | archimedean-spiral | ✓ | 6.855ms | 10.7 MB |
-| 65 | arena-storage-pool | ✓ | 687µs | 128.0 KB |
-| 66 | arithmetic-complex | ✓ | 870µs | 384.0 KB |
-| 67 | arithmetic-derivative | ✓ | 2.564ms | 3.8 MB |
-| 68 | arithmetic-evaluation | ✓ | 866µs | 256.0 KB |
-| 69 | arithmetic-geometric-mean-calculate-pi | ✓ | 631µs | 2.2 MB |
-| 70 | arithmetic-geometric-mean | ✓ | 603µs | 2.0 MB |
-| 71 | arithmetic-integer-1 | ✓ | 454µs |  |
-| 72 | arithmetic-integer-2 | ✓ | 487µs | 128.0 KB |
-| 73 | arithmetic-numbers | ✓ |  |  |
-| 74 | arithmetic-rational | ✓ | 947µs | 384.0 KB |
-| 75 | array-concatenation | ✓ | 779µs | 256.0 KB |
-| 76 | array-length | ✓ | 606µs |  |
-| 77 | arrays | ✓ | 2.229ms | 128.0 KB |
-| 78 | ascending-primes | ✓ | 7.87ms | 3.4 MB |
-| 79 | ascii-art-diagram-converter | ✓ | 2.688ms | 128.0 KB |
-| 80 | assertions | ✓ | 565µs | 128.0 KB |
-| 81 | associative-array-creation | ✓ | 1.139ms |  |
-| 82 | associative-array-iteration | ✓ | 953µs |  |
-| 83 | associative-array-merging | ✓ | 2.997ms | 520.0 KB |
-| 84 | atomic-updates | ✓ | 1.1ms | 128.0 KB |
-| 85 | attractive-numbers | ✓ | 1.386ms | 128.0 KB |
-| 86 | average-loop-length | ✓ | 166.34ms | 9.8 MB |
-| 87 | averages-arithmetic-mean | ✓ | 2.374ms | 384.0 KB |
-| 88 | averages-mean-time-of-day | ✓ | 2.374ms | 128.0 KB |
-| 89 | averages-median-1 | ✓ | 776µs |  |
-| 90 | averages-median-2 | ✓ | 738µs | 128.0 KB |
-| 91 | averages-median-3 | ✓ | 1.154ms | 384.0 KB |
-| 92 | averages-mode | ✓ | 729µs | 128.0 KB |
-| 93 | averages-pythagorean-means | ✓ | 932µs | 1.0 MB |
-| 94 | averages-root-mean-square | ✓ | 623µs | 128.0 KB |
-| 95 | averages-simple-moving-average | ✓ | 1.831ms | 128.0 KB |
-| 96 | avl-tree | ✓ | 3.342ms | 256.0 KB |
-| 97 | b-zier-curves-intersections | ✓ | 10.368ms | 4.1 MB |
-| 98 | babbage-problem | ✓ | 2.369ms | 1.9 MB |
+| 51 | angles-geometric-normalization-and-conversion | ✓ | 5.523ms | 384.0 KB |
+| 52 | animate-a-pendulum | ✓ | 1.571ms | 128.0 KB |
+| 53 | animation | ✓ | 3.15ms | 256.0 KB |
+| 54 | anonymous-recursion-1 | ✓ | 1.495ms | 128.0 KB |
+| 55 | anonymous-recursion-2 | ✓ | 1.956ms | 128.0 KB |
+| 56 | anonymous-recursion | ✓ | 2.127ms | 128.0 KB |
+| 57 | anti-primes | ✓ | 73.347ms | 7.8 MB |
+| 58 | append-a-record-to-the-end-of-a-text-file | ✓ | 647µs | 128.0 KB |
+| 59 | apply-a-callback-to-an-array-1 | ✓ | 641µs |  |
+| 60 | apply-a-callback-to-an-array-2 | ✓ | 904µs |  |
+| 61 | apply-a-digital-filter-direct-form-ii-transposed- | ✓ | 1.449ms | 128.0 KB |
+| 62 | approximate-equality | ✓ | 2.253ms | 384.0 KB |
+| 63 | arbitrary-precision-integers-included- | ✓ | 596µs | 128.0 KB |
+| 64 | archimedean-spiral | ✓ | 17.52ms | 10.2 MB |
+| 65 | arena-storage-pool | ✓ | 1.091ms | 128.0 KB |
+| 66 | arithmetic-complex | ✓ | 2.095ms | 384.0 KB |
+| 67 | arithmetic-derivative | ✓ | 6.845ms | 3.2 MB |
+| 68 | arithmetic-evaluation | ✓ | 1.818ms | 128.0 KB |
+| 69 | arithmetic-geometric-mean-calculate-pi | ✓ | 655µs | 128.0 KB |
+| 70 | arithmetic-geometric-mean | ✓ | 699µs |  |
+| 71 | arithmetic-integer-1 | ✓ | 904µs | 128.0 KB |
+| 72 | arithmetic-integer-2 | ✓ | 803µs | 128.0 KB |
+| 73 | arithmetic-numbers | ✓ | 400.931ms | 62.7 MB |
+| 74 | arithmetic-rational | ✓ | 2.378ms | 256.0 KB |
+| 75 | array-concatenation | ✓ | 707µs |  |
+| 76 | array-length | ✓ | 627µs |  |
+| 77 | arrays | ✓ | 1.685ms |  |
+| 78 | ascending-primes | ✓ | 6.023ms | 3.1 MB |
+| 79 | ascii-art-diagram-converter | ✓ | 1.893ms | 256.0 KB |
+| 80 | assertions | ✓ | 601µs | 128.0 KB |
+| 81 | associative-array-creation | ✓ | 1.055ms |  |
+| 82 | associative-array-iteration | ✓ | 1.118ms | 128.0 KB |
+| 83 | associative-array-merging | ✓ | 3.086ms | 420.0 KB |
+| 84 | atomic-updates | ✓ | 1.299ms | 256.0 KB |
+| 85 | attractive-numbers | ✓ | 1.294ms | 128.0 KB |
+| 86 | average-loop-length | ✓ | 51.604ms | 10.0 MB |
+| 87 | averages-arithmetic-mean | ✓ | 2.926ms | 256.0 KB |
+| 88 | averages-mean-time-of-day | ✓ | 1.96ms | 128.0 KB |
+| 89 | averages-median-1 | ✓ | 749µs |  |
+| 90 | averages-median-2 | ✓ | 1.592ms | 128.0 KB |
+| 91 | averages-median-3 | ✓ | 1.589ms | 384.0 KB |
+| 92 | averages-mode | ✓ | 687µs |  |
+| 93 | averages-pythagorean-means | ✓ | 1.485ms | 1.1 MB |
+| 94 | averages-root-mean-square | ✓ | 643µs | 128.0 KB |
+| 95 | averages-simple-moving-average | ✓ | 4.851ms | 384.0 KB |
+| 96 | avl-tree | ✓ | 3.924ms | 256.0 KB |
+| 97 | b-zier-curves-intersections | ✓ | 8.869ms | 3.8 MB |
+| 98 | babbage-problem | ✓ | 2.737ms | 1.6 MB |
 | 99 | babylonian-spiral | ✓ | 5.177ms | 512.0 KB |
-| 100 | balanced-brackets | ✓ | 2.465ms | 256.0 KB |
+| 100 | balanced-brackets | ✓ | 1.951ms |  |
 | 101 | balanced-ternary | ✓ | 3.115ms | 384.0 KB |
 | 102 | barnsley-fern | ✓ | 23.236ms | 6.7 MB |
 | 103 | base64-decode-data | ✓ | 3.452ms | 1.8 MB |
