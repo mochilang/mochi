@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Rust code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/Rust`.
-Last updated: 2025-07-27 10:27 UTC
+Last updated: 2025-07-27 15:42 UTC
 
-## Rosetta Golden Test Checklist (85/465)
+## Rosetta Golden Test Checklist (87/467)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 109µs | 3.2 MB |
@@ -120,8 +120,8 @@ Last updated: 2025-07-27 10:27 UTC
 | 111 | binary-search | ✓ | 24µs |  |
 | 112 | binary-strings | ✓ | 71µs |  |
 | 113 | bioinformatics-base-count | ✓ | 97µs |  |
-| 114 | bioinformatics-global-alignment |   |  |  |
-| 115 | bioinformatics-sequence-mutation |   |  |  |
+| 114 | bioinformatics-global-alignment | ✓ | 8.254982s | 8.3 MB |
+| 115 | bioinformatics-sequence-mutation | ✓ | 16.24ms | 92.0 KB |
 | 116 | biorhythms |   |  |  |
 | 117 | bitcoin-address-validation |   |  |  |
 | 118 | bitmap-b-zier-curves-cubic |   |  |  |
@@ -415,60 +415,62 @@ Last updated: 2025-07-27 10:27 UTC
 | 406 | fibonacci-sequence-2 |   |  |  |
 | 407 | fibonacci-sequence-3 |   |  |  |
 | 408 | fibonacci-sequence-4 |   |  |  |
-| 409 | fibonacci-word-fractal |   |  |  |
-| 410 | fibonacci-word |   |  |  |
-| 411 | file-extension-is-in-extensions-list |   |  |  |
-| 412 | file-input-output-1 |   |  |  |
-| 413 | file-input-output-2 |   |  |  |
-| 414 | file-modification-time |   |  |  |
-| 415 | file-size-distribution |   |  |  |
-| 416 | file-size |   |  |  |
-| 417 | filter |   |  |  |
-| 418 | find-chess960-starting-position-identifier |   |  |  |
-| 419 | find-common-directory-path |   |  |  |
-| 420 | find-duplicate-files |   |  |  |
-| 421 | find-if-a-point-is-within-a-triangle |   |  |  |
-| 422 | find-largest-left-truncatable-prime-in-a-given-base |   |  |  |
-| 423 | find-limit-of-recursion |   |  |  |
-| 424 | find-palindromic-numbers-in-both-binary-and-ternary-bases |   |  |  |
-| 425 | find-the-intersection-of-a-line-with-a-plane |   |  |  |
-| 426 | find-the-intersection-of-two-lines |   |  |  |
-| 427 | find-the-last-sunday-of-each-month |   |  |  |
-| 428 | find-the-missing-permutation |   |  |  |
-| 429 | fivenum-1 |   |  |  |
-| 430 | fivenum-2 |   |  |  |
-| 431 | fixed-length-records-1 |   |  |  |
-| 432 | fixed-length-records-2 |   |  |  |
-| 433 | fizzbuzz-1 |   |  |  |
-| 434 | fizzbuzz-2 |   |  |  |
-| 435 | flatten-a-list-1 |   |  |  |
-| 436 | flatten-a-list-2 |   |  |  |
-| 437 | flipping-bits-game |   |  |  |
-| 438 | flow-control-structures-1 |   |  |  |
-| 439 | flow-control-structures-2 |   |  |  |
-| 440 | flow-control-structures-3 |   |  |  |
-| 441 | flow-control-structures-4 |   |  |  |
-| 442 | floyd-warshall-algorithm |   |  |  |
-| 443 | floyds-triangle |   |  |  |
-| 444 | forest-fire |   |  |  |
-| 445 | fork |   |  |  |
-| 446 | ftp |   |  |  |
-| 447 | gamma-function |   |  |  |
-| 448 | general-fizzbuzz |   |  |  |
-| 449 | generic-swap |   |  |  |
-| 450 | get-system-command-output |   |  |  |
-| 451 | giuga-numbers |   |  |  |
-| 452 | globally-replace-text-in-several-files |   |  |  |
-| 453 | goldbachs-comet |   |  |  |
-| 454 | golden-ratio-convergence |   |  |  |
-| 455 | graph-colouring |   |  |  |
-| 456 | gray-code |   |  |  |
-| 457 | http |   |  |  |
-| 458 | image-noise |   |  |  |
-| 459 | loops-increment-loop-index-within-loop-body |   |  |  |
-| 460 | md5 |   |  |  |
-| 461 | nim-game |   |  |  |
-| 462 | plasma-effect |   |  |  |
-| 463 | sorting-algorithms-bubble-sort |   |  |  |
-| 464 | window-management |   |  |  |
-| 465 | zumkeller-numbers |   |  |  |
+| 409 | fibonacci-sequence-5 |   |  |  |
+| 410 | fibonacci-word-fractal |   |  |  |
+| 411 | fibonacci-word |   |  |  |
+| 412 | file-extension-is-in-extensions-list |   |  |  |
+| 413 | file-input-output-1 |   |  |  |
+| 414 | file-input-output-2 |   |  |  |
+| 415 | file-input-output-3 |   |  |  |
+| 416 | file-modification-time |   |  |  |
+| 417 | file-size-distribution |   |  |  |
+| 418 | file-size |   |  |  |
+| 419 | filter |   |  |  |
+| 420 | find-chess960-starting-position-identifier |   |  |  |
+| 421 | find-common-directory-path |   |  |  |
+| 422 | find-duplicate-files |   |  |  |
+| 423 | find-if-a-point-is-within-a-triangle |   |  |  |
+| 424 | find-largest-left-truncatable-prime-in-a-given-base |   |  |  |
+| 425 | find-limit-of-recursion |   |  |  |
+| 426 | find-palindromic-numbers-in-both-binary-and-ternary-bases |   |  |  |
+| 427 | find-the-intersection-of-a-line-with-a-plane |   |  |  |
+| 428 | find-the-intersection-of-two-lines |   |  |  |
+| 429 | find-the-last-sunday-of-each-month |   |  |  |
+| 430 | find-the-missing-permutation |   |  |  |
+| 431 | fivenum-1 |   |  |  |
+| 432 | fivenum-2 |   |  |  |
+| 433 | fixed-length-records-1 |   |  |  |
+| 434 | fixed-length-records-2 |   |  |  |
+| 435 | fizzbuzz-1 |   |  |  |
+| 436 | fizzbuzz-2 |   |  |  |
+| 437 | flatten-a-list-1 |   |  |  |
+| 438 | flatten-a-list-2 |   |  |  |
+| 439 | flipping-bits-game |   |  |  |
+| 440 | flow-control-structures-1 |   |  |  |
+| 441 | flow-control-structures-2 |   |  |  |
+| 442 | flow-control-structures-3 |   |  |  |
+| 443 | flow-control-structures-4 |   |  |  |
+| 444 | floyd-warshall-algorithm |   |  |  |
+| 445 | floyds-triangle |   |  |  |
+| 446 | forest-fire |   |  |  |
+| 447 | fork |   |  |  |
+| 448 | ftp |   |  |  |
+| 449 | gamma-function |   |  |  |
+| 450 | general-fizzbuzz |   |  |  |
+| 451 | generic-swap |   |  |  |
+| 452 | get-system-command-output |   |  |  |
+| 453 | giuga-numbers |   |  |  |
+| 454 | globally-replace-text-in-several-files |   |  |  |
+| 455 | goldbachs-comet |   |  |  |
+| 456 | golden-ratio-convergence |   |  |  |
+| 457 | graph-colouring |   |  |  |
+| 458 | gray-code |   |  |  |
+| 459 | http |   |  |  |
+| 460 | image-noise |   |  |  |
+| 461 | loops-increment-loop-index-within-loop-body |   |  |  |
+| 462 | md5 |   |  |  |
+| 463 | nim-game |   |  |  |
+| 464 | plasma-effect |   |  |  |
+| 465 | sorting-algorithms-bubble-sort |   |  |  |
+| 466 | window-management |   |  |  |
+| 467 | zumkeller-numbers |   |  |  |

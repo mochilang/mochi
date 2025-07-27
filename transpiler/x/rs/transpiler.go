@@ -611,11 +611,15 @@ func (i *IndexExpr) emit(w io.Writer) {
 				t.emit(w)
 			}
 			io.WriteString(w, "[")
-			if inferType(i.Index) != "String" {
+			idxT := inferType(i.Index)
+			if idxT == "" && strings.HasPrefix(inferType(i.Target), "HashMap<String") {
+				idxT = "String"
+			}
+			if idxT != "String" {
 				io.WriteString(w, "&")
 			}
 			i.Index.emit(w)
-			if inferType(i.Index) == "String" {
+			if idxT == "String" {
 				io.WriteString(w, ".as_str()")
 			}
 			io.WriteString(w, "]")
@@ -633,6 +637,24 @@ func (i *IndexExpr) emit(w io.Writer) {
 					t.emit(w)
 					io.WriteString(w, ".")
 					io.WriteString(w, key)
+					return
+				}
+			}
+		}
+		if num, ok := i.Index.(*NumberLit); ok {
+			if st, ok2 := structTypes[inferType(i.Target)]; ok2 {
+				idx, _ := strconv.Atoi(num.Value)
+				if idx >= 0 && idx < len(st.Order) {
+					field := st.Order[idx]
+					t.emit(w)
+					io.WriteString(w, ".")
+					io.WriteString(w, field)
+					if !indexLHS {
+						vt := rustTypeFromType(st.Fields[field])
+						if vt != "i64" && vt != "bool" && vt != "f64" {
+							io.WriteString(w, ".clone()")
+						}
+					}
 					return
 				}
 			}
@@ -1272,6 +1294,21 @@ func (s *IndexAssignStmt) emit(w io.Writer) {
 						indexLHS = old
 						return
 					}
+				}
+			}
+		}
+		if num, ok := idx.Index.(*NumberLit); ok {
+			if st, ok2 := structTypes[inferType(idx.Target)]; ok2 {
+				idxVal, _ := strconv.Atoi(num.Value)
+				if idxVal >= 0 && idxVal < len(st.Order) {
+					field := st.Order[idxVal]
+					idx.Target.emit(w)
+					io.WriteString(w, ".")
+					io.WriteString(w, field)
+					io.WriteString(w, " = ")
+					s.Value.emit(w)
+					indexLHS = old
+					return
 				}
 			}
 		}
@@ -2906,7 +2943,7 @@ func compileFunStmt(fn *parser.FunStmt) (Stmt, error) {
 			}
 		}
 	}
-	if ret == "" || strings.HasPrefix(ret, "HashMap") {
+	if ret == "" || strings.HasPrefix(ret, "HashMap") || strings.HasPrefix(ret, "Vec<") {
 		var out string
 		for _, st := range body {
 			if r, ok := st.(*ReturnStmt); ok && r.Value != nil {
@@ -2922,7 +2959,7 @@ func compileFunStmt(fn *parser.FunStmt) (Stmt, error) {
 		if out != "" {
 			ret = out
 		}
-		if strings.HasPrefix(ret, "HashMap") {
+		if strings.HasPrefix(ret, "HashMap") || strings.HasPrefix(ret, "Vec<") {
 			if name := findReturnStructSlice(body); name != "" {
 				ret = name
 			}
@@ -4277,6 +4314,8 @@ func inferType(e Expr) string {
 		switch ex.Name {
 		case "contains":
 			return "bool"
+		case "to_string":
+			return "String"
 		}
 		if nr, ok := ex.Receiver.(*NameRef); ok && nr.Name == "math" {
 			return "f64"
@@ -5282,6 +5321,14 @@ func rewriteReturnStruct(st Stmt, name string, typ types.StructType) Stmt {
 				}
 			}
 			s.Value = &StructLit{Name: name, Fields: fields, Names: typ.Order}
+		} else if ll, ok := s.Value.(*ListLit); ok {
+			fields := make([]Expr, len(typ.Order))
+			for i, el := range ll.Elems {
+				if i < len(fields) {
+					fields[i] = el
+				}
+			}
+			s.Value = &StructLit{Name: name, Fields: fields, Names: typ.Order}
 		}
 		return s
 	case *IfStmt:
@@ -5335,6 +5382,37 @@ func findReturnStruct(st Stmt) string {
 			}
 			name, ok := structSig[strings.Join(sig, ";")]
 			if ok {
+				return name
+			}
+		case *ListLit:
+			if len(v.Elems) == 0 {
+				return ""
+			}
+			tps := make([]string, len(v.Elems))
+			same := true
+			for i, el := range v.Elems {
+				tps[i] = inferType(el)
+				if i > 0 && tps[i] != tps[0] {
+					same = false
+				}
+			}
+			if !same {
+				sig := "list:" + strings.Join(tps, ";")
+				if name, ok := structSig[sig]; ok {
+					return name
+				}
+				name := types.UniqueStructName("Ret", curEnv, nil)
+				st := types.StructType{Fields: map[string]types.Type{}, Order: make([]string, len(tps))}
+				fields := make([]Param, len(tps))
+				for i, t := range tps {
+					fname := fmt.Sprintf("f%d", i)
+					st.Fields[fname] = typeFromString(t)
+					st.Order[i] = fname
+					fields[i] = Param{Name: fname, Type: rustTypeFromType(st.Fields[fname])}
+				}
+				structTypes[name] = st
+				typeDecls = append(typeDecls, &StructDecl{Name: name, Fields: fields})
+				structSig[sig] = name
 				return name
 			}
 		}
