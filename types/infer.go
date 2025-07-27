@@ -236,6 +236,15 @@ func inferPostfixType(env *Env, p *parser.PostfixExpr) Type {
 				t = tt.Elem
 			case MapType:
 				t = tt.Value
+			case StructType:
+				if key, ok := SimpleStringKey(op.Index.Start); ok {
+					if ft, ok2 := tt.Fields[key]; ok2 {
+						t = ft
+					} else {
+						t = AnyType{}
+					}
+					continue
+				}
 			case StringType:
 				t = StringType{}
 			default:
