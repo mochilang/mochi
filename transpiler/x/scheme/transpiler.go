@@ -296,6 +296,13 @@ func header() []byte {
 	prelude += "\n(define (_lt a b) (cond ((and (number? a) (number? b)) (< a b)) ((and (string? a) (string? b)) (string<? a b)) (else (< a b))))"
 	prelude += "\n(define (_ge a b) (cond ((and (number? a) (number? b)) (>= a b)) ((and (string? a) (string? b)) (string>=? a b)) (else (>= a b))))"
 	prelude += "\n(define (_le a b) (cond ((and (number? a) (number? b)) (<= a b)) ((and (string? a) (string? b)) (string<=? a b)) (else (<= a b))))"
+	prelude += `
+(define (_add a b)
+  (cond ((and (number? a) (number? b)) (+ a b))
+        ((string? a) (string-append a (to-str b)))
+        ((string? b) (string-append (to-str a) b))
+        ((and (list? a) (list? b)) (append a b))
+        (else (+ a b))))`
 	prelude += "\n(define (indexOf s sub)" +
 		" (let ((cur (string-contains s sub)))" +
 		"   (if cur (string-cursor->index s cur) -1)))"
@@ -2341,6 +2348,8 @@ func makeBinaryTyped(op string, left, right Node, lt, rt types.Type) Node {
 			return &List{Elems: []Node{Symbol("_gt"), left, right}}
 		case ">=":
 			return &List{Elems: []Node{Symbol("_ge"), left, right}}
+		case "+":
+			return &List{Elems: []Node{Symbol("_add"), left, right}}
 		}
 	}
 	return makeBinary(op, left, right)
