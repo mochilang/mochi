@@ -2,9 +2,9 @@
 
 Generated Kotlin sources for Rosetta Code tests are stored in `tests/rosetta/transpiler/Kotlin`.
 
-Last updated: 2025-07-27 23:38 +0700
+Last updated: 2025-07-28 00:37 +0700
 
-Completed tasks: **74/467**
+Completed tasks: **78/467**
 
 ### Checklist
 | Index | Name | Status | Duration | Memory |
@@ -90,14 +90,14 @@ Completed tasks: **74/467**
 | 79 | ascii-art-diagram-converter | ✓ | 5.01ms | 130.9 KB |
 | 80 | assertions | ✓ | 2.99ms | 134.0 KB |
 | 81 | associative-array-creation |  |  |  |
-| 82 | associative-array-iteration | ✓ | 15.12ms | 118.4 KB |
-| 83 | associative-array-merging | ✓ | 10.43ms | 114.6 KB |
-| 84 | atomic-updates |  |  |  |
-| 85 | attractive-numbers |  |  |  |
-| 86 | average-loop-length |  |  |  |
-| 87 | averages-arithmetic-mean |  |  |  |
-| 88 | averages-mean-time-of-day |  |  |  |
-| 89 | averages-median-1 |  |  |  |
+| 82 | associative-array-iteration |  |  |  |
+| 83 | associative-array-merging |  |  |  |
+| 84 | atomic-updates | ✓ | 11.17ms | 114.8 KB |
+| 85 | attractive-numbers | ✓ | 5.01ms | 134.0 KB |
+| 86 | average-loop-length | ✓ | 244.04ms | 847.4 KB |
+| 87 | averages-arithmetic-mean | ✓ | 12.80ms | 110.5 KB |
+| 88 | averages-mean-time-of-day | ✓ | 23.52ms | 124.8 KB |
+| 89 | averages-median-1 | ✓ | 10.06ms | 113.8 KB |
 | 90 | averages-median-2 |  |  |  |
 | 91 | averages-median-3 |  |  |  |
 | 92 | averages-mode |  |  |  |
