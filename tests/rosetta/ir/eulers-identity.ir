@@ -1,0 +1,198 @@
+func main (regs=3)
+  // let PI = 3.141592653589793
+  Const        r1, 3.141592653589793
+  Move         r0, r1
+  SetGlobal    0,0,0,0
+  // main()
+  Call         r2, main, 
+  Return       r0
+
+  // fun sinApprox(x: float): float {
+func sinApprox (regs=21)
+  // var term = x
+  Move         r2, r1
+  // var sum = x
+  Move         r3, r1
+  // var n = 1
+  Const        r4, 1
+  Move         r5, r4
+L1:
+  // while n <= 10 {
+  Const        r6, 10
+  LessEqInt    r7, r5, r6
+  JumpIfFalse  r7, L0
+  // let denom = ((2*n)*(2*n+1)) as float
+  Const        r8, 2
+  MulInt       r9, r8, r5
+  Const        r8, 2
+  MulInt       r10, r8, r5
+  Const        r4, 1
+  AddInt       r11, r10, r4
+  MulInt       r12, r9, r11
+  Cast         r13, r12, float
+  Move         r14, r13
+  // term = -term * x * x / denom
+  Neg          r15, r2
+  Mul          r16, r15, r1
+  Mul          r17, r16, r1
+  Div          r18, r17, r14
+  Move         r2, r18
+  // sum = sum + term
+  Add          r19, r3, r2
+  Move         r3, r19
+  // n = n + 1
+  Const        r4, 1
+  AddInt       r20, r5, r4
+  Move         r5, r20
+  // while n <= 10 {
+  Jump         L1
+L0:
+  // return sum
+  Return       r3
+
+  // fun cosApprox(x: float): float {
+func cosApprox (regs=22)
+  // var term = 1.0
+  Const        r2, 1.0
+  Move         r3, r2
+  // var sum = 1.0
+  Const        r2, 1.0
+  Move         r4, r2
+  // var n = 1
+  Const        r5, 1
+  Move         r6, r5
+L1:
+  // while n <= 10 {
+  Const        r7, 10
+  LessEqInt    r8, r6, r7
+  JumpIfFalse  r8, L0
+  // let denom = ((2*n-1)*(2*n)) as float
+  Const        r9, 2
+  MulInt       r10, r9, r6
+  Const        r5, 1
+  SubInt       r11, r10, r5
+  Const        r9, 2
+  MulInt       r12, r9, r6
+  MulInt       r13, r11, r12
+  Cast         r14, r13, float
+  Move         r15, r14
+  // term = -term * x * x / denom
+  NegFloat     r16, r3
+  MulFloat     r17, r16, r1
+  MulFloat     r18, r17, r1
+  DivFloat     r19, r18, r15
+  Move         r3, r19
+  // sum = sum + term
+  AddFloat     r20, r4, r3
+  Move         r4, r20
+  // n = n + 1
+  Const        r5, 1
+  AddInt       r21, r6, r5
+  Move         r6, r21
+  // while n <= 10 {
+  Jump         L1
+L0:
+  // return sum
+  Return       r4
+
+  // fun cis(x: float): Complex {
+func cis (regs=13)
+  // return Complex { re: cosApprox(x), im: sinApprox(x) }
+  Move         r2, r1
+  Call         r3, cosApprox, r2
+  Move         r4, r1
+  Call         r5, sinApprox, r4
+  Const        r6, "__name"
+  Const        r7, "Complex"
+  Const        r8, "re"
+  Move         r9, r3
+  Const        r10, "im"
+  Move         r11, r5
+  MakeMap      r12, 3, r6
+  Return       r12
+
+  // fun add(a: Complex, b: Complex): Complex {
+func add (regs=18)
+  // return Complex { re: a.re + b.re, im: a.im + b.im }
+  Const        r3, "re"
+  Index        r4, r1, r3
+  Const        r3, "re"
+  Index        r5, r2, r3
+  Add          r6, r4, r5
+  Const        r7, "im"
+  Index        r8, r1, r7
+  Const        r7, "im"
+  Index        r9, r2, r7
+  Add          r10, r8, r9
+  Const        r11, "__name"
+  Const        r12, "Complex"
+  Const        r13, "re"
+  Move         r14, r6
+  Const        r15, "im"
+  Move         r16, r10
+  MakeMap      r17, 3, r11
+  Return       r17
+
+  // fun cstr(a: Complex): string {
+func cstr (regs=23)
+  // var s = "(" + str(a.re)
+  Const        r2, "("
+  Const        r3, "re"
+  Index        r4, r1, r3
+  Str          r5, r4
+  Add          r6, r2, r5
+  Move         r7, r6
+  // if a.im >= 0 {
+  Const        r8, "im"
+  Index        r9, r1, r8
+  Const        r10, 0
+  LessEq       r11, r10, r9
+  JumpIfFalse  r11, L0
+  // s = s + "+" + str(a.im) + "i)"
+  Const        r12, "+"
+  Add          r13, r7, r12
+  Const        r8, "im"
+  Index        r14, r1, r8
+  Str          r15, r14
+  Add          r16, r13, r15
+  Const        r17, "i)"
+  Add          r18, r16, r17
+  Move         r7, r18
+  // if a.im >= 0 {
+  Jump         L1
+L0:
+  // s = s + str(a.im) + "i)"
+  Const        r8, "im"
+  Index        r19, r1, r8
+  Str          r20, r19
+  Add          r21, r7, r20
+  Const        r17, "i)"
+  Add          r22, r21, r17
+  Move         r7, r22
+L1:
+  // return s
+  Return       r7
+
+  // fun main() {
+func main (regs=18)
+  // let result = add(cis(PI), Complex { re: 1.0, im: 0.0 })
+  Move         r3, r0
+  Call         r4, cis, r3
+  Move         r1, r4
+  Const        r5, 1.0
+  Const        r6, 0.0
+  Const        r7, "__name"
+  Const        r8, "Complex"
+  Const        r9, "re"
+  Move         r10, r5
+  Const        r11, "im"
+  Move         r12, r6
+  MakeMap      r13, 3, r7
+  Move         r2, r13
+  Call2        r14, add, r1, r2
+  Move         r15, r14
+  // print(cstr(result))
+  Move         r16, r15
+  Call         r17, cstr, r16
+  Print        r17
+  Return       r0

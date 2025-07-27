@@ -1,0 +1,11 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun main() {
+func main (regs=1)
+  // print("Hello World!")
+  Const        r0, "Hello World!"
+  Print        r0
+  Return       r0

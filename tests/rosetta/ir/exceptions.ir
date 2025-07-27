@@ -1,0 +1,52 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun foo(): string {
+func foo (regs=12)
+  // print("let's foo...")
+  Const        r0, "let's foo..."
+  Print        r0
+  // var a: list<int> = []
+  Const        r1, []
+  Move         r2, r1
+  // if 12 >= len(a) {
+  Const        r3, 12
+  Const        r4, 0
+  LessEqInt    r5, r4, r3
+  JumpIfFalse  r5, L0
+  // return "runtime error: index out of range [12] with length " + str(len(a))
+  Const        r6, "runtime error: index out of range [12] with length "
+  Const        r7, 0
+  Const        r8, "0"
+  Const        r9, "runtime error: index out of range [12] with length 0"
+  Return       r9
+L0:
+  // a[12] = 0
+  Const        r10, 0
+  Const        r3, 12
+  SetIndex     r2, r3, r10
+  // return ""
+  Const        r11, ""
+  Return       r11
+
+  // fun main() {
+func main (regs=8)
+  // let err = foo()
+  Call         r0, foo, 
+  Move         r1, r0
+  // if len(err) > 0 {
+  Len          r2, r1
+  Const        r3, 0
+  LessInt      r4, r3, r2
+  JumpIfFalse  r4, L0
+  // print("Recovered from " + err)
+  Const        r5, "Recovered from "
+  Add          r6, r5, r1
+  Print        r6
+L0:
+  // print("glad that's over.")
+  Const        r7, "glad that's over."
+  Print        r7
+  Return       r0

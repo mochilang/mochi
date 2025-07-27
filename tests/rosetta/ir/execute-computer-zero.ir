@@ -1,0 +1,160 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun floorMod(a: int, b: int): int {
+func floorMod (regs=7)
+  // var r = a % b
+  Mod          r2, r0, r1
+  Move         r3, r2
+  // if r < 0 { r = r + b }
+  Const        r4, 0
+  Less         r5, r3, r4
+  JumpIfFalse  r5, L0
+  Add          r6, r3, r1
+  Move         r3, r6
+L0:
+  // return r
+  Return       r3
+
+  // fun run(bc: list<int>): int {
+func run (regs=41)
+  // var acc = 0
+  Const        r1, 0
+  Move         r2, r1
+  // var pc = 0
+  Const        r1, 0
+  Move         r3, r1
+L2:
+  // while pc < 32 {
+  Const        r4, 32
+  LessInt      r5, r3, r4
+  JumpIfFalse  r5, L0
+  // let op = bc[pc] / 32
+  Index        r6, r0, r3
+  Const        r4, 32
+  Div          r7, r6, r4
+  Move         r8, r7
+  // let arg = bc[pc] % 32
+  Index        r9, r0, r3
+  Const        r4, 32
+  Mod          r10, r9, r4
+  Move         r11, r10
+  // pc = pc + 1
+  Const        r12, 1
+  AddInt       r13, r3, r12
+  Move         r3, r13
+  // if op == 0 {
+  Const        r1, 0
+  Equal        r14, r8, r1
+  JumpIfFalse  r14, L1
+  Jump         L2
+L1:
+  // } else if op == 1 {
+  Const        r12, 1
+  Equal        r15, r8, r12
+  JumpIfFalse  r15, L3
+  // acc = bc[arg]
+  Index        r16, r0, r11
+  Move         r2, r16
+  // } else if op == 1 {
+  Jump         L2
+L3:
+  // } else if op == 2 {
+  Const        r17, 2
+  Equal        r18, r8, r17
+  JumpIfFalse  r18, L4
+  // bc[arg] = acc
+  SetIndex     r0, r11, r2
+  // } else if op == 2 {
+  Jump         L2
+L4:
+  // } else if op == 3 {
+  Const        r19, 3
+  Equal        r20, r8, r19
+  JumpIfFalse  r20, L5
+  // acc = floorMod(acc + bc[arg], 256)
+  Index        r23, r0, r11
+  Add          r24, r2, r23
+  Move         r21, r24
+  Const        r25, 256
+  Move         r22, r25
+  Call2        r26, floorMod, r21, r22
+  Move         r2, r26
+  // } else if op == 3 {
+  Jump         L2
+L5:
+  // } else if op == 4 {
+  Const        r27, 4
+  Equal        r28, r8, r27
+  JumpIfFalse  r28, L6
+  // acc = floorMod(acc - bc[arg], 256)
+  Index        r31, r0, r11
+  Sub          r32, r2, r31
+  Move         r29, r32
+  Const        r25, 256
+  Move         r30, r25
+  Call2        r33, floorMod, r29, r30
+  Move         r2, r33
+  // } else if op == 4 {
+  Jump         L2
+L6:
+  // } else if op == 5 {
+  Const        r34, 5
+  Equal        r35, r8, r34
+  JumpIfFalse  r35, L7
+  // if acc == 0 { pc = arg }
+  Const        r1, 0
+  Equal        r36, r2, r1
+  JumpIfFalse  r36, L2
+  Move         r3, r11
+  // } else if op == 5 {
+  Jump         L2
+L7:
+  // } else if op == 6 {
+  Const        r37, 6
+  Equal        r38, r8, r37
+  JumpIfFalse  r38, L8
+  // pc = arg
+  Move         r3, r11
+  // } else if op == 6 {
+  Jump         L2
+L8:
+  // } else if op == 7 {
+  Const        r39, 7
+  Equal        r40, r8, r39
+  JumpIfFalse  r40, L0
+L0:
+  // return acc
+  Return       r2
+
+  // fun main() {
+func main (regs=13)
+  // let programs: list<list<int>> = [
+  Const        r0, [[35, 100, 224, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [44, 106, 76, 43, 141, 75, 168, 192, 44, 224, 8, 7, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [46, 79, 109, 78, 47, 77, 48, 145, 171, 80, 192, 46, 224, 1, 1, 0, 8, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [45, 111, 69, 112, 71, 0, 78, 0, 171, 79, 192, 46, 224, 32, 0, 28, 1, 0, 0, 0, 6, 0, 2, 26, 5, 20, 3, 30, 1, 22, 4, 24], [35, 132, 224, 0, 255, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [35, 132, 224, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [35, 100, 224, 1, 255, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
+  Move         r1, r0
+  // var i = 0
+  Const        r2, 0
+  Move         r3, r2
+L1:
+  // while i < len(programs) {
+  Const        r4, 7
+  LessInt      r5, r3, r4
+  JumpIfFalse  r5, L0
+  // let res = run(programs[i])
+  Index        r7, r1, r3
+  Move         r6, r7
+  Call         r8, run, r6
+  Move         r9, r8
+  // print(str(res))
+  Str          r10, r9
+  Print        r10
+  // i = i + 1
+  Const        r11, 1
+  AddInt       r12, r3, r11
+  Move         r3, r12
+  // while i < len(programs) {
+  Jump         L1
+L0:
+  Return       r0

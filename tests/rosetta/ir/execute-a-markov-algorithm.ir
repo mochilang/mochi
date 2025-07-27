@@ -1,0 +1,636 @@
+func main (regs=3)
+  // var testSet = [
+  Const        r1, [{"output": "I bought a bag of apples from my brother.", "ruleSet": "# This rules file is extracted from Wikipedia:\n# http://en.wikipedia.org/wiki/Markov_Algorithm\nA -> apple\nB -> bag\nS -> shop\nT -> the\nthe shop -> my brother\na never used -> .terminating rule\n", "sample": "I bought a B of As from T S."}, {"output": "I bought a bag of apples from T shop.", "ruleSet": "# Slightly modified from the rules on Wikipedia\nA -> apple\nB -> bag\nS -> .shop\nT -> the\nthe shop -> my brother\na never used -> .terminating rule\n", "sample": "I bought a B of As from T S."}, {"output": "I bought a bag of apples with my money from T shop.", "ruleSet": "# BNF Syntax testing rules\nA -> apple\nWWWW -> with\nBgage -> ->.*\nB -> bag\n->.* -> money\nW -> WW\nS -> .shop\nT -> the\nthe shop -> my brother\na never used -> .terminating rule\n", "sample": "I bought a B of As W my Bgage from T S."}, {"output": "11111111111111111111", "ruleSet": "### Unary Multiplication Engine, for testing Markov Algorithm implementations\n### By Donal Fellows.\n# Unary addition engine\n_+1 -> _1+\n1+1 -> 11+\n# Pass for converting from the splitting of multiplication into ordinary\n# addition\n1! -> !1\n,! -> !+\n_! -> _\n# Unary multiplication by duplicating left side, right side times\n1*1 -> x,@y\n1x -> xX\nX, -> 1,1\nX1 -> 1X\n_x -> _X\n,x -> ,X\ny1 -> 1y\ny_ -> _\n# Next phase of applying\n1@1 -> x,@y\n1@_ -> @_\n,@_ -> !_\n++ -> +\n# Termination cleanup for addition\n_1 -> 1\n1+_ -> 1\n_+_ ->\n", "sample": "_1111*11111_"}, {"output": "00011H1111000", "ruleSet": "# Turing machine: three-state busy beaver\n#\n# state A, symbol 0 => write 1, move right, new state B\nA0 -> 1B\n# state A, symbol 1 => write 1, move left, new state C\n0A1 -> C01\n1A1 -> C11\n# state B, symbol 0 => write 1, move left, new state A\n0B0 -> A01\n1B0 -> A11\n# state B, symbol 1 => write 1, move right, new state B\nB1 -> 1B\n# state C, symbol 0 => write 1, move left, new state B\n0C0 -> B01\n1C0 -> B11\n# state C, symbol 1 => write 1, move left, halt\n0C1 -> H01\n1C1 -> H11\n", "sample": "000000A000000"}]
+  Move         r0, r1
+  SetGlobal    0,0,0,0
+  // main()
+  Call         r2, main, 
+  Return       r0
+
+  // fun split(s: string, sep: string): list<string> {
+func split (regs=31)
+  // var parts: list<string> = []
+  Const        r3, []
+  Move         r4, r3
+  // var cur = ""
+  Const        r5, ""
+  Move         r6, r5
+  // var i = 0
+  Const        r7, 0
+  Move         r8, r7
+L3:
+  // while i < len(s) {
+  Len          r9, r1
+  LessInt      r10, r8, r9
+  JumpIfFalse  r10, L0
+  // if len(sep) > 0 && i+len(sep) <= len(s) && substring(s, i, i+len(sep)) == sep {
+  Len          r11, r2
+  Len          r12, r2
+  AddInt       r13, r8, r12
+  Const        r7, 0
+  LessInt      r14, r7, r11
+  Len          r15, r1
+  LessEqInt    r16, r13, r15
+  Len          r17, r2
+  AddInt       r18, r8, r17
+  Slice        r19, r1, r8, r18
+  Equal        r20, r19, r2
+  Move         r21, r14
+  JumpIfFalse  r21, L1
+  Move         r21, r16
+  JumpIfFalse  r21, L1
+  Move         r21, r20
+L1:
+  JumpIfFalse  r21, L2
+  // parts = append(parts, cur)
+  Append       r22, r4, r6
+  Move         r4, r22
+  // cur = ""
+  Const        r5, ""
+  Move         r6, r5
+  // i = i + len(sep)
+  Len          r23, r2
+  AddInt       r24, r8, r23
+  Move         r8, r24
+  // if len(sep) > 0 && i+len(sep) <= len(s) && substring(s, i, i+len(sep)) == sep {
+  Jump         L3
+L2:
+  // cur = cur + substring(s, i, i+1)
+  Const        r25, 1
+  AddInt       r26, r8, r25
+  Slice        r27, r1, r8, r26
+  Add          r28, r6, r27
+  Move         r6, r28
+  // i = i + 1
+  Const        r25, 1
+  AddInt       r29, r8, r25
+  Move         r8, r29
+  // while i < len(s) {
+  Jump         L3
+L0:
+  // parts = append(parts, cur)
+  Append       r30, r4, r6
+  Move         r4, r30
+  // return parts
+  Return       r4
+
+  // fun trimSpace(s: string): string {
+func trimSpace (regs=41)
+  // var start = 0
+  Const        r2, 0
+  Move         r3, r2
+L3:
+  // while start < len(s) && (s[start:start+1] == " " || s[start:start+1] == "\t") {
+  Len          r4, r1
+  LessInt      r5, r3, r4
+  Move         r6, r5
+  JumpIfFalse  r6, L0
+  Move         r7, r3
+  Const        r9, 1
+  AddInt       r10, r3, r9
+  Move         r8, r10
+  Slice        r11, r1, r7, r8
+  Const        r12, " "
+  Equal        r13, r11, r12
+  Move         r14, r3
+  Const        r9, 1
+  AddInt       r16, r3, r9
+  Move         r15, r16
+  Slice        r17, r1, r14, r15
+  Const        r18, "\t"
+  Equal        r19, r17, r18
+  Move         r20, r13
+  JumpIfTrue   r20, L1
+  Move         r20, r19
+L1:
+  Move         r6, r20
+L0:
+  JumpIfFalse  r6, L2
+  // start = start + 1
+  Const        r9, 1
+  AddInt       r21, r3, r9
+  Move         r3, r21
+  // while start < len(s) && (s[start:start+1] == " " || s[start:start+1] == "\t") {
+  Jump         L3
+L2:
+  // var end = len(s)
+  Len          r22, r1
+  Move         r23, r22
+L7:
+  // while end > start && (s[end-1:end] == " " || s[end-1:end] == "\t") {
+  LessInt      r24, r3, r23
+  Move         r25, r24
+  JumpIfFalse  r25, L4
+  Const        r9, 1
+  SubInt       r27, r23, r9
+  Move         r26, r27
+  Move         r28, r23
+  Slice        r29, r1, r26, r28
+  Const        r12, " "
+  Equal        r30, r29, r12
+  Const        r9, 1
+  SubInt       r32, r23, r9
+  Move         r31, r32
+  Move         r33, r23
+  Slice        r34, r1, r31, r33
+  Const        r18, "\t"
+  Equal        r35, r34, r18
+  Move         r36, r30
+  JumpIfTrue   r36, L5
+  Move         r36, r35
+L5:
+  Move         r25, r36
+L4:
+  JumpIfFalse  r25, L6
+  // end = end - 1
+  Const        r9, 1
+  SubInt       r37, r23, r9
+  Move         r23, r37
+  // while end > start && (s[end-1:end] == " " || s[end-1:end] == "\t") {
+  Jump         L7
+L6:
+  // return s[start:end]
+  Move         r38, r3
+  Move         r39, r23
+  Slice        r40, r1, r38, r39
+  Return       r40
+
+  // fun indexOfSub(s: string, sub: string): int {
+func indexOfSub (regs=18)
+  // if len(sub) == 0 { return 0 }
+  Len          r3, r2
+  Const        r4, 0
+  EqualInt     r5, r3, r4
+  JumpIfFalse  r5, L0
+  Const        r4, 0
+  Return       r4
+L0:
+  // var i = 0
+  Const        r4, 0
+  Move         r6, r4
+L3:
+  // while i + len(sub) <= len(s) {
+  Len          r7, r2
+  AddInt       r8, r6, r7
+  Len          r9, r1
+  LessEqInt    r10, r8, r9
+  JumpIfFalse  r10, L1
+  // if substring(s, i, i+len(sub)) == sub { return i }
+  Len          r11, r2
+  AddInt       r12, r6, r11
+  Slice        r13, r1, r6, r12
+  Equal        r14, r13, r2
+  JumpIfFalse  r14, L2
+  Return       r6
+L2:
+  // i = i + 1
+  Const        r15, 1
+  AddInt       r16, r6, r15
+  Move         r6, r16
+  // while i + len(sub) <= len(s) {
+  Jump         L3
+L1:
+  // return 0 - 1
+  Const        r4, 0
+  Const        r15, 1
+  SubInt       r17, r4, r15
+  Return       r17
+
+  // fun parseRules(rs: string): map<string, any> {
+func parseRules (regs=134)
+  // var rules: list<map<string, any>> = []
+  Const        r2, []
+  Move         r3, r2
+  // for line in split(rs, "\n") {
+  Move         r4, r1
+  Const        r6, "\n"
+  Move         r5, r6
+  Call2        r7, split, r4, r5
+  IterPrep     r8, r7
+  Len          r9, r8
+  Const        r10, 0
+L16:
+  LessInt      r11, r10, r9
+  JumpIfFalse  r11, L0
+  Index        r12, r8, r10
+  Move         r13, r12
+  // var ln = line
+  Move         r14, r13
+  // let hash = indexOfSub(ln, "#")
+  Move         r15, r14
+  Const        r17, "#"
+  Move         r16, r17
+  Call2        r18, indexOfSub, r15, r16
+  Move         r19, r18
+  // if hash >= 0 { ln = ln[:hash] }
+  Const        r20, 0
+  LessEq       r21, r20, r19
+  JumpIfFalse  r21, L1
+  Const        r22, nil
+  Move         r23, r19
+  Slice        r24, r14, r22, r23
+  Move         r14, r24
+L1:
+  // ln = trimSpace(ln)
+  Move         r25, r14
+  Call         r26, trimSpace, r25
+  Move         r14, r26
+  // if len(ln) == 0 { continue }
+  Len          r27, r14
+  Const        r20, 0
+  EqualInt     r28, r27, r20
+  JumpIfFalse  r28, L2
+  Jump         L3
+L2:
+  // var arrow = 0 - 1
+  Const        r20, 0
+  Const        r29, 1
+  SubInt       r30, r20, r29
+  Move         r31, r30
+  // var j = 0
+  Const        r20, 0
+  Move         r32, r20
+L11:
+  // while j+2 <= len(ln) {
+  Const        r33, 2
+  AddInt       r34, r32, r33
+  Len          r35, r14
+  LessEqInt    r36, r34, r35
+  JumpIfFalse  r36, L4
+  // if substring(ln, j, j+2) == "->" {
+  Const        r33, 2
+  AddInt       r37, r32, r33
+  Slice        r38, r14, r32, r37
+  Const        r39, "->"
+  Equal        r40, r38, r39
+  JumpIfFalse  r40, L5
+  // var pre = j > 0 && (ln[j-1:j] == " " || ln[j-1:j] == "\t")
+  Const        r20, 0
+  LessInt      r41, r20, r32
+  Move         r42, r41
+  JumpIfFalse  r42, L6
+  Const        r29, 1
+  SubInt       r44, r32, r29
+  Move         r43, r44
+  Move         r45, r32
+  Slice        r46, r14, r43, r45
+  Const        r47, " "
+  Equal        r48, r46, r47
+  Const        r29, 1
+  SubInt       r50, r32, r29
+  Move         r49, r50
+  Move         r51, r32
+  Slice        r52, r14, r49, r51
+  Const        r53, "\t"
+  Equal        r54, r52, r53
+  Move         r55, r48
+  JumpIfTrue   r55, L7
+  Move         r55, r54
+L7:
+  Move         r42, r55
+L6:
+  Move         r56, r42
+  // var post = j+2 < len(ln) && (ln[j+2:j+3] == " " || ln[j+2:j+3] == "\t")
+  Const        r33, 2
+  AddInt       r57, r32, r33
+  Len          r58, r14
+  LessInt      r59, r57, r58
+  Move         r60, r59
+  JumpIfFalse  r60, L8
+  Const        r33, 2
+  AddInt       r62, r32, r33
+  Move         r61, r62
+  Const        r64, 3
+  AddInt       r65, r32, r64
+  Move         r63, r65
+  Slice        r66, r14, r61, r63
+  Const        r47, " "
+  Equal        r67, r66, r47
+  Const        r33, 2
+  AddInt       r69, r32, r33
+  Move         r68, r69
+  Const        r64, 3
+  AddInt       r71, r32, r64
+  Move         r70, r71
+  Slice        r72, r14, r68, r70
+  Const        r53, "\t"
+  Equal        r73, r72, r53
+  Move         r74, r67
+  JumpIfTrue   r74, L9
+  Move         r74, r73
+L9:
+  Move         r60, r74
+L8:
+  Move         r75, r60
+  // if pre && post { arrow = j; break }
+  Move         r76, r56
+  JumpIfFalse  r76, L10
+  Move         r76, r75
+L10:
+  JumpIfFalse  r76, L5
+  Move         r31, r32
+  Jump         L4
+L5:
+  // j = j + 1
+  Const        r29, 1
+  AddInt       r77, r32, r29
+  Move         r32, r77
+  // while j+2 <= len(ln) {
+  Jump         L11
+L4:
+  // if arrow < 0 { arrow = indexOfSub(ln, "->") }
+  Const        r20, 0
+  LessInt      r78, r31, r20
+  JumpIfFalse  r78, L12
+  Move         r79, r14
+  Const        r39, "->"
+  Move         r80, r39
+  Call2        r81, indexOfSub, r79, r80
+  Move         r31, r81
+L12:
+  // if arrow < 0 { return {"ok": false} }
+  Const        r20, 0
+  Less         r82, r31, r20
+  JumpIfFalse  r82, L13
+  Const        r83, {"ok": false}
+  Return       r83
+L13:
+  // var pat = trimSpace(ln[:arrow])
+  Const        r85, nil
+  Move         r86, r31
+  Slice        r87, r14, r85, r86
+  Move         r84, r87
+  Call         r88, trimSpace, r84
+  Move         r89, r88
+  // var rest = trimSpace(ln[arrow+2:len(ln)])
+  Const        r33, 2
+  Add          r92, r31, r33
+  Move         r91, r92
+  Len          r94, r14
+  Move         r93, r94
+  Slice        r95, r14, r91, r93
+  Move         r90, r95
+  Call         r96, trimSpace, r90
+  Move         r97, r96
+  // var term = false
+  Const        r98, false
+  Move         r99, r98
+  // if len(rest) > 0 && rest[0:1] == "." {
+  Len          r100, r97
+  Const        r20, 0
+  LessInt      r101, r20, r100
+  Const        r20, 0
+  Move         r102, r20
+  Const        r29, 1
+  Move         r103, r29
+  Slice        r104, r97, r102, r103
+  Const        r105, "."
+  Equal        r106, r104, r105
+  Move         r107, r101
+  JumpIfFalse  r107, L14
+  Move         r107, r106
+L14:
+  JumpIfFalse  r107, L15
+  // term = true
+  Const        r108, true
+  Move         r99, r108
+  // rest = rest[1:len(rest)]
+  Const        r29, 1
+  Move         r109, r29
+  Len          r111, r97
+  Move         r110, r111
+  Slice        r112, r97, r109, r110
+  Move         r97, r112
+L15:
+  // var rep = rest
+  Move         r113, r97
+  // rules = append(rules, {"pat": pat, "rep": rep, "term": term})
+  Const        r114, "pat"
+  Const        r115, "rep"
+  Const        r116, "term"
+  Move         r117, r114
+  Move         r118, r89
+  Move         r119, r115
+  Move         r120, r113
+  Move         r121, r116
+  Move         r122, r99
+  MakeMap      r123, 3, r117
+  Append       r124, r3, r123
+  Move         r3, r124
+L3:
+  // for line in split(rs, "\n") {
+  Const        r125, 1
+  AddInt       r126, r10, r125
+  Move         r10, r126
+  Jump         L16
+L0:
+  // return {"ok": true, "rules": rules}
+  Const        r127, "ok"
+  Const        r108, true
+  Const        r128, "rules"
+  Move         r129, r127
+  Move         r130, r108
+  Move         r131, r128
+  Move         r132, r3
+  MakeMap      r133, 2, r129
+  Return       r133
+
+  // fun runRules(rules: list<map<string, any>>, s: string): string {
+func runRules (regs=38)
+  // var changed = true
+  Const        r3, true
+  Move         r4, r3
+L1:
+  // while changed {
+  JumpIfFalse  r4, L0
+  // changed = false
+  Const        r5, false
+  Move         r4, r5
+  // var i = 0
+  Const        r6, 0
+  Move         r7, r6
+L3:
+  // while i < len(rules) {
+  Len          r8, r1
+  LessInt      r9, r7, r8
+  JumpIfFalse  r9, L1
+  // let r = rules[i]
+  Index        r10, r1, r7
+  Move         r11, r10
+  // let pat = r["pat"]
+  Const        r12, "pat"
+  Index        r13, r11, r12
+  Move         r14, r13
+  // let rep = r["rep"]
+  Const        r15, "rep"
+  Index        r16, r11, r15
+  Move         r17, r16
+  // let term = r["term"]
+  Const        r18, "term"
+  Index        r19, r11, r18
+  Move         r20, r19
+  // let idx = indexOfSub(s, pat)
+  Move         r21, r2
+  Move         r22, r14
+  Call2        r23, indexOfSub, r21, r22
+  Move         r24, r23
+  // if idx >= 0 {
+  Const        r6, 0
+  LessEq       r25, r6, r24
+  JumpIfFalse  r25, L2
+  // s = s[:idx] + rep + s[idx+len(pat):]
+  Const        r26, nil
+  Move         r27, r24
+  Slice        r28, r2, r26, r27
+  Add          r29, r28, r17
+  Len          r31, r14
+  Add          r32, r24, r31
+  Move         r30, r32
+  Const        r33, nil
+  Slice        r34, r2, r30, r33
+  Add          r35, r29, r34
+  Move         r2, r35
+  // changed = true
+  Const        r3, true
+  Move         r4, r3
+  // if term { return s }
+  JumpIfFalse  r20, L1
+  Return       r2
+L2:
+  // i = i + 1
+  Const        r36, 1
+  AddInt       r37, r7, r36
+  Move         r7, r37
+  // while i < len(rules) {
+  Jump         L3
+L0:
+  // return s
+  Return       r2
+
+  // fun interpret(ruleset: string, input: string): map<string, any> {
+func interpret (regs=23)
+  // let p = parseRules(ruleset)
+  Move         r3, r1
+  Call         r4, parseRules, r3
+  Move         r5, r4
+  // if !p["ok"] { return {"ok": false, "out": ""} }
+  Const        r6, "ok"
+  Index        r7, r5, r6
+  Not          r8, r7
+  JumpIfFalse  r8, L0
+  Const        r9, {"ok": false, "out": ""}
+  Return       r9
+L0:
+  // let out = runRules(p["rules"], input)
+  Const        r12, "rules"
+  Index        r13, r5, r12
+  Move         r10, r13
+  Move         r11, r2
+  Call2        r14, runRules, r10, r11
+  Move         r15, r14
+  // return {"ok": true, "out": out}
+  Const        r6, "ok"
+  Const        r16, true
+  Const        r17, "out"
+  Move         r18, r6
+  Move         r19, r16
+  Move         r20, r17
+  Move         r21, r15
+  MakeMap      r22, 2, r18
+  Return       r22
+
+  // fun main() {
+func main (regs=53)
+  // print("validating " + str(len(testSet)) + " test cases")
+  Const        r1, "validating "
+  Len          r2, r0
+  Str          r3, r2
+  Add          r4, r1, r3
+  Const        r5, " test cases"
+  Add          r6, r4, r5
+  Print        r6
+  // var failures = false
+  Const        r7, false
+  Move         r8, r7
+  // var i = 0
+  Const        r9, 0
+  Move         r10, r9
+L3:
+  // while i < len(testSet) {
+  Len          r11, r0
+  LessInt      r12, r10, r11
+  JumpIfFalse  r12, L0
+  // let tc = testSet[i]
+  Index        r13, r0, r10
+  Move         r14, r13
+  // let res = interpret(tc["ruleSet"], tc["sample"])
+  Const        r17, "ruleSet"
+  Index        r18, r14, r17
+  Move         r15, r18
+  Const        r19, "sample"
+  Index        r20, r14, r19
+  Move         r16, r20
+  Call2        r21, interpret, r15, r16
+  Move         r22, r21
+  // if !res["ok"] {
+  Const        r23, "ok"
+  Index        r24, r22, r23
+  Not          r25, r24
+  JumpIfFalse  r25, L1
+  // print("test " + str(i+1) + " invalid ruleset")
+  Const        r26, "test "
+  Const        r27, 1
+  AddInt       r28, r10, r27
+  Str          r29, r28
+  Add          r30, r26, r29
+  Const        r31, " invalid ruleset"
+  Add          r32, r30, r31
+  Print        r32
+  // failures = true
+  Const        r33, true
+  Move         r8, r33
+  // if !res["ok"] {
+  Jump         L2
+L1:
+  // } else if res["out"] != tc["output"] {
+  Const        r34, "out"
+  Index        r35, r22, r34
+  Const        r36, "output"
+  Index        r37, r14, r36
+  NotEqual     r38, r35, r37
+  JumpIfFalse  r38, L2
+  // print("test " + str(i+1) + ": got " + res["out"] + ", want " + tc["output"])
+  Const        r26, "test "
+  Const        r27, 1
+  AddInt       r39, r10, r27
+  Str          r40, r39
+  Add          r41, r26, r40
+  Const        r42, ": got "
+  Add          r43, r41, r42
+  Const        r34, "out"
+  Index        r44, r22, r34
+  Add          r45, r43, r44
+  Const        r46, ", want "
+  Add          r47, r45, r46
+  Const        r36, "output"
+  Index        r48, r14, r36
+  Add          r49, r47, r48
+  Print        r49
+  // failures = true
+  Const        r33, true
+  Move         r8, r33
+L2:
+  // i = i + 1
+  Const        r27, 1
+  AddInt       r50, r10, r27
+  Move         r10, r50
+  // while i < len(testSet) {
+  Jump         L3
+L0:
+  // if !failures { print("no failures") }
+  Not          r51, r8
+  JumpIfFalse  r51, L4
+  Const        r52, "no failures"
+  Print        r52
+L4:
+  Return       r0

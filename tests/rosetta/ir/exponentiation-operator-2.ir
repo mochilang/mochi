@@ -1,0 +1,266 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun expI(b: int, p: int): int {
+func expI (regs=9)
+  // var r = 1
+  Const        r2, 1
+  Move         r3, r2
+  // var i = 0
+  Const        r4, 0
+  Move         r5, r4
+L1:
+  // while i < p {
+  Less         r6, r5, r1
+  JumpIfFalse  r6, L0
+  // r = r * b
+  Mul          r7, r3, r0
+  Move         r3, r7
+  // i = i + 1
+  Const        r2, 1
+  AddInt       r8, r5, r2
+  Move         r5, r8
+  // while i < p {
+  Jump         L1
+L0:
+  // return r
+  Return       r3
+
+  // fun expF(b: float, p: int): float {
+func expF (regs=21)
+  // var r = 1.0
+  Const        r2, 1.0
+  Move         r3, r2
+  // var pow = b
+  Move         r4, r0
+  // var n = p
+  Move         r5, r1
+  // var neg = false
+  Const        r6, false
+  Move         r7, r6
+  // if p < 0 {
+  Const        r8, 0
+  Less         r9, r1, r8
+  JumpIfFalse  r9, L0
+  // n = -p
+  Neg          r10, r1
+  Move         r5, r10
+  // neg = true
+  Const        r11, true
+  Move         r7, r11
+L0:
+  // while n > 0 {
+  Const        r8, 0
+  Less         r12, r8, r5
+  JumpIfFalse  r12, L1
+  // if n % 2 == 1 { r = r * pow }
+  Const        r13, 2
+  Mod          r14, r5, r13
+  Const        r15, 1
+  Equal        r16, r14, r15
+  JumpIfFalse  r16, L2
+  MulFloat     r17, r3, r4
+  Move         r3, r17
+L2:
+  // pow = pow * pow
+  Mul          r18, r4, r4
+  Move         r4, r18
+  // n = n / 2
+  Const        r13, 2
+  Div          r19, r5, r13
+  Move         r5, r19
+  // while n > 0 {
+  Jump         L0
+L1:
+  // if neg { r = 1.0 / r }
+  JumpIfFalse  r7, L3
+  Const        r2, 1.0
+  DivFloat     r20, r2, r3
+  Move         r3, r20
+L3:
+  // return r
+  Return       r3
+
+  // fun printExpF(b: float, p: int) {
+func printExpF (regs=25)
+  // if b == 0.0 && p < 0 {
+  Const        r2, 0
+  Less         r3, r1, r2
+  Const        r4, 0.0
+  EqualFloat   r5, r0, r4
+  Move         r6, r5
+  JumpIfFalse  r6, L0
+  Move         r6, r3
+L0:
+  JumpIfFalse  r6, L1
+  // print(str(b) + "^" + str(p) + ": +Inf")
+  Str          r7, r0
+  Const        r8, "^"
+  Add          r9, r7, r8
+  Str          r10, r1
+  Add          r11, r9, r10
+  Const        r12, ": +Inf"
+  Add          r13, r11, r12
+  Print        r13
+  // if b == 0.0 && p < 0 {
+  Jump         L2
+L1:
+  // print(str(b) + "^" + str(p) + ": " + str(expF(b, p)))
+  Str          r14, r0
+  Const        r8, "^"
+  Add          r15, r14, r8
+  Str          r16, r1
+  Add          r17, r15, r16
+  Const        r18, ": "
+  Add          r19, r17, r18
+  Move         r20, r0
+  Move         r21, r1
+  Call2        r22, expF, r20, r21
+  Str          r23, r22
+  Add          r24, r19, r23
+  Print        r24
+L2:
+  Return       r0
+
+  // fun main() {
+func main (regs=80)
+  // print("expI tests")
+  Const        r0, "expI tests"
+  Print        r0
+  // for pair in [[2,10],[2,-10],[-2,10],[-2,11],[11,0]] {
+  Const        r1, [[2, 10], [2, -10], [-2, 10], [-2, 11], [11, 0]]
+  IterPrep     r2, r1
+  Len          r3, r2
+  Const        r4, 0
+L3:
+  LessInt      r5, r4, r3
+  JumpIfFalse  r5, L0
+  Index        r6, r2, r4
+  Move         r7, r6
+  // if pair[1] < 0 {
+  Const        r8, 1
+  Index        r9, r7, r8
+  Const        r10, 0
+  Less         r11, r9, r10
+  JumpIfFalse  r11, L1
+  // print(str(pair[0]) + "^" + str(pair[1]) + ": negative power not allowed")
+  Const        r10, 0
+  Index        r12, r7, r10
+  Str          r13, r12
+  Const        r14, "^"
+  Add          r15, r13, r14
+  Const        r8, 1
+  Index        r16, r7, r8
+  Str          r17, r16
+  Add          r18, r15, r17
+  Const        r19, ": negative power not allowed"
+  Add          r20, r18, r19
+  Print        r20
+  // if pair[1] < 0 {
+  Jump         L2
+L1:
+  // print(str(pair[0]) + "^" + str(pair[1]) + ": " + str(expI(pair[0], pair[1])))
+  Const        r10, 0
+  Index        r21, r7, r10
+  Str          r22, r21
+  Const        r14, "^"
+  Add          r23, r22, r14
+  Const        r8, 1
+  Index        r24, r7, r8
+  Str          r25, r24
+  Add          r26, r23, r25
+  Const        r27, ": "
+  Add          r28, r26, r27
+  Const        r10, 0
+  Index        r31, r7, r10
+  Move         r29, r31
+  Const        r8, 1
+  Index        r32, r7, r8
+  Move         r30, r32
+  Call2        r33, expI, r29, r30
+  Str          r34, r33
+  Add          r35, r28, r34
+  Print        r35
+L2:
+  // for pair in [[2,10],[2,-10],[-2,10],[-2,11],[11,0]] {
+  Const        r36, 1
+  AddInt       r37, r4, r36
+  Move         r4, r37
+  Jump         L3
+L0:
+  // print("overflow undetected")
+  Const        r38, "overflow undetected"
+  Print        r38
+  // print("10^10: " + str(expI(10,10)))
+  Const        r39, "10^10: "
+  Const        r42, 10
+  Move         r40, r42
+  Const        r42, 10
+  Move         r41, r42
+  Call2        r43, expI, r40, r41
+  Str          r44, r43
+  Add          r45, r39, r44
+  Print        r45
+  // print("\nexpF tests:")
+  Const        r46, "\nexpF tests:"
+  Print        r46
+  // for pair in [[2.0,10],[2.0,-10],[-2.0,10],[-2.0,11],[11.0,0]] {
+  Const        r47, [[2.0, 10], [2.0, -10], [-2.0, 10], [-2.0, 11], [11.0, 0]]
+  IterPrep     r48, r47
+  Len          r49, r48
+  Const        r50, 0
+L5:
+  LessInt      r51, r50, r49
+  JumpIfFalse  r51, L4
+  Index        r52, r48, r50
+  Move         r7, r52
+  // printExpF(pair[0], pair[1])
+  Const        r10, 0
+  Index        r55, r7, r10
+  Move         r53, r55
+  Const        r8, 1
+  Index        r56, r7, r8
+  Move         r54, r56
+  Call2        r57, printExpF, r53, r54
+  // for pair in [[2.0,10],[2.0,-10],[-2.0,10],[-2.0,11],[11.0,0]] {
+  Const        r58, 1
+  AddInt       r59, r50, r58
+  Move         r50, r59
+  Jump         L5
+L4:
+  // print("disallowed in expI, allowed here")
+  Const        r60, "disallowed in expI, allowed here"
+  Print        r60
+  // printExpF(0.0,-1)
+  Const        r63, 0.0
+  Move         r61, r63
+  Const        r8, 1
+  NegInt       r64, r8
+  Move         r62, r64
+  Call2        r65, printExpF, r61, r62
+  // print("other interesting cases for 32 bit float type")
+  Const        r66, "other interesting cases for 32 bit float type"
+  Print        r66
+  // printExpF(10.0,39)
+  Const        r69, 10.0
+  Move         r67, r69
+  Const        r70, 39
+  Move         r68, r70
+  Call2        r71, printExpF, r67, r68
+  // printExpF(10.0,-39)
+  Const        r69, 10.0
+  Move         r72, r69
+  Const        r70, 39
+  NegInt       r74, r70
+  Move         r73, r74
+  Call2        r75, printExpF, r72, r73
+  // printExpF(-10.0,39)
+  Const        r69, 10.0
+  NegFloat     r78, r69
+  Move         r76, r78
+  Const        r70, 39
+  Move         r77, r70
+  Call2        r79, printExpF, r76, r77
+  Return       r0

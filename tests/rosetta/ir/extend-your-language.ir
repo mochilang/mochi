@@ -1,0 +1,201 @@
+func main (regs=40)
+  // var a = 0
+  Const        r3, 0
+  Move         r0, r3
+  SetGlobal    0,0,0,0
+  // var b = 1
+  Const        r4, 1
+  Move         r1, r4
+  SetGlobal    1,1,0,0
+  // var t = if2(a == 1, b == 3, fun() { print("a = 1 and b = 3") })
+  Const        r4, 1
+  EqualInt     r8, r0, r4
+  Move         r5, r8
+  Const        r9, 3
+  EqualInt     r10, r1, r9
+  Move         r6, r10
+  MakeClosure  r11, fn5, 0, r0
+  Move         r7, r11
+  Call         r12, if2, r5, r6, r7
+  Move         r2, r12
+  SetGlobal    2,2,0,0
+  // t = else1(t, fun() { print("a = 1 and b <> 3") })
+  Move         r13, r2
+  MakeClosure  r15, fn6, 0, r0
+  Move         r14, r15
+  Call2        r16, else1, r13, r14
+  Move         r2, r16
+  SetGlobal    2,2,0,0
+  // t = else2(t, fun() { print("a <> 1 and b = 3") })
+  Move         r17, r2
+  MakeClosure  r19, fn7, 0, r0
+  Move         r18, r19
+  Call2        r20, else2, r17, r18
+  Move         r2, r20
+  SetGlobal    2,2,0,0
+  // else0(t, fun() { print("a <> 1 and b <> 3") })
+  Move         r21, r2
+  MakeClosure  r23, fn8, 0, r0
+  Move         r22, r23
+  Call2        r24, else0, r21, r22
+  // a = 1
+  Const        r4, 1
+  Move         r0, r4
+  SetGlobal    0,0,0,0
+  // b = 0
+  Const        r3, 0
+  Move         r1, r3
+  SetGlobal    1,1,0,0
+  // t = if2(a == 1, b == 3, fun() { print("a = 1 and b = 3") })
+  Const        r4, 1
+  EqualInt     r28, r0, r4
+  Move         r25, r28
+  Const        r9, 3
+  EqualInt     r29, r1, r9
+  Move         r26, r29
+  MakeClosure  r30, fn9, 0, r0
+  Move         r27, r30
+  Call         r31, if2, r25, r26, r27
+  Move         r2, r31
+  SetGlobal    2,2,0,0
+  // t = else0(t, fun() { print("a <> 1 and b <> 3") })
+  Move         r32, r2
+  MakeClosure  r34, fn10, 0, r0
+  Move         r33, r34
+  Call2        r35, else0, r32, r33
+  Move         r2, r35
+  SetGlobal    2,2,0,0
+  // else1(t, fun() { print("a = 1 and b <> 3") })
+  Move         r36, r2
+  MakeClosure  r38, fn11, 0, r0
+  Move         r37, r38
+  Call2        r39, else1, r36, r37
+  Return       r0
+
+  // fun else1(i: If2, f: fun()): If2 {
+func else1 (regs=13)
+  // if i.cond1 && (i.cond2 == false) { f() }
+  Const        r5, "cond1"
+  Index        r6, r3, r5
+  Move         r7, r6
+  JumpIfFalse  r7, L0
+  Const        r8, "cond2"
+  Index        r9, r3, r8
+  Const        r10, false
+  Equal        r11, r9, r10
+  Move         r7, r11
+L0:
+  JumpIfFalse  r7, L1
+  CallV        r12, r4, 0, r0
+L1:
+  // return i
+  Return       r3
+
+  // fun else2(i: If2, f: fun()): If2 {
+func else2 (regs=13)
+  // if i.cond2 && (i.cond1 == false) { f() }
+  Const        r5, "cond2"
+  Index        r6, r3, r5
+  Move         r7, r6
+  JumpIfFalse  r7, L0
+  Const        r8, "cond1"
+  Index        r9, r3, r8
+  Const        r10, false
+  Equal        r11, r9, r10
+  Move         r7, r11
+L0:
+  JumpIfFalse  r7, L1
+  CallV        r12, r4, 0, r0
+L1:
+  // return i
+  Return       r3
+
+  // fun else0(i: If2, f: fun()): If2 {
+func else0 (regs=14)
+  // if (i.cond1 == false) && (i.cond2 == false) { f() }
+  Const        r5, "cond1"
+  Index        r6, r3, r5
+  Const        r7, false
+  Equal        r8, r6, r7
+  Move         r9, r8
+  JumpIfFalse  r9, L0
+  Const        r10, "cond2"
+  Index        r11, r3, r10
+  Const        r7, false
+  Equal        r12, r11, r7
+  Move         r9, r12
+L0:
+  JumpIfFalse  r9, L1
+  CallV        r13, r4, 0, r0
+L1:
+  // return i
+  Return       r3
+
+  // fun if2(cond1: bool, cond2: bool, f: fun()): If2 {
+func if2 (regs=15)
+  // if cond1 && cond2 { f() }
+  Move         r6, r3
+  JumpIfFalse  r6, L0
+  Move         r6, r4
+L0:
+  JumpIfFalse  r6, L1
+  CallV        r7, r5, 0, r0
+L1:
+  // return If2{ cond1: cond1, cond2: cond2 }
+  Const        r8, "__name"
+  Const        r9, "If2"
+  Const        r10, "cond1"
+  Move         r11, r3
+  Const        r12, "cond2"
+  Move         r13, r4
+  MakeMap      r14, 3, r8
+  Return       r14
+
+  // var t = if2(a == 1, b == 3, fun() { print("a = 1 and b = 3") })
+func fn5 (regs=4)
+  // var t = if2(a == 1, b == 3, fun() { print("a = 1 and b = 3") })
+  Const        r3, "a = 1 and b = 3"
+  Print        r3
+  Return       r0
+
+  // t = else1(t, fun() { print("a = 1 and b <> 3") })
+func fn6 (regs=4)
+  // t = else1(t, fun() { print("a = 1 and b <> 3") })
+  Const        r3, "a = 1 and b <> 3"
+  Print        r3
+  Return       r0
+
+  // t = else2(t, fun() { print("a <> 1 and b = 3") })
+func fn7 (regs=4)
+  // t = else2(t, fun() { print("a <> 1 and b = 3") })
+  Const        r3, "a <> 1 and b = 3"
+  Print        r3
+  Return       r0
+
+  // else0(t, fun() { print("a <> 1 and b <> 3") })
+func fn8 (regs=4)
+  // else0(t, fun() { print("a <> 1 and b <> 3") })
+  Const        r3, "a <> 1 and b <> 3"
+  Print        r3
+  Return       r0
+
+  // t = if2(a == 1, b == 3, fun() { print("a = 1 and b = 3") })
+func fn9 (regs=4)
+  // t = if2(a == 1, b == 3, fun() { print("a = 1 and b = 3") })
+  Const        r3, "a = 1 and b = 3"
+  Print        r3
+  Return       r0
+
+  // t = else0(t, fun() { print("a <> 1 and b <> 3") })
+func fn10 (regs=4)
+  // t = else0(t, fun() { print("a <> 1 and b <> 3") })
+  Const        r3, "a <> 1 and b <> 3"
+  Print        r3
+  Return       r0
+
+  // else1(t, fun() { print("a = 1 and b <> 3") })
+func fn11 (regs=4)
+  // else1(t, fun() { print("a = 1 and b <> 3") })
+  Const        r3, "a = 1 and b <> 3"
+  Print        r3
+  Return       r0
