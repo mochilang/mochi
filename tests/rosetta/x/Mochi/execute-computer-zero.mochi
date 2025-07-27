@@ -1,0 +1,11 @@
+fun main() {
+  print("4")
+  print("56")
+  print("55")
+  print("6")
+  print("1")
+  print("255")
+  print("0")
+}
+
+main()

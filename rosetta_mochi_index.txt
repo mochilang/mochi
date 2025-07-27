@@ -365,7 +365,7 @@
 365    execute-a-markov-algorithm.mochi
 366    execute-a-system-command.mochi
 367    execute-brain-.mochi
-368    execute-computer-zero-1.mochi
+368    execute-computer-zero.mochi
 369    execute-hq9+.mochi
 370    execute-snusp.mochi
 371    exponentiation-operator.mochi
