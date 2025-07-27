@@ -5850,9 +5850,30 @@ func cppTypeFrom(tp types.Type) string {
 		return "std::any"
 	case types.FuncType:
 		if currentProgram != nil {
-			currentProgram.addInclude("<any>")
+			currentProgram.addInclude("<functional>")
 		}
-		return "std::any"
+		ret := "void"
+		if t.Return != nil {
+			ret = cppTypeFrom(t.Return)
+		}
+		if ret == "auto" {
+			if currentProgram != nil {
+				currentProgram.addInclude("<any>")
+			}
+			ret = "std::any"
+		}
+		var params []string
+		for _, p := range t.Params {
+			pt := cppTypeFrom(p)
+			if pt == "auto" {
+				if currentProgram != nil {
+					currentProgram.addInclude("<any>")
+				}
+				pt = "std::any"
+			}
+			params = append(params, pt)
+		}
+		return fmt.Sprintf("std::function<%s(%s)>", ret, strings.Join(params, ", "))
 	case types.ListType:
 		return fmt.Sprintf("std::vector<%s>", cppTypeFrom(t.Elem))
 	case types.MapType:
