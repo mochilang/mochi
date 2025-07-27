@@ -1,3 +1,118 @@
+## Progress (2025-07-27 11:33 +0700)
+- cpp transpiler: ensure bench output even with returns
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 11:33 +0700)
+- cpp transpiler: ensure bench output even with returns
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 11:33 +0700)
+- cpp transpiler: ensure bench output even with returns
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 11:33 +0700)
+- cpp transpiler: ensure bench output even with returns
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 11:33 +0700)
+- cpp transpiler: ensure bench output even with returns
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 11:33 +0700)
+- cpp transpiler: ensure bench output even with returns
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 11:33 +0700)
+- cpp transpiler: ensure bench output even with returns
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 11:33 +0700)
+- cpp transpiler: ensure bench output even with returns
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 11:33 +0700)
+- cpp transpiler: ensure bench output even with returns
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 11:33 +0700)
+- cpp transpiler: ensure bench output even with returns
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 11:33 +0700)
+- cpp transpiler: ensure bench output even with returns
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 11:33 +0700)
+- cpp transpiler: ensure bench output even with returns
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 11:33 +0700)
+- cpp transpiler: ensure bench output even with returns
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 11:33 +0700)
+- cpp transpiler: ensure bench output even with returns
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 11:33 +0700)
+- cpp transpiler: ensure bench output even with returns
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 11:33 +0700)
+- cpp transpiler: ensure bench output even with returns
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 11:33 +0700)
+- cpp transpiler: ensure bench output even with returns
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 11:33 +0700)
+- cpp transpiler: ensure bench output even with returns
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 11:33 +0700)
+- cpp transpiler: ensure bench output even with returns
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 11:33 +0700)
+- cpp transpiler: ensure bench output even with returns
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 11:30 +0700)
+- cpp transpiler: add bigrat and repeat support
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 11:30 +0700)
+- cpp transpiler: add bigrat and repeat support
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 11:30 +0700)
+- cpp transpiler: add bigrat and repeat support
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
 ## Progress (2025-07-27 11:03 +0700)
 - Implement nested exception example
 - Generated C++ for 103/104 programs
