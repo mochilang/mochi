@@ -2,38 +2,38 @@
 
 This checklist is auto-generated.
 Generated IR and outputs from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/ir`.
-Last updated: 2025-07-27 06:52 UTC
+Last updated: 2025-07-27 08:16 UTC
 
-## Rosetta Golden Test Checklist (341/453)
+## Rosetta Golden Test Checklist (342/453)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
-| 1 | 100-doors-2 | ✓ | 116µs | 11.7 KB |
-| 2 | 100-doors-3 | ✓ | 184µs | 7.7 KB |
-| 3 | 100-doors | ✓ | 6.231ms | 851.8 KB |
-| 4 | 100-prisoners | ✓ | 4.224632s | 275.7 KB |
+| 1 | 100-doors-2 | ✓ | 648µs | 34.2 KB |
+| 2 | 100-doors-3 | ✓ | 1.469ms | 246.9 KB |
+| 3 | 100-doors | ✓ | 19.083ms | 1.0 MB |
+| 4 | 100-prisoners | ✓ | 5.420941s | 1.0 MB |
 | 5 | 15-puzzle-game | ✓ |  |  |
-| 6 | 15-puzzle-solver | ✓ | 917.949ms | 26.9 KB |
-| 7 | 2048 | ✓ | 5.393ms |  |
+| 6 | 15-puzzle-solver | ✓ | 1.669001s | 27.3 KB |
+| 7 | 2048 | ✓ | 3ms |  |
 | 8 | 21-game | ✓ | 386µs | 10.0 KB |
-| 9 | 24-game-solve | ✓ | 9.164ms |  |
-| 10 | 24-game | ✓ | 506µs | 17.0 KB |
-| 11 | 4-rings-or-4-squares-puzzle | ✓ | 511.101ms | 5.2 MB |
-| 12 | 9-billion-names-of-god-the-integer | ✓ | 14.291954s | 151.1 MB |
-| 13 | 99-bottles-of-beer-2 | ✓ | 48.933ms | 721.5 KB |
-| 14 | 99-bottles-of-beer | ✓ | 1.041ms | 434.1 KB |
-| 15 | DNS-query | ✓ | 1.129634s | 30.4 KB |
-| 16 | Duffinian-numbers |   |  |  |
-| 17 | a+b | ✓ | 184µs | 792 B |
-| 18 | abbreviations-automatic | ✓ | 14.043ms | 154.7 KB |
-| 19 | abbreviations-easy | ✓ | 4.772ms |  |
-| 20 | abbreviations-simple | ✓ | 5.16ms |  |
-| 21 | abc-problem | ✓ | 4.951ms |  |
-| 22 | abelian-sandpile-model-identity | ✓ | 323µs | 337.5 KB |
-| 23 | abelian-sandpile-model | ✓ | 198µs | 248 B |
-| 24 | abstract-type | ✓ | 82µs | 136 B |
+| 9 | 24-game-solve | ✓ | 100.446ms | 1.5 MB |
+| 10 | 24-game | ✓ | 632µs | 20.5 KB |
+| 11 | 4-rings-or-4-squares-puzzle | ✓ | 782.268ms | 3.7 MB |
+| 12 | 9-billion-names-of-god-the-integer | ✓ | 22.882822s | 158.5 MB |
+| 13 | 99-bottles-of-beer-2 | ✓ | 99.202ms | 2.4 MB |
+| 14 | 99-bottles-of-beer | ✓ | 1.388ms | 458.7 KB |
+| 15 | DNS-query | ✓ | 1.128105s | 30.1 KB |
+| 16 | Duffinian-numbers | ✓ | 1.701577s | 1.1 MB |
+| 17 | a+b | ✓ | 464µs | 1.2 KB |
+| 18 | abbreviations-automatic | ✓ | 33.848ms | 556.5 KB |
+| 19 | abbreviations-easy | ✓ | 10.496ms |  |
+| 20 | abbreviations-simple | ✓ | 12.868ms |  |
+| 21 | abc-problem | ✓ | 7.687ms |  |
+| 22 | abelian-sandpile-model-identity | ✓ | 1.63ms | 466.3 KB |
+| 23 | abelian-sandpile-model | ✓ | 3.083ms | 890.7 KB |
+| 24 | abstract-type | ✓ | 756µs | 23.6 KB |
 | 25 | abundant-deficient-and-perfect-number-classifications | ✓ | 194µs | 136 B |
 | 26 | abundant-odd-numbers | ✓ | 52µs | 136 B |
-| 27 | accumulator-factory | ✓ | 72µs | 136 B |
+| 27 | accumulator-factory | ✓ | 267µs | 8.3 KB |
 | 28 | achilles-numbers | ✓ | 67µs | 296 B |
 | 29 | ackermann-function-2 | ✓ | 50µs | 136 B |
 | 30 | ackermann-function-3 | ✓ | 52µs | 248 B |

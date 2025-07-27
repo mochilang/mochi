@@ -1,8 +1,10 @@
-func main (regs=2)
+func main (regs=3)
   // let dim = 16
   Const        r1, 16
   Move         r0, r1
   SetGlobal    0,0,0,0
+  // main()
+  Call         r2, main, 
   Return       r0
 
   // fun newPile(d: int): list<list<int>> {
@@ -268,17 +270,13 @@ func main (regs=15)
   Const        r5, 7
   Move         r6, r5
   // pile[hdim][hdim] = 16
-  Const        r5, 7
-  Index        r7, r4, r5
+  Index        r7, r4, r6
   Const        r2, 16
-  Const        r5, 7
-  SetIndex     r7, r5, r2
+  SetIndex     r7, r6, r2
   // pile = handlePile(pile, hdim, hdim)
   Move         r8, r4
-  Const        r5, 7
-  Move         r9, r5
-  Const        r5, 7
-  Move         r10, r5
+  Move         r9, r6
+  Move         r10, r6
   Call         r11, handlePile, r8, r9, r10
   Move         r4, r11
   // drawPile(pile, 16)

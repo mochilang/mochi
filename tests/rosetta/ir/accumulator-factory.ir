@@ -1,4 +1,6 @@
 func main (regs=1)
+  // main()
+  Call         r0, main, 
   Return       r0
 
   // fun accumulator(sum: any): fun(any) {
@@ -12,19 +14,6 @@ func accumulator (regs=7)
   Move         r5, r0
   MakeClosure  r6, add, 2, r4
   // return add
-  Return       r6
-
-  // fun add(nv: any): any {
-func add (regs=7)
-  // store[0] = store[0] + nv
-  Const        r3, 0
-  Index        r4, r0, r3
-  Add          r5, r4, r2
-  Const        r3, 0
-  SetIndex     r0, r3, r5
-  // return store[0]
-  Const        r3, 0
-  Index        r6, r0, r3
   Return       r6
 
   // fun main() {
@@ -49,3 +38,16 @@ func main (regs=14)
   Str          r13, r12
   Print        r13
   Return       r0
+
+  // fun add(nv: any): any {
+func add (regs=7)
+  // store[0] = store[0] + nv
+  Const        r3, 0
+  Index        r4, r0, r3
+  Add          r5, r4, r2
+  Const        r3, 0
+  SetIndex     r0, r3, r5
+  // return store[0]
+  Const        r3, 0
+  Index        r6, r0, r3
+  Return       r6
