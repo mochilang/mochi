@@ -1,0 +1,39 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun check(s: string) {
+func check (regs=6)
+  // if len(s) == 0 {
+  Len          r1, r0
+  Const        r2, 0
+  EqualInt     r3, r1, r2
+  JumpIfFalse  r3, L0
+  // print("empty")
+  Const        r4, "empty"
+  Print        r4
+  // if len(s) == 0 {
+  Jump         L1
+L0:
+  // print("not empty")
+  Const        r5, "not empty"
+  Print        r5
+L1:
+  Return       r0
+
+  // fun main() {
+func main (regs=8)
+  // let str1 = ""
+  Const        r0, ""
+  Move         r1, r0
+  // let str2 = " "
+  Const        r2, " "
+  Move         r3, r2
+  // check(str1)
+  Move         r4, r1
+  Call         r5, check, r4
+  // check(str2)
+  Move         r6, r3
+  Call         r7, check, r6
+  Return       r0

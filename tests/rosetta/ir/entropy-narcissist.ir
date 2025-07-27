@@ -1,0 +1,403 @@
+func main (regs=102)
+  // let source = "// Mochi translation of the Rosetta \"Entropy-Narcissist\" task\n" +
+  Const        r1, "// Mochi translation of the Rosetta \"Entropy-Narcissist\" task\n"
+  // "// Simplified to compute the entropy of this source string\n\n" +
+  Const        r2, "// Simplified to compute the entropy of this source string\n\n"
+  // let source = "// Mochi translation of the Rosetta \"Entropy-Narcissist\" task\n" +
+  Const        r3, "// Mochi translation of the Rosetta \"Entropy-Narcissist\" task\n// Simplified to compute the entropy of this source string\n\n"
+  // "fun log2(x: float): float {\n" +
+  Const        r4, "fun log2(x: float): float {\n"
+  // "// Simplified to compute the entropy of this source string\n\n" +
+  Const        r5, "// Mochi translation of the Rosetta \"Entropy-Narcissist\" task\n// Simplified to compute the entropy of this source string\n\nfun log2(x: float): float {\n"
+  // "  var k = 0.0\n" +
+  Const        r6, "  var k = 0.0\n"
+  // "fun log2(x: float): float {\n" +
+  Const        r7, "// Mochi translation of the Rosetta \"Entropy-Narcissist\" task\n// Simplified to compute the entropy of this source string\n\nfun log2(x: float): float {\n  var k = 0.0\n"
+  // "  var v = x\n" +
+  Const        r8, "  var v = x\n"
+  // "  var k = 0.0\n" +
+  Const        r9, "// Mochi translation of the Rosetta \"Entropy-Narcissist\" task\n// Simplified to compute the entropy of this source string\n\nfun log2(x: float): float {\n  var k = 0.0\n  var v = x\n"
+  // "  while v >= 2.0 {\n" +
+  Const        r10, "  while v >= 2.0 {\n"
+  // "  var v = x\n" +
+  Const        r11, "// Mochi translation of the Rosetta \"Entropy-Narcissist\" task\n// Simplified to compute the entropy of this source string\n\nfun log2(x: float): float {\n  var k = 0.0\n  var v = x\n  while v >= 2.0 {\n"
+  // "    v = v / 2.0\n" +
+  Const        r12, "    v = v / 2.0\n"
+  // "  while v >= 2.0 {\n" +
+  Const        r13, "// Mochi translation of the Rosetta \"Entropy-Narcissist\" task\n// Simplified to compute the entropy of this source string\n\nfun log2(x: float): float {\n  var k = 0.0\n  var v = x\n  while v >= 2.0 {\n    v = v / 2.0\n"
+  // "    k = k + 1.0\n" +
+  Const        r14, "    k = k + 1.0\n"
+  // "    v = v / 2.0\n" +
+  Const        r15, "// Mochi translation of the Rosetta \"Entropy-Narcissist\" task\n// Simplified to compute the entropy of this source string\n\nfun log2(x: float): float {\n  var k = 0.0\n  var v = x\n  while v >= 2.0 {\n    v = v / 2.0\n    k = k + 1.0\n"
+  // "  }\n" +
+  Const        r16, "  }\n"
+  // "    k = k + 1.0\n" +
+  Add          r17, r15, r16
+  // "  while v < 1.0 {\n" +
+  Const        r18, "  while v < 1.0 {\n"
+  // "  }\n" +
+  Add          r19, r17, r18
+  // "    v = v * 2.0\n" +
+  Const        r20, "    v = v * 2.0\n"
+  // "  while v < 1.0 {\n" +
+  Add          r21, r19, r20
+  // "    k = k - 1.0\n" +
+  Const        r22, "    k = k - 1.0\n"
+  // "    v = v * 2.0\n" +
+  Add          r23, r21, r22
+  // "  }\n" +
+  Const        r16, "  }\n"
+  // "    k = k - 1.0\n" +
+  Add          r24, r23, r16
+  // "  let z = (v - 1.0) / (v + 1.0)\n" +
+  Const        r25, "  let z = (v - 1.0) / (v + 1.0)\n"
+  // "  }\n" +
+  Add          r26, r24, r25
+  // "  var zpow = z\n" +
+  Const        r27, "  var zpow = z\n"
+  // "  let z = (v - 1.0) / (v + 1.0)\n" +
+  Add          r28, r26, r27
+  // "  var sum = z\n" +
+  Const        r29, "  var sum = z\n"
+  // "  var zpow = z\n" +
+  Add          r30, r28, r29
+  // "  var i = 3\n" +
+  Const        r31, "  var i = 3\n"
+  // "  var sum = z\n" +
+  Add          r32, r30, r31
+  // "  while i <= 9 {\n" +
+  Const        r33, "  while i <= 9 {\n"
+  // "  var i = 3\n" +
+  Add          r34, r32, r33
+  // "    zpow = zpow * z * z\n" +
+  Const        r35, "    zpow = zpow * z * z\n"
+  // "  while i <= 9 {\n" +
+  Add          r36, r34, r35
+  // "    sum = sum + zpow / (i as float)\n" +
+  Const        r37, "    sum = sum + zpow / (i as float)\n"
+  // "    zpow = zpow * z * z\n" +
+  Add          r38, r36, r37
+  // "    i = i + 2\n" +
+  Const        r39, "    i = i + 2\n"
+  // "    sum = sum + zpow / (i as float)\n" +
+  Add          r40, r38, r39
+  // "  }\n" +
+  Const        r16, "  }\n"
+  // "    i = i + 2\n" +
+  Add          r41, r40, r16
+  // "  let ln2 = 0.6931471805599453\n" +
+  Const        r42, "  let ln2 = 0.6931471805599453\n"
+  // "  }\n" +
+  Add          r43, r41, r42
+  // "  return k + 2.0 * sum / ln2\n" +
+  Const        r44, "  return k + 2.0 * sum / ln2\n"
+  // "  let ln2 = 0.6931471805599453\n" +
+  Add          r45, r43, r44
+  // "}\n\n" +
+  Const        r46, "}\n\n"
+  // "  return k + 2.0 * sum / ln2\n" +
+  Add          r47, r45, r46
+  // "fun entropy(data: string): float {\n" +
+  Const        r48, "fun entropy(data: string): float {\n"
+  // "}\n\n" +
+  Add          r49, r47, r48
+  // "  if data == \"\" { return 0.0 }\n" +
+  Const        r50, "  if data == \"\" { return 0.0 }\n"
+  // "fun entropy(data: string): float {\n" +
+  Add          r51, r49, r50
+  // "  var counts: map<string,int> = {}\n" +
+  Const        r52, "  var counts: map<string,int> = {}\n"
+  // "  if data == \"\" { return 0.0 }\n" +
+  Add          r53, r51, r52
+  // "  var i = 0\n" +
+  Const        r54, "  var i = 0\n"
+  // "  var counts: map<string,int> = {}\n" +
+  Add          r55, r53, r54
+  // "  while i < len(data) {\n" +
+  Const        r56, "  while i < len(data) {\n"
+  // "  var i = 0\n" +
+  Add          r57, r55, r56
+  // "    let ch = substring(data, i, i+1)\n" +
+  Const        r58, "    let ch = substring(data, i, i+1)\n"
+  // "  while i < len(data) {\n" +
+  Add          r59, r57, r58
+  // "    if ch in counts {\n" +
+  Const        r60, "    if ch in counts {\n"
+  // "    let ch = substring(data, i, i+1)\n" +
+  Add          r61, r59, r60
+  // "      counts[ch] = counts[ch] + 1\n" +
+  Const        r62, "      counts[ch] = counts[ch] + 1\n"
+  // "    if ch in counts {\n" +
+  Add          r63, r61, r62
+  // "    } else {\n" +
+  Const        r64, "    } else {\n"
+  // "      counts[ch] = counts[ch] + 1\n" +
+  Add          r65, r63, r64
+  // "      counts[ch] = 1\n" +
+  Const        r66, "      counts[ch] = 1\n"
+  // "    } else {\n" +
+  Add          r67, r65, r66
+  // "    }\n" +
+  Const        r68, "    }\n"
+  // "      counts[ch] = 1\n" +
+  Add          r69, r67, r68
+  // "    i = i + 1\n" +
+  Const        r70, "    i = i + 1\n"
+  // "    }\n" +
+  Add          r71, r69, r70
+  // "  }\n" +
+  Const        r16, "  }\n"
+  // "    i = i + 1\n" +
+  Add          r72, r71, r16
+  // "  var e = 0.0\n" +
+  Const        r73, "  var e = 0.0\n"
+  // "  }\n" +
+  Add          r74, r72, r73
+  // "  let l = len(data) as float\n" +
+  Const        r75, "  let l = len(data) as float\n"
+  // "  var e = 0.0\n" +
+  Add          r76, r74, r75
+  // "  for ch in counts {\n" +
+  Const        r77, "  for ch in counts {\n"
+  // "  let l = len(data) as float\n" +
+  Add          r78, r76, r77
+  // "    let px = (counts[ch] as float) / l\n" +
+  Const        r79, "    let px = (counts[ch] as float) / l\n"
+  // "  for ch in counts {\n" +
+  Add          r80, r78, r79
+  // "    if px > 0.0 {\n" +
+  Const        r81, "    if px > 0.0 {\n"
+  // "    let px = (counts[ch] as float) / l\n" +
+  Add          r82, r80, r81
+  // "      e = e - px * log2(px)\n" +
+  Const        r83, "      e = e - px * log2(px)\n"
+  // "    if px > 0.0 {\n" +
+  Add          r84, r82, r83
+  // "    }\n" +
+  Const        r68, "    }\n"
+  // "      e = e - px * log2(px)\n" +
+  Add          r85, r84, r68
+  // "  }\n" +
+  Const        r16, "  }\n"
+  // "    }\n" +
+  Add          r86, r85, r16
+  // "  return e\n" +
+  Const        r87, "  return e\n"
+  // "  }\n" +
+  Add          r88, r86, r87
+  // "}\n\n" +
+  Const        r46, "}\n\n"
+  // "  return e\n" +
+  Add          r89, r88, r46
+  // "// Store the program source as a string constant\n" +
+  Const        r90, "// Store the program source as a string constant\n"
+  // "}\n\n" +
+  Add          r91, r89, r90
+  // "let source = ... // truncated in actual source\n" +
+  Const        r92, "let source = ... // truncated in actual source\n"
+  // "// Store the program source as a string constant\n" +
+  Add          r93, r91, r92
+  // "\nfun main() {\n" +
+  Const        r94, "\nfun main() {\n"
+  // "let source = ... // truncated in actual source\n" +
+  Add          r95, r93, r94
+  // "  print(\"Source file entropy: \" + str(entropy(source)))\n" +
+  Const        r96, "  print(\"Source file entropy: \" + str(entropy(source)))\n"
+  // "\nfun main() {\n" +
+  Add          r97, r95, r96
+  // "}\n\n" +
+  Const        r46, "}\n\n"
+  // "  print(\"Source file entropy: \" + str(entropy(source)))\n" +
+  Add          r98, r97, r46
+  // "main()\n"
+  Const        r99, "main()\n"
+  // "}\n\n" +
+  Add          r100, r98, r99
+  // let source = "// Mochi translation of the Rosetta \"Entropy-Narcissist\" task\n" +
+  Move         r0, r100
+  SetGlobal    0,0,0,0
+  // main()
+  Call         r101, main, 
+  Return       r0
+
+  // fun log2(x: float): float {
+func log2 (regs=35)
+  // var k = 0.0
+  Const        r2, 0.0
+  Move         r3, r2
+  // var v = x
+  Move         r4, r1
+L1:
+  // while v >= 2.0 {
+  Const        r5, 2.0
+  LessEqFloat  r6, r5, r4
+  JumpIfFalse  r6, L0
+  // v = v / 2.0
+  Const        r5, 2.0
+  DivFloat     r7, r4, r5
+  Move         r4, r7
+  // k = k + 1.0
+  Const        r8, 1.0
+  AddFloat     r9, r3, r8
+  Move         r3, r9
+  // while v >= 2.0 {
+  Jump         L1
+L0:
+  // while v < 1.0 {
+  Const        r8, 1.0
+  LessFloat    r10, r4, r8
+  JumpIfFalse  r10, L2
+  // v = v * 2.0
+  Const        r5, 2.0
+  MulFloat     r11, r4, r5
+  Move         r4, r11
+  // k = k - 1.0
+  Const        r8, 1.0
+  SubFloat     r12, r3, r8
+  Move         r3, r12
+  // while v < 1.0 {
+  Jump         L0
+L2:
+  // let z = (v - 1.0) / (v + 1.0)
+  Const        r8, 1.0
+  SubFloat     r13, r4, r8
+  Const        r8, 1.0
+  AddFloat     r14, r4, r8
+  DivFloat     r15, r13, r14
+  Move         r16, r15
+  // var zpow = z
+  Move         r17, r16
+  // var sum = z
+  Move         r18, r16
+  // var i = 3
+  Const        r19, 3
+  Move         r20, r19
+L4:
+  // while i <= 9 {
+  Const        r21, 9
+  LessEqInt    r22, r20, r21
+  JumpIfFalse  r22, L3
+  // zpow = zpow * z * z
+  MulFloat     r23, r17, r16
+  MulFloat     r24, r23, r16
+  Move         r17, r24
+  // sum = sum + zpow / (i as float)
+  Cast         r25, r20, float
+  DivFloat     r26, r17, r25
+  AddFloat     r27, r18, r26
+  Move         r18, r27
+  // i = i + 2
+  Const        r28, 2
+  AddInt       r29, r20, r28
+  Move         r20, r29
+  // while i <= 9 {
+  Jump         L4
+L3:
+  // let ln2 = 0.6931471805599453
+  Const        r30, 0.6931471805599453
+  Move         r31, r30
+  // return k + 2.0 * sum / ln2
+  Const        r5, 2.0
+  MulFloat     r32, r5, r18
+  DivFloat     r33, r32, r31
+  AddFloat     r34, r3, r33
+  Return       r34
+
+  // fun entropy(data: string): float {
+func entropy (regs=40)
+  // if data == "" { return 0.0 }
+  Const        r2, ""
+  Equal        r3, r1, r2
+  JumpIfFalse  r3, L0
+  Const        r4, 0.0
+  Return       r4
+L0:
+  // var counts: map<string,int> = {}
+  Const        r5, {}
+  Move         r6, r5
+  // var i = 0
+  Const        r7, 0
+  Move         r8, r7
+L4:
+  // while i < len(data) {
+  Len          r9, r1
+  LessInt      r10, r8, r9
+  JumpIfFalse  r10, L1
+  // let ch = substring(data, i, i+1)
+  Const        r11, 1
+  AddInt       r12, r8, r11
+  Slice        r13, r1, r8, r12
+  Move         r14, r13
+  // if ch in counts {
+  In           r15, r14, r6
+  JumpIfFalse  r15, L2
+  // counts[ch] = counts[ch] + 1
+  Index        r16, r6, r14
+  Const        r11, 1
+  Add          r17, r16, r11
+  SetIndex     r6, r14, r17
+  // if ch in counts {
+  Jump         L3
+L2:
+  // counts[ch] = 1
+  Const        r11, 1
+  SetIndex     r6, r14, r11
+L3:
+  // i = i + 1
+  Const        r11, 1
+  AddInt       r18, r8, r11
+  Move         r8, r18
+  // while i < len(data) {
+  Jump         L4
+L1:
+  // var e = 0.0
+  Const        r4, 0.0
+  Move         r19, r4
+  // let l = len(data) as float
+  Len          r20, r1
+  Cast         r21, r20, float
+  Move         r22, r21
+  // for ch in counts {
+  IterPrep     r23, r6
+  Len          r24, r23
+  Const        r25, 0
+L7:
+  LessInt      r26, r25, r24
+  JumpIfFalse  r26, L5
+  Index        r27, r23, r25
+  Move         r28, r27
+  // let px = (counts[ch] as float) / l
+  Index        r29, r6, r28
+  Cast         r30, r29, float
+  Div          r31, r30, r22
+  Move         r32, r31
+  // if px > 0.0 {
+  Const        r4, 0.0
+  LessFloat    r33, r4, r32
+  JumpIfFalse  r33, L6
+  // e = e - px * log2(px)
+  Move         r34, r32
+  Call         r35, log2, r34
+  Mul          r36, r32, r35
+  SubFloat     r37, r19, r36
+  Move         r19, r37
+L6:
+  // for ch in counts {
+  Const        r38, 1
+  AddInt       r39, r25, r38
+  Move         r25, r39
+  Jump         L7
+L5:
+  // return e
+  Return       r19
+
+  // fun main() {
+func main (regs=6)
+  // print("Source file entropy: " + str(entropy(source)))
+  Const        r1, "Source file entropy: "
+  Move         r2, r0
+  Call         r3, entropy, r2
+  Str          r4, r3
+  Add          r5, r1, r4
+  Print        r5
+  Return       r0

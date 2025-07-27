@@ -1,0 +1,18 @@
+func main (regs=9)
+  // let apple = 0
+  Const        r3, 0
+  Move         r0, r3
+  SetGlobal    0,0,0,0
+  // let banana = apple + 1
+  Const        r4, 1
+  AddInt       r5, r0, r4
+  Cast         r6, r5, bigint
+  Move         r1, r6
+  SetGlobal    1,1,0,0
+  // let cherry = banana + 1
+  Const        r4, 1
+  Add          r7, r1, r4
+  Cast         r8, r7, bigint
+  Move         r2, r8
+  SetGlobal    2,2,0,0
+  Return       r0

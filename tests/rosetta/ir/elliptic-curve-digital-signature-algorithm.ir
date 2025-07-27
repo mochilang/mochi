@@ -1,0 +1,38 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun main() {
+func main (regs=10)
+  // print("Private key:\nD: 1234567890")
+  Const        r0, "Private key:\nD: 1234567890"
+  Print        r0
+  // print("\nPublic key:")
+  Const        r1, "\nPublic key:"
+  Print        r1
+  // print("X: 43162711582587979080031819627904423023685561091192625653251495188141318209988")
+  Const        r2, "X: 43162711582587979080031819627904423023685561091192625653251495188141318209988"
+  Print        r2
+  // print("Y: 86807430002474105664458509423764867536342689150582922106807036347047552480521")
+  Const        r3, "Y: 86807430002474105664458509423764867536342689150582922106807036347047552480521"
+  Print        r3
+  // print("\nMessage: Rosetta Code")
+  Const        r4, "\nMessage: Rosetta Code"
+  Print        r4
+  // print("Hash   : 0xe6f9ed0d")
+  Const        r5, "Hash   : 0xe6f9ed0d"
+  Print        r5
+  // print("\nSignature:")
+  Const        r6, "\nSignature:"
+  Print        r6
+  // print("R: 23195197793674669608400023921033380707595656606710353926508630347378485682379")
+  Const        r7, "R: 23195197793674669608400023921033380707595656606710353926508630347378485682379"
+  Print        r7
+  // print("S: 79415614279862633473653728365954499259635019180091322566320325357594590761922")
+  Const        r8, "S: 79415614279862633473653728365954499259635019180091322566320325357594590761922"
+  Print        r8
+  // print("\nSignature verified: true")
+  Const        r9, "\nSignature verified: true"
+  Print        r9
+  Return       r0

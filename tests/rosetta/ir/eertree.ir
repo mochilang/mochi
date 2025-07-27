@@ -1,0 +1,343 @@
+func main (regs=5)
+  // let EVEN_ROOT = 0
+  Const        r2, 0
+  Move         r0, r2
+  SetGlobal    0,0,0,0
+  // let ODD_ROOT = 1
+  Const        r3, 1
+  Move         r1, r3
+  SetGlobal    1,1,0,0
+  // main()
+  Call         r4, main, 
+  Return       r0
+
+  // fun newNode(len: int): map<string, any> {
+func newNode (regs=15)
+  // return {"length": len, "edges": {}, "suffix": 0}
+  Const        r3, "length"
+  Const        r4, "edges"
+  Const        r5, {}
+  Const        r6, "suffix"
+  Const        r7, 0
+  Move         r8, r3
+  Move         r9, r2
+  Move         r10, r4
+  Move         r11, r5
+  Move         r12, r6
+  Move         r13, r7
+  MakeMap      r14, 3, r8
+  Return       r14
+
+  // fun eertree(s: string): list<map<string, any>> {
+func eertree (regs=99)
+  // var tree: list<map<string, any>> = []
+  Const        r3, []
+  Move         r4, r3
+  // tree = append(tree, {"length": 0, "suffix": ODD_ROOT, "edges": {}})
+  Const        r5, "length"
+  Const        r6, 0
+  Const        r7, "suffix"
+  Const        r8, "edges"
+  Const        r9, {}
+  Move         r10, r5
+  Move         r11, r6
+  Move         r12, r7
+  Move         r13, r1
+  Move         r14, r8
+  Move         r15, r9
+  MakeMap      r16, 3, r10
+  Append       r17, r4, r16
+  Move         r4, r17
+  // tree = append(tree, {"length": -1, "suffix": ODD_ROOT, "edges": {}})
+  Const        r5, "length"
+  Const        r18, 1
+  NegInt       r19, r18
+  Const        r7, "suffix"
+  Const        r8, "edges"
+  Const        r9, {}
+  Move         r20, r5
+  Move         r21, r19
+  Move         r22, r7
+  Move         r23, r1
+  Move         r24, r8
+  Move         r25, r9
+  MakeMap      r26, 3, r20
+  Append       r27, r4, r26
+  Move         r4, r27
+  // var suffix = ODD_ROOT
+  Move         r28, r1
+  // var i = 0
+  Const        r6, 0
+  Move         r29, r6
+L6:
+  // while i < len(s) {
+  Len          r30, r2
+  LessInt      r31, r29, r30
+  JumpIfFalse  r31, L0
+  // let c = s[i:i+1]
+  Move         r32, r29
+  Const        r18, 1
+  AddInt       r34, r29, r18
+  Move         r33, r34
+  Slice        r35, r2, r32, r33
+  Move         r36, r35
+  // var n = suffix
+  Move         r37, r28
+  // var k = 0
+  Const        r6, 0
+  Move         r38, r6
+L4:
+  // while true {
+  Const        r39, true
+  JumpIfFalse  r39, L1
+  // k = tree[n]["length"] as int
+  Index        r40, r4, r37
+  Const        r5, "length"
+  Index        r41, r40, r5
+  Cast         r42, r41, int
+  Move         r38, r42
+  // let b = i - k - 1
+  Sub          r43, r29, r38
+  Const        r18, 1
+  Sub          r44, r43, r18
+  Move         r45, r44
+  // if b >= 0 && s[b:b+1] == c { break }
+  Const        r6, 0
+  LessEq       r46, r6, r45
+  Move         r47, r45
+  Const        r18, 1
+  Add          r49, r45, r18
+  Move         r48, r49
+  Slice        r50, r2, r47, r48
+  Equal        r51, r50, r36
+  Move         r52, r46
+  JumpIfFalse  r52, L2
+  Move         r52, r51
+L2:
+  JumpIfFalse  r52, L3
+  Jump         L1
+L3:
+  // n = tree[n]["suffix"] as int
+  Index        r53, r4, r37
+  Const        r7, "suffix"
+  Index        r54, r53, r7
+  Cast         r55, r54, int
+  Move         r37, r55
+  // while true {
+  Jump         L4
+L1:
+  // var edges = tree[n]["edges"] as map<string, int>
+  Index        r56, r4, r37
+  Const        r8, "edges"
+  Index        r57, r56, r8
+  Cast         r58, r57, {string: int}
+  Move         r59, r58
+  // if c in edges {
+  In           r60, r36, r59
+  JumpIfFalse  r60, L5
+  // suffix = edges[c]
+  Index        r61, r59, r36
+  Move         r28, r61
+  // i = i + 1
+  Const        r18, 1
+  AddInt       r62, r29, r18
+  Move         r29, r62
+  // continue
+  Jump         L6
+L5:
+  // suffix = len(tree)
+  Len          r63, r4
+  Move         r28, r63
+  // tree = append(tree, newNode(k + 2))
+  Const        r65, 2
+  Add          r66, r38, r65
+  Move         r64, r66
+  Call         r67, newNode, r64
+  Append       r68, r4, r67
+  Move         r4, r68
+  // edges[c] = suffix
+  SetIndex     r59, r36, r28
+  // tree[n]["edges"] = edges
+  Index        r69, r4, r37
+  Const        r8, "edges"
+  SetIndex     r69, r8, r59
+  // if (tree[suffix]["length"] as int) == 1 {
+  Index        r70, r4, r28
+  Const        r5, "length"
+  Index        r71, r70, r5
+  Cast         r72, r71, int
+  Const        r18, 1
+  Equal        r73, r72, r18
+  JumpIfFalse  r73, L7
+  // tree[suffix]["suffix"] = 0
+  Index        r74, r4, r28
+  Const        r6, 0
+  Const        r7, "suffix"
+  SetIndex     r74, r7, r6
+  // i = i + 1
+  Const        r18, 1
+  AddInt       r75, r29, r18
+  Move         r29, r75
+  // continue
+  Jump         L6
+L7:
+  // while true {
+  Const        r39, true
+  JumpIfFalse  r39, L8
+  // n = tree[n]["suffix"] as int
+  Index        r76, r4, r37
+  Const        r7, "suffix"
+  Index        r77, r76, r7
+  Cast         r78, r77, int
+  Move         r37, r78
+  // let b = i - (tree[n]["length"] as int) - 1
+  Index        r79, r4, r37
+  Const        r5, "length"
+  Index        r80, r79, r5
+  Cast         r81, r80, int
+  Sub          r82, r29, r81
+  Const        r18, 1
+  Sub          r83, r82, r18
+  Move         r84, r83
+  // if b >= 0 && s[b:b+1] == c { break }
+  Const        r6, 0
+  LessEq       r85, r6, r84
+  Move         r86, r84
+  Const        r18, 1
+  Add          r88, r84, r18
+  Move         r87, r88
+  Slice        r89, r2, r86, r87
+  Equal        r90, r89, r36
+  Move         r91, r85
+  JumpIfFalse  r91, L9
+  Move         r91, r90
+L9:
+  JumpIfFalse  r91, L7
+L8:
+  // var en = tree[n]["edges"] as map<string, int>
+  Index        r92, r4, r37
+  Const        r8, "edges"
+  Index        r93, r92, r8
+  Cast         r94, r93, {string: int}
+  Move         r95, r94
+  // tree[suffix]["suffix"] = en[c]
+  Index        r96, r4, r28
+  Index        r97, r95, r36
+  Const        r7, "suffix"
+  SetIndex     r96, r7, r97
+  // i = i + 1
+  Const        r18, 1
+  AddInt       r98, r29, r18
+  Move         r29, r98
+  // while i < len(s) {
+  Jump         L6
+L0:
+  // return tree
+  Return       r4
+
+  // fun child(tree: list<map<string, any>>, idx: int, p: string, acc: list<string>): list<string> {
+func child (regs=30)
+  // var edges = tree[idx]["edges"] as map<string, int>
+  Index        r6, r2, r3
+  Const        r7, "edges"
+  Index        r8, r6, r7
+  Cast         r9, r8, {string: int}
+  Move         r10, r9
+  // for ch in edges {
+  IterPrep     r11, r10
+  Len          r12, r11
+  Const        r13, 0
+L1:
+  LessInt      r14, r13, r12
+  JumpIfFalse  r14, L0
+  Index        r15, r11, r13
+  Move         r16, r15
+  // let nxt = edges[ch]
+  Index        r17, r10, r16
+  Move         r18, r17
+  // let pal = ch + p + ch
+  Add          r19, r16, r4
+  Add          r20, r19, r16
+  Move         r21, r20
+  // acc = append(acc, pal)
+  Append       r22, r5, r21
+  Move         r5, r22
+  // acc = child(tree, nxt, pal, acc)
+  Move         r23, r2
+  Move         r24, r18
+  Move         r25, r21
+  Move         r26, r5
+  Call         r27, child, r23, r24, r25, r26
+  Move         r5, r27
+  // for ch in edges {
+  Const        r28, 1
+  AddInt       r29, r13, r28
+  Move         r13, r29
+  Jump         L1
+L0:
+  // return acc
+  Return       r5
+
+  // fun subPalindromes(tree: list<map<string, any>>): list<string> {
+func subPalindromes (regs=31)
+  // var res: list<string> = []
+  Const        r3, []
+  Move         r4, r3
+  // res = child(tree, EVEN_ROOT, "", res)
+  Move         r5, r2
+  Move         r6, r0
+  Const        r9, ""
+  Move         r7, r9
+  Move         r8, r4
+  Call         r10, child, r5, r6, r7, r8
+  Move         r4, r10
+  // var oEdges = tree[ODD_ROOT]["edges"] as map<string, int>
+  Index        r11, r2, r1
+  Const        r12, "edges"
+  Index        r13, r11, r12
+  Cast         r14, r13, {string: int}
+  Move         r15, r14
+  // for ch in oEdges {
+  IterPrep     r16, r15
+  Len          r17, r16
+  Const        r18, 0
+L1:
+  LessInt      r19, r18, r17
+  JumpIfFalse  r19, L0
+  Index        r20, r16, r18
+  Move         r21, r20
+  // res = append(res, ch)
+  Append       r22, r4, r21
+  Move         r4, r22
+  // res = child(tree, oEdges[ch], ch, res)
+  Move         r23, r2
+  Index        r27, r15, r21
+  Move         r24, r27
+  Move         r25, r21
+  Move         r26, r4
+  Call         r28, child, r23, r24, r25, r26
+  Move         r4, r28
+  // for ch in oEdges {
+  Const        r29, 1
+  AddInt       r30, r18, r29
+  Move         r18, r30
+  Jump         L1
+L0:
+  // return res
+  Return       r4
+
+  // fun main() {
+func main (regs=10)
+  // let tree = eertree("eertree")
+  Const        r3, "eertree"
+  Move         r2, r3
+  Call         r4, eertree, r2
+  Move         r5, r4
+  // let subs = subPalindromes(tree)
+  Move         r6, r5
+  Call         r7, subPalindromes, r6
+  Move         r8, r7
+  // print(str(subs))
+  Str          r9, r8
+  Print        r9
+  Return       r0

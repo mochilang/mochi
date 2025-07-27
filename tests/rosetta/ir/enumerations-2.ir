@@ -1,0 +1,14 @@
+func main (regs=6)
+  // let apple = 0
+  Const        r3, 0
+  Move         r0, r3
+  SetGlobal    0,0,0,0
+  // let banana = 1
+  Const        r4, 1
+  Move         r1, r4
+  SetGlobal    1,1,0,0
+  // let cherry = 2
+  Const        r5, 2
+  Move         r2, r5
+  SetGlobal    2,2,0,0
+  Return       r0

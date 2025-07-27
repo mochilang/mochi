@@ -1,0 +1,373 @@
+func main (regs=3)
+  // let bCoeff = 7.0
+  Const        r1, 7.0
+  Move         r0, r1
+  SetGlobal    0,0,0,0
+  // main()
+  Call         r2, main, 
+  Return       r0
+
+  // fun zero(): Pt { return Pt { x: 0.0, y: 0.0, inf: true } }
+func zero (regs=12)
+  // fun zero(): Pt { return Pt { x: 0.0, y: 0.0, inf: true } }
+  Const        r1, 0.0
+  Const        r1, 0.0
+  Const        r2, true
+  Const        r3, "__name"
+  Const        r4, "Pt"
+  Const        r5, "x"
+  Move         r6, r1
+  Const        r7, "y"
+  Move         r8, r1
+  Const        r9, "inf"
+  Move         r10, r2
+  MakeMap      r11, 4, r3
+  Return       r11
+
+  // fun isZero(p: Pt): bool { return p.inf }
+func isZero (regs=4)
+  // fun isZero(p: Pt): bool { return p.inf }
+  Const        r2, "inf"
+  Index        r3, r1, r2
+  Return       r3
+
+  // fun neg(p: Pt): Pt { return Pt { x: p.x, y: -p.y, inf: p.inf } }
+func neg (regs=18)
+  // fun neg(p: Pt): Pt { return Pt { x: p.x, y: -p.y, inf: p.inf } }
+  Const        r2, "x"
+  Index        r3, r1, r2
+  Const        r4, "y"
+  Index        r5, r1, r4
+  Neg          r6, r5
+  Const        r7, "inf"
+  Index        r8, r1, r7
+  Const        r9, "__name"
+  Const        r10, "Pt"
+  Const        r11, "x"
+  Move         r12, r3
+  Const        r13, "y"
+  Move         r14, r6
+  Const        r15, "inf"
+  Move         r16, r8
+  MakeMap      r17, 4, r9
+  Return       r17
+
+  // fun dbl(p: Pt): Pt {
+func dbl (regs=36)
+  // if isZero(p) { return p }
+  Move         r2, r1
+  Call         r3, isZero, r2
+  JumpIfFalse  r3, L0
+  Return       r1
+L0:
+  // let L = (3.0 * p.x * p.x) / (2.0 * p.y)
+  Const        r4, 3.0
+  Const        r5, "x"
+  Index        r6, r1, r5
+  MulFloat     r7, r4, r6
+  Const        r5, "x"
+  Index        r8, r1, r5
+  MulFloat     r9, r7, r8
+  Const        r10, 2.0
+  Const        r11, "y"
+  Index        r12, r1, r11
+  MulFloat     r13, r10, r12
+  DivFloat     r14, r9, r13
+  Move         r15, r14
+  // let x = L * L - 2.0 * p.x
+  MulFloat     r16, r15, r15
+  Const        r10, 2.0
+  Const        r5, "x"
+  Index        r17, r1, r5
+  MulFloat     r18, r10, r17
+  SubFloat     r19, r16, r18
+  Move         r20, r19
+  // return Pt { x: x, y: L * (p.x - x) - p.y, inf: false }
+  Const        r5, "x"
+  Index        r21, r1, r5
+  SubFloat     r22, r21, r20
+  MulFloat     r23, r15, r22
+  Const        r11, "y"
+  Index        r24, r1, r11
+  SubFloat     r25, r23, r24
+  Const        r26, false
+  Const        r27, "__name"
+  Const        r28, "Pt"
+  Const        r29, "x"
+  Move         r30, r20
+  Const        r31, "y"
+  Move         r32, r25
+  Const        r33, "inf"
+  Move         r34, r26
+  MakeMap      r35, 4, r27
+  Return       r35
+
+  // fun add(p: Pt, q: Pt): Pt {
+func add (regs=47)
+  // if isZero(p) { return q }
+  Move         r3, r1
+  Call         r4, isZero, r3
+  JumpIfFalse  r4, L0
+  Return       r2
+L0:
+  // if isZero(q) { return p }
+  Move         r5, r2
+  Call         r6, isZero, r5
+  JumpIfFalse  r6, L1
+  Return       r1
+L1:
+  // if p.x == q.x {
+  Const        r7, "x"
+  Index        r8, r1, r7
+  Const        r7, "x"
+  Index        r9, r2, r7
+  Equal        r10, r8, r9
+  JumpIfFalse  r10, L2
+  // if p.y == q.y { return dbl(p) }
+  Const        r11, "y"
+  Index        r12, r1, r11
+  Const        r11, "y"
+  Index        r13, r2, r11
+  Equal        r14, r12, r13
+  JumpIfFalse  r14, L3
+  Move         r15, r1
+  Call         r16, dbl, r15
+  Return       r16
+L3:
+  // return zero()
+  Call         r17, zero, 
+  Return       r17
+L2:
+  // let L = (q.y - p.y) / (q.x - p.x)
+  Const        r11, "y"
+  Index        r18, r2, r11
+  Const        r11, "y"
+  Index        r19, r1, r11
+  Sub          r20, r18, r19
+  Const        r7, "x"
+  Index        r21, r2, r7
+  Const        r7, "x"
+  Index        r22, r1, r7
+  Sub          r23, r21, r22
+  Div          r24, r20, r23
+  Move         r25, r24
+  // let x = L * L - p.x - q.x
+  Mul          r26, r25, r25
+  Const        r7, "x"
+  Index        r27, r1, r7
+  Sub          r28, r26, r27
+  Const        r7, "x"
+  Index        r29, r2, r7
+  Sub          r30, r28, r29
+  Move         r31, r30
+  // return Pt { x: x, y: L * (p.x - x) - p.y, inf: false }
+  Const        r7, "x"
+  Index        r32, r1, r7
+  Sub          r33, r32, r31
+  Mul          r34, r25, r33
+  Const        r11, "y"
+  Index        r35, r1, r11
+  Sub          r36, r34, r35
+  Const        r37, false
+  Const        r38, "__name"
+  Const        r39, "Pt"
+  Const        r40, "x"
+  Move         r41, r31
+  Const        r42, "y"
+  Move         r43, r36
+  Const        r44, "inf"
+  Move         r45, r37
+  MakeMap      r46, 4, r38
+  Return       r46
+
+  // fun mul(p: Pt, n: int): Pt {
+func mul (regs=19)
+  // var r = zero()
+  Call         r3, zero, 
+  Move         r4, r3
+  // var q = p
+  Move         r5, r1
+  // var k = n
+  Move         r6, r2
+L2:
+  // while k > 0 {
+  Const        r7, 0
+  Less         r8, r7, r6
+  JumpIfFalse  r8, L0
+  // if k % 2 == 1 { r = add(r, q) }
+  Const        r9, 2
+  Mod          r10, r6, r9
+  Const        r11, 1
+  Equal        r12, r10, r11
+  JumpIfFalse  r12, L1
+  Move         r13, r4
+  Move         r14, r5
+  Call2        r15, add, r13, r14
+  Move         r4, r15
+L1:
+  // q = dbl(q)
+  Move         r16, r5
+  Call         r17, dbl, r16
+  Move         r5, r17
+  // k = k / 2
+  Const        r9, 2
+  Div          r18, r6, r9
+  Move         r6, r18
+  // while k > 0 {
+  Jump         L2
+L0:
+  // return r
+  Return       r4
+
+  // fun cbrtApprox(x: float): float {
+func cbrtApprox (regs=16)
+  // var guess = x
+  Move         r2, r1
+  // var i = 0
+  Const        r3, 0
+  Move         r4, r3
+L1:
+  // while i < 40 {
+  Const        r5, 40
+  LessInt      r6, r4, r5
+  JumpIfFalse  r6, L0
+  // guess = (2.0 * guess + x / (guess * guess)) / 3.0
+  Const        r7, 2.0
+  MulFloat     r8, r7, r2
+  Mul          r9, r2, r2
+  Div          r10, r1, r9
+  AddFloat     r11, r8, r10
+  Const        r12, 3.0
+  DivFloat     r13, r11, r12
+  Move         r2, r13
+  // i = i + 1
+  Const        r14, 1
+  AddInt       r15, r4, r14
+  Move         r4, r15
+  // while i < 40 {
+  Jump         L1
+L0:
+  // return guess
+  Return       r2
+
+  // fun fromY(y: float): Pt {
+func fromY (regs=16)
+  // return Pt { x: cbrtApprox(y*y - bCoeff), y: y, inf: false }
+  Mul          r3, r1, r1
+  Sub          r4, r3, r0
+  Move         r2, r4
+  Call         r5, cbrtApprox, r2
+  Const        r6, false
+  Const        r7, "__name"
+  Const        r8, "Pt"
+  Const        r9, "x"
+  Move         r10, r5
+  Const        r11, "y"
+  Move         r12, r1
+  Const        r13, "inf"
+  Move         r14, r6
+  MakeMap      r15, 4, r7
+  Return       r15
+
+  // fun show(s: string, p: Pt) {
+func show (regs=21)
+  // if isZero(p) {
+  Move         r3, r2
+  Call         r4, isZero, r3
+  JumpIfFalse  r4, L0
+  // print(s + "Zero")
+  Const        r5, "Zero"
+  Add          r6, r1, r5
+  Print        r6
+  // if isZero(p) {
+  Jump         L1
+L0:
+  // print(s + "(" + str(p.x) + ", " + str(p.y) + ")")
+  Const        r7, "("
+  Add          r8, r1, r7
+  Const        r9, "x"
+  Index        r10, r2, r9
+  Str          r11, r10
+  Add          r12, r8, r11
+  Const        r13, ", "
+  Add          r14, r12, r13
+  Const        r15, "y"
+  Index        r16, r2, r15
+  Str          r17, r16
+  Add          r18, r14, r17
+  Const        r19, ")"
+  Add          r20, r18, r19
+  Print        r20
+L1:
+  Return       r0
+
+  // fun main() {
+func main (regs=57)
+  // let a = fromY(1.0)
+  Const        r2, 1.0
+  Move         r1, r2
+  Call         r3, fromY, r1
+  Move         r4, r3
+  // let b = fromY(2.0)
+  Const        r6, 2.0
+  Move         r5, r6
+  Call         r7, fromY, r5
+  Move         r8, r7
+  // show("a = ", a)
+  Const        r11, "a = "
+  Move         r9, r11
+  Move         r10, r4
+  Call2        r12, show, r9, r10
+  // show("b = ", b)
+  Const        r15, "b = "
+  Move         r13, r15
+  Move         r14, r8
+  Call2        r16, show, r13, r14
+  // let c = add(a, b)
+  Move         r17, r4
+  Move         r18, r8
+  Call2        r19, add, r17, r18
+  Move         r20, r19
+  // show("c = a + b = ", c)
+  Const        r23, "c = a + b = "
+  Move         r21, r23
+  Move         r22, r20
+  Call2        r24, show, r21, r22
+  // let d = neg(c)
+  Move         r25, r20
+  Call         r26, neg, r25
+  Move         r27, r26
+  // show("d = -c = ", d)
+  Const        r30, "d = -c = "
+  Move         r28, r30
+  Move         r29, r27
+  Call2        r31, show, r28, r29
+  // show("c + d = ", add(c, d))
+  Const        r34, "c + d = "
+  Move         r32, r34
+  Move         r35, r20
+  Move         r36, r27
+  Call2        r37, add, r35, r36
+  Move         r33, r37
+  Call2        r38, show, r32, r33
+  // show("a + b + d = ", add(a, add(b, d)))
+  Const        r41, "a + b + d = "
+  Move         r39, r41
+  Move         r42, r4
+  Move         r44, r8
+  Move         r45, r27
+  Call2        r46, add, r44, r45
+  Move         r43, r46
+  Call2        r47, add, r42, r43
+  Move         r40, r47
+  Call2        r48, show, r39, r40
+  // show("a * 12345 = ", mul(a, 12345))
+  Const        r51, "a * 12345 = "
+  Move         r49, r51
+  Move         r52, r4
+  Const        r54, 12345
+  Move         r53, r54
+  Call2        r55, mul, r52, r53
+  Move         r50, r55
+  Call2        r56, show, r49, r50
+  Return       r0

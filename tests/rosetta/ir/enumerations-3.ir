@@ -1,0 +1,20 @@
+func main (regs=11)
+  // let apple: fruit = 0 as fruit
+  Const        r3, 0
+  Move         r0, r3
+  SetGlobal    0,0,0,0
+  // let banana: fruit = (apple as int + 1) as fruit
+  Cast         r4, r0, int
+  Const        r5, 1
+  Add          r6, r4, r5
+  Cast         r7, r6, fruit
+  Move         r1, r7
+  SetGlobal    1,1,0,0
+  // let cherry: fruit = (banana as int + 1) as fruit
+  Cast         r8, r1, int
+  Const        r5, 1
+  Add          r9, r8, r5
+  Cast         r10, r9, fruit
+  Move         r2, r10
+  SetGlobal    2,2,0,0
+  Return       r0

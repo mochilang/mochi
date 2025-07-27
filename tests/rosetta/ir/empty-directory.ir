@@ -1,0 +1,51 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun isEmptyDir(fs: map<string, list<string>>, name: string): bool {
+func isEmptyDir (regs=8)
+  // if name in fs {
+  In           r2, r1, r0
+  JumpIfFalse  r2, L0
+  // return len(fs[name]) == 0
+  Index        r3, r0, r1
+  Len          r4, r3
+  Const        r5, 0
+  EqualInt     r6, r4, r5
+  Return       r6
+L0:
+  // return true
+  Const        r7, true
+  Return       r7
+
+  // fun main() {
+func main (regs=11)
+  // var fs: map<string, list<string>> = {}
+  Const        r0, {}
+  Move         r1, r0
+  // fs["/tmp"] = []
+  Const        r2, []
+  Const        r3, "/tmp"
+  SetIndex     r1, r3, r2
+  // fs["/var"] = ["log"]
+  Const        r4, ["log"]
+  Const        r5, "/var"
+  SetIndex     r1, r5, r4
+  // if isEmptyDir(fs, "/tmp") {
+  Move         r6, r1
+  Const        r3, "/tmp"
+  Move         r7, r3
+  Call2        r8, isEmptyDir, r6, r7
+  JumpIfFalse  r8, L0
+  // print("/tmp is empty")
+  Const        r9, "/tmp is empty"
+  Print        r9
+  // if isEmptyDir(fs, "/tmp") {
+  Jump         L1
+L0:
+  // print("/tmp is not empty")
+  Const        r10, "/tmp is not empty"
+  Print        r10
+L1:
+  Return       r0
