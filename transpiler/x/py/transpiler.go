@@ -39,6 +39,7 @@ var (
 	usesIndexOf       bool
 	usesSubstr        bool
 	usesCallable      bool
+	funcDepth         int
 )
 
 const helperNow = `
@@ -883,6 +884,20 @@ func emitStmtIndent(w io.Writer, s Stmt, indent string) error {
 		_, err := io.WriteString(w, "\n")
 		return err
 	case *ReturnStmt:
+		if funcDepth == 0 {
+			if _, err := io.WriteString(w, indent+"sys.exit("); err != nil {
+				return err
+			}
+			if st.Expr != nil {
+				if err := emitExpr(w, st.Expr); err != nil {
+					return err
+				}
+			}
+			if _, err := io.WriteString(w, ")\n"); err != nil {
+				return err
+			}
+			return nil
+		}
 		if _, err := io.WriteString(w, indent+"return"); err != nil {
 			return err
 		}
@@ -1105,10 +1120,12 @@ func emitStmtIndent(w io.Writer, s Stmt, indent string) error {
 				return err
 			}
 		}
+		funcDepth++
 		if len(st.Body) == 0 {
 			if _, err := io.WriteString(w, indent+"    pass\n"); err != nil {
 				return err
 			}
+			funcDepth--
 			return nil
 		}
 		for _, bs := range st.Body {
@@ -1116,6 +1133,7 @@ func emitStmtIndent(w io.Writer, s Stmt, indent string) error {
 				return err
 			}
 		}
+		funcDepth--
 		return nil
 	case *SaveStmt:
 		if st.Format == "jsonl" {
@@ -4268,6 +4286,22 @@ func convertPostfix(p *parser.PostfixExpr) (Expr, error) {
 									currentImports["socket"] = true
 								}
 								expr = &CallExpr{Func: &Name{Name: "_lookup_host"}, Args: args}
+								replaced = true
+							}
+						case "Getenv":
+							if n.Name == "os" && len(args) == 1 {
+								if currentImports != nil {
+									currentImports["os"] = true
+								}
+								expr = &CallExpr{Func: &FieldExpr{Target: &Name{Name: "os"}, Name: "getenv"}, Args: args}
+								replaced = true
+							}
+						case "Environ":
+							if n.Name == "os" && len(args) == 0 {
+								if currentImports != nil {
+									currentImports["os"] = true
+								}
+								expr = &FieldExpr{Target: &Name{Name: "os"}, Name: "environ"}
 								replaced = true
 							}
 						}
