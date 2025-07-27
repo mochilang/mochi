@@ -2,9 +2,9 @@
 
 Generated Lua code for programs in `tests/rosetta/x/Mochi`. Each program has a `.lua` file produced by the transpiler and a `.out` file with its runtime output. Compilation or runtime errors are captured in `.error` files.
 
-Transpiled programs: 387/465
+Transpiled programs: 417/465
 
-Last updated: 2025-07-27 16:50 GMT+7
+Last updated: 2025-07-27 17:23 GMT+7
 
 Checklist:
 
@@ -400,36 +400,36 @@ Checklist:
 | 388 | faces-from-a-mesh-2 | ✓ | 356µs | 1.3 KB |
 | 389 | faces-from-a-mesh | ✓ | 312µs | 3.8 KB |
 | 390 | factorial-base-numbers-indexing-permutations-of-a-collection | ✓ | 3.083ms | 2.6 KB |
-| 391 | factorial-primes |   |  |  |
-| 392 | factorial |   |  |  |
-| 393 | factorions |   |  |  |
-| 394 | factors-of-a-mersenne-number |   |  |  |
-| 395 | factors-of-an-integer |   |  |  |
-| 396 | fairshare-between-two-and-more |   |  |  |
-| 397 | farey-sequence |   |  |  |
-| 398 | fast-fourier-transform |   |  |  |
-| 399 | fasta-format |   |  |  |
-| 400 | faulhabers-formula |   |  |  |
-| 401 | faulhabers-triangle |   |  |  |
-| 402 | feigenbaum-constant-calculation |   |  |  |
-| 403 | fermat-numbers |   |  |  |
-| 404 | fibonacci-n-step-number-sequences |   |  |  |
-| 405 | fibonacci-sequence-1 |   |  |  |
-| 406 | fibonacci-sequence-2 |   |  |  |
-| 407 | fibonacci-sequence-3 |   |  |  |
-| 408 | fibonacci-sequence-4 |   |  |  |
-| 409 | fibonacci-word-fractal |   |  |  |
-| 410 | fibonacci-word |   |  |  |
-| 411 | file-extension-is-in-extensions-list |   |  |  |
-| 412 | file-input-output-1 |   |  |  |
-| 413 | file-input-output-2 |   |  |  |
-| 414 | file-modification-time |   |  |  |
-| 415 | file-size-distribution |   |  |  |
-| 416 | file-size |   |  |  |
-| 417 | filter |   |  |  |
-| 418 | find-chess960-starting-position-identifier |   |  |  |
-| 419 | find-common-directory-path |   |  |  |
-| 420 | find-duplicate-files |   |  |  |
+| 391 | factorial-primes | ✓ | 2.417ms | 3.0 KB |
+| 392 | factorial | ✓ | 83µs | 2.7 KB |
+| 393 | factorions | ✓ | 5.358529s | 3.0 KB |
+| 394 | factors-of-a-mersenne-number | ✓ | 17.974158s | 1.2 MB |
+| 395 | factors-of-an-integer | ✓ | 21.487173s | 1.0 KB |
+| 396 | fairshare-between-two-and-more | ✓ | 1m5.830898s | 1.2 MB |
+| 397 | farey-sequence | ✓ | 890µs | 2.8 KB |
+| 398 | fast-fourier-transform | ✓ | 260µs | 2.8 KB |
+| 399 | fasta-format | ✓ | 77µs | 1.1 KB |
+| 400 | faulhabers-formula | ✓ | 1.172ms | 1.3 KB |
+| 401 | faulhabers-triangle | ✓ | 32µs | 744 B |
+| 402 | feigenbaum-constant-calculation | ✓ | 3.415ms | 1.1 KB |
+| 403 | fermat-numbers | ✓ | 61µs | 2.8 KB |
+| 404 | fibonacci-n-step-number-sequences | ✓ | 170µs | 3.0 KB |
+| 405 | fibonacci-sequence-1 | ✓ | 2µs | 104 B |
+| 406 | fibonacci-sequence-2 | ✓ | 2µs | 104 B |
+| 407 | fibonacci-sequence-3 | ✓ | 2µs | 136 B |
+| 408 | fibonacci-sequence-4 | ✓ | 92µs | 912 B |
+| 409 | fibonacci-word-fractal | ✓ | 114µs | 840 B |
+| 410 | fibonacci-word | ✓ | 32.21922s | 1.4 KB |
+| 411 | file-extension-is-in-extensions-list | ✓ | 333µs | 1.2 KB |
+| 412 | file-input-output-1 | ✓ | 26µs | 328 B |
+| 413 | file-input-output-2 | ✓ | 28µs | 368 B |
+| 414 | file-modification-time | ✓ | 31µs | 1.1 KB |
+| 415 | file-size-distribution | ✓ | 118µs | 1.0 KB |
+| 416 | file-size | ✓ | 41µs | 848 B |
+| 417 | filter | ✓ | 70µs | 912 B |
+| 418 | find-chess960-starting-position-identifier | ✓ | 354µs | 2.8 KB |
+| 419 | find-common-directory-path | ✓ | 344µs | 1.1 KB |
+| 420 | find-duplicate-files | ✓ | 42µs | 2.9 KB |
 | 421 | find-if-a-point-is-within-a-triangle |   |  |  |
 | 422 | find-largest-left-truncatable-prime-in-a-given-base |   |  |  |
 | 423 | find-limit-of-recursion |   |  |  |
