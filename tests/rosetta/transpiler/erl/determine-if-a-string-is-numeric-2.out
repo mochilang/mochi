@@ -1,0 +1,8 @@
+Are these strings integers?
+  1 -> true
+  one -> false
+{
+  "duration_us": 23806,
+  "memory_bytes": 278600,
+  "name": "main"
+}

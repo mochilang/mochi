@@ -1222,6 +1222,9 @@ func isIntExpr(e Expr, env *types.Env, ctx *context) bool {
 	case *BinaryExpr:
 		return isIntExpr(v.Left, env, ctx) && isIntExpr(v.Right, env, ctx)
 	case *CallExpr:
+		if v.Func == "mochi_to_int" {
+			return true
+		}
 		if v.Func == "erlang:get" && len(v.Args) == 1 {
 			if a, ok := v.Args[0].(*AtomLit); ok {
 				name := strings.Trim(a.Name, "'")
@@ -3318,6 +3321,10 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context, top bool) (
 		kind2 := "list"
 		if _, ok := idx2.(*StringLit); ok {
 			kind2 = "map"
+		} else if nr, ok := idx2.(*NameRef); ok {
+			if nr.IsString || ctx.isStringVar(ctx.original(nr.Name)) {
+				kind2 = "map"
+			}
 		}
 		var stmts []Stmt
 		// extract inner value
@@ -3385,6 +3392,10 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context, top bool) (
 		kind2 := "list"
 		if _, ok := idx2.(*StringLit); ok {
 			kind2 = "map"
+		} else if nr, ok := idx2.(*NameRef); ok {
+			if nr.IsString || ctx.isStringVar(ctx.original(nr.Name)) {
+				kind2 = "map"
+			}
 		}
 		kind3 := "list"
 		if _, ok := idx3.(*StringLit); ok {
@@ -4778,6 +4789,13 @@ func convertPrimary(p *parser.Primary, env *types.Env, ctx *context) (Expr, erro
 		} else if ce.Func == "parseintstr" && (len(ce.Args) == 1 || len(ce.Args) == 2) {
 			useParseIntStr = true
 			return &CallExpr{Func: "mochi_parse_int_str", Args: ce.Args[:1]}, nil
+		}
+		if t, err := env.GetVar(p.Call.Func); err == nil {
+			if ft, ok := t.(types.FuncType); ok {
+				if _, ok := ft.Return.(types.StringType); ok {
+					ce.ReturnsString = true
+				}
+			}
 		}
 		return ce, nil
 	case p.FunExpr != nil:

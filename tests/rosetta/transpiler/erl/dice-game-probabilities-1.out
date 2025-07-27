@@ -1,0 +1,11 @@
+/workspace/mochi/tests/rosetta/transpiler/erl/dice-game-probabilities-1.erl:87:2: Warning: variable 'Counts_3' exported from 'case' (line 71, column 9)
+%   87| {Counts_3, I_2, NDice, NSides, S} = Fun_2(Counts_3, I, NDice, NSides, S),
+%     |  ^
+
+0.0
+0.0
+{
+  "duration_us": 354769,
+  "memory_bytes": 233720,
+  "name": "main"
+}
