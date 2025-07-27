@@ -1,3 +1,7 @@
+## Progress (2025-07-27 15:57 +0700)
+- vm: add pow builtin and update rosetta outputs
+- Generated F# for 103/104 programs (103 passing)
+
 ## Progress (2025-07-26 10:43 +0700)
 - fs transpiler: fix modulo int64 casting
 - Generated F# for 103/104 programs (103 passing)

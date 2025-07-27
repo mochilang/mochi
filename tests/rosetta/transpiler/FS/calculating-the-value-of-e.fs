@@ -1,10 +1,40 @@
-// Generated 2025-07-26 04:38 +0700
+// Generated 2025-07-27 15:57 +0700
 
 exception Break
 exception Continue
 
 exception Return
 
+let mutable _nowSeed:int64 = 0L
+let mutable _nowSeeded = false
+let _initNow () =
+    let s = System.Environment.GetEnvironmentVariable("MOCHI_NOW_SEED")
+    if System.String.IsNullOrEmpty(s) |> not then
+        match System.Int32.TryParse(s) with
+        | true, v ->
+            _nowSeed <- int64 v
+            _nowSeeded <- true
+        | _ -> ()
+let _now () =
+    if _nowSeeded then
+        _nowSeed <- (_nowSeed * 1664525L + 1013904223L) % 2147483647L
+        int _nowSeed
+    else
+        int (System.DateTime.UtcNow.Ticks % 2147483647L)
+
+_initNow()
+let _substring (s:string) (start:int) (finish:int) =
+    let len = String.length s
+    let mutable st = if start < 0 then len + start else start
+    let mutable en = if finish < 0 then len + finish else finish
+    if st < 0 then st <- 0
+    if st > len then st <- len
+    if en > len then en <- len
+    if st > en then st <- en
+    s.Substring(st, en - st)
+
+let __bench_start = _now()
+let __mem_start = System.GC.GetTotalMemory(true)
 let epsilon: float = 0.000000000000001
 let rec absf (x: float) =
     let mutable __ret : float = Unchecked.defaultof<float>
@@ -15,7 +45,7 @@ let rec absf (x: float) =
         __ret
     with
         | Return -> __ret
-and pow10 (n: int) =
+let rec pow10 (n: int) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable n = n
     try
@@ -29,19 +59,19 @@ and pow10 (n: int) =
         __ret
     with
         | Return -> __ret
-and formatFloat (f: float) (prec: int) =
+let rec formatFloat (f: float) (prec: int) =
     let mutable __ret : string = Unchecked.defaultof<string>
     let mutable f = f
     let mutable prec = prec
     try
         let scale: float = pow10 prec
         let scaled: float = (f * scale) + 0.5
-        let mutable n: int = int scaled
+        let mutable n: int = unbox<int> scaled
         let mutable digits: string = string n
         while (String.length digits) <= prec do
             digits <- "0" + digits
-        let intPart: string = digits.Substring(0, ((String.length digits) - prec) - 0)
-        let fracPart: string = digits.Substring((String.length digits) - prec, (String.length digits) - ((String.length digits) - prec))
+        let intPart: string = _substring digits 0 ((String.length digits) - prec)
+        let fracPart: string = _substring digits ((String.length digits) - prec) (String.length digits)
         __ret <- (intPart + ".") + fracPart
         raise Return
         __ret
@@ -55,11 +85,14 @@ try
     while true do
         factval <- factval * n
         n <- n + 1
-        term <- 1.0 / (float factval)
+        term <- 1.0 / (unbox<float> factval)
         e <- e + term
-        if (float (absf term)) < epsilon then
+        if (unbox<float> (absf term)) < epsilon then
             raise Break
 with
 | Break -> ()
 | Continue -> ()
 printfn "%s" ("e = " + (unbox<string> (formatFloat e 15)))
+let __bench_end = _now()
+let __mem_end = System.GC.GetTotalMemory(true)
+printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)

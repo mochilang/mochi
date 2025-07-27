@@ -1,9 +1,37 @@
-// Generated 2025-07-26 04:38 +0700
+// Generated 2025-07-27 15:57 +0700
 
 exception Break
 exception Continue
 
 exception Return
+
+let mutable _nowSeed:int64 = 0L
+let mutable _nowSeeded = false
+let _initNow () =
+    let s = System.Environment.GetEnvironmentVariable("MOCHI_NOW_SEED")
+    if System.String.IsNullOrEmpty(s) |> not then
+        match System.Int32.TryParse(s) with
+        | true, v ->
+            _nowSeed <- int64 v
+            _nowSeeded <- true
+        | _ -> ()
+let _now () =
+    if _nowSeeded then
+        _nowSeed <- (_nowSeed * 1664525L + 1013904223L) % 2147483647L
+        int _nowSeed
+    else
+        int (System.DateTime.UtcNow.Ticks % 2147483647L)
+
+_initNow()
+let _substring (s:string) (start:int) (finish:int) =
+    let len = String.length s
+    let mutable st = if start < 0 then len + start else start
+    let mutable en = if finish < 0 then len + finish else finish
+    if st < 0 then st <- 0
+    if st > len then st <- len
+    if en > len then en <- len
+    if st > en then st <- en
+    s.Substring(st, en - st)
 
 let rec indexOf (s: string) (ch: string) =
     let mutable __ret : int = Unchecked.defaultof<int>
@@ -12,7 +40,7 @@ let rec indexOf (s: string) (ch: string) =
     try
         let mutable i: int = 0
         while i < (String.length s) do
-            if (s.Substring(i, (i + 1) - i)) = ch then
+            if (_substring s i (i + 1)) = ch then
                 __ret <- i
                 raise Return
             i <- i + 1
@@ -63,10 +91,10 @@ and shiftRune (r: string) (k: int) =
     let mutable k = k
     try
         if (r >= "a") && (r <= "z") then
-            __ret <- chr (int ((int (((((int ((int (ord r)) - 97)) + k) % 26 + 26) % 26))) + 97))
+            __ret <- chr ((unbox<int> (((((unbox<int> ((unbox<int> (ord r)) - 97)) + k) % 26 + 26) % 26))) + 97)
             raise Return
         if (r >= "A") && (r <= "Z") then
-            __ret <- chr (int ((int (((((int ((int (ord r)) - 65)) + k) % 26 + 26) % 26))) + 65))
+            __ret <- chr ((unbox<int> (((((unbox<int> ((unbox<int> (ord r)) - 65)) + k) % 26 + 26) % 26))) + 65)
             raise Return
         __ret <- r
         raise Return
@@ -101,20 +129,26 @@ and decipher (s: string) (k: int) =
 and main () =
     let mutable __ret : unit = Unchecked.defaultof<unit>
     try
+        let __bench_start = _now()
+        let __mem_start = System.GC.GetTotalMemory(true)
         let pt: string = "The five boxing wizards jump quickly"
         printfn "%s" ("Plaintext: " + pt)
         for key in [|0; 1; 7; 25; 26|] do
             try
-                if ((int key) < 1) || ((int key) > 25) then
+                if ((unbox<int> key) < 1) || ((unbox<int> key) > 25) then
                     printfn "%s" (("Key " + (string key)) + " invalid")
                     raise Continue
-                let ct: string = encipher pt (int key)
+                let ct: string = encipher pt (unbox<int> key)
                 printfn "%s" ("Key " + (string key))
                 printfn "%s" ("  Enciphered: " + ct)
-                printfn "%s" ("  Deciphered: " + (unbox<string> (decipher ct (int key))))
+                printfn "%s" ("  Deciphered: " + (unbox<string> (decipher ct (unbox<int> key))))
             with
             | Break -> ()
             | Continue -> ()
+        let __bench_end = _now()
+        let __mem_end = System.GC.GetTotalMemory(true)
+        printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)
+
         __ret
     with
         | Return -> __ret

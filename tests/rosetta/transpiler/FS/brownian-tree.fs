@@ -1,4 +1,4 @@
-// Generated 2025-07-26 04:38 +0700
+// Generated 2025-07-27 15:57 +0700
 
 exception Break
 exception Continue
@@ -23,6 +23,8 @@ let _now () =
         int (System.DateTime.UtcNow.Ticks % 2147483647L)
 
 _initNow()
+let __bench_start = _now()
+let __mem_start = System.GC.GetTotalMemory(true)
 open System
 
 let w: int = 400
@@ -35,9 +37,9 @@ while y < h do
     let mutable row: int array = [||]
     let mutable x: int = 0
     while x < w do
-        row <- Array.append row [|0|]
+        row <- unbox<int array> (Array.append row [|0|])
         x <- x + 1
-    grid <- Array.append grid [|row|]
+    grid <- unbox<int array array> (Array.append grid [|row|])
     y <- y + 1
 (grid.[h / 3]).[w / 3] <- frost
 let rec inBounds (x: int) (y: int) =
@@ -50,7 +52,7 @@ let rec inBounds (x: int) (y: int) =
         __ret
     with
         | Return -> __ret
-and hasNeighbor (x: int) (y: int) =
+let rec hasNeighbor (x: int) (y: int) =
     let mutable __ret : bool = Unchecked.defaultof<bool>
     let mutable x = x
     let mutable y = y
@@ -62,7 +64,7 @@ and hasNeighbor (x: int) (y: int) =
                 if not ((dx = 0) && (dy = 0)) then
                     let nx: int = x + dx
                     let ny: int = y + dy
-                    if (unbox<bool> (inBounds nx ny)) && ((int ((grid.[ny]).[nx])) = frost) then
+                    if (unbox<bool> (inBounds nx ny)) && ((unbox<int> ((grid.[ny]).[nx])) = frost) then
                         __ret <- true
                         raise Return
                 dx <- dx + 1
@@ -77,16 +79,16 @@ try
     while a < n do
         let mutable px: int = (((_now()) % w + w) % w)
         let mutable py: int = (((_now()) % h + h) % h)
-        if (int ((grid.[py]).[px])) = frost then
+        if (unbox<int> ((grid.[py]).[px])) = frost then
             let mutable lost: bool = false
             try
                 while true do
-                    px <- (int (px + (int ((((_now()) % 3 + 3) % 3))))) - 1
-                    py <- (int (py + (int ((((_now()) % 3 + 3) % 3))))) - 1
+                    px <- unbox<int> ((unbox<int> (px + (unbox<int> ((((_now()) % 3 + 3) % 3))))) - 1)
+                    py <- unbox<int> ((unbox<int> (py + (unbox<int> ((((_now()) % 3 + 3) % 3))))) - 1)
                     if not (inBounds px py) then
                         lost <- true
                         raise Break
-                    if (int ((grid.[py]).[px])) <> frost then
+                    if (unbox<int> ((grid.[py]).[px])) <> frost then
                         raise Break
             with
             | Break -> ()
@@ -97,8 +99,8 @@ try
             let mutable lost: bool = false
             try
                 while not (hasNeighbor px py) do
-                    px <- (int (px + (int ((((_now()) % 3 + 3) % 3))))) - 1
-                    py <- (int (py + (int ((((_now()) % 3 + 3) % 3))))) - 1
+                    px <- unbox<int> ((unbox<int> (px + (unbox<int> ((((_now()) % 3 + 3) % 3))))) - 1)
+                    py <- unbox<int> ((unbox<int> (py + (unbox<int> ((((_now()) % 3 + 3) % 3))))) - 1)
                     if not (inBounds px py) then
                         lost <- true
                         raise Break
@@ -112,3 +114,6 @@ try
 with
 | Break -> ()
 | Continue -> ()
+let __bench_end = _now()
+let __mem_end = System.GC.GetTotalMemory(true)
+printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)

@@ -1,4 +1,4 @@
-// Generated 2025-07-26 04:38 +0700
+// Generated 2025-07-27 15:57 +0700
 
 exception Break
 exception Continue
@@ -23,6 +23,16 @@ let _now () =
         int (System.DateTime.UtcNow.Ticks % 2147483647L)
 
 _initNow()
+let _substring (s:string) (start:int) (finish:int) =
+    let len = String.length s
+    let mutable st = if start < 0 then len + start else start
+    let mutable en = if finish < 0 then len + finish else finish
+    if st < 0 then st <- 0
+    if st > len then st <- len
+    if en > len then en <- len
+    if st > en then st <- en
+    s.Substring(st, en - st)
+
 open System
 
 let rec indexOf (s: string) (ch: string) =
@@ -32,7 +42,7 @@ let rec indexOf (s: string) (ch: string) =
     try
         let mutable i: int = 0
         while i < (String.length s) do
-            if (s.Substring(i, (i + 1) - i)) = ch then
+            if (_substring s i (i + 1)) = ch then
                 __ret <- i
                 raise Return
             i <- i + 1
@@ -45,15 +55,15 @@ and shuffle (xs: string array) =
     let mutable __ret : string array = Unchecked.defaultof<string array>
     let mutable xs = xs
     try
-        let mutable arr = xs
-        let mutable i: int = (int (Array.length arr)) - 1
+        let mutable arr: string array = xs
+        let mutable i: int = (unbox<int> (Array.length arr)) - 1
         while i > 0 do
             let j = (((_now()) % (i + 1) + (i + 1)) % (i + 1))
-            let tmp = arr.[i]
+            let tmp: string = arr.[i]
             arr.[i] <- arr.[j]
             arr.[j] <- tmp
             i <- i - 1
-        __ret <- arr
+        __ret <- unbox<string array> arr
         raise Return
         __ret
     with
@@ -61,6 +71,8 @@ and shuffle (xs: string array) =
 and main () =
     let mutable __ret : unit = Unchecked.defaultof<unit>
     try
+        let __bench_start = _now()
+        let __mem_start = System.GC.GetTotalMemory(true)
         printfn "%s" "Cows and Bulls"
         printfn "%s" "Guess four digit number of unique digits in the range 1 to 9."
         printfn "%s" "A correct digit but not in the correct place is a cow."
@@ -83,15 +95,15 @@ and main () =
                 let mutable malformed: bool = false
                 try
                     while i < 4 do
-                        let cg: string = guess.Substring(i, (i + 1) - i)
-                        if (int (indexOf seen cg)) <> (-1) then
+                        let cg: string = _substring guess i (i + 1)
+                        if (unbox<int> (indexOf seen cg)) <> (-1) then
                             printfn "%s" ("Repeated digit: " + cg)
                             malformed <- true
                             raise Break
                         seen <- seen + cg
                         let pos: int = indexOf (unbox<string> pat) cg
                         if pos = (-1) then
-                            if (int (indexOf valid cg)) = (-1) then
+                            if (unbox<int> (indexOf valid cg)) = (-1) then
                                 printfn "%s" ("Invalid digit: " + cg)
                                 malformed <- true
                                 raise Break
@@ -113,6 +125,10 @@ and main () =
         with
         | Break -> ()
         | Continue -> ()
+        let __bench_end = _now()
+        let __mem_end = System.GC.GetTotalMemory(true)
+        printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)
+
         __ret
     with
         | Return -> __ret

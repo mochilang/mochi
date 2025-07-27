@@ -2159,11 +2159,7 @@ type CastExpr struct {
 func (c *CastExpr) emit(w io.Writer) {
 	switch c.Type {
 	case "float":
-		if t := inferType(c.Expr); t == "obj" {
-			io.WriteString(w, "unbox<float> ")
-		} else {
-			io.WriteString(w, "float ")
-		}
+		io.WriteString(w, "unbox<float> ")
 		if needsParen(c.Expr) {
 			io.WriteString(w, "(")
 			c.Expr.emit(w)
@@ -2172,11 +2168,7 @@ func (c *CastExpr) emit(w io.Writer) {
 			c.Expr.emit(w)
 		}
 	case "int":
-		if t := inferType(c.Expr); t == "obj" {
-			io.WriteString(w, "unbox<int> ")
-		} else {
-			io.WriteString(w, "int ")
-		}
+		io.WriteString(w, "unbox<int> ")
 		if needsParen(c.Expr) {
 			io.WriteString(w, "(")
 			c.Expr.emit(w)

@@ -1,0 +1,7 @@
+run: exit status 1
+
+Unhandled Exception:
+System.InvalidCastException: Specified cast is not valid.
+  at <StartupCode$calculating-the-value-of-e>.$Calculating-the-value-of-e.main@ () [0x000f2] in <6885efce773a1560a7450383ceef8568>:0 
+[ERROR] FATAL UNHANDLED EXCEPTION: System.InvalidCastException: Specified cast is not valid.
+  at <StartupCode$calculating-the-value-of-e>.$Calculating-the-value-of-e.main@ () [0x000f2] in <6885efce773a1560a7450383ceef8568>:0 

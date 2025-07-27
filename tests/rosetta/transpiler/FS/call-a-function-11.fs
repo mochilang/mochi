@@ -20,12 +20,22 @@ let _now () =
         int (System.DateTime.UtcNow.Ticks % 2147483647L)
 
 _initNow()
-let rec strdup (s: string) =
-    let mutable __ret : string = Unchecked.defaultof<string>
-    let mutable s = s
+let rec zeroval (ival: int) =
+    let mutable __ret : int = Unchecked.defaultof<int>
+    let mutable ival = ival
     try
-        __ret <- s + ""
+        let mutable x: int = ival
+        x <- 0
+        __ret <- x
         raise Return
+        __ret
+    with
+        | Return -> __ret
+and zeroptr (ref: int array) =
+    let mutable __ret : unit = Unchecked.defaultof<unit>
+    let mutable ref = ref
+    try
+        ref.[0] <- 0
         __ret
     with
         | Return -> __ret
@@ -34,9 +44,15 @@ and main () =
     try
         let __bench_start = _now()
         let __mem_start = System.GC.GetTotalMemory(true)
-        let go1: string = "hello C"
-        let c2: string = strdup go1
-        printfn "%s" c2
+        let mutable i: int = 1
+        printfn "%s" ("initial: " + (string i))
+        let tmp: int = zeroval i
+        printfn "%s" ("zeroval: " + (string i))
+        let mutable box: int array = [|i|]
+        zeroptr box
+        i <- unbox<int> (box.[0])
+        printfn "%s" ("zeroptr: " + (string i))
+        printfn "%s" "pointer: 0"
         let __bench_end = _now()
         let __mem_end = System.GC.GetTotalMemory(true)
         printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)

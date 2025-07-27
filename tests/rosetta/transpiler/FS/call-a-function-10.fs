@@ -1,7 +1,5 @@
 // Generated 2025-07-27 15:57 +0700
 
-exception Return
-
 let mutable _nowSeed:int64 = 0L
 let mutable _nowSeeded = false
 let _initNow () =
@@ -20,23 +18,21 @@ let _now () =
         int (System.DateTime.UtcNow.Ticks % 2147483647L)
 
 _initNow()
-let rec strdup (s: string) =
-    let mutable __ret : string = Unchecked.defaultof<string>
-    let mutable s = s
-    try
-        __ret <- s + ""
-        raise Return
-        __ret
-    with
-        | Return -> __ret
-and main () =
+let rec main () =
     let mutable __ret : unit = Unchecked.defaultof<unit>
     try
         let __bench_start = _now()
         let __mem_start = System.GC.GetTotalMemory(true)
-        let go1: string = "hello C"
-        let c2: string = strdup go1
-        printfn "%s" c2
+        let mutable list: int array = [||]
+        let mutable a: int = 1
+        let mutable d: int = 2
+        let mutable e: int = 3
+        let mutable i: int = 4
+        list <- unbox<int array> (Array.append list [|a|])
+        list <- unbox<int array> (Array.append list [|d|])
+        list <- unbox<int array> (Array.append list [|e|])
+        list <- unbox<int array> (Array.append list [|i|])
+        i <- unbox<int> (Array.length list)
         let __bench_end = _now()
         let __mem_end = System.GC.GetTotalMemory(true)
         printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)
