@@ -1,0 +1,13 @@
+dotnet run: exit status 1
+/tmp/TestCSTranspiler_Rosetta_Golden1370592514/001/Program.cs(70,23): error CS0103: The name 'num' does not exist in the current context [/tmp/TestCSTranspiler_Rosetta_Golden1370592514/001/app.csproj]
+/tmp/TestCSTranspiler_Rosetta_Golden1370592514/001/Program.cs(71,23): error CS0103: The name 'denom' does not exist in the current context [/tmp/TestCSTranspiler_Rosetta_Golden1370592514/001/app.csproj]
+/tmp/TestCSTranspiler_Rosetta_Golden1370592514/001/Program.cs(85,20): error CS0103: The name 'num' does not exist in the current context [/tmp/TestCSTranspiler_Rosetta_Golden1370592514/001/app.csproj]
+/tmp/TestCSTranspiler_Rosetta_Golden1370592514/001/Program.cs(86,20): error CS0103: The name 'denom' does not exist in the current context [/tmp/TestCSTranspiler_Rosetta_Golden1370592514/001/app.csproj]
+/tmp/TestCSTranspiler_Rosetta_Golden1370592514/001/Program.cs(108,31): error CS0103: The name 'repeat' does not exist in the current context [/tmp/TestCSTranspiler_Rosetta_Golden1370592514/001/app.csproj]
+/tmp/TestCSTranspiler_Rosetta_Golden1370592514/001/Program.cs(150,28): error CS0103: The name 'num' does not exist in the current context [/tmp/TestCSTranspiler_Rosetta_Golden1370592514/001/app.csproj]
+/tmp/TestCSTranspiler_Rosetta_Golden1370592514/001/Program.cs(151,18): error CS0103: The name 'denom' does not exist in the current context [/tmp/TestCSTranspiler_Rosetta_Golden1370592514/001/app.csproj]
+/tmp/TestCSTranspiler_Rosetta_Golden1370592514/001/Program.cs(152,41): error CS0103: The name 'denom' does not exist in the current context [/tmp/TestCSTranspiler_Rosetta_Golden1370592514/001/app.csproj]
+/tmp/TestCSTranspiler_Rosetta_Golden1370592514/001/Program.cs(160,47): error CS0103: The name 'num' does not exist in the current context [/tmp/TestCSTranspiler_Rosetta_Golden1370592514/001/app.csproj]
+/tmp/TestCSTranspiler_Rosetta_Golden1370592514/001/Program.cs(160,80): error CS0103: The name 'denom' does not exist in the current context [/tmp/TestCSTranspiler_Rosetta_Golden1370592514/001/app.csproj]
+
+The build failed. Fix the build errors and run again.

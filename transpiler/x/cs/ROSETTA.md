@@ -1,7 +1,7 @@
 # Rosetta C# Transpiler Output
 
-Completed programs: 127/452
-Last updated: 2025-07-27 11:31 +0700
+Completed programs: 147/452
+Last updated: 2025-07-27 12:32 +0700
 
 ## Checklist
 | Index | Name | Status | Duration | Memory |
@@ -144,36 +144,36 @@ Last updated: 2025-07-27 11:31 +0700
 | 136 | brazilian-numbers | ✓ | 632.21ms | 24.1MB |
 | 137 | break-oo-privacy | ✓ | 873µs | 16.0MB |
 | 138 | brilliant-numbers | ✓ |  |  |
-| 139 | brownian-tree | ✓ |  |  |
-| 140 | bulls-and-cows-player | ✓ | 7.728ms | 12.7GB |
+| 139 | brownian-tree | ✓ | 1383134h12m40.932246336s | 16.8GB |
+| 140 | bulls-and-cows-player | ✓ | 469566h32m48.600175s | 1.1GB |
 | 141 | bulls-and-cows |   |  |  |
-| 142 | burrows-wheeler-transform |   |  |  |
-| 143 | caesar-cipher-1 |   |  |  |
-| 144 | caesar-cipher-2 |   |  |  |
-| 145 | calculating-the-value-of-e |   |  |  |
-| 146 | calendar---for-real-programmers-1 |   |  |  |
-| 147 | calendar---for-real-programmers-2 |   |  |  |
-| 148 | calendar |   |  |  |
+| 142 | burrows-wheeler-transform | ✓ | 469566h32m48.600175s | 2.3GB |
+| 143 | caesar-cipher-1 | ✓ | 469566h32m48.600175s | 1.1GB |
+| 144 | caesar-cipher-2 | ✓ | 469566h32m48.600175s | 1.1GB |
+| 145 | calculating-the-value-of-e | ✓ | 469566h32m48.600175s | 1.7GB |
+| 146 | calendar---for-real-programmers-1 | ✓ | 469566h32m48.600175s | 100.8MB |
+| 147 | calendar---for-real-programmers-2 | ✓ | 469566h32m48.600175s | 100.8MB |
+| 148 | calendar | ✓ | 469566h32m48.600175s | 100.8MB |
 | 149 | calkin-wilf-sequence |   |  |  |
-| 150 | call-a-foreign-language-function |   |  |  |
-| 151 | call-a-function-1 |   |  |  |
-| 152 | call-a-function-10 |   |  |  |
-| 153 | call-a-function-11 |   |  |  |
-| 154 | call-a-function-12 |   |  |  |
-| 155 | call-a-function-2 |   |  |  |
+| 150 | call-a-foreign-language-function | ✓ | 469566h32m48.600175s | 16.0MB |
+| 151 | call-a-function-1 | ✓ | 469566h32m48.600175s |  |
+| 152 | call-a-function-10 | ✓ | 469566h32m48.600175s |  |
+| 153 | call-a-function-11 | ✓ | 469566h32m48.600175s | 16.0MB |
+| 154 | call-a-function-12 | ✓ | 469566h32m48.600175s | 1.0GB |
+| 155 | call-a-function-2 | ✓ | 469566h32m48.600175s | 1.6GB |
 | 156 | call-a-function-3 |   |  |  |
-| 157 | call-a-function-4 |   |  |  |
-| 158 | call-a-function-5 |   |  |  |
-| 159 | call-a-function-6 |   |  |  |
+| 157 | call-a-function-4 | ✓ | 469566h32m48.600175s |  |
+| 158 | call-a-function-5 | ✓ | 469566h32m48.600175s | 16.0MB |
+| 159 | call-a-function-6 | ✓ | 469566h32m48.600175s | 16.0MB |
 | 160 | call-a-function-7 |   |  |  |
-| 161 | call-a-function-8 |   |  |  |
-| 162 | call-a-function-9 |   |  |  |
+| 161 | call-a-function-8 | ✓ | 469566h32m48.600175s | 1.9GB |
+| 162 | call-a-function-9 | ✓ | 469566h32m48.600175s | 1.9GB |
 | 163 | call-an-object-method-1 |   |  |  |
 | 164 | call-an-object-method-2 |   |  |  |
 | 165 | call-an-object-method-3 |   |  |  |
 | 166 | call-an-object-method |   |  |  |
-| 167 | camel-case-and-snake-case |   |  |  |
-| 168 | canny-edge-detector |   |  |  |
+| 167 | camel-case-and-snake-case | ✓ | 469566h32m48.600175s | 1.2GB |
+| 168 | canny-edge-detector | ✓ | 469566h32m48.600175s | 1.2GB |
 | 169 | canonicalize-cidr |   |  |  |
 | 170 | cantor-set |   |  |  |
 | 171 | carmichael-3-strong-pseudoprimes |   |  |  |

@@ -1,0 +1,13 @@
+dotnet run: exit status 134
+Cows and Bulls
+Guess four digit number of unique digits in the range 1 to 9.
+A correct digit but not in the correct place is a cow.
+A correct digit in the correct place is a bull.
+Guess: 
+Cows: 1, bulls: 0
+Guess: 
+Cows: 1, bulls: 0
+Guess: 
+Unhandled exception. System.NullReferenceException: Object reference not set to an instance of an object.
+   at Program.main() in /tmp/TestCSTranspiler_Rosetta_Golden1368301655/001/Program.cs:line 113
+   at Program.Main() in /tmp/TestCSTranspiler_Rosetta_Golden1368301655/001/Program.cs:line 161
