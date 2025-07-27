@@ -42,6 +42,7 @@ var useBench bool
 var useStdout bool
 var useHas bool
 var useFetch bool
+var useStr bool
 var funcDepth int
 var returnOutsideFunc bool
 
@@ -724,7 +725,10 @@ func (p *PrintExpr) emit(w io.Writer) {
 			io.WriteString(w, " + \" \" + ")
 		}
 		if a != nil {
+			useStr = true
+			io.WriteString(w, "_str(")
 			a.emit(w)
+			io.WriteString(w, ")")
 		} else {
 			io.WriteString(w, "\"\"")
 		}
@@ -2015,6 +2019,7 @@ func Transpile(prog *parser.Program, env *types.Env, benchMain bool) (*Program, 
 	useStdout = false
 	useHas = false
 	useFetch = false
+	useStr = false
 	funcDepth = 0
 	returnOutsideFunc = false
 	defer func() {
@@ -2032,6 +2037,7 @@ func Transpile(prog *parser.Program, env *types.Env, benchMain bool) (*Program, 
 		useStdout = false
 		useHas = false
 		useFetch = false
+		useStr = false
 		funcDepth = 0
 		returnOutsideFunc = false
 	}()
@@ -2210,6 +2216,17 @@ function sha256(bs: number[]): number[] {
 	}
 	if useParseIntStr {
 		prelude = append(prelude, &RawStmt{Code: `function parseIntStr(s: string, base: number): number { return parseInt(s, Math.trunc(base)); }`})
+	}
+	if useStr {
+		prelude = append(prelude, &RawStmt{Code: `function _str(x: any): string {
+  if (typeof x === 'number') {
+    if (Object.is(x, -0)) return '-0';
+    if (x === Infinity) return '+Inf';
+    if (x === -Infinity) return '-Inf';
+    if (Number.isNaN(x)) return 'NaN';
+  }
+  return String(x);
+}`})
 	}
 	if useHas {
 		prelude = append(prelude, &RawStmt{Code: `function _has(obj: any, key: any): boolean {
@@ -2420,11 +2437,18 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 		if alias == "" {
 			alias = parser.AliasFromPath(s.Import.Path)
 		}
-		if s.Import.Lang != nil && *s.Import.Lang == "python" && strings.Trim(s.Import.Path, "\"") == "math" {
-			if pythonMathAliases != nil {
-				pythonMathAliases[alias] = true
+		if s.Import.Lang != nil && *s.Import.Lang == "python" {
+			path := strings.Trim(s.Import.Path, "\"")
+			switch path {
+			case "math":
+				if pythonMathAliases != nil {
+					pythonMathAliases[alias] = true
+				}
+				return &VarDecl{Name: alias, Expr: &NameRef{Name: "Math"}, Const: true}, nil
+			case "subprocess":
+				expr := &RawExpr{Code: `{ getoutput: (cmd: string): string => 'Would run: ' + cmd }`}
+				return &VarDecl{Name: alias, Expr: expr, Const: true}, nil
 			}
-			return &VarDecl{Name: alias, Expr: &NameRef{Name: "Math"}, Const: true}, nil
 		}
 		if s.Import.Lang != nil && *s.Import.Lang == "go" {
 			path := strings.Trim(s.Import.Path, "\"")
@@ -3269,6 +3293,15 @@ func convertBinary(b *parser.BinaryExpr) (Expr, error) {
 		case "intersect":
 			operands[i] = &IntersectExpr{Left: operands[i], Right: operands[i+1]}
 		default:
+			if isBigIntType(typesArr[i]) != isBigIntType(typesArr[i+1]) {
+				if isBigIntType(typesArr[i]) {
+					operands[i] = &CallExpr{Func: "Number", Args: []Expr{operands[i]}}
+					typesArr[i] = types.FloatType{}
+				} else {
+					operands[i+1] = &CallExpr{Func: "Number", Args: []Expr{operands[i+1]}}
+					typesArr[i+1] = types.FloatType{}
+				}
+			}
 			if ops[i] == "/" && (isIntType(typesArr[i]) && isIntType(typesArr[i+1]) || (isVarIntExpr(operands[i]) && isIntLitExpr(operands[i+1])) || (isIntLitExpr(operands[i]) && isIntLitExpr(operands[i+1]))) && !(isFloatLitExpr(operands[i]) || isFloatLitExpr(operands[i+1])) {
 				if isBigIntType(typesArr[i]) || isBigIntType(typesArr[i+1]) {
 					operands[i] = &BinaryExpr{Left: operands[i], Op: "/", Right: operands[i+1]}
@@ -3509,6 +3542,18 @@ func convertPostfix(p *parser.PostfixExpr) (expr Expr, err error) {
 					default:
 						expr = &CallExpr{Func: "Math.trunc", Args: []Expr{expr}}
 					}
+				case types.BigIntType:
+					switch e := expr.(type) {
+					case *NumberLit:
+						if !strings.HasSuffix(e.Value, "n") {
+							e.Value = strings.TrimSuffix(e.Value, ".0") + "n"
+						}
+						expr = e
+					default:
+						expr = &CallExpr{Func: "BigInt", Args: []Expr{expr}}
+					}
+				case types.BigRatType:
+					expr = &CallExpr{Func: "Number", Args: []Expr{expr}}
 				default:
 					// other casts are no-ops in JavaScript
 				}
@@ -3611,6 +3656,7 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 					useStdout = true
 				}
 			}
+			useStr = true
 			return &PrintExpr{Args: args}, nil
 		case "len":
 			if len(args) != 1 {
@@ -3695,7 +3741,8 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			if len(args) != 1 {
 				return nil, fmt.Errorf("str expects one argument")
 			}
-			return &CallExpr{Func: "String", Args: args}, nil
+			useStr = true
+			return &CallExpr{Func: "_str", Args: args}, nil
 		case "int":
 			if len(args) != 1 {
 				return nil, fmt.Errorf("int expects one argument")
