@@ -1,4 +1,40 @@
-## Progress (2025-07-27 22:00 +0700)
+## Progress (2025-07-27 16:08 UTC)
+- java: add rosetta benchmark for program 180 (ed2562baf8)
+
+- java: add rosetta benchmark for program 179 (58be251441)
+
+- java: add rosetta benchmark for program 178 (2bce50c4f1)
+
+- java: fix struct index detection; add rosetta 177 (d100e3d7ac)
+
+- update java README timestamp (8ac8609d1a)
+
+- update java README timestamp (8ac8609d1a)
+
+- update java README timestamp (8ac8609d1a)
+
+- update java README timestamp (8ac8609d1a)
+
+- java: add rosetta benchmark for program 175 (f60ce97ce3)
+
+- java: add rosetta benchmark for program 175 (f60ce97ce3)
+
+- java: add rosetta benchmark for program 174 (5ccfa38263)
+
+- java: support int[][] cast helper; add rosetta 173 (80fb42c3cd)
+
+- java: add rosetta benchmark for program 172 (924bf14edb)
+
+- java: add rosetta benchmark for program 172 (924bf14edb)
+
+- java: add rosetta benchmark for program 171 (add06e089e)
+
+- scala: add cusip error output (4c9768f9e1)
+
+- scala: add cusip error output (4c9768f9e1)
+
+- scala: add cusip error output (4c9768f9e1)
+
 - transpiler/java: process rosetta programs 265-294 (5f3bc4e7fb)
 
 - transpiler/java: process rosetta programs 265-294 (5f3bc4e7fb)

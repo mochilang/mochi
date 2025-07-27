@@ -43,6 +43,8 @@ var needRuneLen bool
 var needSubstr bool
 var needBigRat bool
 var needModPow2 bool
+var needCastInt2D bool
+var needFn3 bool
 var pyMathAliases map[string]bool
 var builtinAliases map[string]string
 var structDefs map[string]map[string]string
@@ -198,6 +200,13 @@ func javaType(t string) string {
 					}
 					rt := javaBoxType(javaType(ret))
 					return fmt.Sprintf("java.util.function.BiFunction<%s,%s,%s>", pt1, pt2, rt)
+				} else if len(params) == 3 {
+					needFn3 = true
+					pt1 := javaBoxType(javaType(params[0]))
+					pt2 := javaBoxType(javaType(params[1]))
+					pt3 := javaBoxType(javaType(params[2]))
+					rt := javaBoxType(javaType(ret))
+					return fmt.Sprintf("Fn3<%s,%s,%s,%s>", pt1, pt2, pt3, rt)
 				}
 			}
 		}
@@ -2147,7 +2156,12 @@ func (c *FloatCastExpr) emit(w io.Writer) {
 
 func (c *CastExpr) emit(w io.Writer) {
 	jt := javaType(c.Type)
-	if jt == "java.math.BigInteger" {
+	if jt == "int[][]" {
+		needCastInt2D = true
+		fmt.Fprint(w, "_castInt2D(")
+		c.Value.emit(w)
+		fmt.Fprint(w, ")")
+	} else if jt == "java.math.BigInteger" {
 		if inferType(c.Value) == "bigint" {
 			c.Value.emit(w)
 		} else if _, ok := c.Value.(*IntLit); ok {
@@ -4029,6 +4043,8 @@ func compilePostfix(pf *parser.PostfixExpr) (Expr, error) {
 					if t, ok2 := fields[s]; ok2 {
 						rType = t
 					}
+					expr = &FieldExpr{Target: expr, Name: s}
+					continue
 				}
 			}
 			if rType == "" {
@@ -4044,8 +4060,11 @@ func compilePostfix(pf *parser.PostfixExpr) (Expr, error) {
 					}
 				}
 			}
+			fields := mapFieldsForExpr(expr)
 			isMap := isMapExpr(expr)
-			if !isMap {
+			if fields != nil {
+				isMap = false
+			} else if !isMap {
 				it := inferType(idx)
 				if it == "string" {
 					if !isStringExpr(expr) && !isArrayExpr(expr) {
@@ -5252,6 +5271,36 @@ func Emit(prog *Program) []byte {
 		buf.WriteString("        } catch (Exception e) { return new int[0]; }\n")
 		buf.WriteString("    }\n")
 	}
+	if needCastInt2D {
+		buf.WriteString("\n    static int[][] _castInt2D(Object v) {\n")
+		buf.WriteString("        if (v == null) return new int[][]{};\n")
+		buf.WriteString("        if (v instanceof int[][]) return (int[][])v;\n")
+		buf.WriteString("        if (v instanceof Object[]) {\n")
+		buf.WriteString("            Object[] arr = (Object[])v;\n")
+		buf.WriteString("            int[][] out = new int[arr.length][];\n")
+		buf.WriteString("            for (int i = 0; i < arr.length; i++) {\n")
+		buf.WriteString("                Object e = arr[i];\n")
+		buf.WriteString("                if (e instanceof int[]) {\n")
+		buf.WriteString("                    out[i] = (int[])e;\n")
+		buf.WriteString("                } else if (e instanceof Object[]) {\n")
+		buf.WriteString("                    Object[] ar = (Object[])e;\n")
+		buf.WriteString("                    int[] ints = new int[ar.length];\n")
+		buf.WriteString("                    for (int j = 0; j < ar.length; j++) ints[j] = ((Number)ar[j]).intValue();\n")
+		buf.WriteString("                    out[i] = ints;\n")
+		buf.WriteString("                } else if (e instanceof Number) {\n")
+		buf.WriteString("                    out[i] = new int[]{((Number)e).intValue()};\n")
+		buf.WriteString("                } else {\n")
+		buf.WriteString("                    out[i] = new int[0];\n")
+		buf.WriteString("                }\n")
+		buf.WriteString("            }\n")
+		buf.WriteString("            return out;\n")
+		buf.WriteString("        }\n")
+		buf.WriteString("        return new int[][]{};\n")
+		buf.WriteString("    }\n")
+	}
+	if needFn3 {
+		buf.WriteString("\n    interface Fn3<A,B,C,R> { R apply(A a, B b, C c); }\n")
+	}
 	if needBigRat {
 		buf.WriteString("\n    static class BigRat {\n")
 		buf.WriteString("        java.math.BigInteger num;\n")
@@ -5827,6 +5876,12 @@ func mapFieldsForExpr(e Expr) map[string]string {
 	case *VarExpr:
 		if f, ok := mapVarFields[ex.Name]; ok {
 			return f
+		}
+		if t, ok := varTypes[ex.Name]; ok {
+			base := strings.TrimSuffix(t, "[]")
+			if fields, ok2 := structDefs[base]; ok2 {
+				return fields
+			}
 		}
 	case *CallExpr:
 		if f, ok := funcMapFields[ex.Func]; ok {
