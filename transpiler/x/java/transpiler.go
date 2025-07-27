@@ -39,6 +39,8 @@ var needNetLookupHost bool
 var needMem bool
 var needPadStart bool
 var needSHA256 bool
+var needRuneLen bool
+var needSubstr bool
 var needBigRat bool
 var needModPow2 bool
 var pyMathAliases map[string]bool
@@ -1558,6 +1560,9 @@ func (m *MapLit) emit(w io.Writer) {
 	valType := "Object"
 	if m.ValueType != "" {
 		valType = javaBoxType(m.ValueType)
+		if strings.Contains(valType, "<") && !strings.HasSuffix(valType, ">") {
+			valType += ">"
+		}
 	} else if len(m.Values) > 0 {
 		t := inferType(m.Values[0])
 		same := true
@@ -1569,6 +1574,9 @@ func (m *MapLit) emit(w io.Writer) {
 		}
 		if same {
 			valType = javaBoxType(t)
+			if strings.Contains(valType, "<") && !strings.HasSuffix(valType, ">") {
+				valType += ">"
+			}
 		}
 	}
 	keyType := "String"
@@ -1910,8 +1918,10 @@ func (l *LenExpr) emit(w io.Writer) {
 		l.Value.emit(w)
 		fmt.Fprint(w, ".items.size()")
 	case isStringExpr(l.Value):
+		needRuneLen = true
+		fmt.Fprint(w, "_runeLen(")
 		l.Value.emit(w)
-		fmt.Fprint(w, ".length()")
+		fmt.Fprint(w, ")")
 	case isArrayExpr(l.Value):
 		l.Value.emit(w)
 		fmt.Fprint(w, ".length")
@@ -2092,6 +2102,13 @@ func (a *AppendExpr) emit(w io.Writer) {
 		fmt.Fprint(w, "appendObj(")
 		a.List.emit(w)
 		fmt.Fprint(w, ", ")
+		if ll, ok := a.Value.(*ListLit); ok && ll.ElemType == "" {
+			et := elem
+			if strings.HasSuffix(et, "[]") {
+				et = strings.TrimSuffix(et, "[]")
+			}
+			ll.ElemType = et
+		}
 		a.Value.emit(w)
 		fmt.Fprint(w, ")")
 		return
@@ -2424,14 +2441,10 @@ type SubstringExpr struct {
 }
 
 func (s *SubstringExpr) emit(w io.Writer) {
-	if isStringExpr(s.Str) {
-		s.Str.emit(w)
-	} else {
-		fmt.Fprint(w, "String.valueOf(")
-		s.Str.emit(w)
-		fmt.Fprint(w, ")")
-	}
-	fmt.Fprint(w, ".substring(")
+	needSubstr = true
+	fmt.Fprint(w, "_substr(")
+	s.Str.emit(w)
+	fmt.Fprint(w, ", ")
 	s.Start.emit(w)
 	fmt.Fprint(w, ", ")
 	s.End.emit(w)
@@ -2923,6 +2936,8 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	needSHA256 = false
 	needBigRat = false
 	needModPow2 = false
+	needRuneLen = false
+	needSubstr = false
 	pyMathAliases = map[string]bool{}
 	builtinAliases = map[string]string{}
 	structDefs = map[string]map[string]string{}
@@ -5290,6 +5305,18 @@ func Emit(prog *Program) []byte {
 		buf.WriteString("\n    static int _modPow2(int v, int n) {\n")
 		buf.WriteString("        long mask = (1L << n) - 1L;\n")
 		buf.WriteString("        return (int)(((long)v) & mask);\n")
+		buf.WriteString("    }\n")
+	}
+	if needRuneLen {
+		buf.WriteString("\n    static int _runeLen(String s) {\n")
+		buf.WriteString("        return s.codePointCount(0, s.length());\n")
+		buf.WriteString("    }\n")
+	}
+	if needSubstr {
+		buf.WriteString("\n    static String _substr(String s, int i, int j) {\n")
+		buf.WriteString("        int start = s.offsetByCodePoints(0, i);\n")
+		buf.WriteString("        int end = s.offsetByCodePoints(0, j);\n")
+		buf.WriteString("        return s.substring(start, end);\n")
 		buf.WriteString("    }\n")
 	}
 	buf.WriteString("}\n")
