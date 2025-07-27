@@ -3730,6 +3730,10 @@ func (fc *funcCompiler) compilePrimary(p *parser.Primary) int {
 				r = fc.newReg()
 				fc.emit(p.Pos, Instr{Op: OpGetGlobal, A: r, B: gidx})
 				fc.tags[r] = tagUnknown
+			} else if fnIdx, fok := fc.comp.fnIndex[p.Selector.Root]; fok && len(p.Selector.Tail) == 0 {
+				r = fc.newReg()
+				fc.emit(p.Pos, Instr{Op: OpMakeClosure, A: r, B: fnIdx, C: 0})
+				fc.tags[r] = tagUnknown
 			} else {
 				if len(p.Selector.Tail) == 0 {
 					if st, ok := fc.comp.env.GetStruct(p.Selector.Root); ok && len(st.Order) == 0 {

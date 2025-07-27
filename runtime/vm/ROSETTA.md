@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated IR and outputs from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/ir`.
-Last updated: 2025-07-27 15:57 UTC
+Last updated: 2025-07-27 16:58 UTC
 
-## Rosetta Golden Test Checklist (450/467)
+## Rosetta Golden Test Checklist (452/467)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 216µs | 34.2 KB |
@@ -207,27 +207,27 @@ Last updated: 2025-07-27 15:57 UTC
 | 198 | cheryls-birthday | ✓ | 1.966ms | 425.7 KB |
 | 199 | chinese-remainder-theorem | ✓ | 826µs | 48.3 KB |
 | 200 | chinese-zodiac | ✓ | 254µs | 57.9 KB |
-| 201 | cholesky-decomposition-1 | ✓ | 329µs | 188.6 KB |
-| 202 | cholesky-decomposition | ✓ | 315µs | 100.8 KB |
-| 203 | chowla-numbers | ✓ | 30µs | 1.1 KB |
+| 201 | cholesky-decomposition-1 | ✓ | 416µs | 188.2 KB |
+| 202 | cholesky-decomposition | ✓ | 282µs | 100.8 KB |
+| 203 | chowla-numbers | ✓ | 32µs | 1.1 KB |
 | 204 | church-numerals-1 |   |  |  |
-| 205 | church-numerals-2 | ✓ | 54µs | 136 B |
-| 206 | circles-of-given-radius-through-two-points | ✓ | 280µs | 195.5 KB |
-| 207 | circular-primes | ✓ | 5.346ms |  |
+| 205 | church-numerals-2 | ✓ | 17µs | 136 B |
+| 206 | circles-of-given-radius-through-two-points | ✓ | 276µs | 195.5 KB |
+| 207 | circular-primes | ✓ | 6.237ms |  |
 | 208 | cistercian-numerals | ✓ |  |  |
-| 209 | comma-quibbling | ✓ | 677µs | 22.5 KB |
-| 210 | compiler-virtual-machine-interpreter | ✓ | 4.182ms | 1.5 MB |
+| 209 | comma-quibbling | ✓ | 225µs | 22.5 KB |
+| 210 | compiler-virtual-machine-interpreter | ✓ | 1.829ms | 897.5 KB |
 | 211 | composite-numbers-k-with-no-single-digit-factors-whose-factors-are-all-substrings-of-k | ✓ |  |  |
-| 212 | compound-data-type | ✓ | 30µs | 136 B |
-| 213 | concurrent-computing-1 | ✓ | 32µs | 3.5 KB |
-| 214 | concurrent-computing-2 | ✓ | 30µs | 3.5 KB |
-| 215 | concurrent-computing-3 | ✓ | 55µs | 8.7 KB |
-| 216 | conditional-structures-1 | ✓ | 31µs | 136 B |
-| 217 | conditional-structures-10 | ✓ | 34µs | 552 B |
-| 218 | conditional-structures-2 | ✓ | 29µs | 136 B |
-| 219 | conditional-structures-3 | ✓ | 28µs | 136 B |
-| 220 | conditional-structures-4 |   |  |  |
-| 221 | conditional-structures-5 |   |  |  |
+| 212 | compound-data-type | ✓ | 28µs | 136 B |
+| 213 | concurrent-computing-1 | ✓ | 82µs |  |
+| 214 | concurrent-computing-2 | ✓ | 50µs | 4.9 KB |
+| 215 | concurrent-computing-3 | ✓ | 46µs | 13.1 KB |
+| 216 | conditional-structures-1 | ✓ | 74µs | 136 B |
+| 217 | conditional-structures-10 | ✓ | 33µs | 552 B |
+| 218 | conditional-structures-2 | ✓ | 57µs | 136 B |
+| 219 | conditional-structures-3 | ✓ | 29µs | 136 B |
+| 220 | conditional-structures-4 | ✓ | 27µs | 136 B |
+| 221 | conditional-structures-5 | ✓ | 47µs | 136 B |
 | 222 | conditional-structures-6 |   |  |  |
 | 223 | conditional-structures-7 |   |  |  |
 | 224 | conditional-structures-8 |   |  |  |
