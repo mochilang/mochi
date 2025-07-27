@@ -48,6 +48,7 @@ var useAscii bool
 var useMem bool
 var usePrint bool
 var aliasStack []map[string]string
+var localMutablesStack []map[string]bool
 var globalNames map[string]bool
 var variantTags map[string]int
 var globalInits []Stmt
@@ -1049,9 +1050,9 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("}\n")
 	}
 	if useConcat {
-		buf.WriteString("\nfn _concat_string(a: []const u8, b: []const u8) []const u8 {\n")
+		buf.WriteString("\nfn _concat_string(lhs: []const u8, rhs: []const u8) []const u8 {\n")
 		buf.WriteString("    const alloc = std.heap.page_allocator;\n")
-		buf.WriteString("    return std.mem.concat(alloc, u8, &[_][]const u8{ a, b }) catch unreachable;\n")
+		buf.WriteString("    return std.mem.concat(alloc, u8, &[_][]const u8{ lhs, rhs }) catch unreachable;\n")
 		buf.WriteString("}\n")
 	}
 	if useInput {
@@ -1569,9 +1570,19 @@ func (sli *SliceExpr) emit(w io.Writer) {
 func (c *CastExpr) emit(w io.Writer) {
 	switch c.Type {
 	case "int":
-		io.WriteString(w, "std.fmt.parseInt(i64, ")
-		c.Value.emit(w)
-		io.WriteString(w, ", 10) catch 0")
+		if zigTypeFromExpr(c.Value) == "[]const u8" {
+			io.WriteString(w, "std.fmt.parseInt(i64, ")
+			c.Value.emit(w)
+			io.WriteString(w, ", 10) catch 0")
+		} else if zigTypeFromExpr(c.Value) == "f64" {
+			io.WriteString(w, "@as(i64, @intFromFloat(")
+			c.Value.emit(w)
+			io.WriteString(w, "))")
+		} else {
+			io.WriteString(w, "@as(i64, ")
+			c.Value.emit(w)
+			io.WriteString(w, ")")
+		}
 	case "float", "f64":
 		io.WriteString(w, "@as(f64, @floatFromInt(")
 		c.Value.emit(w)
@@ -3126,6 +3137,10 @@ func toZigType(t *parser.TypeRef) string {
 func compileFunStmt(fn *parser.FunStmt, prog *parser.Program) (*Func, error) {
 	names := make([]string, len(fn.Params))
 	params := make([]Param, len(fn.Params))
+	mutables := map[string]bool{}
+	collectMutables(fn.Body, mutables)
+	localMutablesStack = append(localMutablesStack, mutables)
+	defer func() { localMutablesStack = localMutablesStack[:len(localMutablesStack)-1] }()
 	aliases := map[string]string{}
 	aliasStack = append(aliasStack, aliases)
 	defer func() { aliasStack = aliasStack[:len(aliasStack)-1] }()
@@ -3277,7 +3292,12 @@ func compileStmt(s *parser.Statement, prog *parser.Program) (Stmt, error) {
 		} else {
 			expr = &IntLit{Value: 0}
 		}
-		vd := &VarDecl{Name: s.Var.Name, Value: expr, Mutable: true}
+		mutable := true
+		if funDepth > 0 && len(localMutablesStack) > 0 {
+			m := localMutablesStack[len(localMutablesStack)-1]
+			mutable = m[s.Var.Name]
+		}
+		vd := &VarDecl{Name: s.Var.Name, Value: expr, Mutable: mutable}
 		varDecls[s.Var.Name] = vd
 		if lst, ok := expr.(*ListLit); ok {
 			if inferListStruct(s.Var.Name, lst) != "" {
