@@ -2,8 +2,8 @@
 
 Generated Scala code for Rosetta tasks in `tests/rosetta/x/Mochi`. Each program has a `.scala` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
 
-## Golden Test Checklist (225/467)
-_Last updated: 2025-07-27 23:43 +0700_
+## Golden Test Checklist (226/467)
+_Last updated: 2025-07-28 00:32 +0700_
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -179,26 +179,26 @@ _Last updated: 2025-07-27 23:43 +0700_
 | 170 | cantor-set | error |  |  |
 | 171 | carmichael-3-strong-pseudoprimes | error |  |  |
 | 172 | cartesian-product-of-two-or-more-lists-1 | ✓ | 4µs | 8.7 MB |
-| 173 | cartesian-product-of-two-or-more-lists-2 | ✓ | 12µs | 8.7 MB |
-| 174 | cartesian-product-of-two-or-more-lists-3 | ✓ | 11µs | 8.7 MB |
-| 175 | cartesian-product-of-two-or-more-lists-4 | error |  |  |
+| 173 | cartesian-product-of-two-or-more-lists-2 | ✓ | 9µs | 8.7 MB |
+| 174 | cartesian-product-of-two-or-more-lists-3 | ✓ | 10µs | 8.7 MB |
+| 175 | cartesian-product-of-two-or-more-lists-4 | ✓ | 10µs | 8.7 MB |
 | 176 | case-sensitivity-of-identifiers | ✓ | 5µs | 8.7 MB |
 | 177 | casting-out-nines | error |  |  |
-| 178 | catalan-numbers-1 | ✓ | 17µs | 8.7 MB |
-| 179 | catalan-numbers-2 | ✓ | 20µs | 8.7 MB |
+| 178 | catalan-numbers-1 | ✓ | 21µs | 8.7 MB |
+| 179 | catalan-numbers-2 | ✓ | 16µs | 8.7 MB |
 | 180 | catalan-numbers-pascals-triangle | error |  |  |
-| 181 | catamorphism | ✓ | 4µs | 8.7 MB |
+| 181 | catamorphism | ✓ | 3µs | 8.7 MB |
 | 182 | catmull-clark-subdivision-surface | error |  |  |
-| 183 | chaocipher | ✓ | 7µs | 8.7 MB |
+| 183 | chaocipher | ✓ | 4µs | 8.7 MB |
 | 184 | chaos-game | error |  |  |
-| 185 | character-codes-1 | ✓ | 3µs | 8.7 MB |
-| 186 | character-codes-2 | ✓ | 3µs | 8.7 MB |
-| 187 | character-codes-3 | ✓ | 17µs | 8.7 MB |
-| 188 | character-codes-4 | ✓ | 3µs | 8.7 MB |
-| 189 | character-codes-5 | ✓ | 3µs | 8.7 MB |
+| 185 | character-codes-1 | ✓ | 2µs | 8.7 MB |
+| 186 | character-codes-2 | ✓ | 2µs | 8.7 MB |
+| 187 | character-codes-3 | ✓ | 2µs | 8.7 MB |
+| 188 | character-codes-4 | ✓ | 2µs | 8.7 MB |
+| 189 | character-codes-5 | ✓ | 2µs | 8.7 MB |
 | 190 | chat-server | ✓ | 3µs | 8.7 MB |
-| 191 | check-machin-like-formulas | ✓ | 32µs | 8.7 MB |
-| 192 | check-that-file-exists | ✓ | 4µs | 8.7 MB |
+| 191 | check-machin-like-formulas | ✓ | 33µs | 8.7 MB |
+| 192 | check-that-file-exists | ✓ | 3µs | 8.7 MB |
 | 193 | checkpoint-synchronization-1 | ✓ | 17µs | 8.7 MB |
 | 194 | checkpoint-synchronization-2 | ✓ | 16µs | 8.7 MB |
 | 195 | checkpoint-synchronization-3 | ✓ | 17µs | 8.7 MB |
