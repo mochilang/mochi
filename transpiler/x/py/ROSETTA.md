@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Python code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/Python`.
-Last updated: 2025-07-27 21:55 GMT+7
+Last updated: 2025-07-27 22:30 GMT+7
 
-## Rosetta Golden Test Checklist (401/467)
+## Rosetta Golden Test Checklist (426/467)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 161.0µs | 12.50MB |
@@ -429,32 +429,32 @@ Last updated: 2025-07-27 21:55 GMT+7
 | 420 | find-chess960-starting-position-identifier | ✓ | 208.0µs | 13.93MB |
 | 421 | find-common-directory-path | ✓ | 244.0µs | 13.37MB |
 | 422 | find-duplicate-files | ✓ | 11.0µs | 13.09MB |
-| 423 | find-if-a-point-is-within-a-triangle |   |  |  |
-| 424 | find-largest-left-truncatable-prime-in-a-given-base |   |  |  |
-| 425 | find-limit-of-recursion |   |  |  |
-| 426 | find-palindromic-numbers-in-both-binary-and-ternary-bases |   |  |  |
-| 427 | find-the-intersection-of-a-line-with-a-plane |   |  |  |
-| 428 | find-the-intersection-of-two-lines |   |  |  |
-| 429 | find-the-last-sunday-of-each-month |   |  |  |
-| 430 | find-the-missing-permutation |   |  |  |
-| 431 | fivenum-1 |   |  |  |
-| 432 | fivenum-2 |   |  |  |
-| 433 | fixed-length-records-1 |   |  |  |
-| 434 | fixed-length-records-2 |   |  |  |
-| 435 | fizzbuzz-1 |   |  |  |
-| 436 | fizzbuzz-2 |   |  |  |
-| 437 | flatten-a-list-1 |   |  |  |
-| 438 | flatten-a-list-2 |   |  |  |
-| 439 | flipping-bits-game |   |  |  |
-| 440 | flow-control-structures-1 |   |  |  |
-| 441 | flow-control-structures-2 |   |  |  |
-| 442 | flow-control-structures-3 |   |  |  |
-| 443 | flow-control-structures-4 |   |  |  |
-| 444 | floyd-warshall-algorithm |   |  |  |
-| 445 | floyds-triangle |   |  |  |
-| 446 | forest-fire |   |  |  |
-| 447 | fork |   |  |  |
-| 448 | ftp |   |  |  |
+| 423 | find-if-a-point-is-within-a-triangle | ✓ | 72.0µs | 13.93MB |
+| 424 | find-largest-left-truncatable-prime-in-a-given-base | ✓ | 3.0ms | 13.09MB |
+| 425 | find-limit-of-recursion | ✓ | 4.0ms | 12.51MB |
+| 426 | find-palindromic-numbers-in-both-binary-and-ternary-bases | ✓ | 26.57s | 12.84MB |
+| 427 | find-the-intersection-of-a-line-with-a-plane | ✓ | 32.0µs | 13.37MB |
+| 428 | find-the-intersection-of-two-lines | ✓ | 32.0µs | 12.78MB |
+| 429 | find-the-last-sunday-of-each-month | ✓ | 141.0µs | 12.66MB |
+| 430 | find-the-missing-permutation | ✓ | 44.0µs | 13.12MB |
+| 431 | fivenum-1 | ✓ | 140.0µs | 12.98MB |
+| 432 | fivenum-2 | ✓ | 122.0µs | 13.68MB |
+| 433 | fixed-length-records-1 | ✓ | 29.0µs | 12.88MB |
+| 434 | fixed-length-records-2 | ✓ | 12.0µs | 12.51MB |
+| 435 | fizzbuzz-1 | ✓ | 113.0µs | 12.64MB |
+| 436 | fizzbuzz-2 | ✓ | 171.0µs | 12.79MB |
+| 437 | flatten-a-list-1 | ✓ | 20.0µs | 13.00MB |
+| 438 | flatten-a-list-2 | ✓ | 13.0µs | 12.59MB |
+| 439 | flipping-bits-game | ✓ | 31.0µs | 13.05MB |
+| 440 | flow-control-structures-1 | ✓ | 12.0µs | 12.61MB |
+| 441 | flow-control-structures-2 | ✓ | 9.0µs | 12.12MB |
+| 442 | flow-control-structures-3 | ✓ | 13.0µs | 12.68MB |
+| 443 | flow-control-structures-4 | ✓ | 10.0µs | 12.80MB |
+| 444 | floyd-warshall-algorithm | ✓ | 10.0µs | 12.57MB |
+| 445 | floyds-triangle | ✓ | 74.0µs | 12.74MB |
+| 446 | forest-fire | ✓ | 53.0µs | 13.40MB |
+| 447 | fork | ✓ | 16.0µs | 12.80MB |
+| 448 | ftp | error |  |  |
 | 449 | gamma-function |   |  |  |
 | 450 | general-fizzbuzz |   |  |  |
 | 451 | generic-swap |   |  |  |
