@@ -1,0 +1,9 @@
+WARNING: importing already defined binding: equal?
+WARNING: importing already defined binding: let-syntax
+WARNING: importing already defined binding: letrec-syntax
+WARNING: importing already defined binding: display
+WARNING: importing already defined binding: write
+initial: 1
+zeroval: 1
+zeroptr: 0
+pointer: 0

@@ -92,7 +92,30 @@ func (s Symbol) Emit(w io.Writer) { io.WriteString(w, string(s)) }
 
 type StringLit string
 
-func (s StringLit) Emit(w io.Writer) { fmt.Fprintf(w, "%q", string(s)) }
+func (s StringLit) Emit(w io.Writer) {
+	io.WriteString(w, "\"")
+	for _, r := range string(s) {
+		switch r {
+		case '\\':
+			io.WriteString(w, "\\\\")
+		case '"':
+			io.WriteString(w, "\\\"")
+		case '\n':
+			io.WriteString(w, "\\n")
+		case '\r':
+			io.WriteString(w, "\\r")
+		case '\t':
+			io.WriteString(w, "\\t")
+		default:
+			if r < 32 || r == 127 {
+				fmt.Fprintf(w, "\\x%02X;", r)
+			} else {
+				io.WriteString(w, string(r))
+			}
+		}
+	}
+	io.WriteString(w, "\"")
+}
 
 type IntLit int
 
@@ -283,6 +306,17 @@ func header() []byte {
     (if (< (string-length out) width)
         (loop (string-append pad out))
         out)))`
+	prelude += `
+(define (_repeat s n)
+  (let loop ((i 0) (out ""))
+    (if (< i n)
+        (loop (+ i 1) (string-append out s))
+        out)))`
+	prelude += `
+(define (_parseIntStr s base)
+  (let* ((b (if (number? base) base 10))
+         (n (string->number (if (list? s) (list->string s) s) b)))
+    (if n (inexact->exact (truncate n)) 0)))`
 	if usesInput {
 		prelude += "\n(define (_input)\n  (let ((l (read-line)))\n    (if (eof-object? l) \"\" l)))"
 	}
@@ -1181,7 +1215,7 @@ func convertParserPostfix(pf *parser.PostfixExpr) (Node, error) {
 			if err != nil {
 				return nil, err
 			}
-			node = &List{Elems: []Node{Symbol("padStart"), node, widthArg, padArg}}
+			node = &List{Elems: []Node{Symbol("padStart"), &List{Elems: []Node{Symbol("to-str"), node}}, widthArg, padArg}}
 			i++
 		default:
 			return nil, fmt.Errorf("unsupported postfix")
@@ -2435,6 +2469,11 @@ func convertCall(target Node, call *parser.CallOp) (Node, error) {
 			return &List{Elems: []Node{Symbol("string-append"), args[0], args[1]}}, nil
 		}
 		return &List{Elems: []Node{Symbol("append"), args[0], &List{Elems: []Node{Symbol("_list"), args[1]}}}}, nil
+	case "repeat":
+		if len(args) != 2 {
+			return nil, fmt.Errorf("repeat expects 2 args")
+		}
+		return &List{Elems: []Node{Symbol("_repeat"), args[0], args[1]}}, nil
 	case "keys":
 		if len(args) != 1 {
 			return nil, fmt.Errorf("keys expects 1 arg")
@@ -2465,6 +2504,13 @@ func convertCall(target Node, call *parser.CallOp) (Node, error) {
 			return nil, fmt.Errorf("str expects 1 arg")
 		}
 		return &List{Elems: []Node{Symbol("to-str"), args[0]}}, nil
+	case "parseIntStr":
+		if len(args) == 1 {
+			args = append(args, IntLit(10))
+		} else if len(args) != 2 {
+			return nil, fmt.Errorf("parseIntStr expects 1 or 2 args")
+		}
+		return &List{Elems: []Node{Symbol("_parseIntStr"), args[0], args[1]}}, nil
 	case "min", "max":
 		if len(args) != 1 {
 			return nil, fmt.Errorf("%s expects 1 arg", sym)
