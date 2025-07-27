@@ -29,6 +29,7 @@ var usesLookupHost bool
 var usesDynMath bool
 var usesMem bool
 var usesBigInt bool
+var usesSHA bool
 var benchMain bool
 var funcMutations = map[string]map[string]bool{}
 var rootEnv *types.Env
@@ -1002,6 +1003,22 @@ type SubstringBuiltin struct {
 	End   Expr
 }
 
+// IndexOfBuiltin represents indexOf(str, ch)
+type IndexOfBuiltin struct {
+	Str Expr
+	Sub Expr
+}
+
+func (i *IndexOfBuiltin) emit(w io.Writer) {
+	io.WriteString(w, "(try String.index (")
+	i.Str.emit(w)
+	io.WriteString(w, ") ")
+	i.Sub.emit(w)
+	io.WriteString(w, " with Not_found -> -1)")
+}
+
+func (i *IndexOfBuiltin) emitPrint(w io.Writer) { i.emit(w) }
+
 func (s *SubstringBuiltin) emit(w io.Writer) {
 	io.WriteString(w, "String.sub (")
 	s.Str.emit(w)
@@ -1113,11 +1130,11 @@ type AppendBuiltin struct {
 }
 
 func (a *AppendBuiltin) emit(w io.Writer) {
-	io.WriteString(w, "List.append ")
+	io.WriteString(w, "(List.append ")
 	a.List.emit(w)
 	io.WriteString(w, " [")
 	a.Value.emit(w)
-	io.WriteString(w, "]")
+	io.WriteString(w, "])")
 }
 
 func (a *AppendBuiltin) emitPrint(w io.Writer) {
@@ -1843,13 +1860,26 @@ func (mu *MapUpdateExpr) emit(w io.Writer) {
 	mu.Key.emit(w)
 	io.WriteString(w, ", ")
 	if mu.Dyn {
-		io.WriteString(w, "Obj.repr ")
+		io.WriteString(w, "Obj.repr (")
 	}
 	mu.Value.emit(w)
+	if mu.Dyn {
+		io.WriteString(w, ")")
+	}
 	io.WriteString(w, ") :: List.remove_assoc ")
 	mu.Key.emit(w)
 	io.WriteString(w, " ")
-	mu.Map.emit(w)
+	if mu.Dyn {
+		io.WriteString(w, "(Obj.magic (")
+		mu.Map.emit(w)
+		if _, ok := mu.Key.(*StringLit); ok {
+			io.WriteString(w, ") : (string * Obj.t) list)")
+		} else {
+			io.WriteString(w, ") : (int * Obj.t) list)")
+		}
+	} else {
+		mu.Map.emit(w)
+	}
 	io.WriteString(w, ")")
 }
 
@@ -1863,6 +1893,32 @@ func (ix *IndexExpr) emit(w io.Writer) {
 		io.WriteString(w, ") ")
 		ix.Index.emit(w)
 		io.WriteString(w, ")")
+	case "list":
+		if ix.Typ == "int" {
+			io.WriteString(w, "(Obj.magic (List.nth (")
+			ix.Col.emit(w)
+			io.WriteString(w, ") (")
+			ix.Index.emit(w)
+			io.WriteString(w, ") ) : int)")
+		} else if ix.Typ == "float" {
+			io.WriteString(w, "(Obj.magic (List.nth (")
+			ix.Col.emit(w)
+			io.WriteString(w, ") (")
+			ix.Index.emit(w)
+			io.WriteString(w, ") ) : float)")
+		} else if ix.Typ == "string" {
+			io.WriteString(w, "(Obj.magic (List.nth (")
+			ix.Col.emit(w)
+			io.WriteString(w, ") (")
+			ix.Index.emit(w)
+			io.WriteString(w, ") ) : string)")
+		} else {
+			io.WriteString(w, "List.nth (")
+			ix.Col.emit(w)
+			io.WriteString(w, ") (")
+			ix.Index.emit(w)
+			io.WriteString(w, ")")
+		}
 	default:
 		io.WriteString(w, "List.nth (")
 		ix.Col.emit(w)
@@ -2024,6 +2080,10 @@ func (c *CastExpr) emit(w io.Writer) {
 		io.WriteString(w, "(Obj.magic ")
 		c.Expr.emit(w)
 		io.WriteString(w, " : float)")
+	case "obj_to_string":
+		io.WriteString(w, "(Obj.magic ")
+		c.Expr.emit(w)
+		io.WriteString(w, " : string)")
 	default:
 		c.Expr.emit(w)
 	}
@@ -2079,6 +2139,10 @@ func (c *CastExpr) emitPrint(w io.Writer) {
 		io.WriteString(w, "string_of_float (Obj.magic ")
 		c.Expr.emit(w)
 		io.WriteString(w, " : float)")
+	case "obj_to_string":
+		io.WriteString(w, "(Obj.magic ")
+		c.Expr.emit(w)
+		io.WriteString(w, " : string)")
 	default:
 		c.Expr.emitPrint(w)
 	}
@@ -2503,6 +2567,19 @@ let _dyn_div a b =
   Obj.repr (af /. bf)
 `
 
+const helperSHA = `
+open Sha256
+
+let _sha256 lst =
+  let buf = Buffer.create (List.length lst) in
+  List.iter (fun i -> Buffer.add_char buf (Char.chr i)) lst;
+  let digest = Sha256.to_bin (Sha256.string (Buffer.contents buf)) in
+  let rec loop i acc =
+    if i < 0 then acc else loop (i - 1) ((Char.code digest.[i]) :: acc)
+  in
+  loop (String.length digest - 1) []
+`
+
 const helperShow = `
 let rec __show v =
   let open Obj in
@@ -2628,6 +2705,10 @@ func (p *Program) Emit() []byte {
 	}
 	if usesMem {
 		buf.WriteString(helperMem)
+		buf.WriteString("\n")
+	}
+	if usesSHA {
+		buf.WriteString(helperSHA)
 		buf.WriteString("\n")
 	}
 	if p.UsesControl() {
@@ -2803,8 +2884,12 @@ func transpileStmt(st *parser.Statement, env *types.Env, vars map[string]VarInfo
 		if err != nil {
 			return nil, err
 		}
-		if info.typ == "int" && valTyp == "" {
+		if info.typ == "int" && valTyp != "int" {
 			valExpr = &CastExpr{Expr: valExpr, Type: "obj_to_int"}
+		} else if info.typ == "float" && valTyp != "float" {
+			valExpr = &CastExpr{Expr: valExpr, Type: "obj_to_float"}
+		} else if info.typ == "string" && valTyp != "string" {
+			valExpr = &CastExpr{Expr: valExpr, Type: "obj_to_string"}
 		}
 		if len(st.Assign.Field) > 0 && len(st.Assign.Index) == 0 {
 			key := &StringLit{Value: st.Assign.Field[0].Name}
@@ -3201,6 +3286,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	usesDynMath = false
 	usesMem = false
 	usesBigInt = false
+	usesSHA = false
 	pr := &Program{}
 	vars := map[string]VarInfo{}
 	stmts, err := transpileStmts(prog.Statements, env, vars)
@@ -3889,6 +3975,8 @@ func convertPostfix(p *parser.PostfixExpr, env *types.Env, vars map[string]VarIn
 				expr = &CastExpr{Expr: expr, Type: "int_to_float"}
 			} else if typ == "float" && target == "int" {
 				expr = &CastExpr{Expr: expr, Type: "float_to_int"}
+			} else if target == "string" && typ != "string" {
+				expr = &CastExpr{Expr: expr, Type: "obj_to_string"}
 			} else if mi, ok := expr.(*MapIndexExpr); ok {
 				mi.Typ = target
 				expr = mi
@@ -4537,7 +4625,7 @@ func convertCall(c *parser.CallExpr, env *types.Env, vars map[string]VarInfo) (E
 			return &LenBuiltin{Arg: arg, Typ: "list"}, "int", nil
 		}
 	}
-	if c.Func == "substring" && len(c.Args) == 3 {
+	if (c.Func == "substring" || c.Func == "substr") && len(c.Args) == 3 {
 		strArg, typ, err := convertExpr(c.Args[0], env, vars)
 		if err != nil {
 			return nil, "", err
@@ -4560,6 +4648,20 @@ func convertCall(c *parser.CallExpr, env *types.Env, vars map[string]VarInfo) (E
 			return nil, "", fmt.Errorf("substring end expects int")
 		}
 		return &SubstringBuiltin{Str: strArg, Start: startArg, End: endArg}, "string", nil
+	}
+	if c.Func == "indexOf" && len(c.Args) == 2 {
+		strArg, typ, err := convertExpr(c.Args[0], env, vars)
+		if err != nil {
+			return nil, "", err
+		}
+		subArg, typ2, err := convertExpr(c.Args[1], env, vars)
+		if err != nil {
+			return nil, "", err
+		}
+		if typ != "string" || typ2 != "string" {
+			return nil, "", fmt.Errorf("indexOf expects string")
+		}
+		return &IndexOfBuiltin{Str: strArg, Sub: subArg}, "int", nil
 	}
 	if c.Func == "append" && len(c.Args) == 2 {
 		listArg, typ, err := convertExpr(c.Args[0], env, vars)
@@ -4678,6 +4780,31 @@ func convertCall(c *parser.CallExpr, env *types.Env, vars map[string]VarInfo) (E
 	if c.Func == "now" && len(c.Args) == 0 {
 		usesNow = true
 		return &FuncCall{Name: "_now", Args: nil, Ret: "int"}, "int", nil
+	}
+	if c.Func == "contains" && len(c.Args) == 2 {
+		strArg, styp, err := convertExpr(c.Args[0], env, vars)
+		if err != nil {
+			return nil, "", err
+		}
+		subArg, subTyp, err := convertExpr(c.Args[1], env, vars)
+		if err != nil {
+			return nil, "", err
+		}
+		if styp != "string" || subTyp != "string" {
+			return nil, "", fmt.Errorf("contains expects string")
+		}
+		return &StringContainsBuiltin{Str: strArg, Sub: subArg}, "bool", nil
+	}
+	if c.Func == "sha256" && len(c.Args) == 1 {
+		arg, typ, err := convertExpr(c.Args[0], env, vars)
+		if err != nil {
+			return nil, "", err
+		}
+		if typ != "list-int" && typ != "list" {
+			return nil, "", fmt.Errorf("sha256 expects list<int>")
+		}
+		usesSHA = true
+		return &FuncCall{Name: "_sha256", Args: []Expr{arg}, Ret: "list-int"}, "list-int", nil
 	}
 	if c.Func == "net.LookupHost" && len(c.Args) == 1 {
 		arg, _, err := convertExpr(c.Args[0], env, vars)
