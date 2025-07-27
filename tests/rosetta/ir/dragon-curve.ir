@@ -1,0 +1,81 @@
+func main (regs=28)
+  // let depth = 10
+  Const        r3, 10
+  Move         r0, r3
+  SetGlobal    0,0,0,0
+  // var seq = "F"
+  Const        r4, "F"
+  Move         r1, r4
+  SetGlobal    1,1,0,0
+  // var i = 0
+  Const        r5, 0
+  Move         r2, r5
+  SetGlobal    2,2,0,0
+L6:
+  // while i < depth {
+  LessInt      r6, r2, r0
+  JumpIfFalse  r6, L0
+  // var rev = ""
+  Const        r7, ""
+  Move         r8, r7
+  // var j = len(seq) - 1
+  Len          r9, r1
+  Const        r10, 1
+  SubInt       r11, r9, r10
+  Move         r12, r11
+L5:
+  // while j >= 0 {
+  Const        r5, 0
+  LessEqInt    r13, r5, r12
+  JumpIfFalse  r13, L1
+  // let c = substring(seq, j, j + 1)
+  Const        r10, 1
+  AddInt       r14, r12, r10
+  Slice        r15, r1, r12, r14
+  Move         r16, r15
+  // if c == "L" { rev = rev + "R" }
+  Const        r17, "L"
+  Equal        r18, r16, r17
+  JumpIfFalse  r18, L2
+  Const        r19, "R"
+  Add          r20, r8, r19
+  Move         r8, r20
+  Jump         L3
+L2:
+  // else if c == "R" { rev = rev + "L" }
+  Const        r19, "R"
+  Equal        r21, r16, r19
+  JumpIfFalse  r21, L4
+  Const        r17, "L"
+  Add          r22, r8, r17
+  Move         r8, r22
+  Jump         L3
+L4:
+  // else { rev = rev + c }
+  Add          r23, r8, r16
+  Move         r8, r23
+L3:
+  // j = j - 1
+  Const        r10, 1
+  SubInt       r24, r12, r10
+  Move         r12, r24
+  // while j >= 0 {
+  Jump         L5
+L1:
+  // seq = seq + "L" + rev
+  Const        r17, "L"
+  Add          r25, r1, r17
+  Add          r26, r25, r8
+  Move         r1, r26
+  SetGlobal    1,1,0,0
+  // i = i + 1
+  Const        r10, 1
+  AddInt       r27, r2, r10
+  Move         r2, r27
+  SetGlobal    2,2,0,0
+  // while i < depth {
+  Jump         L6
+L0:
+  // print(seq)
+  Print        r1
+  Return       r0

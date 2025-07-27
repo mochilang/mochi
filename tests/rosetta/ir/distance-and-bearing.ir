@@ -1,0 +1,1003 @@
+func main (regs=369)
+  // let PI = 3.141592653589793
+  Const        r2, 3.141592653589793
+  Move         r0, r2
+  SetGlobal    0,0,0,0
+  // Airport{ name: "Koksijde Air Base", country: "Belgium", icao: "EBFN", lat: 51.090301513671875, lon: 2.652780055999756 },
+  Const        r23, "Koksijde Air Base"
+  Const        r24, "Belgium"
+  Const        r25, "EBFN"
+  Const        r26, 51.090301513671875
+  Const        r27, 2.652780055999756
+  Const        r28, "__name"
+  Const        r29, "Airport"
+  Const        r30, "name"
+  Move         r31, r23
+  Const        r32, "country"
+  Move         r33, r24
+  Const        r34, "icao"
+  Move         r35, r25
+  Const        r36, "lat"
+  Move         r37, r26
+  Const        r38, "lon"
+  Move         r39, r27
+  MakeMap      r40, 6, r28
+  Move         r3, r40
+  // Airport{ name: "Ostend-Bruges International Airport", country: "Belgium", icao: "EBOS", lat: 51.198898315399994, lon: 2.8622200489 },
+  Const        r41, "Ostend-Bruges International Airport"
+  Const        r24, "Belgium"
+  Const        r42, "EBOS"
+  Const        r43, 51.198898315399994
+  Const        r44, 2.8622200489
+  Const        r45, "__name"
+  Const        r46, "Airport"
+  Const        r47, "name"
+  Move         r48, r41
+  Const        r49, "country"
+  Move         r50, r24
+  Const        r51, "icao"
+  Move         r52, r42
+  Const        r53, "lat"
+  Move         r54, r43
+  Const        r55, "lon"
+  Move         r56, r44
+  MakeMap      r57, 6, r45
+  Move         r4, r57
+  // Airport{ name: "Kent International Airport", country: "United Kingdom", icao: "EGMH", lat: 51.342201, lon: 1.34611 },
+  Const        r58, "Kent International Airport"
+  Const        r59, "United Kingdom"
+  Const        r60, "EGMH"
+  Const        r61, 51.342201
+  Const        r62, 1.34611
+  Const        r63, "__name"
+  Const        r64, "Airport"
+  Const        r65, "name"
+  Move         r66, r58
+  Const        r67, "country"
+  Move         r68, r59
+  Const        r69, "icao"
+  Move         r70, r60
+  Const        r71, "lat"
+  Move         r72, r61
+  Const        r73, "lon"
+  Move         r74, r62
+  MakeMap      r75, 6, r63
+  Move         r5, r75
+  // Airport{ name: "Calais-Dunkerque Airport", country: "France", icao: "LFAC", lat: 50.962100982666016, lon: 1.954759955406189 },
+  Const        r76, "Calais-Dunkerque Airport"
+  Const        r77, "France"
+  Const        r78, "LFAC"
+  Const        r79, 50.962100982666016
+  Const        r80, 1.954759955406189
+  Const        r81, "__name"
+  Const        r82, "Airport"
+  Const        r83, "name"
+  Move         r84, r76
+  Const        r85, "country"
+  Move         r86, r77
+  Const        r87, "icao"
+  Move         r88, r78
+  Const        r89, "lat"
+  Move         r90, r79
+  Const        r91, "lon"
+  Move         r92, r80
+  MakeMap      r93, 6, r81
+  Move         r6, r93
+  // Airport{ name: "Westkapelle heliport", country: "Belgium", icao: "EBKW", lat: 51.32222366333, lon: 3.2930560112 },
+  Const        r94, "Westkapelle heliport"
+  Const        r24, "Belgium"
+  Const        r95, "EBKW"
+  Const        r96, 51.32222366333
+  Const        r97, 3.2930560112
+  Const        r98, "__name"
+  Const        r99, "Airport"
+  Const        r100, "name"
+  Move         r101, r94
+  Const        r102, "country"
+  Move         r103, r24
+  Const        r104, "icao"
+  Move         r105, r95
+  Const        r106, "lat"
+  Move         r107, r96
+  Const        r108, "lon"
+  Move         r109, r97
+  MakeMap      r110, 6, r98
+  Move         r7, r110
+  // Airport{ name: "Lympne Airport", country: "United Kingdom", icao: "EGMK", lat: 51.08, lon: 1.013 },
+  Const        r111, "Lympne Airport"
+  Const        r59, "United Kingdom"
+  Const        r112, "EGMK"
+  Const        r113, 51.08
+  Const        r114, 1.013
+  Const        r115, "__name"
+  Const        r116, "Airport"
+  Const        r117, "name"
+  Move         r118, r111
+  Const        r119, "country"
+  Move         r120, r59
+  Const        r121, "icao"
+  Move         r122, r112
+  Const        r123, "lat"
+  Move         r124, r113
+  Const        r125, "lon"
+  Move         r126, r114
+  MakeMap      r127, 6, r115
+  Move         r8, r127
+  // Airport{ name: "Ursel Air Base", country: "Belgium", icao: "EBUL", lat: 51.14419937133789, lon: 3.475559949874878 },
+  Const        r128, "Ursel Air Base"
+  Const        r24, "Belgium"
+  Const        r129, "EBUL"
+  Const        r130, 51.14419937133789
+  Const        r131, 3.475559949874878
+  Const        r132, "__name"
+  Const        r133, "Airport"
+  Const        r134, "name"
+  Move         r135, r128
+  Const        r136, "country"
+  Move         r137, r24
+  Const        r138, "icao"
+  Move         r139, r129
+  Const        r140, "lat"
+  Move         r141, r130
+  Const        r142, "lon"
+  Move         r143, r131
+  MakeMap      r144, 6, r132
+  Move         r9, r144
+  // Airport{ name: "Southend Airport", country: "United Kingdom", icao: "EGMC", lat: 51.5713996887207, lon: 0.6955559849739075 },
+  Const        r145, "Southend Airport"
+  Const        r59, "United Kingdom"
+  Const        r146, "EGMC"
+  Const        r147, 51.5713996887207
+  Const        r148, 0.6955559849739075
+  Const        r149, "__name"
+  Const        r150, "Airport"
+  Const        r151, "name"
+  Move         r152, r145
+  Const        r153, "country"
+  Move         r154, r59
+  Const        r155, "icao"
+  Move         r156, r146
+  Const        r157, "lat"
+  Move         r158, r147
+  Const        r159, "lon"
+  Move         r160, r148
+  MakeMap      r161, 6, r149
+  Move         r10, r161
+  // Airport{ name: "Merville-Calonne Airport", country: "France", icao: "LFQT", lat: 50.61840057373047, lon: 2.642240047454834 },
+  Const        r162, "Merville-Calonne Airport"
+  Const        r77, "France"
+  Const        r163, "LFQT"
+  Const        r164, 50.61840057373047
+  Const        r165, 2.642240047454834
+  Const        r166, "__name"
+  Const        r167, "Airport"
+  Const        r168, "name"
+  Move         r169, r162
+  Const        r170, "country"
+  Move         r171, r77
+  Const        r172, "icao"
+  Move         r173, r163
+  Const        r174, "lat"
+  Move         r175, r164
+  Const        r176, "lon"
+  Move         r177, r165
+  MakeMap      r178, 6, r166
+  Move         r11, r178
+  // Airport{ name: "Wevelgem Airport", country: "Belgium", icao: "EBKT", lat: 50.817199707, lon: 3.20472002029 },
+  Const        r179, "Wevelgem Airport"
+  Const        r24, "Belgium"
+  Const        r180, "EBKT"
+  Const        r181, 50.817199707
+  Const        r182, 3.20472002029
+  Const        r183, "__name"
+  Const        r184, "Airport"
+  Const        r185, "name"
+  Move         r186, r179
+  Const        r187, "country"
+  Move         r188, r24
+  Const        r189, "icao"
+  Move         r190, r180
+  Const        r191, "lat"
+  Move         r192, r181
+  Const        r193, "lon"
+  Move         r194, r182
+  MakeMap      r195, 6, r183
+  Move         r12, r195
+  // Airport{ name: "Midden-Zeeland Airport", country: "Netherlands", icao: "EHMZ", lat: 51.5121994019, lon: 3.73111009598 },
+  Const        r196, "Midden-Zeeland Airport"
+  Const        r197, "Netherlands"
+  Const        r198, "EHMZ"
+  Const        r199, 51.5121994019
+  Const        r200, 3.73111009598
+  Const        r201, "__name"
+  Const        r202, "Airport"
+  Const        r203, "name"
+  Move         r204, r196
+  Const        r205, "country"
+  Move         r206, r197
+  Const        r207, "icao"
+  Move         r208, r198
+  Const        r209, "lat"
+  Move         r210, r199
+  Const        r211, "lon"
+  Move         r212, r200
+  MakeMap      r213, 6, r201
+  Move         r13, r213
+  // Airport{ name: "Lydd Airport", country: "United Kingdom", icao: "EGMD", lat: 50.95610046386719, lon: 0.9391670227050781 },
+  Const        r214, "Lydd Airport"
+  Const        r59, "United Kingdom"
+  Const        r215, "EGMD"
+  Const        r216, 50.95610046386719
+  Const        r217, 0.9391670227050781
+  Const        r218, "__name"
+  Const        r219, "Airport"
+  Const        r220, "name"
+  Move         r221, r214
+  Const        r222, "country"
+  Move         r223, r59
+  Const        r224, "icao"
+  Move         r225, r215
+  Const        r226, "lat"
+  Move         r227, r216
+  Const        r228, "lon"
+  Move         r229, r217
+  MakeMap      r230, 6, r218
+  Move         r14, r230
+  // Airport{ name: "RAF Wattisham", country: "United Kingdom", icao: "EGUW", lat: 52.1273002625, lon: 0.956264019012 },
+  Const        r231, "RAF Wattisham"
+  Const        r59, "United Kingdom"
+  Const        r232, "EGUW"
+  Const        r233, 52.1273002625
+  Const        r234, 0.956264019012
+  Const        r235, "__name"
+  Const        r236, "Airport"
+  Const        r237, "name"
+  Move         r238, r231
+  Const        r239, "country"
+  Move         r240, r59
+  Const        r241, "icao"
+  Move         r242, r232
+  Const        r243, "lat"
+  Move         r244, r233
+  Const        r245, "lon"
+  Move         r246, r234
+  MakeMap      r247, 6, r235
+  Move         r15, r247
+  // Airport{ name: "Beccles Airport", country: "United Kingdom", icao: "EGSM", lat: 52.435298919699996, lon: 1.6183300018300002 },
+  Const        r248, "Beccles Airport"
+  Const        r59, "United Kingdom"
+  Const        r249, "EGSM"
+  Const        r250, 52.435298919699996
+  Const        r251, 1.6183300018300002
+  Const        r252, "__name"
+  Const        r253, "Airport"
+  Const        r254, "name"
+  Move         r255, r248
+  Const        r256, "country"
+  Move         r257, r59
+  Const        r258, "icao"
+  Move         r259, r249
+  Const        r260, "lat"
+  Move         r261, r250
+  Const        r262, "lon"
+  Move         r263, r251
+  MakeMap      r264, 6, r252
+  Move         r16, r264
+  // Airport{ name: "Lille/Marcq-en-Baroeul Airport", country: "France", icao: "LFQO", lat: 50.687198638916016, lon: 3.0755600929260254 },
+  Const        r265, "Lille/Marcq-en-Baroeul Airport"
+  Const        r77, "France"
+  Const        r266, "LFQO"
+  Const        r267, 50.687198638916016
+  Const        r268, 3.0755600929260254
+  Const        r269, "__name"
+  Const        r270, "Airport"
+  Const        r271, "name"
+  Move         r272, r265
+  Const        r273, "country"
+  Move         r274, r77
+  Const        r275, "icao"
+  Move         r276, r266
+  Const        r277, "lat"
+  Move         r278, r267
+  Const        r279, "lon"
+  Move         r280, r268
+  MakeMap      r281, 6, r269
+  Move         r17, r281
+  // Airport{ name: "Lashenden (Headcorn) Airfield", country: "United Kingdom", icao: "EGKH", lat: 51.156898, lon: 0.641667 },
+  Const        r282, "Lashenden (Headcorn) Airfield"
+  Const        r59, "United Kingdom"
+  Const        r283, "EGKH"
+  Const        r284, 51.156898
+  Const        r285, 0.641667
+  Const        r286, "__name"
+  Const        r287, "Airport"
+  Const        r288, "name"
+  Move         r289, r282
+  Const        r290, "country"
+  Move         r291, r59
+  Const        r292, "icao"
+  Move         r293, r283
+  Const        r294, "lat"
+  Move         r295, r284
+  Const        r296, "lon"
+  Move         r297, r285
+  MakeMap      r298, 6, r286
+  Move         r18, r298
+  // Airport{ name: "Le Touquet-Côte d'Opale Airport", country: "France", icao: "LFAT", lat: 50.517398834228516, lon: 1.6205899715423584 },
+  Const        r299, "Le Touquet-Côte d'Opale Airport"
+  Const        r77, "France"
+  Const        r300, "LFAT"
+  Const        r301, 50.517398834228516
+  Const        r302, 1.6205899715423584
+  Const        r303, "__name"
+  Const        r304, "Airport"
+  Const        r305, "name"
+  Move         r306, r299
+  Const        r307, "country"
+  Move         r308, r77
+  Const        r309, "icao"
+  Move         r310, r300
+  Const        r311, "lat"
+  Move         r312, r301
+  Const        r313, "lon"
+  Move         r314, r302
+  MakeMap      r315, 6, r303
+  Move         r19, r315
+  // Airport{ name: "Rochester Airport", country: "United Kingdom", icao: "EGTO", lat: 51.351898193359375, lon: 0.5033329725265503 },
+  Const        r316, "Rochester Airport"
+  Const        r59, "United Kingdom"
+  Const        r317, "EGTO"
+  Const        r318, 51.351898193359375
+  Const        r319, 0.5033329725265503
+  Const        r320, "__name"
+  Const        r321, "Airport"
+  Const        r322, "name"
+  Move         r323, r316
+  Const        r324, "country"
+  Move         r325, r59
+  Const        r326, "icao"
+  Move         r327, r317
+  Const        r328, "lat"
+  Move         r329, r318
+  Const        r330, "lon"
+  Move         r331, r319
+  MakeMap      r332, 6, r320
+  Move         r20, r332
+  // Airport{ name: "Lille-Lesquin Airport", country: "France", icao: "LFQQ", lat: 50.563332, lon: 3.086886 },
+  Const        r333, "Lille-Lesquin Airport"
+  Const        r77, "France"
+  Const        r334, "LFQQ"
+  Const        r335, 50.563332
+  Const        r336, 3.086886
+  Const        r337, "__name"
+  Const        r338, "Airport"
+  Const        r339, "name"
+  Move         r340, r333
+  Const        r341, "country"
+  Move         r342, r77
+  Const        r343, "icao"
+  Move         r344, r334
+  Const        r345, "lat"
+  Move         r346, r335
+  Const        r347, "lon"
+  Move         r348, r336
+  MakeMap      r349, 6, r337
+  Move         r21, r349
+  // Airport{ name: "Thurrock Airfield", country: "United Kingdom", icao: "EGMT", lat: 51.537505, lon: 0.367634 },
+  Const        r350, "Thurrock Airfield"
+  Const        r59, "United Kingdom"
+  Const        r351, "EGMT"
+  Const        r352, 51.537505
+  Const        r353, 0.367634
+  Const        r354, "__name"
+  Const        r355, "Airport"
+  Const        r356, "name"
+  Move         r357, r350
+  Const        r358, "country"
+  Move         r359, r59
+  Const        r360, "icao"
+  Move         r361, r351
+  Const        r362, "lat"
+  Move         r363, r352
+  Const        r364, "lon"
+  Move         r365, r353
+  MakeMap      r366, 6, r354
+  Move         r22, r366
+  // let airports = [
+  MakeList     r367, 20, r3
+  Move         r1, r367
+  SetGlobal    1,1,0,0
+  // main()
+  Call         r368, main, 
+  Return       r0
+
+  // fun sinApprox(x: float): float {
+func sinApprox (regs=22)
+  // var term = x
+  Move         r3, r2
+  // var sum = x
+  Move         r4, r2
+  // var n = 1
+  Const        r5, 1
+  Move         r6, r5
+L1:
+  // while n <= 8 {
+  Const        r7, 8
+  LessEqInt    r8, r6, r7
+  JumpIfFalse  r8, L0
+  // let denom = ((2*n) * (2*n + 1)) as float
+  Const        r9, 2
+  MulInt       r10, r9, r6
+  Const        r9, 2
+  MulInt       r11, r9, r6
+  Const        r5, 1
+  AddInt       r12, r11, r5
+  MulInt       r13, r10, r12
+  Cast         r14, r13, float
+  Move         r15, r14
+  // term = -term * x * x / denom
+  Neg          r16, r3
+  Mul          r17, r16, r2
+  Mul          r18, r17, r2
+  Div          r19, r18, r15
+  Move         r3, r19
+  // sum = sum + term
+  Add          r20, r4, r3
+  Move         r4, r20
+  // n = n + 1
+  Const        r5, 1
+  AddInt       r21, r6, r5
+  Move         r6, r21
+  // while n <= 8 {
+  Jump         L1
+L0:
+  // return sum
+  Return       r4
+
+  // fun cosApprox(x: float): float {
+func cosApprox (regs=23)
+  // var term = 1.0
+  Const        r3, 1.0
+  Move         r4, r3
+  // var sum = 1.0
+  Const        r3, 1.0
+  Move         r5, r3
+  // var n = 1
+  Const        r6, 1
+  Move         r7, r6
+L1:
+  // while n <= 8 {
+  Const        r8, 8
+  LessEqInt    r9, r7, r8
+  JumpIfFalse  r9, L0
+  // let denom = ((2*n - 1) * (2*n)) as float
+  Const        r10, 2
+  MulInt       r11, r10, r7
+  Const        r6, 1
+  SubInt       r12, r11, r6
+  Const        r10, 2
+  MulInt       r13, r10, r7
+  MulInt       r14, r12, r13
+  Cast         r15, r14, float
+  Move         r16, r15
+  // term = -term * x * x / denom
+  NegFloat     r17, r4
+  MulFloat     r18, r17, r2
+  MulFloat     r19, r18, r2
+  DivFloat     r20, r19, r16
+  Move         r4, r20
+  // sum = sum + term
+  AddFloat     r21, r5, r4
+  Move         r5, r21
+  // n = n + 1
+  Const        r6, 1
+  AddInt       r22, r7, r6
+  Move         r7, r22
+  // while n <= 8 {
+  Jump         L1
+L0:
+  // return sum
+  Return       r5
+
+  // fun atanApprox(x: float): float {
+func atanApprox (regs=24)
+  // if x > 1.0 { return PI/2.0 - x/(x*x + 0.28) }
+  Const        r3, 1.0
+  LessFloat    r4, r3, r2
+  JumpIfFalse  r4, L0
+  Const        r5, 2.0
+  DivFloat     r6, r0, r5
+  Mul          r7, r2, r2
+  Const        r8, 0.28
+  AddFloat     r9, r7, r8
+  DivFloat     r10, r2, r9
+  SubFloat     r11, r6, r10
+  Return       r11
+L0:
+  // if x < (-1.0) { return -PI/2.0 - x/(x*x + 0.28) }
+  Const        r12, -1.0
+  LessFloat    r13, r2, r12
+  JumpIfFalse  r13, L1
+  Neg          r14, r0
+  Const        r5, 2.0
+  DivFloat     r15, r14, r5
+  Mul          r16, r2, r2
+  Const        r8, 0.28
+  AddFloat     r17, r16, r8
+  DivFloat     r18, r2, r17
+  SubFloat     r19, r15, r18
+  Return       r19
+L1:
+  // return x/(1.0 + 0.28*x*x)
+  Const        r3, 1.0
+  Const        r8, 0.28
+  MulFloat     r20, r8, r2
+  MulFloat     r21, r20, r2
+  AddFloat     r22, r3, r21
+  DivFloat     r23, r2, r22
+  Return       r23
+
+  // fun atan2Approx(y: float, x: float): float {
+func atan2Approx (regs=26)
+  // if x > 0.0 {
+  Const        r4, 0.0
+  LessFloat    r5, r4, r3
+  JumpIfFalse  r5, L0
+  // let r = atanApprox(y/x)
+  Div          r7, r2, r3
+  Move         r6, r7
+  Call         r8, atanApprox, r6
+  Move         r9, r8
+  // return r
+  Return       r9
+L0:
+  // if x < 0.0 {
+  Const        r4, 0.0
+  LessFloat    r10, r3, r4
+  JumpIfFalse  r10, L1
+  // if y >= 0.0 { return atanApprox(y/x) + PI }
+  Const        r4, 0.0
+  LessEqFloat  r11, r4, r2
+  JumpIfFalse  r11, L2
+  Div          r13, r2, r3
+  Move         r12, r13
+  Call         r14, atanApprox, r12
+  Add          r15, r14, r0
+  Return       r15
+L2:
+  // return atanApprox(y/x) - PI
+  Div          r17, r2, r3
+  Move         r16, r17
+  Call         r18, atanApprox, r16
+  Sub          r19, r18, r0
+  Return       r19
+L1:
+  // if y > 0.0 { return PI/2.0 }
+  Const        r4, 0.0
+  LessFloat    r20, r4, r2
+  JumpIfFalse  r20, L3
+  Const        r21, 2.0
+  DivFloat     r22, r0, r21
+  Return       r22
+L3:
+  // if y < 0.0 { return -PI/2.0 }
+  Const        r4, 0.0
+  LessFloat    r23, r2, r4
+  JumpIfFalse  r23, L4
+  Neg          r24, r0
+  Const        r21, 2.0
+  DivFloat     r25, r24, r21
+  Return       r25
+L4:
+  // return 0.0
+  Const        r4, 0.0
+  Return       r4
+
+  // fun sqrtApprox(x: float): float {
+func sqrtApprox (regs=14)
+  // var guess = x
+  Move         r3, r2
+  // var i = 0
+  Const        r4, 0
+  Move         r5, r4
+L1:
+  // while i < 10 {
+  Const        r6, 10
+  LessInt      r7, r5, r6
+  JumpIfFalse  r7, L0
+  // guess = (guess + x / guess) / 2.0
+  Div          r8, r2, r3
+  Add          r9, r3, r8
+  Const        r10, 2.0
+  DivFloat     r11, r9, r10
+  Move         r3, r11
+  // i = i + 1
+  Const        r12, 1
+  AddInt       r13, r5, r12
+  Move         r5, r13
+  // while i < 10 {
+  Jump         L1
+L0:
+  // return guess
+  Return       r3
+
+  // fun rad(x: float): float { return x * PI / 180.0 }
+func rad (regs=6)
+  // fun rad(x: float): float { return x * PI / 180.0 }
+  Mul          r3, r2, r0
+  Const        r4, 180.0
+  DivFloat     r5, r3, r4
+  Return       r5
+
+  // fun deg(x: float): float { return x * 180.0 / PI }
+func deg (regs=6)
+  // fun deg(x: float): float { return x * 180.0 / PI }
+  Const        r3, 180.0
+  MulFloat     r4, r2, r3
+  DivFloat     r5, r4, r0
+  Return       r5
+
+  // fun distance(lat1: float, lon1: float, lat2: float, lon2: float): float {
+func distance (regs=52)
+  // let phi1 = rad(lat1)
+  Move         r6, r2
+  Call         r7, rad, r6
+  Move         r8, r7
+  // let phi2 = rad(lat2)
+  Move         r9, r4
+  Call         r10, rad, r9
+  Move         r11, r10
+  // let dphi = rad(lat2 - lat1)
+  Sub          r13, r4, r2
+  Move         r12, r13
+  Call         r14, rad, r12
+  Move         r15, r14
+  // let dlambda = rad(lon2 - lon1)
+  Sub          r17, r5, r3
+  Move         r16, r17
+  Call         r18, rad, r16
+  Move         r19, r18
+  // let sdphi = sinApprox(dphi / 2)
+  Const        r21, 2
+  Div          r22, r15, r21
+  Move         r20, r22
+  Call         r23, sinApprox, r20
+  Move         r24, r23
+  // let sdlambda = sinApprox(dlambda / 2)
+  Const        r21, 2
+  Div          r26, r19, r21
+  Move         r25, r26
+  Call         r27, sinApprox, r25
+  Move         r28, r27
+  // let a = sdphi * sdphi + cosApprox(phi1) * cosApprox(phi2) * sdlambda * sdlambda
+  Mul          r29, r24, r24
+  Move         r30, r8
+  Call         r31, cosApprox, r30
+  Move         r32, r11
+  Call         r33, cosApprox, r32
+  Mul          r34, r31, r33
+  Mul          r35, r34, r28
+  Mul          r36, r35, r28
+  Add          r37, r29, r36
+  Move         r38, r37
+  // let c = 2 * atan2Approx(sqrtApprox(a), sqrtApprox(1 - a))
+  Const        r21, 2
+  Move         r41, r38
+  Call         r42, sqrtApprox, r41
+  Move         r39, r42
+  Const        r44, 1
+  Sub          r45, r44, r38
+  Move         r43, r45
+  Call         r46, sqrtApprox, r43
+  Move         r40, r46
+  Call2        r47, atan2Approx, r39, r40
+  Mul          r48, r21, r47
+  Move         r49, r48
+  // return (6371.0 / 1.852) * c
+  Const        r50, 3440.0647948164146
+  MulFloat     r51, r50, r49
+  Return       r51
+
+  // fun bearing(lat1: float, lon1: float, lat2: float, lon2: float): float {
+func bearing (regs=47)
+  // let phi1 = rad(lat1)
+  Move         r6, r2
+  Call         r7, rad, r6
+  Move         r8, r7
+  // let phi2 = rad(lat2)
+  Move         r9, r4
+  Call         r10, rad, r9
+  Move         r11, r10
+  // let dl = rad(lon2 - lon1)
+  Sub          r13, r5, r3
+  Move         r12, r13
+  Call         r14, rad, r12
+  Move         r15, r14
+  // let y = sinApprox(dl) * cosApprox(phi2)
+  Move         r16, r15
+  Call         r17, sinApprox, r16
+  Move         r18, r11
+  Call         r19, cosApprox, r18
+  Mul          r20, r17, r19
+  Move         r21, r20
+  // let x = cosApprox(phi1) * sinApprox(phi2) - sinApprox(phi1) * cosApprox(phi2) * cosApprox(dl)
+  Move         r22, r8
+  Call         r23, cosApprox, r22
+  Move         r24, r11
+  Call         r25, sinApprox, r24
+  Mul          r26, r23, r25
+  Move         r27, r8
+  Call         r28, sinApprox, r27
+  Move         r29, r11
+  Call         r30, cosApprox, r29
+  Mul          r31, r28, r30
+  Move         r32, r15
+  Call         r33, cosApprox, r32
+  Mul          r34, r31, r33
+  Sub          r35, r26, r34
+  Move         r36, r35
+  // let br = deg(atan2Approx(y, x))
+  Move         r38, r21
+  Move         r39, r36
+  Call2        r40, atan2Approx, r38, r39
+  Move         r37, r40
+  Call         r41, deg, r37
+  Move         r42, r41
+  // if br < 0 { br = br + 360 }
+  Const        r43, 0
+  Less         r44, r42, r43
+  JumpIfFalse  r44, L0
+  Const        r45, 360
+  Add          r46, r42, r45
+  Move         r42, r46
+L0:
+  // return br
+  Return       r42
+
+  // fun floor(x: float): float {
+func floor (regs=10)
+  // var i = x as int
+  Cast         r3, r2, int
+  Move         r4, r3
+  // if (i as float) > x { i = i - 1 }
+  Cast         r5, r4, float
+  Less         r6, r2, r5
+  JumpIfFalse  r6, L0
+  Const        r7, 1
+  Sub          r8, r4, r7
+  Move         r4, r8
+L0:
+  // return i as float
+  Cast         r9, r4, float
+  Return       r9
+
+  // fun pow10(n: int): float {
+func pow10 (regs=12)
+  // var p = 1.0
+  Const        r3, 1.0
+  Move         r4, r3
+  // var i = 0
+  Const        r5, 0
+  Move         r6, r5
+L1:
+  // while i < n {
+  Less         r7, r6, r2
+  JumpIfFalse  r7, L0
+  // p = p * 10.0
+  Const        r8, 10.0
+  MulFloat     r9, r4, r8
+  Move         r4, r9
+  // i = i + 1
+  Const        r10, 1
+  AddInt       r11, r6, r10
+  Move         r6, r11
+  // while i < n {
+  Jump         L1
+L0:
+  // return p
+  Return       r4
+
+  // fun round(x: float, n: int): float {
+func round (regs=13)
+  // let m = pow10(n)
+  Move         r4, r3
+  Call         r5, pow10, r4
+  Move         r6, r5
+  // return floor(x * m + 0.5) / m
+  Mul          r8, r2, r6
+  Const        r9, 0.5
+  AddFloat     r10, r8, r9
+  Move         r7, r10
+  Call         r11, floor, r7
+  Div          r12, r11, r6
+  Return       r12
+
+  // fun sortByDistance(xs: list<list<any>>): list<list<any>> {
+func sortByDistance (regs=25)
+  // var arr = xs
+  Move         r3, r2
+  // var i = 1
+  Const        r4, 1
+  Move         r5, r4
+L4:
+  // while i < len(arr) {
+  Len          r6, r3
+  LessInt      r7, r5, r6
+  JumpIfFalse  r7, L0
+  // var j = i
+  Move         r8, r5
+L3:
+  // while j > 0 && arr[j-1][0] > arr[j][0] {
+  Const        r9, 0
+  LessInt      r10, r9, r8
+  Const        r4, 1
+  SubInt       r11, r8, r4
+  Index        r12, r3, r11
+  Const        r9, 0
+  Index        r13, r12, r9
+  Index        r14, r3, r8
+  Const        r9, 0
+  Index        r15, r14, r9
+  Less         r16, r15, r13
+  Move         r17, r10
+  JumpIfFalse  r17, L1
+  Move         r17, r16
+L1:
+  JumpIfFalse  r17, L2
+  // let tmp = arr[j-1]
+  Const        r4, 1
+  SubInt       r18, r8, r4
+  Index        r19, r3, r18
+  Move         r20, r19
+  // arr[j-1] = arr[j]
+  Index        r21, r3, r8
+  Const        r4, 1
+  SubInt       r22, r8, r4
+  SetIndex     r3, r22, r21
+  // arr[j] = tmp
+  SetIndex     r3, r8, r20
+  // j = j - 1
+  Const        r4, 1
+  SubInt       r23, r8, r4
+  Move         r8, r23
+  // while j > 0 && arr[j-1][0] > arr[j][0] {
+  Jump         L3
+L2:
+  // i = i + 1
+  Const        r4, 1
+  AddInt       r24, r5, r4
+  Move         r5, r24
+  // while i < len(arr) {
+  Jump         L4
+L0:
+  // return arr
+  Return       r3
+
+  // fun main() {
+func main (regs=82)
+  // let planeLat = 51.514669
+  Const        r2, 51.514669
+  Move         r3, r2
+  // let planeLon = 2.198581
+  Const        r4, 2.198581
+  Move         r5, r4
+  // var results: list<list<any>> = []
+  Const        r6, []
+  Move         r7, r6
+  // for ap in airports {
+  IterPrep     r8, r1
+  Len          r9, r8
+  Const        r10, 0
+L1:
+  LessInt      r11, r10, r9
+  JumpIfFalse  r11, L0
+  Index        r12, r8, r10
+  Move         r13, r12
+  // let d = distance(planeLat, planeLon, ap.lat, ap.lon)
+  Move         r14, r3
+  Move         r15, r5
+  Const        r18, "lat"
+  Index        r19, r13, r18
+  Move         r16, r19
+  Const        r20, "lon"
+  Index        r21, r13, r20
+  Move         r17, r21
+  Call         r22, distance, r14, r15, r16, r17
+  Move         r23, r22
+  // let b = bearing(planeLat, planeLon, ap.lat, ap.lon)
+  Move         r24, r3
+  Move         r25, r5
+  Const        r18, "lat"
+  Index        r28, r13, r18
+  Move         r26, r28
+  Const        r20, "lon"
+  Index        r29, r13, r20
+  Move         r27, r29
+  Call         r30, bearing, r24, r25, r26, r27
+  Move         r31, r30
+  // results = append(results, [d, b, ap])
+  Move         r32, r23
+  Move         r33, r31
+  Move         r34, r13
+  MakeList     r35, 3, r32
+  Append       r36, r7, r35
+  Move         r7, r36
+  // for ap in airports {
+  Const        r37, 1
+  AddInt       r38, r10, r37
+  Move         r10, r38
+  Jump         L1
+L0:
+  // results = sortByDistance(results)
+  Move         r39, r7
+  Call         r40, sortByDistance, r39
+  Move         r7, r40
+  // print("Distance Bearing ICAO Country               Airport")
+  Const        r41, "Distance Bearing ICAO Country               Airport"
+  Print        r41
+  // print("--------------------------------------------------------------")
+  Const        r42, "--------------------------------------------------------------"
+  Print        r42
+  // var i = 0
+  Const        r43, 0
+  Move         r44, r43
+L3:
+  // while i < len(results) {
+  Len          r45, r7
+  LessInt      r46, r44, r45
+  JumpIfFalse  r46, L2
+  // let r = results[i]
+  Index        r47, r7, r44
+  Move         r48, r47
+  // let ap = r[2]
+  Const        r49, 2
+  Index        r50, r48, r49
+  Move         r13, r50
+  // let dist = r[0]
+  Const        r43, 0
+  Index        r51, r48, r43
+  Move         r52, r51
+  // let bear = r[1]
+  Const        r53, 1
+  Index        r54, r48, r53
+  Move         r55, r54
+  // let line = str(round(dist,1)) + "\t" + str(round(bear,0)) + "\t" + ap.icao + "\t" + ap.country + " " + ap.name
+  Move         r56, r52
+  Const        r53, 1
+  Move         r57, r53
+  Call2        r58, round, r56, r57
+  Str          r59, r58
+  Const        r60, "\t"
+  Add          r61, r59, r60
+  Move         r62, r55
+  Const        r43, 0
+  Move         r63, r43
+  Call2        r64, round, r62, r63
+  Str          r65, r64
+  Add          r66, r61, r65
+  Const        r60, "\t"
+  Add          r67, r66, r60
+  Const        r68, "icao"
+  Index        r69, r13, r68
+  Add          r70, r67, r69
+  Const        r60, "\t"
+  Add          r71, r70, r60
+  Const        r72, "country"
+  Index        r73, r13, r72
+  Add          r74, r71, r73
+  Const        r75, " "
+  Add          r76, r74, r75
+  Const        r77, "name"
+  Index        r78, r13, r77
+  Add          r79, r76, r78
+  Move         r80, r79
+  // print(line)
+  Print        r80
+  // i = i + 1
+  Const        r53, 1
+  AddInt       r81, r44, r53
+  Move         r44, r81
+  // while i < len(results) {
+  Jump         L3
+L2:
+  Return       r0

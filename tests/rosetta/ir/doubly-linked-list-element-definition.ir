@@ -1,0 +1,118 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun Node(value: string, next: any, prev: any): map<string, any> {
+func Node (regs=13)
+  // return { "value": value, "next": next, "prev": prev }
+  Const        r3, "value"
+  Const        r4, "next"
+  Const        r5, "prev"
+  Move         r6, r3
+  Move         r7, r0
+  Move         r8, r4
+  Move         r9, r1
+  Move         r10, r5
+  Move         r11, r2
+  MakeMap      r12, 3, r6
+  Return       r12
+
+  // fun main() {
+func main (regs=40)
+  // var a = Node("A", null, null)
+  Const        r3, "A"
+  Move         r0, r3
+  Const        r4, nil
+  Move         r1, r4
+  Const        r4, nil
+  Move         r2, r4
+  Call         r5, Node, r0, r1, r2
+  Move         r6, r5
+  // var b = Node("B", null, a)
+  Const        r10, "B"
+  Move         r7, r10
+  Const        r4, nil
+  Move         r8, r4
+  Move         r9, r6
+  Call         r11, Node, r7, r8, r9
+  Move         r12, r11
+  // a["next"] = b
+  Const        r13, "next"
+  SetIndex     r6, r13, r12
+  // var c = Node("C", null, b)
+  Const        r17, "C"
+  Move         r14, r17
+  Const        r4, nil
+  Move         r15, r4
+  Move         r16, r12
+  Call         r18, Node, r14, r15, r16
+  Move         r19, r18
+  // b["next"] = c
+  Const        r13, "next"
+  SetIndex     r12, r13, r19
+  // var p = a
+  Move         r20, r6
+  // var line = ""
+  Const        r21, ""
+  Move         r22, r21
+L1:
+  // while p != null {
+  Const        r4, nil
+  NotEqual     r23, r20, r4
+  JumpIfFalse  r23, L0
+  // line = line + (p["value"] as string)
+  Const        r24, "value"
+  Index        r25, r20, r24
+  Cast         r26, r25, string
+  Add          r27, r22, r26
+  Move         r22, r27
+  // p = p["next"]
+  Const        r13, "next"
+  Index        r28, r20, r13
+  Move         r20, r28
+  // if p != null { line = line + " " }
+  Const        r4, nil
+  NotEqual     r29, r20, r4
+  JumpIfFalse  r29, L1
+  Const        r30, " "
+  Add          r31, r22, r30
+  Move         r22, r31
+  // while p != null {
+  Jump         L1
+L0:
+  // print(line)
+  Print        r22
+  // p = c
+  Move         r20, r19
+  // line = ""
+  Const        r21, ""
+  Move         r22, r21
+L3:
+  // while p != null {
+  Const        r4, nil
+  NotEqual     r32, r20, r4
+  JumpIfFalse  r32, L2
+  // line = line + (p["value"] as string)
+  Const        r24, "value"
+  Index        r33, r20, r24
+  Cast         r34, r33, string
+  Add          r35, r22, r34
+  Move         r22, r35
+  // p = p["prev"]
+  Const        r36, "prev"
+  Index        r37, r20, r36
+  Move         r20, r37
+  // if p != null { line = line + " " }
+  Const        r4, nil
+  NotEqual     r38, r20, r4
+  JumpIfFalse  r38, L3
+  Const        r30, " "
+  Add          r39, r22, r30
+  Move         r22, r39
+  // while p != null {
+  Jump         L3
+L2:
+  // print(line)
+  Print        r22
+  Return       r0

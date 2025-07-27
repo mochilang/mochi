@@ -1,0 +1,91 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun main() {
+func main (regs=36)
+  // let philosophers = ["Aristotle", "Kant", "Spinoza", "Marx", "Russell"]
+  Const        r0, ["Aristotle", "Kant", "Spinoza", "Marx", "Russell"]
+  Move         r1, r0
+  // let hunger = 3
+  Const        r2, 3
+  Move         r3, r2
+  // print("table empty")
+  Const        r4, "table empty"
+  Print        r4
+  // for p in philosophers {
+  IterPrep     r5, r1
+  Len          r6, r5
+  Const        r7, 0
+L1:
+  LessInt      r8, r7, r6
+  JumpIfFalse  r8, L0
+  Index        r9, r5, r7
+  Move         r10, r9
+  // print(p + " seated")
+  Const        r11, " seated"
+  Add          r12, r10, r11
+  Print        r12
+  // for p in philosophers {
+  Const        r13, 1
+  AddInt       r14, r7, r13
+  Move         r7, r14
+  Jump         L1
+L0:
+  // var i: int = 0
+  Const        r15, 0
+  Move         r16, r15
+L5:
+  // while i < len(philosophers) {
+  Const        r17, 5
+  LessInt      r18, r16, r17
+  JumpIfFalse  r18, L2
+  // let name = philosophers[i]
+  Index        r19, r1, r16
+  Move         r20, r19
+  // var h: int = 0
+  Const        r15, 0
+  Move         r21, r15
+L4:
+  // while h < hunger {
+  LessInt      r22, r21, r3
+  JumpIfFalse  r22, L3
+  // print(name + " hungry")
+  Const        r23, " hungry"
+  Add          r24, r20, r23
+  Print        r24
+  // print(name + " eating")
+  Const        r25, " eating"
+  Add          r26, r20, r25
+  Print        r26
+  // print(name + " thinking")
+  Const        r27, " thinking"
+  Add          r28, r20, r27
+  Print        r28
+  // h = h + 1
+  Const        r29, 1
+  AddInt       r30, r21, r29
+  Move         r21, r30
+  // while h < hunger {
+  Jump         L4
+L3:
+  // print(name + " satisfied")
+  Const        r31, " satisfied"
+  Add          r32, r20, r31
+  Print        r32
+  // print(name + " left the table")
+  Const        r33, " left the table"
+  Add          r34, r20, r33
+  Print        r34
+  // i = i + 1
+  Const        r29, 1
+  AddInt       r35, r16, r29
+  Move         r16, r35
+  // while i < len(philosophers) {
+  Jump         L5
+L2:
+  // print("table empty")
+  Const        r4, "table empty"
+  Print        r4
+  Return       r0

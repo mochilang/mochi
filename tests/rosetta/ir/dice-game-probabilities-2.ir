@@ -1,0 +1,98 @@
+func main (regs=21)
+  // print(str(beats(9, 4, 6, 6, 1000)))
+  Const        r5, 9
+  Move         r0, r5
+  Const        r6, 4
+  Move         r1, r6
+  Const        r7, 6
+  Move         r2, r7
+  Const        r7, 6
+  Move         r3, r7
+  Const        r8, 1000
+  Move         r4, r8
+  Call         r9, beats, r0, r1, r2, r3, r4
+  Str          r10, r9
+  Print        r10
+  // print(str(beats(5, 10, 7, 6, 1000)))
+  Const        r16, 5
+  Move         r11, r16
+  Const        r17, 10
+  Move         r12, r17
+  Const        r18, 7
+  Move         r13, r18
+  Const        r7, 6
+  Move         r14, r7
+  Const        r8, 1000
+  Move         r15, r8
+  Call         r19, beats, r11, r12, r13, r14, r15
+  Str          r20, r19
+  Print        r20
+  Return       r0
+
+  // fun roll(nDice: int, nSides: int): int {
+func roll (regs=12)
+  // var sum = 0
+  Const        r2, 0
+  Move         r3, r2
+  // var i = 0
+  Const        r2, 0
+  Move         r4, r2
+L1:
+  // while i < nDice {
+  Less         r5, r4, r0
+  JumpIfFalse  r5, L0
+  // sum = sum + (now() % nSides) + 1
+  Now          r6
+  Mod          r7, r6, r1
+  Add          r8, r3, r7
+  Const        r9, 1
+  Add          r10, r8, r9
+  Move         r3, r10
+  // i = i + 1
+  Const        r9, 1
+  AddInt       r11, r4, r9
+  Move         r4, r11
+  // while i < nDice {
+  Jump         L1
+L0:
+  // return sum
+  Return       r3
+
+  // fun beats(n1: int, s1: int, n2: int, s2: int, trials: int): float {
+func beats (regs=22)
+  // var wins = 0
+  Const        r5, 0
+  Move         r6, r5
+  // var i = 0
+  Const        r5, 0
+  Move         r7, r5
+L2:
+  // while i < trials {
+  Less         r8, r7, r4
+  JumpIfFalse  r8, L0
+  // if roll(n1, s1) > roll(n2, s2) {
+  Move         r9, r0
+  Move         r10, r1
+  Call2        r11, roll, r9, r10
+  Move         r12, r2
+  Move         r13, r3
+  Call2        r14, roll, r12, r13
+  Less         r15, r14, r11
+  JumpIfFalse  r15, L1
+  // wins = wins + 1
+  Const        r16, 1
+  AddInt       r17, r6, r16
+  Move         r6, r17
+L1:
+  // i = i + 1
+  Const        r16, 1
+  AddInt       r18, r7, r16
+  Move         r7, r18
+  // while i < trials {
+  Jump         L2
+L0:
+  // return (wins as float) / (trials as float)
+  Cast         r19, r6, float
+  Cast         r20, r4, float
+  Div          r21, r19, r20
+  Return       r21

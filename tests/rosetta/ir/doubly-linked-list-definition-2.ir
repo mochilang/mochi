@@ -1,0 +1,434 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun newList(): map<string, any> {
+func newList (regs=1)
+  // return {"nodes": {}, "head": 0, "tail": 0, "nextID": 1}
+  Const        r0, {"head": 0, "nextID": 1, "nodes": {}, "tail": 0}
+  Return       r0
+
+  // fun newNode(l: map<string, any>, v: any): map<string, any> {
+func newNode (regs=27)
+  // let id = l["nextID"] as int
+  Const        r2, "nextID"
+  Index        r3, r0, r2
+  Cast         r4, r3, int
+  Move         r5, r4
+  // l["nextID"] = id + 1
+  Const        r6, 1
+  Add          r7, r5, r6
+  Const        r2, "nextID"
+  SetIndex     r0, r2, r7
+  // var nodes = l["nodes"] as map<int, map<string, any>>
+  Const        r8, "nodes"
+  Index        r9, r0, r8
+  Cast         r10, r9, {int: {string: any}}
+  Move         r11, r10
+  // let n = {"id": id, "value": v, "next": 0, "prev": 0}
+  Const        r12, "id"
+  Const        r13, "value"
+  Const        r14, "next"
+  Const        r15, 0
+  Const        r16, "prev"
+  Const        r15, 0
+  Move         r17, r12
+  Move         r18, r5
+  Move         r19, r13
+  Move         r20, r1
+  Move         r21, r14
+  Move         r22, r15
+  Move         r23, r16
+  Move         r24, r15
+  MakeMap      r25, 4, r17
+  Move         r26, r25
+  // nodes[id] = n
+  SetIndex     r11, r5, r26
+  // l["nodes"] = nodes
+  Const        r8, "nodes"
+  SetIndex     r0, r8, r11
+  // return n
+  Return       r26
+
+  // fun pushFront(l: map<string, any>, v: any): map<string, any> {
+func pushFront (regs=34)
+  // var n = newNode(l, v)
+  Move         r2, r0
+  Move         r3, r1
+  Call2        r4, newNode, r2, r3
+  Move         r5, r4
+  // n["next"] = l["head"]
+  Const        r6, "head"
+  Index        r7, r0, r6
+  Const        r8, "next"
+  SetIndex     r5, r8, r7
+  // if (l["head"] as int) != 0 {
+  Const        r6, "head"
+  Index        r9, r0, r6
+  Cast         r10, r9, int
+  Const        r11, 0
+  NotEqual     r12, r10, r11
+  JumpIfFalse  r12, L0
+  // var nodes = l["nodes"] as map<int, map<string, any>>
+  Const        r13, "nodes"
+  Index        r14, r0, r13
+  Cast         r15, r14, {int: {string: any}}
+  Move         r16, r15
+  // var h = nodes[l["head"] as int]
+  Const        r6, "head"
+  Index        r17, r0, r6
+  Cast         r18, r17, int
+  Index        r19, r16, r18
+  Move         r20, r19
+  // h["prev"] = n["id"]
+  Const        r21, "id"
+  Index        r22, r5, r21
+  Const        r23, "prev"
+  SetIndex     r20, r23, r22
+  // nodes[h["id"] as int] = h
+  Const        r21, "id"
+  Index        r24, r20, r21
+  Cast         r25, r24, int
+  SetIndex     r16, r25, r20
+  // l["nodes"] = nodes
+  Const        r13, "nodes"
+  SetIndex     r0, r13, r16
+  // if (l["head"] as int) != 0 {
+  Jump         L1
+L0:
+  // l["tail"] = n["id"]
+  Const        r21, "id"
+  Index        r26, r5, r21
+  Const        r27, "tail"
+  SetIndex     r0, r27, r26
+L1:
+  // l["head"] = n["id"]
+  Const        r21, "id"
+  Index        r28, r5, r21
+  Const        r6, "head"
+  SetIndex     r0, r6, r28
+  // var nodes2 = l["nodes"] as map<int, map<string, any>>
+  Const        r13, "nodes"
+  Index        r29, r0, r13
+  Cast         r30, r29, {int: {string: any}}
+  Move         r31, r30
+  // nodes2[n["id"] as int] = n
+  Const        r21, "id"
+  Index        r32, r5, r21
+  Cast         r33, r32, int
+  SetIndex     r31, r33, r5
+  // l["nodes"] = nodes2
+  Const        r13, "nodes"
+  SetIndex     r0, r13, r31
+  // return n
+  Return       r5
+
+  // fun pushBack(l: map<string, any>, v: any): map<string, any> {
+func pushBack (regs=34)
+  // var n = newNode(l, v)
+  Move         r2, r0
+  Move         r3, r1
+  Call2        r4, newNode, r2, r3
+  Move         r5, r4
+  // n["prev"] = l["tail"]
+  Const        r6, "tail"
+  Index        r7, r0, r6
+  Const        r8, "prev"
+  SetIndex     r5, r8, r7
+  // if (l["tail"] as int) != 0 {
+  Const        r6, "tail"
+  Index        r9, r0, r6
+  Cast         r10, r9, int
+  Const        r11, 0
+  NotEqual     r12, r10, r11
+  JumpIfFalse  r12, L0
+  // var nodes = l["nodes"] as map<int, map<string, any>>
+  Const        r13, "nodes"
+  Index        r14, r0, r13
+  Cast         r15, r14, {int: {string: any}}
+  Move         r16, r15
+  // var t = nodes[l["tail"] as int]
+  Const        r6, "tail"
+  Index        r17, r0, r6
+  Cast         r18, r17, int
+  Index        r19, r16, r18
+  Move         r20, r19
+  // t["next"] = n["id"]
+  Const        r21, "id"
+  Index        r22, r5, r21
+  Const        r23, "next"
+  SetIndex     r20, r23, r22
+  // nodes[t["id"] as int] = t
+  Const        r21, "id"
+  Index        r24, r20, r21
+  Cast         r25, r24, int
+  SetIndex     r16, r25, r20
+  // l["nodes"] = nodes
+  Const        r13, "nodes"
+  SetIndex     r0, r13, r16
+  // if (l["tail"] as int) != 0 {
+  Jump         L1
+L0:
+  // l["head"] = n["id"]
+  Const        r21, "id"
+  Index        r26, r5, r21
+  Const        r27, "head"
+  SetIndex     r0, r27, r26
+L1:
+  // l["tail"] = n["id"]
+  Const        r21, "id"
+  Index        r28, r5, r21
+  Const        r6, "tail"
+  SetIndex     r0, r6, r28
+  // var nodes2 = l["nodes"] as map<int, map<string, any>>
+  Const        r13, "nodes"
+  Index        r29, r0, r13
+  Cast         r30, r29, {int: {string: any}}
+  Move         r31, r30
+  // nodes2[n["id"] as int] = n
+  Const        r21, "id"
+  Index        r32, r5, r21
+  Cast         r33, r32, int
+  SetIndex     r31, r33, r5
+  // l["nodes"] = nodes2
+  Const        r13, "nodes"
+  SetIndex     r0, r13, r31
+  // return n
+  Return       r5
+
+  // fun insertBefore(l: map<string, any>, refID: int, v: any): map<string, any> {
+func insertBefore (regs=38)
+  // if refID == 0 { return pushFront(l, v) }
+  Const        r3, 0
+  Equal        r4, r1, r3
+  JumpIfFalse  r4, L0
+  Move         r5, r0
+  Move         r6, r2
+  Call2        r7, pushFront, r5, r6
+  Return       r7
+L0:
+  // var nodes = l["nodes"] as map<int, map<string, any>>
+  Const        r8, "nodes"
+  Index        r9, r0, r8
+  Cast         r10, r9, {int: {string: any}}
+  Move         r11, r10
+  // var ref = nodes[refID]
+  Index        r12, r11, r1
+  Move         r13, r12
+  // var n = newNode(l, v)
+  Move         r14, r0
+  Move         r15, r2
+  Call2        r16, newNode, r14, r15
+  Move         r17, r16
+  // n["prev"] = ref["prev"]
+  Const        r18, "prev"
+  Index        r19, r13, r18
+  Const        r18, "prev"
+  SetIndex     r17, r18, r19
+  // n["next"] = ref["id"]
+  Const        r20, "id"
+  Index        r21, r13, r20
+  Const        r22, "next"
+  SetIndex     r17, r22, r21
+  // if (ref["prev"] as int) != 0 {
+  Const        r18, "prev"
+  Index        r23, r13, r18
+  Cast         r24, r23, int
+  Const        r3, 0
+  NotEqual     r25, r24, r3
+  JumpIfFalse  r25, L1
+  // var p = nodes[ref["prev"] as int]
+  Const        r18, "prev"
+  Index        r26, r13, r18
+  Cast         r27, r26, int
+  Index        r28, r11, r27
+  Move         r29, r28
+  // p["next"] = n["id"]
+  Const        r20, "id"
+  Index        r30, r17, r20
+  Const        r22, "next"
+  SetIndex     r29, r22, r30
+  // nodes[p["id"] as int] = p
+  Const        r20, "id"
+  Index        r31, r29, r20
+  Cast         r32, r31, int
+  SetIndex     r11, r32, r29
+  // if (ref["prev"] as int) != 0 {
+  Jump         L2
+L1:
+  // l["head"] = n["id"]
+  Const        r20, "id"
+  Index        r33, r17, r20
+  Const        r34, "head"
+  SetIndex     r0, r34, r33
+L2:
+  // ref["prev"] = n["id"]
+  Const        r20, "id"
+  Index        r35, r17, r20
+  Const        r18, "prev"
+  SetIndex     r13, r18, r35
+  // nodes[refID] = ref
+  SetIndex     r11, r1, r13
+  // nodes[n["id"] as int] = n
+  Const        r20, "id"
+  Index        r36, r17, r20
+  Cast         r37, r36, int
+  SetIndex     r11, r37, r17
+  // l["nodes"] = nodes
+  Const        r8, "nodes"
+  SetIndex     r0, r8, r11
+  // return n
+  Return       r17
+
+  // fun insertAfter(l: map<string, any>, refID: int, v: any): map<string, any> {
+func insertAfter (regs=38)
+  // if refID == 0 { return pushBack(l, v) }
+  Const        r3, 0
+  Equal        r4, r1, r3
+  JumpIfFalse  r4, L0
+  Move         r5, r0
+  Move         r6, r2
+  Call2        r7, pushBack, r5, r6
+  Return       r7
+L0:
+  // var nodes = l["nodes"] as map<int, map<string, any>>
+  Const        r8, "nodes"
+  Index        r9, r0, r8
+  Cast         r10, r9, {int: {string: any}}
+  Move         r11, r10
+  // var ref = nodes[refID]
+  Index        r12, r11, r1
+  Move         r13, r12
+  // var n = newNode(l, v)
+  Move         r14, r0
+  Move         r15, r2
+  Call2        r16, newNode, r14, r15
+  Move         r17, r16
+  // n["next"] = ref["next"]
+  Const        r18, "next"
+  Index        r19, r13, r18
+  Const        r18, "next"
+  SetIndex     r17, r18, r19
+  // n["prev"] = ref["id"]
+  Const        r20, "id"
+  Index        r21, r13, r20
+  Const        r22, "prev"
+  SetIndex     r17, r22, r21
+  // if (ref["next"] as int) != 0 {
+  Const        r18, "next"
+  Index        r23, r13, r18
+  Cast         r24, r23, int
+  Const        r3, 0
+  NotEqual     r25, r24, r3
+  JumpIfFalse  r25, L1
+  // var nx = nodes[ref["next"] as int]
+  Const        r18, "next"
+  Index        r26, r13, r18
+  Cast         r27, r26, int
+  Index        r28, r11, r27
+  Move         r29, r28
+  // nx["prev"] = n["id"]
+  Const        r20, "id"
+  Index        r30, r17, r20
+  Const        r22, "prev"
+  SetIndex     r29, r22, r30
+  // nodes[nx["id"] as int] = nx
+  Const        r20, "id"
+  Index        r31, r29, r20
+  Cast         r32, r31, int
+  SetIndex     r11, r32, r29
+  // if (ref["next"] as int) != 0 {
+  Jump         L2
+L1:
+  // l["tail"] = n["id"]
+  Const        r20, "id"
+  Index        r33, r17, r20
+  Const        r34, "tail"
+  SetIndex     r0, r34, r33
+L2:
+  // ref["next"] = n["id"]
+  Const        r20, "id"
+  Index        r35, r17, r20
+  Const        r18, "next"
+  SetIndex     r13, r18, r35
+  // nodes[refID] = ref
+  SetIndex     r11, r1, r13
+  // nodes[n["id"] as int] = n
+  Const        r20, "id"
+  Index        r36, r17, r20
+  Cast         r37, r36, int
+  SetIndex     r11, r37, r17
+  // l["nodes"] = nodes
+  Const        r8, "nodes"
+  SetIndex     r0, r8, r11
+  // return n
+  Return       r17
+
+  // fun main() {
+func main (regs=45)
+  // var l = newList()
+  Call         r0, newList, 
+  Move         r1, r0
+  // var e4 = pushBack(l, 4)
+  Move         r2, r1
+  Const        r4, 4
+  Move         r3, r4
+  Call2        r5, pushBack, r2, r3
+  Move         r6, r5
+  // var e1 = pushFront(l, 1)
+  Move         r7, r1
+  Const        r9, 1
+  Move         r8, r9
+  Call2        r10, pushFront, r7, r8
+  Move         r11, r10
+  // insertBefore(l, e4["id"] as int, 3)
+  Move         r12, r1
+  Const        r15, "id"
+  Index        r16, r6, r15
+  Cast         r17, r16, int
+  Move         r13, r17
+  Const        r18, 3
+  Move         r14, r18
+  Call         r19, insertBefore, r12, r13, r14
+  // insertAfter(l, e1["id"] as int, "two")
+  Move         r20, r1
+  Const        r15, "id"
+  Index        r23, r11, r15
+  Cast         r24, r23, int
+  Move         r21, r24
+  Const        r25, "two"
+  Move         r22, r25
+  Call         r26, insertAfter, r20, r21, r22
+  // var id = l["head"] as int
+  Const        r27, "head"
+  Index        r28, r1, r27
+  Cast         r29, r28, int
+  Move         r30, r29
+  // var nodes = l["nodes"] as map<int, map<string, any>>
+  Const        r31, "nodes"
+  Index        r32, r1, r31
+  Cast         r33, r32, {int: {string: any}}
+  Move         r34, r33
+L1:
+  // while id != 0 {
+  Const        r35, 0
+  NotEqual     r36, r30, r35
+  JumpIfFalse  r36, L0
+  // let node = nodes[id]
+  Index        r37, r34, r30
+  Move         r38, r37
+  // print(str(node["value"]))
+  Const        r39, "value"
+  Index        r40, r38, r39
+  Str          r41, r40
+  Print        r41
+  // id = node["next"] as int
+  Const        r42, "next"
+  Index        r43, r38, r42
+  Cast         r44, r43, int
+  Move         r30, r44
+  // while id != 0 {
+  Jump         L1
+L0:
+  Return       r0

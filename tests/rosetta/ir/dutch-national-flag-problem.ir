@@ -1,0 +1,228 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun listStr(xs: list<int>): string {
+func listStr (regs=19)
+  // var s = "["
+  Const        r1, "["
+  Move         r2, r1
+  // var i = 0
+  Const        r3, 0
+  Move         r4, r3
+L2:
+  // while i < len(xs) {
+  Len          r5, r0
+  LessInt      r6, r4, r5
+  JumpIfFalse  r6, L0
+  // s = s + str(xs[i])
+  Index        r7, r0, r4
+  Str          r8, r7
+  Add          r9, r2, r8
+  Move         r2, r9
+  // if i < len(xs) - 1 { s = s + " " }
+  Len          r10, r0
+  Const        r11, 1
+  SubInt       r12, r10, r11
+  LessInt      r13, r4, r12
+  JumpIfFalse  r13, L1
+  Const        r14, " "
+  Add          r15, r2, r14
+  Move         r2, r15
+L1:
+  // i = i + 1
+  Const        r11, 1
+  AddInt       r16, r4, r11
+  Move         r4, r16
+  // while i < len(xs) {
+  Jump         L2
+L0:
+  // s = s + "]"
+  Const        r17, "]"
+  Add          r18, r2, r17
+  Move         r2, r18
+  // return s
+  Return       r2
+
+  // fun ordered(xs: list<int>): bool {
+func ordered (regs=16)
+  // if len(xs) == 0 { return true }
+  Len          r1, r0
+  Const        r2, 0
+  EqualInt     r3, r1, r2
+  JumpIfFalse  r3, L0
+  Const        r4, true
+  Return       r4
+L0:
+  // var prev = xs[0]
+  Const        r2, 0
+  Index        r5, r0, r2
+  Move         r6, r5
+  // var i = 1
+  Const        r7, 1
+  Move         r8, r7
+L3:
+  // while i < len(xs) {
+  Len          r9, r0
+  LessInt      r10, r8, r9
+  JumpIfFalse  r10, L1
+  // if xs[i] < prev { return false }
+  Index        r11, r0, r8
+  Less         r12, r11, r6
+  JumpIfFalse  r12, L2
+  Const        r13, false
+  Return       r13
+L2:
+  // prev = xs[i]
+  Index        r14, r0, r8
+  Move         r6, r14
+  // i = i + 1
+  Const        r7, 1
+  AddInt       r15, r8, r7
+  Move         r8, r15
+  // while i < len(xs) {
+  Jump         L3
+L1:
+  // return true
+  Const        r4, true
+  Return       r4
+
+  // fun outOfOrder(n: int): list<int> {
+func outOfOrder (regs=18)
+  // if n < 2 { return [] }
+  Const        r1, 2
+  Less         r2, r0, r1
+  JumpIfFalse  r2, L0
+  Const        r3, []
+  Return       r3
+L0:
+  // var r: list<int> = []
+  Const        r3, []
+  Move         r4, r3
+L3:
+  // while true {
+  Const        r5, true
+  // r = []
+  Const        r3, []
+  Move         r4, r3
+  // var i = 0
+  Const        r6, 0
+  Move         r7, r6
+L2:
+  // while i < n {
+  Less         r8, r7, r0
+  JumpIfFalse  r8, L1
+  // r = append(r, now() % 3)
+  Now          r9
+  Const        r10, 3
+  ModInt       r11, r9, r10
+  Append       r12, r4, r11
+  Move         r4, r12
+  // i = i + 1
+  Const        r13, 1
+  AddInt       r14, r7, r13
+  Move         r7, r14
+  // while i < n {
+  Jump         L2
+L1:
+  // if !ordered(r) { break }
+  Move         r15, r4
+  Call         r16, ordered, r15
+  Not          r17, r16
+  JumpIfFalse  r17, L3
+  // return r
+  Return       r4
+
+  // fun sort3(a: list<int>): list<int> {
+func sort3 (regs=23)
+  // var lo = 0
+  Const        r1, 0
+  Move         r2, r1
+  // var mid = 0
+  Const        r1, 0
+  Move         r3, r1
+  // var hi = len(a) - 1
+  Len          r4, r0
+  Const        r5, 1
+  SubInt       r6, r4, r5
+  Move         r7, r6
+L2:
+  // while mid <= hi {
+  LessEqInt    r8, r3, r7
+  JumpIfFalse  r8, L0
+  // let v = a[mid]
+  Index        r9, r0, r3
+  Move         r10, r9
+  // if v == 0 {
+  Const        r1, 0
+  Equal        r11, r10, r1
+  JumpIfFalse  r11, L1
+  // let tmp = a[lo]
+  Index        r12, r0, r2
+  Move         r13, r12
+  // a[lo] = a[mid]
+  Index        r14, r0, r3
+  SetIndex     r0, r2, r14
+  // a[mid] = tmp
+  SetIndex     r0, r3, r13
+  // lo = lo + 1
+  Const        r5, 1
+  AddInt       r15, r2, r5
+  Move         r2, r15
+  // mid = mid + 1
+  Const        r5, 1
+  AddInt       r16, r3, r5
+  Move         r3, r16
+  // if v == 0 {
+  Jump         L2
+L1:
+  // } else if v == 1 {
+  Const        r5, 1
+  Equal        r17, r10, r5
+  JumpIfFalse  r17, L3
+  // mid = mid + 1
+  Const        r5, 1
+  AddInt       r18, r3, r5
+  Move         r3, r18
+  // } else if v == 1 {
+  Jump         L2
+L3:
+  // let tmp = a[mid]
+  Index        r19, r0, r3
+  Move         r20, r19
+  // a[mid] = a[hi]
+  Index        r21, r0, r7
+  SetIndex     r0, r3, r21
+  // a[hi] = tmp
+  SetIndex     r0, r7, r20
+  // hi = hi - 1
+  Const        r5, 1
+  SubInt       r22, r7, r5
+  Move         r7, r22
+  // while mid <= hi {
+  Jump         L2
+L0:
+  // return a
+  Return       r0
+
+  // fun main() {
+func main (regs=10)
+  // var f = outOfOrder(12)
+  Const        r1, 12
+  Move         r0, r1
+  Call         r2, outOfOrder, r0
+  Move         r3, r2
+  // print(listStr(f))
+  Move         r4, r3
+  Call         r5, listStr, r4
+  Print        r5
+  // f = sort3(f)
+  Move         r6, r3
+  Call         r7, sort3, r6
+  Move         r3, r7
+  // print(listStr(f))
+  Move         r8, r3
+  Call         r9, listStr, r8
+  Print        r9
+  Return       r0

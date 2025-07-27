@@ -1,0 +1,26 @@
+func main (regs=5)
+  // var X: int = 0  // lookie
+  Const        r4, 0
+  Move         r0, r4
+  SetGlobal    0,0,0,0
+  // var Y: int = 0
+  Const        r4, 0
+  Move         r1, r4
+  SetGlobal    1,1,0,0
+  // var Z: int = 0  // popular names
+  Const        r4, 0
+  Move         r2, r4
+  SetGlobal    2,2,0,0
+  // var MEMEME: int = 0
+  Const        r4, 0
+  Move         r3, r4
+  SetGlobal    3,3,0,0
+  Return       r0
+
+  // fun XP() { // here we go!
+func XP (regs=4)
+  Return       r0
+
+  // fun nonXP() {}
+func nonXP (regs=4)
+  Return       r0

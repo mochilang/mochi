@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated IR and outputs from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/ir`.
-Last updated: 2025-07-27 05:21 UTC
+Last updated: 2025-07-27 05:37 UTC
 
-## Rosetta Golden Test Checklist (286/452)
+## Rosetta Golden Test Checklist (315/452)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 116µs | 11.7 KB |
@@ -304,36 +304,36 @@ Last updated: 2025-07-27 05:21 UTC
 | 295 | determine-if-a-string-is-squeezable | ✓ | 672µs | 429.6 KB |
 | 296 | determine-if-only-one-instance-is-running | ✓ | 35µs | 1.9 KB |
 | 297 | determine-if-two-triangles-overlap | ✓ | 513µs | 916.3 KB |
-| 298 | determine-sentence-type |   |  |  |
-| 299 | dice-game-probabilities-1 |   |  |  |
-| 300 | dice-game-probabilities-2 |   |  |  |
-| 301 | digital-root-multiplicative-digital-root |   |  |  |
-| 302 | dijkstras-algorithm |   |  |  |
-| 303 | dinesmans-multiple-dwelling-problem |   |  |  |
-| 304 | dining-philosophers-1 |   |  |  |
-| 305 | dining-philosophers-2 |   |  |  |
-| 306 | disarium-numbers |   |  |  |
-| 307 | discordian-date |   |  |  |
-| 308 | display-a-linear-combination |   |  |  |
-| 309 | display-an-outline-as-a-nested-table |   |  |  |
-| 310 | distance-and-bearing |   |  |  |
-| 311 | distributed-programming |   |  |  |
-| 312 | diversity-prediction-theorem |   |  |  |
-| 313 | documentation |   |  |  |
-| 314 | doomsday-rule |   |  |  |
-| 315 | dot-product | ✓ |  |  |
-| 316 | doubly-linked-list-definition-1 |   |  |  |
-| 317 | doubly-linked-list-definition-2 |   |  |  |
-| 318 | doubly-linked-list-element-definition |   |  |  |
-| 319 | doubly-linked-list-traversal |   |  |  |
-| 320 | dragon-curve |   |  |  |
-| 321 | draw-a-clock |   |  |  |
-| 322 | draw-a-cuboid |   |  |  |
-| 323 | draw-a-pixel-1 |   |  |  |
-| 324 | draw-a-rotating-cube |   |  |  |
-| 325 | draw-a-sphere |   |  |  |
-| 326 | dutch-national-flag-problem |   |  |  |
-| 327 | dynamic-variable-names |   |  |  |
+| 298 | determine-sentence-type | ✓ | 903µs | 165.1 KB |
+| 299 | dice-game-probabilities-1 | ✓ | 1.674498s | 2.8 MB |
+| 300 | dice-game-probabilities-2 | ✓ | 53.024ms |  |
+| 301 | digital-root-multiplicative-digital-root | ✓ | 152.454ms | 711.3 KB |
+| 302 | dijkstras-algorithm | ✓ | 874µs | 148.7 KB |
+| 303 | dinesmans-multiple-dwelling-problem | ✓ | 740µs | 63.0 KB |
+| 304 | dining-philosophers-1 | ✓ | 476µs | 11.6 KB |
+| 305 | dining-philosophers-2 | ✓ | 578µs | 11.6 KB |
+| 306 | disarium-numbers | ✓ |  |  |
+| 307 | discordian-date | ✓ | 1.242ms | 263.1 KB |
+| 308 | display-a-linear-combination | ✓ | 1.554ms |  |
+| 309 | display-an-outline-as-a-nested-table | ✓ | 14.328ms |  |
+| 310 | distance-and-bearing | ✓ | 7.484ms | 242.8 KB |
+| 311 | distributed-programming | ✓ | 242µs | 3.9 KB |
+| 312 | diversity-prediction-theorem | ✓ | 913µs | 76.2 KB |
+| 313 | documentation | ✓ | 170µs | 600 B |
+| 314 | doomsday-rule | ✓ | 1.683ms | 53.5 KB |
+| 315 | dot-product | ✓ | 636µs | 13.8 KB |
+| 316 | doubly-linked-list-definition-1 | ✓ | 235µs | 136 B |
+| 317 | doubly-linked-list-definition-2 | ✓ | 582µs | 99.7 KB |
+| 318 | doubly-linked-list-element-definition | ✓ | 410µs | 14.4 KB |
+| 319 | doubly-linked-list-traversal | ✓ | 497µs | 42.6 KB |
+| 320 | dragon-curve | ✓ | 15.489ms | 133.7 KB |
+| 321 | draw-a-clock | ✓ | 1.014ms | 123.4 KB |
+| 322 | draw-a-cuboid | ✓ | 2.025ms | 487.3 KB |
+| 323 | draw-a-pixel-1 | ✓ | 1.959291s | 27.3 MB |
+| 324 | draw-a-rotating-cube | ✓ | 44.808ms |  |
+| 325 | draw-a-sphere | ✓ | 144.437ms | 2.4 MB |
+| 326 | dutch-national-flag-problem | ✓ | 534µs | 47.5 KB |
+| 327 | dynamic-variable-names | ✓ | 323µs | 21.0 KB |
 | 328 | earliest-difference-between-prime-gaps |   |  |  |
 | 329 | eban-numbers |   |  |  |
 | 330 | ecdsa-example |   |  |  |

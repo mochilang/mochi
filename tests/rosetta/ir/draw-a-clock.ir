@@ -1,0 +1,214 @@
+func main (regs=54)
+  // let t = now() / 1000000000
+  Now          r9
+  Const        r10, 1000000000
+  DivInt       r11, r9, r10
+  Cast         r12, r11, bigint
+  Move         r0, r12
+  SetGlobal    0,0,0,0
+  // let sec = t % 60
+  Const        r13, 60
+  Mod          r14, r0, r13
+  Cast         r15, r14, bigint
+  Move         r1, r15
+  SetGlobal    1,1,0,0
+  // let mins = t / 60
+  Const        r13, 60
+  Div          r16, r0, r13
+  Cast         r17, r16, bigint
+  Move         r2, r17
+  SetGlobal    2,2,0,0
+  // let min = mins % 60
+  Const        r13, 60
+  Mod          r18, r2, r13
+  Cast         r19, r18, bigint
+  Move         r3, r19
+  SetGlobal    3,3,0,0
+  // let hour = (mins / 60) % 24
+  Const        r13, 60
+  Div          r20, r2, r13
+  Const        r21, 24
+  Mod          r22, r20, r21
+  Cast         r23, r22, bigint
+  Move         r4, r23
+  SetGlobal    4,4,0,0
+  // print(bin(hour, 8))
+  Move         r24, r4
+  Const        r26, 8
+  Move         r25, r26
+  Call2        r27, bin, r24, r25
+  Print        r27
+  // print("")
+  Const        r28, ""
+  Print        r28
+  // print(bin(min, 8))
+  Move         r29, r3
+  Const        r26, 8
+  Move         r30, r26
+  Call2        r31, bin, r29, r30
+  Print        r31
+  // print("")
+  Const        r28, ""
+  Print        r28
+  // var xs = ""
+  Const        r28, ""
+  Move         r5, r28
+  SetGlobal    5,5,0,0
+  // var i = 0
+  Const        r32, 0
+  Move         r6, r32
+  SetGlobal    6,6,0,0
+L1:
+  // while i < sec {
+  Less         r33, r6, r1
+  JumpIfFalse  r33, L0
+  // xs = xs + "x"
+  Const        r34, "x"
+  Add          r35, r5, r34
+  Move         r5, r35
+  SetGlobal    5,5,0,0
+  // i = i + 1
+  Const        r36, 1
+  AddInt       r37, r6, r36
+  Move         r6, r37
+  SetGlobal    6,6,0,0
+  // while i < sec {
+  Jump         L1
+L0:
+  // var out = ""
+  Const        r28, ""
+  Move         r7, r28
+  SetGlobal    7,7,0,0
+  // var j = 0
+  Const        r32, 0
+  Move         r8, r32
+  SetGlobal    8,8,0,0
+L5:
+  // while j < len(xs) {
+  Len          r38, r5
+  LessInt      r39, r8, r38
+  JumpIfFalse  r39, L2
+  // out = out + substring(xs, j, j+1)
+  Const        r36, 1
+  AddInt       r40, r8, r36
+  Slice        r41, r5, r8, r40
+  Add          r42, r7, r41
+  Move         r7, r42
+  SetGlobal    7,7,0,0
+  // if (j + 1) % 5 == 0 && j + 1 < len(xs) {
+  Const        r36, 1
+  AddInt       r43, r8, r36
+  Const        r44, 5
+  ModInt       r45, r43, r44
+  Const        r36, 1
+  AddInt       r46, r8, r36
+  Len          r47, r5
+  LessInt      r48, r46, r47
+  Const        r32, 0
+  EqualInt     r49, r45, r32
+  Move         r50, r49
+  JumpIfFalse  r50, L3
+  Move         r50, r48
+L3:
+  JumpIfFalse  r50, L4
+  // out = out + "|"
+  Const        r51, "|"
+  Add          r52, r7, r51
+  Move         r7, r52
+  SetGlobal    7,7,0,0
+L4:
+  // j = j + 1
+  Const        r36, 1
+  AddInt       r53, r8, r36
+  Move         r8, r53
+  SetGlobal    8,8,0,0
+  // while j < len(xs) {
+  Jump         L5
+L2:
+  // print(out)
+  Print        r7
+  Return       r0
+
+  // fun pow2(exp: int): int {
+func pow2 (regs=17)
+  // var r = 1
+  Const        r10, 1
+  Move         r11, r10
+  // var i = 0
+  Const        r12, 0
+  Move         r6, r12
+  SetGlobal    6,6,0,0
+L1:
+  // while i < exp {
+  Less         r13, r6, r9
+  JumpIfFalse  r13, L0
+  // r = r * 2
+  Const        r14, 2
+  MulInt       r15, r11, r14
+  Move         r11, r15
+  // i = i + 1
+  Const        r10, 1
+  AddInt       r16, r6, r10
+  Move         r6, r16
+  SetGlobal    6,6,0,0
+  // while i < exp {
+  Jump         L1
+L0:
+  // return r
+  Return       r11
+
+  // fun bin(n: int, digits: int): string {
+func bin (regs=30)
+  // var s = ""
+  Const        r11, ""
+  Move         r12, r11
+  // var i = digits - 1
+  Const        r13, 1
+  Sub          r14, r10, r13
+  Move         r6, r14
+  SetGlobal    6,6,0,0
+L4:
+  // while i >= 0 {
+  Const        r15, 0
+  LessEq       r16, r15, r6
+  JumpIfFalse  r16, L0
+  // let p = pow2(i)
+  Move         r17, r6
+  Call         r18, pow2, r17
+  Move         r19, r18
+  // if n >= p {
+  LessEq       r20, r19, r9
+  JumpIfFalse  r20, L1
+  // s = s + "x"
+  Const        r21, "x"
+  Add          r22, r12, r21
+  Move         r12, r22
+  // n = n - p
+  Sub          r23, r9, r19
+  Move         r9, r23
+  // if n >= p {
+  Jump         L2
+L1:
+  // s = s + " "
+  Const        r24, " "
+  Add          r25, r12, r24
+  Move         r12, r25
+L2:
+  // if i > 0 { s = s + "|" }
+  Const        r15, 0
+  Less         r26, r15, r6
+  JumpIfFalse  r26, L3
+  Const        r27, "|"
+  Add          r28, r12, r27
+  Move         r12, r28
+L3:
+  // i = i - 1
+  Const        r13, 1
+  Sub          r29, r6, r13
+  Move         r6, r29
+  SetGlobal    6,6,0,0
+  // while i >= 0 {
+  Jump         L4
+L0:
+  // return s
+  Return       r12

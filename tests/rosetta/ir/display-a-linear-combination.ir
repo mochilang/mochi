@@ -1,0 +1,225 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun padRight(s: string, w: int): string {
+func padRight (regs=7)
+  // var r = s
+  Move         r2, r0
+L1:
+  // while len(r) < w {
+  Len          r3, r2
+  Less         r4, r3, r1
+  JumpIfFalse  r4, L0
+  // r = r + " "
+  Const        r5, " "
+  Add          r6, r2, r5
+  Move         r2, r6
+  // while len(r) < w {
+  Jump         L1
+L0:
+  // return r
+  Return       r2
+
+  // fun linearCombo(c: list<int>): string {
+func linearCombo (regs=45)
+  // var out = ""
+  Const        r1, ""
+  Move         r2, r1
+  // var i = 0
+  Const        r3, 0
+  Move         r4, r3
+L10:
+  // while i < len(c) {
+  Len          r5, r0
+  LessInt      r6, r4, r5
+  JumpIfFalse  r6, L0
+  // let n = c[i]
+  Index        r7, r0, r4
+  Move         r8, r7
+  // if n != 0 {
+  Const        r3, 0
+  NotEqual     r9, r8, r3
+  JumpIfFalse  r9, L1
+  // var op = ""
+  Const        r1, ""
+  Move         r10, r1
+  // if n < 0 && len(out) == 0 {
+  Const        r3, 0
+  Less         r11, r8, r3
+  Len          r12, r2
+  Const        r3, 0
+  EqualInt     r13, r12, r3
+  Move         r14, r11
+  JumpIfFalse  r14, L2
+  Move         r14, r13
+L2:
+  JumpIfFalse  r14, L3
+  // op = "-"
+  Const        r15, "-"
+  Move         r10, r15
+  // if n < 0 && len(out) == 0 {
+  Jump         L4
+L3:
+  // } else if n < 0 {
+  Const        r3, 0
+  Less         r16, r8, r3
+  JumpIfFalse  r16, L5
+  // op = " - "
+  Const        r17, " - "
+  Move         r10, r17
+  // } else if n < 0 {
+  Jump         L4
+L5:
+  // } else if n > 0 && len(out) == 0 {
+  Const        r3, 0
+  Less         r18, r3, r8
+  Len          r19, r2
+  Const        r3, 0
+  EqualInt     r20, r19, r3
+  Move         r21, r18
+  JumpIfFalse  r21, L6
+  Move         r21, r20
+L6:
+  JumpIfFalse  r21, L7
+  // op = ""
+  Const        r1, ""
+  Move         r10, r1
+  // } else if n > 0 && len(out) == 0 {
+  Jump         L4
+L7:
+  // op = " + "
+  Const        r22, " + "
+  Move         r10, r22
+L4:
+  // var av = n
+  Move         r23, r8
+  // if av < 0 {
+  Const        r3, 0
+  Less         r24, r23, r3
+  JumpIfFalse  r24, L8
+  // av = -av
+  Neg          r25, r23
+  Move         r23, r25
+L8:
+  // var coeff = str(av) + "*"
+  Str          r26, r23
+  Const        r27, "*"
+  Add          r28, r26, r27
+  Move         r29, r28
+  // if av == 1 {
+  Const        r30, 1
+  Equal        r31, r23, r30
+  JumpIfFalse  r31, L9
+  // coeff = ""
+  Const        r1, ""
+  Move         r29, r1
+L9:
+  // out = out + op + coeff + "e(" + str(i + 1) + ")"
+  Add          r32, r2, r10
+  Add          r33, r32, r29
+  Const        r34, "e("
+  Add          r35, r33, r34
+  Const        r30, 1
+  AddInt       r36, r4, r30
+  Str          r37, r36
+  Add          r38, r35, r37
+  Const        r39, ")"
+  Add          r40, r38, r39
+  Move         r2, r40
+L1:
+  // i = i + 1
+  Const        r30, 1
+  AddInt       r41, r4, r30
+  Move         r4, r41
+  // while i < len(c) {
+  Jump         L10
+L0:
+  // if len(out) == 0 {
+  Len          r42, r2
+  Const        r3, 0
+  EqualInt     r43, r42, r3
+  JumpIfFalse  r43, L11
+  // return "0"
+  Const        r44, "0"
+  Return       r44
+L11:
+  // return out
+  Return       r2
+
+  // fun main() {
+func main (regs=36)
+  // let combos = [
+  Const        r0, [[1, 2, 3], [0, 1, 2, 3], [1, 0, 3, 4], [1, 2, 0], [0, 0, 0], [0], [1, 1, 1], [-1, -1, -1], [-1, -2, 0, -3], [-1]]
+  Move         r1, r0
+  // var idx = 0
+  Const        r2, 0
+  Move         r3, r2
+L4:
+  // while idx < len(combos) {
+  Const        r4, 10
+  LessInt      r5, r3, r4
+  JumpIfFalse  r5, L0
+  // let c = combos[idx]
+  Index        r6, r1, r3
+  Move         r7, r6
+  // var t = "["
+  Const        r8, "["
+  Move         r9, r8
+  // var j = 0
+  Const        r2, 0
+  Move         r10, r2
+L3:
+  // while j < len(c) {
+  Len          r11, r7
+  LessInt      r12, r10, r11
+  JumpIfFalse  r12, L1
+  // t = t + str(c[j])
+  Index        r13, r7, r10
+  Str          r14, r13
+  Add          r15, r9, r14
+  Move         r9, r15
+  // if j < len(c) - 1 {
+  Len          r16, r7
+  Const        r17, 1
+  SubInt       r18, r16, r17
+  LessInt      r19, r10, r18
+  JumpIfFalse  r19, L2
+  // t = t + ", "
+  Const        r20, ", "
+  Add          r21, r9, r20
+  Move         r9, r21
+L2:
+  // j = j + 1
+  Const        r17, 1
+  AddInt       r22, r10, r17
+  Move         r10, r22
+  // while j < len(c) {
+  Jump         L3
+L1:
+  // t = t + "]"
+  Const        r23, "]"
+  Add          r24, r9, r23
+  Move         r9, r24
+  // let lc = linearCombo(c)
+  Move         r25, r7
+  Call         r26, linearCombo, r25
+  Move         r27, r26
+  // print(padRight(t, 15) + "  ->  " + lc)
+  Move         r28, r9
+  Const        r30, 15
+  Move         r29, r30
+  Call2        r31, padRight, r28, r29
+  Const        r32, "  ->  "
+  Add          r33, r31, r32
+  Add          r34, r33, r27
+  Print        r34
+  // idx = idx + 1
+  Const        r17, 1
+  AddInt       r35, r3, r17
+  Move         r3, r35
+  // while idx < len(combos) {
+  Jump         L4
+L0:
+  Return       r0

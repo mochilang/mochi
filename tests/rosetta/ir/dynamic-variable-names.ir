@@ -1,0 +1,288 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun parseIntStr(str: string): int {
+func parseIntStr (regs=30)
+  // var i = 0
+  Const        r1, 0
+  Move         r2, r1
+  // var neg = false
+  Const        r3, false
+  Move         r4, r3
+  // if len(str) > 0 && str[0:1] == "-" {
+  Len          r5, r0
+  Const        r1, 0
+  LessInt      r6, r1, r5
+  Const        r1, 0
+  Move         r7, r1
+  Const        r9, 1
+  Move         r8, r9
+  Slice        r10, r0, r7, r8
+  Const        r11, "-"
+  Equal        r12, r10, r11
+  Move         r13, r6
+  JumpIfFalse  r13, L0
+  Move         r13, r12
+L0:
+  JumpIfFalse  r13, L1
+  // neg = true
+  Const        r14, true
+  Move         r4, r14
+  // i = 1
+  Const        r9, 1
+  Move         r2, r9
+L1:
+  // var n = 0
+  Const        r1, 0
+  Move         r15, r1
+  // let digits = {
+  Const        r16, {"0": 0, "1": 1, "2": 2, "3": 3, "4": 4, "5": 5, "6": 6, "7": 7, "8": 8, "9": 9}
+  Move         r17, r16
+L3:
+  // while i < len(str) {
+  Len          r18, r0
+  LessInt      r19, r2, r18
+  JumpIfFalse  r19, L2
+  // n = n * 10 + digits[str[i:i+1]]
+  Const        r20, 10
+  MulInt       r21, r15, r20
+  Move         r22, r2
+  Const        r9, 1
+  AddInt       r24, r2, r9
+  Move         r23, r24
+  Slice        r25, r0, r22, r23
+  Index        r26, r17, r25
+  Add          r27, r21, r26
+  Move         r15, r27
+  // i = i + 1
+  Const        r9, 1
+  AddInt       r28, r2, r9
+  Move         r2, r28
+  // while i < len(str) {
+  Jump         L3
+L2:
+  // if neg { n = -n }
+  JumpIfFalse  r4, L4
+  Neg          r29, r15
+  Move         r15, r29
+L4:
+  // return n
+  Return       r15
+
+  // fun main() {
+func main (regs=76)
+  // var n = 0
+  Const        r0, 0
+  Move         r1, r0
+L2:
+  // while n < 1 || n > 5 {
+  Const        r2, 1
+  LessInt      r3, r1, r2
+  Const        r4, 5
+  LessInt      r5, r4, r1
+  Move         r6, r3
+  JumpIfTrue   r6, L0
+  Move         r6, r5
+L0:
+  JumpIfFalse  r6, L1
+  // print("How many integer variables do you want to create (max 5) : ")
+  Const        r7, "How many integer variables do you want to create (max 5) : "
+  Print        r7
+  // let line = input()
+  Input        r8
+  Move         r9, r8
+  // if len(line) > 0 {
+  Len          r10, r9
+  Const        r0, 0
+  LessInt      r11, r0, r10
+  JumpIfFalse  r11, L2
+  // n = parseIntStr(line)
+  Move         r12, r9
+  Call         r13, parseIntStr, r12
+  Move         r1, r13
+  // while n < 1 || n > 5 {
+  Jump         L2
+L1:
+  // var vars: map<string, int> = {}
+  Const        r14, {}
+  Move         r15, r14
+  // print("OK, enter the variable names and their values, below\n")
+  Const        r16, "OK, enter the variable names and their values, below\n"
+  Print        r16
+  // var i = 1
+  Const        r2, 1
+  Move         r17, r2
+L5:
+  // while i <= n {
+  LessEq       r18, r17, r1
+  JumpIfFalse  r18, L3
+  // print("\n  Variable " + str(i) + "\n")
+  Const        r19, "\n  Variable "
+  Str          r20, r17
+  Add          r21, r19, r20
+  Const        r22, "\n"
+  Add          r23, r21, r22
+  Print        r23
+  // print("    Name  : ")
+  Const        r24, "    Name  : "
+  Print        r24
+  // let name = input()
+  Input        r25
+  Move         r26, r25
+  // if name in vars {
+  In           r27, r26, r15
+  JumpIfFalse  r27, L4
+  // print("  Sorry, you've already created a variable of that name, try again")
+  Const        r28, "  Sorry, you've already created a variable of that name, try again"
+  Print        r28
+  // continue
+  Jump         L5
+L4:
+  // var value = 0
+  Const        r0, 0
+  Move         r29, r0
+L8:
+  // while true {
+  Const        r30, true
+  JumpIfFalse  r30, L6
+  // print("    Value : ")
+  Const        r31, "    Value : "
+  Print        r31
+  // let valstr = input()
+  Input        r32
+  Move         r33, r32
+  // if len(valstr) == 0 {
+  Len          r34, r33
+  Const        r0, 0
+  EqualInt     r35, r34, r0
+  JumpIfFalse  r35, L7
+  // print("  Not a valid integer, try again")
+  Const        r36, "  Not a valid integer, try again"
+  Print        r36
+  // continue
+  Jump         L8
+L7:
+  // var ok = true
+  Const        r30, true
+  Move         r37, r30
+  // var j = 0
+  Const        r0, 0
+  Move         r38, r0
+  // var neg = false
+  Const        r39, false
+  Move         r40, r39
+  // if valstr[0:1] == "-" {
+  Const        r0, 0
+  Move         r41, r0
+  Const        r2, 1
+  Move         r42, r2
+  Slice        r43, r33, r41, r42
+  Const        r44, "-"
+  Equal        r45, r43, r44
+  JumpIfFalse  r45, L9
+  // neg = true
+  Const        r30, true
+  Move         r40, r30
+  // j = 1
+  Const        r2, 1
+  Move         r38, r2
+L9:
+  // while j < len(valstr) {
+  Len          r46, r33
+  LessInt      r47, r38, r46
+  JumpIfFalse  r47, L10
+  // let ch = valstr[j:j+1]
+  Move         r48, r38
+  Const        r2, 1
+  AddInt       r50, r38, r2
+  Move         r49, r50
+  Slice        r51, r33, r48, r49
+  Move         r52, r51
+  // if ch < "0" || ch > "9" {
+  Const        r53, "0"
+  Less         r54, r52, r53
+  Const        r55, "9"
+  Less         r56, r55, r52
+  Move         r57, r54
+  JumpIfTrue   r57, L11
+  Move         r57, r56
+L11:
+  JumpIfFalse  r57, L12
+  // ok = false
+  Const        r39, false
+  Move         r37, r39
+  // break
+  Jump         L10
+L12:
+  // j = j + 1
+  Const        r2, 1
+  AddInt       r58, r38, r2
+  Move         r38, r58
+  // while j < len(valstr) {
+  Jump         L9
+L10:
+  // if !ok {
+  Not          r59, r37
+  JumpIfFalse  r59, L13
+  // print("  Not a valid integer, try again")
+  Const        r36, "  Not a valid integer, try again"
+  Print        r36
+  // continue
+  Jump         L8
+L13:
+  // value = parseIntStr(valstr)
+  Move         r60, r33
+  Call         r61, parseIntStr, r60
+  Move         r29, r61
+L6:
+  // vars[name] = value
+  SetIndex     r15, r26, r29
+  // i = i + 1
+  Const        r2, 1
+  AddInt       r62, r17, r2
+  Move         r17, r62
+  // while i <= n {
+  Jump         L5
+L3:
+  // print("\nEnter q to quit")
+  Const        r63, "\nEnter q to quit"
+  Print        r63
+L17:
+  // while true {
+  Const        r30, true
+  JumpIfFalse  r30, L14
+  // print("\nWhich variable do you want to inspect : ")
+  Const        r64, "\nWhich variable do you want to inspect : "
+  Print        r64
+  // let name = input()
+  Input        r65
+  Move         r66, r65
+  // if lower(name) == "q" {
+  Lower        r67, r66
+  Const        r68, "q"
+  Equal        r69, r67, r68
+  JumpIfFalse  r69, L15
+  // return
+  Return       r0
+L15:
+  // if name in vars {
+  In           r70, r66, r15
+  JumpIfFalse  r70, L16
+  // print("It's value is " + str(vars[name]))
+  Const        r71, "It's value is "
+  Index        r72, r15, r66
+  Str          r73, r72
+  Add          r74, r71, r73
+  Print        r74
+  // if name in vars {
+  Jump         L17
+L16:
+  // print("Sorry there's no variable of that name, try again")
+  Const        r75, "Sorry there's no variable of that name, try again"
+  Print        r75
+  // while true {
+  Jump         L17
+L14:
+  Return       r0
