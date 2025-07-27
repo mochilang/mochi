@@ -1,0 +1,13 @@
+run: exit status 1
+
+Unhandled Exception:
+System.InvalidCastException: Specified cast is not valid.
+  at Catmull-clark-subdivision-surface.getFacePoints (Catmull-clark-subdivision-surface+Point[] points, System.Int32[][] faces) [0x000fa] in <68865b7934bee5e8a7450383795b8668>:0 
+  at Catmull-clark-subdivision-surface.cmcSubdiv (Catmull-clark-subdivision-surface+Point[] points, System.Int32[][] faces) [0x003a2] in <68865b7934bee5e8a7450383795b8668>:0 
+  at Catmull-clark-subdivision-surface.main () [0x003b7] in <68865b7934bee5e8a7450383795b8668>:0 
+  at <StartupCode$catmull-clark-subdivision-surface>.$Catmull-clark-subdivision-surface.main@ () [0x00019] in <68865b7934bee5e8a7450383795b8668>:0 
+[ERROR] FATAL UNHANDLED EXCEPTION: System.InvalidCastException: Specified cast is not valid.
+  at Catmull-clark-subdivision-surface.getFacePoints (Catmull-clark-subdivision-surface+Point[] points, System.Int32[][] faces) [0x000fa] in <68865b7934bee5e8a7450383795b8668>:0 
+  at Catmull-clark-subdivision-surface.cmcSubdiv (Catmull-clark-subdivision-surface+Point[] points, System.Int32[][] faces) [0x003a2] in <68865b7934bee5e8a7450383795b8668>:0 
+  at Catmull-clark-subdivision-surface.main () [0x003b7] in <68865b7934bee5e8a7450383795b8668>:0 
+  at <StartupCode$catmull-clark-subdivision-surface>.$Catmull-clark-subdivision-surface.main@ () [0x00019] in <68865b7934bee5e8a7450383795b8668>:0 

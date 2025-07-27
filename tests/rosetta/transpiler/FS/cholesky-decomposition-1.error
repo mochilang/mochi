@@ -1,0 +1,30 @@
+compile: exit status 1
+F# Compiler for F# 4.0 (Open Source Edition)
+Freely distributed under the Apache 2.0 Open Source License
+
+/workspace/mochi/tests/rosetta/transpiler/FS/cholesky-decomposition-1.fs(3,1): warning FS0221: The declarations in this file will be placed in an implicit module 'Cholesky-decomposition-1' based on the file name 'cholesky-decomposition-1.fs'. However this is not a valid F# identifier, so the contents will not be accessible from other files. Consider renaming the file or adding a 'module' or 'namespace' declaration at the top of the file.
+
+/workspace/mochi/tests/rosetta/transpiler/FS/cholesky-decomposition-1.fs(62,64): error FS0001: This expression was expected to have type
+    float    
+but here has type
+    obj    
+
+/workspace/mochi/tests/rosetta/transpiler/FS/cholesky-decomposition-1.fs(121,64): error FS0001: This expression was expected to have type
+    float    
+but here has type
+    obj    
+
+/workspace/mochi/tests/rosetta/transpiler/FS/cholesky-decomposition-1.fs(141,33): error FS0001: The type 'obj' is not compatible with the type 'seq<'a>'
+
+/workspace/mochi/tests/rosetta/transpiler/FS/cholesky-decomposition-1.fs(149,31): error FS0001: The type 'obj' is not compatible with the type 'seq<'a>'
+
+/workspace/mochi/tests/rosetta/transpiler/FS/cholesky-decomposition-1.fs(150,59): error FS0001: This expression was expected to have type
+    string    
+but here has type
+    int    
+
+/workspace/mochi/tests/rosetta/transpiler/FS/cholesky-decomposition-1.fs(152,39): error FS0001: The type 'float' does not match the type 'obj'
+
+/workspace/mochi/tests/rosetta/transpiler/FS/cholesky-decomposition-1.fs(152,36): error FS0043: The type 'float' does not match the type 'obj'
+
+/workspace/mochi/tests/rosetta/transpiler/FS/cholesky-decomposition-1.fs(165,58): error FS0001: The type 'float' does not match the type 'obj'

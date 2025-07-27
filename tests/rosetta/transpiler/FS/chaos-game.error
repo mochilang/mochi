@@ -1,0 +1,7 @@
+run: exit status 1
+
+Unhandled Exception:
+System.InvalidCastException: Specified cast is not valid.
+  at <StartupCode$chaos-game>.$Chaos-game.main@ () [0x0002e] in <68865a78e8b3c98ba7450383785a8668>:0 
+[ERROR] FATAL UNHANDLED EXCEPTION: System.InvalidCastException: Specified cast is not valid.
+  at <StartupCode$chaos-game>.$Chaos-game.main@ () [0x0002e] in <68865a78e8b3c98ba7450383785a8668>:0 

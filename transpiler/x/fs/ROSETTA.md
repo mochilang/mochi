@@ -2,7 +2,7 @@
 
 This file is auto-generated from rosetta tests.
 
-## Rosetta Golden Test Checklist (156/467)
+## Rosetta Golden Test Checklist (187/467)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 151µs | 41.3 KB |
@@ -178,55 +178,55 @@ This file is auto-generated from rosetta tests.
 | 171 | carmichael-3-strong-pseudoprimes | ✓ | 264µs | 42.1 KB |
 | 172 | cartesian-product-of-two-or-more-lists-1 | ✓ | 161µs | 42.1 KB |
 | 173 | cartesian-product-of-two-or-more-lists-2 | ✓ | 215µs | 54.1 KB |
-| 174 | cartesian-product-of-two-or-more-lists-3 | ✓ | 213µs | 54.0 KB |
-| 175 | cartesian-product-of-two-or-more-lists-4 | ✓ | 218µs | 54.0 KB |
-| 176 | case-sensitivity-of-identifiers |   |  |  |
-| 177 | casting-out-nines |   |  |  |
-| 178 | catalan-numbers-1 | ✓ | 172µs | 41.5 KB |
+| 174 | cartesian-product-of-two-or-more-lists-3 | ✓ | 226µs | 54.0 KB |
+| 175 | cartesian-product-of-two-or-more-lists-4 | ✓ | 287µs | 73.8 KB |
+| 176 | case-sensitivity-of-identifiers | ✓ | 228µs | 53.5 KB |
+| 177 | casting-out-nines | ✓ | 374µs | 42.7 KB |
+| 178 | catalan-numbers-1 | ✓ | 158µs | 41.5 KB |
 | 179 | catalan-numbers-2 | ✓ | 155µs | 41.5 KB |
-| 180 | catalan-numbers-pascals-triangle | ✓ | 156µs | 41.5 KB |
-| 181 | catamorphism | ✓ | 169µs | 42.9 KB |
+| 180 | catalan-numbers-pascals-triangle | ✓ | 156µs | 44.8 KB |
+| 181 | catamorphism | ✓ | 182µs | 53.4 KB |
 | 182 | catmull-clark-subdivision-surface |   |  |  |
-| 183 | chaocipher |   |  |  |
+| 183 | chaocipher | ✓ | 165µs | 54.5 KB |
 | 184 | chaos-game |   |  |  |
-| 185 | character-codes-1 |   |  |  |
-| 186 | character-codes-2 |   |  |  |
-| 187 | character-codes-3 |   |  |  |
-| 188 | character-codes-4 |   |  |  |
-| 189 | character-codes-5 |   |  |  |
-| 190 | chat-server |   |  |  |
+| 185 | character-codes-1 | ✓ | 279µs | 41.6 KB |
+| 186 | character-codes-2 | ✓ | 154µs | 41.7 KB |
+| 187 | character-codes-3 | ✓ | 150µs | 41.6 KB |
+| 188 | character-codes-4 | ✓ | 152µs | 42.0 KB |
+| 189 | character-codes-5 | ✓ | 152µs | 42.1 KB |
+| 190 | chat-server | ✓ | 162µs | 42.1 KB |
 | 191 | check-machin-like-formulas |   |  |  |
-| 192 | check-that-file-exists |   |  |  |
-| 193 | checkpoint-synchronization-1 |   |  |  |
-| 194 | checkpoint-synchronization-2 |   |  |  |
-| 195 | checkpoint-synchronization-3 |   |  |  |
-| 196 | checkpoint-synchronization-4 |   |  |  |
-| 197 | chernicks-carmichael-numbers |   |  |  |
-| 198 | cheryls-birthday |   |  |  |
-| 199 | chinese-remainder-theorem |   |  |  |
-| 200 | chinese-zodiac |   |  |  |
+| 192 | check-that-file-exists | ✓ | 218µs | 53.3 KB |
+| 193 | checkpoint-synchronization-1 | ✓ | 152µs | 41.4 KB |
+| 194 | checkpoint-synchronization-2 | ✓ | 148µs | 41.4 KB |
+| 195 | checkpoint-synchronization-3 | ✓ | 149µs | 41.4 KB |
+| 196 | checkpoint-synchronization-4 | ✓ | 153µs | 65.3 KB |
+| 197 | chernicks-carmichael-numbers | ✓ | 9.475ms | 71.3 KB |
+| 198 | cheryls-birthday | ✓ | 167µs | 51.4 KB |
+| 199 | chinese-remainder-theorem | ✓ | 152µs | 41.5 KB |
+| 200 | chinese-zodiac | ✓ | 155µs | 51.1 KB |
 | 201 | cholesky-decomposition-1 |   |  |  |
-| 202 | cholesky-decomposition |   |  |  |
-| 203 | chowla-numbers |   |  |  |
+| 202 | cholesky-decomposition | ✓ | 187µs | 43.6 KB |
+| 203 | chowla-numbers | ✓ | 153µs | 41.6 KB |
 | 204 | church-numerals-1 |   |  |  |
 | 205 | church-numerals-2 |   |  |  |
 | 206 | circles-of-given-radius-through-two-points |   |  |  |
-| 207 | circular-primes |   |  |  |
+| 207 | circular-primes | ✓ | 166µs | 41.8 KB |
 | 208 | cistercian-numerals |   |  |  |
-| 209 | comma-quibbling |   |  |  |
+| 209 | comma-quibbling | ✓ | 158µs | 42.1 KB |
 | 210 | compiler-virtual-machine-interpreter |   |  |  |
 | 211 | composite-numbers-k-with-no-single-digit-factors-whose-factors-are-all-substrings-of-k |   |  |  |
-| 212 | compound-data-type |   |  |  |
-| 213 | concurrent-computing-1 |   |  |  |
-| 214 | concurrent-computing-2 |   |  |  |
-| 215 | concurrent-computing-3 |   |  |  |
+| 212 | compound-data-type | ✓ | 3µs | 12.7 KB |
+| 213 | concurrent-computing-1 | ✓ | 155µs | 41.6 KB |
+| 214 | concurrent-computing-2 | ✓ | 157µs | 49.9 KB |
+| 215 | concurrent-computing-3 | ✓ | 159µs | 41.8 KB |
 | 216 | conditional-structures-1 |   |  |  |
-| 217 | conditional-structures-10 |   |  |  |
-| 218 | conditional-structures-2 |   |  |  |
+| 217 | conditional-structures-10 | ✓ | 155µs | 41.8 KB |
+| 218 | conditional-structures-2 | ✓ | 3µs | 16.9 KB |
 | 219 | conditional-structures-3 |   |  |  |
-| 220 | conditional-structures-4 |   |  |  |
-| 221 | conditional-structures-5 |   |  |  |
-| 222 | conditional-structures-6 |   |  |  |
+| 220 | conditional-structures-4 | ✓ | 3µs | 10.9 KB |
+| 221 | conditional-structures-5 | ✓ | 4µs | 8.8 KB |
+| 222 | conditional-structures-6 | ✓ | 3µs | 5.9 KB |
 | 223 | conditional-structures-7 |   |  |  |
 | 224 | conditional-structures-8 |   |  |  |
 | 225 | conditional-structures-9 |   |  |  |
@@ -473,4 +473,4 @@ This file is auto-generated from rosetta tests.
 | 466 | window-management |   |  |  |
 | 467 | zumkeller-numbers |   |  |  |
 
-Last updated: 2025-07-27 22:46 +0700
+Last updated: 2025-07-27 23:45 +0700

@@ -1858,6 +1858,11 @@ func inferType(e Expr) string {
 				}
 			}
 		}
+		if t, ok := varTypes[v.Func]; ok {
+			if strings.HasPrefix(t, "func:") {
+				return strings.TrimPrefix(t, "func:")
+			}
+		}
 	case *MethodCallExpr:
 		switch v.Name {
 		case "contains", "Contains":
@@ -2906,6 +2911,9 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 		if retType == "" && st.Fun.Return != nil {
 			retType = typeRefString(st.Fun.Return)
 		}
+		if retType != "" {
+			save[st.Fun.Name] = "func:" + retType
+		}
 		prevReturn := currentReturn
 		currentReturn = retType
 		body := make([]Stmt, len(st.Fun.Body))
@@ -3105,6 +3113,12 @@ func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
 			idx, err := convertExpr(op.Index.Start)
 			if err != nil {
 				return nil, err
+			}
+			if lit, ok := idx.(*StringLit); ok {
+				if _, ok2 := structFieldType(inferType(expr), lit.Value); ok2 {
+					expr = &FieldExpr{Target: expr, Name: lit.Value}
+					continue
+				}
 			}
 			expr = &IndexExpr{Target: expr, Index: idx}
 		case op.Index != nil && op.Index.Colon != nil && op.Index.Step == nil && op.Index.Colon2 == nil:

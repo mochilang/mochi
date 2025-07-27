@@ -1,0 +1,13 @@
+run: exit status 1
+
+Unhandled Exception:
+System.ArgumentException: The index is outside the legal range.
+Parameter name: count
+  at Microsoft.FSharp.Collections.ArrayModule.GetSubArray[T] (T[] array, System.Int32 startIndex, System.Int32 count) [0x00080] in <65d1017bc6ad35d9a74503837b01d165>:0 
+  at Composite-numbers-k-with-no-single-digit-factors-whose-factors-are-all-substrings-of-k.main () [0x00358] in <68865aae6855e877a7450383ae5a8668>:0 
+  at <StartupCode$composite-numbers-k-with-no-single-digit-factors-whose-factors-are-all-substrings-of-k>.$Composite-numbers-k-with-no-single-digit-factors-whose-factors-are-all-substrings-of-k.main@ () [0x00019] in <68865aae6855e877a7450383ae5a8668>:0 
+[ERROR] FATAL UNHANDLED EXCEPTION: System.ArgumentException: The index is outside the legal range.
+Parameter name: count
+  at Microsoft.FSharp.Collections.ArrayModule.GetSubArray[T] (T[] array, System.Int32 startIndex, System.Int32 count) [0x00080] in <65d1017bc6ad35d9a74503837b01d165>:0 
+  at Composite-numbers-k-with-no-single-digit-factors-whose-factors-are-all-substrings-of-k.main () [0x00358] in <68865aae6855e877a7450383ae5a8668>:0 
+  at <StartupCode$composite-numbers-k-with-no-single-digit-factors-whose-factors-are-all-substrings-of-k>.$Composite-numbers-k-with-no-single-digit-factors-whose-factors-are-all-substrings-of-k.main@ () [0x00019] in <68865aae6855e877a7450383ae5a8668>:0 
