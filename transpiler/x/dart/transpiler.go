@@ -75,6 +75,8 @@ var (
 	currentRetType   string
 	inFunc           bool
 	convInFunc       bool
+	methodDefs       []Stmt
+	structMethods    map[string]map[string]bool
 )
 
 // GetStructOrder returns the generated struct names (for testing).
@@ -88,6 +90,9 @@ func DebugLocalVarTypes() map[string]string { return localVarTypes }
 
 // DebugFuncReturnTypes exposes function return type map (for testing).
 func DebugFuncReturnTypes() map[string]string { return funcReturnTypes }
+
+// DebugStructMethods exposes struct method map (for testing).
+func DebugStructMethods() map[string]map[string]bool { return structMethods }
 
 func capitalize(name string) string {
 	parts := strings.Split(name, "_")
@@ -3759,8 +3764,18 @@ func Emit(w io.Writer, p *Program) error {
 		if _, err := fmt.Fprintf(w, "class %s {\n", name); err != nil {
 			return err
 		}
+		if len(fields) == 0 {
+			if _, err := fmt.Fprintf(w, "  %s();\n}\n\n", name); err != nil {
+				return err
+			}
+			continue
+		}
 		for _, f := range fields {
-			if _, err := fmt.Fprintf(w, "  %s %s;\n", f.Type, f.Name); err != nil {
+			t := f.Type
+			if structMutable[name] && !strings.HasSuffix(t, "?") {
+				t += "?"
+			}
+			if _, err := fmt.Fprintf(w, "  %s %s;\n", t, f.Name); err != nil {
 				return err
 			}
 		}
@@ -3773,7 +3788,11 @@ func Emit(w io.Writer, p *Program) error {
 					return err
 				}
 			}
-			if _, err := fmt.Fprintf(w, "required this.%s", f.Name); err != nil {
+			kw := "required "
+			if structMutable[name] {
+				kw = ""
+			}
+			if _, err := fmt.Fprintf(w, "%sthis.%s", kw, f.Name); err != nil {
 				return err
 			}
 		}
@@ -3915,6 +3934,8 @@ func Transpile(prog *parser.Program, env *types.Env, bench, wrapMain bool) (*Pro
 	testpkgAliases = map[string]struct{}{}
 	netAliases = map[string]struct{}{}
 	structMutable = map[string]bool{}
+	methodDefs = nil
+	structMethods = map[string]map[string]bool{}
 	benchMain = bench
 	renameMain = false
 	for _, st := range prog.Statements {
@@ -3932,6 +3953,10 @@ func Transpile(prog *parser.Program, env *types.Env, bench, wrapMain bool) (*Pro
 		if s != nil {
 			p.Stmts = append(p.Stmts, s)
 		}
+	}
+	if len(methodDefs) > 0 {
+		p.Stmts = append(methodDefs, p.Stmts...)
+		methodDefs = nil
 	}
 	if wrapMain {
 		usesJSON = true
@@ -4140,6 +4165,57 @@ func convertStmtList(list []*parser.Statement) ([]Stmt, error) {
 	return out, nil
 }
 
+func convertTypeDecl(td *parser.TypeDecl) error {
+	if currentEnv != nil {
+		if stt, ok := currentEnv.GetStruct(td.Name); ok {
+			var fields []StructField
+			for _, name := range stt.Order {
+				ft := stt.Fields[name]
+				fields = append(fields, StructField{Name: name, Type: dartType(ft)})
+			}
+			structFields[stt.Name] = fields
+			structOrder = append(structOrder, stt.Name)
+		}
+	}
+	fieldSet := map[string]bool{}
+	for _, m := range td.Members {
+		if m.Field != nil {
+			fieldSet[m.Field.Name] = true
+		}
+	}
+	for _, m := range td.Members {
+		if m.Method == nil {
+			continue
+		}
+		if structMethods[td.Name] == nil {
+			structMethods[td.Name] = map[string]bool{}
+		}
+		structMethods[td.Name][m.Method.Name] = true
+		fn := *m.Method
+		fn.Name = td.Name + "_" + fn.Name
+		selfName := "self"
+		selfTypeName := td.Name
+		selfType := &parser.TypeRef{Simple: &selfTypeName}
+		param := &parser.Param{Name: selfName, Type: selfType}
+		fn.Params = append([]*parser.Param{param}, fn.Params...)
+		stmt := &parser.Statement{Fun: &fn}
+		conv, err := convertStmtInternal(stmt)
+		if err != nil {
+			return err
+		}
+		if conv != nil {
+			// substitute field references with self indexing
+			if fd, ok := conv.(*FuncDecl); ok {
+				for i, st := range fd.Body {
+					fd.Body[i] = substituteStmtFields(st, selfName, fieldSet)
+				}
+			}
+			methodDefs = append(methodDefs, conv)
+		}
+	}
+	return nil
+}
+
 func convertStmtInternal(st *parser.Statement) (Stmt, error) {
 	switch {
 	case st.Test != nil:
@@ -4150,16 +4226,8 @@ func convertStmtInternal(st *parser.Statement) (Stmt, error) {
 	case st.Expect != nil:
 		return nil, nil
 	case st.Type != nil:
-		if currentEnv != nil {
-			if stt, ok := currentEnv.GetStruct(st.Type.Name); ok {
-				var fields []StructField
-				for _, name := range stt.Order {
-					ft := stt.Fields[name]
-					fields = append(fields, StructField{Name: name, Type: dartType(ft)})
-				}
-				structFields[stt.Name] = fields
-				structOrder = append(structOrder, stt.Name)
-			}
+		if err := convertTypeDecl(st.Type); err != nil {
+			return nil, err
 		}
 		return nil, nil
 	case st.ExternType != nil:
@@ -4635,7 +4703,11 @@ func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
 					}
 					args = append(args, ex)
 				}
-				if op.Field.Name == "padStart" {
+				recvType := strings.TrimSuffix(inferType(expr), "?")
+				if mset, ok := structMethods[recvType]; ok && mset[op.Field.Name] {
+					args = append([]Expr{expr}, args...)
+					expr = &CallExpr{Func: &Name{Name: recvType + "_" + op.Field.Name}, Args: args}
+				} else if op.Field.Name == "padStart" {
 					if len(args) != 2 {
 						return nil, fmt.Errorf("padStart expects 2 args")
 					}
@@ -4658,7 +4730,12 @@ func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
 				args = append(args, ex)
 			}
 			if sel, ok := expr.(*SelectorExpr); ok {
-				if n, ok := sel.Receiver.(*Name); ok {
+				recvType := strings.TrimSuffix(inferType(sel.Receiver), "?")
+				if mset, ok := structMethods[recvType]; ok && mset[sel.Field] {
+					args = append([]Expr{sel.Receiver}, args...)
+					expr = &CallExpr{Func: &Name{Name: recvType + "_" + sel.Field}, Args: args}
+					replaced = true
+				} else if n, ok := sel.Receiver.(*Name); ok {
 					if _, ok := testpkgAliases[n.Name]; ok {
 						switch sel.Field {
 						case "FifteenPuzzleExample":
@@ -5634,7 +5711,7 @@ func substituteFields(e Expr, varName string, fields map[string]bool) Expr {
 	switch ex := e.(type) {
 	case *Name:
 		if fields[ex.Name] {
-			return &IndexExpr{Target: &Name{Name: varName}, Index: &StringLit{Value: ex.Name}}
+			return &SelectorExpr{Receiver: &Name{Name: varName}, Field: ex.Name}
 		}
 		return ex
 	case *BinaryExpr:
@@ -5681,6 +5758,24 @@ func substituteFields(e Expr, varName string, fields map[string]bool) Expr {
 		return ex
 	default:
 		return ex
+	}
+}
+
+func substituteStmtFields(s Stmt, varName string, fields map[string]bool) Stmt {
+	switch st := s.(type) {
+	case *ExprStmt:
+		st.Expr = substituteFields(st.Expr, varName, fields)
+		return st
+	case *ReturnStmt:
+		if st.Value != nil {
+			st.Value = substituteFields(st.Value, varName, fields)
+		}
+		return st
+	case *AssignStmt:
+		st.Value = substituteFields(st.Value, varName, fields)
+		return st
+	default:
+		return st
 	}
 }
 
