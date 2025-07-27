@@ -1,5 +1,6 @@
 func main (regs=58)
   // let z: Church = zero
+  MakeClosure  r3, zero, 0, r0
   Move         r0, r3
   SetGlobal    0,0,0,0
   // let three = succ(succ(succ(z)))
@@ -149,6 +150,7 @@ func incr (regs=7)
   // fun toInt(c: Church): int { return c(incr)(0) as int }
 func toInt (regs=11)
   // fun toInt(c: Church): int { return c(incr)(0) as int }
+  MakeClosure  r5, incr, 0, r0
   Move         r4, r5
   CallV        r6, r3, 1, r4
   Const        r8, 0
@@ -163,6 +165,7 @@ func intToChurch (regs=13)
   Const        r4, 0
   Equal        r5, r3, r4
   JumpIfFalse  r5, L0
+  MakeClosure  r6, zero, 0, r0
   Return       r6
 L0:
   // return succ(intToChurch(i - 1))

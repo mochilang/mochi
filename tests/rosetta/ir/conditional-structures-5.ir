@@ -1,0 +1,23 @@
+func main (regs=1)
+  Return       r0
+
+  // fun example5(b1: bool, b2: bool) {
+func example5 (regs=3)
+  // if b1 {
+  JumpIfFalse  r0, L0
+  // null
+  Const        r2, nil
+  // if b1 {
+  Jump         L1
+L0:
+  // } else if b2 {
+  JumpIfFalse  r1, L2
+  // null
+  Const        r2, nil
+  // } else if b2 {
+  Jump         L1
+L2:
+  // null
+  Const        r2, nil
+L1:
+  Return       r0

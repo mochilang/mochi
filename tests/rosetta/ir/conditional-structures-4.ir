@@ -1,0 +1,37 @@
+func main (regs=1)
+  Return       r0
+
+  // fun fetchSomething(): int { return 0 }
+func fetchSomething (regs=1)
+  // fun fetchSomething(): int { return 0 }
+  Const        r0, 0
+  Return       r0
+
+  // fun doPos(x: int) {}
+func doPos (regs=1)
+  Return       r0
+
+  // fun doNeg(x: int) {}
+func doNeg (regs=1)
+  Return       r0
+
+  // fun example4() {
+func example4 (regs=7)
+  // let x = fetchSomething()
+  Const        r0, 0
+  Move         r1, r0
+  // if x > 0 {
+  Const        r0, 0
+  LessInt      r2, r0, r1
+  JumpIfFalse  r2, L0
+  // doPos(x)
+  Move         r3, r1
+  Call         r4, doPos, r3
+  // if x > 0 {
+  Jump         L1
+L0:
+  // doNeg(x)
+  Move         r5, r1
+  Call         r6, doNeg, r5
+L1:
+  Return       r0
