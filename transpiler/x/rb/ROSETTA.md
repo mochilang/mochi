@@ -2,7 +2,7 @@
 
 Generated Ruby code from Mochi Rosetta tasks lives in `tests/rosetta/transpiler/rb`.
 
-Last updated: 2025-07-27 17:00 UTC
+Last updated: 2025-07-27 17:28 UTC
 
 ## Checklist (447/467)
 | Index | Name | Status | Duration | Memory |
@@ -57,28 +57,28 @@ Last updated: 2025-07-27 17:00 UTC
 | 48 | anagrams | ✓ | 521µs | 89.0 KB |
 | 49 | angle-difference-between-two-bearings-1 | ✓ | 49µs | 10.0 KB |
 | 50 | angle-difference-between-two-bearings-2 | ✓ | 46µs | 10.7 KB |
-| 51 | angles-geometric-normalization-and-conversion | ✓ | 378µs | 58.5 KB |
-| 52 | animate-a-pendulum | ✓ | 136µs | 10.8 KB |
-| 53 | animation | ✓ | 947µs | 110.4 KB |
-| 54 | anonymous-recursion-1 | ✓ | 69µs | 11.4 KB |
-| 55 | anonymous-recursion-2 | ✓ | 56µs | 12.4 KB |
-| 56 | anonymous-recursion | ✓ | 79µs | 12.4 KB |
-| 57 | anti-primes | ✓ | 1.782873s | 14.3 KB |
-| 58 | append-a-record-to-the-end-of-a-text-file | ✓ | 47µs | 10.0 KB |
-| 59 | apply-a-callback-to-an-array-1 | ✓ | 21µs | 9.0 KB |
-| 60 | apply-a-callback-to-an-array-2 | ✓ | 49µs | 10.6 KB |
-| 61 | apply-a-digital-filter-direct-form-ii-transposed- | ✓ | 133µs | 14.2 KB |
+| 51 | angles-geometric-normalization-and-conversion | ✓ | 376µs | 58.5 KB |
+| 52 | animate-a-pendulum | ✓ | 140µs | 10.8 KB |
+| 53 | animation | ✓ | 868µs | 110.4 KB |
+| 54 | anonymous-recursion-1 | ✓ | 73µs | 11.4 KB |
+| 55 | anonymous-recursion-2 | ✓ | 53µs | 12.4 KB |
+| 56 | anonymous-recursion | ✓ | 77µs | 12.4 KB |
+| 57 | anti-primes | ✓ | 1.833892s | 14.3 KB |
+| 58 | append-a-record-to-the-end-of-a-text-file | ✓ | 21µs | 10.0 KB |
+| 59 | apply-a-callback-to-an-array-1 | ✓ | 47µs | 9.0 KB |
+| 60 | apply-a-callback-to-an-array-2 | ✓ | 37µs | 10.6 KB |
+| 61 | apply-a-digital-filter-direct-form-ii-transposed- | ✓ | 149µs | 14.2 KB |
 | 62 | approximate-equality | ✓ | 83µs | 14.3 KB |
-| 63 | arbitrary-precision-integers-included- | ✓ | 20.961ms | 486.8 KB |
-| 64 | archimedean-spiral | ✓ | 67.853ms | 35.2 KB |
+| 63 | arbitrary-precision-integers-included- | ✓ | 21.22ms | 486.8 KB |
+| 64 | archimedean-spiral | ✓ | 66.553ms | 35.2 KB |
 | 65 | arena-storage-pool | ✓ | 36µs | 10.7 KB |
-| 66 | arithmetic-complex | ✓ | 223µs | 15.7 KB |
-| 67 | arithmetic-derivative | ✓ | 1.038ms | 364.9 KB |
-| 68 | arithmetic-evaluation | ✓ | 129µs | 25.8 KB |
-| 69 | arithmetic-geometric-mean-calculate-pi | ✓ | 96µs | 9.5 KB |
-| 70 | arithmetic-geometric-mean | ✓ | 61µs | 9.5 KB |
-| 71 | arithmetic-integer-1 | ✓ | 49µs | 10.6 KB |
-| 72 | arithmetic-integer-2 | ✓ | 39µs | 11.2 KB |
+| 66 | arithmetic-complex | ✓ | 239µs | 15.7 KB |
+| 67 | arithmetic-derivative | ✓ | 1.01ms | 357.2 KB |
+| 68 | arithmetic-evaluation | ✓ | 133µs | 25.8 KB |
+| 69 | arithmetic-geometric-mean-calculate-pi | ✓ | 68µs | 9.5 KB |
+| 70 | arithmetic-geometric-mean | ✓ | 81µs | 9.5 KB |
+| 71 | arithmetic-integer-1 | ✓ | 40µs | 10.6 KB |
+| 72 | arithmetic-integer-2 | ✓ | 36µs | 11.2 KB |
 | 73 | arithmetic-numbers |   |  |  |
 | 74 | arithmetic-rational | ✓ | 166µs | 15.4 KB |
 | 75 | array-concatenation | ✓ | 95µs | 12.5 KB |
