@@ -1,0 +1,58 @@
+func main (regs=37)
+  // for i in 1..101 {
+  Const        r0, 1
+  Const        r1, 101
+  Move         r2, r0
+L1:
+  LessInt      r3, r2, r1
+  JumpIfFalse  r3, L0
+  // false: {false: str(i), true: "Fizz"},
+  Const        r4, false
+  Const        r4, false
+  Str          r5, r2
+  Const        r6, true
+  Const        r7, "Fizz"
+  Move         r8, r4
+  Move         r9, r5
+  Move         r10, r6
+  Move         r11, r7
+  MakeMap      r12, 2, r8
+  // true: {false: "Buzz", true: "FizzBuzz"},
+  Const        r6, true
+  Const        r4, false
+  Const        r13, "Buzz"
+  Const        r6, true
+  Const        r14, "FizzBuzz"
+  Move         r15, r4
+  Move         r16, r13
+  Move         r17, r6
+  Move         r18, r14
+  MakeMap      r19, 2, r15
+  // false: {false: str(i), true: "Fizz"},
+  Move         r20, r4
+  Move         r21, r12
+  // true: {false: "Buzz", true: "FizzBuzz"},
+  Move         r22, r6
+  Move         r23, r19
+  // let m = {
+  MakeMap      r24, 2, r20
+  Move         r25, r24
+  // print(m[i % 5 == 0][i % 3 == 0])
+  Const        r26, 5
+  ModInt       r27, r2, r26
+  Const        r28, 0
+  EqualInt     r29, r27, r28
+  Index        r30, r25, r29
+  Const        r31, 3
+  ModInt       r32, r2, r31
+  Const        r28, 0
+  EqualInt     r33, r32, r28
+  Index        r34, r30, r33
+  Print        r34
+  // for i in 1..101 {
+  Const        r35, 1
+  AddInt       r36, r2, r35
+  Move         r2, r36
+  Jump         L1
+L0:
+  Return       r0

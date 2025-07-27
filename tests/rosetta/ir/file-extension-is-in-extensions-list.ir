@@ -1,5 +1,5 @@
 func main (regs=3)
-  // let extensions = ["zip","rar","7z","gz","archive","A##","tar.bz2"]
+  // let extensions = ["zip", "rar", "7z", "gz", "archive", "A##", "tar.bz2"]
   Const        r1, ["zip", "rar", "7z", "gz", "archive", "A##", "tar.bz2"]
   Move         r0, r1
   SetGlobal    0,0,0,0
@@ -7,9 +7,9 @@ func main (regs=3)
   Call         r2, main, 
   Return       r0
 
-  // fun endsWith(s:string,suf:string):bool{ if len(s)<len(suf){return false}; return substring(s,len(s)-len(suf),len(s))==suf }
+  // fun endsWith(s: string, suf: string): bool {
 func endsWith (regs=13)
-  // fun endsWith(s:string,suf:string):bool{ if len(s)<len(suf){return false}; return substring(s,len(s)-len(suf),len(s))==suf }
+  // if len(s) < len(suf) { return false }
   Len          r3, r1
   Len          r4, r2
   LessInt      r5, r3, r4
@@ -17,6 +17,7 @@ func endsWith (regs=13)
   Const        r6, false
   Return       r6
 L0:
+  // return substring(s, len(s)-len(suf), len(s)) == suf
   Len          r7, r1
   Len          r8, r2
   SubInt       r9, r7, r8
@@ -25,21 +26,24 @@ L0:
   Equal        r12, r11, r2
   Return       r12
 
-  // fun lastIndexOf(s:string, sub:string):int{var idx=0-1; var i=0; while i<=len(s)-len(sub){ if substring(s,i,i+len(sub))==sub { idx=i }; i=i+1 }; return idx }
+  // fun lastIndexOf(s: string, sub: string): int {
 func lastIndexOf (regs=17)
-  // fun lastIndexOf(s:string, sub:string):int{var idx=0-1; var i=0; while i<=len(s)-len(sub){ if substring(s,i,i+len(sub))==sub { idx=i }; i=i+1 }; return idx }
+  // var idx = 0 - 1
   Const        r3, 0
   Const        r4, 1
   SubInt       r5, r3, r4
   Move         r6, r5
+  // var i = 0
   Const        r3, 0
   Move         r7, r3
 L2:
+  // while i <= len(s) - len(sub) {
   Len          r8, r1
   Len          r9, r2
   SubInt       r10, r8, r9
   LessEqInt    r11, r7, r10
   JumpIfFalse  r11, L0
+  // if substring(s, i, i+len(sub)) == sub { idx = i }
   Len          r12, r2
   AddInt       r13, r7, r12
   Slice        r14, r1, r7, r13
@@ -47,15 +51,18 @@ L2:
   JumpIfFalse  r15, L1
   Move         r6, r7
 L1:
+  // i = i + 1
   Const        r4, 1
   AddInt       r16, r7, r4
   Move         r7, r16
+  // while i <= len(s) - len(sub) {
   Jump         L2
 L0:
+  // return idx
   Return       r6
 
   // fun fileExtInList(filename: string): list<any> {
-func fileExtInList (regs=40)
+func fileExtInList (regs=43)
   // let fl = lower(filename)
   Lower        r2, r1
   Move         r3, r2
@@ -108,16 +115,40 @@ L0:
   Len          r32, r1
   Slice        r33, r1, r31, r32
   Move         r34, r33
-  // return [false, t]
-  Const        r37, false
-  Move         r35, r37
-  Move         r36, r34
-  MakeList     r38, 2, r35
-  Return       r38
+  // if t != "" { return [false, t] }
+  Const        r35, ""
+  NotEqual     r36, r34, r35
+  JumpIfFalse  r36, L4
+  Const        r39, false
+  Move         r37, r39
+  Move         r38, r34
+  MakeList     r40, 2, r37
+  Return       r40
+L4:
+  // return [false, "<empty>"]
+  Const        r41, [false, "<empty>"]
+  Return       r41
 L3:
   // return [false, "<none>"]
-  Const        r39, [false, "<none>"]
-  Return       r39
+  Const        r42, [false, "<none>"]
+  Return       r42
+
+  // fun pad(s: string, w: int): string {
+func pad (regs=8)
+  // var t = s
+  Move         r3, r1
+L1:
+  // while len(t) < w { t = t + " " }
+  Len          r4, r3
+  Less         r5, r4, r2
+  JumpIfFalse  r5, L0
+  Const        r6, " "
+  Add          r7, r3, r6
+  Move         r3, r7
+  Jump         L1
+L0:
+  // return t
+  Return       r3
 
   // fun main() {
 func main (regs=36)
@@ -126,7 +157,7 @@ func main (regs=36)
   Print        r1
   // print(extensions)
   Print        r0
-  // let tests = ["MyData.a##","MyData.tar.Gz","MyData.gzip","MyData.7z.backup","MyData...","MyData","MyData_v1.0.tar.bz2","MyData_v1.0.bz2"]
+  // let tests = [
   Const        r2, ["MyData.a##", "MyData.tar.Gz", "MyData.gzip", "MyData.7z.backup", "MyData...", "MyData", "MyData_v1.0.tar.bz2", "MyData_v1.0.bz2"]
   Move         r3, r2
   // for t in tests {
@@ -174,18 +205,3 @@ L1:
   Jump         L1
 L0:
   Return       r0
-
-  // fun pad(s:string,w:int):string{var t=s; while len(t)<w{t=t+" "}; return t}
-func pad (regs=8)
-  // fun pad(s:string,w:int):string{var t=s; while len(t)<w{t=t+" "}; return t}
-  Move         r3, r1
-L1:
-  Len          r4, r3
-  Less         r5, r4, r2
-  JumpIfFalse  r5, L0
-  Const        r6, " "
-  Add          r7, r3, r6
-  Move         r3, r7
-  Jump         L1
-L0:
-  Return       r3

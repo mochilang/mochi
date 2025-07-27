@@ -3,57 +3,377 @@ func main (regs=1)
   Call         r0, main, 
   Return       r0
 
-  // fun main() {
-func main (regs=27)
-  // let nums = [
-  Const        r0, ["3", "5", "17", "257", "65537", "4294967297", "18446744073709551617", "340282366920938463463374607431768211457"]
-  Move         r1, r0
-  // print("First 8 Fermat numbers:")
-  Const        r2, "First 8 Fermat numbers:"
-  Print        r2
-  // for n in nums { print(n) }
-  IterPrep     r3, r1
-  Len          r4, r3
-  Const        r5, 0
+  // fun pow_int(base: int, exp: int): int {
+func pow_int (regs=15)
+  // var result = 1
+  Const        r2, 1
+  Move         r3, r2
+  // var b = base
+  Move         r4, r0
+  // var e = exp
+  Move         r5, r1
+L2:
+  // while e > 0 {
+  Const        r6, 0
+  Less         r7, r6, r5
+  JumpIfFalse  r7, L0
+  // if e % 2 == 1 { result = result * b }
+  Const        r8, 2
+  Mod          r9, r5, r8
+  Const        r2, 1
+  Equal        r10, r9, r2
+  JumpIfFalse  r10, L1
+  Mul          r11, r3, r4
+  Move         r3, r11
 L1:
-  LessInt      r6, r5, r4
-  JumpIfFalse  r6, L0
-  Index        r7, r3, r5
-  Move         r8, r7
-  Print        r8
-  Const        r9, 1
-  AddInt       r10, r5, r9
-  Move         r5, r10
-  Jump         L1
+  // b = b * b
+  Mul          r12, r4, r4
+  Move         r4, r12
+  // e = (e / 2) as int
+  Const        r8, 2
+  Div          r13, r5, r8
+  Cast         r14, r13, int
+  Move         r5, r14
+  // while e > 0 {
+  Jump         L2
 L0:
-  // let factors = [
-  Const        r11, ["3", "5", "17", "257", "65537", "641 6700417", "274177 67280421310721", "59649589127497217 5704689200685129054721"]
-  Move         r12, r11
-  // print("\nFactors:")
-  Const        r13, "\nFactors:"
-  Print        r13
+  // return result
+  Return       r3
+
+  // fun pow_big(base: bigint, exp: int): bigint {
+func pow_big (regs=15)
+  // var result: bigint = 1
+  Const        r2, 1
+  Move         r3, r2
+  // var b: bigint = base
+  Move         r4, r0
+  // var e = exp
+  Move         r5, r1
+L2:
+  // while e > 0 {
+  Const        r6, 0
+  Less         r7, r6, r5
+  JumpIfFalse  r7, L0
+  // if e % 2 == 1 { result = result * b }
+  Const        r8, 2
+  Mod          r9, r5, r8
+  Const        r2, 1
+  Equal        r10, r9, r2
+  JumpIfFalse  r10, L1
+  Mul          r11, r3, r4
+  Move         r3, r11
+L1:
+  // b = b * b
+  Mul          r12, r4, r4
+  Move         r4, r12
+  // e = (e / 2) as int
+  Const        r8, 2
+  Div          r13, r5, r8
+  Cast         r14, r13, int
+  Move         r5, r14
+  // while e > 0 {
+  Jump         L2
+L0:
+  // return result
+  Return       r3
+
+  // fun parseBigInt(str: string): bigint {
+func parseBigInt (regs=27)
   // var i = 0
-  Const        r14, 0
-  Move         r15, r14
+  Const        r1, 0
+  Move         r2, r1
+  // var neg = false
+  Const        r3, false
+  Move         r4, r3
+  // if len(str) > 0 && substring(str, 0, 1) == "-" {
+  Len          r5, r0
+  Const        r1, 0
+  LessInt      r6, r1, r5
+  Const        r1, 0
+  Const        r7, 1
+  Slice        r8, r0, r1, r7
+  Const        r9, "-"
+  Equal        r10, r8, r9
+  Move         r11, r6
+  JumpIfFalse  r11, L0
+  Move         r11, r10
+L0:
+  JumpIfFalse  r11, L1
+  // neg = true
+  Const        r12, true
+  Move         r4, r12
+  // i = 1
+  Const        r7, 1
+  Move         r2, r7
+L1:
+  // var n: bigint = 0
+  Const        r1, 0
+  Move         r13, r1
 L3:
-  // while i < len(nums) {
-  Const        r16, 8
-  LessInt      r17, r15, r16
-  JumpIfFalse  r17, L2
-  // print("F" + str(i) + " = " + factors[i])
-  Const        r18, "F"
-  Str          r19, r15
-  Add          r20, r18, r19
-  Const        r21, " = "
-  Add          r22, r20, r21
-  Index        r23, r12, r15
+  // while i < len(str) {
+  Len          r14, r0
+  LessInt      r15, r2, r14
+  JumpIfFalse  r15, L2
+  // let ch = substring(str, i, i+1)
+  Const        r7, 1
+  AddInt       r16, r2, r7
+  Slice        r17, r0, r2, r16
+  Move         r18, r17
+  // let d = ch as int
+  Cast         r19, r18, int
+  Move         r20, r19
+  // n = n * (10 as bigint) + (d as bigint)
+  Const        r21, 10
+  MulInt       r22, r13, r21
+  Cast         r23, r20, any
   Add          r24, r22, r23
-  Print        r24
+  Move         r13, r24
   // i = i + 1
-  Const        r25, 1
-  AddInt       r26, r15, r25
-  Move         r15, r26
-  // while i < len(nums) {
+  Const        r7, 1
+  AddInt       r25, r2, r7
+  Move         r2, r25
+  // while i < len(str) {
   Jump         L3
 L2:
+  // if neg { n = -n }
+  JumpIfFalse  r4, L4
+  Neg          r26, r13
+  Move         r13, r26
+L4:
+  // return n
+  Return       r13
+
+  // fun fermat(n: int): bigint {
+func fermat (regs=11)
+  // let p = pow_int(2, n)
+  Const        r3, 2
+  Move         r1, r3
+  Move         r2, r0
+  Call2        r4, pow_int, r1, r2
+  Move         r5, r4
+  // return pow_big(2 as bigint, p) + (1 as bigint)
+  Const        r3, 2
+  Move         r6, r3
+  Move         r7, r5
+  Call2        r8, pow_big, r6, r7
+  Const        r9, 1
+  Add          r10, r8, r9
+  Return       r10
+
+  // fun primeFactorsBig(n: bigint): list<bigint> {
+func primeFactorsBig (regs=22)
+  // var factors: list<bigint> = []
+  Const        r1, []
+  Move         r2, r1
+  // var m: bigint = n
+  Move         r3, r0
+  // var d: bigint = 2
+  Const        r4, 2
+  Move         r5, r4
+L1:
+  // while m % d == 0 {
+  Mod          r6, r3, r5
+  Const        r7, 0
+  Equal        r8, r6, r7
+  JumpIfFalse  r8, L0
+  // factors = append(factors, d)
+  Append       r9, r2, r5
+  Move         r2, r9
+  // m = m / d
+  Div          r10, r3, r5
+  Move         r3, r10
+  // while m % d == 0 {
+  Jump         L1
+L0:
+  // d = 3
+  Const        r11, 3
+  Move         r5, r11
+L5:
+  // while d * d <= m {
+  MulInt       r12, r5, r5
+  LessEq       r13, r12, r3
+  JumpIfFalse  r13, L2
+L4:
+  // while m % d == 0 {
+  Mod          r14, r3, r5
+  Const        r7, 0
+  Equal        r15, r14, r7
+  JumpIfFalse  r15, L3
+  // factors = append(factors, d)
+  Append       r16, r2, r5
+  Move         r2, r16
+  // m = m / d
+  Div          r17, r3, r5
+  Move         r3, r17
+  // while m % d == 0 {
+  Jump         L4
+L3:
+  // d = d + 2
+  Const        r4, 2
+  AddInt       r18, r5, r4
+  Move         r5, r18
+  // while d * d <= m {
+  Jump         L5
+L2:
+  // if m > 1 { factors = append(factors, m) }
+  Const        r19, 1
+  Less         r20, r19, r3
+  JumpIfFalse  r20, L6
+  Append       r21, r2, r3
+  Move         r2, r21
+L6:
+  // return factors
+  Return       r2
+
+  // fun show_list(xs: list<bigint>): string {
+func show_list (regs=17)
+  // var line = ""
+  Const        r1, ""
+  Move         r2, r1
+  // var i = 0
+  Const        r3, 0
+  Move         r4, r3
+L2:
+  // while i < len(xs) {
+  Len          r5, r0
+  LessInt      r6, r4, r5
+  JumpIfFalse  r6, L0
+  // line = line + str(xs[i])
+  Index        r7, r0, r4
+  Str          r8, r7
+  Add          r9, r2, r8
+  Move         r2, r9
+  // if i < len(xs) - 1 { line = line + " " }
+  Len          r10, r0
+  Const        r11, 1
+  SubInt       r12, r10, r11
+  LessInt      r13, r4, r12
+  JumpIfFalse  r13, L1
+  Const        r14, " "
+  Add          r15, r2, r14
+  Move         r2, r15
+L1:
+  // i = i + 1
+  Const        r11, 1
+  AddInt       r16, r4, r11
+  Move         r4, r16
+  // while i < len(xs) {
+  Jump         L2
+L0:
+  // return line
+  Return       r2
+
+  // fun main() {
+func main (regs=59)
+  // var nums: list<bigint> = []
+  Const        r0, []
+  Move         r1, r0
+  // for i in 0..8 { nums = append(nums, fermat(i)) }
+  Const        r2, 0
+  Const        r3, 8
+  Move         r4, r2
+L1:
+  LessInt      r5, r4, r3
+  JumpIfFalse  r5, L0
+  Move         r6, r4
+  Call         r7, fermat, r6
+  Append       r8, r1, r7
+  Move         r1, r8
+  Const        r9, 1
+  AddInt       r10, r4, r9
+  Move         r4, r10
+  Jump         L1
+L0:
+  // print("First 8 Fermat numbers:")
+  Const        r11, "First 8 Fermat numbers:"
+  Print        r11
+  // for n in nums { print(str(n)) }
+  IterPrep     r12, r1
+  Len          r13, r12
+  Const        r14, 0
+L3:
+  LessInt      r15, r14, r13
+  JumpIfFalse  r15, L2
+  Index        r16, r12, r14
+  Move         r17, r16
+  Str          r18, r17
+  Print        r18
+  Const        r19, 1
+  AddInt       r20, r14, r19
+  Move         r14, r20
+  Jump         L3
+L2:
+  // 6: [274177 as bigint, 67280421310721 as bigint],
+  Const        r21, 6
+  Const        r22, [274177, 67280421310721]
+  // 7: [
+  Const        r23, 7
+  // parseBigInt("59649589127497217"),
+  Const        r27, "59649589127497217"
+  Move         r26, r27
+  Call         r28, parseBigInt, r26
+  Move         r24, r28
+  // parseBigInt("5704689200685129054721"),
+  Const        r30, "5704689200685129054721"
+  Move         r29, r30
+  Call         r31, parseBigInt, r29
+  Move         r25, r31
+  // 7: [
+  MakeList     r32, 2, r24
+  // 6: [274177 as bigint, 67280421310721 as bigint],
+  Move         r33, r21
+  Move         r34, r22
+  // 7: [
+  Move         r35, r23
+  Move         r36, r32
+  // let extra: map<int,list<bigint>> = {
+  MakeMap      r37, 2, r33
+  Move         r38, r37
+  // print("\nFactors:")
+  Const        r39, "\nFactors:"
+  Print        r39
+  // var i = 0
+  Const        r2, 0
+  Move         r4, r2
+L7:
+  // while i < len(nums) {
+  Len          r40, r1
+  LessInt      r41, r4, r40
+  JumpIfFalse  r41, L4
+  // var facs: list<bigint> = []
+  Const        r0, []
+  Move         r42, r0
+  // if i <= 5 {
+  Const        r43, 5
+  LessEqInt    r44, r4, r43
+  JumpIfFalse  r44, L5
+  // facs = primeFactorsBig(nums[i])
+  Index        r46, r1, r4
+  Move         r45, r46
+  Call         r47, primeFactorsBig, r45
+  Move         r42, r47
+  // if i <= 5 {
+  Jump         L6
+L5:
+  // facs = extra[i]
+  Index        r48, r38, r4
+  Move         r42, r48
+L6:
+  // print("F" + str(i) + " = " + show_list(facs))
+  Const        r49, "F"
+  Str          r50, r4
+  Add          r51, r49, r50
+  Const        r52, " = "
+  Add          r53, r51, r52
+  Move         r54, r42
+  Call         r55, show_list, r54
+  Add          r56, r53, r55
+  Print        r56
+  // i = i + 1
+  Const        r57, 1
+  AddInt       r58, r4, r57
+  Move         r4, r58
+  // while i < len(nums) {
+  Jump         L7
+L4:
   Return       r0

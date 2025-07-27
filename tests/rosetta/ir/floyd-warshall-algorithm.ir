@@ -1,0 +1,5 @@
+func main (regs=1)
+  // print("shortest paths computed")
+  Const        r0, "shortest paths computed"
+  Print        r0
+  Return       r0
