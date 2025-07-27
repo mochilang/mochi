@@ -1,5 +1,56 @@
+var bazCall = 0
+
+fun baz(): string {
+  bazCall = bazCall + 1
+  print("baz: start")
+  if bazCall == 1 {
+    print("baz: raising U0")
+    return "U0"
+  }
+  if bazCall == 2 {
+    print("baz: raising U1")
+    return "U1"
+  }
+  print("baz: end")
+  return ""
+}
+
+fun bar(): string {
+  print("bar: start")
+  let err = baz()
+  if len(err) > 0 {
+    return err
+  }
+  print("bar: end")
+  return ""
+}
+
+fun foo(): string {
+  print("foo: start")
+  var err = bar()
+  if err == "U0" {
+    print("foo: caught U0")
+  } else if len(err) > 0 {
+    return err
+  }
+  err = bar()
+  if err == "U0" {
+    print("foo: caught U0")
+  } else if len(err) > 0 {
+    return err
+  }
+  print("foo: end")
+  return ""
+}
+
 fun main() {
-  print("demonstration of nested exceptions")
+  print("main: start")
+  let err = foo()
+  if len(err) > 0 {
+    print("main: unhandled " + err)
+  } else {
+    print("main: success")
+  }
 }
 
 main()
