@@ -3358,6 +3358,9 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 				fs.IsMap = true
 			}
 			varType := elementTypeFromListType(gtyp)
+			if isIndexExpr(stmt.For.Source) {
+				varType = elementTypeFromListType(varType)
+			}
 			if vr, ok := start.(*VarRef); ok {
 				if _, ok3 := localTypes[vr.Name]; !ok3 {
 					if t, ok2 := currentProgram.ListTypes[vr.Name]; ok2 {
@@ -3760,6 +3763,9 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 			}
 		}
 		varType := elementTypeFromListType(guessType(s.For.Source))
+		if isIndexExpr(s.For.Source) {
+			varType = elementTypeFromListType(varType)
+		}
 		if vr, ok := start.(*VarRef); ok {
 			if t, ok2 := currentProgram.ListTypes[vr.Name]; ok2 {
 				varType = t
@@ -6645,6 +6651,22 @@ func simpleIdent(e *parser.Expr) (string, bool) {
 		return p.Target.Selector.Root, true
 	}
 	return "", false
+}
+
+func isIndexExpr(e *parser.Expr) bool {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return false
+	}
+	u := e.Binary.Left
+	if u == nil || u.Value == nil {
+		return false
+	}
+	p := u.Value
+	if len(p.Ops) == 0 || p.Ops[0].Index == nil {
+		return false
+	}
+	idx := p.Ops[0].Index
+	return idx.Colon == nil && idx.Colon2 == nil && idx.End == nil && idx.Step == nil
 }
 
 func substituteFieldRefs(e Expr, fields map[string]bool) Expr {

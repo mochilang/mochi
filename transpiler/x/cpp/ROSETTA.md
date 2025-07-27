@@ -2,7 +2,7 @@
 
 This directory stores C++ code generated from Mochi programs in `tests/rosetta/x/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.cpp` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (149/467) - Last updated 2025-07-27 19:09 +0700:
+Checklist of programs that currently transpile and run (149/467) - Last updated 2025-07-27 20:07 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | 100-doors-2 | ✓ | 222.0µs | 13.12MB |
@@ -13,7 +13,7 @@ Checklist of programs that currently transpile and run (149/467) - Last updated 
 | 6 | 15-puzzle-solver | ✓ | 141.0µs | 12.91MB |
 | 7 | 2048 | ✓ | 689.0µs | 13.73MB |
 | 8 | 21-game | ✓ | 356.0µs | 13.36MB |
-| 9 | 24-game-solve | ✓ | 4.0ms | 13.75MB |
+| 9 | 24-game-solve |   | 4.0ms | 13.75MB |
 | 10 | 24-game | ✓ |  |  |
 | 11 | 4-rings-or-4-squares-puzzle |   |  |  |
 | 12 | 9-billion-names-of-god-the-integer | ✓ | 126.70s | 219.41MB |
@@ -178,7 +178,7 @@ Checklist of programs that currently transpile and run (149/467) - Last updated 
 | 171 | carmichael-3-strong-pseudoprimes | ✓ | 737.0µs | 13.35MB |
 | 172 | cartesian-product-of-two-or-more-lists-1 | ✓ | 284.0µs | 13.12MB |
 | 173 | cartesian-product-of-two-or-more-lists-2 | ✓ | 71.0µs | 14.17MB |
-| 174 | cartesian-product-of-two-or-more-lists-3 |   |  |  |
+| 174 | cartesian-product-of-two-or-more-lists-3 | ✓ | 296.0µs | 13.56MB |
 | 175 | cartesian-product-of-two-or-more-lists-4 |   |  |  |
 | 176 | case-sensitivity-of-identifiers |   |  |  |
 | 177 | casting-out-nines |   |  |  |
