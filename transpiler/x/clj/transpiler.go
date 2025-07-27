@@ -1570,6 +1570,22 @@ func transpilePrimary(p *parser.Primary) (Node, error) {
 		return &Map{Pairs: pairs}, nil
 	case p.Struct != nil:
 		pairs := [][2]Node{}
+		if transpileEnv != nil {
+			if ut, ok := transpileEnv.FindUnionByVariant(p.Struct.Name); ok {
+				pairs = append(pairs, [2]Node{Keyword("__tag"), StringLit(p.Struct.Name)})
+				st := ut.Variants[p.Struct.Name]
+				for idx, fname := range st.Order {
+					if idx < len(p.Struct.Fields) {
+						v, err := transpileExpr(p.Struct.Fields[idx].Value)
+						if err != nil {
+							return nil, err
+						}
+						pairs = append(pairs, [2]Node{Keyword(fname), v})
+					}
+				}
+				return &Map{Pairs: pairs}, nil
+			}
+		}
 		for _, f := range p.Struct.Fields {
 			v, err := transpileExpr(f.Value)
 			if err != nil {
@@ -1636,7 +1652,8 @@ func transpilePrimary(p *parser.Primary) (Node, error) {
 		if transpileEnv != nil {
 			if st, ok := transpileEnv.GetStruct(name); ok && len(st.Order) == 0 {
 				if _, ok2 := transpileEnv.FindUnionByVariant(name); ok2 {
-					return Keyword(name), nil
+					pairs := [][2]Node{{Keyword("__tag"), StringLit(name)}}
+					return &Map{Pairs: pairs}, nil
 				}
 			}
 		}
@@ -1850,6 +1867,30 @@ func transpileMatchExpr(m *parser.MatchExpr) (Node, error) {
 
 		// variant pattern of form Node(x y z)
 		if name, vars, ok := callPattern(c.Pattern); ok {
+			if ut, ok := transpileEnv.FindUnionByVariant(name); ok {
+				st := ut.Variants[name]
+				if len(vars) != len(st.Order) {
+					return nil, fmt.Errorf("bad pattern")
+				}
+				res, err := transpileExpr(c.Result)
+				if err != nil {
+					return nil, err
+				}
+				binds := []Node{}
+				for i, v := range vars {
+					binds = append(binds, Symbol(v), &List{Elems: []Node{Keyword(st.Order[i]), target}})
+				}
+				body := &List{Elems: []Node{Symbol("let"), &Vector{Elems: binds}, res}}
+				condElems := []Node{Symbol("and"),
+					&List{Elems: []Node{Symbol("map?"), target}},
+					&List{Elems: []Node{Symbol("="), &List{Elems: []Node{Keyword("__tag"), target}}, StringLit(name)}}}
+				for _, f := range st.Order {
+					condElems = append(condElems, &List{Elems: []Node{Symbol("contains?"), target, Keyword(f)}})
+				}
+				cond := &List{Elems: condElems}
+				elems = append(elems, cond, body)
+				continue
+			}
 			if st, ok := transpileEnv.GetStruct(name); ok && len(vars) == len(st.Order) {
 				res, err := transpileExpr(c.Result)
 				if err != nil {
