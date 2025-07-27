@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Python code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/Python`.
-Last updated: 2025-07-27 22:41 GMT+7
+Last updated: 2025-07-27 23:38 GMT+7
 
-## Rosetta Golden Test Checklist (430/467)
+## Rosetta Golden Test Checklist (444/467)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 161.0µs | 12.50MB |
@@ -459,18 +459,18 @@ Last updated: 2025-07-27 22:41 GMT+7
 | 450 | general-fizzbuzz | ✓ | 47.0µs | 12.78MB |
 | 451 | generic-swap | ✓ | 13.0µs | 12.90MB |
 | 452 | get-system-command-output | ✓ | 10.0µs | 12.43MB |
-| 453 | giuga-numbers |   |  |  |
-| 454 | globally-replace-text-in-several-files |   |  |  |
-| 455 | goldbachs-comet |   |  |  |
-| 456 | golden-ratio-convergence |   |  |  |
-| 457 | graph-colouring |   |  |  |
-| 458 | gray-code |   |  |  |
-| 459 | http |   |  |  |
-| 460 | image-noise |   |  |  |
-| 461 | loops-increment-loop-index-within-loop-body |   |  |  |
-| 462 | md5 | ✓ | 36.0µs | 13.87MB |
-| 463 | nim-game |   |  |  |
-| 464 | plasma-effect |   |  |  |
-| 465 | sorting-algorithms-bubble-sort |   |  |  |
-| 466 | window-management |   |  |  |
-| 467 | zumkeller-numbers |   |  |  |
+| 453 | giuga-numbers | ✓ | 34.0µs | 13.12MB |
+| 454 | globally-replace-text-in-several-files | ✓ | 10.0µs | 12.63MB |
+| 455 | goldbachs-comet | ✓ | 2.0ms | 13.07MB |
+| 456 | golden-ratio-convergence | ✓ | 34.0µs | 12.61MB |
+| 457 | graph-colouring | ✓ | 10.0µs | 12.67MB |
+| 458 | gray-code | ✓ | 318.0µs | 13.13MB |
+| 459 | http | ✓ |  |  |
+| 460 | image-noise | ✓ | 97.0ms | 12.55MB |
+| 461 | loops-increment-loop-index-within-loop-body | ✓ | 1.82s | 13.12MB |
+| 462 | md5 | ✓ | 34.0µs | 14.02MB |
+| 463 | nim-game | ✓ | 91.0µs | 13.57MB |
+| 464 | plasma-effect | ✓ | 115.0ms | 12.87MB |
+| 465 | sorting-algorithms-bubble-sort | ✓ | 33.0µs | 12.56MB |
+| 466 | window-management | ✓ | 108.0µs | 12.88MB |
+| 467 | zumkeller-numbers | ✓ | 41.12s | 13.80MB |
