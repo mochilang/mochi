@@ -1,0 +1,258 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun fracStr(f: Frac): string {
+func fracStr (regs=10)
+  // return str(f.num) + "/" + str(f.den)
+  Const        r1, "num"
+  Index        r2, r0, r1
+  Str          r3, r2
+  Const        r4, "/"
+  Add          r5, r3, r4
+  Const        r6, "den"
+  Index        r7, r0, r6
+  Str          r8, r7
+  Add          r9, r5, r8
+  Return       r9
+
+  // fun gen(l: Frac, r: Frac, n: int, acc: list<Frac>): list<Frac> {
+func gen (regs=33)
+  // let m = Frac{ num: l.num + r.num, den: l.den + r.den }
+  Const        r4, "num"
+  Index        r5, r0, r4
+  Const        r4, "num"
+  Index        r6, r1, r4
+  Add          r7, r5, r6
+  Const        r8, "den"
+  Index        r9, r0, r8
+  Const        r8, "den"
+  Index        r10, r1, r8
+  Add          r11, r9, r10
+  Const        r12, "__name"
+  Const        r13, "Frac"
+  Const        r14, "num"
+  Move         r15, r7
+  Const        r16, "den"
+  Move         r17, r11
+  MakeMap      r18, 3, r12
+  Move         r19, r18
+  // if m.den <= n {
+  Const        r8, "den"
+  Index        r20, r19, r8
+  LessEq       r21, r20, r2
+  JumpIfFalse  r21, L0
+  // acc = gen(l, m, n, acc)
+  Move         r22, r0
+  Move         r23, r19
+  Move         r24, r2
+  Move         r25, r3
+  Call         r26, gen, r22, r23, r24, r25
+  Move         r3, r26
+  // acc = append(acc, m)
+  Append       r27, r3, r19
+  Move         r3, r27
+  // acc = gen(m, r, n, acc)
+  Move         r28, r19
+  Move         r29, r1
+  Move         r30, r2
+  Move         r31, r3
+  Call         r32, gen, r28, r29, r30, r31
+  Move         r3, r32
+L0:
+  // return acc
+  Return       r3
+
+  // fun totient(n: int): int {
+func totient (regs=21)
+  // var tot = n
+  Move         r1, r0
+  // var nn = n
+  Move         r2, r0
+  // var p = 2
+  Const        r3, 2
+  Move         r4, r3
+L5:
+  // while p * p <= nn {
+  MulInt       r5, r4, r4
+  LessEq       r6, r5, r2
+  JumpIfFalse  r6, L0
+  // if nn % p == 0 {
+  Mod          r7, r2, r4
+  Const        r8, 0
+  Equal        r9, r7, r8
+  JumpIfFalse  r9, L1
+L3:
+  // while nn % p == 0 {
+  Mod          r10, r2, r4
+  Const        r8, 0
+  Equal        r11, r10, r8
+  JumpIfFalse  r11, L2
+  // nn = nn / p
+  Div          r12, r2, r4
+  Move         r2, r12
+  // while nn % p == 0 {
+  Jump         L3
+L2:
+  // tot = tot - tot / p
+  Div          r13, r1, r4
+  Sub          r14, r1, r13
+  Move         r1, r14
+L1:
+  // if p == 2 { p = 1 }
+  Const        r3, 2
+  EqualInt     r15, r4, r3
+  JumpIfFalse  r15, L4
+  Const        r16, 1
+  Move         r4, r16
+L4:
+  // p = p + 2
+  Const        r3, 2
+  AddInt       r17, r4, r3
+  Move         r4, r17
+  // while p * p <= nn {
+  Jump         L5
+L0:
+  // if nn > 1 {
+  Const        r16, 1
+  Less         r18, r16, r2
+  JumpIfFalse  r18, L6
+  // tot = tot - tot / nn
+  Div          r19, r1, r2
+  Sub          r20, r1, r19
+  Move         r1, r20
+L6:
+  // return tot
+  Return       r1
+
+  // fun main() {
+func main (regs=74)
+  // var n = 1
+  Const        r0, 1
+  Move         r1, r0
+L3:
+  // while n <= 11 {
+  Const        r2, 11
+  LessEqInt    r3, r1, r2
+  JumpIfFalse  r3, L0
+  // let l = Frac{ num: 0, den: 1 }
+  Const        r4, 0
+  Const        r0, 1
+  Const        r5, "__name"
+  Const        r6, "Frac"
+  Const        r7, "num"
+  Move         r8, r4
+  Const        r9, "den"
+  Move         r10, r0
+  MakeMap      r11, 3, r5
+  Move         r12, r11
+  // let r = Frac{ num: 1, den: 1 }
+  Const        r0, 1
+  Const        r0, 1
+  Const        r13, "__name"
+  Const        r14, "Frac"
+  Const        r15, "num"
+  Move         r16, r0
+  Const        r17, "den"
+  Move         r18, r0
+  MakeMap      r19, 3, r13
+  Move         r20, r19
+  // var seq = gen(l, r, n, [])
+  Move         r21, r12
+  Move         r22, r20
+  Move         r23, r1
+  Const        r25, []
+  Move         r24, r25
+  Call         r26, gen, r21, r22, r23, r24
+  Move         r27, r26
+  // var line = "F(" + str(n) + "): " + fracStr(l)
+  Const        r28, "F("
+  Str          r29, r1
+  Add          r30, r28, r29
+  Const        r31, "): "
+  Add          r32, r30, r31
+  Move         r33, r12
+  Call         r34, fracStr, r33
+  Add          r35, r32, r34
+  Move         r36, r35
+  // for f in seq { line = line + " " + fracStr(f) }
+  IterPrep     r37, r27
+  Len          r38, r37
+  Const        r39, 0
+L2:
+  LessInt      r40, r39, r38
+  JumpIfFalse  r40, L1
+  Index        r41, r37, r39
+  Move         r42, r41
+  Const        r43, " "
+  Add          r44, r36, r43
+  Move         r45, r42
+  Call         r46, fracStr, r45
+  Add          r47, r44, r46
+  Move         r36, r47
+  Const        r48, 1
+  AddInt       r49, r39, r48
+  Move         r39, r49
+  Jump         L2
+L1:
+  // line = line + " " + fracStr(r)
+  Const        r43, " "
+  Add          r50, r36, r43
+  Move         r51, r20
+  Call         r52, fracStr, r51
+  Add          r53, r50, r52
+  Move         r36, r53
+  // print(line)
+  Print        r36
+  // n = n + 1
+  Const        r0, 1
+  AddInt       r54, r1, r0
+  Move         r1, r54
+  // while n <= 11 {
+  Jump         L3
+L0:
+  // var sum = 1
+  Const        r0, 1
+  Move         r55, r0
+  // var i = 1
+  Const        r0, 1
+  Move         r56, r0
+  // var next = 100
+  Const        r57, 100
+  Move         r58, r57
+L6:
+  // while i <= 1000 {
+  Const        r59, 1000
+  LessEqInt    r60, r56, r59
+  JumpIfFalse  r60, L4
+  // sum = sum + totient(i)
+  Move         r61, r56
+  Call         r62, totient, r61
+  Add          r63, r55, r62
+  Move         r55, r63
+  // if i == next {
+  EqualInt     r64, r56, r58
+  JumpIfFalse  r64, L5
+  // print("|F(" + str(i) + ")|: " + str(sum))
+  Const        r65, "|F("
+  Str          r66, r56
+  Add          r67, r65, r66
+  Const        r68, ")|: "
+  Add          r69, r67, r68
+  Str          r70, r55
+  Add          r71, r69, r70
+  Print        r71
+  // next = next + 100
+  Const        r57, 100
+  AddInt       r72, r58, r57
+  Move         r58, r72
+L5:
+  // i = i + 1
+  Const        r0, 1
+  AddInt       r73, r56, r0
+  Move         r56, r73
+  // while i <= 1000 {
+  Jump         L6
+L4:
+  Return       r0

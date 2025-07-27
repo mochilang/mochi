@@ -1,0 +1,189 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun factorial(n: int): int {
+func factorial (regs=8)
+  // var result = 1
+  Const        r1, 1
+  Move         r2, r1
+  // var i = 2
+  Const        r3, 2
+  Move         r4, r3
+L1:
+  // while i <= n {
+  LessEq       r5, r4, r0
+  JumpIfFalse  r5, L0
+  // result = result * i
+  MulInt       r6, r2, r4
+  Move         r2, r6
+  // i = i + 1
+  Const        r1, 1
+  AddInt       r7, r4, r1
+  Move         r4, r7
+  // while i <= n {
+  Jump         L1
+L0:
+  // return result
+  Return       r2
+
+  // fun isPrime(n: int): bool {
+func isPrime (regs=16)
+  // if n < 2 { return false }
+  Const        r1, 2
+  Less         r2, r0, r1
+  JumpIfFalse  r2, L0
+  Const        r3, false
+  Return       r3
+L0:
+  // if n % 2 == 0 { return n == 2 }
+  Const        r1, 2
+  Mod          r4, r0, r1
+  Const        r5, 0
+  Equal        r6, r4, r5
+  JumpIfFalse  r6, L1
+  Const        r1, 2
+  Equal        r7, r0, r1
+  Return       r7
+L1:
+  // var d = 3
+  Const        r8, 3
+  Move         r9, r8
+L4:
+  // while d * d <= n {
+  MulInt       r10, r9, r9
+  LessEq       r11, r10, r0
+  JumpIfFalse  r11, L2
+  // if n % d == 0 { return false }
+  Mod          r12, r0, r9
+  Const        r5, 0
+  Equal        r13, r12, r5
+  JumpIfFalse  r13, L3
+  Const        r3, false
+  Return       r3
+L3:
+  // d = d + 2
+  Const        r1, 2
+  AddInt       r14, r9, r1
+  Move         r9, r14
+  // while d * d <= n {
+  Jump         L4
+L2:
+  // return true
+  Const        r15, true
+  Return       r15
+
+  // fun padLeft(s: string, w: int): string {
+func padLeft (regs=7)
+  // var out = s
+  Move         r2, r0
+L1:
+  // while len(out) < w {
+  Len          r3, r2
+  Less         r4, r3, r1
+  JumpIfFalse  r4, L0
+  // out = " " + out
+  Const        r5, " "
+  Add          r6, r5, r2
+  Move         r2, r6
+  // while len(out) < w {
+  Jump         L1
+L0:
+  // return out
+  Return       r2
+
+  // fun main() {
+func main (regs=52)
+  // var n = 0
+  Const        r0, 0
+  Move         r1, r0
+  // var count = 0
+  Const        r0, 0
+  Move         r2, r0
+L3:
+  // while count < 10 {
+  Const        r3, 10
+  LessInt      r4, r2, r3
+  JumpIfFalse  r4, L0
+  // n = n + 1
+  Const        r5, 1
+  AddInt       r6, r1, r5
+  Move         r1, r6
+  // let f = factorial(n)
+  Move         r7, r1
+  Call         r8, factorial, r7
+  Move         r9, r8
+  // if isPrime(f - 1) {
+  Const        r5, 1
+  Sub          r11, r9, r5
+  Move         r10, r11
+  Call         r12, isPrime, r10
+  JumpIfFalse  r12, L1
+  // count = count + 1
+  Const        r5, 1
+  AddInt       r13, r2, r5
+  Move         r2, r13
+  // print(padLeft(str(count), 2) + ": " + padLeft(str(n), 2) + "! - 1 = " + str(f - 1))
+  Str          r16, r2
+  Move         r14, r16
+  Const        r17, 2
+  Move         r15, r17
+  Call2        r18, padLeft, r14, r15
+  Const        r19, ": "
+  Add          r20, r18, r19
+  Str          r23, r1
+  Move         r21, r23
+  Const        r17, 2
+  Move         r22, r17
+  Call2        r24, padLeft, r21, r22
+  Add          r25, r20, r24
+  Const        r26, "! - 1 = "
+  Add          r27, r25, r26
+  Const        r5, 1
+  Sub          r28, r9, r5
+  Str          r29, r28
+  Add          r30, r27, r29
+  Print        r30
+L1:
+  // if count < 10 && isPrime(f + 1) {
+  Const        r3, 10
+  LessInt      r31, r2, r3
+  Move         r32, r31
+  JumpIfFalse  r32, L2
+  Const        r5, 1
+  Add          r34, r9, r5
+  Move         r33, r34
+  Call         r35, isPrime, r33
+  Move         r32, r35
+L2:
+  JumpIfFalse  r32, L3
+  // count = count + 1
+  Const        r5, 1
+  AddInt       r36, r2, r5
+  Move         r2, r36
+  // print(padLeft(str(count), 2) + ": " + padLeft(str(n), 2) + "! + 1 = " + str(f + 1))
+  Str          r39, r2
+  Move         r37, r39
+  Const        r17, 2
+  Move         r38, r17
+  Call2        r40, padLeft, r37, r38
+  Const        r19, ": "
+  Add          r41, r40, r19
+  Str          r44, r1
+  Move         r42, r44
+  Const        r17, 2
+  Move         r43, r17
+  Call2        r45, padLeft, r42, r43
+  Add          r46, r41, r45
+  Const        r47, "! + 1 = "
+  Add          r48, r46, r47
+  Const        r5, 1
+  Add          r49, r9, r5
+  Str          r50, r49
+  Add          r51, r48, r50
+  Print        r51
+  // while count < 10 {
+  Jump         L3
+L0:
+  Return       r0

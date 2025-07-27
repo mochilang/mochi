@@ -1,0 +1,107 @@
+func main (regs=42)
+  // var facts = [1]
+  Const        r2, [1]
+  Move         r0, r2
+  SetGlobal    0,0,0,0
+  // var n = 1
+  Const        r3, 1
+  Move         r1, r3
+  SetGlobal    1,1,0,0
+L1:
+  // while n < 12 {
+  Const        r4, 12
+  LessInt      r5, r1, r4
+  JumpIfFalse  r5, L0
+  // facts = append(facts, facts[n-1] * n)
+  Const        r3, 1
+  SubInt       r6, r1, r3
+  Index        r7, r0, r6
+  Mul          r8, r7, r1
+  Append       r9, r0, r8
+  Move         r0, r9
+  SetGlobal    0,0,0,0
+  // n = n + 1
+  Const        r3, 1
+  AddInt       r10, r1, r3
+  Move         r1, r10
+  SetGlobal    1,1,0,0
+  // while n < 12 {
+  Jump         L1
+L0:
+  // for b in 9..13 {
+  Const        r11, 9
+  Const        r12, 13
+  Move         r13, r11
+L8:
+  LessInt      r14, r13, r12
+  JumpIfFalse  r14, L2
+  // print("The factorions for base " + str(b) + " are:")
+  Const        r15, "The factorions for base "
+  Str          r16, r13
+  Add          r17, r15, r16
+  Const        r18, " are:"
+  Add          r19, r17, r18
+  Print        r19
+  // var line = ""
+  Const        r20, ""
+  Move         r21, r20
+  // var i = 1
+  Const        r3, 1
+  Move         r22, r3
+L7:
+  // while i < 1500000 {
+  Const        r23, 1500000
+  LessInt      r24, r22, r23
+  JumpIfFalse  r24, L3
+  // var m = i
+  Move         r25, r22
+  // var sum = 0
+  Const        r26, 0
+  Move         r27, r26
+L5:
+  // while m > 0 {
+  Const        r26, 0
+  LessInt      r28, r26, r25
+  JumpIfFalse  r28, L4
+  // let d = m % b
+  ModInt       r29, r25, r13
+  Move         r30, r29
+  // sum = sum + facts[d]
+  Index        r31, r0, r30
+  Add          r32, r27, r31
+  Move         r27, r32
+  // m = m / b
+  DivInt       r33, r25, r13
+  Move         r25, r33
+  // while m > 0 {
+  Jump         L5
+L4:
+  // if sum == i {
+  Equal        r34, r27, r22
+  JumpIfFalse  r34, L6
+  // line = line + str(i) + " "
+  Str          r35, r22
+  Add          r36, r21, r35
+  Const        r37, " "
+  Add          r38, r36, r37
+  Move         r21, r38
+L6:
+  // i = i + 1
+  Const        r3, 1
+  AddInt       r39, r22, r3
+  Move         r22, r39
+  // while i < 1500000 {
+  Jump         L7
+L3:
+  // print(line)
+  Print        r21
+  // print("")
+  Const        r20, ""
+  Print        r20
+  // for b in 9..13 {
+  Const        r40, 1
+  AddInt       r41, r13, r40
+  Move         r13, r41
+  Jump         L8
+L2:
+  Return       r0

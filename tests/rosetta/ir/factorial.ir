@@ -1,0 +1,66 @@
+func main (regs=25)
+  // for i in 0..11 {
+  Const        r0, 0
+  Const        r1, 11
+  Move         r2, r0
+L1:
+  LessInt      r3, r2, r1
+  JumpIfFalse  r3, L0
+  // print(str(i) + " " + str(factorial(i)))
+  Str          r4, r2
+  Const        r5, " "
+  Add          r6, r4, r5
+  Move         r7, r2
+  Call         r8, factorial, r7
+  Str          r9, r8
+  Add          r10, r6, r9
+  Print        r10
+  // for i in 0..11 {
+  Const        r11, 1
+  AddInt       r12, r2, r11
+  Move         r2, r12
+  Jump         L1
+L0:
+  // print("100 " + str(factorial(100)))
+  Const        r13, "100 "
+  Const        r15, 100
+  Move         r14, r15
+  Call         r16, factorial, r14
+  Str          r17, r16
+  Add          r18, r13, r17
+  Print        r18
+  // print("800 " + str(factorial(800)))
+  Const        r19, "800 "
+  Const        r21, 800
+  Move         r20, r21
+  Call         r22, factorial, r20
+  Str          r23, r22
+  Add          r24, r19, r23
+  Print        r24
+  Return       r0
+
+  // fun factorial(n: int): bigint {
+func factorial (regs=9)
+  // var r: bigint = 1
+  Const        r1, 1
+  Move         r2, r1
+  // var i = 2
+  Const        r3, 2
+  Move         r4, r3
+L1:
+  // while i <= n {
+  LessEq       r5, r4, r0
+  JumpIfFalse  r5, L0
+  // r = r * (i as bigint)
+  Cast         r6, r4, any
+  Mul          r7, r2, r6
+  Move         r2, r7
+  // i = i + 1
+  Const        r1, 1
+  AddInt       r8, r4, r1
+  Move         r4, r8
+  // while i <= n {
+  Jump         L1
+L0:
+  // return r
+  Return       r2
