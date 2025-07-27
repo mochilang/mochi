@@ -3170,6 +3170,18 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 					if i < len(types) && strings.HasSuffix(types[i], "[]") {
 						list.ElemType = types[i]
 					}
+				} else if i < len(types) && typeOfExpr(arg) == "object[]" && strings.HasSuffix(types[i], "[]") {
+					elem := strings.TrimSuffix(types[i], "[]")
+					conv := ""
+					switch elem {
+					case "long":
+						conv = fmt.Sprintf("Enumerable.ToArray(%s.Select(x => Convert.ToInt64(x)))", exprString(arg))
+					case "double":
+						conv = fmt.Sprintf("Enumerable.ToArray(%s.Select(x => Convert.ToDouble(x)))", exprString(arg))
+					default:
+						conv = fmt.Sprintf("Enumerable.ToArray(%s.Cast<%s>())", exprString(arg), elem)
+					}
+					args[i] = &RawExpr{Code: conv, Type: types[i]}
 				}
 			}
 		}
@@ -3291,6 +3303,10 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 		case "indexOf":
 			if len(args) == 2 {
 				return &MethodCallExpr{Target: args[0], Name: "IndexOf", Args: []Expr{args[1]}}, nil
+			}
+		case "split":
+			if len(args) == 2 {
+				return &MethodCallExpr{Target: args[0], Name: "Split", Args: []Expr{args[1]}}, nil
 			}
 		case "pow":
 			if len(args) == 2 {
