@@ -1,7 +1,7 @@
 # Rosetta C# Transpiler Output
 
 Completed programs: 240/467
-Last updated: 2025-07-27 16:57 UTC
+Last updated: 2025-07-27 17:44 UTC
 
 ## Checklist
 | Index | Name | Status | Duration | Memory |
@@ -180,20 +180,20 @@ Last updated: 2025-07-27 16:57 UTC
 | 172 | cartesian-product-of-two-or-more-lists-1 | ✓ | 12.934ms | 1.1MB |
 | 173 | cartesian-product-of-two-or-more-lists-2 |   |  |  |
 | 174 | cartesian-product-of-two-or-more-lists-3 | ✓ | 13.743ms | 1.2MB |
-| 175 | cartesian-product-of-two-or-more-lists-4 | ✓ | 15.589ms | 1.2MB |
-| 176 | case-sensitivity-of-identifiers | ✓ | 3.104ms | 16.0KB |
-| 177 | casting-out-nines | ✓ | 15.831ms | 2.8MB |
-| 178 | catalan-numbers-1 | ✓ | 2.989ms | 16.0KB |
-| 179 | catalan-numbers-2 | ✓ | 2.421ms | 16.0KB |
-| 180 | catalan-numbers-pascals-triangle | ✓ | 2.83ms | 24.1KB |
-| 181 | catamorphism | ✓ | 2.748ms | 16.0KB |
-| 182 | catmull-clark-subdivision-surface | ✓ | 20.23ms | 2.1MB |
-| 183 | chaocipher | ✓ | 3.982ms | 69.0KB |
-| 184 | chaos-game | ✓ | 5.799ms | 5.8MB |
-| 185 | character-codes-1 | ✓ | 3.075ms | 16.0KB |
-| 186 | character-codes-2 | ✓ | 3.088ms | 16.0KB |
-| 187 | character-codes-3 | ✓ | 3.119ms | 16.0KB |
-| 188 | character-codes-4 | ✓ | 2.713ms | 16.0KB |
+| 175 | cartesian-product-of-two-or-more-lists-4 | ✓ | 7.788ms | 1.2MB |
+| 176 | case-sensitivity-of-identifiers | ✓ | 1.221ms | 16.0KB |
+| 177 | casting-out-nines | ✓ | 7.552ms | 2.8MB |
+| 178 | catalan-numbers-1 | ✓ | 1.157ms | 16.0KB |
+| 179 | catalan-numbers-2 | ✓ | 1.148ms | 16.0KB |
+| 180 | catalan-numbers-pascals-triangle | ✓ | 989µs | 24.1KB |
+| 181 | catamorphism | ✓ | 1.024ms | 16.0KB |
+| 182 | catmull-clark-subdivision-surface | ✓ | 9.424ms | 2.1MB |
+| 183 | chaocipher | ✓ | 1.472ms | 69.0KB |
+| 184 | chaos-game | ✓ | 2.286ms | 5.8MB |
+| 185 | character-codes-1 | ✓ | 876µs | 16.0KB |
+| 186 | character-codes-2 | ✓ | 881µs | 16.0KB |
+| 187 | character-codes-3 | ✓ | 1.075ms | 16.0KB |
+| 188 | character-codes-4 | ✓ | 1.037ms | 16.0KB |
 | 189 | character-codes-5 | ✓ | 2.624ms | 16.0KB |
 | 190 | chat-server | ✓ | 3.081ms | 16.0KB |
 | 191 | check-machin-like-formulas | ✓ | 6.599ms | 1.5MB |
