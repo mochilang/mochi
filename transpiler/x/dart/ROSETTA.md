@@ -2,7 +2,7 @@
 
 This directory contains Dart code generated from Mochi programs in `tests/rosetta/x/Mochi`. Each program has a `.dart` file and `.out` output. Compilation or runtime failures are captured in a `.error` file.
 
-Compiled and ran: 201/453
+Compiled and ran: 240/453
 
 ## Checklist
 | Index | Name | Status | Duration | Memory |
@@ -214,46 +214,46 @@ Compiled and ran: 201/453
 | 205 | church-numerals-2 | ✓ | 5.992ms | 12.1 MB |
 | 206 | circles-of-given-radius-through-two-points | ✓ | 7.318ms | 684.0 KB |
 | 207 | circular-primes | ✓ | 8.546ms | 10.2 MB |
-| 208 | cistercian-numerals |   |  |  |
-| 209 | comma-quibbling |   |  |  |
-| 210 | compiler-virtual-machine-interpreter |   |  |  |
-| 211 | composite-numbers-k-with-no-single-digit-factors-whose-factors-are-all-substrings-of-k |   |  |  |
-| 212 | compound-data-type |   |  |  |
-| 213 | concurrent-computing-1 |   |  |  |
-| 214 | concurrent-computing-2 |   |  |  |
-| 215 | concurrent-computing-3 |   |  |  |
-| 216 | conditional-structures-1 |   |  |  |
-| 217 | conditional-structures-10 |   |  |  |
-| 218 | conditional-structures-2 |   |  |  |
-| 219 | conditional-structures-3 |   |  |  |
-| 220 | conditional-structures-4 |   |  |  |
-| 221 | conditional-structures-5 |   |  |  |
-| 222 | conditional-structures-6 |   |  |  |
-| 223 | conditional-structures-7 |   |  |  |
-| 224 | conditional-structures-8 |   |  |  |
-| 225 | conditional-structures-9 |   |  |  |
+| 208 | cistercian-numerals | ✓ | 11.241ms | 1.3 MB |
+| 209 | comma-quibbling | ✓ | 5.862ms | 184.0 KB |
+| 210 | compiler-virtual-machine-interpreter | ✓ | 9.532ms | 768.0 KB |
+| 211 | composite-numbers-k-with-no-single-digit-factors-whose-factors-are-all-substrings-of-k | ✓ | 25.418101s | 4.3 MB |
+| 212 | compound-data-type | ✓ | 5.814ms | 908.0 KB |
+| 213 | concurrent-computing-1 | ✓ | 6.84ms | 12.0 MB |
+| 214 | concurrent-computing-2 | ✓ | 34.942ms | 888.0 KB |
+| 215 | concurrent-computing-3 | ✓ | 21.653ms | 10.2 MB |
+| 216 | conditional-structures-1 | ✓ | 4.586ms | 3.2 MB |
+| 217 | conditional-structures-10 | ✓ | 5.45ms | 10.9 MB |
+| 218 | conditional-structures-2 | ✓ | 4.956ms | 11.6 MB |
+| 219 | conditional-structures-3 | ✓ | 4.963ms | 11.0 MB |
+| 220 | conditional-structures-4 | ✓ | 4.509ms | 912.0 KB |
+| 221 | conditional-structures-5 | ✓ | 5.24ms | 13.3 MB |
+| 222 | conditional-structures-6 | ✓ | 5.479ms | 12.7 MB |
+| 223 | conditional-structures-7 | ✓ | 5.343ms | 664.0 KB |
+| 224 | conditional-structures-8 | ✓ | 5.433ms | 332.0 KB |
+| 225 | conditional-structures-9 | ✓ | 5.492ms | 12.8 MB |
 | 226 | consecutive-primes-with-ascending-or-descending-differences |   |  |  |
-| 227 | constrained-genericity-1 |   |  |  |
-| 228 | constrained-genericity-2 |   |  |  |
-| 229 | constrained-genericity-3 |   |  |  |
-| 230 | constrained-genericity-4 |   |  |  |
-| 231 | constrained-random-points-on-a-circle-1 |   |  |  |
-| 232 | constrained-random-points-on-a-circle-2 |   |  |  |
-| 233 | continued-fraction |   |  |  |
-| 234 | convert-decimal-number-to-rational |   |  |  |
-| 235 | convert-seconds-to-compound-duration |   |  |  |
-| 236 | convex-hull |   |  |  |
-| 237 | conways-game-of-life |   |  |  |
-| 238 | copy-a-string-1 |   |  |  |
-| 239 | copy-a-string-2 |   |  |  |
-| 240 | copy-stdin-to-stdout-1 |   |  |  |
-| 241 | copy-stdin-to-stdout-2 |   |  |  |
-| 242 | count-in-factors |   |  |  |
-| 243 | count-in-octal-1 |   |  |  |
-| 244 | count-in-octal-2 |   |  |  |
-| 245 | count-in-octal-3 |   |  |  |
-| 246 | count-in-octal-4 |   |  |  |
-| 247 | count-occurrences-of-a-substring |   |  |  |
+| 227 | constrained-genericity-1 | ✓ | 4.899ms | 876.0 KB |
+| 228 | constrained-genericity-2 | ✓ | 5.174ms | 1.3 MB |
+| 229 | constrained-genericity-3 | ✓ | 6.119ms | 13.0 MB |
+| 230 | constrained-genericity-4 | ✓ | 5.527ms | 2.3 MB |
+| 231 | constrained-random-points-on-a-circle-1 | ✓ | 18.462ms | 4.7 MB |
+| 232 | constrained-random-points-on-a-circle-2 | ✓ | 15.869ms | 6.2 MB |
+| 233 | continued-fraction | ✓ | 7.388ms | 8.6 MB |
+| 234 | convert-decimal-number-to-rational | ✓ | 7.04ms | 12.0 MB |
+| 235 | convert-seconds-to-compound-duration | ✓ | 6.402ms | 11.7 MB |
+| 236 | convex-hull | ✓ | 6.76ms | 768.0 KB |
+| 237 | conways-game-of-life | ✓ | 180.384ms | 2.9 MB |
+| 238 | copy-a-string-1 | ✓ | 5.448ms | 12.4 MB |
+| 239 | copy-a-string-2 | ✓ | 6.18ms | 12.0 MB |
+| 240 | copy-stdin-to-stdout-1 | ✓ | 12.265ms | 12.3 MB |
+| 241 | copy-stdin-to-stdout-2 | ✓ | 13.352ms | 11.9 MB |
+| 242 | count-in-factors | ✓ | 7.587ms | 604.0 KB |
+| 243 | count-in-octal-1 | ✓ | 10.517ms | 780.0 KB |
+| 244 | count-in-octal-2 | ✓ | 261.683ms | 9.6 MB |
+| 245 | count-in-octal-3 | ✓ | 7.043ms | 592.0 KB |
+| 246 | count-in-octal-4 | ✓ | 5.808ms | 2.2 MB |
+| 247 | count-occurrences-of-a-substring | ✓ | 6.56ms | 360.0 KB |
 | 248 | count-the-coins-1 |   |  |  |
 | 249 | count-the-coins-2 |   |  |  |
 | 250 | cramers-rule |   |  |  |
@@ -461,4 +461,4 @@ Compiled and ran: 201/453
 | 452 | window-management |   |  |  |
 | 453 | zumkeller-numbers |   |  |  |
 
-_Last updated: 2025-07-27 13:52 +0700_
+_Last updated: 2025-07-27 14:39 +0700_
