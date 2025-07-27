@@ -82,8 +82,7 @@ L3:
   // return k + 2.0 * sum / ln2
   Const        r4, 2.0
   MulFloat     r31, r4, r17
-  Const        r29, 0.6931471805599453
-  DivFloat     r32, r31, r29
+  DivFloat     r32, r31, r30
   AddFloat     r33, r2, r32
   Return       r33
 
@@ -107,10 +106,9 @@ L3:
   LessInt      r9, r7, r8
   JumpIfFalse  r9, L0
   // let ch = substring(s, i, i+1)
-  Const        r0, "1223334444"
   Const        r10, 1
   AddInt       r11, r7, r10
-  Slice        r12, r0, r7, r11
+  Slice        r12, r1, r7, r11
   Move         r13, r12
   // if ch in counts {
   In           r14, r13, r3

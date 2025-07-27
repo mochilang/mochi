@@ -1,0 +1,8 @@
+func main (regs=4)
+  // print(os.Getenv("SHELL"))
+  Const        r1, "SHELL"
+  Move         r0, r1
+  Const        r3, "os.Getenv"
+  GoAutoCall   r2, r3, 1, r0
+  Print        r2
+  Return       r0

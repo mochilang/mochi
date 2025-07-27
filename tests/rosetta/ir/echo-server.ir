@@ -1,0 +1,45 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun echo(idx: int, msgs: list<string>) {
+func echo (regs=16)
+  // print(str(idx) + ": 127.0.0.1:12321 <-> 127.0.0.1")
+  Str          r2, r0
+  Const        r3, ": 127.0.0.1:12321 <-> 127.0.0.1"
+  Add          r4, r2, r3
+  Print        r4
+  // for msg in msgs {
+  IterPrep     r5, r1
+  Len          r6, r5
+  Const        r7, 0
+L1:
+  LessInt      r8, r7, r6
+  JumpIfFalse  r8, L0
+  Index        r9, r5, r7
+  Move         r10, r9
+  // print(msg)
+  Print        r10
+  // for msg in msgs {
+  Const        r11, 1
+  AddInt       r12, r7, r11
+  Move         r7, r12
+  Jump         L1
+L0:
+  // print(str(idx) + ": closed")
+  Str          r13, r0
+  Const        r14, ": closed"
+  Add          r15, r13, r14
+  Print        r15
+  Return       r0
+
+  // fun main() {
+func main (regs=5)
+  // echo(0, ["hello"])  // example single connection
+  Const        r2, 0
+  Move         r0, r2
+  Const        r3, ["hello"]
+  Move         r1, r3
+  Call2        r4, echo, r0, r1
+  Return       r0

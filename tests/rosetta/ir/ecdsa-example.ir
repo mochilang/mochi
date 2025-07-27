@@ -1,0 +1,59 @@
+func main (regs=35)
+  // let res = testpkg.ECDSAExample()
+  Const        r2, "mochi/runtime/ffi/go/testpkg.ECDSAExample"
+  GoAutoCall   r1, r2, 0, r0
+  Move         r0, r1
+  SetGlobal    0,0,0,0
+  // print("Private key:\nD: " + res.D)
+  Const        r3, "Private key:\nD: "
+  Const        r4, "D"
+  Index        r5, r0, r4
+  Add          r6, r3, r5
+  Print        r6
+  // print("\nPublic key:")
+  Const        r7, "\nPublic key:"
+  Print        r7
+  // print("X: " + res.X)
+  Const        r8, "X: "
+  Const        r9, "X"
+  Index        r10, r0, r9
+  Add          r11, r8, r10
+  Print        r11
+  // print("Y: " + res.Y)
+  Const        r12, "Y: "
+  Const        r13, "Y"
+  Index        r14, r0, r13
+  Add          r15, r12, r14
+  Print        r15
+  // print("\nMessage: Rosetta Code")
+  Const        r16, "\nMessage: Rosetta Code"
+  Print        r16
+  // print("Hash   : " + res.Hash)
+  Const        r17, "Hash   : "
+  Const        r18, "Hash"
+  Index        r19, r0, r18
+  Add          r20, r17, r19
+  Print        r20
+  // print("\nSignature:")
+  Const        r21, "\nSignature:"
+  Print        r21
+  // print("R: " + res.R)
+  Const        r22, "R: "
+  Const        r23, "R"
+  Index        r24, r0, r23
+  Add          r25, r22, r24
+  Print        r25
+  // print("S: " + res.S)
+  Const        r26, "S: "
+  Const        r27, "S"
+  Index        r28, r0, r27
+  Add          r29, r26, r28
+  Print        r29
+  // print("\nSignature verified: " + str(res.Valid))
+  Const        r30, "\nSignature verified: "
+  Const        r31, "Valid"
+  Index        r32, r0, r31
+  Str          r33, r32
+  Add          r34, r30, r33
+  Print        r34
+  Return       r0

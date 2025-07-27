@@ -1,0 +1,65 @@
+func main (regs=26)
+  // let name = "SHELL"
+  Const        r2, "SHELL"
+  Move         r0, r2
+  SetGlobal    0,0,0,0
+  // let prefix = name + "="
+  Const        r3, "="
+  Const        r4, "SHELL="
+  Move         r1, r4
+  SetGlobal    1,1,0,0
+  // for v in os.Environ() {
+  Const        r6, "os.Environ"
+  GoAutoCall   r5, r6, 0, r0
+  IterPrep     r7, r5
+  Len          r8, r7
+  Const        r9, 0
+L2:
+  LessInt      r10, r9, r8
+  JumpIfFalse  r10, L0
+  Index        r11, r7, r9
+  Move         r12, r11
+  // if hasPrefix(v, prefix) {
+  Move         r13, r12
+  Move         r14, r1
+  Call2        r15, hasPrefix, r13, r14
+  JumpIfFalse  r15, L1
+  // print(name + " has value " + substring(v, len(prefix), len(v)))
+  Const        r16, " has value "
+  Const        r17, "SHELL has value "
+  Const        r18, 6
+  Len          r19, r12
+  Slice        r20, r12, r18, r19
+  Add          r21, r17, r20
+  Print        r21
+  // return
+  Return       r0
+L1:
+  // for v in os.Environ() {
+  Const        r22, 1
+  AddInt       r23, r9, r22
+  Move         r9, r23
+  Jump         L2
+L0:
+  // print(name + " not found")
+  Const        r24, " not found"
+  Const        r25, "SHELL not found"
+  Print        r25
+  Return       r0
+
+  // fun hasPrefix(s: string, p: string): bool {
+func hasPrefix (regs=12)
+  // if len(p) > len(s) { return false }
+  Len          r4, r3
+  Len          r5, r2
+  LessInt      r6, r5, r4
+  JumpIfFalse  r6, L0
+  Const        r7, false
+  Return       r7
+L0:
+  // return substring(s, 0, len(p)) == p
+  Const        r8, 0
+  Len          r9, r3
+  Slice        r10, r2, r8, r9
+  Equal        r11, r10, r3
+  Return       r11

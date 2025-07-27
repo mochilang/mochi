@@ -1,0 +1,501 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun pow10(n: int): float {
+func pow10 (regs=10)
+  // var r: float = 1.0
+  Const        r1, 1.0
+  Move         r2, r1
+  // var i = 0
+  Const        r3, 0
+  Move         r4, r3
+L1:
+  // while i < n {
+  Less         r5, r4, r0
+  JumpIfFalse  r5, L0
+  // r = r * 10.0
+  Const        r6, 10.0
+  MulFloat     r7, r2, r6
+  Move         r2, r7
+  // i = i + 1
+  Const        r8, 1
+  AddInt       r9, r4, r8
+  Move         r4, r9
+  // while i < n {
+  Jump         L1
+L0:
+  // return r
+  Return       r2
+
+  // fun powf(base: float, exp: float): float {
+func powf (regs=23)
+  // if exp == 0.5 { // square root via Newton iteration
+  Const        r2, 0.5
+  EqualFloat   r3, r1, r2
+  JumpIfFalse  r3, L0
+  // var guess = base
+  Move         r4, r0
+  // var i = 0
+  Const        r5, 0
+  Move         r6, r5
+L2:
+  // while i < 20 {
+  Const        r7, 20
+  LessInt      r8, r6, r7
+  JumpIfFalse  r8, L1
+  // guess = (guess + base / guess) / 2.0
+  Div          r9, r0, r4
+  Add          r10, r4, r9
+  Const        r11, 2.0
+  DivFloat     r12, r10, r11
+  Move         r4, r12
+  // i = i + 1
+  Const        r13, 1
+  AddInt       r14, r6, r13
+  Move         r6, r14
+  // while i < 20 {
+  Jump         L2
+L1:
+  // return guess
+  Return       r4
+L0:
+  // var result = 1.0
+  Const        r15, 1.0
+  Move         r16, r15
+  // var n = int(exp)
+  Cast         r17, r1, int
+  Move         r18, r17
+  // var i = 0
+  Const        r5, 0
+  Move         r19, r5
+L4:
+  // while i < n {
+  Less         r20, r19, r18
+  JumpIfFalse  r20, L3
+  // result = result * base
+  MulFloat     r21, r16, r0
+  Move         r16, r21
+  // i = i + 1
+  Const        r13, 1
+  AddInt       r22, r19, r13
+  Move         r19, r22
+  // while i < n {
+  Jump         L4
+L3:
+  // return result
+  Return       r16
+
+  // fun formatFloat(f: float, prec: int): string {
+func formatFloat (regs=30)
+  // let scale = pow10(prec)
+  Move         r2, r1
+  Call         r3, pow10, r2
+  Move         r4, r3
+  // let scaled = (f * scale) + 0.5
+  Mul          r5, r0, r4
+  Const        r6, 0.5
+  AddFloat     r7, r5, r6
+  Move         r8, r7
+  // var n = (scaled as int)
+  Cast         r9, r8, int
+  Move         r10, r9
+  // var digits = str(n)
+  Str          r11, r10
+  Move         r12, r11
+L1:
+  // while len(digits) <= prec {
+  Len          r13, r12
+  LessEq       r14, r13, r1
+  JumpIfFalse  r14, L0
+  // digits = "0" + digits
+  Const        r15, "0"
+  Add          r16, r15, r12
+  Move         r12, r16
+  // while len(digits) <= prec {
+  Jump         L1
+L0:
+  // let intPart = substring(digits, 0, len(digits) - prec)
+  Const        r17, 0
+  Len          r18, r12
+  Sub          r19, r18, r1
+  Slice        r20, r12, r17, r19
+  Move         r21, r20
+  // let fracPart = substring(digits, len(digits) - prec, len(digits))
+  Len          r22, r12
+  Sub          r23, r22, r1
+  Len          r24, r12
+  Slice        r25, r12, r23, r24
+  Move         r26, r25
+  // return intPart + "." + fracPart
+  Const        r27, "."
+  Add          r28, r21, r27
+  Add          r29, r28, r26
+  Return       r29
+
+  // fun padLeft(s: string, w: int): string {
+func padLeft (regs=14)
+  // var res = ""
+  Const        r2, ""
+  Move         r3, r2
+  // var n = w - len(s)
+  Len          r4, r0
+  Sub          r5, r1, r4
+  Move         r6, r5
+L1:
+  // while n > 0 {
+  Const        r7, 0
+  Less         r8, r7, r6
+  JumpIfFalse  r8, L0
+  // res = res + " "
+  Const        r9, " "
+  Add          r10, r3, r9
+  Move         r3, r10
+  // n = n - 1
+  Const        r11, 1
+  Sub          r12, r6, r11
+  Move         r6, r12
+  // while n > 0 {
+  Jump         L1
+L0:
+  // return res + s
+  Add          r13, r3, r0
+  Return       r13
+
+  // fun rowString(row: list<float>): string {
+func rowString (regs=26)
+  // var s = "["
+  Const        r1, "["
+  Move         r2, r1
+  // var i = 0
+  Const        r3, 0
+  Move         r4, r3
+L2:
+  // while i < len(row) {
+  Len          r5, r0
+  LessInt      r6, r4, r5
+  JumpIfFalse  r6, L0
+  // s = s + padLeft(formatFloat(row[i], 3), 6)
+  Index        r11, r0, r4
+  Move         r9, r11
+  Const        r12, 3
+  Move         r10, r12
+  Call2        r13, formatFloat, r9, r10
+  Move         r7, r13
+  Const        r14, 6
+  Move         r8, r14
+  Call2        r15, padLeft, r7, r8
+  Add          r16, r2, r15
+  Move         r2, r16
+  // if i < len(row) - 1 { s = s + " " }
+  Len          r17, r0
+  Const        r18, 1
+  SubInt       r19, r17, r18
+  LessInt      r20, r4, r19
+  JumpIfFalse  r20, L1
+  Const        r21, " "
+  Add          r22, r2, r21
+  Move         r2, r22
+L1:
+  // i = i + 1
+  Const        r18, 1
+  AddInt       r23, r4, r18
+  Move         r4, r23
+  // while i < len(row) {
+  Jump         L2
+L0:
+  // return s + "] "
+  Const        r24, "] "
+  Add          r25, r2, r24
+  Return       r25
+
+  // fun printMatrix(heading: string, m: list<list<float>>) {
+func printMatrix (regs=11)
+  // print(heading)
+  Print        r0
+  // var i = 0
+  Const        r2, 0
+  Move         r3, r2
+L1:
+  // while i < len(m) {
+  Len          r4, r1
+  LessInt      r5, r3, r4
+  JumpIfFalse  r5, L0
+  // print(rowString(m[i]))
+  Index        r7, r1, r3
+  Move         r6, r7
+  Call         r8, rowString, r6
+  Print        r8
+  // i = i + 1
+  Const        r9, 1
+  AddInt       r10, r3, r9
+  Move         r3, r10
+  // while i < len(m) {
+  Jump         L1
+L0:
+  Return       r0
+
+  // fun elementWiseMM(m1: list<list<float>>, m2: list<list<float>>, f: fun(float,float): float): list<list<float>> {
+func elementWiseMM (regs=26)
+  // var z: list<list<float>> = []
+  Const        r3, []
+  Move         r4, r3
+  // var r = 0
+  Const        r5, 0
+  Move         r6, r5
+L3:
+  // while r < len(m1) {
+  Len          r7, r0
+  LessInt      r8, r6, r7
+  JumpIfFalse  r8, L0
+  // var row: list<float> = []
+  Const        r3, []
+  Move         r9, r3
+  // var c = 0
+  Const        r5, 0
+  Move         r10, r5
+L2:
+  // while c < len(m1[r]) {
+  Index        r11, r0, r6
+  Len          r12, r11
+  LessInt      r13, r10, r12
+  JumpIfFalse  r13, L1
+  // row = append(row, f(m1[r][c], m2[r][c]))
+  Index        r16, r0, r6
+  Index        r17, r16, r10
+  Move         r14, r17
+  Index        r18, r1, r6
+  Index        r19, r18, r10
+  Move         r15, r19
+  CallV        r20, r2, 2, r14
+  Append       r21, r9, r20
+  Move         r9, r21
+  // c = c + 1
+  Const        r22, 1
+  AddInt       r23, r10, r22
+  Move         r10, r23
+  // while c < len(m1[r]) {
+  Jump         L2
+L1:
+  // z = append(z, row)
+  Append       r24, r4, r9
+  Move         r4, r24
+  // r = r + 1
+  Const        r22, 1
+  AddInt       r25, r6, r22
+  Move         r6, r25
+  // while r < len(m1) {
+  Jump         L3
+L0:
+  // return z
+  Return       r4
+
+  // fun elementWiseMS(m: list<list<float>>, s: float, f: fun(float,float): float): list<list<float>> {
+func elementWiseMS (regs=24)
+  // var z: list<list<float>> = []
+  Const        r3, []
+  Move         r4, r3
+  // var r = 0
+  Const        r5, 0
+  Move         r6, r5
+L3:
+  // while r < len(m) {
+  Len          r7, r0
+  LessInt      r8, r6, r7
+  JumpIfFalse  r8, L0
+  // var row: list<float> = []
+  Const        r3, []
+  Move         r9, r3
+  // var c = 0
+  Const        r5, 0
+  Move         r10, r5
+L2:
+  // while c < len(m[r]) {
+  Index        r11, r0, r6
+  Len          r12, r11
+  LessInt      r13, r10, r12
+  JumpIfFalse  r13, L1
+  // row = append(row, f(m[r][c], s))
+  Index        r16, r0, r6
+  Index        r17, r16, r10
+  Move         r14, r17
+  Move         r15, r1
+  CallV        r18, r2, 2, r14
+  Append       r19, r9, r18
+  Move         r9, r19
+  // c = c + 1
+  Const        r20, 1
+  AddInt       r21, r10, r20
+  Move         r10, r21
+  // while c < len(m[r]) {
+  Jump         L2
+L1:
+  // z = append(z, row)
+  Append       r22, r4, r9
+  Move         r4, r22
+  // r = r + 1
+  Const        r20, 1
+  AddInt       r23, r6, r20
+  Move         r6, r23
+  // while r < len(m) {
+  Jump         L3
+L0:
+  // return z
+  Return       r4
+
+  // fun add(a: float, b: float): float { return a + b }
+func add (regs=3)
+  // fun add(a: float, b: float): float { return a + b }
+  Add          r2, r0, r1
+  Return       r2
+
+  // fun sub(a: float, b: float): float { return a - b }
+func sub (regs=3)
+  // fun sub(a: float, b: float): float { return a - b }
+  Sub          r2, r0, r1
+  Return       r2
+
+  // fun mul(a: float, b: float): float { return a * b }
+func mul (regs=3)
+  // fun mul(a: float, b: float): float { return a * b }
+  Mul          r2, r0, r1
+  Return       r2
+
+  // fun div(a: float, b: float): float { return a / b }
+func div (regs=3)
+  // fun div(a: float, b: float): float { return a / b }
+  Div          r2, r0, r1
+  Return       r2
+
+  // fun exp(a: float, b: float): float { return powf(a, b) }
+func exp (regs=5)
+  // fun exp(a: float, b: float): float { return powf(a, b) }
+  Move         r2, r0
+  Move         r3, r1
+  Call2        r4, powf, r2, r3
+  Return       r4
+
+  // fun main() {
+func main (regs=108)
+  // let m1 = [[3.0, 1.0, 4.0], [1.0, 5.0, 9.0]]
+  Const        r0, [[3.0, 1.0, 4.0], [1.0, 5.0, 9.0]]
+  Move         r1, r0
+  // let m2 = [[2.0, 7.0, 1.0], [8.0, 2.0, 8.0]]
+  Const        r2, [[2.0, 7.0, 1.0], [8.0, 2.0, 8.0]]
+  Move         r3, r2
+  // printMatrix("m1:", m1)
+  Const        r6, "m1:"
+  Move         r4, r6
+  Move         r5, r1
+  Call2        r7, printMatrix, r4, r5
+  // printMatrix("m2:", m2)
+  Const        r10, "m2:"
+  Move         r8, r10
+  Move         r9, r3
+  Call2        r11, printMatrix, r8, r9
+  // print("")
+  Const        r12, ""
+  Print        r12
+  // printMatrix("m1 + m2:", elementWiseMM(m1, m2, add))
+  Const        r15, "m1 + m2:"
+  Move         r13, r15
+  Move         r16, r1
+  Move         r17, r3
+  Move         r18, r19
+  Call         r20, elementWiseMM, r16, r17, r18
+  Move         r14, r20
+  Call2        r21, printMatrix, r13, r14
+  // printMatrix("m1 - m2:", elementWiseMM(m1, m2, sub))
+  Const        r24, "m1 - m2:"
+  Move         r22, r24
+  Move         r25, r1
+  Move         r26, r3
+  Move         r27, r28
+  Call         r29, elementWiseMM, r25, r26, r27
+  Move         r23, r29
+  Call2        r30, printMatrix, r22, r23
+  // printMatrix("m1 * m2:", elementWiseMM(m1, m2, mul))
+  Const        r33, "m1 * m2:"
+  Move         r31, r33
+  Move         r34, r1
+  Move         r35, r3
+  Move         r36, r37
+  Call         r38, elementWiseMM, r34, r35, r36
+  Move         r32, r38
+  Call2        r39, printMatrix, r31, r32
+  // printMatrix("m1 / m2:", elementWiseMM(m1, m2, div))
+  Const        r42, "m1 / m2:"
+  Move         r40, r42
+  Move         r43, r1
+  Move         r44, r3
+  Move         r45, r46
+  Call         r47, elementWiseMM, r43, r44, r45
+  Move         r41, r47
+  Call2        r48, printMatrix, r40, r41
+  // printMatrix("m1 ^ m2:", elementWiseMM(m1, m2, exp))
+  Const        r51, "m1 ^ m2:"
+  Move         r49, r51
+  Move         r52, r1
+  Move         r53, r3
+  Move         r54, r55
+  Call         r56, elementWiseMM, r52, r53, r54
+  Move         r50, r56
+  Call2        r57, printMatrix, r49, r50
+  // print("")
+  Const        r12, ""
+  Print        r12
+  // let s = 0.5
+  Const        r58, 0.5
+  Move         r59, r58
+  // print("s: " + str(s))
+  Const        r60, "s: "
+  Const        r61, "0.5"
+  Const        r62, "s: 0.5"
+  Print        r62
+  // printMatrix("m1 + s:", elementWiseMS(m1, s, add))
+  Const        r65, "m1 + s:"
+  Move         r63, r65
+  Move         r66, r1
+  Move         r67, r59
+  Move         r68, r69
+  Call         r70, elementWiseMS, r66, r67, r68
+  Move         r64, r70
+  Call2        r71, printMatrix, r63, r64
+  // printMatrix("m1 - s:", elementWiseMS(m1, s, sub))
+  Const        r74, "m1 - s:"
+  Move         r72, r74
+  Move         r75, r1
+  Move         r76, r59
+  Move         r77, r78
+  Call         r79, elementWiseMS, r75, r76, r77
+  Move         r73, r79
+  Call2        r80, printMatrix, r72, r73
+  // printMatrix("m1 * s:", elementWiseMS(m1, s, mul))
+  Const        r83, "m1 * s:"
+  Move         r81, r83
+  Move         r84, r1
+  Move         r85, r59
+  Move         r86, r87
+  Call         r88, elementWiseMS, r84, r85, r86
+  Move         r82, r88
+  Call2        r89, printMatrix, r81, r82
+  // printMatrix("m1 / s:", elementWiseMS(m1, s, div))
+  Const        r92, "m1 / s:"
+  Move         r90, r92
+  Move         r93, r1
+  Move         r94, r59
+  Move         r95, r96
+  Call         r97, elementWiseMS, r93, r94, r95
+  Move         r91, r97
+  Call2        r98, printMatrix, r90, r91
+  // printMatrix("m1 ^ s:", elementWiseMS(m1, s, exp))
+  Const        r101, "m1 ^ s:"
+  Move         r99, r101
+  Move         r102, r1
+  Move         r103, r59
+  Move         r104, r105
+  Call         r106, elementWiseMS, r102, r103, r104
+  Move         r100, r106
+  Call2        r107, printMatrix, r99, r100
+  Return       r0

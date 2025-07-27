@@ -1,0 +1,261 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun pow2(n: int): int {
+func pow2 (regs=9)
+  // var p = 1
+  Const        r1, 1
+  Move         r2, r1
+  // var i = 0
+  Const        r3, 0
+  Move         r4, r3
+L1:
+  // while i < n { p = p * 2; i = i + 1 }
+  Less         r5, r4, r0
+  JumpIfFalse  r5, L0
+  Const        r6, 2
+  MulInt       r7, r2, r6
+  Move         r2, r7
+  Const        r1, 1
+  AddInt       r8, r4, r1
+  Move         r4, r8
+  Jump         L1
+L0:
+  // return p
+  Return       r2
+
+  // fun btoi(b: bool): int { if b { return 1 }; return 0 }
+func btoi (regs=3)
+  // fun btoi(b: bool): int { if b { return 1 }; return 0 }
+  JumpIfFalse  r0, L0
+  Const        r1, 1
+  Return       r1
+L0:
+  Const        r2, 0
+  Return       r2
+
+  // fun addNoCells(cells: string): string {
+func addNoCells (regs=18)
+  // var l = "O"
+  Const        r1, "O"
+  Move         r2, r1
+  // var r = "O"
+  Const        r1, "O"
+  Move         r3, r1
+  // if substring(cells, 0, 1) == "O" { l = "." }
+  Const        r4, 0
+  Const        r5, 1
+  Slice        r6, r0, r4, r5
+  Const        r1, "O"
+  Equal        r7, r6, r1
+  JumpIfFalse  r7, L0
+  Const        r8, "."
+  Move         r2, r8
+L0:
+  // if substring(cells, len(cells)-1, len(cells)) == "O" { r = "." }
+  Len          r9, r0
+  Const        r5, 1
+  SubInt       r10, r9, r5
+  Len          r11, r0
+  Slice        r12, r0, r10, r11
+  Const        r1, "O"
+  Equal        r13, r12, r1
+  JumpIfFalse  r13, L1
+  Const        r8, "."
+  Move         r3, r8
+L1:
+  // cells = l + cells + r
+  Add          r14, r2, r0
+  Add          r15, r14, r3
+  Move         r0, r15
+  // cells = l + cells + r
+  Add          r16, r2, r0
+  Add          r17, r16, r3
+  Move         r0, r17
+  // return cells
+  Return       r0
+
+  // fun step(cells: string, ruleVal: int): string {
+func step (regs=38)
+  // var newCells = ""
+  Const        r2, ""
+  Move         r3, r2
+  // var i = 0
+  Const        r4, 0
+  Move         r5, r4
+L4:
+  // while i < len(cells) - 2 {
+  Len          r6, r0
+  Const        r7, 2
+  SubInt       r8, r6, r7
+  LessInt      r9, r5, r8
+  JumpIfFalse  r9, L0
+  // var bin = 0
+  Const        r4, 0
+  Move         r10, r4
+  // var b = 2
+  Const        r7, 2
+  Move         r11, r7
+  // var n = i
+  Move         r12, r5
+L2:
+  // while n < i + 3 {
+  Const        r13, 3
+  AddInt       r14, r5, r13
+  LessInt      r15, r12, r14
+  JumpIfFalse  r15, L1
+  // bin = bin + btoi(substring(cells, n, n+1) == "O") * pow2(b)
+  Const        r17, 1
+  AddInt       r18, r12, r17
+  Slice        r19, r0, r12, r18
+  Const        r20, "O"
+  Equal        r21, r19, r20
+  Move         r16, r21
+  Call         r22, btoi, r16
+  Move         r23, r11
+  Call         r24, pow2, r23
+  Mul          r25, r22, r24
+  Add          r26, r10, r25
+  Move         r10, r26
+  // b = b - 1
+  Const        r17, 1
+  SubInt       r27, r11, r17
+  Move         r11, r27
+  // n = n + 1
+  Const        r17, 1
+  AddInt       r28, r12, r17
+  Move         r12, r28
+  // while n < i + 3 {
+  Jump         L2
+L1:
+  // var a = "."
+  Const        r29, "."
+  Move         r30, r29
+  // if ((ruleVal / pow2(bin)) % 2 == 1) { a = "O" }
+  Move         r31, r10
+  Call         r32, pow2, r31
+  Div          r33, r1, r32
+  Const        r7, 2
+  Mod          r34, r33, r7
+  Const        r17, 1
+  Equal        r35, r34, r17
+  JumpIfFalse  r35, L3
+  Const        r20, "O"
+  Move         r30, r20
+L3:
+  // newCells = newCells + a
+  Add          r36, r3, r30
+  Move         r3, r36
+  // i = i + 1
+  Const        r17, 1
+  AddInt       r37, r5, r17
+  Move         r5, r37
+  // while i < len(cells) - 2 {
+  Jump         L4
+L0:
+  // return newCells
+  Return       r3
+
+  // fun repeat(ch: string, n: int): string {
+func repeat (regs=10)
+  // var s = ""
+  Const        r2, ""
+  Move         r3, r2
+  // var i = 0
+  Const        r4, 0
+  Move         r5, r4
+L1:
+  // while i < n { s = s + ch; i = i + 1 }
+  Less         r6, r5, r1
+  JumpIfFalse  r6, L0
+  Add          r7, r3, r0
+  Move         r3, r7
+  Const        r8, 1
+  AddInt       r9, r5, r8
+  Move         r5, r9
+  Jump         L1
+L0:
+  // return s
+  Return       r3
+
+  // fun evolve(l: int, ruleVal: int) {
+func evolve (regs=33)
+  // print(" Rule #" + str(ruleVal) + ":")
+  Const        r2, " Rule #"
+  Str          r3, r1
+  Add          r4, r2, r3
+  Const        r5, ":"
+  Add          r6, r4, r5
+  Print        r6
+  // var cells = "O"
+  Const        r7, "O"
+  Move         r8, r7
+  // var x = 0
+  Const        r9, 0
+  Move         r10, r9
+L1:
+  // while x < l {
+  Less         r11, r10, r0
+  JumpIfFalse  r11, L0
+  // cells = addNoCells(cells)
+  Move         r12, r8
+  Call         r13, addNoCells, r12
+  Move         r8, r13
+  // var width = 40 + (len(cells) / 2)
+  Const        r14, 40
+  Len          r15, r8
+  Const        r16, 2
+  DivInt       r17, r15, r16
+  AddInt       r18, r14, r17
+  Move         r19, r18
+  // var spaces = repeat(" ", width - len(cells))
+  Const        r22, " "
+  Move         r20, r22
+  Len          r23, r8
+  SubInt       r24, r19, r23
+  Move         r21, r24
+  Call2        r25, repeat, r20, r21
+  Move         r26, r25
+  // print(spaces + cells)
+  Add          r27, r26, r8
+  Print        r27
+  // cells = step(cells, ruleVal)
+  Move         r28, r8
+  Move         r29, r1
+  Call2        r30, step, r28, r29
+  Move         r8, r30
+  // x = x + 1
+  Const        r31, 1
+  AddInt       r32, r10, r31
+  Move         r10, r32
+  // while x < l {
+  Jump         L1
+L0:
+  Return       r0
+
+  // fun main() {
+func main (regs=14)
+  // for r in [90, 30] { evolve(25, r); print("") }
+  Const        r0, [90, 30]
+  IterPrep     r1, r0
+  Len          r2, r1
+  Const        r3, 0
+L1:
+  LessInt      r4, r3, r2
+  JumpIfFalse  r4, L0
+  Index        r5, r1, r3
+  Move         r6, r5
+  Const        r9, 25
+  Move         r7, r9
+  Move         r8, r6
+  Call2        r10, evolve, r7, r8
+  Const        r11, ""
+  Print        r11
+  Const        r12, 1
+  AddInt       r13, r3, r12
+  Move         r3, r13
+  Jump         L1
+L0:
+  Return       r0

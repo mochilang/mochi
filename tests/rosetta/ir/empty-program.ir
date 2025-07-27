@@ -1,0 +1,8 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun main() {
+func main (regs=1)
+  Return       r0

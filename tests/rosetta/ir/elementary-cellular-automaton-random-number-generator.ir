@@ -1,0 +1,214 @@
+func main (regs=16)
+  // let n = 64
+  Const        r4, 64
+  Move         r0, r4
+  SetGlobal    0,0,0,0
+  // var init: list<int> = []
+  Const        r5, []
+  Move         r1, r5
+  SetGlobal    1,1,0,0
+  // var i = 0
+  Const        r6, 0
+  Move         r2, r6
+  SetGlobal    2,2,0,0
+L1:
+  // while i < n { init = append(init, 0); i = i + 1 }
+  LessInt      r7, r2, r0
+  JumpIfFalse  r7, L0
+  Const        r6, 0
+  Append       r8, r1, r6
+  Move         r1, r8
+  SetGlobal    1,1,0,0
+  Const        r9, 1
+  AddInt       r10, r2, r9
+  Move         r2, r10
+  SetGlobal    2,2,0,0
+  Jump         L1
+L0:
+  // init[0] = 1
+  Const        r9, 1
+  Const        r6, 0
+  SetIndex     r1, r6, r9
+  SetGlobal    1,1,0,0
+  // let bytes = evolve(init, 30)
+  Move         r11, r1
+  Const        r13, 30
+  Move         r12, r13
+  Call2        r14, evolve, r11, r12
+  Move         r3, r14
+  SetGlobal    3,3,0,0
+  // print(str(bytes))
+  Str          r15, r3
+  Print        r15
+  Return       r0
+
+  // fun pow2(k: int): int {
+func pow2 (regs=12)
+  // var v = 1
+  Const        r5, 1
+  Move         r6, r5
+  // var i = 0
+  Const        r7, 0
+  Move         r2, r7
+  SetGlobal    2,2,0,0
+L1:
+  // while i < k { v = v * 2; i = i + 1 }
+  Less         r8, r2, r4
+  JumpIfFalse  r8, L0
+  Const        r9, 2
+  MulInt       r10, r6, r9
+  Move         r6, r10
+  Const        r5, 1
+  AddInt       r11, r2, r5
+  Move         r2, r11
+  SetGlobal    2,2,0,0
+  Jump         L1
+L0:
+  // return v
+  Return       r6
+
+  // fun ruleBit(ruleNum: int, idx: int): int {
+func ruleBit (regs=14)
+  // var r = ruleNum
+  Move         r6, r4
+  // var i = 0
+  Const        r7, 0
+  Move         r2, r7
+  SetGlobal    2,2,0,0
+L1:
+  // while i < idx { r = r / 2; i = i + 1 }
+  Less         r8, r2, r5
+  JumpIfFalse  r8, L0
+  Const        r9, 2
+  Div          r10, r6, r9
+  Move         r6, r10
+  Const        r11, 1
+  AddInt       r12, r2, r11
+  Move         r2, r12
+  SetGlobal    2,2,0,0
+  Jump         L1
+L0:
+  // return r % 2
+  Const        r9, 2
+  Mod          r13, r6, r9
+  Return       r13
+
+  // fun evolve(state: list<int>, ruleNum: int): list<int> {
+func evolve (regs=53)
+  // var out: list<int> = []
+  Const        r6, []
+  Move         r7, r6
+  // var p = 0
+  Const        r8, 0
+  Move         r9, r8
+L7:
+  // while p < 10 {
+  Const        r10, 10
+  LessInt      r11, r9, r10
+  JumpIfFalse  r11, L0
+  // var b = 0
+  Const        r8, 0
+  Move         r12, r8
+  // var q = 7
+  Const        r13, 7
+  Move         r14, r13
+L6:
+  // while q >= 0 {
+  Const        r8, 0
+  LessEqInt    r15, r8, r14
+  JumpIfFalse  r15, L1
+  // let st = state
+  Move         r16, r4
+  // b = b + st[0] * pow2(q)
+  Const        r8, 0
+  Index        r17, r16, r8
+  Move         r18, r14
+  Call         r19, pow2, r18
+  Mul          r20, r17, r19
+  Add          r21, r12, r20
+  Move         r12, r21
+  // var next: list<int> = []
+  Const        r6, []
+  Move         r22, r6
+  // var i = 0
+  Const        r8, 0
+  Move         r2, r8
+  SetGlobal    2,2,0,0
+L5:
+  // while i < n {
+  Less         r23, r2, r0
+  JumpIfFalse  r23, L2
+  // var lidx = i - 1
+  Const        r24, 1
+  SubInt       r25, r2, r24
+  Move         r26, r25
+  // if lidx < 0 { lidx = n - 1 }
+  Const        r8, 0
+  LessInt      r27, r26, r8
+  JumpIfFalse  r27, L3
+  Const        r24, 1
+  Sub          r28, r0, r24
+  Move         r26, r28
+L3:
+  // let left = st[lidx]
+  Index        r29, r16, r26
+  Move         r30, r29
+  // let center = st[i]
+  Index        r31, r16, r2
+  Move         r32, r31
+  // let ridx = i + 1
+  Const        r24, 1
+  AddInt       r33, r2, r24
+  Move         r34, r33
+  // if ridx >= n { ridx = 0 }
+  LessEq       r35, r0, r34
+  JumpIfFalse  r35, L4
+  Const        r8, 0
+  Move         r34, r8
+L4:
+  // let right = st[ridx]
+  Index        r36, r16, r34
+  Move         r37, r36
+  // let index = left * 4 + center * 2 + right
+  Const        r38, 4
+  Mul          r39, r30, r38
+  Const        r40, 2
+  Mul          r41, r32, r40
+  Add          r42, r39, r41
+  Add          r43, r42, r37
+  Move         r44, r43
+  // next = append(next, ruleBit(ruleNum, index))
+  Move         r45, r5
+  Move         r46, r44
+  Call2        r47, ruleBit, r45, r46
+  Append       r48, r22, r47
+  Move         r22, r48
+  // i = i + 1
+  Const        r24, 1
+  AddInt       r49, r2, r24
+  Move         r2, r49
+  SetGlobal    2,2,0,0
+  // while i < n {
+  Jump         L5
+L2:
+  // state = next
+  Move         r4, r22
+  // q = q - 1
+  Const        r24, 1
+  SubInt       r50, r14, r24
+  Move         r14, r50
+  // while q >= 0 {
+  Jump         L6
+L1:
+  // out = append(out, b)
+  Append       r51, r7, r12
+  Move         r7, r51
+  // p = p + 1
+  Const        r24, 1
+  AddInt       r52, r9, r24
+  Move         r9, r52
+  // while p < 10 {
+  Jump         L7
+L0:
+  // return out
+  Return       r7

@@ -1,0 +1,220 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun isPrime(n: int): bool {
+func isPrime (regs=16)
+  // if n < 2 { return false }
+  Const        r1, 2
+  Less         r2, r0, r1
+  JumpIfFalse  r2, L0
+  Const        r3, false
+  Return       r3
+L0:
+  // if n % 2 == 0 { return n == 2 }
+  Const        r1, 2
+  Mod          r4, r0, r1
+  Const        r5, 0
+  Equal        r6, r4, r5
+  JumpIfFalse  r6, L1
+  Const        r1, 2
+  Equal        r7, r0, r1
+  Return       r7
+L1:
+  // var d = 3
+  Const        r8, 3
+  Move         r9, r8
+L4:
+  // while d * d <= n {
+  MulInt       r10, r9, r9
+  LessEq       r11, r10, r0
+  JumpIfFalse  r11, L2
+  // if n % d == 0 { return false }
+  Mod          r12, r0, r9
+  Const        r5, 0
+  Equal        r13, r12, r5
+  JumpIfFalse  r13, L3
+  Const        r3, false
+  Return       r3
+L3:
+  // d = d + 2
+  Const        r1, 2
+  AddInt       r14, r9, r1
+  Move         r9, r14
+  // while d * d <= n {
+  Jump         L4
+L2:
+  // return true
+  Const        r15, true
+  Return       r15
+
+  // fun revInt(n: int): int {
+func revInt (regs=11)
+  // var r = 0
+  Const        r1, 0
+  Move         r2, r1
+  // var t = n
+  Move         r3, r0
+L1:
+  // while t > 0 {
+  Const        r1, 0
+  Less         r4, r1, r3
+  JumpIfFalse  r4, L0
+  // r = r * 10 + t % 10
+  Const        r5, 10
+  MulInt       r6, r2, r5
+  Const        r5, 10
+  Mod          r7, r3, r5
+  Add          r8, r6, r7
+  Move         r2, r8
+  // t = (t / 10) as int
+  Const        r5, 10
+  Div          r9, r3, r5
+  Cast         r10, r9, int
+  Move         r3, r10
+  // while t > 0 {
+  Jump         L1
+L0:
+  // return r
+  Return       r2
+
+  // fun main() {
+func main (regs=60)
+  // var emirps: list<int> = []
+  Const        r0, []
+  Move         r1, r0
+  // var n = 2
+  Const        r2, 2
+  Move         r3, r2
+L3:
+  // while len(emirps) < 10000 {
+  Len          r4, r1
+  Const        r5, 10000
+  LessInt      r6, r4, r5
+  JumpIfFalse  r6, L0
+  // if isPrime(n) {
+  Move         r7, r3
+  Call         r8, isPrime, r7
+  JumpIfFalse  r8, L1
+  // let r = revInt(n)
+  Move         r9, r3
+  Call         r10, revInt, r9
+  Move         r11, r10
+  // if r != n && isPrime(r) {
+  NotEqual     r12, r11, r3
+  Move         r13, r12
+  JumpIfFalse  r13, L2
+  Move         r14, r11
+  Call         r15, isPrime, r14
+  Move         r13, r15
+L2:
+  JumpIfFalse  r13, L1
+  // emirps = append(emirps, n)
+  Append       r16, r1, r3
+  Move         r1, r16
+L1:
+  // n = n + 1
+  Const        r17, 1
+  AddInt       r18, r3, r17
+  Move         r3, r18
+  // while len(emirps) < 10000 {
+  Jump         L3
+L0:
+  // var line = "   ["
+  Const        r19, "   ["
+  Move         r20, r19
+  // var i = 0
+  Const        r21, 0
+  Move         r22, r21
+L6:
+  // while i < 20 {
+  Const        r23, 20
+  LessInt      r24, r22, r23
+  JumpIfFalse  r24, L4
+  // line = line + str(emirps[i])
+  Index        r25, r1, r22
+  Str          r26, r25
+  Add          r27, r20, r26
+  Move         r20, r27
+  // if i < 19 { line = line + ", " }
+  Const        r28, 19
+  LessInt      r29, r22, r28
+  JumpIfFalse  r29, L5
+  Const        r30, ", "
+  Add          r31, r20, r30
+  Move         r20, r31
+L5:
+  // i = i + 1
+  Const        r17, 1
+  AddInt       r32, r22, r17
+  Move         r22, r32
+  // while i < 20 {
+  Jump         L6
+L4:
+  // line = line + "]"
+  Const        r33, "]"
+  Add          r34, r20, r33
+  Move         r20, r34
+  // print("First 20:")
+  Const        r35, "First 20:"
+  Print        r35
+  // print(line)
+  Print        r20
+  // line = "  ["
+  Const        r36, "  ["
+  Move         r20, r36
+  // for e in emirps {
+  IterPrep     r37, r1
+  Len          r38, r37
+  Const        r39, 0
+L10:
+  LessInt      r40, r39, r38
+  JumpIfFalse  r40, L7
+  Index        r41, r37, r39
+  Move         r42, r41
+  // if e >= 8000 { break }
+  Const        r43, 8000
+  LessEq       r44, r43, r42
+  JumpIfFalse  r44, L8
+  Jump         L7
+L8:
+  // if e >= 7700 {
+  Const        r45, 7700
+  LessEq       r46, r45, r42
+  JumpIfFalse  r46, L9
+  // line = line + str(e) + ", "
+  Str          r47, r42
+  Add          r48, r20, r47
+  Const        r30, ", "
+  Add          r49, r48, r30
+  Move         r20, r49
+L9:
+  // for e in emirps {
+  Const        r50, 1
+  AddInt       r51, r39, r50
+  Move         r39, r51
+  Jump         L10
+L7:
+  // line = line + "]"
+  Const        r33, "]"
+  Add          r52, r20, r33
+  Move         r20, r52
+  // print("Between 7700 and 8000:")
+  Const        r53, "Between 7700 and 8000:"
+  Print        r53
+  // print(line)
+  Print        r20
+  // print("10000th:")
+  Const        r54, "10000th:"
+  Print        r54
+  // print("   [" + str(emirps[9999]) + "]")
+  Const        r19, "   ["
+  Const        r55, 9999
+  Index        r56, r1, r55
+  Str          r57, r56
+  Add          r58, r19, r57
+  Const        r33, "]"
+  Add          r59, r58, r33
+  Print        r59
+  Return       r0

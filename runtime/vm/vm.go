@@ -125,6 +125,7 @@ const (
 	OpUpper
 	OpLower
 	OpReverse
+	OpPadStart
 	OpInput
 	OpFirst
 	OpCount
@@ -264,6 +265,8 @@ func (op Op) String() string {
 		return "Lower"
 	case OpReverse:
 		return "Reverse"
+	case OpPadStart:
+		return "PadStart"
 	case OpInput:
 		return "Input"
 	case OpFirst:
@@ -524,6 +527,8 @@ func (p *Program) Disassemble(src string) string {
 				fmt.Fprintf(&b, "%s, %s", formatReg(ins.A), formatReg(ins.B))
 			case OpReverse:
 				fmt.Fprintf(&b, "%s, %s", formatReg(ins.A), formatReg(ins.B))
+			case OpPadStart:
+				fmt.Fprintf(&b, "%s, %s, %s, %s", formatReg(ins.A), formatReg(ins.B), formatReg(ins.C), formatReg(ins.D))
 			case OpInput:
 				fmt.Fprintf(&b, "%s", formatReg(ins.A))
 			case OpIterPrep:
@@ -1585,6 +1590,35 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 			default:
 				return Value{}, m.newError(fmt.Errorf("reverse expects list or string"), trace, ins.Line)
 			}
+		case OpPadStart:
+			s := fr.regs[ins.B]
+			ln := fr.regs[ins.C]
+			pad := fr.regs[ins.D]
+			if s.Tag != ValueStr || ln.Tag != ValueInt || pad.Tag != ValueStr {
+				return Value{}, m.newError(fmt.Errorf("padStart expects (string, int, string)"), trace, ins.Line)
+			}
+			r := []rune(s.Str)
+			if len(r) >= ln.Int {
+				fr.regs[ins.A] = s
+				break
+			}
+			pr := []rune(pad.Str)
+			if len(pr) == 0 {
+				pr = []rune(" ")
+			}
+			need := ln.Int - len(r)
+			buf := make([]rune, 0, ln.Int)
+			for need > 0 {
+				if need >= len(pr) {
+					buf = append(buf, pr...)
+					need -= len(pr)
+				} else {
+					buf = append(buf, pr[:need]...)
+					need = 0
+				}
+			}
+			buf = append(buf, r...)
+			fr.regs[ins.A] = Value{Tag: ValueStr, Str: string(buf)}
 		case OpSHA256:
 			v := fr.regs[ins.B]
 			var data []byte
@@ -2603,7 +2637,7 @@ func (fc *funcCompiler) emit(pos lexer.Position, i Instr) {
 		fc.tags[i.A] = tagInt
 	case OpJSON, OpPrint, OpPrint2, OpPrintN:
 		// no result
-	case OpAppend, OpStr, OpUpper, OpLower, OpReverse, OpInput, OpFirst, OpSHA256:
+	case OpAppend, OpStr, OpUpper, OpLower, OpReverse, OpPadStart, OpInput, OpFirst, OpSHA256:
 		fc.tags[i.A] = tagUnknown
 	case OpLoad:
 		fc.tags[i.A] = tagUnknown
@@ -3870,6 +3904,13 @@ func (fc *funcCompiler) compilePrimary(p *parser.Primary) int {
 			arg := fc.compileExpr(p.Call.Args[0])
 			dst := fc.newReg()
 			fc.emit(p.Pos, Instr{Op: OpReverse, A: dst, B: arg})
+			return dst
+		case "padStart":
+			str := fc.compileExpr(p.Call.Args[0])
+			length := fc.compileExpr(p.Call.Args[1])
+			pad := fc.compileExpr(p.Call.Args[2])
+			dst := fc.newReg()
+			fc.emit(p.Pos, Instr{Op: OpPadStart, A: dst, B: str, C: length, D: pad})
 			return dst
 		case "sha256":
 			arg := fc.compileExpr(p.Call.Args[0])
@@ -7061,6 +7102,35 @@ func (fc *funcCompiler) foldCallValue(call *parser.CallExpr) (Value, bool) {
 				out[i], out[j] = out[j], out[i]
 			}
 			return Value{Tag: ValueList, List: out}, true
+		}
+		return Value{}, false
+	case "padStart":
+		if len(args) != 3 {
+			return Value{}, false
+		}
+		s, ln, pad := args[0], args[1], args[2]
+		if s.Tag == ValueStr && ln.Tag == ValueInt && pad.Tag == ValueStr {
+			r := []rune(s.Str)
+			if len(r) >= ln.Int {
+				return Value{Tag: ValueStr, Str: s.Str}, true
+			}
+			pr := []rune(pad.Str)
+			if len(pr) == 0 {
+				pr = []rune(" ")
+			}
+			need := ln.Int - len(r)
+			out := make([]rune, 0, ln.Int)
+			for need > 0 {
+				if need >= len(pr) {
+					out = append(out, pr...)
+					need -= len(pr)
+				} else {
+					out = append(out, pr[:need]...)
+					need = 0
+				}
+			}
+			out = append(out, r...)
+			return Value{Tag: ValueStr, Str: string(out)}, true
 		}
 		return Value{}, false
 	case "slice":
