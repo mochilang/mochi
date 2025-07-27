@@ -1,4 +1,0 @@
-dotnet run: exit status 1
-/tmp/TestCSTranspiler_Rosetta_Golden617366246/001/Program.cs(41,18): error CS1503: Argument 2: cannot convert from 'object[]' to 'long[]' [/tmp/TestCSTranspiler_Rosetta_Golden617366246/001/app.csproj]
-
-The build failed. Fix the build errors and run again.

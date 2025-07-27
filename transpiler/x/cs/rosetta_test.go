@@ -152,10 +152,7 @@ func updateRosetta() {
 		return d.String()
 	}
 	humanBytes := func(n int64) string {
-		if n < 1024 {
-			return fmt.Sprintf("%dB", n)
-		}
-		units := []string{"KB", "MB", "GB", "TB", "PB", "EB"}
+		units := []string{"B", "KB", "MB", "GB", "TB", "PB", "EB"}
 		v := float64(n)
 		u := 0
 		for v >= 1024 && u < len(units)-1 {
