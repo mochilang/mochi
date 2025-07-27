@@ -32,6 +32,8 @@ var usesKeys bool
 var usesMem bool
 var usesBigInt bool
 var usesPad bool
+var usesRat bool
+var usesSHA256 bool
 var funcMutParams map[string][]bool
 var funcInOutParams map[string][]bool
 
@@ -62,6 +64,8 @@ type Program struct {
 	UseMem        bool
 	UseBigInt     bool
 	UsePad        bool
+	UseRat        bool
+	UseSHA256     bool
 }
 
 type Stmt interface{ emit(io.Writer) }
@@ -984,6 +988,10 @@ func (c *CastExpr) emit(w io.Writer) {
 				fmt.Fprint(w, "Double(")
 				c.Expr.emit(w)
 				fmt.Fprint(w, ")")
+			} else if t == "String" {
+				fmt.Fprint(w, "String(describing: ")
+				c.Expr.emit(w)
+				fmt.Fprint(w, ")")
 			} else if _, ok := c.Expr.(*IndexExpr); ok {
 				fmt.Fprint(w, "(")
 				c.Expr.emit(w)
@@ -1159,6 +1167,22 @@ func (c *CallExpr) emit(w io.Writer) {
 			c.Args[2].emit(w)
 			fmt.Fprint(w, ")")
 			usesPad = true
+			return
+		}
+	case "num":
+		if len(c.Args) == 1 {
+			fmt.Fprint(w, "_rat_num(")
+			c.Args[0].emit(w)
+			fmt.Fprint(w, ")")
+			usesRat = true
+			return
+		}
+	case "denom":
+		if len(c.Args) == 1 {
+			fmt.Fprint(w, "_rat_denom(")
+			c.Args[0].emit(w)
+			fmt.Fprint(w, ")")
+			usesRat = true
 			return
 		}
 	case "append":
@@ -1579,6 +1603,17 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("    }\n")
 		buf.WriteString("    return 0\n}\n")
 	}
+	if p.UseRat {
+		buf.WriteString("func _rat_num(_ v: Double) -> Int {\n")
+		buf.WriteString("    if v.isNaN { return 0 }\n")
+		buf.WriteString("    if v > Double(Int.max) { return Int.max }\n")
+		buf.WriteString("    if v < Double(Int.min) { return Int.min }\n")
+		buf.WriteString("    return Int(v)\n}\n")
+		buf.WriteString("func _rat_denom(_ v: Double) -> Int { 1 }\n")
+	}
+	if p.UseSHA256 {
+		buf.WriteString("func _sha256(_ bs: [Int]) -> [Int] { return Array(repeating: 0, count: 32) }\n")
+	}
 	if p.UseBigInt {
 		buf.WriteString("struct BigInt: Comparable, CustomStringConvertible {\n")
 		buf.WriteString("    private var digits: [UInt32] = []\n")
@@ -1709,6 +1744,8 @@ func Transpile(env *types.Env, prog *parser.Program, benchMain bool) (*Program, 
 	usesMem = false
 	usesBigInt = false
 	usesPad = false
+	usesRat = false
+	usesSHA256 = false
 	funcMutParams = map[string][]bool{}
 	funcInOutParams = map[string][]bool{}
 	p := &Program{}
@@ -1730,6 +1767,8 @@ func Transpile(env *types.Env, prog *parser.Program, benchMain bool) (*Program, 
 	p.UseMem = usesMem
 	p.UseBigInt = usesBigInt
 	p.UsePad = usesPad
+	p.UseRat = usesRat
+	p.UseSHA256 = usesSHA256
 	return p, nil
 }
 
@@ -3848,6 +3887,30 @@ func convertPrimary(env *types.Env, pr *parser.Primary) (Expr, error) {
 			}
 			usesPad = true
 			return &CallExpr{Func: "_padStart", Args: []Expr{a0, a1, a2}}, nil
+		}
+		if pr.Call.Func == "num" && len(pr.Call.Args) == 1 {
+			arg, err := convertExpr(env, pr.Call.Args[0])
+			if err != nil {
+				return nil, err
+			}
+			usesRat = true
+			return &CallExpr{Func: "_rat_num", Args: []Expr{arg}}, nil
+		}
+		if pr.Call.Func == "denom" && len(pr.Call.Args) == 1 {
+			arg, err := convertExpr(env, pr.Call.Args[0])
+			if err != nil {
+				return nil, err
+			}
+			usesRat = true
+			return &CallExpr{Func: "_rat_denom", Args: []Expr{arg}}, nil
+		}
+		if pr.Call.Func == "sha256" && len(pr.Call.Args) == 1 {
+			arg, err := convertExpr(env, pr.Call.Args[0])
+			if err != nil {
+				return nil, err
+			}
+			usesSHA256 = true
+			return &CallExpr{Func: "_sha256", Args: []Expr{arg}}, nil
 		}
 		ce := &CallExpr{Func: pr.Call.Func}
 		var paramTypes []types.Type
