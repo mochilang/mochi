@@ -1413,7 +1413,14 @@ func isMapExpr(e Expr, env *types.Env, ctx *context) bool {
 				}
 				if env != nil {
 					if t, err := env.GetVar(name); err == nil {
-						if _, ok := t.(types.StructType); ok {
+						if st, ok := t.(types.StructType); ok {
+							if sl, ok2 := v.Index.(*StringLit); ok2 {
+								if ft := types.FieldType(st, []string{sl.Value}); ft != nil {
+									if _, ok := ft.(types.MapType); ok {
+										return true
+									}
+								}
+							}
 							return false
 						}
 					}
@@ -2181,10 +2188,10 @@ func (f *FunRef) emit(w io.Writer) {
 }
 
 func (a *ApplyExpr) emit(w io.Writer) {
-	need := false
+	need := true
 	switch a.Fun.(type) {
-	case *CallExpr, *ApplyExpr:
-		need = true
+	case *NameRef, *FunRef:
+		need = false
 	}
 	if need {
 		io.WriteString(w, "(")
@@ -3796,6 +3803,11 @@ func convertFunStmt(fn *parser.FunStmt, env *types.Env, ctx *context) (*FuncDecl
 	for i, p := range fn.Params {
 		params[i] = fctx.newAlias(p.Name)
 		fctx.addParam(p.Name)
+		if p.Type != nil {
+			child.SetVar(p.Name, types.ResolveTypeRef(p.Type, env), false)
+		} else {
+			child.SetVar(p.Name, types.AnyType{}, false)
+		}
 		if p.Type != nil {
 			if p.Type.Simple != nil && *p.Type.Simple == "string" {
 				fctx.setStringVar(p.Name, true)
