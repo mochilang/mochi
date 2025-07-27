@@ -1701,6 +1701,7 @@ func Emit(p *Program, benchMain bool) []byte {
 	buf.WriteString(sliceHelper(1))
 	buf.WriteString(lenHelper(1))
 	buf.WriteString(bigRatHelper(1))
+	buf.WriteString(sha256Helper(1))
 	var globals []Stmt
 	var funcs []Stmt
 	var main []Stmt
@@ -3237,20 +3238,12 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 				}
 				diff = &BinaryExpr{Left: left, Op: "-", Right: right}
 			} else {
-				var lengthCall *CallExpr
-				switch typ.(type) {
-				case types.StringType:
-					lengthCall = &CallExpr{Func: "String.length", Args: []Expr{base}}
-				case types.ListType:
-					lengthCall = &CallExpr{Func: "length", Args: []Expr{base}}
-				default:
-					lengthCall = &CallExpr{Func: "Enum.count", Args: []Expr{base}}
-				}
+				lengthCall := &CallExpr{Func: "_len", Args: []Expr{base}}
 				diff = &BinaryExpr{Left: lengthCall, Op: "-", Right: start}
 			}
 			switch tt := typ.(type) {
 			case types.StringType:
-				expr = &CallExpr{Func: "String.slice", Args: []Expr{base, start, diff}}
+				expr = &CallExpr{Func: "_slice", Args: []Expr{base, start, diff}}
 				typ = types.StringType{}
 			case types.ListType:
 				expr = &CallExpr{Func: "_slice", Args: []Expr{base, start, diff}}
@@ -3450,15 +3443,13 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 				}
 			}
 		case "len":
-			name = "length"
+			name = "_len"
 			if len(args) == 1 {
-				// Handle map indexing which may return nil when key is missing.
 				if idx, ok := args[0].(*IndexExpr); ok && idx.UseMapSyntax {
 					valT := types.TypeOfExpr(p.Call.Args[0], env)
 					var def Expr = &ListLit{}
 					if types.IsStringType(valT) {
 						def = &StringLit{Value: ""}
-						name = "String.length"
 					}
 					args[0] = &CallExpr{Func: "Map.get", Args: []Expr{idx.Target, idx.Index, def}}
 				}
@@ -3466,16 +3457,7 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 				t := types.TypeOfExpr(p.Call.Args[0], env)
 				if _, ok := t.(types.MapType); ok {
 					name = "map_size"
-				} else if types.IsStringType(t) || isStringExpr(args[0]) {
-					name = "String.length"
-				} else if v, ok := isSimpleIdent(p.Call.Args[0]); ok {
-					if vt, err := env.GetVar(v); err == nil && types.IsStringType(vt) {
-						name = "String.length"
-					}
 				}
-			}
-			if name == "length" {
-				name = "_len"
 			}
 		case "sum":
 			name = "Enum.sum"
@@ -3553,7 +3535,7 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 		case "substring":
 			if len(args) == 3 {
 				diff := &BinaryExpr{Left: args[2], Op: "-", Right: &GroupExpr{Expr: args[1]}}
-				return &CallExpr{Func: "String.slice", Args: []Expr{args[0], args[1], diff}}, nil
+				return &CallExpr{Func: "_slice", Args: []Expr{args[0], args[1], diff}}, nil
 			}
 		case "padStart":
 			if len(args) == 3 {
@@ -3570,6 +3552,21 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 		case "exists":
 			if len(args) == 1 {
 				return &CallExpr{Func: "Enum.any?", Args: []Expr{args[0]}}, nil
+			}
+		case "contains":
+			if len(args) == 2 {
+				t := types.TypeOfExpr(p.Call.Args[0], env)
+				if _, ok := t.(types.MapType); ok {
+					return &CallExpr{Func: "Map.has_key?", Args: []Expr{args[0], args[1]}}, nil
+				}
+				if types.IsStringType(t) || isStringExpr(args[0]) {
+					return &CallExpr{Func: "String.contains?", Args: []Expr{args[0], args[1]}}, nil
+				}
+				return &CallExpr{Func: "Enum.member?", Args: []Expr{args[0], args[1]}}, nil
+			}
+		case "sha256":
+			if len(args) == 1 {
+				return &CallExpr{Func: "_sha256", Args: []Expr{args[0]}}, nil
 			}
 		case "json":
 			if len(args) == 1 {
@@ -3840,11 +3837,24 @@ func nowHelper(indent int) string {
 func sliceHelper(indent int) string {
 	var buf bytes.Buffer
 	pad := strings.Repeat("  ", indent)
+	buf.WriteString(pad + "defp _clamp_slice(n, start, stop) do\n")
+	buf.WriteString(pad + "  start = if start < 0, do: start + n, else: start\n")
+	buf.WriteString(pad + "  stop = if stop < 0, do: stop + n, else: stop\n")
+	buf.WriteString(pad + "  start = max(min(start, n), 0)\n")
+	buf.WriteString(pad + "  stop = min(max(stop, start), n)\n")
+	buf.WriteString(pad + "  {start, stop}\n")
+	buf.WriteString(pad + "end\n")
 	buf.WriteString(pad + "defp _slice(base, start, len) do\n")
 	buf.WriteString(pad + "  cond do\n")
-	buf.WriteString(pad + "    is_binary(base) -> String.slice(base, start, len)\n")
-	buf.WriteString(pad + "    len == 1 -> Enum.slice(base, start, len)\n")
-	buf.WriteString(pad + "    true -> Enum.slice(base, start, len)\n")
+	buf.WriteString(pad + "    is_binary(base) ->\n")
+	buf.WriteString(pad + "      chars = String.graphemes(base)\n")
+	buf.WriteString(pad + "      n = length(chars)\n")
+	buf.WriteString(pad + "      {s, e} = _clamp_slice(n, start, start + len)\n")
+	buf.WriteString(pad + "      Enum.slice(chars, s, e - s) |> Enum.join(\"\")\n")
+	buf.WriteString(pad + "    true ->\n")
+	buf.WriteString(pad + "      n = length(base)\n")
+	buf.WriteString(pad + "      {s, e} = _clamp_slice(n, start, start + len)\n")
+	buf.WriteString(pad + "      Enum.slice(base, s, e - s)\n")
 	buf.WriteString(pad + "  end\n")
 	buf.WriteString(pad + "end\n")
 	return buf.String()
@@ -3878,7 +3888,11 @@ func lenHelper(indent int) string {
 	var buf bytes.Buffer
 	pad := strings.Repeat("  ", indent)
 	buf.WriteString(pad + "defp _len(x) do\n")
-	buf.WriteString(pad + "  (if is_binary(x), do: String.length(x), else: length(x))\n")
+	buf.WriteString(pad + "  cond do\n")
+	buf.WriteString(pad + "    x == nil -> 0\n")
+	buf.WriteString(pad + "    is_binary(x) -> String.length(x)\n")
+	buf.WriteString(pad + "    true -> length(x)\n")
+	buf.WriteString(pad + "  end\n")
 	buf.WriteString(pad + "end\n")
 	return buf.String()
 }
@@ -3922,6 +3936,16 @@ func bigRatHelper(indent int) string {
 	buf.WriteString(pad + "defp _bigrat_neg(a) do\n")
 	buf.WriteString(pad + "  {n, d} = a\n")
 	buf.WriteString(pad + "  {-n, d}\n")
+	buf.WriteString(pad + "end\n")
+	return buf.String()
+}
+
+func sha256Helper(indent int) string {
+	var buf bytes.Buffer
+	pad := strings.Repeat("  ", indent)
+	buf.WriteString(pad + "defp _sha256(bs) do\n")
+	buf.WriteString(pad + "  bin = :erlang.list_to_binary(bs)\n")
+	buf.WriteString(pad + "  :crypto.hash(:sha256, bin) |> :erlang.binary_to_list()\n")
 	buf.WriteString(pad + "end\n")
 	return buf.String()
 }
