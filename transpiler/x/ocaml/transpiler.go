@@ -2656,7 +2656,7 @@ func (p *Program) Emit() []byte {
 }
 
 // Transpile converts a Mochi program into a simple OCaml AST.
-func transpileStmt(st *parser.Statement, env *types.Env, vars map[string]VarInfo) (Stmt, error) {
+func transpileStmt(st *parser.Statement, env *types.Env, vars map[string]VarInfo, mutated map[string]bool) (Stmt, error) {
 	switch {
 	case st.Import != nil:
 		if st.Import.Lang != nil {
@@ -2710,7 +2710,7 @@ func transpileStmt(st *parser.Statement, env *types.Env, vars map[string]VarInfo
 		if st.Let.Type != nil {
 			typ = typeRefString(st.Let.Type)
 			if typ == "" {
-				typ = "int"
+				typ = guessTypeFromName(st.Var.Name)
 			}
 		} else {
 			typ = valTyp
@@ -2731,8 +2731,11 @@ func transpileStmt(st *parser.Statement, env *types.Env, vars map[string]VarInfo
 		if strings.HasPrefix(typ, "func-") {
 			vinfo.ret = strings.TrimPrefix(typ, "func-")
 		}
+		if mutated[st.Let.Name] {
+			vinfo.ref = true
+		}
 		stmt := Stmt(&LetStmt{Name: st.Let.Name, Expr: expr})
-		if strings.HasPrefix(typ, "list-") || strings.HasPrefix(typ, "map") {
+		if vinfo.ref || strings.HasPrefix(typ, "list-") || strings.HasPrefix(typ, "map") {
 			vinfo.ref = true
 			stmt = &VarStmt{Name: st.Let.Name, Expr: expr}
 		}
@@ -2799,6 +2802,9 @@ func transpileStmt(st *parser.Statement, env *types.Env, vars map[string]VarInfo
 		valExpr, valTyp, err := convertExpr(st.Assign.Value, env, vars)
 		if err != nil {
 			return nil, err
+		}
+		if info.typ == "int" && valTyp == "" {
+			valExpr = &CastExpr{Expr: valExpr, Type: "obj_to_int"}
 		}
 		if len(st.Assign.Field) > 0 && len(st.Assign.Index) == 0 {
 			key := &StringLit{Value: st.Assign.Field[0].Name}
@@ -2910,7 +2916,7 @@ func transpileStmt(st *parser.Statement, env *types.Env, vars map[string]VarInfo
 		}
 		var elseStmts []Stmt
 		if st.If.ElseIf != nil {
-			elseStmt, err := transpileStmt(&parser.Statement{If: st.If.ElseIf}, env, vars)
+			elseStmt, err := transpileStmt(&parser.Statement{If: st.If.ElseIf}, env, vars, mutated)
 			if err != nil {
 				return nil, err
 			}
@@ -3173,9 +3179,11 @@ func transpileStmt(st *parser.Statement, env *types.Env, vars map[string]VarInfo
 }
 
 func transpileStmts(list []*parser.Statement, env *types.Env, vars map[string]VarInfo) ([]Stmt, error) {
+	mutated := map[string]bool{}
+	collectMutations(list, mutated)
 	var out []Stmt
 	for _, st := range list {
-		compiled, err := transpileStmt(st, env, vars)
+		compiled, err := transpileStmt(st, env, vars, mutated)
 		if err != nil {
 			return nil, err
 		}
@@ -3722,11 +3730,16 @@ func convertPostfix(p *parser.PostfixExpr, env *types.Env, vars map[string]VarIn
 				expr = &IndexExpr{Col: expr, Index: idxExpr, Typ: "", ColTyp: typ}
 				typ = ""
 			} else {
-				expr = &IndexExpr{Col: expr, Index: idxExpr, Typ: typ, ColTyp: typ}
-				if typ == "string" {
-					typ = "string"
+				if typ == "" {
+					expr = &IndexExpr{Col: expr, Index: idxExpr, Typ: "", ColTyp: "list"}
+					typ = ""
 				} else {
-					typ = "int"
+					expr = &IndexExpr{Col: expr, Index: idxExpr, Typ: typ, ColTyp: typ}
+					if typ == "string" {
+						typ = "string"
+					} else {
+						typ = "int"
+					}
 				}
 			}
 			i++

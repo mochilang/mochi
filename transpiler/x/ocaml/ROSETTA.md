@@ -2,7 +2,7 @@
 
 This directory contains OCaml code generated from Rosetta Code programs in `tests/rosetta/x/Mochi`.
 
-Completed programs: 87/465
+Completed programs: 88/467
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -88,39 +88,39 @@ Completed programs: 87/465
 | 80 | assertions | ✓ | 25.0µs | 208B |
 | 81 | associative-array-creation | ✓ | 136.0µs | 368B |
 | 82 | associative-array-iteration | ✓ | 125.0µs | 1.29KB |
-| 83 | associative-array-merging | error |  |  |
+| 83 | associative-array-merging |   |  |  |
 | 84 | atomic-updates | ✓ | 253.0µs | 21.29KB |
-| 85 | attractive-numbers | ✓ |  |  |
+| 85 | attractive-numbers |   |  |  |
 | 86 | average-loop-length | ✓ | 898.0ms | 554.03MB |
-| 87 | averages-arithmetic-mean | error |  |  |
+| 87 | averages-arithmetic-mean |   |  |  |
 | 88 | averages-mean-time-of-day | ✓ | 195.0µs | 8.58KB |
 | 89 | averages-median-1 | ✓ | 286.0µs | 4.15KB |
 | 90 | averages-median-2 | ✓ | 198.0µs | 3.38KB |
-| 91 | averages-median-3 | error |  |  |
+| 91 | averages-median-3 |   |  |  |
 | 92 | averages-mode | ✓ | 138.0µs | 2.66KB |
 | 93 | averages-pythagorean-means | ✓ | 220.0µs | 12.70KB |
 | 94 | averages-root-mean-square | ✓ | 128.0µs | 912B |
 | 95 | averages-simple-moving-average | ✓ | 446.0µs | 18.70KB |
-| 96 | avl-tree | error |  |  |
-| 97 | b-zier-curves-intersections | error |  |  |
+| 96 | avl-tree |   |  |  |
+| 97 | b-zier-curves-intersections |   |  |  |
 | 98 | babbage-problem | ✓ | 1.0ms | 440B |
-| 99 | babylonian-spiral | error |  |  |
+| 99 | babylonian-spiral |   |  |  |
 | 100 | balanced-brackets | ✓ | 557.0µs | 76.14KB |
-| 101 | balanced-ternary | error |  |  |
-| 102 | barnsley-fern | ✓ |  |  |
-| 103 | base64-decode-data | error |  |  |
-| 104 | bell-numbers | error |  |  |
-| 105 | benfords-law | error |  |  |
-| 106 | bernoulli-numbers | error |  |  |
-| 107 | best-shuffle | error |  |  |
-| 108 | bifid-cipher | error |  |  |
+| 101 | balanced-ternary |   |  |  |
+| 102 | barnsley-fern |   |  |  |
+| 103 | base64-decode-data |   |  |  |
+| 104 | bell-numbers |   |  |  |
+| 105 | benfords-law |   |  |  |
+| 106 | bernoulli-numbers |   |  |  |
+| 107 | best-shuffle |   |  |  |
+| 108 | bifid-cipher |   |  |  |
 | 109 | bin-given-limits | ✓ | 2.0ms | 163.36KB |
 | 110 | binary-digits | ✓ | 137.0µs | 1.73KB |
 | 111 | binary-search | ✓ | 126.0µs | 552B |
-| 112 | binary-strings |   |  |  |
-| 113 | bioinformatics-base-count |   |  |  |
-| 114 | bioinformatics-global-alignment |   |  |  |
-| 115 | bioinformatics-sequence-mutation |   |  |  |
+| 112 | binary-strings | ✓ | 108.0µs | 5.59KB |
+| 113 | bioinformatics-base-count | ✓ | 144.0µs | 10.45KB |
+| 114 | bioinformatics-global-alignment | ✓ | 1.45s | 463.61MB |
+| 115 | bioinformatics-sequence-mutation | error |  |  |
 | 116 | biorhythms |   |  |  |
 | 117 | bitcoin-address-validation |   |  |  |
 | 118 | bitmap-b-zier-curves-cubic |   |  |  |
@@ -414,61 +414,63 @@ Completed programs: 87/465
 | 406 | fibonacci-sequence-2 |   |  |  |
 | 407 | fibonacci-sequence-3 |   |  |  |
 | 408 | fibonacci-sequence-4 |   |  |  |
-| 409 | fibonacci-word-fractal |   |  |  |
-| 410 | fibonacci-word |   |  |  |
-| 411 | file-extension-is-in-extensions-list |   |  |  |
-| 412 | file-input-output-1 |   |  |  |
-| 413 | file-input-output-2 |   |  |  |
-| 414 | file-modification-time |   |  |  |
-| 415 | file-size-distribution |   |  |  |
-| 416 | file-size |   |  |  |
-| 417 | filter |   |  |  |
-| 418 | find-chess960-starting-position-identifier |   |  |  |
-| 419 | find-common-directory-path |   |  |  |
-| 420 | find-duplicate-files |   |  |  |
-| 421 | find-if-a-point-is-within-a-triangle |   |  |  |
-| 422 | find-largest-left-truncatable-prime-in-a-given-base |   |  |  |
-| 423 | find-limit-of-recursion |   |  |  |
-| 424 | find-palindromic-numbers-in-both-binary-and-ternary-bases |   |  |  |
-| 425 | find-the-intersection-of-a-line-with-a-plane |   |  |  |
-| 426 | find-the-intersection-of-two-lines |   |  |  |
-| 427 | find-the-last-sunday-of-each-month |   |  |  |
-| 428 | find-the-missing-permutation |   |  |  |
-| 429 | fivenum-1 |   |  |  |
-| 430 | fivenum-2 |   |  |  |
-| 431 | fixed-length-records-1 |   |  |  |
-| 432 | fixed-length-records-2 |   |  |  |
-| 433 | fizzbuzz-1 |   |  |  |
-| 434 | fizzbuzz-2 |   |  |  |
-| 435 | flatten-a-list-1 |   |  |  |
-| 436 | flatten-a-list-2 |   |  |  |
-| 437 | flipping-bits-game |   |  |  |
-| 438 | flow-control-structures-1 |   |  |  |
-| 439 | flow-control-structures-2 |   |  |  |
-| 440 | flow-control-structures-3 |   |  |  |
-| 441 | flow-control-structures-4 |   |  |  |
-| 442 | floyd-warshall-algorithm |   |  |  |
-| 443 | floyds-triangle |   |  |  |
-| 444 | forest-fire |   |  |  |
-| 445 | fork |   |  |  |
-| 446 | ftp |   |  |  |
-| 447 | gamma-function |   |  |  |
-| 448 | general-fizzbuzz |   |  |  |
-| 449 | generic-swap |   |  |  |
-| 450 | get-system-command-output |   |  |  |
-| 451 | giuga-numbers |   |  |  |
-| 452 | globally-replace-text-in-several-files |   |  |  |
-| 453 | goldbachs-comet |   |  |  |
-| 454 | golden-ratio-convergence |   |  |  |
-| 455 | graph-colouring |   |  |  |
-| 456 | gray-code |   |  |  |
-| 457 | http |   |  |  |
-| 458 | image-noise |   |  |  |
-| 459 | loops-increment-loop-index-within-loop-body |   |  |  |
-| 460 | md5 |   |  |  |
-| 461 | nim-game |   |  |  |
-| 462 | plasma-effect |   |  |  |
-| 463 | sorting-algorithms-bubble-sort |   |  |  |
-| 464 | window-management |   |  |  |
-| 465 | zumkeller-numbers |   |  |  |
-Last updated 2025-07-27 17:23 +0700
+| 409 | fibonacci-sequence-5 |   |  |  |
+| 410 | fibonacci-word-fractal |   |  |  |
+| 411 | fibonacci-word |   |  |  |
+| 412 | file-extension-is-in-extensions-list |   |  |  |
+| 413 | file-input-output-1 |   |  |  |
+| 414 | file-input-output-2 |   |  |  |
+| 415 | file-input-output-3 |   |  |  |
+| 416 | file-modification-time |   |  |  |
+| 417 | file-size-distribution |   |  |  |
+| 418 | file-size |   |  |  |
+| 419 | filter |   |  |  |
+| 420 | find-chess960-starting-position-identifier |   |  |  |
+| 421 | find-common-directory-path |   |  |  |
+| 422 | find-duplicate-files |   |  |  |
+| 423 | find-if-a-point-is-within-a-triangle |   |  |  |
+| 424 | find-largest-left-truncatable-prime-in-a-given-base |   |  |  |
+| 425 | find-limit-of-recursion |   |  |  |
+| 426 | find-palindromic-numbers-in-both-binary-and-ternary-bases |   |  |  |
+| 427 | find-the-intersection-of-a-line-with-a-plane |   |  |  |
+| 428 | find-the-intersection-of-two-lines |   |  |  |
+| 429 | find-the-last-sunday-of-each-month |   |  |  |
+| 430 | find-the-missing-permutation |   |  |  |
+| 431 | fivenum-1 |   |  |  |
+| 432 | fivenum-2 |   |  |  |
+| 433 | fixed-length-records-1 |   |  |  |
+| 434 | fixed-length-records-2 |   |  |  |
+| 435 | fizzbuzz-1 |   |  |  |
+| 436 | fizzbuzz-2 |   |  |  |
+| 437 | flatten-a-list-1 |   |  |  |
+| 438 | flatten-a-list-2 |   |  |  |
+| 439 | flipping-bits-game |   |  |  |
+| 440 | flow-control-structures-1 |   |  |  |
+| 441 | flow-control-structures-2 |   |  |  |
+| 442 | flow-control-structures-3 |   |  |  |
+| 443 | flow-control-structures-4 |   |  |  |
+| 444 | floyd-warshall-algorithm |   |  |  |
+| 445 | floyds-triangle |   |  |  |
+| 446 | forest-fire |   |  |  |
+| 447 | fork |   |  |  |
+| 448 | ftp |   |  |  |
+| 449 | gamma-function |   |  |  |
+| 450 | general-fizzbuzz |   |  |  |
+| 451 | generic-swap |   |  |  |
+| 452 | get-system-command-output |   |  |  |
+| 453 | giuga-numbers |   |  |  |
+| 454 | globally-replace-text-in-several-files |   |  |  |
+| 455 | goldbachs-comet |   |  |  |
+| 456 | golden-ratio-convergence |   |  |  |
+| 457 | graph-colouring |   |  |  |
+| 458 | gray-code |   |  |  |
+| 459 | http |   |  |  |
+| 460 | image-noise |   |  |  |
+| 461 | loops-increment-loop-index-within-loop-body |   |  |  |
+| 462 | md5 |   |  |  |
+| 463 | nim-game |   |  |  |
+| 464 | plasma-effect |   |  |  |
+| 465 | sorting-algorithms-bubble-sort |   |  |  |
+| 466 | window-management |   |  |  |
+| 467 | zumkeller-numbers |   |  |  |
+Last updated 2025-07-27 21:41 +0700
