@@ -1,180 +1,180 @@
 # Rosetta C# Transpiler Output
 
-Completed programs: 203/465
-Last updated: 2025-07-27 16:11 +0700
+Completed programs: 205/465
+Last updated: 2025-07-27 16:28 +0700
 
 ## Checklist
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
-| 1 | 100-doors-2 | ✓ | 2.465ms | 32.1MB |
-| 2 | 100-doors-3 | ✓ | 2.266ms | 24.1MB |
-| 3 | 100-doors | ✓ | 16.294ms | 2.3GB |
-| 4 | 100-prisoners | ✓ | 176.496ms | 1.4GB |
-| 5 | 15-puzzle-game | ✓ | 3.183ms | 24.1MB |
-| 6 | 15-puzzle-solver | ✓ | 2.292ms | 16.0MB |
-| 7 | 2048 | ✓ | 3.004ms | 69.0MB |
-| 8 | 21-game | ✓ | 2.772ms | 24.1MB |
-| 9 | 24-game-solve | ✓ | 23.015ms | 13.9GB |
-| 10 | 24-game | ✓ | 16.84ms | 2.1GB |
-| 11 | 4-rings-or-4-squares-puzzle | ✓ | 15.268ms | 16.7GB |
-| 12 | 9-billion-names-of-god-the-integer | ✓ | 567.108ms | 186.3GB |
-| 13 | 99-bottles-of-beer-2 | ✓ | 7.373ms | 3.1GB |
-| 14 | 99-bottles-of-beer | ✓ | 3.374ms | 52.9MB |
-| 15 | DNS-query | ✓ | 7.049ms | 2.3GB |
+| 1 | 100-doors-2 | ✓ | 2.465ms | 32.1KB |
+| 2 | 100-doors-3 | ✓ | 2.266ms | 24.1KB |
+| 3 | 100-doors | ✓ | 16.294ms | 2.3MB |
+| 4 | 100-prisoners | ✓ | 176.496ms | 1.4MB |
+| 5 | 15-puzzle-game | ✓ | 3.183ms | 24.1KB |
+| 6 | 15-puzzle-solver | ✓ | 2.292ms | 16.0KB |
+| 7 | 2048 | ✓ | 3.004ms | 69.0KB |
+| 8 | 21-game | ✓ | 2.772ms | 24.1KB |
+| 9 | 24-game-solve | ✓ | 23.015ms | 13.9MB |
+| 10 | 24-game | ✓ | 16.84ms | 2.1MB |
+| 11 | 4-rings-or-4-squares-puzzle | ✓ | 15.268ms | 16.7MB |
+| 12 | 9-billion-names-of-god-the-integer | ✓ | 567.108ms | 186.3MB |
+| 13 | 99-bottles-of-beer-2 | ✓ | 7.373ms | 3.1MB |
+| 14 | 99-bottles-of-beer | ✓ | 3.374ms | 52.9KB |
+| 15 | DNS-query | ✓ | 7.049ms | 2.3MB |
 | 16 | Duffinian-numbers |   |  |  |
-| 17 | a+b | ✓ | 4.344ms | 24.1MB |
-| 18 | abbreviations-automatic | ✓ | 5.738ms | 1.1GB |
-| 19 | abbreviations-easy | ✓ | 6.092ms | 133.0MB |
-| 20 | abbreviations-simple | ✓ | 21.837ms | 1.5GB |
-| 21 | abc-problem | ✓ | 6.474ms | 157.0MB |
-| 22 | abelian-sandpile-model-identity | ✓ | 3.479ms | 44.9MB |
-| 23 | abelian-sandpile-model | ✓ | 4.217ms | 69.0MB |
-| 24 | abstract-type | ✓ | 3.616ms | 16.0MB |
-| 25 | abundant-deficient-and-perfect-number-classifications | ✓ | 86.481ms | 16.0MB |
-| 26 | abundant-odd-numbers | ✓ | 94.338ms | 10.7GB |
-| 27 | accumulator-factory | ✓ | 15.965ms | 1.7GB |
-| 28 | achilles-numbers | ✓ | 20.12ms | 2.2GB |
-| 29 | ackermann-function-2 | ✓ | 1.225ms | 16.0MB |
-| 30 | ackermann-function-3 | ✓ | 10.557471s | 16.8GB |
-| 31 | ackermann-function | ✓ | 919µs | 16.0MB |
-| 32 | active-directory-connect | ✓ | 898µs | 16.0MB |
-| 33 | active-directory-search-for-a-user | ✓ | 5.765ms | 1.1GB |
-| 34 | active-object | ✓ | 1.318ms | 1.9GB |
-| 35 | add-a-variable-to-a-class-instance-at-runtime | ✓ | 1.45ms | 24.1MB |
-| 36 | additive-primes | ✓ | 5.726ms | 1.1GB |
-| 37 | address-of-a-variable | ✓ | 1.055ms | 16.0MB |
+| 17 | a+b | ✓ | 4.344ms | 24.1KB |
+| 18 | abbreviations-automatic | ✓ | 5.738ms | 1.1MB |
+| 19 | abbreviations-easy | ✓ | 6.092ms | 133.0KB |
+| 20 | abbreviations-simple | ✓ | 21.837ms | 1.5MB |
+| 21 | abc-problem | ✓ | 6.474ms | 157.0KB |
+| 22 | abelian-sandpile-model-identity | ✓ | 3.479ms | 44.9KB |
+| 23 | abelian-sandpile-model | ✓ | 4.217ms | 69.0KB |
+| 24 | abstract-type | ✓ | 3.616ms | 16.0KB |
+| 25 | abundant-deficient-and-perfect-number-classifications | ✓ | 86.481ms | 16.0KB |
+| 26 | abundant-odd-numbers | ✓ | 94.338ms | 10.7MB |
+| 27 | accumulator-factory | ✓ | 15.965ms | 1.7MB |
+| 28 | achilles-numbers | ✓ | 20.12ms | 2.2MB |
+| 29 | ackermann-function-2 | ✓ | 1.225ms | 16.0KB |
+| 30 | ackermann-function-3 | ✓ | 10.557471s | 16.8MB |
+| 31 | ackermann-function | ✓ | 919µs | 16.0KB |
+| 32 | active-directory-connect | ✓ | 898µs | 16.0KB |
+| 33 | active-directory-search-for-a-user | ✓ | 5.765ms | 1.1MB |
+| 34 | active-object | ✓ | 1.318ms | 1.9MB |
+| 35 | add-a-variable-to-a-class-instance-at-runtime | ✓ | 1.45ms | 24.1KB |
+| 36 | additive-primes | ✓ | 5.726ms | 1.1MB |
+| 37 | address-of-a-variable | ✓ | 1.055ms | 16.0KB |
 | 38 | adfgvx-cipher |   |  |  |
-| 39 | aks-test-for-primes | ✓ | 958µs | 24.1MB |
-| 40 | algebraic-data-types | ✓ | 26.02ms | 3.3GB |
-| 41 | align-columns | ✓ | 4.195ms | 1.9GB |
-| 42 | aliquot-sequence-classifications | ✓ | 36.965ms | 3.0GB |
-| 43 | almkvist-giullera-formula-for-pi | ✓ | 84.673ms | 18.3GB |
-| 44 | almost-prime | ✓ | 3.366ms | 24.1MB |
-| 45 | amb | ✓ | 13.625ms | 1.0GB |
-| 46 | amicable-pairs | ✓ | 250.872ms | 1.1GB |
-| 47 | anagrams-deranged-anagrams | ✓ | 14.195ms | 1.2GB |
-| 48 | anagrams | ✓ | 14.023ms | 1.3GB |
-| 49 | angle-difference-between-two-bearings-1 | ✓ | 2.768ms | 16.0MB |
-| 50 | angle-difference-between-two-bearings-2 | ✓ | 3.03ms | 16.0MB |
-| 51 | angles-geometric-normalization-and-conversion | ✓ | 3.77ms | 32.1MB |
-| 52 | animate-a-pendulum | ✓ | 15.182ms | 1.5GB |
-| 53 | animation | ✓ | 12.806ms | 1.3GB |
-| 54 | anonymous-recursion-1 | ✓ | 2.55ms | 16.0MB |
-| 55 | anonymous-recursion-2 | ✓ | 3.023ms | 16.0MB |
-| 56 | anonymous-recursion | ✓ | 2.733ms | 16.0MB |
-| 57 | anti-primes | ✓ | 42.424ms | 1.1GB |
-| 58 | append-a-record-to-the-end-of-a-text-file | ✓ | 2.605ms | 16.0MB |
-| 59 | apply-a-callback-to-an-array-1 | ✓ | 2.726ms | 16.0MB |
-| 60 | apply-a-callback-to-an-array-2 | ✓ | 16.906ms | 2.2GB |
-| 61 | apply-a-digital-filter-direct-form-ii-transposed- | ✓ | 2.9ms | 16.0MB |
-| 62 | approximate-equality | ✓ | 3.166ms | 16.0MB |
-| 63 | arbitrary-precision-integers-included- | ✓ | 10.623ms | 2.8GB |
-| 64 | archimedean-spiral | ✓ | 18.515ms | 11.4GB |
-| 65 | arena-storage-pool | ✓ | 17.442ms | 2.5GB |
-| 66 | arithmetic-complex | ✓ | 2.923ms | 16.0MB |
-| 67 | arithmetic-derivative | ✓ | 14.854ms | 1.9GB |
-| 68 | arithmetic-evaluation | ✓ | 14.258ms | 1.1GB |
-| 69 | arithmetic-geometric-mean-calculate-pi | ✓ | 3.518ms | 16.0MB |
-| 70 | arithmetic-geometric-mean | ✓ | 14.814ms | 1.6GB |
-| 71 | arithmetic-integer-1 | ✓ | 3.054ms | 16.0MB |
-| 72 | arithmetic-integer-2 | ✓ | 2.933ms | 16.0MB |
+| 39 | aks-test-for-primes | ✓ | 958µs | 24.1KB |
+| 40 | algebraic-data-types | ✓ | 26.02ms | 3.3MB |
+| 41 | align-columns | ✓ | 4.195ms | 1.9MB |
+| 42 | aliquot-sequence-classifications | ✓ | 36.965ms | 3.0MB |
+| 43 | almkvist-giullera-formula-for-pi | ✓ | 84.673ms | 18.3MB |
+| 44 | almost-prime | ✓ | 3.366ms | 24.1KB |
+| 45 | amb | ✓ | 13.625ms | 1.0MB |
+| 46 | amicable-pairs | ✓ | 250.872ms | 1.1MB |
+| 47 | anagrams-deranged-anagrams | ✓ | 14.195ms | 1.2MB |
+| 48 | anagrams | ✓ | 14.023ms | 1.3MB |
+| 49 | angle-difference-between-two-bearings-1 | ✓ | 2.768ms | 16.0KB |
+| 50 | angle-difference-between-two-bearings-2 | ✓ | 3.03ms | 16.0KB |
+| 51 | angles-geometric-normalization-and-conversion | ✓ | 3.77ms | 32.1KB |
+| 52 | animate-a-pendulum | ✓ | 15.182ms | 1.5MB |
+| 53 | animation | ✓ | 12.806ms | 1.3MB |
+| 54 | anonymous-recursion-1 | ✓ | 2.55ms | 16.0KB |
+| 55 | anonymous-recursion-2 | ✓ | 3.023ms | 16.0KB |
+| 56 | anonymous-recursion | ✓ | 2.733ms | 16.0KB |
+| 57 | anti-primes | ✓ | 42.424ms | 1.1MB |
+| 58 | append-a-record-to-the-end-of-a-text-file | ✓ | 2.605ms | 16.0KB |
+| 59 | apply-a-callback-to-an-array-1 | ✓ | 2.726ms | 16.0KB |
+| 60 | apply-a-callback-to-an-array-2 | ✓ | 16.906ms | 2.2MB |
+| 61 | apply-a-digital-filter-direct-form-ii-transposed- | ✓ | 2.9ms | 16.0KB |
+| 62 | approximate-equality | ✓ | 3.166ms | 16.0KB |
+| 63 | arbitrary-precision-integers-included- | ✓ | 10.623ms | 2.8MB |
+| 64 | archimedean-spiral | ✓ | 18.515ms | 11.4MB |
+| 65 | arena-storage-pool | ✓ | 17.442ms | 2.5MB |
+| 66 | arithmetic-complex | ✓ | 2.923ms | 16.0KB |
+| 67 | arithmetic-derivative | ✓ | 14.854ms | 1.9MB |
+| 68 | arithmetic-evaluation | ✓ | 14.258ms | 1.1MB |
+| 69 | arithmetic-geometric-mean-calculate-pi | ✓ | 3.518ms | 16.0KB |
+| 70 | arithmetic-geometric-mean | ✓ | 14.814ms | 1.6MB |
+| 71 | arithmetic-integer-1 | ✓ | 3.054ms | 16.0KB |
+| 72 | arithmetic-integer-2 | ✓ | 2.933ms | 16.0KB |
 | 73 | arithmetic-numbers |   |  |  |
-| 74 | arithmetic-rational | ✓ | 2.823ms | 16.0MB |
-| 75 | array-concatenation | ✓ | 3.471ms | 16.0MB |
-| 76 | array-length | ✓ | 2.724ms | 16.0MB |
-| 77 | arrays | ✓ | 4.92ms | 24.1MB |
-| 78 | ascending-primes | ✓ | 13.849ms | 1.1GB |
-| 79 | ascii-art-diagram-converter | ✓ | 2.778ms | 16.0MB |
-| 80 | assertions | ✓ | 2.383ms | 16.0MB |
-| 81 | associative-array-creation | ✓ | 3.191ms | 16.0MB |
-| 82 | associative-array-iteration | ✓ | 15.854ms | 2.3GB |
-| 83 | associative-array-merging | ✓ | 11.802ms | 1.1GB |
-| 84 | atomic-updates | ✓ | 2.968ms | 16.0MB |
-| 85 | attractive-numbers | ✓ | 2.697ms | 32.1MB |
-| 86 | average-loop-length | ✓ | 52.588ms | 11.7GB |
-| 87 | averages-arithmetic-mean | ✓ | 10.67ms | 2.6GB |
-| 88 | averages-mean-time-of-day | ✓ | 8.313ms | 2.5GB |
-| 89 | averages-median-1 | ✓ | 8.209ms | 2.4GB |
-| 90 | averages-median-2 | ✓ | 8.385ms | 2.5GB |
-| 91 | averages-median-3 | ✓ | 10.765ms | 2.6GB |
-| 92 | averages-mode | ✓ | 1.187ms | 16.0MB |
-| 93 | averages-pythagorean-means | ✓ | 7.904ms | 1.7GB |
-| 94 | averages-root-mean-square | ✓ | 1.616ms | 1.7GB |
-| 95 | averages-simple-moving-average | ✓ | 8.337ms | 2.1GB |
+| 74 | arithmetic-rational | ✓ | 2.823ms | 16.0KB |
+| 75 | array-concatenation | ✓ | 3.471ms | 16.0KB |
+| 76 | array-length | ✓ | 2.724ms | 16.0KB |
+| 77 | arrays | ✓ | 4.92ms | 24.1KB |
+| 78 | ascending-primes | ✓ | 13.849ms | 1.1MB |
+| 79 | ascii-art-diagram-converter | ✓ | 2.778ms | 16.0KB |
+| 80 | assertions | ✓ | 2.383ms | 16.0KB |
+| 81 | associative-array-creation | ✓ | 3.191ms | 16.0KB |
+| 82 | associative-array-iteration | ✓ | 15.854ms | 2.3MB |
+| 83 | associative-array-merging | ✓ | 11.802ms | 1.1MB |
+| 84 | atomic-updates | ✓ | 2.968ms | 16.0KB |
+| 85 | attractive-numbers | ✓ | 2.697ms | 32.1KB |
+| 86 | average-loop-length | ✓ | 52.588ms | 11.7MB |
+| 87 | averages-arithmetic-mean | ✓ | 10.67ms | 2.6MB |
+| 88 | averages-mean-time-of-day | ✓ | 8.313ms | 2.5MB |
+| 89 | averages-median-1 | ✓ | 8.209ms | 2.4MB |
+| 90 | averages-median-2 | ✓ | 8.385ms | 2.5MB |
+| 91 | averages-median-3 | ✓ | 10.765ms | 2.6MB |
+| 92 | averages-mode | ✓ | 1.187ms | 16.0KB |
+| 93 | averages-pythagorean-means | ✓ | 7.904ms | 1.7MB |
+| 94 | averages-root-mean-square | ✓ | 1.616ms | 1.7MB |
+| 95 | averages-simple-moving-average | ✓ | 8.337ms | 2.1MB |
 | 96 | avl-tree |   |  |  |
 | 97 | b-zier-curves-intersections |   |  |  |
-| 98 | babbage-problem | ✓ | 1.154ms | 16.0MB |
+| 98 | babbage-problem | ✓ | 1.154ms | 16.0KB |
 | 99 | babylonian-spiral |   |  |  |
-| 100 | balanced-brackets | ✓ | 5.441ms | 1.1GB |
-| 101 | balanced-ternary | ✓ | 7.368ms | 1.6GB |
-| 102 | barnsley-fern | ✓ | 4.064ms | 9.9GB |
+| 100 | balanced-brackets | ✓ | 5.441ms | 1.1MB |
+| 101 | balanced-ternary | ✓ | 7.368ms | 1.6MB |
+| 102 | barnsley-fern | ✓ | 4.064ms | 9.9MB |
 | 103 | base64-decode-data |   |  |  |
 | 104 | bell-numbers |   |  |  |
-| 105 | benfords-law | ✓ | 8.442ms | 6.2GB |
+| 105 | benfords-law | ✓ | 8.442ms | 6.2MB |
 | 106 | bernoulli-numbers |   |  |  |
-| 107 | best-shuffle | ✓ | 11.697ms | 2.9GB |
+| 107 | best-shuffle | ✓ | 11.697ms | 2.9MB |
 | 108 | bifid-cipher |   |  |  |
-| 109 | bin-given-limits | ✓ | 6.309ms | 1.2GB |
-| 110 | binary-digits | ✓ | 889µs | 16.0MB |
-| 111 | binary-search | ✓ | 8.933ms | 1.2GB |
+| 109 | bin-given-limits | ✓ | 6.309ms | 1.2MB |
+| 110 | binary-digits | ✓ | 889µs | 16.0KB |
+| 111 | binary-search | ✓ | 8.933ms | 1.2MB |
 | 112 | binary-strings |   |  |  |
-| 113 | bioinformatics-base-count | ✓ | 8.273ms | 2.5GB |
+| 113 | bioinformatics-base-count | ✓ | 8.273ms | 2.5MB |
 | 114 | bioinformatics-global-alignment |   |  |  |
 | 115 | bioinformatics-sequence-mutation |   |  |  |
-| 116 | biorhythms | ✓ | 8.766ms | 2.5GB |
-| 117 | bitcoin-address-validation | ✓ | 1.798ms | 69.0MB |
-| 118 | bitmap-b-zier-curves-cubic | ✓ | 10.31ms | 5.0GB |
-| 119 | bitmap-b-zier-curves-quadratic | ✓ | 11.462ms | 5.0GB |
-| 120 | bitmap-bresenhams-line-algorithm | ✓ | 1.084ms | 16.0MB |
-| 121 | bitmap-flood-fill | ✓ | 6.117ms | 1.2GB |
-| 122 | bitmap-histogram | ✓ | 10.27ms | 2.3GB |
-| 123 | bitmap-midpoint-circle-algorithm | ✓ | 879µs | 108.9MB |
-| 124 | bitmap-ppm-conversion-through-a-pipe | ✓ | 13.347ms | 20.0GB |
-| 125 | bitmap-read-a-ppm-file | ✓ | 968µs | 116.9MB |
-| 126 | bitmap-read-an-image-through-a-pipe | ✓ | 8.777ms | 2.4GB |
-| 127 | bitmap-write-a-ppm-file | ✓ | 1.237ms | 32.1MB |
-| 128 | bitmap | ✓ | 13.719ms | 21.5GB |
-| 129 | bitwise-io-1 | ✓ | 2.838ms | 16.0MB |
-| 130 | bitwise-io-2 | ✓ | 9.923ms | 2.7GB |
-| 131 | bitwise-operations | ✓ | 985µs | 24.1MB |
-| 132 | blum-integer | ✓ | 8.276ms | 1.4GB |
-| 133 | boolean-values | ✓ | 1.892ms | 16.0MB |
-| 134 | box-the-compass | ✓ | 6.786ms | 1.2GB |
-| 135 | boyer-moore-string-search | ✓ | 6.415ms | 1.3GB |
-| 136 | brazilian-numbers | ✓ | 632.21ms | 24.1MB |
-| 137 | break-oo-privacy | ✓ | 873µs | 16.0MB |
+| 116 | biorhythms | ✓ | 8.766ms | 2.5MB |
+| 117 | bitcoin-address-validation | ✓ | 1.798ms | 69.0KB |
+| 118 | bitmap-b-zier-curves-cubic | ✓ | 10.31ms | 5.0MB |
+| 119 | bitmap-b-zier-curves-quadratic | ✓ | 11.462ms | 5.0MB |
+| 120 | bitmap-bresenhams-line-algorithm | ✓ | 1.084ms | 16.0KB |
+| 121 | bitmap-flood-fill | ✓ | 6.117ms | 1.2MB |
+| 122 | bitmap-histogram | ✓ | 10.27ms | 2.3MB |
+| 123 | bitmap-midpoint-circle-algorithm | ✓ | 879µs | 108.9KB |
+| 124 | bitmap-ppm-conversion-through-a-pipe | ✓ | 13.347ms | 20.0MB |
+| 125 | bitmap-read-a-ppm-file | ✓ | 968µs | 116.9KB |
+| 126 | bitmap-read-an-image-through-a-pipe | ✓ | 8.777ms | 2.4MB |
+| 127 | bitmap-write-a-ppm-file | ✓ | 1.237ms | 32.1KB |
+| 128 | bitmap | ✓ | 13.719ms | 21.5MB |
+| 129 | bitwise-io-1 | ✓ | 2.838ms | 16.0KB |
+| 130 | bitwise-io-2 | ✓ | 9.923ms | 2.7MB |
+| 131 | bitwise-operations | ✓ | 985µs | 24.1KB |
+| 132 | blum-integer | ✓ | 8.276ms | 1.4MB |
+| 133 | boolean-values | ✓ | 1.892ms | 16.0KB |
+| 134 | box-the-compass | ✓ | 6.786ms | 1.2MB |
+| 135 | boyer-moore-string-search | ✓ | 6.415ms | 1.3MB |
+| 136 | brazilian-numbers | ✓ | 632.21ms | 24.1KB |
+| 137 | break-oo-privacy | ✓ | 873µs | 16.0KB |
 | 138 | brilliant-numbers | ✓ |  |  |
-| 139 | brownian-tree | ✓ | 24.331035s | 3.6GB |
-| 140 | bulls-and-cows-player | ✓ | 8.101ms | 12.7GB |
+| 139 | brownian-tree | ✓ | 24.331035s | 3.6MB |
+| 140 | bulls-and-cows-player | ✓ | 8.101ms | 12.7MB |
 | 141 | bulls-and-cows |   |  |  |
-| 142 | burrows-wheeler-transform | ✓ | 469566h32m48.600175s | 2.3GB |
-| 143 | caesar-cipher-1 | ✓ | 469566h32m48.600175s | 1.1GB |
-| 144 | caesar-cipher-2 | ✓ | 469566h32m48.600175s | 1.1GB |
-| 145 | calculating-the-value-of-e | ✓ | 469566h32m48.600175s | 1.7GB |
-| 146 | calendar---for-real-programmers-1 | ✓ | 469566h32m48.600175s | 100.8MB |
-| 147 | calendar---for-real-programmers-2 | ✓ | 469566h32m48.600175s | 100.8MB |
-| 148 | calendar | ✓ | 469566h32m48.600175s | 100.8MB |
+| 142 | burrows-wheeler-transform | ✓ | 12.151ms | 19.4MB |
+| 143 | caesar-cipher-1 | ✓ | 6.093ms | 1.1MB |
+| 144 | caesar-cipher-2 | ✓ | 6.318ms | 1.1MB |
+| 145 | calculating-the-value-of-e | ✓ | 9.042ms | 1.7MB |
+| 146 | calendar---for-real-programmers-1 | ✓ | 1.008ms | 100.8KB |
+| 147 | calendar---for-real-programmers-2 | ✓ | 1.028ms | 100.8KB |
+| 148 | calendar | ✓ | 967µs | 100.8KB |
 | 149 | calkin-wilf-sequence |   |  |  |
-| 150 | call-a-foreign-language-function | ✓ | 469566h32m48.600175s | 16.0MB |
-| 151 | call-a-function-1 | ✓ | 469566h32m48.600175s |  |
-| 152 | call-a-function-10 | ✓ | 469566h32m48.600175s |  |
-| 153 | call-a-function-11 | ✓ | 469566h32m48.600175s | 16.0MB |
-| 154 | call-a-function-12 | ✓ | 469566h32m48.600175s | 1.0GB |
-| 155 | call-a-function-2 | ✓ | 469566h32m48.600175s | 1.6GB |
-| 156 | call-a-function-3 |   |  |  |
-| 157 | call-a-function-4 | ✓ | 469566h32m48.600175s |  |
-| 158 | call-a-function-5 | ✓ | 469566h32m48.600175s | 16.0MB |
-| 159 | call-a-function-6 | ✓ | 469566h32m48.600175s | 16.0MB |
-| 160 | call-a-function-7 |   |  |  |
-| 161 | call-a-function-8 | ✓ | 469566h32m48.600175s | 1.9GB |
-| 162 | call-a-function-9 | ✓ | 469566h32m48.600175s | 1.9GB |
+| 150 | call-a-foreign-language-function | ✓ | 1.125ms | 16.0KB |
+| 151 | call-a-function-1 | ✓ | 1µs |  |
+| 152 | call-a-function-10 | ✓ | 180µs |  |
+| 153 | call-a-function-11 | ✓ | 956µs | 16.0KB |
+| 154 | call-a-function-12 | ✓ | 6.522ms | 1.0MB |
+| 155 | call-a-function-2 | ✓ | 6.087ms | 1.6MB |
+| 156 | call-a-function-3 | ✓ | 38µs |  |
+| 157 | call-a-function-4 | ✓ | 131µs |  |
+| 158 | call-a-function-5 | ✓ | 1.137ms | 16.0KB |
+| 159 | call-a-function-6 | ✓ | 1.102ms | 16.0KB |
+| 160 | call-a-function-7 | ✓ | 14µs |  |
+| 161 | call-a-function-8 | ✓ | 7.019ms | 1.9MB |
+| 162 | call-a-function-9 | ✓ | 469566h32m48.600175s | 1.9MB |
 | 163 | call-an-object-method-1 |   |  |  |
 | 164 | call-an-object-method-2 |   |  |  |
 | 165 | call-an-object-method-3 |   |  |  |
 | 166 | call-an-object-method |   |  |  |
-| 167 | camel-case-and-snake-case | ✓ | 469566h32m48.600175s | 1.2GB |
-| 168 | canny-edge-detector | ✓ | 469566h32m48.600175s | 1.2GB |
-| 169 | canonicalize-cidr | ✓ | 17.947ms | 2.4GB |
+| 167 | camel-case-and-snake-case | ✓ | 469566h32m48.600175s | 1.2MB |
+| 168 | canny-edge-detector | ✓ | 469566h32m48.600175s | 1.2MB |
+| 169 | canonicalize-cidr | ✓ | 17.947ms | 2.4MB |
 | 170 | cantor-set |   |  |  |
 | 171 | carmichael-3-strong-pseudoprimes |   |  |  |
 | 172 | cartesian-product-of-two-or-more-lists-1 |   |  |  |
@@ -214,15 +214,15 @@ Last updated: 2025-07-27 16:11 +0700
 | 206 | circles-of-given-radius-through-two-points |   |  |  |
 | 207 | circular-primes |   |  |  |
 | 208 | cistercian-numerals |   |  |  |
-| 209 | comma-quibbling | ✓ | 5.816ms | 1.1GB |
-| 210 | compiler-virtual-machine-interpreter | ✓ | 15.889ms | 3.8GB |
-| 211 | composite-numbers-k-with-no-single-digit-factors-whose-factors-are-all-substrings-of-k | ✓ | 1.536732s | 12.7GB |
+| 209 | comma-quibbling | ✓ | 5.816ms | 1.1MB |
+| 210 | compiler-virtual-machine-interpreter | ✓ | 15.889ms | 3.8MB |
+| 211 | composite-numbers-k-with-no-single-digit-factors-whose-factors-are-all-substrings-of-k | ✓ | 1.536732s | 12.7MB |
 | 212 | compound-data-type | ✓ | 1µs |  |
-| 213 | concurrent-computing-1 | ✓ | 5.458ms | 1.0GB |
-| 214 | concurrent-computing-2 | ✓ | 5.422ms | 1.0GB |
-| 215 | concurrent-computing-3 | ✓ | 5.555ms | 1.1GB |
+| 213 | concurrent-computing-1 | ✓ | 5.458ms | 1.0MB |
+| 214 | concurrent-computing-2 | ✓ | 5.422ms | 1.0MB |
+| 215 | concurrent-computing-3 | ✓ | 5.555ms | 1.1MB |
 | 216 | conditional-structures-1 | ✓ | 8µs |  |
-| 217 | conditional-structures-10 | ✓ | 874µs | 16.0MB |
+| 217 | conditional-structures-10 | ✓ | 874µs | 16.0KB |
 | 218 | conditional-structures-2 | ✓ | 1µs |  |
 | 219 | conditional-structures-3 | ✓ |  |  |
 | 220 | conditional-structures-4 | ✓ |  |  |
@@ -231,44 +231,44 @@ Last updated: 2025-07-27 16:11 +0700
 | 223 | conditional-structures-7 | ✓ |  |  |
 | 224 | conditional-structures-8 | ✓ |  |  |
 | 225 | conditional-structures-9 | ✓ |  |  |
-| 226 | consecutive-primes-with-ascending-or-descending-differences | ✓ | 9.147ms | 11.4GB |
+| 226 | consecutive-primes-with-ascending-or-descending-differences | ✓ | 9.147ms | 11.4MB |
 | 227 | constrained-genericity-1 | ✓ | 1µs |  |
 | 228 | constrained-genericity-2 | ✓ |  |  |
 | 229 | constrained-genericity-3 | ✓ |  |  |
-| 230 | constrained-genericity-4 | ✓ | 6.075ms | 1.2GB |
-| 231 | constrained-random-points-on-a-circle-1 | ✓ | 1.118ms | 837.0MB |
-| 232 | constrained-random-points-on-a-circle-2 | ✓ | 5.704ms | 2.6GB |
-| 233 | continued-fraction | ✓ | 6.824ms | 1.7GB |
-| 234 | convert-decimal-number-to-rational | ✓ | 6.082ms | 1.1GB |
-| 235 | convert-seconds-to-compound-duration | ✓ | 1.042ms | 16.0MB |
-| 236 | convex-hull | ✓ | 804µs | 1.3GB |
-| 237 | conways-game-of-life | ✓ | 11.575ms | 1.2GB |
+| 230 | constrained-genericity-4 | ✓ | 6.075ms | 1.2MB |
+| 231 | constrained-random-points-on-a-circle-1 | ✓ | 1.118ms | 837.0KB |
+| 232 | constrained-random-points-on-a-circle-2 | ✓ | 5.704ms | 2.6MB |
+| 233 | continued-fraction | ✓ | 6.824ms | 1.7MB |
+| 234 | convert-decimal-number-to-rational | ✓ | 6.082ms | 1.1MB |
+| 235 | convert-seconds-to-compound-duration | ✓ | 1.042ms | 16.0KB |
+| 236 | convex-hull | ✓ | 804µs | 1.3MB |
+| 237 | conways-game-of-life | ✓ | 11.575ms | 1.2MB |
 | 238 | copy-a-string-1 | ✓ |  |  |
-| 239 | copy-a-string-2 | ✓ | 860µs | 16.0MB |
-| 240 | copy-stdin-to-stdout-1 | ✓ | 1.003ms | 24.1MB |
-| 241 | copy-stdin-to-stdout-2 | ✓ | 1.535ms | 24.1MB |
-| 242 | count-in-factors | ✓ | 923µs | 24.1MB |
-| 243 | count-in-octal-1 | ✓ | 900µs | 24.1MB |
-| 244 | count-in-octal-2 | ✓ | 10.034ms | 17.3GB |
-| 245 | count-in-octal-3 | ✓ | 923µs | 16.0MB |
-| 246 | count-in-octal-4 | ✓ | 895µs | 16.0MB |
-| 247 | count-occurrences-of-a-substring | ✓ | 6.345ms | 1.2GB |
-| 248 | count-the-coins-1 | ✓ | 1.065ms | 16.0MB |
-| 249 | count-the-coins-2 | ✓ | 5.609ms | 3.9GB |
-| 250 | cramers-rule | ✓ | 12.418ms | 1.2GB |
-| 251 | crc-32-1 | ✓ | 14.331ms | 1.3GB |
-| 252 | crc-32-2 | ✓ | 15.856ms | 1.3GB |
+| 239 | copy-a-string-2 | ✓ | 860µs | 16.0KB |
+| 240 | copy-stdin-to-stdout-1 | ✓ | 1.003ms | 24.1KB |
+| 241 | copy-stdin-to-stdout-2 | ✓ | 1.535ms | 24.1KB |
+| 242 | count-in-factors | ✓ | 923µs | 24.1KB |
+| 243 | count-in-octal-1 | ✓ | 900µs | 24.1KB |
+| 244 | count-in-octal-2 | ✓ | 10.034ms | 17.3MB |
+| 245 | count-in-octal-3 | ✓ | 923µs | 16.0KB |
+| 246 | count-in-octal-4 | ✓ | 895µs | 16.0KB |
+| 247 | count-occurrences-of-a-substring | ✓ | 6.345ms | 1.2MB |
+| 248 | count-the-coins-1 | ✓ | 1.065ms | 16.0KB |
+| 249 | count-the-coins-2 | ✓ | 5.609ms | 3.9MB |
+| 250 | cramers-rule | ✓ | 12.418ms | 1.2MB |
+| 251 | crc-32-1 | ✓ | 14.331ms | 1.3MB |
+| 252 | crc-32-2 | ✓ | 15.856ms | 1.3MB |
 | 253 | create-a-file-on-magnetic-tape | ✓ | 61µs |  |
-| 254 | create-a-file | ✓ | 2.661ms | 16.0MB |
-| 255 | create-a-two-dimensional-array-at-runtime-1 | ✓ | 19.511ms | 2.5GB |
-| 256 | create-an-html-table | ✓ | 3.262ms | 16.0MB |
-| 257 | create-an-object-at-a-given-address | ✓ | 13.523ms | 1.2GB |
-| 258 | csv-data-manipulation | ✓ | 13.826ms | 1.1GB |
-| 259 | csv-to-html-translation-1 | ✓ | 2.506ms | 16.0MB |
-| 260 | csv-to-html-translation-2 | ✓ | 2.413ms | 16.0MB |
-| 261 | csv-to-html-translation-3 | ✓ | 2.345ms | 16.0MB |
-| 262 | csv-to-html-translation-4 | ✓ | 2.542ms | 16.0MB |
-| 263 | csv-to-html-translation-5 | ✓ | 2.807ms | 44.9MB |
+| 254 | create-a-file | ✓ | 2.661ms | 16.0KB |
+| 255 | create-a-two-dimensional-array-at-runtime-1 | ✓ | 19.511ms | 2.5MB |
+| 256 | create-an-html-table | ✓ | 3.262ms | 16.0KB |
+| 257 | create-an-object-at-a-given-address | ✓ | 13.523ms | 1.2MB |
+| 258 | csv-data-manipulation | ✓ | 13.826ms | 1.1MB |
+| 259 | csv-to-html-translation-1 | ✓ | 2.506ms | 16.0KB |
+| 260 | csv-to-html-translation-2 | ✓ | 2.413ms | 16.0KB |
+| 261 | csv-to-html-translation-3 | ✓ | 2.345ms | 16.0KB |
+| 262 | csv-to-html-translation-4 | ✓ | 2.542ms | 16.0KB |
+| 263 | csv-to-html-translation-5 | ✓ | 2.807ms | 44.9KB |
 | 264 | cuban-primes |   |  |  |
 | 265 | cullen-and-woodall-numbers |   |  |  |
 | 266 | cumulative-standard-deviation |   |  |  |
