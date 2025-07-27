@@ -58,6 +58,7 @@ var (
 	structNameCount  map[string]int
 	nextStructHint   string
 	usesJSON         bool
+	benchMain        bool
 	useNow           bool
 	useInput         bool
 	useLookupHost    bool
@@ -1167,7 +1168,11 @@ func (n *Name) emit(w io.Writer) error {
 		_, err := io.WriteString(w, "null")
 		return err
 	}
-	_, err := io.WriteString(w, n.Name)
+	name := n.Name
+	if benchMain && name == "main" {
+		name = "_main"
+	}
+	_, err := io.WriteString(w, name)
 	return err
 }
 
@@ -3424,7 +3429,7 @@ func Emit(w io.Writer, p *Program) error {
 	mainCalled := false
 	for _, st := range p.Stmts {
 		if fd, ok := st.(*FuncDecl); ok {
-			if fd.Name == "main" {
+			if fd.Name == "main" || (benchMain && fd.Name == "_main") {
 				hasMain = true
 			}
 			if err := fd.emit(w); err != nil {
@@ -3456,8 +3461,12 @@ func Emit(w io.Writer, p *Program) error {
 		}
 	}
 	entry := "main"
+	mainName := "main"
 	if hasMain {
 		entry = "_start"
+		if benchMain {
+			mainName = "_main"
+		}
 	}
 	if _, err := io.WriteString(w, "void "+entry+"() {\n"); err != nil {
 		return err
@@ -3497,14 +3506,8 @@ func Emit(w io.Writer, p *Program) error {
 		}
 	}
 	if hasMain && !mainCalled {
-		if p.BenchMain {
-			if _, err := io.WriteString(w, "  main();\n"); err != nil {
-				return err
-			}
-		} else {
-			if _, err := io.WriteString(w, "  main();\n"); err != nil {
-				return err
-			}
+		if _, err := io.WriteString(w, "  "+mainName+"();\n"); err != nil {
+			return err
 		}
 	}
 	if p.BenchMain {
@@ -3520,6 +3523,11 @@ func Emit(w io.Writer, p *Program) error {
 	}
 	if _, err := io.WriteString(w, "}\n"); err != nil {
 		return err
+	}
+	if entry == "_start" {
+		if _, err := io.WriteString(w, "\nvoid main() => _start();\n"); err != nil {
+			return err
+		}
 	}
 	return nil
 }
@@ -3550,6 +3558,7 @@ func Transpile(prog *parser.Program, env *types.Env, bench, wrapMain bool) (*Pro
 	testpkgAliases = map[string]struct{}{}
 	netAliases = map[string]struct{}{}
 	structMutable = map[string]bool{}
+	benchMain = bench
 	p := &Program{BenchMain: bench, WrapMain: wrapMain}
 	for _, st := range prog.Statements {
 		s, err := convertStmtInternal(st)
@@ -3927,7 +3936,11 @@ func convertStmtInternal(st *parser.Statement) (Stmt, error) {
 				delete(localVarTypes, n)
 			}
 		}
-		fd := &FuncDecl{Name: sanitize(st.Fun.Name), Params: params, ParamTypes: paramTypes, Body: body}
+		name := sanitize(st.Fun.Name)
+		if benchMain && name == "main" {
+			name = "_main"
+		}
+		fd := &FuncDecl{Name: name, Params: params, ParamTypes: paramTypes, Body: body}
 		if rt := typeRefString(st.Fun.Return); rt != "" {
 			funcReturnTypes[fd.Name] = rt
 		}
