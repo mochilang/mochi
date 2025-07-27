@@ -1,0 +1,150 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun egyptianDivide(dividend: int, divisor: int): DivResult {
+func egyptianDivide (regs=55)
+  // if dividend < 0 || divisor <= 0 { panic("Invalid argument(s)") }
+  Const        r2, 0
+  Less         r3, r0, r2
+  Const        r2, 0
+  LessEq       r4, r1, r2
+  Move         r5, r3
+  JumpIfTrue   r5, L0
+  Move         r5, r4
+L0:
+  JumpIfFalse  r5, L1
+L1:
+  // if dividend < divisor { return DivResult{ q: 0, r: dividend } }
+  Less         r7, r0, r1
+  JumpIfFalse  r7, L2
+  Const        r2, 0
+  Const        r8, "__name"
+  Const        r9, "DivResult"
+  Const        r10, "q"
+  Move         r11, r2
+  Const        r12, "r"
+  Move         r13, r0
+  MakeMap      r14, 3, r8
+  Return       r14
+L2:
+  // var powers: list<int> = [1]
+  Const        r15, [1]
+  Move         r16, r15
+  // var doublings: list<int> = [divisor]
+  Move         r17, r1
+  MakeList     r18, 1, r17
+  Move         r19, r18
+  // var doubling = divisor * 2
+  Const        r20, 2
+  Mul          r21, r1, r20
+  Move         r22, r21
+L4:
+  // while doubling <= dividend {
+  LessEq       r23, r22, r0
+  JumpIfFalse  r23, L3
+  // powers = append(powers, powers[len(powers)-1] * 2)
+  Len          r24, r16
+  Const        r25, 1
+  SubInt       r26, r24, r25
+  Index        r27, r16, r26
+  Const        r20, 2
+  Mul          r28, r27, r20
+  Append       r29, r16, r28
+  Move         r16, r29
+  // doublings = append(doublings, doubling)
+  Append       r30, r19, r22
+  Move         r19, r30
+  // doubling = doubling * 2
+  Const        r20, 2
+  Mul          r31, r22, r20
+  Move         r22, r31
+  // while doubling <= dividend {
+  Jump         L4
+L3:
+  // var ans = 0
+  Const        r2, 0
+  Move         r32, r2
+  // var accum = 0
+  Const        r2, 0
+  Move         r33, r2
+  // var i = len(doublings) - 1
+  Len          r34, r19
+  Const        r25, 1
+  SubInt       r35, r34, r25
+  Move         r36, r35
+L7:
+  // while i >= 0 {
+  Const        r2, 0
+  LessEqInt    r37, r2, r36
+  JumpIfFalse  r37, L5
+  // if accum + doublings[i] <= dividend {
+  Index        r38, r19, r36
+  Add          r39, r33, r38
+  LessEq       r40, r39, r0
+  JumpIfFalse  r40, L6
+  // accum = accum + doublings[i]
+  Index        r41, r19, r36
+  Add          r42, r33, r41
+  Move         r33, r42
+  // ans = ans + powers[i]
+  Index        r43, r16, r36
+  Add          r44, r32, r43
+  Move         r32, r44
+  // if accum == dividend { break }
+  Equal        r45, r33, r0
+  JumpIfFalse  r45, L6
+  Jump         L5
+L6:
+  // i = i - 1
+  Const        r25, 1
+  SubInt       r46, r36, r25
+  Move         r36, r46
+  // while i >= 0 {
+  Jump         L7
+L5:
+  // return DivResult{ q: ans, r: dividend - accum }
+  Sub          r47, r0, r33
+  Const        r48, "__name"
+  Const        r49, "DivResult"
+  Const        r50, "q"
+  Move         r51, r32
+  Const        r52, "r"
+  Move         r53, r47
+  MakeMap      r54, 3, r48
+  Return       r54
+
+  // fun main() {
+func main (regs=25)
+  // let dividend = 580
+  Const        r0, 580
+  Move         r1, r0
+  // let divisor = 34
+  Const        r2, 34
+  Move         r3, r2
+  // let res = egyptianDivide(dividend, divisor)
+  Move         r4, r1
+  Move         r5, r3
+  Call2        r6, egyptianDivide, r4, r5
+  Move         r7, r6
+  // print(str(dividend) + " divided by " + str(divisor) + " is " + str(res.q) + " with remainder " + str(res.r))
+  Const        r8, "580"
+  Const        r9, " divided by "
+  Const        r10, "580 divided by "
+  Const        r11, "34"
+  Const        r12, "580 divided by 34"
+  Const        r13, " is "
+  Const        r14, "580 divided by 34 is "
+  Const        r15, "q"
+  Index        r16, r7, r15
+  Str          r17, r16
+  Add          r18, r14, r17
+  Const        r19, " with remainder "
+  Add          r20, r18, r19
+  Const        r21, "r"
+  Index        r22, r7, r21
+  Str          r23, r22
+  Add          r24, r20, r23
+  Print        r24
+  Return       r0

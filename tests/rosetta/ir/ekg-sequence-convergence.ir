@@ -1,0 +1,380 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun contains(xs: list<int>, n: int): bool {
+func contains (regs=12)
+  // var i = 0
+  Const        r2, 0
+  Move         r3, r2
+L2:
+  // while i < len(xs) {
+  Len          r4, r0
+  LessInt      r5, r3, r4
+  JumpIfFalse  r5, L0
+  // if xs[i] == n { return true }
+  Index        r6, r0, r3
+  Equal        r7, r6, r1
+  JumpIfFalse  r7, L1
+  Const        r8, true
+  Return       r8
+L1:
+  // i = i + 1
+  Const        r9, 1
+  AddInt       r10, r3, r9
+  Move         r3, r10
+  // while i < len(xs) {
+  Jump         L2
+L0:
+  // return false
+  Const        r11, false
+  Return       r11
+
+  // fun gcd(a: int, b: int): int {
+func gcd (regs=10)
+  // var x = a
+  Move         r2, r0
+  // var y = b
+  Move         r3, r1
+L1:
+  // while y != 0 {
+  Const        r4, 0
+  NotEqual     r5, r3, r4
+  JumpIfFalse  r5, L0
+  // let t = x % y
+  Mod          r6, r2, r3
+  Move         r7, r6
+  // x = y
+  Move         r2, r3
+  // y = t
+  Move         r3, r7
+  // while y != 0 {
+  Jump         L1
+L0:
+  // if x < 0 { x = -x }
+  Const        r4, 0
+  Less         r8, r2, r4
+  JumpIfFalse  r8, L2
+  Neg          r9, r2
+  Move         r2, r9
+L2:
+  // return x
+  Return       r2
+
+  // fun sortInts(xs: list<int>): list<int> {
+func sortInts (regs=22)
+  // var arr = xs
+  Move         r1, r0
+  // var n = len(arr)
+  Len          r2, r1
+  Move         r3, r2
+  // var i = 0
+  Const        r4, 0
+  Move         r5, r4
+L4:
+  // while i < n {
+  LessInt      r6, r5, r3
+  JumpIfFalse  r6, L0
+  // var j = 0
+  Const        r4, 0
+  Move         r7, r4
+L3:
+  // while j < n - 1 {
+  Const        r8, 1
+  SubInt       r9, r3, r8
+  LessInt      r10, r7, r9
+  JumpIfFalse  r10, L1
+  // if arr[j] > arr[j+1] {
+  Index        r11, r1, r7
+  Const        r8, 1
+  AddInt       r12, r7, r8
+  Index        r13, r1, r12
+  Less         r14, r13, r11
+  JumpIfFalse  r14, L2
+  // let tmp = arr[j]
+  Index        r15, r1, r7
+  Move         r16, r15
+  // arr[j] = arr[j+1]
+  Const        r8, 1
+  AddInt       r17, r7, r8
+  Index        r18, r1, r17
+  SetIndex     r1, r7, r18
+  // arr[j+1] = tmp
+  Const        r8, 1
+  AddInt       r19, r7, r8
+  SetIndex     r1, r19, r16
+L2:
+  // j = j + 1
+  Const        r8, 1
+  AddInt       r20, r7, r8
+  Move         r7, r20
+  // while j < n - 1 {
+  Jump         L3
+L1:
+  // i = i + 1
+  Const        r8, 1
+  AddInt       r21, r5, r8
+  Move         r5, r21
+  // while i < n {
+  Jump         L4
+L0:
+  // return arr
+  Return       r1
+
+  // fun areSame(s: list<int>, t: list<int>): bool {
+func areSame (regs=22)
+  // if len(s) != len(t) { return false }
+  Len          r2, r0
+  Len          r3, r1
+  NotEqual     r4, r2, r3
+  JumpIfFalse  r4, L0
+  Const        r5, false
+  Return       r5
+L0:
+  // var a = sortInts(s)
+  Move         r6, r0
+  Call         r7, sortInts, r6
+  Move         r8, r7
+  // var b = sortInts(t)
+  Move         r9, r1
+  Call         r10, sortInts, r9
+  Move         r11, r10
+  // var i = 0
+  Const        r12, 0
+  Move         r13, r12
+L3:
+  // while i < len(a) {
+  Len          r14, r8
+  LessInt      r15, r13, r14
+  JumpIfFalse  r15, L1
+  // if a[i] != b[i] { return false }
+  Index        r16, r8, r13
+  Index        r17, r11, r13
+  NotEqual     r18, r16, r17
+  JumpIfFalse  r18, L2
+  Const        r5, false
+  Return       r5
+L2:
+  // i = i + 1
+  Const        r19, 1
+  AddInt       r20, r13, r19
+  Move         r13, r20
+  // while i < len(a) {
+  Jump         L3
+L1:
+  // return true
+  Const        r21, true
+  Return       r21
+
+  // fun printSlice(start: int, seq: list<int>) {
+func printSlice (regs=25)
+  // var first: list<int> = []
+  Const        r2, []
+  Move         r3, r2
+  // var i = 0
+  Const        r4, 0
+  Move         r5, r4
+L1:
+  // while i < 30 {
+  Const        r6, 30
+  LessInt      r7, r5, r6
+  JumpIfFalse  r7, L0
+  // first = append(first, seq[i])
+  Index        r8, r1, r5
+  Append       r9, r3, r8
+  Move         r3, r9
+  // i = i + 1
+  Const        r10, 1
+  AddInt       r11, r5, r10
+  Move         r5, r11
+  // while i < 30 {
+  Jump         L1
+L0:
+  // var pad = ""
+  Const        r12, ""
+  Move         r13, r12
+  // if start < 10 { pad = " " }
+  Const        r14, 10
+  Less         r15, r0, r14
+  JumpIfFalse  r15, L2
+  Const        r16, " "
+  Move         r13, r16
+L2:
+  // print("EKG(" + pad + str(start) + "): " + str(first))
+  Const        r17, "EKG("
+  Add          r18, r17, r13
+  Str          r19, r0
+  Add          r20, r18, r19
+  Const        r21, "): "
+  Add          r22, r20, r21
+  Str          r23, r3
+  Add          r24, r22, r23
+  Print        r24
+  Return       r0
+
+  // fun main() {
+func main (regs=75)
+  // let limit = 100
+  Const        r0, 100
+  Move         r1, r0
+  // let starts = [2, 5, 7, 9, 10]
+  Const        r2, [2, 5, 7, 9, 10]
+  Move         r3, r2
+  // var ekg: list<list<int>> = []
+  Const        r4, []
+  Move         r5, r4
+  // var s = 0
+  Const        r6, 0
+  Move         r7, r6
+L7:
+  // while s < len(starts) {
+  Const        r8, 5
+  LessInt      r9, r7, r8
+  JumpIfFalse  r9, L0
+  // var seq: list<int> = [1, starts[s]]
+  Const        r12, 1
+  Move         r10, r12
+  Index        r13, r3, r7
+  Move         r11, r13
+  MakeList     r14, 2, r10
+  Move         r15, r14
+  // var n = 2
+  Const        r16, 2
+  Move         r17, r16
+L6:
+  // while n < limit {
+  LessInt      r18, r17, r1
+  JumpIfFalse  r18, L1
+  // var i = 2
+  Const        r16, 2
+  Move         r19, r16
+  // var done = false
+  Const        r20, false
+  Move         r21, r20
+L5:
+  // while !done {
+  Not          r22, r21
+  JumpIfFalse  r22, L2
+  // if !contains(seq, i) && gcd(seq[n-1], i) > 1 {
+  Move         r23, r15
+  Move         r24, r19
+  Call2        r25, contains, r23, r24
+  Not          r26, r25
+  Const        r12, 1
+  SubInt       r29, r17, r12
+  Index        r30, r15, r29
+  Move         r27, r30
+  Move         r28, r19
+  Call2        r31, gcd, r27, r28
+  Const        r12, 1
+  Less         r32, r12, r31
+  Move         r33, r26
+  JumpIfFalse  r33, L3
+  Move         r33, r32
+L3:
+  JumpIfFalse  r33, L4
+  // seq = append(seq, i)
+  Append       r34, r15, r19
+  Move         r15, r34
+  // done = true
+  Const        r35, true
+  Move         r21, r35
+L4:
+  // i = i + 1
+  Const        r12, 1
+  AddInt       r36, r19, r12
+  Move         r19, r36
+  // while !done {
+  Jump         L5
+L2:
+  // n = n + 1
+  Const        r12, 1
+  AddInt       r37, r17, r12
+  Move         r17, r37
+  // while n < limit {
+  Jump         L6
+L1:
+  // ekg = append(ekg, seq)
+  Append       r38, r5, r15
+  Move         r5, r38
+  // printSlice(starts[s], seq)
+  Index        r41, r3, r7
+  Move         r39, r41
+  Move         r40, r15
+  Call2        r42, printSlice, r39, r40
+  // s = s + 1
+  Const        r12, 1
+  AddInt       r43, r7, r12
+  Move         r7, r43
+  // while s < len(starts) {
+  Jump         L7
+L0:
+  // var i = 2
+  Const        r16, 2
+  Move         r44, r16
+  // var found = false
+  Const        r20, false
+  Move         r45, r20
+L11:
+  // while i < limit {
+  LessInt      r46, r44, r1
+  JumpIfFalse  r46, L8
+  // if ekg[1][i] == ekg[2][i] && areSame(ekg[1][:i], ekg[2][:i]) {
+  Const        r12, 1
+  Index        r47, r5, r12
+  Index        r48, r47, r44
+  Const        r16, 2
+  Index        r49, r5, r16
+  Index        r50, r49, r44
+  Equal        r51, r48, r50
+  Move         r52, r51
+  JumpIfFalse  r52, L9
+  Const        r12, 1
+  Index        r55, r5, r12
+  Const        r56, nil
+  Move         r57, r44
+  Slice        r58, r55, r56, r57
+  Move         r53, r58
+  Const        r16, 2
+  Index        r59, r5, r16
+  Const        r60, nil
+  Move         r61, r44
+  Slice        r62, r59, r60, r61
+  Move         r54, r62
+  Call2        r63, areSame, r53, r54
+  Move         r52, r63
+L9:
+  JumpIfFalse  r52, L10
+  // print("\nEKG(5) and EKG(7) converge at term " + str(i+1))
+  Const        r64, "\nEKG(5) and EKG(7) converge at term "
+  Const        r12, 1
+  AddInt       r65, r44, r12
+  Str          r66, r65
+  Add          r67, r64, r66
+  Print        r67
+  // found = true
+  Const        r35, true
+  Move         r45, r35
+  // break
+  Jump         L8
+L10:
+  // i = i + 1
+  Const        r12, 1
+  AddInt       r68, r44, r12
+  Move         r44, r68
+  // while i < limit {
+  Jump         L11
+L8:
+  // if !found {
+  Not          r69, r45
+  JumpIfFalse  r69, L12
+  // print("\nEKG5(5) and EKG(7) do not converge within " + str(limit) + " terms")
+  Const        r70, "\nEKG5(5) and EKG(7) do not converge within "
+  Const        r71, "100"
+  Const        r72, "\nEKG5(5) and EKG(7) do not converge within 100"
+  Const        r73, " terms"
+  Const        r74, "\nEKG5(5) and EKG(7) do not converge within 100 terms"
+  Print        r74
+L12:
+  Return       r0

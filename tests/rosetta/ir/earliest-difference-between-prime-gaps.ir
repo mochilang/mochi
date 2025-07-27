@@ -1,0 +1,119 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun commatize(n: int): string {
+func commatize (regs=20)
+  // var s = str(n)
+  Str          r1, r0
+  Move         r2, r1
+  // var i = len(s) - 3
+  Len          r3, r2
+  Const        r4, 3
+  SubInt       r5, r3, r4
+  Move         r6, r5
+L1:
+  // while i > 0 {
+  Const        r7, 0
+  LessInt      r8, r7, r6
+  JumpIfFalse  r8, L0
+  // s = s[0:i] + "," + s[i:len(s)]
+  Const        r7, 0
+  Move         r9, r7
+  Move         r10, r6
+  Slice        r11, r2, r9, r10
+  Const        r12, ","
+  Add          r13, r11, r12
+  Move         r14, r6
+  Len          r16, r2
+  Move         r15, r16
+  Slice        r17, r2, r14, r15
+  Add          r18, r13, r17
+  Move         r2, r18
+  // i = i - 3
+  Const        r4, 3
+  SubInt       r19, r6, r4
+  Move         r6, r19
+  // while i > 0 {
+  Jump         L1
+L0:
+  // return s
+  Return       r2
+
+  // fun main() {
+func main (regs=55)
+  // let data = [
+  Const        r0, [{"d": 16, "g1": 4, "g2": 6, "pm": 10, "s1": 7, "s2": 23}, {"d": 1718, "g1": 14, "g2": 16, "pm": 100, "s1": 113, "s2": 1831}, {"d": 1718, "g1": 14, "g2": 16, "pm": 1000, "s1": 113, "s2": 1831}, {"d": 21042, "g1": 36, "g2": 38, "pm": 10000, "s1": 9551, "s2": 30593}, {"d": 141962, "g1": 70, "g2": 72, "pm": 100000, "s1": 173359, "s2": 31397}, {"d": 1047576, "g1": 100, "g2": 102, "pm": 1000000, "s1": 396733, "s2": 1444309}, {"d": 11615524, "g1": 148, "g2": 150, "pm": 10000000, "s1": 2010733, "s2": 13626257}, {"d": 332037210, "g1": 198, "g2": 200, "pm": 100000000, "s1": 46006769, "s2": 378043979}, {"d": 3611348430, "g1": 276, "g2": 278, "pm": 1000000000, "s1": 649580171, "s2": 4260928601}, {"d": 24933958388, "g1": 332, "g2": 334, "pm": 10000000000, "s1": 5893180121, "s2": 30827138509}, {"d": 121560146636, "g1": 386, "g2": 388, "pm": 100000000000, "s1": 35238645587, "s2": 156798792223}]
+  Move         r1, r0
+  // for entry in data {
+  IterPrep     r2, r1
+  Len          r3, r2
+  Const        r4, 0
+L1:
+  LessInt      r5, r4, r3
+  JumpIfFalse  r5, L0
+  Index        r6, r2, r4
+  Move         r7, r6
+  // let pm = commatize(entry["pm"])
+  Const        r9, "pm"
+  Index        r10, r7, r9
+  Move         r8, r10
+  Call         r11, commatize, r8
+  Move         r12, r11
+  // let line1 = "Earliest difference > " + pm + " between adjacent prime gap starting primes:"
+  Const        r13, "Earliest difference > "
+  Add          r14, r13, r12
+  Const        r15, " between adjacent prime gap starting primes:"
+  Add          r16, r14, r15
+  Move         r17, r16
+  // print(line1)
+  Print        r17
+  // let line2 = "Gap " + str(entry["g1"]) + " starts at " + commatize(entry["s1"]) + ", gap " + str(entry["g2"]) + " starts at " + commatize(entry["s2"]) + ", difference is " + commatize(entry["d"]) + "."
+  Const        r18, "Gap "
+  Const        r19, "g1"
+  Index        r20, r7, r19
+  Str          r21, r20
+  Add          r22, r18, r21
+  Const        r23, " starts at "
+  Add          r24, r22, r23
+  Const        r26, "s1"
+  Index        r27, r7, r26
+  Move         r25, r27
+  Call         r28, commatize, r25
+  Add          r29, r24, r28
+  Const        r30, ", gap "
+  Add          r31, r29, r30
+  Const        r32, "g2"
+  Index        r33, r7, r32
+  Str          r34, r33
+  Add          r35, r31, r34
+  Const        r23, " starts at "
+  Add          r36, r35, r23
+  Const        r38, "s2"
+  Index        r39, r7, r38
+  Move         r37, r39
+  Call         r40, commatize, r37
+  Add          r41, r36, r40
+  Const        r42, ", difference is "
+  Add          r43, r41, r42
+  Const        r45, "d"
+  Index        r46, r7, r45
+  Move         r44, r46
+  Call         r47, commatize, r44
+  Add          r48, r43, r47
+  Const        r49, "."
+  Add          r50, r48, r49
+  Move         r51, r50
+  // print(line2)
+  Print        r51
+  // print("")
+  Const        r52, ""
+  Print        r52
+  // for entry in data {
+  Const        r53, 1
+  AddInt       r54, r4, r53
+  Move         r4, r54
+  Jump         L1
+L0:
+  Return       r0

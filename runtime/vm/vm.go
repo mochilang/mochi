@@ -3652,6 +3652,11 @@ func (fc *funcCompiler) compilePrimary(p *parser.Primary) int {
 						fc.emit(p.Pos, Instr{Op: OpMakeMap, A: dst, B: 1, C: key})
 						return dst
 					}
+					if idx, ok := fc.comp.fnIndex[p.Selector.Root]; ok {
+						dst := fc.newReg()
+						fc.emit(p.Pos, Instr{Op: OpMakeClosure, A: dst, B: idx, C: 0, D: 0})
+						return dst
+					}
 				}
 				r = fc.newReg()
 			}

@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated IR and outputs from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/ir`.
-Last updated: 2025-07-27 05:37 UTC
+Last updated: 2025-07-27 06:09 UTC
 
-## Rosetta Golden Test Checklist (315/452)
+## Rosetta Golden Test Checklist (340/452)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 116µs | 11.7 KB |
@@ -333,37 +333,37 @@ Last updated: 2025-07-27 05:37 UTC
 | 324 | draw-a-rotating-cube | ✓ | 44.808ms |  |
 | 325 | draw-a-sphere | ✓ | 144.437ms | 2.4 MB |
 | 326 | dutch-national-flag-problem | ✓ | 534µs | 47.5 KB |
-| 327 | dynamic-variable-names | ✓ | 323µs | 21.0 KB |
-| 328 | earliest-difference-between-prime-gaps |   |  |  |
-| 329 | eban-numbers |   |  |  |
-| 330 | ecdsa-example |   |  |  |
-| 331 | echo-server |   |  |  |
-| 332 | eertree |   |  |  |
-| 333 | egyptian-division |   |  |  |
-| 334 | ekg-sequence-convergence |   |  |  |
-| 335 | element-wise-operations |   |  |  |
-| 336 | elementary-cellular-automaton-infinite-length |   |  |  |
-| 337 | elementary-cellular-automaton-random-number-generator |   |  |  |
-| 338 | elementary-cellular-automaton |   |  |  |
-| 339 | elliptic-curve-arithmetic |   |  |  |
-| 340 | elliptic-curve-digital-signature-algorithm |   |  |  |
-| 341 | emirp-primes |   |  |  |
-| 342 | empty-directory |   |  |  |
-| 343 | empty-program |   |  |  |
-| 344 | empty-string-1 |   |  |  |
-| 345 | empty-string-2 |   |  |  |
-| 346 | enforced-immutability | ✓ |  |  |
-| 347 | entropy-1 | ✓ |  |  |
-| 348 | entropy-2 | ✓ |  |  |
-| 349 | entropy-narcissist |   |  |  |
-| 350 | enumerations-1 |   |  |  |
-| 351 | enumerations-2 |   |  |  |
-| 352 | enumerations-3 |   |  |  |
-| 353 | enumerations-4 |   |  |  |
-| 354 | environment-variables-1 |   |  |  |
-| 355 | environment-variables-2 |   |  |  |
+| 327 | dynamic-variable-names | ✓ | 233µs | 21.0 KB |
+| 328 | earliest-difference-between-prime-gaps | ✓ | 463µs | 106.0 KB |
+| 329 | eban-numbers | ✓ | 642.701ms |  |
+| 330 | ecdsa-example | ✓ | 235.073ms | 35.8 KB |
+| 331 | echo-server | ✓ | 33µs | 3.2 KB |
+| 332 | eertree | ✓ | 258µs | 131.5 KB |
+| 333 | egyptian-division | ✓ | 54µs | 22.1 KB |
+| 334 | ekg-sequence-convergence | ✓ | 475.291ms | 967.8 KB |
+| 335 | element-wise-operations | ✓ | 809µs | 884.9 KB |
+| 336 | elementary-cellular-automaton-infinite-length | ✓ | 18.831ms |  |
+| 337 | elementary-cellular-automaton-random-number-generator | ✓ | 54.029ms |  |
+| 338 | elementary-cellular-automaton | ✓ | 2.853ms | 1.9 MB |
+| 339 | elliptic-curve-arithmetic | ✓ | 263µs | 232.5 KB |
+| 340 | elliptic-curve-digital-signature-algorithm | ✓ | 38µs | 2.4 KB |
+| 341 | emirp-primes | ✓ | 36.117313s | 2.3 MB |
+| 342 | empty-directory | ✓ | 31µs | 3.9 KB |
+| 343 | empty-program | ✓ | 631µs | 5.6 KB |
+| 344 | empty-string-1 | ✓ | 37µs | 1.5 KB |
+| 345 | empty-string-2 | ✓ | 34µs | 2.9 KB |
+| 346 | enforced-immutability | ✓ | 34µs | 1.1 KB |
+| 347 | entropy-1 | ✓ | 108µs | 31.5 KB |
+| 348 | entropy-2 | ✓ | 292µs | 35.5 KB |
+| 349 | entropy-narcissist | ✓ | 6.399ms | 1.3 MB |
+| 350 | enumerations-1 | ✓ | 26µs | 1.5 KB |
+| 351 | enumerations-2 | ✓ | 234µs | 824 B |
+| 352 | enumerations-3 | ✓ | 47µs | 1.5 KB |
+| 353 | enumerations-4 | ✓ | 53µs | 728 B |
+| 354 | environment-variables-1 | ✓ | 125.482ms | 26.8 KB |
+| 355 | environment-variables-2 | ✓ | 130.69ms | 209.8 KB |
 | 356 | equal-prime-and-composite-sums |   |  |  |
-| 357 | equilibrium-index | ✓ |  |  |
+| 357 | equilibrium-index | ✓ | 3.39536s | 328.4 KB |
 | 358 | erd-s-nicolas-numbers |   |  |  |
 | 359 | erd-s-selfridge-categorization-of-primes |   |  |  |
 | 360 | esthetic-numbers |   |  |  |
