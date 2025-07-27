@@ -21,6 +21,8 @@ import (
 )
 
 func TestVM_RosettaTasks(t *testing.T) {
+	os.Setenv("MOCHI_NOW_SEED", "0")
+	vm.SetNowSeed(0)
 	root := findRepoRoot(t)
 	dir := filepath.Join(root, "tests/rosetta/x/Mochi")
 	pattern := filepath.Join(dir, "*.mochi")
