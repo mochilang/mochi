@@ -231,6 +231,32 @@ const helperSHA256 = `function _sha256($bs) {
     return array_values(unpack('C*', $hash));
 }`
 
+const helperFetch = `function _fetch($url, $opts = null) {
+    $method = 'GET';
+    $headers = [];
+    $body = null;
+    $query = null;
+    $timeout = 0;
+    if ($opts !== null) {
+        if (isset($opts['method'])) $method = strtoupper($opts['method']);
+        if (isset($opts['headers'])) {
+            foreach ($opts['headers'] as $k => $v) { $headers[] = "$k: $v"; }
+        }
+        if (isset($opts['body'])) $body = json_encode($opts['body']);
+        if (isset($opts['query'])) $query = http_build_query($opts['query']);
+        if (isset($opts['timeout'])) $timeout = intval($opts['timeout']);
+    }
+    if ($query !== null) {
+        $url .= (strpos($url, '?') !== false ? '&' : '?') . $query;
+    }
+    $context = ['http' => ['method' => $method, 'header' => implode("\r\n", $headers)]];
+    if ($body !== null) $context['http']['content'] = $body;
+    if ($timeout > 0) $context['http']['timeout'] = $timeout / 1000.0;
+    $ctx = stream_context_create($context);
+    $data = file_get_contents($url, false, $ctx);
+    return json_decode($data, true);
+}`
+
 var usesLookupHost bool
 var usesNow bool
 var usesLen bool
@@ -244,6 +270,7 @@ var usesSHA256 bool
 var usesEnviron bool
 var usesBigIntOps bool
 var usesGetOutput bool
+var usesFetch bool
 var benchMain bool
 var extraStmts []Stmt
 
@@ -2161,6 +2188,11 @@ func Emit(w io.Writer, p *Program) error {
 			return err
 		}
 	}
+	if usesFetch {
+		if _, err := io.WriteString(w, helperFetch+"\n"); err != nil {
+			return err
+		}
+	}
 	hasMain := false
 	mainCalled := false
 	for _, s := range p.Stmts {
@@ -2216,6 +2248,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	usesEnviron = false
 	usesBigIntOps = false
 	usesGetOutput = false
+	usesFetch = false
 	defer func() { transpileEnv = nil }()
 	p := &Program{Env: env}
 	extraStmts = nil
@@ -3152,6 +3185,21 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		return convertMatchExpr(p.Match)
 	case p.Query != nil:
 		return convertQueryExpr(p.Query)
+	case p.Fetch != nil:
+		urlExpr, err := convertExpr(p.Fetch.URL)
+		if err != nil {
+			return nil, err
+		}
+		usesFetch = true
+		args := []Expr{urlExpr}
+		if p.Fetch.With != nil {
+			withExpr, err := convertExpr(p.Fetch.With)
+			if err != nil {
+				return nil, err
+			}
+			args = append(args, withExpr)
+		}
+		return &CallExpr{Func: "_fetch", Args: args}, nil
 	case p.Load != nil:
 		format := parseFormat(p.Load.With)
 		path := ""
@@ -4577,6 +4625,7 @@ func convertImport(im *parser.ImportStmt) (Stmt, error) {
 			{Key: &StringLit{Value: "Pi"}, Value: &FloatLit{Value: 3.14}},
 			{Key: &StringLit{Value: "Answer"}, Value: &IntLit{Value: 42}},
 			{Key: &StringLit{Value: "FifteenPuzzleExample"}, Value: &ClosureExpr{Params: []string{}, Body: []Stmt{&ReturnStmt{Value: &StringLit{Value: "Solution found in 52 moves: rrrulddluuuldrurdddrullulurrrddldluurddlulurruldrdrd"}}}}},
+			{Key: &StringLit{Value: "MD5Hex"}, Value: &StringLit{Value: "md5"}},
 		}
 		return &LetStmt{Name: alias, Value: &MapLit{Items: items}}, nil
 	}

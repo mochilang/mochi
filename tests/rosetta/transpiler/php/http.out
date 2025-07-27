@@ -1,0 +1,9 @@
+Warning: file_get_contents(https://jsonplaceholder.typicode.com/todos/1): Failed to open stream: Network is unreachable in /workspace/mochi/tests/rosetta/transpiler/php/http.php on line 40
+
+Warning: Trying to access array offset on null in /workspace/mochi/tests/rosetta/transpiler/php/http.php on line 47
+null
+{
+  "duration_us": 22437,
+  "memory_bytes": 536,
+  "name": "main"
+}
