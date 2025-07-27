@@ -2,8 +2,8 @@
 
 Generated Scheme code for Rosetta Code tasks under `tests/rosetta/x/Mochi`.
 
-## Checklist (157/467)
-Last updated: 2025-07-27 16:35 UTC
+## Checklist (163/467)
+Last updated: 2025-07-27 17:13 UTC
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -170,12 +170,12 @@ Last updated: 2025-07-27 16:35 UTC
 | 161 | call-a-function-8 | ✓ | 571.223ms | 12.5 MB |
 | 162 | call-a-function-9 | ✓ | 571.223ms | 12.1 MB |
 | 163 | call-an-object-method-1 | ✓ | 571.223ms | 12.4 MB |
-| 164 | call-an-object-method-2 |   |  |  |
-| 165 | call-an-object-method-3 |   |  |  |
-| 166 | call-an-object-method |   |  |  |
-| 167 | camel-case-and-snake-case |   |  |  |
-| 168 | canny-edge-detector |   |  |  |
-| 169 | canonicalize-cidr |   |  |  |
+| 164 | call-an-object-method-2 | ✓ | 571.223ms | 12.5 MB |
+| 165 | call-an-object-method-3 | ✓ | 571.223ms | 12.5 MB |
+| 166 | call-an-object-method | ✓ | 571.223ms | 12.2 MB |
+| 167 | camel-case-and-snake-case | ✓ | 571.223ms | 13.6 MB |
+| 168 | canny-edge-detector | ✓ | 571.223ms | 13.5 MB |
+| 169 | canonicalize-cidr | ✓ | 571.223ms | 13.6 MB |
 | 170 | cantor-set |   |  |  |
 | 171 | carmichael-3-strong-pseudoprimes |   |  |  |
 | 172 | cartesian-product-of-two-or-more-lists-1 |   |  |  |
