@@ -1144,6 +1144,12 @@ func (s *LetStmt) emit(w io.Writer, indent string) {
 		emitCastExpr(w, s.Expr, typ)
 	}
 	fmt.Fprint(w, ";\n")
+	if varDecls != nil {
+		varDecls[s.Name] = &VarStmt{Name: s.Name, Type: typ}
+	}
+	if varTypes != nil {
+		varTypes[s.Name] = typ
+	}
 }
 
 type VarStmt struct {
@@ -1192,6 +1198,12 @@ func (s *VarStmt) emit(w io.Writer, indent string) {
 		emitCastExpr(w, s.Expr, typ)
 	}
 	fmt.Fprint(w, ";\n")
+	if varDecls != nil {
+		varDecls[s.Name] = s
+	}
+	if varTypes != nil {
+		varTypes[s.Name] = typ
+	}
 }
 
 func defaultValue(t string) string {
@@ -4991,6 +5003,8 @@ func compileQueryExpr(q *parser.QueryExpr) (Expr, error) {
 func Emit(prog *Program) []byte {
 	var buf bytes.Buffer
 	buf.WriteString("public class Main {\n")
+	varDecls = map[string]*VarStmt{}
+	scopeStack = []map[string]*VarStmt{varDecls}
 	// emit type declarations and global variables first
 	for _, st := range prog.Stmts {
 		switch st.(type) {
@@ -5090,6 +5104,7 @@ func Emit(prog *Program) []byte {
 		buf.WriteString(") {\n")
 		savedVT := varTypes
 		varTypes = copyMap(varTypes)
+		savedDecls := pushScope(false)
 		for _, p := range fn.Params {
 			if p.Type != "" {
 				varTypes[p.Name] = p.Type
@@ -5098,6 +5113,7 @@ func Emit(prog *Program) []byte {
 		for _, s := range fn.Body {
 			s.emit(&buf, "        ")
 		}
+		popScope(savedDecls)
 		varTypes = savedVT
 		buf.WriteString("    }")
 		buf.WriteByte('\n')
