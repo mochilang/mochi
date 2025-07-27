@@ -1,0 +1,90 @@
+<?php
+ini_set('memory_limit', '-1');
+function _str($x) {
+    if (is_array($x)) {
+        $isList = array_keys($x) === range(0, count($x) - 1);
+        if ($isList) {
+            $parts = [];
+            foreach ($x as $v) { $parts[] = _str($v); }
+            return '[' . implode(' ', $parts) . ']';
+        }
+        $parts = [];
+        foreach ($x as $k => $v) { $parts[] = _str($k) . ':' . _str($v); }
+        return 'map[' . implode(' ', $parts) . ']';
+    }
+    if (is_bool($x)) return $x ? 'true' : 'false';
+    if ($x === null) return 'null';
+    return strval($x);
+}
+function _intdiv($a, $b) {
+    if (function_exists('bcdiv')) {
+        $sa = is_int($a) ? strval($a) : sprintf('%.0f', $a);
+        $sb = is_int($b) ? strval($b) : sprintf('%.0f', $b);
+        return intval(bcdiv($sa, $sb, 0));
+    }
+    return intdiv($a, $b);
+}
+function mochi_ord($ch) {
+  if ($ch == '5') {
+  return 53;
+}
+  if ($ch == 'T') {
+  return 84;
+}
+  if ($ch == ' ') {
+  return 32;
+}
+  if ($ch == 'é') {
+  return 233;
+}
+  if ($ch == '🐺') {
+  return 128058;
+}
+  return 0;
+}
+function hex($n) {
+  $digits = '0123456789abcdef';
+  if ($n == 0) {
+  return '0x0';
+}
+  $m = $n;
+  $out = '';
+  while ($m > 0) {
+  $d = $m % 16;
+  $out = substr($digits, $d, $d + 1 - $d) . $out;
+  $m = _intdiv($m, 16);
+};
+  return '0x' . $out;
+}
+function quote($s) {
+  return '\'' . $s . '\'';
+}
+function analyze($s) {
+  $le = strlen($s);
+  echo rtrim('Analyzing ' . quote($s) . ' which has a length of ' . _str($le) . ':'), PHP_EOL;
+  if ($le > 1) {
+  $i = 1;
+  while ($i < $le) {
+  $cur = substr($s, $i, $i + 1 - $i);
+  $prev = substr($s, $i - 1, $i - ($i - 1));
+  if ($cur != $prev) {
+  echo rtrim('  Not all characters in the string are the same.'), PHP_EOL;
+  echo rtrim('  ' . quote($cur) . ' (' . hex(mochi_ord($cur)) . ') is different at position ' . _str($i + 1) . '.'), PHP_EOL;
+  echo rtrim(''), PHP_EOL;
+  return;
+}
+  $i = $i + 1;
+};
+}
+  echo rtrim('  All characters in the string are the same.'), PHP_EOL;
+  echo rtrim(''), PHP_EOL;
+}
+function main() {
+  $strings = ['', '   ', '2', '333', '.55', 'tttTTT', '4444 444k', 'pépé', '🐶🐶🐺🐶', '🎄🎄🎄🎄'];
+  $i = 0;
+  while ($i < count($strings)) {
+  analyze($strings[$i]);
+  $i = $i + 1;
+};
+}
+main();

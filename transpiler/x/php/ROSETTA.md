@@ -286,35 +286,35 @@ Last updated: 2025-07-27 16:32 +0700
 | 277 | deal-cards-for-freecell | ✓ | 328µs | 192 B |
 | 278 | death-star | ✓ | 5.828ms | 96 B |
 | 279 | deceptive-numbers | ✓ |  |  |
-| 280 | deconvolution-1d-2 |   |  |  |
-| 281 | deconvolution-1d-3 |   |  |  |
-| 282 | deconvolution-1d |   |  |  |
-| 283 | deepcopy-1 |   |  |  |
-| 284 | define-a-primitive-data-type |   |  |  |
-| 285 | delegates |   |  |  |
-| 286 | demings-funnel |   |  |  |
-| 287 | department-numbers |   |  |  |
-| 288 | descending-primes |   |  |  |
-| 289 | detect-division-by-zero |   |  |  |
-| 290 | determine-if-a-string-has-all-the-same-characters |   |  |  |
-| 291 | determine-if-a-string-has-all-unique-characters |   |  |  |
-| 292 | determine-if-a-string-is-collapsible |   |  |  |
-| 293 | determine-if-a-string-is-numeric-1 |   |  |  |
-| 294 | determine-if-a-string-is-numeric-2 |   |  |  |
-| 295 | determine-if-a-string-is-squeezable |   |  |  |
-| 296 | determine-if-only-one-instance-is-running |   |  |  |
-| 297 | determine-if-two-triangles-overlap |   |  |  |
-| 298 | determine-sentence-type |   |  |  |
-| 299 | dice-game-probabilities-1 |   |  |  |
-| 300 | dice-game-probabilities-2 |   |  |  |
-| 301 | digital-root-multiplicative-digital-root |   |  |  |
-| 302 | dijkstras-algorithm |   |  |  |
-| 303 | dinesmans-multiple-dwelling-problem |   |  |  |
-| 304 | dining-philosophers-1 |   |  |  |
-| 305 | dining-philosophers-2 |   |  |  |
-| 306 | disarium-numbers |   |  |  |
-| 307 | discordian-date |   |  |  |
-| 308 | display-a-linear-combination |   |  |  |
+| 280 | deconvolution-1d-2 | ✓ |  |  |
+| 281 | deconvolution-1d-3 | ✓ |  |  |
+| 282 | deconvolution-1d | ✓ |  |  |
+| 283 | deepcopy-1 | ✓ |  |  |
+| 284 | define-a-primitive-data-type | ✓ |  |  |
+| 285 | delegates | ✓ |  |  |
+| 286 | demings-funnel | ✓ |  |  |
+| 287 | department-numbers | ✓ |  |  |
+| 288 | descending-primes | ✓ |  |  |
+| 289 | detect-division-by-zero | ✓ |  |  |
+| 290 | determine-if-a-string-has-all-the-same-characters | ✓ |  |  |
+| 291 | determine-if-a-string-has-all-unique-characters | ✓ |  |  |
+| 292 | determine-if-a-string-is-collapsible | ✓ |  |  |
+| 293 | determine-if-a-string-is-numeric-1 | ✓ |  |  |
+| 294 | determine-if-a-string-is-numeric-2 | ✓ |  |  |
+| 295 | determine-if-a-string-is-squeezable | ✓ |  |  |
+| 296 | determine-if-only-one-instance-is-running | ✓ |  |  |
+| 297 | determine-if-two-triangles-overlap | ✓ |  |  |
+| 298 | determine-sentence-type | ✓ |  |  |
+| 299 | dice-game-probabilities-1 | ✓ |  |  |
+| 300 | dice-game-probabilities-2 | ✓ |  |  |
+| 301 | digital-root-multiplicative-digital-root | ✓ |  |  |
+| 302 | dijkstras-algorithm | ✓ |  |  |
+| 303 | dinesmans-multiple-dwelling-problem | ✓ |  |  |
+| 304 | dining-philosophers-1 | ✓ |  |  |
+| 305 | dining-philosophers-2 | ✓ |  |  |
+| 306 | disarium-numbers | ✓ |  |  |
+| 307 | discordian-date | ✓ |  |  |
+| 308 | display-a-linear-combination | ✓ |  |  |
 | 309 | display-an-outline-as-a-nested-table |   |  |  |
 | 310 | distance-and-bearing |   |  |  |
 | 311 | distributed-programming |   |  |  |

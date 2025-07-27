@@ -175,6 +175,34 @@ const helperIntDiv = `function _intdiv($a, $b) {
     return intdiv($a, $b);
 }`
 
+const helperBigInt = `function _iadd($a, $b) {
+    if (function_exists('bcadd')) {
+        return bcadd(strval($a), strval($b), 0);
+    }
+    return $a + $b;
+}
+function _isub($a, $b) {
+    if (function_exists('bcsub')) {
+        return bcsub(strval($a), strval($b), 0);
+    }
+    return $a - $b;
+}
+function _imul($a, $b) {
+    if (function_exists('bcmul')) {
+        return bcmul(strval($a), strval($b), 0);
+    }
+    return $a * $b;
+}
+function _idiv($a, $b) {
+    return _intdiv($a, $b);
+}
+function _imod($a, $b) {
+    if (function_exists('bcmod')) {
+        return intval(bcmod(strval($a), strval($b)));
+    }
+    return $a % $b;
+}`
+
 const helperSHA256 = `function _sha256($bs) {
     $bin = '';
     foreach ($bs as $b) { $bin .= chr($b); }
@@ -192,6 +220,7 @@ var usesRepeat bool
 var usesParseIntStr bool
 var usesIntDiv bool
 var usesSHA256 bool
+var usesBigIntOps bool
 var benchMain bool
 var extraStmts []Stmt
 
@@ -244,6 +273,7 @@ var renameMap map[string]string
 var closureNames = map[string]bool{}
 var funcRefParams = map[string][]bool{}
 var groupStack []string
+var structStack []string
 var globalNames []string
 var globalSet map[string]struct{}
 var globalFuncs map[string]struct{}
@@ -2078,6 +2108,11 @@ func Emit(w io.Writer, p *Program) error {
 			return err
 		}
 	}
+	if usesBigIntOps {
+		if _, err := io.WriteString(w, helperBigInt+"\n"); err != nil {
+			return err
+		}
+	}
 	if usesSHA256 {
 		if _, err := io.WriteString(w, helperSHA256+"\n"); err != nil {
 			return err
@@ -2135,6 +2170,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	usesParseIntStr = false
 	usesIntDiv = false
 	usesSHA256 = false
+	usesBigIntOps = false
 	defer func() { transpileEnv = nil }()
 	p := &Program{Env: env}
 	extraStmts = nil
@@ -2236,6 +2272,11 @@ func convertBinary(b *parser.BinaryExpr) (Expr, error) {
 				usesBigRat = true
 				return &CallExpr{Func: "_div", Args: []Expr{left, right}}, false
 			}
+			if isBigIntExpr(left) || isBigIntExpr(right) {
+				usesBigIntOps = true
+				usesIntDiv = true
+				return &CallExpr{Func: "_idiv", Args: []Expr{left, right}}, false
+			}
 			return &BinaryExpr{Left: left, Op: "/", Right: right}, false
 		case "in":
 			if isListExpr(right) {
@@ -2256,6 +2297,10 @@ func convertBinary(b *parser.BinaryExpr) (Expr, error) {
 				usesBigRat = true
 				return &CallExpr{Func: "_add", Args: []Expr{left, right}}, false
 			}
+			if isBigIntExpr(left) || isBigIntExpr(right) {
+				usesBigIntOps = true
+				return &CallExpr{Func: "_iadd", Args: []Expr{left, right}}, false
+			}
 			if isListExpr(left) && isListExpr(right) {
 				return &CallExpr{Func: "array_merge", Args: []Expr{left, right}}, false
 			}
@@ -2273,14 +2318,26 @@ func convertBinary(b *parser.BinaryExpr) (Expr, error) {
 				usesBigRat = true
 				return &CallExpr{Func: "_sub", Args: []Expr{left, right}}, false
 			}
+			if isBigIntExpr(left) || isBigIntExpr(right) {
+				usesBigIntOps = true
+				return &CallExpr{Func: "_isub", Args: []Expr{left, right}}, false
+			}
 			return &BinaryExpr{Left: left, Op: "-", Right: right}, false
 		case "*":
 			if isBigRatExpr(left) || isBigRatExpr(right) {
 				usesBigRat = true
 				return &CallExpr{Func: "_mul", Args: []Expr{left, right}}, false
 			}
+			if isBigIntExpr(left) || isBigIntExpr(right) {
+				usesBigIntOps = true
+				return &CallExpr{Func: "_imul", Args: []Expr{left, right}}, false
+			}
 			return &BinaryExpr{Left: left, Op: "*", Right: right}, false
 		case "%":
+			if isBigIntExpr(left) || isBigIntExpr(right) {
+				usesBigIntOps = true
+				return &CallExpr{Func: "_imod", Args: []Expr{left, right}}, false
+			}
 			if !isIntExpr(left) || !isIntExpr(right) {
 				return &CallExpr{Func: "fmod", Args: []Expr{left, right}}, false
 			}
@@ -2603,6 +2660,15 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		}
 		if newName, ok := renameMap[name]; ok {
 			callName = newName
+		}
+		if strings.HasPrefix(callName, "$") && len(structStack) > 0 && transpileEnv != nil {
+			structName := structStack[len(structStack)-1]
+			if st, ok := transpileEnv.GetStruct(structName); ok {
+				if _, ok := st.Methods[name]; ok {
+					callName = structName + "_" + name
+					args = append([]Expr{&Var{Name: "self"}}, args...)
+				}
+			}
 		}
 		if name == "print" {
 			callName = "echo"
@@ -3370,7 +3436,9 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 			}
 			fun.Body = append(prelude, fun.Body...)
 			stmt := &parser.Statement{Fun: &fun}
+			structStack = append(structStack, st.Type.Name)
 			conv, err := convertStmt(stmt)
+			structStack = structStack[:len(structStack)-1]
 			if err != nil {
 				return nil, err
 			}
@@ -3407,7 +3475,9 @@ func convertStmtList(list []*parser.Statement) ([]Stmt, error) {
 				}
 				fun.Body = append(prelude, fun.Body...)
 				stmt := &parser.Statement{Fun: &fun}
+				structStack = append(structStack, s.Type.Name)
 				st, err := convertStmt(stmt)
+				structStack = structStack[:len(structStack)-1]
 				if err != nil {
 					return nil, err
 				}
@@ -4248,6 +4318,34 @@ func isIntExpr(e Expr) bool {
 		return isIntExpr(v.Left) && isIntExpr(v.Right)
 	case *CondExpr:
 		return isIntExpr(v.Then) && isIntExpr(v.Else)
+	}
+	return false
+}
+
+func isBigIntExpr(e Expr) bool {
+	switch v := e.(type) {
+	case *Var:
+		if transpileEnv != nil {
+			if t, err := transpileEnv.GetVar(v.Name); err == nil {
+				if _, ok := t.(types.BigIntType); ok {
+					return true
+				}
+			}
+		}
+	case *BinaryExpr:
+		switch v.Op {
+		case "+", "-", "*", "/", "%":
+			return isBigIntExpr(v.Left) || isBigIntExpr(v.Right)
+		}
+	case *GroupExpr:
+		return isBigIntExpr(v.X)
+	case *CondExpr:
+		return isBigIntExpr(v.Then) && isBigIntExpr(v.Else)
+	case *IntDivExpr:
+		return isBigIntExpr(v.Left) && isBigIntExpr(v.Right)
+	}
+	if _, ok := exprType(e).(types.BigIntType); ok {
+		return true
 	}
 	return false
 }
