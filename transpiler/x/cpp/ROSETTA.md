@@ -2,7 +2,7 @@
 
 This directory stores C++ code generated from Mochi programs in `tests/rosetta/x/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.cpp` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (140/465) - Last updated 2025-07-27 15:57 +0700:
+Checklist of programs that currently transpile and run (140/465) - Last updated 2025-07-27 16:50 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | 100-doors-2 | ✓ | 222.0µs | 13.12MB |
@@ -160,14 +160,14 @@ Checklist of programs that currently transpile and run (140/465) - Last updated 
 | 153 | call-a-function-11 | ✓ | 311.0µs | 12.50MB |
 | 154 | call-a-function-12 | ✓ | 250.0µs | 12.89MB |
 | 155 | call-a-function-2 | ✓ | 41.0µs | 12.65MB |
-| 156 | call-a-function-3 | ✓ |  |  |
-| 157 | call-a-function-4 | ✓ |  |  |
-| 158 | call-a-function-5 | ✓ |  |  |
-| 159 | call-a-function-6 | ✓ |  |  |
-| 160 | call-a-function-7 | ✓ |  |  |
-| 161 | call-a-function-8 | ✓ |  |  |
-| 162 | call-a-function-9 | ✓ |  |  |
-| 163 | call-an-object-method-1 | ✓ |  |  |
+| 156 | call-a-function-3 | ✓ | 50.0µs | 12.73MB |
+| 157 | call-a-function-4 | ✓ | 48.0µs | 12.68MB |
+| 158 | call-a-function-5 | ✓ | 252.0µs | 12.96MB |
+| 159 | call-a-function-6 | ✓ | 253.0µs | 12.57MB |
+| 160 | call-a-function-7 | ✓ | 22.0µs | 12.79MB |
+| 161 | call-a-function-8 | ✓ | 57.0µs | 12.88MB |
+| 162 | call-a-function-9 | ✓ | 56.0µs | 12.79MB |
+| 163 | call-an-object-method-1 | ✓ | 15.0µs | 12.30MB |
 | 164 | call-an-object-method-2 |   |  |  |
 | 165 | call-an-object-method-3 |   |  |  |
 | 166 | call-an-object-method |   |  |  |
