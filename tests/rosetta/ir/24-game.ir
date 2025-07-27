@@ -14,7 +14,7 @@ func randDigit (regs=5)
   Return       r4
 
   // fun main() {
-func main (regs=100)
+func main (regs=116)
   // var digits = []
   Const        r0, []
   Move         r1, r0
@@ -88,7 +88,7 @@ L4:
   // var valid = true
   Const        r30, true
   Move         r31, r30
-L14:
+L18:
   // while i < len(expr) {
   Len          r32, r24
   LessInt      r33, r4, r32
@@ -125,113 +125,166 @@ L8:
 L10:
   // while digits[j] != int(ch) - int("0") {
   Index        r47, r1, r46
-  Sub          r50, r48, r49
-  NotEqual     r51, r47, r50
-  JumpIfFalse  r51, L9
+  Cast         r48, r37, int
+  Const        r2, 0
+  Sub          r49, r48, r2
+  NotEqual     r50, r47, r49
+  JumpIfFalse  r50, L9
   // j = j + 1
   Const        r34, 1
-  AddInt       r52, r46, r34
-  Move         r46, r52
+  AddInt       r51, r46, r34
+  Move         r46, r51
   // if j == len(digits) {
-  Len          r53, r1
-  EqualInt     r54, r46, r53
-  JumpIfFalse  r54, L10
+  Len          r52, r1
+  EqualInt     r53, r46, r52
+  JumpIfFalse  r53, L10
   // print("wrong numbers.")
-  Const        r55, "wrong numbers."
-  Print        r55
+  Const        r54, "wrong numbers."
+  Print        r54
   // return
   Return       r0
 L9:
   // digits = digits[:j] + digits[j+1:]
-  Const        r56, nil
-  Move         r57, r46
-  Slice        r58, r1, r56, r57
+  Const        r55, nil
+  Move         r56, r46
+  Slice        r57, r1, r55, r56
   Const        r34, 1
-  AddInt       r60, r46, r34
-  Move         r59, r60
-  Const        r61, nil
-  Slice        r62, r1, r59, r61
-  Add          r63, r58, r62
-  Move         r1, r63
+  AddInt       r59, r46, r34
+  Move         r58, r59
+  Const        r60, nil
+  Slice        r61, r1, r58, r60
+  Add          r62, r57, r61
+  Move         r1, r62
   // stack = append(stack, float(int(ch) - int("0")))
-  Append       r65, r29, r64
-  Move         r29, r65
+  Append       r64, r29, r63
+  Move         r29, r64
   // if ch >= "0" && ch <= "9" {
   Jump         L11
 L7:
   // if len(stack) < 2 {
-  Len          r66, r29
-  Const        r67, 2
-  LessInt      r68, r66, r67
-  JumpIfFalse  r68, L12
+  Len          r65, r29
+  Const        r66, 2
+  LessInt      r67, r65, r66
+  JumpIfFalse  r67, L12
   // print("invalid expression syntax.")
-  Const        r69, "invalid expression syntax."
-  Print        r69
+  Const        r68, "invalid expression syntax."
+  Print        r68
   // valid = false
-  Const        r70, false
-  Move         r31, r70
+  Const        r69, false
+  Move         r31, r69
   // break
   Jump         L5
 L12:
   // var b = stack[len(stack)-1]
-  Len          r71, r29
+  Len          r70, r29
   Const        r34, 1
-  SubInt       r72, r71, r34
-  Index        r73, r29, r72
-  Move         r74, r73
+  SubInt       r71, r70, r34
+  Index        r72, r29, r71
+  Move         r73, r72
   // var a = stack[len(stack)-2]
-  Len          r75, r29
-  Const        r67, 2
-  SubInt       r76, r75, r67
-  Index        r77, r29, r76
-  Move         r78, r77
+  Len          r74, r29
+  Const        r66, 2
+  SubInt       r75, r74, r66
+  Index        r76, r29, r75
+  Move         r77, r76
   // if ch == "+" {
-  Const        r79, "+"
-  Equal        r80, r37, r79
-  JumpIfFalse  r80, L13
+  Const        r78, "+"
+  Equal        r79, r37, r78
+  JumpIfFalse  r79, L13
   // stack[len(stack)-2] = a + b
-  Add          r81, r78, r74
-  Len          r82, r29
-  Const        r67, 2
-  SubInt       r83, r82, r67
-  SetIndex     r29, r83, r81
+  Add          r80, r77, r73
+  Len          r81, r29
+  Const        r66, 2
+  SubInt       r82, r81, r66
+  SetIndex     r29, r82, r80
+  // if ch == "+" {
+  Jump         L14
 L13:
-  // stack = stack[:len(stack)-1]
-  Const        r84, nil
+  // } else if ch == "-" {
+  Const        r83, "-"
+  Equal        r84, r37, r83
+  JumpIfFalse  r84, L15
+  // stack[len(stack)-2] = a - b
+  Sub          r85, r77, r73
   Len          r86, r29
+  Const        r66, 2
+  SubInt       r87, r86, r66
+  SetIndex     r29, r87, r85
+  // } else if ch == "-" {
+  Jump         L14
+L15:
+  // } else if ch == "*" {
+  Const        r88, "*"
+  Equal        r89, r37, r88
+  JumpIfFalse  r89, L16
+  // stack[len(stack)-2] = a * b
+  Mul          r90, r77, r73
+  Len          r91, r29
+  Const        r66, 2
+  SubInt       r92, r91, r66
+  SetIndex     r29, r92, r90
+  // } else if ch == "*" {
+  Jump         L14
+L16:
+  // } else if ch == "/" {
+  Const        r93, "/"
+  Equal        r94, r37, r93
+  JumpIfFalse  r94, L17
+  // stack[len(stack)-2] = a / b
+  Div          r95, r77, r73
+  Len          r96, r29
+  Const        r66, 2
+  SubInt       r97, r96, r66
+  SetIndex     r29, r97, r95
+  // } else if ch == "/" {
+  Jump         L14
+L17:
+  // print(ch + " invalid.")
+  Const        r98, " invalid."
+  Add          r99, r37, r98
+  Print        r99
+  // valid = false
+  Const        r69, false
+  Move         r31, r69
+  // break
+  Jump         L5
+L14:
+  // stack = stack[:len(stack)-1]
+  Const        r100, nil
+  Len          r102, r29
   Const        r34, 1
-  SubInt       r87, r86, r34
-  Move         r85, r87
-  Slice        r88, r29, r84, r85
-  Move         r29, r88
+  SubInt       r103, r102, r34
+  Move         r101, r103
+  Slice        r104, r29, r100, r101
+  Move         r29, r104
 L11:
   // i = i + 1
   Const        r34, 1
-  AddInt       r89, r4, r34
-  Move         r4, r89
+  AddInt       r105, r4, r34
+  Move         r4, r105
   // while i < len(expr) {
-  Jump         L14
+  Jump         L18
 L5:
   // if valid {
-  JumpIfFalse  r31, L15
+  JumpIfFalse  r31, L19
   // if abs(stack[0] - 24.0) > 0.000001 {
-  Const        r91, 0.000001
-  LessFloat    r92, r91, r90
-  JumpIfFalse  r92, L16
+  Const        r107, 0.000001
+  LessFloat    r108, r107, r106
+  JumpIfFalse  r108, L20
   // print("incorrect. " + str(stack[0]) + " != 24")
-  Const        r93, "incorrect. "
+  Const        r109, "incorrect. "
   Const        r2, 0
-  Index        r94, r29, r2
-  Str          r95, r94
-  Add          r96, r93, r95
-  Const        r97, " != 24"
-  Add          r98, r96, r97
-  Print        r98
+  Index        r110, r29, r2
+  Str          r111, r110
+  Add          r112, r109, r111
+  Const        r113, " != 24"
+  Add          r114, r112, r113
+  Print        r114
   // if abs(stack[0] - 24.0) > 0.000001 {
-  Jump         L15
-L16:
+  Jump         L19
+L20:
   // print("correct.")
-  Const        r99, "correct."
-  Print        r99
-L15:
+  Const        r115, "correct."
+  Print        r115
+L19:
   Return       r0

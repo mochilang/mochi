@@ -31,140 +31,9 @@ func main (regs=14)
   Call         r13, main, 
   Return       r0
 
-  // fun binEval(op: int, l: Expr, r: Expr): Rational {
-func binEval (regs=79)
-  // let lv = exprEval(l)
-  Move         r11, r10
-  // let rv = exprEval(r)
-  Move         r13, r12
-  // if op == OP_ADD {
-  Equal        r14, r7, r0
-  JumpIfFalse  r14, L0
-  // return Rational { num: lv.num*rv.denom + lv.denom*rv.num, denom: lv.denom*rv.denom }
-  Const        r15, "num"
-  Index        r16, r11, r15
-  Const        r17, "denom"
-  Index        r18, r13, r17
-  Mul          r19, r16, r18
-  Const        r17, "denom"
-  Index        r20, r11, r17
-  Const        r15, "num"
-  Index        r21, r13, r15
-  Mul          r22, r20, r21
-  Add          r23, r19, r22
-  Const        r17, "denom"
-  Index        r24, r11, r17
-  Const        r17, "denom"
-  Index        r25, r13, r17
-  Mul          r26, r24, r25
-  Const        r27, "__name"
-  Const        r28, "Rational"
-  Const        r29, "num"
-  Move         r30, r23
-  Const        r31, "denom"
-  Move         r32, r26
-  MakeMap      r33, 3, r27
-  Return       r33
-L0:
-  // if op == OP_SUB {
-  Equal        r34, r7, r1
-  JumpIfFalse  r34, L1
-  // return Rational { num: lv.num*rv.denom - lv.denom*rv.num, denom: lv.denom*rv.denom }
-  Const        r15, "num"
-  Index        r35, r11, r15
-  Const        r17, "denom"
-  Index        r36, r13, r17
-  Mul          r37, r35, r36
-  Const        r17, "denom"
-  Index        r38, r11, r17
-  Const        r15, "num"
-  Index        r39, r13, r15
-  Mul          r40, r38, r39
-  Sub          r41, r37, r40
-  Const        r17, "denom"
-  Index        r42, r11, r17
-  Const        r17, "denom"
-  Index        r43, r13, r17
-  Mul          r44, r42, r43
-  Const        r45, "__name"
-  Const        r46, "Rational"
-  Const        r47, "num"
-  Move         r48, r41
-  Const        r49, "denom"
-  Move         r50, r44
-  MakeMap      r51, 3, r45
-  Return       r51
-L1:
-  // if op == OP_MUL {
-  Equal        r52, r7, r2
-  JumpIfFalse  r52, L2
-  // return Rational { num: lv.num*rv.num, denom: lv.denom*rv.denom }
-  Const        r15, "num"
-  Index        r53, r11, r15
-  Const        r15, "num"
-  Index        r54, r13, r15
-  Mul          r55, r53, r54
-  Const        r17, "denom"
-  Index        r56, r11, r17
-  Const        r17, "denom"
-  Index        r57, r13, r17
-  Mul          r58, r56, r57
-  Const        r59, "__name"
-  Const        r60, "Rational"
-  Const        r61, "num"
-  Move         r62, r55
-  Const        r63, "denom"
-  Move         r64, r58
-  MakeMap      r65, 3, r59
-  Return       r65
-L2:
-  // return Rational { num: lv.num*rv.denom, denom: lv.denom*rv.num }
-  Const        r15, "num"
-  Index        r66, r11, r15
-  Const        r17, "denom"
-  Index        r67, r13, r17
-  Mul          r68, r66, r67
-  Const        r17, "denom"
-  Index        r69, r11, r17
-  Const        r15, "num"
-  Index        r70, r13, r15
-  Mul          r71, r69, r70
-  Const        r72, "__name"
-  Const        r73, "Rational"
-  Const        r74, "num"
-  Move         r75, r68
-  Const        r76, "denom"
-  Move         r77, r71
-  MakeMap      r78, 3, r72
-  Return       r78
-
-  // fun binString(op: int, l: Expr, r: Expr): string {
-func binString (regs=24)
-  // let ls = exprString(l)
-  Move         r11, r10
-  // let rs = exprString(r)
-  Move         r13, r12
-  // var opstr = ""
-  Const        r14, ""
-  Move         r15, r14
-  // if op == OP_ADD { opstr = " + " }
-  Equal        r16, r7, r0
-  JumpIfFalse  r16, L0
-  Const        r17, " + "
-  Move         r15, r17
-L0:
-  // return "(" + ls + opstr + rs + ")"
-  Const        r18, "("
-  Add          r19, r18, r11
-  Add          r20, r19, r15
-  Add          r21, r20, r13
-  Const        r22, ")"
-  Add          r23, r21, r22
-  Return       r23
-
-  // fun newNum(n: int): Expr {
-func newNum (regs=21)
-  // return Num { value: Rational { num: n, denom: 1 } }
+  // fun makeNode(n: int): Node {
+func makeNode (regs=24)
+  // return Node { val: Rational { num: n, denom: 1 }, txt: str(n) }
   Const        r8, 1
   Const        r9, "__name"
   Const        r10, "Rational"
@@ -173,92 +42,231 @@ func newNum (regs=21)
   Const        r13, "denom"
   Move         r14, r8
   MakeMap      r15, 3, r9
-  Const        r16, "__name"
-  Const        r17, "Num"
-  Const        r18, "value"
-  Move         r19, r15
-  MakeMap      r20, 2, r16
-  Return       r20
+  Str          r16, r7
+  Const        r17, "__name"
+  Const        r18, "Node"
+  Const        r19, "val"
+  Move         r20, r15
+  Const        r21, "txt"
+  Move         r22, r16
+  MakeMap      r23, 3, r17
+  Return       r23
 
-  // fun exprEval(x: Expr): Rational {
-func exprEval (regs=29)
-  // Num(v) => v
-  Const        r10, "__name"
-  Index        r11, r7, r10
-  Const        r12, "Num"
-  Equal        r9, r11, r12
-  JumpIfFalse  r9, L0
-  Const        r13, "value"
-  Index        r14, r7, r13
-  Move         r8, r14
-  Jump         L1
-L0:
-  // Bin(op, l, r) => binEval(op, l, r)
-  Const        r16, "__name"
-  Index        r17, r7, r16
-  Const        r18, "Bin"
-  Equal        r15, r17, r18
-  JumpIfFalse  r15, L2
-  Const        r19, "op"
-  Index        r20, r7, r19
-  Const        r21, "left"
-  Index        r22, r7, r21
-  Const        r23, "right"
-  Index        r24, r7, r23
-  Move         r25, r20
-  Move         r26, r22
-  Move         r27, r24
-  Call         r28, binEval, r25, r26, r27
-  Move         r8, r28
-  Jump         L1
-L2:
-  Const        r8, nil
-L1:
-  // return match x {
-  Return       r8
-
-  // fun exprString(x: Expr): string {
-func exprString (regs=32)
-  // Num(v) => str(v.num)
-  Const        r10, "__name"
-  Index        r11, r7, r10
-  Const        r12, "Num"
-  Equal        r9, r11, r12
-  JumpIfFalse  r9, L0
-  Const        r13, "value"
-  Index        r14, r7, r13
+  // fun combine(op: int, l: Node, r: Node): Node {
+func combine (regs=123)
+  // var res: Rational
+  Move         r11, r10
+  // if op == OP_ADD {
+  Equal        r12, r7, r0
+  JumpIfFalse  r12, L0
+  // res = Rational { num: l.val.num*r.val.denom + l.val.denom*r.val.num, denom: l.val.denom*r.val.denom }
+  Const        r13, "val"
+  Index        r14, r8, r13
   Const        r15, "num"
   Index        r16, r14, r15
-  Str          r17, r16
-  Move         r8, r17
+  Const        r13, "val"
+  Index        r17, r9, r13
+  Const        r18, "denom"
+  Index        r19, r17, r18
+  Mul          r20, r16, r19
+  Const        r13, "val"
+  Index        r21, r8, r13
+  Const        r18, "denom"
+  Index        r22, r21, r18
+  Const        r13, "val"
+  Index        r23, r9, r13
+  Const        r15, "num"
+  Index        r24, r23, r15
+  Mul          r25, r22, r24
+  Add          r26, r20, r25
+  Const        r13, "val"
+  Index        r27, r8, r13
+  Const        r18, "denom"
+  Index        r28, r27, r18
+  Const        r13, "val"
+  Index        r29, r9, r13
+  Const        r18, "denom"
+  Index        r30, r29, r18
+  Mul          r31, r28, r30
+  Const        r32, "__name"
+  Const        r33, "Rational"
+  Const        r34, "num"
+  Move         r35, r26
+  Const        r36, "denom"
+  Move         r37, r31
+  MakeMap      r38, 3, r32
+  Move         r11, r38
+  // if op == OP_ADD {
   Jump         L1
 L0:
-  // Bin(op, l, r) => binString(op, l, r)
-  Const        r19, "__name"
-  Index        r20, r7, r19
-  Const        r21, "Bin"
-  Equal        r18, r20, r21
-  JumpIfFalse  r18, L2
-  Const        r22, "op"
-  Index        r23, r7, r22
-  Const        r24, "left"
-  Index        r25, r7, r24
-  Const        r26, "right"
-  Index        r27, r7, r26
-  Move         r28, r23
-  Move         r29, r25
-  Move         r30, r27
-  Call         r31, binString, r28, r29, r30
-  Move         r8, r31
+  // } else if op == OP_SUB {
+  Equal        r39, r7, r1
+  JumpIfFalse  r39, L2
+  // res = Rational { num: l.val.num*r.val.denom - l.val.denom*r.val.num, denom: l.val.denom*r.val.denom }
+  Const        r13, "val"
+  Index        r40, r8, r13
+  Const        r15, "num"
+  Index        r41, r40, r15
+  Const        r13, "val"
+  Index        r42, r9, r13
+  Const        r18, "denom"
+  Index        r43, r42, r18
+  Mul          r44, r41, r43
+  Const        r13, "val"
+  Index        r45, r8, r13
+  Const        r18, "denom"
+  Index        r46, r45, r18
+  Const        r13, "val"
+  Index        r47, r9, r13
+  Const        r15, "num"
+  Index        r48, r47, r15
+  Mul          r49, r46, r48
+  Sub          r50, r44, r49
+  Const        r13, "val"
+  Index        r51, r8, r13
+  Const        r18, "denom"
+  Index        r52, r51, r18
+  Const        r13, "val"
+  Index        r53, r9, r13
+  Const        r18, "denom"
+  Index        r54, r53, r18
+  Mul          r55, r52, r54
+  Const        r56, "__name"
+  Const        r57, "Rational"
+  Const        r58, "num"
+  Move         r59, r50
+  Const        r60, "denom"
+  Move         r61, r55
+  MakeMap      r62, 3, r56
+  Move         r11, r62
+  // } else if op == OP_SUB {
   Jump         L1
 L2:
-  Const        r8, nil
+  // } else if op == OP_MUL {
+  Equal        r63, r7, r2
+  JumpIfFalse  r63, L3
+  // res = Rational { num: l.val.num*r.val.num, denom: l.val.denom*r.val.denom }
+  Const        r13, "val"
+  Index        r64, r8, r13
+  Const        r15, "num"
+  Index        r65, r64, r15
+  Const        r13, "val"
+  Index        r66, r9, r13
+  Const        r15, "num"
+  Index        r67, r66, r15
+  Mul          r68, r65, r67
+  Const        r13, "val"
+  Index        r69, r8, r13
+  Const        r18, "denom"
+  Index        r70, r69, r18
+  Const        r13, "val"
+  Index        r71, r9, r13
+  Const        r18, "denom"
+  Index        r72, r71, r18
+  Mul          r73, r70, r72
+  Const        r74, "__name"
+  Const        r75, "Rational"
+  Const        r76, "num"
+  Move         r77, r68
+  Const        r78, "denom"
+  Move         r79, r73
+  MakeMap      r80, 3, r74
+  Move         r11, r80
+  // } else if op == OP_MUL {
+  Jump         L1
+L3:
+  // res = Rational { num: l.val.num*r.val.denom, denom: l.val.denom*r.val.num }
+  Const        r13, "val"
+  Index        r81, r8, r13
+  Const        r15, "num"
+  Index        r82, r81, r15
+  Const        r13, "val"
+  Index        r83, r9, r13
+  Const        r18, "denom"
+  Index        r84, r83, r18
+  Mul          r85, r82, r84
+  Const        r13, "val"
+  Index        r86, r8, r13
+  Const        r18, "denom"
+  Index        r87, r86, r18
+  Const        r13, "val"
+  Index        r88, r9, r13
+  Const        r15, "num"
+  Index        r89, r88, r15
+  Mul          r90, r87, r89
+  Const        r91, "__name"
+  Const        r92, "Rational"
+  Const        r93, "num"
+  Move         r94, r85
+  Const        r95, "denom"
+  Move         r96, r90
+  MakeMap      r97, 3, r91
+  Move         r11, r97
 L1:
-  // return match x {
-  Return       r8
+  // var opstr = ""
+  Const        r98, ""
+  Move         r99, r98
+  // if op == OP_ADD { opstr = " + " }
+  Equal        r100, r7, r0
+  JumpIfFalse  r100, L4
+  Const        r101, " + "
+  Move         r99, r101
+  Jump         L5
+L4:
+  // else if op == OP_SUB { opstr = " - " }
+  Equal        r102, r7, r1
+  JumpIfFalse  r102, L6
+  Const        r103, " - "
+  Move         r99, r103
+  Jump         L5
+L6:
+  // else if op == OP_MUL { opstr = " * " }
+  Equal        r104, r7, r2
+  JumpIfFalse  r104, L7
+  Const        r105, " * "
+  Move         r99, r105
+  Jump         L5
+L7:
+  // else { opstr = " / " }
+  Const        r106, " / "
+  Move         r99, r106
+L5:
+  // return Node { val: res, txt: "(" + l.txt + opstr + r.txt + ")" }
+  Const        r107, "("
+  Const        r108, "txt"
+  Index        r109, r8, r108
+  Add          r110, r107, r109
+  Add          r111, r110, r99
+  Const        r108, "txt"
+  Index        r112, r9, r108
+  Add          r113, r111, r112
+  Const        r114, ")"
+  Add          r115, r113, r114
+  Const        r116, "__name"
+  Const        r117, "Node"
+  Const        r118, "val"
+  Move         r119, r11
+  Const        r120, "txt"
+  Move         r121, r115
+  MakeMap      r122, 3, r116
+  Return       r122
 
-  // fun solve(xs: list<Expr>): bool {
-func solve (regs=113)
+  // fun exprEval(x: Node): Rational { return x.val }
+func exprEval (regs=10)
+  // fun exprEval(x: Node): Rational { return x.val }
+  Const        r8, "val"
+  Index        r9, r7, r8
+  Return       r9
+
+  // fun exprString(x: Node): string { return x.txt }
+func exprString (regs=10)
+  // fun exprString(x: Node): string { return x.txt }
+  Const        r8, "txt"
+  Index        r9, r7, r8
+  Return       r9
+
+  // fun solve(xs: list<Node>): bool {
+func solve (regs=90)
   // if len(xs) == 1 {
   Len          r8, r7
   Const        r9, 1
@@ -317,7 +325,7 @@ L14:
   Len          r35, r7
   LessInt      r36, r34, r35
   JumpIfFalse  r36, L4
-  // var rest: list<Expr> = []
+  // var rest: list<Node> = []
   Const        r37, []
   Move         r38, r37
   // var k = 0
@@ -353,105 +361,81 @@ L5:
   // let b = xs[j]
   Index        r50, r7, r34
   Move         r51, r50
-  // var node = Bin { op: OP_ADD, left: a, right: b }
-  Const        r52, "__name"
-  Const        r53, "Bin"
-  Const        r54, "op"
-  Move         r55, r0
-  Const        r56, "left"
-  Move         r57, r49
-  Const        r58, "right"
-  Move         r59, r51
-  MakeMap      r60, 4, r52
-  Move         r61, r60
+  // var node: Node
+  Move         r53, r52
   // for op in [OP_ADD, OP_SUB, OP_MUL, OP_DIV] {
-  Move         r62, r0
-  Move         r63, r1
-  Move         r64, r2
-  Move         r65, r3
-  MakeList     r66, 4, r62
-  IterPrep     r67, r66
-  Len          r68, r67
-  Const        r69, 0
+  Move         r54, r0
+  Move         r55, r1
+  Move         r56, r2
+  Move         r57, r3
+  MakeList     r58, 4, r54
+  IterPrep     r59, r58
+  Len          r60, r59
+  Const        r61, 0
 L11:
-  LessInt      r70, r69, r68
-  JumpIfFalse  r70, L9
-  Index        r71, r67, r69
-  Move         r72, r71
-  // node = Bin { op: op, left: a, right: b }
-  Const        r73, "__name"
-  Const        r74, "Bin"
-  Const        r75, "op"
-  Move         r76, r72
-  Const        r77, "left"
-  Move         r78, r49
-  Const        r79, "right"
-  Move         r80, r51
-  MakeMap      r81, 4, r73
-  Move         r61, r81
+  LessInt      r62, r61, r60
+  JumpIfFalse  r62, L9
+  Index        r63, r59, r61
+  Move         r64, r63
+  // node = combine(op, a, b)
+  Move         r65, r64
+  Move         r66, r49
+  Move         r67, r51
+  Call         r68, combine, r65, r66, r67
+  Move         r53, r68
   // if solve(append(rest, node)) { return true }
-  Append       r83, r38, r61
-  Move         r82, r83
-  Call         r84, solve, r82
-  JumpIfFalse  r84, L10
+  Append       r70, r38, r53
+  Move         r69, r70
+  Call         r71, solve, r69
+  JumpIfFalse  r71, L10
   Const        r28, true
   Return       r28
 L10:
   // for op in [OP_ADD, OP_SUB, OP_MUL, OP_DIV] {
-  Const        r85, 1
-  AddInt       r86, r69, r85
-  Move         r69, r86
+  Const        r72, 1
+  AddInt       r73, r61, r72
+  Move         r61, r73
   Jump         L11
 L9:
-  // node = Bin { op: OP_SUB, left: b, right: a }
-  Const        r87, "__name"
-  Const        r88, "Bin"
-  Const        r89, "op"
-  Move         r90, r1
-  Const        r91, "left"
-  Move         r92, r51
-  Const        r93, "right"
-  Move         r94, r49
-  MakeMap      r95, 4, r87
-  Move         r61, r95
+  // node = combine(OP_SUB, b, a)
+  Move         r74, r1
+  Move         r75, r51
+  Move         r76, r49
+  Call         r77, combine, r74, r75, r76
+  Move         r53, r77
   // if solve(append(rest, node)) { return true }
-  Append       r97, r38, r61
-  Move         r96, r97
-  Call         r98, solve, r96
-  JumpIfFalse  r98, L12
+  Append       r79, r38, r53
+  Move         r78, r79
+  Call         r80, solve, r78
+  JumpIfFalse  r80, L12
   Const        r28, true
   Return       r28
 L12:
-  // node = Bin { op: OP_DIV, left: b, right: a }
-  Const        r99, "__name"
-  Const        r100, "Bin"
-  Const        r101, "op"
-  Move         r102, r3
-  Const        r103, "left"
-  Move         r104, r51
-  Const        r105, "right"
-  Move         r106, r49
-  MakeMap      r107, 4, r99
-  Move         r61, r107
+  // node = combine(OP_DIV, b, a)
+  Move         r81, r3
+  Move         r82, r51
+  Move         r83, r49
+  Call         r84, combine, r81, r82, r83
+  Move         r53, r84
   // if solve(append(rest, node)) { return true }
-  Append       r109, r38, r61
-  Move         r108, r109
-  Call         r110, solve, r108
-  JumpIfFalse  r110, L13
+  Append       r86, r38, r53
+  Move         r85, r86
+  Call         r87, solve, r85
+  JumpIfFalse  r87, L13
   Const        r28, true
   Return       r28
 L13:
   // j = j + 1
   Const        r9, 1
-  AddInt       r111, r34, r9
-  Move         r34, r111
+  AddInt       r88, r34, r9
+  Move         r34, r88
   // while j < len(xs) {
   Jump         L14
 L4:
   // i = i + 1
   Const        r9, 1
-  AddInt       r112, r30, r9
-  Move         r30, r112
+  AddInt       r89, r30, r9
+  Move         r30, r89
   // while i < len(xs) {
   Jump         L15
 L3:
@@ -469,7 +453,7 @@ L4:
   Const        r9, 10
   LessInt      r10, r8, r9
   JumpIfFalse  r10, L0
-  // var cards: list<Expr> = []
+  // var cards: list<Node> = []
   Const        r11, []
   Move         r12, r11
   // var i = 0
@@ -487,9 +471,9 @@ L2:
   Const        r16, 1
   Add          r19, r18, r16
   Move         r20, r19
-  // cards = append(cards, newNum(n))
+  // cards = append(cards, makeNode(n))
   Move         r21, r20
-  Call         r22, newNum, r21
+  Call         r22, makeNode, r21
   Append       r23, r12, r22
   Move         r12, r23
   // print(" " + str(n))
