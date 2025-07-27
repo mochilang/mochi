@@ -104,6 +104,7 @@ type Program struct {
 	UseParseIntStr bool
 	UseBigRat      bool
 	UseRepeat      bool
+	UseBenchNow    bool
 }
 
 func (p *Program) addInclude(inc string) {
@@ -561,6 +562,9 @@ func (p *Program) write(w io.Writer) {
 		p.addInclude("<cstdlib>")
 		p.addInclude("<chrono>")
 	}
+	if p.UseBenchNow {
+		p.addInclude("<chrono>")
+	}
 	if p.UseMem {
 		p.addInclude("<sys/resource.h>")
 	}
@@ -614,6 +618,11 @@ func (p *Program) write(w io.Writer) {
 		fmt.Fprintln(w, "#else")
 		fmt.Fprintln(w, "    return usage.ru_maxrss * 1024;")
 		fmt.Fprintln(w, "#endif")
+		fmt.Fprintln(w, "}")
+	}
+	if p.UseBenchNow {
+		fmt.Fprintln(w, "static long long _bench_now() {")
+		fmt.Fprintln(w, "    return std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count();")
 		fmt.Fprintln(w, "}")
 	}
 	if p.UseLookupHost {
@@ -2736,16 +2745,21 @@ func (b *BenchStmt) emit(w io.Writer, indent int) {
 	ind := strings.Repeat("    ", indent)
 	fmt.Fprintln(w, ind+"{")
 	ind2 := strings.Repeat("    ", indent+1)
-	fmt.Fprintln(w, ind2+"auto __bench_start = _now();")
-	fmt.Fprintln(w, ind2+"auto __bench_mem_start = _mem();")
+	fmt.Fprintf(w, "%sstruct __BenchGuard {\n", ind2)
+	fmt.Fprintf(w, "%s    long long start;\n", ind2)
+	fmt.Fprintf(w, "%s    long memStart;\n", ind2)
+	fmt.Fprintf(w, "%s    __BenchGuard() : start(_bench_now()), memStart(_mem()) {}\n", ind2)
+	fmt.Fprintf(w, "%s    ~__BenchGuard() {\n", ind2)
+	fmt.Fprintf(w, "%s        auto __bench_end = _bench_now();\n", ind2+"    ")
+	fmt.Fprintf(w, "%s        auto __bench_mem_end = _mem();\n", ind2+"    ")
+	fmt.Fprintf(w, "%s        auto __bench_dur = __bench_end - start;\n", ind2+"    ")
+	fmt.Fprintf(w, "%s        auto __bench_mem = __bench_mem_end;\n", ind2+"    ")
+	fmt.Fprintf(w, "%s        std::cout << \"{\\n  \\\"duration_us\\\": \" << __bench_dur << \",\\n  \\\"memory_bytes\\\": \" << __bench_mem << \",\\n  \\\"name\\\": \\\"%s\\\"\\n}\" << std::endl;\n", ind2+"    ", b.Name)
+	fmt.Fprintf(w, "%s    }\n", ind2)
+	fmt.Fprintf(w, "%s} __bench_guard;\n", ind2)
 	for _, st := range b.Body {
 		st.emit(w, indent+1)
 	}
-	fmt.Fprintln(w, ind2+"auto __bench_end = _now();")
-	fmt.Fprintln(w, ind2+"auto __bench_mem_end = _mem();")
-	fmt.Fprintln(w, ind2+"auto __bench_dur = __bench_end - __bench_start;")
-	fmt.Fprintln(w, ind2+"auto __bench_mem = __bench_mem_end;")
-	fmt.Fprintf(w, "%sstd::cout << \"{\\n  \\\"duration_us\\\": \" << __bench_dur << \",\\n  \\\"memory_bytes\\\": \" << __bench_mem << \",\\n  \\\"name\\\": \\\"%s\\\"\\n}\" << std::endl;\n", ind2, b.Name)
 	fmt.Fprintln(w, ind+"}")
 }
 
@@ -3318,6 +3332,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	cp.UseParseIntStr = usesParseIntStr
 	cp.UseBigRat = useBigRat
 	cp.UseRepeat = useRepeat
+	cp.UseBenchNow = benchMain
 	hasMain := false
 	for _, fn := range cp.Functions {
 		if fn.Name == "main" {
