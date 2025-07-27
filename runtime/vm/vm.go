@@ -82,7 +82,10 @@ const smallJoinThreshold = 0
 // prevent runaway programs from exhausting memory.
 // Allow significantly deeper recursion to support programs that expand
 // Church numerals into extremely nested function calls.
-const maxCallDepth = 131072
+// Support extremely deep recursion required by some Rosetta programs like
+// `church-numerals-1`.  One million frames still guards against runaway
+// programs while avoiding stack overflow on legitimate cases.
+const maxCallDepth = 1048576
 
 // Op defines a VM instruction opcode.
 type Op uint8
