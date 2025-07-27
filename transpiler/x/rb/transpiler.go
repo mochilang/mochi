@@ -1652,8 +1652,13 @@ type CallExpr struct {
 }
 
 func (c *CallExpr) emit(e *emitter) {
-	io.WriteString(e.w, c.Func)
-	io.WriteString(e.w, "(")
+	name := identName(c.Func)
+	io.WriteString(e.w, name)
+	if inScope(c.Func) {
+		io.WriteString(e.w, ".call(")
+	} else {
+		io.WriteString(e.w, "(")
+	}
 	for i, a := range c.Args {
 		if i > 0 {
 			io.WriteString(e.w, ", ")
@@ -3026,6 +3031,10 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 		// cloning is removed so mutations are visible to the caller.
 		if funcDepth > 0 {
 			lam := &LambdaExpr{Params: params, Body: body}
+			if currentEnv != nil {
+				currentEnv.SetVar(st.Fun.Name, types.FuncType{}, false)
+			}
+			addVar(st.Fun.Name)
 			return &LetStmt{Name: st.Fun.Name, Value: lam}, nil
 		}
 		return &FuncStmt{Name: st.Fun.Name, Params: params, Body: body}, nil

@@ -2,9 +2,9 @@
 
 Generated Ruby code from Mochi Rosetta tasks lives in `tests/rosetta/transpiler/rb`.
 
-Last updated: 2025-07-27 10:24 UTC
+Last updated: 2025-07-27 15:23 UTC
 
-## Checklist (346/465)
+## Checklist (362/467)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 195µs | 36.2 KB |
@@ -369,23 +369,23 @@ Last updated: 2025-07-27 10:24 UTC
 | 360 | esthetic-numbers | ✓ | 1.522139s | 29.9 MB |
 | 361 | ethiopian-multiplication |   |  |  |
 | 362 | euclid-mullin-sequence |   |  |  |
-| 363 | euler-method |   |  |  |
-| 364 | eulers-constant-0.5772... |   |  |  |
-| 365 | eulers-identity |   |  |  |
-| 366 | eulers-sum-of-powers-conjecture |   |  |  |
-| 367 | evaluate-binomial-coefficients |   |  |  |
-| 368 | even-or-odd |   |  |  |
-| 369 | events |   |  |  |
-| 370 | evolutionary-algorithm |   |  |  |
-| 371 | exceptions-catch-an-exception-thrown-in-a-nested-call |   |  |  |
-| 372 | exceptions |   |  |  |
-| 373 | executable-library |   |  |  |
-| 374 | execute-a-markov-algorithm |   |  |  |
+| 363 | euler-method | ✓ | 1.248ms | 78.9 KB |
+| 364 | eulers-constant-0.5772... | ✓ | 29.7ms | 9.5 KB |
+| 365 | eulers-identity | ✓ | 146µs | 12.2 KB |
+| 366 | eulers-sum-of-powers-conjecture | ✓ | 259.159ms | 2.0 MB |
+| 367 | evaluate-binomial-coefficients | ✓ | 31µs | 9.2 KB |
+| 368 | even-or-odd | ✓ | 254µs | 26.3 KB |
+| 369 | events | ✓ | 48µs | 10.4 KB |
+| 370 | evolutionary-algorithm | ✓ | 274.393ms | 97.6 KB |
+| 371 | exceptions-catch-an-exception-thrown-in-a-nested-call | ✓ | 36µs | 10.0 KB |
+| 372 | exceptions | ✓ | 31µs | 9.6 KB |
+| 373 | executable-library | ✓ | 2.629413s | 441.3 KB |
+| 374 | execute-a-markov-algorithm | ✓ | 17.994ms | 25.4 KB |
 | 375 | execute-a-system-command |   |  |  |
-| 376 | execute-brain- |   |  |  |
-| 377 | execute-computer-zero-1 |   |  |  |
-| 378 | execute-computer-zero |   |  |  |
-| 379 | execute-hq9+ |   |  |  |
+| 376 | execute-brain- | ✓ | 1.275ms | 321.5 KB |
+| 377 | execute-computer-zero-1 | ✓ | 1.573ms | 496.1 KB |
+| 378 | execute-computer-zero | ✓ | 88µs | 10.6 KB |
+| 379 | execute-hq9+ | ✓ | 421µs | 103.1 KB |
 | 380 | execute-snusp |   |  |  |
 | 381 | exponentiation-operator-2 |   |  |  |
 | 382 | exponentiation-operator |   |  |  |
@@ -415,60 +415,62 @@ Last updated: 2025-07-27 10:24 UTC
 | 406 | fibonacci-sequence-2 |   |  |  |
 | 407 | fibonacci-sequence-3 |   |  |  |
 | 408 | fibonacci-sequence-4 |   |  |  |
-| 409 | fibonacci-word-fractal |   |  |  |
-| 410 | fibonacci-word |   |  |  |
-| 411 | file-extension-is-in-extensions-list |   |  |  |
-| 412 | file-input-output-1 |   |  |  |
-| 413 | file-input-output-2 |   |  |  |
-| 414 | file-modification-time |   |  |  |
-| 415 | file-size-distribution |   |  |  |
-| 416 | file-size |   |  |  |
-| 417 | filter |   |  |  |
-| 418 | find-chess960-starting-position-identifier |   |  |  |
-| 419 | find-common-directory-path |   |  |  |
-| 420 | find-duplicate-files |   |  |  |
-| 421 | find-if-a-point-is-within-a-triangle |   |  |  |
-| 422 | find-largest-left-truncatable-prime-in-a-given-base |   |  |  |
-| 423 | find-limit-of-recursion |   |  |  |
-| 424 | find-palindromic-numbers-in-both-binary-and-ternary-bases |   |  |  |
-| 425 | find-the-intersection-of-a-line-with-a-plane |   |  |  |
-| 426 | find-the-intersection-of-two-lines |   |  |  |
-| 427 | find-the-last-sunday-of-each-month |   |  |  |
-| 428 | find-the-missing-permutation |   |  |  |
-| 429 | fivenum-1 |   |  |  |
-| 430 | fivenum-2 |   |  |  |
-| 431 | fixed-length-records-1 |   |  |  |
-| 432 | fixed-length-records-2 |   |  |  |
-| 433 | fizzbuzz-1 |   |  |  |
-| 434 | fizzbuzz-2 |   |  |  |
-| 435 | flatten-a-list-1 |   |  |  |
-| 436 | flatten-a-list-2 |   |  |  |
-| 437 | flipping-bits-game |   |  |  |
-| 438 | flow-control-structures-1 |   |  |  |
-| 439 | flow-control-structures-2 |   |  |  |
-| 440 | flow-control-structures-3 |   |  |  |
-| 441 | flow-control-structures-4 |   |  |  |
-| 442 | floyd-warshall-algorithm |   |  |  |
-| 443 | floyds-triangle |   |  |  |
-| 444 | forest-fire |   |  |  |
-| 445 | fork |   |  |  |
-| 446 | ftp |   |  |  |
-| 447 | gamma-function |   |  |  |
-| 448 | general-fizzbuzz |   |  |  |
-| 449 | generic-swap |   |  |  |
-| 450 | get-system-command-output |   |  |  |
-| 451 | giuga-numbers |   |  |  |
-| 452 | globally-replace-text-in-several-files |   |  |  |
-| 453 | goldbachs-comet |   |  |  |
-| 454 | golden-ratio-convergence |   |  |  |
-| 455 | graph-colouring |   |  |  |
-| 456 | gray-code |   |  |  |
-| 457 | http |   |  |  |
-| 458 | image-noise |   |  |  |
-| 459 | loops-increment-loop-index-within-loop-body |   |  |  |
-| 460 | md5 |   |  |  |
-| 461 | nim-game |   |  |  |
-| 462 | plasma-effect |   |  |  |
-| 463 | sorting-algorithms-bubble-sort |   |  |  |
-| 464 | window-management |   |  |  |
-| 465 | zumkeller-numbers |   |  |  |
+| 409 | fibonacci-sequence-5 |   |  |  |
+| 410 | fibonacci-word-fractal |   |  |  |
+| 411 | fibonacci-word |   |  |  |
+| 412 | file-extension-is-in-extensions-list |   |  |  |
+| 413 | file-input-output-1 |   |  |  |
+| 414 | file-input-output-2 |   |  |  |
+| 415 | file-input-output-3 |   |  |  |
+| 416 | file-modification-time |   |  |  |
+| 417 | file-size-distribution |   |  |  |
+| 418 | file-size |   |  |  |
+| 419 | filter |   |  |  |
+| 420 | find-chess960-starting-position-identifier |   |  |  |
+| 421 | find-common-directory-path |   |  |  |
+| 422 | find-duplicate-files |   |  |  |
+| 423 | find-if-a-point-is-within-a-triangle |   |  |  |
+| 424 | find-largest-left-truncatable-prime-in-a-given-base |   |  |  |
+| 425 | find-limit-of-recursion |   |  |  |
+| 426 | find-palindromic-numbers-in-both-binary-and-ternary-bases |   |  |  |
+| 427 | find-the-intersection-of-a-line-with-a-plane |   |  |  |
+| 428 | find-the-intersection-of-two-lines |   |  |  |
+| 429 | find-the-last-sunday-of-each-month |   |  |  |
+| 430 | find-the-missing-permutation |   |  |  |
+| 431 | fivenum-1 |   |  |  |
+| 432 | fivenum-2 |   |  |  |
+| 433 | fixed-length-records-1 |   |  |  |
+| 434 | fixed-length-records-2 |   |  |  |
+| 435 | fizzbuzz-1 |   |  |  |
+| 436 | fizzbuzz-2 |   |  |  |
+| 437 | flatten-a-list-1 |   |  |  |
+| 438 | flatten-a-list-2 |   |  |  |
+| 439 | flipping-bits-game |   |  |  |
+| 440 | flow-control-structures-1 |   |  |  |
+| 441 | flow-control-structures-2 |   |  |  |
+| 442 | flow-control-structures-3 |   |  |  |
+| 443 | flow-control-structures-4 |   |  |  |
+| 444 | floyd-warshall-algorithm |   |  |  |
+| 445 | floyds-triangle |   |  |  |
+| 446 | forest-fire |   |  |  |
+| 447 | fork |   |  |  |
+| 448 | ftp |   |  |  |
+| 449 | gamma-function |   |  |  |
+| 450 | general-fizzbuzz |   |  |  |
+| 451 | generic-swap |   |  |  |
+| 452 | get-system-command-output |   |  |  |
+| 453 | giuga-numbers |   |  |  |
+| 454 | globally-replace-text-in-several-files |   |  |  |
+| 455 | goldbachs-comet |   |  |  |
+| 456 | golden-ratio-convergence |   |  |  |
+| 457 | graph-colouring |   |  |  |
+| 458 | gray-code |   |  |  |
+| 459 | http |   |  |  |
+| 460 | image-noise |   |  |  |
+| 461 | loops-increment-loop-index-within-loop-body |   |  |  |
+| 462 | md5 |   |  |  |
+| 463 | nim-game |   |  |  |
+| 464 | plasma-effect |   |  |  |
+| 465 | sorting-algorithms-bubble-sort |   |  |  |
+| 466 | window-management |   |  |  |
+| 467 | zumkeller-numbers |   |  |  |
