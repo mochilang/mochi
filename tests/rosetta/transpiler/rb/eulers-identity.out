@@ -1,0 +1,2 @@
+/workspace/mochi/tests/rosetta/transpiler/rb/eulers-identity.rb:48: warning: already initialized constant Complex
+(7.565070792026063e-11+1.0348087996209086e-11i)
