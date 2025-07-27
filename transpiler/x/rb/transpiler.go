@@ -2694,6 +2694,26 @@ func Emit(w io.Writer, p *Program) error {
 	return nil
 }
 
+func reorderFuncs(stmts []Stmt) []Stmt {
+	if len(stmts) == 0 {
+		return stmts
+	}
+	var funcs []Stmt
+	var rest []Stmt
+	for _, st := range stmts {
+		switch s := st.(type) {
+		case *FuncStmt:
+			funcs = append(funcs, s)
+		case *BenchStmt:
+			s.Body = reorderFuncs(s.Body)
+			rest = append(rest, s)
+		default:
+			rest = append(rest, st)
+		}
+	}
+	return append(funcs, rest...)
+}
+
 // Transpile converts a Mochi program into a Ruby AST.
 func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	needsJSON = false
@@ -2719,6 +2739,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 			rbProg.Stmts = append(rbProg.Stmts, conv)
 		}
 	}
+	rbProg.Stmts = reorderFuncs(rbProg.Stmts)
 	if benchMain {
 		needsJSON = true
 		usesNow = true
