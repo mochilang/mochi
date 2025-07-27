@@ -5,5 +5,5 @@
 package main
 
 func main() {
-    libMain()
+	libMain()
 }
