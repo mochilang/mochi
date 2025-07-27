@@ -1,0 +1,7 @@
+validating 5 test cases
+no failures
+{
+  "duration_us": 1551,
+  "memory_bytes": 128,
+  "name": "main"
+}

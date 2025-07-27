@@ -1,0 +1,18 @@
+-0.0   
+-0.0   
+
+-Inf + Inf -> NaN
+0 * Inf -> NaN
+Inf / Inf -> NaN
+Inf % 1 -> NaN
+1 + NaN -> NaN
+1 / Inf -> 0
+Inf > max value
+-Inf < max neg value
+NaN != NaN
+-0 == 0
+{
+  "duration_us": 61,
+  "memory_bytes": 96,
+  "name": "main"
+}

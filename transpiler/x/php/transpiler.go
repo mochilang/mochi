@@ -23,7 +23,7 @@ var builtinNames = map[string]struct{}{
 	"print": {}, "len": {}, "substring": {}, "count": {}, "sum": {}, "avg": {},
 	"str": {}, "min": {}, "max": {}, "append": {}, "json": {}, "exists": {},
 	"values": {}, "keys": {}, "load": {}, "save": {}, "now": {}, "input": {},
-	"upper": {}, "lower": {}, "num": {}, "denom": {}, "indexOf": {}, "repeat": {}, "parseIntStr": {}, "slice": {}, "split": {}, "contains": {}, "substr": {}, "pow": {},
+	"upper": {}, "lower": {}, "num": {}, "denom": {}, "indexOf": {}, "repeat": {}, "parseIntStr": {}, "slice": {}, "split": {}, "contains": {}, "substr": {}, "pow": {}, "getoutput": {},
 }
 
 const helperLookupHost = `function _lookup_host($host) {
@@ -173,10 +173,16 @@ const helperParseIntStr = `function parseIntStr($s, $base = 10) {
     return intval($s, intval($base));
 }`
 
+const helperGetOutput = `function _getoutput($cmd) {
+    $out = shell_exec($cmd);
+    if ($out === null) return '';
+    return rtrim($out);
+}`
+
 const helperIntDiv = `function _intdiv($a, $b) {
     if (function_exists('bcdiv')) {
-        $sa = is_int($a) ? strval($a) : sprintf('%.0f', $a);
-        $sb = is_int($b) ? strval($b) : sprintf('%.0f', $b);
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
         return intval(bcdiv($sa, $sb, 0));
     }
     return intdiv($a, $b);
@@ -184,19 +190,25 @@ const helperIntDiv = `function _intdiv($a, $b) {
 
 const helperBigInt = `function _iadd($a, $b) {
     if (function_exists('bcadd')) {
-        return bcadd(strval($a), strval($b), 0);
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
+        return bcadd($sa, $sb, 0);
     }
     return $a + $b;
 }
 function _isub($a, $b) {
     if (function_exists('bcsub')) {
-        return bcsub(strval($a), strval($b), 0);
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
+        return bcsub($sa, $sb, 0);
     }
     return $a - $b;
 }
 function _imul($a, $b) {
     if (function_exists('bcmul')) {
-        return bcmul(strval($a), strval($b), 0);
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
+        return bcmul($sa, $sb, 0);
     }
     return $a * $b;
 }
@@ -205,7 +217,9 @@ function _idiv($a, $b) {
 }
 function _imod($a, $b) {
     if (function_exists('bcmod')) {
-        return intval(bcmod(strval($a), strval($b)));
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
+        return intval(bcmod($sa, $sb));
     }
     return $a % $b;
 }`
@@ -229,6 +243,7 @@ var usesIntDiv bool
 var usesSHA256 bool
 var usesEnviron bool
 var usesBigIntOps bool
+var usesGetOutput bool
 var benchMain bool
 var extraStmts []Stmt
 
@@ -2133,6 +2148,11 @@ func Emit(w io.Writer, p *Program) error {
 			return err
 		}
 	}
+	if usesGetOutput {
+		if _, err := io.WriteString(w, helperGetOutput+"\n"); err != nil {
+			return err
+		}
+	}
 	hasMain := false
 	mainCalled := false
 	for _, s := range p.Stmts {
@@ -2187,6 +2207,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	usesSHA256 = false
 	usesEnviron = false
 	usesBigIntOps = false
+	usesGetOutput = false
 	defer func() { transpileEnv = nil }()
 	p := &Program{Env: env}
 	extraStmts = nil
@@ -2780,6 +2801,12 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			}
 			usesSHA256 = true
 			return &CallExpr{Func: "_sha256", Args: args}, nil
+		} else if name == "getoutput" {
+			if len(args) != 1 {
+				return nil, fmt.Errorf("getoutput expects 1 arg")
+			}
+			usesGetOutput = true
+			return &CallExpr{Func: "_getoutput", Args: args}, nil
 		} else if name == "count" {
 			if len(args) != 1 {
 				return nil, fmt.Errorf("count expects 1 arg")
@@ -4514,6 +4541,13 @@ func convertImport(im *parser.ImportStmt) (Stmt, error) {
 			{Key: &StringLit{Value: "log"}, Value: &ClosureExpr{Params: []string{"x"}, Body: []Stmt{&ReturnStmt{Value: &CallExpr{Func: "log", Args: []Expr{&Var{Name: "x"}}}}}}},
 			{Key: &StringLit{Value: "pi"}, Value: &Name{Value: "M_PI"}},
 			{Key: &StringLit{Value: "e"}, Value: &Name{Value: "M_E"}},
+		}
+		return &LetStmt{Name: alias, Value: &MapLit{Items: items}}, nil
+	}
+	if lang == "python" && path == "subprocess" {
+		usesGetOutput = true
+		items := []MapEntry{
+			{Key: &StringLit{Value: "getoutput"}, Value: &StringLit{Value: "_getoutput"}},
 		}
 		return &LetStmt{Name: alias, Value: &MapLit{Items: items}}, nil
 	}

@@ -2,9 +2,9 @@
 
 Generated PHP code from Mochi Rosetta tasks lives in `tests/rosetta/transpiler/php`.
 
-Last updated: 2025-07-27 23:37 +0700
+Last updated: 2025-07-28 00:01 +0700
 
-## Checklist (353/467)
+## Checklist (393/467)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 154µs | 136 B |
@@ -367,46 +367,46 @@ Last updated: 2025-07-27 23:37 +0700
 | 358 | erd-s-nicolas-numbers |   |  |  |
 | 359 | erd-s-selfridge-categorization-of-primes | ✓ | 6.188ms | 40.2 KB |
 | 360 | esthetic-numbers | ✓ | 2.166134s | 1.0 MB |
-| 361 | ethiopian-multiplication |   |  |  |
-| 362 | euclid-mullin-sequence |   |  |  |
-| 363 | euler-method |   |  |  |
-| 364 | eulers-constant-0.5772... |   |  |  |
-| 365 | eulers-identity |   |  |  |
-| 366 | eulers-sum-of-powers-conjecture |   |  |  |
-| 367 | evaluate-binomial-coefficients |   |  |  |
-| 368 | even-or-odd |   |  |  |
-| 369 | events |   |  |  |
-| 370 | evolutionary-algorithm |   |  |  |
-| 371 | exceptions-catch-an-exception-thrown-in-a-nested-call |   |  |  |
-| 372 | exceptions |   |  |  |
-| 373 | executable-library |   |  |  |
-| 374 | execute-a-markov-algorithm |   |  |  |
-| 375 | execute-a-system-command |   |  |  |
-| 376 | execute-brain- |   |  |  |
-| 377 | execute-computer-zero-1 |   |  |  |
-| 378 | execute-computer-zero |   |  |  |
-| 379 | execute-hq9+ |   |  |  |
-| 380 | execute-snusp |   |  |  |
-| 381 | exponentiation-operator-2 |   |  |  |
-| 382 | exponentiation-operator |   |  |  |
-| 383 | exponentiation-order |   |  |  |
-| 384 | exponentiation-with-infix-operators-in-or-operating-on-the-base |   |  |  |
-| 385 | extend-your-language |   |  |  |
-| 386 | extensible-prime-generator |   |  |  |
-| 387 | extreme-floating-point-values |   |  |  |
-| 388 | faces-from-a-mesh-2 |   |  |  |
-| 389 | faces-from-a-mesh |   |  |  |
-| 390 | factorial-base-numbers-indexing-permutations-of-a-collection |   |  |  |
-| 391 | factorial-primes |   |  |  |
-| 392 | factorial |   |  |  |
-| 393 | factorions |   |  |  |
-| 394 | factors-of-a-mersenne-number |   |  |  |
-| 395 | factors-of-an-integer |   |  |  |
-| 396 | fairshare-between-two-and-more |   |  |  |
-| 397 | farey-sequence |   |  |  |
-| 398 | fast-fourier-transform |   |  |  |
-| 399 | fasta-format |   |  |  |
-| 400 | faulhabers-formula |   |  |  |
+| 361 | ethiopian-multiplication | ✓ | 32µs | 96 B |
+| 362 | euclid-mullin-sequence | ✓ | 4m36.368866s | 67.5 KB |
+| 363 | euler-method | ✓ | 283µs | 96 B |
+| 364 | eulers-constant-0.5772... | ✓ | 1.655ms | 96 B |
+| 365 | eulers-identity | ✓ | 43µs | 128 B |
+| 366 | eulers-sum-of-powers-conjecture | ✓ | 75.318ms | 96 B |
+| 367 | evaluate-binomial-coefficients | ✓ | 130µs | 96 B |
+| 368 | even-or-odd | ✓ | 129µs | 96 B |
+| 369 | events | ✓ | 40µs | 96 B |
+| 370 | evolutionary-algorithm | ✓ | 23.688ms | 192 B |
+| 371 | exceptions-catch-an-exception-thrown-in-a-nested-call | ✓ | 42µs | 128 B |
+| 372 | exceptions | ✓ | 42µs | 96 B |
+| 373 | executable-library | ✓ | 3.552287s | 96 B |
+| 374 | execute-a-markov-algorithm | ✓ | 1.551ms | 128 B |
+| 375 | execute-a-system-command | ✓ | 2.36ms | 608 B |
+| 376 | execute-brain- | ✓ | 112µs | 96 B |
+| 377 | execute-computer-zero-1 | ✓ | 254µs | 96 B |
+| 378 | execute-computer-zero | ✓ | 58µs | 96 B |
+| 379 | execute-hq9+ | ✓ | 426µs | 8.1 KB |
+| 380 | execute-snusp | ✓ | 26µs | 96 B |
+| 381 | exponentiation-operator-2 | ✓ | 85µs | 96 B |
+| 382 | exponentiation-operator | ✓ | 102µs | 96 B |
+| 383 | exponentiation-order | ✓ | 27µs | 160 B |
+| 384 | exponentiation-with-infix-operators-in-or-operating-on-the-base | ✓ | 52µs | 256 B |
+| 385 | extend-your-language | ✓ | 27µs | 568 B |
+| 386 | extensible-prime-generator | ✓ | 87.095ms | 96 B |
+| 387 | extreme-floating-point-values | ✓ | 61µs | 96 B |
+| 388 | faces-from-a-mesh-2 | ✓ | 87µs | 96 B |
+| 389 | faces-from-a-mesh | ✓ | 109µs | 568 B |
+| 390 | factorial-base-numbers-indexing-permutations-of-a-collection | ✓ | 1.189ms | 128 B |
+| 391 | factorial-primes | ✓ | 1.741ms | 96 B |
+| 392 | factorial | ✓ | 1.409ms | 96 B |
+| 393 | factorions | ✓ | 7.1618s | 504 B |
+| 394 | factors-of-a-mersenne-number | ✓ | 3.308795s | 128 B |
+| 395 | factors-of-an-integer | ✓ | 8.288449s | 6.3 KB |
+| 396 | fairshare-between-two-and-more | ✓ | 5.491371s | 96 B |
+| 397 | farey-sequence | ✓ | 1.246ms | 96 B |
+| 398 | fast-fourier-transform | ✓ | 98µs | 128 B |
+| 399 | fasta-format | ✓ | 80µs | 128 B |
+| 400 | faulhabers-formula | ✓ | 2.82ms | 96 B |
 | 401 | faulhabers-triangle |   |  |  |
 | 402 | feigenbaum-constant-calculation |   |  |  |
 | 403 | fermat-numbers |   |  |  |
