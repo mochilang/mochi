@@ -644,6 +644,16 @@ func (c *CastExpr) emit(w io.Writer) {
 	if inner, ok := c.Value.(*CastExpr); ok && inner.Type == "Any?" {
 		c.Value = inner.Value
 	}
+	if strings.Contains(c.Type, "->") {
+		if _, ok := c.Value.(*BinaryExpr); ok {
+			io.WriteString(w, "(")
+			c.Value.emit(w)
+			io.WriteString(w, ")")
+		} else {
+			c.Value.emit(w)
+		}
+		return
+	}
 	if ll, ok := c.Value.(*ListLit); ok && strings.HasPrefix(c.Type, "MutableList<") {
 		elemType := strings.TrimSuffix(strings.TrimPrefix(c.Type, "MutableList<"), ">")
 		tll := &TypedListLit{ElemType: elemType, Elems: ll.Elems}
@@ -2509,7 +2519,17 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 			if err != nil {
 				return nil, err
 			}
-			// skip assignment casting; rely on expression types
+			if ce, ok := e.(*CastExpr); ok && strings.Contains(ce.Type, "->") {
+				e = ce.Value
+			}
+			if env != nil {
+				if t, err2 := env.GetVar(st.Assign.Name); err2 == nil {
+					typ := kotlinTypeFromType(t)
+					if typ != "" && typ != guessType(e) {
+						e = &CastExpr{Value: e, Type: typ}
+					}
+				}
+			}
 			p.Stmts = append(p.Stmts, &AssignStmt{Name: st.Assign.Name, Value: e})
 		case st.Assign != nil && (len(st.Assign.Index) > 0 || len(st.Assign.Field) > 0):
 			target, err := buildAccessTarget(env, st.Assign.Name, st.Assign.Index, st.Assign.Field)
@@ -2982,6 +3002,9 @@ func convertStmts(env *types.Env, list []*parser.Statement) ([]Stmt, error) {
 			v, err := convertExpr(env, s.Assign.Value)
 			if err != nil {
 				return nil, err
+			}
+			if ce, ok := v.(*CastExpr); ok && strings.Contains(ce.Type, "->") {
+				v = ce.Value
 			}
 			if env != nil {
 				if tt, err := env.GetVar(s.Assign.Name); err == nil {
