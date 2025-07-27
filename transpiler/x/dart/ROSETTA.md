@@ -148,26 +148,26 @@ Compiled and ran: 318/467
 | 139 | brownian-tree | ✓ |  |  |
 | 140 | bulls-and-cows-player | ✓ | 33.003ms | 2.6 MB |
 | 141 | bulls-and-cows | ✓ | 30.312ms | 5.7 MB |
-| 142 | burrows-wheeler-transform | ✓ |  |  |
-| 143 | caesar-cipher-1 | ✓ |  |  |
-| 144 | caesar-cipher-2 | ✓ |  |  |
-| 145 | calculating-the-value-of-e | ✓ |  |  |
-| 146 | calendar---for-real-programmers-1 | ✓ |  |  |
-| 147 | calendar---for-real-programmers-2 | ✓ |  |  |
-| 148 | calendar | ✓ | 14.477ms | 4.1 MB |
-| 149 | calkin-wilf-sequence | ✓ |  |  |
-| 150 | call-a-foreign-language-function | ✓ |  |  |
-| 151 | call-a-function-1 | ✓ |  |  |
-| 152 | call-a-function-10 | ✓ |  |  |
-| 153 | call-a-function-11 | ✓ |  |  |
-| 154 | call-a-function-12 | ✓ |  |  |
-| 155 | call-a-function-2 | ✓ |  |  |
-| 156 | call-a-function-3 | ✓ | 7.122ms | 512.0 KB |
-| 157 | call-a-function-4 | ✓ | 8.231ms | 640.0 KB |
-| 158 | call-a-function-5 | ✓ | 7.993ms | 1008.0 KB |
-| 159 | call-a-function-6 | ✓ | 7.653ms | 148.0 KB |
-| 160 | call-a-function-7 | ✓ | 6.982ms | 640.0 KB |
-| 161 | call-a-function-8 | ✓ | 8.195ms | 624.0 KB |
+| 142 | burrows-wheeler-transform | ✓ | 23.113ms | 6.2 MB |
+| 143 | caesar-cipher-1 | ✓ | 13.769ms | 3.8 MB |
+| 144 | caesar-cipher-2 | ✓ | 13.634ms | 3.5 MB |
+| 145 | calculating-the-value-of-e | ✓ | 22.599ms | 11.1 MB |
+| 146 | calendar---for-real-programmers-1 | ✓ | 15.938ms | 4.0 MB |
+| 147 | calendar---for-real-programmers-2 | ✓ | 23.447ms | 3.4 MB |
+| 148 | calendar | ✓ | 19.417ms | 2.5 MB |
+| 149 | calkin-wilf-sequence | ✓ | 28.274ms | 8.4 MB |
+| 150 | call-a-foreign-language-function | ✓ | 16.581ms | 10.0 MB |
+| 151 | call-a-function-1 | ✓ | 17.095ms | 10.2 MB |
+| 152 | call-a-function-10 | ✓ | 14.312ms | 1.5 MB |
+| 153 | call-a-function-11 | ✓ | 20.599ms | 11.2 MB |
+| 154 | call-a-function-12 | ✓ | 17.003ms | 10.0 MB |
+| 155 | call-a-function-2 | ✓ | 21.742ms | 10.9 MB |
+| 156 | call-a-function-3 | ✓ | 23.518ms | 10.5 MB |
+| 157 | call-a-function-4 | ✓ | 14.164ms | 748.0 KB |
+| 158 | call-a-function-5 | ✓ | 17.397ms | 10.2 MB |
+| 159 | call-a-function-6 | ✓ | 22.164ms | 10.8 MB |
+| 160 | call-a-function-7 | ✓ | 15.983ms | 10.2 MB |
+| 161 | call-a-function-8 | ✓ | 21.696ms | 10.9 MB |
 | 162 | call-a-function-9 | ✓ | 8.76ms | 72.0 KB |
 | 163 | call-an-object-method-1 |   |  |  |
 | 164 | call-an-object-method-2 |   |  |  |
@@ -475,4 +475,4 @@ Compiled and ran: 318/467
 | 466 | window-management |   |  |  |
 | 467 | zumkeller-numbers |   |  |  |
 
-_Last updated: 2025-07-27 22:48 +0700_
+_Last updated: 2025-07-27 23:34 +0700_
