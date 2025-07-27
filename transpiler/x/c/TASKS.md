@@ -1,5 +1,5 @@
-## Progress (2025-07-27 21:39 +0700)
-- Commit 49be72e8ca: transpiler/c: support for-range over strings
+## Progress (2025-07-27 23:06 +0700)
+- Commit 334e0d0f92: ctrans: support bigrat via GMP
 - Regenerated golden files - 81/104 vm valid programs passing
 
 ## Progress (2025-07-22 14:12 +0700)

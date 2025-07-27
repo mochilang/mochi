@@ -81,6 +81,9 @@ func transpileAndRun(src string) ([]byte, error) {
 	if bytes.Contains(code, []byte("<math.h>")) {
 		args = append(args, "-lm")
 	}
+	if bytes.Contains(code, []byte("<gmp.h>")) {
+		args = append(args, "-lgmp")
+	}
 	if out, err := exec.Command(cc, args...).CombinedOutput(); err != nil {
 		return nil, fmt.Errorf("compile failed: %v: %s", err, string(out))
 	}
