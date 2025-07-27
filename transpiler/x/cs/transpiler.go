@@ -986,7 +986,7 @@ func (f *FieldExpr) emit(w io.Writer) {
 		fmt.Fprintf(w, "[\"%s\"]))", f.Name)
 	} else {
 		f.Target.emit(w)
-		fmt.Fprintf(w, ".%s", f.Name)
+		fmt.Fprintf(w, ".%s", safeName(f.Name))
 	}
 }
 
@@ -1871,7 +1871,7 @@ func (s *StructLit) emit(w io.Writer) {
 		if i > 0 {
 			fmt.Fprint(w, ", ")
 		}
-		fmt.Fprintf(w, "%s = ", f.Name)
+		fmt.Fprintf(w, "%s = ", safeName(f.Name))
 		f.Value.emit(w)
 	}
 	fmt.Fprint(w, "}")
@@ -2844,10 +2844,15 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 		mapVars = savedMap
 		stringVars = savedStrAll
 		mutatedVars = savedMut
+		// record function type information so that calls to this
+		// function can be typed even when the declaration is local
+		varTypes[s.Fun.Name] = fmt.Sprintf("fn/%d", len(ptypes))
+		funRets[s.Fun.Name] = retType
+		funParams[s.Fun.Name] = append([]string{}, ptypes...)
+
 		if prog != nil && blockDepth == 0 {
-			varTypes[s.Fun.Name] = fmt.Sprintf("fn/%d", len(ptypes))
-			funRets[s.Fun.Name] = retType
-			funParams[s.Fun.Name] = append([]string{}, ptypes...)
+			// top-level function definitions are emitted as
+			// standalone functions in the generated program
 		}
 		if s.Fun.Return == nil {
 			retType = ""
@@ -4136,7 +4141,7 @@ func Emit(prog *Program) []byte {
 	for _, st := range prog.Structs {
 		fmt.Fprintf(&buf, "class %s {\n", st.Name)
 		for _, f := range st.Fields {
-			fmt.Fprintf(&buf, "    public %s %s;\n", f.Type, f.Name)
+			fmt.Fprintf(&buf, "    public %s %s;\n", f.Type, safeName(f.Name))
 		}
 		for _, m := range st.Methods {
 			buf.WriteString("    ")
@@ -4149,12 +4154,13 @@ func Emit(prog *Program) []byte {
 				buf.WriteString(", ")
 			}
 			fmt.Fprintf(&buf, "%s = ", f.Name)
+			name := safeName(f.Name)
 			if f.Type == "string" {
-				fmt.Fprintf(&buf, "\\\"{%s}\\\"", f.Name)
+				fmt.Fprintf(&buf, "\\\"{%s}\\\"", name)
 			} else if f.Type == "double" {
-				fmt.Fprintf(&buf, "{%s.ToString(\"0.0\")}", f.Name)
+				fmt.Fprintf(&buf, "{%s.ToString(\"0.0\")}", name)
 			} else {
-				fmt.Fprintf(&buf, "{%s}", f.Name)
+				fmt.Fprintf(&buf, "{%s}", name)
 			}
 		}
 		buf.WriteString("}}\";\n")
