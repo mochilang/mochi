@@ -1,5 +1,5 @@
-## Progress (2025-07-27 10:46 +0700)
-- Commit f42cca5fda: vm: add int builtin cast
+## Progress (2025-07-27 11:24 +0700)
+- Commit 64bd5a372c: fix vm closure method order and update rosetta outputs
 - Regenerated golden files - 81/104 vm valid programs passing
 
 ## Progress (2025-07-22 14:12 +0700)

@@ -564,6 +564,12 @@ func (d *DeclStmt) emit(w io.Writer, indent int) {
 	} else if strings.HasSuffix(typ, "[]") {
 		base := strings.TrimSuffix(typ, "[]")
 		if lst, ok := d.Value.(*ListLit); ok {
+			if len(lst.Elems) == 0 {
+				fmt.Fprintf(w, "%s *%s = NULL;\n", base, d.Name)
+				writeIndent(w, indent)
+				fmt.Fprintf(w, "size_t %s_len = 0;\n", d.Name)
+				return
+			}
 			io.WriteString(w, base)
 			fmt.Fprintf(w, " %s[%d] = {", d.Name, len(lst.Elems))
 			for i, e := range lst.Elems {
@@ -648,6 +654,34 @@ func (d *DeclStmt) emit(w io.Writer, indent int) {
 }
 
 func (a *AssignStmt) emit(w io.Writer, indent int) {
+	if bin, ok := a.Value.(*BinaryExpr); ok && bin.Op == "+" && len(a.Indexes) == 0 && len(a.Fields) == 0 {
+		if vr, ok2 := bin.Left.(*VarRef); ok2 && vr.Name == a.Name {
+			if lst, ok3 := bin.Right.(*ListLit); ok3 && len(lst.Elems) == 1 {
+				if ds, ok := declStmts[a.Name]; ok {
+					ds.Value = nil
+				}
+				base := strings.TrimSuffix(varTypes[a.Name], "[]")
+				writeIndent(w, indent)
+				switch base {
+				case "int":
+					needListAppendInt = true
+					fmt.Fprintf(w, "%s = list_append_int(%s, &%s_len, ", a.Name, a.Name, a.Name)
+				case "const char*":
+					needListAppendStr = true
+					fmt.Fprintf(w, "%s = list_append_str(%s, &%s_len, ", a.Name, a.Name, a.Name)
+				case "double":
+					needListAppendDoublePtr = true
+					fmt.Fprintf(w, "%s = list_append_doubleptr(%s, &%s_len, ", a.Name, a.Name, a.Name)
+				default:
+					needListAppendInt = true
+					fmt.Fprintf(w, "%s = list_append_int(%s, &%s_len, ", a.Name, a.Name, a.Name)
+				}
+				lst.Elems[0].emitExpr(w)
+				io.WriteString(w, ");\n")
+				return
+			}
+		}
+	}
 	if call, ok := a.Value.(*CallExpr); ok && call.Func == "append" && len(call.Args) == 2 {
 		if vr, ok2 := call.Args[0].(*VarRef); ok2 && vr.Name == a.Name && len(a.Indexes) == 0 && len(a.Fields) == 0 {
 			if ds, ok := declStmts[a.Name]; ok {
@@ -3171,7 +3205,21 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 			if keys, ok2 := convertMapKeysExpr(s.For.Source); ok2 {
 				list = keys
 				ok = true
-			} else if name := varName(s.For.Source); name != "" {
+			} else if name := simpleVarName(s.For.Source); name != "" {
+				if isMapVar(name) {
+					keyT := mapKeyTypes[name]
+					switch keyT {
+					case "const char*":
+						env.SetVarDeep(s.For.Name, types.StringType{}, true)
+					default:
+						env.SetVarDeep(s.For.Name, types.IntType{}, true)
+					}
+					body, err := compileStmts(env, s.For.Body)
+					if err != nil {
+						return nil, err
+					}
+					return &ForStmt{Var: s.For.Name, ListVar: name + "_keys", ElemType: keyT, Body: body}, nil
+				}
 				typStr := inferExprType(env, convertExpr(s.For.Source))
 				if strings.HasSuffix(typStr, "[]") {
 					elemType := strings.TrimSuffix(typStr, "[]")
