@@ -1918,7 +1918,10 @@ func (l *LenExpr) emit(w io.Writer) {
 		fmt.Fprint(w, ".Count")
 		return
 	}
-	if strings.HasPrefix(t, "Dictionary<") || isMapExpr(l.Arg) {
+	if strings.HasPrefix(t, "Dictionary<") && strings.HasSuffix(t, "[]") {
+		// array of dictionaries
+		fmt.Fprint(w, ".Length")
+	} else if strings.HasPrefix(t, "Dictionary<") || isMapExpr(l.Arg) {
 		fmt.Fprint(w, ".Count")
 	} else {
 		fmt.Fprint(w, ".Length")

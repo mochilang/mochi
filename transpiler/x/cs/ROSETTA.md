@@ -1,7 +1,7 @@
 # Rosetta C# Transpiler Output
 
 Completed programs: 240/467
-Last updated: 2025-07-27 16:57 UTC
+Last updated: 2025-07-28 00:39 +0700
 
 ## Checklist
 | Index | Name | Status | Duration | Memory |
@@ -181,23 +181,23 @@ Last updated: 2025-07-27 16:57 UTC
 | 173 | cartesian-product-of-two-or-more-lists-2 |   |  |  |
 | 174 | cartesian-product-of-two-or-more-lists-3 | ✓ | 13.743ms | 1.2MB |
 | 175 | cartesian-product-of-two-or-more-lists-4 | ✓ | 15.589ms | 1.2MB |
-| 176 | case-sensitivity-of-identifiers | ✓ | 3.104ms | 16.0KB |
-| 177 | casting-out-nines | ✓ | 15.831ms | 2.8MB |
-| 178 | catalan-numbers-1 | ✓ | 2.989ms | 16.0KB |
-| 179 | catalan-numbers-2 | ✓ | 2.421ms | 16.0KB |
-| 180 | catalan-numbers-pascals-triangle | ✓ | 2.83ms | 24.1KB |
-| 181 | catamorphism | ✓ | 2.748ms | 16.0KB |
-| 182 | catmull-clark-subdivision-surface | ✓ | 20.23ms | 2.1MB |
-| 183 | chaocipher | ✓ | 3.982ms | 69.0KB |
-| 184 | chaos-game | ✓ | 5.799ms | 5.8MB |
-| 185 | character-codes-1 | ✓ | 3.075ms | 16.0KB |
-| 186 | character-codes-2 | ✓ | 3.088ms | 16.0KB |
-| 187 | character-codes-3 | ✓ | 3.119ms | 16.0KB |
-| 188 | character-codes-4 | ✓ | 2.713ms | 16.0KB |
-| 189 | character-codes-5 | ✓ | 2.624ms | 16.0KB |
-| 190 | chat-server | ✓ | 3.081ms | 16.0KB |
-| 191 | check-machin-like-formulas | ✓ | 6.599ms | 1.5MB |
-| 192 | check-that-file-exists | ✓ | 2.705ms | 16.0KB |
+| 176 | case-sensitivity-of-identifiers | ✓ | 1.236ms | 16.0KB |
+| 177 | casting-out-nines | ✓ | 8.695ms | 2.8MB |
+| 178 | catalan-numbers-1 | ✓ | 1.191ms | 16.0KB |
+| 179 | catalan-numbers-2 | ✓ | 909µs | 16.0KB |
+| 180 | catalan-numbers-pascals-triangle | ✓ | 975µs | 24.1KB |
+| 181 | catamorphism | ✓ | 973µs | 16.0KB |
+| 182 | catmull-clark-subdivision-surface | ✓ | 9.124ms | 2.1MB |
+| 183 | chaocipher | ✓ | 1.605ms | 69.0KB |
+| 184 | chaos-game | ✓ | 2.142ms | 5.8MB |
+| 185 | character-codes-1 | ✓ | 893µs | 16.0KB |
+| 186 | character-codes-2 | ✓ | 894µs | 16.0KB |
+| 187 | character-codes-3 | ✓ | 874µs | 16.0KB |
+| 188 | character-codes-4 | ✓ | 869µs | 16.0KB |
+| 189 | character-codes-5 | ✓ | 1.142ms | 16.0KB |
+| 190 | chat-server | ✓ | 1.052ms | 16.0KB |
+| 191 | check-machin-like-formulas | ✓ | 9.963ms | 1.5MB |
+| 192 | check-that-file-exists | ✓ | 1.289ms | 16.0KB |
 | 193 | checkpoint-synchronization-1 | ✓ | 2.933ms | 16.0KB |
 | 194 | checkpoint-synchronization-2 | ✓ | 4.191ms | 24.1KB |
 | 195 | checkpoint-synchronization-3 | ✓ | 4.543ms | 24.1KB |
