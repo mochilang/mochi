@@ -1337,9 +1337,9 @@ func (c *ContainsExpr) emit(w io.Writer) {
 		c.Value.emit(w)
 		fmt.Fprint(w, "]; return ok }()")
 	default: // list
-		fmt.Fprint(w, "func() bool { for _, v := range ")
+		fmt.Fprint(w, "func() bool { for _, el := range ")
 		c.Collection.emit(w)
-		fmt.Fprint(w, " { if v == ")
+		fmt.Fprint(w, " { if el == ")
 		c.Value.emit(w)
 		fmt.Fprint(w, " { return true } } ; return false }()")
 	}
@@ -1855,6 +1855,12 @@ func (a *AssertExpr) emit(w io.Writer) {
 				}
 			}
 		}
+	}
+	if a.Type == "int" {
+		io.WriteString(w, "int(")
+		a.Expr.emit(w)
+		io.WriteString(w, ")")
+		return
 	}
 	if strings.HasPrefix(a.Type, "[]") {
 		elem := a.Type[2:]
@@ -4022,6 +4028,15 @@ func compileFunStmt(fn *parser.FunStmt, env *types.Env) (Stmt, error) {
 		mainFuncName = "mochiMain"
 		name = mainFuncName
 	}
+	if name == "fmt" {
+		name = "fmt_"
+	}
+	if _, ok := imports[name]; ok {
+		name = name + "_fn"
+	}
+	if name != fn.Name {
+		varNameMap[fn.Name] = name
+	}
 	return &FuncDecl{Name: name, Params: params, Return: ret, Body: body}, nil
 }
 
@@ -4230,6 +4245,18 @@ func compileBinary(b *parser.BinaryExpr, env *types.Env, base string) (Expr, err
 								newExpr = eq
 							} else {
 								newExpr = &NotExpr{Expr: eq}
+							}
+						}
+					}
+					if newExpr == nil && (ops[i].Op == "<" || ops[i].Op == "<=" || ops[i].Op == ">" || ops[i].Op == ">=" || ops[i].Op == "==" || ops[i].Op == "!=") {
+						if _, ok := typesList[i].(types.FloatType); ok {
+							if _, ok2 := typesList[i+1].(types.IntType); ok2 {
+								right = &CallExpr{Func: "float64", Args: []Expr{right}}
+							}
+						}
+						if _, ok := typesList[i+1].(types.FloatType); ok {
+							if _, ok2 := typesList[i].(types.IntType); ok2 {
+								left = &CallExpr{Func: "float64", Args: []Expr{left}}
 							}
 						}
 					}
@@ -4845,6 +4872,14 @@ func compilePrimary(p *parser.Primary, env *types.Env, base string) (Expr, error
 		name := p.Call.Func
 		if name == "main" && mainFuncName != "" {
 			name = mainFuncName
+		}
+		if name == "fmt" {
+			if _, ok := env.GetFunc(name); ok {
+				name = "fmt_"
+			}
+		}
+		if rn, ok := varNameMap[name]; ok {
+			name = rn
 		}
 		switch name {
 		case "avg":
