@@ -1,0 +1,11 @@
+compile: exit status 1
+/tmp/TestJavaTranspiler_Rosetta_Goldencholesky-decomposition-12080796224/001/Main.java:27: error: array required, but Object found
+                row = java.util.stream.DoubleStream.concat(java.util.Arrays.stream(row), java.util.stream.DoubleStream.of(((Number)(ele[idx])).doubleValue())).toArray();
+                                                                                                                                       ^
+/tmp/TestJavaTranspiler_Rosetta_Goldencholesky-decomposition-12080796224/001/Main.java:81: error: array required, but Object found
+                row = java.util.stream.DoubleStream.concat(java.util.Arrays.stream(row), java.util.stream.DoubleStream.of(((Number)(ele[idx])).doubleValue())).toArray();
+                                                                                                                                       ^
+/tmp/TestJavaTranspiler_Rosetta_Goldencholesky-decomposition-12080796224/001/Main.java:110: error: array required, but Object found
+            Object e = ae[i];
+                         ^
+3 errors

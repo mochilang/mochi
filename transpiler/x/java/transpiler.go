@@ -15,6 +15,7 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+	"unicode"
 
 	"gopkg.in/yaml.v3"
 	"mochi/parser"
@@ -76,6 +77,14 @@ func SetBenchMain(v bool) { benchMain = v }
 
 func copyMap(src map[string]string) map[string]string {
 	dst := make(map[string]string, len(src))
+	for k, v := range src {
+		dst[k] = v
+	}
+	return dst
+}
+
+func copyBoolMap(src map[string]bool) map[string]bool {
+	dst := make(map[string]bool, len(src))
 	for k, v := range src {
 		dst[k] = v
 	}
@@ -1030,7 +1039,17 @@ func exprUsesVar(e Expr, name string) bool {
 	if e == nil {
 		return false
 	}
-	return strings.Contains(exprString(e), sanitize(name))
+	s := exprString(e)
+	target := sanitize(name)
+	fields := strings.FieldsFunc(s, func(r rune) bool {
+		return !(unicode.IsLetter(r) || unicode.IsDigit(r) || r == '_')
+	})
+	for _, f := range fields {
+		if f == target {
+			return true
+		}
+	}
+	return false
 }
 
 func (l *LambdaExpr) emit(w io.Writer) {
@@ -2871,6 +2890,8 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	for _, s := range p.Statements {
 		if s.Fun != nil {
 			if strings.Contains(s.Fun.Name, ".") {
+				savedRefs := refVars
+				refVars = copyBoolMap(refVars)
 				parts := strings.SplitN(s.Fun.Name, ".", 2)
 				recv := parts[0]
 				name := parts[1]
@@ -2900,10 +2921,13 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 				varTypes = saved
 				popScope(varDeclsSaved)
 				currentFuncReturn = savedRet
+				refVars = savedRefs
 				continue
 			}
 			saved := varTypes
+			savedRefs := refVars
 			varTypes = copyMap(varTypes)
+			refVars = copyBoolMap(refVars)
 			for _, pa := range s.Fun.Params {
 				if t := typeRefString(pa.Type); t != "" {
 					varTypes[pa.Name] = t
@@ -2946,6 +2970,7 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 			varTypes = saved
 			popScope(savedDecls)
 			currentFuncReturn = savedRet
+			refVars = savedRefs
 			continue
 		}
 		st, err := compileStmt(s)
@@ -3281,7 +3306,7 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 		}
 		provisional := fmt.Sprintf("fn(%s):%s", strings.Join(ptypes, ","), provisionalRet)
 		varTypes[s.Fun.Name] = provisional
-		expr, err := compileFunExpr(&parser.FunExpr{Params: s.Fun.Params, Return: s.Fun.Return, BlockBody: s.Fun.Body})
+		expr, err := compileFunExpr(&parser.FunExpr{Params: s.Fun.Params, Return: s.Fun.Return, BlockBody: s.Fun.Body}, false)
 		if err != nil {
 			return nil, err
 		}
@@ -4438,7 +4463,7 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 		}
 		return &StructLit{Name: p.Struct.Name, Fields: vals, Names: names}, nil
 	case p.FunExpr != nil:
-		return compileFunExpr(p.FunExpr)
+		return compileFunExpr(p.FunExpr, true)
 	case p.Match != nil:
 		return compileMatchExpr(p.Match)
 	}
@@ -4471,14 +4496,14 @@ func compileIfExpr(ie *parser.IfExpr) (Expr, error) {
 	return &TernaryExpr{Cond: cond, Then: thenExpr, Else: elseExpr}, nil
 }
 
-func compileFunExpr(fn *parser.FunExpr) (Expr, error) {
+func compileFunExpr(fn *parser.FunExpr, closure bool) (Expr, error) {
 	params := make([]Param, len(fn.Params))
 	for i, p := range fn.Params {
 		params[i] = Param{Name: p.Name, Type: typeRefString(p.Type)}
 	}
 	saved := varTypes
 	varTypes = copyMap(varTypes)
-	savedDecls := pushScope(true)
+	savedDecls := pushScope(closure)
 	for _, p := range params {
 		if p.Type != "" {
 			varTypes[p.Name] = p.Type

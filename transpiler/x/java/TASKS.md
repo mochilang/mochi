@@ -1,4 +1,56 @@
-## Progress (2025-07-27 05:58 +0700)
+## Progress (2025-07-27 16:50 +0700)
+- php: support struct methods (bb2bfaef9b)
+
+- php: support struct methods (bb2bfaef9b)
+
+- php: support struct methods (bb2bfaef9b)
+
+- php: support struct methods (bb2bfaef9b)
+
+- php: support struct methods (bb2bfaef9b)
+
+- php: support struct methods (bb2bfaef9b)
+
+- php: support struct methods (bb2bfaef9b)
+
+- php: support struct methods (bb2bfaef9b)
+
+- php: support struct methods (bb2bfaef9b)
+
+- php: support struct methods (bb2bfaef9b)
+
+- php: support struct methods (bb2bfaef9b)
+
+- php: support struct methods (bb2bfaef9b)
+
+- php: support struct methods (bb2bfaef9b)
+
+- php: support struct methods (bb2bfaef9b)
+
+- php: support struct methods (bb2bfaef9b)
+
+- php: support struct methods (bb2bfaef9b)
+
+- php: support struct methods (bb2bfaef9b)
+
+- php: support struct methods (bb2bfaef9b)
+
+- php: support struct methods (bb2bfaef9b)
+
+- php: support struct methods (bb2bfaef9b)
+
+- php: support struct methods (bb2bfaef9b)
+
+- php: support struct methods (bb2bfaef9b)
+
+- php: support struct methods (bb2bfaef9b)
+
+- php: support struct methods (bb2bfaef9b)
+
+- php: support struct methods (bb2bfaef9b)
+
+- php: support struct methods (bb2bfaef9b)
+
 - java transpiler: improve function typing (1af955c4b2)
 
 - java transpiler: improve function typing (1af955c4b2)
