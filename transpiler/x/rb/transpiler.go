@@ -1461,11 +1461,13 @@ func (i *ImportStmt) emit(e *emitter) {
 		io.WriteString(e.w, "end\n")
 		io.WriteString(e.w, i.Alias+" = PythonMath")
 	case "go_testpkg":
+		io.WriteString(e.w, "require 'digest'\n")
 		io.WriteString(e.w, "module Testpkg\n")
 		io.WriteString(e.w, "  def self.Pi; 3.14; end\n")
 		io.WriteString(e.w, "  def self.Answer; 42; end\n")
 		io.WriteString(e.w, "  def self.Add(a, b); a + b; end\n")
 		io.WriteString(e.w, "  def self.FifteenPuzzleExample; 'Solution found in 52 moves: rrrulddluuuldrurdddrullulurrrddldluurddlulurruldrdrd'; end\n")
+		io.WriteString(e.w, "  def self.MD5Hex(s); Digest::MD5.hexdigest(s); end\n")
 		io.WriteString(e.w, "end\n")
 		io.WriteString(e.w, i.Alias+" = Testpkg")
 	case "go_strings":
@@ -3444,6 +3446,7 @@ func convertImport(im *parser.ImportStmt) (Stmt, error) {
 					"Pi":                   types.FloatType{},
 					"Answer":               types.IntType{},
 					"FifteenPuzzleExample": types.FuncType{Params: []types.Type{}, Return: types.StringType{}},
+					"MD5Hex":               types.FuncType{Params: []types.Type{types.StringType{}}, Return: types.StringType{}},
 				}
 				currentEnv.SetVar(alias, types.StructType{Name: "GoTestpkg", Fields: fields}, false)
 			}
@@ -4089,6 +4092,9 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			t = types.ExprType(exprFromPrimary(prim), currentEnv)
 		}
 		if len(p.Selector.Tail) == 0 && currentEnv != nil {
+			if _, err := currentEnv.GetVar(p.Selector.Root); err == nil {
+				return expr, nil
+			}
 			if _, ok := currentEnv.GetFunc(p.Selector.Root); ok {
 				return &MethodRefExpr{Name: identName(p.Selector.Root)}, nil
 			}

@@ -1,3 +1,213 @@
+## Progress (2025-07-27 23:45 +0700)
+- Commit eba0a6ec0f: transpiler/rb: update benchmark for active directory connect
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 23:45 +0700)
+- Commit 52a330fae3: transpiler/rb: update benchmark for ackermann
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 23:45 +0700)
+- Commit 48d7df80eb: transpiler/rb: update benchmark for ackermann 3
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 23:44 +0700)
+- Commit 6de82fb6c1: transpiler/rb: update benchmark for ackermann 2
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 23:44 +0700)
+- Commit 6a856d0a1d: transpiler/rb: update benchmark for achilles numbers
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 23:43 +0700)
+- Commit f3d77aeb85: transpiler/rb: update benchmark for accumulator factory
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 23:43 +0700)
+- Commit ca2ede6987: transpiler/rb: update benchmark for abundant odd
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 23:43 +0700)
+- Commit 20c9d03d05: transpiler/rb: update benchmark for abundant classification
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 23:42 +0700)
+- Commit ba9f91a3e4: transpiler/rb: update benchmark for abstract type
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 23:42 +0700)
+- Commit ac12b1a70b: transpiler/rb: update benchmark for abelian sandpile model
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 23:42 +0700)
+- Commit feb798fa77: transpiler/rb: update benchmark for abelian sandpile
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 23:42 +0700)
+- Commit 669ee74bd4: transpiler/rb: update benchmark for abc problem
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 23:42 +0700)
+- Commit ac9dccf29f: transpiler/rb: update benchmark for abbreviations simple
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 23:41 +0700)
+- Commit f676d4d67e: transpiler/rb: update benchmark for abbreviations easy
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 23:41 +0700)
+- Commit 55bd29532e: transpiler/rb: update benchmark for abbreviations automatic
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 23:41 +0700)
+- Commit 8ec8e32828: transpiler/rb: update benchmark for a+b
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 23:41 +0700)
+- Commit 632a62f8cd: transpiler/rb: add Duffinian numbers
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 23:40 +0700)
+- Commit 8fa49b665c: transpiler/rb: update benchmark for DNS query
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 23:40 +0700)
+- Commit 7f182c7ffa: transpiler/rb: update benchmark for 99-bottles-of-beer
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 23:40 +0700)
+- Commit 58160a53a8: transpiler/rb: update benchmark for 99-bottles-of-beer-2
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 23:40 +0700)
+- Commit 269d9ce867: transpiler/rb: update benchmark for 9-billion-names
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 23:39 +0700)
+- Commit 15f8ce9db6: transpiler/rb: update benchmark for 4-rings puzzle
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 23:39 +0700)
+- Commit bed5fd9dc4: transpiler/rb: update benchmark for 24-game
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 23:39 +0700)
+- Commit cbadf55a5a: transpiler/rb: update benchmark for 24-game-solve
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 23:39 +0700)
+- Commit 3568c950c6: transpiler/rb: update benchmark for 21-game
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 23:38 +0700)
+- Commit e46d2de631: transpiler/rb: fix variable shadowing for 2048
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 23:37 +0700)
+- Commit 430abb47e1: transpiler/rb: update benchmark for 15-puzzle-solver
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 23:37 +0700)
+- Commit 430abb47e1: transpiler/rb: update benchmark for 15-puzzle-solver
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 23:37 +0700)
+- Commit 274c5bc844: transpiler/rb: update benchmark for 15-puzzle-game
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 23:37 +0700)
+- Commit d658809cb2: transpiler/rb: update benchmark for 100-prisoners
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 23:36 +0700)
+- Commit 9ec0107ffc: transpiler/rb: update benchmark for 100-doors
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 23:36 +0700)
+- Commit 9da78733c3: transpiler/rb: update benchmark for 100-doors-3
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 23:36 +0700)
+- Commit 0cd9310551: transpiler/rb: update benchmark for 100-doors-2
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 23:36 +0700)
+- Commit 934d68de72: transpiler/rb: add zumkeller numbers
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 23:35 +0700)
+- Commit d09ec812d1: transpiler/rb: add window management
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 23:35 +0700)
+- Commit 148bab5199: transpiler/rb: add bubble sort
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 23:34 +0700)
+- Commit 6b75e11aa4: transpiler/rb: add plasma effect
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 23:34 +0700)
+- Commit a90b33a707: transpiler/rb: add nim game
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 23:34 +0700)
+- Commit c2267ea3d4: transpiler/rb: support MD5Hex
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 23:32 +0700)
+- Commit 5794efbdab: transpiler/rb: add output for loops increment loop index
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 23:32 +0700)
+- Commit 5794efbdab: transpiler/rb: add output for loops increment loop index
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 23:28 +0700)
+- Commit 0102f49be3: transpiler/rb: add output for index 460
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
 ## Progress (2025-07-27 23:15 +0700)
 - Commit 1d60dc0fc4: transpiler/rb: add fetch support and output for index 459
 - Generated Ruby for 104/104 programs

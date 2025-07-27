@@ -2,44 +2,44 @@
 
 Generated Ruby code from Mochi Rosetta tasks lives in `tests/rosetta/transpiler/rb`.
 
-Last updated: 2025-07-27 16:15 UTC
+Last updated: 2025-07-27 16:45 UTC
 
-## Checklist (439/467)
+## Checklist (447/467)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
-| 1 | 100-doors-2 | ✓ | 195µs | 36.2 KB |
-| 2 | 100-doors-3 | ✓ | 159µs | 23.6 KB |
-| 3 | 100-doors | ✓ | 320µs | 79.2 KB |
-| 4 | 100-prisoners | ✓ | 486.886ms | 3.1 MB |
-| 5 | 15-puzzle-game | ✓ | 170µs | 35.5 KB |
-| 6 | 15-puzzle-solver | ✓ | 52µs | 9.7 KB |
-| 7 | 2048 | ✓ | 346µs | 82.1 KB |
-| 8 | 21-game | ✓ | 43µs | 18.2 KB |
-| 9 | 24-game-solve | ✓ | 104.708ms | -19391 B |
-| 10 | 24-game | ✓ | 49µs | 18.8 KB |
-| 11 | 4-rings-or-4-squares-puzzle | ✓ | 116.975ms | 13.9 MB |
-| 12 | 9-billion-names-of-god-the-integer | ✓ | 15.810347s | 227.3 MB |
-| 13 | 99-bottles-of-beer-2 | ✓ | 30.784ms | 70.4 KB |
-| 14 | 99-bottles-of-beer | ✓ | 387µs | 93.9 KB |
-| 15 | DNS-query | ✓ | 843.276ms | 80.9 KB |
-| 16 | Duffinian-numbers |   |  |  |
-| 17 | a+b | ✓ | 46µs | 17.7 KB |
-| 18 | abbreviations-automatic | ✓ | 12.098ms | 2.5 KB |
-| 19 | abbreviations-easy | ✓ | 1.094ms | 359.8 KB |
-| 20 | abbreviations-simple | ✓ | 1.134ms | 468.8 KB |
-| 21 | abc-problem | ✓ | 440µs | 190.0 KB |
-| 22 | abelian-sandpile-model-identity | ✓ | 261µs | 60.2 KB |
-| 23 | abelian-sandpile-model | ✓ | 229µs | 62.8 KB |
-| 24 | abstract-type | ✓ | 92µs | 13.7 KB |
-| 25 | abundant-deficient-and-perfect-number-classifications | ✓ | 12.300626s | 9.9 KB |
-| 26 | abundant-odd-numbers | ✓ | 14.588835s | 963.5 KB |
-| 27 | accumulator-factory | ✓ | 57µs | 9.5 KB |
-| 28 | achilles-numbers | ✓ | 42.678ms | 3.3 MB |
-| 29 | ackermann-function-2 | ✓ | 60µs | 9.7 KB |
-| 30 | ackermann-function-3 | ✓ | 21.495735s | 435.1 KB |
-| 31 | ackermann-function | ✓ | 936µs | 9.6 KB |
-| 32 | active-directory-connect | ✓ | 69µs | 12.2 KB |
-| 33 | active-directory-search-for-a-user | ✓ | 56µs | 10.7 KB |
+| 1 | 100-doors-2 | ✓ | 140µs | 36.2 KB |
+| 2 | 100-doors-3 | ✓ | 157µs | 23.6 KB |
+| 3 | 100-doors | ✓ | 253µs | 79.2 KB |
+| 4 | 100-prisoners | ✓ | 499.356ms | 46.6 KB |
+| 5 | 15-puzzle-game | ✓ | 175µs | 35.1 KB |
+| 6 | 15-puzzle-solver | ✓ | 1.372ms | 76.2 KB |
+| 7 | 2048 | ✓ | 342µs | 85.5 KB |
+| 8 | 21-game | ✓ | 50µs | 18.6 KB |
+| 9 | 24-game-solve | ✓ | 7.069ms | 428.2 KB |
+| 10 | 24-game | ✓ | 52µs | 18.8 KB |
+| 11 | 4-rings-or-4-squares-puzzle | ✓ | 121.607ms | 13.9 MB |
+| 12 | 9-billion-names-of-god-the-integer | ✓ | 15.858937s | 227.7 MB |
+| 13 | 99-bottles-of-beer-2 | ✓ | 30.935ms | 70.4 KB |
+| 14 | 99-bottles-of-beer | ✓ | 409µs | 93.9 KB |
+| 15 | DNS-query | ✓ | 352.426ms | 75.0 KB |
+| 16 | Duffinian-numbers | ✓ | 191.606ms | 715.5 KB |
+| 17 | a+b | ✓ | 40µs | 17.7 KB |
+| 18 | abbreviations-automatic | ✓ | 12.079ms | 3.1 KB |
+| 19 | abbreviations-easy | ✓ | 1.246ms | 359.8 KB |
+| 20 | abbreviations-simple | ✓ | 1.095ms | 468.8 KB |
+| 21 | abc-problem | ✓ | 547µs | 190.0 KB |
+| 22 | abelian-sandpile-model-identity | ✓ | 253µs | 60.2 KB |
+| 23 | abelian-sandpile-model | ✓ | 192µs | 62.8 KB |
+| 24 | abstract-type | ✓ | 67µs | 13.7 KB |
+| 25 | abundant-deficient-and-perfect-number-classifications | ✓ | 12.288228s | 9.9 KB |
+| 26 | abundant-odd-numbers | ✓ | 14.586404s | 963.5 KB |
+| 27 | accumulator-factory | ✓ | 52µs | 9.5 KB |
+| 28 | achilles-numbers | ✓ | 42.332ms | 3.3 MB |
+| 29 | ackermann-function-2 | ✓ | 30µs | 9.7 KB |
+| 30 | ackermann-function-3 | ✓ | 21.685154s | 435.1 KB |
+| 31 | ackermann-function | ✓ | 958µs | 9.6 KB |
+| 32 | active-directory-connect | ✓ | 72µs | 12.2 KB |
+| 33 | active-directory-search-for-a-user | ✓ | 45µs | 10.7 KB |
 | 34 | active-object | ✓ | 1.426ms | 10.5 KB |
 | 35 | add-a-variable-to-a-class-instance-at-runtime | ✓ | 85µs | 20.2 KB |
 | 36 | additive-primes | ✓ | 287µs | 22.9 KB |
@@ -467,10 +467,10 @@ Last updated: 2025-07-27 16:15 UTC
 | 458 | gray-code | ✓ | 433µs | 70.5 KB |
 | 459 | http | ✓ | 153.621ms | 410.2 KB |
 | 460 | image-noise | ✓ | 124ms | 2.3 MB |
-| 461 | loops-increment-loop-index-within-loop-body |   |  |  |
-| 462 | md5 |   |  |  |
-| 463 | nim-game |   |  |  |
-| 464 | plasma-effect |   |  |  |
-| 465 | sorting-algorithms-bubble-sort |   |  |  |
-| 466 | window-management |   |  |  |
-| 467 | zumkeller-numbers |   |  |  |
+| 461 | loops-increment-loop-index-within-loop-body | ✓ | 1.953803s | 82.1 KB |
+| 462 | md5 | ✓ | 7.941ms | 73.3 KB |
+| 463 | nim-game | ✓ | 58µs | 22.5 KB |
+| 464 | plasma-effect | ✓ | 244.4ms | 86.8 KB |
+| 465 | sorting-algorithms-bubble-sort | ✓ | 70µs | 10.4 KB |
+| 466 | window-management | ✓ | 145µs | 26.6 KB |
+| 467 | zumkeller-numbers | ✓ | 50.248088s | 514.9 KB |
