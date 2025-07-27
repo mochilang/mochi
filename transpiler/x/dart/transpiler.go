@@ -73,6 +73,7 @@ var (
 	structMutable    map[string]bool
 	currentRetType   string
 	inFunc           bool
+	convInFunc       bool
 )
 
 // GetStructOrder returns the generated struct names (for testing).
@@ -83,6 +84,9 @@ func GetStructFields() map[string][]StructField { return structFields }
 
 // DebugLocalVarTypes exposes local variable type map (for testing).
 func DebugLocalVarTypes() map[string]string { return localVarTypes }
+
+// DebugFuncReturnTypes exposes function return type map (for testing).
+func DebugFuncReturnTypes() map[string]string { return funcReturnTypes }
 
 func capitalize(name string) string {
 	parts := strings.Split(name, "_")
@@ -100,6 +104,7 @@ var dartKeywords = map[string]struct{}{
 	"for": {}, "if": {}, "in": {}, "new": {}, "null": {}, "super": {},
 	"switch": {}, "case": {}, "var": {}, "void": {}, "while": {},
 	"return": {}, "this": {}, "true": {}, "is": {},
+	"num": {},
 }
 
 func sanitize(name string) string {
@@ -2699,6 +2704,47 @@ type LambdaExpr struct {
 	Body   Expr
 }
 
+// LambdaBlock represents a closure with a statement body.
+type LambdaBlock struct {
+	Params []string
+	Body   []Stmt
+}
+
+func (l *LambdaBlock) emit(w io.Writer) error {
+	if _, err := io.WriteString(w, "("); err != nil {
+		return err
+	}
+	if _, err := io.WriteString(w, "("); err != nil {
+		return err
+	}
+	for i, p := range l.Params {
+		if i > 0 {
+			if _, err := io.WriteString(w, ", "); err != nil {
+				return err
+			}
+		}
+		if _, err := io.WriteString(w, p); err != nil {
+			return err
+		}
+	}
+	if _, err := io.WriteString(w, ") {\n"); err != nil {
+		return err
+	}
+	for _, st := range l.Body {
+		if _, err := io.WriteString(w, "  "); err != nil {
+			return err
+		}
+		if err := st.emit(w); err != nil {
+			return err
+		}
+		if _, err := io.WriteString(w, ";\n"); err != nil {
+			return err
+		}
+	}
+	_, err := io.WriteString(w, "})")
+	return err
+}
+
 func (l *LambdaExpr) emit(w io.Writer) error {
 	if _, err := io.WriteString(w, "("); err != nil {
 		return err
@@ -3953,13 +3999,20 @@ func convertStmtInternal(st *parser.Statement) (Stmt, error) {
 		}
 		name := sanitize(st.Let.Name)
 		typ := typeRefString(st.Let.Type)
-		if typ == "" && currentEnv != nil {
+		if typ == "" && currentEnv != nil && !convInFunc {
 			if t, err := currentEnv.GetVar(st.Let.Name); err == nil {
 				typ = dartType(t)
 			}
 		}
 		if typ == "" && e != nil {
 			typ = inferType(e)
+			if ce, ok := e.(*CallExpr); ok {
+				if n, ok2 := ce.Func.(*Name); ok2 {
+					if rt, ok3 := funcReturnTypes[n.Name]; ok3 {
+						typ = rt
+					}
+				}
+			}
 		}
 		if _, ok := e.(*IndexExpr); ok && strings.HasSuffix(typ, "?") {
 			typ = strings.TrimSuffix(typ, "?")
@@ -3981,13 +4034,20 @@ func convertStmtInternal(st *parser.Statement) (Stmt, error) {
 		}
 		name := sanitize(st.Var.Name)
 		typ := typeRefString(st.Var.Type)
-		if typ == "" && currentEnv != nil {
+		if typ == "" && currentEnv != nil && !convInFunc {
 			if t, err := currentEnv.GetVar(st.Var.Name); err == nil {
 				typ = dartType(t)
 			}
 		}
 		if typ == "" && e != nil {
 			typ = inferType(e)
+			if ce, ok := e.(*CallExpr); ok {
+				if n, ok2 := ce.Func.(*Name); ok2 {
+					if rt, ok3 := funcReturnTypes[n.Name]; ok3 {
+						typ = rt
+					}
+				}
+			}
 		}
 		if _, ok := e.(*IndexExpr); ok && strings.HasSuffix(typ, "?") {
 			typ = strings.TrimSuffix(typ, "?")
@@ -4041,7 +4101,18 @@ func convertStmtInternal(st *parser.Statement) (Stmt, error) {
 				params = append(params, name)
 			}
 		}
+		name := sanitize(st.Fun.Name)
+		if benchMain && name == "main" {
+			name = "_main"
+		}
+		if rt := typeRefString(st.Fun.Return); rt != "" {
+			funcReturnTypes[name] = rt
+		}
+
+		savedConv := convInFunc
+		convInFunc = true
 		body, err := convertStmtList(st.Fun.Body)
+		convInFunc = savedConv
 		if err != nil {
 			for n, v := range savedLocals {
 				if v != "" {
@@ -4059,14 +4130,7 @@ func convertStmtInternal(st *parser.Statement) (Stmt, error) {
 				delete(localVarTypes, n)
 			}
 		}
-		name := sanitize(st.Fun.Name)
-		if benchMain && name == "main" {
-			name = "_main"
-		}
 		fd := &FuncDecl{Name: name, Params: params, ParamTypes: paramTypes, Body: body}
-		if rt := typeRefString(st.Fun.Return); rt != "" {
-			funcReturnTypes[fd.Name] = rt
-		}
 		return fd, nil
 	case st.While != nil:
 		return convertWhileStmt(st.While)
@@ -4578,18 +4642,37 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			return &CallExpr{Func: &Name{Name: "_repeat"}, Args: []Expr{s0, s1}}, nil
 		}
 		if p.Call.Func == "pow" && len(p.Call.Args) == 2 {
-			x, err := convertExpr(p.Call.Args[0])
-			if err != nil {
-				return nil, err
+			if currentEnv != nil {
+				if _, ok := currentEnv.GetFunc("pow"); ok {
+					// use user-defined pow
+				} else {
+					x, err := convertExpr(p.Call.Args[0])
+					if err != nil {
+						return nil, err
+					}
+					y, err := convertExpr(p.Call.Args[1])
+					if err != nil {
+						return nil, err
+					}
+					imports = append(imports, "import 'dart:math';")
+					expr := &CallExpr{Func: &Name{Name: "pow"}, Args: []Expr{x, y}}
+					expr = &CallExpr{Func: &SelectorExpr{Receiver: expr, Field: "toInt"}}
+					return expr, nil
+				}
+			} else {
+				x, err := convertExpr(p.Call.Args[0])
+				if err != nil {
+					return nil, err
+				}
+				y, err := convertExpr(p.Call.Args[1])
+				if err != nil {
+					return nil, err
+				}
+				imports = append(imports, "import 'dart:math';")
+				expr := &CallExpr{Func: &Name{Name: "pow"}, Args: []Expr{x, y}}
+				expr = &CallExpr{Func: &SelectorExpr{Receiver: expr, Field: "toInt"}}
+				return expr, nil
 			}
-			y, err := convertExpr(p.Call.Args[1])
-			if err != nil {
-				return nil, err
-			}
-			imports = append(imports, "import 'dart:math';")
-			expr := &CallExpr{Func: &Name{Name: "pow"}, Args: []Expr{x, y}}
-			expr = &CallExpr{Func: &SelectorExpr{Receiver: expr, Field: "toInt"}}
-			return expr, nil
 		}
 		if p.Call.Func == "sha256" && len(p.Call.Args) == 1 {
 			arg, err := convertExpr(p.Call.Args[0])
@@ -4788,6 +4871,23 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			return nil, err
 		}
 		return &LambdaExpr{Params: params, Body: body}, nil
+	case p.FunExpr != nil && p.FunExpr.BlockBody != nil:
+		var params []string
+		for _, pa := range p.FunExpr.Params {
+			params = append(params, sanitize(pa.Name))
+		}
+		if len(p.FunExpr.BlockBody) == 1 && p.FunExpr.BlockBody[0].Return != nil {
+			body, err := convertExpr(p.FunExpr.BlockBody[0].Return.Value)
+			if err != nil {
+				return nil, err
+			}
+			return &LambdaExpr{Params: params, Body: body}, nil
+		}
+		body, err := convertStmtList(p.FunExpr.BlockBody)
+		if err != nil {
+			return nil, err
+		}
+		return &LambdaBlock{Params: params, Body: body}, nil
 	case p.Selector != nil:
 		expr := Expr(&Name{Name: sanitize(p.Selector.Root)})
 		for _, f := range p.Selector.Tail {
