@@ -133,8 +133,8 @@ Last updated: 2025-07-26 17:02 +0700
 | 125 | bitmap-read-an-image-through-a-pipe | ✓ | 8.777ms | 2.4GB |
 | 126 | bitmap-write-a-ppm-file | ✓ | 1.237ms | 32.1MB |
 | 127 | bitmap | ✓ | 13.719ms | 21.5GB |
-| 128 | bitwise-io-1 | ✓ | 1.136ms | 16.0MB |
-| 129 | bitwise-io-2 |   |  |  |
+| 128 | bitwise-io-1 | ✓ | 2.838ms | 16.0KB |
+| 129 | bitwise-io-2 | ✓ | 19.592ms | 2.7MB |
 | 130 | bitwise-operations |   |  |  |
 | 131 | blum-integer |   |  |  |
 | 132 | boolean-values |   |  |  |
