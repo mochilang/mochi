@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated IR and outputs from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/ir`.
-Last updated: 2025-07-27 05:21 UTC
+Last updated: 2025-07-27 05:45 UTC
 
 ## Rosetta Golden Test Checklist (286/452)
 | Index | Name | Status | Duration | Memory |
@@ -176,26 +176,26 @@ Last updated: 2025-07-27 05:21 UTC
 | 167 | camel-case-and-snake-case | ✓ | 738µs | 463.0 KB |
 | 168 | canny-edge-detector | ✓ | 388µs | 112.5 KB |
 | 169 | canonicalize-cidr | ✓ | 2.048ms | 559.1 KB |
-| 170 | cantor-set | ✓ | 1.394ms | 728.5 KB |
-| 171 | carmichael-3-strong-pseudoprimes | ✓ | 42.69ms | 404.5 KB |
-| 172 | cartesian-product-of-two-or-more-lists-1 | ✓ | 75µs | 39.7 KB |
-| 173 | cartesian-product-of-two-or-more-lists-2 | ✓ | 575µs | 337.4 KB |
-| 174 | cartesian-product-of-two-or-more-lists-3 | ✓ | 586µs | 414.8 KB |
-| 175 | cartesian-product-of-two-or-more-lists-4 | ✓ | 467µs | 574.6 KB |
-| 176 | case-sensitivity-of-identifiers | ✓ | 80µs | 23.5 KB |
-| 177 | casting-out-nines | ✓ | 12.302ms | 1.8 MB |
-| 178 | catalan-numbers-1 | ✓ | 118µs | 60.6 KB |
-| 179 | catalan-numbers-2 | ✓ | 594µs | 329.7 KB |
-| 180 | catalan-numbers-pascals-triangle | ✓ | 330µs | 546.0 KB |
-| 181 | catamorphism | ✓ | 75µs | 34.4 KB |
-| 182 | catmull-clark-subdivision-surface | ✓ | 2.131ms | 736.3 KB |
-| 183 | chaocipher | ✓ | 711µs | 617.6 KB |
-| 184 | chaos-game | ✓ | 1.25584s |  |
-| 185 | character-codes-1 | ✓ | 43µs | 4.0 KB |
-| 186 | character-codes-2 | ✓ | 28µs | 3.8 KB |
-| 187 | character-codes-3 | ✓ | 40µs | 8.4 KB |
-| 188 | character-codes-4 | ✓ | 38µs | 8.8 KB |
-| 189 | character-codes-5 | ✓ | 42µs | 7.0 KB |
+| 170 | cantor-set | ✓ | 5.813ms |  |
+| 171 | carmichael-3-strong-pseudoprimes | ✓ | 148.196ms |  |
+| 172 | cartesian-product-of-two-or-more-lists-1 | ✓ | 955µs | 47.7 KB |
+| 173 | cartesian-product-of-two-or-more-lists-2 | ✓ | 1.684ms | 426.9 KB |
+| 174 | cartesian-product-of-two-or-more-lists-3 | ✓ | 2.623ms | 470.5 KB |
+| 175 | cartesian-product-of-two-or-more-lists-4 | ✓ | 1.94ms | 649.9 KB |
+| 176 | case-sensitivity-of-identifiers | ✓ | 644µs | 23.5 KB |
+| 177 | casting-out-nines | ✓ | 41.748ms | 914.3 KB |
+| 178 | catalan-numbers-1 | ✓ | 842µs | 127.7 KB |
+| 179 | catalan-numbers-2 | ✓ | 1.999ms | 449.3 KB |
+| 180 | catalan-numbers-pascals-triangle | ✓ | 1.821ms | 648.1 KB |
+| 181 | catamorphism | ✓ | 772µs | 30.4 KB |
+| 182 | catmull-clark-subdivision-surface | ✓ | 6.025ms | 693.1 KB |
+| 183 | chaocipher | ✓ | 8.466ms |  |
+| 184 | chaos-game | ✓ | 1.915336s |  |
+| 185 | character-codes-1 | ✓ | 440µs | 4.0 KB |
+| 186 | character-codes-2 | ✓ | 949µs | 3.8 KB |
+| 187 | character-codes-3 | ✓ | 404µs | 8.4 KB |
+| 188 | character-codes-4 | ✓ | 502µs | 8.8 KB |
+| 189 | character-codes-5 | ✓ | 459µs | 7.0 KB |
 | 190 | chat-server | ✓ | 154µs | 32.4 KB |
 | 191 | check-machin-like-formulas |   |  |  |
 | 192 | check-that-file-exists | ✓ | 43µs | 10.6 KB |
