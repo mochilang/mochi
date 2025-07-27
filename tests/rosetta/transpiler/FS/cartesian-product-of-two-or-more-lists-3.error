@@ -1,0 +1,15 @@
+run: exit status 1
+
+Unhandled Exception:
+System.InvalidCastException: Specified cast is not valid.
+  at Cartesian-product-of-two-or-more-lists-3.cartN (System.Object lists) [0x0012a] in <68864a8d8bd67ba0a74503838d4a8668>:0 
+  at Cartesian-product-of-two-or-more-lists-3.cartN (System.Object lists) [0x0012a] in <68864a8d8bd67ba0a74503838d4a8668>:0 
+  at Cartesian-product-of-two-or-more-lists-3.cartN (System.Object lists) [0x0012a] in <68864a8d8bd67ba0a74503838d4a8668>:0 
+  at Cartesian-product-of-two-or-more-lists-3.main () [0x0045c] in <68864a8d8bd67ba0a74503838d4a8668>:0 
+  at <StartupCode$cartesian-product-of-two-or-more-lists-3>.$Cartesian-product-of-two-or-more-lists-3.main@ () [0x00000] in <68864a8d8bd67ba0a74503838d4a8668>:0 
+[ERROR] FATAL UNHANDLED EXCEPTION: System.InvalidCastException: Specified cast is not valid.
+  at Cartesian-product-of-two-or-more-lists-3.cartN (System.Object lists) [0x0012a] in <68864a8d8bd67ba0a74503838d4a8668>:0 
+  at Cartesian-product-of-two-or-more-lists-3.cartN (System.Object lists) [0x0012a] in <68864a8d8bd67ba0a74503838d4a8668>:0 
+  at Cartesian-product-of-two-or-more-lists-3.cartN (System.Object lists) [0x0012a] in <68864a8d8bd67ba0a74503838d4a8668>:0 
+  at Cartesian-product-of-two-or-more-lists-3.main () [0x0045c] in <68864a8d8bd67ba0a74503838d4a8668>:0 
+  at <StartupCode$cartesian-product-of-two-or-more-lists-3>.$Cartesian-product-of-two-or-more-lists-3.main@ () [0x00000] in <68864a8d8bd67ba0a74503838d4a8668>:0 

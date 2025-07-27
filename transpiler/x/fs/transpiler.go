@@ -263,7 +263,7 @@ func fsIdent(name string) string {
 		"private": true, "public": true, "rec": true, "return": true, "sig": true, "static": true,
 		"struct": true, "then": true, "to": true, "true": true, "try": true, "type": true,
 		"upcast": true, "use": true, "val": true, "void": true, "when": true, "while": true,
-		"with": true, "yield": true}
+		"with": true, "yield": true, "mod": true}
 	if keywords[name] || strings.ContainsAny(name, "- ") {
 		return "``" + name + "``"
 	}
@@ -1894,7 +1894,11 @@ func isList(e Expr) bool {
 }
 
 func (c *CallExpr) emit(w io.Writer) {
-	io.WriteString(w, c.Func)
+	name := c.Func
+	if !strings.ContainsAny(name, " \"") && !strings.Contains(name, "%") {
+		name = fsIdent(name)
+	}
+	io.WriteString(w, name)
 	if len(c.Args) == 0 {
 		io.WriteString(w, "()")
 		return
@@ -2107,6 +2111,11 @@ func (m *MethodCallExpr) emit(w io.Writer) {
 	}
 
 	typ := inferType(m.Target)
+	if typ != "" && typ != "obj" {
+		if typ == "int" || typ == "float" || typ == "string" || typ == "bool" || strings.HasSuffix(typ, " array") || strings.HasPrefix(typ, "Map<") {
+			typ = ""
+		}
+	}
 	if typ != "" && typ != "obj" {
 		io.WriteString(w, fsIdent(typ+"_"+mapMethod(m.Name)))
 		io.WriteString(w, " ")
@@ -2817,6 +2826,9 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 				}
 			}
 		}
+		if retType == "" && st.Fun.Return != nil {
+			retType = typeRefString(st.Fun.Return)
+		}
 		prevReturn := currentReturn
 		currentReturn = retType
 		body := make([]Stmt, len(st.Fun.Body))
@@ -3448,6 +3460,13 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		typ := ""
 		if t, ok := varTypes[p.Selector.Root]; ok {
 			typ = t
+		}
+		if typ == "" && len(p.Selector.Tail) == 0 {
+			if selfTyp, ok := varTypes["self"]; ok {
+				if _, ok := structFieldType(selfTyp, p.Selector.Root); ok {
+					return &FieldExpr{Target: &IdentExpr{Name: "self", Type: selfTyp}, Name: p.Selector.Root}, nil
+				}
+			}
 		}
 		expr := Expr(&IdentExpr{Name: p.Selector.Root, Type: typ})
 		for _, name := range p.Selector.Tail {
