@@ -2,13 +2,13 @@
 
 This file is auto-generated from rosetta tests.
 
-## Rosetta Golden Test Checklist (148/467)
+## Rosetta Golden Test Checklist (156/467)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 151µs | 41.3 KB |
 | 2 | 100-doors-3 | ✓ | 154µs | 41.9 KB |
 | 3 | 100-doors | ✓ | 155µs | 41.6 KB |
-| 4 | 100-prisoners |   |  |  |
+| 4 | 100-prisoners | ✓ |  |  |
 | 5 | 15-puzzle-game | ✓ |  |  |
 | 6 | 15-puzzle-solver | ✓ | 155µs | 42.0 KB |
 | 7 | 2048 | ✓ | 188µs | 42.7 KB |
@@ -177,15 +177,15 @@ This file is auto-generated from rosetta tests.
 | 170 | cantor-set | ✓ | 383µs | 63.9 KB |
 | 171 | carmichael-3-strong-pseudoprimes | ✓ | 264µs | 42.1 KB |
 | 172 | cartesian-product-of-two-or-more-lists-1 | ✓ | 161µs | 42.1 KB |
-| 173 | cartesian-product-of-two-or-more-lists-2 |   |  |  |
-| 174 | cartesian-product-of-two-or-more-lists-3 |   |  |  |
-| 175 | cartesian-product-of-two-or-more-lists-4 |   |  |  |
+| 173 | cartesian-product-of-two-or-more-lists-2 | ✓ | 215µs | 54.1 KB |
+| 174 | cartesian-product-of-two-or-more-lists-3 | ✓ | 213µs | 54.0 KB |
+| 175 | cartesian-product-of-two-or-more-lists-4 | ✓ | 218µs | 54.0 KB |
 | 176 | case-sensitivity-of-identifiers |   |  |  |
 | 177 | casting-out-nines |   |  |  |
-| 178 | catalan-numbers-1 |   |  |  |
-| 179 | catalan-numbers-2 |   |  |  |
-| 180 | catalan-numbers-pascals-triangle |   |  |  |
-| 181 | catamorphism |   |  |  |
+| 178 | catalan-numbers-1 | ✓ | 172µs | 41.5 KB |
+| 179 | catalan-numbers-2 | ✓ | 155µs | 41.5 KB |
+| 180 | catalan-numbers-pascals-triangle | ✓ | 156µs | 41.5 KB |
+| 181 | catamorphism | ✓ | 169µs | 42.9 KB |
 | 182 | catmull-clark-subdivision-surface |   |  |  |
 | 183 | chaocipher |   |  |  |
 | 184 | chaos-game |   |  |  |
@@ -473,4 +473,4 @@ This file is auto-generated from rosetta tests.
 | 466 | window-management |   |  |  |
 | 467 | zumkeller-numbers |   |  |  |
 
-Last updated: 2025-07-27 22:23 +0700
+Last updated: 2025-07-27 22:46 +0700

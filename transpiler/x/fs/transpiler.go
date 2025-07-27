@@ -690,10 +690,16 @@ func (l *ListLit) emit(w io.Writer) {
 	prev := ""
 	for i, e := range l.Elems {
 		t := inferType(e)
+		if t == "array" {
+			et := elemTypeOf(e)
+			if et != "" {
+				t = et + " array"
+			}
+		}
 		types[i] = t
 		if i == 0 {
 			prev = t
-		} else if t != prev {
+		} else if t != prev && t != "" && prev != "" {
 			same = false
 		}
 	}
@@ -1720,6 +1726,9 @@ func inferType(e Expr) string {
 		}
 		return "map"
 	case *StructLit:
+		if v.Name != "" {
+			return v.Name
+		}
 		return "struct"
 	case *VariantExpr:
 		if transpileEnv != nil {
@@ -2269,15 +2278,69 @@ func (c *CastExpr) emit(w io.Writer) {
 			c.Expr.emit(w)
 		}
 	default:
-		io.WriteString(w, "unbox<")
-		io.WriteString(w, c.Type)
-		io.WriteString(w, "> ")
-		if needsParen(c.Expr) {
-			io.WriteString(w, "(")
-			c.Expr.emit(w)
-			io.WriteString(w, ")")
+		if ll, ok := c.Expr.(*ListLit); ok && c.Type == "obj array" {
+			io.WriteString(w, "[|")
+			for i, e := range ll.Elems {
+				io.WriteString(w, "box ")
+				e.emit(w)
+				if i < len(ll.Elems)-1 {
+					io.WriteString(w, "; ")
+				}
+			}
+			io.WriteString(w, "|]")
+		} else if ll, ok := c.Expr.(*ListLit); ok && strings.HasSuffix(c.Type, " array") && len(ll.Elems) == 0 {
+			elem := strings.TrimSuffix(c.Type, " array")
+			io.WriteString(w, "Array.empty<")
+			io.WriteString(w, elem)
+			io.WriteString(w, ">")
+		} else if ll, ok := c.Expr.(*ListLit); ok && strings.HasSuffix(c.Type, " array array") && len(ll.Elems) == 1 {
+			if inner, ok := ll.Elems[0].(*ListLit); ok && len(inner.Elems) == 0 {
+				elem := strings.TrimSuffix(c.Type, " array array")
+				io.WriteString(w, "[|Array.empty<")
+				io.WriteString(w, elem)
+				io.WriteString(w, ">|]")
+				return
+			}
+			elem := strings.TrimSuffix(c.Type, " array array")
+			io.WriteString(w, "(match ")
+			if needsParen(c.Expr) {
+				io.WriteString(w, "(")
+				c.Expr.emit(w)
+				io.WriteString(w, ")")
+			} else {
+				c.Expr.emit(w)
+			}
+			io.WriteString(w, " with | :? (")
+			io.WriteString(w, c.Type)
+			io.WriteString(w, ") as a -> a | :? (obj array) as oa -> oa |> Array.map (fun v -> unbox<")
+			io.WriteString(w, elem)
+			io.WriteString(w, " array> v) | _ -> failwith \"invalid cast\")")
+		} else if strings.HasSuffix(c.Type, " array array") && inferType(c.Expr) == "obj" {
+			elem := strings.TrimSuffix(c.Type, " array array")
+			io.WriteString(w, "(match ")
+			if needsParen(c.Expr) {
+				io.WriteString(w, "(")
+				c.Expr.emit(w)
+				io.WriteString(w, ")")
+			} else {
+				c.Expr.emit(w)
+			}
+			io.WriteString(w, " with | :? (")
+			io.WriteString(w, c.Type)
+			io.WriteString(w, ") as a -> a | :? (obj array) as oa -> oa |> Array.map (fun v -> unbox<")
+			io.WriteString(w, elem)
+			io.WriteString(w, " array> v) | _ -> failwith \"invalid cast\")")
 		} else {
-			c.Expr.emit(w)
+			io.WriteString(w, "unbox<")
+			io.WriteString(w, c.Type)
+			io.WriteString(w, "> ")
+			if needsParen(c.Expr) {
+				io.WriteString(w, "(")
+				c.Expr.emit(w)
+				io.WriteString(w, ")")
+			} else {
+				c.Expr.emit(w)
+			}
 		}
 	}
 }
@@ -2896,15 +2959,6 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 				return nil, err
 			}
 		}
-		body := make([]Stmt, len(st.For.Body))
-		for i, s := range st.For.Body {
-			cs, err := convertStmt(s)
-			if err != nil {
-				return nil, err
-			}
-			body[i] = cs
-		}
-		// infer element type for loop variable
 		elemType := ""
 		if st.For.RangeEnd != nil {
 			elemType = "int"
@@ -2913,6 +2967,14 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 		}
 		if elemType != "" {
 			varTypes[st.For.Name] = elemType
+		}
+		body := make([]Stmt, len(st.For.Body))
+		for i, s := range st.For.Body {
+			cs, err := convertStmt(s)
+			if err != nil {
+				return nil, err
+			}
+			body[i] = cs
 		}
 		wb := bodyUsesBreak(body)
 		if wb {
