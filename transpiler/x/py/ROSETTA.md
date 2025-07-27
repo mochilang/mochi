@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Python code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/Python`.
-Last updated: 2025-07-27 12:32 GMT+7
+Last updated: 2025-07-27 13:13 GMT+7
 
-## Rosetta Golden Test Checklist (340/452)
+## Rosetta Golden Test Checklist (383/452)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 161.0µs | 12.50MB |
@@ -359,56 +359,56 @@ Last updated: 2025-07-27 12:32 GMT+7
 | 350 | enumerations-1 | ✓ | 3.0µs | 12.30MB |
 | 351 | enumerations-2 | ✓ | 2.0µs | 12.40MB |
 | 352 | enumerations-3 | ✓ | 3.0µs | 12.37MB |
-| 353 | enumerations-4 | ✓ | 2.0µs | 12.25MB |
-| 354 | environment-variables-1 | ✓ |  |  |
-| 355 | environment-variables-2 | ✓ |  |  |
+| 353 | enumerations-4 | ✓ | 1.0µs | 11.76MB |
+| 354 | environment-variables-1 | ✓ | 11.0µs | 12.65MB |
+| 355 | environment-variables-2 | ✓ | 47.0µs | 12.54MB |
 | 356 | equal-prime-and-composite-sums | error |  |  |
 | 357 | equilibrium-index | error |  |  |
 | 358 | erd-s-nicolas-numbers | error |  |  |
-| 359 | erd-s-selfridge-categorization-of-primes |   |  |  |
-| 360 | esthetic-numbers |   |  |  |
-| 361 | ethiopian-multiplication |   |  |  |
-| 362 | euclid-mullin-sequence |   |  |  |
-| 363 | euler-method |   |  |  |
-| 364 | eulers-constant-0.5772... |   |  |  |
-| 365 | eulers-identity |   |  |  |
-| 366 | eulers-sum-of-powers-conjecture |   |  |  |
-| 367 | evaluate-binomial-coefficients |   |  |  |
-| 368 | even-or-odd |   |  |  |
-| 369 | events |   |  |  |
-| 370 | evolutionary-algorithm |   |  |  |
-| 371 | exceptions-catch-an-exception-thrown-in-a-nested-call |   |  |  |
-| 372 | exceptions |   |  |  |
-| 373 | executable-library |   |  |  |
-| 374 | execute-a-markov-algorithm |   |  |  |
-| 375 | execute-a-system-command |   |  |  |
-| 376 | execute-brain- |   |  |  |
-| 377 | execute-computer-zero |   |  |  |
-| 378 | execute-hq9+ |   |  |  |
-| 379 | execute-snusp |   |  |  |
-| 380 | exponentiation-operator |   |  |  |
-| 381 | exponentiation-order |   |  |  |
-| 382 | exponentiation-with-infix-operators-in-or-operating-on-the-base |   |  |  |
-| 383 | extend-your-language |   |  |  |
-| 384 | extensible-prime-generator |   |  |  |
-| 385 | extreme-floating-point-values |   |  |  |
-| 386 | faces-from-a-mesh |   |  |  |
-| 387 | fasta-format |   |  |  |
-| 388 | faulhabers-triangle |   |  |  |
-| 389 | feigenbaum-constant-calculation |   |  |  |
-| 390 | fermat-numbers |   |  |  |
-| 391 | fibonacci-n-step-number-sequences |   |  |  |
-| 392 | fibonacci-sequence-1 |   |  |  |
-| 393 | fibonacci-sequence-2 |   |  |  |
+| 359 | erd-s-selfridge-categorization-of-primes | ✓ | 9.0ms | 13.67MB |
+| 360 | esthetic-numbers | ✓ |  |  |
+| 361 | ethiopian-multiplication | ✓ | 12.0µs | 12.71MB |
+| 362 | euclid-mullin-sequence | ✓ |  |  |
+| 363 | euler-method | ✓ |  |  |
+| 364 | eulers-constant-0.5772... | ✓ |  |  |
+| 365 | eulers-identity | ✓ |  |  |
+| 366 | eulers-sum-of-powers-conjecture | ✓ |  |  |
+| 367 | evaluate-binomial-coefficients | ✓ |  |  |
+| 368 | even-or-odd | ✓ |  |  |
+| 369 | events | ✓ | 15.0µs | 12.59MB |
+| 370 | evolutionary-algorithm | ✓ |  |  |
+| 371 | exceptions-catch-an-exception-thrown-in-a-nested-call | ✓ |  |  |
+| 372 | exceptions | ✓ |  |  |
+| 373 | executable-library | ✓ | 2.40s | 12.93MB |
+| 374 | execute-a-markov-algorithm | ✓ |  |  |
+| 375 | execute-a-system-command | ✓ | 7.0µs | 11.79MB |
+| 376 | execute-brain- | ✓ |  |  |
+| 377 | execute-computer-zero | ✓ |  |  |
+| 378 | execute-hq9+ | ✓ |  |  |
+| 379 | execute-snusp | ✓ | 7.0µs | 12.09MB |
+| 380 | exponentiation-operator | ✓ | 58.0µs | 13.11MB |
+| 381 | exponentiation-order | ✓ | 14.0µs | 12.63MB |
+| 382 | exponentiation-with-infix-operators-in-or-operating-on-the-base | ✓ |  |  |
+| 383 | extend-your-language | ✓ | 456.0µs | 12.72MB |
+| 384 | extensible-prime-generator | ✓ | 21.0µs | 13.18MB |
+| 385 | extreme-floating-point-values | ✓ | 13.0µs | 12.53MB |
+| 386 | faces-from-a-mesh | ✓ | 526.0µs | 14.11MB |
+| 387 | fasta-format | ✓ | 12.0µs | 12.72MB |
+| 388 | faulhabers-triangle | ✓ | 15.0µs | 12.57MB |
+| 389 | feigenbaum-constant-calculation | ✓ |  |  |
+| 390 | fermat-numbers | ✓ | 20.0µs | 12.78MB |
+| 391 | fibonacci-n-step-number-sequences | ✓ |  |  |
+| 392 | fibonacci-sequence-1 | ✓ | 1.0µs | 12.38MB |
+| 393 | fibonacci-sequence-2 | ✓ | 1.0µs | 12.55MB |
 | 394 | fibonacci-sequence-3 |   |  |  |
-| 395 | fibonacci-sequence-4 |   |  |  |
-| 396 | fibonacci-word-fractal |   |  |  |
-| 397 | fibonacci-word |   |  |  |
-| 398 | file-extension-is-in-extensions-list |   |  |  |
-| 399 | file-input-output-1 |   |  |  |
-| 400 | file-input-output-2 |   |  |  |
-| 401 | file-modification-time |   |  |  |
-| 402 | file-size-distribution |   |  |  |
+| 395 | fibonacci-sequence-4 | ✓ |  |  |
+| 396 | fibonacci-word-fractal | ✓ |  |  |
+| 397 | fibonacci-word | ✓ |  |  |
+| 398 | file-extension-is-in-extensions-list | ✓ |  |  |
+| 399 | file-input-output-1 | ✓ | 8.0µs | 12.40MB |
+| 400 | file-input-output-2 | ✓ | 7.0µs | 12.54MB |
+| 401 | file-modification-time | ✓ | 10.0µs | 12.71MB |
+| 402 | file-size-distribution | ✓ |  |  |
 | 403 | file-size |   |  |  |
 | 404 | filter |   |  |  |
 | 405 | find-chess960-starting-position-identifier |   |  |  |
