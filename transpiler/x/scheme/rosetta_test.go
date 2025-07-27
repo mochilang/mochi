@@ -110,7 +110,7 @@ func TestSchemeTranspiler_Rosetta_Golden(t *testing.T) {
 			cmd := exec.Command("chibi-scheme", "-q", "-m", "chibi", "-m", "srfi.1", "-m", "srfi.69", "-m", "scheme.sort", "-m", "chibi.string", codePath)
 			runEnv := append(os.Environ())
 			if bench {
-				runEnv = append(runEnv, "MOCHI_BENCHMARK=1")
+				runEnv = append(runEnv, "MOCHI_BENCHMARK=1", "MOCHI_NOW_SEED=1")
 			} else {
 				runEnv = append(runEnv, "MOCHI_NOW_SEED=1")
 			}

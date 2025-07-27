@@ -207,9 +207,8 @@ func header() []byte {
 	// Always import string helpers for functions like string-contains
 	prelude += "(import (chibi string))\n"
 	prelude += "(import (only (scheme char) string-upcase string-downcase))\n"
-	if needHash {
-		prelude += "(import (srfi 69))\n"
-	}
+	prelude += "(import (scheme write))\n"
+	prelude += "(import (srfi 69))\n"
 	if usesInput {
 		prelude += "(import (chibi io))\n"
 	}
@@ -227,7 +226,9 @@ func header() []byte {
       (begin
         (set! _now_seed (modulo (+ (* _now_seed 1664525) 1013904223) 2147483647))
         _now_seed)
-      (exact (floor (* (current-second) 1000000000))))`
+      (exact (floor (* (current-second) 1000000000))))
+)
+`
 	}
 	if usesBench {
 		if !usesNow {
