@@ -1,0 +1,4 @@
+exit status 1
+# command-line-arguments
+../../../tests/rosetta/transpiler/Go/date-manipulation.go:236:17: invalid operation: local - _toFloat(zoneOffsets[tz]) (mismatched types int and float64)
+../../../tests/rosetta/transpiler/Go/date-manipulation.go:236:46: cannot use tz (variable of interface type any) as string value in map index: need type assertion
