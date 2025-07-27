@@ -1,9 +1,9 @@
 # Java Rosetta Transpiler Output
 
 Generated Java code for programs in `tests/rosetta/x/Mochi`. Each program has a `.java` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
-Last updated: 2025-07-27 17:18 GMT+7
+Last updated: 2025-07-27 19:16 GMT+7
 
-## Rosetta Checklist (156/465)
+## Rosetta Checklist (173/467)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 23.0ms | 245.84KB |
@@ -207,36 +207,36 @@ Last updated: 2025-07-27 17:18 GMT+7
 | 199 | chinese-remainder-theorem | ✓ | 25.0ms | 37.30KB |
 | 200 | chinese-zodiac | ✓ | 45.0ms | 99.30KB |
 | 201 | cholesky-decomposition-1 |   |  |  |
-| 202 | cholesky-decomposition |   |  |  |
-| 203 | chowla-numbers |   |  |  |
+| 202 | cholesky-decomposition | ✓ | 17.0ms | 65.20KB |
+| 203 | chowla-numbers | ✓ | 6.0ms | 3.83KB |
 | 204 | church-numerals-1 |   |  |  |
 | 205 | church-numerals-2 |   |  |  |
 | 206 | circles-of-given-radius-through-two-points |   |  |  |
-| 207 | circular-primes |   |  |  |
+| 207 | circular-primes | ✓ | 27.0ms | 89.04KB |
 | 208 | cistercian-numerals |   |  |  |
-| 209 | comma-quibbling |   |  |  |
+| 209 | comma-quibbling | ✓ | 24.0ms | 88.39KB |
 | 210 | compiler-virtual-machine-interpreter |   |  |  |
-| 211 | composite-numbers-k-with-no-single-digit-factors-whose-factors-are-all-substrings-of-k |   |  |  |
-| 212 | compound-data-type |   |  |  |
-| 213 | concurrent-computing-1 |   |  |  |
-| 214 | concurrent-computing-2 |   |  |  |
-| 215 | concurrent-computing-3 |   |  |  |
+| 211 | composite-numbers-k-with-no-single-digit-factors-whose-factors-are-all-substrings-of-k | ✓ | 11.43s | 94.89KB |
+| 212 | compound-data-type | ✓ | 6.0ms | 0B |
+| 213 | concurrent-computing-1 | ✓ | 8.0ms | 648B |
+| 214 | concurrent-computing-2 | ✓ | 6.0ms | 648B |
+| 215 | concurrent-computing-3 | ✓ | 8.0ms | 648B |
 | 216 | conditional-structures-1 |   |  |  |
-| 217 | conditional-structures-10 |   |  |  |
+| 217 | conditional-structures-10 | ✓ | 8.0ms | 496B |
 | 218 | conditional-structures-2 |   |  |  |
 | 219 | conditional-structures-3 |   |  |  |
-| 220 | conditional-structures-4 |   |  |  |
+| 220 | conditional-structures-4 | ✓ | 8.0ms | 0B |
 | 221 | conditional-structures-5 |   |  |  |
 | 222 | conditional-structures-6 |   |  |  |
 | 223 | conditional-structures-7 |   |  |  |
 | 224 | conditional-structures-8 |   |  |  |
-| 225 | conditional-structures-9 |   |  |  |
-| 226 | consecutive-primes-with-ascending-or-descending-differences |   |  |  |
-| 227 | constrained-genericity-1 |   |  |  |
-| 228 | constrained-genericity-2 |   |  |  |
-| 229 | constrained-genericity-3 |   |  |  |
+| 225 | conditional-structures-9 | ✓ | 8.0ms | 0B |
+| 226 | consecutive-primes-with-ascending-or-descending-differences | ✓ |  |  |
+| 227 | constrained-genericity-1 | ✓ | 5.0ms | 0B |
+| 228 | constrained-genericity-2 | ✓ | 6.0ms | 0B |
+| 229 | constrained-genericity-3 | ✓ |  |  |
 | 230 | constrained-genericity-4 |   |  |  |
-| 231 | constrained-random-points-on-a-circle-1 |   |  |  |
+| 231 | constrained-random-points-on-a-circle-1 | ✓ | 34.0ms | 104.09KB |
 | 232 | constrained-random-points-on-a-circle-2 |   |  |  |
 | 233 | continued-fraction |   |  |  |
 | 234 | convert-decimal-number-to-rational |   |  |  |
@@ -414,60 +414,62 @@ Last updated: 2025-07-27 17:18 GMT+7
 | 406 | fibonacci-sequence-2 |   |  |  |
 | 407 | fibonacci-sequence-3 |   |  |  |
 | 408 | fibonacci-sequence-4 |   |  |  |
-| 409 | fibonacci-word-fractal |   |  |  |
-| 410 | fibonacci-word |   |  |  |
-| 411 | file-extension-is-in-extensions-list |   |  |  |
-| 412 | file-input-output-1 |   |  |  |
-| 413 | file-input-output-2 |   |  |  |
-| 414 | file-modification-time |   |  |  |
-| 415 | file-size-distribution |   |  |  |
-| 416 | file-size |   |  |  |
-| 417 | filter |   |  |  |
-| 418 | find-chess960-starting-position-identifier |   |  |  |
-| 419 | find-common-directory-path |   |  |  |
-| 420 | find-duplicate-files |   |  |  |
-| 421 | find-if-a-point-is-within-a-triangle |   |  |  |
-| 422 | find-largest-left-truncatable-prime-in-a-given-base |   |  |  |
-| 423 | find-limit-of-recursion |   |  |  |
-| 424 | find-palindromic-numbers-in-both-binary-and-ternary-bases |   |  |  |
-| 425 | find-the-intersection-of-a-line-with-a-plane |   |  |  |
-| 426 | find-the-intersection-of-two-lines |   |  |  |
-| 427 | find-the-last-sunday-of-each-month |   |  |  |
-| 428 | find-the-missing-permutation |   |  |  |
-| 429 | fivenum-1 |   |  |  |
-| 430 | fivenum-2 |   |  |  |
-| 431 | fixed-length-records-1 |   |  |  |
-| 432 | fixed-length-records-2 |   |  |  |
-| 433 | fizzbuzz-1 |   |  |  |
-| 434 | fizzbuzz-2 |   |  |  |
-| 435 | flatten-a-list-1 |   |  |  |
-| 436 | flatten-a-list-2 |   |  |  |
-| 437 | flipping-bits-game |   |  |  |
-| 438 | flow-control-structures-1 |   |  |  |
-| 439 | flow-control-structures-2 |   |  |  |
-| 440 | flow-control-structures-3 |   |  |  |
-| 441 | flow-control-structures-4 |   |  |  |
-| 442 | floyd-warshall-algorithm |   |  |  |
-| 443 | floyds-triangle |   |  |  |
-| 444 | forest-fire |   |  |  |
-| 445 | fork |   |  |  |
-| 446 | ftp |   |  |  |
-| 447 | gamma-function |   |  |  |
-| 448 | general-fizzbuzz |   |  |  |
-| 449 | generic-swap |   |  |  |
-| 450 | get-system-command-output |   |  |  |
-| 451 | giuga-numbers |   |  |  |
-| 452 | globally-replace-text-in-several-files |   |  |  |
-| 453 | goldbachs-comet |   |  |  |
-| 454 | golden-ratio-convergence |   |  |  |
-| 455 | graph-colouring |   |  |  |
-| 456 | gray-code |   |  |  |
-| 457 | http |   |  |  |
-| 458 | image-noise |   |  |  |
-| 459 | loops-increment-loop-index-within-loop-body |   |  |  |
-| 460 | md5 |   |  |  |
-| 461 | nim-game |   |  |  |
-| 462 | plasma-effect |   |  |  |
-| 463 | sorting-algorithms-bubble-sort |   |  |  |
-| 464 | window-management |   |  |  |
-| 465 | zumkeller-numbers |   |  |  |
+| 409 | fibonacci-sequence-5 |   |  |  |
+| 410 | fibonacci-word-fractal |   |  |  |
+| 411 | fibonacci-word |   |  |  |
+| 412 | file-extension-is-in-extensions-list |   |  |  |
+| 413 | file-input-output-1 |   |  |  |
+| 414 | file-input-output-2 |   |  |  |
+| 415 | file-input-output-3 |   |  |  |
+| 416 | file-modification-time |   |  |  |
+| 417 | file-size-distribution |   |  |  |
+| 418 | file-size |   |  |  |
+| 419 | filter |   |  |  |
+| 420 | find-chess960-starting-position-identifier |   |  |  |
+| 421 | find-common-directory-path |   |  |  |
+| 422 | find-duplicate-files |   |  |  |
+| 423 | find-if-a-point-is-within-a-triangle |   |  |  |
+| 424 | find-largest-left-truncatable-prime-in-a-given-base |   |  |  |
+| 425 | find-limit-of-recursion |   |  |  |
+| 426 | find-palindromic-numbers-in-both-binary-and-ternary-bases |   |  |  |
+| 427 | find-the-intersection-of-a-line-with-a-plane |   |  |  |
+| 428 | find-the-intersection-of-two-lines |   |  |  |
+| 429 | find-the-last-sunday-of-each-month |   |  |  |
+| 430 | find-the-missing-permutation |   |  |  |
+| 431 | fivenum-1 |   |  |  |
+| 432 | fivenum-2 |   |  |  |
+| 433 | fixed-length-records-1 |   |  |  |
+| 434 | fixed-length-records-2 |   |  |  |
+| 435 | fizzbuzz-1 |   |  |  |
+| 436 | fizzbuzz-2 |   |  |  |
+| 437 | flatten-a-list-1 |   |  |  |
+| 438 | flatten-a-list-2 |   |  |  |
+| 439 | flipping-bits-game |   |  |  |
+| 440 | flow-control-structures-1 |   |  |  |
+| 441 | flow-control-structures-2 |   |  |  |
+| 442 | flow-control-structures-3 |   |  |  |
+| 443 | flow-control-structures-4 |   |  |  |
+| 444 | floyd-warshall-algorithm |   |  |  |
+| 445 | floyds-triangle |   |  |  |
+| 446 | forest-fire |   |  |  |
+| 447 | fork |   |  |  |
+| 448 | ftp |   |  |  |
+| 449 | gamma-function |   |  |  |
+| 450 | general-fizzbuzz |   |  |  |
+| 451 | generic-swap |   |  |  |
+| 452 | get-system-command-output |   |  |  |
+| 453 | giuga-numbers |   |  |  |
+| 454 | globally-replace-text-in-several-files |   |  |  |
+| 455 | goldbachs-comet |   |  |  |
+| 456 | golden-ratio-convergence |   |  |  |
+| 457 | graph-colouring |   |  |  |
+| 458 | gray-code |   |  |  |
+| 459 | http |   |  |  |
+| 460 | image-noise |   |  |  |
+| 461 | loops-increment-loop-index-within-loop-body |   |  |  |
+| 462 | md5 |   |  |  |
+| 463 | nim-game |   |  |  |
+| 464 | plasma-effect |   |  |  |
+| 465 | sorting-algorithms-bubble-sort |   |  |  |
+| 466 | window-management |   |  |  |
+| 467 | zumkeller-numbers |   |  |  |

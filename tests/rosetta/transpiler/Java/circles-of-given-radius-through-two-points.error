@@ -1,0 +1,84 @@
+compile: exit status 1
+/tmp/TestJavaTranspiler_Rosetta_Goldencircles-of-given-radius-through-two-points2624922645/001/Main.java:20: error: incompatible types: double cannot be converted to Point
+    static Point[][] td = new Point[][]{new Point[]{new Point(0.1234, 0.9876), new Point(0.8765, 0.2345), 2.0}, new Point[]{new Point(0.0, 2.0), new Point(0.0, 0.0), 1.0}, new Point[]{new Point(0.1234, 0.9876), new Point(0.1234, 0.9876), 2.0}, new Point[]{new Point(0.1234, 0.9876), new Point(0.8765, 0.2345), 0.5}, new Point[]{new Point(0.1234, 0.9876), new Point(0.1234, 0.9876), 0.0}};
+                                                                                                          ^
+/tmp/TestJavaTranspiler_Rosetta_Goldencircles-of-given-radius-through-two-points2624922645/001/Main.java:20: error: incompatible types: double cannot be converted to Point
+    static Point[][] td = new Point[][]{new Point[]{new Point(0.1234, 0.9876), new Point(0.8765, 0.2345), 2.0}, new Point[]{new Point(0.0, 2.0), new Point(0.0, 0.0), 1.0}, new Point[]{new Point(0.1234, 0.9876), new Point(0.1234, 0.9876), 2.0}, new Point[]{new Point(0.1234, 0.9876), new Point(0.8765, 0.2345), 0.5}, new Point[]{new Point(0.1234, 0.9876), new Point(0.1234, 0.9876), 0.0}};
+                                                                                                                                                                      ^
+/tmp/TestJavaTranspiler_Rosetta_Goldencircles-of-given-radius-through-two-points2624922645/001/Main.java:20: error: incompatible types: double cannot be converted to Point
+    static Point[][] td = new Point[][]{new Point[]{new Point(0.1234, 0.9876), new Point(0.8765, 0.2345), 2.0}, new Point[]{new Point(0.0, 2.0), new Point(0.0, 0.0), 1.0}, new Point[]{new Point(0.1234, 0.9876), new Point(0.1234, 0.9876), 2.0}, new Point[]{new Point(0.1234, 0.9876), new Point(0.8765, 0.2345), 0.5}, new Point[]{new Point(0.1234, 0.9876), new Point(0.1234, 0.9876), 0.0}};
+                                                                                                                                                                                                                                              ^
+/tmp/TestJavaTranspiler_Rosetta_Goldencircles-of-given-radius-through-two-points2624922645/001/Main.java:20: error: incompatible types: double cannot be converted to Point
+    static Point[][] td = new Point[][]{new Point[]{new Point(0.1234, 0.9876), new Point(0.8765, 0.2345), 2.0}, new Point[]{new Point(0.0, 2.0), new Point(0.0, 0.0), 1.0}, new Point[]{new Point(0.1234, 0.9876), new Point(0.1234, 0.9876), 2.0}, new Point[]{new Point(0.1234, 0.9876), new Point(0.8765, 0.2345), 0.5}, new Point[]{new Point(0.1234, 0.9876), new Point(0.1234, 0.9876), 0.0}};
+                                                                                                                                                                                                                                                                                                                      ^
+/tmp/TestJavaTranspiler_Rosetta_Goldencircles-of-given-radius-through-two-points2624922645/001/Main.java:20: error: incompatible types: double cannot be converted to Point
+    static Point[][] td = new Point[][]{new Point[]{new Point(0.1234, 0.9876), new Point(0.8765, 0.2345), 2.0}, new Point[]{new Point(0.0, 2.0), new Point(0.0, 0.0), 1.0}, new Point[]{new Point(0.1234, 0.9876), new Point(0.1234, 0.9876), 2.0}, new Point[]{new Point(0.1234, 0.9876), new Point(0.8765, 0.2345), 0.5}, new Point[]{new Point(0.1234, 0.9876), new Point(0.1234, 0.9876), 0.0}};
+                                                                                                                                                                                                                                                                                                                                                                                              ^
+/tmp/TestJavaTranspiler_Rosetta_Goldencircles-of-given-radius-through-two-points2624922645/001/Main.java:39: error: incompatible types: String cannot be converted to Point
+                return new Point[]{p1, p1, "Coincident points with r==0.0 describe a degenerate circle."};
+                                           ^
+/tmp/TestJavaTranspiler_Rosetta_Goldencircles-of-given-radius-through-two-points2624922645/001/Main.java:41: error: incompatible types: String cannot be converted to Point
+            return new Point[]{p1, p2, "Coincident points describe an infinite number of circles."};
+                                       ^
+/tmp/TestJavaTranspiler_Rosetta_Goldencircles-of-given-radius-through-two-points2624922645/001/Main.java:44: error: incompatible types: String cannot be converted to Point
+            return new Point[]{p1, p2, "R==0.0 does not describe circles."};
+                                       ^
+/tmp/TestJavaTranspiler_Rosetta_Goldencircles-of-given-radius-through-two-points2624922645/001/Main.java:50: error: incompatible types: String cannot be converted to Point
+            return new Point[]{p1, p2, "Points too far apart to form circles."};
+                                       ^
+/tmp/TestJavaTranspiler_Rosetta_Goldencircles-of-given-radius-through-two-points2624922645/001/Main.java:54: error: incompatible types: String cannot be converted to Point
+            return new Point[]{m, m, "Points form a diameter and describe only a single circle."};
+                                     ^
+/tmp/TestJavaTranspiler_Rosetta_Goldencircles-of-given-radius-through-two-points2624922645/001/Main.java:59: error: incompatible types: String cannot be converted to Point
+        return new Point[]{new Point(m.x - oy, m.y + ox), new Point(m.x + oy, m.y - ox), "Two circles."};
+                                                                                         ^
+/tmp/TestJavaTranspiler_Rosetta_Goldencircles-of-given-radius-through-two-points2624922645/001/Main.java:69: error: incompatible types: Point cannot be converted to double
+            Object[] res = circles(p1, p2, r);
+                                           ^
+/tmp/TestJavaTranspiler_Rosetta_Goldencircles-of-given-radius-through-two-points2624922645/001/Main.java:74: error: bad operand types for binary operator '=='
+            if (((Number)(caseStr)).intValue() == "Points form a diameter and describe only a single circle." || ((Number)(caseStr)).intValue() == "Coincident points with r==0.0 describe a degenerate circle.") {
+                                               ^
+  first type:  int
+  second type: String
+/tmp/TestJavaTranspiler_Rosetta_Goldencircles-of-given-radius-through-two-points2624922645/001/Main.java:74: error: bad operand types for binary operator '=='
+            if (((Number)(caseStr)).intValue() == "Points form a diameter and describe only a single circle." || ((Number)(caseStr)).intValue() == "Coincident points with r==0.0 describe a degenerate circle.") {
+                                                                                                                                                ^
+  first type:  int
+  second type: String
+/tmp/TestJavaTranspiler_Rosetta_Goldencircles-of-given-radius-through-two-points2624922645/001/Main.java:75: error: cannot find symbol
+                System.out.println("   Center:  {" + String.valueOf(c1.x) + " " + String.valueOf(c1.y) + "}");
+                                                                      ^
+  symbol:   variable x
+  location: variable c1 of type Object
+/tmp/TestJavaTranspiler_Rosetta_Goldencircles-of-given-radius-through-two-points2624922645/001/Main.java:75: error: cannot find symbol
+                System.out.println("   Center:  {" + String.valueOf(c1.x) + " " + String.valueOf(c1.y) + "}");
+                                                                                                   ^
+  symbol:   variable y
+  location: variable c1 of type Object
+/tmp/TestJavaTranspiler_Rosetta_Goldencircles-of-given-radius-through-two-points2624922645/001/Main.java:76: error: bad operand types for binary operator '=='
+            } else             if (((Number)(caseStr)).intValue() == "Two circles.") {
+                                                                  ^
+  first type:  int
+  second type: String
+/tmp/TestJavaTranspiler_Rosetta_Goldencircles-of-given-radius-through-two-points2624922645/001/Main.java:77: error: cannot find symbol
+                System.out.println("   Center 1:  {" + String.valueOf(c1.x) + " " + String.valueOf(c1.y) + "}");
+                                                                        ^
+  symbol:   variable x
+  location: variable c1 of type Object
+/tmp/TestJavaTranspiler_Rosetta_Goldencircles-of-given-radius-through-two-points2624922645/001/Main.java:77: error: cannot find symbol
+                System.out.println("   Center 1:  {" + String.valueOf(c1.x) + " " + String.valueOf(c1.y) + "}");
+                                                                                                     ^
+  symbol:   variable y
+  location: variable c1 of type Object
+/tmp/TestJavaTranspiler_Rosetta_Goldencircles-of-given-radius-through-two-points2624922645/001/Main.java:78: error: cannot find symbol
+                System.out.println("   Center 2:  {" + String.valueOf(c2.x) + " " + String.valueOf(c2.y) + "}");
+                                                                        ^
+  symbol:   variable x
+  location: variable c2 of type Object
+/tmp/TestJavaTranspiler_Rosetta_Goldencircles-of-given-radius-through-two-points2624922645/001/Main.java:78: error: cannot find symbol
+                System.out.println("   Center 2:  {" + String.valueOf(c2.x) + " " + String.valueOf(c2.y) + "}");
+                                                                                                     ^
+  symbol:   variable y
+  location: variable c2 of type Object
+Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
+21 errors

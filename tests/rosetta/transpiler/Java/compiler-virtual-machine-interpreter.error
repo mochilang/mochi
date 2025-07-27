@@ -1,0 +1,113 @@
+compile: exit status 1
+/tmp/TestJavaTranspiler_Rosetta_Goldencompiler-virtual-machine-interpreter294563534/001/Main.java:119: error: array required, but Object found
+            Object inst = code[pc];
+                              ^
+/tmp/TestJavaTranspiler_Rosetta_Goldencompiler-virtual-machine-interpreter294563534/001/Main.java:122: error: bad operand types for binary operator '=='
+            if (((Number)(op)).intValue() == "push") {
+                                          ^
+  first type:  int
+  second type: String
+/tmp/TestJavaTranspiler_Rosetta_Goldencompiler-virtual-machine-interpreter294563534/001/Main.java:127: error: bad operand types for binary operator '=='
+            if (((Number)(op)).intValue() == "store") {
+                                          ^
+  first type:  int
+  second type: String
+/tmp/TestJavaTranspiler_Rosetta_Goldencompiler-virtual-machine-interpreter294563534/001/Main.java:128: error: incompatible types: Object cannot be converted to int
+data[arg] = stack[stack.length - 1];
+     ^
+/tmp/TestJavaTranspiler_Rosetta_Goldencompiler-virtual-machine-interpreter294563534/001/Main.java:129: error: cannot find symbol
+                stack = slice(stack, 0, stack.length - 1);
+                        ^
+  symbol:   method slice(int[],int,int)
+  location: class Main
+/tmp/TestJavaTranspiler_Rosetta_Goldencompiler-virtual-machine-interpreter294563534/001/Main.java:133: error: bad operand types for binary operator '=='
+            if (((Number)(op)).intValue() == "fetch") {
+                                          ^
+  first type:  int
+  second type: String
+/tmp/TestJavaTranspiler_Rosetta_Goldencompiler-virtual-machine-interpreter294563534/001/Main.java:134: error: incompatible types: Object cannot be converted to int
+                stack = java.util.stream.IntStream.concat(java.util.Arrays.stream(stack), java.util.stream.IntStream.of(data[arg])).toArray();
+                                                                                                                             ^
+/tmp/TestJavaTranspiler_Rosetta_Goldencompiler-virtual-machine-interpreter294563534/001/Main.java:138: error: bad operand types for binary operator '=='
+            if (((Number)(op)).intValue() == "add") {
+                                          ^
+  first type:  int
+  second type: String
+/tmp/TestJavaTranspiler_Rosetta_Goldencompiler-virtual-machine-interpreter294563534/001/Main.java:140: error: cannot find symbol
+                stack = slice(stack, 0, stack.length - 1);
+                        ^
+  symbol:   method slice(int[],int,int)
+  location: class Main
+/tmp/TestJavaTranspiler_Rosetta_Goldencompiler-virtual-machine-interpreter294563534/001/Main.java:144: error: bad operand types for binary operator '=='
+            if (((Number)(op)).intValue() == "lt") {
+                                          ^
+  first type:  int
+  second type: String
+/tmp/TestJavaTranspiler_Rosetta_Goldencompiler-virtual-machine-interpreter294563534/001/Main.java:150: error: cannot find symbol
+                stack = slice(stack, 0, stack.length - 1);
+                        ^
+  symbol:   method slice(int[],int,int)
+  location: class Main
+/tmp/TestJavaTranspiler_Rosetta_Goldencompiler-virtual-machine-interpreter294563534/001/Main.java:154: error: bad operand types for binary operator '=='
+            if (((Number)(op)).intValue() == "jz") {
+                                          ^
+  first type:  int
+  second type: String
+/tmp/TestJavaTranspiler_Rosetta_Goldencompiler-virtual-machine-interpreter294563534/001/Main.java:156: error: cannot find symbol
+                stack = slice(stack, 0, stack.length - 1);
+                        ^
+  symbol:   method slice(int[],int,int)
+  location: class Main
+/tmp/TestJavaTranspiler_Rosetta_Goldencompiler-virtual-machine-interpreter294563534/001/Main.java:158: error: incompatible types: Object cannot be converted to int
+                    pc = ((Number)(addrMap[arg])).intValue();
+                                           ^
+/tmp/TestJavaTranspiler_Rosetta_Goldencompiler-virtual-machine-interpreter294563534/001/Main.java:158: error: array required, but Object found
+                    pc = ((Number)(addrMap[arg])).intValue();
+                                          ^
+/tmp/TestJavaTranspiler_Rosetta_Goldencompiler-virtual-machine-interpreter294563534/001/Main.java:164: error: bad operand types for binary operator '=='
+            if (((Number)(op)).intValue() == "jmp") {
+                                          ^
+  first type:  int
+  second type: String
+/tmp/TestJavaTranspiler_Rosetta_Goldencompiler-virtual-machine-interpreter294563534/001/Main.java:165: error: incompatible types: Object cannot be converted to int
+                pc = ((Number)(addrMap[arg])).intValue();
+                                       ^
+/tmp/TestJavaTranspiler_Rosetta_Goldencompiler-virtual-machine-interpreter294563534/001/Main.java:165: error: array required, but Object found
+                pc = ((Number)(addrMap[arg])).intValue();
+                                      ^
+/tmp/TestJavaTranspiler_Rosetta_Goldencompiler-virtual-machine-interpreter294563534/001/Main.java:168: error: bad operand types for binary operator '=='
+            if (((Number)(op)).intValue() == "prts") {
+                                          ^
+  first type:  int
+  second type: String
+/tmp/TestJavaTranspiler_Rosetta_Goldencompiler-virtual-machine-interpreter294563534/001/Main.java:169: error: array required, but Object found
+                Object s = pool[stack[stack.length - 1]];
+                               ^
+/tmp/TestJavaTranspiler_Rosetta_Goldencompiler-virtual-machine-interpreter294563534/001/Main.java:170: error: cannot find symbol
+                stack = slice(stack, 0, stack.length - 1);
+                        ^
+  symbol:   method slice(int[],int,int)
+  location: class Main
+/tmp/TestJavaTranspiler_Rosetta_Goldencompiler-virtual-machine-interpreter294563534/001/Main.java:171: error: bad operand types for binary operator '!='
+                if (((Number)(s)).intValue() != "\n") {
+                                             ^
+  first type:  int
+  second type: String
+/tmp/TestJavaTranspiler_Rosetta_Goldencompiler-virtual-machine-interpreter294563534/001/Main.java:177: error: bad operand types for binary operator '=='
+            if (((Number)(op)).intValue() == "prti") {
+                                          ^
+  first type:  int
+  second type: String
+/tmp/TestJavaTranspiler_Rosetta_Goldencompiler-virtual-machine-interpreter294563534/001/Main.java:181: error: cannot find symbol
+                stack = slice(stack, 0, stack.length - 1);
+                        ^
+  symbol:   method slice(int[],int,int)
+  location: class Main
+/tmp/TestJavaTranspiler_Rosetta_Goldencompiler-virtual-machine-interpreter294563534/001/Main.java:185: error: bad operand types for binary operator '=='
+            if (((Number)(op)).intValue() == "halt") {
+                                          ^
+  first type:  int
+  second type: String
+Note: /tmp/TestJavaTranspiler_Rosetta_Goldencompiler-virtual-machine-interpreter294563534/001/Main.java uses unchecked or unsafe operations.
+Note: Recompile with -Xlint:unchecked for details.
+25 errors
