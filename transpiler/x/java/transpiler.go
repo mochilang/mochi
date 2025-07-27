@@ -41,6 +41,8 @@ var needPadStart bool
 var needSHA256 bool
 var needBigRat bool
 var needModPow2 bool
+var needCastInt2D bool
+var needFn3 bool
 var pyMathAliases map[string]bool
 var builtinAliases map[string]string
 var structDefs map[string]map[string]string
@@ -196,6 +198,16 @@ func javaType(t string) string {
 					}
 					rt := javaBoxType(javaType(ret))
 					return fmt.Sprintf("java.util.function.BiFunction<%s,%s,%s>", pt1, pt2, rt)
+				} else if len(params) == 3 {
+					needFn3 = true
+					pt1 := javaBoxType(javaType(params[0]))
+					pt2 := javaBoxType(javaType(params[1]))
+					pt3 := javaBoxType(javaType(params[2]))
+					rt := javaBoxType(javaType(ret))
+					if ret == "void" {
+						return fmt.Sprintf("Fn3Void<%s,%s,%s>", pt1, pt2, pt3)
+					}
+					return fmt.Sprintf("Fn3<%s,%s,%s,%s>", pt1, pt2, pt3, rt)
 				}
 			}
 		}
@@ -218,6 +230,9 @@ func javaBoxType(t string) string {
 	case "bigrat", "BigRat":
 		return "BigRat"
 	default:
+		if strings.Contains(t, "java.util.") {
+			return t
+		}
 		if strings.HasSuffix(t, "[]") {
 			elem := strings.TrimSuffix(t, "[]")
 			jt := javaType(elem)
@@ -2126,6 +2141,13 @@ func (c *FloatCastExpr) emit(w io.Writer) {
 }
 
 func (c *CastExpr) emit(w io.Writer) {
+	if c.Type == "int[][]" {
+		needCastInt2D = true
+		fmt.Fprint(w, "_castInt2D(")
+		c.Value.emit(w)
+		fmt.Fprint(w, ")")
+		return
+	}
 	jt := javaType(c.Type)
 	if jt == "java.math.BigInteger" {
 		if inferType(c.Value) == "bigint" {
@@ -2444,6 +2466,14 @@ type IndexExpr struct {
 }
 
 func (ix *IndexExpr) emit(w io.Writer) {
+	if key, ok := ix.Index.(*StringLit); ok {
+		if _, ok2 := fieldTypeFromVar(ix.Target, key.Value); ok2 {
+			fmt.Fprint(w, "(")
+			ix.Target.emit(w)
+			fmt.Fprintf(w, ").%s", key.Value)
+			return
+		}
+	}
 	if ix.IsMap {
 		castType := "Object"
 		if ix.ResultType != "" {
@@ -2920,6 +2950,8 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	needSHA256 = false
 	needBigRat = false
 	needModPow2 = false
+	needCastInt2D = false
+	needFn3 = false
 	pyMathAliases = map[string]bool{}
 	builtinAliases = map[string]string{}
 	structDefs = map[string]map[string]string{}
@@ -4024,6 +4056,11 @@ func compilePostfix(pf *parser.PostfixExpr) (Expr, error) {
 					if !isStringExpr(expr) && !isArrayExpr(expr) {
 						isMap = true
 					}
+				}
+			}
+			if !isMap && rType == "" {
+				if t := arrayElemType(expr); t != "" {
+					rType = t
 				}
 			}
 			expr = &IndexExpr{Target: expr, Index: idx, IsMap: isMap, ResultType: rType}
@@ -5215,6 +5252,23 @@ func Emit(prog *Program) []byte {
 		buf.WriteString("        } catch (Exception e) { return new int[0]; }\n")
 		buf.WriteString("    }\n")
 	}
+	if needCastInt2D {
+		buf.WriteString("\n    static int[][] _castInt2D(Object v) {\n")
+		buf.WriteString("        if (v == null) return null;\n")
+		buf.WriteString("        if (v instanceof int[][]) return (int[][])v;\n")
+		buf.WriteString("        if (v instanceof Object[]) {\n")
+		buf.WriteString("            Object[] arr = (Object[])v;\n")
+		buf.WriteString("            int[][] out = new int[arr.length][];\n")
+		buf.WriteString("            for (int i = 0; i < arr.length; i++) out[i] = (int[])arr[i];\n")
+		buf.WriteString("            return out;\n")
+		buf.WriteString("        }\n")
+		buf.WriteString("        return new int[][]{};\n")
+		buf.WriteString("    }\n")
+	}
+	if needFn3 {
+		buf.WriteString("\n    @FunctionalInterface interface Fn3<A,B,C,R> { R apply(A a, B b, C c); }\n")
+		buf.WriteString("    @FunctionalInterface interface Fn3Void<A,B,C> { void apply(A a, B b, C c); }\n")
+	}
 	if needBigRat {
 		buf.WriteString("\n    static class BigRat {\n")
 		buf.WriteString("        java.math.BigInteger num;\n")
@@ -5391,6 +5445,16 @@ func toJavaTypeFromType(t types.Type) string {
 				return fmt.Sprintf("java.util.function.BiConsumer<%s,%s>", pt1, pt2)
 			}
 			return fmt.Sprintf("java.util.function.BiFunction<%s,%s,%s>", pt1, pt2, javaBoxType(rt))
+		case 3:
+			needFn3 = true
+			pt1 := javaBoxType(toJavaTypeFromType(tt.Params[0]))
+			pt2 := javaBoxType(toJavaTypeFromType(tt.Params[1]))
+			pt3 := javaBoxType(toJavaTypeFromType(tt.Params[2]))
+			rt := toJavaTypeFromType(tt.Return)
+			if rt == "" || rt == "void" {
+				return fmt.Sprintf("Fn3Void<%s,%s,%s>", pt1, pt2, pt3)
+			}
+			return fmt.Sprintf("Fn3<%s,%s,%s,%s>", pt1, pt2, pt3, javaBoxType(rt))
 		default:
 			return "java.util.function.Function"
 		}
