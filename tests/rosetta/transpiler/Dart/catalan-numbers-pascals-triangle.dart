@@ -34,14 +34,8 @@ String _substr(String s, int start, int end) {
   return s.substring(start, end);
 }
 
-int width = 81;
-int height = 5;
-List<String> lines = <String>[];
-String setChar(String s, int idx, String ch) {
-  return _substr(s, 0, idx) + ch + _substr(s, idx + 1, s.length);
-}
-
-List<Map<String, int>> stack = [{"start": 0, "len": width, "index": 1}];
+int n = 15;
+List<int> t = <int>[];
 void main() {
   var _benchMem0 = ProcessInfo.currentRss;
   var _benchSw = Stopwatch()..start();
@@ -49,39 +43,28 @@ void main() {
   {
   var _benchMem0 = ProcessInfo.currentRss;
   var _benchSw = Stopwatch()..start();
-  for (int i = 0; i < height; i++) {
-    String row = "";
-    int j = 0;
-    while (j < width) {
-    row = row + "*";
-    j = j + 1;
+  for (int _ = 0; _ < n + 2; _++) {
+    t = [...t, 0];
   }
-    lines = [...lines, row];
+  t[1] = 1;
+  for (int i = 1; i < n + 1; i++) {
+    var j = i;
+    while (j.toString().compareTo(1.toString()) > 0) {
+    t[j] = t[j] + t[j - 1];
+    j = j - 1;
   }
-  while (stack.length > 0) {
-    Map<String, int> frame = stack[stack.length - 1];
-    stack = stack.sublist(0, stack.length - 1);
-    int start = frame["start"]!;
-    int lenSeg = frame["len"]!;
-    int index = frame["index"]!;
-    int seg = lenSeg ~/ 3 as int;
-    if (seg == 0) {
-    continue;
+    t[i + 1 as int] = t[i];
+    j = i + 1;
+    while (j.toString().compareTo(1.toString()) > 0) {
+    t[j] = t[j] + t[j - 1];
+    j = j - 1;
   }
-    int i = index;
-    while (i < height) {
-    int j = start + seg;
-    while (j < start + 2 * seg) {
-    lines[i] = setChar(lines[i], j, " ");
-    j = j + 1;
+    int cat = t[i + 1] - t[i];
+    if (i < 10) {
+    print(" " + (i).toString() + " : " + (cat).toString());
+  } else {
+    print((i).toString() + " : " + (cat).toString());
   }
-    i = i + 1;
-  }
-    stack = [...stack, {"start": start, "len": seg, "index": index + 1}];
-    stack = [...stack, {"start": start + seg * 2, "len": seg, "index": index + 1}];
-  }
-  for (var line in lines) {
-    print(line);
   }
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;

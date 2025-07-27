@@ -2,14 +2,14 @@
 
 This directory contains Dart code generated from Mochi programs in `tests/rosetta/x/Mochi`. Each program has a `.dart` file and `.out` output. Compilation or runtime failures are captured in a `.error` file.
 
-Compiled and ran: 163/452
+Compiled and ran: 178/452
 
 ## Checklist
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 10.076ms | 1.4 MB |
 | 2 | 100-doors-3 | ✓ | 7.194ms | 12.0 MB |
-| 3 | 100-doors | ✓ |  |  |
+| 3 | 100-doors |   |  |  |
 | 4 | 100-prisoners | ✓ | 276.736ms | 5.0 MB |
 | 5 | 15-puzzle-game | ✓ | 23.29ms | 192.0 KB |
 | 6 | 15-puzzle-solver | ✓ | 5.473ms | 10.6 MB |
@@ -176,26 +176,26 @@ Compiled and ran: 163/452
 | 167 | camel-case-and-snake-case | ✓ | 10.976ms | 592.0 KB |
 | 168 | canny-edge-detector | ✓ | 9.693ms | 692.0 KB |
 | 169 | canonicalize-cidr | ✓ | 22.858ms | 10.7 MB |
-| 170 | cantor-set |   |  |  |
-| 171 | carmichael-3-strong-pseudoprimes |   |  |  |
-| 172 | cartesian-product-of-two-or-more-lists-1 |   |  |  |
+| 170 | cantor-set | ✓ | 21.667ms | 10.7 MB |
+| 171 | carmichael-3-strong-pseudoprimes | ✓ | 24.205ms | 10.1 MB |
+| 172 | cartesian-product-of-two-or-more-lists-1 | ✓ | 24.229ms | 10.8 MB |
 | 173 | cartesian-product-of-two-or-more-lists-2 |   |  |  |
 | 174 | cartesian-product-of-two-or-more-lists-3 |   |  |  |
 | 175 | cartesian-product-of-two-or-more-lists-4 |   |  |  |
-| 176 | case-sensitivity-of-identifiers |   |  |  |
-| 177 | casting-out-nines |   |  |  |
-| 178 | catalan-numbers-1 |   |  |  |
-| 179 | catalan-numbers-2 |   |  |  |
+| 176 | case-sensitivity-of-identifiers | ✓ | 19.029ms | 9.7 MB |
+| 177 | casting-out-nines | ✓ | 25.319ms | 4.3 MB |
+| 178 | catalan-numbers-1 | ✓ | 21.358ms | 10.9 MB |
+| 179 | catalan-numbers-2 | ✓ | 9.766ms | 2.6 MB |
 | 180 | catalan-numbers-pascals-triangle |   |  |  |
-| 181 | catamorphism |   |  |  |
-| 182 | catmull-clark-subdivision-surface |   |  |  |
-| 183 | chaocipher |   |  |  |
-| 184 | chaos-game |   |  |  |
-| 185 | character-codes-1 |   |  |  |
-| 186 | character-codes-2 |   |  |  |
-| 187 | character-codes-3 |   |  |  |
-| 188 | character-codes-4 |   |  |  |
-| 189 | character-codes-5 |   |  |  |
+| 181 | catamorphism | ✓ | 17.36ms | 10.1 MB |
+| 182 | catmull-clark-subdivision-surface | ✓ | 21.213ms | 6.1 MB |
+| 183 | chaocipher | ✓ | 16.995ms | 9.7 MB |
+| 184 | chaos-game | ✓ | 40.024ms | 4.7 MB |
+| 185 | character-codes-1 | ✓ | 17.589ms | 9.6 MB |
+| 186 | character-codes-2 | ✓ | 15.186ms | 10.0 MB |
+| 187 | character-codes-3 | ✓ | 17.195ms | 9.6 MB |
+| 188 | character-codes-4 | ✓ | 16.724ms | 10.3 MB |
+| 189 | character-codes-5 | ✓ | 14.404ms | 1.5 MB |
 | 190 | chat-server |   |  |  |
 | 191 | check-machin-like-formulas |   |  |  |
 | 192 | check-that-file-exists |   |  |  |
@@ -460,4 +460,4 @@ Compiled and ran: 163/452
 | 451 | window-management |   |  |  |
 | 452 | zumkeller-numbers |   |  |  |
 
-_Last updated: 2025-07-27 11:33 +0700_
+_Last updated: 2025-07-27 12:32 +0700_

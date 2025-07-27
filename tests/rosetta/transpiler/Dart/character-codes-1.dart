@@ -34,14 +34,19 @@ String _substr(String s, int start, int end) {
   return s.substring(start, end);
 }
 
-int width = 81;
-int height = 5;
-List<String> lines = <String>[];
-String setChar(String s, int idx, String ch) {
-  return _substr(s, 0, idx) + ch + _substr(s, idx + 1, s.length);
+int ord(String ch) {
+  if (ch == "a") {
+    return 97;
+  }
+  if (ch == "π") {
+    return 960;
+  }
+  if (ch == "A") {
+    return 65;
+  }
+  return 0;
 }
 
-List<Map<String, int>> stack = [{"start": 0, "len": width, "index": 1}];
 void main() {
   var _benchMem0 = ProcessInfo.currentRss;
   var _benchSw = Stopwatch()..start();
@@ -49,40 +54,8 @@ void main() {
   {
   var _benchMem0 = ProcessInfo.currentRss;
   var _benchSw = Stopwatch()..start();
-  for (int i = 0; i < height; i++) {
-    String row = "";
-    int j = 0;
-    while (j < width) {
-    row = row + "*";
-    j = j + 1;
-  }
-    lines = [...lines, row];
-  }
-  while (stack.length > 0) {
-    Map<String, int> frame = stack[stack.length - 1];
-    stack = stack.sublist(0, stack.length - 1);
-    int start = frame["start"]!;
-    int lenSeg = frame["len"]!;
-    int index = frame["index"]!;
-    int seg = lenSeg ~/ 3 as int;
-    if (seg == 0) {
-    continue;
-  }
-    int i = index;
-    while (i < height) {
-    int j = start + seg;
-    while (j < start + 2 * seg) {
-    lines[i] = setChar(lines[i], j, " ");
-    j = j + 1;
-  }
-    i = i + 1;
-  }
-    stack = [...stack, {"start": start, "len": seg, "index": index + 1}];
-    stack = [...stack, {"start": start + seg * 2, "len": seg, "index": index + 1}];
-  }
-  for (var line in lines) {
-    print(line);
-  }
+  print((ord("a")).toString());
+  print((ord("π")).toString());
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "main"}));
