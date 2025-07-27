@@ -1,5 +1,25 @@
 # 📦 CHANGELOG.md
 
+## [0.10.42] – 2025-07-27T09:00:51+00:00
+
+### Added
+
+* Numerous new Rosetta programs such as Faulhabers formula, factorions and HQ9+
+* Deterministic `now` builtin with updated VM outputs
+* Dart transpiler gains slice support, BigInt indexing and block lambdas
+* C# adds delegate calls and literal match cases with improved indexing
+* C++ supports const maps, auto params and benchmark timing helpers
+* TypeScript compiler introduces async fetch and map containment
+* Python enumerations and environment variables improved
+
+### Changed
+
+* Rosetta progress index regenerated with refreshed outputs across languages
+* Documentation clarified for the Computer Zero interpreter
+
+### Fixed
+
+* Various closure ordering and map field bugs across backends
 ## [0.10.41] – 2025-07-26T12:01:29+07:00
 
 ### Added
