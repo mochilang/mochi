@@ -46,6 +46,7 @@ type Program struct {
 	UseReflect   bool
 	UseRuntime   bool
 	UseRepeat    bool
+	UseMapConv   bool
 	BenchMain    bool
 }
 
@@ -70,6 +71,7 @@ var (
 	usesReflect    bool
 	usesRuntime    bool
 	usesRepeat     bool
+	usesMapConv    bool
 	topEnv         *types.Env
 	extraDecls     []Stmt
 	structCount    int
@@ -185,6 +187,9 @@ func (v *VarDecl) emit(w io.Writer) {
 	case v.Value != nil && v.Type != "":
 		fmt.Fprintf(w, "var %s %s = ", v.Name, v.Type)
 		v.Value.emit(w)
+		if !v.Global {
+			fmt.Fprintf(w, "; _ = %s", v.Name)
+		}
 	case v.Value != nil:
 		if v.Global {
 			fmt.Fprintf(w, "var %s = ", v.Name)
@@ -192,10 +197,19 @@ func (v *VarDecl) emit(w io.Writer) {
 			fmt.Fprintf(w, "%s := ", v.Name)
 		}
 		v.Value.emit(w)
+		if !v.Global {
+			fmt.Fprintf(w, "; _ = %s", v.Name)
+		}
 	case v.Type != "":
 		fmt.Fprintf(w, "var %s %s", v.Name, v.Type)
+		if !v.Global {
+			fmt.Fprintf(w, "; _ = %s", v.Name)
+		}
 	default:
 		fmt.Fprintf(w, "var %s any", v.Name)
+		if !v.Global {
+			fmt.Fprintf(w, "; _ = %s", v.Name)
+		}
 	}
 }
 
@@ -1848,6 +1862,12 @@ func (a *AssertExpr) emit(w io.Writer) {
 		fmt.Fprint(w, ")")
 		return
 	}
+	if strings.HasPrefix(a.Type, "map[") {
+		fmt.Fprintf(w, "func(v any) %s { if v == nil { return nil }; if vv, ok := v.(%s); ok { return vv }; return nil }(", a.Type, a.Type)
+		a.Expr.emit(w)
+		fmt.Fprint(w, ")")
+		return
+	}
 	if inner, ok := a.Expr.(*AssertExpr); ok && inner.Type == a.Type {
 		inner.Expr.emit(w)
 		fmt.Fprintf(w, ".(%s)", a.Type)
@@ -1885,6 +1905,7 @@ func Transpile(p *parser.Program, env *types.Env, benchMain bool) (*Program, err
 	usesReflect = false
 	usesRuntime = false
 	usesRepeat = false
+	usesMapConv = false
 	topEnv = env
 	extraDecls = nil
 	structCount = 0
@@ -1928,6 +1949,7 @@ func Transpile(p *parser.Program, env *types.Env, benchMain bool) (*Program, err
 	gp.UseFloatConv = usesFloatConv
 	gp.UsePadStart = usesPadStart
 	gp.UseRepeat = usesRepeat
+	gp.UseMapConv = usesMapConv
 	gp.UseSHA256 = usesSHA256
 	gp.UseBigInt = usesBigInt
 	gp.UseBigRat = usesBigRat
@@ -1956,6 +1978,13 @@ func Transpile(p *parser.Program, env *types.Env, benchMain bool) (*Program, err
 			}
 			if vd.Value != nil {
 				applyType(vd.Value, toTypeFromGoType(vd.Type))
+				if strings.HasPrefix(vd.Type, "[][]") {
+					if ll, ok := vd.Value.(*ListLit); ok {
+						if ll.ElemType == "any" {
+							ll.ElemType = strings.TrimPrefix(vd.Type, "[]")
+						}
+					}
+				}
 			}
 		}
 	}
@@ -2210,10 +2239,14 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 				}
 			}
 			if typ != "" && typ != "any" && types.IsAnyType(valType) {
-				e = &AssertExpr{Expr: e, Type: typ}
+				if !(typ == "string" && looksLikeStringExpr(e)) {
+					e = &AssertExpr{Expr: e, Type: typ}
+				}
 			}
 			if typ != "" && typ != "any" && types.IsAnyType(valType) {
-				e = &AssertExpr{Expr: e, Type: typ}
+				if !(typ == "string" && looksLikeStringExpr(e)) {
+					e = &AssertExpr{Expr: e, Type: typ}
+				}
 			}
 			if typ == "*big.Int" {
 				e = ensureBigIntExpr(e, valType)
@@ -2503,7 +2536,9 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 					e = ensureBigIntExpr(e, valType)
 				}
 				if vtStr := toGoTypeFromType(vt); vtStr != "" && vtStr != "any" && types.IsAnyType(valType) {
-					e = &AssertExpr{Expr: e, Type: vtStr}
+					if !(vtStr == "string" && looksLikeStringExpr(e)) {
+						e = &AssertExpr{Expr: e, Type: vtStr}
+					}
 				}
 			}
 			if ml, ok := e.(*MapLit); ok {
@@ -3559,6 +3594,22 @@ func isStringType(t types.Type) bool {
 	return ok
 }
 
+func looksLikeStringExpr(e Expr) bool {
+	switch ex := e.(type) {
+	case *StringLit:
+		return true
+	case *BinaryExpr:
+		if ex.Op == "+" {
+			return looksLikeStringExpr(ex.Left) || looksLikeStringExpr(ex.Right)
+		}
+	case *CallExpr:
+		if ex.Func == "fmt.Sprint" {
+			return true
+		}
+	}
+	return false
+}
+
 func isFloatType(t types.Type) bool {
 	_, ok := t.(types.FloatType)
 	return ok
@@ -4095,12 +4146,16 @@ func compileBinary(b *parser.BinaryExpr, env *types.Env, base string) (Expr, err
 						}
 						if newExpr == nil {
 							if _, ok := typesList[i].(types.AnyType); ok {
-								left = &CallExpr{Func: "_toFloat", Args: []Expr{left}}
-								usesFloatConv = true
+								if _, isNull := left.(*NullLit); !isNull {
+									left = &CallExpr{Func: "_toFloat", Args: []Expr{left}}
+									usesFloatConv = true
+								}
 							}
 							if _, ok := typesList[i+1].(types.AnyType); ok {
-								right = &CallExpr{Func: "_toFloat", Args: []Expr{right}}
-								usesFloatConv = true
+								if _, isNull := right.(*NullLit); !isNull {
+									right = &CallExpr{Func: "_toFloat", Args: []Expr{right}}
+									usesFloatConv = true
+								}
 							}
 						}
 					}
@@ -4412,6 +4467,17 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env, base string) (Expr, 
 				if isBigIntType(types.TypeOfExpr(idx.Start, env)) {
 					iex = &BigIntToIntExpr{Value: iex}
 				}
+				if st, ok := t.(types.StructType); ok {
+					if key, ok2 := types.SimpleStringKey(idx.Start); ok2 {
+						expr = &FieldExpr{X: expr, Name: key}
+						if ft, ok3 := st.Fields[key]; ok3 {
+							t = ft
+						} else {
+							t = types.AnyType{}
+						}
+						continue
+					}
+				}
 				if mt, ok := t.(types.MapType); ok {
 					if types.IsStringType(mt.Key) && !types.IsStringType(types.TypeOfExpr(idx.Start, env)) {
 						iex = &AssertExpr{Expr: iex, Type: "string"}
@@ -4624,7 +4690,11 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env, base string) (Expr, 
 					t = types.ListType{Elem: types.ResolveTypeRef(g.Args[0], env)}
 				} else if g.Name == "map" && len(g.Args) == 2 {
 					typ := fmt.Sprintf("map[%s]%s", toGoType(g.Args[0], env), toGoType(g.Args[1], env))
-					if types.IsAnyType(t) {
+					if typ == "map[int]map[string]any" {
+						usesMapConv = true
+						usesStrconv = true
+						expr = &CallExpr{Func: "_toMapIntMapStringAny", Args: []Expr{expr}}
+					} else if types.IsAnyType(t) {
 						if ae, ok := expr.(*AssertExpr); !(ok && ae.Type == typ) {
 							expr = &AssertExpr{Expr: expr, Type: typ}
 						}
@@ -5616,6 +5686,9 @@ func Emit(prog *Program, bench bool) []byte {
 	if prog.UseBigInt || prog.UseBigRat {
 		buf.WriteString("    \"math/big\"\n")
 	}
+	if prog.UseMapConv {
+		buf.WriteString("    \"strconv\"\n")
+	}
 	if prog.UseReflect {
 		buf.WriteString("    \"reflect\"\n")
 	}
@@ -5719,6 +5792,23 @@ func Emit(prog *Program, bench bool) []byte {
 		buf.WriteString("    case float64: return t\n")
 		buf.WriteString("    default: return 0\n")
 		buf.WriteString("    }\n")
+		buf.WriteString("}\n\n")
+	}
+	if prog.UseMapConv {
+		buf.WriteString("func _toMapIntMapStringAny(v any) map[int]map[string]any {\n")
+		buf.WriteString("    if v == nil { return nil }\n")
+		buf.WriteString("    if m, ok := v.(map[int]map[string]any); ok { return m }\n")
+		buf.WriteString("    out := make(map[int]map[string]any)\n")
+		buf.WriteString("    if m, ok := v.(map[string]any); ok {\n")
+		buf.WriteString("        for k, vv := range m {\n")
+		buf.WriteString("            if id, err := strconv.Atoi(k); err == nil {\n")
+		buf.WriteString("                if sub, ok := vv.(map[string]any); ok {\n")
+		buf.WriteString("                    out[id] = sub\n")
+		buf.WriteString("                }\n")
+		buf.WriteString("            }\n")
+		buf.WriteString("        }\n")
+		buf.WriteString("    }\n")
+		buf.WriteString("    return out\n")
 		buf.WriteString("}\n\n")
 	}
 	if prog.UseSHA256 {
@@ -6377,9 +6467,7 @@ func applyType(expr Expr, t types.Type) {
 	switch tt := t.(type) {
 	case types.ListType:
 		if ll, ok := expr.(*ListLit); ok {
-			if ll.ElemType == "" || strings.Contains(ll.ElemType, "any") {
-				ll.ElemType = toGoTypeFromType(tt.Elem)
-			}
+			ll.ElemType = toGoTypeFromType(tt.Elem)
 			for _, el := range ll.Elems {
 				applyType(el, tt.Elem)
 			}
