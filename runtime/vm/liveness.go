@@ -89,7 +89,7 @@ func useDef(ins Instr, n int) (use, def []bool) {
 	case OpMove:
 		addDef(ins.A)
 		addUse(ins.B)
-	case OpAdd, OpSub, OpMul, OpDiv, OpMod,
+	case OpAdd, OpSub, OpMul, OpDiv, OpMod, OpPow,
 		OpAddInt, OpSubInt, OpMulInt, OpDivInt, OpModInt,
 		OpAddFloat, OpSubFloat, OpMulFloat, OpDivFloat, OpModFloat,
 		OpEqual, OpNotEqual, OpEqualInt, OpEqualFloat,
@@ -200,7 +200,7 @@ func isPure(op Op) bool {
 
 func defRegs(ins Instr) []int {
 	switch ins.Op {
-	case OpConst, OpMove, OpAdd, OpSub, OpMul, OpDiv, OpMod,
+	case OpConst, OpMove, OpAdd, OpSub, OpMul, OpDiv, OpMod, OpPow,
 		OpAddInt, OpSubInt, OpMulInt, OpDivInt, OpModInt,
 		OpAddFloat, OpSubFloat, OpMulFloat, OpDivFloat, OpModFloat,
 		OpEqual, OpNotEqual, OpEqualInt, OpEqualFloat,
@@ -625,7 +625,7 @@ func constFold(fn *Function) bool {
 				}
 			}
 			consts[ins.A] = cinfo{}
-		case OpAdd, OpSub, OpMul, OpDiv, OpMod,
+		case OpAdd, OpSub, OpMul, OpDiv, OpMod, OpPow,
 			OpAddInt, OpSubInt, OpMulInt, OpDivInt, OpModInt,
 			OpAddFloat, OpSubFloat, OpMulFloat, OpDivFloat, OpModFloat,
 			OpEqual, OpNotEqual, OpEqualInt, OpEqualFloat,

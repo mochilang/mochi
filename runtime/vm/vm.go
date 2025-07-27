@@ -161,6 +161,7 @@ const (
 	OpDivFloat
 	OpModInt
 	OpModFloat
+	OpPow
 	OpEqualInt
 	OpEqualFloat
 	OpLessInt
@@ -325,6 +326,8 @@ func (op Op) String() string {
 		return "ModInt"
 	case OpModFloat:
 		return "ModFloat"
+	case OpPow:
+		return "Pow"
 	case OpEqualInt:
 		return "EqualInt"
 	case OpEqualFloat:
@@ -474,7 +477,7 @@ func (p *Program) Disassemble(src string) string {
 			case OpAdd, OpSub, OpMul, OpDiv, OpMod,
 				OpAddInt, OpAddFloat, OpSubInt, OpSubFloat,
 				OpMulInt, OpMulFloat, OpDivInt, OpDivFloat,
-				OpModInt, OpModFloat,
+				OpModInt, OpModFloat, OpPow,
 				OpEqual, OpNotEqual, OpEqualInt, OpEqualFloat,
 				OpLess, OpLessEq, OpLessInt, OpLessFloat,
 				OpLessEqInt, OpLessEqFloat, OpIn:
@@ -1007,6 +1010,21 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 					return Value{}, m.newError(fmt.Errorf("division by zero"), trace, ins.Line)
 				}
 				fr.regs[ins.A] = Value{Tag: ValueFloat, Float: math.Mod(toFloat(b), toFloat(c))}
+			}
+		case OpPow:
+			b := fr.regs[ins.B]
+			c := fr.regs[ins.C]
+			if b.Tag == ValueNull || c.Tag == ValueNull {
+				fr.regs[ins.A] = Value{Tag: ValueNull}
+			} else if b.Tag == ValueFloat || c.Tag == ValueFloat {
+				fr.regs[ins.A] = Value{Tag: ValueFloat, Float: math.Pow(toFloat(b), toFloat(c))}
+			} else {
+				bi := new(big.Int).Exp(toBigInt(b), toBigInt(c), nil)
+				if bi.IsInt64() {
+					fr.regs[ins.A] = Value{Tag: ValueInt, Int: int(bi.Int64())}
+				} else {
+					fr.regs[ins.A] = Value{Tag: ValueBigInt, BigInt: bi}
+				}
 			}
 		case OpEqual:
 			fr.regs[ins.A] = Value{Tag: ValueBool, Bool: valuesEqual(fr.regs[ins.B], fr.regs[ins.C])}
@@ -2627,7 +2645,7 @@ func (fc *funcCompiler) emit(pos lexer.Position, i Instr) {
 	case OpAddFloat, OpSubFloat, OpMulFloat, OpDivFloat, OpModFloat,
 		OpNegFloat:
 		fc.tags[i.A] = tagFloat
-	case OpAdd, OpSub, OpMul, OpDiv, OpMod, OpNeg:
+	case OpAdd, OpSub, OpMul, OpDiv, OpMod, OpPow, OpNeg:
 		fc.tags[i.A] = tagUnknown
 	case OpEqual, OpNotEqual, OpEqualInt, OpEqualFloat,
 		OpLess, OpLessEq, OpLessInt, OpLessFloat, OpLessEqInt, OpLessEqFloat,
@@ -3904,6 +3922,12 @@ func (fc *funcCompiler) compilePrimary(p *parser.Primary) int {
 			arg := fc.compileExpr(p.Call.Args[0])
 			dst := fc.newReg()
 			fc.emit(p.Pos, Instr{Op: OpReverse, A: dst, B: arg})
+			return dst
+		case "pow":
+			base := fc.compileExpr(p.Call.Args[0])
+			exp := fc.compileExpr(p.Call.Args[1])
+			dst := fc.newReg()
+			fc.emit(p.Pos, Instr{Op: OpPow, A: dst, B: base, C: exp})
 			return dst
 		case "padStart":
 			str := fc.compileExpr(p.Call.Args[0])
