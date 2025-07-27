@@ -1,5 +1,5 @@
-## Progress (2025-07-27 11:07 +0700)
-- Commit 93133c4bde: transpiler/c: support int slice
+## Progress (2025-07-27 12:32 +0700)
+- Commit a216c74cda: transpiler/ts: support async fetch
 - Regenerated golden files - 81/104 vm valid programs passing
 
 ## Progress (2025-07-22 14:12 +0700)
