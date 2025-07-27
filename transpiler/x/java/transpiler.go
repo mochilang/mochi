@@ -1348,17 +1348,18 @@ type ForRangeStmt struct {
 }
 
 func (fr *ForRangeStmt) emit(w io.Writer, indent string) {
-	fmt.Fprint(w, indent+"for (int "+fr.Name+" = ")
+	name := sanitize(fr.Name)
+	fmt.Fprint(w, indent+"for (int "+name+" = ")
 	if fr.Start != nil {
 		fr.Start.emit(w)
 	} else {
 		fmt.Fprint(w, "0")
 	}
 	fmt.Fprint(w, "; ")
-	fmt.Fprint(w, fr.Name+" < ")
+	fmt.Fprint(w, name+" < ")
 	fr.End.emit(w)
 	fmt.Fprint(w, "; ")
-	fmt.Fprint(w, fr.Name+"++")
+	fmt.Fprint(w, name+"++")
 	fmt.Fprint(w, ") {\n")
 	for _, st := range fr.Body {
 		st.emit(w, indent+"    ")
@@ -1588,11 +1589,15 @@ type BinaryExpr struct {
 }
 
 func (b *BinaryExpr) emit(w io.Writer) {
-	if b.Op == "+" && (isStringExpr(b.Left) || isStringExpr(b.Right)) {
-		emitCastExpr(w, b.Left, "String")
-		fmt.Fprint(w, " + ")
-		emitCastExpr(w, b.Right, "String")
-		return
+	if b.Op == "+" {
+		lt := inferType(b.Left)
+		rt := inferType(b.Right)
+		if lt == "string" || lt == "String" || rt == "string" || rt == "String" || isStringExpr(b.Left) || isStringExpr(b.Right) {
+			emitCastExpr(w, b.Left, "String")
+			fmt.Fprint(w, " + ")
+			emitCastExpr(w, b.Right, "String")
+			return
+		}
 	}
 	if (b.Op == "==" || b.Op == "!=") && isStringExpr(b.Left) && isStringExpr(b.Right) {
 		if b.Op == "!=" {
@@ -3381,9 +3386,13 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 			if err != nil {
 				return nil, err
 			}
-			if _, ok := varDecls[s.Assign.Name]; !ok && len(scopeStack) > 0 {
+			var vdecl *VarStmt
+			if vs, ok := varDecls[s.Assign.Name]; ok {
+				vdecl = vs
+			} else if len(scopeStack) > 0 {
 				for i := len(scopeStack) - 1; i >= 0; i-- {
-					if _, ok2 := scopeStack[i][s.Assign.Name]; ok2 {
+					if vs, ok2 := scopeStack[i][s.Assign.Name]; ok2 {
+						vdecl = vs
 						if closureStack[i] {
 							refVars[s.Assign.Name] = true
 						}
@@ -3397,9 +3406,9 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 					if cur, ok := varTypes[s.Assign.Name]; ok && (cur == "int[]" || cur == "Object[]") && vt == "boolean" {
 						newT := "boolean[]"
 						varTypes[s.Assign.Name] = newT
-						if vs, ok2 := varDecls[s.Assign.Name]; ok2 {
-							vs.Type = newT
-							if ll, ok3 := vs.Expr.(*ListLit); ok3 {
+						if vdecl != nil {
+							vdecl.Type = newT
+							if ll, ok3 := vdecl.Expr.(*ListLit); ok3 {
 								ll.ElemType = "boolean"
 							}
 						}
@@ -3409,9 +3418,9 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 			if t := inferType(e); t != "" {
 				if cur, ok := varTypes[s.Assign.Name]; !ok || ((cur == "int[]" || cur == "Object[]") && t != cur) {
 					varTypes[s.Assign.Name] = t
-					if vs, ok := varDecls[s.Assign.Name]; ok {
-						vs.Type = t
-						if ll, ok2 := vs.Expr.(*ListLit); ok2 && strings.HasSuffix(t, "[]") {
+					if vdecl != nil {
+						vdecl.Type = t
+						if ll, ok2 := vdecl.Expr.(*ListLit); ok2 && strings.HasSuffix(t, "[]") {
 							ll.ElemType = strings.TrimSuffix(t, "[]")
 						}
 					}
@@ -4275,6 +4284,9 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 		}
 		if name == "substring" && len(args) == 3 {
 			return &SubstringExpr{Str: args[0], Start: args[1], End: args[2]}, nil
+		}
+		if name == "split" && len(args) == 2 {
+			return &MethodCallExpr{Target: args[0], Name: "split", Args: []Expr{args[1]}}, nil
 		}
 		if name == "upper" && len(args) == 1 {
 			return &MethodCallExpr{Target: args[0], Name: "toUpperCase", Args: nil}, nil
