@@ -111,6 +111,37 @@ def _sha256(bs)
 end
 `
 
+const helperFetch = `
+require 'net/http'
+require 'uri'
+require 'ostruct'
+def _fetch(url, opts = nil)
+  uri = URI.parse(url)
+  method = opts && opts['method'] ? opts['method'].to_s.upcase : 'GET'
+  req_class = Net::HTTP.const_get(method.capitalize)
+  req = req_class.new(uri)
+  if opts && opts['headers']
+    opts['headers'].each { |k,v| req[k] = v }
+  end
+  if opts && opts.key?('body')
+    req.body = opts['body'].to_json
+  end
+  if opts && opts['query']
+    uri.query = URI.encode_www_form(opts['query'])
+  end
+  resp = Net::HTTP.start(uri.host, uri.port, use_ssl: uri.scheme == 'https') do |http|
+    http.request(req)
+  end
+  body = resp.body
+  begin
+    data = JSON.parse(body)
+    OpenStruct.new(data)
+  rescue StandardError
+    body
+  end
+end
+`
+
 const helperMem = `
 require 'objspace'
 def _mem()
@@ -1190,6 +1221,7 @@ var (
 	usesRepeat      bool
 	usesParseIntStr bool
 	usesSplit       bool
+	usesFetch       bool
 	usesMem         bool
 	benchMain       bool
 )
@@ -2670,6 +2702,11 @@ func Emit(w io.Writer, p *Program) error {
 			return err
 		}
 	}
+	if usesFetch {
+		if _, err := io.WriteString(w, helperFetch+"\n"); err != nil {
+			return err
+		}
+	}
 	if usesParseIntStr {
 		if _, err := io.WriteString(w, helperParseIntStr+"\n"); err != nil {
 			return err
@@ -2725,6 +2762,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	usesRepeat = false
 	usesParseIntStr = false
 	usesSplit = false
+	usesFetch = false
 	usesMem = false
 	currentEnv = env
 	topVars = map[string]bool{}
@@ -3767,6 +3805,11 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				return nil, fmt.Errorf("int takes one arg")
 			}
 			return &CastExpr{Value: args[0], Type: "int"}, nil
+		case "float":
+			if len(args) != 1 {
+				return nil, fmt.Errorf("float takes one arg")
+			}
+			return &CastExpr{Value: args[0], Type: "float"}, nil
 		case "str":
 			if len(args) != 1 {
 				return nil, fmt.Errorf("str takes one arg")
@@ -3980,6 +4023,20 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			items[i] = MapItem{Key: k, Value: v}
 		}
 		return &MapLit{Items: items}, nil
+	case p.Fetch != nil:
+		urlExpr, err := convertExpr(p.Fetch.URL)
+		if err != nil {
+			return nil, err
+		}
+		usesFetch = true
+		if p.Fetch.With != nil {
+			withExpr, err := convertExpr(p.Fetch.With)
+			if err != nil {
+				return nil, err
+			}
+			return &CallExpr{Func: "_fetch", Args: []Expr{urlExpr, withExpr}}, nil
+		}
+		return &CallExpr{Func: "_fetch", Args: []Expr{urlExpr}}, nil
 	case p.Load != nil:
 		format := parseFormat(p.Load.With)
 		path := ""
