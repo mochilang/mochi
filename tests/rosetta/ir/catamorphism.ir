@@ -1,32 +1,26 @@
-func main (regs=20)
+func main (regs=14)
   // let n = [1, 2, 3, 4, 5]
   Const        r1, [1, 2, 3, 4, 5]
   Move         r0, r1
   SetGlobal    0,0,0,0
   // print(fold(fun(a: int, b: int): int => add(a, b), n))
-  Move         r4, r0
-  MakeClosure  r5, fn5, 1, r4
-  Move         r2, r5
-  Const        r6, [1, 2, 3, 4, 5]
-  Move         r3, r6
-  Call2        r7, fold, r2, r3
-  Print        r7
+  MakeClosure  r4, fn5, 0, r0
+  Move         r2, r4
+  Move         r3, r0
+  Call2        r5, fold, r2, r3
+  Print        r5
   // print(fold(fun(a: int, b: int): int => sub(a, b), n))
-  Move         r10, r0
-  MakeClosure  r11, fn6, 1, r10
-  Move         r8, r11
-  Const        r12, [1, 2, 3, 4, 5]
-  Move         r9, r12
-  Call2        r13, fold, r8, r9
-  Print        r13
+  MakeClosure  r8, fn6, 0, r0
+  Move         r6, r8
+  Move         r7, r0
+  Call2        r9, fold, r6, r7
+  Print        r9
   // print(fold(fun(a: int, b: int): int => mul(a, b), n))
-  Move         r16, r0
-  MakeClosure  r17, fn7, 1, r16
-  Move         r14, r17
-  Const        r18, [1, 2, 3, 4, 5]
-  Move         r15, r18
-  Call2        r19, fold, r14, r15
-  Print        r19
+  MakeClosure  r12, fn7, 0, r0
+  Move         r10, r12
+  Move         r11, r0
+  Call2        r13, fold, r10, r11
+  Print        r13
   Return       r0
 
   // fun add(a: int, b: int): int { return a + b }
@@ -78,25 +72,25 @@ L0:
   Return       r5
 
   // print(fold(fun(a: int, b: int): int => add(a, b), n))
-func fn5 (regs=7)
+func fn5 (regs=6)
   // print(fold(fun(a: int, b: int): int => add(a, b), n))
+  Move         r3, r1
   Move         r4, r2
-  Move         r5, r3
-  Call2        r6, add, r4, r5
-  Return       r6
+  Call2        r5, add, r3, r4
+  Return       r5
 
   // print(fold(fun(a: int, b: int): int => sub(a, b), n))
-func fn6 (regs=7)
+func fn6 (regs=6)
   // print(fold(fun(a: int, b: int): int => sub(a, b), n))
+  Move         r3, r1
   Move         r4, r2
-  Move         r5, r3
-  Call2        r6, sub, r4, r5
-  Return       r6
+  Call2        r5, sub, r3, r4
+  Return       r5
 
   // print(fold(fun(a: int, b: int): int => mul(a, b), n))
-func fn7 (regs=7)
+func fn7 (regs=6)
   // print(fold(fun(a: int, b: int): int => mul(a, b), n))
+  Move         r3, r1
   Move         r4, r2
-  Move         r5, r3
-  Call2        r6, mul, r4, r5
-  Return       r6
+  Call2        r5, mul, r3, r4
+  Return       r5
