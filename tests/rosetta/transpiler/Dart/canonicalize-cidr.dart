@@ -129,9 +129,9 @@ String padRight(String s, int width) {
 String canonicalize(String cidr) {
   List<String> parts = split(cidr, "/");
   String dotted = parts[0];
-  var size = int.parse(parts[1]);
+  int size = int.parse(parts[1]);
   List<String> binParts = <String>[];
-  for (var p in split(dotted, ".")) {
+  for (String p in split(dotted, ".")) {
     binParts = [...binParts, toBinary(int.parse(p), 8)];
   }
   String binary = join(binParts, "");
@@ -153,7 +153,7 @@ void main() {
   {
   var _benchMem0 = ProcessInfo.currentRss;
   var _benchSw = Stopwatch()..start();
-  for (var t in tests) {
+  for (String t in tests) {
     print(padRight(t, 18) + " -> " + canonicalize(t));
   }
   _benchSw.stop();

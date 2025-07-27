@@ -46,7 +46,7 @@ List<List<num>> conv2d(List<List<num>> img, List<List<num>> k) {
     List<num> row = <num>[];
     int x = 0;
     while (x < w) {
-    var sum = 0.0;
+    num sum = 0.0;
     int j = 0;
     while (j < n) {
     int i = 0;
@@ -160,7 +160,6 @@ void _start() {
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "main"}));
 }
-  _main();
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "_start"}));

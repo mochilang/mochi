@@ -40,6 +40,10 @@ class Box {
   Box({required this.Contents, required this.secret});
 }
 
+int Box_TellSecret(Box self) {
+  return self.secret;
+}
+
 Box New() {
   Box b = Box(Contents: "rabbit", secret: 1);
   return b;
@@ -53,7 +57,7 @@ void main() {
   {
   var _benchMem0 = ProcessInfo.currentRss;
   var _benchSw = Stopwatch()..start();
-  box.TellSecret();
+  Box_TellSecret(box);
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "main"}));

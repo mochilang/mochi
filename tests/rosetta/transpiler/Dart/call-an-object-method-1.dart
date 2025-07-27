@@ -35,7 +35,13 @@ String _substr(String s, int start, int end) {
 }
 
 class Foo {
-  Foo({});
+  Foo();
+}
+
+void Foo_ValueMethod(Foo self, int x) {
+}
+
+void Foo_PointerMethod(Foo self, int x) {
 }
 
 Foo myValue = Foo();
@@ -47,12 +53,12 @@ void main() {
   {
   var _benchMem0 = ProcessInfo.currentRss;
   var _benchSw = Stopwatch()..start();
-  myValue.ValueMethod(0);
-  myPointer.PointerMethod(0);
-  myPointer.ValueMethod(0);
-  myValue.PointerMethod(0);
-  myValue.ValueMethod(0);
-  myPointer.PointerMethod(0);
+  Foo_ValueMethod(myValue, 0);
+  Foo_PointerMethod(myPointer, 0);
+  Foo_ValueMethod(myPointer, 0);
+  Foo_PointerMethod(myValue, 0);
+  Foo_ValueMethod(myValue, 0);
+  Foo_PointerMethod(myPointer, 0);
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "main"}));

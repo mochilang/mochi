@@ -49,7 +49,7 @@ void printStat(Map<String, bool> fs, String path) {
 void _main() {
   Map<String, bool> fs = <String, bool>{};
   fs["docs"] = true;
-  for (var p in ["input.txt", "/input.txt", "docs", "/docs"]) {
+  for (String p in ["input.txt", "/input.txt", "docs", "/docs"]) {
     printStat(fs, p);
   }
 }
@@ -66,7 +66,6 @@ void _start() {
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "main"}));
 }
-  _main();
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "_start"}));

@@ -688,6 +688,16 @@ func (s *ReturnStmt) emit(w io.Writer) error {
 			if _, err := io.WriteString(w, ").toInt()"); err != nil {
 				return err
 			}
+		} else if !strings.HasSuffix(currentRetType, "?") && strings.HasSuffix(valType, "?") {
+			if _, err := io.WriteString(w, "("); err != nil {
+				return err
+			}
+			if err := s.Value.emit(w); err != nil {
+				return err
+			}
+			if _, err := io.WriteString(w, ")!"); err != nil {
+				return err
+			}
 		} else if strings.HasPrefix(currentRetType, "List<") && valType != currentRetType {
 			if err := emitListConversion(w, s.Value, currentRetType); err != nil {
 				return err
@@ -3522,7 +3532,11 @@ func inferType(e Expr) string {
 		if fields, ok := structFields[rt]; ok {
 			for _, f := range fields {
 				if f.Name == ex.Field {
-					return f.Type
+					typ := f.Type
+					if structMutable[rt] && !strings.HasSuffix(typ, "?") {
+						typ += "?"
+					}
+					return typ
 				}
 			}
 		}
@@ -3627,6 +3641,9 @@ func walkTypes(s Stmt) {
 	case *VarStmt:
 		nextStructHint = st.Name
 		typ := st.Type
+		if strings.Contains(typ, "Map<") {
+			nextStructHint = ""
+		}
 		if st.Value != nil {
 			valType := inferType(st.Value)
 			if typ == "" || typ == "dynamic" {

@@ -155,12 +155,12 @@ String camelToSnake(String s) {
 void _main() {
   List<String> samples = ["snakeCase", "snake_case", "snake-case", "snake case", "snake CASE", "snake.case", "variable_10_case", "variable10Case", "ɛrgo rE tHis", "hurry-up-joe!", "c://my-docs/happy_Flag-Day/12.doc", " spaces "];
   print("=== To snake_case ===");
-  for (var s in samples) {
+  for (String s in samples) {
     print(padLeft(s, 34) + " => " + camelToSnake(s));
   }
   print("");
   print("=== To camelCase ===");
-  for (var s in samples) {
+  for (String s in samples) {
     print(padLeft(s, 34) + " => " + snakeToCamel(s));
   }
 }
@@ -177,7 +177,6 @@ void _start() {
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "main"}));
 }
-  _main();
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "_start"}));

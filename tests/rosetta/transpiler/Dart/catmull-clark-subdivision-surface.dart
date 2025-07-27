@@ -126,7 +126,7 @@ List<Point> getFacePoints(List<Point> points, List<List<int>> faces) {
   while (i < faces.length) {
     List<int> face = faces[i];
     Point fp = Point(x: 0.0, y: 0.0, z: 0.0);
-    for (var idx in face) {
+    for (int idx in face) {
     fp = sumPoint(fp, points[idx]);
   }
     fp = divPoint(fp, (face.length).toDouble());
@@ -140,12 +140,12 @@ List<List<int>> sortEdges(List<List<int>> edges) {
   List<List<int>> res = <List<int>>[];
   List<List<int>> tmp = edges;
   while (tmp.length > 0) {
-    var min = tmp[0];
+    List<int> min = tmp[0];
     int idx = 0;
     int j = 1;
     while (j < tmp.length) {
     List<int> e = tmp[j];
-    if (e[0].toString().compareTo(min[0].toString()) < 0 || e[0] == min[0] && (e[1].toString().compareTo(min[1].toString()) < 0 || e[1] == min[1] && e[2].toString().compareTo(min[2].toString()) < 0)) {
+    if (e[0] < min[0] || e[0] == min[0] && (e[1] < min[1] || e[1] == min[1] && e[2] < min[2])) {
     min = e;
     idx = j;
   }
@@ -207,7 +207,7 @@ List<Edge> getEdgesFaces(List<Point> points, List<List<int>> faces) {
     idx = idx + 1;
   }
   List<Edge> edgesCenters = <Edge>[];
-  for (var me in merged) {
+  for (List<int> me in merged) {
     Point p1 = points[me[0]];
     Point p2 = points[me[1]];
     Point cp = centerPoint(p1, p2);
@@ -245,7 +245,7 @@ List<Point> getAvgFacePoints(List<Point> points, List<List<int>> faces, List<Poi
   int fnum = 0;
   while (fnum < faces.length) {
     Point fp = facePoints[fnum];
-    for (var pn in faces[fnum]) {
+    for (int pn in faces[fnum]) {
     PointEx tp = temp[pn];
     temp[pn] = PointEx(p: sumPoint(tp.p, fp), n: tp.n + 1);
   }
@@ -269,10 +269,10 @@ List<Point> getAvgMidEdges(List<Point> points, List<Edge> edgesFaces) {
     temp = [...temp, PointEx(p: Point(x: 0.0, y: 0.0, z: 0.0), n: 0)];
     i = i + 1;
   }
-  for (var edge in edgesFaces) {
+  for (Edge edge in edgesFaces) {
     Point cp = edge.cp;
     List<int> arr = [edge.pn1, edge.pn2];
-    for (var pn in arr) {
+    for (int pn in arr) {
     PointEx tp = temp[pn];
     temp[pn] = PointEx(p: sumPoint(tp.p, cp), n: tp.n + 1);
   }
@@ -296,7 +296,7 @@ List<int> getPointsFaces(List<Point> points, List<List<int>> faces) {
   }
   int fnum = 0;
   while (fnum < faces.length) {
-    for (var pn in faces[fnum]) {
+    for (int pn in faces[fnum]) {
     pf[pn] = pf[pn] + 1;
   }
     fnum = fnum + 1;
@@ -339,7 +339,7 @@ List<dynamic> cmcSubdiv(List<Point> points, List<List<int>> faces) {
   List<Point> newPoints = getNewPoints(points, pointsFaces, avgFacePoints, avgMidEdges);
   List<int> facePointNums = <int>[];
   int nextPoint = newPoints.length;
-  for (var fp in facePoints) {
+  for (Point fp in facePoints) {
     newPoints = [...newPoints, fp];
     facePointNums = [...facePointNums, nextPoint];
     nextPoint = nextPoint + 1;
@@ -407,11 +407,11 @@ void _main() {
     outputFaces = res[1];
     i = i + 1;
   }
-  for (var p in outputPoints) {
+  for (Point p in outputPoints) {
     print(formatPoint(p));
   }
   print("");
-  for (var f in outputFaces) {
+  for (List<int> f in outputFaces) {
     print(formatFace(f));
   }
 }
@@ -428,7 +428,6 @@ void _start() {
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "main"}));
 }
-  _main();
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "_start"}));

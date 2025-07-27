@@ -80,7 +80,7 @@ void main() {
     stack = [...stack, {"start": start, "len": seg, "index": index + 1}];
     stack = [...stack, {"start": start + seg * 2, "len": seg, "index": index + 1}];
   }
-  for (var line in lines) {
+  for (String line in lines) {
     print(line);
   }
   _benchSw.stop();

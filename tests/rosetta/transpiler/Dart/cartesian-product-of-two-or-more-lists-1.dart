@@ -36,8 +36,8 @@ String _substr(String s, int start, int end) {
 
 List<List<int>> cart2(List<int> a, List<int> b) {
   List<List<int>> p = <List<int>>[];
-  for (var x in a) {
-    for (var y in b) {
+  for (int x in a) {
+    for (int y in b) {
     p = [...p, [x, y]];
   }
   }
@@ -87,7 +87,6 @@ void _start() {
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "main"}));
 }
-  _main();
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "_start"}));
