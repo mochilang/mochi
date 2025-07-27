@@ -23,8 +23,8 @@ int indexOf(String s, String ch) {
 }
 
 int ord(String ch) {
-  var upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-  var lower = "abcdefghijklmnopqrstuvwxyz";
+  String upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  String lower = "abcdefghijklmnopqrstuvwxyz";
   int idx = upper.indexOf(ch);
   if (idx >= 0) {
     return 65 + idx;
@@ -37,8 +37,8 @@ int ord(String ch) {
 }
 
 String chr(int n) {
-  var upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-  var lower = "abcdefghijklmnopqrstuvwxyz";
+  String upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  String lower = "abcdefghijklmnopqrstuvwxyz";
   if (n >= 65 && n < 91) {
     return _substr(upper, n - 65, n - 64);
   }
@@ -72,11 +72,11 @@ String decipher(String s, int k) {
   return encipher(s, (26 - k % 26) % 26);
 }
 
-void main() {
+void _main() {
   String pt = "The five boxing wizards jump quickly";
   print("Plaintext: " + pt);
-  for (var key in [0, 1, 7, 25, 26]) {
-    if (key.toString().compareTo(1.toString()) < 0 || key.toString().compareTo(25.toString()) > 0) {
+  for (int key in [0, 1, 7, 25, 26]) {
+    if (key < 1 || key > 25) {
     print("Key " + (key).toString() + " invalid");
     continue;
   }
@@ -88,5 +88,7 @@ void main() {
 }
 
 void _start() {
-  main();
+  _main();
 }
+
+void main() => _start();

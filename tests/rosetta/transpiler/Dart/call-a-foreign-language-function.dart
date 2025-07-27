@@ -15,12 +15,14 @@ String strdup(String s) {
   return s + "";
 }
 
-void main() {
+void _main() {
   String go1 = "hello C";
   String c2 = strdup(go1);
   print(c2);
 }
 
 void _start() {
-  main();
+  _main();
 }
+
+void main() => _start();

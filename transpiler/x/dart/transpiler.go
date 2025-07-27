@@ -3773,7 +3773,7 @@ func Emit(w io.Writer, p *Program) error {
 		if _, err := io.WriteString(w, "int _nowSeed = 0;\nbool _nowSeeded = false;\n"); err != nil {
 			return err
 		}
-		if _, err := io.WriteString(w, "void _initNow() {\n  var s = Platform.environment['MOCHI_NOW_SEED'];\n  if (s != null && s.isNotEmpty) {\n    var v = int.tryParse(s);\n    if (v != null) {\n      _nowSeed = v;\n      _nowSeeded = true;\n    }\n  }\n}\n"); err != nil {
+		if _, err := io.WriteString(w, "void _initNow() {\n  var s = Platform.environment['MOCHI_NOW_SEED'];\n  if (s != null && s.isNotEmpty) {\n    var v = int.tryParse(s);\n    if (v != null) {\n      _nowSeed = v;\n      _nowSeeded = true;\n      _now();\n    }\n  }\n}\n"); err != nil {
 			return err
 		}
 		if _, err := io.WriteString(w, "int _now() {\n  if (_nowSeeded) {\n    _nowSeed = (_nowSeed * 1664525 + 1013904223) % 2147483647;\n    return _nowSeed;\n  }\n  return DateTime.now().microsecondsSinceEpoch;\n}\n\n"); err != nil {

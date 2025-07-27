@@ -47,6 +47,7 @@ BigRat _add(BigRat a, BigRat b) => a.add(b);
 BigRat _sub(BigRat a, BigRat b) => a.sub(b);
 BigRat _mul(BigRat a, BigRat b) => a.mul(b);
 BigRat _div(BigRat a, BigRat b) => a.div(b);
+BigRat _neg(BigRat a) => BigRat(-a.num, a.den);
 
 BigRat bigrat(int a, int b) {
   return _div(_bigrat(a), _bigrat(b));
@@ -95,7 +96,7 @@ List<int> toContinued(BigRat r) {
 int termNumber(List<int> cf) {
   String b = "";
   String d = "1";
-  for (var n in cf) {
+  for (int n in cf) {
     b = _repeat(d, n) + b;
     if (d == "1") {
     d = "0";
@@ -132,7 +133,7 @@ String commatize(int n) {
   return out;
 }
 
-void main() {
+void _main() {
   List<BigRat> cw = calkinWilf(20);
   print("The first 20 terms of the Calkin-Wilf sequnence are:");
   int i = 0;
@@ -152,5 +153,7 @@ void main() {
 }
 
 void _start() {
-  main();
+  _main();
 }
+
+void main() => _start();

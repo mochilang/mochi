@@ -113,9 +113,9 @@ String makePrintable(String s) {
   return out;
 }
 
-void main() {
+void _main() {
   List<String> examples = ["banana", "appellee", "dogwood", "TO BE OR NOT TO BE OR WANT TO BE OR NOT?", "SIX.MIXED.PIXIES.SIFT.SIXTY.PIXIE.DUST.BOXES", "ABC"];
-  for (var t in examples) {
+  for (String t in examples) {
     print(makePrintable(t));
     Map<String, dynamic> res = bwt(t);
     if (res["err"]!) {
@@ -132,5 +132,7 @@ void main() {
 }
 
 void _start() {
-  main();
+  _main();
 }
+
+void main() => _start();
