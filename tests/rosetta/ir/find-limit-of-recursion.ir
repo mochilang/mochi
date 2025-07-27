@@ -1,0 +1,32 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun main() {
+func main (regs=10)
+  // var n = 1
+  Const        r0, 1
+  Move         r1, r0
+L2:
+  // while n <= 51300 {
+  Const        r2, 51300
+  LessEqInt    r3, r1, r2
+  JumpIfFalse  r3, L0
+  // if n % 100 == 0 { print(str(n)) }
+  Const        r4, 100
+  ModInt       r5, r1, r4
+  Const        r6, 0
+  EqualInt     r7, r5, r6
+  JumpIfFalse  r7, L1
+  Str          r8, r1
+  Print        r8
+L1:
+  // n = n + 1
+  Const        r0, 1
+  AddInt       r9, r1, r0
+  Move         r1, r9
+  // while n <= 51300 {
+  Jump         L2
+L0:
+  Return       r0

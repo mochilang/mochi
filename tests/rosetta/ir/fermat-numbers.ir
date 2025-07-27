@@ -1,0 +1,59 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun main() {
+func main (regs=27)
+  // let nums = [
+  Const        r0, ["3", "5", "17", "257", "65537", "4294967297", "18446744073709551617", "340282366920938463463374607431768211457"]
+  Move         r1, r0
+  // print("First 8 Fermat numbers:")
+  Const        r2, "First 8 Fermat numbers:"
+  Print        r2
+  // for n in nums { print(n) }
+  IterPrep     r3, r1
+  Len          r4, r3
+  Const        r5, 0
+L1:
+  LessInt      r6, r5, r4
+  JumpIfFalse  r6, L0
+  Index        r7, r3, r5
+  Move         r8, r7
+  Print        r8
+  Const        r9, 1
+  AddInt       r10, r5, r9
+  Move         r5, r10
+  Jump         L1
+L0:
+  // let factors = [
+  Const        r11, ["3", "5", "17", "257", "65537", "641 6700417", "274177 67280421310721", "59649589127497217 5704689200685129054721"]
+  Move         r12, r11
+  // print("\nFactors:")
+  Const        r13, "\nFactors:"
+  Print        r13
+  // var i = 0
+  Const        r14, 0
+  Move         r15, r14
+L3:
+  // while i < len(nums) {
+  Const        r16, 8
+  LessInt      r17, r15, r16
+  JumpIfFalse  r17, L2
+  // print("F" + str(i) + " = " + factors[i])
+  Const        r18, "F"
+  Str          r19, r15
+  Add          r20, r18, r19
+  Const        r21, " = "
+  Add          r22, r20, r21
+  Index        r23, r12, r15
+  Add          r24, r22, r23
+  Print        r24
+  // i = i + 1
+  Const        r25, 1
+  AddInt       r26, r15, r25
+  Move         r15, r26
+  // while i < len(nums) {
+  Jump         L3
+L2:
+  Return       r0

@@ -1,0 +1,49 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun fibonacciWord(n: int): string {
+func fibonacciWord (regs=11)
+  // var a = "1"
+  Const        r1, "1"
+  Move         r2, r1
+  // var b = "0"
+  Const        r3, "0"
+  Move         r4, r3
+  // var i = 1
+  Const        r5, 1
+  Move         r6, r5
+L1:
+  // while i < n {
+  Less         r7, r6, r0
+  JumpIfFalse  r7, L0
+  // let tmp = b
+  Move         r8, r4
+  // b = b + a
+  Add          r9, r4, r2
+  Move         r4, r9
+  // a = tmp
+  Move         r2, r8
+  // i = i + 1
+  Const        r5, 1
+  AddInt       r10, r6, r5
+  Move         r6, r10
+  // while i < n {
+  Jump         L1
+L0:
+  // return a
+  Return       r2
+
+  // fun main() {
+func main (regs=6)
+  // let wf = fibonacciWord(23)
+  Const        r1, 23
+  Move         r0, r1
+  Call         r2, fibonacciWord, r0
+  Move         r3, r2
+  // print(str(len(wf)))
+  Len          r4, r3
+  Str          r5, r4
+  Print        r5
+  Return       r0

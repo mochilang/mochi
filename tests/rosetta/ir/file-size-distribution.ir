@@ -1,0 +1,209 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun log10floor(n: int): int {
+func log10floor (regs=10)
+  // var p = 0
+  Const        r1, 0
+  Move         r2, r1
+  // var v = n
+  Move         r3, r0
+L1:
+  // while v >= 10 {
+  Const        r4, 10
+  LessEq       r5, r4, r3
+  JumpIfFalse  r5, L0
+  // v = (v / 10) as int
+  Const        r4, 10
+  Div          r6, r3, r4
+  Cast         r7, r6, int
+  Move         r3, r7
+  // p = p + 1
+  Const        r8, 1
+  AddInt       r9, r2, r8
+  Move         r2, r9
+  // while v >= 10 {
+  Jump         L1
+L0:
+  // return p
+  Return       r2
+
+  // fun commatize(n: int): string {
+func commatize (regs=23)
+  // var s = str(n)
+  Str          r1, r0
+  Move         r2, r1
+  // var res = ""
+  Const        r3, ""
+  Move         r4, r3
+  // var i = 0
+  Const        r5, 0
+  Move         r6, r5
+L3:
+  // while i < len(s) {
+  Len          r7, r2
+  LessInt      r8, r6, r7
+  JumpIfFalse  r8, L0
+  // if i > 0 && (len(s)-i) % 3 == 0 { res = res + "," }
+  Len          r9, r2
+  SubInt       r10, r9, r6
+  Const        r11, 3
+  ModInt       r12, r10, r11
+  Const        r5, 0
+  LessInt      r13, r5, r6
+  Const        r5, 0
+  EqualInt     r14, r12, r5
+  Move         r15, r13
+  JumpIfFalse  r15, L1
+  Move         r15, r14
+L1:
+  JumpIfFalse  r15, L2
+  Const        r16, ","
+  Add          r17, r4, r16
+  Move         r4, r17
+L2:
+  // res = res + substring(s, i, i+1)
+  Const        r18, 1
+  AddInt       r19, r6, r18
+  Slice        r20, r2, r6, r19
+  Add          r21, r4, r20
+  Move         r4, r21
+  // i = i + 1
+  Const        r18, 1
+  AddInt       r22, r6, r18
+  Move         r6, r22
+  // while i < len(s) {
+  Jump         L3
+L0:
+  // return res
+  Return       r4
+
+  // fun showDistribution(sizes: list<int>) {
+func showDistribution (regs=55)
+  // var bins: list<int> = []
+  Const        r1, []
+  Move         r2, r1
+  // var i = 0
+  Const        r3, 0
+  Move         r4, r3
+L1:
+  // while i < 12 { bins = append(bins, 0); i = i + 1 }
+  Const        r5, 12
+  LessInt      r6, r4, r5
+  JumpIfFalse  r6, L0
+  Const        r3, 0
+  Append       r7, r2, r3
+  Move         r2, r7
+  Const        r8, 1
+  AddInt       r9, r4, r8
+  Move         r4, r9
+  Jump         L1
+L0:
+  // var total = 0
+  Const        r3, 0
+  Move         r10, r3
+  // for sz in sizes {
+  IterPrep     r11, r0
+  Len          r12, r11
+  Const        r13, 0
+L4:
+  LessInt      r14, r13, r12
+  JumpIfFalse  r14, L2
+  Index        r15, r11, r13
+  Move         r16, r15
+  // total = total + sz
+  Add          r17, r10, r16
+  Move         r10, r17
+  // var idx = 0
+  Const        r3, 0
+  Move         r18, r3
+  // if sz > 0 { idx = log10floor(sz) + 1 }
+  Const        r3, 0
+  Less         r19, r3, r16
+  JumpIfFalse  r19, L3
+  Move         r20, r16
+  Call         r21, log10floor, r20
+  Const        r8, 1
+  Add          r22, r21, r8
+  Move         r18, r22
+L3:
+  // bins[idx] = bins[idx] + 1
+  Index        r23, r2, r18
+  Const        r8, 1
+  Add          r24, r23, r8
+  SetIndex     r2, r18, r24
+  // for sz in sizes {
+  Const        r25, 1
+  AddInt       r26, r13, r25
+  Move         r13, r26
+  Jump         L4
+L2:
+  // print("File size distribution:\n")
+  Const        r27, "File size distribution:\n"
+  Print        r27
+  // i = 0
+  Const        r3, 0
+  Move         r4, r3
+L7:
+  // while i < len(bins) {
+  Len          r28, r2
+  LessInt      r29, r4, r28
+  JumpIfFalse  r29, L5
+  // var prefix = "  "
+  Const        r30, "  "
+  Move         r31, r30
+  // if i > 0 { prefix = "+ " }
+  Const        r3, 0
+  LessInt      r32, r3, r4
+  JumpIfFalse  r32, L6
+  Const        r33, "+ "
+  Move         r31, r33
+L6:
+  // print(prefix + "Files less than 10 ^ " + str(i) + " bytes : " + str(bins[i]))
+  Const        r34, "Files less than 10 ^ "
+  Add          r35, r31, r34
+  Str          r36, r4
+  Add          r37, r35, r36
+  Const        r38, " bytes : "
+  Add          r39, r37, r38
+  Index        r40, r2, r4
+  Str          r41, r40
+  Add          r42, r39, r41
+  Print        r42
+  // i = i + 1
+  Const        r8, 1
+  AddInt       r43, r4, r8
+  Move         r4, r43
+  // while i < len(bins) {
+  Jump         L7
+L5:
+  // print("                                  -----")
+  Const        r44, "                                  -----"
+  Print        r44
+  // print("= Total number of files         : " + str(len(sizes)))
+  Const        r45, "= Total number of files         : "
+  Len          r46, r0
+  Str          r47, r46
+  Add          r48, r45, r47
+  Print        r48
+  // print("  Total size of files           : " + commatize(total) + " bytes")
+  Const        r49, "  Total size of files           : "
+  Move         r50, r10
+  Call         r51, commatize, r50
+  Add          r52, r49, r51
+  Const        r53, " bytes"
+  Add          r54, r52, r53
+  Print        r54
+  Return       r0
+
+  // fun main() {
+func main (regs=4)
+  // let sizes = [0, 1, 9, 10, 99, 100, 1234, 50000, 730000, 8200000]
+  Const        r0, [0, 1, 9, 10, 99, 100, 1234, 50000, 730000, 8200000]
+  Move         r1, r0
+  // showDistribution(sizes)
+  Move         r2, r1
+  Call         r3, showDistribution, r2
+  Return       r0

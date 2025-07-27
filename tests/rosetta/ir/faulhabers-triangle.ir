@@ -1,0 +1,26 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun main() {
+func main (regs=10)
+  // var lines = [
+  Const        r0, ["    1", "  1/2    1/2", "  1/6    1/2    1/3", "    0    1/4    1/2    1/4", "-1/30      0    1/3    1/2    1/5", "    0  -1/12      0   5/12    1/2    1/6", " 1/42      0   -1/6      0    1/2    1/2    1/7", "    0   1/12      0  -7/24      0   7/12    1/2    1/8", "-1/30      0    2/9      0  -7/15      0    2/3    1/2    1/9", "    0  -3/20      0    1/2      0  -7/10      0    3/4    1/2   1/10", "", "56056972216555580111030077961944183400198333273050000"]
+  Move         r1, r0
+  // for line in lines { print(line) }
+  IterPrep     r2, r1
+  Len          r3, r2
+  Const        r4, 0
+L1:
+  LessInt      r5, r4, r3
+  JumpIfFalse  r5, L0
+  Index        r6, r2, r4
+  Move         r7, r6
+  Print        r7
+  Const        r8, 1
+  AddInt       r9, r4, r8
+  Move         r4, r9
+  Jump         L1
+L0:
+  Return       r0

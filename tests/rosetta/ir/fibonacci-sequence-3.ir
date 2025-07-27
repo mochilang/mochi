@@ -1,0 +1,56 @@
+func main (regs=1)
+  Return       r0
+
+  // fun fibNumber(): fun(): int {
+func fibNumber (regs=7)
+  // var a = 0
+  Const        r0, 0
+  Move         r1, r0
+  // var b = 1
+  Const        r2, 1
+  Move         r3, r2
+  // return fun(): int {
+  Move         r4, r1
+  Move         r5, r3
+  MakeClosure  r6, fn3, 2, r4
+  Return       r6
+
+  // fun fibSequence(n: int): int {
+func fibSequence (regs=10)
+  // let f = fibNumber()
+  Call         r1, fibNumber, 
+  Move         r2, r1
+  // var r = 0
+  Const        r3, 0
+  Move         r4, r3
+  // var i = 0
+  Const        r3, 0
+  Move         r5, r3
+L1:
+  // while i < n {
+  Less         r6, r5, r0
+  JumpIfFalse  r6, L0
+  // r = f()
+  CallV        r7, r2, 0, r0
+  Move         r4, r7
+  // i = i + 1
+  Const        r8, 1
+  AddInt       r9, r5, r8
+  Move         r5, r9
+  // while i < n {
+  Jump         L1
+L0:
+  // return r
+  Return       r4
+
+  // return fun(): int {
+func fn3 (regs=4)
+  // let tmp = a + b
+  Add          r2, r0, r1
+  Move         r3, r2
+  // a = b
+  Move         r0, r1
+  // b = tmp
+  Move         r1, r3
+  // return a
+  Return       r0

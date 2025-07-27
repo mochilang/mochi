@@ -1,0 +1,53 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun even(xs: list<int>): list<int> {
+func even (regs=16)
+  // var r: list<int> = []
+  Const        r1, []
+  Move         r2, r1
+  // for x in xs {
+  IterPrep     r3, r0
+  Len          r4, r3
+  Const        r5, 0
+L2:
+  LessInt      r6, r5, r4
+  JumpIfFalse  r6, L0
+  Index        r7, r3, r5
+  Move         r8, r7
+  // if x % 2 == 0 { r = append(r, x) }
+  Const        r9, 2
+  Mod          r10, r8, r9
+  Const        r11, 0
+  Equal        r12, r10, r11
+  JumpIfFalse  r12, L1
+  Append       r13, r2, r8
+  Move         r2, r13
+L1:
+  // for x in xs {
+  Const        r14, 1
+  AddInt       r15, r5, r14
+  Move         r5, r15
+  Jump         L2
+L0:
+  // return r
+  Return       r2
+
+  // fun main() {
+func main (regs=5)
+  // var a = [1,2,3,4,5,6,7,8,9,10]
+  Const        r0, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+  Move         r1, r0
+  // print(a)
+  Print        r1
+  // let b = even(a)
+  Move         r2, r1
+  Call         r3, even, r2
+  Move         r4, r3
+  // print(b)
+  Print        r4
+  // print(a) // original unchanged
+  Print        r1
+  Return       r0

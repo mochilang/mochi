@@ -1,0 +1,191 @@
+func main (regs=3)
+  // let extensions = ["zip","rar","7z","gz","archive","A##","tar.bz2"]
+  Const        r1, ["zip", "rar", "7z", "gz", "archive", "A##", "tar.bz2"]
+  Move         r0, r1
+  SetGlobal    0,0,0,0
+  // main()
+  Call         r2, main, 
+  Return       r0
+
+  // fun endsWith(s:string,suf:string):bool{ if len(s)<len(suf){return false}; return substring(s,len(s)-len(suf),len(s))==suf }
+func endsWith (regs=13)
+  // fun endsWith(s:string,suf:string):bool{ if len(s)<len(suf){return false}; return substring(s,len(s)-len(suf),len(s))==suf }
+  Len          r3, r1
+  Len          r4, r2
+  LessInt      r5, r3, r4
+  JumpIfFalse  r5, L0
+  Const        r6, false
+  Return       r6
+L0:
+  Len          r7, r1
+  Len          r8, r2
+  SubInt       r9, r7, r8
+  Len          r10, r1
+  Slice        r11, r1, r9, r10
+  Equal        r12, r11, r2
+  Return       r12
+
+  // fun lastIndexOf(s:string, sub:string):int{var idx=0-1; var i=0; while i<=len(s)-len(sub){ if substring(s,i,i+len(sub))==sub { idx=i }; i=i+1 }; return idx }
+func lastIndexOf (regs=17)
+  // fun lastIndexOf(s:string, sub:string):int{var idx=0-1; var i=0; while i<=len(s)-len(sub){ if substring(s,i,i+len(sub))==sub { idx=i }; i=i+1 }; return idx }
+  Const        r3, 0
+  Const        r4, 1
+  SubInt       r5, r3, r4
+  Move         r6, r5
+  Const        r3, 0
+  Move         r7, r3
+L2:
+  Len          r8, r1
+  Len          r9, r2
+  SubInt       r10, r8, r9
+  LessEqInt    r11, r7, r10
+  JumpIfFalse  r11, L0
+  Len          r12, r2
+  AddInt       r13, r7, r12
+  Slice        r14, r1, r7, r13
+  Equal        r15, r14, r2
+  JumpIfFalse  r15, L1
+  Move         r6, r7
+L1:
+  Const        r4, 1
+  AddInt       r16, r7, r4
+  Move         r7, r16
+  Jump         L2
+L0:
+  Return       r6
+
+  // fun fileExtInList(filename: string): list<any> {
+func fileExtInList (regs=40)
+  // let fl = lower(filename)
+  Lower        r2, r1
+  Move         r3, r2
+  // for ext in extensions {
+  IterPrep     r4, r0
+  Len          r5, r4
+  Const        r6, 0
+L2:
+  LessInt      r7, r6, r5
+  JumpIfFalse  r7, L0
+  Index        r8, r4, r6
+  Move         r9, r8
+  // let ext2 = "." + lower(ext)
+  Const        r10, "."
+  Lower        r11, r9
+  Add          r12, r10, r11
+  Move         r13, r12
+  // if endsWith(fl, ext2) { return [true, ext] }
+  Move         r14, r3
+  Move         r15, r13
+  Call2        r16, endsWith, r14, r15
+  JumpIfFalse  r16, L1
+  Const        r19, true
+  Move         r17, r19
+  Move         r18, r9
+  MakeList     r20, 2, r17
+  Return       r20
+L1:
+  // for ext in extensions {
+  Const        r21, 1
+  AddInt       r22, r6, r21
+  Move         r6, r22
+  Jump         L2
+L0:
+  // let idx = lastIndexOf(filename, ".")
+  Move         r23, r1
+  Const        r10, "."
+  Move         r24, r10
+  Call2        r25, lastIndexOf, r23, r24
+  Move         r26, r25
+  // if idx != 0 - 1 {
+  Const        r27, 0
+  Const        r28, 1
+  SubInt       r29, r27, r28
+  NotEqual     r30, r26, r29
+  JumpIfFalse  r30, L3
+  // let t = substring(filename, idx+1, len(filename))
+  Const        r28, 1
+  Add          r31, r26, r28
+  Len          r32, r1
+  Slice        r33, r1, r31, r32
+  Move         r34, r33
+  // return [false, t]
+  Const        r37, false
+  Move         r35, r37
+  Move         r36, r34
+  MakeList     r38, 2, r35
+  Return       r38
+L3:
+  // return [false, "<none>"]
+  Const        r39, [false, "<none>"]
+  Return       r39
+
+  // fun main() {
+func main (regs=36)
+  // print("The listed extensions are:")
+  Const        r1, "The listed extensions are:"
+  Print        r1
+  // print(extensions)
+  Print        r0
+  // let tests = ["MyData.a##","MyData.tar.Gz","MyData.gzip","MyData.7z.backup","MyData...","MyData","MyData_v1.0.tar.bz2","MyData_v1.0.bz2"]
+  Const        r2, ["MyData.a##", "MyData.tar.Gz", "MyData.gzip", "MyData.7z.backup", "MyData...", "MyData", "MyData_v1.0.tar.bz2", "MyData_v1.0.bz2"]
+  Move         r3, r2
+  // for t in tests {
+  IterPrep     r4, r3
+  Len          r5, r4
+  Const        r6, 0
+L1:
+  LessInt      r7, r6, r5
+  JumpIfFalse  r7, L0
+  Index        r8, r4, r6
+  Move         r9, r8
+  // let res = fileExtInList(t)
+  Move         r10, r9
+  Call         r11, fileExtInList, r10
+  Move         r12, r11
+  // let ok = res[0] as bool
+  Const        r13, 0
+  Index        r14, r12, r13
+  Cast         r15, r14, bool
+  Move         r16, r15
+  // let ext = res[1] as string
+  Const        r17, 1
+  Index        r18, r12, r17
+  Cast         r19, r18, string
+  Move         r20, r19
+  // print(pad(t,20) + " => " + str(ok) + "  (extension = " + ext + ")")
+  Move         r21, r9
+  Const        r23, 20
+  Move         r22, r23
+  Call2        r24, pad, r21, r22
+  Const        r25, " => "
+  Add          r26, r24, r25
+  Str          r27, r16
+  Add          r28, r26, r27
+  Const        r29, "  (extension = "
+  Add          r30, r28, r29
+  Add          r31, r30, r20
+  Const        r32, ")"
+  Add          r33, r31, r32
+  Print        r33
+  // for t in tests {
+  Const        r34, 1
+  AddInt       r35, r6, r34
+  Move         r6, r35
+  Jump         L1
+L0:
+  Return       r0
+
+  // fun pad(s:string,w:int):string{var t=s; while len(t)<w{t=t+" "}; return t}
+func pad (regs=8)
+  // fun pad(s:string,w:int):string{var t=s; while len(t)<w{t=t+" "}; return t}
+  Move         r3, r1
+L1:
+  Len          r4, r3
+  Less         r5, r4, r2
+  JumpIfFalse  r5, L0
+  Const        r6, " "
+  Add          r7, r3, r6
+  Move         r3, r7
+  Jump         L1
+L0:
+  Return       r3

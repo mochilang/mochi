@@ -1,0 +1,214 @@
+func main (regs=15)
+  // let x1 = [36.0, 40.0, 7.0, 39.0, 41.0, 15.0]
+  Const        r3, [36.0, 40.0, 7.0, 39.0, 41.0, 15.0]
+  Move         r0, r3
+  SetGlobal    0,0,0,0
+  // let x2 = [15.0, 6.0, 42.0, 41.0, 7.0, 36.0, 49.0, 40.0, 39.0, 47.0, 43.0]
+  Const        r4, [15.0, 6.0, 42.0, 41.0, 7.0, 36.0, 49.0, 40.0, 39.0, 47.0, 43.0]
+  Move         r1, r4
+  SetGlobal    1,1,0,0
+  // let x3 = [
+  Const        r5, [0.14082834, 0.0974879, 1.73131507, 0.87636009, -1.95059594, 0.73438555, -0.03035726, 1.4667597, -0.74621349, -0.72588772, 0.6390516, 0.61501527, -0.9898378, -1.00447874, -0.62759469, 0.66206163, 1.04312009, -0.10305385, 0.75775634, 0.32566578]
+  Move         r2, r5
+  SetGlobal    2,2,0,0
+  // print(str(fivenum(x1)))
+  Move         r6, r0
+  Call         r7, fivenum, r6
+  Str          r8, r7
+  Print        r8
+  // print(str(fivenum(x2)))
+  Move         r9, r1
+  Call         r10, fivenum, r9
+  Str          r11, r10
+  Print        r11
+  // print(str(fivenum(x3)))
+  Move         r12, r2
+  Call         r13, fivenum, r12
+  Str          r14, r13
+  Print        r14
+  Return       r0
+
+  // fun qsel(a: list<float>, k: int): float {
+func qsel (regs=44)
+  // var arr = a
+  Move         r5, r3
+L6:
+  // while len(arr) > 1 {
+  Len          r6, r5
+  Const        r7, 1
+  LessInt      r8, r7, r6
+  JumpIfFalse  r8, L0
+  // var px = now() % len(arr)
+  Now          r9
+  Len          r10, r5
+  ModInt       r11, r9, r10
+  Move         r12, r11
+  // var pv = arr[px]
+  Index        r13, r5, r12
+  Move         r14, r13
+  // let last = len(arr) - 1
+  Len          r15, r5
+  Const        r7, 1
+  SubInt       r16, r15, r7
+  Move         r17, r16
+  // let tmp = arr[px]
+  Index        r18, r5, r12
+  Move         r19, r18
+  // arr[px] = arr[last]
+  Index        r20, r5, r17
+  SetIndex     r5, r12, r20
+  // arr[last] = tmp
+  SetIndex     r5, r17, r19
+  // px = 0
+  Const        r21, 0
+  Move         r12, r21
+  // var i = 0
+  Const        r21, 0
+  Move         r22, r21
+L3:
+  // while i < last {
+  LessInt      r23, r22, r17
+  JumpIfFalse  r23, L1
+  // let v = arr[i]
+  Index        r24, r5, r22
+  Move         r25, r24
+  // if v < pv {
+  Less         r26, r25, r14
+  JumpIfFalse  r26, L2
+  // let t = arr[px]
+  Index        r27, r5, r12
+  Move         r28, r27
+  // arr[px] = arr[i]
+  Index        r29, r5, r22
+  SetIndex     r5, r12, r29
+  // arr[i] = t
+  SetIndex     r5, r22, r28
+  // px = px + 1
+  Const        r7, 1
+  AddInt       r30, r12, r7
+  Move         r12, r30
+L2:
+  // i = i + 1
+  Const        r7, 1
+  AddInt       r31, r22, r7
+  Move         r22, r31
+  // while i < last {
+  Jump         L3
+L1:
+  // arr[px] = pv
+  SetIndex     r5, r12, r14
+  // if px == k { return pv }
+  Equal        r32, r12, r4
+  JumpIfFalse  r32, L4
+  Return       r14
+L4:
+  // if k < px {
+  Less         r33, r4, r12
+  JumpIfFalse  r33, L5
+  // arr = arr[0:px]
+  Const        r21, 0
+  Move         r34, r21
+  Move         r35, r12
+  Slice        r36, r5, r34, r35
+  Move         r5, r36
+  // if k < px {
+  Jump         L6
+L5:
+  // arr = arr[(px+1):]
+  Const        r7, 1
+  AddInt       r38, r12, r7
+  Move         r37, r38
+  Const        r39, nil
+  Slice        r40, r5, r37, r39
+  Move         r5, r40
+  // k = k - (px + 1)
+  Const        r7, 1
+  AddInt       r41, r12, r7
+  Sub          r42, r4, r41
+  Move         r4, r42
+  // while len(arr) > 1 {
+  Jump         L6
+L0:
+  // return arr[0]
+  Const        r21, 0
+  Index        r43, r5, r21
+  Return       r43
+
+  // fun fivenum(a: list<float>): list<float> {
+func fivenum (regs=57)
+  // let last = len(a) - 1
+  Len          r4, r3
+  Const        r5, 1
+  SubInt       r6, r4, r5
+  Move         r7, r6
+  // let m = last / 2
+  Const        r8, 2
+  DivInt       r9, r7, r8
+  Move         r10, r9
+  // var n5: list<float> = []
+  Const        r11, []
+  Move         r12, r11
+  // n5 = append(n5, qsel(a[0:m], 0))
+  Const        r16, 0
+  Move         r15, r16
+  Move         r17, r10
+  Slice        r18, r3, r15, r17
+  Move         r13, r18
+  Const        r16, 0
+  Move         r14, r16
+  Call2        r19, qsel, r13, r14
+  Append       r20, r12, r19
+  Move         r12, r20
+  // n5 = append(n5, qsel(a[0:m], len(a)/4))
+  Const        r16, 0
+  Move         r23, r16
+  Move         r24, r10
+  Slice        r25, r3, r23, r24
+  Move         r21, r25
+  Len          r26, r3
+  Const        r27, 4
+  DivInt       r28, r26, r27
+  Move         r22, r28
+  Call2        r29, qsel, r21, r22
+  Append       r30, r12, r29
+  Move         r12, r30
+  // n5 = append(n5, qsel(a, m))
+  Move         r31, r3
+  Move         r32, r10
+  Call2        r33, qsel, r31, r32
+  Append       r34, r12, r33
+  Move         r12, r34
+  // var arr2 = a[m:]
+  Move         r35, r10
+  Const        r36, nil
+  Slice        r37, r3, r35, r36
+  Move         r38, r37
+  // let q3 = last - m - len(a)/4
+  Len          r39, r3
+  Const        r27, 4
+  DivInt       r40, r39, r27
+  SubInt       r41, r7, r10
+  SubInt       r42, r41, r40
+  Move         r43, r42
+  // n5 = append(n5, qsel(arr2, q3))
+  Move         r44, r38
+  Move         r45, r43
+  Call2        r46, qsel, r44, r45
+  Append       r47, r12, r46
+  Move         r12, r47
+  // arr2 = arr2[q3:]
+  Move         r48, r43
+  Const        r49, nil
+  Slice        r50, r38, r48, r49
+  Move         r38, r50
+  // n5 = append(n5, qsel(arr2, len(arr2)-1))
+  Move         r51, r38
+  Len          r53, r38
+  Const        r5, 1
+  SubInt       r54, r53, r5
+  Move         r52, r54
+  Call2        r55, qsel, r51, r52
+  Append       r56, r12, r55
+  Move         r12, r56
+  // return n5
+  Return       r12

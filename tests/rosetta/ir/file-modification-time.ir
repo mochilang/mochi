@@ -1,0 +1,37 @@
+func main (regs=3)
+  // var fs: map<string,int> = {"input.txt": 0}
+  Const        r1, {"input.txt": 0}
+  Move         r0, r1
+  SetGlobal    0,0,0,0
+  // main()
+  Call         r2, main, 
+  Return       r0
+
+  // fun main() {
+func main (regs=14)
+  // let old = fs["input.txt"]
+  Const        r1, "input.txt"
+  Index        r2, r0, r1
+  Move         r3, r2
+  // print("mod time was: " + str(old))
+  Const        r4, "mod time was: "
+  Str          r5, r3
+  Add          r6, r4, r5
+  Print        r6
+  // var mtime = now()
+  Now          r7
+  Move         r8, r7
+  // mtime = now()
+  Now          r9
+  Move         r8, r9
+  // fs["input.txt"] = mtime as int
+  Cast         r10, r8, int
+  Const        r1, "input.txt"
+  SetIndex     r0, r1, r10
+  SetGlobal    0,0,0,0
+  // print("mod time now: " + str(mtime))
+  Const        r11, "mod time now: "
+  Str          r12, r8
+  Add          r13, r11, r12
+  Print        r13
+  Return       r0

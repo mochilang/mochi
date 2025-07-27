@@ -1,0 +1,317 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun abs(x: float): float {
+func abs (regs=4)
+  // if x < 0.0 { return -x }
+  Const        r1, 0.0
+  LessFloat    r2, r0, r1
+  JumpIfFalse  r2, L0
+  Neg          r3, r0
+  Return       r3
+L0:
+  // return x
+  Return       r0
+
+  // fun area(x1: float, y1: float, x2: float, y2: float, x3: float, y3: float): float {
+func area (regs=18)
+  // return abs((x1*(y2-y3) + x2*(y3-y1) + x3*(y1-y2)) / 2.0)
+  Sub          r7, r3, r5
+  Mul          r8, r0, r7
+  Sub          r9, r5, r1
+  Mul          r10, r2, r9
+  Sub          r11, r1, r3
+  Mul          r12, r4, r11
+  Add          r13, r8, r10
+  Add          r14, r13, r12
+  Const        r15, 2.0
+  DivFloat     r16, r14, r15
+  Move         r6, r16
+  Call         r17, abs, r6
+  Return       r17
+
+  // fun pointInTriangle(x1: float, y1: float, x2: float, y2: float, x3: float, y3: float, x: float, y: float): bool {
+func pointInTriangle (regs=51)
+  // let A = area(x1,y1,x2,y2,x3,y3)
+  Move         r8, r0
+  Move         r9, r1
+  Move         r10, r2
+  Move         r11, r3
+  Move         r12, r4
+  Move         r13, r5
+  Call         r14, area, r8, r9, r10, r11, r12, r13
+  Move         r15, r14
+  // let A1 = area(x, y, x2, y2, x3, y3)
+  Move         r16, r6
+  Move         r17, r7
+  Move         r18, r2
+  Move         r19, r3
+  Move         r20, r4
+  Move         r21, r5
+  Call         r22, area, r16, r17, r18, r19, r20, r21
+  Move         r23, r22
+  // let A2 = area(x1,y1,x, y, x3, y3)
+  Move         r24, r0
+  Move         r25, r1
+  Move         r26, r6
+  Move         r27, r7
+  Move         r28, r4
+  Move         r29, r5
+  Call         r30, area, r24, r25, r26, r27, r28, r29
+  Move         r31, r30
+  // let A3 = area(x1,y1,x2,y2,x, y)
+  Move         r32, r0
+  Move         r33, r1
+  Move         r34, r2
+  Move         r35, r3
+  Move         r36, r6
+  Move         r37, r7
+  Call         r38, area, r32, r33, r34, r35, r36, r37
+  Move         r39, r38
+  // let diff = (abs((A1+A2+A3) - A) as float)
+  Add          r41, r23, r31
+  Add          r42, r41, r39
+  Sub          r43, r42, r15
+  Move         r40, r43
+  Call         r44, abs, r40
+  Cast         r45, r44, float
+  Move         r46, r45
+  // if diff < 0.0001 { return true }
+  Const        r47, 0.0001
+  LessFloat    r48, r46, r47
+  JumpIfFalse  r48, L0
+  Const        r49, true
+  Return       r49
+L0:
+  // return false
+  Const        r50, false
+  Return       r50
+
+  // fun main() {
+func main (regs=134)
+  // let tri1 = [[3.0/2, 12.0/5], [51.0/10, -31.0/10], [-19.0/5, 1.2]]
+  Const        r0, [[1.5, 2.4], [5.1, -3.1], [-3.8, 1.2]]
+  Move         r1, r0
+  // print("Triangle is " + str(tri1))
+  Const        r2, "Triangle is "
+  Const        r3, "[[1.5 2.4] [5.1 -3.1] [-3.8 1.2]]"
+  Add          r4, r2, r3
+  Print        r4
+  // for pt in [[0.0,0.0],[0.0,1.0],[3.0,1.0]] {
+  Const        r5, [[0.0, 0.0], [0.0, 1.0], [3.0, 1.0]]
+  IterPrep     r6, r5
+  Len          r7, r6
+  Const        r8, 0
+L1:
+  LessInt      r9, r8, r7
+  JumpIfFalse  r9, L0
+  Index        r10, r6, r8
+  Move         r11, r10
+  // let ok = pointInTriangle(tri1[0][0],tri1[0][1],tri1[1][0],tri1[1][1],tri1[2][0],tri1[2][1], pt[0], pt[1])
+  Const        r20, 0
+  Index        r21, r1, r20
+  Const        r20, 0
+  Index        r22, r21, r20
+  Move         r12, r22
+  Const        r20, 0
+  Index        r23, r1, r20
+  Const        r24, 1
+  Index        r25, r23, r24
+  Move         r13, r25
+  Const        r24, 1
+  Index        r26, r1, r24
+  Const        r20, 0
+  Index        r27, r26, r20
+  Move         r14, r27
+  Const        r24, 1
+  Index        r28, r1, r24
+  Const        r24, 1
+  Index        r29, r28, r24
+  Move         r15, r29
+  Const        r30, 2
+  Index        r31, r1, r30
+  Const        r20, 0
+  Index        r32, r31, r20
+  Move         r16, r32
+  Const        r30, 2
+  Index        r33, r1, r30
+  Const        r24, 1
+  Index        r34, r33, r24
+  Move         r17, r34
+  Const        r20, 0
+  Index        r35, r11, r20
+  Move         r18, r35
+  Const        r24, 1
+  Index        r36, r11, r24
+  Move         r19, r36
+  Call         r37, pointInTriangle, r12, r13, r14, r15, r16, r17, r18, r19
+  Move         r38, r37
+  // print("Point " + str(pt) + " is within triangle? " + str(ok))
+  Const        r39, "Point "
+  Str          r40, r11
+  Add          r41, r39, r40
+  Const        r42, " is within triangle? "
+  Add          r43, r41, r42
+  Str          r44, r38
+  Add          r45, r43, r44
+  Print        r45
+  // for pt in [[0.0,0.0],[0.0,1.0],[3.0,1.0]] {
+  Const        r46, 1
+  AddInt       r47, r8, r46
+  Move         r8, r47
+  Jump         L1
+L0:
+  // print("")
+  Const        r48, ""
+  Print        r48
+  // var tri2 = [[1.0/10,1.0/9],[100.0/8,100.0/3],[100.0/4,100.0/9]]
+  Const        r49, [[0.1, 0.1111111111111111], [12.5, 33.333333333333336], [25.0, 11.11111111111111]]
+  Move         r50, r49
+  // print("Triangle is " + str(tri2))
+  Const        r2, "Triangle is "
+  Str          r51, r50
+  Add          r52, r2, r51
+  Print        r52
+  // let x = tri2[0][0] + (3.0/7)*(tri2[1][0]-tri2[0][0])
+  Const        r20, 0
+  Index        r53, r50, r20
+  Const        r20, 0
+  Index        r54, r53, r20
+  Const        r55, 0.42857142857142855
+  Const        r24, 1
+  Index        r56, r50, r24
+  Const        r20, 0
+  Index        r57, r56, r20
+  Const        r20, 0
+  Index        r58, r50, r20
+  Const        r20, 0
+  Index        r59, r58, r20
+  Sub          r60, r57, r59
+  MulFloat     r61, r55, r60
+  AddFloat     r62, r54, r61
+  Move         r63, r62
+  // let y = tri2[0][1] + (3.0/7)*(tri2[1][1]-tri2[0][1])
+  Const        r20, 0
+  Index        r64, r50, r20
+  Const        r24, 1
+  Index        r65, r64, r24
+  Const        r55, 0.42857142857142855
+  Const        r24, 1
+  Index        r66, r50, r24
+  Const        r24, 1
+  Index        r67, r66, r24
+  Const        r20, 0
+  Index        r68, r50, r20
+  Const        r24, 1
+  Index        r69, r68, r24
+  Sub          r70, r67, r69
+  MulFloat     r71, r55, r70
+  AddFloat     r72, r65, r71
+  Move         r73, r72
+  // let pt = [x,y]
+  Move         r74, r63
+  Move         r75, r73
+  MakeList     r76, 2, r74
+  Move         r11, r76
+  // var ok = pointInTriangle(tri2[0][0],tri2[0][1],tri2[1][0],tri2[1][1],tri2[2][0],tri2[2][1], x, y)
+  Const        r20, 0
+  Index        r85, r50, r20
+  Const        r20, 0
+  Index        r86, r85, r20
+  Move         r77, r86
+  Const        r20, 0
+  Index        r87, r50, r20
+  Const        r24, 1
+  Index        r88, r87, r24
+  Move         r78, r88
+  Const        r24, 1
+  Index        r89, r50, r24
+  Const        r20, 0
+  Index        r90, r89, r20
+  Move         r79, r90
+  Const        r24, 1
+  Index        r91, r50, r24
+  Const        r24, 1
+  Index        r92, r91, r24
+  Move         r80, r92
+  Const        r30, 2
+  Index        r93, r50, r30
+  Const        r20, 0
+  Index        r94, r93, r20
+  Move         r81, r94
+  Const        r30, 2
+  Index        r95, r50, r30
+  Const        r24, 1
+  Index        r96, r95, r24
+  Move         r82, r96
+  Move         r83, r63
+  Move         r84, r73
+  Call         r97, pointInTriangle, r77, r78, r79, r80, r81, r82, r83, r84
+  Move         r98, r97
+  // print("Point " + str(pt) + " is within triangle ? " + str(ok))
+  Const        r39, "Point "
+  Str          r99, r11
+  Add          r100, r39, r99
+  Const        r101, " is within triangle ? "
+  Add          r102, r100, r101
+  Str          r103, r98
+  Add          r104, r102, r103
+  Print        r104
+  // print("")
+  Const        r48, ""
+  Print        r48
+  // tri2 = [[1.0/10,1.0/9],[100.0/8,100.0/3],[-100.0/8,100.0/6]]
+  Const        r105, [[0.1, 0.1111111111111111], [12.5, 33.333333333333336], [-12.5, 16.666666666666668]]
+  Move         r50, r105
+  // print("Triangle is " + str(tri2))
+  Const        r2, "Triangle is "
+  Str          r106, r50
+  Add          r107, r2, r106
+  Print        r107
+  // ok = pointInTriangle(tri2[0][0],tri2[0][1],tri2[1][0],tri2[1][1],tri2[2][0],tri2[2][1], x, y)
+  Const        r20, 0
+  Index        r116, r50, r20
+  Const        r20, 0
+  Index        r117, r116, r20
+  Move         r108, r117
+  Const        r20, 0
+  Index        r118, r50, r20
+  Const        r24, 1
+  Index        r119, r118, r24
+  Move         r109, r119
+  Const        r24, 1
+  Index        r120, r50, r24
+  Const        r20, 0
+  Index        r121, r120, r20
+  Move         r110, r121
+  Const        r24, 1
+  Index        r122, r50, r24
+  Const        r24, 1
+  Index        r123, r122, r24
+  Move         r111, r123
+  Const        r30, 2
+  Index        r124, r50, r30
+  Const        r20, 0
+  Index        r125, r124, r20
+  Move         r112, r125
+  Const        r30, 2
+  Index        r126, r50, r30
+  Const        r24, 1
+  Index        r127, r126, r24
+  Move         r113, r127
+  Move         r114, r63
+  Move         r115, r73
+  Call         r128, pointInTriangle, r108, r109, r110, r111, r112, r113, r114, r115
+  Move         r98, r128
+  // print("Point " + str(pt) + " is within triangle ? " + str(ok))
+  Const        r39, "Point "
+  Str          r129, r11
+  Add          r130, r39, r129
+  Const        r101, " is within triangle ? "
+  Add          r131, r130, r101
+  Str          r132, r98
+  Add          r133, r131, r132
+  Print        r133
+  Return       r0

@@ -1,0 +1,196 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun splitPath(p: string): list<string> {
+func splitPath (regs=22)
+  // var parts: list<string> = []
+  Const        r1, []
+  Move         r2, r1
+  // var cur = ""
+  Const        r3, ""
+  Move         r4, r3
+  // var i = 0
+  Const        r5, 0
+  Move         r6, r5
+L3:
+  // while i < len(p) {
+  Len          r7, r0
+  LessInt      r8, r6, r7
+  JumpIfFalse  r8, L0
+  // if substring(p, i, i+1) == "/" {
+  Const        r9, 1
+  AddInt       r10, r6, r9
+  Slice        r11, r0, r6, r10
+  Const        r12, "/"
+  Equal        r13, r11, r12
+  JumpIfFalse  r13, L1
+  // if cur != "" { parts = append(parts, cur); cur = "" }
+  Const        r3, ""
+  NotEqual     r14, r4, r3
+  JumpIfFalse  r14, L2
+  Append       r15, r2, r4
+  Move         r2, r15
+  Const        r3, ""
+  Move         r4, r3
+  // if substring(p, i, i+1) == "/" {
+  Jump         L2
+L1:
+  // cur = cur + substring(p, i, i+1)
+  Const        r9, 1
+  AddInt       r16, r6, r9
+  Slice        r17, r0, r6, r16
+  Add          r18, r4, r17
+  Move         r4, r18
+L2:
+  // i = i + 1
+  Const        r9, 1
+  AddInt       r19, r6, r9
+  Move         r6, r19
+  // while i < len(p) {
+  Jump         L3
+L0:
+  // if cur != "" { parts = append(parts, cur) }
+  Const        r3, ""
+  NotEqual     r20, r4, r3
+  JumpIfFalse  r20, L4
+  Append       r21, r2, r4
+  Move         r2, r21
+L4:
+  // return parts
+  Return       r2
+
+  // fun joinPath(parts: list<string>): string {
+func joinPath (regs=13)
+  // var s = ""
+  Const        r1, ""
+  Move         r2, r1
+  // var i = 0
+  Const        r3, 0
+  Move         r4, r3
+L1:
+  // while i < len(parts) {
+  Len          r5, r0
+  LessInt      r6, r4, r5
+  JumpIfFalse  r6, L0
+  // s = s + "/" + parts[i]
+  Const        r7, "/"
+  Add          r8, r2, r7
+  Index        r9, r0, r4
+  Add          r10, r8, r9
+  Move         r2, r10
+  // i = i + 1
+  Const        r11, 1
+  AddInt       r12, r4, r11
+  Move         r4, r12
+  // while i < len(parts) {
+  Jump         L1
+L0:
+  // return s
+  Return       r2
+
+  // fun commonPrefix(paths: list<string>): string {
+func commonPrefix (regs=40)
+  // if len(paths) == 0 { return "" }
+  Len          r1, r0
+  Const        r2, 0
+  EqualInt     r3, r1, r2
+  JumpIfFalse  r3, L0
+  Const        r4, ""
+  Return       r4
+L0:
+  // var base = splitPath(paths[0])
+  Const        r2, 0
+  Index        r6, r0, r2
+  Move         r5, r6
+  Call         r7, splitPath, r5
+  Move         r8, r7
+  // var i = 0
+  Const        r2, 0
+  Move         r9, r2
+  // var prefix: list<string> = []
+  Const        r10, []
+  Move         r11, r10
+L6:
+  // while i < len(base) {
+  Len          r12, r8
+  LessInt      r13, r9, r12
+  JumpIfFalse  r13, L1
+  // let comp = base[i]
+  Index        r14, r8, r9
+  Move         r15, r14
+  // var ok = true
+  Const        r16, true
+  Move         r17, r16
+  // for p in paths {
+  IterPrep     r18, r0
+  Len          r19, r18
+  Const        r20, 0
+L5:
+  LessInt      r21, r20, r19
+  JumpIfFalse  r21, L2
+  Index        r22, r18, r20
+  Move         r23, r22
+  // let parts = splitPath(p)
+  Move         r24, r23
+  Call         r25, splitPath, r24
+  Move         r26, r25
+  // if i >= len(parts) || parts[i] != comp { ok = false; break }
+  Len          r27, r26
+  LessEqInt    r28, r27, r9
+  Index        r29, r26, r9
+  NotEqual     r30, r29, r15
+  Move         r31, r28
+  JumpIfTrue   r31, L3
+  Move         r31, r30
+L3:
+  JumpIfFalse  r31, L4
+  Const        r32, false
+  Move         r17, r32
+  Jump         L2
+L4:
+  // for p in paths {
+  Const        r33, 1
+  AddInt       r34, r20, r33
+  Move         r20, r34
+  Jump         L5
+L2:
+  // if ok { prefix = append(prefix, comp) } else { break }
+  JumpIfFalse  r17, L1
+  Append       r35, r11, r15
+  Move         r11, r35
+  // i = i + 1
+  Const        r36, 1
+  AddInt       r37, r9, r36
+  Move         r9, r37
+  // while i < len(base) {
+  Jump         L6
+L1:
+  // return joinPath(prefix)
+  Move         r38, r11
+  Call         r39, joinPath, r38
+  Return       r39
+
+  // fun main() {
+func main (regs=10)
+  // let paths = [
+  Const        r0, ["/home/user1/tmp/coverage/test", "/home/user1/tmp/covert/operator", "/home/user1/tmp/coven/members", "/home//user1/tmp/coventry", "/home/user1/././tmp/covertly/foo", "/home/bob/../user1/tmp/coved/bar"]
+  Move         r1, r0
+  // let c = commonPrefix(paths)
+  Move         r2, r1
+  Call         r3, commonPrefix, r2
+  Move         r4, r3
+  // if c == "" { print("No common path") } else { print("Common path: " + c) }
+  Const        r5, ""
+  Equal        r6, r4, r5
+  JumpIfFalse  r6, L0
+  Const        r7, "No common path"
+  Print        r7
+  Jump         L1
+L0:
+  Const        r8, "Common path: "
+  Add          r9, r8, r4
+  Print        r9
+L1:
+  Return       r0
