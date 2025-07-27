@@ -1,0 +1,89 @@
+// Mochi translation of Rosetta "Factors of a Mersenne number" task
+// Based on Go version in tests/rosetta/x/Go/factors-of-a-mersenne-number.go
+
+// Limit search to relatively small primes for demo purposes.
+let qlimit = 50000
+
+fun powf(base: float, exp: int): float {
+  var result = 1.0
+  var i = 0
+  while i < exp {
+    result = result * base
+    i = i + 1
+  }
+  return result
+}
+
+fun sqrtApprox(x: float): float {
+  if x <= 0.0 { return 0.0 }
+  var g = x
+  var i = 0
+  while i < 20 {
+    g = (g + x / g) / 2.0
+    i = i + 1
+  }
+  return g
+}
+
+fun modPow(base: int, exp: int, mod: int): int {
+  var result = 1 % mod
+  var b = base % mod
+  var e = exp
+  while e > 0 {
+    if e % 2 == 1 { result = (result * b) % mod }
+    b = (b * b) % mod
+    e = e / 2
+  }
+  return result
+}
+
+fun mtest(m: int) {
+  if m < 4 {
+    print(str(m) + " < 4.  M" + str(m) + " not tested.")
+    return
+  }
+  let flimit = sqrtApprox(powf(2.0, m) - 1.0)
+  var qlast = 0
+  if flimit < qlimit {
+    qlast = flimit as int
+  } else {
+    qlast = qlimit
+  }
+  var composite: list<bool> = []
+  var i = 0
+  while i <= qlast {
+    composite = append(composite, false)
+    i = i + 1
+  }
+  let sq = sqrtApprox(qlast as float) as int
+  var q = 3
+  while true {
+    if q <= sq {
+      var j = q * q
+      while j <= qlast {
+        composite[j] = true
+        j = j + q
+      }
+    }
+    let q8 = q % 8
+    if (q8 == 1 || q8 == 7) && modPow(2, m, q) == 1 {
+      print("M" + str(m) + " has factor " + str(q))
+      return
+    }
+    while true {
+      q = q + 2
+      if q > qlast {
+        print("No factors of M" + str(m) + " found.")
+        return
+      }
+      if !composite[q] { break }
+    }
+  }
+}
+
+fun main() {
+  mtest(31)
+  mtest(67)
+}
+
+main()
