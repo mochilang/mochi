@@ -1692,136 +1692,145 @@ func transpilePrimary(p *parser.Primary) (Node, error) {
 
 func transpileCall(c *parser.CallExpr) (Node, error) {
 	elems := []Node{}
-	switch c.Func {
-	case "print":
-		elems = append(elems, Symbol("println"))
-	case "len":
-		elems = append(elems, Symbol("count"))
-	case "now":
-		if len(c.Args) != 0 {
-			return nil, fmt.Errorf("now expects no args")
+	userFun := false
+	if transpileEnv != nil {
+		if _, ok := transpileEnv.GetFunc(c.Func); ok {
+			userFun = true
 		}
-		update := &List{Elems: []Node{
-			Symbol("swap!"), Symbol("nowSeed"),
-			&List{Elems: []Node{
-				Symbol("fn"), &Vector{Elems: []Node{Symbol("s")}},
-				&List{Elems: []Node{
-					Symbol("mod"),
-					&List{Elems: []Node{
-						Symbol("+"),
-						&List{Elems: []Node{Symbol("*"), Symbol("s"), IntLit(1664525)}},
-						IntLit(1013904223),
-					}},
-					IntLit(2147483647),
-				}},
-			}},
-		}}
-		return update, nil
-	case "count":
-		if len(c.Args) == 1 {
-			if name, ok := identName(c.Args[0]); ok && groupVars != nil && groupVars[name] {
-				arg := &List{Elems: []Node{Keyword("items"), Symbol(name)}}
-				return &List{Elems: []Node{Symbol("count"), arg}}, nil
+	}
+	if !userFun {
+		switch c.Func {
+		case "print":
+			elems = append(elems, Symbol("println"))
+		case "len":
+			elems = append(elems, Symbol("count"))
+		case "now":
+			if len(c.Args) != 0 {
+				return nil, fmt.Errorf("now expects no args")
 			}
+			update := &List{Elems: []Node{
+				Symbol("swap!"), Symbol("nowSeed"),
+				&List{Elems: []Node{
+					Symbol("fn"), &Vector{Elems: []Node{Symbol("s")}},
+					&List{Elems: []Node{
+						Symbol("mod"),
+						&List{Elems: []Node{
+							Symbol("+"),
+							&List{Elems: []Node{Symbol("*"), Symbol("s"), IntLit(1664525)}},
+							IntLit(1013904223),
+						}},
+						IntLit(2147483647),
+					}},
+				}},
+			}}
+			return update, nil
+		case "count":
+			if len(c.Args) == 1 {
+				if name, ok := identName(c.Args[0]); ok && groupVars != nil && groupVars[name] {
+					arg := &List{Elems: []Node{Keyword("items"), Symbol(name)}}
+					return &List{Elems: []Node{Symbol("count"), arg}}, nil
+				}
+			}
+			elems = append(elems, Symbol("count"))
+		case "min":
+			elems = append(elems, Symbol("apply"), Symbol("min"))
+		case "max":
+			elems = append(elems, Symbol("apply"), Symbol("max"))
+		case "substring":
+			elems = append(elems, Symbol("subs"))
+		case "lower":
+			if len(c.Args) != 1 {
+				return nil, fmt.Errorf("lower expects 1 arg")
+			}
+			arg, err := transpileExpr(c.Args[0])
+			if err != nil {
+				return nil, err
+			}
+			return &List{Elems: []Node{Symbol("clojure.string/lower-case"), arg}}, nil
+		case "upper":
+			if len(c.Args) != 1 {
+				return nil, fmt.Errorf("upper expects 1 arg")
+			}
+			arg, err := transpileExpr(c.Args[0])
+			if err != nil {
+				return nil, err
+			}
+			return &List{Elems: []Node{Symbol("clojure.string/upper-case"), arg}}, nil
+		case "int":
+			if len(c.Args) != 1 {
+				return nil, fmt.Errorf("int expects 1 arg")
+			}
+			arg, err := transpileExpr(c.Args[0])
+			if err != nil {
+				return nil, err
+			}
+			return &List{Elems: []Node{Symbol("Integer/parseInt"), arg}}, nil
+		case "input":
+			if len(c.Args) != 0 {
+				return nil, fmt.Errorf("input expects no args")
+			}
+			return &List{Elems: []Node{Symbol("read-line")}}, nil
+		case "abs":
+			if len(c.Args) != 1 {
+				return nil, fmt.Errorf("abs expects 1 arg")
+			}
+			arg, err := transpileExpr(c.Args[0])
+			if err != nil {
+				return nil, err
+			}
+			return &List{Elems: []Node{Symbol("Math/abs"), arg}}, nil
+		case "append":
+			elems = append(elems, Symbol("conj"))
+		case "sum":
+			elems = append(elems, Symbol("reduce"), Symbol("+"), IntLit(0))
+		case "avg":
+			if len(c.Args) != 1 {
+				return nil, fmt.Errorf("avg expects 1 arg")
+			}
+			coll, err := transpileExpr(c.Args[0])
+			if err != nil {
+				return nil, err
+			}
+			sum := &List{Elems: []Node{Symbol("reduce"), Symbol("+"), IntLit(0), coll}}
+			cnt := &List{Elems: []Node{Symbol("count"), coll}}
+			avg := &List{Elems: []Node{Symbol("double"), &List{Elems: []Node{Symbol("/"), sum, cnt}}}}
+			return avg, nil
+		case "json":
+			if len(c.Args) != 1 {
+				return nil, fmt.Errorf("json expects 1 arg")
+			}
+			arg, err := transpileExpr(c.Args[0])
+			if err != nil {
+				return nil, err
+			}
+			mapJoin := &List{Elems: []Node{Symbol("clojure.string/join"), StringLit(","), &List{Elems: []Node{Symbol("map"), &List{Elems: []Node{Symbol("fn"), &Vector{Elems: []Node{&Vector{Elems: []Node{Symbol("k"), Symbol("v")}}}}, &List{Elems: []Node{Symbol("str"), StringLit("\""), &List{Elems: []Node{Symbol("name"), Symbol("k")}}, StringLit("\":"), &List{Elems: []Node{Symbol("json_str"), Symbol("v")}}}}}}, Symbol("x")}}}}
+			mapBody := &List{Elems: []Node{Symbol("str"), StringLit("{"), mapJoin, StringLit("}")}}
+			seqJoin := &List{Elems: []Node{Symbol("clojure.string/join"), StringLit(","), &List{Elems: []Node{Symbol("map"), Symbol("json_str"), Symbol("x")}}}}
+			seqBody := &List{Elems: []Node{Symbol("str"), StringLit("["), seqJoin, StringLit("]")}}
+			condForm := &List{Elems: []Node{Symbol("cond"),
+				&List{Elems: []Node{Symbol("map?"), Symbol("x")}}, mapBody,
+				&List{Elems: []Node{Symbol("sequential?"), Symbol("x")}}, seqBody,
+				&List{Elems: []Node{Symbol("string?"), Symbol("x")}}, &List{Elems: []Node{Symbol("pr-str"), Symbol("x")}},
+				Keyword("else"), &List{Elems: []Node{Symbol("str"), Symbol("x")}},
+			}}
+			jsonFn := &List{Elems: []Node{Symbol("fn"), Symbol("json_str"), &Vector{Elems: []Node{Symbol("x")}}, condForm}}
+			call := &List{Elems: []Node{jsonFn, arg}}
+			return &List{Elems: []Node{Symbol("println"), call}}, nil
+		case "exists":
+			if len(c.Args) != 1 {
+				return nil, fmt.Errorf("exists expects 1 arg")
+			}
+			arg, err := transpileExpr(c.Args[0])
+			if err != nil {
+				return nil, err
+			}
+			cnt := &List{Elems: []Node{Symbol("count"), arg}}
+			return &List{Elems: []Node{Symbol(">"), cnt, IntLit(0)}}, nil
+		case "values":
+			elems = append(elems, Symbol("vals"))
 		}
-		elems = append(elems, Symbol("count"))
-	case "min":
-		elems = append(elems, Symbol("apply"), Symbol("min"))
-	case "max":
-		elems = append(elems, Symbol("apply"), Symbol("max"))
-	case "substring":
-		elems = append(elems, Symbol("subs"))
-	case "lower":
-		if len(c.Args) != 1 {
-			return nil, fmt.Errorf("lower expects 1 arg")
-		}
-		arg, err := transpileExpr(c.Args[0])
-		if err != nil {
-			return nil, err
-		}
-		return &List{Elems: []Node{Symbol("clojure.string/lower-case"), arg}}, nil
-	case "upper":
-		if len(c.Args) != 1 {
-			return nil, fmt.Errorf("upper expects 1 arg")
-		}
-		arg, err := transpileExpr(c.Args[0])
-		if err != nil {
-			return nil, err
-		}
-		return &List{Elems: []Node{Symbol("clojure.string/upper-case"), arg}}, nil
-	case "int":
-		if len(c.Args) != 1 {
-			return nil, fmt.Errorf("int expects 1 arg")
-		}
-		arg, err := transpileExpr(c.Args[0])
-		if err != nil {
-			return nil, err
-		}
-		return &List{Elems: []Node{Symbol("Integer/parseInt"), arg}}, nil
-	case "input":
-		if len(c.Args) != 0 {
-			return nil, fmt.Errorf("input expects no args")
-		}
-		return &List{Elems: []Node{Symbol("read-line")}}, nil
-	case "abs":
-		if len(c.Args) != 1 {
-			return nil, fmt.Errorf("abs expects 1 arg")
-		}
-		arg, err := transpileExpr(c.Args[0])
-		if err != nil {
-			return nil, err
-		}
-		return &List{Elems: []Node{Symbol("Math/abs"), arg}}, nil
-	case "append":
-		elems = append(elems, Symbol("conj"))
-	case "sum":
-		elems = append(elems, Symbol("reduce"), Symbol("+"), IntLit(0))
-	case "avg":
-		if len(c.Args) != 1 {
-			return nil, fmt.Errorf("avg expects 1 arg")
-		}
-		coll, err := transpileExpr(c.Args[0])
-		if err != nil {
-			return nil, err
-		}
-		sum := &List{Elems: []Node{Symbol("reduce"), Symbol("+"), IntLit(0), coll}}
-		cnt := &List{Elems: []Node{Symbol("count"), coll}}
-		avg := &List{Elems: []Node{Symbol("double"), &List{Elems: []Node{Symbol("/"), sum, cnt}}}}
-		return avg, nil
-	case "json":
-		if len(c.Args) != 1 {
-			return nil, fmt.Errorf("json expects 1 arg")
-		}
-		arg, err := transpileExpr(c.Args[0])
-		if err != nil {
-			return nil, err
-		}
-		mapJoin := &List{Elems: []Node{Symbol("clojure.string/join"), StringLit(","), &List{Elems: []Node{Symbol("map"), &List{Elems: []Node{Symbol("fn"), &Vector{Elems: []Node{&Vector{Elems: []Node{Symbol("k"), Symbol("v")}}}}, &List{Elems: []Node{Symbol("str"), StringLit("\""), &List{Elems: []Node{Symbol("name"), Symbol("k")}}, StringLit("\":"), &List{Elems: []Node{Symbol("json_str"), Symbol("v")}}}}}}, Symbol("x")}}}}
-		mapBody := &List{Elems: []Node{Symbol("str"), StringLit("{"), mapJoin, StringLit("}")}}
-		seqJoin := &List{Elems: []Node{Symbol("clojure.string/join"), StringLit(","), &List{Elems: []Node{Symbol("map"), Symbol("json_str"), Symbol("x")}}}}
-		seqBody := &List{Elems: []Node{Symbol("str"), StringLit("["), seqJoin, StringLit("]")}}
-		condForm := &List{Elems: []Node{Symbol("cond"),
-			&List{Elems: []Node{Symbol("map?"), Symbol("x")}}, mapBody,
-			&List{Elems: []Node{Symbol("sequential?"), Symbol("x")}}, seqBody,
-			&List{Elems: []Node{Symbol("string?"), Symbol("x")}}, &List{Elems: []Node{Symbol("pr-str"), Symbol("x")}},
-			Keyword("else"), &List{Elems: []Node{Symbol("str"), Symbol("x")}},
-		}}
-		jsonFn := &List{Elems: []Node{Symbol("fn"), Symbol("json_str"), &Vector{Elems: []Node{Symbol("x")}}, condForm}}
-		call := &List{Elems: []Node{jsonFn, arg}}
-		return &List{Elems: []Node{Symbol("println"), call}}, nil
-	case "exists":
-		if len(c.Args) != 1 {
-			return nil, fmt.Errorf("exists expects 1 arg")
-		}
-		arg, err := transpileExpr(c.Args[0])
-		if err != nil {
-			return nil, err
-		}
-		cnt := &List{Elems: []Node{Symbol("count"), arg}}
-		return &List{Elems: []Node{Symbol(">"), cnt, IntLit(0)}}, nil
-	case "values":
-		elems = append(elems, Symbol("vals"))
-	default:
+	}
+	if len(elems) == 0 {
 		elems = append(elems, Symbol(c.Func))
 		if extra, ok := nestedFunArgs[c.Func]; ok {
 			for _, v := range extra {
