@@ -263,7 +263,7 @@ func fsIdent(name string) string {
 		"private": true, "public": true, "rec": true, "return": true, "sig": true, "static": true,
 		"struct": true, "then": true, "to": true, "true": true, "try": true, "type": true,
 		"upcast": true, "use": true, "val": true, "void": true, "when": true, "while": true,
-		"with": true, "yield": true}
+		"with": true, "yield": true, "mod": true}
 	if keywords[name] || strings.ContainsAny(name, "- ") {
 		return "``" + name + "``"
 	}
@@ -1789,6 +1789,10 @@ func inferType(e Expr) string {
 			}
 		}
 	case *AppendExpr:
+		t := inferType(v.List)
+		if t != "" {
+			return t
+		}
 		return "array"
 	case *SubstringExpr:
 		return "string"
@@ -1894,7 +1898,11 @@ func isList(e Expr) bool {
 }
 
 func (c *CallExpr) emit(w io.Writer) {
-	io.WriteString(w, c.Func)
+	name := c.Func
+	if name == "mod" {
+		name = "``mod``"
+	}
+	io.WriteString(w, name)
 	if len(c.Args) == 0 {
 		io.WriteString(w, "()")
 		return
@@ -2108,6 +2116,21 @@ func (m *MethodCallExpr) emit(w io.Writer) {
 
 	typ := inferType(m.Target)
 	if typ != "" && typ != "obj" {
+		// For primitive types like string, prefer direct method calls
+		if typ == "string" && (m.Name == "ToLower" || m.Name == "ToUpper" || m.Name == "Trim") {
+			m.Target.emit(w)
+			io.WriteString(w, ".")
+			io.WriteString(w, mapMethod(m.Name))
+			io.WriteString(w, "(")
+			for i, a := range m.Args {
+				if i > 0 {
+					io.WriteString(w, ", ")
+				}
+				a.emit(w)
+			}
+			io.WriteString(w, ")")
+			return
+		}
 		io.WriteString(w, fsIdent(typ+"_"+mapMethod(m.Name)))
 		io.WriteString(w, " ")
 		if needsParen(m.Target) {
@@ -2816,6 +2839,9 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 					retType = fsType(ft.Return)
 				}
 			}
+		}
+		if retType == "" && st.Fun.Return != nil {
+			retType = typeRefString(st.Fun.Return)
 		}
 		prevReturn := currentReturn
 		currentReturn = retType
@@ -3711,6 +3737,17 @@ func convertTypeDecl(td *parser.TypeDecl) error {
 		selfType := &parser.TypeRef{Simple: &selfTypeName}
 		param := &parser.Param{Name: selfName, Type: selfType}
 		fn.Params = append([]*parser.Param{param}, fn.Params...)
+		// Inject local variables for struct fields so method bodies can
+		// reference them directly by name like in Mochi code.
+		var prelude []*parser.Statement
+		for _, fm := range td.Members {
+			if fm.Field != nil {
+				fname := fm.Field.Name
+				fieldExpr := &parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: &parser.PostfixExpr{Target: &parser.Primary{Selector: &parser.SelectorExpr{Root: selfName, Tail: []string{fname}}}}}}}
+				prelude = append(prelude, &parser.Statement{Var: &parser.VarStmt{Name: fname, Value: fieldExpr}})
+			}
+		}
+		fn.Body = append(prelude, fn.Body...)
 		stmt := &parser.Statement{Fun: &fn}
 		fs, err := convertStmt(stmt)
 		if err != nil {

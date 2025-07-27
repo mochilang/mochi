@@ -1,3 +1,7 @@
+## Progress (2025-07-27 22:23 +0700)
+- vm: support globals in nested functions and update Rosetta outputs
+- Generated F# for 103/104 programs (103 passing)
+
 ## Progress (2025-07-27 17:18 +0700)
 - fs transpiler: handle typed lambdas and append elem cast
 - Generated F# for 103/104 programs (103 passing)
