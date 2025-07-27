@@ -38,6 +38,8 @@ var benchMain bool
 var usesSHA256 bool
 var usesIndexOf bool
 var usesParseIntStr bool
+var useBigRat bool
+var useRepeat bool
 var reserved = map[string]bool{"this": true, "new": true, "double": true, "char": true}
 var currentReturnType string
 var inReturn bool
@@ -100,6 +102,8 @@ type Program struct {
 	UseSHA256      bool
 	UseIndexOf     bool
 	UseParseIntStr bool
+	UseBigRat      bool
+	UseRepeat      bool
 }
 
 func (p *Program) addInclude(inc string) {
@@ -659,6 +663,31 @@ func (p *Program) write(w io.Writer) {
 	if p.UseParseIntStr {
 		fmt.Fprintln(w, "static long _parse_int_str(const std::string& s, long base) {")
 		fmt.Fprintln(w, "    return std::stol(s, nullptr, base);")
+		fmt.Fprintln(w, "}")
+	}
+	if p.UseBigRat {
+		fmt.Fprintln(w, "using cpp_int = boost::multiprecision::cpp_int;")
+		fmt.Fprintln(w, "struct BigRat {")
+		fmt.Fprintln(w, "    cpp_int num; cpp_int den;")
+		fmt.Fprintln(w, "    BigRat(cpp_int n=0, cpp_int d=1){ init(n,d); }")
+		io.WriteString(w, "    static cpp_int _gcd(cpp_int a, cpp_int b){ if(a<0) a=-a; if(b<0) b=-b; while(b!=0){ cpp_int t=a%b; a=b; b=t;} return a; }\n")
+		fmt.Fprintln(w, "    void init(cpp_int n, cpp_int d){ if(d<0){ n=-n; d=-d; } cpp_int g=_gcd(n,d); num=n/g; den=d/g; }")
+		fmt.Fprintln(w, "    BigRat operator+(const BigRat& o) const { return BigRat(num*o.den + o.num*den, den*o.den); }")
+		fmt.Fprintln(w, "    BigRat operator-(const BigRat& o) const { return BigRat(num*o.den - o.num*den, den*o.den); }")
+		fmt.Fprintln(w, "    BigRat operator*(const BigRat& o) const { return BigRat(num*o.num, den*o.den); }")
+		fmt.Fprintln(w, "    BigRat operator/(const BigRat& o) const { return BigRat(num*o.den, den*o.num); }")
+		fmt.Fprintln(w, "};")
+		fmt.Fprintln(w, "template<typename A> BigRat _bigrat(A a){ return BigRat(cpp_int(a), cpp_int(1)); }")
+		fmt.Fprintln(w, "template<typename A, typename B> BigRat _bigrat(A a, B b){ return BigRat(cpp_int(a), cpp_int(b)); }")
+		fmt.Fprintln(w, "inline cpp_int _num(const BigRat& r){ return r.num; }")
+		fmt.Fprintln(w, "inline cpp_int _denom(const BigRat& r){ return r.den; }")
+		fmt.Fprintln(w, "static std::ostream& operator<<(std::ostream& os, const BigRat& r){ os<<r.num; if(r.den!=1) os<<\"/\"<<r.den; return os; }")
+	}
+	if p.UseRepeat {
+		fmt.Fprintln(w, "static std::string _repeat(const std::string& s, int64_t n) {")
+		fmt.Fprintln(w, "    std::string out; out.reserve(s.size()*n);")
+		fmt.Fprintln(w, "    for(int64_t i=0;i<n;i++) out += s;")
+		fmt.Fprintln(w, "    return out;")
 		fmt.Fprintln(w, "}")
 	}
 	if usesAny {
@@ -1531,6 +1560,13 @@ func (c *CastExpr) emit(w io.Writer) {
 		io.WriteString(w, ")")
 		return
 	}
+	if c.Type == "BigRat" {
+		useBigRat = true
+		io.WriteString(w, "_bigrat(")
+		c.Value.emit(w)
+		io.WriteString(w, ")")
+		return
+	}
 	if c.Type == "std::string" && valType != "std::string" && valType != "std::any" {
 		io.WriteString(w, "std::string(1, ")
 		c.Value.emit(w)
@@ -1580,11 +1616,23 @@ func (s *SubstringExpr) emit(w io.Writer) {
 
 func (p *PadStartExpr) emit(w io.Writer) {
 	io.WriteString(w, "([&]{ std::string __s = ")
-	p.Value.emit(w)
+	if exprType(p.Value) != "std::string" {
+		io.WriteString(w, "_to_string(")
+		p.Value.emit(w)
+		io.WriteString(w, ")")
+	} else {
+		p.Value.emit(w)
+	}
 	io.WriteString(w, "; while(__s.size() < ")
 	p.Width.emit(w)
 	io.WriteString(w, ") __s = ")
-	p.Pad.emit(w)
+	if exprType(p.Pad) != "std::string" {
+		io.WriteString(w, "_to_string(")
+		p.Pad.emit(w)
+		io.WriteString(w, ")")
+	} else {
+		p.Pad.emit(w)
+	}
 	io.WriteString(w, " + __s; return __s; }())")
 }
 
@@ -3268,6 +3316,8 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	cp.UseSHA256 = usesSHA256
 	cp.UseIndexOf = usesIndexOf
 	cp.UseParseIntStr = usesParseIntStr
+	cp.UseBigRat = useBigRat
+	cp.UseRepeat = useRepeat
 	hasMain := false
 	for _, fn := range cp.Functions {
 		if fn.Name == "main" {
@@ -4371,6 +4421,19 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				}
 				return &PadStartExpr{Value: v0, Width: v1, Pad: v2}, nil
 			}
+		case "repeat":
+			if len(p.Call.Args) == 2 {
+				s0, err := convertExpr(p.Call.Args[0])
+				if err != nil {
+					return nil, err
+				}
+				s1, err := convertExpr(p.Call.Args[1])
+				if err != nil {
+					return nil, err
+				}
+				useRepeat = true
+				return &CallExpr{Name: "_repeat", Args: []Expr{s0, s1}}, nil
+			}
 		case "contains":
 			if len(p.Call.Args) == 2 {
 				v0, err := convertExpr(p.Call.Args[0])
@@ -4410,6 +4473,45 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 					return nil, err
 				}
 				return &CastExpr{Value: arg, Type: "double"}, nil
+			}
+		case "bigrat":
+			if len(p.Call.Args) == 1 {
+				arg, err := convertExpr(p.Call.Args[0])
+				if err != nil {
+					return nil, err
+				}
+				useBigRat = true
+				return &CallExpr{Name: "_bigrat", Args: []Expr{arg}}, nil
+			}
+			if len(p.Call.Args) == 2 {
+				v0, err := convertExpr(p.Call.Args[0])
+				if err != nil {
+					return nil, err
+				}
+				v1, err := convertExpr(p.Call.Args[1])
+				if err != nil {
+					return nil, err
+				}
+				useBigRat = true
+				return &CallExpr{Name: "_bigrat", Args: []Expr{v0, v1}}, nil
+			}
+		case "num":
+			if len(p.Call.Args) == 1 {
+				arg, err := convertExpr(p.Call.Args[0])
+				if err != nil {
+					return nil, err
+				}
+				useBigRat = true
+				return &CallExpr{Name: "_num", Args: []Expr{arg}}, nil
+			}
+		case "denom":
+			if len(p.Call.Args) == 1 {
+				arg, err := convertExpr(p.Call.Args[0])
+				if err != nil {
+					return nil, err
+				}
+				useBigRat = true
+				return &CallExpr{Name: "_denom", Args: []Expr{arg}}, nil
 			}
 		case "parseIntStr":
 			if len(p.Call.Args) == 1 || len(p.Call.Args) == 2 {
@@ -5607,6 +5709,12 @@ func cppType(t string) string {
 			currentProgram.addInclude("<boost/multiprecision/cpp_int.hpp>")
 		}
 		return "boost::multiprecision::cpp_int"
+	case "bigrat":
+		if currentProgram != nil {
+			currentProgram.addInclude("<boost/multiprecision/cpp_int.hpp>")
+		}
+		useBigRat = true
+		return "BigRat"
 	}
 	if strings.HasPrefix(t, "list<") && strings.HasSuffix(t, ">") {
 		elem := strings.TrimSuffix(strings.TrimPrefix(t, "list<"), ">")
@@ -5646,6 +5754,12 @@ func cppTypeFrom(tp types.Type) string {
 			currentProgram.addInclude("<boost/multiprecision/cpp_int.hpp>")
 		}
 		return "boost::multiprecision::cpp_int"
+	case types.BigRatType:
+		if currentProgram != nil {
+			currentProgram.addInclude("<boost/multiprecision/cpp_int.hpp>")
+		}
+		useBigRat = true
+		return "BigRat"
 	case types.FloatType:
 		return "double"
 	case types.BoolType:
@@ -6011,6 +6125,12 @@ func exprType(e Expr) string {
 					return fn.ReturnType
 				}
 			}
+		}
+		switch v.Name {
+		case "_bigrat":
+			return "BigRat"
+		case "_num", "_denom":
+			return "boost::multiprecision::cpp_int"
 		}
 		return "auto"
 	case *BinaryExpr:
