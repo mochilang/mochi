@@ -1,0 +1,9 @@
+t1      = 6
+t2      = 3
+t1 + t2 = map[value:9]
+t1 - t2 = map[value:3]
+t1 * t2 = map[value:10]
+t1 / t2 = map[value:2]
+t1 % t2 = map[value:1]
+t1 + 1  = map[value:7]
+t1 - 1  = map[value:5]

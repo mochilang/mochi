@@ -16,6 +16,33 @@ function _str($x) {
     if ($x === null) return 'null';
     return strval($x);
 }
+function _iadd($a, $b) {
+    if (function_exists('bcadd')) {
+        return bcadd(strval($a), strval($b), 0);
+    }
+    return $a + $b;
+}
+function _isub($a, $b) {
+    if (function_exists('bcsub')) {
+        return bcsub(strval($a), strval($b), 0);
+    }
+    return $a - $b;
+}
+function _imul($a, $b) {
+    if (function_exists('bcmul')) {
+        return bcmul(strval($a), strval($b), 0);
+    }
+    return $a * $b;
+}
+function _idiv($a, $b) {
+    return _intdiv($a, $b);
+}
+function _imod($a, $b) {
+    if (function_exists('bcmod')) {
+        return intval(bcmod(strval($a), strval($b)));
+    }
+    return $a % $b;
+}
 function isPrime($n) {
   if ($n < 2) {
   return false;
@@ -62,13 +89,13 @@ function main() {
   while ($count < $limit) {
   if (!isPrime($n) && $n % 3 != 0 && $n % 5 != 0) {
   $bn = $n;
-  if (fmod($repunit, $bn) == 0) {
+  if (_imod($repunit, $bn) == 0) {
   $deceptive = array_merge($deceptive, [$n]);
   $count = $count + 1;
 };
 }
   $n = $n + 2;
-  $repunit = ($repunit * $hundred) + $eleven;
+  $repunit = _iadd((_imul($repunit, $hundred)), $eleven);
 };
   echo rtrim('The first ' . _str($limit) . ' deceptive numbers are:'), PHP_EOL;
   echo rtrim(listToString($deceptive)), PHP_EOL;
