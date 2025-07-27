@@ -1,0 +1,44 @@
+compile failed: exit status 1: /tmp/ctranspile899407321/associative-array-creation.mochi.c: In function ‘_mem’:
+/tmp/ctranspile899407321/associative-array-creation.mochi.c:44:12: warning: ‘mallinfo’ is deprecated [-Wdeprecated-declarations]
+   44 |     struct mallinfo mi = mallinfo();
+      |            ^~~~~~~~
+In file included from /tmp/ctranspile899407321/associative-array-creation.mochi.c:5:
+/usr/include/malloc.h:114:24: note: declared here
+  114 | extern struct mallinfo mallinfo (void) __THROW __MALLOC_DEPRECATED;
+      |                        ^~~~~~~~
+/tmp/ctranspile899407321/associative-array-creation.mochi.c: In function ‘removeKey’:
+/tmp/ctranspile899407321/associative-array-creation.mochi.c:68:32: error: ‘m_keys_len’ undeclared (first use in this function)
+   68 |     for (size_t __i = 0; __i < m_keys_len; __i++) {
+      |                                ^~~~~~~~~~
+/tmp/ctranspile899407321/associative-array-creation.mochi.c:68:32: note: each undeclared identifier is reported only once for each function it appears in
+/tmp/ctranspile899407321/associative-array-creation.mochi.c:69:27: error: ‘m_keys’ undeclared (first use in this function)
+   69 |         const char* key = m_keys[__i];
+      |                           ^~~~~~
+/tmp/ctranspile899407321/associative-array-creation.mochi.c:71:78: error: ‘m_vals’ undeclared (first use in this function); did you mean ‘out_vals’?
+   71 |             map_set_si(out_keys, out_vals, &out_len, key, map_get_si(m_keys, m_vals, m_len, key));
+      |                                                                              ^~~~~~
+      |                                                                              out_vals
+/tmp/ctranspile899407321/associative-array-creation.mochi.c:71:86: error: ‘m_len’ undeclared (first use in this function); did you mean ‘mblen’?
+   71 |             map_set_si(out_keys, out_vals, &out_len, key, map_get_si(m_keys, m_vals, m_len, key));
+      |                                                                                      ^~~~~
+      |                                                                                      mblen
+/tmp/ctranspile899407321/associative-array-creation.mochi.c:74:12: error: ‘out’ undeclared (first use in this function)
+   74 |     return out;
+      |            ^~~
+/tmp/ctranspile899407321/associative-array-creation.mochi.c: In function ‘user_main’:
+/tmp/ctranspile899407321/associative-array-creation.mochi.c:79:9: error: incompatible types when assigning to type ‘int’ from type ‘Anon1’
+   79 |     x = (Anon1){};
+      |         ^
+/tmp/ctranspile899407321/associative-array-creation.mochi.c:80:5: warning: assignment of read-only location ‘"foo"[x]’
+   80 |     x["foo"] = 3;
+      |     ^
+/tmp/ctranspile899407321/associative-array-creation.mochi.c:82:14: warning: initialization of ‘int’ from ‘char *’ makes integer from pointer without a cast [-Wint-conversion]
+   82 |     int ok = "bar" in x;
+      |              ^~~~~
+/tmp/ctranspile899407321/associative-array-creation.mochi.c:82:20: error: expected ‘,’ or ‘;’ before ‘in’
+   82 |     int ok = "bar" in x;
+      |                    ^~
+/tmp/ctranspile899407321/associative-array-creation.mochi.c:86:9: error: incompatible types when assigning to type ‘int’ from type ‘Anon2’
+   86 |     x = (Anon2){.foo = 2, .bar = 42, .baz = -1};
+      |         ^
+

@@ -1,5 +1,5 @@
-## Progress (2025-07-27 10:46 +0700)
-- Commit f42cca5fda: vm: add int builtin cast
+## Progress (2025-07-27 11:07 +0700)
+- Commit 93133c4bde: transpiler/c: support int slice
 - Regenerated golden files - 81/104 vm valid programs passing
 
 ## Progress (2025-07-22 14:12 +0700)
