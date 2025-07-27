@@ -2,9 +2,9 @@
 
 Generated Lua code for programs in `tests/rosetta/x/Mochi`. Each program has a `.lua` file produced by the transpiler and a `.out` file with its runtime output. Compilation or runtime errors are captured in `.error` files.
 
-Transpiled programs: 461/467
+Transpiled programs: 459/467
 
-Last updated: 2025-07-28 00:18 GMT+7
+Last updated: 2025-07-28 00:29 GMT+7
 
 Checklist:
 
@@ -110,56 +110,56 @@ Checklist:
 | 98 | babbage-problem | ✓ | 1.363ms | 64 B |
 | 99 | babylonian-spiral | ✓ | 629µs | 1.1 KB |
 | 100 | balanced-brackets | ✓ | 129µs | 3.0 KB |
-| 101 | balanced-ternary | ✓ | 274µs | 1.4 KB |
-| 102 | barnsley-fern | ✓ | 16.603ms | 139.0 KB |
-| 103 | base64-decode-data | ✓ | 1.172ms | 1.3 KB |
-| 104 | bell-numbers | ✓ | 1.879ms | 960 B |
-| 105 | benfords-law | ✓ | 7.263ms | 20.1 KB |
-| 106 | bernoulli-numbers | ✓ | 92.636ms | 1.9 KB |
-| 107 | best-shuffle | ✓ | 490µs | 1.1 KB |
-| 108 | bifid-cipher | ✓ | 1.178ms | 2.3 KB |
-| 109 | bin-given-limits | ✓ | 1.046ms | 1.0 KB |
-| 110 | binary-digits | ✓ | 149µs | 2.7 KB |
-| 111 | binary-search | ✓ | 147µs | 952 B |
-| 112 | binary-strings | ✓ | 253µs | 1.8 KB |
-| 113 | bioinformatics-base-count | ✓ | 692µs | 1.3 KB |
-| 114 | bioinformatics-global-alignment | ✓ | 6.505401s | 84.5 KB |
-| 115 | bioinformatics-sequence-mutation | ✓ | 9.705ms | 5.0 KB |
-| 116 | biorhythms | ✓ | 251µs | 1.4 KB |
-| 117 | bitcoin-address-validation | ✓ | 2.387ms | 1.2 KB |
-| 118 | bitmap-b-zier-curves-cubic | ✓ | 1.597654s | 2.4 MB |
-| 119 | bitmap-b-zier-curves-quadratic | ✓ | 1.572776s | 2.4 MB |
-| 120 | bitmap-bresenhams-line-algorithm | ✓ | 96µs | 944 B |
+| 101 | balanced-ternary | ✓ | 313µs | 216 B |
+| 102 | barnsley-fern | ✓ | 20.532ms | 137.3 KB |
+| 103 | base64-decode-data | ✓ | 1.173ms | 4.7 KB |
+| 104 | bell-numbers | ✓ | 2.398ms |  |
+| 105 | benfords-law | ✓ | 9.13ms | 672 B |
+| 106 | bernoulli-numbers | ✓ | 95.585ms | 623 B |
+| 107 | best-shuffle | ✓ | 416µs |  |
+| 108 | bifid-cipher | ✓ | 1.55ms | 520 B |
+| 109 | bin-given-limits | ✓ | 800µs | 480 B |
+| 110 | binary-digits | ✓ | 174µs | 2.3 KB |
+| 111 | binary-search | ✓ | 82µs | 440 B |
+| 112 | binary-strings | ✓ | 336µs | 1.2 KB |
+| 113 | bioinformatics-base-count | ✓ | 641µs | 685 B |
+| 114 | bioinformatics-global-alignment | ✓ | 6.153248s | 4.8 KB |
+| 115 | bioinformatics-sequence-mutation | ✓ | 10.764ms | 520 B |
+| 116 | biorhythms | ✓ | 246µs | 760 B |
+| 117 | bitcoin-address-validation | ✓ | 2.404ms | 912 B |
+| 118 | bitmap-b-zier-curves-cubic | ✓ | 1.842636s | 2.4 MB |
+| 119 | bitmap-b-zier-curves-quadratic | ✓ | 1.960474s | 2.4 MB |
+| 120 | bitmap-bresenhams-line-algorithm | ✓ | 127µs | 432 B |
 | 121 | bitmap-flood-fill |   | 341µs | 3.9 KB |
-| 122 | bitmap-histogram | ✓ | 115µs | 1.0 KB |
-| 123 | bitmap-midpoint-circle-algorithm | ✓ | 500µs | 15.2 KB |
-| 124 | bitmap-ppm-conversion-through-a-pipe | ✓ | 1.501627s | 9.9 KB |
-| 125 | bitmap-read-a-ppm-file | ✓ | 533µs | 6.1 KB |
-| 126 | bitmap-read-an-image-through-a-pipe | ✓ | 84µs | 1.7 KB |
-| 127 | bitmap-write-a-ppm-file | ✓ | 151µs | 1.1 KB |
-| 128 | bitmap | ✓ | 242.368ms | 10.0 KB |
-| 129 | bitwise-io-1 | ✓ | 77µs | 1.2 KB |
-| 130 | bitwise-io-2 | ✓ | 430µs | 1.7 KB |
-| 131 | bitwise-operations | ✓ | 111µs | 1.4 KB |
-| 132 | blum-integer | ✓ | 510µs | 1.1 KB |
-| 133 | boolean-values | ✓ | 57µs | 848 B |
-| 134 | box-the-compass | ✓ | 264µs | 1.5 KB |
-| 135 | boyer-moore-string-search | ✓ | 138µs | 1.1 KB |
-| 136 | brazilian-numbers | ✓ | 1m34.269996s | 3.0 KB |
-| 137 | break-oo-privacy | ✓ | 32µs | 2.9 KB |
+| 122 | bitmap-histogram | ✓ | 155µs | 552 B |
+| 123 | bitmap-midpoint-circle-algorithm | ✓ | 839µs | 12.7 KB |
+| 124 | bitmap-ppm-conversion-through-a-pipe | ✓ | 1.836549s | 632 B |
+| 125 | bitmap-read-a-ppm-file | ✓ | 1.043ms | 8.8 KB |
+| 126 | bitmap-read-an-image-through-a-pipe | ✓ | 216µs | 1.2 KB |
+| 127 | bitmap-write-a-ppm-file | ✓ | 342µs | 552 B |
+| 128 | bitmap | ✓ | 1.436116s | 808 B |
+| 129 | bitwise-io-1 | ✓ | 129µs | 744 B |
+| 130 | bitwise-io-2 |   | 430µs | 1.7 KB |
+| 131 | bitwise-operations | ✓ | 88µs | 872 B |
+| 132 | blum-integer | ✓ | 925µs | 520 B |
+| 133 | boolean-values | ✓ | 126µs | 328 B |
+| 134 | box-the-compass |   | 264µs | 1.5 KB |
+| 135 | boyer-moore-string-search | ✓ | 363µs | 4.0 KB |
+| 136 | brazilian-numbers | ✓ | 2m58.01392s | 472 B |
+| 137 | break-oo-privacy | ✓ | 117µs | 448 B |
 | 138 | brilliant-numbers | ✓ |  |  |
 | 139 | brownian-tree | ✓ | 4m41.44364s | 2.4 MB |
-| 140 | bulls-and-cows-player | ✓ | 38.086ms | 91.8 KB |
+| 140 | bulls-and-cows-player | ✓ | 73.451ms | 12.4 KB |
 | 141 | bulls-and-cows | ✓ |  |  |
-| 142 | burrows-wheeler-transform | ✓ | 7.727ms | 5.1 KB |
-| 143 | caesar-cipher-1 | ✓ | 667µs | 1.2 KB |
-| 144 | caesar-cipher-2 | ✓ | 608µs | 1.2 KB |
-| 145 | calculating-the-value-of-e | ✓ | 48µs | 2.9 KB |
-| 146 | calendar---for-real-programmers-1 | ✓ | 1.431ms | 1003 B |
-| 147 | calendar---for-real-programmers-2 | ✓ | 1.337ms | 1003 B |
-| 148 | calendar | ✓ | 1.046ms | 1003 B |
-| 149 | calkin-wilf-sequence | ✓ | 615µs | 864 B |
-| 150 | call-a-foreign-language-function | ✓ | 35µs | 320 B |
+| 142 | burrows-wheeler-transform | ✓ | 17.049ms | 4.0 KB |
+| 143 | caesar-cipher-1 | ✓ | 962µs | 616 B |
+| 144 | caesar-cipher-2 | ✓ | 987µs | 616 B |
+| 145 | calculating-the-value-of-e | ✓ | 65µs |  |
+| 146 | calendar---for-real-programmers-1 | ✓ | 1.27ms | 1.2 KB |
+| 147 | calendar---for-real-programmers-2 | ✓ | 2.805ms | 1.2 KB |
+| 148 | calendar | ✓ | 2.09ms | 1.2 KB |
+| 149 | calkin-wilf-sequence | ✓ | 1.127ms | 760 B |
+| 150 | call-a-foreign-language-function | ✓ | 39µs | 320 B |
 | 151 | call-a-function-1 | ✓ | 3µs | 344 B |
 | 152 | call-a-function-10 | ✓ | 15µs | 288 B |
 | 153 | call-a-function-11 | ✓ | 53µs | 2.3 KB |
