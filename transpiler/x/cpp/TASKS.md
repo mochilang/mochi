@@ -1,3 +1,38 @@
+## Progress (2025-07-27 11:03 +0700)
+- Implement nested exception example
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 11:03 +0700)
+- Implement nested exception example
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 11:03 +0700)
+- Implement nested exception example
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 11:03 +0700)
+- Implement nested exception example
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 11:03 +0700)
+- Implement nested exception example
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 11:03 +0700)
+- Implement nested exception example
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 11:03 +0700)
+- Implement nested exception example
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
 ## Progress (2025-07-27 00:58 +0700)
 - Add enforced-immutability task
 - Generated C++ for 103/104 programs
