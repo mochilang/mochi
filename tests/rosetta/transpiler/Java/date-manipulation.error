@@ -1,0 +1,54 @@
+compile: exit status 1
+/tmp/TestJavaTranspiler_Rosetta_Goldendate-manipulation1439689706/001/Main.java:162: error: no suitable method found for stream(Object)
+                    parts = java.util.stream.Stream.concat(java.util.Arrays.stream(parts), java.util.stream.Stream.of(cur)).toArray(String[]::new);
+                                                                           ^
+    method Arrays.<T#1>stream(T#1[]) is not applicable
+      (cannot infer type-variable(s) T#1
+        (argument mismatch; Object cannot be converted to T#1[]))
+    method Arrays.<T#2>stream(T#2[],int,int) is not applicable
+      (cannot infer type-variable(s) T#2
+        (actual and formal argument lists differ in length))
+    method Arrays.stream(int[]) is not applicable
+      (argument mismatch; Object cannot be converted to int[])
+    method Arrays.stream(long[]) is not applicable
+      (argument mismatch; Object cannot be converted to long[])
+    method Arrays.stream(double[]) is not applicable
+      (argument mismatch; Object cannot be converted to double[])
+  where T#1,T#2 are type-variables:
+    T#1 extends Object declared in method <T#1>stream(T#1[])
+    T#2 extends Object declared in method <T#2>stream(T#2[],int,int)
+/tmp/TestJavaTranspiler_Rosetta_Goldendate-manipulation1439689706/001/Main.java:171: error: no suitable method found for stream(Object)
+            parts = java.util.stream.Stream.concat(java.util.Arrays.stream(parts), java.util.stream.Stream.of(cur)).toArray(String[]::new);
+                                                                   ^
+    method Arrays.<T#1>stream(T#1[]) is not applicable
+      (cannot infer type-variable(s) T#1
+        (argument mismatch; Object cannot be converted to T#1[]))
+    method Arrays.<T#2>stream(T#2[],int,int) is not applicable
+      (cannot infer type-variable(s) T#2
+        (actual and formal argument lists differ in length))
+    method Arrays.stream(int[]) is not applicable
+      (argument mismatch; Object cannot be converted to int[])
+    method Arrays.stream(long[]) is not applicable
+      (argument mismatch; Object cannot be converted to long[])
+    method Arrays.stream(double[]) is not applicable
+      (argument mismatch; Object cannot be converted to double[])
+  where T#1,T#2 are type-variables:
+    T#1 extends Object declared in method <T#1>stream(T#1[])
+    T#2 extends Object declared in method <T#2>stream(T#2[],int,int)
+/tmp/TestJavaTranspiler_Rosetta_Goldendate-manipulation1439689706/001/Main.java:173: error: array required, but Object found
+        int month = (int)(((int)months.getOrDefault(parts[0], 0)));
+                                                         ^
+/tmp/TestJavaTranspiler_Rosetta_Goldendate-manipulation1439689706/001/Main.java:174: error: array required, but Object found
+        int day = Integer.parseInt(parts[1]);
+                                        ^
+/tmp/TestJavaTranspiler_Rosetta_Goldendate-manipulation1439689706/001/Main.java:175: error: array required, but Object found
+        int year = Integer.parseInt(parts[2]);
+                                         ^
+/tmp/TestJavaTranspiler_Rosetta_Goldendate-manipulation1439689706/001/Main.java:176: error: array required, but Object found
+        int[] tm = parseTime(parts[3]);
+                                  ^
+/tmp/TestJavaTranspiler_Rosetta_Goldendate-manipulation1439689706/001/Main.java:179: error: array required, but Object found
+        String tz = parts[4];
+                         ^
+Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
+7 errors

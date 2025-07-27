@@ -1,9 +1,9 @@
 # Java Rosetta Transpiler Output
 
 Generated Java code for programs in `tests/rosetta/x/Mochi`. Each program has a `.java` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
-Last updated: 2025-07-27 21:06 GMT+7
+Last updated: 2025-07-27 21:57 GMT+7
 
-## Rosetta Checklist (205/467)
+## Rosetta Checklist (231/467)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 23.0ms | 245.84KB |
@@ -269,37 +269,37 @@ Last updated: 2025-07-27 21:06 GMT+7
 | 261 | csv-to-html-translation-3 | ✓ | 7.0ms | 1.51KB |
 | 262 | csv-to-html-translation-4 | ✓ | 8.0ms | 1.27KB |
 | 263 | csv-to-html-translation-5 | ✓ | 31.0ms | 89.14KB |
-| 264 | cuban-primes |   |  |  |
-| 265 | cullen-and-woodall-numbers |   |  |  |
-| 266 | cumulative-standard-deviation |   |  |  |
-| 267 | currency |   |  |  |
-| 268 | currying |   |  |  |
-| 269 | curzon-numbers |   |  |  |
-| 270 | cusip |   |  |  |
-| 271 | cyclops-numbers |   |  |  |
-| 272 | damm-algorithm |   |  |  |
-| 273 | date-format |   |  |  |
+| 264 | cuban-primes | ✓ |  |  |
+| 265 | cullen-and-woodall-numbers | ✓ | 37.0ms | 63.46KB |
+| 266 | cumulative-standard-deviation | ✓ | 19.0ms | 10.59KB |
+| 267 | currency | ✓ | 42.0ms | 80.55KB |
+| 268 | currying | ✓ | 39.0ms | 68.09KB |
+| 269 | curzon-numbers | ✓ |  |  |
+| 270 | cusip | ✓ | 43.0ms | 77.64KB |
+| 271 | cyclops-numbers | ✓ | 16.0ms | 0B |
+| 272 | damm-algorithm | ✓ | 44.0ms | 79.77KB |
+| 273 | date-format | ✓ | 56.0ms | 103.55KB |
 | 274 | date-manipulation |   |  |  |
-| 275 | day-of-the-week |   |  |  |
-| 276 | de-bruijn-sequences |   |  |  |
+| 275 | day-of-the-week | ✓ | 39.0ms | 69.08KB |
+| 276 | de-bruijn-sequences | ✓ | 1.22s | 105.70KB |
 | 277 | deal-cards-for-freecell |   |  |  |
-| 278 | death-star |   |  |  |
-| 279 | deceptive-numbers |   |  |  |
-| 280 | deconvolution-1d-2 |   |  |  |
-| 281 | deconvolution-1d-3 |   |  |  |
-| 282 | deconvolution-1d |   |  |  |
+| 278 | death-star | ✓ | 65.0ms | 39.51KB |
+| 279 | deceptive-numbers | ✓ |  |  |
+| 280 | deconvolution-1d-2 | ✓ | 43.0ms | 65.21KB |
+| 281 | deconvolution-1d-3 | ✓ | 46.0ms | 95.74KB |
+| 282 | deconvolution-1d | ✓ | 35.0ms | 65.21KB |
 | 283 | deepcopy-1 |   |  |  |
-| 284 | define-a-primitive-data-type |   |  |  |
+| 284 | define-a-primitive-data-type | ✓ | 29.0ms | 39.78KB |
 | 285 | delegates |   |  |  |
-| 286 | demings-funnel |   |  |  |
-| 287 | department-numbers |   |  |  |
-| 288 | descending-primes |   |  |  |
-| 289 | detect-division-by-zero |   |  |  |
-| 290 | determine-if-a-string-has-all-the-same-characters |   |  |  |
-| 291 | determine-if-a-string-has-all-unique-characters |   |  |  |
+| 286 | demings-funnel | ✓ | 60.0ms | 109.08KB |
+| 287 | department-numbers | ✓ | 44.0ms | 87.02KB |
+| 288 | descending-primes | ✓ | 39.0ms | 56.60KB |
+| 289 | detect-division-by-zero | ✓ | 41.0ms | 77.66KB |
+| 290 | determine-if-a-string-has-all-the-same-characters | ✓ | 57.0ms | 106.90KB |
+| 291 | determine-if-a-string-has-all-unique-characters | ✓ | 54.0ms | 101.68KB |
 | 292 | determine-if-a-string-is-collapsible |   |  |  |
-| 293 | determine-if-a-string-is-numeric-1 |   |  |  |
-| 294 | determine-if-a-string-is-numeric-2 |   |  |  |
+| 293 | determine-if-a-string-is-numeric-1 | ✓ | 39.0ms | 77.67KB |
+| 294 | determine-if-a-string-is-numeric-2 | ✓ | 39.0ms | 77.88KB |
 | 295 | determine-if-a-string-is-squeezable |   |  |  |
 | 296 | determine-if-only-one-instance-is-running |   |  |  |
 | 297 | determine-if-two-triangles-overlap |   |  |  |
