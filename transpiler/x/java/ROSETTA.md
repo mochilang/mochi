@@ -1,9 +1,9 @@
 # Java Rosetta Transpiler Output
 
 Generated Java code for programs in `tests/rosetta/x/Mochi`. Each program has a `.java` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
-Last updated: 2025-07-27 21:57 GMT+7
+Last updated: 2025-07-27 22:15 GMT+7
 
-## Rosetta Checklist (231/467)
+## Rosetta Checklist (238/467)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 23.0ms | 245.84KB |
@@ -300,13 +300,13 @@ Last updated: 2025-07-27 21:57 GMT+7
 | 292 | determine-if-a-string-is-collapsible |   |  |  |
 | 293 | determine-if-a-string-is-numeric-1 | ✓ | 39.0ms | 77.67KB |
 | 294 | determine-if-a-string-is-numeric-2 | ✓ | 39.0ms | 77.88KB |
-| 295 | determine-if-a-string-is-squeezable |   |  |  |
-| 296 | determine-if-only-one-instance-is-running |   |  |  |
-| 297 | determine-if-two-triangles-overlap |   |  |  |
-| 298 | determine-sentence-type |   |  |  |
-| 299 | dice-game-probabilities-1 |   |  |  |
-| 300 | dice-game-probabilities-2 |   |  |  |
-| 301 | digital-root-multiplicative-digital-root |   |  |  |
+| 295 | determine-if-a-string-is-squeezable | ✓ | 25.0ms | 88.58KB |
+| 296 | determine-if-only-one-instance-is-running | ✓ | 6.0ms | 584B |
+| 297 | determine-if-two-triangles-overlap | ✓ | 26.0ms | 110.55KB |
+| 298 | determine-sentence-type | ✓ | 31.0ms | 52.66KB |
+| 299 | dice-game-probabilities-1 | ✓ | 28.0ms | 56.18KB |
+| 300 | dice-game-probabilities-2 | ✓ | 16.0ms | 10.58KB |
+| 301 | digital-root-multiplicative-digital-root | ✓ | 75.0ms | 120.93KB |
 | 302 | dijkstras-algorithm |   |  |  |
 | 303 | dinesmans-multiple-dwelling-problem |   |  |  |
 | 304 | dining-philosophers-1 |   |  |  |

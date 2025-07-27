@@ -1,0 +1,8 @@
+compile: exit status 1
+/tmp/TestJavaTranspiler_Rosetta_Goldendijkstras-algorithm3108875227/001/Main.java:52: error: > or ',' expected
+            for (var v : ((java.util.Map<String,Integer)graph.get(u))) {
+                                                       ^
+/tmp/TestJavaTranspiler_Rosetta_Goldendijkstras-algorithm3108875227/001/Main.java:53: error: > or ',' expected
+                int alt = (int)(((int)dist.getOrDefault(u, 0))) + (int)(((int)((java.util.Map<String,Integer)graph.get(u)).getOrDefault(v, 0)));
+                                                                                                            ^
+2 errors

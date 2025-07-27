@@ -1,4 +1,50 @@
-## Progress (2025-07-27 13:49 UTC)
+## Progress (2025-07-27 22:00 +0700)
+- transpiler/java: process rosetta programs 265-294 (5f3bc4e7fb)
+
+- transpiler/java: process rosetta programs 265-294 (5f3bc4e7fb)
+
+- transpiler/java: process rosetta programs 265-294 (5f3bc4e7fb)
+
+- transpiler/java: process rosetta programs 265-294 (5f3bc4e7fb)
+
+- transpiler/java: process rosetta programs 265-294 (5f3bc4e7fb)
+
+- transpiler/java: process rosetta programs 265-294 (5f3bc4e7fb)
+
+- transpiler/java: process rosetta programs 265-294 (5f3bc4e7fb)
+
+- transpiler/java: process rosetta programs 265-294 (5f3bc4e7fb)
+
+- transpiler/java: process rosetta programs 265-294 (5f3bc4e7fb)
+
+- transpiler/java: process rosetta programs 265-294 (5f3bc4e7fb)
+
+- transpiler/java: process rosetta programs 265-294 (5f3bc4e7fb)
+
+- transpiler/java: process rosetta programs 265-294 (5f3bc4e7fb)
+
+- transpiler/java: process rosetta programs 265-294 (5f3bc4e7fb)
+
+- transpiler/java: process rosetta programs 265-294 (5f3bc4e7fb)
+
+- transpiler/java: process rosetta programs 265-294 (5f3bc4e7fb)
+
+- transpiler/java: process rosetta programs 265-294 (5f3bc4e7fb)
+
+- transpiler/java: process rosetta programs 265-294 (5f3bc4e7fb)
+
+- transpiler/java: process rosetta programs 265-294 (5f3bc4e7fb)
+
+- transpiler/java: process rosetta programs 265-294 (5f3bc4e7fb)
+
+- transpiler/java: process rosetta programs 265-294 (5f3bc4e7fb)
+
+- transpiler/java: process rosetta programs 265-294 (5f3bc4e7fb)
+
+- transpiler/java: process rosetta programs 265-294 (5f3bc4e7fb)
+
+- transpiler/java: process rosetta programs 265-294 (5f3bc4e7fb)
+
 - java: add rosetta program 248 (c56bde5cfc)
 
 - java: add rosetta program 248 (c56bde5cfc)
