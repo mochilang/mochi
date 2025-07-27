@@ -4006,7 +4006,8 @@ func Emit(prog *Program) []byte {
 		buf.WriteString("\t\tif (inputIndex < inputLines.Length) {\n")
 		buf.WriteString("\t\t\treturn inputLines[inputIndex++];\n")
 		buf.WriteString("\t\t}\n")
-		buf.WriteString("\t\treturn Console.ReadLine();\n")
+		buf.WriteString("\t\tvar line = Console.ReadLine();\n")
+		buf.WriteString("\t\treturn line == null ? \"\" : line;\n")
 		buf.WriteString("\t}\n")
 	}
 	if usesFmt {
