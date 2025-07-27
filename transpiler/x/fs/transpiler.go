@@ -1057,7 +1057,11 @@ func (a *AppendExpr) emit(w io.Writer) {
 		if it == "obj" || it == "" {
 			io.WriteString(w, "unbox<")
 			io.WriteString(w, elemType)
-			io.WriteString(w, "> ")
+			io.WriteString(w, "> (")
+			a.Elem.emit(w)
+			io.WriteString(w, ")")
+			io.WriteString(w, "|]")
+			return
 		}
 	}
 	a.Elem.emit(w)
@@ -1784,7 +1788,7 @@ func inferType(e Expr) string {
 	case *IdentExpr:
 		if t := v.Type; t != "" {
 			if strings.HasSuffix(t, " list") || strings.HasSuffix(t, " array") || strings.HasPrefix(t, "list<") {
-				return "array"
+				return t
 			}
 			if strings.HasPrefix(t, "Map<") {
 				return "map"
@@ -1793,7 +1797,7 @@ func inferType(e Expr) string {
 		}
 		if t, ok := varTypes[v.Name]; ok {
 			if strings.HasSuffix(t, " list") || strings.HasSuffix(t, " array") || strings.HasPrefix(t, "list<") {
-				return "array"
+				return t
 			}
 			if strings.HasPrefix(t, "Map<") {
 				return "map"
@@ -2017,15 +2021,36 @@ func (i *IndexExpr) emit(w io.Writer) {
 			}
 		}
 		if t == "obj" || t == "" {
+			io.WriteString(w, "((")
+			i.Target.emit(w)
 			if inferType(i.Index) == "int" {
-				io.WriteString(w, "((")
-				i.Target.emit(w)
-				io.WriteString(w, " :?> obj[]).[")
-			} else {
-				io.WriteString(w, "((")
-				i.Target.emit(w)
-				io.WriteString(w, " :?> Map<string, obj>).[")
+				io.WriteString(w, " :?> System.Array).GetValue(")
+				if needsParen(i.Index) {
+					io.WriteString(w, "(")
+					i.Index.emit(w)
+					io.WriteString(w, ")")
+				} else {
+					i.Index.emit(w)
+				}
+				io.WriteString(w, ")")
+				if valT != "obj" {
+					io.WriteString(w, ")") // closing ((target :?> System.Array).GetValue(...)
+					io.WriteString(w, " |> unbox<")
+					io.WriteString(w, valT)
+					io.WriteString(w, ">")
+					return
+				}
+				io.WriteString(w, ")")
+				return
 			}
+			io.WriteString(w, " :?> Map<string, ")
+			if valT != "obj" {
+				io.WriteString(w, valT)
+			} else {
+				io.WriteString(w, "obj")
+			}
+			io.WriteString(w, ">).")
+			io.WriteString(w, "[")
 		} else {
 			i.Target.emit(w)
 			io.WriteString(w, ".[")
@@ -2081,7 +2106,13 @@ func (f *FieldExpr) emit(w io.Writer) {
 			f.Target.emit(w)
 			io.WriteString(w, " :?> Map<string, obj>).[")
 		} else {
-			f.Target.emit(w)
+			if needsParen(f.Target) {
+				io.WriteString(w, "(")
+				f.Target.emit(w)
+				io.WriteString(w, ")")
+			} else {
+				f.Target.emit(w)
+			}
 			io.WriteString(w, ".[")
 		}
 		fmt.Fprintf(w, "%q", f.Name)
@@ -2095,7 +2126,13 @@ func (f *FieldExpr) emit(w io.Writer) {
 			io.WriteString(w, ">")
 		}
 	} else {
-		f.Target.emit(w)
+		if needsParen(f.Target) {
+			io.WriteString(w, "(")
+			f.Target.emit(w)
+			io.WriteString(w, ")")
+		} else {
+			f.Target.emit(w)
+		}
 		io.WriteString(w, ".")
 		io.WriteString(w, fsIdent(f.Name))
 	}
@@ -3277,6 +3314,9 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 						field := &FieldExpr{Target: id, Name: "items"}
 						return &CallExpr{Func: "Array.length", Args: []Expr{field}}, nil
 					}
+				case "obj":
+					cast := &CastExpr{Expr: args[0], Type: "System.Array"}
+					return &FieldExpr{Target: cast, Name: "Length"}, nil
 				}
 			}
 			return &CallExpr{Func: fn, Args: args}, nil
@@ -3311,6 +3351,16 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			elemArg := args[1]
 			if et := elemTypeOf(listArg); et != "" && inferType(elemArg) == "obj" {
 				elemArg = &CastExpr{Expr: elemArg, Type: et}
+				if ix, ok := elemArg.(*CastExpr); ok {
+					if idx, ok2 := ix.Expr.(*IndexExpr); ok2 {
+						if id, ok3 := idx.Target.(*IdentExpr); ok3 {
+							if varTypes[id.Name] == "obj" {
+								varTypes[id.Name] = et + " array"
+								id.Type = et + " array"
+							}
+						}
+					}
+				}
 			}
 			return &AppendExpr{List: listArg, Elem: elemArg}, nil
 		case "now":

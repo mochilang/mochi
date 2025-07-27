@@ -1,4 +1,4 @@
-// Generated 2025-07-27 23:36 +0700
+// Generated 2025-07-27 17:40 +0000
 
 exception Return
 
@@ -59,13 +59,13 @@ let rec unpackSym (m: Map<string, obj>) =
             let mutable row: float array = [||]
             let mutable c: int = 0
             while c <= r do
-                row <- unbox<float array> (Array.append row [|((ele :?> obj[]).[idx])|])
+                row <- Array.append row [|unbox<float> (((ele :?> System.Array).GetValue(idx)))|]
                 idx <- idx + 1
                 c <- c + 1
             while c < (unbox<int> n) do
-                row <- unbox<float array> (Array.append row [|0.0|])
+                row <- Array.append row [|0.0|]
                 c <- c + 1
-            mat <- unbox<float array array> (Array.append mat [|row|])
+            mat <- Array.append mat [|row|]
             r <- r + 1
         r <- 0
         while r < (unbox<int> n) do
@@ -74,7 +74,7 @@ let rec unpackSym (m: Map<string, obj>) =
                 (mat.[r]).[c] <- (mat.[c]).[r]
                 c <- c + 1
             r <- r + 1
-        __ret <- unbox<float array array> mat
+        __ret <- mat
         raise Return
         __ret
     with
@@ -84,7 +84,7 @@ let rec printMat (m: float array array) =
     let mutable m = m
     try
         let mutable i: int = 0
-        while i < (int (Array.length m)) do
+        while i < (Seq.length m) do
             let mutable line: string = ""
             let mutable j: int = 0
             while j < (Seq.length (m.[i])) do
@@ -118,13 +118,13 @@ let rec printLower (m: Map<string, obj>) =
             let mutable row: float array = [||]
             let mutable c: int = 0
             while c <= r do
-                row <- unbox<float array> (Array.append row [|((ele :?> obj[]).[idx])|])
+                row <- Array.append row [|unbox<float> (((ele :?> System.Array).GetValue(idx)))|]
                 idx <- idx + 1
                 c <- c + 1
             while c < (unbox<int> n) do
-                row <- unbox<float array> (Array.append row [|0.0|])
+                row <- Array.append row [|0.0|]
                 c <- c + 1
-            mat <- unbox<float array array> (Array.append mat [|row|])
+            mat <- Array.append mat [|row|]
             r <- r + 1
         printMat mat
         __ret
@@ -138,18 +138,18 @@ let rec choleskyLower (a: Map<string, obj>) =
         let ae: obj = box (a.["ele"])
         let mutable le: float array = [||]
         let mutable idx: int = 0
-        while idx < (Seq.length ae) do
-            le <- unbox<float array> (Array.append le [|0.0|])
+        while idx < (int ((unbox<System.Array> ae).Length)) do
+            le <- Array.append le [|0.0|]
             idx <- idx + 1
         let mutable row: int = 1
         let mutable col: int = 1
         let mutable dr: int = 0
         let mutable dc: int = 0
         let mutable i: int = 0
-        while i < (Seq.length ae) do
-            let e: obj = box (((ae :?> obj[]).[i]))
+        while i < (int ((unbox<System.Array> ae).Length)) do
+            let e: obj = box (((ae :?> System.Array).GetValue(i)))
             if i < dr then
-                let mutable d = (e - (le.[i])) / (le.[dc])
+                let mutable d = (float ((unbox<float> e) - (le.[i]))) / (le.[dc])
                 le.[i] <- d
                 let mutable ci: int = col
                 let mutable cx: int = dc
@@ -157,12 +157,12 @@ let rec choleskyLower (a: Map<string, obj>) =
                 while j <= dr do
                     cx <- cx + ci
                     ci <- ci + 1
-                    le.[j] <- (le.[j]) + (d * (le.[cx]))
+                    le.[j] <- (le.[j]) + (float ((float d) * (le.[cx])))
                     j <- j + 1
                 col <- col + 1
                 dc <- dc + col
             else
-                le.[i] <- sqrtApprox (float (e - (le.[i])))
+                le.[i] <- sqrtApprox (float ((unbox<float> e) - (le.[i])))
                 row <- row + 1
                 dr <- dr + row
                 col <- 1
