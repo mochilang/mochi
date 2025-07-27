@@ -1,7 +1,7 @@
 # Rosetta C# Transpiler Output
 
-Completed programs: 206/465
-Last updated: 2025-07-27 10:11 UTC
+Completed programs: 210/465
+Last updated: 2025-07-27 17:19 +0700
 
 ## Checklist
 | Index | Name | Status | Duration | Memory |
@@ -168,13 +168,13 @@ Last updated: 2025-07-27 10:11 UTC
 | 160 | call-a-function-7 | ✓ | 14µs |  |
 | 161 | call-a-function-8 | ✓ | 7.019ms | 1.9MB |
 | 162 | call-a-function-9 | ✓ | 6.581ms | 1.7MB |
-| 163 | call-an-object-method-1 |   |  |  |
-| 164 | call-an-object-method-2 |   |  |  |
-| 165 | call-an-object-method-3 |   |  |  |
-| 166 | call-an-object-method |   |  |  |
-| 167 | camel-case-and-snake-case | ✓ | 469566h32m48.600175s | 1.2MB |
-| 168 | canny-edge-detector | ✓ | 469566h32m48.600175s | 1.2MB |
-| 169 | canonicalize-cidr | ✓ | 17.947ms | 2.4MB |
+| 163 | call-an-object-method-1 | ✓ | 10µs |  |
+| 164 | call-an-object-method-2 | ✓ | 1µs |  |
+| 165 | call-an-object-method-3 | ✓ | 8µs |  |
+| 166 | call-an-object-method | ✓ | 8µs |  |
+| 167 | camel-case-and-snake-case | ✓ | 14.748ms | 1.2MB |
+| 168 | canny-edge-detector | ✓ | 13.911ms | 1.2MB |
+| 169 | canonicalize-cidr | ✓ | 23.115ms | 3.1MB |
 | 170 | cantor-set |   |  |  |
 | 171 | carmichael-3-strong-pseudoprimes |   |  |  |
 | 172 | cartesian-product-of-two-or-more-lists-1 |   |  |  |

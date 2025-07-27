@@ -62,13 +62,57 @@ type Global struct {
 }
 
 type StructDecl struct {
-	Name   string
-	Fields []StructField
+	Name    string
+	Fields  []StructField
+	Methods []*Method
 }
 
 type StructField struct {
 	Name string
 	Type string
+}
+
+type Method struct {
+	Name       string
+	Params     []string
+	ParamTypes []string
+	ReturnType string
+	Body       []Stmt
+}
+
+func (m *Method) emit(w io.Writer) {
+	ret := m.ReturnType
+	if ret == "" {
+		ret = "void"
+	}
+	saved := make(map[string]string)
+	fmt.Fprintf(w, "    public %s %s(", ret, safeName(m.Name))
+	for i, p := range m.Params {
+		if i > 0 {
+			fmt.Fprint(w, ", ")
+		}
+		typ := "int"
+		if len(m.ParamTypes) > i && m.ParamTypes[i] != "" {
+			typ = m.ParamTypes[i]
+		}
+		fmt.Fprintf(w, "%s %s", typ, safeName(p))
+		saved[p] = varTypes[p]
+		varTypes[p] = typ
+	}
+	fmt.Fprint(w, ") {\n")
+	for _, st := range m.Body {
+		fmt.Fprint(w, "        ")
+		st.emit(w)
+		fmt.Fprint(w, ";\n")
+	}
+	fmt.Fprint(w, "    }\n")
+	for name, t := range saved {
+		if t == "" {
+			delete(varTypes, name)
+		} else {
+			varTypes[name] = t
+		}
+	}
 }
 
 var stringVars map[string]bool
@@ -1809,6 +1853,13 @@ func (l *ListLit) emit(w io.Writer) {
 	if t == "" {
 		t = listType(l)
 	}
+	if t == "Action[]" {
+		for i, e := range l.Elems {
+			if typeOfExpr(e) != "Action" {
+				l.Elems[i] = &RawExpr{Code: fmt.Sprintf("new Action(() => %s())", exprString(e)), Type: "Action"}
+			}
+		}
+	}
 	fmt.Fprintf(w, "new %s{", t)
 	for i, e := range l.Elems {
 		if i > 0 {
@@ -2427,7 +2478,7 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 			}
 		}
 		if mp, ok := val.(*MapLit); ok {
-			if len(mp.Items) == 0 && s.Let.Type != nil && s.Let.Type.Generic != nil && s.Let.Type.Generic.Name == "map" && len(s.Let.Type.Generic.Args) == 2 {
+			if s.Let.Type != nil && s.Let.Type.Generic != nil && s.Let.Type.Generic.Name == "map" && len(s.Let.Type.Generic.Args) == 2 {
 				mp.KeyType = csType(s.Let.Type.Generic.Args[0])
 				mp.ValType = csType(s.Let.Type.Generic.Args[1])
 			} else if len(mp.Items) > 2 && false {
@@ -2531,7 +2582,7 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 			_ = list // do not convert mutable vars to structs
 		}
 		if mp, ok := val.(*MapLit); ok {
-			if len(mp.Items) == 0 && s.Var.Type != nil && s.Var.Type.Generic != nil && s.Var.Type.Generic.Name == "map" && len(s.Var.Type.Generic.Args) == 2 {
+			if s.Var.Type != nil && s.Var.Type.Generic != nil && s.Var.Type.Generic.Name == "map" && len(s.Var.Type.Generic.Args) == 2 {
 				mp.KeyType = csType(s.Var.Type.Generic.Args[0])
 				mp.ValType = csType(s.Var.Type.Generic.Args[1])
 			}
@@ -2572,7 +2623,15 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 				for i, n := range st.Order {
 					fields[i] = StructField{Name: n, Type: csTypeFromType(st.Fields[n])}
 				}
-				prog.Structs = append(prog.Structs, StructDecl{Name: s.Type.Name, Fields: fields})
+				methods := []*Method{}
+				for name, meth := range st.Methods {
+					m, err := compileMethodDecl(name, s.Type.Name, meth.Decl)
+					if err != nil {
+						return nil, err
+					}
+					methods = append(methods, m)
+				}
+				prog.Structs = append(prog.Structs, StructDecl{Name: s.Type.Name, Fields: fields, Methods: methods})
 			}
 		}
 		return nil, nil
@@ -2633,9 +2692,7 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 								}
 							}
 						}
-						if g, ok3 := globalDecls[s.Assign.Name]; ok3 {
-							g.Value = &RawExpr{Code: fmt.Sprintf("new %s{}", varTypes[nameAlias]), Type: varTypes[nameAlias]}
-						}
+						_ = globalDecls[s.Assign.Name]
 						finalVarTypes[nameAlias] = varTypes[nameAlias]
 					}
 					val = &AppendExpr{List: app.List, Item: item}
@@ -2842,8 +2899,20 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 				if vt != ct && vt != "" {
 					if vt == "object[]" && strings.HasSuffix(ct, "[]") {
 						elem := strings.TrimSuffix(ct, "[]")
-						usesLinq = true
-						val = &RawExpr{Code: fmt.Sprintf("%s.Cast<%s>().ToArray()", exprString(val), elem), Type: ct}
+						if elem == "Action" {
+							if l, ok := val.(*ListLit); ok {
+								wrapped := make([]Expr, len(l.Elems))
+								for i, e := range l.Elems {
+									wrapped[i] = &RawExpr{Code: fmt.Sprintf("new Action(() => %s())", exprString(e)), Type: "Action"}
+								}
+								val = &ListLit{Elems: wrapped, ElemType: "Action[]"}
+								vt = "Action[]"
+							}
+						}
+						if vt != ct {
+							usesLinq = true
+							val = &RawExpr{Code: fmt.Sprintf("%s.Cast<%s>().ToArray()", exprString(val), elem), Type: ct}
+						}
 					} else {
 						val = &RawExpr{Code: fmt.Sprintf("(%s)"+exprString(val), ct), Type: ct}
 					}
@@ -4060,6 +4129,9 @@ func Emit(prog *Program) []byte {
 		for _, f := range st.Fields {
 			fmt.Fprintf(&buf, "    public %s %s;\n", f.Type, f.Name)
 		}
+		for _, m := range st.Methods {
+			m.emit(&buf)
+		}
 		fmt.Fprintf(&buf, "    public override string ToString() => $\"%s {{", st.Name)
 		for i, f := range st.Fields {
 			if i > 0 {
@@ -4310,6 +4382,84 @@ func structPattern(e *parser.Expr) (string, []string, bool) {
 		vars[i] = v
 	}
 	return call.Func, vars, true
+}
+
+func compileMethodDecl(name, structName string, decl *parser.FunStmt) (*Method, error) {
+	params := make([]string, len(decl.Params))
+	ptypes := make([]string, len(decl.Params))
+	savedAliases := cloneStringMap(varAliases)
+	savedAll := cloneStringMap(varTypes)
+	savedStrAll := cloneBoolMap(stringVars)
+	savedMut := cloneBoolMap(mutatedVars)
+	saved := make(map[string]string)
+	savedStr := make(map[string]bool)
+
+	// struct fields available as variables
+	if st, ok := structTypes[structName]; ok {
+		for fname, ft := range st.Fields {
+			varTypes[fname] = csTypeFromType(ft)
+			if csTypeFromType(ft) == "string" {
+				stringVars[fname] = true
+			}
+		}
+	}
+
+	for i, p := range decl.Params {
+		alias := fmt.Sprintf("%s_%d", p.Name, aliasCounter)
+		aliasCounter++
+		params[i] = alias
+		ptypes[i] = csType(p.Type)
+		saved[p.Name] = varTypes[p.Name]
+		varTypes[p.Name] = ptypes[i]
+		varAliases[p.Name] = alias
+		varTypes[alias] = ptypes[i]
+		savedStr[p.Name] = stringVars[p.Name]
+		if ptypes[i] == "string" {
+			stringVars[p.Name] = true
+		} else {
+			delete(stringVars, p.Name)
+		}
+	}
+
+	retType := csType(decl.Return)
+	var body []Stmt
+	blockDepth++
+	for _, st := range decl.Body {
+		s, err := compileStmt(nil, st)
+		if err != nil {
+			blockDepth--
+			return nil, err
+		}
+		if s != nil {
+			body = append(body, s)
+		}
+	}
+	blockDepth--
+
+	for name, typ := range saved {
+		if typ == "" {
+			delete(varTypes, name)
+		} else {
+			varTypes[name] = typ
+		}
+	}
+	for name, val := range savedStr {
+		if !val {
+			delete(stringVars, name)
+		} else {
+			stringVars[name] = val
+		}
+	}
+	varTypes = savedAll
+	stringVars = savedStrAll
+	mutatedVars = savedMut
+	varAliases = savedAliases
+
+	if decl.Return == nil {
+		retType = ""
+	}
+	m := &Method{Name: name, Params: params, ParamTypes: ptypes, ReturnType: retType, Body: body}
+	return m, nil
 }
 
 func parseFormat(e *parser.Expr) string {
