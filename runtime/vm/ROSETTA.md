@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated IR and outputs from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/ir`.
-Last updated: 2025-07-27 15:37 UTC
+Last updated: 2025-07-27 15:57 UTC
 
 ## Rosetta Golden Test Checklist (450/467)
 | Index | Name | Status | Duration | Memory |
@@ -207,13 +207,13 @@ Last updated: 2025-07-27 15:37 UTC
 | 198 | cheryls-birthday | ✓ | 1.966ms | 425.7 KB |
 | 199 | chinese-remainder-theorem | ✓ | 826µs | 48.3 KB |
 | 200 | chinese-zodiac | ✓ | 254µs | 57.9 KB |
-| 201 | cholesky-decomposition-1 | ✓ | 980µs | 188.1 KB |
-| 202 | cholesky-decomposition | ✓ | 1.585ms |  |
-| 203 | chowla-numbers | ✓ | 420µs | 1.1 KB |
+| 201 | cholesky-decomposition-1 | ✓ | 329µs | 188.6 KB |
+| 202 | cholesky-decomposition | ✓ | 315µs | 100.8 KB |
+| 203 | chowla-numbers | ✓ | 30µs | 1.1 KB |
 | 204 | church-numerals-1 |   |  |  |
-| 205 | church-numerals-2 | ✓ | 244µs | 136 B |
-| 206 | circles-of-given-radius-through-two-points | ✓ | 1.294ms | 195.5 KB |
-| 207 | circular-primes | ✓ | 17.457ms | 1.8 MB |
+| 205 | church-numerals-2 | ✓ | 54µs | 136 B |
+| 206 | circles-of-given-radius-through-two-points | ✓ | 280µs | 195.5 KB |
+| 207 | circular-primes | ✓ | 5.346ms |  |
 | 208 | cistercian-numerals | ✓ |  |  |
 | 209 | comma-quibbling | ✓ | 677µs | 22.5 KB |
 | 210 | compiler-virtual-machine-interpreter | ✓ | 4.182ms | 1.5 MB |
