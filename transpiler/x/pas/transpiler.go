@@ -1268,9 +1268,14 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 						if vd.Type == "" {
 							vd.Type = rec.Type
 						}
-						pr.Vars = append(pr.Vars, vd)
+						var args []Expr
 						for _, f := range rec.Fields {
-							pr.Stmts = append(pr.Stmts, &AssignStmt{Name: fmt.Sprintf("%s.%s", vd.Name, f.Name), Expr: f.Expr})
+							args = append(args, f.Expr)
+						}
+						vd.Init = &CallExpr{Name: ctorName(rec.Type), Args: args}
+						pr.Vars = append(pr.Vars, vd)
+						if vd.Type != "" {
+							varTypes[vd.Name] = vd.Type
 						}
 						continue
 					}
@@ -1659,9 +1664,11 @@ func convertBody(env *types.Env, body []*parser.Statement, varTypes map[string]s
 					if vd.Type == "" {
 						vd.Type = rec.Type
 					}
+					var args []Expr
 					for _, f := range rec.Fields {
-						out = append(out, &AssignStmt{Name: fmt.Sprintf("%s.%s", name, f.Name), Expr: f.Expr})
+						args = append(args, f.Expr)
 					}
+					out = append(out, &AssignStmt{Name: name, Expr: &CallExpr{Name: ctorName(rec.Type), Args: args}})
 				} else {
 					if vd.Type == "" {
 						if t := inferType(ex); t != "" {
@@ -1711,12 +1718,23 @@ func convertBody(env *types.Env, body []*parser.Statement, varTypes map[string]s
 				if err != nil {
 					return nil, err
 				}
-				if vd.Type == "" {
-					if t := inferType(ex); t != "" {
-						vd.Type = t
+				if rec, ok := ex.(*RecordLit); ok {
+					if vd.Type == "" {
+						vd.Type = rec.Type
 					}
+					var args []Expr
+					for _, f := range rec.Fields {
+						args = append(args, f.Expr)
+					}
+					out = append(out, &AssignStmt{Name: name, Expr: &CallExpr{Name: ctorName(rec.Type), Args: args}})
+				} else {
+					if vd.Type == "" {
+						if t := inferType(ex); t != "" {
+							vd.Type = t
+						}
+					}
+					out = append(out, &AssignStmt{Name: name, Expr: ex})
 				}
-				out = append(out, &AssignStmt{Name: name, Expr: ex})
 			}
 			if !hasVar(vd.Name) {
 				currProg.Vars = append(currProg.Vars, vd)
@@ -3258,6 +3276,39 @@ func typeFromSimple(s string) string {
 	}
 }
 
+func pasTypeFromType(t types.Type) string {
+	switch v := t.(type) {
+	case types.StringType:
+		return "string"
+	case types.BoolType:
+		return "boolean"
+	case types.IntType, types.Int64Type:
+		return "integer"
+	case types.FloatType:
+		return "real"
+	case types.StructType:
+		return v.Name
+	case types.ListType:
+		elem := pasTypeFromType(v.Elem)
+		if strings.HasPrefix(elem, "array of ") {
+			alias := currProg.addArrayAlias(strings.TrimPrefix(elem, "array of "))
+			elem = alias
+		}
+		return "array of " + elem
+	case types.MapType:
+		key := pasTypeFromType(v.Key)
+		val := pasTypeFromType(v.Value)
+		if strings.HasPrefix(val, "array of ") {
+			alias := currProg.addArrayAlias(strings.TrimPrefix(val, "array of "))
+			val = alias
+		}
+		currProg.UseFGL = true
+		return fmt.Sprintf("specialize TFPGMap<%s, %s>", key, val)
+	default:
+		return "Variant"
+	}
+}
+
 func CurrentVarTypesDebug() map[string]string { return currentVarTypes }
 
 func convertUnary(env *types.Env, u *parser.Unary) (Expr, error) {
@@ -3621,8 +3672,20 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 		}
 		return &ListLit{Elems: elems}, nil
 	case p.Struct != nil:
+		st, _ := env.GetStruct(p.Struct.Name)
 		var fields []FieldExpr
 		for _, it := range p.Struct.Fields {
+			if isEmptyMapLiteral(it.Value) {
+				if ft, ok := st.Fields[it.Name]; ok {
+					if mt, ok2 := ft.(types.MapType); ok2 {
+						keyT := pasTypeFromType(mt.Key)
+						valT := pasTypeFromType(mt.Value)
+						mapName := ensureMap(keyT, valT, nil)
+						fields = append(fields, FieldExpr{Name: it.Name, Expr: &CallExpr{Name: mapName}})
+						continue
+					}
+				}
+			}
 			val, err := convertExpr(env, it.Value)
 			if err != nil {
 				return nil, err
