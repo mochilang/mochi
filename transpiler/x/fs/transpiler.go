@@ -66,6 +66,7 @@ var (
 	usesSHA256    bool
 	benchMain     bool
 	currentReturn string
+	methodDefs    []Stmt
 )
 
 // SetBenchMain configures whether the generated main function is wrapped in a
@@ -865,6 +866,11 @@ func (v *VariantExpr) emit(w io.Writer) {
 }
 
 func (s *StructLit) emit(w io.Writer) {
+	if len(s.Fields) == 0 && s.Name != "" {
+		io.WriteString(w, fsIdent(s.Name))
+		io.WriteString(w, "()")
+		return
+	}
 	io.WriteString(w, "{ ")
 	for i, f := range s.Fields {
 		io.WriteString(w, fsIdent(f.Name))
@@ -1023,10 +1029,13 @@ func (a *AppendExpr) emit(w io.Writer) {
 	}
 	io.WriteString(w, " [|")
 	elemType := elemTypeOf(a.List)
-	if elemType != "" && inferType(a.Elem) == "obj" {
-		io.WriteString(w, "unbox<")
-		io.WriteString(w, elemType)
-		io.WriteString(w, "> ")
+	if elemType != "" {
+		it := inferType(a.Elem)
+		if it == "obj" || it == "" {
+			io.WriteString(w, "unbox<")
+			io.WriteString(w, elemType)
+			io.WriteString(w, "> ")
+		}
 	}
 	a.Elem.emit(w)
 	io.WriteString(w, "|]")
@@ -2097,17 +2106,40 @@ func (m *MethodCallExpr) emit(w io.Writer) {
 		}
 	}
 
-	m.Target.emit(w)
-	io.WriteString(w, ".")
-	io.WriteString(w, mapMethod(m.Name))
-	io.WriteString(w, "(")
-	for i, a := range m.Args {
-		if i > 0 {
-			io.WriteString(w, ", ")
+	typ := inferType(m.Target)
+	if typ != "" && typ != "obj" {
+		io.WriteString(w, fsIdent(typ+"_"+mapMethod(m.Name)))
+		io.WriteString(w, " ")
+		if needsParen(m.Target) {
+			io.WriteString(w, "(")
+			m.Target.emit(w)
+			io.WriteString(w, ")")
+		} else {
+			m.Target.emit(w)
 		}
-		a.emit(w)
+		for _, a := range m.Args {
+			io.WriteString(w, " ")
+			if needsParen(a) {
+				io.WriteString(w, "(")
+				a.emit(w)
+				io.WriteString(w, ")")
+			} else {
+				a.emit(w)
+			}
+		}
+	} else {
+		m.Target.emit(w)
+		io.WriteString(w, ".")
+		io.WriteString(w, mapMethod(m.Name))
+		io.WriteString(w, "(")
+		for i, a := range m.Args {
+			if i > 0 {
+				io.WriteString(w, ", ")
+			}
+			a.emit(w)
+		}
+		io.WriteString(w, ")")
 	}
-	io.WriteString(w, ")")
 }
 
 // SliceExpr represents slicing start:end on strings.
@@ -2258,6 +2290,10 @@ func Emit(prog *Program) []byte {
 		buf.WriteString("\n")
 	}
 	for _, st := range prog.Structs {
+		if len(st.Fields) == 0 {
+			fmt.Fprintf(&buf, "type %s() = class end\n", fsIdent(st.Name))
+			continue
+		}
 		fmt.Fprintf(&buf, "type %s = {\n", fsIdent(st.Name))
 		for _, f := range st.Fields {
 			if f.Mut {
@@ -2350,6 +2386,10 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 		if conv != nil {
 			p.Stmts = append(p.Stmts, optimizeFun(conv))
 		}
+	}
+	if len(methodDefs) > 0 {
+		p.Stmts = append(methodDefs, p.Stmts...)
+		methodDefs = nil
 	}
 	p.Structs = structDefs
 	p.Unions = unionDefs
@@ -3082,7 +3122,12 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			if len(args) != 2 {
 				return nil, fmt.Errorf("append expects 2 args")
 			}
-			return &AppendExpr{List: args[0], Elem: args[1]}, nil
+			listArg := args[0]
+			elemArg := args[1]
+			if et := elemTypeOf(listArg); et != "" && inferType(elemArg) == "obj" {
+				elemArg = &CastExpr{Expr: elemArg, Type: et}
+			}
+			return &AppendExpr{List: listArg, Elem: elemArg}, nil
 		case "now":
 			if len(args) == 0 {
 				usesNow = true
@@ -3615,6 +3660,26 @@ func convertTypeDecl(td *parser.TypeDecl) error {
 		st.Order = append(st.Order, m.Field.Name)
 	}
 	addStructDef(td.Name, st)
+	for _, m := range td.Members {
+		if m.Method == nil {
+			continue
+		}
+		fn := *m.Method
+		fn.Name = td.Name + "_" + fn.Name
+		selfName := "self"
+		selfTypeName := td.Name
+		selfType := &parser.TypeRef{Simple: &selfTypeName}
+		param := &parser.Param{Name: selfName, Type: selfType}
+		fn.Params = append([]*parser.Param{param}, fn.Params...)
+		stmt := &parser.Statement{Fun: &fn}
+		fs, err := convertStmt(stmt)
+		if err != nil {
+			return err
+		}
+		if fs != nil {
+			methodDefs = append(methodDefs, fs)
+		}
+	}
 	return nil
 }
 
