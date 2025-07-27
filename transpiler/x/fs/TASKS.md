@@ -1,3 +1,7 @@
+## Progress (2025-07-27 23:36 +0700)
+- transpiler(fs): handle empty array casts
+- Generated F# for 103/104 programs (103 passing)
+
 ## Progress (2025-07-27 22:23 +0700)
 - vm: support globals in nested functions and update Rosetta outputs
 - Generated F# for 103/104 programs (103 passing)
