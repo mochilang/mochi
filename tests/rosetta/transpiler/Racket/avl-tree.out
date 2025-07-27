@@ -1,0 +1,22 @@
+Empty tree:
+null
+
+Insert test:
+{
+   "Data": 3,
+   "Balance": 0,
+   "Link": [
+      null,
+      null
+   ]
+}
+
+Remove test:
+{
+   "Data": #f,
+   "Balance": 0,
+   "Link": [
+      null,
+      null
+   ]
+}
