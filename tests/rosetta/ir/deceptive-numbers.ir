@@ -1,0 +1,198 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun isPrime(n: int): bool {
+func isPrime (regs=24)
+  // if n < 2 { return false }
+  Const        r1, 2
+  Less         r2, r0, r1
+  JumpIfFalse  r2, L0
+  Const        r3, false
+  Return       r3
+L0:
+  // if n % 2 == 0 { return n == 2 }
+  Const        r1, 2
+  Mod          r4, r0, r1
+  Const        r5, 0
+  Equal        r6, r4, r5
+  JumpIfFalse  r6, L1
+  Const        r1, 2
+  Equal        r7, r0, r1
+  Return       r7
+L1:
+  // if n % 3 == 0 { return n == 3 }
+  Const        r8, 3
+  Mod          r9, r0, r8
+  Const        r5, 0
+  Equal        r10, r9, r5
+  JumpIfFalse  r10, L2
+  Const        r8, 3
+  Equal        r11, r0, r8
+  Return       r11
+L2:
+  // var d = 5
+  Const        r12, 5
+  Move         r13, r12
+L6:
+  // while d * d <= n {
+  MulInt       r14, r13, r13
+  LessEq       r15, r14, r0
+  JumpIfFalse  r15, L3
+  // if n % d == 0 { return false }
+  Mod          r16, r0, r13
+  Const        r5, 0
+  Equal        r17, r16, r5
+  JumpIfFalse  r17, L4
+  Const        r3, false
+  Return       r3
+L4:
+  // d = d + 2
+  Const        r1, 2
+  AddInt       r18, r13, r1
+  Move         r13, r18
+  // if n % d == 0 { return false }
+  Mod          r19, r0, r13
+  Const        r5, 0
+  Equal        r20, r19, r5
+  JumpIfFalse  r20, L5
+  Const        r3, false
+  Return       r3
+L5:
+  // d = d + 4
+  Const        r21, 4
+  AddInt       r22, r13, r21
+  Move         r13, r22
+  // while d * d <= n {
+  Jump         L6
+L3:
+  // return true
+  Const        r23, true
+  Return       r23
+
+  // fun listToString(xs: list<int>): string {
+func listToString (regs=19)
+  // var s = "["
+  Const        r1, "["
+  Move         r2, r1
+  // var i = 0
+  Const        r3, 0
+  Move         r4, r3
+L2:
+  // while i < len(xs) {
+  Len          r5, r0
+  LessInt      r6, r4, r5
+  JumpIfFalse  r6, L0
+  // s = s + str(xs[i])
+  Index        r7, r0, r4
+  Str          r8, r7
+  Add          r9, r2, r8
+  Move         r2, r9
+  // if i < len(xs) - 1 { s = s + " " }
+  Len          r10, r0
+  Const        r11, 1
+  SubInt       r12, r10, r11
+  LessInt      r13, r4, r12
+  JumpIfFalse  r13, L1
+  Const        r14, " "
+  Add          r15, r2, r14
+  Move         r2, r15
+L1:
+  // i = i + 1
+  Const        r11, 1
+  AddInt       r16, r4, r11
+  Move         r4, r16
+  // while i < len(xs) {
+  Jump         L2
+L0:
+  // return s + "]"
+  Const        r17, "]"
+  Add          r18, r2, r17
+  Return       r18
+
+  // fun main() {
+func main (regs=43)
+  // var count = 0
+  Const        r0, 0
+  Move         r1, r0
+  // let limit = 25
+  Const        r2, 25
+  Move         r3, r2
+  // var n = 17
+  Const        r4, 17
+  Move         r5, r4
+  // var repunit: bigint = 1111111111111111 as bigint  // R(16)
+  Const        r6, 1111111111111111
+  Move         r7, r6
+  // let eleven: bigint = 11
+  Const        r8, 11
+  Move         r9, r8
+  // let hundred: bigint = 100
+  Const        r10, 100
+  Move         r11, r10
+  // var deceptive: list<int> = []
+  Const        r12, []
+  Move         r13, r12
+L3:
+  // while count < limit {
+  LessInt      r14, r1, r3
+  JumpIfFalse  r14, L0
+  // if !isPrime(n) && n % 3 != 0 && n % 5 != 0 {
+  Move         r15, r5
+  Call         r16, isPrime, r15
+  Not          r17, r16
+  Const        r18, 3
+  ModInt       r19, r5, r18
+  Const        r20, 5
+  ModInt       r21, r5, r20
+  Const        r0, 0
+  NotEqual     r22, r19, r0
+  Const        r0, 0
+  NotEqual     r23, r21, r0
+  Move         r24, r17
+  JumpIfFalse  r24, L1
+  Move         r24, r22
+  JumpIfFalse  r24, L1
+  Move         r24, r23
+L1:
+  JumpIfFalse  r24, L2
+  // let bn: bigint = n as bigint
+  Cast         r25, r5, any
+  Move         r26, r25
+  // if repunit % bn == 0 as bigint {
+  Mod          r27, r7, r26
+  Const        r0, 0
+  Equal        r28, r27, r0
+  JumpIfFalse  r28, L2
+  // deceptive = append(deceptive, n)
+  Append       r29, r13, r5
+  Move         r13, r29
+  // count = count + 1
+  Const        r30, 1
+  AddInt       r31, r1, r30
+  Move         r1, r31
+L2:
+  // n = n + 2
+  Const        r32, 2
+  AddInt       r33, r5, r32
+  Move         r5, r33
+  // repunit = (repunit * hundred) + eleven
+  MulInt       r34, r7, r11
+  AddInt       r35, r34, r9
+  Move         r7, r35
+  // while count < limit {
+  Jump         L3
+L0:
+  // print("The first " + str(limit) + " deceptive numbers are:")
+  Const        r36, "The first "
+  Const        r37, "25"
+  Const        r38, "The first 25"
+  Const        r39, " deceptive numbers are:"
+  Const        r40, "The first 25 deceptive numbers are:"
+  Print        r40
+  // print(listToString(deceptive))
+  Move         r41, r13
+  Call         r42, listToString, r41
+  Print        r42
+  Return       r0

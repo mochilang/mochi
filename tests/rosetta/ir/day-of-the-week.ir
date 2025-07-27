@@ -1,0 +1,92 @@
+func main (regs=19)
+  // for year in 2008..2122 {
+  Const        r0, 2008
+  Const        r1, 2122
+  Move         r2, r0
+L2:
+  LessInt      r3, r2, r1
+  JumpIfFalse  r3, L0
+  // if weekday(year, 12, 25) == 1 {
+  Move         r4, r2
+  Const        r7, 12
+  Move         r5, r7
+  Const        r8, 25
+  Move         r6, r8
+  Call         r9, weekday, r4, r5, r6
+  Const        r10, 1
+  Equal        r11, r9, r10
+  JumpIfFalse  r11, L1
+  // print("25 December " + str(year) + " is Sunday")
+  Const        r12, "25 December "
+  Str          r13, r2
+  Add          r14, r12, r13
+  Const        r15, " is Sunday"
+  Add          r16, r14, r15
+  Print        r16
+L1:
+  // for year in 2008..2122 {
+  Const        r17, 1
+  AddInt       r18, r2, r17
+  Move         r2, r18
+  Jump         L2
+L0:
+  Return       r0
+
+  // fun weekday(y: int, m: int, d: int): int {
+func weekday (regs=39)
+  // var yy = y
+  Move         r3, r0
+  // var mm = m
+  Move         r4, r1
+  // if mm < 3 {
+  Const        r5, 3
+  Less         r6, r4, r5
+  JumpIfFalse  r6, L0
+  // mm = mm + 12
+  Const        r7, 12
+  Add          r8, r4, r7
+  Move         r4, r8
+  // yy = yy - 1
+  Const        r9, 1
+  Sub          r10, r3, r9
+  Move         r3, r10
+L0:
+  // let k = yy % 100
+  Const        r11, 100
+  Mod          r12, r3, r11
+  Move         r13, r12
+  // let j = (yy / 100) as int
+  Const        r11, 100
+  Div          r14, r3, r11
+  Cast         r15, r14, int
+  Move         r16, r15
+  // let a = ((13*(mm+1))/5) as int
+  Const        r17, 13
+  Const        r9, 1
+  Add          r18, r4, r9
+  Mul          r19, r17, r18
+  Const        r20, 5
+  Div          r21, r19, r20
+  Cast         r22, r21, int
+  Move         r23, r22
+  // let b = (k/4) as int
+  Const        r24, 4
+  Div          r25, r13, r24
+  Cast         r26, r25, int
+  Move         r27, r26
+  // let c = (j/4) as int
+  Const        r24, 4
+  Div          r28, r16, r24
+  Cast         r29, r28, int
+  Move         r30, r29
+  // return (d + a + k + b + c + 5*j) % 7
+  Const        r20, 5
+  Mul          r31, r20, r16
+  Add          r32, r2, r23
+  Add          r33, r32, r13
+  Add          r34, r33, r27
+  Add          r35, r34, r30
+  Add          r36, r35, r31
+  Const        r37, 7
+  Mod          r38, r36, r37
+  Return       r38

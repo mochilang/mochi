@@ -1,0 +1,505 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun sqrtApprox(x: float): float {
+func sqrtApprox (regs=14)
+  // if x <= 0.0 { return 0.0 }
+  Const        r1, 0.0
+  LessEqFloat  r2, r0, r1
+  JumpIfFalse  r2, L0
+  Const        r1, 0.0
+  Return       r1
+L0:
+  // var guess = x
+  Move         r3, r0
+  // var i = 0
+  Const        r4, 0
+  Move         r5, r4
+L2:
+  // while i < 20 {
+  Const        r6, 20
+  LessInt      r7, r5, r6
+  JumpIfFalse  r7, L1
+  // guess = (guess + x / guess) / 2.0
+  Div          r8, r0, r3
+  Add          r9, r3, r8
+  Const        r10, 2.0
+  DivFloat     r11, r9, r10
+  Move         r3, r11
+  // i = i + 1
+  Const        r12, 1
+  AddInt       r13, r5, r12
+  Move         r5, r13
+  // while i < 20 {
+  Jump         L2
+L1:
+  // return guess
+  Return       r3
+
+  // fun powf(base: float, exp: int): float {
+func powf (regs=10)
+  // var result = 1.0
+  Const        r2, 1.0
+  Move         r3, r2
+  // var i = 0
+  Const        r4, 0
+  Move         r5, r4
+L1:
+  // while i < exp {
+  Less         r6, r5, r1
+  JumpIfFalse  r6, L0
+  // result = result * base
+  MulFloat     r7, r3, r0
+  Move         r3, r7
+  // i = i + 1
+  Const        r8, 1
+  AddInt       r9, r5, r8
+  Move         r5, r9
+  // while i < exp {
+  Jump         L1
+L0:
+  // return result
+  Return       r3
+
+  // fun normalize(v: V3): V3 {
+func normalize (regs=33)
+  // let len = sqrtApprox(v.x*v.x + v.y*v.y + v.z*v.z)
+  Const        r2, "x"
+  Index        r3, r0, r2
+  Const        r2, "x"
+  Index        r4, r0, r2
+  Mul          r5, r3, r4
+  Const        r6, "y"
+  Index        r7, r0, r6
+  Const        r6, "y"
+  Index        r8, r0, r6
+  Mul          r9, r7, r8
+  Const        r10, "z"
+  Index        r11, r0, r10
+  Const        r10, "z"
+  Index        r12, r0, r10
+  Mul          r13, r11, r12
+  Add          r14, r5, r9
+  Add          r15, r14, r13
+  Move         r1, r15
+  Call         r16, sqrtApprox, r1
+  Move         r17, r16
+  // return V3{ x: v.x/len, y: v.y/len, z: v.z/len }
+  Const        r2, "x"
+  Index        r18, r0, r2
+  Div          r19, r18, r17
+  Const        r6, "y"
+  Index        r20, r0, r6
+  Div          r21, r20, r17
+  Const        r10, "z"
+  Index        r22, r0, r10
+  Div          r23, r22, r17
+  Const        r24, "__name"
+  Const        r25, "V3"
+  Const        r26, "x"
+  Move         r27, r19
+  Const        r28, "y"
+  Move         r29, r21
+  Const        r30, "z"
+  Move         r31, r23
+  MakeMap      r32, 4, r24
+  Return       r32
+
+  // fun dot(a: V3, b: V3): float {
+func dot (regs=20)
+  // let d = a.x*b.x + a.y*b.y + a.z*b.z
+  Const        r2, "x"
+  Index        r3, r0, r2
+  Const        r2, "x"
+  Index        r4, r1, r2
+  Mul          r5, r3, r4
+  Const        r6, "y"
+  Index        r7, r0, r6
+  Const        r6, "y"
+  Index        r8, r1, r6
+  Mul          r9, r7, r8
+  Const        r10, "z"
+  Index        r11, r0, r10
+  Const        r10, "z"
+  Index        r12, r1, r10
+  Mul          r13, r11, r12
+  Add          r14, r5, r9
+  Add          r15, r14, r13
+  Move         r16, r15
+  // if d < 0.0 { return -d }
+  Const        r17, 0.0
+  LessFloat    r18, r16, r17
+  JumpIfFalse  r18, L0
+  Neg          r19, r16
+  Return       r19
+L0:
+  // return 0.0
+  Const        r17, 0.0
+  Return       r17
+
+  // fun hitSphere(s: Sphere, x: float, y: float): map<string, any> {
+func hitSphere (regs=42)
+  // let dx = x - s.cx
+  Const        r3, "cx"
+  Index        r4, r0, r3
+  Sub          r5, r1, r4
+  Move         r6, r5
+  // let dy = y - s.cy
+  Const        r7, "cy"
+  Index        r8, r0, r7
+  Sub          r9, r2, r8
+  Move         r10, r9
+  // let zsq = s.r*s.r - (dx*dx + dy*dy)
+  Const        r11, "r"
+  Index        r12, r0, r11
+  Const        r11, "r"
+  Index        r13, r0, r11
+  Mul          r14, r12, r13
+  Mul          r15, r6, r6
+  Mul          r16, r10, r10
+  Add          r17, r15, r16
+  Sub          r18, r14, r17
+  Move         r19, r18
+  // if zsq < 0.0 { return {"hit": false} }
+  Const        r20, 0.0
+  LessFloat    r21, r19, r20
+  JumpIfFalse  r21, L0
+  Const        r22, {"hit": false}
+  Return       r22
+L0:
+  // let z = sqrtApprox(zsq)
+  Move         r23, r19
+  Call         r24, sqrtApprox, r23
+  Move         r25, r24
+  // return {"hit": true, "z1": s.cz - z, "z2": s.cz + z}
+  Const        r26, "hit"
+  Const        r27, true
+  Const        r28, "z1"
+  Const        r29, "cz"
+  Index        r30, r0, r29
+  Sub          r31, r30, r25
+  Const        r32, "z2"
+  Const        r29, "cz"
+  Index        r33, r0, r29
+  Add          r34, r33, r25
+  Move         r35, r26
+  Move         r36, r27
+  Move         r37, r28
+  Move         r38, r31
+  Move         r39, r32
+  Move         r40, r34
+  MakeMap      r41, 3, r35
+  Return       r41
+
+  // fun main() {
+func main (regs=167)
+  // let shades = ".:!*oe&#%@"
+  Const        r0, ".:!*oe&#%@"
+  Move         r1, r0
+  // var light = normalize(V3{ x: -50.0, y: 30.0, z: 50.0 })
+  Const        r3, 50.0
+  NegFloat     r4, r3
+  Const        r5, 30.0
+  Const        r3, 50.0
+  Const        r6, "__name"
+  Const        r7, "V3"
+  Const        r8, "x"
+  Move         r9, r4
+  Const        r10, "y"
+  Move         r11, r5
+  Const        r12, "z"
+  Move         r13, r3
+  MakeMap      r14, 4, r6
+  Move         r2, r14
+  Call         r15, normalize, r2
+  Move         r16, r15
+  // let pos = Sphere{ cx:20.0, cy:20.0, cz:0.0, r:20.0 }
+  Const        r17, 20.0
+  Const        r17, 20.0
+  Const        r18, 0.0
+  Const        r17, 20.0
+  Const        r19, "__name"
+  Const        r20, "Sphere"
+  Const        r21, "cx"
+  Move         r22, r17
+  Const        r23, "cy"
+  Move         r24, r17
+  Const        r25, "cz"
+  Move         r26, r18
+  Const        r27, "r"
+  Move         r28, r17
+  MakeMap      r29, 5, r19
+  Move         r30, r29
+  // let neg = Sphere{ cx:1.0, cy:1.0, cz: -6.0, r:20.0 }
+  Const        r31, 1.0
+  Const        r31, 1.0
+  Const        r32, 6.0
+  Const        r33, -6.0
+  Const        r17, 20.0
+  Const        r34, "__name"
+  Const        r35, "Sphere"
+  Const        r36, "cx"
+  Move         r37, r31
+  Const        r38, "cy"
+  Move         r39, r31
+  Const        r40, "cz"
+  Move         r41, r33
+  Const        r42, "r"
+  Move         r43, r17
+  MakeMap      r44, 5, r34
+  Move         r45, r44
+  // var yi = 0
+  Const        r46, 0
+  Move         r47, r46
+L14:
+  // while yi <= 40 {
+  Const        r48, 40
+  LessEqInt    r49, r47, r48
+  JumpIfFalse  r49, L0
+  // let y = (yi as float) + 0.5
+  Cast         r50, r47, float
+  Const        r51, 0.5
+  AddFloat     r52, r50, r51
+  Move         r53, r52
+  // var line = ""
+  Const        r54, ""
+  Move         r55, r54
+  // var xi = -20
+  Const        r56, 20
+  Const        r57, -20
+  Move         r58, r57
+L3:
+  // while xi <= 60 {
+  Const        r59, 60
+  LessEqInt    r60, r58, r59
+  JumpIfFalse  r60, L1
+  // let x = ((xi as float) - pos.cx) / 2.0 + 0.5 + pos.cx
+  Cast         r61, r58, float
+  Const        r62, "cx"
+  Index        r63, r30, r62
+  Sub          r64, r61, r63
+  Const        r65, 2.0
+  DivFloat     r66, r64, r65
+  Const        r51, 0.5
+  AddFloat     r67, r66, r51
+  Const        r62, "cx"
+  Index        r68, r30, r62
+  AddFloat     r69, r67, r68
+  Move         r70, r69
+  // let hb = hitSphere(pos, x, y)
+  Move         r71, r30
+  Move         r72, r70
+  Move         r73, r53
+  Call         r74, hitSphere, r71, r72, r73
+  Move         r75, r74
+  // if !hb.hit {
+  Const        r76, "hit"
+  Index        r77, r75, r76
+  Not          r78, r77
+  JumpIfFalse  r78, L2
+  // line = line + " "
+  Const        r79, " "
+  Add          r80, r55, r79
+  Move         r55, r80
+  // xi = xi + 1
+  Const        r81, 1
+  AddInt       r82, r58, r81
+  Move         r58, r82
+  // continue
+  Jump         L3
+L2:
+  // let zb1 = hb.z1
+  Const        r83, "z1"
+  Index        r84, r75, r83
+  Move         r85, r84
+  // let zb2 = hb.z2
+  Const        r86, "z2"
+  Index        r87, r75, r86
+  Move         r88, r87
+  // let hs = hitSphere(neg, x, y)
+  Move         r89, r45
+  Move         r90, r70
+  Move         r91, r53
+  Call         r92, hitSphere, r89, r90, r91
+  Move         r93, r92
+  // var hitRes = 1
+  Const        r81, 1
+  Move         r94, r81
+  // if !hs.hit {
+  Const        r76, "hit"
+  Index        r95, r93, r76
+  Not          r96, r95
+  JumpIfFalse  r96, L4
+  // hitRes = 1
+  Const        r81, 1
+  Move         r94, r81
+  // if !hs.hit {
+  Jump         L5
+L4:
+  // } else if hs.z1 > zb1 {
+  Const        r83, "z1"
+  Index        r97, r93, r83
+  Less         r98, r85, r97
+  JumpIfFalse  r98, L6
+  // hitRes = 1
+  Const        r81, 1
+  Move         r94, r81
+  // } else if hs.z1 > zb1 {
+  Jump         L5
+L6:
+  // } else if hs.z2 > zb2 {
+  Const        r86, "z2"
+  Index        r99, r93, r86
+  Less         r100, r88, r99
+  JumpIfFalse  r100, L7
+  // hitRes = 0
+  Const        r46, 0
+  Move         r94, r46
+  // } else if hs.z2 > zb2 {
+  Jump         L5
+L7:
+  // } else if hs.z2 > zb1 {
+  Const        r86, "z2"
+  Index        r101, r93, r86
+  Less         r102, r85, r101
+  JumpIfFalse  r102, L8
+  // hitRes = 2
+  Const        r103, 2
+  Move         r94, r103
+  // } else if hs.z2 > zb1 {
+  Jump         L5
+L8:
+  // hitRes = 1
+  Const        r81, 1
+  Move         r94, r81
+L5:
+  // if hitRes == 0 {
+  Const        r46, 0
+  EqualInt     r104, r94, r46
+  JumpIfFalse  r104, L9
+  // line = line + " "
+  Const        r79, " "
+  Add          r105, r55, r79
+  Move         r55, r105
+  // xi = xi + 1
+  Const        r81, 1
+  AddInt       r106, r58, r81
+  Move         r58, r106
+  // continue
+  Jump         L3
+L9:
+  // var vec: V3
+  Move         r108, r107
+  // if hitRes == 1 {
+  Const        r81, 1
+  EqualInt     r109, r94, r81
+  JumpIfFalse  r109, L10
+  // vec = V3{ x: x - pos.cx, y: y - pos.cy, z: zb1 - pos.cz }
+  Const        r62, "cx"
+  Index        r110, r30, r62
+  SubFloat     r111, r70, r110
+  Const        r112, "cy"
+  Index        r113, r30, r112
+  SubFloat     r114, r53, r113
+  Const        r115, "cz"
+  Index        r116, r30, r115
+  Sub          r117, r85, r116
+  Const        r118, "__name"
+  Const        r119, "V3"
+  Const        r120, "x"
+  Move         r121, r111
+  Const        r122, "y"
+  Move         r123, r114
+  Const        r124, "z"
+  Move         r125, r117
+  MakeMap      r126, 4, r118
+  Move         r108, r126
+  // if hitRes == 1 {
+  Jump         L11
+L10:
+  // vec = V3{ x: neg.cx - x, y: neg.cy - y, z: neg.cz - hs.z2 }
+  Const        r62, "cx"
+  Index        r127, r45, r62
+  SubFloat     r128, r127, r70
+  Const        r112, "cy"
+  Index        r129, r45, r112
+  SubFloat     r130, r129, r53
+  Const        r115, "cz"
+  Index        r131, r45, r115
+  Const        r86, "z2"
+  Index        r132, r93, r86
+  Sub          r133, r131, r132
+  Const        r134, "__name"
+  Const        r135, "V3"
+  Const        r136, "x"
+  Move         r137, r128
+  Const        r138, "y"
+  Move         r139, r130
+  Const        r140, "z"
+  Move         r141, r133
+  MakeMap      r142, 4, r134
+  Move         r108, r142
+L11:
+  // vec = normalize(vec)
+  Move         r143, r108
+  Call         r144, normalize, r143
+  Move         r108, r144
+  // var b = powf(dot(light, vec), 2) + 0.5
+  Move         r147, r16
+  Move         r148, r108
+  Call2        r149, dot, r147, r148
+  Move         r145, r149
+  Const        r103, 2
+  Move         r146, r103
+  Call2        r150, powf, r145, r146
+  Const        r51, 0.5
+  AddFloat     r151, r150, r51
+  Move         r152, r151
+  // var intensity = ((1.0 - b) * (len(shades) as float)) as int
+  Const        r31, 1.0
+  SubFloat     r153, r31, r152
+  Const        r154, 10.0
+  MulFloat     r155, r153, r154
+  Cast         r156, r155, int
+  Move         r157, r156
+  // if intensity < 0 { intensity = 0 }
+  Const        r46, 0
+  Less         r158, r157, r46
+  JumpIfFalse  r158, L12
+  Const        r46, 0
+  Move         r157, r46
+L12:
+  // if intensity >= len(shades) { intensity = len(shades) - 1 }
+  Const        r159, 10
+  LessEqInt    r160, r159, r157
+  JumpIfFalse  r160, L13
+  Const        r159, 10
+  Const        r81, 1
+  SubInt       r161, r159, r81
+  Move         r157, r161
+L13:
+  // line = line + substring(shades, intensity, intensity + 1)
+  Const        r81, 1
+  AddInt       r162, r157, r81
+  Slice        r163, r1, r157, r162
+  Add          r164, r55, r163
+  Move         r55, r164
+  // xi = xi + 1
+  Const        r81, 1
+  AddInt       r165, r58, r81
+  Move         r58, r165
+  // while xi <= 60 {
+  Jump         L3
+L1:
+  // print(line)
+  Print        r55
+  // yi = yi + 1
+  Const        r81, 1
+  AddInt       r166, r47, r81
+  Move         r47, r166
+  // while yi <= 40 {
+  Jump         L14
+L0:
+  Return       r0
