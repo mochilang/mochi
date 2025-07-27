@@ -1,0 +1,201 @@
+func main (regs=42)
+  // let digits = [9,8,7,6,5,4,3,2,1]
+  Const        r4, [9, 8, 7, 6, 5, 4, 3, 2, 1]
+  Move         r0, r4
+  SetGlobal    0,0,0,0
+  // var primes: list<int> = gen(0, 0, false)
+  Const        r8, 0
+  Move         r5, r8
+  Const        r8, 0
+  Move         r6, r8
+  Const        r9, false
+  Move         r7, r9
+  Call         r10, gen, r5, r6, r7
+  Move         r1, r10
+  SetGlobal    1,1,0,0
+  // print("There are " + str(len(primes)) + " descending primes, namely:")
+  Const        r11, "There are "
+  Len          r12, r1
+  Str          r13, r12
+  Add          r14, r11, r13
+  Const        r15, " descending primes, namely:"
+  Add          r16, r14, r15
+  Print        r16
+  // var i = 0
+  Const        r8, 0
+  Move         r2, r8
+  SetGlobal    2,2,0,0
+  // var line = ""
+  Const        r17, ""
+  Move         r3, r17
+  SetGlobal    3,3,0,0
+L2:
+  // while i < len(primes) {
+  Len          r18, r1
+  LessInt      r19, r2, r18
+  JumpIfFalse  r19, L0
+  // line = line + pad(primes[i], 8) + " "
+  Index        r22, r1, r2
+  Move         r20, r22
+  Const        r23, 8
+  Move         r21, r23
+  Call2        r24, pad, r20, r21
+  Add          r25, r3, r24
+  Const        r26, " "
+  Add          r27, r25, r26
+  Move         r3, r27
+  SetGlobal    3,3,0,0
+  // if (i + 1) % 10 == 0 {
+  Const        r28, 1
+  AddInt       r29, r2, r28
+  Const        r30, 10
+  ModInt       r31, r29, r30
+  Const        r8, 0
+  EqualInt     r32, r31, r8
+  JumpIfFalse  r32, L1
+  // print(substring(line, 0, len(line)-1))
+  Const        r8, 0
+  Len          r33, r3
+  Const        r28, 1
+  SubInt       r34, r33, r28
+  Slice        r35, r3, r8, r34
+  Print        r35
+  // line = ""
+  Const        r17, ""
+  Move         r3, r17
+  SetGlobal    3,3,0,0
+L1:
+  // i = i + 1
+  Const        r28, 1
+  AddInt       r36, r2, r28
+  Move         r2, r36
+  SetGlobal    2,2,0,0
+  // while i < len(primes) {
+  Jump         L2
+L0:
+  // if len(line) > 0 { print(substring(line, 0, len(line)-1)) }
+  Len          r37, r3
+  Const        r8, 0
+  LessInt      r38, r8, r37
+  JumpIfFalse  r38, L3
+  Const        r8, 0
+  Len          r39, r3
+  Const        r28, 1
+  SubInt       r40, r39, r28
+  Slice        r41, r3, r8, r40
+  Print        r41
+L3:
+  Return       r0
+
+  // fun isPrime(n: int): bool {
+func isPrime (regs=20)
+  // if n < 2 { return false }
+  Const        r5, 2
+  Less         r6, r4, r5
+  JumpIfFalse  r6, L0
+  Const        r7, false
+  Return       r7
+L0:
+  // if n % 2 == 0 { return n == 2 }
+  Const        r5, 2
+  Mod          r8, r4, r5
+  Const        r9, 0
+  Equal        r10, r8, r9
+  JumpIfFalse  r10, L1
+  Const        r5, 2
+  Equal        r11, r4, r5
+  Return       r11
+L1:
+  // var d = 3
+  Const        r12, 3
+  Move         r13, r12
+L4:
+  // while d * d <= n {
+  MulInt       r14, r13, r13
+  LessEq       r15, r14, r4
+  JumpIfFalse  r15, L2
+  // if n % d == 0 { return false }
+  Mod          r16, r4, r13
+  Const        r9, 0
+  Equal        r17, r16, r9
+  JumpIfFalse  r17, L3
+  Const        r7, false
+  Return       r7
+L3:
+  // d = d + 2
+  Const        r5, 2
+  AddInt       r18, r13, r5
+  Move         r13, r18
+  // while d * d <= n {
+  Jump         L4
+L2:
+  // return true
+  Const        r19, true
+  Return       r19
+
+  // fun gen(idx: int, cur: int, used: bool): list<int> {
+func gen (regs=34)
+  // if idx == len(digits) {
+  Len          r7, r0
+  Equal        r8, r4, r7
+  JumpIfFalse  r8, L0
+  // if used && isPrime(cur) { return [cur] }
+  Move         r9, r6
+  JumpIfFalse  r9, L1
+  Move         r10, r5
+  Call         r11, isPrime, r10
+  Move         r9, r11
+L1:
+  JumpIfFalse  r9, L2
+  Move         r12, r5
+  MakeList     r13, 1, r12
+  Return       r13
+L2:
+  // return []
+  Const        r14, []
+  Return       r14
+L0:
+  // let with = gen(idx + 1, cur * 10 + digits[idx], true)
+  Const        r18, 1
+  Add          r19, r4, r18
+  Move         r15, r19
+  Const        r20, 10
+  Mul          r21, r5, r20
+  Index        r22, r0, r4
+  Add          r23, r21, r22
+  Move         r16, r23
+  Const        r24, true
+  Move         r17, r24
+  Call         r25, gen, r15, r16, r17
+  Move         r26, r25
+  // let without = gen(idx + 1, cur, used)
+  Const        r18, 1
+  Add          r30, r4, r18
+  Move         r27, r30
+  Move         r28, r5
+  Move         r29, r6
+  Call         r31, gen, r27, r28, r29
+  Move         r32, r31
+  // return with union all without
+  UnionAll     r33, r26, r32
+  Return       r33
+
+  // fun pad(n: int, width: int): string {
+func pad (regs=12)
+  // var s = str(n)
+  Str          r6, r4
+  Move         r7, r6
+L1:
+  // while len(s) < width {
+  Len          r8, r7
+  Less         r9, r8, r5
+  JumpIfFalse  r9, L0
+  // s = " " + s
+  Const        r10, " "
+  Add          r11, r10, r7
+  Move         r7, r11
+  // while len(s) < width {
+  Jump         L1
+L0:
+  // return s
+  Return       r7

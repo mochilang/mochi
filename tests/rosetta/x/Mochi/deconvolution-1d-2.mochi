@@ -29,77 +29,20 @@ fun listToString1(xs: list<float>): string {
   return s + "]"
 }
 
-fun fft(arr: list<complex>): list<complex> {
-  let n = len(arr)
-  var out: list<complex> = arr
-  var size = 1
-  while size < n {
-    size = size * 2
-  }
-  // naive discrete Fourier transform (for simplicity)
-  var res: list<complex> = []
-  var k = 0
-  while k < size {
-  var sum: complex = 0 + 0i
-    var t = 0
-    while t < n {
-      let angle = -2.0 * PI * (k as float) * (t as float) / (size as float)
-      sum = sum + arr[t] * cis(angle)
-      t = t + 1
-    }
-    res = append(res, sum)
-    k = k + 1
-  }
-  return res
-}
-
-fun ifft(arr: list<complex>): list<complex> {
-  let n = len(arr)
-  var out: list<complex> = []
-  var k = 0
-  while k < n {
-  var sum: complex = 0 + 0i
-    var t = 0
-    while t < n {
-      let angle = 2.0 * PI * (k as float) * (t as float) / (n as float)
-      sum = sum + arr[t] * cis(angle)
-      t = t + 1
-    }
-    out = append(out, sum / (n as float))
-    k = k + 1
-  }
-  return out
-}
-
 fun deconv(g: list<float>, f: list<float>): list<float> {
-  var n = 1
-  while n < len(g) { n = n * 2 }
-  var g2: list<complex> = []
-  var i = 0
-  while i < n {
-    if i < len(g) { g2 = append(g2, (g[i] as complex)) } else { g2 = append(g2, 0 + 0i) }
-    i = i + 1
-  }
-  var f2: list<complex> = []
-  i = 0
-  while i < n {
-    if i < len(f) { f2 = append(f2, (f[i] as complex)) } else { f2 = append(f2, 0 + 0i) }
-    i = i + 1
-  }
-  let gt = fft(g2)
-  let ft = fft(f2)
-  var j = 0
-  while j < n {
-    gt[j] = gt[j] / ft[j]
-    j = j + 1
-  }
-  let ht = ifft(gt)
   var out: list<float> = []
-  out = append(out, (real(ht[0]) as float))
-  j = 1
-  while j < len(g) - len(f) + 1 {
-    out = append(out, (real(ht[n - j]) as float))
-    j = j + 1
+  var i = 0
+  while i <= len(g) - len(f) {
+    var sum = g[i]
+    var j = 1
+    while j < len(f) {
+      if j <= i {
+        sum = sum - out[i - j] * f[j]
+      }
+      j = j + 1
+    }
+    out = append(out, sum / f[0])
+    i = i + 1
   }
   return out
 }

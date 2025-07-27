@@ -1,0 +1,202 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun indexOf(s: string, ch: string): int {
+func indexOf (regs=12)
+  // var i = 0
+  Const        r2, 0
+  Move         r3, r2
+L2:
+  // while i < len(s) {
+  Len          r4, r0
+  LessInt      r5, r3, r4
+  JumpIfFalse  r5, L0
+  // if substring(s, i, i+1) == ch { return i }
+  Const        r6, 1
+  AddInt       r7, r3, r6
+  Slice        r8, r0, r3, r7
+  Equal        r9, r8, r1
+  JumpIfFalse  r9, L1
+  Return       r3
+L1:
+  // i = i + 1
+  Const        r6, 1
+  AddInt       r10, r3, r6
+  Move         r3, r10
+  // while i < len(s) {
+  Jump         L2
+L0:
+  // return -1
+  Const        r6, 1
+  NegInt       r11, r6
+  Return       r11
+
+  // fun fmt1(x: float): string {
+func fmt1 (regs=20)
+  // var y = ((x * 10.0) + 0.5) as int as float / 10.0
+  Const        r1, 10.0
+  MulFloat     r2, r0, r1
+  Const        r3, 0.5
+  AddFloat     r4, r2, r3
+  Cast         r5, r4, int
+  Cast         r6, r5, float
+  Const        r1, 10.0
+  DivFloat     r7, r6, r1
+  Move         r8, r7
+  // var s = str(y)
+  Str          r9, r8
+  Move         r10, r9
+  // let dot = indexOf(s, ".")
+  Move         r11, r10
+  Const        r13, "."
+  Move         r12, r13
+  Call2        r14, indexOf, r11, r12
+  Move         r15, r14
+  // if dot < 0 { s = s + ".0" }
+  Const        r16, 0
+  Less         r17, r15, r16
+  JumpIfFalse  r17, L0
+  Const        r18, ".0"
+  Add          r19, r10, r18
+  Move         r10, r19
+L0:
+  // return s
+  Return       r10
+
+  // fun listToString1(xs: list<float>): string {
+func listToString1 (regs=20)
+  // var s = "["
+  Const        r1, "["
+  Move         r2, r1
+  // var i = 0
+  Const        r3, 0
+  Move         r4, r3
+L2:
+  // while i < len(xs) {
+  Len          r5, r0
+  LessInt      r6, r4, r5
+  JumpIfFalse  r6, L0
+  // s = s + fmt1(xs[i])
+  Index        r8, r0, r4
+  Move         r7, r8
+  Call         r9, fmt1, r7
+  Add          r10, r2, r9
+  Move         r2, r10
+  // if i < len(xs) - 1 { s = s + " " }
+  Len          r11, r0
+  Const        r12, 1
+  SubInt       r13, r11, r12
+  LessInt      r14, r4, r13
+  JumpIfFalse  r14, L1
+  Const        r15, " "
+  Add          r16, r2, r15
+  Move         r2, r16
+L1:
+  // i = i + 1
+  Const        r12, 1
+  AddInt       r17, r4, r12
+  Move         r4, r17
+  // while i < len(xs) {
+  Jump         L2
+L0:
+  // return s + "]"
+  Const        r18, "]"
+  Add          r19, r2, r18
+  Return       r19
+
+  // fun deconv(g: list<float>, f: list<float>): list<float> {
+func deconv (regs=27)
+  // var out: list<float> = []
+  Const        r2, []
+  Move         r3, r2
+  // var i = 0
+  Const        r4, 0
+  Move         r5, r4
+L4:
+  // while i <= len(g) - len(f) {
+  Len          r6, r0
+  Len          r7, r1
+  SubInt       r8, r6, r7
+  LessEqInt    r9, r5, r8
+  JumpIfFalse  r9, L0
+  // var sum = g[i]
+  Index        r10, r0, r5
+  Move         r11, r10
+  // var j = 1
+  Const        r12, 1
+  Move         r13, r12
+L3:
+  // while j < len(f) {
+  Len          r14, r1
+  LessInt      r15, r13, r14
+  JumpIfFalse  r15, L1
+  // if j <= i {
+  LessEqInt    r16, r13, r5
+  JumpIfFalse  r16, L2
+  // sum = sum - out[i - j] * f[j]
+  SubInt       r17, r5, r13
+  Index        r18, r3, r17
+  Index        r19, r1, r13
+  Mul          r20, r18, r19
+  Sub          r21, r11, r20
+  Move         r11, r21
+L2:
+  // j = j + 1
+  Const        r12, 1
+  AddInt       r22, r13, r12
+  Move         r13, r22
+  // while j < len(f) {
+  Jump         L3
+L1:
+  // out = append(out, sum / f[0])
+  Const        r4, 0
+  Index        r23, r1, r4
+  Div          r24, r11, r23
+  Append       r25, r3, r24
+  Move         r3, r25
+  // i = i + 1
+  Const        r12, 1
+  AddInt       r26, r5, r12
+  Move         r5, r26
+  // while i <= len(g) - len(f) {
+  Jump         L4
+L0:
+  // return out
+  Return       r3
+
+  // fun main() {
+func main (regs=20)
+  // let h = [-8.0, -9.0, -3.0, -1.0, -6.0, 7.0]
+  Const        r0, [-8.0, -9.0, -3.0, -1.0, -6.0, 7.0]
+  Move         r1, r0
+  // let f = [-3.0, -6.0, -1.0, 8.0, -6.0, 3.0, -1.0, -9.0, -9.0, 3.0, -2.0, 5.0, 2.0, -2.0, -7.0, -1.0]
+  Const        r2, [-3.0, -6.0, -1.0, 8.0, -6.0, 3.0, -1.0, -9.0, -9.0, 3.0, -2.0, 5.0, 2.0, -2.0, -7.0, -1.0]
+  Move         r3, r2
+  // let g = [24.0, 75.0, 71.0, -34.0, 3.0, 22.0, -45.0, 23.0, 245.0, 25.0, 52.0, 25.0, -67.0, -96.0, 96.0, 31.0, 55.0, 36.0, 29.0, -43.0, -7.0]
+  Const        r4, [24.0, 75.0, 71.0, -34.0, 3.0, 22.0, -45.0, 23.0, 245.0, 25.0, 52.0, 25.0, -67.0, -96.0, 96.0, 31.0, 55.0, 36.0, 29.0, -43.0, -7.0]
+  Move         r5, r4
+  // print(listToString1(h))
+  Move         r6, r1
+  Call         r7, listToString1, r6
+  Print        r7
+  // print(listToString1(deconv(g, f)))
+  Move         r9, r5
+  Move         r10, r3
+  Call2        r11, deconv, r9, r10
+  Move         r8, r11
+  Call         r12, listToString1, r8
+  Print        r12
+  // print(listToString1(f))
+  Move         r13, r3
+  Call         r14, listToString1, r13
+  Print        r14
+  // print(listToString1(deconv(g, h)))
+  Move         r16, r5
+  Move         r17, r1
+  Call2        r18, deconv, r16, r17
+  Move         r15, r18
+  Call         r19, listToString1, r15
+  Print        r19
+  Return       r0
