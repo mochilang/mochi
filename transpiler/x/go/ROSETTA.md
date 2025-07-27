@@ -1,7 +1,7 @@
 # Go Rosetta Transpiler Output
 
-Completed programs: 260/465
-Last updated: 2025-07-27 16:11 +0700
+Completed programs: 289/465
+Last updated: 2025-07-27 17:26 +0700
 
 Checklist:
 
@@ -270,7 +270,7 @@ Checklist:
 | 261 | csv-to-html-translation-3 | ✓ | 113.0µs | 1.26KB |
 | 262 | csv-to-html-translation-4 | ✓ | 86.0µs | 1.24KB |
 | 263 | csv-to-html-translation-5 | ✓ | 214.0µs | 57.38KB |
-| 264 | cuban-primes | ✓ |  |  |
+| 264 | cuban-primes |   |  |  |
 | 265 | cullen-and-woodall-numbers | ✓ | 1.0ms | 34.53KB |
 | 266 | cumulative-standard-deviation | ✓ | 336.0µs | 1.20KB |
 | 267 | currency | ✓ | 470.0µs | 6.48KB |
@@ -281,36 +281,36 @@ Checklist:
 | 272 | damm-algorithm | ✓ | 623.0µs | 2.90KB |
 | 273 | date-format | ✓ | 298.0µs | 1.06KB |
 | 274 | date-manipulation |   |  |  |
-| 275 | day-of-the-week |   |  |  |
-| 276 | de-bruijn-sequences |   |  |  |
-| 277 | deal-cards-for-freecell |   |  |  |
-| 278 | death-star |   |  |  |
-| 279 | deceptive-numbers |   |  |  |
-| 280 | deconvolution-1d-2 |   |  |  |
-| 281 | deconvolution-1d-3 |   |  |  |
-| 282 | deconvolution-1d |   |  |  |
-| 283 | deepcopy-1 |   |  |  |
-| 284 | define-a-primitive-data-type |   |  |  |
-| 285 | delegates |   |  |  |
-| 286 | demings-funnel |   |  |  |
-| 287 | department-numbers |   |  |  |
-| 288 | descending-primes |   |  |  |
-| 289 | detect-division-by-zero |   |  |  |
-| 290 | determine-if-a-string-has-all-the-same-characters |   |  |  |
-| 291 | determine-if-a-string-has-all-unique-characters |   |  |  |
-| 292 | determine-if-a-string-is-collapsible |   |  |  |
-| 293 | determine-if-a-string-is-numeric-1 |   |  |  |
-| 294 | determine-if-a-string-is-numeric-2 |   |  |  |
-| 295 | determine-if-a-string-is-squeezable |   |  |  |
-| 296 | determine-if-only-one-instance-is-running |   |  |  |
-| 297 | determine-if-two-triangles-overlap |   |  |  |
-| 298 | determine-sentence-type |   |  |  |
-| 299 | dice-game-probabilities-1 |   |  |  |
-| 300 | dice-game-probabilities-2 |   |  |  |
-| 301 | digital-root-multiplicative-digital-root |   |  |  |
-| 302 | dijkstras-algorithm |   |  |  |
-| 303 | dinesmans-multiple-dwelling-problem |   |  |  |
-| 304 | dining-philosophers-1 |   |  |  |
+| 275 | day-of-the-week | ✓ | 454.0µs | 2.01KB |
+| 276 | de-bruijn-sequences | ✓ | 1.35s | 1.65MB |
+| 277 | deal-cards-for-freecell | ✓ | 408.0µs | 4.87KB |
+| 278 | death-star | ✓ | 11.0ms | 2.07MB |
+| 279 | deceptive-numbers | ✓ | 61.0ms | 2.80MB |
+| 280 | deconvolution-1d-2 | ✓ | 355.0µs | 5.52KB |
+| 281 | deconvolution-1d-3 | ✓ | 416.0µs | 2.29KB |
+| 282 | deconvolution-1d | ✓ | 693.0µs | 3.95KB |
+| 283 | deepcopy-1 | ✓ | 578.0µs | 2.50KB |
+| 284 | define-a-primitive-data-type | ✓ |  |  |
+| 285 | delegates | ✓ |  |  |
+| 286 | demings-funnel | ✓ | 1.0ms | 52.11KB |
+| 287 | department-numbers | ✓ | 480.0µs | 1.57KB |
+| 288 | descending-primes | ✓ | 887.0µs | 22.73KB |
+| 289 | detect-division-by-zero | ✓ | 359.0µs | 1000B |
+| 290 | determine-if-a-string-has-all-the-same-characters | ✓ | 506.0µs | 2.15KB |
+| 291 | determine-if-a-string-has-all-unique-characters | ✓ | 1.0ms | 88.57KB |
+| 292 | determine-if-a-string-is-collapsible | ✓ | 1.0ms | 121.84KB |
+| 293 | determine-if-a-string-is-numeric-1 | ✓ | 540.0µs | 1.15KB |
+| 294 | determine-if-a-string-is-numeric-2 | ✓ | 478.0µs | 1.01KB |
+| 295 | determine-if-a-string-is-squeezable | ✓ | 1.0ms | 169.59KB |
+| 296 | determine-if-only-one-instance-is-running | ✓ | 358.0µs | 992B |
+| 297 | determine-if-two-triangles-overlap | ✓ | 748.0µs | 4.10KB |
+| 298 | determine-sentence-type | ✓ | 869.0µs | 101.70KB |
+| 299 | dice-game-probabilities-1 | ✓ | 2.0ms | 4.98KB |
+| 300 | dice-game-probabilities-2 | ✓ | 2.0ms | 1000B |
+| 301 | digital-root-multiplicative-digital-root | ✓ | 50.0ms | 193.64KB |
+| 302 | dijkstras-algorithm | ✓ |  |  |
+| 303 | dinesmans-multiple-dwelling-problem | ✓ | 479.0µs | 1.18KB |
+| 304 | dining-philosophers-1 | ✓ | 535.0µs | 2.91KB |
 | 305 | dining-philosophers-2 |   |  |  |
 | 306 | disarium-numbers |   |  |  |
 | 307 | discordian-date |   |  |  |
