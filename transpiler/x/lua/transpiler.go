@@ -204,6 +204,18 @@ local function _parseIntStr(str)
 end
 `
 
+const helperFetch = `
+local function _fetch(url)
+  local p = io.popen('curl -fsSL ' .. url)
+  if not p then return '' end
+  local out = p:read('*a') or ''
+  p:close()
+  local title = string.match(out, '"title"%s*:%s*"([^"]+)"')
+  if title then return {title = title} end
+  return out
+end
+`
+
 const helperSlice = `
 local function slice(lst, s, e)
   if s < 0 then s = #lst + s end
@@ -515,6 +527,12 @@ func (c *CallExpr) emit(w io.Writer) {
 		io.WriteString(w, "))")
 	case "int":
 		io.WriteString(w, "math.floor(")
+		if len(c.Args) > 0 {
+			c.Args[0].emit(w)
+		}
+		io.WriteString(w, ")")
+	case "float":
+		io.WriteString(w, "tonumber(")
 		if len(c.Args) > 0 {
 			c.Args[0].emit(w)
 		}
@@ -2481,6 +2499,8 @@ func collectHelpers(p *Program) map[string]bool {
 				used["slice"] = true
 			case "parseIntStr":
 				used["parseIntStr"] = true
+			case "_fetch":
+				used["fetch"] = true
 			case "_environ":
 				used["environ"] = true
 			}
@@ -2665,6 +2685,9 @@ func Emit(p *Program) []byte {
 	if used["parseIntStr"] {
 		b.WriteString(helperParseIntStr)
 	}
+	if used["fetch"] {
+		b.WriteString(helperFetch)
+	}
 	if used["split"] {
 		b.WriteString(helperSplit)
 	}
@@ -2828,6 +2851,9 @@ func convertPostfix(p *parser.PostfixExpr) (Expr, error) {
 			} else if id, ok := expr.(*Ident); ok && strings.HasSuffix(id.Name, "Map") {
 				kind = "map"
 			} else if _, ok := idx.(*StringLit); ok {
+				kind = "map"
+			} else if !isIntExpr(idx) && !isFloatExpr(idx) {
+				// default to map access when index is not clearly numeric
 				kind = "map"
 			}
 			expr = &IndexExpr{Target: expr, Index: idx, Kind: kind}
@@ -3008,6 +3034,12 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 	switch {
 	case p.Lit != nil:
 		return convertLiteral(p.Lit)
+	case p.Fetch != nil:
+		urlExpr, err := convertExpr(p.Fetch.URL)
+		if err != nil {
+			return nil, err
+		}
+		return &CallExpr{Func: "_fetch", Args: []Expr{urlExpr}}, nil
 	case p.Load != nil:
 		format := parseFormat(p.Load.With)
 		path := ""
