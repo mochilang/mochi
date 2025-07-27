@@ -37,6 +37,7 @@ var (
 	tempCounter             int
 	anonStructs             map[string]string
 	currentVarName          string
+	currentVarType          types.Type
 	needMath                bool
 	needContainsInt         bool
 	needContainsStr         bool
@@ -1207,7 +1208,7 @@ func (i *IndexExpr) emitExpr(w io.Writer) {
 		if keyT == "const char*" && valT == "const char*" {
 			needMapGetSS = true
 			io.WriteString(w, "map_get_ss(")
-			if varTypes[vr.Name] == "MapSL" {
+			if varTypes[vr.Name] == "MapSL" || varTypes[vr.Name] == "MapSS" {
 				io.WriteString(w, vr.Name+".keys, ")
 				io.WriteString(w, vr.Name+".vals, ")
 				io.WriteString(w, vr.Name+".len, ")
@@ -1708,6 +1709,21 @@ func formatMapString(m map[string]any) string {
 		}
 	}
 	return "{" + strings.Join(parts, ", ") + "}"
+}
+
+func emitMapStringValue(w io.Writer, v Expr) {
+	switch t := v.(type) {
+	case *StringLit:
+		fmt.Fprintf(w, "\"%s\"", escape(t.Value))
+	case *IntLit:
+		needStrInt = true
+		fmt.Fprintf(w, "str_int(%d)", t.Value)
+	case *FloatLit:
+		needStrFloat = true
+		fmt.Fprintf(w, "str_float(%g)", t.Value)
+	default:
+		v.emitExpr(w)
+	}
 }
 
 func markMath() {
@@ -2399,6 +2415,10 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 				funcAliases[name] = "user_abs"
 				name = "user_abs"
 			}
+			if name == "floorf" { // avoid conflict with stdlib
+				funcAliases[name] = "user_floorf"
+				name = "user_floorf"
+			}
 			fun, err := compileFunction(env, name, fnExpr)
 			if err != nil {
 				return nil, err
@@ -2555,6 +2575,11 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 		}
 	case s.Let != nil:
 		currentVarName = s.Let.Name
+		if s.Let.Type != nil {
+			currentVarType = types.ResolveTypeRef(s.Let.Type, env)
+		} else {
+			currentVarType = nil
+		}
 		if q := queryExpr(s.Let.Value); q != nil {
 			if s.Let.Name == "filtered" && matchFilteredQuery(q) {
 				multiJoinEnabled = true
@@ -2705,6 +2730,7 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 			}
 		}
 		currentVarName = ""
+		currentVarType = nil
 		declType := ""
 		if s.Let.Type != nil {
 			declType = cTypeFromMochiType(types.ResolveTypeRef(s.Let.Type, env))
@@ -2788,6 +2814,9 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 					valT = vt
 				}
 			}
+			if s.Let.Type != nil && types.IsStringAnyMapLike(types.ResolveTypeRef(s.Let.Type, env)) {
+				valT = "const char*"
+			}
 			mapKeyTypes[s.Let.Name] = keyT
 			mapValTypes[s.Let.Name] = valT
 			if strings.HasSuffix(valT, "[]") {
@@ -2854,7 +2883,7 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 					if i > 0 {
 						buf.WriteString(", ")
 					}
-					it.Value.emitExpr(&buf)
+					emitMapStringValue(&buf, it.Value)
 				}
 				buf.WriteString("};\n")
 			} else {
@@ -2882,6 +2911,11 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 		return ds, nil
 	case s.Var != nil:
 		currentVarName = s.Var.Name
+		if s.Var.Type != nil {
+			currentVarType = types.ResolveTypeRef(s.Var.Type, env)
+		} else {
+			currentVarType = nil
+		}
 		var valExpr Expr
 		if s.Var.Type != nil {
 			if _, ok := types.ResolveTypeRef(s.Var.Type, env).(types.MapType); ok {
@@ -2906,6 +2940,7 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 			}
 		}
 		currentVarName = ""
+		currentVarType = nil
 		if declType == "" {
 			declType = inferCType(env, s.Var.Name, valExpr)
 		}
@@ -2949,6 +2984,9 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 				if vt != "" {
 					valT = vt
 				}
+			}
+			if s.Var.Type != nil && types.IsStringAnyMapLike(types.ResolveTypeRef(s.Var.Type, env)) {
+				valT = "const char*"
 			}
 			mapKeyTypes[s.Var.Name] = keyT
 			mapValTypes[s.Var.Name] = valT
@@ -3016,7 +3054,7 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 					if i > 0 {
 						buf.WriteString(", ")
 					}
-					it.Value.emitExpr(&buf)
+					emitMapStringValue(&buf, it.Value)
 				}
 				buf.WriteString("};\n")
 			} else {
@@ -3131,7 +3169,11 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 				buf.WriteString(s.Assign.Name + "_len, ")
 				idxs[0].emitExpr(&buf)
 				buf.WriteString(", ")
-				valExpr.emitExpr(&buf)
+				if valT == "const char*" {
+					emitMapStringValue(&buf, valExpr)
+				} else {
+					valExpr.emitExpr(&buf)
+				}
 				buf.WriteString(");\n")
 				return &RawStmt{Code: buf.String()}, nil
 			}
@@ -3139,12 +3181,22 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 				needMapSetSS = true
 				var buf bytes.Buffer
 				buf.WriteString("map_set_ss(")
-				buf.WriteString(s.Assign.Name + "_keys, ")
-				buf.WriteString(s.Assign.Name + "_vals, &")
-				buf.WriteString(s.Assign.Name + "_len, ")
+				if varTypes[s.Assign.Name] == "MapSL" || varTypes[s.Assign.Name] == "MapSS" {
+					buf.WriteString(s.Assign.Name + ".keys, ")
+					buf.WriteString(s.Assign.Name + ".vals, &")
+					buf.WriteString(s.Assign.Name + ".len, ")
+				} else {
+					buf.WriteString(s.Assign.Name + "_keys, ")
+					buf.WriteString(s.Assign.Name + "_vals, &")
+					buf.WriteString(s.Assign.Name + "_len, ")
+				}
 				idxs[0].emitExpr(&buf)
 				buf.WriteString(", ")
-				valExpr.emitExpr(&buf)
+				if valT == "const char*" {
+					emitMapStringValue(&buf, valExpr)
+				} else {
+					valExpr.emitExpr(&buf)
+				}
 				buf.WriteString(");\n")
 				return &RawStmt{Code: buf.String()}, nil
 			}
@@ -3194,7 +3246,13 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 				default:
 					env.SetVarDeep(s.For.Name, types.AnyType{}, true)
 				}
-				return &ForStmt{Var: s.For.Name, ListVar: name + "_keys", LenVar: name + "_len", ElemType: keyT, Body: body}, nil
+				listVar := name + "_keys"
+				lenVar := name + "_len"
+				if vt := varTypes[name]; vt == "MapSL" || vt == "MapSS" {
+					listVar = name + ".keys"
+					lenVar = name + ".len"
+				}
+				return &ForStmt{Var: s.For.Name, ListVar: listVar, LenVar: lenVar, ElemType: keyT, Body: body}, nil
 			}
 			if keys, ok2 := convertMapKeysExpr(s.For.Source); ok2 {
 				list = keys
@@ -3214,7 +3272,13 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 					default:
 						env.SetVarDeep(s.For.Name, types.AnyType{}, true)
 					}
-					return &ForStmt{Var: s.For.Name, ListVar: name + "_keys", LenVar: name + "_len", ElemType: keyT, Body: body}, nil
+					listVar := name + "_keys"
+					lenVar := name + "_len"
+					if vt := varTypes[name]; vt == "MapSL" || vt == "MapSS" {
+						listVar = name + ".keys"
+						lenVar = name + ".len"
+					}
+					return &ForStmt{Var: s.For.Name, ListVar: listVar, LenVar: lenVar, ElemType: keyT, Body: body}, nil
 				}
 				typStr := inferExprType(env, convertExpr(s.For.Source))
 				if strings.HasSuffix(typStr, "[]") {
@@ -3231,7 +3295,13 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 					default:
 						env.SetVarDeep(s.For.Name, types.AnyType{}, true)
 					}
-					return &ForStmt{Var: s.For.Name, ListVar: name + "_keys", LenVar: name + "_len", ElemType: keyT, Body: body}, nil
+					listVar := name + "_keys"
+					lenVar := name + "_len"
+					if vt := varTypes[name]; vt == "MapSL" || vt == "MapSS" {
+						listVar = name + ".keys"
+						lenVar = name + ".len"
+					}
+					return &ForStmt{Var: s.For.Name, ListVar: listVar, LenVar: lenVar, ElemType: keyT, Body: body}, nil
 				}
 				if strings.HasSuffix(typStr, "[]") {
 					elemType := strings.TrimSuffix(typStr, "[]")
@@ -3674,7 +3744,12 @@ func compileFunction(env *types.Env, name string, fn *parser.FunExpr) (*Function
 			} else {
 				mapKeyTypes[p.Name] = "int"
 			}
-			mapValTypes[p.Name] = cTypeFromMochiType(mt.Value)
+			if types.IsStringAnyMapLike(mochiT) {
+				mapValTypes[p.Name] = "const char*"
+				needMapGetSS = true
+			} else {
+				mapValTypes[p.Name] = cTypeFromMochiType(mt.Value)
+			}
 		}
 		if strings.HasSuffix(typ, "[]") {
 			params = append(params, Param{Name: p.Name + "_len", Type: "size_t"})
@@ -3974,14 +4049,19 @@ func convertUnary(u *parser.Unary) Expr {
 			}
 		}
 		if allStr {
-			if len(items) == 0 {
-				if currentVarName != "" {
-					if t, err := currentEnv.GetVar(currentVarName); err == nil {
-						if _, ok := t.(types.MapType); ok {
+			if currentVarName != "" {
+				if currentVarType != nil {
+					if types.IsStringAnyMapLike(currentVarType) {
+						return &MapLit{Items: items}
+					}
+					if len(items) == 0 {
+						if _, ok := currentVarType.(types.MapType); ok {
 							return &MapLit{Items: items}
 						}
 					}
 				}
+			} else if len(items) == 0 {
+				return &MapLit{Items: items}
 			}
 			key := strings.Join(names, ",")
 			name, ok := anonStructs[key]
@@ -5105,6 +5185,9 @@ func isConstExpr(e Expr) bool {
 		return true
 	}
 	if m, ok := e.(*MapLit); ok {
+		if len(m.Items) == 0 {
+			return false
+		}
 		for _, it := range m.Items {
 			if !isConstExpr(it.Value) {
 				return false
@@ -5407,6 +5490,9 @@ func cTypeFromMochiType(t types.Type) string {
 				}
 			}
 			if _, ok2 := tt.Value.(types.StringType); ok2 {
+				return "MapSS"
+			}
+			if _, ok2 := tt.Value.(types.AnyType); ok2 {
 				return "MapSS"
 			}
 		}
