@@ -2,7 +2,7 @@
 
 This directory contains Dart code generated from Mochi programs in `tests/rosetta/x/Mochi`. Each program has a `.dart` file and `.out` output. Compilation or runtime failures are captured in a `.error` file.
 
-Compiled and ran: 270/465
+Compiled and ran: 290/465
 
 ## Checklist
 | Index | Name | Status | Duration | Memory |
@@ -295,26 +295,26 @@ Compiled and ran: 270/465
 | 286 | demings-funnel | ✓ | 25.395ms | 8.2 MB |
 | 287 | department-numbers | ✓ | 9.23ms | 2.4 MB |
 | 288 | descending-primes | ✓ | 10.132ms | 1.1 MB |
-| 289 | detect-division-by-zero |   |  |  |
-| 290 | determine-if-a-string-has-all-the-same-characters |   |  |  |
-| 291 | determine-if-a-string-has-all-unique-characters |   |  |  |
-| 292 | determine-if-a-string-is-collapsible |   |  |  |
-| 293 | determine-if-a-string-is-numeric-1 |   |  |  |
-| 294 | determine-if-a-string-is-numeric-2 |   |  |  |
-| 295 | determine-if-a-string-is-squeezable |   |  |  |
-| 296 | determine-if-only-one-instance-is-running |   |  |  |
-| 297 | determine-if-two-triangles-overlap |   |  |  |
-| 298 | determine-sentence-type |   |  |  |
-| 299 | dice-game-probabilities-1 |   |  |  |
-| 300 | dice-game-probabilities-2 |   |  |  |
-| 301 | digital-root-multiplicative-digital-root |   |  |  |
-| 302 | dijkstras-algorithm |   |  |  |
-| 303 | dinesmans-multiple-dwelling-problem |   |  |  |
-| 304 | dining-philosophers-1 |   |  |  |
-| 305 | dining-philosophers-2 |   |  |  |
-| 306 | disarium-numbers |   |  |  |
-| 307 | discordian-date |   |  |  |
-| 308 | display-a-linear-combination |   |  |  |
+| 289 | detect-division-by-zero | ✓ | 6.284ms | 12.0 MB |
+| 290 | determine-if-a-string-has-all-the-same-characters | ✓ | 6.933ms | 11.9 MB |
+| 291 | determine-if-a-string-has-all-unique-characters | ✓ | 7.378ms | 11.2 MB |
+| 292 | determine-if-a-string-is-collapsible | ✓ | 6.288ms | 228.0 KB |
+| 293 | determine-if-a-string-is-numeric-1 | ✓ | 6.415ms | 1.2 MB |
+| 294 | determine-if-a-string-is-numeric-2 | ✓ | 7.021ms | 40.0 KB |
+| 295 | determine-if-a-string-is-squeezable | ✓ | 6.536ms | 11.9 MB |
+| 296 | determine-if-only-one-instance-is-running | ✓ | 5.542ms | 12.9 MB |
+| 297 | determine-if-two-triangles-overlap | ✓ | 7.518ms | 424.0 KB |
+| 298 | determine-sentence-type | ✓ | 6.043ms | 2.1 MB |
+| 299 | dice-game-probabilities-1 | ✓ | 10.032ms | 1.0 MB |
+| 300 | dice-game-probabilities-2 | ✓ | 8.965ms | 9.8 MB |
+| 301 | digital-root-multiplicative-digital-root | ✓ | 41.398ms | 9.0 MB |
+| 302 | dijkstras-algorithm | ✓ | 7.731ms | 544.0 KB |
+| 303 | dinesmans-multiple-dwelling-problem | ✓ | 5.229ms | 908.0 KB |
+| 304 | dining-philosophers-1 | ✓ | 6.969ms | 760.0 KB |
+| 305 | dining-philosophers-2 | ✓ | 7.136ms | 12.0 MB |
+| 306 | disarium-numbers | ✓ | 916.675ms | 3.2 MB |
+| 307 | discordian-date | ✓ | 6.454ms | 68.0 KB |
+| 308 | display-a-linear-combination | ✓ | 6.787ms | 11.9 MB |
 | 309 | display-an-outline-as-a-nested-table |   |  |  |
 | 310 | distance-and-bearing |   |  |  |
 | 311 | distributed-programming |   |  |  |
@@ -473,4 +473,4 @@ Compiled and ran: 270/465
 | 464 | window-management |   |  |  |
 | 465 | zumkeller-numbers |   |  |  |
 
-_Last updated: 2025-07-27 15:57 +0700_
+_Last updated: 2025-07-27 16:25 +0700_
