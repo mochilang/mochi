@@ -58,36 +58,25 @@ class Program {
         }
         return _fmt(v);
     }
-    static long[] n_10 = new long[]{1, 2, 3, 4, 5};
-    static long add(long a_0, long b_1) {
-        return (a_0 + b_1);
-    }
-
-    static long sub(long a_2, long b_3) {
-        return (a_2 - b_3);
-    }
-
-    static long mul(long a_4, long b_5) {
-        return (a_4 * b_5);
-    }
-
-    static long fold(Func<long, long, long> f_6, long[] xs_7) {
-        long r_8 = xs_7[(int)(0)];
-        long i_9 = 1;
-        while ((i_9 < xs_7.Length)) {
-            r_8 = f_6(r_8, xs_7[(int)(i_9)]);
-            i_9 = (i_9 + 1);
+    static long ord(string ch_0) {
+        if ((ch_0 == "a")) {
+            return 97;
         };
-        return r_8;
+        if ((ch_0 == "π")) {
+            return 960;
+        };
+        if ((ch_0 == "A")) {
+            return 65;
+        };
+        return 0;
     }
 
     static void Main() {
         {
             var __memStart = _mem();
             var __start = _now();
-            Console.WriteLine(_fmtTop(fold((long a, long b) => add(a, b), n_10)));
-            Console.WriteLine(_fmtTop(fold((long a, long b) => sub(a, b), n_10)));
-            Console.WriteLine(_fmtTop(fold((long a, long b) => mul(a, b), n_10)));
+            Console.WriteLine(_fmtTop((ord("a")).ToString()));
+            Console.WriteLine(_fmtTop((ord("π")).ToString()));
             var __end = _now();
             var __memEnd = _mem();
             var __dur = (__end - __start);
