@@ -104,7 +104,8 @@ var dartKeywords = map[string]struct{}{
 	"for": {}, "if": {}, "in": {}, "new": {}, "null": {}, "super": {},
 	"switch": {}, "case": {}, "var": {}, "void": {}, "while": {},
 	"return": {}, "this": {}, "true": {}, "is": {},
-	"num": {},
+	"with": {},
+	"num":  {},
 }
 
 func sanitize(name string) string {
@@ -1166,9 +1167,11 @@ func precedence(e Expr) int {
 			return 5
 		case "||":
 			return 6
+		case "union", "union_all", "except", "intersect":
+			return 7
 		}
 	case *CastExpr:
-		return 7
+		return 8
 	}
 	return 0
 }
@@ -1867,6 +1870,87 @@ func (a *AppendExpr) emit(w io.Writer) error {
 	}
 	_, err := io.WriteString(w, "]")
 	return err
+}
+
+// UnionExpr represents list union without duplicates.
+type UnionExpr struct{ Left, Right Expr }
+
+func (u *UnionExpr) emit(w io.Writer) error {
+	if _, err := io.WriteString(w, "Set.from([..."); err != nil {
+		return err
+	}
+	if err := u.Left.emit(w); err != nil {
+		return err
+	}
+	if _, err := io.WriteString(w, ", ..."); err != nil {
+		return err
+	}
+	if err := u.Right.emit(w); err != nil {
+		return err
+	}
+	_, err := io.WriteString(w, "]).toList()")
+	return err
+}
+
+// UnionAllExpr represents concatenation of two lists.
+type UnionAllExpr struct{ Left, Right Expr }
+
+func (u *UnionAllExpr) emit(w io.Writer) error {
+	if _, err := io.WriteString(w, "["); err != nil {
+		return err
+	}
+	if _, err := io.WriteString(w, "..."); err != nil {
+		return err
+	}
+	if err := u.Left.emit(w); err != nil {
+		return err
+	}
+	if _, err := io.WriteString(w, ", ..."); err != nil {
+		return err
+	}
+	if err := u.Right.emit(w); err != nil {
+		return err
+	}
+	_, err := io.WriteString(w, "]")
+	return err
+}
+
+// ExceptExpr represents elements in Left not in Right.
+type ExceptExpr struct{ Left, Right Expr }
+
+func (e *ExceptExpr) emit(w io.Writer) error {
+	if err := e.Left.emit(w); err != nil {
+		return err
+	}
+	if _, err := io.WriteString(w, ".where((x) => !"); err != nil {
+		return err
+	}
+	if err := e.Right.emit(w); err != nil {
+		return err
+	}
+	if _, err := io.WriteString(w, ".contains(x)).toList()"); err != nil {
+		return err
+	}
+	return nil
+}
+
+// IntersectExpr represents intersection of two lists.
+type IntersectExpr struct{ Left, Right Expr }
+
+func (i *IntersectExpr) emit(w io.Writer) error {
+	if err := i.Left.emit(w); err != nil {
+		return err
+	}
+	if _, err := io.WriteString(w, ".where((x) => "); err != nil {
+		return err
+	}
+	if err := i.Right.emit(w); err != nil {
+		return err
+	}
+	if _, err := io.WriteString(w, ".contains(x)).toList()"); err != nil {
+		return err
+	}
+	return nil
 }
 
 // AvgExpr represents avg(list).
@@ -3257,6 +3341,8 @@ func inferType(e Expr) string {
 			return "num"
 		case "<", "<=", ">", ">=", "==", "!=", "&&", "||":
 			return "bool"
+		case "union", "union_all", "except", "intersect":
+			return inferType(ex.Left)
 		default:
 			return "dynamic"
 		}
@@ -4322,6 +4408,7 @@ func convertBinary(b *parser.BinaryExpr) (Expr, error) {
 	}
 	operands := []Expr{first}
 	ops := make([]string, len(b.Right))
+	opnodes := make([]*parser.BinaryOp, len(b.Right))
 	for i, op := range b.Right {
 		right, err := convertPostfix(op.Right)
 		if err != nil {
@@ -4329,6 +4416,7 @@ func convertBinary(b *parser.BinaryExpr) (Expr, error) {
 		}
 		operands = append(operands, right)
 		ops[i] = op.Op
+		opnodes[i] = op
 	}
 
 	levels := [][]string{
@@ -4338,6 +4426,7 @@ func convertBinary(b *parser.BinaryExpr) (Expr, error) {
 		{"==", "!=", "in"},
 		{"&&"},
 		{"||"},
+		{"union", "except", "intersect"},
 	}
 
 	contains := func(list []string, op string) bool {
@@ -4355,14 +4444,26 @@ func convertBinary(b *parser.BinaryExpr) (Expr, error) {
 				left := operands[i]
 				right := operands[i+1]
 				var expr Expr
-				if ops[i] == "in" {
+				switch ops[i] {
+				case "in":
 					expr = &ContainsExpr{Target: right, Elem: left}
-				} else {
+				case "union":
+					if opnodes[i].All {
+						expr = &UnionAllExpr{Left: left, Right: right}
+					} else {
+						expr = &UnionExpr{Left: left, Right: right}
+					}
+				case "except":
+					expr = &ExceptExpr{Left: left, Right: right}
+				case "intersect":
+					expr = &IntersectExpr{Left: left, Right: right}
+				default:
 					expr = &BinaryExpr{Left: left, Op: ops[i], Right: right}
 				}
 				operands[i] = expr
 				operands = append(operands[:i+1], operands[i+2:]...)
 				ops = append(ops[:i], ops[i+1:]...)
+				opnodes = append(opnodes[:i], opnodes[i+1:]...)
 			} else {
 				i++
 			}
@@ -6151,6 +6252,14 @@ func exprNode(e Expr) *ast.Node {
 		return &ast.Node{Kind: "slice", Children: []*ast.Node{exprNode(ex.Target), exprNode(ex.Start), exprNode(ex.End)}}
 	case *AppendExpr:
 		return &ast.Node{Kind: "append", Children: []*ast.Node{exprNode(ex.List), exprNode(ex.Value)}}
+	case *UnionExpr:
+		return &ast.Node{Kind: "union", Children: []*ast.Node{exprNode(ex.Left), exprNode(ex.Right)}}
+	case *UnionAllExpr:
+		return &ast.Node{Kind: "unionall", Children: []*ast.Node{exprNode(ex.Left), exprNode(ex.Right)}}
+	case *ExceptExpr:
+		return &ast.Node{Kind: "except", Children: []*ast.Node{exprNode(ex.Left), exprNode(ex.Right)}}
+	case *IntersectExpr:
+		return &ast.Node{Kind: "intersect", Children: []*ast.Node{exprNode(ex.Left), exprNode(ex.Right)}}
 	case *ContainsExpr:
 		return &ast.Node{Kind: "contains", Children: []*ast.Node{exprNode(ex.Target), exprNode(ex.Elem)}}
 	case *AvgExpr:
