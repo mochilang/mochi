@@ -40,6 +40,7 @@ var useRepeat bool
 var useParseIntStr bool
 var useBench bool
 var useStdout bool
+var useHas bool
 
 var reserved = map[string]bool{
 	"break": true, "case": true, "catch": true, "class": true, "const": true,
@@ -1842,7 +1843,7 @@ func emitStmt(w *indentWriter, s Stmt, level int) {
 			if i > 0 {
 				io.WriteString(w, ", ")
 			}
-			io.WriteString(w, p)
+			io.WriteString(w, safeName(p))
 			if i < len(st.ParamTypes) && st.ParamTypes[i] != "" && st.ParamTypes[i] != "any" {
 				io.WriteString(w, ": ")
 				io.WriteString(w, st.ParamTypes[i])
@@ -1964,6 +1965,7 @@ func Transpile(prog *parser.Program, env *types.Env, benchMain bool) (*Program, 
 	useRepeat = false
 	useParseIntStr = false
 	useStdout = false
+	useHas = false
 	defer func() {
 		transpileEnv = nil
 		generatedTypes = nil
@@ -1977,6 +1979,7 @@ func Transpile(prog *parser.Program, env *types.Env, benchMain bool) (*Program, 
 		useRepeat = false
 		useParseIntStr = false
 		useStdout = false
+		useHas = false
 	}()
 	tsProg := &Program{}
 	mainDefined := false
@@ -2127,6 +2130,11 @@ function sha256(bs: number[]): number[] {
 	}
 	if useParseIntStr {
 		prelude = append(prelude, &RawStmt{Code: `function parseIntStr(s: string, base: number): number { return parseInt(s, Math.trunc(base)); }`})
+	}
+	if useHas {
+		prelude = append(prelude, &RawStmt{Code: `function _has(obj: any, key: any): boolean {
+  return Object.prototype.hasOwnProperty.call(obj, String(key));
+}`})
 	}
 	if useStdout {
 		prelude = append(prelude, &RawStmt{Code: `function _stdout_write(s: string) {
@@ -3626,6 +3634,12 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		case "contains":
 			if len(args) != 2 {
 				return nil, fmt.Errorf("contains expects two arguments")
+			}
+			if transpileEnv != nil {
+				if _, ok := types.ExprType(p.Call.Args[0], transpileEnv).(types.MapType); ok {
+					useHas = true
+					return &CallExpr{Func: "_has", Args: []Expr{args[0], args[1]}}, nil
+				}
 			}
 			return &MethodCallExpr{Target: args[0], Method: "includes", Args: []Expr{args[1]}}, nil
 		case "padStart":

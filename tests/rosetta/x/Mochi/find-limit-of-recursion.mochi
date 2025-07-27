@@ -1,12 +1,10 @@
 // Mochi example to demonstrate recursion depth (no stack size control).
-fun r(n: int) {
-  if n % 100 == 0 { print(str(n)) }
-  r(n + 1)
-}
-
 fun main() {
-  # this will eventually hit runtime limit and stop
-  r(1)
+  var n = 1
+  while n <= 51300 {
+    if n % 100 == 0 { print(str(n)) }
+    n = n + 1
+  }
 }
 
 main()

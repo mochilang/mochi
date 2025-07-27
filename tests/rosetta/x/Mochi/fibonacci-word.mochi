@@ -1,3 +1,6 @@
+import python "math" as math
+extern fun math.log(x: float): float
+
 fun entropy(s: string): float {
   var counts: map<string,int> = {}
   var i = 0
