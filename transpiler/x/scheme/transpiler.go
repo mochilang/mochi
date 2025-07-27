@@ -227,10 +227,12 @@ func header() []byte {
       (begin
         (set! _now_seed (modulo (+ (* _now_seed 1664525) 1013904223) 2147483647))
         _now_seed)
-      (inexact->exact (* (current-second) 1000000000))))`
+      (exact (floor (* (current-second) 1000000000))))`
 	}
 	if usesBench {
-		prelude += "(import (chibi time))\n"
+		if !usesNow {
+			prelude += "(import (chibi time))\n"
+		}
 		prelude += "(define (_mem) (* 1024 (resource-usage-max-rss (get-resource-usage resource-usage/self))))\n"
 	}
 	if usesLookupHost {
@@ -1106,9 +1108,9 @@ func convertParserPostfix(pf *parser.PostfixExpr) (Node, error) {
 				x := gensym("v")
 				cond := &List{Elems: []Node{
 					Symbol("cond"),
-					&List{Elems: []Node{&List{Elems: []Node{Symbol("string?"), Symbol(x)}}, &List{Elems: []Node{Symbol("inexact->exact"), &List{Elems: []Node{Symbol("floor"), &List{Elems: []Node{Symbol("string->number"), Symbol(x)}}}}}}}},
+					&List{Elems: []Node{&List{Elems: []Node{Symbol("string?"), Symbol(x)}}, &List{Elems: []Node{Symbol("exact"), &List{Elems: []Node{Symbol("floor"), &List{Elems: []Node{Symbol("string->number"), Symbol(x)}}}}}}}},
 					&List{Elems: []Node{&List{Elems: []Node{Symbol("boolean?"), Symbol(x)}}, &List{Elems: []Node{Symbol("if"), Symbol(x), IntLit(1), IntLit(0)}}}},
-					&List{Elems: []Node{Symbol("else"), &List{Elems: []Node{Symbol("inexact->exact"), &List{Elems: []Node{Symbol("floor"), Symbol(x)}}}}}},
+					&List{Elems: []Node{Symbol("else"), &List{Elems: []Node{Symbol("exact"), &List{Elems: []Node{Symbol("floor"), Symbol(x)}}}}}},
 				}}
 				node = &List{Elems: []Node{
 					Symbol("let"),
@@ -2499,9 +2501,9 @@ func convertCall(target Node, call *parser.CallOp) (Node, error) {
 		x := gensym("v")
 		cond := &List{Elems: []Node{
 			Symbol("cond"),
-			&List{Elems: []Node{&List{Elems: []Node{Symbol("string?"), Symbol(x)}}, &List{Elems: []Node{Symbol("inexact->exact"), &List{Elems: []Node{Symbol("floor"), &List{Elems: []Node{Symbol("string->number"), Symbol(x)}}}}}}}},
+			&List{Elems: []Node{&List{Elems: []Node{Symbol("string?"), Symbol(x)}}, &List{Elems: []Node{Symbol("exact"), &List{Elems: []Node{Symbol("floor"), &List{Elems: []Node{Symbol("string->number"), Symbol(x)}}}}}}}},
 			&List{Elems: []Node{&List{Elems: []Node{Symbol("boolean?"), Symbol(x)}}, &List{Elems: []Node{Symbol("if"), Symbol(x), IntLit(1), IntLit(0)}}}},
-			&List{Elems: []Node{Symbol("else"), &List{Elems: []Node{Symbol("inexact->exact"), &List{Elems: []Node{Symbol("floor"), Symbol(x)}}}}}},
+			&List{Elems: []Node{Symbol("else"), &List{Elems: []Node{Symbol("exact"), &List{Elems: []Node{Symbol("floor"), Symbol(x)}}}}}},
 		}}
 		return &List{Elems: []Node{
 			Symbol("let"),

@@ -2,8 +2,8 @@
 
 Generated Scheme code for Rosetta Code tasks under `tests/rosetta/x/Mochi`.
 
-## Checklist (133/465)
-Last updated: 2025-07-27 09:41 UTC
+## Checklist (134/465)
+Last updated: 2025-07-27 10:29 UTC
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -146,7 +146,7 @@ Last updated: 2025-07-27 09:41 UTC
 | 137 | break-oo-privacy | ✓ | 412µs | 12.7 MB |
 | 138 | brilliant-numbers |   |  |  |
 | 139 | brownian-tree |   |  |  |
-| 140 | bulls-and-cows-player |   |  |  |
+| 140 | bulls-and-cows-player | ✓ | 350.024ms | 16.8 MB |
 | 141 | bulls-and-cows |   |  |  |
 | 142 | burrows-wheeler-transform |   |  |  |
 | 143 | caesar-cipher-1 |   |  |  |
