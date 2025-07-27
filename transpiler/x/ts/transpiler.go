@@ -2053,8 +2053,12 @@ func Transpile(prog *parser.Program, env *types.Env, benchMain bool) (*Program, 
 		if err != nil {
 			return nil, err
 		}
-		tsProg.Stmts = append(tsProg.Stmts, stmt)
+		if stmt != nil {
+			tsProg.Stmts = append(tsProg.Stmts, stmt)
+		}
 	}
+
+	optimizeFillLoops(tsProg)
 
 	if !benchMain && useFetch {
 		for _, st := range tsProg.Stmts {
@@ -4114,6 +4118,113 @@ func mapLiteral(e *parser.Expr) *parser.MapLiteral {
 		return nil
 	}
 	return p.Target.Map
+}
+
+func optimizeFillLoops(p *Program) {
+	var out []Stmt
+	for i := 0; i < len(p.Stmts); i++ {
+		if w, ok := p.Stmts[i].(*WhileStmt); ok {
+			if repl := rewriteFillLoop(w); repl != nil {
+				out = append(out, repl...)
+				continue
+			}
+		}
+		out = append(out, p.Stmts[i])
+	}
+	p.Stmts = out
+}
+
+func rewriteFillLoop(w *WhileStmt) []Stmt {
+	be, ok := w.Cond.(*BinaryExpr)
+	if !ok || be.Op != "<=" {
+		return nil
+	}
+	iter, ok := be.Left.(*NameRef)
+	if !ok {
+		return nil
+	}
+	if len(w.Body) == 0 {
+		return nil
+	}
+	incr, ok := w.Body[len(w.Body)-1].(*AssignStmt)
+	if !ok || incr.Name != iter.Name {
+		return nil
+	}
+	bin, ok := incr.Expr.(*BinaryExpr)
+	if !ok || bin.Op != "+" {
+		return nil
+	}
+	ln, ok := bin.Left.(*NameRef)
+	if !ok || ln.Name != iter.Name {
+		return nil
+	}
+	rn, ok := bin.Right.(*NumberLit)
+	if !ok || rn.Value != "1" {
+		return nil
+	}
+	arrays := []string{}
+	values := []Expr{}
+	for _, st := range w.Body[:len(w.Body)-1] {
+		as, ok := st.(*AssignStmt)
+		if !ok {
+			return nil
+		}
+		ce, ok := as.Expr.(*AppendExpr)
+		if !ok {
+			return nil
+		}
+		nr, ok := ce.List.(*NameRef)
+		if !ok || nr.Name != as.Name {
+			return nil
+		}
+		arrays = append(arrays, as.Name)
+		values = append(values, ce.Elem)
+	}
+	if len(arrays) == 0 {
+		return nil
+	}
+	length := emitExprString(be.Right) + " + 1"
+	var stmts []Stmt
+	for i, arr := range arrays {
+		t := typedArrayType(arr)
+		if t == "" {
+			return nil
+		}
+		val := emitExprString(values[i])
+		code := fmt.Sprintf("%s = new %s(%s).fill(%s);", safeName(arr), t, length, val)
+		stmts = append(stmts, &RawStmt{Code: code})
+	}
+	return stmts
+}
+
+func typedArrayType(name string) string {
+	if transpileEnv == nil {
+		return ""
+	}
+	t, err := transpileEnv.GetVar(name)
+	if err != nil {
+		return ""
+	}
+	lt, ok := t.(types.ListType)
+	if !ok {
+		return ""
+	}
+	switch lt.Elem.(type) {
+	case types.IntType, types.Int64Type:
+		return "Int32Array"
+	case types.FloatType, types.BigIntType, types.BigRatType:
+		return "Float64Array"
+	default:
+		return ""
+	}
+}
+
+func emitExprString(e Expr) string {
+	var buf bytes.Buffer
+	if e != nil {
+		e.emit(&buf)
+	}
+	return buf.String()
 }
 
 func isNumericBool(e Expr) bool {

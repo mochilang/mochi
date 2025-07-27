@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated TypeScript code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/TypeScript`.
-Last updated: 2025-07-27 15:04 UTC
+Last updated: 2025-07-27 15:43 UTC
 
-## Rosetta Golden Test Checklist (445/467)
+## Rosetta Golden Test Checklist (446/467)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 5.905ms | 256.0 KB |
@@ -364,10 +364,10 @@ Last updated: 2025-07-27 15:04 UTC
 | 355 | environment-variables-2 | ✓ | 1.973ms | 128.0 KB |
 | 356 | equal-prime-and-composite-sums | ✓ | 22.945ms | 11.0 MB |
 | 357 | equilibrium-index | ✓ | 12.006ms | 9.7 MB |
-| 358 | erd-s-nicolas-numbers |   |  |  |
-| 359 | erd-s-selfridge-categorization-of-primes | ✓ | 23.746ms | 5.5 MB |
-| 360 | esthetic-numbers | ✓ | 58.334ms | 12.3 MB |
-| 361 | ethiopian-multiplication | ✓ | 799µs |  |
+| 358 | erd-s-nicolas-numbers | ✓ | 55.038122s | 771.8 MB |
+| 359 | erd-s-selfridge-categorization-of-primes | ✓ | 7.069ms | 10.6 MB |
+| 360 | esthetic-numbers | ✓ | 31.434ms | 12.2 MB |
+| 361 | ethiopian-multiplication | ✓ | 451µs |  |
 | 362 | euclid-mullin-sequence |   |  |  |
 | 363 | euler-method | ✓ | 8.09ms | 3.2 MB |
 | 364 | eulers-constant-0.5772... |   |  |  |
