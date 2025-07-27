@@ -1,0 +1,221 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun parseBigInt(str: string): bigint {
+func parseBigInt (regs=27)
+  // var i = 0
+  Const        r1, 0
+  Move         r2, r1
+  // var neg = false
+  Const        r3, false
+  Move         r4, r3
+  // if len(str) > 0 && substring(str, 0, 1) == "-" {
+  Len          r5, r0
+  Const        r1, 0
+  LessInt      r6, r1, r5
+  Const        r1, 0
+  Const        r7, 1
+  Slice        r8, r0, r1, r7
+  Const        r9, "-"
+  Equal        r10, r8, r9
+  Move         r11, r6
+  JumpIfFalse  r11, L0
+  Move         r11, r10
+L0:
+  JumpIfFalse  r11, L1
+  // neg = true
+  Const        r12, true
+  Move         r4, r12
+  // i = 1
+  Const        r7, 1
+  Move         r2, r7
+L1:
+  // var n: bigint = 0
+  Const        r1, 0
+  Move         r13, r1
+L3:
+  // while i < len(str) {
+  Len          r14, r0
+  LessInt      r15, r2, r14
+  JumpIfFalse  r15, L2
+  // let ch = substring(str, i, i+1)
+  Const        r7, 1
+  AddInt       r16, r2, r7
+  Slice        r17, r0, r2, r16
+  Move         r18, r17
+  // let d = ch as int
+  Cast         r19, r18, int
+  Move         r20, r19
+  // n = n * (10 as bigint) + (d as bigint)
+  Const        r21, 10
+  MulInt       r22, r13, r21
+  Cast         r23, r20, any
+  Add          r24, r22, r23
+  Move         r13, r24
+  // i = i + 1
+  Const        r7, 1
+  AddInt       r25, r2, r7
+  Move         r2, r25
+  // while i < len(str) {
+  Jump         L3
+L2:
+  // if neg { n = -n }
+  JumpIfFalse  r4, L4
+  Neg          r26, r13
+  Move         r13, r26
+L4:
+  // return n
+  Return       r13
+
+  // fun pad(n: int, width: int): string {
+func pad (regs=8)
+  // var s = str(n)
+  Str          r2, r0
+  Move         r3, r2
+L1:
+  // while len(s) < width { s = " " + s }
+  Len          r4, r3
+  Less         r5, r4, r1
+  JumpIfFalse  r5, L0
+  Const        r6, " "
+  Add          r7, r6, r3
+  Move         r3, r7
+  Jump         L1
+L0:
+  // return s
+  Return       r3
+
+  // fun showInt(n: int) {
+func showInt (regs=24)
+  // var line = "Testing integer " + pad(n, 3) + ":  "
+  Const        r1, "Testing integer "
+  Move         r2, r0
+  Const        r4, 3
+  Move         r3, r4
+  Call2        r5, pad, r2, r3
+  Add          r6, r1, r5
+  Const        r7, ":  "
+  Add          r8, r6, r7
+  Move         r9, r8
+  // if n % 2 == 0 {
+  Const        r10, 2
+  Mod          r11, r0, r10
+  Const        r12, 0
+  Equal        r13, r11, r12
+  JumpIfFalse  r13, L0
+  // line = line + "even "
+  Const        r14, "even "
+  Add          r15, r9, r14
+  Move         r9, r15
+  // if n % 2 == 0 {
+  Jump         L1
+L0:
+  // line = line + " odd "
+  Const        r16, " odd "
+  Add          r17, r9, r16
+  Move         r9, r17
+L1:
+  // if n % 2 == 0 {
+  Const        r10, 2
+  Mod          r18, r0, r10
+  Const        r12, 0
+  Equal        r19, r18, r12
+  JumpIfFalse  r19, L2
+  // line = line + "even"
+  Const        r20, "even"
+  Add          r21, r9, r20
+  Move         r9, r21
+  // if n % 2 == 0 {
+  Jump         L3
+L2:
+  // line = line + " odd"
+  Const        r22, " odd"
+  Add          r23, r9, r22
+  Move         r9, r23
+L3:
+  // print(line)
+  Print        r9
+  Return       r0
+
+  // fun showBig(s: string) {
+func showBig (regs=18)
+  // let b = parseBigInt(s)
+  Move         r1, r0
+  Call         r2, parseBigInt, r1
+  Move         r3, r2
+  // var line = "Testing big integer " + str(b) + ":  "
+  Const        r4, "Testing big integer "
+  Str          r5, r3
+  Add          r6, r4, r5
+  Const        r7, ":  "
+  Add          r8, r6, r7
+  Move         r9, r8
+  // if b % (2 as bigint) == 0 as bigint {
+  Const        r10, 2
+  Mod          r11, r3, r10
+  Const        r12, 0
+  Equal        r13, r11, r12
+  JumpIfFalse  r13, L0
+  // line = line + "even"
+  Const        r14, "even"
+  Add          r15, r9, r14
+  Move         r9, r15
+  // if b % (2 as bigint) == 0 as bigint {
+  Jump         L1
+L0:
+  // line = line + "odd"
+  Const        r16, "odd"
+  Add          r17, r9, r16
+  Move         r9, r17
+L1:
+  // print(line)
+  Print        r9
+  Return       r0
+
+  // fun main() {
+func main (regs=30)
+  // showInt(-2)
+  Const        r1, 2
+  NegInt       r2, r1
+  Move         r0, r2
+  Call         r3, showInt, r0
+  // showInt(-1)
+  Const        r5, 1
+  NegInt       r6, r5
+  Move         r4, r6
+  Call         r7, showInt, r4
+  // showInt(0)
+  Const        r9, 0
+  Move         r8, r9
+  Call         r10, showInt, r8
+  // showInt(1)
+  Const        r5, 1
+  Move         r11, r5
+  Call         r12, showInt, r11
+  // showInt(2)
+  Const        r1, 2
+  Move         r13, r1
+  Call         r14, showInt, r13
+  // showBig("-222222222222222222222222222222222222")
+  Const        r16, "-222222222222222222222222222222222222"
+  Move         r15, r16
+  Call         r17, showBig, r15
+  // showBig("-1")
+  Const        r19, "-1"
+  Move         r18, r19
+  Call         r20, showBig, r18
+  // showBig("0")
+  Const        r22, "0"
+  Move         r21, r22
+  Call         r23, showBig, r21
+  // showBig("1")
+  Const        r25, "1"
+  Move         r24, r25
+  Call         r26, showBig, r24
+  // showBig("222222222222222222222222222222222222")
+  Const        r28, "222222222222222222222222222222222222"
+  Move         r27, r28
+  Call         r29, showBig, r27
+  Return       r0

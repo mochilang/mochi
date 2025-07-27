@@ -1,0 +1,12 @@
+func main (regs=6)
+  // let out = subprocess.getoutput("ls -l")
+  Const        r2, "ls -l"
+  Move         r1, r2
+  Const        r4, "subprocess"
+  Const        r5, "getoutput"
+  PyCall       r3, r4, r5, 1, r1
+  Move         r0, r3
+  SetGlobal    0,0,0,0
+  // print(out)
+  Print        r0
+  Return       r0

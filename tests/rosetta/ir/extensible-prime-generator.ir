@@ -1,0 +1,208 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun nextPrime(primes: list<int>, start: int): int {
+func nextPrime (regs=20)
+  // var n = start
+  Move         r2, r1
+L6:
+  // while true {
+  Const        r3, true
+  JumpIfFalse  r3, L0
+  // var isP = true
+  Const        r3, true
+  Move         r4, r3
+  // var i = 0
+  Const        r5, 0
+  Move         r6, r5
+L4:
+  // while i < len(primes) {
+  Len          r7, r0
+  LessInt      r8, r6, r7
+  JumpIfFalse  r8, L1
+  // let p = primes[i]
+  Index        r9, r0, r6
+  Move         r10, r9
+  // if p * p > n { break }
+  Mul          r11, r10, r10
+  Less         r12, r2, r11
+  JumpIfFalse  r12, L2
+  Jump         L1
+L2:
+  // if n % p == 0 { isP = false; break }
+  Mod          r13, r2, r10
+  Const        r5, 0
+  Equal        r14, r13, r5
+  JumpIfFalse  r14, L3
+  Const        r15, false
+  Move         r4, r15
+  Jump         L1
+L3:
+  // i = i + 1
+  Const        r16, 1
+  AddInt       r17, r6, r16
+  Move         r6, r17
+  // while i < len(primes) {
+  Jump         L4
+L1:
+  // if isP { return n }
+  JumpIfFalse  r4, L5
+  Return       r2
+L5:
+  // n = n + 2
+  Const        r18, 2
+  Add          r19, r2, r18
+  Move         r2, r19
+  // while true {
+  Jump         L6
+L0:
+  Return       r0
+
+  // fun main() {
+func main (regs=62)
+  // var primes: list<int> = [2]
+  Const        r0, [2]
+  Move         r1, r0
+  // var cand = 3
+  Const        r2, 3
+  Move         r3, r2
+L1:
+  // while len(primes) < 10000 {
+  Len          r4, r1
+  Const        r5, 10000
+  LessInt      r6, r4, r5
+  JumpIfFalse  r6, L0
+  // cand = nextPrime(primes, cand)
+  Move         r7, r1
+  Move         r8, r3
+  Call2        r9, nextPrime, r7, r8
+  Move         r3, r9
+  // primes = append(primes, cand)
+  Append       r10, r1, r3
+  Move         r1, r10
+  // cand = cand + 2
+  Const        r11, 2
+  Add          r12, r3, r11
+  Move         r3, r12
+  // while len(primes) < 10000 {
+  Jump         L1
+L0:
+  // var line = "First twenty:"
+  Const        r13, "First twenty:"
+  Move         r14, r13
+  // var i = 0
+  Const        r15, 0
+  Move         r16, r15
+L3:
+  // while i < 20 {
+  Const        r17, 20
+  LessInt      r18, r16, r17
+  JumpIfFalse  r18, L2
+  // line = line + " " + str(primes[i])
+  Const        r19, " "
+  Add          r20, r14, r19
+  Index        r21, r1, r16
+  Str          r22, r21
+  Add          r23, r20, r22
+  Move         r14, r23
+  // i = i + 1
+  Const        r24, 1
+  AddInt       r25, r16, r24
+  Move         r16, r25
+  // while i < 20 {
+  Jump         L3
+L2:
+  // print(line)
+  Print        r14
+  // var idx = 0
+  Const        r15, 0
+  Move         r26, r15
+L5:
+  // while primes[idx] <= 100 { idx = idx + 1 }
+  Index        r27, r1, r26
+  Const        r28, 100
+  LessEq       r29, r27, r28
+  JumpIfFalse  r29, L4
+  Const        r24, 1
+  AddInt       r30, r26, r24
+  Move         r26, r30
+  Jump         L5
+L4:
+  // line = "Between 100 and 150: " + str(primes[idx])
+  Const        r31, "Between 100 and 150: "
+  Index        r32, r1, r26
+  Str          r33, r32
+  Add          r34, r31, r33
+  Move         r14, r34
+  // idx = idx + 1
+  Const        r24, 1
+  AddInt       r35, r26, r24
+  Move         r26, r35
+L7:
+  // while primes[idx] < 150 {
+  Index        r36, r1, r26
+  Const        r37, 150
+  Less         r38, r36, r37
+  JumpIfFalse  r38, L6
+  // line = line + " " + str(primes[idx])
+  Const        r19, " "
+  Add          r39, r14, r19
+  Index        r40, r1, r26
+  Str          r41, r40
+  Add          r42, r39, r41
+  Move         r14, r42
+  // idx = idx + 1
+  Const        r24, 1
+  AddInt       r43, r26, r24
+  Move         r26, r43
+  // while primes[idx] < 150 {
+  Jump         L7
+L6:
+  // print(line)
+  Print        r14
+L9:
+  // while primes[idx] <= 7700 { idx = idx + 1 }
+  Index        r44, r1, r26
+  Const        r45, 7700
+  LessEq       r46, r44, r45
+  JumpIfFalse  r46, L8
+  Const        r24, 1
+  AddInt       r47, r26, r24
+  Move         r26, r47
+  Jump         L9
+L8:
+  // var count = 0
+  Const        r15, 0
+  Move         r48, r15
+L11:
+  // while primes[idx] < 8000 {
+  Index        r49, r1, r26
+  Const        r50, 8000
+  Less         r51, r49, r50
+  JumpIfFalse  r51, L10
+  // count = count + 1
+  Const        r24, 1
+  AddInt       r52, r48, r24
+  Move         r48, r52
+  // idx = idx + 1
+  Const        r24, 1
+  AddInt       r53, r26, r24
+  Move         r26, r53
+  // while primes[idx] < 8000 {
+  Jump         L11
+L10:
+  // print("Number beween 7,700 and 8,000: " + str(count))
+  Const        r54, "Number beween 7,700 and 8,000: "
+  Str          r55, r48
+  Add          r56, r54, r55
+  Print        r56
+  // print("10,000th prime: " + str(primes[9999]))
+  Const        r57, "10,000th prime: "
+  Const        r58, 9999
+  Index        r59, r1, r58
+  Str          r60, r59
+  Add          r61, r57, r60
+  Print        r61
+  Return       r0

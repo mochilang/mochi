@@ -1,0 +1,861 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun contains(xs: list<int>, v: int): bool {
+func contains (regs=13)
+  // for x in xs { if x == v { return true } }
+  IterPrep     r2, r0
+  Len          r3, r2
+  Const        r4, 0
+L2:
+  LessInt      r5, r4, r3
+  JumpIfFalse  r5, L0
+  Index        r6, r2, r4
+  Move         r7, r6
+  Equal        r8, r7, r1
+  JumpIfFalse  r8, L1
+  Const        r9, true
+  Return       r9
+L1:
+  Const        r10, 1
+  AddInt       r11, r4, r10
+  Move         r4, r11
+  Jump         L2
+L0:
+  // return false
+  Const        r12, false
+  Return       r12
+
+  // fun copyInts(xs: list<int>): list<int> {
+func copyInts (regs=12)
+  // var out: list<int> = []
+  Const        r1, []
+  Move         r2, r1
+  // for x in xs { out = append(out, x) }
+  IterPrep     r3, r0
+  Len          r4, r3
+  Const        r5, 0
+L1:
+  LessInt      r6, r5, r4
+  JumpIfFalse  r6, L0
+  Index        r7, r3, r5
+  Move         r8, r7
+  Append       r9, r2, r8
+  Move         r2, r9
+  Const        r10, 1
+  AddInt       r11, r5, r10
+  Move         r5, r11
+  Jump         L1
+L0:
+  // return out
+  Return       r2
+
+  // fun sliceEqual(a: list<int>, b: list<int>): bool {
+func sliceEqual (regs=13)
+  // var i = 0
+  Const        r2, 0
+  Move         r3, r2
+L2:
+  // while i < len(a) {
+  Len          r4, r0
+  LessInt      r5, r3, r4
+  JumpIfFalse  r5, L0
+  // if a[i] != b[i] { return false }
+  Index        r6, r0, r3
+  Index        r7, r1, r3
+  NotEqual     r8, r6, r7
+  JumpIfFalse  r8, L1
+  Const        r9, false
+  Return       r9
+L1:
+  // i = i + 1
+  Const        r10, 1
+  AddInt       r11, r3, r10
+  Move         r3, r11
+  // while i < len(a) {
+  Jump         L2
+L0:
+  // return true
+  Const        r12, true
+  Return       r12
+
+  // fun reverse(xs: list<int>) {
+func reverse (regs=13)
+  // var i = 0
+  Const        r1, 0
+  Move         r2, r1
+  // var j = len(xs) - 1
+  Len          r3, r0
+  Const        r4, 1
+  SubInt       r5, r3, r4
+  Move         r6, r5
+L1:
+  // while i < j {
+  LessInt      r7, r2, r6
+  JumpIfFalse  r7, L0
+  // let t = xs[i]
+  Index        r8, r0, r2
+  Move         r9, r8
+  // xs[i] = xs[j]
+  Index        r10, r0, r6
+  SetIndex     r0, r2, r10
+  // xs[j] = t
+  SetIndex     r0, r6, r9
+  // i = i + 1
+  Const        r4, 1
+  AddInt       r11, r2, r4
+  Move         r2, r11
+  // j = j - 1
+  Const        r4, 1
+  SubInt       r12, r6, r4
+  Move         r6, r12
+  // while i < j {
+  Jump         L1
+L0:
+  Return       r0
+
+  // fun perimEqual(p1: list<int>, p2: list<int>): bool {
+func perimEqual (regs=47)
+  // if len(p1) != len(p2) { return false }
+  Len          r2, r0
+  Len          r3, r1
+  NotEqual     r4, r2, r3
+  JumpIfFalse  r4, L0
+  Const        r5, false
+  Return       r5
+L0:
+  // for v in p1 { if !contains(p2, v) { return false } }
+  IterPrep     r6, r0
+  Len          r7, r6
+  Const        r8, 0
+L3:
+  LessInt      r9, r8, r7
+  JumpIfFalse  r9, L1
+  Index        r10, r6, r8
+  Move         r11, r10
+  Move         r12, r1
+  Move         r13, r11
+  Call2        r14, contains, r12, r13
+  Not          r15, r14
+  JumpIfFalse  r15, L2
+  Const        r5, false
+  Return       r5
+L2:
+  Const        r16, 1
+  AddInt       r17, r8, r16
+  Move         r8, r17
+  Jump         L3
+L1:
+  // var c = copyInts(p1)
+  Move         r18, r0
+  Call         r19, copyInts, r18
+  Move         r20, r19
+  // var r = 0
+  Const        r21, 0
+  Move         r22, r21
+L10:
+  // while r < 2 {
+  Const        r23, 2
+  LessInt      r24, r22, r23
+  JumpIfFalse  r24, L4
+  // var i = 0
+  Const        r21, 0
+  Move         r25, r21
+L9:
+  // while i < len(c) {
+  Len          r26, r20
+  LessInt      r27, r25, r26
+  JumpIfFalse  r27, L5
+  // if sliceEqual(c, p2) { return true }
+  Move         r28, r20
+  Move         r29, r1
+  Call2        r30, sliceEqual, r28, r29
+  JumpIfFalse  r30, L6
+  Const        r31, true
+  Return       r31
+L6:
+  // let t = c[len(c)-1]
+  Len          r32, r20
+  Const        r33, 1
+  SubInt       r34, r32, r33
+  Index        r35, r20, r34
+  Move         r36, r35
+  // var j = len(c)-1
+  Len          r37, r20
+  Const        r33, 1
+  SubInt       r38, r37, r33
+  Move         r39, r38
+L8:
+  // while j > 0 {
+  Const        r21, 0
+  LessInt      r40, r21, r39
+  JumpIfFalse  r40, L7
+  // c[j] = c[j-1]
+  Const        r33, 1
+  SubInt       r41, r39, r33
+  Index        r42, r20, r41
+  SetIndex     r20, r39, r42
+  // j = j - 1
+  Const        r33, 1
+  SubInt       r43, r39, r33
+  Move         r39, r43
+  // while j > 0 {
+  Jump         L8
+L7:
+  // c[0] = t
+  Const        r21, 0
+  SetIndex     r20, r21, r36
+  // i = i + 1
+  Const        r33, 1
+  AddInt       r44, r25, r33
+  Move         r25, r44
+  // while i < len(c) {
+  Jump         L9
+L5:
+  // reverse(c)
+  Reverse      r45, r20
+  // r = r + 1
+  Const        r33, 1
+  AddInt       r46, r22, r33
+  Move         r22, r46
+  // while r < 2 {
+  Jump         L10
+L4:
+  // return false
+  Const        r5, false
+  Return       r5
+
+  // fun sortEdges(es: list<Edge>): list<Edge> {
+func sortEdges (regs=32)
+  // var arr = es
+  Move         r1, r0
+  // var n = len(arr)
+  Len          r2, r1
+  Move         r3, r2
+  // var i = 0
+  Const        r4, 0
+  Move         r5, r4
+L6:
+  // while i < n {
+  LessInt      r6, r5, r3
+  JumpIfFalse  r6, L0
+  // var j = 0
+  Const        r4, 0
+  Move         r7, r4
+L5:
+  // while j < n-1 {
+  Const        r8, 1
+  SubInt       r9, r3, r8
+  LessInt      r10, r7, r9
+  JumpIfFalse  r10, L1
+  // let a = arr[j]
+  Index        r11, r1, r7
+  Move         r12, r11
+  // let b = arr[j+1]
+  Const        r8, 1
+  AddInt       r13, r7, r8
+  Index        r14, r1, r13
+  Move         r15, r14
+  // if a.a > b.a || (a.a == b.a && a.b > b.b) {
+  Const        r16, "a"
+  Index        r17, r12, r16
+  Const        r16, "a"
+  Index        r18, r15, r16
+  Less         r19, r18, r17
+  Move         r20, r19
+  JumpIfTrue   r20, L2
+  Const        r16, "a"
+  Index        r21, r12, r16
+  Const        r22, "b"
+  Index        r23, r12, r22
+  Const        r22, "b"
+  Index        r24, r15, r22
+  Less         r25, r24, r23
+  Const        r16, "a"
+  Index        r26, r15, r16
+  Equal        r27, r21, r26
+  Move         r28, r27
+  JumpIfFalse  r28, L3
+  Move         r28, r25
+L3:
+  Move         r20, r28
+L2:
+  JumpIfFalse  r20, L4
+  // arr[j] = b
+  SetIndex     r1, r7, r15
+  // arr[j+1] = a
+  Const        r8, 1
+  AddInt       r29, r7, r8
+  SetIndex     r1, r29, r12
+L4:
+  // j = j + 1
+  Const        r8, 1
+  AddInt       r30, r7, r8
+  Move         r7, r30
+  // while j < n-1 {
+  Jump         L5
+L1:
+  // i = i + 1
+  Const        r8, 1
+  AddInt       r31, r5, r8
+  Move         r5, r31
+  // while i < n {
+  Jump         L6
+L0:
+  // return arr
+  Return       r1
+
+  // fun concat(a: list<Edge>, b: list<Edge>): list<Edge> {
+func concat (regs=21)
+  // var out: list<Edge> = []
+  Const        r2, []
+  Move         r3, r2
+  // for x in a { out = append(out, x) }
+  IterPrep     r4, r0
+  Len          r5, r4
+  Const        r6, 0
+L1:
+  LessInt      r7, r6, r5
+  JumpIfFalse  r7, L0
+  Index        r8, r4, r6
+  Move         r9, r8
+  Append       r10, r3, r9
+  Move         r3, r10
+  Const        r11, 1
+  AddInt       r12, r6, r11
+  Move         r6, r12
+  Jump         L1
+L0:
+  // for x in b { out = append(out, x) }
+  IterPrep     r13, r1
+  Len          r14, r13
+  Const        r15, 0
+L3:
+  LessInt      r16, r15, r14
+  JumpIfFalse  r16, L2
+  Index        r17, r13, r15
+  Move         r9, r17
+  Append       r18, r3, r9
+  Move         r3, r18
+  Const        r19, 1
+  AddInt       r20, r15, r19
+  Move         r15, r20
+  Jump         L3
+L2:
+  // return out
+  Return       r3
+
+  // fun faceToPerim(face: list<Edge>): any {
+func faceToPerim (regs=82)
+  // var le = len(face)
+  Len          r1, r0
+  Move         r2, r1
+  // if le == 0 { return nil }
+  Const        r3, 0
+  EqualInt     r4, r2, r3
+  JumpIfFalse  r4, L0
+  Return       r5
+L0:
+  // var edges: list<Edge> = []
+  Const        r6, []
+  Move         r7, r6
+  // var i = 0
+  Const        r3, 0
+  Move         r8, r3
+L3:
+  // while i < le {
+  LessInt      r9, r8, r2
+  JumpIfFalse  r9, L1
+  // let e = face[i]
+  Index        r10, r0, r8
+  Move         r11, r10
+  // if e.b <= e.a { return nil }
+  Const        r12, "b"
+  Index        r13, r11, r12
+  Const        r14, "a"
+  Index        r15, r11, r14
+  LessEq       r16, r13, r15
+  JumpIfFalse  r16, L2
+  Return       r17
+L2:
+  // edges = append(edges, e)
+  Append       r18, r7, r11
+  Move         r7, r18
+  // i = i + 1
+  Const        r19, 1
+  AddInt       r20, r8, r19
+  Move         r8, r20
+  // while i < le {
+  Jump         L3
+L1:
+  // edges = sortEdges(edges)
+  Move         r21, r7
+  Call         r22, sortEdges, r21
+  Move         r7, r22
+  // var firstEdge = edges[0]
+  Const        r3, 0
+  Index        r23, r7, r3
+  Move         r24, r23
+  // var perim: list<int> = [firstEdge.a, firstEdge.b]
+  Const        r14, "a"
+  Index        r27, r24, r14
+  Move         r25, r27
+  Const        r12, "b"
+  Index        r28, r24, r12
+  Move         r26, r28
+  MakeList     r29, 2, r25
+  Move         r30, r29
+  // var first = firstEdge.a
+  Const        r14, "a"
+  Index        r31, r24, r14
+  Move         r32, r31
+  // var last = firstEdge.b
+  Const        r12, "b"
+  Index        r33, r24, r12
+  Move         r34, r33
+  // edges = edges[1:len(edges)]
+  Const        r19, 1
+  Move         r35, r19
+  Len          r37, r7
+  Move         r36, r37
+  Slice        r38, r7, r35, r36
+  Move         r7, r38
+  // le = len(edges)
+  Len          r39, r7
+  Move         r2, r39
+  // var done = false
+  Const        r40, false
+  Move         r41, r40
+L12:
+  // while le > 0 && (!done) {
+  Const        r3, 0
+  LessInt      r42, r3, r2
+  Move         r43, r42
+  JumpIfFalse  r43, L4
+  Not          r44, r41
+  Move         r43, r44
+L4:
+  JumpIfFalse  r43, L5
+  // var idx = 0
+  Const        r3, 0
+  Move         r45, r3
+  // var found = false
+  Const        r40, false
+  Move         r46, r40
+L11:
+  // while idx < le {
+  LessInt      r47, r45, r2
+  JumpIfFalse  r47, L6
+  // let e = edges[idx]
+  Index        r48, r7, r45
+  Move         r49, r48
+  // if e.a == last {
+  Const        r14, "a"
+  Index        r50, r49, r14
+  Equal        r51, r50, r34
+  JumpIfFalse  r51, L7
+  // perim = append(perim, e.b)
+  Const        r12, "b"
+  Index        r52, r49, r12
+  Append       r53, r30, r52
+  Move         r30, r53
+  // last = e.b
+  Const        r12, "b"
+  Index        r54, r49, r12
+  Move         r34, r54
+  // found = true
+  Const        r55, true
+  Move         r46, r55
+  // if e.a == last {
+  Jump         L8
+L7:
+  // } else if e.b == last {
+  Const        r12, "b"
+  Index        r56, r49, r12
+  Equal        r57, r56, r34
+  JumpIfFalse  r57, L8
+  // perim = append(perim, e.a)
+  Const        r14, "a"
+  Index        r58, r49, r14
+  Append       r59, r30, r58
+  Move         r30, r59
+  // last = e.a
+  Const        r14, "a"
+  Index        r60, r49, r14
+  Move         r34, r60
+  // found = true
+  Const        r55, true
+  Move         r46, r55
+L8:
+  // if found {
+  JumpIfFalse  r46, L9
+  // edges = concat(edges[:idx], edges[idx+1:len(edges)])
+  Const        r61, nil
+  Move         r62, r45
+  Slice        r63, r7, r61, r62
+  Const        r19, 1
+  AddInt       r65, r45, r19
+  Move         r64, r65
+  Len          r67, r7
+  Move         r66, r67
+  Slice        r68, r7, r64, r66
+  UnionAll     r69, r63, r68
+  Move         r7, r69
+  // le = le - 1
+  Const        r19, 1
+  SubInt       r70, r2, r19
+  Move         r2, r70
+  // if last == first {
+  Equal        r71, r34, r32
+  JumpIfFalse  r71, L6
+  // if le == 0 { done = true } else { return nil }
+  Const        r3, 0
+  EqualInt     r72, r2, r3
+  JumpIfFalse  r72, L10
+  Const        r55, true
+  Move         r41, r55
+  Jump         L6
+L10:
+  Return       r73
+L9:
+  // idx = idx + 1
+  Const        r19, 1
+  AddInt       r74, r45, r19
+  Move         r45, r74
+  // while idx < le {
+  Jump         L11
+L6:
+  // if !found { return nil }
+  Not          r75, r46
+  JumpIfFalse  r75, L12
+  Return       r76
+L5:
+  // return perim[:len(perim)-1]
+  Const        r77, nil
+  Len          r79, r30
+  Const        r19, 1
+  SubInt       r80, r79, r19
+  Move         r78, r80
+  Slice        r81, r30, r77, r78
+  Return       r81
+
+  // fun listStr(xs: list<int>): string {
+func listStr (regs=19)
+  // var s = "["
+  Const        r1, "["
+  Move         r2, r1
+  // var i = 0
+  Const        r3, 0
+  Move         r4, r3
+L2:
+  // while i < len(xs) {
+  Len          r5, r0
+  LessInt      r6, r4, r5
+  JumpIfFalse  r6, L0
+  // s = s + str(xs[i])
+  Index        r7, r0, r4
+  Str          r8, r7
+  Add          r9, r2, r8
+  Move         r2, r9
+  // if i < len(xs)-1 { s = s + " " }
+  Len          r10, r0
+  Const        r11, 1
+  SubInt       r12, r10, r11
+  LessInt      r13, r4, r12
+  JumpIfFalse  r13, L1
+  Const        r14, " "
+  Add          r15, r2, r14
+  Move         r2, r15
+L1:
+  // i = i + 1
+  Const        r11, 1
+  AddInt       r16, r4, r11
+  Move         r4, r16
+  // while i < len(xs) {
+  Jump         L2
+L0:
+  // s = s + "]"
+  Const        r17, "]"
+  Add          r18, r2, r17
+  Move         r2, r18
+  // return s
+  Return       r2
+
+  // fun main() {
+func main (regs=215)
+  // print("Perimeter format equality checks:")
+  Const        r0, "Perimeter format equality checks:"
+  Print        r0
+  // print("  Q == R is " + str(perimEqual([8,1,3], [1,3,8])))
+  Const        r1, "  Q == R is "
+  Const        r4, [8, 1, 3]
+  Move         r2, r4
+  Const        r5, [1, 3, 8]
+  Move         r3, r5
+  Call2        r6, perimEqual, r2, r3
+  Str          r7, r6
+  Add          r8, r1, r7
+  Print        r8
+  // print("  U == V is " + str(perimEqual([18,8,14,10,12,17,19], [8,14,10,12,17,19,18])))
+  Const        r9, "  U == V is "
+  Const        r12, [18, 8, 14, 10, 12, 17, 19]
+  Move         r10, r12
+  Const        r13, [8, 14, 10, 12, 17, 19, 18]
+  Move         r11, r13
+  Call2        r14, perimEqual, r10, r11
+  Str          r15, r14
+  Add          r16, r9, r15
+  Print        r16
+  // let e = [Edge{a:7,b:11}, Edge{a:1,b:11}, Edge{a:1,b:7}]
+  Const        r20, 7
+  Const        r21, 11
+  Const        r22, "__name"
+  Const        r23, "Edge"
+  Const        r24, "a"
+  Move         r25, r20
+  Const        r26, "b"
+  Move         r27, r21
+  MakeMap      r28, 3, r22
+  Move         r17, r28
+  Const        r29, 1
+  Const        r21, 11
+  Const        r30, "__name"
+  Const        r31, "Edge"
+  Const        r32, "a"
+  Move         r33, r29
+  Const        r34, "b"
+  Move         r35, r21
+  MakeMap      r36, 3, r30
+  Move         r18, r36
+  Const        r29, 1
+  Const        r20, 7
+  Const        r37, "__name"
+  Const        r38, "Edge"
+  Const        r39, "a"
+  Move         r40, r29
+  Const        r41, "b"
+  Move         r42, r20
+  MakeMap      r43, 3, r37
+  Move         r19, r43
+  MakeList     r44, 3, r17
+  Move         r45, r44
+  // let f = [Edge{a:11,b:23}, Edge{a:1,b:17}, Edge{a:17,b:23}, Edge{a:1,b:11}]
+  Const        r21, 11
+  Const        r50, 23
+  Const        r51, "__name"
+  Const        r52, "Edge"
+  Const        r53, "a"
+  Move         r54, r21
+  Const        r55, "b"
+  Move         r56, r50
+  MakeMap      r57, 3, r51
+  Move         r46, r57
+  Const        r29, 1
+  Const        r58, 17
+  Const        r59, "__name"
+  Const        r60, "Edge"
+  Const        r61, "a"
+  Move         r62, r29
+  Const        r63, "b"
+  Move         r64, r58
+  MakeMap      r65, 3, r59
+  Move         r47, r65
+  Const        r58, 17
+  Const        r50, 23
+  Const        r66, "__name"
+  Const        r67, "Edge"
+  Const        r68, "a"
+  Move         r69, r58
+  Const        r70, "b"
+  Move         r71, r50
+  MakeMap      r72, 3, r66
+  Move         r48, r72
+  Const        r29, 1
+  Const        r21, 11
+  Const        r73, "__name"
+  Const        r74, "Edge"
+  Const        r75, "a"
+  Move         r76, r29
+  Const        r77, "b"
+  Move         r78, r21
+  MakeMap      r79, 3, r73
+  Move         r49, r79
+  MakeList     r80, 4, r46
+  Move         r81, r80
+  // let g = [Edge{a:8,b:14}, Edge{a:17,b:19}, Edge{a:10,b:12}, Edge{a:10,b:14}, Edge{a:12,b:17}, Edge{a:8,b:18}, Edge{a:18,b:19}]
+  Const        r89, 8
+  Const        r90, 14
+  Const        r91, "__name"
+  Const        r92, "Edge"
+  Const        r93, "a"
+  Move         r94, r89
+  Const        r95, "b"
+  Move         r96, r90
+  MakeMap      r97, 3, r91
+  Move         r82, r97
+  Const        r58, 17
+  Const        r98, 19
+  Const        r99, "__name"
+  Const        r100, "Edge"
+  Const        r101, "a"
+  Move         r102, r58
+  Const        r103, "b"
+  Move         r104, r98
+  MakeMap      r105, 3, r99
+  Move         r83, r105
+  Const        r106, 10
+  Const        r107, 12
+  Const        r108, "__name"
+  Const        r109, "Edge"
+  Const        r110, "a"
+  Move         r111, r106
+  Const        r112, "b"
+  Move         r113, r107
+  MakeMap      r114, 3, r108
+  Move         r84, r114
+  Const        r106, 10
+  Const        r90, 14
+  Const        r115, "__name"
+  Const        r116, "Edge"
+  Const        r117, "a"
+  Move         r118, r106
+  Const        r119, "b"
+  Move         r120, r90
+  MakeMap      r121, 3, r115
+  Move         r85, r121
+  Const        r107, 12
+  Const        r58, 17
+  Const        r122, "__name"
+  Const        r123, "Edge"
+  Const        r124, "a"
+  Move         r125, r107
+  Const        r126, "b"
+  Move         r127, r58
+  MakeMap      r128, 3, r122
+  Move         r86, r128
+  Const        r89, 8
+  Const        r129, 18
+  Const        r130, "__name"
+  Const        r131, "Edge"
+  Const        r132, "a"
+  Move         r133, r89
+  Const        r134, "b"
+  Move         r135, r129
+  MakeMap      r136, 3, r130
+  Move         r87, r136
+  Const        r129, 18
+  Const        r98, 19
+  Const        r137, "__name"
+  Const        r138, "Edge"
+  Const        r139, "a"
+  Move         r140, r129
+  Const        r141, "b"
+  Move         r142, r98
+  MakeMap      r143, 3, r137
+  Move         r88, r143
+  MakeList     r144, 7, r82
+  Move         r145, r144
+  // let h = [Edge{a:1,b:3}, Edge{a:9,b:11}, Edge{a:3,b:11}, Edge{a:1,b:11}]
+  Const        r29, 1
+  Const        r150, 3
+  Const        r151, "__name"
+  Const        r152, "Edge"
+  Const        r153, "a"
+  Move         r154, r29
+  Const        r155, "b"
+  Move         r156, r150
+  MakeMap      r157, 3, r151
+  Move         r146, r157
+  Const        r158, 9
+  Const        r21, 11
+  Const        r159, "__name"
+  Const        r160, "Edge"
+  Const        r161, "a"
+  Move         r162, r158
+  Const        r163, "b"
+  Move         r164, r21
+  MakeMap      r165, 3, r159
+  Move         r147, r165
+  Const        r150, 3
+  Const        r21, 11
+  Const        r166, "__name"
+  Const        r167, "Edge"
+  Const        r168, "a"
+  Move         r169, r150
+  Const        r170, "b"
+  Move         r171, r21
+  MakeMap      r172, 3, r166
+  Move         r148, r172
+  Const        r29, 1
+  Const        r21, 11
+  Const        r173, "__name"
+  Const        r174, "Edge"
+  Const        r175, "a"
+  Move         r176, r29
+  Const        r177, "b"
+  Move         r178, r21
+  MakeMap      r179, 3, r173
+  Move         r149, r179
+  MakeList     r180, 4, r146
+  Move         r181, r180
+  // print("\nEdge to perimeter format translations:")
+  Const        r182, "\nEdge to perimeter format translations:"
+  Print        r182
+  // var faces = [e, f, g, h]
+  Move         r183, r45
+  Move         r184, r81
+  Move         r185, r145
+  Move         r186, r181
+  MakeList     r187, 4, r183
+  Move         r188, r187
+  // var names = ["E", "F", "G", "H"]
+  Const        r189, ["E", "F", "G", "H"]
+  Move         r190, r189
+  // var idx = 0
+  Const        r191, 0
+  Move         r192, r191
+L3:
+  // while idx < len(faces) {
+  Len          r193, r188
+  LessInt      r194, r192, r193
+  JumpIfFalse  r194, L0
+  // let per = faceToPerim(faces[idx])
+  Index        r196, r188, r192
+  Move         r195, r196
+  Call         r197, faceToPerim, r195
+  Move         r198, r197
+  // if per == nil {
+  Equal        r200, r198, r199
+  JumpIfFalse  r200, L1
+  // print("  " + names[idx] + " => Invalid edge format")
+  Const        r201, "  "
+  Index        r202, r190, r192
+  Add          r203, r201, r202
+  Const        r204, " => Invalid edge format"
+  Add          r205, r203, r204
+  Print        r205
+  // if per == nil {
+  Jump         L2
+L1:
+  // print("  " + names[idx] + " => " + listStr(per as list<int>))
+  Const        r201, "  "
+  Index        r206, r190, r192
+  Add          r207, r201, r206
+  Const        r208, " => "
+  Add          r209, r207, r208
+  Cast         r211, r198, [int]
+  Move         r210, r211
+  Call         r212, listStr, r210
+  Add          r213, r209, r212
+  Print        r213
+L2:
+  // idx = idx + 1
+  Const        r29, 1
+  AddInt       r214, r192, r29
+  Move         r192, r214
+  // while idx < len(faces) {
+  Jump         L3
+L0:
+  Return       r0

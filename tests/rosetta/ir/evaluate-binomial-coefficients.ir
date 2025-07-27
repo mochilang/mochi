@@ -1,0 +1,76 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun binom(n: int, k: int): bigint {
+func binom (regs=20)
+  // if k < 0 || k > n { return 0 as bigint }
+  Const        r2, 0
+  Less         r3, r1, r2
+  Less         r4, r0, r1
+  Move         r5, r3
+  JumpIfTrue   r5, L0
+  Move         r5, r4
+L0:
+  JumpIfFalse  r5, L1
+  Const        r2, 0
+  Return       r2
+L1:
+  // var kk = k
+  Move         r6, r1
+  // if kk > n - kk { kk = n - kk }
+  Sub          r7, r0, r6
+  Less         r8, r7, r6
+  JumpIfFalse  r8, L2
+  Sub          r9, r0, r6
+  Move         r6, r9
+L2:
+  // var res: bigint = 1
+  Const        r10, 1
+  Move         r11, r10
+  // var i = 0
+  Const        r2, 0
+  Move         r12, r2
+L4:
+  // while i < kk {
+  Less         r13, r12, r6
+  JumpIfFalse  r13, L3
+  // res = res * ((n - i) as bigint)
+  Sub          r14, r0, r12
+  Cast         r15, r14, any
+  Mul          r16, r11, r15
+  Move         r11, r16
+  // i = i + 1
+  Const        r10, 1
+  AddInt       r17, r12, r10
+  Move         r12, r17
+  // res = res / (i as bigint)
+  Cast         r18, r12, any
+  Div          r19, r11, r18
+  Move         r11, r19
+  // while i < kk {
+  Jump         L4
+L3:
+  // return res
+  Return       r11
+
+  // fun main() {
+func main (regs=12)
+  // print(str(binom(5, 3)))
+  Const        r2, 5
+  Move         r0, r2
+  Const        r3, 3
+  Move         r1, r3
+  Call2        r4, binom, r0, r1
+  Str          r5, r4
+  Print        r5
+  // print(str(binom(60, 30)))
+  Const        r8, 60
+  Move         r6, r8
+  Const        r9, 30
+  Move         r7, r9
+  Call2        r10, binom, r6, r7
+  Str          r11, r10
+  Print        r11
+  Return       r0

@@ -1,0 +1,564 @@
+func main (regs=5)
+  // let digits = "0123456789abcdef"
+  Const        r2, "0123456789abcdef"
+  Move         r0, r2
+  SetGlobal    0,0,0,0
+  // var esths: list<int> = []
+  Const        r3, []
+  Move         r1, r3
+  SetGlobal    1,1,0,0
+  // main()
+  Call         r4, main, 
+  Return       r0
+
+  // fun toBase(n: int, b: int): string {
+func toBase (regs=20)
+  // if n == 0 { return "0" }
+  Const        r4, 0
+  Equal        r5, r2, r4
+  JumpIfFalse  r5, L0
+  Const        r6, "0"
+  Return       r6
+L0:
+  // var v = n
+  Move         r7, r2
+  // var out = ""
+  Const        r8, ""
+  Move         r9, r8
+L2:
+  // while v > 0 {
+  Const        r4, 0
+  Less         r10, r4, r7
+  JumpIfFalse  r10, L1
+  // let d = v % b
+  Mod          r11, r7, r3
+  Move         r12, r11
+  // out = digits[d:d+1] + out
+  Move         r13, r12
+  Const        r15, 1
+  Add          r16, r12, r15
+  Move         r14, r16
+  Slice        r17, r0, r13, r14
+  Add          r18, r17, r9
+  Move         r9, r18
+  // v = v / b
+  Div          r19, r7, r3
+  Move         r7, r19
+  // while v > 0 {
+  Jump         L2
+L1:
+  // return out
+  Return       r9
+
+  // fun uabs(a: int, b: int): int { if a > b { return a - b } return b - a }
+func uabs (regs=7)
+  // fun uabs(a: int, b: int): int { if a > b { return a - b } return b - a }
+  Less         r4, r3, r2
+  JumpIfFalse  r4, L0
+  Sub          r5, r2, r3
+  Return       r5
+L0:
+  Sub          r6, r3, r2
+  Return       r6
+
+  // fun isEsthetic(n: int, b: int): bool {
+func isEsthetic (regs=20)
+  // if n == 0 { return false }
+  Const        r4, 0
+  Equal        r5, r2, r4
+  JumpIfFalse  r5, L0
+  Const        r6, false
+  Return       r6
+L0:
+  // var i = n % b
+  Mod          r7, r2, r3
+  Move         r8, r7
+  // n = n / b
+  Div          r9, r2, r3
+  Move         r2, r9
+L3:
+  // while n > 0 {
+  Const        r4, 0
+  Less         r10, r4, r2
+  JumpIfFalse  r10, L1
+  // let j = n % b
+  Mod          r11, r2, r3
+  Move         r12, r11
+  // if uabs(i, j) != 1 { return false }
+  Move         r13, r8
+  Move         r14, r12
+  Call2        r15, uabs, r13, r14
+  Const        r16, 1
+  NotEqual     r17, r15, r16
+  JumpIfFalse  r17, L2
+  Const        r6, false
+  Return       r6
+L2:
+  // n = n / b
+  Div          r18, r2, r3
+  Move         r2, r18
+  // i = j
+  Move         r8, r12
+  // while n > 0 {
+  Jump         L3
+L1:
+  // return true
+  Const        r19, true
+  Return       r19
+
+  // fun dfs(n: int, m: int, i: int) {
+func dfs (regs=43)
+  // if i >= n && i <= m { esths = append(esths, i) }
+  LessEq       r5, r2, r4
+  LessEq       r6, r4, r3
+  Move         r7, r5
+  JumpIfFalse  r7, L0
+  Move         r7, r6
+L0:
+  JumpIfFalse  r7, L1
+  Append       r8, r1, r4
+  Move         r1, r8
+  SetGlobal    1,1,0,0
+L1:
+  // if i == 0 || i > m { return }
+  Less         r9, r3, r4
+  Const        r10, 0
+  Equal        r11, r4, r10
+  Move         r12, r11
+  JumpIfTrue   r12, L2
+  Move         r12, r9
+L2:
+  JumpIfFalse  r12, L3
+  Return       r0
+L3:
+  // let d = i % 10
+  Const        r13, 10
+  Mod          r14, r4, r13
+  Move         r15, r14
+  // let i1 = i * 10 + d - 1
+  Const        r13, 10
+  Mul          r16, r4, r13
+  Add          r17, r16, r15
+  Const        r18, 1
+  Sub          r19, r17, r18
+  Move         r20, r19
+  // let i2 = i1 + 2
+  Const        r21, 2
+  Add          r22, r20, r21
+  Move         r23, r22
+  // if d == 0 {
+  Const        r10, 0
+  Equal        r24, r15, r10
+  JumpIfFalse  r24, L4
+  // dfs(n, m, i2)
+  Move         r25, r2
+  Move         r26, r3
+  Move         r27, r23
+  Call         r28, dfs, r25, r26, r27
+  // if d == 0 {
+  Jump         L5
+L4:
+  // } else if d == 9 {
+  Const        r29, 9
+  Equal        r30, r15, r29
+  JumpIfFalse  r30, L6
+  // dfs(n, m, i1)
+  Move         r31, r2
+  Move         r32, r3
+  Move         r33, r20
+  Call         r34, dfs, r31, r32, r33
+  // } else if d == 9 {
+  Jump         L5
+L6:
+  // dfs(n, m, i1)
+  Move         r35, r2
+  Move         r36, r3
+  Move         r37, r20
+  Call         r38, dfs, r35, r36, r37
+  // dfs(n, m, i2)
+  Move         r39, r2
+  Move         r40, r3
+  Move         r41, r23
+  Call         r42, dfs, r39, r40, r41
+L5:
+  Return       r0
+
+  // fun commatize(n: int): string {
+func commatize (regs=23)
+  // var s = str(n)
+  Str          r3, r2
+  Move         r4, r3
+  // var i = len(s) - 3
+  Len          r5, r4
+  Const        r6, 3
+  SubInt       r7, r5, r6
+  Move         r8, r7
+L1:
+  // while i >= 1 {
+  Const        r9, 1
+  LessEqInt    r10, r9, r8
+  JumpIfFalse  r10, L0
+  // s = s[0:i] + "," + s[i:len(s)]
+  Const        r12, 0
+  Move         r11, r12
+  Move         r13, r8
+  Slice        r14, r4, r11, r13
+  Const        r15, ","
+  Add          r16, r14, r15
+  Move         r17, r8
+  Len          r19, r4
+  Move         r18, r19
+  Slice        r20, r4, r17, r18
+  Add          r21, r16, r20
+  Move         r4, r21
+  // i = i - 3
+  Const        r6, 3
+  SubInt       r22, r8, r6
+  Move         r8, r22
+  // while i >= 1 {
+  Jump         L1
+L0:
+  // return s
+  Return       r4
+
+  // fun listEsths(n: int, n2: int, m: int, m2: int, perLine: int, showAll: bool) {
+func listEsths (regs=79)
+  // esths = []
+  Const        r8, []
+  Move         r1, r8
+  SetGlobal    1,1,0,0
+  // var i = 0
+  Const        r9, 0
+  Move         r10, r9
+L1:
+  // while i < 10 { dfs(n2, m2, i); i = i + 1 }
+  Const        r11, 10
+  LessInt      r12, r10, r11
+  JumpIfFalse  r12, L0
+  Move         r13, r3
+  Move         r14, r5
+  Move         r15, r10
+  Call         r16, dfs, r13, r14, r15
+  Const        r17, 1
+  AddInt       r18, r10, r17
+  Move         r10, r18
+  Jump         L1
+L0:
+  // let le = len(esths)
+  Const        r19, 0
+  Move         r20, r19
+  // print("Base 10: " + commatize(le) + " esthetic numbers between " + commatize(n) + " and " + commatize(m) + ":")
+  Const        r21, "Base 10: "
+  Move         r22, r20
+  Call         r23, commatize, r22
+  Add          r24, r21, r23
+  Const        r25, " esthetic numbers between "
+  Add          r26, r24, r25
+  Move         r27, r2
+  Call         r28, commatize, r27
+  Add          r29, r26, r28
+  Const        r30, " and "
+  Add          r31, r29, r30
+  Move         r32, r4
+  Call         r33, commatize, r32
+  Add          r34, r31, r33
+  Const        r35, ":"
+  Add          r36, r34, r35
+  Print        r36
+  // if showAll {
+  JumpIfFalse  r7, L2
+  // var c = 0
+  Const        r9, 0
+  Move         r37, r9
+  // var line = ""
+  Const        r38, ""
+  Move         r39, r38
+  // for v in esths {
+  IterPrep     r40, r1
+  Len          r41, r40
+  Const        r42, 0
+L6:
+  LessInt      r43, r42, r41
+  JumpIfFalse  r43, L3
+  Index        r44, r40, r42
+  Move         r45, r44
+  // if len(line) > 0 { line = line + " " }
+  Len          r46, r39
+  Const        r9, 0
+  LessInt      r47, r9, r46
+  JumpIfFalse  r47, L4
+  Const        r48, " "
+  Add          r49, r39, r48
+  Move         r39, r49
+L4:
+  // line = line + str(v)
+  Str          r50, r45
+  Add          r51, r39, r50
+  Move         r39, r51
+  // c = c + 1
+  Const        r17, 1
+  AddInt       r52, r37, r17
+  Move         r37, r52
+  // if c % perLine == 0 { print(line); line = "" }
+  Mod          r53, r37, r6
+  Const        r9, 0
+  Equal        r54, r53, r9
+  JumpIfFalse  r54, L5
+  Print        r39
+  Const        r38, ""
+  Move         r39, r38
+L5:
+  // for v in esths {
+  Const        r55, 1
+  AddInt       r56, r42, r55
+  Move         r42, r56
+  Jump         L6
+L3:
+  // if len(line) > 0 { print(line) }
+  Len          r57, r39
+  Const        r9, 0
+  LessInt      r58, r9, r57
+  JumpIfFalse  r58, L7
+  Print        r39
+  // if showAll {
+  Jump         L7
+L2:
+  // var line = ""
+  Const        r38, ""
+  Move         r59, r38
+  // var idx = 0
+  Const        r9, 0
+  Move         r60, r9
+L10:
+  // while idx < perLine {
+  Less         r61, r60, r6
+  JumpIfFalse  r61, L8
+  // if len(line) > 0 { line = line + " " }
+  Len          r62, r59
+  Const        r9, 0
+  LessInt      r63, r9, r62
+  JumpIfFalse  r63, L9
+  Const        r48, " "
+  Add          r64, r59, r48
+  Move         r59, r64
+L9:
+  // line = line + str(esths[idx])
+  Index        r65, r1, r60
+  Str          r66, r65
+  Add          r67, r59, r66
+  Move         r59, r67
+  // idx = idx + 1
+  Const        r17, 1
+  AddInt       r68, r60, r17
+  Move         r60, r68
+  // while idx < perLine {
+  Jump         L10
+L8:
+  // print(line)
+  Print        r59
+  // print("............")
+  Const        r69, "............"
+  Print        r69
+  // line = ""
+  Const        r38, ""
+  Move         r59, r38
+  // idx = le - perLine
+  Sub          r70, r20, r6
+  Move         r60, r70
+L13:
+  // while idx < le {
+  Less         r71, r60, r20
+  JumpIfFalse  r71, L11
+  // if len(line) > 0 { line = line + " " }
+  Len          r72, r59
+  Const        r9, 0
+  LessInt      r73, r9, r72
+  JumpIfFalse  r73, L12
+  Const        r48, " "
+  Add          r74, r59, r48
+  Move         r59, r74
+L12:
+  // line = line + str(esths[idx])
+  Index        r75, r1, r60
+  Str          r76, r75
+  Add          r77, r59, r76
+  Move         r59, r77
+  // idx = idx + 1
+  Const        r17, 1
+  Add          r78, r60, r17
+  Move         r60, r78
+  // while idx < le {
+  Jump         L13
+L11:
+  // print(line)
+  Print        r59
+L7:
+  // print("")
+  Const        r38, ""
+  Print        r38
+  Return       r0
+
+  // fun main() {
+func main (regs=107)
+  // var b = 2
+  Const        r2, 2
+  Move         r3, r2
+L5:
+  // while b <= 16 {
+  Const        r4, 16
+  LessEqInt    r5, r3, r4
+  JumpIfFalse  r5, L0
+  // let start = 4 * b
+  Const        r6, 4
+  MulInt       r7, r6, r3
+  Move         r8, r7
+  // let stop = 6 * b
+  Const        r9, 6
+  MulInt       r10, r9, r3
+  Move         r11, r10
+  // print("Base " + str(b) + ": " + str(start) + "th to " + str(stop) + "th esthetic numbers:")
+  Const        r12, "Base "
+  Str          r13, r3
+  Add          r14, r12, r13
+  Const        r15, ": "
+  Add          r16, r14, r15
+  Str          r17, r8
+  Add          r18, r16, r17
+  Const        r19, "th to "
+  Add          r20, r18, r19
+  Str          r21, r11
+  Add          r22, r20, r21
+  Const        r23, "th esthetic numbers:"
+  Add          r24, r22, r23
+  Print        r24
+  // var n = 1
+  Const        r25, 1
+  Move         r26, r25
+  // var c = 0
+  Const        r27, 0
+  Move         r28, r27
+  // var line = ""
+  Const        r29, ""
+  Move         r30, r29
+L4:
+  // while c < stop {
+  LessInt      r31, r28, r11
+  JumpIfFalse  r31, L1
+  // if isEsthetic(n, b) {
+  Move         r32, r26
+  Move         r33, r3
+  Call2        r34, isEsthetic, r32, r33
+  JumpIfFalse  r34, L2
+  // c = c + 1
+  Const        r25, 1
+  AddInt       r35, r28, r25
+  Move         r28, r35
+  // if c >= start {
+  LessEqInt    r36, r8, r28
+  JumpIfFalse  r36, L2
+  // if len(line) > 0 { line = line + " " }
+  Len          r37, r30
+  Const        r27, 0
+  LessInt      r38, r27, r37
+  JumpIfFalse  r38, L3
+  Const        r39, " "
+  Add          r40, r30, r39
+  Move         r30, r40
+L3:
+  // line = line + toBase(n, b)
+  Move         r41, r26
+  Move         r42, r3
+  Call2        r43, toBase, r41, r42
+  Add          r44, r30, r43
+  Move         r30, r44
+L2:
+  // n = n + 1
+  Const        r25, 1
+  AddInt       r45, r26, r25
+  Move         r26, r45
+  // while c < stop {
+  Jump         L4
+L1:
+  // print(line)
+  Print        r30
+  // print("")
+  Const        r29, ""
+  Print        r29
+  // b = b + 1
+  Const        r25, 1
+  AddInt       r46, r3, r25
+  Move         r3, r46
+  // while b <= 16 {
+  Jump         L5
+L0:
+  // listEsths(1000, 1010, 9999, 9898, 16, true)
+  Const        r53, 1000
+  Move         r47, r53
+  Const        r54, 1010
+  Move         r48, r54
+  Const        r55, 9999
+  Move         r49, r55
+  Const        r56, 9898
+  Move         r50, r56
+  Const        r4, 16
+  Move         r51, r4
+  Const        r57, true
+  Move         r52, r57
+  Call         r58, listEsths, r47, r48, r49, r50, r51, r52
+  // listEsths(100000000, 101010101, 130000000, 123456789, 9, true)
+  Const        r65, 100000000
+  Move         r59, r65
+  Const        r66, 101010101
+  Move         r60, r66
+  Const        r67, 130000000
+  Move         r61, r67
+  Const        r68, 123456789
+  Move         r62, r68
+  Const        r69, 9
+  Move         r63, r69
+  Const        r57, true
+  Move         r64, r57
+  Call         r70, listEsths, r59, r60, r61, r62, r63, r64
+  // listEsths(100000000000, 101010101010, 130000000000, 123456789898, 7, false)
+  Const        r77, 100000000000
+  Move         r71, r77
+  Const        r78, 101010101010
+  Move         r72, r78
+  Const        r79, 130000000000
+  Move         r73, r79
+  Const        r80, 123456789898
+  Move         r74, r80
+  Const        r81, 7
+  Move         r75, r81
+  Const        r82, false
+  Move         r76, r82
+  Call         r83, listEsths, r71, r72, r73, r74, r75, r76
+  // listEsths(100000000000000, 101010101010101, 130000000000000, 123456789898989, 5, false)
+  Const        r90, 100000000000000
+  Move         r84, r90
+  Const        r91, 101010101010101
+  Move         r85, r91
+  Const        r92, 130000000000000
+  Move         r86, r92
+  Const        r93, 123456789898989
+  Move         r87, r93
+  Const        r94, 5
+  Move         r88, r94
+  Const        r82, false
+  Move         r89, r82
+  Call         r95, listEsths, r84, r85, r86, r87, r88, r89
+  // listEsths(100000000000000000, 101010101010101010, 130000000000000000, 123456789898989898, 4, false)
+  Const        r102, 100000000000000000
+  Move         r96, r102
+  Const        r103, 101010101010101010
+  Move         r97, r103
+  Const        r104, 130000000000000000
+  Move         r98, r104
+  Const        r105, 123456789898989898
+  Move         r99, r105
+  Const        r6, 4
+  Move         r100, r6
+  Const        r82, false
+  Move         r101, r82
+  Call         r106, listEsths, r96, r97, r98, r99, r100, r101
+  Return       r0

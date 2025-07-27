@@ -1,0 +1,377 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun indexOf(s: string, ch: string): int {
+func indexOf (regs=12)
+  // var i = 0
+  Const        r2, 0
+  Move         r3, r2
+L2:
+  // while i < len(s) {
+  Len          r4, r0
+  LessInt      r5, r3, r4
+  JumpIfFalse  r5, L0
+  // if substring(s, i, i+1) == ch {
+  Const        r6, 1
+  AddInt       r7, r3, r6
+  Slice        r8, r0, r3, r7
+  Equal        r9, r8, r1
+  JumpIfFalse  r9, L1
+  // return i
+  Return       r3
+L1:
+  // i = i + 1
+  Const        r6, 1
+  AddInt       r10, r3, r6
+  Move         r3, r10
+  // while i < len(s) {
+  Jump         L2
+L0:
+  // return -1
+  Const        r6, 1
+  NegInt       r11, r6
+  Return       r11
+
+  // fun floorf(x: float): float {
+func floorf (regs=4)
+  // let y = x as int
+  Cast         r1, r0, int
+  Move         r2, r1
+  // return y as float
+  Cast         r3, r2, float
+  Return       r3
+
+  // fun powf(base: float, exp: int): float {
+func powf (regs=10)
+  // var r = 1.0
+  Const        r2, 1.0
+  Move         r3, r2
+  // var i = 0
+  Const        r4, 0
+  Move         r5, r4
+L1:
+  // while i < exp {
+  Less         r6, r5, r1
+  JumpIfFalse  r6, L0
+  // r = r * base
+  MulFloat     r7, r3, r0
+  Move         r3, r7
+  // i = i + 1
+  Const        r8, 1
+  AddInt       r9, r5, r8
+  Move         r5, r9
+  // while i < exp {
+  Jump         L1
+L0:
+  // return r
+  Return       r3
+
+  // fun fmtF(x: float, width: int, prec: int): string {
+func fmtF (regs=43)
+  // let factor = powf(10.0, prec)
+  Const        r5, 10.0
+  Move         r3, r5
+  Move         r4, r2
+  Call2        r6, powf, r3, r4
+  Move         r7, r6
+  // var y = floorf(x * factor + 0.5) / factor
+  Mul          r9, r0, r7
+  Const        r10, 0.5
+  AddFloat     r11, r9, r10
+  Move         r8, r11
+  Call         r12, floorf, r8
+  Div          r13, r12, r7
+  Move         r14, r13
+  // var s = str(y)
+  Str          r15, r14
+  Move         r16, r15
+  // let dot = indexOf(s, ".")
+  Move         r17, r16
+  Const        r19, "."
+  Move         r18, r19
+  Call2        r20, indexOf, r17, r18
+  Move         r21, r20
+  // if dot == 0 - 1 {
+  Const        r22, 0
+  Const        r23, 1
+  SubInt       r24, r22, r23
+  Equal        r25, r21, r24
+  JumpIfFalse  r25, L0
+  // s = s + "."
+  Const        r19, "."
+  Add          r26, r16, r19
+  Move         r16, r26
+  // var j = 0
+  Const        r22, 0
+  Move         r27, r22
+L2:
+  // while j < prec {
+  Less         r28, r27, r2
+  JumpIfFalse  r28, L1
+  // s = s + "0"
+  Const        r29, "0"
+  Add          r30, r16, r29
+  Move         r16, r30
+  // j = j + 1
+  Const        r23, 1
+  AddInt       r31, r27, r23
+  Move         r27, r31
+  // while j < prec {
+  Jump         L2
+L0:
+  // var decs = len(s) - dot - 1
+  Len          r32, r16
+  Sub          r33, r32, r21
+  Const        r23, 1
+  Sub          r34, r33, r23
+  Move         r35, r34
+L3:
+  // while decs < prec {
+  Less         r36, r35, r2
+  JumpIfFalse  r36, L1
+  // s = s + "0"
+  Const        r29, "0"
+  Add          r37, r16, r29
+  Move         r16, r37
+  // decs = decs + 1
+  Const        r23, 1
+  Add          r38, r35, r23
+  Move         r35, r38
+  // while decs < prec {
+  Jump         L3
+L1:
+  // while len(s) < width {
+  Len          r39, r16
+  Less         r40, r39, r1
+  JumpIfFalse  r40, L4
+  // s = " " + s
+  Const        r41, " "
+  Add          r42, r41, r16
+  Move         r16, r42
+  // while len(s) < width {
+  Jump         L1
+L4:
+  // return s
+  Return       r16
+
+  // fun expf(x: float): float {
+func expf (regs=19)
+  // if x < 0.0 { return 1.0 / expf(-x) }
+  Const        r1, 0.0
+  LessFloat    r2, r0, r1
+  JumpIfFalse  r2, L0
+  Const        r3, 1.0
+  Neg          r5, r0
+  Move         r4, r5
+  Call         r6, expf, r4
+  DivFloat     r7, r3, r6
+  Return       r7
+L0:
+  // var term = 1.0
+  Const        r3, 1.0
+  Move         r8, r3
+  // var sum = 1.0
+  Const        r3, 1.0
+  Move         r9, r3
+  // var i = 1
+  Const        r10, 1
+  Move         r11, r10
+L2:
+  // while i < 20 {
+  Const        r12, 20
+  LessInt      r13, r11, r12
+  JumpIfFalse  r13, L1
+  // term = term * x / (i as float)
+  MulFloat     r14, r8, r0
+  Cast         r15, r11, float
+  DivFloat     r16, r14, r15
+  Move         r8, r16
+  // sum = sum + term
+  AddFloat     r17, r9, r8
+  Move         r9, r17
+  // i = i + 1
+  Const        r10, 1
+  AddInt       r18, r11, r10
+  Move         r11, r18
+  // while i < 20 {
+  Jump         L2
+L1:
+  // return sum
+  Return       r9
+
+  // fun eulerStep(f: fun(float, float): float, x: float, y: float, h: float): float {
+func eulerStep (regs=9)
+  // return y + h * f(x, y)
+  Move         r4, r1
+  Move         r5, r2
+  CallV        r6, r0, 2, r4
+  Mul          r7, r3, r6
+  Add          r8, r2, r7
+  Return       r8
+
+  // fun newCoolingRate(k: float): fun(float): float {
+func newCoolingRate (regs=3)
+  // return fun(dt: float): float { return -k * dt }
+  Move         r1, r0
+  MakeClosure  r2, fn11, 1, r1
+  Return       r2
+
+  // fun newTempFunc(k: float, ambient: float, initial: float): fun(float): float {
+func newTempFunc (regs=7)
+  // return fun(t: float): float {
+  Move         r3, r1
+  Move         r4, r2
+  Move         r5, r0
+  MakeClosure  r6, fn12, 3, r3
+  Return       r6
+
+  // fun newCoolingRateDy(k: float, ambient: float): fun(float, float): float {
+func newCoolingRateDy (regs=9)
+  // let cr = newCoolingRate(k)
+  Move         r2, r0
+  Call         r3, newCoolingRate, r2
+  Move         r4, r3
+  // return fun(_x: float, obj: float): float { return cr(obj - ambient) }
+  Move         r5, r1
+  Move         r6, r4
+  Move         r7, r0
+  MakeClosure  r8, fn13, 3, r5
+  Return       r8
+
+  // fun main() {
+func main (regs=67)
+  // let k = 0.07
+  Const        r0, 0.07
+  Move         r1, r0
+  // let tempRoom = 20.0
+  Const        r2, 20.0
+  Move         r3, r2
+  // let tempObject = 100.0
+  Const        r4, 100.0
+  Move         r5, r4
+  // let fcr = newCoolingRateDy(k, tempRoom)
+  Move         r6, r1
+  Move         r7, r3
+  Call2        r8, newCoolingRateDy, r6, r7
+  Move         r9, r8
+  // let analytic = newTempFunc(k, tempRoom, tempObject)
+  Move         r10, r1
+  Move         r11, r3
+  Move         r12, r5
+  Call         r13, newTempFunc, r10, r11, r12
+  Move         r14, r13
+  // for step in [2.0, 5.0, 10.0] {
+  Const        r15, [2.0, 5.0, 10.0]
+  IterPrep     r16, r15
+  Len          r17, r16
+  Const        r18, 0
+L3:
+  LessInt      r19, r18, r17
+  JumpIfFalse  r19, L0
+  Index        r20, r16, r18
+  Move         r21, r20
+  // print("Step size = " + fmtF(step, 0, 1))
+  Const        r22, "Step size = "
+  Move         r23, r21
+  Const        r26, 0
+  Move         r24, r26
+  Const        r27, 1
+  Move         r25, r27
+  Call         r28, fmtF, r23, r24, r25
+  Add          r29, r22, r28
+  Print        r29
+  // print(" Time Euler's Analytic")
+  Const        r30, " Time Euler's Analytic"
+  Print        r30
+  // var temp = tempObject
+  Move         r31, r5
+  // var time = 0.0
+  Const        r32, 0.0
+  Move         r33, r32
+L2:
+  // while time <= 100.0 {
+  Const        r4, 100.0
+  LessEqFloat  r34, r33, r4
+  JumpIfFalse  r34, L1
+  // let line = fmtF(time, 5, 1) + " " + fmtF(temp, 7, 3) + " " + fmtF(analytic(time), 7, 3)
+  Move         r35, r33
+  Const        r38, 5
+  Move         r36, r38
+  Const        r27, 1
+  Move         r37, r27
+  Call         r39, fmtF, r35, r36, r37
+  Const        r40, " "
+  Add          r41, r39, r40
+  Move         r42, r31
+  Const        r45, 7
+  Move         r43, r45
+  Const        r46, 3
+  Move         r44, r46
+  Call         r47, fmtF, r42, r43, r44
+  Add          r48, r41, r47
+  Const        r40, " "
+  Add          r49, r48, r40
+  Move         r53, r33
+  CallV        r54, r14, 1, r53
+  Move         r50, r54
+  Const        r45, 7
+  Move         r51, r45
+  Const        r46, 3
+  Move         r52, r46
+  Call         r55, fmtF, r50, r51, r52
+  Add          r56, r49, r55
+  Move         r57, r56
+  // print(line)
+  Print        r57
+  // temp = eulerStep(fcr, time, temp, step)
+  Move         r58, r9
+  Move         r59, r33
+  Move         r60, r31
+  Move         r61, r21
+  Call         r62, eulerStep, r58, r59, r60, r61
+  Move         r31, r62
+  // time = time + step
+  AddFloat     r63, r33, r21
+  Move         r33, r63
+  // while time <= 100.0 {
+  Jump         L2
+L1:
+  // print("")
+  Const        r64, ""
+  Print        r64
+  // for step in [2.0, 5.0, 10.0] {
+  Const        r65, 1
+  AddInt       r66, r18, r65
+  Move         r18, r66
+  Jump         L3
+L0:
+  Return       r0
+
+  // return fun(dt: float): float { return -k * dt }
+func fn11 (regs=4)
+  // return fun(dt: float): float { return -k * dt }
+  Neg          r2, r0
+  Mul          r3, r2, r1
+  Return       r3
+
+  // return fun(t: float): float {
+func fn12 (regs=11)
+  // return ambient + (initial - ambient) * expf(-k * t)
+  Sub          r4, r1, r0
+  Neg          r6, r2
+  Mul          r7, r6, r3
+  Move         r5, r7
+  Call         r8, expf, r5
+  Mul          r9, r4, r8
+  Add          r10, r0, r9
+  Return       r10
+
+  // return fun(_x: float, obj: float): float { return cr(obj - ambient) }
+func fn13 (regs=8)
+  // return fun(_x: float, obj: float): float { return cr(obj - ambient) }
+  Sub          r6, r4, r0
+  Move         r5, r6
+  CallV        r7, r1, 1, r5
+  Return       r7
