@@ -2986,6 +2986,9 @@ func convertStmts(env *types.Env, list []*parser.Statement) ([]Stmt, error) {
 			if env != nil {
 				if tt, err := env.GetVar(s.Assign.Name); err == nil {
 					tname := kotlinTypeFromType(tt)
+					if strings.Contains(tname, "->") {
+						tname = ""
+					}
 					if tname != "" && tname != guessType(v) {
 						if tname == "Any" {
 							if gt := guessType(v); gt != "" {
