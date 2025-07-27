@@ -2397,7 +2397,8 @@ func fieldAccess(expr Expr, t types.Type, name string) (Expr, types.Type) {
 			}
 		}
 	}
-	return &IndexExpr{Target: expr, Index: &StringLit{Value: name}}, nil
+	// default to struct-style access when type information is unknown
+	return &FieldExpr{Target: expr, Name: name}, nil
 }
 
 func isSimpleIdent(e *parser.Expr) (string, bool) {
@@ -3646,7 +3647,12 @@ func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
 			expr, curType = fieldAccess(expr, curType, op.Field.Name)
 		case op.Cast != nil:
 			if op.Cast.Type != nil && op.Cast.Type.Simple != nil {
-				typName := identName(toTypeName(*op.Cast.Type.Simple))
+				name := *op.Cast.Type.Simple
+				typName := identName(toTypeName(name))
+				switch name {
+				case "int", "float", "string", "bigrat":
+					typName = name
+				}
 				if currentEnv != nil {
 					if st, ok := currentEnv.GetStruct(typName); ok {
 						if ml, ok2 := expr.(*MapLit); ok2 {

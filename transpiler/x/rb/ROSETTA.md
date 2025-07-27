@@ -2,9 +2,9 @@
 
 Generated Ruby code from Mochi Rosetta tasks lives in `tests/rosetta/transpiler/rb`.
 
-Last updated: 2025-07-27 09:16 UTC
+Last updated: 2025-07-27 10:24 UTC
 
-## Checklist (315/465)
+## Checklist (346/465)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 195µs | 36.2 KB |
@@ -329,44 +329,44 @@ Last updated: 2025-07-27 09:16 UTC
 | 320 | dragon-curve | ✓ | 4.121ms | -42888 B |
 | 321 | draw-a-clock | ✓ | 83µs | 17.5 KB |
 | 322 | draw-a-cuboid | ✓ | 343µs | 115.4 KB |
-| 323 | draw-a-pixel-1 |   |  |  |
-| 324 | draw-a-rotating-cube |   |  |  |
-| 325 | draw-a-sphere |   |  |  |
-| 326 | dutch-national-flag-problem |   |  |  |
-| 327 | dynamic-variable-names |   |  |  |
+| 323 | draw-a-pixel-1 | ✓ | 40.881ms | 5.8 MB |
+| 324 | draw-a-rotating-cube | ✓ | 4.949ms | 220.0 KB |
+| 325 | draw-a-sphere | ✓ | 32.451ms | 61.9 KB |
+| 326 | dutch-national-flag-problem | ✓ | 67µs | 15.6 KB |
+| 327 | dynamic-variable-names | ✓ | 52µs | 21.0 KB |
 | 328 | earliest-difference-between-prime-gaps |   |  |  |
-| 329 | eban-numbers |   |  |  |
+| 329 | eban-numbers | ✓ | 83.095ms | 31.7 KB |
 | 330 | ecdsa-example |   |  |  |
-| 331 | echo-server |   |  |  |
-| 332 | eertree |   |  |  |
-| 333 | egyptian-division |   |  |  |
-| 334 | ekg-sequence-convergence |   |  |  |
+| 331 | echo-server | ✓ | 25µs | 9.5 KB |
+| 332 | eertree | ✓ | 64µs | 17.1 KB |
+| 333 | egyptian-division | ✓ | 49µs | 12.0 KB |
+| 334 | ekg-sequence-convergence | ✓ | 7.856ms | 321.8 KB |
 | 335 | element-wise-operations |   |  |  |
-| 336 | elementary-cellular-automaton-infinite-length |   |  |  |
-| 337 | elementary-cellular-automaton-random-number-generator |   |  |  |
-| 338 | elementary-cellular-automaton |   |  |  |
+| 336 | elementary-cellular-automaton-infinite-length | ✓ | 3.6ms | 201.3 KB |
+| 337 | elementary-cellular-automaton-random-number-generator | ✓ | 4.521ms | 2.2 MB |
+| 338 | elementary-cellular-automaton | ✓ | 888µs | 254.9 KB |
 | 339 | elliptic-curve-arithmetic |   |  |  |
-| 340 | elliptic-curve-digital-signature-algorithm |   |  |  |
-| 341 | emirp-primes |   |  |  |
-| 342 | empty-directory |   |  |  |
-| 343 | empty-program |   |  |  |
-| 344 | empty-string-1 |   |  |  |
-| 345 | empty-string-2 |   |  |  |
-| 346 | enforced-immutability |   |  |  |
-| 347 | entropy-1 |   |  |  |
-| 348 | entropy-2 |   |  |  |
-| 349 | entropy-narcissist |   |  |  |
-| 350 | enumerations-1 |   |  |  |
-| 351 | enumerations-2 |   |  |  |
-| 352 | enumerations-3 |   |  |  |
-| 353 | enumerations-4 |   |  |  |
+| 340 | elliptic-curve-digital-signature-algorithm | ✓ | 20µs | 9.8 KB |
+| 341 | emirp-primes | ✓ | 3.04514s | 11.9 MB |
+| 342 | empty-directory | ✓ | 21µs | 9.2 KB |
+| 343 | empty-program | ✓ | 2µs | 512 B |
+| 344 | empty-string-1 | ✓ | 18µs | 9.1 KB |
+| 345 | empty-string-2 | ✓ | 44µs | 9.0 KB |
+| 346 | enforced-immutability | ✓ | 18µs | 8.9 KB |
+| 347 | entropy-1 | ✓ | 89µs | 10.8 KB |
+| 348 | entropy-2 | ✓ | 51µs | 10.6 KB |
+| 349 | entropy-narcissist | ✓ | 711µs | 143.8 KB |
+| 350 | enumerations-1 | ✓ | 3µs | 512 B |
+| 351 | enumerations-2 | ✓ | 2µs | 472 B |
+| 352 | enumerations-3 | ✓ | 4µs | 552 B |
+| 353 | enumerations-4 | ✓ | 2µs | 472 B |
 | 354 | environment-variables-1 |   |  |  |
 | 355 | environment-variables-2 |   |  |  |
-| 356 | equal-prime-and-composite-sums |   |  |  |
-| 357 | equilibrium-index |   |  |  |
+| 356 | equal-prime-and-composite-sums | ✓ | 2.079809s | 14.7 MB |
+| 357 | equilibrium-index | ✓ | 104.61ms | 12.0 MB |
 | 358 | erd-s-nicolas-numbers |   |  |  |
-| 359 | erd-s-selfridge-categorization-of-primes |   |  |  |
-| 360 | esthetic-numbers |   |  |  |
+| 359 | erd-s-selfridge-categorization-of-primes | ✓ | 9.245ms | 225.1 KB |
+| 360 | esthetic-numbers | ✓ | 1.522139s | 29.9 MB |
 | 361 | ethiopian-multiplication |   |  |  |
 | 362 | euclid-mullin-sequence |   |  |  |
 | 363 | euler-method |   |  |  |
