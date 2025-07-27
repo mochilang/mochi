@@ -3320,7 +3320,8 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 			if op.Field.Name == "get" {
 				expr = &CallExpr{Func: "Map.get", Args: append([]Expr{expr}, args...)}
 			} else if op.Field.Name == "padStart" {
-				expr = &CallExpr{Func: "String.pad_leading", Args: append([]Expr{expr}, args...)}
+				strExpr := Expr(&CallExpr{Func: "Kernel.to_string", Args: []Expr{expr}})
+				expr = &CallExpr{Func: "String.pad_leading", Args: append([]Expr{strExpr}, args...)}
 			} else if v, ok := expr.(*VarRef); ok {
 				methodName := v.Name + "." + op.Field.Name
 				expr = &CallExpr{Func: methodName, Args: args}
@@ -3583,6 +3584,14 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 		case "padStart":
 			if len(args) == 3 {
 				return &CallExpr{Func: "String.pad_leading", Args: args}, nil
+			}
+		case "repeat":
+			if len(args) == 2 {
+				return &CallExpr{Func: "String.duplicate", Args: args}, nil
+			}
+		case "parseIntStr":
+			if len(args) == 2 {
+				return &CallExpr{Func: "String.to_integer", Args: args}, nil
 			}
 		case "num":
 			if len(args) == 1 {
@@ -3947,6 +3956,8 @@ func bigRatHelper(indent int) string {
 	buf.WriteString(pad + "  _bigrat(v, 1)\n")
 	buf.WriteString(pad + "end\n")
 	buf.WriteString(pad + "defp _bigrat(n, d) do\n")
+	buf.WriteString(pad + "  n = trunc(n)\n")
+	buf.WriteString(pad + "  d = trunc(d)\n")
 	buf.WriteString(pad + "  g = Integer.gcd(n, d)\n")
 	buf.WriteString(pad + "  n = div(n, g)\n")
 	buf.WriteString(pad + "  d = div(d, g)\n")
