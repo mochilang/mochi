@@ -73,9 +73,9 @@ Compiled and ran: 153/446
 | 64 | archimedean-spiral | ✓ |  |  |
 | 65 | arena-storage-pool | ✓ | 6.639ms | 3.2 MB |
 | 66 | arithmetic-complex | ✓ | 6.116ms | 700.0 KB |
-| 67 | arithmetic-derivative | ✓ |  |  |
-| 68 | arithmetic-evaluation | ✓ |  |  |
-| 69 | arithmetic-geometric-mean-calculate-pi | ✓ |  |  |
+| 67 | arithmetic-derivative | ✓ | 11.878ms | 1.1 MB |
+| 68 | arithmetic-evaluation | ✓ | 7.395ms | 428.0 KB |
+| 69 | arithmetic-geometric-mean-calculate-pi | ✓ | 7.218ms | 12.0 MB |
 | 70 | arithmetic-geometric-mean | ✓ |  |  |
 | 71 | arithmetic-integer-1 | ✓ |  |  |
 | 72 | arithmetic-integer-2 | ✓ |  |  |
@@ -454,4 +454,4 @@ Compiled and ran: 153/446
 | 445 | window-management |   |  |  |
 | 446 | zumkeller-numbers |   |  |  |
 
-_Last updated: 2025-07-27 11:11 +0700_
+_Last updated: 2025-07-27 11:22 +0700_
