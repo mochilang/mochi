@@ -866,9 +866,9 @@ func (g *MapGetExpr) emit(w io.Writer) {
 }
 
 func (a *AppendExpr) emit(w io.Writer) {
-	io.WriteString(w, "{ let mut v = ")
+	io.WriteString(w, "{ let mut _v = ")
 	a.List.emit(w)
-	io.WriteString(w, ".clone(); v.push(")
+	io.WriteString(w, ".clone(); _v.push(")
 	lt := inferType(a.List)
 	if lt == "Vec<String>" {
 		a.Elem.emit(w)
@@ -886,7 +886,7 @@ func (a *AppendExpr) emit(w io.Writer) {
 			a.Elem.emit(w)
 		}
 	}
-	io.WriteString(w, "); v }")
+	io.WriteString(w, "); _v }")
 }
 
 // PopExpr represents removing the last element from a list.
@@ -2771,7 +2771,8 @@ func compileFunStmt(fn *parser.FunStmt) (Stmt, error) {
 			sigType = "&mut " + typ
 		} else if strings.HasPrefix(typ, "Vec<") {
 			mut := paramMutated(fn.Body, p.Name)
-			if mut && (fn.Return == nil || rustTypeRef(fn.Return) != typ) {
+			assign := paramAssigned(fn.Body, p.Name)
+			if mut && !assign && (fn.Return == nil || rustTypeRef(fn.Return) != typ) {
 				sigType = "&mut " + typ
 			}
 		} else if typ != "" && typ != "i64" && typ != "bool" && typ != "f64" && typ != "String" {
@@ -3156,13 +3157,19 @@ func compilePostfix(p *parser.PostfixExpr) (Expr, error) {
 			ct := rustTypeRef(op.Cast.Type)
 			switch ct {
 			case "i64":
-				expr = &IntCastExpr{Expr: expr}
+				if inferType(expr) == "String" {
+					expr = &AtoiExpr{Expr: expr}
+				} else {
+					expr = &IntCastExpr{Expr: expr}
+				}
 			case "f64":
 				expr = &FloatCastExpr{Expr: expr}
 			case "String":
 				expr = &StringCastExpr{Expr: expr}
 			default:
-				expr = &IntCastExpr{Expr: expr}
+				if ct != "" && ct != inferType(expr) {
+					// unsupported cast target; ignore
+				}
 			}
 		default:
 			return nil, fmt.Errorf("unsupported postfix")
@@ -3209,12 +3216,16 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			return &FloatCastExpr{Expr: args[0]}, nil
 		}
 		if name == "abs" && len(args) == 1 {
-			useAbs = true
-			funReturns[name] = "f64"
-			if inferType(args[0]) != "f64" {
-				args[0] = &FloatCastExpr{Expr: args[0]}
+			if _, ok := funReturns["abs"]; ok {
+				// user-defined abs; treat as normal function
+			} else {
+				useAbs = true
+				funReturns[name] = "f64"
+				if inferType(args[0]) != "f64" {
+					args[0] = &FloatCastExpr{Expr: args[0]}
+				}
+				return &CallExpr{Func: "abs", Args: []Expr{args[0]}}, nil
 			}
-			return &CallExpr{Func: "abs", Args: []Expr{args[0]}}, nil
 		}
 		if ut, ok := curEnv.FindUnionByVariant(name); ok {
 			st, _ := curEnv.GetStruct(name)
@@ -5102,18 +5113,18 @@ func identName(e *parser.Expr) (string, bool) {
 }
 
 func paramMutated(body []*parser.Statement, name string) bool {
-	hasIndex := false
-	hasAssign := false
 	for _, st := range body {
 		idx, assign := stmtMutates(st, name)
-		if idx {
-			hasIndex = true
-		}
-		if assign {
-			hasAssign = true
+		if idx || assign {
+			return true
 		}
 	}
-	return hasIndex && !hasAssign
+	return false
+}
+
+func paramAssigned(body []*parser.Statement, name string) bool {
+	_, assign := stmtsMutate(body, name)
+	return assign
 }
 
 func stmtMutates(st *parser.Statement, name string) (bool, bool) {
@@ -5122,6 +5133,9 @@ func stmtMutates(st *parser.Statement, name string) (bool, bool) {
 		if st.Assign.Name == name {
 			if len(st.Assign.Index) > 0 {
 				return true, false
+			}
+			if len(st.Assign.Field) > 0 {
+				return false, true
 			}
 			return false, true
 		}

@@ -37,14 +37,40 @@ fn _mem() -> i64 {
 fn main() {
         let _start_mem: i64 = _mem();
     let _start: i64 = _now();
+    fn abs(mut x: f64) -> f64 {
+    if (x < 0.0) {
+        return -x
+    }
+    return x
+};
+    fn sqrtApprox(mut x: f64) -> f64 {
+    let mut guess: f64 = x;
+    let mut i: i64 = 0;
+    while (i < 20) {
+        guess = ((guess + (x / guess)) / 2.0);
+        i = (i + 1);
+    }
+    return guess
+};
+    fn agmPi() -> f64 {
+    let mut a: f64 = 1.0;
+    let mut g: f64 = (1.0 / sqrtApprox(2.0));
+    let mut sum: f64 = 0.0;
+    let mut pow: f64 = 2.0;
+    while (abs((a - g)) > 0.000000000000001) {
+        let mut t: f64 = ((a + g) / 2.0);
+        let mut u: f64 = sqrtApprox((a * g));
+        a = t;
+        g = u;
+        pow = (pow * 2.0);
+        let mut diff: f64 = ((a * a) - (g * g));
+        sum = (sum + (diff * pow));
+    }
+    let mut pi: f64 = (((4.0 * a) * a) / (1.0 - sum));
+    return pi
+};
     fn mochi_main() {
-    let a: i64 = 12;
-    let b: i64 = 8;
-    println!("{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", a.to_string(), " + "), b.to_string()), " = "), (a + b).to_string()));
-    println!("{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", a.to_string(), " - "), b.to_string()), " = "), (a - b).to_string()));
-    println!("{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", a.to_string(), " * "), b.to_string()), " = "), (a * b).to_string()));
-    println!("{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", a.to_string(), " / "), b.to_string()), " = "), (a / b).to_string()));
-    println!("{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", a.to_string(), " % "), b.to_string()), " = "), (a % b).to_string()));
+    println!("{}", agmPi().to_string());
 };
     mochi_main();
     let _end: i64 = _now();
