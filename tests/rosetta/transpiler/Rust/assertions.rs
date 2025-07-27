@@ -38,13 +38,12 @@ fn main() {
         let _start_mem: i64 = _mem();
     let _start: i64 = _now();
     fn mochi_main() {
-    let a: i64 = 12;
-    let b: i64 = 8;
-    println!("{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", a.to_string(), " + "), b.to_string()), " = "), (a + b).to_string()));
-    println!("{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", a.to_string(), " - "), b.to_string()), " = "), (a - b).to_string()));
-    println!("{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", a.to_string(), " * "), b.to_string()), " = "), (a * b).to_string()));
-    println!("{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", a.to_string(), " / "), b.to_string()), " = "), (a / b).to_string()));
-    println!("{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", a.to_string(), " % "), b.to_string()), " = "), (a % b).to_string()));
+    let x: i64 = 43;
+    if (x != 42) {
+        println!("{}", "Assertion failed");
+    } else {
+        println!("{}", "Assertion passed");
+    }
 };
     mochi_main();
     let _end: i64 = _now();

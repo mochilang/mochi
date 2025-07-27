@@ -38,13 +38,8 @@ fn main() {
         let _start_mem: i64 = _mem();
     let _start: i64 = _now();
     fn mochi_main() {
-    let a: i64 = 12;
-    let b: i64 = 8;
-    println!("{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", a.to_string(), " + "), b.to_string()), " = "), (a + b).to_string()));
-    println!("{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", a.to_string(), " - "), b.to_string()), " = "), (a - b).to_string()));
-    println!("{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", a.to_string(), " * "), b.to_string()), " = "), (a * b).to_string()));
-    println!("{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", a.to_string(), " / "), b.to_string()), " = "), (a / b).to_string()));
-    println!("{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", a.to_string(), " % "), b.to_string()), " = "), (a % b).to_string()));
+    let mut arr: Vec<String> = vec![String::from("apple"), String::from("orange"), String::from("pear")];
+    println!("{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", "Length of ", format!("{:?}", arr)), " is "), (arr.len() as i64).to_string()), "."));
 };
     mochi_main();
     let _end: i64 = _now();
