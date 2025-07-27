@@ -19,48 +19,43 @@ function fmt1(x: number): string {
   }
   return s;
 }
-function printColumnMatrix(xs: number[]) {
-  if (((Array.isArray(xs) || typeof xs === 'string' ? xs.length : Object.keys(xs ?? {}).length) == 0)) {
-    return;
-  }
-  console.log((("⎡" + fmt1(xs[Math.trunc(0)])) + "⎤"));
-  let i: number = 1;
-  while ((i < ((Array.isArray(xs) || typeof xs === 'string' ? xs.length : Object.keys(xs ?? {}).length) - 1))) {
-    console.log((("⎢" + fmt1(xs[i])) + "⎥"));
+function listToString1(xs: number[]): string {
+  let s: string = "[";
+  let i: number = 0;
+  while ((i < (Array.isArray(xs) || typeof xs === 'string' ? xs.length : Object.keys(xs ?? {}).length))) {
+    s = (s + fmt1(xs[i]));
+    if ((i < ((Array.isArray(xs) || typeof xs === 'string' ? xs.length : Object.keys(xs ?? {}).length) - 1))) {
+      s = (s + " ");
+    }
     i = (i + 1);
   }
-  console.log((("⎣ " + fmt1(xs[Math.trunc(((Array.isArray(xs) || typeof xs === 'string' ? xs.length : Object.keys(xs ?? {}).length) - 1))])) + "⎦"));
+  return (s + "]");
 }
 function deconv(g: number[], f: number[]): number[] {
-  let h: number[] = [];
-  let n: number = 0;
-  let hn: number = (((Array.isArray(g) || typeof g === 'string' ? g.length : Object.keys(g ?? {}).length) - (Array.isArray(f) || typeof f === 'string' ? f.length : Object.keys(f ?? {}).length)) + 1);
-  while ((n < hn)) {
-    let v: number = g[n];
-    let lower: number = 0;
-    if ((n >= (Array.isArray(f) || typeof f === 'string' ? f.length : Object.keys(f ?? {}).length))) {
-      lower = ((n - (Array.isArray(f) || typeof f === 'string' ? f.length : Object.keys(f ?? {}).length)) + 1);
+  let out: number[] = [];
+  let i: number = 0;
+  while ((i <= ((Array.isArray(g) || typeof g === 'string' ? g.length : Object.keys(g ?? {}).length) - (Array.isArray(f) || typeof f === 'string' ? f.length : Object.keys(f ?? {}).length)))) {
+    let sum: number = g[i];
+    let j: number = 1;
+    while ((j < (Array.isArray(f) || typeof f === 'string' ? f.length : Object.keys(f ?? {}).length))) {
+      if ((j <= i)) {
+        sum = (sum - (out[Math.trunc((i - j))] * f[j]));
+      }
+      j = (j + 1);
     }
-    let i = lower;
-    while ((i < n)) {
-      v = (v - (h[i] * f[Math.trunc((n - i))]));
-      i = (i + 1);
-    }
-    v = (v / f[Math.trunc(0)]);
-    h.push(v);
-    n = (n + 1);
+    out.push((sum / f[Math.trunc(0)]));
+    i = (i + 1);
   }
-  return h;
+  return out;
 }
 function main() {
   let h: number[] = [-8.0, -9.0, -3.0, -1.0, -6.0, 7.0];
   let f: number[] = [-3.0, -6.0, -1.0, 8.0, -6.0, 3.0, -1.0, -9.0, -9.0, 3.0, -2.0, 5.0, 2.0, -2.0, -7.0, -1.0];
   let g: number[] = [24.0, 75.0, 71.0, -34.0, 3.0, 22.0, -45.0, 23.0, 245.0, 25.0, 52.0, 25.0, -67.0, -96.0, 96.0, 31.0, 55.0, 36.0, 29.0, -43.0, -7.0];
-  console.log("deconv(g, f) =");
-  printColumnMatrix(deconv(g, f));
-  console.log("");
-  console.log("deconv(g, h) =");
-  printColumnMatrix(deconv(g, h));
+  console.log(listToString1(h));
+  console.log(listToString1(deconv(g, f)));
+  console.log(listToString1(f));
+  console.log(listToString1(deconv(g, h)));
 }
 var _nowSeed = 0;
 var _nowSeeded = false;
