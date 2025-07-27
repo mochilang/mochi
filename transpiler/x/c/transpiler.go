@@ -86,6 +86,9 @@ var (
 	needCharAt              bool
 	needSliceInt            bool
 	needSliceDouble         bool
+	needGMP                 bool
+	needStrBigInt           bool
+	needListAppendBigRat    bool
 
 	currentFuncName   string
 	currentFuncReturn string
@@ -691,6 +694,8 @@ func (d *DeclStmt) emit(w io.Writer, indent int) {
 	} else {
 		if typ == "const char*" {
 			io.WriteString(w, " = \"\"")
+		} else if typ == "bigrat" {
+			io.WriteString(w, " = _bigrat(0,1)")
 		} else {
 			io.WriteString(w, " = 0")
 		}
@@ -722,6 +727,12 @@ func (a *AssignStmt) emit(w io.Writer, indent int) {
 			case "const char*":
 				needListAppendStr = true
 				fmt.Fprintf(w, "%s = list_append_str(%s, &%s_len, ", a.Name, a.Name, a.Name)
+				call.Args[1].emitExpr(w)
+				io.WriteString(w, ");\n")
+				return
+			case "bigrat":
+				needListAppendBigRat = true
+				fmt.Fprintf(w, "%s = list_append_bigrat(%s, &%s_len, ", a.Name, a.Name, a.Name)
 				call.Args[1].emitExpr(w)
 				io.WriteString(w, ");\n")
 				return
@@ -1457,6 +1468,14 @@ func (c *CallExpr) emitExpr(w io.Writer) {
 			return
 		}
 	}
+	if (c.Func == "num" || c.Func == "denom") && len(c.Args) == 1 {
+		needGMP = true
+		io.WriteString(w, c.Func)
+		io.WriteString(w, "(")
+		c.Args[0].emitExpr(w)
+		io.WriteString(w, ")")
+		return
+	}
 	if c.Func == "str" && len(c.Args) == 1 {
 		arg := c.Args[0]
 		if exprIsBool(arg) {
@@ -1467,6 +1486,13 @@ func (c *CallExpr) emitExpr(w io.Writer) {
 			return
 		}
 		t := inferExprType(currentEnv, arg)
+		if t == "bigint" {
+			needStrBigInt = true
+			io.WriteString(w, "str_bigint(")
+			arg.emitExpr(w)
+			io.WriteString(w, ")")
+			return
+		}
 		if strings.HasSuffix(t, "[]") {
 			base := strings.TrimSuffix(t, "[]")
 			if base == "int" {
@@ -1687,6 +1713,40 @@ func (b *BinaryExpr) emitExpr(w io.Writer) {
 			return
 		}
 	}
+	lt := inferExprType(currentEnv, b.Left)
+	rt := inferExprType(currentEnv, b.Right)
+	if b.Op == "+" || b.Op == "-" || b.Op == "*" || b.Op == "/" {
+		if lt == "bigrat" || rt == "bigrat" {
+			needGMP = true
+			op := "_add"
+			switch b.Op {
+			case "-":
+				op = "_sub"
+			case "*":
+				op = "_mul"
+			case "/":
+				op = "_div"
+			}
+			io.WriteString(w, op+"(")
+			if lt != "bigrat" {
+				io.WriteString(w, "_bigrat(")
+				b.Left.emitExpr(w)
+				io.WriteString(w, ", 1)")
+			} else {
+				b.Left.emitExpr(w)
+			}
+			io.WriteString(w, ", ")
+			if rt != "bigrat" {
+				io.WriteString(w, "_bigrat(")
+				b.Right.emitExpr(w)
+				io.WriteString(w, ", 1)")
+			} else {
+				b.Right.emitExpr(w)
+			}
+			io.WriteString(w, ")")
+			return
+		}
+	}
 	if b.Op == "%" && (exprIsFloat(b.Left) || exprIsFloat(b.Right) || inferExprType(currentEnv, b.Left) == "double" || inferExprType(currentEnv, b.Right) == "double") {
 		markMath()
 		io.WriteString(w, "fmod(")
@@ -1894,6 +1954,11 @@ func (p *Program) Emit() []byte {
 	if needMath {
 		buf.WriteString("#include <math.h>\n")
 	}
+	if needGMP {
+		buf.WriteString("#include <gmp.h>\n")
+		buf.WriteString("typedef mpq_t* bigrat;\n")
+		buf.WriteString("typedef mpz_t* bigint;\n")
+	}
 	buf.WriteString("\n")
 	for _, fn := range p.Functions {
 		if strings.HasSuffix(fn.Return, "[]") {
@@ -1959,6 +2024,46 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("    snprintf(buf, sizeof(buf), \"%g\", v);\n")
 		buf.WriteString("    return strdup(buf);\n")
 		buf.WriteString("}\n\n")
+	}
+	if needStrBigInt {
+		buf.WriteString("static char* str_bigint(const mpz_t v) {\n")
+		buf.WriteString("    return mpz_get_str(NULL, 10, v);\n")
+		buf.WriteString("}\n\n")
+	}
+	if needGMP {
+		buf.WriteString("static bigrat _bigrat(long n, long d) {\n")
+		buf.WriteString("    bigrat r = malloc(sizeof(mpq_t));\n")
+		buf.WriteString("    mpq_init(*r);\n")
+		buf.WriteString("    mpq_set_si(*r, n, d);\n")
+		buf.WriteString("    mpq_canonicalize(*r);\n")
+		buf.WriteString("    return r;\n")
+		buf.WriteString("}\n\n")
+		buf.WriteString("static bigrat _add(bigrat a, bigrat b) {\n")
+		buf.WriteString("    bigrat r = malloc(sizeof(mpq_t));\n")
+		buf.WriteString("    mpq_init(*r);\n")
+		buf.WriteString("    mpq_add(*r, *a, *b);\n")
+		buf.WriteString("    return r;\n")
+		buf.WriteString("}\n\n")
+		buf.WriteString("static bigrat _sub(bigrat a, bigrat b) {\n")
+		buf.WriteString("    bigrat r = malloc(sizeof(mpq_t));\n")
+		buf.WriteString("    mpq_init(*r);\n")
+		buf.WriteString("    mpq_sub(*r, *a, *b);\n")
+		buf.WriteString("    return r;\n")
+		buf.WriteString("}\n\n")
+		buf.WriteString("static bigrat _mul(bigrat a, bigrat b) {\n")
+		buf.WriteString("    bigrat r = malloc(sizeof(mpq_t));\n")
+		buf.WriteString("    mpq_init(*r);\n")
+		buf.WriteString("    mpq_mul(*r, *a, *b);\n")
+		buf.WriteString("    return r;\n")
+		buf.WriteString("}\n\n")
+		buf.WriteString("static bigrat _div(bigrat a, bigrat b) {\n")
+		buf.WriteString("    bigrat r = malloc(sizeof(mpq_t));\n")
+		buf.WriteString("    mpq_init(*r);\n")
+		buf.WriteString("    mpq_div(*r, *a, *b);\n")
+		buf.WriteString("    return r;\n")
+		buf.WriteString("}\n\n")
+		buf.WriteString("static mpz_srcptr num(bigrat a) { return mpq_numref(*a); }\n")
+		buf.WriteString("static mpz_srcptr denom(bigrat a) { return mpq_denref(*a); }\n\n")
 	}
 	if needStrListInt {
 		buf.WriteString("static char* str_list_int(const int *arr, size_t len) {\n")
@@ -2169,6 +2274,14 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("    if (arr && len) memcpy(res, arr, len * sizeof(const char*));\n")
 		buf.WriteString("    res[len] = val;\n")
 		buf.WriteString("    return res;\n")
+		buf.WriteString("}\n\n")
+	}
+	if needListAppendBigRat {
+		buf.WriteString("static bigrat* list_append_bigrat(bigrat *arr, size_t *len, bigrat val) {\n")
+		buf.WriteString("    arr = realloc(arr, (*len + 1) * sizeof(bigrat));\n")
+		buf.WriteString("    arr[*len] = val;\n")
+		buf.WriteString("    (*len)++;\n")
+		buf.WriteString("    return arr;\n")
 		buf.WriteString("}\n\n")
 	}
 	if needListAppendSizeT {
@@ -4401,6 +4514,10 @@ func convertUnary(u *parser.Unary) Expr {
 		if castType == "string" {
 			return &CallExpr{Func: "str", Args: []Expr{base}}
 		}
+		if castType == "bigrat" {
+			needGMP = true
+			return &CallExpr{Func: "_bigrat", Args: []Expr{base, &IntLit{Value: 1}}}
+		}
 		if ml := u.Value.Target.Map; ml != nil {
 			var fields []StructField
 			for _, it := range ml.Items {
@@ -5641,6 +5758,10 @@ func inferExprType(env *types.Env, e Expr) string {
 			return "const char*"
 		case "len":
 			return "int"
+		case "num", "denom":
+			return "bigint"
+		case "_bigrat", "_add", "_sub", "_mul", "_div":
+			return "bigrat"
 		default:
 			if t, ok := funcReturnTypes[v.Func]; ok {
 				return t
@@ -5663,6 +5784,9 @@ func inferExprType(env *types.Env, e Expr) string {
 		if v.Op == "+" && (exprIsString(v.Left) || exprIsString(v.Right)) {
 			return "const char*"
 		}
+		if inferExprType(env, v.Left) == "bigrat" || inferExprType(env, v.Right) == "bigrat" {
+			return "bigrat"
+		}
 		if exprIsFloat(v.Left) || exprIsFloat(v.Right) {
 			return "double"
 		}
@@ -5673,6 +5797,8 @@ func inferExprType(env *types.Env, e Expr) string {
 			return "int"
 		case "(double)":
 			return "double"
+		case "(bigrat)":
+			return "bigrat"
 		case "(const char*)":
 			return "const char*"
 		}
@@ -5720,6 +5846,12 @@ func cTypeFromMochiType(t types.Type) string {
 		return "double"
 	case types.IntType, types.Int64Type:
 		return "int"
+	case types.BigIntType:
+		needGMP = true
+		return "bigint"
+	case types.BigRatType:
+		needGMP = true
+		return "bigrat"
 	case types.BoolType:
 		return "int"
 	case types.StructType:

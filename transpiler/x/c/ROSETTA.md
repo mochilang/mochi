@@ -2,7 +2,7 @@
 
 This directory stores C code generated from Mochi programs in `tests/rosetta/x/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.c` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (82/467) - Last updated 2025-07-27 21:59 +0700:
+Checklist of programs that currently transpile and run (83/467) - Last updated 2025-07-27 23:06 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | 100-doors-2 | ✓ | 65us | 17.2 KB |
@@ -110,13 +110,13 @@ Checklist of programs that currently transpile and run (82/467) - Last updated 2
 | 103 | base64-decode-data | ✓ | 501us | 80.9 KB |
 | 104 | bell-numbers | ✓ | 97us | 24.1 KB |
 | 105 | benfords-law | ✓ | 791us | 18.0 KB |
-| 106 | bernoulli-numbers |  |  |  |
+| 106 | bernoulli-numbers | ✓ | 38.37ms | 12.8 MB |
 | 107 | best-shuffle |  |  |  |
 | 108 | bifid-cipher |  |  |  |
-| 109 | bin-given-limits | ✓ | 54us | 11.8 KB |
-| 110 | binary-digits | ✓ | 39us | 7.7 KB |
-| 111 | binary-search | ✓ | 27us | 4.9 KB |
-| 112 | binary-strings | ✓ | 25us | 7.6 KB |
+| 109 | bin-given-limits | ✓ | 53us | 11.8 KB |
+| 110 | binary-digits | ✓ | 46us | 7.7 KB |
+| 111 | binary-search | ✓ | 47us | 4.9 KB |
+| 112 | binary-strings | ✓ | 33us | 7.6 KB |
 | 113 | bioinformatics-base-count | ✓ | 151us | 23.8 KB |
 | 114 | bioinformatics-global-alignment |  |  |  |
 | 115 | bioinformatics-sequence-mutation |  |  |  |
