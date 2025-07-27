@@ -1,11 +1,296 @@
+// Mochi implementation of the "Execute Computer Zero" task
+// Implements a tiny assembler interpreter mirroring the Go version.
+
+type Instruction {
+  Label: string
+  Opcode: string
+  Arg: string
+}
+
+fun trim(s: string): string {
+  var start = 0
+  while start < len(s) && (s[start:start+1] == " " || s[start:start+1] == "\t") {
+    start = start + 1
+  }
+  var end = len(s)
+  while end > start && (s[end-1:end] == " " || s[end-1:end] == "\t") {
+    end = end - 1
+  }
+  return substring(s, start, end)
+}
+
+fun split(s: string, sep: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    if len(sep) > 0 && i + len(sep) <= len(s) && substring(s, i, i+len(sep)) == sep {
+      parts = append(parts, cur)
+      cur = ""
+      i = i + len(sep)
+    } else {
+      cur = cur + substring(s, i, i+1)
+      i = i + 1
+    }
+  }
+  parts = append(parts, cur)
+  return parts
+}
+
+fun splitWS(s: string): list<string> {
+  var out: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = substring(s, i, i+1)
+    if ch == " " || ch == "\t" {
+      if len(cur) > 0 { out = append(out, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { out = append(out, cur) }
+  return out
+}
+
+fun indexOf(s: string, ch: string): int {
+  var i = 0
+  while i < len(s) {
+    if substring(s, i, i+1) == ch { return i }
+    i = i + 1
+  }
+  return -1
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var neg = false
+  if len(str) > 0 && str[0:1] == "-" { neg = true; i = 1 }
+  var n = 0
+  let digits = {
+    "0":0,"1":1,"2":2,"3":3,"4":4,"5":5,"6":6,"7":7,"8":8,"9":9
+  }
+  while i < len(str) {
+    n = n * 10 + digits[str[i:i+1]]
+    i = i + 1
+  }
+  if neg { n = -n }
+  return n
+}
+
+fun parseAsm(asm: string): map<string, any> {
+  let lines = split(asm, "\n")
+  var instrs: list<Instruction> = []
+  var labels: map<string,int> = {}
+  var lineNum = 0
+  var i = 0
+  while i < len(lines) {
+    var line = lines[i]
+    if indexOf(line, ";") != (-1) {
+      line = substring(line, 0, indexOf(line, ";"))
+    }
+    line = trim(line)
+    if len(line) == 0 { i = i + 1; continue }
+    var label = ""
+    if indexOf(line, ":") != (-1) {
+      let idx = indexOf(line, ":")
+      label = trim(substring(line, 0, idx))
+      line = trim(substring(line, idx+1, len(line)))
+    }
+    var opcode = ""
+    var arg = ""
+    if len(line) > 0 {
+      let parts = splitWS(line)
+      if len(parts) > 0 { opcode = parts[0] }
+      if len(parts) > 1 { arg = parts[1] }
+      else {
+        // single token after label - treat as data
+        let ops = {"NOP":0,"LDA":1,"STA":2,"ADD":3,"SUB":4,"BRZ":5,"JMP":6,"STP":7}
+        if !(opcode in ops) {
+          arg = opcode
+          opcode = ""
+        }
+      }
+    }
+    if label != "" { labels[label] = lineNum }
+    instrs = append(instrs, Instruction{Label:label, Opcode:opcode, Arg:arg})
+    lineNum = lineNum + 1
+    i = i + 1
+  }
+  return {"instructions": instrs, "labels": labels}
+}
+
+fun compile(p: map<string, any>): list<int> {
+  let instrs = p["instructions"] as list<Instruction>
+  let labels = p["labels"] as map<string,int>
+  var bytecode: list<int> = []
+  var i = 0
+  let opcodes = {"NOP":0,"LDA":1,"STA":2,"ADD":3,"SUB":4,"BRZ":5,"JMP":6,"STP":7}
+  while i < len(instrs) {
+    let ins = instrs[i]
+    var arg = 0
+    if ins.Arg != "" {
+      if ins.Arg in labels { arg = labels[ins.Arg] }
+      else { arg = parseIntStr(ins.Arg) }
+    }
+    var code = 0
+    if ins.Opcode != "" { code = opcodes[ins.Opcode] }
+    bytecode = append(bytecode, code * 32 + arg)
+    i = i + 1
+  }
+  while len(bytecode) < 32 { bytecode = append(bytecode, 0) }
+  return bytecode
+}
+
+fun floorMod(a: int, b: int): int {
+  var r = a % b
+  if r < 0 { r = r + b }
+  return r
+}
+
+fun run(bytecode: list<int>): int {
+  var acc = 0
+  var pc = 0
+  var mem: list<int> = []
+  var i = 0
+  while i < len(bytecode) {
+    mem = append(mem, bytecode[i])
+    i = i + 1
+  }
+  while pc < 32 {
+    let op = mem[pc] / 32
+    let arg = mem[pc] % 32
+    pc = pc + 1
+    if op == 0 {
+      continue
+    } else if op == 1 {
+      acc = mem[arg]
+    } else if op == 2 {
+      mem[arg] = acc
+    } else if op == 3 {
+      acc = floorMod(acc + mem[arg], 256)
+    } else if op == 4 {
+      acc = floorMod(acc - mem[arg], 256)
+    } else if op == 5 {
+      if acc == 0 { pc = arg }
+    } else if op == 6 {
+      pc = arg
+    } else if op == 7 {
+      break
+    } else {
+      break
+    }
+  }
+  return acc
+}
+
+fun execute(asm: string): int {
+  let parsed = parseAsm(asm)
+  let bc = compile(parsed)
+  return run(bc)
+}
+
 fun main() {
-  print("4")
-  print("56")
-  print("55")
-  print("6")
-  print("1")
-  print("255")
-  print("0")
+  let examples = [
+    "LDA   x\n" +
+    "ADD   y       ; accumulator = x + y\n" +
+    "STP\n" +
+    "x:            2\n" +
+    "y:            2",
+
+    "loop:   LDA   prodt\n" +
+    "        ADD   x\n" +
+    "        STA   prodt\n" +
+    "        LDA   y\n" +
+    "        SUB   one\n" +
+    "        STA   y\n" +
+    "        BRZ   done\n" +
+    "        JMP   loop\n" +
+    "done:   LDA   prodt   ; to display it\n" +
+    "        STP\n" +
+    "x:            8\n" +
+    "y:            7\n" +
+    "prodt:        0\n" +
+    "one:          1",
+
+    "loop:   LDA   n\n" +
+    "        STA   temp\n" +
+    "        ADD   m\n" +
+    "        STA   n\n" +
+    "        LDA   temp\n" +
+    "        STA   m\n" +
+    "        LDA   count\n" +
+    "        SUB   one\n" +
+    "        BRZ   done\n" +
+    "        STA   count\n" +
+    "        JMP   loop\n" +
+    "done:   LDA   n       ; to display it\n" +
+    "        STP\n" +
+    "m:            1\n" +
+    "n:            1\n" +
+    "temp:         0\n" +
+    "count:        8       ; valid range: 1-11\n" +
+    "one:          1",
+
+    "start:  LDA   load\n" +
+    "ADD   car     ; head of list\n" +
+    "STA   ldcar\n" +
+    "ADD   one\n" +
+    "STA   ldcdr   ; next CONS cell\n" +
+    "ldcar:  NOP\n" +
+    "STA   value\n" +
+    "ldcdr:  NOP\n" +
+    "BRZ   done    ; 0 stands for NIL\n" +
+    "STA   car\n" +
+    "JMP   start\n" +
+    "done:   LDA   value   ; CAR of last CONS\n" +
+    "STP\n" +
+    "load:   LDA   0\n" +
+    "value:        0\n" +
+    "car:          28\n" +
+    "one:          1\n" +
+    "                        ; order of CONS cells\n" +
+    "                        ; in memory\n" +
+    "                        ; does not matter\n" +
+    "        6\n" +
+    "        0       ; 0 stands for NIL\n" +
+    "        2       ; (CADR ls)\n" +
+    "        26      ; (CDDR ls) -- etc.\n" +
+    "        5\n" +
+    "        20\n" +
+    "        3\n" +
+    "        30\n" +
+    "        1       ; value of (CAR ls)\n" +
+    "        22      ; points to (CDR ls)\n" +
+    "        4\n" +
+    "        24",
+
+    "LDA  3\n" +
+    "SUB  4\n" +
+    "STP  0\n" +
+    "         0\n" +
+    "         255",
+
+    "LDA  3\n" +
+    "SUB  4\n" +
+    "STP  0\n" +
+    "                0\n" +
+    "                1",
+
+    "LDA  3\n" +
+    "ADD  4\n" +
+    "STP  0\n" +
+    "                1\n" +
+    "                255"
+  ]
+
+  var i = 0
+  while i < len(examples) {
+    let res = execute(examples[i])
+    print(str(res))
+    i = i + 1
+  }
 }
 
 main()
