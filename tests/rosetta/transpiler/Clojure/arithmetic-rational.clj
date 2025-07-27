@@ -19,6 +19,17 @@
   (do (def nums [6 28 120 496 672 8128 30240 32760 523776]) (doseq [n nums] (do (def s (sumRecip n)) (when (= (mod s n) 0) (do (def val (/ s n)) (def perfect "") (when (= val 1) (def perfect "perfect!")) (println (str (str (str (str (str "Sum of recipr. factors of " (str n)) " = ") (str val)) " exactly ") perfect))))))))
 
 (defn -main []
-  (main))
+  (let [rt (Runtime/getRuntime)
+    start-mem (- (.totalMemory rt) (.freeMemory rt))
+    start (System/nanoTime)]
+      (main)
+      (System/gc)
+      (let [end (System/nanoTime)
+        end-mem (- (.totalMemory rt) (.freeMemory rt))
+        duration-us (quot (- end start) 1000)
+        memory-bytes (Math/abs ^long (- end-mem start-mem))]
+        (println (str "{\n  \"duration_us\": " duration-us ",\n  \"memory_bytes\": " memory-bytes ",\n  \"name\": \"main\"\n}"))
+      )
+    ))
 
 (-main)

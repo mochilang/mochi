@@ -9,14 +9,14 @@
 
 (declare abs sqrtApprox agm main)
 
-(defn abs [x]
-  (try (if (< x 0.0) (- x) x) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
+(defn abs [x_v0]
+  (try (if (< x_v0 0.0) (- x_v0) x_v0) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
 
-(defn sqrtApprox [x]
-  (try (do (def guess x) (def i 0) (while (< i 20) (do (def guess (/ (+ guess (/ x guess)) 2.0)) (def i (+ i 1)))) (throw (ex-info "return" {:v guess}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
+(defn sqrtApprox [x_v0]
+  (try (do (def guess_v1 x_v0) (def i_v2 0) (while (< i_v2 20) (do (def guess_v1 (/ (+ guess_v1 (/ x_v0 guess_v1)) 2.0)) (def i_v2 (+ i_v2 1)))) (throw (ex-info "return" {:v guess_v1}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
 
-(defn agm [a g]
-  (try (do (def eps 0.00000000000001) (while (> (abs (- a g)) (* (abs a) eps)) (do (def newA (/ (+ a g) 2.0)) (def newG (sqrtApprox (* a g))) (def a newA) (def g newG))) (throw (ex-info "return" {:v a}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
+(defn agm [a_v0 g_v1]
+  (try (do (def eps_v2 0.00000000000001) (while (> (abs (- a_v0 g_v1)) (* (abs a_v0) eps_v2)) (do (def newA_v3 (/ (+ a_v0 g_v1) 2.0)) (def newG_v4 (sqrtApprox (* a_v0 g_v1))) (def a_v0 newA_v3) (def g_v1 newG_v4))) (throw (ex-info "return" {:v a_v0}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
 
 (defn main []
   (println (str (agm 1.0 (/ 1.0 (sqrtApprox 2.0))))))

@@ -417,6 +417,20 @@ func renameVar(name string) string {
 	return name
 }
 
+// newVarName registers a new local variable mapping to avoid clashes with other
+// scopes. It always returns the mapped name when inside a function.
+func newVarName(name string) string {
+	if renameVars == nil || funDepth == 0 {
+		return name
+	}
+	if newName, ok := renameVars[name]; ok {
+		return newName
+	}
+	newName := fmt.Sprintf("%s_v%d", name, len(renameVars))
+	renameVars[name] = newName
+	return newName
+}
+
 func validCljIdent(name string) bool {
 	if name == "" {
 		return false
@@ -745,7 +759,7 @@ func Transpile(prog *parser.Program, env *types.Env, benchMain bool) (*Program, 
 				return nil, err
 			}
 			if n != nil {
-				body = append(body, n)
+				pr.Forms = append(pr.Forms, n)
 			}
 			continue
 		}
@@ -809,13 +823,13 @@ func transpileStmt(s *parser.Statement) (Node, error) {
 				v = Symbol("nil")
 			}
 		}
+		name := newVarName(s.Let.Name)
 		if stringVars != nil && isStringNode(v) {
-			stringVars[s.Let.Name] = true
+			stringVars[name] = true
 		}
 		if stringListVars != nil && isStringListNode(v) {
-			stringListVars[s.Let.Name] = true
+			stringListVars[name] = true
 		}
-		name := renameVar(s.Let.Name)
 		return &List{Elems: []Node{Symbol("def"), Symbol(name), v}}, nil
 	case s.Var != nil:
 		var v Node
@@ -843,13 +857,13 @@ func transpileStmt(s *parser.Statement) (Node, error) {
 				v = Symbol("nil")
 			}
 		}
+		name := newVarName(s.Var.Name)
 		if stringVars != nil && isStringNode(v) {
-			stringVars[s.Var.Name] = true
+			stringVars[name] = true
 		}
 		if stringListVars != nil && isStringListNode(v) {
-			stringListVars[s.Var.Name] = true
+			stringListVars[name] = true
 		}
-		name := renameVar(s.Var.Name)
 		return &List{Elems: []Node{Symbol("def"), Symbol(name), v}}, nil
 	case s.Assign != nil:
 		v, err := transpileExpr(s.Assign.Value)
@@ -938,16 +952,17 @@ func transpileFunStmt(f *parser.FunStmt) (Node, error) {
 	params := []Node{}
 	names := []string{}
 	for _, p := range f.Params {
-		params = append(params, Symbol(p.Name))
+		newName := newVarName(p.Name)
+		params = append(params, Symbol(newName))
 		names = append(names, p.Name)
 		if p.Type != nil && p.Type.Simple != nil {
 			if *p.Type.Simple == "string" {
-				stringVars[p.Name] = true
+				stringVars[newName] = true
 			}
 		} else if p.Type != nil && p.Type.Generic != nil {
 			if p.Type.Generic.Name == "list" && len(p.Type.Generic.Args) == 1 {
 				if a := p.Type.Generic.Args[0]; a != nil && a.Simple != nil && *a.Simple == "string" {
-					stringListVars[p.Name] = true
+					stringListVars[newName] = true
 				}
 			}
 		}
@@ -1081,6 +1096,9 @@ func applyBinOp(op string, left, right Node) Node {
 		if isStringNode(left) || isStringNode(right) {
 			return &List{Elems: []Node{Symbol("str"), left, right}}
 		}
+		if isVectorNode(left) || isVectorNode(right) {
+			return &List{Elems: []Node{Symbol("vec"), &List{Elems: []Node{Symbol("concat"), left, right}}}}
+		}
 		return &List{Elems: []Node{Symbol("+"), left, right}}
 	case "union":
 		setFn := func(x Node) Node { return &List{Elems: []Node{Symbol("set"), x}} }
@@ -1189,6 +1207,14 @@ func isStringListNode(n Node) bool {
 				}
 			}
 		}
+	}
+	return false
+}
+
+func isVectorNode(n Node) bool {
+	switch n.(type) {
+	case *Vector:
+		return true
 	}
 	return false
 }

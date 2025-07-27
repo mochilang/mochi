@@ -9,21 +9,24 @@
 
 (declare listStr)
 
-(defn listStr [xs]
-  (try (do (def s "[") (def i 0) (while (< i (count xs)) (do (def s (str s (str (nth xs i)))) (when (< (+ i 1) (count xs)) (def s (str s " "))) (def i (+ i 1)))) (def s (str s "]")) (throw (ex-info "return" {:v s}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
+(defn listStr [xs_v0]
+  (try (do (def s_v1 "[") (def i_v2 0) (while (< i_v2 (count xs_v0)) (do (def s_v1 (str s_v1 (str (nth xs_v0 i_v2)))) (when (< (+ i_v2 1) (count xs_v0)) (def s_v1 (str s_v1 " "))) (def i_v2 (+ i_v2 1)))) (def s_v1 (str s_v1 "]")) (throw (ex-info "return" {:v s_v1}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
+
+(def a [0 0 0 0 0])
+
+(def s (subvec a 0 4))
+
+(def cap_s 5)
 
 (defn -main []
   (let [rt (Runtime/getRuntime)
     start-mem (- (.totalMemory rt) (.freeMemory rt))
     start (System/nanoTime)]
-      (def a [0 0 0 0 0])
       (println (str "len(a) = " (str (count a))))
       (println (str "a = " (listStr a)))
       (def a (assoc a 0 3))
       (println (str "a = " (listStr a)))
       (println (str "a[0] = " (str (nth a 0))))
-      (def s (subvec a 0 4))
-      (def cap_s 5)
       (println (str "s = " (listStr s)))
       (println (str (str (str "len(s) = " (str (count s))) "  cap(s) = ") (str cap_s)))
       (def s (subvec a 0 5))

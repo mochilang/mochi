@@ -31,6 +31,17 @@
   (do (def limit 1228663) (def spf (sieve limit)) (def primes (primesFrom spf limit)) (def arr (arithmeticNumbers 1000000 spf)) (println "The first 100 arithmetic numbers are:") (def i 0) (while (< i 100) (do (def line "") (def j 0) (while (< j 10) (do (def line (str line (pad3 (nth arr (+ i j))))) (when (< j 9) (def line (str line " "))) (def j (+ j 1)))) (println line) (def i (+ i 10)))) (doseq [x [1000 10000 100000 1000000]] (do (def last (nth arr (- x 1))) (def lastc (commatize last)) (println (str (str (str "\nThe " (commatize x)) "th arithmetic number is: ") lastc)) (def pc (primeCount primes last spf)) (def comp (- (- x pc) 1)) (println (str (str (str (str "The count of such numbers <= " lastc) " which are composite is ") (commatize comp)) "."))))))
 
 (defn -main []
-  (main))
+  (let [rt (Runtime/getRuntime)
+    start-mem (- (.totalMemory rt) (.freeMemory rt))
+    start (System/nanoTime)]
+      (main)
+      (System/gc)
+      (let [end (System/nanoTime)
+        end-mem (- (.totalMemory rt) (.freeMemory rt))
+        duration-us (quot (- end start) 1000)
+        memory-bytes (Math/abs ^long (- end-mem start-mem))]
+        (println (str "{\n  \"duration_us\": " duration-us ",\n  \"memory_bytes\": " memory-bytes ",\n  \"name\": \"main\"\n}"))
+      )
+    ))
 
 (-main)
