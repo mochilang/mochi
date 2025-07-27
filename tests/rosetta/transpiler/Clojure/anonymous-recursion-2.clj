@@ -1,4 +1,4 @@
-(ns main (:refer-clojure :exclude [connect main]))
+(ns main (:refer-clojure :exclude [fib main]))
 
 (require 'clojure.set)
 
@@ -7,13 +7,13 @@
 
 (def nowSeed (atom (let [s (System/getenv "MOCHI_NOW_SEED")] (if (and s (not (= s ""))) (Integer/parseInt s) 0))))
 
-(declare connect main)
+(declare fib main)
 
-(defn connect [client]
-  (try (throw (ex-info "return" {:v (and (not= (:Host client) "") (> (:Port client) 0))})) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
+(defn fib [n]
+  (try (do (when (< n 2) (throw (ex-info "return" {:v n}))) (def a 0) (def b 1) (def i 1) (while (< i n) (do (def t (+ a b)) (def a b) (def b t) (def i (+ i 1)))) (throw (ex-info "return" {:v b}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
 
 (defn main []
-  (do (def client {:Base "dc=example,dc=com" :Host "ldap.example.com" :Port 389 :UseSSL false :BindDN "uid=readonlyuser,ou=People,dc=example,dc=com" :BindPassword "readonlypassword" :UserFilter "(uid=%s)" :GroupFilter "(memberUid=%s)" :Attributes ["givenName" "sn" "mail" "uid"]}) (if (connect client) (println (str "Connected to " (:Host client))) (println "Failed to connect"))))
+  (doseq [i [(- 1) 0 1 2 3 4 5 6 7 8 9 10]] (if (< i 0) (println (str (str "fib(" (str i)) ") returned error: negative n is forbidden")) (println (str (str (str "fib(" (str i)) ") = ") (str (fib i)))))))
 
 (defn -main []
   (let [rt (Runtime/getRuntime)

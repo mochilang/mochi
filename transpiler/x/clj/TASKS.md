@@ -1,3 +1,143 @@
+## Progress (2025-07-27 16:50 +0700)
+- php: support struct methods
+- Regenerated golden files - 101/104 vm valid programs passing
+
+## Progress (2025-07-27 16:50 +0700)
+- php: support struct methods
+- Regenerated golden files - 101/104 vm valid programs passing
+
+## Progress (2025-07-27 16:50 +0700)
+- php: support struct methods
+- Regenerated golden files - 101/104 vm valid programs passing
+
+## Progress (2025-07-27 16:50 +0700)
+- php: support struct methods
+- Regenerated golden files - 101/104 vm valid programs passing
+
+## Progress (2025-07-27 16:50 +0700)
+- php: support struct methods
+- Regenerated golden files - 101/104 vm valid programs passing
+
+## Progress (2025-07-27 16:50 +0700)
+- php: support struct methods
+- Regenerated golden files - 101/104 vm valid programs passing
+
+## Progress (2025-07-27 16:50 +0700)
+- php: support struct methods
+- Regenerated golden files - 101/104 vm valid programs passing
+
+## Progress (2025-07-27 16:50 +0700)
+- php: support struct methods
+- Regenerated golden files - 101/104 vm valid programs passing
+
+## Progress (2025-07-27 16:50 +0700)
+- php: support struct methods
+- Regenerated golden files - 101/104 vm valid programs passing
+
+## Progress (2025-07-27 16:50 +0700)
+- php: support struct methods
+- Regenerated golden files - 101/104 vm valid programs passing
+
+## Progress (2025-07-27 16:50 +0700)
+- php: support struct methods
+- Regenerated golden files - 101/104 vm valid programs passing
+
+## Progress (2025-07-27 16:50 +0700)
+- php: support struct methods
+- Regenerated golden files - 101/104 vm valid programs passing
+
+## Progress (2025-07-27 16:50 +0700)
+- php: support struct methods
+- Regenerated golden files - 101/104 vm valid programs passing
+
+## Progress (2025-07-27 16:50 +0700)
+- php: support struct methods
+- Regenerated golden files - 101/104 vm valid programs passing
+
+## Progress (2025-07-27 16:50 +0700)
+- php: support struct methods
+- Regenerated golden files - 101/104 vm valid programs passing
+
+## Progress (2025-07-27 16:50 +0700)
+- php: support struct methods
+- Regenerated golden files - 101/104 vm valid programs passing
+
+## Progress (2025-07-27 16:50 +0700)
+- php: support struct methods
+- Regenerated golden files - 101/104 vm valid programs passing
+
+## Progress (2025-07-27 16:50 +0700)
+- php: support struct methods
+- Regenerated golden files - 101/104 vm valid programs passing
+
+## Progress (2025-07-27 16:50 +0700)
+- php: support struct methods
+- Regenerated golden files - 101/104 vm valid programs passing
+
+## Progress (2025-07-27 16:50 +0700)
+- php: support struct methods
+- Regenerated golden files - 101/104 vm valid programs passing
+
+## Progress (2025-07-27 16:50 +0700)
+- php: support struct methods
+- Regenerated golden files - 101/104 vm valid programs passing
+
+## Progress (2025-07-27 16:50 +0700)
+- php: support struct methods
+- Regenerated golden files - 101/104 vm valid programs passing
+
+## Progress (2025-07-27 16:50 +0700)
+- php: support struct methods
+- Regenerated golden files - 101/104 vm valid programs passing
+
+## Progress (2025-07-27 16:50 +0700)
+- php: support struct methods
+- Regenerated golden files - 101/104 vm valid programs passing
+
+## Progress (2025-07-27 16:50 +0700)
+- php: support struct methods
+- Regenerated golden files - 101/104 vm valid programs passing
+
+## Progress (2025-07-27 16:50 +0700)
+- php: support struct methods
+- Regenerated golden files - 101/104 vm valid programs passing
+
+## Progress (2025-07-27 16:50 +0700)
+- php: support struct methods
+- Regenerated golden files - 101/104 vm valid programs passing
+
+## Progress (2025-07-27 16:50 +0700)
+- php: support struct methods
+- Regenerated golden files - 101/104 vm valid programs passing
+
+## Progress (2025-07-27 16:50 +0700)
+- php: support struct methods
+- Regenerated golden files - 101/104 vm valid programs passing
+
+## Progress (2025-07-27 16:50 +0700)
+- php: support struct methods
+- Regenerated golden files - 101/104 vm valid programs passing
+
+## Progress (2025-07-27 16:50 +0700)
+- php: support struct methods
+- Regenerated golden files - 101/104 vm valid programs passing
+
+## Progress (2025-07-27 16:50 +0700)
+- php: support struct methods
+- Regenerated golden files - 101/104 vm valid programs passing
+
+## Progress (2025-07-27 16:50 +0700)
+- php: support struct methods
+- Regenerated golden files - 101/104 vm valid programs passing
+
+## Progress (2025-07-27 16:50 +0700)
+- php: support struct methods
+- Regenerated golden files - 101/104 vm valid programs passing
+
+## Progress (2025-07-27 16:50 +0700)
+- php: support struct methods
+- Regenerated golden files - 101/104 vm valid programs passing
+
 ## Progress (2025-07-26 19:01 +0700)
 - ex transpiler: handle float mod and module globals
 - Regenerated golden files - 101/104 vm valid programs passing

@@ -1,7 +1,7 @@
 # Clojure Rosetta Transpiler
 
-Completed: 20/465
-Last updated: 2025-07-27 16:10 +0700
+Completed: 38/465
+Last updated: 2025-07-27 17:17 +0700
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -36,36 +36,36 @@ Last updated: 2025-07-27 16:10 +0700
 | 29 | ackermann-function-2 |   |  |  |
 | 30 | ackermann-function-3 |   |  |  |
 | 31 | ackermann-function |   |  |  |
-| 32 | active-directory-connect | ✓ |  |  |
-| 33 | active-directory-search-for-a-user | ✓ |  |  |
-| 34 | active-object | ✓ |  |  |
-| 35 | add-a-variable-to-a-class-instance-at-runtime |   |  |  |
-| 36 | additive-primes |   |  |  |
-| 37 | address-of-a-variable | ✓ |  |  |
+| 32 | active-directory-connect | ✓ | 18.043ms | 18.7 MB |
+| 33 | active-directory-search-for-a-user | ✓ | 19.549ms | 24.3 MB |
+| 34 | active-object | ✓ | 37.262ms | 20.0 MB |
+| 35 | add-a-variable-to-a-class-instance-at-runtime | ✓ | 15.428ms | 18.8 MB |
+| 36 | additive-primes | ✓ | 76.429ms | 20.4 MB |
+| 37 | address-of-a-variable | ✓ | 14.698ms | 17.9 MB |
 | 38 | adfgvx-cipher |   |  |  |
 | 39 | aks-test-for-primes |   |  |  |
 | 40 | algebraic-data-types |   |  |  |
-| 41 | align-columns |   |  |  |
-| 42 | aliquot-sequence-classifications |   |  |  |
+| 41 | align-columns | ✓ | 26.04ms | 22.4 MB |
+| 42 | aliquot-sequence-classifications | ✓ |  |  |
 | 43 | almkvist-giullera-formula-for-pi |   |  |  |
 | 44 | almost-prime |   |  |  |
 | 45 | amb |   |  |  |
-| 46 | amicable-pairs |   |  |  |
+| 46 | amicable-pairs | ✓ | 19.466429s | 19.4 MB |
 | 47 | anagrams-deranged-anagrams |   |  |  |
 | 48 | anagrams |   |  |  |
-| 49 | angle-difference-between-two-bearings-1 |   |  |  |
-| 50 | angle-difference-between-two-bearings-2 |   |  |  |
-| 51 | angles-geometric-normalization-and-conversion |   |  |  |
-| 52 | animate-a-pendulum |   |  |  |
-| 53 | animation |   |  |  |
-| 54 | anonymous-recursion-1 |   |  |  |
-| 55 | anonymous-recursion-2 |   |  |  |
-| 56 | anonymous-recursion |   |  |  |
-| 57 | anti-primes |   |  |  |
-| 58 | append-a-record-to-the-end-of-a-text-file |   |  |  |
-| 59 | apply-a-callback-to-an-array-1 |   |  |  |
-| 60 | apply-a-callback-to-an-array-2 |   |  |  |
-| 61 | apply-a-digital-filter-direct-form-ii-transposed- |   |  |  |
+| 49 | angle-difference-between-two-bearings-1 | ✓ | 24.659ms | 19.6 MB |
+| 50 | angle-difference-between-two-bearings-2 | ✓ | 22.483ms | 19.8 MB |
+| 51 | angles-geometric-normalization-and-conversion | ✓ | 42.981ms | 24.0 MB |
+| 52 | animate-a-pendulum | ✓ | 21.004ms | 20.7 MB |
+| 53 | animation | ✓ | 25.301ms | 18.7 MB |
+| 54 | anonymous-recursion-1 | ✓ | 49.151ms | 19.3 MB |
+| 55 | anonymous-recursion-2 | ✓ | 46.059ms | 19.4 MB |
+| 56 | anonymous-recursion | ✓ | 21.672ms | 18.8 MB |
+| 57 | anti-primes | ✓ | 64.874ms | 19.5 MB |
+| 58 | append-a-record-to-the-end-of-a-text-file | ✓ | 18.961ms | 18.7 MB |
+| 59 | apply-a-callback-to-an-array-1 | ✓ | 42.369ms | 18.4 MB |
+| 60 | apply-a-callback-to-an-array-2 | ✓ | 35.862ms | 19.6 MB |
+| 61 | apply-a-digital-filter-direct-form-ii-transposed- | ✓ | 20.222ms | 20.4 MB |
 | 62 | approximate-equality |   |  |  |
 | 63 | arbitrary-precision-integers-included- |   |  |  |
 | 64 | archimedean-spiral |   |  |  |

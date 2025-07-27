@@ -1,4 +1,4 @@
-(ns main (:refer-clojure :exclude [connect main]))
+(ns main (:refer-clojure :exclude [countDivisors main]))
 
 (require 'clojure.set)
 
@@ -7,13 +7,13 @@
 
 (def nowSeed (atom (let [s (System/getenv "MOCHI_NOW_SEED")] (if (and s (not (= s ""))) (Integer/parseInt s) 0))))
 
-(declare connect main)
+(declare countDivisors main)
 
-(defn connect [client]
-  (try (throw (ex-info "return" {:v (and (not= (:Host client) "") (> (:Port client) 0))})) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
+(defn countDivisors [n]
+  (try (do (when (< n 2) (throw (ex-info "return" {:v 1}))) (def count_v 2) (def i 2) (while (<= i (/ n 2)) (do (when (= (mod n i) 0) (def count_v (+ count_v 1))) (def i (+ i 1)))) (throw (ex-info "return" {:v count_v}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
 
 (defn main []
-  (do (def client {:Base "dc=example,dc=com" :Host "ldap.example.com" :Port 389 :UseSSL false :BindDN "uid=readonlyuser,ou=People,dc=example,dc=com" :BindPassword "readonlypassword" :UserFilter "(uid=%s)" :GroupFilter "(memberUid=%s)" :Attributes ["givenName" "sn" "mail" "uid"]}) (if (connect client) (println (str "Connected to " (:Host client))) (println "Failed to connect"))))
+  (do (println "The first 20 anti-primes are:") (def maxDiv 0) (def count_v 0) (def n 1) (def line "") (while (< count_v 20) (do (def d (countDivisors n)) (when (> d maxDiv) (do (def line (str (str line (str n)) " ")) (def maxDiv d) (def count_v (+ count_v 1)))) (def n (+ n 1)))) (def line (subs line 0 (- (count line) 1))) (println line)))
 
 (defn -main []
   (let [rt (Runtime/getRuntime)
