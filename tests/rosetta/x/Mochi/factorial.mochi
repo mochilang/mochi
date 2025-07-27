@@ -1,0 +1,15 @@
+fun factorial(n: int): bigint {
+  var r: bigint = 1
+  var i = 2
+  while i <= n {
+    r = r * (i as bigint)
+    i = i + 1
+  }
+  return r
+}
+
+for i in 0..11 {
+  print(str(i) + " " + str(factorial(i)))
+}
+print("100 " + str(factorial(100)))
+print("800 " + str(factorial(800)))
