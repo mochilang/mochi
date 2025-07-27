@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated TypeScript code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/TypeScript`.
-Last updated: 2025-07-27 11:47 UTC
+Last updated: 2025-07-27 13:13 UTC
 
-## Rosetta Golden Test Checklist (442/465)
+## Rosetta Golden Test Checklist (442/467)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 5.905ms | 256.0 KB |
@@ -107,58 +107,58 @@ Last updated: 2025-07-27 11:47 UTC
 | 98 | babbage-problem | ✓ | 2.737ms | 1.6 MB |
 | 99 | babylonian-spiral | ✓ | 5.177ms | 512.0 KB |
 | 100 | balanced-brackets | ✓ | 1.951ms |  |
-| 101 | balanced-ternary | ✓ | 3.115ms | 384.0 KB |
-| 102 | barnsley-fern | ✓ | 23.236ms | 6.7 MB |
-| 103 | base64-decode-data | ✓ | 3.452ms | 1.8 MB |
-| 104 | bell-numbers | ✓ | 6.041ms | 1.2 MB |
-| 105 | benfords-law | ✓ | 18.309ms | 4.9 MB |
-| 106 | bernoulli-numbers | ✓ | 10.584ms | 4.3 MB |
-| 107 | best-shuffle | ✓ | 2.062ms | 128.0 KB |
-| 108 | bifid-cipher | ✓ | 4.939ms | 512.0 KB |
-| 109 | bin-given-limits | ✓ | 4.286ms | 384.0 KB |
-| 110 | binary-digits | ✓ | 1.637ms | 128.0 KB |
-| 111 | binary-search | ✓ | 881µs |  |
-| 112 | binary-strings | ✓ | 1.335ms | 256.0 KB |
-| 113 | bioinformatics-base-count | ✓ | 1.232ms | 128.0 KB |
-| 114 | bioinformatics-global-alignment | ✓ | 195.968ms | 28.7 MB |
-| 115 | bioinformatics-sequence-mutation | ✓ | 13.273ms | 2.5 MB |
-| 116 | biorhythms | ✓ | 2.247ms | 256.0 KB |
-| 117 | bitcoin-address-validation | ✓ | 3.433ms | 640.0 KB |
-| 118 | bitmap-b-zier-curves-cubic | ✓ | 182.079ms | 30.8 MB |
-| 119 | bitmap-b-zier-curves-quadratic | ✓ | 186.558ms | 31.0 MB |
-| 120 | bitmap-bresenhams-line-algorithm | ✓ | 1.009ms | 128.0 KB |
-| 121 | bitmap-flood-fill | ✓ | 766µs |  |
-| 122 | bitmap-histogram | ✓ | 2.218ms | 128.0 KB |
-| 123 | bitmap-midpoint-circle-algorithm | ✓ | 3.508ms | 256.0 KB |
-| 124 | bitmap-ppm-conversion-through-a-pipe | ✓ | 191.744ms | 31.6 MB |
-| 125 | bitmap-read-a-ppm-file | ✓ | 2.791ms | 256.0 KB |
-| 126 | bitmap-read-an-image-through-a-pipe | ✓ | 1.331ms | 128.0 KB |
-| 127 | bitmap-write-a-ppm-file | ✓ | 1.048ms | 128.0 KB |
-| 128 | bitmap | ✓ | 125.419ms | 28.1 MB |
-| 129 | bitwise-io-1 | ✓ | 888µs | 128.0 KB |
-| 130 | bitwise-io-2 | ✓ | 3.214ms | 384.0 KB |
-| 131 | bitwise-operations | ✓ | 2.556ms | 128.0 KB |
-| 132 | blum-integer | ✓ | 2.621ms | 3.1 MB |
-| 133 | boolean-values | ✓ | 1.193ms | 128.0 KB |
-| 134 | box-the-compass | ✓ | 2.672ms | 640.0 KB |
-| 135 | boyer-moore-string-search | ✓ | 1.918ms | 128.0 KB |
-| 136 | brazilian-numbers | ✓ | 4.46147s | 9.2 MB |
-| 137 | break-oo-privacy | ✓ | 817µs |  |
+| 101 | balanced-ternary | ✓ | 2.867ms | 384.0 KB |
+| 102 | barnsley-fern | ✓ | 17.204ms | 9.6 MB |
+| 103 | base64-decode-data | ✓ | 534µs | 1.0 MB |
+| 104 | bell-numbers | ✓ | 4.402ms | 512.0 KB |
+| 105 | benfords-law | ✓ | 6.307ms | 5.4 MB |
+| 106 | bernoulli-numbers | ✓ | 8.189ms | 4.4 MB |
+| 107 | best-shuffle | ✓ | 1.642ms | 128.0 KB |
+| 108 | bifid-cipher | ✓ | 2.754ms | 128.0 KB |
+| 109 | bin-given-limits | ✓ | 3.476ms | 384.0 KB |
+| 110 | binary-digits | ✓ | 1.972ms | 128.0 KB |
+| 111 | binary-search | ✓ | 750µs | 128.0 KB |
+| 112 | binary-strings | ✓ | 1.037ms |  |
+| 113 | bioinformatics-base-count | ✓ | 1.301ms | 128.0 KB |
+| 114 | bioinformatics-global-alignment | ✓ | 124.258ms | 19.0 MB |
+| 115 | bioinformatics-sequence-mutation | ✓ | 4.696ms | 640.0 KB |
+| 116 | biorhythms | ✓ | 3.055ms | 640.0 KB |
+| 117 | bitcoin-address-validation | ✓ | 2.796ms | 640.0 KB |
+| 118 | bitmap-b-zier-curves-cubic | ✓ | 2.746ms | 264.0 KB |
+| 119 | bitmap-b-zier-curves-quadratic | ✓ | 2.369ms | 128.0 KB |
+| 120 | bitmap-bresenhams-line-algorithm | ✓ | 800µs |  |
+| 121 | bitmap-flood-fill | ✓ | 769µs | 128.0 KB |
+| 122 | bitmap-histogram | ✓ | 1.2ms | 128.0 KB |
+| 123 | bitmap-midpoint-circle-algorithm | ✓ | 1.589ms |  |
+| 124 | bitmap-ppm-conversion-through-a-pipe | ✓ | 72.909ms | 21.8 MB |
+| 125 | bitmap-read-a-ppm-file | ✓ | 737µs | 128.0 KB |
+| 126 | bitmap-read-an-image-through-a-pipe | ✓ | 607µs | 128.0 KB |
+| 127 | bitmap-write-a-ppm-file | ✓ | 1.345ms | 128.0 KB |
+| 128 | bitmap | ✓ | 44.059ms | 14.1 MB |
+| 129 | bitwise-io-1 | ✓ | 795µs | 128.0 KB |
+| 130 | bitwise-io-2 | ✓ | 2.336ms | 1.8 MB |
+| 131 | bitwise-operations | ✓ | 1.679ms | 256.0 KB |
+| 132 | blum-integer | ✓ | 2.941ms | 2.8 MB |
+| 133 | boolean-values | ✓ | 1.085ms |  |
+| 134 | box-the-compass | ✓ | 2.644ms | 640.0 KB |
+| 135 | boyer-moore-string-search | ✓ | 1.316ms | 128.0 KB |
+| 136 | brazilian-numbers | ✓ | 8.144409s | 9.0 MB |
+| 137 | break-oo-privacy | ✓ | 844µs |  |
 | 138 | brilliant-numbers | ✓ | 58.808563s | 129.2 MB |
 | 139 | brownian-tree | ✓ | 17.721714s | 14.4 MB |
-| 140 | bulls-and-cows-player | ✓ | 1.604ms | 3.6 MB |
+| 140 | bulls-and-cows-player | ✓ | 4.121ms | 3.6 MB |
 | 141 | bulls-and-cows | ✓ | 1.141558s | 512.0 KB |
-| 142 | burrows-wheeler-transform | ✓ | 1.015568s | 7.9 MB |
-| 143 | caesar-cipher-1 | ✓ | 1.015568s | 128.0 KB |
-| 144 | caesar-cipher-2 | ✓ | 1.015568s | 128.0 KB |
-| 145 | calculating-the-value-of-e | ✓ | 1.015568s | 128.0 KB |
-| 146 | calendar---for-real-programmers-1 | ✓ | 1.015568s | 3.4 MB |
-| 147 | calendar---for-real-programmers-2 | ✓ | 1.015568s | 3.0 MB |
-| 148 | calendar | ✓ | 1.015568s | 3.1 MB |
-| 149 | calkin-wilf-sequence | ✓ | 1.015568s | 384.0 KB |
-| 150 | call-a-foreign-language-function | ✓ | 1.015568s | 128.0 KB |
+| 142 | burrows-wheeler-transform | ✓ | 11.275ms | 7.8 MB |
+| 143 | caesar-cipher-1 | ✓ | 1.236ms | 128.0 KB |
+| 144 | caesar-cipher-2 | ✓ | 1.274ms | 128.0 KB |
+| 145 | calculating-the-value-of-e | ✓ | 724µs | 128.0 KB |
+| 146 | calendar---for-real-programmers-1 | ✓ | 7.269ms | 3.2 MB |
+| 147 | calendar---for-real-programmers-2 | ✓ | 7.22ms | 3.0 MB |
+| 148 | calendar | ✓ | 5.892ms | 3.0 MB |
+| 149 | calkin-wilf-sequence | ✓ | 3.01ms | 512.0 KB |
+| 150 | call-a-foreign-language-function | ✓ | 570µs | 128.0 KB |
 | 151 | call-a-function-1 | ✓ | 7µs |  |
-| 152 | call-a-function-10 | ✓ | 105µs |  |
+| 152 | call-a-function-10 | ✓ | 62µs |  |
 | 153 | call-a-function-11 | ✓ | 944µs | 128.0 KB |
 | 154 | call-a-function-12 | ✓ | 360µs | 128.0 KB |
 | 155 | call-a-function-2 | ✓ | 82µs |  |
@@ -415,60 +415,62 @@ Last updated: 2025-07-27 11:47 UTC
 | 406 | fibonacci-sequence-2 | ✓ | 9µs |  |
 | 407 | fibonacci-sequence-3 | ✓ | 9µs |  |
 | 408 | fibonacci-sequence-4 | ✓ | 998µs | 128.0 KB |
-| 409 | fibonacci-word-fractal | ✓ | 893µs |  |
-| 410 | fibonacci-word | ✓ | 2.19354s | 32.3 MB |
-| 411 | file-extension-is-in-extensions-list | ✓ | 2.684ms | 256.0 KB |
-| 412 | file-input-output-1 | ✓ | 637µs | 128.0 KB |
-| 413 | file-input-output-2 | ✓ | 707µs |  |
-| 414 | file-modification-time | ✓ | 2.253ms | 384.0 KB |
-| 415 | file-size-distribution | ✓ | 1.474ms | 128.0 KB |
-| 416 | file-size | ✓ | 731µs | 128.0 KB |
-| 417 | filter | ✓ | 1.123ms |  |
-| 418 | find-chess960-starting-position-identifier | ✓ | 4.524ms | 512.0 KB |
-| 419 | find-common-directory-path | ✓ | 1.21ms | 256.0 KB |
-| 420 | find-duplicate-files | ✓ | 1.046ms | 128.0 KB |
-| 421 | find-if-a-point-is-within-a-triangle | ✓ | 3.376ms | 384.0 KB |
-| 422 | find-largest-left-truncatable-prime-in-a-given-base | ✓ | 1.21ms | 4.5 MB |
-| 423 | find-limit-of-recursion | ✓ | 4.021ms | 9.2 MB |
-| 424 | find-palindromic-numbers-in-both-binary-and-ternary-bases | ✓ | 1.290361s | 10.8 MB |
-| 425 | find-the-intersection-of-a-line-with-a-plane | ✓ | 419µs |  |
-| 426 | find-the-intersection-of-two-lines | ✓ | 351µs | 128.0 KB |
-| 427 | find-the-last-sunday-of-each-month | ✓ | 926µs | 640.0 KB |
-| 428 | find-the-missing-permutation | ✓ | 462µs | 256.0 KB |
-| 429 | fivenum-1 | ✓ | 504µs | 128.0 KB |
-| 430 | fivenum-2 | ✓ | 647µs | 256.0 KB |
-| 431 | fixed-length-records-1 | ✓ | 370µs |  |
-| 432 | fixed-length-records-2 | ✓ | 605µs |  |
-| 433 | fizzbuzz-1 | ✓ | 793µs | 256.0 KB |
-| 434 | fizzbuzz-2 | ✓ | 1.239ms | 512.0 KB |
-| 435 | flatten-a-list-1 | ✓ | 301µs | 128.0 KB |
-| 436 | flatten-a-list-2 | ✓ | 300µs | 128.0 KB |
-| 437 | flipping-bits-game | ✓ | 366µs | 128.0 KB |
-| 438 | flow-control-structures-1 | ✓ | 310µs |  |
-| 439 | flow-control-structures-2 | ✓ | 297µs | 128.0 KB |
-| 440 | flow-control-structures-3 | ✓ | 309µs | 128.0 KB |
-| 441 | flow-control-structures-4 | ✓ | 261µs |  |
-| 442 | floyd-warshall-algorithm | ✓ | 287µs |  |
-| 443 | floyds-triangle | ✓ | 520µs |  |
-| 444 | forest-fire | ✓ | 522µs |  |
-| 445 | fork | ✓ | 358µs |  |
-| 446 | ftp | ✓ | 312µs |  |
-| 447 | gamma-function | ✓ | 667µs | 384.0 KB |
-| 448 | general-fizzbuzz | ✓ | 525µs |  |
-| 449 | generic-swap | ✓ | 330µs |  |
-| 450 | get-system-command-output | ✓ | 281µs | 128.0 KB |
-| 451 | giuga-numbers | ✓ | 447µs | 128.0 KB |
-| 452 | globally-replace-text-in-several-files | ✓ | 283µs | 128.0 KB |
-| 453 | goldbachs-comet | ✓ | 988µs | 2.5 MB |
-| 454 | golden-ratio-convergence | ✓ | 471µs |  |
-| 455 | graph-colouring | ✓ | 273µs |  |
-| 456 | gray-code | ✓ | 1.305ms | 1.8 MB |
-| 457 | http | ✓ |  |  |
-| 458 | image-noise | ✓ | 8.558ms | 10.1 MB |
-| 459 | loops-increment-loop-index-within-loop-body | ✓ | 160.041ms | 9.6 MB |
-| 460 | md5 | ✓ | 636µs | 256.0 KB |
-| 461 | nim-game | ✓ | 970µs | 512.0 KB |
-| 462 | plasma-effect | ✓ | 5.884ms | 10.4 MB |
-| 463 | sorting-algorithms-bubble-sort | ✓ | 393µs | 128.0 KB |
-| 464 | window-management | ✓ | 546µs |  |
-| 465 | zumkeller-numbers | ✓ | 862.793ms | 12.2 MB |
+| 409 | fibonacci-sequence-5 |   |  |  |
+| 410 | fibonacci-word-fractal | ✓ | 893µs |  |
+| 411 | fibonacci-word | ✓ | 2.19354s | 32.3 MB |
+| 412 | file-extension-is-in-extensions-list | ✓ | 2.684ms | 256.0 KB |
+| 413 | file-input-output-1 | ✓ | 637µs | 128.0 KB |
+| 414 | file-input-output-2 | ✓ | 707µs |  |
+| 415 | file-input-output-3 |   |  |  |
+| 416 | file-modification-time | ✓ | 2.253ms | 384.0 KB |
+| 417 | file-size-distribution | ✓ | 1.474ms | 128.0 KB |
+| 418 | file-size | ✓ | 731µs | 128.0 KB |
+| 419 | filter | ✓ | 1.123ms |  |
+| 420 | find-chess960-starting-position-identifier | ✓ | 4.524ms | 512.0 KB |
+| 421 | find-common-directory-path | ✓ | 1.21ms | 256.0 KB |
+| 422 | find-duplicate-files | ✓ | 1.046ms | 128.0 KB |
+| 423 | find-if-a-point-is-within-a-triangle | ✓ | 3.376ms | 384.0 KB |
+| 424 | find-largest-left-truncatable-prime-in-a-given-base | ✓ | 1.21ms | 4.5 MB |
+| 425 | find-limit-of-recursion | ✓ | 4.021ms | 9.2 MB |
+| 426 | find-palindromic-numbers-in-both-binary-and-ternary-bases | ✓ | 1.290361s | 10.8 MB |
+| 427 | find-the-intersection-of-a-line-with-a-plane | ✓ | 419µs |  |
+| 428 | find-the-intersection-of-two-lines | ✓ | 351µs | 128.0 KB |
+| 429 | find-the-last-sunday-of-each-month | ✓ | 926µs | 640.0 KB |
+| 430 | find-the-missing-permutation | ✓ | 462µs | 256.0 KB |
+| 431 | fivenum-1 | ✓ | 504µs | 128.0 KB |
+| 432 | fivenum-2 | ✓ | 647µs | 256.0 KB |
+| 433 | fixed-length-records-1 | ✓ | 370µs |  |
+| 434 | fixed-length-records-2 | ✓ | 605µs |  |
+| 435 | fizzbuzz-1 | ✓ | 793µs | 256.0 KB |
+| 436 | fizzbuzz-2 | ✓ | 1.239ms | 512.0 KB |
+| 437 | flatten-a-list-1 | ✓ | 301µs | 128.0 KB |
+| 438 | flatten-a-list-2 | ✓ | 300µs | 128.0 KB |
+| 439 | flipping-bits-game | ✓ | 366µs | 128.0 KB |
+| 440 | flow-control-structures-1 | ✓ | 310µs |  |
+| 441 | flow-control-structures-2 | ✓ | 297µs | 128.0 KB |
+| 442 | flow-control-structures-3 | ✓ | 309µs | 128.0 KB |
+| 443 | flow-control-structures-4 | ✓ | 261µs |  |
+| 444 | floyd-warshall-algorithm | ✓ | 287µs |  |
+| 445 | floyds-triangle | ✓ | 520µs |  |
+| 446 | forest-fire | ✓ | 522µs |  |
+| 447 | fork | ✓ | 358µs |  |
+| 448 | ftp | ✓ | 312µs |  |
+| 449 | gamma-function | ✓ | 667µs | 384.0 KB |
+| 450 | general-fizzbuzz | ✓ | 525µs |  |
+| 451 | generic-swap | ✓ | 330µs |  |
+| 452 | get-system-command-output | ✓ | 281µs | 128.0 KB |
+| 453 | giuga-numbers | ✓ | 447µs | 128.0 KB |
+| 454 | globally-replace-text-in-several-files | ✓ | 283µs | 128.0 KB |
+| 455 | goldbachs-comet | ✓ | 988µs | 2.5 MB |
+| 456 | golden-ratio-convergence | ✓ | 471µs |  |
+| 457 | graph-colouring | ✓ | 273µs |  |
+| 458 | gray-code | ✓ | 1.305ms | 1.8 MB |
+| 459 | http | ✓ |  |  |
+| 460 | image-noise | ✓ | 8.558ms | 10.1 MB |
+| 461 | loops-increment-loop-index-within-loop-body | ✓ | 160.041ms | 9.6 MB |
+| 462 | md5 | ✓ | 636µs | 256.0 KB |
+| 463 | nim-game | ✓ | 970µs | 512.0 KB |
+| 464 | plasma-effect | ✓ | 5.884ms | 10.4 MB |
+| 465 | sorting-algorithms-bubble-sort | ✓ | 393µs | 128.0 KB |
+| 466 | window-management | ✓ | 546µs |  |
+| 467 | zumkeller-numbers | ✓ | 862.793ms | 12.2 MB |
