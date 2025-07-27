@@ -1,7 +1,7 @@
 # Rosetta C# Transpiler Output
 
-Completed programs: 222/467
-Last updated: 2025-07-27 16:42 UTC
+Completed programs: 240/467
+Last updated: 2025-07-27 16:57 UTC
 
 ## Checklist
 | Index | Name | Status | Duration | Memory |
@@ -190,25 +190,25 @@ Last updated: 2025-07-27 16:42 UTC
 | 182 | catmull-clark-subdivision-surface | ✓ | 20.23ms | 2.1MB |
 | 183 | chaocipher | ✓ | 3.982ms | 69.0KB |
 | 184 | chaos-game | ✓ | 5.799ms | 5.8MB |
-| 185 | character-codes-1 |   |  |  |
-| 186 | character-codes-2 |   |  |  |
-| 187 | character-codes-3 |   |  |  |
-| 188 | character-codes-4 |   |  |  |
-| 189 | character-codes-5 |   |  |  |
-| 190 | chat-server |   |  |  |
+| 185 | character-codes-1 | ✓ | 3.075ms | 16.0KB |
+| 186 | character-codes-2 | ✓ | 3.088ms | 16.0KB |
+| 187 | character-codes-3 | ✓ | 3.119ms | 16.0KB |
+| 188 | character-codes-4 | ✓ | 2.713ms | 16.0KB |
+| 189 | character-codes-5 | ✓ | 2.624ms | 16.0KB |
+| 190 | chat-server | ✓ | 3.081ms | 16.0KB |
 | 191 | check-machin-like-formulas | ✓ | 6.599ms | 1.5MB |
-| 192 | check-that-file-exists |   |  |  |
-| 193 | checkpoint-synchronization-1 |   |  |  |
-| 194 | checkpoint-synchronization-2 |   |  |  |
-| 195 | checkpoint-synchronization-3 |   |  |  |
-| 196 | checkpoint-synchronization-4 |   |  |  |
-| 197 | chernicks-carmichael-numbers |   |  |  |
-| 198 | cheryls-birthday |   |  |  |
-| 199 | chinese-remainder-theorem |   |  |  |
-| 200 | chinese-zodiac |   |  |  |
-| 201 | cholesky-decomposition-1 |   |  |  |
-| 202 | cholesky-decomposition |   |  |  |
-| 203 | chowla-numbers |   |  |  |
+| 192 | check-that-file-exists | ✓ | 2.705ms | 16.0KB |
+| 193 | checkpoint-synchronization-1 | ✓ | 2.933ms | 16.0KB |
+| 194 | checkpoint-synchronization-2 | ✓ | 4.191ms | 24.1KB |
+| 195 | checkpoint-synchronization-3 | ✓ | 4.543ms | 24.1KB |
+| 196 | checkpoint-synchronization-4 | ✓ | 2.493ms | 24.1KB |
+| 197 | chernicks-carmichael-numbers | ✓ | 55.103ms | 16.9MB |
+| 198 | cheryls-birthday | ✓ | 2.623ms | 16.0KB |
+| 199 | chinese-remainder-theorem | ✓ | 2.531ms | 16.0KB |
+| 200 | chinese-zodiac | ✓ | 2.452ms | 16.0KB |
+| 201 | cholesky-decomposition-1 | ✓ | 20.535ms | 2.3MB |
+| 202 | cholesky-decomposition | ✓ | 12.64ms | 1.2MB |
+| 203 | chowla-numbers | ✓ | 2.539ms | 16.0KB |
 | 204 | church-numerals-1 |   |  |  |
 | 205 | church-numerals-2 |   |  |  |
 | 206 | circles-of-given-radius-through-two-points |   |  |  |
