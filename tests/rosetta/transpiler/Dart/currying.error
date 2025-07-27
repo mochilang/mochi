@@ -1,0 +1,11 @@
+run: exit status 254
+../../../tests/rosetta/transpiler/Dart/currying.dart:66:23: Error: The method 'Method' isn't defined for the class 'Foo'.
+ - 'Foo' is from '../../../tests/rosetta/transpiler/Dart/currying.dart'.
+Try correcting the name to the name of an existing method, or defining a method named 'Method'.
+  var fn1 = ((b) => a.Method(b));
+                      ^^^^^^
+../../../tests/rosetta/transpiler/Dart/currying.dart:68:25: Error: The method 'Method' isn't defined for the class 'Foo'.
+ - 'Foo' is from '../../../tests/rosetta/transpiler/Dart/currying.dart'.
+Try correcting the name to the name of an existing method, or defining a method named 'Method'.
+  print("2 + 2 = " + (a.Method(2)).toString());
+                        ^^^^^^
