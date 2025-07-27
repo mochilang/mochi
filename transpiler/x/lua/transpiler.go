@@ -2914,6 +2914,10 @@ func convertPostfix(p *parser.PostfixExpr) (Expr, error) {
 					// built-in map methods
 					args = append([]Expr{expr}, args...)
 					expr = &CallExpr{Func: op.Field.Name, Args: args}
+				} else if op.Field.Name == "padStart" {
+					// string method
+					args = append([]Expr{expr}, args...)
+					expr = &CallExpr{Func: "padStart", Args: args}
 				} else if id, ok := expr.(*Ident); ok {
 					if id.Name == "net" {
 						// treat as a namespaced function call for known package
