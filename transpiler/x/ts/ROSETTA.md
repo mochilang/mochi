@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated TypeScript code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/TypeScript`.
-Last updated: 2025-07-27 14:21 UTC
+Last updated: 2025-07-27 14:45 UTC
 
-## Rosetta Golden Test Checklist (443/467)
+## Rosetta Golden Test Checklist (445/467)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 5.905ms | 256.0 KB |
@@ -307,55 +307,55 @@ Last updated: 2025-07-27 14:21 UTC
 | 298 | determine-sentence-type | ✓ | 529µs | 256.0 KB |
 | 299 | dice-game-probabilities-1 | ✓ | 5.072ms | 7.4 MB |
 | 300 | dice-game-probabilities-2 | ✓ | 5.441ms | 7.9 MB |
-| 301 | digital-root-multiplicative-digital-root | ✓ | 16.861ms | 10.0 MB |
-| 302 | dijkstras-algorithm | ✓ | 1.568ms | 128.0 KB |
-| 303 | dinesmans-multiple-dwelling-problem | ✓ | 1.316ms | 128.0 KB |
-| 304 | dining-philosophers-1 | ✓ | 2.554ms | 128.0 KB |
-| 305 | dining-philosophers-2 | ✓ | 3.62ms | 256.0 KB |
-| 306 | disarium-numbers | ✓ | 354.098ms | 10.9 MB |
-| 307 | discordian-date | ✓ | 1.681ms | 128.0 KB |
-| 308 | display-a-linear-combination | ✓ | 1.614ms | 128.0 KB |
-| 309 | display-an-outline-as-a-nested-table | ✓ | 1.871ms | 128.0 KB |
-| 310 | distance-and-bearing | ✓ | 5.349ms | 3.1 MB |
-| 311 | distributed-programming | ✓ | 616µs |  |
-| 312 | diversity-prediction-theorem | ✓ | 1.402ms | 256.0 KB |
-| 313 | documentation | ✓ | 6µs |  |
-| 314 | doomsday-rule | ✓ | 1.676ms |  |
-| 315 | dot-product | ✓ | 638µs |  |
-| 316 | doubly-linked-list-definition-1 | ✓ | 8µs |  |
-| 317 | doubly-linked-list-definition-2 | ✓ | 1.027ms | 128.0 KB |
-| 318 | doubly-linked-list-element-definition | ✓ | 690µs |  |
-| 319 | doubly-linked-list-traversal | ✓ | 714µs | 128.0 KB |
-| 320 | dragon-curve | ✓ | 1.801ms | 128.0 KB |
-| 321 | draw-a-clock | ✓ | 743µs | 128.0 KB |
-| 322 | draw-a-cuboid | ✓ | 3.326ms | 128.0 KB |
-| 323 | draw-a-pixel-1 | ✓ | 15.11ms | 9.9 MB |
-| 324 | draw-a-rotating-cube | ✓ | 7.667ms | 3.6 MB |
-| 325 | draw-a-sphere | ✓ | 16.525ms | 10.8 MB |
-| 326 | dutch-national-flag-problem | ✓ | 1.073ms | 128.0 KB |
-| 327 | dynamic-variable-names | ✓ | 2.378ms | 512.0 KB |
-| 328 | earliest-difference-between-prime-gaps | ✓ | 3.677ms | 512.0 KB |
-| 329 | eban-numbers | ✓ | 30.75ms | 12.5 MB |
-| 330 | ecdsa-example |   |  |  |
-| 331 | echo-server | ✓ | 639µs | 128.0 KB |
-| 332 | eertree |   |  |  |
-| 333 | egyptian-division | ✓ | 369µs | 128.0 KB |
-| 334 | ekg-sequence-convergence | ✓ | 2.445ms | 4.9 MB |
-| 335 | element-wise-operations | ✓ | 1.542ms | 640.0 KB |
-| 336 | elementary-cellular-automaton-infinite-length | ✓ | 1.933ms | 3.5 MB |
-| 337 | elementary-cellular-automaton-random-number-generator | ✓ | 442µs | 384.0 KB |
-| 338 | elementary-cellular-automaton | ✓ | 981µs | 1.4 MB |
-| 339 | elliptic-curve-arithmetic | ✓ | 998µs | 256.0 KB |
-| 340 | elliptic-curve-digital-signature-algorithm | ✓ | 447µs | 128.0 KB |
-| 341 | emirp-primes | ✓ | 74.128ms | 9.2 MB |
-| 342 | empty-directory | ✓ | 302µs | 128.0 KB |
-| 343 | empty-program | ✓ | 8µs |  |
-| 344 | empty-string-1 | ✓ | 529µs | 128.0 KB |
-| 345 | empty-string-2 | ✓ | 329µs |  |
-| 346 | enforced-immutability | ✓ | 361µs | 128.0 KB |
-| 347 | entropy-1 | ✓ | 391µs | 128.0 KB |
-| 348 | entropy-2 | ✓ | 372µs | 128.0 KB |
-| 349 | entropy-narcissist | ✓ | 640µs | 128.0 KB |
+| 301 | digital-root-multiplicative-digital-root | ✓ | 4.299ms | 8.6 MB |
+| 302 | dijkstras-algorithm | ✓ | 559µs | 128.0 KB |
+| 303 | dinesmans-multiple-dwelling-problem | ✓ | 392µs | 128.0 KB |
+| 304 | dining-philosophers-1 | ✓ | 867µs | 256.0 KB |
+| 305 | dining-philosophers-2 | ✓ | 663µs | 128.0 KB |
+| 306 | disarium-numbers | ✓ | 256.312ms | 11.3 MB |
+| 307 | discordian-date | ✓ | 566µs | 128.0 KB |
+| 308 | display-a-linear-combination | ✓ | 579µs | 128.0 KB |
+| 309 | display-an-outline-as-a-nested-table | ✓ | 1.012ms | 128.0 KB |
+| 310 | distance-and-bearing | ✓ | 1.408ms | 2.8 MB |
+| 311 | distributed-programming | ✓ | 286µs |  |
+| 312 | diversity-prediction-theorem | ✓ | 556µs | 256.0 KB |
+| 313 | documentation | ✓ | 3µs |  |
+| 314 | doomsday-rule | ✓ | 582µs |  |
+| 315 | dot-product | ✓ | 332µs | 128.0 KB |
+| 316 | doubly-linked-list-definition-1 | ✓ | 3µs |  |
+| 317 | doubly-linked-list-definition-2 | ✓ | 479µs | 128.0 KB |
+| 318 | doubly-linked-list-element-definition | ✓ | 316µs | 128.0 KB |
+| 319 | doubly-linked-list-traversal | ✓ | 324µs |  |
+| 320 | dragon-curve | ✓ | 495µs | 128.0 KB |
+| 321 | draw-a-clock | ✓ | 596µs |  |
+| 322 | draw-a-cuboid | ✓ | 683µs | 256.0 KB |
+| 323 | draw-a-pixel-1 | ✓ | 3.059ms | 8.2 MB |
+| 324 | draw-a-rotating-cube | ✓ | 1.819ms | 3.4 MB |
+| 325 | draw-a-sphere | ✓ | 5.221ms | 10.4 MB |
+| 326 | dutch-national-flag-problem | ✓ | 535µs | 256.0 KB |
+| 327 | dynamic-variable-names | ✓ | 1.334ms | 512.0 KB |
+| 328 | earliest-difference-between-prime-gaps | ✓ | 909µs | 384.0 KB |
+| 329 | eban-numbers | ✓ | 13.146ms | 13.3 MB |
+| 330 | ecdsa-example | ✓ | 397µs | 256.0 KB |
+| 331 | echo-server | ✓ | 335µs |  |
+| 332 | eertree | ✓ | 548µs | 128.0 KB |
+| 333 | egyptian-division | ✓ | 367µs | 128.0 KB |
+| 334 | ekg-sequence-convergence | ✓ | 3.116ms | 4.7 MB |
+| 335 | element-wise-operations | ✓ | 1.65ms | 640.0 KB |
+| 336 | elementary-cellular-automaton-infinite-length | ✓ | 1.861ms | 3.4 MB |
+| 337 | elementary-cellular-automaton-random-number-generator | ✓ | 459µs | 384.0 KB |
+| 338 | elementary-cellular-automaton | ✓ | 1.065ms | 2.0 MB |
+| 339 | elliptic-curve-arithmetic | ✓ | 969µs | 384.0 KB |
+| 340 | elliptic-curve-digital-signature-algorithm | ✓ | 399µs | 128.0 KB |
+| 341 | emirp-primes | ✓ | 90.046ms | 9.0 MB |
+| 342 | empty-directory | ✓ | 328µs |  |
+| 343 | empty-program | ✓ | 7µs |  |
+| 344 | empty-string-1 | ✓ | 514µs |  |
+| 345 | empty-string-2 | ✓ | 320µs |  |
+| 346 | enforced-immutability | ✓ | 286µs |  |
+| 347 | entropy-1 | ✓ | 381µs | 128.0 KB |
+| 348 | entropy-2 | ✓ | 426µs | 128.0 KB |
+| 349 | entropy-narcissist | ✓ | 673µs | 256.0 KB |
 | 350 | enumerations-1 | ✓ | 3µs |  |
 | 351 | enumerations-2 | ✓ | 3µs |  |
 | 352 | enumerations-3 | ✓ | 3µs |  |

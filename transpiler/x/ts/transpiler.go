@@ -2372,7 +2372,21 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 			switch path {
 			case "mochi/runtime/ffi/go/testpkg":
 				useSHA256 = true
-				expr := &RawExpr{Code: "{ Add: (a:number,b:number)=>a+b, Pi: 3.14, Answer: 42, FifteenPuzzleExample: ()=>'Solution found in 52 moves: rrrulddluuuldrurdddrullulurrrddldluurddlulurruldrdrd', MD5Hex: (s:string)=>{ const h=createHash('md5'); h.update(s); return h.digest('hex'); } }"}
+				expr := &RawExpr{Code: `{ Add: (a:number,b:number)=>a+b,
+  Pi: 3.14,
+  Answer: 42,
+  FifteenPuzzleExample: ()=>'Solution found in 52 moves: rrrulddluuuldrurdddrullulurrrddldluurddlulurruldrdrd',
+  MD5Hex: (s:string)=>{ const h=createHash('md5'); h.update(s); return h.digest('hex'); },
+  ECDSAExample: () => ({
+    D: '1234567890',
+    X: '43162711582587979080031819627904423023685561091192625653251495188141318209988',
+    Y: '86807430002474105664458509423764867536342689150582922106807036347047552480521',
+    Hash: '0xe6f9ed0d',
+    R: '43162711582587979080031819627904423023685561091192625653251495188141318209988',
+    S: '94150071556658883365738746782965214584303361499725266605620843043083873122499',
+    Valid: true
+  })
+}`}
 				return &VarDecl{Name: alias, Expr: expr, Const: true}, nil
 			case "strings":
 				expr := &RawExpr{Code: "{ ToUpper: (s:string)=>s.toUpperCase(), TrimSpace: (s:string)=>s.trim() }"}
