@@ -644,6 +644,10 @@ func (c *CastExpr) emit(w io.Writer) {
 	if inner, ok := c.Value.(*CastExpr); ok && inner.Type == "Any?" {
 		c.Value = inner.Value
 	}
+	if c.Type == "Double" && guessType(c.Value) == "Double" {
+		c.Value.emit(w)
+		return
+	}
 	if ll, ok := c.Value.(*ListLit); ok && strings.HasPrefix(c.Type, "MutableList<") {
 		elemType := strings.TrimSuffix(strings.TrimPrefix(c.Type, "MutableList<"), ">")
 		tll := &TypedListLit{ElemType: elemType, Elems: ll.Elems}
@@ -664,10 +668,12 @@ func (c *CastExpr) emit(w io.Writer) {
 		c.Value.emit(w)
 	}
 	switch c.Type {
-	case "int":
+	case "int", "Int":
 		io.WriteString(w, ".toInt()")
-	case "float":
+	case "float", "Double", "Double?":
 		io.WriteString(w, ".toDouble()")
+	case "Int?":
+		io.WriteString(w, ".toInt()")
 	case "string":
 		io.WriteString(w, ".toString()")
 	case "BigInteger":
@@ -754,7 +760,7 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		} else if typ == "Int" {
 			io.WriteString(w, "(")
 			e.emit(w)
-			io.WriteString(w, " as Int)")
+			io.WriteString(w, ").toInt()")
 		} else if typ == "BigInteger" {
 			io.WriteString(w, "(")
 			e.emit(w)
@@ -804,6 +810,10 @@ func (b *BinaryExpr) emit(w io.Writer) {
 				return
 			}
 			if lt == "Any" && (rt == "Double" || rt == "Int") {
+				if _, ok := e.(*IndexExpr); ok {
+					e.emit(w)
+					return
+				}
 				cast(e, "Double")
 				return
 			}
@@ -917,6 +927,26 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		default:
 			io.WriteString(w, " /* unsupported */ ")
 		}
+		return
+	}
+	if numOp && b.Op == "%" && !bigOp {
+		io.WriteString(w, "Math.floorMod(")
+		if _, ok := b.Left.(*BinaryExpr); ok {
+			io.WriteString(w, "(")
+			emitOperand(b.Left, b.Right)
+			io.WriteString(w, ")")
+		} else {
+			emitOperand(b.Left, b.Right)
+		}
+		io.WriteString(w, ", ")
+		if _, ok := b.Right.(*BinaryExpr); ok {
+			io.WriteString(w, "(")
+			emitOperand(b.Right, b.Left)
+			io.WriteString(w, ")")
+		} else {
+			emitOperand(b.Right, b.Left)
+		}
+		io.WriteString(w, ")")
 		return
 	}
 	if listOp {
@@ -2029,7 +2059,19 @@ func guessType(e Expr) string {
 		return "Int"
 	case *ListLit:
 		if len(v.Elems) > 0 {
-			elem := guessType(v.Elems[0])
+			elem := ""
+			for _, ex := range v.Elems {
+				t := guessType(ex)
+				if t == "" {
+					t = "Any"
+				}
+				if elem == "" || elem == "Any" || elem == "MutableList<Any>" {
+					elem = t
+				} else if t != elem {
+					elem = "Any"
+					break
+				}
+			}
 			if elem == "" {
 				elem = "Any"
 			}
@@ -2419,6 +2461,9 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 				if typ == "MutableMap<Any, Any>" {
 					typ = "MutableMap<String, Any>"
 				}
+				if strings.Contains(typ, "Any?") && guessType(val) != typ {
+					typ = ""
+				}
 				if _, ok := val.(*NullLit); ok {
 					if typ == "" {
 						typ = "Any?"
@@ -2740,6 +2785,9 @@ func convertStmts(env *types.Env, list []*parser.Statement) ([]Stmt, error) {
 				if typ == "MutableMap<Any, Any>" {
 					typ = "MutableMap<String, Any>"
 				}
+				if strings.Contains(typ, "Any?") && guessType(v) != typ {
+					typ = ""
+				}
 				if ix, ok := v.(*IndexExpr); ok {
 					tgt := guessType(ix.Target)
 					if strings.HasPrefix(tgt, "MutableMap<") && !strings.HasSuffix(typ, "?") {
@@ -2893,6 +2941,9 @@ func convertStmts(env *types.Env, list []*parser.Statement) ([]Stmt, error) {
 				}
 				if typ == "MutableMap<Any, Any>" {
 					typ = "MutableMap<String, Any>"
+				}
+				if strings.Contains(typ, "Any?") && guessType(v) != typ {
+					typ = ""
 				}
 				if ix, ok := v.(*IndexExpr); ok {
 					tgt := guessType(ix.Target)
@@ -4638,6 +4689,25 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 				return nil, err
 			}
 			elems[i] = ex
+		}
+		elemType := ""
+		for _, ex := range elems {
+			t := guessType(ex)
+			if t != "" && t != "Any" && t != "MutableList<Any>" {
+				if elemType == "" {
+					elemType = t
+				} else if elemType != t {
+					elemType = ""
+					break
+				}
+			}
+		}
+		if elemType != "" {
+			for i, ex := range elems {
+				if guessType(ex) == "MutableList<Any>" {
+					elems[i] = &CastExpr{Value: ex, Type: elemType}
+				}
+			}
 		}
 		return &ListLit{Elems: elems}, nil
 	case p.Map != nil:
