@@ -1,0 +1,63 @@
+// Another Mochi implementation of Rosetta "Exponentiation operator" task
+
+fun expI(b: int, p: int): int {
+  var r = 1
+  var i = 0
+  while i < p {
+    r = r * b
+    i = i + 1
+  }
+  return r
+}
+
+fun expF(b: float, p: int): float {
+  var r = 1.0
+  var pow = b
+  var n = p
+  var neg = false
+  if p < 0 {
+    n = -p
+    neg = true
+  }
+  while n > 0 {
+    if n % 2 == 1 { r = r * pow }
+    pow = pow * pow
+    n = n / 2
+  }
+  if neg { r = 1.0 / r }
+  return r
+}
+
+fun printExpF(b: float, p: int) {
+  if b == 0.0 && p < 0 {
+    print(str(b) + "^" + str(p) + ": +Inf")
+  } else {
+    print(str(b) + "^" + str(p) + ": " + str(expF(b, p)))
+  }
+}
+
+fun main() {
+  print("expI tests")
+  for pair in [[2,10],[2,-10],[-2,10],[-2,11],[11,0]] {
+    if pair[1] < 0 {
+      print(str(pair[0]) + "^" + str(pair[1]) + ": negative power not allowed")
+    } else {
+      print(str(pair[0]) + "^" + str(pair[1]) + ": " + str(expI(pair[0], pair[1])))
+    }
+  }
+  print("overflow undetected")
+  print("10^10: " + str(expI(10,10)))
+
+  print("\nexpF tests:")
+  for pair in [[2.0,10],[2.0,-10],[-2.0,10],[-2.0,11],[11.0,0]] {
+    printExpF(pair[0], pair[1])
+  }
+  print("disallowed in expI, allowed here")
+  printExpF(0.0,-1)
+  print("other interesting cases for 32 bit float type")
+  printExpF(10.0,39)
+  printExpF(10.0,-39)
+  printExpF(-10.0,39)
+}
+
+main()
