@@ -118,6 +118,15 @@ var pyKeywords = map[string]bool{
 	"yield":    true,
 }
 
+func isBuiltinType(name string) bool {
+	switch name {
+	case "int", "int64", "float", "bool", "string":
+		return true
+	default:
+		return false
+	}
+}
+
 func safeName(n string) string {
 	if pyKeywords[n] {
 		return n + "_"
@@ -3458,6 +3467,9 @@ func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, erro
 			}
 			for _, v := range st.Type.Variants {
 				if len(v.Fields) == 0 {
+					if len(st.Type.Variants) == 1 && st.Type.Alias == nil && isBuiltinType(v.Name) {
+						continue
+					}
 					p.Stmts = append(p.Stmts, &LetStmt{Name: v.Name, Expr: &Name{Name: "None"}})
 				} else {
 					var vf []DataClassField

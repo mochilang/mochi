@@ -1,5 +1,5 @@
-## Progress (2025-07-26 21:27 +0700)
-- Commit 61d4016716: transpiler: add list concat support and update rosetta tests
+## Progress (2025-07-27 10:59 +0700)
+- Commit 709945238e: transpiler: handle casts and map struct return
 - Generated Python for 104/104 programs
 - Updated README checklist and outputs
 - Removed runtime helpers and improved boolean type inference
