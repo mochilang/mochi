@@ -1,0 +1,27 @@
+exit status 1
+/workspace/mochi/tests/rosetta/transpiler/Scala/consecutive-primes-with-ascending-or-descending-differences.scala:74: error: type mismatch;
+ found   : scala.math.BigInt
+ required: Int
+        val d: Int = primes((i).toInt) - primes((i - BigInt(1)).toInt)
+                                       ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/consecutive-primes-with-ascending-or-descending-differences.scala:102: error: type mismatch;
+ found   : scala.math.BigInt
+ required: Int
+          diffs = diffs :+ ((ls(j)).toString.toDouble - (ls(j - BigInt(1))).toString.toDouble).asInstanceOf[BigInt]
+                                ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/consecutive-primes-with-ascending-or-descending-differences.scala:102: error: type mismatch;
+ found   : scala.math.BigInt
+ required: Int
+          diffs = diffs :+ ((ls(j)).toString.toDouble - (ls(j - BigInt(1))).toString.toDouble).asInstanceOf[BigInt]
+                                                              ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/consecutive-primes-with-ascending-or-descending-differences.scala:107: error: type mismatch;
+ found   : scala.math.BigInt
+ required: Int
+          println(List(String.valueOf(ls(k)) + " (" + String.valueOf(diffs((k).toInt)) + ") ", false).mkString(" "))
+                                         ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/consecutive-primes-with-ascending-or-descending-differences.scala:110: error: type mismatch;
+ found   : scala.math.BigInt
+ required: Int
+        println(String.valueOf(ls((ls).size - BigInt(1))))
+                                            ^
+5 errors found

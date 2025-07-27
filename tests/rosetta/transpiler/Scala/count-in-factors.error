@@ -1,0 +1,7 @@
+exit status 1
+/workspace/mochi/tests/rosetta/transpiler/Scala/count-in-factors.scala:49: error: type mismatch;
+ found   : Double
+ required: String
+          out = (out + x).toString.toDouble + (String.valueOf(f)).toString.toDouble
+                                                                           ^
+one error found
