@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated IR and outputs from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/ir`.
-Last updated: 2025-07-27 17:17 UTC
+Last updated: 2025-07-27 17:50 UTC
 
 ## Rosetta Golden Test Checklist (460/467)
 | Index | Name | Status | Duration | Memory |
@@ -307,58 +307,58 @@ Last updated: 2025-07-27 17:17 UTC
 | 298 | determine-sentence-type | ✓ | 903µs | 165.1 KB |
 | 299 | dice-game-probabilities-1 | ✓ | 1.674498s | 2.8 MB |
 | 300 | dice-game-probabilities-2 | ✓ | 63.713ms |  |
-| 301 | digital-root-multiplicative-digital-root | ✓ | 152.454ms | 711.3 KB |
-| 302 | dijkstras-algorithm | ✓ | 874µs | 148.7 KB |
-| 303 | dinesmans-multiple-dwelling-problem | ✓ | 740µs | 63.0 KB |
-| 304 | dining-philosophers-1 | ✓ | 476µs | 11.6 KB |
-| 305 | dining-philosophers-2 | ✓ | 578µs | 11.6 KB |
+| 301 | digital-root-multiplicative-digital-root | ✓ | 131.054ms | 1.8 MB |
+| 302 | dijkstras-algorithm | ✓ | 297µs | 148.7 KB |
+| 303 | dinesmans-multiple-dwelling-problem | ✓ | 1.309ms | 62.6 KB |
+| 304 | dining-philosophers-1 | ✓ | 114µs | 11.6 KB |
+| 305 | dining-philosophers-2 | ✓ | 115µs | 11.6 KB |
 | 306 | disarium-numbers | ✓ | 1m11.763697s |  |
-| 307 | discordian-date | ✓ | 2.312ms | 263.1 KB |
-| 308 | display-a-linear-combination | ✓ | 1.081ms | 90.1 KB |
-| 309 | display-an-outline-as-a-nested-table | ✓ | 28.031ms |  |
-| 310 | distance-and-bearing | ✓ | 8.571ms | 541.8 KB |
-| 311 | distributed-programming | ✓ | 364µs | 3.9 KB |
-| 312 | diversity-prediction-theorem | ✓ | 1.143ms | 76.2 KB |
-| 313 | documentation | ✓ | 308µs | 600 B |
-| 314 | doomsday-rule | ✓ | 3.183ms |  |
-| 315 | dot-product | ✓ | 438µs | 8.4 KB |
-| 316 | doubly-linked-list-definition-1 | ✓ | 408µs | 136 B |
-| 317 | doubly-linked-list-definition-2 | ✓ | 1.098ms | 99.7 KB |
-| 318 | doubly-linked-list-element-definition | ✓ | 671µs | 14.4 KB |
-| 319 | doubly-linked-list-traversal | ✓ | 191µs | 42.6 KB |
-| 320 | dragon-curve | ✓ | 19.211ms | 60.6 KB |
-| 321 | draw-a-clock | ✓ | 504µs | 70.9 KB |
-| 322 | draw-a-cuboid | ✓ | 3.84ms | 487.3 KB |
-| 323 | draw-a-pixel-1 | ✓ | 2.624434s | 36.7 MB |
-| 324 | draw-a-rotating-cube | ✓ | 63.282ms |  |
-| 325 | draw-a-sphere | ✓ | 178.229ms | 981.0 KB |
-| 326 | dutch-national-flag-problem | ✓ | 1.081ms | 47.2 KB |
-| 327 | dynamic-variable-names | ✓ | 691µs | 21.0 KB |
-| 328 | earliest-difference-between-prime-gaps | ✓ | 1.374ms | 143.2 KB |
-| 329 | eban-numbers | ✓ | 902.464ms |  |
-| 330 | ecdsa-example | ✓ | 194.291ms | 35.4 KB |
-| 331 | echo-server | ✓ | 48µs | 3.2 KB |
-| 332 | eertree | ✓ | 241µs | 131.5 KB |
-| 333 | egyptian-division | ✓ | 70µs | 22.1 KB |
-| 334 | ekg-sequence-convergence | ✓ | 429.806ms |  |
-| 335 | element-wise-operations | ✓ |  |  |
-| 336 | elementary-cellular-automaton-infinite-length | ✓ | 18.377ms | 331.4 KB |
-| 337 | elementary-cellular-automaton-random-number-generator | ✓ | 49.651ms | 1.1 MB |
-| 338 | elementary-cellular-automaton | ✓ | 9.228ms | 1.9 MB |
-| 339 | elliptic-curve-arithmetic | ✓ | 558µs | 232.5 KB |
-| 340 | elliptic-curve-digital-signature-algorithm | ✓ | 282µs | 2.4 KB |
-| 341 | emirp-primes | ✓ | 38.155207s | 2.5 MB |
-| 342 | empty-directory | ✓ | 29µs | 3.9 KB |
-| 343 | empty-program | ✓ | 245µs |  |
-| 344 | empty-string-1 | ✓ | 26µs | 1.5 KB |
-| 345 | empty-string-2 | ✓ | 26µs | 2.9 KB |
-| 346 | enforced-immutability | ✓ | 23µs | 1.1 KB |
-| 347 | entropy-1 | ✓ | 97µs | 31.5 KB |
-| 348 | entropy-2 | ✓ | 86µs | 35.5 KB |
-| 349 | entropy-narcissist | ✓ | 5.983ms | 413.5 KB |
-| 350 | enumerations-1 | ✓ | 27µs | 1.5 KB |
-| 351 | enumerations-2 | ✓ | 21µs | 728 B |
-| 352 | enumerations-3 | ✓ | 31µs | 1.5 KB |
+| 307 | discordian-date | ✓ | 337µs | 263.1 KB |
+| 308 | display-a-linear-combination | ✓ | 206µs | 90.1 KB |
+| 309 | display-an-outline-as-a-nested-table | ✓ | 7.559ms | 1.6 MB |
+| 310 | distance-and-bearing | ✓ | 5.621ms |  |
+| 311 | distributed-programming | ✓ | 29µs | 3.9 KB |
+| 312 | diversity-prediction-theorem | ✓ | 177µs | 76.2 KB |
+| 313 | documentation | ✓ | 10µs | 600 B |
+| 314 | doomsday-rule | ✓ | 500µs |  |
+| 315 | dot-product | ✓ | 102µs | 8.4 KB |
+| 316 | doubly-linked-list-definition-1 | ✓ | 31µs | 136 B |
+| 317 | doubly-linked-list-definition-2 | ✓ | 145µs | 99.7 KB |
+| 318 | doubly-linked-list-element-definition | ✓ | 144µs | 14.4 KB |
+| 319 | doubly-linked-list-traversal | ✓ | 59µs | 42.6 KB |
+| 320 | dragon-curve | ✓ | 20.05ms | 283.1 KB |
+| 321 | draw-a-clock | ✓ | 135µs | 70.9 KB |
+| 322 | draw-a-cuboid | ✓ | 755µs | 487.3 KB |
+| 323 | draw-a-pixel-1 | ✓ | 1.15897s | 36.8 MB |
+| 324 | draw-a-rotating-cube | ✓ | 38.641ms | 912.7 KB |
+| 325 | draw-a-sphere | ✓ | 103.962ms | 2.2 MB |
+| 326 | dutch-national-flag-problem | ✓ | 127µs | 47.2 KB |
+| 327 | dynamic-variable-names | ✓ | 103µs | 21.0 KB |
+| 328 | earliest-difference-between-prime-gaps | ✓ | 407µs | 143.2 KB |
+| 329 | eban-numbers | ✓ | 561.557ms | 702.3 KB |
+| 330 | ecdsa-example | ✓ | 233.702ms | 36.1 KB |
+| 331 | echo-server | ✓ | 41µs | 3.2 KB |
+| 332 | eertree | ✓ | 228µs | 131.5 KB |
+| 333 | egyptian-division | ✓ | 83µs | 22.1 KB |
+| 334 | ekg-sequence-convergence | ✓ | 443.07ms | 1.4 MB |
+| 335 | element-wise-operations | ✓ | 836µs | 884.9 KB |
+| 336 | elementary-cellular-automaton-infinite-length | ✓ | 18.548ms |  |
+| 337 | elementary-cellular-automaton-random-number-generator | ✓ | 52.357ms | 34.3 KB |
+| 338 | elementary-cellular-automaton | ✓ | 7.771ms |  |
+| 339 | elliptic-curve-arithmetic | ✓ | 298µs | 232.5 KB |
+| 340 | elliptic-curve-digital-signature-algorithm | ✓ | 48µs | 2.4 KB |
+| 341 | emirp-primes | ✓ | 35.93559s |  |
+| 342 | empty-directory | ✓ | 33µs | 3.9 KB |
+| 343 | empty-program | ✓ | 36µs | 248 B |
+| 344 | empty-string-1 | ✓ | 43µs | 1.5 KB |
+| 345 | empty-string-2 | ✓ | 43µs | 2.9 KB |
+| 346 | enforced-immutability | ✓ | 19µs | 1.1 KB |
+| 347 | entropy-1 | ✓ | 64µs | 31.5 KB |
+| 348 | entropy-2 | ✓ | 218µs | 35.5 KB |
+| 349 | entropy-narcissist | ✓ | 7.665ms | 390.2 KB |
+| 350 | enumerations-1 | ✓ | 22µs | 1.5 KB |
+| 351 | enumerations-2 | ✓ | 38µs | 728 B |
+| 352 | enumerations-3 | ✓ | 21µs | 1.5 KB |
 | 353 | enumerations-4 | ✓ | 21µs | 728 B |
 | 354 | environment-variables-1 | ✓ | 160.953ms | 12.5 KB |
 | 355 | environment-variables-2 | ✓ | 159.797ms | 210.0 KB |
