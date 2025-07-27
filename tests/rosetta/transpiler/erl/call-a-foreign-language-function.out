@@ -1,6 +1,6 @@
-"hello C"
+hello C
 {
-  "duration_us": 24505,
-  "memory_bytes": 430408,
+  "duration_us": 4792,
+  "memory_bytes": 240824,
   "name": "main"
 }
