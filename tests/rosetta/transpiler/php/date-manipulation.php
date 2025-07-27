@@ -1,5 +1,20 @@
 <?php
 ini_set('memory_limit', '-1');
+$now_seed = 0;
+$now_seeded = false;
+$s = getenv('MOCHI_NOW_SEED');
+if ($s !== false && $s !== '') {
+    $now_seed = intval($s);
+    $now_seeded = true;
+}
+function _now() {
+    global $now_seed, $now_seeded;
+    if ($now_seeded) {
+        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
+        return $now_seed;
+    }
+    return hrtime(true);
+}
 function _str($x) {
     if (is_array($x)) {
         $isList = array_keys($x) === range(0, count($x) - 1);
@@ -31,8 +46,10 @@ function _intdiv($a, $b) {
     }
     return intdiv($a, $b);
 }
-$months = ['January' => 1, 'February' => 2, 'March' => 3, 'April' => 4, 'May' => 5, 'June' => 6, 'July' => 7, 'August' => 8, 'September' => 9, 'October' => 10, 'November' => 11, 'December' => 12];
-function isLeap($y) {
+$__start_mem = memory_get_usage();
+$__start = _now();
+  $months = ['January' => 1, 'February' => 2, 'March' => 3, 'April' => 4, 'May' => 5, 'June' => 6, 'July' => 7, 'August' => 8, 'September' => 9, 'October' => 10, 'November' => 11, 'December' => 12];
+  function isLeap($y) {
   global $months;
   if ($y % 400 == 0) {
   return true;
@@ -41,14 +58,14 @@ function isLeap($y) {
   return false;
 }
   return $y % 4 == 0;
-}
-function daysInMonth($y, $m) {
+};
+  function daysInMonth($y, $m) {
   global $months;
   $feb = (isLeap($y) ? 29 : 28);
   $lengths = [31, $feb, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
   return $lengths[$m - 1];
-}
-function daysBeforeYear($y) {
+};
+  function daysBeforeYear($y) {
   global $months;
   $days = 0;
   $yy = 1970;
@@ -60,8 +77,8 @@ function daysBeforeYear($y) {
   $yy = $yy + 1;
 };
   return $days;
-}
-function daysBeforeMonth($y, $m) {
+};
+  function daysBeforeMonth($y, $m) {
   global $months;
   $days = 0;
   $mm = 1;
@@ -70,13 +87,13 @@ function daysBeforeMonth($y, $m) {
   $mm = $mm + 1;
 };
   return $days;
-}
-function epochSeconds($y, $m, $d, $h, $mi) {
+};
+  function epochSeconds($y, $m, $d, $h, $mi) {
   global $months;
   $days = daysBeforeYear($y) + daysBeforeMonth($y, $m) + ($d - 1);
   return $days * 86400 + $h * 3600 + $mi * 60;
-}
-function fromEpoch($sec) {
+};
+  function fromEpoch($sec) {
   global $months;
   $days = _intdiv($sec, 86400);
   $rem = $sec % 86400;
@@ -104,22 +121,22 @@ function fromEpoch($sec) {
   $h = _intdiv($rem, 3600);
   $mi = _intdiv(($rem % 3600), 60);
   return [$y, $m, $d, $h, $mi];
-}
-function pad2($n) {
+};
+  function pad2($n) {
   global $months;
   if ($n < 10) {
   return '0' . _str($n);
 }
   return _str($n);
-}
-function absInt($n) {
+};
+  function absInt($n) {
   global $months;
   if ($n < 0) {
   return -$n;
 }
   return $n;
-}
-function formatDate($parts, $offset, $abbr) {
+};
+  function formatDate($parts, $offset, $abbr) {
   global $months;
   $y = $parts[0];
   $m = $parts[1];
@@ -134,8 +151,8 @@ function formatDate($parts, $offset, $abbr) {
   $offh = pad2(_intdiv($off, 60));
   $offm = pad2($off % 60);
   return _str($y) . '-' . pad2($m) . '-' . pad2($d) . ' ' . pad2($h) . ':' . pad2($mi) . ':00 ' . $sign . $offh . $offm . ' ' . $abbr;
-}
-function mochi_parseIntStr($str) {
+};
+  function mochi_parseIntStr($str) {
   global $months;
   $i = 0;
   $neg = false;
@@ -153,8 +170,8 @@ function mochi_parseIntStr($str) {
   $n = -$n;
 }
   return $n;
-}
-function indexOf($s, $ch) {
+};
+  function indexOf($s, $ch) {
   global $months;
   $i = 0;
   while ($i < strlen($s)) {
@@ -164,13 +181,13 @@ function indexOf($s, $ch) {
   $i = $i + 1;
 };
   return -1;
-}
-function parseTime($s) {
+};
+  function parseTime($s) {
   global $months;
   $c = _indexof($s, ':');
   $h = parseIntStr(substr($s, 0, $c - 0), 10);
-  $mi = parseIntStr(substr($s, $c + 1, $c + 3 - $c + 1), 10);
-  $ampm = substr($s, strlen($s) - 2, strlen($s) - strlen($s) - 2);
+  $mi = parseIntStr(substr($s, $c + 1, $c + 3 - ($c + 1)), 10);
+  $ampm = substr($s, strlen($s) - 2, strlen($s) - (strlen($s) - 2));
   $hh = $h;
   if ($ampm == 'pm' && $h != 12) {
   $hh = $h + 12;
@@ -179,8 +196,8 @@ function parseTime($s) {
   $hh = 0;
 }
   return [$hh, $mi];
-}
-function main() {
+};
+  function main() {
   global $months;
   $input = 'March 7 2009 7:30pm EST';
   echo rtrim('Input:              ' . $input), PHP_EOL;
@@ -227,5 +244,13 @@ function main() {
   $offAZ = -25200;
   $azParts = fromEpoch($utc12 + $offAZ);
   echo rtrim('+12 hrs in Arizona: ' . formatDate($azParts, $offAZ, 'MST')), PHP_EOL;
-}
-main();
+};
+  main();
+$__end = _now();
+$__end_mem = memory_get_usage();
+$__duration = intdiv($__end - $__start, 1000);
+$__mem_diff = max(0, $__end_mem - $__start_mem);
+$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
+$__j = json_encode($__bench, 128);
+$__j = str_replace("    ", "  ", $__j);
+echo $__j, PHP_EOL;;

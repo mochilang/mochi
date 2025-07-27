@@ -62,7 +62,7 @@ function main() {
   while ($count < $limit) {
   if (!isPrime($n) && $n % 3 != 0 && $n % 5 != 0) {
   $bn = $n;
-  if ($repunit % $bn == 0) {
+  if (fmod($repunit, $bn) == 0) {
   $deceptive = array_merge($deceptive, [$n]);
   $count = $count + 1;
 };

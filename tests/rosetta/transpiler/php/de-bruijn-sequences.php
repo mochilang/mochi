@@ -1,5 +1,20 @@
 <?php
 ini_set('memory_limit', '-1');
+$now_seed = 0;
+$now_seeded = false;
+$s = getenv('MOCHI_NOW_SEED');
+if ($s !== false && $s !== '') {
+    $now_seed = intval($s);
+    $now_seeded = true;
+}
+function _now() {
+    global $now_seed, $now_seeded;
+    if ($now_seeded) {
+        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
+        return $now_seed;
+    }
+    return hrtime(true);
+}
 function _str($x) {
     if (is_array($x)) {
         $isList = array_keys($x) === range(0, count($x) - 1);
@@ -19,7 +34,9 @@ function _str($x) {
 function parseIntStr($s, $base = 10) {
     return intval($s, intval($base));
 }
-function dbRec($k, $n, $t, $p, &$a, $seq) {
+$__start_mem = memory_get_usage();
+$__start = _now();
+  function dbRec($k, $n, $t, $p, &$a, $seq) {
   if ($t > $n) {
   if ($n % $p == 0) {
   $j = 1;
@@ -39,8 +56,8 @@ function dbRec($k, $n, $t, $p, &$a, $seq) {
 };
 }
   return $seq;
-}
-function deBruijn($k, $n) {
+};
+  function deBruijn($k, $n) {
   $digits = '0123456789';
   $alphabet = $digits;
   if ($k < 10) {
@@ -62,8 +79,8 @@ function deBruijn($k, $n) {
 };
   $b = $b . substr($b, 0, $n - 1 - 0);
   return $b;
-}
-function allDigits($s) {
+};
+  function allDigits($s) {
   $i = 0;
   while ($i < strlen($s)) {
   $ch = substr($s, $i, $i + 1 - $i);
@@ -73,8 +90,8 @@ function allDigits($s) {
   $i = $i + 1;
 };
   return true;
-}
-function mochi_parseIntStr($str) {
+};
+  function mochi_parseIntStr($str) {
   $n = 0;
   $i = 0;
   while ($i < strlen($str)) {
@@ -82,8 +99,8 @@ function mochi_parseIntStr($str) {
   $i = $i + 1;
 };
   return $n;
-}
-function validate($db) {
+};
+  function validate($db) {
   $le = strlen($db);
   $found = [];
   $i = 0;
@@ -125,15 +142,15 @@ function validate($db) {
 ');
   echo rtrim($msg), PHP_EOL;
 }
-}
-function padLeft($n, $width) {
+};
+  function padLeft($n, $width) {
   $s = _str($n);
   while (strlen($s) < $width) {
   $s = '0' . $s;
 };
   return $s;
-}
-function joinStr($xs, $sep) {
+};
+  function joinStr($xs, $sep) {
   $res = '';
   $i = 0;
   while ($i < count($xs)) {
@@ -144,8 +161,8 @@ function joinStr($xs, $sep) {
   $i = $i + 1;
 };
   return $res;
-}
-function reverse($s) {
+};
+  function reverse($s) {
   $out = '';
   $i = strlen($s) - 1;
   while ($i >= 0) {
@@ -153,8 +170,8 @@ function reverse($s) {
   $i = $i - 1;
 };
   return $out;
-}
-function main() {
+};
+  function main() {
   $db = deBruijn(10, 4);
   $le = strlen($db);
   echo rtrim('The length of the de Bruijn sequence is ' . _str($le)), PHP_EOL;
@@ -175,5 +192,13 @@ Validating the reversed de Bruijn sequence:'), PHP_EOL;
   echo rtrim('
 Validating the overlaid de Bruijn sequence:'), PHP_EOL;
   validate($db);
-}
-main();
+};
+  main();
+$__end = _now();
+$__end_mem = memory_get_usage();
+$__duration = intdiv($__end - $__start, 1000);
+$__mem_diff = max(0, $__end_mem - $__start_mem);
+$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
+$__j = json_encode($__bench, 128);
+$__j = str_replace("    ", "  ", $__j);
+echo $__j, PHP_EOL;;

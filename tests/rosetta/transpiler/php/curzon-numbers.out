@@ -42,3 +42,9 @@ The first 50 Curzon numbers using a base of 10 :
 "1513 1606 1614 1630 1665 1681 1690 1702 1785 1837"
 
 One thousandth: 46845
+
+{
+  "duration_us": 460558,
+  "memory_bytes": 96,
+  "name": "main"
+}

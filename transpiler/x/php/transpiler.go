@@ -395,7 +395,12 @@ type LetStmt struct {
 }
 
 func (s *LetStmt) emit(w io.Writer) {
-	fmt.Fprintf(w, "$%s = ", sanitizeVarName(s.Name))
+	if _, ok := s.Value.(*ClosureExpr); ok {
+		fmt.Fprintf(w, "$%s = null;\n", sanitizeVarName(s.Name))
+		fmt.Fprintf(w, "$%s = ", sanitizeVarName(s.Name))
+	} else {
+		fmt.Fprintf(w, "$%s = ", sanitizeVarName(s.Name))
+	}
 	if s.Value != nil {
 		s.Value.emit(w)
 	} else {
@@ -1731,7 +1736,7 @@ func (s *StringLit) emit(w io.Writer) {
 	// Escape backslashes and single quotes.
 	esc := strings.ReplaceAll(s.Value, "\\", "\\\\")
 	esc = strings.ReplaceAll(esc, "'", "\\'")
-	esc = strings.ReplaceAll(esc, "\n", "\\n")
+	// Preserve actual newlines in strings so Rosetta outputs match.
 	esc = strings.ReplaceAll(esc, "\t", "\\t")
 	io.WriteString(w, "'"+esc+"'")
 }
@@ -2418,6 +2423,14 @@ func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
 				if t := types.TypeOfPrimary(base, transpileEnv); t != nil {
 					if st, ok := t.(types.StructType); ok && st.Name != "" {
 						call := st.Name + "_" + method
+						args = append([]Expr{e}, args...)
+						return &CallExpr{Func: call, Args: args}, nil
+					}
+				}
+				// Fallback: search all known structs for this method
+				for name, st := range transpileEnv.Structs() {
+					if _, ok := st.Methods[method]; ok {
+						call := name + "_" + method
 						args = append([]Expr{e}, args...)
 						return &CallExpr{Func: call, Args: args}, nil
 					}
@@ -3345,6 +3358,17 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 			fun := *mem.Method
 			fun.Name = st.Type.Name + "_" + fun.Name
 			fun.Params = append([]*parser.Param{{Name: "self"}}, fun.Params...)
+			// Inject local variables for struct fields so method body can
+			// reference them directly.
+			var prelude []*parser.Statement
+			for _, fm := range st.Type.Members {
+				if fm.Field != nil {
+					fname := fm.Field.Name
+					fieldExpr := &parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: &parser.PostfixExpr{Target: &parser.Primary{Selector: &parser.SelectorExpr{Root: "self", Tail: []string{fname}}}}}}}
+					prelude = append(prelude, &parser.Statement{Var: &parser.VarStmt{Name: fname, Value: fieldExpr}})
+				}
+			}
+			fun.Body = append(prelude, fun.Body...)
 			stmt := &parser.Statement{Fun: &fun}
 			conv, err := convertStmt(stmt)
 			if err != nil {
@@ -3373,6 +3397,15 @@ func convertStmtList(list []*parser.Statement) ([]Stmt, error) {
 				fun := *mem.Method
 				fun.Name = s.Type.Name + "_" + fun.Name
 				fun.Params = append([]*parser.Param{{Name: "self"}}, fun.Params...)
+				var prelude []*parser.Statement
+				for _, fm := range s.Type.Members {
+					if fm.Field != nil {
+						fname := fm.Field.Name
+						fieldExpr := &parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: &parser.PostfixExpr{Target: &parser.Primary{Selector: &parser.SelectorExpr{Root: "self", Tail: []string{fname}}}}}}}
+						prelude = append(prelude, &parser.Statement{Var: &parser.VarStmt{Name: fname, Value: fieldExpr}})
+					}
+				}
+				fun.Body = append(prelude, fun.Body...)
 				stmt := &parser.Statement{Fun: &fun}
 				st, err := convertStmt(stmt)
 				if err != nil {

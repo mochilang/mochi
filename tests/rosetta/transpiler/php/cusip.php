@@ -1,5 +1,20 @@
 <?php
 ini_set('memory_limit', '-1');
+$now_seed = 0;
+$now_seeded = false;
+$s = getenv('MOCHI_NOW_SEED');
+if ($s !== false && $s !== '') {
+    $now_seed = intval($s);
+    $now_seeded = true;
+}
+function _now() {
+    global $now_seed, $now_seeded;
+    if ($now_seeded) {
+        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
+        return $now_seed;
+    }
+    return hrtime(true);
+}
 function _indexof($s, $sub) {
     $pos = strpos($s, $sub);
     return $pos === false ? -1 : $pos;
@@ -15,7 +30,9 @@ function _intdiv($a, $b) {
     }
     return intdiv($a, $b);
 }
-function mochi_ord($ch) {
+$__start_mem = memory_get_usage();
+$__start = _now();
+  function mochi_ord($ch) {
   global $candidates, $b;
   $upper = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
   if ($ch >= '0' && $ch <= '9') {
@@ -26,8 +43,8 @@ function mochi_ord($ch) {
   return 65 + $idx;
 }
   return 0;
-}
-function isCusip($s) {
+};
+  function isCusip($s) {
   global $candidates, $b;
   if (strlen($s) != 9) {
   return false;
@@ -65,12 +82,20 @@ function isCusip($s) {
   $i = $i + 1;
 };
   return parseIntStr(substr($s, 8, 9 - 8), 10) == (10 - ($sum % 10)) % 10;
-}
-$candidates = ['037833100', '17275R102', '38259P508', '594918104', '68389X106', '68389X105'];
-foreach ($candidates as $cand) {
+};
+  $candidates = ['037833100', '17275R102', '38259P508', '594918104', '68389X106', '68389X105'];
+  foreach ($candidates as $cand) {
   $b = 'incorrect';
   if (isCusip($cand)) {
   $b = 'correct';
 }
   echo rtrim($cand . ' -> ' . $b), PHP_EOL;
 }
+$__end = _now();
+$__end_mem = memory_get_usage();
+$__duration = intdiv($__end - $__start, 1000);
+$__mem_diff = max(0, $__end_mem - $__start_mem);
+$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
+$__j = json_encode($__bench, 128);
+$__j = str_replace("    ", "  ", $__j);
+echo $__j, PHP_EOL;;

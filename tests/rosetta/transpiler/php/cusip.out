@@ -4,3 +4,8 @@
 594918104 -> correct
 68389X106 -> incorrect
 68389X105 -> correct
+{
+  "duration_us": 90,
+  "memory_bytes": 160,
+  "name": "main"
+}

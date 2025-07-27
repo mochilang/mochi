@@ -1,6 +1,23 @@
 <?php
 ini_set('memory_limit', '-1');
-function sqrtApprox($x) {
+$now_seed = 0;
+$now_seeded = false;
+$s = getenv('MOCHI_NOW_SEED');
+if ($s !== false && $s !== '') {
+    $now_seed = intval($s);
+    $now_seeded = true;
+}
+function _now() {
+    global $now_seed, $now_seeded;
+    if ($now_seeded) {
+        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
+        return $now_seed;
+    }
+    return hrtime(true);
+}
+$__start_mem = memory_get_usage();
+$__start = _now();
+  function sqrtApprox($x) {
   if ($x <= 0.0) {
   return 0.0;
 }
@@ -11,8 +28,8 @@ function sqrtApprox($x) {
   $i = $i + 1;
 };
   return $guess;
-}
-function powf($base, $exp) {
+};
+  function powf($base, $exp) {
   $result = 1.0;
   $i = 0;
   while ($i < $exp) {
@@ -20,19 +37,19 @@ function powf($base, $exp) {
   $i = $i + 1;
 };
   return $result;
-}
-function normalize($v) {
+};
+  function normalize($v) {
   $len = sqrtApprox($v['x'] * $v['x'] + $v['y'] * $v['y'] + $v['z'] * $v['z']);
   return ['x' => $v['x'] / $len, 'y' => $v['y'] / $len, 'z' => $v['z'] / $len];
-}
-function dot($a, $b) {
+};
+  function dot($a, $b) {
   $d = $a['x'] * $b['x'] + $a['y'] * $b['y'] + $a['z'] * $b['z'];
   if ($d < 0.0) {
   return -$d;
 }
   return 0.0;
-}
-function hitSphere($s, $x, $y) {
+};
+  function hitSphere($s, $x, $y) {
   $dx = $x - $s['cx'];
   $dy = $y - $s['cy'];
   $zsq = $s['r'] * $s['r'] - ($dx * $dx + $dy * $dy);
@@ -41,8 +58,8 @@ function hitSphere($s, $x, $y) {
 }
   $z = sqrtApprox($zsq);
   return ['hit' => true, 'z1' => $s['cz'] - $z, 'z2' => $s['cz'] + $z];
-}
-function main() {
+};
+  function main() {
   $shades = '.:!*oe&#%@';
   $light = normalize(['x' => -50.0, 'y' => 30.0, 'z' => 50.0]);
   $pos = ['cx' => 20.0, 'cy' => 20.0, 'cz' => 0.0, 'r' => 20.0];
@@ -107,5 +124,13 @@ function main() {
   echo rtrim($line), PHP_EOL;
   $yi = $yi + 1;
 };
-}
-main();
+};
+  main();
+$__end = _now();
+$__end_mem = memory_get_usage();
+$__duration = intdiv($__end - $__start, 1000);
+$__mem_diff = max(0, $__end_mem - $__start_mem);
+$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
+$__j = json_encode($__bench, 128);
+$__j = str_replace("    ", "  ", $__j);
+echo $__j, PHP_EOL;;

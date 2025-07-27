@@ -1,9 +1,19 @@
 <?php
 ini_set('memory_limit', '-1');
-function _len($x) {
-    if (is_array($x)) { return count($x); }
-    if (is_string($x)) { return strlen($x); }
-    return strlen(strval($x));
+$now_seed = 0;
+$now_seeded = false;
+$s = getenv('MOCHI_NOW_SEED');
+if ($s !== false && $s !== '') {
+    $now_seed = intval($s);
+    $now_seeded = true;
+}
+function _now() {
+    global $now_seed, $now_seeded;
+    if ($now_seeded) {
+        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
+        return $now_seed;
+    }
+    return hrtime(true);
 }
 function _str($x) {
     if (is_array($x)) {
@@ -32,7 +42,9 @@ function _intdiv($a, $b) {
     }
     return intdiv($a, $b);
 }
-function digits($n) {
+$__start_mem = memory_get_usage();
+$__start = _now();
+  function digits($n) {
   if ($n == 0) {
   return [0];
 }
@@ -49,19 +61,19 @@ function digits($n) {
   $i = $i - 1;
 };
   return $out;
-}
-function commatize($n) {
+};
+  function commatize($n) {
   $s = _str($n);
   $out = '';
   $i = strlen($s);
   while ($i > 3) {
-  $out = ',' . substr($s, $i - 3, $i - $i - 3) . $out;
+  $out = ',' . substr($s, $i - 3, $i - ($i - 3)) . $out;
   $i = $i - 3;
 };
   $out = substr($s, 0, $i - 0) . $out;
   return $out;
-}
-function isPrime($n) {
+};
+  function isPrime($n) {
   if ($n < 2) {
   return false;
 }
@@ -83,8 +95,8 @@ function isPrime($n) {
   $d = $d + 4;
 };
   return true;
-}
-function split($s, $sep) {
+};
+  function split($s, $sep) {
   $parts = [];
   $cur = '';
   $i = 0;
@@ -100,8 +112,8 @@ function split($s, $sep) {
 };
   $parts = array_merge($parts, [$cur]);
   return $parts;
-}
-function mochi_parseIntStr($str) {
+};
+  function mochi_parseIntStr($str) {
   $i = 0;
   $neg = false;
   if (strlen($str) > 0 && substr($str, 0, 1 - 0) == '-') {
@@ -118,8 +130,8 @@ function mochi_parseIntStr($str) {
   $n = -$n;
 }
   return $n;
-}
-function reverseStr($s) {
+};
+  function reverseStr($s) {
   $out = '';
   $i = strlen($s) - 1;
   while ($i >= 0) {
@@ -127,15 +139,15 @@ function reverseStr($s) {
   $i = $i - 1;
 };
   return $out;
-}
-function pad($s, $w) {
+};
+  function pad($s, $w) {
   $out = $s;
   while (strlen($out) < $w) {
   $out = ' ' . $out;
 };
   return $out;
-}
-function findFirst($list) {
+};
+  function findFirst($list) {
   $i = 0;
   while ($i < count($list)) {
   if ($list[$i] > 10000000) {
@@ -144,14 +156,14 @@ function findFirst($list) {
   $i = $i + 1;
 };
   return [-1, -1];
-}
-function main() {
+};
+  function main() {
   $ranges = [[0, 0], [101, 909], [11011, 99099], [1110111, 9990999], [111101111, 119101111]];
   $cyclops = [];
   foreach ($ranges as $r) {
   $start = $r[0];
   $end = $r[1];
-  $numDigits = _len(_str($start));
+  $numDigits = strlen(_str($start));
   $center = _intdiv($numDigits, 2);
   $i = $start;
   while ($i <= $end) {
@@ -248,5 +260,12 @@ The first 50 palindromic prime cyclops numbers are:'), PHP_EOL;
   echo rtrim('
 
 First such number > 10 million is ' . commatize($fpp[0]) . ' at zero-based index ' . commatize($fpp[1])), PHP_EOL;
-}
-main();
+};
+$__end = _now();
+$__end_mem = memory_get_usage();
+$__duration = intdiv($__end - $__start, 1000);
+$__mem_diff = max(0, $__end_mem - $__start_mem);
+$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
+$__j = json_encode($__bench, 128);
+$__j = str_replace("    ", "  ", $__j);
+echo $__j, PHP_EOL;;

@@ -15,3 +15,8 @@
 25 December 2107 is Sunday
 25 December 2112 is Sunday
 25 December 2118 is Sunday
+{
+  "duration_us": 241,
+  "memory_bytes": 96,
+  "name": "main"
+}
