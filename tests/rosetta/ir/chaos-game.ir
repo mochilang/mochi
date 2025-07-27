@@ -1,195 +1,218 @@
-func main (regs=67)
+func main (regs=89)
   // let width = 60
   Const        r10, 60
   Move         r0, r10
   SetGlobal    0,0,0,0
   // let height = (width as float * 0.86602540378) as int
-  Const        r11, 51
-  Move         r1, r11
+  Cast         r11, r0, float
+  Const        r12, 0.86602540378
+  MulFloat     r13, r11, r12
+  Cast         r14, r13, int
+  Move         r1, r14
   SetGlobal    1,1,0,0
   // let iterations = 5000
-  Const        r12, 5000
-  Move         r2, r12
+  Const        r15, 5000
+  Move         r2, r15
   SetGlobal    2,2,0,0
   // var grid: list<list<string>> = []
-  Const        r13, []
-  Move         r3, r13
+  Const        r16, []
+  Move         r3, r16
   SetGlobal    3,3,0,0
   // var y = 0
-  Const        r14, 0
-  Move         r4, r14
+  Const        r17, 0
+  Move         r4, r17
   SetGlobal    4,4,0,0
 L3:
   // while y < height {
-  Const        r11, 51
-  LessInt      r15, r4, r11
-  JumpIfFalse  r15, L0
+  Less         r18, r4, r1
+  JumpIfFalse  r18, L0
   // var line: list<string> = []
-  Const        r13, []
-  Move         r16, r13
+  Const        r16, []
+  Move         r19, r16
   // var x = 0
-  Const        r14, 0
-  Move         r17, r14
+  Const        r17, 0
+  Move         r20, r17
 L2:
   // while x < width {
-  Const        r10, 60
-  LessInt      r18, r17, r10
-  JumpIfFalse  r18, L1
+  LessInt      r21, r20, r0
+  JumpIfFalse  r21, L1
   // line = append(line, " ")
-  Const        r19, " "
-  Append       r20, r16, r19
-  Move         r16, r20
+  Const        r22, " "
+  Append       r23, r19, r22
+  Move         r19, r23
   // x = x + 1
-  Const        r21, 1
-  AddInt       r22, r17, r21
-  Move         r17, r22
+  Const        r24, 1
+  AddInt       r25, r20, r24
+  Move         r20, r25
   // while x < width {
   Jump         L2
 L1:
   // grid = append(grid, line)
-  Append       r23, r3, r16
-  Move         r3, r23
+  Append       r26, r3, r19
+  Move         r3, r26
   SetGlobal    3,3,0,0
   // y = y + 1
-  Const        r21, 1
-  AddInt       r24, r4, r21
-  Move         r4, r24
+  Const        r24, 1
+  AddInt       r27, r4, r24
+  Move         r4, r27
   SetGlobal    4,4,0,0
   // while y < height {
   Jump         L3
 L0:
   // var seed = 1
-  Const        r21, 1
-  Move         r5, r21
+  Const        r24, 1
+  Move         r5, r24
   SetGlobal    5,5,0,0
   // let vertices: list<list<int>> = [[0, height - 1], [width - 1, height - 1], [(width / 2) as int, 0]]
-  Const        r25, [[0, 50], [59, 50], [30, 0]]
-  Move         r6, r25
+  Const        r17, 0
+  Move         r31, r17
+  Const        r24, 1
+  Sub          r33, r1, r24
+  Move         r32, r33
+  MakeList     r34, 2, r31
+  Move         r28, r34
+  Const        r24, 1
+  SubInt       r37, r0, r24
+  Move         r35, r37
+  Const        r24, 1
+  Sub          r38, r1, r24
+  Move         r36, r38
+  MakeList     r39, 2, r35
+  Move         r29, r39
+  Const        r42, 2
+  DivInt       r43, r0, r42
+  Cast         r44, r43, int
+  Move         r40, r44
+  Const        r17, 0
+  Move         r41, r17
+  MakeList     r45, 2, r40
+  Move         r30, r45
+  MakeList     r46, 3, r28
+  Move         r6, r46
   SetGlobal    6,6,0,0
   // var px = (width / 2) as int
-  Const        r26, 30
-  Move         r7, r26
+  Const        r42, 2
+  DivInt       r47, r0, r42
+  Cast         r48, r47, int
+  Move         r7, r48
   SetGlobal    7,7,0,0
   // var py = (height / 2) as int
-  Const        r27, 25
-  Move         r8, r27
+  Const        r42, 2
+  Div          r49, r1, r42
+  Cast         r50, r49, int
+  Move         r8, r50
   SetGlobal    8,8,0,0
   // var i = 0
-  Const        r14, 0
-  Move         r9, r14
+  Const        r17, 0
+  Move         r9, r17
   SetGlobal    9,9,0,0
 L7:
   // while i < iterations {
-  Const        r12, 5000
-  LessInt      r28, r9, r12
-  JumpIfFalse  r28, L4
+  LessInt      r51, r9, r2
+  JumpIfFalse  r51, L4
   // var r = randInt(seed, 3)
-  Move         r29, r5
-  Const        r31, 3
-  Move         r30, r31
-  Call2        r32, randInt, r29, r30
-  Move         r33, r32
+  Move         r52, r5
+  Const        r54, 3
+  Move         r53, r54
+  Call2        r55, randInt, r52, r53
+  Move         r56, r55
   // seed = r[0]
-  Const        r14, 0
-  Index        r34, r33, r14
-  Move         r5, r34
+  Const        r17, 0
+  Index        r57, r56, r17
+  Move         r5, r57
   SetGlobal    5,5,0,0
   // let idx = r[1] as int
-  Const        r21, 1
-  Index        r35, r33, r21
-  Cast         r36, r35, int
-  Move         r37, r36
+  Const        r24, 1
+  Index        r58, r56, r24
+  Cast         r59, r58, int
+  Move         r60, r59
   // let v = vertices[idx]
-  Index        r38, r6, r37
-  Move         r39, r38
+  Index        r61, r6, r60
+  Move         r62, r61
   // px = ((px + v[0]) / 2) as int
-  Const        r14, 0
-  Index        r40, r39, r14
-  Add          r41, r7, r40
+  Const        r17, 0
+  Index        r63, r62, r17
+  Add          r64, r7, r63
   Const        r42, 2
-  Div          r43, r41, r42
-  Cast         r44, r43, int
-  Move         r7, r44
+  Div          r65, r64, r42
+  Cast         r66, r65, int
+  Move         r7, r66
   SetGlobal    7,7,0,0
   // py = ((py + v[1]) / 2) as int
-  Const        r21, 1
-  Index        r45, r39, r21
-  Add          r46, r8, r45
+  Const        r24, 1
+  Index        r67, r62, r24
+  Add          r68, r8, r67
   Const        r42, 2
-  Div          r47, r46, r42
-  Cast         r48, r47, int
-  Move         r8, r48
+  Div          r69, r68, r42
+  Cast         r70, r69, int
+  Move         r8, r70
   SetGlobal    8,8,0,0
   // if px >= 0 && px < width && py >= 0 && py < height {
-  Const        r14, 0
-  LessEq       r49, r14, r7
-  Const        r10, 60
-  Less         r50, r7, r10
-  Const        r14, 0
-  LessEq       r51, r14, r8
-  Const        r11, 51
-  Less         r52, r8, r11
-  Move         r53, r49
-  JumpIfFalse  r53, L5
-  Move         r53, r50
-  JumpIfFalse  r53, L5
-  Move         r53, r51
-  JumpIfFalse  r53, L5
-  Move         r53, r52
+  Const        r17, 0
+  LessEq       r71, r17, r7
+  Less         r72, r7, r0
+  Const        r17, 0
+  LessEq       r73, r17, r8
+  Less         r74, r8, r1
+  Move         r75, r71
+  JumpIfFalse  r75, L5
+  Move         r75, r72
+  JumpIfFalse  r75, L5
+  Move         r75, r73
+  JumpIfFalse  r75, L5
+  Move         r75, r74
 L5:
-  JumpIfFalse  r53, L6
+  JumpIfFalse  r75, L6
   // grid[py][px] = "*"
-  Index        r54, r3, r8
-  Const        r55, "*"
-  SetIndex     r54, r7, r55
+  Index        r76, r3, r8
+  Const        r77, "*"
+  SetIndex     r76, r7, r77
   SetGlobal    3,3,0,0
 L6:
   // i = i + 1
-  Const        r21, 1
-  AddInt       r56, r9, r21
-  Move         r9, r56
+  Const        r24, 1
+  AddInt       r78, r9, r24
+  Move         r9, r78
   SetGlobal    9,9,0,0
   // while i < iterations {
   Jump         L7
 L4:
   // y = 0
-  Const        r14, 0
-  Move         r4, r14
+  Const        r17, 0
+  Move         r4, r17
   SetGlobal    4,4,0,0
 L11:
   // while y < height {
-  Const        r11, 51
-  LessInt      r57, r4, r11
-  JumpIfFalse  r57, L8
+  Less         r79, r4, r1
+  JumpIfFalse  r79, L8
   // var line = ""
-  Const        r58, ""
-  Move         r59, r58
+  Const        r80, ""
+  Move         r81, r80
   // var x = 0
-  Const        r14, 0
-  Move         r60, r14
+  Const        r17, 0
+  Move         r82, r17
 L10:
   // while x < width {
-  Const        r10, 60
-  LessInt      r61, r60, r10
-  JumpIfFalse  r61, L9
+  LessInt      r83, r82, r0
+  JumpIfFalse  r83, L9
   // line = line + grid[y][x]
-  Index        r62, r3, r4
-  Index        r63, r62, r60
-  Add          r64, r59, r63
-  Move         r59, r64
+  Index        r84, r3, r4
+  Index        r85, r84, r82
+  Add          r86, r81, r85
+  Move         r81, r86
   // x = x + 1
-  Const        r21, 1
-  AddInt       r65, r60, r21
-  Move         r60, r65
+  Const        r24, 1
+  AddInt       r87, r82, r24
+  Move         r82, r87
   // while x < width {
   Jump         L10
 L9:
   // print(line)
-  Print        r59
+  Print        r81
   // y = y + 1
-  Const        r21, 1
-  AddInt       r66, r4, r21
-  Move         r4, r66
+  Const        r24, 1
+  AddInt       r88, r4, r24
+  Move         r4, r88
   SetGlobal    4,4,0,0
   // while y < height {
   Jump         L11
