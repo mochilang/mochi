@@ -211,7 +211,7 @@ func (t *TypeDecl) emit(w io.Writer) {
 			if i > 0 {
 				io.WriteString(w, ",\n    ")
 			}
-			fmt.Fprintf(w, "%s :: %s", f, t.Types[i])
+			fmt.Fprintf(w, "%s :: %s", safeName(f), t.Types[i])
 		}
 		io.WriteString(w, "\n  } deriving (Show, Eq)\n")
 		return
@@ -227,7 +227,7 @@ func (t *TypeDecl) emit(w io.Writer) {
 				if j > 0 {
 					io.WriteString(w, ", ")
 				}
-				fmt.Fprintf(w, "%s :: %s", f, v.Types[j])
+				fmt.Fprintf(w, "%s :: %s", safeName(f), v.Types[j])
 			}
 			io.WriteString(w, "}")
 		}
@@ -304,7 +304,7 @@ func typeNameFromRef(tr *parser.TypeRef) string {
 		fields := make([]string, len(tr.Struct.Fields))
 		typestr := make([]string, len(tr.Struct.Fields))
 		for i, f := range tr.Struct.Fields {
-			fields[i] = f.Name
+			fields[i] = safeName(f.Name)
 			typestr[i] = typeNameFromRef(f.Type)
 			preludeHide[f.Name] = true
 		}
@@ -1625,7 +1625,7 @@ func (r *RecordUpdate) emit(w io.Writer) {
 		io.WriteString(w, ")")
 	}
 	io.WriteString(w, " {")
-	io.WriteString(w, r.Field)
+	io.WriteString(w, safeName(r.Field))
 	io.WriteString(w, " = ")
 	r.Value.emit(w)
 	io.WriteString(w, "}")
@@ -1654,7 +1654,7 @@ func (f *FieldExpr) emit(w io.Writer) {
 	}
 	f.Target.emit(w)
 	io.WriteString(w, ".")
-	io.WriteString(w, f.Field)
+	io.WriteString(w, safeName(f.Field))
 }
 
 func hasStruct(e Expr) bool {
@@ -2609,7 +2609,7 @@ func Transpile(prog *parser.Program, env *types.Env, benchMain bool) (*Program, 
 				fields := make([]string, len(st.Type.Members))
 				typestr := make([]string, len(st.Type.Members))
 				for i, m := range st.Type.Members {
-					fields[i] = m.Field.Name
+					fields[i] = safeName(m.Field.Name)
 					typestr[i] = typeNameFromRef(m.Field.Type)
 				}
 				structDefs[st.Type.Name] = &TypeDecl{Name: st.Type.Name, Fields: fields, Types: typestr}
@@ -2623,7 +2623,7 @@ func Transpile(prog *parser.Program, env *types.Env, benchMain bool) (*Program, 
 					fields := make([]string, len(v.Fields))
 					typestr := make([]string, len(v.Fields))
 					for i, f := range v.Fields {
-						fields[i] = f.Name
+						fields[i] = safeName(f.Name)
 						typestr[i] = typeNameFromRef(f.Type)
 						preludeHide[f.Name] = true
 					}
@@ -3141,7 +3141,7 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		names := make([]string, len(p.Struct.Fields))
 		vals := make([]Expr, len(p.Struct.Fields))
 		for i, f := range p.Struct.Fields {
-			names[i] = f.Name
+			names[i] = safeName(f.Name)
 			ve, err := convertExpr(f.Value)
 			if err != nil {
 				return nil, err
