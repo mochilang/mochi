@@ -983,10 +983,10 @@ func (f *FieldExpr) emit(w io.Writer) {
 	if isMapExpr(f.Target) {
 		fmt.Fprint(w, "((dynamic)(")
 		f.Target.emit(w)
-		fmt.Fprintf(w, "[\"%s\"]))", f.Name)
+		fmt.Fprintf(w, "[\"%s\"]))", safeName(f.Name))
 	} else {
 		f.Target.emit(w)
-		fmt.Fprintf(w, ".%s", f.Name)
+		fmt.Fprintf(w, ".%s", safeName(f.Name))
 	}
 }
 
@@ -1836,6 +1836,31 @@ type MapLit struct {
 	ValType string
 }
 
+// propagateListTypes assigns element types to empty list literals based on the
+// provided type. For example, when an expression should have type "long[][]",
+// any nested empty list literals will be annotated as "long[]" so the emitted
+// C# code contains correctly typed array literals.
+func propagateListTypes(e Expr, typ string) {
+	if !strings.HasSuffix(typ, "[]") {
+		return
+	}
+	elem := strings.TrimSuffix(typ, "[]")
+	if l, ok := e.(*ListLit); ok {
+		if len(l.Elems) == 0 {
+			if l.ElemType == "" || l.ElemType == "object[]" || l.ElemType == "object" {
+				l.ElemType = typ
+			}
+		} else {
+			for _, el := range l.Elems {
+				propagateListTypes(el, elem)
+			}
+			if l.ElemType == "" || l.ElemType == "object[]" || l.ElemType == "object" {
+				l.ElemType = typ
+			}
+		}
+	}
+}
+
 func (m *MapLit) emit(w io.Writer) {
 	k, v := mapTypes(m)
 	if k != "object" || v != "object" {
@@ -1871,7 +1896,7 @@ func (s *StructLit) emit(w io.Writer) {
 		if i > 0 {
 			fmt.Fprint(w, ", ")
 		}
-		fmt.Fprintf(w, "%s = ", f.Name)
+		fmt.Fprintf(w, "%s = ", safeName(f.Name))
 		f.Value.emit(w)
 	}
 	fmt.Fprint(w, "}")
@@ -2359,7 +2384,14 @@ func compilePostfix(p *parser.PostfixExpr) (Expr, error) {
 		case op.Cast != nil && op.Cast.Type != nil:
 			if op.Cast.Type.Generic != nil && op.Cast.Type.Generic.Name == "list" && len(op.Cast.Type.Generic.Args) == 1 {
 				typ := fmt.Sprintf("%s[]", csType(op.Cast.Type.Generic.Args[0]))
-				expr = &RawExpr{Code: fmt.Sprintf("(%s)"+exprString(expr), typ), Type: typ}
+				srcType := typeOfExpr(expr)
+				if srcType == "object[]" || srcType == "object" {
+					elem := csType(op.Cast.Type.Generic.Args[0])
+					usesLinq = true
+					expr = &RawExpr{Code: fmt.Sprintf("Enumerable.ToArray(((System.Collections.IEnumerable)%s).Cast<%s>())", exprString(expr), elem), Type: typ}
+				} else {
+					expr = &RawExpr{Code: fmt.Sprintf("(%s)"+exprString(expr), typ), Type: typ}
+				}
 			} else if op.Cast.Type.Generic != nil && op.Cast.Type.Generic.Name == "map" && len(op.Cast.Type.Generic.Args) == 2 {
 				kt := csType(op.Cast.Type.Generic.Args[0])
 				vt := csType(op.Cast.Type.Generic.Args[1])
@@ -2829,11 +2861,9 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 		mapVars = savedMap
 		stringVars = savedStrAll
 		mutatedVars = savedMut
-		if prog != nil && blockDepth == 0 {
-			varTypes[s.Fun.Name] = fmt.Sprintf("fn/%d", len(ptypes))
-			funRets[s.Fun.Name] = retType
-			funParams[s.Fun.Name] = append([]string{}, ptypes...)
-		}
+		varTypes[s.Fun.Name] = fmt.Sprintf("fn/%d", len(ptypes))
+		funRets[s.Fun.Name] = retType
+		funParams[s.Fun.Name] = append([]string{}, ptypes...)
 		if s.Fun.Return == nil {
 			retType = ""
 		}
@@ -2856,6 +2886,7 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 			if err != nil {
 				return nil, err
 			}
+			propagateListTypes(val, currentReturnType)
 			if ml, ok := val.(*MapLit); ok && currentReturnType != "" && strings.HasPrefix(currentReturnType, "Dictionary<") {
 				parts := strings.TrimPrefix(strings.TrimSuffix(currentReturnType, ">"), "Dictionary<")
 				arr := strings.Split(parts, ",")
@@ -4108,7 +4139,7 @@ func Emit(prog *Program) []byte {
 	for _, st := range prog.Structs {
 		fmt.Fprintf(&buf, "class %s {\n", st.Name)
 		for _, f := range st.Fields {
-			fmt.Fprintf(&buf, "    public %s %s;\n", f.Type, f.Name)
+			fmt.Fprintf(&buf, "    public %s %s;\n", f.Type, safeName(f.Name))
 		}
 		for _, m := range st.Methods {
 			buf.WriteString("    ")
@@ -4120,13 +4151,13 @@ func Emit(prog *Program) []byte {
 			if i > 0 {
 				buf.WriteString(", ")
 			}
-			fmt.Fprintf(&buf, "%s = ", f.Name)
+			fmt.Fprintf(&buf, "%s = ", safeName(f.Name))
 			if f.Type == "string" {
-				fmt.Fprintf(&buf, "\\\"{%s}\\\"", f.Name)
+				fmt.Fprintf(&buf, "\\\"{%s}\\\"", safeName(f.Name))
 			} else if f.Type == "double" {
-				fmt.Fprintf(&buf, "{%s.ToString(\"0.0\")}", f.Name)
+				fmt.Fprintf(&buf, "{%s.ToString(\"0.0\")}", safeName(f.Name))
 			} else {
-				fmt.Fprintf(&buf, "{%s}", f.Name)
+				fmt.Fprintf(&buf, "{%s}", safeName(f.Name))
 			}
 		}
 		buf.WriteString("}}\";\n")

@@ -1,0 +1,9 @@
+Test case base = 10, begin = 1, end = 100:
+Subset:  System.String[]
+Kaprekar:System.String[]
+Valid subset.
+
+Test case base = 17, begin = 10, end = gg:
+Subset:  System.String[]
+Kaprekar:System.String[]
+Valid subset.
