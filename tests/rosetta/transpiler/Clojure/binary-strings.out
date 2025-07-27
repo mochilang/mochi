@@ -1,0 +1,12 @@
+WARNING: val already refers to: #'clojure.core/val in namespace: main, being replaced by: #'main/val
+WARNING: rem already refers to: #'clojure.core/rem in namespace: main, being replaced by: #'main/rem
+[98 105 110 97 114 121]
+[98 105 110 97 114 121]
+true
+binary
+banany
+false
+binaryz
+in
+banany -> bamamy
+bary

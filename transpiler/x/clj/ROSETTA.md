@@ -1,7 +1,7 @@
 # Clojure Rosetta Transpiler
 
-Completed: 68/467
-Last updated: 2025-07-27 23:04 +0700
+Completed: 84/467
+Last updated: 2025-07-27 23:56 +0700
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -100,35 +100,35 @@ Last updated: 2025-07-27 23:04 +0700
 | 93 | averages-pythagorean-means | ✓ |  |  |
 | 94 | averages-root-mean-square | ✓ | 25.824ms | 18.8 MB |
 | 95 | averages-simple-moving-average | ✓ |  |  |
-| 96 | avl-tree |   |  |  |
-| 97 | b-zier-curves-intersections |   |  |  |
-| 98 | babbage-problem |   |  |  |
-| 99 | babylonian-spiral |   |  |  |
-| 100 | balanced-brackets |   |  |  |
-| 101 | balanced-ternary |   |  |  |
+| 96 | avl-tree | ✓ | 46.738ms | 25.6 MB |
+| 97 | b-zier-curves-intersections | ✓ | 279.112ms | 28.2 MB |
+| 98 | babbage-problem | ✓ | 155.667ms | 18.2 MB |
+| 99 | babylonian-spiral | ✓ |  |  |
+| 100 | balanced-brackets | ✓ | 47.871ms | 20.7 MB |
+| 101 | balanced-ternary | ✓ | 48.758ms | 22.7 MB |
 | 102 | barnsley-fern |   |  |  |
 | 103 | base64-decode-data |   |  |  |
 | 104 | bell-numbers |   |  |  |
-| 105 | benfords-law |   |  |  |
+| 105 | benfords-law | ✓ |  |  |
 | 106 | bernoulli-numbers |   |  |  |
 | 107 | best-shuffle |   |  |  |
 | 108 | bifid-cipher |   |  |  |
 | 109 | bin-given-limits |   |  |  |
-| 110 | binary-digits |   |  |  |
-| 111 | binary-search |   |  |  |
-| 112 | binary-strings |   |  |  |
-| 113 | bioinformatics-base-count |   |  |  |
+| 110 | binary-digits | ✓ | 40.119ms | 18.8 MB |
+| 111 | binary-search | ✓ | 43.13ms | 19.8 MB |
+| 112 | binary-strings | ✓ | 58.888ms | 20.1 MB |
+| 113 | bioinformatics-base-count | ✓ | 51.718ms | 19.5 MB |
 | 114 | bioinformatics-global-alignment |   |  |  |
-| 115 | bioinformatics-sequence-mutation |   |  |  |
+| 115 | bioinformatics-sequence-mutation | ✓ | 70.13ms | 23.8 MB |
 | 116 | biorhythms |   |  |  |
 | 117 | bitcoin-address-validation |   |  |  |
 | 118 | bitmap-b-zier-curves-cubic |   |  |  |
 | 119 | bitmap-b-zier-curves-quadratic |   |  |  |
-| 120 | bitmap-bresenhams-line-algorithm |   |  |  |
+| 120 | bitmap-bresenhams-line-algorithm | ✓ |  |  |
 | 121 | bitmap-flood-fill |   |  |  |
-| 122 | bitmap-histogram |   |  |  |
-| 123 | bitmap-midpoint-circle-algorithm |   |  |  |
-| 124 | bitmap-ppm-conversion-through-a-pipe |   |  |  |
+| 122 | bitmap-histogram | ✓ | 65.616ms | 22.0 MB |
+| 123 | bitmap-midpoint-circle-algorithm | ✓ | 48.451ms | 21.7 MB |
+| 124 | bitmap-ppm-conversion-through-a-pipe | ✓ | 1.140733s | 21.7 MB |
 | 125 | bitmap-read-a-ppm-file |   |  |  |
 | 126 | bitmap-read-an-image-through-a-pipe |   |  |  |
 | 127 | bitmap-write-a-ppm-file |   |  |  |
