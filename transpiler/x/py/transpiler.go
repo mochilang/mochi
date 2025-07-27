@@ -883,6 +883,15 @@ func emitStmtIndent(w io.Writer, s Stmt, indent string) error {
 		}
 		_, err := io.WriteString(w, "\n")
 		return err
+	case *ImportStmt:
+		line := indent + "import " + st.Module
+		if st.Alias != "" && st.Alias != st.Module {
+			line += " as " + st.Alias
+		}
+		if _, err := io.WriteString(w, line+"\n"); err != nil {
+			return err
+		}
+		return nil
 	case *ReturnStmt:
 		if funcDepth == 0 {
 			if _, err := io.WriteString(w, indent+"sys.exit("); err != nil {
@@ -3032,16 +3041,21 @@ func Emit(w io.Writer, p *Program, bench bool) error {
 					return err
 				}
 			}
+			funcDepth++
 			if len(st.Body) == 0 {
 				if _, err := io.WriteString(w, "    pass\n"); err != nil {
+					funcDepth--
 					return err
 				}
+				funcDepth--
 			} else {
 				for _, bs := range st.Body {
 					if err := emitStmtIndent(w, bs, "    "); err != nil {
+						funcDepth--
 						return err
 					}
 				}
+				funcDepth--
 			}
 		case *SaveStmt:
 			if err := emitStmtIndent(w, st, ""); err != nil {
