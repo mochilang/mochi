@@ -2,7 +2,7 @@
 
 This directory stores C code generated from Mochi programs in `tests/rosetta/x/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.c` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (78/467) - Last updated 2025-07-27 18:49 +0700:
+Checklist of programs that currently transpile and run (80/467) - Last updated 2025-07-27 21:25 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | 100-doors-2 | ✓ | 65us | 17.2 KB |
@@ -105,9 +105,9 @@ Checklist of programs that currently transpile and run (78/467) - Last updated 2
 | 98 | babbage-problem | ✓ | 79us | 4.9 KB |
 | 99 | babylonian-spiral |  |  |  |
 | 100 | balanced-brackets |  |  |  |
-| 101 | balanced-ternary | ✓ | 38us | 8.5 KB |
-| 102 | barnsley-fern |  |  |  |
-| 103 | base64-decode-data |  |  |  |
+| 101 | balanced-ternary | ✓ | 46us | 8.5 KB |
+| 102 | barnsley-fern | ✓ | 3.69ms | 481.8 KB |
+| 103 | base64-decode-data | ✓ | 501us | 80.9 KB |
 | 104 | bell-numbers |  |  |  |
 | 105 | benfords-law |  |  |  |
 | 106 | bernoulli-numbers |  |  |  |

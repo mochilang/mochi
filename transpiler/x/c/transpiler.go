@@ -727,7 +727,9 @@ func (a *AssignStmt) emit(w io.Writer, indent int) {
 	io.WriteString(w, a.Name)
 	for _, idx := range a.Indexes {
 		io.WriteString(w, "[")
+		io.WriteString(w, "(int)(")
 		idx.emitExpr(w)
+		io.WriteString(w, ")")
 		io.WriteString(w, "]")
 	}
 	for _, f := range a.Fields {
@@ -1290,7 +1292,9 @@ func (i *IndexExpr) emitExpr(w io.Writer) {
 	}
 	i.Target.emitExpr(w)
 	io.WriteString(w, "[")
+	io.WriteString(w, "(int)(")
 	i.Index.emitExpr(w)
+	io.WriteString(w, ")")
 	io.WriteString(w, "]")
 }
 
@@ -2561,6 +2565,7 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 		needMem = true
 		mainFn.Body = []Stmt{&BenchStmt{Name: "main", Body: mainFn.Body}}
 	}
+	mainFn.VarTypes = varTypes
 	p.Functions = append(p.Functions, mainFn)
 	p.Globals = globals
 	return p, nil
@@ -3517,6 +3522,28 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 				return nil, err
 			}
 			return &ForStmt{Var: s.For.Name, List: list, ElemType: elemType, Body: body}, nil
+		}
+		typStr := inferExprType(env, convertExpr(s.For.Source))
+		if typStr == "const char*" {
+			body, err := compileStmts(env, s.For.Body)
+			if err != nil {
+				return nil, err
+			}
+			var buf bytes.Buffer
+			buf.WriteString("for (size_t __i = 0; __i < strlen(")
+			convertExpr(s.For.Source).emitExpr(&buf)
+			buf.WriteString("); __i++) {\n")
+			writeIndent(&buf, 1)
+			buf.WriteString("char ")
+			buf.WriteString(s.For.Name)
+			buf.WriteString("[2] = { ")
+			convertExpr(s.For.Source).emitExpr(&buf)
+			buf.WriteString("[__i], 0 };\n")
+			for _, st := range body {
+				st.emit(&buf, 1)
+			}
+			buf.WriteString("}\n")
+			return &RawStmt{Code: buf.String()}, nil
 		}
 		return nil, fmt.Errorf("unsupported for-loop")
 	case s.If != nil:
