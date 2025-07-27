@@ -468,6 +468,10 @@ func (c *CastExpr) emit(w io.Writer) {
 			c.Expr.emit(w)
 			io.WriteString(w, ")")
 		}
+	case "float":
+		io.WriteString(w, "Double(")
+		c.Expr.emit(w)
+		io.WriteString(w, ")")
 	default:
 		c.Expr.emit(w)
 	}
@@ -798,7 +802,6 @@ func (p *PrintStmt) emit(w io.Writer) {
 		switch typ {
 		case "real":
 			ex.emit(w)
-			io.WriteString(w, ":0:1")
 		case "boolean":
 			io.WriteString(w, "Ord(")
 			ex.emit(w)
@@ -1415,34 +1418,7 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 				for _, p := range st.Fun.Params {
 					typ := "integer"
 					if p.Type != nil {
-						if p.Type.Simple != nil {
-							switch *p.Type.Simple {
-							case "int":
-								typ = "integer"
-							case "string":
-								typ = "string"
-							case "bool":
-								typ = "boolean"
-							default:
-								typ = *p.Type.Simple
-							}
-						} else if p.Type.Generic != nil && p.Type.Generic.Name == "list" && len(p.Type.Generic.Args) == 1 {
-							arg := p.Type.Generic.Args[0]
-							elem := "integer"
-							if arg.Simple != nil {
-								switch *arg.Simple {
-								case "int":
-									elem = "integer"
-								case "string":
-									elem = "string"
-								case "bool":
-									elem = "boolean"
-								default:
-									elem = *arg.Simple
-								}
-							}
-							typ = "array of " + elem
-						}
+						typ = typeFromRef(p.Type)
 					}
 					if strings.HasPrefix(typ, "array of ") {
 						elem := strings.TrimPrefix(typ, "array of ")
@@ -1877,34 +1853,7 @@ func convertBody(env *types.Env, body []*parser.Statement, varTypes map[string]s
 			for _, p := range st.Fun.Params {
 				typ := "integer"
 				if p.Type != nil {
-					if p.Type.Simple != nil {
-						switch *p.Type.Simple {
-						case "int":
-							typ = "integer"
-						case "string":
-							typ = "string"
-						case "bool":
-							typ = "boolean"
-						default:
-							typ = *p.Type.Simple
-						}
-					} else if p.Type.Generic != nil && p.Type.Generic.Name == "list" && len(p.Type.Generic.Args) == 1 {
-						arg := p.Type.Generic.Args[0]
-						elem := "integer"
-						if arg.Simple != nil {
-							switch *arg.Simple {
-							case "int":
-								elem = "integer"
-							case "string":
-								elem = "string"
-							case "bool":
-								elem = "boolean"
-							default:
-								elem = *arg.Simple
-							}
-						}
-						typ = "array of " + elem
-					}
+					typ = typeFromRef(p.Type)
 				}
 				if strings.HasPrefix(typ, "array of ") {
 					elem := strings.TrimPrefix(typ, "array of ")
@@ -3507,9 +3456,10 @@ func convertPostfix(env *types.Env, pf *parser.PostfixExpr) (Expr, error) {
 			expr = &SliceExpr{Target: expr, Start: start, End: end, String: isStr}
 		case op.Cast != nil && op.Cast.Type != nil && op.Cast.Type.Simple != nil:
 			target := *op.Cast.Type.Simple
-			if target == "int" {
+			switch target {
+			case "int", "float":
 				expr = &CastExpr{Expr: expr, Type: target}
-			} else {
+			default:
 				expr = expr
 			}
 		case op.Cast != nil && op.Cast.Type != nil && op.Cast.Type.Generic != nil:
@@ -3956,6 +3906,9 @@ func inferType(e Expr) string {
 		if lt == rt {
 			return lt
 		}
+		if lt == "real" || rt == "real" {
+			return "real"
+		}
 		if lt != "" {
 			return lt
 		}
@@ -4059,6 +4012,9 @@ func inferType(e Expr) string {
 	case *CastExpr:
 		if v.Type == "int" {
 			return "integer"
+		}
+		if v.Type == "float" {
+			return "real"
 		}
 		if strings.HasPrefix(v.Type, "array of ") {
 			return v.Type
