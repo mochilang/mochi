@@ -1,0 +1,363 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun digitSumMod(n: int, base: int): int {
+func digitSumMod (regs=10)
+  // var sum = 0
+  Const        r2, 0
+  Move         r3, r2
+  // var j = n
+  Move         r4, r0
+L1:
+  // while j > 0 {
+  Const        r2, 0
+  Less         r5, r2, r4
+  JumpIfFalse  r5, L0
+  // sum = sum + j % base
+  Mod          r6, r4, r1
+  Add          r7, r3, r6
+  Move         r3, r7
+  // j = j / base
+  Div          r8, r4, r1
+  Move         r4, r8
+  // while j > 0 {
+  Jump         L1
+L0:
+  // return sum % base
+  Mod          r9, r3, r1
+  Return       r9
+
+  // fun fairshareList(n: int, base: int): list<int> {
+func fairshareList (regs=13)
+  // var res: list<int> = []
+  Const        r2, []
+  Move         r3, r2
+  // var i = 0
+  Const        r4, 0
+  Move         r5, r4
+L1:
+  // while i < n {
+  Less         r6, r5, r0
+  JumpIfFalse  r6, L0
+  // res = append(res, digitSumMod(i, base))
+  Move         r7, r5
+  Move         r8, r1
+  Call2        r9, digitSumMod, r7, r8
+  Append       r10, r3, r9
+  Move         r3, r10
+  // i = i + 1
+  Const        r11, 1
+  AddInt       r12, r5, r11
+  Move         r5, r12
+  // while i < n {
+  Jump         L1
+L0:
+  // return res
+  Return       r3
+
+  // fun sortInts(xs: list<int>): list<int> {
+func sortInts (regs=22)
+  // var arr = xs
+  Move         r1, r0
+  // var i = 0
+  Const        r2, 0
+  Move         r3, r2
+L4:
+  // while i < len(arr) {
+  Len          r4, r1
+  LessInt      r5, r3, r4
+  JumpIfFalse  r5, L0
+  // var j = 0
+  Const        r2, 0
+  Move         r6, r2
+L3:
+  // while j < len(arr) - 1 {
+  Len          r7, r1
+  Const        r8, 1
+  SubInt       r9, r7, r8
+  LessInt      r10, r6, r9
+  JumpIfFalse  r10, L1
+  // if arr[j] > arr[j+1] {
+  Index        r11, r1, r6
+  Const        r8, 1
+  AddInt       r12, r6, r8
+  Index        r13, r1, r12
+  Less         r14, r13, r11
+  JumpIfFalse  r14, L2
+  // let t = arr[j]
+  Index        r15, r1, r6
+  Move         r16, r15
+  // arr[j] = arr[j+1]
+  Const        r8, 1
+  AddInt       r17, r6, r8
+  Index        r18, r1, r17
+  SetIndex     r1, r6, r18
+  // arr[j+1] = t
+  Const        r8, 1
+  AddInt       r19, r6, r8
+  SetIndex     r1, r19, r16
+L2:
+  // j = j + 1
+  Const        r8, 1
+  AddInt       r20, r6, r8
+  Move         r6, r20
+  // while j < len(arr) - 1 {
+  Jump         L3
+L1:
+  // i = i + 1
+  Const        r8, 1
+  AddInt       r21, r3, r8
+  Move         r3, r21
+  // while i < len(arr) {
+  Jump         L4
+L0:
+  // return arr
+  Return       r1
+
+  // fun turns(n: int, base: int): string {
+func turns (regs=56)
+  // var counts: list<int> = []
+  Const        r2, []
+  Move         r3, r2
+  // var i = 0
+  Const        r4, 0
+  Move         r5, r4
+L1:
+  // while i < base {
+  Less         r6, r5, r1
+  JumpIfFalse  r6, L0
+  // counts = append(counts, 0)
+  Const        r4, 0
+  Append       r7, r3, r4
+  Move         r3, r7
+  // i = i + 1
+  Const        r8, 1
+  AddInt       r9, r5, r8
+  Move         r5, r9
+  // while i < base {
+  Jump         L1
+L0:
+  // i = 0
+  Const        r4, 0
+  Move         r5, r4
+L3:
+  // while i < n {
+  Less         r10, r5, r0
+  JumpIfFalse  r10, L2
+  // let v = digitSumMod(i, base)
+  Move         r11, r5
+  Move         r12, r1
+  Call2        r13, digitSumMod, r11, r12
+  Move         r14, r13
+  // counts[v] = counts[v] + 1
+  Index        r15, r3, r14
+  Const        r8, 1
+  Add          r16, r15, r8
+  SetIndex     r3, r14, r16
+  // i = i + 1
+  Const        r8, 1
+  AddInt       r17, r5, r8
+  Move         r5, r17
+  // while i < n {
+  Jump         L3
+L2:
+  // var freq: map<int,int> = {}
+  Const        r18, {}
+  Move         r19, r18
+  // var fkeys: list<int> = []
+  Const        r2, []
+  Move         r20, r2
+  // i = 0
+  Const        r4, 0
+  Move         r5, r4
+L7:
+  // while i < base {
+  Less         r21, r5, r1
+  JumpIfFalse  r21, L4
+  // let c = counts[i]
+  Index        r22, r3, r5
+  Move         r23, r22
+  // if c > 0 {
+  Const        r4, 0
+  Less         r24, r4, r23
+  JumpIfFalse  r24, L5
+  // if c in freq {
+  In           r25, r23, r19
+  JumpIfFalse  r25, L6
+  // freq[c] = freq[c] + 1
+  Index        r26, r19, r23
+  Const        r8, 1
+  Add          r27, r26, r8
+  SetIndex     r19, r23, r27
+  // if c in freq {
+  Jump         L5
+L6:
+  // freq[c] = 1
+  Const        r8, 1
+  SetIndex     r19, r23, r8
+  // fkeys = append(fkeys, c)
+  Append       r28, r20, r23
+  Move         r20, r28
+L5:
+  // i = i + 1
+  Const        r8, 1
+  AddInt       r29, r5, r8
+  Move         r5, r29
+  // while i < base {
+  Jump         L7
+L4:
+  // var total = 0
+  Const        r4, 0
+  Move         r30, r4
+  // i = 0
+  Const        r4, 0
+  Move         r5, r4
+L9:
+  // while i < len(fkeys) {
+  Len          r31, r20
+  LessInt      r32, r5, r31
+  JumpIfFalse  r32, L8
+  // total = total + freq[fkeys[i]]
+  Index        r33, r20, r5
+  Index        r34, r19, r33
+  Add          r35, r30, r34
+  Move         r30, r35
+  // i = i + 1
+  Const        r8, 1
+  AddInt       r36, r5, r8
+  Move         r5, r36
+  // while i < len(fkeys) {
+  Jump         L9
+L8:
+  // if total != base {
+  NotEqual     r37, r30, r1
+  JumpIfFalse  r37, L10
+  // return "only " + str(total) + " have a turn"
+  Const        r38, "only "
+  Str          r39, r30
+  Add          r40, r38, r39
+  Const        r41, " have a turn"
+  Add          r42, r40, r41
+  Return       r42
+L10:
+  // fkeys = sortInts(fkeys)
+  Move         r43, r20
+  Call         r44, sortInts, r43
+  Move         r20, r44
+  // var res = ""
+  Const        r45, ""
+  Move         r46, r45
+  // i = 0
+  Const        r4, 0
+  Move         r5, r4
+L13:
+  // while i < len(fkeys) {
+  Len          r47, r20
+  LessInt      r48, r5, r47
+  JumpIfFalse  r48, L11
+  // if i > 0 { res = res + " or " }
+  Const        r4, 0
+  LessInt      r49, r4, r5
+  JumpIfFalse  r49, L12
+  Const        r50, " or "
+  Add          r51, r46, r50
+  Move         r46, r51
+L12:
+  // res = res + str(fkeys[i])
+  Index        r52, r20, r5
+  Str          r53, r52
+  Add          r54, r46, r53
+  Move         r46, r54
+  // i = i + 1
+  Const        r8, 1
+  AddInt       r55, r5, r8
+  Move         r5, r55
+  // while i < len(fkeys) {
+  Jump         L13
+L11:
+  // return res
+  Return       r46
+
+  // fun main() {
+func main (regs=44)
+  // var bases1 = [2,3,5,11]
+  Const        r0, [2, 3, 5, 11]
+  Move         r1, r0
+  // var i = 0
+  Const        r2, 0
+  Move         r3, r2
+L1:
+  // while i < len(bases1) {
+  Const        r4, 4
+  LessInt      r5, r3, r4
+  JumpIfFalse  r5, L0
+  // let b = bases1[i]
+  Index        r6, r1, r3
+  Move         r7, r6
+  // print(str(b).padStart(2, " ") + " : " + str(fairshareList(25, b)))
+  Str          r8, r7
+  Const        r11, 2
+  Move         r9, r11
+  Const        r12, " "
+  Move         r10, r12
+  CallV        r13, r8, 2, r9
+  Const        r14, " : "
+  Add          r15, r13, r14
+  Const        r18, 25
+  Move         r16, r18
+  Move         r17, r7
+  Call2        r19, fairshareList, r16, r17
+  Str          r20, r19
+  Add          r21, r15, r20
+  Print        r21
+  // i = i + 1
+  Const        r22, 1
+  AddInt       r23, r3, r22
+  Move         r3, r23
+  // while i < len(bases1) {
+  Jump         L1
+L0:
+  // print("")
+  Const        r24, ""
+  Print        r24
+  // print("How many times does each get a turn in 50000 iterations?")
+  Const        r25, "How many times does each get a turn in 50000 iterations?"
+  Print        r25
+  // var bases2 = [191,1377,49999,50000,50001]
+  Const        r26, [191, 1377, 49999, 50000, 50001]
+  Move         r27, r26
+  // i = 0
+  Const        r2, 0
+  Move         r3, r2
+L3:
+  // while i < len(bases2) {
+  Const        r28, 5
+  LessInt      r29, r3, r28
+  JumpIfFalse  r29, L2
+  // let b = bases2[i]
+  Index        r30, r27, r3
+  Move         r31, r30
+  // let t = turns(50000, b)
+  Const        r34, 50000
+  Move         r32, r34
+  Move         r33, r31
+  Call2        r35, turns, r32, r33
+  Move         r36, r35
+  // print("  With " + str(b) + " people: " + t)
+  Const        r37, "  With "
+  Str          r38, r31
+  Add          r39, r37, r38
+  Const        r40, " people: "
+  Add          r41, r39, r40
+  Add          r42, r41, r36
+  Print        r42
+  // i = i + 1
+  Const        r22, 1
+  AddInt       r43, r3, r22
+  Move         r3, r43
+  // while i < len(bases2) {
+  Jump         L3
+L2:
+  Return       r0

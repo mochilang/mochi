@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated IR and outputs from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/ir`.
-Last updated: 2025-07-27 09:44 UTC
+Last updated: 2025-07-27 10:12 UTC
 
-## Rosetta Golden Test Checklist (402/465)
+## Rosetta Golden Test Checklist (406/465)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 116µs | 11.7 KB |
@@ -396,10 +396,10 @@ Last updated: 2025-07-27 09:44 UTC
 | 387 | extreme-floating-point-values | ✓ | 536µs |  |
 | 388 | faces-from-a-mesh-2 | ✓ | 545µs | 277.7 KB |
 | 389 | faces-from-a-mesh | ✓ | 413µs | 399.4 KB |
-| 390 | factorial-base-numbers-indexing-permutations-of-a-collection |   |  |  |
-| 391 | factorial-primes |   |  |  |
-| 392 | factorial |   |  |  |
-| 393 | factorions |   |  |  |
+| 390 | factorial-base-numbers-indexing-permutations-of-a-collection | ✓ | 34.251ms | 355.9 KB |
+| 391 | factorial-primes | ✓ | 116.429ms | 810.8 KB |
+| 392 | factorial | ✓ | 1.501ms | 981.8 KB |
+| 393 | factorions | ✓ | 30.371532s | 1.1 MB |
 | 394 | factors-of-a-mersenne-number |   |  |  |
 | 395 | factors-of-an-integer |   |  |  |
 | 396 | fairshare-between-two-and-more |   |  |  |
