@@ -3865,7 +3865,7 @@ func Emit(prog *Program) []byte {
 	buf.WriteString("\n")
 
 	for _, st := range prog.Structs {
-		fmt.Fprintf(&buf, "struct %s {\n", st.Name)
+                fmt.Fprintf(&buf, "class %s {\n", st.Name)
 		for _, f := range st.Fields {
 			fmt.Fprintf(&buf, "    public %s %s;\n", f.Type, f.Name)
 		}
