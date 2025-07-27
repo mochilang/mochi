@@ -595,26 +595,24 @@ func (i *IndexExpr) emit(w io.Writer) {
 				if newName, ok := globalRenames[t.Name]; ok && !isLocal(t.Name) {
 					name = newName
 				}
+				io.WriteString(w, "{ ")
 				io.WriteString(w, name)
-				io.WriteString(w, ".lock().unwrap()")
+				io.WriteString(w, ".lock().unwrap().get(")
 			} else {
+				io.WriteString(w, "{ ")
 				t.emit(w)
+				io.WriteString(w, ".get(")
 			}
-			io.WriteString(w, "[")
 			if inferType(i.Index) != "String" {
 				io.WriteString(w, "&")
 			}
 			i.Index.emit(w)
 			if inferType(i.Index) == "String" {
-				io.WriteString(w, ".as_str()")
-			}
-			io.WriteString(w, "]")
-			if !indexLHS {
-				vt := inferType(i)
-				if vt != "" && vt != "i64" && vt != "bool" && vt != "f64" {
-					io.WriteString(w, ".clone()")
+				if _, ok := i.Index.(*StringLit); !ok {
+					io.WriteString(w, ".as_str()")
 				}
 			}
+			io.WriteString(w, ").cloned().unwrap_or(Default::default()) }")
 			return
 		}
 		if key, ok := literalStringExpr(i.Index); ok {
@@ -628,38 +626,36 @@ func (i *IndexExpr) emit(w io.Writer) {
 			}
 		}
 	case *MapLit:
+		io.WriteString(w, "{")
 		i.Target.emit(w)
-		io.WriteString(w, "[")
+		io.WriteString(w, ".get(")
 		if inferType(i.Index) != "String" {
 			io.WriteString(w, "&")
 		}
 		i.Index.emit(w)
 		if inferType(i.Index) == "String" {
-			io.WriteString(w, ".as_str()")
-		}
-		io.WriteString(w, "]")
-		if !indexLHS {
-			vt := inferType(i)
-			if vt != "" && vt != "i64" && vt != "bool" && vt != "f64" {
-				io.WriteString(w, ".clone()")
+			if _, ok := i.Index.(*StringLit); !ok {
+				io.WriteString(w, ".as_str()")
 			}
 		}
+		io.WriteString(w, ").cloned().unwrap_or(Default::default()) }")
 		return
 	}
 	i.Target.emit(w)
 	if strings.HasPrefix(inferType(i.Target), "HashMap") {
-		io.WriteString(w, "[")
+		io.WriteString(w, "{")
+		i.Target.emit(w)
+		io.WriteString(w, ".get(")
+		if inferType(i.Index) != "String" {
+			io.WriteString(w, "&")
+		}
 		i.Index.emit(w)
 		if inferType(i.Index) == "String" {
-			io.WriteString(w, ".as_str()")
-		}
-		io.WriteString(w, "]")
-		if !indexLHS {
-			vt := inferType(i)
-			if vt != "" && vt != "i64" && vt != "bool" && vt != "f64" {
-				io.WriteString(w, ".clone()")
+			if _, ok := i.Index.(*StringLit); !ok {
+				io.WriteString(w, ".as_str()")
 			}
 		}
+		io.WriteString(w, ").cloned().unwrap_or(Default::default()) }")
 	} else {
 		if strings.HasPrefix(inferType(i.Target), "Vec<") {
 			io.WriteString(w, "[")
@@ -671,7 +667,10 @@ func (i *IndexExpr) emit(w io.Writer) {
 		} else if inferType(i.Index) == "String" {
 			io.WriteString(w, "[")
 			i.Index.emit(w)
-			io.WriteString(w, ".as_str()]")
+			if _, ok := i.Index.(*StringLit); !ok {
+				io.WriteString(w, ".as_str()")
+			}
+			io.WriteString(w, "]")
 		} else {
 			io.WriteString(w, "[")
 			i.Index.emit(w)
@@ -858,7 +857,9 @@ func (g *MapGetExpr) emit(w io.Writer) {
 	}
 	g.Key.emit(w)
 	if inferType(g.Key) == "String" {
-		io.WriteString(w, ".as_str()")
+		if _, ok := g.Key.(*StringLit); !ok {
+			io.WriteString(w, ".as_str()")
+		}
 	}
 	io.WriteString(w, ").cloned().unwrap_or(")
 	g.Default.emit(w)
@@ -1274,7 +1275,11 @@ func (s *IndexAssignStmt) emit(w io.Writer) {
 				io.WriteString(w, ".insert(")
 			}
 			idx.Index.emit(w)
-			io.WriteString(w, ".clone(), ")
+			if _, ok := idx.Index.(*StringLit); ok {
+				io.WriteString(w, ".to_string(), ")
+			} else {
+				io.WriteString(w, ".clone(), ")
+			}
 			s.Value.emit(w)
 			io.WriteString(w, ")")
 			indexLHS = old
@@ -1390,12 +1395,18 @@ func (b *BinaryExpr) emit(w io.Writer) {
 					name = newName
 				}
 				io.WriteString(w, name)
-				io.WriteString(w, ".lock().unwrap().contains_key(&")
+				io.WriteString(w, ".lock().unwrap().contains_key(")
+				if _, ok := b.Left.(*StringLit); !ok {
+					io.WriteString(w, "&")
+				}
 				b.Left.emit(w)
 				io.WriteString(w, ")")
 			} else {
 				b.Right.emit(w)
-				io.WriteString(w, ".contains_key(&")
+				io.WriteString(w, ".contains_key(")
+				if _, ok := b.Left.(*StringLit); !ok {
+					io.WriteString(w, "&")
+				}
 				b.Left.emit(w)
 				io.WriteString(w, ")")
 			}

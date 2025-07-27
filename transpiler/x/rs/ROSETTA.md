@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Rust code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/Rust`.
-Last updated: 2025-07-27 04:21 UTC
+Last updated: 2025-07-27 10:17 UTC
 
-## Rosetta Golden Test Checklist (71/451)
+## Rosetta Golden Test Checklist (71/465)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 109µs | 3.2 MB |
@@ -79,7 +79,7 @@ Last updated: 2025-07-27 04:21 UTC
 | 70 | arithmetic-geometric-mean | ✓ | 15µs |  |
 | 71 | arithmetic-integer-1 | ✓ | 21µs |  |
 | 72 | arithmetic-integer-2 | ✓ | 26µs |  |
-| 73 | arithmetic-numbers | ✓ |  |  |
+| 73 | arithmetic-numbers |   |  |  |
 | 74 | arithmetic-rational | ✓ | 164µs |  |
 | 75 | array-concatenation |   |  |  |
 | 76 | array-length | ✓ | 17µs |  |
@@ -87,7 +87,7 @@ Last updated: 2025-07-27 04:21 UTC
 | 78 | ascending-primes | ✓ | 363µs |  |
 | 79 | ascii-art-diagram-converter | ✓ | 32µs |  |
 | 80 | assertions | ✓ | 16µs |  |
-| 81 | associative-array-creation |   |  |  |
+| 81 | associative-array-creation | ✓ | 23µs |  |
 | 82 | associative-array-iteration |   |  |  |
 | 83 | associative-array-merging |   |  |  |
 | 84 | atomic-updates |   |  |  |
@@ -368,93 +368,107 @@ Last updated: 2025-07-27 04:21 UTC
 | 359 | erd-s-selfridge-categorization-of-primes |   |  |  |
 | 360 | esthetic-numbers |   |  |  |
 | 361 | ethiopian-multiplication |   |  |  |
-| 362 | euler-method |   |  |  |
-| 363 | eulers-constant-0.5772... |   |  |  |
-| 364 | eulers-identity |   |  |  |
-| 365 | eulers-sum-of-powers-conjecture |   |  |  |
-| 366 | evaluate-binomial-coefficients |   |  |  |
-| 367 | even-or-odd |   |  |  |
-| 368 | events |   |  |  |
-| 369 | evolutionary-algorithm |   |  |  |
-| 370 | exceptions-catch-an-exception-thrown-in-a-nested-call |   |  |  |
-| 371 | exceptions |   |  |  |
-| 372 | executable-library |   |  |  |
-| 373 | execute-a-markov-algorithm |   |  |  |
-| 374 | execute-a-system-command |   |  |  |
-| 375 | execute-brain- |   |  |  |
-| 376 | execute-computer-zero |   |  |  |
-| 377 | execute-hq9+ |   |  |  |
-| 378 | execute-snusp |   |  |  |
-| 379 | exponentiation-operator |   |  |  |
-| 380 | exponentiation-order |   |  |  |
-| 381 | exponentiation-with-infix-operators-in-or-operating-on-the-base |   |  |  |
-| 382 | extend-your-language |   |  |  |
-| 383 | extensible-prime-generator |   |  |  |
-| 384 | extreme-floating-point-values |   |  |  |
-| 385 | faces-from-a-mesh |   |  |  |
-| 386 | fasta-format |   |  |  |
-| 387 | faulhabers-triangle |   |  |  |
-| 388 | feigenbaum-constant-calculation |   |  |  |
-| 389 | fermat-numbers |   |  |  |
-| 390 | fibonacci-n-step-number-sequences |   |  |  |
-| 391 | fibonacci-sequence-1 |   |  |  |
-| 392 | fibonacci-sequence-2 |   |  |  |
-| 393 | fibonacci-sequence-3 |   |  |  |
-| 394 | fibonacci-sequence-4 |   |  |  |
-| 395 | fibonacci-word-fractal |   |  |  |
-| 396 | fibonacci-word |   |  |  |
-| 397 | file-extension-is-in-extensions-list |   |  |  |
-| 398 | file-input-output-1 |   |  |  |
-| 399 | file-input-output-2 |   |  |  |
-| 400 | file-modification-time |   |  |  |
-| 401 | file-size-distribution |   |  |  |
-| 402 | file-size |   |  |  |
-| 403 | filter |   |  |  |
-| 404 | find-chess960-starting-position-identifier |   |  |  |
-| 405 | find-common-directory-path |   |  |  |
-| 406 | find-duplicate-files |   |  |  |
-| 407 | find-if-a-point-is-within-a-triangle |   |  |  |
-| 408 | find-largest-left-truncatable-prime-in-a-given-base |   |  |  |
-| 409 | find-limit-of-recursion |   |  |  |
-| 410 | find-palindromic-numbers-in-both-binary-and-ternary-bases |   |  |  |
-| 411 | find-the-intersection-of-a-line-with-a-plane |   |  |  |
-| 412 | find-the-intersection-of-two-lines |   |  |  |
-| 413 | find-the-last-sunday-of-each-month |   |  |  |
-| 414 | find-the-missing-permutation |   |  |  |
-| 415 | fivenum-1 |   |  |  |
-| 416 | fivenum-2 |   |  |  |
-| 417 | fixed-length-records-1 |   |  |  |
-| 418 | fixed-length-records-2 |   |  |  |
-| 419 | fizzbuzz-1 |   |  |  |
-| 420 | fizzbuzz-2 |   |  |  |
-| 421 | flatten-a-list-1 |   |  |  |
-| 422 | flatten-a-list-2 |   |  |  |
-| 423 | flipping-bits-game |   |  |  |
-| 424 | flow-control-structures-1 |   |  |  |
-| 425 | flow-control-structures-2 |   |  |  |
-| 426 | flow-control-structures-3 |   |  |  |
-| 427 | flow-control-structures-4 |   |  |  |
-| 428 | floyd-warshall-algorithm |   |  |  |
-| 429 | floyds-triangle |   |  |  |
-| 430 | forest-fire |   |  |  |
-| 431 | fork |   |  |  |
-| 432 | ftp |   |  |  |
-| 433 | gamma-function |   |  |  |
-| 434 | general-fizzbuzz |   |  |  |
-| 435 | generic-swap |   |  |  |
-| 436 | get-system-command-output |   |  |  |
-| 437 | giuga-numbers |   |  |  |
-| 438 | globally-replace-text-in-several-files |   |  |  |
-| 439 | goldbachs-comet |   |  |  |
-| 440 | golden-ratio-convergence |   |  |  |
-| 441 | graph-colouring |   |  |  |
-| 442 | gray-code |   |  |  |
-| 443 | http |   |  |  |
-| 444 | image-noise |   |  |  |
-| 445 | loops-increment-loop-index-within-loop-body |   |  |  |
-| 446 | md5 |   |  |  |
-| 447 | nim-game |   |  |  |
-| 448 | plasma-effect |   |  |  |
-| 449 | sorting-algorithms-bubble-sort |   |  |  |
-| 450 | window-management |   |  |  |
-| 451 | zumkeller-numbers |   |  |  |
+| 362 | euclid-mullin-sequence |   |  |  |
+| 363 | euler-method |   |  |  |
+| 364 | eulers-constant-0.5772... |   |  |  |
+| 365 | eulers-identity |   |  |  |
+| 366 | eulers-sum-of-powers-conjecture |   |  |  |
+| 367 | evaluate-binomial-coefficients |   |  |  |
+| 368 | even-or-odd |   |  |  |
+| 369 | events |   |  |  |
+| 370 | evolutionary-algorithm |   |  |  |
+| 371 | exceptions-catch-an-exception-thrown-in-a-nested-call |   |  |  |
+| 372 | exceptions |   |  |  |
+| 373 | executable-library |   |  |  |
+| 374 | execute-a-markov-algorithm |   |  |  |
+| 375 | execute-a-system-command |   |  |  |
+| 376 | execute-brain- |   |  |  |
+| 377 | execute-computer-zero-1 |   |  |  |
+| 378 | execute-computer-zero |   |  |  |
+| 379 | execute-hq9+ |   |  |  |
+| 380 | execute-snusp |   |  |  |
+| 381 | exponentiation-operator-2 |   |  |  |
+| 382 | exponentiation-operator |   |  |  |
+| 383 | exponentiation-order |   |  |  |
+| 384 | exponentiation-with-infix-operators-in-or-operating-on-the-base |   |  |  |
+| 385 | extend-your-language |   |  |  |
+| 386 | extensible-prime-generator |   |  |  |
+| 387 | extreme-floating-point-values |   |  |  |
+| 388 | faces-from-a-mesh-2 |   |  |  |
+| 389 | faces-from-a-mesh |   |  |  |
+| 390 | factorial-base-numbers-indexing-permutations-of-a-collection |   |  |  |
+| 391 | factorial-primes |   |  |  |
+| 392 | factorial |   |  |  |
+| 393 | factorions |   |  |  |
+| 394 | factors-of-a-mersenne-number |   |  |  |
+| 395 | factors-of-an-integer |   |  |  |
+| 396 | fairshare-between-two-and-more |   |  |  |
+| 397 | farey-sequence |   |  |  |
+| 398 | fast-fourier-transform |   |  |  |
+| 399 | fasta-format |   |  |  |
+| 400 | faulhabers-formula |   |  |  |
+| 401 | faulhabers-triangle |   |  |  |
+| 402 | feigenbaum-constant-calculation |   |  |  |
+| 403 | fermat-numbers |   |  |  |
+| 404 | fibonacci-n-step-number-sequences |   |  |  |
+| 405 | fibonacci-sequence-1 |   |  |  |
+| 406 | fibonacci-sequence-2 |   |  |  |
+| 407 | fibonacci-sequence-3 |   |  |  |
+| 408 | fibonacci-sequence-4 |   |  |  |
+| 409 | fibonacci-word-fractal |   |  |  |
+| 410 | fibonacci-word |   |  |  |
+| 411 | file-extension-is-in-extensions-list |   |  |  |
+| 412 | file-input-output-1 |   |  |  |
+| 413 | file-input-output-2 |   |  |  |
+| 414 | file-modification-time |   |  |  |
+| 415 | file-size-distribution |   |  |  |
+| 416 | file-size |   |  |  |
+| 417 | filter |   |  |  |
+| 418 | find-chess960-starting-position-identifier |   |  |  |
+| 419 | find-common-directory-path |   |  |  |
+| 420 | find-duplicate-files |   |  |  |
+| 421 | find-if-a-point-is-within-a-triangle |   |  |  |
+| 422 | find-largest-left-truncatable-prime-in-a-given-base |   |  |  |
+| 423 | find-limit-of-recursion |   |  |  |
+| 424 | find-palindromic-numbers-in-both-binary-and-ternary-bases |   |  |  |
+| 425 | find-the-intersection-of-a-line-with-a-plane |   |  |  |
+| 426 | find-the-intersection-of-two-lines |   |  |  |
+| 427 | find-the-last-sunday-of-each-month |   |  |  |
+| 428 | find-the-missing-permutation |   |  |  |
+| 429 | fivenum-1 |   |  |  |
+| 430 | fivenum-2 |   |  |  |
+| 431 | fixed-length-records-1 |   |  |  |
+| 432 | fixed-length-records-2 |   |  |  |
+| 433 | fizzbuzz-1 |   |  |  |
+| 434 | fizzbuzz-2 |   |  |  |
+| 435 | flatten-a-list-1 |   |  |  |
+| 436 | flatten-a-list-2 |   |  |  |
+| 437 | flipping-bits-game |   |  |  |
+| 438 | flow-control-structures-1 |   |  |  |
+| 439 | flow-control-structures-2 |   |  |  |
+| 440 | flow-control-structures-3 |   |  |  |
+| 441 | flow-control-structures-4 |   |  |  |
+| 442 | floyd-warshall-algorithm |   |  |  |
+| 443 | floyds-triangle |   |  |  |
+| 444 | forest-fire |   |  |  |
+| 445 | fork |   |  |  |
+| 446 | ftp |   |  |  |
+| 447 | gamma-function |   |  |  |
+| 448 | general-fizzbuzz |   |  |  |
+| 449 | generic-swap |   |  |  |
+| 450 | get-system-command-output |   |  |  |
+| 451 | giuga-numbers |   |  |  |
+| 452 | globally-replace-text-in-several-files |   |  |  |
+| 453 | goldbachs-comet |   |  |  |
+| 454 | golden-ratio-convergence |   |  |  |
+| 455 | graph-colouring |   |  |  |
+| 456 | gray-code |   |  |  |
+| 457 | http |   |  |  |
+| 458 | image-noise |   |  |  |
+| 459 | loops-increment-loop-index-within-loop-body |   |  |  |
+| 460 | md5 |   |  |  |
+| 461 | nim-game |   |  |  |
+| 462 | plasma-effect |   |  |  |
+| 463 | sorting-algorithms-bubble-sort |   |  |  |
+| 464 | window-management |   |  |  |
+| 465 | zumkeller-numbers |   |  |  |
