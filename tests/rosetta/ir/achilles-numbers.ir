@@ -1,8 +1,10 @@
-func main (regs=2)
+func main (regs=3)
   // var pps: map<int, bool> = {}
   Const        r1, {}
   Move         r0, r1
   SetGlobal    0,0,0,0
+  // main()
+  Call         r2, main, 
   Return       r0
 
   // fun pow10(exp: int): int {
@@ -516,8 +518,7 @@ L10:
   Move         r85, r84
 L16:
   // while d <= maxDigits {
-  Const        r1, 15
-  LessEqInt    r86, r85, r1
+  LessEqInt    r86, r85, r2
   JumpIfFalse  r86, L15
   // let c = counts[d-2]
   Const        r84, 2

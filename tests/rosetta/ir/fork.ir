@@ -1,0 +1,46 @@
+func main (regs=5)
+  // var nextPID = 1
+  Const        r1, 1
+  Move         r0, r1
+  SetGlobal    0,0,0,0
+  // run(true)
+  Const        r3, true
+  Move         r2, r3
+  Call         r4, run, r2
+  Return       r0
+
+  // fun run(hasArg: bool) {
+func run (regs=17)
+  // let pid = nextPID
+  Move         r2, r0
+  // nextPID = nextPID + 1
+  Const        r3, 1
+  Add          r4, r0, r3
+  Move         r0, r4
+  SetGlobal    0,0,0,0
+  // print("PID: " + str(pid))
+  Const        r5, "PID: "
+  Str          r6, r2
+  Add          r7, r5, r6
+  Print        r7
+  // if !hasArg {
+  Not          r8, r1
+  JumpIfFalse  r8, L0
+  // print("Done.")
+  Const        r9, "Done."
+  Print        r9
+  // return
+  Return       r0
+L0:
+  // let childPID = nextPID
+  Move         r10, r0
+  // print("Child's PID: " + str(childPID))
+  Const        r11, "Child's PID: "
+  Str          r12, r10
+  Add          r13, r11, r12
+  Print        r13
+  // run(false)
+  Const        r15, false
+  Move         r14, r15
+  Call         r16, run, r14
+  Return       r0

@@ -1,0 +1,278 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun showState(w: Window, label: string) {
+func showState (regs=43)
+  // print(label + ": pos=(" + str(w.x) + "," + str(w.y) + ") size=(" + str(w.w) + "x" + str(w.h) + ") max=" + str(w.maximized) + " icon=" + str(w.iconified) + " visible=" + str(w.visible))
+  Const        r2, ": pos=("
+  Add          r3, r1, r2
+  Const        r4, "x"
+  Index        r5, r0, r4
+  Str          r6, r5
+  Add          r7, r3, r6
+  Const        r8, ","
+  Add          r9, r7, r8
+  Const        r10, "y"
+  Index        r11, r0, r10
+  Str          r12, r11
+  Add          r13, r9, r12
+  Const        r14, ") size=("
+  Add          r15, r13, r14
+  Const        r16, "w"
+  Index        r17, r0, r16
+  Str          r18, r17
+  Add          r19, r15, r18
+  Const        r4, "x"
+  Add          r20, r19, r4
+  Const        r21, "h"
+  Index        r22, r0, r21
+  Str          r23, r22
+  Add          r24, r20, r23
+  Const        r25, ") max="
+  Add          r26, r24, r25
+  Const        r27, "maximized"
+  Index        r28, r0, r27
+  Str          r29, r28
+  Add          r30, r26, r29
+  Const        r31, " icon="
+  Add          r32, r30, r31
+  Const        r33, "iconified"
+  Index        r34, r0, r33
+  Str          r35, r34
+  Add          r36, r32, r35
+  Const        r37, " visible="
+  Add          r38, r36, r37
+  Const        r39, "visible"
+  Index        r40, r0, r39
+  Str          r41, r40
+  Add          r42, r38, r41
+  Print        r42
+  Return       r0
+
+  // fun maximize(w: Window): Window {
+func maximize (regs=7)
+  // w.maximized = true
+  Const        r1, true
+  Const        r2, "maximized"
+  SetIndex     r0, r2, r1
+  // w.w = 800
+  Const        r3, 800
+  Const        r4, "w"
+  SetIndex     r0, r4, r3
+  // w.h = 600
+  Const        r5, 600
+  Const        r6, "h"
+  SetIndex     r0, r6, r5
+  // return w
+  Return       r0
+
+  // fun unmaximize(w: Window): Window {
+func unmaximize (regs=7)
+  // w.maximized = false
+  Const        r1, false
+  Const        r2, "maximized"
+  SetIndex     r0, r2, r1
+  // w.w = 640
+  Const        r3, 640
+  Const        r4, "w"
+  SetIndex     r0, r4, r3
+  // w.h = 480
+  Const        r5, 480
+  Const        r6, "h"
+  SetIndex     r0, r6, r5
+  // return w
+  Return       r0
+
+  // fun iconify(w: Window): Window {
+func iconify (regs=5)
+  // w.iconified = true
+  Const        r1, true
+  Const        r2, "iconified"
+  SetIndex     r0, r2, r1
+  // w.visible = false
+  Const        r3, false
+  Const        r4, "visible"
+  SetIndex     r0, r4, r3
+  // return w
+  Return       r0
+
+  // fun deiconify(w: Window): Window {
+func deiconify (regs=5)
+  // w.iconified = false
+  Const        r1, false
+  Const        r2, "iconified"
+  SetIndex     r0, r2, r1
+  // w.visible = true
+  Const        r3, true
+  Const        r4, "visible"
+  SetIndex     r0, r4, r3
+  // return w
+  Return       r0
+
+  // fun hide(w: Window): Window {
+func hide (regs=3)
+  // w.visible = false
+  Const        r1, false
+  Const        r2, "visible"
+  SetIndex     r0, r2, r1
+  // return w
+  Return       r0
+
+  // fun showWindow(w: Window): Window {
+func showWindow (regs=3)
+  // w.visible = true
+  Const        r1, true
+  Const        r2, "visible"
+  SetIndex     r0, r2, r1
+  // return w
+  Return       r0
+
+  // fun move(w: Window): Window {
+func move (regs=16)
+  // if w.shifted {
+  Const        r1, "shifted"
+  Index        r2, r0, r1
+  JumpIfFalse  r2, L0
+  // w.x = w.x - 10
+  Const        r3, "x"
+  Index        r4, r0, r3
+  Const        r5, 10
+  Sub          r6, r4, r5
+  Const        r3, "x"
+  SetIndex     r0, r3, r6
+  // w.y = w.y - 10
+  Const        r7, "y"
+  Index        r8, r0, r7
+  Const        r5, 10
+  Sub          r9, r8, r5
+  Const        r7, "y"
+  SetIndex     r0, r7, r9
+  // if w.shifted {
+  Jump         L1
+L0:
+  // w.x = w.x + 10
+  Const        r3, "x"
+  Index        r10, r0, r3
+  Const        r5, 10
+  Add          r11, r10, r5
+  Const        r3, "x"
+  SetIndex     r0, r3, r11
+  // w.y = w.y + 10
+  Const        r7, "y"
+  Index        r12, r0, r7
+  Const        r5, 10
+  Add          r13, r12, r5
+  Const        r7, "y"
+  SetIndex     r0, r7, r13
+L1:
+  // w.shifted = !w.shifted
+  Const        r1, "shifted"
+  Index        r14, r0, r1
+  Not          r15, r14
+  Const        r1, "shifted"
+  SetIndex     r0, r1, r15
+  // return w
+  Return       r0
+
+  // fun main() {
+func main (regs=71)
+  // var win = Window{ x: 100, y: 100, w: 640, h: 480, maximized: false, iconified: false, visible: true, shifted: false }
+  Const        r0, 100
+  Const        r0, 100
+  Const        r1, 640
+  Const        r2, 480
+  Const        r3, false
+  Const        r3, false
+  Const        r4, true
+  Const        r3, false
+  Const        r5, "__name"
+  Const        r6, "Window"
+  Const        r7, "x"
+  Move         r8, r0
+  Const        r9, "y"
+  Move         r10, r0
+  Const        r11, "w"
+  Move         r12, r1
+  Const        r13, "h"
+  Move         r14, r2
+  Const        r15, "maximized"
+  Move         r16, r3
+  Const        r17, "iconified"
+  Move         r18, r3
+  Const        r19, "visible"
+  Move         r20, r4
+  Const        r21, "shifted"
+  Move         r22, r3
+  MakeMap      r23, 9, r5
+  Move         r24, r23
+  // showState(win, "Start")
+  Move         r25, r24
+  Const        r27, "Start"
+  Move         r26, r27
+  Call2        r28, showState, r25, r26
+  // win = maximize(win)
+  Move         r29, r24
+  Call         r30, maximize, r29
+  Move         r24, r30
+  // showState(win, "Maximize")
+  Move         r31, r24
+  Const        r33, "Maximize"
+  Move         r32, r33
+  Call2        r34, showState, r31, r32
+  // win = unmaximize(win)
+  Move         r35, r24
+  Call         r36, unmaximize, r35
+  Move         r24, r36
+  // showState(win, "Unmaximize")
+  Move         r37, r24
+  Const        r39, "Unmaximize"
+  Move         r38, r39
+  Call2        r40, showState, r37, r38
+  // win = iconify(win)
+  Move         r41, r24
+  Call         r42, iconify, r41
+  Move         r24, r42
+  // showState(win, "Iconify")
+  Move         r43, r24
+  Const        r45, "Iconify"
+  Move         r44, r45
+  Call2        r46, showState, r43, r44
+  // win = deiconify(win)
+  Move         r47, r24
+  Call         r48, deiconify, r47
+  Move         r24, r48
+  // showState(win, "Deiconify")
+  Move         r49, r24
+  Const        r51, "Deiconify"
+  Move         r50, r51
+  Call2        r52, showState, r49, r50
+  // win = hide(win)
+  Move         r53, r24
+  Call         r54, hide, r53
+  Move         r24, r54
+  // showState(win, "Hide")
+  Move         r55, r24
+  Const        r57, "Hide"
+  Move         r56, r57
+  Call2        r58, showState, r55, r56
+  // win = showWindow(win)
+  Move         r59, r24
+  Call         r60, showWindow, r59
+  Move         r24, r60
+  // showState(win, "Show")
+  Move         r61, r24
+  Const        r63, "Show"
+  Move         r62, r63
+  Call2        r64, showState, r61, r62
+  // win = move(win)
+  Move         r65, r24
+  Call         r66, move, r65
+  Move         r24, r66
+  // showState(win, "Move")
+  Move         r67, r24
+  Const        r69, "Move"
+  Move         r68, r69
+  Call2        r70, showState, r67, r68
+  Return       r0

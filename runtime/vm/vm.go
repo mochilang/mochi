@@ -1149,6 +1149,22 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 				}
 			case ValueNull:
 				fr.regs[ins.A] = Value{Tag: ValueInt, Int: 0}
+			case ValueInt:
+				fr.regs[ins.A] = Value{Tag: ValueInt, Int: len(strconv.Itoa(v.Int))}
+			case ValueBigInt:
+				if v.BigInt == nil {
+					fr.regs[ins.A] = Value{Tag: ValueInt, Int: 0}
+				} else {
+					fr.regs[ins.A] = Value{Tag: ValueInt, Int: len(v.BigInt.String())}
+				}
+			case ValueFloat:
+				fr.regs[ins.A] = Value{Tag: ValueInt, Int: len(strconv.FormatFloat(v.Float, 'f', -1, 64))}
+			case ValueBigRat:
+				if v.BigRat == nil {
+					fr.regs[ins.A] = Value{Tag: ValueInt, Int: 0}
+				} else {
+					fr.regs[ins.A] = Value{Tag: ValueInt, Int: len(v.BigRat.RatString())}
+				}
 			default:
 				return Value{}, m.newError(fmt.Errorf("invalid len operand"), trace, ins.Line)
 			}
@@ -1264,13 +1280,22 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 			idxVal := fr.regs[ins.B]
 			val := fr.regs[ins.C]
 			switch dst.Tag {
+			case ValueNull:
+				dst.Tag = ValueList
+				dst.List = make([]Value, idxVal.Int+1)
+				dst.List[idxVal.Int] = val
 			case ValueList:
 				idx := idxVal.Int
 				if idx < 0 {
 					idx += len(dst.List)
 				}
-				if idx < 0 || idx >= len(dst.List) {
+				if idx < 0 {
 					return Value{}, m.newError(fmt.Errorf("index out of range"), trace, ins.Line)
+				}
+				if idx >= len(dst.List) {
+					newList := make([]Value, idx+1)
+					copy(newList, dst.List)
+					dst.List = newList
 				}
 				dst.List[idx] = val
 			case ValueMap:

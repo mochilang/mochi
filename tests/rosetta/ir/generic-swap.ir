@@ -1,0 +1,49 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun swap(a: any, b: any): list<any> {
+func swap (regs=5)
+  // return [b, a]
+  Move         r2, r1
+  Move         r3, r0
+  MakeList     r4, 2, r2
+  Return       r4
+
+  // fun main() {
+func main (regs=21)
+  // var a = 3
+  Const        r0, 3
+  Move         r1, r0
+  // var b = "four"
+  Const        r2, "four"
+  Move         r3, r2
+  // print(str(a) + " " + str(b))
+  Str          r4, r1
+  Const        r5, " "
+  Add          r6, r4, r5
+  Str          r7, r3
+  Add          r8, r6, r7
+  Print        r8
+  // var res = swap(a, b)
+  Move         r9, r1
+  Move         r10, r3
+  Call2        r11, swap, r9, r10
+  Move         r12, r11
+  // a = res[0]
+  Const        r13, 0
+  Index        r14, r12, r13
+  Move         r1, r14
+  // b = res[1]
+  Const        r15, 1
+  Index        r16, r12, r15
+  Move         r3, r16
+  // print(str(a) + " " + str(b))
+  Str          r17, r1
+  Const        r5, " "
+  Add          r18, r17, r5
+  Str          r19, r3
+  Add          r20, r18, r19
+  Print        r20
+  Return       r0

@@ -32,12 +32,10 @@ L1:
   JumpIfFalse  r14, L0
   // let t2 = (i as float) * dt
   Cast         r15, r5, float
-  Const        r8, 0.01
-  MulFloat     r16, r15, r8
+  MulFloat     r16, r15, r1
   Move         r17, r16
   // let k2 = sinApprox(t2 * PI)
-  Const        r7, 3.141592653589793
-  MulFloat     r19, r17, r7
+  MulFloat     r19, r17, r0
   Move         r18, r19
   Call         r20, sinApprox, r18
   Move         r21, r20
@@ -76,16 +74,14 @@ L3:
   // let t2 = 2.0 + (i2 as float) * dt
   Const        r31, 2.0
   Cast         r32, r6, float
-  Const        r8, 0.01
-  MulFloat     r33, r32, r8
+  MulFloat     r33, r32, r1
   AddFloat     r34, r31, r33
   Move         r35, r34
   // let k2 = 0.0
   Const        r9, 0.0
   Move         r36, r9
   // s = s + (k1 + k2) * 0.5 * (t2 - t1)
-  Const        r9, 0.0
-  AddFloat     r37, r4, r9
+  AddFloat     r37, r4, r36
   Const        r23, 0.5
   MulFloat     r38, r37, r23
   SubFloat     r39, r35, r3
@@ -97,8 +93,7 @@ L3:
   Move         r3, r35
   SetGlobal    3,3,0,0
   // k1 = k2
-  Const        r9, 0.0
-  Move         r4, r9
+  Move         r4, r36
   SetGlobal    4,4,0,0
   // i2 = i2 + 1
   Const        r12, 1

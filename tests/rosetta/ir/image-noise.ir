@@ -1,0 +1,113 @@
+func main (regs=33)
+  // let width = 320
+  Const        r4, 320
+  Move         r0, r4
+  SetGlobal    0,0,0,0
+  // let height = 240
+  Const        r5, 240
+  Move         r1, r5
+  SetGlobal    1,1,0,0
+  // var seed = now() % 2147483647
+  Now          r6
+  Const        r7, 2147483647
+  ModInt       r8, r6, r7
+  Cast         r9, r8, bigint
+  Move         r2, r9
+  SetGlobal    2,2,0,0
+  // print("P2")
+  Const        r10, "P2"
+  Print        r10
+  // print(str(width) + " " + str(height))
+  Const        r11, "320"
+  Const        r12, " "
+  Add          r13, r11, r12
+  Const        r14, "240"
+  Add          r15, r13, r14
+  Print        r15
+  // print("255")
+  Const        r16, "255"
+  Print        r16
+  // var y = 0
+  Const        r17, 0
+  Move         r3, r17
+  SetGlobal    3,3,0,0
+L4:
+  // while y < height {
+  LessInt      r18, r3, r1
+  JumpIfFalse  r18, L0
+  // var line = ""
+  Const        r19, ""
+  Move         r20, r19
+  // var x = 0
+  Const        r17, 0
+  Move         r21, r17
+L3:
+  // while x < width {
+  LessInt      r22, r21, r0
+  JumpIfFalse  r22, L1
+  // let val = randBit()
+  Call         r23, randBit, 
+  Move         r24, r23
+  // line = line + str(val)
+  Str          r25, r24
+  Add          r26, r20, r25
+  Move         r20, r26
+  // if x < width - 1 { line = line + " " }
+  Const        r27, 1
+  SubInt       r28, r0, r27
+  LessInt      r29, r21, r28
+  JumpIfFalse  r29, L2
+  Const        r12, " "
+  Add          r30, r20, r12
+  Move         r20, r30
+L2:
+  // x = x + 1
+  Const        r27, 1
+  AddInt       r31, r21, r27
+  Move         r21, r31
+  // while x < width {
+  Jump         L3
+L1:
+  // print(line)
+  Print        r20
+  // y = y + 1
+  Const        r27, 1
+  AddInt       r32, r3, r27
+  Move         r3, r32
+  SetGlobal    3,3,0,0
+  // while y < height {
+  Jump         L4
+L0:
+  Return       r0
+
+  // fun nextRand(): int {
+func nextRand (regs=10)
+  // seed = (seed * 1664525 + 1013904223) % 2147483647
+  Const        r4, 1664525
+  Mul          r5, r2, r4
+  Const        r6, 1013904223
+  Add          r7, r5, r6
+  Const        r8, 2147483647
+  Mod          r9, r7, r8
+  Move         r2, r9
+  SetGlobal    2,2,0,0
+  // return seed
+  Return       r2
+
+  // fun randBit(): int {
+func randBit (regs=11)
+  // let r = nextRand()
+  Call         r4, nextRand, 
+  Move         r5, r4
+  // if r % 2 == 0 { return 0 }
+  Const        r6, 2
+  Mod          r7, r5, r6
+  Const        r8, 0
+  Equal        r9, r7, r8
+  JumpIfFalse  r9, L0
+  Const        r8, 0
+  Return       r8
+L0:
+  // return 255
+  Const        r10, 255
+  Return       r10

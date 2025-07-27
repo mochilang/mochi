@@ -1,8 +1,10 @@
-func main (regs=2)
+func main (regs=3)
   // let THRESHOLD = 140737488355328
   Const        r1, 140737488355328
   Move         r0, r1
   SetGlobal    0,0,0,0
+  // main()
+  Call         r2, main, 
   Return       r0
 
   // fun indexOf(xs: list<int>, value: int): int {
@@ -142,14 +144,14 @@ L4:
   Return       r9
 
   // fun classifySequence(k: int): map<string, any> {
-func classifySequence (regs=30)
+func classifySequence (regs=80)
   // var last = k
   Move         r2, r1
   // var seq: list<int> = [k]
   Move         r3, r1
   MakeList     r4, 1, r3
   Move         r5, r4
-L1:
+L11:
   // while true {
   Const        r6, true
   // last = sumProperDivisors(last)
@@ -172,19 +174,130 @@ L1:
   // aliquot = "Terminating"
   Const        r16, "Terminating"
   Move         r13, r16
+  // if last == 0 {
+  Jump         L1
 L0:
+  // } else if n == 2 && last == k {
+  Const        r17, 2
+  EqualInt     r18, r11, r17
+  Equal        r19, r2, r1
+  Move         r20, r18
+  JumpIfFalse  r20, L2
+  Move         r20, r19
+L2:
+  JumpIfFalse  r20, L3
+  // aliquot = "Perfect"
+  Const        r21, "Perfect"
+  Move         r13, r21
+  // } else if n == 2 && last == k {
+  Jump         L1
+L3:
+  // } else if n == 3 && last == k {
+  Const        r22, 3
+  EqualInt     r23, r11, r22
+  Equal        r24, r2, r1
+  Move         r25, r23
+  JumpIfFalse  r25, L4
+  Move         r25, r24
+L4:
+  JumpIfFalse  r25, L5
+  // aliquot = "Amicable"
+  Const        r26, "Amicable"
+  Move         r13, r26
+  // } else if n == 3 && last == k {
+  Jump         L1
+L5:
+  // } else if n >= 4 && last == k {
+  Const        r27, 4
+  LessEqInt    r28, r27, r11
+  Equal        r29, r2, r1
+  Move         r30, r28
+  JumpIfFalse  r30, L6
+  Move         r30, r29
+L6:
+  JumpIfFalse  r30, L7
+  // aliquot = "Sociable[" + str(n - 1) + "]"
+  Const        r31, "Sociable["
+  Const        r32, 1
+  SubInt       r33, r11, r32
+  Str          r34, r33
+  Add          r35, r31, r34
+  Const        r36, "]"
+  Add          r37, r35, r36
+  Move         r13, r37
+  // } else if n >= 4 && last == k {
+  Jump         L1
+L7:
+  // } else if last == seq[n-2] {
+  Const        r17, 2
+  SubInt       r38, r11, r17
+  Index        r39, r5, r38
+  Equal        r40, r2, r39
+  JumpIfFalse  r40, L8
+  // aliquot = "Aspiring"
+  Const        r41, "Aspiring"
+  Move         r13, r41
+  // } else if last == seq[n-2] {
+  Jump         L1
+L8:
+  // } else if contains(seq[1:maxOf(1, n-2)], last) {
+  Const        r32, 1
+  Move         r44, r32
+  Const        r32, 1
+  Move         r46, r32
+  Const        r17, 2
+  SubInt       r48, r11, r17
+  Move         r47, r48
+  Call2        r49, maxOf, r46, r47
+  Move         r45, r49
+  Slice        r50, r5, r44, r45
+  Move         r42, r50
+  Move         r43, r2
+  Call2        r51, contains, r42, r43
+  JumpIfFalse  r51, L9
+  // let idx = indexOf(seq, last)
+  Move         r52, r5
+  Move         r53, r2
+  Call2        r54, indexOf, r52, r53
+  Move         r55, r54
+  // aliquot = "Cyclic[" + str(n - 1 - idx) + "]"
+  Const        r56, "Cyclic["
+  Const        r32, 1
+  SubInt       r57, r11, r32
+  Sub          r58, r57, r55
+  Str          r59, r58
+  Add          r60, r56, r59
+  Const        r36, "]"
+  Add          r61, r60, r36
+  Move         r13, r61
+  // } else if contains(seq[1:maxOf(1, n-2)], last) {
+  Jump         L1
+L9:
+  // } else if n == 16 || last > THRESHOLD {
+  Less         r62, r0, r2
+  Const        r63, 16
+  EqualInt     r64, r11, r63
+  Move         r65, r64
+  JumpIfTrue   r65, L10
+  Move         r65, r62
+L10:
+  JumpIfFalse  r65, L1
+  // aliquot = "Non-Terminating"
+  Const        r66, "Non-Terminating"
+  Move         r13, r66
+L1:
   // if aliquot != "" { return {"seq": seq, "aliquot": aliquot} }
   Const        r12, ""
-  NotEqual     r17, r13, r12
-  JumpIfFalse  r17, L1
-  Const        r18, "seq"
-  Const        r19, "aliquot"
-  Move         r20, r18
-  Move         r21, r5
-  Move         r22, r19
-  Move         r23, r13
-  MakeMap      r24, 2, r20
-  Return       r24
+  NotEqual     r67, r13, r12
+  JumpIfFalse  r67, L11
+  Const        r68, "seq"
+  Const        r69, "aliquot"
+  Move         r70, r68
+  Move         r71, r5
+  Move         r72, r69
+  Move         r73, r13
+  MakeMap      r74, 2, r70
+  Return       r74
 
   // fun padLeft(n: int, w: int): string {
 func padLeft (regs=9)
@@ -370,8 +483,7 @@ L2:
   Const        r62, 15355717786080
   Move         r63, r62
   // let r = classifySequence(big)
-  Const        r62, 15355717786080
-  Move         r64, r62
+  Move         r64, r63
   Call         r65, classifySequence, r64
   Move         r66, r65
   // print(str(big) + ": " + padRight(r["aliquot"] as string, 15) + " " + joinWithCommas(r["seq"] as list<int>))

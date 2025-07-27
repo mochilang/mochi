@@ -1,0 +1,17 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun main() {
+func main (regs=6)
+  // let todo: Todo = fetch "https://jsonplaceholder.typicode.com/todos/1"
+  Const        r0, "https://jsonplaceholder.typicode.com/todos/1"
+  Const        r1, nil
+  Fetch        2,0,1,0
+  Move         r3, r2
+  // print(todo.title)
+  Const        r4, "title"
+  Index        r5, r3, r4
+  Print        r5
+  Return       r0

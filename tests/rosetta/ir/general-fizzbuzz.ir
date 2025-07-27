@@ -1,0 +1,64 @@
+func main (regs=29)
+  // let max = 20
+  Const        r3, 20
+  Move         r0, r3
+  SetGlobal    0,0,0,0
+  // let words = {3: "Fizz", 5: "Buzz", 7: "Baxx"}
+  Const        r4, {"3": "Fizz", "5": "Buzz", "7": "Baxx"}
+  Move         r1, r4
+  SetGlobal    1,1,0,0
+  // let keys = [3,5,7]
+  Const        r5, [3, 5, 7]
+  Move         r2, r5
+  SetGlobal    2,2,0,0
+  // for i in 1..(max+1) {
+  Const        r6, 1
+  Const        r6, 1
+  AddInt       r7, r0, r6
+  Move         r8, r6
+L5:
+  LessInt      r9, r8, r7
+  JumpIfFalse  r9, L0
+  // var text = ""
+  Const        r10, ""
+  Move         r11, r10
+  // for n in keys {
+  IterPrep     r12, r2
+  Len          r13, r12
+  Const        r14, 0
+L3:
+  LessInt      r15, r14, r13
+  JumpIfFalse  r15, L1
+  Index        r16, r12, r14
+  Move         r17, r16
+  // if i % n == 0 { text = text + words[n] }
+  Mod          r18, r8, r17
+  Const        r19, 0
+  Equal        r20, r18, r19
+  JumpIfFalse  r20, L2
+  Index        r21, r1, r17
+  Add          r22, r11, r21
+  Move         r11, r22
+L2:
+  // for n in keys {
+  Const        r23, 1
+  AddInt       r24, r14, r23
+  Move         r14, r24
+  Jump         L3
+L1:
+  // if text == "" { text = str(i) }
+  Const        r10, ""
+  Equal        r25, r11, r10
+  JumpIfFalse  r25, L4
+  Str          r26, r8
+  Move         r11, r26
+L4:
+  // print(text)
+  Print        r11
+  // for i in 1..(max+1) {
+  Const        r27, 1
+  AddInt       r28, r8, r27
+  Move         r8, r28
+  Jump         L5
+L0:
+  Return       r0

@@ -1,0 +1,208 @@
+func main (regs=3)
+  // let limit = 42
+  Const        r1, 42
+  Move         r0, r1
+  SetGlobal    0,0,0,0
+  // main()
+  Call         r2, main, 
+  Return       r0
+
+  // fun isPrime(n: int): bool {
+func isPrime (regs=25)
+  // if n < 2 { return false }
+  Const        r2, 2
+  Less         r3, r1, r2
+  JumpIfFalse  r3, L0
+  Const        r4, false
+  Return       r4
+L0:
+  // if n % 2 == 0 { return n == 2 }
+  Const        r2, 2
+  Mod          r5, r1, r2
+  Const        r6, 0
+  Equal        r7, r5, r6
+  JumpIfFalse  r7, L1
+  Const        r2, 2
+  Equal        r8, r1, r2
+  Return       r8
+L1:
+  // if n % 3 == 0 { return n == 3 }
+  Const        r9, 3
+  Mod          r10, r1, r9
+  Const        r6, 0
+  Equal        r11, r10, r6
+  JumpIfFalse  r11, L2
+  Const        r9, 3
+  Equal        r12, r1, r9
+  Return       r12
+L2:
+  // var d = 5
+  Const        r13, 5
+  Move         r14, r13
+L6:
+  // while d * d <= n {
+  MulInt       r15, r14, r14
+  LessEq       r16, r15, r1
+  JumpIfFalse  r16, L3
+  // if n % d == 0 { return false }
+  Mod          r17, r1, r14
+  Const        r6, 0
+  Equal        r18, r17, r6
+  JumpIfFalse  r18, L4
+  Const        r4, false
+  Return       r4
+L4:
+  // d = d + 2
+  Const        r2, 2
+  AddInt       r19, r14, r2
+  Move         r14, r19
+  // if n % d == 0 { return false }
+  Mod          r20, r1, r14
+  Const        r6, 0
+  Equal        r21, r20, r6
+  JumpIfFalse  r21, L5
+  Const        r4, false
+  Return       r4
+L5:
+  // d = d + 4
+  Const        r22, 4
+  AddInt       r23, r14, r22
+  Move         r14, r23
+  // while d * d <= n {
+  Jump         L6
+L3:
+  // return true
+  Const        r24, true
+  Return       r24
+
+  // fun commatize(n: int): string {
+func commatize (regs=22)
+  // var s = str(n)
+  Str          r2, r1
+  Move         r3, r2
+  // var i = len(s) - 3
+  Len          r4, r3
+  Const        r5, 3
+  SubInt       r6, r4, r5
+  Move         r7, r6
+L1:
+  // while i >= 1 {
+  Const        r8, 1
+  LessEqInt    r9, r8, r7
+  JumpIfFalse  r9, L0
+  // s = s[0:i] + "," + s[i:len(s)]
+  Const        r11, 0
+  Move         r10, r11
+  Move         r12, r7
+  Slice        r13, r3, r10, r12
+  Const        r14, ","
+  Add          r15, r13, r14
+  Move         r16, r7
+  Len          r18, r3
+  Move         r17, r18
+  Slice        r19, r3, r16, r17
+  Add          r20, r15, r19
+  Move         r3, r20
+  // i = i - 3
+  Const        r5, 3
+  SubInt       r21, r7, r5
+  Move         r7, r21
+  // while i >= 1 {
+  Jump         L1
+L0:
+  // return s
+  Return       r3
+
+  // fun padLeft(s: string, w: int): string {
+func padLeft (regs=8)
+  // var out = s
+  Move         r3, r1
+L1:
+  // while len(out) < w {
+  Len          r4, r3
+  Less         r5, r4, r2
+  JumpIfFalse  r5, L0
+  // out = " " + out
+  Const        r6, " "
+  Add          r7, r6, r3
+  Move         r3, r7
+  // while len(out) < w {
+  Jump         L1
+L0:
+  // return out
+  Return       r3
+
+  // fun padRight(s: string, w: int): string {
+func padRight (regs=8)
+  // var out = s
+  Move         r3, r1
+L1:
+  // while len(out) < w {
+  Len          r4, r3
+  Less         r5, r4, r2
+  JumpIfFalse  r5, L0
+  // out = out + " "
+  Const        r6, " "
+  Add          r7, r3, r6
+  Move         r3, r7
+  // while len(out) < w {
+  Jump         L1
+L0:
+  // return out
+  Return       r3
+
+  // fun main() {
+func main (regs=30)
+  // var i = limit
+  Move         r1, r0
+  // var n = 0
+  Const        r2, 0
+  Move         r3, r2
+L2:
+  // while n < limit {
+  Less         r4, r3, r0
+  JumpIfFalse  r4, L0
+  // if isPrime(i) {
+  Move         r5, r1
+  Call         r6, isPrime, r5
+  JumpIfFalse  r6, L1
+  // n = n + 1
+  Const        r7, 1
+  AddInt       r8, r3, r7
+  Move         r3, r8
+  // let nStr = padRight(str(n), 2)
+  Str          r11, r3
+  Move         r9, r11
+  Const        r12, 2
+  Move         r10, r12
+  Call2        r13, padRight, r9, r10
+  Move         r14, r13
+  // let pStr = padLeft(commatize(i), 19)
+  Move         r17, r1
+  Call         r18, commatize, r17
+  Move         r15, r18
+  Const        r19, 19
+  Move         r16, r19
+  Call2        r20, padLeft, r15, r16
+  Move         r21, r20
+  // print("n = " + nStr + "  " + pStr)
+  Const        r22, "n = "
+  Add          r23, r22, r14
+  Const        r24, "  "
+  Add          r25, r23, r24
+  Add          r26, r25, r21
+  Print        r26
+  // i = i + i - 1
+  Add          r27, r1, r1
+  Const        r7, 1
+  Sub          r28, r27, r7
+  Move         r1, r28
+L1:
+  // i = i + 1
+  Const        r7, 1
+  Add          r29, r1, r7
+  Move         r1, r29
+  // while n < limit {
+  Jump         L2
+L0:
+  Return       r0

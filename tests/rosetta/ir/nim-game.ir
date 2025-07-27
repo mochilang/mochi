@@ -1,0 +1,181 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun parseIntStr(str: string): int {
+func parseIntStr (regs=30)
+  // var i = 0
+  Const        r1, 0
+  Move         r2, r1
+  // var neg = false
+  Const        r3, false
+  Move         r4, r3
+  // if len(str) > 0 && str[0:1] == "-" {
+  Len          r5, r0
+  Const        r1, 0
+  LessInt      r6, r1, r5
+  Const        r1, 0
+  Move         r7, r1
+  Const        r9, 1
+  Move         r8, r9
+  Slice        r10, r0, r7, r8
+  Const        r11, "-"
+  Equal        r12, r10, r11
+  Move         r13, r6
+  JumpIfFalse  r13, L0
+  Move         r13, r12
+L0:
+  JumpIfFalse  r13, L1
+  // neg = true
+  Const        r14, true
+  Move         r4, r14
+  // i = 1
+  Const        r9, 1
+  Move         r2, r9
+L1:
+  // var n = 0
+  Const        r1, 0
+  Move         r15, r1
+  // let digits = {
+  Const        r16, {"0": 0, "1": 1, "2": 2, "3": 3, "4": 4, "5": 5, "6": 6, "7": 7, "8": 8, "9": 9}
+  Move         r17, r16
+L3:
+  // while i < len(str) {
+  Len          r18, r0
+  LessInt      r19, r2, r18
+  JumpIfFalse  r19, L2
+  // n = n * 10 + digits[str[i:i+1]]
+  Const        r20, 10
+  MulInt       r21, r15, r20
+  Move         r22, r2
+  Const        r9, 1
+  AddInt       r24, r2, r9
+  Move         r23, r24
+  Slice        r25, r0, r22, r23
+  Index        r26, r17, r25
+  Add          r27, r21, r26
+  Move         r15, r27
+  // i = i + 1
+  Const        r9, 1
+  AddInt       r28, r2, r9
+  Move         r2, r28
+  // while i < len(str) {
+  Jump         L3
+L2:
+  // if neg { n = -n }
+  JumpIfFalse  r4, L4
+  Neg          r29, r15
+  Move         r15, r29
+L4:
+  // return n
+  Return       r15
+
+  // fun showTokens(tokens: int) {
+func showTokens (regs=4)
+  // print("Tokens remaining " + str(tokens))
+  Const        r1, "Tokens remaining "
+  Str          r2, r0
+  Add          r3, r1, r2
+  Print        r3
+  Return       r0
+
+  // fun main() {
+func main (regs=43)
+  // var tokens = 12
+  Const        r0, 12
+  Move         r1, r0
+  // var done = false
+  Const        r2, false
+  Move         r3, r2
+L6:
+  // while !done {
+  Not          r4, r3
+  JumpIfFalse  r4, L0
+  // showTokens(tokens)
+  Move         r5, r1
+  Call         r6, showTokens, r5
+  // print("")
+  Const        r7, ""
+  Print        r7
+  // print("How many tokens 1, 2 or 3?")
+  Const        r8, "How many tokens 1, 2 or 3?"
+  Print        r8
+  // let line = input()
+  Input        r9
+  Move         r10, r9
+  // var t = 0
+  Const        r11, 0
+  Move         r12, r11
+  // if len(line) > 0 { t = parseIntStr(line) }
+  Len          r13, r10
+  Const        r11, 0
+  LessInt      r14, r11, r13
+  JumpIfFalse  r14, L1
+  Move         r15, r10
+  Call         r16, parseIntStr, r15
+  Move         r12, r16
+L1:
+  // if t < 1 || t > 3 {
+  Const        r17, 1
+  Less         r18, r12, r17
+  Const        r19, 3
+  Less         r20, r19, r12
+  Move         r21, r18
+  JumpIfTrue   r21, L2
+  Move         r21, r20
+L2:
+  JumpIfFalse  r21, L3
+  // print("\nMust be a number between 1 and 3, try again.\n")
+  Const        r22, "\nMust be a number between 1 and 3, try again.\n"
+  Print        r22
+  // if t < 1 || t > 3 {
+  Jump         L4
+L3:
+  // var ct = 4 - t
+  Const        r23, 4
+  Sub          r24, r23, r12
+  Move         r25, r24
+  // var s = "s"
+  Const        r26, "s"
+  Move         r27, r26
+  // if ct == 1 { s = "" }
+  Const        r17, 1
+  Equal        r28, r25, r17
+  JumpIfFalse  r28, L5
+  Const        r7, ""
+  Move         r27, r7
+L5:
+  // print("  Computer takes " + str(ct) + " token" + s + "\n\n")
+  Const        r29, "  Computer takes "
+  Str          r30, r25
+  Add          r31, r29, r30
+  Const        r32, " token"
+  Add          r33, r31, r32
+  Add          r34, r33, r27
+  Const        r35, "\n\n"
+  Add          r36, r34, r35
+  Print        r36
+  // tokens = tokens - 4
+  Const        r23, 4
+  SubInt       r37, r1, r23
+  Move         r1, r37
+L4:
+  // if tokens == 0 {
+  Const        r11, 0
+  EqualInt     r38, r1, r11
+  JumpIfFalse  r38, L6
+  // showTokens(0)
+  Const        r11, 0
+  Move         r39, r11
+  Call         r40, showTokens, r39
+  // print("  Computer wins!")
+  Const        r41, "  Computer wins!"
+  Print        r41
+  // done = true
+  Const        r42, true
+  Move         r3, r42
+  // while !done {
+  Jump         L6
+L0:
+  Return       r0

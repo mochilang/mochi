@@ -1,0 +1,118 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun sqrtApprox(x: float): float {
+func sqrtApprox (regs=14)
+  // if x <= 0.0 { return 0.0 }
+  Const        r1, 0.0
+  LessEqFloat  r2, r0, r1
+  JumpIfFalse  r2, L0
+  Const        r1, 0.0
+  Return       r1
+L0:
+  // var g = x
+  Move         r3, r0
+  // var i = 0
+  Const        r4, 0
+  Move         r5, r4
+L2:
+  // while i < 20 {
+  Const        r6, 20
+  LessInt      r7, r5, r6
+  JumpIfFalse  r7, L1
+  // g = (g + x / g) / 2.0
+  Div          r8, r0, r3
+  Add          r9, r3, r8
+  Const        r10, 2.0
+  DivFloat     r11, r9, r10
+  Move         r3, r11
+  // i = i + 1
+  Const        r12, 1
+  AddInt       r13, r5, r12
+  Move         r5, r13
+  // while i < 20 {
+  Jump         L2
+L1:
+  // return g
+  Return       r3
+
+  // fun abs(x: float): float {
+func abs (regs=4)
+  // if x < 0.0 { return -x }
+  Const        r1, 0.0
+  LessFloat    r2, r0, r1
+  JumpIfFalse  r2, L0
+  Neg          r3, r0
+  Return       r3
+L0:
+  // return x
+  Return       r0
+
+  // fun main() {
+func main (regs=34)
+  // var oldPhi = 1.0
+  Const        r0, 1.0
+  Move         r1, r0
+  // var phi = 0.0
+  Const        r2, 0.0
+  Move         r3, r2
+  // var iters = 0
+  Const        r4, 0
+  Move         r5, r4
+  // let limit = 0.00001
+  Const        r6, 0.00001
+  Move         r7, r6
+L2:
+  // while true {
+  Const        r8, true
+  // phi = 1.0 + 1.0 / oldPhi
+  Const        r0, 1.0
+  Const        r0, 1.0
+  DivFloat     r9, r0, r1
+  AddFloat     r10, r0, r9
+  Move         r3, r10
+  // iters = iters + 1
+  Const        r11, 1
+  AddInt       r12, r5, r11
+  Move         r5, r12
+  // if abs(phi - oldPhi) <= limit { break }
+  SubFloat     r14, r3, r1
+  Move         r13, r14
+  Call         r15, abs, r13
+  LessEqFloat  r16, r15, r7
+  JumpIfFalse  r16, L0
+  Jump         L1
+L0:
+  // oldPhi = phi
+  Move         r1, r3
+  // while true {
+  Jump         L2
+L1:
+  // let actual = (1.0 + sqrtApprox(5.0)) / 2.0
+  Const        r0, 1.0
+  Const        r18, 5.0
+  Move         r17, r18
+  Call         r19, sqrtApprox, r17
+  AddFloat     r20, r0, r19
+  Const        r21, 2.0
+  DivFloat     r22, r20, r21
+  Move         r23, r22
+  // print("Final value of phi : " + str(phi))
+  Const        r24, "Final value of phi : "
+  Str          r25, r3
+  Add          r26, r24, r25
+  Print        r26
+  // print("Number of iterations : " + str(iters))
+  Const        r27, "Number of iterations : "
+  Str          r28, r5
+  Add          r29, r27, r28
+  Print        r29
+  // print("Error (approx) : " + str(phi - actual))
+  Const        r30, "Error (approx) : "
+  SubFloat     r31, r3, r23
+  Str          r32, r31
+  Add          r33, r30, r32
+  Print        r33
+  Return       r0

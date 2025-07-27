@@ -173,16 +173,8 @@ func newSpeller (regs=7)
   // return fun(w: string): bool => canSpell(w, bl)
   Move         r4, r3
   Move         r5, r0
-  MakeClosure  r6, fn4, 2, r4
+  MakeClosure  r6, fn5, 2, r4
   Return       r6
-
-  // return fun(w: string): bool => canSpell(w, bl)
-func fn4 (regs=6)
-  // return fun(w: string): bool => canSpell(w, bl)
-  Move         r3, r2
-  Move         r4, r0
-  Call2        r5, canSpell, r3, r4
-  Return       r5
 
   // fun main() {
 func main (regs=19)
@@ -216,3 +208,11 @@ L1:
   Jump         L1
 L0:
   Return       r0
+
+  // return fun(w: string): bool => canSpell(w, bl)
+func fn5 (regs=6)
+  // return fun(w: string): bool => canSpell(w, bl)
+  Move         r3, r2
+  Move         r4, r0
+  Call2        r5, canSpell, r3, r4
+  Return       r5
