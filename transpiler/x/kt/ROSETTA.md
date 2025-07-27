@@ -2,9 +2,9 @@
 
 Generated Kotlin sources for Rosetta Code tests are stored in `tests/rosetta/transpiler/Kotlin`.
 
-Last updated: 2025-07-27 22:51 +0700
+Last updated: 2025-07-27 23:38 +0700
 
-Completed tasks: **72/467**
+Completed tasks: **74/467**
 
 ### Checklist
 | Index | Name | Status | Duration | Memory |
@@ -83,15 +83,15 @@ Completed tasks: **72/467**
 | 72 | arithmetic-integer-2 | ✓ | 10.42ms | 140.1 KB |
 | 73 | arithmetic-numbers |  |  |  |
 | 74 | arithmetic-rational |  |  |  |
-| 75 | array-concatenation | ✓ | 11.17ms | 132.4 KB |
-| 76 | array-length | ✓ | 20.04ms | 123.5 KB |
-| 77 | arrays | ✓ | 10.24ms | 132.1 KB |
-| 78 | ascending-primes | ✓ | 22.53ms | 122.0 KB |
-| 79 | ascii-art-diagram-converter | ✓ | 9.75ms | 131.0 KB |
-| 80 | assertions | ✓ | 7.33ms | 134.1 KB |
+| 75 | array-concatenation | ✓ | 5.91ms | 132.0 KB |
+| 76 | array-length | ✓ | 10.63ms | 123.6 KB |
+| 77 | arrays | ✓ | 6.53ms | 131.7 KB |
+| 78 | ascending-primes | ✓ | 13.98ms | 120.7 KB |
+| 79 | ascii-art-diagram-converter | ✓ | 5.01ms | 130.9 KB |
+| 80 | assertions | ✓ | 2.99ms | 134.0 KB |
 | 81 | associative-array-creation |  |  |  |
-| 82 | associative-array-iteration |  |  |  |
-| 83 | associative-array-merging |  |  |  |
+| 82 | associative-array-iteration | ✓ | 15.12ms | 118.4 KB |
+| 83 | associative-array-merging | ✓ | 10.43ms | 114.6 KB |
 | 84 | atomic-updates |  |  |  |
 | 85 | attractive-numbers |  |  |  |
 | 86 | average-loop-length |  |  |  |

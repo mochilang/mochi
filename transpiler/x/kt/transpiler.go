@@ -2419,6 +2419,13 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 				if typ == "MutableMap<Any, Any>" {
 					typ = "MutableMap<String, Any>"
 				}
+				if _, ok := val.(*NullLit); ok {
+					if typ == "" {
+						typ = "Any?"
+					} else if !strings.HasSuffix(typ, "?") {
+						typ += "?"
+					}
+				}
 				if typ == "BigInteger" {
 					typ = "Int"
 				}
@@ -2733,6 +2740,12 @@ func convertStmts(env *types.Env, list []*parser.Statement) ([]Stmt, error) {
 				if typ == "MutableMap<Any, Any>" {
 					typ = "MutableMap<String, Any>"
 				}
+				if ix, ok := v.(*IndexExpr); ok {
+					tgt := guessType(ix.Target)
+					if strings.HasPrefix(tgt, "MutableMap<") && !strings.HasSuffix(typ, "?") {
+						typ += "?"
+					}
+				}
 				if typ == "BigInteger" {
 					typ = "Int"
 				}
@@ -2880,6 +2893,19 @@ func convertStmts(env *types.Env, list []*parser.Statement) ([]Stmt, error) {
 				}
 				if typ == "MutableMap<Any, Any>" {
 					typ = "MutableMap<String, Any>"
+				}
+				if ix, ok := v.(*IndexExpr); ok {
+					tgt := guessType(ix.Target)
+					if strings.HasPrefix(tgt, "MutableMap<") && !strings.HasSuffix(typ, "?") {
+						typ += "?"
+					}
+				}
+			}
+			if _, ok := v.(*NullLit); ok {
+				if typ == "" {
+					typ = "Any?"
+				} else if !strings.HasSuffix(typ, "?") {
+					typ += "?"
 				}
 			}
 			if s.Var.Type != nil {
@@ -3344,17 +3370,19 @@ func buildIndexTarget(env *types.Env, name string, idx []*parser.IndexOp) (Expr,
 			return nil, err
 		}
 		tname := ""
+		force := true
 		if curType != nil {
 			switch tt := curType.(type) {
 			case types.ListType:
 				tname = kotlinTypeFromType(tt.Elem)
 				curType = tt.Elem
 			case types.MapType:
-				tname = kotlinTypeFromType(tt.Value)
+				tname = ""
 				curType = tt.Value
+				force = false
 			}
 		}
-		target = &IndexExpr{Target: target, Index: idxExpr, Type: tname, ForceBang: true}
+		target = &IndexExpr{Target: target, Index: idxExpr, Type: tname, ForceBang: force}
 	}
 	return target, nil
 }
@@ -4156,7 +4184,10 @@ func convertPostfix(env *types.Env, p *parser.PostfixExpr) (Expr, error) {
 				tname = "MutableMap<String, Any>"
 			}
 			force := true
-			if tname == "" {
+			if baseIsMap {
+				force = false
+				tname = ""
+			} else if tname == "" {
 				force = false
 			}
 			expr = &IndexExpr{Target: expr, Index: idx, Type: tname, ForceBang: force}
