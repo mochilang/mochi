@@ -1,9 +1,9 @@
 # Java Rosetta Transpiler Output
 
 Generated Java code for programs in `tests/rosetta/x/Mochi`. Each program has a `.java` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
-Last updated: 2025-07-27 21:57 GMT+7
+Last updated: 2025-07-27 22:35 GMT+7
 
-## Rosetta Checklist (231/467)
+## Rosetta Checklist (233/467)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 23.0ms | 245.84KB |
@@ -176,8 +176,8 @@ Last updated: 2025-07-27 21:57 GMT+7
 | 168 | canny-edge-detector |   |  |  |
 | 169 | canonicalize-cidr |   |  |  |
 | 170 | cantor-set | ✓ | 46.0ms | 101.48KB |
-| 171 | carmichael-3-strong-pseudoprimes |   |  |  |
-| 172 | cartesian-product-of-two-or-more-lists-1 |   |  |  |
+| 171 | carmichael-3-strong-pseudoprimes | ✓ | 52.0ms | 89.27KB |
+| 172 | cartesian-product-of-two-or-more-lists-1 | ✓ | 27.0ms | 38.89KB |
 | 173 | cartesian-product-of-two-or-more-lists-2 |   |  |  |
 | 174 | cartesian-product-of-two-or-more-lists-3 |   |  |  |
 | 175 | cartesian-product-of-two-or-more-lists-4 |   |  |  |

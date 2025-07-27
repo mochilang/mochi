@@ -121,7 +121,7 @@ func sanitize(name string) string {
 func javaType(t string) string {
 	switch t {
 	case "int":
-		return "int"
+		return "long"
 	case "bool":
 		return "boolean"
 	case "boolean":
@@ -138,7 +138,7 @@ func javaType(t string) string {
 		needBigRat = true
 		return "BigRat"
 	case "int[]":
-		return "int[]"
+		return "long[]"
 	case "string[]":
 		return "String[]"
 	case "bool[]":
@@ -206,7 +206,7 @@ func javaType(t string) string {
 func javaBoxType(t string) string {
 	switch t {
 	case "int":
-		return "Integer"
+		return "Long"
 	case "float", "float64", "double":
 		return "Double"
 	case "bool", "boolean":
@@ -243,7 +243,7 @@ func mapValueType(t string) string {
 		if len(parts) == 2 {
 			v := strings.TrimSpace(parts[1])
 			switch v {
-			case "Integer":
+			case "Long":
 				return "int"
 			case "Double":
 				return "double"
@@ -267,7 +267,7 @@ func mapKeyType(t string) string {
 		if len(parts) == 2 {
 			k := strings.TrimSpace(parts[0])
 			switch k {
-			case "Integer":
+			case "Long":
 				return "int"
 			case "Double":
 				return "double"
@@ -289,13 +289,15 @@ func emitCastExpr(w io.Writer, e Expr, typ string) {
 		e.emit(w)
 		return
 	}
-	if typ == "int" || typ == "double" || typ == "float" || typ == "float64" {
+	if typ == "int" || typ == "long" || typ == "double" || typ == "float" || typ == "float64" {
 		it := inferType(e)
 		if it == "" || it == "Object" {
 			fmt.Fprint(w, "((Number)(")
 			e.emit(w)
 			if typ == "int" {
 				fmt.Fprint(w, ")).intValue()")
+			} else if typ == "long" {
+				fmt.Fprint(w, ")).longValue()")
 			} else {
 				fmt.Fprint(w, ")).doubleValue()")
 			}
@@ -360,7 +362,7 @@ func emitCastExpr(w io.Writer, e Expr, typ string) {
 
 func typeFromName(n string) types.Type {
 	switch n {
-	case "int", "Integer":
+	case "int", "Long":
 		return types.IntType{}
 	case "double", "float", "float64":
 		return types.FloatType{}
@@ -593,7 +595,7 @@ func inferType(e Expr) string {
 		switch ex.Func {
 		case "String.valueOf", "substring":
 			return "String"
-		case "Integer.parseInt":
+		case "Long.parseLong":
 			return "int"
 		case "System.out.println":
 			return "void"
@@ -1000,7 +1002,7 @@ func (q *QueryExpr) emit(w io.Writer) {
 	} else {
 		fmt.Fprint(w, "-1")
 	}
-	fmt.Fprint(w, "; for (int i = 0; i < list.size(); i++) {")
+	fmt.Fprint(w, "; for (long i = 0; i < list.size(); i++) {")
 	fmt.Fprint(w, " if (i < skip) continue; if (take >= 0 && i >= skip + take) break;")
 	if q.Group != nil {
 		fmt.Fprintf(w, " var %s = (%s)list.get(i);", q.Group.Name, q.Group.GroupType)
@@ -1211,7 +1213,7 @@ func (s *VarStmt) emit(w io.Writer, indent string) {
 
 func defaultValue(t string) string {
 	switch t {
-	case "int", "Integer":
+	case "int", "Long":
 		return "0"
 	case "double", "float", "float64", "Double":
 		return "0"
@@ -1285,9 +1287,9 @@ func (s *IndexAssignStmt) emit(w io.Writer, indent string) {
 		}
 		ix.emit(w)
 		for _, idx := range s.Indices[1:] {
-			fmt.Fprint(w, "[")
+			fmt.Fprint(w, "[(int)(")
 			idx.emit(w)
-			fmt.Fprint(w, "]")
+			fmt.Fprint(w, ")]")
 		}
 		fmt.Fprint(w, " = ")
 		elem := arrayElemType(ix)
@@ -1310,9 +1312,9 @@ func (s *IndexAssignStmt) emit(w io.Writer, indent string) {
 		}
 		if isMapExpr(base) {
 			base.emit(w)
-			fmt.Fprint(w, ".put(")
+			fmt.Fprint(w, ".put((int)(")
 			s.Indices[len(s.Indices)-1].emit(w)
-			fmt.Fprint(w, ", ")
+			fmt.Fprint(w, "), ")
 			s.Expr.emit(w)
 			fmt.Fprint(w, ");\n")
 			return
@@ -1320,9 +1322,9 @@ func (s *IndexAssignStmt) emit(w io.Writer, indent string) {
 	}
 	s.Target.emit(w)
 	for _, idx := range s.Indices {
-		fmt.Fprint(w, "[")
+		fmt.Fprint(w, "[(int)(")
 		idx.emit(w)
-		fmt.Fprint(w, "]")
+		fmt.Fprint(w, ")]")
 	}
 	fmt.Fprint(w, " = ")
 	elem := arrayElemType(s.Target)
@@ -1364,7 +1366,7 @@ type ForRangeStmt struct {
 
 func (fr *ForRangeStmt) emit(w io.Writer, indent string) {
 	name := sanitize(fr.Name)
-	fmt.Fprint(w, indent+"for (int "+name+" = ")
+	fmt.Fprint(w, indent+"for (long "+name+" = ")
 	if fr.Start != nil {
 		fr.Start.emit(w)
 	} else {
@@ -1397,12 +1399,12 @@ func (fe *ForEachStmt) emit(w io.Writer, indent string) {
 		if t == "" {
 			t = "var"
 		}
-		fmt.Fprint(w, indent+"for (int _i = 0; _i < ")
+		fmt.Fprint(w, indent+"for (long _i = 0; _i < ")
 		fe.Iterable.emit(w)
 		fmt.Fprint(w, ".length(); _i++) {\n")
 		fmt.Fprintf(w, indent+"    %s %s = ", t, sanitize(fe.Name))
 		fe.Iterable.emit(w)
-		fmt.Fprint(w, ".substring(_i, _i + 1);\n")
+		fmt.Fprint(w, ".substring((int)_i, (int)_i + 1);\n")
 		for _, st := range fe.Body {
 			st.emit(w, indent+"    ")
 		}
@@ -1470,7 +1472,7 @@ type UpdateStmt struct {
 }
 
 func (u *UpdateStmt) emit(w io.Writer, indent string) {
-	fmt.Fprintf(w, indent+"for (int i = 0; i < %s.length; i++) {\n", u.Target)
+	fmt.Fprintf(w, indent+"for (long i = 0; i < %s.length; i++) {\n", u.Target)
 	fmt.Fprintf(w, indent+"    var item = %s[i];\n", u.Target)
 	if u.Cond != nil {
 		fmt.Fprint(w, indent+"    if (")
@@ -1785,8 +1787,8 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		if lt == "" {
 			fmt.Fprint(w, "((Number)(")
 			b.Left.emit(w)
-			if typ == "int" {
-				fmt.Fprint(w, ")).intValue()")
+			if typ == "long" {
+				fmt.Fprint(w, ")).longValue()")
 			} else {
 				fmt.Fprint(w, ")).doubleValue()")
 			}
@@ -1797,8 +1799,8 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		if rt == "" {
 			fmt.Fprint(w, "((Number)(")
 			b.Right.emit(w)
-			if typ == "int" {
-				fmt.Fprint(w, ")).intValue()")
+			if typ == "long" {
+				fmt.Fprint(w, ")).longValue()")
 			} else {
 				fmt.Fprint(w, ")).doubleValue()")
 			}
@@ -1828,11 +1830,7 @@ func (b *BinaryExpr) emit(w io.Writer) {
 type IntLit struct{ Value int }
 
 func (i *IntLit) emit(w io.Writer) {
-	if i.Value > math.MaxInt32 || i.Value < math.MinInt32 {
-		fmt.Fprintf(w, "(int)%dL", int64(i.Value))
-	} else {
-		fmt.Fprint(w, i.Value)
-	}
+	fmt.Fprintf(w, "%dL", int64(i.Value))
 }
 
 type FloatLit struct{ Value float64 }
@@ -2080,10 +2078,10 @@ func (a *AppendExpr) emit(w io.Writer) {
 		return
 	}
 	if elem == "int" {
-		fmt.Fprint(w, "java.util.stream.IntStream.concat(java.util.Arrays.stream(")
+		fmt.Fprint(w, "java.util.stream.LongStream.concat(java.util.Arrays.stream(")
 		a.List.emit(w)
-		fmt.Fprint(w, "), java.util.stream.IntStream.of(")
-		emitCastExpr(w, a.Value, "int")
+		fmt.Fprint(w, "), java.util.stream.LongStream.of(")
+		emitCastExpr(w, a.Value, "long")
 		fmt.Fprint(w, ")).toArray()")
 		return
 	}
@@ -2112,13 +2110,13 @@ func (a *AppendExpr) emit(w io.Writer) {
 
 func (c *IntCastExpr) emit(w io.Writer) {
 	if isStringExpr(c.Value) {
-		fmt.Fprint(w, "Integer.parseInt(")
+		fmt.Fprint(w, "Long.parseLong(")
 		c.Value.emit(w)
 		fmt.Fprint(w, ")")
 	} else {
 		fmt.Fprint(w, "((Number)(")
 		c.Value.emit(w)
-		fmt.Fprint(w, ")).intValue()")
+		fmt.Fprint(w, ")).longValue()")
 	}
 }
 
@@ -2167,7 +2165,7 @@ func (u *UnionExpr) emit(w io.Writer) {
 		jt = elem
 	}
 	if elem == "int" {
-		fmt.Fprint(w, "java.util.stream.IntStream.concat(java.util.Arrays.stream(")
+		fmt.Fprint(w, "java.util.stream.LongStream.concat(java.util.Arrays.stream(")
 		u.Left.emit(w)
 		fmt.Fprint(w, "), java.util.Arrays.stream(")
 		u.Right.emit(w)
@@ -2201,7 +2199,7 @@ func (u *UnionAllExpr) emit(w io.Writer) {
 		jt = elem
 	}
 	if elem == "int" {
-		fmt.Fprint(w, "java.util.stream.IntStream.concat(java.util.Arrays.stream(")
+		fmt.Fprint(w, "java.util.stream.LongStream.concat(java.util.Arrays.stream(")
 		u.Left.emit(w)
 		fmt.Fprint(w, "), java.util.Arrays.stream(")
 		u.Right.emit(w)
@@ -2489,27 +2487,27 @@ func (ix *IndexExpr) emit(w io.Writer) {
 		}
 		if useDefault {
 			fmt.Fprint(w, ".getOrDefault(")
-			ix.Index.emit(w)
+			emitCastExpr(w, ix.Index, "int")
 			fmt.Fprintf(w, ", %s))", defVal)
 		} else {
 			fmt.Fprint(w, ".get(")
-			ix.Index.emit(w)
+			emitCastExpr(w, ix.Index, "int")
 			fmt.Fprint(w, "))")
 		}
 		return
 	}
 	if isStringExpr(ix.Target) {
 		ix.Target.emit(w)
-		fmt.Fprint(w, ".substring(")
+		fmt.Fprint(w, ".substring((int)(")
 		ix.Index.emit(w)
-		fmt.Fprint(w, ", ")
+		fmt.Fprint(w, "), (int)(")
 		ix.Index.emit(w)
-		fmt.Fprint(w, "+1)")
+		fmt.Fprint(w, ") + 1)")
 	} else if isArrayExpr(ix.Target) {
 		ix.Target.emit(w)
-		fmt.Fprint(w, "[")
+		fmt.Fprint(w, "[(int)(")
 		ix.Index.emit(w)
-		fmt.Fprint(w, "]")
+		fmt.Fprint(w, ")]")
 	} else if isMapExpr(ix.Target) {
 		castType := "java.util.Map"
 		if ix.ResultType != "" {
@@ -2517,14 +2515,14 @@ func (ix *IndexExpr) emit(w io.Writer) {
 		}
 		fmt.Fprintf(w, "((%s)", castType)
 		ix.Target.emit(w)
-		fmt.Fprint(w, ".get(")
+		fmt.Fprint(w, ".get((int)(")
 		ix.Index.emit(w)
-		fmt.Fprint(w, "))")
+		fmt.Fprint(w, ")))")
 	} else {
 		ix.Target.emit(w)
-		fmt.Fprint(w, "[")
+		fmt.Fprint(w, "[(int)(")
 		ix.Index.emit(w)
-		fmt.Fprint(w, "]")
+		fmt.Fprint(w, ")]")
 	}
 }
 
@@ -2540,17 +2538,17 @@ func (sli *SliceExpr) emit(w io.Writer) {
 	case isStringExpr(sli.Value):
 		sli.Value.emit(w)
 		fmt.Fprint(w, ".substring(")
-		sli.Start.emit(w)
+		emitCastExpr(w, sli.Start, "int")
 		fmt.Fprint(w, ", ")
-		sli.End.emit(w)
+		emitCastExpr(w, sli.End, "int")
 		fmt.Fprint(w, ")")
 	case isArrayExpr(sli.Value):
 		fmt.Fprint(w, "java.util.Arrays.copyOfRange(")
 		sli.Value.emit(w)
 		fmt.Fprint(w, ", ")
-		sli.Start.emit(w)
+		emitCastExpr(w, sli.Start, "int")
 		fmt.Fprint(w, ", ")
-		sli.End.emit(w)
+		emitCastExpr(w, sli.End, "int")
 		fmt.Fprint(w, ")")
 	default:
 		sli.Value.emit(w)
@@ -4333,9 +4331,9 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 		}
 		if name == "parseIntStr" && (len(args) == 1 || len(args) == 2) {
 			if len(args) == 1 {
-				return &CallExpr{Func: "Integer.parseInt", Args: []Expr{args[0]}}, nil
+				return &CallExpr{Func: "Long.parseLong", Args: []Expr{args[0]}}, nil
 			}
-			return &CallExpr{Func: "Integer.parseInt", Args: []Expr{args[0], args[1]}}, nil
+			return &CallExpr{Func: "Long.parseLong", Args: []Expr{args[0], args[1]}}, nil
 		}
 		if name == "padStart" && len(args) == 3 {
 			needPadStart = true
@@ -5069,7 +5067,7 @@ func Emit(prog *Program) []byte {
 		buf.WriteString("                    cur = new java.util.LinkedHashMap<>();\n")
 		buf.WriteString("                    cur.put(\"name\", line.substring(line.indexOf(':')+1).trim());\n")
 		buf.WriteString("                } else if (line.startsWith(\"age:\")) {\n")
-		buf.WriteString("                    if (cur != null) cur.put(\"age\", Integer.parseInt(line.substring(line.indexOf(':')+1).trim()));\n")
+		buf.WriteString("                    if (cur != null) cur.put(\"age\", Long.parseLong(line.substring(line.indexOf(':')+1).trim()));\n")
 		buf.WriteString("                } else if (line.startsWith(\"email:\")) {\n")
 		buf.WriteString("                    if (cur != null) cur.put(\"email\", line.substring(line.indexOf(':')+1).trim());\n")
 		buf.WriteString("                }\n")
@@ -5169,17 +5167,17 @@ func Emit(prog *Program) []byte {
 	buf.WriteString("    }\n")
 	if needNow {
 		buf.WriteString("\n    static boolean _nowSeeded = false;\n")
-		buf.WriteString("    static int _nowSeed;\n")
+		buf.WriteString("    static long _nowSeed;\n")
 		buf.WriteString("    static int _now() {\n")
 		buf.WriteString("        if (!_nowSeeded) {\n")
 		buf.WriteString("            String s = System.getenv(\"MOCHI_NOW_SEED\");\n")
 		buf.WriteString("            if (s != null && !s.isEmpty()) {\n")
-		buf.WriteString("                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}\n")
+		buf.WriteString("                try { _nowSeed = Long.parseLong(s); _nowSeeded = true; } catch (Exception e) {}\n")
 		buf.WriteString("            }\n")
 		buf.WriteString("        }\n")
 		buf.WriteString("        if (_nowSeeded) {\n")
-		buf.WriteString("            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);\n")
-		buf.WriteString("            return _nowSeed;\n")
+		buf.WriteString("            _nowSeed = (_nowSeed * 1664525L + 1013904223) % 2147483647;\n")
+		buf.WriteString("            return (int)_nowSeed;\n")
 		buf.WriteString("        }\n")
 		buf.WriteString("        return (int)(System.nanoTime() / 1000);\n")
 		buf.WriteString("    }\n")
@@ -5225,16 +5223,16 @@ func Emit(prog *Program) []byte {
 		buf.WriteString("    }\n")
 	}
 	if needSHA256 {
-		buf.WriteString("\n    static int[] _sha256(int[] bs) {\n")
+		buf.WriteString("\n    static long[] _sha256(long[] bs) {\n")
 		buf.WriteString("        try {\n")
 		buf.WriteString("            java.security.MessageDigest md = java.security.MessageDigest.getInstance(\"SHA-256\");\n")
 		buf.WriteString("            byte[] bytes = new byte[bs.length];\n")
 		buf.WriteString("            for (int i = 0; i < bs.length; i++) bytes[i] = (byte)bs[i];\n")
 		buf.WriteString("            byte[] hash = md.digest(bytes);\n")
-		buf.WriteString("            int[] out = new int[hash.length];\n")
+		buf.WriteString("            long[] out = new long[hash.length];\n")
 		buf.WriteString("            for (int i = 0; i < hash.length; i++) out[i] = hash[i] & 0xff;\n")
 		buf.WriteString("            return out;\n")
-		buf.WriteString("        } catch (Exception e) { return new int[0]; }\n")
+		buf.WriteString("        } catch (Exception e) { return new long[0]; }\n")
 		buf.WriteString("    }\n")
 	}
 	if needBigRat {
@@ -5287,9 +5285,9 @@ func Emit(prog *Program) []byte {
 		buf.WriteString("    static java.math.BigInteger _denom(Object x) { return (x instanceof BigRat) ? ((BigRat)x).den : java.math.BigInteger.ONE; }\n")
 	}
 	if needModPow2 {
-		buf.WriteString("\n    static int _modPow2(int v, int n) {\n")
+		buf.WriteString("\n    static long _modPow2(long v, long n) {\n")
 		buf.WriteString("        long mask = (1L << n) - 1L;\n")
-		buf.WriteString("        return (int)(((long)v) & mask);\n")
+		buf.WriteString("        return ((long)v) & mask;\n")
 		buf.WriteString("    }\n")
 	}
 	buf.WriteString("}\n")
@@ -5352,7 +5350,7 @@ func typeRefString(tr *parser.TypeRef) string {
 func toJavaTypeFromType(t types.Type) string {
 	switch tt := t.(type) {
 	case types.IntType, types.Int64Type:
-		return "int"
+		return "long"
 	case types.FloatType:
 		return "double"
 	case types.BoolType:
