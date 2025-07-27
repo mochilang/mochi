@@ -938,16 +938,17 @@ func transpileFunStmt(f *parser.FunStmt) (Node, error) {
 	params := []Node{}
 	names := []string{}
 	for _, p := range f.Params {
-		params = append(params, Symbol(p.Name))
-		names = append(names, p.Name)
+		newName := renameVar(p.Name)
+		params = append(params, Symbol(newName))
+		names = append(names, newName)
 		if p.Type != nil && p.Type.Simple != nil {
 			if *p.Type.Simple == "string" {
-				stringVars[p.Name] = true
+				stringVars[newName] = true
 			}
 		} else if p.Type != nil && p.Type.Generic != nil {
 			if p.Type.Generic.Name == "list" && len(p.Type.Generic.Args) == 1 {
 				if a := p.Type.Generic.Args[0]; a != nil && a.Simple != nil && *a.Simple == "string" {
-					stringListVars[p.Name] = true
+					stringListVars[newName] = true
 				}
 			}
 		}
@@ -1081,6 +1082,10 @@ func applyBinOp(op string, left, right Node) Node {
 		if isStringNode(left) || isStringNode(right) {
 			return &List{Elems: []Node{Symbol("str"), left, right}}
 		}
+		if isVectorNode(left) || isVectorNode(right) {
+			cat := &List{Elems: []Node{Symbol("concat"), left, right}}
+			return &List{Elems: []Node{Symbol("vec"), cat}}
+		}
 		return &List{Elems: []Node{Symbol("+"), left, right}}
 	case "union":
 		setFn := func(x Node) Node { return &List{Elems: []Node{Symbol("set"), x}} }
@@ -1186,6 +1191,22 @@ func isStringListNode(n Node) bool {
 					if _, ok := lt.Elem.(types.StringType); ok {
 						return true
 					}
+				}
+			}
+		}
+	}
+	return false
+}
+
+func isVectorNode(n Node) bool {
+	switch t := n.(type) {
+	case *Vector:
+		return true
+	case Symbol:
+		if transpileEnv != nil {
+			if typ, err := transpileEnv.GetVar(string(t)); err == nil {
+				if _, ok := typ.(types.ListType); ok {
+					return true
 				}
 			}
 		}

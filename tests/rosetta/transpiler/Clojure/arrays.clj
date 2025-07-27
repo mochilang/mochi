@@ -9,8 +9,8 @@
 
 (declare listStr)
 
-(defn listStr [xs]
-  (try (do (def s "[") (def i 0) (while (< i (count xs)) (do (def s (str s (str (nth xs i)))) (when (< (+ i 1) (count xs)) (def s (str s " "))) (def i (+ i 1)))) (def s (str s "]")) (throw (ex-info "return" {:v s}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
+(defn listStr [xs_v]
+  (try (do (def s_v "[") (def i_v 0) (while (< i_v (count xs_v)) (do (def s_v (str s_v (str (nth xs_v i_v)))) (when (< (+ i_v 1) (count xs_v)) (def s_v (str s_v " "))) (def i_v (+ i_v 1)))) (def s_v (str s_v "]")) (throw (ex-info "return" {:v s_v}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
 
 (defn -main []
   (let [rt (Runtime/getRuntime)

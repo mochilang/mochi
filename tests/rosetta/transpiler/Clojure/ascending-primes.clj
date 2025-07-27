@@ -13,7 +13,7 @@
   (try (do (when (< n 2) (throw (ex-info "return" {:v false}))) (when (= (mod n 2) 0) (throw (ex-info "return" {:v (= n 2)}))) (when (= (mod n 3) 0) (throw (ex-info "return" {:v (= n 3)}))) (def d 5) (while (<= (* d d) n) (do (when (= (mod n d) 0) (throw (ex-info "return" {:v false}))) (def d (+ d 2)) (when (= (mod n d) 0) (throw (ex-info "return" {:v false}))) (def d (+ d 4)))) (throw (ex-info "return" {:v true}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
 
 (defn gen [first cand digits]
-  (try (do (when (= digits 0) (do (when (isPrime cand) (def asc (+ asc [cand]))) (throw (ex-info "return" {:v nil})))) (def i first) (while (< i 10) (do (gen (+ i 1) (+ (* cand 10) i) (- digits 1)) (def i (+ i 1))))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
+  (try (do (when (= digits 0) (do (when (isPrime cand) (def asc (vec (concat asc [cand])))) (throw (ex-info "return" {:v nil})))) (def i first) (while (< i 10) (do (gen (+ i 1) (+ (* cand 10) i) (- digits 1)) (def i (+ i 1))))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
 
 (defn pad [n width]
   (try (do (def s (str n)) (while (< (count s) width) (def s (str " " s))) (throw (ex-info "return" {:v s}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
