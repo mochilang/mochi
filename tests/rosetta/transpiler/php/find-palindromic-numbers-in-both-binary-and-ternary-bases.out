@@ -1,0 +1,10 @@
+Numbers palindromic in both binary and ternary :
+0
+1
+6643
+1422773
+{
+  "duration_us": 17651596,
+  "memory_bytes": 96,
+  "name": "main"
+}

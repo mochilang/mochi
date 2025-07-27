@@ -1,0 +1,17 @@
+map[num:1 den:1]
+map[num:1 den:2]  map[num:1 den:2]
+map[num:1 den:6]  map[num:1 den:2]  map[num:1 den:3]
+map[num:0 den:1]  map[num:1 den:4]  map[num:1 den:2]  map[num:1 den:4]
+map[num:-1 den:30]  map[num:0 den:1]  map[num:1 den:3]  map[num:1 den:2]  map[num:1 den:5]
+map[num:0 den:1]  map[num:-1 den:12]  map[num:0 den:1]  map[num:5 den:12]  map[num:1 den:2]  map[num:1 den:6]
+map[num:1 den:42]  map[num:0 den:1]  map[num:-1 den:6]  map[num:0 den:1]  map[num:1 den:2]  map[num:1 den:2]  map[num:1 den:7]
+map[num:0 den:1]  map[num:1 den:12]  map[num:0 den:1]  map[num:-7 den:24]  map[num:0 den:1]  map[num:7 den:12]  map[num:1 den:2]  map[num:1 den:8]
+map[num:-1 den:30]  map[num:0 den:1]  map[num:2 den:9]  map[num:0 den:1]  map[num:-7 den:15]  map[num:0 den:1]  map[num:2 den:3]  map[num:1 den:2]  map[num:1 den:9]
+map[num:0 den:1]  map[num:-3 den:20]  map[num:0 den:1]  map[num:1 den:2]  map[num:0 den:1]  map[num:-7 den:10]  map[num:0 den:1]  map[num:3 den:4]  map[num:1 den:2]  map[num:1 den:10]
+
+map[num:56056972216555580111030077961944183400198333273050000 den:1]
+{
+  "duration_us": 10649,
+  "memory_bytes": 96,
+  "name": "main"
+}

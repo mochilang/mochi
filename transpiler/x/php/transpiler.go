@@ -23,7 +23,7 @@ var builtinNames = map[string]struct{}{
 	"print": {}, "len": {}, "substring": {}, "count": {}, "sum": {}, "avg": {},
 	"str": {}, "min": {}, "max": {}, "append": {}, "json": {}, "exists": {},
 	"values": {}, "keys": {}, "load": {}, "save": {}, "now": {}, "input": {},
-	"upper": {}, "lower": {}, "num": {}, "denom": {}, "indexOf": {}, "repeat": {}, "parseIntStr": {}, "slice": {}, "split": {}, "contains": {}, "substr": {}, "pow": {}, "getoutput": {},
+	"upper": {}, "lower": {}, "num": {}, "denom": {}, "indexOf": {}, "repeat": {}, "parseIntStr": {}, "slice": {}, "split": {}, "contains": {}, "substr": {}, "pow": {}, "getoutput": {}, "intval": {}, "floatval": {}, "int": {}, "float": {},
 }
 
 const helperLookupHost = `function _lookup_host($host) {
@@ -258,6 +258,7 @@ func SetBenchMain(v bool) { benchMain = v }
 var phpReserved = map[string]struct{}{
 	"shuffle":     {},
 	"join":        {},
+	"list":        {},
 	"pow":         {},
 	"abs":         {},
 	"ord":         {},
@@ -623,8 +624,15 @@ func freeVars(body []Stmt, params []string) []string {
 			}
 		case *CallExpr:
 			if _, builtin := builtinNames[ex.Func]; !builtin {
-				if _, ok := locals[ex.Func]; !ok {
-					seen[ex.Func] = struct{}{}
+				name := ex.Func
+				if strings.HasPrefix(name, "$") {
+					name = name[1:]
+					if idx := strings.Index(name, "["); idx >= 0 {
+						name = name[:idx]
+					}
+				}
+				if _, ok := locals[name]; !ok {
+					seen[name] = struct{}{}
 				}
 			}
 			for _, a := range ex.Args {
@@ -2786,6 +2794,11 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				return nil, fmt.Errorf("int expects 1 arg")
 			}
 			return &CallExpr{Func: "intval", Args: args}, nil
+		} else if name == "float" {
+			if len(args) != 1 {
+				return nil, fmt.Errorf("float expects 1 arg")
+			}
+			return &CallExpr{Func: "floatval", Args: args}, nil
 		} else if name == "parseIntStr" {
 			if len(args) == 1 {
 				usesParseIntStr = true
@@ -3450,7 +3463,14 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 		}
 		return &ForEachStmt{Name: st.For.Name, Expr: expr, Keys: keys, String: str, Body: body}, nil
 	case st.Import != nil:
-		return convertImport(st.Import)
+		stmt, err := convertImport(st.Import)
+		if err != nil {
+			return nil, err
+		}
+		if ls, ok := stmt.(*LetStmt); ok && len(funcStack) == 0 {
+			addGlobal(ls.Name)
+		}
+		return stmt, nil
 	case st.ExternVar != nil, st.ExternFun != nil, st.ExternType != nil, st.ExternObject != nil:
 		return nil, nil
 	case st.Break != nil:
