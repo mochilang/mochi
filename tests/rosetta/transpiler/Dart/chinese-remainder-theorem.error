@@ -1,0 +1,17 @@
+run: exit status 254
+../../../tests/rosetta/transpiler/Dart/chinese-remainder-theorem.dart:41:13: Error: A value of type 'List<int>' can't be assigned to a variable of type 'int'.
+ - 'List' is from 'dart:core'.
+  int res = egcd(b % a, a);
+            ^
+../../../tests/rosetta/transpiler/Dart/chinese-remainder-theorem.dart:42:14: Error: The operator '[]' isn't defined for the class 'int'.
+Try correcting the operator to an existing operator, or defining a '[]' operator.
+  var g = res[0];
+             ^
+../../../tests/rosetta/transpiler/Dart/chinese-remainder-theorem.dart:43:15: Error: The operator '[]' isn't defined for the class 'int'.
+Try correcting the operator to an existing operator, or defining a '[]' operator.
+  var x1 = res[1];
+              ^
+../../../tests/rosetta/transpiler/Dart/chinese-remainder-theorem.dart:44:15: Error: The operator '[]' isn't defined for the class 'int'.
+Try correcting the operator to an existing operator, or defining a '[]' operator.
+  var y1 = res[2];
+              ^

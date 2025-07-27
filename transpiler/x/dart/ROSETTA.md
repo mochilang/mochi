@@ -2,7 +2,7 @@
 
 This directory contains Dart code generated from Mochi programs in `tests/rosetta/x/Mochi`. Each program has a `.dart` file and `.out` output. Compilation or runtime failures are captured in a `.error` file.
 
-Compiled and ran: 163/452
+Compiled and ran: 183/452
 
 ## Checklist
 | Index | Name | Status | Duration | Memory |
@@ -186,27 +186,27 @@ Compiled and ran: 163/452
 | 177 | casting-out-nines |   |  |  |
 | 178 | catalan-numbers-1 |   |  |  |
 | 179 | catalan-numbers-2 |   |  |  |
-| 180 | catalan-numbers-pascals-triangle |   |  |  |
-| 181 | catamorphism |   |  |  |
-| 182 | catmull-clark-subdivision-surface |   |  |  |
-| 183 | chaocipher |   |  |  |
-| 184 | chaos-game |   |  |  |
-| 185 | character-codes-1 |   |  |  |
-| 186 | character-codes-2 |   |  |  |
-| 187 | character-codes-3 |   |  |  |
-| 188 | character-codes-4 |   |  |  |
-| 189 | character-codes-5 |   |  |  |
-| 190 | chat-server |   |  |  |
-| 191 | check-machin-like-formulas |   |  |  |
-| 192 | check-that-file-exists |   |  |  |
-| 193 | checkpoint-synchronization-1 |   |  |  |
-| 194 | checkpoint-synchronization-2 |   |  |  |
-| 195 | checkpoint-synchronization-3 |   |  |  |
-| 196 | checkpoint-synchronization-4 |   |  |  |
-| 197 | chernicks-carmichael-numbers |   |  |  |
-| 198 | cheryls-birthday |   |  |  |
+| 180 | catalan-numbers-pascals-triangle | ✓ | 5.689ms | 2.3 MB |
+| 181 | catamorphism | ✓ | 8.534ms | 11.6 MB |
+| 182 | catmull-clark-subdivision-surface | ✓ | 11.246ms | 11.9 MB |
+| 183 | chaocipher | ✓ | 6.273ms | 12.1 MB |
+| 184 | chaos-game | ✓ | 12.934ms | 10.7 MB |
+| 185 | character-codes-1 | ✓ | 5.463ms | 11.1 MB |
+| 186 | character-codes-2 | ✓ | 5.652ms | 10.6 MB |
+| 187 | character-codes-3 | ✓ | 5.592ms | 148.0 KB |
+| 188 | character-codes-4 | ✓ | 5.809ms | 12.4 MB |
+| 189 | character-codes-5 | ✓ | 4.955ms | 3.6 MB |
+| 190 | chat-server | ✓ | 6.894ms | 11.3 MB |
+| 191 | check-machin-like-formulas | ✓ | 55.437ms | 1.6 MB |
+| 192 | check-that-file-exists | ✓ | 6.216ms | 12.1 MB |
+| 193 | checkpoint-synchronization-1 | ✓ | 6.205ms | 10.4 MB |
+| 194 | checkpoint-synchronization-2 | ✓ | 5.849ms | 508.0 KB |
+| 195 | checkpoint-synchronization-3 | ✓ | 6.21ms | 2.2 MB |
+| 196 | checkpoint-synchronization-4 | ✓ | 5.566ms | 11.4 MB |
+| 197 | chernicks-carmichael-numbers | ✓ | 106.424ms | 4.0 MB |
+| 198 | cheryls-birthday | ✓ | 6.244ms | 196.0 KB |
 | 199 | chinese-remainder-theorem |   |  |  |
-| 200 | chinese-zodiac |   |  |  |
+| 200 | chinese-zodiac | ✓ | 6.125ms | 3.0 MB |
 | 201 | cholesky-decomposition-1 |   |  |  |
 | 202 | cholesky-decomposition |   |  |  |
 | 203 | chowla-numbers |   |  |  |
@@ -460,4 +460,4 @@ Compiled and ran: 163/452
 | 451 | window-management |   |  |  |
 | 452 | zumkeller-numbers |   |  |  |
 
-_Last updated: 2025-07-27 11:33 +0700_
+_Last updated: 2025-07-27 12:44 +0700_

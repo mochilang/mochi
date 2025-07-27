@@ -73,6 +73,8 @@ var (
 	structMutable    map[string]bool
 	currentRetType   string
 	inFunc           bool
+	nameMap          map[string]string
+	nameSeq          int
 )
 
 // GetStructOrder returns the generated struct names (for testing).
@@ -103,10 +105,18 @@ var dartKeywords = map[string]struct{}{
 }
 
 func sanitize(name string) string {
-	if _, ok := dartKeywords[name]; ok {
-		return "_" + name
+	if mapped, ok := nameMap[name]; ok {
+		return mapped
 	}
-	return name
+	newName := name
+	if name == "_" || !validIdent(name) {
+		nameSeq++
+		newName = fmt.Sprintf("_v%d", nameSeq)
+	} else if _, ok := dartKeywords[name]; ok {
+		newName = "_" + name
+	}
+	nameMap[name] = newName
+	return newName
 }
 
 func validIdent(name string) bool {
@@ -548,6 +558,9 @@ func (s *LetStmt) emit(w io.Writer) error {
 	typ := s.Type
 	if typ == "" {
 		typ = inferType(s.Value)
+		if _, ok := callName(s.Value); ok {
+			typ = ""
+		}
 		if strings.HasSuffix(typ, "?") {
 			typ = strings.TrimSuffix(typ, "?")
 		}
@@ -890,6 +903,17 @@ type UnaryExpr struct {
 }
 
 func (u *UnaryExpr) emit(w io.Writer) error {
+	if u.Op == "-" && inferType(u.X) == "BigRat" {
+		useBigRat = true
+		if _, err := io.WriteString(w, "_neg("); err != nil {
+			return err
+		}
+		if err := u.X.emit(w); err != nil {
+			return err
+		}
+		_, err := io.WriteString(w, ")")
+		return err
+	}
 	if _, err := io.WriteString(w, u.Op); err != nil {
 		return err
 	}
@@ -1201,6 +1225,15 @@ func (n *Name) emit(w io.Writer) error {
 	}
 	_, err := io.WriteString(w, name)
 	return err
+}
+
+func callName(e Expr) (string, bool) {
+	if ce, ok := e.(*CallExpr); ok {
+		if n, ok := ce.Func.(*Name); ok {
+			return n.Name, true
+		}
+	}
+	return "", false
 }
 
 // SelectorExpr represents receiver.field access.
@@ -3077,7 +3110,10 @@ func inferType(e Expr) string {
 	case *UnaryExpr:
 		if ex.Op == "-" {
 			t := inferType(ex.X)
-			if t == "int" || t == "num" {
+			if t == "int" || t == "num" || t == "BigInt" || t == "BigRat" {
+				if t == "BigRat" {
+					useBigRat = true
+				}
 				return t
 			}
 			return "num"
@@ -3116,6 +3152,12 @@ func inferType(e Expr) string {
 					return rt
 				}
 				if currentEnv != nil {
+					if fn, ok := currentEnv.GetFunc(n.Name); ok {
+						if fn.Return != nil {
+							return dartType(types.ResolveTypeRef(fn.Return, currentEnv))
+						}
+						return "void"
+					}
 					if t, err := currentEnv.GetVar(n.Name); err == nil {
 						if ft, ok := t.(types.FuncType); ok {
 							return dartType(ft.Return)
@@ -3429,7 +3471,7 @@ func Emit(w io.Writer, p *Program) error {
 		}
 	}
 	if useBigRat {
-		if _, err := io.WriteString(w, "class BigRat {\n  BigInt num;\n  BigInt den;\n  BigRat(this.num, [BigInt? d]) : den = d ?? BigInt.one {\n    if (den.isNegative) { num = -num; den = -den; }\n    var g = num.gcd(den);\n    num = num ~/ g;\n    den = den ~/ g;\n  }\n  BigRat add(BigRat o) => BigRat(num * o.den + o.num * den, den * o.den);\n  BigRat sub(BigRat o) => BigRat(num * o.den - o.num * den, den * o.den);\n  BigRat mul(BigRat o) => BigRat(num * o.num, den * o.den);\n  BigRat div(BigRat o) => BigRat(num * o.den, den * o.num);\n}\n\nBigRat _bigrat(dynamic n, [dynamic d]) {\n  if (n is BigRat && d == null) return BigRat(n.num, n.den);\n  BigInt numer;\n  BigInt denom = d == null ? BigInt.one : (d is BigInt ? d : BigInt.from((d as num).toInt()));\n  if (n is BigRat) { numer = n.num; denom = n.den; }\n  else if (n is BigInt) { numer = n; }\n  else if (n is int) { numer = BigInt.from(n); }\n  else if (n is num) { numer = BigInt.from(n.toInt()); }\n  else { numer = BigInt.zero; }\n  return BigRat(numer, denom);\n}\nBigInt _num(BigRat r) => r.num;\nBigInt _denom(BigRat r) => r.den;\nBigRat _add(BigRat a, BigRat b) => a.add(b);\nBigRat _sub(BigRat a, BigRat b) => a.sub(b);\nBigRat _mul(BigRat a, BigRat b) => a.mul(b);\nBigRat _div(BigRat a, BigRat b) => a.div(b);\n\n"); err != nil {
+		if _, err := io.WriteString(w, "class BigRat {\n  BigInt num;\n  BigInt den;\n  BigRat(this.num, [BigInt? d]) : den = d ?? BigInt.one {\n    if (den.isNegative) { num = -num; den = -den; }\n    var g = num.gcd(den);\n    num = num ~/ g;\n    den = den ~/ g;\n  }\n  BigRat add(BigRat o) => BigRat(num * o.den + o.num * den, den * o.den);\n  BigRat sub(BigRat o) => BigRat(num * o.den - o.num * den, den * o.den);\n  BigRat mul(BigRat o) => BigRat(num * o.num, den * o.den);\n  BigRat div(BigRat o) => BigRat(num * o.den, den * o.num);\n}\n\nBigRat _bigrat(dynamic n, [dynamic d]) {\n  if (n is BigRat && d == null) return BigRat(n.num, n.den);\n  BigInt numer;\n  BigInt denom = d == null ? BigInt.one : (d is BigInt ? d : BigInt.from((d as num).toInt()));\n  if (n is BigRat) { numer = n.num; denom = n.den; }\n  else if (n is BigInt) { numer = n; }\n  else if (n is int) { numer = BigInt.from(n); }\n  else if (n is num) { numer = BigInt.from(n.toInt()); }\n  else { numer = BigInt.zero; }\n  return BigRat(numer, denom);\n}\nBigInt _num(BigRat r) => r.num;\nBigInt _denom(BigRat r) => r.den;\nBigRat _add(BigRat a, BigRat b) => a.add(b);\nBigRat _sub(BigRat a, BigRat b) => a.sub(b);\nBigRat _mul(BigRat a, BigRat b) => a.mul(b);\nBigRat _div(BigRat a, BigRat b) => a.div(b);\nBigRat _neg(BigRat r) => BigRat(-r.num, r.den);\n\n"); err != nil {
 			return err
 		}
 	}
@@ -3599,6 +3641,8 @@ func Transpile(prog *parser.Program, env *types.Env, bench, wrapMain bool) (*Pro
 	testpkgAliases = map[string]struct{}{}
 	netAliases = map[string]struct{}{}
 	structMutable = map[string]bool{}
+	nameMap = map[string]string{}
+	nameSeq = 0
 	benchMain = bench
 	p := &Program{BenchMain: bench, WrapMain: wrapMain}
 	for _, st := range prog.Statements {
@@ -3865,7 +3909,11 @@ func convertStmtInternal(st *parser.Statement) (Stmt, error) {
 	case st.Let != nil:
 		var e Expr
 		var err error
+		var callName string
 		if st.Let.Value != nil {
+			if c, ok := callPattern(st.Let.Value); ok {
+				callName = c.Func
+			}
 			e, err = convertExpr(st.Let.Value)
 			if err != nil {
 				return nil, err
@@ -3884,6 +3932,19 @@ func convertStmtInternal(st *parser.Statement) (Stmt, error) {
 		}
 		if typ == "" && e != nil {
 			typ = inferType(e)
+			if callName != "" {
+				if rt, ok := funcReturnTypes[callName]; ok {
+					typ = rt
+				} else if currentEnv != nil {
+					if fn, ok := currentEnv.GetFunc(callName); ok && fn.Return != nil {
+						typ = dartType(types.ResolveTypeRef(fn.Return, currentEnv))
+					} else {
+						typ = ""
+					}
+				} else {
+					typ = ""
+				}
+			}
 		}
 		if typ != "" {
 			localVarTypes[name] = typ
@@ -3942,6 +4003,9 @@ func convertStmtInternal(st *parser.Statement) (Stmt, error) {
 		var params []string
 		paramTypes := make(map[string]string)
 		savedLocals := map[string]string{}
+		if rt := typeRefString(st.Fun.Return); rt != "" {
+			funcReturnTypes[st.Fun.Name] = rt
+		}
 		for _, p := range st.Fun.Params {
 			typ := typeRefString(p.Type)
 			name := sanitize(p.Name)
