@@ -1,0 +1,205 @@
+fun split(s: string, sep: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    if len(sep) > 0 && i + len(sep) <= len(s) && substring(s, i, i+len(sep)) == sep {
+      parts = append(parts, cur)
+      cur = ""
+      i = i + len(sep)
+    } else {
+      cur = cur + substring(s, i, i+1)
+      i = i + 1
+    }
+  }
+  parts = append(parts, cur)
+  return parts
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var neg = false
+  if len(str) > 0 && str[0:1] == "-" {
+    neg = true
+    i = 1
+  }
+  var n = 0
+  let digits = {
+    "0": 0,
+    "1": 1,
+    "2": 2,
+    "3": 3,
+    "4": 4,
+    "5": 5,
+    "6": 6,
+    "7": 7,
+    "8": 8,
+    "9": 9,
+  }
+  while i < len(str) {
+    n = n * 10 + digits[str[i:i+1]]
+    i = i + 1
+  }
+  if neg { n = -n }
+  return n
+}
+
+fun joinInts(nums: list<int>, sep: string): string {
+  var s = ""
+  var i = 0
+  while i < len(nums) {
+    if i > 0 { s = s + sep }
+    s = s + str(nums[i])
+    i = i + 1
+  }
+  return s
+}
+
+fun undot(s: string): list<int> {
+  let parts = split(s, ".")
+  var nums: list<int> = []
+  for p in parts { nums = append(nums, parseIntStr(p)) }
+  return nums
+}
+
+fun factorial(n: int): int {
+  var f = 1
+  var i = 2
+  while i <= n {
+    f = f * i
+    i = i + 1
+  }
+  return f
+}
+
+fun genFactBaseNums(size: int, countOnly: bool): list<any> {
+  var results: list<list<int>> = []
+  var count = 0
+  var n = 0
+  while true {
+    var radix = 2
+    var res: list<int> = []
+    if !countOnly {
+      var z = 0
+      while z < size { res = append(res, 0); z = z + 1 }
+    }
+    var k = n
+    while k > 0 {
+      var div = k / radix
+      var rem = k % radix
+      if !countOnly && radix <= size + 1 {
+        res[size - radix + 1] = rem
+      }
+      k = div
+      radix = radix + 1
+    }
+    if radix > size + 2 { break }
+    count = count + 1
+    if !countOnly { results = append(results, res) }
+    n = n + 1
+  }
+  return [results, count]
+}
+
+fun mapToPerms(factNums: list<list<int>>): list<list<int>> {
+  var perms: list<list<int>> = []
+  var psize = len(factNums[0]) + 1
+  var start: list<int> = []
+  var i = 0
+  while i < psize { start = append(start, i); i = i + 1 }
+  for fn in factNums {
+    var perm: list<int> = []
+    var j = 0
+    while j < len(start) { perm = append(perm, start[j]); j = j + 1 }
+    var m = 0
+    while m < len(fn) {
+      var g = fn[m]
+      if g != 0 {
+        var first = m
+        var last = m + g
+        var t = 1
+        while t <= g {
+          var temp = perm[first]
+          var x = first + 1
+          while x <= last {
+            perm[x - 1] = perm[x]
+            x = x + 1
+          }
+          perm[last] = temp
+          t = t + 1
+        }
+      }
+      m = m + 1
+    }
+    perms = append(perms, perm)
+  }
+  return perms
+}
+
+var seed = 1
+fun randInt(n: int): int {
+  seed = (seed * 1664525 + 1013904223) % 2147483647
+  return seed % n
+}
+
+fun main() {
+  let g = genFactBaseNums(3, false)
+  var factNums = g[0]
+  var perms = mapToPerms(factNums)
+  var i = 0
+  while i < len(factNums) {
+    print(joinInts(factNums[i], ".") + " -> " + joinInts(perms[i], ""))
+    i = i + 1
+  }
+
+  let count2 = factorial(11)
+  print("\nPermutations generated = " + str(count2))
+  print("compared to 11! which  = " + str(factorial(11)))
+  print("")
+
+  let fbn51s: list<string> = [
+    "39.49.7.47.29.30.2.12.10.3.29.37.33.17.12.31.29.34.17.25.2.4.25.4.1.14.20.6.21.18.1.1.1.4.0.5.15.12.4.3.10.10.9.1.6.5.5.3.0.0.0",
+    "51.48.16.22.3.0.19.34.29.1.36.30.12.32.12.29.30.26.14.21.8.12.1.3.10.4.7.17.6.21.8.12.15.15.13.15.7.3.12.11.9.5.5.6.6.3.4.0.3.2.1",
+  ]
+  factNums = [undot(fbn51s[0]), undot(fbn51s[1])]
+  perms = mapToPerms(factNums)
+  let shoe = "A♠K♠Q♠J♠T♠9♠8♠7♠6♠5♠4♠3♠2♠A♥K♥Q♥J♥T♥9♥8♥7♥6♥5♥4♥3♥2♥A♦K♦Q♦J♦T♦9♦8♦7♦6♦5♦4♦3♦2♦A♣K♣Q♣J♣T♣9♣8♣7♣6♣5♣4♣3♣2♣"
+  var cards: list<string> = []
+  i = 0
+  while i < 52 {
+    var card = substring(shoe, 2*i, 2*i+2)
+    if card[0:1] == "T" { card = "10" + card[1:2] }
+    cards = append(cards, card)
+    i = i + 1
+  }
+  i = 0
+  while i < len(fbn51s) {
+    print(fbn51s[i])
+    var perm = perms[i]
+    var j = 0
+    var line = ""
+    while j < len(perm) {
+      line = line + cards[perm[j]]
+      j = j + 1
+    }
+    print(line + "\n")
+    i = i + 1
+  }
+  var fbn51: list<int> = []
+  i = 0
+  while i < 51 {
+    fbn51 = append(fbn51, randInt(52 - i))
+    i = i + 1
+  }
+  print(joinInts(fbn51, "."))
+  perms = mapToPerms([fbn51])
+  var line = ""
+  i = 0
+  while i < len(perms[0]) {
+    line = line + cards[perms[0][i]]
+    i = i + 1
+  }
+  print(line)
+}
+
+main()
