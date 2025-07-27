@@ -59,7 +59,11 @@ func (i IntLit) Emit(w io.Writer) {
 type FloatLit float64
 
 func (f FloatLit) Emit(w io.Writer) {
-	io.WriteString(w, strconv.FormatFloat(float64(f), 'f', -1, 64))
+	s := strconv.FormatFloat(float64(f), 'f', -1, 64)
+	if !strings.ContainsAny(s, ".eE") && !strings.ContainsRune(s, '.') {
+		s += ".0"
+	}
+	io.WriteString(w, s)
 }
 
 // List represents a Clojure list form: (elem1 elem2 ...)
