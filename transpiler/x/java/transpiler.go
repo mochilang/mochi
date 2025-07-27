@@ -43,6 +43,7 @@ var needRuneLen bool
 var needSubstr bool
 var needBigRat bool
 var needModPow2 bool
+var needPanic bool
 var pyMathAliases map[string]bool
 var builtinAliases map[string]string
 var structDefs map[string]map[string]string
@@ -462,13 +463,17 @@ func inferType(e Expr) string {
 			return ex.ElemType + "[]"
 		}
 		if len(ex.Elems) > 0 {
-			t := inferType(ex.Elems[0])
-			if t == "" {
-				for _, el := range ex.Elems[1:] {
-					t = inferType(el)
-					if t != "" {
-						break
-					}
+			t := ""
+			for i, el := range ex.Elems {
+				et := inferType(el)
+				if et == "" {
+					continue
+				}
+				if i == 0 {
+					t = et
+				} else if t != et {
+					t = "Object"
+					break
 				}
 			}
 			if t != "" {
@@ -1531,12 +1536,22 @@ func (l *ListLit) emit(w io.Writer) {
 			arrType = jt
 		}
 	}
-	raw := arrType
-	if idx := strings.Index(arrType, "<"); idx >= 0 {
-		raw = arrType[:idx]
-		fmt.Fprintf(w, "(%s[])new %s[]{", arrType, raw)
+	base := arrType
+	dims := 1
+	for strings.HasSuffix(base, "[]") {
+		base = strings.TrimSuffix(base, "[]")
+		dims++
+	}
+	raw := base
+	if idx := strings.Index(base, "<"); idx >= 0 {
+		raw = base[:idx]
+	}
+	castType := arrType + "[]"
+	newType := raw + strings.Repeat("[]", dims)
+	if strings.Index(base, "<") >= 0 {
+		fmt.Fprintf(w, "(%s)new %s{", castType, newType)
 	} else {
-		fmt.Fprintf(w, "new %s[]{", arrType)
+		fmt.Fprintf(w, "new %s{", newType)
 	}
 	for i, e := range l.Elems {
 		if i > 0 {
@@ -2417,8 +2432,13 @@ func (m *MethodCallExpr) emit(w io.Writer) {
 }
 
 func (c *CallExpr) emit(w io.Writer) {
-	fmt.Fprint(w, sanitize(c.Func))
-	fmt.Fprint(w, "(")
+	if c.Func == "panic" {
+		needPanic = true
+		fmt.Fprint(w, "_panic(")
+	} else {
+		fmt.Fprint(w, sanitize(c.Func))
+		fmt.Fprint(w, "(")
+	}
 	for i, a := range c.Args {
 		if i > 0 {
 			fmt.Fprint(w, ", ")
@@ -3459,7 +3479,7 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 				}
 			}
 			if t := inferType(e); t != "" {
-				if cur, ok := varTypes[s.Assign.Name]; !ok || ((cur == "int[]" || cur == "Object[]") && t != cur) {
+				if cur, ok := varTypes[s.Assign.Name]; !ok || ((cur == "int[]" || cur == "Object[]") && t != cur && !(cur == "Object[]" && strings.Contains(t, "java.util.Map"))) {
 					varTypes[s.Assign.Name] = t
 					if vdecl != nil {
 						vdecl.Type = t
@@ -3722,9 +3742,11 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 			isMap = true
 			keyType = it.KeyType
 		case *VarExpr:
-			if t, ok := varTypes[it.Name]; ok && (t == "map" || strings.HasPrefix(t, "java.util.Map")) {
-				isMap = true
-				keyType = mapKeyType(t)
+			if t, ok := varTypes[it.Name]; ok {
+				if t == "map" || (strings.HasPrefix(t, "java.util.Map") && !strings.HasSuffix(t, "[]")) {
+					isMap = true
+					keyType = mapKeyType(t)
+				}
 			}
 		}
 		elemType := ""
@@ -4475,10 +4497,15 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			elems[i] = ex
 		}
 		lt := ""
-		for _, el := range elems {
+		for i, el := range elems {
 			t := inferType(el)
-			if t != "" {
+			if t == "" {
+				continue
+			}
+			if i == 0 || lt == "" {
 				lt = t
+			} else if lt != t {
+				lt = "Object"
 				break
 			}
 		}
@@ -5250,6 +5277,11 @@ func Emit(prog *Program) []byte {
 		buf.WriteString("            for (int i = 0; i < hash.length; i++) out[i] = hash[i] & 0xff;\n")
 		buf.WriteString("            return out;\n")
 		buf.WriteString("        } catch (Exception e) { return new int[0]; }\n")
+		buf.WriteString("    }\n")
+	}
+	if needPanic {
+		buf.WriteString("\n    static void _panic(Object msg) {\n")
+		buf.WriteString("        throw new RuntimeException(String.valueOf(msg));\n")
 		buf.WriteString("    }\n")
 	}
 	if needBigRat {
