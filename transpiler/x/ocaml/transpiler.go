@@ -431,6 +431,10 @@ func mapFieldType(typ, field string) (string, bool) {
 			return "bool", true
 		case "full":
 			return "bool", true
+		case "err":
+			return "bool", true
+		case "res":
+			return "string", true
 		case "value":
 			return "map-int", true
 		case "left", "right":
@@ -540,6 +544,7 @@ var ocamlReserved = map[string]bool{
 	"new":  true,
 	"sig":  true,
 	"done": true,
+	"ref":  true,
 }
 
 func sanitizeIdent(s string) string {
@@ -1016,7 +1021,9 @@ func (i *IndexOfBuiltin) emit(w io.Writer) {
 	if lit, ok := i.Sub.(*StringLit); ok && len(lit.Value) == 1 {
 		fmt.Fprintf(w, "'%s'", lit.Value)
 	} else {
+		io.WriteString(w, "(String.get (")
 		i.Sub.emit(w)
+		io.WriteString(w, ") 0)")
 	}
 	io.WriteString(w, " with Not_found -> -1)")
 }
@@ -2064,8 +2071,9 @@ func (c *CastExpr) emit(w io.Writer) {
 			s.Start.emit(w)
 			io.WriteString(w, ")")
 		} else {
-			io.WriteString(w, "int_of_string ")
+			io.WriteString(w, "int_of_string (")
 			c.Expr.emit(w)
+			io.WriteString(w, ")")
 		}
 	case "float_to_int":
 		io.WriteString(w, "int_of_float (")
@@ -2122,9 +2130,9 @@ func (c *CastExpr) emitPrint(w io.Writer) {
 			s.Start.emit(w)
 			io.WriteString(w, ")))")
 		} else {
-			io.WriteString(w, "string_of_int (int_of_string ")
+			io.WriteString(w, "string_of_int (int_of_string (")
 			c.Expr.emit(w)
-			io.WriteString(w, ")")
+			io.WriteString(w, "))")
 		}
 	case "float_to_int":
 		io.WriteString(w, "string_of_int (int_of_float (")
@@ -2749,12 +2757,17 @@ func (p *Program) Emit() []byte {
 		}
 	}
 	buf.WriteString("let () =\n")
+	empty := true
 	for _, s := range p.Stmts {
 		switch s.(type) {
 		case *FunStmt, *VarStmt, *LetStmt:
 			continue
 		}
+		empty = false
 		s.emit(&buf)
+	}
+	if empty {
+		buf.WriteString("  ()")
 	}
 	return buf.Bytes()
 }
@@ -3181,7 +3194,7 @@ func transpileStmt(st *parser.Statement, env *types.Env, vars map[string]VarInfo
 		funcMutations[st.Fun.Name] = mutated
 		params := make([]string, len(st.Fun.Params))
 		for i, p := range st.Fun.Params {
-			params[i] = p.Name
+			params[i] = sanitizeIdent(p.Name)
 			typ := "int"
 			if p.Type != nil {
 				typ = typeRefString(p.Type)

@@ -2,7 +2,7 @@
 
 This directory contains OCaml code generated from Rosetta Code programs in `tests/rosetta/x/Mochi`.
 
-Completed programs: 105/467
+Completed programs: 122/467
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -145,26 +145,26 @@ Completed programs: 105/467
 | 137 | break-oo-privacy | ✓ | 54.0µs | 816B |
 | 138 | brilliant-numbers | error |  |  |
 | 139 | brownian-tree |   |  |  |
-| 140 | bulls-and-cows-player |   |  |  |
-| 141 | bulls-and-cows |   |  |  |
-| 142 | burrows-wheeler-transform |   |  |  |
-| 143 | caesar-cipher-1 |   |  |  |
-| 144 | caesar-cipher-2 |   |  |  |
-| 145 | calculating-the-value-of-e |   |  |  |
-| 146 | calendar---for-real-programmers-1 |   |  |  |
-| 147 | calendar---for-real-programmers-2 |   |  |  |
-| 148 | calendar |   |  |  |
-| 149 | calkin-wilf-sequence |   |  |  |
-| 150 | call-a-foreign-language-function |   |  |  |
-| 151 | call-a-function-1 |   |  |  |
-| 152 | call-a-function-10 |   |  |  |
-| 153 | call-a-function-11 |   |  |  |
-| 154 | call-a-function-12 |   |  |  |
-| 155 | call-a-function-2 |   |  |  |
-| 156 | call-a-function-3 |   |  |  |
-| 157 | call-a-function-4 |   |  |  |
-| 158 | call-a-function-5 |   |  |  |
-| 159 | call-a-function-6 |   |  |  |
+| 140 | bulls-and-cows-player | ✓ | 121.0ms | 105.62MB |
+| 141 | bulls-and-cows | error |  |  |
+| 142 | burrows-wheeler-transform | ✓ | 364.0ms | 104.99MB |
+| 143 | caesar-cipher-1 | ✓ |  |  |
+| 144 | caesar-cipher-2 | ✓ |  |  |
+| 145 | calculating-the-value-of-e | ✓ |  |  |
+| 146 | calendar---for-real-programmers-1 | ✓ |  |  |
+| 147 | calendar---for-real-programmers-2 | ✓ |  |  |
+| 148 | calendar | ✓ |  |  |
+| 149 | calkin-wilf-sequence | error |  |  |
+| 150 | call-a-foreign-language-function | ✓ |  |  |
+| 151 | call-a-function-1 | ✓ | 2.0µs | 208B |
+| 152 | call-a-function-10 | ✓ |  |  |
+| 153 | call-a-function-11 | ✓ | 116.0µs | 440B |
+| 154 | call-a-function-12 | error |  |  |
+| 155 | call-a-function-2 | ✓ |  |  |
+| 156 | call-a-function-3 | ✓ |  |  |
+| 157 | call-a-function-4 | ✓ |  |  |
+| 158 | call-a-function-5 | ✓ |  |  |
+| 159 | call-a-function-6 | ✓ |  |  |
 | 160 | call-a-function-7 |   |  |  |
 | 161 | call-a-function-8 |   |  |  |
 | 162 | call-a-function-9 |   |  |  |
@@ -473,4 +473,4 @@ Completed programs: 105/467
 | 465 | sorting-algorithms-bubble-sort |   |  |  |
 | 466 | window-management |   |  |  |
 | 467 | zumkeller-numbers |   |  |  |
-Last updated 2025-07-27 23:17 +0700
+Last updated 2025-07-27 17:37 UTC
