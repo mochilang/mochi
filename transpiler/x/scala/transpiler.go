@@ -838,7 +838,11 @@ type IntLit struct {
 
 func (i *IntLit) emit(w io.Writer) {
 	needsBigInt = true
-	fmt.Fprintf(w, "BigInt(%d)", i.Value)
+	if i.Value > math.MaxInt32 || i.Value < math.MinInt32 {
+		fmt.Fprintf(w, "BigInt(\"%d\")", i.Value)
+	} else {
+		fmt.Fprintf(w, "BigInt(%d)", i.Value)
+	}
 }
 
 type BoolLit struct{ Value bool }
@@ -2714,8 +2718,13 @@ func convertCall(c *parser.CallExpr, env *types.Env) (Expr, error) {
 	case "int":
 		if len(args) == 1 {
 			needsBigInt = true
-			toStr := &CallExpr{Fn: &FieldExpr{Receiver: args[0], Name: "toString"}}
-			return &CallExpr{Fn: &Name{Name: "BigInt"}, Args: []Expr{toStr}}, nil
+			toInt := &FieldExpr{Receiver: args[0], Name: "toInt"}
+			return &CallExpr{Fn: &Name{Name: "BigInt"}, Args: []Expr{toInt}}, nil
+		}
+	case "indexOf":
+		if len(args) == 2 {
+			call := &CallExpr{Fn: &FieldExpr{Receiver: args[0], Name: "indexOf"}, Args: []Expr{args[1]}}
+			return &CallExpr{Fn: &Name{Name: "BigInt"}, Args: []Expr{call}}, nil
 		}
 	case "float":
 		if len(args) == 1 {

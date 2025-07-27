@@ -1,0 +1,7 @@
+exit status 1
+/workspace/mochi/tests/rosetta/transpiler/Scala/cusip.scala:84: error: type mismatch;
+ found   : Double
+ required: scala.math.BigInt
+        sum = (sum + v / BigInt(10)).toString.toDouble + (v % BigInt(10)).toString.toDouble
+                                                       ^
+one error found
