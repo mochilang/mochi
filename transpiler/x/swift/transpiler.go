@@ -34,6 +34,7 @@ var usesBigInt bool
 var usesPad bool
 var usesRat bool
 var usesSHA256 bool
+var usesAppend bool
 var funcMutParams map[string][]bool
 var funcInOutParams map[string][]bool
 
@@ -66,6 +67,7 @@ type Program struct {
 	UsePad        bool
 	UseRat        bool
 	UseSHA256     bool
+	UseAppend     bool
 }
 
 type Stmt interface{ emit(io.Writer) }
@@ -1198,11 +1200,12 @@ func (c *CallExpr) emit(w io.Writer) {
 		}
 	case "append":
 		if len(c.Args) == 2 {
-			fmt.Fprint(w, "(")
+			fmt.Fprint(w, "_append(")
 			c.Args[0].emit(w)
-			fmt.Fprint(w, " + [")
+			fmt.Fprint(w, ", ")
 			c.Args[1].emit(w)
-			fmt.Fprint(w, "])")
+			fmt.Fprint(w, ")")
+			usesAppend = true
 			return
 		}
 	case "avg":
@@ -1625,6 +1628,13 @@ func (p *Program) Emit() []byte {
 	if p.UseSHA256 {
 		buf.WriteString("func _sha256(_ bs: [Int]) -> [Int] { return Array(repeating: 0, count: 32) }\n")
 	}
+	if p.UseAppend {
+		buf.WriteString("func _append<T>(_ xs: [T], _ v: T) -> [T] {\n")
+		buf.WriteString("    var out = xs\n")
+		buf.WriteString("    out.append(v)\n")
+		buf.WriteString("    return out\n")
+		buf.WriteString("}\n")
+	}
 	if p.UseBigInt {
 		buf.WriteString("struct BigInt: Comparable, CustomStringConvertible {\n")
 		buf.WriteString("    private var digits: [UInt32] = []\n")
@@ -1757,6 +1767,7 @@ func Transpile(env *types.Env, prog *parser.Program, benchMain bool) (*Program, 
 	usesPad = false
 	usesRat = false
 	usesSHA256 = false
+	usesAppend = false
 	funcMutParams = map[string][]bool{}
 	funcInOutParams = map[string][]bool{}
 	p := &Program{}
@@ -1780,6 +1791,7 @@ func Transpile(env *types.Env, prog *parser.Program, benchMain bool) (*Program, 
 	p.UsePad = usesPad
 	p.UseRat = usesRat
 	p.UseSHA256 = usesSHA256
+	p.UseAppend = usesAppend
 	return p, nil
 }
 
@@ -3838,14 +3850,8 @@ func convertPrimary(env *types.Env, pr *parser.Primary) (Expr, error) {
 			if err != nil {
 				return nil, err
 			}
-			arr := &ArrayLit{Elems: []Expr{right}}
-			expr := &BinaryExpr{Left: left, Op: "+", Right: arr}
-			if env != nil {
-				if lt, ok := types.TypeOfExpr(pr.Call.Args[0], env).(types.ListType); ok {
-					return &CastExpr{Expr: expr, Type: swiftTypeOf(lt)}, nil
-				}
-			}
-			return expr, nil
+			usesAppend = true
+			return &CallExpr{Func: "_append", Args: []Expr{left, right}}, nil
 		}
 		if pr.Call.Func == "now" && len(pr.Call.Args) == 0 {
 			usesNow = true

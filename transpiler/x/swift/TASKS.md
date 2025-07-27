@@ -1,5 +1,5 @@
-## Progress (2025-07-27 16:26 +0700)
-- swift transpiler: benchmark biorhythms
+## Progress (2025-07-27 21:41 +0700)
+- remove old error file for deconvolution
 - Generated golden tests for 102/104 programs
 - Updated README checklist and output artifacts
 
