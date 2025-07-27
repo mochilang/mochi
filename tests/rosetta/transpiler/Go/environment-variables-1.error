@@ -1,0 +1,5 @@
+exit status 1
+# command-line-arguments
+../../../tests/rosetta/transpiler/Go/environment-variables-1.go:10:2: os redeclared in this block
+	../../../tests/rosetta/transpiler/Go/environment-variables-1.go:9:2: other declaration of os
+../../../tests/rosetta/transpiler/Go/environment-variables-1.go:10:2: "os" imported and not used

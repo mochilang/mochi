@@ -1,7 +1,7 @@
 # Go Rosetta Transpiler Output
 
-Completed programs: 331/467
-Last updated: 2025-07-27 22:38 +0700
+Completed programs: 363/467
+Last updated: 2025-07-27 23:47 +0700
 
 Checklist:
 
@@ -353,46 +353,46 @@ Checklist:
 | 344 | empty-string-1 | ✓ | 75.0µs | 936B |
 | 345 | empty-string-2 | ✓ | 72.0µs | 952B |
 | 346 | enforced-immutability | ✓ | 41.0µs | 968B |
-| 347 | entropy-1 |   |  |  |
-| 348 | entropy-2 |   |  |  |
-| 349 | entropy-narcissist |   |  |  |
-| 350 | enumerations-1 |   |  |  |
-| 351 | enumerations-2 |   |  |  |
-| 352 | enumerations-3 |   |  |  |
-| 353 | enumerations-4 |   |  |  |
+| 347 | entropy-1 | ✓ | 505.0µs | 1.23KB |
+| 348 | entropy-2 | ✓ | 547.0µs | 1.33KB |
+| 349 | entropy-narcissist | ✓ | 21.0ms | 1.77MB |
+| 350 | enumerations-1 | ✓ | 212.0µs | 128B |
+| 351 | enumerations-2 | ✓ | 154.0µs | 0B |
+| 352 | enumerations-3 | ✓ | 156.0µs | 0B |
+| 353 | enumerations-4 | ✓ | 144.0µs | 0B |
 | 354 | environment-variables-1 |   |  |  |
 | 355 | environment-variables-2 |   |  |  |
-| 356 | equal-prime-and-composite-sums |   |  |  |
+| 356 | equal-prime-and-composite-sums | ✓ | 9.0ms | 1.77MB |
 | 357 | equilibrium-index |   |  |  |
-| 358 | erd-s-nicolas-numbers |   |  |  |
-| 359 | erd-s-selfridge-categorization-of-primes |   |  |  |
-| 360 | esthetic-numbers |   |  |  |
-| 361 | ethiopian-multiplication |   |  |  |
-| 362 | euclid-mullin-sequence |   |  |  |
-| 363 | euler-method |   |  |  |
-| 364 | eulers-constant-0.5772... |   |  |  |
-| 365 | eulers-identity |   |  |  |
-| 366 | eulers-sum-of-powers-conjecture |   |  |  |
+| 358 | erd-s-nicolas-numbers | ✓ | 84.32s | 2.39GB |
+| 359 | erd-s-selfridge-categorization-of-primes | ✓ | 3.0ms | 250.99KB |
+| 360 | esthetic-numbers | ✓ | 16.0ms | 2.13MB |
+| 361 | ethiopian-multiplication | ✓ | 196.0µs | 1016B |
+| 362 | euclid-mullin-sequence | ✓ |  |  |
+| 363 | euler-method | ✓ | 815.0µs | 11.08KB |
+| 364 | eulers-constant-0.5772... | ✓ | 441.0µs | 1000B |
+| 365 | eulers-identity | ✓ | 312.0µs | 1.12KB |
+| 366 | eulers-sum-of-powers-conjecture | ✓ | 46.0ms | 3.80MB |
 | 367 | evaluate-binomial-coefficients |   |  |  |
-| 368 | even-or-odd |   |  |  |
-| 369 | events |   |  |  |
-| 370 | evolutionary-algorithm |   |  |  |
-| 371 | exceptions-catch-an-exception-thrown-in-a-nested-call |   |  |  |
-| 372 | exceptions |   |  |  |
-| 373 | executable-library |   |  |  |
+| 368 | even-or-odd | ✓ | 768.0µs | 23.97KB |
+| 369 | events | ✓ | 328.0µs | 968B |
+| 370 | evolutionary-algorithm | ✓ | 49.0ms | 2.26MB |
+| 371 | exceptions-catch-an-exception-thrown-in-a-nested-call | ✓ | 413.0µs | 1008B |
+| 372 | exceptions | ✓ | 488.0µs | 1.15KB |
+| 373 | executable-library | ✓ | 191.0ms | 3.31MB |
 | 374 | execute-a-markov-algorithm |   |  |  |
 | 375 | execute-a-system-command |   |  |  |
-| 376 | execute-brain- |   |  |  |
+| 376 | execute-brain- | ✓ | 7.0ms | 1.49MB |
 | 377 | execute-computer-zero-1 |   |  |  |
-| 378 | execute-computer-zero |   |  |  |
-| 379 | execute-hq9+ |   |  |  |
-| 380 | execute-snusp |   |  |  |
+| 378 | execute-computer-zero | ✓ | 423.0µs | 1.02KB |
+| 379 | execute-hq9+ | ✓ | 1.0ms | 18.73KB |
+| 380 | execute-snusp | ✓ | 258.0µs | 936B |
 | 381 | exponentiation-operator-2 |   |  |  |
-| 382 | exponentiation-operator |   |  |  |
-| 383 | exponentiation-order |   |  |  |
-| 384 | exponentiation-with-infix-operators-in-or-operating-on-the-base |   |  |  |
-| 385 | extend-your-language |   |  |  |
-| 386 | extensible-prime-generator |   |  |  |
+| 382 | exponentiation-operator | ✓ | 770.0µs | 1.93KB |
+| 383 | exponentiation-order | ✓ | 362.0µs | 1.09KB |
+| 384 | exponentiation-with-infix-operators-in-or-operating-on-the-base | ✓ | 383.0µs | 1.74KB |
+| 385 | extend-your-language | ✓ | 316.0µs | 944B |
+| 386 | extensible-prime-generator | ✓ | 5.0ms | 351.82KB |
 | 387 | extreme-floating-point-values |   |  |  |
 | 388 | faces-from-a-mesh-2 |   |  |  |
 | 389 | faces-from-a-mesh |   |  |  |

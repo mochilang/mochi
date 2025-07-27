@@ -1,0 +1,4 @@
+exit status 1
+# command-line-arguments
+../../../tests/rosetta/transpiler/Go/execute-computer-zero-1.go:205:9: invalid operation: func() bool {…}() (value of type bool) is not an interface
+../../../tests/rosetta/transpiler/Go/execute-computer-zero-1.go:207:15: invalid operation: v == opcode (mismatched types int and string)
