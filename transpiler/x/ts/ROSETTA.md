@@ -2,40 +2,40 @@
 
 This checklist is auto-generated.
 Generated TypeScript code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/TypeScript`.
-Last updated: 2025-07-27 05:29 UTC
+Last updated: 2025-07-27 09:14 UTC
 
-## Rosetta Golden Test Checklist (442/452)
+## Rosetta Golden Test Checklist (442/465)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
-| 1 | 100-doors-2 | ✓ | 1.595ms | 512.0 KB |
-| 2 | 100-doors-3 | ✓ | 347µs |  |
-| 3 | 100-doors | ✓ | 598µs | 256.0 KB |
-| 4 | 100-prisoners | ✓ | 142.982ms | 14.9 MB |
-| 5 | 15-puzzle-game | ✓ | 1.159ms | 512.0 KB |
-| 6 | 15-puzzle-solver | ✓ | 326µs |  |
-| 7 | 2048 | ✓ | 1.946ms | 1.0 MB |
-| 8 | 21-game | ✓ | 784µs | 640.0 KB |
-| 9 | 24-game-solve | ✓ | 10.405ms | 5.1 MB |
-| 10 | 24-game | ✓ | 819µs | 512.0 KB |
-| 11 | 4-rings-or-4-squares-puzzle | ✓ | 16.8ms | 17.0 MB |
-| 12 | 9-billion-names-of-god-the-integer | ✓ | 6.453699s | 555.6 MB |
-| 13 | 99-bottles-of-beer-2 | ✓ | 21.361ms | 5.3 MB |
-| 14 | 99-bottles-of-beer | ✓ | 14.585ms | 3.5 MB |
-| 15 | DNS-query | ✓ | 631µs | 128.0 KB |
-| 16 | Duffinian-numbers | ✓ | 10.042ms | 12.0 MB |
-| 17 | a+b | ✓ | 1.936ms | 512.0 KB |
-| 18 | abbreviations-automatic | ✓ | 25.499ms | 5.2 MB |
-| 19 | abbreviations-easy | ✓ | 6.557ms | 384.0 KB |
-| 20 | abbreviations-simple | ✓ | 4.605ms | 640.0 KB |
-| 21 | abc-problem | ✓ | 3.639ms | 384.0 KB |
-| 22 | abelian-sandpile-model-identity | ✓ | 3.276ms | 128.0 KB |
-| 23 | abelian-sandpile-model | ✓ | 3.758ms | 256.0 KB |
-| 24 | abstract-type | ✓ | 626µs |  |
-| 25 | abundant-deficient-and-perfect-number-classifications | ✓ | 251.495ms | 7.8 MB |
-| 26 | abundant-odd-numbers | ✓ | 499.683ms | 10.8 MB |
-| 27 | accumulator-factory | ✓ | 455µs | 128.0 KB |
-| 28 | achilles-numbers | ✓ | 36.63ms | 10.8 MB |
-| 29 | ackermann-function-2 | ✓ | 705µs |  |
+| 1 | 100-doors-2 | ✓ | 1.508ms | 384.0 KB |
+| 2 | 100-doors-3 | ✓ | 449µs |  |
+| 3 | 100-doors | ✓ | 600µs |  |
+| 4 | 100-prisoners | ✓ | 58.258ms | 10.8 MB |
+| 5 | 15-puzzle-game | ✓ | 1.11ms | 768.0 KB |
+| 6 | 15-puzzle-solver | ✓ | 294µs |  |
+| 7 | 2048 | ✓ | 1.914ms | 640.0 KB |
+| 8 | 21-game | ✓ | 859µs | 512.0 KB |
+| 9 | 24-game-solve | ✓ | 7.8ms | 7.0 MB |
+| 10 | 24-game | ✓ | 810µs | 384.0 KB |
+| 11 | 4-rings-or-4-squares-puzzle | ✓ | 2.065ms | 1.3 MB |
+| 12 | 9-billion-names-of-god-the-integer | ✓ | 732.935ms | 395.7 MB |
+| 13 | 99-bottles-of-beer-2 | ✓ | 7.208ms | 5.3 MB |
+| 14 | 99-bottles-of-beer | ✓ | 3.432ms | 3.4 MB |
+| 15 | DNS-query | ✓ | 347µs | 128.0 KB |
+| 16 | Duffinian-numbers | ✓ | 9.281ms | 11.2 MB |
+| 17 | a+b | ✓ | 857µs | 512.0 KB |
+| 18 | abbreviations-automatic | ✓ | 5.04ms | 4.5 MB |
+| 19 | abbreviations-easy | ✓ | 920µs | 256.0 KB |
+| 20 | abbreviations-simple | ✓ | 1.059ms | 256.0 KB |
+| 21 | abc-problem | ✓ | 706µs | 128.0 KB |
+| 22 | abelian-sandpile-model-identity | ✓ | 617µs |  |
+| 23 | abelian-sandpile-model | ✓ | 579µs | 128.0 KB |
+| 24 | abstract-type | ✓ | 309µs | 128.0 KB |
+| 25 | abundant-deficient-and-perfect-number-classifications | ✓ | 180.647ms | 7.4 MB |
+| 26 | abundant-odd-numbers | ✓ | 285.826ms | 11.6 MB |
+| 27 | accumulator-factory | ✓ | 323µs |  |
+| 28 | achilles-numbers | ✓ | 3.442ms | 8.5 MB |
+| 29 | ackermann-function-2 | ✓ | 379µs |  |
 | 30 | ackermann-function-3 | ✓ | 571.223ms | 4.2 MB |
 | 31 | ackermann-function | ✓ | 1.028ms | 2.6 MB |
 | 32 | active-directory-connect | ✓ | 425µs | 128.0 KB |
@@ -383,79 +383,92 @@ Last updated: 2025-07-27 05:29 UTC
 | 374 | execute-a-markov-algorithm | ✓ | 15.417ms | 5.0 MB |
 | 375 | execute-a-system-command | ✓ | 643µs | 128.0 KB |
 | 376 | execute-brain- | ✓ | 2.656ms | 1.0 MB |
-| 377 | execute-computer-zero | ✓ | 1.8ms |  |
-| 378 | execute-hq9+ | ✓ | 846µs |  |
-| 379 | execute-snusp | ✓ | 745µs |  |
-| 380 | exponentiation-operator | ✓ | 2.933ms | 256.0 KB |
-| 381 | exponentiation-order | ✓ | 883µs | 128.0 KB |
-| 382 | exponentiation-with-infix-operators-in-or-operating-on-the-base | ✓ | 1.057ms | 128.0 KB |
-| 383 | extend-your-language | ✓ | 716µs | 128.0 KB |
-| 384 | extensible-prime-generator | ✓ | 884µs |  |
-| 385 | extreme-floating-point-values | ✓ | 2.356ms |  |
-| 386 | faces-from-a-mesh | ✓ | 2.689ms | 128.0 KB |
-| 387 | fasta-format | ✓ | 796µs | 128.0 KB |
-| 388 | faulhabers-triangle | ✓ | 1.263ms |  |
-| 389 | feigenbaum-constant-calculation | ✓ | 19.647ms | 6.4 MB |
-| 390 | fermat-numbers | ✓ | 2.243ms | 128.0 KB |
-| 391 | fibonacci-n-step-number-sequences | ✓ | 2.207ms | 128.0 KB |
-| 392 | fibonacci-sequence-1 | ✓ | 8µs |  |
-| 393 | fibonacci-sequence-2 | ✓ | 9µs |  |
-| 394 | fibonacci-sequence-3 | ✓ | 9µs |  |
-| 395 | fibonacci-sequence-4 | ✓ | 998µs | 128.0 KB |
-| 396 | fibonacci-word-fractal | ✓ | 893µs |  |
-| 397 | fibonacci-word | ✓ | 2.19354s | 32.3 MB |
-| 398 | file-extension-is-in-extensions-list | ✓ | 2.684ms | 256.0 KB |
-| 399 | file-input-output-1 | ✓ | 637µs | 128.0 KB |
-| 400 | file-input-output-2 | ✓ | 707µs |  |
-| 401 | file-modification-time | ✓ | 2.253ms | 384.0 KB |
-| 402 | file-size-distribution | ✓ | 1.474ms | 128.0 KB |
-| 403 | file-size | ✓ | 731µs | 128.0 KB |
-| 404 | filter | ✓ | 1.123ms |  |
-| 405 | find-chess960-starting-position-identifier | ✓ | 4.524ms | 512.0 KB |
-| 406 | find-common-directory-path | ✓ | 1.21ms | 256.0 KB |
-| 407 | find-duplicate-files | ✓ | 1.046ms | 128.0 KB |
-| 408 | find-if-a-point-is-within-a-triangle | ✓ | 3.376ms | 384.0 KB |
-| 409 | find-largest-left-truncatable-prime-in-a-given-base | ✓ | 1.21ms | 4.5 MB |
-| 410 | find-limit-of-recursion | ✓ | 4.021ms | 9.2 MB |
-| 411 | find-palindromic-numbers-in-both-binary-and-ternary-bases | ✓ | 1.290361s | 10.8 MB |
-| 412 | find-the-intersection-of-a-line-with-a-plane | ✓ | 419µs |  |
-| 413 | find-the-intersection-of-two-lines | ✓ | 351µs | 128.0 KB |
-| 414 | find-the-last-sunday-of-each-month | ✓ | 926µs | 640.0 KB |
-| 415 | find-the-missing-permutation | ✓ | 462µs | 256.0 KB |
-| 416 | fivenum-1 | ✓ | 504µs | 128.0 KB |
-| 417 | fivenum-2 | ✓ | 647µs | 256.0 KB |
-| 418 | fixed-length-records-1 | ✓ | 370µs |  |
-| 419 | fixed-length-records-2 | ✓ | 605µs |  |
-| 420 | fizzbuzz-1 | ✓ | 793µs | 256.0 KB |
-| 421 | fizzbuzz-2 | ✓ | 1.239ms | 512.0 KB |
-| 422 | flatten-a-list-1 | ✓ | 301µs | 128.0 KB |
-| 423 | flatten-a-list-2 | ✓ | 300µs | 128.0 KB |
-| 424 | flipping-bits-game | ✓ | 366µs | 128.0 KB |
-| 425 | flow-control-structures-1 | ✓ | 310µs |  |
-| 426 | flow-control-structures-2 | ✓ | 297µs | 128.0 KB |
-| 427 | flow-control-structures-3 | ✓ | 309µs | 128.0 KB |
-| 428 | flow-control-structures-4 | ✓ | 261µs |  |
-| 429 | floyd-warshall-algorithm | ✓ | 287µs |  |
-| 430 | floyds-triangle | ✓ | 520µs |  |
-| 431 | forest-fire | ✓ | 522µs |  |
-| 432 | fork | ✓ | 358µs |  |
-| 433 | ftp | ✓ | 312µs |  |
-| 434 | gamma-function | ✓ | 667µs | 384.0 KB |
-| 435 | general-fizzbuzz | ✓ | 525µs |  |
-| 436 | generic-swap | ✓ | 330µs |  |
-| 437 | get-system-command-output | ✓ | 281µs | 128.0 KB |
-| 438 | giuga-numbers | ✓ | 447µs | 128.0 KB |
-| 439 | globally-replace-text-in-several-files | ✓ | 283µs | 128.0 KB |
-| 440 | goldbachs-comet | ✓ | 988µs | 2.5 MB |
-| 441 | golden-ratio-convergence | ✓ | 471µs |  |
-| 442 | graph-colouring | ✓ | 273µs |  |
-| 443 | gray-code | ✓ | 1.305ms | 1.8 MB |
-| 444 | http | ✓ |  |  |
-| 445 | image-noise | ✓ | 8.558ms | 10.1 MB |
-| 446 | loops-increment-loop-index-within-loop-body | ✓ | 160.041ms | 9.6 MB |
-| 447 | md5 | ✓ | 495µs | 384.0 KB |
-| 448 | nim-game | ✓ | 970µs | 512.0 KB |
-| 449 | plasma-effect | ✓ | 5.884ms | 10.4 MB |
-| 450 | sorting-algorithms-bubble-sort | ✓ | 393µs | 128.0 KB |
-| 451 | window-management | ✓ | 546µs |  |
-| 452 | zumkeller-numbers | ✓ | 862.793ms | 12.2 MB |
+| 377 | execute-computer-zero-1 |   |  |  |
+| 378 | execute-computer-zero | ✓ | 1.8ms |  |
+| 379 | execute-hq9+ | ✓ | 846µs |  |
+| 380 | execute-snusp | ✓ | 745µs |  |
+| 381 | exponentiation-operator-2 |   |  |  |
+| 382 | exponentiation-operator | ✓ | 2.933ms | 256.0 KB |
+| 383 | exponentiation-order | ✓ | 883µs | 128.0 KB |
+| 384 | exponentiation-with-infix-operators-in-or-operating-on-the-base | ✓ | 1.057ms | 128.0 KB |
+| 385 | extend-your-language | ✓ | 716µs | 128.0 KB |
+| 386 | extensible-prime-generator | ✓ | 884µs |  |
+| 387 | extreme-floating-point-values | ✓ | 2.356ms |  |
+| 388 | faces-from-a-mesh-2 |   |  |  |
+| 389 | faces-from-a-mesh | ✓ | 2.689ms | 128.0 KB |
+| 390 | factorial-base-numbers-indexing-permutations-of-a-collection |   |  |  |
+| 391 | factorial-primes |   |  |  |
+| 392 | factorial |   |  |  |
+| 393 | factorions |   |  |  |
+| 394 | factors-of-a-mersenne-number |   |  |  |
+| 395 | factors-of-an-integer |   |  |  |
+| 396 | fairshare-between-two-and-more |   |  |  |
+| 397 | farey-sequence |   |  |  |
+| 398 | fast-fourier-transform |   |  |  |
+| 399 | fasta-format | ✓ | 796µs | 128.0 KB |
+| 400 | faulhabers-formula |   |  |  |
+| 401 | faulhabers-triangle | ✓ | 1.263ms |  |
+| 402 | feigenbaum-constant-calculation | ✓ | 19.647ms | 6.4 MB |
+| 403 | fermat-numbers | ✓ | 2.243ms | 128.0 KB |
+| 404 | fibonacci-n-step-number-sequences | ✓ | 2.207ms | 128.0 KB |
+| 405 | fibonacci-sequence-1 | ✓ | 8µs |  |
+| 406 | fibonacci-sequence-2 | ✓ | 9µs |  |
+| 407 | fibonacci-sequence-3 | ✓ | 9µs |  |
+| 408 | fibonacci-sequence-4 | ✓ | 998µs | 128.0 KB |
+| 409 | fibonacci-word-fractal | ✓ | 893µs |  |
+| 410 | fibonacci-word | ✓ | 2.19354s | 32.3 MB |
+| 411 | file-extension-is-in-extensions-list | ✓ | 2.684ms | 256.0 KB |
+| 412 | file-input-output-1 | ✓ | 637µs | 128.0 KB |
+| 413 | file-input-output-2 | ✓ | 707µs |  |
+| 414 | file-modification-time | ✓ | 2.253ms | 384.0 KB |
+| 415 | file-size-distribution | ✓ | 1.474ms | 128.0 KB |
+| 416 | file-size | ✓ | 731µs | 128.0 KB |
+| 417 | filter | ✓ | 1.123ms |  |
+| 418 | find-chess960-starting-position-identifier | ✓ | 4.524ms | 512.0 KB |
+| 419 | find-common-directory-path | ✓ | 1.21ms | 256.0 KB |
+| 420 | find-duplicate-files | ✓ | 1.046ms | 128.0 KB |
+| 421 | find-if-a-point-is-within-a-triangle | ✓ | 3.376ms | 384.0 KB |
+| 422 | find-largest-left-truncatable-prime-in-a-given-base | ✓ | 1.21ms | 4.5 MB |
+| 423 | find-limit-of-recursion | ✓ | 4.021ms | 9.2 MB |
+| 424 | find-palindromic-numbers-in-both-binary-and-ternary-bases | ✓ | 1.290361s | 10.8 MB |
+| 425 | find-the-intersection-of-a-line-with-a-plane | ✓ | 419µs |  |
+| 426 | find-the-intersection-of-two-lines | ✓ | 351µs | 128.0 KB |
+| 427 | find-the-last-sunday-of-each-month | ✓ | 926µs | 640.0 KB |
+| 428 | find-the-missing-permutation | ✓ | 462µs | 256.0 KB |
+| 429 | fivenum-1 | ✓ | 504µs | 128.0 KB |
+| 430 | fivenum-2 | ✓ | 647µs | 256.0 KB |
+| 431 | fixed-length-records-1 | ✓ | 370µs |  |
+| 432 | fixed-length-records-2 | ✓ | 605µs |  |
+| 433 | fizzbuzz-1 | ✓ | 793µs | 256.0 KB |
+| 434 | fizzbuzz-2 | ✓ | 1.239ms | 512.0 KB |
+| 435 | flatten-a-list-1 | ✓ | 301µs | 128.0 KB |
+| 436 | flatten-a-list-2 | ✓ | 300µs | 128.0 KB |
+| 437 | flipping-bits-game | ✓ | 366µs | 128.0 KB |
+| 438 | flow-control-structures-1 | ✓ | 310µs |  |
+| 439 | flow-control-structures-2 | ✓ | 297µs | 128.0 KB |
+| 440 | flow-control-structures-3 | ✓ | 309µs | 128.0 KB |
+| 441 | flow-control-structures-4 | ✓ | 261µs |  |
+| 442 | floyd-warshall-algorithm | ✓ | 287µs |  |
+| 443 | floyds-triangle | ✓ | 520µs |  |
+| 444 | forest-fire | ✓ | 522µs |  |
+| 445 | fork | ✓ | 358µs |  |
+| 446 | ftp | ✓ | 312µs |  |
+| 447 | gamma-function | ✓ | 667µs | 384.0 KB |
+| 448 | general-fizzbuzz | ✓ | 525µs |  |
+| 449 | generic-swap | ✓ | 330µs |  |
+| 450 | get-system-command-output | ✓ | 281µs | 128.0 KB |
+| 451 | giuga-numbers | ✓ | 447µs | 128.0 KB |
+| 452 | globally-replace-text-in-several-files | ✓ | 283µs | 128.0 KB |
+| 453 | goldbachs-comet | ✓ | 988µs | 2.5 MB |
+| 454 | golden-ratio-convergence | ✓ | 471µs |  |
+| 455 | graph-colouring | ✓ | 273µs |  |
+| 456 | gray-code | ✓ | 1.305ms | 1.8 MB |
+| 457 | http | ✓ |  |  |
+| 458 | image-noise | ✓ | 8.558ms | 10.1 MB |
+| 459 | loops-increment-loop-index-within-loop-body | ✓ | 160.041ms | 9.6 MB |
+| 460 | md5 | ✓ | 636µs | 256.0 KB |
+| 461 | nim-game | ✓ | 970µs | 512.0 KB |
+| 462 | plasma-effect | ✓ | 5.884ms | 10.4 MB |
+| 463 | sorting-algorithms-bubble-sort | ✓ | 393µs | 128.0 KB |
+| 464 | window-management | ✓ | 546µs |  |
+| 465 | zumkeller-numbers | ✓ | 862.793ms | 12.2 MB |
