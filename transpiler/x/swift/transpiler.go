@@ -951,6 +951,17 @@ func (c *CastExpr) emit(w io.Writer) {
 			return
 		}
 	}
+	typ := strings.TrimSuffix(c.Type, "!")
+	if typ == "Bool" {
+		if _, ok := c.Expr.(*BinaryExpr); ok {
+			c.Expr.emit(w)
+			return
+		}
+		if _, ok := c.Expr.(*CallExpr); ok {
+			c.Expr.emit(w)
+			return
+		}
+	}
 	if inner, ok := c.Expr.(*CastExpr); ok {
 		t1 := strings.TrimSuffix(c.Type, "!")
 		t2 := strings.TrimSuffix(inner.Type, "!")
