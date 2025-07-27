@@ -2,29 +2,29 @@
 
 This file is auto-generated from rosetta tests.
 
-## Rosetta Golden Test Checklist (133/465)
+## Rosetta Golden Test Checklist (139/465)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
-| 1 | 100-doors-2 | ✓ |  |  |
-| 2 | 100-doors-3 | ✓ |  |  |
-| 3 | 100-doors | ✓ |  |  |
+| 1 | 100-doors-2 | ✓ | 151µs | 41.3 KB |
+| 2 | 100-doors-3 | ✓ | 154µs | 41.9 KB |
+| 3 | 100-doors | ✓ | 155µs | 41.6 KB |
 | 4 | 100-prisoners | ✓ |  |  |
 | 5 | 15-puzzle-game | ✓ |  |  |
-| 6 | 15-puzzle-solver | ✓ |  |  |
-| 7 | 2048 | ✓ |  |  |
-| 8 | 21-game | ✓ |  |  |
-| 9 | 24-game-solve | ✓ |  |  |
+| 6 | 15-puzzle-solver | ✓ | 155µs | 42.0 KB |
+| 7 | 2048 | ✓ | 188µs | 42.7 KB |
+| 8 | 21-game | ✓ | 153µs | 41.8 KB |
+| 9 | 24-game-solve | ✓ | 1.054ms | 62.3 KB |
 | 10 | 24-game | ✓ |  |  |
-| 11 | 4-rings-or-4-squares-puzzle | ✓ |  |  |
-| 12 | 9-billion-names-of-god-the-integer | ✓ |  |  |
-| 13 | 99-bottles-of-beer-2 | ✓ |  |  |
-| 14 | 99-bottles-of-beer | ✓ |  |  |
-| 15 | DNS-query | ✓ |  |  |
+| 11 | 4-rings-or-4-squares-puzzle | ✓ | 2.005ms | 302.9 KB |
+| 12 | 9-billion-names-of-god-the-integer | ✓ | 54.495ms | 289.7 KB |
+| 13 | 99-bottles-of-beer-2 | ✓ | 322µs | 43.1 KB |
+| 14 | 99-bottles-of-beer | ✓ | 169µs | 42.1 KB |
+| 15 | DNS-query | ✓ | 5.283ms | 319.1 KB |
 | 16 | Duffinian-numbers |   |  |  |
-| 17 | a+b | ✓ |  |  |
-| 18 | abbreviations-automatic | ✓ |  |  |
-| 19 | abbreviations-easy | ✓ |  |  |
-| 20 | abbreviations-simple | ✓ |  |  |
+| 17 | a+b | ✓ | 370µs | 62.2 KB |
+| 18 | abbreviations-automatic | ✓ | 308µs | 53.6 KB |
+| 19 | abbreviations-easy | ✓ | 229µs | 55.7 KB |
+| 20 | abbreviations-simple | ✓ | 316µs | 57.5 KB |
 | 21 | abc-problem | ✓ |  |  |
 | 22 | abelian-sandpile-model-identity | ✓ |  |  |
 | 23 | abelian-sandpile-model | ✓ |  |  |
@@ -32,105 +32,105 @@ This file is auto-generated from rosetta tests.
 | 25 | abundant-deficient-and-perfect-number-classifications | ✓ |  |  |
 | 26 | abundant-odd-numbers | ✓ |  |  |
 | 27 | accumulator-factory |   |  |  |
-| 28 | achilles-numbers | ✓ |  |  |
-| 29 | ackermann-function-2 | ✓ |  |  |
-| 30 | ackermann-function-3 |   |  |  |
-| 31 | ackermann-function | ✓ |  |  |
-| 32 | active-directory-connect | ✓ |  |  |
-| 33 | active-directory-search-for-a-user | ✓ |  |  |
-| 34 | active-object | ✓ |  |  |
+| 28 | achilles-numbers | ✓ | 540µs | 57.4 KB |
+| 29 | ackermann-function-2 | ✓ | 333µs | 41.5 KB |
+| 30 | ackermann-function-3 |   |  | 65.9 KB |
+| 31 | ackermann-function | ✓ | 586µs | 54.1 KB |
+| 32 | active-directory-connect | ✓ | 328µs | 52.0 KB |
+| 33 | active-directory-search-for-a-user | ✓ | 471µs | 55.9 KB |
+| 34 | active-object | ✓ | 405µs | 50.4 KB |
 | 35 | add-a-variable-to-a-class-instance-at-runtime | ✓ |  |  |
-| 36 | additive-primes | ✓ |  |  |
-| 37 | address-of-a-variable | ✓ |  |  |
+| 36 | additive-primes | ✓ | 351µs | 53.5 KB |
+| 37 | address-of-a-variable | ✓ | 808µs | 77.0 KB |
 | 38 | adfgvx-cipher |   |  |  |
 | 39 | aks-test-for-primes | ✓ |  |  |
-| 40 | algebraic-data-types | ✓ |  |  |
-| 41 | align-columns | ✓ |  |  |
+| 40 | algebraic-data-types | ✓ | 393µs | 66.7 KB |
+| 41 | align-columns | ✓ | 262µs | 70.9 KB |
 | 42 | aliquot-sequence-classifications |   |  |  |
-| 43 | almkvist-giullera-formula-for-pi | ✓ |  |  |
-| 44 | almost-prime | ✓ |  |  |
-| 45 | amb | ✓ |  |  |
-| 46 | amicable-pairs | ✓ |  |  |
-| 47 | anagrams-deranged-anagrams | ✓ |  |  |
-| 48 | anagrams | ✓ |  |  |
-| 49 | angle-difference-between-two-bearings-1 | ✓ |  |  |
-| 50 | angle-difference-between-two-bearings-2 | ✓ |  |  |
-| 51 | angles-geometric-normalization-and-conversion | ✓ |  |  |
-| 52 | animate-a-pendulum | ✓ |  |  |
-| 53 | animation | ✓ |  |  |
-| 54 | anonymous-recursion-1 | ✓ |  |  |
-| 55 | anonymous-recursion-2 | ✓ |  |  |
-| 56 | anonymous-recursion | ✓ |  |  |
-| 57 | anti-primes | ✓ |  |  |
-| 58 | append-a-record-to-the-end-of-a-text-file | ✓ |  |  |
-| 59 | apply-a-callback-to-an-array-1 | ✓ |  |  |
-| 60 | apply-a-callback-to-an-array-2 | ✓ |  |  |
-| 61 | apply-a-digital-filter-direct-form-ii-transposed- | ✓ |  |  |
-| 62 | approximate-equality | ✓ |  |  |
-| 63 | arbitrary-precision-integers-included- | ✓ |  |  |
-| 64 | archimedean-spiral | ✓ |  |  |
-| 65 | arena-storage-pool | ✓ |  |  |
-| 66 | arithmetic-complex | ✓ |  |  |
-| 67 | arithmetic-derivative | ✓ |  |  |
-| 68 | arithmetic-evaluation | ✓ |  |  |
-| 69 | arithmetic-geometric-mean-calculate-pi | ✓ |  |  |
-| 70 | arithmetic-geometric-mean | ✓ |  |  |
-| 71 | arithmetic-integer-1 | ✓ |  |  |
-| 72 | arithmetic-integer-2 | ✓ |  |  |
+| 43 | almkvist-giullera-formula-for-pi | ✓ | 2.281ms | 104.7 KB |
+| 44 | almost-prime | ✓ | 176µs | 41.5 KB |
+| 45 | amb | ✓ | 208µs | 41.7 KB |
+| 46 | amicable-pairs | ✓ | 7.233ms | 120.0 KB |
+| 47 | anagrams-deranged-anagrams | ✓ | 248µs | 53.0 KB |
+| 48 | anagrams | ✓ | 384µs | 90.9 KB |
+| 49 | angle-difference-between-two-bearings-1 | ✓ | 366µs | 63.5 KB |
+| 50 | angle-difference-between-two-bearings-2 | ✓ | 384µs | 63.7 KB |
+| 51 | angles-geometric-normalization-and-conversion | ✓ | 187µs | 50.4 KB |
+| 52 | animate-a-pendulum | ✓ |  | 41.5 KB |
+| 53 | animation | ✓ | 162µs | 41.6 KB |
+| 54 | anonymous-recursion-1 | ✓ | 152µs | 41.5 KB |
+| 55 | anonymous-recursion-2 | ✓ | 180µs | 41.5 KB |
+| 56 | anonymous-recursion | ✓ | 394µs | 57.5 KB |
+| 57 | anti-primes | ✓ | 747µs | 41.5 KB |
+| 58 | append-a-record-to-the-end-of-a-text-file | ✓ | 187µs | 42.1 KB |
+| 59 | apply-a-callback-to-an-array-1 | ✓ | 278µs | 57.3 KB |
+| 60 | apply-a-callback-to-an-array-2 | ✓ | 337µs | 58.8 KB |
+| 61 | apply-a-digital-filter-direct-form-ii-transposed- | ✓ | 381µs | 63.6 KB |
+| 62 | approximate-equality | ✓ | 174µs | 42.9 KB |
+| 63 | arbitrary-precision-integers-included- | ✓ | 15.861ms | 528.1 KB |
+| 64 | archimedean-spiral | ✓ | 363µs | 42.5 KB |
+| 65 | arena-storage-pool | ✓ | 241µs | 76.3 KB |
+| 66 | arithmetic-complex | ✓ | 180µs | 46.4 KB |
+| 67 | arithmetic-derivative | ✓ | 191µs | 41.8 KB |
+| 68 | arithmetic-evaluation | ✓ | 500µs | 52.6 KB |
+| 69 | arithmetic-geometric-mean-calculate-pi | ✓ | 396µs | 46.5 KB |
+| 70 | arithmetic-geometric-mean | ✓ | 396µs | 56.3 KB |
+| 71 | arithmetic-integer-1 | ✓ | 321µs | 41.4 KB |
+| 72 | arithmetic-integer-2 | ✓ | 319µs | 45.3 KB |
 | 73 | arithmetic-numbers | ✓ |  |  |
-| 74 | arithmetic-rational | ✓ |  |  |
-| 75 | array-concatenation | ✓ |  |  |
-| 76 | array-length | ✓ |  |  |
-| 77 | arrays | ✓ |  |  |
-| 78 | ascending-primes | ✓ |  |  |
-| 79 | ascii-art-diagram-converter | ✓ |  |  |
-| 80 | assertions | ✓ |  |  |
+| 74 | arithmetic-rational | ✓ | 330µs | 52.6 KB |
+| 75 | array-concatenation | ✓ | 337µs | 42.2 KB |
+| 76 | array-length | ✓ | 326µs | 41.3 KB |
+| 77 | arrays | ✓ | 312µs | 56.2 KB |
+| 78 | ascending-primes | ✓ | 362µs | 56.1 KB |
+| 79 | ascii-art-diagram-converter | ✓ | 294µs | 42.3 KB |
+| 80 | assertions | ✓ | 330µs | 34.9 KB |
 | 81 | associative-array-creation | ✓ |  |  |
-| 82 | associative-array-iteration | ✓ |  |  |
-| 83 | associative-array-merging | ✓ |  |  |
-| 84 | atomic-updates | ✓ |  |  |
-| 85 | attractive-numbers | ✓ |  |  |
-| 86 | average-loop-length | ✓ |  |  |
-| 87 | averages-arithmetic-mean | ✓ |  |  |
-| 88 | averages-mean-time-of-day | ✓ |  |  |
-| 89 | averages-median-1 | ✓ |  |  |
-| 90 | averages-median-2 | ✓ |  |  |
-| 91 | averages-median-3 | ✓ |  |  |
-| 92 | averages-mode | ✓ |  |  |
-| 93 | averages-pythagorean-means | ✓ |  |  |
-| 94 | averages-root-mean-square | ✓ |  |  |
-| 95 | averages-simple-moving-average | ✓ |  |  |
+| 82 | associative-array-iteration | ✓ | 439µs | 57.1 KB |
+| 83 | associative-array-merging | ✓ | 895µs | 73.0 KB |
+| 84 | atomic-updates | ✓ | 315µs | 48.7 KB |
+| 85 | attractive-numbers | ✓ | 341µs | 52.6 KB |
+| 86 | average-loop-length | ✓ | 3.122ms | 44.0 KB |
+| 87 | averages-arithmetic-mean | ✓ | 338µs | 54.5 KB |
+| 88 | averages-mean-time-of-day | ✓ | 487µs | 61.8 KB |
+| 89 | averages-median-1 | ✓ | 231µs | 42.6 KB |
+| 90 | averages-median-2 | ✓ | 227µs | 42.6 KB |
+| 91 | averages-median-3 | ✓ | 236µs | 42.6 KB |
+| 92 | averages-mode | ✓ | 304µs | 53.6 KB |
+| 93 | averages-pythagorean-means | ✓ | 227µs | 42.5 KB |
+| 94 | averages-root-mean-square | ✓ | 254µs | 42.5 KB |
+| 95 | averages-simple-moving-average | ✓ | 241µs | 42.9 KB |
 | 96 | avl-tree |   |  |  |
 | 97 | b-zier-curves-intersections |   |  |  |
-| 98 | babbage-problem | ✓ |  |  |
+| 98 | babbage-problem | ✓ | 207µs | 41.5 KB |
 | 99 | babylonian-spiral |   |  |  |
 | 100 | balanced-brackets |   |  |  |
-| 101 | balanced-ternary | ✓ |  |  |
-| 102 | barnsley-fern | ✓ |  |  |
+| 101 | balanced-ternary | ✓ | 367µs | 53.7 KB |
+| 102 | barnsley-fern | ✓ | 415µs | 104.1 KB |
 | 103 | base64-decode-data |   |  |  |
 | 104 | bell-numbers |   |  |  |
-| 105 | benfords-law | ✓ |  |  |
+| 105 | benfords-law | ✓ | 309µs | 51.0 KB |
 | 106 | bernoulli-numbers |   |  |  |
 | 107 | best-shuffle |   |  |  |
-| 108 | bifid-cipher | ✓ |  |  |
-| 109 | bin-given-limits | ✓ |  |  |
-| 110 | binary-digits | ✓ |  |  |
-| 111 | binary-search | ✓ |  |  |
-| 112 | binary-strings | ✓ |  |  |
-| 113 | bioinformatics-base-count | ✓ |  |  |
+| 108 | bifid-cipher | ✓ | 362µs | 64.3 KB |
+| 109 | bin-given-limits | ✓ | 225µs | 41.8 KB |
+| 110 | binary-digits | ✓ | 541µs | 61.8 KB |
+| 111 | binary-search | ✓ | 209µs | 41.5 KB |
+| 112 | binary-strings | ✓ | 660µs | 62.5 KB |
+| 113 | bioinformatics-base-count | ✓ | 210µs | 42.9 KB |
 | 114 | bioinformatics-global-alignment | ✓ |  |  |
 | 115 | bioinformatics-sequence-mutation | ✓ |  |  |
-| 116 | biorhythms | ✓ |  |  |
-| 117 | bitcoin-address-validation | ✓ |  |  |
+| 116 | biorhythms | ✓ | 600µs | 75.2 KB |
+| 117 | bitcoin-address-validation | ✓ | 549µs | 86.2 KB |
 | 118 | bitmap-b-zier-curves-cubic |   |  |  |
 | 119 | bitmap-b-zier-curves-quadratic |   |  |  |
-| 120 | bitmap-bresenhams-line-algorithm | ✓ |  |  |
-| 121 | bitmap-flood-fill | ✓ |  |  |
-| 122 | bitmap-histogram | ✓ |  |  |
-| 123 | bitmap-midpoint-circle-algorithm | ✓ |  |  |
-| 124 | bitmap-ppm-conversion-through-a-pipe | ✓ |  |  |
-| 125 | bitmap-read-a-ppm-file | ✓ |  |  |
-| 126 | bitmap-read-an-image-through-a-pipe | ✓ |  |  |
+| 120 | bitmap-bresenhams-line-algorithm | ✓ | 401µs | 53.3 KB |
+| 121 | bitmap-flood-fill | ✓ | 388µs | 41.7 KB |
+| 122 | bitmap-histogram | ✓ | 382µs | 52.0 KB |
+| 123 | bitmap-midpoint-circle-algorithm | ✓ | 861µs | 70.0 KB |
+| 124 | bitmap-ppm-conversion-through-a-pipe | ✓ | 1.385ms | 1.4 MB |
+| 125 | bitmap-read-a-ppm-file | ✓ | 356µs | 47.0 KB |
+| 126 | bitmap-read-an-image-through-a-pipe | ✓ | 517µs | 54.1 KB |
 | 127 | bitmap-write-a-ppm-file | ✓ |  |  |
 | 128 | bitmap |   |  |  |
 | 129 | bitwise-io-1 | ✓ |  |  |
@@ -160,12 +160,12 @@ This file is auto-generated from rosetta tests.
 | 153 | call-a-function-11 | ✓ | 152µs | 41.5 KB |
 | 154 | call-a-function-12 | ✓ | 240µs | 41.9 KB |
 | 155 | call-a-function-2 | ✓ | 8µs | 400 B |
-| 156 | call-a-function-3 |   |  |  |
-| 157 | call-a-function-4 |   |  |  |
-| 158 | call-a-function-5 |   |  |  |
-| 159 | call-a-function-6 |   |  |  |
-| 160 | call-a-function-7 |   |  |  |
-| 161 | call-a-function-8 |   |  |  |
+| 156 | call-a-function-3 | ✓ | 10µs |  |
+| 157 | call-a-function-4 | ✓ | 116µs | 23.6 KB |
+| 158 | call-a-function-5 | ✓ | 224µs | 62.0 KB |
+| 159 | call-a-function-6 | ✓ | 234µs | 53.1 KB |
+| 160 | call-a-function-7 | ✓ | 6µs | 208 B |
+| 161 | call-a-function-8 | ✓ | 21µs | 14.6 KB |
 | 162 | call-a-function-9 |   |  |  |
 | 163 | call-an-object-method-1 |   |  |  |
 | 164 | call-an-object-method-2 |   |  |  |
@@ -471,4 +471,4 @@ This file is auto-generated from rosetta tests.
 | 464 | window-management |   |  |  |
 | 465 | zumkeller-numbers |   |  |  |
 
-Last updated: 2025-07-27 15:57 +0700
+Last updated: 2025-07-27 10:08 +0000

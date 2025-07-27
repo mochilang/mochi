@@ -513,6 +513,7 @@ func (m *ModuleDef) emit(w io.Writer) {
 // LambdaExpr represents an inline function expression.
 type LambdaExpr struct {
 	Params []string
+	Types  []string
 	Expr   Expr
 	Body   []Stmt
 }
@@ -523,9 +524,17 @@ func (l *LambdaExpr) emit(w io.Writer) {
 	if len(l.Params) == 0 {
 		io.WriteString(w, " ()")
 	}
-	for _, p := range l.Params {
+	for i, p := range l.Params {
 		io.WriteString(w, " ")
-		io.WriteString(w, p)
+		if i < len(l.Types) && l.Types[i] != "" {
+			io.WriteString(w, "(")
+			io.WriteString(w, p)
+			io.WriteString(w, ": ")
+			io.WriteString(w, l.Types[i])
+			io.WriteString(w, ")")
+		} else {
+			io.WriteString(w, p)
+		}
 	}
 	io.WriteString(w, " -> ")
 	if l.Expr != nil {
@@ -1013,6 +1022,12 @@ func (a *AppendExpr) emit(w io.Writer) {
 		a.List.emit(w)
 	}
 	io.WriteString(w, " [|")
+	elemType := elemTypeOf(a.List)
+	if elemType != "" && inferType(a.Elem) == "obj" {
+		io.WriteString(w, "unbox<")
+		io.WriteString(w, elemType)
+		io.WriteString(w, "> ")
+	}
 	a.Elem.emit(w)
 	io.WriteString(w, "|]")
 }
@@ -3314,10 +3329,12 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		save := varTypes
 		varTypes = copyMap(varTypes)
 		params := make([]string, len(p.FunExpr.Params))
+		paramTypes := make([]string, len(p.FunExpr.Params))
 		for i, par := range p.FunExpr.Params {
 			params[i] = par.Name
 			if par.Type != nil && par.Type.Simple != nil {
 				varTypes[par.Name] = *par.Type.Simple
+				paramTypes[i] = fsTypeFromString(*par.Type.Simple)
 			}
 		}
 		if p.FunExpr.ExprBody != nil {
@@ -3326,7 +3343,7 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			if err != nil {
 				return nil, err
 			}
-			return &LambdaExpr{Params: params, Expr: body}, nil
+			return &LambdaExpr{Params: params, Types: paramTypes, Expr: body}, nil
 		}
 		stmts := make([]Stmt, len(p.FunExpr.BlockBody))
 		for i, s := range p.FunExpr.BlockBody {
@@ -3338,7 +3355,7 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			stmts[i] = cs
 		}
 		varTypes = save
-		return &LambdaExpr{Params: params, Body: stmts}, nil
+		return &LambdaExpr{Params: params, Types: paramTypes, Body: stmts}, nil
 	case p.Selector != nil:
 		if p.Selector.Root == "nil" && len(p.Selector.Tail) == 0 {
 			return &NullLit{}, nil

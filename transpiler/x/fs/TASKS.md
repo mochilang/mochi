@@ -1,3 +1,11 @@
+## Progress (2025-07-27 10:08 +0000)
+- fs transpiler: add benchmark for call-a-function-3
+- Generated F# for 103/104 programs (103 passing)
+
+## Progress (2025-07-27 16:50 +0700)
+- php: support struct methods
+- Generated F# for 103/104 programs (103 passing)
+
 ## Progress (2025-07-27 15:57 +0700)
 - vm: add pow builtin and update rosetta outputs
 - Generated F# for 103/104 programs (103 passing)
