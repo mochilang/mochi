@@ -1,8 +1,8 @@
-# Rosetta Haskell Transpiler (15/465 succeeded)
+# Rosetta Haskell Transpiler (16/465 succeeded)
 
 Generated Haskell code for Rosetta Mochi programs. Each `.hs` file is in `tests/rosetta/transpiler/Haskell` with matching `.out` output. Failures produce a `.error` file.
 
-Last updated: 2025-07-27 16:50 GMT+7
+Last updated: 2025-07-27 22:18 GMT+7
 
 ## Checklist
 | Index | Name | Status | Duration | Memory |
@@ -39,7 +39,7 @@ Last updated: 2025-07-27 16:50 GMT+7
 | 30 | ackermann-function-3 |  |  |  |
 | 31 | ackermann-function |  | 11.168ms | 35.0 MB |
 | 32 | active-directory-connect | ✓ | 104µs | 31.0 MB |
-| 33 | active-directory-search-for-a-user |  |  |  |
+| 33 | active-directory-search-for-a-user | ✓ | 92µs | 5.5 kB |
 | 34 | active-object |  |  |  |
 | 35 | add-a-variable-to-a-class-instance-at-runtime |  |  |  |
 | 36 | additive-primes |  |  |  |
