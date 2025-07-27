@@ -2,8 +2,8 @@
 
 Generated Scheme code for Rosetta Code tasks under `tests/rosetta/x/Mochi`.
 
-## Checklist (135/467)
-Last updated: 2025-07-27 16:10 UTC
+## Checklist (156/467)
+Last updated: 2025-07-27 16:21 UTC
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -148,27 +148,27 @@ Last updated: 2025-07-27 16:10 UTC
 | 139 | brownian-tree |   |  |  |
 | 140 | bulls-and-cows-player | ✓ | 350.024ms | 16.8 MB |
 | 141 | bulls-and-cows | ✓ | 381.942ms | 12.9 MB |
-| 142 | burrows-wheeler-transform |   |  |  |
-| 143 | caesar-cipher-1 |   |  |  |
-| 144 | caesar-cipher-2 |   |  |  |
-| 145 | calculating-the-value-of-e |   |  |  |
-| 146 | calendar---for-real-programmers-1 |   |  |  |
-| 147 | calendar---for-real-programmers-2 |   |  |  |
-| 148 | calendar |   |  |  |
-| 149 | calkin-wilf-sequence |   |  |  |
-| 150 | call-a-foreign-language-function |   |  |  |
-| 151 | call-a-function-1 |   |  |  |
-| 152 | call-a-function-10 |   |  |  |
-| 153 | call-a-function-11 |   |  |  |
-| 154 | call-a-function-12 |   |  |  |
-| 155 | call-a-function-2 |   |  |  |
-| 156 | call-a-function-3 |   |  |  |
-| 157 | call-a-function-4 |   |  |  |
-| 158 | call-a-function-5 |   |  |  |
-| 159 | call-a-function-6 |   |  |  |
-| 160 | call-a-function-7 |   |  |  |
-| 161 | call-a-function-8 |   |  |  |
-| 162 | call-a-function-9 |   |  |  |
+| 142 | burrows-wheeler-transform | ✓ | 571.223ms | 16.6 MB |
+| 143 | caesar-cipher-1 | ✓ | 571.223ms | 12.9 MB |
+| 144 | caesar-cipher-2 | ✓ | 571.223ms | 13.0 MB |
+| 145 | calculating-the-value-of-e | ✓ | 571.223ms | 12.6 MB |
+| 146 | calendar---for-real-programmers-1 | ✓ | 571.223ms | 13.5 MB |
+| 147 | calendar---for-real-programmers-2 | ✓ | 571.223ms | 13.4 MB |
+| 148 | calendar | ✓ | 571.223ms | 12.9 MB |
+| 149 | calkin-wilf-sequence | ✓ | 571.223ms | 13.5 MB |
+| 150 | call-a-foreign-language-function | ✓ | 571.223ms | 12.2 MB |
+| 151 | call-a-function-1 | ✓ | 571.223ms | 12.1 MB |
+| 152 | call-a-function-10 | ✓ | 571.223ms | 12.3 MB |
+| 153 | call-a-function-11 | ✓ | 571.223ms | 12.5 MB |
+| 154 | call-a-function-12 | ✓ | 571.223ms | 12.3 MB |
+| 155 | call-a-function-2 | ✓ | 571.223ms | 12.5 MB |
+| 156 | call-a-function-3 | ✓ | 571.223ms | 12.3 MB |
+| 157 | call-a-function-4 | ✓ | 571.223ms | 12.4 MB |
+| 158 | call-a-function-5 | ✓ | 571.223ms | 12.3 MB |
+| 159 | call-a-function-6 | ✓ | 571.223ms | 12.2 MB |
+| 160 | call-a-function-7 | ✓ | 571.223ms | 12.4 MB |
+| 161 | call-a-function-8 | ✓ | 571.223ms | 12.5 MB |
+| 162 | call-a-function-9 | ✓ | 571.223ms | 12.1 MB |
 | 163 | call-an-object-method-1 |   |  |  |
 | 164 | call-an-object-method-2 |   |  |  |
 | 165 | call-an-object-method-3 |   |  |  |

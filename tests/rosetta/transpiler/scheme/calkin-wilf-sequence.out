@@ -1,0 +1,27 @@
+WARNING: importing already defined binding: equal?
+WARNING: importing already defined binding: let-syntax
+WARNING: importing already defined binding: letrec-syntax
+WARNING: importing already defined binding: display
+WARNING: importing already defined binding: write
+The first 20 terms of the Calkin-Wilf sequnence are:
+ 1: 1
+ 2: 0
+ 3: 1
+ 4: 0
+ 5: 1
+ 6: 0
+ 7: 1
+ 8: 0
+ 9: 1
+10: 0
+11: 1
+12: 0
+13: 1
+14: 0
+15: 1
+16: 0
+17: 1
+18: 0
+19: 1
+20: 0
+1/1 is the 1th term of the sequence.
