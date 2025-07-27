@@ -13,6 +13,7 @@ func pow (regs=11)
   Move         r5, r4
 L1:
   // while i < int(exp) {
+  Cast         r6, r1, int
   Less         r7, r5, r6
   JumpIfFalse  r7, L0
   // result = result * base

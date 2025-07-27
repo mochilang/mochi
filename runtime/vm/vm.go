@@ -3886,6 +3886,12 @@ func (fc *funcCompiler) compilePrimary(p *parser.Primary) int {
 			dst := fc.newReg()
 			fc.emit(p.Pos, Instr{Op: OpStr, A: dst, B: arg})
 			return dst
+		case "int":
+			arg := fc.compileExpr(p.Call.Args[0])
+			dst := fc.newReg()
+			idx := fc.comp.addType(types.IntType{})
+			fc.emit(p.Pos, Instr{Op: OpCast, A: dst, B: arg, C: idx})
+			return dst
 		case "print":
 			if len(p.Call.Args) == 1 {
 				arg := fc.compileExpr(p.Call.Args[0])
@@ -6988,6 +6994,36 @@ func (fc *funcCompiler) foldCallValue(call *parser.CallExpr) (Value, bool) {
 			return Value{}, false
 		}
 		return Value{Tag: ValueStr, Str: fmt.Sprint(args[0].ToAny())}, true
+	case "int":
+		if len(args) != 1 {
+			return Value{}, false
+		}
+		v := args[0]
+		switch v.Tag {
+		case ValueInt:
+			return v, true
+		case ValueFloat:
+			return Value{Tag: ValueInt, Int: int(v.Float)}, true
+		case ValueBigInt:
+			if v.BigInt.IsInt64() {
+				return Value{Tag: ValueInt, Int: int(v.BigInt.Int64())}, true
+			}
+			return Value{Tag: ValueBigInt, BigInt: new(big.Int).Set(v.BigInt)}, true
+		case ValueBigRat:
+			if v.BigRat.IsInt() {
+				i := new(big.Int).Set(v.BigRat.Num())
+				if i.IsInt64() {
+					return Value{Tag: ValueInt, Int: int(i.Int64())}, true
+				}
+				return Value{Tag: ValueBigInt, BigInt: i}, true
+			}
+			return Value{Tag: ValueInt, Int: int(toFloat(v))}, true
+		case ValueStr:
+			if n, err := strconv.Atoi(v.Str); err == nil {
+				return Value{Tag: ValueInt, Int: n}, true
+			}
+		}
+		return Value{}, false
 	case "lower":
 		if len(args) != 1 {
 			return Value{}, false
