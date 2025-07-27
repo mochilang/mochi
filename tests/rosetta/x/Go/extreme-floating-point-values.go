@@ -1,6 +1,8 @@
 //go:build ignore
 // +build ignore
 
+// Source: Rosetta Code "Extreme floating point values"
+
 package main
 
 import (

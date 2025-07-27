@@ -1,17 +1,61 @@
-// Mochi translation of Rosetta "Extreme floating point values" task
-// Mochi VM currently errors on division by zero, so we simply print
-// the expected results from the Go version.
+fun makeInf(): float {
+  var x = 1.0
+  var i = 0
+  while i < 400 {
+    x = x * 10.0
+    i = i + 1
+  }
+  return x
+}
 
-print("-0 +Inf -Inf NaN")
-print("-0 +Inf -Inf NaN")
-print("")
-print("-Inf + Inf -> NaN")
-print("0 * Inf -> NaN")
-print("Inf / Inf -> NaN")
-print("Inf % 1 -> NaN")
-print("1 + NaN -> NaN")
-print("1 / Inf -> 0")
-print("Inf > max value")
-print("-Inf < max neg value")
-print("NaN != NaN")
-print("-0 == 0")
+fun makeMax(): float {
+  var x = 1.0
+  var i = 0
+  while i < 308 {
+    x = x * 10.0
+    i = i + 1
+  }
+  return x
+}
+
+fun isNaN(x: float): bool { return x != x }
+
+fun validateNaN(n: float, op: string) {
+  if isNaN(n) { print(op + " -> NaN") } else { print("!!! Expected NaN from", op, " Found", n) }
+}
+fun validateZero(n: float, op: string) {
+  if n == 0 { print(op + " -> 0") } else { print("!!! Expected 0 from", op, " Found", n) }
+}
+fun validateGT(a: float, b: float, op: string) {
+  if a > b { print(op) } else { print("!!! Expected", op, " Found not true.") }
+}
+fun validateNE(a: float, b: float, op: string) {
+  if a == b { print("!!! Expected", op, " Found not true.") } else { print(op) }
+}
+fun validateEQ(a: float, b: float, op: string) {
+  if a == b { print(op) } else { print("!!! Expected", op, " Found not true.") }
+}
+
+fun main() {
+  let negZero = -0.0
+  let posInf = makeInf()
+  let negInf = -posInf
+  let nan = posInf / posInf
+  let maxVal = makeMax()
+
+  print(negZero, posInf, negInf, nan)
+  print(negZero, posInf, negInf, nan)
+  print("")
+  validateNaN(negInf + posInf, "-Inf + Inf")
+  validateNaN(0.0 * posInf, "0 * Inf")
+  validateNaN(posInf / posInf, "Inf / Inf")
+  validateNaN(posInf % 1.0, "Inf % 1")
+  validateNaN(1.0 + nan, "1 + NaN")
+  validateZero(1.0 / posInf, "1 / Inf")
+  validateGT(posInf, maxVal, "Inf > max value")
+  validateGT(-maxVal, negInf, "-Inf < max neg value")
+  validateNE(nan, nan, "NaN != NaN")
+  validateEQ(negZero, 0.0, "-0 == 0")
+}
+
+main()
