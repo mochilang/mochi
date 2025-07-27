@@ -2,17 +2,17 @@
 
 Generated Lua code for programs in `tests/rosetta/x/Mochi`. Each program has a `.lua` file produced by the transpiler and a `.out` file with its runtime output. Compilation or runtime errors are captured in `.error` files.
 
-Transpiled programs: 417/465
+Transpiled programs: 461/467
 
-Last updated: 2025-07-27 17:23 GMT+7
+Last updated: 2025-07-27 21:41 GMT+7
 
 Checklist:
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
-| 1 | 100-doors-2 | ✓ | 568.6ms | 38 B |
-| 2 | 100-doors-3 | ✓ | 568.6ms | 125 B |
-| 3 | 100-doors | ✓ | 568.6ms | 3.4 KB |
+| 1 | 100-doors-2 | ✓ | 159µs | 2.7 KB |
+| 2 | 100-doors-3 | ✓ | 56µs | 2.2 KB |
+| 3 | 100-doors | ✓ | 234µs | 6.0 KB |
 | 4 | 100-prisoners | ✓ | 244.151ms | 1.6 KB |
 | 5 | 15-puzzle-game | ✓ | 119.487ms | 1.2 KB |
 | 6 | 15-puzzle-solver | ✓ | 568.6ms | 224 B |
@@ -418,60 +418,62 @@ Checklist:
 | 406 | fibonacci-sequence-2 | ✓ | 2µs | 104 B |
 | 407 | fibonacci-sequence-3 | ✓ | 2µs | 136 B |
 | 408 | fibonacci-sequence-4 | ✓ | 92µs | 912 B |
-| 409 | fibonacci-word-fractal | ✓ | 114µs | 840 B |
-| 410 | fibonacci-word | ✓ | 32.21922s | 1.4 KB |
-| 411 | file-extension-is-in-extensions-list | ✓ | 333µs | 1.2 KB |
-| 412 | file-input-output-1 | ✓ | 26µs | 328 B |
-| 413 | file-input-output-2 | ✓ | 28µs | 368 B |
-| 414 | file-modification-time | ✓ | 31µs | 1.1 KB |
-| 415 | file-size-distribution | ✓ | 118µs | 1.0 KB |
-| 416 | file-size | ✓ | 41µs | 848 B |
-| 417 | filter | ✓ | 70µs | 912 B |
-| 418 | find-chess960-starting-position-identifier | ✓ | 354µs | 2.8 KB |
-| 419 | find-common-directory-path | ✓ | 344µs | 1.1 KB |
-| 420 | find-duplicate-files | ✓ | 42µs | 2.9 KB |
-| 421 | find-if-a-point-is-within-a-triangle |   |  |  |
-| 422 | find-largest-left-truncatable-prime-in-a-given-base |   |  |  |
-| 423 | find-limit-of-recursion |   |  |  |
-| 424 | find-palindromic-numbers-in-both-binary-and-ternary-bases |   |  |  |
-| 425 | find-the-intersection-of-a-line-with-a-plane |   |  |  |
-| 426 | find-the-intersection-of-two-lines |   |  |  |
-| 427 | find-the-last-sunday-of-each-month |   |  |  |
-| 428 | find-the-missing-permutation |   |  |  |
-| 429 | fivenum-1 |   |  |  |
-| 430 | fivenum-2 |   |  |  |
-| 431 | fixed-length-records-1 |   |  |  |
-| 432 | fixed-length-records-2 |   |  |  |
-| 433 | fizzbuzz-1 |   |  |  |
-| 434 | fizzbuzz-2 |   |  |  |
-| 435 | flatten-a-list-1 |   |  |  |
-| 436 | flatten-a-list-2 |   |  |  |
-| 437 | flipping-bits-game |   |  |  |
-| 438 | flow-control-structures-1 |   |  |  |
-| 439 | flow-control-structures-2 |   |  |  |
-| 440 | flow-control-structures-3 |   |  |  |
-| 441 | flow-control-structures-4 |   |  |  |
-| 442 | floyd-warshall-algorithm |   |  |  |
-| 443 | floyds-triangle |   |  |  |
-| 444 | forest-fire |   |  |  |
-| 445 | fork |   |  |  |
-| 446 | ftp |   |  |  |
-| 447 | gamma-function |   |  |  |
-| 448 | general-fizzbuzz |   |  |  |
-| 449 | generic-swap |   |  |  |
-| 450 | get-system-command-output |   |  |  |
-| 451 | giuga-numbers |   |  |  |
-| 452 | globally-replace-text-in-several-files |   |  |  |
-| 453 | goldbachs-comet |   |  |  |
-| 454 | golden-ratio-convergence |   |  |  |
-| 455 | graph-colouring |   |  |  |
-| 456 | gray-code |   |  |  |
-| 457 | http |   |  |  |
-| 458 | image-noise |   |  |  |
-| 459 | loops-increment-loop-index-within-loop-body |   |  |  |
-| 460 | md5 | ✓ | 1.688ms | 840 B |
-| 461 | nim-game |   |  |  |
-| 462 | plasma-effect |   |  |  |
-| 463 | sorting-algorithms-bubble-sort |   |  |  |
-| 464 | window-management |   |  |  |
-| 465 | zumkeller-numbers |   |  |  |
+| 409 | fibonacci-sequence-5 |   |  |  |
+| 410 | fibonacci-word-fractal | ✓ | 114µs | 840 B |
+| 411 | fibonacci-word | ✓ | 32.21922s | 1.4 KB |
+| 412 | file-extension-is-in-extensions-list | ✓ | 333µs | 1.2 KB |
+| 413 | file-input-output-1 | ✓ | 26µs | 328 B |
+| 414 | file-input-output-2 | ✓ | 28µs | 368 B |
+| 415 | file-input-output-3 |   |  |  |
+| 416 | file-modification-time | ✓ | 31µs | 1.1 KB |
+| 417 | file-size-distribution | ✓ | 118µs | 1.0 KB |
+| 418 | file-size | ✓ | 41µs | 848 B |
+| 419 | filter | ✓ | 70µs | 912 B |
+| 420 | find-chess960-starting-position-identifier | ✓ | 354µs | 2.8 KB |
+| 421 | find-common-directory-path | ✓ | 454µs | 1.1 KB |
+| 422 | find-duplicate-files | ✓ | 43µs | 2.9 KB |
+| 423 | find-if-a-point-is-within-a-triangle | ✓ | 100µs | 1.0 KB |
+| 424 | find-largest-left-truncatable-prime-in-a-given-base | ✓ | 636µs | 4.5 KB |
+| 425 | find-limit-of-recursion | ✓ | 1.956ms | 2.1 KB |
+| 426 | find-palindromic-numbers-in-both-binary-and-ternary-bases | ✓ | 28.702322s | 3.0 KB |
+| 427 | find-the-intersection-of-a-line-with-a-plane | ✓ | 58µs | 3.0 KB |
+| 428 | find-the-intersection-of-two-lines | ✓ | 33µs | 912 B |
+| 429 | find-the-last-sunday-of-each-month | ✓ | 47µs | 1.0 KB |
+| 430 | find-the-missing-permutation | ✓ | 50µs | 1.3 KB |
+| 431 | fivenum-1 | ✓ | 55µs | 1.7 KB |
+| 432 | fivenum-2 | ✓ | 139µs | 1.7 KB |
+| 433 | fixed-length-records-1 | ✓ | 45µs | 2.9 KB |
+| 434 | fixed-length-records-2 | ✓ | 28µs | 704 B |
+| 435 | fizzbuzz-1 | ✓ | 101µs | 2.7 KB |
+| 436 | fizzbuzz-2 | ✓ | 172µs | 1.0 KB |
+| 437 | flatten-a-list-1 | ✓ | 45µs | 5.1 KB |
+| 438 | flatten-a-list-2 | ✓ | 25µs | 64 B |
+| 439 | flipping-bits-game | ✓ | 34µs | 1.3 KB |
+| 440 | flow-control-structures-1 | ✓ | 30µs | 64 B |
+| 441 | flow-control-structures-2 | ✓ | 26µs | 96 B |
+| 442 | flow-control-structures-3 | ✓ | 28µs | 64 B |
+| 443 | flow-control-structures-4 | ✓ | 26µs | 64 B |
+| 444 | floyd-warshall-algorithm | ✓ | 26µs | 64 B |
+| 445 | floyds-triangle | ✓ | 132µs | 2.7 KB |
+| 446 | forest-fire | ✓ | 122µs | 1.9 KB |
+| 447 | fork | ✓ | 33µs | 808 B |
+| 448 | ftp | ✓ | 46µs | 1.8 KB |
+| 449 | gamma-function | ✓ | 93µs | 3.1 KB |
+| 450 | general-fizzbuzz | ✓ | 52µs | 960 B |
+| 451 | generic-swap | ✓ | 29µs | 776 B |
+| 452 | get-system-command-output | ✓ | 22µs | 64 B |
+| 453 | giuga-numbers | ✓ | 57µs | 1016 B |
+| 454 | globally-replace-text-in-several-files | ✓ | 32µs | 64 B |
+| 455 | goldbachs-comet | ✓ | 4.599ms | 19.8 KB |
+| 456 | golden-ratio-convergence | ✓ | 40µs | 808 B |
+| 457 | graph-colouring | ✓ | 27µs | 64 B |
+| 458 | gray-code | ✓ | 350µs | 3.0 KB |
+| 459 | http | ✓ | 881µs | 904 B |
+| 460 | image-noise | ✓ | 37.789ms | 3.1 KB |
+| 461 | loops-increment-loop-index-within-loop-body | ✓ | 187.014ms | 3.0 KB |
+| 462 | md5 | ✓ | 1.386ms | 1.5 KB |
+| 463 | nim-game | ✓ | 52µs | 936 B |
+| 464 | plasma-effect | ✓ | 20.626ms | 272 B |
+| 465 | sorting-algorithms-bubble-sort | ✓ | 50µs | 1.0 KB |
+| 466 | window-management | ✓ | 84µs | 1.0 KB |
+| 467 | zumkeller-numbers | ✓ | 16.138863s | 39.9 KB |
