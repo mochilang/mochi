@@ -1,0 +1,166 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun pad2(n: int): string {
+func pad2 (regs=7)
+  // if n < 10 { return "0" + str(n) }
+  Const        r1, 10
+  Less         r2, r0, r1
+  JumpIfFalse  r2, L0
+  Const        r3, "0"
+  Str          r4, r0
+  Add          r5, r3, r4
+  Return       r5
+L0:
+  // return str(n)
+  Str          r6, r0
+  Return       r6
+
+  // fun weekdayName(z: int): string {
+func weekdayName (regs=8)
+  // let names = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
+  Const        r1, ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
+  Move         r2, r1
+  // return names[(z + 4) % 7]
+  Const        r3, 4
+  Add          r4, r0, r3
+  Const        r5, 7
+  Mod          r6, r4, r5
+  Index        r7, r2, r6
+  Return       r7
+
+  // fun main() {
+func main (regs=95)
+  // let ts = (now() / 1000000000) as int
+  Now          r0
+  Const        r1, 1000000000
+  DivInt       r2, r0, r1
+  Cast         r3, r2, int
+  Move         r4, r3
+  // var days = (ts / 86400) as int
+  Const        r5, 86400
+  Div          r6, r4, r5
+  Cast         r7, r6, int
+  Move         r8, r7
+  // var z = days + 719468
+  Const        r9, 719468
+  Add          r10, r8, r9
+  Move         r11, r10
+  // var era = (z / 146097) as int
+  Const        r12, 146097
+  Div          r13, r11, r12
+  Cast         r14, r13, int
+  Move         r15, r14
+  // var doe = z - era * 146097
+  Const        r12, 146097
+  Mul          r16, r15, r12
+  Sub          r17, r11, r16
+  Move         r18, r17
+  // var yoe = (doe - doe/1460 + doe/36524 - doe/146096) / 365 as int
+  Const        r19, 1460
+  Div          r20, r18, r19
+  Const        r21, 36524
+  Div          r22, r18, r21
+  Const        r23, 146096
+  Div          r24, r18, r23
+  Sub          r25, r18, r20
+  Add          r26, r25, r22
+  Sub          r27, r26, r24
+  Const        r28, 365
+  Div          r29, r27, r28
+  Move         r30, r29
+  // var y = yoe + era * 400
+  Const        r31, 400
+  Mul          r32, r15, r31
+  Add          r33, r30, r32
+  Move         r34, r33
+  // var doy = doe - (365 * yoe + yoe/4 - yoe/100)
+  Const        r28, 365
+  Mul          r35, r28, r30
+  Const        r36, 4
+  Div          r37, r30, r36
+  Const        r38, 100
+  Div          r39, r30, r38
+  Add          r40, r35, r37
+  Sub          r41, r40, r39
+  Sub          r42, r18, r41
+  Move         r43, r42
+  // var mp = (5 * doy + 2) / 153 as int
+  Const        r44, 5
+  Mul          r45, r44, r43
+  Const        r46, 2
+  Add          r47, r45, r46
+  Const        r48, 153
+  Div          r49, r47, r48
+  Move         r50, r49
+  // var d = (doy - ((153 * mp + 2) / 5 as int) + 1) as int
+  Const        r48, 153
+  Mul          r51, r48, r50
+  Const        r46, 2
+  Add          r52, r51, r46
+  Const        r44, 5
+  Div          r53, r52, r44
+  Sub          r54, r43, r53
+  Const        r55, 1
+  Add          r56, r54, r55
+  Cast         r57, r56, int
+  Move         r58, r57
+  // var m = (mp + 3) as int
+  Const        r59, 3
+  Add          r60, r50, r59
+  Cast         r61, r60, int
+  Move         r62, r61
+  // if m > 12 {
+  Const        r63, 12
+  Less         r64, r63, r62
+  JumpIfFalse  r64, L0
+  // y = y + 1
+  Const        r55, 1
+  Add          r65, r34, r55
+  Move         r34, r65
+  // m = m - 12
+  Const        r63, 12
+  Sub          r66, r62, r63
+  Move         r62, r66
+L0:
+  // let iso = str(y) + "-" + pad2(m) + "-" + pad2(d)
+  Str          r67, r34
+  Const        r68, "-"
+  Add          r69, r67, r68
+  Move         r70, r62
+  Call         r71, pad2, r70
+  Add          r72, r69, r71
+  Const        r68, "-"
+  Add          r73, r72, r68
+  Move         r74, r58
+  Call         r75, pad2, r74
+  Add          r76, r73, r75
+  Move         r77, r76
+  // print(iso)
+  Print        r77
+  // let months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+  Const        r78, ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+  Move         r79, r78
+  // let line = weekdayName(days) + ", " + months[m-1] + " " + str(d) + ", " + str(y)
+  Move         r80, r8
+  Call         r81, weekdayName, r80
+  Const        r82, ", "
+  Add          r83, r81, r82
+  Const        r55, 1
+  Sub          r84, r62, r55
+  Index        r85, r79, r84
+  Add          r86, r83, r85
+  Const        r87, " "
+  Add          r88, r86, r87
+  Str          r89, r58
+  Add          r90, r88, r89
+  Const        r82, ", "
+  Add          r91, r90, r82
+  Str          r92, r34
+  Add          r93, r91, r92
+  Move         r94, r93
+  // print(line)
+  Print        r94
+  Return       r0

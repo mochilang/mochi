@@ -1,43 +1,42 @@
-func main (regs=19)
+func main (regs=18)
   // let candidates = ["037833100","17275R102","38259P508","594918104","68389X106","68389X105"]
   Const        r1, ["037833100", "17275R102", "38259P508", "594918104", "68389X106", "68389X105"]
   Move         r0, r1
   SetGlobal    0,0,0,0
   // for cand in candidates {
-  Const        r2, ["037833100", "17275R102", "38259P508", "594918104", "68389X106", "68389X105"]
-  IterPrep     r3, r2
-  Len          r4, r3
-  Const        r5, 0
+  IterPrep     r2, r0
+  Len          r3, r2
+  Const        r4, 0
 L2:
-  LessInt      r6, r5, r4
-  JumpIfFalse  r6, L0
-  Index        r7, r3, r5
-  Move         r8, r7
+  LessInt      r5, r4, r3
+  JumpIfFalse  r5, L0
+  Index        r6, r2, r4
+  Move         r7, r6
   // var b = "incorrect"
-  Const        r9, "incorrect"
-  Move         r10, r9
+  Const        r8, "incorrect"
+  Move         r9, r8
   // if isCusip(cand) { b = "correct" }
-  Move         r11, r8
-  Call         r12, isCusip, r11
-  JumpIfFalse  r12, L1
-  Const        r13, "correct"
-  Move         r10, r13
+  Move         r10, r7
+  Call         r11, isCusip, r10
+  JumpIfFalse  r11, L1
+  Const        r12, "correct"
+  Move         r9, r12
 L1:
   // print(cand + " -> " + b)
-  Const        r14, " -> "
-  Add          r15, r8, r14
-  Add          r16, r15, r10
-  Print        r16
+  Const        r13, " -> "
+  Add          r14, r7, r13
+  Add          r15, r14, r9
+  Print        r15
   // for cand in candidates {
-  Const        r17, 1
-  AddInt       r18, r5, r17
-  Move         r5, r18
+  Const        r16, 1
+  AddInt       r17, r4, r16
+  Move         r4, r17
   Jump         L2
 L0:
   Return       r0
 
   // fun ord(ch: string): int {
-func ord (regs=18)
+func ord (regs=19)
   // let upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
   Const        r2, "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
   Move         r3, r2
@@ -51,26 +50,29 @@ func ord (regs=18)
   Move         r8, r7
 L0:
   JumpIfFalse  r8, L1
-  Const        r10, 48
-  Add          r11, r9, r10
-  Return       r11
+  Const        r9, 10
+  ParseIntStr  10,1,9,0
+  Const        r11, 48
+  AddInt       r12, r10, r11
+  Return       r12
 L1:
   // var idx = indexOf(upper, ch)
-  Move         r13, r12
+  IndexOf      13,3,1,0
+  Move         r14, r13
   // if idx >= 0 { return 65 + idx }
-  Const        r14, 0
-  LessEq       r15, r14, r13
-  JumpIfFalse  r15, L2
-  Const        r16, 65
-  Add          r17, r16, r13
-  Return       r17
+  Const        r15, 0
+  LessEqInt    r16, r15, r14
+  JumpIfFalse  r16, L2
+  Const        r17, 65
+  AddInt       r18, r17, r14
+  Return       r18
 L2:
   // return 0
-  Const        r14, 0
-  Return       r14
+  Const        r15, 0
+  Return       r15
 
   // fun isCusip(s: string): bool {
-func isCusip (regs=57)
+func isCusip (regs=60)
   // if len(s) != 9 { return false }
   Len          r2, r1
   Const        r3, 9
@@ -111,56 +113,58 @@ L11:
 L2:
   JumpIfFalse  r22, L3
   // v = parseIntStr(c, 10)
-  Move         r17, r23
+  Const        r23, 10
+  ParseIntStr  24,16,23,0
+  Move         r17, r24
   // if c >= "0" && c <= "9" {
   Jump         L4
 L3:
   // } else if c >= "A" && c <= "Z" {
-  Const        r24, "A"
-  LessEq       r25, r24, r16
-  Const        r26, "Z"
-  LessEq       r27, r16, r26
-  Move         r28, r25
-  JumpIfFalse  r28, L5
-  Move         r28, r27
+  Const        r25, "A"
+  LessEq       r26, r25, r16
+  Const        r27, "Z"
+  LessEq       r28, r16, r27
+  Move         r29, r26
+  JumpIfFalse  r29, L5
+  Move         r29, r28
 L5:
-  JumpIfFalse  r28, L6
+  JumpIfFalse  r29, L6
   // v = ord(c) - 55
-  Move         r29, r16
-  Call         r30, ord, r29
-  Const        r31, 55
-  Sub          r32, r30, r31
-  Move         r17, r32
+  Move         r30, r16
+  Call         r31, ord, r30
+  Const        r32, 55
+  Sub          r33, r31, r32
+  Move         r17, r33
   // } else if c >= "A" && c <= "Z" {
   Jump         L4
 L6:
   // } else if c == "*" {
-  Const        r33, "*"
-  Equal        r34, r16, r33
-  JumpIfFalse  r34, L7
+  Const        r34, "*"
+  Equal        r35, r16, r34
+  JumpIfFalse  r35, L7
   // v = 36
-  Const        r35, 36
-  Move         r17, r35
+  Const        r36, 36
+  Move         r17, r36
   // } else if c == "*" {
   Jump         L4
 L7:
   // } else if c == "@" {
-  Const        r36, "@"
-  Equal        r37, r16, r36
-  JumpIfFalse  r37, L8
+  Const        r37, "@"
+  Equal        r38, r16, r37
+  JumpIfFalse  r38, L8
   // v = 37
-  Const        r38, 37
-  Move         r17, r38
+  Const        r39, 37
+  Move         r17, r39
   // } else if c == "@" {
   Jump         L4
 L8:
   // } else if c == "#" {
-  Const        r39, "#"
-  Equal        r40, r16, r39
-  JumpIfFalse  r40, L9
+  Const        r40, "#"
+  Equal        r41, r16, r40
+  JumpIfFalse  r41, L9
   // v = 38
-  Const        r41, 38
-  Move         r17, r41
+  Const        r42, 38
+  Move         r17, r42
   // } else if c == "#" {
   Jump         L4
 L9:
@@ -169,20 +173,20 @@ L9:
   Return       r5
 L4:
   // if i % 2 == 1 { v = v * 2 }
-  Const        r42, 2
-  ModInt       r43, r8, r42
+  Const        r43, 2
+  ModInt       r44, r8, r43
   Const        r13, 1
-  EqualInt     r44, r43, r13
-  JumpIfFalse  r44, L10
-  Const        r42, 2
-  MulInt       r45, r17, r42
-  Move         r17, r45
+  EqualInt     r45, r44, r13
+  JumpIfFalse  r45, L10
+  Const        r43, 2
+  MulInt       r46, r17, r43
+  Move         r17, r46
 L10:
   // sum = sum + v/10 + v%10
-  Const        r46, 10
-  DivInt       r47, r17, r46
-  Const        r46, 10
-  ModInt       r48, r17, r46
+  Const        r23, 10
+  DivInt       r47, r17, r23
+  Const        r23, 10
+  ModInt       r48, r17, r23
   AddInt       r49, r7, r47
   AddInt       r50, r49, r48
   Move         r7, r50
@@ -194,11 +198,18 @@ L10:
   Jump         L11
 L1:
   // return parseIntStr(s[8:9], 10) == (10 - (sum % 10)) % 10
-  Const        r46, 10
-  Const        r46, 10
-  ModInt       r53, r7, r46
-  SubInt       r54, r46, r53
-  Const        r46, 10
-  ModInt       r55, r54, r46
-  Equal        r56, r52, r55
-  Return       r56
+  Const        r9, 8
+  Move         r52, r9
+  Const        r3, 9
+  Move         r53, r3
+  Slice        r54, r1, r52, r53
+  Const        r23, 10
+  ParseIntStr  55,54,23,0
+  Const        r23, 10
+  Const        r23, 10
+  ModInt       r56, r7, r23
+  SubInt       r57, r23, r56
+  Const        r23, 10
+  ModInt       r58, r57, r23
+  EqualInt     r59, r55, r58
+  Return       r59

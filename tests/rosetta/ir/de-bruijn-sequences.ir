@@ -1,0 +1,565 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun dbRec(k: int, n: int, t: int, p: int, a: list<int>, seq: list<int>): list<int> {
+func dbRec (regs=40)
+  // if t > n {
+  Less         r6, r1, r2
+  JumpIfFalse  r6, L0
+  // if n % p == 0 {
+  Mod          r7, r1, r3
+  Const        r8, 0
+  Equal        r9, r7, r8
+  JumpIfFalse  r9, L1
+  // var j = 1
+  Const        r10, 1
+  Move         r11, r10
+L2:
+  // while j <= p {
+  LessEq       r12, r11, r3
+  JumpIfFalse  r12, L1
+  // seq = append(seq, a[j])
+  Index        r13, r4, r11
+  Append       r14, r5, r13
+  Move         r5, r14
+  // j = j + 1
+  Const        r10, 1
+  AddInt       r15, r11, r10
+  Move         r11, r15
+  // while j <= p {
+  Jump         L2
+L0:
+  // a[t] = a[t-p]
+  Sub          r16, r2, r3
+  Index        r17, r4, r16
+  SetIndex     r4, r2, r17
+  // seq = dbRec(k, n, t+1, p, a, seq)
+  Move         r18, r0
+  Move         r19, r1
+  Const        r10, 1
+  Add          r24, r2, r10
+  Move         r20, r24
+  Move         r21, r3
+  Move         r22, r4
+  Move         r23, r5
+  Call         r25, dbRec, r18, r19, r20, r21, r22, r23
+  Move         r5, r25
+  // var j = a[t-p] + 1
+  Sub          r26, r2, r3
+  Index        r27, r4, r26
+  Const        r10, 1
+  Add          r28, r27, r10
+  Move         r29, r28
+L3:
+  // while j < k {
+  Less         r30, r29, r0
+  JumpIfFalse  r30, L1
+  // a[t] = j
+  SetIndex     r4, r2, r29
+  // seq = dbRec(k, n, t+1, t, a, seq)
+  Move         r31, r0
+  Move         r32, r1
+  Const        r10, 1
+  Add          r37, r2, r10
+  Move         r33, r37
+  Move         r34, r2
+  Move         r35, r4
+  Move         r36, r5
+  Call         r38, dbRec, r31, r32, r33, r34, r35, r36
+  Move         r5, r38
+  // j = j + 1
+  Const        r10, 1
+  Add          r39, r29, r10
+  Move         r29, r39
+  // while j < k {
+  Jump         L3
+L1:
+  // return seq
+  Return       r5
+
+  // fun deBruijn(k: int, n: int): string {
+func deBruijn (regs=41)
+  // let digits = "0123456789"
+  Const        r2, "0123456789"
+  Move         r3, r2
+  // var alphabet = digits
+  Move         r4, r3
+  // if k < 10 { alphabet = digits[0:k] }
+  Const        r5, 10
+  Less         r6, r0, r5
+  JumpIfFalse  r6, L0
+  Const        r8, 0
+  Move         r7, r8
+  Move         r9, r0
+  Slice        r10, r3, r7, r9
+  Move         r4, r10
+L0:
+  // var a: list<int> = []
+  Const        r11, []
+  Move         r12, r11
+  // var i = 0
+  Const        r8, 0
+  Move         r13, r8
+L2:
+  // while i < k*n { a = append(a, 0); i = i + 1 }
+  Mul          r14, r0, r1
+  Less         r15, r13, r14
+  JumpIfFalse  r15, L1
+  Const        r8, 0
+  Append       r16, r12, r8
+  Move         r12, r16
+  Const        r17, 1
+  AddInt       r18, r13, r17
+  Move         r13, r18
+  Jump         L2
+L1:
+  // var seq: list<int> = []
+  Const        r11, []
+  Move         r19, r11
+  // seq = dbRec(k, n, 1, 1, a, seq)
+  Move         r20, r0
+  Move         r21, r1
+  Const        r17, 1
+  Move         r22, r17
+  Const        r17, 1
+  Move         r23, r17
+  Move         r24, r12
+  Move         r25, r19
+  Call         r26, dbRec, r20, r21, r22, r23, r24, r25
+  Move         r19, r26
+  // var b = ""
+  Const        r27, ""
+  Move         r28, r27
+  // var idx = 0
+  Const        r8, 0
+  Move         r29, r8
+L4:
+  // while idx < len(seq) {
+  Len          r30, r19
+  LessInt      r31, r29, r30
+  JumpIfFalse  r31, L3
+  // b = b + alphabet[seq[idx]]
+  Index        r32, r19, r29
+  Index        r33, r4, r32
+  Add          r34, r28, r33
+  Move         r28, r34
+  // idx = idx + 1
+  Const        r17, 1
+  AddInt       r35, r29, r17
+  Move         r29, r35
+  // while idx < len(seq) {
+  Jump         L4
+L3:
+  // b = b + b[0:n-1]
+  Const        r8, 0
+  Move         r36, r8
+  Const        r17, 1
+  Sub          r38, r1, r17
+  Move         r37, r38
+  Slice        r39, r28, r36, r37
+  Add          r40, r28, r39
+  Move         r28, r40
+  // return b
+  Return       r28
+
+  // fun allDigits(s: string): bool {
+func allDigits (regs=19)
+  // var i = 0
+  Const        r1, 0
+  Move         r2, r1
+L3:
+  // while i < len(s) {
+  Len          r3, r0
+  LessInt      r4, r2, r3
+  JumpIfFalse  r4, L0
+  // let ch = s[i:i+1]
+  Move         r5, r2
+  Const        r7, 1
+  AddInt       r8, r2, r7
+  Move         r6, r8
+  Slice        r9, r0, r5, r6
+  Move         r10, r9
+  // if ch < "0" || ch > "9" { return false }
+  Const        r11, "0"
+  Less         r12, r10, r11
+  Const        r13, "9"
+  Less         r14, r13, r10
+  Move         r15, r12
+  JumpIfTrue   r15, L1
+  Move         r15, r14
+L1:
+  JumpIfFalse  r15, L2
+  Const        r16, false
+  Return       r16
+L2:
+  // i = i + 1
+  Const        r7, 1
+  AddInt       r17, r2, r7
+  Move         r2, r17
+  // while i < len(s) {
+  Jump         L3
+L0:
+  // return true
+  Const        r18, true
+  Return       r18
+
+  // fun parseIntStr(str: string): int {
+func parseIntStr (regs=16)
+  // var n = 0
+  Const        r1, 0
+  Move         r2, r1
+  // var i = 0
+  Const        r1, 0
+  Move         r3, r1
+L1:
+  // while i < len(str) {
+  Len          r4, r0
+  LessInt      r5, r3, r4
+  JumpIfFalse  r5, L0
+  // n = n * 10 + (str[i:i+1] as int)
+  Const        r6, 10
+  MulInt       r7, r2, r6
+  Move         r8, r3
+  Const        r10, 1
+  AddInt       r11, r3, r10
+  Move         r9, r11
+  Slice        r12, r0, r8, r9
+  Cast         r13, r12, int
+  Add          r14, r7, r13
+  Move         r2, r14
+  // i = i + 1
+  Const        r10, 1
+  AddInt       r15, r3, r10
+  Move         r3, r15
+  // while i < len(str) {
+  Jump         L1
+L0:
+  // return n
+  Return       r2
+
+  // fun validate(db: string) {
+func validate (regs=78)
+  // let le = len(db)
+  Len          r1, r0
+  Move         r2, r1
+  // var found: list<int> = []
+  Const        r3, []
+  Move         r4, r3
+  // var i = 0
+  Const        r5, 0
+  Move         r6, r5
+L1:
+  // while i < 10000 {
+  Const        r7, 10000
+  LessInt      r8, r6, r7
+  JumpIfFalse  r8, L0
+  // found = append(found, 0)
+  Const        r5, 0
+  Append       r9, r4, r5
+  Move         r4, r9
+  // i = i + 1
+  Const        r10, 1
+  AddInt       r11, r6, r10
+  Move         r6, r11
+  // while i < 10000 {
+  Jump         L1
+L0:
+  // var j = 0
+  Const        r5, 0
+  Move         r12, r5
+L4:
+  // while j < le - 3 {
+  Const        r13, 3
+  SubInt       r14, r2, r13
+  LessInt      r15, r12, r14
+  JumpIfFalse  r15, L2
+  // let s = db[j:j + 4]
+  Move         r16, r12
+  Const        r18, 4
+  AddInt       r19, r12, r18
+  Move         r17, r19
+  Slice        r20, r0, r16, r17
+  Move         r21, r20
+  // if allDigits(s) {
+  Move         r22, r21
+  Call         r23, allDigits, r22
+  JumpIfFalse  r23, L3
+  // let n = parseIntStr(s)
+  Move         r25, r24
+  // found[n] = found[n] + 1
+  Index        r26, r4, r25
+  Const        r10, 1
+  Add          r27, r26, r10
+  SetIndex     r4, r25, r27
+L3:
+  // j = j + 1
+  Const        r10, 1
+  AddInt       r28, r12, r10
+  Move         r12, r28
+  // while j < le - 3 {
+  Jump         L4
+L2:
+  // var errs: list<string> = []
+  Const        r3, []
+  Move         r29, r3
+  // var k = 0
+  Const        r5, 0
+  Move         r30, r5
+L8:
+  // while k < 10000 {
+  Const        r7, 10000
+  LessInt      r31, r30, r7
+  JumpIfFalse  r31, L5
+  // if found[k] == 0 {
+  Index        r32, r4, r30
+  Const        r5, 0
+  Equal        r33, r32, r5
+  JumpIfFalse  r33, L6
+  // errs = append(errs, "    PIN number " + padLeft(k, 4) + " missing")
+  Const        r34, "    PIN number "
+  Move         r35, r30
+  Const        r18, 4
+  Move         r36, r18
+  Call2        r37, padLeft, r35, r36
+  Add          r38, r34, r37
+  Const        r39, " missing"
+  Add          r40, r38, r39
+  Append       r41, r29, r40
+  Move         r29, r41
+  // if found[k] == 0 {
+  Jump         L7
+L6:
+  // } else if found[k] > 1 {
+  Index        r42, r4, r30
+  Const        r10, 1
+  Less         r43, r10, r42
+  JumpIfFalse  r43, L7
+  // errs = append(errs, "    PIN number " + padLeft(k, 4) + " occurs " + str(found[k]) + " times")
+  Const        r34, "    PIN number "
+  Move         r44, r30
+  Const        r18, 4
+  Move         r45, r18
+  Call2        r46, padLeft, r44, r45
+  Add          r47, r34, r46
+  Const        r48, " occurs "
+  Add          r49, r47, r48
+  Index        r50, r4, r30
+  Str          r51, r50
+  Add          r52, r49, r51
+  Const        r53, " times"
+  Add          r54, r52, r53
+  Append       r55, r29, r54
+  Move         r29, r55
+L7:
+  // k = k + 1
+  Const        r10, 1
+  AddInt       r56, r30, r10
+  Move         r30, r56
+  // while k < 10000 {
+  Jump         L8
+L5:
+  // let lerr = len(errs)
+  Len          r57, r29
+  Move         r58, r57
+  // if lerr == 0 {
+  Const        r5, 0
+  EqualInt     r59, r58, r5
+  JumpIfFalse  r59, L9
+  // print("  No errors found")
+  Const        r60, "  No errors found"
+  Print        r60
+  // if lerr == 0 {
+  Jump         L10
+L9:
+  // var pl = "s"
+  Const        r61, "s"
+  Move         r62, r61
+  // if lerr == 1 { pl = "" }
+  Const        r10, 1
+  EqualInt     r63, r58, r10
+  JumpIfFalse  r63, L11
+  Const        r64, ""
+  Move         r62, r64
+L11:
+  // print("  " + str(lerr) + " error" + pl + " found:")
+  Const        r65, "  "
+  Str          r66, r58
+  Add          r67, r65, r66
+  Const        r68, " error"
+  Add          r69, r67, r68
+  Add          r70, r69, r62
+  Const        r71, " found:"
+  Add          r72, r70, r71
+  Print        r72
+  // let msg = joinStr(errs, "\n")
+  Move         r73, r29
+  Const        r75, "\n"
+  Move         r74, r75
+  Call2        r76, joinStr, r73, r74
+  Move         r77, r76
+  // print(msg)
+  Print        r77
+L10:
+  Return       r0
+
+  // fun padLeft(n: int, width: int): string {
+func padLeft (regs=8)
+  // var s = str(n)
+  Str          r2, r0
+  Move         r3, r2
+L1:
+  // while len(s) < width { s = "0" + s }
+  Len          r4, r3
+  Less         r5, r4, r1
+  JumpIfFalse  r5, L0
+  Const        r6, "0"
+  Add          r7, r6, r3
+  Move         r3, r7
+  Jump         L1
+L0:
+  // return s
+  Return       r3
+
+  // fun joinStr(xs: list<string>, sep: string): string {
+func joinStr (regs=14)
+  // var res = ""
+  Const        r2, ""
+  Move         r3, r2
+  // var i = 0
+  Const        r4, 0
+  Move         r5, r4
+L2:
+  // while i < len(xs) {
+  Len          r6, r0
+  LessInt      r7, r5, r6
+  JumpIfFalse  r7, L0
+  // if i > 0 { res = res + sep }
+  Const        r4, 0
+  LessInt      r8, r4, r5
+  JumpIfFalse  r8, L1
+  Add          r9, r3, r1
+  Move         r3, r9
+L1:
+  // res = res + xs[i]
+  Index        r10, r0, r5
+  Add          r11, r3, r10
+  Move         r3, r11
+  // i = i + 1
+  Const        r12, 1
+  AddInt       r13, r5, r12
+  Move         r5, r13
+  // while i < len(xs) {
+  Jump         L2
+L0:
+  // return res
+  Return       r3
+
+  // fun reverse(s: string): string {
+func reverse (regs=15)
+  // var out = ""
+  Const        r1, ""
+  Move         r2, r1
+  // var i = len(s) - 1
+  Len          r3, r0
+  Const        r4, 1
+  SubInt       r5, r3, r4
+  Move         r6, r5
+L1:
+  // while i >= 0 {
+  Const        r7, 0
+  LessEqInt    r8, r7, r6
+  JumpIfFalse  r8, L0
+  // out = out + s[i:i + 1]
+  Move         r9, r6
+  Const        r4, 1
+  AddInt       r11, r6, r4
+  Move         r10, r11
+  Slice        r12, r0, r9, r10
+  Add          r13, r2, r12
+  Move         r2, r13
+  // i = i - 1
+  Const        r4, 1
+  SubInt       r14, r6, r4
+  Move         r6, r14
+  // while i >= 0 {
+  Jump         L1
+L0:
+  // return out
+  Return       r2
+
+  // fun main() {
+func main (regs=45)
+  // var db = deBruijn(10, 4)
+  Const        r2, 10
+  Move         r0, r2
+  Const        r3, 4
+  Move         r1, r3
+  Call2        r4, deBruijn, r0, r1
+  Move         r5, r4
+  // let le = len(db)
+  Len          r6, r5
+  Move         r7, r6
+  // print("The length of the de Bruijn sequence is " + str(le))
+  Const        r8, "The length of the de Bruijn sequence is "
+  Str          r9, r7
+  Add          r10, r8, r9
+  Print        r10
+  // print("\nThe first 130 digits of the de Bruijn sequence are:")
+  Const        r11, "\nThe first 130 digits of the de Bruijn sequence are:"
+  Print        r11
+  // print(db[0:130])
+  Const        r13, 0
+  Move         r12, r13
+  Const        r15, 130
+  Move         r14, r15
+  Slice        r16, r5, r12, r14
+  Print        r16
+  // print("\nThe last 130 digits of the de Bruijn sequence are:")
+  Const        r17, "\nThe last 130 digits of the de Bruijn sequence are:"
+  Print        r17
+  // print(db[le-130:])
+  Const        r15, 130
+  SubInt       r19, r7, r15
+  Move         r18, r19
+  Const        r20, nil
+  Slice        r21, r5, r18, r20
+  Print        r21
+  // print("\nValidating the de Bruijn sequence:")
+  Const        r22, "\nValidating the de Bruijn sequence:"
+  Print        r22
+  // validate(db)
+  Move         r23, r5
+  Call         r24, validate, r23
+  // print("\nValidating the reversed de Bruijn sequence:")
+  Const        r25, "\nValidating the reversed de Bruijn sequence:"
+  Print        r25
+  // let dbr = reverse(db)
+  Reverse      r26, r5
+  Move         r27, r26
+  // validate(dbr)
+  Move         r28, r27
+  Call         r29, validate, r28
+  // db = db[0:4443] + "." + db[4444:len(db)]
+  Const        r13, 0
+  Move         r30, r13
+  Const        r32, 4443
+  Move         r31, r32
+  Slice        r33, r5, r30, r31
+  Const        r34, "."
+  Add          r35, r33, r34
+  Const        r37, 4444
+  Move         r36, r37
+  Len          r39, r5
+  Move         r38, r39
+  Slice        r40, r5, r36, r38
+  Add          r41, r35, r40
+  Move         r5, r41
+  // print("\nValidating the overlaid de Bruijn sequence:")
+  Const        r42, "\nValidating the overlaid de Bruijn sequence:"
+  Print        r42
+  // validate(db)
+  Move         r43, r5
+  Call         r44, validate, r43
+  Return       r0

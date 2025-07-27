@@ -122,6 +122,8 @@ const (
 	OpJSON
 	OpAppend
 	OpStr
+	OpParseIntStr
+	OpIndexOf
 	OpUpper
 	OpLower
 	OpReverse
@@ -258,6 +260,10 @@ func (op Op) String() string {
 		return "Append"
 	case OpStr:
 		return "Str"
+	case OpParseIntStr:
+		return "ParseIntStr"
+	case OpIndexOf:
+		return "IndexOf"
 	case OpUpper:
 		return "Upper"
 	case OpLower:
@@ -1554,6 +1560,36 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 			}
 		case OpStr:
 			fr.regs[ins.A] = Value{Tag: ValueStr, Str: fmt.Sprint(fr.regs[ins.B].ToAny())}
+		case OpParseIntStr:
+			s := fr.regs[ins.B]
+			base := fr.regs[ins.C]
+			if s.Tag != ValueStr || base.Tag != ValueInt {
+				return Value{}, m.newError(fmt.Errorf("parseIntStr expects (string,int)"), trace, ins.Line)
+			}
+			if n, err := strconv.ParseInt(s.Str, base.Int, 64); err == nil {
+				fr.regs[ins.A] = Value{Tag: ValueInt, Int: int(n)}
+			} else {
+				return Value{}, m.newError(err, trace, ins.Line)
+			}
+		case OpIndexOf:
+			s := fr.regs[ins.B]
+			sub := fr.regs[ins.C]
+			if s.Tag == ValueStr && sub.Tag == ValueStr {
+				fr.regs[ins.A] = Value{Tag: ValueInt, Int: strings.Index(s.Str, sub.Str)}
+				break
+			}
+			if lst, ok := toList(s); ok {
+				idx := -1
+				for i, v := range lst {
+					if equalValue(v, sub) {
+						idx = i
+						break
+					}
+				}
+				fr.regs[ins.A] = Value{Tag: ValueInt, Int: idx}
+				break
+			}
+			return Value{}, m.newError(fmt.Errorf("indexOf expects (string,string) or (list,any)"), trace, ins.Line)
 		case OpUpper:
 			b := fr.regs[ins.B]
 			if b.Tag != ValueStr {
@@ -2603,6 +2639,8 @@ func (fc *funcCompiler) emit(pos lexer.Position, i Instr) {
 		fc.tags[i.A] = tagInt
 	case OpJSON, OpPrint, OpPrint2, OpPrintN:
 		// no result
+	case OpParseIntStr, OpIndexOf:
+		fc.tags[i.A] = tagInt
 	case OpAppend, OpStr, OpUpper, OpLower, OpReverse, OpInput, OpFirst, OpSHA256:
 		fc.tags[i.A] = tagUnknown
 	case OpLoad:
@@ -3885,6 +3923,23 @@ func (fc *funcCompiler) compilePrimary(p *parser.Primary) int {
 			arg := fc.compileExpr(p.Call.Args[0])
 			dst := fc.newReg()
 			fc.emit(p.Pos, Instr{Op: OpStr, A: dst, B: arg})
+			return dst
+		case "parseIntStr":
+			if len(p.Call.Args) == 2 {
+				if _, ok := fc.comp.env.GetFunc("parseIntStr"); !ok {
+					s := fc.compileExpr(p.Call.Args[0])
+					base := fc.compileExpr(p.Call.Args[1])
+					dst := fc.newReg()
+					fc.emit(p.Pos, Instr{Op: OpParseIntStr, A: dst, B: s, C: base})
+					return dst
+				}
+			}
+			// fallthrough to normal call
+		case "indexOf":
+			s := fc.compileExpr(p.Call.Args[0])
+			sub := fc.compileExpr(p.Call.Args[1])
+			dst := fc.newReg()
+			fc.emit(p.Pos, Instr{Op: OpIndexOf, A: dst, B: s, C: sub})
 			return dst
 		case "int":
 			arg := fc.compileExpr(p.Call.Args[0])
@@ -6994,6 +7049,35 @@ func (fc *funcCompiler) foldCallValue(call *parser.CallExpr) (Value, bool) {
 			return Value{}, false
 		}
 		return Value{Tag: ValueStr, Str: fmt.Sprint(args[0].ToAny())}, true
+	case "parseIntStr":
+		if len(args) != 2 {
+			return Value{}, false
+		}
+		s, base := args[0], args[1]
+		if s.Tag == ValueStr && base.Tag == ValueInt {
+			if n, err := strconv.ParseInt(s.Str, base.Int, 64); err == nil {
+				return Value{Tag: ValueInt, Int: int(n)}, true
+			}
+		}
+		return Value{}, false
+	case "indexOf":
+		if len(args) != 2 {
+			return Value{}, false
+		}
+		s, sub := args[0], args[1]
+		if s.Tag == ValueStr && sub.Tag == ValueStr {
+			idx := strings.Index(s.Str, sub.Str)
+			return Value{Tag: ValueInt, Int: idx}, true
+		}
+		if lst, ok := toList(s); ok {
+			for i, v := range lst {
+				if equalValue(v, sub) {
+					return Value{Tag: ValueInt, Int: i}, true
+				}
+			}
+			return Value{Tag: ValueInt, Int: -1}, true
+		}
+		return Value{}, false
 	case "int":
 		if len(args) != 1 {
 			return Value{}, false

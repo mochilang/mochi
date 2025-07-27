@@ -36,6 +36,10 @@ type Value struct {
 	Func   any
 }
 
+func equalValue(a, b Value) bool {
+	return reflect.DeepEqual(a.ToAny(), b.ToAny())
+}
+
 // Truthy returns the boolean interpretation of v.
 func (v Value) Truthy() bool {
 	switch v.Tag {
