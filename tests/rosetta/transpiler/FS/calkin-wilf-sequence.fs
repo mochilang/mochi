@@ -1,10 +1,28 @@
-// Generated 2025-07-26 04:38 +0700
+// Generated 2025-07-27 15:57 +0700
 
 exception Break
 exception Continue
 
 exception Return
 
+let mutable _nowSeed:int64 = 0L
+let mutable _nowSeeded = false
+let _initNow () =
+    let s = System.Environment.GetEnvironmentVariable("MOCHI_NOW_SEED")
+    if System.String.IsNullOrEmpty(s) |> not then
+        match System.Int32.TryParse(s) with
+        | true, v ->
+            _nowSeed <- int64 v
+            _nowSeeded <- true
+        | _ -> ()
+let _now () =
+    if _nowSeeded then
+        _nowSeed <- (_nowSeed * 1664525L + 1013904223L) % 2147483647L
+        int _nowSeed
+    else
+        int (System.DateTime.UtcNow.Ticks % 2147483647L)
+
+_initNow()
 let rec bigrat (a: int) (b: int) =
     let mutable __ret : bignum = Unchecked.defaultof<bignum>
     let mutable a = a
@@ -20,7 +38,7 @@ and calkinWilf (n: int) =
     let mutable n = n
     try
         let mutable seq: bignum array = [||]
-        seq <- Array.append seq [|bigrat 1 1|]
+        seq <- unbox<bignum array> (Array.append seq [|bigrat 1 1|])
         let mutable i: int = 1
         while i < n do
             let mutable prev: bignum = seq.[i - 1]
@@ -32,9 +50,9 @@ and calkinWilf (n: int) =
             t <- t - prev
             t <- t + (unbox<bignum> 1)
             t <- (unbox<bignum> 1) / t
-            seq <- Array.append seq [|t|]
+            seq <- unbox<bignum array> (Array.append seq [|t|])
             i <- i + 1
-        __ret <- seq
+        __ret <- unbox<bignum array> seq
         raise Return
         __ret
     with
@@ -48,7 +66,7 @@ and toContinued (r: bignum) =
         let mutable res: int array = [||]
         try
             while true do
-                res <- Array.append res [|int (a / b)|]
+                res <- unbox<int array> (Array.append res [|unbox<int> (a / b)|])
                 let t: bigint = ((a % b + b) % b)
                 a <- b
                 b <- t
@@ -57,10 +75,10 @@ and toContinued (r: bignum) =
         with
         | Break -> ()
         | Continue -> ()
-        if (int ((((Array.length res) % 2 + 2) % 2))) = 0 then
-            res.[(int (Array.length res)) - 1] <- (int (res.[(int (Array.length res)) - 1])) - 1
-            res <- Array.append res [|1|]
-        __ret <- res
+        if (unbox<int> ((((Array.length res) % 2 + 2) % 2))) = 0 then
+            res.[(unbox<int> (Array.length res)) - 1] <- (unbox<int> (res.[(unbox<int> (Array.length res)) - 1])) - 1
+            res <- unbox<int array> (Array.append res [|1|])
+        __ret <- unbox<int array> res
         raise Return
         __ret
     with
@@ -72,7 +90,7 @@ and termNumber (cf: int array) =
         let mutable b: string = ""
         let mutable d: string = "1"
         for n in cf do
-            b <- (unbox<string> (repeat d (int n))) + b
+            b <- (unbox<string> (repeat d (unbox<int> n))) + b
             if d = "1" then
                 d <- "0"
             else
@@ -112,20 +130,26 @@ and commatize (n: int) =
 and main () =
     let mutable __ret : unit = Unchecked.defaultof<unit>
     try
+        let __bench_start = _now()
+        let __mem_start = System.GC.GetTotalMemory(true)
         let cw: bignum array = calkinWilf 20
         printfn "%s" "The first 20 terms of the Calkin-Wilf sequnence are:"
         let mutable i: int = 0
         while i < 20 do
             let r: bignum = cw.[i]
             let s: string = string (num r)
-            if (int (denom r)) <> 1 then
+            if (unbox<int> (denom r)) <> 1 then
                 s <- (s + "/") + (string (denom r))
-            printfn "%s" (((unbox<string> (i + (int 1).padStart(2, " "))) + ": ") + s)
+            printfn "%s" (((unbox<string> (i + (unbox<int> 1).padStart(2, " "))) + ": ") + s)
             i <- i + 1
         let r: bignum = bigrat 83116 51639
         let cf: int array = toContinued r
         let tn: int = termNumber cf
         printfn "%s" (((((("" + (string (num r))) + "/") + (string (denom r))) + " is the ") + (unbox<string> (commatize tn))) + "th term of the sequence.")
+        let __bench_end = _now()
+        let __mem_end = System.GC.GetTotalMemory(true)
+        printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)
+
         __ret
     with
         | Return -> __ret

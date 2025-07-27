@@ -1,5 +1,25 @@
-// Generated 2025-07-26 04:38 +0700
+// Generated 2025-07-27 15:57 +0700
 
+let mutable _nowSeed:int64 = 0L
+let mutable _nowSeeded = false
+let _initNow () =
+    let s = System.Environment.GetEnvironmentVariable("MOCHI_NOW_SEED")
+    if System.String.IsNullOrEmpty(s) |> not then
+        match System.Int32.TryParse(s) with
+        | true, v ->
+            _nowSeed <- int64 v
+            _nowSeeded <- true
+        | _ -> ()
+let _now () =
+    if _nowSeeded then
+        _nowSeed <- (_nowSeed * 1664525L + 1013904223L) % 2147483647L
+        int _nowSeed
+    else
+        int (System.DateTime.UtcNow.Ticks % 2147483647L)
+
+_initNow()
+let __bench_start = _now()
+let __mem_start = System.GC.GetTotalMemory(true)
 let daysInMonth: int array = [|31; 28; 31; 30; 31; 30; 31; 31; 30; 31; 30; 31|]
 let start: int array = [|3; 6; 6; 2; 4; 0; 2; 5; 1; 3; 6; 1|]
 let months: string array = [|" January "; " February"; "  March  "; "  April  "; "   May   "; "   June  "; "   July  "; "  August "; "September"; " October "; " November"; " December"|]
@@ -29,8 +49,8 @@ while qtr < 4 do
             let mutable day: int = 0
             while day < 7 do
                 let m: int = (qtr * 3) + mi
-                let ``val`` = (int (((week * 7) + day) - (int (start.[m])))) + 1
-                if ((int ``val``) >= 1) && (``val`` <= (daysInMonth.[m])) then
+                let ``val`` = (unbox<int> (((week * 7) + day) - (unbox<int> (start.[m])))) + 1
+                if ((unbox<int> ``val``) >= 1) && (``val`` <= (daysInMonth.[m])) then
                     let mutable s: string = string ``val``
                     if (String.length s) = 1 then
                         s <- " " + s
@@ -44,3 +64,6 @@ while qtr < 4 do
         week <- week + 1
     printfn "%s" ""
     qtr <- qtr + 1
+let __bench_end = _now()
+let __mem_end = System.GC.GetTotalMemory(true)
+printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)

@@ -1,10 +1,28 @@
-// Generated 2025-07-26 04:38 +0700
+// Generated 2025-07-27 15:57 +0700
 
 exception Break
 exception Continue
 
 exception Return
 
+let mutable _nowSeed:int64 = 0L
+let mutable _nowSeeded = false
+let _initNow () =
+    let s = System.Environment.GetEnvironmentVariable("MOCHI_NOW_SEED")
+    if System.String.IsNullOrEmpty(s) |> not then
+        match System.Int32.TryParse(s) with
+        | true, v ->
+            _nowSeed <- int64 v
+            _nowSeeded <- true
+        | _ -> ()
+let _now () =
+    if _nowSeeded then
+        _nowSeed <- (_nowSeed * 1664525L + 1013904223L) % 2147483647L
+        int _nowSeed
+    else
+        int (System.DateTime.UtcNow.Ticks % 2147483647L)
+
+_initNow()
 let rec primesUpTo (n: int) =
     let mutable __ret : int array = Unchecked.defaultof<int array>
     let mutable n = n
@@ -12,7 +30,7 @@ let rec primesUpTo (n: int) =
         let mutable sieve: bool array = [||]
         let mutable i: int = 0
         while i <= n do
-            sieve <- Array.append sieve [|true|]
+            sieve <- unbox<bool array> (Array.append sieve [|true|])
             i <- i + 1
         let mutable p: int = 2
         while (p * p) <= n do
@@ -26,9 +44,9 @@ let rec primesUpTo (n: int) =
         let mutable x: int = 2
         while x <= n do
             if unbox<bool> (sieve.[x]) then
-                res <- Array.append res [|x|]
+                res <- unbox<int array> (Array.append res [|x|])
             x <- x + 1
-        __ret <- res
+        __ret <- unbox<int array> res
         raise Return
         __ret
     with
@@ -38,25 +56,25 @@ and sortInts (xs: int array) =
     let mutable xs = xs
     try
         let mutable res: int array = [||]
-        let mutable tmp = xs
-        while (int (Array.length tmp)) > 0 do
-            let mutable min = tmp.[0]
+        let mutable tmp: int array = xs
+        while (unbox<int> (Array.length tmp)) > 0 do
+            let mutable min: int = tmp.[0]
             let mutable idx: int = 0
             let mutable i: int = 1
-            while i < (int (Array.length tmp)) do
-                if (tmp.[i]) < min then
-                    min <- tmp.[i]
+            while i < (unbox<int> (Array.length tmp)) do
+                if (unbox<int> (tmp.[i])) < min then
+                    min <- unbox<int> (tmp.[i])
                     idx <- i
                 i <- i + 1
-            res <- Array.append res [|min|]
+            res <- unbox<int array> (Array.append res [|min|])
             let mutable out: int array = [||]
             let mutable j: int = 0
-            while j < (int (Array.length tmp)) do
+            while j < (unbox<int> (Array.length tmp)) do
                 if j <> idx then
-                    out <- Array.append out [|tmp.[j]|]
+                    out <- unbox<int array> (Array.append out [|tmp.[j]|])
                 j <- j + 1
-            tmp <- out
-        __ret <- res
+            tmp <- unbox<int array> out
+        __ret <- unbox<int array> res
         raise Return
         __ret
     with
@@ -92,28 +110,28 @@ let rec getBrilliant (digits: int) (limit: int) (countOnly: bool) =
                 let mutable s: int array = [||]
                 for p in primes do
                     try
-                        if (int p) >= (pow * 10) then
+                        if (unbox<int> p) >= (pow * 10) then
                             raise Break
-                        if (int p) > pow then
-                            s <- Array.append s [|p|]
+                        if (unbox<int> p) > pow then
+                            s <- unbox<int array> (Array.append s [|p|])
                     with
                     | Break -> ()
                     | Continue -> ()
                 let mutable i: int = 0
                 try
-                    while i < (int (Array.length s)) do
+                    while i < (unbox<int> (Array.length s)) do
                         let mutable j: int = i
                         try
-                            while j < (int (Array.length s)) do
+                            while j < (unbox<int> (Array.length s)) do
                                 let mutable prod = (s.[i]) * (s.[j])
-                                if (int prod) < limit then
+                                if (unbox<int> prod) < limit then
                                     if countOnly then
                                         count <- count + 1
                                     else
-                                        brilliant <- Array.append brilliant [|prod|]
+                                        brilliant <- unbox<int array> (Array.append brilliant [|prod|])
                                 else
                                     if prod < next then
-                                        next <- prod
+                                        next <- unbox<int> prod
                                     raise Break
                                 j <- j + 1
                         with
@@ -129,9 +147,9 @@ let rec getBrilliant (digits: int) (limit: int) (countOnly: bool) =
         | Break -> ()
         | Continue -> ()
         if countOnly then
-            __ret <- Map.ofList [("bc", box count); ("next", box next)]
+            __ret <- unbox<Map<string, obj>> (Map.ofList [("bc", box count); ("next", box next)])
             raise Return
-        __ret <- Map.ofList [("bc", box brilliant); ("next", box next)]
+        __ret <- unbox<Map<string, obj>> (Map.ofList [("bc", box brilliant); ("next", box next)])
         raise Return
         __ret
     with
@@ -139,12 +157,14 @@ let rec getBrilliant (digits: int) (limit: int) (countOnly: bool) =
 and main () =
     let mutable __ret : unit = Unchecked.defaultof<unit>
     try
+        let __bench_start = _now()
+        let __mem_start = System.GC.GetTotalMemory(true)
         printfn "%s" "First 100 brilliant numbers:"
         let r: Map<string, obj> = getBrilliant 2 10000 false
         let mutable br: int array = sortInts (unbox<int array> (r.["bc"]))
-        br <- Array.sub br 0 (100 - 0)
+        br <- unbox<int array> (Array.sub br 0 (100 - 0))
         let mutable i: int = 0
-        while i < (int (Array.length br)) do
+        while i < (unbox<int> (Array.length br)) do
             printfn "%s" (String.concat " " [|sprintf "%A" ((unbox<string> (string (br.[i]).padStart(4, " "))) + " "); sprintf "%b" false|])
             if ((((i + 1) % 10 + 10) % 10)) = 0 then
                 printfn "%s" (String.concat " " [|sprintf "%A" ""; sprintf "%b" true|])
@@ -153,14 +173,18 @@ and main () =
         let mutable k: int = 1
         while k <= 13 do
             let limit = pow 10 k
-            let r2: Map<string, obj> = getBrilliant k (int limit) true
-            let total: obj = r2.["bc"]
-            let next: obj = r2.["next"]
-            let climit: string = commatize (int limit)
-            let ctotal: string = commatize (int ((unbox<int> total) + 1))
+            let r2: Map<string, obj> = getBrilliant k (unbox<int> limit) true
+            let total: obj = box (r2.["bc"])
+            let next: obj = box (r2.["next"])
+            let climit: string = commatize (unbox<int> limit)
+            let ctotal: string = commatize (unbox<int> ((unbox<int> total) + 1))
             let cnext: string = commatize (unbox<int> next)
             printfn "%s" ((((("First >= " + (unbox<string> (climit.padStart(18, " ")))) + " is ") + (unbox<string> (ctotal.padStart(14, " ")))) + " in the series: ") + (unbox<string> (cnext.padStart(18, " "))))
             k <- k + 1
+        let __bench_end = _now()
+        let __mem_end = System.GC.GetTotalMemory(true)
+        printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)
+
         __ret
     with
         | Return -> __ret

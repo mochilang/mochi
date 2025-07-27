@@ -1,0 +1,8 @@
+Cows and Bulls
+Guess four digit number of unique digits in the range 1 to 9.
+A correct digit but not in the correct place is a cow.
+A correct digit in the correct place is a bull.
+Guess: 
+Cows: 1, bulls: 1
+Guess: 
+Please guess a four digit number.
