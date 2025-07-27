@@ -1,4 +1,4 @@
-func main (regs=52)
+func main (regs=53)
   // let n = 15
   Const        r2, 15
   Move         r0, r2
@@ -9,122 +9,124 @@ func main (regs=52)
   SetGlobal    1,1,0,0
   // for _ in 0..(n+2) {
   Const        r4, 0
-  Const        r5, 17
-  Move         r6, r4
+  Const        r5, 2
+  Const        r6, 17
+  Move         r7, r4
 L1:
-  LessInt      r7, r6, r5
-  JumpIfFalse  r7, L0
+  LessInt      r8, r7, r6
+  JumpIfFalse  r8, L0
   // t = append(t, 0)
   Const        r4, 0
-  Append       r8, r1, r4
-  Move         r1, r8
+  Append       r9, r1, r4
+  Move         r1, r9
   SetGlobal    1,1,0,0
   // for _ in 0..(n+2) {
-  Const        r9, 1
-  AddInt       r10, r6, r9
-  Move         r6, r10
+  Const        r10, 1
+  AddInt       r11, r7, r10
+  Move         r7, r11
   Jump         L1
 L0:
   // t[1] = 1
-  Const        r11, 1
-  Const        r11, 1
-  SetIndex     r1, r11, r11
+  Const        r12, 1
+  Const        r12, 1
+  SetIndex     r1, r12, r12
   SetGlobal    1,1,0,0
   // for i in 1..(n+1) {
-  Const        r11, 1
-  Const        r12, 16
-  Move         r13, r11
+  Const        r12, 1
+  Const        r12, 1
+  AddInt       r13, r0, r12
+  Move         r14, r12
 L9:
-  LessInt      r14, r13, r12
-  JumpIfFalse  r14, L2
+  LessInt      r15, r14, r13
+  JumpIfFalse  r15, L2
   // var j = i
-  Move         r15, r13
+  Move         r16, r14
 L4:
   // while j > 1 {
-  Const        r11, 1
-  LessInt      r16, r11, r15
-  JumpIfFalse  r16, L3
+  Const        r12, 1
+  LessInt      r17, r12, r16
+  JumpIfFalse  r17, L3
   // t[j] = t[j] + t[j-1]
-  Index        r17, r1, r15
-  Const        r11, 1
-  SubInt       r18, r15, r11
-  Index        r19, r1, r18
-  Add          r20, r17, r19
-  SetIndex     r1, r15, r20
+  Index        r18, r1, r16
+  Const        r12, 1
+  SubInt       r19, r16, r12
+  Index        r20, r1, r19
+  Add          r21, r18, r20
+  SetIndex     r1, r16, r21
   SetGlobal    1,1,0,0
   // j = j - 1
-  Const        r11, 1
-  SubInt       r21, r15, r11
-  Move         r15, r21
+  Const        r12, 1
+  SubInt       r22, r16, r12
+  Move         r16, r22
   // while j > 1 {
   Jump         L4
 L3:
   // t[(i+1) as int] = t[i]
-  Index        r22, r1, r13
-  Const        r11, 1
-  AddInt       r23, r13, r11
-  Cast         r24, r23, int
-  SetIndex     r1, r24, r22
+  Index        r23, r1, r14
+  Const        r12, 1
+  AddInt       r24, r14, r12
+  Cast         r25, r24, int
+  SetIndex     r1, r25, r23
   SetGlobal    1,1,0,0
   // j = i + 1
-  Const        r11, 1
-  AddInt       r25, r13, r11
-  Move         r15, r25
+  Const        r12, 1
+  AddInt       r26, r14, r12
+  Move         r16, r26
 L6:
   // while j > 1 {
-  Const        r11, 1
-  LessInt      r26, r11, r15
-  JumpIfFalse  r26, L5
+  Const        r12, 1
+  LessInt      r27, r12, r16
+  JumpIfFalse  r27, L5
   // t[j] = t[j] + t[j-1]
-  Index        r27, r1, r15
-  Const        r11, 1
-  SubInt       r28, r15, r11
-  Index        r29, r1, r28
-  Add          r30, r27, r29
-  SetIndex     r1, r15, r30
+  Index        r28, r1, r16
+  Const        r12, 1
+  SubInt       r29, r16, r12
+  Index        r30, r1, r29
+  Add          r31, r28, r30
+  SetIndex     r1, r16, r31
   SetGlobal    1,1,0,0
   // j = j - 1
-  Const        r11, 1
-  SubInt       r31, r15, r11
-  Move         r15, r31
+  Const        r12, 1
+  SubInt       r32, r16, r12
+  Move         r16, r32
   // while j > 1 {
   Jump         L6
 L5:
   // let cat = t[i+1] - t[i]
-  Const        r11, 1
-  AddInt       r32, r13, r11
-  Index        r33, r1, r32
-  Index        r34, r1, r13
-  Sub          r35, r33, r34
-  Move         r36, r35
+  Const        r12, 1
+  AddInt       r33, r14, r12
+  Index        r34, r1, r33
+  Index        r35, r1, r14
+  Sub          r36, r34, r35
+  Move         r37, r36
   // if i < 10 {
-  Const        r37, 10
-  LessInt      r38, r13, r37
-  JumpIfFalse  r38, L7
+  Const        r38, 10
+  LessInt      r39, r14, r38
+  JumpIfFalse  r39, L7
   // print(" " + str(i) + " : " + str(cat))
-  Const        r39, " "
-  Str          r40, r13
-  Add          r41, r39, r40
-  Const        r42, " : "
-  Add          r43, r41, r42
-  Str          r44, r36
-  Add          r45, r43, r44
-  Print        r45
+  Const        r40, " "
+  Str          r41, r14
+  Add          r42, r40, r41
+  Const        r43, " : "
+  Add          r44, r42, r43
+  Str          r45, r37
+  Add          r46, r44, r45
+  Print        r46
   // if i < 10 {
   Jump         L8
 L7:
   // print(str(i) + " : " + str(cat))
-  Str          r46, r13
-  Const        r42, " : "
-  Add          r47, r46, r42
-  Str          r48, r36
-  Add          r49, r47, r48
-  Print        r49
+  Str          r47, r14
+  Const        r43, " : "
+  Add          r48, r47, r43
+  Str          r49, r37
+  Add          r50, r48, r49
+  Print        r50
 L8:
   // for i in 1..(n+1) {
-  Const        r50, 1
-  AddInt       r51, r13, r50
-  Move         r13, r51
+  Const        r51, 1
+  AddInt       r52, r14, r51
+  Move         r14, r52
   Jump         L9
 L2:
   Return       r0

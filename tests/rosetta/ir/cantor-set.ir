@@ -1,4 +1,4 @@
-func main (regs=90)
+func main (regs=98)
   // let width = 81
   Const        r4, 81
   Move         r0, r4
@@ -13,10 +13,9 @@ func main (regs=90)
   SetGlobal    2,2,0,0
   // for i in 0..height {
   Const        r7, 0
-  Const        r5, 5
   Move         r8, r7
 L3:
-  LessInt      r9, r8, r5
+  LessInt      r9, r8, r1
   JumpIfFalse  r9, L0
   // var row = ""
   Const        r10, ""
@@ -26,8 +25,7 @@ L3:
   Move         r12, r7
 L2:
   // while j < width {
-  Const        r4, 81
-  LessInt      r13, r12, r4
+  LessInt      r13, r12, r0
   JumpIfFalse  r13, L1
   // row = row + "*"
   Const        r14, "*"
@@ -51,146 +49,158 @@ L1:
   Jump         L3
 L0:
   // var stack: list<map<string, int>> = [{"start": 0, "len": width, "index": 1}]
-  Const        r21, [{"index": 1, "len": 81, "start": 0}]
-  Move         r3, r21
+  Const        r22, "start"
+  Const        r7, 0
+  Const        r23, "len"
+  Const        r24, "index"
+  Const        r16, 1
+  Move         r25, r22
+  Move         r26, r7
+  Move         r27, r23
+  Move         r28, r0
+  Move         r29, r24
+  Move         r30, r16
+  MakeMap      r31, 3, r25
+  Move         r21, r31
+  MakeList     r32, 1, r21
+  Move         r3, r32
   SetGlobal    3,3,0,0
 L6:
   // while len(stack) > 0 {
-  Len          r22, r3
+  Len          r33, r3
   Const        r7, 0
-  LessInt      r23, r7, r22
-  JumpIfFalse  r23, L4
+  LessInt      r34, r7, r33
+  JumpIfFalse  r34, L4
   // var frame = stack[len(stack)-1]
-  Len          r24, r3
+  Len          r35, r3
   Const        r16, 1
-  SubInt       r25, r24, r16
-  Index        r26, r3, r25
-  Move         r27, r26
+  SubInt       r36, r35, r16
+  Index        r37, r3, r36
+  Move         r38, r37
   // stack = stack[:len(stack)-1]
-  Const        r28, nil
-  Len          r30, r3
+  Const        r39, nil
+  Len          r41, r3
   Const        r16, 1
-  SubInt       r31, r30, r16
-  Move         r29, r31
-  Slice        r32, r3, r28, r29
-  Move         r3, r32
+  SubInt       r42, r41, r16
+  Move         r40, r42
+  Slice        r43, r3, r39, r40
+  Move         r3, r43
   SetGlobal    3,3,0,0
   // let start = frame["start"]
-  Const        r33, "start"
-  Index        r34, r27, r33
-  Move         r35, r34
-  // let lenSeg = frame["len"]
-  Const        r36, "len"
-  Index        r37, r27, r36
-  Move         r38, r37
-  // let index = frame["index"]
-  Const        r39, "index"
-  Index        r40, r27, r39
-  Move         r41, r40
-  // let seg = (lenSeg / 3) as int
-  Const        r42, 3
-  Div          r43, r38, r42
-  Cast         r44, r43, int
+  Const        r22, "start"
+  Index        r44, r38, r22
   Move         r45, r44
+  // let lenSeg = frame["len"]
+  Const        r23, "len"
+  Index        r46, r38, r23
+  Move         r47, r46
+  // let index = frame["index"]
+  Const        r24, "index"
+  Index        r48, r38, r24
+  Move         r49, r48
+  // let seg = (lenSeg / 3) as int
+  Const        r50, 3
+  Div          r51, r47, r50
+  Cast         r52, r51, int
+  Move         r53, r52
   // if seg == 0 { continue }
   Const        r7, 0
-  Equal        r46, r45, r7
-  JumpIfFalse  r46, L5
+  Equal        r54, r53, r7
+  JumpIfFalse  r54, L5
   Jump         L6
 L5:
   // var i = index
-  Move         r8, r41
+  Move         r8, r49
 L10:
   // while i < height {
-  Const        r5, 5
-  Less         r47, r8, r5
-  JumpIfFalse  r47, L7
+  Less         r55, r8, r1
+  JumpIfFalse  r55, L7
   // var j = start + seg
-  Add          r48, r35, r45
-  Move         r49, r48
+  Add          r56, r45, r53
+  Move         r57, r56
 L9:
   // while j < start + 2 * seg {
-  Const        r50, 2
-  Mul          r51, r50, r45
-  Add          r52, r35, r51
-  Less         r53, r49, r52
-  JumpIfFalse  r53, L8
+  Const        r58, 2
+  Mul          r59, r58, r53
+  Add          r60, r45, r59
+  Less         r61, r57, r60
+  JumpIfFalse  r61, L8
   // lines[i] = setChar(lines[i], j, " ")
-  Index        r57, r2, r8
-  Move         r54, r57
-  Move         r55, r49
-  Const        r58, " "
-  Move         r56, r58
-  Call         r59, setChar, r54, r55, r56
-  SetIndex     r2, r8, r59
+  Index        r65, r2, r8
+  Move         r62, r65
+  Move         r63, r57
+  Const        r66, " "
+  Move         r64, r66
+  Call         r67, setChar, r62, r63, r64
+  SetIndex     r2, r8, r67
   SetGlobal    2,2,0,0
   // j = j + 1
   Const        r16, 1
-  Add          r60, r49, r16
-  Move         r49, r60
+  Add          r68, r57, r16
+  Move         r57, r68
   // while j < start + 2 * seg {
   Jump         L9
 L8:
   // i = i + 1
   Const        r16, 1
-  Add          r61, r8, r16
-  Move         r8, r61
+  Add          r69, r8, r16
+  Move         r8, r69
   // while i < height {
   Jump         L10
 L7:
   // stack = append(stack, {"start": start, "len": seg, "index": index + 1})
-  Const        r33, "start"
-  Const        r36, "len"
-  Const        r39, "index"
+  Const        r22, "start"
+  Const        r23, "len"
+  Const        r24, "index"
   Const        r16, 1
-  Add          r62, r41, r16
-  Move         r63, r33
-  Move         r64, r35
-  Move         r65, r36
-  Move         r66, r45
-  Move         r67, r39
-  Move         r68, r62
-  MakeMap      r69, 3, r63
-  Append       r70, r3, r69
-  Move         r3, r70
+  Add          r70, r49, r16
+  Move         r71, r22
+  Move         r72, r45
+  Move         r73, r23
+  Move         r74, r53
+  Move         r75, r24
+  Move         r76, r70
+  MakeMap      r77, 3, r71
+  Append       r78, r3, r77
+  Move         r3, r78
   SetGlobal    3,3,0,0
   // stack = append(stack, {"start": start + seg * 2, "len": seg, "index": index + 1})
-  Const        r33, "start"
-  Const        r50, 2
-  Mul          r71, r45, r50
-  Add          r72, r35, r71
-  Const        r36, "len"
-  Const        r39, "index"
+  Const        r22, "start"
+  Const        r58, 2
+  Mul          r79, r53, r58
+  Add          r80, r45, r79
+  Const        r23, "len"
+  Const        r24, "index"
   Const        r16, 1
-  Add          r73, r41, r16
-  Move         r74, r33
-  Move         r75, r72
-  Move         r76, r36
-  Move         r77, r45
-  Move         r78, r39
-  Move         r79, r73
-  MakeMap      r80, 3, r74
-  Append       r81, r3, r80
-  Move         r3, r81
+  Add          r81, r49, r16
+  Move         r82, r22
+  Move         r83, r80
+  Move         r84, r23
+  Move         r85, r53
+  Move         r86, r24
+  Move         r87, r81
+  MakeMap      r88, 3, r82
+  Append       r89, r3, r88
+  Move         r3, r89
   SetGlobal    3,3,0,0
   // while len(stack) > 0 {
   Jump         L6
 L4:
   // for line in lines {
-  IterPrep     r82, r2
-  Len          r83, r82
-  Const        r84, 0
+  IterPrep     r90, r2
+  Len          r91, r90
+  Const        r92, 0
 L12:
-  LessInt      r85, r84, r83
-  JumpIfFalse  r85, L11
-  Index        r86, r82, r84
-  Move         r87, r86
+  LessInt      r93, r92, r91
+  JumpIfFalse  r93, L11
+  Index        r94, r90, r92
+  Move         r95, r94
   // print(line)
-  Print        r87
+  Print        r95
   // for line in lines {
-  Const        r88, 1
-  AddInt       r89, r84, r88
-  Move         r84, r89
+  Const        r96, 1
+  AddInt       r97, r92, r96
+  Move         r92, r97
   Jump         L12
 L11:
   Return       r0
