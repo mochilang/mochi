@@ -68,6 +68,24 @@ func isGlobalVar(name string) bool {
 }
 
 var loopCounter int
+var breakStack [][]string
+
+func pushBreakVars(vars []string) {
+	breakStack = append(breakStack, vars)
+}
+
+func popBreakVars() {
+	if len(breakStack) > 0 {
+		breakStack = breakStack[:len(breakStack)-1]
+	}
+}
+
+func currentBreakVars() []string {
+	if len(breakStack) == 0 {
+		return nil
+	}
+	return breakStack[len(breakStack)-1]
+}
 
 func moduleAttrName(name string) string {
 	if len(name) > 0 && name[0] >= 'A' && name[0] <= 'Z' {
@@ -196,7 +214,19 @@ func (b *BreakStmt) emit(w io.Writer, indent int) {
 	for i := 0; i < indent; i++ {
 		io.WriteString(w, "  ")
 	}
-	io.WriteString(w, "throw :break")
+	vars := currentBreakVars()
+	if len(vars) == 0 {
+		io.WriteString(w, "throw :break")
+		return
+	}
+	io.WriteString(w, "throw {:break, {")
+	for i, v := range vars {
+		if i > 0 {
+			io.WriteString(w, ", ")
+		}
+		io.WriteString(w, sanitizeIdent(v))
+	}
+	io.WriteString(w, "}}")
 }
 
 // ContinueStmt represents a continue statement inside loops.
@@ -330,6 +360,7 @@ func (wst *WhileStmt) emit(w io.Writer, indent int) {
 	io.WriteString(w, "if ")
 	wst.Cond.emit(w)
 	io.WriteString(w, " do\n")
+	pushBreakVars(wst.Vars)
 	if wst.Simple {
 		for _, st := range wst.Body {
 			st.emit(w, indent+2)
@@ -394,6 +425,7 @@ func (wst *WhileStmt) emit(w io.Writer, indent int) {
 		io.WriteString(w, "  ")
 	}
 	io.WriteString(w, "end\n")
+	popBreakVars()
 	for i := 0; i < indent; i++ {
 		io.WriteString(w, "  ")
 	}
@@ -441,7 +473,9 @@ func (wst *WhileStmt) emit(w io.Writer, indent int) {
 		for i := 0; i < indent+2; i++ {
 			io.WriteString(w, "  ")
 		}
-		io.WriteString(w, ":break -> ")
+		io.WriteString(w, "{:break, ")
+		io.WriteString(w, wst.Vars[0])
+		io.WriteString(w, "} -> ")
 		io.WriteString(w, wst.Vars[0])
 		io.WriteString(w, "\n")
 		for i := 0; i < indent+1; i++ {
@@ -475,7 +509,14 @@ func (wst *WhileStmt) emit(w io.Writer, indent int) {
 		for i := 0; i < indent+2; i++ {
 			io.WriteString(w, "  ")
 		}
-		io.WriteString(w, ":break -> {")
+		io.WriteString(w, "{:break, {")
+		for i, v := range wst.Vars {
+			if i > 0 {
+				io.WriteString(w, ", ")
+			}
+			io.WriteString(w, v)
+		}
+		io.WriteString(w, "}} -> {")
 		for i, v := range wst.Vars {
 			if i > 0 {
 				io.WriteString(w, ", ")
@@ -838,6 +879,7 @@ func (fs *ForStmt) emit(w io.Writer, indent int) {
 		fs.Source.emit(w)
 	}
 	io.WriteString(w, " do\n")
+	pushBreakVars(fs.Vars)
 	for i := 0; i < indent+2; i++ {
 		io.WriteString(w, "  ")
 	}
@@ -862,6 +904,7 @@ func (fs *ForStmt) emit(w io.Writer, indent int) {
 		io.WriteString(w, "  ")
 	}
 	io.WriteString(w, "end\n")
+	popBreakVars()
 	for i := 0; i < indent; i++ {
 		io.WriteString(w, "  ")
 	}
