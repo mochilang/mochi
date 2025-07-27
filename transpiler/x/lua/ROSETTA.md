@@ -2,64 +2,64 @@
 
 Generated Lua code for programs in `tests/rosetta/x/Mochi`. Each program has a `.lua` file produced by the transpiler and a `.out` file with its runtime output. Compilation or runtime errors are captured in `.error` files.
 
-Transpiled programs: 461/467
+Transpiled programs: 462/467
 
-Last updated: 2025-07-27 21:41 GMT+7
+Last updated: 2025-07-27 22:50 GMT+7
 
 Checklist:
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
-| 1 | 100-doors-2 | ✓ | 159µs | 2.7 KB |
-| 2 | 100-doors-3 | ✓ | 56µs | 2.2 KB |
-| 3 | 100-doors | ✓ | 234µs | 6.0 KB |
-| 4 | 100-prisoners | ✓ | 244.151ms | 1.6 KB |
-| 5 | 15-puzzle-game | ✓ | 119.487ms | 1.2 KB |
+| 1 | 100-doors-2 | ✓ | 568.6ms | 2.7 KB |
+| 2 | 100-doors-3 | ✓ | 568.6ms | 2.1 KB |
+| 3 | 100-doors | ✓ | 568.6ms | 6.0 KB |
+| 4 | 100-prisoners | ✓ | 244.151ms | 2.2 KB |
+| 5 | 15-puzzle-game | ✓ | 119.487ms | 1.9 KB |
 | 6 | 15-puzzle-solver | ✓ | 568.6ms | 224 B |
-| 7 | 2048 | ✓ | 884.042ms | 2.0 KB |
-| 8 | 21-game | ✓ | 726.918ms | 304 B |
-| 9 | 24-game-solve | ✓ | 245.103ms | 2.1 KB |
-| 10 | 24-game | ✓ | 1.704ms | 248 B |
-| 11 | 4-rings-or-4-squares-puzzle | ✓ | 67.993ms | 615.3 KB |
-| 12 | 9-billion-names-of-god-the-integer | ✓ | 3m18.319678s | 1.3 MB |
-| 13 | 99-bottles-of-beer-2 | ✓ | 30.276ms | 528 B |
-| 14 | 99-bottles-of-beer | ✓ | 571µs | 208 B |
-| 15 | DNS-query | ✓ | 59µs | 192 B |
-| 16 | Duffinian-numbers |   |  |  |
-| 17 | a+b | ✓ | 118µs | 168 B |
-| 18 | abbreviations-automatic | ✓ | 11.754ms | 4.5 KB |
-| 19 | abbreviations-easy | ✓ | 1.549ms | 1.6 KB |
-| 20 | abbreviations-simple | ✓ | 2.17ms | 8.4 KB |
-| 21 | abc-problem | ✓ | 1.294ms | 2.0 KB |
-| 22 | abelian-sandpile-model-identity | ✓ | 354µs | 2.5 KB |
-| 23 | abelian-sandpile-model | ✓ | 334µs | 608 B |
-| 24 | abstract-type | ✓ | 33µs | 304 B |
-| 25 | abundant-deficient-and-perfect-number-classifications | ✓ | 4.041724s | 136 B |
-| 26 | abundant-odd-numbers | ✓ | 7.727416s | 1.8 KB |
-| 27 | accumulator-factory | ✓ | 84µs | 368 B |
-| 28 | achilles-numbers | ✓ | 95.787ms | 16.2 KB |
-| 29 | ackermann-function-2 | ✓ | 110µs | 240 B |
-| 30 | ackermann-function-3 | ✓ | 132µs | 640 B |
-| 31 | ackermann-function | ✓ | 716µs | 26.6 KB |
-| 32 | active-directory-connect | ✓ | 32µs | 136 B |
-| 33 | active-directory-search-for-a-user | ✓ | 36µs | 200 B |
-| 34 | active-object | ✓ | 209µs | 96 B |
+| 7 | 2048 | ✓ | 884.042ms | 2.6 KB |
+| 8 | 21-game | ✓ | 726.918ms | 944 B |
+| 9 | 24-game-solve | ✓ | 245.103ms | 2.5 KB |
+| 10 | 24-game | ✓ | 1.704ms | 936 B |
+| 11 | 4-rings-or-4-squares-puzzle | ✓ | 568.6ms | 615.9 KB |
+| 12 | 9-billion-names-of-god-the-integer | ✓ | 568.6ms | 138.9 KB |
+| 13 | 99-bottles-of-beer-2 | ✓ | 568.6ms | 1.2 KB |
+| 14 | 99-bottles-of-beer | ✓ | 568.6ms | 2.8 KB |
+| 15 | DNS-query | ✓ | 568.6ms | 128 B |
+| 16 | Duffinian-numbers | ✓ | 568.6ms | 2.5 KB |
+| 17 | a+b | ✓ | 568.6ms | 808 B |
+| 18 | abbreviations-automatic | ✓ | 568.6ms | 5.2 KB |
+| 19 | abbreviations-easy | ✓ | 568.6ms | 2.3 KB |
+| 20 | abbreviations-simple | ✓ | 568.6ms | 9.0 KB |
+| 21 | abc-problem | ✓ | 568.6ms | 2.7 KB |
+| 22 | abelian-sandpile-model-identity | ✓ | 568.6ms | 3.1 KB |
+| 23 | abelian-sandpile-model | ✓ | 568.6ms | 3.2 KB |
+| 24 | abstract-type | ✓ | 568.6ms | 2.9 KB |
+| 25 | abundant-deficient-and-perfect-number-classifications | ✓ | 568.6ms | 776 B |
+| 26 | abundant-odd-numbers | ✓ | 568.6ms | 2.4 KB |
+| 27 | accumulator-factory | ✓ | 568.6ms | 1008 B |
+| 28 | achilles-numbers | ✓ | 568.6ms | 16.9 KB |
+| 29 | ackermann-function-2 | ✓ | 568.6ms | 240 B |
+| 30 | ackermann-function-3 | ✓ | 568.6ms | 1.3 KB |
+| 31 | ackermann-function | ✓ | 568.6ms | 27.2 KB |
+| 32 | active-directory-connect | ✓ | 568.6ms | 136 B |
+| 33 | active-directory-search-for-a-user | ✓ | 568.6ms | 840 B |
+| 34 | active-object | ✓ | 568.6ms | 32 B |
 | 35 | add-a-variable-to-a-class-instance-at-runtime | ✓ | 255µs | 168 B |
-| 36 | additive-primes | ✓ | 307µs | 280 B |
-| 37 | address-of-a-variable | ✓ | 92µs | 64 B |
-| 38 | adfgvx-cipher | ✓ | 731µs | 680 B |
-| 39 | aks-test-for-primes | ✓ | 217µs | 248 B |
-| 40 | algebraic-data-types | ✓ | 313µs | 7.7 KB |
-| 41 | align-columns | ✓ | 1.77ms | 4.3 KB |
-| 42 | aliquot-sequence-classifications | ✓ | 273.763ms | 624 B |
-| 43 | almkvist-giullera-formula-for-pi | ✓ | 13.31461s | 39.7 KB |
-| 44 | almost-prime | ✓ | 669µs | 304 B |
-| 45 | amb | ✓ | 62µs | 1.8 KB |
-| 46 | amicable-pairs | ✓ | 12.414371s | 319.0 KB |
-| 47 | anagrams-deranged-anagrams | ✓ | 140µs | 312 B |
-| 48 | anagrams | ✓ | 533µs | 312 B |
-| 49 | angle-difference-between-two-bearings-1 | ✓ | 44µs | 984 B |
-| 50 | angle-difference-between-two-bearings-2 | ✓ | 62µs | 1.4 KB |
+| 36 | additive-primes | ✓ | 568.6ms | 2.9 KB |
+| 37 | address-of-a-variable | ✓ | 568.6ms |  |
+| 38 | adfgvx-cipher | ✓ |  | 1.3 KB |
+| 39 | aks-test-for-primes | ✓ | 568.6ms | 2.9 KB |
+| 40 | algebraic-data-types | ✓ | 568.6ms | 8.3 KB |
+| 41 | align-columns | ✓ | 568.6ms | 5.0 KB |
+| 42 | aliquot-sequence-classifications | ✓ | 568.6ms | 1.2 KB |
+| 43 | almkvist-giullera-formula-for-pi | ✓ | 568.6ms | 40.4 KB |
+| 44 | almost-prime | ✓ | 568.6ms | 944 B |
+| 45 | amb | ✓ | 568.6ms | 1.2 KB |
+| 46 | amicable-pairs | ✓ | 568.6ms | 321.7 KB |
+| 47 | anagrams-deranged-anagrams | ✓ | 568.6ms | 952 B |
+| 48 | anagrams | ✓ | 568.6ms | 952 B |
+| 49 | angle-difference-between-two-bearings-1 | ✓ | 568.6ms | 1.5 KB |
+| 50 | angle-difference-between-two-bearings-2 | ✓ | 568.6ms | 1.9 KB |
 | 51 | angles-geometric-normalization-and-conversion | ✓ | 366µs | 776 B |
 | 52 | animate-a-pendulum | ✓ | 42µs | 160 B |
 | 53 | animation | ✓ | 889µs | 102 B |
