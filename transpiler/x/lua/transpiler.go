@@ -149,6 +149,20 @@ local function _md5(bs)
 end
 `
 
+const helperEnviron = `
+local function _environ()
+  local p = io.popen('env')
+  local t = {}
+  if p then
+    for line in p:lines() do
+      t[#t+1] = line
+    end
+    p:close()
+  end
+  return t
+end
+`
+
 const helperIndexOf = `
 local function _indexOf(s, ch)
   if type(s) == 'string' then
@@ -2399,6 +2413,8 @@ func collectHelpers(p *Program) map[string]bool {
 				used["split"] = true
 			case "parseIntStr":
 				used["parseIntStr"] = true
+			case "_environ":
+				used["environ"] = true
 			}
 			for _, a := range ex.Args {
 				walkExpr(a)
@@ -2571,6 +2587,9 @@ func Emit(p *Program) []byte {
 	}
 	if used["indexOf"] {
 		b.WriteString(helperIndexOf)
+	}
+	if used["environ"] {
+		b.WriteString(helperEnviron)
 	}
 	if used["parseIntStr"] {
 		b.WriteString(helperParseIntStr)
@@ -2798,6 +2817,12 @@ func convertPostfix(p *parser.PostfixExpr) (Expr, error) {
 							}
 						}
 						expr = cexpr
+					} else if id.Name == "os" && op.Field.Name == "Getenv" {
+						expr = &CallExpr{Func: "os.getenv", Args: args}
+						continue
+					} else if id.Name == "os" && op.Field.Name == "Environ" {
+						expr = &CallExpr{Func: "_environ"}
+						continue
 					} else if id.Name == "stdout" && op.Field.Name == "write" {
 						// map stdout.write to io.write
 						expr = &CallExpr{Func: "io.write", Args: args}
@@ -2932,7 +2957,7 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			}
 		}
 		switch p.Call.Func {
-		case "append", "avg", "sum", "contains", "len", "count", "now", "sha256", "indexOf", "parseIntStr", "repeat":
+		case "append", "avg", "sum", "contains", "len", "count", "now", "sha256", "indexOf", "parseIntStr", "repeat", "_environ":
 			// handled during emission
 			return ce, nil
 		case "substr":

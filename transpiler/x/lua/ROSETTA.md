@@ -2,9 +2,9 @@
 
 Generated Lua code for programs in `tests/rosetta/x/Mochi`. Each program has a `.lua` file produced by the transpiler and a `.out` file with its runtime output. Compilation or runtime errors are captured in `.error` files.
 
-Transpiled programs: 349/465
+Transpiled programs: 357/465
 
-Last updated: 2025-07-27 15:57 GMT+7
+Last updated: 2025-07-27 16:28 GMT+7
 
 Checklist:
 
@@ -362,14 +362,14 @@ Checklist:
 | 350 | enumerations-1 | ✓ | 3µs | 64 B |
 | 351 | enumerations-2 | ✓ | 2µs | 64 B |
 | 352 | enumerations-3 | ✓ | 3µs | 64 B |
-| 353 | enumerations-4 |   |  |  |
-| 354 | environment-variables-1 |   |  |  |
-| 355 | environment-variables-2 |   |  |  |
-| 356 | equal-prime-and-composite-sums |   |  |  |
-| 357 | equilibrium-index |   |  |  |
-| 358 | erd-s-nicolas-numbers |   |  |  |
-| 359 | erd-s-selfridge-categorization-of-primes |   |  |  |
-| 360 | esthetic-numbers |   |  |  |
+| 353 | enumerations-4 | ✓ | 2µs | 248 B |
+| 354 | environment-variables-1 | ✓ | 29µs | 248 B |
+| 355 | environment-variables-2 | ✓ | 224µs |  |
+| 356 | equal-prime-and-composite-sums | ✓ | 44.400383s | 392 B |
+| 357 | equilibrium-index | ✓ | 552.953ms | 440 B |
+| 358 | erd-s-nicolas-numbers | ✓ |  |  |
+| 359 | erd-s-selfridge-categorization-of-primes | ✓ | 23.051ms | 36.6 KB |
+| 360 | esthetic-numbers | ✓ | 32.245331s | 1.0 MB |
 | 361 | ethiopian-multiplication |   |  |  |
 | 362 | euclid-mullin-sequence |   |  |  |
 | 363 | euler-method |   |  |  |
