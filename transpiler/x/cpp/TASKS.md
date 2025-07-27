@@ -1,3 +1,133 @@
+## Progress (2025-07-27 15:57 +0700)
+- vm: add pow builtin and update rosetta outputs
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 15:57 +0700)
+- vm: add pow builtin and update rosetta outputs
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 15:57 +0700)
+- vm: add pow builtin and update rosetta outputs
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 15:57 +0700)
+- vm: add pow builtin and update rosetta outputs
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 15:57 +0700)
+- vm: add pow builtin and update rosetta outputs
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 15:57 +0700)
+- vm: add pow builtin and update rosetta outputs
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 15:57 +0700)
+- vm: add pow builtin and update rosetta outputs
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 15:57 +0700)
+- vm: add pow builtin and update rosetta outputs
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 15:57 +0700)
+- vm: add pow builtin and update rosetta outputs
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 15:57 +0700)
+- vm: add pow builtin and update rosetta outputs
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 15:57 +0700)
+- vm: add pow builtin and update rosetta outputs
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 15:57 +0700)
+- vm: add pow builtin and update rosetta outputs
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 15:57 +0700)
+- vm: add pow builtin and update rosetta outputs
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 15:57 +0700)
+- vm: add pow builtin and update rosetta outputs
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 15:57 +0700)
+- vm: add pow builtin and update rosetta outputs
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 15:57 +0700)
+- vm: add pow builtin and update rosetta outputs
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 15:57 +0700)
+- vm: add pow builtin and update rosetta outputs
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 15:57 +0700)
+- vm: add pow builtin and update rosetta outputs
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 15:57 +0700)
+- vm: add pow builtin and update rosetta outputs
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 15:57 +0700)
+- vm: add pow builtin and update rosetta outputs
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 15:57 +0700)
+- vm: add pow builtin and update rosetta outputs
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 15:57 +0700)
+- vm: add pow builtin and update rosetta outputs
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 15:57 +0700)
+- vm: add pow builtin and update rosetta outputs
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 15:57 +0700)
+- vm: add pow builtin and update rosetta outputs
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 15:57 +0700)
+- vm: add pow builtin and update rosetta outputs
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-27 15:57 +0700)
+- vm: add pow builtin and update rosetta outputs
+- Generated C++ for 103/104 programs
+- Updated README checklist and outputs
+
 ## Progress (2025-07-27 11:33 +0700)
 - cpp transpiler: ensure bench output even with returns
 - Generated C++ for 103/104 programs

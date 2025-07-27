@@ -2,7 +2,7 @@
 
 This directory stores C++ code generated from Mochi programs in `tests/rosetta/x/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.cpp` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (129/452) - Last updated 2025-07-27 11:33 +0700:
+Checklist of programs that currently transpile and run (140/465) - Last updated 2025-07-27 15:57 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | 100-doors-2 | ✓ | 222.0µs | 13.12MB |
@@ -154,20 +154,20 @@ Checklist of programs that currently transpile and run (129/452) - Last updated 
 | 147 | calendar---for-real-programmers-2 | ✓ | 655.0µs | 13.56MB |
 | 148 | calendar | ✓ | 704.0µs | 13.25MB |
 | 149 | calkin-wilf-sequence |   | 415.0µs | 13.49MB |
-| 150 | call-a-foreign-language-function | ✓ |  |  |
-| 151 | call-a-function-1 | ✓ |  |  |
-| 152 | call-a-function-10 | ✓ |  |  |
-| 153 | call-a-function-11 |   |  |  |
-| 154 | call-a-function-12 |   |  |  |
-| 155 | call-a-function-2 |   |  |  |
-| 156 | call-a-function-3 |   |  |  |
-| 157 | call-a-function-4 |   |  |  |
-| 158 | call-a-function-5 |   |  |  |
-| 159 | call-a-function-6 |   |  |  |
-| 160 | call-a-function-7 |   |  |  |
-| 161 | call-a-function-8 |   |  |  |
-| 162 | call-a-function-9 |   |  |  |
-| 163 | call-an-object-method-1 |   |  |  |
+| 150 | call-a-foreign-language-function | ✓ | 152.0µs | 12.61MB |
+| 151 | call-a-function-1 | ✓ | 10.0µs | 12.54MB |
+| 152 | call-a-function-10 | ✓ | 36.0µs | 12.54MB |
+| 153 | call-a-function-11 | ✓ | 311.0µs | 12.50MB |
+| 154 | call-a-function-12 | ✓ | 250.0µs | 12.89MB |
+| 155 | call-a-function-2 | ✓ |  |  |
+| 156 | call-a-function-3 | ✓ |  |  |
+| 157 | call-a-function-4 | ✓ |  |  |
+| 158 | call-a-function-5 | ✓ |  |  |
+| 159 | call-a-function-6 | ✓ |  |  |
+| 160 | call-a-function-7 | ✓ |  |  |
+| 161 | call-a-function-8 | ✓ |  |  |
+| 162 | call-a-function-9 | ✓ |  |  |
+| 163 | call-an-object-method-1 | ✓ |  |  |
 | 164 | call-an-object-method-2 |   |  |  |
 | 165 | call-an-object-method-3 |   |  |  |
 | 166 | call-an-object-method |   |  |  |
@@ -381,79 +381,92 @@ Checklist of programs that currently transpile and run (129/452) - Last updated 
 | 374 | execute-a-markov-algorithm |   |  |  |
 | 375 | execute-a-system-command |   |  |  |
 | 376 | execute-brain- |   |  |  |
-| 377 | execute-computer-zero |   |  |  |
-| 378 | execute-hq9+ |   |  |  |
-| 379 | execute-snusp |   |  |  |
-| 380 | exponentiation-operator |   |  |  |
-| 381 | exponentiation-order |   |  |  |
-| 382 | exponentiation-with-infix-operators-in-or-operating-on-the-base |   |  |  |
-| 383 | extend-your-language |   |  |  |
-| 384 | extensible-prime-generator |   |  |  |
-| 385 | extreme-floating-point-values |   |  |  |
-| 386 | faces-from-a-mesh |   |  |  |
-| 387 | fasta-format |   |  |  |
-| 388 | faulhabers-triangle |   |  |  |
-| 389 | feigenbaum-constant-calculation |   |  |  |
-| 390 | fermat-numbers |   |  |  |
-| 391 | fibonacci-n-step-number-sequences |   |  |  |
-| 392 | fibonacci-sequence-1 |   |  |  |
-| 393 | fibonacci-sequence-2 |   |  |  |
-| 394 | fibonacci-sequence-3 |   |  |  |
-| 395 | fibonacci-sequence-4 |   |  |  |
-| 396 | fibonacci-word-fractal |   |  |  |
-| 397 | fibonacci-word |   |  |  |
-| 398 | file-extension-is-in-extensions-list |   |  |  |
-| 399 | file-input-output-1 |   |  |  |
-| 400 | file-input-output-2 |   |  |  |
-| 401 | file-modification-time |   |  |  |
-| 402 | file-size-distribution |   |  |  |
-| 403 | file-size |   |  |  |
-| 404 | filter |   |  |  |
-| 405 | find-chess960-starting-position-identifier |   |  |  |
-| 406 | find-common-directory-path |   |  |  |
-| 407 | find-duplicate-files |   |  |  |
-| 408 | find-if-a-point-is-within-a-triangle |   |  |  |
-| 409 | find-largest-left-truncatable-prime-in-a-given-base |   |  |  |
-| 410 | find-limit-of-recursion |   |  |  |
-| 411 | find-palindromic-numbers-in-both-binary-and-ternary-bases |   |  |  |
-| 412 | find-the-intersection-of-a-line-with-a-plane |   |  |  |
-| 413 | find-the-intersection-of-two-lines |   |  |  |
-| 414 | find-the-last-sunday-of-each-month |   |  |  |
-| 415 | find-the-missing-permutation |   |  |  |
-| 416 | fivenum-1 |   |  |  |
-| 417 | fivenum-2 |   |  |  |
-| 418 | fixed-length-records-1 |   |  |  |
-| 419 | fixed-length-records-2 |   |  |  |
-| 420 | fizzbuzz-1 |   |  |  |
-| 421 | fizzbuzz-2 |   |  |  |
-| 422 | flatten-a-list-1 |   |  |  |
-| 423 | flatten-a-list-2 |   |  |  |
-| 424 | flipping-bits-game |   |  |  |
-| 425 | flow-control-structures-1 |   |  |  |
-| 426 | flow-control-structures-2 |   |  |  |
-| 427 | flow-control-structures-3 |   |  |  |
-| 428 | flow-control-structures-4 |   |  |  |
-| 429 | floyd-warshall-algorithm |   |  |  |
-| 430 | floyds-triangle |   |  |  |
-| 431 | forest-fire |   |  |  |
-| 432 | fork |   |  |  |
-| 433 | ftp |   |  |  |
-| 434 | gamma-function |   |  |  |
-| 435 | general-fizzbuzz |   |  |  |
-| 436 | generic-swap |   |  |  |
-| 437 | get-system-command-output |   |  |  |
-| 438 | giuga-numbers |   |  |  |
-| 439 | globally-replace-text-in-several-files |   |  |  |
-| 440 | goldbachs-comet |   |  |  |
-| 441 | golden-ratio-convergence |   |  |  |
-| 442 | graph-colouring |   |  |  |
-| 443 | gray-code |   |  |  |
-| 444 | http |   |  |  |
-| 445 | image-noise |   |  |  |
-| 446 | loops-increment-loop-index-within-loop-body |   |  |  |
-| 447 | md5 |   |  |  |
-| 448 | nim-game |   |  |  |
-| 449 | plasma-effect |   |  |  |
-| 450 | sorting-algorithms-bubble-sort |   |  |  |
-| 451 | window-management |   |  |  |
-| 452 | zumkeller-numbers |   |  |  |
+| 377 | execute-computer-zero-1 |   |  |  |
+| 378 | execute-computer-zero |   |  |  |
+| 379 | execute-hq9+ |   |  |  |
+| 380 | execute-snusp |   |  |  |
+| 381 | exponentiation-operator-2 |   |  |  |
+| 382 | exponentiation-operator |   |  |  |
+| 383 | exponentiation-order |   |  |  |
+| 384 | exponentiation-with-infix-operators-in-or-operating-on-the-base |   |  |  |
+| 385 | extend-your-language |   |  |  |
+| 386 | extensible-prime-generator |   |  |  |
+| 387 | extreme-floating-point-values |   |  |  |
+| 388 | faces-from-a-mesh-2 |   |  |  |
+| 389 | faces-from-a-mesh |   |  |  |
+| 390 | factorial-base-numbers-indexing-permutations-of-a-collection |   |  |  |
+| 391 | factorial-primes |   |  |  |
+| 392 | factorial |   |  |  |
+| 393 | factorions |   |  |  |
+| 394 | factors-of-a-mersenne-number |   |  |  |
+| 395 | factors-of-an-integer |   |  |  |
+| 396 | fairshare-between-two-and-more |   |  |  |
+| 397 | farey-sequence |   |  |  |
+| 398 | fast-fourier-transform |   |  |  |
+| 399 | fasta-format |   |  |  |
+| 400 | faulhabers-formula |   |  |  |
+| 401 | faulhabers-triangle |   |  |  |
+| 402 | feigenbaum-constant-calculation |   |  |  |
+| 403 | fermat-numbers |   |  |  |
+| 404 | fibonacci-n-step-number-sequences |   |  |  |
+| 405 | fibonacci-sequence-1 |   |  |  |
+| 406 | fibonacci-sequence-2 |   |  |  |
+| 407 | fibonacci-sequence-3 |   |  |  |
+| 408 | fibonacci-sequence-4 |   |  |  |
+| 409 | fibonacci-word-fractal |   |  |  |
+| 410 | fibonacci-word |   |  |  |
+| 411 | file-extension-is-in-extensions-list |   |  |  |
+| 412 | file-input-output-1 |   |  |  |
+| 413 | file-input-output-2 |   |  |  |
+| 414 | file-modification-time |   |  |  |
+| 415 | file-size-distribution |   |  |  |
+| 416 | file-size |   |  |  |
+| 417 | filter |   |  |  |
+| 418 | find-chess960-starting-position-identifier |   |  |  |
+| 419 | find-common-directory-path |   |  |  |
+| 420 | find-duplicate-files |   |  |  |
+| 421 | find-if-a-point-is-within-a-triangle |   |  |  |
+| 422 | find-largest-left-truncatable-prime-in-a-given-base |   |  |  |
+| 423 | find-limit-of-recursion |   |  |  |
+| 424 | find-palindromic-numbers-in-both-binary-and-ternary-bases |   |  |  |
+| 425 | find-the-intersection-of-a-line-with-a-plane |   |  |  |
+| 426 | find-the-intersection-of-two-lines |   |  |  |
+| 427 | find-the-last-sunday-of-each-month |   |  |  |
+| 428 | find-the-missing-permutation |   |  |  |
+| 429 | fivenum-1 |   |  |  |
+| 430 | fivenum-2 |   |  |  |
+| 431 | fixed-length-records-1 |   |  |  |
+| 432 | fixed-length-records-2 |   |  |  |
+| 433 | fizzbuzz-1 |   |  |  |
+| 434 | fizzbuzz-2 |   |  |  |
+| 435 | flatten-a-list-1 |   |  |  |
+| 436 | flatten-a-list-2 |   |  |  |
+| 437 | flipping-bits-game |   |  |  |
+| 438 | flow-control-structures-1 |   |  |  |
+| 439 | flow-control-structures-2 |   |  |  |
+| 440 | flow-control-structures-3 |   |  |  |
+| 441 | flow-control-structures-4 |   |  |  |
+| 442 | floyd-warshall-algorithm |   |  |  |
+| 443 | floyds-triangle |   |  |  |
+| 444 | forest-fire |   |  |  |
+| 445 | fork |   |  |  |
+| 446 | ftp |   |  |  |
+| 447 | gamma-function |   |  |  |
+| 448 | general-fizzbuzz |   |  |  |
+| 449 | generic-swap |   |  |  |
+| 450 | get-system-command-output |   |  |  |
+| 451 | giuga-numbers |   |  |  |
+| 452 | globally-replace-text-in-several-files |   |  |  |
+| 453 | goldbachs-comet |   |  |  |
+| 454 | golden-ratio-convergence |   |  |  |
+| 455 | graph-colouring |   |  |  |
+| 456 | gray-code |   |  |  |
+| 457 | http |   |  |  |
+| 458 | image-noise |   |  |  |
+| 459 | loops-increment-loop-index-within-loop-body |   |  |  |
+| 460 | md5 |   |  |  |
+| 461 | nim-game |   |  |  |
+| 462 | plasma-effect |   |  |  |
+| 463 | sorting-algorithms-bubble-sort |   |  |  |
+| 464 | window-management |   |  |  |
+| 465 | zumkeller-numbers |   |  |  |

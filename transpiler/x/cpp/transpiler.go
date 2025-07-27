@@ -1175,7 +1175,9 @@ func (s *StringLit) emit(w io.Writer) {
 	fmt.Fprintf(w, "std::string(%q)", s.Value)
 }
 
-func (i *IntLit) emit(w io.Writer) { fmt.Fprintf(w, "%d", i.Value) }
+func (i *IntLit) emit(w io.Writer) {
+	fmt.Fprintf(w, "int64_t(%d)", i.Value)
+}
 
 func (f *FloatLit) emit(w io.Writer) {
 	if f.Value == float64(int(f.Value)) {
@@ -1203,6 +1205,9 @@ func (s *StructLit) emit(w io.Writer) {
 	for i, f := range s.Fields {
 		if i > 0 {
 			io.WriteString(w, ", ")
+		}
+		if f.Name != "" {
+			io.WriteString(w, "."+safeName(f.Name)+" = ")
 		}
 		f.Value.emit(w)
 	}
@@ -1681,7 +1686,13 @@ func (v *VarRef) emit(w io.Writer) {
 	}
 	if currentReceiver != "" {
 		if currentReceiverFields[v.Name] {
-			io.WriteString(w, "self->"+safeName(v.Name))
+			io.WriteString(w, "self."+safeName(v.Name))
+			return
+		}
+		_, lok := localTypes[v.Name]
+		_, gok := globalTypes[v.Name]
+		if !lok && !gok {
+			io.WriteString(w, "self."+safeName(v.Name))
 			return
 		}
 	}
@@ -4176,6 +4187,12 @@ func convertFun(fn *parser.FunStmt) (*Func, error) {
 		ret = cppType(*fn.Return.Simple)
 	} else if fn.Return.Generic != nil {
 		ret = cppType(typeRefString(&parser.TypeRef{Generic: fn.Return.Generic}))
+		if ret == "std::vector<auto>" {
+			if currentProgram != nil {
+				currentProgram.addInclude("<any>")
+			}
+			ret = "std::vector<std::any>"
+		}
 	} else {
 		ret = "auto"
 	}
@@ -5770,6 +5787,12 @@ func cppType(t string) string {
 		useBigRat = true
 		return "BigRat"
 	}
+	if strings.HasPrefix(t, "fun(") {
+		if currentProgram != nil {
+			currentProgram.addInclude("<any>")
+		}
+		return "std::any"
+	}
 	if strings.HasPrefix(t, "list<") && strings.HasSuffix(t, ">") {
 		elem := strings.TrimSuffix(strings.TrimPrefix(t, "list<"), ">")
 		return fmt.Sprintf("std::vector<%s>", cppType(strings.TrimSpace(elem)))
@@ -5821,6 +5844,11 @@ func cppTypeFrom(tp types.Type) string {
 	case types.StringType:
 		return "std::string"
 	case types.AnyType:
+		if currentProgram != nil {
+			currentProgram.addInclude("<any>")
+		}
+		return "std::any"
+	case types.FuncType:
 		if currentProgram != nil {
 			currentProgram.addInclude("<any>")
 		}
