@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated TypeScript code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/TypeScript`.
-Last updated: 2025-07-27 13:13 UTC
+Last updated: 2025-07-27 13:34 UTC
 
 ## Rosetta Golden Test Checklist (442/467)
 | Index | Name | Status | Duration | Memory |
@@ -157,56 +157,56 @@ Last updated: 2025-07-27 13:13 UTC
 | 148 | calendar | ✓ | 5.892ms | 3.0 MB |
 | 149 | calkin-wilf-sequence | ✓ | 3.01ms | 512.0 KB |
 | 150 | call-a-foreign-language-function | ✓ | 570µs | 128.0 KB |
-| 151 | call-a-function-1 | ✓ | 7µs |  |
-| 152 | call-a-function-10 | ✓ | 62µs |  |
-| 153 | call-a-function-11 | ✓ | 944µs | 128.0 KB |
-| 154 | call-a-function-12 | ✓ | 360µs | 128.0 KB |
-| 155 | call-a-function-2 | ✓ | 82µs |  |
-| 156 | call-a-function-3 | ✓ | 26µs |  |
-| 157 | call-a-function-4 | ✓ | 21µs |  |
-| 158 | call-a-function-5 | ✓ | 296µs | 128.0 KB |
-| 159 | call-a-function-6 | ✓ | 346µs |  |
-| 160 | call-a-function-7 | ✓ | 16µs |  |
-| 161 | call-a-function-8 | ✓ | 79µs |  |
-| 162 | call-a-function-9 | ✓ | 57µs |  |
-| 163 | call-an-object-method-1 | ✓ | 34µs |  |
-| 164 | call-an-object-method-2 | ✓ | 2µs |  |
-| 165 | call-an-object-method-3 | ✓ | 31µs |  |
-| 166 | call-an-object-method | ✓ | 31µs |  |
-| 167 | camel-case-and-snake-case | ✓ | 2.649ms | 512.0 KB |
-| 168 | canny-edge-detector | ✓ | 2.268ms | 128.0 KB |
-| 169 | canonicalize-cidr | ✓ | 2.183ms | 256.0 KB |
-| 170 | cantor-set | ✓ | 2.073ms | 128.0 KB |
-| 171 | carmichael-3-strong-pseudoprimes | ✓ | 3.582ms | 2.9 MB |
-| 172 | cartesian-product-of-two-or-more-lists-1 | ✓ | 1.55ms | 128.0 KB |
-| 173 | cartesian-product-of-two-or-more-lists-2 | ✓ | 2.919ms | 128.0 KB |
-| 174 | cartesian-product-of-two-or-more-lists-3 | ✓ | 2.144ms | 384.0 KB |
-| 175 | cartesian-product-of-two-or-more-lists-4 | ✓ | 2.211ms | 384.0 KB |
-| 176 | case-sensitivity-of-identifiers | ✓ | 1.089ms | 128.0 KB |
-| 177 | casting-out-nines | ✓ | 4.668ms | 3.0 MB |
-| 178 | catalan-numbers-1 | ✓ | 2.064ms | 128.0 KB |
-| 179 | catalan-numbers-2 | ✓ | 1.703ms | 128.0 KB |
-| 180 | catalan-numbers-pascals-triangle | ✓ | 2.871ms | 384.0 KB |
-| 181 | catamorphism | ✓ | 1.082ms |  |
-| 182 | catmull-clark-subdivision-surface | ✓ | 6.114ms | 640.0 KB |
-| 183 | chaocipher | ✓ | 1.362ms | 256.0 KB |
-| 184 | chaos-game | ✓ | 9.482ms | 4.0 MB |
-| 185 | character-codes-1 | ✓ | 602µs | 128.0 KB |
-| 186 | character-codes-2 | ✓ | 602µs |  |
-| 187 | character-codes-3 | ✓ | 965µs | 128.0 KB |
-| 188 | character-codes-4 | ✓ | 632µs |  |
-| 189 | character-codes-5 | ✓ | 1.052ms | 128.0 KB |
-| 190 | chat-server | ✓ | 935µs | 128.0 KB |
-| 191 | check-machin-like-formulas | ✓ | 3.989ms | 1.0 MB |
-| 192 | check-that-file-exists | ✓ | 767µs |  |
-| 193 | checkpoint-synchronization-1 | ✓ | 1.911ms | 128.0 KB |
-| 194 | checkpoint-synchronization-2 | ✓ | 1.348ms | 128.0 KB |
-| 195 | checkpoint-synchronization-3 | ✓ | 1.74ms | 256.0 KB |
-| 196 | checkpoint-synchronization-4 | ✓ | 2.807ms | 256.0 KB |
-| 197 | chernicks-carmichael-numbers | ✓ | 111.369ms | 13.8 MB |
-| 198 | cheryls-birthday | ✓ | 1.458ms |  |
-| 199 | chinese-remainder-theorem | ✓ | 487µs |  |
-| 200 | chinese-zodiac | ✓ | 742µs | 128.0 KB |
+| 151 | call-a-function-1 | ✓ | 8µs |  |
+| 152 | call-a-function-10 | ✓ | 63µs |  |
+| 153 | call-a-function-11 | ✓ | 903µs | 128.0 KB |
+| 154 | call-a-function-12 | ✓ | 740µs | 128.0 KB |
+| 155 | call-a-function-2 | ✓ | 75µs |  |
+| 156 | call-a-function-3 | ✓ | 74µs |  |
+| 157 | call-a-function-4 | ✓ | 35µs |  |
+| 158 | call-a-function-5 | ✓ | 771µs | 128.0 KB |
+| 159 | call-a-function-6 | ✓ | 651µs | 128.0 KB |
+| 160 | call-a-function-7 | ✓ | 65µs |  |
+| 161 | call-a-function-8 | ✓ | 184µs |  |
+| 162 | call-a-function-9 | ✓ | 153µs |  |
+| 163 | call-an-object-method-1 | ✓ | 53µs |  |
+| 164 | call-an-object-method-2 | ✓ | 5µs |  |
+| 165 | call-an-object-method-3 | ✓ | 30µs |  |
+| 166 | call-an-object-method | ✓ | 29µs |  |
+| 167 | camel-case-and-snake-case | ✓ | 2.614ms | 384.0 KB |
+| 168 | canny-edge-detector | ✓ | 1.453ms | 256.0 KB |
+| 169 | canonicalize-cidr | ✓ | 1.764ms | 128.0 KB |
+| 170 | cantor-set | ✓ | 1.773ms | 128.0 KB |
+| 171 | carmichael-3-strong-pseudoprimes | ✓ | 5.978ms | 2.6 MB |
+| 172 | cartesian-product-of-two-or-more-lists-1 | ✓ | 1.133ms | 128.0 KB |
+| 173 | cartesian-product-of-two-or-more-lists-2 | ✓ | 2.196ms | 384.0 KB |
+| 174 | cartesian-product-of-two-or-more-lists-3 | ✓ | 2.918ms | 256.0 KB |
+| 175 | cartesian-product-of-two-or-more-lists-4 | ✓ | 3.355ms | 384.0 KB |
+| 176 | case-sensitivity-of-identifiers | ✓ | 1.168ms | 128.0 KB |
+| 177 | casting-out-nines | ✓ | 4.533ms | 2.8 MB |
+| 178 | catalan-numbers-1 | ✓ | 1.444ms | 128.0 KB |
+| 179 | catalan-numbers-2 | ✓ | 1.393ms |  |
+| 180 | catalan-numbers-pascals-triangle | ✓ | 4.282ms | 384.0 KB |
+| 181 | catamorphism | ✓ | 1.151ms |  |
+| 182 | catmull-clark-subdivision-surface | ✓ | 6.743ms | 896.0 KB |
+| 183 | chaocipher | ✓ | 2.068ms | 128.0 KB |
+| 184 | chaos-game | ✓ | 10.231ms | 4.0 MB |
+| 185 | character-codes-1 | ✓ | 626µs | 128.0 KB |
+| 186 | character-codes-2 | ✓ | 681µs | 128.0 KB |
+| 187 | character-codes-3 | ✓ | 759µs |  |
+| 188 | character-codes-4 | ✓ | 617µs |  |
+| 189 | character-codes-5 | ✓ | 821µs |  |
+| 190 | chat-server | ✓ | 1.089ms | 128.0 KB |
+| 191 | check-machin-like-formulas | ✓ | 3.347ms | 896.0 KB |
+| 192 | check-that-file-exists | ✓ | 870µs | 128.0 KB |
+| 193 | checkpoint-synchronization-1 | ✓ | 2.457ms | 128.0 KB |
+| 194 | checkpoint-synchronization-2 | ✓ | 2.258ms | 256.0 KB |
+| 195 | checkpoint-synchronization-3 | ✓ | 2.071ms | 256.0 KB |
+| 196 | checkpoint-synchronization-4 | ✓ | 2.128ms | 256.0 KB |
+| 197 | chernicks-carmichael-numbers | ✓ | 113.251ms | 11.8 MB |
+| 198 | cheryls-birthday | ✓ | 1.038ms | 128.0 KB |
+| 199 | chinese-remainder-theorem | ✓ | 477µs |  |
+| 200 | chinese-zodiac | ✓ | 830µs | 128.0 KB |
 | 201 | cholesky-decomposition-1 | ✓ | 3.307ms | 128.0 KB |
 | 202 | cholesky-decomposition | ✓ | 1.78ms | 256.0 KB |
 | 203 | chowla-numbers | ✓ | 534µs |  |
