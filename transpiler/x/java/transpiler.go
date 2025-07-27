@@ -51,8 +51,23 @@ var currentFuncReturn string
 var structMethods map[string][]*Function
 var refVars map[string]bool
 var scopeStack []map[string]*VarStmt
+var closureStack []bool
 var structDecls map[string]*TypeDeclStmt
 var disableStructList bool
+
+func pushScope(closure bool) map[string]*VarStmt {
+	saved := varDecls
+	scopeStack = append(scopeStack, varDecls)
+	closureStack = append(closureStack, closure)
+	varDecls = map[string]*VarStmt{}
+	return saved
+}
+
+func popScope(saved map[string]*VarStmt) {
+	varDecls = saved
+	scopeStack = scopeStack[:len(scopeStack)-1]
+	closureStack = closureStack[:len(closureStack)-1]
+}
 
 // SetBenchMain configures whether the generated main function is wrapped in a
 // benchmark block when emitting code. When enabled, the program will print a
@@ -1005,6 +1020,19 @@ type LambdaExpr struct {
 	Return string
 }
 
+func exprString(e Expr) string {
+	var buf bytes.Buffer
+	e.emit(&buf)
+	return buf.String()
+}
+
+func exprUsesVar(e Expr, name string) bool {
+	if e == nil {
+		return false
+	}
+	return strings.Contains(exprString(e), sanitize(name))
+}
+
 func (l *LambdaExpr) emit(w io.Writer) {
 	fmt.Fprint(w, "(")
 	for i, p := range l.Params {
@@ -1122,17 +1150,21 @@ func (s *VarStmt) emit(w io.Writer, indent string) {
 		if jt == "" {
 			jt = typ
 		}
+		raw := jt
+		if idx := strings.Index(raw, "<"); idx >= 0 {
+			raw = raw[:idx]
+		}
 		fmt.Fprintf(w, "%s[] %s", jt, sanitize(s.Name))
 		if s.Expr != nil {
-			fmt.Fprint(w, " = new "+jt+"[]{")
+			fmt.Fprint(w, " = new "+raw+"[1];\n")
+			fmt.Fprint(w, indent+sanitize(s.Name)+"[0] = ")
 			emitCastExpr(w, s.Expr, typ)
-			fmt.Fprint(w, "}")
+			fmt.Fprint(w, ";\n")
 		} else {
-			fmt.Fprint(w, " = new "+jt+"[]{")
+			fmt.Fprint(w, " = new "+raw+"[]{")
 			fmt.Fprint(w, defaultValue(jt))
-			fmt.Fprint(w, "}")
+			fmt.Fprint(w, "};\n")
 		}
-		fmt.Fprint(w, ";\n")
 		return
 	}
 	fmt.Fprint(w, jt+" "+sanitize(s.Name))
@@ -2831,6 +2863,7 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	varDecls = map[string]*VarStmt{}
 	refVars = map[string]bool{}
 	scopeStack = []map[string]*VarStmt{varDecls}
+	closureStack = []bool{false}
 	disableStructList = false
 	funcMapFields = map[string]map[string]string{}
 	mapVarFields = map[string]map[string]string{}
@@ -2843,9 +2876,7 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 				name := parts[1]
 				saved := varTypes
 				varTypes = copyMap(varTypes)
-				varDeclsSaved := varDecls
-				scopeStack = append(scopeStack, varDecls)
-				varDecls = map[string]*VarStmt{}
+				varDeclsSaved := pushScope(false)
 				savedRet := currentFuncReturn
 				currentFuncReturn = typeRefString(s.Fun.Return)
 				for _, pa := range s.Fun.Params {
@@ -2867,8 +2898,7 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 				}
 				structMethods[recv] = append(structMethods[recv], &Function{Name: name, Params: params, Return: ret, Body: body})
 				varTypes = saved
-				varDecls = varDeclsSaved
-				scopeStack = scopeStack[:len(scopeStack)-1]
+				popScope(varDeclsSaved)
 				currentFuncReturn = savedRet
 				continue
 			}
@@ -2879,9 +2909,7 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 					varTypes[pa.Name] = t
 				}
 			}
-			savedDecls := varDecls
-			scopeStack = append(scopeStack, varDecls)
-			varDecls = map[string]*VarStmt{}
+			savedDecls := pushScope(false)
 			savedRet := currentFuncReturn
 			currentFuncReturn = typeRefString(s.Fun.Return)
 			body, err := compileStmts(s.Fun.Body)
@@ -2916,8 +2944,7 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 			funcParams[s.Fun.Name] = ptypes
 			prog.Funcs = append(prog.Funcs, &Function{Name: s.Fun.Name, Params: params, Return: ret, Body: body})
 			varTypes = saved
-			varDecls = savedDecls
-			scopeStack = scopeStack[:len(scopeStack)-1]
+			popScope(savedDecls)
 			currentFuncReturn = savedRet
 			continue
 		}
@@ -2987,6 +3014,9 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 			e, err := compileExpr(s.Let.Value)
 			if err != nil {
 				return nil, err
+			}
+			if exprUsesVar(e, s.Let.Name) {
+				refVars[s.Let.Name] = true
 			}
 			t := typeRefString(s.Let.Type)
 			if t == "list" && topEnv != nil {
@@ -3098,6 +3128,9 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 			disableStructList = savedDisable
 			if err != nil {
 				return nil, err
+			}
+			if exprUsesVar(e, s.Var.Name) {
+				refVars[s.Var.Name] = true
 			}
 
 			if t == "" {
@@ -3252,6 +3285,9 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 		if err != nil {
 			return nil, err
 		}
+		if exprUsesVar(expr, s.Fun.Name) {
+			refVars[s.Fun.Name] = true
+		}
 		ret := typeRefString(s.Fun.Return)
 		if lam, ok := expr.(*LambdaExpr); ok {
 			if ret == "" {
@@ -3270,7 +3306,9 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 			if _, ok := varDecls[s.Assign.Name]; !ok && len(scopeStack) > 0 {
 				for i := len(scopeStack) - 1; i >= 0; i-- {
 					if _, ok2 := scopeStack[i][s.Assign.Name]; ok2 {
-						refVars[s.Assign.Name] = true
+						if closureStack[i] {
+							refVars[s.Assign.Name] = true
+						}
 						break
 					}
 				}
@@ -3389,16 +3427,19 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 		if err != nil {
 			return nil, err
 		}
+		savedThen := pushScope(false)
 		var thenStmts []Stmt
 		for _, b := range s.If.Then {
 			st, err := compileStmt(b)
 			if err != nil {
+				popScope(savedThen)
 				return nil, err
 			}
 			if st != nil {
 				thenStmts = append(thenStmts, st)
 			}
 		}
+		popScope(savedThen)
 		var elseStmts []Stmt
 		if s.If.ElseIf != nil {
 			st, err := compileStmt(&parser.Statement{If: s.If.ElseIf})
@@ -3409,15 +3450,18 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 				elseStmts = append(elseStmts, st)
 			}
 		} else {
+			savedElse := pushScope(false)
 			for _, b := range s.If.Else {
 				st, err := compileStmt(b)
 				if err != nil {
+					popScope(savedElse)
 					return nil, err
 				}
 				if st != nil {
 					elseStmts = append(elseStmts, st)
 				}
 			}
+			popScope(savedElse)
 		}
 		return &IfStmt{Cond: cond, Then: thenStmts, Else: elseStmts}, nil
 	case s.Return != nil:
@@ -3459,16 +3503,19 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 		if err != nil {
 			return nil, err
 		}
+		saved := pushScope(false)
 		var body []Stmt
 		for _, b := range s.While.Body {
 			st, err := compileStmt(b)
 			if err != nil {
+				popScope(saved)
 				return nil, err
 			}
 			if st != nil {
 				body = append(body, st)
 			}
 		}
+		popScope(saved)
 		return &WhileStmt{Cond: cond, Body: body}, nil
 	case s.For != nil && s.For.RangeEnd != nil:
 		start, err := compileExpr(s.For.Source)
@@ -3479,16 +3526,30 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 		if err != nil {
 			return nil, err
 		}
+		savedType, had := varTypes[s.For.Name]
 		varTypes[s.For.Name] = "int"
+		saved := pushScope(false)
 		var body []Stmt
 		for _, b := range s.For.Body {
 			st, err := compileStmt(b)
 			if err != nil {
+				popScope(saved)
+				if had {
+					varTypes[s.For.Name] = savedType
+				} else {
+					delete(varTypes, s.For.Name)
+				}
 				return nil, err
 			}
 			if st != nil {
 				body = append(body, st)
 			}
+		}
+		popScope(saved)
+		if had {
+			varTypes[s.For.Name] = savedType
+		} else {
+			delete(varTypes, s.For.Name)
 		}
 		return &ForRangeStmt{Name: s.For.Name, Start: start, End: end, Body: body}, nil
 	case s.For != nil:
@@ -3500,15 +3561,29 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 		if elem != "" {
 			varTypes[s.For.Name] = elem
 		}
+		savedType, had := varTypes[s.For.Name]
 		var body []Stmt
+		saved := pushScope(false)
 		for _, b := range s.For.Body {
 			st, err := compileStmt(b)
 			if err != nil {
+				popScope(saved)
+				if had {
+					varTypes[s.For.Name] = savedType
+				} else {
+					delete(varTypes, s.For.Name)
+				}
 				return nil, err
 			}
 			if st != nil {
 				body = append(body, st)
 			}
+		}
+		popScope(saved)
+		if had {
+			varTypes[s.For.Name] = savedType
+		} else {
+			delete(varTypes, s.For.Name)
 		}
 		isMap := false
 		keyType := ""
@@ -4403,9 +4478,7 @@ func compileFunExpr(fn *parser.FunExpr) (Expr, error) {
 	}
 	saved := varTypes
 	varTypes = copyMap(varTypes)
-	savedDecls := varDecls
-	scopeStack = append(scopeStack, varDecls)
-	varDecls = map[string]*VarStmt{}
+	savedDecls := pushScope(true)
 	for _, p := range params {
 		if p.Type != "" {
 			varTypes[p.Name] = p.Type
@@ -4437,8 +4510,7 @@ func compileFunExpr(fn *parser.FunExpr) (Expr, error) {
 	}
 	lam := &LambdaExpr{Params: params, Body: body, Return: ret}
 	varTypes = saved
-	varDecls = savedDecls
-	scopeStack = scopeStack[:len(scopeStack)-1]
+	popScope(savedDecls)
 	return lam, nil
 }
 
