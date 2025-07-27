@@ -13,6 +13,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"reflect"
+	"regexp"
 	"runtime"
 	"sort"
 	"strconv"
@@ -2353,6 +2354,18 @@ func compilePostfix(p *parser.PostfixExpr) (Expr, error) {
 				}
 				sb.WriteString(")")
 				expr = &RawExpr{Code: sb.String()}
+			} else if _, ok := expr.(*CallExpr); ok {
+				var sb strings.Builder
+				sb.WriteString(exprString(expr))
+				sb.WriteString("(")
+				for i, a := range args {
+					if i > 0 {
+						sb.WriteString(", ")
+					}
+					sb.WriteString(exprString(a))
+				}
+				sb.WriteString(")")
+				expr = &RawExpr{Code: sb.String()}
 			} else {
 				return nil, fmt.Errorf("unsupported call")
 			}
@@ -2925,7 +2938,11 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 							val = &RawExpr{Code: fmt.Sprintf("%s.Cast<%s>().ToArray()", exprString(val), elem), Type: ct}
 						}
 					} else {
-						val = &RawExpr{Code: fmt.Sprintf("(%s)"+exprString(val), ct), Type: ct}
+						code := exprString(val)
+						if strings.HasPrefix(code, "(") {
+							code = "(" + code + ")"
+						}
+						val = &RawExpr{Code: fmt.Sprintf("(%s)%s", ct, code), Type: ct}
 					}
 				}
 			}
@@ -4295,6 +4312,9 @@ return _fmt(v);
 // formatCS performs very basic formatting and prepends a standard header.
 func formatCS(src []byte) []byte {
 	s := strings.ReplaceAll(string(src), "\t", "    ")
+	// fix casting of inline lambda expressions
+	re := regexp.MustCompile(`\(object\)\(object ([A-Za-z0-9_]+)\) => {`)
+	s = re.ReplaceAllString(s, "(object)((object $1) => {")
 	lines := strings.Split(s, "\n")
 	indent := 0
 	for i, ln := range lines {
