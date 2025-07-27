@@ -1,5 +1,6 @@
 //go:build ignore
 // +build ignore
+// Downloaded via tools/rosetta DownloadTaskByNumber
 
 package main
 
