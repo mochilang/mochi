@@ -2,7 +2,7 @@
 
 This file is auto-generated from rosetta tests.
 
-## Rosetta Golden Test Checklist (156/467)
+## Rosetta Golden Test Checklist (170/467)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 151µs | 41.3 KB |
@@ -178,33 +178,33 @@ This file is auto-generated from rosetta tests.
 | 171 | carmichael-3-strong-pseudoprimes | ✓ | 264µs | 42.1 KB |
 | 172 | cartesian-product-of-two-or-more-lists-1 | ✓ | 161µs | 42.1 KB |
 | 173 | cartesian-product-of-two-or-more-lists-2 | ✓ | 215µs | 54.1 KB |
-| 174 | cartesian-product-of-two-or-more-lists-3 | ✓ | 213µs | 54.0 KB |
-| 175 | cartesian-product-of-two-or-more-lists-4 | ✓ | 218µs | 54.0 KB |
+| 174 | cartesian-product-of-two-or-more-lists-3 |   |  |  |
+| 175 | cartesian-product-of-two-or-more-lists-4 |   |  |  |
 | 176 | case-sensitivity-of-identifiers |   |  |  |
 | 177 | casting-out-nines |   |  |  |
-| 178 | catalan-numbers-1 | ✓ | 172µs | 41.5 KB |
-| 179 | catalan-numbers-2 | ✓ | 155µs | 41.5 KB |
-| 180 | catalan-numbers-pascals-triangle | ✓ | 156µs | 41.5 KB |
-| 181 | catamorphism | ✓ | 169µs | 42.9 KB |
-| 182 | catmull-clark-subdivision-surface |   |  |  |
-| 183 | chaocipher |   |  |  |
-| 184 | chaos-game |   |  |  |
-| 185 | character-codes-1 |   |  |  |
-| 186 | character-codes-2 |   |  |  |
-| 187 | character-codes-3 |   |  |  |
-| 188 | character-codes-4 |   |  |  |
-| 189 | character-codes-5 |   |  |  |
-| 190 | chat-server |   |  |  |
-| 191 | check-machin-like-formulas |   |  |  |
-| 192 | check-that-file-exists |   |  |  |
-| 193 | checkpoint-synchronization-1 |   |  |  |
-| 194 | checkpoint-synchronization-2 |   |  |  |
-| 195 | checkpoint-synchronization-3 |   |  |  |
-| 196 | checkpoint-synchronization-4 |   |  |  |
-| 197 | chernicks-carmichael-numbers |   |  |  |
-| 198 | cheryls-birthday |   |  |  |
-| 199 | chinese-remainder-theorem |   |  |  |
-| 200 | chinese-zodiac |   |  |  |
+| 178 | catalan-numbers-1 |   |  |  |
+| 179 | catalan-numbers-2 |   |  |  |
+| 180 | catalan-numbers-pascals-triangle |   |  |  |
+| 181 | catamorphism | ✓ | 351µs | 51.4 KB |
+| 182 | catmull-clark-subdivision-surface | ✓ | 643µs | 58.6 KB |
+| 183 | chaocipher | ✓ | 343µs | 46.0 KB |
+| 184 | chaos-game | ✓ | 531µs | 71.1 KB |
+| 185 | character-codes-1 | ✓ | 338µs | 53.6 KB |
+| 186 | character-codes-2 | ✓ | 330µs | 45.6 KB |
+| 187 | character-codes-3 | ✓ | 326µs | 41.6 KB |
+| 188 | character-codes-4 | ✓ | 337µs | 49.9 KB |
+| 189 | character-codes-5 | ✓ | 330µs | 46.0 KB |
+| 190 | chat-server | ✓ | 363µs | 42.1 KB |
+| 191 | check-machin-like-formulas | ✓ | 560µs | 62.1 KB |
+| 192 | check-that-file-exists | ✓ | 473µs | 57.3 KB |
+| 193 | checkpoint-synchronization-1 | ✓ | 330µs | 61.7 KB |
+| 194 | checkpoint-synchronization-2 | ✓ | 319µs | 41.4 KB |
+| 195 | checkpoint-synchronization-3 | ✓ | 324µs | 66.1 KB |
+| 196 | checkpoint-synchronization-4 | ✓ | 316µs | 50.7 KB |
+| 197 | chernicks-carmichael-numbers | ✓ | 13.208ms | 80.9 KB |
+| 198 | cheryls-birthday | ✓ | 353µs | 50.4 KB |
+| 199 | chinese-remainder-theorem | ✓ | 325µs | 54.2 KB |
+| 200 | chinese-zodiac | ✓ | 322µs | 49.6 KB |
 | 201 | cholesky-decomposition-1 |   |  |  |
 | 202 | cholesky-decomposition |   |  |  |
 | 203 | chowla-numbers |   |  |  |
@@ -473,4 +473,4 @@ This file is auto-generated from rosetta tests.
 | 466 | window-management |   |  |  |
 | 467 | zumkeller-numbers |   |  |  |
 
-Last updated: 2025-07-27 22:46 +0700
+Last updated: 2025-07-27 23:36 +0700

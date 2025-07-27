@@ -176,7 +176,7 @@ func fsType(t types.Type) string {
 	case types.BigIntType:
 		return "bigint"
 	case types.BigRatType:
-		return "bignum"
+		return "float"
 	case types.FloatType:
 		return "float"
 	case types.BoolType:
@@ -877,6 +877,23 @@ func (s *StructLit) emit(w io.Writer) {
 		io.WriteString(w, "()")
 		return
 	}
+	if s.Name != "" {
+		if names, ok := structFieldNames(s.Name); ok {
+			existing := map[string]bool{}
+			for _, f := range s.Fields {
+				existing[f.Name] = true
+			}
+			for _, n := range names {
+				if !existing[n] {
+					if ft, ok := structFieldType(s.Name, n); ok {
+						s.Fields = append(s.Fields, StructFieldExpr{Name: n, Value: &DefaultOfExpr{Type: ft}})
+					} else {
+						s.Fields = append(s.Fields, StructFieldExpr{Name: n, Value: &DefaultOfExpr{Type: "obj"}})
+					}
+				}
+			}
+		}
+	}
 	io.WriteString(w, "{ ")
 	for i, f := range s.Fields {
 		io.WriteString(w, fsIdent(f.Name))
@@ -1194,11 +1211,26 @@ func (wst *WhileStmt) emit(w io.Writer) {
 	wst.Cond.emit(w)
 	io.WriteString(w, " do\n")
 	indentLevel++
+	if wst.WithBreak {
+		writeIndent(w)
+		io.WriteString(w, "try\n")
+		indentLevel++
+	}
 	for i, st := range wst.Body {
 		st.emit(w)
 		if i < len(wst.Body)-1 {
 			w.Write([]byte{'\n'})
 		}
+	}
+	if wst.WithBreak {
+		indentLevel--
+		w.Write([]byte{'\n'})
+		writeIndent(w)
+		io.WriteString(w, "with\n")
+		writeIndent(w)
+		io.WriteString(w, "| Continue -> ()\n")
+		writeIndent(w)
+		io.WriteString(w, "| Break -> raise Break")
 	}
 	indentLevel--
 	if wst.WithBreak {
@@ -1281,11 +1313,21 @@ func (fst *ForStmt) emit(w io.Writer) {
 		writeIndent(w)
 		io.WriteString(w, "with\n")
 		writeIndent(w)
+		io.WriteString(w, "| Continue -> ()\n")
+		writeIndent(w)
+		io.WriteString(w, "| Break -> raise Break")
+	}
+	indentLevel--
+	if fst.WithBreak {
+		indentLevel--
+		w.Write([]byte{'\n'})
+		writeIndent(w)
+		io.WriteString(w, "with\n")
+		writeIndent(w)
 		io.WriteString(w, "| Break -> ()\n")
 		writeIndent(w)
 		io.WriteString(w, "| Continue -> ()")
 	}
-	indentLevel--
 }
 
 type LetStmt struct {
@@ -1975,9 +2017,15 @@ func (i *IndexExpr) emit(w io.Writer) {
 			}
 		}
 		if t == "obj" || t == "" {
-			io.WriteString(w, "((")
-			i.Target.emit(w)
-			io.WriteString(w, " :?> Map<string, obj>).[")
+			if inferType(i.Index) == "int" {
+				io.WriteString(w, "((")
+				i.Target.emit(w)
+				io.WriteString(w, " :?> obj[]).[")
+			} else {
+				io.WriteString(w, "((")
+				i.Target.emit(w)
+				io.WriteString(w, " :?> Map<string, obj>).[")
+			}
 		} else {
 			i.Target.emit(w)
 			io.WriteString(w, ".[")
@@ -2236,9 +2284,14 @@ type CastExpr struct {
 }
 
 func (c *CastExpr) emit(w io.Writer) {
+	t := inferType(c.Expr)
 	switch c.Type {
 	case "float":
-		io.WriteString(w, "unbox<float> ")
+		if t == "obj" {
+			io.WriteString(w, "unbox<float> ")
+		} else {
+			io.WriteString(w, "float ")
+		}
 		if needsParen(c.Expr) {
 			io.WriteString(w, "(")
 			c.Expr.emit(w)
@@ -2247,7 +2300,11 @@ func (c *CastExpr) emit(w io.Writer) {
 			c.Expr.emit(w)
 		}
 	case "int":
-		io.WriteString(w, "unbox<int> ")
+		if t == "obj" {
+			io.WriteString(w, "unbox<int> ")
+		} else {
+			io.WriteString(w, "int ")
+		}
 		if needsParen(c.Expr) {
 			io.WriteString(w, "(")
 			c.Expr.emit(w)
@@ -3364,32 +3421,7 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 	case p.Lit != nil && p.Lit.Null:
 		return &NullLit{}, nil
 	case p.List != nil:
-		if st, ok := types.InferStructFromList(p.List, transpileEnv); ok {
-			structCount++
-			name := fmt.Sprintf("Anon%d", structCount)
-			addStructDef(name, st)
-			elems := make([]Expr, len(p.List.Elems))
-			for i, el := range p.List.Elems {
-				ml := el.Binary.Left.Value.Target.Map
-				fields := make([]StructFieldExpr, len(ml.Items))
-				for j, it := range ml.Items {
-					val, err := convertExpr(it.Value)
-					if err != nil {
-						return nil, err
-					}
-					key := ""
-					tgt := it.Key.Binary.Left.Value.Target
-					if tgt.Selector != nil && len(tgt.Selector.Tail) == 0 {
-						key = tgt.Selector.Root
-					} else if tgt.Lit != nil && tgt.Lit.Str != nil {
-						key = *tgt.Lit.Str
-					}
-					fields[j] = StructFieldExpr{Name: key, Value: val}
-				}
-				elems[i] = &StructLit{Fields: fields}
-			}
-			return &ListLit{Elems: elems}, nil
-		}
+		// Avoid inferring anonymous records for simple map lists; use generic maps instead
 		if len(p.List.Elems) > 0 && p.List.Elems[0].Binary != nil && p.List.Elems[0].Binary.Left.Value.Target.Map != nil {
 			if fields, ok := inferStructFromMapVars(p.List.Elems[0].Binary.Left.Value.Target.Map); ok {
 				structCount++

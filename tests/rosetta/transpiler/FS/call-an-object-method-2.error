@@ -1,0 +1,9 @@
+run: exit status 1
+
+Unhandled Exception:
+System.InvalidCastException: Specified cast is not valid.
+  at Call-an-object-method-2.newFactory () [0x00063] in <68865abbbb740bf0a7450383bb5a8668>:0 
+  at <StartupCode$call-an-object-method-2>.$Call-an-object-method-2.main@ () [0x0002e] in <68865abbbb740bf0a7450383bb5a8668>:0 
+[ERROR] FATAL UNHANDLED EXCEPTION: System.InvalidCastException: Specified cast is not valid.
+  at Call-an-object-method-2.newFactory () [0x00063] in <68865abbbb740bf0a7450383bb5a8668>:0 
+  at <StartupCode$call-an-object-method-2>.$Call-an-object-method-2.main@ () [0x0002e] in <68865abbbb740bf0a7450383bb5a8668>:0 
