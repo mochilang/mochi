@@ -1908,7 +1908,16 @@ type LenExpr struct{ Arg Expr }
 
 func (l *LenExpr) emit(w io.Writer) {
 	l.Arg.emit(w)
-	if isMapExpr(l.Arg) {
+	t := typeOfExpr(l.Arg)
+	name := ""
+	if vr, ok := l.Arg.(*VarRef); ok {
+		name = vr.Name
+	}
+	if mapVars[name] {
+		fmt.Fprint(w, ".Count")
+		return
+	}
+	if strings.HasPrefix(t, "Dictionary<") || isMapExpr(l.Arg) {
 		fmt.Fprint(w, ".Count")
 	} else {
 		fmt.Fprint(w, ".Length")
@@ -2359,12 +2368,12 @@ func compilePostfix(p *parser.PostfixExpr) (Expr, error) {
 		case op.Cast != nil && op.Cast.Type != nil:
 			if op.Cast.Type.Generic != nil && op.Cast.Type.Generic.Name == "list" && len(op.Cast.Type.Generic.Args) == 1 {
 				typ := fmt.Sprintf("%s[]", csType(op.Cast.Type.Generic.Args[0]))
-				expr = &RawExpr{Code: fmt.Sprintf("(%s)"+exprString(expr), typ), Type: typ}
+				expr = &RawExpr{Code: fmt.Sprintf("(%s as %s) ?? new %s{}", exprString(expr), typ, typ), Type: typ}
 			} else if op.Cast.Type.Generic != nil && op.Cast.Type.Generic.Name == "map" && len(op.Cast.Type.Generic.Args) == 2 {
 				kt := csType(op.Cast.Type.Generic.Args[0])
 				vt := csType(op.Cast.Type.Generic.Args[1])
 				typ := fmt.Sprintf("Dictionary<%s, %s>", kt, vt)
-				expr = &RawExpr{Code: fmt.Sprintf("(%s)"+exprString(expr), typ), Type: typ}
+				expr = &RawExpr{Code: fmt.Sprintf("(%s as %s) ?? new %s{}", exprString(expr), typ, typ), Type: typ}
 			} // ignore other casts
 		default:
 			return nil, fmt.Errorf("unsupported postfix")
@@ -2578,6 +2587,12 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 				delete(varTypes, s.Var.Name)
 			}
 			finalVarTypes[alias] = t
+		}
+		if mapVars[s.Var.Name] {
+			mapVars[alias] = true
+			if alias != s.Var.Name {
+				delete(mapVars, s.Var.Name)
+			}
 		}
 		if prog != nil && blockDepth == 0 {
 			g := &Global{Name: alias, Value: val}
@@ -2871,6 +2886,19 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 			if l, ok := val.(*ListLit); ok && len(l.Elems) == 0 && strings.HasSuffix(currentReturnType, "[]") {
 				if l.ElemType == "" || l.ElemType == "object[]" {
 					l.ElemType = currentReturnType
+				}
+			}
+			if l, ok := val.(*ListLit); ok && len(l.Elems) > 0 && strings.HasSuffix(currentReturnType, "[]") {
+				elemCt := strings.TrimSuffix(currentReturnType, "[]")
+				if l.ElemType == "" || l.ElemType == "object[]" {
+					l.ElemType = currentReturnType
+				}
+				for _, e := range l.Elems {
+					if ll, ok2 := e.(*ListLit); ok2 && len(ll.Elems) == 0 {
+						if ll.ElemType == "" || ll.ElemType == "object[]" || ll.ElemType == "object" {
+							ll.ElemType = elemCt
+						}
+					}
 				}
 			}
 			if ct := currentReturnType; ct != "" {
