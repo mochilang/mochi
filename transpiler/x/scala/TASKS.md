@@ -1,3 +1,83 @@
+## Progress (2025-07-27 22:05 +0700)
+- scala transpiler: add program 265
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-27 22:05 +0700)
+- scala transpiler: add program 264
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-27 22:04 +0700)
+- scala transpiler: add program 263
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-27 22:04 +0700)
+- scala transpiler: add program 262
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-27 22:04 +0700)
+- scala transpiler: add program 261
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-27 22:04 +0700)
+- scala transpiler: add program 260
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-27 22:03 +0700)
+- scala transpiler: add program 259
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-27 22:00 +0700)
+- scala transpiler: add program 258
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-27 22:00 +0700)
+- scala transpiler: add program 258
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-27 22:00 +0700)
+- scala transpiler: add program 258
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-27 22:00 +0700)
+- scala transpiler: add program 257
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-27 22:00 +0700)
+- scala transpiler: add program 256
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-27 21:57 +0700)
+- scala transpiler: add program 255
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-27 21:57 +0700)
+- scala transpiler: add program 255
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-27 21:57 +0700)
+- scala transpiler: add program 255
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-27 21:57 +0700)
+- scala transpiler: add program 255
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-27 21:56 +0700)
+- scala transpiler: add program 254
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-27 21:56 +0700)
+- scala transpiler: add program 253
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-27 21:41 +0700)
+- remove old error file for deconvolution
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-27 21:41 +0700)
+- remove old error file for deconvolution
+- Regenerated golden files - 93/104 vm valid programs passing
+
 ## Progress (2025-07-27 15:57 +0700)
 - vm: add pow builtin and update rosetta outputs
 - Regenerated golden files - 93/104 vm valid programs passing
