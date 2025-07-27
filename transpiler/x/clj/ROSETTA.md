@@ -1,7 +1,7 @@
 # Clojure Rosetta Transpiler
 
-Completed: 52/467
-Last updated: 2025-07-27 22:15 +0700
+Completed: 65/467
+Last updated: 2025-07-27 22:40 +0700
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -79,26 +79,26 @@ Last updated: 2025-07-27 22:15 +0700
 | 72 | arithmetic-integer-2 | ✓ | 45.211ms | 18.7 MB |
 | 73 | arithmetic-numbers | ✓ | 13.288406s | 15.6 MB |
 | 74 | arithmetic-rational | ✓ | 64.993ms | 20.5 MB |
-| 75 | array-concatenation |   |  |  |
-| 76 | array-length |   |  |  |
+| 75 | array-concatenation | ✓ | 77.149ms | 20.5 MB |
+| 76 | array-length | ✓ | 83.717ms | 18.3 MB |
 | 77 | arrays |   |  |  |
 | 78 | ascending-primes |   |  |  |
-| 79 | ascii-art-diagram-converter |   |  |  |
-| 80 | assertions |   |  |  |
+| 79 | ascii-art-diagram-converter | ✓ | 48.062ms | 18.1 MB |
+| 80 | assertions | ✓ | 67.261ms | 18.1 MB |
 | 81 | associative-array-creation |   |  |  |
 | 82 | associative-array-iteration |   |  |  |
 | 83 | associative-array-merging |   |  |  |
-| 84 | atomic-updates |   |  |  |
+| 84 | atomic-updates | ✓ | 82.148ms | 21.8 MB |
 | 85 | attractive-numbers |   |  |  |
-| 86 | average-loop-length |   |  |  |
-| 87 | averages-arithmetic-mean |   |  |  |
-| 88 | averages-mean-time-of-day |   |  |  |
-| 89 | averages-median-1 |   |  |  |
-| 90 | averages-median-2 |   |  |  |
-| 91 | averages-median-3 |   |  |  |
-| 92 | averages-mode |   |  |  |
-| 93 | averages-pythagorean-means |   |  |  |
-| 94 | averages-root-mean-square |   |  |  |
+| 86 | average-loop-length | ✓ | 4.039113s | 22.6 MB |
+| 87 | averages-arithmetic-mean | ✓ | 78.381ms | 19.9 MB |
+| 88 | averages-mean-time-of-day |   | 48.938ms | 24.4 MB |
+| 89 | averages-median-1 | ✓ | 50.357ms | 19.5 MB |
+| 90 | averages-median-2 | ✓ | 61.708ms | 19.2 MB |
+| 91 | averages-median-3 | ✓ | 64.184ms | 20.3 MB |
+| 92 | averages-mode | ✓ | 80.905ms | 20.3 MB |
+| 93 | averages-pythagorean-means | ✓ |  |  |
+| 94 | averages-root-mean-square | ✓ | 63.592ms | 18.8 MB |
 | 95 | averages-simple-moving-average |   |  |  |
 | 96 | avl-tree |   |  |  |
 | 97 | b-zier-curves-intersections |   |  |  |

@@ -731,12 +731,22 @@ func Transpile(prog *parser.Program, env *types.Env, benchMain bool) (*Program, 
 			// type declarations have no runtime representation
 			continue
 		}
-		if st.Import != nil || st.Let != nil || st.Var != nil || st.Fun != nil {
+		if st.Import != nil || st.Fun != nil {
 			n, err := transpileStmt(st)
 			if err != nil {
 				return nil, err
 			}
 			pr.Forms = append(pr.Forms, n)
+			continue
+		}
+		if st.Let != nil || st.Var != nil {
+			n, err := transpileStmt(st)
+			if err != nil {
+				return nil, err
+			}
+			if n != nil {
+				body = append(body, n)
+			}
 			continue
 		}
 		n, err := transpileStmt(st)
