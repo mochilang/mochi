@@ -1,4 +1,4 @@
-func main (regs=88)
+func main (regs=85)
   // let nPts = 100
   Const        r12, 100
   Move         r0, r12
@@ -12,11 +12,9 @@ func main (regs=88)
   Move         r2, r14
   SetGlobal    2,2,0,0
   // let span = rMax + 1 + rMax
-  Const        r14, 15
   Const        r15, 1
-  AddInt       r16, r14, r15
-  Const        r14, 15
-  AddInt       r17, r16, r14
+  AddInt       r16, r2, r15
+  AddInt       r17, r16, r2
   Cast         r18, r17, bigint
   Move         r3, r18
   SetGlobal    3,3,0,0
@@ -30,41 +28,39 @@ func main (regs=88)
   SetGlobal    5,5,0,0
 L3:
   // while r < span {
-  Const        r21, 31
-  Less         r22, r5, r21
-  JumpIfFalse  r22, L0
+  Less         r21, r5, r3
+  JumpIfFalse  r21, L0
   // var row: list<string> = []
   Const        r19, []
-  Move         r23, r19
+  Move         r22, r19
   // var c = 0
   Const        r20, 0
-  Move         r24, r20
+  Move         r23, r20
 L2:
   // while c < span * 2 {
-  Const        r21, 31
-  Const        r25, 2
-  Mul          r26, r21, r25
-  Less         r27, r24, r26
-  JumpIfFalse  r27, L1
+  Const        r24, 2
+  Mul          r25, r3, r24
+  Less         r26, r23, r25
+  JumpIfFalse  r26, L1
   // row = append(row, " ")
-  Const        r28, " "
-  Append       r29, r23, r28
-  Move         r23, r29
+  Const        r27, " "
+  Append       r28, r22, r27
+  Move         r22, r28
   // c = c + 1
   Const        r15, 1
-  AddInt       r30, r24, r15
-  Move         r24, r30
+  AddInt       r29, r23, r15
+  Move         r23, r29
   // while c < span * 2 {
   Jump         L2
 L1:
   // rows = append(rows, row)
-  Append       r31, r4, r23
-  Move         r4, r31
+  Append       r30, r4, r22
+  Move         r4, r30
   SetGlobal    4,4,0,0
   // r = r + 1
   Const        r15, 1
-  AddInt       r32, r5, r15
-  Move         r5, r32
+  AddInt       r31, r5, r15
+  Move         r5, r31
   SetGlobal    5,5,0,0
   // while r < span {
   Jump         L3
@@ -74,22 +70,18 @@ L0:
   Move         r6, r20
   SetGlobal    6,6,0,0
   // var seen: map<string, bool> = {}
-  Const        r33, {}
-  Move         r7, r33
+  Const        r32, {}
+  Move         r7, r32
   SetGlobal    7,7,0,0
   // let min2 = rMin * rMin
-  Const        r13, 10
-  Const        r13, 10
-  MulInt       r34, r13, r13
-  Cast         r35, r34, bigint
-  Move         r8, r35
+  Const        r33, 100
+  Cast         r34, r33, bigint
+  Move         r8, r34
   SetGlobal    8,8,0,0
   // let max2 = rMax * rMax
-  Const        r14, 15
-  Const        r14, 15
-  MulInt       r36, r14, r14
-  Cast         r37, r36, bigint
-  Move         r9, r37
+  Const        r35, 225
+  Cast         r36, r35, bigint
+  Move         r9, r36
   SetGlobal    9,9,0,0
   // var n = 0
   Const        r20, 0
@@ -97,79 +89,70 @@ L0:
   SetGlobal    10,10,0,0
 L7:
   // while n < nPts {
-  Const        r12, 100
-  LessInt      r38, r10, r12
-  JumpIfFalse  r38, L4
+  LessInt      r37, r10, r0
+  JumpIfFalse  r37, L4
   // var x = now() % span - rMax
-  Now          r39
-  Const        r21, 31
-  Mod          r40, r39, r21
-  Const        r14, 15
-  Sub          r41, r40, r14
-  Move         r42, r41
+  Now          r38
+  Mod          r39, r38, r3
+  Sub          r40, r39, r2
+  Move         r41, r40
   // var y = now() % span - rMax
-  Now          r43
-  Const        r21, 31
-  Mod          r44, r43, r21
-  Const        r14, 15
-  Sub          r45, r44, r14
-  Move         r46, r45
+  Now          r42
+  Mod          r43, r42, r3
+  Sub          r44, r43, r2
+  Move         r45, r44
   // let rs = x * x + y * y
-  Mul          r47, r42, r42
-  Mul          r48, r46, r46
-  Add          r49, r47, r48
-  Move         r50, r49
+  Mul          r46, r41, r41
+  Mul          r47, r45, r45
+  Add          r48, r46, r47
+  Move         r49, r48
   // if rs < min2 || rs > max2 { continue }
-  Const        r51, 100
-  Less         r52, r50, r51
-  Const        r53, 225
-  Less         r54, r53, r50
-  Move         r55, r52
-  JumpIfTrue   r55, L5
-  Move         r55, r54
+  Less         r50, r49, r8
+  Less         r51, r9, r49
+  Move         r52, r50
+  JumpIfTrue   r52, L5
+  Move         r52, r51
 L5:
-  JumpIfFalse  r55, L6
+  JumpIfFalse  r52, L6
   Jump         L7
 L6:
   // n = n + 1
   Const        r15, 1
-  AddInt       r56, r10, r15
-  Move         r10, r56
+  AddInt       r53, r10, r15
+  Move         r10, r53
   SetGlobal    10,10,0,0
   // let row = y + rMax
-  Const        r14, 15
-  Add          r57, r46, r14
-  Move         r58, r57
+  Add          r54, r45, r2
+  Move         r55, r54
   // let col = (x + rMax) * 2
-  Const        r14, 15
-  Add          r59, r42, r14
-  Const        r25, 2
-  Mul          r60, r59, r25
-  Move         r61, r60
+  Add          r56, r41, r2
+  Const        r24, 2
+  Mul          r57, r56, r24
+  Move         r58, r57
   // rows[row][col] = "*"
-  Index        r62, r4, r58
-  Const        r63, "*"
-  SetIndex     r62, r61, r63
+  Index        r59, r4, r55
+  Const        r60, "*"
+  SetIndex     r59, r58, r60
   SetGlobal    4,4,0,0
   // let key = str(row) + "," + str(col)
+  Str          r61, r55
+  Const        r62, ","
+  Add          r63, r61, r62
   Str          r64, r58
-  Const        r65, ","
-  Add          r66, r64, r65
-  Str          r67, r61
-  Add          r68, r66, r67
-  Move         r69, r68
+  Add          r65, r63, r64
+  Move         r66, r65
   // if !seen[key] {
-  Index        r70, r7, r69
-  Not          r71, r70
-  JumpIfFalse  r71, L7
+  Index        r67, r7, r66
+  Not          r68, r67
+  JumpIfFalse  r68, L7
   // seen[key] = true
-  Const        r72, true
-  SetIndex     r7, r69, r72
+  Const        r69, true
+  SetIndex     r7, r66, r69
   SetGlobal    7,7,0,0
   // u = u + 1
   Const        r15, 1
-  AddInt       r73, r6, r15
-  Move         r6, r73
+  AddInt       r70, r6, r15
+  Move         r6, r70
   SetGlobal    6,6,0,0
   // while n < nPts {
   Jump         L7
@@ -180,47 +163,45 @@ L4:
   SetGlobal    11,11,0,0
 L11:
   // while i < span {
-  Const        r21, 31
-  Less         r74, r11, r21
-  JumpIfFalse  r74, L8
+  Less         r71, r11, r3
+  JumpIfFalse  r71, L8
   // var line = ""
-  Const        r75, ""
-  Move         r76, r75
+  Const        r72, ""
+  Move         r73, r72
   // var j = 0
   Const        r20, 0
-  Move         r77, r20
+  Move         r74, r20
 L10:
   // while j < span * 2 {
-  Const        r21, 31
-  Const        r25, 2
-  Mul          r78, r21, r25
-  Less         r79, r77, r78
-  JumpIfFalse  r79, L9
+  Const        r24, 2
+  Mul          r75, r3, r24
+  Less         r76, r74, r75
+  JumpIfFalse  r76, L9
   // line = line + rows[i][j]
-  Index        r80, r4, r11
-  Index        r81, r80, r77
-  Add          r82, r76, r81
-  Move         r76, r82
+  Index        r77, r4, r11
+  Index        r78, r77, r74
+  Add          r79, r73, r78
+  Move         r73, r79
   // j = j + 1
   Const        r15, 1
-  AddInt       r83, r77, r15
-  Move         r77, r83
+  AddInt       r80, r74, r15
+  Move         r74, r80
   // while j < span * 2 {
   Jump         L10
 L9:
   // print(line)
-  Print        r76
+  Print        r73
   // i = i + 1
   Const        r15, 1
-  AddInt       r84, r11, r15
-  Move         r11, r84
+  AddInt       r81, r11, r15
+  Move         r11, r81
   SetGlobal    11,11,0,0
   // while i < span {
   Jump         L11
 L8:
   // print(str(u) + " unique points")
-  Str          r85, r6
-  Const        r86, " unique points"
-  Add          r87, r85, r86
-  Print        r87
+  Str          r82, r6
+  Const        r83, " unique points"
+  Add          r84, r82, r83
+  Print        r84
   Return       r0

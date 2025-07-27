@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated IR and outputs from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/ir`.
-Last updated: 2025-07-27 16:58 UTC
+Last updated: 2025-07-27 17:17 UTC
 
-## Rosetta Golden Test Checklist (452/467)
+## Rosetta Golden Test Checklist (460/467)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 216µs | 34.2 KB |
@@ -228,59 +228,59 @@ Last updated: 2025-07-27 16:58 UTC
 | 219 | conditional-structures-3 | ✓ | 29µs | 136 B |
 | 220 | conditional-structures-4 | ✓ | 27µs | 136 B |
 | 221 | conditional-structures-5 | ✓ | 47µs | 136 B |
-| 222 | conditional-structures-6 |   |  |  |
-| 223 | conditional-structures-7 |   |  |  |
-| 224 | conditional-structures-8 |   |  |  |
-| 225 | conditional-structures-9 |   |  |  |
-| 226 | consecutive-primes-with-ascending-or-descending-differences |   |  |  |
-| 227 | constrained-genericity-1 |   |  |  |
-| 228 | constrained-genericity-2 |   |  |  |
-| 229 | constrained-genericity-3 |   |  |  |
-| 230 | constrained-genericity-4 | ✓ | 56µs | 8.1 KB |
-| 231 | constrained-random-points-on-a-circle-1 | ✓ | 33.713ms |  |
-| 232 | constrained-random-points-on-a-circle-2 | ✓ | 74.269ms | 2.2 MB |
-| 233 | continued-fraction | ✓ | 792µs | 317.6 KB |
-| 234 | convert-decimal-number-to-rational | ✓ |  |  |
-| 235 | convert-seconds-to-compound-duration | ✓ | 360µs | 19.8 KB |
-| 236 | convex-hull | ✓ | 2.537ms | 424.6 KB |
+| 222 | conditional-structures-6 | ✓ | 422µs | 5.5 KB |
+| 223 | conditional-structures-7 | ✓ | 195µs |  |
+| 224 | conditional-structures-8 | ✓ | 49µs | 136 B |
+| 225 | conditional-structures-9 | ✓ | 35µs | 136 B |
+| 226 | consecutive-primes-with-ascending-or-descending-differences | ✓ |  |  |
+| 227 | constrained-genericity-1 | ✓ | 42µs | 136 B |
+| 228 | constrained-genericity-2 | ✓ | 42µs | 136 B |
+| 229 | constrained-genericity-3 | ✓ | 70µs | 136 B |
+| 230 | constrained-genericity-4 | ✓ | 28µs | 8.1 KB |
+| 231 | constrained-random-points-on-a-circle-1 | ✓ | 37.962ms | 141.3 KB |
+| 232 | constrained-random-points-on-a-circle-2 | ✓ | 69.154ms | 976.6 KB |
+| 233 | continued-fraction | ✓ | 379µs | 344.7 KB |
+| 234 | convert-decimal-number-to-rational | ✓ | 95µs | 48.2 KB |
+| 235 | convert-seconds-to-compound-duration | ✓ | 63µs | 22.6 KB |
+| 236 | convex-hull | ✓ | 866µs | 693.5 KB |
 | 237 | conways-game-of-life | ✓ | 16.545665s | 429.3 KB |
-| 238 | copy-a-string-1 | ✓ | 332µs | 376 B |
-| 239 | copy-a-string-2 | ✓ | 367µs | 2.7 KB |
-| 240 | copy-stdin-to-stdout-1 | ✓ | 582µs | 728 B |
-| 241 | copy-stdin-to-stdout-2 | ✓ | 291µs | 840 B |
-| 242 | count-in-factors | ✓ | 7.765ms | 112.2 KB |
-| 243 | count-in-octal-1 | ✓ | 1.354ms | 314.0 KB |
-| 244 | count-in-octal-2 | ✓ | 375.123ms | 1.7 MB |
-| 245 | count-in-octal-3 | ✓ | 737µs | 23.0 KB |
-| 246 | count-in-octal-4 | ✓ | 421µs | 40.1 KB |
-| 247 | count-occurrences-of-a-substring | ✓ | 412µs | 7.5 KB |
-| 248 | count-the-coins-1 | ✓ | 713µs | 21.9 KB |
-| 249 | count-the-coins-2 | ✓ | 91.004ms | 971.5 KB |
-| 250 | cramers-rule | ✓ | 3.823ms | 1.4 MB |
-| 251 | crc-32-1 | ✓ | 58.741ms | 660.0 KB |
-| 252 | crc-32-2 | ✓ | 49.144ms | 2.4 MB |
-| 253 | create-a-file-on-magnetic-tape | ✓ | 262µs | 7.8 KB |
-| 254 | create-a-file | ✓ | 517µs | 10.6 KB |
-| 255 | create-a-two-dimensional-array-at-runtime-1 | ✓ | 346µs | 12.5 KB |
-| 256 | create-an-html-table | ✓ | 837µs | 11.9 KB |
-| 257 | create-an-object-at-a-given-address | ✓ | 1.281ms | 32.7 KB |
-| 258 | csv-data-manipulation | ✓ | 1.009ms | 64.7 KB |
-| 259 | csv-to-html-translation-1 | ✓ | 650µs | 6.1 KB |
-| 260 | csv-to-html-translation-2 | ✓ | 651µs | 12.1 KB |
-| 261 | csv-to-html-translation-3 | ✓ | 450µs | 3.5 KB |
-| 262 | csv-to-html-translation-4 | ✓ | 399µs | 2.3 KB |
-| 263 | csv-to-html-translation-5 | ✓ | 4.737ms | 609.1 KB |
+| 238 | copy-a-string-1 | ✓ | 35µs | 376 B |
+| 239 | copy-a-string-2 | ✓ | 136µs | 2.7 KB |
+| 240 | copy-stdin-to-stdout-1 | ✓ | 44µs | 728 B |
+| 241 | copy-stdin-to-stdout-2 | ✓ | 30µs | 1.0 KB |
+| 242 | count-in-factors | ✓ | 11.869ms |  |
+| 243 | count-in-octal-1 | ✓ | 523µs | 457.4 KB |
+| 244 | count-in-octal-2 | ✓ | 521.302ms | 1.4 MB |
+| 245 | count-in-octal-3 | ✓ | 156µs | 52.4 KB |
+| 246 | count-in-octal-4 | ✓ | 125µs | 51.6 KB |
+| 247 | count-occurrences-of-a-substring | ✓ | 100µs | 14.8 KB |
+| 248 | count-the-coins-1 | ✓ | 105µs | 31.0 KB |
+| 249 | count-the-coins-2 | ✓ | 28.302ms | 1.8 MB |
+| 250 | cramers-rule | ✓ | 1.141ms | 1.6 MB |
+| 251 | crc-32-1 | ✓ | 81.4ms | 550.6 KB |
+| 252 | crc-32-2 | ✓ | 56.646ms | 366.1 KB |
+| 253 | create-a-file-on-magnetic-tape | ✓ | 33µs | 7.8 KB |
+| 254 | create-a-file | ✓ | 30µs | 10.6 KB |
+| 255 | create-a-two-dimensional-array-at-runtime-1 | ✓ | 38µs | 16.6 KB |
+| 256 | create-an-html-table | ✓ | 79µs | 16.5 KB |
+| 257 | create-an-object-at-a-given-address | ✓ | 163µs | 46.4 KB |
+| 258 | csv-data-manipulation | ✓ | 140µs | 74.6 KB |
+| 259 | csv-to-html-translation-1 | ✓ | 49µs | 6.1 KB |
+| 260 | csv-to-html-translation-2 | ✓ | 85µs | 12.1 KB |
+| 261 | csv-to-html-translation-3 | ✓ | 25µs | 3.5 KB |
+| 262 | csv-to-html-translation-4 | ✓ | 73µs | 2.3 KB |
+| 263 | csv-to-html-translation-5 | ✓ | 2.396ms |  |
 | 264 | cuban-primes | ✓ |  |  |
-| 265 | cullen-and-woodall-numbers | ✓ |  |  |
-| 266 | cumulative-standard-deviation | ✓ | 147µs | 72.6 KB |
-| 267 | currency | ✓ | 208µs | 86.5 KB |
-| 268 | currying | ✓ | 68µs | 34.7 KB |
-| 269 | curzon-numbers | ✓ | 2.577357s |  |
-| 270 | cusip | ✓ | 130µs | 74.6 KB |
-| 271 | cyclops-numbers | ✓ | 102µs | 136 B |
-| 272 | damm-algorithm | ✓ | 107µs | 24.2 KB |
-| 273 | date-format | ✓ | 140µs | 18.7 KB |
-| 274 | date-manipulation | ✓ | 10.167ms | 475.3 KB |
+| 265 | cullen-and-woodall-numbers | ✓ | 375µs | 372.7 KB |
+| 266 | cumulative-standard-deviation | ✓ | 2.136ms | 95.3 KB |
+| 267 | currency | ✓ | 141µs | 86.5 KB |
+| 268 | currying | ✓ | 51µs | 30.1 KB |
+| 269 | curzon-numbers | ✓ | 2.115943s |  |
+| 270 | cusip | ✓ | 142µs | 74.6 KB |
+| 271 | cyclops-numbers | ✓ | 38µs | 136 B |
+| 272 | damm-algorithm | ✓ | 90µs | 24.2 KB |
+| 273 | date-format | ✓ | 60µs | 18.9 KB |
+| 274 | date-manipulation | ✓ | 904µs | 605.8 KB |
 | 275 | day-of-the-week | ✓ | 618µs | 835.0 KB |
 | 276 | de-bruijn-sequences | ✓ | 14.141446s | 345.0 KB |
 | 277 | deal-cards-for-freecell | ✓ |  |  |

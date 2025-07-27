@@ -1,4 +1,4 @@
-func main (regs=43)
+func main (regs=40)
   // let m = [
   Const        r7, [[2.0, -1.0, 5.0, 1.0], [3.0, 2.0, 2.0, -6.0], [1.0, 3.0, 3.0, -1.0], [5.0, -2.0, -3.0, 3.0]]
   Move         r0, r7
@@ -8,89 +8,86 @@ func main (regs=43)
   Move         r1, r8
   SetGlobal    1,1,0,0
   // let d = det(m)
-  Const        r10, [[2.0, -1.0, 5.0, 1.0], [3.0, 2.0, 2.0, -6.0], [1.0, 3.0, 3.0, -1.0], [5.0, -2.0, -3.0, 3.0]]
-  Move         r9, r10
-  Call         r11, det, r9
-  Move         r2, r11
+  Move         r9, r0
+  Call         r10, det, r9
+  Move         r2, r10
   SetGlobal    2,2,0,0
   // var x: list<float> = []
-  Const        r12, []
-  Move         r3, r12
+  Const        r11, []
+  Move         r3, r11
   SetGlobal    3,3,0,0
   // var i = 0
-  Const        r13, 0
-  Move         r4, r13
+  Const        r12, 0
+  Move         r4, r12
   SetGlobal    4,4,0,0
 L1:
   // while i < len(v) {
-  Const        r14, 4
-  LessInt      r15, r4, r14
-  JumpIfFalse  r15, L0
+  Const        r13, 4
+  LessInt      r14, r4, r13
+  JumpIfFalse  r14, L0
   // let mc = replaceCol(m, i, v)
-  Const        r19, [[2.0, -1.0, 5.0, 1.0], [3.0, 2.0, 2.0, -6.0], [1.0, 3.0, 3.0, -1.0], [5.0, -2.0, -3.0, 3.0]]
-  Move         r16, r19
-  Move         r17, r4
-  Const        r20, [-3.0, -32.0, -47.0, 49.0]
-  Move         r18, r20
-  Call         r21, replaceCol, r16, r17, r18
-  Move         r22, r21
+  Move         r15, r0
+  Move         r16, r4
+  Move         r17, r1
+  Call         r18, replaceCol, r15, r16, r17
+  Move         r19, r18
   // x = append(x, det(mc) / d)
-  Move         r23, r22
-  Call         r24, det, r23
-  Div          r25, r24, r2
-  Append       r26, r3, r25
-  Move         r3, r26
+  Move         r20, r19
+  Call         r21, det, r20
+  Div          r22, r21, r2
+  Append       r23, r3, r22
+  Move         r3, r23
   SetGlobal    3,3,0,0
   // i = i + 1
-  Const        r27, 1
-  AddInt       r28, r4, r27
-  Move         r4, r28
+  Const        r24, 1
+  AddInt       r25, r4, r24
+  Move         r4, r25
   SetGlobal    4,4,0,0
   // while i < len(v) {
   Jump         L1
 L0:
   // var s = "["
-  Const        r29, "["
-  Move         r5, r29
+  Const        r26, "["
+  Move         r5, r26
   SetGlobal    5,5,0,0
   // var j = 0
-  Const        r13, 0
-  Move         r6, r13
+  Const        r12, 0
+  Move         r6, r12
   SetGlobal    6,6,0,0
 L4:
   // while j < len(x) {
-  Len          r30, r3
-  LessInt      r31, r6, r30
-  JumpIfFalse  r31, L2
+  Len          r27, r3
+  LessInt      r28, r6, r27
+  JumpIfFalse  r28, L2
   // s = s + str(x[j])
-  Index        r32, r3, r6
-  Str          r33, r32
-  Add          r34, r5, r33
-  Move         r5, r34
+  Index        r29, r3, r6
+  Str          r30, r29
+  Add          r31, r5, r30
+  Move         r5, r31
   SetGlobal    5,5,0,0
   // if j < len(x)-1 { s = s + " " }
-  Len          r35, r3
-  Const        r27, 1
-  SubInt       r36, r35, r27
-  LessInt      r37, r6, r36
-  JumpIfFalse  r37, L3
-  Const        r38, " "
-  Add          r39, r5, r38
-  Move         r5, r39
+  Len          r32, r3
+  Const        r24, 1
+  SubInt       r33, r32, r24
+  LessInt      r34, r6, r33
+  JumpIfFalse  r34, L3
+  Const        r35, " "
+  Add          r36, r5, r35
+  Move         r5, r36
   SetGlobal    5,5,0,0
 L3:
   // j = j + 1
-  Const        r27, 1
-  AddInt       r40, r6, r27
-  Move         r6, r40
+  Const        r24, 1
+  AddInt       r37, r6, r24
+  Move         r6, r37
   SetGlobal    6,6,0,0
   // while j < len(x) {
   Jump         L4
 L2:
   // s = s + "]"
-  Const        r41, "]"
-  Add          r42, r5, r41
-  Move         r5, r42
+  Const        r38, "]"
+  Add          r39, r5, r38
+  Move         r5, r39
   SetGlobal    5,5,0,0
   // print(s)
   Print        r5

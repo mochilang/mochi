@@ -40,28 +40,18 @@ func main (regs=47)
   Move         r8, r7
   // if outfile != "" {          // would open outfile here
   Const        r2, ""
-  Const        r2, ""
-  NotEqual     r9, r2, r2
+  NotEqual     r9, r4, r2
   JumpIfFalse  r9, L0
   // w = null
   Const        r7, nil
   Move         r8, r7
 L0:
-  // if gzipFlag {               // wrap in gzip writer if requested
-  Const        r5, false
-  JumpIfFalse  r5, L1
-  // w = gzipWriter(w)
-  Move         r10, r8
-  Call         r11, gzipWriter, r10
-  Move         r8, r11
-L1:
   // w = tarWriter(w)            // create tar writer
   Move         r12, r8
   Call         r13, tarWriter, r12
   Move         r8, r13
   // "Name": filename,
   Const        r14, "Name"
-  Const        r0, "TAPE.FILE"
   // "Mode": 0o660,
   Const        r15, "Mode"
   Const        r16, 432
@@ -82,7 +72,7 @@ L1:
   Const        r23, "guest"
   // "Name": filename,
   Move         r25, r14
-  Move         r26, r0
+  Move         r26, r1
   // "Mode": 0o660,
   Move         r27, r15
   Move         r28, r16
@@ -110,7 +100,6 @@ L1:
   Call2        r43, tarWriteHeader, r41, r42
   // tarWrite(w, data)
   Move         r44, r8
-  Const        r2, ""
-  Move         r45, r2
+  Move         r45, r3
   Call2        r46, tarWrite, r44, r45
   Return       r0

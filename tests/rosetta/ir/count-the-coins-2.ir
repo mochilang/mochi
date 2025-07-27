@@ -9,8 +9,7 @@ func main (regs=11)
   Const        r4, "amount, ways to make change: 1000"
   Const        r5, " "
   Const        r6, "amount, ways to make change: 1000 "
-  Const        r1, 1000
-  Move         r7, r1
+  Move         r7, r0
   Call         r8, countChange, r7
   Str          r9, r8
   Add          r10, r6, r9
