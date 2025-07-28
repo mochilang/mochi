@@ -263,6 +263,31 @@ function parse(src: string): TSDecl[] {
           doc,
         });
       }
+    } else if (ts.isForOfStatement(stmt)) {
+      let iter = stmt.initializer.getText(source);
+      if (ts.isVariableDeclarationList(stmt.initializer)) {
+        const d = stmt.initializer.declarations[0];
+        iter = d.name.getText(source);
+      }
+      let list = stmt.expression.getText(source);
+      list = list.replace(/^Object\.values\(/, "values(");
+      let body = stmt.statement.getText(source);
+      if (ts.isBlock(stmt.statement)) body = body.slice(1, -1);
+      body = body.replace(/console\.log\(String\((.+?)\)\);?/g, "print($1)");
+      decls.push({
+        kind: "expr",
+        node: ts.SyntaxKind[stmt.kind],
+        name: "",
+        expr: `for ${iter} in ${list} {${body}}`,
+        start: start.line,
+        startCol: start.col,
+        end: end.line,
+        endCol: end.col,
+        snippet,
+        startOff: stmt.getStart(source),
+        endOff: stmt.end,
+        doc,
+      });
     } else if (ts.isExpressionStatement(stmt)) {
       if (ts.isCallExpression(stmt.expression)) {
         const call = stmt.expression;
