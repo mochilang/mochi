@@ -702,6 +702,12 @@ type CallExpr struct {
 	Args []Expr
 }
 
+// InvokeExpr calls the result of evaluating an expression as a function.
+type InvokeExpr struct {
+	Callee Expr
+	Args   []Expr
+}
+
 type IndexExpr struct {
 	Target   Expr
 	Index    Expr
@@ -757,43 +763,27 @@ func (i *IndexExpr) emit(w io.Writer) {
 }
 
 func (s *SliceExpr) emit(w io.Writer) {
-	if s.IsString {
-		io.WriteString(w, "(substring ")
-		s.Target.emit(w)
-		io.WriteString(w, " ")
-		if s.Start != nil {
-			s.Start.emit(w)
-		} else {
-			io.WriteString(w, "0")
-		}
-		io.WriteString(w, " ")
-		if s.End != nil {
-			s.End.emit(w)
-		} else {
-			io.WriteString(w, "(string-length ")
-			s.Target.emit(w)
-			io.WriteString(w, ")")
-		}
-		io.WriteString(w, ")")
+	io.WriteString(w, "(slice ")
+	s.Target.emit(w)
+	io.WriteString(w, " ")
+	if s.Start != nil {
+		s.Start.emit(w)
 	} else {
-		io.WriteString(w, "(sublist ")
-		s.Target.emit(w)
-		io.WriteString(w, " ")
-		if s.Start != nil {
-			s.Start.emit(w)
-		} else {
-			io.WriteString(w, "0")
-		}
-		io.WriteString(w, " ")
-		if s.End != nil {
-			s.End.emit(w)
+		io.WriteString(w, "0")
+	}
+	io.WriteString(w, " ")
+	if s.End != nil {
+		s.End.emit(w)
+	} else {
+		if s.IsString {
+			io.WriteString(w, "(string-length ")
 		} else {
 			io.WriteString(w, "(length ")
-			s.Target.emit(w)
-			io.WriteString(w, ")")
 		}
+		s.Target.emit(w)
 		io.WriteString(w, ")")
 	}
+	io.WriteString(w, ")")
 }
 
 func (m *MatchExpr) emit(w io.Writer) {
@@ -818,6 +808,16 @@ func (c *CallExpr) emit(w io.Writer) {
 	io.WriteString(w, "(")
 	io.WriteString(w, c.Func)
 	for _, a := range c.Args {
+		io.WriteString(w, " ")
+		a.emit(w)
+	}
+	io.WriteString(w, ")")
+}
+
+func (i *InvokeExpr) emit(w io.Writer) {
+	io.WriteString(w, "(")
+	i.Callee.emit(w)
+	for _, a := range i.Args {
 		io.WriteString(w, " ")
 		a.emit(w)
 	}
@@ -1331,6 +1331,7 @@ func header() string {
 	hdr += "(define (upper s) (string-upcase s))\n"
 	hdr += "(define (lower s) (string-downcase s))\n"
 	hdr += "(define (sublist lst start end)\n  (if (string? lst)\n      (substring lst start end)\n      (take (drop lst start) (- end start))))\n\n"
+	hdr += "(define (slice seq start end)\n  (define len (if (string? seq) (string-length seq) (length seq)))\n  (define s (int start))\n  (define e (int end))\n  (when (< s 0) (set! s (+ len s)))\n  (when (< e 0) (set! e (+ len e)))\n  (set! s (max 0 (min len s)))\n  (set! e (max 0 (min len e)))\n  (when (< e s) (set! e s))\n  (if (string? seq) (substring seq s e) (sublist seq s e)))\n"
 	hdr += "(define (pad-start s width ch)\n  (let ([s (format \"~a\" s)])\n    (if (< (string-length s) width)\n        (string-append (make-string (- width (string-length s)) (string-ref ch 0)) s)\n        s)))\n"
 	hdr += "(define (index-of s ch)\n  (let loop ([i 0])\n    (cond [(>= i (string-length s)) -1]\n          [(string=? (substring s i (add1 i)) ch) i]\n          [else (loop (add1 i))])))\n"
 	hdr += "(define (_repeat s n)\n  (cond\n    [(string? s) (apply string-append (make-list (int n) s))]\n    [(list? s) (apply append (make-list (int n) s))]\n    [else '()]))\n"
@@ -2505,9 +2506,16 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 					break
 					//return nil, fmt.Errorf("unsupported call %s", lit.Value)
 				}
-				return nil, fmt.Errorf("unsupported call")
 			default:
-				return nil, fmt.Errorf("unsupported call")
+				var args []Expr
+				for _, a := range op.Call.Args {
+					arg, err := convertExpr(a, env)
+					if err != nil {
+						return nil, err
+					}
+					args = append(args, arg)
+				}
+				expr = &InvokeExpr{Callee: expr, Args: args}
 			}
 		case op.Index != nil && op.Index.Colon == nil:
 			idx, err := convertExpr(op.Index.Start, env)
@@ -2811,7 +2819,18 @@ func convertCall(c *parser.CallExpr, env *types.Env) (Expr, error) {
 		}
 	case "substring":
 		if len(args) == 3 {
-			return &CallExpr{Func: "substring", Args: args}, nil
+			return &CallExpr{Func: "slice", Args: args}, nil
+		}
+	case "slice":
+		if len(args) == 3 {
+			isStr := false
+			if env != nil {
+				t := types.TypeOfExprBasic(c.Args[0], env)
+				if _, ok := t.(types.StringType); ok {
+					isStr = true
+				}
+			}
+			return &SliceExpr{Target: args[0], Start: args[1], End: args[2], IsString: isStr}, nil
 		}
 	case "contains":
 		if len(args) == 2 {
@@ -2882,7 +2901,14 @@ func convertCall(c *parser.CallExpr, env *types.Env) (Expr, error) {
 		}
 	case "pow":
 		if len(args) == 2 {
-			return &CallExpr{Func: "expt", Args: args}, nil
+			if env != nil {
+				t0 := types.TypeOfExprBasic(c.Args[0], env)
+				t1 := types.TypeOfExprBasic(c.Args[1], env)
+				if (types.IsNumericType(t0) || types.IsFloatType(t0)) && (types.IsNumericType(t1) || types.IsFloatType(t1)) {
+					return &CallExpr{Func: "expt", Args: args}, nil
+				}
+			}
+			return &CallExpr{Func: c.Func, Args: args}, nil
 		}
 	case "math.sin":
 		if len(args) == 1 {

@@ -1,0 +1,10 @@
+run error: exit status 1
+list-ref: index reaches a non-pair
+  index: 10
+  in: '#hash((0 . 0) (5 . 1) (10 . 2) (15 . 3) (20 . 4) (21 . 5) (26 . 6) (31 . 7) (32 . 8) (37 . 9) (38 . 10) (43 . 11) (44 . 12) (49 . 13) (54 . 14) (55 . 15) (60 . 16) (65 . 17))
+  context...:
+   /workspace/mochi/tests/rosetta/transpiler/Racket/compiler-virtual-machine-interpreter.rkt:191:15: loop
+   [repeats 16 more times]
+   /workspace/mochi/tests/rosetta/transpiler/Racket/compiler-virtual-machine-interpreter.rkt:58:0
+   body of "/workspace/mochi/tests/rosetta/transpiler/Racket/compiler-virtual-machine-interpreter.rkt"
+count is: 1
