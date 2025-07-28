@@ -87,15 +87,18 @@ $__start = _now();
   foreach ($angles as $a) {
   echo rtrim(_str($a) . ' ' . _str(d2d($a)) . ' ' . _str(d2g($a)) . ' ' . _str(d2m($a)) . ' ' . _str(d2r($a))), PHP_EOL;
 };
-  echo rtrim('\ngradians normalized_grds degrees mils radians'), PHP_EOL;
+  echo rtrim('
+gradians normalized_grds degrees mils radians'), PHP_EOL;
   foreach ($angles as $a) {
   echo rtrim(_str($a) . ' ' . _str(g2g($a)) . ' ' . _str(g2d($a)) . ' ' . _str(g2m($a)) . ' ' . _str(g2r($a))), PHP_EOL;
 };
-  echo rtrim('\nmils normalized_mils degrees gradians radians'), PHP_EOL;
+  echo rtrim('
+mils normalized_mils degrees gradians radians'), PHP_EOL;
   foreach ($angles as $a) {
   echo rtrim(_str($a) . ' ' . _str(m2m($a)) . ' ' . _str(m2d($a)) . ' ' . _str(m2g($a)) . ' ' . _str(m2r($a))), PHP_EOL;
 };
-  echo rtrim('\nradians normalized_rads degrees gradians mils'), PHP_EOL;
+  echo rtrim('
+radians normalized_rads degrees gradians mils'), PHP_EOL;
   foreach ($angles as $a) {
   echo rtrim(_str($a) . ' ' . _str(r2r($a)) . ' ' . _str(r2d($a)) . ' ' . _str(r2g($a)) . ' ' . _str(r2m($a))), PHP_EOL;
 };

@@ -11,7 +11,7 @@ fib(8) = 21
 fib(9) = 34
 fib(10) = 55
 {
-  "duration_us": 52,
+  "duration_us": 54,
   "memory_bytes": 96,
   "name": "main"
 }

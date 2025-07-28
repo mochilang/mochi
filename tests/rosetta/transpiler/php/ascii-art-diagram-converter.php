@@ -18,7 +18,8 @@ function _now() {
 $__start_mem = memory_get_usage();
 $__start = _now();
   function main() {
-  echo rtrim('Diagram after trimming whitespace and removal of blank lines:\n'), PHP_EOL;
+  echo rtrim('Diagram after trimming whitespace and removal of blank lines:
+'), PHP_EOL;
   echo rtrim('+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+'), PHP_EOL;
   echo rtrim('|                      ID                       |'), PHP_EOL;
   echo rtrim('+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+'), PHP_EOL;
@@ -32,7 +33,9 @@ $__start = _now();
   echo rtrim('+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+'), PHP_EOL;
   echo rtrim('|                    ARCOUNT                    |'), PHP_EOL;
   echo rtrim('+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+'), PHP_EOL;
-  echo rtrim('\nDecoded:\n'), PHP_EOL;
+  echo rtrim('
+Decoded:
+'), PHP_EOL;
   echo rtrim('Name     Bits  Start  End'), PHP_EOL;
   echo rtrim('=======  ====  =====  ==='), PHP_EOL;
   echo rtrim('ID        16      0    15'), PHP_EOL;
@@ -48,11 +51,15 @@ $__start = _now();
   echo rtrim('ANCOUNT   16     48    63'), PHP_EOL;
   echo rtrim('NSCOUNT   16     64    79'), PHP_EOL;
   echo rtrim('ARCOUNT   16     80    95'), PHP_EOL;
-  echo rtrim('\nTest string in hex:'), PHP_EOL;
+  echo rtrim('
+Test string in hex:'), PHP_EOL;
   echo rtrim('78477bbf5496e12e1bf169a4'), PHP_EOL;
-  echo rtrim('\nTest string in binary:'), PHP_EOL;
+  echo rtrim('
+Test string in binary:'), PHP_EOL;
   echo rtrim('011110000100011101111011101111110101010010010110111000010010111000011011111100010110100110100100'), PHP_EOL;
-  echo rtrim('\nUnpacked:\n'), PHP_EOL;
+  echo rtrim('
+Unpacked:
+'), PHP_EOL;
   echo rtrim('Name     Size  Bit pattern'), PHP_EOL;
   echo rtrim('=======  ====  ================'), PHP_EOL;
   echo rtrim('ID        16   0111100001000111'), PHP_EOL;
