@@ -689,8 +689,10 @@ func (p *Program) write(w io.Writer) {
 		fmt.Fprintln(w, "    BigRat operator-(const BigRat& o) const { return BigRat(num*o.den - o.num*den, den*o.den); }")
 		fmt.Fprintln(w, "    BigRat operator*(const BigRat& o) const { return BigRat(num*o.num, den*o.den); }")
 		fmt.Fprintln(w, "    BigRat operator/(const BigRat& o) const { return BigRat(num*o.den, den*o.num); }")
+		fmt.Fprintln(w, "    BigRat operator-() const { return BigRat(-num, den); }")
 		fmt.Fprintln(w, "};")
 		fmt.Fprintln(w, "template<typename A> BigRat _bigrat(A a){ return BigRat(cpp_int(a), cpp_int(1)); }")
+		fmt.Fprintln(w, "inline BigRat _bigrat(const BigRat& r){ return r; }")
 		fmt.Fprintln(w, "template<typename A, typename B> BigRat _bigrat(A a, B b){ return BigRat(cpp_int(a), cpp_int(b)); }")
 		fmt.Fprintln(w, "inline cpp_int _num(const BigRat& r){ return r.num; }")
 		fmt.Fprintln(w, "inline cpp_int _denom(const BigRat& r){ return r.den; }")
@@ -1370,9 +1372,9 @@ func (i *IndexExpr) emit(w io.Writer) {
 					}
 					io.WriteString(w, "std::any_cast<"+resType+">(")
 					i.Target.emit(w)
-					io.WriteString(w, "[")
+					io.WriteString(w, ".at(")
 					i.Index.emit(w)
-					io.WriteString(w, "])")
+					io.WriteString(w, ")")
 					io.WriteString(w, ")")
 					return
 				}

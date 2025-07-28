@@ -196,7 +196,7 @@ Checklist of programs that currently transpile and run (198/493) - Last updated 
 | 189 | character-codes-4 | ✓ | 26.0µs | 12.68MB |
 | 190 | character-codes-5 | ✓ | 28.0µs | 12.80MB |
 | 191 | chat-server | ✓ | 53.0µs | 13.29MB |
-| 192 | check-machin-like-formulas |   |  |  |
+| 192 | check-machin-like-formulas | ✓ | 54.2ms | 14.29MB |
 | 193 | check-that-file-exists |   |  |  |
 | 194 | checkpoint-synchronization-1 |   |  |  |
 | 195 | checkpoint-synchronization-2 |   |  |  |
