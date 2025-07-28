@@ -39,8 +39,9 @@ func ConvertSource(n *Node) (string, error) {
 	}
 	out.WriteString("*/\n")
 
-	varDecl := regexp.MustCompile(`^static\s+int\s+([A-Za-z_][A-Za-z0-9_]*)\s*=\s*([-0-9]+);`)
+	varDecl := regexp.MustCompile(`^static\s+int\s+([A-Za-z_][A-Za-z0-9_]*)\s*=\s*([^;]+);`)
 	printStmt := regexp.MustCompile(`System\.out\.println\((.*)\);`)
+	boolTernary := regexp.MustCompile(`^(.+)\?\s*1\s*:\s*0$`)
 
 	for _, line := range n.Lines {
 		line = strings.TrimSpace(line)
@@ -50,6 +51,9 @@ func ConvertSource(n *Node) (string, error) {
 		}
 		if m := printStmt.FindStringSubmatch(line); m != nil {
 			expr := strings.TrimSpace(m[1])
+			if bm := boolTernary.FindStringSubmatch(expr); bm != nil {
+				expr = strings.TrimSpace(bm[1])
+			}
 			fmt.Fprintf(&out, "print(%s)\n", expr)
 		}
 	}
