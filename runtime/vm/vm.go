@@ -121,6 +121,7 @@ const (
 	OpNot
 	OpJumpIfTrue
 	OpNow
+	OpRealNow
 	OpMem
 	OpJSON
 	OpAppend
@@ -255,6 +256,8 @@ func (op Op) String() string {
 		return "JumpIfTrue"
 	case OpNow:
 		return "Now"
+	case OpRealNow:
+		return "RealNow"
 	case OpMem:
 		return "Mem"
 	case OpJSON:
@@ -1375,6 +1378,8 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 			} else {
 				fr.regs[ins.A] = Value{Tag: ValueInt, Int: int(time.Now().UnixNano())}
 			}
+		case OpRealNow:
+			fr.regs[ins.A] = Value{Tag: ValueInt, Int: int(time.Now().UnixNano())}
 		case OpMem:
 			var ms runtime.MemStats
 			runtime.ReadMemStats(&ms)
@@ -2690,7 +2695,7 @@ func (fc *funcCompiler) emit(pos lexer.Position, i Instr) {
 		OpLess, OpLessEq, OpLessInt, OpLessFloat, OpLessEqInt, OpLessEqFloat,
 		OpIn, OpNot:
 		fc.tags[i.A] = tagBool
-	case OpLen, OpNow, OpMem:
+	case OpLen, OpNow, OpRealNow, OpMem:
 		fc.tags[i.A] = tagInt
 	case OpJSON, OpPrint, OpPrint2, OpPrintN:
 		// no result
@@ -2985,7 +2990,7 @@ func (fc *funcCompiler) compileStmt(s *parser.Statement) error {
 		startMem := fc.newReg()
 		fc.emit(s.Bench.Pos, Instr{Op: OpMem, A: startMem})
 		start := fc.newReg()
-		fc.emit(s.Bench.Pos, Instr{Op: OpNow, A: start})
+		fc.emit(s.Bench.Pos, Instr{Op: OpRealNow, A: start})
 		fc.pushScope()
 		for _, st := range s.Bench.Body {
 			if err := fc.compileStmt(st); err != nil {
@@ -2995,7 +3000,7 @@ func (fc *funcCompiler) compileStmt(s *parser.Statement) error {
 		}
 		fc.popScope()
 		end := fc.newReg()
-		fc.emit(s.Bench.Pos, Instr{Op: OpNow, A: end})
+		fc.emit(s.Bench.Pos, Instr{Op: OpRealNow, A: end})
 		endMem := fc.newReg()
 		fc.emit(s.Bench.Pos, Instr{Op: OpMem, A: endMem})
 		dur := fc.newReg()
