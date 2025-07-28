@@ -2404,6 +2404,17 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 		if err != nil {
 			return nil, err
 		}
+		if transpileEnv != nil {
+			if t, err2 := transpileEnv.GetVar(s.Assign.Name); err2 == nil {
+				if _, ok := t.(types.BigIntType); ok {
+					if n, ok2 := val.(*NumberLit); ok2 {
+						if !strings.HasSuffix(n.Value, "n") {
+							n.Value = strings.TrimSuffix(n.Value, ".0") + "n"
+						}
+					}
+				}
+			}
+		}
 		target := Expr(&NameRef{Name: s.Assign.Name})
 		if len(s.Assign.Index) > 0 {
 			target, err = applyIndexOps(target, s.Assign.Index)
@@ -3145,6 +3156,15 @@ func isMapIntKey(p *parser.PostfixExpr) bool {
 	return false
 }
 
+func isStructExpr(p *parser.PostfixExpr) bool {
+	if p == nil || p.Target == nil || transpileEnv == nil {
+		return false
+	}
+	t := types.CheckExprType(&parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: p}}}, transpileEnv)
+	_, ok := t.(types.StructType)
+	return ok
+}
+
 func isIntType(t types.Type) bool {
 	switch t.(type) {
 	case types.IntType, types.Int64Type, types.BigIntType:
@@ -3250,11 +3270,24 @@ func convertBinary(b *parser.BinaryExpr) (Expr, error) {
 				}
 				break
 			}
-			operands[i] = &BinaryExpr{Left: operands[i], Op: ops[i], Right: operands[i+1]}
-			if isIntType(typesArr[i]) && isIntType(typesArr[i+1]) {
-				typesArr[i] = types.IntType{}
+			if isBigIntType(typesArr[i]) || isBigIntType(typesArr[i+1]) {
+				if !isBigIntType(typesArr[i]) {
+					operands[i] = &CallExpr{Func: "BigInt", Args: []Expr{operands[i]}}
+					typesArr[i] = types.BigIntType{}
+				}
+				if !isBigIntType(typesArr[i+1]) {
+					operands[i+1] = &CallExpr{Func: "BigInt", Args: []Expr{operands[i+1]}}
+					typesArr[i+1] = types.BigIntType{}
+				}
+				operands[i] = &BinaryExpr{Left: operands[i], Op: ops[i], Right: operands[i+1]}
+				typesArr[i] = types.BigIntType{}
 			} else {
-				typesArr[i] = types.FloatType{}
+				operands[i] = &BinaryExpr{Left: operands[i], Op: ops[i], Right: operands[i+1]}
+				if isIntType(typesArr[i]) && isIntType(typesArr[i+1]) {
+					typesArr[i] = types.IntType{}
+				} else {
+					typesArr[i] = types.FloatType{}
+				}
 			}
 			break
 		case "in":
@@ -3293,13 +3326,14 @@ func convertBinary(b *parser.BinaryExpr) (Expr, error) {
 		case "intersect":
 			operands[i] = &IntersectExpr{Left: operands[i], Right: operands[i+1]}
 		default:
-			if isBigIntType(typesArr[i]) != isBigIntType(typesArr[i+1]) {
-				if isBigIntType(typesArr[i]) {
-					operands[i] = &CallExpr{Func: "Number", Args: []Expr{operands[i]}}
-					typesArr[i] = types.FloatType{}
-				} else {
-					operands[i+1] = &CallExpr{Func: "Number", Args: []Expr{operands[i+1]}}
-					typesArr[i+1] = types.FloatType{}
+			if isBigIntType(typesArr[i]) || isBigIntType(typesArr[i+1]) {
+				if !isBigIntType(typesArr[i]) {
+					operands[i] = &CallExpr{Func: "BigInt", Args: []Expr{operands[i]}}
+					typesArr[i] = types.BigIntType{}
+				}
+				if !isBigIntType(typesArr[i+1]) {
+					operands[i+1] = &CallExpr{Func: "BigInt", Args: []Expr{operands[i+1]}}
+					typesArr[i+1] = types.BigIntType{}
 				}
 			}
 			if ops[i] == "/" && (isIntType(typesArr[i]) && isIntType(typesArr[i+1]) || (isVarIntExpr(operands[i]) && isIntLitExpr(operands[i+1])) || (isIntLitExpr(operands[i]) && isIntLitExpr(operands[i+1]))) && !(isFloatLitExpr(operands[i]) || isFloatLitExpr(operands[i+1])) {
@@ -3465,7 +3499,7 @@ func convertPostfix(p *parser.PostfixExpr) (expr Expr, err error) {
 					return nil, err
 				}
 				if keyStr, isStr := literalString(idxExpr); !isStr {
-					if isMapIntKey(partial) || !isMapExpr(partial) {
+					if isMapIntKey(partial) || (!isMapExpr(partial) && !isStructExpr(partial)) {
 						if be, ok := idx.(*BinaryExpr); ok && be.Op == "*" && isMapIntKey(partial) {
 							be.Left = &CallExpr{Func: "Math.trunc", Args: []Expr{be.Left}}
 							idx = be
@@ -4147,7 +4181,7 @@ func tsType(t types.Type) string {
 		}
 		parts := make([]string, len(tt.Order))
 		for i, name := range tt.Order {
-			parts[i] = name + ": " + tsType(tt.Fields[name])
+			parts[i] = tsKey(name) + ": " + tsType(tt.Fields[name])
 		}
 		return "{ " + strings.Join(parts, "; ") + " }"
 	case types.UnionType:

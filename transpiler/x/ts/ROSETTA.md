@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated TypeScript code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/TypeScript`.
-Last updated: 2025-07-27 18:06 UTC
+Last updated: 2025-07-28 01:02 UTC
 
-## Rosetta Golden Test Checklist (465/467)
+## Rosetta Golden Test Checklist (467/467)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 5.905ms | 256.0 KB |
@@ -407,56 +407,56 @@ Last updated: 2025-07-27 18:06 UTC
 | 398 | fast-fourier-transform | ✓ | 1.944ms | 256.0 KB |
 | 399 | fasta-format | ✓ | 1.895ms | 128.0 KB |
 | 400 | faulhabers-formula | ✓ | 3.595ms | 512.0 KB |
-| 401 | faulhabers-triangle | ✓ | 1.263ms |  |
-| 402 | feigenbaum-constant-calculation | ✓ | 19.647ms | 6.4 MB |
-| 403 | fermat-numbers | ✓ | 2.243ms | 128.0 KB |
-| 404 | fibonacci-n-step-number-sequences | ✓ | 2.207ms | 128.0 KB |
-| 405 | fibonacci-sequence-1 | ✓ | 8µs |  |
-| 406 | fibonacci-sequence-2 | ✓ | 9µs |  |
-| 407 | fibonacci-sequence-3 | ✓ | 9µs |  |
-| 408 | fibonacci-sequence-4 | ✓ | 998µs | 128.0 KB |
-| 409 | fibonacci-sequence-5 |   |  |  |
-| 410 | fibonacci-word-fractal | ✓ | 893µs |  |
-| 411 | fibonacci-word | ✓ | 2.19354s | 32.3 MB |
-| 412 | file-extension-is-in-extensions-list | ✓ | 2.684ms | 256.0 KB |
-| 413 | file-input-output-1 | ✓ | 637µs | 128.0 KB |
-| 414 | file-input-output-2 | ✓ | 707µs |  |
-| 415 | file-input-output-3 |   |  |  |
-| 416 | file-modification-time | ✓ | 2.253ms | 384.0 KB |
-| 417 | file-size-distribution | ✓ | 1.474ms | 128.0 KB |
-| 418 | file-size | ✓ | 731µs | 128.0 KB |
-| 419 | filter | ✓ | 1.123ms |  |
-| 420 | find-chess960-starting-position-identifier | ✓ | 4.524ms | 512.0 KB |
-| 421 | find-common-directory-path | ✓ | 1.21ms | 256.0 KB |
-| 422 | find-duplicate-files | ✓ | 1.046ms | 128.0 KB |
-| 423 | find-if-a-point-is-within-a-triangle | ✓ | 3.376ms | 384.0 KB |
-| 424 | find-largest-left-truncatable-prime-in-a-given-base | ✓ | 1.21ms | 4.5 MB |
-| 425 | find-limit-of-recursion | ✓ | 4.021ms | 9.2 MB |
-| 426 | find-palindromic-numbers-in-both-binary-and-ternary-bases | ✓ | 1.290361s | 10.8 MB |
-| 427 | find-the-intersection-of-a-line-with-a-plane | ✓ | 419µs |  |
-| 428 | find-the-intersection-of-two-lines | ✓ | 351µs | 128.0 KB |
-| 429 | find-the-last-sunday-of-each-month | ✓ | 926µs | 640.0 KB |
-| 430 | find-the-missing-permutation | ✓ | 462µs | 256.0 KB |
-| 431 | fivenum-1 | ✓ | 504µs | 128.0 KB |
-| 432 | fivenum-2 | ✓ | 647µs | 256.0 KB |
-| 433 | fixed-length-records-1 | ✓ | 370µs |  |
-| 434 | fixed-length-records-2 | ✓ | 605µs |  |
-| 435 | fizzbuzz-1 | ✓ | 793µs | 256.0 KB |
-| 436 | fizzbuzz-2 | ✓ | 1.239ms | 512.0 KB |
-| 437 | flatten-a-list-1 | ✓ | 301µs | 128.0 KB |
-| 438 | flatten-a-list-2 | ✓ | 300µs | 128.0 KB |
-| 439 | flipping-bits-game | ✓ | 366µs | 128.0 KB |
-| 440 | flow-control-structures-1 | ✓ | 310µs |  |
-| 441 | flow-control-structures-2 | ✓ | 297µs | 128.0 KB |
-| 442 | flow-control-structures-3 | ✓ | 309µs | 128.0 KB |
-| 443 | flow-control-structures-4 | ✓ | 261µs |  |
-| 444 | floyd-warshall-algorithm | ✓ | 287µs |  |
-| 445 | floyds-triangle | ✓ | 520µs |  |
-| 446 | forest-fire | ✓ | 522µs |  |
-| 447 | fork | ✓ | 358µs |  |
-| 448 | ftp | ✓ | 312µs |  |
-| 449 | gamma-function | ✓ | 667µs | 384.0 KB |
-| 450 | general-fizzbuzz | ✓ | 525µs |  |
+| 401 | faulhabers-triangle | ✓ | 1.287ms | 1.9 MB |
+| 402 | feigenbaum-constant-calculation | ✓ | 3.925ms | 6.9 MB |
+| 403 | fermat-numbers | ✓ | 1.208ms | 1.0 MB |
+| 404 | fibonacci-n-step-number-sequences | ✓ | 615µs | 128.0 KB |
+| 405 | fibonacci-sequence-1 | ✓ | 3µs |  |
+| 406 | fibonacci-sequence-2 | ✓ | 3µs |  |
+| 407 | fibonacci-sequence-3 | ✓ | 3µs |  |
+| 408 | fibonacci-sequence-4 | ✓ | 487µs |  |
+| 409 | fibonacci-sequence-5 | ✓ | 902µs | 384.0 KB |
+| 410 | fibonacci-word-fractal | ✓ | 325µs |  |
+| 411 | fibonacci-word | ✓ | 982.175ms | 32.2 MB |
+| 412 | file-extension-is-in-extensions-list | ✓ | 757µs | 128.0 KB |
+| 413 | file-input-output-1 | ✓ | 354µs | 128.0 KB |
+| 414 | file-input-output-2 | ✓ | 326µs |  |
+| 415 | file-input-output-3 | ✓ | 339µs |  |
+| 416 | file-modification-time | ✓ | 329µs | 128.0 KB |
+| 417 | file-size-distribution | ✓ | 635µs | 128.0 KB |
+| 418 | file-size | ✓ | 320µs |  |
+| 419 | filter | ✓ | 404µs |  |
+| 420 | find-chess960-starting-position-identifier | ✓ | 1ms | 672.0 KB |
+| 421 | find-common-directory-path | ✓ | 497µs | 128.0 KB |
+| 422 | find-duplicate-files | ✓ | 416µs |  |
+| 423 | find-if-a-point-is-within-a-triangle | ✓ | 1.176ms | 512.0 KB |
+| 424 | find-largest-left-truncatable-prime-in-a-given-base | ✓ | 1.316ms | 4.2 MB |
+| 425 | find-limit-of-recursion | ✓ | 6.133ms | 9.6 MB |
+| 426 | find-palindromic-numbers-in-both-binary-and-ternary-bases | ✓ | 1.288927s | 11.1 MB |
+| 427 | find-the-intersection-of-a-line-with-a-plane | ✓ | 383µs |  |
+| 428 | find-the-intersection-of-two-lines | ✓ | 362µs |  |
+| 429 | find-the-last-sunday-of-each-month | ✓ | 1.033ms | 640.0 KB |
+| 430 | find-the-missing-permutation | ✓ | 474µs | 256.0 KB |
+| 431 | fivenum-1 | ✓ | 1.624ms |  |
+| 432 | fivenum-2 | ✓ | 646µs | 256.0 KB |
+| 433 | fixed-length-records-1 | ✓ | 457µs | 128.0 KB |
+| 434 | fixed-length-records-2 | ✓ | 300µs | 128.0 KB |
+| 435 | fizzbuzz-1 | ✓ | 921µs | 256.0 KB |
+| 436 | fizzbuzz-2 | ✓ | 1.013ms | 384.0 KB |
+| 437 | flatten-a-list-1 | ✓ | 285µs | 128.0 KB |
+| 438 | flatten-a-list-2 | ✓ | 318µs |  |
+| 439 | flipping-bits-game | ✓ | 425µs |  |
+| 440 | flow-control-structures-1 | ✓ | 377µs | 128.0 KB |
+| 441 | flow-control-structures-2 | ✓ | 337µs |  |
+| 442 | flow-control-structures-3 | ✓ | 383µs | 128.0 KB |
+| 443 | flow-control-structures-4 | ✓ | 323µs |  |
+| 444 | floyd-warshall-algorithm | ✓ | 384µs | 128.0 KB |
+| 445 | floyds-triangle | ✓ | 635µs | 128.0 KB |
+| 446 | forest-fire | ✓ | 522µs | 128.0 KB |
+| 447 | fork | ✓ | 359µs | 128.0 KB |
+| 448 | ftp | ✓ | 519µs | 128.0 KB |
+| 449 | gamma-function | ✓ | 704µs | 256.0 KB |
+| 450 | general-fizzbuzz | ✓ | 575µs |  |
 | 451 | generic-swap | ✓ | 330µs |  |
 | 452 | get-system-command-output | ✓ | 281µs | 128.0 KB |
 | 453 | giuga-numbers | ✓ | 447µs | 128.0 KB |
