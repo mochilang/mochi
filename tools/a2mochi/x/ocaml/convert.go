@@ -336,6 +336,13 @@ func replaceBuiltins(s string) string {
 	s = strings.ReplaceAll(s, "List.length", "len")
 	listNth := regexp.MustCompile(`List\.nth\s*\(([^\)]+)\)\s*(\d+)`)
 	s = listNth.ReplaceAllString(s, `$1[$2]`)
+	listAppend := regexp.MustCompile(`List\.append\s+([a-zA-Z0-9_']+)\s+\[([^\]]+)\]`)
+	s = listAppend.ReplaceAllString(s, `append($1, $2)`)
+	foldSum := regexp.MustCompile(`List\.fold_left\s*\(fun acc x -> acc \+ x\) 0 \[([^\]]+)\]`)
+	s = foldSum.ReplaceAllString(s, `sum([$1])`)
+	s = strings.ReplaceAll(s, "List.map", "map")
+	s = strings.ReplaceAll(s, "List.filter", "filter")
+	s = strings.ReplaceAll(s, " ^ ", " + ")
 	s = strings.ReplaceAll(s, ";", ",")
 	return s
 }
