@@ -1017,18 +1017,30 @@ func emitStmtIndent(w io.Writer, s Stmt, indent string) error {
 		if _, err := io.WriteString(w, ":\n"); err != nil {
 			return err
 		}
-		for _, bs := range st.Then {
-			if err := emitStmtIndent(w, bs, indent+"    "); err != nil {
+		if len(st.Then) == 0 {
+			if _, err := io.WriteString(w, indent+"    pass\n"); err != nil {
 				return err
+			}
+		} else {
+			for _, bs := range st.Then {
+				if err := emitStmtIndent(w, bs, indent+"    "); err != nil {
+					return err
+				}
 			}
 		}
 		if len(st.Else) > 0 {
 			if _, err := io.WriteString(w, indent+"else:\n"); err != nil {
 				return err
 			}
-			for _, bs := range st.Else {
-				if err := emitStmtIndent(w, bs, indent+"    "); err != nil {
+			if len(st.Else) == 0 {
+				if _, err := io.WriteString(w, indent+"    pass\n"); err != nil {
 					return err
+				}
+			} else {
+				for _, bs := range st.Else {
+					if err := emitStmtIndent(w, bs, indent+"    "); err != nil {
+						return err
+					}
 				}
 			}
 		}
@@ -1154,6 +1166,11 @@ func emitStmtIndent(w io.Writer, s Stmt, indent string) error {
 		}
 		if len(st.Globals) > 0 {
 			if _, err := io.WriteString(w, indent+"    global "+strings.Join(st.Globals, ", ")+"\n"); err != nil {
+				return err
+			}
+		}
+		if len(st.Nonlocals) > 0 {
+			if _, err := io.WriteString(w, indent+"    nonlocal "+strings.Join(st.Nonlocals, ", ")+"\n"); err != nil {
 				return err
 			}
 		}
@@ -3078,6 +3095,11 @@ func Emit(w io.Writer, p *Program, bench bool) error {
 			}
 			if len(st.Globals) > 0 {
 				if _, err := io.WriteString(w, "    global "+strings.Join(st.Globals, ", ")+"\n"); err != nil {
+					return err
+				}
+			}
+			if len(st.Nonlocals) > 0 {
+				if _, err := io.WriteString(w, "    nonlocal "+strings.Join(st.Nonlocals, ", ")+"\n"); err != nil {
 					return err
 				}
 			}

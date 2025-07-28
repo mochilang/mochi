@@ -1,5 +1,5 @@
-## Progress (2025-07-28 01:30 +0700)
-- Commit ed8d398d3b: transpiler(py): bench rosetta index 129
+## Progress (2025-07-28 07:52 +0700)
+- Commit 254038b61f: transpiler(py): infer call return type
 - Generated Python for 104/104 programs
 - Updated README checklist and outputs
 - Removed runtime helpers and improved boolean type inference

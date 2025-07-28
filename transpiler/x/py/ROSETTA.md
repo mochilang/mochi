@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Python code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/Python`.
-Last updated: 2025-07-28 01:46 GMT+7
+Last updated: 2025-07-28 07:59 GMT+7
 
-## Rosetta Golden Test Checklist (446/467)
+## Rosetta Golden Test Checklist (449/467)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 159.0µs | 12.75MB |
@@ -136,7 +136,7 @@ Last updated: 2025-07-28 01:46 GMT+7
 | 127 | bitmap-write-a-ppm-file | ✓ | 136.0µs | 13.86MB |
 | 128 | bitmap | ✓ | 264.0ms | 20.99MB |
 | 129 | bitwise-io-1 | ✓ | 1.0ms | 13.48MB |
-| 130 | bitwise-io-2 | error |  |  |
+| 130 | bitwise-io-2 | ✓ |  |  |
 | 131 | bitwise-operations | ✓ | 146.0µs | 13.86MB |
 | 132 | blum-integer | ✓ | 313.0µs | 13.26MB |
 | 133 | boolean-values | ✓ | 18.0µs | 12.62MB |
@@ -157,56 +157,56 @@ Last updated: 2025-07-28 01:46 GMT+7
 | 148 | calendar | ✓ | 895.0µs | 13.02MB |
 | 149 | calkin-wilf-sequence | error |  |  |
 | 150 | call-a-foreign-language-function | ✓ | 7.0µs | 12.43MB |
-| 151 | call-a-function-1 | ✓ | 2.0µs | 12.39MB |
-| 152 | call-a-function-10 | ✓ | 2.0µs | 12.58MB |
-| 153 | call-a-function-11 | ✓ | 11.0µs | 12.42MB |
-| 154 | call-a-function-12 | ✓ | 10.0µs | 12.68MB |
-| 155 | call-a-function-2 | ✓ | 2.0µs | 12.31MB |
-| 156 | call-a-function-3 | ✓ | 2.0µs | 12.52MB |
-| 157 | call-a-function-4 | ✓ | 1.0µs | 12.31MB |
-| 158 | call-a-function-5 | ✓ | 9.0µs | 12.61MB |
-| 159 | call-a-function-6 | ✓ | 9.0µs | 12.49MB |
-| 160 | call-a-function-7 | error |  |  |
-| 161 | call-a-function-8 | ✓ | 17.0µs | 12.68MB |
-| 162 | call-a-function-9 | ✓ | 3.0µs | 12.54MB |
-| 163 | call-an-object-method-1 | ✓ | 373.0µs | 12.16MB |
-| 164 | call-an-object-method-2 | ✓ | 921.0µs | 12.42MB |
-| 165 | call-an-object-method-3 | ✓ | 842.0µs | 12.43MB |
-| 166 | call-an-object-method | ✓ | 814.0µs | 12.30MB |
-| 167 | camel-case-and-snake-case | ✓ | 293.0µs | 13.74MB |
-| 168 | canny-edge-detector | ✓ | 274.0µs | 13.58MB |
-| 169 | canonicalize-cidr | ✓ | 428.0µs | 13.50MB |
-| 170 | cantor-set | ✓ | 654.0µs | 12.80MB |
-| 171 | carmichael-3-strong-pseudoprimes | ✓ | 3.0ms | 12.17MB |
-| 172 | cartesian-product-of-two-or-more-lists-1 | ✓ | 40.0µs | 12.59MB |
-| 173 | cartesian-product-of-two-or-more-lists-2 | ✓ | 182.0µs | 13.57MB |
-| 174 | cartesian-product-of-two-or-more-lists-3 | ✓ | 172.0µs | 13.03MB |
-| 175 | cartesian-product-of-two-or-more-lists-4 | ✓ | 172.0µs | 13.30MB |
-| 176 | case-sensitivity-of-identifiers | ✓ | 26.0µs | 12.61MB |
-| 177 | casting-out-nines | ✓ | 4.0ms | 13.35MB |
-| 178 | catalan-numbers-1 | ✓ | 79.0µs | 12.48MB |
-| 179 | catalan-numbers-2 | ✓ | 82.0µs | 12.42MB |
-| 180 | catalan-numbers-pascals-triangle | ✓ | 117.0µs | 12.09MB |
-| 181 | catamorphism | ✓ | 21.0µs | 12.35MB |
-| 182 | catmull-clark-subdivision-surface | ✓ | 844.0µs | 14.61MB |
-| 183 | chaocipher | ✓ | 474.0µs | 12.81MB |
-| 184 | chaos-game | ✓ | 10.0ms | 12.62MB |
-| 185 | character-codes-1 | ✓ | 13.0µs | 12.17MB |
-| 186 | character-codes-2 | ✓ | 13.0µs | 12.85MB |
-| 187 | character-codes-3 | ✓ | 23.0µs | 12.67MB |
-| 188 | character-codes-4 | ✓ | 16.0µs | 12.83MB |
-| 189 | character-codes-5 | ✓ | 16.0µs | 12.55MB |
-| 190 | chat-server | error |  |  |
-| 191 | check-machin-like-formulas | ✓ | 11.0ms | 13.92MB |
-| 192 | check-that-file-exists | ✓ | 15.0µs | 12.42MB |
-| 193 | checkpoint-synchronization-1 | ✓ | 41.0µs | 12.21MB |
-| 194 | checkpoint-synchronization-2 | ✓ | 48.0µs | 12.36MB |
-| 195 | checkpoint-synchronization-3 | ✓ | 87.0µs | 12.72MB |
-| 196 | checkpoint-synchronization-4 | ✓ | 139.0µs | 12.35MB |
-| 197 | chernicks-carmichael-numbers | ✓ | 2.87s | 13.67MB |
-| 198 | cheryls-birthday | ✓ | 932.0µs | 12.47MB |
-| 199 | chinese-remainder-theorem | ✓ | 22.0µs | 12.87MB |
-| 200 | chinese-zodiac | ✓ | 1.0ms | 12.62MB |
+| 151 | call-a-function-1 | ✓ | 2.0µs | 12.76MB |
+| 152 | call-a-function-10 | ✓ | 2.0µs | 12.75MB |
+| 153 | call-a-function-11 | ✓ | 13.0µs | 12.68MB |
+| 154 | call-a-function-12 | ✓ | 12.0µs | 12.95MB |
+| 155 | call-a-function-2 | ✓ | 2.0µs | 12.55MB |
+| 156 | call-a-function-3 | ✓ | 2.0µs | 12.90MB |
+| 157 | call-a-function-4 | ✓ | 1.0µs | 12.74MB |
+| 158 | call-a-function-5 | ✓ | 9.0µs | 12.75MB |
+| 159 | call-a-function-6 | ✓ | 10.0µs | 12.69MB |
+| 160 | call-a-function-7 | ✓ | 1.0µs | 12.67MB |
+| 161 | call-a-function-8 | ✓ | 12.0µs | 12.68MB |
+| 162 | call-a-function-9 | ✓ | 4.0µs | 12.93MB |
+| 163 | call-an-object-method-1 | ✓ | 395.0µs | 12.87MB |
+| 164 | call-an-object-method-2 | ✓ | 442.0µs | 12.86MB |
+| 165 | call-an-object-method-3 | ✓ | 450.0µs | 12.56MB |
+| 166 | call-an-object-method | ✓ | 436.0µs | 12.48MB |
+| 167 | camel-case-and-snake-case | ✓ | 208.0µs | 14.17MB |
+| 168 | canny-edge-detector | ✓ | 211.0µs | 14.44MB |
+| 169 | canonicalize-cidr | ✓ | 310.0µs | 13.90MB |
+| 170 | cantor-set | ✓ | 467.0µs | 13.09MB |
+| 171 | carmichael-3-strong-pseudoprimes | ✓ | 2.0ms | 13.25MB |
+| 172 | cartesian-product-of-two-or-more-lists-1 | ✓ | 27.0µs | 13.12MB |
+| 173 | cartesian-product-of-two-or-more-lists-2 | ✓ | 117.0µs | 13.81MB |
+| 174 | cartesian-product-of-two-or-more-lists-3 | ✓ | 124.0µs | 13.38MB |
+| 175 | cartesian-product-of-two-or-more-lists-4 | ✓ | 117.0µs | 13.46MB |
+| 176 | case-sensitivity-of-identifiers | ✓ | 18.0µs | 13.46MB |
+| 177 | casting-out-nines | ✓ | 3.0ms | 13.81MB |
+| 178 | catalan-numbers-1 | ✓ | 44.0µs | 13.07MB |
+| 179 | catalan-numbers-2 | ✓ | 45.0µs | 12.75MB |
+| 180 | catalan-numbers-pascals-triangle | ✓ | 74.0µs | 13.06MB |
+| 181 | catamorphism | ✓ | 17.0µs | 13.00MB |
+| 182 | catmull-clark-subdivision-surface | ✓ | 548.0µs | 14.36MB |
+| 183 | chaocipher | ✓ | 339.0µs | 13.06MB |
+| 184 | chaos-game | ✓ | 7.0ms | 13.09MB |
+| 185 | character-codes-1 | ✓ | 10.0µs | 12.98MB |
+| 186 | character-codes-2 | ✓ | 10.0µs | 13.07MB |
+| 187 | character-codes-3 | ✓ | 18.0µs | 13.01MB |
+| 188 | character-codes-4 | ✓ | 13.0µs | 12.80MB |
+| 189 | character-codes-5 | ✓ | 13.0µs | 12.78MB |
+| 190 | chat-server | ✓ | 18.0µs | 13.12MB |
+| 191 | check-machin-like-formulas | ✓ | 7.0ms | 14.44MB |
+| 192 | check-that-file-exists | ✓ | 12.0µs | 13.15MB |
+| 193 | checkpoint-synchronization-1 | ✓ | 30.0µs | 12.55MB |
+| 194 | checkpoint-synchronization-2 | ✓ | 36.0µs | 13.18MB |
+| 195 | checkpoint-synchronization-3 | ✓ | 40.0µs | 13.00MB |
+| 196 | checkpoint-synchronization-4 | ✓ | 63.0µs | 12.69MB |
+| 197 | chernicks-carmichael-numbers | ✓ | 1.73s | 13.80MB |
+| 198 | cheryls-birthday | ✓ | 517.0µs | 13.18MB |
+| 199 | chinese-remainder-theorem | ✓ | 16.0µs | 13.23MB |
+| 200 | chinese-zodiac | ✓ | 608.0µs | 13.06MB |
 | 201 | cholesky-decomposition-1 | ✓ | 157.0µs | 13.79MB |
 | 202 | cholesky-decomposition | ✓ | 120.0µs | 12.62MB |
 | 203 | chowla-numbers | ✓ | 10.0µs | 12.73MB |
