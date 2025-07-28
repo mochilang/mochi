@@ -8,6 +8,7 @@ import (
 
 	"mochi/ast"
 	"mochi/parser"
+	"mochi/transpiler/meta"
 )
 
 // Field describes a record field in a data declaration.
@@ -70,18 +71,24 @@ func Parse(src string) ([]Item, error) {
 					t := strings.TrimSpace(ln)
 					if strings.HasPrefix(t, "print") {
 						arg := strings.TrimSpace(strings.TrimPrefix(t, "print"))
-						arg = strings.Trim(arg, "()")
+						if strings.HasPrefix(arg, "(") && strings.HasSuffix(arg, ")") {
+							arg = strings.TrimSuffix(strings.TrimPrefix(arg, "("), ")")
+						}
 						items = append(items, Item{Kind: "print", Body: arg, Line: j + 1})
 					} else if strings.HasPrefix(t, "putStrLn") {
 						arg := strings.TrimSpace(strings.TrimPrefix(t, "putStrLn"))
-						arg = strings.Trim(arg, "()")
+						if strings.HasPrefix(arg, "(") && strings.HasSuffix(arg, ")") {
+							arg = strings.TrimSuffix(strings.TrimPrefix(arg, "("), ")")
+						}
 						if strings.HasPrefix(arg, "show") {
 							arg = "str(" + strings.TrimSpace(strings.TrimPrefix(arg, "show ")) + ")"
 						}
 						items = append(items, Item{Kind: "print", Body: arg, Line: j + 1})
 					} else if strings.HasPrefix(t, "_json") {
 						arg := strings.TrimSpace(strings.TrimPrefix(t, "_json"))
-						arg = strings.Trim(arg, "()")
+						if strings.HasPrefix(arg, "(") && strings.HasSuffix(arg, ")") {
+							arg = strings.TrimSuffix(strings.TrimPrefix(arg, "("), ")")
+						}
 						items = append(items, Item{Kind: "json", Body: arg, Line: j + 1})
 					} else if strings.HasPrefix(t, "mapM_") {
 						if it, ok := parseMapM(t, j+1); ok {
@@ -95,7 +102,9 @@ func Parse(src string) ([]Item, error) {
 			}
 			if strings.HasPrefix(body, "putStrLn") {
 				arg := strings.TrimSpace(strings.TrimPrefix(body, "putStrLn"))
-				arg = strings.Trim(arg, "()")
+				if strings.HasPrefix(arg, "(") && strings.HasSuffix(arg, ")") {
+					arg = strings.TrimSuffix(strings.TrimPrefix(arg, "("), ")")
+				}
 				items = append(items, Item{Kind: "print", Body: arg, Line: i + 1})
 			}
 			continue
@@ -304,7 +313,14 @@ func convertExpr(expr string) string {
 	parts := strings.Fields(expr)
 	if len(parts) > 1 {
 		ops := map[string]bool{"+": true, "-": true, "*": true, "/": true, "%": true, "&&": true, "||": true, "==": true, "<": true, ">": true, "<=": true, ">=": true}
-		if !ops[parts[1]] {
+		hasOp := false
+		for _, p := range parts[1:] {
+			if ops[p] {
+				hasOp = true
+				break
+			}
+		}
+		if !hasOp {
 			for i := 1; i < len(parts); i++ {
 				parts[i] = strings.TrimSuffix(parts[i], ",")
 			}
@@ -485,17 +501,27 @@ func parseVarSig(sig string) (string, bool) {
 }
 
 // ConvertSource converts parsed Haskell items into Mochi source code.
-func ConvertSource(items []Item) (string, error) {
+func ConvertSource(items []Item, original string) (string, error) {
 	src := convertItems(items)
 	if src == nil {
 		return "", fmt.Errorf("no output")
 	}
-	return string(src), nil
+	var b strings.Builder
+	b.Write(meta.Header("//"))
+	b.WriteByte('\n')
+	b.WriteString("/*\n")
+	b.WriteString(original)
+	if !strings.HasSuffix(original, "\n") {
+		b.WriteByte('\n')
+	}
+	b.WriteString("*/\n")
+	b.Write(src)
+	return b.String(), nil
 }
 
 // Convert converts parsed Haskell items into a Mochi AST node.
-func Convert(items []Item) (*ast.Node, error) {
-	src, err := ConvertSource(items)
+func Convert(items []Item, original string) (*ast.Node, error) {
+	src, err := ConvertSource(items, original)
 	if err != nil {
 		return nil, err
 	}
