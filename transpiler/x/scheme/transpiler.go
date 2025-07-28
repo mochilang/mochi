@@ -1651,7 +1651,10 @@ func convertFunExpr(fe *parser.FunExpr) (Node, error) {
 		}
 		body = b
 	} else {
+		retSym := gensym("ret")
+		pushReturn(retSym)
 		stmts, err := convertStmts(fe.BlockBody)
+		popReturn()
 		if err != nil {
 			currentEnv = prevEnv
 			return nil, err
@@ -1661,6 +1664,13 @@ func convertFunExpr(fe *parser.FunExpr) (Node, error) {
 		} else {
 			body = &List{Elems: append([]Node{Symbol("begin")}, stmts...)}
 		}
+		body = &List{Elems: []Node{
+			Symbol("call/cc"),
+			&List{Elems: []Node{
+				Symbol("lambda"), &List{Elems: []Node{retSym}},
+				body,
+			}},
+		}}
 	}
 	currentEnv = prevEnv
 	return &List{Elems: []Node{Symbol("lambda"), &List{Elems: params}, body}}, nil
@@ -2539,10 +2549,6 @@ func isIntOne(n Node) bool {
 }
 
 func convertCall(target Node, call *parser.CallOp) (Node, error) {
-	sym, ok := target.(Symbol)
-	if !ok {
-		return nil, fmt.Errorf("unsupported call: %T", target)
-	}
 	args := make([]Node, len(call.Args))
 	for i, a := range call.Args {
 		n, err := convertParserExpr(a)
@@ -2551,170 +2557,177 @@ func convertCall(target Node, call *parser.CallOp) (Node, error) {
 		}
 		args[i] = n
 	}
-	if ut, ok := currentEnv.FindUnionByVariant(string(sym)); ok {
-		needHash = true
-		st := ut.Variants[string(sym)]
-		if len(args) != len(st.Order) {
-			return nil, fmt.Errorf("%s expects %d args", sym, len(st.Order))
-		}
-		pairs := []Node{Symbol("_list")}
-		opPair := &List{Elems: []Node{Symbol("cons"), StringLit(tagKey), ensureUnionConst(string(sym))}}
-		pairs = append(pairs, opPair)
-		for i, field := range st.Order {
-			pair := &List{Elems: []Node{Symbol("cons"), StringLit(field), args[i]}}
-			pairs = append(pairs, pair)
-		}
-		return &List{Elems: []Node{Symbol("alist->hash-table"), &List{Elems: pairs}}}, nil
-	}
-	switch sym {
-	case "print":
-		forms := []Node{Symbol("begin")}
-		for i, a := range args {
-			if _, ok := types.ExprType(call.Args[i], currentEnv).(types.BoolType); ok {
-				a = &List{Elems: []Node{Symbol("if"), a, BoolLit(true), BoolLit(false)}}
+	if sym, ok := target.(Symbol); ok {
+		if ut, ok := currentEnv.FindUnionByVariant(string(sym)); ok {
+			needHash = true
+			st := ut.Variants[string(sym)]
+			if len(args) != len(st.Order) {
+				return nil, fmt.Errorf("%s expects %d args", sym, len(st.Order))
 			}
-			forms = append(forms, &List{Elems: []Node{Symbol("_display"), &List{Elems: []Node{Symbol("to-str"), a}}}})
-			if i < len(args)-1 {
-				forms = append(forms, &List{Elems: []Node{Symbol("_display"), StringLit(" ")}})
+			pairs := []Node{Symbol("_list")}
+			opPair := &List{Elems: []Node{Symbol("cons"), StringLit(tagKey), ensureUnionConst(string(sym))}}
+			pairs = append(pairs, opPair)
+			for i, field := range st.Order {
+				pair := &List{Elems: []Node{Symbol("cons"), StringLit(field), args[i]}}
+				pairs = append(pairs, pair)
 			}
+			return &List{Elems: []Node{Symbol("alist->hash-table"), &List{Elems: pairs}}}, nil
 		}
-		forms = append(forms, &List{Elems: []Node{Symbol("newline")}})
-		return &List{Elems: forms}, nil
-	case "len", "count":
-		if len(args) != 1 {
-			return nil, fmt.Errorf("len expects 1 arg")
+		switch sym {
+		case "print":
+			forms := []Node{Symbol("begin")}
+			for i, a := range args {
+				if _, ok := types.ExprType(call.Args[i], currentEnv).(types.BoolType); ok {
+					a = &List{Elems: []Node{Symbol("if"), a, BoolLit(true), BoolLit(false)}}
+				}
+				forms = append(forms, &List{Elems: []Node{Symbol("_display"), &List{Elems: []Node{Symbol("to-str"), a}}}})
+				if i < len(args)-1 {
+					forms = append(forms, &List{Elems: []Node{Symbol("_display"), StringLit(" ")}})
+				}
+			}
+			forms = append(forms, &List{Elems: []Node{Symbol("newline")}})
+			return &List{Elems: forms}, nil
+		case "len", "count":
+			if len(args) != 1 {
+				return nil, fmt.Errorf("len expects 1 arg")
+			}
+			return &List{Elems: []Node{
+				Symbol("cond"),
+				&List{Elems: []Node{&List{Elems: []Node{Symbol("string?"), args[0]}}, &List{Elems: []Node{Symbol("string-length"), args[0]}}}},
+				&List{Elems: []Node{&List{Elems: []Node{Symbol("hash-table?"), args[0]}}, &List{Elems: []Node{Symbol("hash-table-size"), args[0]}}}},
+				&List{Elems: []Node{Symbol("else"), &List{Elems: []Node{Symbol("length"), args[0]}}}},
+			}}, nil
+		case "append":
+			if len(args) != 2 {
+				return nil, fmt.Errorf("append expects 2 args")
+			}
+			if _, ok := types.ExprType(call.Args[0], currentEnv).(types.StringType); ok {
+				return &List{Elems: []Node{Symbol("string-append"), args[0], args[1]}}, nil
+			}
+			return &List{Elems: []Node{Symbol("append"), args[0], &List{Elems: []Node{Symbol("_list"), args[1]}}}}, nil
+		case "split":
+			if len(args) != 2 {
+				return nil, fmt.Errorf("split expects 2 args")
+			}
+			return &List{Elems: []Node{Symbol("_split"), args[0], args[1]}}, nil
+		case "repeat":
+			if len(args) != 2 {
+				return nil, fmt.Errorf("repeat expects 2 args")
+			}
+			return &List{Elems: []Node{Symbol("_repeat"), args[0], args[1]}}, nil
+		case "keys":
+			if len(args) != 1 {
+				return nil, fmt.Errorf("keys expects 1 arg")
+			}
+			needHash = true
+			return &List{Elems: []Node{Symbol("hash-table-keys"), args[0]}}, nil
+		case "sum":
+			if len(args) != 1 {
+				return nil, fmt.Errorf("sum expects 1 arg")
+			}
+			return &List{Elems: []Node{Symbol("apply"), Symbol("+"), args[0]}}, nil
+		case "avg":
+			if len(args) != 1 {
+				return nil, fmt.Errorf("avg expects 1 arg")
+			}
+			xs := Symbol("xs")
+			div := &List{Elems: []Node{Symbol("/"),
+				&List{Elems: []Node{Symbol("apply"), Symbol("+"), xs}},
+				&List{Elems: []Node{Symbol("length"), xs}},
+			}}
+			return &List{Elems: []Node{
+				Symbol("let"),
+				&List{Elems: []Node{&List{Elems: []Node{xs, args[0]}}}},
+				&List{Elems: []Node{Symbol("exact->inexact"), div}},
+			}}, nil
+		case "str":
+			if len(args) != 1 {
+				return nil, fmt.Errorf("str expects 1 arg")
+			}
+			return &List{Elems: []Node{Symbol("to-str"), args[0]}}, nil
+		case "parseIntStr":
+			if len(args) == 1 {
+				args = append(args, IntLit(10))
+			} else if len(args) != 2 {
+				return nil, fmt.Errorf("parseIntStr expects 1 or 2 args")
+			}
+			return &List{Elems: []Node{Symbol("_parseIntStr"), args[0], args[1]}}, nil
+		case "min", "max":
+			if len(args) != 1 {
+				return nil, fmt.Errorf("%s expects 1 arg", sym)
+			}
+			return &List{Elems: []Node{Symbol("apply"), Symbol(string(sym)), args[0]}}, nil
+		case "substring", "substr":
+			if len(args) != 3 {
+				return nil, fmt.Errorf("%s expects 3 args", sym)
+			}
+			return &List{Elems: []Node{Symbol("substring"), args[0], args[1], args[2]}}, nil
+		case "exists":
+			if len(args) != 1 {
+				return nil, fmt.Errorf("exists expects 1 arg")
+			}
+			return &List{Elems: []Node{Symbol("if"), &List{Elems: []Node{Symbol("null?"), args[0]}}, StringLit("false"), StringLit("true")}}, nil
+		case "pow":
+			if len(args) != 2 {
+				return nil, fmt.Errorf("pow expects 2 args")
+			}
+			return &List{Elems: []Node{Symbol("expt"), args[0], args[1]}}, nil
+		case "num":
+			if len(args) != 1 {
+				return nil, fmt.Errorf("num expects 1 arg")
+			}
+			return &List{Elems: []Node{Symbol("numerator"), args[0]}}, nil
+		case "denom":
+			if len(args) != 1 {
+				return nil, fmt.Errorf("denom expects 1 arg")
+			}
+			return &List{Elems: []Node{Symbol("denominator"), args[0]}}, nil
+		case "int":
+			if len(args) != 1 {
+				return nil, fmt.Errorf("int expects 1 arg")
+			}
+			x := gensym("v")
+			cond := &List{Elems: []Node{
+				Symbol("cond"),
+				&List{Elems: []Node{&List{Elems: []Node{Symbol("string?"), Symbol(x)}}, &List{Elems: []Node{Symbol("exact"), &List{Elems: []Node{Symbol("floor"), &List{Elems: []Node{Symbol("string->number"), Symbol(x)}}}}}}}},
+				&List{Elems: []Node{&List{Elems: []Node{Symbol("boolean?"), Symbol(x)}}, &List{Elems: []Node{Symbol("if"), Symbol(x), IntLit(1), IntLit(0)}}}},
+				&List{Elems: []Node{Symbol("else"), &List{Elems: []Node{Symbol("exact"), &List{Elems: []Node{Symbol("floor"), Symbol(x)}}}}}},
+			}}
+			return &List{Elems: []Node{
+				Symbol("let"),
+				&List{Elems: []Node{&List{Elems: []Node{Symbol(x), args[0]}}}},
+				cond,
+			}}, nil
+		case "input":
+			if len(args) != 0 {
+				return nil, fmt.Errorf("input expects no args")
+			}
+			usesInput = true
+			return &List{Elems: []Node{Symbol("_input")}}, nil
+		case "now":
+			if len(args) != 0 {
+				return nil, fmt.Errorf("now expects no args")
+			}
+			usesNow = true
+			needBase = true
+			return &List{Elems: []Node{Symbol("now")}}, nil
+		case "testpkg.FifteenPuzzleExample":
+			if len(args) != 0 {
+				return nil, fmt.Errorf("FifteenPuzzleExample expects no args")
+			}
+			return StringLit(testpkg.FifteenPuzzleExample()), nil
+		default:
+			elems := make([]Node, 0, len(args)+1)
+			elems = append(elems, Symbol(sym))
+			elems = append(elems, args...)
+			return &List{Elems: elems}, nil
 		}
-		return &List{Elems: []Node{
-			Symbol("cond"),
-			&List{Elems: []Node{&List{Elems: []Node{Symbol("string?"), args[0]}}, &List{Elems: []Node{Symbol("string-length"), args[0]}}}},
-			&List{Elems: []Node{&List{Elems: []Node{Symbol("hash-table?"), args[0]}}, &List{Elems: []Node{Symbol("hash-table-size"), args[0]}}}},
-			&List{Elems: []Node{Symbol("else"), &List{Elems: []Node{Symbol("length"), args[0]}}}},
-		}}, nil
-	case "append":
-		if len(args) != 2 {
-			return nil, fmt.Errorf("append expects 2 args")
-		}
-		if _, ok := types.ExprType(call.Args[0], currentEnv).(types.StringType); ok {
-			return &List{Elems: []Node{Symbol("string-append"), args[0], args[1]}}, nil
-		}
-		return &List{Elems: []Node{Symbol("append"), args[0], &List{Elems: []Node{Symbol("_list"), args[1]}}}}, nil
-	case "split":
-		if len(args) != 2 {
-			return nil, fmt.Errorf("split expects 2 args")
-		}
-		return &List{Elems: []Node{Symbol("_split"), args[0], args[1]}}, nil
-	case "repeat":
-		if len(args) != 2 {
-			return nil, fmt.Errorf("repeat expects 2 args")
-		}
-		return &List{Elems: []Node{Symbol("_repeat"), args[0], args[1]}}, nil
-	case "keys":
-		if len(args) != 1 {
-			return nil, fmt.Errorf("keys expects 1 arg")
-		}
-		needHash = true
-		return &List{Elems: []Node{Symbol("hash-table-keys"), args[0]}}, nil
-	case "sum":
-		if len(args) != 1 {
-			return nil, fmt.Errorf("sum expects 1 arg")
-		}
-		return &List{Elems: []Node{Symbol("apply"), Symbol("+"), args[0]}}, nil
-	case "avg":
-		if len(args) != 1 {
-			return nil, fmt.Errorf("avg expects 1 arg")
-		}
-		xs := Symbol("xs")
-		div := &List{Elems: []Node{Symbol("/"),
-			&List{Elems: []Node{Symbol("apply"), Symbol("+"), xs}},
-			&List{Elems: []Node{Symbol("length"), xs}},
-		}}
-		return &List{Elems: []Node{
-			Symbol("let"),
-			&List{Elems: []Node{&List{Elems: []Node{xs, args[0]}}}},
-			&List{Elems: []Node{Symbol("exact->inexact"), div}},
-		}}, nil
-	case "str":
-		if len(args) != 1 {
-			return nil, fmt.Errorf("str expects 1 arg")
-		}
-		return &List{Elems: []Node{Symbol("to-str"), args[0]}}, nil
-	case "parseIntStr":
-		if len(args) == 1 {
-			args = append(args, IntLit(10))
-		} else if len(args) != 2 {
-			return nil, fmt.Errorf("parseIntStr expects 1 or 2 args")
-		}
-		return &List{Elems: []Node{Symbol("_parseIntStr"), args[0], args[1]}}, nil
-	case "min", "max":
-		if len(args) != 1 {
-			return nil, fmt.Errorf("%s expects 1 arg", sym)
-		}
-		return &List{Elems: []Node{Symbol("apply"), Symbol(string(sym)), args[0]}}, nil
-	case "substring", "substr":
-		if len(args) != 3 {
-			return nil, fmt.Errorf("%s expects 3 args", sym)
-		}
-		return &List{Elems: []Node{Symbol("substring"), args[0], args[1], args[2]}}, nil
-	case "exists":
-		if len(args) != 1 {
-			return nil, fmt.Errorf("exists expects 1 arg")
-		}
-		return &List{Elems: []Node{Symbol("if"), &List{Elems: []Node{Symbol("null?"), args[0]}}, StringLit("false"), StringLit("true")}}, nil
-	case "pow":
-		if len(args) != 2 {
-			return nil, fmt.Errorf("pow expects 2 args")
-		}
-		return &List{Elems: []Node{Symbol("expt"), args[0], args[1]}}, nil
-	case "num":
-		if len(args) != 1 {
-			return nil, fmt.Errorf("num expects 1 arg")
-		}
-		return &List{Elems: []Node{Symbol("numerator"), args[0]}}, nil
-	case "denom":
-		if len(args) != 1 {
-			return nil, fmt.Errorf("denom expects 1 arg")
-		}
-		return &List{Elems: []Node{Symbol("denominator"), args[0]}}, nil
-	case "int":
-		if len(args) != 1 {
-			return nil, fmt.Errorf("int expects 1 arg")
-		}
-		x := gensym("v")
-		cond := &List{Elems: []Node{
-			Symbol("cond"),
-			&List{Elems: []Node{&List{Elems: []Node{Symbol("string?"), Symbol(x)}}, &List{Elems: []Node{Symbol("exact"), &List{Elems: []Node{Symbol("floor"), &List{Elems: []Node{Symbol("string->number"), Symbol(x)}}}}}}}},
-			&List{Elems: []Node{&List{Elems: []Node{Symbol("boolean?"), Symbol(x)}}, &List{Elems: []Node{Symbol("if"), Symbol(x), IntLit(1), IntLit(0)}}}},
-			&List{Elems: []Node{Symbol("else"), &List{Elems: []Node{Symbol("exact"), &List{Elems: []Node{Symbol("floor"), Symbol(x)}}}}}},
-		}}
-		return &List{Elems: []Node{
-			Symbol("let"),
-			&List{Elems: []Node{&List{Elems: []Node{Symbol(x), args[0]}}}},
-			cond,
-		}}, nil
-	case "input":
-		if len(args) != 0 {
-			return nil, fmt.Errorf("input expects no args")
-		}
-		usesInput = true
-		return &List{Elems: []Node{Symbol("_input")}}, nil
-	case "now":
-		if len(args) != 0 {
-			return nil, fmt.Errorf("now expects no args")
-		}
-		usesNow = true
-		needBase = true
-		return &List{Elems: []Node{Symbol("now")}}, nil
-	case "testpkg.FifteenPuzzleExample":
-		if len(args) != 0 {
-			return nil, fmt.Errorf("FifteenPuzzleExample expects no args")
-		}
-		return StringLit(testpkg.FifteenPuzzleExample()), nil
-	default:
-		elems := make([]Node, 0, len(args)+1)
-		elems = append(elems, Symbol(sym))
-		elems = append(elems, args...)
-		return &List{Elems: elems}, nil
 	}
+	// generic function call where target is an expression
+	elems := make([]Node, 0, len(args)+1)
+	elems = append(elems, target)
+	elems = append(elems, args...)
+	return &List{Elems: elems}, nil
 }
 
 func convertIndex(target Node, orig *parser.Primary, idx *parser.IndexOp) (Node, error) {
