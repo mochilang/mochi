@@ -11,6 +11,7 @@ import (
 
 	"mochi/ast"
 	"mochi/parser"
+	"mochi/transpiler/meta"
 )
 
 // Node represents a top-level declaration parsed from Kotlin.
@@ -140,8 +141,17 @@ func toNodes(a *astJSON) []Node {
 }
 
 // ConvertSource converts parsed nodes to Mochi source code.
-func ConvertSource(nodes []Node) (string, error) {
+func ConvertSource(nodes []Node, orig string) (string, error) {
 	var b strings.Builder
+	b.Write(meta.Header("//"))
+	if orig != "" {
+		b.WriteString("/*\n")
+		b.WriteString(orig)
+		if !strings.HasSuffix(orig, "\n") {
+			b.WriteByte('\n')
+		}
+		b.WriteString("*/\n")
+	}
 	for _, n := range nodes {
 		switch n.Kind {
 		case "var":
@@ -157,7 +167,7 @@ func ConvertSource(nodes []Node) (string, error) {
 
 // Convert converts parsed nodes to a Mochi AST node.
 func Convert(nodes []Node) (*ast.Node, error) {
-	src, err := ConvertSource(nodes)
+	src, err := ConvertSource(nodes, "")
 	if err != nil {
 		return nil, err
 	}
