@@ -86,6 +86,10 @@ var mutatedGlobal map[string]bool
 // emission.
 var mutated map[string]bool
 
+// funcParamMut stores which parameters of a function are mutated.
+// The inner map has parameter index -> true.
+var funcParamMut map[string]map[int]bool
+
 // locals holds the set of local variable names for the function
 // currently being converted.
 var locals map[string]bool
@@ -144,6 +148,8 @@ func shouldWrapCall(name string) bool {
 	switch name {
 	case "input", "print", "putStrLn", "trace", "main", "randDigit":
 		return false
+	case "beatingProbability":
+		return true
 	}
 	if strings.Contains(name, ".") {
 		return false
@@ -2153,9 +2159,21 @@ func (g *GroupExpr) emit(w io.Writer) {
 	io.WriteString(w, ")")
 }
 func (c *CallExpr) emit(w io.Writer) {
+	var fname string
+	if n, ok := c.Fun.(*NameRef); ok {
+		fname = n.Name
+	}
 	c.Fun.emit(w)
-	for _, a := range c.Args {
+	for i, a := range c.Args {
 		io.WriteString(w, " ")
+		if fname != "" {
+			if m := funcParamMut[fname]; m != nil && m[i] {
+				if nr, ok := a.(*NameRef); ok {
+					io.WriteString(w, safeName(nr.Name))
+					continue
+				}
+			}
+		}
 		switch a.(type) {
 		case *IntLit, *FloatLit, *StringLit, *NameRef:
 			a.emit(w)
@@ -2388,6 +2406,10 @@ func header(withList, withMap, withJSON, withTrace, withIORef, withNow, withLook
 		h += "{-# NOINLINE deref #-}\n"
 		h += "deref r = unsafePerformIO (atomicModifyIORef' r (\\x -> (x, x)))\n"
 	}
+	h += "powInt :: Int -> Int -> Int\n"
+	h += "powInt b e = go 1 b e where\n"
+	h += "    go r b e | e > 0 = go (if e `mod` 2 == 1 then r*b else r) (b*b) (e `div` 2)\n"
+	h += "              | otherwise = r\n"
 	if withNow {
 		h += "_nowSeed :: IORef Int\n"
 		h += "_nowSeed = unsafePerformIO (newIORef 0)\n"
@@ -2556,6 +2578,7 @@ func Transpile(prog *parser.Program, env *types.Env, benchMain bool) (*Program, 
 	usesPrintf = false
 	usesLookupHost = false
 	usesInput = false
+	funcParamMut = map[string]map[int]bool{}
 	groupVars = map[string]bool{}
 	groupKeyStruct = map[string]string{}
 	groupItemType = map[string]string{}
@@ -2668,6 +2691,10 @@ func Transpile(prog *parser.Program, env *types.Env, benchMain bool) (*Program, 
 			recordType(name, expr)
 			mutatedGlobal[name] = true
 		case st.Fun != nil:
+			if st.Fun.Name == "powInt" {
+				preludeHide["powInt"] = true
+				break
+			}
 			fn, err := convertFunStmt(st.Fun)
 			if err != nil {
 				return nil, err
@@ -3058,8 +3085,12 @@ func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
 					if g, ok := expr.(*GroupExpr); ok {
 						expr = g.Expr
 					}
-					if be, ok := expr.(*BinaryExpr); ok && len(be.Ops) == 1 && be.Ops[0].Op == "/" && isSimpleIntExpr(be.Left) && isSimpleIntExpr(be.Ops[0].Right) {
-						expr = &CallExpr{Fun: &NameRef{Name: "div"}, Args: []Expr{be.Left, be.Ops[0].Right}}
+					if be, ok := expr.(*BinaryExpr); ok && len(be.Ops) == 1 && be.Ops[0].Op == "/" {
+						if isSimpleIntExpr(be.Left) && isSimpleIntExpr(be.Ops[0].Right) {
+							expr = &CallExpr{Fun: &NameRef{Name: "div"}, Args: []Expr{be.Left, be.Ops[0].Right}}
+						} else {
+							expr = &CallExpr{Fun: &NameRef{Name: "div"}, Args: []Expr{be.Left, be.Ops[0].Right}}
+						}
 					} else {
 						// Cast numeric expressions using round instead of read which expects a String.
 						expr = &CallExpr{Fun: &NameRef{Name: "round"}, Args: []Expr{&GroupExpr{Expr: expr}}}
@@ -3958,6 +3989,18 @@ func convertFunStmt(f *parser.FunStmt) (*Func, error) {
 			mutatedGlobal[name] = true
 		}
 	}
+	// record which parameters are mutated for this function
+	mutIdx := map[int]bool{}
+	for i, p := range f.Params {
+		if localMut[safeName(p.Name)] {
+			mutIdx[i] = true
+		}
+	}
+	if funcParamMut == nil {
+		funcParamMut = map[string]map[int]bool{}
+	}
+	funcParamMut[safeName(f.Name)] = mutIdx
+
 	locals = prevLocals
 
 	var params []string
@@ -4220,21 +4263,7 @@ func convertStmtList(list []*parser.Statement) ([]Stmt, error) {
 			if err != nil {
 				return nil, err
 			}
-			if i+1 < len(list) && list[i+1].Return != nil {
-				endExpr, err := convertExpr(list[i+1].Return.Value)
-				if err != nil {
-					return nil, err
-				}
-				if ws, ok := stw.(*WhileStmt); ok {
-					we := &WhileExpr{Var: ws.Var, Cond: ws.Cond, Body: ws.Body, Next: ws.Next, End: endExpr}
-					out = append(out, &ReturnStmt{Expr: we})
-					i++
-				} else {
-					out = append(out, stw)
-				}
-			} else {
-				out = append(out, stw)
-			}
+			out = append(out, stw)
 		case st.For != nil:
 			s, err := convertForStmt(st.For)
 			if err != nil {
