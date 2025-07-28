@@ -1,0 +1,17 @@
+(program
+  (fun add
+    (param A)
+    (param B)
+    (param R)
+    (let Return1
+      (binary + (selector A) (selector B))
+    )
+    (let R (selector Return1))
+  )
+  (fun main
+    (let R0
+      (call add (int 2) (int 3))
+    )
+    (call print (selector R0))
+  )
+)

@@ -13,6 +13,8 @@ import (
 
 const version = "0.10.47"
 
+var callAssignPattern = regexp.MustCompile(`^(\w+)\((.*),\s*([A-Za-z]\w*)\)$`)
+
 // ConvertSource converts Prolog source code into Mochi source.
 func ConvertSource(src string) (string, error) {
 	funcs := parseFuncs(src)
@@ -84,7 +86,10 @@ type function struct {
 
 func parseFuncs(src string) []function {
 	var funcs []function
-	re := regexp.MustCompile(`(?ms)^\s*(\w+)(?:\(([^)]*)\))?\s*:-\s*(.*?)\.`)
+	// Function clauses end with a period on its own line. Dots inside
+	// numbers like "3.14" should not terminate the match, so we only treat
+	// a period followed by whitespace or end of file as the terminator.
+	re := regexp.MustCompile(`(?ms)^\s*(\w+)(?:\(([^)]*)\))?\s*:-\s*(.*?)(?:\.\s*(?:\n|$))`)
 	matches := re.FindAllStringSubmatch(src, -1)
 	for _, m := range matches {
 		name := m[1]
@@ -128,6 +133,15 @@ func parseBody(body string) []string {
 			name := strings.TrimSpace(parts[0])
 			expr := strings.TrimSpace(parts[1])
 			out = append(out, "  let "+name+" = "+expr)
+		case callAssignPattern.MatchString(c):
+			m := callAssignPattern.FindStringSubmatch(c)
+			name := m[1]
+			args := strings.Split(strings.TrimSpace(m[2]), ",")
+			for i, a := range args {
+				args[i] = strings.TrimSpace(a)
+			}
+			outVar := strings.TrimSpace(m[3])
+			out = append(out, "  let "+outVar+" = "+name+"("+strings.Join(args, ", ")+")")
 		case strings.Contains(c, " = "):
 			parts := strings.SplitN(c, " = ", 2)
 			name := strings.TrimSpace(parts[0])

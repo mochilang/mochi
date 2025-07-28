@@ -1,0 +1,15 @@
+// a2mochi 0.10.47 2025-07-28 16:11:37
+/*
+:- initialization(main).
+:- style_check(-singleton).
+
+main :-
+    writeln(42),
+    writeln(3.5),
+    writeln(1).
+*/
+fun main() {
+  print(42)
+  print(3.5)
+  print(1)
+}

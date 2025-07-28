@@ -1,0 +1,20 @@
+// a2mochi 0.10.47 2025-07-28 16:11:37
+/*
+:- style_check(-singleton).
+:- initialization(main).
+
+sum3(A, B, C, R) :-
+    Return1 is A + B + C,
+    R = Return1.
+
+main :-
+    sum3(1, 2, 3, R0), writeln(R0).
+*/
+fun sum3(A, B, C, R) {
+  let Return1 = A + B + C
+  let R = Return1
+}
+fun main() {
+  let R0 = sum3(1, 2, 3)
+  print(R0)
+}

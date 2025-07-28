@@ -1,0 +1,21 @@
+// a2mochi 0.10.47 2025-07-28 16:11:37
+/*
+:- style_check(-singleton).
+:- initialization(main).
+
+main :-
+    I is 1,
+    writeln(1),
+    I1 is 2,
+    writeln(2),
+    I2 is 3,
+    writeln(3).
+*/
+fun main() {
+  let I = 1
+  print(1)
+  let I1 = 2
+  print(2)
+  let I2 = 3
+  print(3)
+}

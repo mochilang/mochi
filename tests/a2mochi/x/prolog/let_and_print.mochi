@@ -1,0 +1,16 @@
+// a2mochi 0.10.47 2025-07-28 16:11:37
+/*
+:- initialization(main).
+:- style_check(-singleton).
+
+main :-
+    A is 10,
+    B is 20,
+    R2 is A + B, writeln(R2).
+*/
+fun main() {
+  let A = 10
+  let B = 20
+  let R2 = A + B
+  print(R2)
+}
