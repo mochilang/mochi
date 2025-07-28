@@ -235,6 +235,50 @@ func mapType(t string) string {
 	if strings.HasSuffix(t, "?") {
 		t = strings.TrimSuffix(t, "?")
 	}
+	if strings.Contains(t, "->") {
+		parts := strings.SplitN(t, "->", 2)
+		params := strings.TrimSpace(parts[0])
+		ret := strings.TrimSpace(parts[1])
+		if strings.HasPrefix(params, "(") && strings.HasSuffix(params, ")") {
+			params = params[1 : len(params)-1]
+		}
+		var mapped []string
+		if params != "" {
+			for _, p := range splitGeneric(params) {
+				mp := mapType(p)
+				if mp == "" {
+					mp = "any"
+				}
+				mapped = append(mapped, mp)
+			}
+		}
+		mret := mapType(ret)
+		res := "fun(" + strings.Join(mapped, ", ") + ")"
+		if mret != "" {
+			res += ": " + mret
+		}
+		return res
+	}
+	if strings.HasPrefix(t, "Function") && strings.Contains(t, "<") && strings.HasSuffix(t, ">") {
+		inner := t[strings.Index(t, "<")+1 : len(t)-1]
+		parts := splitGeneric(inner)
+		if len(parts) > 0 {
+			ret := mapType(parts[len(parts)-1])
+			var params []string
+			for _, p := range parts[:len(parts)-1] {
+				mp := mapType(p)
+				if mp == "" {
+					mp = "any"
+				}
+				params = append(params, mp)
+			}
+			res := "fun(" + strings.Join(params, ", ") + ")"
+			if ret != "" {
+				res += ": " + ret
+			}
+			return res
+		}
+	}
 	switch t {
 	case "", "Unit", "Nothing":
 		return ""

@@ -80,6 +80,7 @@ func TestConvert_Golden(t *testing.T) {
 		"slice":               true,
 		"str_builtin":         true,
 		"string_prefix_slice": true,
+		"closure":             true,
 	}
 
 	for _, srcPath := range files {
