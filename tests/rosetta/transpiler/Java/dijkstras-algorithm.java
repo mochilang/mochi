@@ -1,14 +1,14 @@
 public class Main {
     static int INF = 1000000000;
-    static java.util.Map<String,java.util.Map<String,Integer>> graph = new java.util.LinkedHashMap<String, java.util.Map<String,Integer>>();
+    static java.util.Map<String,java.util.Map<String,Integer>> graph = ((java.util.Map<String,java.util.Map<String,Integer>>)(new java.util.LinkedHashMap<String, java.util.Map<String,Integer>>()));
 
     static void addEdge(String u, String v, int w) {
         if (!(Boolean)(graph.containsKey(u))) {
-graph.put(u, new java.util.LinkedHashMap<String, Object>());
+graph.put(u, new java.util.LinkedHashMap<String, Integer>());
         }
-((Object)graph.get(u))[v] = w;
+((java.util.Map<String,Integer>)(graph).get(u)).put(v, w);
         if (!(Boolean)(graph.containsKey(v))) {
-graph.put(v, new java.util.LinkedHashMap<String, Object>());
+graph.put(v, new java.util.LinkedHashMap<String, Integer>());
         }
     }
 
@@ -25,8 +25,8 @@ graph.put(v, new java.util.LinkedHashMap<String, Object>());
     }
 
     static java.util.Map<String,Object> dijkstra(String source) {
-        java.util.Map<String,Integer> dist = new java.util.LinkedHashMap<String, Integer>();
-        java.util.Map<String,String> prev = new java.util.LinkedHashMap<String, String>();
+        java.util.Map<String,Integer> dist = ((java.util.Map<String,Integer>)(new java.util.LinkedHashMap<String, Integer>()));
+        java.util.Map<String,String> prev = ((java.util.Map<String,String>)(new java.util.LinkedHashMap<String, String>()));
         for (String v : graph.keySet()) {
 dist.put(v, INF);
 prev.put(v, "");
@@ -42,16 +42,16 @@ dist.put(source, 0);
             int i = 1;
             while (i < q.length) {
                 String v = q[i];
-                if ((int)(((int)dist.getOrDefault(v, 0))) < (int)(((int)dist.getOrDefault(u, 0)))) {
+                if ((int)(((int)(dist).getOrDefault(v, 0))) < (int)(((int)(dist).getOrDefault(u, 0)))) {
                     u = v;
                     bestIdx = i;
                 }
                 i = i + 1;
             }
             q = removeAt(q, bestIdx);
-            for (var v : ((java.util.Map<String,Integer)graph.get(u))) {
-                int alt = (int)(((int)dist.getOrDefault(u, 0))) + (int)(((int)((java.util.Map<String,Integer)graph.get(u)).getOrDefault(v, 0)));
-                if (alt < (int)(((int)dist.getOrDefault(v, 0)))) {
+            for (String v : ((java.util.Map<String,Integer>)(graph).get(u)).keySet()) {
+                int alt = (int)(((int)(dist).getOrDefault(u, 0))) + (int)(((int)(((java.util.Map<String,Integer>)(graph).get(u))).getOrDefault(v, 0)));
+                if (alt < (int)(((int)(dist).getOrDefault(v, 0)))) {
 dist.put(v, alt);
 prev.put(v, u);
                 }
@@ -63,8 +63,8 @@ prev.put(v, u);
     static String path(java.util.Map<String,String> prev, String v) {
         String s = v;
         String cur = v;
-        while (!(((String)prev.get(cur)).equals(""))) {
-            cur = ((String)prev.get(cur));
+        while (!(((String)(prev).get(cur)).equals(""))) {
+            cur = ((String)(prev).get(cur));
             s = cur + s;
         }
         return s;
@@ -81,10 +81,10 @@ prev.put(v, u);
         addEdge("d", "e", 6);
         addEdge("e", "f", 9);
         java.util.Map<String,Object> res = dijkstra("a");
-        java.util.Map<String,Integer> dist = (java.util.Map<String,Integer>)(((java.util.Map<String,Integer>)res.get("dist")));
-        java.util.Map<String,String> prev = (java.util.Map<String,String>)(((java.util.Map<String,String>)res.get("prev")));
-        System.out.println("Distance to e: " + String.valueOf(((int)dist.getOrDefault("e", 0))) + ", Path: " + String.valueOf(path(prev, "e")));
-        System.out.println("Distance to f: " + String.valueOf(((int)dist.getOrDefault("f", 0))) + ", Path: " + String.valueOf(path(prev, "f")));
+        java.util.Map<String,Integer> dist = ((java.util.Map<String,Integer>)(((java.util.Map<String,Integer>) (res.get("dist")))));
+        java.util.Map<String,String> prev = ((java.util.Map<String,String>)(((java.util.Map<String,String>) (res.get("prev")))));
+        System.out.println("Distance to e: " + String.valueOf(((int)(dist).getOrDefault("e", 0))) + ", Path: " + String.valueOf(path(prev, "e")));
+        System.out.println("Distance to f: " + String.valueOf(((int)(dist).getOrDefault("f", 0))) + ", Path: " + String.valueOf(path(prev, "f")));
     }
     public static void main(String[] args) {
         {
