@@ -196,6 +196,7 @@ type FunDecl struct {
 	Name       string
 	Params     []string
 	ReturnType string
+	Locals     []VarDecl
 	Body       []Stmt
 }
 
@@ -217,10 +218,21 @@ func (f *FunDecl) emit(out io.Writer) {
 		io.WriteString(out, p)
 	}
 	if proc {
-		io.WriteString(out, ");\nbegin\n")
+		io.WriteString(out, ");\n")
 	} else {
-		fmt.Fprintf(out, "): %s;\nbegin\n", rt)
+		fmt.Fprintf(out, "): %s;\n", rt)
 	}
+	if len(f.Locals) > 0 {
+		io.WriteString(out, "var\n")
+		for _, v := range f.Locals {
+			typ := v.Type
+			if typ == "" {
+				typ = "integer"
+			}
+			fmt.Fprintf(out, "  %s: %s;\n", v.Name, typ)
+		}
+	}
+	io.WriteString(out, "begin\n")
 	for _, s := range f.Body {
 		io.WriteString(out, "  ")
 		s.emit(out)
@@ -1431,6 +1443,7 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 					}
 					local[p.Name] = typ
 				}
+				startVarCount := len(currProg.Vars)
 				pushScope()
 				currentFunc = fn.Name
 				for _, p := range st.Fun.Params {
@@ -1442,6 +1455,8 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 				}
 				popScope()
 				currentFunc = ""
+				locals := append([]VarDecl(nil), currProg.Vars[startVarCount:]...)
+				currProg.Vars = currProg.Vars[:startVarCount]
 				var params []string
 				for _, p := range st.Fun.Params {
 					typ := "integer"
@@ -1452,7 +1467,7 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 						elem := strings.TrimPrefix(typ, "array of ")
 						typ = currProg.addArrayAlias(elem)
 					}
-					params = append(params, fmt.Sprintf("%s: %s", p.Name, typ))
+					params = append(params, formatParam(p.Name, typ))
 				}
 				rt := ""
 				if st.Fun.Return != nil {
@@ -1501,11 +1516,11 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 						nameParts := strings.SplitN(params[0], ":", 2)
 						paramName := strings.TrimSpace(nameParts[0])
 						body := []Stmt{&ReturnStmt{Expr: &CallExpr{Name: "StrToInt", Args: []Expr{&VarRef{Name: paramName}}}}}
-						currProg.Funs = append(currProg.Funs, FunDecl{Name: fn.Name, Params: params, ReturnType: "integer", Body: body})
+						currProg.Funs = append(currProg.Funs, FunDecl{Name: fn.Name, Params: params, ReturnType: "integer", Locals: locals, Body: body})
 						funcReturns[fn.Name] = "integer"
 					}
 				} else {
-					currProg.Funs = append(currProg.Funs, FunDecl{Name: fn.Name, Params: params, ReturnType: rt, Body: fnBody})
+					currProg.Funs = append(currProg.Funs, FunDecl{Name: fn.Name, Params: params, ReturnType: rt, Locals: locals, Body: fnBody})
 					if rt != "" {
 						funcReturns[fn.Name] = rt
 					}
@@ -1900,7 +1915,7 @@ func convertBody(env *types.Env, body []*parser.Statement, varTypes map[string]s
 					elem := strings.TrimPrefix(typ, "array of ")
 					typ = currProg.addArrayAlias(elem)
 				}
-				params = append(params, fmt.Sprintf("%s: %s", p.Name, typ))
+				params = append(params, formatParam(p.Name, typ))
 			}
 			rt := ""
 			if st.Fun.Return != nil {
@@ -3775,6 +3790,7 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 		name := fmt.Sprintf("anon%d", len(currProg.Funs))
 		var params []string
 		child := types.NewEnv(env)
+		startVarCount := len(currProg.Vars)
 		pushScope()
 		currentFunc = name
 		for _, pa := range p.FunExpr.Params {
@@ -3786,7 +3802,7 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 					typ = currProg.addArrayAlias(elem)
 				}
 			}
-			params = append(params, fmt.Sprintf("%s: %s", pa.Name, typ))
+			params = append(params, formatParam(pa.Name, typ))
 			child.SetVar(pa.Name, types.AnyType{}, true)
 			currentScope()[pa.Name] = pa.Name
 		}
@@ -3811,6 +3827,8 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 		}
 		popScope()
 		currentFunc = ""
+		locals := append([]VarDecl(nil), currProg.Vars[startVarCount:]...)
+		currProg.Vars = currProg.Vars[:startVarCount]
 		rt := ""
 		if p.FunExpr.Return != nil && p.FunExpr.Return.Simple != nil {
 			if *p.FunExpr.Return.Simple == "int" {
@@ -3819,7 +3837,7 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 				rt = "string"
 			}
 		}
-		currProg.Funs = append(currProg.Funs, FunDecl{Name: name, Params: params, ReturnType: rt, Body: body})
+		currProg.Funs = append(currProg.Funs, FunDecl{Name: name, Params: params, ReturnType: rt, Locals: locals, Body: body})
 		if rt != "" {
 			funcReturns[name] = rt
 		}
@@ -4258,7 +4276,7 @@ func addConstructors(p *Program) {
 				elem := strings.TrimPrefix(typ, "array of ")
 				typ = p.addArrayAlias(elem)
 			}
-			params = append(params, fmt.Sprintf("%s: %s", f.Name, typ))
+			params = append(params, formatParam(f.Name, typ))
 			body = append(body, &SetStmt{Target: &SelectorExpr{Root: "Result", Tail: []string{f.Name}}, Expr: &VarRef{Name: f.Name}})
 		}
 		fn := FunDecl{Name: ctorName(r.Name), Params: params, ReturnType: r.Name, Body: body}
@@ -4425,6 +4443,38 @@ func resolveAlias(t string) string {
 		}
 	}
 	return t
+}
+
+func isArrayAlias(t string) bool {
+	if currProg != nil {
+		if currProg.ArrayAliases != nil {
+			for _, alias := range currProg.ArrayAliases {
+				if alias == t {
+					return true
+				}
+			}
+		}
+		if currProg.LateAliases != nil {
+			for _, alias := range currProg.LateAliases {
+				if alias == t {
+					return true
+				}
+			}
+		}
+	}
+	return false
+}
+
+func isArrayType(t string) bool {
+	return strings.HasPrefix(t, "array of ") || isArrayAlias(t)
+}
+
+func formatParam(name, typ string) string {
+	prefix := ""
+	if isArrayType(typ) {
+		prefix = "var "
+	}
+	return fmt.Sprintf("%s%s: %s", prefix, name, typ)
 }
 
 func findRecord(name string) (RecordDef, bool) {
