@@ -3,8 +3,8 @@
 public class Main {
 
     public static void main(String[] args) {
-        System.out.println("hello " + "world");
+        System.out.println(Integer.parseInt("1995"));
     }
 }
 */
-print("hello " + "world")
+print("1995" as int)
