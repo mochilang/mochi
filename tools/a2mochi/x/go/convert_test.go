@@ -10,7 +10,6 @@ import (
 	"strings"
 	"testing"
 
-	"mochi/ast"
 	"mochi/parser"
 	"mochi/runtime/vm"
 	"mochi/types"
@@ -75,6 +74,10 @@ func TestConvert_Golden(t *testing.T) {
 		"let_and_print":  true,
 		"if_else":        true,
 		"var_assignment": true,
+		"len_string":     true,
+		"string_concat":  true,
+		"str_builtin":    true,
+		"unary_neg":      true,
 	}
 
 	outDir := filepath.Join(root, "tests/a2mochi/x/go")
@@ -111,11 +114,10 @@ func TestConvert_Golden(t *testing.T) {
 				t.Fatalf("golden mismatch\n--- Got ---\n%s\n--- Want ---\n%s", got, want)
 			}
 
-			var buf bytes.Buffer
-			if err := ast.Fprint(&buf, astNode); err != nil {
-				t.Fatalf("print: %v", err)
+			code, err := gox.ConvertSource(node)
+			if err != nil {
+				t.Fatalf("convert source: %v", err)
 			}
-			code := buf.String()
 			mochiPath := filepath.Join(outDir, name+".mochi")
 			if *update {
 				os.WriteFile(mochiPath, []byte(code), 0o644)
@@ -123,6 +125,9 @@ func TestConvert_Golden(t *testing.T) {
 			gotOut, err := runMochi(code)
 			if err != nil {
 				t.Fatalf("run: %v", err)
+			}
+			if *update {
+				os.WriteFile(filepath.Join(outDir, name+".out"), gotOut, 0o644)
 			}
 			vmSrc, err := os.ReadFile(filepath.Join(root, "tests/vm/valid", name+".mochi"))
 			if err != nil {
