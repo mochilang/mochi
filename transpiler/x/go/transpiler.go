@@ -785,12 +785,13 @@ func (fr *ForRangeStmt) emit(w io.Writer) {
 
 // ForEachStmt represents iteration over a collection.
 type ForEachStmt struct {
-	Name     string
-	Iterable Expr
-	Body     []Stmt
-	IsMap    bool
-	KeyType  string
-	ElemType string
+	Name       string
+	Iterable   Expr
+	Body       []Stmt
+	IsMap      bool
+	KeyType    string
+	ElemType   string
+	StringIter bool
 }
 
 func (fe *ForEachStmt) emit(w io.Writer) {
@@ -808,7 +809,7 @@ func (fe *ForEachStmt) emit(w io.Writer) {
 		fmt.Fprint(w, " { keys = append(keys, k) }\n")
 		fmt.Fprint(w, "        sort.Slice(keys, func(i, j int) bool { return fmt.Sprint(keys[i]) < fmt.Sprint(keys[j]) })\n")
 		fmt.Fprint(w, "        return keys }() {\n")
-	} else if fe.ElemType == "string" {
+	} else if fe.StringIter {
 		fmt.Fprint(w, "for _, _ch := range ")
 		if fe.Iterable != nil {
 			fe.Iterable.emit(w)
@@ -3801,6 +3802,7 @@ func compileForStmt(fs *parser.ForStmt, env *types.Env) (Stmt, error) {
 	var isMap bool
 	var keyType string
 	var elemType string
+	var stringIter bool
 	if ke, ok := iter.(*KeysExpr); ok {
 		child.SetVar(fs.Name, toTypeFromGoType(ke.KeyType), true)
 		elemType = ke.KeyType
@@ -3811,6 +3813,21 @@ func compileForStmt(fs *parser.ForStmt, env *types.Env) (Stmt, error) {
 		t := types.TypeOfExpr(fs.Source, env)
 		if types.IsAnyType(t) {
 			t = types.TypeOfExprBasic(fs.Source, env)
+			if types.IsAnyType(t) {
+				e := fs.Source
+				if e != nil && e.Binary != nil && len(e.Binary.Right) == 0 {
+					u := e.Binary.Left
+					if len(u.Ops) == 0 && u.Value != nil {
+						p := u.Value
+						if p.Target != nil && p.Target.Selector != nil &&
+							p.Target.Selector.Root == "os" &&
+							len(p.Target.Selector.Tail) == 1 && p.Target.Selector.Tail[0] == "Environ" &&
+							len(p.Ops) == 1 && p.Ops[0].Call != nil {
+							t = types.ListType{Elem: types.StringType{}}
+						}
+					}
+				}
+			}
 		}
 		switch tt := t.(type) {
 		case types.MapType:
@@ -3824,6 +3841,7 @@ func compileForStmt(fs *parser.ForStmt, env *types.Env) (Stmt, error) {
 		case types.StringType:
 			child.SetVar(fs.Name, types.StringType{}, true)
 			elemType = "string"
+			stringIter = true
 		default:
 			child.SetVar(fs.Name, types.AnyType{}, true)
 		}
@@ -3832,7 +3850,7 @@ func compileForStmt(fs *parser.ForStmt, env *types.Env) (Stmt, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &ForEachStmt{Name: fs.Name, Iterable: iter, Body: body, IsMap: isMap, KeyType: keyType, ElemType: elemType}, nil
+	return &ForEachStmt{Name: fs.Name, Iterable: iter, Body: body, IsMap: isMap, KeyType: keyType, ElemType: elemType, StringIter: stringIter}, nil
 }
 
 func compileBenchBlock(bb *parser.BenchBlock, env *types.Env) (Stmt, error) {
@@ -5806,7 +5824,9 @@ func Emit(prog *Program, bench bool) []byte {
 	}
 	if prog.UseTime {
 		buf.WriteString("    \"time\"\n")
-		buf.WriteString("    \"os\"\n")
+		if _, ok := prog.Imports["os"]; !ok {
+			buf.WriteString("    \"os\"\n")
+		}
 		buf.WriteString("    \"strconv\"\n")
 	}
 	if prog.UseJSON {

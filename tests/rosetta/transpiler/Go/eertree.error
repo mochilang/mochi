@@ -1,0 +1,7 @@
+exit status 1
+# command-line-arguments
+../../../tests/rosetta/transpiler/Go/eertree.go:36:12: cannot convert tree[n]["length"] (map index expression of interface type any) to type int: need type assertion
+../../../tests/rosetta/transpiler/Go/eertree.go:42:12: cannot convert tree[n]["suffix"] (map index expression of interface type any) to type int: need type assertion
+../../../tests/rosetta/transpiler/Go/eertree.go:71:10: cannot convert tree[suffix]["length"] (map index expression of interface type any) to type int: need type assertion
+../../../tests/rosetta/transpiler/Go/eertree.go:77:12: cannot convert tree[n]["suffix"] (map index expression of interface type any) to type int: need type assertion
+../../../tests/rosetta/transpiler/Go/eertree.go:78:26: cannot convert tree[n]["length"] (map index expression of interface type any) to type int: need type assertion

@@ -1,0 +1,4 @@
+exit status 1
+# command-line-arguments
+../../../tests/rosetta/transpiler/Go/eban-numbers.go:73:23: cannot convert rg[0] (variable of interface type any) to type int: need type assertion
+../../../tests/rosetta/transpiler/Go/eban-numbers.go:75:22: cannot convert rg[1] (variable of interface type any) to type int: need type assertion
