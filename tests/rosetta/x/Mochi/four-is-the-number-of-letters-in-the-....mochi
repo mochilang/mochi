@@ -1,0 +1,161 @@
+// Mochi translation of Rosetta "Four is the number of letters in the ..." task
+// Based on Go version in tests/rosetta/x/Go
+
+let small = [
+  "zero","one","two","three","four","five","six","seven","eight","nine",
+  "ten","eleven","twelve","thirteen","fourteen","fifteen","sixteen",
+  "seventeen","eighteen","nineteen"
+]
+
+let tens = [
+  "","","twenty","thirty","forty","fifty","sixty","seventy","eighty","ninety"
+]
+
+let smallOrd = [
+  "zeroth","first","second","third","fourth","fifth","sixth","seventh","eighth",
+  "ninth","tenth","eleventh","twelfth","thirteenth","fourteenth","fifteenth",
+  "sixteenth","seventeenth","eighteenth","nineteenth"
+]
+
+let tensOrd = [
+  "","","twentieth","thirtieth","fortieth","fiftieth","sixtieth","seventieth",
+  "eightieth","ninetieth"
+]
+
+fun say(n: int): string {
+  if n < 20 { return small[n] }
+  if n < 100 {
+    var res = tens[n / 10]
+    let m = n % 10
+    if m != 0 { res = res + "-" + small[m] }
+    return res
+  }
+  if n < 1000 {
+    var res = say(n / 100) + " hundred"
+    let m = n % 100
+    if m != 0 { res = res + " " + say(m) }
+    return res
+  }
+  if n < 1000000 {
+    var res = say(n / 1000) + " thousand"
+    let m = n % 1000
+    if m != 0 { res = res + " " + say(m) }
+    return res
+  }
+  var res = say(n / 1000000) + " million"
+  let m = n % 1000000
+  if m != 0 { res = res + " " + say(m) }
+  return res
+}
+
+fun sayOrdinal(n: int): string {
+  if n < 20 { return smallOrd[n] }
+  if n < 100 {
+    if n % 10 == 0 { return tensOrd[n / 10] }
+    return say(n - n % 10) + "-" + smallOrd[n % 10]
+  }
+  if n < 1000 {
+    if n % 100 == 0 { return say(n / 100) + " hundredth" }
+    return say(n / 100) + " hundred " + sayOrdinal(n % 100)
+  }
+  if n < 1000000 {
+    if n % 1000 == 0 { return say(n / 1000) + " thousandth" }
+    return say(n / 1000) + " thousand " + sayOrdinal(n % 1000)
+  }
+  if n % 1000000 == 0 { return say(n / 1000000) + " millionth" }
+  return say(n / 1000000) + " million " + sayOrdinal(n % 1000000)
+}
+
+fun split(s: string, sep: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    if len(sep) > 0 && i + len(sep) <= len(s) && substring(s, i, i+len(sep)) == sep {
+      parts = append(parts, cur)
+      cur = ""
+      i = i + len(sep)
+    } else {
+      cur = cur + substring(s, i, i+1)
+      i = i + 1
+    }
+  }
+  parts = append(parts, cur)
+  return parts
+}
+
+fun countLetters(s: string): int {
+  var cnt = 0
+  var i = 0
+  while i < len(s) {
+    let ch = substring(s, i, i+1)
+    if ch >= "A" && ch <= "Z" || ch >= "a" && ch <= "z" { cnt = cnt + 1 }
+    i = i + 1
+  }
+  return cnt
+}
+
+var words: list<string> = [
+  "Four","is","the","number","of","letters","in","the",
+  "first","word","of","this","sentence,"
+]
+var idx = 0
+
+fun wordLen(w: int): list<any> {
+  while len(words) < w {
+    idx = idx + 1
+    let n = countLetters(words[idx])
+    var parts = split(say(n), " ")
+    var j = 0
+    while j < len(parts) { words = append(words, parts[j]); j = j + 1 }
+    words = append(words, "in")
+    words = append(words, "the")
+    parts = split(sayOrdinal(idx + 1) + ",", " ")
+    j = 0
+    while j < len(parts) { words = append(words, parts[j]); j = j + 1 }
+  }
+  let word = words[w - 1]
+  return [word, countLetters(word)]
+}
+
+fun totalLength(): int {
+  var tot = 0
+  var i = 0
+  while i < len(words) {
+    tot = tot + len(words[i])
+    if i < len(words) - 1 { tot = tot + 1 }
+    i = i + 1
+  }
+  return tot
+}
+
+fun pad(n: int, width: int): string {
+  var s = str(n)
+  while len(s) < width { s = " " + s }
+  return s
+}
+
+fun main() {
+  print("The lengths of the first 201 words are:")
+  var line = ""
+  var i = 1
+  while i <= 201 {
+    if i % 25 == 1 {
+      if i != 1 { print(line) }
+      line = pad(i, 3) + ":"
+    }
+    let r = wordLen(i)
+    let n = r[1]
+    line = line + " " + pad(n, 2)
+    i = i + 1
+  }
+  print(line)
+  print("Length of sentence so far: " + str(totalLength()))
+  for n in [1000, 10000, 100000, 1000000, 10000000] {
+    let r = wordLen(n)
+    let w = r[0]
+    let l = r[1]
+    print("Word " + pad(n, 8) + " is \"" + w + "\", with " + str(l) + " letters.  Length of sentence so far: " + str(totalLength()))
+  }
+}
+main()
