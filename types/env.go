@@ -5,6 +5,7 @@ import (
 	"io"
 	"mochi/parser"
 	"os"
+	"strings"
 )
 
 // ModelSpec defines a named model configuration.
@@ -260,6 +261,12 @@ func (e *Env) GetValue(name string) (any, error) {
 // SetFunc binds a named function.
 func (e *Env) SetFunc(name string, fn *parser.FunStmt) {
 	e.funcs[name] = fn
+	lower := strings.ToLower(name)
+	if lower != name {
+		if _, ok := e.funcs[lower]; !ok {
+			e.funcs[lower] = fn
+		}
+	}
 }
 
 // SetFuncType binds a function name to its static type.
