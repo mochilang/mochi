@@ -478,9 +478,15 @@ func ocamlType(t string) string {
 		usesBigRat = true
 		return "Q.t"
 	default:
+		if _, ok := structFields[t]; ok {
+			return "(string * Obj.t) list"
+		}
 		if strings.HasPrefix(t, "map-") {
 			inner := strings.TrimPrefix(t, "map-")
 			return "(string * " + ocamlType(inner) + ") list"
+		}
+		if strings.HasPrefix(t, "map-dyn") {
+			return "(string * Obj.t) list"
 		}
 		if t == "map" {
 			return "(string * Obj.t) list"
@@ -1391,6 +1397,16 @@ func (f *FuncCall) emitPrint(w io.Writer) {
 		io.WriteString(w, "string_of_bool (")
 		f.emit(w)
 		io.WriteString(w, ")")
+	case "bigint":
+		usesBigInt = true
+		io.WriteString(w, "Z.to_string (")
+		f.emit(w)
+		io.WriteString(w, ")")
+	case "bigrat":
+		usesBigRat = true
+		io.WriteString(w, "Q.to_string (")
+		f.emit(w)
+		io.WriteString(w, ")")
 	default:
 		f.emit(w)
 	}
@@ -1484,9 +1500,12 @@ func (m *MapLit) emit(w io.Writer) {
 		it.Key.emit(w)
 		io.WriteString(w, ", ")
 		if m.Dynamic {
-			io.WriteString(w, "Obj.repr ")
+			io.WriteString(w, "Obj.repr (")
+			it.Value.emit(w)
+			io.WriteString(w, ")")
+		} else {
+			it.Value.emit(w)
 		}
-		it.Value.emit(w)
 		io.WriteString(w, ")")
 	}
 	io.WriteString(w, "]")
@@ -2321,6 +2340,12 @@ func (n *Name) emitPrint(w io.Writer) {
 		fmt.Fprintf(w, "string_of_bool %s", ident)
 	case "float":
 		fmt.Fprintf(w, "Printf.sprintf \"%%.15f\" (%s)", ident)
+	case "bigint":
+		usesBigInt = true
+		fmt.Fprintf(w, "Z.to_string %s", ident)
+	case "bigrat":
+		usesBigRat = true
+		fmt.Fprintf(w, "Q.to_string %s", ident)
 	default:
 		fmt.Fprintf(w, "__show %s", ident)
 	}
@@ -4801,7 +4826,7 @@ func convertCall(c *parser.CallExpr, env *types.Env, vars map[string]VarInfo) (E
 			return nil, "", err
 		}
 		switch typ {
-		case "int", "float", "bigint":
+		case "int", "float", "bigint", "bigrat":
 			return &StrBuiltin{Expr: arg, Typ: typ}, "string", nil
 		default:
 			return &FuncCall{Name: "__show", Args: []Expr{arg}, Ret: "string"}, "string", nil

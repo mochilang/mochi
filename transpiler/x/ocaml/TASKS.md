@@ -1,7 +1,13 @@
-## Progress (2025-07-26 19:01 +0700)
-- ex transpiler: handle float mod and module globals (ea0c01187b)
+## Progress (2025-07-28 08:10 +0700)
+- ocaml transpiler: start bigrat support (0a65091be7)
 
 - VM valid programs compiled: 102/104
+
+- ocaml transpiler: start bigrat support (0a65091be7)
+
+
+- ex transpiler: handle float mod and module globals (ea0c01187b)
+
 
 - transpiler/py: add benchmarks and code outputs for indices 163-192 (070466d590)
 
