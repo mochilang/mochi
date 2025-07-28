@@ -1,0 +1,10 @@
+(program main
+  (fun main
+    (call print
+      (group
+        (binary + (string "hello ") (string world))
+      )
+    )
+  )
+  (call main)
+)

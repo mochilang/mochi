@@ -1,0 +1,22 @@
+(program main
+  (fun main
+    (let S (string catch))
+    (call print
+      (group
+        (call
+          (selector contains (selector S))
+          (string cat)
+        )
+      )
+    )
+    (call print
+      (group
+        (call
+          (selector contains (selector S))
+          (string dog)
+        )
+      )
+    )
+  )
+  (call main)
+)
