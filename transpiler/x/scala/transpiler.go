@@ -2232,13 +2232,16 @@ func convertUnary(u *parser.Unary, env *types.Env) (Expr, error) {
 	for i := len(u.Ops) - 1; i >= 0; i-- {
 		switch u.Ops[i] {
 		case "-":
-			if inferTypeWithEnv(expr, env) == "BigRat" {
+			typ := inferTypeWithEnv(expr, env)
+			if typ == "BigRat" {
 				needsBigRat = true
 				needsBigInt = true
 				zero := &CallExpr{Fn: &Name{Name: "_bigrat"}, Args: []Expr{&IntLit{Value: 0}}}
 				expr = &BinaryExpr{Left: zero, Op: "-", Right: expr}
-			} else {
+			} else if typ == "BigInt" {
 				expr = &BinaryExpr{Left: &IntLit{Value: 0}, Op: "-", Right: expr}
+			} else {
+				expr = &UnaryExpr{Op: "-", Expr: expr}
 			}
 		case "!":
 			if inferTypeWithEnv(expr, env) != "Boolean" {
