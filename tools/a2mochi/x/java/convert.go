@@ -39,8 +39,13 @@ func ConvertSource(n *Node) (string, error) {
 	}
 	out.WriteString("*/\n")
 
-	varDecl := regexp.MustCompile(`^static\s+int\s+([A-Za-z_][A-Za-z0-9_]*)\s*=\s*([-0-9]+);`)
-	typedVar := regexp.MustCompile(`^static\s+int\s+([A-Za-z_][A-Za-z0-9_]*)\s*;`)
+	// varDecl matches a top-level static integer variable declaration. The
+	// initializer previously only allowed plain numbers which prevented
+	// simple expressions like "static int a = 1 + 2" from being parsed.
+	// Extend the pattern to accept any expression up to the semicolon so
+	// more examples can be converted.
+	varDecl := regexp.MustCompile(`^static\s+(?:int|double)\s+([A-Za-z_][A-Za-z0-9_]*)\s*=\s*([^;]+);`)
+	typedVar := regexp.MustCompile(`^static\s+(?:int|double)\s+([A-Za-z_][A-Za-z0-9_]*)\s*;`)
 	assignStmt := regexp.MustCompile(`^([A-Za-z_][A-Za-z0-9_]*)\s*=\s*(.+);`)
 	whileStart := regexp.MustCompile(`^while\s*\((.*)\)\s*\{`)
 	forStart := regexp.MustCompile(`^for\s*\(int\s+([A-Za-z_][A-Za-z0-9_]*)\s*=\s*([^;]+);\s*[A-Za-z_][A-Za-z0-9_]*\s*<\s*([^;]+);\s*[A-Za-z_][A-Za-z0-9_]*\+\+\)\s*\{`)
