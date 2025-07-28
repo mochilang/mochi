@@ -3,4 +3,4 @@
 This directory stores helpers and golden files for converting Zig programs
 in `tests/transpiler/x/zig` into Mochi AST form.
 
-Completed programs: 0/104
+Completed programs: 6/104
