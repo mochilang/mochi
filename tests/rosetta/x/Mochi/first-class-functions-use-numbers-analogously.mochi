@@ -1,0 +1,26 @@
+fun multiplier(n1: float, n2: float): fun(float): float {
+  let n1n2 = n1 * n2
+  return fun(m: float): float => n1n2 * m
+}
+
+fun main() {
+  let x = 2.0
+  let xi = 0.5
+  let y = 4.0
+  let yi = 0.25
+  let z = x + y
+  let zi = 1.0 / (x + y)
+  let numbers = [x, y, z]
+  let inverses = [xi, yi, zi]
+  var mfs: list<fun(float): float> = []
+  var i = 0
+  while i < len(numbers) {
+    mfs = append(mfs, multiplier(numbers[i], inverses[i]))
+    i = i + 1
+  }
+  for mf in mfs {
+    print(str(mf(1.0)))
+  }
+}
+
+main()
