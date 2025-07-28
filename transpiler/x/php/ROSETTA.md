@@ -2,9 +2,9 @@
 
 Generated PHP code from Mochi Rosetta tasks lives in `tests/rosetta/transpiler/php`.
 
-Last updated: 2025-07-28 01:20 +0700
+Last updated: 2025-07-28 07:45 +0700
 
-## Checklist (461/467)
+## Checklist (462/467)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 76µs | 136 B |
@@ -22,7 +22,7 @@ Last updated: 2025-07-28 01:20 +0700
 | 13 | 99-bottles-of-beer-2 | ✓ | 5.576ms | 96 B |
 | 14 | 99-bottles-of-beer | ✓ | 439µs | 96 B |
 | 15 | DNS-query | ✓ | 308.932ms | 568 B |
-| 16 | Duffinian-numbers |   |  |  |
+| 16 | Duffinian-numbers | ✓ | 51.315ms | 96 B |
 | 17 | a+b | ✓ | 56µs | 8.1 KB |
 | 18 | abbreviations-automatic | ✓ | 2.198ms | 96 B |
 | 19 | abbreviations-easy | ✓ | 323µs | 96 B |
