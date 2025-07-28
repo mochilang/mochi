@@ -12,9 +12,9 @@
     12	9-billion-names-of-god-the-integer.mochi
     13	99-bottles-of-beer-2.mochi
     14	99-bottles-of-beer.mochi
-    15	DNS-query.mochi
-    16	Duffinian-numbers.mochi
-    17	Find-if-a-point-is-within-a-triangle.mochi
+    15	dns-query.mochi
+    16	duffinian-numbers.mochi
+    17	find-if-a-point-is-within-a-triangle.mochi
     18	a+b.mochi
     19	abbreviations-automatic.mochi
     20	abbreviations-easy.mochi
