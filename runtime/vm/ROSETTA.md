@@ -2,21 +2,21 @@
 
 This checklist is auto-generated.
 Generated IR and outputs from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/ir`.
-Last updated: 2025-07-28 02:39 UTC
+Last updated: 2025-07-28 03:36 UTC
 
-## Rosetta Golden Test Checklist (469/477)
+## Rosetta Golden Test Checklist (487/493)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
-| 1 | 100-doors-2 | ✓ | 216µs | 34.2 KB |
-| 2 | 100-doors-3 | ✓ | 526µs | 246.9 KB |
-| 3 | 100-doors | ✓ | 10.926ms | 1.1 MB |
-| 4 | 100-prisoners | ✓ | 5.43561s |  |
+| 1 | 100-doors-2 | ✓ | 161µs | 34.2 KB |
+| 2 | 100-doors-3 | ✓ | 540µs | 246.9 KB |
+| 3 | 100-doors | ✓ | 4.941ms | 1021.7 KB |
+| 4 | 100-prisoners | ✓ | 3.604108s | 635.4 KB |
 | 5 | 15-puzzle-game | ✓ |  |  |
-| 6 | 15-puzzle-solver | ✓ | 922.503ms | 26.9 KB |
-| 7 | 2048 | ✓ | 1.056ms | 857.7 KB |
-| 8 | 21-game | ✓ | 329µs | 10.4 KB |
-| 9 | 24-game-solve | ✓ | 326.853ms | 248.6 KB |
-| 10 | 24-game | ✓ | 84µs | 20.5 KB |
+| 6 | 15-puzzle-solver | ✓ | 933.582ms | 27.4 KB |
+| 7 | 2048 | ✓ | 7.075ms |  |
+| 8 | 21-game | ✓ | 266µs | 10.4 KB |
+| 9 | 24-game-solve | ✓ | 221.517ms | 1.1 MB |
+| 10 | 24-game | ✓ | 113µs | 20.5 KB |
 | 11 | 4-rings-or-4-squares-puzzle | ✓ | 372.895ms | 3.8 MB |
 | 12 | 9-billion-names-of-god-the-integer | ✓ | 11.102605s | 149.9 MB |
 | 13 | 99-bottles-of-beer-2 | ✓ | 63.449ms | 263.2 KB |
@@ -457,30 +457,46 @@ Last updated: 2025-07-28 02:39 UTC
 | 448 | flow-control-structures-1 | ✓ | 18µs | 1.4 KB |
 | 449 | flow-control-structures-2 | ✓ | 66µs | 600 B |
 | 450 | flow-control-structures-3 | ✓ | 27µs | 1.4 KB |
-| 451 | flow-control-structures-4 | ✓ | 36µs | 808 B |
-| 452 | floyd-warshall-algorithm | ✓ | 284µs | 235.5 KB |
-| 453 | floyd-warshall-algorithm2 |   |  |  |
-| 454 | floyds-triangle | ✓ | 148µs | 51.9 KB |
-| 455 | forest-fire | ✓ | 137µs | 63.2 KB |
-| 456 | fork-2 |   |  |  |
-| 457 | fork | ✓ | 32µs | 5.4 KB |
-| 458 | ftp | ✓ | 65µs | 23.7 KB |
-| 459 | gamma-function | ✓ | 316µs | 291.3 KB |
-| 460 | general-fizzbuzz | ✓ | 77µs | 24.5 KB |
-| 461 | generic-swap | ✓ | 48µs | 4.0 KB |
-| 462 | get-system-command-output | ✓ | 17µs | 216 B |
-| 463 | giuga-numbers | ✓ | 404µs | 57.3 KB |
-| 464 | globally-replace-text-in-several-files | ✓ | 17µs | 232 B |
-| 465 | goldbachs-comet | ✓ | 30.237ms | 280.3 KB |
-| 466 | golden-ratio-convergence | ✓ | 57µs | 20.0 KB |
-| 467 | graph-colouring | ✓ | 26µs | 216 B |
-| 468 | gray-code | ✓ | 4.084ms |  |
-| 469 | http | ✓ | 180.478ms | 647.3 KB |
-| 470 | image-noise | ✓ | 340.187ms | 397.8 KB |
-| 471 | loops-increment-loop-index-within-loop-body | ✓ | 11.477587s |  |
-| 472 | md5 | ✓ | 1.68366s | 182.5 KB |
-| 473 | nim-game | ✓ | 67µs | 21.5 KB |
-| 474 | plasma-effect | ✓ | 730.38ms |  |
-| 475 | sorting-algorithms-bubble-sort | ✓ | 87µs | 26.4 KB |
-| 476 | window-management | ✓ | 68µs | 64.1 KB |
-| 477 | zumkeller-numbers | ✓ |  |  |
+| 451 | flow-control-structures-4 | ✓ | 38µs | 808 B |
+| 452 | floyd-warshall-algorithm | ✓ | 316µs | 235.5 KB |
+| 453 | floyd-warshall-algorithm2 | ✓ | 270µs | 200.7 KB |
+| 454 | floyds-triangle | ✓ | 233µs | 200.5 KB |
+| 455 | forest-fire | ✓ | 8.295ms |  |
+| 456 | fork-2 | ✓ | 29µs | 5.4 KB |
+| 457 | fork | ✓ | 53µs | 5.4 KB |
+| 458 | formal-power-series | ✓ | 258µs | 244.5 KB |
+| 459 | formatted-numeric-output | ✓ | 106µs | 8.0 KB |
+| 460 | forward-difference | ✓ | 186µs | 89.6 KB |
+| 461 | four-bit-adder-1 | ✓ | 322µs | 68.1 KB |
+| 462 | four-is-magic | ✓ | 362µs | 502.1 KB |
+| 463 | four-is-the-number-of-letters-in-the-... | ✓ |  |  |
+| 464 | fractal-tree | ✓ | 16.447ms |  |
+| 465 | fractran | ✓ | 17.173426s |  |
+| 466 | french-republican-calendar | ✓ | 128µs | 69.9 KB |
+| 467 | ftp | ✓ | 56µs | 23.7 KB |
+| 468 | function-frequency | ✓ | 14.262ms | 502.0 KB |
+| 469 | function-prototype | ✓ | 56µs | 136 B |
+| 470 | functional-coverage-tree | ✓ | 5.211ms | 206.6 KB |
+| 471 | fusc-sequence | ✓ | 1.576ms |  |
+| 472 | gamma-function | ✓ | 375µs | 291.3 KB |
+| 473 | general-fizzbuzz | ✓ | 605µs |  |
+| 474 | generic-swap | ✓ | 28µs | 4.0 KB |
+| 475 | get-system-command-output | ✓ | 127µs | 216 B |
+| 476 | giuga-numbers | ✓ | 99µs | 57.3 KB |
+| 477 | globally-replace-text-in-several-files | ✓ | 12µs | 232 B |
+| 478 | goldbachs-comet | ✓ | 32.565ms |  |
+| 479 | golden-ratio-convergence | ✓ | 57µs | 20.0 KB |
+| 480 | graph-colouring | ✓ | 71µs | 216 B |
+| 481 | gray-code | ✓ | 3.563ms |  |
+| 482 | gui-component-interaction | ✓ | 58µs | 11.6 KB |
+| 483 | gui-enabling-disabling-of-controls | ✓ | 205µs | 212.1 KB |
+| 484 | gui-maximum-window-dimensions | ✓ | 34µs | 10.0 KB |
+| 485 | http | ✓ | 133.248ms | 115.9 KB |
+| 486 | image-noise | ✓ | 342.797ms | 262.0 KB |
+| 487 | loops-increment-loop-index-within-loop-body | ✓ | 12.115003s |  |
+| 488 | md5 | ✓ | 1.460052s | 183.4 KB |
+| 489 | nim-game | ✓ | 56µs | 21.5 KB |
+| 490 | plasma-effect | ✓ | 748.735ms |  |
+| 491 | sorting-algorithms-bubble-sort | ✓ | 78µs | 26.4 KB |
+| 492 | window-management | ✓ | 93µs | 64.1 KB |
+| 493 | zumkeller-numbers | ✓ |  |  |

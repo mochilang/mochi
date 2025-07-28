@@ -1,4 +1,4 @@
-func main (regs=29)
+func __main (regs=29)
   // let max = 20
   Const        r3, 20
   Move         r0, r3

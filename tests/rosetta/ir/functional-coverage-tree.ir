@@ -1,0 +1,913 @@
+func __main (regs=249)
+  // var house1 = newNode("house1", 40, 0.0)
+  Const        r44, "house1"
+  Move         r41, r44
+  Const        r45, 40
+  Move         r42, r45
+  Const        r46, 0.0
+  Move         r43, r46
+  Call         r47, newNode, r41, r42, r43
+  Move         r0, r47
+  SetGlobal    0,0,0,0
+  // var house2 = newNode("house2", 60, 0.0)
+  Const        r51, "house2"
+  Move         r48, r51
+  Const        r52, 60
+  Move         r49, r52
+  Const        r46, 0.0
+  Move         r50, r46
+  Call         r53, newNode, r48, r49, r50
+  Move         r1, r53
+  SetGlobal    1,1,0,0
+  // var h1_bedrooms = newNode("bedrooms", 1, 0.25)
+  Const        r57, "bedrooms"
+  Move         r54, r57
+  Const        r58, 1
+  Move         r55, r58
+  Const        r59, 0.25
+  Move         r56, r59
+  Call         r60, newNode, r54, r55, r56
+  Move         r2, r60
+  SetGlobal    2,2,0,0
+  // var h1_bathrooms = newNode("bathrooms", 1, 0.0)
+  Const        r64, "bathrooms"
+  Move         r61, r64
+  Const        r58, 1
+  Move         r62, r58
+  Const        r46, 0.0
+  Move         r63, r46
+  Call         r65, newNode, r61, r62, r63
+  Move         r3, r65
+  SetGlobal    3,3,0,0
+  // var h1_attic = newNode("attic", 1, 0.75)
+  Const        r69, "attic"
+  Move         r66, r69
+  Const        r58, 1
+  Move         r67, r58
+  Const        r70, 0.75
+  Move         r68, r70
+  Call         r71, newNode, r66, r67, r68
+  Move         r4, r71
+  SetGlobal    4,4,0,0
+  // var h1_kitchen = newNode("kitchen", 1, 0.1)
+  Const        r75, "kitchen"
+  Move         r72, r75
+  Const        r58, 1
+  Move         r73, r58
+  Const        r76, 0.1
+  Move         r74, r76
+  Call         r77, newNode, r72, r73, r74
+  Move         r5, r77
+  SetGlobal    5,5,0,0
+  // var h1_living_rooms = newNode("living_rooms", 1, 0.0)
+  Const        r81, "living_rooms"
+  Move         r78, r81
+  Const        r58, 1
+  Move         r79, r58
+  Const        r46, 0.0
+  Move         r80, r46
+  Call         r82, newNode, r78, r79, r80
+  Move         r6, r82
+  SetGlobal    6,6,0,0
+  // var h1_basement = newNode("basement", 1, 0.0)
+  Const        r86, "basement"
+  Move         r83, r86
+  Const        r58, 1
+  Move         r84, r58
+  Const        r46, 0.0
+  Move         r85, r46
+  Call         r87, newNode, r83, r84, r85
+  Move         r7, r87
+  SetGlobal    7,7,0,0
+  // var h1_garage = newNode("garage", 1, 0.0)
+  Const        r91, "garage"
+  Move         r88, r91
+  Const        r58, 1
+  Move         r89, r58
+  Const        r46, 0.0
+  Move         r90, r46
+  Call         r92, newNode, r88, r89, r90
+  Move         r8, r92
+  SetGlobal    8,8,0,0
+  // var h1_garden = newNode("garden", 1, 0.8)
+  Const        r96, "garden"
+  Move         r93, r96
+  Const        r58, 1
+  Move         r94, r58
+  Const        r97, 0.8
+  Move         r95, r97
+  Call         r98, newNode, r93, r94, r95
+  Move         r9, r98
+  SetGlobal    9,9,0,0
+  // var h2_upstairs = newNode("upstairs", 1, 0.0)
+  Const        r102, "upstairs"
+  Move         r99, r102
+  Const        r58, 1
+  Move         r100, r58
+  Const        r46, 0.0
+  Move         r101, r46
+  Call         r103, newNode, r99, r100, r101
+  Move         r10, r103
+  SetGlobal    10,10,0,0
+  // var h2_groundfloor = newNode("groundfloor", 1, 0.0)
+  Const        r107, "groundfloor"
+  Move         r104, r107
+  Const        r58, 1
+  Move         r105, r58
+  Const        r46, 0.0
+  Move         r106, r46
+  Call         r108, newNode, r104, r105, r106
+  Move         r11, r108
+  SetGlobal    11,11,0,0
+  // var h2_basement = newNode("basement", 1, 0.0)
+  Const        r86, "basement"
+  Move         r109, r86
+  Const        r58, 1
+  Move         r110, r58
+  Const        r46, 0.0
+  Move         r111, r46
+  Call         r112, newNode, r109, r110, r111
+  Move         r12, r112
+  SetGlobal    12,12,0,0
+  // var h1_bathroom1 = newNode("bathroom1", 1, 0.5)
+  Const        r116, "bathroom1"
+  Move         r113, r116
+  Const        r58, 1
+  Move         r114, r58
+  Const        r117, 0.5
+  Move         r115, r117
+  Call         r118, newNode, r113, r114, r115
+  Move         r13, r118
+  SetGlobal    13,13,0,0
+  // var h1_bathroom2 = newNode("bathroom2", 1, 0.0)
+  Const        r122, "bathroom2"
+  Move         r119, r122
+  Const        r58, 1
+  Move         r120, r58
+  Const        r46, 0.0
+  Move         r121, r46
+  Call         r123, newNode, r119, r120, r121
+  Move         r14, r123
+  SetGlobal    14,14,0,0
+  // var h1_outside = newNode("outside_lavatory", 1, 1.0)
+  Const        r127, "outside_lavatory"
+  Move         r124, r127
+  Const        r58, 1
+  Move         r125, r58
+  Const        r128, 1.0
+  Move         r126, r128
+  Call         r129, newNode, r124, r125, r126
+  Move         r15, r129
+  SetGlobal    15,15,0,0
+  // var h1_lounge = newNode("lounge", 1, 0.0)
+  Const        r133, "lounge"
+  Move         r130, r133
+  Const        r58, 1
+  Move         r131, r58
+  Const        r46, 0.0
+  Move         r132, r46
+  Call         r134, newNode, r130, r131, r132
+  Move         r16, r134
+  SetGlobal    16,16,0,0
+  // var h1_dining = newNode("dining_room", 1, 0.0)
+  Const        r138, "dining_room"
+  Move         r135, r138
+  Const        r58, 1
+  Move         r136, r58
+  Const        r46, 0.0
+  Move         r137, r46
+  Call         r139, newNode, r135, r136, r137
+  Move         r17, r139
+  SetGlobal    17,17,0,0
+  // var h1_conservatory = newNode("conservatory", 1, 0.0)
+  Const        r143, "conservatory"
+  Move         r140, r143
+  Const        r58, 1
+  Move         r141, r58
+  Const        r46, 0.0
+  Move         r142, r46
+  Call         r144, newNode, r140, r141, r142
+  Move         r18, r144
+  SetGlobal    18,18,0,0
+  // var h1_playroom = newNode("playroom", 1, 1.0)
+  Const        r148, "playroom"
+  Move         r145, r148
+  Const        r58, 1
+  Move         r146, r58
+  Const        r128, 1.0
+  Move         r147, r128
+  Call         r149, newNode, r145, r146, r147
+  Move         r19, r149
+  SetGlobal    19,19,0,0
+  // var h2_bedrooms = newNode("bedrooms", 1, 0.0)
+  Const        r57, "bedrooms"
+  Move         r150, r57
+  Const        r58, 1
+  Move         r151, r58
+  Const        r46, 0.0
+  Move         r152, r46
+  Call         r153, newNode, r150, r151, r152
+  Move         r20, r153
+  SetGlobal    20,20,0,0
+  // var h2_bathroom = newNode("bathroom", 1, 0.0)
+  Const        r157, "bathroom"
+  Move         r154, r157
+  Const        r58, 1
+  Move         r155, r58
+  Const        r46, 0.0
+  Move         r156, r46
+  Call         r158, newNode, r154, r155, r156
+  Move         r21, r158
+  SetGlobal    21,21,0,0
+  // var h2_toilet = newNode("toilet", 1, 0.0)
+  Const        r162, "toilet"
+  Move         r159, r162
+  Const        r58, 1
+  Move         r160, r58
+  Const        r46, 0.0
+  Move         r161, r46
+  Call         r163, newNode, r159, r160, r161
+  Move         r22, r163
+  SetGlobal    22,22,0,0
+  // var h2_attics = newNode("attics", 1, 0.6)
+  Const        r167, "attics"
+  Move         r164, r167
+  Const        r58, 1
+  Move         r165, r58
+  Const        r168, 0.6
+  Move         r166, r168
+  Call         r169, newNode, r164, r165, r166
+  Move         r23, r169
+  SetGlobal    23,23,0,0
+  // var h2_kitchen = newNode("kitchen", 1, 0.0)
+  Const        r75, "kitchen"
+  Move         r170, r75
+  Const        r58, 1
+  Move         r171, r58
+  Const        r46, 0.0
+  Move         r172, r46
+  Call         r173, newNode, r170, r171, r172
+  Move         r24, r173
+  SetGlobal    24,24,0,0
+  // var h2_living_rooms = newNode("living_rooms", 1, 0.0)
+  Const        r81, "living_rooms"
+  Move         r174, r81
+  Const        r58, 1
+  Move         r175, r58
+  Const        r46, 0.0
+  Move         r176, r46
+  Call         r177, newNode, r174, r175, r176
+  Move         r25, r177
+  SetGlobal    25,25,0,0
+  // var h2_wet_room = newNode("wet_room_&_toilet", 1, 0.0)
+  Const        r181, "wet_room_&_toilet"
+  Move         r178, r181
+  Const        r58, 1
+  Move         r179, r58
+  Const        r46, 0.0
+  Move         r180, r46
+  Call         r182, newNode, r178, r179, r180
+  Move         r26, r182
+  SetGlobal    26,26,0,0
+  // var h2_garage = newNode("garage", 1, 0.0)
+  Const        r91, "garage"
+  Move         r183, r91
+  Const        r58, 1
+  Move         r184, r58
+  Const        r46, 0.0
+  Move         r185, r46
+  Call         r186, newNode, r183, r184, r185
+  Move         r27, r186
+  SetGlobal    27,27,0,0
+  // var h2_garden = newNode("garden", 1, 0.9)
+  Const        r96, "garden"
+  Move         r187, r96
+  Const        r58, 1
+  Move         r188, r58
+  Const        r190, 0.9
+  Move         r189, r190
+  Call         r191, newNode, r187, r188, r189
+  Move         r28, r191
+  SetGlobal    28,28,0,0
+  // var h2_hot_tub = newNode("hot_tub_suite", 1, 1.0)
+  Const        r195, "hot_tub_suite"
+  Move         r192, r195
+  Const        r58, 1
+  Move         r193, r58
+  Const        r128, 1.0
+  Move         r194, r128
+  Call         r196, newNode, r192, r193, r194
+  Move         r29, r196
+  SetGlobal    29,29,0,0
+  // var h2_cellars = newNode("cellars", 1, 1.0)
+  Const        r200, "cellars"
+  Move         r197, r200
+  Const        r58, 1
+  Move         r198, r58
+  Const        r128, 1.0
+  Move         r199, r128
+  Call         r201, newNode, r197, r198, r199
+  Move         r30, r201
+  SetGlobal    30,30,0,0
+  // var h2_wine_cellar = newNode("wine_cellar", 1, 1.0)
+  Const        r205, "wine_cellar"
+  Move         r202, r205
+  Const        r58, 1
+  Move         r203, r58
+  Const        r128, 1.0
+  Move         r204, r128
+  Call         r206, newNode, r202, r203, r204
+  Move         r31, r206
+  SetGlobal    31,31,0,0
+  // var h2_cinema = newNode("cinema", 1, 0.75)
+  Const        r210, "cinema"
+  Move         r207, r210
+  Const        r58, 1
+  Move         r208, r58
+  Const        r70, 0.75
+  Move         r209, r70
+  Call         r211, newNode, r207, r208, r209
+  Move         r32, r211
+  SetGlobal    32,32,0,0
+  // var h2_suite1 = newNode("suite_1", 1, 0.0)
+  Const        r215, "suite_1"
+  Move         r212, r215
+  Const        r58, 1
+  Move         r213, r58
+  Const        r46, 0.0
+  Move         r214, r46
+  Call         r216, newNode, r212, r213, r214
+  Move         r33, r216
+  SetGlobal    33,33,0,0
+  // var h2_suite2 = newNode("suite_2", 1, 0.0)
+  Const        r220, "suite_2"
+  Move         r217, r220
+  Const        r58, 1
+  Move         r218, r58
+  Const        r46, 0.0
+  Move         r219, r46
+  Call         r221, newNode, r217, r218, r219
+  Move         r34, r221
+  SetGlobal    34,34,0,0
+  // var h2_bedroom3 = newNode("bedroom_3", 1, 0.0)
+  Const        r225, "bedroom_3"
+  Move         r222, r225
+  Const        r58, 1
+  Move         r223, r58
+  Const        r46, 0.0
+  Move         r224, r46
+  Call         r226, newNode, r222, r223, r224
+  Move         r35, r226
+  SetGlobal    35,35,0,0
+  // var h2_bedroom4 = newNode("bedroom_4", 1, 0.0)
+  Const        r230, "bedroom_4"
+  Move         r227, r230
+  Const        r58, 1
+  Move         r228, r58
+  Const        r46, 0.0
+  Move         r229, r46
+  Call         r231, newNode, r227, r228, r229
+  Move         r36, r231
+  SetGlobal    36,36,0,0
+  // var h2_lounge = newNode("lounge", 1, 0.0)
+  Const        r133, "lounge"
+  Move         r232, r133
+  Const        r58, 1
+  Move         r233, r58
+  Const        r46, 0.0
+  Move         r234, r46
+  Call         r235, newNode, r232, r233, r234
+  Move         r37, r235
+  SetGlobal    37,37,0,0
+  // var h2_dining = newNode("dining_room", 1, 0.0)
+  Const        r138, "dining_room"
+  Move         r236, r138
+  Const        r58, 1
+  Move         r237, r58
+  Const        r46, 0.0
+  Move         r238, r46
+  Call         r239, newNode, r236, r237, r238
+  Move         r38, r239
+  SetGlobal    38,38,0,0
+  // var h2_conservatory = newNode("conservatory", 1, 0.0)
+  Const        r143, "conservatory"
+  Move         r240, r143
+  Const        r58, 1
+  Move         r241, r58
+  Const        r46, 0.0
+  Move         r242, r46
+  Call         r243, newNode, r240, r241, r242
+  Move         r39, r243
+  SetGlobal    39,39,0,0
+  // var h2_playroom = newNode("playroom", 1, 0.0)
+  Const        r148, "playroom"
+  Move         r244, r148
+  Const        r58, 1
+  Move         r245, r58
+  Const        r46, 0.0
+  Move         r246, r46
+  Call         r247, newNode, r244, r245, r246
+  Move         r40, r247
+  SetGlobal    40,40,0,0
+  // main()
+  Call         r248, main, 
+  Return       r0
+
+  // fun pow10(n: int): float {
+func pow10 (regs=51)
+  // var r: float = 1.0
+  Const        r42, 1.0
+  Move         r43, r42
+  // var i = 0
+  Const        r44, 0
+  Move         r45, r44
+L1:
+  // while i < n { r = r * 10.0; i = i + 1 }
+  Less         r46, r45, r41
+  JumpIfFalse  r46, L0
+  Const        r47, 10.0
+  MulFloat     r48, r43, r47
+  Move         r43, r48
+  Const        r49, 1
+  AddInt       r50, r45, r49
+  Move         r45, r50
+  Jump         L1
+L0:
+  // return r
+  Return       r43
+
+  // fun formatFloat(f: float, prec: int): string {
+func formatFloat (regs=71)
+  // let scale = pow10(prec)
+  Move         r43, r42
+  Call         r44, pow10, r43
+  Move         r45, r44
+  // let scaled = (f * scale) + 0.5
+  Mul          r46, r41, r45
+  Const        r47, 0.5
+  AddFloat     r48, r46, r47
+  Move         r49, r48
+  // var n = (scaled as int)
+  Cast         r50, r49, int
+  Move         r51, r50
+  // var digits = str(n)
+  Str          r52, r51
+  Move         r53, r52
+L1:
+  // while len(digits) <= prec { digits = "0" + digits }
+  Len          r54, r53
+  LessEq       r55, r54, r42
+  JumpIfFalse  r55, L0
+  Const        r56, "0"
+  Add          r57, r56, r53
+  Move         r53, r57
+  Jump         L1
+L0:
+  // let intPart = substring(digits, 0, len(digits) - prec)
+  Const        r58, 0
+  Len          r59, r53
+  Sub          r60, r59, r42
+  Slice        r61, r53, r58, r60
+  Move         r62, r61
+  // let fracPart = substring(digits, len(digits) - prec, len(digits))
+  Len          r63, r53
+  Sub          r64, r63, r42
+  Len          r65, r53
+  Slice        r66, r53, r64, r65
+  Move         r67, r66
+  // return intPart + "." + fracPart
+  Const        r68, "."
+  Add          r69, r62, r68
+  Add          r70, r69, r67
+  Return       r70
+
+  // fun padLeft(s: string, w: int): string {
+func padLeft (regs=55)
+  // var res = ""
+  Const        r43, ""
+  Move         r44, r43
+  // var n = w - len(s)
+  Len          r45, r41
+  Sub          r46, r42, r45
+  Move         r47, r46
+L1:
+  // while n > 0 { res = res + " "; n = n - 1 }
+  Const        r48, 0
+  Less         r49, r48, r47
+  JumpIfFalse  r49, L0
+  Const        r50, " "
+  Add          r51, r44, r50
+  Move         r44, r51
+  Const        r52, 1
+  Sub          r53, r47, r52
+  Move         r47, r53
+  Jump         L1
+L0:
+  // return res + s
+  Add          r54, r44, r41
+  Return       r54
+
+  // fun repeat(ch: string, n: int): string {
+func repeat (regs=51)
+  // var s = ""
+  Const        r43, ""
+  Move         r44, r43
+  // var i = 0
+  Const        r45, 0
+  Move         r46, r45
+L1:
+  // while i < n { s = s + ch; i = i + 1 }
+  Less         r47, r46, r42
+  JumpIfFalse  r47, L0
+  Add          r48, r44, r41
+  Move         r44, r48
+  Const        r49, 1
+  AddInt       r50, r46, r49
+  Move         r46, r50
+  Jump         L1
+L0:
+  // return s
+  Return       r44
+
+  // fun toFloat(i: int): float { return i as float }
+func toFloat (regs=43)
+  // fun toFloat(i: int): float { return i as float }
+  Cast         r42, r41, float
+  Return       r42
+
+  // fun newNode(name: string, weight: int, coverage: float): map<string, any> {
+func newNode (regs=58)
+  // return {"name": name, "weight": weight, "coverage": coverage, "children": []}
+  Const        r44, "name"
+  Const        r45, "weight"
+  Const        r46, "coverage"
+  Const        r47, "children"
+  Const        r48, []
+  Move         r49, r44
+  Move         r50, r41
+  Move         r51, r45
+  Move         r52, r42
+  Move         r53, r46
+  Move         r54, r43
+  Move         r55, r47
+  Move         r56, r48
+  MakeMap      r57, 4, r49
+  Return       r57
+
+  // fun addChildren(n: map<string, any>, nodes: list<map<string, any>>) {
+func addChildren (regs=56)
+  // var cs = n["children"] as list<any>
+  Const        r43, "children"
+  Index        r44, r41, r43
+  Cast         r45, r44, [any]
+  Move         r46, r45
+  // for node in nodes {
+  IterPrep     r47, r42
+  Len          r48, r47
+  Const        r49, 0
+L1:
+  LessInt      r50, r49, r48
+  JumpIfFalse  r50, L0
+  Index        r51, r47, r49
+  Move         r52, r51
+  // cs = append(cs, node)
+  Append       r53, r46, r52
+  Move         r46, r53
+  // for node in nodes {
+  Const        r54, 1
+  AddInt       r55, r49, r54
+  Move         r49, r55
+  Jump         L1
+L0:
+  // n["children"] = cs
+  Const        r43, "children"
+  SetIndex     r41, r43, r46
+  Return       r0
+
+  // fun setCoverage(n: map<string, any>, value: float) {
+func setCoverage (regs=44)
+  // n["coverage"] = value
+  Const        r43, "coverage"
+  SetIndex     r41, r43, r42
+  Return       r0
+
+  // fun computeCoverage(n: map<string, any>): float {
+func computeCoverage (regs=81)
+  // var cs = n["children"] as list<any>
+  Const        r42, "children"
+  Index        r43, r41, r42
+  Cast         r44, r43, [any]
+  Move         r45, r44
+  // if len(cs) == 0 { return n["coverage"] as float }
+  Len          r46, r45
+  Const        r47, 0
+  EqualInt     r48, r46, r47
+  JumpIfFalse  r48, L0
+  Const        r49, "coverage"
+  Index        r50, r41, r49
+  Cast         r51, r50, float
+  Return       r51
+L0:
+  // var v1 = 0.0
+  Const        r52, 0.0
+  Move         r53, r52
+  // var v2 = 0
+  Const        r47, 0
+  Move         r54, r47
+  // for node in cs {
+  IterPrep     r55, r45
+  Len          r56, r55
+  Const        r57, 0
+L2:
+  LessInt      r58, r57, r56
+  JumpIfFalse  r58, L1
+  Index        r59, r55, r57
+  Move         r60, r59
+  // let m = node as map<string, any>
+  Cast         r61, r60, {string: any}
+  Move         r62, r61
+  // let c = computeCoverage(m)
+  Move         r63, r62
+  Call         r64, computeCoverage, r63
+  Move         r65, r64
+  // v1 = v1 + toFloat(m["weight"] as int) * c
+  Const        r67, "weight"
+  Index        r68, r62, r67
+  Cast         r69, r68, int
+  Move         r66, r69
+  Call         r70, toFloat, r66
+  Mul          r71, r70, r65
+  AddFloat     r72, r53, r71
+  Move         r53, r72
+  // v2 = v2 + (m["weight"] as int)
+  Const        r67, "weight"
+  Index        r73, r62, r67
+  Cast         r74, r73, int
+  Add          r75, r54, r74
+  Move         r54, r75
+  // for node in cs {
+  Const        r76, 1
+  AddInt       r77, r57, r76
+  Move         r57, r77
+  Jump         L2
+L1:
+  // return v1 / toFloat(v2)
+  Move         r78, r54
+  Call         r79, toFloat, r78
+  DivFloat     r80, r53, r79
+  Return       r80
+
+  // fun spaces(n: int): string { return repeat(" ", n) }
+func spaces (regs=46)
+  // fun spaces(n: int): string { return repeat(" ", n) }
+  Const        r44, " "
+  Move         r42, r44
+  Move         r43, r41
+  Call2        r45, repeat, r42, r43
+  Return       r45
+
+  // fun show(n: map<string, any>, level: int) {
+func show (regs=102)
+  // var indent = level * 4
+  Const        r43, 4
+  Mul          r44, r42, r43
+  Move         r45, r44
+  // let name = n["name"] as string
+  Const        r46, "name"
+  Index        r47, r41, r46
+  Cast         r48, r47, string
+  Move         r49, r48
+  // var nl = len(name) + indent
+  Len          r50, r49
+  Add          r51, r50, r45
+  Move         r52, r51
+  // var line = spaces(indent) + name
+  Move         r53, r45
+  Call         r54, spaces, r53
+  Add          r55, r54, r49
+  Move         r56, r55
+  // line = line + spaces(32 - nl) + "|  "
+  Const        r58, 32
+  Sub          r59, r58, r52
+  Move         r57, r59
+  Call         r60, spaces, r57
+  Add          r61, r56, r60
+  Const        r62, "|  "
+  Add          r63, r61, r62
+  Move         r56, r63
+  // line = line + padLeft(str(n["weight"] as int), 3) + "   | "
+  Const        r66, "weight"
+  Index        r67, r41, r66
+  Cast         r68, r67, int
+  Str          r69, r68
+  Move         r64, r69
+  Const        r70, 3
+  Move         r65, r70
+  Call2        r71, padLeft, r64, r65
+  Add          r72, r56, r71
+  Const        r73, "   | "
+  Add          r74, r72, r73
+  Move         r56, r74
+  // line = line + formatFloat(computeCoverage(n), 6) + " |"
+  Move         r77, r41
+  Call         r78, computeCoverage, r77
+  Move         r75, r78
+  Const        r79, 6
+  Move         r76, r79
+  Call2        r80, formatFloat, r75, r76
+  Add          r81, r56, r80
+  Const        r82, " |"
+  Add          r83, r81, r82
+  Move         r56, r83
+  // print(line)
+  Print        r56
+  // let cs = n["children"] as list<any>
+  Const        r84, "children"
+  Index        r85, r41, r84
+  Cast         r86, r85, [any]
+  Move         r87, r86
+  // for child in cs { show(child as map<string, any>, level + 1) }
+  IterPrep     r88, r87
+  Len          r89, r88
+  Const        r90, 0
+L1:
+  LessInt      r91, r90, r89
+  JumpIfFalse  r91, L0
+  Index        r92, r88, r90
+  Move         r93, r92
+  Cast         r96, r93, {string: any}
+  Move         r94, r96
+  Const        r97, 1
+  Add          r98, r42, r97
+  Move         r95, r98
+  Call2        r99, show, r94, r95
+  Const        r100, 1
+  AddInt       r101, r90, r100
+  Move         r90, r101
+  Jump         L1
+L0:
+  Return       r0
+
+  // fun main() {
+func main (regs=170)
+  // var cleaning = newNode("cleaning", 1, 0.0)
+  Const        r44, "cleaning"
+  Move         r41, r44
+  Const        r45, 1
+  Move         r42, r45
+  Const        r46, 0.0
+  Move         r43, r46
+  Call         r47, newNode, r41, r42, r43
+  Move         r48, r47
+  // addChildren(h1_bathrooms, [h1_bathroom1, h1_bathroom2, h1_outside])
+  Move         r49, r3
+  Move         r51, r13
+  Move         r52, r14
+  Move         r53, r15
+  MakeList     r54, 3, r51
+  Move         r50, r54
+  Call2        r55, addChildren, r49, r50
+  // addChildren(h1_living_rooms, [h1_lounge, h1_dining, h1_conservatory, h1_playroom])
+  Move         r56, r6
+  Move         r58, r16
+  Move         r59, r17
+  Move         r60, r18
+  Move         r61, r19
+  MakeList     r62, 4, r58
+  Move         r57, r62
+  Call2        r63, addChildren, r56, r57
+  // addChildren(house1, [h1_bedrooms, h1_bathrooms, h1_attic, h1_kitchen, h1_living_rooms, h1_basement, h1_garage, h1_garden])
+  Move         r64, r0
+  Move         r66, r2
+  Move         r67, r3
+  Move         r68, r4
+  Move         r69, r5
+  Move         r70, r6
+  Move         r71, r7
+  Move         r72, r8
+  Move         r73, r9
+  MakeList     r74, 8, r66
+  Move         r65, r74
+  Call2        r75, addChildren, r64, r65
+  // addChildren(h2_bedrooms, [h2_suite1, h2_suite2, h2_bedroom3, h2_bedroom4])
+  Move         r76, r20
+  Move         r78, r33
+  Move         r79, r34
+  Move         r80, r35
+  Move         r81, r36
+  MakeList     r82, 4, r78
+  Move         r77, r82
+  Call2        r83, addChildren, r76, r77
+  // addChildren(h2_upstairs, [h2_bedrooms, h2_bathroom, h2_toilet, h2_attics])
+  Move         r84, r10
+  Move         r86, r20
+  Move         r87, r21
+  Move         r88, r22
+  Move         r89, r23
+  MakeList     r90, 4, r86
+  Move         r85, r90
+  Call2        r91, addChildren, r84, r85
+  // addChildren(h2_living_rooms, [h2_lounge, h2_dining, h2_conservatory, h2_playroom])
+  Move         r92, r25
+  Move         r94, r37
+  Move         r95, r38
+  Move         r96, r39
+  Move         r97, r40
+  MakeList     r98, 4, r94
+  Move         r93, r98
+  Call2        r99, addChildren, r92, r93
+  // addChildren(h2_groundfloor, [h2_kitchen, h2_living_rooms, h2_wet_room, h2_garage, h2_garden, h2_hot_tub])
+  Move         r100, r11
+  Move         r102, r24
+  Move         r103, r25
+  Move         r104, r26
+  Move         r105, r27
+  Move         r106, r28
+  Move         r107, r29
+  MakeList     r108, 6, r102
+  Move         r101, r108
+  Call2        r109, addChildren, r100, r101
+  // addChildren(h2_basement, [h2_cellars, h2_wine_cellar, h2_cinema])
+  Move         r110, r12
+  Move         r112, r30
+  Move         r113, r31
+  Move         r114, r32
+  MakeList     r115, 3, r112
+  Move         r111, r115
+  Call2        r116, addChildren, r110, r111
+  // addChildren(house2, [h2_upstairs, h2_groundfloor, h2_basement])
+  Move         r117, r1
+  Move         r119, r10
+  Move         r120, r11
+  Move         r121, r12
+  MakeList     r122, 3, r119
+  Move         r118, r122
+  Call2        r123, addChildren, r117, r118
+  // addChildren(cleaning, [house1, house2])
+  Move         r124, r48
+  Move         r126, r0
+  Move         r127, r1
+  MakeList     r128, 2, r126
+  Move         r125, r128
+  Call2        r129, addChildren, r124, r125
+  // let topCoverage = computeCoverage(cleaning)
+  Move         r130, r48
+  Call         r131, computeCoverage, r130
+  Move         r132, r131
+  // print("TOP COVERAGE = " + formatFloat(topCoverage, 6))
+  Const        r133, "TOP COVERAGE = "
+  Move         r134, r132
+  Const        r136, 6
+  Move         r135, r136
+  Call2        r137, formatFloat, r134, r135
+  Add          r138, r133, r137
+  Print        r138
+  // print("")
+  Const        r139, ""
+  Print        r139
+  // print("NAME HIERARCHY                 | WEIGHT | COVERAGE |")
+  Const        r140, "NAME HIERARCHY                 | WEIGHT | COVERAGE |"
+  Print        r140
+  // show(cleaning, 0)
+  Move         r141, r48
+  Const        r143, 0
+  Move         r142, r143
+  Call2        r144, show, r141, r142
+  // setCoverage(h2_cinema, 1.0)
+  Move         r145, r32
+  Const        r147, 1.0
+  Move         r146, r147
+  Call2        r148, setCoverage, r145, r146
+  // let diff = computeCoverage(cleaning) - topCoverage
+  Move         r149, r48
+  Call         r150, computeCoverage, r149
+  Sub          r151, r150, r132
+  Move         r152, r151
+  // print("")
+  Const        r139, ""
+  Print        r139
+  // print("If the coverage of the Cinema node were increased from 0.75 to 1")
+  Const        r153, "If the coverage of the Cinema node were increased from 0.75 to 1"
+  Print        r153
+  // print("the top level coverage would increase by " + formatFloat(diff, 6) + " to " + formatFloat(topCoverage + diff, 6))
+  Const        r154, "the top level coverage would increase by "
+  Move         r155, r152
+  Const        r136, 6
+  Move         r156, r136
+  Call2        r157, formatFloat, r155, r156
+  Add          r158, r154, r157
+  Const        r159, " to "
+  Add          r160, r158, r159
+  Add          r163, r132, r152
+  Move         r161, r163
+  Const        r136, 6
+  Move         r162, r136
+  Call2        r164, formatFloat, r161, r162
+  Add          r165, r160, r164
+  Print        r165
+  // setCoverage(h2_cinema, 0.75)
+  Move         r166, r32
+  Const        r168, 0.75
+  Move         r167, r168
+  Call2        r169, setCoverage, r166, r167
+  Return       r0

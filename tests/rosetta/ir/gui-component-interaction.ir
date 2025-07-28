@@ -1,0 +1,187 @@
+func __main (regs=40)
+  // var value = 0
+  Const        r2, 0
+  Move         r0, r2
+  SetGlobal    0,0,0,0
+  // print("Value:", value)
+  Const        r3, "Value:"
+  Print2       r3, r0
+  // var done = false
+  Const        r4, false
+  Move         r1, r4
+  SetGlobal    1,1,0,0
+L2:
+  // while !done {
+  Not          r5, r1
+  JumpIfFalse  r5, L0
+  // print("i=increment, r=random, s num=set, q=quit:")
+  Const        r6, "i=increment, r=random, s num=set, q=quit:"
+  Print        r6
+  // let line = input()
+  Input        r7
+  Move         r8, r7
+  // if line == "i" {
+  Const        r9, "i"
+  Equal        r10, r8, r9
+  JumpIfFalse  r10, L1
+  // value = value + 1
+  Const        r11, 1
+  AddInt       r12, r0, r11
+  Move         r0, r12
+  SetGlobal    0,0,0,0
+  // print("Value:", value)
+  Const        r3, "Value:"
+  Print2       r3, r0
+  // if line == "i" {
+  Jump         L2
+L1:
+  // } else if line == "r" {
+  Const        r13, "r"
+  Equal        r14, r8, r13
+  JumpIfFalse  r14, L3
+  // print("Set random value? (y/n)")
+  Const        r15, "Set random value? (y/n)"
+  Print        r15
+  // let ans = input()
+  Input        r16
+  Move         r17, r16
+  // if ans == "y" {
+  Const        r18, "y"
+  Equal        r19, r17, r18
+  JumpIfFalse  r19, L2
+  // value = rand10000()
+  Call         r20, rand10000, 
+  Move         r0, r20
+  SetGlobal    0,0,0,0
+  // print("Value:", value)
+  Const        r3, "Value:"
+  Print2       r3, r0
+  // } else if line == "r" {
+  Jump         L2
+L3:
+  // } else if len(line) > 2 && line[0:2] == "s " {
+  Len          r21, r8
+  Const        r22, 2
+  LessInt      r23, r22, r21
+  Const        r2, 0
+  Move         r24, r2
+  Const        r22, 2
+  Move         r25, r22
+  Slice        r26, r8, r24, r25
+  Const        r27, "s "
+  Equal        r28, r26, r27
+  Move         r29, r23
+  JumpIfFalse  r29, L4
+  Move         r29, r28
+L4:
+  JumpIfFalse  r29, L5
+  // value = parseInt(line[2:len(line)])
+  Const        r22, 2
+  Move         r31, r22
+  Len          r33, r8
+  Move         r32, r33
+  Slice        r34, r8, r31, r32
+  Move         r30, r34
+  Call         r35, parseInt, r30
+  Move         r0, r35
+  SetGlobal    0,0,0,0
+  // print("Value:", value)
+  Const        r3, "Value:"
+  Print2       r3, r0
+  // } else if len(line) > 2 && line[0:2] == "s " {
+  Jump         L2
+L5:
+  // } else if line == "q" {
+  Const        r36, "q"
+  Equal        r37, r8, r36
+  JumpIfFalse  r37, L6
+  // done = true
+  Const        r38, true
+  Move         r1, r38
+  SetGlobal    1,1,0,0
+  // } else if line == "q" {
+  Jump         L2
+L6:
+  // print("Unknown command")
+  Const        r39, "Unknown command"
+  Print        r39
+  // while !done {
+  Jump         L2
+L0:
+  Return       r0
+
+  // fun parseInt(str: string): int {
+func parseInt (regs=32)
+  // var i = 0
+  Const        r3, 0
+  Move         r4, r3
+  // var neg = false
+  Const        r5, false
+  Move         r6, r5
+  // if len(str) > 0 && str[0:1] == "-" {
+  Len          r7, r2
+  Const        r3, 0
+  LessInt      r8, r3, r7
+  Const        r3, 0
+  Move         r9, r3
+  Const        r11, 1
+  Move         r10, r11
+  Slice        r12, r2, r9, r10
+  Const        r13, "-"
+  Equal        r14, r12, r13
+  Move         r15, r8
+  JumpIfFalse  r15, L0
+  Move         r15, r14
+L0:
+  JumpIfFalse  r15, L1
+  // neg = true
+  Const        r16, true
+  Move         r6, r16
+  // i = 1
+  Const        r11, 1
+  Move         r4, r11
+L1:
+  // var n = 0
+  Const        r3, 0
+  Move         r17, r3
+  // let digits = {
+  Const        r18, {"0": 0, "1": 1, "2": 2, "3": 3, "4": 4, "5": 5, "6": 6, "7": 7, "8": 8, "9": 9}
+  Move         r19, r18
+L3:
+  // while i < len(str) {
+  Len          r20, r2
+  LessInt      r21, r4, r20
+  JumpIfFalse  r21, L2
+  // n = n * 10 + digits[str[i:i+1]]
+  Const        r22, 10
+  MulInt       r23, r17, r22
+  Move         r24, r4
+  Const        r11, 1
+  AddInt       r26, r4, r11
+  Move         r25, r26
+  Slice        r27, r2, r24, r25
+  Index        r28, r19, r27
+  Add          r29, r23, r28
+  Move         r17, r29
+  // i = i + 1
+  Const        r11, 1
+  AddInt       r30, r4, r11
+  Move         r4, r30
+  // while i < len(str) {
+  Jump         L3
+L2:
+  // if neg { n = -n }
+  JumpIfFalse  r6, L4
+  Neg          r31, r17
+  Move         r17, r31
+L4:
+  // return n
+  Return       r17
+
+  // fun rand10000(): int {
+func rand10000 (regs=5)
+  // return now() % 10000
+  Now          r2
+  Const        r3, 10000
+  ModInt       r4, r2, r3
+  Return       r4

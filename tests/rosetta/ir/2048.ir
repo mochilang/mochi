@@ -1,4 +1,4 @@
-func main (regs=104)
+func __main (regs=104)
   // let SIZE = 4
   Const        r5, 4
   Move         r0, r5

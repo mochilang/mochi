@@ -1,0 +1,14 @@
+func __main (regs=1)
+  Return       r0
+
+  // fun a() {
+func a (regs=1)
+  Return       r0
+
+  // fun b(x: int, y: int) {
+func b (regs=2)
+  Return       r0
+
+  // fun c(nums: list<int>) {
+func c (regs=1)
+  Return       r0

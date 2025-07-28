@@ -1,0 +1,181 @@
+func __main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun step(n: bigint, program: list<list<bigint>>): StepResult {
+func step (regs=34)
+  // var i = 0
+  Const        r2, 0
+  Move         r3, r2
+L2:
+  // while i < len(program) {
+  Len          r4, r1
+  LessInt      r5, r3, r4
+  JumpIfFalse  r5, L0
+  // let num = program[i][0]
+  Index        r6, r1, r3
+  Const        r2, 0
+  Index        r7, r6, r2
+  Move         r8, r7
+  // let den = program[i][1]
+  Index        r9, r1, r3
+  Const        r10, 1
+  Index        r11, r9, r10
+  Move         r12, r11
+  // if n % den == 0 as bigint {
+  Mod          r13, r0, r12
+  Const        r2, 0
+  Equal        r14, r13, r2
+  JumpIfFalse  r14, L1
+  // n = (n / den) * num
+  Div          r15, r0, r12
+  Mul          r16, r15, r8
+  Move         r0, r16
+  // return StepResult{ n: n, ok: true }
+  Const        r17, true
+  Const        r18, "__name"
+  Const        r19, "StepResult"
+  Const        r20, "n"
+  Move         r21, r0
+  Const        r22, "ok"
+  Move         r23, r17
+  MakeMap      r24, 3, r18
+  Return       r24
+L1:
+  // i = i + 1
+  Const        r10, 1
+  AddInt       r25, r3, r10
+  Move         r3, r25
+  // while i < len(program) {
+  Jump         L2
+L0:
+  // return StepResult{ n: n, ok: false }
+  Const        r26, false
+  Const        r27, "__name"
+  Const        r28, "StepResult"
+  Const        r29, "n"
+  Move         r30, r0
+  Const        r31, "ok"
+  Move         r32, r26
+  MakeMap      r33, 3, r27
+  Return       r33
+
+  // fun main() {
+func main (regs=46)
+  // let program: list<list<bigint>> = [
+  Const        r0, [[17, 91], [78, 85], [19, 51], [23, 38], [29, 33], [77, 29], [95, 23], [77, 19], [1, 17], [11, 13], [13, 11], [15, 14], [15, 2], [55, 1]]
+  Move         r1, r0
+  // var n: bigint = 2
+  Const        r2, 2
+  Move         r3, r2
+  // var primes = 0
+  Const        r4, 0
+  Move         r5, r4
+  // var count = 0
+  Const        r4, 0
+  Move         r6, r4
+  // let limit = 1000000
+  Const        r7, 1000000
+  Move         r8, r7
+  // let two: bigint = 2
+  Const        r2, 2
+  Move         r9, r2
+  // var line = ""
+  Const        r10, ""
+  Move         r11, r10
+L7:
+  // while primes < 20 && count < limit {
+  Const        r12, 20
+  LessInt      r13, r5, r12
+  LessInt      r14, r6, r8
+  Move         r15, r13
+  JumpIfFalse  r15, L0
+  Move         r15, r14
+L0:
+  JumpIfFalse  r15, L1
+  // let res = step(n, program)
+  Move         r16, r3
+  Move         r17, r1
+  Call2        r18, step, r16, r17
+  Move         r19, r18
+  // n = res.n
+  Const        r20, "n"
+  Index        r21, r19, r20
+  Move         r3, r21
+  // if !res.ok { break }
+  Const        r22, "ok"
+  Index        r23, r19, r22
+  Not          r24, r23
+  JumpIfFalse  r24, L2
+  Jump         L1
+L2:
+  // var m = n
+  Move         r25, r3
+  // var pow = 0
+  Const        r4, 0
+  Move         r26, r4
+L4:
+  // while m % two == 0 as bigint {
+  Mod          r27, r25, r9
+  Const        r4, 0
+  Equal        r28, r27, r4
+  JumpIfFalse  r28, L3
+  // m = m / two
+  Div          r29, r25, r9
+  Move         r25, r29
+  // pow = pow + 1
+  Const        r30, 1
+  AddInt       r31, r26, r30
+  Move         r26, r31
+  // while m % two == 0 as bigint {
+  Jump         L4
+L3:
+  // if m == 1 as bigint && pow > 1 {
+  Const        r30, 1
+  LessInt      r32, r30, r26
+  Const        r30, 1
+  Equal        r33, r25, r30
+  Move         r34, r33
+  JumpIfFalse  r34, L5
+  Move         r34, r32
+L5:
+  JumpIfFalse  r34, L6
+  // line = line + str(pow) + " "
+  Str          r35, r26
+  Add          r36, r11, r35
+  Const        r37, " "
+  Add          r38, r36, r37
+  Move         r11, r38
+  // primes = primes + 1
+  Const        r30, 1
+  AddInt       r39, r5, r30
+  Move         r5, r39
+L6:
+  // count = count + 1
+  Const        r30, 1
+  AddInt       r40, r6, r30
+  Move         r6, r40
+  // while primes < 20 && count < limit {
+  Jump         L7
+L1:
+  // if len(line) > 0 {
+  Len          r41, r11
+  Const        r4, 0
+  LessInt      r42, r4, r41
+  JumpIfFalse  r42, L8
+  // print(substring(line, 0, len(line)-1))
+  Const        r4, 0
+  Len          r43, r11
+  Const        r30, 1
+  SubInt       r44, r43, r30
+  Slice        r45, r11, r4, r44
+  Print        r45
+  // if len(line) > 0 {
+  Jump         L9
+L8:
+  // print("")
+  Const        r10, ""
+  Print        r10
+L9:
+  Return       r0

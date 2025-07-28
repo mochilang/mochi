@@ -1,0 +1,207 @@
+func __main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun xor(a: bool, b: bool): bool { return (a && (!b)) || ((!a) && b) }
+func xor (regs=7)
+  // fun xor(a: bool, b: bool): bool { return (a && (!b)) || ((!a) && b) }
+  Move         r2, r0
+  JumpIfFalse  r2, L0
+  Not          r3, r1
+  Move         r2, r3
+L0:
+  Move         r4, r2
+  JumpIfTrue   r4, L1
+  Not          r5, r0
+  Move         r6, r5
+  JumpIfFalse  r6, L2
+  Move         r6, r1
+L2:
+  Move         r4, r6
+L1:
+  Return       r4
+
+  // fun ha(a: bool, b: bool): SumCarry {
+func ha (regs=13)
+  // return SumCarry{ s: xor(a,b), c: a && b }
+  Move         r2, r0
+  Move         r3, r1
+  Call2        r4, xor, r2, r3
+  Move         r5, r0
+  JumpIfFalse  r5, L0
+  Move         r5, r1
+L0:
+  Const        r6, "__name"
+  Const        r7, "SumCarry"
+  Const        r8, "s"
+  Move         r9, r4
+  Const        r10, "c"
+  Move         r11, r5
+  MakeMap      r12, 3, r6
+  Return       r12
+
+  // fun fa(a: bool, b: bool, c0: bool): SumCarry {
+func fa (regs=25)
+  // let r1 = ha(a, c0)
+  Move         r3, r0
+  Move         r4, r2
+  Call2        r5, ha, r3, r4
+  Move         r6, r5
+  // let r2 = ha(r1.s, b)
+  Const        r9, "s"
+  Index        r10, r6, r9
+  Move         r7, r10
+  Move         r8, r1
+  Call2        r11, ha, r7, r8
+  Move         r12, r11
+  // return SumCarry{ s: r2.s, c: r1.c || r2.c }
+  Const        r9, "s"
+  Index        r13, r12, r9
+  Const        r14, "c"
+  Index        r15, r6, r14
+  Move         r16, r15
+  JumpIfTrue   r16, L0
+  Const        r14, "c"
+  Index        r17, r12, r14
+  Move         r16, r17
+L0:
+  Const        r18, "__name"
+  Const        r19, "SumCarry"
+  Const        r20, "s"
+  Move         r21, r13
+  Const        r22, "c"
+  Move         r23, r16
+  MakeMap      r24, 3, r18
+  Return       r24
+
+  // fun add4(a3: bool, a2: bool, a1: bool, a0: bool,
+func add4 (regs=52)
+  // let r0 = fa(a0, b0, false)
+  Move         r8, r3
+  Move         r9, r7
+  Const        r11, false
+  Move         r10, r11
+  Call         r12, fa, r8, r9, r10
+  Move         r13, r12
+  // let r1 = fa(a1, b1, r0.c)
+  Move         r14, r2
+  Move         r15, r6
+  Const        r17, "c"
+  Index        r18, r13, r17
+  Move         r16, r18
+  Call         r19, fa, r14, r15, r16
+  Move         r20, r19
+  // let r2 = fa(a2, b2, r1.c)
+  Move         r21, r1
+  Move         r22, r5
+  Const        r17, "c"
+  Index        r24, r20, r17
+  Move         r23, r24
+  Call         r25, fa, r21, r22, r23
+  Move         r26, r25
+  // let r3 = fa(a3, b3, r2.c)
+  Move         r27, r0
+  Move         r28, r4
+  Const        r17, "c"
+  Index        r30, r26, r17
+  Move         r29, r30
+  Call         r31, fa, r27, r28, r29
+  Move         r32, r31
+  // return Add4Result{ v: r3.c, s3: r3.s, s2: r2.s, s1: r1.s, s0: r0.s }
+  Const        r17, "c"
+  Index        r33, r32, r17
+  Const        r34, "s"
+  Index        r35, r32, r34
+  Const        r34, "s"
+  Index        r36, r26, r34
+  Const        r34, "s"
+  Index        r37, r20, r34
+  Const        r34, "s"
+  Index        r38, r13, r34
+  Const        r39, "__name"
+  Const        r40, "Add4Result"
+  Const        r41, "v"
+  Move         r42, r33
+  Const        r43, "s3"
+  Move         r44, r35
+  Const        r45, "s2"
+  Move         r46, r36
+  Const        r47, "s1"
+  Move         r48, r37
+  Const        r49, "s0"
+  Move         r50, r38
+  MakeMap      r51, 6, r39
+  Return       r51
+
+  // fun b2i(b: bool): int { if b { return 1 } return 0 }
+func b2i (regs=3)
+  // fun b2i(b: bool): int { if b { return 1 } return 0 }
+  JumpIfFalse  r0, L0
+  Const        r1, 1
+  Return       r1
+L0:
+  Const        r2, 0
+  Return       r2
+
+  // fun main() {
+func main (regs=46)
+  // let r = add4(true, false, true, false, true, false, false, true)
+  Const        r8, true
+  Move         r0, r8
+  Const        r9, false
+  Move         r1, r9
+  Const        r8, true
+  Move         r2, r8
+  Const        r9, false
+  Move         r3, r9
+  Const        r8, true
+  Move         r4, r8
+  Const        r9, false
+  Move         r5, r9
+  Const        r9, false
+  Move         r6, r9
+  Const        r8, true
+  Move         r7, r8
+  Call         r10, add4, r0, r1, r2, r3, r4, r5, r6, r7
+  Move         r11, r10
+  // print(str(b2i(r.v)) + " " + str(b2i(r.s3)) + " " + str(b2i(r.s2)) + " " + str(b2i(r.s1)) + " " + str(b2i(r.s0)))
+  Const        r13, "v"
+  Index        r14, r11, r13
+  Move         r12, r14
+  Call         r15, b2i, r12
+  Str          r16, r15
+  Const        r17, " "
+  Add          r18, r16, r17
+  Const        r20, "s3"
+  Index        r21, r11, r20
+  Move         r19, r21
+  Call         r22, b2i, r19
+  Str          r23, r22
+  Add          r24, r18, r23
+  Const        r17, " "
+  Add          r25, r24, r17
+  Const        r27, "s2"
+  Index        r28, r11, r27
+  Move         r26, r28
+  Call         r29, b2i, r26
+  Str          r30, r29
+  Add          r31, r25, r30
+  Const        r17, " "
+  Add          r32, r31, r17
+  Const        r34, "s1"
+  Index        r35, r11, r34
+  Move         r33, r35
+  Call         r36, b2i, r33
+  Str          r37, r36
+  Add          r38, r32, r37
+  Const        r17, " "
+  Add          r39, r38, r17
+  Const        r41, "s0"
+  Index        r42, r11, r41
+  Move         r40, r42
+  Call         r43, b2i, r40
+  Str          r44, r43
+  Add          r45, r39, r44
+  Print        r45
+  Return       r0

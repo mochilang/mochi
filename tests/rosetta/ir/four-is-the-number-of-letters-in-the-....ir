@@ -1,0 +1,669 @@
+func __main (regs=13)
+  // let small = [
+  Const        r6, ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen"]
+  Move         r0, r6
+  SetGlobal    0,0,0,0
+  // let tens = [
+  Const        r7, ["", "", "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety"]
+  Move         r1, r7
+  SetGlobal    1,1,0,0
+  // let smallOrd = [
+  Const        r8, ["zeroth", "first", "second", "third", "fourth", "fifth", "sixth", "seventh", "eighth", "ninth", "tenth", "eleventh", "twelfth", "thirteenth", "fourteenth", "fifteenth", "sixteenth", "seventeenth", "eighteenth", "nineteenth"]
+  Move         r2, r8
+  SetGlobal    2,2,0,0
+  // let tensOrd = [
+  Const        r9, ["", "", "twentieth", "thirtieth", "fortieth", "fiftieth", "sixtieth", "seventieth", "eightieth", "ninetieth"]
+  Move         r3, r9
+  SetGlobal    3,3,0,0
+  // var words: list<string> = [
+  Const        r10, ["Four", "is", "the", "number", "of", "letters", "in", "the", "first", "word", "of", "this", "sentence,"]
+  Move         r4, r10
+  SetGlobal    4,4,0,0
+  // var idx = 0
+  Const        r11, 0
+  Move         r5, r11
+  SetGlobal    5,5,0,0
+  // main()
+  Call         r12, main, 
+  Return       r0
+
+  // fun say(n: int): string {
+func say (regs=68)
+  // if n < 20 { return small[n] }
+  Const        r7, 20
+  Less         r8, r6, r7
+  JumpIfFalse  r8, L0
+  Index        r9, r0, r6
+  Return       r9
+L0:
+  // if n < 100 {
+  Const        r10, 100
+  Less         r11, r6, r10
+  JumpIfFalse  r11, L1
+  // var res = tens[n / 10]
+  Const        r12, 10
+  Div          r13, r6, r12
+  Index        r14, r1, r13
+  Move         r15, r14
+  // let m = n % 10
+  Const        r12, 10
+  Mod          r16, r6, r12
+  Move         r17, r16
+  // if m != 0 { res = res + "-" + small[m] }
+  Const        r18, 0
+  NotEqual     r19, r17, r18
+  JumpIfFalse  r19, L2
+  Const        r20, "-"
+  Add          r21, r15, r20
+  Index        r22, r0, r17
+  Add          r23, r21, r22
+  Move         r15, r23
+L2:
+  // return res
+  Return       r15
+L1:
+  // if n < 1000 {
+  Const        r24, 1000
+  Less         r25, r6, r24
+  JumpIfFalse  r25, L3
+  // var res = say(n / 100) + " hundred"
+  Const        r10, 100
+  Div          r27, r6, r10
+  Move         r26, r27
+  Call         r28, say, r26
+  Const        r29, " hundred"
+  Add          r30, r28, r29
+  Move         r31, r30
+  // let m = n % 100
+  Const        r10, 100
+  Mod          r32, r6, r10
+  Move         r33, r32
+  // if m != 0 { res = res + " " + say(m) }
+  Const        r18, 0
+  NotEqual     r34, r33, r18
+  JumpIfFalse  r34, L4
+  Const        r35, " "
+  Add          r36, r31, r35
+  Move         r37, r33
+  Call         r38, say, r37
+  Add          r39, r36, r38
+  Move         r31, r39
+L4:
+  // return res
+  Return       r31
+L3:
+  // if n < 1000000 {
+  Const        r40, 1000000
+  Less         r41, r6, r40
+  JumpIfFalse  r41, L5
+  // var res = say(n / 1000) + " thousand"
+  Const        r24, 1000
+  Div          r43, r6, r24
+  Move         r42, r43
+  Call         r44, say, r42
+  Const        r45, " thousand"
+  Add          r46, r44, r45
+  Move         r47, r46
+  // let m = n % 1000
+  Const        r24, 1000
+  Mod          r48, r6, r24
+  Move         r49, r48
+  // if m != 0 { res = res + " " + say(m) }
+  Const        r18, 0
+  NotEqual     r50, r49, r18
+  JumpIfFalse  r50, L6
+  Const        r35, " "
+  Add          r51, r47, r35
+  Move         r52, r49
+  Call         r53, say, r52
+  Add          r54, r51, r53
+  Move         r47, r54
+L6:
+  // return res
+  Return       r47
+L5:
+  // var res = say(n / 1000000) + " million"
+  Const        r40, 1000000
+  Div          r56, r6, r40
+  Move         r55, r56
+  Call         r57, say, r55
+  Const        r58, " million"
+  Add          r59, r57, r58
+  Move         r60, r59
+  // let m = n % 1000000
+  Const        r40, 1000000
+  Mod          r61, r6, r40
+  Move         r62, r61
+  // if m != 0 { res = res + " " + say(m) }
+  Const        r18, 0
+  NotEqual     r63, r62, r18
+  JumpIfFalse  r63, L7
+  Const        r35, " "
+  Add          r64, r60, r35
+  Move         r65, r62
+  Call         r66, say, r65
+  Add          r67, r64, r66
+  Move         r60, r67
+L7:
+  // return res
+  Return       r60
+
+  // fun sayOrdinal(n: int): string {
+func sayOrdinal (regs=79)
+  // if n < 20 { return smallOrd[n] }
+  Const        r7, 20
+  Less         r8, r6, r7
+  JumpIfFalse  r8, L0
+  Index        r9, r2, r6
+  Return       r9
+L0:
+  // if n < 100 {
+  Const        r10, 100
+  Less         r11, r6, r10
+  JumpIfFalse  r11, L1
+  // if n % 10 == 0 { return tensOrd[n / 10] }
+  Const        r12, 10
+  Mod          r13, r6, r12
+  Const        r14, 0
+  Equal        r15, r13, r14
+  JumpIfFalse  r15, L2
+  Const        r12, 10
+  Div          r16, r6, r12
+  Index        r17, r3, r16
+  Return       r17
+L2:
+  // return say(n - n % 10) + "-" + smallOrd[n % 10]
+  Const        r12, 10
+  Mod          r19, r6, r12
+  Sub          r20, r6, r19
+  Move         r18, r20
+  Call         r21, say, r18
+  Const        r22, "-"
+  Add          r23, r21, r22
+  Const        r12, 10
+  Mod          r24, r6, r12
+  Index        r25, r2, r24
+  Add          r26, r23, r25
+  Return       r26
+L1:
+  // if n < 1000 {
+  Const        r27, 1000
+  Less         r28, r6, r27
+  JumpIfFalse  r28, L3
+  // if n % 100 == 0 { return say(n / 100) + " hundredth" }
+  Const        r10, 100
+  Mod          r29, r6, r10
+  Const        r14, 0
+  Equal        r30, r29, r14
+  JumpIfFalse  r30, L4
+  Const        r10, 100
+  Div          r32, r6, r10
+  Move         r31, r32
+  Call         r33, say, r31
+  Const        r34, " hundredth"
+  Add          r35, r33, r34
+  Return       r35
+L4:
+  // return say(n / 100) + " hundred " + sayOrdinal(n % 100)
+  Const        r10, 100
+  Div          r37, r6, r10
+  Move         r36, r37
+  Call         r38, say, r36
+  Const        r39, " hundred "
+  Add          r40, r38, r39
+  Const        r10, 100
+  Mod          r42, r6, r10
+  Move         r41, r42
+  Call         r43, sayOrdinal, r41
+  Add          r44, r40, r43
+  Return       r44
+L3:
+  // if n < 1000000 {
+  Const        r45, 1000000
+  Less         r46, r6, r45
+  JumpIfFalse  r46, L5
+  // if n % 1000 == 0 { return say(n / 1000) + " thousandth" }
+  Const        r27, 1000
+  Mod          r47, r6, r27
+  Const        r14, 0
+  Equal        r48, r47, r14
+  JumpIfFalse  r48, L6
+  Const        r27, 1000
+  Div          r50, r6, r27
+  Move         r49, r50
+  Call         r51, say, r49
+  Const        r52, " thousandth"
+  Add          r53, r51, r52
+  Return       r53
+L6:
+  // return say(n / 1000) + " thousand " + sayOrdinal(n % 1000)
+  Const        r27, 1000
+  Div          r55, r6, r27
+  Move         r54, r55
+  Call         r56, say, r54
+  Const        r57, " thousand "
+  Add          r58, r56, r57
+  Const        r27, 1000
+  Mod          r60, r6, r27
+  Move         r59, r60
+  Call         r61, sayOrdinal, r59
+  Add          r62, r58, r61
+  Return       r62
+L5:
+  // if n % 1000000 == 0 { return say(n / 1000000) + " millionth" }
+  Const        r45, 1000000
+  Mod          r63, r6, r45
+  Const        r14, 0
+  Equal        r64, r63, r14
+  JumpIfFalse  r64, L7
+  Const        r45, 1000000
+  Div          r66, r6, r45
+  Move         r65, r66
+  Call         r67, say, r65
+  Const        r68, " millionth"
+  Add          r69, r67, r68
+  Return       r69
+L7:
+  // return say(n / 1000000) + " million " + sayOrdinal(n % 1000000)
+  Const        r45, 1000000
+  Div          r71, r6, r45
+  Move         r70, r71
+  Call         r72, say, r70
+  Const        r73, " million "
+  Add          r74, r72, r73
+  Const        r45, 1000000
+  Mod          r76, r6, r45
+  Move         r75, r76
+  Call         r77, sayOrdinal, r75
+  Add          r78, r74, r77
+  Return       r78
+
+  // fun split(s: string, sep: string): list<string> {
+func split (regs=36)
+  // var parts: list<string> = []
+  Const        r8, []
+  Move         r9, r8
+  // var cur = ""
+  Const        r10, ""
+  Move         r11, r10
+  // var i = 0
+  Const        r12, 0
+  Move         r13, r12
+L3:
+  // while i < len(s) {
+  Len          r14, r6
+  LessInt      r15, r13, r14
+  JumpIfFalse  r15, L0
+  // if len(sep) > 0 && i + len(sep) <= len(s) && substring(s, i, i+len(sep)) == sep {
+  Len          r16, r7
+  Len          r17, r7
+  AddInt       r18, r13, r17
+  Const        r12, 0
+  LessInt      r19, r12, r16
+  Len          r20, r6
+  LessEqInt    r21, r18, r20
+  Len          r22, r7
+  AddInt       r23, r13, r22
+  Slice        r24, r6, r13, r23
+  Equal        r25, r24, r7
+  Move         r26, r19
+  JumpIfFalse  r26, L1
+  Move         r26, r21
+  JumpIfFalse  r26, L1
+  Move         r26, r25
+L1:
+  JumpIfFalse  r26, L2
+  // parts = append(parts, cur)
+  Append       r27, r9, r11
+  Move         r9, r27
+  // cur = ""
+  Const        r10, ""
+  Move         r11, r10
+  // i = i + len(sep)
+  Len          r28, r7
+  AddInt       r29, r13, r28
+  Move         r13, r29
+  // if len(sep) > 0 && i + len(sep) <= len(s) && substring(s, i, i+len(sep)) == sep {
+  Jump         L3
+L2:
+  // cur = cur + substring(s, i, i+1)
+  Const        r30, 1
+  AddInt       r31, r13, r30
+  Slice        r32, r6, r13, r31
+  Add          r33, r11, r32
+  Move         r11, r33
+  // i = i + 1
+  Const        r30, 1
+  AddInt       r34, r13, r30
+  Move         r13, r34
+  // while i < len(s) {
+  Jump         L3
+L0:
+  // parts = append(parts, cur)
+  Append       r35, r9, r11
+  Move         r9, r35
+  // return parts
+  Return       r9
+
+  // fun countLetters(s: string): int {
+func countLetters (regs=29)
+  // var cnt = 0
+  Const        r7, 0
+  Move         r8, r7
+  // var i = 0
+  Const        r7, 0
+  Move         r9, r7
+L5:
+  // while i < len(s) {
+  Len          r10, r6
+  LessInt      r11, r9, r10
+  JumpIfFalse  r11, L0
+  // let ch = substring(s, i, i+1)
+  Const        r12, 1
+  AddInt       r13, r9, r12
+  Slice        r14, r6, r9, r13
+  Move         r15, r14
+  // if ch >= "A" && ch <= "Z" || ch >= "a" && ch <= "z" { cnt = cnt + 1 }
+  Const        r16, "A"
+  LessEq       r17, r16, r15
+  Const        r18, "Z"
+  LessEq       r19, r15, r18
+  Const        r20, "a"
+  LessEq       r21, r20, r15
+  Const        r22, "z"
+  LessEq       r23, r15, r22
+  Move         r24, r17
+  JumpIfFalse  r24, L1
+  Move         r24, r19
+L1:
+  Move         r25, r21
+  JumpIfFalse  r25, L2
+  Move         r25, r23
+L2:
+  Move         r26, r24
+  JumpIfTrue   r26, L3
+  Move         r26, r25
+L3:
+  JumpIfFalse  r26, L4
+  Const        r12, 1
+  AddInt       r27, r8, r12
+  Move         r8, r27
+L4:
+  // i = i + 1
+  Const        r12, 1
+  AddInt       r28, r9, r12
+  Move         r9, r28
+  // while i < len(s) {
+  Jump         L5
+L0:
+  // return cnt
+  Return       r8
+
+  // fun wordLen(w: int): list<any> {
+func wordLen (regs=54)
+L3:
+  // while len(words) < w {
+  Len          r7, r4
+  Less         r8, r7, r6
+  JumpIfFalse  r8, L0
+  // idx = idx + 1
+  Const        r9, 1
+  Add          r10, r5, r9
+  Move         r5, r10
+  SetGlobal    5,5,0,0
+  // let n = countLetters(words[idx])
+  Index        r12, r4, r5
+  Move         r11, r12
+  Call         r13, countLetters, r11
+  Move         r14, r13
+  // var parts = split(say(n), " ")
+  Move         r17, r14
+  Call         r18, say, r17
+  Move         r15, r18
+  Const        r19, " "
+  Move         r16, r19
+  Call2        r20, split, r15, r16
+  Move         r21, r20
+  // var j = 0
+  Const        r22, 0
+  Move         r23, r22
+L2:
+  // while j < len(parts) { words = append(words, parts[j]); j = j + 1 }
+  Len          r24, r21
+  LessInt      r25, r23, r24
+  JumpIfFalse  r25, L1
+  Index        r26, r21, r23
+  Append       r27, r4, r26
+  Move         r4, r27
+  SetGlobal    4,4,0,0
+  Const        r9, 1
+  AddInt       r28, r23, r9
+  Move         r23, r28
+  Jump         L2
+L1:
+  // words = append(words, "in")
+  Const        r29, "in"
+  Append       r30, r4, r29
+  Move         r4, r30
+  SetGlobal    4,4,0,0
+  // words = append(words, "the")
+  Const        r31, "the"
+  Append       r32, r4, r31
+  Move         r4, r32
+  SetGlobal    4,4,0,0
+  // parts = split(sayOrdinal(idx + 1) + ",", " ")
+  Const        r9, 1
+  Add          r36, r5, r9
+  Move         r35, r36
+  Call         r37, sayOrdinal, r35
+  Const        r38, ","
+  Add          r39, r37, r38
+  Move         r33, r39
+  Const        r19, " "
+  Move         r34, r19
+  Call2        r40, split, r33, r34
+  Move         r21, r40
+  // j = 0
+  Const        r22, 0
+  Move         r23, r22
+L4:
+  // while j < len(parts) { words = append(words, parts[j]); j = j + 1 }
+  Len          r41, r21
+  LessInt      r42, r23, r41
+  JumpIfFalse  r42, L3
+  Index        r43, r21, r23
+  Append       r44, r4, r43
+  Move         r4, r44
+  SetGlobal    4,4,0,0
+  Const        r9, 1
+  AddInt       r45, r23, r9
+  Move         r23, r45
+  Jump         L4
+L0:
+  // let word = words[w - 1]
+  Const        r9, 1
+  Sub          r46, r6, r9
+  Index        r47, r4, r46
+  Move         r48, r47
+  // return [word, countLetters(word)]
+  Move         r49, r48
+  Move         r51, r48
+  Call         r52, countLetters, r51
+  Move         r50, r52
+  MakeList     r53, 2, r49
+  Return       r53
+
+  // fun totalLength(): int {
+func totalLength (regs=20)
+  // var tot = 0
+  Const        r6, 0
+  Move         r7, r6
+  // var i = 0
+  Const        r6, 0
+  Move         r8, r6
+L2:
+  // while i < len(words) {
+  Len          r9, r4
+  LessInt      r10, r8, r9
+  JumpIfFalse  r10, L0
+  // tot = tot + len(words[i])
+  Index        r11, r4, r8
+  Len          r12, r11
+  AddInt       r13, r7, r12
+  Move         r7, r13
+  // if i < len(words) - 1 { tot = tot + 1 }
+  Len          r14, r4
+  Const        r15, 1
+  SubInt       r16, r14, r15
+  LessInt      r17, r8, r16
+  JumpIfFalse  r17, L1
+  Const        r15, 1
+  AddInt       r18, r7, r15
+  Move         r7, r18
+L1:
+  // i = i + 1
+  Const        r15, 1
+  AddInt       r19, r8, r15
+  Move         r8, r19
+  // while i < len(words) {
+  Jump         L2
+L0:
+  // return tot
+  Return       r7
+
+  // fun pad(n: int, width: int): string {
+func pad (regs=14)
+  // var s = str(n)
+  Str          r8, r6
+  Move         r9, r8
+L1:
+  // while len(s) < width { s = " " + s }
+  Len          r10, r9
+  Less         r11, r10, r7
+  JumpIfFalse  r11, L0
+  Const        r12, " "
+  Add          r13, r12, r9
+  Move         r9, r13
+  Jump         L1
+L0:
+  // return s
+  Return       r9
+
+  // fun main() {
+func main (regs=75)
+  // print("The lengths of the first 201 words are:")
+  Const        r6, "The lengths of the first 201 words are:"
+  Print        r6
+  // var line = ""
+  Const        r7, ""
+  Move         r8, r7
+  // var i = 1
+  Const        r9, 1
+  Move         r10, r9
+L3:
+  // while i <= 201 {
+  Const        r11, 201
+  LessEqInt    r12, r10, r11
+  JumpIfFalse  r12, L0
+  // if i % 25 == 1 {
+  Const        r13, 25
+  ModInt       r14, r10, r13
+  Const        r9, 1
+  EqualInt     r15, r14, r9
+  JumpIfFalse  r15, L1
+  // if i != 1 { print(line) }
+  Const        r9, 1
+  NotEqual     r16, r10, r9
+  JumpIfFalse  r16, L2
+  Print        r8
+L2:
+  // line = pad(i, 3) + ":"
+  Move         r17, r10
+  Const        r19, 3
+  Move         r18, r19
+  Call2        r20, pad, r17, r18
+  Const        r21, ":"
+  Add          r22, r20, r21
+  Move         r8, r22
+L1:
+  // let r = wordLen(i)
+  Move         r23, r10
+  Call         r24, wordLen, r23
+  Move         r25, r24
+  // let n = r[1]
+  Const        r9, 1
+  Index        r26, r25, r9
+  Move         r27, r26
+  // line = line + " " + pad(n, 2)
+  Const        r28, " "
+  Add          r29, r8, r28
+  Move         r30, r27
+  Const        r32, 2
+  Move         r31, r32
+  Call2        r33, pad, r30, r31
+  Add          r34, r29, r33
+  Move         r8, r34
+  // i = i + 1
+  Const        r9, 1
+  AddInt       r35, r10, r9
+  Move         r10, r35
+  // while i <= 201 {
+  Jump         L3
+L0:
+  // print(line)
+  Print        r8
+  // print("Length of sentence so far: " + str(totalLength()))
+  Const        r36, "Length of sentence so far: "
+  Call         r37, totalLength, 
+  Str          r38, r37
+  Add          r39, r36, r38
+  Print        r39
+  // for n in [1000, 10000, 100000, 1000000, 10000000] {
+  Const        r40, [1000, 10000, 100000, 1000000, 10000000]
+  IterPrep     r41, r40
+  Len          r42, r41
+  Const        r43, 0
+L5:
+  LessInt      r44, r43, r42
+  JumpIfFalse  r44, L4
+  Index        r45, r41, r43
+  Move         r46, r45
+  // let r = wordLen(n)
+  Move         r47, r46
+  Call         r48, wordLen, r47
+  Move         r49, r48
+  // let w = r[0]
+  Const        r50, 0
+  Index        r51, r49, r50
+  Move         r52, r51
+  // let l = r[1]
+  Const        r9, 1
+  Index        r53, r49, r9
+  Move         r54, r53
+  // print("Word " + pad(n, 8) + " is \"" + w + "\", with " + str(l) + " letters.  Length of sentence so far: " + str(totalLength()))
+  Const        r55, "Word "
+  Move         r56, r46
+  Const        r58, 8
+  Move         r57, r58
+  Call2        r59, pad, r56, r57
+  Add          r60, r55, r59
+  Const        r61, " is \""
+  Add          r62, r60, r61
+  Add          r63, r62, r52
+  Const        r64, "\", with "
+  Add          r65, r63, r64
+  Str          r66, r54
+  Add          r67, r65, r66
+  Const        r68, " letters.  Length of sentence so far: "
+  Add          r69, r67, r68
+  Call         r70, totalLength, 
+  Str          r71, r70
+  Add          r72, r69, r71
+  Print        r72
+  // for n in [1000, 10000, 100000, 1000000, 10000000] {
+  Const        r73, 1
+  AddInt       r74, r43, r73
+  Move         r43, r74
+  Jump         L5
+L4:
+  Return       r0

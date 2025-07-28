@@ -1,0 +1,89 @@
+func __main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun maximize(s: Screen, win: Window): Window {
+func maximize (regs=8)
+  // win.w = s.w
+  Const        r2, "w"
+  Index        r3, r0, r2
+  Const        r2, "w"
+  SetIndex     r1, r2, r3
+  // win.h = s.h
+  Const        r4, "h"
+  Index        r5, r0, r4
+  Const        r4, "h"
+  SetIndex     r1, r4, r5
+  // win.maximized = true
+  Const        r6, true
+  Const        r7, "maximized"
+  SetIndex     r1, r7, r6
+  // return win
+  Return       r1
+
+  // fun main() {
+func main (regs=50)
+  // let screen = Screen{ w: 1920, h: 1080 }
+  Const        r0, 1920
+  Const        r1, 1080
+  Const        r2, "__name"
+  Const        r3, "Screen"
+  Const        r4, "w"
+  Move         r5, r0
+  Const        r6, "h"
+  Move         r7, r1
+  MakeMap      r8, 3, r2
+  Move         r9, r8
+  // print("Screen size: " + str(screen.w) + " x " + str(screen.h))
+  Const        r10, "Screen size: "
+  Const        r11, "w"
+  Index        r12, r9, r11
+  Str          r13, r12
+  Add          r14, r10, r13
+  Const        r15, " x "
+  Add          r16, r14, r15
+  Const        r17, "h"
+  Index        r18, r9, r17
+  Str          r19, r18
+  Add          r20, r16, r19
+  Print        r20
+  // var win = Window{ x: 50, y: 50, w: 800, h: 600, maximized: false }
+  Const        r21, 50
+  Const        r21, 50
+  Const        r22, 800
+  Const        r23, 600
+  Const        r24, false
+  Const        r25, "__name"
+  Const        r26, "Window"
+  Const        r27, "x"
+  Move         r28, r21
+  Const        r29, "y"
+  Move         r30, r21
+  Const        r31, "w"
+  Move         r32, r22
+  Const        r33, "h"
+  Move         r34, r23
+  Const        r35, "maximized"
+  Move         r36, r24
+  MakeMap      r37, 6, r25
+  Move         r38, r37
+  // win = maximize(screen, win)
+  Move         r39, r9
+  Move         r40, r38
+  Call2        r41, maximize, r39, r40
+  Move         r38, r41
+  // print("Max usable : " + str(win.w) + " x " + str(win.h))
+  Const        r42, "Max usable : "
+  Const        r11, "w"
+  Index        r43, r38, r11
+  Str          r44, r43
+  Add          r45, r42, r44
+  Const        r15, " x "
+  Add          r46, r45, r15
+  Const        r17, "h"
+  Index        r47, r38, r17
+  Str          r48, r47
+  Add          r49, r46, r48
+  Print        r49
+  Return       r0

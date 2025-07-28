@@ -1,0 +1,238 @@
+func __main (regs=7)
+  // var small = ["zero","one","two","three","four","five","six","seven","eight","nine",
+  Const        r3, ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen"]
+  Move         r0, r3
+  SetGlobal    0,0,0,0
+  // var tens = ["","","twenty","thirty","forty","fifty","sixty","seventy","eighty","ninety"]
+  Const        r4, ["", "", "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety"]
+  Move         r1, r4
+  SetGlobal    1,1,0,0
+  // var illions = [""," thousand"," million"," billion"," trillion"," quadrillion"," quintillion"]
+  Const        r5, ["", " thousand", " million", " billion", " trillion", " quadrillion", " quintillion"]
+  Move         r2, r5
+  SetGlobal    2,2,0,0
+  // main()
+  Call         r6, main, 
+  Return       r0
+
+  // fun capitalize(s: string): string {
+func capitalize (regs=13)
+  // if len(s) == 0 { return s }
+  Len          r4, r3
+  Const        r5, 0
+  EqualInt     r6, r4, r5
+  JumpIfFalse  r6, L0
+  Return       r3
+L0:
+  // return upper(substring(s, 0, 1)) + substring(s, 1, len(s))
+  Const        r5, 0
+  Const        r7, 1
+  Slice        r8, r3, r5, r7
+  Upper        r9, r8
+  Const        r7, 1
+  Len          r10, r3
+  Slice        r11, r3, r7, r10
+  Add          r12, r9, r11
+  Return       r12
+
+  // fun say(n: int): string {
+func say (regs=59)
+  // var t = ""
+  Const        r4, ""
+  Move         r5, r4
+  // if n < 0 {
+  Const        r6, 0
+  Less         r7, r3, r6
+  JumpIfFalse  r7, L0
+  // t = "negative "
+  Const        r8, "negative "
+  Move         r5, r8
+  // n = -n
+  Neg          r9, r3
+  Move         r3, r9
+L0:
+  // if n < 20 {
+  Const        r10, 20
+  Less         r11, r3, r10
+  JumpIfFalse  r11, L1
+  // return t + small[n]
+  Index        r12, r0, r3
+  Add          r13, r5, r12
+  Return       r13
+L1:
+  // } else if n < 100 {
+  Const        r14, 100
+  Less         r15, r3, r14
+  JumpIfFalse  r15, L2
+  // t = tens[n / 10]
+  Const        r16, 10
+  Div          r17, r3, r16
+  Index        r18, r1, r17
+  Move         r5, r18
+  // let s = n % 10
+  Const        r16, 10
+  Mod          r19, r3, r16
+  Move         r20, r19
+  // if s > 0 { t = t + "-" + small[s] }
+  Const        r6, 0
+  Less         r21, r6, r20
+  JumpIfFalse  r21, L3
+  Const        r22, "-"
+  Add          r23, r5, r22
+  Index        r24, r0, r20
+  Add          r25, r23, r24
+  Move         r5, r25
+L3:
+  // return t
+  Return       r5
+L2:
+  // } else if n < 1000 {
+  Const        r26, 1000
+  Less         r27, r3, r26
+  JumpIfFalse  r27, L4
+  // t = small[n / 100] + " hundred"
+  Const        r14, 100
+  Div          r28, r3, r14
+  Index        r29, r0, r28
+  Const        r30, " hundred"
+  Add          r31, r29, r30
+  Move         r5, r31
+  // let s = n % 100
+  Const        r14, 100
+  Mod          r32, r3, r14
+  Move         r33, r32
+  // if s > 0 { t = t + " " + say(s) }
+  Const        r6, 0
+  Less         r34, r6, r33
+  JumpIfFalse  r34, L5
+  Const        r35, " "
+  Add          r36, r5, r35
+  Move         r37, r33
+  Call         r38, say, r37
+  Add          r39, r36, r38
+  Move         r5, r39
+L5:
+  // return t
+  Return       r5
+L4:
+  // var sx = ""
+  Const        r4, ""
+  Move         r40, r4
+  // var i = 0
+  Const        r6, 0
+  Move         r41, r6
+  // var nn = n
+  Move         r42, r3
+L9:
+  // while nn > 0 {
+  Const        r6, 0
+  Less         r43, r6, r42
+  JumpIfFalse  r43, L6
+  // let p = nn % 1000
+  Const        r26, 1000
+  Mod          r44, r42, r26
+  Move         r45, r44
+  // nn = nn / 1000
+  Const        r26, 1000
+  Div          r46, r42, r26
+  Move         r42, r46
+  // if p > 0 {
+  Const        r6, 0
+  Less         r47, r6, r45
+  JumpIfFalse  r47, L7
+  // var ix = say(p) + illions[i]
+  Move         r48, r45
+  Call         r49, say, r48
+  Index        r50, r2, r41
+  Add          r51, r49, r50
+  Move         r52, r51
+  // if sx != "" { ix = ix + " " + sx }
+  Const        r4, ""
+  NotEqual     r53, r40, r4
+  JumpIfFalse  r53, L8
+  Const        r35, " "
+  Add          r54, r52, r35
+  Add          r55, r54, r40
+  Move         r52, r55
+L8:
+  // sx = ix
+  Move         r40, r52
+L7:
+  // i = i + 1
+  Const        r56, 1
+  AddInt       r57, r41, r56
+  Move         r41, r57
+  // while nn > 0 {
+  Jump         L9
+L6:
+  // return t + sx
+  Add          r58, r5, r40
+  Return       r58
+
+  // fun fourIsMagic(n: int): string {
+func fourIsMagic (regs=23)
+  // var s = say(n)
+  Move         r4, r3
+  Call         r5, say, r4
+  Move         r6, r5
+  // s = capitalize(s)
+  Move         r7, r6
+  Call         r8, capitalize, r7
+  Move         r6, r8
+  // var t = s
+  Move         r9, r6
+L1:
+  // while n != 4 {
+  Const        r10, 4
+  NotEqual     r11, r3, r10
+  JumpIfFalse  r11, L0
+  // n = len(s)
+  Len          r12, r6
+  Move         r3, r12
+  // s = say(n)
+  Move         r13, r3
+  Call         r14, say, r13
+  Move         r6, r14
+  // t = t + " is " + s + ", " + s
+  Const        r15, " is "
+  Add          r16, r9, r15
+  Add          r17, r16, r6
+  Const        r18, ", "
+  Add          r19, r17, r18
+  Add          r20, r19, r6
+  Move         r9, r20
+  // while n != 4 {
+  Jump         L1
+L0:
+  // t = t + " is magic."
+  Const        r21, " is magic."
+  Add          r22, r9, r21
+  Move         r9, r22
+  // return t
+  Return       r9
+
+  // fun main() {
+func main (regs=15)
+  // let nums = [0, 4, 6, 11, 13, 75, 100, 337, -164, 9223372036854775807]
+  Const        r3, [0, 4, 6, 11, 13, 75, 100, 337, -164, 9223372036854775807]
+  Move         r4, r3
+  // for n in nums {
+  IterPrep     r5, r4
+  Len          r6, r5
+  Const        r7, 0
+L1:
+  LessInt      r8, r7, r6
+  JumpIfFalse  r8, L0
+  Index        r9, r5, r7
+  Move         r10, r9
+  // print(fourIsMagic(n))
+  Move         r11, r10
+  Call         r12, fourIsMagic, r11
+  Print        r12
+  // for n in nums {
+  Const        r13, 1
+  AddInt       r14, r7, r13
+  Move         r7, r14
+  Jump         L1
+L0:
+  Return       r0

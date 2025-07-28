@@ -1,4 +1,4 @@
-func main (regs=45)
+func __main (regs=45)
   // var doors = []
   Const        r1, []
   Move         r0, r1

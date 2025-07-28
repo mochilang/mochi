@@ -1,0 +1,105 @@
+func __main (regs=9)
+  // print(padLeftZeros(formatFloat(7.125, 3), 9))
+  Const        r4, 7.125
+  Move         r2, r4
+  Const        r5, 3
+  Move         r3, r5
+  Call2        r6, formatFloat, r2, r3
+  Move         r0, r6
+  Const        r7, 9
+  Move         r1, r7
+  Call2        r8, padLeftZeros, r0, r1
+  Print        r8
+  Return       r0
+
+  // fun pow10(n: int): float {
+func pow10 (regs=10)
+  // var r: float = 1.0
+  Const        r1, 1.0
+  Move         r2, r1
+  // var i = 0
+  Const        r3, 0
+  Move         r4, r3
+L1:
+  // while i < n {
+  Less         r5, r4, r0
+  JumpIfFalse  r5, L0
+  // r = r * 10.0
+  Const        r6, 10.0
+  MulFloat     r7, r2, r6
+  Move         r2, r7
+  // i = i + 1
+  Const        r8, 1
+  AddInt       r9, r4, r8
+  Move         r4, r9
+  // while i < n {
+  Jump         L1
+L0:
+  // return r
+  Return       r2
+
+  // fun formatFloat(f: float, prec: int): string {
+func formatFloat (regs=30)
+  // let scale = pow10(prec)
+  Move         r2, r1
+  Call         r3, pow10, r2
+  Move         r4, r3
+  // let scaled = (f * scale) + 0.5
+  Mul          r5, r0, r4
+  Const        r6, 0.5
+  AddFloat     r7, r5, r6
+  Move         r8, r7
+  // var n = (scaled as int)
+  Cast         r9, r8, int
+  Move         r10, r9
+  // var digits = str(n)
+  Str          r11, r10
+  Move         r12, r11
+L1:
+  // while len(digits) <= prec {
+  Len          r13, r12
+  LessEq       r14, r13, r1
+  JumpIfFalse  r14, L0
+  // digits = "0" + digits
+  Const        r15, "0"
+  Add          r16, r15, r12
+  Move         r12, r16
+  // while len(digits) <= prec {
+  Jump         L1
+L0:
+  // let intPart = substring(digits, 0, len(digits) - prec)
+  Const        r17, 0
+  Len          r18, r12
+  Sub          r19, r18, r1
+  Slice        r20, r12, r17, r19
+  Move         r21, r20
+  // let fracPart = substring(digits, len(digits) - prec, len(digits))
+  Len          r22, r12
+  Sub          r23, r22, r1
+  Len          r24, r12
+  Slice        r25, r12, r23, r24
+  Move         r26, r25
+  // return intPart + "." + fracPart
+  Const        r27, "."
+  Add          r28, r21, r27
+  Add          r29, r28, r26
+  Return       r29
+
+  // fun padLeftZeros(s: string, width: int): string {
+func padLeftZeros (regs=7)
+  // var out = s
+  Move         r2, r0
+L1:
+  // while len(out) < width {
+  Len          r3, r2
+  Less         r4, r3, r1
+  JumpIfFalse  r4, L0
+  // out = "0" + out
+  Const        r5, "0"
+  Add          r6, r5, r2
+  Move         r2, r6
+  // while len(out) < width {
+  Jump         L1
+L0:
+  // return out
+  Return       r2
