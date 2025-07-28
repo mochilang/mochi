@@ -143,6 +143,44 @@ fun _now(): Long {
         kotlin.math.abs(System.nanoTime())
     }
 }`,
+		"bigRatHelpers": `data class BigRat(var num: BigInteger, var den: BigInteger = BigInteger.ONE) {
+    init {
+        if (den.signum() < 0) {
+            num = num.negate()
+            den = den.negate()
+        }
+        val g = num.gcd(den)
+        num = num.divide(g)
+        den = den.divide(g)
+    }
+    fun add(o: BigRat) = BigRat(num.multiply(o.den).add(o.num.multiply(den)), den.multiply(o.den))
+    fun sub(o: BigRat) = BigRat(num.multiply(o.den).subtract(o.num.multiply(den)), den.multiply(o.den))
+    fun mul(o: BigRat) = BigRat(num.multiply(o.num), den.multiply(o.den))
+    fun div(o: BigRat) = BigRat(num.multiply(o.den), den.multiply(o.num))
+}
+fun _bigrat(n: Any?, d: Any? = 1): BigRat {
+    if (n is BigRat && d == null) return BigRat(n.num, n.den)
+    val denom = when (d) {
+        null -> BigInteger.ONE
+        is BigInteger -> d
+        is Number -> BigInteger.valueOf(d.toLong())
+        else -> BigInteger.ONE
+    }
+    val numer = when (n) {
+        is BigRat -> n.num
+        is BigInteger -> n
+        is Number -> BigInteger.valueOf(n.toLong())
+        else -> BigInteger.ZERO
+    }
+    val den = if (n is BigRat && d == null) n.den else denom
+    return BigRat(numer, den)
+}
+fun _num(r: BigRat): BigInteger = r.num
+fun _denom(r: BigRat): BigInteger = r.den
+fun _add(a: BigRat, b: BigRat): BigRat = a.add(b)
+fun _sub(a: BigRat, b: BigRat): BigRat = a.sub(b)
+fun _mul(a: BigRat, b: BigRat): BigRat = a.mul(b)
+fun _div(a: BigRat, b: BigRat): BigRat = a.div(b)`,
 	}
 	reserved = map[string]bool{
 		"package": true, "as": true, "typealias": true, "class": true,
@@ -157,6 +195,13 @@ fun _now(): Long {
 	localFuncs = map[string]bool{}
 	funcRets = map[string]string{
 		"kotlin.math.abs": "Double",
+		"_num":            "BigInteger",
+		"_denom":          "BigInteger",
+		"_bigrat":         "BigRat",
+		"_add":            "BigRat",
+		"_sub":            "BigRat",
+		"_mul":            "BigRat",
+		"_div":            "BigRat",
 	}
 }
 
@@ -656,6 +701,13 @@ func (c *CastExpr) emit(w io.Writer) {
 	if inner, ok := c.Value.(*CastExpr); ok && inner.Type == "Any?" {
 		c.Value = inner.Value
 	}
+	if c.Type == "BigRat" {
+		useHelper("bigRatHelpers")
+		io.WriteString(w, "_bigrat(")
+		c.Value.emit(w)
+		io.WriteString(w, ")")
+		return
+	}
 	if c.Type == "Double" && guessType(c.Value) == "Double" {
 		c.Value.emit(w)
 		return
@@ -764,6 +816,7 @@ func (b *BinaryExpr) emit(w io.Writer) {
 	boolOp := b.Op == "&&" || b.Op == "||"
 	strOp := b.Op == "+" && (leftType == "String" || rightType == "String")
 	bigOp := leftType == "BigInteger" || rightType == "BigInteger"
+	ratOp := leftType == "BigRat" || rightType == "BigRat"
 	cast := func(e Expr, typ string) {
 		if typ == "Double" {
 			io.WriteString(w, "(")
@@ -835,6 +888,41 @@ func (b *BinaryExpr) emit(w io.Writer) {
 			}
 		}
 		e.emit(w)
+	}
+	if ratOp {
+		useHelper("bigRatHelpers")
+		fn := ""
+		whenOp := b.Op
+		switch whenOp {
+		case "+":
+			fn = "_add"
+		case "-":
+			fn = "_sub"
+		case "*":
+			fn = "_mul"
+		case "/":
+			fn = "_div"
+		}
+		if fn != "" {
+			io.WriteString(w, fn+"(")
+			if _, ok := b.Left.(*BinaryExpr); ok {
+				io.WriteString(w, "(")
+				b.Left.emit(w)
+				io.WriteString(w, ")")
+			} else {
+				b.Left.emit(w)
+			}
+			io.WriteString(w, ", ")
+			if _, ok := b.Right.(*BinaryExpr); ok {
+				io.WriteString(w, "(")
+				b.Right.emit(w)
+				io.WriteString(w, ")")
+			} else {
+				b.Right.emit(w)
+			}
+			io.WriteString(w, ")")
+			return
+		}
 	}
 	if bigOp {
 		if leftType != "BigInteger" {
@@ -2078,6 +2166,10 @@ func kotlinType(t *parser.TypeRef) string {
 			return "String"
 		case "float":
 			return "Double"
+		case "bigrat":
+			useHelper("importBigInt")
+			useHelper("bigRatHelpers")
+			return "BigRat"
 		case "bigint":
 			useHelper("importBigInt")
 			return "BigInteger"
@@ -2138,8 +2230,12 @@ func kotlinTypeFromType(t types.Type) string {
 		return "Boolean"
 	case types.StringType, *types.StringType:
 		return "String"
-	case types.FloatType, *types.FloatType, types.BigRatType, *types.BigRatType:
+	case types.FloatType, *types.FloatType:
 		return "Double"
+	case types.BigRatType, *types.BigRatType:
+		useHelper("importBigInt")
+		useHelper("bigRatHelpers")
+		return "BigRat"
 	case types.AnyType, *types.AnyType:
 		return "Any?"
 	case types.ListType:
@@ -2400,6 +2496,8 @@ func guessType(e Expr) string {
 				return "Double"
 			case "string":
 				return "String"
+			case "bigrat", "BigRat":
+				return "BigRat"
 			default:
 				return v.Type
 			}
@@ -4456,6 +4554,10 @@ func convertPostfix(env *types.Env, p *parser.PostfixExpr) (Expr, error) {
 				if ctype == "bigint" {
 					useHelper("importBigInt")
 					ctype = "BigInteger"
+				} else if ctype == "bigrat" {
+					useHelper("importBigInt")
+					useHelper("bigRatHelpers")
+					ctype = "BigRat"
 				}
 				switch ctype {
 				case "int", "float", "string":
@@ -4674,6 +4776,16 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 				}
 				return &CastExpr{Value: args[0], Type: "float"}, nil
 			}
+			if name == "bigrat" {
+				if len(args) != 1 && len(args) != 2 {
+					return nil, fmt.Errorf("bigrat expects 1 or 2 args")
+				}
+				useHelper("bigRatHelpers")
+				if len(args) == 1 {
+					args = append(args, &IntLit{Value: 1})
+				}
+				return &CallExpr{Func: "_bigrat", Args: args}, nil
+			}
 			if name == "upper" {
 				if len(args) != 1 {
 					return nil, fmt.Errorf("upper expects 1 arg")
@@ -4691,6 +4803,26 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 					return nil, fmt.Errorf("abs expects 1 arg")
 				}
 				return &CallExpr{Func: "kotlin.math.abs", Args: args}, nil
+			}
+			if name == "num" {
+				if len(args) != 1 {
+					return nil, fmt.Errorf("num expects 1 arg")
+				}
+				if guessType(args[0]) == "BigRat" {
+					useHelper("bigRatHelpers")
+					return &CallExpr{Func: "_num", Args: args}, nil
+				}
+				return args[0], nil
+			}
+			if name == "denom" {
+				if len(args) != 1 {
+					return nil, fmt.Errorf("denom expects 1 arg")
+				}
+				if guessType(args[0]) == "BigRat" {
+					useHelper("bigRatHelpers")
+					return &CallExpr{Func: "_denom", Args: args}, nil
+				}
+				return &IntLit{Value: 1}, nil
 			}
 			if name == "now" {
 				if len(args) != 0 {
