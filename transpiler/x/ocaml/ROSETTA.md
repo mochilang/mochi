@@ -2,7 +2,7 @@
 
 This directory contains OCaml code generated from Rosetta Code programs in `tests/rosetta/x/Mochi`.
 
-Completed programs: 143/467
+Completed programs: 153/467
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -196,17 +196,17 @@ Completed programs: 143/467
 | 188 | character-codes-4 | ✓ | 26.0µs | 272B |
 | 189 | character-codes-5 | ✓ | 21.0µs | 224B |
 | 190 | chat-server | ✓ | 40.0µs | 1.23KB |
-| 191 | check-machin-like-formulas |   |  |  |
-| 192 | check-that-file-exists |   |  |  |
-| 193 | checkpoint-synchronization-1 |   |  |  |
-| 194 | checkpoint-synchronization-2 |   |  |  |
-| 195 | checkpoint-synchronization-3 |   |  |  |
-| 196 | checkpoint-synchronization-4 |   |  |  |
-| 197 | chernicks-carmichael-numbers |   |  |  |
-| 198 | cheryls-birthday |   |  |  |
-| 199 | chinese-remainder-theorem |   |  |  |
-| 200 | chinese-zodiac |   |  |  |
-| 201 | cholesky-decomposition-1 |   |  |  |
+| 191 | check-machin-like-formulas | ✓ | 5.0ms | 512.06KB |
+| 192 | check-that-file-exists | ✓ | 34.0µs | 560B |
+| 193 | checkpoint-synchronization-1 | ✓ | 167.0µs | 1.54KB |
+| 194 | checkpoint-synchronization-2 | ✓ | 151.0µs | 2.59KB |
+| 195 | checkpoint-synchronization-3 | ✓ | 205.0µs | 2.91KB |
+| 196 | checkpoint-synchronization-4 | ✓ | 242.0µs | 5.24KB |
+| 197 | chernicks-carmichael-numbers | ✓ | 945.0ms | 47.19MB |
+| 198 | cheryls-birthday | ✓ | 228.0µs | 5.97KB |
+| 199 | chinese-remainder-theorem | ✓ | 125.0µs | 248B |
+| 200 | chinese-zodiac | ✓ | 144.0µs | 4.03KB |
+| 201 | cholesky-decomposition-1 | error |  |  |
 | 202 | cholesky-decomposition |   |  |  |
 | 203 | chowla-numbers |   |  |  |
 | 204 | church-numerals-1 |   |  |  |
@@ -473,4 +473,4 @@ Completed programs: 143/467
 | 465 | sorting-algorithms-bubble-sort |   |  |  |
 | 466 | window-management |   |  |  |
 | 467 | zumkeller-numbers |   |  |  |
-Last updated 2025-07-27 18:10 UTC
+Last updated 2025-07-28 08:10 +0700
