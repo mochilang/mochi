@@ -1,0 +1,19 @@
+(program
+  (var i (type auto) (int 0))
+  (fun main
+    (type int)
+    (while
+      (binary < (selector i) (int 3))
+      (block
+        (call print (selector i))
+        (assign i
+          (group
+            (binary + (selector i) (int 1))
+          )
+        )
+      )
+    )
+    (return (int 0))
+  )
+  (call main)
+)
