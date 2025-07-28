@@ -363,8 +363,10 @@ func parseStatementsIndent(body string, indent int) []string {
 				expr := rewriteStructLiteral(strings.TrimSpace(l[len("return "):]))
 				out = append(out, strings.Repeat("  ", indent)+"return "+expr)
 			case strings.HasPrefix(l, "let ") || strings.HasPrefix(l, "var "):
+				keyword := "let"
 				decl := strings.TrimPrefix(l, "let ")
 				if decl == l {
+					keyword = "var"
 					decl = strings.TrimPrefix(l, "var ")
 				}
 				parts := strings.SplitN(decl, "=", 2)
@@ -374,7 +376,7 @@ func parseStatementsIndent(body string, indent int) []string {
 						name = strings.TrimSpace(name[:colon])
 					}
 					expr := rewriteStructLiteral(strings.TrimSpace(parts[1]))
-					out = append(out, strings.Repeat("  ", indent)+"let "+name+" = "+expr)
+					out = append(out, strings.Repeat("  ", indent)+keyword+" "+name+" = "+expr)
 				}
 			case l == "break":
 				out = append(out, strings.Repeat("  ", indent)+"break")
