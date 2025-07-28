@@ -850,7 +850,11 @@ func (p *Program) write(w io.Writer) {
 					io.WriteString(w, "const "+typ+"&")
 				}
 			} else if isStructType(typ) {
-				io.WriteString(w, typ+"&")
+				if p.ByVal {
+					io.WriteString(w, typ)
+				} else {
+					io.WriteString(w, "const "+typ+"&")
+				}
 			} else {
 				io.WriteString(w, typ)
 			}
@@ -930,7 +934,11 @@ func (f *Func) emit(w io.Writer) {
 					io.WriteString(w, "const "+typ+"& ")
 				}
 			} else if isStructType(typ) {
-				io.WriteString(w, typ+"& ")
+				if p.ByVal {
+					io.WriteString(w, typ+" ")
+				} else {
+					io.WriteString(w, "const "+typ+"& ")
+				}
 			} else {
 				io.WriteString(w, typ+" ")
 			}
@@ -1437,7 +1445,11 @@ func (s *SumExpr) emit(w io.Writer) {
 		lit.emit(w)
 		io.WriteString(w, "; return std::accumulate(tmp.begin(), tmp.end(), 0.0); })()")
 	} else {
-		io.WriteString(w, "([&]{ auto __tmp = ")
+		cap := "[&]"
+		if !inFunction {
+			cap = "[]"
+		}
+		io.WriteString(w, "("+cap+"{ auto __tmp = ")
 		s.Arg.emit(w)
 		io.WriteString(w, "; return std::accumulate(__tmp.begin(), __tmp.end(), 0.0); }())")
 	}
@@ -1466,7 +1478,11 @@ func (a *AppendExpr) emit(w io.Writer) {
 		}
 		elemType = valType
 	}
-	io.WriteString(w, "([&]{ auto __tmp = ")
+	cap := "[&]"
+	if !inFunction {
+		cap = "[]"
+	}
+	io.WriteString(w, "("+cap+"{ auto __tmp = ")
 	a.List.emit(w)
 	io.WriteString(w, "; __tmp.push_back(")
 	if et := valType; et != elemType && elemType != "auto" {
@@ -1616,6 +1632,18 @@ func (c *CastExpr) emit(w io.Writer) {
 			if strings.HasPrefix(t, "std::map<") && strings.Contains(t, "std::any>") {
 				valType = "std::any"
 			}
+		}
+	}
+	if ml, ok := c.Value.(*MapLit); ok && strings.HasPrefix(c.Type, "std::map<") && valType == "std::map<std::string, std::any>" {
+		parts := strings.SplitN(strings.TrimSuffix(strings.TrimPrefix(c.Type, "std::map<"), ">"), ",", 2)
+		if len(parts) == 2 {
+			kt := strings.TrimSpace(parts[0])
+			vt := strings.TrimSpace(parts[1])
+			oldKT, oldVT := ml.KeyType, ml.ValueType
+			ml.KeyType, ml.ValueType = kt, vt
+			ml.emit(w)
+			ml.KeyType, ml.ValueType = oldKT, oldVT
+			return
 		}
 	}
 	if c.Type == "int" && valType == "std::string" {
