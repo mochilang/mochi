@@ -17,3 +17,7 @@ func ConvertAST(src string, n *ASTNode) (*mochiast.Node, error) { return rs.Conv
 func Convert(src string) (*mochiast.Node, error)                { return rs.Convert(src) }
 func ConvertFile(path string) (*mochiast.Node, error)           { return rs.ConvertFile(path) }
 func ConvertASTFile(path string) (*mochiast.Node, error)        { return rs.ConvertASTFile(path) }
+func ConvertSourceAST(src string, n *ASTNode) (string, error)   { return rs.ConvertSourceAST(src, n) }
+func ConvertSource(src string) (string, error)                  { return rs.ConvertSource(src) }
+func ConvertFileSource(path string) (string, error)             { return rs.ConvertFileSource(path) }
+func ConvertASTFileSource(path string) (string, error)          { return rs.ConvertASTFileSource(path) }
