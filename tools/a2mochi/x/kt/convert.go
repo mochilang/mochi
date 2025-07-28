@@ -261,6 +261,13 @@ func mapType(t string) string {
 		}
 		return "list<" + inner + ">"
 	}
+	if strings.HasPrefix(t, "MutableList<") && strings.HasSuffix(t, ">") {
+		inner := mapType(t[12 : len(t)-1])
+		if inner == "" {
+			inner = "any"
+		}
+		return "list<" + inner + ">"
+	}
 	if strings.HasPrefix(t, "Map<") && strings.HasSuffix(t, ">") {
 		inner := t[4 : len(t)-1]
 		parts := splitGeneric(inner)
@@ -275,6 +282,36 @@ func mapType(t string) string {
 			}
 		}
 		return "map<" + key + ", " + val + ">"
+	}
+	if strings.HasPrefix(t, "MutableMap<") && strings.HasSuffix(t, ">") {
+		inner := t[11 : len(t)-1]
+		parts := splitGeneric(inner)
+		key := "any"
+		val := "any"
+		if len(parts) == 2 {
+			if k := mapType(parts[0]); k != "" {
+				key = k
+			}
+			if v := mapType(parts[1]); v != "" {
+				val = v
+			}
+		}
+		return "map<" + key + ", " + val + ">"
+	}
+	if strings.HasPrefix(t, "Pair<") && strings.HasSuffix(t, ">") {
+		inner := t[5 : len(t)-1]
+		parts := splitGeneric(inner)
+		first := "any"
+		second := "any"
+		if len(parts) == 2 {
+			if f := mapType(parts[0]); f != "" {
+				first = f
+			}
+			if s := mapType(parts[1]); s != "" {
+				second = s
+			}
+		}
+		return "tuple<" + first + ", " + second + ">"
 	}
 	return t
 }

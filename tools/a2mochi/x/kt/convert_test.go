@@ -57,6 +57,11 @@ func TestConvert_Golden(t *testing.T) {
 		"print_hello":    true,
 		"append_builtin": true,
 		"basic_compare":  true,
+		"avg_builtin":    true,
+		"let_and_print":  true,
+		"list_index":     true,
+		"while_loop":     true,
+		"fun_three_args": true,
 	}
 
 	for _, srcPath := range files {
