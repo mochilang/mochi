@@ -653,7 +653,13 @@ func (fe *ForEachStmt) emit(w io.Writer) {
 		fmt.Fprintf(w, "  val %s = new Breaks\n", contVar)
 	}
 	fmt.Fprintf(w, "  for (%s <- ", fe.Name)
-	fe.Iterable.emit(w)
+	iterType := inferTypeWithEnv(fe.Iterable, nil)
+	if strings.HasPrefix(iterType, "Map[") || strings.HasPrefix(iterType, "scala.collection.mutable.Map[") {
+		fe.Iterable.emit(w)
+		fmt.Fprint(w, ".keys")
+	} else {
+		fe.Iterable.emit(w)
+	}
 	fmt.Fprint(w, ") {\n")
 	if hasCont {
 		fmt.Fprintf(w, "    %s.breakable {\n", contVar)
@@ -985,9 +991,29 @@ func (idx *IndexExpr) emit(w io.Writer) {
 		fmt.Fprint(w, ", ")
 		t := idx.Type
 		if t == "" {
-			t = "Any"
+			if strings.HasPrefix(idx.Container, "Map[") || strings.HasPrefix(idx.Container, "scala.collection.mutable.Map[") {
+				parts := strings.TrimSuffix(idx.Container[strings.Index(idx.Container, "[")+1:], "]")
+				kv := strings.SplitN(parts, ",", 2)
+				if len(kv) == 2 {
+					t = strings.TrimSpace(kv[1])
+				}
+			}
+			if t == "" {
+				t = "Any"
+			}
 		}
-		fmt.Fprintf(w, "null.asInstanceOf[%s])", t)
+		if strings.HasPrefix(t, "Map[") || strings.HasPrefix(t, "scala.collection.mutable.Map[") {
+			fmt.Fprintf(w, "%s()", t)
+		} else if t == "BigInt" {
+			fmt.Fprint(w, "BigInt(0)")
+		} else if t == "Double" || t == "Float" {
+			fmt.Fprint(w, "0.0")
+		} else if t == "Boolean" {
+			fmt.Fprint(w, "false")
+		} else {
+			fmt.Fprintf(w, "null.asInstanceOf[%s]", t)
+		}
+		fmt.Fprint(w, ")")
 	} else if idx.Container == "Any" {
 		if (idx.ForceMap) || (func() bool {
 			if prev, ok := idx.Value.(*IndexExpr); ok {
@@ -2018,6 +2044,12 @@ func convertBinary(b *parser.BinaryExpr, env *types.Env) (Expr, error) {
 				if (lt == "Any" || lt == "") && (rt == "Any" || rt == "") {
 					// fallback to floating point arithmetic when both operand types are unknown
 					left = &CastExpr{Value: left, Type: "Double"}
+					right = &CastExpr{Value: right, Type: "Double"}
+				}
+				if lt == "BigInt" && (rt == "Double" || rt == "Float") {
+					left = &CastExpr{Value: left, Type: "Double"}
+				}
+				if rt == "BigInt" && (lt == "Double" || lt == "Float") {
 					right = &CastExpr{Value: right, Type: "Double"}
 				}
 			} else if op == "&&" || op == "||" {

@@ -1,3 +1,43 @@
+## Progress (2025-07-28 10:24 +0700)
+- transpiler/kt: add more rosetta outputs and fix BigInteger casts
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-28 10:24 +0700)
+- transpiler/kt: add more rosetta outputs and fix BigInteger casts
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-28 10:24 +0700)
+- transpiler/kt: add more rosetta outputs and fix BigInteger casts
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-28 10:24 +0700)
+- transpiler/kt: add more rosetta outputs and fix BigInteger casts
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-28 10:24 +0700)
+- transpiler/kt: add more rosetta outputs and fix BigInteger casts
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-28 10:24 +0700)
+- transpiler/kt: add more rosetta outputs and fix BigInteger casts
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-28 10:24 +0700)
+- transpiler/kt: add more rosetta outputs and fix BigInteger casts
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-28 10:24 +0700)
+- transpiler/kt: add more rosetta outputs and fix BigInteger casts
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-28 10:24 +0700)
+- transpiler/kt: add more rosetta outputs and fix BigInteger casts
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-28 10:24 +0700)
+- transpiler/kt: add more rosetta outputs and fix BigInteger casts
+- Regenerated golden files - 93/104 vm valid programs passing
+
 ## Progress (2025-07-27 23:38 +0700)
 - Refresh Lua transpiler output for balanced-brackets
 - Regenerated golden files - 93/104 vm valid programs passing
