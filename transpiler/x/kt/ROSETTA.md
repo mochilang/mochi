@@ -2,9 +2,9 @@
 
 Generated Kotlin sources for Rosetta Code tests are stored in `tests/rosetta/transpiler/Kotlin`.
 
-Last updated: 2025-07-28 00:51 +0700
+Last updated: 2025-07-28 01:22 +0700
 
-Completed tasks: **87/467**
+Completed tasks: **89/467**
 
 ### Checklist
 | Index | Name | Status | Duration | Memory |
@@ -108,8 +108,8 @@ Completed tasks: **87/467**
 | 97 | b-zier-curves-intersections | ✓ |  |  |
 | 98 | babbage-problem | ✓ |  |  |
 | 99 | babylonian-spiral | ✓ |  |  |
-| 100 | balanced-brackets |  |  |  |
-| 101 | balanced-ternary |  |  |  |
+| 100 | balanced-brackets | ✓ | 11.75ms | 115.2 KB |
+| 101 | balanced-ternary | ✓ | 13.76ms | 111.5 KB |
 | 102 | barnsley-fern |  |  |  |
 | 103 | base64-decode-data |  |  |  |
 | 104 | bell-numbers |  |  |  |

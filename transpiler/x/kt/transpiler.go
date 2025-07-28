@@ -774,6 +774,10 @@ func (b *BinaryExpr) emit(w io.Writer) {
 			io.WriteString(w, "(")
 			e.emit(w)
 			io.WriteString(w, ").toBigInteger()")
+		} else if typ == "Long" {
+			io.WriteString(w, "(")
+			e.emit(w)
+			io.WriteString(w, ").toLong()")
 		} else if typ == "String" {
 			io.WriteString(w, "(")
 			e.emit(w)
@@ -966,23 +970,43 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		return
 	}
 	if numOp && b.Op == "%" && !bigOp {
+		useLong := leftType == "Long" || rightType == "Long"
 		io.WriteString(w, "Math.floorMod(")
 		if _, ok := b.Left.(*BinaryExpr); ok {
 			io.WriteString(w, "(")
-			emitOperand(b.Left, b.Right)
+			if useLong && leftType != "Long" {
+				cast(b.Left, "Long")
+			} else {
+				emitOperand(b.Left, b.Right)
+			}
 			io.WriteString(w, ")")
 		} else {
-			emitOperand(b.Left, b.Right)
+			if useLong && leftType != "Long" {
+				cast(b.Left, "Long")
+			} else {
+				emitOperand(b.Left, b.Right)
+			}
 		}
 		io.WriteString(w, ", ")
 		if _, ok := b.Right.(*BinaryExpr); ok {
 			io.WriteString(w, "(")
-			emitOperand(b.Right, b.Left)
+			if useLong && rightType != "Long" {
+				cast(b.Right, "Long")
+			} else {
+				emitOperand(b.Right, b.Left)
+			}
 			io.WriteString(w, ")")
 		} else {
-			emitOperand(b.Right, b.Left)
+			if useLong && rightType != "Long" {
+				cast(b.Right, "Long")
+			} else {
+				emitOperand(b.Right, b.Left)
+			}
 		}
 		io.WriteString(w, ")")
+		if useLong && guessType(b) == "Int" {
+			io.WriteString(w, ".toInt()")
+		}
 		return
 	}
 	if listOp {
@@ -1035,6 +1059,11 @@ func (s *LetStmt) emit(w io.Writer, indentLevel int) { // 'let' is immutable
 		io.WriteString(w, ").toBigInteger()")
 		return
 	}
+	if ll, ok := s.Value.(*ListLit); ok && len(ll.Elems) == 0 && strings.HasPrefix(s.Type, "MutableList<") {
+		elem := strings.TrimSuffix(strings.TrimPrefix(s.Type, "MutableList<"), ">")
+		io.WriteString(w, "mutableListOf<"+elem+">()")
+		return
+	}
 	s.Value.emit(w)
 }
 
@@ -1062,6 +1091,11 @@ func (s *VarStmt) emit(w io.Writer, indentLevel int) {
 		io.WriteString(w, "(")
 		s.Value.emit(w)
 		io.WriteString(w, ").toBigInteger()")
+		return
+	}
+	if ll, ok := s.Value.(*ListLit); ok && len(ll.Elems) == 0 && strings.HasPrefix(s.Type, "MutableList<") {
+		elem := strings.TrimSuffix(strings.TrimPrefix(s.Type, "MutableList<"), ">")
+		io.WriteString(w, "mutableListOf<"+elem+">()")
 		return
 	}
 	s.Value.emit(w)
@@ -1254,6 +1288,10 @@ func (ie *IfExpr) emit(w io.Writer) {
 type ListLit struct{ Elems []Expr }
 
 func (l *ListLit) emit(w io.Writer) {
+	if len(l.Elems) == 0 {
+		io.WriteString(w, "mutableListOf<Any?>()")
+		return
+	}
 	io.WriteString(w, "mutableListOf(")
 	for i, e := range l.Elems {
 		if i > 0 {
@@ -1495,7 +1533,17 @@ func (a *AppendExpr) emit(w io.Writer) {
 		a.List.emit(w)
 	}
 	io.WriteString(w, ".toMutableList(); _tmp.add(")
-	a.Elem.emit(w)
+	elemType := ""
+	listType := guessType(a.List)
+	if strings.HasPrefix(listType, "MutableList<") {
+		elemType = strings.TrimSuffix(strings.TrimPrefix(listType, "MutableList<"), ">")
+	}
+	if elemType != "" && elemType != guessType(a.Elem) {
+		castExpr := &CastExpr{Value: a.Elem, Type: elemType}
+		castExpr.emit(w)
+	} else {
+		a.Elem.emit(w)
+	}
 	io.WriteString(w, "); _tmp }")
 }
 
