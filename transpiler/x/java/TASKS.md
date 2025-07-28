@@ -1,4 +1,46 @@
-## Progress (2025-07-28 10:03 +0700)
+## Progress (2025-07-28 10:37 +0700)
+- java transpiler: fix map index assignment (da56f4ceaa)
+
+- java transpiler: fix map index assignment (da56f4ceaa)
+
+- java transpiler: fix map index assignment (da56f4ceaa)
+
+- java transpiler: fix map index assignment (da56f4ceaa)
+
+- java transpiler: fix map index assignment (da56f4ceaa)
+
+- java transpiler: fix map index assignment (da56f4ceaa)
+
+- java transpiler: fix map index assignment (da56f4ceaa)
+
+- java transpiler: fix map index assignment (da56f4ceaa)
+
+- java transpiler: fix map index assignment (da56f4ceaa)
+
+- java transpiler: fix map index assignment (da56f4ceaa)
+
+- java transpiler: fix map index assignment (da56f4ceaa)
+
+- java transpiler: fix map index assignment (da56f4ceaa)
+
+- java transpiler: fix map index assignment (da56f4ceaa)
+
+- java transpiler: fix map index assignment (da56f4ceaa)
+
+- java transpiler: fix map index assignment (da56f4ceaa)
+
+- java transpiler: fix map index assignment (da56f4ceaa)
+
+- java transpiler: fix map index assignment (da56f4ceaa)
+
+- java transpiler: fix map index assignment (da56f4ceaa)
+
+- java transpiler: fix map index assignment (da56f4ceaa)
+
+- java transpiler: fix map index assignment (da56f4ceaa)
+
+- java transpiler: fix map index assignment (da56f4ceaa)
+
 - chore: sort rosetta index (b04341afb7)
 
 - chore: sort rosetta index (b04341afb7)

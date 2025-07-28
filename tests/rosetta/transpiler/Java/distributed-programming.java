@@ -1,33 +1,18 @@
 public class Main {
+    static int amount = 300;
+    static int result = tax(amount);
 
-    static void main() {
-        String[] philosophers = new String[]{"Aristotle", "Kant", "Spinoza", "Marx", "Russell"};
-        int hunger = 3;
-        System.out.println("table empty");
-        for (String p : philosophers) {
-            System.out.println(p + " seated");
+    static int tax(int cents) {
+        if (cents < 0) {
+            throw new RuntimeException(String.valueOf("Negative amounts not allowed"));
         }
-        int i = 0;
-        while (i < philosophers.length) {
-            String name = philosophers[i];
-            int h = 0;
-            while (h < hunger) {
-                System.out.println(name + " hungry");
-                System.out.println(name + " eating");
-                System.out.println(name + " thinking");
-                h = h + 1;
-            }
-            System.out.println(name + " satisfied");
-            System.out.println(name + " left the table");
-            i = i + 1;
-        }
-        System.out.println("table empty");
+        return (cents * 5 + 50) / 100;
     }
     public static void main(String[] args) {
         {
             long _benchStart = _now();
             long _benchMem = _mem();
-            main();
+            System.out.println("tax on " + String.valueOf(amount) + " cents is " + String.valueOf(result) + " cents");
             long _benchDuration = _now() - _benchStart;
             long _benchMemory = _mem() - _benchMem;
             System.out.println("{");
