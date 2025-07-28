@@ -2,8 +2,8 @@
 
 Generated Swift code for Mochi Rosetta programs in `tests/rosetta/x/Mochi`. Outputs are stored in `tests/rosetta/transpiler/Swift`. Errors are captured in `.error` files.
 
-Completed: 203/493
-Last updated: 2025-07-28 11:14 +0700
+Completed: 206/493
+Last updated: 2025-07-28 11:47 +0700
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -206,9 +206,9 @@ Last updated: 2025-07-28 11:14 +0700
 | 197 | checkpoint-synchronization-4 |   |  |  |
 | 198 | chernicks-carmichael-numbers |   |  |  |
 | 199 | cheryls-birthday |   |  |  |
-| 200 | chinese-remainder-theorem |   |  |  |
-| 201 | chinese-zodiac |   |  |  |
-| 202 | cholesky-decomposition-1 |   |  |  |
+| 200 | chinese-remainder-theorem | ✓ | 173µs | 3.3 MB |
+| 201 | chinese-zodiac | ✓ | 220µs | 3.2 MB |
+| 202 | cholesky-decomposition-1 | ✓ | 288µs | 3.1 MB |
 | 203 | cholesky-decomposition |   |  |  |
 | 204 | chowla-numbers |   |  |  |
 | 205 | church-numerals-1 |   |  |  |

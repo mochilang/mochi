@@ -1,5 +1,5 @@
-## Progress (2025-07-28 10:41 +0700)
-- swift: add rosetta output for entropy-narcissist
+## Progress (2025-07-28 11:47 +0700)
+- swift: transpile chinese-zodiac
 - Generated golden tests for 102/104 programs
 - Updated README checklist and output artifacts
 
