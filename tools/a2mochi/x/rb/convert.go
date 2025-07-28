@@ -134,6 +134,42 @@ func tokens(n Node) []string {
 }
 
 func exprString(n Node) string {
+	switch n.Type {
+	case "array":
+		ts := tokens(n)
+		return "[" + strings.Join(ts, ", ") + "]"
+	case "hash":
+		var parts []string
+		var walk func(Node)
+		walk = func(x Node) {
+			switch x.Type {
+			case "assoc_new":
+				if len(x.Children) == 2 {
+					k := exprString(x.Children[0])
+					v := exprString(x.Children[1])
+					parts = append(parts, k+": "+v)
+				}
+			case "args_add", "assoclist_from_args", "args_add_block", "list":
+				for _, c := range x.Children {
+					walk(c)
+				}
+			}
+		}
+		for _, c := range n.Children {
+			walk(c)
+		}
+		return "{" + strings.Join(parts, ", ") + "}"
+	case "aref":
+		if len(n.Children) == 2 {
+			recv := exprString(n.Children[0])
+			idx := n.Children[1]
+			if idx.Type == "args_add_block" && len(idx.Children) > 0 {
+				idx = idx.Children[0]
+			}
+			return recv + "[" + exprString(idx) + "]"
+		}
+	}
+
 	if n.Type == "paren" && len(n.Children) == 1 {
 		return "(" + exprString(n.Children[0]) + ")"
 	}
@@ -252,12 +288,12 @@ func firstArg(n Node) Node {
 	}
 }
 
-func convertNode(n Node, level int, out *[]string) {
+func convertNode(n Node, level int, out *[]string, globals map[string]bool) {
 	idt := strings.Repeat("  ", level)
 	switch n.Type {
 	case "program":
 		for _, c := range n.Children {
-			convertNode(c, level, out)
+			convertNode(c, level, out, globals)
 		}
 	case "command", "method_add_arg":
 		if len(n.Children) > 0 {
@@ -305,9 +341,16 @@ func convertNode(n Node, level int, out *[]string) {
 			return
 		}
 		expr := exprString(n.Children[1])
-		kw := "let "
-		if level == 0 {
-			kw = "var "
+		kw := ""
+		if n.Children[0].Type == "var_field" {
+			if level == 0 {
+				if !globals[name] {
+					kw = "var "
+					globals[name] = true
+				}
+			} else {
+				kw = "let "
+			}
 		}
 		*out = append(*out, idt+kw+name+" = "+expr)
 	case "while":
@@ -316,7 +359,7 @@ func convertNode(n Node, level int, out *[]string) {
 		}
 		cond := exprString(n.Children[0])
 		*out = append(*out, idt+"while "+cond+" {")
-		convertNode(n.Children[1], level+1, out)
+		convertNode(n.Children[1], level+1, out, globals)
 		*out = append(*out, idt+"}")
 	case "return", "break", "next":
 		expr := exprString(n)
@@ -331,7 +374,7 @@ func convertNode(n Node, level int, out *[]string) {
 		varName := exprString(n.Children[0])
 		iter := exprString(n.Children[1])
 		*out = append(*out, idt+"for "+varName+" in "+iter+" {")
-		convertNode(n.Children[2], level+1, out)
+		convertNode(n.Children[2], level+1, out, globals)
 		*out = append(*out, idt+"}")
 	case "method_add_block":
 		if len(n.Children) == 2 {
@@ -357,7 +400,7 @@ func convertNode(n Node, level int, out *[]string) {
 					body = block.Children[len(block.Children)-1]
 				}
 				*out = append(*out, idt+"for "+varName+" in range("+count+") {")
-				convertNode(body, level+1, out)
+				convertNode(body, level+1, out, globals)
 				*out = append(*out, idt+"}")
 				return
 			}
@@ -368,18 +411,18 @@ func convertNode(n Node, level int, out *[]string) {
 		}
 		cond := exprString(n.Children[0])
 		*out = append(*out, idt+"if "+cond+" {")
-		convertNode(n.Children[1], level+1, out)
+		convertNode(n.Children[1], level+1, out, globals)
 		if len(n.Children) > 2 {
 			handleElse := func(e Node) {}
 			handleElse = func(e Node) {
 				switch e.Type {
 				case "else":
 					*out = append(*out, idt+"} else {")
-					convertNode(e, level+1, out)
+					convertNode(e, level+1, out, globals)
 				case "elsif":
 					cond := exprString(e.Children[0])
 					*out = append(*out, idt+"} else if "+cond+" {")
-					convertNode(e.Children[1], level+1, out)
+					convertNode(e.Children[1], level+1, out, globals)
 					if len(e.Children) > 2 {
 						handleElse(e.Children[2])
 					}
@@ -413,7 +456,7 @@ func convertNode(n Node, level int, out *[]string) {
 				} else {
 					*out = append(*out, idt+"} else if "+cStr+" {")
 				}
-				convertNode(w.Children[1], level+1, out)
+				convertNode(w.Children[1], level+1, out, globals)
 				if len(w.Children) > 2 {
 					handleCase(w.Children[2], false)
 				} else {
@@ -422,7 +465,7 @@ func convertNode(n Node, level int, out *[]string) {
 			case "else":
 				*out = append(*out, idt+"} else {")
 				if len(w.Children) > 0 {
-					convertNode(w.Children[0], level+1, out)
+					convertNode(w.Children[0], level+1, out, globals)
 				}
 				*out = append(*out, idt+"}")
 			}
@@ -430,7 +473,7 @@ func convertNode(n Node, level int, out *[]string) {
 		handleCase(n.Children[1], true)
 	case "else", "bodystmt":
 		for _, c := range n.Children {
-			convertNode(c, level, out)
+			convertNode(c, level, out, globals)
 		}
 	case "def":
 		if len(n.Children) < 3 {
@@ -439,7 +482,7 @@ func convertNode(n Node, level int, out *[]string) {
 		name := exprString(n.Children[0])
 		params := params(n.Children[1])
 		*out = append(*out, idt+"fun "+name+"("+params+") {")
-		convertNode(n.Children[2], level+1, out)
+		convertNode(n.Children[2], level+1, out, globals)
 		*out = append(*out, idt+"}")
 	case "class":
 		if len(n.Children) < 3 {
@@ -447,11 +490,11 @@ func convertNode(n Node, level int, out *[]string) {
 		}
 		name := exprString(n.Children[0])
 		*out = append(*out, idt+"type "+name+" {")
-		convertNode(n.Children[2], level+1, out)
+		convertNode(n.Children[2], level+1, out, globals)
 		*out = append(*out, idt+"}")
 	default:
 		for _, c := range n.Children {
-			convertNode(c, level, out)
+			convertNode(c, level, out, globals)
 		}
 	}
 }
@@ -482,7 +525,8 @@ func ConvertSource(n *Node) (string, error) {
 		return "", fmt.Errorf("nil node")
 	}
 	var lines []string
-	convertNode(*n, 0, &lines)
+	globals := make(map[string]bool)
+	convertNode(*n, 0, &lines, globals)
 	if len(lines) == 0 {
 		return "", fmt.Errorf("no convertible statements")
 	}
