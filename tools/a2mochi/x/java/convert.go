@@ -101,6 +101,7 @@ func ConvertSource(n *Node) (string, error) {
 		}
 		if m := printStmt.FindStringSubmatch(line); m != nil {
 			expr := strings.TrimSpace(m[1])
+			expr = rewriteExpr(expr)
 			fmt.Fprintf(&out, "%sprint(%s)\n", indent, expr)
 		}
 	}
@@ -144,6 +145,19 @@ func ConvertFileSource(path string) (string, error) {
 		return "", err
 	}
 	return ConvertSource(n)
+}
+
+func rewriteExpr(expr string) string {
+	arrLen := regexp.MustCompile(`^new\s+int\[]\{([^}]*)\}\.length$`)
+	if m := arrLen.FindStringSubmatch(expr); m != nil {
+		elems := strings.ReplaceAll(m[1], " ", "")
+		return fmt.Sprintf("len([%s])", elems)
+	}
+	strLen := regexp.MustCompile(`^"([^"]*)"\.length\(\)$`)
+	if m := strLen.FindStringSubmatch(expr); m != nil {
+		return fmt.Sprintf("len(\"%s\")", m[1])
+	}
+	return expr
 }
 
 func header() string {

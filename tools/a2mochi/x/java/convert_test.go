@@ -77,6 +77,10 @@ func TestConvert_Golden(t *testing.T) {
 		"var_assignment": true,
 		"for_loop":       true,
 		"while_loop":     true,
+		"string_concat":  true,
+		"len_builtin":    true,
+		"count_builtin":  true,
+		"len_string":     true,
 	}
 
 	outDir := filepath.Join(root, "tests/a2mochi/x/java")
