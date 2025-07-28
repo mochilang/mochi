@@ -2,7 +2,7 @@
 
 Generated Ruby code from Mochi Rosetta tasks lives in `tests/rosetta/transpiler/rb`.
 
-Last updated: 2025-07-28 03:16 UTC
+Last updated: 2025-07-28 04:23 UTC
 
 ## Checklist (451/493)
 | Index | Name | Status | Duration | Memory |
@@ -256,7 +256,7 @@ Last updated: 2025-07-28 03:16 UTC
 | 247 | count-in-octal-4 | ✓ | 36µs | 13.1 KB |
 | 248 | count-occurrences-of-a-substring | ✓ | 46µs | 10.5 KB |
 | 249 | count-the-coins-1 | ✓ | 44µs | 10.7 KB |
-| 250 | count-the-coins-2 | ✓ | 3.336ms | 3.9 MB |
+| 250 | count-the-coins-2 | ✓ | 3.833ms | 3.9 MB |
 | 251 | cramers-rule | ✓ | 259µs | 103.7 KB |
 | 252 | crc-32-1 | ✓ | 3.957ms | 304.5 KB |
 | 253 | crc-32-2 | ✓ | 3.912ms | 304.6 KB |
