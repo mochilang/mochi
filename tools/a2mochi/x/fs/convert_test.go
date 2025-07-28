@@ -84,6 +84,9 @@ func TestConvert_Golden(t *testing.T) {
 		"unary_neg":          true,
 		"closure":            true,
 		"fun_call":           true,
+		"binary_precedence":  true,
+		"string_concat":      true,
+		"min_max_builtin":    true,
 	}
 	outDir := filepath.Join(root, "tests", "a2mochi", "x", "fs")
 	os.MkdirAll(outDir, 0o755)
