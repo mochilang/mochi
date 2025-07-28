@@ -91,6 +91,44 @@ func stmtToNode(st ast.Stmt) []*mochias.Node {
 				Children: []*mochias.Node{lhs, rhs},
 			}}
 		}
+	case *ast.ForStmt:
+		body := blockToNode(s.Body)
+		// while style loop: for cond { .. }
+		if s.Init == nil && s.Post == nil {
+			return []*mochias.Node{{
+				Kind:     "while",
+				Children: []*mochias.Node{exprToNode(s.Cond), body},
+			}}
+		}
+		// basic for loop: for i := start; i < end; i++ { ... }
+		if as, ok := s.Init.(*ast.AssignStmt); ok &&
+			len(as.Lhs) == 1 && len(as.Rhs) == 1 &&
+			as.Tok == token.DEFINE {
+			if inc, ok := s.Post.(*ast.IncDecStmt); ok && inc.Tok == token.INC {
+				if id, ok := as.Lhs[0].(*ast.Ident); ok {
+					varName := id.Name
+					if xid, ok := inc.X.(*ast.Ident); ok && xid.Name == varName {
+						if be, ok := s.Cond.(*ast.BinaryExpr); ok {
+							if lhs, ok := be.X.(*ast.Ident); ok && lhs.Name == varName {
+								start := exprToNode(as.Rhs[0])
+								end := exprToNode(be.Y)
+								rng := &mochias.Node{Kind: "range", Children: []*mochias.Node{start, end}}
+								return []*mochias.Node{{
+									Kind:     "for",
+									Value:    varName,
+									Children: []*mochias.Node{rng, body},
+								}}
+							}
+						}
+					}
+				}
+			}
+		}
+		// fallback to while loop if pattern does not match
+		return []*mochias.Node{{
+			Kind:     "while",
+			Children: []*mochias.Node{exprToNode(s.Cond), body},
+		}}
 	case *ast.IfStmt:
 		cond := exprToNode(s.Cond)
 		thenBlk := blockToNode(s.Body)
