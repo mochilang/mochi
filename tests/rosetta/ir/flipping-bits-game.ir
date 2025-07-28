@@ -1,78 +1,620 @@
-func main (regs=11)
-  // var board = [[1,0,1],[0,1,0],[1,1,0]]
-  Const        r1, [[1, 0, 1], [0, 1, 0], [1, 1, 0]]
-  Move         r0, r1
-  SetGlobal    0,0,0,0
-  // board = flipRow(board, 1)
-  Move         r2, r0
-  Const        r4, 1
-  Move         r3, r4
-  Call2        r5, flipRow, r2, r3
-  Move         r0, r5
-  SetGlobal    0,0,0,0
-  // board = flipCol(board, 2)
-  Move         r6, r0
-  Const        r8, 2
-  Move         r7, r8
-  Call2        r9, flipCol, r6, r7
-  Move         r0, r9
-  SetGlobal    0,0,0,0
-  // print(str(board))
-  Str          r10, r0
-  Print        r10
+func __main (regs=1)
+  // main()
+  Call         r0, main, 
   Return       r0
 
-  // fun flipRow(b: list<list<int>>, r: int): list<list<int>> {
-func flipRow (regs=14)
-  // var row = 0
-  Const        r3, 0
-  Move         r4, r3
-L1:
-  // while row < len(b[r]) {
-  Index        r5, r1, r2
-  Len          r6, r5
-  LessInt      r7, r4, r6
-  JumpIfFalse  r7, L0
-  // b[r][row] = 1 - b[r][row]
-  Index        r8, r1, r2
-  Const        r9, 1
-  Index        r10, r1, r2
-  Index        r11, r10, r4
-  Sub          r12, r9, r11
-  SetIndex     r8, r4, r12
-  // row = row + 1
-  Const        r9, 1
-  AddInt       r13, r4, r9
-  Move         r4, r13
-  // while row < len(b[r]) {
-  Jump         L1
-L0:
-  // return b
-  Return       r1
+  // fun randInt(seed: int, n: int): list<int> {
+func randInt (regs=13)
+  // let next = (seed * 1664525 + 1013904223) % 2147483647
+  Const        r2, 1664525
+  Mul          r3, r0, r2
+  Const        r4, 1013904223
+  Add          r5, r3, r4
+  Const        r6, 2147483647
+  Mod          r7, r5, r6
+  Move         r8, r7
+  // return [next, next % n]
+  Move         r9, r8
+  Mod          r11, r8, r1
+  Move         r10, r11
+  MakeList     r12, 2, r9
+  Return       r12
 
-  // fun flipCol(b: list<list<int>>, c: int): list<list<int>> {
-func flipCol (regs=13)
+  // fun newBoard(n: int, seed: int): list<any> {
+func newBoard (regs=26)
+  // var board: list<list<int>> = []
+  Const        r2, []
+  Move         r3, r2
+  // var s = seed
+  Move         r4, r1
+  // var i = 0
+  Const        r5, 0
+  Move         r6, r5
+L3:
+  // while i < n {
+  Less         r7, r6, r0
+  JumpIfFalse  r7, L0
+  // var row: list<int> = []
+  Const        r2, []
+  Move         r8, r2
+  // var j = 0
+  Const        r5, 0
+  Move         r9, r5
+L2:
+  // while j < n {
+  Less         r10, r9, r0
+  JumpIfFalse  r10, L1
+  // var r = randInt(s, 2)
+  Move         r11, r4
+  Const        r13, 2
+  Move         r12, r13
+  Call2        r14, randInt, r11, r12
+  Move         r15, r14
+  // s = r[0]
+  Const        r5, 0
+  Index        r16, r15, r5
+  Move         r4, r16
+  // row = append(row, r[1])
+  Const        r17, 1
+  Index        r18, r15, r17
+  Append       r19, r8, r18
+  Move         r8, r19
+  // j = j + 1
+  Const        r17, 1
+  AddInt       r20, r9, r17
+  Move         r9, r20
+  // while j < n {
+  Jump         L2
+L1:
+  // board = append(board, row)
+  Append       r21, r3, r8
+  Move         r3, r21
+  // i = i + 1
+  Const        r17, 1
+  AddInt       r22, r6, r17
+  Move         r6, r22
+  // while i < n {
+  Jump         L3
+L0:
+  // return [board, s]
+  Move         r23, r3
+  Move         r24, r4
+  MakeList     r25, 2, r23
+  Return       r25
+
+  // fun copyBoard(b: list<list<int>>): list<list<int>> {
+func copyBoard (regs=19)
+  // var nb: list<list<int>> = []
+  Const        r1, []
+  Move         r2, r1
   // var i = 0
   Const        r3, 0
   Move         r4, r3
-L1:
+L3:
   // while i < len(b) {
-  Len          r5, r1
+  Len          r5, r0
   LessInt      r6, r4, r5
   JumpIfFalse  r6, L0
-  // b[i][c] = 1 - b[i][c]
-  Index        r7, r1, r4
-  Const        r8, 1
-  Index        r9, r1, r4
-  Index        r10, r9, r2
-  Sub          r11, r8, r10
-  SetIndex     r7, r2, r11
+  // var row: list<int> = []
+  Const        r1, []
+  Move         r7, r1
+  // var j = 0
+  Const        r3, 0
+  Move         r8, r3
+L2:
+  // while j < len(b[i]) {
+  Index        r9, r0, r4
+  Len          r10, r9
+  LessInt      r11, r8, r10
+  JumpIfFalse  r11, L1
+  // row = append(row, b[i][j])
+  Index        r12, r0, r4
+  Index        r13, r12, r8
+  Append       r14, r7, r13
+  Move         r7, r14
+  // j = j + 1
+  Const        r15, 1
+  AddInt       r16, r8, r15
+  Move         r8, r16
+  // while j < len(b[i]) {
+  Jump         L2
+L1:
+  // nb = append(nb, row)
+  Append       r17, r2, r7
+  Move         r2, r17
   // i = i + 1
+  Const        r15, 1
+  AddInt       r18, r4, r15
+  Move         r4, r18
+  // while i < len(b) {
+  Jump         L3
+L0:
+  // return nb
+  Return       r2
+
+  // fun flipRow(b: list<list<int>>, r: int): list<list<int>> {
+func flipRow (regs=13)
+  // var j = 0
+  Const        r2, 0
+  Move         r3, r2
+L1:
+  // while j < len(b[r]) {
+  Index        r4, r0, r1
+  Len          r5, r4
+  LessInt      r6, r3, r5
+  JumpIfFalse  r6, L0
+  // b[r][j] = 1 - b[r][j]
+  Index        r7, r0, r1
   Const        r8, 1
-  AddInt       r12, r4, r8
-  Move         r4, r12
+  Index        r9, r0, r1
+  Index        r10, r9, r3
+  Sub          r11, r8, r10
+  SetIndex     r7, r3, r11
+  // j = j + 1
+  Const        r8, 1
+  AddInt       r12, r3, r8
+  Move         r3, r12
+  // while j < len(b[r]) {
+  Jump         L1
+L0:
+  // return b
+  Return       r0
+
+  // fun flipCol(b: list<list<int>>, c: int): list<list<int>> {
+func flipCol (regs=12)
+  // var i = 0
+  Const        r2, 0
+  Move         r3, r2
+L1:
+  // while i < len(b) {
+  Len          r4, r0
+  LessInt      r5, r3, r4
+  JumpIfFalse  r5, L0
+  // b[i][c] = 1 - b[i][c]
+  Index        r6, r0, r3
+  Const        r7, 1
+  Index        r8, r0, r3
+  Index        r9, r8, r1
+  Sub          r10, r7, r9
+  SetIndex     r6, r1, r10
+  // i = i + 1
+  Const        r7, 1
+  AddInt       r11, r3, r7
+  Move         r3, r11
   // while i < len(b) {
   Jump         L1
 L0:
   // return b
-  Return       r1
+  Return       r0
+
+  // fun boardsEqual(a: list<list<int>>, b: list<list<int>>): bool {
+func boardsEqual (regs=20)
+  // var i = 0
+  Const        r2, 0
+  Move         r3, r2
+L4:
+  // while i < len(a) {
+  Len          r4, r0
+  LessInt      r5, r3, r4
+  JumpIfFalse  r5, L0
+  // var j = 0
+  Const        r2, 0
+  Move         r6, r2
+L3:
+  // while j < len(a[i]) {
+  Index        r7, r0, r3
+  Len          r8, r7
+  LessInt      r9, r6, r8
+  JumpIfFalse  r9, L1
+  // if a[i][j] != b[i][j] { return false }
+  Index        r10, r0, r3
+  Index        r11, r10, r6
+  Index        r12, r1, r3
+  Index        r13, r12, r6
+  NotEqual     r14, r11, r13
+  JumpIfFalse  r14, L2
+  Const        r15, false
+  Return       r15
+L2:
+  // j = j + 1
+  Const        r16, 1
+  AddInt       r17, r6, r16
+  Move         r6, r17
+  // while j < len(a[i]) {
+  Jump         L3
+L1:
+  // i = i + 1
+  Const        r16, 1
+  AddInt       r18, r3, r16
+  Move         r3, r18
+  // while i < len(a) {
+  Jump         L4
+L0:
+  // return true
+  Const        r19, true
+  Return       r19
+
+  // fun shuffleBoard(b: list<list<int>>, seed: int): list<any> {
+func shuffleBoard (regs=31)
+  // var s = seed
+  Move         r2, r1
+  // var n = len(b)
+  Len          r3, r0
+  Move         r4, r3
+  // var k = 0
+  Const        r5, 0
+  Move         r6, r5
+L3:
+  // while k < 2 * n {
+  Const        r7, 2
+  MulInt       r8, r7, r4
+  LessInt      r9, r6, r8
+  JumpIfFalse  r9, L0
+  // var r = randInt(s, n)
+  Move         r10, r2
+  Move         r11, r4
+  Call2        r12, randInt, r10, r11
+  Move         r13, r12
+  // s = r[0]
+  Const        r5, 0
+  Index        r14, r13, r5
+  Move         r2, r14
+  // let idx = r[1] as int
+  Const        r15, 1
+  Index        r16, r13, r15
+  Cast         r17, r16, int
+  Move         r18, r17
+  // if k % 2 == 0 {
+  Const        r7, 2
+  ModInt       r19, r6, r7
+  Const        r5, 0
+  EqualInt     r20, r19, r5
+  JumpIfFalse  r20, L1
+  // b = flipRow(b, idx)
+  Move         r21, r0
+  Move         r22, r18
+  Call2        r23, flipRow, r21, r22
+  Move         r0, r23
+  // if k % 2 == 0 {
+  Jump         L2
+L1:
+  // b = flipCol(b, idx)
+  Move         r24, r0
+  Move         r25, r18
+  Call2        r26, flipCol, r24, r25
+  Move         r0, r26
+L2:
+  // k = k + 1
+  Const        r15, 1
+  AddInt       r27, r6, r15
+  Move         r6, r27
+  // while k < 2 * n {
+  Jump         L3
+L0:
+  // return [b, s]
+  Move         r28, r0
+  Move         r29, r2
+  MakeList     r30, 2, r28
+  Return       r30
+
+  // fun solve(board: list<list<int>>, target: list<list<int>>): map<string, list<int>> {
+func solve (regs=43)
+  // let n = len(board)
+  Len          r2, r0
+  Move         r3, r2
+  // var row: list<int> = []
+  Const        r4, []
+  Move         r5, r4
+  // var col: list<int> = []
+  Const        r4, []
+  Move         r6, r4
+  // var i = 0
+  Const        r7, 0
+  Move         r8, r7
+L1:
+  // while i < n {
+  LessInt      r9, r8, r3
+  JumpIfFalse  r9, L0
+  // let diff = if board[i][0] != target[i][0] { 1 } else { 0 }
+  Index        r10, r0, r8
+  Const        r7, 0
+  Index        r11, r10, r7
+  Index        r12, r1, r8
+  Const        r7, 0
+  Index        r13, r12, r7
+  NotEqual     r14, r11, r13
+  Const        r15, 1
+  Const        r7, 0
+  Select       16,14,15,7
+  Move         r17, r16
+  // row = append(row, diff)
+  Append       r18, r5, r17
+  Move         r5, r18
+  // i = i + 1
+  Const        r15, 1
+  AddInt       r19, r8, r15
+  Move         r8, r19
+  // while i < n {
+  Jump         L1
+L0:
+  // var j = 0
+  Const        r7, 0
+  Move         r20, r7
+L3:
+  // while j < n {
+  LessInt      r21, r20, r3
+  JumpIfFalse  r21, L2
+  // let diff = if board[0][j] != target[0][j] { 1 } else { 0 }
+  Const        r7, 0
+  Index        r22, r0, r7
+  Index        r23, r22, r20
+  Const        r7, 0
+  Index        r24, r1, r7
+  Index        r25, r24, r20
+  NotEqual     r26, r23, r25
+  Const        r15, 1
+  Const        r7, 0
+  Select       27,26,15,7
+  Move         r28, r27
+  // let val = (diff + row[0]) % 2
+  Const        r7, 0
+  Index        r29, r5, r7
+  Add          r30, r28, r29
+  Const        r31, 2
+  Mod          r32, r30, r31
+  Move         r33, r32
+  // col = append(col, val)
+  Append       r34, r6, r33
+  Move         r6, r34
+  // j = j + 1
+  Const        r15, 1
+  AddInt       r35, r20, r15
+  Move         r20, r35
+  // while j < n {
+  Jump         L3
+L2:
+  // return { "row": row, "col": col }
+  Const        r36, "row"
+  Const        r37, "col"
+  Move         r38, r36
+  Move         r39, r5
+  Move         r40, r37
+  Move         r41, r6
+  MakeMap      r42, 2, r38
+  Return       r42
+
+  // fun applySolution(b: list<list<int>>, sol: map<string, list<int>>): list<any> {
+func applySolution (regs=35)
+  // var board = b
+  Move         r2, r0
+  // var moves = 0
+  Const        r3, 0
+  Move         r4, r3
+  // var i = 0
+  Const        r3, 0
+  Move         r5, r3
+L2:
+  // while i < len(sol["row"]) {
+  Const        r6, "row"
+  Index        r7, r1, r6
+  Len          r8, r7
+  LessInt      r9, r5, r8
+  JumpIfFalse  r9, L0
+  // if sol["row"][i] == 1 {
+  Const        r6, "row"
+  Index        r10, r1, r6
+  Index        r11, r10, r5
+  Const        r12, 1
+  Equal        r13, r11, r12
+  JumpIfFalse  r13, L1
+  // board = flipRow(board, i)
+  Move         r14, r2
+  Move         r15, r5
+  Call2        r16, flipRow, r14, r15
+  Move         r2, r16
+  // moves = moves + 1
+  Const        r12, 1
+  AddInt       r17, r4, r12
+  Move         r4, r17
+L1:
+  // i = i + 1
+  Const        r12, 1
+  AddInt       r18, r5, r12
+  Move         r5, r18
+  // while i < len(sol["row"]) {
+  Jump         L2
+L0:
+  // var j = 0
+  Const        r3, 0
+  Move         r19, r3
+L5:
+  // while j < len(sol["col"]) {
+  Const        r20, "col"
+  Index        r21, r1, r20
+  Len          r22, r21
+  LessInt      r23, r19, r22
+  JumpIfFalse  r23, L3
+  // if sol["col"][j] == 1 {
+  Const        r20, "col"
+  Index        r24, r1, r20
+  Index        r25, r24, r19
+  Const        r12, 1
+  Equal        r26, r25, r12
+  JumpIfFalse  r26, L4
+  // board = flipCol(board, j)
+  Move         r27, r2
+  Move         r28, r19
+  Call2        r29, flipCol, r27, r28
+  Move         r2, r29
+  // moves = moves + 1
+  Const        r12, 1
+  AddInt       r30, r4, r12
+  Move         r4, r30
+L4:
+  // j = j + 1
+  Const        r12, 1
+  AddInt       r31, r19, r12
+  Move         r19, r31
+  // while j < len(sol["col"]) {
+  Jump         L5
+L3:
+  // return [board, moves]
+  Move         r32, r2
+  Move         r33, r4
+  MakeList     r34, 2, r32
+  Return       r34
+
+  // fun printBoard(b: list<list<int>>) {
+func printBoard (regs=24)
+  // var i = 0
+  Const        r1, 0
+  Move         r2, r1
+L4:
+  // while i < len(b) {
+  Len          r3, r0
+  LessInt      r4, r2, r3
+  JumpIfFalse  r4, L0
+  // var line = ""
+  Const        r5, ""
+  Move         r6, r5
+  // var j = 0
+  Const        r1, 0
+  Move         r7, r1
+L3:
+  // while j < len(b[i]) {
+  Index        r8, r0, r2
+  Len          r9, r8
+  LessInt      r10, r7, r9
+  JumpIfFalse  r10, L1
+  // line = line + str(b[i][j])
+  Index        r11, r0, r2
+  Index        r12, r11, r7
+  Str          r13, r12
+  Add          r14, r6, r13
+  Move         r6, r14
+  // if j < len(b[i]) - 1 { line = line + " " }
+  Index        r15, r0, r2
+  Len          r16, r15
+  Const        r17, 1
+  SubInt       r18, r16, r17
+  LessInt      r19, r7, r18
+  JumpIfFalse  r19, L2
+  Const        r20, " "
+  Add          r21, r6, r20
+  Move         r6, r21
+L2:
+  // j = j + 1
+  Const        r17, 1
+  AddInt       r22, r7, r17
+  Move         r7, r22
+  // while j < len(b[i]) {
+  Jump         L3
+L1:
+  // print(line)
+  Print        r6
+  // i = i + 1
+  Const        r17, 1
+  AddInt       r23, r2, r17
+  Move         r2, r23
+  // while i < len(b) {
+  Jump         L4
+L0:
+  Return       r0
+
+  // fun main() {
+func main (regs=57)
+  // let n = 3
+  Const        r0, 3
+  Move         r1, r0
+  // var seed = 1
+  Const        r2, 1
+  Move         r3, r2
+  // var res = newBoard(n, seed)
+  Move         r4, r1
+  Move         r5, r3
+  Call2        r6, newBoard, r4, r5
+  Move         r7, r6
+  // var target = res[0] as list<list<int>>
+  Const        r8, 0
+  Index        r9, r7, r8
+  Cast         r10, r9, [[int]]
+  Move         r11, r10
+  // seed = res[1] as int
+  Const        r2, 1
+  Index        r12, r7, r2
+  Cast         r13, r12, int
+  Move         r3, r13
+  // var board = copyBoard(target)
+  Move         r14, r11
+  Call         r15, copyBoard, r14
+  Move         r16, r15
+L0:
+  // while true {
+  Const        r17, true
+  // var sres = shuffleBoard(copyBoard(board), seed)
+  Move         r20, r16
+  Call         r21, copyBoard, r20
+  Move         r18, r21
+  Move         r19, r3
+  Call2        r22, shuffleBoard, r18, r19
+  Move         r23, r22
+  // board = sres[0] as list<list<int>>
+  Const        r8, 0
+  Index        r24, r23, r8
+  Cast         r25, r24, [[int]]
+  Move         r16, r25
+  // seed = sres[1] as int
+  Const        r2, 1
+  Index        r26, r23, r2
+  Cast         r27, r26, int
+  Move         r3, r27
+  // if !boardsEqual(board, target) { break }
+  Move         r28, r16
+  Move         r29, r11
+  Call2        r30, boardsEqual, r28, r29
+  Not          r31, r30
+  JumpIfFalse  r31, L0
+  // print("Target:")
+  Const        r32, "Target:"
+  Print        r32
+  // printBoard(target)
+  Move         r33, r11
+  Call         r34, printBoard, r33
+  // print("Board:")
+  Const        r35, "Board:"
+  Print        r35
+  // printBoard(board)
+  Move         r36, r16
+  Call         r37, printBoard, r36
+  // let sol = solve(board, target)
+  Move         r38, r16
+  Move         r39, r11
+  Call2        r40, solve, r38, r39
+  Move         r41, r40
+  // var ares = applySolution(board, sol)
+  Move         r42, r16
+  Move         r43, r41
+  Call2        r44, applySolution, r42, r43
+  Move         r45, r44
+  // board = ares[0] as list<list<int>>
+  Const        r8, 0
+  Index        r46, r45, r8
+  Cast         r47, r46, [[int]]
+  Move         r16, r47
+  // let moves = ares[1] as int
+  Const        r2, 1
+  Index        r48, r45, r2
+  Cast         r49, r48, int
+  Move         r50, r49
+  // print("Solved:")
+  Const        r51, "Solved:"
+  Print        r51
+  // printBoard(board)
+  Move         r52, r16
+  Call         r53, printBoard, r52
+  // print("Moves: " + str(moves))
+  Const        r54, "Moves: "
+  Str          r55, r50
+  Add          r56, r54, r55
+  Print        r56
+  Return       r0

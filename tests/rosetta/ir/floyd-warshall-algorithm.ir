@@ -1,5 +1,384 @@
-func main (regs=1)
-  // print("shortest paths computed")
-  Const        r0, "shortest paths computed"
-  Print        r0
+func __main (regs=1)
+  // main()
+  Call         r0, main, 
   Return       r0
+
+  // fun main() {
+func main (regs=111)
+  // let INF = 1000000000
+  Const        r0, 1000000000
+  Move         r1, r0
+  // let n = 4
+  Const        r2, 4
+  Move         r3, r2
+  // var dist: list<list<int>> = []
+  Const        r4, []
+  Move         r5, r4
+  // var next: list<list<int>> = []
+  Const        r4, []
+  Move         r6, r4
+  // var i: int = 0
+  Const        r7, 0
+  Move         r8, r7
+L5:
+  // while i < n {
+  LessInt      r9, r8, r3
+  JumpIfFalse  r9, L0
+  // var row: list<int> = []
+  Const        r4, []
+  Move         r10, r4
+  // var nrow: list<int> = []
+  Const        r4, []
+  Move         r11, r4
+  // var j: int = 0
+  Const        r7, 0
+  Move         r12, r7
+L4:
+  // while j < n {
+  LessInt      r13, r12, r3
+  JumpIfFalse  r13, L1
+  // if i == j { row = append(row, 0) } else { row = append(row, INF) }
+  EqualInt     r14, r8, r12
+  JumpIfFalse  r14, L2
+  Const        r7, 0
+  Append       r15, r10, r7
+  Move         r10, r15
+  Jump         L3
+L2:
+  Append       r16, r10, r1
+  Move         r10, r16
+L3:
+  // nrow = append(nrow, 0 - 1)
+  Const        r7, 0
+  Const        r17, 1
+  SubInt       r18, r7, r17
+  Append       r19, r11, r18
+  Move         r11, r19
+  // j = j + 1
+  Const        r17, 1
+  AddInt       r20, r12, r17
+  Move         r12, r20
+  // while j < n {
+  Jump         L4
+L1:
+  // dist = append(dist, row)
+  Append       r21, r5, r10
+  Move         r5, r21
+  // next = append(next, nrow)
+  Append       r22, r6, r11
+  Move         r6, r22
+  // i = i + 1
+  Const        r17, 1
+  AddInt       r23, r8, r17
+  Move         r8, r23
+  // while i < n {
+  Jump         L5
+L0:
+  // dist[0][2] = -2
+  Const        r7, 0
+  Index        r24, r5, r7
+  Const        r25, 2
+  NegInt       r26, r25
+  Const        r25, 2
+  SetIndex     r24, r25, r26
+  // next[0][2] = 2
+  Const        r7, 0
+  Index        r27, r6, r7
+  Const        r25, 2
+  Const        r25, 2
+  SetIndex     r27, r25, r25
+  // dist[2][3] = 2
+  Const        r25, 2
+  Index        r28, r5, r25
+  Const        r25, 2
+  Const        r29, 3
+  SetIndex     r28, r29, r25
+  // next[2][3] = 3
+  Const        r25, 2
+  Index        r30, r6, r25
+  Const        r29, 3
+  Const        r29, 3
+  SetIndex     r30, r29, r29
+  // dist[3][1] = -1
+  Const        r29, 3
+  Index        r31, r5, r29
+  Const        r17, 1
+  NegInt       r32, r17
+  Const        r17, 1
+  SetIndex     r31, r17, r32
+  // next[3][1] = 1
+  Const        r29, 3
+  Index        r33, r6, r29
+  Const        r17, 1
+  Const        r17, 1
+  SetIndex     r33, r17, r17
+  // dist[1][0] = 4
+  Const        r17, 1
+  Index        r34, r5, r17
+  Const        r2, 4
+  Const        r7, 0
+  SetIndex     r34, r7, r2
+  // next[1][0] = 0
+  Const        r17, 1
+  Index        r35, r6, r17
+  Const        r7, 0
+  Const        r7, 0
+  SetIndex     r35, r7, r7
+  // dist[1][2] = 3
+  Const        r17, 1
+  Index        r36, r5, r17
+  Const        r29, 3
+  Const        r25, 2
+  SetIndex     r36, r25, r29
+  // next[1][2] = 2
+  Const        r17, 1
+  Index        r37, r6, r17
+  Const        r25, 2
+  Const        r25, 2
+  SetIndex     r37, r25, r25
+  // var k: int = 0
+  Const        r7, 0
+  Move         r38, r7
+L13:
+  // while k < n {
+  LessInt      r39, r38, r3
+  JumpIfFalse  r39, L6
+  // var i: int = 0
+  Const        r7, 0
+  Move         r8, r7
+L12:
+  // while i < n {
+  LessInt      r40, r8, r3
+  JumpIfFalse  r40, L7
+  // var j: int = 0
+  Const        r7, 0
+  Move         r41, r7
+L11:
+  // while j < n {
+  LessInt      r42, r41, r3
+  JumpIfFalse  r42, L8
+  // if dist[i][k] < INF && dist[k][j] < INF {
+  Index        r43, r5, r8
+  Index        r44, r43, r38
+  Less         r45, r44, r1
+  Index        r46, r5, r38
+  Index        r47, r46, r41
+  Less         r48, r47, r1
+  Move         r49, r45
+  JumpIfFalse  r49, L9
+  Move         r49, r48
+L9:
+  JumpIfFalse  r49, L10
+  // let alt = dist[i][k] + dist[k][j]
+  Index        r50, r5, r8
+  Index        r51, r50, r38
+  Index        r52, r5, r38
+  Index        r53, r52, r41
+  Add          r54, r51, r53
+  Move         r55, r54
+  // if alt < dist[i][j] {
+  Index        r56, r5, r8
+  Index        r57, r56, r41
+  Less         r58, r55, r57
+  JumpIfFalse  r58, L10
+  // dist[i][j] = alt
+  Index        r59, r5, r8
+  SetIndex     r59, r41, r55
+  // next[i][j] = next[i][k]
+  Index        r60, r6, r8
+  Index        r61, r6, r8
+  Index        r62, r61, r38
+  SetIndex     r60, r41, r62
+L10:
+  // j = j + 1
+  Const        r17, 1
+  AddInt       r63, r41, r17
+  Move         r41, r63
+  // while j < n {
+  Jump         L11
+L8:
+  // i = i + 1
+  Const        r17, 1
+  AddInt       r64, r8, r17
+  Move         r8, r64
+  // while i < n {
+  Jump         L12
+L7:
+  // k = k + 1
+  Const        r17, 1
+  AddInt       r65, r38, r17
+  Move         r38, r65
+  // while k < n {
+  Jump         L13
+L6:
+  // fun path(u:int, v:int): list<int> {
+  Move         r66, r1
+  Move         r67, r5
+  Move         r68, r8
+  Move         r69, r38
+  Move         r70, r3
+  Move         r71, r6
+  MakeClosure  r72, path, 6, r66
+  // fun pathStr(p:list<int>): string {
+  Move         r73, r1
+  Move         r74, r5
+  Move         r75, r8
+  Move         r76, r38
+  Move         r77, r3
+  Move         r78, r6
+  Move         r79, r72
+  MakeClosure  r80, pathStr, 7, r73
+  // print("pair\tdist\tpath")
+  Const        r81, "pair\tdist\tpath"
+  Print        r81
+  // var a:int = 0
+  Const        r7, 0
+  Move         r82, r7
+L18:
+  // while a < n {
+  LessInt      r83, r82, r3
+  JumpIfFalse  r83, L14
+  // var b:int = 0
+  Const        r7, 0
+  Move         r84, r7
+L17:
+  // while b < n {
+  LessInt      r85, r84, r3
+  JumpIfFalse  r85, L15
+  // if a != b {
+  NotEqual     r86, r82, r84
+  JumpIfFalse  r86, L16
+  // print(str(a+1) + " -> " + str(b+1) + "\t" + str(dist[a][b]) + "\t" + pathStr(path(a+1,b+1)))
+  Const        r17, 1
+  AddInt       r87, r82, r17
+  Str          r88, r87
+  Const        r89, " -> "
+  Add          r90, r88, r89
+  Const        r17, 1
+  AddInt       r91, r84, r17
+  Str          r92, r91
+  Add          r93, r90, r92
+  Const        r94, "\t"
+  Add          r95, r93, r94
+  Index        r96, r5, r82
+  Index        r97, r96, r84
+  Str          r98, r97
+  Add          r99, r95, r98
+  Const        r94, "\t"
+  Add          r100, r99, r94
+  Const        r17, 1
+  AddInt       r104, r82, r17
+  Move         r102, r104
+  Const        r17, 1
+  AddInt       r105, r84, r17
+  Move         r103, r105
+  CallV        r106, r72, 2, r102
+  Move         r101, r106
+  CallV        r107, r80, 1, r101
+  Add          r108, r100, r107
+  Print        r108
+L16:
+  // b = b + 1
+  Const        r17, 1
+  AddInt       r109, r84, r17
+  Move         r84, r109
+  // while b < n {
+  Jump         L17
+L15:
+  // a = a + 1
+  Const        r17, 1
+  AddInt       r110, r82, r17
+  Move         r82, r110
+  // while a < n {
+  Jump         L18
+L14:
+  Return       r0
+
+  // fun path(u:int, v:int): list<int> {
+func path (regs=28)
+  // var ui:int = u - 1
+  Const        r8, 1
+  Sub          r9, r6, r8
+  Move         r10, r9
+  // var vi:int = v - 1
+  Const        r8, 1
+  Sub          r11, r7, r8
+  Move         r12, r11
+  // if next[ui][vi] == 0 - 1 { return [] }
+  Index        r13, r5, r10
+  Index        r14, r13, r12
+  Const        r15, 0
+  Const        r8, 1
+  SubInt       r16, r15, r8
+  Equal        r17, r14, r16
+  JumpIfFalse  r17, L0
+  Const        r18, []
+  Return       r18
+L0:
+  // var p:list<int> = [u]
+  Move         r19, r6
+  MakeList     r20, 1, r19
+  Move         r21, r20
+  // var cur:int = ui
+  Move         r22, r10
+L2:
+  // while cur != vi {
+  NotEqual     r23, r22, r12
+  JumpIfFalse  r23, L1
+  // cur = next[cur][vi]
+  Index        r24, r5, r22
+  Index        r25, r24, r12
+  Move         r22, r25
+  // p = append(p, cur + 1)
+  Const        r8, 1
+  Add          r26, r22, r8
+  Append       r27, r21, r26
+  Move         r21, r27
+  // while cur != vi {
+  Jump         L2
+L1:
+  // return p
+  Return       r21
+
+  // fun pathStr(p:list<int>): string {
+func pathStr (regs=26)
+  // var s=""
+  Const        r8, ""
+  Move         r9, r8
+  // var first = true
+  Const        r10, true
+  Move         r11, r10
+  // var idx:int = 0
+  Const        r12, 0
+  Move         r13, r12
+L2:
+  // while idx < len(p) {
+  Len          r14, r7
+  LessInt      r15, r13, r14
+  JumpIfFalse  r15, L0
+  // let x = p[idx]
+  Index        r16, r7, r13
+  Move         r17, r16
+  // if !first { s = s + " -> " }
+  Not          r18, r11
+  JumpIfFalse  r18, L1
+  Const        r19, " -> "
+  Add          r20, r9, r19
+  Move         r9, r20
+L1:
+  // s = s + str(x)
+  Str          r21, r17
+  Add          r22, r9, r21
+  Move         r9, r22
+  // first = false
+  Const        r23, false
+  Move         r11, r23
+  // idx = idx + 1
+  Const        r24, 1
+  AddInt       r25, r13, r24
+  Move         r13, r25
+  // while idx < len(p) {
+  Jump         L2
+L0:
+  // return s
+  Return       r9

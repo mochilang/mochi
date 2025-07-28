@@ -1,4 +1,4 @@
-func main (regs=2)
+func __main (regs=2)
   // process()
   Call         r0, process, 
   // print("done")

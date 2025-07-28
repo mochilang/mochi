@@ -1,4 +1,4 @@
-func main (regs=3)
+func __main (regs=3)
   // var fs: map<string,int> = {"input.txt": 0}
   Const        r1, {"input.txt": 0}
   Move         r0, r1

@@ -1,4 +1,4 @@
-func main (regs=1)
+func __main (regs=1)
   Return       r0
 
   // fun fibNumber(): fun(): int {

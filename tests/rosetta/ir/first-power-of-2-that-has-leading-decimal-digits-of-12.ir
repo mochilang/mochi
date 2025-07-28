@@ -1,0 +1,219 @@
+func __main (regs=29)
+  // var params = [[12,1], [12,2], [123,45]]
+  Const        r2, [[12, 1], [12, 2], [123, 45]]
+  Move         r0, r2
+  SetGlobal    0,0,0,0
+  // var idx = 0
+  Const        r3, 0
+  Move         r1, r3
+  SetGlobal    1,1,0,0
+L1:
+  // while idx < len(params) {
+  Const        r4, 3
+  LessInt      r5, r1, r4
+  JumpIfFalse  r5, L0
+  // let L = params[idx][0]
+  Index        r6, r0, r1
+  Const        r3, 0
+  Index        r7, r6, r3
+  Move         r8, r7
+  // let m = params[idx][1]
+  Index        r9, r0, r1
+  Const        r10, 1
+  Index        r11, r9, r10
+  Move         r12, r11
+  // print("p(" + str(L) + ", " + str(m) + ") = " + commatize(p(L, m)))
+  Const        r13, "p("
+  Str          r14, r8
+  Add          r15, r13, r14
+  Const        r16, ", "
+  Add          r17, r15, r16
+  Str          r18, r12
+  Add          r19, r17, r18
+  Const        r20, ") = "
+  Add          r21, r19, r20
+  Move         r23, r8
+  Move         r24, r12
+  Call2        r25, p, r23, r24
+  Move         r22, r25
+  Call         r26, commatize, r22
+  Add          r27, r21, r26
+  Print        r27
+  // idx = idx + 1
+  Const        r10, 1
+  AddInt       r28, r1, r10
+  Move         r1, r28
+  SetGlobal    1,1,0,0
+  // while idx < len(params) {
+  Jump         L1
+L0:
+  Return       r0
+
+  // fun commatize(n: int): string {
+func commatize (regs=21)
+  // var s = str(n)
+  Str          r3, r2
+  Move         r4, r3
+  // var i = len(s) % 3
+  Len          r5, r4
+  Const        r6, 3
+  ModInt       r7, r5, r6
+  Move         r8, r7
+  // if i == 0 { i = 3 }
+  Const        r9, 0
+  EqualInt     r10, r8, r9
+  JumpIfFalse  r10, L0
+  Const        r6, 3
+  Move         r8, r6
+L0:
+  // var out = substring(s, 0, i)
+  Const        r9, 0
+  Slice        r11, r4, r9, r8
+  Move         r12, r11
+L2:
+  // while i < len(s) {
+  Len          r13, r4
+  LessInt      r14, r8, r13
+  JumpIfFalse  r14, L1
+  // out = out + "," + substring(s, i, i+3)
+  Const        r15, ","
+  Add          r16, r12, r15
+  Const        r6, 3
+  AddInt       r17, r8, r6
+  Slice        r18, r4, r8, r17
+  Add          r19, r16, r18
+  Move         r12, r19
+  // i = i + 3
+  Const        r6, 3
+  AddInt       r20, r8, r6
+  Move         r8, r20
+  // while i < len(s) {
+  Jump         L2
+L1:
+  // return out
+  Return       r12
+
+  // fun p(L: int, n: int): int {
+func p (regs=47)
+  // let Ls = str(L)
+  Str          r4, r2
+  Move         r5, r4
+  // var digits = 1
+  Const        r6, 1
+  Move         r7, r6
+  // var d = 1
+  Const        r6, 1
+  Move         r8, r6
+L1:
+  // while d <= 18 - len(Ls) {
+  Const        r9, 18
+  Len          r10, r5
+  SubInt       r11, r9, r10
+  LessEqInt    r12, r8, r11
+  JumpIfFalse  r12, L0
+  // digits = digits * 10
+  Const        r13, 10
+  MulInt       r14, r7, r13
+  Move         r7, r14
+  // d = d + 1
+  Const        r6, 1
+  AddInt       r15, r8, r6
+  Move         r8, r15
+  // while d <= 18 - len(Ls) {
+  Jump         L1
+L0:
+  // let ten18 = 1000000000000000000
+  Const        r16, 1000000000000000000
+  Move         r17, r16
+  // var count = 0
+  Const        r18, 0
+  Move         r19, r18
+  // var i = 0
+  Const        r18, 0
+  Move         r20, r18
+  // var probe = 1
+  Const        r6, 1
+  Move         r21, r6
+L8:
+  // while true {
+  Const        r22, true
+  JumpIfFalse  r22, L2
+  // probe = probe * 2
+  Const        r23, 2
+  MulInt       r24, r21, r23
+  Move         r21, r24
+  // i = i + 1
+  Const        r6, 1
+  AddInt       r25, r20, r6
+  Move         r20, r25
+  // if probe >= ten18 {
+  LessEqInt    r26, r17, r21
+  JumpIfFalse  r26, L3
+L6:
+  // while true {
+  Const        r22, true
+  JumpIfFalse  r22, L3
+  // if probe >= ten18 { probe = probe / 10 }
+  LessEqInt    r27, r17, r21
+  JumpIfFalse  r27, L4
+  Const        r13, 10
+  DivInt       r28, r21, r13
+  Move         r21, r28
+L4:
+  // if probe / digits == L {
+  DivInt       r29, r21, r7
+  Equal        r30, r29, r2
+  JumpIfFalse  r30, L5
+  // count = count + 1
+  Const        r6, 1
+  AddInt       r31, r19, r6
+  Move         r19, r31
+  // if count >= n {
+  LessEq       r32, r3, r19
+  JumpIfFalse  r32, L5
+  // count = count - 1
+  Const        r6, 1
+  SubInt       r33, r19, r6
+  Move         r19, r33
+  // break
+  Jump         L3
+L5:
+  // probe = probe * 2
+  Const        r23, 2
+  MulInt       r34, r21, r23
+  Move         r21, r34
+  // i = i + 1
+  Const        r6, 1
+  AddInt       r35, r20, r6
+  Move         r20, r35
+  // while true {
+  Jump         L6
+L3:
+  // var ps = str(probe)
+  Str          r36, r21
+  Move         r37, r36
+  // var le = len(Ls)
+  Len          r38, r5
+  Move         r39, r38
+  // if le > len(ps) { le = len(ps) }
+  Len          r40, r37
+  LessInt      r41, r40, r39
+  JumpIfFalse  r41, L7
+  Len          r42, r37
+  Move         r39, r42
+L7:
+  // if substring(ps, 0, le) == Ls {
+  Const        r18, 0
+  Slice        r43, r37, r18, r39
+  Equal        r44, r43, r5
+  JumpIfFalse  r44, L8
+  // count = count + 1
+  Const        r6, 1
+  AddInt       r45, r19, r6
+  Move         r19, r45
+  // if count >= n {
+  LessEq       r46, r3, r19
+  JumpIfFalse  r46, L8
+L2:
+  // return i
+  Return       r20

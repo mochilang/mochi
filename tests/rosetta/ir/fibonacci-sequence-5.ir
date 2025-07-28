@@ -1,4 +1,4 @@
-func main (regs=3)
+func __main (regs=3)
   // var memo: map<int,int> = {0: 0, 1: 1}
   Const        r1, {"0": 0, "1": 1}
   Move         r0, r1
