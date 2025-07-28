@@ -97,9 +97,12 @@ func TestConvert_Golden(t *testing.T) {
 		"fun_three_args":     true,
 		"fun_expr_in_let":    true,
 		"string_concat":      true,
-		"var_assignment":     true,
-		"while_loop":         true,
-	}
+                "var_assignment":     true,
+                "while_loop":         true,
+                "for_list_collection": true,
+                "len_map":            true,
+                "math_ops":           true,
+        }
 	outDir := filepath.Join(root, "tests", "a2mochi", "x", "swift")
 	os.MkdirAll(outDir, 0o755)
 	for _, src := range files {
