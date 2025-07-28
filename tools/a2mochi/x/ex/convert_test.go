@@ -89,7 +89,9 @@ func TestConvert_Golden(t *testing.T) {
 	}
 
 	allowed := map[string]bool{
-		"bool_chain": true,
+		"bool_chain":    true,
+		"let_and_print": true,
+		"print_hello":   true,
 	}
 
 	outDir := filepath.Join(root, "tests", "a2mochi", "x", "ex")
