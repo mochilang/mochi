@@ -342,35 +342,38 @@ func exprString(n *Node) string {
 		}
 		return s
 	case "query":
-		var parts []string
 		if len(n.Children) == 0 {
 			return ""
 		}
+		var sb strings.Builder
 		src := exprString(n.Children[0].Children[0])
-		parts = append(parts, fmt.Sprintf("from %s in %s", n.Value, src))
+		fmt.Fprintf(&sb, "from %s in %s", n.Value, src)
+		indent := ""
 		for _, c := range n.Children[1:] {
+			sb.WriteString("\n")
+			sb.WriteString(indent)
 			switch c.Kind {
 			case "from":
 				src := exprString(c.Children[0].Children[0])
-				parts = append(parts, fmt.Sprintf("from %s in %s", c.Value, src))
+				fmt.Fprintf(&sb, "from %s in %s", c.Value, src)
 			case "join", "left_join", "right_join", "outer_join":
 				src := exprString(c.Children[0].Children[0])
 				kind := strings.ReplaceAll(c.Kind, "_", " ")
-				clause := fmt.Sprintf("%s %s in %s", kind, c.Value, src)
+				fmt.Fprintf(&sb, "%s %s in %s", kind, c.Value, src)
 				if len(c.Children) > 1 && c.Children[1].Kind == "on" {
-					clause += " on " + exprString(c.Children[1].Children[0])
+					sb.WriteString(" on ")
+					sb.WriteString(exprString(c.Children[1].Children[0]))
 				}
-				parts = append(parts, clause)
 			case "where", "sort", "skip", "take":
-				parts = append(parts, fmt.Sprintf("%s %s", c.Kind, exprString(c.Children[0])))
+				fmt.Fprintf(&sb, "%s %s", c.Kind, exprString(c.Children[0]))
 			case "group_by":
-				clause := fmt.Sprintf("group by %s into %s", exprString(c.Children[0]), c.Children[1].Value)
-				parts = append(parts, clause)
+				fmt.Fprintf(&sb, "group by %s into %s", exprString(c.Children[0]), c.Children[1].Value)
 			case "select":
-				parts = append(parts, "select "+exprString(c.Children[0]))
+				sb.WriteString("select ")
+				sb.WriteString(exprString(c.Children[0]))
 			}
 		}
-		return strings.Join(parts, " ")
+		return sb.String()
 	case "match":
 		if len(n.Children) == 0 {
 			return "match {}"
