@@ -65,12 +65,14 @@ var (
 	useLookupHost    bool
 	useBigRat        bool
 	useSHA256        bool
+	useEnv           bool
 	useSubstrClamp   bool
 	useRepeat        bool
 	useParseIntStr   bool
 	imports          []string
 	testpkgAliases   map[string]struct{}
 	netAliases       map[string]struct{}
+	osAliases        map[string]struct{}
 	structMutable    map[string]bool
 	currentRetType   string
 	inFunc           bool
@@ -3776,12 +3778,12 @@ func Emit(w io.Writer, p *Program) error {
 			return err
 		}
 	}
-	if (useNow || useInput || useSHA256) && !added["dart:io"] {
+	if (useNow || useInput || useSHA256 || useEnv) && !added["dart:io"] {
 		if _, err := io.WriteString(w, "import 'dart:io';\n"); err != nil {
 			return err
 		}
 	}
-	if len(p.Imports) > 0 || usesJSON || useNow || useInput || useSHA256 {
+	if len(p.Imports) > 0 || usesJSON || useNow || useInput || useSHA256 || useEnv {
 		if _, err := io.WriteString(w, "\n"); err != nil {
 			return err
 		}
@@ -3799,6 +3801,14 @@ func Emit(w io.Writer, p *Program) error {
 	}
 	if useLookupHost {
 		if _, err := io.WriteString(w, "List _lookupHost(String host) {\n  return [<String>[], null];\n}\n\n"); err != nil {
+			return err
+		}
+	}
+	if useEnv {
+		if _, err := io.WriteString(w, "String _getenv(String k) => Platform.environment[k] ?? '';\n"); err != nil {
+			return err
+		}
+		if _, err := io.WriteString(w, "List<String> _environ() => Platform.environment.entries.map((e) => '${e.key}=${e.value}').toList();\n\n"); err != nil {
 			return err
 		}
 	}
@@ -3997,12 +4007,14 @@ func Transpile(prog *parser.Program, env *types.Env, bench, wrapMain bool) (*Pro
 	useLookupHost = false
 	useBigRat = false
 	useSHA256 = false
+	useEnv = false
 	useSubstrClamp = false
 	useRepeat = false
 	useParseIntStr = false
 	imports = nil
 	testpkgAliases = map[string]struct{}{}
 	netAliases = map[string]struct{}{}
+	osAliases = map[string]struct{}{}
 	structMutable = map[string]bool{}
 	methodDefs = nil
 	structMethods = map[string]map[string]bool{}
@@ -4324,6 +4336,12 @@ func convertStmtInternal(st *parser.Statement) (Stmt, error) {
 		if st.Import.Lang != nil && *st.Import.Lang == "go" && strings.Trim(st.Import.Path, "\"") == "net" {
 			netAliases[alias] = struct{}{}
 			useLookupHost = true
+			imports = append(imports, "import 'dart:io';")
+			return nil, nil
+		}
+		if st.Import.Lang != nil && *st.Import.Lang == "go" && strings.Trim(st.Import.Path, "\"") == "os" {
+			osAliases[alias] = struct{}{}
+			useEnv = true
 			imports = append(imports, "import 'dart:io';")
 			return nil, nil
 		}
@@ -4765,6 +4783,26 @@ func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
 							continue
 						}
 					}
+					if _, ok := osAliases[n.Name]; ok {
+						if op.Field.Name == "Getenv" && len(call.Call.Args) == 1 {
+							arg, err := convertExpr(call.Call.Args[0])
+							if err != nil {
+								return nil, err
+							}
+							useEnv = true
+							expr = &CallExpr{Func: &Name{Name: "_getenv"}, Args: []Expr{arg}}
+							i++
+							replaced = true
+							continue
+						}
+						if op.Field.Name == "Environ" && len(call.Call.Args) == 0 {
+							useEnv = true
+							expr = &CallExpr{Func: &Name{Name: "_environ"}}
+							i++
+							replaced = true
+							continue
+						}
+					}
 				}
 				var args []Expr
 				for _, a := range call.Call.Args {
@@ -4820,6 +4858,17 @@ func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
 							useLookupHost = true
 							expr = &CallExpr{Func: &Name{Name: "_lookupHost"}, Args: args}
 							args = nil
+							replaced = true
+						}
+					} else if _, ok := osAliases[n.Name]; ok {
+						if sel.Field == "Getenv" && len(args) == 1 {
+							useEnv = true
+							expr = &CallExpr{Func: &Name{Name: "_getenv"}, Args: args}
+							args = nil
+							replaced = true
+						} else if sel.Field == "Environ" && len(args) == 0 {
+							useEnv = true
+							expr = &CallExpr{Func: &Name{Name: "_environ"}}
 							replaced = true
 						}
 					}
@@ -5195,6 +5244,18 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			}
 			useLookupHost = true
 			return &CallExpr{Func: &Name{Name: "_lookupHost"}, Args: []Expr{arg}}, nil
+		}
+		if p.Call.Func == "os.Getenv" && len(p.Call.Args) == 1 {
+			arg, err := convertExpr(p.Call.Args[0])
+			if err != nil {
+				return nil, err
+			}
+			useEnv = true
+			return &CallExpr{Func: &Name{Name: "_getenv"}, Args: []Expr{arg}}, nil
+		}
+		if p.Call.Func == "os.Environ" && len(p.Call.Args) == 0 {
+			useEnv = true
+			return &CallExpr{Func: &Name{Name: "_environ"}}, nil
 		}
 		ce := &CallExpr{Func: &Name{p.Call.Func}}
 		var paramTypes []string
