@@ -2397,6 +2397,9 @@ func compilePostfix(p *parser.PostfixExpr) (Expr, error) {
 				expr = &CallExpr{Func: "Convert.ToInt64", Args: []Expr{expr}}
 			case "float":
 				expr = &CallExpr{Func: "Convert.ToDouble", Args: []Expr{expr}}
+			case "bigint":
+				usesBigInt = true
+				expr = &RawExpr{Code: fmt.Sprintf("new BigInteger(%s)", exprString(expr)), Type: "BigInteger"}
 			default:
 				// other casts are treated as no-ops
 			}
@@ -2441,7 +2444,7 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 		}
 		return &ExprStmt{Expr: e}, nil
 	case s.Let != nil:
-		if _, ok := varTypes[s.Let.Name]; ok {
+		if vt, ok := varTypes[s.Let.Name]; ok && !strings.HasPrefix(vt, "fn/") {
 			if s.Let.Value == nil {
 				return nil, fmt.Errorf("redeclare without value")
 			}
@@ -2535,7 +2538,7 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 		}
 		return &LetStmt{Name: alias, Value: val}, nil
 	case s.Var != nil:
-		if _, ok := varTypes[s.Var.Name]; ok {
+		if vt, ok := varTypes[s.Var.Name]; ok && !strings.HasPrefix(vt, "fn/") {
 			if s.Var.Value == nil {
 				return nil, fmt.Errorf("redeclare without value")
 			}
