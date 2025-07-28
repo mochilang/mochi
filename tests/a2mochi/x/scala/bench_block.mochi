@@ -1,0 +1,7 @@
+bench "simple" {
+  let n = 1000
+  var data = []
+  for i in 1..n {
+    data = append(data, i)
+  }
+}
