@@ -1,0 +1,1097 @@
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/distance-and-bearing.rs:69:36
+   |
+69 |         static mut g_PI: f64 = 0.0;;
+   |                                    ^ help: remove this semicolon
+   |
+   = note: `#[warn(redundant_semicolons)]` on by default
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/distance-and-bearing.rs:81:2
+   |
+81 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/distance-and-bearing.rs:93:2
+   |
+93 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/distance-and-bearing.rs:102:2
+    |
+102 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/distance-and-bearing.rs:121:2
+    |
+121 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/distance-and-bearing.rs:130:2
+    |
+130 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/distance-and-bearing.rs:133:2
+    |
+133 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/distance-and-bearing.rs:136:2
+    |
+136 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/distance-and-bearing.rs:147:2
+    |
+147 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/distance-and-bearing.rs:159:2
+    |
+159 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/distance-and-bearing.rs:160:58
+    |
+160 |         static mut g_airports: Vec<Airport> = Vec::new();;
+    |                                                          ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/distance-and-bearing.rs:167:2
+    |
+167 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/distance-and-bearing.rs:176:2
+    |
+176 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/distance-and-bearing.rs:180:2
+    |
+180 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/distance-and-bearing.rs:195:2
+    |
+195 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/distance-and-bearing.rs:218:2
+    |
+218 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/distance-and-bearing.rs:74:11
+   |
+74 |     while (n <= 8) {
+   |           ^      ^
+   |
+   = note: `#[warn(unused_parens)]` on by default
+help: remove these parentheses
+   |
+74 -     while (n <= 8) {
+74 +     while n <= 8 {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/distance-and-bearing.rs:75:30
+   |
+75 |         let mut denom: f64 = (((2 * n) * ((2 * n) + 1)) as f64);
+   |                              ^                                ^
+   |
+help: remove these parentheses
+   |
+75 -         let mut denom: f64 = (((2 * n) * ((2 * n) + 1)) as f64);
+75 +         let mut denom: f64 = ((2 * n) * ((2 * n) + 1)) as f64;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/distance-and-bearing.rs:76:16
+   |
+76 |         term = (((-term * x) * x) / denom);
+   |                ^                         ^
+   |
+help: remove these parentheses
+   |
+76 -         term = (((-term * x) * x) / denom);
+76 +         term = ((-term * x) * x) / denom;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/distance-and-bearing.rs:77:15
+   |
+77 |         sum = (sum + term);
+   |               ^          ^
+   |
+help: remove these parentheses
+   |
+77 -         sum = (sum + term);
+77 +         sum = sum + term;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/distance-and-bearing.rs:78:13
+   |
+78 |         n = (n + 1);
+   |             ^     ^
+   |
+help: remove these parentheses
+   |
+78 -         n = (n + 1);
+78 +         n = n + 1;
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/distance-and-bearing.rs:86:11
+   |
+86 |     while (n <= 8) {
+   |           ^      ^
+   |
+help: remove these parentheses
+   |
+86 -     while (n <= 8) {
+86 +     while n <= 8 {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/distance-and-bearing.rs:87:30
+   |
+87 |         let mut denom: f64 = ((((2 * n) - 1) * (2 * n)) as f64);
+   |                              ^                                ^
+   |
+help: remove these parentheses
+   |
+87 -         let mut denom: f64 = ((((2 * n) - 1) * (2 * n)) as f64);
+87 +         let mut denom: f64 = (((2 * n) - 1) * (2 * n)) as f64;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/distance-and-bearing.rs:88:16
+   |
+88 |         term = (((-term * x) * x) / denom);
+   |                ^                         ^
+   |
+help: remove these parentheses
+   |
+88 -         term = (((-term * x) * x) / denom);
+88 +         term = ((-term * x) * x) / denom;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/distance-and-bearing.rs:89:15
+   |
+89 |         sum = (sum + term);
+   |               ^          ^
+   |
+help: remove these parentheses
+   |
+89 -         sum = (sum + term);
+89 +         sum = sum + term;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/distance-and-bearing.rs:90:13
+   |
+90 |         n = (n + 1);
+   |             ^     ^
+   |
+help: remove these parentheses
+   |
+90 -         n = (n + 1);
+90 +         n = n + 1;
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/distance-and-bearing.rs:95:8
+   |
+95 |     if (x > 1.0) {
+   |        ^       ^
+   |
+help: remove these parentheses
+   |
+95 -     if (x > 1.0) {
+95 +     if x > 1.0 {
+   |
+
+warning: unnecessary parentheses around `return` value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/distance-and-bearing.rs:96:16
+   |
+96 |         return ((g_PI / 2.0) - (x / ((x * x) + 0.28)))
+   |                ^                                     ^
+   |
+help: remove these parentheses
+   |
+96 -         return ((g_PI / 2.0) - (x / ((x * x) + 0.28)))
+96 +         return (g_PI / 2.0) - (x / ((x * x) + 0.28))
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/distance-and-bearing.rs:98:8
+   |
+98 |     if (x < -1.0) {
+   |        ^        ^
+   |
+help: remove these parentheses
+   |
+98 -     if (x < -1.0) {
+98 +     if x < -1.0 {
+   |
+
+warning: unnecessary parentheses around `return` value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/distance-and-bearing.rs:99:16
+   |
+99 |         return ((-g_PI / 2.0) - (x / ((x * x) + 0.28)))
+   |                ^                                      ^
+   |
+help: remove these parentheses
+   |
+99 -         return ((-g_PI / 2.0) - (x / ((x * x) + 0.28)))
+99 +         return (-g_PI / 2.0) - (x / ((x * x) + 0.28))
+   |
+
+warning: unnecessary parentheses around `return` value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/distance-and-bearing.rs:101:12
+    |
+101 |     return (x / (1.0 + ((0.28 * x) * x)))
+    |            ^                            ^
+    |
+help: remove these parentheses
+    |
+101 -     return (x / (1.0 + ((0.28 * x) * x)))
+101 +     return x / (1.0 + ((0.28 * x) * x))
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/distance-and-bearing.rs:104:8
+    |
+104 |     if (x > 0.0) {
+    |        ^       ^
+    |
+help: remove these parentheses
+    |
+104 -     if (x > 0.0) {
+104 +     if x > 0.0 {
+    |
+
+warning: unnecessary parentheses around function argument
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/distance-and-bearing.rs:105:37
+    |
+105 |         let mut r: f64 = atanApprox((y / x));
+    |                                     ^     ^
+    |
+help: remove these parentheses
+    |
+105 -         let mut r: f64 = atanApprox((y / x));
+105 +         let mut r: f64 = atanApprox(y / x);
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/distance-and-bearing.rs:108:8
+    |
+108 |     if (x < 0.0) {
+    |        ^       ^
+    |
+help: remove these parentheses
+    |
+108 -     if (x < 0.0) {
+108 +     if x < 0.0 {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/distance-and-bearing.rs:109:12
+    |
+109 |         if (y >= 0.0) {
+    |            ^        ^
+    |
+help: remove these parentheses
+    |
+109 -         if (y >= 0.0) {
+109 +         if y >= 0.0 {
+    |
+
+warning: unnecessary parentheses around `return` value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/distance-and-bearing.rs:110:20
+    |
+110 |             return (atanApprox((y / x)) + g_PI)
+    |                    ^                          ^
+    |
+help: remove these parentheses
+    |
+110 -             return (atanApprox((y / x)) + g_PI)
+110 +             return atanApprox((y / x)) + g_PI
+    |
+
+warning: unnecessary parentheses around function argument
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/distance-and-bearing.rs:110:32
+    |
+110 |             return (atanApprox((y / x)) + g_PI)
+    |                                ^     ^
+    |
+help: remove these parentheses
+    |
+110 -             return (atanApprox((y / x)) + g_PI)
+110 +             return (atanApprox(y / x) + g_PI)
+    |
+
+warning: unnecessary parentheses around `return` value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/distance-and-bearing.rs:112:16
+    |
+112 |         return (atanApprox((y / x)) - g_PI)
+    |                ^                          ^
+    |
+help: remove these parentheses
+    |
+112 -         return (atanApprox((y / x)) - g_PI)
+112 +         return atanApprox((y / x)) - g_PI
+    |
+
+warning: unnecessary parentheses around function argument
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/distance-and-bearing.rs:112:28
+    |
+112 |         return (atanApprox((y / x)) - g_PI)
+    |                            ^     ^
+    |
+help: remove these parentheses
+    |
+112 -         return (atanApprox((y / x)) - g_PI)
+112 +         return (atanApprox(y / x) - g_PI)
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/distance-and-bearing.rs:114:8
+    |
+114 |     if (y > 0.0) {
+    |        ^       ^
+    |
+help: remove these parentheses
+    |
+114 -     if (y > 0.0) {
+114 +     if y > 0.0 {
+    |
+
+warning: unnecessary parentheses around `return` value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/distance-and-bearing.rs:115:16
+    |
+115 |         return (g_PI / 2.0)
+    |                ^          ^
+    |
+help: remove these parentheses
+    |
+115 -         return (g_PI / 2.0)
+115 +         return g_PI / 2.0
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/distance-and-bearing.rs:117:8
+    |
+117 |     if (y < 0.0) {
+    |        ^       ^
+    |
+help: remove these parentheses
+    |
+117 -     if (y < 0.0) {
+117 +     if y < 0.0 {
+    |
+
+warning: unnecessary parentheses around `return` value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/distance-and-bearing.rs:118:16
+    |
+118 |         return (-g_PI / 2.0)
+    |                ^           ^
+    |
+help: remove these parentheses
+    |
+118 -         return (-g_PI / 2.0)
+118 +         return -g_PI / 2.0
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/distance-and-bearing.rs:125:11
+    |
+125 |     while (i < 10) {
+    |           ^      ^
+    |
+help: remove these parentheses
+    |
+125 -     while (i < 10) {
+125 +     while i < 10 {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/distance-and-bearing.rs:126:17
+    |
+126 |         guess = ((guess + (x / guess)) / 2.0);
+    |                 ^                           ^
+    |
+help: remove these parentheses
+    |
+126 -         guess = ((guess + (x / guess)) / 2.0);
+126 +         guess = (guess + (x / guess)) / 2.0;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/distance-and-bearing.rs:127:13
+    |
+127 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+127 -         i = (i + 1);
+127 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around `return` value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/distance-and-bearing.rs:132:12
+    |
+132 |     return ((x * g_PI) / 180.0)
+    |            ^                  ^
+    |
+help: remove these parentheses
+    |
+132 -     return ((x * g_PI) / 180.0)
+132 +     return (x * g_PI) / 180.0
+    |
+
+warning: unnecessary parentheses around `return` value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/distance-and-bearing.rs:135:12
+    |
+135 |     return ((x * 180.0) / g_PI)
+    |            ^                  ^
+    |
+help: remove these parentheses
+    |
+135 -     return ((x * 180.0) / g_PI)
+135 +     return (x * 180.0) / g_PI
+    |
+
+warning: unnecessary parentheses around function argument
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/distance-and-bearing.rs:140:29
+    |
+140 |     let mut dphi: f64 = rad((lat2 - lat1));
+    |                             ^           ^
+    |
+help: remove these parentheses
+    |
+140 -     let mut dphi: f64 = rad((lat2 - lat1));
+140 +     let mut dphi: f64 = rad(lat2 - lat1);
+    |
+
+warning: unnecessary parentheses around function argument
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/distance-and-bearing.rs:141:32
+    |
+141 |     let mut dlambda: f64 = rad((lon2 - lon1));
+    |                                ^           ^
+    |
+help: remove these parentheses
+    |
+141 -     let mut dlambda: f64 = rad((lon2 - lon1));
+141 +     let mut dlambda: f64 = rad(lon2 - lon1);
+    |
+
+warning: unnecessary parentheses around function argument
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/distance-and-bearing.rs:142:36
+    |
+142 |     let mut sdphi: f64 = sinApprox((dphi / (2 as f64)));
+    |                                    ^                 ^
+    |
+help: remove these parentheses
+    |
+142 -     let mut sdphi: f64 = sinApprox((dphi / (2 as f64)));
+142 +     let mut sdphi: f64 = sinApprox(dphi / (2 as f64));
+    |
+
+warning: unnecessary parentheses around function argument
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/distance-and-bearing.rs:143:39
+    |
+143 |     let mut sdlambda: f64 = sinApprox((dlambda / (2 as f64)));
+    |                                       ^                    ^
+    |
+help: remove these parentheses
+    |
+143 -     let mut sdlambda: f64 = sinApprox((dlambda / (2 as f64)));
+143 +     let mut sdlambda: f64 = sinApprox(dlambda / (2 as f64));
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/distance-and-bearing.rs:144:22
+    |
+144 |     let mut a: f64 = ((sdphi * sdphi) + (((cosApprox(phi1) * cosApprox(phi2)) * sdlambda) * sdlambda));
+    |                      ^                                                                               ^
+    |
+help: remove these parentheses
+    |
+144 -     let mut a: f64 = ((sdphi * sdphi) + (((cosApprox(phi1) * cosApprox(phi2)) * sdlambda) * sdlambda));
+144 +     let mut a: f64 = (sdphi * sdphi) + (((cosApprox(phi1) * cosApprox(phi2)) * sdlambda) * sdlambda);
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/distance-and-bearing.rs:145:22
+    |
+145 |     let mut c: i64 = ((2 as f64) * atan2Approx(sqrtApprox(a), sqrtApprox((((1 as f64) - a) as f64))));
+    |                      ^                                                                              ^
+    |
+help: remove these parentheses
+    |
+145 -     let mut c: i64 = ((2 as f64) * atan2Approx(sqrtApprox(a), sqrtApprox((((1 as f64) - a) as f64))));
+145 +     let mut c: i64 = (2 as f64) * atan2Approx(sqrtApprox(a), sqrtApprox((((1 as f64) - a) as f64)));
+    |
+
+warning: unnecessary parentheses around function argument
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/distance-and-bearing.rs:145:74
+    |
+145 |     let mut c: i64 = ((2 as f64) * atan2Approx(sqrtApprox(a), sqrtApprox((((1 as f64) - a) as f64))));
+    |                                                                          ^                       ^
+    |
+help: remove these parentheses
+    |
+145 -     let mut c: i64 = ((2 as f64) * atan2Approx(sqrtApprox(a), sqrtApprox((((1 as f64) - a) as f64))));
+145 +     let mut c: i64 = ((2 as f64) * atan2Approx(sqrtApprox(a), sqrtApprox(((1 as f64) - a) as f64)));
+    |
+
+warning: unnecessary parentheses around `return` value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/distance-and-bearing.rs:146:12
+    |
+146 |     return ((6371.0 / 1.852) * (c as f64))
+    |            ^                             ^
+    |
+help: remove these parentheses
+    |
+146 -     return ((6371.0 / 1.852) * (c as f64))
+146 +     return (6371.0 / 1.852) * (c as f64)
+    |
+
+warning: unnecessary parentheses around function argument
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/distance-and-bearing.rs:151:27
+    |
+151 |     let mut dl: f64 = rad((lon2 - lon1));
+    |                           ^           ^
+    |
+help: remove these parentheses
+    |
+151 -     let mut dl: f64 = rad((lon2 - lon1));
+151 +     let mut dl: f64 = rad(lon2 - lon1);
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/distance-and-bearing.rs:152:22
+    |
+152 |     let mut y: f64 = (sinApprox(dl) * cosApprox(phi2));
+    |                      ^                               ^
+    |
+help: remove these parentheses
+    |
+152 -     let mut y: f64 = (sinApprox(dl) * cosApprox(phi2));
+152 +     let mut y: f64 = sinApprox(dl) * cosApprox(phi2);
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/distance-and-bearing.rs:153:22
+    |
+153 |     let mut x: f64 = ((cosApprox(phi1) * sinApprox(phi2)) - ((sinApprox(phi1) * cosApprox(phi2)) * cosApprox(dl)));
+    |                      ^                                                                                           ^
+    |
+help: remove these parentheses
+    |
+153 -     let mut x: f64 = ((cosApprox(phi1) * sinApprox(phi2)) - ((sinApprox(phi1) * cosApprox(phi2)) * cosApprox(dl)));
+153 +     let mut x: f64 = (cosApprox(phi1) * sinApprox(phi2)) - ((sinApprox(phi1) * cosApprox(phi2)) * cosApprox(dl));
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/distance-and-bearing.rs:155:8
+    |
+155 |     if (br < (0 as f64)) {
+    |        ^               ^
+    |
+help: remove these parentheses
+    |
+155 -     if (br < (0 as f64)) {
+155 +     if br < (0 as f64) {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/distance-and-bearing.rs:156:14
+    |
+156 |         br = (br + (360 as f64));
+    |              ^                 ^
+    |
+help: remove these parentheses
+    |
+156 -         br = (br + (360 as f64));
+156 +         br = br + (360 as f64);
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/distance-and-bearing.rs:162:22
+    |
+162 |     let mut i: i64 = (x as i64);
+    |                      ^        ^
+    |
+help: remove these parentheses
+    |
+162 -     let mut i: i64 = (x as i64);
+162 +     let mut i: i64 = x as i64;
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/distance-and-bearing.rs:163:8
+    |
+163 |     if ((i as f64) > x) {
+    |        ^              ^
+    |
+help: remove these parentheses
+    |
+163 -     if ((i as f64) > x) {
+163 +     if (i as f64) > x {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/distance-and-bearing.rs:164:13
+    |
+164 |         i = (i - 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+164 -         i = (i - 1);
+164 +         i = i - 1;
+    |
+
+warning: unnecessary parentheses around `return` value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/distance-and-bearing.rs:166:12
+    |
+166 |     return (i as f64)
+    |            ^        ^
+    |
+help: remove these parentheses
+    |
+166 -     return (i as f64)
+166 +     return i as f64
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/distance-and-bearing.rs:171:11
+    |
+171 |     while (i < n) {
+    |           ^     ^
+    |
+help: remove these parentheses
+    |
+171 -     while (i < n) {
+171 +     while i < n {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/distance-and-bearing.rs:172:13
+    |
+172 |         p = (p * 10.0);
+    |             ^        ^
+    |
+help: remove these parentheses
+    |
+172 -         p = (p * 10.0);
+172 +         p = p * 10.0;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/distance-and-bearing.rs:173:13
+    |
+173 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+173 -         i = (i + 1);
+173 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around `return` value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/distance-and-bearing.rs:179:12
+    |
+179 |     return (floor(((x * m) + 0.5)) / m)
+    |            ^                          ^
+    |
+help: remove these parentheses
+    |
+179 -     return (floor(((x * m) + 0.5)) / m)
+179 +     return floor(((x * m) + 0.5)) / m
+    |
+
+warning: unnecessary parentheses around function argument
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/distance-and-bearing.rs:179:19
+    |
+179 |     return (floor(((x * m) + 0.5)) / m)
+    |                   ^             ^
+    |
+help: remove these parentheses
+    |
+179 -     return (floor(((x * m) + 0.5)) / m)
+179 +     return (floor((x * m) + 0.5) / m)
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/distance-and-bearing.rs:184:11
+    |
+184 |     while (i < (arr.len() as i64)) {
+    |           ^                      ^
+    |
+help: remove these parentheses
+    |
+184 -     while (i < (arr.len() as i64)) {
+184 +     while i < (arr.len() as i64) {
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/distance-and-bearing.rs:186:15
+    |
+186 |         while ((j > 0) && (arr[(j - 1) as usize].clone()[0 as usize] > arr[j as usize].clone()[0 as usize])) {
+    |               ^                                                                                            ^
+    |
+help: remove these parentheses
+    |
+186 -         while ((j > 0) && (arr[(j - 1) as usize].clone()[0 as usize] > arr[j as usize].clone()[0 as usize])) {
+186 +         while (j > 0) && (arr[(j - 1) as usize].clone()[0 as usize] > arr[j as usize].clone()[0 as usize]) {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/distance-and-bearing.rs:190:17
+    |
+190 |             j = (j - 1);
+    |                 ^     ^
+    |
+help: remove these parentheses
+    |
+190 -             j = (j - 1);
+190 +             j = j - 1;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/distance-and-bearing.rs:192:13
+    |
+192 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+192 -         i = (i + 1);
+192 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/distance-and-bearing.rs:209:11
+    |
+209 |     while (i < (results.len() as i64)) {
+    |           ^                          ^
+    |
+help: remove these parentheses
+    |
+209 -     while (i < (results.len() as i64)) {
+209 +     while i < (results.len() as i64) {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/distance-and-bearing.rs:216:13
+    |
+216 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+216 -         i = (i + 1);
+216 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/distance-and-bearing.rs:222:32
+    |
+222 |         let duration_us: i64 = ((_end - _start) / 1000);
+    |                                ^                      ^
+    |
+help: remove these parentheses
+    |
+222 -         let duration_us: i64 = ((_end - _start) / 1000);
+222 +         let duration_us: i64 = (_end - _start) / 1000;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/distance-and-bearing.rs:223:33
+    |
+223 |         let memory_bytes: i64 = (_end_mem - _start_mem);
+    |                                 ^                     ^
+    |
+help: remove these parentheses
+    |
+223 -         let memory_bytes: i64 = (_end_mem - _start_mem);
+223 +         let memory_bytes: i64 = _end_mem - _start_mem;
+    |
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/distance-and-bearing.rs:145:22
+    |
+145 |     let mut c: i64 = ((2 as f64) * atan2Approx(sqrtApprox(a), sqrtApprox((((1 as f64) - a) as f64))));
+    |                ---   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `i64`, found `f64`
+    |                |
+    |                expected due to this
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/distance-and-bearing.rs:203:70
+    |
+203 |         results = { let mut _v = results.clone(); _v.push(vec![d, b, ap]); _v };
+    |                                                                      ^^ expected `f64`, found `&Airport`
+
+error[E0610]: `f64` is a primitive type and therefore doesn't have fields
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/distance-and-bearing.rs:214:226
+    |
+214 | ...t, 1).to_string(), "\t"), round(bear, 0).to_string()), "\t"), ap.icao), "\t"), ap.country), " "), ap.name);
+    |                                                                     ^^^^
+
+error[E0610]: `f64` is a primitive type and therefore doesn't have fields
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/distance-and-bearing.rs:214:243
+    |
+214 | ..."\t"), round(bear, 0).to_string()), "\t"), ap.icao), "\t"), ap.country), " "), ap.name);
+    |                                                                   ^^^^^^^
+
+error[E0610]: `f64` is a primitive type and therefore doesn't have fields
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/distance-and-bearing.rs:214:262
+    |
+214 | ..., 0).to_string()), "\t"), ap.icao), "\t"), ap.country), " "), ap.name);
+    |                                                                     ^^^^
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/distance-and-bearing.rs:70:29
+   |
+70 |         unsafe fn sinApprox(mut x: f64) -> f64 {
+   |                             ----^
+   |                             |
+   |                             help: remove this `mut`
+   |
+   = note: `#[warn(unused_mut)]` on by default
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/distance-and-bearing.rs:75:13
+   |
+75 |         let mut denom: f64 = (((2 * n) * ((2 * n) + 1)) as f64);
+   |             ----^^^^^
+   |             |
+   |             help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/distance-and-bearing.rs:82:29
+   |
+82 |         unsafe fn cosApprox(mut x: f64) -> f64 {
+   |                             ----^
+   |                             |
+   |                             help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/distance-and-bearing.rs:87:13
+   |
+87 |         let mut denom: f64 = ((((2 * n) - 1) * (2 * n)) as f64);
+   |             ----^^^^^
+   |             |
+   |             help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/distance-and-bearing.rs:94:30
+   |
+94 |         unsafe fn atanApprox(mut x: f64) -> f64 {
+   |                              ----^
+   |                              |
+   |                              help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/distance-and-bearing.rs:103:31
+    |
+103 |         unsafe fn atan2Approx(mut y: f64, mut x: f64) -> f64 {
+    |                               ----^
+    |                               |
+    |                               help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/distance-and-bearing.rs:103:43
+    |
+103 |         unsafe fn atan2Approx(mut y: f64, mut x: f64) -> f64 {
+    |                                           ----^
+    |                                           |
+    |                                           help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/distance-and-bearing.rs:105:13
+    |
+105 |         let mut r: f64 = atanApprox((y / x));
+    |             ----^
+    |             |
+    |             help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/distance-and-bearing.rs:122:30
+    |
+122 |         unsafe fn sqrtApprox(mut x: f64) -> f64 {
+    |                              ----^
+    |                              |
+    |                              help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/distance-and-bearing.rs:131:23
+    |
+131 |         unsafe fn rad(mut x: f64) -> f64 {
+    |                       ----^
+    |                       |
+    |                       help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/distance-and-bearing.rs:134:23
+    |
+134 |         unsafe fn deg(mut x: f64) -> f64 {
+    |                       ----^
+    |                       |
+    |                       help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/distance-and-bearing.rs:148:27
+    |
+148 |         unsafe fn bearing(mut lat1: f64, mut lon1: f64, mut lat2: f64, mut lon2: f64) -> f64 {
+    |                           ----^^^^
+    |                           |
+    |                           help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/distance-and-bearing.rs:148:42
+    |
+148 |         unsafe fn bearing(mut lat1: f64, mut lon1: f64, mut lat2: f64, mut lon2: f64) -> f64 {
+    |                                          ----^^^^
+    |                                          |
+    |                                          help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/distance-and-bearing.rs:148:57
+    |
+148 |         unsafe fn bearing(mut lat1: f64, mut lon1: f64, mut lat2: f64, mut lon2: f64) -> f64 {
+    |                                                         ----^^^^
+    |                                                         |
+    |                                                         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/distance-and-bearing.rs:148:72
+    |
+148 |         unsafe fn bearing(mut lat1: f64, mut lon1: f64, mut lat2: f64, mut lon2: f64) -> f64 {
+    |                                                                        ----^^^^
+    |                                                                        |
+    |                                                                        help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/distance-and-bearing.rs:149:9
+    |
+149 |     let mut phi1: f64 = rad(lat1);
+    |         ----^^^^
+    |         |
+    |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/distance-and-bearing.rs:150:9
+    |
+150 |     let mut phi2: f64 = rad(lat2);
+    |         ----^^^^
+    |         |
+    |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/distance-and-bearing.rs:151:9
+    |
+151 |     let mut dl: f64 = rad((lon2 - lon1));
+    |         ----^^
+    |         |
+    |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/distance-and-bearing.rs:152:9
+    |
+152 |     let mut y: f64 = (sinApprox(dl) * cosApprox(phi2));
+    |         ----^
+    |         |
+    |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/distance-and-bearing.rs:153:9
+    |
+153 |     let mut x: f64 = ((cosApprox(phi1) * sinApprox(phi2)) - ((sinApprox(phi1) * cosApprox(phi2)) * cosApprox(dl)));
+    |         ----^
+    |         |
+    |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/distance-and-bearing.rs:161:25
+    |
+161 |         unsafe fn floor(mut x: f64) -> f64 {
+    |                         ----^
+    |                         |
+    |                         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/distance-and-bearing.rs:168:25
+    |
+168 |         unsafe fn pow10(mut n: i64) -> f64 {
+    |                         ----^
+    |                         |
+    |                         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/distance-and-bearing.rs:177:25
+    |
+177 |         unsafe fn round(mut x: f64, mut n: i64) -> f64 {
+    |                         ----^
+    |                         |
+    |                         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/distance-and-bearing.rs:177:37
+    |
+177 |         unsafe fn round(mut x: f64, mut n: i64) -> f64 {
+    |                                     ----^
+    |                                     |
+    |                                     help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/distance-and-bearing.rs:178:9
+    |
+178 |     let mut m: f64 = pow10(n);
+    |         ----^
+    |         |
+    |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/distance-and-bearing.rs:181:34
+    |
+181 |         unsafe fn sortByDistance(mut xs: Vec<Vec<f64>>) -> Vec<Vec<f64>> {
+    |                                  ----^^
+    |                                  |
+    |                                  help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/distance-and-bearing.rs:187:17
+    |
+187 |             let mut tmp: Vec<f64> = arr[(j - 1) as usize].clone();
+    |                 ----^^^
+    |                 |
+    |                 help: remove this `mut`
+
+error: aborting due to 5 previous errors; 105 warnings emitted
+
+Some errors have detailed explanations: E0308, E0610.
+For more information about an error, try `rustc --explain E0308`.

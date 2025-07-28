@@ -2125,7 +2125,8 @@ func compileStmt(stmt *parser.Statement) (Stmt, error) {
 			if _, ok := e.(*MapLit); ok {
 				mapVars[stmt.Let.Name] = true
 			}
-			if inferType(e) == "String" {
+			switch inferType(e) {
+			case "String", "&str":
 				stringVars[stmt.Let.Name] = true
 			}
 		}
@@ -2140,6 +2141,10 @@ func compileStmt(stmt *parser.Statement) (Stmt, error) {
 			}
 		} else if e != nil {
 			typ = inferType(e)
+			if typ == "&str" {
+				typ = "String"
+				e = &StringCastExpr{Expr: e}
+			}
 			if emptyList && typ == "Vec<i64>" {
 				typ = ""
 			}
@@ -2267,7 +2272,8 @@ func compileStmt(stmt *parser.Statement) (Stmt, error) {
 			if _, ok := e.(*MapLit); ok {
 				mapVars[stmt.Var.Name] = true
 			}
-			if inferType(e) == "String" {
+			switch inferType(e) {
+			case "String", "&str":
 				stringVars[stmt.Var.Name] = true
 			}
 		}
@@ -2282,6 +2288,10 @@ func compileStmt(stmt *parser.Statement) (Stmt, error) {
 			}
 		} else if e != nil {
 			typ = inferType(e)
+			if typ == "&str" {
+				typ = "String"
+				e = &StringCastExpr{Expr: e}
+			}
 			if emptyList && typ == "Vec<i64>" {
 				typ = ""
 			}

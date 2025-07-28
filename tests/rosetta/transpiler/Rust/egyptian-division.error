@@ -1,0 +1,235 @@
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/egyptian-division.rs:84:2
+   |
+84 | };
+   |  ^ help: remove this semicolon
+   |
+   = note: `#[warn(redundant_semicolons)]` on by default
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/egyptian-division.rs:90:2
+   |
+90 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/egyptian-division.rs:56:8
+   |
+56 |     if ((dividend < 0) || (divisor <= 0)) {
+   |        ^                                ^
+   |
+   = note: `#[warn(unused_parens)]` on by default
+help: remove these parentheses
+   |
+56 -     if ((dividend < 0) || (divisor <= 0)) {
+56 +     if (dividend < 0) || (divisor <= 0) {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/egyptian-division.rs:59:8
+   |
+59 |     if (dividend < divisor) {
+   |        ^                  ^
+   |
+help: remove these parentheses
+   |
+59 -     if (dividend < divisor) {
+59 +     if dividend < divisor {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/egyptian-division.rs:64:29
+   |
+64 |     let mut doubling: i64 = (divisor * 2);
+   |                             ^           ^
+   |
+help: remove these parentheses
+   |
+64 -     let mut doubling: i64 = (divisor * 2);
+64 +     let mut doubling: i64 = divisor * 2;
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/egyptian-division.rs:65:11
+   |
+65 |     while (doubling <= dividend) {
+   |           ^                    ^
+   |
+help: remove these parentheses
+   |
+65 -     while (doubling <= dividend) {
+65 +     while doubling <= dividend {
+   |
+
+warning: unnecessary parentheses around method argument
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/egyptian-division.rs:66:57
+   |
+66 |         powers = { let mut _v = powers.clone(); _v.push((powers[((powers.len() as i64) - 1) as usize] * 2)); _v };
+   |                                                         ^                                                ^
+   |
+help: remove these parentheses
+   |
+66 -         powers = { let mut _v = powers.clone(); _v.push((powers[((powers.len() as i64) - 1) as usize] * 2)); _v };
+66 +         powers = { let mut _v = powers.clone(); _v.push(powers[((powers.len() as i64) - 1) as usize] * 2); _v };
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/egyptian-division.rs:68:20
+   |
+68 |         doubling = (doubling * 2);
+   |                    ^            ^
+   |
+help: remove these parentheses
+   |
+68 -         doubling = (doubling * 2);
+68 +         doubling = doubling * 2;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/egyptian-division.rs:72:17
+   |
+72 |     let mut i = ((doublings.len() as i64) - 1);
+   |                 ^                            ^
+   |
+help: remove these parentheses
+   |
+72 -     let mut i = ((doublings.len() as i64) - 1);
+72 +     let mut i = (doublings.len() as i64) - 1;
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/egyptian-division.rs:73:11
+   |
+73 |     while (i >= 0) {
+   |           ^      ^
+   |
+help: remove these parentheses
+   |
+73 -     while (i >= 0) {
+73 +     while i >= 0 {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/egyptian-division.rs:74:12
+   |
+74 |         if ((accum + doublings[i as usize]) <= dividend) {
+   |            ^                                           ^
+   |
+help: remove these parentheses
+   |
+74 -         if ((accum + doublings[i as usize]) <= dividend) {
+74 +         if (accum + doublings[i as usize]) <= dividend {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/egyptian-division.rs:75:21
+   |
+75 |             accum = (accum + doublings[i as usize]);
+   |                     ^                             ^
+   |
+help: remove these parentheses
+   |
+75 -             accum = (accum + doublings[i as usize]);
+75 +             accum = accum + doublings[i as usize];
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/egyptian-division.rs:76:19
+   |
+76 |             ans = (ans + powers[i as usize]);
+   |                   ^                        ^
+   |
+help: remove these parentheses
+   |
+76 -             ans = (ans + powers[i as usize]);
+76 +             ans = ans + powers[i as usize];
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/egyptian-division.rs:77:16
+   |
+77 |             if (accum == dividend) {
+   |                ^                 ^
+   |
+help: remove these parentheses
+   |
+77 -             if (accum == dividend) {
+77 +             if accum == dividend {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/egyptian-division.rs:81:13
+   |
+81 |         i = (i - 1);
+   |             ^     ^
+   |
+help: remove these parentheses
+   |
+81 -         i = (i - 1);
+81 +         i = i - 1;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/egyptian-division.rs:94:28
+   |
+94 |     let duration_us: i64 = ((_end - _start) / 1000);
+   |                            ^                      ^
+   |
+help: remove these parentheses
+   |
+94 -     let duration_us: i64 = ((_end - _start) / 1000);
+94 +     let duration_us: i64 = (_end - _start) / 1000;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/egyptian-division.rs:95:29
+   |
+95 |     let memory_bytes: i64 = (_end_mem - _start_mem);
+   |                             ^                     ^
+   |
+help: remove these parentheses
+   |
+95 -     let memory_bytes: i64 = (_end_mem - _start_mem);
+95 +     let memory_bytes: i64 = _end_mem - _start_mem;
+   |
+
+error[E0423]: expected function, found macro `panic`
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/egyptian-division.rs:57:9
+   |
+57 |         panic("Invalid argument(s)");
+   |         ^^^^^ not a function
+   |
+help: use `!` to invoke the macro
+   |
+57 |         panic!("Invalid argument(s)");
+   |              +
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/egyptian-division.rs:86:9
+   |
+86 |     let mut dividend: i64 = 580;
+   |         ----^^^^^^^^
+   |         |
+   |         help: remove this `mut`
+   |
+   = note: `#[warn(unused_mut)]` on by default
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/egyptian-division.rs:87:9
+   |
+87 |     let mut divisor: i64 = 34;
+   |         ----^^^^^^^
+   |         |
+   |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/egyptian-division.rs:88:9
+   |
+88 |     let mut res: DivResult = egyptianDivide(dividend, divisor);
+   |         ----^^^
+   |         |
+   |         help: remove this `mut`
+
+error: aborting due to 1 previous error; 20 warnings emitted
+
+For more information about this error, try `rustc --explain E0423`.

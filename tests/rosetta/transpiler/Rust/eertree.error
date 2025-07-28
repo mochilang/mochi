@@ -1,0 +1,560 @@
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/eertree.rs:82:41
+   |
+82 |         static mut g_EVEN_ROOT: i64 = 0;;
+   |                                         ^ help: remove this semicolon
+   |
+   = note: `#[warn(redundant_semicolons)]` on by default
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/eertree.rs:83:40
+   |
+83 |         static mut g_ODD_ROOT: i64 = 0;;
+   |                                        ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/eertree.rs:86:2
+   |
+86 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/eertree.rs:132:2
+    |
+132 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/eertree.rs:142:2
+    |
+142 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/eertree.rs:152:2
+    |
+152 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/eertree.rs:157:2
+    |
+157 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/eertree.rs:93:11
+   |
+93 |     while (i < (s.len() as i64)) {
+   |           ^                    ^
+   |
+   = note: `#[warn(unused_parens)]` on by default
+help: remove these parentheses
+   |
+93 -     while (i < (s.len() as i64)) {
+93 +     while i < (s.len() as i64) {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/eertree.rs:99:30
+   |
+99 |             let mut b: i64 = ((i - k) - 1);
+   |                              ^           ^
+   |
+help: remove these parentheses
+   |
+99 -             let mut b: i64 = ((i - k) - 1);
+99 +             let mut b: i64 = (i - k) - 1;
+   |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/eertree.rs:100:16
+    |
+100 |             if ((b >= 0) && (s[b as usize..(b + 1) as usize].to_string().as_str() == c.as_str())) {
+    |                ^                                                                                ^
+    |
+help: remove these parentheses
+    |
+100 -             if ((b >= 0) && (s[b as usize..(b + 1) as usize].to_string().as_str() == c.as_str())) {
+100 +             if (b >= 0) && (s[b as usize..(b + 1) as usize].to_string().as_str() == c.as_str()) {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/eertree.rs:108:17
+    |
+108 |             i = (i + 1);
+    |                 ^     ^
+    |
+help: remove these parentheses
+    |
+108 -             i = (i + 1);
+108 +             i = i + 1;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/eertree.rs:111:18
+    |
+111 |         suffix = (tree.len() as i64);
+    |                  ^                 ^
+    |
+help: remove these parentheses
+    |
+111 -         suffix = (tree.len() as i64);
+111 +         suffix = tree.len() as i64;
+    |
+
+warning: unnecessary parentheses around function argument
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/eertree.rs:112:61
+    |
+112 |         tree = { let mut _v = tree.clone(); _v.push(newNode((k + 2))); _v };
+    |                                                             ^     ^
+    |
+help: remove these parentheses
+    |
+112 -         tree = { let mut _v = tree.clone(); _v.push(newNode((k + 2))); _v };
+112 +         tree = { let mut _v = tree.clone(); _v.push(newNode(k + 2)); _v };
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/eertree.rs:115:12
+    |
+115 |         if (tree[suffix as usize].clone()["length".as_str()] == 1) {
+    |            ^                                                     ^
+    |
+help: remove these parentheses
+    |
+115 -         if (tree[suffix as usize].clone()["length".as_str()] == 1) {
+115 +         if tree[suffix as usize].clone()["length".as_str()] == 1 {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/eertree.rs:117:17
+    |
+117 |             i = (i + 1);
+    |                 ^     ^
+    |
+help: remove these parentheses
+    |
+117 -             i = (i + 1);
+117 +             i = i + 1;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/eertree.rs:122:30
+    |
+122 |             let mut b: i64 = ((i - tree[n as usize].clone()["length".as_str()]) - 1);
+    |                              ^                                                     ^
+    |
+help: remove these parentheses
+    |
+122 -             let mut b: i64 = ((i - tree[n as usize].clone()["length".as_str()]) - 1);
+122 +             let mut b: i64 = (i - tree[n as usize].clone()["length".as_str()]) - 1;
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/eertree.rs:123:16
+    |
+123 |             if ((b >= 0) && (s[b as usize..(b + 1) as usize].to_string().as_str() == c.as_str())) {
+    |                ^                                                                                ^
+    |
+help: remove these parentheses
+    |
+123 -             if ((b >= 0) && (s[b as usize..(b + 1) as usize].to_string().as_str() == c.as_str())) {
+123 +             if (b >= 0) && (s[b as usize..(b + 1) as usize].to_string().as_str() == c.as_str()) {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/eertree.rs:129:13
+    |
+129 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+129 -         i = (i + 1);
+129 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/eertree.rs:137:28
+    |
+137 |         let mut pal: i64 = ((ch + p) + ch);
+    |                            ^             ^
+    |
+help: remove these parentheses
+    |
+137 -         let mut pal: i64 = ((ch + p) + ch);
+137 +         let mut pal: i64 = (ch + p) + ch;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/eertree.rs:161:32
+    |
+161 |         let duration_us: i64 = ((_end - _start) / 1000);
+    |                                ^                      ^
+    |
+help: remove these parentheses
+    |
+161 -         let duration_us: i64 = ((_end - _start) / 1000);
+161 +         let duration_us: i64 = (_end - _start) / 1000;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/eertree.rs:162:33
+    |
+162 |         let memory_bytes: i64 = (_end_mem - _start_mem);
+    |                                 ^                     ^
+    |
+help: remove these parentheses
+    |
+162 -         let memory_bytes: i64 = (_end_mem - _start_mem);
+162 +         let memory_bytes: i64 = _end_mem - _start_mem;
+    |
+
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/eertree.rs:89:49
+   |
+89 |     tree = { let mut _v = tree.clone(); _v.push(Map1 {length: 0, suffix: g_ODD_ROOT, edges: HashMap::from([])}); _v };
+   |                                            ---- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `HashMap<String, f64>`, found `Map1`
+   |                                            |
+   |                                            arguments to this method are incorrect
+   |
+   = note: expected struct `HashMap<String, f64>`
+              found struct `Map1`
+note: method defined here
+  --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/alloc/src/vec/mod.rs:2442:12
+
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/eertree.rs:90:49
+   |
+90 |     tree = { let mut _v = tree.clone(); _v.push(Map1 {length: -1, suffix: g_ODD_ROOT, edges: HashMap::from([])}); _v };
+   |                                            ---- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `HashMap<String, f64>`, found `Map1`
+   |                                            |
+   |                                            arguments to this method are incorrect
+   |
+   = note: expected struct `HashMap<String, f64>`
+              found struct `Map1`
+note: method defined here
+  --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/alloc/src/vec/mod.rs:2442:12
+
+error[E0658]: use of unstable library feature `str_as_str`
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/eertree.rs:98:51
+   |
+98 |             k = tree[n as usize].clone()["length".as_str()];
+   |                                                   ^^^^^^
+   |
+   = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/eertree.rs:98:17
+   |
+96 |         let mut k: i64 = 0;
+   |                    --- expected due to this type
+97 |         loop {
+98 |             k = tree[n as usize].clone()["length".as_str()];
+   |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `i64`, found `f64`
+
+error[E0658]: use of unstable library feature `str_as_str`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/eertree.rs:103:51
+    |
+103 |             n = tree[n as usize].clone()["suffix".as_str()];
+    |                                                   ^^^^^^
+    |
+    = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/eertree.rs:103:17
+    |
+95  |         let mut n: i64 = suffix;
+    |                    --- expected due to this type
+...
+103 |             n = tree[n as usize].clone()["suffix".as_str()];
+    |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `i64`, found `f64`
+
+error[E0658]: use of unstable library feature `str_as_str`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/eertree.rs:105:77
+    |
+105 |         let mut edges: HashMap<i64, i64> = tree[n as usize].clone()["edges".as_str()];
+    |                                                                             ^^^^^^
+    |
+    = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/eertree.rs:105:44
+    |
+105 |         let mut edges: HashMap<i64, i64> = tree[n as usize].clone()["edges".as_str()];
+    |                        -----------------   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `HashMap<i64, i64>`, found `f64`
+    |                        |
+    |                        expected due to this
+    |
+    = note: expected struct `HashMap<i64, i64>`
+                 found type `f64`
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/eertree.rs:106:31
+    |
+106 |         if edges.contains_key(&c) {
+    |                  ------------ ^^ expected `&i64`, found `&String`
+    |                  |
+    |                  arguments to this method are incorrect
+    |
+    = note: expected reference `&i64`
+               found reference `&String`
+note: method defined here
+   --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/std/src/collections/hash/map.rs:1137:12
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/eertree.rs:107:28
+    |
+107 |             suffix = edges[c.as_str()];
+    |                            ^^^^^^^^^^ expected `&i64`, found `&str`
+    |
+    = note: expected reference `&i64`
+               found reference `&str`
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/eertree.rs:112:53
+    |
+112 |         tree = { let mut _v = tree.clone(); _v.push(newNode((k + 2))); _v };
+    |                                                ---- ^^^^^^^^^^^^^^^^ expected `HashMap<String, f64>`, found `Map`
+    |                                                |
+    |                                                arguments to this method are incorrect
+    |
+    = note: expected struct `HashMap<String, f64>`
+               found struct `Map`
+note: method defined here
+   --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/alloc/src/vec/mod.rs:2442:12
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/eertree.rs:113:22
+    |
+113 |         edges.insert(c.clone(), suffix);
+    |               ------ ^^^^^^^^^ expected `i64`, found `String`
+    |               |
+    |               arguments to this method are incorrect
+    |
+note: method defined here
+   --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/std/src/collections/hash/map.rs:1201:12
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/eertree.rs:114:37
+    |
+114 |         tree[n as usize]["edges"] = edges;
+    |         -------------------------   ^^^^^ expected `f64`, found `HashMap<i64, i64>`
+    |         |
+    |         expected due to the type of this binding
+    |
+    = note: expected type `f64`
+             found struct `HashMap<i64, i64>`
+
+error[E0658]: use of unstable library feature `str_as_str`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/eertree.rs:115:52
+    |
+115 |         if (tree[suffix as usize].clone()["length".as_str()] == 1) {
+    |                                                    ^^^^^^
+    |
+    = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/eertree.rs:115:65
+    |
+115 |         if (tree[suffix as usize].clone()["length".as_str()] == 1) {
+    |             ------------------------------------------------    ^ expected `f64`, found integer
+    |             |
+    |             expected because this is `f64`
+    |
+help: use a float literal
+    |
+115 |         if (tree[suffix as usize].clone()["length".as_str()] == 1.0) {
+    |                                                                  ++
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/eertree.rs:116:47
+    |
+116 |             tree[suffix as usize]["suffix"] = 0;
+    |             -------------------------------   ^ expected `f64`, found integer
+    |             |
+    |             expected due to the type of this binding
+    |
+help: use a float literal
+    |
+116 |             tree[suffix as usize]["suffix"] = 0.0;
+    |                                                ++
+
+error[E0658]: use of unstable library feature `str_as_str`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/eertree.rs:121:51
+    |
+121 |             n = tree[n as usize].clone()["suffix".as_str()];
+    |                                                   ^^^^^^
+    |
+    = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/eertree.rs:121:17
+    |
+95  |         let mut n: i64 = suffix;
+    |                    --- expected due to this type
+...
+121 |             n = tree[n as usize].clone()["suffix".as_str()];
+    |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `i64`, found `f64`
+
+error[E0658]: use of unstable library feature `str_as_str`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/eertree.rs:122:70
+    |
+122 |             let mut b: i64 = ((i - tree[n as usize].clone()["length".as_str()]) - 1);
+    |                                                                      ^^^^^^
+    |
+    = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0277]: cannot subtract `f64` from `i64`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/eertree.rs:122:34
+    |
+122 |             let mut b: i64 = ((i - tree[n as usize].clone()["length".as_str()]) - 1);
+    |                                  ^ no implementation for `i64 - f64`
+    |
+    = help: the trait `Sub<f64>` is not implemented for `i64`
+    = help: the following other types implement trait `Sub<Rhs>`:
+              `&i64` implements `Sub<i64>`
+              `&i64` implements `Sub`
+              `i64` implements `Sub<&i64>`
+              `i64` implements `Sub`
+
+error[E0658]: use of unstable library feature `str_as_str`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/eertree.rs:127:74
+    |
+127 |         let mut en: HashMap<i64, i64> = tree[n as usize].clone()["edges".as_str()];
+    |                                                                          ^^^^^^
+    |
+    = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/eertree.rs:127:41
+    |
+127 |         let mut en: HashMap<i64, i64> = tree[n as usize].clone()["edges".as_str()];
+    |                     -----------------   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `HashMap<i64, i64>`, found `f64`
+    |                     |
+    |                     expected due to this
+    |
+    = note: expected struct `HashMap<i64, i64>`
+                 found type `f64`
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/eertree.rs:128:46
+    |
+128 |         tree[suffix as usize]["suffix"] = en[c.as_str()];
+    |                                              ^^^^^^^^^^ expected `&i64`, found `&str`
+    |
+    = note: expected reference `&i64`
+               found reference `&str`
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/eertree.rs:128:43
+    |
+128 |         tree[suffix as usize]["suffix"] = en[c.as_str()];
+    |         -------------------------------   ^^^^^^^^^^^^^^ expected `f64`, found `i64`
+    |         |
+    |         expected due to the type of this binding
+    |
+help: you can convert an `i64` to an `f64`, producing the floating point representation of the integer, rounded if necessary
+    |
+128 |         tree[suffix as usize]["suffix"] = en[c.as_str()] as f64;
+    |                                                          ++++++
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/eertree.rs:131:12
+    |
+87  |         unsafe fn eertree(s: &str) -> Vec<Map> {
+    |                                       -------- expected `Vec<Map>` because of return type
+...
+131 |     return tree
+    |            ^^^^ expected `Vec<Map>`, found `Vec<HashMap<String, f64>>`
+    |
+    = note: expected struct `Vec<Map>`
+               found struct `Vec<HashMap<String, f64>>`
+
+error[E0658]: use of unstable library feature `str_as_str`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/eertree.rs:134:61
+    |
+134 |     let mut edges: f64 = tree[idx as usize].clone()["edges".as_str()];
+    |                                                             ^^^^^^
+    |
+    = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0277]: `f64` is not an iterator
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/eertree.rs:135:15
+    |
+135 |     for ch in edges {
+    |               ^^^^^ `f64` is not an iterator
+    |
+    = help: the trait `Iterator` is not implemented for `f64`
+    = note: required for `f64` to implement `IntoIterator`
+
+error[E0608]: cannot index into a value of type `f64`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/eertree.rs:136:33
+    |
+136 |         let mut nxt: i64 = edges[ch];
+    |                                 ^^^^
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/eertree.rs:139:40
+    |
+139 |         acc = child(tree.clone(), nxt, &pal, acc.clone());
+    |               -----                    ^^^^ expected `&str`, found `&i64`
+    |               |
+    |               arguments to this function are incorrect
+    |
+    = note: expected reference `&str`
+               found reference `&i64`
+note: function defined here
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/eertree.rs:133:19
+    |
+133 |         unsafe fn child(mut tree: Vec<HashMap<String, f64>>, mut idx: i64, p: &str, mut acc: Vec<String>) -> Vec<String> {
+    |                   ^^^^^                                                    -------
+
+error[E0658]: use of unstable library feature `str_as_str`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/eertree.rs:146:69
+    |
+146 |     let mut oEdges: f64 = tree[g_ODD_ROOT as usize].clone()["edges".as_str()];
+    |                                                                     ^^^^^^
+    |
+    = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0277]: `f64` is not an iterator
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/eertree.rs:147:15
+    |
+147 |     for ch in oEdges {
+    |               ^^^^^^ `f64` is not an iterator
+    |
+    = help: the trait `Iterator` is not implemented for `f64`
+    = note: required for `f64` to implement `IntoIterator`
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/eertree.rs:155:48
+    |
+155 |     let mut subs: Vec<String> = subPalindromes(tree.clone());
+    |                                 -------------- ^^^^^^^^^^^^ expected `Vec<HashMap<String, f64>>`, found `Vec<Map>`
+    |                                 |
+    |                                 arguments to this function are incorrect
+    |
+    = note: expected struct `Vec<HashMap<String, f64>>`
+               found struct `Vec<Map>`
+note: function defined here
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/eertree.rs:143:19
+    |
+143 |         unsafe fn subPalindromes(mut tree: Vec<HashMap<String, f64>>) -> Vec<String> {
+    |                   ^^^^^^^^^^^^^^ -----------------------------------
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/eertree.rs:84:27
+   |
+84 |         unsafe fn newNode(mut len: i64) -> Map {
+   |                           ----^^^
+   |                           |
+   |                           help: remove this `mut`
+   |
+   = note: `#[warn(unused_mut)]` on by default
+
+error: aborting due to 32 previous errors; 22 warnings emitted
+
+Some errors have detailed explanations: E0277, E0308, E0608, E0658.
+For more information about an error, try `rustc --explain E0277`.

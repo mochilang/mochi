@@ -1,0 +1,815 @@
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/display-an-outline-as-a-nested-table.rs:87:2
+   |
+87 | };
+   |  ^ help: remove this semicolon
+   |
+   = note: `#[warn(redundant_semicolons)]` on by default
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/display-an-outline-as-a-nested-table.rs:99:2
+   |
+99 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/display-an-outline-as-a-nested-table.rs:106:2
+    |
+106 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/display-an-outline-as-a-nested-table.rs:116:2
+    |
+116 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/display-an-outline-as-a-nested-table.rs:136:2
+    |
+136 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/display-an-outline-as-a-nested-table.rs:147:2
+    |
+147 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/display-an-outline-as-a-nested-table.rs:165:2
+    |
+165 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/display-an-outline-as-a-nested-table.rs:204:2
+    |
+204 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/display-an-outline-as-a-nested-table.rs:224:2
+    |
+224 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/display-an-outline-as-a-nested-table.rs:75:11
+   |
+75 |     while (i < (s.len() as i64)) {
+   |           ^                    ^
+   |
+   = note: `#[warn(unused_parens)]` on by default
+help: remove these parentheses
+   |
+75 -     while (i < (s.len() as i64)) {
+75 +     while i < (s.len() as i64) {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/display-an-outline-as-a-nested-table.rs:76:12
+   |
+76 | ...if (((i + (sep.len() as i64)) <= (s.len() as i64)) && ({ let tmp = &s; tmp.chars().skip(i as usize).take(((i + (sep.len() as i64)) - i) as usize).collect::<String>() } == sep)) {
+   |       ^                                                                                                                                                                           ^
+   |
+help: remove these parentheses
+   |
+76 -         if (((i + (sep.len() as i64)) <= (s.len() as i64)) && ({ let tmp = &s; tmp.chars().skip(i as usize).take(((i + (sep.len() as i64)) - i) as usize).collect::<String>() } == sep)) {
+76 +         if ((i + (sep.len() as i64)) <= (s.len() as i64)) && ({ let tmp = &s; tmp.chars().skip(i as usize).take(((i + (sep.len() as i64)) - i) as usize).collect::<String>() } == sep) {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/display-an-outline-as-a-nested-table.rs:79:17
+   |
+79 |             i = (i + (sep.len() as i64));
+   |                 ^                      ^
+   |
+help: remove these parentheses
+   |
+79 -             i = (i + (sep.len() as i64));
+79 +             i = i + (sep.len() as i64);
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/display-an-outline-as-a-nested-table.rs:82:17
+   |
+82 |             i = (i + 1);
+   |                 ^     ^
+   |
+help: remove these parentheses
+   |
+82 -             i = (i + 1);
+82 +             i = i + 1;
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/display-an-outline-as-a-nested-table.rs:91:11
+   |
+91 |     while (i < (xs.len() as i64)) {
+   |           ^                     ^
+   |
+help: remove these parentheses
+   |
+91 -     while (i < (xs.len() as i64)) {
+91 +     while i < (xs.len() as i64) {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/display-an-outline-as-a-nested-table.rs:92:12
+   |
+92 |         if (i > 0) {
+   |            ^     ^
+   |
+help: remove these parentheses
+   |
+92 -         if (i > 0) {
+92 +         if i > 0 {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/display-an-outline-as-a-nested-table.rs:96:13
+   |
+96 |         i = (i + 1);
+   |             ^     ^
+   |
+help: remove these parentheses
+   |
+96 -         i = (i + 1);
+96 +         i = i + 1;
+   |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/display-an-outline-as-a-nested-table.rs:102:11
+    |
+102 |     while ((i < (s.len() as i64)) && (s[i as usize..(i + 1) as usize].to_string().as_str() == " ")) {
+    |           ^                                                                                       ^
+    |
+help: remove these parentheses
+    |
+102 -     while ((i < (s.len() as i64)) && (s[i as usize..(i + 1) as usize].to_string().as_str() == " ")) {
+102 +     while (i < (s.len() as i64)) && (s[i as usize..(i + 1) as usize].to_string().as_str() == " ") {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/display-an-outline-as-a-nested-table.rs:103:13
+    |
+103 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+103 -         i = (i + 1);
+103 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/display-an-outline-as-a-nested-table.rs:112:25
+    |
+112 |         let mut level = (((line.len() as i64) - (line2.len() as i64)) / tab);
+    |                         ^                                                  ^
+    |
+help: remove these parentheses
+    |
+112 -         let mut level = (((line.len() as i64) - (line2.len() as i64)) / tab);
+112 +         let mut level = ((line.len() as i64) - (line2.len() as i64)) / tab;
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/display-an-outline-as-a-nested-table.rs:118:8
+    |
+118 |     if (level == 0) {
+    |        ^          ^
+    |
+help: remove these parentheses
+    |
+118 -     if (level == 0) {
+118 +     if level == 0 {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/display-an-outline-as-a-nested-table.rs:121:22
+    |
+121 |     let mut i: i64 = (start + 1);
+    |                      ^         ^
+    |
+help: remove these parentheses
+    |
+121 -     let mut i: i64 = (start + 1);
+121 +     let mut i: i64 = start + 1;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/display-an-outline-as-a-nested-table.rs:122:11
+    |
+122 |     while (i < (nodes.len() as i64)) {
+    |           ^                        ^
+    |
+help: remove these parentheses
+    |
+122 -     while (i < (nodes.len() as i64)) {
+122 +     while i < (nodes.len() as i64) {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/display-an-outline-as-a-nested-table.rs:124:28
+    |
+124 |         let mut lev: i64 = (node["level".as_str()] as i64);
+    |                            ^                             ^
+    |
+help: remove these parentheses
+    |
+124 -         let mut lev: i64 = (node["level".as_str()] as i64);
+124 +         let mut lev: i64 = node["level".as_str()] as i64;
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/display-an-outline-as-a-nested-table.rs:125:12
+    |
+125 |         if (lev == (level + 1)) {
+    |            ^                  ^
+    |
+help: remove these parentheses
+    |
+125 -         if (lev == (level + 1)) {
+125 +         if lev == (level + 1) {
+    |
+
+warning: unnecessary parentheses around function argument
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/display-an-outline-as-a-nested-table.rs:127:38
+    |
+127 |             toNest(nodes.clone(), i, (level + 1), child.clone());
+    |                                      ^         ^
+    |
+help: remove these parentheses
+    |
+127 -             toNest(nodes.clone(), i, (level + 1), child.clone());
+127 +             toNest(nodes.clone(), i, level + 1, child.clone());
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/display-an-outline-as-a-nested-table.rs:131:19
+    |
+131 |         } else if (lev <= level) {
+    |                   ^            ^
+    |
+help: remove these parentheses
+    |
+131 -         } else if (lev <= level) {
+131 +         } else if lev <= level {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/display-an-outline-as-a-nested-table.rs:134:13
+    |
+134 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+134 -         i = (i + 1);
+134 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/display-an-outline-as-a-nested-table.rs:139:8
+    |
+139 |     if ((kids.len() as i64) == 0) {
+    |        ^                        ^
+    |
+help: remove these parentheses
+    |
+139 -     if ((kids.len() as i64) == 0) {
+139 +     if (kids.len() as i64) == 0 {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/display-an-outline-as-a-nested-table.rs:144:17
+    |
+144 |         total = (total + countLeaves(&k));
+    |                 ^                       ^
+    |
+help: remove these parentheses
+    |
+144 -         total = (total + countLeaves(&k));
+144 +         total = total + countLeaves(&k);
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/display-an-outline-as-a-nested-table.rs:152:11
+    |
+152 |     while (d < depth) {
+    |           ^         ^
+    |
+help: remove these parentheses
+    |
+152 -     while (d < depth) {
+152 +     while d < depth {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/display-an-outline-as-a-nested-table.rs:156:33
+    |
+156 |             let mut kids: i64 = (n["children".as_str()] as i64);
+    |                                 ^                             ^
+    |
+help: remove these parentheses
+    |
+156 -             let mut kids: i64 = (n["children".as_str()] as i64);
+156 +             let mut kids: i64 = n["children".as_str()] as i64;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/display-an-outline-as-a-nested-table.rs:162:13
+    |
+162 |         d = (d + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+162 -         d = (d + 1);
+162 +         d = d + 1;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/display-an-outline-as-a-nested-table.rs:176:11
+    |
+176 |     while (lvl < depth) {
+    |           ^           ^
+    |
+help: remove these parentheses
+    |
+176 -     while (lvl < depth) {
+176 +     while lvl < depth {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/display-an-outline-as-a-nested-table.rs:178:12
+    |
+178 |         if ((nodes.len() as i64) == 0) {
+    |            ^                         ^
+    |
+help: remove these parentheses
+    |
+178 -         if ((nodes.len() as i64) == 0) {
+178 +         if (nodes.len() as i64) == 0 {
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/display-an-outline-as-a-nested-table.rs:182:19
+    |
+182 |             while (idx < (nodes.len() as i64)) {
+    |                   ^                          ^
+    |
+help: remove these parentheses
+    |
+182 -             while (idx < (nodes.len() as i64)) {
+182 +             while idx < (nodes.len() as i64) {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/display-an-outline-as-a-nested-table.rs:186:20
+    |
+186 |                 if (lvl == 1) {
+    |                    ^        ^
+    |
+help: remove these parentheses
+    |
+186 -                 if (lvl == 1) {
+186 +                 if lvl == 1 {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/display-an-outline-as-a-nested-table.rs:187:27
+    |
+187 |                     col = (idx + 1);
+    |                           ^       ^
+    |
+help: remove these parentheses
+    |
+187 -                     col = (idx + 1);
+187 +                     col = idx + 1;
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/display-an-outline-as-a-nested-table.rs:189:20
+    |
+189 |                 if (col >= (cols.len() as i64)) {
+    |                    ^                          ^
+    |
+help: remove these parentheses
+    |
+189 -                 if (col >= (cols.len() as i64)) {
+189 +                 if col >= (cols.len() as i64) {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/display-an-outline-as-a-nested-table.rs:190:27
+    |
+190 |                     col = ((cols.len() as i64) - 1);
+    |                           ^                       ^
+    |
+help: remove these parentheses
+    |
+190 -                     col = ((cols.len() as i64) - 1);
+190 +                     col = (cols.len() as i64) - 1;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/display-an-outline-as-a-nested-table.rs:194:23
+    |
+194 |                 idx = (idx + 1);
+    |                       ^       ^
+    |
+help: remove these parentheses
+    |
+194 -                 idx = (idx + 1);
+194 +                 idx = idx + 1;
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/display-an-outline-as-a-nested-table.rs:197:12
+    |
+197 |         if (lvl < (depth - 1)) {
+    |            ^                 ^
+    |
+help: remove these parentheses
+    |
+197 -         if (lvl < (depth - 1)) {
+197 +         if lvl < (depth - 1) {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/display-an-outline-as-a-nested-table.rs:200:15
+    |
+200 |         lvl = (lvl + 1);
+    |               ^       ^
+    |
+help: remove these parentheses
+    |
+200 -         lvl = (lvl + 1);
+200 +         lvl = lvl + 1;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/display-an-outline-as-a-nested-table.rs:228:28
+    |
+228 |     let duration_us: i64 = ((_end - _start) / 1000);
+    |                            ^                      ^
+    |
+help: remove these parentheses
+    |
+228 -     let duration_us: i64 = ((_end - _start) / 1000);
+228 +     let duration_us: i64 = (_end - _start) / 1000;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/display-an-outline-as-a-nested-table.rs:229:29
+    |
+229 |     let memory_bytes: i64 = (_end_mem - _start_mem);
+    |                             ^                     ^
+    |
+help: remove these parentheses
+    |
+229 -     let memory_bytes: i64 = (_end_mem - _start_mem);
+229 +     let memory_bytes: i64 = _end_mem - _start_mem;
+    |
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/display-an-outline-as-a-nested-table.rs:113:125
+    |
+113 |         nodes = { let mut _v = nodes.clone(); _v.push(HashMap::from([(String::from("level"), level), (String::from("name"), line2)])); _v };
+    |                                                                                                                             ^^^^^ expected `i64`, found `String`
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/display-an-outline-as-a-nested-table.rs:113:55
+    |
+113 |         nodes = { let mut _v = nodes.clone(); _v.push(HashMap::from([(String::from("level"), level), (String::from("name"), line2)])); _v };
+    |                                                  ---- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `HashMap<String, f64>`, found `HashMap<String, i64>`
+    |                                                  |
+    |                                                  arguments to this method are incorrect
+    |
+    = note: expected struct `HashMap<_, f64>`
+               found struct `HashMap<_, i64>`
+note: method defined here
+   --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/alloc/src/vec/mod.rs:2442:12
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/display-an-outline-as-a-nested-table.rs:115:12
+    |
+107 |     fn makeIndent(outline: &str, mut tab: i64) -> Vec<HashMap<&str, i64>> {
+    |                                                   ----------------------- expected `Vec<HashMap<&str, i64>>` because of return type
+...
+115 |     return nodes
+    |            ^^^^^ expected `Vec<HashMap<&str, i64>>`, found `Vec<HashMap<String, f64>>`
+    |
+    = note: expected struct `Vec<HashMap<&str, i64>>`
+               found struct `Vec<HashMap<String, f64>>`
+
+error[E0658]: use of unstable library feature `str_as_str`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/display-an-outline-as-a-nested-table.rs:119:59
+    |
+119 |         n.insert("name".clone(), nodes[0 as usize]["name".as_str()]);
+    |                                                           ^^^^^^
+    |
+    = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/display-an-outline-as-a-nested-table.rs:119:18
+    |
+119 |         n.insert("name".clone(), nodes[0 as usize]["name".as_str()]);
+    |           ------ ^^^^^^^-----^^
+    |           |      |      |
+    |           |      |      help: try using a conversion method: `to_string`
+    |           |      expected `String`, found `&str`
+    |           arguments to this method are incorrect
+    |
+note: method defined here
+   --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/std/src/collections/hash/map.rs:1201:12
+
+error[E0658]: use of unstable library feature `str_as_str`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/display-an-outline-as-a-nested-table.rs:124:42
+    |
+124 |         let mut lev: i64 = (node["level".as_str()] as i64);
+    |                                          ^^^^^^
+    |
+    = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0658]: use of unstable library feature `str_as_str`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/display-an-outline-as-a-nested-table.rs:126:57
+    |
+126 |             let mut child: Map = Map {name: node["name".as_str()], children: vec![]};
+    |                                                         ^^^^^^
+    |
+    = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/display-an-outline-as-a-nested-table.rs:127:51
+    |
+127 |             toNest(nodes.clone(), i, (level + 1), child.clone());
+    |             ------                                ^^^^^^^^^^^^^ expected `HashMap<String, f64>`, found `Map`
+    |             |
+    |             arguments to this function are incorrect
+    |
+    = note: expected struct `HashMap<String, f64>`
+               found struct `Map`
+note: function defined here
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/display-an-outline-as-a-nested-table.rs:117:8
+    |
+117 |     fn toNest(mut nodes: Vec<HashMap<String, f64>>, mut start: i64, mut level: i64, mut n: HashMap<String, f64>) {
+    |        ^^^^^^                                                                       ---------------------------
+
+error[E0658]: use of unstable library feature `str_as_str`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/display-an-outline-as-a-nested-table.rs:128:44
+    |
+128 |             let mut cs: f64 = n["children".as_str()];
+    |                                            ^^^^^^
+    |
+    = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0599]: no method named `push` found for type `f64` in the current scope
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/display-an-outline-as-a-nested-table.rs:129:48
+    |
+129 |             cs = { let mut _v = cs.clone(); _v.push(child.clone()); _v };
+    |                                                ^^^^ method not found in `f64`
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/display-an-outline-as-a-nested-table.rs:130:22
+    |
+130 |             n.insert("children".clone(), cs);
+    |               ------ ^^^^^^^^^^^-----^^
+    |               |      |          |
+    |               |      |          help: try using a conversion method: `to_string`
+    |               |      expected `String`, found `&str`
+    |               arguments to this method are incorrect
+    |
+note: method defined here
+   --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/std/src/collections/hash/map.rs:1201:12
+
+error[E0658]: use of unstable library feature `str_as_str`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/display-an-outline-as-a-nested-table.rs:138:38
+    |
+138 |     let mut kids: f64 = n["children".as_str()];
+    |                                      ^^^^^^
+    |
+    = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0599]: no method named `len` found for type `f64` in the current scope
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/display-an-outline-as-a-nested-table.rs:139:15
+    |
+139 |     if ((kids.len() as i64) == 0) {
+    |               ^^^
+    |
+help: there is a method `le` with a similar name, but with different arguments
+   --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/core/src/cmp.rs:1400:5
+
+error[E0277]: `f64` is not an iterator
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/display-an-outline-as-a-nested-table.rs:143:14
+    |
+143 |     for k in kids {
+    |              ^^^^ `f64` is not an iterator
+    |
+    = help: the trait `Iterator` is not implemented for `f64`
+    = note: required for `f64` to implement `IntoIterator`
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/display-an-outline-as-a-nested-table.rs:150:55
+    |
+150 |     let mut current: Vec<HashMap<String, f64>> = vec![root];
+    |                                                       ^^^^ expected `HashMap<String, f64>`, found `&HashMap<String, f64>`
+    |
+    = note: expected struct `HashMap<_, _>`
+            found reference `&HashMap<_, _>`
+help: consider using clone here
+    |
+150 |     let mut current: Vec<HashMap<String, f64>> = vec![root.clone()];
+    |                                                           ++++++++
+
+error[E0658]: use of unstable library feature `str_as_str`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/display-an-outline-as-a-nested-table.rs:156:47
+    |
+156 |             let mut kids: i64 = (n["children".as_str()] as i64);
+    |                                               ^^^^^^
+    |
+    = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0277]: `i64` is not an iterator
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/display-an-outline-as-a-nested-table.rs:157:22
+    |
+157 |             for k in kids {
+    |                      ^^^^ `i64` is not an iterator
+    |
+    = help: the trait `Iterator` is not implemented for `i64`
+    = note: if you want to iterate between `start` until a value `end`, use the exclusive range syntax `start..end` or the inclusive range syntax `start..=end`
+    = note: required for `i64` to implement `IntoIterator`
+
+error[E0658]: use of unstable library feature `str_as_str`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/display-an-outline-as-a-nested-table.rs:172:237
+    |
+172 | ....clone()), " \" colSpan="), span.to_string()), " | "), n["name".as_str()].to_string()).to_string()); _v };
+    |                                                                    ^^^^^^
+    |
+    = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0658]: use of unstable library feature `str_as_str`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/display-an-outline-as-a-nested-table.rs:192:231
+    |
+192 | ...one()), " \" colspan="), span.to_string()), " | "), node["name".as_str()].to_string()).clone();
+    |                                                                    ^^^^^^
+    |
+    = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0308]: arguments to this function are incorrect
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/display-an-outline-as-a-nested-table.rs:215:5
+    |
+215 |     toNest(nodes.clone(), 0, 0, n.clone());
+    |     ^^^^^^
+    |
+note: expected `Vec<HashMap<String, f64>>`, found `Vec<HashMap<&str, i64>>`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/display-an-outline-as-a-nested-table.rs:215:12
+    |
+215 |     toNest(nodes.clone(), 0, 0, n.clone());
+    |            ^^^^^^^^^^^^^
+    = note: expected struct `Vec<HashMap<String, f64>>`
+               found struct `Vec<HashMap<&str, i64>>`
+note: expected `HashMap<String, f64>`, found `Map1`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/display-an-outline-as-a-nested-table.rs:215:33
+    |
+215 |     toNest(nodes.clone(), 0, 0, n.clone());
+    |                                 ^^^^^^^^^
+    = note: expected struct `HashMap<String, f64>`
+               found struct `Map1`
+note: function defined here
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/display-an-outline-as-a-nested-table.rs:117:8
+    |
+117 |     fn toNest(mut nodes: Vec<HashMap<String, f64>>, mut start: i64, mut level: i64, mut n: HashMap<String, f64>) {
+    |        ^^^^^^ ------------------------------------                                  ---------------------------
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/display-an-outline-as-a-nested-table.rs:216:29
+    |
+216 |     println!("{}", toMarkup(&n, cols.clone(), 4));
+    |                    -------- ^^ expected `&HashMap<String, f64>`, found `&Map1`
+    |                    |
+    |                    arguments to this function are incorrect
+    |
+    = note: expected reference `&HashMap<String, f64>`
+               found reference `&Map1`
+note: function defined here
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/display-an-outline-as-a-nested-table.rs:166:8
+    |
+166 |     fn toMarkup(n: &HashMap<String, f64>, mut cols: Vec<String>, mut depth: i64) -> String {
+    |        ^^^^^^^^ ------------------------
+
+error[E0308]: arguments to this function are incorrect
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/display-an-outline-as-a-nested-table.rs:222:5
+    |
+222 |     toNest(nodes2.clone(), 0, 0, n2.clone());
+    |     ^^^^^^
+    |
+note: expected `Vec<HashMap<String, f64>>`, found `Vec<HashMap<&str, i64>>`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/display-an-outline-as-a-nested-table.rs:222:12
+    |
+222 |     toNest(nodes2.clone(), 0, 0, n2.clone());
+    |            ^^^^^^^^^^^^^^
+    = note: expected struct `Vec<HashMap<String, f64>>`
+               found struct `Vec<HashMap<&str, i64>>`
+note: expected `HashMap<String, f64>`, found `Map1`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/display-an-outline-as-a-nested-table.rs:222:34
+    |
+222 |     toNest(nodes2.clone(), 0, 0, n2.clone());
+    |                                  ^^^^^^^^^^
+    = note: expected struct `HashMap<String, f64>`
+               found struct `Map1`
+note: function defined here
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/display-an-outline-as-a-nested-table.rs:117:8
+    |
+117 |     fn toNest(mut nodes: Vec<HashMap<String, f64>>, mut start: i64, mut level: i64, mut n: HashMap<String, f64>) {
+    |        ^^^^^^ ------------------------------------                                  ---------------------------
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/display-an-outline-as-a-nested-table.rs:223:29
+    |
+223 |     println!("{}", toMarkup(&n2, cols2.clone(), 4));
+    |                    -------- ^^^ expected `&HashMap<String, f64>`, found `&Map1`
+    |                    |
+    |                    arguments to this function are incorrect
+    |
+    = note: expected reference `&HashMap<String, f64>`
+               found reference `&Map1`
+note: function defined here
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/display-an-outline-as-a-nested-table.rs:166:8
+    |
+166 |     fn toMarkup(n: &HashMap<String, f64>, mut cols: Vec<String>, mut depth: i64) -> String {
+    |        ^^^^^^^^ ------------------------
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/display-an-outline-as-a-nested-table.rs:88:13
+   |
+88 |     fn join(mut xs: Vec<String>, sep: &str) -> String {
+   |             ----^^
+   |             |
+   |             help: remove this `mut`
+   |
+   = note: `#[warn(unused_mut)]` on by default
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/display-an-outline-as-a-nested-table.rs:166:43
+    |
+166 |     fn toMarkup(n: &HashMap<String, f64>, mut cols: Vec<String>, mut depth: i64) -> String {
+    |                                           ----^^^^
+    |                                           |
+    |                                           help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/display-an-outline-as-a-nested-table.rs:166:66
+    |
+166 |     fn toMarkup(n: &HashMap<String, f64>, mut cols: Vec<String>, mut depth: i64) -> String {
+    |                                                                  ----^^^^^
+    |                                                                  |
+    |                                                                  help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/display-an-outline-as-a-nested-table.rs:169:9
+    |
+169 |     let mut l1 = String::from("|-");
+    |         ----^^
+    |         |
+    |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/display-an-outline-as-a-nested-table.rs:174:9
+    |
+174 |     let mut lvls: Vec<Vec<HashMap<String, f64>>> = nodesByDepth(n, depth);
+    |         ----^^^^
+    |         |
+    |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/display-an-outline-as-a-nested-table.rs:177:13
+    |
+177 |         let mut nodes: Vec<HashMap<String, f64>> = lvls[lvl as usize].clone();
+    |             ----^^^^^
+    |             |
+    |             help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/display-an-outline-as-a-nested-table.rs:183:21
+    |
+183 |                 let mut node: HashMap<String, f64> = nodes[idx as usize].clone();
+    |                     ----^^^^
+    |                     |
+    |                     help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/display-an-outline-as-a-nested-table.rs:192:21
+    |
+192 | ...   let mut cell: String = format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", "| style=\"background: ", co...
+    |           ----^^^^
+    |           |
+    |           help: remove this `mut`
+
+error: aborting due to 23 previous errors; 52 warnings emitted
+
+Some errors have detailed explanations: E0277, E0308, E0599, E0658.
+For more information about an error, try `rustc --explain E0277`.

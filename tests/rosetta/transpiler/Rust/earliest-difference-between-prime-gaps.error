@@ -1,0 +1,160 @@
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/earliest-difference-between-prime-gaps.rs:76:2
+   |
+76 | };
+   |  ^ help: remove this semicolon
+   |
+   = note: `#[warn(redundant_semicolons)]` on by default
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/earliest-difference-between-prime-gaps.rs:87:2
+   |
+87 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/earliest-difference-between-prime-gaps.rs:70:17
+   |
+70 |     let mut i = ((s.len() as i64) - 3);
+   |                 ^                    ^
+   |
+   = note: `#[warn(unused_parens)]` on by default
+help: remove these parentheses
+   |
+70 -     let mut i = ((s.len() as i64) - 3);
+70 +     let mut i = (s.len() as i64) - 3;
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/earliest-difference-between-prime-gaps.rs:71:11
+   |
+71 |     while (i > 0) {
+   |           ^     ^
+   |
+help: remove these parentheses
+   |
+71 -     while (i > 0) {
+71 +     while i > 0 {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/earliest-difference-between-prime-gaps.rs:73:13
+   |
+73 |         i = (i - 3);
+   |             ^     ^
+   |
+help: remove these parentheses
+   |
+73 -         i = (i - 3);
+73 +         i = i - 3;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/earliest-difference-between-prime-gaps.rs:91:28
+   |
+91 |     let duration_us: i64 = ((_end - _start) / 1000);
+   |                            ^                      ^
+   |
+help: remove these parentheses
+   |
+91 -     let duration_us: i64 = ((_end - _start) / 1000);
+91 +     let duration_us: i64 = (_end - _start) / 1000;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/earliest-difference-between-prime-gaps.rs:92:29
+   |
+92 |     let memory_bytes: i64 = (_end_mem - _start_mem);
+   |                             ^                     ^
+   |
+help: remove these parentheses
+   |
+92 -     let memory_bytes: i64 = (_end_mem - _start_mem);
+92 +     let memory_bytes: i64 = _end_mem - _start_mem;
+   |
+
+error[E0277]: the type `str` cannot be indexed by `std::ops::Range<i64>`
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/earliest-difference-between-prime-gaps.rs:72:47
+   |
+72 |         s = format!("{}{}", format!("{}{}", s[0..i].to_vec(), ","), s[i..(s.len() as i64)].to_vec());
+   |                                               ^^^^ string indices are ranges of `usize`
+   |
+   = help: the trait `SliceIndex<str>` is not implemented for `std::ops::Range<i64>`
+   = help: the following other types implement trait `SliceIndex<T>`:
+             `std::ops::Range<usize>` implements `SliceIndex<[T]>`
+             `std::ops::Range<usize>` implements `SliceIndex<str>`
+   = note: required for `String` to implement `Index<std::ops::Range<i64>>`
+
+error[E0277]: the type `str` cannot be indexed by `std::ops::Range<i64>`
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/earliest-difference-between-prime-gaps.rs:72:71
+   |
+72 |         s = format!("{}{}", format!("{}{}", s[0..i].to_vec(), ","), s[i..(s.len() as i64)].to_vec());
+   |                                                                       ^^^^^^^^^^^^^^^^^^^ string indices are ranges of `usize`
+   |
+   = help: the trait `SliceIndex<str>` is not implemented for `std::ops::Range<i64>`
+   = help: the following other types implement trait `SliceIndex<T>`:
+             `std::ops::Range<usize>` implements `SliceIndex<[T]>`
+             `std::ops::Range<usize>` implements `SliceIndex<str>`
+   = note: required for `String` to implement `Index<std::ops::Range<i64>>`
+
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/earliest-difference-between-prime-gaps.rs:78:50
+   |
+78 | ...c![HashMap::from([(String::from("pm"), 10), (String::from("g1"), 4), (String::from("s1"), 7), (String::from("g2"), 6), (String::from("s2"), 23), (String::from("d"), 16)]), H...
+   |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `HashMap<&str, i64>`, found `HashMap<String, {integer}>`
+   |
+   = note: expected struct `HashMap<&str, i64>`
+              found struct `HashMap<String, {integer}>`
+
+error[E0658]: use of unstable library feature `str_as_str`
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/earliest-difference-between-prime-gaps.rs:80:51
+   |
+80 |         let mut pm: String = commatize(entry["pm".as_str()]).clone();
+   |                                                   ^^^^^^
+   |
+   = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0658]: use of unstable library feature `str_as_str`
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/earliest-difference-between-prime-gaps.rs:83:212
+   |
+83 | ...mat!("{}{}", format!("{}{}", format!("{}{}", "Gap ", entry["g1".as_str()].to_string()), " starts at "), commatize(entry["s1".as_str()]...
+   |                                                                    ^^^^^^
+   |
+   = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0658]: use of unstable library feature `str_as_str`
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/earliest-difference-between-prime-gaps.rs:83:273
+   |
+83 | ...1".as_str()].to_string()), " starts at "), commatize(entry["s1".as_str()])), ", gap "), entry["g2".as_str()].to_string()), " starts at...
+   |                                                                    ^^^^^^
+   |
+   = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0658]: use of unstable library feature `str_as_str`
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/earliest-difference-between-prime-gaps.rs:83:308
+   |
+83 | ... at "), commatize(entry["s1".as_str()])), ", gap "), entry["g2".as_str()].to_string()), " starts at "), commatize(entry["s2".as_str()]...
+   |                                                                    ^^^^^^
+   |
+   = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0658]: use of unstable library feature `str_as_str`
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/earliest-difference-between-prime-gaps.rs:83:369
+   |
+83 | ...2".as_str()].to_string()), " starts at "), commatize(entry["s2".as_str()])), ", difference is "), commatize(entry["d".as_str()])), "."...
+   |                                                                    ^^^^^^
+   |
+   = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0658]: use of unstable library feature `str_as_str`
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/earliest-difference-between-prime-gaps.rs:83:423
+   |
+83 | ...ntry["s2".as_str()])), ", difference is "), commatize(entry["d".as_str()])), ".").clone();
+   |                                                                    ^^^^^^
+   |
+   = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error: aborting due to 9 previous errors; 7 warnings emitted
+
+Some errors have detailed explanations: E0277, E0308, E0658.
+For more information about an error, try `rustc --explain E0277`.

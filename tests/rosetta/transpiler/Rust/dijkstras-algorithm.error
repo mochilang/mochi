@@ -1,0 +1,412 @@
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/dijkstras-algorithm.rs:47:35
+   |
+47 |         static mut g_INF: i64 = 0;;
+   |                                   ^ help: remove this semicolon
+   |
+   = note: `#[warn(redundant_semicolons)]` on by default
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/dijkstras-algorithm.rs:48:127
+   |
+48 |         static g_graph: LazyLock<Mutex<HashMap<String, HashMap<String, i64>>>> = LazyLock::new(|| Mutex::new(HashMap::new()));;
+   |                                                                                                                               ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/dijkstras-algorithm.rs:57:2
+   |
+57 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/dijkstras-algorithm.rs:68:2
+   |
+68 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/dijkstras-algorithm.rs:103:2
+    |
+103 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/dijkstras-algorithm.rs:112:2
+    |
+112 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/dijkstras-algorithm.rs:128:2
+    |
+128 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/dijkstras-algorithm.rs:62:12
+   |
+62 |         if (i != idx) {
+   |            ^        ^
+   |
+   = note: `#[warn(unused_parens)]` on by default
+help: remove these parentheses
+   |
+62 -         if (i != idx) {
+62 +         if i != idx {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/dijkstras-algorithm.rs:65:13
+   |
+65 |         i = (i + 1);
+   |             ^     ^
+   |
+help: remove these parentheses
+   |
+65 -         i = (i + 1);
+65 +         i = i + 1;
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/dijkstras-algorithm.rs:81:11
+   |
+81 |     while ((q.len() as i64) > 0) {
+   |           ^                    ^
+   |
+help: remove these parentheses
+   |
+81 -     while ((q.len() as i64) > 0) {
+81 +     while (q.len() as i64) > 0 {
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/dijkstras-algorithm.rs:85:15
+   |
+85 |         while (i < (q.len() as i64)) {
+   |               ^                    ^
+   |
+help: remove these parentheses
+   |
+85 -         while (i < (q.len() as i64)) {
+85 +         while i < (q.len() as i64) {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/dijkstras-algorithm.rs:87:16
+   |
+87 |             if (dist[v.as_str()] < dist[u.as_str()]) {
+   |                ^                                   ^
+   |
+help: remove these parentheses
+   |
+87 -             if (dist[v.as_str()] < dist[u.as_str()]) {
+87 +             if dist[v.as_str()] < dist[u.as_str()] {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/dijkstras-algorithm.rs:91:17
+   |
+91 |             i = (i + 1);
+   |                 ^     ^
+   |
+help: remove these parentheses
+   |
+91 -             i = (i + 1);
+91 +             i = i + 1;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/dijkstras-algorithm.rs:95:32
+   |
+95 |             let mut alt: i64 = (dist[u.as_str()] + g_graph.lock().unwrap()[u.as_str()].clone()[v.as_str()]);
+   |                                ^                                                                          ^
+   |
+help: remove these parentheses
+   |
+95 -             let mut alt: i64 = (dist[u.as_str()] + g_graph.lock().unwrap()[u.as_str()].clone()[v.as_str()]);
+95 +             let mut alt: i64 = dist[u.as_str()] + g_graph.lock().unwrap()[u.as_str()].clone()[v.as_str()];
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/dijkstras-algorithm.rs:96:16
+   |
+96 |             if (alt < dist[v.as_str()]) {
+   |                ^                      ^
+   |
+help: remove these parentheses
+   |
+96 -             if (alt < dist[v.as_str()]) {
+96 +             if alt < dist[v.as_str()] {
+   |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/dijkstras-algorithm.rs:107:11
+    |
+107 |     while (prev[cur.as_str()].clone().as_str() != "") {
+    |           ^                                         ^
+    |
+help: remove these parentheses
+    |
+107 -     while (prev[cur.as_str()].clone().as_str() != "") {
+107 +     while prev[cur.as_str()].clone().as_str() != "" {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/dijkstras-algorithm.rs:132:32
+    |
+132 |         let duration_us: i64 = ((_end - _start) / 1000);
+    |                                ^                      ^
+    |
+help: remove these parentheses
+    |
+132 -         let duration_us: i64 = ((_end - _start) / 1000);
+132 +         let duration_us: i64 = (_end - _start) / 1000;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/dijkstras-algorithm.rs:133:33
+    |
+133 |         let memory_bytes: i64 = (_end_mem - _start_mem);
+    |                                 ^                     ^
+    |
+help: remove these parentheses
+    |
+133 -         let memory_bytes: i64 = (_end_mem - _start_mem);
+133 +         let memory_bytes: i64 = _end_mem - _start_mem;
+    |
+
+error[E0277]: the trait bound `String: Borrow<&str>` is not satisfied
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/dijkstras-algorithm.rs:50:46
+   |
+50 |     if !g_graph.lock().unwrap().contains_key(&u) {
+   |                                 ------------ ^^ the trait `Borrow<&str>` is not implemented for `String`
+   |                                 |
+   |                                 required by a bound introduced by this call
+   |
+   = help: the trait `Borrow<&_>` is not implemented for `String`
+           but trait `Borrow<_>` is implemented for it
+   = help: for that trait implementation, expected `str`, found `&str`
+note: required by a bound in `HashMap::<K, V, S>::contains_key`
+  --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/std/src/collections/hash/map.rs:1137:5
+
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/dijkstras-algorithm.rs:51:93
+   |
+51 |         { let mut _map = g_graph.lock().unwrap(); let _val = HashMap::from([]); _map.insert(u.clone(), _val); };
+   |                                                                                      ------ ^^-----^^
+   |                                                                                      |      | |
+   |                                                                                      |      | help: try using a conversion method: `to_string`
+   |                                                                                      |      expected `String`, found `&str`
+   |                                                                                      arguments to this method are incorrect
+   |
+note: method defined here
+  --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/std/src/collections/hash/map.rs:1201:12
+
+error[E0277]: the trait bound `String: Borrow<&str>` is not satisfied
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/dijkstras-algorithm.rs:53:29
+   |
+53 |     g_graph.lock().unwrap()[&u].insert(v.clone(), w);
+   |                             ^^ the trait `Borrow<&str>` is not implemented for `String`
+   |
+   = help: the trait `Borrow<&_>` is not implemented for `String`
+           but trait `Borrow<_>` is implemented for it
+   = help: for that trait implementation, expected `str`, found `&str`
+   = note: required for `HashMap<String, HashMap<String, i64>>` to implement `Index<&&str>`
+
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/dijkstras-algorithm.rs:53:40
+   |
+53 |     g_graph.lock().unwrap()[&u].insert(v.clone(), w);
+   |                                 ------ ^^-----^^
+   |                                 |      | |
+   |                                 |      | help: try using a conversion method: `to_string`
+   |                                 |      expected `String`, found `&str`
+   |                                 arguments to this method are incorrect
+   |
+note: method defined here
+  --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/std/src/collections/hash/map.rs:1201:12
+
+error[E0277]: the trait bound `String: Borrow<&str>` is not satisfied
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/dijkstras-algorithm.rs:54:46
+   |
+54 |     if !g_graph.lock().unwrap().contains_key(&v) {
+   |                                 ------------ ^^ the trait `Borrow<&str>` is not implemented for `String`
+   |                                 |
+   |                                 required by a bound introduced by this call
+   |
+   = help: the trait `Borrow<&_>` is not implemented for `String`
+           but trait `Borrow<_>` is implemented for it
+   = help: for that trait implementation, expected `str`, found `&str`
+note: required by a bound in `HashMap::<K, V, S>::contains_key`
+  --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/std/src/collections/hash/map.rs:1137:5
+
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/dijkstras-algorithm.rs:55:93
+   |
+55 |         { let mut _map = g_graph.lock().unwrap(); let _val = HashMap::from([]); _map.insert(v.clone(), _val); };
+   |                                                                                      ------ ^^-----^^
+   |                                                                                      |      | |
+   |                                                                                      |      | help: try using a conversion method: `to_string`
+   |                                                                                      |      expected `String`, found `&str`
+   |                                                                                      arguments to this method are incorrect
+   |
+note: method defined here
+  --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/std/src/collections/hash/map.rs:1201:12
+
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/dijkstras-algorithm.rs:67:12
+   |
+58 |         unsafe fn removeAt(mut xs: Vec<String>, mut idx: i64) -> Vec<i64> {
+   |                                                                  -------- expected `Vec<i64>` because of return type
+...
+67 |     return out
+   |            ^^^ expected `Vec<i64>`, found `Vec<String>`
+   |
+   = note: expected struct `Vec<i64>`
+              found struct `Vec<String>`
+
+error[E0599]: no method named `clone` found for struct `LazyLock<Mutex<HashMap<String, HashMap<String, i64>>>>` in the current scope
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/dijkstras-algorithm.rs:72:22
+   |
+72 |     for v in g_graph.clone().keys() {
+   |                      ^^^^^ method not found in `LazyLock<Mutex<HashMap<String, HashMap<String, i64>>>>`
+
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/dijkstras-algorithm.rs:74:32
+   |
+74 |         prev.insert(v.clone(), "");
+   |              ------            ^^- help: try using a conversion method: `.to_string()`
+   |              |                 |
+   |              |                 expected `String`, found `&str`
+   |              arguments to this method are incorrect
+   |
+help: the return type of this call is `&'static str` due to the type of the argument passed
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/dijkstras-algorithm.rs:74:9
+   |
+74 |         prev.insert(v.clone(), "");
+   |         ^^^^^^^^^^^^^^^^^^^^^^^--^
+   |                                |
+   |                                this argument influences the return type of `insert`
+note: method defined here
+  --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/std/src/collections/hash/map.rs:1201:12
+
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/dijkstras-algorithm.rs:76:17
+   |
+76 |     dist.insert(source.clone(), 0);
+   |          ------ ^^^^^^^-----^^
+   |          |      |      |
+   |          |      |      help: try using a conversion method: `to_string`
+   |          |      expected `String`, found `&str`
+   |          arguments to this method are incorrect
+   |
+note: method defined here
+  --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/std/src/collections/hash/map.rs:1201:12
+
+error[E0599]: no method named `clone` found for struct `LazyLock<Mutex<HashMap<String, HashMap<String, i64>>>>` in the current scope
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/dijkstras-algorithm.rs:78:22
+   |
+78 |     for v in g_graph.clone().keys() {
+   |                      ^^^^^ method not found in `LazyLock<Mutex<HashMap<String, HashMap<String, i64>>>>`
+
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/dijkstras-algorithm.rs:93:13
+   |
+77 |     let mut q: Vec<String> = vec![];
+   |                ----------- expected due to this type
+...
+93 |         q = removeAt(q.clone(), bestIdx);
+   |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `Vec<String>`, found `Vec<i64>`
+   |
+   = note: expected struct `Vec<String>`
+              found struct `Vec<i64>`
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/dijkstras-algorithm.rs:102:80
+    |
+102 |     return HashMap::from([(String::from("dist"), dist), (String::from("prev"), prev)])
+    |                                                                                ^^^^ expected `HashMap<String, i64>`, found `HashMap<String, String>`
+    |
+    = note: expected struct `HashMap<_, i64>`
+               found struct `HashMap<_, String>`
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/dijkstras-algorithm.rs:102:12
+    |
+69  |         unsafe fn dijkstra(source: &str) -> HashMap<&str, HashMap<String, i64>> {
+    |                                             ----------------------------------- expected `HashMap<&str, HashMap<String, i64>>` because of return type
+...
+102 |     return HashMap::from([(String::from("dist"), dist), (String::from("prev"), prev)])
+    |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `HashMap<&str, HashMap<String, i64>>`, found `HashMap<String, HashMap<String, i64>>`
+    |
+    = note: expected struct `HashMap<&str, _>`
+               found struct `HashMap<String, _>`
+
+error[E0658]: use of unstable library feature `str_as_str`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/dijkstras-algorithm.rs:124:53
+    |
+124 |     let mut dist: HashMap<String, i64> = res["dist".as_str()].clone();
+    |                                                     ^^^^^^
+    |
+    = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0658]: use of unstable library feature `str_as_str`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/dijkstras-algorithm.rs:125:53
+    |
+125 |     let mut prev: HashMap<String, i64> = res["prev".as_str()].clone();
+    |                                                     ^^^^^^
+    |
+    = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0658]: use of unstable library feature `str_as_str`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/dijkstras-algorithm.rs:126:96
+    |
+126 |     println!("{}", format!("{}{}", format!("{}{}", format!("{}{}", "Distance to e: ", dist["e".as_str()].to_string()), ", Path: "), path(...
+    |                                                                                                ^^^^^^
+    |
+    = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/dijkstras-algorithm.rs:126:138
+    |
+126 | ....to_string()), ", Path: "), path(&prev, &"e")));
+    |                                ---- ^^^^^ expected `&HashMap<String, String>`, found `&HashMap<String, i64>`
+    |                                |
+    |                                arguments to this function are incorrect
+    |
+    = note: expected reference `&HashMap<_, String>`
+               found reference `&HashMap<_, i64>`
+note: function defined here
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/dijkstras-algorithm.rs:104:19
+    |
+104 |         unsafe fn path(prev: &HashMap<String, String>, v: &str) -> String {
+    |                   ^^^^ ------------------------------
+
+error[E0658]: use of unstable library feature `str_as_str`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/dijkstras-algorithm.rs:127:96
+    |
+127 |     println!("{}", format!("{}{}", format!("{}{}", format!("{}{}", "Distance to f: ", dist["f".as_str()].to_string()), ", Path: "), path(...
+    |                                                                                                ^^^^^^
+    |
+    = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/dijkstras-algorithm.rs:127:138
+    |
+127 | ....to_string()), ", Path: "), path(&prev, &"f")));
+    |                                ---- ^^^^^ expected `&HashMap<String, String>`, found `&HashMap<String, i64>`
+    |                                |
+    |                                arguments to this function are incorrect
+    |
+    = note: expected reference `&HashMap<_, String>`
+               found reference `&HashMap<_, i64>`
+note: function defined here
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/dijkstras-algorithm.rs:104:19
+    |
+104 |         unsafe fn path(prev: &HashMap<String, String>, v: &str) -> String {
+    |                   ^^^^ ------------------------------
+
+error: aborting due to 20 previous errors; 18 warnings emitted
+
+Some errors have detailed explanations: E0277, E0308, E0599, E0658.
+For more information about an error, try `rustc --explain E0277`.

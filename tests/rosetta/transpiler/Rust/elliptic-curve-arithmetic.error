@@ -1,0 +1,343 @@
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/elliptic-curve-arithmetic.rs:61:40
+   |
+61 |         static mut g_bCoeff: f64 = 0.0;;
+   |                                        ^ help: remove this semicolon
+   |
+   = note: `#[warn(redundant_semicolons)]` on by default
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/elliptic-curve-arithmetic.rs:64:2
+   |
+64 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/elliptic-curve-arithmetic.rs:67:2
+   |
+67 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/elliptic-curve-arithmetic.rs:70:2
+   |
+70 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/elliptic-curve-arithmetic.rs:78:2
+   |
+78 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/elliptic-curve-arithmetic.rs:95:2
+   |
+95 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/elliptic-curve-arithmetic.rs:108:2
+    |
+108 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/elliptic-curve-arithmetic.rs:117:2
+    |
+117 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/elliptic-curve-arithmetic.rs:120:2
+    |
+120 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/elliptic-curve-arithmetic.rs:127:2
+    |
+127 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/elliptic-curve-arithmetic.rs:140:2
+    |
+140 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/elliptic-curve-arithmetic.rs:75:22
+   |
+75 |     let mut L: f64 = (((3.0 * p.x) * p.x) / (2.0 * p.y));
+   |                      ^                                 ^
+   |
+   = note: `#[warn(unused_parens)]` on by default
+help: remove these parentheses
+   |
+75 -     let mut L: f64 = (((3.0 * p.x) * p.x) / (2.0 * p.y));
+75 +     let mut L: f64 = ((3.0 * p.x) * p.x) / (2.0 * p.y);
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/elliptic-curve-arithmetic.rs:76:22
+   |
+76 |     let mut x: f64 = ((L * L) - (2.0 * p.x));
+   |                      ^                     ^
+   |
+help: remove these parentheses
+   |
+76 -     let mut x: f64 = ((L * L) - (2.0 * p.x));
+76 +     let mut x: f64 = (L * L) - (2.0 * p.x);
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/elliptic-curve-arithmetic.rs:86:8
+   |
+86 |     if (p.x == q.x) {
+   |        ^          ^
+   |
+help: remove these parentheses
+   |
+86 -     if (p.x == q.x) {
+86 +     if p.x == q.x {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/elliptic-curve-arithmetic.rs:87:12
+   |
+87 |         if (p.y == q.y) {
+   |            ^          ^
+   |
+help: remove these parentheses
+   |
+87 -         if (p.y == q.y) {
+87 +         if p.y == q.y {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/elliptic-curve-arithmetic.rs:92:22
+   |
+92 |     let mut L: f64 = ((q.y - p.y) / (q.x - p.x));
+   |                      ^                         ^
+   |
+help: remove these parentheses
+   |
+92 -     let mut L: f64 = ((q.y - p.y) / (q.x - p.x));
+92 +     let mut L: f64 = (q.y - p.y) / (q.x - p.x);
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/elliptic-curve-arithmetic.rs:93:22
+   |
+93 |     let mut x: f64 = (((L * L) - p.x) - q.x);
+   |                      ^                     ^
+   |
+help: remove these parentheses
+   |
+93 -     let mut x: f64 = (((L * L) - p.x) - q.x);
+93 +     let mut x: f64 = ((L * L) - p.x) - q.x;
+   |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/elliptic-curve-arithmetic.rs:100:11
+    |
+100 |     while (k > 0) {
+    |           ^     ^
+    |
+help: remove these parentheses
+    |
+100 -     while (k > 0) {
+100 +     while k > 0 {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/elliptic-curve-arithmetic.rs:101:12
+    |
+101 |         if ((k % 2) == 1) {
+    |            ^            ^
+    |
+help: remove these parentheses
+    |
+101 -         if ((k % 2) == 1) {
+101 +         if (k % 2) == 1 {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/elliptic-curve-arithmetic.rs:105:13
+    |
+105 |         k = (k / 2);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+105 -         k = (k / 2);
+105 +         k = k / 2;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/elliptic-curve-arithmetic.rs:112:11
+    |
+112 |     while (i < 40) {
+    |           ^      ^
+    |
+help: remove these parentheses
+    |
+112 -     while (i < 40) {
+112 +     while i < 40 {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/elliptic-curve-arithmetic.rs:113:17
+    |
+113 |         guess = (((2.0 * guess) + (x / (guess * guess))) / 3.0);
+    |                 ^                                             ^
+    |
+help: remove these parentheses
+    |
+113 -         guess = (((2.0 * guess) + (x / (guess * guess))) / 3.0);
+113 +         guess = ((2.0 * guess) + (x / (guess * guess))) / 3.0;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/elliptic-curve-arithmetic.rs:114:13
+    |
+114 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+114 -         i = (i + 1);
+114 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around function argument
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/elliptic-curve-arithmetic.rs:119:30
+    |
+119 |     return Pt {x: cbrtApprox(((y * y) - g_bCoeff)), y: y, inf: false}
+    |                              ^                  ^
+    |
+help: remove these parentheses
+    |
+119 -     return Pt {x: cbrtApprox(((y * y) - g_bCoeff)), y: y, inf: false}
+119 +     return Pt {x: cbrtApprox((y * y) - g_bCoeff), y: y, inf: false}
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/elliptic-curve-arithmetic.rs:144:32
+    |
+144 |         let duration_us: i64 = ((_end - _start) / 1000);
+    |                                ^                      ^
+    |
+help: remove these parentheses
+    |
+144 -         let duration_us: i64 = ((_end - _start) / 1000);
+144 +         let duration_us: i64 = (_end - _start) / 1000;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/elliptic-curve-arithmetic.rs:145:33
+    |
+145 |         let memory_bytes: i64 = (_end_mem - _start_mem);
+    |                                 ^                     ^
+    |
+help: remove these parentheses
+    |
+145 -         let memory_bytes: i64 = (_end_mem - _start_mem);
+145 +         let memory_bytes: i64 = _end_mem - _start_mem;
+    |
+
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/elliptic-curve-arithmetic.rs:73:16
+   |
+71 |         unsafe fn dbl(p: &Pt) -> Pt {
+   |                                  -- expected `Pt` because of return type
+72 |     if isZero(p) {
+73 |         return p
+   |                ^ expected `Pt`, found `&Pt`
+   |
+help: consider using clone here
+   |
+73 |         return p.clone()
+   |                 ++++++++
+
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/elliptic-curve-arithmetic.rs:81:16
+   |
+79 |         unsafe fn add(p: &Pt, q: &Pt) -> Pt {
+   |                                          -- expected `Pt` because of return type
+80 |     if isZero(p) {
+81 |         return q
+   |                ^ expected `Pt`, found `&Pt`
+   |
+help: consider using clone here
+   |
+81 |         return q.clone()
+   |                 ++++++++
+
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/elliptic-curve-arithmetic.rs:98:21
+   |
+98 |     let mut q: Pt = p;
+   |                --   ^ expected `Pt`, found `&Pt`
+   |                |
+   |                expected due to this
+   |
+help: consider using clone here
+   |
+98 |     let mut q: Pt = p.clone();
+   |                      ++++++++
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/elliptic-curve-arithmetic.rs:109:30
+    |
+109 |         unsafe fn cbrtApprox(mut x: f64) -> f64 {
+    |                              ----^
+    |                              |
+    |                              help: remove this `mut`
+    |
+    = note: `#[warn(unused_mut)]` on by default
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/elliptic-curve-arithmetic.rs:118:25
+    |
+118 |         unsafe fn fromY(mut y: f64) -> Pt {
+    |                         ----^
+    |                         |
+    |                         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/elliptic-curve-arithmetic.rs:129:9
+    |
+129 |     let mut a: Pt = fromY(1.0);
+    |         ----^
+    |         |
+    |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/elliptic-curve-arithmetic.rs:130:9
+    |
+130 |     let mut b: Pt = fromY(2.0);
+    |         ----^
+    |         |
+    |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/elliptic-curve-arithmetic.rs:133:9
+    |
+133 |     let mut c: Pt = add(&a, &b);
+    |         ----^
+    |         |
+    |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/elliptic-curve-arithmetic.rs:135:9
+    |
+135 |     let mut d: Pt = neg(&c);
+    |         ----^
+    |         |
+    |         help: remove this `mut`
+
+error: aborting due to 3 previous errors; 32 warnings emitted
+
+For more information about this error, try `rustc --explain E0308`.

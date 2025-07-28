@@ -1,0 +1,273 @@
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/eban-numbers.rs:45:50
+   |
+45 |         static mut g_vals: Vec<i64> = Vec::new();;
+   |                                                  ^ help: remove this semicolon
+   |
+   = note: `#[warn(redundant_semicolons)]` on by default
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/eban-numbers.rs:46:54
+   |
+46 |         static mut g_billions: Vec<i64> = Vec::new();;
+   |                                                      ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/eban-numbers.rs:62:2
+   |
+62 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/eban-numbers.rs:78:2
+   |
+78 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/eban-numbers.rs:105:2
+    |
+105 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/eban-numbers.rs:53:38
+   |
+53 |                     let mut n: i64 = ((((b * 1000000000) + (m * 1000000)) + (t * 1000)) + r);
+   |                                      ^                                                     ^
+   |
+   = note: `#[warn(unused_parens)]` on by default
+help: remove these parentheses
+   |
+53 -                     let mut n: i64 = ((((b * 1000000000) + (m * 1000000)) + (t * 1000)) + r);
+53 +                     let mut n: i64 = (((b * 1000000000) + (m * 1000000)) + (t * 1000)) + r;
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/eban-numbers.rs:54:24
+   |
+54 |                     if ((n >= start) && (n <= stop)) {
+   |                        ^                           ^
+   |
+help: remove these parentheses
+   |
+54 -                     if ((n >= start) && (n <= stop)) {
+54 +                     if (n >= start) && (n <= stop) {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/eban-numbers.rs:69:38
+   |
+69 |                     let mut n: i64 = ((((b * 1000000000) + (m * 1000000)) + (t * 1000)) + r);
+   |                                      ^                                                     ^
+   |
+help: remove these parentheses
+   |
+69 -                     let mut n: i64 = ((((b * 1000000000) + (m * 1000000)) + (t * 1000)) + r);
+69 +                     let mut n: i64 = (((b * 1000000000) + (m * 1000000)) + (t * 1000)) + r;
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/eban-numbers.rs:70:24
+   |
+70 |                     if ((n >= start) && (n <= stop)) {
+   |                        ^                           ^
+   |
+help: remove these parentheses
+   |
+70 -                     if ((n >= start) && (n <= stop)) {
+70 +                     if (n >= start) && (n <= stop) {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/eban-numbers.rs:71:33
+   |
+71 |                         count = (count + 1);
+   |                                 ^         ^
+   |
+help: remove these parentheses
+   |
+71 -                         count = (count + 1);
+71 +                         count = count + 1;
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/eban-numbers.rs:85:12
+   |
+85 |         if (start == 2) {
+   |            ^          ^
+   |
+help: remove these parentheses
+   |
+85 -         if (start == 2) {
+85 +         if start == 2 {
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/eban-numbers.rs:94:19
+   |
+94 |             while (i < (nums.len() as i64)) {
+   |                   ^                       ^
+   |
+help: remove these parentheses
+   |
+94 -             while (i < (nums.len() as i64)) {
+94 +             while i < (nums.len() as i64) {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/eban-numbers.rs:96:21
+   |
+96 |                 i = (i + 1);
+   |                     ^     ^
+   |
+help: remove these parentheses
+   |
+96 -                 i = (i + 1);
+96 +                 i = i + 1;
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/eban-numbers.rs:98:16
+   |
+98 |             if ((line.len() as i64) > 0) {
+   |                ^                       ^
+   |
+help: remove these parentheses
+   |
+98 -             if ((line.len() as i64) > 0) {
+98 +             if (line.len() as i64) > 0 {
+   |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/eban-numbers.rs:109:32
+    |
+109 |         let duration_us: i64 = ((_end - _start) / 1000);
+    |                                ^                      ^
+    |
+help: remove these parentheses
+    |
+109 -         let duration_us: i64 = ((_end - _start) / 1000);
+109 +         let duration_us: i64 = (_end - _start) / 1000;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/eban-numbers.rs:110:33
+    |
+110 |         let memory_bytes: i64 = (_end_mem - _start_mem);
+    |                                 ^                     ^
+    |
+help: remove these parentheses
+    |
+110 -         let memory_bytes: i64 = (_end_mem - _start_mem);
+110 +         let memory_bytes: i64 = _end_mem - _start_mem;
+    |
+
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/eban-numbers.rs:80:56
+   |
+80 |     let mut ranges: Vec<Vec<i64>> = vec![vec![2, 1000, true], vec![1000, 4000, true], vec![2, 10000, false], vec![2, 100000, false], vec!...
+   |                                                        ^^^^ expected `i64`, found `bool`
+
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/eban-numbers.rs:80:80
+   |
+80 |     let mut ranges: Vec<Vec<i64>> = vec![vec![2, 1000, true], vec![1000, 4000, true], vec![2, 10000, false], vec![2, 100000, false], vec!...
+   |                                                                                ^^^^ expected `i64`, found `bool`
+
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/eban-numbers.rs:80:102
+   |
+80 | ...00, true], vec![1000, 4000, true], vec![2, 10000, false], vec![2, 100000, false], vec![2, 1000000, false], vec![2, 10000000, false], v...
+   |                                                      ^^^^^ expected `i64`, found `bool`
+
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/eban-numbers.rs:80:126
+   |
+80 | ...00, true], vec![2, 10000, false], vec![2, 100000, false], vec![2, 1000000, false], vec![2, 10000000, false], vec![2, 100000000, false]...
+   |                                                      ^^^^^ expected `i64`, found `bool`
+
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/eban-numbers.rs:80:151
+   |
+80 | ... false], vec![2, 100000, false], vec![2, 1000000, false], vec![2, 10000000, false], vec![2, 100000000, false], vec![2, 1000000000, fal...
+   |                                                      ^^^^^ expected `i64`, found `bool`
+
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/eban-numbers.rs:80:177
+   |
+80 | ...alse], vec![2, 1000000, false], vec![2, 10000000, false], vec![2, 100000000, false], vec![2, 1000000000, false]];
+   |                                                      ^^^^^ expected `i64`, found `bool`
+
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/eban-numbers.rs:80:204
+   |
+80 | ...se], vec![2, 10000000, false], vec![2, 100000000, false], vec![2, 1000000000, false]];
+   |                                                      ^^^^^ expected `i64`, found `bool`
+
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/eban-numbers.rs:80:232
+   |
+80 | ...], vec![2, 100000000, false], vec![2, 1000000000, false]];
+   |                                                      ^^^^^ expected `i64`, found `bool`
+
+error[E0599]: no method named `is_some` found for type `i64` in the current scope
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/eban-numbers.rs:90:17
+   |
+90 |         if show.is_some() {
+   |                 ^^^^^^^ method not found in `i64`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/eban-numbers.rs:47:31
+   |
+47 |         unsafe fn ebanNumbers(mut start: i64, mut stop: i64) -> Vec<i64> {
+   |                               ----^^^^^
+   |                               |
+   |                               help: remove this `mut`
+   |
+   = note: `#[warn(unused_mut)]` on by default
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/eban-numbers.rs:47:47
+   |
+47 |         unsafe fn ebanNumbers(mut start: i64, mut stop: i64) -> Vec<i64> {
+   |                                               ----^^^^
+   |                                               |
+   |                                               help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/eban-numbers.rs:53:25
+   |
+53 |                     let mut n: i64 = ((((b * 1000000000) + (m * 1000000)) + (t * 1000)) + r);
+   |                         ----^
+   |                         |
+   |                         help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/eban-numbers.rs:63:29
+   |
+63 |         unsafe fn countEban(mut start: i64, mut stop: i64) -> i64 {
+   |                             ----^^^^^
+   |                             |
+   |                             help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/eban-numbers.rs:63:45
+   |
+63 |         unsafe fn countEban(mut start: i64, mut stop: i64) -> i64 {
+   |                                             ----^^^^
+   |                                             |
+   |                                             help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/eban-numbers.rs:69:25
+   |
+69 |                     let mut n: i64 = ((((b * 1000000000) + (m * 1000000)) + (t * 1000)) + r);
+   |                         ----^
+   |                         |
+   |                         help: remove this `mut`
+
+error: aborting due to 9 previous errors; 22 warnings emitted
+
+Some errors have detailed explanations: E0308, E0599.
+For more information about an error, try `rustc --explain E0308`.

@@ -1,0 +1,85 @@
+error[E0425]: cannot find value `testpkg` in this scope
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/ecdsa-example.rs:40:17
+   |
+40 |         g_res = testpkg.ECDSAExample();
+   |                 ^^^^^^^ not found in this scope
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/ecdsa-example.rs:43:35
+   |
+43 |         static mut g_res: i64 = 0;;
+   |                                   ^ help: remove this semicolon
+   |
+   = note: `#[warn(redundant_semicolons)]` on by default
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/ecdsa-example.rs:56:32
+   |
+56 |         let duration_us: i64 = ((_end - _start) / 1000);
+   |                                ^                      ^
+   |
+   = note: `#[warn(unused_parens)]` on by default
+help: remove these parentheses
+   |
+56 -         let duration_us: i64 = ((_end - _start) / 1000);
+56 +         let duration_us: i64 = (_end - _start) / 1000;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/ecdsa-example.rs:57:33
+   |
+57 |         let memory_bytes: i64 = (_end_mem - _start_mem);
+   |                                 ^                     ^
+   |
+help: remove these parentheses
+   |
+57 -         let memory_bytes: i64 = (_end_mem - _start_mem);
+57 +         let memory_bytes: i64 = _end_mem - _start_mem;
+   |
+
+error[E0610]: `i64` is a primitive type and therefore doesn't have fields
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/ecdsa-example.rs:44:67
+   |
+44 |         println!("{}", format!("{}{}", "Private key:\nD: ", g_res.D));
+   |                                                                   ^
+
+error[E0610]: `i64` is a primitive type and therefore doesn't have fields
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/ecdsa-example.rs:46:53
+   |
+46 |         println!("{}", format!("{}{}", "X: ", g_res.X));
+   |                                                     ^
+
+error[E0610]: `i64` is a primitive type and therefore doesn't have fields
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/ecdsa-example.rs:47:53
+   |
+47 |         println!("{}", format!("{}{}", "Y: ", g_res.Y));
+   |                                                     ^
+
+error[E0610]: `i64` is a primitive type and therefore doesn't have fields
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/ecdsa-example.rs:49:59
+   |
+49 |         println!("{}", format!("{}{}", "Hash   : ", g_res.Hash));
+   |                                                           ^^^^
+
+error[E0610]: `i64` is a primitive type and therefore doesn't have fields
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/ecdsa-example.rs:51:53
+   |
+51 |         println!("{}", format!("{}{}", "R: ", g_res.R));
+   |                                                     ^
+
+error[E0610]: `i64` is a primitive type and therefore doesn't have fields
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/ecdsa-example.rs:52:53
+   |
+52 |         println!("{}", format!("{}{}", "S: ", g_res.S));
+   |                                                     ^
+
+error[E0610]: `i64` is a primitive type and therefore doesn't have fields
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/ecdsa-example.rs:53:72
+   |
+53 |         println!("{}", format!("{}{}", "\nSignature verified: ", g_res.Valid.to_string()));
+   |                                                                        ^^^^^
+
+error: aborting due to 8 previous errors; 3 warnings emitted
+
+Some errors have detailed explanations: E0425, E0610.
+For more information about an error, try `rustc --explain E0425`.

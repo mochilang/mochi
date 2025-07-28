@@ -1,0 +1,83 @@
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/distributed-programming.rs:50:2
+   |
+50 | };
+   |  ^ help: remove this semicolon
+   |
+   = note: `#[warn(redundant_semicolons)]` on by default
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/distributed-programming.rs:51:38
+   |
+51 |         static mut g_amount: i64 = 0;;
+   |                                      ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/distributed-programming.rs:52:38
+   |
+52 |         static mut g_result: i64 = 0;;
+   |                                      ^ help: remove this semicolon
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/distributed-programming.rs:46:8
+   |
+46 |     if (cents < 0) {
+   |        ^         ^
+   |
+   = note: `#[warn(unused_parens)]` on by default
+help: remove these parentheses
+   |
+46 -     if (cents < 0) {
+46 +     if cents < 0 {
+   |
+
+warning: unnecessary parentheses around `return` value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/distributed-programming.rs:49:12
+   |
+49 |     return (((cents * 5) + 50) / 100)
+   |            ^                        ^
+   |
+help: remove these parentheses
+   |
+49 -     return (((cents * 5) + 50) / 100)
+49 +     return ((cents * 5) + 50) / 100
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/distributed-programming.rs:56:32
+   |
+56 |         let duration_us: i64 = ((_end - _start) / 1000);
+   |                                ^                      ^
+   |
+help: remove these parentheses
+   |
+56 -         let duration_us: i64 = ((_end - _start) / 1000);
+56 +         let duration_us: i64 = (_end - _start) / 1000;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/distributed-programming.rs:57:33
+   |
+57 |         let memory_bytes: i64 = (_end_mem - _start_mem);
+   |                                 ^                     ^
+   |
+help: remove these parentheses
+   |
+57 -         let memory_bytes: i64 = (_end_mem - _start_mem);
+57 +         let memory_bytes: i64 = _end_mem - _start_mem;
+   |
+
+error[E0423]: expected function, found macro `panic`
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/distributed-programming.rs:47:9
+   |
+47 |         panic("Negative amounts not allowed");
+   |         ^^^^^ not a function
+   |
+help: use `!` to invoke the macro
+   |
+47 |         panic!("Negative amounts not allowed");
+   |              +
+
+error: aborting due to 1 previous error; 7 warnings emitted
+
+For more information about this error, try `rustc --explain E0423`.

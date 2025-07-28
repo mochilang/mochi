@@ -1,0 +1,750 @@
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/element-wise-operations.rs:49:2
+   |
+49 | };
+   |  ^ help: remove this semicolon
+   |
+   = note: `#[warn(redundant_semicolons)]` on by default
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/element-wise-operations.rs:68:2
+   |
+68 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/element-wise-operations.rs:80:2
+   |
+80 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/element-wise-operations.rs:89:2
+   |
+89 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/element-wise-operations.rs:101:2
+    |
+101 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/element-wise-operations.rs:109:2
+    |
+109 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/element-wise-operations.rs:124:2
+    |
+124 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/element-wise-operations.rs:139:2
+    |
+139 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/element-wise-operations.rs:142:2
+    |
+142 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/element-wise-operations.rs:145:2
+    |
+145 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/element-wise-operations.rs:148:2
+    |
+148 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/element-wise-operations.rs:151:2
+    |
+151 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/element-wise-operations.rs:154:2
+    |
+154 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/element-wise-operations.rs:174:2
+    |
+174 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/element-wise-operations.rs:44:11
+   |
+44 |     while (i < n) {
+   |           ^     ^
+   |
+   = note: `#[warn(unused_parens)]` on by default
+help: remove these parentheses
+   |
+44 -     while (i < n) {
+44 +     while i < n {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/element-wise-operations.rs:45:13
+   |
+45 |         r = (r * 10.0);
+   |             ^        ^
+   |
+help: remove these parentheses
+   |
+45 -         r = (r * 10.0);
+45 +         r = r * 10.0;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/element-wise-operations.rs:46:13
+   |
+46 |         i = (i + 1);
+   |             ^     ^
+   |
+help: remove these parentheses
+   |
+46 -         i = (i + 1);
+46 +         i = i + 1;
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/element-wise-operations.rs:51:8
+   |
+51 |     if (exp == 0.5) {
+   |        ^          ^
+   |
+help: remove these parentheses
+   |
+51 -     if (exp == 0.5) {
+51 +     if exp == 0.5 {
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/element-wise-operations.rs:54:15
+   |
+54 |         while (i < 20) {
+   |               ^      ^
+   |
+help: remove these parentheses
+   |
+54 -         while (i < 20) {
+54 +         while i < 20 {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/element-wise-operations.rs:55:21
+   |
+55 |             guess = ((guess + (base / guess)) / 2.0);
+   |                     ^                              ^
+   |
+help: remove these parentheses
+   |
+55 -             guess = ((guess + (base / guess)) / 2.0);
+55 +             guess = (guess + (base / guess)) / 2.0;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/element-wise-operations.rs:56:17
+   |
+56 |             i = (i + 1);
+   |                 ^     ^
+   |
+help: remove these parentheses
+   |
+56 -             i = (i + 1);
+56 +             i = i + 1;
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/element-wise-operations.rs:63:11
+   |
+63 |     while (i < n) {
+   |           ^     ^
+   |
+help: remove these parentheses
+   |
+63 -     while (i < n) {
+63 +     while i < n {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/element-wise-operations.rs:64:18
+   |
+64 |         result = (result * base);
+   |                  ^             ^
+   |
+help: remove these parentheses
+   |
+64 -         result = (result * base);
+64 +         result = result * base;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/element-wise-operations.rs:65:13
+   |
+65 |         i = (i + 1);
+   |             ^     ^
+   |
+help: remove these parentheses
+   |
+65 -         i = (i + 1);
+65 +         i = i + 1;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/element-wise-operations.rs:71:27
+   |
+71 |     let mut scaled: f64 = ((f * scale) + 0.5);
+   |                           ^                 ^
+   |
+help: remove these parentheses
+   |
+71 -     let mut scaled: f64 = ((f * scale) + 0.5);
+71 +     let mut scaled: f64 = (f * scale) + 0.5;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/element-wise-operations.rs:72:22
+   |
+72 |     let mut n: i64 = (scaled as i64);
+   |                      ^             ^
+   |
+help: remove these parentheses
+   |
+72 -     let mut n: i64 = (scaled as i64);
+72 +     let mut n: i64 = scaled as i64;
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/element-wise-operations.rs:74:11
+   |
+74 |     while ((digits.len() as i64) <= prec) {
+   |           ^                             ^
+   |
+help: remove these parentheses
+   |
+74 -     while ((digits.len() as i64) <= prec) {
+74 +     while (digits.len() as i64) <= prec {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/element-wise-operations.rs:83:22
+   |
+83 |     let mut n: i64 = (w - (s.len() as i64));
+   |                      ^                    ^
+   |
+help: remove these parentheses
+   |
+83 -     let mut n: i64 = (w - (s.len() as i64));
+83 +     let mut n: i64 = w - (s.len() as i64);
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/element-wise-operations.rs:84:11
+   |
+84 |     while (n > 0) {
+   |           ^     ^
+   |
+help: remove these parentheses
+   |
+84 -     while (n > 0) {
+84 +     while n > 0 {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/element-wise-operations.rs:86:13
+   |
+86 |         n = (n - 1);
+   |             ^     ^
+   |
+help: remove these parentheses
+   |
+86 -         n = (n - 1);
+86 +         n = n - 1;
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/element-wise-operations.rs:93:11
+   |
+93 |     while (i < (row.len() as i64)) {
+   |           ^                      ^
+   |
+help: remove these parentheses
+   |
+93 -     while (i < (row.len() as i64)) {
+93 +     while i < (row.len() as i64) {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/element-wise-operations.rs:95:12
+   |
+95 |         if (i < ((row.len() as i64) - 1)) {
+   |            ^                            ^
+   |
+help: remove these parentheses
+   |
+95 -         if (i < ((row.len() as i64) - 1)) {
+95 +         if i < ((row.len() as i64) - 1) {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/element-wise-operations.rs:98:13
+   |
+98 |         i = (i + 1);
+   |             ^     ^
+   |
+help: remove these parentheses
+   |
+98 -         i = (i + 1);
+98 +         i = i + 1;
+   |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/element-wise-operations.rs:105:11
+    |
+105 |     while (i < (m.len() as i64)) {
+    |           ^                    ^
+    |
+help: remove these parentheses
+    |
+105 -     while (i < (m.len() as i64)) {
+105 +     while i < (m.len() as i64) {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/element-wise-operations.rs:107:13
+    |
+107 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+107 -         i = (i + 1);
+107 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/element-wise-operations.rs:113:11
+    |
+113 |     while (r < (m1.len() as i64)) {
+    |           ^                     ^
+    |
+help: remove these parentheses
+    |
+113 -     while (r < (m1.len() as i64)) {
+113 +     while r < (m1.len() as i64) {
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/element-wise-operations.rs:116:15
+    |
+116 |         while (c < (m1[r as usize].clone().len() as i64)) {
+    |               ^                                         ^
+    |
+help: remove these parentheses
+    |
+116 -         while (c < (m1[r as usize].clone().len() as i64)) {
+116 +         while c < (m1[r as usize].clone().len() as i64) {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/element-wise-operations.rs:118:17
+    |
+118 |             c = (c + 1);
+    |                 ^     ^
+    |
+help: remove these parentheses
+    |
+118 -             c = (c + 1);
+118 +             c = c + 1;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/element-wise-operations.rs:121:13
+    |
+121 |         r = (r + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+121 -         r = (r + 1);
+121 +         r = r + 1;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/element-wise-operations.rs:128:11
+    |
+128 |     while (r < (m.len() as i64)) {
+    |           ^                    ^
+    |
+help: remove these parentheses
+    |
+128 -     while (r < (m.len() as i64)) {
+128 +     while r < (m.len() as i64) {
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/element-wise-operations.rs:131:15
+    |
+131 |         while (c < (m[r as usize].clone().len() as i64)) {
+    |               ^                                        ^
+    |
+help: remove these parentheses
+    |
+131 -         while (c < (m[r as usize].clone().len() as i64)) {
+131 +         while c < (m[r as usize].clone().len() as i64) {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/element-wise-operations.rs:133:17
+    |
+133 |             c = (c + 1);
+    |                 ^     ^
+    |
+help: remove these parentheses
+    |
+133 -             c = (c + 1);
+133 +             c = c + 1;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/element-wise-operations.rs:136:13
+    |
+136 |         r = (r + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+136 -         r = (r + 1);
+136 +         r = r + 1;
+    |
+
+warning: unnecessary parentheses around `return` value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/element-wise-operations.rs:141:12
+    |
+141 |     return (a + b)
+    |            ^     ^
+    |
+help: remove these parentheses
+    |
+141 -     return (a + b)
+141 +     return a + b
+    |
+
+warning: unnecessary parentheses around `return` value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/element-wise-operations.rs:144:12
+    |
+144 |     return (a - b)
+    |            ^     ^
+    |
+help: remove these parentheses
+    |
+144 -     return (a - b)
+144 +     return a - b
+    |
+
+warning: unnecessary parentheses around `return` value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/element-wise-operations.rs:147:12
+    |
+147 |     return (a * b)
+    |            ^     ^
+    |
+help: remove these parentheses
+    |
+147 -     return (a * b)
+147 +     return a * b
+    |
+
+warning: unnecessary parentheses around `return` value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/element-wise-operations.rs:150:12
+    |
+150 |     return (a / b)
+    |            ^     ^
+    |
+help: remove these parentheses
+    |
+150 -     return (a / b)
+150 +     return a / b
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/element-wise-operations.rs:178:28
+    |
+178 |     let duration_us: i64 = ((_end - _start) / 1000);
+    |                            ^                      ^
+    |
+help: remove these parentheses
+    |
+178 -     let duration_us: i64 = ((_end - _start) / 1000);
+178 +     let duration_us: i64 = (_end - _start) / 1000;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/element-wise-operations.rs:179:29
+    |
+179 |     let memory_bytes: i64 = (_end_mem - _start_mem);
+    |                             ^                     ^
+    |
+help: remove these parentheses
+    |
+179 -     let memory_bytes: i64 = (_end_mem - _start_mem);
+179 +     let memory_bytes: i64 = _end_mem - _start_mem;
+    |
+
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/element-wise-operations.rs:61:26
+   |
+61 |     let mut n: i64 = int(exp);
+   |                      --- ^^^ expected `i64`, found `f64`
+   |                      |
+   |                      arguments to this function are incorrect
+   |
+note: function defined here
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/element-wise-operations.rs:37:4
+   |
+37 | fn int(x: i64) -> i64 { x }
+   |    ^^^ ------
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/element-wise-operations.rs:41:14
+   |
+41 |     fn pow10(mut n: i64) -> f64 {
+   |              ----^
+   |              |
+   |              help: remove this `mut`
+   |
+   = note: `#[warn(unused_mut)]` on by default
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/element-wise-operations.rs:69:20
+   |
+69 |     fn formatFloat(mut f: f64, mut prec: i64) -> String {
+   |                    ----^
+   |                    |
+   |                    help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/element-wise-operations.rs:69:32
+   |
+69 |     fn formatFloat(mut f: f64, mut prec: i64) -> String {
+   |                                ----^^^^
+   |                                |
+   |                                help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/element-wise-operations.rs:70:9
+   |
+70 |     let mut scale: f64 = pow10(prec);
+   |         ----^^^^^
+   |         |
+   |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/element-wise-operations.rs:71:9
+   |
+71 |     let mut scaled: f64 = ((f * scale) + 0.5);
+   |         ----^^^^^^
+   |         |
+   |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/element-wise-operations.rs:72:9
+   |
+72 |     let mut n: i64 = (scaled as i64);
+   |         ----^
+   |         |
+   |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/element-wise-operations.rs:77:9
+   |
+77 |     let mut intPart: String = { let tmp = &digits; tmp.chars().skip(0 as usize).take((((digits.len() as i64) - prec) - 0) as usize).colle...
+   |         ----^^^^^^^
+   |         |
+   |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/element-wise-operations.rs:78:9
+   |
+78 |     let mut fracPart: String = { let tmp = &digits; tmp.chars().skip(((digits.len() as i64) - prec) as usize).take(((digits.len() as i64)...
+   |         ----^^^^^^^^
+   |         |
+   |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/element-wise-operations.rs:81:25
+   |
+81 |     fn padLeft(s: &str, mut w: i64) -> String {
+   |                         ----^
+   |                         |
+   |                         help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/element-wise-operations.rs:90:18
+   |
+90 |     fn rowString(mut row: Vec<f64>) -> String {
+   |                  ----^^^
+   |                  |
+   |                  help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/element-wise-operations.rs:102:35
+    |
+102 |     fn printMatrix(heading: &str, mut m: Vec<Vec<f64>>) {
+    |                                   ----^
+    |                                   |
+    |                                   help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/element-wise-operations.rs:110:22
+    |
+110 |     fn elementWiseMM(mut m1: Vec<Vec<f64>>, mut m2: Vec<Vec<f64>>, f: &mut impl FnMut(f64, f64) -> f64) -> Vec<Vec<f64>> {
+    |                      ----^^
+    |                      |
+    |                      help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/element-wise-operations.rs:110:45
+    |
+110 |     fn elementWiseMM(mut m1: Vec<Vec<f64>>, mut m2: Vec<Vec<f64>>, f: &mut impl FnMut(f64, f64) -> f64) -> Vec<Vec<f64>> {
+    |                                             ----^^
+    |                                             |
+    |                                             help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/element-wise-operations.rs:125:22
+    |
+125 |     fn elementWiseMS(mut m: Vec<Vec<f64>>, mut s: f64, f: &mut impl FnMut(f64, f64) -> f64) -> Vec<Vec<f64>> {
+    |                      ----^
+    |                      |
+    |                      help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/element-wise-operations.rs:125:44
+    |
+125 |     fn elementWiseMS(mut m: Vec<Vec<f64>>, mut s: f64, f: &mut impl FnMut(f64, f64) -> f64) -> Vec<Vec<f64>> {
+    |                                            ----^
+    |                                            |
+    |                                            help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/element-wise-operations.rs:140:12
+    |
+140 |     fn add(mut a: f64, mut b: f64) -> f64 {
+    |            ----^
+    |            |
+    |            help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/element-wise-operations.rs:140:24
+    |
+140 |     fn add(mut a: f64, mut b: f64) -> f64 {
+    |                        ----^
+    |                        |
+    |                        help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/element-wise-operations.rs:143:12
+    |
+143 |     fn sub(mut a: f64, mut b: f64) -> f64 {
+    |            ----^
+    |            |
+    |            help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/element-wise-operations.rs:143:24
+    |
+143 |     fn sub(mut a: f64, mut b: f64) -> f64 {
+    |                        ----^
+    |                        |
+    |                        help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/element-wise-operations.rs:146:12
+    |
+146 |     fn mul(mut a: f64, mut b: f64) -> f64 {
+    |            ----^
+    |            |
+    |            help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/element-wise-operations.rs:146:24
+    |
+146 |     fn mul(mut a: f64, mut b: f64) -> f64 {
+    |                        ----^
+    |                        |
+    |                        help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/element-wise-operations.rs:149:12
+    |
+149 |     fn div(mut a: f64, mut b: f64) -> f64 {
+    |            ----^
+    |            |
+    |            help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/element-wise-operations.rs:149:24
+    |
+149 |     fn div(mut a: f64, mut b: f64) -> f64 {
+    |                        ----^
+    |                        |
+    |                        help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/element-wise-operations.rs:152:12
+    |
+152 |     fn exp(mut a: f64, mut b: f64) -> f64 {
+    |            ----^
+    |            |
+    |            help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/element-wise-operations.rs:152:24
+    |
+152 |     fn exp(mut a: f64, mut b: f64) -> f64 {
+    |                        ----^
+    |                        |
+    |                        help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/element-wise-operations.rs:156:9
+    |
+156 |     let mut m1: Vec<Vec<f64>> = vec![vec![3.0, 1.0, 4.0], vec![1.0, 5.0, 9.0]];
+    |         ----^^
+    |         |
+    |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/element-wise-operations.rs:157:9
+    |
+157 |     let mut m2: Vec<Vec<f64>> = vec![vec![2.0, 7.0, 1.0], vec![8.0, 2.0, 8.0]];
+    |         ----^^
+    |         |
+    |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/element-wise-operations.rs:167:9
+    |
+167 |     let mut s: f64 = 0.5;
+    |         ----^
+    |         |
+    |         help: remove this `mut`
+
+error: aborting due to 1 previous error; 77 warnings emitted
+
+For more information about this error, try `rustc --explain E0308`.
