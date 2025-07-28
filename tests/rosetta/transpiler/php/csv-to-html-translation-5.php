@@ -58,9 +58,15 @@ $__start = _now();
 };
   return $out;
 };
-  $c = 'Character,Speech\n' . 'The multitude,The messiah! Show us the messiah!\n' . 'Brians mother,<angry>Now you listen here! He\'s not the messiah; he\'s a very naughty boy! Now go away!</angry>\n' . 'The multitude,Who are you?\n' . 'Brians mother,I\'m his mother; that\'s who!\n' . 'The multitude,Behold his mother! Behold his mother!';
+  $c = 'Character,Speech
+' . 'The multitude,The messiah! Show us the messiah!
+' . 'Brians mother,<angry>Now you listen here! He\'s not the messiah; he\'s a very naughty boy! Now go away!</angry>
+' . 'The multitude,Who are you?
+' . 'Brians mother,I\'m his mother; that\'s who!
+' . 'The multitude,Behold his mother! Behold his mother!';
   $rows = [];
-  foreach (explode('\n', $c) as $line) {
+  foreach (explode('
+', $c) as $line) {
   $rows = array_merge($rows, [explode(',', $line)]);
 }
   echo rtrim('<table>'), PHP_EOL;

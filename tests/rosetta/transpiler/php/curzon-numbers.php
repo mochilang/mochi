@@ -33,8 +33,8 @@ function _str($x) {
 }
 function _intdiv($a, $b) {
     if (function_exists('bcdiv')) {
-        $sa = is_int($a) ? strval($a) : sprintf('%.0f', $a);
-        $sb = is_int($b) ? strval($b) : sprintf('%.0f', $b);
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
         return intval(bcdiv($sa, $sb, 0));
     }
     return intdiv($a, $b);
@@ -85,7 +85,7 @@ $__start = _now();
   $idx = $idx + 1;
   $j = $j + 1;
 };
-  echo rtrim(json_encode(substr($line, 0, strlen($line) - 1 - 0), 1344)), PHP_EOL;
+  echo rtrim(substr($line, 0, strlen($line) - 1 - 0)), PHP_EOL;
 };
 };
   if ($count == 1000) {

@@ -33,8 +33,8 @@ function _str($x) {
 }
 function _intdiv($a, $b) {
     if (function_exists('bcdiv')) {
-        $sa = is_int($a) ? strval($a) : sprintf('%.0f', $a);
-        $sb = is_int($b) ? strval($b) : sprintf('%.0f', $b);
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
         return intval(bcdiv($sa, $sb, 0));
     }
     return intdiv($a, $b);
@@ -57,11 +57,11 @@ $__start = _now();
   $z = $days + 719468;
   $era = intval((_intdiv($z, 146097)));
   $doe = $z - $era * 146097;
-  $yoe = ($doe - _intdiv($doe, 1460) + _intdiv($doe, 36524) - _intdiv($doe, 146096)) / intval(365);
+  $yoe = _intdiv(($doe - _intdiv($doe, 1460) + _intdiv($doe, 36524) - _intdiv($doe, 146096)), intval(365));
   $y = $yoe + $era * 400;
   $doy = $doe - (365 * $yoe + _intdiv($yoe, 4) - _intdiv($yoe, 100));
-  $mp = (5 * $doy + 2) / intval(153);
-  $d = intval(($doy - ((153 * $mp + 2) / intval(5)) + 1));
+  $mp = _intdiv((5 * $doy + 2), intval(153));
+  $d = intval(($doy - (_intdiv((153 * $mp + 2), intval(5))) + 1));
   $m = intval(($mp + 3));
   if ($m > 12) {
   $y = $y + 1;

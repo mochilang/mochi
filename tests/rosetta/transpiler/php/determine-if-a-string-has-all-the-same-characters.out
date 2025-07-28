@@ -35,7 +35,7 @@ Analyzing '🎄🎄🎄🎄' which has a length of 16:
   '' (0x0) is different at position 2.
 
 {
-  "duration_us": 80,
+  "duration_us": 120,
   "memory_bytes": 96,
   "name": "main"
 }

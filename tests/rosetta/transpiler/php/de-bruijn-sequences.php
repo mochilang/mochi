@@ -177,10 +177,10 @@ $__start = _now();
   echo rtrim('The length of the de Bruijn sequence is ' . _str($le)), PHP_EOL;
   echo rtrim('
 The first 130 digits of the de Bruijn sequence are:'), PHP_EOL;
-  echo rtrim(json_encode(substr($db, 0, 130 - 0), 1344)), PHP_EOL;
+  echo rtrim(substr($db, 0, 130 - 0)), PHP_EOL;
   echo rtrim('
 The last 130 digits of the de Bruijn sequence are:'), PHP_EOL;
-  echo rtrim(json_encode(substr($db, $le - 130), 1344)), PHP_EOL;
+  echo rtrim(substr($db, $le - 130)), PHP_EOL;
   echo rtrim('
 Validating the de Bruijn sequence:'), PHP_EOL;
   validate($db);

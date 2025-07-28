@@ -8,7 +8,7 @@ t1 % t2 = map[value:1]
 t1 + 1  = map[value:7]
 t1 - 1  = map[value:5]
 {
-  "duration_us": 62,
+  "duration_us": 134,
   "memory_bytes": 96,
   "name": "main"
 }

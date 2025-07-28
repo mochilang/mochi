@@ -3,7 +3,7 @@ file /input.txt created!
 mkdir docs: file exists
 directory /docs created!
 {
-  "duration_us": 72,
+  "duration_us": 66,
   "memory_bytes": 96,
   "name": "main"
 }

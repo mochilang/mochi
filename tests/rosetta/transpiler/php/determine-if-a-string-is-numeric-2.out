@@ -2,7 +2,7 @@ Are these strings integers?
   1 -> true
   one -> false
 {
-  "duration_us": 46,
+  "duration_us": 58,
   "memory_bytes": 96,
   "name": "main"
 }

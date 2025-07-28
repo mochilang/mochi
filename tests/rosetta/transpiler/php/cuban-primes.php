@@ -33,8 +33,8 @@ function _str($x) {
 }
 function _intdiv($a, $b) {
     if (function_exists('bcdiv')) {
-        $sa = is_int($a) ? strval($a) : sprintf('%.0f', $a);
-        $sb = is_int($b) ? strval($b) : sprintf('%.0f', $b);
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
         return intval(bcdiv($sa, $sb, 0));
     }
     return intdiv($a, $b);
@@ -165,7 +165,8 @@ $__start = _now();
   echo rtrim(formatRow($slice)), PHP_EOL;
   $row = $row + 1;
 };
-  echo rtrim('\nThe 100,000th cuban prime is ' . commatize($cube100k)), PHP_EOL;
+  echo rtrim('
+The 100,000th cuban prime is ' . commatize($cube100k)), PHP_EOL;
 };
   main();
 $__end = _now();
