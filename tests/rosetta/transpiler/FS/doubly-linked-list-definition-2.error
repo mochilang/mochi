@@ -1,0 +1,19 @@
+compile: exit status 1
+F# Compiler for F# 4.0 (Open Source Edition)
+Freely distributed under the Apache 2.0 Open Source License
+
+/workspace/mochi/tests/rosetta/transpiler/FS/doubly-linked-list-definition-2.fs(56,31): error FS0010: Unexpected symbol '>' in binding. Expected '=' or other token.
+
+/workspace/mochi/tests/rosetta/transpiler/FS/doubly-linked-list-definition-2.fs(80,31): error FS0010: Unexpected symbol '>' in binding. Expected '=' or other token.
+
+/workspace/mochi/tests/rosetta/transpiler/FS/doubly-linked-list-definition-2.fs(105,29): error FS0010: Unexpected symbol '>' in binding. Expected '=' or other token.
+
+/workspace/mochi/tests/rosetta/transpiler/FS/doubly-linked-list-definition-2.fs(110,31): error FS0010: Unexpected symbol '>' in binding. Expected '=' or other token.
+
+/workspace/mochi/tests/rosetta/transpiler/FS/doubly-linked-list-definition-2.fs(134,29): error FS0010: Unexpected symbol '>' in binding. Expected '=' or other token.
+
+/workspace/mochi/tests/rosetta/transpiler/FS/doubly-linked-list-definition-2.fs(139,32): error FS0010: Unexpected symbol '>' in binding. Expected '=' or other token.
+
+/workspace/mochi/tests/rosetta/transpiler/FS/doubly-linked-list-definition-2.fs(166,26): error FS0010: Unexpected symbol '>' in binding. Expected '=' or other token.
+
+/workspace/mochi/tests/rosetta/transpiler/FS/doubly-linked-list-definition-2.fs(3,1): warning FS0221: The declarations in this file will be placed in an implicit module 'Doubly-linked-list-definition-2' based on the file name 'doubly-linked-list-definition-2.fs'. However this is not a valid F# identifier, so the contents will not be accessible from other files. Consider renaming the file or adding a 'module' or 'namespace' declaration at the top of the file.

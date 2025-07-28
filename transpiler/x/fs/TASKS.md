@@ -1,3 +1,7 @@
+## Progress (2025-07-28 10:03 +0700)
+- chore: sort rosetta index
+- Generated F# for 103/104 programs (103 passing)
+
 ## Progress (2025-07-28 07:48 +0700)
 - fs transpiler: support function calls and typed indexing
 - Generated F# for 103/104 programs (103 passing)
