@@ -90,7 +90,7 @@ func TestConvert_Golden(t *testing.T) {
 			if err != nil {
 				t.Fatalf("parse: %v", err)
 			}
-			astNode, err := ts.Convert(nodes)
+			astNode, err := ts.Convert(nodes, string(data))
 			if err != nil {
 				t.Fatalf("convert: %v", err)
 			}
