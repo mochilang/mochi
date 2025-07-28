@@ -52,8 +52,12 @@ func TestConvert_Golden(t *testing.T) {
 		"let_and_print":  true,
 		"math_ops":       true,
 		"fun_call":       true,
-		"fun_three_args": true,
-	}
+               "fun_three_args": true,
+               "basic_compare":  true,
+               "if_then_else":   true,
+               "if_else":        true,
+               "while_loop":     true,
+       }
 
 	outDir := filepath.Join(root, "tests/a2mochi/x/prolog")
 	os.MkdirAll(outDir, 0o755)

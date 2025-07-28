@@ -1,0 +1,25 @@
+(program
+  (fun main
+    (let A (int 7))
+    (let B (int 4))
+    (call print (int 7))
+    (if
+      (binary == (selector A) (int 7))
+      (block
+        (call print (bool true))
+      )
+      (block
+        (call print (bool false))
+      )
+    )
+    (if
+      (binary < (selector B) (int 5))
+      (block
+        (call print (bool true))
+      )
+      (block
+        (call print (bool false))
+      )
+    )
+  )
+)

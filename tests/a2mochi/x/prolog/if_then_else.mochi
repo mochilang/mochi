@@ -1,0 +1,19 @@
+// a2mochi 0.10.47 2025-07-28 16:31:59
+/*
+:- initialization(main).
+:- style_check(-singleton).
+
+main :-
+    X is 12,
+    (X > 10 -> Msg = "yes" ; Msg = "no"),
+    writeln(Msg).
+*/
+fun main() {
+  let X = 12
+  if X > 10 {
+  let Msg = "yes"
+  } else {
+  let Msg = "no"
+  }
+  print(Msg)
+}

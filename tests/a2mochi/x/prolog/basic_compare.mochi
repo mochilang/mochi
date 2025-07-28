@@ -1,0 +1,27 @@
+// a2mochi 0.10.47 2025-07-28 16:31:59
+/*
+:- initialization(main).
+:- style_check(-singleton).
+
+main :-
+    A is 7,
+    B is 4,
+    writeln(7),
+    (A =:= 7 -> writeln(true) ; writeln(false)),
+    (B < 5 -> writeln(true) ; writeln(false)).
+*/
+fun main() {
+  let A = 7
+  let B = 4
+  print(7)
+  if A == 7 {
+  print(true)
+  } else {
+  print(false)
+  }
+  if B < 5 {
+  print(true)
+  } else {
+  print(false)
+  }
+}
