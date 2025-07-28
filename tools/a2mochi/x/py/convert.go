@@ -431,10 +431,17 @@ func emitAssignStmt(b *strings.Builder, n *Node, lines []string, seen map[string
 	}
 	nameNode := targets[0]
 	declared := false
-	if nameNode.Type == "Name" && seen != nil {
-		declared = seen[nameNode.ID]
-		if !declared {
-			seen[nameNode.ID] = true
+	if seen != nil {
+		switch nameNode.Type {
+		case "Name":
+			declared = seen[nameNode.ID]
+			if !declared {
+				seen[nameNode.ID] = true
+			}
+		case "Subscript":
+			if v := nameNode.valueNode(); v != nil && v.Type == "Name" {
+				declared = seen[v.ID]
+			}
 		}
 	}
 	if !declared {
@@ -730,6 +737,10 @@ func emitExpr(b *strings.Builder, n *Node, lines []string) error {
 			b.WriteString(">")
 		case "GtE":
 			b.WriteString(">=")
+		case "In":
+			b.WriteString("in")
+		case "NotIn":
+			b.WriteString("not in")
 		default:
 			return newConvertError(n.Line, lines, "unhandled compare operator")
 		}
