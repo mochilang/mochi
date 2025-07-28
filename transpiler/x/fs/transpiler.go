@@ -3510,8 +3510,7 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			}
 			t := inferType(args[0])
 			if t == "string" || t == "" {
-				arr := &MethodCallExpr{Target: args[0], Name: "Split", Args: []Expr{&ListLit{Elems: []Expr{args[1]}}, &IdentExpr{Name: "System.StringSplitOptions.None"}}}
-				return &CallExpr{Func: "Array.toList", Args: []Expr{arr}}, nil
+				return &MethodCallExpr{Target: args[0], Name: "Split", Args: []Expr{&ListLit{Elems: []Expr{args[1]}}, &IdentExpr{Name: "System.StringSplitOptions.None"}}}, nil
 			}
 			return nil, fmt.Errorf("split on non-string not supported")
 		case "contains":
