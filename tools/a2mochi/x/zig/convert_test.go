@@ -3,7 +3,6 @@ package zig_test
 import (
 	"flag"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"strings"
 	"testing"
@@ -33,8 +32,6 @@ func findRepoRoot(t *testing.T) string {
 }
 
 func TestConvert_Golden(t *testing.T) {
-	t.Skip("zig converter not implemented")
-
 	root := findRepoRoot(t)
 	pattern := filepath.Join(root, "tests/transpiler/x/zig", "*.zig")
 	files, err := filepath.Glob(pattern)
@@ -45,11 +42,23 @@ func TestConvert_Golden(t *testing.T) {
 		t.Fatalf("no files: %s", pattern)
 	}
 
+	allowed := map[string]bool{
+		"print_hello":       true,
+		"unary_neg":         true,
+		"pure_fold":         true,
+		"tail_recursion":    true,
+		"binary_precedence": true,
+		"avg_builtin":       true,
+	}
+
 	outDir := filepath.Join(root, "tests/a2mochi/x/zig")
 	os.MkdirAll(outDir, 0o755)
 
 	for _, srcPath := range files {
 		name := strings.TrimSuffix(filepath.Base(srcPath), ".zig")
+		if !allowed[name] {
+			continue
+		}
 		t.Run(name, func(t *testing.T) {
 			data, err := os.ReadFile(srcPath)
 			if err != nil {
