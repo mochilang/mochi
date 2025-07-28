@@ -11,6 +11,7 @@ import (
 	"github.com/z7zmey/php-parser/node/expr"
 	"github.com/z7zmey/php-parser/node/expr/assign"
 	binary "github.com/z7zmey/php-parser/node/expr/binary"
+	castexpr "github.com/z7zmey/php-parser/node/expr/cast"
 	"github.com/z7zmey/php-parser/node/name"
 	"github.com/z7zmey/php-parser/node/scalar"
 	"github.com/z7zmey/php-parser/node/stmt"
@@ -237,6 +238,12 @@ func simpleExpr(n pnode.Node) (string, bool) {
 			return "", false
 		}
 		return "-" + val, true
+	case *castexpr.Int:
+		val, ok := simpleExpr(v.Expr)
+		if !ok {
+			return "", false
+		}
+		return fmt.Sprintf("(%s as int)", val), true
 	case *expr.FunctionCall:
 		name := nameString(v.Function)
 		args := []string{}
@@ -258,6 +265,10 @@ func simpleExpr(n pnode.Node) (string, bool) {
 			name = "sum"
 		case "count":
 			name = "len"
+		case "intval":
+			if len(args) == 1 {
+				return fmt.Sprintf("(%s as int)", args[0]), true
+			}
 		}
 		return fmt.Sprintf("%s(%s)", name, strings.Join(args, ", ")), true
 	case *expr.Ternary:
@@ -428,6 +439,16 @@ func simpleExpr(n pnode.Node) (string, bool) {
 			return "", false
 		}
 		return fmt.Sprintf("(%s / %s)", left, right), true
+	case *binary.Mod:
+		left, ok1 := simpleExpr(v.Left)
+		if !ok1 {
+			return "", false
+		}
+		right, ok2 := simpleExpr(v.Right)
+		if !ok2 {
+			return "", false
+		}
+		return fmt.Sprintf("(%s %% %s)", left, right), true
 	case *expr.ArrayDimFetch:
 		base, ok := simpleExpr(v.Variable)
 		if !ok {
