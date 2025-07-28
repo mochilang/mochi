@@ -59,7 +59,7 @@ func Parse(src string) ([]Item, error) {
 			}
 		case len(n.list) == 3 && n.list[0].atom == "set!" && n.list[1].atom != "":
 			items = append(items, Item{Kind: "var", Name: n.list[1].atom})
-		case len(n.list) >= 2 && n.list[0].atom == "import":
+		case len(n.list) >= 2 && (n.list[0].atom == "import" || n.list[0].atom == "require"):
 			for _, mod := range n.list[1:] {
 				if len(mod.list) > 0 {
 					var parts []string
