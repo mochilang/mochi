@@ -1,0 +1,18 @@
+(program
+  (for i
+    (range
+      (int 1)
+      (group
+        (binary +
+          (group
+            (binary - (int 4) (int 1))
+          )
+          (int 1)
+        )
+      )
+    )
+    (block
+      (call print (selector i))
+    )
+  )
+)
