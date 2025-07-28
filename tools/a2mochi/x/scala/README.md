@@ -1,6 +1,6 @@
 # a2mochi Scala Converter
 
-Completed programs: 20/104
+Completed programs: 22/104
 Date: 2025-07-28
 
 This directory contains the helper code and golden files for converting Scala
@@ -33,4 +33,6 @@ block comment at the top of the emitted Mochi file.
 - [x] binary_precedence
 - [x] bool_chain
 - [x] count_builtin
+- [x] bench_block
+- [x] break_continue
 

@@ -1,0 +1,15 @@
+(program
+  (bench simple
+    (let n (int 1000))
+    (var data (list))
+    (for i
+      (range (int 1) (selector n))
+      (block
+        (assign data
+          (call append (selector data) (selector i))
+        )
+      )
+    )
+  )
+)
+
