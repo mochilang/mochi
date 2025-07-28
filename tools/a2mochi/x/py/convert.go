@@ -7,7 +7,9 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"os"
 	"os/exec"
+	"path/filepath"
 	"regexp"
 	"strconv"
 	"strings"
@@ -233,20 +235,72 @@ func Parse(src string) (*Node, error) {
 	return &root, nil
 }
 
-// Convert converts a parsed Python AST to a Mochi AST node.
-func Convert(n *Node) (*ast.Node, error) {
+func repoRoot() (string, error) {
+	dir, err := os.Getwd()
+	if err != nil {
+		return "", err
+	}
+	for i := 0; i < 10; i++ {
+		if _, err := os.Stat(filepath.Join(dir, "go.mod")); err == nil {
+			return dir, nil
+		}
+		parent := filepath.Dir(dir)
+		if parent == dir {
+			break
+		}
+		dir = parent
+	}
+	return "", os.ErrNotExist
+}
+
+func metaHeader() string {
+	root, err := repoRoot()
+	if err != nil {
+		return ""
+	}
+	ver, err := os.ReadFile(filepath.Join(root, "VERSION"))
+	if err != nil {
+		return ""
+	}
+	tz := time.FixedZone("GMT+7", 7*3600)
+	now := time.Now().In(tz).Format("2006-01-02 15:04:05 MST")
+	return fmt.Sprintf("// Mochi %s %s\n", strings.TrimSpace(string(ver)), now)
+}
+
+func blockComment(src string) string {
+	if !strings.HasSuffix(src, "\n") {
+		src += "\n"
+	}
+	return "/*\n" + src + "*/\n"
+}
+
+func ConvertSource(n *Node) (string, error) {
 	if n == nil {
-		return nil, fmt.Errorf("nil node")
+		return "", fmt.Errorf("nil node")
 	}
 	var b strings.Builder
 	if err := emitAST(&b, n, "", n.Lines, map[string]bool{}); err != nil {
-		return nil, err
+		return "", err
 	}
 	code := strings.TrimSpace(b.String())
 	if code == "" {
-		return nil, fmt.Errorf("no output")
+		return "", fmt.Errorf("no output")
 	}
-	prog, err := parser.ParseString(code)
+	var out strings.Builder
+	out.WriteString(metaHeader())
+	out.WriteString(blockComment(strings.Join(n.Lines, "\n")))
+	out.WriteString(code)
+	out.WriteByte('\n')
+	return out.String(), nil
+}
+
+// Convert converts a parsed Python AST to a Mochi AST node.
+func Convert(n *Node) (*ast.Node, error) {
+	src, err := ConvertSource(n)
+	if err != nil {
+		return nil, err
+	}
+	prog, err := parser.ParseString(src)
 	if err != nil {
 		return nil, err
 	}
