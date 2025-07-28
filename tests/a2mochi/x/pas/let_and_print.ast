@@ -1,0 +1,9 @@
+(program
+  (var a (type int))
+  (var b (type int))
+  (assign a (int 10))
+  (assign b (int 20))
+  (call print
+    (binary + (selector a) (selector b))
+  )
+)

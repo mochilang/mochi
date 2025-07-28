@@ -1,0 +1,10 @@
+(program
+  (var s (type string))
+  (assign s (string mochi))
+  (call print
+    (index
+      (selector s)
+      (binary + (int 1) (int 1))
+    )
+  )
+)

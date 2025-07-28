@@ -1,0 +1,5 @@
+var a: int
+var b: int
+a = 10
+b = 20
+print((a + b))
