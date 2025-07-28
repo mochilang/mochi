@@ -1,0 +1,66 @@
+fun capitalize(s: string): string {
+  if len(s) == 0 { return s }
+  return upper(substring(s, 0, 1)) + substring(s, 1, len(s))
+}
+
+var small = ["zero","one","two","three","four","five","six","seven","eight","nine",
+             "ten","eleven","twelve","thirteen","fourteen","fifteen","sixteen",
+             "seventeen","eighteen","nineteen"]
+var tens = ["","","twenty","thirty","forty","fifty","sixty","seventy","eighty","ninety"]
+var illions = [""," thousand"," million"," billion"," trillion"," quadrillion"," quintillion"]
+
+fun say(n: int): string {
+  var t = ""
+  if n < 0 {
+    t = "negative "
+    n = -n
+  }
+  if n < 20 {
+    return t + small[n]
+  } else if n < 100 {
+    t = tens[n / 10]
+    let s = n % 10
+    if s > 0 { t = t + "-" + small[s] }
+    return t
+  } else if n < 1000 {
+    t = small[n / 100] + " hundred"
+    let s = n % 100
+    if s > 0 { t = t + " " + say(s) }
+    return t
+  }
+  var sx = ""
+  var i = 0
+  var nn = n
+  while nn > 0 {
+    let p = nn % 1000
+    nn = nn / 1000
+    if p > 0 {
+      var ix = say(p) + illions[i]
+      if sx != "" { ix = ix + " " + sx }
+      sx = ix
+    }
+    i = i + 1
+  }
+  return t + sx
+}
+
+fun fourIsMagic(n: int): string {
+  var s = say(n)
+  s = capitalize(s)
+  var t = s
+  while n != 4 {
+    n = len(s)
+    s = say(n)
+    t = t + " is " + s + ", " + s
+  }
+  t = t + " is magic."
+  return t
+}
+
+fun main() {
+  let nums = [0, 4, 6, 11, 13, 75, 100, 337, -164, 9223372036854775807]
+  for n in nums {
+    print(fourIsMagic(n))
+  }
+}
+main()
