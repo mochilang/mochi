@@ -2,8 +2,8 @@
 
 Generated Scheme code for Rosetta Code tasks under `tests/rosetta/x/Mochi`.
 
-## Checklist (221/493)
-Last updated: 2025-07-28 03:44 UTC
+## Checklist (263/493)
+Last updated: 2025-07-28 04:39 UTC
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -256,56 +256,56 @@ Last updated: 2025-07-28 03:44 UTC
 | 247 | count-in-octal-4 |   |  |  |
 | 248 | count-occurrences-of-a-substring |   |  |  |
 | 249 | count-the-coins-1 |   |  |  |
-| 250 | count-the-coins-2 |   |  |  |
-| 251 | cramers-rule |   |  |  |
-| 252 | crc-32-1 |   |  |  |
-| 253 | crc-32-2 |   |  |  |
-| 254 | create-a-file-on-magnetic-tape |   |  |  |
-| 255 | create-a-file |   |  |  |
-| 256 | create-a-two-dimensional-array-at-runtime-1 |   |  |  |
-| 257 | create-an-html-table |   |  |  |
-| 258 | create-an-object-at-a-given-address |   |  |  |
-| 259 | csv-data-manipulation |   |  |  |
-| 260 | csv-to-html-translation-1 |   |  |  |
-| 261 | csv-to-html-translation-2 |   |  |  |
-| 262 | csv-to-html-translation-3 |   |  |  |
-| 263 | csv-to-html-translation-4 |   |  |  |
-| 264 | csv-to-html-translation-5 |   |  |  |
-| 265 | cuban-primes |   |  |  |
-| 266 | cullen-and-woodall-numbers |   |  |  |
-| 267 | cumulative-standard-deviation |   |  |  |
-| 268 | currency |   |  |  |
-| 269 | currying |   |  |  |
-| 270 | curzon-numbers |   |  |  |
-| 271 | cusip |   |  |  |
-| 272 | cyclops-numbers |   |  |  |
-| 273 | damm-algorithm |   |  |  |
-| 274 | date-format |   |  |  |
-| 275 | date-manipulation |   |  |  |
-| 276 | day-of-the-week |   |  |  |
-| 277 | de-bruijn-sequences |   |  |  |
-| 278 | deal-cards-for-freecell |   |  |  |
-| 279 | death-star |   |  |  |
-| 280 | deceptive-numbers |   |  |  |
-| 281 | deconvolution-1d-2 |   |  |  |
-| 282 | deconvolution-1d-3 |   |  |  |
-| 283 | deconvolution-1d |   |  |  |
-| 284 | deepcopy-1 |   |  |  |
+| 250 | count-the-coins-2 | ✓ | 571.223ms | 12.3 MB |
+| 251 | cramers-rule | ✓ |  |  |
+| 252 | crc-32-1 | ✓ |  |  |
+| 253 | crc-32-2 | ✓ |  |  |
+| 254 | create-a-file-on-magnetic-tape | ✓ |  |  |
+| 255 | create-a-file | ✓ |  |  |
+| 256 | create-a-two-dimensional-array-at-runtime-1 | ✓ |  |  |
+| 257 | create-an-html-table | ✓ |  |  |
+| 258 | create-an-object-at-a-given-address | ✓ |  |  |
+| 259 | csv-data-manipulation | ✓ |  |  |
+| 260 | csv-to-html-translation-1 | ✓ | 571.223ms | 12.2 MB |
+| 261 | csv-to-html-translation-2 | ✓ |  |  |
+| 262 | csv-to-html-translation-3 | ✓ |  |  |
+| 263 | csv-to-html-translation-4 | ✓ |  |  |
+| 264 | csv-to-html-translation-5 | ✓ |  |  |
+| 265 | cuban-primes | ✓ |  |  |
+| 266 | cullen-and-woodall-numbers | ✓ |  |  |
+| 267 | cumulative-standard-deviation | ✓ |  |  |
+| 268 | currency | ✓ |  |  |
+| 269 | currying | ✓ |  |  |
+| 270 | curzon-numbers | ✓ |  |  |
+| 271 | cusip | ✓ |  |  |
+| 272 | cyclops-numbers | ✓ |  |  |
+| 273 | damm-algorithm | ✓ |  |  |
+| 274 | date-format | ✓ |  |  |
+| 275 | date-manipulation | ✓ |  |  |
+| 276 | day-of-the-week | ✓ |  |  |
+| 277 | de-bruijn-sequences | ✓ |  |  |
+| 278 | deal-cards-for-freecell | ✓ |  |  |
+| 279 | death-star | ✓ |  |  |
+| 280 | deceptive-numbers | ✓ |  |  |
+| 281 | deconvolution-1d-2 | ✓ |  |  |
+| 282 | deconvolution-1d-3 | ✓ |  |  |
+| 283 | deconvolution-1d | ✓ |  |  |
+| 284 | deepcopy-1 | ✓ |  |  |
 | 285 | define-a-primitive-data-type |   |  |  |
 | 286 | delegates |   |  |  |
-| 287 | demings-funnel |   |  |  |
-| 288 | department-numbers |   |  |  |
-| 289 | descending-primes |   |  |  |
-| 290 | detect-division-by-zero |   |  |  |
-| 291 | determine-if-a-string-has-all-the-same-characters |   |  |  |
-| 292 | determine-if-a-string-has-all-unique-characters |   |  |  |
-| 293 | determine-if-a-string-is-collapsible |   |  |  |
-| 294 | determine-if-a-string-is-numeric-1 |   |  |  |
-| 295 | determine-if-a-string-is-numeric-2 |   |  |  |
-| 296 | determine-if-a-string-is-squeezable |   |  |  |
-| 297 | determine-if-only-one-instance-is-running |   |  |  |
-| 298 | determine-if-two-triangles-overlap |   |  |  |
-| 299 | determine-sentence-type |   |  |  |
+| 287 | demings-funnel | ✓ |  |  |
+| 288 | department-numbers | ✓ |  |  |
+| 289 | descending-primes | ✓ |  |  |
+| 290 | detect-division-by-zero | ✓ |  |  |
+| 291 | determine-if-a-string-has-all-the-same-characters | ✓ |  |  |
+| 292 | determine-if-a-string-has-all-unique-characters | ✓ |  |  |
+| 293 | determine-if-a-string-is-collapsible | ✓ |  |  |
+| 294 | determine-if-a-string-is-numeric-1 | ✓ |  |  |
+| 295 | determine-if-a-string-is-numeric-2 | ✓ |  |  |
+| 296 | determine-if-a-string-is-squeezable | ✓ |  |  |
+| 297 | determine-if-only-one-instance-is-running | ✓ |  |  |
+| 298 | determine-if-two-triangles-overlap | ✓ |  |  |
+| 299 | determine-sentence-type | ✓ | 571.223ms | 12.0 MB |
 | 300 | dice-game-probabilities-1 | ✓ | 571.223ms | 12.6 MB |
 | 301 | dice-game-probabilities-2 | ✓ | 133.338ms | 12.6 MB |
 | 302 | digital-root-multiplicative-digital-root | ✓ | 571.223ms | 12.8 MB |
@@ -363,12 +363,12 @@ Last updated: 2025-07-28 03:44 UTC
 | 354 | enumerations-4 | ✓ | 571.223ms | 12.3 MB |
 | 355 | environment-variables-1 | ✓ | 571.223ms | 12.0 MB |
 | 356 | environment-variables-2 | ✓ | 571.223ms | 12.1 MB |
-| 357 | equal-prime-and-composite-sums | ✓ |  |  |
-| 358 | equilibrium-index | ✓ |  |  |
-| 359 | erd-s-nicolas-numbers | ✓ |  |  |
-| 360 | erd-s-selfridge-categorization-of-primes | ✓ |  |  |
-| 361 | esthetic-numbers | ✓ |  |  |
-| 362 | ethiopian-multiplication | ✓ |  |  |
+| 357 | equal-prime-and-composite-sums |   |  |  |
+| 358 | equilibrium-index |   |  |  |
+| 359 | erd-s-nicolas-numbers |   |  |  |
+| 360 | erd-s-selfridge-categorization-of-primes |   |  |  |
+| 361 | esthetic-numbers |   |  |  |
+| 362 | ethiopian-multiplication |   |  |  |
 | 363 | euclid-mullin-sequence |   |  |  |
 | 364 | euler-method |   |  |  |
 | 365 | eulers-constant-0.5772... |   |  |  |
