@@ -1,0 +1,160 @@
+fun pow10(n: int): float {
+  var r: float = 1.0
+  var i = 0
+  while i < n { r = r * 10.0; i = i + 1 }
+  return r
+}
+
+fun formatFloat(f: float, prec: int): string {
+  let scale = pow10(prec)
+  let scaled = (f * scale) + 0.5
+  var n = (scaled as int)
+  var digits = str(n)
+  while len(digits) <= prec { digits = "0" + digits }
+  let intPart = substring(digits, 0, len(digits) - prec)
+  let fracPart = substring(digits, len(digits) - prec, len(digits))
+  return intPart + "." + fracPart
+}
+
+fun padLeft(s: string, w: int): string {
+  var res = ""
+  var n = w - len(s)
+  while n > 0 { res = res + " "; n = n - 1 }
+  return res + s
+}
+
+fun repeat(ch: string, n: int): string {
+  var s = ""
+  var i = 0
+  while i < n { s = s + ch; i = i + 1 }
+  return s
+}
+
+fun toFloat(i: int): float { return i as float }
+
+fun newNode(name: string, weight: int, coverage: float): map<string, any> {
+  return {"name": name, "weight": weight, "coverage": coverage, "children": []}
+}
+
+fun addChildren(n: map<string, any>, nodes: list<map<string, any>>) {
+  var cs = n["children"] as list<any>
+  for node in nodes {
+    cs = append(cs, node)
+  }
+  n["children"] = cs
+}
+
+fun setCoverage(n: map<string, any>, value: float) {
+  n["coverage"] = value
+}
+
+fun computeCoverage(n: map<string, any>): float {
+  var cs = n["children"] as list<any>
+  if len(cs) == 0 { return n["coverage"] as float }
+  var v1 = 0.0
+  var v2 = 0
+  for node in cs {
+    let m = node as map<string, any>
+    let c = computeCoverage(m)
+    v1 = v1 + toFloat(m["weight"] as int) * c
+    v2 = v2 + (m["weight"] as int)
+  }
+  return v1 / toFloat(v2)
+}
+
+fun spaces(n: int): string { return repeat(" ", n) }
+
+fun show(n: map<string, any>, level: int) {
+  var indent = level * 4
+  let name = n["name"] as string
+  var nl = len(name) + indent
+  var line = spaces(indent) + name
+  line = line + spaces(32 - nl) + "|  "
+  line = line + padLeft(str(n["weight"] as int), 3) + "   | "
+  line = line + formatFloat(computeCoverage(n), 6) + " |"
+  print(line)
+  let cs = n["children"] as list<any>
+  for child in cs { show(child as map<string, any>, level + 1) }
+}
+
+var house1 = newNode("house1", 40, 0.0)
+var house2 = newNode("house2", 60, 0.0)
+
+var h1_bedrooms = newNode("bedrooms", 1, 0.25)
+var h1_bathrooms = newNode("bathrooms", 1, 0.0)
+var h1_attic = newNode("attic", 1, 0.75)
+var h1_kitchen = newNode("kitchen", 1, 0.1)
+var h1_living_rooms = newNode("living_rooms", 1, 0.0)
+var h1_basement = newNode("basement", 1, 0.0)
+var h1_garage = newNode("garage", 1, 0.0)
+var h1_garden = newNode("garden", 1, 0.8)
+
+var h2_upstairs = newNode("upstairs", 1, 0.0)
+var h2_groundfloor = newNode("groundfloor", 1, 0.0)
+var h2_basement = newNode("basement", 1, 0.0)
+
+var h1_bathroom1 = newNode("bathroom1", 1, 0.5)
+var h1_bathroom2 = newNode("bathroom2", 1, 0.0)
+var h1_outside = newNode("outside_lavatory", 1, 1.0)
+
+var h1_lounge = newNode("lounge", 1, 0.0)
+var h1_dining = newNode("dining_room", 1, 0.0)
+var h1_conservatory = newNode("conservatory", 1, 0.0)
+var h1_playroom = newNode("playroom", 1, 1.0)
+
+var h2_bedrooms = newNode("bedrooms", 1, 0.0)
+var h2_bathroom = newNode("bathroom", 1, 0.0)
+var h2_toilet = newNode("toilet", 1, 0.0)
+var h2_attics = newNode("attics", 1, 0.6)
+
+var h2_kitchen = newNode("kitchen", 1, 0.0)
+var h2_living_rooms = newNode("living_rooms", 1, 0.0)
+var h2_wet_room = newNode("wet_room_&_toilet", 1, 0.0)
+var h2_garage = newNode("garage", 1, 0.0)
+var h2_garden = newNode("garden", 1, 0.9)
+var h2_hot_tub = newNode("hot_tub_suite", 1, 1.0)
+
+var h2_cellars = newNode("cellars", 1, 1.0)
+var h2_wine_cellar = newNode("wine_cellar", 1, 1.0)
+var h2_cinema = newNode("cinema", 1, 0.75)
+
+var h2_suite1 = newNode("suite_1", 1, 0.0)
+var h2_suite2 = newNode("suite_2", 1, 0.0)
+var h2_bedroom3 = newNode("bedroom_3", 1, 0.0)
+var h2_bedroom4 = newNode("bedroom_4", 1, 0.0)
+
+var h2_lounge = newNode("lounge", 1, 0.0)
+var h2_dining = newNode("dining_room", 1, 0.0)
+var h2_conservatory = newNode("conservatory", 1, 0.0)
+var h2_playroom = newNode("playroom", 1, 0.0)
+
+fun main() {
+  var cleaning = newNode("cleaning", 1, 0.0)
+
+  addChildren(h1_bathrooms, [h1_bathroom1, h1_bathroom2, h1_outside])
+  addChildren(h1_living_rooms, [h1_lounge, h1_dining, h1_conservatory, h1_playroom])
+  addChildren(house1, [h1_bedrooms, h1_bathrooms, h1_attic, h1_kitchen, h1_living_rooms, h1_basement, h1_garage, h1_garden])
+
+  addChildren(h2_bedrooms, [h2_suite1, h2_suite2, h2_bedroom3, h2_bedroom4])
+  addChildren(h2_upstairs, [h2_bedrooms, h2_bathroom, h2_toilet, h2_attics])
+  addChildren(h2_living_rooms, [h2_lounge, h2_dining, h2_conservatory, h2_playroom])
+  addChildren(h2_groundfloor, [h2_kitchen, h2_living_rooms, h2_wet_room, h2_garage, h2_garden, h2_hot_tub])
+  addChildren(h2_basement, [h2_cellars, h2_wine_cellar, h2_cinema])
+  addChildren(house2, [h2_upstairs, h2_groundfloor, h2_basement])
+
+  addChildren(cleaning, [house1, house2])
+  let topCoverage = computeCoverage(cleaning)
+  print("TOP COVERAGE = " + formatFloat(topCoverage, 6))
+  print("")
+  print("NAME HIERARCHY                 | WEIGHT | COVERAGE |")
+  show(cleaning, 0)
+
+  setCoverage(h2_cinema, 1.0)
+  let diff = computeCoverage(cleaning) - topCoverage
+  print("")
+  print("If the coverage of the Cinema node were increased from 0.75 to 1")
+  print("the top level coverage would increase by " + formatFloat(diff, 6) + " to " + formatFloat(topCoverage + diff, 6))
+  setCoverage(h2_cinema, 0.75)
+}
+
+main()
