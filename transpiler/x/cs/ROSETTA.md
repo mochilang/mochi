@@ -1,7 +1,7 @@
 # Rosetta C# Transpiler Output
 
-Completed programs: 252/493
-Last updated: 2025-07-28 10:03 +0700
+Completed programs: 256/493
+Last updated: 2025-07-28 05:11 UTC
 
 ## Checklist
 | Index | Name | Status | Duration | Memory |
@@ -255,27 +255,27 @@ Last updated: 2025-07-28 10:03 +0700
 | 247 | count-in-octal-4 | ✓ | 895µs | 16.0KB |
 | 248 | count-occurrences-of-a-substring | ✓ | 6.345ms | 1.2MB |
 | 249 | count-the-coins-1 | ✓ | 1.065ms | 16.0KB |
-| 250 | count-the-coins-2 | ✓ | 5.609ms | 3.9MB |
-| 251 | cramers-rule | ✓ | 12.418ms | 1.2MB |
-| 252 | crc-32-1 | ✓ | 14.331ms | 1.3MB |
-| 253 | crc-32-2 | ✓ | 15.856ms | 1.3MB |
-| 254 | create-a-file-on-magnetic-tape | ✓ | 61µs |  |
-| 255 | create-a-file | ✓ | 2.661ms | 16.0KB |
-| 256 | create-a-two-dimensional-array-at-runtime-1 | ✓ | 19.511ms | 2.5MB |
-| 257 | create-an-html-table | ✓ | 3.262ms | 16.0KB |
-| 258 | create-an-object-at-a-given-address | ✓ | 13.523ms | 1.2MB |
-| 259 | csv-data-manipulation | ✓ | 13.826ms | 1.1MB |
-| 260 | csv-to-html-translation-1 | ✓ | 2.506ms | 16.0KB |
-| 261 | csv-to-html-translation-2 | ✓ | 2.413ms | 16.0KB |
-| 262 | csv-to-html-translation-3 | ✓ | 2.345ms | 16.0KB |
-| 263 | csv-to-html-translation-4 | ✓ | 2.542ms | 16.0KB |
-| 264 | csv-to-html-translation-5 | ✓ | 2.807ms | 44.9KB |
+| 250 | count-the-coins-2 | ✓ | 2.203ms | 3.9MB |
+| 251 | cramers-rule | ✓ | 5.866ms | 1.2MB |
+| 252 | crc-32-1 | ✓ | 6.498ms | 1.3MB |
+| 253 | crc-32-2 | ✓ | 6.899ms | 1.3MB |
+| 254 | create-a-file-on-magnetic-tape | ✓ | 37µs |  |
+| 255 | create-a-file | ✓ | 891µs | 16.0KB |
+| 256 | create-a-two-dimensional-array-at-runtime-1 | ✓ | 8.347ms | 2.5MB |
+| 257 | create-an-html-table | ✓ | 1ms | 16.0KB |
+| 258 | create-an-object-at-a-given-address | ✓ | 8.626ms | 1.2MB |
+| 259 | csv-data-manipulation | ✓ | 1.443ms | 24.1KB |
+| 260 | csv-to-html-translation-1 | ✓ | 880µs | 16.0KB |
+| 261 | csv-to-html-translation-2 | ✓ | 984µs | 16.0KB |
+| 262 | csv-to-html-translation-3 | ✓ | 838µs | 16.0KB |
+| 263 | csv-to-html-translation-4 | ✓ | 868µs | 16.0KB |
+| 264 | csv-to-html-translation-5 | ✓ | 6.351ms | 1.4MB |
 | 265 | cuban-primes |   |  |  |
-| 266 | cullen-and-woodall-numbers | ✓ | 5.93ms | 1.2MB |
-| 267 | cumulative-standard-deviation |   |  |  |
-| 268 | currency |   |  |  |
-| 269 | currying |   |  |  |
-| 270 | curzon-numbers |   |  |  |
+| 266 | cullen-and-woodall-numbers | ✓ | 6.095ms | 1.2MB |
+| 267 | cumulative-standard-deviation | ✓ | 1.212ms | 16.0KB |
+| 268 | currency | ✓ | 2.51ms | 32.1KB |
+| 269 | currying | ✓ | 5.813ms | 1.0MB |
+| 270 | curzon-numbers | ✓ | 8.432ms | 1.2MB |
 | 271 | cusip |   |  |  |
 | 272 | cyclops-numbers |   |  |  |
 | 273 | damm-algorithm |   |  |  |
