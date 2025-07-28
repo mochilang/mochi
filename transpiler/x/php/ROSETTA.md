@@ -2,7 +2,7 @@
 
 Generated PHP code from Mochi Rosetta tasks lives in `tests/rosetta/transpiler/php`.
 
-Last updated: 2025-07-28 10:20 +0700
+Last updated: 2025-07-28 10:26 +0700
 
 ## Checklist (461/493)
 | Index | Name | Status | Duration | Memory |
@@ -356,7 +356,7 @@ Last updated: 2025-07-28 10:20 +0700
 | 347 | enforced-immutability | ✓ | 60µs | 136 B |
 | 348 | entropy-1 | ✓ | 121µs | 96 B |
 | 349 | entropy-2 | ✓ | 132µs | 96 B |
-| 350 | entropy-narcissist | ✓ | 280µs | 128 B |
+| 350 | entropy-narcissist | ✓ | 237µs | 128 B |
 | 351 | enumerations-1 | ✓ | 1µs | 64 B |
 | 352 | enumerations-2 | ✓ | 1µs | 64 B |
 | 353 | enumerations-3 | ✓ | 2µs | 64 B |
