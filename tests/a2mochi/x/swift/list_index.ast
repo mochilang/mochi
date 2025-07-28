@@ -1,5 +1,5 @@
 (program
-  (var xs
+  (let xs
     (list (int 10) (int 20) (int 30))
   )
   (call print

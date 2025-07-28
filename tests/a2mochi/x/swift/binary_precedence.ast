@@ -1,0 +1,6 @@
+(program
+  (call print (int 7))
+  (call print (int 9))
+  (call print (int 7))
+  (call print (int 8))
+)

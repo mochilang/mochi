@@ -146,7 +146,7 @@ func ConvertSource(src string) (string, error) {
 				out.WriteByte('\n')
 			}
 		case "top_level_code_decl":
-			code := extractRange(src, it.Range)
+			code := lineFromRange(src, it.Range)
 			for _, st := range parseStatementsIndent(code, 0) {
 				out.WriteString(st)
 				out.WriteByte('\n')
@@ -288,6 +288,37 @@ func extractRange(src string, r offsetRange) string {
 	return src[r.Start : end+1]
 }
 
+func lineFromRange(src string, r offsetRange) string {
+	if r.Start < 0 {
+		r.Start = 0
+	}
+	start := r.Start
+	end := r.End
+	if start >= len(src) {
+		return ""
+	}
+	if end < start {
+		end = start
+	}
+	if end >= len(src) {
+		end = len(src) - 1
+	}
+	if end >= len(src) {
+		end = len(src) - 1
+	}
+	line := src[start : end+1]
+	if strings.Contains(line, "\n") {
+		return line
+	}
+	for end+1 < len(src) && src[end] != '\n' {
+		end++
+	}
+	if end < len(src) && src[end] == '\n' {
+		return src[start:end]
+	}
+	return src[start : end+1]
+}
+
 func bodyFromRange(src string, r offsetRange) []string {
 	text := extractRange(src, r)
 	start := strings.Index(text, "{")
@@ -333,7 +364,11 @@ func parseStatementsIndent(body string, indent int) []string {
 			l = rewriteCasts(l)
 			l = rewriteCount(l)
 			l = rewriteMinMax(l)
+			l = rewriteStringSlice(l)
+			l = rewriteStringIndex(l)
+			l = rewriteBoolInt(l)
 			l = strings.ReplaceAll(l, ")!", ")")
+			l = strings.ReplaceAll(l, "]!", "]")
 			l = strings.ReplaceAll(l, "_append(", "append(")
 			l = strings.ReplaceAll(l, "_values(", "values(")
 			l = strings.ReplaceAll(l, "_exists(", "exists(")
@@ -378,7 +413,20 @@ func parseStatementsIndent(body string, indent int) []string {
 					if colon := strings.Index(name, ":"); colon != -1 {
 						name = strings.TrimSpace(name[:colon])
 					}
-					expr := rewriteStructLiteral(strings.TrimSpace(parts[1]))
+					expr := strings.TrimSpace(parts[1])
+					expr = rewriteMapLiteral(expr)
+					expr = rewriteStructLiteral(expr)
+					expr = rewriteCasts(expr)
+					expr = rewriteCount(expr)
+					expr = rewriteMinMax(expr)
+					expr = rewriteStringSlice(expr)
+					expr = rewriteStringIndex(expr)
+					expr = strings.ReplaceAll(expr, ")!", ")")
+					expr = strings.ReplaceAll(expr, "]!", "]")
+					expr = strings.ReplaceAll(expr, "_append(", "append(")
+					expr = strings.ReplaceAll(expr, "_values(", "values(")
+					expr = strings.ReplaceAll(expr, "_exists(", "exists(")
+					expr = strings.ReplaceAll(expr, "_sliceString(", "substring(")
 					out = append(out, strings.Repeat("  ", indent)+keyword+" "+name+" = "+expr)
 				}
 			case l == "break":
@@ -403,6 +451,9 @@ var parenMinRE = regexp.MustCompile(`\(([^()]+)\)\.min\(\)`)
 var identMinRE = regexp.MustCompile(`([A-Za-z0-9_]+)\.min\(\)`)
 var parenMaxRE = regexp.MustCompile(`\(([^()]+)\)\.max\(\)`)
 var identMaxRE = regexp.MustCompile(`([A-Za-z0-9_]+)\.max\(\)`)
+var stringSliceRE = regexp.MustCompile(`String\(Array\(([^\)]*)\)\[(.*?)\.\.\<(.*?)\]\)(?:\s+as!\s+String)?`)
+var stringIndexRE = regexp.MustCompile(`String\(Array\(([^\)]*)\)\[(.*?)\]\)(?:\s+as!\s+String)?`)
+var boolIntRE = regexp.MustCompile(`\(([^()]+)\)\s*\?\s*1\s*:\s*0`)
 
 func rewriteMapLiteral(expr string) string {
 	m := mapLitRE.FindStringSubmatch(expr)
@@ -480,6 +531,30 @@ func rewriteMinMax(expr string) string {
 		break
 	}
 	return expr
+}
+
+func rewriteStringSlice(expr string) string {
+	return stringSliceRE.ReplaceAllStringFunc(expr, func(s string) string {
+		m := stringSliceRE.FindStringSubmatch(s)
+		if len(m) == 4 {
+			return fmt.Sprintf("substring(%s, %s, %s)", strings.TrimSpace(m[1]), strings.TrimSpace(m[2]), strings.TrimSpace(m[3]))
+		}
+		return s
+	})
+}
+
+func rewriteStringIndex(expr string) string {
+	return stringIndexRE.ReplaceAllStringFunc(expr, func(s string) string {
+		m := stringIndexRE.FindStringSubmatch(s)
+		if len(m) == 3 {
+			return fmt.Sprintf("%s[%s]", strings.TrimSpace(m[1]), strings.TrimSpace(m[2]))
+		}
+		return s
+	})
+}
+
+func rewriteBoolInt(expr string) string {
+	return boolIntRE.ReplaceAllString(expr, "$1")
 }
 
 func gatherEnumElements(ms []item) []item {
