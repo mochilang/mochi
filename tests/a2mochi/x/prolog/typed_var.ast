@@ -1,0 +1,6 @@
+(program
+  (fun main
+    (let X (int 0))
+    (call print (int 0))
+  )
+)

@@ -202,6 +202,7 @@ func splitClauses(body string) []string {
 	var clauses []string
 	depth := 0
 	brack := 0
+	brace := 0
 	start := 0
 	for i, r := range body {
 		switch r {
@@ -217,8 +218,14 @@ func splitClauses(body string) []string {
 			if brack > 0 {
 				brack--
 			}
+		case '{':
+			brace++
+		case '}':
+			if brace > 0 {
+				brace--
+			}
 		case ',':
-			if depth == 0 && brack == 0 {
+			if depth == 0 && brack == 0 && brace == 0 {
 				clauses = append(clauses, strings.TrimSpace(body[start:i]))
 				start = i + 1
 			}
@@ -238,8 +245,27 @@ func convertExpr(expr string) string {
 		sub = strings.Trim(sub, "\"")
 		return "contains(" + src + ", \"" + sub + "\")"
 	}
+	if strings.Contains(expr, ",") {
+		parts := splitClauses(expr)
+		if len(parts) > 1 {
+			for i, p := range parts {
+				parts[i] = convertExpr(p)
+			}
+			return strings.Join(parts, " && ")
+		}
+	}
+	if strings.Contains(expr, ";") {
+		segs := strings.Split(expr, ";")
+		if len(segs) > 1 {
+			for i, s := range segs {
+				segs[i] = convertExpr(strings.TrimSpace(s))
+			}
+			return strings.Join(segs, " || ")
+		}
+	}
 	expr = strings.ReplaceAll(expr, "=:=", "==")
 	expr = strings.ReplaceAll(expr, "=\\=", "!=")
+	expr = strings.ReplaceAll(expr, " = ", " == ")
 	expr = strings.ReplaceAll(expr, "@>=", ">=")
 	expr = strings.ReplaceAll(expr, "@=<", "<=")
 	expr = strings.ReplaceAll(expr, "@>", ">")

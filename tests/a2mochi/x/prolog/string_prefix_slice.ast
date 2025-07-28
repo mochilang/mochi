@@ -1,0 +1,41 @@
+(program
+  (fun main
+    (let Prefix (string fore))
+    (let S1 (string forest))
+    (let L2
+      (binary - (int 4) (int 0))
+    )
+    (let T2
+      (call substr (selector S1) (int 0) (selector L2))
+    )
+    (if
+      (group
+        (binary == (selector T2) (selector Prefix))
+      )
+      (block
+        (call print (bool true))
+      )
+      (block
+        (call print (bool false))
+      )
+    )
+    (let S2 (string desert))
+    (let L4
+      (binary - (int 4) (int 0))
+    )
+    (let T4
+      (call substr (selector S2) (int 0) (selector L4))
+    )
+    (if
+      (group
+        (binary == (selector T4) (selector Prefix))
+      )
+      (block
+        (call print (bool true))
+      )
+      (block
+        (call print (bool false))
+      )
+    )
+  )
+)

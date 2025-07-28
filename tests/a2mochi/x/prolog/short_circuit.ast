@@ -1,0 +1,36 @@
+(program
+  (fun boom
+    (param A)
+    (param B)
+    (param R)
+    (call print (string boom))
+    (let Return1 (bool true))
+    (let R (selector Return1))
+  )
+  (fun main
+    (if
+      (binary &&
+        (bool false)
+        (call boom (int 1) (int 2))
+      )
+      (block
+        (call print (bool true))
+      )
+      (block
+        (call print (bool false))
+      )
+    )
+    (if
+      (binary ||
+        (bool true)
+        (call boom (int 1) (int 2))
+      )
+      (block
+        (call print (bool true))
+      )
+      (block
+        (call print (bool false))
+      )
+    )
+  )
+)
