@@ -1,0 +1,15 @@
+(program
+  (fun main
+    (var square
+      (group
+        (funexpr
+          (param x)
+          (binary * (selector x) (selector x))
+        )
+      )
+    )
+    (call print
+      (call square (int 6))
+    )
+  )
+)

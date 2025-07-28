@@ -202,7 +202,9 @@ func repoRoot() (string, error) {
 	return "", os.ErrNotExist
 }
 
-var typedVarRe = regexp.MustCompile(`^(?:final|const)?\s*([A-Za-z_][A-Za-z0-9_<>,\[\]\? ]*)\s+([A-Za-z_][A-Za-z0-9_]*)\s*(=.*)?$`)
+// typedVarRe matches Dart variable declarations with an optional type. It
+// allows "final" or "const" without a following type.
+var typedVarRe = regexp.MustCompile(`^(?:final|const)?\s*(?:([A-Za-z_][A-Za-z0-9_<>,\[\]\? ]*)\s+)?([A-Za-z_][A-Za-z0-9_]*)\s*(=.*)?$`)
 
 func parseTopLevelVars(src string, funcs []Function, classes []Class) []string {
 	lines := strings.Split(src, "\n")

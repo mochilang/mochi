@@ -1,6 +1,6 @@
 # a2mochi Dart Converter
 
-Completed programs: 43/103
+Completed programs: 44/103
 Date: 2025-07-28 16:55:00 GMT
 
 This directory holds golden outputs for the Dart to Mochi converter.
@@ -14,6 +14,7 @@ Each `.dart` source in `tests/transpiler/x/dart` has a matching `.mochi` and `.a
 - [x] for_list_collection
 - [x] for_loop
 - [x] fun_call
+- [x] fun_expr_in_let
 - [x] fun_three_args
 - [x] go_auto
 - [x] if_else
