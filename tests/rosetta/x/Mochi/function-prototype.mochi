@@ -1,0 +1,14 @@
+// Mochi translation of Rosetta Code "Function prototype" task
+
+// function with no arguments
+fun a() {
+}
+
+// function with two arguments
+fun b(x: int, y: int) {
+}
+
+// variadic parameters simulated with list
+fun c(nums: list<int>) {
+}
+
