@@ -1,5 +1,5 @@
-## Progress (2025-07-28 11:35 +0700)
-- Commit 9fad435cba: release: v0.10.47
+## Progress (2025-07-28 11:55 +0700)
+- Commit 8a36daec5b: transpiler/cpp: transpile rosetta tasks 250-300
 - Regenerated golden files - 81/104 vm valid programs passing
 
 ## Progress (2025-07-22 14:12 +0700)
