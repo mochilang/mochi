@@ -9,3 +9,15 @@ The converter does not rely on a language server. It tokenises the input
 and recognises basic forms such as `define`, `struct` and `for`. Only a
 subset of expressions and statements are supported.
 
+Completed programs: 8/104
+
+## Checklist
+- [x] append_builtin
+- [x] fun_call
+- [x] fun_three_args
+- [x] let_and_print
+- [x] for_loop
+- [x] for_list_collection
+- [x] print_hello
+- [x] unary_neg
+
