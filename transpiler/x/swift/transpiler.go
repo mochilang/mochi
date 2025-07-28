@@ -35,6 +35,7 @@ var usesPad bool
 var usesRat bool
 var usesSHA256 bool
 var usesAppend bool
+var usesLen bool
 var funcMutParams map[string][]bool
 var funcInOutParams map[string][]bool
 
@@ -68,6 +69,7 @@ type Program struct {
 	UseRat        bool
 	UseSHA256     bool
 	UseAppend     bool
+	UseLen        bool
 }
 
 type Stmt interface{ emit(io.Writer) }
@@ -997,27 +999,9 @@ func (c *CastExpr) emit(w io.Writer) {
 			return
 		}
 		if force {
-			if t == "Bool" {
-				fmt.Fprint(w, "(")
-				c.Expr.emit(w)
-				fmt.Fprint(w, " as! Bool)")
-			} else if t == "Double" {
-				fmt.Fprint(w, "Double(")
-				c.Expr.emit(w)
-				fmt.Fprint(w, ")")
-			} else if t == "String" {
-				fmt.Fprint(w, "String(describing: ")
-				c.Expr.emit(w)
-				fmt.Fprint(w, ")")
-			} else if _, ok := c.Expr.(*IndexExpr); ok {
-				fmt.Fprint(w, "(")
-				c.Expr.emit(w)
-				fmt.Fprintf(w, " as! %s)", t)
-			} else {
-				fmt.Fprintf(w, "%s(", t)
-				c.Expr.emit(w)
-				fmt.Fprint(w, ")")
-			}
+			fmt.Fprint(w, "(")
+			c.Expr.emit(w)
+			fmt.Fprintf(w, " as! %s)", t)
 		} else if t == "String" {
 			fmt.Fprint(w, "String(describing: ")
 			c.Expr.emit(w)
@@ -1639,6 +1623,15 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("    return out\n")
 		buf.WriteString("}\n")
 	}
+	if p.UseLen {
+		buf.WriteString("func _len(_ v: Any) -> Int {\n")
+		buf.WriteString("    if let s = v as? String { return Array(s).count }\n")
+		buf.WriteString("    if let a = v as? [Any] { return a.count }\n")
+		buf.WriteString("    if let a = v as? [Double] { return a.count }\n")
+		buf.WriteString("    if let a = v as? [Int] { return a.count }\n")
+		buf.WriteString("    if let m = v as? [AnyHashable: Any] { return m.count }\n")
+		buf.WriteString("    return 0\n}\n")
+	}
 	if p.UseBigInt {
 		buf.WriteString("struct BigInt: Comparable, CustomStringConvertible {\n")
 		buf.WriteString("    private var digits: [UInt32] = []\n")
@@ -1772,6 +1765,7 @@ func Transpile(env *types.Env, prog *parser.Program, benchMain bool) (*Program, 
 	usesRat = false
 	usesSHA256 = false
 	usesAppend = false
+	usesLen = false
 	funcMutParams = map[string][]bool{}
 	funcInOutParams = map[string][]bool{}
 	p := &Program{}
@@ -1796,6 +1790,7 @@ func Transpile(env *types.Env, prog *parser.Program, benchMain bool) (*Program, 
 	p.UseRat = usesRat
 	p.UseSHA256 = usesSHA256
 	p.UseAppend = usesAppend
+	p.UseLen = usesLen
 	return p, nil
 }
 
@@ -3892,7 +3887,11 @@ func convertPrimary(env *types.Env, pr *parser.Primary) (Expr, error) {
 					asStr = false
 				}
 			}
-			return &LenExpr{Value: arg, AsString: asStr}, nil
+			if asStr {
+				usesLen = true
+				return &CallExpr{Func: "_len", Args: []Expr{arg}}, nil
+			}
+			return &LenExpr{Value: arg, AsString: false}, nil
 		}
 		if pr.Call.Func == "str" && len(pr.Call.Args) == 1 {
 			arg, err := convertExpr(env, pr.Call.Args[0])
