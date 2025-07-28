@@ -3,12 +3,14 @@
 package cs
 
 import (
+	"encoding/json"
 	"fmt"
 	"os"
+	"os/exec"
 	"path/filepath"
-	"regexp"
 	"runtime"
 	"strings"
+	"sync"
 	"time"
 
 	"mochi/ast"
@@ -16,19 +18,25 @@ import (
 )
 
 var (
-	longLit   = regexp.MustCompile(`\b([0-9]+)L\b`)
-	varDeclRE = regexp.MustCompile(`^([A-Za-z0-9_<>\[\]]+)\s+([A-Za-z_][A-Za-z0-9_]*)\s*=`)
+	helperOnce sync.Once
+	helperPath string
+	helperErr  error
 )
 
-func stripLong(s string) string { return longLit.ReplaceAllString(s, "$1") }
+func stripLong(s string) string { return strings.ReplaceAll(s, "L", "") }
 
 func convertExpr(s string) string {
 	s = strings.TrimSpace(s)
 	if strings.Contains(s, "string.Join(") {
 		s = strings.Replace(s, "string.Join", "join", 1)
 	}
-	if m := regexp.MustCompile(`(?i)([A-Za-z_][A-Za-z0-9_]*)\.Append\(([^)]*)\)\.ToArray\(\)`).FindStringSubmatch(s); m != nil {
-		s = fmt.Sprintf("append(%s, %s)", m[1], m[2])
+	if idx := strings.Index(s, ".Append("); idx != -1 {
+		end := strings.Index(s[idx:], ")")
+		if end != -1 && strings.HasSuffix(s, ").ToArray()") {
+			arg := s[idx+len(".Append(") : idx+end]
+			target := s[:idx]
+			s = fmt.Sprintf("append(%s, %s)", target, arg)
+		}
 	}
 	if q := strings.Index(s, "?"); q != -1 {
 		if c := strings.Index(s[q+1:], ":"); c != -1 {
@@ -100,8 +108,8 @@ type Param struct {
 	Type string
 }
 
-// Parse parses a restricted subset of C# source code.
-func Parse(src string) (*AST, error) { return parseSimple(src) }
+// Parse parses C# source code using the Roslyn compiler.
+func Parse(src string) (*AST, error) { return parseRoslyn(src) }
 
 // ConvertSource converts the parsed AST into Mochi source code.
 func ConvertSource(ast *AST) (string, error) {
@@ -286,10 +294,16 @@ func convertBodyLines(body []string) []string {
 		case l == "}" || l == "} else {":
 			// keep as is
 		default:
-			if m := varDeclRE.FindStringSubmatch(l); m != nil {
-				name := m[2]
-				rest := strings.TrimSpace(l[len(m[0]):])
-				l = "var " + name + " = " + rest
+			if idx := strings.Index(l, "="); idx != -1 {
+				before := strings.TrimSpace(l[:idx])
+				rest := strings.TrimSpace(l[idx+1:])
+				parts := strings.Fields(before)
+				if len(parts) >= 2 {
+					name := parts[len(parts)-1]
+					l = "var " + name + " = " + rest
+				} else {
+					l = stripLong(l)
+				}
 			} else {
 				for _, t := range []string{"long ", "int ", "float ", "double ", "string ", "bool "} {
 					if strings.HasPrefix(l, t) {
@@ -398,152 +412,66 @@ func splitArgs(s string) []string {
 	return parts
 }
 
-// --- minimal parser ---
-func parseSimple(src string) (*AST, error) {
-	lines := strings.Split(src, "\n")
-	var ast AST
-	ast.Src = src
-	var cur *Type
-	depth := 0
-	var pendingDoc []string
-	for i := 0; i < len(lines); i++ {
-		l := strings.TrimSpace(lines[i])
-		if strings.HasPrefix(l, "//") || l == "" {
-			if strings.HasPrefix(l, "//") {
-				pendingDoc = append(pendingDoc, strings.TrimSpace(strings.TrimPrefix(l, "//")))
-			}
-			continue
-		}
-		if m := typeRE.FindStringSubmatch(l); m != nil {
-			t := &Type{Name: m[2], Kind: strings.ToLower(m[1]), StartLine: i + 1, Doc: strings.Join(pendingDoc, "\n")}
-			if strings.Contains(l, "public") {
-				t.Access = "public"
-			} else if strings.Contains(l, "protected") {
-				t.Access = "protected"
-			} else if strings.Contains(l, "private") {
-				t.Access = "private"
-			}
-			pendingDoc = nil
-			ast.Types = append(ast.Types, *t)
-			cur = &ast.Types[len(ast.Types)-1]
-			if strings.Contains(l, "{") {
-				depth++
-			} else if i+1 < len(lines) && strings.TrimSpace(lines[i+1]) == "{" {
-				depth++
-				i++
-			}
-			continue
-		}
-		if strings.Contains(l, "{") {
-			depth++
-		}
-		if strings.Contains(l, "}") {
-			depth--
-			if depth == 0 {
-				if cur != nil {
-					cur.EndLine = i + 1
-				}
-				cur = nil
-			}
-			continue
-		}
-		if cur == nil {
-			continue
-		}
-		if m := funcRE.FindStringSubmatch(l); m != nil {
-			fn := Func{Name: m[2], Ret: strings.TrimSpace(m[1]), StartLine: i + 1, Doc: strings.Join(pendingDoc, "\n")}
-			if strings.Contains(l, "static") {
-				fn.Static = true
-			}
-			if strings.Contains(l, "public") {
-				fn.Access = "public"
-			} else if strings.Contains(l, "protected") {
-				fn.Access = "protected"
-			} else if strings.Contains(l, "private") {
-				fn.Access = "private"
-			}
-			pendingDoc = nil
-			params := strings.Split(strings.TrimSpace(m[3]), ",")
-			for _, p := range params {
-				p = strings.TrimSpace(p)
-				if p == "" {
-					continue
-				}
-				parts := strings.Fields(p)
-				if len(parts) == 1 {
-					fn.Params = append(fn.Params, Param{Name: parts[0]})
-				} else {
-					fn.Params = append(fn.Params, Param{Type: parts[0], Name: parts[1]})
-				}
-			}
-			if !strings.Contains(l, "{") && i+1 < len(lines) && strings.TrimSpace(lines[i+1]) == "{" {
-				i++
-			}
-			var body []string
-			braces := 1
-			for j := i + 1; j < len(lines); j++ {
-				if strings.Contains(lines[j], "{") {
-					braces++
-				}
-				if strings.Contains(lines[j], "}") {
-					braces--
-					if braces == 0 {
-						i = j
-						fn.EndLine = j + 1
-						break
-					}
-				}
-				body = append(body, lines[j])
-			}
-			fn.Body = body
-			cur.Methods = append(cur.Methods, fn)
-			continue
-		}
-		if m := fieldRE.FindStringSubmatch(l); m != nil && strings.HasSuffix(l, ";") {
-			f := Field{Name: m[2], Type: strings.TrimSpace(m[1]), Line: i + 1, Doc: strings.Join(pendingDoc, "\n")}
-			if strings.Contains(l, "public") {
-				f.Access = "public"
-			} else if strings.Contains(l, "protected") {
-				f.Access = "protected"
-			} else if strings.Contains(l, "private") {
-				f.Access = "private"
-			}
-			cur.Fields = append(cur.Fields, f)
-			pendingDoc = nil
-			continue
-		}
-
-		if m := propertyRE.FindStringSubmatch(l); m != nil {
-			f := Field{Name: m[2], Type: strings.TrimSpace(m[1]), Line: i + 1, Doc: strings.Join(pendingDoc, "\n")}
-			if strings.Contains(l, "public") {
-				f.Access = "public"
-			} else if strings.Contains(l, "protected") {
-				f.Access = "protected"
-			} else if strings.Contains(l, "private") {
-				f.Access = "private"
-			}
-			cur.Fields = append(cur.Fields, f)
-			pendingDoc = nil
-			continue
-		}
-
-		if usingRE.MatchString(l) || namespaceRE.MatchString(l) {
-			continue
-		}
-
-		// Ignore unsupported lines instead of failing parsing
+// parseRoslyn invokes the helper C# parser to produce the AST in JSON form.
+func parseRoslyn(src string) (*AST, error) {
+	if err := ensureHelper(); err != nil {
+		return nil, err
 	}
-	if len(ast.Types) == 0 {
-		return nil, fmt.Errorf("no types found")
+	tmp, err := os.CreateTemp("", "a2mochi-*.cs")
+	if err != nil {
+		return nil, err
+	}
+	defer os.Remove(tmp.Name())
+	if _, err := tmp.WriteString(src); err != nil {
+		return nil, err
+	}
+	tmp.Close()
+	cmd := exec.Command(helperPath, tmp.Name())
+	out, err := cmd.Output()
+	if err != nil {
+		if ee, ok := err.(*exec.ExitError); ok {
+			return nil, fmt.Errorf("parser error: %s", string(ee.Stderr))
+		}
+		return nil, err
+	}
+	var ast AST
+	if err := json.Unmarshal(out, &ast); err != nil {
+		return nil, err
 	}
 	return &ast, nil
 }
 
-var (
-	typeRE      = regexp.MustCompile(`(?i)^\s*(?:public\s+|private\s+|protected\s+)?(class|struct|interface|enum)\s+([A-Za-z_][A-Za-z0-9_]*)`)
-	funcRE      = regexp.MustCompile(`(?i)^\s*(?:public\s+|private\s+|protected\s+)?(?:static\s+)?([A-Za-z0-9_<>\[\],\s]+)\s+([A-Za-z_][A-Za-z0-9_]*)(?:<[^>]+>)?\s*\(([^)]*)\)\s*\{?`)
-	fieldRE     = regexp.MustCompile(`(?i)^\s*(?:public\s+|private\s+|protected\s+)?(?:static\s+)?([A-Za-z0-9_<>\[\],\s]+)\s+([A-Za-z_][A-Za-z0-9_]*)`)
-	propertyRE  = regexp.MustCompile(`(?i)^\s*(?:public\s+|private\s+|protected\s+)?(?:static\s+)?([A-Za-z0-9_<>\[\],\s]+)\s+([A-Za-z_][A-Za-z0-9_]*)\s*\{`)
-	usingRE     = regexp.MustCompile(`^\s*using\s+`)
-	namespaceRE = regexp.MustCompile(`^\s*namespace\s+`)
-)
+// ensureHelper builds the C# helper program if needed.
+func ensureHelper() error {
+	helperOnce.Do(func() {
+		_, file, _, _ := runtime.Caller(0)
+		root := filepath.Join(filepath.Dir(file), "../../../..")
+		helperPath = filepath.Join(root, "tools/a2mochi/x/cs/internal/bin/AstJson")
+		if runtime.GOOS == "windows" {
+			helperPath += ".exe"
+		}
+		if _, err := os.Stat(helperPath); err == nil {
+			return
+		}
+		if _, err := exec.LookPath("dotnet"); err != nil {
+			helperErr = fmt.Errorf("dotnet not installed")
+			return
+		}
+		dir := filepath.Join(root, "tools/a2mochi/x/cs/internal")
+		csproj := filepath.Join(dir, "AstJson.csproj")
+		if _, err := os.Stat(csproj); os.IsNotExist(err) {
+			proj := `<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework></PropertyGroup></Project>`
+			if err := os.WriteFile(csproj, []byte(proj), 0644); err != nil {
+				helperErr = err
+				return
+			}
+		}
+		cmd := exec.Command("dotnet", "publish", "-c", "Release", "-o", filepath.Dir(helperPath))
+		cmd.Dir = dir
+		if out, err := cmd.CombinedOutput(); err != nil {
+			helperErr = fmt.Errorf("dotnet publish: %v: %s", err, out)
+			return
+		}
+	})
+	return helperErr
+}
