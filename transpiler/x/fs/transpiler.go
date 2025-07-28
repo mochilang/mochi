@@ -192,6 +192,9 @@ func fsType(t types.Type) string {
 	case types.VoidType:
 		return "unit"
 	case types.FuncType:
+		if len(tt.Params) == 0 {
+			return "unit -> " + fsType(tt.Return)
+		}
 		parts := make([]string, len(tt.Params)+1)
 		for i, p := range tt.Params {
 			parts[i] = fsType(p)
@@ -326,6 +329,24 @@ func structFieldNames(name string) ([]string, bool) {
 		}
 	}
 	return nil, false
+}
+
+func structWithField(field string) (string, bool) {
+	name := ""
+	for _, sd := range structDefs {
+		for _, f := range sd.Fields {
+			if f.Name == field {
+				if name != "" {
+					return "", false
+				}
+				name = sd.Name
+			}
+		}
+	}
+	if name == "" {
+		return "", false
+	}
+	return name, true
 }
 
 func addStructDef(name string, st types.StructType) {
@@ -1280,6 +1301,11 @@ type ForStmt struct {
 }
 
 func (fst *ForStmt) emit(w io.Writer) {
+	if fst.WithBreak {
+		writeIndent(w)
+		io.WriteString(w, "try\n")
+		indentLevel++
+	}
 	writeIndent(w)
 	io.WriteString(w, "for ")
 	if fst.End == nil && inferType(fst.Start) == "map" {
@@ -2087,6 +2113,18 @@ type FieldExpr struct {
 
 func (f *FieldExpr) emit(w io.Writer) {
 	t := inferType(f.Target)
+	if t == "obj" || t == "" {
+		if sname, ok := structWithField(f.Name); ok {
+			io.WriteString(w, "((")
+			f.Target.emit(w)
+			io.WriteString(w, " :?> ")
+			io.WriteString(w, sname)
+			io.WriteString(w, ").")
+			io.WriteString(w, fsIdent(f.Name))
+			io.WriteString(w, ")")
+			return
+		}
+	}
 	if strings.HasPrefix(t, "Map<") || t == "map" || t == "obj" || t == "" {
 		valT := mapValueType(t)
 		if id, ok := f.Target.(*IdentExpr); ok {
@@ -2143,6 +2181,35 @@ type MethodCallExpr struct {
 	Target Expr
 	Name   string
 	Args   []Expr
+}
+
+type InvokeExpr struct {
+	Target Expr
+	Args   []Expr
+}
+
+func (i *InvokeExpr) emit(w io.Writer) {
+	if needsParen(i.Target) {
+		io.WriteString(w, "(")
+		i.Target.emit(w)
+		io.WriteString(w, ")")
+	} else {
+		i.Target.emit(w)
+	}
+	if len(i.Args) == 0 {
+		io.WriteString(w, " ()")
+		return
+	}
+	for _, a := range i.Args {
+		io.WriteString(w, " ")
+		if needsParen(a) {
+			io.WriteString(w, "(")
+			a.emit(w)
+			io.WriteString(w, ")")
+		} else {
+			a.emit(w)
+		}
+	}
 }
 
 func (m *MethodCallExpr) emit(w io.Writer) {
@@ -2710,7 +2777,11 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 			if declared == "" {
 				if ix, ok := e.(*IndexExpr); ok {
 					if t := elemTypeOf(ix.Target); t != "" {
-						declared = t
+						if t == "array" {
+							declared = "obj"
+						} else {
+							declared = t
+						}
 					}
 				}
 			}
@@ -2802,7 +2873,11 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 			if declared == "" {
 				if ix, ok := e.(*IndexExpr); ok {
 					if t := elemTypeOf(ix.Target); t != "" {
-						declared = t
+						if t == "array" {
+							declared = "obj"
+						} else {
+							declared = t
+						}
 					}
 				}
 			}
@@ -3231,12 +3306,10 @@ func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
 			}
 			if fe, ok := expr.(*FieldExpr); ok {
 				expr = &MethodCallExpr{Target: fe.Target, Name: fe.Name, Args: args}
+			} else if id, ok := expr.(*IdentExpr); ok {
+				expr = &CallExpr{Func: id.Name, Args: args}
 			} else {
-				if id, ok := expr.(*IdentExpr); ok {
-					expr = &CallExpr{Func: id.Name, Args: args}
-				} else {
-					return nil, fmt.Errorf("unsupported postfix")
-				}
+				expr = &InvokeExpr{Target: expr, Args: args}
 			}
 		case op.Cast != nil && op.Cast.Type != nil:
 			expr = &CastExpr{Expr: expr, Type: typeRefString(op.Cast.Type)}
