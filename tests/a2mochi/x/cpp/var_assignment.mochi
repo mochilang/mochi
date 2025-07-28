@@ -1,0 +1,7 @@
+var x: auto = 1
+fun main(): int {
+  x = 2
+  print(x)
+  return 0
+}
+main()

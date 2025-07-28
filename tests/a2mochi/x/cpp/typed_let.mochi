@@ -1,0 +1,6 @@
+var y: int
+fun main(): int {
+  print(y)
+  return 0
+}
+main()
