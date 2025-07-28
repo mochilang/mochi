@@ -98,6 +98,8 @@ func TestConvert_Golden(t *testing.T) {
 		"len_map":            true,
 		"let_and_print":      true,
 		"var_assignment":     true,
+		"string_index":       true,
+		"string_contains":    true,
 	}
 
 	outDir := filepath.Join(root, "tests/a2mochi/x/rb")
