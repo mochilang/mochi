@@ -1,0 +1,15 @@
+(program
+  (fun main
+    (let M
+      (map
+        (entry (selector a) (int 1))
+        (entry (selector b) (int 2))
+        (entry (selector c) (int 3))
+      )
+    )
+    (let R1
+      (call values (selector M))
+    )
+    (call print (selector R1))
+  )
+)

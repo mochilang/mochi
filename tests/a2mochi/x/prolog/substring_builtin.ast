@@ -1,0 +1,11 @@
+(program
+  (fun main
+    (let L0
+      (binary - (int 4) (int 1))
+    )
+    (let R0
+      (call substr (string mochi) (int 1) (selector L0))
+    )
+    (call print (selector R0))
+  )
+)

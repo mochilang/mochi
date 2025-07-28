@@ -1,0 +1,52 @@
+(program
+  (fun main
+    (if
+      (binary &&
+        (binary &&
+          (group (bool true))
+          (group (bool true))
+        )
+        (group (bool true))
+      )
+      (block
+        (call print (bool true))
+      )
+      (block
+        (call print (bool false))
+      )
+    )
+    (if
+      (binary &&
+        (binary &&
+          (group (bool true))
+          (group (bool false))
+        )
+        (bool true)
+      )
+      (block
+        (call print (bool true))
+      )
+      (block
+        (call print (bool false))
+      )
+    )
+    (if
+      (binary &&
+        (binary &&
+          (binary &&
+            (group (bool true))
+            (group (bool true))
+          )
+          (group (bool false))
+        )
+        (bool true)
+      )
+      (block
+        (call print (bool true))
+      )
+      (block
+        (call print (bool false))
+      )
+    )
+  )
+)
