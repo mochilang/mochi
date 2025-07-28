@@ -1,11 +1,16 @@
-run: exit status 254
-../../../tests/rosetta/transpiler/Dart/currying.dart:66:23: Error: The method 'Method' isn't defined for the class 'Foo'.
- - 'Foo' is from '../../../tests/rosetta/transpiler/Dart/currying.dart'.
-Try correcting the name to the name of an existing method, or defining a method named 'Method'.
-  var fn1 = ((b) => a.Method(b));
-                      ^^^^^^
-../../../tests/rosetta/transpiler/Dart/currying.dart:68:25: Error: The method 'Method' isn't defined for the class 'Foo'.
- - 'Foo' is from '../../../tests/rosetta/transpiler/Dart/currying.dart'.
-Try correcting the name to the name of an existing method, or defining a method named 'Method'.
-  print("2 + 2 = " + (a.Method(2)).toString());
-                        ^^^^^^
+run: exit status 255
+2^8 = 256.0
+4³ = 64.0
+2 + 2 = 4
+2 + 3 = 5
+Unhandled exception:
+NoSuchMethodError: Class 'Foo' has no instance method 'Method'.
+Receiver: Instance of 'Foo'
+Tried calling: Method(4)
+#0      Object.noSuchMethod (dart:core-patch/object_patch.dart:38:5)
+#1      _main.<anonymous closure> (file:///workspace/mochi/tests/rosetta/transpiler/Dart/currying.dart:71:26)
+#2      _main (file:///workspace/mochi/tests/rosetta/transpiler/Dart/currying.dart:74:26)
+#3      _start (file:///workspace/mochi/tests/rosetta/transpiler/Dart/currying.dart:85:3)
+#4      main (file:///workspace/mochi/tests/rosetta/transpiler/Dart/currying.dart:95:16)
+#5      _delayEntrypointInvocation.<anonymous closure> (dart:isolate-patch/isolate_patch.dart:314:19)
+#6      _RawReceivePort._handleMessage (dart:isolate-patch/isolate_patch.dart:193:12)

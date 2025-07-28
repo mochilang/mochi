@@ -39,6 +39,34 @@ class TinyInt {
   TinyInt({required this.value});
 }
 
+TinyInt TinyInt_Add(TinyInt self, TinyInt t2) {
+  return NewTinyInt(self.value + t2.value);
+}
+
+TinyInt TinyInt_Sub(TinyInt self, TinyInt t2) {
+  return NewTinyInt(self.value - t2.value);
+}
+
+TinyInt TinyInt_Mul(TinyInt self, TinyInt t2) {
+  return NewTinyInt(self.value * t2.value);
+}
+
+TinyInt TinyInt_Div(TinyInt self, TinyInt t2) {
+  return NewTinyInt(self.value ~/ t2.value);
+}
+
+TinyInt TinyInt_Rem(TinyInt self, TinyInt t2) {
+  return NewTinyInt(self.value % t2.value);
+}
+
+TinyInt TinyInt_Inc(TinyInt self) {
+  return Add(NewTinyInt(1));
+}
+
+TinyInt TinyInt_Dec(TinyInt self) {
+  return Sub(NewTinyInt(1));
+}
+
 TinyInt NewTinyInt(int i) {
   if (i < 1) {
     i = 1;
@@ -55,13 +83,13 @@ void _main() {
   TinyInt t2 = NewTinyInt(3);
   print("t1      = " + (t1.value).toString());
   print("t2      = " + (t2.value).toString());
-  print("t1 + t2 = " + (t1.Add(t2).value).toString());
-  print("t1 - t2 = " + (t1.Sub(t2).value).toString());
-  print("t1 * t2 = " + (t1.Mul(t2).value).toString());
-  print("t1 / t2 = " + (t1.Div(t2).value).toString());
-  print("t1 % t2 = " + (t1.Rem(t2).value).toString());
-  print("t1 + 1  = " + (t1.Inc().value).toString());
-  print("t1 - 1  = " + (t1.Dec().value).toString());
+  print("t1 + t2 = " + (TinyInt_Add(t1, t2).value).toString());
+  print("t1 - t2 = " + (TinyInt_Sub(t1, t2).value).toString());
+  print("t1 * t2 = " + (TinyInt_Mul(t1, t2).value).toString());
+  print("t1 / t2 = " + (TinyInt_Div(t1, t2).value).toString());
+  print("t1 % t2 = " + (TinyInt_Rem(t1, t2).value).toString());
+  print("t1 + 1  = " + (TinyInt_Inc(t1).value).toString());
+  print("t1 - 1  = " + (TinyInt_Dec(t1).value).toString());
 }
 
 void _start() {
@@ -76,7 +104,6 @@ void _start() {
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "main"}));
 }
-  _main();
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "_start"}));

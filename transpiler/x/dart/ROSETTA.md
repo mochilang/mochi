@@ -2,7 +2,7 @@
 
 This directory contains Dart code generated from Mochi programs in `tests/rosetta/x/Mochi`. Each program has a `.dart` file and `.out` output. Compilation or runtime failures are captured in a `.error` file.
 
-Compiled and ran: 345/493
+Compiled and ran: 344/493
 
 ## Checklist
 | Index | Name | Status | Duration | Memory |
@@ -256,56 +256,56 @@ Compiled and ran: 345/493
 | 247 | count-in-octal-4 | ✓ | 5.808ms | 2.2 MB |
 | 248 | count-occurrences-of-a-substring | ✓ | 6.56ms | 360.0 KB |
 | 249 | count-the-coins-1 | ✓ | 16.551ms | 10.0 MB |
-| 250 | count-the-coins-2 | ✓ | 25.509ms | 9.9 MB |
-| 251 | cramers-rule | ✓ | 23.657ms | 9.6 MB |
-| 252 | crc-32-1 | ✓ | 27.363ms | 9.0 MB |
-| 253 | crc-32-2 | ✓ | 19.864ms | 4.1 MB |
-| 254 | create-a-file-on-magnetic-tape |   |  |  |
-| 255 | create-a-file | ✓ | 10.753ms | 2.6 MB |
-| 256 | create-a-two-dimensional-array-at-runtime-1 |   |  |  |
-| 257 | create-an-html-table | ✓ | 11.696ms | 3.4 MB |
-| 258 | create-an-object-at-a-given-address |   |  |  |
-| 259 | csv-data-manipulation | ✓ | 15.913ms | 1.7 MB |
-| 260 | csv-to-html-translation-1 |   |  |  |
-| 261 | csv-to-html-translation-2 |   |  |  |
-| 262 | csv-to-html-translation-3 | ✓ | 15.705ms | 10.1 MB |
-| 263 | csv-to-html-translation-4 | ✓ | 16.665ms | 9.8 MB |
-| 264 | csv-to-html-translation-5 | ✓ | 22.571ms | 10.7 MB |
+| 250 | count-the-coins-2 | ✓ | 13.547ms | 3.5 MB |
+| 251 | cramers-rule | ✓ | 8.013ms | 2.3 MB |
+| 252 | crc-32-1 | ✓ | 11.832ms | 464.0 KB |
+| 253 | crc-32-2 | ✓ | 12.341ms | 1.2 MB |
+| 254 | create-a-file-on-magnetic-tape | ✓ | 7.67ms | 12.2 MB |
+| 255 | create-a-file | ✓ | 6.185ms | 11.1 MB |
+| 256 | create-a-two-dimensional-array-at-runtime-1 | ✓ | 6.517ms | 12.6 MB |
+| 257 | create-an-html-table | ✓ | 7.168ms | 12.4 MB |
+| 258 | create-an-object-at-a-given-address | ✓ | 7.25ms | 740.0 KB |
+| 259 | csv-data-manipulation | ✓ | 7.255ms | 632.0 KB |
+| 260 | csv-to-html-translation-1 | ✓ | 7.369ms | 11.8 MB |
+| 261 | csv-to-html-translation-2 | ✓ | 6.369ms | 10.5 MB |
+| 262 | csv-to-html-translation-3 | ✓ | 6.387ms | 10.9 MB |
+| 263 | csv-to-html-translation-4 | ✓ | 5.908ms | 10.7 MB |
+| 264 | csv-to-html-translation-5 | ✓ | 8.878ms | 2.9 MB |
 | 265 | cuban-primes |   |  |  |
-| 266 | cullen-and-woodall-numbers | ✓ | 24.966ms | 9.2 MB |
-| 267 | cumulative-standard-deviation | ✓ | 20.514ms | 10.0 MB |
-| 268 | currency | ✓ | 22.44ms | 10.3 MB |
+| 266 | cullen-and-woodall-numbers | ✓ | 8.438ms | 1.2 MB |
+| 267 | cumulative-standard-deviation | ✓ | 7.087ms | 564.0 KB |
+| 268 | currency | ✓ | 6.475ms | 48.0 KB |
 | 269 | currying |   |  |  |
-| 270 | curzon-numbers | ✓ | 83.469ms | 2.4 MB |
-| 271 | cusip | ✓ | 18.272ms | 9.5 MB |
+| 270 | curzon-numbers | ✓ | 28.761ms | 12.9 MB |
+| 271 | cusip | ✓ | 7.772ms | 544.0 KB |
 | 272 | cyclops-numbers |   |  |  |
-| 273 | damm-algorithm | ✓ | 22.729ms | 10.8 MB |
-| 274 | date-format | ✓ | 21.863ms | 10.2 MB |
-| 275 | date-manipulation | ✓ | 13.585ms | 3.8 MB |
-| 276 | day-of-the-week | ✓ | 16.127ms | 10.2 MB |
-| 277 | de-bruijn-sequences | ✓ | 1.371359s | 17.4 MB |
-| 278 | deal-cards-for-freecell |   |  |  |
+| 273 | damm-algorithm | ✓ | 6.803ms | 12.5 MB |
+| 274 | date-format | ✓ | 6.405ms | 2.9 MB |
+| 275 | date-manipulation | ✓ | 7.381ms | 816.0 KB |
+| 276 | day-of-the-week | ✓ | 5.491ms | 2.3 MB |
+| 277 | de-bruijn-sequences | ✓ | 538.674ms | 12.9 MB |
+| 278 | deal-cards-for-freecell | ✓ | 19.757ms | 1.8 MB |
 | 279 | death-star | ✓ | 97.751ms | 8.3 MB |
-| 280 | deceptive-numbers | ✓ | 145.114ms | 6.5 MB |
-| 281 | deconvolution-1d-2 | ✓ | 24.426ms | 10.8 MB |
-| 282 | deconvolution-1d-3 | ✓ | 19.848ms | 9.2 MB |
-| 283 | deconvolution-1d | ✓ | 23.713ms | 10.1 MB |
-| 284 | deepcopy-1 | ✓ | 13.991ms | 3.9 MB |
+| 280 | deceptive-numbers | ✓ | 40.309ms | 3.8 MB |
+| 281 | deconvolution-1d-2 | ✓ | 7.197ms | 2.8 MB |
+| 282 | deconvolution-1d-3 | ✓ | 6.562ms | 736.0 KB |
+| 283 | deconvolution-1d | ✓ | 6.239ms | 936.0 KB |
+| 284 | deepcopy-1 | ✓ | 7.36ms | 2.8 MB |
 | 285 | define-a-primitive-data-type |   |  |  |
 | 286 | delegates |   |  |  |
-| 287 | demings-funnel | ✓ | 25.395ms | 8.2 MB |
-| 288 | department-numbers | ✓ | 9.23ms | 2.4 MB |
-| 289 | descending-primes | ✓ | 10.132ms | 1.1 MB |
-| 290 | detect-division-by-zero | ✓ | 6.284ms | 12.0 MB |
-| 291 | determine-if-a-string-has-all-the-same-characters | ✓ | 6.933ms | 11.9 MB |
-| 292 | determine-if-a-string-has-all-unique-characters | ✓ | 7.378ms | 11.2 MB |
-| 293 | determine-if-a-string-is-collapsible | ✓ | 6.288ms | 228.0 KB |
-| 294 | determine-if-a-string-is-numeric-1 | ✓ | 6.415ms | 1.2 MB |
-| 295 | determine-if-a-string-is-numeric-2 | ✓ | 7.021ms | 40.0 KB |
-| 296 | determine-if-a-string-is-squeezable | ✓ | 6.536ms | 11.9 MB |
-| 297 | determine-if-only-one-instance-is-running | ✓ | 5.542ms | 12.9 MB |
-| 298 | determine-if-two-triangles-overlap | ✓ | 7.518ms | 424.0 KB |
-| 299 | determine-sentence-type | ✓ | 6.043ms | 2.1 MB |
+| 287 | demings-funnel | ✓ | 14.541ms | 216.0 KB |
+| 288 | department-numbers | ✓ | 5.425ms | 10.7 MB |
+| 289 | descending-primes | ✓ | 12.639ms | 9.9 MB |
+| 290 | detect-division-by-zero | ✓ | 8.926ms | 2.6 MB |
+| 291 | determine-if-a-string-has-all-the-same-characters | ✓ | 6.149ms | 10.4 MB |
+| 292 | determine-if-a-string-has-all-unique-characters | ✓ | 6.653ms | 568.0 KB |
+| 293 | determine-if-a-string-is-collapsible | ✓ | 7.029ms | 488.0 KB |
+| 294 | determine-if-a-string-is-numeric-1 | ✓ | 6.559ms | 644.0 KB |
+| 295 | determine-if-a-string-is-numeric-2 | ✓ | 6.994ms | 224.0 KB |
+| 296 | determine-if-a-string-is-squeezable | ✓ | 8.003ms | 2.9 MB |
+| 297 | determine-if-only-one-instance-is-running | ✓ | 5.374ms | 852.0 KB |
+| 298 | determine-if-two-triangles-overlap | ✓ | 7.73ms | 1016.0 KB |
+| 299 | determine-sentence-type | ✓ | 5.918ms | 2.4 MB |
 | 300 | dice-game-probabilities-1 | ✓ | 14.021ms | 1.1 MB |
 | 301 | dice-game-probabilities-2 | ✓ | 9.699ms | 1.1 MB |
 | 302 | digital-root-multiplicative-digital-root | ✓ | 13.194ms | 1.4 MB |
@@ -368,16 +368,16 @@ Compiled and ran: 345/493
 | 359 | erd-s-nicolas-numbers |   |  |  |
 | 360 | erd-s-selfridge-categorization-of-primes |   |  |  |
 | 361 | esthetic-numbers |   |  |  |
-| 362 | ethiopian-multiplication | ✓ | 5.631ms | 2.2 MB |
+| 362 | ethiopian-multiplication |   |  |  |
 | 363 | euclid-mullin-sequence |   |  |  |
-| 364 | euler-method | ✓ | 9.335ms | 9.9 MB |
-| 365 | eulers-constant-0.5772... | ✓ | 8.231ms | 8.3 MB |
-| 366 | eulers-identity | ✓ | 6.772ms | 204.0 KB |
-| 367 | eulers-sum-of-powers-conjecture | ✓ | 118.348ms | 5.4 MB |
+| 364 | euler-method |   |  |  |
+| 365 | eulers-constant-0.5772... |   |  |  |
+| 366 | eulers-identity |   |  |  |
+| 367 | eulers-sum-of-powers-conjecture |   |  |  |
 | 368 | evaluate-binomial-coefficients |   |  |  |
-| 369 | even-or-odd | ✓ | 10.765ms | 9.2 MB |
+| 369 | even-or-odd |   |  |  |
 | 370 | events |   |  |  |
-| 371 | evolutionary-algorithm | ✓ | 26.759ms | 3.5 MB |
+| 371 | evolutionary-algorithm |   |  |  |
 | 372 | exceptions-catch-an-exception-thrown-in-a-nested-call |   |  |  |
 | 373 | exceptions |   |  |  |
 | 374 | executable-library |   |  |  |
@@ -501,4 +501,4 @@ Compiled and ran: 345/493
 | 492 | window-management |   |  |  |
 | 493 | zumkeller-numbers |   |  |  |
 
-_Last updated: 2025-07-28 10:34 +0700_
+_Last updated: 2025-07-28 11:50 +0700_

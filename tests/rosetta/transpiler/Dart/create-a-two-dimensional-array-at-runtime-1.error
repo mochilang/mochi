@@ -1,5 +1,0 @@
-run: exit status 254
-../../../tests/rosetta/transpiler/Dart/create-a-two-dimensional-array-at-runtime-1.dart:55:7: Error: The value 'null' can't be assigned to a variable of type 'List<List<int>>' because 'List<List<int>>' is not nullable.
- - 'List' is from 'dart:core'.
-  a = null;
-      ^

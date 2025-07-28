@@ -39,6 +39,10 @@ class Foo {
   Foo({required this.value});
 }
 
+int Foo_Method(Foo self, int b) {
+  return self.value + b;
+}
+
 num pow(num base, num exp) {
   num result = 1.0;
   int i = 0;
@@ -63,9 +67,9 @@ void _main() {
   print("2^8 = " + (pow2(8.0)).toString());
   print("4³ = " + (cube(4.0)).toString());
   Foo a = Foo(value: 2);
-  var fn1 = ((b) => a.Method(b));
+  var fn1 = ((b) => Foo_Method(a, b));
   var fn2 = ((f, b) => f.Method(b));
-  print("2 + 2 = " + (a.Method(2)).toString());
+  print("2 + 2 = " + (Foo_Method(a, 2)).toString());
   print("2 + 3 = " + (fn1(3)).toString());
   print("2 + 4 = " + (fn2(a, 4)).toString());
   print("3 + 5 = " + (fn2(Foo(value: 3), 5)).toString());
@@ -83,7 +87,6 @@ void _start() {
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "main"}));
 }
-  _main();
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "_start"}));

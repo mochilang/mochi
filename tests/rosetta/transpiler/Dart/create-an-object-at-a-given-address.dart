@@ -66,8 +66,8 @@ void sliceDemo() {
   }
   List<dynamic> s = a;
   print("Before:");
-  print("	s: " + listStr(s));
-  print("	a: " + listStr(a));
+  print("	s: " + listStr(List<int>.from(s)));
+  print("	a: " + listStr(List<int>.from(a)));
   List<int> data = [65, 32, 115, 116, 114, 105, 110, 103, 46];
   int idx = 0;
   while (idx < data.length) {
@@ -75,8 +75,8 @@ void sliceDemo() {
     idx = idx + 1;
   }
   print("After:");
-  print("	s: " + listStr(s));
-  print("	a: " + listStr(a));
+  print("	s: " + listStr(List<int>.from(s)));
+  print("	a: " + listStr(List<int>.from(a)));
 }
 
 void main() {

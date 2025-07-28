@@ -52,7 +52,7 @@ void _main() {
   print("a[0][0] = " + (a[0][0]).toString());
   a[row - 1 as int]![col - 1 as int] = 7;
   print("a[" + (row - 1).toString() + "][" + (col - 1).toString() + "] = " + (a[row - 1 as int][col - 1 as int]).toString());
-  a = null;
+  ;
 }
 
 void _start() {
@@ -67,7 +67,6 @@ void _start() {
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "main"}));
 }
-  _main();
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "_start"}));
