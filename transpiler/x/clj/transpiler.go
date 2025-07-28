@@ -1907,6 +1907,24 @@ func transpileCall(c *parser.CallExpr) (Node, error) {
 			cnt := &List{Elems: []Node{Symbol("count"), coll}}
 			avg := &List{Elems: []Node{Symbol("double"), &List{Elems: []Node{Symbol("/"), sum, cnt}}}}
 			return avg, nil
+		case "num":
+			if len(c.Args) != 1 {
+				return nil, fmt.Errorf("num expects 1 arg")
+			}
+			arg, err := transpileExpr(c.Args[0])
+			if err != nil {
+				return nil, err
+			}
+			return &List{Elems: []Node{Symbol("numerator"), arg}}, nil
+		case "denom":
+			if len(c.Args) != 1 {
+				return nil, fmt.Errorf("denom expects 1 arg")
+			}
+			arg, err := transpileExpr(c.Args[0])
+			if err != nil {
+				return nil, err
+			}
+			return &List{Elems: []Node{Symbol("denominator"), arg}}, nil
 		case "json":
 			if len(c.Args) != 1 {
 				return nil, fmt.Errorf("json expects 1 arg")
@@ -2517,6 +2535,10 @@ func castNode(n Node, t *parser.TypeRef) (Node, error) {
 		return &List{Elems: []Node{Symbol("double"), n}}, nil
 	case "string":
 		return &List{Elems: []Node{Symbol("str"), n}}, nil
+	case "bigrat":
+		// force ratio by converting to BigInteger before division
+		n = &List{Elems: []Node{Symbol("bigint"), n}}
+		return &List{Elems: []Node{Symbol("/"), n, IntLit(1)}}, nil
 	default:
 		return nil, fmt.Errorf("cast to %s not supported", *t.Simple)
 	}
