@@ -1,0 +1,7 @@
+(program
+  (fun main
+    (var x (type int) (int 1))
+    (assign x (int 2))
+    (call print (selector x))
+  )
+)

@@ -1,13 +1,13 @@
 (program
   (fun main
     (var a
-      (type i64)
+      (type int)
       (group
         (binary - (int 10) (int 3))
       )
     )
     (var b
-      (type i64)
+      (type int)
       (group
         (binary + (int 2) (int 2))
       )

@@ -63,6 +63,10 @@ func TestConvert_Golden(t *testing.T) {
 		"fun_three_args": true,
 		"bool_chain":     true,
 		"math_ops":       true,
+		"var_assignment": true,
+		"typed_var":      true,
+		"typed_let":      true,
+		"unary_neg":      true,
 	}
 
 	for _, srcPath := range files {
