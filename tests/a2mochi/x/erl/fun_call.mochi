@@ -1,0 +1,8 @@
+package main
+fun add(A: any, B: any): any {
+  return ((A + B))
+}
+fun main() {
+  print(add(2, 3))
+}
+main()

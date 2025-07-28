@@ -43,6 +43,7 @@ var appendRe = regexp.MustCompile(`lists:append\(([^,]+),\s*\[([^\]]+)\]\)`)
 var mapsGetRe = regexp.MustCompile(`maps:get\(([^,]+),\s*([^\)]+)\)`)
 var mapsPutRe = regexp.MustCompile(`maps:put\(([^,]+),\s*([^,]+),\s*([^\)]+)\)`)
 var mapsIsKeyRe = regexp.MustCompile(`maps:is_key\(([^,]+),\s*([^\)]+)\)`)
+var unaryNumRe = regexp.MustCompile(`([+\-*/])\s*-([0-9]+)`) // operator followed by negative number
 
 // Parse parses a very small subset of Erlang syntax and returns an AST.
 // It only supports module attributes, exports and simple function bodies.
@@ -218,17 +219,31 @@ func ConvertSource(ast *AST) (string, error) {
 				out.WriteString(", ")
 			}
 			out.WriteString(p)
+			if p != "_" {
+				out.WriteString(": any")
+			}
 		}
 		out.WriteByte(')')
+		if f.Name != "main" {
+			out.WriteString(": any")
+		}
 		if len(f.Body) == 0 {
 			out.WriteString(" {}\n")
+		} else if len(f.Body) == 1 && f.Name != "main" {
+			out.WriteString(" {\n")
+			out.WriteString("  return ")
+			out.WriteString(strings.TrimSpace(convertLine(f.Body[0], ast.Records)))
+			out.WriteString("\n}\n")
 		} else {
 			out.WriteString(" {\n")
-			for _, line := range f.Body {
+			for i, line := range f.Body {
 				parts := strings.Split(line, "\n")
 				for _, ln := range parts {
 					ln = convertLine(ln, ast.Records)
 					out.WriteString("  ")
+					if f.Name != "main" && i == len(f.Body)-1 {
+						out.WriteString("return ")
+					}
 					out.WriteString(strings.TrimSpace(ln))
 					out.WriteByte('\n')
 				}
@@ -292,6 +307,12 @@ func convertLine(ln string, recs []Record) string {
 	}
 	if strings.Contains(ln, "maps:values(") {
 		ln = strings.ReplaceAll(ln, "maps:values(", "values(")
+	}
+	if strings.Contains(ln, "++") {
+		ln = strings.ReplaceAll(ln, "++", "+")
+	}
+	if unaryNumRe.MatchString(ln) {
+		ln = unaryNumRe.ReplaceAllString(ln, "$1 (-$2)")
 	}
 	if strings.Contains(ln, "#{") {
 		ln = strings.ReplaceAll(ln, "#{", "{")

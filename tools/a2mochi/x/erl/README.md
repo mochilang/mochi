@@ -1,6 +1,6 @@
 # a2mochi Erlang Converter
 
-Completed programs: 11/103
+Completed programs: 15/103
 Date: 2025-07-28
 
 This directory stores golden files for the Erlang to Mochi converter.
@@ -18,3 +18,7 @@ Supported programs:
 - [x] map_membership
 - [x] min_max_builtin
 - [x] values_builtin
+- [x] fun_call
+- [x] fun_three_args
+- [x] unary_neg
+- [x] string_concat
