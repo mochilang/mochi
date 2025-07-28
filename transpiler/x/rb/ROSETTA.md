@@ -2,9 +2,9 @@
 
 Generated Ruby code from Mochi Rosetta tasks lives in `tests/rosetta/transpiler/rb`.
 
-Last updated: 2025-07-27 17:49 UTC
+Last updated: 2025-07-27 18:26 UTC
 
-## Checklist (447/467)
+## Checklist (449/467)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 110µs | 36.2 KB |
@@ -157,56 +157,56 @@ Last updated: 2025-07-27 17:49 UTC
 | 148 | calendar | ✓ | 1.223ms | 241.7 KB |
 | 149 | calkin-wilf-sequence | ✓ | 128µs | 37.3 KB |
 | 150 | call-a-foreign-language-function | ✓ | 19µs | 9.2 KB |
-| 151 | call-a-function-1 | ✓ | 12µs | 600 B |
-| 152 | call-a-function-10 | ✓ | 5µs | 912 B |
-| 153 | call-a-function-11 | ✓ | 30µs | 9.7 KB |
-| 154 | call-a-function-12 | ✓ | 32µs | 9.8 KB |
-| 155 | call-a-function-2 | ✓ | 47µs | 800 B |
+| 151 | call-a-function-1 | ✓ | 8µs | 600 B |
+| 152 | call-a-function-10 | ✓ | 4µs | 912 B |
+| 153 | call-a-function-11 | ✓ | 21µs | 9.7 KB |
+| 154 | call-a-function-12 | ✓ | 45µs | 9.8 KB |
+| 155 | call-a-function-2 | ✓ | 4µs | 800 B |
 | 156 | call-a-function-3 | ✓ | 7µs | 1000 B |
-| 157 | call-a-function-4 | ✓ | 5µs | 720 B |
-| 158 | call-a-function-5 | ✓ | 25µs | 9.3 KB |
-| 159 | call-a-function-6 | ✓ | 41µs | 9.6 KB |
-| 160 | call-a-function-7 | ✓ | 11µs | 720 B |
-| 161 | call-a-function-8 | ✓ | 33µs | 4.5 KB |
-| 162 | call-a-function-9 | ✓ | 10µs | 1.2 KB |
-| 163 | call-an-object-method-1 | ✓ | 14µs | 1.3 KB |
-| 164 | call-an-object-method-2 | ✓ | 34µs | 1.5 KB |
-| 165 | call-an-object-method-3 | ✓ | 37µs | 1.9 KB |
-| 166 | call-an-object-method | ✓ | 30µs | 1.9 KB |
-| 167 | camel-case-and-snake-case | ✓ | 745µs | 204.0 KB |
-| 168 | canny-edge-detector | ✓ | 345µs | 29.7 KB |
-| 169 | canonicalize-cidr | ✓ | 754µs | 244.4 KB |
-| 170 | cantor-set | ✓ | 659µs | 195.7 KB |
-| 171 | carmichael-3-strong-pseudoprimes | ✓ | 6.706ms | 88.3 KB |
-| 172 | cartesian-product-of-two-or-more-lists-1 | ✓ | 56µs | 15.6 KB |
-| 173 | cartesian-product-of-two-or-more-lists-2 | ✓ | 217µs | 57.8 KB |
-| 174 | cartesian-product-of-two-or-more-lists-3 | ✓ | 283µs | 71.5 KB |
-| 175 | cartesian-product-of-two-or-more-lists-4 | ✓ | 242µs | 68.8 KB |
-| 176 | case-sensitivity-of-identifiers |   |  |  |
+| 157 | call-a-function-4 | ✓ | 4µs | 720 B |
+| 158 | call-a-function-5 | ✓ | 21µs | 9.3 KB |
+| 159 | call-a-function-6 | ✓ | 34µs | 9.6 KB |
+| 160 | call-a-function-7 | ✓ | 5µs | 720 B |
+| 161 | call-a-function-8 | ✓ | 25µs | 4.5 KB |
+| 162 | call-a-function-9 | ✓ | 6µs | 1.2 KB |
+| 163 | call-an-object-method-1 | ✓ | 12µs | 1.3 KB |
+| 164 | call-an-object-method-2 | ✓ | 22µs | 1.5 KB |
+| 165 | call-an-object-method-3 | ✓ | 29µs | 1.9 KB |
+| 166 | call-an-object-method | ✓ | 28µs | 1.9 KB |
+| 167 | camel-case-and-snake-case | ✓ | 498µs | 204.0 KB |
+| 168 | canny-edge-detector | ✓ | 249µs | 29.7 KB |
+| 169 | canonicalize-cidr | ✓ | 411µs | 211.2 KB |
+| 170 | cantor-set | ✓ | 14m20.748514s | 195.7 KB |
+| 171 | carmichael-3-strong-pseudoprimes | ✓ | 4.301ms | 88.3 KB |
+| 172 | cartesian-product-of-two-or-more-lists-1 | ✓ | 54µs | 15.6 KB |
+| 173 | cartesian-product-of-two-or-more-lists-2 | ✓ | 166µs | 57.8 KB |
+| 174 | cartesian-product-of-two-or-more-lists-3 | ✓ | 165µs | 71.5 KB |
+| 175 | cartesian-product-of-two-or-more-lists-4 | ✓ | 161µs | 68.8 KB |
+| 176 | case-sensitivity-of-identifiers | ✓ | 33µs | 14.3 KB |
 | 177 | casting-out-nines |   |  |  |
-| 178 | catalan-numbers-1 | ✓ | 55µs | 10.0 KB |
-| 179 | catalan-numbers-2 | ✓ | 78µs | 9.9 KB |
-| 180 | catalan-numbers-pascals-triangle | ✓ | 133µs | 15.3 KB |
-| 181 | catamorphism | ✓ | 35µs | 9.9 KB |
-| 182 | catmull-clark-subdivision-surface | ✓ | 913µs | 225.0 KB |
-| 183 | chaocipher | ✓ | 356µs | 94.3 KB |
-| 184 | chaos-game | ✓ | 12.215ms | 592.8 KB |
-| 185 | character-codes-1 | ✓ | 33µs | 9.0 KB |
-| 186 | character-codes-2 | ✓ | 21µs | 9.0 KB |
-| 187 | character-codes-3 | ✓ | 28µs | 10.4 KB |
-| 188 | character-codes-4 | ✓ | 26µs | 9.2 KB |
-| 189 | character-codes-5 | ✓ | 23µs | 9.0 KB |
-| 190 | chat-server | ✓ | 35µs | 11.6 KB |
-| 191 | check-machin-like-formulas | ✓ | 3.656ms | 179.2 KB |
-| 192 | check-that-file-exists | ✓ | 29µs | 10.3 KB |
-| 193 | checkpoint-synchronization-1 | ✓ | 59µs | 14.4 KB |
-| 194 | checkpoint-synchronization-2 | ✓ | 82µs | 17.2 KB |
-| 195 | checkpoint-synchronization-3 | ✓ | 82µs | 18.1 KB |
-| 196 | checkpoint-synchronization-4 | ✓ | 86µs | 25.1 KB |
-| 197 | chernicks-carmichael-numbers |   |  |  |
-| 198 | cheryls-birthday | ✓ | 132µs | 16.0 KB |
-| 199 | chinese-remainder-theorem | ✓ |  |  |
-| 200 | chinese-zodiac | ✓ | 65µs | 18.6 KB |
+| 178 | catalan-numbers-1 | ✓ | 57µs | 10.0 KB |
+| 179 | catalan-numbers-2 | ✓ | 59µs | 9.9 KB |
+| 180 | catalan-numbers-pascals-triangle | ✓ | 84µs | 15.3 KB |
+| 181 | catamorphism | ✓ | 48µs | 9.9 KB |
+| 182 | catmull-clark-subdivision-surface | ✓ | 689µs | 220.1 KB |
+| 183 | chaocipher | ✓ | 226µs | 94.3 KB |
+| 184 | chaos-game | ✓ | 4.272ms | 592.5 KB |
+| 185 | character-codes-1 | ✓ | 18µs | 9.0 KB |
+| 186 | character-codes-2 | ✓ | 39µs | 9.0 KB |
+| 187 | character-codes-3 | ✓ | 37µs | 10.4 KB |
+| 188 | character-codes-4 | ✓ | 31µs | 9.2 KB |
+| 189 | character-codes-5 | ✓ | 36µs | 9.0 KB |
+| 190 | chat-server | ✓ | 44µs | 11.6 KB |
+| 191 | check-machin-like-formulas | ✓ | 2.321ms | 179.2 KB |
+| 192 | check-that-file-exists | ✓ | 36µs | 10.3 KB |
+| 193 | checkpoint-synchronization-1 | ✓ | 33µs | 14.4 KB |
+| 194 | checkpoint-synchronization-2 | ✓ | 58µs | 17.2 KB |
+| 195 | checkpoint-synchronization-3 | ✓ | 45µs | 18.1 KB |
+| 196 | checkpoint-synchronization-4 | ✓ | 64µs | 25.1 KB |
+| 197 | chernicks-carmichael-numbers | ✓ | 2.579551s | 226.5 KB |
+| 198 | cheryls-birthday | ✓ | 84µs | 16.0 KB |
+| 199 | chinese-remainder-theorem | ✓ | 36µs | 9.7 KB |
+| 200 | chinese-zodiac | ✓ | 74µs | 18.6 KB |
 | 201 | cholesky-decomposition-1 | ✓ | 197µs | 27.8 KB |
 | 202 | cholesky-decomposition | ✓ | 161µs | 22.2 KB |
 | 203 | chowla-numbers | ✓ | 46µs | 8.8 KB |
