@@ -2014,6 +2014,17 @@ func Transpile(p *parser.Program, env *types.Env, benchMain bool) (*Program, err
 				}
 			}
 		}
+		if ias, ok := st.(*IndexAssignStmt); ok {
+			if typ, ok2 := initTypes[ias.Name]; ok2 {
+				t := toTypeFromGoType(typ)
+				switch tt := t.(type) {
+				case types.ListType:
+					applyType(ias.Value, tt.Elem)
+				case types.MapType:
+					applyType(ias.Value, tt.Value)
+				}
+			}
+		}
 		switch s := st.(type) {
 		case *VarDecl:
 			if s.Value != nil {
@@ -2570,6 +2581,8 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 						if vl, ok3 := mt.Value.(types.ListType); ok3 {
 							ll.ElemType = toGoTypeFromType(vl.Elem)
 						}
+					} else if ml, ok2 := val.(*MapLit); ok2 {
+						updateMapLitTypes(ml, mt.Value)
 					}
 				}
 			}
