@@ -254,6 +254,13 @@ func mapType(t string) string {
 		}
 		return "list<" + inner + ">"
 	}
+	if strings.HasPrefix(t, "Set<") && strings.HasSuffix(t, ">") {
+		inner := mapType(t[4 : len(t)-1])
+		if inner == "" {
+			inner = "any"
+		}
+		return "list<" + inner + ">"
+	}
 	if strings.HasPrefix(t, "Array<") && strings.HasSuffix(t, ">") {
 		inner := mapType(t[6 : len(t)-1])
 		if inner == "" {
@@ -263,6 +270,13 @@ func mapType(t string) string {
 	}
 	if strings.HasPrefix(t, "MutableList<") && strings.HasSuffix(t, ">") {
 		inner := mapType(t[12 : len(t)-1])
+		if inner == "" {
+			inner = "any"
+		}
+		return "list<" + inner + ">"
+	}
+	if strings.HasPrefix(t, "MutableSet<") && strings.HasSuffix(t, ">") {
+		inner := mapType(t[11 : len(t)-1])
 		if inner == "" {
 			inner = "any"
 		}
