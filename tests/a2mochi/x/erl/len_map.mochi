@@ -1,0 +1,5 @@
+package main
+fun main() {
+  print(len({"a": 1, "b": 2}))
+}
+main()

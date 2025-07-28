@@ -1,0 +1,6 @@
+package main
+fun main() {
+  let M = {1: "a", 2: "b"}
+  print(M[1])
+}
+main()

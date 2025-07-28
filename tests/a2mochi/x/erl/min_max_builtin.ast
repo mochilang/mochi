@@ -1,0 +1,14 @@
+(program main
+  (fun main
+    (let Nums
+      (list (int 3) (int 1) (int 4))
+    )
+    (call print
+      (call min (selector Nums))
+    )
+    (call print
+      (call max (selector Nums))
+    )
+  )
+  (call main)
+)

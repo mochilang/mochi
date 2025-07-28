@@ -1,0 +1,17 @@
+(program main
+  (fun main
+    (let M
+      (map
+        (entry (string a) (int 1))
+        (entry (string b) (int 2))
+      )
+    )
+    (call print
+      (binary in (string a) (selector M))
+    )
+    (call print
+      (binary in (string c) (selector M))
+    )
+  )
+  (call main)
+)
