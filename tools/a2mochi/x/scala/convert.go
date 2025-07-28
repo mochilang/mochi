@@ -49,7 +49,23 @@ type TypeDecl struct {
 type Func struct {
 	Name   string
 	Params []string
+	Return string
 	Body   []string
+}
+
+func convertType(t string) string {
+	t = strings.TrimSpace(t)
+	builtin := map[string]string{"Int": "int", "Boolean": "bool", "String": "string"}
+	if v, ok := builtin[t]; ok {
+		return v
+	}
+	if strings.Contains(t, "=>") {
+		parts := strings.SplitN(t, "=>", 2)
+		params := strings.TrimSpace(strings.Trim(parts[0], "()"))
+		ret := convertType(strings.TrimSpace(parts[1]))
+		return "fun(" + params + "): " + ret
+	}
+	return t
 }
 
 // Var represents a top level variable definition.
@@ -141,7 +157,7 @@ func Convert(f *File) (*ast.Node, error) {
 
 func parseSource(src string) File {
 	lines := strings.Split(strings.ReplaceAll(src, "\r\n", "\n"), "\n")
-	reHeader := regexp.MustCompile(`^def\s+([a-zA-Z0-9_]+)\s*\(([^)]*)\)(?:\s*:\s*[^=]+)?\s*=\s*(\{)?`)
+	reHeader := regexp.MustCompile(`^def\s+([a-zA-Z0-9_]+)\s*\(([^)]*)\)(?:\s*:\s*([^=]+(?:=>[^=]+)?))?\s*=\s*(\{)?`)
 	reTrait := regexp.MustCompile(`^sealed\s+trait\s+([a-zA-Z0-9_]+)`)
 	reCaseClass := regexp.MustCompile(`^case\s+class\s+([a-zA-Z0-9_]+)\(([^)]*)\)(?:\s+extends\s+([a-zA-Z0-9_]+))?`)
 	reCaseObj := regexp.MustCompile(`^case\s+object\s+([a-zA-Z0-9_]+)(?:\s+extends\s+([a-zA-Z0-9_]+))?`)
@@ -227,7 +243,8 @@ func parseSource(src string) File {
 				params = append(params, p)
 			}
 			body := []string{}
-			if m[3] == "{" {
+			ret := convertType(strings.TrimSpace(m[3]))
+			if m[4] == "{" {
 				depth := 1
 				for j := i + 1; j < len(lines); j++ {
 					l := strings.TrimSpace(lines[j])
@@ -244,7 +261,7 @@ func parseSource(src string) File {
 					body = append(body, l)
 				}
 			}
-			file.Funcs = append(file.Funcs, Func{Name: name, Params: params, Body: body})
+			file.Funcs = append(file.Funcs, Func{Name: name, Params: params, Return: ret, Body: body})
 		}
 	}
 	file.Source = src
@@ -266,7 +283,12 @@ func convertFromAST(file *File, fn Func) string {
 			}
 			b.WriteString(p)
 		}
-		b.WriteString(") {\n")
+		b.WriteString(")")
+		if fn.Return != "" {
+			b.WriteString(": ")
+			b.WriteString(fn.Return)
+		}
+		b.WriteString(" {\n")
 	}
 	indent := 1
 	if topLevel {
@@ -376,7 +398,10 @@ func convertFromAST(file *File, fn Func) string {
 	return b.String()
 }
 
-var reIndex = regexp.MustCompile(`^([a-z][a-zA-Z0-9_]*)\(([^()]*)\)$`)
+var (
+	reIndex  = regexp.MustCompile(`^([a-z][a-zA-Z0-9_]*)\(([^()]*)\)$`)
+	reLambda = regexp.MustCompile(`^\(([^)]*)\)\s*=>\s*(.*)$`)
+)
 
 func convertExpr(file *File, expr string) string {
 	expr = strings.TrimSpace(expr)
@@ -387,10 +412,16 @@ func convertExpr(file *File, expr string) string {
 		expr = "int(" + strings.TrimSuffix(expr, ".toInt") + ")"
 	}
 	if strings.HasSuffix(expr, ".size") {
-		expr = "len(" + strings.TrimSuffix(expr, ".size") + ")"
+		inner := strings.TrimSuffix(expr, ".size")
+		expr = "len(" + convertExpr(file, inner) + ")"
 	}
 	if strings.HasSuffix(expr, ".length") {
-		expr = "len(" + strings.TrimSuffix(expr, ".length") + ")"
+		inner := strings.TrimSuffix(expr, ".length")
+		expr = "len(" + convertExpr(file, inner) + ")"
+	}
+	if strings.HasPrefix(expr, "ArrayBuffer(") && strings.HasSuffix(expr, ")") {
+		inner := strings.TrimSuffix(strings.TrimPrefix(expr, "ArrayBuffer("), ")")
+		expr = "[" + inner + "]"
 	}
 	if strings.Contains(expr, ".append(") {
 		idx := strings.Index(expr, ".append(")
@@ -418,6 +449,15 @@ func convertExpr(file *File, expr string) string {
 			}
 		}
 		return name + "[" + convertExpr(file, m[2]) + "]"
+	}
+	trimmed := strings.TrimSpace(expr)
+	for strings.HasPrefix(trimmed, "(") && strings.HasSuffix(trimmed, ")") {
+		trimmed = strings.TrimSpace(trimmed[1 : len(trimmed)-1])
+	}
+	if m := reLambda.FindStringSubmatch(trimmed); m != nil {
+		params := strings.TrimSpace(m[1])
+		body := strings.TrimSpace(m[2])
+		return "fun(" + params + ") => " + convertExpr(file, body)
 	}
 	return expr
 }
