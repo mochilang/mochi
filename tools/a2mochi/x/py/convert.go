@@ -497,8 +497,31 @@ func emitForStmt(b *strings.Builder, n *Node, indent string, lines []string, see
 		return err
 	}
 	b.WriteString(" in ")
-	if err := emitExpr(b, n.Iter, lines); err != nil {
-		return err
+	if n.Iter != nil && n.Iter.Type == "Call" && n.Iter.Func != nil && n.Iter.Func.Type == "Name" && n.Iter.Func.ID == "range" {
+		args := n.Iter.callArgs()
+		switch len(args) {
+		case 1:
+			b.WriteString("0..")
+			if err := emitExpr(b, args[0], lines); err != nil {
+				return err
+			}
+		case 2:
+			if err := emitExpr(b, args[0], lines); err != nil {
+				return err
+			}
+			b.WriteString("..")
+			if err := emitExpr(b, args[1], lines); err != nil {
+				return err
+			}
+		default:
+			if err := emitExpr(b, n.Iter, lines); err != nil {
+				return err
+			}
+		}
+	} else {
+		if err := emitExpr(b, n.Iter, lines); err != nil {
+			return err
+		}
 	}
 	b.WriteString(" {\n")
 	for _, st := range n.Body {
@@ -644,6 +667,19 @@ func emitExpr(b *strings.Builder, n *Node, lines []string) error {
 			fmt.Fprintf(b, "%v", vv)
 		}
 	case "BinOp":
+		if n.Op != nil && n.Op.Type == "Add" && n.Left != nil && n.Right != nil &&
+			n.Left.Type == "Name" && n.Right.Type == "List" && len(n.Right.Elts) == 1 {
+			b.WriteString("append(")
+			if err := emitExpr(b, n.Left, lines); err != nil {
+				return err
+			}
+			b.WriteString(", ")
+			if err := emitExpr(b, n.Right.Elts[0], lines); err != nil {
+				return err
+			}
+			b.WriteByte(')')
+			return nil
+		}
 		if err := emitExpr(b, n.Left, lines); err != nil {
 			return err
 		}
@@ -775,6 +811,17 @@ func emitExpr(b *strings.Builder, n *Node, lines []string) error {
 			return newConvertError(n.Line, lines, "unsupported list comp")
 		}
 	case "IfExp":
+		if c := condBool(n); c != nil {
+			return emitExpr(b, c, lines)
+		}
+		if arg, ok := avgArg(n); ok {
+			b.WriteString("avg(")
+			if err := emitExpr(b, arg, lines); err != nil {
+				return err
+			}
+			b.WriteByte(')')
+			return nil
+		}
 		b.WriteString("if ")
 		if err := emitExpr(b, n.Test, lines); err != nil {
 			return err
@@ -890,4 +937,97 @@ func extractSegment(lines []string, startLine, startCol, endLine, endCol int) st
 		}
 	}
 	return out.String()
+}
+
+func avgArg(n *Node) (*Node, bool) {
+	if n == nil || n.Type != "IfExp" || len(n.Body) == 0 || len(n.Orelse) == 0 {
+		return nil, false
+	}
+	thenExpr := n.Body[0]
+	elseExpr := n.Orelse[0]
+	if thenExpr == nil || thenExpr.Type != "BinOp" || thenExpr.Op == nil || thenExpr.Op.Type != "Div" {
+		return nil, false
+	}
+	left := thenExpr.Left
+	right := thenExpr.Right
+	if left == nil || right == nil {
+		return nil, false
+	}
+	if left.Type != "Call" || right.Type != "Call" {
+		return nil, false
+	}
+	if left.Func == nil || left.Func.Type != "Name" || left.Func.ID != "sum" {
+		return nil, false
+	}
+	if right.Func == nil || right.Func.Type != "Name" || right.Func.ID != "len" {
+		return nil, false
+	}
+	largs := left.callArgs()
+	rargs := right.callArgs()
+	if len(largs) != 1 || len(rargs) != 1 {
+		return nil, false
+	}
+	if !nodesEqual(largs[0], rargs[0]) {
+		return nil, false
+	}
+	if elseExpr.Type != "Constant" {
+		return nil, false
+	}
+	val := elseExpr.constValue()
+	switch v := val.(type) {
+	case float64:
+		if v != 0 {
+			return nil, false
+		}
+	case int:
+		if v != 0 {
+			return nil, false
+		}
+	default:
+		return nil, false
+	}
+	return largs[0], true
+}
+
+func nodesEqual(a, b *Node) bool {
+	if a == nil || b == nil {
+		return a == nil && b == nil
+	}
+	if a.Type != b.Type {
+		return false
+	}
+	switch a.Type {
+	case "Name":
+		return a.ID == b.ID
+	case "Constant":
+		return string(a.Value) == string(b.Value)
+	case "List":
+		if len(a.Elts) != len(b.Elts) {
+			return false
+		}
+		for i := range a.Elts {
+			if !nodesEqual(a.Elts[i], b.Elts[i]) {
+				return false
+			}
+		}
+		return true
+	default:
+		return false
+	}
+}
+
+func condBool(n *Node) *Node {
+	if n == nil || n.Type != "IfExp" || len(n.Body) == 0 || len(n.Orelse) == 0 {
+		return nil
+	}
+	thenExpr := n.Body[0]
+	elseExpr := n.Orelse[0]
+	if thenExpr.Type == "Constant" && elseExpr.Type == "Constant" {
+		t := thenExpr.constValue()
+		e := elseExpr.constValue()
+		if (t == 1 || t == 1.0) && (e == 0 || e == 0.0) {
+			return n.Test
+		}
+	}
+	return nil
 }

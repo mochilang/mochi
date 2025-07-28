@@ -1,0 +1,7 @@
+fun boom() {
+  print("boom")
+  return true
+}
+print(if (((((1 < 2) && 2) < 3) && 3) < 4) then 1 else 0)
+print(if ((((1 < 2) && 2) > 3) && boom()) then 1 else 0)
+print(if ((((((1 < 2) && 2) < 3) && 3) > 4) && boom()) then 1 else 0)
