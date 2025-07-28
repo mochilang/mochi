@@ -9,7 +9,10 @@ import (
 	"strings"
 )
 
-var typedVarRe = regexp.MustCompile(`^(?:final|const)?\s*([A-Za-z_][A-Za-z0-9_<>,\[\]\? ]*)\s+([A-Za-z_][A-Za-z0-9_]*)\s*(=.*)?$`)
+// typedVarRe matches variable declarations with an optional type following
+// `final` or `const`. The type portion is optional to correctly handle
+// declarations like `final x = 1`.
+var typedVarRe = regexp.MustCompile(`^(?:final|const)?\s*(?:([A-Za-z_][A-Za-z0-9_<>,\[\]\? ]*)\s+)?([A-Za-z_][A-Za-z0-9_]*)\s*(=.*)?$`)
 
 type dartParam struct {
 	Name string `json:"name"`

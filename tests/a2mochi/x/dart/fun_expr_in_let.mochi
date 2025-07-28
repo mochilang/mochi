@@ -1,0 +1,4 @@
+fun main() {
+  var square = (fun(x) => x * x)
+  print(square(6))
+}
