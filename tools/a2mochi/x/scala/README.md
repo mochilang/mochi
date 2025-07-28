@@ -1,7 +1,8 @@
 # a2mochi Scala Converter
 
+Created: 2025-07-28
+
 Completed programs: 100/100
-Date: 2025-07-28
 
 This directory contains the helper code and golden files for converting Scala
 sources under `tests/transpiler/x/scala` into Mochi AST form.
