@@ -7,7 +7,7 @@ Days of week given by Doomsday rule:
 2077-02-12 -> Friday
 2101-04-02 -> Saturday
 {
-  "duration_us": 92,
+  "duration_us": 127,
   "memory_bytes": 192,
   "name": "main"
 }

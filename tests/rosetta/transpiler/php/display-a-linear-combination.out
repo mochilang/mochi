@@ -9,7 +9,7 @@
 [-1, -2, 0, -3]  ->  -e(1) - 2*e(2) - 3*e(4)
 [-1]             ->  -e(1)
 {
-  "duration_us": 73,
+  "duration_us": 97,
   "memory_bytes": 96,
   "name": "main"
 }

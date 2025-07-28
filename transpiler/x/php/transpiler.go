@@ -4437,30 +4437,35 @@ func isBoolExpr(e Expr) bool {
 }
 
 func isIntExpr(e Expr) bool {
-	switch v := e.(type) {
-	case *IntLit:
-		return true
-	case *Var:
-		if transpileEnv != nil {
-			if t, err := transpileEnv.GetVar(v.Name); err == nil {
-				if _, ok := t.(types.IntType); ok {
-					return true
-				}
-			}
-		}
-	case *BinaryExpr:
-		switch v.Op {
-		case "+", "-", "*", "/", "%":
-			return isIntExpr(v.Left) && isIntExpr(v.Right)
-		}
-	case *GroupExpr:
-		return isIntExpr(v.X)
-	case *IntDivExpr:
-		return isIntExpr(v.Left) && isIntExpr(v.Right)
-	case *CondExpr:
-		return isIntExpr(v.Then) && isIntExpr(v.Else)
-	}
-	return false
+        switch v := e.(type) {
+        case *IntLit:
+                return true
+        case *Var:
+                if transpileEnv != nil {
+                        if t, err := transpileEnv.GetVar(v.Name); err == nil {
+                                if _, ok := t.(types.IntType); ok {
+                                        return true
+                                }
+                        }
+                }
+        case *BinaryExpr:
+                switch v.Op {
+                case "+", "-", "*", "/", "%":
+                        return isIntExpr(v.Left) && isIntExpr(v.Right)
+                }
+        case *GroupExpr:
+                return isIntExpr(v.X)
+        case *IntDivExpr:
+                return isIntExpr(v.Left) && isIntExpr(v.Right)
+        case *CondExpr:
+                return isIntExpr(v.Then) && isIntExpr(v.Else)
+       case *CallExpr:
+               switch v.Func {
+               case "intval", "_intdiv", "_iadd", "_isub", "_imul", "_idiv", "_imod":
+                       return true
+               }
+        }
+        return false
 }
 
 func isBigIntExpr(e Expr) bool {
