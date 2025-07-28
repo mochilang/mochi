@@ -1,0 +1,19 @@
+// Mochi translation of Rosetta "Forward-difference" task
+// Based on tests/rosetta/x/Go/forward-difference.go
+
+fun fd(a: list<int>, ord: int): list<int> {
+  var i = 0
+  while i < ord {
+    var j = 0
+    while j < len(a) - i - 1 {
+      a[j] = a[j+1] - a[j]
+      j = j + 1
+    }
+    i = i + 1
+  }
+  return a[0:len(a)-ord]
+}
+
+var a = [90, 47, 58, 29, 22, 32, 55, 5, 55, 73]
+print(str(a))
+print(str(fd(a, 9)))
