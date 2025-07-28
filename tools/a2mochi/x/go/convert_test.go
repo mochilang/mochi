@@ -71,10 +71,14 @@ func TestConvert_Golden(t *testing.T) {
 		t.Fatalf("no files: %s", pattern)
 	}
 	allowed := map[string]bool{
-		"print_hello":    true,
-		"let_and_print":  true,
-		"if_else":        true,
-		"var_assignment": true,
+		"print_hello":         true,
+		"let_and_print":       true,
+		"if_else":             true,
+		"var_assignment":      true,
+		"for_loop":            true,
+		"for_list_collection": true,
+		"while_loop":          true,
+		"str_builtin":         true,
 	}
 
 	outDir := filepath.Join(root, "tests/a2mochi/x/go")
@@ -119,6 +123,9 @@ func TestConvert_Golden(t *testing.T) {
 			mochiPath := filepath.Join(outDir, name+".mochi")
 			if *update {
 				os.WriteFile(mochiPath, []byte(code), 0o644)
+				if out, err := runMochi(code); err == nil {
+					os.WriteFile(filepath.Join(outDir, name+".out"), out, 0o644)
+				}
 			}
 			gotOut, err := runMochi(code)
 			if err != nil {
