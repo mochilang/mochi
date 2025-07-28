@@ -1,4 +1,4 @@
-func main (regs=11)
+func __main (regs=11)
   // let a: bigint = 10
   Const        r2, 10
   Cast         r3, r2, bigint
