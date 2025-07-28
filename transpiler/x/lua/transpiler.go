@@ -2935,6 +2935,19 @@ func convertPostfix(p *parser.PostfixExpr) (Expr, error) {
 					args = append([]Expr{expr}, args...)
 					expr = &CallExpr{Func: "padStart", Args: args}
 				} else if id, ok := expr.(*Ident); ok {
+					if currentEnv != nil {
+						if t, err := currentEnv.GetVar(id.Name); err == nil {
+							if st, ok := t.(types.StructType); ok {
+								if info, ok := currentEnv.GetStruct(st.Name); ok {
+									if m, ok := info.Methods[op.Field.Name]; ok {
+										args = append([]Expr{expr}, args...)
+										expr = &CallExpr{Func: op.Field.Name, Args: args, ParamTypes: m.Type.Params}
+										continue
+									}
+								}
+							}
+						}
+					}
 					if id.Name == "net" {
 						// treat as a namespaced function call for known package
 						name := id.Name + "." + op.Field.Name
