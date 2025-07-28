@@ -282,6 +282,28 @@ func exprToNode(e ast.Expr) *mochias.Node {
 		return n
 	case *ast.ParenExpr:
 		return exprToNode(v.X)
+	case *ast.CompositeLit:
+		switch v.Type.(type) {
+		case *ast.ArrayType:
+			n := &mochias.Node{Kind: "list"}
+			for _, e := range v.Elts {
+				n.Children = append(n.Children, exprToNode(e))
+			}
+			return n
+		case *ast.MapType:
+			n := &mochias.Node{Kind: "map"}
+			for _, e := range v.Elts {
+				if kv, ok := e.(*ast.KeyValueExpr); ok {
+					n.Children = append(n.Children, &mochias.Node{
+						Kind:     "entry",
+						Children: []*mochias.Node{exprToNode(kv.Key), exprToNode(kv.Value)},
+					})
+				}
+			}
+			return n
+		}
+	case *ast.IndexExpr:
+		return &mochias.Node{Kind: "index", Children: []*mochias.Node{exprToNode(v.X), exprToNode(v.Index)}}
 	}
 	return &mochias.Node{Kind: "unknown"}
 }

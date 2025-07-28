@@ -82,6 +82,9 @@ func TestConvert_Golden(t *testing.T) {
 		"while_loop":        true,
 		"basic_compare":     true,
 		"binary_precedence": true,
+		"list_index":        true,
+		"list_assign":       true,
+		"map_index":         true,
 	}
 
 	outDir := filepath.Join(root, "tests/a2mochi/x/go")
