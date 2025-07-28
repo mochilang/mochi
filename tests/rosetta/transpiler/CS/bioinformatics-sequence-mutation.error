@@ -1,0 +1,6 @@
+dotnet run: exit status 134
+Unhandled exception. Microsoft.CSharp.RuntimeBinder.RuntimeBinderException: Cannot implicitly convert type 'long' to 'int'. An explicit conversion exists (are you missing a cast?)
+   at CallSite.Target(Closure, CallSite, Object)
+   at System.Dynamic.UpdateDelegates.UpdateAndExecute1[T0,TRet](CallSite site, T0 arg0)
+   at Program.main() in /tmp/TestCSTranspiler_Rosetta_Golden4031194903/001/Program.cs:line 177
+   at Program.Main() in /tmp/TestCSTranspiler_Rosetta_Golden4031194903/001/Program.cs:line 197
