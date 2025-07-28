@@ -2,9 +2,9 @@
 
 Generated Ruby code from Mochi Rosetta tasks lives in `tests/rosetta/transpiler/rb`.
 
-Last updated: 2025-07-28 04:23 UTC
+Last updated: 2025-07-28 04:51 UTC
 
-## Checklist (451/493)
+## Checklist (460/493)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 110µs | 36.2 KB |
@@ -450,25 +450,25 @@ Last updated: 2025-07-28 04:23 UTC
 | 441 | fixed-length-records-2 | ✓ | 20µs | 8.9 KB |
 | 442 | fizzbuzz-1 | ✓ | 77µs | 12.8 KB |
 | 443 | fizzbuzz-2 | ✓ | 107µs | 73.7 KB |
-| 444 | fizzbuzz |   |  |  |
-| 445 | flatten-a-list-1 | ✓ | 46µs | 10.3 KB |
-| 446 | flatten-a-list-2 | ✓ | 17µs | 8.8 KB |
-| 447 | flipping-bits-game | ✓ | 36µs | 10.1 KB |
-| 448 | flow-control-structures-1 | ✓ | 21µs | 8.9 KB |
+| 444 | fizzbuzz | ✓ | 103µs | 12.8 KB |
+| 445 | flatten-a-list-1 | ✓ | 33µs | 10.3 KB |
+| 446 | flatten-a-list-2 | ✓ | 18µs | 8.8 KB |
+| 447 | flipping-bits-game | ✓ | 91µs | 18.7 KB |
+| 448 | flow-control-structures-1 | ✓ | 19µs | 8.9 KB |
 | 449 | flow-control-structures-2 | ✓ | 42µs | 8.8 KB |
 | 450 | flow-control-structures-3 | ✓ | 36µs | 9.0 KB |
-| 451 | flow-control-structures-4 | ✓ | 35µs | 8.8 KB |
+| 451 | flow-control-structures-4 | ✓ | 24µs | 8.8 KB |
 | 452 | floyd-warshall-algorithm | ✓ | 17µs | 8.8 KB |
 | 453 | floyd-warshall-algorithm2 |   |  |  |
 | 454 | floyds-triangle | ✓ | 124µs | 32.2 KB |
 | 455 | forest-fire | ✓ | 120µs | 14.5 KB |
-| 456 | fork-2 |   |  |  |
+| 456 | fork-2 | ✓ | 29µs | 9.2 KB |
 | 457 | fork | ✓ | 44µs | 9.2 KB |
 | 458 | formal-power-series |   |  |  |
-| 459 | formatted-numeric-output |   |  |  |
-| 460 | forward-difference |   |  |  |
-| 461 | four-bit-adder-1 |   |  |  |
-| 462 | four-is-magic |   |  |  |
+| 459 | formatted-numeric-output | ✓ | 48µs | 10.0 KB |
+| 460 | forward-difference | ✓ | 72µs | 9.8 KB |
+| 461 | four-bit-adder-1 | ✓ | 99µs | 15.4 KB |
+| 462 | four-is-magic | ✓ | 145µs | 53.8 KB |
 | 463 | four-is-the-number-of-letters-in-the-... |   |  |  |
 | 464 | fractal-tree |   |  |  |
 | 465 | fractran |   |  |  |
@@ -488,15 +488,15 @@ Last updated: 2025-07-28 04:23 UTC
 | 479 | golden-ratio-convergence | ✓ | 55µs | 10.1 KB |
 | 480 | graph-colouring | ✓ | 36µs | 8.8 KB |
 | 481 | gray-code | ✓ | 433µs | 70.5 KB |
-| 482 | gui-component-interaction |   |  |  |
-| 483 | gui-enabling-disabling-of-controls |   |  |  |
-| 484 | gui-maximum-window-dimensions |   |  |  |
-| 485 | http | ✓ | 153.621ms | 410.2 KB |
-| 486 | image-noise | ✓ | 124ms | 2.3 MB |
-| 487 | loops-increment-loop-index-within-loop-body | ✓ | 1.953803s | 82.1 KB |
-| 488 | md5 | ✓ | 7.941ms | 73.3 KB |
-| 489 | nim-game | ✓ | 58µs | 22.5 KB |
-| 490 | plasma-effect | ✓ | 244.4ms | 86.8 KB |
-| 491 | sorting-algorithms-bubble-sort | ✓ | 70µs | 10.4 KB |
-| 492 | window-management | ✓ | 145µs | 26.6 KB |
-| 493 | zumkeller-numbers | ✓ | 50.248088s | 514.9 KB |
+| 482 | gui-component-interaction | ✓ | 90µs | 21.4 KB |
+| 483 | gui-enabling-disabling-of-controls | ✓ | 192µs | 33.2 KB |
+| 484 | gui-maximum-window-dimensions | ✓ | 75µs | 13.0 KB |
+| 485 | http | ✓ | 177.722ms | 410.5 KB |
+| 486 | image-noise | ✓ | 115.461ms | 2.2 MB |
+| 487 | loops-increment-loop-index-within-loop-body | ✓ | 2.094468s | 82.1 KB |
+| 488 | md5 | ✓ | 3.818ms | 73.3 KB |
+| 489 | nim-game | ✓ | 64µs | 22.5 KB |
+| 490 | plasma-effect | ✓ | 243.777ms | 86.6 KB |
+| 491 | sorting-algorithms-bubble-sort | ✓ | 76µs | 10.4 KB |
+| 492 | window-management | ✓ | 106µs | 26.6 KB |
+| 493 | zumkeller-numbers | ✓ | 50.183716s | 477.5 KB |
