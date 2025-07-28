@@ -331,6 +331,9 @@ func parseStatementsIndent(body string, indent int) []string {
 			l = rewriteMapLiteral(l)
 			l = rewriteStructLiteral(l)
 			l = rewriteCasts(l)
+			l = rewriteCount(l)
+			l = rewriteMinMax(l)
+			l = strings.ReplaceAll(l, ")!", ")")
 			l = strings.ReplaceAll(l, "_append(", "append(")
 			l = strings.ReplaceAll(l, "_values(", "values(")
 			l = strings.ReplaceAll(l, "_exists(", "exists(")
@@ -394,6 +397,13 @@ var structLitRE = regexp.MustCompile(`^([A-Z][A-Za-z0-9_]*)\((.*)\)$`)
 
 var mapLitRE = regexp.MustCompile(`^\[(.*:.+)\]$`)
 
+var countPropRE = regexp.MustCompile(`\(([^()]+)\)\.count\b`)
+var identCountRE = regexp.MustCompile(`([A-Za-z0-9_]+)\.count\b`)
+var parenMinRE = regexp.MustCompile(`\(([^()]+)\)\.min\(\)`)
+var identMinRE = regexp.MustCompile(`([A-Za-z0-9_]+)\.min\(\)`)
+var parenMaxRE = regexp.MustCompile(`\(([^()]+)\)\.max\(\)`)
+var identMaxRE = regexp.MustCompile(`([A-Za-z0-9_]+)\.max\(\)`)
+
 func rewriteMapLiteral(expr string) string {
 	m := mapLitRE.FindStringSubmatch(expr)
 	if len(m) != 2 {
@@ -421,7 +431,7 @@ func rewriteStructLiteral(expr string) string {
 	return name + " { " + strings.Join(fields, ", ") + " }"
 }
 
-var castRE = regexp.MustCompile(`\(([^()]+)\s+as!\s+[A-Za-z0-9_<>.]+\)`)
+var castRE = regexp.MustCompile(`\((.+?)\s+as!\s+[A-Za-z0-9_<>.]+\)`)
 
 func rewriteCasts(expr string) string {
 	for {
@@ -430,6 +440,44 @@ func rewriteCasts(expr string) string {
 			break
 		}
 		expr = expr[:m[0]] + expr[m[2]:m[3]] + expr[m[1]:]
+	}
+	return expr
+}
+
+func rewriteCount(expr string) string {
+	for {
+		if m := countPropRE.FindStringSubmatchIndex(expr); m != nil {
+			expr = expr[:m[0]] + "count(" + expr[m[2]:m[3]] + ")" + expr[m[1]:]
+			continue
+		}
+		if m := identCountRE.FindStringSubmatchIndex(expr); m != nil {
+			expr = expr[:m[0]] + "count(" + expr[m[2]:m[3]] + ")" + expr[m[1]:]
+			continue
+		}
+		break
+	}
+	return expr
+}
+
+func rewriteMinMax(expr string) string {
+	for {
+		if m := parenMinRE.FindStringSubmatchIndex(expr); m != nil {
+			expr = expr[:m[0]] + "min(" + expr[m[2]:m[3]] + ")" + expr[m[1]:]
+			continue
+		}
+		if m := identMinRE.FindStringSubmatchIndex(expr); m != nil {
+			expr = expr[:m[0]] + "min(" + expr[m[2]:m[3]] + ")" + expr[m[1]:]
+			continue
+		}
+		if m := parenMaxRE.FindStringSubmatchIndex(expr); m != nil {
+			expr = expr[:m[0]] + "max(" + expr[m[2]:m[3]] + ")" + expr[m[1]:]
+			continue
+		}
+		if m := identMaxRE.FindStringSubmatchIndex(expr); m != nil {
+			expr = expr[:m[0]] + "max(" + expr[m[2]:m[3]] + ")" + expr[m[1]:]
+			continue
+		}
+		break
 	}
 	return expr
 }

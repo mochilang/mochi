@@ -1,0 +1,15 @@
+(program
+  (let nums
+    (list (int 3) (int 1) (int 4))
+  )
+  (call print
+    (group
+      (call min (selector nums))
+    )
+  )
+  (call print
+    (group
+      (call max (selector nums))
+    )
+  )
+)
