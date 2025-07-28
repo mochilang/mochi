@@ -1,156 +1,70 @@
-6 x 6 Polybius square:\n
+6 x 6 Polybius square:
   | A D F G V X
 ---------------
-A | J D C H 7 T
-D | Y Z N M I 5
-F | L 0 V S O P
-G | W 6 E 9 3 B
-V | 2 4 8 R G X
-X | K F 1 Q A U
-\nThe key is S5CZBTY16
-\nPlaintext : ATTACKAT1200AM
+A | K Q A 5 Y P
+D | U N L 7 S H
+F | V W J 4 C 3
+G | T 2 F O 1 R
+V | 6 X G B 9 I
+X | D M 0 8 E Z
 
-Deprecated: Implicit conversion from float 0.1111111111111111 to int loses precision in /workspace/mochi/tests/rosetta/transpiler/php/adfgvx-cipher.php on line 169
+The key is I9XKLBRQ3
 
-Deprecated: Implicit conversion from float 0.2222222222222222 to int loses precision in /workspace/mochi/tests/rosetta/transpiler/php/adfgvx-cipher.php on line 169
+Plaintext : ATTACKAT1200AM
 
-Deprecated: Implicit conversion from float 0.3333333333333333 to int loses precision in /workspace/mochi/tests/rosetta/transpiler/php/adfgvx-cipher.php on line 169
+Deprecated: Implicit conversion from float 0.1111111111111111 to int loses precision in /workspace/mochi/tests/rosetta/transpiler/php/adfgvx-cipher.php on line 171
 
-Deprecated: Implicit conversion from float 0.4444444444444444 to int loses precision in /workspace/mochi/tests/rosetta/transpiler/php/adfgvx-cipher.php on line 169
+Deprecated: Implicit conversion from float 0.2222222222222222 to int loses precision in /workspace/mochi/tests/rosetta/transpiler/php/adfgvx-cipher.php on line 171
 
-Deprecated: Implicit conversion from float 0.5555555555555556 to int loses precision in /workspace/mochi/tests/rosetta/transpiler/php/adfgvx-cipher.php on line 169
+Deprecated: Implicit conversion from float 0.3333333333333333 to int loses precision in /workspace/mochi/tests/rosetta/transpiler/php/adfgvx-cipher.php on line 171
 
-Deprecated: Implicit conversion from float 0.6666666666666666 to int loses precision in /workspace/mochi/tests/rosetta/transpiler/php/adfgvx-cipher.php on line 169
+Deprecated: Implicit conversion from float 0.4444444444444444 to int loses precision in /workspace/mochi/tests/rosetta/transpiler/php/adfgvx-cipher.php on line 171
 
-Deprecated: Implicit conversion from float 0.7777777777777778 to int loses precision in /workspace/mochi/tests/rosetta/transpiler/php/adfgvx-cipher.php on line 169
+Deprecated: Implicit conversion from float 0.5555555555555556 to int loses precision in /workspace/mochi/tests/rosetta/transpiler/php/adfgvx-cipher.php on line 171
 
-Deprecated: Implicit conversion from float 0.8888888888888888 to int loses precision in /workspace/mochi/tests/rosetta/transpiler/php/adfgvx-cipher.php on line 169
+Deprecated: Implicit conversion from float 0.6666666666666666 to int loses precision in /workspace/mochi/tests/rosetta/transpiler/php/adfgvx-cipher.php on line 171
 
-Deprecated: Implicit conversion from float 1.1111111111111112 to int loses precision in /workspace/mochi/tests/rosetta/transpiler/php/adfgvx-cipher.php on line 169
+Deprecated: Implicit conversion from float 0.7777777777777778 to int loses precision in /workspace/mochi/tests/rosetta/transpiler/php/adfgvx-cipher.php on line 171
 
-Deprecated: Implicit conversion from float 1.2222222222222223 to int loses precision in /workspace/mochi/tests/rosetta/transpiler/php/adfgvx-cipher.php on line 169
+Deprecated: Implicit conversion from float 0.8888888888888888 to int loses precision in /workspace/mochi/tests/rosetta/transpiler/php/adfgvx-cipher.php on line 171
 
-Deprecated: Implicit conversion from float 1.3333333333333333 to int loses precision in /workspace/mochi/tests/rosetta/transpiler/php/adfgvx-cipher.php on line 169
+Deprecated: Implicit conversion from float 1.1111111111111112 to int loses precision in /workspace/mochi/tests/rosetta/transpiler/php/adfgvx-cipher.php on line 171
 
-Deprecated: Implicit conversion from float 1.4444444444444444 to int loses precision in /workspace/mochi/tests/rosetta/transpiler/php/adfgvx-cipher.php on line 169
+Deprecated: Implicit conversion from float 1.2222222222222223 to int loses precision in /workspace/mochi/tests/rosetta/transpiler/php/adfgvx-cipher.php on line 171
 
-Deprecated: Implicit conversion from float 1.5555555555555556 to int loses precision in /workspace/mochi/tests/rosetta/transpiler/php/adfgvx-cipher.php on line 169
+Deprecated: Implicit conversion from float 1.3333333333333333 to int loses precision in /workspace/mochi/tests/rosetta/transpiler/php/adfgvx-cipher.php on line 171
 
-Deprecated: Implicit conversion from float 1.6666666666666667 to int loses precision in /workspace/mochi/tests/rosetta/transpiler/php/adfgvx-cipher.php on line 169
+Deprecated: Implicit conversion from float 1.4444444444444444 to int loses precision in /workspace/mochi/tests/rosetta/transpiler/php/adfgvx-cipher.php on line 171
 
-Deprecated: Implicit conversion from float 1.7777777777777777 to int loses precision in /workspace/mochi/tests/rosetta/transpiler/php/adfgvx-cipher.php on line 169
+Deprecated: Implicit conversion from float 1.5555555555555556 to int loses precision in /workspace/mochi/tests/rosetta/transpiler/php/adfgvx-cipher.php on line 171
 
-Deprecated: Implicit conversion from float 1.8888888888888888 to int loses precision in /workspace/mochi/tests/rosetta/transpiler/php/adfgvx-cipher.php on line 169
+Deprecated: Implicit conversion from float 1.6666666666666667 to int loses precision in /workspace/mochi/tests/rosetta/transpiler/php/adfgvx-cipher.php on line 171
 
-Deprecated: Implicit conversion from float 2.111111111111111 to int loses precision in /workspace/mochi/tests/rosetta/transpiler/php/adfgvx-cipher.php on line 169
+Deprecated: Implicit conversion from float 1.7777777777777777 to int loses precision in /workspace/mochi/tests/rosetta/transpiler/php/adfgvx-cipher.php on line 171
 
-Deprecated: Implicit conversion from float 2.2222222222222223 to int loses precision in /workspace/mochi/tests/rosetta/transpiler/php/adfgvx-cipher.php on line 169
+Deprecated: Implicit conversion from float 1.8888888888888888 to int loses precision in /workspace/mochi/tests/rosetta/transpiler/php/adfgvx-cipher.php on line 171
 
-Deprecated: Implicit conversion from float 2.3333333333333335 to int loses precision in /workspace/mochi/tests/rosetta/transpiler/php/adfgvx-cipher.php on line 169
+Deprecated: Implicit conversion from float 2.111111111111111 to int loses precision in /workspace/mochi/tests/rosetta/transpiler/php/adfgvx-cipher.php on line 171
 
-Deprecated: Implicit conversion from float 2.4444444444444446 to int loses precision in /workspace/mochi/tests/rosetta/transpiler/php/adfgvx-cipher.php on line 169
+Deprecated: Implicit conversion from float 2.2222222222222223 to int loses precision in /workspace/mochi/tests/rosetta/transpiler/php/adfgvx-cipher.php on line 171
 
-Deprecated: Implicit conversion from float 2.5555555555555554 to int loses precision in /workspace/mochi/tests/rosetta/transpiler/php/adfgvx-cipher.php on line 169
+Deprecated: Implicit conversion from float 2.3333333333333335 to int loses precision in /workspace/mochi/tests/rosetta/transpiler/php/adfgvx-cipher.php on line 171
 
-Deprecated: Implicit conversion from float 2.6666666666666665 to int loses precision in /workspace/mochi/tests/rosetta/transpiler/php/adfgvx-cipher.php on line 169
+Deprecated: Implicit conversion from float 2.4444444444444446 to int loses precision in /workspace/mochi/tests/rosetta/transpiler/php/adfgvx-cipher.php on line 171
 
-Deprecated: Implicit conversion from float 2.7777777777777777 to int loses precision in /workspace/mochi/tests/rosetta/transpiler/php/adfgvx-cipher.php on line 169
+Deprecated: Implicit conversion from float 2.5555555555555554 to int loses precision in /workspace/mochi/tests/rosetta/transpiler/php/adfgvx-cipher.php on line 171
 
-Deprecated: Implicit conversion from float 2.888888888888889 to int loses precision in /workspace/mochi/tests/rosetta/transpiler/php/adfgvx-cipher.php on line 169
+Deprecated: Implicit conversion from float 2.6666666666666665 to int loses precision in /workspace/mochi/tests/rosetta/transpiler/php/adfgvx-cipher.php on line 171
 
-Warning: Undefined array key 55 in /workspace/mochi/tests/rosetta/transpiler/php/adfgvx-cipher.php on line 179
+Deprecated: Implicit conversion from float 2.7777777777777777 to int loses precision in /workspace/mochi/tests/rosetta/transpiler/php/adfgvx-cipher.php on line 171
 
-Warning: Undefined array key 55 in /workspace/mochi/tests/rosetta/transpiler/php/adfgvx-cipher.php on line 179
+Deprecated: Implicit conversion from float 2.888888888888889 to int loses precision in /workspace/mochi/tests/rosetta/transpiler/php/adfgvx-cipher.php on line 171
 
-Warning: Undefined array key 55 in /workspace/mochi/tests/rosetta/transpiler/php/adfgvx-cipher.php on line 179
+Encrypted : FVX FAD AGF AVGD AAF GFX FGF AAA GAX
 
-Warning: Undefined array key 55 in /workspace/mochi/tests/rosetta/transpiler/php/adfgvx-cipher.php on line 179
-
-Warning: Undefined array key 55 in /workspace/mochi/tests/rosetta/transpiler/php/adfgvx-cipher.php on line 179
-
-Warning: Undefined array key 49 in /workspace/mochi/tests/rosetta/transpiler/php/adfgvx-cipher.php on line 179
-
-Warning: Undefined array key 49 in /workspace/mochi/tests/rosetta/transpiler/php/adfgvx-cipher.php on line 179
-
-Warning: Undefined array key 49 in /workspace/mochi/tests/rosetta/transpiler/php/adfgvx-cipher.php on line 179
-
-Warning: Undefined array key 49 in /workspace/mochi/tests/rosetta/transpiler/php/adfgvx-cipher.php on line 179
-
-Warning: Undefined array key 49 in /workspace/mochi/tests/rosetta/transpiler/php/adfgvx-cipher.php on line 179
-
-Warning: Undefined array key 56 in /workspace/mochi/tests/rosetta/transpiler/php/adfgvx-cipher.php on line 179
-
-Warning: Undefined array key 56 in /workspace/mochi/tests/rosetta/transpiler/php/adfgvx-cipher.php on line 179
-
-Warning: Undefined array key 56 in /workspace/mochi/tests/rosetta/transpiler/php/adfgvx-cipher.php on line 179
-
-Warning: Undefined array key 56 in /workspace/mochi/tests/rosetta/transpiler/php/adfgvx-cipher.php on line 179
-
-Warning: Undefined array key 56 in /workspace/mochi/tests/rosetta/transpiler/php/adfgvx-cipher.php on line 179
-
-Warning: Undefined array key 52 in /workspace/mochi/tests/rosetta/transpiler/php/adfgvx-cipher.php on line 179
-
-Warning: Undefined array key 52 in /workspace/mochi/tests/rosetta/transpiler/php/adfgvx-cipher.php on line 179
-
-Warning: Undefined array key 52 in /workspace/mochi/tests/rosetta/transpiler/php/adfgvx-cipher.php on line 179
-
-Warning: Undefined array key 52 in /workspace/mochi/tests/rosetta/transpiler/php/adfgvx-cipher.php on line 179
-
-Warning: Undefined array key 52 in /workspace/mochi/tests/rosetta/transpiler/php/adfgvx-cipher.php on line 179
-
-Warning: Undefined array key 50 in /workspace/mochi/tests/rosetta/transpiler/php/adfgvx-cipher.php on line 179
-
-Warning: Undefined array key 50 in /workspace/mochi/tests/rosetta/transpiler/php/adfgvx-cipher.php on line 179
-
-Warning: Undefined array key 50 in /workspace/mochi/tests/rosetta/transpiler/php/adfgvx-cipher.php on line 179
-
-Warning: Undefined array key 50 in /workspace/mochi/tests/rosetta/transpiler/php/adfgvx-cipher.php on line 179
-
-Warning: Undefined array key 50 in /workspace/mochi/tests/rosetta/transpiler/php/adfgvx-cipher.php on line 179
-
-Warning: Undefined array key 48 in /workspace/mochi/tests/rosetta/transpiler/php/adfgvx-cipher.php on line 179
-
-Warning: Undefined array key 48 in /workspace/mochi/tests/rosetta/transpiler/php/adfgvx-cipher.php on line 179
-
-Warning: Undefined array key 48 in /workspace/mochi/tests/rosetta/transpiler/php/adfgvx-cipher.php on line 179
-
-Warning: Undefined array key 48 in /workspace/mochi/tests/rosetta/transpiler/php/adfgvx-cipher.php on line 179
-
-Warning: Undefined array key 48 in /workspace/mochi/tests/rosetta/transpiler/php/adfgvx-cipher.php on line 179
-
-Warning: Undefined array key 53 in /workspace/mochi/tests/rosetta/transpiler/php/adfgvx-cipher.php on line 179
-
-Warning: Undefined array key 53 in /workspace/mochi/tests/rosetta/transpiler/php/adfgvx-cipher.php on line 179
-
-Warning: Undefined array key 53 in /workspace/mochi/tests/rosetta/transpiler/php/adfgvx-cipher.php on line 179
-
-Warning: Undefined array key 53 in /workspace/mochi/tests/rosetta/transpiler/php/adfgvx-cipher.php on line 179
-
-Warning: Undefined array key 53 in /workspace/mochi/tests/rosetta/transpiler/php/adfgvx-cipher.php on line 179
-
-Warning: Undefined array key 54 in /workspace/mochi/tests/rosetta/transpiler/php/adfgvx-cipher.php on line 179
-
-Warning: Undefined array key 54 in /workspace/mochi/tests/rosetta/transpiler/php/adfgvx-cipher.php on line 179
-
-Warning: Undefined array key 54 in /workspace/mochi/tests/rosetta/transpiler/php/adfgvx-cipher.php on line 179
-
-Warning: Undefined array key 54 in /workspace/mochi/tests/rosetta/transpiler/php/adfgvx-cipher.php on line 179
-
-Warning: Undefined array key 54 in /workspace/mochi/tests/rosetta/transpiler/php/adfgvx-cipher.php on line 179
-
-Warning: Undefined array key 51 in /workspace/mochi/tests/rosetta/transpiler/php/adfgvx-cipher.php on line 179
-
-Warning: Undefined array key 51 in /workspace/mochi/tests/rosetta/transpiler/php/adfgvx-cipher.php on line 179
-
-Warning: Undefined array key 51 in /workspace/mochi/tests/rosetta/transpiler/php/adfgvx-cipher.php on line 179
-
-Warning: Undefined array key 51 in /workspace/mochi/tests/rosetta/transpiler/php/adfgvx-cipher.php on line 179
-
-Warning: Undefined array key 51 in /workspace/mochi/tests/rosetta/transpiler/php/adfgvx-cipher.php on line 179
-\nEncrypted :
-\nDecrypted :
+Decrypted : ATTACKAT1200AM
 {
-  "duration_us": 210,
-  "memory_bytes": 208,
+  "duration_us": 206,
+  "memory_bytes": 256,
   "name": "main"
 }

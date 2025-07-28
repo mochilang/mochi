@@ -1,13 +1,13 @@
 Starting board:
 
-  5  1  2  3
- 13  9  6  4
- 14 10  7 12
- 11  . 15  8
+  1  3  7  6
+  5  2 11  4
+  9 14 10  8
+ 13  . 15 12
 Enter move #51 (U, D, L, R, or Q):
 Quiting after 50 moves.
 {
-  "duration_us": -671044,
+  "duration_us": 261,
   "memory_bytes": 8824,
   "name": "main"
 }

@@ -1,6 +1,6 @@
 "Solution found in 52 moves: rrrulddluuuldrurdddrullulurrrddldluurddlulurruldrdrd"
 {
-  "duration_us": 571223,
-  "memory_bytes": 1240,
+  "duration_us": 43,
+  "memory_bytes": 1624,
   "name": "main"
 }

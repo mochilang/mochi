@@ -49,7 +49,7 @@ $__start = _now();
   $addrs = $res[0];
   $err = $res[1];
   if ($err == null) {
-  echo rtrim(json_encode(_str($addrs), 1344)), PHP_EOL;
+  echo rtrim(_str($addrs)), PHP_EOL;
 } else {
   echo rtrim(json_encode($err, 1344)), PHP_EOL;
 }

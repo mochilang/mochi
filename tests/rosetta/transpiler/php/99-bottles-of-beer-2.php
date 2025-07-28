@@ -17,8 +17,8 @@ function _now() {
 }
 function _intdiv($a, $b) {
     if (function_exists('bcdiv')) {
-        $sa = is_int($a) ? strval($a) : sprintf('%.0f', $a);
-        $sb = is_int($b) ? strval($b) : sprintf('%.0f', $b);
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
         return intval(bcdiv($sa, $sb, 0));
     }
     return intdiv($a, $b);
@@ -31,7 +31,8 @@ $__start = _now();
   $i = 0;
   while ($i < strlen($s)) {
   $ch = substr($s, $i, $i + 1 - $i);
-  if ($ch == ' ' || $ch == '\n' || $ch == '\t') {
+  if ($ch == ' ' || $ch == '
+' || $ch == '\t') {
   if (strlen($cur) > 0) {
   $words = array_merge($words, [$cur]);
   $cur = '';

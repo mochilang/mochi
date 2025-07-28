@@ -1,6 +1,6 @@
 Groups: ["admins", "users"]
 {
-  "duration_us": 79,
+  "duration_us": 36,
   "memory_bytes": 96,
   "name": "main"
 }

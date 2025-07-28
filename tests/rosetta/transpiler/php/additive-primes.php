@@ -33,8 +33,8 @@ function _str($x) {
 }
 function _intdiv($a, $b) {
     if (function_exists('bcdiv')) {
-        $sa = is_int($a) ? strval($a) : sprintf('%.0f', $a);
-        $sb = is_int($b) ? strval($b) : sprintf('%.0f', $b);
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
         return intval(bcdiv($sa, $sb, 0));
     }
     return intdiv($a, $b);
@@ -94,7 +94,7 @@ $__start = _now();
   $line = $line . pad($i) . '  ';
   $lineCount = $lineCount + 1;
   if ($lineCount == 10) {
-  echo rtrim(json_encode(substr($line, 0, strlen($line) - 2 - 0), 1344)), PHP_EOL;
+  echo rtrim(substr($line, 0, strlen($line) - 2 - 0)), PHP_EOL;
   $line = '';
   $lineCount = 0;
 };
@@ -106,7 +106,7 @@ $__start = _now();
 }
 };
   if ($lineCount > 0) {
-  echo rtrim(json_encode(substr($line, 0, strlen($line) - 2 - 0), 1344)), PHP_EOL;
+  echo rtrim(substr($line, 0, strlen($line) - 2 - 0)), PHP_EOL;
 }
   echo rtrim(_str($count) . ' additive primes found.'), PHP_EOL;
 };

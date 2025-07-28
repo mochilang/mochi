@@ -83,19 +83,22 @@ $__start = _now();
   $s = $s . _str($p[3 * $r + $c]) . ' ';
   $c = $c + 1;
 };
-  $s = $s . '\n';
+  $s = $s . '
+';
   $r = $r + 1;
 };
   return $s;
 };
-  echo rtrim('Avalanche of topplings:\n'), PHP_EOL;
+  echo rtrim('Avalanche of topplings:
+'), PHP_EOL;
   $s4 = [4, 3, 3, 3, 1, 2, 0, 2, 3];
   echo rtrim(pileString($s4)), PHP_EOL;
   while (!isStable($s4)) {
   topple($s4);
   echo rtrim(pileString($s4)), PHP_EOL;
 }
-  echo rtrim('Commutative additions:\n'), PHP_EOL;
+  echo rtrim('Commutative additions:
+'), PHP_EOL;
   $s1 = [1, 2, 0, 2, 1, 1, 0, 1, 3];
   $s2 = [2, 1, 3, 1, 0, 1, 0, 1, 0];
   $s3_a = plus($s1, $s2);
@@ -106,22 +109,50 @@ $__start = _now();
   while (!isStable($s3_b)) {
   topple($s3_b);
 }
-  echo rtrim(pileString($s1) . '\nplus\n\n' . pileString($s2) . '\nequals\n\n' . pileString($s3_a)), PHP_EOL;
-  echo rtrim('and\n\n' . pileString($s2) . '\nplus\n\n' . pileString($s1) . '\nalso equals\n\n' . pileString($s3_b)), PHP_EOL;
-  echo rtrim('Addition of identity sandpile:\n'), PHP_EOL;
+  echo rtrim(pileString($s1) . '
+plus
+
+' . pileString($s2) . '
+equals
+
+' . pileString($s3_a)), PHP_EOL;
+  echo rtrim('and
+
+' . pileString($s2) . '
+plus
+
+' . pileString($s1) . '
+also equals
+
+' . pileString($s3_b)), PHP_EOL;
+  echo rtrim('Addition of identity sandpile:
+'), PHP_EOL;
   $s3 = [3, 3, 3, 3, 3, 3, 3, 3, 3];
   $s3_id = [2, 1, 2, 1, 0, 1, 2, 1, 2];
   $s4b = plus($s3, $s3_id);
   while (!isStable($s4b)) {
   topple($s4b);
 }
-  echo rtrim(pileString($s3) . '\nplus\n\n' . pileString($s3_id) . '\nequals\n\n' . pileString($s4b)), PHP_EOL;
-  echo rtrim('Addition of identities:\n'), PHP_EOL;
+  echo rtrim(pileString($s3) . '
+plus
+
+' . pileString($s3_id) . '
+equals
+
+' . pileString($s4b)), PHP_EOL;
+  echo rtrim('Addition of identities:
+'), PHP_EOL;
   $s5 = plus($s3_id, $s3_id);
   while (!isStable($s5)) {
   topple($s5);
 }
-  echo rtrim(pileString($s3_id) . '\nplus\n\n' . pileString($s3_id) . '\nequals\n\n' . pileString($s5)), PHP_EOL;
+  echo rtrim(pileString($s3_id) . '
+plus
+
+' . pileString($s3_id) . '
+equals
+
+' . pileString($s5)), PHP_EOL;
 $__end = _now();
 $__end_mem = memory_get_usage();
 $__duration = intdiv($__end - $__start, 1000);

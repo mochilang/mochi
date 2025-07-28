@@ -1,16 +1,57 @@
 <?php
 ini_set('memory_limit', '-1');
-function bigTrim($a) {
-  global $bigFromInt, $bigAdd, $bigSub, $bigToString, $minInt, $cumu, $row, $x, $r, $line, $i, $r;
+$now_seed = 0;
+$now_seeded = false;
+$s = getenv('MOCHI_NOW_SEED');
+if ($s !== false && $s !== '') {
+    $now_seed = intval($s);
+    $now_seeded = true;
+}
+function _now() {
+    global $now_seed, $now_seeded;
+    if ($now_seeded) {
+        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
+        return $now_seed;
+    }
+    return hrtime(true);
+}
+function _str($x) {
+    if (is_array($x)) {
+        $isList = array_keys($x) === range(0, count($x) - 1);
+        if ($isList) {
+            $parts = [];
+            foreach ($x as $v) { $parts[] = _str($v); }
+            return '[' . implode(' ', $parts) . ']';
+        }
+        $parts = [];
+        foreach ($x as $k => $v) { $parts[] = _str($k) . ':' . _str($v); }
+        return 'map[' . implode(' ', $parts) . ']';
+    }
+    if (is_bool($x)) return $x ? 'true' : 'false';
+    if ($x === null) return 'null';
+    return strval($x);
+}
+function _intdiv($a, $b) {
+    if (function_exists('bcdiv')) {
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
+        return intval(bcdiv($sa, $sb, 0));
+    }
+    return intdiv($a, $b);
+}
+$__start_mem = memory_get_usage();
+$__start = _now();
+  function bigTrim($a) {
+  global $x, $r, $line, $i;
   $n = count($a);
   while ($n > 1 && $a[$n - 1] == 0) {
   $a = array_slice($a, 0, $n - 1 - 0);
   $n = $n - 1;
 };
   return $a;
-}
-function bigFromInt($x) {
-  global $bigTrim, $bigAdd, $bigSub, $bigToString, $minInt, $cumu, $row, $r, $line, $i, $r;
+};
+  function bigFromInt($x) {
+  global $r, $line, $i;
   if ($x == 0) {
   return [0];
 }
@@ -18,12 +59,12 @@ function bigFromInt($x) {
   $n = $x;
   while ($n > 0) {
   $digits = array_merge($digits, [$n % 10]);
-  $n = intdiv($n, 10);
+  $n = _intdiv($n, 10);
 };
   return $digits;
-}
-function bigAdd($a, $b) {
-  global $bigTrim, $bigFromInt, $bigSub, $bigToString, $minInt, $cumu, $row, $x, $r, $line, $r;
+};
+  function bigAdd($a, $b) {
+  global $x, $r, $line;
   $res = [];
   $carry = 0;
   $i = 0;
@@ -38,13 +79,13 @@ function bigAdd($a, $b) {
 }
   $s = $av + $bv + $carry;
   $res = array_merge($res, [$s % 10]);
-  $carry = intdiv($s, 10);
+  $carry = _intdiv($s, 10);
   $i = $i + 1;
 };
   return bigTrim($res);
-}
-function bigSub($a, $b) {
-  global $bigTrim, $bigFromInt, $bigAdd, $bigToString, $minInt, $cumu, $row, $x, $r, $line, $r;
+};
+  function bigSub($a, $b) {
+  global $x, $r, $line;
   $res = [];
   $borrow = 0;
   $i = 0;
@@ -65,27 +106,27 @@ function bigSub($a, $b) {
   $i = $i + 1;
 };
   return bigTrim($res);
-}
-function bigToString($a) {
-  global $bigTrim, $bigFromInt, $bigAdd, $bigSub, $minInt, $cumu, $row, $x, $r, $line, $r;
+};
+  function bigToString($a) {
+  global $x, $r, $line;
   $s = '';
   $i = count($a) - 1;
   while ($i >= 0) {
-  $s = $s . json_encode($a[$i], 1344);
+  $s = $s . _str($a[$i]);
   $i = $i - 1;
 };
   return $s;
-}
-function minInt($a, $b) {
-  global $bigTrim, $bigFromInt, $bigAdd, $bigSub, $bigToString, $cumu, $row, $x, $r, $line, $i, $r;
+};
+  function minInt($a, $b) {
+  global $x, $r, $line, $i;
   if ($a < $b) {
   return $a;
 } else {
   return $b;
 }
-}
-function cumu($n) {
-  global $bigTrim, $bigFromInt, $bigAdd, $bigSub, $bigToString, $minInt, $r, $line, $i, $r;
+};
+  function cumu($n) {
+  global $r, $line, $i;
   $cache = [[bigFromInt(1)]];
   $y = 1;
   while ($y <= $n) {
@@ -93,16 +134,16 @@ function cumu($n) {
   $x = 1;
   while ($x <= $y) {
   $val = $cache[$y - $x][minInt($x, $y - $x)];
-  $row = array_merge($row, [bigAdd($row[count($row) - 1], $val)]);
+  $row = array_merge($row, [bigAdd(substr('row', count('row') - 1, count('row') - 1 + 1 - (count('row') - 1)), $val)]);
   $x = $x + 1;
 };
-  $cache = array_merge($cache, [$row]);
+  $cache = array_merge($cache, ['row']);
   $y = $y + 1;
 };
   return $cache[$n];
-}
-function row($n) {
-  global $bigTrim, $bigFromInt, $bigAdd, $bigSub, $bigToString, $minInt, $cumu, $x, $r, $line, $r;
+};
+  function row($n) {
+  global $x, $r, $line;
   $e = cumu($n);
   $out = [];
   $i = 0;
@@ -112,10 +153,10 @@ function row($n) {
   $i = $i + 1;
 };
   return $out;
-}
-echo 'rows:', PHP_EOL;
-$x = 1;
-while ($x < 11) {
+};
+  echo rtrim('rows:'), PHP_EOL;
+  $x = 1;
+  while ($x < 11) {
   $r = row($x);
   $line = '';
   $i = 0;
@@ -123,12 +164,20 @@ while ($x < 11) {
   $line = $line . ' ' . $r[$i] . ' ';
   $i = $i + 1;
 };
-  echo $line, PHP_EOL;
+  echo rtrim($line), PHP_EOL;
   $x = $x + 1;
 }
-echo '', PHP_EOL;
-echo 'sums:', PHP_EOL;
-foreach ([23, 123, 1234] as $num) {
+  echo rtrim(''), PHP_EOL;
+  echo rtrim('sums:'), PHP_EOL;
+  foreach ([23, 123, 1234] as $num) {
   $r = cumu($num);
-  echo json_encode($num, 1344) . ' ' . bigToString($r[count($r) - 1]), PHP_EOL;
+  echo rtrim(_str($num) . ' ' . bigToString($r[count($r) - 1])), PHP_EOL;
 }
+$__end = _now();
+$__end_mem = memory_get_usage();
+$__duration = intdiv($__end - $__start, 1000);
+$__mem_diff = max(0, $__end_mem - $__start_mem);
+$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
+$__j = json_encode($__bench, 128);
+$__j = str_replace("    ", "  ", $__j);
+echo $__j, PHP_EOL;;

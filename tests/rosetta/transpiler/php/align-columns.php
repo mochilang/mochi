@@ -17,8 +17,8 @@ function _now() {
 }
 function _intdiv($a, $b) {
     if (function_exists('bcdiv')) {
-        $sa = is_int($a) ? strval($a) : sprintf('%.0f', $a);
-        $sb = is_int($b) ? strval($b) : sprintf('%.0f', $b);
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
         return intval(bcdiv($sa, $sb, 0));
     }
     return intdiv($a, $b);
@@ -76,7 +76,8 @@ $__start = _now();
 };
   function newFormatter($text) {
   global $f;
-  $lines = explode('\n', $text);
+  $lines = explode('
+', $text);
   $fmtLines = [];
   $width = [];
   $i = 0;
@@ -121,7 +122,12 @@ $__start = _now();
 };
   echo rtrim(''), PHP_EOL;
 };
-  $text = 'Given$a$text$file$of$many$lines,$where$fields$within$a$line\n' . 'are$delineated$by$a$single$\'dollar\'$character,$write$a$program\n' . 'that$aligns$each$column$of$fields$by$ensuring$that$words$in$each\n' . 'column$are$separated$by$at$least$one$space.\n' . 'Further,$allow$for$each$word$in$a$column$to$be$either$left\n' . 'justified,$right$justified,$or$center$justified$within$its$column.';
+  $text = 'Given$a$text$file$of$many$lines,$where$fields$within$a$line
+' . 'are$delineated$by$a$single$\'dollar\'$character,$write$a$program
+' . 'that$aligns$each$column$of$fields$by$ensuring$that$words$in$each
+' . 'column$are$separated$by$at$least$one$space.
+' . 'Further,$allow$for$each$word$in$a$column$to$be$either$left
+' . 'justified,$right$justified,$or$center$justified$within$its$column.';
   $f = newFormatter($text);
   printFmt($f, 0);
   printFmt($f, 1);

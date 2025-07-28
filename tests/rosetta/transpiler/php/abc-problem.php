@@ -81,7 +81,7 @@ $__start = _now();
 };
   function newSpeller($blocks) {
   $bl = fields($blocks);
-  return function($w) use ($blocks, $bl) {
+  return function($w) use ($bl, $blocks) {
   return canSpell($w, $bl);
 };
 };

@@ -1,4 +1,8 @@
-Your numbers: 1336
-
-Enter RPN: 
+Your numbers: 4115
+Enter RPN:
 invalid. expression length must be 7. (4 numbers, 3 operators, no spaces)
+{
+  "duration_us": 49,
+  "memory_bytes": 8288,
+  "name": "main"
+}

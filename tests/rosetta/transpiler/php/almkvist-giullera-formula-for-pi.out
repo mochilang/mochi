@@ -14,7 +14,7 @@ N                               Integer Portion  Pow  Nth Term (33 dp)
 Pi to 70 decimal places is:
 3.1415926535897932384626433832795028841971693993751058209749445923078164
 {
-  "duration_us": 2509759,
+  "duration_us": 2602167,
   "memory_bytes": 96,
   "name": "main"
 }

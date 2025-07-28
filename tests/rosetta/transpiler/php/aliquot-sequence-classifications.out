@@ -1,4 +1,4 @@
-Aliquot classifications - periods for Sociable/Cyclic in square brackets:\n
+Aliquot classifications - periods for Sociable/Cyclic in square brackets:
  1: Terminating     [1, 0]
  2: Terminating     [2, 1, 0]
  3: Terminating     [3, 1, 0]
@@ -26,7 +26,7 @@ Aliquot classifications - periods for Sociable/Cyclic in square brackets:\n
 
 15355717786080: Non-Terminating [15355717786080, 44534663601120, 144940087464480]
 {
-  "duration_us": 90195,
+  "duration_us": 90276,
   "memory_bytes": 128,
   "name": "main"
 }

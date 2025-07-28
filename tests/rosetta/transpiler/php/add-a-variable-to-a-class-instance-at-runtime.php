@@ -35,10 +35,12 @@ $__start_mem = memory_get_usage();
 $__start = _now();
   function main() {
   $ss = ['runtimeFields' => []];
-  echo rtrim('Create two fields at runtime: \n'), PHP_EOL;
+  echo rtrim('Create two fields at runtime: 
+'), PHP_EOL;
   $i = 1;
   while ($i <= 2) {
-  echo rtrim('  Field #' . _str($i) . ':\n'), PHP_EOL;
+  echo rtrim('  Field #' . _str($i) . ':
+'), PHP_EOL;
   echo rtrim('       Enter name  : '), PHP_EOL;
   $name = trim(fgets(STDIN));
   echo rtrim('       Enter value : '), PHP_EOL;
@@ -46,7 +48,8 @@ $__start = _now();
   $fields = $ss['runtimeFields'];
   $fields[$name] = $value;
   $ss['runtimeFields'] = $fields;
-  echo rtrim('\n'), PHP_EOL;
+  echo rtrim('
+'), PHP_EOL;
   $i = $i + 1;
 };
   while (true) {
@@ -57,7 +60,8 @@ $__start = _now();
   echo rtrim('Its value is \'' . $value . '\''), PHP_EOL;
   return;
 } else {
-  echo rtrim('There is no field of that name, try again\n'), PHP_EOL;
+  echo rtrim('There is no field of that name, try again
+'), PHP_EOL;
 }
 };
 };

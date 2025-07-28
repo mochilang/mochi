@@ -33,7 +33,7 @@ $__start = _now();
 };
   $j = count($arr) - 1;
   while ($j > 0) {
-  $k = _now() % ($j + 1);
+  $k = fmod(_now(), ($j + 1));
   $tmp = $arr[$j];
   $arr[$j] = $arr[$k];
   $arr[$k] = $tmp;
@@ -56,7 +56,8 @@ $__start = _now();
   $labels = array_merge($labels, [substr($adfgvx, $li, $li + 1 - $li)]);
   $li = $li + 1;
 };
-  echo rtrim('6 x 6 Polybius square:\n'), PHP_EOL;
+  echo rtrim('6 x 6 Polybius square:
+'), PHP_EOL;
   echo rtrim('  | A D F G V X'), PHP_EOL;
   echo rtrim('---------------'), PHP_EOL;
   $p = [];
@@ -84,12 +85,13 @@ $__start = _now();
   $key = '';
   $i = 0;
   while ($i < $n) {
-  $idx = _now() % strlen($pool);
+  $idx = fmod(_now(), strlen($pool));
   $key = $key . substr($pool, $idx, $idx + 1 - $idx);
   $pool = substr($pool, 0, $idx - 0) . substr($pool, $idx + 1, strlen($pool) - ($idx + 1));
   $i = $i + 1;
 };
-  echo rtrim('\nThe key is ' . $key), PHP_EOL;
+  echo rtrim('
+The key is ' . $key), PHP_EOL;
   return $key;
 };
   function orderKey($key) {
@@ -117,7 +119,7 @@ $__start = _now();
   $res = [];
   $i = 0;
   while ($i < $n) {
-  $res = array_merge($res, [ord($pairs[$i][1])]);
+  $res = array_merge($res, [intval($pairs[$i][1])]);
   $i = $i + 1;
 };
   return $res;
@@ -147,7 +149,7 @@ $__start = _now();
   $i = $i + 1;
 };
   $colLen = strlen($temp) / strlen($key);
-  if (strlen($temp) % strlen($key) > 0) {
+  if (fmod(strlen($temp), strlen($key)) > 0) {
   $colLen = $colLen + 1;
 }
   $table = [];
@@ -165,7 +167,7 @@ $__start = _now();
   $idx = 0;
   while ($idx < strlen($temp)) {
   $row = $idx / strlen($key);
-  $col = $idx % strlen($key);
+  $col = fmod($idx, strlen($key));
   $table[$row][$col] = substr($temp, $idx, $idx + 1 - $idx);
   $idx = $idx + 1;
 };
@@ -298,11 +300,14 @@ $__start = _now();
   $plainText = 'ATTACKAT1200AM';
   $polybius = createPolybius();
   $key = createKey(9);
-  echo rtrim('\nPlaintext : ' . $plainText), PHP_EOL;
+  echo rtrim('
+Plaintext : ' . $plainText), PHP_EOL;
   $cipherText = encrypt($polybius, $key, $plainText);
-  echo rtrim('\nEncrypted : ' . $cipherText), PHP_EOL;
+  echo rtrim('
+Encrypted : ' . $cipherText), PHP_EOL;
   $plainText2 = decrypt($polybius, $key, $cipherText);
-  echo rtrim('\nDecrypted : ' . $plainText2), PHP_EOL;
+  echo rtrim('
+Decrypted : ' . $plainText2), PHP_EOL;
 };
   main();
 $__end = _now();

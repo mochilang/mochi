@@ -2,61 +2,61 @@
 
 Generated PHP code from Mochi Rosetta tasks lives in `tests/rosetta/transpiler/php`.
 
-Last updated: 2025-07-28 07:45 +0700
+Last updated: 2025-07-28 08:01 +0700
 
-## Checklist (462/467)
+## Checklist (461/467)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
-| 1 | 100-doors-2 | ✓ | 76µs | 136 B |
-| 2 | 100-doors-3 | ✓ | 20µs | 224 B |
-| 3 | 100-doors | ✓ | 71µs | 2.7 KB |
-| 4 | 100-prisoners | ✓ | 181.581ms | 96 B |
-| 5 | 15-puzzle-game | ✓ |  |  |
-| 6 | 15-puzzle-solver | ✓ | 571.223ms | 1.2 KB |
+| 1 | 100-doors-2 | ✓ | 137µs | 136 B |
+| 2 | 100-doors-3 | ✓ | 43µs | 224 B |
+| 3 | 100-doors | ✓ | 52µs | 2.7 KB |
+| 4 | 100-prisoners | ✓ | 173.611ms | 96 B |
+| 5 | 15-puzzle-game | ✓ | 261µs | 8.6 KB |
+| 6 | 15-puzzle-solver | ✓ | 43µs | 1.6 KB |
 | 7 | 2048 | ✓ |  |  |
-| 8 | 21-game | ✓ |  |  |
-| 9 | 24-game-solve | ✓ |  |  |
-| 10 | 24-game | ✓ |  |  |
-| 11 | 4-rings-or-4-squares-puzzle | ✓ |  |  |
-| 12 | 9-billion-names-of-god-the-integer | ✓ |  |  |
-| 13 | 99-bottles-of-beer-2 | ✓ | 5.576ms | 96 B |
-| 14 | 99-bottles-of-beer | ✓ | 439µs | 96 B |
-| 15 | DNS-query | ✓ | 308.932ms | 568 B |
-| 16 | Duffinian-numbers | ✓ | 51.315ms | 96 B |
-| 17 | a+b | ✓ | 56µs | 8.1 KB |
-| 18 | abbreviations-automatic | ✓ | 2.198ms | 96 B |
-| 19 | abbreviations-easy | ✓ | 323µs | 96 B |
-| 20 | abbreviations-simple | ✓ | 369µs | 96 B |
-| 21 | abc-problem | ✓ | 289µs | 96 B |
-| 22 | abelian-sandpile-model-identity | ✓ | 135µs | 2.2 KB |
-| 23 | abelian-sandpile-model | ✓ | 181µs | 128 B |
-| 24 | abstract-type | ✓ | 75µs | 96 B |
-| 25 | abundant-deficient-and-perfect-number-classifications | ✓ | 29.816518s | 96 B |
-| 26 | abundant-odd-numbers | ✓ | 3.612025s | 96 B |
-| 27 | accumulator-factory | ✓ | 97µs | 2.1 KB |
-| 28 | achilles-numbers | ✓ | 10.575ms | 20.2 KB |
-| 29 | ackermann-function-2 | ✓ | 56µs | 96 B |
-| 30 | ackermann-function-3 | ✓ | 475µs | 192 B |
-| 31 | ackermann-function | ✓ | 645µs | 96 B |
-| 32 | active-directory-connect | ✓ | 62µs | 96 B |
-| 33 | active-directory-search-for-a-user | ✓ | 79µs | 96 B |
-| 34 | active-object | ✓ | 242µs | 384 B |
-| 35 | add-a-variable-to-a-class-instance-at-runtime | ✓ | 123µs | 8.1 KB |
-| 36 | additive-primes | ✓ | 274µs | 96 B |
-| 37 | address-of-a-variable | ✓ | 36µs | 96 B |
-| 38 | adfgvx-cipher | ✓ | 210µs | 208 B |
-| 39 | aks-test-for-primes | ✓ | 175µs | 96 B |
-| 40 | algebraic-data-types | ✓ | 106µs | 6.0 KB |
-| 41 | align-columns | ✓ | 120µs | 5.0 KB |
-| 42 | aliquot-sequence-classifications | ✓ | 90.195ms | 128 B |
-| 43 | almkvist-giullera-formula-for-pi | ✓ | 2.509759s | 96 B |
-| 44 | almost-prime | ✓ | 301µs | 96 B |
-| 45 | amb | ✓ | 43µs | 96 B |
-| 46 | amicable-pairs | ✓ | 19.789947s | 96 B |
+| 8 | 21-game | ✓ | 45µs | 8.1 KB |
+| 9 | 24-game-solve | ✓ | 5.126ms | 320 B |
+| 10 | 24-game | ✓ | 49µs | 8.1 KB |
+| 11 | 4-rings-or-4-squares-puzzle | ✓ | 16.314ms | 675.6 KB |
+| 12 | 9-billion-names-of-god-the-integer |   |  |  |
+| 13 | 99-bottles-of-beer-2 | ✓ | 4.852ms | 96 B |
+| 14 | 99-bottles-of-beer | ✓ | 412µs | 96 B |
+| 15 | DNS-query | ✓ | 444.693ms | 568 B |
+| 16 | Duffinian-numbers | ✓ | 51.825ms | 96 B |
+| 17 | a+b | ✓ | 39µs | 8.1 KB |
+| 18 | abbreviations-automatic | ✓ | 1.428ms | 96 B |
+| 19 | abbreviations-easy | ✓ | 199µs | 96 B |
+| 20 | abbreviations-simple | ✓ | 268µs | 96 B |
+| 21 | abc-problem | ✓ | 182µs | 96 B |
+| 22 | abelian-sandpile-model-identity | ✓ | 78µs | 2.2 KB |
+| 23 | abelian-sandpile-model | ✓ | 84µs | 128 B |
+| 24 | abstract-type | ✓ | 32µs | 96 B |
+| 25 | abundant-deficient-and-perfect-number-classifications | ✓ | 19.458317s | 96 B |
+| 26 | abundant-odd-numbers | ✓ | 2.042842s | 96 B |
+| 27 | accumulator-factory | ✓ | 42µs | 2.1 KB |
+| 28 | achilles-numbers | ✓ | 7.385ms | 20.2 KB |
+| 29 | ackermann-function-2 | ✓ | 28µs | 96 B |
+| 30 | ackermann-function-3 | ✓ | 579.278ms | 128 B |
+| 31 | ackermann-function | ✓ | 248µs | 96 B |
+| 32 | active-directory-connect | ✓ | 38µs | 96 B |
+| 33 | active-directory-search-for-a-user | ✓ | 36µs | 96 B |
+| 34 | active-object | ✓ | 141µs | 384 B |
+| 35 | add-a-variable-to-a-class-instance-at-runtime | ✓ | 51µs | 8.1 KB |
+| 36 | additive-primes | ✓ | 124µs | 96 B |
+| 37 | address-of-a-variable | ✓ | 37µs | 96 B |
+| 38 | adfgvx-cipher | ✓ | 206µs | 256 B |
+| 39 | aks-test-for-primes | ✓ | 162µs | 96 B |
+| 40 | algebraic-data-types | ✓ | 79µs | 6.0 KB |
+| 41 | align-columns | ✓ | 148µs | 5.0 KB |
+| 42 | aliquot-sequence-classifications | ✓ | 90.276ms | 128 B |
+| 43 | almkvist-giullera-formula-for-pi | ✓ | 2.602167s | 96 B |
+| 44 | almost-prime | ✓ | 329µs | 96 B |
+| 45 | amb | ✓ | 47µs | 96 B |
+| 46 | amicable-pairs | ✓ | 19.856936s | 96 B |
 | 47 | anagrams-deranged-anagrams | ✓ | 70µs | 96 B |
-| 48 | anagrams | ✓ | 134µs | 96 B |
-| 49 | angle-difference-between-two-bearings-1 | ✓ | 48µs | 128 B |
-| 50 | angle-difference-between-two-bearings-2 | ✓ | 55µs | 128 B |
+| 48 | anagrams | ✓ | 144µs | 96 B |
+| 49 | angle-difference-between-two-bearings-1 | ✓ | 73µs | 128 B |
+| 50 | angle-difference-between-two-bearings-2 | ✓ | 52µs | 128 B |
 | 51 | angles-geometric-normalization-and-conversion | ✓ | 151µs | 96 B |
 | 52 | animate-a-pendulum | ✓ | 32µs | 384 B |
 | 53 | animation | ✓ | 156µs | 136 B |

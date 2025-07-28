@@ -35,7 +35,8 @@ $__start_mem = memory_get_usage();
 $__start = _now();
   function accumulator($sum) {
   $store = [$sum];
-  $add = function($nv) use (&$add, $sum, $store) {
+  $add = null;
+$add = function($nv) use (&$add, $sum, $store) {
   $store[0] = $store[0] + $nv;
   return $store[0];
 };

@@ -33,8 +33,8 @@ function _str($x) {
 }
 function _intdiv($a, $b) {
     if (function_exists('bcdiv')) {
-        $sa = is_int($a) ? strval($a) : sprintf('%.0f', $a);
-        $sb = is_int($b) ? strval($b) : sprintf('%.0f', $b);
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
         return intval(bcdiv($sa, $sb, 0));
     }
     return intdiv($a, $b);
@@ -119,9 +119,11 @@ $__start = _now();
   $max = 25;
   echo rtrim('The first ' . _str($max) . ' abundant odd numbers are:'), PHP_EOL;
   $n = abundantOdd(1, 0, $max, false);
-  echo rtrim('\nThe one thousandth abundant odd number is:'), PHP_EOL;
+  echo rtrim('
+The one thousandth abundant odd number is:'), PHP_EOL;
   abundantOdd($n, $max, 1000, true);
-  echo rtrim('\nThe first abundant odd number above one billion is:'), PHP_EOL;
+  echo rtrim('
+The first abundant odd number above one billion is:'), PHP_EOL;
   abundantOdd(1000000001, 0, 1, true);
 };
   main();
