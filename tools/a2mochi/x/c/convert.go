@@ -122,7 +122,7 @@ var castRE = regexp.MustCompile(`\([a-zA-Z_][a-zA-Z0-9_\s]*\*\)`) // matches C c
 var functionPtrRE = regexp.MustCompile(`^.*\(\*\s*([A-Za-z_][A-Za-z0-9_]*)\s*\)\s*\([^)]*\)\s*=\s*(.*)$`)
 var funcPtrTypeAnonRE = regexp.MustCompile(`^(.+)\(\*\)\s*\((.*)\)$`)
 var funcPtrTypeNamedRE = regexp.MustCompile(`^(.+)\(\*\s*[A-Za-z_][A-Za-z0-9_]*\s*\)\s*\((.*)\)$`)
-var forRangeRE = regexp.MustCompile(`^for\s*\((?:int\s+)?([A-Za-z_][A-Za-z0-9_]*)\s*=\s*([^;]+);\s*([A-Za-z_][A-Za-z0-9_]*)\s*(<|<=)\s*([^;]+);\s*([A-Za-z_][A-Za-z0-9_]*)\+\+\s*\)$`)
+var forRangeRE = regexp.MustCompile(`^for\s*\((?:[A-Za-z_][A-Za-z0-9_]*\s+)?([A-Za-z_][A-Za-z0-9_]*)\s*=\s*([^;]+);\s*([A-Za-z_][A-Za-z0-9_]*)\s*(<|<=)\s*([^;]+);\s*([A-Za-z_][A-Za-z0-9_]*)\+\+\s*\)$`)
 
 func stripCasts(s string) string { return castRE.ReplaceAllString(s, "") }
 
@@ -394,6 +394,9 @@ func parseStatements(body string) []string {
 				arg = strings.TrimSpace(parts[1])
 			}
 			out = append(out, strings.Repeat("  ", indent)+"print("+arg+")")
+		case strings.HasPrefix(l, "puts("):
+			arg := strings.TrimSuffix(strings.TrimPrefix(l, "puts("), ");")
+			out = append(out, strings.Repeat("  ", indent)+"print("+strings.TrimSpace(arg)+")")
 		default:
 			if strings.HasSuffix(l, ";") {
 				l = strings.TrimSuffix(l, ";")
@@ -448,6 +451,12 @@ func parseStatements(body string) []string {
 				out = append(out, strings.Repeat("  ", indent)+v+" = "+v+" ^ "+val)
 			case strings.HasPrefix(l, "int "):
 				out = append(out, strings.Repeat("  ", indent)+"var "+strings.TrimSpace(l[4:]))
+			case strings.HasPrefix(l, "size_t "):
+				out = append(out, strings.Repeat("  ", indent)+"var "+strings.TrimSpace(l[7:]))
+			case strings.HasPrefix(l, "long "):
+				out = append(out, strings.Repeat("  ", indent)+"var "+strings.TrimSpace(l[5:]))
+			case strings.HasPrefix(l, "short "):
+				out = append(out, strings.Repeat("  ", indent)+"var "+strings.TrimSpace(l[6:]))
 			case strings.HasPrefix(l, "float "):
 				out = append(out, strings.Repeat("  ", indent)+"var "+strings.TrimSpace(l[6:]))
 			case strings.HasPrefix(l, "double "):

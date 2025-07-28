@@ -1,0 +1,3 @@
+print(a)
+print(a == 7)
+print(b < 5)

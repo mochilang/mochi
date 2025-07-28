@@ -1,0 +1,12 @@
+(program
+  (fun square
+    (param x (type int))
+    (type int)
+    (return
+      (binary * (selector x) (selector x))
+    )
+  )
+  (call print
+    (call square (int 6))
+  )
+)
