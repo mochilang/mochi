@@ -11,7 +11,6 @@ import (
 	"strings"
 	"testing"
 
-	"mochi/ast"
 	"mochi/parser"
 	"mochi/runtime/vm"
 	"mochi/types"
@@ -91,9 +90,13 @@ func TestConvert_Golden(t *testing.T) {
 	}
 
 	allowed := map[string]bool{
-		"bool_chain":    true,
-		"let_and_print": true,
-		"print_hello":   true,
+		"append_builtin":    true,
+		"basic_compare":     true,
+		"binary_precedence": true,
+		"bool_chain":        true,
+		"let_and_print":     true,
+		"print_hello":       true,
+		"unary_neg":         true,
 	}
 
 	outDir := filepath.Join(root, "tests", "a2mochi", "x", "ex")
@@ -130,11 +133,11 @@ func TestConvert_Golden(t *testing.T) {
 				t.Fatalf("golden mismatch\n--- Got ---\n%s\n--- Want ---\n%s", got, want)
 			}
 
-			var buf bytes.Buffer
-			if err := ast.Fprint(&buf, node); err != nil {
-				t.Fatalf("print: %v", err)
+			codeBytes, err := ex.ConvertParsed(string(data))
+			if err != nil {
+				t.Fatalf("source: %v", err)
 			}
-			code := buf.String()
+			code := string(codeBytes)
 			mochiPath := filepath.Join(outDir, name+".mochi")
 			if *update {
 				os.WriteFile(mochiPath, []byte(code), 0o644)

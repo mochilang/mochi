@@ -1,0 +1,16 @@
+(program
+  (fun main
+    (call print
+      (unary - (int 3))
+    )
+    (call print
+      (binary +
+        (int 5)
+        (group
+          (unary - (int 2))
+        )
+      )
+    )
+  )
+  (call main)
+)
