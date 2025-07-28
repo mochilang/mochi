@@ -1,0 +1,22 @@
+(program
+  (var data
+    (list (int 1) (int 2))
+  )
+  (var flag
+    (binary >
+      (call len
+        (query x
+          (source (selector data))
+          (where
+            (binary == (selector x) (int 1))
+          )
+          (select (selector x))
+        )
+      )
+      (int 0)
+    )
+  )
+  (call print
+    (if_expr (selector flag) (bool true) (bool false))
+  )
+)

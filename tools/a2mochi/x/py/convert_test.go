@@ -103,9 +103,16 @@ func TestConvert_Golden(t *testing.T) {
 		"list_assign":         true,
 		"map_assign":          true,
 		"membership":          true,
-		"map_membership":      true,
-		"count_builtin":       true,
-	}
+               "map_membership":      true,
+               "count_builtin":       true,
+               "exists_builtin":      true,
+               "for_list_collection": true,
+               "for_map_collection":  true,
+               "if_then_else":        true,
+               "if_then_else_nested": true,
+               "in_operator":         true,
+               "in_operator_extended": true,
+       }
 	outDir := filepath.Join(root, "tests", "a2mochi", "x", "py")
 	os.MkdirAll(outDir, 0o755)
 	for _, src := range files {

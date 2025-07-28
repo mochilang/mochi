@@ -970,24 +970,32 @@ func emitExpr(b *strings.Builder, n *Node, lines []string) error {
 			}
 		}
 		b.WriteByte(']')
-	case "UnaryOp":
-		b.WriteByte('(')
-		if n.Op != nil {
-			switch n.Op.Type {
-			case "USub":
-				b.WriteByte('-')
-			case "UAdd":
-				b.WriteByte('+')
-			case "Not":
-				b.WriteString("not ")
-			default:
-				return newConvertError(n.Line, lines, "unhandled unary operator")
-			}
-		}
-		if err := emitExpr(b, n.Operand, lines); err != nil {
-			return err
-		}
-		b.WriteByte(')')
+       case "UnaryOp":
+               if n.Op != nil && n.Op.Type == "Not" && n.Operand != nil && n.Operand.Type == "Compare" {
+                       b.WriteString("!(")
+                       if err := emitExpr(b, n.Operand, lines); err != nil {
+                               return err
+                       }
+                       b.WriteByte(')')
+                       return nil
+               }
+               b.WriteByte('(')
+               if n.Op != nil {
+                       switch n.Op.Type {
+                       case "USub":
+                               b.WriteByte('-')
+                       case "UAdd":
+                               b.WriteByte('+')
+                       case "Not":
+                               b.WriteString("not ")
+                       default:
+                               return newConvertError(n.Line, lines, "unhandled unary operator")
+                       }
+               }
+               if err := emitExpr(b, n.Operand, lines); err != nil {
+                       return err
+               }
+               b.WriteByte(')')
 	default:
 		return newConvertError(n.Line, lines, "unhandled expression")
 	}

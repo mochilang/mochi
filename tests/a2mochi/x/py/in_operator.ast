@@ -1,0 +1,19 @@
+(program
+  (var xs
+    (list (int 1) (int 2) (int 3))
+  )
+  (call print
+    (binary in (int 2) (selector xs))
+  )
+  (call print
+    (if_expr
+      (unary !
+        (group
+          (binary in (int 5) (selector xs))
+        )
+      )
+      (bool true)
+      (bool false)
+    )
+  )
+)
