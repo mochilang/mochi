@@ -382,7 +382,15 @@ func convertBodyString(body string) []string {
 		}
 		switch {
 		case strings.HasPrefix(l, "return"):
-			out = append(out, l)
+			expr := strings.TrimSpace(strings.TrimPrefix(l, "return"))
+			if expr != "" {
+				expr = convertExpr(expr)
+				negRe := regexp.MustCompile(`([+\-*/])\s*-([A-Za-z0-9_]+)`)
+				expr = negRe.ReplaceAllString(expr, `$1 (-$2)`)
+				out = append(out, "return "+expr)
+			} else {
+				out = append(out, "return")
+			}
 		case l == "break":
 			out = append(out, "break")
 		case l == "continue":
@@ -396,9 +404,8 @@ func convertBodyString(body string) []string {
 			l = strings.TrimSuffix(l, "<< std::endl")
 			l = strings.TrimSuffix(l, "<< endl")
 			l = strings.TrimSpace(l)
-			if strings.HasPrefix(l, "std::string(") && strings.HasSuffix(l, ")") {
-				l = strings.TrimSuffix(strings.TrimPrefix(l, "std::string("), ")")
-			}
+			// built-in conversions handled in convertExpr
+			l = convertExpr(l)
 			negRe := regexp.MustCompile(`([+\-*/])\s*-([A-Za-z0-9_]+)`)
 			l = negRe.ReplaceAllString(l, `$1 (-$2)`)
 			out = append(out, "print("+l+")")
@@ -461,12 +468,31 @@ func convertBodyString(body string) []string {
 			if decl {
 				l = "let " + l
 			}
+			l = convertExpr(l)
 			negRe := regexp.MustCompile(`([+\-*/])\s*-([A-Za-z0-9_]+)`)
 			l = negRe.ReplaceAllString(l, `$1 (-$2)`)
 			out = append(out, l)
 		}
 	}
 	return out
+}
+
+func convertExpr(s string) string {
+	s = strings.TrimSpace(s)
+	if strings.HasSuffix(s, ".size()") {
+		inner := strings.TrimSuffix(s, ".size()")
+		inner = convertExpr(inner)
+		return "len(" + inner + ")"
+	}
+	if strings.HasPrefix(s, "std::vector") && strings.Contains(s, "{") && strings.HasSuffix(s, "}") {
+		start := strings.Index(s, "{")
+		inner := strings.TrimSpace(s[start+1 : len(s)-1])
+		return "[" + inner + "]"
+	}
+	if strings.HasPrefix(s, "std::string(") && strings.HasSuffix(s, ")") {
+		return strings.TrimSuffix(strings.TrimPrefix(s, "std::string("), ")")
+	}
+	return s
 }
 
 func parseGlobals(src string) []Global {

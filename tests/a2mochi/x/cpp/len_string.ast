@@ -1,0 +1,10 @@
+(program
+  (fun main
+    (type int)
+    (call print
+      (call len (string mochi))
+    )
+    (return (int 0))
+  )
+  (call main)
+)
