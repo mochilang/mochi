@@ -741,7 +741,9 @@ func (c *CastExpr) emit(w io.Writer) {
 	case "string":
 		io.WriteString(w, ".toString()")
 	case "BigInteger":
-		io.WriteString(w, ".toBigInteger()")
+		if guessType(c.Value) != "BigInteger" {
+			io.WriteString(w, ".toBigInteger()")
+		}
 	default:
 		io.WriteString(w, " as "+c.Type)
 	}
@@ -829,7 +831,11 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		} else if typ == "BigInteger" {
 			io.WriteString(w, "(")
 			e.emit(w)
-			io.WriteString(w, ").toBigInteger()")
+			if guessType(e) != "BigInteger" {
+				io.WriteString(w, ").toBigInteger()")
+			} else {
+				io.WriteString(w, ")")
+			}
 		} else if typ == "Long" {
 			io.WriteString(w, "(")
 			e.emit(w)
@@ -1145,9 +1151,14 @@ func (s *LetStmt) emit(w io.Writer, indentLevel int) { // 'let' is immutable
 			io.WriteString(w, ")")
 			return
 		}
-		io.WriteString(w, "(")
-		s.Value.emit(w)
-		io.WriteString(w, ").toBigInteger()")
+		needConv := guessType(s.Value) != "BigInteger"
+		if needConv {
+			io.WriteString(w, "(")
+			s.Value.emit(w)
+			io.WriteString(w, ").toBigInteger()")
+		} else {
+			s.Value.emit(w)
+		}
 		return
 	}
 	if ll, ok := s.Value.(*ListLit); ok && len(ll.Elems) == 0 && strings.HasPrefix(s.Type, "MutableList<") {
@@ -1179,9 +1190,14 @@ func (s *VarStmt) emit(w io.Writer, indentLevel int) {
 			io.WriteString(w, ")")
 			return
 		}
-		io.WriteString(w, "(")
-		s.Value.emit(w)
-		io.WriteString(w, ").toBigInteger()")
+		needConv := guessType(s.Value) != "BigInteger"
+		if needConv {
+			io.WriteString(w, "(")
+			s.Value.emit(w)
+			io.WriteString(w, ").toBigInteger()")
+		} else {
+			s.Value.emit(w)
+		}
 		return
 	}
 	if ll, ok := s.Value.(*ListLit); ok && len(ll.Elems) == 0 && strings.HasPrefix(s.Type, "MutableList<") {
@@ -2712,12 +2728,6 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 						typ += "?"
 					}
 				}
-				if typ == "BigInteger" {
-					typ = "Int"
-				}
-				if typ == "BigInteger" && guessType(val) == "Int" {
-					typ = "Int"
-				}
 			}
 			p.Globals = append(p.Globals, &LetStmt{Name: st.Let.Name, Type: typ, Value: val})
 			if env != nil {
@@ -3030,12 +3040,6 @@ func convertStmts(env *types.Env, list []*parser.Statement) ([]Stmt, error) {
 				}
 				if ix, ok := v.(*IndexExpr); ok {
 					_ = ix
-				}
-				if typ == "BigInteger" {
-					typ = "Int"
-				}
-				if typ == "BigInteger" && guessType(v) == "Int" {
-					typ = "Int"
 				}
 			}
 			if s.Let.Type != nil {
