@@ -1,0 +1,38 @@
+(program
+  (let nums
+    (list (int 1) (int 2) (int 3))
+  )
+  (let letters
+    (list (string A) (string B))
+  )
+  (let pairs
+    (query n
+      (source (selector nums))
+      (from l
+        (source (selector letters))
+      )
+      (where
+        (binary ==
+          (binary % (selector n) (int 2))
+          (int 0)
+        )
+      )
+      (select
+        (map
+          (entry (selector n) (selector n))
+          (entry (selector l) (selector l))
+        )
+      )
+    )
+  )
+  (call print (string "--- Even pairs ---"))
+  (for p
+    (in (selector pairs))
+    (block
+      (call print
+        (selector n (selector p))
+        (selector l (selector p))
+      )
+    )
+  )
+)
