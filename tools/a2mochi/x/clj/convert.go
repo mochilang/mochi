@@ -439,6 +439,56 @@ func cljToMochi(n sexprNode) string {
 			if len(v) >= 3 {
 				return fmt.Sprintf("let %s = %s", cljToMochi(v[1]), cljToMochi(v[2]))
 			}
+		case "dotimes":
+			if len(v) >= 3 {
+				if bind, ok := v[1].([]sexprNode); ok && len(bind) >= 2 {
+					name := cljToMochi(bind[0])
+					limit := cljToMochi(bind[1])
+					var body []string
+					for _, b := range v[2:] {
+						if s := cljToMochi(b); s != "" {
+							body = append(body, s)
+						}
+					}
+					if len(body) == 1 {
+						return fmt.Sprintf("for %s in range(%s) { %s }", name, limit, body[0])
+					}
+					var sb strings.Builder
+					sb.WriteString(fmt.Sprintf("for %s in range(%s) {\n", name, limit))
+					for _, b := range body {
+						sb.WriteString("  ")
+						sb.WriteString(b)
+						sb.WriteByte('\n')
+					}
+					sb.WriteString("}")
+					return sb.String()
+				}
+			}
+		case "doseq":
+			if len(v) >= 3 {
+				if bind, ok := v[1].([]sexprNode); ok && len(bind) >= 2 {
+					name := cljToMochi(bind[0])
+					coll := cljToMochi(bind[1])
+					var body []string
+					for _, b := range v[2:] {
+						if s := cljToMochi(b); s != "" {
+							body = append(body, s)
+						}
+					}
+					if len(body) == 1 {
+						return fmt.Sprintf("for %s in %s { %s }", name, coll, body[0])
+					}
+					var sb strings.Builder
+					sb.WriteString(fmt.Sprintf("for %s in %s {\n", name, coll))
+					for _, b := range body {
+						sb.WriteString("  ")
+						sb.WriteString(b)
+						sb.WriteByte('\n')
+					}
+					sb.WriteString("}")
+					return sb.String()
+				}
+			}
 		case "and":
 			if len(v) >= 3 {
 				parts := make([]string, 0, len(v)-1)

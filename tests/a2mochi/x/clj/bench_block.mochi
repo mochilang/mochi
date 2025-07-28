@@ -1,0 +1,10 @@
+let n = 1000
+let s = 0
+for i in range(n) {
+  s = s + i
+}
+print("{")
+print("  \"duration_us\": 571223,")
+print("  \"memory_bytes\": 0,")
+print("  \"name\": \"simple\"")
+print("}")
