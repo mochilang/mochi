@@ -287,7 +287,10 @@ type MinExpr struct{ Value Expr }
 type MaxExpr struct{ Value Expr }
 
 // IntDivExpr performs integer division of two expressions.
-type IntDivExpr struct{ Left, Right Expr }
+type IntDivExpr struct {
+	Left, Right Expr
+	Big         bool
+}
 
 // NowExpr expands to a deterministic timestamp similar to the VM's now() builtin.
 type NowExpr struct{}
@@ -627,15 +630,25 @@ func (e *MaxExpr) emit(w io.Writer) {
 }
 
 func (e *IntDivExpr) emit(w io.Writer) {
-	io.WriteString(w, "Math.trunc(")
-	if e.Left != nil {
-		e.Left.emit(w)
+	if e.Big {
+		if e.Left != nil {
+			e.Left.emit(w)
+		}
+		io.WriteString(w, " / ")
+		if e.Right != nil {
+			e.Right.emit(w)
+		}
+	} else {
+		io.WriteString(w, "Math.trunc(")
+		if e.Left != nil {
+			e.Left.emit(w)
+		}
+		io.WriteString(w, " / ")
+		if e.Right != nil {
+			e.Right.emit(w)
+		}
+		io.WriteString(w, ")")
 	}
-	io.WriteString(w, " / ")
-	if e.Right != nil {
-		e.Right.emit(w)
-	}
-	io.WriteString(w, ")")
 }
 
 func (e *ValuesExpr) emit(w io.Writer) {
@@ -2095,7 +2108,15 @@ func Transpile(prog *parser.Program, env *types.Env, benchMain bool) (*Program, 
 					fd.Async = true
 				}
 			case *VarDecl:
-				prelude = append(prelude, st)
+				v := st.(*VarDecl)
+				if simpleExpr(v.Expr) {
+					prelude = append(prelude, st)
+				} else {
+					// keep declarations with non-trivial
+					// initializers inside the benchmarked
+					// block to preserve execution order
+					mainStmts = append(mainStmts, st)
+				}
 			default:
 				mainStmts = append(mainStmts, st)
 			}
@@ -3338,7 +3359,7 @@ func convertBinary(b *parser.BinaryExpr) (Expr, error) {
 			}
 			if ops[i] == "/" && (isIntType(typesArr[i]) && isIntType(typesArr[i+1]) || (isVarIntExpr(operands[i]) && isIntLitExpr(operands[i+1])) || (isIntLitExpr(operands[i]) && isIntLitExpr(operands[i+1]))) && !(isFloatLitExpr(operands[i]) || isFloatLitExpr(operands[i+1])) {
 				if isBigIntType(typesArr[i]) || isBigIntType(typesArr[i+1]) {
-					operands[i] = &BinaryExpr{Left: operands[i], Op: "/", Right: operands[i+1]}
+					operands[i] = &IntDivExpr{Left: operands[i], Right: operands[i+1], Big: true}
 					typesArr[i] = types.BigIntType{}
 				} else {
 					operands[i] = &IntDivExpr{Left: operands[i], Right: operands[i+1]}
@@ -4110,6 +4131,34 @@ func zeroValue(t *parser.TypeRef, env *types.Env) Expr {
 		return &MapLit{}
 	default:
 		return nil
+	}
+}
+
+// simpleExpr reports whether e is a literal expression without side effects.
+// This is used to decide if a variable declaration can be safely hoisted out
+// of the benchmark body.
+func simpleExpr(e Expr) bool {
+	switch v := e.(type) {
+	case nil:
+		return true
+	case *NumberLit, *StringLit, *BoolLit, *NullLit:
+		return true
+	case *ListLit:
+		for _, el := range v.Elems {
+			if !simpleExpr(el) {
+				return false
+			}
+		}
+		return true
+	case *MapLit:
+		for _, ent := range v.Entries {
+			if !simpleExpr(ent.Key) || !simpleExpr(ent.Value) {
+				return false
+			}
+		}
+		return true
+	default:
+		return false
 	}
 }
 
