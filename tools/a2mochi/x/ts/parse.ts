@@ -74,6 +74,12 @@ function tsToMochiType(t: string): string {
     const val = tsToMochiType(v || "any") || "any";
     return `map<${key},${val}>`;
   }
+  const idx = t.match(/^\{\s*\[[^:]+:\s*([^\]]+)\]\s*:\s*(.+)\}$/);
+  if (idx) {
+    const key = tsToMochiType(idx[1]) || "any";
+    const val = tsToMochiType(idx[2]) || "any";
+    return `map<${key},${val}>`;
+  }
   return t;
 }
 
