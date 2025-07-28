@@ -545,6 +545,8 @@ func emitAugAssignStmt(b *strings.Builder, n *Node, lines []string, seen map[str
 		b.WriteByte('*')
 	case "Div":
 		b.WriteByte('/')
+	case "FloorDiv":
+		b.WriteByte('/')
 	case "Mod":
 		b.WriteByte('%')
 	default:
@@ -760,6 +762,8 @@ func emitExpr(b *strings.Builder, n *Node, lines []string) error {
 			case "Mult":
 				b.WriteByte('*')
 			case "Div":
+				b.WriteByte('/')
+			case "FloorDiv":
 				b.WriteByte('/')
 			case "Mod":
 				b.WriteByte('%')

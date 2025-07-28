@@ -106,6 +106,8 @@ func TestConvert_Golden(t *testing.T) {
 		"membership":          true,
 		"map_membership":      true,
 		"count_builtin":       true,
+		"math_ops":            true,
+		"min_max_builtin":     true,
 	}
 	outDir := filepath.Join(root, "tests", "a2mochi", "x", "py")
 	os.MkdirAll(outDir, 0o755)
