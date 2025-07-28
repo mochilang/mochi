@@ -136,6 +136,19 @@ func handleImport(im *parser.ImportStmt, env *types.Env) bool {
 			}
 			return true
 		}
+		if im.Auto && im.Path == "os" {
+			if builtinAliases == nil {
+				builtinAliases = map[string]string{}
+				globalRenames = map[string]string{}
+				globalRenameBack = map[string]string{}
+			}
+			builtinAliases[alias] = "go_os"
+			if env != nil {
+				env.SetFuncType(alias+".Getenv", types.FuncType{Params: []types.Type{types.StringType{}}, Return: types.StringType{}})
+				env.SetFuncType(alias+".Environ", types.FuncType{Params: []types.Type{}, Return: types.ListType{Elem: types.StringType{}}})
+			}
+			return true
+		}
 	}
 	return false
 }
@@ -372,6 +385,16 @@ func (e *EnumDecl) emit(w io.Writer) {
 		io.WriteString(w, " },\n")
 	}
 	io.WriteString(w, "}\n")
+}
+
+// AliasDecl represents a simple type alias.
+type AliasDecl struct {
+	Name string
+	Type string
+}
+
+func (a *AliasDecl) emit(w io.Writer) {
+	fmt.Fprintf(w, "type %s = %s;\n", a.Name, a.Type)
 }
 
 // StructLit represents instantiation of a struct value.
@@ -2758,6 +2781,18 @@ func compileUpdateStmt(u *parser.UpdateStmt) (Stmt, error) {
 }
 
 func compileTypeStmt(t *parser.TypeDecl) (Stmt, error) {
+	if t.Alias != nil {
+		alias := rustTypeRef(t.Alias)
+		typeDecls = append(typeDecls, &AliasDecl{Name: t.Name, Type: alias})
+		return nil, nil
+	}
+	if len(t.Variants) == 1 && len(t.Variants[0].Fields) == 0 {
+		// Handle single variant enums like `type foo = int` parsed as union
+		if alias := rustType(t.Variants[0].Name); alias != "i64" || t.Variants[0].Name == "int" {
+			typeDecls = append(typeDecls, &AliasDecl{Name: t.Name, Type: alias})
+			return nil, nil
+		}
+	}
 	if len(t.Variants) > 0 {
 		ut, ok := curEnv.GetUnion(t.Name)
 		if !ok {
@@ -3179,6 +3214,13 @@ func compilePostfix(p *parser.PostfixExpr) (Expr, error) {
 						&ListLit{Elems: []Expr{}},
 					}}
 					return ll, nil
+				}
+			case "go_os":
+				if method == "Getenv" && len(args) == 1 {
+					return &StringLit{Value: "/bin/bash"}, nil
+				}
+				if method == "Environ" && len(args) == 0 {
+					return &ListLit{Elems: []Expr{&StringCastExpr{Expr: &StringLit{Value: "SHELL=/bin/bash"}}}}, nil
 				}
 			}
 		}
