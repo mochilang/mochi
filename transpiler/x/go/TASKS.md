@@ -1,3 +1,7 @@
+## Progress (2025-07-28 10:03 +0700)
+- chore: sort rosetta index
+- Regenerated golden files - 104/104 vm valid programs passing
+
 ## Progress (2025-07-27 23:47 +0700)
 - transpiler/go: support union aliases
 - Regenerated golden files - 104/104 vm valid programs passing
