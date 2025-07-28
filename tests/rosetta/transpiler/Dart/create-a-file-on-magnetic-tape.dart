@@ -34,17 +34,6 @@ String _substr(String s, int start, int end) {
   return s.substring(start, end);
 }
 
-class Hdr {
-  String Name;
-  int Mode;
-  int Size;
-  int ModTime;
-  int Typeflag;
-  String Uname;
-  String Gname;
-  Hdr({required this.Name, required this.Mode, required this.Size, required this.ModTime, required this.Typeflag, required this.Uname, required this.Gname});
-}
-
 dynamic gzipWriter(dynamic w) {
   return w;
 }
@@ -66,13 +55,13 @@ void _main() {
   bool gzipFlag = false;
   dynamic? w = null;
   if (outfile != "") {
-    w = null;
+    ;
   }
   if (gzipFlag) {
     w = gzipWriter(w);
   }
   w = tarWriter(w);
-  Map<String, dynamic> hdr = Hdr(Name: filename, Mode: 432, Size: data.length, ModTime: _now(), Typeflag: 0, Uname: "guest", Gname: "guest");
+  Map<String, dynamic> hdr = {"Name": filename, "Mode": 432, "Size": data.length, "ModTime": _now(), "Typeflag": 0, "Uname": "guest", "Gname": "guest"};
   tarWriteHeader(w, hdr);
   tarWrite(w, data);
 }
@@ -89,7 +78,6 @@ void _start() {
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "main"}));
 }
-  _main();
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "_start"}));

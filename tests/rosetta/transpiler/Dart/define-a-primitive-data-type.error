@@ -1,36 +1,7 @@
 run: exit status 254
-../../../tests/rosetta/transpiler/Dart/define-a-primitive-data-type.dart:58:28: Error: The method 'Add' isn't defined for the class 'TinyInt'.
- - 'TinyInt' is from '../../../tests/rosetta/transpiler/Dart/define-a-primitive-data-type.dart'.
-Try correcting the name to the name of an existing method, or defining a method named 'Add'.
-  print("t1 + t2 = " + (t1.Add(t2).value).toString());
-                           ^^^
-../../../tests/rosetta/transpiler/Dart/define-a-primitive-data-type.dart:59:28: Error: The method 'Sub' isn't defined for the class 'TinyInt'.
- - 'TinyInt' is from '../../../tests/rosetta/transpiler/Dart/define-a-primitive-data-type.dart'.
-Try correcting the name to the name of an existing method, or defining a method named 'Sub'.
-  print("t1 - t2 = " + (t1.Sub(t2).value).toString());
-                           ^^^
-../../../tests/rosetta/transpiler/Dart/define-a-primitive-data-type.dart:60:28: Error: The method 'Mul' isn't defined for the class 'TinyInt'.
- - 'TinyInt' is from '../../../tests/rosetta/transpiler/Dart/define-a-primitive-data-type.dart'.
-Try correcting the name to the name of an existing method, or defining a method named 'Mul'.
-  print("t1 * t2 = " + (t1.Mul(t2).value).toString());
-                           ^^^
-../../../tests/rosetta/transpiler/Dart/define-a-primitive-data-type.dart:61:28: Error: The method 'Div' isn't defined for the class 'TinyInt'.
- - 'TinyInt' is from '../../../tests/rosetta/transpiler/Dart/define-a-primitive-data-type.dart'.
-Try correcting the name to the name of an existing method, or defining a method named 'Div'.
-  print("t1 / t2 = " + (t1.Div(t2).value).toString());
-                           ^^^
-../../../tests/rosetta/transpiler/Dart/define-a-primitive-data-type.dart:62:28: Error: The method 'Rem' isn't defined for the class 'TinyInt'.
- - 'TinyInt' is from '../../../tests/rosetta/transpiler/Dart/define-a-primitive-data-type.dart'.
-Try correcting the name to the name of an existing method, or defining a method named 'Rem'.
-  print("t1 % t2 = " + (t1.Rem(t2).value).toString());
-                           ^^^
-../../../tests/rosetta/transpiler/Dart/define-a-primitive-data-type.dart:63:28: Error: The method 'Inc' isn't defined for the class 'TinyInt'.
- - 'TinyInt' is from '../../../tests/rosetta/transpiler/Dart/define-a-primitive-data-type.dart'.
-Try correcting the name to the name of an existing method, or defining a method named 'Inc'.
-  print("t1 + 1  = " + (t1.Inc().value).toString());
-                           ^^^
-../../../tests/rosetta/transpiler/Dart/define-a-primitive-data-type.dart:64:28: Error: The method 'Dec' isn't defined for the class 'TinyInt'.
- - 'TinyInt' is from '../../../tests/rosetta/transpiler/Dart/define-a-primitive-data-type.dart'.
-Try correcting the name to the name of an existing method, or defining a method named 'Dec'.
-  print("t1 - 1  = " + (t1.Dec().value).toString());
-                           ^^^
+../../../tests/rosetta/transpiler/Dart/define-a-primitive-data-type.dart:63:10: Error: Method not found: 'Add'.
+  return Add(NewTinyInt(1));
+         ^^^
+../../../tests/rosetta/transpiler/Dart/define-a-primitive-data-type.dart:67:10: Error: Method not found: 'Sub'.
+  return Sub(NewTinyInt(1));
+         ^^^

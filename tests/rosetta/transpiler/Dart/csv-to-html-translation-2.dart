@@ -44,8 +44,8 @@ void main() {
   {
   var _benchMem0 = ProcessInfo.currentRss;
   var _benchSw = Stopwatch()..start();
-  for (String line in split(c, "\n")) {
-    rows = [...rows, split(line, ",")];
+  for (var line in c.split("\n")) {
+    rows = [...rows, line.split(",")];
   }
   print("<table>");
   if (headings) {

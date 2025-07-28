@@ -186,7 +186,7 @@ List<int> parseTime(String s) {
 void _main() {
   String input = "March 7 2009 7:30pm EST";
   print("Input:              " + input);
-  List<dynamic> parts = <dynamic>[];
+  List<dynamic> parts = [];
   String cur = "";
   int i = 0;
   while (i < input.length) {
@@ -243,7 +243,6 @@ void _start() {
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "main"}));
 }
-  _main();
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "_start"}));

@@ -212,7 +212,7 @@ void _main() {
   List<int> ppcyclops = <int>[];
   for (int p in primes) {
     String ps = (p).toString();
-    List<String> splitp = split(ps, "0");
+    var splitp = ps.split("0");
     int noMiddle = int.parse(splitp[0] + splitp[1]);
     if (isPrime(noMiddle)) {
     bpcyclops = [...bpcyclops, p];
@@ -252,11 +252,11 @@ void _start() {
   {
   var _benchMem0 = ProcessInfo.currentRss;
   var _benchSw = Stopwatch()..start();
+  _main();
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "main"}));
 }
-  _main();
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "_start"}));
