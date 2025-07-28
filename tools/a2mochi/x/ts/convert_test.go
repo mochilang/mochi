@@ -11,7 +11,6 @@ import (
 	"strings"
 	"testing"
 
-	"mochi/ast"
 	"mochi/parser"
 	"mochi/runtime/vm"
 	"mochi/types"
@@ -86,13 +85,13 @@ func TestConvert_Golden(t *testing.T) {
 			if err != nil {
 				t.Fatalf("read src: %v", err)
 			}
-			nodes, err := ts.Parse(string(data))
+			prog, err := ts.Parse(string(data))
 			if err != nil {
 				t.Fatalf("parse: %v", err)
 			}
-			astNode, err := ts.Convert(nodes, string(data))
+			astNode, err := ts.Transform(prog)
 			if err != nil {
-				t.Fatalf("convert: %v", err)
+				t.Fatalf("transform: %v", err)
 			}
 			astPath := filepath.Join(outDir, name+".ast")
 			if *update {
@@ -106,23 +105,22 @@ func TestConvert_Golden(t *testing.T) {
 				t.Fatalf("golden mismatch\n--- Got ---\n%s\n--- Want ---\n%s", astNode.String(), wantAST)
 			}
 
-			var buf bytes.Buffer
-			if err := ast.Fprint(&buf, astNode); err != nil {
+			code, err := ts.Print(astNode)
+			if err != nil {
 				t.Fatalf("print: %v", err)
 			}
-			code := buf.String()
 			mochiPath := filepath.Join(outDir, name+".mochi")
 			if *update {
 				os.WriteFile(mochiPath, []byte(code), 0644)
 			}
 
-                        gotOut, err := runMochi(code)
-                        if err != nil {
-                                t.Fatalf("run: %v", err)
-                        }
-                        if *update {
-                                os.WriteFile(filepath.Join(outDir, name+".out"), gotOut, 0o644)
-                        }
+			gotOut, err := runMochi(code)
+			if err != nil {
+				t.Fatalf("run: %v", err)
+			}
+			if *update {
+				os.WriteFile(filepath.Join(outDir, name+".out"), gotOut, 0o644)
+			}
 			vmSrc, err := os.ReadFile(filepath.Join(root, "tests/vm/valid", name+".mochi"))
 			if err != nil {
 				t.Fatalf("missing vm source: %v", err)
