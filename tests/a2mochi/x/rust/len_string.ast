@@ -1,0 +1,9 @@
+(program
+  (fun main
+    (call print
+      (call
+        (selector len (string mochi))
+      )
+    )
+  )
+)
