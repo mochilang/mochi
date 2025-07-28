@@ -1,0 +1,9 @@
+(program
+  (call print (selector a))
+  (call print
+    (binary == (selector a) (int 7))
+  )
+  (call print
+    (binary < (selector b) (int 5))
+  )
+)
