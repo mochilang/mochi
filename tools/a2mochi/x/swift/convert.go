@@ -329,6 +329,7 @@ func parseStatementsIndent(body string, indent int) []string {
 			l = strings.TrimSpace(l)
 			l = strings.TrimSuffix(l, ";")
 			l = rewriteStructLiteral(l)
+			l = rewriteCasts(l)
 			l = strings.ReplaceAll(l, "_append(", "append(")
 			l = strings.ReplaceAll(l, "_values(", "values(")
 			l = strings.ReplaceAll(l, "_exists(", "exists(")
@@ -404,6 +405,19 @@ func rewriteStructLiteral(expr string) string {
 		fields = append(fields, fmt.Sprintf("%s: %s", strings.TrimSpace(kv[0]), strings.TrimSpace(kv[1])))
 	}
 	return name + " { " + strings.Join(fields, ", ") + " }"
+}
+
+var castRE = regexp.MustCompile(`\(([^()]+)\s+as!\s+[A-Za-z0-9_<>.]+\)`)
+
+func rewriteCasts(expr string) string {
+	for {
+		m := castRE.FindStringSubmatchIndex(expr)
+		if m == nil {
+			break
+		}
+		expr = expr[:m[0]] + expr[m[2]:m[3]] + expr[m[1]:]
+	}
+	return expr
 }
 
 func gatherEnumElements(ms []item) []item {
