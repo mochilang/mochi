@@ -1,0 +1,5 @@
+(program
+  (var x (int 1))
+  (assign (selector x) (int 2))
+  (call print (selector x))
+)
