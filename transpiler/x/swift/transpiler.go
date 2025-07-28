@@ -2020,7 +2020,8 @@ func convertStmt(env *types.Env, st *parser.Statement) (Stmt, error) {
 			} else if env != nil {
 				t := types.TypeOfExpr(st.Let.Value, env)
 				typ = swiftTypeOf(t)
-				if !types.IsEmptyListLiteral(st.Let.Value) && !isEmptyMapLiteral(st.Let.Value) {
+				if !types.IsEmptyListLiteral(st.Let.Value) && !isEmptyMapLiteral(st.Let.Value) &&
+					!types.IsMapType(t) && !types.IsListType(t) {
 					typ = ""
 				}
 			}
@@ -4156,7 +4157,7 @@ func toSwiftType(t *parser.TypeRef) string {
 		usesBigInt = true
 		return "BigInt"
 	case "any":
-		return "Any"
+		return "Any?"
 	default:
 		return *t.Simple
 	}

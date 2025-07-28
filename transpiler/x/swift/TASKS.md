@@ -1,5 +1,5 @@
-## Progress (2025-07-28 11:47 +0700)
-- swift: transpile chinese-zodiac
+## Progress (2025-07-28 11:57 +0700)
+- swift: support dynamic len and fix cholesky
 - Generated golden tests for 102/104 programs
 - Updated README checklist and output artifacts
 

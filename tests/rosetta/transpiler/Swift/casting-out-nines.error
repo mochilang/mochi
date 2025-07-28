@@ -1,0 +1,344 @@
+exit status 1
+/tmp/TestSwiftTranspiler_Rosetta_Golden2404274015/001/main.swift:67:30: warning: forced cast of 'Any' to same type has no effect
+65 | var idx: Int = 0
+66 | while (idx < Int(((testCases).count))) {
+67 |     let tc = (testCases[idx] as! Any)
+   |                              `- warning: forced cast of 'Any' to same type has no effect
+68 |     print(_p((((((("\nTest case base = " + _p((tc["base"] as! Int))) + ", begin = ") + (tc["begin"] as! String)) + ", end = ") + (tc["end"] as! String)) + ":")))
+69 |     let s: [String] = (subset((tc["base"] as! Int), (tc["begin"] as! String), (tc["end"] as! String)) as! [String])
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2404274015/001/main.swift:68:50: error: value of type 'Any' has no subscripts
+66 | while (idx < Int(((testCases).count))) {
+67 |     let tc = (testCases[idx] as! Any)
+68 |     print(_p((((((("\nTest case base = " + _p((tc["base"] as! Int))) + ", begin = ") + (tc["begin"] as! String)) + ", end = ") + (tc["end"] as! String)) + ":")))
+   |                                                  `- error: value of type 'Any' has no subscripts
+69 |     let s: [String] = (subset((tc["base"] as! Int), (tc["begin"] as! String), (tc["end"] as! String)) as! [String])
+70 |     print(_p(("Subset:  " + _p(s))))
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2404274015/001/main.swift:68:91: error: value of type 'Any' has no subscripts
+66 | while (idx < Int(((testCases).count))) {
+67 |     let tc = (testCases[idx] as! Any)
+68 |     print(_p((((((("\nTest case base = " + _p((tc["base"] as! Int))) + ", begin = ") + (tc["begin"] as! String)) + ", end = ") + (tc["end"] as! String)) + ":")))
+   |                                                                                           `- error: value of type 'Any' has no subscripts
+69 |     let s: [String] = (subset((tc["base"] as! Int), (tc["begin"] as! String), (tc["end"] as! String)) as! [String])
+70 |     print(_p(("Subset:  " + _p(s))))
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2404274015/001/main.swift:68:133: error: value of type 'Any' has no subscripts
+66 | while (idx < Int(((testCases).count))) {
+67 |     let tc = (testCases[idx] as! Any)
+68 |     print(_p((((((("\nTest case base = " + _p((tc["base"] as! Int))) + ", begin = ") + (tc["begin"] as! String)) + ", end = ") + (tc["end"] as! String)) + ":")))
+   |                                                                                                                                     `- error: value of type 'Any' has no subscripts
+69 |     let s: [String] = (subset((tc["base"] as! Int), (tc["begin"] as! String), (tc["end"] as! String)) as! [String])
+70 |     print(_p(("Subset:  " + _p(s))))
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2404274015/001/main.swift:69:34: error: value of type 'Any' has no subscripts
+67 |     let tc = (testCases[idx] as! Any)
+68 |     print(_p((((((("\nTest case base = " + _p((tc["base"] as! Int))) + ", begin = ") + (tc["begin"] as! String)) + ", end = ") + (tc["end"] as! String)) + ":")))
+69 |     let s: [String] = (subset((tc["base"] as! Int), (tc["begin"] as! String), (tc["end"] as! String)) as! [String])
+   |                                  `- error: value of type 'Any' has no subscripts
+70 |     print(_p(("Subset:  " + _p(s))))
+71 |     print(_p(("Kaprekar:" + _p((tc["kaprekar"] as! [String])))))
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2404274015/001/main.swift:69:56: error: value of type 'Any' has no subscripts
+67 |     let tc = (testCases[idx] as! Any)
+68 |     print(_p((((((("\nTest case base = " + _p((tc["base"] as! Int))) + ", begin = ") + (tc["begin"] as! String)) + ", end = ") + (tc["end"] as! String)) + ":")))
+69 |     let s: [String] = (subset((tc["base"] as! Int), (tc["begin"] as! String), (tc["end"] as! String)) as! [String])
+   |                                                        `- error: value of type 'Any' has no subscripts
+70 |     print(_p(("Subset:  " + _p(s))))
+71 |     print(_p(("Kaprekar:" + _p((tc["kaprekar"] as! [String])))))
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2404274015/001/main.swift:69:82: error: value of type 'Any' has no subscripts
+67 |     let tc = (testCases[idx] as! Any)
+68 |     print(_p((((((("\nTest case base = " + _p((tc["base"] as! Int))) + ", begin = ") + (tc["begin"] as! String)) + ", end = ") + (tc["end"] as! String)) + ":")))
+69 |     let s: [String] = (subset((tc["base"] as! Int), (tc["begin"] as! String), (tc["end"] as! String)) as! [String])
+   |                                                                                  `- error: value of type 'Any' has no subscripts
+70 |     print(_p(("Subset:  " + _p(s))))
+71 |     print(_p(("Kaprekar:" + _p((tc["kaprekar"] as! [String])))))
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2404274015/001/main.swift:69:103: warning: forced cast of '[String]' to same type has no effect
+67 |     let tc = (testCases[idx] as! Any)
+68 |     print(_p((((((("\nTest case base = " + _p((tc["base"] as! Int))) + ", begin = ") + (tc["begin"] as! String)) + ", end = ") + (tc["end"] as! String)) + ":")))
+69 |     let s: [String] = (subset((tc["base"] as! Int), (tc["begin"] as! String), (tc["end"] as! String)) as! [String])
+   |                                                                                                       `- warning: forced cast of '[String]' to same type has no effect
+70 |     print(_p(("Subset:  " + _p(s))))
+71 |     print(_p(("Kaprekar:" + _p((tc["kaprekar"] as! [String])))))
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2404274015/001/main.swift:71:35: error: value of type 'Any' has no subscripts
+69 |     let s: [String] = (subset((tc["base"] as! Int), (tc["begin"] as! String), (tc["end"] as! String)) as! [String])
+70 |     print(_p(("Subset:  " + _p(s))))
+71 |     print(_p(("Kaprekar:" + _p((tc["kaprekar"] as! [String])))))
+   |                                   `- error: value of type 'Any' has no subscripts
+72 |     var sx: Int = 0
+73 |     var valid: Bool = true
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2404274015/001/main.swift:75:25: error: value of type 'Any' has no subscripts
+73 |     var valid: Bool = true
+74 |     var i: Int = 0
+75 |     while (i < Int((((tc["kaprekar"] as! [String])).count))) {
+   |                         `- error: value of type 'Any' has no subscripts
+76 |         let k = (tc["kaprekar"][i] as! String)
+77 |         var found: Bool = false
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2404274015/001/main.swift:76:20: error: value of type 'Any' has no subscripts
+74 |     var i: Int = 0
+75 |     while (i < Int((((tc["kaprekar"] as! [String])).count))) {
+76 |         let k = (tc["kaprekar"][i] as! String)
+   |                    `- error: value of type 'Any' has no subscripts
+77 |         var found: Bool = false
+78 |         while (sx < Int(((s).count))) {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2404274015/001/main.swift:79:24: warning: forced cast of 'String' to same type has no effect
+77 |         var found: Bool = false
+78 |         while (sx < Int(((s).count))) {
+79 |             if ((s[sx] as! String) == k) {
+   |                        `- warning: forced cast of 'String' to same type has no effect
+80 |                 found = true
+81 |                 sx = ((sx + 1) as! Int)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2404274015/001/main.swift:81:32: warning: forced cast of 'Int' to same type has no effect
+79 |             if ((s[sx] as! String) == k) {
+80 |                 found = true
+81 |                 sx = ((sx + 1) as! Int)
+   |                                `- warning: forced cast of 'Int' to same type has no effect
+82 |                 break
+83 |             }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2404274015/001/main.swift:84:28: warning: forced cast of 'Int' to same type has no effect
+82 |                 break
+83 |             }
+84 |             sx = ((sx + 1) as! Int)
+   |                            `- warning: forced cast of 'Int' to same type has no effect
+85 |         }
+86 |         if (!found) {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2404274015/001/main.swift:91:22: warning: forced cast of 'Int' to same type has no effect
+89 |             break
+90 |         }
+91 |         i = ((i + 1) as! Int)
+   |                      `- warning: forced cast of 'Int' to same type has no effect
+92 |     }
+93 |     if valid {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2404274015/001/main.swift:96:22: warning: forced cast of 'Int' to same type has no effect
+94 |         print(_p("Valid subset."))
+95 |     }
+96 |     idx = ((idx + 1) as! Int)
+   |                      `- warning: forced cast of 'Int' to same type has no effect
+97 | }
+98 | 
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2404274015/001/main.swift:22:76: warning: forced cast of 'String' to same type has no effect
+20 |         var v: Int = 0
+21 |         while (j < Int(((digits).count))) {
+22 |             if (String(describing: String(Array(String(describing: (digits as! String)))[(j as! Int)..<((j + 1) as! Int)])) == String(Array(s)[i..<(i + 1)])) {
+   |                                                                            `- warning: forced cast of 'String' to same type has no effect
+23 |                 v = (j as! Int)
+24 |                 break
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2404274015/001/main.swift:22:93: warning: forced cast of 'Int' to same type has no effect
+20 |         var v: Int = 0
+21 |         while (j < Int(((digits).count))) {
+22 |             if (String(describing: String(Array(String(describing: (digits as! String)))[(j as! Int)..<((j + 1) as! Int)])) == String(Array(s)[i..<(i + 1)])) {
+   |                                                                                             `- warning: forced cast of 'Int' to same type has no effect
+23 |                 v = (j as! Int)
+24 |                 break
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2404274015/001/main.swift:22:113: warning: forced cast of 'Int' to same type has no effect
+20 |         var v: Int = 0
+21 |         while (j < Int(((digits).count))) {
+22 |             if (String(describing: String(Array(String(describing: (digits as! String)))[(j as! Int)..<((j + 1) as! Int)])) == String(Array(s)[i..<(i + 1)])) {
+   |                                                                                                                 `- warning: forced cast of 'Int' to same type has no effect
+23 |                 v = (j as! Int)
+24 |                 break
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2404274015/001/main.swift:23:24: warning: forced cast of 'Int' to same type has no effect
+21 |         while (j < Int(((digits).count))) {
+22 |             if (String(describing: String(Array(String(describing: (digits as! String)))[(j as! Int)..<((j + 1) as! Int)])) == String(Array(s)[i..<(i + 1)])) {
+23 |                 v = (j as! Int)
+   |                        `- warning: forced cast of 'Int' to same type has no effect
+24 |                 break
+25 |             }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2404274015/001/main.swift:26:26: warning: forced cast of 'Int' to same type has no effect
+24 |                 break
+25 |             }
+26 |             j = ((j + 1) as! Int)
+   |                          `- warning: forced cast of 'Int' to same type has no effect
+27 |         }
+28 |         n = (((n * base) + v) as! Int)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2404274015/001/main.swift:28:31: warning: forced cast of 'Int' to same type has no effect
+26 |             j = ((j + 1) as! Int)
+27 |         }
+28 |         n = (((n * base) + v) as! Int)
+   |                               `- warning: forced cast of 'Int' to same type has no effect
+29 |         i = ((i + 1) as! Int)
+30 |     }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2404274015/001/main.swift:29:22: warning: forced cast of 'Int' to same type has no effect
+27 |         }
+28 |         n = (((n * base) + v) as! Int)
+29 |         i = ((i + 1) as! Int)
+   |                      `- warning: forced cast of 'Int' to same type has no effect
+30 |     }
+31 |     return (n as! Int)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2404274015/001/main.swift:31:15: warning: forced cast of 'Int' to same type has no effect
+29 |         i = ((i + 1) as! Int)
+30 |     }
+31 |     return (n as! Int)
+   |               `- warning: forced cast of 'Int' to same type has no effect
+32 | }
+33 | func intToBase(_ n: Int, _ base: Int) -> String {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2404274015/001/main.swift:42:59: warning: forced cast of 'String' to same type has no effect
+40 |     while (v > 0) {
+41 |         let d = (v % base)
+42 |         out = ((String(Array(digits)[d..<(d + 1)]) + out) as! String)
+   |                                                           `- warning: forced cast of 'String' to same type has no effect
+43 |         v = ((v / base) as! Int)
+44 |     }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2404274015/001/main.swift:43:25: warning: forced cast of 'Int' to same type has no effect
+41 |         let d = (v % base)
+42 |         out = ((String(Array(digits)[d..<(d + 1)]) + out) as! String)
+43 |         v = ((v / base) as! Int)
+   |                         `- warning: forced cast of 'Int' to same type has no effect
+44 |     }
+45 |     return (out as! String)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2404274015/001/main.swift:45:17: warning: forced cast of 'String' to same type has no effect
+43 |         v = ((v / base) as! Int)
+44 |     }
+45 |     return (out as! String)
+   |                 `- warning: forced cast of 'String' to same type has no effect
+46 | }
+47 | func subset(_ base: Int, _ begin: String, _ end: String) -> [String] {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2404274015/001/main.swift:48:42: warning: forced cast of 'String' to same type has no effect
+46 | }
+47 | func subset(_ base: Int, _ begin: String, _ end: String) -> [String] {
+48 |     var b: Int = Int(parseIntBase((begin as! String), (base as! Int)))
+   |                                          `- warning: forced cast of 'String' to same type has no effect
+49 |     var e: Int = Int(parseIntBase((end as! String), (base as! Int)))
+50 |     var out: [String] = ([] as! [String])
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2404274015/001/main.swift:48:61: warning: forced cast of 'Int' to same type has no effect
+46 | }
+47 | func subset(_ base: Int, _ begin: String, _ end: String) -> [String] {
+48 |     var b: Int = Int(parseIntBase((begin as! String), (base as! Int)))
+   |                                                             `- warning: forced cast of 'Int' to same type has no effect
+49 |     var e: Int = Int(parseIntBase((end as! String), (base as! Int)))
+50 |     var out: [String] = ([] as! [String])
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2404274015/001/main.swift:49:40: warning: forced cast of 'String' to same type has no effect
+47 | func subset(_ base: Int, _ begin: String, _ end: String) -> [String] {
+48 |     var b: Int = Int(parseIntBase((begin as! String), (base as! Int)))
+49 |     var e: Int = Int(parseIntBase((end as! String), (base as! Int)))
+   |                                        `- warning: forced cast of 'String' to same type has no effect
+50 |     var out: [String] = ([] as! [String])
+51 |     var k: Int = b
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2404274015/001/main.swift:49:59: warning: forced cast of 'Int' to same type has no effect
+47 | func subset(_ base: Int, _ begin: String, _ end: String) -> [String] {
+48 |     var b: Int = Int(parseIntBase((begin as! String), (base as! Int)))
+49 |     var e: Int = Int(parseIntBase((end as! String), (base as! Int)))
+   |                                                           `- warning: forced cast of 'Int' to same type has no effect
+50 |     var out: [String] = ([] as! [String])
+51 |     var k: Int = b
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2404274015/001/main.swift:53:50: warning: forced cast of 'Int' to same type has no effect
+51 |     var k: Int = b
+52 |     while (k <= e) {
+53 |         let ks = String(describing: intToBase((k as! Int), (base as! Int)))
+   |                                                  `- warning: forced cast of 'Int' to same type has no effect
+54 |         let mod = (base - 1)
+55 |         let r1 = (Int(parseIntBase((ks as! String), (base as! Int))) % mod)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2404274015/001/main.swift:53:66: warning: forced cast of 'Int' to same type has no effect
+51 |     var k: Int = b
+52 |     while (k <= e) {
+53 |         let ks = String(describing: intToBase((k as! Int), (base as! Int)))
+   |                                                                  `- warning: forced cast of 'Int' to same type has no effect
+54 |         let mod = (base - 1)
+55 |         let r1 = (Int(parseIntBase((ks as! String), (base as! Int))) % mod)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2404274015/001/main.swift:55:40: warning: forced cast of 'String' to same type has no effect
+53 |         let ks = String(describing: intToBase((k as! Int), (base as! Int)))
+54 |         let mod = (base - 1)
+55 |         let r1 = (Int(parseIntBase((ks as! String), (base as! Int))) % mod)
+   |                                        `- warning: forced cast of 'String' to same type has no effect
+56 |         let r2 = (Int((Int(parseIntBase((ks as! String), (base as! Int))) * Int(parseIntBase((ks as! String), (base as! Int))))) % mod)
+57 |         if (r1 == r2) {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2404274015/001/main.swift:55:59: warning: forced cast of 'Int' to same type has no effect
+53 |         let ks = String(describing: intToBase((k as! Int), (base as! Int)))
+54 |         let mod = (base - 1)
+55 |         let r1 = (Int(parseIntBase((ks as! String), (base as! Int))) % mod)
+   |                                                           `- warning: forced cast of 'Int' to same type has no effect
+56 |         let r2 = (Int((Int(parseIntBase((ks as! String), (base as! Int))) * Int(parseIntBase((ks as! String), (base as! Int))))) % mod)
+57 |         if (r1 == r2) {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2404274015/001/main.swift:56:45: warning: forced cast of 'String' to same type has no effect
+54 |         let mod = (base - 1)
+55 |         let r1 = (Int(parseIntBase((ks as! String), (base as! Int))) % mod)
+56 |         let r2 = (Int((Int(parseIntBase((ks as! String), (base as! Int))) * Int(parseIntBase((ks as! String), (base as! Int))))) % mod)
+   |                                             `- warning: forced cast of 'String' to same type has no effect
+57 |         if (r1 == r2) {
+58 |             out = (_append(out, ks) as! [String])
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2404274015/001/main.swift:56:64: warning: forced cast of 'Int' to same type has no effect
+54 |         let mod = (base - 1)
+55 |         let r1 = (Int(parseIntBase((ks as! String), (base as! Int))) % mod)
+56 |         let r2 = (Int((Int(parseIntBase((ks as! String), (base as! Int))) * Int(parseIntBase((ks as! String), (base as! Int))))) % mod)
+   |                                                                `- warning: forced cast of 'Int' to same type has no effect
+57 |         if (r1 == r2) {
+58 |             out = (_append(out, ks) as! [String])
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2404274015/001/main.swift:56:98: warning: forced cast of 'String' to same type has no effect
+54 |         let mod = (base - 1)
+55 |         let r1 = (Int(parseIntBase((ks as! String), (base as! Int))) % mod)
+56 |         let r2 = (Int((Int(parseIntBase((ks as! String), (base as! Int))) * Int(parseIntBase((ks as! String), (base as! Int))))) % mod)
+   |                                                                                                  `- warning: forced cast of 'String' to same type has no effect
+57 |         if (r1 == r2) {
+58 |             out = (_append(out, ks) as! [String])
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2404274015/001/main.swift:56:117: warning: forced cast of 'Int' to same type has no effect
+54 |         let mod = (base - 1)
+55 |         let r1 = (Int(parseIntBase((ks as! String), (base as! Int))) % mod)
+56 |         let r2 = (Int((Int(parseIntBase((ks as! String), (base as! Int))) * Int(parseIntBase((ks as! String), (base as! Int))))) % mod)
+   |                                                                                                                     `- warning: forced cast of 'Int' to same type has no effect
+57 |         if (r1 == r2) {
+58 |             out = (_append(out, ks) as! [String])
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2404274015/001/main.swift:60:22: warning: forced cast of 'Int' to same type has no effect
+58 |             out = (_append(out, ks) as! [String])
+59 |         }
+60 |         k = ((k + 1) as! Int)
+   |                      `- warning: forced cast of 'Int' to same type has no effect
+61 |     }
+62 |     return (out as! [String])
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2404274015/001/main.swift:62:17: warning: forced cast of '[String]' to same type has no effect
+60 |         k = ((k + 1) as! Int)
+61 |     }
+62 |     return (out as! [String])
+   |                 `- warning: forced cast of '[String]' to same type has no effect
+63 | }
+64 | let testCases: [Any] = ([["base": 10, "begin": "1", "end": "100", "kaprekar": (["1", "9", "45", "55", "99"] as! [String])], ["base": 17, "begin": "10", "end": "gg", "kaprekar": (["3d", "d4", "gg"] as! [String])]] as! [Any])
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2404274015/001/main.swift:48:9: warning: variable 'b' was never mutated; consider changing to 'let' constant
+46 | }
+47 | func subset(_ base: Int, _ begin: String, _ end: String) -> [String] {
+48 |     var b: Int = Int(parseIntBase((begin as! String), (base as! Int)))
+   |         `- warning: variable 'b' was never mutated; consider changing to 'let' constant
+49 |     var e: Int = Int(parseIntBase((end as! String), (base as! Int)))
+50 |     var out: [String] = ([] as! [String])
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2404274015/001/main.swift:49:9: warning: variable 'e' was never mutated; consider changing to 'let' constant
+47 | func subset(_ base: Int, _ begin: String, _ end: String) -> [String] {
+48 |     var b: Int = Int(parseIntBase((begin as! String), (base as! Int)))
+49 |     var e: Int = Int(parseIntBase((end as! String), (base as! Int)))
+   |         `- warning: variable 'e' was never mutated; consider changing to 'let' constant
+50 |     var out: [String] = ([] as! [String])
+51 |     var k: Int = b

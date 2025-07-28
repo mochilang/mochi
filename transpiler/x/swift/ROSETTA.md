@@ -2,8 +2,8 @@
 
 Generated Swift code for Mochi Rosetta programs in `tests/rosetta/x/Mochi`. Outputs are stored in `tests/rosetta/transpiler/Swift`. Errors are captured in `.error` files.
 
-Completed: 206/493
-Last updated: 2025-07-28 11:47 +0700
+Completed: 209/493
+Last updated: 2025-07-28 11:57 +0700
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -181,9 +181,9 @@ Last updated: 2025-07-28 11:47 +0700
 | 172 | carmichael-3-strong-pseudoprimes |   |  |  |
 | 173 | cartesian-product-of-two-or-more-lists-1 |   |  |  |
 | 174 | cartesian-product-of-two-or-more-lists-2 |   |  |  |
-| 175 | cartesian-product-of-two-or-more-lists-3 |   |  |  |
-| 176 | cartesian-product-of-two-or-more-lists-4 |   |  |  |
-| 177 | case-sensitivity-of-identifiers |   |  |  |
+| 175 | cartesian-product-of-two-or-more-lists-3 | ✓ | 863µs | 3.2 MB |
+| 176 | cartesian-product-of-two-or-more-lists-4 | ✓ |  |  |
+| 177 | case-sensitivity-of-identifiers | ✓ |  |  |
 | 178 | casting-out-nines |   |  |  |
 | 179 | catalan-numbers-1 |   |  |  |
 | 180 | catalan-numbers-2 |   |  |  |
