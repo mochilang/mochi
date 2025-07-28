@@ -2,8 +2,8 @@
 
 Generated Scheme code for Rosetta Code tasks under `tests/rosetta/x/Mochi`.
 
-## Checklist (263/493)
-Last updated: 2025-07-28 04:39 UTC
+## Checklist (273/493)
+Last updated: 2025-07-28 05:10 UTC
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -206,17 +206,17 @@ Last updated: 2025-07-28 04:39 UTC
 | 197 | checkpoint-synchronization-4 |   |  |  |
 | 198 | chernicks-carmichael-numbers |   |  |  |
 | 199 | cheryls-birthday |   |  |  |
-| 200 | chinese-remainder-theorem |   |  |  |
-| 201 | chinese-zodiac |   |  |  |
-| 202 | cholesky-decomposition-1 |   |  |  |
-| 203 | cholesky-decomposition |   |  |  |
-| 204 | chowla-numbers |   |  |  |
-| 205 | church-numerals-1 |   |  |  |
-| 206 | church-numerals-2 |   |  |  |
-| 207 | circles-of-given-radius-through-two-points |   |  |  |
-| 208 | circular-primes |   |  |  |
+| 200 | chinese-remainder-theorem | ✓ | 571.223ms | 12.4 MB |
+| 201 | chinese-zodiac | ✓ | 571.223ms | 12.6 MB |
+| 202 | cholesky-decomposition-1 | ✓ | 571.223ms | 13.8 MB |
+| 203 | cholesky-decomposition | ✓ | 571.223ms | 12.3 MB |
+| 204 | chowla-numbers | ✓ | 571.223ms | 12.5 MB |
+| 205 | church-numerals-1 | ✓ | 571.223ms | 12.4 MB |
+| 206 | church-numerals-2 | ✓ | 571.223ms | 12.9 MB |
+| 207 | circles-of-given-radius-through-two-points | ✓ | 571.223ms | 13.5 MB |
+| 208 | circular-primes | ✓ | 571.223ms | 12.7 MB |
 | 209 | cistercian-numerals |   |  |  |
-| 210 | comma-quibbling |   |  |  |
+| 210 | comma-quibbling | ✓ | 571.223ms | 12.3 MB |
 | 211 | compiler-virtual-machine-interpreter |   |  |  |
 | 212 | composite-numbers-k-with-no-single-digit-factors-whose-factors-are-all-substrings-of-k |   |  |  |
 | 213 | compound-data-type |   |  |  |
