@@ -1,0 +1,19 @@
+(program
+  (fun main
+    (call print
+      (group
+        (binary * (int 6) (int 7))
+      )
+    )
+    (call print
+      (group
+        (binary / (int 7) (int 2))
+      )
+    )
+    (call print
+      (group
+        (binary % (int 7) (int 2))
+      )
+    )
+  )
+)

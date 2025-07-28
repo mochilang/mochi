@@ -53,9 +53,16 @@ func TestConvert_Golden(t *testing.T) {
 	os.MkdirAll(outDir, 0o755)
 
 	allowed := map[string]bool{
-		"print_hello":   true,
-		"let_and_print": true,
-		"for_loop":      true,
+		"print_hello":    true,
+		"let_and_print":  true,
+		"for_loop":       true,
+		"while_loop":     true,
+		"basic_compare":  true,
+		"len_string":     true,
+		"fun_call":       true,
+		"fun_three_args": true,
+		"bool_chain":     true,
+		"math_ops":       true,
 	}
 
 	for _, srcPath := range files {
