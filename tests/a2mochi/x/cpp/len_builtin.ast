@@ -1,0 +1,12 @@
+(program
+  (fun main
+    (type int)
+    (call print
+      (call len
+        (list (int 1) (int 2) (int 3))
+      )
+    )
+    (return (int 0))
+  )
+  (call main)
+)
