@@ -336,11 +336,27 @@ type StructLit struct {
 
 func (s *StructLit) emit(w io.Writer) {
 	io.WriteString(w, s.Name+"(")
+	var decl *DataClass
+	for _, d := range extraDecls {
+		if d.Name == s.Name {
+			decl = d
+			break
+		}
+	}
 	for i, f := range s.Fields {
 		if i > 0 {
 			io.WriteString(w, ", ")
 		}
 		io.WriteString(w, s.Names[i]+" = ")
+		if decl != nil && i < len(decl.Fields) {
+			ft := decl.Fields[i].Type
+			if ft == "Int" && guessType(f) == "BigInteger" {
+				io.WriteString(w, "(")
+				f.emit(w)
+				io.WriteString(w, ").toInt()")
+				continue
+			}
+		}
 		f.emit(w)
 	}
 	io.WriteString(w, ")")
@@ -885,7 +901,7 @@ func (b *BinaryExpr) emit(w io.Writer) {
 				cast(e, "String")
 				return
 			}
-			if lt == "Any" && (rt == "Double" || rt == "Int") {
+			if (lt == "Any" || lt == "Any?") && (rt == "Double" || rt == "Int") {
 				if _, ok := e.(*IndexExpr); ok {
 					e.emit(w)
 					return
