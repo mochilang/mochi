@@ -1,4 +1,4 @@
-func main (regs=13)
+func __main (regs=13)
   // let FASTA = ">Rosetta_Example_1\n" +
   Const        r1, ">Rosetta_Example_1\n"
   // "THERECANBENOSPACE\n" +
