@@ -1,5 +1,5 @@
-## Progress (2025-07-28 10:49 +0700)
-- Commit 189cef0a0b: c transpiler: fix int overflow by using long long
+## Progress (2025-07-28 11:35 +0700)
+- Commit 9fad435cba: release: v0.10.47
 - Regenerated golden files - 81/104 vm valid programs passing
 
 ## Progress (2025-07-22 14:12 +0700)
