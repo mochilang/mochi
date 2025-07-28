@@ -51,7 +51,6 @@ func TestConvert_Golden(t *testing.T) {
 
 	skip := map[string]bool{
 		"bench_block":              true,
-		"break_continue":           true,
 		"closure":                  true,
 		"cross_join":               true,
 		"cross_join_filter":        true,
