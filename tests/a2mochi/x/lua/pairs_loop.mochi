@@ -1,0 +1,7 @@
+for v in [10, 20] {
+  print(v)
+}
+let m = {"a": 1, "b": 2}
+for v in values(m) {
+  print(v)
+}
