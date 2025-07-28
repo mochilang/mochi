@@ -14,6 +14,7 @@ import (
 
 	"mochi/ast"
 	"mochi/parser"
+	"mochi/transpiler/meta"
 )
 
 // Param represents a Dart function parameter.
@@ -113,6 +114,13 @@ func decode(data []byte) ([]Function, []Class, error) {
 // ConvertSource converts the parsed Dart node into Mochi source code.
 func ConvertSource(n *Node) (string, error) {
 	var b strings.Builder
+	b.Write(meta.Header("// "))
+	b.WriteString("/*\n")
+	b.WriteString(n.Src)
+	if !strings.HasSuffix(n.Src, "\n") {
+		b.WriteByte('\n')
+	}
+	b.WriteString("*/\n")
 	for _, v := range parseTopLevelVars(n.Src, n.Functions, n.Classes) {
 		b.WriteString(v)
 		b.WriteByte('\n')
