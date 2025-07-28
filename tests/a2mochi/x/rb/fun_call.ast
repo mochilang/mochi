@@ -1,0 +1,12 @@
+(program
+  (fun add
+    (param a)
+    (param b)
+    (return
+      (binary + (selector a) (selector b))
+    )
+  )
+  (call print
+    (call add (int 2) (int 3))
+  )
+)
