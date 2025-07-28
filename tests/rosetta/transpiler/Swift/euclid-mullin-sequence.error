@@ -1,0 +1,51 @@
+signal: illegal instruction
+
+*** Signal 4: Backtracing from 0x55647b72e766... done ***
+
+*** Program crashed: Illegal instruction at 0x000055647b72e766 ***
+
+Thread 0 "main" crashed:
+
+0      0x000055647b72e766 BigInt.toInt() + 294 in main
+1 [ra] 0x000055647b72b775 static BigInt.% infix(_:_:) + 68 in main
+2 [ra] 0x000055647b72fb2e gcd #1 (_:_:) in  + 397 in main
+3 [ra] 0x000055647b73020e pollardRho #1 (_:_:) in  + 1245 in main
+4 [ra] 0x000055647b731478 smallestPrimeFactor #1 (_:) in  + 1127 in main
+5 [ra] 0x000055647b72dde0 main #1 () in  + 1551 in main
+6 [ra] 0x000055647b72f67b main + 1002 in main
+7 [ra] 0x00007fbf997231ca <unknown> in libc.so.6
+8 [ra] 0x00007fbf9972328b <unknown> in libc.so.6
+
+
+Registers:
+
+rax 0xe8fc6ac75ed24801  16788410915452241921
+rdx 0x00005564a5c0bed0  30 c0 c0 a5 64 55 00 00 31 00 00 00 00 00 00 00  0ÀÀ¥dU··1·······
+rcx 0x00007fbf9b0a8df8  00 02 00 00 00 00 00 00 04 dc 0e 9b bf 7f 00 00  ·········Ü··¿···
+rbx 0x0000000000000001  1
+rsi 0x00007fffffcb7678  e0 9a c5 15 00 7f 00 00 a0 fa c0 a5 64 55 00 00  à·Å····· úÀ¥dU··
+rdi 0x0000000000000000  0
+rbp 0x00007fffffcb76c0  30 77 cb ff ff 7f 00 00 75 b7 72 7b 64 55 00 00  0wËÿÿ···u·r{dU··
+rsp 0x00007fffffcb7640  01 00 00 00 00 00 00 00 54 b4 39 62 19 00 00 00  ········T´9b····
+ r8 0x00005564a5bf8010  01 00 04 00 06 00 07 00 07 00 07 00 02 00 03 00  ················
+ r9 0x0000000000000007  7
+r10 0x00005564a5c0ccb0  8c 90 8a f3 61 55 00 00 88 74 83 bd c4 f1 56 91  ···óaU···t·½ÄñV·
+r11 0x9156f1c4bd837488  10472823810792060040
+r12 0x0000000000000001  1
+r13 0x00007fffffcb7698  a0 fa c0 a5 64 55 00 00 43 00 00 00 00 00 00 00   úÀ¥dU··C·······
+r14 0x000055647b734b28  b0 b4 72 7b 64 55 00 00 00 00 00 00 00 00 00 00  °´r{dU··········
+r15 0x00007fbf9b261000  e0 22 26 9b bf 7f 00 00 15 00 00 00 00 00 00 00  à"&·¿···········
+rip 0x000055647b72e766  0f 0b 0f 0b 66 0f 1f 44 00 00 55 48 89 e5 48 83  ····f··D··UH·åH·
+
+rflags 0x0000000000010202  
+
+cs 0x0033  fs 0x0000  gs 0x0000
+
+
+Images (18 omitted):
+
+0x000055647b727000–0x000055647b732df8 180d3d7caa88ef24562a5607e14d0acc9ed58895 main      /tmp/TestSwiftTranspiler_Rosetta_Golden3206301312/001/main
+0x00007fbf996f9000–0x00007fbf998a8cb9 282c2c16e7b6600b0b22ea0c99010d2795752b5f libc.so.6 /usr/lib/x86_64-linux-gnu/libc.so.6
+
+Backtrace took 0.00s
+

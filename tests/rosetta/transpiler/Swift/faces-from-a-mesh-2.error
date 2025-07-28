@@ -1,0 +1,264 @@
+exit status 1
+/tmp/TestSwiftTranspiler_Rosetta_Golden3385496463/001/main.swift:62:21: warning: forced cast of '[Int]' to same type has no effect
+ 60 |             out = (_append(out, x) as! [Int])
+ 61 |         }
+ 62 |         return (out as! [Int])
+    |                     `- warning: forced cast of '[Int]' to same type has no effect
+ 63 |     }
+ 64 |     func sliceEqual(_ a: [Int], _ b: [Int]) -> Bool {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3385496463/001/main.swift:67:23: warning: forced cast of 'Int' to same type has no effect
+ 65 |         var i: Int = 0
+ 66 |         while (i < Int(((a).count))) {
+ 67 |             if ((a[i] as! Int) != (b[i] as! Int)) {
+    |                       `- warning: forced cast of 'Int' to same type has no effect
+ 68 |                 return false
+ 69 |             }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3385496463/001/main.swift:67:41: warning: forced cast of 'Int' to same type has no effect
+ 65 |         var i: Int = 0
+ 66 |         while (i < Int(((a).count))) {
+ 67 |             if ((a[i] as! Int) != (b[i] as! Int)) {
+    |                                         `- warning: forced cast of 'Int' to same type has no effect
+ 68 |                 return false
+ 69 |             }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3385496463/001/main.swift:78:28: warning: forced cast of 'Int' to same type has no effect
+ 76 |         var j: Int = (Int(((xs).count)) - 1)
+ 77 |         while (i < j) {
+ 78 |             let t = (xs[i] as! Int)
+    |                            `- warning: forced cast of 'Int' to same type has no effect
+ 79 |             xs[i] = (xs[j] as! Int)
+ 80 |             xs[j] = Int(t)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3385496463/001/main.swift:79:28: warning: forced cast of 'Int' to same type has no effect
+ 77 |         while (i < j) {
+ 78 |             let t = (xs[i] as! Int)
+ 79 |             xs[i] = (xs[j] as! Int)
+    |                            `- warning: forced cast of 'Int' to same type has no effect
+ 80 |             xs[j] = Int(t)
+ 81 |             i = Int((i + 1))
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3385496463/001/main.swift:90:23: warning: forced cast of '[Int]' to same type has no effect
+ 88 |         }
+ 89 |         for v in p1 {
+ 90 |             if (!((p2 as! [Int]).contains(Int(v)))) {
+    |                       `- warning: forced cast of '[Int]' to same type has no effect
+ 91 |                 return false
+ 92 |             }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3385496463/001/main.swift:94:38: warning: forced cast of '[Int]' to same type has no effect
+ 92 |             }
+ 93 |         }
+ 94 |         var c: [Int] = (copyInts((p1 as! [Int])) as! [Int])
+    |                                      `- warning: forced cast of '[Int]' to same type has no effect
+ 95 |         var r: Int = 0
+ 96 |         while (r < 2) {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3385496463/001/main.swift:94:50: warning: forced cast of '[Int]' to same type has no effect
+ 92 |             }
+ 93 |         }
+ 94 |         var c: [Int] = (copyInts((p1 as! [Int])) as! [Int])
+    |                                                  `- warning: forced cast of '[Int]' to same type has no effect
+ 95 |         var r: Int = 0
+ 96 |         while (r < 2) {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3385496463/001/main.swift:99:34: warning: forced cast of '[Int]' to same type has no effect
+ 97 |             var i: Int = 0
+ 98 |             while (i < Int(((c).count))) {
+ 99 |                 if sliceEqual((c as! [Int]), (p2 as! [Int])) {
+    |                                  `- warning: forced cast of '[Int]' to same type has no effect
+100 |                     return true
+101 |                 }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3385496463/001/main.swift:99:50: warning: forced cast of '[Int]' to same type has no effect
+ 97 |             var i: Int = 0
+ 98 |             while (i < Int(((c).count))) {
+ 99 |                 if sliceEqual((c as! [Int]), (p2 as! [Int])) {
+    |                                                  `- warning: forced cast of '[Int]' to same type has no effect
+100 |                     return true
+101 |                 }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3385496463/001/main.swift:102:52: warning: forced cast of 'Int' to same type has no effect
+100 |                     return true
+101 |                 }
+102 |                 let t = (c[(Int(((c).count)) - 1)] as! Int)
+    |                                                    `- warning: forced cast of 'Int' to same type has no effect
+103 |                 var j: Int = (Int(((c).count)) - 1)
+104 |                 while (j > 0) {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3385496463/001/main.swift:105:40: warning: forced cast of 'Int' to same type has no effect
+103 |                 var j: Int = (Int(((c).count)) - 1)
+104 |                 while (j > 0) {
+105 |                     c[j] = (c[(j - 1)] as! Int)
+    |                                        `- warning: forced cast of 'Int' to same type has no effect
+106 |                     j = Int((j - 1))
+107 |                 }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3385496463/001/main.swift:111:13: warning: using '_' to ignore the result of a Void-returning function is redundant
+109 |                 i = Int((i + 1))
+110 |             }
+111 |             _ = reverse(&c)
+    |             `- warning: using '_' to ignore the result of a Void-returning function is redundant
+112 |             r = Int((r + 1))
+113 |         }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3385496463/001/main.swift:123:33: warning: forced cast of 'Edge' to same type has no effect
+121 |             var j: Int = 0
+122 |             while (j < (n - 1)) {
+123 |                 let a = (arr[j] as! Edge)
+    |                                 `- warning: forced cast of 'Edge' to same type has no effect
+124 |                 let b = (arr[(j + 1)] as! Edge)
+125 |                 if ((a.a > b.a) || ((a.a == b.a) && (a.b > b.b))) {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3385496463/001/main.swift:124:39: warning: forced cast of 'Edge' to same type has no effect
+122 |             while (j < (n - 1)) {
+123 |                 let a = (arr[j] as! Edge)
+124 |                 let b = (arr[(j + 1)] as! Edge)
+    |                                       `- warning: forced cast of 'Edge' to same type has no effect
+125 |                 if ((a.a > b.a) || ((a.a == b.a) && (a.b > b.b))) {
+126 |                     arr[j] = (b as! Edge)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3385496463/001/main.swift:126:33: warning: forced cast of 'Edge' to same type has no effect
+124 |                 let b = (arr[(j + 1)] as! Edge)
+125 |                 if ((a.a > b.a) || ((a.a == b.a) && (a.b > b.b))) {
+126 |                     arr[j] = (b as! Edge)
+    |                                 `- warning: forced cast of 'Edge' to same type has no effect
+127 |                     arr[(j + 1)] = (a as! Edge)
+128 |                 }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3385496463/001/main.swift:127:39: warning: forced cast of 'Edge' to same type has no effect
+125 |                 if ((a.a > b.a) || ((a.a == b.a) && (a.b > b.b))) {
+126 |                     arr[j] = (b as! Edge)
+127 |                     arr[(j + 1)] = (a as! Edge)
+    |                                       `- warning: forced cast of 'Edge' to same type has no effect
+128 |                 }
+129 |                 j = Int((j + 1))
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3385496463/001/main.swift:133:21: warning: forced cast of '[Edge]' to same type has no effect
+131 |             i = Int((i + 1))
+132 |         }
+133 |         return (arr as! [Edge])
+    |                     `- warning: forced cast of '[Edge]' to same type has no effect
+134 |     }
+135 |     func concat(_ a: [Edge], _ b: [Edge]) -> [Edge] {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3385496463/001/main.swift:143:21: warning: forced cast of '[Edge]' to same type has no effect
+141 |             out = (_append(out, x) as! [Edge])
+142 |         }
+143 |         return (out as! [Edge])
+    |                     `- warning: forced cast of '[Edge]' to same type has no effect
+144 |     }
+145 |     func faceToPerim(_ face: [Edge]) -> Any {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3385496463/001/main.swift:148:20: error: 'nil' is incompatible with return type 'Any'
+146 |         var le: Int = Int(((face).count))
+147 |         if (le == 0) {
+148 |             return nil
+    |                    `- error: 'nil' is incompatible with return type 'Any'
+149 |         }
+150 |         var edges: [Edge] = ([] as! [Edge])
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3385496463/001/main.swift:153:30: warning: forced cast of 'Edge' to same type has no effect
+151 |         var i: Int = 0
+152 |         while (i < le) {
+153 |             let e = (face[i] as! Edge)
+    |                              `- warning: forced cast of 'Edge' to same type has no effect
+154 |             if (e.b <= e.a) {
+155 |                 return nil
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3385496463/001/main.swift:155:24: error: 'nil' is incompatible with return type 'Any'
+153 |             let e = (face[i] as! Edge)
+154 |             if (e.b <= e.a) {
+155 |                 return nil
+    |                        `- error: 'nil' is incompatible with return type 'Any'
+156 |             }
+157 |             edges = (_append(edges, e) as! [Edge])
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3385496463/001/main.swift:160:35: warning: forced cast of '[Edge]' to same type has no effect
+158 |             i = Int((i + 1))
+159 |         }
+160 |         edges = (sortEdges((edges as! [Edge])) as! [Edge])
+    |                                   `- warning: forced cast of '[Edge]' to same type has no effect
+161 |         var firstEdge: Edge = (edges[0] as! Edge)
+162 |         var perim: [Int] = ([firstEdge.a, firstEdge.b] as! [Int])
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3385496463/001/main.swift:160:48: warning: forced cast of '[Edge]' to same type has no effect
+158 |             i = Int((i + 1))
+159 |         }
+160 |         edges = (sortEdges((edges as! [Edge])) as! [Edge])
+    |                                                `- warning: forced cast of '[Edge]' to same type has no effect
+161 |         var firstEdge: Edge = (edges[0] as! Edge)
+162 |         var perim: [Int] = ([firstEdge.a, firstEdge.b] as! [Int])
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3385496463/001/main.swift:161:41: warning: forced cast of 'Edge' to same type has no effect
+159 |         }
+160 |         edges = (sortEdges((edges as! [Edge])) as! [Edge])
+161 |         var firstEdge: Edge = (edges[0] as! Edge)
+    |                                         `- warning: forced cast of 'Edge' to same type has no effect
+162 |         var perim: [Int] = ([firstEdge.a, firstEdge.b] as! [Int])
+163 |         var first: Int = firstEdge.a
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3385496463/001/main.swift:168:37: warning: forced cast of 'Bool' to same type has no effect
+166 |         le = Int(((edges).count))
+167 |         var done: Bool = false
+168 |         while ((le > 0) && ((!done) as! Bool)) {
+    |                                     `- warning: forced cast of 'Bool' to same type has no effect
+169 |             var idx: Int = 0
+170 |             var found: Bool = false
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3385496463/001/main.swift:172:37: warning: forced cast of 'Edge' to same type has no effect
+170 |             var found: Bool = false
+171 |             while (idx < le) {
+172 |                 let e = (edges[idx] as! Edge)
+    |                                     `- warning: forced cast of 'Edge' to same type has no effect
+173 |                 if (e.a == last) {
+174 |                     perim = (_append(perim, e.b) as! [Int])
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3385496463/001/main.swift:184:134: warning: forced cast of '[Edge]' to same type has no effect
+182 |                 
+183 |                 if found {
+184 |                     edges = (concat((Array(edges[0..<idx]) as! [Edge]), (Array(edges[(idx + 1)..<Int(((edges).count))]) as! [Edge])) as! [Edge])
+    |                                                                                                                                      `- warning: forced cast of '[Edge]' to same type has no effect
+185 |                     le = Int((le - 1))
+186 |                     if (last == first) {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3385496463/001/main.swift:190:36: error: 'nil' is incompatible with return type 'Any'
+188 |                             done = true
+189 |                         } else {
+190 |                             return nil
+    |                                    `- error: 'nil' is incompatible with return type 'Any'
+191 |                         }
+192 |                     }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3385496463/001/main.swift:198:24: error: 'nil' is incompatible with return type 'Any'
+196 |             }
+197 |             if (!found) {
+198 |                 return nil
+    |                        `- error: 'nil' is incompatible with return type 'Any'
+199 |             }
+200 |         }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3385496463/001/main.swift:207:51: warning: forced cast of 'Int' to same type has no effect
+205 |         var i: Int = 0
+206 |         while (i < Int(((xs).count))) {
+207 |             s = String(describing: (s + _p((xs[i] as! Int))))
+    |                                                   `- warning: forced cast of 'Int' to same type has no effect
+208 |             if (i < (Int(((xs).count)) - 1)) {
+209 |                 s = String(describing: (s + " "))
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3385496463/001/main.swift:229:47: warning: forced cast of '[Edge]' to same type has no effect
+227 |         var idx: Int = 0
+228 |         while (idx < Int(((faces).count))) {
+229 |             let per = faceToPerim((faces[idx] as! [Edge]))
+    |                                               `- warning: forced cast of '[Edge]' to same type has no effect
+230 |             if (String(describing: per)
+231 |             == String(describing: nil as Any?)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3385496463/001/main.swift:240:5: warning: using '_' to ignore the result of a Void-returning function is redundant
+238 |         }
+239 |     }
+240 |     _ = main()
+    |     `- warning: using '_' to ignore the result of a Void-returning function is redundant
+241 |     let _benchEnd = _now()
+242 |     let _benchMemEnd = _mem()

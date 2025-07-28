@@ -1,5 +1,5 @@
-## Progress (2025-07-28 10:32 +0700)
-- transpiler/swift: rosetta outputs generated for indexes 300-349
+## Progress (2025-07-28 10:41 +0700)
+- swift: add rosetta output for entropy-narcissist
 - Generated golden tests for 102/104 programs
 - Updated README checklist and output artifacts
 

@@ -1,0 +1,232 @@
+exit status 1
+/tmp/TestSwiftTranspiler_Rosetta_Golden1501803548/001/main.swift:60:23: warning: forced cast of '[String]' to same type has no effect
+ 58 |         }
+ 59 |         parts = (_append(parts, cur) as! [String])
+ 60 |         return (parts as! [String])
+    |                       `- warning: forced cast of '[String]' to same type has no effect
+ 61 |     }
+ 62 |     func parseIntStr(_ str: String) -> Int {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1501803548/001/main.swift:72:94: error: cannot convert value of type 'Any' to expected argument type 'Int'
+ 70 |         let digits: [String: Any] = ["0": 0, "1": 1, "2": 2, "3": 3, "4": 4, "5": 5, "6": 6, "7": 7, "8": 8, "9": 9]
+ 71 |         while (i < Int(((str).count))) {
+ 72 |             n = Int(((n * 10) + ((digits as! [String: Any])[String(Array(str)[i..<(i + 1)])] as! Any)))
+    |                                                                                              `- error: cannot convert value of type 'Any' to expected argument type 'Int'
+ 73 |             i = Int((i + 1))
+ 74 |         }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1501803548/001/main.swift:72:42: warning: forced cast of '[String : Any]' to same type has no effect
+ 70 |         let digits: [String: Any] = ["0": 0, "1": 1, "2": 2, "3": 3, "4": 4, "5": 5, "6": 6, "7": 7, "8": 8, "9": 9]
+ 71 |         while (i < Int(((str).count))) {
+ 72 |             n = Int(((n * 10) + ((digits as! [String: Any])[String(Array(str)[i..<(i + 1)])] as! Any)))
+    |                                          `- warning: forced cast of '[String : Any]' to same type has no effect
+ 73 |             i = Int((i + 1))
+ 74 |         }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1501803548/001/main.swift:72:94: warning: forced cast from 'Any?' to 'Any' only unwraps optionals; did you mean to use '!'?
+ 70 |         let digits: [String: Any] = ["0": 0, "1": 1, "2": 2, "3": 3, "4": 4, "5": 5, "6": 6, "7": 7, "8": 8, "9": 9]
+ 71 |         while (i < Int(((str).count))) {
+ 72 |             n = Int(((n * 10) + ((digits as! [String: Any])[String(Array(str)[i..<(i + 1)])] as! Any)))
+    |                                                                                              `- warning: forced cast from 'Any?' to 'Any' only unwraps optionals; did you mean to use '!'?
+ 73 |             i = Int((i + 1))
+ 74 |         }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1501803548/001/main.swift:87:53: warning: forced cast of 'Int' to same type has no effect
+ 85 |                 s = String(describing: (s + sep))
+ 86 |             }
+ 87 |             s = String(describing: (s + _p((nums[i] as! Int))))
+    |                                                     `- warning: forced cast of 'Int' to same type has no effect
+ 88 |             i = Int((i + 1))
+ 89 |         }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1501803548/001/main.swift:93:56: warning: forced cast of '[String]' to same type has no effect
+ 91 |     }
+ 92 |     func undot(_ s: String) -> [Int] {
+ 93 |         let parts = (split(String(describing: s), ".") as! [String])
+    |                                                        `- warning: forced cast of '[String]' to same type has no effect
+ 94 |         var nums: [Int] = ([] as! [Int])
+ 95 |         for p in parts {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1501803548/001/main.swift:98:22: warning: forced cast of '[Int]' to same type has no effect
+ 96 |             nums = (_append(nums, Int(Int(String(describing: String(describing: p)))!)) as! [Int])
+ 97 |         }
+ 98 |         return (nums as! [Int])
+    |                      `- warning: forced cast of '[Int]' to same type has no effect
+ 99 |     }
+100 |     func factorial(_ n: Int) -> Int {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1501803548/001/main.swift:146:46: warning: forced cast of '[Int]' to same type has no effect
+144 |     func mapToPerms(_ factNums: [[Int]]) -> [[Int]] {
+145 |         var perms: [[Int]] = ([] as! [[Int]])
+146 |         var psize: Int = (Int((((factNums[0] as! [Int])).count)) + 1)
+    |                                              `- warning: forced cast of '[Int]' to same type has no effect
+147 |         var start: [Int] = ([] as! [Int])
+148 |         var i: Int = 0
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1501803548/001/main.swift:157:49: warning: forced cast of 'Int' to same type has no effect
+155 |             var j: Int = 0
+156 |             while (j < Int(((start).count))) {
+157 |                 perm = (_append(perm, (start[j] as! Int)) as! [Int])
+    |                                                 `- warning: forced cast of 'Int' to same type has no effect
+158 |                 j = Int((j + 1))
+159 |             }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1501803548/001/main.swift:162:37: warning: forced cast of 'Int' to same type has no effect
+160 |             var m: Int = 0
+161 |             while (m < Int(((fn).count))) {
+162 |                 var g: Int = (fn[m] as! Int)
+    |                                     `- warning: forced cast of 'Int' to same type has no effect
+163 |                 if (g != 0) {
+164 |                     var first: Int = m
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1501803548/001/main.swift:168:54: warning: forced cast of 'Int' to same type has no effect
+166 |                     var t: Int = 1
+167 |                     while (t <= g) {
+168 |                         var temp: Int = (perm[first] as! Int)
+    |                                                      `- warning: forced cast of 'Int' to same type has no effect
+169 |                         var x: Int = (first + 1)
+170 |                         while (x <= last) {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1501803548/001/main.swift:171:54: warning: forced cast of 'Int' to same type has no effect
+169 |                         var x: Int = (first + 1)
+170 |                         while (x <= last) {
+171 |                             perm[(x - 1)] = (perm[x] as! Int)
+    |                                                      `- warning: forced cast of 'Int' to same type has no effect
+172 |                             x = Int((x + 1))
+173 |                         }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1501803548/001/main.swift:182:23: warning: forced cast of '[[Int]]' to same type has no effect
+180 |             perms = (_append(perms, perm) as! [[Int]])
+181 |         }
+182 |         return (perms as! [[Int]])
+    |                       `- warning: forced cast of '[[Int]]' to same type has no effect
+183 |     }
+184 |     var seed: Int = 1
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1501803548/001/main.swift:190:44: warning: forced cast of '[Any]' to same type has no effect
+188 |     }
+189 |     func main() {
+190 |         let g = (genFactBaseNums(3, false) as! [Any])
+    |                                            `- warning: forced cast of '[Any]' to same type has no effect
+191 |         var factNums: Any = ((g as! [Any])[0] as! Any)
+192 |         var perms: [[Int]] = (mapToPerms((factNums as! [[Int]])) as! [[Int]])
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1501803548/001/main.swift:191:33: warning: forced cast of '[Any]' to same type has no effect
+189 |     func main() {
+190 |         let g = (genFactBaseNums(3, false) as! [Any])
+191 |         var factNums: Any = ((g as! [Any])[0] as! Any)
+    |                                 `- warning: forced cast of '[Any]' to same type has no effect
+192 |         var perms: [[Int]] = (mapToPerms((factNums as! [[Int]])) as! [[Int]])
+193 |         var i: Int = 0
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1501803548/001/main.swift:191:47: warning: forced cast of 'Any' to same type has no effect
+189 |     func main() {
+190 |         let g = (genFactBaseNums(3, false) as! [Any])
+191 |         var factNums: Any = ((g as! [Any])[0] as! Any)
+    |                                               `- warning: forced cast of 'Any' to same type has no effect
+192 |         var perms: [[Int]] = (mapToPerms((factNums as! [[Int]])) as! [[Int]])
+193 |         var i: Int = 0
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1501803548/001/main.swift:192:66: warning: forced cast of '[[Int]]' to same type has no effect
+190 |         let g = (genFactBaseNums(3, false) as! [Any])
+191 |         var factNums: Any = ((g as! [Any])[0] as! Any)
+192 |         var perms: [[Int]] = (mapToPerms((factNums as! [[Int]])) as! [[Int]])
+    |                                                                  `- warning: forced cast of '[[Int]]' to same type has no effect
+193 |         var i: Int = 0
+194 |         while (i < Int((String(describing: factNums).count))) {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1501803548/001/main.swift:195:78: warning: forced cast of 'Any' to same type has no effect
+193 |         var i: Int = 0
+194 |         while (i < Int((String(describing: factNums).count))) {
+195 |             print(_p(((String(describing: joinInts((((factNums as! [Any])[i] as! Any) as! [Int]), ".")) + " -> ") + String(describing: joinInts((perms[i] as! [Int]), "")))))
+    |                                                                              `- warning: forced cast of 'Any' to same type has no effect
+196 |             i = Int((i + 1))
+197 |         }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1501803548/001/main.swift:195:155: warning: forced cast of '[Int]' to same type has no effect
+193 |         var i: Int = 0
+194 |         while (i < Int((String(describing: factNums).count))) {
+195 |             print(_p(((String(describing: joinInts((((factNums as! [Any])[i] as! Any) as! [Int]), ".")) + " -> ") + String(describing: joinInts((perms[i] as! [Int]), "")))))
+    |                                                                                                                                                           `- warning: forced cast of '[Int]' to same type has no effect
+196 |             i = Int((i + 1))
+197 |         }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1501803548/001/main.swift:203:60: warning: forced cast of '[Int]' to same type has no effect
+201 |         print(_p(""))
+202 |         let fbn51s: [String] = (["39.49.7.47.29.30.2.12.10.3.29.37.33.17.12.31.29.34.17.25.2.4.25.4.1.14.20.6.21.18.1.1.1.4.0.5.15.12.4.3.10.10.9.1.6.5.5.3.0.0.0", "51.48.16.22.3.0.19.34.29.1.36.30.12.32.12.29.30.26.14.21.8.12.1.3.10.4.7.17.6.21.8.12.15.15.13.15.7.3.12.11.9.5.5.6.6.3.4.0.3.2.1"] as! [String])
+203 |         factNums = ([(undot(String(describing: fbn51s[0])) as! [Int]), (undot(String(describing: fbn51s[1])) as! [Int])] as! [[Int]])
+    |                                                            `- warning: forced cast of '[Int]' to same type has no effect
+204 |         perms = (mapToPerms((factNums as! [[Int]])) as! [[Int]])
+205 |         let shoe = "A♠K♠Q♠J♠T♠9♠8♠7♠6♠5♠4♠3♠2♠A♥K♥Q♥J♥T♥9♥8♥7♥6♥5♥4♥3♥2♥A♦K♦Q♦J♦T♦9♦8♦7♦6♦5♦4♦3♦2♦A♣K♣Q♣J♣T♣9♣8♣7♣6♣5♣4♣3♣2♣"
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1501803548/001/main.swift:203:110: warning: forced cast of '[Int]' to same type has no effect
+201 |         print(_p(""))
+202 |         let fbn51s: [String] = (["39.49.7.47.29.30.2.12.10.3.29.37.33.17.12.31.29.34.17.25.2.4.25.4.1.14.20.6.21.18.1.1.1.4.0.5.15.12.4.3.10.10.9.1.6.5.5.3.0.0.0", "51.48.16.22.3.0.19.34.29.1.36.30.12.32.12.29.30.26.14.21.8.12.1.3.10.4.7.17.6.21.8.12.15.15.13.15.7.3.12.11.9.5.5.6.6.3.4.0.3.2.1"] as! [String])
+203 |         factNums = ([(undot(String(describing: fbn51s[0])) as! [Int]), (undot(String(describing: fbn51s[1])) as! [Int])] as! [[Int]])
+    |                                                                                                              `- warning: forced cast of '[Int]' to same type has no effect
+204 |         perms = (mapToPerms((factNums as! [[Int]])) as! [[Int]])
+205 |         let shoe = "A♠K♠Q♠J♠T♠9♠8♠7♠6♠5♠4♠3♠2♠A♥K♥Q♥J♥T♥9♥8♥7♥6♥5♥4♥3♥2♥A♦K♦Q♦J♦T♦9♦8♦7♦6♦5♦4♦3♦2♦A♣K♣Q♣J♣T♣9♣8♣7♣6♣5♣4♣3♣2♣"
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1501803548/001/main.swift:204:53: warning: forced cast of '[[Int]]' to same type has no effect
+202 |         let fbn51s: [String] = (["39.49.7.47.29.30.2.12.10.3.29.37.33.17.12.31.29.34.17.25.2.4.25.4.1.14.20.6.21.18.1.1.1.4.0.5.15.12.4.3.10.10.9.1.6.5.5.3.0.0.0", "51.48.16.22.3.0.19.34.29.1.36.30.12.32.12.29.30.26.14.21.8.12.1.3.10.4.7.17.6.21.8.12.15.15.13.15.7.3.12.11.9.5.5.6.6.3.4.0.3.2.1"] as! [String])
+203 |         factNums = ([(undot(String(describing: fbn51s[0])) as! [Int]), (undot(String(describing: fbn51s[1])) as! [Int])] as! [[Int]])
+204 |         perms = (mapToPerms((factNums as! [[Int]])) as! [[Int]])
+    |                                                     `- warning: forced cast of '[[Int]]' to same type has no effect
+205 |         let shoe = "A♠K♠Q♠J♠T♠9♠8♠7♠6♠5♠4♠3♠2♠A♥K♥Q♥J♥T♥9♥8♥7♥6♥5♥4♥3♥2♥A♦K♦Q♦J♦T♦9♦8♦7♦6♦5♦4♦3♦2♦A♣K♣Q♣J♣T♣9♣8♣7♣6♣5♣4♣3♣2♣"
+206 |         var cards: [String] = ([] as! [String])
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1501803548/001/main.swift:219:41: warning: forced cast of '[Int]' to same type has no effect
+217 |         while (i < Int(((fbn51s).count))) {
+218 |             print(_p(String(describing: fbn51s[i])))
+219 |             var perm: [Int] = (perms[i] as! [Int])
+    |                                         `- warning: forced cast of '[Int]' to same type has no effect
+220 |             var j: Int = 0
+221 |             var line: String = ""
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1501803548/001/main.swift:223:85: warning: forced cast of 'Int' to same type has no effect
+221 |             var line: String = ""
+222 |             while (j < Int(((perm).count))) {
+223 |                 line = String(describing: (line + String(describing: cards[(perm[j] as! Int)])))
+    |                                                                                     `- warning: forced cast of 'Int' to same type has no effect
+224 |                 j = Int((j + 1))
+225 |             }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1501803548/001/main.swift:235:53: warning: forced cast of '[Int]' to same type has no effect
+233 |             i = Int((i + 1))
+234 |         }
+235 |         print(_p(String(describing: joinInts((fbn51 as! [Int]), "."))))
+    |                                                     `- warning: forced cast of '[Int]' to same type has no effect
+236 |         perms = (mapToPerms(([fbn51] as! [[Int]])) as! [[Int]])
+237 |         var line: String = ""
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1501803548/001/main.swift:236:52: warning: forced cast of '[[Int]]' to same type has no effect
+234 |         }
+235 |         print(_p(String(describing: joinInts((fbn51 as! [Int]), "."))))
+236 |         perms = (mapToPerms(([fbn51] as! [[Int]])) as! [[Int]])
+    |                                                    `- warning: forced cast of '[[Int]]' to same type has no effect
+237 |         var line: String = ""
+238 |         i = 0
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1501803548/001/main.swift:239:36: warning: forced cast of '[Int]' to same type has no effect
+237 |         var line: String = ""
+238 |         i = 0
+239 |         while (i < Int((((perms[0] as! [Int])).count))) {
+    |                                    `- warning: forced cast of '[Int]' to same type has no effect
+240 |             line = String(describing: (line + String(describing: cards[(perms[0][i] as! Int)])))
+241 |             i = Int((i + 1))
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1501803548/001/main.swift:240:85: warning: forced cast of 'Int' to same type has no effect
+238 |         i = 0
+239 |         while (i < Int((((perms[0] as! [Int])).count))) {
+240 |             line = String(describing: (line + String(describing: cards[(perms[0][i] as! Int)])))
+    |                                                                                     `- warning: forced cast of 'Int' to same type has no effect
+241 |             i = Int((i + 1))
+242 |         }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1501803548/001/main.swift:245:5: warning: using '_' to ignore the result of a Void-returning function is redundant
+243 |         print(_p(line))
+244 |     }
+245 |     _ = main()
+    |     `- warning: using '_' to ignore the result of a Void-returning function is redundant
+246 |     let _benchEnd = _now()
+247 |     let _benchMemEnd = _mem()

@@ -1,0 +1,58 @@
+exit status 1
+/tmp/TestSwiftTranspiler_Rosetta_Golden230259571/001/main.swift:41:17: error: enum element with associated values must have at least one associated value
+39 |     let _benchStart = _now()
+40 |     indirect enum fruit {
+41 |         case int()
+   |                 |- error: enum element with associated values must have at least one associated value
+   |                 |- note: did you mean to remove the empty associated value list?
+   |                 `- note: did you mean to explicitly add a 'Void' associated value?
+42 |     }
+43 |     let apple: fruit = 0
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden230259571/001/main.swift:43:24: error: cannot convert value of type 'Int' to specified type 'fruit'
+41 |         case int()
+42 |     }
+43 |     let apple: fruit = 0
+   |                        `- error: cannot convert value of type 'Int' to specified type 'fruit'
+44 |     let banana: fruit = ((Int(apple) + 1) as! fruit)
+45 |     let cherry: fruit = ((Int(banana) + 1) as! fruit)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden230259571/001/main.swift:44:27: error: no exact matches in call to initializer 
+42 |     }
+43 |     let apple: fruit = 0
+44 |     let banana: fruit = ((Int(apple) + 1) as! fruit)
+   |                           `- error: no exact matches in call to initializer 
+45 |     let cherry: fruit = ((Int(banana) + 1) as! fruit)
+46 |     let _benchEnd = _now()
+
+Swift.FixedWidthInteger.init:2:19: note: candidate requires that 'fruit' conform to 'BinaryFloatingPoint' (requirement specified as 'T' : 'BinaryFloatingPoint')
+1 | protocol FixedWidthInteger {
+2 | @inlinable public init<T>(_ source: T) where T : BinaryFloatingPoint}
+  |                   `- note: candidate requires that 'fruit' conform to 'BinaryFloatingPoint' (requirement specified as 'T' : 'BinaryFloatingPoint')
+3 | 
+
+Swift.SignedInteger.init:2:8: note: candidate requires that 'fruit' conform to 'BinaryInteger' (requirement specified as 'T' : 'BinaryInteger')
+1 | protocol SignedInteger {
+2 | public init<T>(_ source: T) where T : BinaryInteger}
+  |        `- note: candidate requires that 'fruit' conform to 'BinaryInteger' (requirement specified as 'T' : 'BinaryInteger')
+3 | 
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden230259571/001/main.swift:45:27: error: no exact matches in call to initializer 
+43 |     let apple: fruit = 0
+44 |     let banana: fruit = ((Int(apple) + 1) as! fruit)
+45 |     let cherry: fruit = ((Int(banana) + 1) as! fruit)
+   |                           `- error: no exact matches in call to initializer 
+46 |     let _benchEnd = _now()
+47 |     let _benchMemEnd = _mem()
+
+Swift.FixedWidthInteger.init:2:19: note: candidate requires that 'fruit' conform to 'BinaryFloatingPoint' (requirement specified as 'T' : 'BinaryFloatingPoint')
+1 | protocol FixedWidthInteger {
+2 | @inlinable public init<T>(_ source: T) where T : BinaryFloatingPoint}
+  |                   `- note: candidate requires that 'fruit' conform to 'BinaryFloatingPoint' (requirement specified as 'T' : 'BinaryFloatingPoint')
+3 | 
+
+Swift.SignedInteger.init:2:8: note: candidate requires that 'fruit' conform to 'BinaryInteger' (requirement specified as 'T' : 'BinaryInteger')
+1 | protocol SignedInteger {
+2 | public init<T>(_ source: T) where T : BinaryInteger}
+  |        `- note: candidate requires that 'fruit' conform to 'BinaryInteger' (requirement specified as 'T' : 'BinaryInteger')
+3 | 

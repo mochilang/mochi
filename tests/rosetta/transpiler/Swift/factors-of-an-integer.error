@@ -1,0 +1,47 @@
+signal: illegal instruction
+
+*** Signal 4: Backtracing from 0x56309a50cedc... done ***
+
+*** Program crashed: Illegal instruction at 0x000056309a50cedc ***
+
+Thread 0 "main" crashed:
+
+0      0x000056309a50cedc apf #1 (_:_:) in printFactors #1 (_:) in  + 764 in main
+1 [ra] 0x000056309a50c673 printFactors #1 (_:) in  + 2194 in main
+2 [ra] 0x000056309a50d6eb main + 234 in main
+3 [ra] 0x00007f0d0695f1ca <unknown> in libc.so.6
+4 [ra] 0x00007f0d0695f28b <unknown> in libc.so.6
+
+
+Registers:
+
+rax 0x81fbeb9f9d680001  9366338920820244481
+rdx 0x00007ffe7f9cf348  7c 15 9d 7f fe 7f 00 00 00 00 00 00 00 00 00 00  |···þ···········
+rcx 0x0000000000000001  1
+rbx 0x00007ffe7f9ceca0  d0 2e d6 a8 30 56 00 00 3a ce 50 9a 30 56 00 00  Ð.Ö¨0V··:ÎP·0V··
+rsi 0x00007f0d082f2fb0  01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ················
+rdi 0x00005630a8d63c10  67 71 72 49 00 00 00 f0 31 00 00 00 00 00 00 00  gqrI···ð1·······
+rbp 0x00007ffe7f9ced50  40 f1 9c 7f fe 7f 00 00 73 c6 50 9a 30 56 00 00  @ñ··þ···sÆP·0V··
+rsp 0x00007ffe7f9cec30  21 24 d6 a8 30 56 00 00 79 00 68 9d 9f eb fb 81  !$Ö¨0V··y·h··ëû·
+ r8 0x00005630a8d4f010  06 00 06 00 05 00 07 00 07 00 07 00 02 00 02 00  ················
+ r9 0x0000000000000007  7
+r10 0x00005630a8d63c20  e3 a2 dc cb 35 56 00 00 94 e5 d4 3b 0a a9 72 04  ã¢ÜË5V···åÔ;·©r·
+r11 0x0472a90a3bd4e594  320504384915301780
+r12 0x0000000000000001  1
+r13 0x0000000000000000  0
+r14 0x000056309a50fc58  e0 d4 50 9a 30 56 00 00 00 00 00 00 00 00 00 00  àÔP·0V··········
+r15 0x00007f0d0849d000  e0 e2 49 08 0d 7f 00 00 15 00 00 00 00 00 00 00  àâI·············
+rip 0x000056309a50cedc  0f 0b 0f 0b 0f 0b 66 66 66 66 66 2e 0f 1f 84 00  ······fffff.····
+
+rflags 0x0000000000010202  
+
+cs 0x0033  fs 0x0000  gs 0x0000
+
+
+Images (18 omitted):
+
+0x000056309a509000–0x000056309a50e058 aa90a98923594f77fa8a94e34ab2bc3b7054fe78 main      /tmp/TestSwiftTranspiler_Rosetta_Golden1209311956/001/main
+0x00007f0d06935000–0x00007f0d06ae4cb9 282c2c16e7b6600b0b22ea0c99010d2795752b5f libc.so.6 /usr/lib/x86_64-linux-gnu/libc.so.6
+
+Backtrace took 0.00s
+

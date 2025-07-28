@@ -1,0 +1,113 @@
+exit status 1
+/tmp/TestSwiftTranspiler_Rosetta_Golden1462355545/001/main.swift:55:27: warning: forced cast of 'Frac' to same type has no effect
+ 53 |         let m = Frac(num: (l.num + r.num), den: (l.den + r.den))
+ 54 |         if (m.den <= n) {
+ 55 |             acc = (gen((l as! Frac), (m as! Frac), Int(n), &acc) as! [Frac])
+    |                           `- warning: forced cast of 'Frac' to same type has no effect
+ 56 |             acc = (_append(acc, m) as! [Frac])
+ 57 |             acc = (gen((m as! Frac), (r as! Frac), Int(n), &acc) as! [Frac])
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1462355545/001/main.swift:55:41: warning: forced cast of 'Frac' to same type has no effect
+ 53 |         let m = Frac(num: (l.num + r.num), den: (l.den + r.den))
+ 54 |         if (m.den <= n) {
+ 55 |             acc = (gen((l as! Frac), (m as! Frac), Int(n), &acc) as! [Frac])
+    |                                         `- warning: forced cast of 'Frac' to same type has no effect
+ 56 |             acc = (_append(acc, m) as! [Frac])
+ 57 |             acc = (gen((m as! Frac), (r as! Frac), Int(n), &acc) as! [Frac])
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1462355545/001/main.swift:55:66: warning: forced cast of '[Frac]' to same type has no effect
+ 53 |         let m = Frac(num: (l.num + r.num), den: (l.den + r.den))
+ 54 |         if (m.den <= n) {
+ 55 |             acc = (gen((l as! Frac), (m as! Frac), Int(n), &acc) as! [Frac])
+    |                                                                  `- warning: forced cast of '[Frac]' to same type has no effect
+ 56 |             acc = (_append(acc, m) as! [Frac])
+ 57 |             acc = (gen((m as! Frac), (r as! Frac), Int(n), &acc) as! [Frac])
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1462355545/001/main.swift:57:27: warning: forced cast of 'Frac' to same type has no effect
+ 55 |             acc = (gen((l as! Frac), (m as! Frac), Int(n), &acc) as! [Frac])
+ 56 |             acc = (_append(acc, m) as! [Frac])
+ 57 |             acc = (gen((m as! Frac), (r as! Frac), Int(n), &acc) as! [Frac])
+    |                           `- warning: forced cast of 'Frac' to same type has no effect
+ 58 |         }
+ 59 |         return (acc as! [Frac])
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1462355545/001/main.swift:57:41: warning: forced cast of 'Frac' to same type has no effect
+ 55 |             acc = (gen((l as! Frac), (m as! Frac), Int(n), &acc) as! [Frac])
+ 56 |             acc = (_append(acc, m) as! [Frac])
+ 57 |             acc = (gen((m as! Frac), (r as! Frac), Int(n), &acc) as! [Frac])
+    |                                         `- warning: forced cast of 'Frac' to same type has no effect
+ 58 |         }
+ 59 |         return (acc as! [Frac])
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1462355545/001/main.swift:57:66: warning: forced cast of '[Frac]' to same type has no effect
+ 55 |             acc = (gen((l as! Frac), (m as! Frac), Int(n), &acc) as! [Frac])
+ 56 |             acc = (_append(acc, m) as! [Frac])
+ 57 |             acc = (gen((m as! Frac), (r as! Frac), Int(n), &acc) as! [Frac])
+    |                                                                  `- warning: forced cast of '[Frac]' to same type has no effect
+ 58 |         }
+ 59 |         return (acc as! [Frac])
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1462355545/001/main.swift:59:21: warning: forced cast of '[Frac]' to same type has no effect
+ 57 |             acc = (gen((m as! Frac), (r as! Frac), Int(n), &acc) as! [Frac])
+ 58 |         }
+ 59 |         return (acc as! [Frac])
+    |                     `- warning: forced cast of '[Frac]' to same type has no effect
+ 60 |     }
+ 61 |     func totient(_ n: Int) -> Int {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1462355545/001/main.swift:89:60: error: cannot convert value of type '[Any]' to expected argument type '[Frac]'
+ 87 |             var seq: [Frac] = ({ () -> Any in
+ 88 |             var _tmp3 = []
+ 89 |             return gen((l as! Frac), (r as! Frac), Int(n), &_tmp3)
+    |                                                            |- error: cannot convert value of type '[Any]' to expected argument type '[Frac]'
+    |                                                            `- note: arguments to generic parameter 'Element' ('Any' and 'Frac') are expected to be equal
+ 90 |         }() as! [Frac])
+ 91 |         var line: String = ((("F(" + _p(n)) + "): ") + String(describing: fracStr((l as! Frac))))
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1462355545/001/main.swift:89:27: warning: forced cast of 'Frac' to same type has no effect
+ 87 |             var seq: [Frac] = ({ () -> Any in
+ 88 |             var _tmp3 = []
+ 89 |             return gen((l as! Frac), (r as! Frac), Int(n), &_tmp3)
+    |                           `- warning: forced cast of 'Frac' to same type has no effect
+ 90 |         }() as! [Frac])
+ 91 |         var line: String = ((("F(" + _p(n)) + "): ") + String(describing: fracStr((l as! Frac))))
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1462355545/001/main.swift:89:41: warning: forced cast of 'Frac' to same type has no effect
+ 87 |             var seq: [Frac] = ({ () -> Any in
+ 88 |             var _tmp3 = []
+ 89 |             return gen((l as! Frac), (r as! Frac), Int(n), &_tmp3)
+    |                                         `- warning: forced cast of 'Frac' to same type has no effect
+ 90 |         }() as! [Frac])
+ 91 |         var line: String = ((("F(" + _p(n)) + "): ") + String(describing: fracStr((l as! Frac))))
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1462355545/001/main.swift:91:86: warning: forced cast of 'Frac' to same type has no effect
+ 89 |             return gen((l as! Frac), (r as! Frac), Int(n), &_tmp3)
+ 90 |         }() as! [Frac])
+ 91 |         var line: String = ((("F(" + _p(n)) + "): ") + String(describing: fracStr((l as! Frac))))
+    |                                                                                      `- warning: forced cast of 'Frac' to same type has no effect
+ 92 |         for f in seq {
+ 93 |             line = String(describing: ((line + " ") + String(describing: fracStr((f as! Frac)))))
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1462355545/001/main.swift:93:85: warning: forced cast of 'Frac' to same type has no effect
+ 91 |         var line: String = ((("F(" + _p(n)) + "): ") + String(describing: fracStr((l as! Frac))))
+ 92 |         for f in seq {
+ 93 |             line = String(describing: ((line + " ") + String(describing: fracStr((f as! Frac)))))
+    |                                                                                     `- warning: forced cast of 'Frac' to same type has no effect
+ 94 |         }
+ 95 |         line = String(describing: ((line + " ") + String(describing: fracStr((r as! Frac)))))
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1462355545/001/main.swift:95:81: warning: forced cast of 'Frac' to same type has no effect
+ 93 |             line = String(describing: ((line + " ") + String(describing: fracStr((f as! Frac)))))
+ 94 |         }
+ 95 |         line = String(describing: ((line + " ") + String(describing: fracStr((r as! Frac)))))
+    |                                                                                 `- warning: forced cast of 'Frac' to same type has no effect
+ 96 |         print(_p(line))
+ 97 |         n = Int((n + 1))
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1462355545/001/main.swift:111:1: warning: using '_' to ignore the result of a Void-returning function is redundant
+109 |     }
+110 | }
+111 | _ = main()
+    | `- warning: using '_' to ignore the result of a Void-returning function is redundant
+112 | let _benchEnd = _now()
+113 | let _benchMemEnd = _mem()

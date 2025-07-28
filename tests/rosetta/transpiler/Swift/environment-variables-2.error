@@ -1,0 +1,8 @@
+exit status 1
+/tmp/TestSwiftTranspiler_Rosetta_Golden3267510945/001/main.swift:49:14: error: cannot find 'os' in scope
+47 |     let name = "SHELL"
+48 |     let prefix = (name + "=")
+49 |     for v in os.Environ() {
+   |              `- error: cannot find 'os' in scope
+50 |         if hasPrefix(String(describing: v), String(describing: prefix)) {
+51 |             print(_p(((name + " has value ") + String(describing: String(Array(String(describing: String(describing: v)))[Int(((prefix).count))..<Int((String(describing: v).count))])))))
