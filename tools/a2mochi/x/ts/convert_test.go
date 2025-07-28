@@ -89,9 +89,9 @@ func TestConvert_Golden(t *testing.T) {
 			if err != nil {
 				t.Fatalf("parse: %v", err)
 			}
-			astNode, err := ts.Convert(prog)
+			astNode, err := ts.Transform(prog)
 			if err != nil {
-				t.Fatalf("convert: %v", err)
+				t.Fatalf("transform: %v", err)
 			}
 			astPath := filepath.Join(outDir, name+".ast")
 			if *update {
@@ -105,7 +105,10 @@ func TestConvert_Golden(t *testing.T) {
 				t.Fatalf("golden mismatch\n--- Got ---\n%s\n--- Want ---\n%s", astNode.String(), wantAST)
 			}
 
-			code := ts.Print(astNode)
+			code, err := ts.Print(astNode)
+			if err != nil {
+				t.Fatalf("print: %v", err)
+			}
 			mochiPath := filepath.Join(outDir, name+".mochi")
 			if *update {
 				os.WriteFile(mochiPath, []byte(code), 0644)

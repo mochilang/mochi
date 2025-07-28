@@ -8,31 +8,10 @@ import (
 
 	"mochi/ast"
 	"mochi/parser"
-	tm "mochi/transpiler/meta"
 )
 
-// ConvertSource converts a Program into Mochi source code.
-func ConvertSource(p *Program) (string, error) {
-	node, err := Convert(p)
-	if err != nil {
-		return "", err
-	}
-	var b strings.Builder
-	b.Write(tm.Header("//"))
-	if p.Source != "" {
-		b.WriteString("/*\n")
-		b.WriteString(p.Source)
-		if !strings.HasSuffix(p.Source, "\n") {
-			b.WriteByte('\n')
-		}
-		b.WriteString("*/\n")
-	}
-	b.WriteString(Print(node))
-	return b.String(), nil
-}
-
-// Convert converts a Program into a Mochi AST node.
-func Convert(p *Program) (*ast.Node, error) {
+// Transform converts a Program into a Mochi AST node.
+func Transform(p *Program) (*ast.Node, error) {
 	var b strings.Builder
 	for _, d := range p.Nodes {
 		switch d.Kind {

@@ -9,13 +9,15 @@ import (
 )
 
 // Print returns the Mochi source code for the given AST node.
-func Print(n *ast.Node) string {
+func Print(n *ast.Node) (string, error) {
 	var b strings.Builder
-	_ = ast.Fprint(&b, n)
+	if err := ast.Fprint(&b, n); err != nil {
+		return "", err
+	}
 	s := b.String()
 	if len(s) > 0 && s[len(s)-1] != '\n' {
 		b.WriteByte('\n')
 		s = b.String()
 	}
-	return s
+	return s, nil
 }
