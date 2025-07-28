@@ -2,7 +2,7 @@
 
 This directory stores C++ code generated from Mochi programs in `tests/rosetta/x/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.cpp` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (182/493) - Last updated 2025-07-28 11:35 +0700:
+Checklist of programs that currently transpile and run (198/493) - Last updated 2025-07-28 11:58 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | 100-doors-2 | ✓ | 222.0µs | 13.12MB |
@@ -180,22 +180,22 @@ Checklist of programs that currently transpile and run (182/493) - Last updated 
 | 173 | cartesian-product-of-two-or-more-lists-1 | ✓ | 284.0µs | 13.12MB |
 | 174 | cartesian-product-of-two-or-more-lists-2 | ✓ | 71.0µs | 14.17MB |
 | 175 | cartesian-product-of-two-or-more-lists-3 | ✓ | 296.0µs | 13.56MB |
-| 176 | cartesian-product-of-two-or-more-lists-4 |   |  |  |
-| 177 | case-sensitivity-of-identifiers |   |  |  |
-| 178 | casting-out-nines |   |  |  |
-| 179 | catalan-numbers-1 |   |  |  |
-| 180 | catalan-numbers-2 |   |  |  |
-| 181 | catalan-numbers-pascals-triangle |   |  |  |
-| 182 | catamorphism |   |  |  |
-| 183 | catmull-clark-subdivision-surface |   |  |  |
-| 184 | chaocipher |   |  |  |
-| 185 | chaos-game |   |  |  |
-| 186 | character-codes-1 |   |  |  |
-| 187 | character-codes-2 |   |  |  |
-| 188 | character-codes-3 |   |  |  |
-| 189 | character-codes-4 |   |  |  |
-| 190 | character-codes-5 |   |  |  |
-| 191 | chat-server |   |  |  |
+| 176 | cartesian-product-of-two-or-more-lists-4 | ✓ | 55.0µs | 13.16MB |
+| 177 | case-sensitivity-of-identifiers | ✓ | 157.0µs | 13.62MB |
+| 178 | casting-out-nines | ✓ | 4.0ms | 13.41MB |
+| 179 | catalan-numbers-1 | ✓ | 59.0µs | 12.89MB |
+| 180 | catalan-numbers-2 | ✓ | 51.0µs | 13.16MB |
+| 181 | catalan-numbers-pascals-triangle | ✓ | 73.0µs | 12.96MB |
+| 182 | catamorphism | ✓ | 22.0µs | 12.98MB |
+| 183 | catmull-clark-subdivision-surface | ✓ | 1.0ms | 14.62MB |
+| 184 | chaocipher | ✓ | 403.0µs | 13.44MB |
+| 185 | chaos-game | ✓ | 28.0ms | 12.88MB |
+| 186 | character-codes-1 | ✓ | 42.0µs | 12.60MB |
+| 187 | character-codes-2 | ✓ | 42.0µs | 13.25MB |
+| 188 | character-codes-3 | ✓ | 58.0µs | 13.36MB |
+| 189 | character-codes-4 | ✓ | 26.0µs | 12.68MB |
+| 190 | character-codes-5 | ✓ | 28.0µs | 12.80MB |
+| 191 | chat-server | ✓ | 53.0µs | 13.29MB |
 | 192 | check-machin-like-formulas |   |  |  |
 | 193 | check-that-file-exists |   |  |  |
 | 194 | checkpoint-synchronization-1 |   |  |  |
