@@ -27,18 +27,12 @@ func ConvertSource(p *Program) (string, error) {
 		}
 		b.WriteString("*/\n")
 	}
-	if err := ast.Fprint(&b, node); err != nil {
-		return "", err
-	}
-	s := b.String()
-	if len(s) > 0 && s[len(s)-1] != '\n' {
-		b.WriteByte('\n')
-		s = b.String()
-	}
-	return s, nil
+	b.WriteString(Print(node))
+	return b.String(), nil
 }
 
-func programToSource(p *Program) string {
+// Convert converts a Program into a Mochi AST node.
+func Convert(p *Program) (*ast.Node, error) {
 	var b strings.Builder
 	for _, d := range p.Nodes {
 		switch d.Kind {
@@ -68,17 +62,24 @@ func programToSource(p *Program) string {
 			writeWhile(&b, d)
 		}
 	}
-	return b.String()
-}
-
-// Convert converts a Program into a Mochi AST node.
-func Convert(p *Program) (*ast.Node, error) {
-	src := programToSource(p)
+	src := b.String()
 	prog, err := parser.ParseString(src)
 	if err != nil {
 		return nil, err
 	}
 	return ast.FromProgram(prog), nil
+}
+
+// Print returns the Mochi source code for the given AST node.
+func Print(n *ast.Node) string {
+	var b strings.Builder
+	_ = ast.Fprint(&b, n)
+	s := b.String()
+	if len(s) > 0 && s[len(s)-1] != '\n' {
+		b.WriteByte('\n')
+		s = b.String()
+	}
+	return s
 }
 
 func writeVar(b *strings.Builder, d Node) {

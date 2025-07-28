@@ -11,7 +11,6 @@ import (
 	"strings"
 	"testing"
 
-	"mochi/ast"
 	"mochi/parser"
 	"mochi/runtime/vm"
 	"mochi/types"
@@ -106,11 +105,7 @@ func TestConvert_Golden(t *testing.T) {
 				t.Fatalf("golden mismatch\n--- Got ---\n%s\n--- Want ---\n%s", astNode.String(), wantAST)
 			}
 
-			var buf bytes.Buffer
-			if err := ast.Fprint(&buf, astNode); err != nil {
-				t.Fatalf("print: %v", err)
-			}
-			code := buf.String()
+			code := ts.Print(astNode)
 			mochiPath := filepath.Join(outDir, name+".mochi")
 			if *update {
 				os.WriteFile(mochiPath, []byte(code), 0644)
