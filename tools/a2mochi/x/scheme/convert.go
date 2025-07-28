@@ -44,7 +44,19 @@ func Parse(src string) ([]Item, error) {
 			}
 			items = append(items, Item{Kind: "func", Name: name, Params: params})
 		} else if def.atom != "" {
-			items = append(items, Item{Kind: "var", Name: def.atom})
+			// Support (define name (lambda (params...) ...)) forms
+			if len(n.list) > 2 && len(n.list[2].list) > 1 && n.list[2].list[0].atom == "lambda" {
+				lam := n.list[2].list[1]
+				var params []string
+				for _, p := range lam.list {
+					if p.atom != "" {
+						params = append(params, p.atom)
+					}
+				}
+				items = append(items, Item{Kind: "func", Name: def.atom, Params: params})
+			} else {
+				items = append(items, Item{Kind: "var", Name: def.atom})
+			}
 		}
 	}
 	return items, nil
