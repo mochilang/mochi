@@ -1,0 +1,115 @@
+func main (regs=34)
+  // let maxNumber = 100000000
+  Const        r4, 100000000
+  Move         r0, r4
+  SetGlobal    0,0,0,0
+  // var dsum: list<int> = []
+  Const        r5, []
+  Move         r1, r5
+  SetGlobal    1,1,0,0
+  // var dcount: list<int> = []
+  Const        r5, []
+  Move         r2, r5
+  SetGlobal    2,2,0,0
+  // var i = 0
+  Const        r6, 0
+  Move         r3, r6
+  SetGlobal    3,3,0,0
+L1:
+  // while i <= maxNumber {
+  LessEqInt    r7, r3, r0
+  JumpIfFalse  r7, L0
+  // dsum = append(dsum, 1)
+  Const        r8, 1
+  Append       r9, r1, r8
+  Move         r1, r9
+  SetGlobal    1,1,0,0
+  // dcount = append(dcount, 1)
+  Const        r8, 1
+  Append       r10, r2, r8
+  Move         r2, r10
+  SetGlobal    2,2,0,0
+  // i = i + 1
+  Const        r8, 1
+  AddInt       r11, r3, r8
+  Move         r3, r11
+  SetGlobal    3,3,0,0
+  // while i <= maxNumber {
+  Jump         L1
+L0:
+  // i = 2
+  Const        r12, 2
+  Move         r3, r12
+  SetGlobal    3,3,0,0
+L6:
+  // while i <= maxNumber {
+  LessEqInt    r13, r3, r0
+  JumpIfFalse  r13, L2
+  // var j = i + i
+  AddInt       r14, r3, r3
+  Move         r15, r14
+L5:
+  // while j <= maxNumber {
+  LessEqInt    r16, r15, r0
+  JumpIfFalse  r16, L3
+  // if dsum[j] == j {
+  Index        r17, r1, r15
+  Equal        r18, r17, r15
+  JumpIfFalse  r18, L4
+  // print(pad8(j) + " equals the sum of its first " + str(dcount[j]) + " divisors")
+  Move         r19, r15
+  Call         r20, pad8, r19
+  Const        r21, " equals the sum of its first "
+  Add          r22, r20, r21
+  Index        r23, r2, r15
+  Str          r24, r23
+  Add          r25, r22, r24
+  Const        r26, " divisors"
+  Add          r27, r25, r26
+  Print        r27
+L4:
+  // dsum[j] = dsum[j] + i
+  Index        r28, r1, r15
+  Add          r29, r28, r3
+  SetIndex     r1, r15, r29
+  SetGlobal    1,1,0,0
+  // dcount[j] = dcount[j] + 1
+  Index        r30, r2, r15
+  Const        r8, 1
+  Add          r31, r30, r8
+  SetIndex     r2, r15, r31
+  SetGlobal    2,2,0,0
+  // j = j + i
+  AddInt       r32, r15, r3
+  Move         r15, r32
+  // while j <= maxNumber {
+  Jump         L5
+L3:
+  // i = i + 1
+  Const        r8, 1
+  AddInt       r33, r3, r8
+  Move         r3, r33
+  SetGlobal    3,3,0,0
+  // while i <= maxNumber {
+  Jump         L6
+L2:
+  Return       r0
+
+  // fun pad8(n: int): string {
+func pad8 (regs=12)
+  // var s = str(n)
+  Str          r5, r4
+  Move         r6, r5
+L1:
+  // while len(s) < 8 { s = " " + s }
+  Len          r7, r6
+  Const        r8, 8
+  LessInt      r9, r7, r8
+  JumpIfFalse  r9, L0
+  Const        r10, " "
+  Add          r11, r10, r6
+  Move         r6, r11
+  Jump         L1
+L0:
+  // return s
+  Return       r6

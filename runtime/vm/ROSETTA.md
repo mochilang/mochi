@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated IR and outputs from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/ir`.
-Last updated: 2025-07-27 17:50 UTC
+Last updated: 2025-07-28 02:21 UTC
 
-## Rosetta Golden Test Checklist (460/467)
+## Rosetta Golden Test Checklist (462/467)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 216µs | 34.2 KB |
@@ -358,56 +358,56 @@ Last updated: 2025-07-27 17:50 UTC
 | 349 | entropy-narcissist | ✓ | 7.665ms | 390.2 KB |
 | 350 | enumerations-1 | ✓ | 22µs | 1.5 KB |
 | 351 | enumerations-2 | ✓ | 38µs | 728 B |
-| 352 | enumerations-3 | ✓ | 21µs | 1.5 KB |
-| 353 | enumerations-4 | ✓ | 21µs | 728 B |
-| 354 | environment-variables-1 | ✓ | 160.953ms | 12.5 KB |
-| 355 | environment-variables-2 | ✓ | 159.797ms | 210.0 KB |
+| 352 | enumerations-3 | ✓ | 316µs | 1.5 KB |
+| 353 | enumerations-4 | ✓ | 368µs | 728 B |
+| 354 | environment-variables-1 | ✓ | 488.549ms | 26.8 KB |
+| 355 | environment-variables-2 | ✓ | 473.928ms | 211.7 KB |
 | 356 | equal-prime-and-composite-sums | ✓ |  |  |
-| 357 | equilibrium-index | ✓ | 2.793365s | 1.9 MB |
-| 358 | erd-s-nicolas-numbers |   |  |  |
-| 359 | erd-s-selfridge-categorization-of-primes | ✓ | 2.685141s | 2.0 MB |
+| 357 | equilibrium-index | ✓ | 5.679338s | 204.8 KB |
+| 358 | erd-s-nicolas-numbers | ✓ |  |  |
+| 359 | erd-s-selfridge-categorization-of-primes | ✓ | 3.510396s | 1.2 MB |
 | 360 | esthetic-numbers | ✓ |  |  |
-| 361 | ethiopian-multiplication | ✓ | 105µs | 14.7 KB |
+| 361 | ethiopian-multiplication | ✓ | 394µs | 14.7 KB |
 | 362 | euclid-mullin-sequence | ✓ |  |  |
-| 363 | euler-method | ✓ | 5.758ms | 661.9 KB |
-| 364 | eulers-constant-0.5772... | ✓ | 38.614ms | 362.2 KB |
-| 365 | eulers-identity | ✓ | 100µs | 34.0 KB |
-| 366 | eulers-sum-of-powers-conjecture | ✓ | 1.614504s | 26.4 MB |
-| 367 | evaluate-binomial-coefficients | ✓ | 188µs | 24.4 KB |
-| 368 | even-or-odd | ✓ | 344µs | 120.1 KB |
-| 369 | events | ✓ | 47µs | 3.3 KB |
-| 370 | evolutionary-algorithm | ✓ | 655.748ms |  |
-| 371 | exceptions-catch-an-exception-thrown-in-a-nested-call | ✓ | 113µs | 9.9 KB |
-| 372 | exceptions | ✓ | 189µs | 2.9 KB |
+| 363 | euler-method | ✓ | 7.48ms | 1.0 MB |
+| 364 | eulers-constant-0.5772... | ✓ | 71.66ms | 1.3 MB |
+| 365 | eulers-identity | ✓ | 761µs | 34.0 KB |
+| 366 | eulers-sum-of-powers-conjecture | ✓ | 1.835781s | 15.9 MB |
+| 367 | evaluate-binomial-coefficients | ✓ | 403µs | 24.4 KB |
+| 368 | even-or-odd | ✓ | 1.305ms | 120.2 KB |
+| 369 | events | ✓ | 290µs | 3.3 KB |
+| 370 | evolutionary-algorithm | ✓ | 853.92ms |  |
+| 371 | exceptions-catch-an-exception-thrown-in-a-nested-call | ✓ | 436µs | 9.9 KB |
+| 372 | exceptions | ✓ | 462µs | 2.9 KB |
 | 373 | executable-library | ✓ |  |  |
-| 374 | execute-a-markov-algorithm | ✓ | 37.505ms |  |
-| 375 | execute-a-system-command | ✓ | 299.52ms | 30.5 KB |
-| 376 | execute-brain- | ✓ | 2.888ms |  |
-| 377 | execute-computer-zero-1 | ✓ | 12.877ms | 712.6 KB |
-| 378 | execute-computer-zero | ✓ | 377µs | 192.9 KB |
-| 379 | execute-hq9+ | ✓ | 382µs | 449.5 KB |
-| 380 | execute-snusp | ✓ | 35µs | 328 B |
-| 381 | exponentiation-operator-2 | ✓ | 324µs | 93.1 KB |
-| 382 | exponentiation-operator | ✓ | 142µs | 100.7 KB |
-| 383 | exponentiation-order | ✓ | 171µs | 22.2 KB |
-| 384 | exponentiation-with-infix-operators-in-or-operating-on-the-base | ✓ | 290µs | 66.8 KB |
-| 385 | extend-your-language | ✓ | 116µs | 28.0 KB |
-| 386 | extensible-prime-generator | ✓ | 3.576129s | 1.2 MB |
-| 387 | extreme-floating-point-values | ✓ | 536µs |  |
-| 388 | faces-from-a-mesh-2 | ✓ | 545µs | 277.7 KB |
-| 389 | faces-from-a-mesh | ✓ | 413µs | 399.4 KB |
-| 390 | factorial-base-numbers-indexing-permutations-of-a-collection | ✓ | 34.251ms | 355.9 KB |
-| 391 | factorial-primes | ✓ | 116.429ms | 810.8 KB |
-| 392 | factorial | ✓ | 1.501ms | 981.8 KB |
+| 374 | execute-a-markov-algorithm | ✓ | 56.17ms | 1.1 MB |
+| 375 | execute-a-system-command | ✓ | 400.537ms | 30.8 KB |
+| 376 | execute-brain- | ✓ | 8.22ms |  |
+| 377 | execute-computer-zero-1 | ✓ | 21.961ms | 338.9 KB |
+| 378 | execute-computer-zero | ✓ | 861µs | 192.9 KB |
+| 379 | execute-hq9+ | ✓ | 1.151ms | 449.5 KB |
+| 380 | execute-snusp | ✓ | 94µs | 328 B |
+| 381 | exponentiation-operator-2 | ✓ | 1.234ms | 67.8 KB |
+| 382 | exponentiation-operator | ✓ | 1.621ms |  |
+| 383 | exponentiation-order | ✓ | 473µs | 22.2 KB |
+| 384 | exponentiation-with-infix-operators-in-or-operating-on-the-base | ✓ | 732µs | 66.8 KB |
+| 385 | extend-your-language | ✓ | 602µs | 28.0 KB |
+| 386 | extensible-prime-generator | ✓ | 6.912101s | 2.4 MB |
+| 387 | extreme-floating-point-values | ✓ | 1.744ms | 139.4 KB |
+| 388 | faces-from-a-mesh-2 | ✓ | 985µs | 277.7 KB |
+| 389 | faces-from-a-mesh | ✓ | 1.131ms | 399.4 KB |
+| 390 | factorial-base-numbers-indexing-permutations-of-a-collection | ✓ | 55.32ms |  |
+| 391 | factorial-primes | ✓ | 162.892ms |  |
+| 392 | factorial | ✓ | 4.171ms | 982.0 KB |
 | 393 | factorions | ✓ | 30.371532s | 1.1 MB |
-| 394 | factors-of-a-mersenne-number |   |  |  |
+| 394 | factors-of-a-mersenne-number | ✓ |  |  |
 | 395 | factors-of-an-integer | ✓ |  |  |
 | 396 | fairshare-between-two-and-more |   |  |  |
-| 397 | farey-sequence | ✓ | 10.485ms | 510.8 KB |
-| 398 | fast-fourier-transform | ✓ | 1.85ms |  |
-| 399 | fasta-format | ✓ | 199µs | 114.9 KB |
-| 400 | faulhabers-formula | ✓ | 4.929ms |  |
-| 401 | faulhabers-triangle | ✓ | 4.853ms | 635.3 KB |
+| 397 | farey-sequence | ✓ | 24.859ms |  |
+| 398 | fast-fourier-transform | ✓ | 2.697ms | 759.6 KB |
+| 399 | fasta-format | ✓ | 451µs | 114.9 KB |
+| 400 | faulhabers-formula | ✓ | 10.1ms |  |
+| 401 | faulhabers-triangle | ✓ | 12.953ms | 588.6 KB |
 | 402 | feigenbaum-constant-calculation | ✓ | 72.651ms | 762.4 KB |
 | 403 | fermat-numbers | ✓ | 1.15ms | 789.1 KB |
 | 404 | fibonacci-n-step-number-sequences | ✓ | 139µs | 127.1 KB |

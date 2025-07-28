@@ -2620,7 +2620,11 @@ func (c *compiler) compileNamedFunExpr(name string, fn *parser.FunExpr, captures
 
 func (c *compiler) compileMain(p *parser.Program) (Function, error) {
 	fc := newFuncCompiler(c)
-	fc.fn.Name = "main"
+	// Use a unique name for the synthetic entry function to avoid
+	// clashing with a user defined `main` function. The VM always
+	// executes function index 0 so the actual name is irrelevant
+	// except for debugging output.
+	fc.fn.Name = "__main"
 	fc.fn.Line = 0
 	fc.fn.NumParams = 0
 	for name, idx := range c.globals {
