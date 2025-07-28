@@ -1262,7 +1262,41 @@ func (ix *IndexExpr) emit(w io.Writer) {
 		ix.Index.emit(w)
 		io.WriteString(w, " + 1]")
 	default: // map
-		if s, ok := ix.Index.(*StringLit); ok && isLuaIdent(s.Value) {
+		if _, ok := ix.Index.(*StringLit); !ok {
+			if _, ok := exprType(ix.Target).(types.ListType); ok {
+				ix.Target.emit(w)
+				io.WriteString(w, "[")
+				ix.Index.emit(w)
+				io.WriteString(w, " + 1]")
+				return
+			}
+			if _, ok := exprType(ix.Target).(types.StringType); ok {
+				io.WriteString(w, "string.sub(")
+				ix.Target.emit(w)
+				io.WriteString(w, ", (")
+				ix.Index.emit(w)
+				io.WriteString(w, " + 1), (")
+				ix.Index.emit(w)
+				io.WriteString(w, " + 1)")
+				io.WriteString(w, ")")
+				return
+			}
+		}
+		if _, ok := exprType(ix.Target).(types.ListType); ok {
+			ix.Target.emit(w)
+			io.WriteString(w, "[")
+			ix.Index.emit(w)
+			io.WriteString(w, " + 1]")
+		} else if _, ok := exprType(ix.Target).(types.StringType); ok {
+			io.WriteString(w, "string.sub(")
+			ix.Target.emit(w)
+			io.WriteString(w, ", (")
+			ix.Index.emit(w)
+			io.WriteString(w, " + 1), (")
+			ix.Index.emit(w)
+			io.WriteString(w, " + 1)")
+			io.WriteString(w, ")")
+		} else if s, ok := ix.Index.(*StringLit); ok && isLuaIdent(s.Value) {
 			ix.Target.emit(w)
 			io.WriteString(w, ".")
 			io.WriteString(w, s.Value)
@@ -1415,6 +1449,10 @@ func isIntExpr(e Expr) bool {
 					return true
 				}
 			}
+		}
+	case *CallExpr:
+		if ex.Func == "len" || ex.Func == "count" {
+			return true
 		}
 	case *BinaryExpr:
 		switch ex.Op {
@@ -2868,9 +2906,18 @@ func convertPostfix(p *parser.PostfixExpr) (Expr, error) {
 				kind = "map"
 			} else if _, ok := idx.(*StringLit); ok {
 				kind = "map"
-			} else if !isIntExpr(idx) && !isFloatExpr(idx) {
-				// default to map access when index is not clearly numeric
+			} else if !isIntExpr(idx) && !isFloatExpr(idx) && !isListExpr(expr) {
+				// default to map access when index is not clearly numeric and target is not a list
 				kind = "map"
+			}
+			if _, ok := exprType(expr).(types.ListType); ok {
+				// force list indexing when the target type is a list
+				kind = "list_elem"
+			}
+			if ie, ok := expr.(*IndexExpr); ok && ie.Kind == "map" {
+				if _, ok := exprType(ie).(types.ListType); ok {
+					kind = "list_elem"
+				}
 			}
 			expr = &IndexExpr{Target: expr, Index: idx, Kind: kind}
 		case op.Index != nil:
