@@ -9,6 +9,7 @@ import (
 
 	"mochi/ast"
 	"mochi/parser"
+	transpmeta "mochi/transpiler/meta"
 )
 
 // ConvertError represents a conversion failure with line context.
@@ -175,7 +176,20 @@ func ConvertFile(path string) (string, error) {
 	if err != nil {
 		return "", formatError(path, string(data), err)
 	}
-	return out, nil
+	var b strings.Builder
+	b.Write(transpmeta.Header("//"))
+	b.WriteString("/*\n")
+	b.WriteString(string(data))
+	if len(data) > 0 && data[len(data)-1] != '\n' {
+		b.WriteByte('\n')
+	}
+	b.WriteString("*/\n")
+	b.WriteString(out)
+	result := b.String()
+	if len(result) > 0 && result[len(result)-1] != '\n' {
+		result += "\n"
+	}
+	return result, nil
 }
 
 func formatParseError(path, src string, err error) error {
