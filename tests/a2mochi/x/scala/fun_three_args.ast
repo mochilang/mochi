@@ -1,0 +1,16 @@
+(program
+  (fun sum3
+    (param a)
+    (param b)
+    (param c)
+    (return
+      (binary +
+        (binary + (selector a) (selector b))
+        (selector c)
+      )
+    )
+  )
+  (call print
+    (call sum3 (int 1) (int 2) (int 3))
+  )
+)

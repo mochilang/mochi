@@ -1,6 +1,6 @@
 # a2mochi Scala Converter
 
-Completed programs: 100/100
+Completed programs: 14/104
 Date: 2025-07-28
 
 This directory contains the helper code and golden files for converting Scala
@@ -16,4 +16,15 @@ block comment at the top of the emitted Mochi file.
 - [x] append_builtin
 - [x] avg_builtin
 - [x] sum_builtin
+- [x] basic_compare
+- [x] cast_string_to_int
+- [x] fun_call
+- [x] fun_three_args
+- [x] len_builtin
+- [x] len_string
+- [x] let_and_print
+- [x] list_index
+- [x] math_ops
+- [x] print_hello
+- [x] unary_neg
 
