@@ -163,6 +163,12 @@ func writeStmt(b *strings.Builder, n *Node, indent int) {
 			writeStmt(b, c, indent+1)
 		}
 		fmt.Fprintf(b, "%s}\n", ind)
+	case "bench":
+		fmt.Fprintf(b, "%sbench %q {\n", ind, n.Value)
+		for _, c := range n.Children {
+			writeStmt(b, c, indent+1)
+		}
+		fmt.Fprintf(b, "%s}\n", ind)
 	case "type":
 		fmt.Fprintf(b, "%stype %s", ind, n.Value)
 		if len(n.Children) > 0 {

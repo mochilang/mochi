@@ -68,7 +68,7 @@ func TestASTPrinterGolden(t *testing.T) {
 	}
 	sort.Strings(files)
 
-	skip := map[string]bool{"bench_block": true, "tree_sum": true}
+	skip := map[string]bool{"tree_sum": true}
 
 	for _, path := range files {
 		name := strings.TrimSuffix(filepath.Base(path), ".mochi")

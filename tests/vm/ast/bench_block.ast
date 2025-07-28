@@ -1,0 +1,14 @@
+(program
+  (bench simple
+    (let n (int 1000))
+    (var s (int 0))
+    (for i
+      (range (int 1) (selector n))
+      (block
+        (assign s
+          (binary + (selector s) (selector i))
+        )
+      )
+    )
+  )
+)
