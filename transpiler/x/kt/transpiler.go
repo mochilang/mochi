@@ -495,6 +495,7 @@ func (ix *IndexExpr) emit(w io.Writer) {
 
 	isMap := strings.HasPrefix(baseType, "MutableMap<")
 	isList := strings.HasPrefix(baseType, "MutableList<")
+	isString := baseType == "String"
 	if !isMap && !isList && ix.ForceBang && idxType != "Int" {
 		isMap = true
 	}
@@ -546,6 +547,8 @@ func (ix *IndexExpr) emit(w io.Writer) {
 		} else if ix.ForceBang {
 			io.WriteString(w, "!!")
 		}
+	} else if isString {
+		io.WriteString(w, ".toString()")
 	}
 }
 
@@ -1199,8 +1202,28 @@ type ForEachStmt struct {
 }
 
 func (fe *ForEachStmt) emit(w io.Writer, indentLevel int) {
+	iterType := guessType(fe.Iterable)
+	name := safeName(fe.Name)
+	if iterType == "String" {
+		tmp := "_" + name
+		indent(w, indentLevel)
+		io.WriteString(w, "for ("+tmp+" in ")
+		if fe.Iterable != nil {
+			fe.Iterable.emit(w)
+		}
+		io.WriteString(w, ") {\n")
+		indent(w, indentLevel+1)
+		io.WriteString(w, "val "+name+" = "+tmp+".toString()\n")
+		for _, st := range fe.Body {
+			st.emit(w, indentLevel+1)
+			io.WriteString(w, "\n")
+		}
+		indent(w, indentLevel)
+		io.WriteString(w, "}")
+		return
+	}
 	indent(w, indentLevel)
-	io.WriteString(w, "for ("+safeName(fe.Name)+" in ")
+	io.WriteString(w, "for ("+name+" in ")
 	if fe.Iterable != nil {
 		fe.Iterable.emit(w)
 	}
@@ -1606,6 +1629,27 @@ func (s *SubstringExpr) emit(w io.Writer) {
 		s.End.emit(w)
 	}
 	io.WriteString(w, ")")
+}
+
+type PadStartExpr struct {
+	Value Expr
+	Width Expr
+	Pad   Expr
+}
+
+func (pse *PadStartExpr) emit(w io.Writer) {
+	pse.Value.emit(w)
+	io.WriteString(w, ".padStart(")
+	if guessType(pse.Width) == "BigInteger" {
+		io.WriteString(w, "(")
+		pse.Width.emit(w)
+		io.WriteString(w, ").toInt()")
+	} else {
+		pse.Width.emit(w)
+	}
+	io.WriteString(w, ", ")
+	pse.Pad.emit(w)
+	io.WriteString(w, "[0])")
 }
 
 type ExistsExpr struct{ Value Expr }
@@ -2314,6 +2358,9 @@ func guessType(e Expr) string {
 			return v.Type
 		}
 		base := guessType(v.Target)
+		if base == "String" {
+			return "String"
+		}
 		if strings.HasPrefix(base, "MutableList<") {
 			t := strings.TrimSuffix(strings.TrimPrefix(base, "MutableList<"), ">")
 			return t
@@ -2666,7 +2713,6 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 			}
 			if ix, ok := target.(*IndexExpr); ok {
 				ix.ForceBang = false
-				ix.Type = ""
 			}
 			v, err := convertExpr(env, st.Assign.Value)
 			if err != nil {
@@ -2999,7 +3045,6 @@ func convertStmts(env *types.Env, list []*parser.Statement) ([]Stmt, error) {
 			}
 			typ := kotlinType(s.Var.Type)
 			if s.Var.Type == nil {
-				typ = localTypeName(env, s.Var.Name)
 				if typ == "" {
 					if t := types.CheckExprType(s.Var.Value, env); t != nil {
 						typ = kotlinTypeFromType(t)
@@ -3182,7 +3227,6 @@ func convertStmts(env *types.Env, list []*parser.Statement) ([]Stmt, error) {
 			}
 			if ix, ok := target.(*IndexExpr); ok {
 				ix.ForceBang = false
-				ix.Type = ""
 			}
 			v, err := convertExpr(env, s.Assign.Value)
 			if err != nil {
@@ -3393,12 +3437,16 @@ func convertForStmt(env *types.Env, fs *parser.ForStmt) (Stmt, error) {
 		if t, err := env.GetVar(name); err == nil {
 			if lt, ok := t.(types.ListType); ok {
 				elem = lt.Elem
+			} else if _, ok := t.(types.StringType); ok {
+				elem = types.StringType{}
 			}
 		}
 	} else {
 		if t := types.CheckExprType(fs.Source, env); t != nil {
 			if lt, ok := t.(types.ListType); ok {
 				elem = lt.Elem
+			} else if _, ok := t.(types.StringType); ok {
+				elem = types.StringType{}
 			}
 		}
 	}
@@ -4580,6 +4628,23 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 				return nil, err
 			}
 			return &SubstringExpr{Value: str, Start: start, End: end}, nil
+		case "padStart":
+			if len(p.Call.Args) != 3 {
+				return nil, fmt.Errorf("padStart expects 3 args")
+			}
+			str, err := convertExpr(env, p.Call.Args[0])
+			if err != nil {
+				return nil, err
+			}
+			width, err := convertExpr(env, p.Call.Args[1])
+			if err != nil {
+				return nil, err
+			}
+			pad, err := convertExpr(env, p.Call.Args[2])
+			if err != nil {
+				return nil, err
+			}
+			return &PadStartExpr{Value: str, Width: width, Pad: pad}, nil
 		default:
 			args := make([]Expr, len(p.Call.Args))
 			for i, a := range p.Call.Args {
