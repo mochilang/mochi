@@ -95,6 +95,9 @@ func TestConvert_Golden(t *testing.T) {
 		"unary_neg":          true,
 		"membership":         true,
 		"map_membership":     true,
+		"len_map":            true,
+		"let_and_print":      true,
+		"var_assignment":     true,
 	}
 
 	outDir := filepath.Join(root, "tests/a2mochi/x/rb")
