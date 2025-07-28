@@ -135,7 +135,23 @@ func convertLuaStmts(stmts []luaast.Stmt, indent int, vars map[string]bool) []st
 			if len(s.Exprs) > 0 {
 				iter = luaExprString(s.Exprs[0])
 			}
-			out = append(out, ind+"for "+strings.Join(s.Names, ", ")+" in "+iter+" {")
+			name := strings.Join(s.Names, ", ")
+			if len(s.Names) > 1 {
+				if call, ok := s.Exprs[0].(*luaast.FuncCallExpr); ok {
+					callee := luaExprString(call.Func)
+					if callee == "pairs" && len(call.Args) == 1 {
+						iter = "values(" + luaExprString(call.Args[0]) + ")"
+					} else if callee == "ipairs" && len(call.Args) == 1 {
+						iter = luaExprString(call.Args[0])
+					} else {
+						iter = "values(" + iter + ")"
+					}
+				} else {
+					iter = "values(" + iter + ")"
+				}
+				name = s.Names[len(s.Names)-1]
+			}
+			out = append(out, ind+"for "+name+" in "+iter+" {")
 			out = append(out, convertLuaStmts(s.Stmts, indent+1, map[string]bool{})...)
 			out = append(out, ind+"}")
 		case *luaast.FuncDefStmt:
@@ -229,6 +245,9 @@ func luaExprString(e luaast.Expr) string {
 		callee := luaExprString(v.Func)
 		if v.Method != "" {
 			callee = luaExprString(v.Receiver) + "." + v.Method
+		}
+		if (callee == "pairs" || callee == "ipairs") && len(args) == 1 {
+			return luaExprString(v.Args[0])
 		}
 		switch callee {
 		case "__print":
