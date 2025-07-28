@@ -2,6 +2,7 @@ package php
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
 
 	pnode "github.com/z7zmey/php-parser/node"
@@ -96,6 +97,8 @@ func Parse(src string) (*Program, error) {
 			prog.Classes = append(prog.Classes, classFromNode(n))
 		case *stmt.Expression:
 			parseExprStmt(prog, n)
+		case *stmt.Echo:
+			parseExprStmt(prog, &stmt.Expression{Expr: n})
 		}
 	}
 	return prog, nil
@@ -181,7 +184,7 @@ func parseExprStmt(p *Program, st *stmt.Expression) {
 		pos := e.GetPosition()
 		p.Prints = append(p.Prints, PrintStmt{Expr: val, StartLine: pos.StartLine, EndLine: pos.EndLine})
 	case *stmt.Echo:
-		if len(e.Exprs) != 1 {
+		if len(e.Exprs) == 0 {
 			return
 		}
 		val, ok := simpleExpr(e.Exprs[0])
@@ -219,7 +222,11 @@ func simpleExpr(n pnode.Node) (string, bool) {
 	case *scalar.Dnumber:
 		return v.Value, true
 	case *scalar.String:
-		return fmt.Sprintf("\"%s\"", v.Value), true
+		// v.Value already includes surrounding quotes
+		if strings.HasPrefix(v.Value, "\"") && strings.HasSuffix(v.Value, "\"") {
+			return v.Value, true
+		}
+		return strconv.Quote(v.Value), true
 	case *expr.Variable:
 		return identString(v.VarName), true
 	case *expr.UnaryMinus:
@@ -228,6 +235,28 @@ func simpleExpr(n pnode.Node) (string, bool) {
 			return "", false
 		}
 		return "-" + val, true
+	case *expr.FunctionCall:
+		name := nameString(v.Function)
+		args := []string{}
+		if v.ArgumentList != nil {
+			for _, a := range v.ArgumentList.Arguments {
+				arg, ok := a.(*pnode.Argument)
+				if !ok {
+					return "", false
+				}
+				val, ok := simpleExpr(arg.Expr)
+				if !ok {
+					return "", false
+				}
+				args = append(args, val)
+			}
+		}
+		return fmt.Sprintf("%s(%s)", name, strings.Join(args, ", ")), true
+	case *expr.Ternary:
+		if v.IfFalse != nil {
+			return simpleExpr(v.IfFalse)
+		}
+		return "", false
 	case *binary.Plus:
 		left, ok1 := simpleExpr(v.Left)
 		if !ok1 {
@@ -236,6 +265,9 @@ func simpleExpr(n pnode.Node) (string, bool) {
 		right, ok2 := simpleExpr(v.Right)
 		if !ok2 {
 			return "", false
+		}
+		if strings.HasPrefix(right, "-") {
+			right = "(" + right + ")"
 		}
 		return fmt.Sprintf("(%s + %s)", left, right), true
 	case *binary.Minus:
