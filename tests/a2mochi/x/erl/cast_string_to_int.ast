@@ -1,0 +1,8 @@
+(program main
+  (fun main
+    (call print
+      (call int (string 1995))
+    )
+  )
+  (call main)
+)

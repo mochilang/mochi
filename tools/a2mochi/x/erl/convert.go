@@ -4,6 +4,7 @@ package erl
 
 import (
 	"fmt"
+	"mochi/transpiler/meta"
 	"regexp"
 	"strconv"
 	"strings"
@@ -156,11 +157,20 @@ func Parse(src string) (*AST, error) {
 }
 
 // ConvertSource converts a parsed AST into Mochi source code.
-func ConvertSource(ast *AST) (string, error) {
+func ConvertSource(ast *AST, original string) (string, error) {
 	if ast == nil {
 		return "", fmt.Errorf("nil ast")
 	}
 	var out strings.Builder
+	out.Write(meta.Header("//"))
+	if original != "" {
+		out.WriteString("/*\n")
+		out.WriteString(original)
+		if !strings.HasSuffix(original, "\n") {
+			out.WriteByte('\n')
+		}
+		out.WriteString("*/\n")
+	}
 	if ast.Module != "" {
 		out.WriteString("package ")
 		out.WriteString(ast.Module)
@@ -246,8 +256,8 @@ func ConvertSource(ast *AST) (string, error) {
 }
 
 // Convert parses the Mochi source produced by ConvertSource into an AST node.
-func Convert(astFile *AST) (*ast.Node, error) {
-	src, err := ConvertSource(astFile)
+func Convert(astFile *AST, original string) (*ast.Node, error) {
+	src, err := ConvertSource(astFile, original)
 	if err != nil {
 		return nil, err
 	}
@@ -284,6 +294,9 @@ func convertLine(ln string, recs []Record) string {
 	if strings.Contains(ln, "lists:max(") {
 		ln = strings.ReplaceAll(ln, "lists:max(", "max(")
 	}
+	if strings.Contains(ln, "list_to_integer(") {
+		ln = strings.ReplaceAll(ln, "list_to_integer(", "int(")
+	}
 	if strings.Contains(ln, "length(") {
 		ln = strings.ReplaceAll(ln, "length(", "len(")
 	}
@@ -292,6 +305,12 @@ func convertLine(ln string, recs []Record) string {
 	}
 	if strings.Contains(ln, "maps:values(") {
 		ln = strings.ReplaceAll(ln, "maps:values(", "values(")
+	}
+	if strings.Contains(ln, " andalso ") {
+		ln = strings.ReplaceAll(ln, " andalso ", " && ")
+	}
+	if strings.Contains(ln, " orelse ") {
+		ln = strings.ReplaceAll(ln, " orelse ", " || ")
 	}
 	if strings.Contains(ln, "#{") {
 		ln = strings.ReplaceAll(ln, "#{", "{")
