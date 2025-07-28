@@ -1,0 +1,31 @@
+// Text simulation of GUI enabling/disabling of controls
+
+type State { entry: bool, inc: bool, dec: bool }
+
+fun state(v: int): State {
+  return State{ entry: v == 0, inc: v < 10, dec: v > 0 }
+}
+
+fun printState(v: int) {
+  let s = state(v)
+  print("value=" + str(v) + " entry=" + str(s.entry) + " inc=" + str(s.inc) + " dec=" + str(s.dec))
+}
+
+fun main() {
+  var v = 0
+  printState(v)
+  while true {
+    let s = state(v)
+    if !s.inc { break }
+    v = v + 1
+    printState(v)
+  }
+  while true {
+    let s = state(v)
+    if !s.dec { break }
+    v = v - 1
+    printState(v)
+  }
+}
+
+main()
