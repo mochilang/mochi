@@ -105,6 +105,44 @@ func stmtToNode(st ast.Stmt) []*mochias.Node {
 			n.Children = append(n.Children, elseBlk)
 		}
 		return []*mochias.Node{n}
+	case *ast.RangeStmt:
+		ident, ok := s.Key.(*ast.Ident)
+		if !ok {
+			return nil
+		}
+		iter := exprToNode(s.X)
+		blk := blockToNode(s.Body)
+		return []*mochias.Node{{
+			Kind:     "for",
+			Value:    ident.Name,
+			Children: []*mochias.Node{iter, blk},
+		}}
+	case *ast.ForStmt:
+		asg, ok := s.Init.(*ast.AssignStmt)
+		if !ok || len(asg.Lhs) != 1 || len(asg.Rhs) != 1 {
+			return nil
+		}
+		id, ok := asg.Lhs[0].(*ast.Ident)
+		if !ok {
+			return nil
+		}
+		cond, ok := s.Cond.(*ast.BinaryExpr)
+		if !ok || cond.Op != token.LSS {
+			return nil
+		}
+		post, ok := s.Post.(*ast.IncDecStmt)
+		if !ok || post.Tok != token.INC {
+			return nil
+		}
+		start := exprToNode(asg.Rhs[0])
+		end := exprToNode(cond.Y)
+		iter := &mochias.Node{Kind: "range", Children: []*mochias.Node{start, end}}
+		blk := blockToNode(s.Body)
+		return []*mochias.Node{{
+			Kind:     "for",
+			Value:    id.Name,
+			Children: []*mochias.Node{iter, blk},
+		}}
 	}
 	return nil
 }
@@ -130,6 +168,12 @@ func callToNode(c *ast.CallExpr) *mochias.Node {
 			}
 			return n
 		}
+	case *ast.Ident:
+		if fn.Name == "len" && len(c.Args) == 1 {
+			n := &mochias.Node{Kind: "call", Value: "len"}
+			n.Children = append(n.Children, exprToNode(c.Args[0]))
+			return n
+		}
 	}
 	return nil
 }
@@ -153,6 +197,16 @@ func exprToNode(e ast.Expr) *mochias.Node {
 		}}
 	case *ast.ParenExpr:
 		return exprToNode(v.X)
+	case *ast.CallExpr:
+		if n := callToNode(v); n != nil {
+			return n
+		}
+	case *ast.CompositeLit:
+		var elems []*mochias.Node
+		for _, e := range v.Elts {
+			elems = append(elems, exprToNode(e))
+		}
+		return &mochias.Node{Kind: "list", Children: elems}
 	}
 	return &mochias.Node{Kind: "unknown"}
 }

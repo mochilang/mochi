@@ -1,6 +1,6 @@
 # a2mochi Go Converter
 
-Completed programs: 35/104
+Completed programs: 37/104
 Date: 2025-07-28 16:36:46 GMT+7
 
 This directory holds golden outputs for the Go to Mochi converter.
