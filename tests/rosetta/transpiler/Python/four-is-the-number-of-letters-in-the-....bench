@@ -1,0 +1,11 @@
+The lengths of the first 201 words are:
+Traceback (most recent call last):
+  File "/workspace/mochi/tests/rosetta/transpiler/Python/four-is-the-number-of-letters-in-the-....py", line 160, in <module>
+    main()
+  File "/workspace/mochi/tests/rosetta/transpiler/Python/four-is-the-number-of-letters-in-the-....py", line 146, in main
+    r = wordLen(i)
+        ^^^^^^^^^^
+  File "/workspace/mochi/tests/rosetta/transpiler/Python/four-is-the-number-of-letters-in-the-....py", line 114, in wordLen
+    parts = sayOrdinal(idx + 1) + ",".split(" ")
+            ~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~
+TypeError: can only concatenate str (not "list") to str

@@ -1,0 +1,16 @@
+Traceback (most recent call last):
+  File "/workspace/mochi/tests/rosetta/transpiler/Python/formal-power-series.py", line 140, in <module>
+    main()
+  File "/workspace/mochi/tests/rosetta/transpiler/Python/formal-power-series.py", line 135, in main
+    print("sin:" + partialSeries(p.sin))
+                   ^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/mochi/tests/rosetta/transpiler/Python/formal-power-series.py", line 128, in partialSeries
+    out = out + " " + padFloat5(extract(f, i), 8) + " "
+                                ^^^^^^^^^^^^^
+  File "/workspace/mochi/tests/rosetta/transpiler/Python/formal-power-series.py", line 72, in extract
+    v = f.compute(idx)
+        ^^^^^^^^^^^^^^
+  File "/workspace/mochi/tests/rosetta/transpiler/Python/formal-power-series.py", line 61, in _lambda4
+    return extract(cos, n - 1) / (float(n))
+                   ^^^
+NameError: name 'cos' is not defined. Did you mean: 'os'?
