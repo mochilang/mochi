@@ -72,11 +72,17 @@ func TestConvert_Golden(t *testing.T) {
 	}
 
 	allowed := map[string]bool{
-		"unary_neg":     true,
-		"print_hello":   true,
-		"let_and_print": true,
-		"list_index":    true,
-		"avg_builtin":   true,
+		"unary_neg":      true,
+		"print_hello":    true,
+		"let_and_print":  true,
+		"list_index":     true,
+		"avg_builtin":    true,
+		"sum_builtin":    true,
+		"len_builtin":    true,
+		"count_builtin":  true,
+		"basic_compare":  true,
+		"string_concat":  true,
+		"string_compare": true,
 	}
 
 	outDir := filepath.Join(root, "tests", "a2mochi", "x", "php")
