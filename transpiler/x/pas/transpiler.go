@@ -46,6 +46,9 @@ func lookupName(name string) (string, bool) {
 			return v, true
 		}
 	}
+	if v, ok := nameMap[name]; ok {
+		return v, true
+	}
 	return "", false
 }
 
@@ -65,7 +68,8 @@ func sanitize(name string) string {
 	}
 	newName := name
 	switch name {
-	case "label":
+	case "label", "xor", "and", "or", "div", "mod", "type":
+		// Avoid Pascal reserved keywords
 		newName = name + "_"
 	}
 	if currentFunc != "" {
@@ -139,6 +143,7 @@ type Program struct {
 	NeedShowList2 bool
 	NeedListStr   bool
 	NeedListStr2  bool
+	NeedIndexOf   bool
 	UseLookupHost bool
 	UseNow        bool
 	UseMem        bool
@@ -935,6 +940,9 @@ end;
 	if p.NeedMax {
 		buf.WriteString("function max(xs: array of integer): integer;\nvar i, m: integer;\nbegin\n  if Length(xs) = 0 then begin max := 0; exit; end;\n  m := xs[0];\n  for i := 1 to High(xs) do if xs[i] > m then m := xs[i];\n  max := m;\nend;\n")
 	}
+	if p.NeedIndexOf {
+		buf.WriteString("function indexOf(s: string; ch: string): integer;\nbegin\n  Result := Pos(ch, s);\n  if Result = 0 then Result := -1 else Dec(Result);\nend;\n")
+	}
 	if p.NeedShowList || p.NeedShowList2 {
 		buf.WriteString("procedure show_list(xs: array of integer);\nvar i: integer;\nbegin\n  write('[');\n  for i := 0 to High(xs) do begin\n    write(xs[i]);\n    if i < High(xs) then write(' ');\n  end;\n  write(']');\nend;\n")
 	}
@@ -1040,7 +1048,16 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 	funcReturns["_input"] = "string"
 	for _, st := range prog.Statements {
 		if st.Fun != nil {
-			funcNames[st.Fun.Name] = struct{}{}
+			name := st.Fun.Name
+			switch name {
+			case "xor", "and", "or", "div", "mod", "type":
+				name = name + "_"
+			}
+			funcNames[name] = struct{}{}
+			if name != st.Fun.Name {
+				nameMap[st.Fun.Name] = name
+				st.Fun.Name = name
+			}
 		}
 	}
 	varTypes := map[string]string{}
@@ -1600,6 +1617,28 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 	addConstructors(pr)
 	addMapConstructors(pr)
 	markSysUtils(pr)
+	// Move variables that belong to function bodies from the global scope
+	// into the corresponding function's local variable list. Variables
+	// defined inside a function are prefixed with the function name by
+	// sanitize(), so we can use this to determine ownership.
+	if len(pr.Funs) > 0 && len(pr.Vars) > 0 {
+		var globals []VarDecl
+		for _, gv := range pr.Vars {
+			moved := false
+			for i := range pr.Funs {
+				prefix := pr.Funs[i].Name + "_"
+				if strings.HasPrefix(gv.Name, prefix) {
+					pr.Funs[i].Locals = append(pr.Funs[i].Locals, gv)
+					moved = true
+					break
+				}
+			}
+			if !moved {
+				globals = append(globals, gv)
+			}
+		}
+		pr.Vars = globals
+	}
 	currProg = nil
 	return pr, nil
 }
@@ -3411,7 +3450,12 @@ func convertPostfix(env *types.Env, pf *parser.PostfixExpr) (Expr, error) {
 					args = append(args, ex)
 				}
 				name := t.Name
-				if name == "parseIntStr" && len(args) == 1 {
+				if mapped, ok := nameMap[name]; ok {
+					name = mapped
+				}
+				if name == "indexOf" && len(args) == 2 {
+					currProg.NeedIndexOf = true
+				} else if name == "parseIntStr" && len(args) == 1 {
 					currProg.UseSysUtils = true
 					name = "StrToInt"
 				}
@@ -4521,11 +4565,11 @@ func isArrayType(t string) bool {
 }
 
 func formatParam(name, typ string) string {
-	prefix := ""
-	if isArrayType(typ) {
-		prefix = "var "
-	}
-	return fmt.Sprintf("%s%s: %s", prefix, name, typ)
+	// Always pass parameters by value to avoid issues with nested dynamic
+	// arrays when using recursion. Using "var" for array parameters caused
+	// access violations on some programs (e.g. Cramer's rule) so we no
+	// longer emit it here.
+	return fmt.Sprintf("%s: %s", name, typ)
 }
 
 func findRecord(name string) (RecordDef, bool) {

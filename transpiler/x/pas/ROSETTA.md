@@ -2,7 +2,7 @@
 
 Generated Pascal code for Rosetta tasks lives under `tests/rosetta/transpiler/Pascal`.
 
-## Rosetta Checklist (31/493) - updated 2025-07-28 03:58 UTC
+## Rosetta Checklist (33/493) - updated 2025-07-28 05:01 UTC
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 571.223ms | 128 B |
@@ -254,8 +254,8 @@ Generated Pascal code for Rosetta tasks lives under `tests/rosetta/transpiler/Pa
 | 247 | count-in-octal-4 |   |  |  |
 | 248 | count-occurrences-of-a-substring |   |  |  |
 | 249 | count-the-coins-1 |   |  |  |
-| 250 | count-the-coins-2 |   |  |  |
-| 251 | cramers-rule |   |  |  |
+| 250 | count-the-coins-2 | ✓ | 1µs | 4.2 KB |
+| 251 | cramers-rule | ✓ | 2µs | 1.0 KB |
 | 252 | crc-32-1 |   |  |  |
 | 253 | crc-32-2 |   |  |  |
 | 254 | create-a-file-on-magnetic-tape |   |  |  |
