@@ -3,6 +3,7 @@ package ast
 import (
 	"fmt"
 	"io"
+	"strconv"
 	"strings"
 )
 
@@ -46,7 +47,21 @@ func writeStmt(b *strings.Builder, n *Node, indent int) {
 			i++
 		}
 		if i < len(n.Children) {
-			fmt.Fprintf(b, " = %s", exprString(n.Children[i]))
+			expr := exprString(n.Children[i])
+			if strings.Contains(expr, "\n") {
+				parts := strings.Split(expr, "\n")
+				fmt.Fprintf(b, " = %s\n", parts[0])
+				prefix := fmt.Sprintf("%s%s %s = ", ind, n.Kind, n.Value)
+				indent2 := strings.Repeat(" ", len(prefix))
+				for _, p := range parts[1:] {
+					if p == "" {
+						continue
+					}
+					fmt.Fprintf(b, "%s%s\n", indent2, p)
+				}
+				return
+			}
+			fmt.Fprintf(b, " = %s", expr)
 		}
 		b.WriteString("\n")
 	case "assign":
@@ -227,7 +242,15 @@ func paramString(n *Node) string {
 
 func exprString(n *Node) string {
 	switch n.Kind {
-	case "int", "float":
+	case "int":
+		return fmt.Sprintf("%v", n.Value)
+	case "float":
+		if v, ok := n.Value.(float64); ok {
+			if v == float64(int64(v)) {
+				return fmt.Sprintf("%.1f", v)
+			}
+			return strconv.FormatFloat(v, 'f', -1, 64)
+		}
 		return fmt.Sprintf("%v", n.Value)
 	case "string":
 		return fmt.Sprintf("%q", n.Value)
@@ -348,7 +371,7 @@ func exprString(n *Node) string {
 		var sb strings.Builder
 		src := exprString(n.Children[0].Children[0])
 		fmt.Fprintf(&sb, "from %s in %s", n.Value, src)
-		indent := ""
+		indent := "  "
 		for _, c := range n.Children[1:] {
 			sb.WriteString("\n")
 			sb.WriteString(indent)
