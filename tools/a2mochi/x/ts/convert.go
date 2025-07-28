@@ -32,6 +32,11 @@ type Node struct {
 	Alias    string   `json:"alias,omitempty"`
 	Variants []string `json:"variants,omitempty"`
 	Expr     string   `json:"expr,omitempty"`
+	Iter     string   `json:"iter,omitempty"`
+	List     string   `json:"list,omitempty"`
+	StartVal string   `json:"startVal,omitempty"`
+	EndVal   string   `json:"endVal,omitempty"`
+	Cond     string   `json:"cond,omitempty"`
 }
 
 type Param struct {
@@ -117,6 +122,14 @@ func ConvertSource(nodes []Node, original string) (string, error) {
 			writePrint(&b, d)
 		case "expr":
 			writeExpr(&b, d)
+		case "forof":
+			writeForOf(&b, d)
+		case "forin":
+			writeForIn(&b, d)
+		case "for":
+			writeForRange(&b, d)
+		case "while":
+			writeWhile(&b, d)
 		}
 	}
 	return b.String(), nil
@@ -225,8 +238,29 @@ func writePrint(b *strings.Builder, d Node) {
 }
 
 func writeExpr(b *strings.Builder, d Node) {
-	b.WriteString(d.Expr)
+	b.WriteString(convertExpr(d.Expr))
 	b.WriteByte('\n')
+}
+
+func writeForOf(b *strings.Builder, d Node) {
+	body := replaceConsoleLogs(d.Body)
+	list := replaceObjectValues(d.List)
+	fmt.Fprintf(b, "for %s in %s {%s}\n", d.Iter, list, body)
+}
+
+func writeForIn(b *strings.Builder, d Node) {
+	body := replaceConsoleLogs(d.Body)
+	fmt.Fprintf(b, "for %s in %s {%s}\n", d.Iter, d.List, body)
+}
+
+func writeForRange(b *strings.Builder, d Node) {
+	body := replaceConsoleLogs(d.Body)
+	fmt.Fprintf(b, "for %s in %s..%s {%s}\n", d.Iter, d.StartVal, d.EndVal, body)
+}
+
+func writeWhile(b *strings.Builder, d Node) {
+	body := replaceConsoleLogs(d.Body)
+	fmt.Fprintf(b, "while %s {%s}\n", d.Cond, body)
 }
 
 // --- Helpers copied from archived any2mochi ---
@@ -285,4 +319,54 @@ func parseFilterMap(expr, lhs string) []string {
 	out = append(out, "             where "+cond)
 	out = append(out, "             select "+body)
 	return out
+}
+
+func replaceObjectValues(s string) string {
+	const prefix = "Object.values("
+	if strings.HasPrefix(s, prefix) {
+		return "values(" + s[len(prefix):]
+	}
+	return s
+}
+
+func replaceConsoleLogs(body string) string {
+	prefix := "console.log(String("
+	for {
+		idx := strings.Index(body, prefix)
+		if idx == -1 {
+			break
+		}
+		end := findMatch(body, idx+len(prefix)-1, '(', ')')
+		if end == len(body) {
+			break
+		}
+		expr := body[idx+len(prefix) : end]
+		tail := end + 1
+		if strings.HasPrefix(body[tail:], ");") {
+			tail += 2
+		}
+		if tail < len(body) && body[tail] == ';' {
+			tail++
+		}
+		body = body[:idx] + "print(" + expr + ")" + body[tail:]
+	}
+	return body
+}
+
+func convertExpr(expr string) string {
+	if strings.HasPrefix(expr, "console.log(") {
+		inner := strings.TrimSuffix(strings.TrimPrefix(expr, "console.log("), ")")
+		if strings.HasPrefix(inner, "String(") && strings.HasSuffix(inner, ")") {
+			inner = inner[len("String(") : len(inner)-1]
+		}
+		return "print(" + inner + ")"
+	}
+	if assignIdx := strings.Index(expr, "="); assignIdx > 0 {
+		lhs := strings.TrimSpace(expr[:assignIdx])
+		rhs := strings.TrimSpace(expr[assignIdx+1:])
+		if q := parseFilterMap(rhs, lhs); q != nil {
+			return strings.Join(q, "\n")
+		}
+	}
+	return expr
 }
