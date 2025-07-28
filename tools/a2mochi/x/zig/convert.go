@@ -140,6 +140,12 @@ func convertFunction(lines []string) string {
 			break
 		}
 		t = strings.TrimSuffix(t, ";")
+		if m := declRE.FindStringSubmatch(t); m != nil {
+			name := m[2]
+			val := strings.TrimSpace(m[3])
+			b.WriteString("  let " + name + " = " + val + "\n")
+			continue
+		}
 		if p := extractPrint(t); p != "" {
 			b.WriteString("  print(" + p + ")\n")
 			continue
@@ -192,6 +198,12 @@ func convertLoop(lines []string) string {
 			continue
 		}
 		t = strings.TrimSuffix(t, ";")
+		if m := declRE.FindStringSubmatch(t); m != nil {
+			name := m[2]
+			val := strings.TrimSpace(m[3])
+			b.WriteString("  let " + name + " = " + val + "\n")
+			continue
+		}
 		if t == "}" {
 			b.WriteString("}\n")
 			continue
@@ -205,6 +217,7 @@ func convertLoop(lines []string) string {
 }
 
 var printRE = regexp.MustCompile(`print\("\{[^}]+\}\\n",\s*\.\{(.*)\}\)`)
+var declRE = regexp.MustCompile(`^(const|var)\s+([A-Za-z_][A-Za-z0-9_]*)\s*=\s*(.*)$`)
 
 func extractPrint(line string) string {
 	m := printRE.FindStringSubmatch(strings.TrimSpace(line))

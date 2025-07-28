@@ -4,7 +4,9 @@
 const std = @import("std");
 
 pub fn main() void {
-    try std.io.getStdOut().writer().print("{any}\n", .{2.0});
+    const a = 10;
+    const b = 20;
+    try std.io.getStdOut().writer().print("{any}\n", .{a + b});
 }
 */
-print(2.0)
+print(a + b)
