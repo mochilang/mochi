@@ -1,0 +1,12 @@
+(program
+  (let nums
+    (type list (type int))
+    (list (int 3) (int 1) (int 4))
+  )
+  (call print
+    (call min (selector nums))
+  )
+  (call print
+    (call max (selector nums))
+  )
+)

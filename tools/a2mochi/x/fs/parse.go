@@ -79,6 +79,18 @@ type Return struct {
 	Raw  string `json:"raw"`
 }
 
+// Break represents a loop break statement.
+type Break struct {
+	Line int    `json:"line"`
+	Raw  string `json:"raw"`
+}
+
+// Continue represents a loop continue statement.
+type Continue struct {
+	Line int    `json:"line"`
+	Raw  string `json:"raw"`
+}
+
 // If represents a simple if-else statement.
 type If struct {
 	Cond string `json:"cond"`
@@ -131,7 +143,7 @@ var (
 	expectRe      = regexp.MustCompile(`^if\s+not\s+\((.+)\)\s+then\s+failwith\s+"expect failed"$`)
 	forRangeRe    = regexp.MustCompile(`^for\s+(\w+)\s*=\s*(.+)\s+to\s+(.+)\s+do$`)
 	forInRe       = regexp.MustCompile(`^for\s+(\w+)\s+in\s+(.+)\s+do$`)
-	whileRe       = regexp.MustCompile(`^while\s*\((.+)\)\s*do$`)
+	whileRe       = regexp.MustCompile(`^while\s*(?:\((.+)\)|(.+))\s*do$`)
 	// funRe matches function declarations with optional return type.
 	// It supports forms like:
 	//   let foo (x:int) : int =
@@ -148,7 +160,8 @@ var (
 	typeRe    = regexp.MustCompile(`^type\s+(\w+)\s*=\s*\{?$`)
 	variantRe = regexp.MustCompile(`^\|\s*(\w+)(.*)$`)
 	// fieldRe matches a record field. F# may prefix fields with "mutable".
-	fieldRe = regexp.MustCompile(`^(?:mutable\s+)?(\w+)\s*:\s*([^;]+);?$`)
+	fieldRe   = regexp.MustCompile(`^(?:mutable\s+)?(\w+)\s*:\s*([^;]+);?$`)
+	boolLitRe = regexp.MustCompile(`^(true|false|\d+)$`)
 )
 
 // Parse performs a very small subset of F# parsing using regular expressions.
@@ -325,8 +338,16 @@ func Parse(src string) (*Program, error) {
 				stmts = append(stmts, ForIn{Var: m[1], Expr: strings.TrimSpace(m[2]), Body: body, Line: lineNum, Raw: l.raw})
 			case whileRe.MatchString(t):
 				m := whileRe.FindStringSubmatch(t)
+				cond := m[1]
+				if cond == "" {
+					cond = m[2]
+				}
 				body := parseBlock(ind + 4)
-				stmts = append(stmts, While{Cond: strings.TrimSpace(m[1]), Body: body, Line: lineNum, Raw: l.raw})
+				stmts = append(stmts, While{Cond: strings.TrimSpace(cond), Body: body, Line: lineNum, Raw: l.raw})
+			case strings.TrimSpace(t) == "break":
+				stmts = append(stmts, Break{Line: lineNum, Raw: l.raw})
+			case strings.TrimSpace(t) == "continue":
+				stmts = append(stmts, Continue{Line: lineNum, Raw: l.raw})
 			case exceptionRe.MatchString(t):
 				m := exceptionRe.FindStringSubmatch(t)
 				retMap[m[1]] = strings.TrimSpace(m[2])
@@ -344,6 +365,11 @@ func Parse(src string) (*Program, error) {
 					idx++
 				}
 				body := parseBlock(ind + indentStep)
+				if ret == "" && len(body) > 0 {
+					if r, ok := body[len(body)-1].(Return); ok {
+						ret = guessType(r.Expr)
+					}
+				}
 				if idx < len(lines) && strings.Contains(lines[idx].text, "failwith") {
 					idx++
 				}
@@ -352,7 +378,9 @@ func Parse(src string) (*Program, error) {
 				}
 				stmts = append(stmts, Fun{Name: name, Params: params, Ret: ret, Body: body, Line: lineNum, Raw: l.raw})
 			default:
-				if parseErr == nil {
+				if boolLitRe.MatchString(t) {
+					stmts = append(stmts, Return{Expr: strings.TrimSpace(t), Line: lineNum, Raw: l.raw})
+				} else if parseErr == nil {
 					errLine = lineNum
 					linesCopy = append([]line(nil), lines...)
 					snippet := l.raw
@@ -414,4 +442,17 @@ func parseParams(sig string) []Field {
 		}
 	}
 	return fields
+}
+
+func guessType(expr string) string {
+	expr = strings.TrimSpace(expr)
+	switch {
+	case expr == "true" || expr == "false":
+		return "bool"
+	case regexp.MustCompile(`^\d+$`).MatchString(expr):
+		return "int"
+	case strings.HasPrefix(expr, "\"") && strings.HasSuffix(expr, "\""):
+		return "string"
+	}
+	return ""
 }
