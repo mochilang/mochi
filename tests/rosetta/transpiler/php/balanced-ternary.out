@@ -3,7 +3,7 @@ a:      +-0++0+     523
      c:        +-++-      65
 a(b-c): ----0+--0++0 -262023
 {
-  "duration_us": 185,
+  "duration_us": 79,
   "memory_bytes": 96,
   "name": "main"
 }

@@ -4,7 +4,7 @@
 12345678 quo 98765 = 125
 12345678 rem 98765 = 53
 {
-  "duration_us": 63,
+  "duration_us": 32,
   "memory_bytes": 96,
   "name": "main"
 }

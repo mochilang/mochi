@@ -10,7 +10,7 @@ x       sma3   sma5
 2.000  3.000  3.800
 1.000  2.000  3.000
 {
-  "duration_us": 129,
+  "duration_us": 70,
   "memory_bytes": 96,
   "name": "main"
 }

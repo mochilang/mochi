@@ -64,7 +64,7 @@ d! Hello Worl
 ! Hello World
  Hello World!
 {
-  "duration_us": 156,
+  "duration_us": 217,
   "memory_bytes": 136,
   "name": "main"
 }

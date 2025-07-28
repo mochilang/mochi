@@ -97,7 +97,7 @@ $__start = _now();
 }
   $node = $root;
   $dir = 0;
-  if ((ord($node['Data'])) < $data) {
+  if ((intval($node['Data'])) < $data) {
   $dir = 1;
 }
   $r = insertR(getLink($node, $dir), $data);
@@ -105,7 +105,7 @@ $__start = _now();
   if ($r['done']) {
   return ['node' => $node, 'done' => true];
 }
-  $node['Balance'] = (ord($node['Balance'])) + (2 * $dir - 1);
+  $node['Balance'] = (intval($node['Balance'])) + (2 * $dir - 1);
   if ($node['Balance'] == 0) {
   return ['node' => $node, 'done' => true];
 }
@@ -139,7 +139,7 @@ $__start = _now();
   return ['node' => null, 'done' => false];
 }
   $node = $root;
-  if ((ord($node['Data'])) == $data) {
+  if ((intval($node['Data'])) == $data) {
   if (getLink($node, 0) == null) {
   return ['node' => getLink($node, 1), 'done' => false];
 };
@@ -151,10 +151,10 @@ $__start = _now();
   $heir = getLink($heir, 1);
 };
   $node['Data'] = $heir['Data'];
-  $data = ord($heir['Data']);
+  $data = intval($heir['Data']);
 }
   $dir = 0;
-  if ((ord($node['Data'])) < $data) {
+  if ((intval($node['Data'])) < $data) {
   $dir = 1;
 }
   $r = removeR(getLink($node, $dir), $data);
@@ -162,7 +162,7 @@ $__start = _now();
   if ($r['done']) {
   return ['node' => $node, 'done' => true];
 }
-  $node['Balance'] = (ord($node['Balance'])) + 1 - 2 * $dir;
+  $node['Balance'] = (intval($node['Balance'])) + 1 - 2 * $dir;
   if ($node['Balance'] == 1 || $node['Balance'] == (-1)) {
   return ['node' => $node, 'done' => true];
 }

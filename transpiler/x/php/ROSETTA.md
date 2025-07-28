@@ -2,7 +2,7 @@
 
 Generated PHP code from Mochi Rosetta tasks lives in `tests/rosetta/transpiler/php`.
 
-Last updated: 2025-07-28 08:01 +0700
+Last updated: 2025-07-28 08:24 +0700
 
 ## Checklist (461/467)
 | Index | Name | Status | Duration | Memory |
@@ -57,57 +57,57 @@ Last updated: 2025-07-28 08:01 +0700
 | 48 | anagrams | ✓ | 144µs | 96 B |
 | 49 | angle-difference-between-two-bearings-1 | ✓ | 73µs | 128 B |
 | 50 | angle-difference-between-two-bearings-2 | ✓ | 52µs | 128 B |
-| 51 | angles-geometric-normalization-and-conversion | ✓ | 151µs | 96 B |
-| 52 | animate-a-pendulum | ✓ | 32µs | 384 B |
-| 53 | animation | ✓ | 156µs | 136 B |
-| 54 | anonymous-recursion-1 | ✓ | 44µs | 96 B |
-| 55 | anonymous-recursion-2 | ✓ | 40µs | 96 B |
-| 56 | anonymous-recursion | ✓ | 52µs | 96 B |
-| 57 | anti-primes | ✓ | 2.751236s | 96 B |
-| 58 | append-a-record-to-the-end-of-a-text-file | ✓ | 40µs | 96 B |
-| 59 | apply-a-callback-to-an-array-1 | ✓ | 40µs | 96 B |
-| 60 | apply-a-callback-to-an-array-2 | ✓ | 63µs | 96 B |
-| 61 | apply-a-digital-filter-direct-form-ii-transposed- | ✓ | 81µs | 888 B |
-| 62 | approximate-equality | ✓ | 54µs | 96 B |
-| 63 | arbitrary-precision-integers-included- | ✓ | 58µs | 256 B |
-| 64 | archimedean-spiral | ✓ | 7.123ms | 480 B |
-| 65 | arena-storage-pool | ✓ | 53µs | 96 B |
-| 66 | arithmetic-complex | ✓ | 52µs | 128 B |
-| 67 | arithmetic-derivative | ✓ | 383µs | 96 B |
-| 68 | arithmetic-evaluation | ✓ | 111µs | 96 B |
+| 51 | angles-geometric-normalization-and-conversion | ✓ | 125µs | 96 B |
+| 52 | animate-a-pendulum | ✓ | 54µs | 384 B |
+| 53 | animation | ✓ | 217µs | 136 B |
+| 54 | anonymous-recursion-1 | ✓ | 39µs | 96 B |
+| 55 | anonymous-recursion-2 | ✓ | 72µs | 96 B |
+| 56 | anonymous-recursion | ✓ | 54µs | 96 B |
+| 57 | anti-primes | ✓ | 2.721277s | 96 B |
+| 58 | append-a-record-to-the-end-of-a-text-file | ✓ | 39µs | 96 B |
+| 59 | apply-a-callback-to-an-array-1 | ✓ | 80µs | 96 B |
+| 60 | apply-a-callback-to-an-array-2 | ✓ | 59µs | 96 B |
+| 61 | apply-a-digital-filter-direct-form-ii-transposed- | ✓ | 109µs | 888 B |
+| 62 | approximate-equality | ✓ | 57µs | 96 B |
+| 63 | arbitrary-precision-integers-included- | ✓ | 431.6ms | 180.2 KB |
+| 64 | archimedean-spiral | ✓ | 7.2ms | 480 B |
+| 65 | arena-storage-pool | ✓ | 39µs | 96 B |
+| 66 | arithmetic-complex | ✓ | 56µs | 128 B |
+| 67 | arithmetic-derivative | ✓ | 372µs | 96 B |
+| 68 | arithmetic-evaluation | ✓ | 67µs | 96 B |
 | 69 | arithmetic-geometric-mean-calculate-pi | ✓ | 42µs | 96 B |
-| 70 | arithmetic-geometric-mean | ✓ | 47µs | 96 B |
-| 71 | arithmetic-integer-1 | ✓ | 47µs | 96 B |
-| 72 | arithmetic-integer-2 | ✓ | 63µs | 96 B |
+| 70 | arithmetic-geometric-mean | ✓ | 40µs | 96 B |
+| 71 | arithmetic-integer-1 | ✓ | 41µs | 96 B |
+| 72 | arithmetic-integer-2 | ✓ | 32µs | 96 B |
 | 73 | arithmetic-numbers |   |  |  |
-| 74 | arithmetic-rational | ✓ | 245µs | 96 B |
-| 75 | array-concatenation | ✓ | 130µs | 224 B |
-| 76 | array-length | ✓ | 102µs | 96 B |
-| 77 | arrays | ✓ | 123µs | 592 B |
-| 78 | ascending-primes | ✓ | 569µs | 2.7 KB |
-| 79 | ascii-art-diagram-converter | ✓ | 106µs | 96 B |
-| 80 | assertions | ✓ | 48µs | 96 B |
-| 81 | associative-array-creation | ✓ | 179µs | 152 B |
-| 82 | associative-array-iteration | ✓ | 76µs | 96 B |
-| 83 | associative-array-merging | ✓ | 117µs | 96 B |
-| 84 | atomic-updates | ✓ | 189µs | 96 B |
-| 85 | attractive-numbers | ✓ | 257µs | 96 B |
-| 86 | average-loop-length | ✓ | 200.863ms | 96 B |
-| 87 | averages-arithmetic-mean | ✓ | 158µs | 96 B |
-| 88 | averages-mean-time-of-day | ✓ | 110µs | 128 B |
-| 89 | averages-median-1 | ✓ | 83µs | 96 B |
-| 90 | averages-median-2 | ✓ | 134µs | 96 B |
-| 91 | averages-median-3 | ✓ | 99µs | 96 B |
-| 92 | averages-mode | ✓ | 287µs | 1.7 KB |
-| 93 | averages-pythagorean-means | ✓ | 142µs | 96 B |
-| 94 | averages-root-mean-square | ✓ | 200µs | 192 B |
-| 95 | averages-simple-moving-average | ✓ | 129µs | 96 B |
-| 96 | avl-tree | ✓ | 720µs | 152 B |
-| 97 | b-zier-curves-intersections | ✓ | 1.592ms | 96 B |
-| 98 | babbage-problem | ✓ | 862µs | 96 B |
-| 99 | babylonian-spiral | ✓ | 424µs | 96 B |
-| 100 | balanced-brackets | ✓ | 232µs | 128 B |
-| 101 | balanced-ternary | ✓ | 185µs | 96 B |
+| 74 | arithmetic-rational | ✓ | 180µs | 96 B |
+| 75 | array-concatenation | ✓ | 56µs | 224 B |
+| 76 | array-length | ✓ | 50µs | 96 B |
+| 77 | arrays | ✓ | 60µs | 592 B |
+| 78 | ascending-primes | ✓ | 316µs | 2.7 KB |
+| 79 | ascii-art-diagram-converter | ✓ | 59µs | 96 B |
+| 80 | assertions | ✓ | 23µs | 96 B |
+| 81 | associative-array-creation | ✓ | 55µs | 152 B |
+| 82 | associative-array-iteration | ✓ | 44µs | 96 B |
+| 83 | associative-array-merging | ✓ | 49µs | 96 B |
+| 84 | atomic-updates | ✓ | 89µs | 96 B |
+| 85 | attractive-numbers | ✓ | 157µs | 96 B |
+| 86 | average-loop-length | ✓ | 126.47ms | 96 B |
+| 87 | averages-arithmetic-mean | ✓ | 85µs | 96 B |
+| 88 | averages-mean-time-of-day | ✓ | 150µs | 128 B |
+| 89 | averages-median-1 | ✓ | 45µs | 96 B |
+| 90 | averages-median-2 | ✓ | 48µs | 96 B |
+| 91 | averages-median-3 | ✓ | 51µs | 96 B |
+| 92 | averages-mode | ✓ | 58µs | 1.7 KB |
+| 93 | averages-pythagorean-means | ✓ | 49µs | 96 B |
+| 94 | averages-root-mean-square | ✓ | 85µs | 192 B |
+| 95 | averages-simple-moving-average | ✓ | 70µs | 96 B |
+| 96 | avl-tree | ✓ | 180µs | 96 B |
+| 97 | b-zier-curves-intersections | ✓ | 885µs | 96 B |
+| 98 | babbage-problem | ✓ | 447µs | 96 B |
+| 99 | babylonian-spiral | ✓ | 170µs | 96 B |
+| 100 | balanced-brackets | ✓ | 71µs | 128 B |
+| 101 | balanced-ternary | ✓ | 79µs | 96 B |
 | 102 | barnsley-fern | ✓ | 10.777ms | 165.5 KB |
 | 103 | base64-decode-data | ✓ | 266µs | 336 B |
 | 104 | bell-numbers | ✓ | 238µs | 96 B |

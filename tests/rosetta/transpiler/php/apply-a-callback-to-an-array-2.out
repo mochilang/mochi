@@ -5,7 +5,7 @@
 25
 [1 4 9 16 25]
 {
-  "duration_us": 63,
+  "duration_us": 59,
   "memory_bytes": 96,
   "name": "main"
 }

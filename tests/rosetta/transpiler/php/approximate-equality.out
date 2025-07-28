@@ -8,7 +8,7 @@
 1.0E+17 ≈ 1.0E+17
 3.1415926535898 ≈ 3.1415926535898
 {
-  "duration_us": 54,
+  "duration_us": 57,
   "memory_bytes": 96,
   "name": "main"
 }

@@ -6,7 +6,7 @@ a * b:   (1.89159+4.39159i)
 1 / a:   (0.5-0.5i)
 a̅:       (1-1i)
 {
-  "duration_us": 52,
+  "duration_us": 56,
   "memory_bytes": 128,
   "name": "main"
 }

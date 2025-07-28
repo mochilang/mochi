@@ -33,11 +33,46 @@ function _str($x) {
 }
 function _intdiv($a, $b) {
     if (function_exists('bcdiv')) {
-        $sa = is_int($a) ? strval($a) : sprintf('%.0f', $a);
-        $sb = is_int($b) ? strval($b) : sprintf('%.0f', $b);
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
         return intval(bcdiv($sa, $sb, 0));
     }
     return intdiv($a, $b);
+}
+function _iadd($a, $b) {
+    if (function_exists('bcadd')) {
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
+        return bcadd($sa, $sb, 0);
+    }
+    return $a + $b;
+}
+function _isub($a, $b) {
+    if (function_exists('bcsub')) {
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
+        return bcsub($sa, $sb, 0);
+    }
+    return $a - $b;
+}
+function _imul($a, $b) {
+    if (function_exists('bcmul')) {
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
+        return bcmul($sa, $sb, 0);
+    }
+    return $a * $b;
+}
+function _idiv($a, $b) {
+    return _intdiv($a, $b);
+}
+function _imod($a, $b) {
+    if (function_exists('bcmod')) {
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
+        return intval(bcmod($sa, $sb));
+    }
+    return $a % $b;
 }
 $__start_mem = memory_get_usage();
 $__start = _now();
@@ -62,9 +97,9 @@ $__start = _now();
   $e = $exp;
   while ($e > 0) {
   if ($e % 2 == 1) {
-  $result = $result * $b;
+  $result = _imul($result, $b);
 }
-  $b = $b * $b;
+  $b = _imul($b, $b);
   $e = intval((_intdiv($e, 2)));
 };
   return $result;
@@ -74,7 +109,7 @@ $__start = _now();
   $base = 5;
   $x = pow_big($base, $e2);
   $s = _str($x);
-  echo rtrim('5^(4^(3^2)) has') . " " . rtrim(json_encode(strlen($s), 1344)) . " " . rtrim('digits:') . " " . rtrim(json_encode(substr($s, 0, 20 - 0), 1344)) . " " . rtrim('...') . " " . rtrim(json_encode(substr($s, strlen($s) - 20, strlen($s) - (strlen($s) - 20)), 1344)), PHP_EOL;
+  echo rtrim('5^(4^(3^2)) has') . " " . rtrim(json_encode(strlen($s), 1344)) . " " . rtrim('digits:') . " " . rtrim(substr($s, 0, 20 - 0)) . " " . rtrim('...') . " " . rtrim(substr($s, strlen($s) - 20, strlen($s) - (strlen($s) - 20))), PHP_EOL;
 $__end = _now();
 $__end_mem = memory_get_usage();
 $__duration = intdiv($__end - $__start, 1000);
