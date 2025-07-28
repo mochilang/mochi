@@ -1,4 +1,4 @@
-func main (regs=3)
+func __main (regs=3)
   // let limit = 42
   Const        r1, 42
   Move         r0, r1

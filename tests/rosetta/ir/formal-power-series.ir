@@ -1,0 +1,498 @@
+func __main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun newFps(fn: fun(int): float): Fps {
+func newFps (regs=9)
+  // return Fps{ coeffs: [], compute: fn }
+  Const        r1, []
+  Const        r2, "__name"
+  Const        r3, "Fps"
+  Const        r4, "coeffs"
+  Move         r5, r1
+  Const        r6, "compute"
+  Move         r7, r0
+  MakeMap      r8, 3, r2
+  Return       r8
+
+  // fun extract(f: Fps, n: int): float {
+func extract (regs=18)
+L1:
+  // while len(f.coeffs) <= n {
+  Const        r2, "coeffs"
+  Index        r3, r0, r2
+  Len          r4, r3
+  LessEq       r5, r4, r1
+  JumpIfFalse  r5, L0
+  // let idx = len(f.coeffs)
+  Const        r2, "coeffs"
+  Index        r6, r0, r2
+  Len          r7, r6
+  Move         r8, r7
+  // let v = f.compute(idx)
+  Const        r9, "compute"
+  Index        r10, r0, r9
+  Move         r11, r8
+  CallV        r12, r10, 1, r11
+  Move         r13, r12
+  // f.coeffs = append(f.coeffs, v)
+  Const        r2, "coeffs"
+  Index        r14, r0, r2
+  Append       r15, r14, r13
+  Const        r2, "coeffs"
+  SetIndex     r0, r2, r15
+  // while len(f.coeffs) <= n {
+  Jump         L1
+L0:
+  // return f.coeffs[n]
+  Const        r2, "coeffs"
+  Index        r16, r0, r2
+  Index        r17, r16, r1
+  Return       r17
+
+  // fun one(): Fps {
+func one (regs=3)
+  // return newFps(fun(i: int): float {
+  MakeClosure  r1, fn16, 0, r0
+  Move         r0, r1
+  Call         r2, newFps, r0
+  Return       r2
+
+  // fun add(a: Fps, b: Fps): Fps {
+func add (regs=7)
+  // return newFps(fun(n: int): float { return extract(a, n) + extract(b, n) })
+  Move         r3, r0
+  Move         r4, r1
+  MakeClosure  r5, fn17, 2, r3
+  Move         r2, r5
+  Call         r6, newFps, r2
+  Return       r6
+
+  // fun sub(a: Fps, b: Fps): Fps {
+func sub (regs=7)
+  // return newFps(fun(n: int): float { return extract(a, n) - extract(b, n) })
+  Move         r3, r0
+  Move         r4, r1
+  MakeClosure  r5, fn18, 2, r3
+  Move         r2, r5
+  Call         r6, newFps, r2
+  Return       r6
+
+  // fun mul(a: Fps, b: Fps): Fps {
+func mul (regs=7)
+  // return newFps(fun(n: int): float {
+  Move         r3, r0
+  Move         r4, r1
+  MakeClosure  r5, fn19, 2, r3
+  Move         r2, r5
+  Call         r6, newFps, r2
+  Return       r6
+
+  // fun div(a: Fps, b: Fps): Fps {
+func div (regs=13)
+  // var q: Fps = newFps(fun(n: int): float { return 0.0 })
+  Move         r3, r0
+  Move         r4, r1
+  MakeClosure  r5, fn20, 2, r3
+  Move         r2, r5
+  Call         r6, newFps, r2
+  Move         r7, r6
+  // q.compute = fun(n: int): float {
+  Move         r8, r0
+  Move         r9, r1
+  Move         r10, r7
+  MakeClosure  r11, fn21, 3, r8
+  Const        r12, "compute"
+  SetIndex     r7, r12, r11
+  // return q
+  Return       r7
+
+  // fun differentiate(a: Fps): Fps {
+func differentiate (regs=5)
+  // return newFps(fun(n: int): float {
+  Move         r2, r0
+  MakeClosure  r3, fn22, 1, r2
+  Move         r1, r3
+  Call         r4, newFps, r1
+  Return       r4
+
+  // fun integrate(a: Fps): Fps {
+func integrate (regs=5)
+  // return newFps(fun(n: int): float {
+  Move         r2, r0
+  MakeClosure  r3, fn23, 1, r2
+  Move         r1, r3
+  Call         r4, newFps, r1
+  Return       r4
+
+  // fun sinCos(): Pair {
+func sinCos (regs=22)
+  // var sin: Fps = newFps(fun(n: int): float { return 0.0 })
+  MakeClosure  r1, fn24, 0, r0
+  Move         r0, r1
+  Call         r2, newFps, r0
+  Move         r3, r2
+  // var cos: Fps = sub(one(), integrate(sin))
+  Call         r6, one, 
+  Move         r4, r6
+  Move         r7, r3
+  Call         r8, integrate, r7
+  Move         r5, r8
+  Call2        r9, sub, r4, r5
+  Move         r10, r9
+  // sin.compute = fun(n: int): float {
+  Move         r11, r10
+  Move         r12, r3
+  MakeClosure  r13, fn25, 2, r11
+  Const        r14, "compute"
+  SetIndex     r3, r14, r13
+  // return Pair{ sin: sin, cos: cos }
+  Const        r15, "__name"
+  Const        r16, "Pair"
+  Const        r17, "sin"
+  Move         r18, r3
+  Const        r19, "cos"
+  Move         r20, r10
+  MakeMap      r21, 3, r15
+  Return       r21
+
+  // fun floorf(x: float): float {
+func floorf (regs=4)
+  // let y = x as int
+  Cast         r1, r0, int
+  Move         r2, r1
+  // return y as float
+  Cast         r3, r2, float
+  Return       r3
+
+  // fun fmtF5(x: float): string {
+func fmtF5 (regs=32)
+  // var y = floorf(x * 100000.0 + 0.5) / 100000.0
+  Const        r2, 100000.0
+  MulFloat     r3, r0, r2
+  Const        r4, 0.5
+  AddFloat     r5, r3, r4
+  Move         r1, r5
+  Call         r6, floorf, r1
+  Const        r2, 100000.0
+  DivFloat     r7, r6, r2
+  Move         r8, r7
+  // var s = str(y)
+  Str          r9, r8
+  Move         r10, r9
+  // var dot = indexOf(s, ".")
+  Move         r12, r11
+  // if dot == 0 - 1 {
+  Const        r13, 0
+  Const        r14, 1
+  SubInt       r15, r13, r14
+  Equal        r16, r12, r15
+  JumpIfFalse  r16, L0
+  // s = s + ".00000"
+  Const        r17, ".00000"
+  Add          r18, r10, r17
+  Move         r10, r18
+  // if dot == 0 - 1 {
+  Jump         L1
+L0:
+  // var decs = len(s) - dot - 1
+  Len          r19, r10
+  Sub          r20, r19, r12
+  Const        r14, 1
+  Sub          r21, r20, r14
+  Move         r22, r21
+  // if decs > 5 {
+  Const        r23, 5
+  Less         r24, r23, r22
+  JumpIfFalse  r24, L2
+  // s = substring(s, 0, dot + 6)
+  Const        r13, 0
+  Const        r25, 6
+  Add          r26, r12, r25
+  Slice        r27, r10, r13, r26
+  Move         r10, r27
+  // if decs > 5 {
+  Jump         L1
+L2:
+  // while decs < 5 {
+  Const        r23, 5
+  Less         r28, r22, r23
+  JumpIfFalse  r28, L1
+  // s = s + "0"
+  Const        r29, "0"
+  Add          r30, r10, r29
+  Move         r10, r30
+  // decs = decs + 1
+  Const        r14, 1
+  Add          r31, r22, r14
+  Move         r22, r31
+  // while decs < 5 {
+  Jump         L2
+L1:
+  // return s
+  Return       r10
+
+  // fun padFloat5(x: float, width: int): string {
+func padFloat5 (regs=9)
+  // var s = fmtF5(x)
+  Move         r2, r0
+  Call         r3, fmtF5, r2
+  Move         r4, r3
+L1:
+  // while len(s) < width { s = " " + s }
+  Len          r5, r4
+  Less         r6, r5, r1
+  JumpIfFalse  r6, L0
+  Const        r7, " "
+  Add          r8, r7, r4
+  Move         r4, r8
+  Jump         L1
+L0:
+  // return s
+  Return       r4
+
+  // fun partialSeries(f: Fps): string {
+func partialSeries (regs=20)
+  // var out = ""
+  Const        r1, ""
+  Move         r2, r1
+  // var i = 0
+  Const        r3, 0
+  Move         r4, r3
+L1:
+  // while i < 6 {
+  Const        r5, 6
+  LessInt      r6, r4, r5
+  JumpIfFalse  r6, L0
+  // out = out + " " + padFloat5(extract(f, i), 8) + " "
+  Const        r7, " "
+  Add          r8, r2, r7
+  Move         r11, r0
+  Move         r12, r4
+  Call2        r13, extract, r11, r12
+  Move         r9, r13
+  Const        r14, 8
+  Move         r10, r14
+  Call2        r15, padFloat5, r9, r10
+  Add          r16, r8, r15
+  Const        r7, " "
+  Add          r17, r16, r7
+  Move         r2, r17
+  // i = i + 1
+  Const        r18, 1
+  AddInt       r19, r4, r18
+  Move         r4, r19
+  // while i < 6 {
+  Jump         L1
+L0:
+  // return out
+  Return       r2
+
+  // fun main() {
+func main (regs=14)
+  // let p = sinCos()
+  Call         r0, sinCos, 
+  Move         r1, r0
+  // print("sin:" + partialSeries(p.sin))
+  Const        r2, "sin:"
+  Const        r4, "sin"
+  Index        r5, r1, r4
+  Move         r3, r5
+  Call         r6, partialSeries, r3
+  Add          r7, r2, r6
+  Print        r7
+  // print("cos:" + partialSeries(p.cos))
+  Const        r8, "cos:"
+  Const        r10, "cos"
+  Index        r11, r1, r10
+  Move         r9, r11
+  Call         r12, partialSeries, r9
+  Add          r13, r8, r12
+  Print        r13
+  Return       r0
+
+  // return newFps(fun(i: int): float {
+func fn16 (regs=5)
+  // if i == 0 { return 1.0 }
+  Const        r1, 0
+  Equal        r2, r0, r1
+  JumpIfFalse  r2, L0
+  Const        r3, 1.0
+  Return       r3
+L0:
+  // return 0.0
+  Const        r4, 0.0
+  Return       r4
+
+  // return newFps(fun(n: int): float { return extract(a, n) + extract(b, n) })
+func fn17 (regs=10)
+  // return newFps(fun(n: int): float { return extract(a, n) + extract(b, n) })
+  Move         r3, r0
+  Move         r4, r2
+  Call2        r5, extract, r3, r4
+  Move         r6, r1
+  Move         r7, r2
+  Call2        r8, extract, r6, r7
+  Add          r9, r5, r8
+  Return       r9
+
+  // return newFps(fun(n: int): float { return extract(a, n) - extract(b, n) })
+func fn18 (regs=10)
+  // return newFps(fun(n: int): float { return extract(a, n) - extract(b, n) })
+  Move         r3, r0
+  Move         r4, r2
+  Call2        r5, extract, r3, r4
+  Move         r6, r1
+  Move         r7, r2
+  Call2        r8, extract, r6, r7
+  Sub          r9, r5, r8
+  Return       r9
+
+  // return newFps(fun(n: int): float {
+func fn19 (regs=19)
+  // var s = 0.0
+  Const        r3, 0.0
+  Move         r4, r3
+  // var k = 0
+  Const        r5, 0
+  Move         r6, r5
+L1:
+  // while k <= n {
+  LessEq       r7, r6, r2
+  JumpIfFalse  r7, L0
+  // s = s + extract(a, k) * extract(b, n - k)
+  Move         r8, r0
+  Move         r9, r6
+  Call2        r10, extract, r8, r9
+  Move         r11, r1
+  Sub          r13, r2, r6
+  Move         r12, r13
+  Call2        r14, extract, r11, r12
+  Mul          r15, r10, r14
+  AddFloat     r16, r4, r15
+  Move         r4, r16
+  // k = k + 1
+  Const        r17, 1
+  AddInt       r18, r6, r17
+  Move         r6, r18
+  // while k <= n {
+  Jump         L1
+L0:
+  // return s
+  Return       r4
+
+  // var q: Fps = newFps(fun(n: int): float { return 0.0 })
+func fn20 (regs=4)
+  // var q: Fps = newFps(fun(n: int): float { return 0.0 })
+  Const        r3, 0.0
+  Return       r3
+
+  // q.compute = fun(n: int): float {
+func fn21 (regs=30)
+  // let b0 = extract(b, 0)
+  Move         r4, r1
+  Const        r6, 0
+  Move         r5, r6
+  Call2        r7, extract, r4, r5
+  Move         r8, r7
+  // if b0 == 0.0 { return (0.0 / 0.0) }
+  Const        r9, 0.0
+  EqualFloat   r10, r8, r9
+  JumpIfFalse  r10, L0
+  Const        r9, 0.0
+  Const        r9, 0.0
+  DivFloat     r11, r9, r9
+  Return       r11
+L0:
+  // var s = extract(a, n)
+  Move         r12, r0
+  Move         r13, r3
+  Call2        r14, extract, r12, r13
+  Move         r15, r14
+  // var k = 1
+  Const        r16, 1
+  Move         r17, r16
+L2:
+  // while k <= n {
+  LessEq       r18, r17, r3
+  JumpIfFalse  r18, L1
+  // s = s - extract(b, k) * extract(q, n - k)
+  Move         r19, r1
+  Move         r20, r17
+  Call2        r21, extract, r19, r20
+  Move         r22, r2
+  Sub          r24, r3, r17
+  Move         r23, r24
+  Call2        r25, extract, r22, r23
+  Mul          r26, r21, r25
+  Sub          r27, r15, r26
+  Move         r15, r27
+  // k = k + 1
+  Const        r16, 1
+  AddInt       r28, r17, r16
+  Move         r17, r28
+  // while k <= n {
+  Jump         L2
+L1:
+  // return s / b0
+  Div          r29, r15, r8
+  Return       r29
+
+  // return newFps(fun(n: int): float {
+func fn22 (regs=10)
+  // return ((n + 1) as float) * extract(a, n + 1)
+  Const        r2, 1
+  Add          r3, r1, r2
+  Cast         r4, r3, float
+  Move         r5, r0
+  Const        r2, 1
+  Add          r7, r1, r2
+  Move         r6, r7
+  Call2        r8, extract, r5, r6
+  Mul          r9, r4, r8
+  Return       r9
+
+  // return newFps(fun(n: int): float {
+func fn23 (regs=12)
+  // if n == 0 { return 0.0 }
+  Const        r2, 0
+  Equal        r3, r1, r2
+  JumpIfFalse  r3, L0
+  Const        r4, 0.0
+  Return       r4
+L0:
+  // return extract(a, n - 1) / (n as float)
+  Move         r5, r0
+  Const        r7, 1
+  Sub          r8, r1, r7
+  Move         r6, r8
+  Call2        r9, extract, r5, r6
+  Cast         r10, r1, float
+  Div          r11, r9, r10
+  Return       r11
+
+  // var sin: Fps = newFps(fun(n: int): float { return 0.0 })
+func fn24 (regs=2)
+  // var sin: Fps = newFps(fun(n: int): float { return 0.0 })
+  Const        r1, 0.0
+  Return       r1
+
+  // sin.compute = fun(n: int): float {
+func fn25 (regs=13)
+  // if n == 0 { return 0.0 }
+  Const        r3, 0
+  Equal        r4, r2, r3
+  JumpIfFalse  r4, L0
+  Const        r5, 0.0
+  Return       r5
+L0:
+  // return extract(cos, n - 1) / (n as float)
+  Move         r6, r0
+  Const        r8, 1
+  Sub          r9, r2, r8
+  Move         r7, r9
+  Call2        r10, extract, r6, r7
+  Cast         r11, r2, float
+  Div          r12, r10, r11
+  Return       r12

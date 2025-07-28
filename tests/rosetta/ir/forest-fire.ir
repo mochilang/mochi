@@ -1,144 +1,363 @@
-func main (regs=40)
-  // let rows = 5
-  Const        r4, 5
-  Move         r0, r4
+func __main (regs=16)
+  // let rows = 20
+  Const        r5, 20
+  Move         r0, r5
   SetGlobal    0,0,0,0
-  // let cols = 5
-  Const        r4, 5
-  Move         r1, r4
+  // let cols = 30
+  Const        r6, 30
+  Move         r1, r6
   SetGlobal    1,1,0,0
-  // var board: list<list<int>> = []
-  Const        r5, []
-  Move         r2, r5
+  // let p = 0.01   // probability a tree grows in an empty cell
+  Const        r7, 0.01
+  Move         r2, r7
   SetGlobal    2,2,0,0
-  // var r = 0
-  Const        r6, 0
-  Move         r3, r6
+  // let f = 0.001  // probability a tree spontaneously ignites
+  Const        r8, 0.001
+  Move         r3, r8
   SetGlobal    3,3,0,0
-L3:
-  // while r < rows {
-  LessInt      r7, r3, r0
-  JumpIfFalse  r7, L0
-  // var row: list<int> = []
-  Const        r5, []
-  Move         r8, r5
-  // var c = 0
-  Const        r6, 0
-  Move         r9, r6
-L2:
-  // while c < cols {
-  LessInt      r10, r9, r1
-  JumpIfFalse  r10, L1
-  // row = append(row, (r+c)%2)
-  AddInt       r11, r3, r9
-  Const        r12, 2
-  ModInt       r13, r11, r12
-  Append       r14, r8, r13
-  Move         r8, r14
-  // c = c + 1
-  Const        r15, 1
-  AddInt       r16, r9, r15
-  Move         r9, r16
-  // while c < cols {
-  Jump         L2
-L1:
-  // board = append(board, row)
-  Append       r17, r2, r8
-  Move         r2, r17
-  SetGlobal    2,2,0,0
-  // r = r + 1
-  Const        r15, 1
-  AddInt       r18, r3, r15
-  Move         r3, r18
-  SetGlobal    3,3,0,0
-  // while r < rows {
-  Jump         L3
-L0:
-  // print("start")
-  Const        r19, "start"
-  Print        r19
-  // for row in board { print(str(row)) }
-  IterPrep     r20, r2
-  Len          r21, r20
-  Const        r22, 0
-L5:
-  LessInt      r23, r22, r21
-  JumpIfFalse  r23, L4
-  Index        r24, r20, r22
-  Move         r25, r24
-  Str          r26, r25
-  Print        r26
-  Const        r27, 1
-  AddInt       r28, r22, r27
-  Move         r22, r28
-  Jump         L5
-L4:
+  // var board = newBoard()
+  Call         r9, newBoard, 
+  Move         r4, r9
+  SetGlobal    4,4,0,0
+  // printBoard(board)
+  Move         r10, r4
+  Call         r11, printBoard, r10
   // board = step(board)
-  Move         r29, r2
-  Call         r30, step, r29
-  Move         r2, r30
-  SetGlobal    2,2,0,0
-  // print("after")
-  Const        r31, "after"
-  Print        r31
-  // for row in board { print(str(row)) }
-  IterPrep     r32, r2
-  Len          r33, r32
-  Const        r34, 0
-L7:
-  LessInt      r35, r34, r33
-  JumpIfFalse  r35, L6
-  Index        r36, r32, r34
-  Move         r25, r36
-  Str          r37, r25
-  Print        r37
-  Const        r38, 1
-  AddInt       r39, r34, r38
-  Move         r34, r39
-  Jump         L7
-L6:
+  Move         r12, r4
+  Call         r13, step, r12
+  Move         r4, r13
+  SetGlobal    4,4,0,0
+  // printBoard(board)
+  Move         r14, r4
+  Call         r15, printBoard, r14
   Return       r0
 
-  // fun step(b: list<list<int>>): list<list<int>> {
-func step (regs=17)
-  // var nb = b
-  Move         r5, r4
-  // var r = 0
-  Const        r6, 0
-  Move         r3, r6
-  SetGlobal    3,3,0,0
-L3:
-  // while r < rows {
-  Less         r7, r3, r0
-  JumpIfFalse  r7, L0
-  // var c = 0
-  Const        r6, 0
-  Move         r8, r6
-L2:
-  // while c < cols {
-  Less         r9, r8, r1
-  JumpIfFalse  r9, L1
-  // nb[r][c] = 1 - b[r][c]
-  Index        r10, r5, r3
-  Const        r11, 1
-  Index        r12, r4, r3
-  Index        r13, r12, r8
-  Sub          r14, r11, r13
-  SetIndex     r10, r8, r14
-  // c = c + 1
-  Const        r11, 1
-  AddInt       r15, r8, r11
-  Move         r8, r15
-  // while c < cols {
-  Jump         L2
+  // fun repeat(ch: string, n: int): string {
+func repeat (regs=15)
+  // var s = ""
+  Const        r7, ""
+  Move         r8, r7
+  // var i = 0
+  Const        r9, 0
+  Move         r10, r9
 L1:
-  // r = r + 1
-  Const        r11, 1
-  AddInt       r16, r3, r11
-  Move         r3, r16
-  SetGlobal    3,3,0,0
-  // while r < rows {
-  Jump         L3
+  // while i < n {
+  Less         r11, r10, r6
+  JumpIfFalse  r11, L0
+  // s = s + ch
+  Add          r12, r8, r5
+  Move         r8, r12
+  // i = i + 1
+  Const        r13, 1
+  AddInt       r14, r10, r13
+  Move         r10, r14
+  // while i < n {
+  Jump         L1
 L0:
-  // return nb
-  Return       r5
+  // return s
+  Return       r8
+
+  // fun chance(prob: float): bool {
+func chance (regs=14)
+  // let threshold = int(prob * 1000.0)
+  Const        r6, 1000.0
+  MulFloat     r7, r5, r6
+  Cast         r8, r7, int
+  Move         r9, r8
+  // return now() % 1000 < threshold
+  Now          r10
+  Const        r11, 1000
+  ModInt       r12, r10, r11
+  Less         r13, r12, r9
+  Return       r13
+
+  // fun newBoard(): list<list<string>> {
+func newBoard (regs=25)
+  // var b: list<list<string>> = []
+  Const        r5, []
+  Move         r6, r5
+  // var r = 0
+  Const        r7, 0
+  Move         r8, r7
+L5:
+  // while r < rows {
+  Less         r9, r8, r0
+  JumpIfFalse  r9, L0
+  // var row: list<string> = []
+  Const        r5, []
+  Move         r10, r5
+  // var c = 0
+  Const        r7, 0
+  Move         r11, r7
+L4:
+  // while c < cols {
+  Less         r12, r11, r1
+  JumpIfFalse  r12, L1
+  // if now() % 2 == 0 {
+  Now          r13
+  Const        r14, 2
+  ModInt       r15, r13, r14
+  Const        r7, 0
+  EqualInt     r16, r15, r7
+  JumpIfFalse  r16, L2
+  // row = append(row, "T")
+  Const        r17, "T"
+  Append       r18, r10, r17
+  Move         r10, r18
+  // if now() % 2 == 0 {
+  Jump         L3
+L2:
+  // row = append(row, " ")
+  Const        r19, " "
+  Append       r20, r10, r19
+  Move         r10, r20
+L3:
+  // c = c + 1
+  Const        r21, 1
+  AddInt       r22, r11, r21
+  Move         r11, r22
+  // while c < cols {
+  Jump         L4
+L1:
+  // b = append(b, row)
+  Append       r23, r6, r10
+  Move         r6, r23
+  // r = r + 1
+  Const        r21, 1
+  AddInt       r24, r8, r21
+  Move         r8, r24
+  // while r < rows {
+  Jump         L5
+L0:
+  // return b
+  Return       r6
+
+  // fun step(src: list<list<string>>): list<list<string>> {
+func step (regs=59)
+  // var dst: list<list<string>> = []
+  Const        r6, []
+  Move         r7, r6
+  // var r = 0
+  Const        r8, 0
+  Move         r9, r8
+L14:
+  // while r < rows {
+  Less         r10, r9, r0
+  JumpIfFalse  r10, L0
+  // var row: list<string> = []
+  Const        r6, []
+  Move         r11, r6
+  // var c = 0
+  Const        r8, 0
+  Move         r12, r8
+L13:
+  // while c < cols {
+  Less         r13, r12, r1
+  JumpIfFalse  r13, L1
+  // var cell = src[r][c]
+  Index        r14, r5, r9
+  Index        r15, r14, r12
+  Move         r16, r15
+  // var next = cell
+  Move         r17, r16
+  // if cell == "#" {
+  Const        r18, "#"
+  Equal        r19, r16, r18
+  JumpIfFalse  r19, L2
+  // next = " "
+  Const        r20, " "
+  Move         r17, r20
+  // if cell == "#" {
+  Jump         L3
+L2:
+  // } else if cell == "T" {
+  Const        r21, "T"
+  Equal        r22, r16, r21
+  JumpIfFalse  r22, L4
+  // var burning = false
+  Const        r23, false
+  Move         r24, r23
+  // var dr = -1
+  Const        r25, 1
+  NegInt       r26, r25
+  Move         r27, r26
+L11:
+  // while dr <= 1 {
+  Const        r25, 1
+  LessEqInt    r28, r27, r25
+  JumpIfFalse  r28, L5
+  // var dc = -1
+  Const        r25, 1
+  NegInt       r29, r25
+  Move         r30, r29
+L10:
+  // while dc <= 1 {
+  Const        r25, 1
+  LessEqInt    r31, r30, r25
+  JumpIfFalse  r31, L6
+  // if dr != 0 || dc != 0 {
+  Const        r8, 0
+  NotEqual     r32, r27, r8
+  Const        r8, 0
+  NotEqual     r33, r30, r8
+  Move         r34, r32
+  JumpIfTrue   r34, L7
+  Move         r34, r33
+L7:
+  JumpIfFalse  r34, L8
+  // let rr = r + dr
+  AddInt       r35, r9, r27
+  Move         r36, r35
+  // let cc = c + dc
+  AddInt       r37, r12, r30
+  Move         r38, r37
+  // if rr >= 0 && rr < rows && cc >= 0 && cc < cols {
+  Const        r8, 0
+  LessEqInt    r39, r8, r36
+  Less         r40, r36, r0
+  Const        r8, 0
+  LessEqInt    r41, r8, r38
+  Less         r42, r38, r1
+  Move         r43, r39
+  JumpIfFalse  r43, L9
+  Move         r43, r40
+  JumpIfFalse  r43, L9
+  Move         r43, r41
+  JumpIfFalse  r43, L9
+  Move         r43, r42
+L9:
+  JumpIfFalse  r43, L8
+  // if src[rr][cc] == "#" { burning = true }
+  Index        r44, r5, r36
+  Index        r45, r44, r38
+  Const        r18, "#"
+  Equal        r46, r45, r18
+  JumpIfFalse  r46, L8
+  Const        r47, true
+  Move         r24, r47
+L8:
+  // dc = dc + 1
+  Const        r25, 1
+  AddInt       r48, r30, r25
+  Move         r30, r48
+  // while dc <= 1 {
+  Jump         L10
+L6:
+  // dr = dr + 1
+  Const        r25, 1
+  AddInt       r49, r27, r25
+  Move         r27, r49
+  // while dr <= 1 {
+  Jump         L11
+L5:
+  // if burning || chance(f) {
+  Move         r50, r24
+  JumpIfTrue   r50, L12
+  Move         r51, r3
+  Call         r52, chance, r51
+  Move         r50, r52
+L12:
+  JumpIfFalse  r50, L3
+  // next = "#"
+  Const        r18, "#"
+  Move         r17, r18
+  // } else if cell == "T" {
+  Jump         L3
+L4:
+  // if chance(p) { next = "T" }
+  Move         r53, r2
+  Call         r54, chance, r53
+  JumpIfFalse  r54, L3
+  Const        r21, "T"
+  Move         r17, r21
+L3:
+  // row = append(row, next)
+  Append       r55, r11, r17
+  Move         r11, r55
+  // c = c + 1
+  Const        r25, 1
+  AddInt       r56, r12, r25
+  Move         r12, r56
+  // while c < cols {
+  Jump         L13
+L1:
+  // dst = append(dst, row)
+  Append       r57, r7, r11
+  Move         r7, r57
+  // r = r + 1
+  Const        r25, 1
+  AddInt       r58, r9, r25
+  Move         r9, r58
+  // while r < rows {
+  Jump         L14
+L0:
+  // return dst
+  Return       r7
+
+  // fun printBoard(b: list<list<string>>) {
+func printBoard (regs=33)
+  // print(repeat("__", cols) + "\n\n")
+  Const        r8, "__"
+  Move         r6, r8
+  Move         r7, r1
+  Call2        r9, repeat, r6, r7
+  Const        r10, "\n\n"
+  Add          r11, r9, r10
+  Print        r11
+  // var r = 0
+  Const        r12, 0
+  Move         r13, r12
+L5:
+  // while r < rows {
+  Less         r14, r13, r0
+  JumpIfFalse  r14, L0
+  // var line = ""
+  Const        r15, ""
+  Move         r16, r15
+  // var c = 0
+  Const        r12, 0
+  Move         r17, r12
+L4:
+  // while c < cols {
+  Less         r18, r17, r1
+  JumpIfFalse  r18, L1
+  // let cell = b[r][c]
+  Index        r19, r5, r13
+  Index        r20, r19, r17
+  Move         r21, r20
+  // if cell == " " {
+  Const        r22, " "
+  Equal        r23, r21, r22
+  JumpIfFalse  r23, L2
+  // line = line + "  "
+  Const        r24, "  "
+  Add          r25, r16, r24
+  Move         r16, r25
+  // if cell == " " {
+  Jump         L3
+L2:
+  // line = line + " " + cell
+  Const        r22, " "
+  Add          r26, r16, r22
+  Add          r27, r26, r21
+  Move         r16, r27
+L3:
+  // c = c + 1
+  Const        r28, 1
+  AddInt       r29, r17, r28
+  Move         r17, r29
+  // while c < cols {
+  Jump         L4
+L1:
+  // print(line + "\n")
+  Const        r30, "\n"
+  Add          r31, r16, r30
+  Print        r31
+  // r = r + 1
+  Const        r28, 1
+  AddInt       r32, r13, r28
+  Move         r13, r32
+  // while r < rows {
+  Jump         L5
+L0:
+  Return       r0

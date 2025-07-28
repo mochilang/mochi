@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated IR and outputs from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/ir`.
-Last updated: 2025-07-28 02:39 UTC
+Last updated: 2025-07-28 03:14 UTC
 
-## Rosetta Golden Test Checklist (469/477)
+## Rosetta Golden Test Checklist (487/493)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 216µs | 34.2 KB |
@@ -457,30 +457,46 @@ Last updated: 2025-07-28 02:39 UTC
 | 448 | flow-control-structures-1 | ✓ | 18µs | 1.4 KB |
 | 449 | flow-control-structures-2 | ✓ | 66µs | 600 B |
 | 450 | flow-control-structures-3 | ✓ | 27µs | 1.4 KB |
-| 451 | flow-control-structures-4 | ✓ | 36µs | 808 B |
-| 452 | floyd-warshall-algorithm | ✓ | 284µs | 235.5 KB |
-| 453 | floyd-warshall-algorithm2 |   |  |  |
-| 454 | floyds-triangle | ✓ | 148µs | 51.9 KB |
-| 455 | forest-fire | ✓ | 137µs | 63.2 KB |
-| 456 | fork-2 |   |  |  |
-| 457 | fork | ✓ | 32µs | 5.4 KB |
-| 458 | ftp | ✓ | 65µs | 23.7 KB |
-| 459 | gamma-function | ✓ | 316µs | 291.3 KB |
-| 460 | general-fizzbuzz | ✓ | 77µs | 24.5 KB |
-| 461 | generic-swap | ✓ | 48µs | 4.0 KB |
-| 462 | get-system-command-output | ✓ | 17µs | 216 B |
-| 463 | giuga-numbers | ✓ | 404µs | 57.3 KB |
-| 464 | globally-replace-text-in-several-files | ✓ | 17µs | 232 B |
-| 465 | goldbachs-comet | ✓ | 30.237ms | 280.3 KB |
-| 466 | golden-ratio-convergence | ✓ | 57µs | 20.0 KB |
-| 467 | graph-colouring | ✓ | 26µs | 216 B |
-| 468 | gray-code | ✓ | 4.084ms |  |
-| 469 | http | ✓ | 180.478ms | 647.3 KB |
-| 470 | image-noise | ✓ | 340.187ms | 397.8 KB |
-| 471 | loops-increment-loop-index-within-loop-body | ✓ | 11.477587s |  |
-| 472 | md5 | ✓ | 1.68366s | 182.5 KB |
-| 473 | nim-game | ✓ | 67µs | 21.5 KB |
-| 474 | plasma-effect | ✓ | 730.38ms |  |
-| 475 | sorting-algorithms-bubble-sort | ✓ | 87µs | 26.4 KB |
-| 476 | window-management | ✓ | 68µs | 64.1 KB |
-| 477 | zumkeller-numbers | ✓ |  |  |
+| 451 | flow-control-structures-4 | ✓ | 1.56ms | 808 B |
+| 452 | floyd-warshall-algorithm | ✓ | 8.263ms | 235.5 KB |
+| 453 | floyd-warshall-algorithm2 | ✓ | 942µs | 200.7 KB |
+| 454 | floyds-triangle | ✓ | 1.787ms | 200.5 KB |
+| 455 | forest-fire | ✓ | 7.76ms | 1.5 MB |
+| 456 | fork-2 | ✓ | 47µs | 5.4 KB |
+| 457 | fork | ✓ | 35µs | 5.4 KB |
+| 458 | formal-power-series | ✓ | 339µs | 244.5 KB |
+| 459 | formatted-numeric-output | ✓ | 52µs | 8.0 KB |
+| 460 | forward-difference | ✓ | 138µs | 89.6 KB |
+| 461 | four-bit-adder-1 | ✓ | 378µs | 68.1 KB |
+| 462 | four-is-magic | ✓ | 333µs | 502.1 KB |
+| 463 | four-is-the-number-of-letters-in-the-... | ✓ |  |  |
+| 464 | fractal-tree | ✓ |  |  |
+| 465 | fractran | ✓ |  |  |
+| 466 | french-republican-calendar | ✓ |  |  |
+| 467 | ftp | ✓ | 65µs | 23.7 KB |
+| 468 | function-frequency | ✓ |  |  |
+| 469 | function-prototype | ✓ |  |  |
+| 470 | functional-coverage-tree | ✓ |  |  |
+| 471 | fusc-sequence | ✓ |  |  |
+| 472 | gamma-function | ✓ | 316µs | 291.3 KB |
+| 473 | general-fizzbuzz | ✓ | 77µs | 24.5 KB |
+| 474 | generic-swap | ✓ | 48µs | 4.0 KB |
+| 475 | get-system-command-output | ✓ | 17µs | 216 B |
+| 476 | giuga-numbers | ✓ | 404µs | 57.3 KB |
+| 477 | globally-replace-text-in-several-files | ✓ | 17µs | 232 B |
+| 478 | goldbachs-comet | ✓ | 30.237ms | 280.3 KB |
+| 479 | golden-ratio-convergence | ✓ | 57µs | 20.0 KB |
+| 480 | graph-colouring | ✓ | 26µs | 216 B |
+| 481 | gray-code | ✓ | 4.084ms |  |
+| 482 | gui-component-interaction | ✓ |  |  |
+| 483 | gui-enabling-disabling-of-controls | ✓ |  |  |
+| 484 | gui-maximum-window-dimensions | ✓ |  |  |
+| 485 | http | ✓ | 180.478ms | 647.3 KB |
+| 486 | image-noise | ✓ | 340.187ms | 397.8 KB |
+| 487 | loops-increment-loop-index-within-loop-body | ✓ | 11.477587s |  |
+| 488 | md5 | ✓ | 1.68366s | 182.5 KB |
+| 489 | nim-game | ✓ | 67µs | 21.5 KB |
+| 490 | plasma-effect | ✓ | 730.38ms |  |
+| 491 | sorting-algorithms-bubble-sort | ✓ | 87µs | 26.4 KB |
+| 492 | window-management | ✓ | 68µs | 64.1 KB |
+| 493 | zumkeller-numbers | ✓ |  |  |

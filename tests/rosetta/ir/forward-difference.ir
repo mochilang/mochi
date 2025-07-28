@@ -1,0 +1,67 @@
+func __main (regs=8)
+  // var a = [90, 47, 58, 29, 22, 32, 55, 5, 55, 73]
+  Const        r1, [90, 47, 58, 29, 22, 32, 55, 5, 55, 73]
+  Move         r0, r1
+  SetGlobal    0,0,0,0
+  // print(str(a))
+  Const        r2, "[90 47 58 29 22 32 55 5 55 73]"
+  Print        r2
+  // print(str(fd(a, 9)))
+  Move         r3, r0
+  Const        r5, 9
+  Move         r4, r5
+  Call2        r6, fd, r3, r4
+  Str          r7, r6
+  Print        r7
+  Return       r0
+
+  // fun fd(a: list<int>, ord: int): list<int> {
+func fd (regs=23)
+  // var i = 0
+  Const        r3, 0
+  Move         r4, r3
+L3:
+  // while i < ord {
+  Less         r5, r4, r2
+  JumpIfFalse  r5, L0
+  // var j = 0
+  Const        r3, 0
+  Move         r6, r3
+L2:
+  // while j < len(a) - i - 1 {
+  Len          r7, r1
+  SubInt       r8, r7, r4
+  Const        r9, 1
+  SubInt       r10, r8, r9
+  LessInt      r11, r6, r10
+  JumpIfFalse  r11, L1
+  // a[j] = a[j+1] - a[j]
+  Const        r9, 1
+  AddInt       r12, r6, r9
+  Index        r13, r1, r12
+  Index        r14, r1, r6
+  Sub          r15, r13, r14
+  SetIndex     r1, r6, r15
+  SetGlobal    0,1,0,0
+  // j = j + 1
+  Const        r9, 1
+  AddInt       r16, r6, r9
+  Move         r6, r16
+  // while j < len(a) - i - 1 {
+  Jump         L2
+L1:
+  // i = i + 1
+  Const        r9, 1
+  AddInt       r17, r4, r9
+  Move         r4, r17
+  // while i < ord {
+  Jump         L3
+L0:
+  // return a[0:len(a)-ord]
+  Const        r3, 0
+  Move         r18, r3
+  Len          r20, r1
+  Sub          r21, r20, r2
+  Move         r19, r21
+  Slice        r22, r1, r18, r19
+  Return       r22

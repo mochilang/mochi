@@ -1,0 +1,411 @@
+func __main (regs=66)
+  // let INF = 1000000
+  Const        r5, 1000000
+  Move         r0, r5
+  SetGlobal    0,0,0,0
+  // let n = 4
+  Const        r6, 4
+  Move         r1, r6
+  SetGlobal    1,1,0,0
+  // var g: list<list<int>> = []
+  Const        r7, []
+  Move         r2, r7
+  SetGlobal    2,2,0,0
+  // for i in 0..n {
+  Const        r8, 0
+  Move         r4, r8
+L5:
+  LessInt      r9, r4, r1
+  JumpIfFalse  r9, L0
+  // var row: list<int> = []
+  Const        r7, []
+  Move         r10, r7
+  // for j in 0..n {
+  Const        r8, 0
+  Move         r11, r8
+L4:
+  LessInt      r12, r11, r1
+  JumpIfFalse  r12, L1
+  // if i == j { row = append(row, 0) } else { row = append(row, INF) }
+  EqualInt     r13, r4, r11
+  JumpIfFalse  r13, L2
+  Const        r8, 0
+  Append       r14, r10, r8
+  Move         r10, r14
+  Jump         L3
+L2:
+  Append       r15, r10, r0
+  Move         r10, r15
+L3:
+  // for j in 0..n {
+  Const        r16, 1
+  AddInt       r17, r11, r16
+  Move         r11, r17
+  Jump         L4
+L1:
+  // g = append(g, row)
+  Append       r18, r2, r10
+  Move         r2, r18
+  SetGlobal    2,2,0,0
+  // for i in 0..n {
+  Const        r19, 1
+  AddInt       r20, r4, r19
+  Move         r4, r20
+  Jump         L5
+L0:
+  // g[0][2] = -2
+  Const        r8, 0
+  Index        r21, r2, r8
+  Const        r22, 2
+  NegInt       r23, r22
+  Const        r22, 2
+  SetIndex     r21, r22, r23
+  SetGlobal    2,2,0,0
+  // g[2][3] = 2
+  Const        r22, 2
+  Index        r24, r2, r22
+  Const        r22, 2
+  Const        r25, 3
+  SetIndex     r24, r25, r22
+  SetGlobal    2,2,0,0
+  // g[3][1] = -1
+  Const        r25, 3
+  Index        r26, r2, r25
+  Const        r27, 1
+  NegInt       r28, r27
+  Const        r27, 1
+  SetIndex     r26, r27, r28
+  SetGlobal    2,2,0,0
+  // g[1][0] = 4
+  Const        r27, 1
+  Index        r29, r2, r27
+  Const        r6, 4
+  Const        r8, 0
+  SetIndex     r29, r8, r6
+  SetGlobal    2,2,0,0
+  // g[1][2] = 3
+  Const        r27, 1
+  Index        r30, r2, r27
+  Const        r25, 3
+  Const        r22, 2
+  SetIndex     r30, r22, r25
+  SetGlobal    2,2,0,0
+  // let res = floydWarshall(g)
+  Move         r31, r2
+  Call         r32, floydWarshall, r31
+  Move         r3, r32
+  SetGlobal    3,3,0,0
+  // print("pair\tdist\tpath")
+  Const        r33, "pair\tdist\tpath"
+  Print        r33
+  // var i = 0
+  Const        r8, 0
+  Move         r4, r8
+  SetGlobal    4,4,0,0
+L10:
+  // while i < n {
+  LessInt      r34, r4, r1
+  JumpIfFalse  r34, L6
+  // var j = 0
+  Const        r8, 0
+  Move         r35, r8
+L9:
+  // while j < n {
+  LessInt      r36, r35, r1
+  JumpIfFalse  r36, L7
+  // if i != j {
+  NotEqual     r37, r4, r35
+  JumpIfFalse  r37, L8
+  // let p = path(i, j, res.next)
+  Move         r38, r4
+  Move         r39, r35
+  Const        r41, "next"
+  Index        r42, r3, r41
+  Move         r40, r42
+  Call         r43, path, r38, r39, r40
+  Move         r44, r43
+  // print(str(i+1) + " -> " + str(j+1) + "\t" + str(res.dist[i][j]) + "\t" + pathStr(p))
+  Const        r27, 1
+  AddInt       r45, r4, r27
+  Str          r46, r45
+  Const        r47, " -> "
+  Add          r48, r46, r47
+  Const        r27, 1
+  AddInt       r49, r35, r27
+  Str          r50, r49
+  Add          r51, r48, r50
+  Const        r52, "\t"
+  Add          r53, r51, r52
+  Const        r54, "dist"
+  Index        r55, r3, r54
+  Index        r56, r55, r4
+  Index        r57, r56, r35
+  Str          r58, r57
+  Add          r59, r53, r58
+  Const        r52, "\t"
+  Add          r60, r59, r52
+  Move         r61, r44
+  Call         r62, pathStr, r61
+  Add          r63, r60, r62
+  Print        r63
+L8:
+  // j = j + 1
+  Const        r27, 1
+  AddInt       r64, r35, r27
+  Move         r35, r64
+  // while j < n {
+  Jump         L9
+L7:
+  // i = i + 1
+  Const        r27, 1
+  AddInt       r65, r4, r27
+  Move         r4, r65
+  SetGlobal    4,4,0,0
+  // while i < n {
+  Jump         L10
+L6:
+  Return       r0
+
+  // fun floydWarshall(graph: list<list<int>>): FWResult {
+func floydWarshall (regs=67)
+  // let n = len(graph)
+  Len          r6, r5
+  Move         r1, r6
+  SetGlobal    1,1,0,0
+  // var dist: list<list<int>> = []
+  Const        r7, []
+  Move         r8, r7
+  // var next: list<list<int>> = []
+  Const        r7, []
+  Move         r9, r7
+  // var i = 0
+  Const        r10, 0
+  Move         r4, r10
+  SetGlobal    4,4,0,0
+L6:
+  // while i < n {
+  LessInt      r11, r4, r1
+  JumpIfFalse  r11, L0
+  // var drow: list<int> = []
+  Const        r7, []
+  Move         r12, r7
+  // var nrow: list<int> = []
+  Const        r7, []
+  Move         r13, r7
+  // var j = 0
+  Const        r10, 0
+  Move         r14, r10
+L5:
+  // while j < n {
+  LessInt      r15, r14, r1
+  JumpIfFalse  r15, L1
+  // drow = append(drow, graph[i][j])
+  Index        r16, r5, r4
+  Index        r17, r16, r14
+  Append       r18, r12, r17
+  Move         r12, r18
+  // if graph[i][j] < INF && i != j {
+  Index        r19, r5, r4
+  Index        r20, r19, r14
+  Less         r21, r20, r0
+  NotEqual     r22, r4, r14
+  Move         r23, r21
+  JumpIfFalse  r23, L2
+  Move         r23, r22
+L2:
+  JumpIfFalse  r23, L3
+  // nrow = append(nrow, j)
+  Append       r24, r13, r14
+  Move         r13, r24
+  // if graph[i][j] < INF && i != j {
+  Jump         L4
+L3:
+  // nrow = append(nrow, -1)
+  Const        r25, 1
+  NegInt       r26, r25
+  Append       r27, r13, r26
+  Move         r13, r27
+L4:
+  // j = j + 1
+  Const        r25, 1
+  AddInt       r28, r14, r25
+  Move         r14, r28
+  // while j < n {
+  Jump         L5
+L1:
+  // dist = append(dist, drow)
+  Append       r29, r8, r12
+  Move         r8, r29
+  // next = append(next, nrow)
+  Append       r30, r9, r13
+  Move         r9, r30
+  // i = i + 1
+  Const        r25, 1
+  AddInt       r31, r4, r25
+  Move         r4, r31
+  SetGlobal    4,4,0,0
+  // while i < n {
+  Jump         L6
+L0:
+  // var k = 0
+  Const        r10, 0
+  Move         r32, r10
+L14:
+  // while k < n {
+  LessInt      r33, r32, r1
+  JumpIfFalse  r33, L7
+  // var i = 0
+  Const        r10, 0
+  Move         r4, r10
+  SetGlobal    4,4,0,0
+L13:
+  // while i < n {
+  LessInt      r34, r4, r1
+  JumpIfFalse  r34, L8
+  // var j = 0
+  Const        r10, 0
+  Move         r35, r10
+L12:
+  // while j < n {
+  LessInt      r36, r35, r1
+  JumpIfFalse  r36, L9
+  // if dist[i][k] < INF && dist[k][j] < INF {
+  Index        r37, r8, r4
+  Index        r38, r37, r32
+  Less         r39, r38, r0
+  Index        r40, r8, r32
+  Index        r41, r40, r35
+  Less         r42, r41, r0
+  Move         r43, r39
+  JumpIfFalse  r43, L10
+  Move         r43, r42
+L10:
+  JumpIfFalse  r43, L11
+  // let alt = dist[i][k] + dist[k][j]
+  Index        r44, r8, r4
+  Index        r45, r44, r32
+  Index        r46, r8, r32
+  Index        r47, r46, r35
+  Add          r48, r45, r47
+  Move         r49, r48
+  // if alt < dist[i][j] {
+  Index        r50, r8, r4
+  Index        r51, r50, r35
+  Less         r52, r49, r51
+  JumpIfFalse  r52, L11
+  // dist[i][j] = alt
+  Index        r53, r8, r4
+  SetIndex     r53, r35, r49
+  // next[i][j] = next[i][k]
+  Index        r54, r9, r4
+  Index        r55, r9, r4
+  Index        r56, r55, r32
+  SetIndex     r54, r35, r56
+L11:
+  // j = j + 1
+  Const        r25, 1
+  AddInt       r57, r35, r25
+  Move         r35, r57
+  // while j < n {
+  Jump         L12
+L9:
+  // i = i + 1
+  Const        r25, 1
+  AddInt       r58, r4, r25
+  Move         r4, r58
+  SetGlobal    4,4,0,0
+  // while i < n {
+  Jump         L13
+L8:
+  // k = k + 1
+  Const        r25, 1
+  AddInt       r59, r32, r25
+  Move         r32, r59
+  // while k < n {
+  Jump         L14
+L7:
+  // return FWResult{ dist: dist, next: next }
+  Const        r60, "__name"
+  Const        r61, "FWResult"
+  Const        r62, "dist"
+  Move         r63, r8
+  Const        r64, "next"
+  Move         r65, r9
+  MakeMap      r66, 3, r60
+  Return       r66
+
+  // fun path(u: int, v: int, next: list<list<int>>): list<int> {
+func path (regs=21)
+  // if next[u][v] < 0 { return [] }
+  Index        r8, r7, r5
+  Index        r9, r8, r6
+  Const        r10, 0
+  Less         r11, r9, r10
+  JumpIfFalse  r11, L0
+  Const        r12, []
+  Return       r12
+L0:
+  // var p: list<int> = [u]
+  Move         r13, r5
+  MakeList     r14, 1, r13
+  Move         r15, r14
+  // var x = u
+  Move         r16, r5
+L2:
+  // while x != v {
+  NotEqual     r17, r16, r6
+  JumpIfFalse  r17, L1
+  // x = next[x][v]
+  Index        r18, r7, r16
+  Index        r19, r18, r6
+  Move         r16, r19
+  // p = append(p, x)
+  Append       r20, r15, r16
+  Move         r15, r20
+  // while x != v {
+  Jump         L2
+L1:
+  // return p
+  Return       r15
+
+  // fun pathStr(p: list<int>): string {
+func pathStr (regs=22)
+  // var s = ""
+  Const        r6, ""
+  Move         r7, r6
+  // var i = 0
+  Const        r8, 0
+  Move         r4, r8
+  SetGlobal    4,4,0,0
+L2:
+  // while i < len(p) {
+  Len          r9, r5
+  LessInt      r10, r4, r9
+  JumpIfFalse  r10, L0
+  // s = s + str(p[i]+1)
+  Index        r11, r5, r4
+  Const        r12, 1
+  Add          r13, r11, r12
+  Str          r14, r13
+  Add          r15, r7, r14
+  Move         r7, r15
+  // if i < len(p)-1 { s = s + " -> " }
+  Len          r16, r5
+  Const        r12, 1
+  SubInt       r17, r16, r12
+  LessInt      r18, r4, r17
+  JumpIfFalse  r18, L1
+  Const        r19, " -> "
+  Add          r20, r7, r19
+  Move         r7, r20
+L1:
+  // i = i + 1
+  Const        r12, 1
+  AddInt       r21, r4, r12
+  Move         r4, r21
+  SetGlobal    4,4,0,0
+  // while i < len(p) {
+  Jump         L2
+L0:
+  // return s
+  Return       r7

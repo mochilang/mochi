@@ -1,4 +1,4 @@
-func main (regs=63)
+func __main (regs=63)
   // let PI = 3.141592653589793
   Const        r6, 3.141592653589793
   Move         r0, r6

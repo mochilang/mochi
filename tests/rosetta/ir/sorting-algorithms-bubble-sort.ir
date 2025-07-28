@@ -1,4 +1,4 @@
-func main (regs=10)
+func __main (regs=10)
   // var list = [31, 41, 59, 26, 53, 58, 97, 93, 23, 84]
   Const        r1, [31, 41, 59, 26, 53, 58, 97, 93, 23, 84]
   Move         r0, r1

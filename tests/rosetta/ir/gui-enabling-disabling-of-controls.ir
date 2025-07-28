@@ -1,0 +1,114 @@
+func __main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun state(v: int): State {
+func state (regs=15)
+  // return State{ entry: v == 0, inc: v < 10, dec: v > 0 }
+  Const        r1, 0
+  Equal        r2, r0, r1
+  Const        r3, 10
+  Less         r4, r0, r3
+  Const        r1, 0
+  Less         r5, r1, r0
+  Const        r6, "__name"
+  Const        r7, "State"
+  Const        r8, "entry"
+  Move         r9, r2
+  Const        r10, "inc"
+  Move         r11, r4
+  Const        r12, "dec"
+  Move         r13, r5
+  MakeMap      r14, 4, r6
+  Return       r14
+
+  // fun printState(v: int) {
+func printState (regs=25)
+  // let s = state(v)
+  Move         r1, r0
+  Call         r2, state, r1
+  Move         r3, r2
+  // print("value=" + str(v) + " entry=" + str(s.entry) + " inc=" + str(s.inc) + " dec=" + str(s.dec))
+  Const        r4, "value="
+  Str          r5, r0
+  Add          r6, r4, r5
+  Const        r7, " entry="
+  Add          r8, r6, r7
+  Const        r9, "entry"
+  Index        r10, r3, r9
+  Str          r11, r10
+  Add          r12, r8, r11
+  Const        r13, " inc="
+  Add          r14, r12, r13
+  Const        r15, "inc"
+  Index        r16, r3, r15
+  Str          r17, r16
+  Add          r18, r14, r17
+  Const        r19, " dec="
+  Add          r20, r18, r19
+  Const        r21, "dec"
+  Index        r22, r3, r21
+  Str          r23, r22
+  Add          r24, r20, r23
+  Print        r24
+  Return       r0
+
+  // fun main() {
+func main (regs=24)
+  // var v = 0
+  Const        r0, 0
+  Move         r1, r0
+  // printState(v)
+  Move         r2, r1
+  Call         r3, printState, r2
+L2:
+  // while true {
+  Const        r4, true
+  JumpIfFalse  r4, L0
+  // let s = state(v)
+  Move         r5, r1
+  Call         r6, state, r5
+  Move         r7, r6
+  // if !s.inc { break }
+  Const        r8, "inc"
+  Index        r9, r7, r8
+  Not          r10, r9
+  JumpIfFalse  r10, L1
+  Jump         L0
+L1:
+  // v = v + 1
+  Const        r11, 1
+  AddInt       r12, r1, r11
+  Move         r1, r12
+  // printState(v)
+  Move         r13, r1
+  Call         r14, printState, r13
+  // while true {
+  Jump         L2
+L0:
+  // while true {
+  Const        r4, true
+  JumpIfFalse  r4, L3
+  // let s = state(v)
+  Move         r15, r1
+  Call         r16, state, r15
+  Move         r17, r16
+  // if !s.dec { break }
+  Const        r18, "dec"
+  Index        r19, r17, r18
+  Not          r20, r19
+  JumpIfFalse  r20, L4
+  Jump         L3
+L4:
+  // v = v - 1
+  Const        r11, 1
+  SubInt       r21, r1, r11
+  Move         r1, r21
+  // printState(v)
+  Move         r22, r1
+  Call         r23, printState, r22
+  // while true {
+  Jump         L0
+L3:
+  Return       r0
