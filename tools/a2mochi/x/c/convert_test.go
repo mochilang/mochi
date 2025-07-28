@@ -47,20 +47,32 @@ func TestConvert_Golden(t *testing.T) {
 		t.Fatalf("no files: %s", pattern)
 	}
 
-	allowed := map[string]bool{
-		"append_builtin": true,
-		"avg_builtin":    true,
-		"basic_compare":  true,
-		// break_continue uses array literals not yet supported
-		"for_loop":        true,
-		"fun_call":        true,
-		"fun_expr_in_let": true,
-		"fun_three_args":  true,
-		"if_else":         true,
-		"len_builtin":     true,
-		"string_concat":   true,
-		"unary_neg":       true,
-		"while_loop":      true,
+	skip := map[string]bool{
+		"bench_block":              true,
+		"break_continue":           true,
+		"closure":                  true,
+		"cross_join":               true,
+		"cross_join_filter":        true,
+		"cross_join_triple":        true,
+		"dataset_sort_take_limit":  true,
+		"dataset_where_filter":     true,
+		"for_list_collection":      true,
+		"for_map_collection":       true,
+		"group_by":                 true,
+		"group_by_join":            true,
+		"group_by_left_join":       true,
+		"group_by_multi_join":      true,
+		"group_by_multi_join_sort": true,
+		"if_then_else":             true,
+		"if_then_else_nested":      true,
+		"in_operator_extended":     true,
+		"inner_join":               true,
+		"join_multi":               true,
+		"left_join":                true,
+		"left_join_multi":          true,
+		"match_expr":               true,
+		"match_full":               true,
+		"membership":               true,
 	}
 
 	outDir := filepath.Join(root, "tests/a2mochi/x/c")
@@ -68,7 +80,7 @@ func TestConvert_Golden(t *testing.T) {
 
 	for _, srcPath := range files {
 		name := strings.TrimSuffix(filepath.Base(srcPath), ".c")
-		if !allowed[name] {
+		if skip[name] {
 			continue
 		}
 		t.Run(name, func(t *testing.T) {

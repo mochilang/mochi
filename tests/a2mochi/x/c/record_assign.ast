@@ -1,0 +1,15 @@
+(program
+  (fun inc
+    (param c (type Counter))
+    (type int)
+    (assign c
+      (binary +
+        (selector n (selector c))
+        (int 1)
+      )
+    )
+  )
+  (call print
+    (selector n (selector c))
+  )
+)

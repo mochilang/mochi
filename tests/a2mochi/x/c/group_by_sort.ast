@@ -1,0 +1,3 @@
+(program
+  (call print (string "{\"cat\": \"b\", \"total\": 7} {\"cat\": \"a\", \"total\": 4}"))
+)

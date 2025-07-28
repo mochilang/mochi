@@ -1,0 +1,4 @@
+(program
+  (assign x (int 2))
+  (call print (selector x))
+)

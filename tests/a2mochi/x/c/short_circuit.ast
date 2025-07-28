@@ -1,0 +1,11 @@
+(program
+  (fun boom
+    (param a (type int))
+    (param b (type int))
+    (type int)
+    (call print (string boom))
+    (return (int 1))
+  )
+  (call print (int 0))
+  (call print (int 1))
+)

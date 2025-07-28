@@ -1,0 +1,5 @@
+(program
+  (call print (int 5))
+  (call print (float 3.14))
+  (call print (int 42))
+)

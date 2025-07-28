@@ -1,0 +1,9 @@
+(program
+  (assign
+    (index (selector nums) (int 1))
+    (int 3)
+  )
+  (call print
+    (index (selector nums) (int 1))
+  )
+)

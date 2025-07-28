@@ -1,0 +1,7 @@
+(program
+  (call print
+    (selector name
+      (selector author (selector book))
+    )
+  )
+)

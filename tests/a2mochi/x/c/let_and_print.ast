@@ -1,0 +1,5 @@
+(program
+  (call print
+    (binary + (selector a) (selector b))
+  )
+)
