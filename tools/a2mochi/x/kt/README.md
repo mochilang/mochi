@@ -1,6 +1,6 @@
 # a2mochi Kotlin Converter
 
-Completed programs: 21/102
+Completed programs: 26/102
 Date: 2025-07-28
 
 This directory holds golden outputs for the Kotlin to Mochi converter.
@@ -28,3 +28,8 @@ Implemented examples:
 - string_compare
 - var_assignment
 - sum_builtin
+- list_assign
+- map_assign
+- slice
+- str_builtin
+- string_prefix_slice
