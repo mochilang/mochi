@@ -1,5 +1,22 @@
 # 📦 CHANGELOG.md
 
+## [0.10.43] – 2025-07-28T11:11:30+07:00
+
+### Added
+
+* Environment variable helpers and OS FFI across multiple transpilers
+* BigRat math, union operations and typed maps
+* Dynamic function calls, typed lambdas and improved indexing
+* Hundreds of new Rosetta programs with updated benchmarks
+
+### Changed
+
+* Progress indexes and examples refreshed across languages
+* Map handling and type inference enhanced in various backends
+
+### Fixed
+
+* Numerous bugs with map iteration, globals and casting
 ## [0.10.42] – 2025-07-27T09:00:51+00:00
 
 ### Added
