@@ -59,7 +59,6 @@ func runMochi(src string) ([]byte, error) {
 }
 
 func TestConvert_Golden(t *testing.T) {
-	t.Skip("fs converter not implemented")
 	root := findRepoRoot(t)
 	pattern := filepath.Join(root, "tests", "transpiler", "x", "fs", "*.fs")
 	files, err := filepath.Glob(pattern)
