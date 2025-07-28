@@ -1,0 +1,48 @@
+exit status 1
+/tmp/TestSwiftTranspiler_Rosetta_Golden3963543237/001/main.swift:67:74: error: cannot convert value of type 'Any' to expected argument type 'Int'
+65 |         let digits = ["0": 0, "1": 1, "2": 2, "3": 3, "4": 4, "5": 5, "6": 6, "7": 7, "8": 8, "9": 9]
+66 |         while (i < Int(((str).count))) {
+67 |             n = Int(((n * 10) + (digits[String(Array(str)[i..<(i + 1)])] as! Any)))
+   |                                                                          `- error: cannot convert value of type 'Any' to expected argument type 'Int'
+68 |             i = Int((i + 1))
+69 |         }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3963543237/001/main.swift:67:74: warning: forced cast from 'Int?' to 'Any' only unwraps optionals; did you mean to use '!'?
+65 |         let digits = ["0": 0, "1": 1, "2": 2, "3": 3, "4": 4, "5": 5, "6": 6, "7": 7, "8": 8, "9": 9]
+66 |         while (i < Int(((str).count))) {
+67 |             n = Int(((n * 10) + (digits[String(Array(str)[i..<(i + 1)])] as! Any)))
+   |                                                                          `- warning: forced cast from 'Int?' to 'Any' only unwraps optionals; did you mean to use '!'?
+68 |             i = Int((i + 1))
+69 |         }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3963543237/001/main.swift:76:33: warning: forced cast of '[String]' to same type has no effect
+74 |     }
+75 |     var rows: [[String]] = ([(["A", "B", "C"] as! [String]), (["1", "2", "3"] as! [String]), (["4", "5", "6"] as! [String]), (["7", "8", "9"] as! [String])] as! [[String]])
+76 |     rows[0] = (_append((rows[0] as! [String]), "SUM") as! [String])
+   |                                 `- warning: forced cast of '[String]' to same type has no effect
+77 |     var i: Int = 1
+78 |     while (i < Int(((rows).count))) {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3963543237/001/main.swift:80:27: warning: forced cast of '[String]' to same type has no effect
+78 |     while (i < Int(((rows).count))) {
+79 |         var sum: Int = 0
+80 |         for s in (rows[i] as! [String]) {
+   |                           `- warning: forced cast of '[String]' to same type has no effect
+81 |             sum = Int((sum + Int(Int(String(describing: String(describing: s)))!)))
+82 |         }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3963543237/001/main.swift:83:37: warning: forced cast of '[String]' to same type has no effect
+81 |             sum = Int((sum + Int(Int(String(describing: String(describing: s)))!)))
+82 |         }
+83 |         rows[i] = (_append((rows[i] as! [String]), _p(sum)) as! [String])
+   |                                     `- warning: forced cast of '[String]' to same type has no effect
+84 |         i = Int((i + 1))
+85 |     }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3963543237/001/main.swift:87:45: warning: forced cast of '[String]' to same type has no effect
+85 |     }
+86 |     for r in rows {
+87 |         print(_p(String(describing: join((r as! [String]), ","))))
+   |                                             `- warning: forced cast of '[String]' to same type has no effect
+88 |     }
+89 |     let _benchEnd = _now()
