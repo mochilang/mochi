@@ -140,6 +140,8 @@ var functionPtrRE = regexp.MustCompile(`^.*\(\*\s*([A-Za-z_][A-Za-z0-9_]*)\s*\)\
 var funcPtrTypeAnonRE = regexp.MustCompile(`^(.+)\(\*\)\s*\((.*)\)$`)
 var funcPtrTypeNamedRE = regexp.MustCompile(`^(.+)\(\*\s*[A-Za-z_][A-Za-z0-9_]*\s*\)\s*\((.*)\)$`)
 var forRangeRE = regexp.MustCompile(`^for\s*\((?:[A-Za-z_][A-Za-z0-9_]*\s+)?([A-Za-z_][A-Za-z0-9_]*)\s*=\s*([^;]+);\s*([A-Za-z_][A-Za-z0-9_]*)\s*(<|<=)\s*([^;]+);\s*([A-Za-z_][A-Za-z0-9_]*)\+\+\s*\)$`)
+var varDeclAnyRE = regexp.MustCompile(`^[A-Za-z_][A-Za-z0-9_\s\*]*\s+[A-Za-z_][A-Za-z0-9_]*\s*(?:=.*)?$`)
+var structInitRE = regexp.MustCompile(`^\(\s*([A-Za-z_][A-Za-z0-9_]*)\s*\)\s*\{([^}]*)\}$`)
 
 func stripCasts(s string) string { return castRE.ReplaceAllString(s, "") }
 
@@ -510,6 +512,10 @@ func parseStatements(body string) []string {
 				out = append(out, strings.Repeat("  ", indent)+"var "+name+" = "+val)
 			default:
 				tl := strings.TrimSpace(l)
+				if varDeclAnyRE.MatchString(tl) {
+					out = append(out, strings.Repeat("  ", indent)+convertGenericVarDecl(tl))
+					continue
+				}
 				if strings.Contains(tl, "[]") && strings.Contains(tl, "=") && strings.Contains(tl, "{") {
 					out = append(out, strings.Repeat("  ", indent)+convertVarDecl(tl))
 				} else {
@@ -552,6 +558,23 @@ func convertVarDecl(s string) string {
 	return "var " + s
 }
 
+func convertGenericVarDecl(s string) string {
+	s = strings.TrimSuffix(s, ";")
+	if eq := strings.Index(s, "="); eq != -1 {
+		namePart := strings.TrimSpace(s[:eq])
+		rhs := convertExpr(strings.TrimSpace(s[eq+1:]))
+		fields := strings.Fields(namePart)
+		name := fields[len(fields)-1]
+		return "var " + name + " = " + rhs
+	}
+	fields := strings.Fields(s)
+	if len(fields) == 0 {
+		return s
+	}
+	name := fields[len(fields)-1]
+	return "var " + name
+}
+
 func convertExpr(s string) string {
 	s = strings.TrimSpace(s)
 	for strings.HasPrefix(s, "(") && strings.HasSuffix(s, ")") {
@@ -560,6 +583,26 @@ func convertExpr(s string) string {
 		} else {
 			break
 		}
+	}
+	if m := structInitRE.FindStringSubmatch(s); m != nil {
+		typ := m[1]
+		body := strings.TrimSpace(m[2])
+		fields := []string{}
+		for _, part := range strings.Split(body, ",") {
+			p := strings.TrimSpace(part)
+			if p == "" {
+				continue
+			}
+			if strings.HasPrefix(p, ".") {
+				kv := strings.SplitN(strings.TrimPrefix(p, "."), "=", 2)
+				if len(kv) == 2 {
+					key := strings.TrimSpace(kv[0])
+					val := convertExpr(strings.TrimSpace(kv[1]))
+					fields = append(fields, fmt.Sprintf("%s: %s", key, val))
+				}
+			}
+		}
+		return fmt.Sprintf("%s{%s}", typ, strings.Join(fields, ", "))
 	}
 	q := indexTopLevel(s, '?')
 	if q != -1 {
