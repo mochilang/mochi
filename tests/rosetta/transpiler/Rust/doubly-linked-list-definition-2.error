@@ -1,0 +1,926 @@
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/doubly-linked-list-definition-2.rs:85:2
+   |
+85 | };
+   |  ^ help: remove this semicolon
+   |
+   = note: `#[warn(redundant_semicolons)]` on by default
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/doubly-linked-list-definition-2.rs:94:2
+   |
+94 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/doubly-linked-list-definition-2.rs:112:2
+    |
+112 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/doubly-linked-list-definition-2.rs:130:2
+    |
+130 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/doubly-linked-list-definition-2.rs:152:2
+    |
+152 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/doubly-linked-list-definition-2.rs:174:2
+    |
+174 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/doubly-linked-list-definition-2.rs:188:2
+    |
+188 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/doubly-linked-list-definition-2.rs:87:23
+   |
+87 |     let mut id: i64 = (l["nextID".as_str()] as i64);
+   |                       ^                           ^
+   |
+   = note: `#[warn(unused_parens)]` on by default
+help: remove these parentheses
+   |
+87 -     let mut id: i64 = (l["nextID".as_str()] as i64);
+87 +     let mut id: i64 = l["nextID".as_str()] as i64;
+   |
+
+warning: unnecessary parentheses around method argument
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/doubly-linked-list-definition-2.rs:88:32
+   |
+88 |     l.insert("nextID".clone(), (id + 1));
+   |                                ^      ^
+   |
+help: remove these parentheses
+   |
+88 -     l.insert("nextID".clone(), (id + 1));
+88 +     l.insert("nextID".clone(), id + 1);
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/doubly-linked-list-definition-2.rs:98:8
+   |
+98 |     if ((l["head".as_str()] as i64) != 0) {
+   |        ^                                ^
+   |
+help: remove these parentheses
+   |
+98 -     if ((l["head".as_str()] as i64) != 0) {
+98 +     if (l["head".as_str()] as i64) != 0 {
+   |
+
+warning: unnecessary parentheses around index expression
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/doubly-linked-list-definition-2.rs:100:32
+    |
+100 |         let mut h: i64 = nodes[(l["head".as_str()] as i64)];
+    |                                ^                         ^
+    |
+help: remove these parentheses
+    |
+100 -         let mut h: i64 = nodes[(l["head".as_str()] as i64)];
+100 +         let mut h: i64 = nodes[l["head".as_str()] as i64];
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/doubly-linked-list-definition-2.rs:116:8
+    |
+116 |     if ((l["tail".as_str()] as i64) != 0) {
+    |        ^                                ^
+    |
+help: remove these parentheses
+    |
+116 -     if ((l["tail".as_str()] as i64) != 0) {
+116 +     if (l["tail".as_str()] as i64) != 0 {
+    |
+
+warning: unnecessary parentheses around index expression
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/doubly-linked-list-definition-2.rs:118:32
+    |
+118 |         let mut t: i64 = nodes[(l["tail".as_str()] as i64)];
+    |                                ^                         ^
+    |
+help: remove these parentheses
+    |
+118 -         let mut t: i64 = nodes[(l["tail".as_str()] as i64)];
+118 +         let mut t: i64 = nodes[l["tail".as_str()] as i64];
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/doubly-linked-list-definition-2.rs:132:8
+    |
+132 |     if (refID == 0) {
+    |        ^          ^
+    |
+help: remove these parentheses
+    |
+132 -     if (refID == 0) {
+132 +     if refID == 0 {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/doubly-linked-list-definition-2.rs:140:8
+    |
+140 |     if (r#ref["prev".as_str()] != 0) {
+    |        ^                           ^
+    |
+help: remove these parentheses
+    |
+140 -     if (r#ref["prev".as_str()] != 0) {
+140 +     if r#ref["prev".as_str()] != 0 {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/doubly-linked-list-definition-2.rs:154:8
+    |
+154 |     if (refID == 0) {
+    |        ^          ^
+    |
+help: remove these parentheses
+    |
+154 -     if (refID == 0) {
+154 +     if refID == 0 {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/doubly-linked-list-definition-2.rs:162:8
+    |
+162 |     if (r#ref["next".as_str()] != 0) {
+    |        ^                           ^
+    |
+help: remove these parentheses
+    |
+162 -     if (r#ref["next".as_str()] != 0) {
+162 +     if r#ref["next".as_str()] != 0 {
+    |
+
+warning: unnecessary parentheses around function argument
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/doubly-linked-list-definition-2.rs:177:44
+    |
+177 |     let mut e4: Map1 = pushBack(l.clone(), (4 as f64));
+    |                                            ^        ^
+    |
+help: remove these parentheses
+    |
+177 -     let mut e4: Map1 = pushBack(l.clone(), (4 as f64));
+177 +     let mut e4: Map1 = pushBack(l.clone(), 4 as f64);
+    |
+
+warning: unnecessary parentheses around function argument
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/doubly-linked-list-definition-2.rs:178:45
+    |
+178 |     let mut e1: Map1 = pushFront(l.clone(), (1 as f64));
+    |                                             ^        ^
+    |
+help: remove these parentheses
+    |
+178 -     let mut e1: Map1 = pushFront(l.clone(), (1 as f64));
+178 +     let mut e1: Map1 = pushFront(l.clone(), 1 as f64);
+    |
+
+warning: unnecessary parentheses around function argument
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/doubly-linked-list-definition-2.rs:179:36
+    |
+179 |     insertBefore(l.clone(), e4.id, (3 as f64));
+    |                                    ^        ^
+    |
+help: remove these parentheses
+    |
+179 -     insertBefore(l.clone(), e4.id, (3 as f64));
+179 +     insertBefore(l.clone(), e4.id, 3 as f64);
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/doubly-linked-list-definition-2.rs:183:11
+    |
+183 |     while (id != 0) {
+    |           ^       ^
+    |
+help: remove these parentheses
+    |
+183 -     while (id != 0) {
+183 +     while id != 0 {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/doubly-linked-list-definition-2.rs:192:28
+    |
+192 |     let duration_us: i64 = ((_end - _start) / 1000);
+    |                            ^                      ^
+    |
+help: remove these parentheses
+    |
+192 -     let duration_us: i64 = ((_end - _start) / 1000);
+192 +     let duration_us: i64 = (_end - _start) / 1000;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/doubly-linked-list-definition-2.rs:193:29
+    |
+193 |     let memory_bytes: i64 = (_end_mem - _start_mem);
+    |                             ^                     ^
+    |
+help: remove these parentheses
+    |
+193 -     let memory_bytes: i64 = (_end_mem - _start_mem);
+193 +     let memory_bytes: i64 = _end_mem - _start_mem;
+    |
+
+error[E0658]: use of unstable library feature `str_as_str`
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/doubly-linked-list-definition-2.rs:87:35
+   |
+87 |     let mut id: i64 = (l["nextID".as_str()] as i64);
+   |                                   ^^^^^^
+   |
+   = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0308]: arguments to this method are incorrect
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/doubly-linked-list-definition-2.rs:88:7
+   |
+88 |     l.insert("nextID".clone(), (id + 1));
+   |       ^^^^^^ ----------------  -------- expected `f64`, found `i64`
+   |              |
+   |              expected `String`, found `&str`
+   |
+help: the return type of this call is `i64` due to the type of the argument passed
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/doubly-linked-list-definition-2.rs:88:5
+   |
+88 |     l.insert("nextID".clone(), (id + 1));
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^--------^
+   |                                |
+   |                                this argument influences the return type of `insert`
+note: method defined here
+  --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/std/src/collections/hash/map.rs:1201:12
+help: try using a conversion method
+   |
+88 -     l.insert("nextID".clone(), (id + 1));
+88 +     l.insert("nextID".to_string(), (id + 1));
+   |
+help: you can convert an `i64` to an `f64`, producing the floating point representation of the integer, rounded if necessary
+   |
+88 |     l.insert("nextID".clone(), ((id + 1)) as f64);
+   |                                +        ++++++++
+
+error[E0658]: use of unstable library feature `str_as_str`
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/doubly-linked-list-definition-2.rs:89:36
+   |
+89 |     let mut nodes: f64 = l["nodes".as_str()];
+   |                                    ^^^^^^
+   |
+   = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0608]: cannot index into a value of type `f64`
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/doubly-linked-list-definition-2.rs:91:10
+   |
+91 |     nodes[id] = n;
+   |          ^^^^
+
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/doubly-linked-list-definition-2.rs:92:14
+   |
+92 |     l.insert("nodes".clone(), nodes);
+   |       ------ ^^^^^^^^-----^^
+   |       |      |       |
+   |       |      |       help: try using a conversion method: `to_string`
+   |       |      expected `String`, found `&str`
+   |       arguments to this method are incorrect
+   |
+note: method defined here
+  --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/std/src/collections/hash/map.rs:1201:12
+
+error[E0608]: cannot index into a value of type `Map1`
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/doubly-linked-list-definition-2.rs:97:6
+   |
+97 |     n["next"] = l["head".as_str()];
+   |      ^^^^^^^^
+
+error[E0658]: use of unstable library feature `str_as_str`
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/doubly-linked-list-definition-2.rs:97:26
+   |
+97 |     n["next"] = l["head".as_str()];
+   |                          ^^^^^^
+   |
+   = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0658]: use of unstable library feature `str_as_str`
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/doubly-linked-list-definition-2.rs:98:19
+   |
+98 |     if ((l["head".as_str()] as i64) != 0) {
+   |                   ^^^^^^
+   |
+   = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0658]: use of unstable library feature `str_as_str`
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/doubly-linked-list-definition-2.rs:99:40
+   |
+99 |         let mut nodes: f64 = l["nodes".as_str()];
+   |                                        ^^^^^^
+   |
+   = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0658]: use of unstable library feature `str_as_str`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/doubly-linked-list-definition-2.rs:100:42
+    |
+100 |         let mut h: i64 = nodes[(l["head".as_str()] as i64)];
+    |                                          ^^^^^^
+    |
+    = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0608]: cannot index into a value of type `f64`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/doubly-linked-list-definition-2.rs:100:31
+    |
+100 |         let mut h: i64 = nodes[(l["head".as_str()] as i64)];
+    |                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error[E0658]: use of unstable library feature `str_as_str`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/doubly-linked-list-definition-2.rs:102:22
+    |
+102 |         nodes[h["id".as_str()]] = h;
+    |                      ^^^^^^
+    |
+    = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/doubly-linked-list-definition-2.rs:103:18
+    |
+103 |         l.insert("nodes".clone(), nodes);
+    |           ------ ^^^^^^^^-----^^
+    |           |      |       |
+    |           |      |       help: try using a conversion method: `to_string`
+    |           |      expected `String`, found `&str`
+    |           arguments to this method are incorrect
+    |
+note: method defined here
+   --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/std/src/collections/hash/map.rs:1201:12
+
+error[E0308]: arguments to this method are incorrect
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/doubly-linked-list-definition-2.rs:105:11
+    |
+105 |         l.insert("tail".clone(), n.id);
+    |           ^^^^^^ --------------  ---- expected `f64`, found `i64`
+    |                  |
+    |                  expected `String`, found `&str`
+    |
+help: the return type of this call is `i64` due to the type of the argument passed
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/doubly-linked-list-definition-2.rs:105:9
+    |
+105 |         l.insert("tail".clone(), n.id);
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^----^
+    |                                  |
+    |                                  this argument influences the return type of `insert`
+note: method defined here
+   --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/std/src/collections/hash/map.rs:1201:12
+help: try using a conversion method
+    |
+105 -         l.insert("tail".clone(), n.id);
+105 +         l.insert("tail".to_string(), n.id);
+    |
+help: you can convert an `i64` to an `f64`, producing the floating point representation of the integer, rounded if necessary
+    |
+105 |         l.insert("tail".clone(), n.id as f64);
+    |                                       ++++++
+
+error[E0308]: arguments to this method are incorrect
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/doubly-linked-list-definition-2.rs:107:7
+    |
+107 |     l.insert("head".clone(), n.id);
+    |       ^^^^^^ --------------  ---- expected `f64`, found `i64`
+    |              |
+    |              expected `String`, found `&str`
+    |
+help: the return type of this call is `i64` due to the type of the argument passed
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/doubly-linked-list-definition-2.rs:107:5
+    |
+107 |     l.insert("head".clone(), n.id);
+    |     ^^^^^^^^^^^^^^^^^^^^^^^^^----^
+    |                              |
+    |                              this argument influences the return type of `insert`
+note: method defined here
+   --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/std/src/collections/hash/map.rs:1201:12
+help: try using a conversion method
+    |
+107 -     l.insert("head".clone(), n.id);
+107 +     l.insert("head".to_string(), n.id);
+    |
+help: you can convert an `i64` to an `f64`, producing the floating point representation of the integer, rounded if necessary
+    |
+107 |     l.insert("head".clone(), n.id as f64);
+    |                                   ++++++
+
+error[E0658]: use of unstable library feature `str_as_str`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/doubly-linked-list-definition-2.rs:108:37
+    |
+108 |     let mut nodes2: f64 = l["nodes".as_str()];
+    |                                     ^^^^^^
+    |
+    = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0608]: cannot index into a value of type `f64`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/doubly-linked-list-definition-2.rs:109:11
+    |
+109 |     nodes2[n.id] = n;
+    |           ^^^^^^
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/doubly-linked-list-definition-2.rs:110:14
+    |
+110 |     l.insert("nodes".clone(), nodes2);
+    |       ------ ^^^^^^^^-----^^
+    |       |      |       |
+    |       |      |       help: try using a conversion method: `to_string`
+    |       |      expected `String`, found `&str`
+    |       arguments to this method are incorrect
+    |
+note: method defined here
+   --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/std/src/collections/hash/map.rs:1201:12
+
+error[E0608]: cannot index into a value of type `Map1`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/doubly-linked-list-definition-2.rs:115:6
+    |
+115 |     n["prev"] = l["tail".as_str()];
+    |      ^^^^^^^^
+
+error[E0658]: use of unstable library feature `str_as_str`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/doubly-linked-list-definition-2.rs:115:26
+    |
+115 |     n["prev"] = l["tail".as_str()];
+    |                          ^^^^^^
+    |
+    = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0658]: use of unstable library feature `str_as_str`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/doubly-linked-list-definition-2.rs:116:19
+    |
+116 |     if ((l["tail".as_str()] as i64) != 0) {
+    |                   ^^^^^^
+    |
+    = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0658]: use of unstable library feature `str_as_str`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/doubly-linked-list-definition-2.rs:117:40
+    |
+117 |         let mut nodes: f64 = l["nodes".as_str()];
+    |                                        ^^^^^^
+    |
+    = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0658]: use of unstable library feature `str_as_str`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/doubly-linked-list-definition-2.rs:118:42
+    |
+118 |         let mut t: i64 = nodes[(l["tail".as_str()] as i64)];
+    |                                          ^^^^^^
+    |
+    = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0608]: cannot index into a value of type `f64`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/doubly-linked-list-definition-2.rs:118:31
+    |
+118 |         let mut t: i64 = nodes[(l["tail".as_str()] as i64)];
+    |                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error[E0658]: use of unstable library feature `str_as_str`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/doubly-linked-list-definition-2.rs:120:22
+    |
+120 |         nodes[t["id".as_str()]] = t;
+    |                      ^^^^^^
+    |
+    = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/doubly-linked-list-definition-2.rs:121:18
+    |
+121 |         l.insert("nodes".clone(), nodes);
+    |           ------ ^^^^^^^^-----^^
+    |           |      |       |
+    |           |      |       help: try using a conversion method: `to_string`
+    |           |      expected `String`, found `&str`
+    |           arguments to this method are incorrect
+    |
+note: method defined here
+   --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/std/src/collections/hash/map.rs:1201:12
+
+error[E0308]: arguments to this method are incorrect
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/doubly-linked-list-definition-2.rs:123:11
+    |
+123 |         l.insert("head".clone(), n.id);
+    |           ^^^^^^ --------------  ---- expected `f64`, found `i64`
+    |                  |
+    |                  expected `String`, found `&str`
+    |
+help: the return type of this call is `i64` due to the type of the argument passed
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/doubly-linked-list-definition-2.rs:123:9
+    |
+123 |         l.insert("head".clone(), n.id);
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^----^
+    |                                  |
+    |                                  this argument influences the return type of `insert`
+note: method defined here
+   --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/std/src/collections/hash/map.rs:1201:12
+help: try using a conversion method
+    |
+123 -         l.insert("head".clone(), n.id);
+123 +         l.insert("head".to_string(), n.id);
+    |
+help: you can convert an `i64` to an `f64`, producing the floating point representation of the integer, rounded if necessary
+    |
+123 |         l.insert("head".clone(), n.id as f64);
+    |                                       ++++++
+
+error[E0308]: arguments to this method are incorrect
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/doubly-linked-list-definition-2.rs:125:7
+    |
+125 |     l.insert("tail".clone(), n.id);
+    |       ^^^^^^ --------------  ---- expected `f64`, found `i64`
+    |              |
+    |              expected `String`, found `&str`
+    |
+help: the return type of this call is `i64` due to the type of the argument passed
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/doubly-linked-list-definition-2.rs:125:5
+    |
+125 |     l.insert("tail".clone(), n.id);
+    |     ^^^^^^^^^^^^^^^^^^^^^^^^^----^
+    |                              |
+    |                              this argument influences the return type of `insert`
+note: method defined here
+   --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/std/src/collections/hash/map.rs:1201:12
+help: try using a conversion method
+    |
+125 -     l.insert("tail".clone(), n.id);
+125 +     l.insert("tail".to_string(), n.id);
+    |
+help: you can convert an `i64` to an `f64`, producing the floating point representation of the integer, rounded if necessary
+    |
+125 |     l.insert("tail".clone(), n.id as f64);
+    |                                   ++++++
+
+error[E0658]: use of unstable library feature `str_as_str`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/doubly-linked-list-definition-2.rs:126:37
+    |
+126 |     let mut nodes2: f64 = l["nodes".as_str()];
+    |                                     ^^^^^^
+    |
+    = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0608]: cannot index into a value of type `f64`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/doubly-linked-list-definition-2.rs:127:11
+    |
+127 |     nodes2[n.id] = n;
+    |           ^^^^^^
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/doubly-linked-list-definition-2.rs:128:14
+    |
+128 |     l.insert("nodes".clone(), nodes2);
+    |       ------ ^^^^^^^^-----^^
+    |       |      |       |
+    |       |      |       help: try using a conversion method: `to_string`
+    |       |      expected `String`, found `&str`
+    |       arguments to this method are incorrect
+    |
+note: method defined here
+   --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/std/src/collections/hash/map.rs:1201:12
+
+error[E0658]: use of unstable library feature `str_as_str`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/doubly-linked-list-definition-2.rs:135:36
+    |
+135 |     let mut nodes: f64 = l["nodes".as_str()];
+    |                                    ^^^^^^
+    |
+    = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0608]: cannot index into a value of type `f64`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/doubly-linked-list-definition-2.rs:136:31
+    |
+136 |     let mut r#ref: i64 = nodes[refID];
+    |                               ^^^^^^^
+
+error[E0608]: cannot index into a value of type `Map1`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/doubly-linked-list-definition-2.rs:138:6
+    |
+138 |     n["prev"] = r#ref["prev".as_str()];
+    |      ^^^^^^^^
+
+error[E0658]: use of unstable library feature `str_as_str`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/doubly-linked-list-definition-2.rs:138:30
+    |
+138 |     n["prev"] = r#ref["prev".as_str()];
+    |                              ^^^^^^
+    |
+    = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0608]: cannot index into a value of type `Map1`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/doubly-linked-list-definition-2.rs:139:6
+    |
+139 |     n["next"] = r#ref["id".as_str()];
+    |      ^^^^^^^^
+
+error[E0658]: use of unstable library feature `str_as_str`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/doubly-linked-list-definition-2.rs:139:28
+    |
+139 |     n["next"] = r#ref["id".as_str()];
+    |                            ^^^^^^
+    |
+    = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0658]: use of unstable library feature `str_as_str`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/doubly-linked-list-definition-2.rs:140:22
+    |
+140 |     if (r#ref["prev".as_str()] != 0) {
+    |                      ^^^^^^
+    |
+    = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0658]: use of unstable library feature `str_as_str`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/doubly-linked-list-definition-2.rs:141:45
+    |
+141 |         let mut p: i64 = nodes[r#ref["prev".as_str()]];
+    |                                             ^^^^^^
+    |
+    = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0658]: use of unstable library feature `str_as_str`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/doubly-linked-list-definition-2.rs:143:22
+    |
+143 |         nodes[p["id".as_str()]] = p;
+    |                      ^^^^^^
+    |
+    = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0308]: arguments to this method are incorrect
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/doubly-linked-list-definition-2.rs:145:11
+    |
+145 |         l.insert("head".clone(), n.id);
+    |           ^^^^^^ --------------  ---- expected `f64`, found `i64`
+    |                  |
+    |                  expected `String`, found `&str`
+    |
+help: the return type of this call is `i64` due to the type of the argument passed
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/doubly-linked-list-definition-2.rs:145:9
+    |
+145 |         l.insert("head".clone(), n.id);
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^----^
+    |                                  |
+    |                                  this argument influences the return type of `insert`
+note: method defined here
+   --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/std/src/collections/hash/map.rs:1201:12
+help: try using a conversion method
+    |
+145 -         l.insert("head".clone(), n.id);
+145 +         l.insert("head".to_string(), n.id);
+    |
+help: you can convert an `i64` to an `f64`, producing the floating point representation of the integer, rounded if necessary
+    |
+145 |         l.insert("head".clone(), n.id as f64);
+    |                                       ++++++
+
+error[E0608]: cannot index into a value of type `f64`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/doubly-linked-list-definition-2.rs:148:10
+    |
+148 |     nodes[refID] = r#ref;
+    |          ^^^^^^^
+
+error[E0608]: cannot index into a value of type `f64`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/doubly-linked-list-definition-2.rs:149:10
+    |
+149 |     nodes[n.id] = n;
+    |          ^^^^^^
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/doubly-linked-list-definition-2.rs:150:14
+    |
+150 |     l.insert("nodes".clone(), nodes);
+    |       ------ ^^^^^^^^-----^^
+    |       |      |       |
+    |       |      |       help: try using a conversion method: `to_string`
+    |       |      expected `String`, found `&str`
+    |       arguments to this method are incorrect
+    |
+note: method defined here
+   --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/std/src/collections/hash/map.rs:1201:12
+
+error[E0658]: use of unstable library feature `str_as_str`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/doubly-linked-list-definition-2.rs:157:36
+    |
+157 |     let mut nodes: f64 = l["nodes".as_str()];
+    |                                    ^^^^^^
+    |
+    = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0608]: cannot index into a value of type `f64`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/doubly-linked-list-definition-2.rs:158:31
+    |
+158 |     let mut r#ref: i64 = nodes[refID];
+    |                               ^^^^^^^
+
+error[E0608]: cannot index into a value of type `Map1`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/doubly-linked-list-definition-2.rs:160:6
+    |
+160 |     n["next"] = r#ref["next".as_str()];
+    |      ^^^^^^^^
+
+error[E0658]: use of unstable library feature `str_as_str`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/doubly-linked-list-definition-2.rs:160:30
+    |
+160 |     n["next"] = r#ref["next".as_str()];
+    |                              ^^^^^^
+    |
+    = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0608]: cannot index into a value of type `Map1`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/doubly-linked-list-definition-2.rs:161:6
+    |
+161 |     n["prev"] = r#ref["id".as_str()];
+    |      ^^^^^^^^
+
+error[E0658]: use of unstable library feature `str_as_str`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/doubly-linked-list-definition-2.rs:161:28
+    |
+161 |     n["prev"] = r#ref["id".as_str()];
+    |                            ^^^^^^
+    |
+    = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0658]: use of unstable library feature `str_as_str`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/doubly-linked-list-definition-2.rs:162:22
+    |
+162 |     if (r#ref["next".as_str()] != 0) {
+    |                      ^^^^^^
+    |
+    = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0658]: use of unstable library feature `str_as_str`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/doubly-linked-list-definition-2.rs:163:46
+    |
+163 |         let mut nx: i64 = nodes[r#ref["next".as_str()]];
+    |                                              ^^^^^^
+    |
+    = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0658]: use of unstable library feature `str_as_str`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/doubly-linked-list-definition-2.rs:165:23
+    |
+165 |         nodes[nx["id".as_str()]] = nx;
+    |                       ^^^^^^
+    |
+    = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0308]: arguments to this method are incorrect
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/doubly-linked-list-definition-2.rs:167:11
+    |
+167 |         l.insert("tail".clone(), n.id);
+    |           ^^^^^^ --------------  ---- expected `f64`, found `i64`
+    |                  |
+    |                  expected `String`, found `&str`
+    |
+help: the return type of this call is `i64` due to the type of the argument passed
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/doubly-linked-list-definition-2.rs:167:9
+    |
+167 |         l.insert("tail".clone(), n.id);
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^----^
+    |                                  |
+    |                                  this argument influences the return type of `insert`
+note: method defined here
+   --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/std/src/collections/hash/map.rs:1201:12
+help: try using a conversion method
+    |
+167 -         l.insert("tail".clone(), n.id);
+167 +         l.insert("tail".to_string(), n.id);
+    |
+help: you can convert an `i64` to an `f64`, producing the floating point representation of the integer, rounded if necessary
+    |
+167 |         l.insert("tail".clone(), n.id as f64);
+    |                                       ++++++
+
+error[E0608]: cannot index into a value of type `f64`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/doubly-linked-list-definition-2.rs:170:10
+    |
+170 |     nodes[refID] = r#ref;
+    |          ^^^^^^^
+
+error[E0608]: cannot index into a value of type `f64`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/doubly-linked-list-definition-2.rs:171:10
+    |
+171 |     nodes[n.id] = n;
+    |          ^^^^^^
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/doubly-linked-list-definition-2.rs:172:14
+    |
+172 |     l.insert("nodes".clone(), nodes);
+    |       ------ ^^^^^^^^-----^^
+    |       |      |       |
+    |       |      |       help: try using a conversion method: `to_string`
+    |       |      expected `String`, found `&str`
+    |       arguments to this method are incorrect
+    |
+note: method defined here
+   --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/std/src/collections/hash/map.rs:1201:12
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/doubly-linked-list-definition-2.rs:177:33
+    |
+177 |     let mut e4: Map1 = pushBack(l.clone(), (4 as f64));
+    |                        -------- ^^^^^^^^^ expected `HashMap<String, f64>`, found `Map`
+    |                        |
+    |                        arguments to this function are incorrect
+    |
+    = note: expected struct `HashMap<String, f64>`
+               found struct `Map`
+note: function defined here
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/doubly-linked-list-definition-2.rs:113:8
+    |
+113 |     fn pushBack(mut l: HashMap<String, f64>, mut v: f64) -> Map1 {
+    |        ^^^^^^^^ ---------------------------
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/doubly-linked-list-definition-2.rs:178:34
+    |
+178 |     let mut e1: Map1 = pushFront(l.clone(), (1 as f64));
+    |                        --------- ^^^^^^^^^ expected `HashMap<String, f64>`, found `Map`
+    |                        |
+    |                        arguments to this function are incorrect
+    |
+    = note: expected struct `HashMap<String, f64>`
+               found struct `Map`
+note: function defined here
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/doubly-linked-list-definition-2.rs:95:8
+    |
+95  |     fn pushFront(mut l: HashMap<String, f64>, mut v: f64) -> Map1 {
+    |        ^^^^^^^^^ ---------------------------
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/doubly-linked-list-definition-2.rs:179:18
+    |
+179 |     insertBefore(l.clone(), e4.id, (3 as f64));
+    |     ------------ ^^^^^^^^^ expected `HashMap<String, f64>`, found `Map`
+    |     |
+    |     arguments to this function are incorrect
+    |
+    = note: expected struct `HashMap<String, f64>`
+               found struct `Map`
+note: function defined here
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/doubly-linked-list-definition-2.rs:131:8
+    |
+131 |     fn insertBefore(mut l: HashMap<String, f64>, mut refID: i64, mut v: f64) -> Map1 {
+    |        ^^^^^^^^^^^^ ---------------------------
+
+error[E0308]: arguments to this function are incorrect
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/doubly-linked-list-definition-2.rs:180:5
+    |
+180 |     insertAfter(l.clone(), e1.id, "two");
+    |     ^^^^^^^^^^^                   ----- expected `f64`, found `&str`
+    |
+note: expected `HashMap<String, f64>`, found `Map`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/doubly-linked-list-definition-2.rs:180:17
+    |
+180 |     insertAfter(l.clone(), e1.id, "two");
+    |                 ^^^^^^^^^
+    = note: expected struct `HashMap<String, f64>`
+               found struct `Map`
+note: function defined here
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/doubly-linked-list-definition-2.rs:153:8
+    |
+153 |     fn insertAfter(mut l: HashMap<String, f64>, mut refID: i64, mut v: f64) -> Map1 {
+    |        ^^^^^^^^^^^ ---------------------------                  ----------
+
+error[E0658]: use of unstable library feature `str_as_str`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/doubly-linked-list-definition-2.rs:185:37
+    |
+185 |         println!("{}", node["value".as_str()].to_string());
+    |                                     ^^^^^^
+    |
+    = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0608]: cannot index into a value of type `i64`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/doubly-linked-list-definition-2.rs:185:28
+    |
+185 |         println!("{}", node["value".as_str()].to_string());
+    |                            ^^^^^^^^^^^^^^^^^^
+
+error[E0658]: use of unstable library feature `str_as_str`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/doubly-linked-list-definition-2.rs:186:26
+    |
+186 |         id = node["next".as_str()];
+    |                          ^^^^^^
+    |
+    = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0608]: cannot index into a value of type `i64`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/doubly-linked-list-definition-2.rs:186:18
+    |
+186 |         id = node["next".as_str()];
+    |                  ^^^^^^^^^^^^^^^^^
+
+error: aborting due to 65 previous errors; 23 warnings emitted
+
+Some errors have detailed explanations: E0308, E0608, E0658.
+For more information about an error, try `rustc --explain E0308`.

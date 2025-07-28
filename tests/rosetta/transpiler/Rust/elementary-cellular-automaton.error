@@ -1,0 +1,496 @@
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/elementary-cellular-automaton.rs:48:2
+   |
+48 | };
+   |  ^ help: remove this semicolon
+   |
+   = note: `#[warn(redundant_semicolons)]` on by default
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/elementary-cellular-automaton.rs:61:2
+   |
+61 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/elementary-cellular-automaton.rs:88:2
+   |
+88 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/elementary-cellular-automaton.rs:98:2
+   |
+98 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/elementary-cellular-automaton.rs:113:2
+    |
+113 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/elementary-cellular-automaton.rs:126:2
+    |
+126 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/elementary-cellular-automaton.rs:136:2
+    |
+136 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/elementary-cellular-automaton.rs:43:11
+   |
+43 |     while (i < idx) {
+   |           ^       ^
+   |
+   = note: `#[warn(unused_parens)]` on by default
+help: remove these parentheses
+   |
+43 -     while (i < idx) {
+43 +     while i < idx {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/elementary-cellular-automaton.rs:44:13
+   |
+44 |         v = (v / 2);
+   |             ^     ^
+   |
+help: remove these parentheses
+   |
+44 -         v = (v / 2);
+44 +         v = v / 2;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/elementary-cellular-automaton.rs:45:13
+   |
+45 |         i = (i + 1);
+   |             ^     ^
+   |
+help: remove these parentheses
+   |
+45 -         i = (i + 1);
+45 +         i = i + 1;
+   |
+
+warning: unnecessary parentheses around `return` value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/elementary-cellular-automaton.rs:47:12
+   |
+47 |     return (v % 2)
+   |            ^     ^
+   |
+help: remove these parentheses
+   |
+47 -     return (v % 2)
+47 +     return v % 2
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/elementary-cellular-automaton.rs:52:11
+   |
+52 |     while (i < (state.len() as i64)) {
+   |           ^                        ^
+   |
+help: remove these parentheses
+   |
+52 -     while (i < (state.len() as i64)) {
+52 +     while i < (state.len() as i64) {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/elementary-cellular-automaton.rs:53:12
+   |
+53 |         if (state[i as usize..(i + 1) as usize].to_string().as_str() == "1") {
+   |            ^                                                               ^
+   |
+help: remove these parentheses
+   |
+53 -         if (state[i as usize..(i + 1) as usize].to_string().as_str() == "1") {
+53 +         if state[i as usize..(i + 1) as usize].to_string().as_str() == "1" {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/elementary-cellular-automaton.rs:58:13
+   |
+58 |         i = (i + 1);
+   |             ^     ^
+   |
+help: remove these parentheses
+   |
+58 -         i = (i + 1);
+58 +         i = i + 1;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/elementary-cellular-automaton.rs:63:21
+   |
+63 |     let mut cells = (state.len() as i64);
+   |                     ^                  ^
+   |
+help: remove these parentheses
+   |
+63 -     let mut cells = (state.len() as i64);
+63 +     let mut cells = state.len() as i64;
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/elementary-cellular-automaton.rs:66:11
+   |
+66 |     while (i < cells) {
+   |           ^         ^
+   |
+help: remove these parentheses
+   |
+66 -     while (i < cells) {
+66 +     while i < cells {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/elementary-cellular-automaton.rs:71:12
+   |
+71 |         if (l.as_str() == "1") {
+   |            ^                 ^
+   |
+help: remove these parentheses
+   |
+71 -         if (l.as_str() == "1") {
+71 +         if l.as_str() == "1" {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/elementary-cellular-automaton.rs:72:19
+   |
+72 |             idx = (idx + 4);
+   |                   ^       ^
+   |
+help: remove these parentheses
+   |
+72 -             idx = (idx + 4);
+72 +             idx = idx + 4;
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/elementary-cellular-automaton.rs:74:12
+   |
+74 |         if (c.as_str() == "1") {
+   |            ^                 ^
+   |
+help: remove these parentheses
+   |
+74 -         if (c.as_str() == "1") {
+74 +         if c.as_str() == "1" {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/elementary-cellular-automaton.rs:75:19
+   |
+75 |             idx = (idx + 2);
+   |                   ^       ^
+   |
+help: remove these parentheses
+   |
+75 -             idx = (idx + 2);
+75 +             idx = idx + 2;
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/elementary-cellular-automaton.rs:77:12
+   |
+77 |         if (rt.as_str() == "1") {
+   |            ^                  ^
+   |
+help: remove these parentheses
+   |
+77 -         if (rt.as_str() == "1") {
+77 +         if rt.as_str() == "1" {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/elementary-cellular-automaton.rs:78:19
+   |
+78 |             idx = (idx + 1);
+   |                   ^       ^
+   |
+help: remove these parentheses
+   |
+78 -             idx = (idx + 1);
+78 +             idx = idx + 1;
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/elementary-cellular-automaton.rs:80:12
+   |
+80 |         if (bitAt(r, idx) == 1) {
+   |            ^                  ^
+   |
+help: remove these parentheses
+   |
+80 -         if (bitAt(r, idx) == 1) {
+80 +         if bitAt(r, idx) == 1 {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/elementary-cellular-automaton.rs:85:13
+   |
+85 |         i = (i + 1);
+   |             ^     ^
+   |
+help: remove these parentheses
+   |
+85 -         i = (i + 1);
+85 +         i = i + 1;
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/elementary-cellular-automaton.rs:93:11
+   |
+93 |     while (g < generations) {
+   |           ^               ^
+   |
+help: remove these parentheses
+   |
+93 -     while (g < generations) {
+93 +     while g < generations {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/elementary-cellular-automaton.rs:96:13
+   |
+96 |         g = (g + 1);
+   |             ^     ^
+   |
+help: remove these parentheses
+   |
+96 -         g = (g + 1);
+96 +         g = g + 1;
+   |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/elementary-cellular-automaton.rs:103:11
+    |
+103 |     while (i < cells) {
+    |           ^         ^
+    |
+help: remove these parentheses
+    |
+103 -     while (i < cells) {
+103 +     while i < cells {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/elementary-cellular-automaton.rs:104:15
+    |
+104 |         val = (((val * 1664525) + 1013904223) % 2147483647);
+    |               ^                                           ^
+    |
+help: remove these parentheses
+    |
+104 -         val = (((val * 1664525) + 1013904223) % 2147483647);
+104 +         val = ((val * 1664525) + 1013904223) % 2147483647;
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/elementary-cellular-automaton.rs:105:12
+    |
+105 |         if ((val % 2) == 0) {
+    |            ^              ^
+    |
+help: remove these parentheses
+    |
+105 -         if ((val % 2) == 0) {
+105 +         if (val % 2) == 0 {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/elementary-cellular-automaton.rs:110:13
+    |
+110 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+110 -         i = (i + 1);
+110 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/elementary-cellular-automaton.rs:117:11
+    |
+117 |     while (i < cells) {
+    |           ^         ^
+    |
+help: remove these parentheses
+    |
+117 -     while (i < cells) {
+117 +     while i < cells {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/elementary-cellular-automaton.rs:118:12
+    |
+118 |         if (i == (cells / 2)) {
+    |            ^                ^
+    |
+help: remove these parentheses
+    |
+118 -         if (i == (cells / 2)) {
+118 +         if i == (cells / 2) {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/elementary-cellular-automaton.rs:123:13
+    |
+123 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+123 -         i = (i + 1);
+123 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/elementary-cellular-automaton.rs:140:28
+    |
+140 |     let duration_us: i64 = ((_end - _start) / 1000);
+    |                            ^                      ^
+    |
+help: remove these parentheses
+    |
+140 -     let duration_us: i64 = ((_end - _start) / 1000);
+140 +     let duration_us: i64 = (_end - _start) / 1000;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/elementary-cellular-automaton.rs:141:29
+    |
+141 |     let memory_bytes: i64 = (_end_mem - _start_mem);
+    |                             ^                     ^
+    |
+help: remove these parentheses
+    |
+141 -     let memory_bytes: i64 = (_end_mem - _start_mem);
+141 +     let memory_bytes: i64 = _end_mem - _start_mem;
+    |
+
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/elementary-cellular-automaton.rs:94:13
+   |
+92 |     let mut s: &str = state;
+   |                ---- expected due to this type
+93 |     while (g < generations) {
+94 |         s = step(&s, r);
+   |             ^^^^^^^^^^^ expected `&str`, found `String`
+   |
+help: consider borrowing here
+   |
+94 |         s = &step(&s, r);
+   |             +
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/elementary-cellular-automaton.rs:40:14
+   |
+40 |     fn bitAt(mut x: i64, mut idx: i64) -> i64 {
+   |              ----^
+   |              |
+   |              help: remove this `mut`
+   |
+   = note: `#[warn(unused_mut)]` on by default
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/elementary-cellular-automaton.rs:40:26
+   |
+40 |     fn bitAt(mut x: i64, mut idx: i64) -> i64 {
+   |                          ----^^^
+   |                          |
+   |                          help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/elementary-cellular-automaton.rs:62:26
+   |
+62 |     fn step(state: &str, mut r: i64) -> String {
+   |                          ----^
+   |                          |
+   |                          help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/elementary-cellular-automaton.rs:63:9
+   |
+63 |     let mut cells = (state.len() as i64);
+   |         ----^^^^^
+   |         |
+   |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/elementary-cellular-automaton.rs:67:13
+   |
+67 |         let mut l: String = state[(((i - 1) + cells) % cells) as usize..((((i - 1) + cells) % cells) + 1) as usize].to_string().clone();
+   |             ----^
+   |             |
+   |             help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/elementary-cellular-automaton.rs:68:13
+   |
+68 |         let mut c: String = state[i as usize..(i + 1) as usize].to_string().clone();
+   |             ----^
+   |             |
+   |             help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/elementary-cellular-automaton.rs:69:13
+   |
+69 |         let mut rt: String = state[((i + 1) % cells) as usize..(((i + 1) % cells) + 1) as usize].to_string().clone();
+   |             ----^^
+   |             |
+   |             help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/elementary-cellular-automaton.rs:99:17
+   |
+99 |     fn randInit(mut cells: i64, mut seed: i64) -> String {
+   |                 ----^^^^^
+   |                 |
+   |                 help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/elementary-cellular-automaton.rs:99:33
+   |
+99 |     fn randInit(mut cells: i64, mut seed: i64) -> String {
+   |                                 ----^^^^
+   |                                 |
+   |                                 help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/elementary-cellular-automaton.rs:114:19
+    |
+114 |     fn singleInit(mut cells: i64) -> String {
+    |                   ----^^^^^
+    |                   |
+    |                   help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/elementary-cellular-automaton.rs:128:9
+    |
+128 |     let mut cells: i64 = 20;
+    |         ----^^^^^
+    |         |
+    |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/elementary-cellular-automaton.rs:129:9
+    |
+129 |     let mut generations: i64 = 9;
+    |         ----^^^^^^^^^^^
+    |         |
+    |         help: remove this `mut`
+
+error: aborting due to 1 previous error; 47 warnings emitted
+
+For more information about this error, try `rustc --explain E0308`.

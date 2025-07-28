@@ -1,0 +1,242 @@
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/doubly-linked-list-element-definition.rs:43:2
+   |
+43 | };
+   |  ^ help: remove this semicolon
+   |
+   = note: `#[warn(redundant_semicolons)]` on by default
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/doubly-linked-list-element-definition.rs:70:2
+   |
+70 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/doubly-linked-list-element-definition.rs:52:11
+   |
+52 |     while (p != Default::default()) {
+   |           ^                       ^
+   |
+   = note: `#[warn(unused_parens)]` on by default
+help: remove these parentheses
+   |
+52 -     while (p != Default::default()) {
+52 +     while p != Default::default() {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/doubly-linked-list-element-definition.rs:55:12
+   |
+55 |         if (p != Default::default()) {
+   |            ^                       ^
+   |
+help: remove these parentheses
+   |
+55 -         if (p != Default::default()) {
+55 +         if p != Default::default() {
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/doubly-linked-list-element-definition.rs:62:11
+   |
+62 |     while (p != Default::default()) {
+   |           ^                       ^
+   |
+help: remove these parentheses
+   |
+62 -     while (p != Default::default()) {
+62 +     while p != Default::default() {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/doubly-linked-list-element-definition.rs:65:12
+   |
+65 |         if (p != Default::default()) {
+   |            ^                       ^
+   |
+help: remove these parentheses
+   |
+65 -         if (p != Default::default()) {
+65 +         if p != Default::default() {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/doubly-linked-list-element-definition.rs:74:28
+   |
+74 |     let duration_us: i64 = ((_end - _start) / 1000);
+   |                            ^                      ^
+   |
+help: remove these parentheses
+   |
+74 -     let duration_us: i64 = ((_end - _start) / 1000);
+74 +     let duration_us: i64 = (_end - _start) / 1000;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/doubly-linked-list-element-definition.rs:75:29
+   |
+75 |     let memory_bytes: i64 = (_end_mem - _start_mem);
+   |                             ^                     ^
+   |
+help: remove these parentheses
+   |
+75 -     let memory_bytes: i64 = (_end_mem - _start_mem);
+75 +     let memory_bytes: i64 = _end_mem - _start_mem;
+   |
+
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/doubly-linked-list-element-definition.rs:42:82
+   |
+42 |     return HashMap::from([(String::from("value"), value), (String::from("next"), next), (String::from("prev"), prev)])
+   |                                                                                  ^^^^ expected `&str`, found `f64`
+
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/doubly-linked-list-element-definition.rs:42:112
+   |
+42 |     return HashMap::from([(String::from("value"), value), (String::from("next"), next), (String::from("prev"), prev)])
+   |                                                                                                                ^^^^ expected `&str`, found `f64`
+
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/doubly-linked-list-element-definition.rs:42:12
+   |
+41 |     fn Node(value: &str, mut next: f64, mut prev: f64) -> HashMap<&str, &str> {
+   |                                                           ------------------- expected `HashMap<&str, &str>` because of return type
+42 |     return HashMap::from([(String::from("value"), value), (String::from("next"), next), (String::from("prev"), prev)])
+   |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `HashMap<&str, &str>`, found `HashMap<String, &str>`
+   |
+   = note: expected struct `HashMap<&str, &_>`
+              found struct `HashMap<String, &_>`
+
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/doubly-linked-list-element-definition.rs:46:69
+   |
+46 |     let mut b: HashMap<&str, &str> = Node(&"B", Default::default(), a);
+   |                                      ----                           ^ expected `f64`, found `HashMap<&str, &str>`
+   |                                      |
+   |                                      arguments to this function are incorrect
+   |
+   = note: expected type `f64`
+            found struct `HashMap<&str, &str>`
+note: function defined here
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/doubly-linked-list-element-definition.rs:41:8
+   |
+41 |     fn Node(value: &str, mut next: f64, mut prev: f64) -> HashMap<&str, &str> {
+   |        ^^^^                             -------------
+
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/doubly-linked-list-element-definition.rs:47:30
+   |
+47 |     a.insert("next".clone(), b);
+   |       ------                 ^ expected `&str`, found `HashMap<&str, &str>`
+   |       |
+   |       arguments to this method are incorrect
+   |
+   = note: expected reference `&str`
+                 found struct `HashMap<&str, &str>`
+help: the return type of this call is `HashMap<&str, &str>` due to the type of the argument passed
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/doubly-linked-list-element-definition.rs:47:5
+   |
+47 |     a.insert("next".clone(), b);
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^-^
+   |                              |
+   |                              this argument influences the return type of `insert`
+note: method defined here
+  --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/std/src/collections/hash/map.rs:1201:12
+
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/doubly-linked-list-element-definition.rs:48:69
+   |
+48 |     let mut c: HashMap<&str, &str> = Node(&"C", Default::default(), b);
+   |                                      ----                           ^ expected `f64`, found `HashMap<&str, &str>`
+   |                                      |
+   |                                      arguments to this function are incorrect
+   |
+   = note: expected type `f64`
+            found struct `HashMap<&str, &str>`
+note: function defined here
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/doubly-linked-list-element-definition.rs:41:8
+   |
+41 |     fn Node(value: &str, mut next: f64, mut prev: f64) -> HashMap<&str, &str> {
+   |        ^^^^                             -------------
+
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/doubly-linked-list-element-definition.rs:49:30
+   |
+49 |     b.insert("next".clone(), c);
+   |       ------                 ^ expected `&str`, found `HashMap<&str, &str>`
+   |       |
+   |       arguments to this method are incorrect
+   |
+   = note: expected reference `&str`
+                 found struct `HashMap<&str, &str>`
+help: the return type of this call is `HashMap<&str, &str>` due to the type of the argument passed
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/doubly-linked-list-element-definition.rs:49:5
+   |
+49 |     b.insert("next".clone(), c);
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^-^
+   |                              |
+   |                              this argument influences the return type of `insert`
+note: method defined here
+  --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/std/src/collections/hash/map.rs:1201:12
+
+error[E0658]: use of unstable library feature `str_as_str`
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/doubly-linked-list-element-definition.rs:53:48
+   |
+53 |         line = format!("{}{}", line, p["value".as_str()].clone().to_string());
+   |                                                ^^^^^^
+   |
+   = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0658]: use of unstable library feature `str_as_str`
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/doubly-linked-list-element-definition.rs:54:22
+   |
+54 |         p = p["next".as_str()].clone();
+   |                      ^^^^^^
+   |
+   = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/doubly-linked-list-element-definition.rs:54:13
+   |
+50 |     let mut p: HashMap<&str, &str> = a;
+   |                ------------------- expected due to this type
+...
+54 |         p = p["next".as_str()].clone();
+   |             ^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `HashMap<&str, &str>`, found `&str`
+   |
+   = note: expected struct `HashMap<&str, &str>`
+           found reference `&str`
+
+error[E0658]: use of unstable library feature `str_as_str`
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/doubly-linked-list-element-definition.rs:63:48
+   |
+63 |         line = format!("{}{}", line, p["value".as_str()].clone().to_string());
+   |                                                ^^^^^^
+   |
+   = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0658]: use of unstable library feature `str_as_str`
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/doubly-linked-list-element-definition.rs:64:22
+   |
+64 |         p = p["prev".as_str()].clone();
+   |                      ^^^^^^
+   |
+   = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/doubly-linked-list-element-definition.rs:64:13
+   |
+50 |     let mut p: HashMap<&str, &str> = a;
+   |                ------------------- expected due to this type
+...
+64 |         p = p["prev".as_str()].clone();
+   |             ^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `HashMap<&str, &str>`, found `&str`
+   |
+   = note: expected struct `HashMap<&str, &str>`
+           found reference `&str`
+
+error: aborting due to 13 previous errors; 8 warnings emitted
+
+Some errors have detailed explanations: E0308, E0658.
+For more information about an error, try `rustc --explain E0308`.

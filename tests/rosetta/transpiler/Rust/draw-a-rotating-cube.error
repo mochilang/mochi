@@ -1,0 +1,1097 @@
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/draw-a-rotating-cube.rs:90:36
+   |
+90 |         static mut g_PI: f64 = 0.0;;
+   |                                    ^ help: remove this semicolon
+   |
+   = note: `#[warn(redundant_semicolons)]` on by default
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/draw-a-rotating-cube.rs:91:40
+   |
+91 |         static mut g_TWO_PI: f64 = 0.0;;
+   |                                        ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/draw-a-rotating-cube.rs:94:2
+   |
+94 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/draw-a-rotating-cube.rs:102:2
+    |
+102 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/draw-a-rotating-cube.rs:109:2
+    |
+109 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/draw-a-rotating-cube.rs:110:54
+    |
+110 |         static mut g_nodes: Vec<Point3> = Vec::new();;
+    |                                                      ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/draw-a-rotating-cube.rs:111:56
+    |
+111 |         static mut g_edges: Vec<Vec<i64>> = Vec::new();;
+    |                                                        ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/draw-a-rotating-cube.rs:123:2
+    |
+123 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/draw-a-rotating-cube.rs:124:37
+    |
+124 |         static mut g_width: i64 = 0;;
+    |                                     ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/draw-a-rotating-cube.rs:125:38
+    |
+125 |         static mut g_height: i64 = 0;;
+    |                                      ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/draw-a-rotating-cube.rs:126:42
+    |
+126 |         static mut g_distance: f64 = 0.0;;
+    |                                          ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/draw-a-rotating-cube.rs:127:39
+    |
+127 |         static mut g_scale: f64 = 0.0;;
+    |                                       ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/draw-a-rotating-cube.rs:133:2
+    |
+133 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/draw-a-rotating-cube.rs:148:2
+    |
+148 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/draw-a-rotating-cube.rs:155:2
+    |
+155 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/draw-a-rotating-cube.rs:189:2
+    |
+189 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/draw-a-rotating-cube.rs:204:2
+    |
+204 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/draw-a-rotating-cube.rs:230:2
+    |
+230 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary parentheses around `return` value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/draw-a-rotating-cube.rs:93:12
+   |
+93 |     return (x - ((((x / m) as i64) as f64) * m))
+   |            ^                                   ^
+   |
+   = note: `#[warn(unused_parens)]` on by default
+help: remove these parentheses
+   |
+93 -     return (x - ((((x / m) as i64) as f64) * m))
+93 +     return x - ((((x / m) as i64) as f64) * m)
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/draw-a-rotating-cube.rs:96:22
+   |
+96 |     let mut y: f64 = (_mod((x + g_PI), g_TWO_PI) - g_PI);
+   |                      ^                                 ^
+   |
+help: remove these parentheses
+   |
+96 -     let mut y: f64 = (_mod((x + g_PI), g_TWO_PI) - g_PI);
+96 +     let mut y: f64 = _mod((x + g_PI), g_TWO_PI) - g_PI;
+   |
+
+warning: unnecessary parentheses around function argument
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/draw-a-rotating-cube.rs:96:28
+   |
+96 |     let mut y: f64 = (_mod((x + g_PI), g_TWO_PI) - g_PI);
+   |                            ^        ^
+   |
+help: remove these parentheses
+   |
+96 -     let mut y: f64 = (_mod((x + g_PI), g_TWO_PI) - g_PI);
+96 +     let mut y: f64 = (_mod(x + g_PI, g_TWO_PI) - g_PI);
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/draw-a-rotating-cube.rs:97:23
+   |
+97 |     let mut y2: f64 = (y * y);
+   |                       ^     ^
+   |
+help: remove these parentheses
+   |
+97 -     let mut y2: f64 = (y * y);
+97 +     let mut y2: f64 = y * y;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/draw-a-rotating-cube.rs:98:23
+   |
+98 |     let mut y3: f64 = (y2 * y);
+   |                       ^      ^
+   |
+help: remove these parentheses
+   |
+98 -     let mut y3: f64 = (y2 * y);
+98 +     let mut y3: f64 = y2 * y;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/draw-a-rotating-cube.rs:99:23
+   |
+99 |     let mut y5: f64 = (y3 * y2);
+   |                       ^       ^
+   |
+help: remove these parentheses
+   |
+99 -     let mut y5: f64 = (y3 * y2);
+99 +     let mut y5: f64 = y3 * y2;
+   |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/draw-a-rotating-cube.rs:100:23
+    |
+100 |     let mut y7: f64 = (y5 * y2);
+    |                       ^       ^
+    |
+help: remove these parentheses
+    |
+100 -     let mut y7: f64 = (y5 * y2);
+100 +     let mut y7: f64 = y5 * y2;
+    |
+
+warning: unnecessary parentheses around `return` value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/draw-a-rotating-cube.rs:101:12
+    |
+101 |     return (((y - (y3 / 6.0)) + (y5 / 120.0)) - (y7 / 5040.0))
+    |            ^                                                 ^
+    |
+help: remove these parentheses
+    |
+101 -     return (((y - (y3 / 6.0)) + (y5 / 120.0)) - (y7 / 5040.0))
+101 +     return ((y - (y3 / 6.0)) + (y5 / 120.0)) - (y7 / 5040.0)
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/draw-a-rotating-cube.rs:104:22
+    |
+104 |     let mut y: f64 = (_mod((x + g_PI), g_TWO_PI) - g_PI);
+    |                      ^                                 ^
+    |
+help: remove these parentheses
+    |
+104 -     let mut y: f64 = (_mod((x + g_PI), g_TWO_PI) - g_PI);
+104 +     let mut y: f64 = _mod((x + g_PI), g_TWO_PI) - g_PI;
+    |
+
+warning: unnecessary parentheses around function argument
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/draw-a-rotating-cube.rs:104:28
+    |
+104 |     let mut y: f64 = (_mod((x + g_PI), g_TWO_PI) - g_PI);
+    |                            ^        ^
+    |
+help: remove these parentheses
+    |
+104 -     let mut y: f64 = (_mod((x + g_PI), g_TWO_PI) - g_PI);
+104 +     let mut y: f64 = (_mod(x + g_PI, g_TWO_PI) - g_PI);
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/draw-a-rotating-cube.rs:105:23
+    |
+105 |     let mut y2: f64 = (y * y);
+    |                       ^     ^
+    |
+help: remove these parentheses
+    |
+105 -     let mut y2: f64 = (y * y);
+105 +     let mut y2: f64 = y * y;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/draw-a-rotating-cube.rs:106:23
+    |
+106 |     let mut y4: f64 = (y2 * y2);
+    |                       ^       ^
+    |
+help: remove these parentheses
+    |
+106 -     let mut y4: f64 = (y2 * y2);
+106 +     let mut y4: f64 = y2 * y2;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/draw-a-rotating-cube.rs:107:23
+    |
+107 |     let mut y6: f64 = (y4 * y2);
+    |                       ^       ^
+    |
+help: remove these parentheses
+    |
+107 -     let mut y6: f64 = (y4 * y2);
+107 +     let mut y6: f64 = y4 * y2;
+    |
+
+warning: unnecessary parentheses around `return` value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/draw-a-rotating-cube.rs:108:12
+    |
+108 |     return (((1.0 - (y2 / 2.0)) + (y4 / 24.0)) - (y6 / 720.0))
+    |            ^                                                 ^
+    |
+help: remove these parentheses
+    |
+108 -     return (((1.0 - (y2 / 2.0)) + (y4 / 24.0)) - (y6 / 720.0))
+108 +     return ((1.0 - (y2 / 2.0)) + (y4 / 24.0)) - (y6 / 720.0)
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/draw-a-rotating-cube.rs:118:23
+    |
+118 |     let mut y1: f64 = ((p.y * cosx) - (p.z * sinx));
+    |                       ^                           ^
+    |
+help: remove these parentheses
+    |
+118 -     let mut y1: f64 = ((p.y * cosx) - (p.z * sinx));
+118 +     let mut y1: f64 = (p.y * cosx) - (p.z * sinx);
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/draw-a-rotating-cube.rs:119:23
+    |
+119 |     let mut z1: f64 = ((p.y * sinx) + (p.z * cosx));
+    |                       ^                           ^
+    |
+help: remove these parentheses
+    |
+119 -     let mut z1: f64 = ((p.y * sinx) + (p.z * cosx));
+119 +     let mut z1: f64 = (p.y * sinx) + (p.z * cosx);
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/draw-a-rotating-cube.rs:120:23
+    |
+120 |     let mut x2: f64 = ((x1 * cosy) + (z1 * siny));
+    |                       ^                         ^
+    |
+help: remove these parentheses
+    |
+120 -     let mut x2: f64 = ((x1 * cosy) + (z1 * siny));
+120 +     let mut x2: f64 = (x1 * cosy) + (z1 * siny);
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/draw-a-rotating-cube.rs:121:23
+    |
+121 |     let mut z2: f64 = ((-x1 * siny) + (z1 * cosy));
+    |                       ^                          ^
+    |
+help: remove these parentheses
+    |
+121 -     let mut z2: f64 = ((-x1 * siny) + (z1 * cosy));
+121 +     let mut z2: f64 = (-x1 * siny) + (z1 * cosy);
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/draw-a-rotating-cube.rs:129:27
+    |
+129 |     let mut factor: f64 = (g_scale / (p.z + g_distance));
+    |                           ^                            ^
+    |
+help: remove these parentheses
+    |
+129 -     let mut factor: f64 = (g_scale / (p.z + g_distance));
+129 +     let mut factor: f64 = g_scale / (p.z + g_distance);
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/draw-a-rotating-cube.rs:130:22
+    |
+130 |     let mut x: i64 = (((p.x * factor) as i64) + (g_width / 2));
+    |                      ^                                       ^
+    |
+help: remove these parentheses
+    |
+130 -     let mut x: i64 = (((p.x * factor) as i64) + (g_width / 2));
+130 +     let mut x: i64 = ((p.x * factor) as i64) + (g_width / 2);
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/draw-a-rotating-cube.rs:131:22
+    |
+131 |     let mut y: i64 = (((-p.y * factor) as i64) + (g_height / 2));
+    |                      ^                                         ^
+    |
+help: remove these parentheses
+    |
+131 -     let mut y: i64 = (((-p.y * factor) as i64) + (g_height / 2));
+131 +     let mut y: i64 = ((-p.y * factor) as i64) + (g_height / 2);
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/draw-a-rotating-cube.rs:137:11
+    |
+137 |     while (y < g_height) {
+    |           ^            ^
+    |
+help: remove these parentheses
+    |
+137 -     while (y < g_height) {
+137 +     while y < g_height {
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/draw-a-rotating-cube.rs:140:15
+    |
+140 |         while (x < g_width) {
+    |               ^           ^
+    |
+help: remove these parentheses
+    |
+140 -         while (x < g_width) {
+140 +         while x < g_width {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/draw-a-rotating-cube.rs:142:17
+    |
+142 |             x = (x + 1);
+    |                 ^     ^
+    |
+help: remove these parentheses
+    |
+142 -             x = (x + 1);
+142 +             x = x + 1;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/draw-a-rotating-cube.rs:145:13
+    |
+145 |         y = (y + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+145 -         y = (y + 1);
+145 +         y = y + 1;
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/draw-a-rotating-cube.rs:150:8
+    |
+150 |     if ((((x >= 0) && (x < g_width)) && (y >= 0)) && (y < g_height)) {
+    |        ^                                                           ^
+    |
+help: remove these parentheses
+    |
+150 -     if ((((x >= 0) && (x < g_width)) && (y >= 0)) && (y < g_height)) {
+150 +     if (((x >= 0) && (x < g_width)) && (y >= 0)) && (y < g_height) {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/draw-a-rotating-cube.rs:157:23
+    |
+157 |     let mut dx: i64 = (x1 - x0);
+    |                       ^       ^
+    |
+help: remove these parentheses
+    |
+157 -     let mut dx: i64 = (x1 - x0);
+157 +     let mut dx: i64 = x1 - x0;
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/draw-a-rotating-cube.rs:158:8
+    |
+158 |     if (dx < 0) {
+    |        ^      ^
+    |
+help: remove these parentheses
+    |
+158 -     if (dx < 0) {
+158 +     if dx < 0 {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/draw-a-rotating-cube.rs:161:23
+    |
+161 |     let mut dy: i64 = (y1 - y0);
+    |                       ^       ^
+    |
+help: remove these parentheses
+    |
+161 -     let mut dy: i64 = (y1 - y0);
+161 +     let mut dy: i64 = y1 - y0;
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/draw-a-rotating-cube.rs:162:8
+    |
+162 |     if (dy < 0) {
+    |        ^      ^
+    |
+help: remove these parentheses
+    |
+162 -     if (dy < 0) {
+162 +     if dy < 0 {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/draw-a-rotating-cube.rs:166:8
+    |
+166 |     if (x0 < x1) {
+    |        ^       ^
+    |
+help: remove these parentheses
+    |
+166 -     if (x0 < x1) {
+166 +     if x0 < x1 {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/draw-a-rotating-cube.rs:170:8
+    |
+170 |     if (y0 < y1) {
+    |        ^       ^
+    |
+help: remove these parentheses
+    |
+170 -     if (y0 < y1) {
+170 +     if y0 < y1 {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/draw-a-rotating-cube.rs:173:24
+    |
+173 |     let mut err: i64 = (dx - dy);
+    |                        ^       ^
+    |
+help: remove these parentheses
+    |
+173 -     let mut err: i64 = (dx - dy);
+173 +     let mut err: i64 = dx - dy;
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/draw-a-rotating-cube.rs:176:12
+    |
+176 |         if ((x0 == x1) && (y0 == y1)) {
+    |            ^                        ^
+    |
+help: remove these parentheses
+    |
+176 -         if ((x0 == x1) && (y0 == y1)) {
+176 +         if (x0 == x1) && (y0 == y1) {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/draw-a-rotating-cube.rs:179:27
+    |
+179 |         let mut e2: i64 = (2 * err);
+    |                           ^       ^
+    |
+help: remove these parentheses
+    |
+179 -         let mut e2: i64 = (2 * err);
+179 +         let mut e2: i64 = 2 * err;
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/draw-a-rotating-cube.rs:180:12
+    |
+180 |         if (e2 > -dy) {
+    |            ^        ^
+    |
+help: remove these parentheses
+    |
+180 -         if (e2 > -dy) {
+180 +         if e2 > -dy {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/draw-a-rotating-cube.rs:181:19
+    |
+181 |             err = (err - dy);
+    |                   ^        ^
+    |
+help: remove these parentheses
+    |
+181 -             err = (err - dy);
+181 +             err = err - dy;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/draw-a-rotating-cube.rs:182:18
+    |
+182 |             x0 = (x0 + sx);
+    |                  ^       ^
+    |
+help: remove these parentheses
+    |
+182 -             x0 = (x0 + sx);
+182 +             x0 = x0 + sx;
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/draw-a-rotating-cube.rs:184:12
+    |
+184 |         if (e2 < dx) {
+    |            ^       ^
+    |
+help: remove these parentheses
+    |
+184 -         if (e2 < dx) {
+184 +         if e2 < dx {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/draw-a-rotating-cube.rs:185:19
+    |
+185 |             err = (err + dx);
+    |                   ^        ^
+    |
+help: remove these parentheses
+    |
+185 -             err = (err + dx);
+185 +             err = err + dx;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/draw-a-rotating-cube.rs:186:18
+    |
+186 |             y0 = (y0 + sy);
+    |                  ^       ^
+    |
+help: remove these parentheses
+    |
+186 -             y0 = (y0 + sy);
+186 +             y0 = y0 + sy;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/draw-a-rotating-cube.rs:193:11
+    |
+193 |     while (y < g_height) {
+    |           ^            ^
+    |
+help: remove these parentheses
+    |
+193 -     while (y < g_height) {
+193 +     while y < g_height {
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/draw-a-rotating-cube.rs:196:15
+    |
+196 |         while (x < g_width) {
+    |               ^           ^
+    |
+help: remove these parentheses
+    |
+196 -         while (x < g_width) {
+196 +         while x < g_width {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/draw-a-rotating-cube.rs:198:17
+    |
+198 |             x = (x + 1);
+    |                 ^     ^
+    |
+help: remove these parentheses
+    |
+198 -             x = (x + 1);
+198 +             x = x + 1;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/draw-a-rotating-cube.rs:201:13
+    |
+201 |         y = (y + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+201 -         y = (y + 1);
+201 +         y = y + 1;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/draw-a-rotating-cube.rs:207:11
+    |
+207 |     while (f < 10) {
+    |           ^      ^
+    |
+help: remove these parentheses
+    |
+207 -     while (f < 10) {
+207 +     while f < 10 {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/draw-a-rotating-cube.rs:211:27
+    |
+211 |         let mut ay: f64 = ((g_PI / 4.0) + (((f as f64) * g_PI) / 10.0));
+    |                           ^                                           ^
+    |
+help: remove these parentheses
+    |
+211 -         let mut ay: f64 = ((g_PI / 4.0) + (((f as f64) * g_PI) / 10.0));
+211 +         let mut ay: f64 = (g_PI / 4.0) + (((f as f64) * g_PI) / 10.0);
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/draw-a-rotating-cube.rs:212:15
+    |
+212 |         while (i < (g_nodes.clone().len() as i64)) {
+    |               ^                                  ^
+    |
+help: remove these parentheses
+    |
+212 -         while (i < (g_nodes.clone().len() as i64)) {
+212 +         while i < (g_nodes.clone().len() as i64) {
+    |
+
+warning: unnecessary parentheses around function argument
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/draw-a-rotating-cube.rs:213:70
+    |
+213 |             let mut p: Point3 = rotate(&g_nodes[i as usize].clone(), (g_PI / 4.0), ay);
+    |                                                                      ^          ^
+    |
+help: remove these parentheses
+    |
+213 -             let mut p: Point3 = rotate(&g_nodes[i as usize].clone(), (g_PI / 4.0), ay);
+213 +             let mut p: Point3 = rotate(&g_nodes[i as usize].clone(), g_PI / 4.0, ay);
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/draw-a-rotating-cube.rs:216:17
+    |
+216 |             i = (i + 1);
+    |                 ^     ^
+    |
+help: remove these parentheses
+    |
+216 -             i = (i + 1);
+216 +             i = i + 1;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/draw-a-rotating-cube.rs:219:15
+    |
+219 |         while (e < (g_edges.clone().len() as i64)) {
+    |               ^                                  ^
+    |
+help: remove these parentheses
+    |
+219 -         while (e < (g_edges.clone().len() as i64)) {
+219 +         while e < (g_edges.clone().len() as i64) {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/draw-a-rotating-cube.rs:225:17
+    |
+225 |             e = (e + 1);
+    |                 ^     ^
+    |
+help: remove these parentheses
+    |
+225 -             e = (e + 1);
+225 +             e = e + 1;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/draw-a-rotating-cube.rs:228:13
+    |
+228 |         f = (f + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+228 -         f = (f + 1);
+228 +         f = f + 1;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/draw-a-rotating-cube.rs:234:32
+    |
+234 |         let duration_us: i64 = ((_end - _start) / 1000);
+    |                                ^                      ^
+    |
+help: remove these parentheses
+    |
+234 -         let duration_us: i64 = ((_end - _start) / 1000);
+234 +         let duration_us: i64 = (_end - _start) / 1000;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/draw-a-rotating-cube.rs:235:33
+    |
+235 |         let memory_bytes: i64 = (_end_mem - _start_mem);
+    |                                 ^                     ^
+    |
+help: remove these parentheses
+    |
+235 -         let memory_bytes: i64 = (_end_mem - _start_mem);
+235 +         let memory_bytes: i64 = _end_mem - _start_mem;
+    |
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/draw-a-rotating-cube.rs:152:27
+    |
+152 |         row[x as usize] = ch;
+    |         ---------------   ^^- help: try using a conversion method: `.to_string()`
+    |         |                 |
+    |         |                 expected `String`, found `&str`
+    |         expected due to the type of this binding
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/draw-a-rotating-cube.rs:92:24
+   |
+92 |         unsafe fn _mod(mut x: f64, mut m: f64) -> f64 {
+   |                        ----^
+   |                        |
+   |                        help: remove this `mut`
+   |
+   = note: `#[warn(unused_mut)]` on by default
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/draw-a-rotating-cube.rs:92:36
+   |
+92 |         unsafe fn _mod(mut x: f64, mut m: f64) -> f64 {
+   |                                    ----^
+   |                                    |
+   |                                    help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/draw-a-rotating-cube.rs:95:24
+   |
+95 |         unsafe fn _sin(mut x: f64) -> f64 {
+   |                        ----^
+   |                        |
+   |                        help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/draw-a-rotating-cube.rs:96:9
+   |
+96 |     let mut y: f64 = (_mod((x + g_PI), g_TWO_PI) - g_PI);
+   |         ----^
+   |         |
+   |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/draw-a-rotating-cube.rs:97:9
+   |
+97 |     let mut y2: f64 = (y * y);
+   |         ----^^
+   |         |
+   |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/draw-a-rotating-cube.rs:98:9
+   |
+98 |     let mut y3: f64 = (y2 * y);
+   |         ----^^
+   |         |
+   |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/draw-a-rotating-cube.rs:99:9
+   |
+99 |     let mut y5: f64 = (y3 * y2);
+   |         ----^^
+   |         |
+   |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/draw-a-rotating-cube.rs:100:9
+    |
+100 |     let mut y7: f64 = (y5 * y2);
+    |         ----^^
+    |         |
+    |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/draw-a-rotating-cube.rs:103:24
+    |
+103 |         unsafe fn _cos(mut x: f64) -> f64 {
+    |                        ----^
+    |                        |
+    |                        help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/draw-a-rotating-cube.rs:104:9
+    |
+104 |     let mut y: f64 = (_mod((x + g_PI), g_TWO_PI) - g_PI);
+    |         ----^
+    |         |
+    |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/draw-a-rotating-cube.rs:105:9
+    |
+105 |     let mut y2: f64 = (y * y);
+    |         ----^^
+    |         |
+    |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/draw-a-rotating-cube.rs:106:9
+    |
+106 |     let mut y4: f64 = (y2 * y2);
+    |         ----^^
+    |         |
+    |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/draw-a-rotating-cube.rs:107:9
+    |
+107 |     let mut y6: f64 = (y4 * y2);
+    |         ----^^
+    |         |
+    |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/draw-a-rotating-cube.rs:112:38
+    |
+112 |         unsafe fn rotate(p: &Point3, mut ax: f64, mut ay: f64) -> Point3 {
+    |                                      ----^^
+    |                                      |
+    |                                      help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/draw-a-rotating-cube.rs:112:51
+    |
+112 |         unsafe fn rotate(p: &Point3, mut ax: f64, mut ay: f64) -> Point3 {
+    |                                                   ----^^
+    |                                                   |
+    |                                                   help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/draw-a-rotating-cube.rs:113:9
+    |
+113 |     let mut sinx: f64 = _sin(ax);
+    |         ----^^^^
+    |         |
+    |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/draw-a-rotating-cube.rs:114:9
+    |
+114 |     let mut cosx: f64 = _cos(ax);
+    |         ----^^^^
+    |         |
+    |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/draw-a-rotating-cube.rs:115:9
+    |
+115 |     let mut siny: f64 = _sin(ay);
+    |         ----^^^^
+    |         |
+    |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/draw-a-rotating-cube.rs:116:9
+    |
+116 |     let mut cosy: f64 = _cos(ay);
+    |         ----^^^^
+    |         |
+    |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/draw-a-rotating-cube.rs:117:9
+    |
+117 |     let mut x1: f64 = p.x;
+    |         ----^^
+    |         |
+    |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/draw-a-rotating-cube.rs:118:9
+    |
+118 |     let mut y1: f64 = ((p.y * cosx) - (p.z * sinx));
+    |         ----^^
+    |         |
+    |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/draw-a-rotating-cube.rs:119:9
+    |
+119 |     let mut z1: f64 = ((p.y * sinx) + (p.z * cosx));
+    |         ----^^
+    |         |
+    |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/draw-a-rotating-cube.rs:120:9
+    |
+120 |     let mut x2: f64 = ((x1 * cosy) + (z1 * siny));
+    |         ----^^
+    |         |
+    |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/draw-a-rotating-cube.rs:121:9
+    |
+121 |     let mut z2: f64 = ((-x1 * siny) + (z1 * cosy));
+    |         ----^^
+    |         |
+    |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/draw-a-rotating-cube.rs:129:9
+    |
+129 |     let mut factor: f64 = (g_scale / (p.z + g_distance));
+    |         ----^^^^^^
+    |         |
+    |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/draw-a-rotating-cube.rs:130:9
+    |
+130 |     let mut x: i64 = (((p.x * factor) as i64) + (g_width / 2));
+    |         ----^
+    |         |
+    |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/draw-a-rotating-cube.rs:131:9
+    |
+131 |     let mut y: i64 = (((-p.y * factor) as i64) + (g_height / 2));
+    |         ----^
+    |         |
+    |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/draw-a-rotating-cube.rs:156:55
+    |
+156 |         unsafe fn bresenham(mut x0: i64, mut y0: i64, mut x1: i64, mut y1: i64, mut g: Vec<Vec<String>>, ch: &str) {
+    |                                                       ----^^
+    |                                                       |
+    |                                                       help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/draw-a-rotating-cube.rs:156:68
+    |
+156 |         unsafe fn bresenham(mut x0: i64, mut y0: i64, mut x1: i64, mut y1: i64, mut g: Vec<Vec<String>>, ch: &str) {
+    |                                                                    ----^^
+    |                                                                    |
+    |                                                                    help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/draw-a-rotating-cube.rs:179:13
+    |
+179 |         let mut e2: i64 = (2 * err);
+    |             ----^^
+    |             |
+    |             help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/draw-a-rotating-cube.rs:190:26
+    |
+190 |         unsafe fn render(mut g: Vec<Vec<String>>) -> String {
+    |                          ----^
+    |                          |
+    |                          help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/draw-a-rotating-cube.rs:208:13
+    |
+208 |         let mut grid: Vec<Vec<String>> = clearGrid();
+    |             ----^^^^
+    |             |
+    |             help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/draw-a-rotating-cube.rs:211:13
+    |
+211 |         let mut ay: f64 = ((g_PI / 4.0) + (((f as f64) * g_PI) / 10.0));
+    |             ----^^
+    |             |
+    |             help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/draw-a-rotating-cube.rs:213:17
+    |
+213 |             let mut p: Point3 = rotate(&g_nodes[i as usize].clone(), (g_PI / 4.0), ay);
+    |                 ----^
+    |                 |
+    |                 help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/draw-a-rotating-cube.rs:214:17
+    |
+214 |             let mut pp: Point2 = project(&p);
+    |                 ----^^
+    |                 |
+    |                 help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/draw-a-rotating-cube.rs:220:17
+    |
+220 |             let mut a: i64 = g_edges.clone()[e as usize].clone()[0 as usize];
+    |                 ----^
+    |                 |
+    |                 help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/draw-a-rotating-cube.rs:221:17
+    |
+221 |             let mut b: i64 = g_edges.clone()[e as usize].clone()[1 as usize];
+    |                 ----^
+    |                 |
+    |                 help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/draw-a-rotating-cube.rs:222:17
+    |
+222 |             let mut p1: Point2 = rot[a as usize].clone();
+    |                 ----^^
+    |                 |
+    |                 help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/draw-a-rotating-cube.rs:223:17
+    |
+223 |             let mut p2: Point2 = rot[b as usize].clone();
+    |                 ----^^
+    |                 |
+    |                 help: remove this `mut`
+
+error: aborting due to 1 previous error; 112 warnings emitted
+
+For more information about this error, try `rustc --explain E0308`.

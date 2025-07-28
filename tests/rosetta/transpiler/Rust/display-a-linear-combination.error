@@ -1,0 +1,287 @@
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/display-a-linear-combination.rs:46:2
+   |
+46 | };
+   |  ^ help: remove this semicolon
+   |
+   = note: `#[warn(redundant_semicolons)]` on by default
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/display-a-linear-combination.rs:79:2
+   |
+79 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/display-a-linear-combination.rs:99:2
+   |
+99 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/display-a-linear-combination.rs:42:11
+   |
+42 |     while ((r.len() as i64) < w) {
+   |           ^                    ^
+   |
+   = note: `#[warn(unused_parens)]` on by default
+help: remove these parentheses
+   |
+42 -     while ((r.len() as i64) < w) {
+42 +     while (r.len() as i64) < w {
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/display-a-linear-combination.rs:50:11
+   |
+50 |     while (i < (c.len() as i64)) {
+   |           ^                    ^
+   |
+help: remove these parentheses
+   |
+50 -     while (i < (c.len() as i64)) {
+50 +     while i < (c.len() as i64) {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/display-a-linear-combination.rs:52:12
+   |
+52 |         if (n != 0) {
+   |            ^      ^
+   |
+help: remove these parentheses
+   |
+52 -         if (n != 0) {
+52 +         if n != 0 {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/display-a-linear-combination.rs:54:16
+   |
+54 |             if ((n < 0) && ((out.len() as i64) == 0)) {
+   |                ^                                    ^
+   |
+help: remove these parentheses
+   |
+54 -             if ((n < 0) && ((out.len() as i64) == 0)) {
+54 +             if (n < 0) && ((out.len() as i64) == 0) {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/display-a-linear-combination.rs:56:23
+   |
+56 |             } else if (n < 0) {
+   |                       ^     ^
+   |
+help: remove these parentheses
+   |
+56 -             } else if (n < 0) {
+56 +             } else if n < 0 {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/display-a-linear-combination.rs:58:23
+   |
+58 |             } else if ((n > 0) && ((out.len() as i64) == 0)) {
+   |                       ^                                    ^
+   |
+help: remove these parentheses
+   |
+58 -             } else if ((n > 0) && ((out.len() as i64) == 0)) {
+58 +             } else if (n > 0) && ((out.len() as i64) == 0) {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/display-a-linear-combination.rs:64:16
+   |
+64 |             if (av < 0) {
+   |                ^      ^
+   |
+help: remove these parentheses
+   |
+64 -             if (av < 0) {
+64 +             if av < 0 {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/display-a-linear-combination.rs:68:16
+   |
+68 |             if (av == 1) {
+   |                ^       ^
+   |
+help: remove these parentheses
+   |
+68 -             if (av == 1) {
+68 +             if av == 1 {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/display-a-linear-combination.rs:73:13
+   |
+73 |         i = (i + 1);
+   |             ^     ^
+   |
+help: remove these parentheses
+   |
+73 -         i = (i + 1);
+73 +         i = i + 1;
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/display-a-linear-combination.rs:75:8
+   |
+75 |     if ((out.len() as i64) == 0) {
+   |        ^                       ^
+   |
+help: remove these parentheses
+   |
+75 -     if ((out.len() as i64) == 0) {
+75 +     if (out.len() as i64) == 0 {
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/display-a-linear-combination.rs:83:11
+   |
+83 |     while (idx < (combos.len() as i64)) {
+   |           ^                           ^
+   |
+help: remove these parentheses
+   |
+83 -     while (idx < (combos.len() as i64)) {
+83 +     while idx < (combos.len() as i64) {
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/display-a-linear-combination.rs:87:15
+   |
+87 |         while (j < (c.len() as i64)) {
+   |               ^                    ^
+   |
+help: remove these parentheses
+   |
+87 -         while (j < (c.len() as i64)) {
+87 +         while j < (c.len() as i64) {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/display-a-linear-combination.rs:89:16
+   |
+89 |             if (j < ((c.len() as i64) - 1)) {
+   |                ^                          ^
+   |
+help: remove these parentheses
+   |
+89 -             if (j < ((c.len() as i64) - 1)) {
+89 +             if j < ((c.len() as i64) - 1) {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/display-a-linear-combination.rs:92:17
+   |
+92 |             j = (j + 1);
+   |                 ^     ^
+   |
+help: remove these parentheses
+   |
+92 -             j = (j + 1);
+92 +             j = j + 1;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/display-a-linear-combination.rs:97:15
+   |
+97 |         idx = (idx + 1);
+   |               ^       ^
+   |
+help: remove these parentheses
+   |
+97 -         idx = (idx + 1);
+97 +         idx = idx + 1;
+   |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/display-a-linear-combination.rs:103:28
+    |
+103 |     let duration_us: i64 = ((_end - _start) / 1000);
+    |                            ^                      ^
+    |
+help: remove these parentheses
+    |
+103 -     let duration_us: i64 = ((_end - _start) / 1000);
+103 +     let duration_us: i64 = (_end - _start) / 1000;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/display-a-linear-combination.rs:104:29
+    |
+104 |     let memory_bytes: i64 = (_end_mem - _start_mem);
+    |                             ^                     ^
+    |
+help: remove these parentheses
+    |
+104 -     let memory_bytes: i64 = (_end_mem - _start_mem);
+104 +     let memory_bytes: i64 = _end_mem - _start_mem;
+    |
+
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/display-a-linear-combination.rs:43:13
+   |
+43 |         r = format!("{}{}", r, " ");
+   |             ^^^^^^^^^^^^^^^^^^^^^^^ expected `&str`, found `String`
+   |
+   = note: this error originates in the macro `format` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+warning: value assigned to `op` is never read
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/display-a-linear-combination.rs:53:21
+   |
+53 |             let mut op = String::from("");
+   |                     ^^
+   |
+   = help: maybe it is overwritten before being read?
+   = note: `#[warn(unused_assignments)]` on by default
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/display-a-linear-combination.rs:47:20
+   |
+47 |     fn linearCombo(mut c: Vec<i64>) -> String {
+   |                    ----^
+   |                    |
+   |                    help: remove this `mut`
+   |
+   = note: `#[warn(unused_mut)]` on by default
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/display-a-linear-combination.rs:51:13
+   |
+51 |         let mut n: i64 = c[i as usize];
+   |             ----^
+   |             |
+   |             help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/display-a-linear-combination.rs:81:9
+   |
+81 |     let mut combos: Vec<Vec<i64>> = vec![vec![1, 2, 3], vec![0, 1, 2, 3], vec![1, 0, 3, 4], vec![1, 2, 0], vec![0, 0, 0], vec![0], vec![1...
+   |         ----^^^^^^
+   |         |
+   |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/display-a-linear-combination.rs:84:13
+   |
+84 |         let mut c: Vec<i64> = combos[idx as usize].clone();
+   |             ----^
+   |             |
+   |             help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/display-a-linear-combination.rs:95:13
+   |
+95 |         let mut lc: String = linearCombo(c.clone()).clone();
+   |             ----^^
+   |             |
+   |             help: remove this `mut`
+
+error: aborting due to 1 previous error; 26 warnings emitted
+
+For more information about this error, try `rustc --explain E0308`.
