@@ -1,0 +1,40 @@
+(program
+  (fun main
+    (if
+      (binary < (string a) (string b))
+      (block
+        (call print (bool true))
+      )
+      (block
+        (call print (bool false))
+      )
+    )
+    (if
+      (binary <= (string a) (string a))
+      (block
+        (call print (bool true))
+      )
+      (block
+        (call print (bool false))
+      )
+    )
+    (if
+      (binary > (string b) (string a))
+      (block
+        (call print (bool true))
+      )
+      (block
+        (call print (bool false))
+      )
+    )
+    (if
+      (binary >= (string b) (string b))
+      (block
+        (call print (bool true))
+      )
+      (block
+        (call print (bool false))
+      )
+    )
+  )
+)

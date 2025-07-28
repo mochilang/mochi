@@ -1,0 +1,19 @@
+// a2mochi 0.10.47 2025-07-28 16:56:05
+/*
+:- initialization(main).
+:- style_check(-singleton).
+
+main :-
+    writeln(9),
+    R1 is (3) * 3, writeln(R1),
+    writeln(7),
+    R3 is 2 * (4), writeln(R3).
+*/
+fun main() {
+  print(9)
+  let R1 = (3) * 3
+  print(R1)
+  print(7)
+  let R3 = 2 * (4)
+  print(R3)
+}

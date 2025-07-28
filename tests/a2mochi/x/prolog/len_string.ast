@@ -1,0 +1,5 @@
+(program
+  (fun main
+    (call print (int 5))
+  )
+)

@@ -1,0 +1,9 @@
+(program
+  (fun main
+    (let S (string mochi))
+    (let R1
+      (call substr (selector S) (int 1) (int 1))
+    )
+    (call print (selector R1))
+  )
+)
