@@ -1,0 +1,208 @@
+func __main (regs=3)
+  // let jobs = 12
+  Const        r1, 12
+  Move         r0, r1
+  SetGlobal    0,0,0,0
+  // main()
+  Call         r2, main, 
+  Return       r0
+
+  // fun pad(n: int): string {
+func pad (regs=9)
+  // var s = str(n)
+  Str          r2, r1
+  Move         r3, r2
+L1:
+  // while len(s) < 4 { s = " " + s }
+  Len          r4, r3
+  Const        r5, 4
+  LessInt      r6, r4, r5
+  JumpIfFalse  r6, L0
+  Const        r7, " "
+  Add          r8, r7, r3
+  Move         r3, r8
+  Jump         L1
+L0:
+  // return s
+  Return       r3
+
+  // fun hail(seq: int, cnt: int): HailResult {
+func hail (regs=26)
+  // var out = pad(seq)
+  Move         r3, r1
+  Call         r4, pad, r3
+  Move         r5, r4
+  // if seq != 1 {
+  Const        r6, 1
+  NotEqual     r7, r1, r6
+  JumpIfFalse  r7, L0
+  // cnt = cnt + 1
+  Const        r6, 1
+  Add          r8, r2, r6
+  Move         r2, r8
+  // if seq % 2 != 0 {
+  Const        r9, 2
+  Mod          r10, r1, r9
+  Const        r11, 0
+  NotEqual     r12, r10, r11
+  JumpIfFalse  r12, L1
+  // seq = 3 * seq + 1
+  Const        r13, 3
+  Mul          r14, r13, r1
+  Const        r6, 1
+  Add          r15, r14, r6
+  Move         r1, r15
+  // if seq % 2 != 0 {
+  Jump         L0
+L1:
+  // seq = seq / 2
+  Const        r9, 2
+  Div          r16, r1, r9
+  Move         r1, r16
+L0:
+  // return HailResult{ seq: seq, cnt: cnt, out: out }
+  Const        r17, "__name"
+  Const        r18, "HailResult"
+  Const        r19, "seq"
+  Move         r20, r1
+  Const        r21, "cnt"
+  Move         r22, r2
+  Const        r23, "out"
+  Move         r24, r5
+  MakeMap      r25, 4, r17
+  Return       r25
+
+  // fun main() {
+func main (regs=47)
+  // var seqs: list<int> = []
+  Const        r1, []
+  Move         r2, r1
+  // var cnts: list<int> = []
+  Const        r1, []
+  Move         r3, r1
+  // for i in 0..jobs {
+  Const        r4, 0
+  Move         r5, r4
+L1:
+  LessInt      r6, r5, r0
+  JumpIfFalse  r6, L0
+  // seqs = append(seqs, i + 1)
+  Const        r7, 1
+  AddInt       r8, r5, r7
+  Append       r9, r2, r8
+  Move         r2, r9
+  // cnts = append(cnts, 0)
+  Const        r4, 0
+  Append       r10, r3, r4
+  Move         r3, r10
+  // for i in 0..jobs {
+  Const        r11, 1
+  AddInt       r12, r5, r11
+  Move         r5, r12
+  Jump         L1
+L0:
+  // while true {
+  Const        r13, true
+  JumpIfFalse  r13, L2
+  // var line = ""
+  Const        r14, ""
+  Move         r15, r14
+  // var i = 0
+  Const        r4, 0
+  Move         r5, r4
+L4:
+  // while i < jobs {
+  Less         r16, r5, r0
+  JumpIfFalse  r16, L3
+  // let res = hail(seqs[i], cnts[i])
+  Index        r19, r2, r5
+  Move         r17, r19
+  Index        r20, r3, r5
+  Move         r18, r20
+  Call2        r21, hail, r17, r18
+  Move         r22, r21
+  // seqs[i] = res.seq
+  Const        r23, "seq"
+  Index        r24, r22, r23
+  SetIndex     r2, r5, r24
+  // cnts[i] = res.cnt
+  Const        r25, "cnt"
+  Index        r26, r22, r25
+  SetIndex     r3, r5, r26
+  // line = line + res.out
+  Const        r27, "out"
+  Index        r28, r22, r27
+  Add          r29, r15, r28
+  Move         r15, r29
+  // i = i + 1
+  Const        r7, 1
+  AddInt       r30, r5, r7
+  Move         r5, r30
+  // while i < jobs {
+  Jump         L4
+L3:
+  // print(line)
+  Print        r15
+  // var done = true
+  Const        r13, true
+  Move         r31, r13
+  // var j = 0
+  Const        r4, 0
+  Move         r32, r4
+L7:
+  // while j < jobs {
+  Less         r33, r32, r0
+  JumpIfFalse  r33, L5
+  // if seqs[j] != 1 { done = false }
+  Index        r34, r2, r32
+  Const        r7, 1
+  NotEqual     r35, r34, r7
+  JumpIfFalse  r35, L6
+  Const        r36, false
+  Move         r31, r36
+L6:
+  // j = j + 1
+  Const        r7, 1
+  AddInt       r37, r32, r7
+  Move         r32, r37
+  // while j < jobs {
+  Jump         L7
+L5:
+  // if done { break }
+  JumpIfFalse  r31, L0
+L2:
+  // print("")
+  Const        r14, ""
+  Print        r14
+  // print("COUNTS:")
+  Const        r38, "COUNTS:"
+  Print        r38
+  // var counts = ""
+  Const        r14, ""
+  Move         r39, r14
+  // var k = 0
+  Const        r4, 0
+  Move         r40, r4
+L9:
+  // while k < jobs {
+  Less         r41, r40, r0
+  JumpIfFalse  r41, L8
+  // counts = counts + pad(cnts[k])
+  Index        r43, r3, r40
+  Move         r42, r43
+  Call         r44, pad, r42
+  Add          r45, r39, r44
+  Move         r39, r45
+  // k = k + 1
+  Const        r7, 1
+  AddInt       r46, r40, r7
+  Move         r40, r46
+  // while k < jobs {
+  Jump         L9
+L8:
+  // print(counts)
+  Print        r39
+  // print("")
+  Const        r14, ""
+  Print        r14
+  Return       r0

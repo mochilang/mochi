@@ -1,0 +1,192 @@
+func __main (regs=15)
+  // let x1 = [36.0, 40.0, 7.0, 39.0, 41.0, 15.0]
+  Const        r3, [36.0, 40.0, 7.0, 39.0, 41.0, 15.0]
+  Move         r0, r3
+  SetGlobal    0,0,0,0
+  // let x2 = [15.0, 6.0, 42.0, 41.0, 7.0, 36.0, 49.0, 40.0, 39.0, 47.0, 43.0]
+  Const        r4, [15.0, 6.0, 42.0, 41.0, 7.0, 36.0, 49.0, 40.0, 39.0, 47.0, 43.0]
+  Move         r1, r4
+  SetGlobal    1,1,0,0
+  // let x3 = [
+  Const        r5, [0.14082834, 0.0974879, 1.73131507, 0.87636009, -1.95059594, 0.73438555, -0.03035726, 1.4667597, -0.74621349, -0.72588772, 0.6390516, 0.61501527, -0.9898378, -1.00447874, -0.62759469, 0.66206163, 1.04312009, -0.10305385, 0.75775634, 0.32566578]
+  Move         r2, r5
+  SetGlobal    2,2,0,0
+  // print(str(fivenum(x1)))
+  Move         r6, r0
+  Call         r7, fivenum, r6
+  Str          r8, r7
+  Print        r8
+  // print(str(fivenum(x2)))
+  Move         r9, r1
+  Call         r10, fivenum, r9
+  Str          r11, r10
+  Print        r11
+  // print(str(fivenum(x3)))
+  Move         r12, r2
+  Call         r13, fivenum, r12
+  Str          r14, r13
+  Print        r14
+  Return       r0
+
+  // fun sortFloat(xs: list<float>): list<float> {
+func sortFloat (regs=25)
+  // var arr = xs
+  Move         r4, r3
+  // var n = len(arr)
+  Len          r5, r4
+  Move         r6, r5
+  // var i = 0
+  Const        r7, 0
+  Move         r8, r7
+L4:
+  // while i < n {
+  LessInt      r9, r8, r6
+  JumpIfFalse  r9, L0
+  // var j = 0
+  Const        r7, 0
+  Move         r10, r7
+L3:
+  // while j < n - 1 {
+  Const        r11, 1
+  SubInt       r12, r6, r11
+  LessInt      r13, r10, r12
+  JumpIfFalse  r13, L1
+  // if arr[j] > arr[j+1] {
+  Index        r14, r4, r10
+  Const        r11, 1
+  AddInt       r15, r10, r11
+  Index        r16, r4, r15
+  Less         r17, r16, r14
+  JumpIfFalse  r17, L2
+  // let t = arr[j]
+  Index        r18, r4, r10
+  Move         r19, r18
+  // arr[j] = arr[j+1]
+  Const        r11, 1
+  AddInt       r20, r10, r11
+  Index        r21, r4, r20
+  SetIndex     r4, r10, r21
+  // arr[j+1] = t
+  Const        r11, 1
+  AddInt       r22, r10, r11
+  SetIndex     r4, r22, r19
+L2:
+  // j = j + 1
+  Const        r11, 1
+  AddInt       r23, r10, r11
+  Move         r10, r23
+  // while j < n - 1 {
+  Jump         L3
+L1:
+  // i = i + 1
+  Const        r11, 1
+  AddInt       r24, r8, r11
+  Move         r8, r24
+  // while i < n {
+  Jump         L4
+L0:
+  // return arr
+  Return       r4
+
+  // fun ceilf(x: float): int {
+func ceilf (regs=10)
+  // let i = int(x)
+  Cast         r4, r3, int
+  Move         r5, r4
+  // if x > (i as float) { return i + 1 }
+  Cast         r6, r5, float
+  Less         r7, r6, r3
+  JumpIfFalse  r7, L0
+  Const        r8, 1
+  Add          r9, r5, r8
+  Return       r9
+L0:
+  // return i
+  Return       r5
+
+  // fun fivenum(a: list<float>): list<float> {
+func fivenum (regs=58)
+  // var arr = sortFloat(a)
+  Move         r4, r3
+  Call         r5, sortFloat, r4
+  Move         r6, r5
+  // let n = len(arr)
+  Len          r7, r6
+  Move         r8, r7
+  // let half = (n + 3) - ((n + 3) % 2)
+  Const        r9, 3
+  AddInt       r10, r8, r9
+  Const        r9, 3
+  AddInt       r11, r8, r9
+  Const        r12, 2
+  ModInt       r13, r11, r12
+  SubInt       r14, r10, r13
+  Move         r15, r14
+  // let n4 = (half / 2) as float / 2.0
+  Const        r12, 2
+  DivInt       r16, r15, r12
+  Cast         r17, r16, float
+  Const        r18, 2.0
+  DivFloat     r19, r17, r18
+  Move         r20, r19
+  // let nf = n as float
+  Cast         r21, r8, float
+  Move         r22, r21
+  // let d = [1.0, n4, (nf + 1.0) / 2.0, nf + 1.0 - n4, nf]
+  Const        r28, 1.0
+  Move         r23, r28
+  Move         r24, r20
+  Const        r28, 1.0
+  AddFloat     r29, r22, r28
+  Const        r18, 2.0
+  DivFloat     r30, r29, r18
+  Move         r25, r30
+  Const        r28, 1.0
+  AddFloat     r31, r22, r28
+  SubFloat     r32, r31, r20
+  Move         r26, r32
+  Move         r27, r22
+  MakeList     r33, 5, r23
+  Move         r34, r33
+  // var result: list<float> = []
+  Const        r35, []
+  Move         r36, r35
+  // var idx = 0
+  Const        r37, 0
+  Move         r38, r37
+L1:
+  // while idx < len(d) {
+  Len          r39, r34
+  LessInt      r40, r38, r39
+  JumpIfFalse  r40, L0
+  // let de = d[idx]
+  Index        r41, r34, r38
+  Move         r42, r41
+  // let fl = int(de - 1.0)
+  Const        r28, 1.0
+  SubFloat     r43, r42, r28
+  Cast         r44, r43, int
+  Move         r45, r44
+  // let cl = ceilf(de - 1.0)
+  Const        r28, 1.0
+  SubFloat     r47, r42, r28
+  Move         r46, r47
+  Call         r48, ceilf, r46
+  Move         r49, r48
+  // result = append(result, 0.5 * (arr[fl] + arr[cl]))
+  Const        r50, 0.5
+  Index        r51, r6, r45
+  Index        r52, r6, r49
+  Add          r53, r51, r52
+  MulFloat     r54, r50, r53
+  Append       r55, r36, r54
+  Move         r36, r55
+  // idx = idx + 1
+  Const        r56, 1
+  AddInt       r57, r38, r56
+  Move         r38, r57
+  // while idx < len(d) {
+  Jump         L1
+L0:
+  // return result
+  Return       r36

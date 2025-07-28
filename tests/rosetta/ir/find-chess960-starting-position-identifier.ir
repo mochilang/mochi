@@ -1,4 +1,4 @@
-func main (regs=9)
+func __main (regs=9)
   // var glyphs = "♜♞♝♛♚♖♘♗♕♔"
   Const        r4, "♜♞♝♛♚♖♘♗♕♔"
   Move         r0, r4

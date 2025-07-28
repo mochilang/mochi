@@ -1,4 +1,4 @@
-func main (regs=6)
+func __main (regs=6)
   // var phone1 = true
   Const        r2, true
   Move         r0, r2

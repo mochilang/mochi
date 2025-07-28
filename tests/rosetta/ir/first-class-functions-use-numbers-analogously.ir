@@ -1,0 +1,105 @@
+func __main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun multiplier(n1: float, n2: float): fun(float): float {
+func multiplier (regs=8)
+  // let n1n2 = n1 * n2
+  Mul          r2, r0, r1
+  Move         r3, r2
+  // return fun(m: float): float => n1n2 * m
+  Move         r4, r0
+  Move         r5, r3
+  Move         r6, r1
+  MakeClosure  r7, fn3, 3, r4
+  Return       r7
+
+  // fun main() {
+func main (regs=49)
+  // let x = 2.0
+  Const        r0, 2.0
+  Move         r1, r0
+  // let xi = 0.5
+  Const        r2, 0.5
+  Move         r3, r2
+  // let y = 4.0
+  Const        r4, 4.0
+  Move         r5, r4
+  // let yi = 0.25
+  Const        r6, 0.25
+  Move         r7, r6
+  // let z = x + y
+  Const        r8, 6.0
+  Move         r9, r8
+  // let zi = 1.0 / (x + y)
+  Const        r10, 1.0
+  Const        r11, 6.0
+  DivFloat     r12, r10, r11
+  Move         r13, r12
+  // let numbers = [x, y, z]
+  Move         r14, r1
+  Move         r15, r5
+  Move         r16, r9
+  MakeList     r17, 3, r14
+  Move         r18, r17
+  // let inverses = [xi, yi, zi]
+  Move         r19, r3
+  Move         r20, r7
+  Move         r21, r13
+  MakeList     r22, 3, r19
+  Move         r23, r22
+  // var mfs: list<fun(float): float> = []
+  Const        r24, []
+  Move         r25, r24
+  // var i = 0
+  Const        r26, 0
+  Move         r27, r26
+L1:
+  // while i < len(numbers) {
+  Len          r28, r18
+  LessInt      r29, r27, r28
+  JumpIfFalse  r29, L0
+  // mfs = append(mfs, multiplier(numbers[i], inverses[i]))
+  Index        r32, r18, r27
+  Move         r30, r32
+  Index        r33, r23, r27
+  Move         r31, r33
+  Call2        r34, multiplier, r30, r31
+  Append       r35, r25, r34
+  Move         r25, r35
+  // i = i + 1
+  Const        r36, 1
+  AddInt       r37, r27, r36
+  Move         r27, r37
+  // while i < len(numbers) {
+  Jump         L1
+L0:
+  // for mf in mfs {
+  IterPrep     r38, r25
+  Len          r39, r38
+  Const        r40, 0
+L3:
+  LessInt      r41, r40, r39
+  JumpIfFalse  r41, L2
+  Index        r42, r38, r40
+  Move         r43, r42
+  // print(str(mf(1.0)))
+  Const        r10, 1.0
+  Move         r44, r10
+  CallV        r45, r43, 1, r44
+  Str          r46, r45
+  Print        r46
+  // for mf in mfs {
+  Const        r47, 1
+  AddInt       r48, r40, r47
+  Move         r40, r48
+  Jump         L3
+L2:
+  Return       r0
+
+  // return fun(m: float): float => n1n2 * m
+func fn3 (regs=5)
+  // return fun(m: float): float => n1n2 * m
+  Mul          r4, r1, r3
+  Return       r4

@@ -1,0 +1,286 @@
+func __main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun weekday(y: int, m: int, d: int): int {
+func weekday (regs=39)
+  // var yy = y
+  Move         r3, r0
+  // var mm = m
+  Move         r4, r1
+  // if mm < 3 {
+  Const        r5, 3
+  Less         r6, r4, r5
+  JumpIfFalse  r6, L0
+  // mm = mm + 12
+  Const        r7, 12
+  Add          r8, r4, r7
+  Move         r4, r8
+  // yy = yy - 1
+  Const        r9, 1
+  Sub          r10, r3, r9
+  Move         r3, r10
+L0:
+  // let k = yy % 100
+  Const        r11, 100
+  Mod          r12, r3, r11
+  Move         r13, r12
+  // let j = (yy / 100) as int
+  Const        r11, 100
+  Div          r14, r3, r11
+  Cast         r15, r14, int
+  Move         r16, r15
+  // let a = ((13 * (mm + 1)) / 5) as int
+  Const        r17, 13
+  Const        r9, 1
+  Add          r18, r4, r9
+  Mul          r19, r17, r18
+  Const        r20, 5
+  Div          r21, r19, r20
+  Cast         r22, r21, int
+  Move         r23, r22
+  // let b = (k / 4) as int
+  Const        r24, 4
+  Div          r25, r13, r24
+  Cast         r26, r25, int
+  Move         r27, r26
+  // let c = (j / 4) as int
+  Const        r24, 4
+  Div          r28, r16, r24
+  Cast         r29, r28, int
+  Move         r30, r29
+  // return (d + a + k + b + c + 5 * j) % 7
+  Const        r20, 5
+  Mul          r31, r20, r16
+  Add          r32, r2, r23
+  Add          r33, r32, r13
+  Add          r34, r33, r27
+  Add          r35, r34, r30
+  Add          r36, r35, r31
+  Const        r37, 7
+  Mod          r38, r36, r37
+  Return       r38
+
+  // fun main() {
+func main (regs=104)
+  // let months31 = [1, 3, 5, 7, 8, 10, 12]
+  Const        r0, [1, 3, 5, 7, 8, 10, 12]
+  Move         r1, r0
+  // let names = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+  Const        r2, ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+  Move         r3, r2
+  // var count = 0
+  Const        r4, 0
+  Move         r5, r4
+  // var firstY = 0
+  Const        r4, 0
+  Move         r6, r4
+  // var firstM = 0
+  Const        r4, 0
+  Move         r7, r4
+  // var lastY = 0
+  Const        r4, 0
+  Move         r8, r4
+  // var lastM = 0
+  Const        r4, 0
+  Move         r9, r4
+  // var haveNone: list<int> = []
+  Const        r10, []
+  Move         r11, r10
+  // print("Months with five weekends:")
+  Const        r12, "Months with five weekends:"
+  Print        r12
+  // for year in 1900..2101 {
+  Const        r13, 1900
+  Const        r14, 2101
+  Move         r15, r13
+L5:
+  LessInt      r16, r15, r14
+  JumpIfFalse  r16, L0
+  // var hasOne = false
+  Const        r17, false
+  Move         r18, r17
+  // for m in months31 {
+  IterPrep     r19, r1
+  Len          r20, r19
+  Const        r21, 0
+L3:
+  LessInt      r22, r21, r20
+  JumpIfFalse  r22, L1
+  Index        r23, r19, r21
+  Move         r24, r23
+  // if weekday(year, m, 1) == 6 {
+  Move         r25, r15
+  Move         r26, r24
+  Const        r28, 1
+  Move         r27, r28
+  Call         r29, weekday, r25, r26, r27
+  Const        r30, 6
+  Equal        r31, r29, r30
+  JumpIfFalse  r31, L2
+  // print("  " + str(year) + " " + names[m-1])
+  Const        r32, "  "
+  Str          r33, r15
+  Add          r34, r32, r33
+  Const        r35, " "
+  Add          r36, r34, r35
+  Const        r28, 1
+  Sub          r37, r24, r28
+  Index        r38, r3, r37
+  Add          r39, r36, r38
+  Print        r39
+  // count = count + 1
+  Const        r28, 1
+  AddInt       r40, r5, r28
+  Move         r5, r40
+  // hasOne = true
+  Const        r41, true
+  Move         r18, r41
+  // lastY = year
+  Move         r8, r15
+  // lastM = m
+  Move         r9, r24
+  // if firstY == 0 {
+  Const        r4, 0
+  EqualInt     r42, r6, r4
+  JumpIfFalse  r42, L2
+  // firstY = year
+  Move         r6, r15
+  // firstM = m
+  Move         r7, r24
+L2:
+  // for m in months31 {
+  Const        r43, 1
+  AddInt       r44, r21, r43
+  Move         r21, r44
+  Jump         L3
+L1:
+  // if !hasOne {
+  Not          r45, r18
+  JumpIfFalse  r45, L4
+  // haveNone = append(haveNone, year)
+  Append       r46, r11, r15
+  Move         r11, r46
+L4:
+  // for year in 1900..2101 {
+  Const        r47, 1
+  AddInt       r48, r15, r47
+  Move         r15, r48
+  Jump         L5
+L0:
+  // print(str(count) + " total")
+  Str          r49, r5
+  Const        r50, " total"
+  Add          r51, r49, r50
+  Print        r51
+  // print("")
+  Const        r52, ""
+  Print        r52
+  // print("First five dates of weekends:")
+  Const        r53, "First five dates of weekends:"
+  Print        r53
+  // for i in 0..5 {
+  Const        r4, 0
+  Const        r54, 5
+  Move         r55, r4
+L7:
+  LessInt      r56, r55, r54
+  JumpIfFalse  r56, L6
+  // let day = 1 + 7 * i
+  Const        r28, 1
+  Const        r57, 7
+  MulInt       r58, r57, r55
+  AddInt       r59, r28, r58
+  Move         r60, r59
+  // print("  Friday, " + names[firstM-1] + " " + str(day) + ", " + str(firstY))
+  Const        r61, "  Friday, "
+  Const        r28, 1
+  Sub          r62, r7, r28
+  Index        r63, r3, r62
+  Add          r64, r61, r63
+  Const        r35, " "
+  Add          r65, r64, r35
+  Str          r66, r60
+  Add          r67, r65, r66
+  Const        r68, ", "
+  Add          r69, r67, r68
+  Str          r70, r6
+  Add          r71, r69, r70
+  Print        r71
+  // for i in 0..5 {
+  Const        r72, 1
+  AddInt       r73, r55, r72
+  Move         r55, r73
+  Jump         L7
+L6:
+  // print("Last five dates of weekends:")
+  Const        r74, "Last five dates of weekends:"
+  Print        r74
+  // for i in 0..5 {
+  Const        r4, 0
+  Const        r54, 5
+  Move         r55, r4
+L9:
+  LessInt      r75, r55, r54
+  JumpIfFalse  r75, L8
+  // let day = 1 + 7 * i
+  Const        r28, 1
+  Const        r57, 7
+  MulInt       r76, r57, r55
+  AddInt       r77, r28, r76
+  Move         r78, r77
+  // print("  Friday, " + names[lastM-1] + " " + str(day) + ", " + str(lastY))
+  Const        r61, "  Friday, "
+  Const        r28, 1
+  Sub          r79, r9, r28
+  Index        r80, r3, r79
+  Add          r81, r61, r80
+  Const        r35, " "
+  Add          r82, r81, r35
+  Str          r83, r78
+  Add          r84, r82, r83
+  Const        r68, ", "
+  Add          r85, r84, r68
+  Str          r86, r8
+  Add          r87, r85, r86
+  Print        r87
+  // for i in 0..5 {
+  Const        r88, 1
+  AddInt       r89, r55, r88
+  Move         r55, r89
+  Jump         L9
+L8:
+  // print("")
+  Const        r52, ""
+  Print        r52
+  // print("Years with no months with five weekends:")
+  Const        r90, "Years with no months with five weekends:"
+  Print        r90
+  // for y in haveNone {
+  IterPrep     r91, r11
+  Len          r92, r91
+  Const        r93, 0
+L11:
+  LessInt      r94, r93, r92
+  JumpIfFalse  r94, L10
+  Index        r95, r91, r93
+  Move         r96, r95
+  // print("  " + str(y))
+  Const        r32, "  "
+  Str          r97, r96
+  Add          r98, r32, r97
+  Print        r98
+  // for y in haveNone {
+  Const        r99, 1
+  AddInt       r100, r93, r99
+  Move         r93, r100
+  Jump         L11
+L10:
+  // print(str(len(haveNone)) + " total")
+  Len          r101, r11
+  Str          r102, r101
+  Const        r50, " total"
+  Add          r103, r102, r50
+  Print        r103
+  Return       r0

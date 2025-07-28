@@ -1,4 +1,4 @@
-func main (regs=3)
+func __main (regs=3)
   // let extensions = ["zip", "rar", "7z", "gz", "archive", "A##", "tar.bz2"]
   Const        r1, ["zip", "rar", "7z", "gz", "archive", "A##", "tar.bz2"]
   Move         r0, r1

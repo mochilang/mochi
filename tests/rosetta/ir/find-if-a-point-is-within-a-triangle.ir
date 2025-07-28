@@ -1,4 +1,4 @@
-func main (regs=1)
+func __main (regs=1)
   // main()
   Call         r0, main, 
   Return       r0

@@ -1,4 +1,4 @@
-func main (regs=1)
+func __main (regs=1)
   // main()
   Call         r0, main, 
   Return       r0
@@ -39,9 +39,9 @@ L1:
   Const        r12, true
   Return       r12
 
-  // fun search(base: int, prefix: int, depth: int, limit: int, max: int): int {
+  // fun search(base: int, prefix: int, depth: int, limit: int, best: int): int {
 func search (regs=25)
-  // var best = max
+  // var b = best
   Move         r5, r4
   // var d = 1
   Const        r6, 1
@@ -58,12 +58,12 @@ L3:
   Move         r12, r11
   Call         r13, isPrime, r12
   JumpIfFalse  r13, L1
-  // if val > best { best = val }
+  // if val > b { b = val }
   Less         r14, r5, r11
   JumpIfFalse  r14, L2
   Move         r5, r11
 L2:
-  // if depth + 1 < limit { best = search(base, val, depth+1, limit, best) }
+  // if depth + 1 < limit { b = search(base, val, depth + 1, limit, b) }
   Const        r6, 1
   Add          r15, r2, r6
   Less         r16, r15, r3
@@ -85,7 +85,7 @@ L1:
   // while d < base {
   Jump         L3
 L0:
-  // return best
+  // return b
   Return       r5
 
   // fun largest(base: int): int { return search(base, 0, 0, 6, 0) }
@@ -109,8 +109,8 @@ func main (regs=13)
   Const        r0, 3
   Move         r1, r0
 L1:
-  // while b <= 10 {
-  Const        r2, 10
+  // while b <= 17 {
+  Const        r2, 17
   LessEqInt    r3, r1, r2
   JumpIfFalse  r3, L0
   // print(str(b) + ": " + str(largest(b)))
@@ -126,7 +126,7 @@ L1:
   Const        r11, 1
   AddInt       r12, r1, r11
   Move         r1, r12
-  // while b <= 10 {
+  // while b <= 17 {
   Jump         L1
 L0:
   Return       r0

@@ -1,4 +1,4 @@
-func main (regs=7)
+func __main (regs=7)
   // for i in 0..3 {
   Const        r0, 0
   Const        r1, 3
