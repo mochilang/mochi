@@ -121,6 +121,7 @@ func TestConvert_Golden(t *testing.T) {
 			if err != nil {
 				t.Fatalf("run: %v", err)
 			}
+			// Compare output against the reference Mochi program
 			vmSrc, err := os.ReadFile(filepath.Join(root, "tests", "vm", "valid", name+".mochi"))
 			if err != nil {
 				t.Fatalf("missing vm source: %v", err)
@@ -131,6 +132,14 @@ func TestConvert_Golden(t *testing.T) {
 			}
 			if !bytes.Equal(gotOut, wantOut) {
 				t.Fatalf("output mismatch\nGot: %s\nWant: %s", gotOut, wantOut)
+			}
+
+			// Also ensure the output matches the original Erlang example
+			if outData, err := os.ReadFile(filepath.Join(root, "tests", "transpiler", "x", "erl", name+".out")); err == nil {
+				want := bytes.TrimSpace(outData)
+				if !bytes.Equal(gotOut, want) {
+					t.Fatalf(".out mismatch\nGot: %s\nWant: %s", gotOut, want)
+				}
 			}
 		})
 	}
