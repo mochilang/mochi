@@ -284,6 +284,12 @@ func parseToplevel(out *strings.Builder, src string) {
 
 func parseValue(expr string) string {
 	expr = strings.TrimSpace(expr)
+	if expr == "#t" {
+		return "true"
+	}
+	if expr == "#f" {
+		return "false"
+	}
 	if strings.HasPrefix(expr, "(") && strings.HasSuffix(expr, ")") {
 		inner := strings.TrimSpace(expr[1 : len(expr)-1])
 		expr = "(" + inner + ")"
@@ -342,6 +348,12 @@ func parseHash(expr string) string {
 
 func convertExpr(expr string) string {
 	expr = strings.TrimSpace(expr)
+	if expr == "#t" {
+		return "true"
+	}
+	if expr == "#f" {
+		return "false"
+	}
 	if strings.HasPrefix(expr, "(hash-ref") {
 		parts := strings.Fields(expr)
 		if len(parts) == 3 {
@@ -393,6 +405,23 @@ func convertExpr(expr string) string {
 		}
 		if start < len(inner) {
 			parts = append(parts, inner[start:])
+		}
+		if len(parts) >= 2 && (parts[0] == "and" || parts[0] == "or") {
+			op := "&&"
+			if parts[0] == "or" {
+				op = "||"
+			}
+			var args []string
+			for _, p := range parts[1:] {
+				args = append(args, convertExpr(p))
+			}
+			return strings.Join(args, " "+op+" ")
+		}
+		if len(parts) == 4 && parts[0] == "if" {
+			cond := convertExpr(parts[1])
+			thenExpr := convertExpr(parts[2])
+			elseExpr := convertExpr(parts[3])
+			return fmt.Sprintf("if %s then %s else %s", cond, thenExpr, elseExpr)
 		}
 		if len(parts) == 2 && parts[0] == "-" {
 			return "-" + convertExpr(parts[1])
@@ -469,8 +498,16 @@ func writeItems(out *strings.Builder, items []item) {
 				}
 			}
 			out.WriteByte(')')
-			out.WriteString(": int")
 			body := bodyFromSnippet(it.Body)
+			ret := "int"
+			for _, st := range body {
+				if strings.Contains(st, "return true") || strings.Contains(st, "return false") {
+					ret = "bool"
+					break
+				}
+			}
+			out.WriteString(": ")
+			out.WriteString(ret)
 			if len(body) == 0 {
 				out.WriteString(" {}\n")
 			} else {
@@ -506,6 +543,16 @@ func writeItems(out *strings.Builder, items []item) {
 func bodyFromSnippet(snippet string) []string {
 	snippet = strings.TrimSpace(snippet)
 	var out []string
+	multi := regexp.MustCompile(`^\(\s*displayln\s+(.+)\)\s+(#t|#f)$`)
+	if m := multi.FindStringSubmatch(snippet); len(m) == 3 {
+		out = append(out, "print("+convertExpr(strings.TrimSpace(m[1]))+")")
+		if m[2] == "#t" {
+			out = append(out, "return true")
+		} else {
+			out = append(out, "return false")
+		}
+		return out
+	}
 	lineRe := regexp.MustCompile(`\([^()]+\)`)
 	matches := lineRe.FindAllString(snippet, -1)
 	if len(matches) == 0 || len(matches[0]) != len(snippet) {
