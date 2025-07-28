@@ -1,0 +1,99 @@
+exit status 70
+WARNING: importing already defined binding: equal?
+WARNING: importing already defined binding: let-syntax
+WARNING: importing already defined binding: letrec-syntax
+WARNING: importing already defined binding: display
+WARNING: importing already defined binding: write
+WARNING: out of order define: (define numbers (_list 0 1 20 300 4000 5555 6789 9999))
+ERROR on line 767 of file /workspace/mochi/tests/rosetta/transpiler/scheme/cistercian-numerals.scm: non procedure application: ()
+  called from loop60 on line 736 of file /workspace/mochi/tests/rosetta/transpiler/scheme/cistercian-numerals.scm
+  called from call-with-current-continuation on line 848 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 90 of file /workspace/mochi/tests/rosetta/transpiler/scheme/cistercian-numerals.scm
+  called from <anonymous> on line 1292 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 821 of file /usr/share/chibi/init-7.scm
+0:
+          x           
+          x           
+          x           
+          x           
+          x           
+          x           
+          x           
+          x           
+          x           
+          x           
+          x           
+          x           
+          x           
+          x           
+          x           
+
+1:
+          x x x x x x 
+          x           
+          x           
+          x           
+          x           
+          x           
+          x           
+          x           
+          x           
+          x           
+          x           
+          x           
+          x           
+          x           
+          x           
+
+20:
+          x x x x x x 
+          x           
+          x           
+          x           
+x x x x x x           
+          x           
+          x           
+          x           
+          x           
+          x           
+          x           
+          x           
+          x           
+          x           
+          x           
+
+300:
+          x x x x x x 
+          x           
+          x           
+          x           
+x x x x x x           
+          x           
+          x           
+          x           
+          x           
+          x           
+          x         x 
+          x       x   
+          x     x     
+          x   x       
+          x x         
+
+4000:
+          x x x x x x 
+          x           
+          x           
+          x           
+x x x x x x           
+          x           
+          x           
+          x           
+          x           
+          x           
+        x x         x 
+      x   x       x   
+    x     x     x     
+  x       x   x       
+x         x x         
+
+5555:

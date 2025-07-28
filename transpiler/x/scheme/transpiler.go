@@ -2573,6 +2573,9 @@ func convertCall(target Node, call *parser.CallOp) (Node, error) {
 			}
 			return &List{Elems: []Node{Symbol("alist->hash-table"), &List{Elems: pairs}}}, nil
 		}
+		if _, ok := currentEnv.GetFunc(string(sym)); ok {
+			return &List{Elems: append([]Node{Symbol(string(sym))}, args...)}, nil
+		}
 		switch sym {
 		case "print":
 			forms := []Node{Symbol("begin")}
