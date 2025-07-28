@@ -77,6 +77,8 @@ func TestConvert_Golden(t *testing.T) {
 	}
 	allowed := map[string]bool{
 		"print_hello": true,
+		"len_builtin": true,
+		"len_string":  true,
 	}
 	outDir := filepath.Join(root, "tests", "a2mochi", "x", "ocaml")
 	os.MkdirAll(outDir, 0o755)

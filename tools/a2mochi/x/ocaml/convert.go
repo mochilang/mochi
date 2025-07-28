@@ -143,9 +143,7 @@ func formatProgram(p *Program) []byte {
 		line := "fun " + fn.Name + "(" + strings.Join(fn.Params, ", ") + ") {"
 		appendLine(line)
 		body := strings.ReplaceAll(fn.Body, "print_endline", "print")
-		body = strings.ReplaceAll(body, "string_of_int", "str")
-		body = strings.ReplaceAll(body, "string_of_float", "str")
-		body = strings.ReplaceAll(body, "string_of_bool", "str")
+		body = replaceBuiltins(body)
 		body = strings.ReplaceAll(body, "str (", "str(")
 		body = strings.ReplaceAll(body, "print (", "print(")
 		body = strings.ReplaceAll(body, "not ", "!")
@@ -161,9 +159,7 @@ func formatProgram(p *Program) []byte {
 	}
 	for _, pr := range p.Prints {
 		line := strings.TrimSpace(pr.Expr)
-		line = strings.ReplaceAll(line, "string_of_int", "")
-		line = strings.ReplaceAll(line, "string_of_float", "")
-		line = strings.ReplaceAll(line, "string_of_bool", "")
+		line = replaceBuiltins(line)
 		line = strings.ReplaceAll(line, "str (", "str(")
 		line = strings.ReplaceAll(line, "print (", "print(")
 		line = strings.ReplaceAll(line, "not ", "!")
@@ -261,17 +257,50 @@ func mapOcamlType(t string) string {
 }
 
 func simplifyConcat(expr string) string {
-	// handles String.concat " " ["text"]
+	// handles String.concat " " [expr]
 	expr = strings.TrimSpace(strings.TrimPrefix(expr, "String.concat"))
-	if strings.HasPrefix(expr, "\" \"") {
-		idx := strings.Index(expr, "[")
-		if idx != -1 {
-			rest := expr[idx+1:]
-			rest = strings.TrimSuffix(strings.TrimSpace(rest), "]")
-			return rest
+	if !strings.HasPrefix(expr, "\" \"") {
+		return expr
+	}
+	i := strings.Index(expr, "[")
+	if i == -1 {
+		return expr
+	}
+	s := expr[i+1:]
+	depth := 1
+	end := -1
+	for idx, r := range s {
+		if r == '[' {
+			depth++
+		} else if r == ']' {
+			depth--
+			if depth == 0 {
+				end = idx
+				break
+			}
 		}
 	}
-	return expr
+	if end == -1 {
+		return expr
+	}
+	inner := strings.TrimSpace(s[:end])
+	return inner
+}
+
+func replaceBuiltins(s string) string {
+	s = strings.ReplaceAll(s, "string_of_int", "str")
+	s = strings.ReplaceAll(s, "string_of_float", "str")
+	s = strings.ReplaceAll(s, "string_of_bool", "str")
+	s = strings.ReplaceAll(s, "String.length", "len")
+	strLen := regexp.MustCompile(`len\s+"([^"]+)"`)
+	s = strLen.ReplaceAllString(s, `len("$1")`)
+	listLen := regexp.MustCompile(`List\.length\s*\[([^\]]*)\]`)
+	s = listLen.ReplaceAllString(s, `len([$1])`)
+	s = strings.ReplaceAll(s, "List.length", "len")
+	listNth := regexp.MustCompile(`List\.nth\s*\(([^\)]+)\)\s*(\d+)`)
+	s = listNth.ReplaceAllString(s, `$1[$2]`)
+	s = strings.ReplaceAll(s, ";", ",")
+	return s
 }
 
 func header(src string) string {
