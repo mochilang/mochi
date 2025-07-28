@@ -92,6 +92,32 @@ func fixIndex(expr string) string {
 	expr = strings.ReplaceAll(expr, "[|", "[")
 	expr = strings.ReplaceAll(expr, "|]", "]")
 	expr = strings.ReplaceAll(expr, ";", ",")
+	expr = convertContains(expr)
+	expr = stripStringCall(expr)
+	return expr
+}
+
+var (
+	listContainsRe   = regexp.MustCompile(`\bList\.contains\s+(\S+)\s+(\S+)`)
+	stringContainsRe = regexp.MustCompile(`(\w+)\.Contains\(([^)]+)\)`)
+	stringCallRe     = regexp.MustCompile(`^string\s*\((.*)\)$`)
+)
+
+func convertContains(expr string) string {
+	if m := listContainsRe.FindStringSubmatch(expr); m != nil {
+		return listContainsRe.ReplaceAllString(expr, m[1]+" in "+m[2])
+	}
+	if m := stringContainsRe.FindStringSubmatch(expr); m != nil {
+		return stringContainsRe.ReplaceAllString(expr, m[2]+" in "+m[1])
+	}
+	return expr
+}
+
+func stripStringCall(expr string) string {
+	trimmed := strings.TrimSpace(expr)
+	if m := stringCallRe.FindStringSubmatch(trimmed); m != nil {
+		return strings.TrimSpace(m[1])
+	}
 	return expr
 }
 
