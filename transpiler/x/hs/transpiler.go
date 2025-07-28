@@ -576,6 +576,8 @@ func isPureExpr(e Expr) bool {
 		return true
 	case *UnaryExpr:
 		return isPureExpr(ex.Expr)
+	case *LenExpr:
+		return isPureExpr(ex.Arg)
 	case *CallExpr:
 		if n, ok := ex.Fun.(*NameRef); ok && n.Name == "unsafePerformIO" {
 			return false
