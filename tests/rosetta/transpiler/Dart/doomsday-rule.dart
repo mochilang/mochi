@@ -44,7 +44,7 @@ int parseIntStr(String str) {
   int n = 0;
   Map<String, int> digits = {"0": 0, "1": 1, "2": 2, "3": 3, "4": 4, "5": 5, "6": 6, "7": 7, "8": 8, "9": 9};
   while (i < str.length) {
-    n = n * 10 + digits[_substr(str, i, i + 1)]!;
+    n = (n * 10 + (digits[_substr(str, i, i + 1)] ?? 0)).toInt();
     i = i + 1;
   }
   if (neg) {
@@ -97,7 +97,6 @@ void _start() {
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "main"}));
 }
-  _main();
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "_start"}));

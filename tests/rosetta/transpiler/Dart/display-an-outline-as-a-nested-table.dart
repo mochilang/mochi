@@ -86,14 +86,14 @@ List<Map<String, dynamic>> makeIndent(String outline, int tab) {
 
 void toNest(List<Map<String, dynamic>> nodes, int start, int level, Map<String, dynamic> n) {
   if (level == 0) {
-    n["name"] = nodes[0]["name"]!;
+    n["name"] = (nodes[0]["name"] ?? null);
   }
   int i = start + 1;
   while (i < nodes.length) {
     Map<String, dynamic> node = nodes[i];
     int lev = node["level"]! as int;
     if (lev == level + 1) {
-    Map<String, dynamic> child = {"name": node["name"]!, "children": []};
+    Map<String, dynamic> child = {"name": (node["name"] ?? null), "children": []};
     toNest(nodes, i, level + 1, child);
     List<dynamic> cs = List<dynamic>.from(n["children"]!);
     cs = [...cs, child];
@@ -211,7 +211,6 @@ void _start() {
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "main"}));
 }
-  _main();
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "_start"}));

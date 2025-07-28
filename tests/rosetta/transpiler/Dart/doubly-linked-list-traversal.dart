@@ -41,10 +41,10 @@ String listString() {
   if (head == 0 - 1) {
     return "<nil>";
   }
-  String r = "[" + nodes[head]!["value"]!;
+  String r = "[" + (nodes[head]!["value"] ?? null);
   int id = nodes[head]!["next"]! as int;
   while (id != 0 - 1) {
-    r = r + " " + nodes[id]!["value"]!;
+    r = r + " " + (nodes[id]!["value"] ?? null);
     id = nodes[id]!["next"]! as int;
   }
   r = r + "]";
@@ -73,7 +73,7 @@ void main() {
   nodes[0]!["next"] = 2;
   print(listString());
   while (id != 0 - 1) {
-    out = out + " " + nodes[id]!["value"]!;
+    out = out + " " + (nodes[id]!["value"] ?? null);
     id = nodes[id]!["prev"]! as int;
   }
   print(out);

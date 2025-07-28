@@ -41,7 +41,7 @@ Map<String, dynamic> newList() {
 Map<String, dynamic> newNode(Map<String, dynamic> l, dynamic v) {
   int id = l["nextID"]! as int;
   l["nextID"] = id + 1;
-  Map<int, Map<String, dynamic>> nodes = l["nodes"]! as Map<int, Map<String, dynamic>>;
+  Map<int, Map<String, dynamic>> nodes = (l["nodes"]!).cast<int, Map<String, dynamic>>();
   Map<String, dynamic> n = {"id": id, "value": v, "next": 0, "prev": 0};
   nodes[id] = n;
   l["nodes"] = nodes;
@@ -50,18 +50,18 @@ Map<String, dynamic> newNode(Map<String, dynamic> l, dynamic v) {
 
 Map<String, dynamic> pushFront(Map<String, dynamic> l, dynamic v) {
   Map<String, dynamic> n = newNode(l, v);
-  n["next"] = l["head"]!;
+  n["next"] = (l["head"] ?? null);
   if ((l["head"]! as int) != 0) {
-    Map<int, Map<String, dynamic>> nodes = l["nodes"]! as Map<int, Map<String, dynamic>>;
+    Map<int, Map<String, dynamic>> nodes = (l["nodes"]!).cast<int, Map<String, dynamic>>();
     Map<String, dynamic> h = nodes[l["head"]! as int]!;
-    h["prev"] = n["id"]!;
+    h["prev"] = (n["id"] ?? null);
     nodes[h["id"]! as int] = h;
     l["nodes"] = nodes;
   } else {
-    l["tail"] = n["id"]!;
+    l["tail"] = (n["id"] ?? null);
   }
-  l["head"] = n["id"]!;
-  Map<int, Map<String, dynamic>> nodes2 = l["nodes"]! as Map<int, Map<String, dynamic>>;
+  l["head"] = (n["id"] ?? null);
+  Map<int, Map<String, dynamic>> nodes2 = (l["nodes"]!).cast<int, Map<String, dynamic>>();
   nodes2[n["id"]! as int] = n;
   l["nodes"] = nodes2;
   return n;
@@ -69,18 +69,18 @@ Map<String, dynamic> pushFront(Map<String, dynamic> l, dynamic v) {
 
 Map<String, dynamic> pushBack(Map<String, dynamic> l, dynamic v) {
   Map<String, dynamic> n = newNode(l, v);
-  n["prev"] = l["tail"]!;
+  n["prev"] = (l["tail"] ?? null);
   if ((l["tail"]! as int) != 0) {
-    Map<int, Map<String, dynamic>> nodes = l["nodes"]! as Map<int, Map<String, dynamic>>;
+    Map<int, Map<String, dynamic>> nodes = (l["nodes"]!).cast<int, Map<String, dynamic>>();
     Map<String, dynamic> t = nodes[l["tail"]! as int]!;
-    t["next"] = n["id"]!;
+    t["next"] = (n["id"] ?? null);
     nodes[t["id"]! as int] = t;
     l["nodes"] = nodes;
   } else {
-    l["head"] = n["id"]!;
+    l["head"] = (n["id"] ?? null);
   }
-  l["tail"] = n["id"]!;
-  Map<int, Map<String, dynamic>> nodes2 = l["nodes"]! as Map<int, Map<String, dynamic>>;
+  l["tail"] = (n["id"] ?? null);
+  Map<int, Map<String, dynamic>> nodes2 = (l["nodes"]!).cast<int, Map<String, dynamic>>();
   nodes2[n["id"]! as int] = n;
   l["nodes"] = nodes2;
   return n;
@@ -90,19 +90,19 @@ Map<String, dynamic> insertBefore(Map<String, dynamic> l, int refID, dynamic v) 
   if (refID == 0) {
     return pushFront(l, v);
   }
-  Map<int, Map<String, dynamic>> nodes = l["nodes"]! as Map<int, Map<String, dynamic>>;
+  Map<int, Map<String, dynamic>> nodes = (l["nodes"]!).cast<int, Map<String, dynamic>>();
   Map<String, dynamic> ref = nodes[refID]!;
   Map<String, dynamic> n = newNode(l, v);
-  n["prev"] = ref["prev"]!;
-  n["next"] = ref["id"]!;
+  n["prev"] = (ref["prev"] ?? null);
+  n["next"] = (ref["id"] ?? null);
   if ((ref["prev"]! as int) != 0) {
     Map<String, dynamic> p = nodes[ref["prev"]! as int]!;
-    p["next"] = n["id"]!;
+    p["next"] = (n["id"] ?? null);
     nodes[p["id"]! as int] = p;
   } else {
-    l["head"] = n["id"]!;
+    l["head"] = (n["id"] ?? null);
   }
-  ref["prev"] = n["id"]!;
+  ref["prev"] = (n["id"] ?? null);
   nodes[refID] = ref;
   nodes[n["id"]! as int] = n;
   l["nodes"] = nodes;
@@ -113,19 +113,19 @@ Map<String, dynamic> insertAfter(Map<String, dynamic> l, int refID, dynamic v) {
   if (refID == 0) {
     return pushBack(l, v);
   }
-  Map<int, Map<String, dynamic>> nodes = l["nodes"]! as Map<int, Map<String, dynamic>>;
+  Map<int, Map<String, dynamic>> nodes = (l["nodes"]!).cast<int, Map<String, dynamic>>();
   Map<String, dynamic> ref = nodes[refID]!;
   Map<String, dynamic> n = newNode(l, v);
-  n["next"] = ref["next"]!;
-  n["prev"] = ref["id"]!;
+  n["next"] = (ref["next"] ?? null);
+  n["prev"] = (ref["id"] ?? null);
   if ((ref["next"]! as int) != 0) {
     Map<String, dynamic> nx = nodes[ref["next"]! as int]!;
-    nx["prev"] = n["id"]!;
+    nx["prev"] = (n["id"] ?? null);
     nodes[nx["id"]! as int] = nx;
   } else {
-    l["tail"] = n["id"]!;
+    l["tail"] = (n["id"] ?? null);
   }
-  ref["next"] = n["id"]!;
+  ref["next"] = (n["id"] ?? null);
   nodes[refID] = ref;
   nodes[n["id"]! as int] = n;
   l["nodes"] = nodes;
@@ -139,10 +139,10 @@ void _main() {
   insertBefore(l, e4["id"]! as int, 3);
   insertAfter(l, e1["id"]! as int, "two");
   int id = l["head"]! as int;
-  Map<int, Map<String, dynamic>> nodes = l["nodes"]! as Map<int, Map<String, dynamic>>;
+  Map<int, Map<String, dynamic>> nodes = (l["nodes"]!).cast<int, Map<String, dynamic>>();
   while (id != 0) {
     Map<String, dynamic> node = nodes[id]!;
-    print((node["value"]!).toString());
+    print(((node["value"] ?? null)).toString());
     id = node["next"]! as int;
   }
 }
@@ -159,7 +159,6 @@ void _start() {
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "main"}));
 }
-  _main();
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "_start"}));
