@@ -40,17 +40,68 @@ func ConvertSource(n *Node) (string, error) {
 	out.WriteString("*/\n")
 
 	varDecl := regexp.MustCompile(`^static\s+int\s+([A-Za-z_][A-Za-z0-9_]*)\s*=\s*([-0-9]+);`)
+	typedVar := regexp.MustCompile(`^static\s+int\s+([A-Za-z_][A-Za-z0-9_]*)\s*;`)
+	assignStmt := regexp.MustCompile(`^([A-Za-z_][A-Za-z0-9_]*)\s*=\s*(.+);`)
+	whileStart := regexp.MustCompile(`^while\s*\((.*)\)\s*\{`)
+	forStart := regexp.MustCompile(`^for\s*\(int\s+([A-Za-z_][A-Za-z0-9_]*)\s*=\s*([^;]+);\s*[A-Za-z_][A-Za-z0-9_]*\s*<\s*([^;]+);\s*[A-Za-z_][A-Za-z0-9_]*\+\+\)\s*\{`)
 	printStmt := regexp.MustCompile(`System\.out\.println\((.*)\);`)
+
+	// detect mutated variables so that we emit `var` declarations
+	mutated := map[string]bool{}
+	for _, line := range n.Lines {
+		line = strings.TrimSpace(line)
+		if m := assignStmt.FindStringSubmatch(line); m != nil && !strings.HasPrefix(line, "static") {
+			mutated[m[1]] = true
+		}
+	}
+
+	indent := ""
+	var stack []string
 
 	for _, line := range n.Lines {
 		line = strings.TrimSpace(line)
+
 		if m := varDecl.FindStringSubmatch(line); m != nil {
-			fmt.Fprintf(&out, "let %s = %s\n", m[1], m[2])
+			kw := "let"
+			if mutated[m[1]] {
+				kw = "var"
+			}
+			fmt.Fprintf(&out, "%s%s %s = %s\n", indent, kw, m[1], m[2])
+			continue
+		}
+		if m := typedVar.FindStringSubmatch(line); m != nil {
+			fmt.Fprintf(&out, "%svar %s = 0\n", indent, m[1])
+			continue
+		}
+		if m := assignStmt.FindStringSubmatch(line); m != nil && !strings.HasPrefix(line, "static") {
+			fmt.Fprintf(&out, "%s%s = %s\n", indent, m[1], m[2])
+			continue
+		}
+		if m := whileStart.FindStringSubmatch(line); m != nil {
+			cond := strings.TrimSpace(m[1])
+			fmt.Fprintf(&out, "%swhile (%s) {\n", indent, cond)
+			indent += "  "
+			stack = append(stack, "while")
+			continue
+		}
+		if m := forStart.FindStringSubmatch(line); m != nil {
+			name := m[1]
+			start := strings.TrimSpace(m[2])
+			end := strings.TrimSpace(m[3])
+			fmt.Fprintf(&out, "%sfor %s in %s..%s {\n", indent, name, start, end)
+			indent += "  "
+			stack = append(stack, "for")
+			continue
+		}
+		if line == "}" && len(stack) > 0 {
+			indent = indent[:len(indent)-2]
+			fmt.Fprintf(&out, "%s}\n", indent)
+			stack = stack[:len(stack)-1]
 			continue
 		}
 		if m := printStmt.FindStringSubmatch(line); m != nil {
 			expr := strings.TrimSpace(m[1])
-			fmt.Fprintf(&out, "print(%s)\n", expr)
+			fmt.Fprintf(&out, "%sprint(%s)\n", indent, expr)
 		}
 	}
 	return out.String(), nil
