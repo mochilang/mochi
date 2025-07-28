@@ -1,0 +1,16 @@
+(program
+  (fun main
+    (var sum (int 0))
+    (for i
+      (in
+        (list (int 1) (int 2) (int 3))
+      )
+      (block
+        (assign sum
+          (binary + (selector sum) (selector i))
+        )
+      )
+    )
+    (call print (selector sum))
+  )
+)

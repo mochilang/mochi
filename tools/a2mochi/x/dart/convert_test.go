@@ -176,10 +176,11 @@ func TestConvert_Golden(t *testing.T) {
 		"unary_neg":                true,
 		"update_stmt":              true,
 		"user_type_literal":        true,
-		"values_builtin":           true,
-		"var_assignment":           true,
-		"while_loop":               true,
-	}
+                "values_builtin":           true,
+                "var_assignment":           true,
+                "while_loop":               true,
+                "simple_loop":              true,
+        }
 
 	outDir := filepath.Join(root, "tests/a2mochi/x/dart")
 	os.MkdirAll(outDir, 0o755)
@@ -225,25 +226,28 @@ func TestConvert_Golden(t *testing.T) {
 				t.Fatalf("print: %v", err)
 			}
 			code := buf.String()
-			mochiPath := filepath.Join(outDir, name+".mochi")
-			if *update {
-				os.WriteFile(mochiPath, []byte(code), 0644)
-			}
-			gotOut, err := runMochi(code)
-			if err != nil {
-				t.Fatalf("run: %v", err)
-			}
+                        mochiPath := filepath.Join(outDir, name+".mochi")
+                        if *update {
+                                os.WriteFile(mochiPath, []byte(code), 0644)
+                        }
+                        gotOut, err := runMochi(code)
+                        if err != nil {
+                                t.Fatalf("run: %v", err)
+                        }
 			vmSrc, err := os.ReadFile(filepath.Join(root, "tests/vm/valid", name+".mochi"))
 			if err != nil {
 				t.Fatalf("missing vm source: %v", err)
 			}
-			wantOut, err := runMochi(string(vmSrc))
-			if err != nil {
-				t.Fatalf("run vm: %v", err)
-			}
-			if !bytes.Equal(gotOut, wantOut) {
-				t.Fatalf("output mismatch\nGot: %s\nWant: %s", gotOut, wantOut)
-			}
+                        wantOut, err := runMochi(string(vmSrc))
+                        if err != nil {
+                                t.Fatalf("run vm: %v", err)
+                        }
+                        if *update {
+                                os.WriteFile(filepath.Join(outDir, name+".out"), gotOut, 0644)
+                        }
+                        if !bytes.Equal(gotOut, wantOut) {
+                                t.Fatalf("output mismatch\nGot: %s\nWant: %s", gotOut, wantOut)
+                        }
 		})
 	}
 }
