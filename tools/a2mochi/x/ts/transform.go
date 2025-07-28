@@ -12,79 +12,91 @@ import (
 
 // Transform converts a Program into a Mochi AST node.
 func Transform(p *Program) (*ast.Node, error) {
-	var b strings.Builder
+	root := &ast.Node{Kind: "program"}
 	for _, d := range p.Nodes {
-		switch d.Kind {
-		case "var":
-			emitVar(&b, d)
-		case "funcvar":
-			emitFuncVar(&b, d)
-		case "func":
-			emitFunc(&b, d)
-		case "enum":
-			emitEnum(&b, d)
-		case "type":
-			emitType(&b, d)
-		case "alias":
-			emitAlias(&b, d)
-		case "print":
-			emitPrint(&b, d)
-		case "expr":
-			emitExpr(&b, d)
-		case "forof":
-			emitForOf(&b, d)
-		case "forin":
-			emitForIn(&b, d)
-		case "for":
-			emitForRange(&b, d)
-		case "while":
-			emitWhile(&b, d)
+		st, err := nodeFromDecl(d)
+		if err != nil {
+			return nil, err
+		}
+		if st != nil {
+			root.Children = append(root.Children, st)
 		}
 	}
-	src := b.String()
+	return root, nil
+}
+
+func nodeFromDecl(d Node) (*ast.Node, error) {
+	var src string
+	switch d.Kind {
+	case "var":
+		src = emitVar(d)
+	case "funcvar":
+		src = emitFuncVar(d)
+	case "func":
+		src = emitFunc(d)
+	case "enum":
+		src = emitEnum(d)
+	case "type":
+		src = emitType(d)
+	case "alias":
+		src = emitAlias(d)
+	case "print":
+		src = emitPrint(d)
+	case "expr":
+		src = emitExpr(d)
+	case "forof":
+		src = emitForOf(d)
+	case "forin":
+		src = emitForIn(d)
+	case "for":
+		src = emitForRange(d)
+	case "while":
+		src = emitWhile(d)
+	}
+	if src == "" {
+		return nil, nil
+	}
 	prog, err := parser.ParseString(src)
 	if err != nil {
 		return nil, err
 	}
-	return fromProgram(prog), nil
+	if len(prog.Statements) == 0 {
+		return nil, nil
+	}
+	return ast.FromStatement(prog.Statements[0]), nil
 }
 
-func fromProgram(p *parser.Program) *ast.Node {
-	root := &ast.Node{Kind: "program"}
-	if p.Package != "" {
-		root.Value = p.Package
-	}
-	for _, st := range p.Statements {
-		root.Children = append(root.Children, ast.FromStatement(st))
-	}
-	return root
-}
-
-func emitVar(b *strings.Builder, d Node) {
-	b.WriteString("let ")
-	b.WriteString(d.Name)
+func emitVar(d Node) string {
+	var sb strings.Builder
+	sb.WriteString("let ")
+	sb.WriteString(d.Name)
 	if d.Ret != "" {
-		b.WriteString(": ")
-		b.WriteString(toMochiType(d.Ret))
+		sb.WriteString(": ")
+		sb.WriteString(toMochiType(d.Ret))
 	}
 	if d.Value != "" {
-		b.WriteString(" = ")
-		b.WriteString(d.Value)
+		sb.WriteString(" = ")
+		sb.WriteString(d.Value)
 	}
-	b.WriteByte('\n')
+	sb.WriteByte('\n')
+	return sb.String()
 }
 
-func emitFuncVar(b *strings.Builder, d Node) {
-	b.WriteString("let ")
-	b.WriteString(d.Name)
-	b.WriteString(" = ")
-	emitFuncSignature(b, d)
+func emitFuncVar(d Node) string {
+	var sb strings.Builder
+	sb.WriteString("let ")
+	sb.WriteString(d.Name)
+	sb.WriteString(" = ")
+	emitFuncSignature(&sb, d)
+	return sb.String()
 }
 
-func emitFunc(b *strings.Builder, d Node) {
-	b.WriteString("fun ")
-	b.WriteString(d.Name)
-	emitFuncSignature(b, d)
+func emitFunc(d Node) string {
+	var sb strings.Builder
+	sb.WriteString("fun ")
+	sb.WriteString(d.Name)
+	emitFuncSignature(&sb, d)
+	return sb.String()
 }
 
 func emitFuncSignature(b *strings.Builder, d Node) {
@@ -108,72 +120,75 @@ func emitFuncSignature(b *strings.Builder, d Node) {
 	b.WriteByte('\n')
 }
 
-func emitEnum(b *strings.Builder, d Node) {
-	b.WriteString("type ")
-	b.WriteString(d.Name)
-	b.WriteString(" {\n")
+func emitEnum(d Node) string {
+	var sb strings.Builder
+	sb.WriteString("type ")
+	sb.WriteString(d.Name)
+	sb.WriteString(" {\n")
 	for _, v := range d.Variants {
-		b.WriteString("  ")
-		b.WriteString(v)
-		b.WriteByte('\n')
+		sb.WriteString("  ")
+		sb.WriteString(v)
+		sb.WriteByte('\n')
 	}
-	b.WriteString("}\n")
+	sb.WriteString("}\n")
+	return sb.String()
 }
 
-func emitType(b *strings.Builder, d Node) {
-	b.WriteString("type ")
-	b.WriteString(d.Name)
-	b.WriteString(" {\n")
+func emitType(d Node) string {
+	var sb strings.Builder
+	sb.WriteString("type ")
+	sb.WriteString(d.Name)
+	sb.WriteString(" {\n")
 	for _, f := range d.Fields {
-		b.WriteString("  ")
-		b.WriteString(f.Name)
+		sb.WriteString("  ")
+		sb.WriteString(f.Name)
 		if f.Typ != "" {
-			b.WriteString(": ")
-			b.WriteString(toMochiType(f.Typ))
+			sb.WriteString(": ")
+			sb.WriteString(toMochiType(f.Typ))
 		}
-		b.WriteByte('\n')
+		sb.WriteByte('\n')
 	}
-	b.WriteString("}\n")
+	sb.WriteString("}\n")
+	return sb.String()
 }
 
-func emitAlias(b *strings.Builder, d Node) {
-	b.WriteString("type ")
-	b.WriteString(d.Name)
-	b.WriteString(" = ")
-	b.WriteString(toMochiType(d.Alias))
-	b.WriteByte('\n')
+func emitAlias(d Node) string {
+	var sb strings.Builder
+	sb.WriteString("type ")
+	sb.WriteString(d.Name)
+	sb.WriteString(" = ")
+	sb.WriteString(toMochiType(d.Alias))
+	sb.WriteByte('\n')
+	return sb.String()
 }
 
-func emitPrint(b *strings.Builder, d Node) {
-	b.WriteString("print(")
-	b.WriteString(d.Body)
-	b.WriteString(")\n")
+func emitPrint(d Node) string {
+	return fmt.Sprintf("print(%s)\n", d.Body)
 }
 
-func emitExpr(b *strings.Builder, d Node) {
-	b.WriteString(convertExpr(d.Expr))
-	b.WriteByte('\n')
+func emitExpr(d Node) string {
+	return convertExpr(d.Expr) + "\n"
 }
 
-func emitForOf(b *strings.Builder, d Node) {
+func emitForOf(d Node) string {
 	body := replaceConsoleLogs(d.Body)
 	list := replaceObjectValues(d.List)
-	fmt.Fprintf(b, "for %s in %s {%s}\n", d.Iter, list, body)
+	return fmt.Sprintf("for %s in %s {%s}\n", d.Iter, list, body)
 }
 
-func emitForIn(b *strings.Builder, d Node) {
+func emitForIn(d Node) string {
 	body := replaceConsoleLogs(d.Body)
-	fmt.Fprintf(b, "for %s in %s {%s}\n", d.Iter, d.List, body)
+	return fmt.Sprintf("for %s in %s {%s}\n", d.Iter, d.List, body)
 }
 
-func emitForRange(b *strings.Builder, d Node) {
+func emitForRange(d Node) string {
 	body := replaceConsoleLogs(d.Body)
-	fmt.Fprintf(b, "for %s in %s..%s {%s}\n", d.Iter, d.StartVal, d.EndVal, body)
+	return fmt.Sprintf("for %s in %s..%s {%s}\n", d.Iter, d.StartVal, d.EndVal, body)
 }
 
-func emitWhile(b *strings.Builder, d Node) {
+func emitWhile(d Node) string {
 	body := replaceConsoleLogs(d.Body)
-	fmt.Fprintf(b, "while %s {%s}\n", d.Cond, body)
+	return fmt.Sprintf("while %s {%s}\n", d.Cond, body)
 }
 
 // --- Helpers copied from archived any2mochi ---
