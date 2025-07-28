@@ -351,13 +351,11 @@ func exprString(n *Node) string {
 		}
 		if idx < len(n.Children) {
 			if n.Children[idx].Kind == "block" {
-				sb.WriteString(" {")
+				sb.WriteString(" {\n")
 				var tmp strings.Builder
 				writeBlock(&tmp, n.Children[idx], 1)
+				sb.WriteString(tmp.String())
 				sb.WriteString("}")
-				// simplistic single line block
-				body := tmp.String()
-				sb.WriteString(strings.TrimSuffix(body, "\n"))
 			} else {
 				sb.WriteString(" => ")
 				sb.WriteString(exprString(n.Children[idx]))

@@ -120,22 +120,22 @@ func convertLuaStmts(stmts []luaast.Stmt, indent int, vars map[string]bool) []st
 			out = append(out, ind+"} while !("+cond+")")
 		case *luaast.IfStmt:
 			writeLuaIfStmt(&out, s, indent)
-                case *luaast.NumberForStmt:
-                        step := "1"
-                        if s.Step != nil {
-                                step = luaExprString(s.Step)
-                        }
-                        init := luaExprString(s.Init)
-                        limit := luaExprString(s.Limit)
-                        endVal := fmt.Sprintf("(%s) + %s", limit, step)
-                        loop := fmt.Sprintf("for %s in %s..%s", s.Name, init, endVal)
-                        if step != "1" {
-                                loop += " step " + step
-                        }
-                        loop += " {"
-                        out = append(out, ind+loop)
-                        out = append(out, convertLuaStmts(s.Stmts, indent+1, map[string]bool{})...)
-                        out = append(out, ind+"}")
+		case *luaast.NumberForStmt:
+			step := "1"
+			if s.Step != nil {
+				step = luaExprString(s.Step)
+			}
+			init := luaExprString(s.Init)
+			limit := luaExprString(s.Limit)
+			endVal := fmt.Sprintf("(%s) + %s", limit, step)
+			loop := fmt.Sprintf("for %s in %s..%s", s.Name, init, endVal)
+			if step != "1" {
+				loop += " step " + step
+			}
+			loop += " {"
+			out = append(out, ind+loop)
+			out = append(out, convertLuaStmts(s.Stmts, indent+1, map[string]bool{})...)
+			out = append(out, ind+"}")
 		case *luaast.GenericForStmt:
 			iter := ""
 			if len(s.Exprs) > 0 {
@@ -252,6 +252,14 @@ func luaExprString(e luaast.Expr) string {
 		if v.Method != "" {
 			callee = luaExprString(v.Receiver) + "." + v.Method
 		}
+		if fn, ok := v.Func.(*luaast.FunctionExpr); ok {
+			if isAppendFunc(fn) && len(v.Args) == 2 {
+				return "append(" + luaExprString(v.Args[0]) + ", " + luaExprString(v.Args[1]) + ")"
+			}
+			if isAvgFunc(fn) && len(v.Args) == 1 {
+				return "avg(" + luaExprString(v.Args[0]) + ")"
+			}
+		}
 		if (callee == "pairs" || callee == "ipairs") && len(args) == 1 {
 			return luaExprString(v.Args[0])
 		}
@@ -362,6 +370,80 @@ func luaFuncSignature(fn *luaast.FunctionExpr) string {
 		}
 	}
 	return "(" + strings.Join(params, ", ") + ")"
+}
+
+func isAppendFunc(fn *luaast.FunctionExpr) bool {
+	if len(fn.Stmts) != 3 {
+		return false
+	}
+	assign, ok := fn.Stmts[0].(*luaast.LocalAssignStmt)
+	if !ok || len(assign.Names) != 1 || assign.Names[0] != "res" || len(assign.Exprs) != 1 {
+		return false
+	}
+	tbl, ok := assign.Exprs[0].(*luaast.TableExpr)
+	if !ok || len(tbl.Fields) != 1 {
+		return false
+	}
+	call, ok := tbl.Fields[0].Value.(*luaast.FuncCallExpr)
+	if !ok || !isAttrCall(call.Func, "table", "unpack") {
+		return false
+	}
+	fc, ok := fn.Stmts[1].(*luaast.FuncCallStmt)
+	if !ok {
+		return false
+	}
+	if !isAttrCall(fc.Expr.(*luaast.FuncCallExpr).Func, "table", "insert") {
+		return false
+	}
+	ret, ok := fn.Stmts[2].(*luaast.ReturnStmt)
+	if !ok || len(ret.Exprs) != 1 {
+		return false
+	}
+	if id, ok := ret.Exprs[0].(*luaast.IdentExpr); !ok || id.Value != "res" {
+		return false
+	}
+	return true
+}
+
+func isAvgFunc(fn *luaast.FunctionExpr) bool {
+	// Simple heuristic for the generated avg_builtin function
+	if len(fn.Stmts) < 4 {
+		return false
+	}
+	// first stmt: local sum = 0
+	if assign, ok := fn.Stmts[0].(*luaast.LocalAssignStmt); !ok || len(assign.Names) != 1 || assign.Names[0] != "sum" {
+		return false
+	}
+	// presence of for loop over ipairs and final return statements
+	hasLoop := false
+	hasReturn := false
+	for _, st := range fn.Stmts {
+		switch st.(type) {
+		case *luaast.NumberForStmt, *luaast.GenericForStmt:
+			hasLoop = true
+		case *luaast.ReturnStmt:
+			hasReturn = true
+		}
+	}
+	return hasLoop && hasReturn
+}
+
+func isAttrCall(e luaast.Expr, object, method string) bool {
+	get, ok := e.(*luaast.AttrGetExpr)
+	if !ok {
+		return false
+	}
+	obj, ok1 := get.Object.(*luaast.IdentExpr)
+	if !ok1 || obj.Value != object {
+		return false
+	}
+	switch k := get.Key.(type) {
+	case *luaast.IdentExpr:
+		return k.Value == method
+	case *luaast.StringExpr:
+		return k.Value == method
+	}
+	return false
 }
 
 func preprocessLuaSource(src string) string {
