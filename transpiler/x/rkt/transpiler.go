@@ -2392,14 +2392,19 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 							break
 						}
 					} else if lit.Value == "contains" {
-						if types.IsStringPrimary(pf.Target, env) {
-							arg, err := convertExpr(op.Call.Args[0], env)
-							if err != nil {
-								return nil, err
-							}
-							expr = &CallExpr{Func: "string-contains?", Args: []Expr{n.Target, arg}}
-							break
+						arg, err := convertExpr(op.Call.Args[0], env)
+						if err != nil {
+							return nil, err
 						}
+						switch {
+						case types.IsStringPrimary(pf.Target, env):
+							expr = &CallExpr{Func: "string-contains?", Args: []Expr{n.Target, arg}}
+						case types.IsMapPrimary(pf.Target, env):
+							expr = &CallExpr{Func: "hash-has-key?", Args: []Expr{n.Target, arg}}
+						default:
+							expr = &CallExpr{Func: "member", Args: []Expr{arg, n.Target}}
+						}
+						break
 					} else if lit.Value == "padStart" {
 						if len(op.Call.Args) == 2 {
 							arg1, err := convertExpr(op.Call.Args[0], env)
@@ -2759,7 +2764,18 @@ func convertCall(c *parser.CallExpr, env *types.Env) (Expr, error) {
 		}
 	case "contains":
 		if len(args) == 2 {
-			return &CallExpr{Func: "string-contains?", Args: args}, nil
+			if env != nil {
+				t := types.TypeOfExprBasic(c.Args[0], env)
+				switch t.(type) {
+				case types.MapType:
+					return &CallExpr{Func: "hash-has-key?", Args: []Expr{args[0], args[1]}}, nil
+				case types.ListType:
+					return &CallExpr{Func: "member", Args: []Expr{args[1], args[0]}}, nil
+				case types.StringType:
+					return &CallExpr{Func: "string-contains?", Args: args}, nil
+				}
+			}
+			return &CallExpr{Func: "member", Args: []Expr{args[1], args[0]}}, nil
 		}
 	case "sha256":
 		if len(args) == 1 {
