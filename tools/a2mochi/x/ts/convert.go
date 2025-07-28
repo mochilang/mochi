@@ -152,7 +152,7 @@ func writeVar(b *strings.Builder, d Node) {
 	b.WriteString(d.Name)
 	if d.Ret != "" {
 		b.WriteString(": ")
-		b.WriteString(d.Ret)
+		b.WriteString(toMochiType(d.Ret))
 	}
 	if d.Value != "" {
 		b.WriteString(" = ")
@@ -183,13 +183,13 @@ func writeFuncSignature(b *strings.Builder, d Node) {
 		b.WriteString(p.Name)
 		if p.Typ != "" {
 			b.WriteString(": ")
-			b.WriteString(p.Typ)
+			b.WriteString(toMochiType(p.Typ))
 		}
 	}
 	b.WriteByte(')')
 	if d.Ret != "" && d.Ret != "void" {
 		b.WriteString(": ")
-		b.WriteString(d.Ret)
+		b.WriteString(toMochiType(d.Ret))
 	}
 	b.WriteString(" {\n}")
 	b.WriteByte('\n')
@@ -216,7 +216,7 @@ func writeType(b *strings.Builder, d Node) {
 		b.WriteString(f.Name)
 		if f.Typ != "" {
 			b.WriteString(": ")
-			b.WriteString(f.Typ)
+			b.WriteString(toMochiType(f.Typ))
 		}
 		b.WriteByte('\n')
 	}
@@ -227,7 +227,7 @@ func writeAlias(b *strings.Builder, d Node) {
 	b.WriteString("type ")
 	b.WriteString(d.Name)
 	b.WriteString(" = ")
-	b.WriteString(d.Alias)
+	b.WriteString(toMochiType(d.Alias))
 	b.WriteByte('\n')
 }
 
@@ -369,4 +369,76 @@ func convertExpr(expr string) string {
 		}
 	}
 	return expr
+}
+
+func toMochiType(t string) string {
+	t = strings.TrimSpace(t)
+	if strings.Contains(t, "|") {
+		parts := strings.Split(t, "|")
+		filtered := make([]string, 0, len(parts))
+		for _, p := range parts {
+			p = strings.TrimSpace(p)
+			if p == "null" || p == "undefined" {
+				continue
+			}
+			mp := toMochiType(p)
+			if mp != "" {
+				filtered = append(filtered, mp)
+			}
+		}
+		if len(filtered) == 1 {
+			return filtered[0]
+		}
+		if len(filtered) > 1 {
+			return "any"
+		}
+		return ""
+	}
+	switch t {
+	case "", "any", "unknown", "object":
+		return "any"
+	case "number":
+		return "int"
+	case "string":
+		return "string"
+	case "boolean":
+		return "bool"
+	case "void", "undefined", "null":
+		return ""
+	}
+	if strings.HasSuffix(t, "[]") {
+		inner := toMochiType(t[:len(t)-2])
+		if inner == "" {
+			inner = "any"
+		}
+		return "list<" + inner + ">"
+	}
+	if strings.HasPrefix(t, "Array<") && strings.HasSuffix(t, ">") {
+		inner := toMochiType(t[6 : len(t)-1])
+		if inner == "" {
+			inner = "any"
+		}
+		return "list<" + inner + ">"
+	}
+	if strings.HasPrefix(t, "Record<") && strings.HasSuffix(t, ">") {
+		inner := t[7 : len(t)-1]
+		comma := strings.Index(inner, ",")
+		var k, v string
+		if comma >= 0 {
+			k = strings.TrimSpace(inner[:comma])
+			v = strings.TrimSpace(inner[comma+1:])
+		} else {
+			k = strings.TrimSpace(inner)
+		}
+		key := toMochiType(k)
+		val := toMochiType(v)
+		if key == "" {
+			key = "any"
+		}
+		if val == "" {
+			val = "any"
+		}
+		return "map<" + key + "," + val + ">"
+	}
+	return t
 }

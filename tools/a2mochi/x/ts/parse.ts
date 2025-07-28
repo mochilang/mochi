@@ -36,62 +36,6 @@ interface TSDecl {
   endOff?: number;
 }
 
-function tsToMochiType(t: string): string {
-  t = t.trim();
-  if (t.includes("|")) {
-    const parts = t
-      .split("|")
-      .map((p) => p.trim())
-      .filter((p) => p !== "null" && p !== "undefined")
-      .map(tsToMochiType)
-      .filter(Boolean);
-    if (parts.length === 1) return parts[0];
-    if (parts.length > 1) return "any";
-    return "";
-  }
-  switch (t) {
-    case "":
-    case "any":
-    case "unknown":
-    case "object":
-      return "any";
-    case "number":
-      return "int";
-    case "string":
-      return "string";
-    case "boolean":
-      return "bool";
-    case "void":
-    case "undefined":
-    case "null":
-      return "";
-  }
-  if (t.endsWith("[]")) {
-    const inner = tsToMochiType(t.slice(0, -2)) || "any";
-    return `list<${inner}>`;
-  }
-  if (t.startsWith("Array<") && t.endsWith(">")) {
-    const inner = tsToMochiType(t.slice(6, -1)) || "any";
-    return `list<${inner}>`;
-  }
-  if (t.startsWith("Record<") && t.endsWith(">")) {
-    const inner = t.slice(7, -1);
-    const comma = inner.indexOf(",");
-    let k = "";
-    let v = "";
-    if (comma >= 0) {
-      k = inner.slice(0, comma).trim();
-      v = inner.slice(comma + 1).trim();
-    } else {
-      k = inner.trim();
-    }
-    const key = tsToMochiType(k || "any") || "any";
-    const val = tsToMochiType(v || "any") || "any";
-    return `map<${key},${val}>`;
-  }
-  return t;
-}
-
 function pos(source: ts.SourceFile, p: number) {
   const lc = source.getLineAndCharacterOfPosition(p);
   return { line: lc.line + 1, col: lc.character };
@@ -124,9 +68,9 @@ function parse(src: string): TSDecl[] {
         ) {
           const params: TSParam[] = init.parameters.map((p) => ({
             name: p.name.getText(source),
-            typ: tsToMochiType(p.type ? p.type.getText(source) : ""),
+            typ: p.type ? p.type.getText(source) : "",
           }));
-          const rt = tsToMochiType(init.type ? init.type.getText(source) : "");
+          const rt = init.type ? init.type.getText(source) : "";
           let body = "";
           if (ts.isBlock(init.body)) {
             body = init.body.getText(source).slice(1, -1);
@@ -148,7 +92,7 @@ function parse(src: string): TSDecl[] {
             doc,
           });
         } else {
-          const typ = tsToMochiType(d.type ? d.type.getText(source) : "");
+          const typ = d.type ? d.type.getText(source) : "";
           const value = init ? init.getText(source) : "";
           decls.push({
             kind: "var",
@@ -171,9 +115,9 @@ function parse(src: string): TSDecl[] {
       const name = stmt.name.getText(source);
       const params: TSParam[] = stmt.parameters.map((p) => ({
         name: p.name.getText(source),
-        typ: tsToMochiType(p.type ? p.type.getText(source) : ""),
+        typ: p.type ? p.type.getText(source) : "",
       }));
-      const rt = tsToMochiType(stmt.type ? stmt.type.getText(source) : "");
+      const rt = stmt.type ? stmt.type.getText(source) : "";
       let body = "";
       if (stmt.body) body = stmt.body.getText(source).slice(1, -1);
       decls.push({
@@ -214,7 +158,7 @@ function parse(src: string): TSDecl[] {
         if (ts.isPropertyDeclaration(mem) || ts.isPropertySignature(mem)) {
           fields.push({
             name: mem.name.getText(source),
-            typ: tsToMochiType(mem.type ? mem.type.getText(source) : ""),
+            typ: mem.type ? mem.type.getText(source) : "",
           });
         }
       });
@@ -241,7 +185,7 @@ function parse(src: string): TSDecl[] {
           if (ts.isPropertySignature(m)) {
             fields.push({
               name: m.name.getText(source),
-              typ: tsToMochiType(m.type ? m.type.getText(source) : ""),
+              typ: m.type ? m.type.getText(source) : "",
             });
           }
         });
@@ -260,7 +204,7 @@ function parse(src: string): TSDecl[] {
           doc,
         });
       } else if (tn) {
-        const alias = tsToMochiType(tn.getText(source));
+        const alias = tn.getText(source);
         decls.push({
           kind: "alias",
           node: ts.SyntaxKind[stmt.kind],
