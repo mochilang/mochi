@@ -4,7 +4,7 @@ Generated Lua code for programs in `tests/rosetta/x/Mochi`. Each program has a `
 
 Transpiled programs: 465/493
 
-Last updated: 2025-07-28 10:03 GMT+7
+Last updated: 2025-07-28 10:25 GMT+7
 
 Checklist:
 
