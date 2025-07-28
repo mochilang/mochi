@@ -29,6 +29,7 @@ var usesLookupHost bool
 var usesDynMath bool
 var usesMem bool
 var usesBigInt bool
+var usesBigRat bool
 var usesSHA bool
 var benchMain bool
 var funcMutations = map[string]map[string]bool{}
@@ -473,6 +474,9 @@ func ocamlType(t string) string {
 	case "bigint":
 		usesBigInt = true
 		return "Z.t"
+	case "bigrat":
+		usesBigRat = true
+		return "Q.t"
 	default:
 		if strings.HasPrefix(t, "map-") {
 			inner := strings.TrimPrefix(t, "map-")
@@ -504,6 +508,9 @@ func typeString(t types.Type) string {
 	case types.BigIntType:
 		usesBigInt = true
 		return "bigint"
+	case types.BigRatType:
+		usesBigRat = true
+		return "bigrat"
 	case types.ListType:
 		elem := typeString(tt.Elem)
 		if elem == "" {
@@ -950,6 +957,11 @@ func (s *StrBuiltin) emit(w io.Writer) {
 	case "bigint":
 		usesBigInt = true
 		io.WriteString(w, "(Z.to_string (")
+		s.Expr.emit(w)
+		io.WriteString(w, "))")
+	case "bigrat":
+		usesBigRat = true
+		io.WriteString(w, "(Q.to_string (")
 		s.Expr.emit(w)
 		io.WriteString(w, "))")
 	default:
@@ -2028,6 +2040,10 @@ func (u *UnaryMinus) emit(w io.Writer) {
 		io.WriteString(w, "(-.(")
 		u.Expr.emit(w)
 		io.WriteString(w, "))")
+	} else if u.Typ == "bigrat" {
+		io.WriteString(w, "(Q.neg (")
+		u.Expr.emit(w)
+		io.WriteString(w, "))")
 	} else {
 		io.WriteString(w, "-(")
 		u.Expr.emit(w)
@@ -2038,6 +2054,10 @@ func (u *UnaryMinus) emit(w io.Writer) {
 func (u *UnaryMinus) emitPrint(w io.Writer) {
 	if u.Typ == "float" {
 		io.WriteString(w, "string_of_float (-.(")
+		u.Expr.emit(w)
+		io.WriteString(w, "))")
+	} else if u.Typ == "bigrat" {
+		io.WriteString(w, "Q.to_string (Q.neg (")
 		u.Expr.emit(w)
 		io.WriteString(w, "))")
 	} else {
@@ -2092,8 +2112,14 @@ func (c *CastExpr) emit(w io.Writer) {
 		io.WriteString(w, ")")
 	case "int_to_big":
 		usesBigInt = true
-		io.WriteString(w, "Z.of_int ")
+		io.WriteString(w, "(Z.of_int (")
 		c.Expr.emit(w)
+		io.WriteString(w, "))")
+	case "int_to_rat":
+		usesBigRat = true
+		io.WriteString(w, "(Q.of_int (")
+		c.Expr.emit(w)
+		io.WriteString(w, "))")
 	case "big_to_int":
 		usesBigInt = true
 		io.WriteString(w, "Z.to_int ")
@@ -2151,9 +2177,14 @@ func (c *CastExpr) emitPrint(w io.Writer) {
 		io.WriteString(w, "))")
 	case "int_to_big":
 		usesBigInt = true
-		io.WriteString(w, "Z.to_string (Z.of_int ")
+		io.WriteString(w, "Z.to_string (Z.of_int (")
 		c.Expr.emit(w)
-		io.WriteString(w, ")")
+		io.WriteString(w, "))")
+	case "int_to_rat":
+		usesBigRat = true
+		io.WriteString(w, "Q.to_string (Q.of_int (")
+		c.Expr.emit(w)
+		io.WriteString(w, "))")
 	case "big_to_int":
 		usesBigInt = true
 		io.WriteString(w, "string_of_int (Z.to_int ")
@@ -2447,6 +2478,77 @@ func (b *BinaryExpr) emit(w io.Writer) {
 			io.WriteString(w, ")")
 		}
 		return
+	} else if b.Typ == "bigrat" {
+		usesBigRat = true
+		switch b.Op {
+		case "+":
+			io.WriteString(w, "(Q.add ")
+			b.Left.emit(w)
+			io.WriteString(w, " ")
+			b.Right.emit(w)
+			io.WriteString(w, ")")
+		case "-":
+			io.WriteString(w, "(Q.sub ")
+			b.Left.emit(w)
+			io.WriteString(w, " ")
+			b.Right.emit(w)
+			io.WriteString(w, ")")
+		case "*":
+			io.WriteString(w, "(Q.mul ")
+			b.Left.emit(w)
+			io.WriteString(w, " ")
+			b.Right.emit(w)
+			io.WriteString(w, ")")
+		case "/":
+			io.WriteString(w, "(Q.div ")
+			b.Left.emit(w)
+			io.WriteString(w, " ")
+			b.Right.emit(w)
+			io.WriteString(w, ")")
+		case "==":
+			io.WriteString(w, "(Q.equal ")
+			b.Left.emit(w)
+			io.WriteString(w, " ")
+			b.Right.emit(w)
+			io.WriteString(w, ")")
+		case "!=":
+			io.WriteString(w, "(not (Q.equal ")
+			b.Left.emit(w)
+			io.WriteString(w, " ")
+			b.Right.emit(w)
+			io.WriteString(w, "))")
+		case "<":
+			io.WriteString(w, "((Q.compare ")
+			b.Left.emit(w)
+			io.WriteString(w, " ")
+			b.Right.emit(w)
+			io.WriteString(w, ") < 0)")
+		case "<=":
+			io.WriteString(w, "((Q.compare ")
+			b.Left.emit(w)
+			io.WriteString(w, " ")
+			b.Right.emit(w)
+			io.WriteString(w, ") <= 0)")
+		case ">":
+			io.WriteString(w, "((Q.compare ")
+			b.Left.emit(w)
+			io.WriteString(w, " ")
+			b.Right.emit(w)
+			io.WriteString(w, ") > 0)")
+		case ">=":
+			io.WriteString(w, "((Q.compare ")
+			b.Left.emit(w)
+			io.WriteString(w, " ")
+			b.Right.emit(w)
+			io.WriteString(w, ") >= 0)")
+		default:
+			io.WriteString(w, "(Q.add ")
+			b.Left.emit(w)
+			io.WriteString(w, " ")
+			b.Right.emit(w)
+			io.WriteString(w, ")")
+		}
+		return
 	}
 
 	op := b.Op
@@ -2504,6 +2606,10 @@ func (b *BinaryExpr) emitPrint(w io.Writer) {
 	case "bigint":
 		usesBigInt = true
 		io.WriteString(w, "Z.to_string ")
+		b.emit(w)
+	case "bigrat":
+		usesBigRat = true
+		io.WriteString(w, "Q.to_string ")
 		b.emit(w)
 	default:
 		io.WriteString(w, "string_of_int ")
@@ -2660,6 +2766,9 @@ func defaultValueExpr(typ string) Expr {
 	case "bigint":
 		usesBigInt = true
 		return &RawExpr{Code: "(Z.of_int 0)"}
+	case "bigrat":
+		usesBigRat = true
+		return &RawExpr{Code: "(Q.of_int 0)"}
 	case "list":
 		return &ListLit{Elems: nil}
 	case "map":
@@ -2847,6 +2956,8 @@ func transpileStmt(st *parser.Statement, env *types.Env, vars map[string]VarInfo
 				expr = &CastExpr{Expr: expr, Type: "int_to_big"}
 			} else if typ == "int" && valTyp == "bigint" {
 				expr = &CastExpr{Expr: expr, Type: "big_to_int"}
+			} else if typ == "bigrat" && valTyp == "int" {
+				expr = &CastExpr{Expr: expr, Type: "int_to_rat"}
 			}
 		} else if typ == "" {
 			return nil, fmt.Errorf("let without value not supported")
@@ -2909,6 +3020,8 @@ func transpileStmt(st *parser.Statement, env *types.Env, vars map[string]VarInfo
 				expr = &CastExpr{Expr: expr, Type: "int_to_big"}
 			} else if typ == "int" && valTyp == "bigint" {
 				expr = &CastExpr{Expr: expr, Type: "big_to_int"}
+			} else if typ == "bigrat" && valTyp == "int" {
+				expr = &CastExpr{Expr: expr, Type: "int_to_rat"}
 			}
 		}
 
@@ -3335,6 +3448,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	usesDynMath = false
 	usesMem = false
 	usesBigInt = false
+	usesBigRat = false
 	usesSHA = false
 	pr := &Program{}
 	vars := map[string]VarInfo{}
@@ -3494,6 +3608,8 @@ func convertBinary(b *parser.BinaryExpr, env *types.Env, vars map[string]VarInfo
 				resTyp = "string"
 			} else if ltyp == "bigint" || rtyp == "bigint" {
 				resTyp = "bigint"
+			} else if ltyp == "bigrat" || rtyp == "bigrat" {
+				resTyp = "bigrat"
 			} else if ltyp == "float" || rtyp == "float" {
 				resTyp = "float"
 			} else if ltyp == "" || rtyp == "" {
@@ -3575,7 +3691,7 @@ func convertUnary(u *parser.Unary, env *types.Env, vars map[string]VarInfo) (Exp
 			if err != nil {
 				return nil, "", err
 			}
-			if typ != "int" && typ != "float" {
+			if typ != "int" && typ != "float" && typ != "bigrat" {
 				return nil, "", fmt.Errorf("unary - only for numeric")
 			}
 			return &UnaryMinus{Expr: expr, Typ: typ}, typ, nil
@@ -4043,6 +4159,8 @@ func convertPostfix(p *parser.PostfixExpr, env *types.Env, vars map[string]VarIn
 				expr = &CastExpr{Expr: expr, Type: "big_to_int"}
 			} else if typ == "int" && target == "bigint" {
 				expr = &CastExpr{Expr: expr, Type: "int_to_big"}
+			} else if typ == "int" && target == "bigrat" {
+				expr = &CastExpr{Expr: expr, Type: "int_to_rat"}
 			} else if target == "int" && typ != "int" {
 				expr = &CastExpr{Expr: expr, Type: "obj_to_int"}
 			} else if target == "float" && typ != "float" && typ != "int" {
