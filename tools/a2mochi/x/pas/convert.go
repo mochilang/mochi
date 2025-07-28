@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 	"regexp"
 	"runtime"
+	"strconv"
 	"strings"
 	"time"
 
@@ -15,7 +16,10 @@ import (
 	"mochi/parser"
 )
 
-var version string
+var (
+	version    string
+	stringVars map[string]bool
+)
 
 func init() {
 	_, file, _, _ := runtime.Caller(0)
@@ -117,6 +121,7 @@ func convertExpr(s string) string {
 	s = convertBuiltins(s)
 	s = convertOps(s)
 	s = convertStringLits(s)
+	s = convertStringIndex(s)
 	return s
 }
 
@@ -135,6 +140,28 @@ var unaryRe = regexp.MustCompile(`(^|[=(+\-*/])\s*-(\d+)`)
 
 func fixUnary(s string) string {
 	return unaryRe.ReplaceAllString(s, `${1}(-${2})`)
+}
+
+var indexLitRe = regexp.MustCompile(`^\d+$`)
+var stringIdxRe = regexp.MustCompile(`([a-zA-Z_][a-zA-Z0-9_]*)\s*\[(.+?)\]`)
+
+func convertStringIndex(s string) string {
+	return stringIdxRe.ReplaceAllStringFunc(s, func(m string) string {
+		parts := stringIdxRe.FindStringSubmatch(m)
+		if len(parts) < 3 {
+			return m
+		}
+		name := parts[1]
+		inner := strings.TrimSpace(parts[2])
+		if !stringVars[name] {
+			return m
+		}
+		if indexLitRe.MatchString(inner) {
+			v, _ := strconv.Atoi(inner)
+			return fmt.Sprintf("%s[%d]", name, v-1)
+		}
+		return fmt.Sprintf("%s[%s - 1]", name, inner)
+	})
 }
 
 func toMochiType(t string) string {
@@ -223,6 +250,7 @@ func convertFallback(src string) ([]byte, error) {
 	ifDepth := 0
 	inRepeat := false
 	waitingBegin := false
+	stringVars = map[string]bool{}
 
 	addError := func(i int, msg string) ([]byte, error) {
 		snippet := func(idx int) string {
@@ -351,6 +379,9 @@ func convertFallback(src string) ([]byte, error) {
 							line := "var " + name
 							if typ != "" {
 								line += ": " + typ
+								if typ == "string" {
+									stringVars[name] = true
+								}
 							}
 							appendLine(line)
 						}
@@ -368,6 +399,9 @@ func convertFallback(src string) ([]byte, error) {
 						line := "var " + name
 						if typ != "" {
 							line += ": " + typ
+							if typ == "string" {
+								stringVars[name] = true
+							}
 						}
 						appendLine(line)
 					}

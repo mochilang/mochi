@@ -4,7 +4,10 @@
   (call print
     (index
       (selector s)
-      (binary + (int 1) (int 1))
+      (binary -
+        (binary + (int 1) (int 1))
+        (int 1)
+      )
     )
   )
 )
