@@ -1,5 +1,20 @@
-// Mochi translation of Rosetta "Filter" task.
-// Demonstrates filtering a list of integers for even values.
+fun randPerm(n: int): list<int> {
+  var arr: list<int> = []
+  var i = 0
+  while i < n {
+    arr = append(arr, i)
+    i = i + 1
+  }
+  var idx = n - 1
+  while idx > 0 {
+    let j = now() % (idx + 1)
+    let tmp = arr[idx]
+    arr[idx] = arr[j]
+    arr[j] = tmp
+    idx = idx - 1
+  }
+  return arr
+}
 
 fun even(xs: list<int>): list<int> {
   var r: list<int> = []
@@ -9,12 +24,42 @@ fun even(xs: list<int>): list<int> {
   return r
 }
 
+fun reduceToEven(xs: list<int>): list<int> {
+  var arr = xs
+  var last = 0
+  var i = 0
+  while i < len(arr) {
+    let e = arr[i]
+    if e % 2 == 0 {
+      arr[last] = e
+      last = last + 1
+    }
+    i = i + 1
+  }
+  return arr[:last]
+}
+
+fun listStr(xs: list<int>): string {
+  var s = "["
+  var i = 0
+  while i < len(xs) {
+    s = s + str(xs[i])
+    if i + 1 < len(xs) { s = s + " " }
+    i = i + 1
+  }
+  s = s + "]"
+  return s
+}
+
 fun main() {
-  var a = [1,2,3,4,5,6,7,8,9,10]
-  print(a)
-  let b = even(a)
-  print(b)
-  print(a) // original unchanged
+  var a = randPerm(20)
+  var cap_a = 20
+  print(listStr(a))
+  print(listStr(even(a)))
+  print(listStr(a))
+  a = reduceToEven(a)
+  print(listStr(a))
+  print("a len: " + str(len(a)) + " cap: " + str(cap_a))
 }
 
 main()
