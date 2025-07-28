@@ -1,0 +1,16 @@
+(program
+  (fun main
+    (call print
+      (unary - (int 3))
+    )
+    (let R1
+      (binary +
+        (int 5)
+        (group
+          (unary - (int 2))
+        )
+      )
+    )
+    (call print (selector R1))
+  )
+)

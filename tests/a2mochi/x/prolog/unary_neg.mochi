@@ -1,0 +1,14 @@
+// a2mochi 0.10.47 2025-07-28 15:40:37
+/*
+:- initialization(main).
+:- style_check(-singleton).
+
+main :-
+    writeln(-3),
+    R1 is 5 + (-2), writeln(R1).
+*/
+fun main() {
+  print(-3)
+  let R1 = 5 + (-2)
+  print(R1)
+}
