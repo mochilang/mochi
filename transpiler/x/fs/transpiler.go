@@ -1618,8 +1618,10 @@ func (b *BinaryExpr) emit(w io.Writer) {
 type IntLit struct{ Value int64 }
 
 func (i *IntLit) emit(w io.Writer) {
-	if i.Value > math.MaxInt32 || i.Value < math.MinInt32 {
-		fmt.Fprintf(w, "%dL", i.Value)
+	if i.Value > math.MaxInt32 {
+		fmt.Fprintf(w, "%d", i.Value-1<<32)
+	} else if i.Value < math.MinInt32 {
+		fmt.Fprintf(w, "%d", i.Value)
 	} else {
 		fmt.Fprintf(w, "%d", i.Value)
 	}
@@ -1770,7 +1772,13 @@ func needsParen(e Expr) bool {
 func inferType(e Expr) string {
 	switch v := e.(type) {
 	case *IntLit:
-		if v.Value > math.MaxInt32 || v.Value < math.MinInt32 {
+		if v.Value > math.MaxInt32 {
+			if v.Value <= math.MaxUint32 {
+				return "int"
+			}
+			return "int64"
+		}
+		if v.Value < math.MinInt32 {
 			return "int64"
 		}
 		return "int"
@@ -2278,8 +2286,14 @@ func (m *MethodCallExpr) emit(w io.Writer) {
 	typ := inferType(m.Target)
 	if typ != "" && typ != "obj" {
 		// For primitive types like string, prefer direct method calls
-		if typ == "string" && (m.Name == "ToLower" || m.Name == "ToUpper" || m.Name == "Trim") {
-			m.Target.emit(w)
+		if typ == "string" && (m.Name == "ToLower" || m.Name == "ToUpper" || m.Name == "Trim" || m.Name == "IndexOf" || m.Name == "Split") {
+			if needsParen(m.Target) {
+				io.WriteString(w, "(")
+				m.Target.emit(w)
+				io.WriteString(w, ")")
+			} else {
+				m.Target.emit(w)
+			}
 			io.WriteString(w, ".")
 			io.WriteString(w, mapMethod(m.Name))
 			io.WriteString(w, "(")
@@ -2312,7 +2326,13 @@ func (m *MethodCallExpr) emit(w io.Writer) {
 			}
 		}
 	} else {
-		m.Target.emit(w)
+		if needsParen(m.Target) {
+			io.WriteString(w, "(")
+			m.Target.emit(w)
+			io.WriteString(w, ")")
+		} else {
+			m.Target.emit(w)
+		}
 		io.WriteString(w, ".")
 		io.WriteString(w, mapMethod(m.Name))
 		io.WriteString(w, "(")
@@ -2802,6 +2822,9 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 				}
 			}
 		}
+		if il, ok := e.(*IntLit); ok && declared == "int64" && il.Value <= math.MaxUint32 {
+			declared = "int"
+		}
 		fsDecl := fsTypeFromString(declared)
 		if strings.HasPrefix(fsDecl, "Map<") {
 			switch v := e.(type) {
@@ -2897,6 +2920,9 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 					declared = t
 				}
 			}
+		}
+		if il, ok := e.(*IntLit); ok && declared == "int64" && il.Value <= math.MaxUint32 {
+			declared = "int"
 		}
 		fsDecl := fsTypeFromString(declared)
 		if strings.Contains(fsDecl, "Map<") {
@@ -3463,6 +3489,31 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				return nil, fmt.Errorf("lower expects 1 arg")
 			}
 			return &MethodCallExpr{Target: args[0], Name: "ToLower"}, nil
+		case "indexOf":
+			if len(args) != 2 {
+				return nil, fmt.Errorf("indexOf expects 2 args")
+			}
+			t := inferType(args[0])
+			if t == "string" {
+				return &MethodCallExpr{Target: args[0], Name: "IndexOf", Args: []Expr{args[1]}}, nil
+			}
+			lambdaVar := "x"
+			pred := &BinaryExpr{Left: &IdentExpr{Name: lambdaVar}, Op: "=", Right: args[1]}
+			lam := &LambdaExpr{Params: []string{lambdaVar}, Expr: pred}
+			if t == "array" {
+				return &CallExpr{Func: "Array.findIndex", Args: []Expr{lam, args[0]}}, nil
+			}
+			return &CallExpr{Func: "Seq.findIndex", Args: []Expr{lam, args[0]}}, nil
+		case "split":
+			if len(args) != 2 {
+				return nil, fmt.Errorf("split expects 2 args")
+			}
+			t := inferType(args[0])
+			if t == "string" || t == "" {
+				arr := &MethodCallExpr{Target: args[0], Name: "Split", Args: []Expr{&ListLit{Elems: []Expr{args[1]}}, &IdentExpr{Name: "System.StringSplitOptions.None"}}}
+				return &CallExpr{Func: "Array.toList", Args: []Expr{arr}}, nil
+			}
+			return nil, fmt.Errorf("split on non-string not supported")
 		case "contains":
 			if len(args) != 2 {
 				return nil, fmt.Errorf("contains expects 2 args")
