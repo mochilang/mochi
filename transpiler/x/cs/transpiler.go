@@ -89,6 +89,7 @@ var usesSHA256 bool
 var usesInput bool
 var usesMem bool
 var usesBigInt bool
+var usesBigRat bool
 var currentReturnType string
 var currentReturnVoid bool
 var globalDecls map[string]*Global
@@ -432,14 +433,25 @@ type ForInStmt struct {
 
 func (f *ForInStmt) emit(w io.Writer) {
 	v := safeName(f.Var)
-	fmt.Fprintf(w, "foreach (var %s in ", v)
-	if isMapExpr(f.Iterable) {
+	if typeOfExpr(f.Iterable) == "string" {
+		idx := fmt.Sprintf("_i%d", aliasCounter)
+		aliasCounter++
+		fmt.Fprintf(w, "for (var %s = 0; %s < ", idx, idx)
 		f.Iterable.emit(w)
-		fmt.Fprint(w, ".Keys")
+		fmt.Fprintf(w, ".Length; %s++) {\n", idx)
+		fmt.Fprintf(w, "    var %s = ", v)
+		f.Iterable.emit(w)
+		fmt.Fprintf(w, ".Substring((int)(%s), 1);\n", idx)
 	} else {
-		f.Iterable.emit(w)
+		fmt.Fprintf(w, "foreach (var %s in ", v)
+		if isMapExpr(f.Iterable) {
+			f.Iterable.emit(w)
+			fmt.Fprint(w, ".Keys")
+		} else {
+			f.Iterable.emit(w)
+		}
+		fmt.Fprint(w, ") {\n")
 	}
-	fmt.Fprint(w, ") {\n")
 	for _, st := range f.Body {
 		fmt.Fprint(w, "    ")
 		st.emit(w)
@@ -632,6 +644,38 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		} else {
 			lt := typeOfExpr(b.Left)
 			rt := typeOfExpr(b.Right)
+			if lt == "BigRat" || rt == "BigRat" {
+				usesBigRat = true
+				switch b.Op {
+				case "+":
+					fmt.Fprint(w, "_add(")
+					b.Left.emit(w)
+					fmt.Fprint(w, ", ")
+					b.Right.emit(w)
+					fmt.Fprint(w, ")")
+				case "-":
+					fmt.Fprint(w, "_sub(")
+					b.Left.emit(w)
+					fmt.Fprint(w, ", ")
+					b.Right.emit(w)
+					fmt.Fprint(w, ")")
+				case "*":
+					fmt.Fprint(w, "_mul(")
+					b.Left.emit(w)
+					fmt.Fprint(w, ", ")
+					b.Right.emit(w)
+					fmt.Fprint(w, ")")
+				case "/":
+					fmt.Fprint(w, "_div(")
+					b.Left.emit(w)
+					fmt.Fprint(w, ", ")
+					b.Right.emit(w)
+					fmt.Fprint(w, ")")
+				default:
+					fmt.Fprint(w, "0")
+				}
+				return
+			}
 			useDyn := lt == "object" || lt == "" || rt == "object" || rt == ""
 			fmt.Fprint(w, "(")
 			if useDyn {
@@ -1258,6 +1302,10 @@ func csType(t *parser.TypeRef) string {
 		case "bigint":
 			usesBigInt = true
 			return "BigInteger"
+		case "bigrat":
+			usesBigRat = true
+			usesBigInt = true
+			return "BigRat"
 		}
 		if st, ok := structTypes[*t.Simple]; ok {
 			return st.Name
@@ -1313,6 +1361,10 @@ func csTypeFromType(t types.Type) string {
 	case types.BigIntType:
 		usesBigInt = true
 		return "BigInteger"
+	case types.BigRatType:
+		usesBigRat = true
+		usesBigInt = true
+		return "BigRat"
 	case types.ListType:
 		return fmt.Sprintf("%s[]", csTypeFromType(tt.Elem))
 	case types.MapType:
@@ -2104,6 +2156,8 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	usesInput = false
 	usesMem = false
 	usesFmt = false
+	usesBigInt = false
+	usesBigRat = false
 	globalDecls = make(map[string]*Global)
 	mutatedVars = make(map[string]bool)
 	importAliases = make(map[string]string)
@@ -2120,6 +2174,13 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 			funRets[name] = csTypeFromType(ft.Return)
 		}
 	}
+	funRets["_bigrat"] = "BigRat"
+	funRets["_add"] = "BigRat"
+	funRets["_sub"] = "BigRat"
+	funRets["_mul"] = "BigRat"
+	funRets["_div"] = "BigRat"
+	funRets["_num"] = "BigInteger"
+	funRets["_denom"] = "BigInteger"
 	for _, st := range p.Statements {
 		s, err := compileStmt(prog, st)
 		if err != nil {
@@ -2400,6 +2461,10 @@ func compilePostfix(p *parser.PostfixExpr) (Expr, error) {
 			case "bigint":
 				usesBigInt = true
 				expr = &RawExpr{Code: fmt.Sprintf("new BigInteger(%s)", exprString(expr)), Type: "BigInteger"}
+			case "bigrat":
+				usesBigRat = true
+				usesBigInt = true
+				expr = &RawExpr{Code: fmt.Sprintf("_bigrat(%s)", exprString(expr)), Type: "BigRat"}
 			default:
 				// other casts are treated as no-ops
 			}
@@ -2807,6 +2872,9 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 		params := make([]string, len(s.Fun.Params))
 		ptypes := make([]string, len(s.Fun.Params))
 		savedAliases := cloneStringMap(varAliases)
+		funAlias := safeName(s.Fun.Name)
+		varAliases[s.Fun.Name] = funAlias
+		savedAliases[s.Fun.Name] = funAlias
 		savedRet := currentReturnType
 		savedVoid := currentReturnVoid
 		defer func() {
@@ -3451,6 +3519,31 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 		case "indexOf":
 			if len(args) == 2 {
 				return &MethodCallExpr{Target: args[0], Name: "IndexOf", Args: []Expr{args[1]}}, nil
+			}
+		case "padStart":
+			if len(args) == 3 {
+				var ch Expr
+				if lit, ok := args[2].(*StringLit); ok && len(lit.Value) > 0 {
+					ch = &RawExpr{Code: fmt.Sprintf("'%c'", []rune(lit.Value)[0]), Type: "char"}
+				} else {
+					ch = &CallExpr{Func: "Convert.ToChar", Args: []Expr{args[2]}}
+				}
+				return &MethodCallExpr{Target: args[0], Name: "PadLeft", Args: []Expr{args[1], ch}}, nil
+			} else if len(args) == 2 {
+				ch := &RawExpr{Code: "' '", Type: "char"}
+				return &MethodCallExpr{Target: args[0], Name: "PadLeft", Args: []Expr{args[1], ch}}, nil
+			}
+		case "num":
+			if len(args) == 1 {
+				usesBigRat = true
+				usesBigInt = true
+				return &CallExpr{Func: "_num", Args: []Expr{args[0]}}, nil
+			}
+		case "denom":
+			if len(args) == 1 {
+				usesBigRat = true
+				usesBigInt = true
+				return &CallExpr{Func: "_denom", Args: []Expr{args[0]}}, nil
 			}
 		case "split":
 			if len(args) == 2 {
@@ -4276,6 +4369,38 @@ func Emit(prog *Program) []byte {
 		buf.WriteString("\t\tvar line = Console.ReadLine();\n")
 		buf.WriteString("\t\treturn line == null ? \"\" : line;\n")
 		buf.WriteString("\t}\n")
+	}
+	if usesBigRat {
+		buf.WriteString("\tclass BigRat {\n")
+		buf.WriteString("\t\tpublic BigInteger num;\n")
+		buf.WriteString("\t\tpublic BigInteger den;\n")
+		buf.WriteString("\t\tpublic BigRat(BigInteger n, BigInteger d) {\n")
+		buf.WriteString("\t\t\tif (d.Sign < 0) { n = BigInteger.Negate(n); d = BigInteger.Negate(d); }\n")
+		buf.WriteString("\t\t\tvar g = BigInteger.GreatestCommonDivisor(n, d);\n")
+		buf.WriteString("\t\t\tnum = n / g; den = d / g;\n")
+		buf.WriteString("\t\t}\n")
+		buf.WriteString("\t\tpublic override string ToString() => den.Equals(BigInteger.One) ? num.ToString() : num.ToString()+\"/\"+den.ToString();\n")
+		buf.WriteString("\t}\n")
+		buf.WriteString("\tstatic BigInteger _toBigInt(object x) {\n")
+		buf.WriteString("\t\tif (x is BigInteger bi) return bi;\n")
+		buf.WriteString("\t\tif (x is BigRat br) return br.num;\n")
+		buf.WriteString("\t\tif (x is int ii) return new BigInteger(ii);\n")
+		buf.WriteString("\t\tif (x is long ll) return new BigInteger(ll);\n")
+		buf.WriteString("\t\tif (x is double dd) return new BigInteger((long)dd);\n")
+		buf.WriteString("\t\tif (x is string ss) return BigInteger.Parse(ss);\n")
+		buf.WriteString("\t\treturn BigInteger.Zero;\n")
+		buf.WriteString("\t}\n")
+		buf.WriteString("\tstatic BigRat _bigrat(object n, object d = null) {\n")
+		buf.WriteString("\t\tvar nn = _toBigInt(n);\n")
+		buf.WriteString("\t\tvar dd = d == null ? BigInteger.One : _toBigInt(d);\n")
+		buf.WriteString("\t\treturn new BigRat(nn, dd);\n")
+		buf.WriteString("\t}\n")
+		buf.WriteString("\tstatic BigRat _add(object a, object b) { var x=_bigrat(a, null); var y=_bigrat(b, null); return new BigRat(x.num*y.den + y.num*x.den, x.den*y.den); }\n")
+		buf.WriteString("\tstatic BigRat _sub(object a, object b) { var x=_bigrat(a, null); var y=_bigrat(b, null); return new BigRat(x.num*y.den - y.num*x.den, x.den*y.den); }\n")
+		buf.WriteString("\tstatic BigRat _mul(object a, object b) { var x=_bigrat(a, null); var y=_bigrat(b, null); return new BigRat(x.num*y.num, x.den*y.den); }\n")
+		buf.WriteString("\tstatic BigRat _div(object a, object b) { var x=_bigrat(a, null); var y=_bigrat(b, null); return new BigRat(x.num*y.den, x.den*y.num); }\n")
+		buf.WriteString("\tstatic BigInteger _num(object x) { return x is BigRat br ? br.num : _toBigInt(x); }\n")
+		buf.WriteString("\tstatic BigInteger _denom(object x) { return x is BigRat br ? br.den : BigInteger.One; }\n")
 	}
 	if usesFmt {
 		buf.WriteString(`static string _fmt(object v) {

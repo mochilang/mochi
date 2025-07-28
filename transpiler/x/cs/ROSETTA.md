@@ -1,7 +1,7 @@
 # Rosetta C# Transpiler Output
 
-Completed programs: 245/469
-Last updated: 2025-07-28 08:20 +0700
+Completed programs: 252/493
+Last updated: 2025-07-28 10:03 +0700
 
 ## Checklist
 | Index | Name | Status | Duration | Memory |
@@ -105,22 +105,22 @@ Last updated: 2025-07-28 08:20 +0700
 | 97 | avl-tree |   |  |  |
 | 98 | b-zier-curves-intersections |   |  |  |
 | 99 | babbage-problem | ✓ | 1.154ms | 16.0KB |
-| 100 | babylonian-spiral |   |  |  |
+| 100 | babylonian-spiral | ✓ |  |  |
 | 101 | balanced-brackets | ✓ | 5.441ms | 1.1MB |
 | 102 | balanced-ternary | ✓ | 7.368ms | 1.6MB |
 | 103 | barnsley-fern | ✓ | 4.064ms | 9.9MB |
-| 104 | base64-decode-data |   |  |  |
-| 105 | bell-numbers |   |  |  |
+| 104 | base64-decode-data | ✓ |  |  |
+| 105 | bell-numbers | ✓ |  |  |
 | 106 | benfords-law | ✓ | 8.442ms | 6.2MB |
-| 107 | bernoulli-numbers |   |  |  |
+| 107 | bernoulli-numbers | ✓ |  |  |
 | 108 | best-shuffle | ✓ | 11.697ms | 2.9MB |
-| 109 | bifid-cipher |   |  |  |
+| 109 | bifid-cipher | ✓ |  |  |
 | 110 | bin-given-limits | ✓ | 6.309ms | 1.2MB |
 | 111 | binary-digits | ✓ | 889µs | 16.0KB |
 | 112 | binary-search | ✓ | 8.933ms | 1.2MB |
-| 113 | binary-strings |   |  |  |
+| 113 | binary-strings | ✓ |  |  |
 | 114 | bioinformatics-base-count | ✓ | 8.273ms | 2.5MB |
-| 115 | bioinformatics-global-alignment |   |  |  |
+| 115 | bioinformatics-global-alignment | ✓ |  |  |
 | 116 | bioinformatics-sequence-mutation |   |  |  |
 | 117 | biorhythms | ✓ | 8.766ms | 2.5MB |
 | 118 | bitcoin-address-validation | ✓ | 1.798ms | 69.0KB |
@@ -438,40 +438,64 @@ Last updated: 2025-07-28 08:20 +0700
 | 430 | find-the-intersection-of-two-lines |   |  |  |
 | 431 | find-the-last-sunday-of-each-month |   |  |  |
 | 432 | find-the-missing-permutation |   |  |  |
-| 433 | fivenum-1 |   |  |  |
-| 434 | fivenum-2 |   |  |  |
-| 435 | fixed-length-records-1 |   |  |  |
-| 436 | fixed-length-records-2 |   |  |  |
-| 437 | fizzbuzz-1 |   |  |  |
-| 438 | fizzbuzz-2 |   |  |  |
-| 439 | flatten-a-list-1 |   |  |  |
-| 440 | flatten-a-list-2 |   |  |  |
-| 441 | flipping-bits-game |   |  |  |
-| 442 | flow-control-structures-1 |   |  |  |
-| 443 | flow-control-structures-2 |   |  |  |
-| 444 | flow-control-structures-3 |   |  |  |
-| 445 | flow-control-structures-4 |   |  |  |
-| 446 | floyd-warshall-algorithm |   |  |  |
-| 447 | floyds-triangle |   |  |  |
-| 448 | forest-fire |   |  |  |
-| 449 | fork |   |  |  |
-| 450 | ftp |   |  |  |
-| 451 | gamma-function |   |  |  |
-| 452 | general-fizzbuzz |   |  |  |
-| 453 | generic-swap |   |  |  |
-| 454 | get-system-command-output |   |  |  |
-| 455 | giuga-numbers |   |  |  |
-| 456 | globally-replace-text-in-several-files |   |  |  |
-| 457 | goldbachs-comet |   |  |  |
-| 458 | golden-ratio-convergence |   |  |  |
-| 459 | graph-colouring |   |  |  |
-| 460 | gray-code |   |  |  |
-| 461 | http |   |  |  |
-| 462 | image-noise |   |  |  |
-| 463 | loops-increment-loop-index-within-loop-body |   |  |  |
-| 464 | md5 |   |  |  |
-| 465 | nim-game |   |  |  |
-| 466 | plasma-effect |   |  |  |
-| 467 | sorting-algorithms-bubble-sort |   |  |  |
-| 468 | window-management |   |  |  |
-| 469 | zumkeller-numbers |   |  |  |
+| 433 | first-class-environments |   |  |  |
+| 434 | first-class-functions-use-numbers-analogously |   |  |  |
+| 435 | first-power-of-2-that-has-leading-decimal-digits-of-12 |   |  |  |
+| 436 | five-weekends |   |  |  |
+| 437 | fivenum-1 |   |  |  |
+| 438 | fivenum-2 |   |  |  |
+| 439 | fivenum-3 |   |  |  |
+| 440 | fixed-length-records-1 |   |  |  |
+| 441 | fixed-length-records-2 |   |  |  |
+| 442 | fizzbuzz-1 |   |  |  |
+| 443 | fizzbuzz-2 |   |  |  |
+| 444 | fizzbuzz |   |  |  |
+| 445 | flatten-a-list-1 |   |  |  |
+| 446 | flatten-a-list-2 |   |  |  |
+| 447 | flipping-bits-game |   |  |  |
+| 448 | flow-control-structures-1 |   |  |  |
+| 449 | flow-control-structures-2 |   |  |  |
+| 450 | flow-control-structures-3 |   |  |  |
+| 451 | flow-control-structures-4 |   |  |  |
+| 452 | floyd-warshall-algorithm |   |  |  |
+| 453 | floyd-warshall-algorithm2 |   |  |  |
+| 454 | floyds-triangle |   |  |  |
+| 455 | forest-fire |   |  |  |
+| 456 | fork-2 |   |  |  |
+| 457 | fork |   |  |  |
+| 458 | formal-power-series |   |  |  |
+| 459 | formatted-numeric-output |   |  |  |
+| 460 | forward-difference |   |  |  |
+| 461 | four-bit-adder-1 |   |  |  |
+| 462 | four-is-magic |   |  |  |
+| 463 | four-is-the-number-of-letters-in-the-... |   |  |  |
+| 464 | fractal-tree |   |  |  |
+| 465 | fractran |   |  |  |
+| 466 | french-republican-calendar |   |  |  |
+| 467 | ftp |   |  |  |
+| 468 | function-frequency |   |  |  |
+| 469 | function-prototype |   |  |  |
+| 470 | functional-coverage-tree |   |  |  |
+| 471 | fusc-sequence |   |  |  |
+| 472 | gamma-function |   |  |  |
+| 473 | general-fizzbuzz |   |  |  |
+| 474 | generic-swap |   |  |  |
+| 475 | get-system-command-output |   |  |  |
+| 476 | giuga-numbers |   |  |  |
+| 477 | globally-replace-text-in-several-files |   |  |  |
+| 478 | goldbachs-comet |   |  |  |
+| 479 | golden-ratio-convergence |   |  |  |
+| 480 | graph-colouring |   |  |  |
+| 481 | gray-code |   |  |  |
+| 482 | gui-component-interaction |   |  |  |
+| 483 | gui-enabling-disabling-of-controls |   |  |  |
+| 484 | gui-maximum-window-dimensions |   |  |  |
+| 485 | http |   |  |  |
+| 486 | image-noise |   |  |  |
+| 487 | loops-increment-loop-index-within-loop-body |   |  |  |
+| 488 | md5 |   |  |  |
+| 489 | nim-game |   |  |  |
+| 490 | plasma-effect |   |  |  |
+| 491 | sorting-algorithms-bubble-sort |   |  |  |
+| 492 | window-management |   |  |  |
+| 493 | zumkeller-numbers |   |  |  |
