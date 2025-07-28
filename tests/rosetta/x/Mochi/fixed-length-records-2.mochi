@@ -1,3 +1,60 @@
-for s in ["alpha", "beta", "gamma"] {
-  print(s)
+// Convert between text lines and 64-byte blocks
+fun repeat(s: string, n: int): string {
+  var out = ""
+  var i = 0
+  while i < n {
+    out = out + s
+    i = i + 1
+  }
+  return out
+}
+
+fun trimRightSpace(s: string): string {
+  var i = len(s) - 1
+  while i >= 0 && s[i:i+1] == " " {
+    i = i - 1
+  }
+  return s[:i+1]
+}
+
+fun block2text(block: list<string>): list<string> {
+  var out: list<string> = []
+  for b in block {
+    out = append(out, trimRightSpace(b))
+  }
+  return out
+}
+
+fun text2block(lines: list<string>): list<string> {
+  var out: list<string> = []
+  var count = 0
+  for line in lines {
+    var s = line
+    let le = len(s)
+    if le > 64 {
+      s = s[:64]
+    } else if le < 64 {
+      s = s + repeat(" ", 64 - le)
+    }
+    out = append(out, s)
+    count = count + 1
+  }
+  if count % 16 != 0 {
+    let pad = 16 - count % 16
+    var i = 0
+    while i < pad {
+      out = append(out, repeat(" ", 64))
+      i = i + 1
+    }
+  }
+  return out
+}
+
+var lines = ["alpha", "beta", "gamma"]
+var blocks = text2block(lines)
+var outLines = block2text(blocks)
+for l in outLines {
+  if l != "" {
+    print(l)
+  }
 }

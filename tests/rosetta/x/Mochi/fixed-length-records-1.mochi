@@ -1,8 +1,18 @@
-// Simplified demonstration of reversing fixed length records
-let records = [
-  "abcdefgh",
-  "ijklmnop",
-  "qrstuvwx",
+// Reverse 80-byte fixed length records
+fun repeat(s: string, n: int): string {
+  var out = ""
+  var i = 0
+  while i < n {
+    out = out + s
+    i = i + 1
+  }
+  return out
+}
+
+var records = [
+  repeat("abcdefgh", 10),
+  repeat("ijklmnop", 10),
+  repeat("qrstuvwx", 10),
 ]
 
 fun reverseStr(s: string): string {
