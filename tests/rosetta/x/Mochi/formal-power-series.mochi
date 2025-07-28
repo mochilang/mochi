@@ -1,0 +1,139 @@
+// Mochi translation of Rosetta "Formal power series" task
+// Based on Go version formal-power-series.go
+
+// Define a lazy formal power series with cached coefficients
+
+type Fps {
+  coeffs: list<float>
+  compute: fun(int): float
+}
+
+fun newFps(fn: fun(int): float): Fps {
+  return Fps{ coeffs: [], compute: fn }
+}
+
+fun extract(f: Fps, n: int): float {
+  while len(f.coeffs) <= n {
+    let idx = len(f.coeffs)
+    let v = f.compute(idx)
+    f.coeffs = append(f.coeffs, v)
+  }
+  return f.coeffs[n]
+}
+
+fun one(): Fps {
+  return newFps(fun(i: int): float {
+    if i == 0 { return 1.0 }
+    return 0.0
+  })
+}
+
+fun add(a: Fps, b: Fps): Fps {
+  return newFps(fun(n: int): float { return extract(a, n) + extract(b, n) })
+}
+
+fun sub(a: Fps, b: Fps): Fps {
+  return newFps(fun(n: int): float { return extract(a, n) - extract(b, n) })
+}
+
+fun mul(a: Fps, b: Fps): Fps {
+  return newFps(fun(n: int): float {
+    var s = 0.0
+    var k = 0
+    while k <= n {
+      s = s + extract(a, k) * extract(b, n - k)
+      k = k + 1
+    }
+    return s
+  })
+}
+
+fun div(a: Fps, b: Fps): Fps {
+  var q: Fps = newFps(fun(n: int): float { return 0.0 })
+  q.compute = fun(n: int): float {
+    let b0 = extract(b, 0)
+    if b0 == 0.0 { return (0.0 / 0.0) }
+    var s = extract(a, n)
+    var k = 1
+    while k <= n {
+      s = s - extract(b, k) * extract(q, n - k)
+      k = k + 1
+    }
+    return s / b0
+  }
+  return q
+}
+
+fun differentiate(a: Fps): Fps {
+  return newFps(fun(n: int): float {
+    return ((n + 1) as float) * extract(a, n + 1)
+  })
+}
+
+fun integrate(a: Fps): Fps {
+  return newFps(fun(n: int): float {
+    if n == 0 { return 0.0 }
+    return extract(a, n - 1) / (n as float)
+  })
+}
+
+type Pair { sin: Fps, cos: Fps }
+
+fun sinCos(): Pair {
+  var sin: Fps = newFps(fun(n: int): float { return 0.0 })
+  var cos: Fps = sub(one(), integrate(sin))
+  sin.compute = fun(n: int): float {
+    if n == 0 { return 0.0 }
+    return extract(cos, n - 1) / (n as float)
+  }
+  return Pair{ sin: sin, cos: cos }
+}
+
+fun floorf(x: float): float {
+  let y = x as int
+  return y as float
+}
+
+fun fmtF5(x: float): string {
+  var y = floorf(x * 100000.0 + 0.5) / 100000.0
+  var s = str(y)
+  var dot = indexOf(s, ".")
+  if dot == 0 - 1 {
+    s = s + ".00000"
+  } else {
+    var decs = len(s) - dot - 1
+    if decs > 5 {
+      s = substring(s, 0, dot + 6)
+    } else {
+      while decs < 5 {
+        s = s + "0"
+        decs = decs + 1
+      }
+    }
+  }
+  return s
+}
+
+fun padFloat5(x: float, width: int): string {
+  var s = fmtF5(x)
+  while len(s) < width { s = " " + s }
+  return s
+}
+
+fun partialSeries(f: Fps): string {
+  var out = ""
+  var i = 0
+  while i < 6 {
+    out = out + " " + padFloat5(extract(f, i), 8) + " "
+    i = i + 1
+  }
+  return out
+}
+
+fun main() {
+  let p = sinCos()
+  print("sin:" + partialSeries(p.sin))
+  print("cos:" + partialSeries(p.cos))
+}
+
+main()
