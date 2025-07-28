@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Python code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/Python`.
-Last updated: 2025-07-28 00:52 GMT+7
+Last updated: 2025-07-28 01:46 GMT+7
 
-## Rosetta Golden Test Checklist (447/467)
+## Rosetta Golden Test Checklist (446/467)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 159.0µs | 12.75MB |
@@ -107,36 +107,36 @@ Last updated: 2025-07-28 00:52 GMT+7
 | 98 | babbage-problem | ✓ | 4.0ms | 12.70MB |
 | 99 | babylonian-spiral | ✓ | 261.0µs | 13.80MB |
 | 100 | balanced-brackets | ✓ | 80.0µs | 12.69MB |
-| 101 | balanced-ternary | ✓ | 60.0µs | 13.80MB |
-| 102 | barnsley-fern | ✓ | 38.0ms | 13.06MB |
-| 103 | base64-decode-data | ✓ | 1.0ms | 13.99MB |
-| 104 | bell-numbers | ✓ | 885.0µs | 12.86MB |
-| 105 | benfords-law | ✓ | 4.0ms | 12.90MB |
-| 106 | bernoulli-numbers | ✓ | 195.0ms | 12.80MB |
-| 107 | best-shuffle | ✓ | 133.0µs | 13.10MB |
-| 108 | bifid-cipher | ✓ | 467.0µs | 13.80MB |
-| 109 | bin-given-limits | ✓ | 378.0µs | 14.08MB |
-| 110 | binary-digits | ✓ | 75.0µs | 12.22MB |
-| 111 | binary-search | ✓ | 17.0µs | 12.36MB |
-| 112 | binary-strings | ✓ | 84.0µs | 12.44MB |
-| 113 | bioinformatics-base-count | ✓ | 352.0µs | 12.83MB |
-| 114 | bioinformatics-global-alignment | ✓ | 685.0ms | 14.05MB |
-| 115 | bioinformatics-sequence-mutation | ✓ | 2.0ms | 13.55MB |
-| 116 | biorhythms | ✓ | 170.0µs | 14.19MB |
-| 117 | bitcoin-address-validation | ✓ | 597.0µs | 13.99MB |
-| 118 | bitmap-b-zier-curves-cubic | ✓ | 245.0ms | 26.37MB |
-| 119 | bitmap-b-zier-curves-quadratic | ✓ | 244.0ms | 26.50MB |
-| 120 | bitmap-bresenhams-line-algorithm | ✓ | 62.0µs | 12.57MB |
-| 121 | bitmap-flood-fill | ✓ | 29.0µs | 12.71MB |
-| 122 | bitmap-histogram | ✓ | 39.0µs | 13.46MB |
-| 123 | bitmap-midpoint-circle-algorithm | ✓ | 188.0µs | 12.93MB |
-| 124 | bitmap-ppm-conversion-through-a-pipe | ✓ | 431.0ms | 26.36MB |
-| 125 | bitmap-read-a-ppm-file | ✓ | 2.0ms | 13.47MB |
-| 126 | bitmap-read-an-image-through-a-pipe | ✓ | 56.0µs | 12.49MB |
-| 127 | bitmap-write-a-ppm-file | ✓ | 118.0µs | 13.63MB |
-| 128 | bitmap | ✓ | 226.0ms | 20.87MB |
-| 129 | bitwise-io-1 | ✓ | 1.0ms | 13.15MB |
-| 130 | bitwise-io-2 | ✓ |  |  |
+| 101 | balanced-ternary | ✓ | 94.0µs | 14.19MB |
+| 102 | barnsley-fern | ✓ | 32.0ms | 12.75MB |
+| 103 | base64-decode-data | ✓ | 1.0ms | 14.04MB |
+| 104 | bell-numbers | ✓ | 987.0µs | 13.68MB |
+| 105 | benfords-law | ✓ | 5.0ms | 13.66MB |
+| 106 | bernoulli-numbers | ✓ | 238.0ms | 13.18MB |
+| 107 | best-shuffle | ✓ | 503.0µs | 13.75MB |
+| 108 | bifid-cipher | ✓ | 482.0µs | 13.73MB |
+| 109 | bin-given-limits | ✓ | 406.0µs | 13.88MB |
+| 110 | binary-digits | ✓ | 95.0µs | 12.59MB |
+| 111 | binary-search | ✓ | 21.0µs | 13.05MB |
+| 112 | binary-strings | ✓ | 72.0µs | 12.91MB |
+| 113 | bioinformatics-base-count | ✓ | 354.0µs | 12.57MB |
+| 114 | bioinformatics-global-alignment | ✓ | 796.0ms | 14.15MB |
+| 115 | bioinformatics-sequence-mutation | ✓ | 2.0ms | 14.53MB |
+| 116 | biorhythms | ✓ | 200.0µs | 14.57MB |
+| 117 | bitcoin-address-validation | ✓ | 714.0µs | 14.18MB |
+| 118 | bitmap-b-zier-curves-cubic | ✓ | 287.0ms | 26.63MB |
+| 119 | bitmap-b-zier-curves-quadratic | ✓ | 270.0ms | 26.50MB |
+| 120 | bitmap-bresenhams-line-algorithm | ✓ | 38.0µs | 12.86MB |
+| 121 | bitmap-flood-fill | ✓ | 31.0µs | 12.68MB |
+| 122 | bitmap-histogram | ✓ | 36.0µs | 13.23MB |
+| 123 | bitmap-midpoint-circle-algorithm | ✓ | 233.0µs | 12.98MB |
+| 124 | bitmap-ppm-conversion-through-a-pipe | ✓ | 496.0ms | 26.44MB |
+| 125 | bitmap-read-a-ppm-file | ✓ | 2.0ms | 14.38MB |
+| 126 | bitmap-read-an-image-through-a-pipe | ✓ | 62.0µs | 13.17MB |
+| 127 | bitmap-write-a-ppm-file | ✓ | 136.0µs | 13.86MB |
+| 128 | bitmap | ✓ | 264.0ms | 20.99MB |
+| 129 | bitwise-io-1 | ✓ | 1.0ms | 13.48MB |
+| 130 | bitwise-io-2 | error |  |  |
 | 131 | bitwise-operations | ✓ | 146.0µs | 13.86MB |
 | 132 | blum-integer | ✓ | 313.0µs | 13.26MB |
 | 133 | boolean-values | ✓ | 18.0µs | 12.62MB |
