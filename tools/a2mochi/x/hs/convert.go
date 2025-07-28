@@ -4,6 +4,7 @@ package hs
 
 import (
 	"fmt"
+	"regexp"
 	"strings"
 
 	"mochi/ast"
@@ -280,8 +281,41 @@ func convertBody(body string) string {
 	return convertExpr(body)
 }
 
+var (
+	callParen = regexp.MustCompile(`([A-Za-z_][A-Za-z0-9_]*)\s+\(([^()]*)\)`)
+	callBrack = regexp.MustCompile(`([A-Za-z_][A-Za-z0-9_]*)\s+\[([^\]]*)\]`)
+	avgExpr   = regexp.MustCompile(`^fromIntegral\(sum\(([^()]*)\)\)\s*/\s*fromIntegral\(length\(([^()]*)\)\)$`)
+)
+
+// fixFuncCalls converts Haskell-style function application to Mochi calls.
+func fixFuncCalls(expr string) string {
+	for {
+		changed := false
+		e := callParen.ReplaceAllString(expr, `$1($2)`)
+		if e != expr {
+			changed = true
+			expr = e
+		}
+		e = callBrack.ReplaceAllString(expr, `$1([$2])`)
+		if e != expr {
+			changed = true
+			expr = e
+		}
+		if !changed {
+			break
+		}
+	}
+	return expr
+}
+
 func convertExpr(expr string) string {
 	expr = strings.TrimSpace(expr)
+	expr = fixFuncCalls(expr)
+	if m := avgExpr.FindStringSubmatch(expr); m != nil {
+		if strings.TrimSpace(m[1]) == strings.TrimSpace(m[2]) {
+			return "avg(" + strings.TrimSpace(m[1]) + ")"
+		}
+	}
 	if strings.HasPrefix(expr, "[") && strings.HasSuffix(expr, "]") {
 		return expr
 	}
