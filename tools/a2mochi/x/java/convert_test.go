@@ -71,15 +71,18 @@ func TestConvert_Golden(t *testing.T) {
 	}
 
 	allowed := map[string]bool{
-		"print_hello":       true,
-		"unary_neg":         true,
-		"let_and_print":     true,
-		"var_assignment":    true,
-		"for_loop":          true,
-		"while_loop":        true,
-		"binary_precedence": true,
-		"math_ops":          true,
-		"string_concat":     true,
+		"print_hello":        true,
+		"unary_neg":          true,
+		"let_and_print":      true,
+		"var_assignment":     true,
+		"for_loop":           true,
+		"while_loop":         true,
+		"binary_precedence":  true,
+		"math_ops":           true,
+		"string_concat":      true,
+		"basic_compare":      true,
+		"cast_string_to_int": true,
+		"if_else":            true,
 	}
 
 	outDir := filepath.Join(root, "tests/a2mochi/x/java")

@@ -49,7 +49,11 @@ func ConvertSource(n *Node) (string, error) {
 	assignStmt := regexp.MustCompile(`^([A-Za-z_][A-Za-z0-9_]*)\s*=\s*(.+);`)
 	whileStart := regexp.MustCompile(`^while\s*\((.*)\)\s*\{`)
 	forStart := regexp.MustCompile(`^for\s*\(int\s+([A-Za-z_][A-Za-z0-9_]*)\s*=\s*([^;]+);\s*[A-Za-z_][A-Za-z0-9_]*\s*<\s*([^;]+);\s*[A-Za-z_][A-Za-z0-9_]*\+\+\)\s*\{`)
+	ifStart := regexp.MustCompile(`^if\s*\((.*)\)\s*\{`)
+	elseStart := regexp.MustCompile(`^}\s*else\s*\{`)
 	printStmt := regexp.MustCompile(`System\.out\.println\((.*)\);`)
+	parseInt := regexp.MustCompile(`^Integer\.parseInt\("([^"]*)"\)$`)
+	ternaryBool := regexp.MustCompile(`^(.*)\?\s*1\s*:\s*0$`)
 
 	// detect mutated variables so that we emit `var` declarations
 	mutated := map[string]bool{}
@@ -98,6 +102,19 @@ func ConvertSource(n *Node) (string, error) {
 			stack = append(stack, "for")
 			continue
 		}
+		if m := ifStart.FindStringSubmatch(line); m != nil {
+			cond := strings.TrimSpace(m[1])
+			fmt.Fprintf(&out, "%sif %s {\n", indent, cond)
+			indent += "  "
+			stack = append(stack, "if")
+			continue
+		}
+		if elseStart.MatchString(line) {
+			indent = indent[:len(indent)-2]
+			fmt.Fprintf(&out, "%s} else {\n", indent)
+			indent += "  "
+			continue
+		}
 		if line == "}" && len(stack) > 0 {
 			indent = indent[:len(indent)-2]
 			fmt.Fprintf(&out, "%s}\n", indent)
@@ -106,6 +123,11 @@ func ConvertSource(n *Node) (string, error) {
 		}
 		if m := printStmt.FindStringSubmatch(line); m != nil {
 			expr := strings.TrimSpace(m[1])
+			if p := parseInt.FindStringSubmatch(expr); p != nil {
+				expr = fmt.Sprintf("\"%s\" as int", p[1])
+			} else if t := ternaryBool.FindStringSubmatch(expr); t != nil {
+				expr = strings.TrimSpace(t[1])
+			}
 			fmt.Fprintf(&out, "%sprint(%s)\n", indent, expr)
 		}
 	}
