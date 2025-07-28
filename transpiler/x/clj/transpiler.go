@@ -757,7 +757,7 @@ func Transpile(prog *parser.Program, env *types.Env, benchMain bool) (*Program, 
 				return nil, err
 			}
 			if n != nil {
-				body = append(body, n)
+				pr.Forms = append(pr.Forms, n)
 			}
 			continue
 		}
