@@ -95,6 +95,13 @@ func TestConvert_Golden(t *testing.T) {
 		"tail_recursion":      true,
 		"test_block":          true,
 		"unary_neg":           true,
+		"append_builtin":      true,
+		"basic_compare":       true,
+		"break_continue":      true,
+		"cast_string_to_int":  true,
+		"let_and_print":       true,
+		"list_index":          true,
+		"while_loop":          true,
 	}
 
 	outDir := filepath.Join(root, "tests/a2mochi/x/go")
