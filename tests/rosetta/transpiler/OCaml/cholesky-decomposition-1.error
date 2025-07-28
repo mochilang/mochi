@@ -1,8 +1,0 @@
-exit status 2
-File "/workspace/mochi/tests/rosetta/transpiler/OCaml/cholesky-decomposition-1.ml", line 1:
-Warning 24 [bad-module-name]: bad source file name: "Cholesky-decomposition-1" is not a valid module name.
-File "/workspace/mochi/tests/rosetta/transpiler/OCaml/cholesky-decomposition-1.ml", line 84, characters 49-54:
-84 |   row := (List.append !row [(Obj.magic (List.nth (ele) (!idx)) : float)]);
-                                                      ^^^^^
-Error: This expression has type int but an expression was expected of type
-         'a list
