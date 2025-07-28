@@ -1228,6 +1228,8 @@ func isIntExpr(e Expr, env *types.Env, ctx *context) bool {
 	switch v := e.(type) {
 	case *IntLit:
 		return true
+	case *NowExpr:
+		return true
 	case *UnaryExpr:
 		return isIntExpr(v.Expr, env, ctx)
 	case *BinaryExpr:
@@ -2966,7 +2968,7 @@ func sanitize(name string) string {
 }
 
 func sanitizeFuncName(name string) string {
-	lower := strings.ToLower(name)
+	lower := strings.TrimLeft(strings.ToLower(name), "_")
 	switch lower {
 	case "div", "rem", "band", "bor", "bxor", "bnot", "bsl", "bsr", "and", "or", "xor", "not", "when", "case", "catch", "end", "fun", "if", "receive", "try", "of", "after":
 		return lower + "_fn"
@@ -3226,6 +3228,19 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context, top bool) (
 			return []Stmt{&PutStmt{Name: st.Var.Name, Expr: e}}, nil
 		}
 		alias := ctx.newAlias(st.Var.Name)
+		if ce, ok := e.(*CallExpr); ok {
+			if idx, ok := mutatedFuncs[ce.Func]; ok && idx < len(ce.Args) {
+				if nr, ok := ce.Args[idx].(*NameRef); ok {
+					name := ctx.original(nr.Name)
+					mAlias := ctx.newAlias(name)
+					ctx.markMutated(name)
+					ctx.clearConst(name)
+					ctx.alias[name] = mAlias
+					pat := fmt.Sprintf("{%s, %s}", alias, mAlias)
+					return []Stmt{&LetStmt{Name: pat, Expr: e}}, nil
+				}
+			}
+		}
 		return []Stmt{&LetStmt{Name: alias, Expr: e}}, nil
 	case st.Assign != nil && len(st.Assign.Index) == 0 && len(st.Assign.Field) == 0:
 		val, err := convertExpr(st.Assign.Value, env, ctx)
@@ -3239,6 +3254,33 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context, top bool) (
 			ctx.markMutated(st.Assign.Name)
 		}
 		alias := ctx.newAlias(st.Assign.Name)
+		// handle assignment from a function that mutates one of its arguments
+		if ce, ok := val.(*CallExpr); ok {
+			if idx, ok := mutatedFuncs[ce.Func]; ok && idx < len(ce.Args) {
+				if nr, ok := ce.Args[idx].(*NameRef); ok {
+					name := ctx.original(nr.Name)
+					mAlias := ctx.newAlias(name)
+					ctx.markMutated(name)
+					ctx.clearConst(name)
+					ctx.alias[name] = mAlias
+					ctx.setStrFields(st.Assign.Name, stringFields(val))
+					ctx.setBoolFields(st.Assign.Name, boolFields(val, env, ctx))
+					ctx.setStringVar(st.Assign.Name, isStringExpr(val))
+					ctx.setListStrVar(st.Assign.Name, isStringListExpr(val))
+					ctx.setFloatVar(st.Assign.Name, isFloatExpr(val, env, ctx))
+					ctx.setMapVar(st.Assign.Name, isMapExpr(val, env, ctx))
+					ctx.setBoolVar(st.Assign.Name, isBoolExpr(val, env, ctx))
+					switch val.(type) {
+					case *IntLit, *FloatLit, *BoolLit, *StringLit, *AtomLit:
+						ctx.setConst(st.Assign.Name, val)
+					default:
+						ctx.clearConst(st.Assign.Name)
+					}
+					pat := fmt.Sprintf("{%s, %s}", alias, mAlias)
+					return []Stmt{&LetStmt{Name: pat, Expr: val}}, nil
+				}
+			}
+		}
 		ctx.setStrFields(st.Assign.Name, stringFields(val))
 		ctx.setBoolFields(st.Assign.Name, boolFields(val, env, ctx))
 		ctx.setStringVar(st.Assign.Name, isStringExpr(val))
@@ -3517,21 +3559,24 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context, top bool) (
 					name := ctx.original(nr.Name)
 					if ctx.isGlobal(name) {
 						tmp := ctx.newAlias(name)
+						pat := fmt.Sprintf("{_, %s}", tmp)
 						return []Stmt{
-							&LetStmt{Name: tmp, Expr: c},
+							&LetStmt{Name: pat, Expr: c},
 							&PutStmt{Name: name, Expr: &NameRef{Name: tmp}},
 						}, nil
 					}
 					alias := ctx.newAlias(name)
 					ctx.markMutated(name)
 					ctx.clearConst(name)
-					return []Stmt{&LetStmt{Name: alias, Expr: c}}, nil
+					pat := fmt.Sprintf("{_, %s}", alias)
+					return []Stmt{&LetStmt{Name: pat, Expr: c}}, nil
 				}
 				if get, ok := arg.(*CallExpr); ok && get.Func == "erlang:get" && len(get.Args) == 1 {
 					if atom, ok := get.Args[0].(*AtomLit); ok {
 						gname := strings.Trim(atom.Name, "'")
 						tmp := ctx.newAlias(gname)
-						stmts := []Stmt{&LetStmt{Name: tmp, Expr: c}, &PutStmt{Name: gname, Expr: &NameRef{Name: tmp}}}
+						pat := fmt.Sprintf("{_, %s}", tmp)
+						stmts := []Stmt{&LetStmt{Name: pat, Expr: c}, &PutStmt{Name: gname, Expr: &NameRef{Name: tmp}}}
 						return stmts, nil
 					}
 				}
@@ -3959,6 +4004,8 @@ func convertFunStmt(fn *parser.FunStmt, env *types.Env, ctx *context) (*FuncDecl
 		alias := fctx.alias[mname]
 		if isZeroExpr(ret) {
 			ret = &NameRef{Name: alias}
+		} else {
+			ret = &TupleExpr{A: ret, B: &NameRef{Name: alias}}
 		}
 		for _, st := range stmts {
 			if rs, ok := st.(*ReturnStmt); ok && isZeroExpr(rs.Expr) {
@@ -4828,6 +4875,7 @@ func convertPrimary(p *parser.Primary, env *types.Env, ctx *context) (Expr, erro
 			return &CallExpr{Func: "mochi_index_of", Args: ce.Args}, nil
 		} else if ce.Func == "repeat" && len(ce.Args) == 2 {
 			useRepeat = true
+			useToInt = true
 			return &CallExpr{Func: "mochi_repeat", Args: ce.Args}, nil
 		} else if ce.Func == "split" && len(ce.Args) == 2 {
 			return &CallExpr{Func: "string:tokens", Args: ce.Args}, nil
