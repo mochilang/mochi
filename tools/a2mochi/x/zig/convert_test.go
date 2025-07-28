@@ -55,6 +55,12 @@ func TestConvert_Golden(t *testing.T) {
 		"for_loop":          true,
 		"len_builtin":       true,
 		"bool_chain":        true,
+		"let_and_print":     true,
+		"math_ops":          true,
+		"str_builtin":       true,
+		"string_concat":     true,
+		"substring_builtin": true,
+		"sum_builtin":       true,
 	}
 
 	outDir := filepath.Join(root, "tests/a2mochi/x/zig")

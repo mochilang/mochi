@@ -5,46 +5,31 @@
     (return (bool true))
   )
   (call print
-    (binary <
+    (binary &&
       (binary &&
-        (binary <
-          (binary &&
-            (binary < (int 1) (int 2))
-            (int 2)
-          )
-          (int 3)
-        )
-        (int 3)
+        (binary < (int 1) (int 2))
+        (binary < (int 2) (int 3))
       )
-      (int 4)
+      (binary < (int 3) (int 4))
     )
   )
   (call print
     (binary &&
-      (binary >
-        (binary &&
-          (binary < (int 1) (int 2))
-          (int 2)
-        )
-        (int 3)
+      (binary &&
+        (binary < (int 1) (int 2))
+        (binary > (int 2) (int 3))
       )
       (call boom)
     )
   )
   (call print
     (binary &&
-      (binary >
+      (binary &&
         (binary &&
-          (binary <
-            (binary &&
-              (binary < (int 1) (int 2))
-              (int 2)
-            )
-            (int 3)
-          )
-          (int 3)
+          (binary < (int 1) (int 2))
+          (binary < (int 2) (int 3))
         )
-        (int 4)
+        (binary > (int 3) (int 4))
       )
       (call boom)
     )
