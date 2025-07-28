@@ -77,6 +77,9 @@ var (
 	needListAppendDoubleNew bool
 	needListAppendStrNew    bool
 	needListAppendIntNew    bool
+	needListAppendBigInt    bool
+	needListAppendBigIntPtr bool
+	needListAppendBigIntNew bool
 	needListAppendSizeT     bool
 	needNow                 bool
 	needMem                 bool
@@ -88,6 +91,7 @@ var (
 	needSliceDouble         bool
 	needGMP                 bool
 	needStrBigInt           bool
+	needStrListBigInt       bool
 	needListAppendBigRat    bool
 
 	currentFuncName   string
@@ -696,6 +700,8 @@ func (d *DeclStmt) emit(w io.Writer, indent int) {
 			io.WriteString(w, " = \"\"")
 		} else if typ == "bigrat" {
 			io.WriteString(w, " = _bigrat(0,1)")
+		} else if typ == "bigint" {
+			io.WriteString(w, " = _bigint(0)")
 		} else {
 			io.WriteString(w, " = 0")
 		}
@@ -736,6 +742,12 @@ func (a *AssignStmt) emit(w io.Writer, indent int) {
 				call.Args[1].emitExpr(w)
 				io.WriteString(w, ");\n")
 				return
+			case "bigint":
+				needListAppendBigInt = true
+				fmt.Fprintf(w, "%s = list_append_bigint(%s, &%s_len, ", a.Name, a.Name, a.Name)
+				call.Args[1].emitExpr(w)
+				io.WriteString(w, ");\n")
+				return
 			default:
 				if base == "" {
 					needListAppendInt = true
@@ -753,6 +765,9 @@ func (a *AssignStmt) emit(w io.Writer, indent int) {
 					case "double":
 						needListAppendDoublePtr = true
 						fmt.Fprintf(w, "%s = list_append_doubleptr(%s, &%s_len, ", a.Name, a.Name, a.Name)
+					case "bigint":
+						needListAppendBigIntPtr = true
+						fmt.Fprintf(w, "%s = list_append_bigintptr(%s, &%s_len, ", a.Name, a.Name, a.Name)
 					default:
 						needListAppendStrPtr = true
 						fmt.Fprintf(w, "%s = list_append_strptr(%s, &%s_len, ", a.Name, a.Name, a.Name)
@@ -794,7 +809,28 @@ func (a *AssignStmt) emit(w io.Writer, indent int) {
 	}
 	io.WriteString(w, " = ")
 	if a.Value != nil {
-		a.Value.emitExpr(w)
+		t := varTypes[a.Name]
+		for range a.Indexes {
+			if strings.HasSuffix(t, "[]") {
+				t = strings.TrimSuffix(t, "[]")
+			}
+		}
+		for _, f := range a.Fields {
+			if st, ok := structTypes[t]; ok {
+				if ft, ok2 := st.Fields[f]; ok2 {
+					t = cTypeFromMochiType(ft)
+				}
+			}
+		}
+		valT := inferExprType(currentEnv, a.Value)
+		if t == "bigint" && valT != "bigint" {
+			needGMP = true
+			io.WriteString(w, "_bigint(")
+			a.Value.emitExpr(w)
+			io.WriteString(w, ")")
+		} else {
+			a.Value.emitExpr(w)
+		}
 	}
 	io.WriteString(w, ";\n")
 
@@ -1057,6 +1093,15 @@ func exprIsFloat(e Expr) bool {
 }
 
 func (u *UnaryExpr) emitExpr(w io.Writer) {
+	if u.Op == "(bigint)" {
+		needGMP = true
+		io.WriteString(w, "_bigint(")
+		if u.Expr != nil {
+			u.Expr.emitExpr(w)
+		}
+		io.WriteString(w, ")")
+		return
+	}
 	io.WriteString(w, u.Op)
 	io.WriteString(w, "(")
 	if u.Expr != nil {
@@ -1389,6 +1434,9 @@ func (c *CallExpr) emitExpr(w io.Writer) {
 			case "double":
 				needListAppendDoubleNew = true
 				fmt.Fprintf(w, "list_append_double_new(%s, %s_len, ", vr.Name, vr.Name)
+			case "bigint":
+				needListAppendBigIntNew = true
+				fmt.Fprintf(w, "list_append_bigint_new(%s, %s_len, ", vr.Name, vr.Name)
 			default:
 				needListAppendIntNew = true
 				fmt.Fprintf(w, "list_append_int_new(%s, %s_len, ", vr.Name, vr.Name)
@@ -1526,6 +1574,25 @@ func (c *CallExpr) emitExpr(w io.Writer) {
 					io.WriteString(w, "); __res;})")
 				} else {
 					io.WriteString(w, "str_list_str(")
+					arg.emitExpr(w)
+					io.WriteString(w, ", ")
+					emitLenExpr(w, arg)
+					io.WriteString(w, ")")
+				}
+				return
+			}
+			if base == "bigint" {
+				needStrListBigInt = true
+				if _, ok := arg.(*CallExpr); ok {
+					tmp := fmt.Sprintf("__tmp%d", tempCounter)
+					tempCounter++
+					io.WriteString(w, "({bigint *"+tmp+" = ")
+					arg.emitExpr(w)
+					io.WriteString(w, "; char *__res = str_list_bigint("+tmp+", ")
+					emitLenExpr(w, arg)
+					io.WriteString(w, "); __res;})")
+				} else {
+					io.WriteString(w, "str_list_bigint(")
 					arg.emitExpr(w)
 					io.WriteString(w, ", ")
 					emitLenExpr(w, arg)
@@ -1715,7 +1782,39 @@ func (b *BinaryExpr) emitExpr(w io.Writer) {
 	}
 	lt := inferExprType(currentEnv, b.Left)
 	rt := inferExprType(currentEnv, b.Right)
-	if b.Op == "+" || b.Op == "-" || b.Op == "*" || b.Op == "/" {
+	if b.Op == "+" || b.Op == "-" || b.Op == "*" || b.Op == "/" || b.Op == "%" {
+		if lt == "bigint" || rt == "bigint" {
+			needGMP = true
+			op := "_badd"
+			switch b.Op {
+			case "-":
+				op = "_bsub"
+			case "*":
+				op = "_bmul"
+			case "/":
+				op = "_bdiv"
+			case "%":
+				op = "_bmod"
+			}
+			io.WriteString(w, op+"(")
+			if lt != "bigint" {
+				io.WriteString(w, "_bigint(")
+				b.Left.emitExpr(w)
+				io.WriteString(w, ")")
+			} else {
+				b.Left.emitExpr(w)
+			}
+			io.WriteString(w, ", ")
+			if rt != "bigint" {
+				io.WriteString(w, "_bigint(")
+				b.Right.emitExpr(w)
+				io.WriteString(w, ")")
+			} else {
+				b.Right.emitExpr(w)
+			}
+			io.WriteString(w, ")")
+			return
+		}
 		if lt == "bigrat" || rt == "bigrat" {
 			needGMP = true
 			op := "_add"
@@ -2031,6 +2130,43 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("}\n\n")
 	}
 	if needGMP {
+		buf.WriteString("static bigint _bigint(long n) {\n")
+		buf.WriteString("    bigint r = malloc(sizeof(mpz_t));\n")
+		buf.WriteString("    mpz_init_set_si(*r, n);\n")
+		buf.WriteString("    return r;\n")
+		buf.WriteString("}\n\n")
+		buf.WriteString("static bigint _badd(bigint a, bigint b) {\n")
+		buf.WriteString("    bigint r = malloc(sizeof(mpz_t));\n")
+		buf.WriteString("    mpz_init(*r);\n")
+		buf.WriteString("    mpz_add(*r, *a, *b);\n")
+		buf.WriteString("    return r;\n")
+		buf.WriteString("}\n\n")
+		buf.WriteString("static bigint _bsub(bigint a, bigint b) {\n")
+		buf.WriteString("    bigint r = malloc(sizeof(mpz_t));\n")
+		buf.WriteString("    mpz_init(*r);\n")
+		buf.WriteString("    mpz_sub(*r, *a, *b);\n")
+		buf.WriteString("    return r;\n")
+		buf.WriteString("}\n\n")
+		buf.WriteString("static bigint _bmul(bigint a, bigint b) {\n")
+		buf.WriteString("    bigint r = malloc(sizeof(mpz_t));\n")
+		buf.WriteString("    mpz_init(*r);\n")
+		buf.WriteString("    mpz_mul(*r, *a, *b);\n")
+		buf.WriteString("    return r;\n")
+		buf.WriteString("}\n\n")
+		buf.WriteString("static bigint _bdiv(bigint a, bigint b) {\n")
+		buf.WriteString("    bigint r = malloc(sizeof(mpz_t));\n")
+		buf.WriteString("    mpz_init(*r);\n")
+		buf.WriteString("    mpz_tdiv_q(*r, *a, *b);\n")
+		buf.WriteString("    return r;\n")
+		buf.WriteString("}\n\n")
+		buf.WriteString("static bigint _bmod(bigint a, bigint b) {\n")
+		buf.WriteString("    bigint r = malloc(sizeof(mpz_t));\n")
+		buf.WriteString("    mpz_init(*r);\n")
+		buf.WriteString("    mpz_mod(*r, *a, *b);\n")
+		buf.WriteString("    return r;\n")
+		buf.WriteString("}\n\n")
+	}
+	if needGMP {
 		buf.WriteString("static bigrat _bigrat(long n, long d) {\n")
 		buf.WriteString("    bigrat r = malloc(sizeof(mpq_t));\n")
 		buf.WriteString("    mpq_init(*r);\n")
@@ -2079,6 +2215,26 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("        memcpy(buf + pos, tmp, n);\n")
 		buf.WriteString("        pos += n;\n")
 		buf.WriteString("        if (i + 1 < len) buf[pos++] = ' ';\n")
+		buf.WriteString("    }\n")
+		buf.WriteString("    buf[pos++] = ']';\n")
+		buf.WriteString("    buf[pos] = 0;\n")
+		buf.WriteString("    return buf;\n")
+		buf.WriteString("}\n\n")
+	}
+	if needStrListBigInt {
+		buf.WriteString("static char* str_list_bigint(const bigint *arr, size_t len) {\n")
+		buf.WriteString("    size_t cap = 2;\n")
+		buf.WriteString("    char *buf = malloc(cap);\n")
+		buf.WriteString("    size_t pos = 0;\n")
+		buf.WriteString("    buf[pos++] = '[';\n")
+		buf.WriteString("    for (size_t i = 0; i < len; i++) {\n")
+		buf.WriteString("        char *tmp = mpz_get_str(NULL, 10, *arr[i]);\n")
+		buf.WriteString("        size_t n = strlen(tmp);\n")
+		buf.WriteString("        if (pos + n + 2 >= cap) { cap = cap * 2 + n + 2; buf = realloc(buf, cap); }\n")
+		buf.WriteString("        memcpy(buf + pos, tmp, n);\n")
+		buf.WriteString("        pos += n;\n")
+		buf.WriteString("        if (i + 1 < len) buf[pos++] = ' ';\n")
+		buf.WriteString("        free(tmp);\n")
 		buf.WriteString("    }\n")
 		buf.WriteString("    buf[pos++] = ']';\n")
 		buf.WriteString("    buf[pos] = 0;\n")
@@ -2226,6 +2382,30 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("    if (arr && len) memcpy(res, arr, len * sizeof(int));\n")
 		buf.WriteString("    res[len] = val;\n")
 		buf.WriteString("    return res;\n")
+		buf.WriteString("}\n\n")
+	}
+	if needListAppendBigInt {
+		buf.WriteString("static bigint* list_append_bigint(bigint *arr, size_t *len, bigint val) {\n")
+		buf.WriteString("    arr = realloc(arr, (*len + 1) * sizeof(bigint));\n")
+		buf.WriteString("    arr[*len] = val;\n")
+		buf.WriteString("    (*len)++;\n")
+		buf.WriteString("    return arr;\n")
+		buf.WriteString("}\n\n")
+	}
+	if needListAppendBigIntNew {
+		buf.WriteString("static bigint* list_append_bigint_new(const bigint *arr, size_t len, bigint val) {\n")
+		buf.WriteString("    bigint *res = malloc((len + 1) * sizeof(bigint));\n")
+		buf.WriteString("    if (arr && len) memcpy(res, arr, len * sizeof(bigint));\n")
+		buf.WriteString("    res[len] = val;\n")
+		buf.WriteString("    return res;\n")
+		buf.WriteString("}\n\n")
+	}
+	if needListAppendBigIntPtr {
+		buf.WriteString("static bigint** list_append_bigintptr(bigint **arr, size_t *len, bigint *val) {\n")
+		buf.WriteString("    arr = realloc(arr, (*len + 1) * sizeof(bigint*));\n")
+		buf.WriteString("    arr[*len] = val;\n")
+		buf.WriteString("    (*len)++;\n")
+		buf.WriteString("    return arr;\n")
 		buf.WriteString("}\n\n")
 	}
 	if needListAppendDouble {
@@ -2608,6 +2788,7 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 	needStrBool = false
 	needStrListInt = false
 	needStrListStr = false
+	needStrListBigInt = false
 	needUpper = false
 	needLower = false
 	needPadStart = false
@@ -2629,6 +2810,9 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 	needListAppendDoubleNew = false
 	needListAppendStrNew = false
 	needListAppendIntNew = false
+	needListAppendBigInt = false
+	needListAppendBigIntPtr = false
+	needListAppendBigIntNew = false
 	needNow = false
 	needMem = false
 	needInput = false
@@ -5799,6 +5983,8 @@ func inferExprType(env *types.Env, e Expr) string {
 			return "double"
 		case "(bigrat)":
 			return "bigrat"
+		case "(bigint)":
+			return "bigint"
 		case "(const char*)":
 			return "const char*"
 		}
