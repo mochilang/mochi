@@ -1,0 +1,5 @@
+package main
+fun main() {
+  print(len([1, 2, 3]))
+}
+main()

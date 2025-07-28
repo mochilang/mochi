@@ -40,6 +40,9 @@ type AST struct {
 
 var assignRe = regexp.MustCompile(`^([A-Za-z_][A-Za-z0-9_]*)\s*=\s*(.+)$`)
 var appendRe = regexp.MustCompile(`lists:append\(([^,]+),\s*\[([^\]]+)\]\)`)
+var mapsGetRe = regexp.MustCompile(`maps:get\(([^,]+),\s*([^\)]+)\)`)
+var mapsPutRe = regexp.MustCompile(`maps:put\(([^,]+),\s*([^,]+),\s*([^\)]+)\)`)
+var mapsIsKeyRe = regexp.MustCompile(`maps:is_key\(([^,]+),\s*([^\)]+)\)`)
 
 // Parse parses a very small subset of Erlang syntax and returns an AST.
 // It only supports module attributes, exports and simple function bodies.
@@ -275,8 +278,33 @@ func convertLine(ln string, recs []Record) string {
 	if strings.Contains(ln, "lists:sum(") {
 		ln = strings.ReplaceAll(ln, "lists:sum(", "sum(")
 	}
+	if strings.Contains(ln, "lists:min(") {
+		ln = strings.ReplaceAll(ln, "lists:min(", "min(")
+	}
+	if strings.Contains(ln, "lists:max(") {
+		ln = strings.ReplaceAll(ln, "lists:max(", "max(")
+	}
 	if strings.Contains(ln, "length(") {
 		ln = strings.ReplaceAll(ln, "length(", "len(")
+	}
+	if strings.Contains(ln, "maps:size(") {
+		ln = strings.ReplaceAll(ln, "maps:size(", "len(")
+	}
+	if strings.Contains(ln, "maps:values(") {
+		ln = strings.ReplaceAll(ln, "maps:values(", "values(")
+	}
+	if strings.Contains(ln, "#{") {
+		ln = strings.ReplaceAll(ln, "#{", "{")
+		ln = strings.ReplaceAll(ln, "=>", ":")
+	}
+	if mapsGetRe.MatchString(ln) {
+		ln = mapsGetRe.ReplaceAllString(ln, "$2[$1]")
+	}
+	if mapsPutRe.MatchString(ln) {
+		ln = mapsPutRe.ReplaceAllString(ln, "$3[$1] = $2")
+	}
+	if mapsIsKeyRe.MatchString(ln) {
+		ln = mapsIsKeyRe.ReplaceAllString(ln, "$1 in $2")
 	}
 	for _, r := range recs {
 		t := strings.Title(r.Name)
