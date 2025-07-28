@@ -392,6 +392,18 @@ type UnaryExpr struct {
 }
 
 func (dc *DynCallExpr) emit(w io.Writer) {
+	if ix, ok := dc.Fn.(*IndexExpr); ok {
+		if s, ok2 := ix.Index.(*StringLit); ok2 && s.Value == "slice" {
+			io.WriteString(w, "slice(")
+			ix.Target.emit(w)
+			for _, a := range dc.Args {
+				io.WriteString(w, ", ")
+				a.emit(w)
+			}
+			io.WriteString(w, ")")
+			return
+		}
+	}
 	dc.Fn.emit(w)
 	io.WriteString(w, "(")
 	for i, a := range dc.Args {
@@ -3566,14 +3578,20 @@ func convertForStmt(fs *parser.ForStmt) (Stmt, error) {
 		if err != nil {
 			return nil, err
 		}
+		child := types.NewEnv(currentEnv)
+		child.SetVar(fs.Name, types.IntType{}, true)
+		prev := currentEnv
+		currentEnv = child
 		var body []Stmt
 		for _, st := range fs.Body {
 			s, err := convertStmt(st)
 			if err != nil {
+				currentEnv = prev
 				return nil, err
 			}
 			body = append(body, s)
 		}
+		currentEnv = prev
 		return &ForRangeStmt{Name: fs.Name, Start: start, End: end, Body: body}, nil
 	}
 	iter, err := convertExpr(fs.Source)
