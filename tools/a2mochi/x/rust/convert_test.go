@@ -55,6 +55,7 @@ func TestConvert_Golden(t *testing.T) {
 	allowed := map[string]bool{
 		"print_hello":    true,
 		"let_and_print":  true,
+		"append_builtin": true,
 		"for_loop":       true,
 		"while_loop":     true,
 		"basic_compare":  true,
