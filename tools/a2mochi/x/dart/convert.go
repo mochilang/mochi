@@ -261,11 +261,38 @@ var forVarRe = regexp.MustCompile(`^(\s*)for \((?:var|final|const) ([A-Za-z_][A-
 func convertBodyLine(s string) string {
 	s = strings.TrimSuffix(s, ";")
 	s = forVarRe.ReplaceAllString(s, "${1}for ${2} in ${3}")
+	if strings.HasPrefix(strings.TrimSpace(s), "let ") {
+		s = strings.Replace(s, "let ", "var ", 1)
+	}
+	s = fixUnaryNeg(s)
+	s = convertArrowFunc(s)
+	s = convertTernaryPrint(s)
 	s = convertTernary(s)
 	s = convertSpread(s)
 	s = convertLength(s)
 	return convertQuotes(s)
 }
+
+var arrowRe = regexp.MustCompile(`\(([^()]*)\)\s*=>`)
+
+func convertArrowFunc(s string) string {
+	return arrowRe.ReplaceAllString(s, "fun($1) =>")
+}
+
+var unaryNegRe = regexp.MustCompile(`([+\-*/])\s*-([A-Za-z0-9_]+)`) // e.g., "+ -2" -> "+ (-2)"
+
+func fixUnaryNeg(s string) string {
+	return unaryNegRe.ReplaceAllString(s, "$1 (-$2)")
+}
+
+func convertTernaryPrint(s string) string {
+	if m := printTernaryRe.FindStringSubmatch(s); m != nil {
+		return fmt.Sprintf("print(if %s { %s } else { %s })", strings.TrimSpace(m[1]), strings.TrimSpace(m[2]), strings.TrimSpace(m[3]))
+	}
+	return s
+}
+
+var printTernaryRe = regexp.MustCompile(`^\s*print\(([^?]+)\?\s*([^:]+)\s*:\s*([^)]*)\)$`)
 
 var ternaryRe = regexp.MustCompile(`([^?]+)\?\s*([^:]+)\s*:\s*(.+)`)
 

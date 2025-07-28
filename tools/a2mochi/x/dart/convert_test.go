@@ -79,8 +79,10 @@ func TestConvert_Golden(t *testing.T) {
 	allowed := map[string]bool{
 		"append_builtin":      true,
 		"binary_precedence":   true,
+		"bool_chain":          true,
 		"break_continue":      true,
 		"cast_string_to_int":  true,
+		"closure":             true,
 		"for_list_collection": true,
 		"for_loop":            true,
 		"fun_call":            true,
@@ -113,6 +115,7 @@ func TestConvert_Golden(t *testing.T) {
 		"tail_recursion":      true,
 		"test_block":          true,
 		"two-sum":             true,
+		"unary_neg":           true,
 		"typed_let":           true,
 		"typed_var":           true,
 		"var_assignment":      true,
