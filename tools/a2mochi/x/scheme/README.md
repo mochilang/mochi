@@ -21,4 +21,5 @@ Completed programs: 94/94
 - [x] tail_recursion
 - [x] var_assignment
 - [x] import_statements
+- [x] require_statements
 
