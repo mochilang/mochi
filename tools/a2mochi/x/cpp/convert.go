@@ -3,7 +3,6 @@
 package cpp
 
 import (
-	"bufio"
 	"bytes"
 	"encoding/json"
 	"fmt"
@@ -30,8 +29,8 @@ var version = func() string {
 	return "unknown"
 }()
 
-// Node represents the parsed structure of a C++ source file.
-type Node struct {
+// Program represents the parsed structure of a C++ source file.
+type Program struct {
 	Funcs   []Func
 	Enums   []Enum
 	Structs []Struct
@@ -78,31 +77,66 @@ func header() string {
 }
 
 // Parse parses C++ source code using clang++'s JSON AST output.
-func Parse(src string) (*Node, error) {
-	funcs, enums, structs, err := parseAST(src)
+func Parse(src string) (*Program, error) {
+	funcs, enums, structs, globals, err := parseClangAST(src)
 	if err != nil {
 		return nil, err
 	}
-	return &Node{Funcs: funcs, Enums: enums, Structs: structs, Src: src, Globals: parseGlobals(src)}, nil
+	return &Program{Funcs: funcs, Enums: enums, Structs: structs, Globals: globals, Src: src}, nil
 }
 
-// ConvertSource converts a parsed C++ Node into Mochi source code.
-func ConvertSource(n *Node) (string, error) {
+// ConvertSource converts a parsed C++ Program into Mochi source code.
+func ConvertSource(p *Program) (string, error) {
+	astNode, err := Convert(p)
+	if err != nil {
+		return "", err
+	}
+
+	var code strings.Builder
+	if err := ast.Fprint(&code, astNode); err != nil {
+		return "", err
+	}
+
 	var b strings.Builder
 	b.WriteString(header())
 	b.WriteByte('\n')
-	if n.Src != "" {
+	if p.Src != "" {
 		b.WriteString("/*\n")
-		b.WriteString(n.Src)
-		if !strings.HasSuffix(n.Src, "\n") {
+		b.WriteString(p.Src)
+		if !strings.HasSuffix(p.Src, "\n") {
 			b.WriteByte('\n')
 		}
 		b.WriteString("*/\n")
 	}
-	if len(n.Globals) == 0 {
-		n.Globals = parseGlobals(n.Src)
+	b.WriteString(code.String())
+	if !strings.HasSuffix(code.String(), "\n") {
+		b.WriteByte('\n')
 	}
-	for _, g := range n.Globals {
+	return b.String(), nil
+}
+
+// Convert parses C++ source and returns the corresponding Mochi AST node.
+func Convert(p *Program) (*ast.Node, error) {
+	if p == nil {
+		return nil, fmt.Errorf("nil program")
+	}
+	code, err := programCode(p)
+	if err != nil {
+		return nil, err
+	}
+	prog, err := parser.ParseString(code)
+	if err != nil {
+		return nil, err
+	}
+	return ast.FromProgram(prog), nil
+}
+
+func programCode(p *Program) (string, error) {
+	if p == nil {
+		return "", fmt.Errorf("nil program")
+	}
+	var b strings.Builder
+	for _, g := range p.Globals {
 		b.WriteString("var ")
 		b.WriteString(g.Name)
 		if g.Typ != "" {
@@ -115,7 +149,7 @@ func ConvertSource(n *Node) (string, error) {
 		}
 		b.WriteByte('\n')
 	}
-	for _, st := range n.Structs {
+	for _, st := range p.Structs {
 		b.WriteString("type ")
 		b.WriteString(st.Name)
 		b.WriteString(" {\n")
@@ -130,7 +164,7 @@ func ConvertSource(n *Node) (string, error) {
 		}
 		b.WriteString("}\n")
 	}
-	for _, e := range n.Enums {
+	for _, e := range p.Enums {
 		b.WriteString("type ")
 		b.WriteString(e.Name)
 		b.WriteString(" {\n")
@@ -142,23 +176,23 @@ func ConvertSource(n *Node) (string, error) {
 		b.WriteString("}\n")
 	}
 	hasMain := false
-	for _, f := range n.Funcs {
+	for _, f := range p.Funcs {
 		if f.Name == "main" {
 			hasMain = true
 		}
 	}
-	for _, f := range n.Funcs {
+	for _, f := range p.Funcs {
 		b.WriteString("fun ")
 		b.WriteString(f.Name)
 		b.WriteByte('(')
-		for i, p := range f.Params {
+		for i, param := range f.Params {
 			if i > 0 {
 				b.WriteString(", ")
 			}
-			b.WriteString(p.Name)
-			if p.Typ != "" {
+			b.WriteString(param.Name)
+			if param.Typ != "" {
 				b.WriteString(": ")
-				b.WriteString(p.Typ)
+				b.WriteString(param.Typ)
 			}
 		}
 		b.WriteByte(')')
@@ -166,7 +200,7 @@ func ConvertSource(n *Node) (string, error) {
 			b.WriteString(": ")
 			b.WriteString(f.Ret)
 		}
-		body := convertBodyString(f.Body)
+		body := convertBody(f.Body)
 		if len(body) == 0 {
 			b.WriteString(" {}\n")
 		} else {
@@ -185,32 +219,16 @@ func ConvertSource(n *Node) (string, error) {
 	return b.String(), nil
 }
 
-// Convert parses C++ source and returns the corresponding Mochi AST node.
-func Convert(src string) (*ast.Node, error) {
-	n, err := Parse(src)
-	if err != nil {
-		return nil, err
-	}
-	code, err := ConvertSource(n)
-	if err != nil {
-		return nil, err
-	}
-	prog, err := parser.ParseString(code)
-	if err != nil {
-		return nil, err
-	}
-	return ast.FromProgram(prog), nil
-}
-
 // --- Parsing helpers below (adapted from archived any2mochi) ---
 
-type astNode struct {
+type clangNode struct {
 	Kind string `json:"kind"`
 	Name string `json:"name,omitempty"`
 	Type *struct {
 		QualType string `json:"qualType"`
 	} `json:"type,omitempty"`
-	Inner []astNode `json:"inner,omitempty"`
+	Inner []clangNode     `json:"inner,omitempty"`
+	Value json.RawMessage `json:"value,omitempty"`
 	Range *struct {
 		Begin struct {
 			Offset int `json:"offset"`
@@ -221,7 +239,7 @@ type astNode struct {
 	} `json:"range,omitempty"`
 }
 
-func parseAST(src string) ([]Func, []Enum, []Struct, error) {
+func parseClangAST(src string) ([]Func, []Enum, []Struct, []Global, error) {
 	cmd := exec.Command("clang++", "-x", "c++", "-std=c++20", "-fsyntax-only", "-Xclang", "-ast-dump=json", "-")
 	cmd.Stdin = strings.NewReader(src)
 	var buf bytes.Buffer
@@ -230,24 +248,25 @@ func parseAST(src string) ([]Func, []Enum, []Struct, error) {
 	cmd.Stderr = &errBuf
 	runErr := cmd.Run()
 	if buf.Len() == 0 {
-		return nil, nil, nil, fmt.Errorf("clang++: %w: %s", runErr, errBuf.String())
+		return nil, nil, nil, nil, fmt.Errorf("clang++: %w: %s", runErr, errBuf.String())
 	}
-	var root astNode
+	var root clangNode
 	if err := json.Unmarshal(buf.Bytes(), &root); err != nil {
 		if runErr != nil {
-			return nil, nil, nil, fmt.Errorf("%v: %w", runErr, err)
+			return nil, nil, nil, nil, fmt.Errorf("%v: %w", runErr, err)
 		}
-		return nil, nil, nil, err
+		return nil, nil, nil, nil, err
 	}
 	var funcs []Func
 	var enums []Enum
 	var structs []Struct
-	collectAST(&root, src, &funcs, &enums, &structs, "")
+	var globals []Global
+	walkAST(&root, src, &funcs, &enums, &structs, &globals, "")
 	// Ignore clang++ errors as long as we obtained a parse tree.
-	return funcs, enums, structs, nil
+	return funcs, enums, structs, globals, nil
 }
 
-func collectAST(n *astNode, src string, funcs *[]Func, enums *[]Enum, structs *[]Struct, parent string) {
+func walkAST(n *clangNode, src string, funcs *[]Func, enums *[]Enum, structs *[]Struct, globals *[]Global, parent string) {
 	switch n.Kind {
 	case "FunctionDecl":
 		if n.Range == nil || n.Range.Begin.Offset < 0 || n.Range.End.Offset > len(src) {
@@ -320,6 +339,19 @@ func collectAST(n *astNode, src string, funcs *[]Func, enums *[]Enum, structs *[
 		}
 		name := parent + "." + n.Name
 		*funcs = append(*funcs, Func{Name: name, Params: params, Ret: ret, Body: body})
+	case "VarDecl":
+		if parent == "" && n.Range != nil && n.Range.Begin.Offset >= 0 && n.Range.End.Offset >= n.Range.Begin.Offset && n.Range.End.Offset <= len(src) {
+			snippet := strings.TrimSpace(src[n.Range.Begin.Offset:n.Range.End.Offset])
+			g := parseGlobalDecl(snippet)
+			if g.Name != "" {
+				if len(n.Inner) > 0 && n.Inner[0].Kind == "IntegerLiteral" {
+					var lit string
+					json.Unmarshal(n.Inner[0].Value, &lit)
+					g.Value = strings.TrimSpace(lit)
+				}
+				*globals = append(*globals, g)
+			}
+		}
 	case "EnumDecl":
 		if n.Range == nil || n.Range.Begin.Offset < 0 || n.Range.End.Offset > len(src) {
 			break
@@ -361,11 +393,11 @@ func collectAST(n *astNode, src string, funcs *[]Func, enums *[]Enum, structs *[
 		if n.Inner[i].Kind == "CXXMethodDecl" {
 			continue
 		}
-		collectAST(&n.Inner[i], src, funcs, enums, structs, nextParent)
+		walkAST(&n.Inner[i], src, funcs, enums, structs, globals, nextParent)
 	}
 }
 
-func convertBodyString(body string) []string {
+func convertBody(body string) []string {
 	lines := strings.Split(body, "\n")
 	if len(lines) > 0 && strings.TrimSpace(lines[0]) == "{" {
 		lines = lines[1:]
@@ -384,7 +416,7 @@ func convertBodyString(body string) []string {
 		case strings.HasPrefix(l, "return"):
 			expr := strings.TrimSpace(strings.TrimPrefix(l, "return"))
 			if expr != "" {
-				expr = convertExpr(expr)
+				expr = convertExpression(expr)
 				negRe := regexp.MustCompile(`([+\-*/])\s*-([A-Za-z0-9_]+)`)
 				expr = negRe.ReplaceAllString(expr, `$1 (-$2)`)
 				out = append(out, "return "+expr)
@@ -404,8 +436,8 @@ func convertBodyString(body string) []string {
 			l = strings.TrimSuffix(l, "<< std::endl")
 			l = strings.TrimSuffix(l, "<< endl")
 			l = strings.TrimSpace(l)
-			// built-in conversions handled in convertExpr
-			l = convertExpr(l)
+			// built-in conversions handled in convertExpression
+			l = convertExpression(l)
 			negRe := regexp.MustCompile(`([+\-*/])\s*-([A-Za-z0-9_]+)`)
 			l = negRe.ReplaceAllString(l, `$1 (-$2)`)
 			out = append(out, "print("+l+")")
@@ -468,7 +500,7 @@ func convertBodyString(body string) []string {
 			if decl {
 				l = "let " + l
 			}
-			l = convertExpr(l)
+			l = convertExpression(l)
 			negRe := regexp.MustCompile(`([+\-*/])\s*-([A-Za-z0-9_]+)`)
 			l = negRe.ReplaceAllString(l, `$1 (-$2)`)
 			out = append(out, l)
@@ -477,11 +509,11 @@ func convertBodyString(body string) []string {
 	return out
 }
 
-func convertExpr(s string) string {
+func convertExpression(s string) string {
 	s = strings.TrimSpace(s)
 	if strings.HasSuffix(s, ".size()") {
 		inner := strings.TrimSuffix(s, ".size()")
-		inner = convertExpr(inner)
+		inner = convertExpression(inner)
 		return "len(" + inner + ")"
 	}
 	if strings.HasPrefix(s, "std::vector") && strings.Contains(s, "{") && strings.HasSuffix(s, "}") {
@@ -495,27 +527,26 @@ func convertExpr(s string) string {
 	return s
 }
 
-func parseGlobals(src string) []Global {
-	scanner := bufio.NewScanner(strings.NewReader(src))
-	var globals []Global
-	re := regexp.MustCompile(`^(?:auto|int|long|float|double|bool|std::string|string)\s+([A-Za-z_][A-Za-z0-9_]*)\s*=\s*(.+);$`)
-	for scanner.Scan() {
-		line := strings.TrimSpace(scanner.Text())
-		if strings.HasPrefix(line, "int main") || strings.HasPrefix(line, "auto main") {
-			break
-		}
-		if m := re.FindStringSubmatch(line); m != nil {
-			typToken := strings.Fields(line)[0]
-			typ := mapType(typToken)
-			val := strings.TrimSpace(m[2])
-			val = strings.TrimSuffix(strings.TrimPrefix(val, "("), ")")
-			if (typ == "int" && val == "0") || (typ == "float" && (val == "0" || val == "0.0")) || (typ == "bool" && val == "false") || (typ == "string" && val == "\"\"") {
-				val = ""
-			}
-			globals = append(globals, Global{Name: m[1], Typ: typ, Value: val})
-		}
+func parseGlobalDecl(s string) Global {
+	s = strings.TrimSpace(strings.TrimSuffix(s, ";"))
+	parts := strings.SplitN(s, "=", 2)
+	left := strings.TrimSpace(parts[0])
+	var val string
+	if len(parts) > 1 {
+		val = strings.TrimSpace(parts[1])
+		val = strings.TrimSuffix(strings.TrimPrefix(val, "("), ")")
 	}
-	return globals
+	fields := strings.Fields(left)
+	if len(fields) == 0 {
+		return Global{}
+	}
+	name := fields[len(fields)-1]
+	typToken := strings.Join(fields[:len(fields)-1], " ")
+	typ := mapType(typToken)
+	if (typ == "int" && val == "0") || (typ == "float" && (val == "0" || val == "0.0")) || (typ == "bool" && val == "false") || (typ == "string" && val == "\"\"") {
+		val = ""
+	}
+	return Global{Name: name, Typ: typ, Value: val}
 }
 
 func mapType(typ string) string {
