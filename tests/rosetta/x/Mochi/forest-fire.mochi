@@ -1,34 +1,109 @@
-let rows = 5
-let cols = 5
-var board: list<list<int>> = []
-var r = 0
-while r < rows {
-  var row: list<int> = []
-  var c = 0
-  while c < cols {
-    row = append(row, (r+c)%2)
-    c = c + 1
+// Mochi implementation of Rosetta "Forest-fire" task
+
+let rows = 20
+let cols = 30
+let p = 0.01   // probability a tree grows in an empty cell
+let f = 0.001  // probability a tree spontaneously ignites
+
+fun repeat(ch: string, n: int): string {
+  var s = ""
+  var i = 0
+  while i < n {
+    s = s + ch
+    i = i + 1
   }
-  board = append(board, row)
-  r = r + 1
+  return s
 }
 
-fun step(b: list<list<int>>): list<list<int>> {
-  var nb = b
+fun chance(prob: float): bool {
+  let threshold = int(prob * 1000.0)
+  return now() % 1000 < threshold
+}
+
+fun newBoard(): list<list<string>> {
+  var b: list<list<string>> = []
   var r = 0
   while r < rows {
+    var row: list<string> = []
     var c = 0
     while c < cols {
-      nb[r][c] = 1 - b[r][c]
+      if now() % 2 == 0 {
+        row = append(row, "T")
+      } else {
+        row = append(row, " ")
+      }
       c = c + 1
     }
+    b = append(b, row)
     r = r + 1
   }
-  return nb
+  return b
 }
 
-print("start")
-for row in board { print(str(row)) }
+fun step(src: list<list<string>>): list<list<string>> {
+  var dst: list<list<string>> = []
+  var r = 0
+  while r < rows {
+    var row: list<string> = []
+    var c = 0
+    while c < cols {
+      var cell = src[r][c]
+      var next = cell
+      if cell == "#" {
+        next = " "
+      } else if cell == "T" {
+        var burning = false
+        var dr = -1
+        while dr <= 1 {
+          var dc = -1
+          while dc <= 1 {
+            if dr != 0 || dc != 0 {
+              let rr = r + dr
+              let cc = c + dc
+              if rr >= 0 && rr < rows && cc >= 0 && cc < cols {
+                if src[rr][cc] == "#" { burning = true }
+              }
+            }
+            dc = dc + 1
+          }
+          dr = dr + 1
+        }
+        if burning || chance(f) {
+          next = "#"
+        }
+      } else {
+        if chance(p) { next = "T" }
+      }
+      row = append(row, next)
+      c = c + 1
+    }
+    dst = append(dst, row)
+    r = r + 1
+  }
+  return dst
+}
+
+fun printBoard(b: list<list<string>>) {
+  print(repeat("__", cols) + "\n\n")
+  var r = 0
+  while r < rows {
+    var line = ""
+    var c = 0
+    while c < cols {
+      let cell = b[r][c]
+      if cell == " " {
+        line = line + "  "
+      } else {
+        line = line + " " + cell
+      }
+      c = c + 1
+    }
+    print(line + "\n")
+    r = r + 1
+  }
+}
+
+var board = newBoard()
+printBoard(board)
 board = step(board)
-print("after")
-for row in board { print(str(row)) }
+printBoard(board)
