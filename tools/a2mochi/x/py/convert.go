@@ -495,7 +495,11 @@ func emitAssignStmt(b *strings.Builder, n *Node, lines []string, seen map[string
 				seen[nameNode.ID] = true
 			}
 		case "Subscript":
-			if v := nameNode.valueNode(); v != nil && v.Type == "Name" {
+			v := nameNode.valueNode()
+			for v != nil && v.Type == "Subscript" {
+				v = v.valueNode()
+			}
+			if v != nil && v.Type == "Name" {
 				declared = seen[v.ID]
 			}
 		}
@@ -679,6 +683,20 @@ func emitExpr(b *strings.Builder, n *Node, lines []string) error {
 			return nil
 		}
 		if fn != nil && fn.Type == "Name" {
+			if fn.ID == "list" {
+				args := n.callArgs()
+				if len(args) == 1 {
+					inner := args[0]
+					if inner.Type == "Call" && inner.Func != nil && inner.Func.Type == "Attribute" && inner.Func.Attr == "values" && len(inner.callArgs()) == 0 {
+						b.WriteString("values(")
+						if err := emitExpr(b, inner.Func.valueNode(), lines); err != nil {
+							return err
+						}
+						b.WriteString(")")
+						return nil
+					}
+				}
+			}
 			if len(n.Keywords) > 0 && len(n.callArgs()) == 0 && strings.Title(fn.ID) == fn.ID {
 				b.WriteString(fn.ID)
 				b.WriteString(" {")
@@ -696,6 +714,24 @@ func emitExpr(b *strings.Builder, n *Node, lines []string) error {
 				return nil
 			}
 			b.WriteString(fn.ID)
+		} else if fn != nil && fn.Type == "Attribute" {
+			if fn.Attr == "values" && len(n.callArgs()) == 0 && len(n.Keywords) == 0 {
+				b.WriteString("values(")
+				if err := emitExpr(b, fn.valueNode(), lines); err != nil {
+					return err
+				}
+				b.WriteString(")")
+				return nil
+			}
+			if err := emitExpr(b, fn.valueNode(), lines); err != nil {
+				return err
+			}
+			b.WriteByte('.')
+			if fn.Attr != "" {
+				b.WriteString(fn.Attr)
+			} else {
+				b.WriteString(fn.Name)
+			}
 		}
 		b.WriteString("(")
 		args := n.callArgs()
