@@ -1,0 +1,12 @@
+(program
+  (type Item
+    (field n (type int))
+    (field v (type string))
+  )
+  (let items
+    (type list (type Item))
+  )
+  (let result
+    (type list (type any))
+  )
+)

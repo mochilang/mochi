@@ -1,0 +1,6 @@
+let _nowSeed
+let _nowSeeded
+fun _now(): int {
+}
+fun _mem(): int {
+}

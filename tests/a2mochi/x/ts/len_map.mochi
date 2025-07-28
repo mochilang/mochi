@@ -1,0 +1,4 @@
+type Result {
+  a: int
+  b: int
+}

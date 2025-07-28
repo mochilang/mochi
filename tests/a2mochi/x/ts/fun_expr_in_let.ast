@@ -1,0 +1,6 @@
+(program
+  (let square
+    (group (selector x))
+  )
+  (map)
+)

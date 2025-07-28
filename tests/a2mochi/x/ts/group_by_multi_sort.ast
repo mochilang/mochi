@@ -1,0 +1,20 @@
+(program
+  (type Result
+    (field a (type string))
+    (field b (type int))
+    (field val (type int))
+  )
+  (type Item
+    (field a (type string))
+    (field b (type int))
+    (field val (type int))
+  )
+  (let items
+    (type list (type Item))
+  )
+  (let grouped
+    (type list
+      (type map (type string) (type any))
+    )
+  )
+)

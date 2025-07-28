@@ -1,0 +1,11 @@
+(program
+  (fun add
+    (param a (type int))
+    (param b (type int))
+    (type int)
+  )
+  (let add5
+    (group (selector b))
+  )
+  (map)
+)

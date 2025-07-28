@@ -1,0 +1,10 @@
+type Result {
+  name: string
+  price: int
+}
+type Product {
+  name: string
+  price: int
+}
+let products: list<Product>
+let expensive: list<map<string,any>>

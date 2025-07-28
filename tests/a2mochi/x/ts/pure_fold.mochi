@@ -1,0 +1,2 @@
+fun triple(x: int): int {
+}

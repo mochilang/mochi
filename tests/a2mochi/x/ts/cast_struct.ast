@@ -1,0 +1,12 @@
+(program
+  (type Result
+    (field title (type string))
+  )
+  (type Todo1
+    (field title (type string))
+  )
+  (type Todo
+    (field title (type string))
+  )
+  (let todo (type Todo1))
+)

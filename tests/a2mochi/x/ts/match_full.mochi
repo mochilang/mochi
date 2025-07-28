@@ -1,0 +1,8 @@
+let x: int
+let label: string
+let day: string
+let mood: string
+let ok: bool
+let status: string
+fun classify(n: int): string {
+}

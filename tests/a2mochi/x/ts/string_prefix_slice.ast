@@ -1,0 +1,5 @@
+(program
+  (let prefix (type string))
+  (let s1 (type string))
+  (let s2 (type string))
+)

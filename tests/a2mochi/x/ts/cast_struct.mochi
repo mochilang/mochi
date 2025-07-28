@@ -1,0 +1,10 @@
+type Result {
+  title: string
+}
+type Todo1 {
+  title: string
+}
+type Todo {
+  title: string
+}
+let todo: Todo1

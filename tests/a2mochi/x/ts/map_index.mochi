@@ -1,0 +1,9 @@
+type Result {
+  a: int
+  b: int
+}
+type M {
+  a: int
+  b: int
+}
+let m: M

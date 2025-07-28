@@ -1,0 +1,4 @@
+(program
+  (let x (type int))
+  (let label (type string))
+)

@@ -1,0 +1,14 @@
+(program
+  (type Data
+    (field a (type int))
+    (field b (type int))
+  )
+  (let data
+    (type list (type Data))
+  )
+  (let sorted
+    (type list
+      (type map (type string) (type int))
+    )
+  )
+)

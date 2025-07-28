@@ -1,0 +1,13 @@
+(program
+  (type Result
+    (field a (type int))
+    (field b (type int))
+    (field c (type int))
+  )
+  (type M
+    (field a (type int))
+    (field b (type int))
+    (field c (type int))
+  )
+  (let m (type M))
+)

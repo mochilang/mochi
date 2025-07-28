@@ -1,0 +1,28 @@
+(program
+  (type Result
+    (field id (type int))
+    (field name (type string))
+  )
+  (type Customer
+    (field id (type int))
+    (field name (type string))
+  )
+  (type Order
+    (field id (type int))
+    (field customerId (type int))
+    (field total (type int))
+  )
+  (fun __show
+    (param v)
+    (param nest (type bool))
+  )
+  (let customers
+    (type list (type Customer))
+  )
+  (let orders
+    (type list (type Order))
+  )
+  (let result
+    (type list (type Result))
+  )
+)

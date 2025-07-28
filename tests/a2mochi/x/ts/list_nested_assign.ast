@@ -1,0 +1,7 @@
+(program
+  (let matrix
+    (type list
+      (type list (type int))
+    )
+  )
+)

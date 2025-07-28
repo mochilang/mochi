@@ -1,0 +1,10 @@
+type Result {
+  a: int
+}
+type M {
+  a: int
+}
+let xs: list<int>
+let ys: list<int>
+let m: M
+let s: string

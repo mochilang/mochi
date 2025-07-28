@@ -1,0 +1,6 @@
+(program
+  (fun outer
+    (param x (type int))
+    (type int)
+  )
+)

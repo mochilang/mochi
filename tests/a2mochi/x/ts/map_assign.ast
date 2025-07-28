@@ -1,0 +1,9 @@
+(program
+  (type Result
+    (field alice (type int))
+  )
+  (type Scores
+    (field alice (type int))
+  )
+  (let scores (type Scores))
+)

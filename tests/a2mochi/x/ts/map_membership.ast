@@ -1,0 +1,7 @@
+(program
+  (type M
+    (field a (type int))
+    (field b (type int))
+  )
+  (let m (type M))
+)

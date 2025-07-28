@@ -1,0 +1,18 @@
+type Result {
+  id: int
+  name: string
+}
+type Customer {
+  id: int
+  name: string
+}
+type Order {
+  id: int
+  customerId: int
+  total: int
+}
+fun __show(v, nest: bool) {
+}
+let customers: list<Customer>
+let orders: list<Order>
+let result: list<Result>

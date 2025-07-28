@@ -1,0 +1,5 @@
+(program
+  (let nums
+    (type list (type int))
+  )
+)

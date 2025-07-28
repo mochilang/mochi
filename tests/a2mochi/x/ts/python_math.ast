@@ -1,0 +1,8 @@
+(program
+  (let math)
+  (let r (type int))
+  (let area (type int))
+  (let root (type int))
+  (let sin45 (type int))
+  (let log_e (type int))
+)

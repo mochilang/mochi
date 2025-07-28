@@ -1,0 +1,7 @@
+type Result {
+  alice: int
+}
+type Scores {
+  alice: int
+}
+let scores: Scores
