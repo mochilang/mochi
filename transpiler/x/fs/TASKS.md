@@ -1,3 +1,7 @@
+## Progress (2025-07-28 07:48 +0700)
+- fs transpiler: support function calls and typed indexing
+- Generated F# for 103/104 programs (103 passing)
+
 ## Progress (2025-07-27 23:36 +0700)
 - transpiler(fs): handle empty array casts
 - Generated F# for 103/104 programs (103 passing)

@@ -1,0 +1,12 @@
+run: exit status 1
+404 possible points
+
+Unhandled Exception:
+System.Collections.Generic.KeyNotFoundException: The given key was not present in the dictionary.
+  at Microsoft.FSharp.Collections.MapTreeModule.find[TValue,a] (System.Collections.Generic.IComparer`1[T] comparer, TValue k, Microsoft.FSharp.Collections.MapTree`2[TKey,TValue] m) [0x00016] in <65d1017bc6ad35d9a74503837b01d165>:0 
+  at Microsoft.FSharp.Collections.FSharpMap`2[TKey,TValue].get_Item (TKey key) [0x00001] in <65d1017bc6ad35d9a74503837b01d165>:0 
+  at <StartupCode$constrained-random-points-on-a-circle-2>.$Constrained-random-points-on-a-circle-2.main@ () [0x0030b] in <6886ca5e0c55b121a74503835eca8668>:0 
+[ERROR] FATAL UNHANDLED EXCEPTION: System.Collections.Generic.KeyNotFoundException: The given key was not present in the dictionary.
+  at Microsoft.FSharp.Collections.MapTreeModule.find[TValue,a] (System.Collections.Generic.IComparer`1[T] comparer, TValue k, Microsoft.FSharp.Collections.MapTree`2[TKey,TValue] m) [0x00016] in <65d1017bc6ad35d9a74503837b01d165>:0 
+  at Microsoft.FSharp.Collections.FSharpMap`2[TKey,TValue].get_Item (TKey key) [0x00001] in <65d1017bc6ad35d9a74503837b01d165>:0 
+  at <StartupCode$constrained-random-points-on-a-circle-2>.$Constrained-random-points-on-a-circle-2.main@ () [0x0030b] in <6886ca5e0c55b121a74503835eca8668>:0 
