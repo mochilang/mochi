@@ -1,11 +1,17 @@
 package gox_test
 
 import (
+	"bytes"
 	"flag"
 	"os"
 	"path/filepath"
 	"strings"
 	"testing"
+
+	"mochi/ast"
+	"mochi/parser"
+	"mochi/runtime/vm"
+	"mochi/types"
 
 	gox "mochi/tools/a2mochi/x/go"
 )
@@ -29,6 +35,27 @@ func findRepoRoot(t *testing.T) string {
 	}
 	t.Fatal("go.mod not found")
 	return ""
+}
+
+func runMochi(src string) ([]byte, error) {
+	prog, err := parser.ParseString(src)
+	if err != nil {
+		return nil, err
+	}
+	env := types.NewEnv(nil)
+	if errs := types.Check(prog, env); len(errs) > 0 {
+		return nil, errs[0]
+	}
+	p, err := vm.Compile(prog, env)
+	if err != nil {
+		return nil, err
+	}
+	var out bytes.Buffer
+	m := vm.New(p, &out)
+	if err := m.Run(); err != nil {
+		return nil, err
+	}
+	return bytes.TrimSpace(out.Bytes()), nil
 }
 
 func TestConvert_Golden(t *testing.T) {
@@ -94,7 +121,7 @@ func TestConvert_Golden(t *testing.T) {
 			got := []byte(astNode.String())
 			outPath := filepath.Join(outDir, name+".ast")
 			if *update {
-				os.WriteFile(outPath, got, 0644)
+				os.WriteFile(outPath, got, 0o644)
 			}
 			want, err := os.ReadFile(outPath)
 			if err != nil {
@@ -102,6 +129,31 @@ func TestConvert_Golden(t *testing.T) {
 			}
 			if string(got) != string(want) {
 				t.Fatalf("golden mismatch\n--- Got ---\n%s\n--- Want ---\n%s", got, want)
+			}
+
+			var buf bytes.Buffer
+			if err := ast.Fprint(&buf, astNode); err != nil {
+				t.Fatalf("print: %v", err)
+			}
+			code := buf.String()
+			mochiPath := filepath.Join(outDir, name+".mochi")
+			if *update {
+				os.WriteFile(mochiPath, []byte(code), 0o644)
+			}
+			gotOut, err := runMochi(code)
+			if err != nil {
+				t.Fatalf("run: %v", err)
+			}
+			vmSrc, err := os.ReadFile(filepath.Join(root, "tests/vm/valid", name+".mochi"))
+			if err != nil {
+				t.Fatalf("missing vm source: %v", err)
+			}
+			wantOut, err := runMochi(string(vmSrc))
+			if err != nil {
+				t.Fatalf("run vm: %v", err)
+			}
+			if !bytes.Equal(gotOut, wantOut) {
+				t.Fatalf("output mismatch\nGot: %s\nWant: %s", gotOut, wantOut)
 			}
 		})
 	}
