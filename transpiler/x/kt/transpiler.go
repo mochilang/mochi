@@ -881,16 +881,20 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		} else if cmpOp {
 			lt := guessType(e)
 			rt := guessType(other)
-			if lt == "Any" && rt == "String" {
+			if (lt == "Any" || lt == "Any?") && rt == "String" {
 				cast(e, "String")
 				return
 			}
-			if lt == "Any" && (rt == "Double" || rt == "Int") {
+			if (lt == "Any" || lt == "Any?") && (rt == "Double" || rt == "Int") {
 				if _, ok := e.(*IndexExpr); ok {
 					e.emit(w)
 					return
 				}
 				cast(e, "Double")
+				return
+			}
+			if (rt == "Any" || rt == "Any?") && (lt == "Double" || lt == "Int") {
+				cast(e, lt)
 				return
 			}
 		}
@@ -4089,11 +4093,15 @@ func convertStructLiteral(env *types.Env, sl *parser.StructLiteral) (Expr, error
 		if env != nil {
 			if st, ok := env.GetStruct(sl.Name); ok {
 				if ft, ok := st.Fields[f.Name]; ok {
+					typName := kotlinTypeFromType(ft)
 					if _, ok := v.(*MapLit); ok {
-						typ := kotlinTypeFromType(ft)
-						if typ != "" && typ != "Any" {
-							v = &CastExpr{Value: v, Type: typ}
+						if typName != "" && typName != "Any" {
+							v = &CastExpr{Value: v, Type: typName}
 						}
+					} else if typName == "Int" && guessType(v) == "BigInteger" {
+						v = &CastExpr{Value: v, Type: "Int"}
+					} else if typName == "Long" && guessType(v) == "BigInteger" {
+						v = &CastExpr{Value: v, Type: "Long"}
 					}
 				}
 			}
