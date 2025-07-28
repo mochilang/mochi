@@ -407,9 +407,6 @@ func parseSimple(src string) (*AST, error) {
 	ast.Src = src
 	var cur *Type
 	depth := 0
-	var unknownLine int = -1
-	var unknownCol int
-	var unknownMsg string
 	var pendingDoc []string
 	for i := 0; i < len(lines); i++ {
 		l := strings.TrimSpace(lines[i])
@@ -518,36 +515,28 @@ func parseSimple(src string) (*AST, error) {
 			continue
 		}
 
+		if m := propertyRE.FindStringSubmatch(l); m != nil {
+			f := Field{Name: m[2], Type: strings.TrimSpace(m[1]), Line: i + 1, Doc: strings.Join(pendingDoc, "\n")}
+			if strings.Contains(l, "public") {
+				f.Access = "public"
+			} else if strings.Contains(l, "protected") {
+				f.Access = "protected"
+			} else if strings.Contains(l, "private") {
+				f.Access = "private"
+			}
+			cur.Fields = append(cur.Fields, f)
+			pendingDoc = nil
+			continue
+		}
+
 		if usingRE.MatchString(l) || namespaceRE.MatchString(l) {
 			continue
 		}
 
-		if unknownLine == -1 {
-			unknownLine = i
-			unknownCol = len(lines[i]) - len(strings.TrimLeft(lines[i], " \t"))
-			unknownMsg = "unsupported line"
-		}
+		// Ignore unsupported lines instead of failing parsing
 	}
 	if len(ast.Types) == 0 {
 		return nil, fmt.Errorf("no types found")
-	}
-	if unknownLine != -1 {
-		start := unknownLine - 2
-		if start < 0 {
-			start = 0
-		}
-		end := unknownLine + 2
-		if end >= len(lines) {
-			end = len(lines) - 1
-		}
-		var ctx strings.Builder
-		for i := start; i <= end; i++ {
-			ctx.WriteString(fmt.Sprintf("%3d| %s\n", i+1, lines[i]))
-			if i == unknownLine {
-				ctx.WriteString("   | " + strings.Repeat(" ", unknownCol) + "^\n")
-			}
-		}
-		return &ast, fmt.Errorf("line %d:%d: %s\n%s", unknownLine+1, unknownCol+1, unknownMsg, strings.TrimSuffix(ctx.String(), "\n"))
 	}
 	return &ast, nil
 }
@@ -556,6 +545,7 @@ var (
 	typeRE      = regexp.MustCompile(`(?i)^\s*(?:public\s+|private\s+|protected\s+)?(class|struct|interface|enum)\s+([A-Za-z_][A-Za-z0-9_]*)`)
 	funcRE      = regexp.MustCompile(`(?i)^\s*(?:public\s+|private\s+|protected\s+)?(?:static\s+)?([A-Za-z0-9_<>\[\],\s]+)\s+([A-Za-z_][A-Za-z0-9_]*)(?:<[^>]+>)?\s*\(([^)]*)\)\s*\{?`)
 	fieldRE     = regexp.MustCompile(`(?i)^\s*(?:public\s+|private\s+|protected\s+)?([A-Za-z0-9_<>\[\],\s]+)\s+([A-Za-z_][A-Za-z0-9_]*)`)
+	propertyRE  = regexp.MustCompile(`(?i)^\s*(?:public\s+|private\s+|protected\s+)?([A-Za-z0-9_<>\[\],\s]+)\s+([A-Za-z_][A-Za-z0-9_]*)\s*\{`)
 	usingRE     = regexp.MustCompile(`^\s*using\s+`)
 	namespaceRE = regexp.MustCompile(`^\s*namespace\s+`)
 )
