@@ -166,10 +166,19 @@ func formatProgram(p *Program) []byte {
 		noNL := strings.ReplaceAll(line, "\n", " ")
 		varRe := regexp.MustCompile(`^let ([a-zA-Z0-9_']+) = ref 0 in\s*print_endline`)
 		letRe := regexp.MustCompile(`^let ([a-zA-Z0-9_']+) = 0 in\s*print_endline`)
+		varAssignRe := regexp.MustCompile(`^let ([a-zA-Z0-9_']+) = ref ([^;]+) in\s*([a-zA-Z0-9_']+) := ([^;]+);\s*print_endline.*`)
 		if m := varRe.FindStringSubmatch(noNL); m != nil {
 			appendLine("var " + m[1] + ": int")
 			appendLine("print(" + m[1] + ")")
 			return
+		}
+		if m := varAssignRe.FindStringSubmatch(noNL); m != nil {
+			if m[1] == m[3] {
+				appendLine("var " + m[1] + " = " + m[2])
+				appendLine(m[1] + " = " + m[4])
+				appendLine("print(" + m[1] + ")")
+				return
+			}
 		}
 		if m := letRe.FindStringSubmatch(noNL); m != nil {
 			appendLine("let " + m[1] + ": int")
@@ -202,6 +211,13 @@ func formatProgram(p *Program) []byte {
 
 	for _, pr := range p.Prints {
 		line := strings.TrimSpace(pr.Expr)
+		varAssignRe := regexp.MustCompile(`^let ([a-zA-Z0-9_']+) = ref ([^;]+) in\s*([a-zA-Z0-9_']+) := ([^;]+);\s*print_endline.*`)
+		if m := varAssignRe.FindStringSubmatch(strings.ReplaceAll(line, "\n", " ")); m != nil && m[1] == m[3] {
+			appendLine("var " + m[1] + " = " + m[2])
+			appendLine(m[1] + " = " + m[4])
+			appendLine("print(" + m[1] + ")")
+			continue
+		}
 		if strings.HasPrefix(line, "let ") {
 			line = strings.ReplaceAll(line, " in\n", ";")
 			line = strings.ReplaceAll(line, " in ", ";")
