@@ -2,9 +2,9 @@
 
 Generated Lua code for programs in `tests/rosetta/x/Mochi`. Each program has a `.lua` file produced by the transpiler and a `.out` file with its runtime output. Compilation or runtime errors are captured in `.error` files.
 
-Transpiled programs: 465/493
+Transpiled programs: 472/493
 
-Last updated: 2025-07-28 11:14 GMT+7
+Last updated: 2025-07-28 11:52 GMT+7
 
 Checklist:
 
@@ -459,19 +459,19 @@ Checklist:
 | 447 | flipping-bits-game | ✓ | 34µs | 1.3 KB |
 | 448 | flow-control-structures-1 | ✓ | 30µs | 64 B |
 | 449 | flow-control-structures-2 | ✓ | 26µs | 96 B |
-| 450 | flow-control-structures-3 | ✓ | 28µs | 64 B |
-| 451 | flow-control-structures-4 | ✓ | 26µs | 64 B |
-| 452 | floyd-warshall-algorithm | ✓ | 26µs | 64 B |
-| 453 | floyd-warshall-algorithm2 |   |  |  |
-| 454 | floyds-triangle | ✓ | 132µs | 2.7 KB |
-| 455 | forest-fire | ✓ | 122µs | 1.9 KB |
-| 456 | fork-2 |   |  |  |
-| 457 | fork | ✓ | 33µs | 808 B |
-| 458 | formal-power-series |   |  |  |
-| 459 | formatted-numeric-output |   |  |  |
-| 460 | forward-difference |   |  |  |
-| 461 | four-bit-adder-1 |   |  |  |
-| 462 | four-is-magic |   |  |  |
+| 450 | flow-control-structures-3 | ✓ | 36µs | 64 B |
+| 451 | flow-control-structures-4 | ✓ | 17µs | 64 B |
+| 452 | floyd-warshall-algorithm | ✓ | 145µs | 872 B |
+| 453 | floyd-warshall-algorithm2 | ✓ | 201µs | 2.8 KB |
+| 454 | floyds-triangle | ✓ | 252µs | 2.9 KB |
+| 455 | forest-fire | ✓ | 1.685ms | 12.7 KB |
+| 456 | fork-2 | ✓ | 39µs | 808 B |
+| 457 | fork | ✓ | 38µs | 808 B |
+| 458 | formal-power-series | ✓ | 105µs | 1.9 KB |
+| 459 | formatted-numeric-output | ✓ | 48µs | 2.9 KB |
+| 460 | forward-difference | ✓ | 92µs | 1.0 KB |
+| 461 | four-bit-adder-1 | ✓ | 26µs | 1.1 KB |
+| 462 | four-is-magic | ✓ | 80µs | 1.8 KB |
 | 463 | four-is-the-number-of-letters-in-the-... |   |  |  |
 | 464 | fractal-tree |   |  |  |
 | 465 | fractran |   |  |  |
