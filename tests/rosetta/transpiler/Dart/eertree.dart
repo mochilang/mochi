@@ -60,7 +60,7 @@ List<Map<String, dynamic>> eertree(String s) {
   }
     Map<String, int> edges = tree[n]["edges"]! as Map<String, int>;
     if (edges.containsKey(c)) {
-    suffix = edges[c]!;
+    suffix = (edges[c] ?? 0);
     i = i + 1;
     continue;
   }
@@ -81,7 +81,7 @@ List<Map<String, dynamic>> eertree(String s) {
   }
   }
     Map<String, int> en = tree[n]["edges"]! as Map<String, int>;
-    tree[suffix]!["suffix"] = en[c]!;
+    tree[suffix]!["suffix"] = (en[c] ?? 0);
     i = i + 1;
   }
   return tree;
@@ -89,7 +89,7 @@ List<Map<String, dynamic>> eertree(String s) {
 
 List<String> child(List<Map<String, dynamic>> tree, int idx, String p, List<String> acc) {
   Map<String, int> edges = tree[idx]["edges"]! as Map<String, int>;
-  for (String ch in edges.keys) {
+  for (String ch in edges!.keys) {
     int nxt = edges[ch]!;
     String pal = ch + p + ch;
     acc = [...acc, pal];
@@ -102,9 +102,9 @@ List<String> subPalindromes(List<Map<String, dynamic>> tree) {
   List<String> res = <String>[];
   res = child(tree, EVEN_ROOT, "", res);
   Map<String, int> oEdges = tree[ODD_ROOT]["edges"]! as Map<String, int>;
-  for (String ch in oEdges.keys) {
+  for (String ch in oEdges!.keys) {
     res = [...res, ch];
-    res = child(tree, oEdges[ch]!, ch, res);
+    res = child(tree, (oEdges[ch] ?? 0), ch, res);
   }
   return res;
 }
@@ -127,7 +127,6 @@ void _start() {
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "main"}));
 }
-  _main();
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "_start"}));

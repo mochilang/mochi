@@ -47,10 +47,10 @@ String commatize(int n) {
 void _main() {
   List<Map<String, int>> data = [{"pm": 10, "g1": 4, "s1": 7, "g2": 6, "s2": 23, "d": 16}, {"pm": 100, "g1": 14, "s1": 113, "g2": 16, "s2": 1831, "d": 1718}, {"pm": 1000, "g1": 14, "s1": 113, "g2": 16, "s2": 1831, "d": 1718}, {"pm": 10000, "g1": 36, "s1": 9551, "g2": 38, "s2": 30593, "d": 21042}, {"pm": 100000, "g1": 70, "s1": 173359, "g2": 72, "s2": 31397, "d": 141962}, {"pm": 1000000, "g1": 100, "s1": 396733, "g2": 102, "s2": 1444309, "d": 1047576}, {"pm": 10000000, "g1": 148, "s1": 2010733, "g2": 150, "s2": 13626257, "d": 11615524}, {"pm": 100000000, "g1": 198, "s1": 46006769, "g2": 200, "s2": 378043979, "d": 332037210}, {"pm": 1000000000, "g1": 276, "s1": 649580171, "g2": 278, "s2": 4260928601, "d": 3611348430}, {"pm": 10000000000, "g1": 332, "s1": 5893180121, "g2": 334, "s2": 30827138509, "d": 24933958388}, {"pm": 100000000000, "g1": 386, "s1": 35238645587, "g2": 388, "s2": 156798792223, "d": 121560146636}];
   for (Map<String, int> entry in data) {
-    String pm = commatize(entry["pm"]!);
+    String pm = commatize((entry["pm"] ?? 0));
     String line1 = "Earliest difference > " + pm + " between adjacent prime gap starting primes:";
     print(line1);
-    String line2 = "Gap " + (entry["g1"]!).toString() + " starts at " + commatize(entry["s1"]!) + ", gap " + (entry["g2"]!).toString() + " starts at " + commatize(entry["s2"]!) + ", difference is " + commatize(entry["d"]!) + ".";
+    String line2 = "Gap " + ((entry["g1"] ?? 0)).toString() + " starts at " + commatize((entry["s1"] ?? 0)) + ", gap " + ((entry["g2"] ?? 0)).toString() + " starts at " + commatize((entry["s2"] ?? 0)) + ", difference is " + commatize((entry["d"] ?? 0)) + ".";
     print(line2);
     print("");
   }
@@ -68,7 +68,6 @@ void _start() {
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "main"}));
 }
-  _main();
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "_start"}));

@@ -1,0 +1,6 @@
+run: exit status 254
+../../../tests/rosetta/transpiler/Dart/empty-directory.dart:39:31: Error: Property 'length' cannot be accessed on 'List<String>?' because it is potentially null.
+ - 'List' is from 'dart:core'.
+Try accessing using ?. instead.
+    return (fs[name] ?? null).length == 0;
+                              ^^^^^^
