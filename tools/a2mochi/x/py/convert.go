@@ -433,7 +433,7 @@ func emitAssignStmt(b *strings.Builder, n *Node, lines []string, seen map[string
 			seen[nameNode.ID] = true
 		}
 	}
-	if !declared {
+	if nameNode.Type == "Name" && !declared {
 		b.WriteString("var ")
 	}
 	if err := emitExpr(b, nameNode, lines); err != nil {
@@ -644,6 +644,18 @@ func emitExpr(b *strings.Builder, n *Node, lines []string) error {
 			fmt.Fprintf(b, "%v", vv)
 		}
 	case "BinOp":
+		if n.Op != nil && n.Op.Type == "Add" && n.Right != nil && n.Right.Type == "List" && len(n.Right.Elts) == 1 {
+			b.WriteString("append(")
+			if err := emitExpr(b, n.Left, lines); err != nil {
+				return err
+			}
+			b.WriteString(", ")
+			if err := emitExpr(b, n.Right.Elts[0], lines); err != nil {
+				return err
+			}
+			b.WriteByte(')')
+			return nil
+		}
 		if err := emitExpr(b, n.Left, lines); err != nil {
 			return err
 		}
@@ -669,14 +681,26 @@ func emitExpr(b *strings.Builder, n *Node, lines []string) error {
 			return err
 		}
 	case "Compare":
-		if err := emitExpr(b, n.Left, lines); err != nil {
-			return err
-		}
 		if len(n.Ops) == 0 || len(n.Comparators) == 0 {
 			return newConvertError(n.Line, lines, "bad compare")
 		}
-		b.WriteByte(' ')
 		op := n.Ops[0]
+		if op.Type == "NotIn" {
+			b.WriteString("!(")
+			if err := emitExpr(b, n.Left, lines); err != nil {
+				return err
+			}
+			b.WriteString(" in ")
+			if err := emitExpr(b, n.Comparators[0], lines); err != nil {
+				return err
+			}
+			b.WriteByte(')')
+			return nil
+		}
+		if err := emitExpr(b, n.Left, lines); err != nil {
+			return err
+		}
+		b.WriteByte(' ')
 		switch op.Type {
 		case "Eq":
 			b.WriteString("==")
@@ -690,6 +714,8 @@ func emitExpr(b *strings.Builder, n *Node, lines []string) error {
 			b.WriteString(">")
 		case "GtE":
 			b.WriteString(">=")
+		case "In":
+			b.WriteString("in")
 		default:
 			return newConvertError(n.Line, lines, "unhandled compare operator")
 		}

@@ -1,6 +1,7 @@
 package py_test
 
 import (
+	"bytes"
 	"flag"
 	"os"
 	"os/exec"
@@ -8,7 +9,11 @@ import (
 	"strings"
 	"testing"
 
+	"mochi/ast"
+	"mochi/parser"
+	"mochi/runtime/vm"
 	"mochi/tools/a2mochi/x/py"
+	"mochi/types"
 )
 
 var update = flag.Bool("update", false, "update golden files")
@@ -32,6 +37,27 @@ func findRepoRoot(t *testing.T) string {
 	return ""
 }
 
+func runMochi(src string) ([]byte, error) {
+	prog, err := parser.ParseString(src)
+	if err != nil {
+		return nil, err
+	}
+	env := types.NewEnv(nil)
+	if errs := types.Check(prog, env); len(errs) > 0 {
+		return nil, errs[0]
+	}
+	p, err := vm.Compile(prog, env)
+	if err != nil {
+		return nil, err
+	}
+	var out bytes.Buffer
+	m := vm.New(p, &out)
+	if err := m.Run(); err != nil {
+		return nil, err
+	}
+	return bytes.TrimSpace(out.Bytes()), nil
+}
+
 func TestConvert_Golden(t *testing.T) {
 	if _, err := exec.LookPath("python3"); err != nil {
 		t.Skip("python3 not installed")
@@ -47,18 +73,16 @@ func TestConvert_Golden(t *testing.T) {
 	}
 	allowed := map[string]bool{
 		"append_builtin":     true,
-		"basic_compare":      true,
-		"binary_precedence":  true,
 		"break_continue":     true,
 		"cast_string_to_int": true,
-		"closure":            true,
 		"print_hello":        true,
-		"bool_chain":         true,
-		"for_loop":           true,
-		"fun_call":           true,
 		"len_builtin":        true,
 		"len_string":         true,
 		"map_index":          true,
+		"list_assign":        true,
+		"list_index":         true,
+		"map_assign":         true,
+		"string_index":       true,
 		"if_else":            true,
 		"while_loop":         true,
 		"unary_neg":          true,
@@ -83,17 +107,43 @@ func TestConvert_Golden(t *testing.T) {
 			if err != nil {
 				t.Fatalf("convert: %v", err)
 			}
-			outPath := filepath.Join(outDir, name+".ast")
+			astPath := filepath.Join(outDir, name+".ast")
 			if *update {
-				os.WriteFile(outPath, []byte(node.String()), 0o644)
+				os.WriteFile(astPath, []byte(node.String()), 0o644)
 			}
-			want, err := os.ReadFile(outPath)
+			want, err := os.ReadFile(astPath)
 			if err != nil {
 				t.Fatalf("missing golden: %v", err)
 			}
 			got := node.String()
 			if strings.TrimSpace(string(want)) != strings.TrimSpace(got) {
 				t.Fatalf("golden mismatch\n--- Got ---\n%s\n--- Want ---\n%s", got, want)
+			}
+
+			var buf bytes.Buffer
+			if err := ast.Fprint(&buf, node); err != nil {
+				t.Fatalf("print: %v", err)
+			}
+			code := buf.String()
+			mochiPath := filepath.Join(outDir, name+".mochi")
+			if *update {
+				os.WriteFile(mochiPath, []byte(code), 0o644)
+			}
+
+			gotRun, err := runMochi(code)
+			if err != nil {
+				t.Fatalf("run converted: %v", err)
+			}
+			refSrc, err := os.ReadFile(filepath.Join(root, "tests", "vm", "valid", name+".mochi"))
+			if err != nil {
+				t.Fatalf("missing ref: %v", err)
+			}
+			wantRun, err := runMochi(string(refSrc))
+			if err != nil {
+				t.Fatalf("run ref: %v", err)
+			}
+			if string(gotRun) != string(wantRun) {
+				t.Fatalf("output mismatch\nGot: %s\nWant: %s", gotRun, wantRun)
 			}
 		})
 	}
