@@ -269,6 +269,15 @@ func translateExpr(expr string) string {
 		if len(parts) == 3 {
 			return parts[0] + "[" + parts[1] + ":" + parts[2] + "]"
 		}
+	case strings.HasPrefix(expr, "String.length(") && strings.HasSuffix(expr, ")"):
+		inner := expr[len("String.length(") : len(expr)-1]
+		return "len(" + inner + ")"
+	case strings.HasPrefix(expr, "Enum.count(") && strings.HasSuffix(expr, ")"):
+		inner := expr[len("Enum.count(") : len(expr)-1]
+		return "len(" + inner + ")"
+	case strings.HasPrefix(expr, "Enum.sum(") && strings.HasSuffix(expr, ")"):
+		inner := expr[len("Enum.sum(") : len(expr)-1]
+		return "sum(" + inner + ")"
 	case strings.Contains(expr, "++"):
 		parts := strings.Split(expr, "++")
 		if len(parts) == 2 {
@@ -283,6 +292,13 @@ func translateExpr(expr string) string {
 		parts := splitArgs(expr[len("rem(") : len(expr)-1])
 		if len(parts) == 2 {
 			return parts[0] + " % " + parts[1]
+		}
+	case strings.Contains(expr, "<>"):
+		parts := strings.Split(expr, "<>")
+		if len(parts) == 2 {
+			left := translateExpr(strings.TrimSpace(parts[0]))
+			right := translateExpr(strings.TrimSpace(parts[1]))
+			return left + " + " + right
 		}
 	case strings.HasPrefix(expr, "length(String.graphemes(") && strings.HasSuffix(expr, "))"):
 		inner := expr[len("length(String.graphemes(") : len(expr)-2]
