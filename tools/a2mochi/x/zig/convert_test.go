@@ -68,6 +68,9 @@ func TestConvert_Golden(t *testing.T) {
 		"append_builtin":    true,
 		"if_else":           true,
 		"string_compare":    true,
+		"typed_let":         true,
+		"typed_var":         true,
+		"membership":        true,
 	}
 
 	outDir := filepath.Join(root, "tests/a2mochi/x/zig")

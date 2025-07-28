@@ -1,0 +1,11 @@
+(program
+  (let nums
+    (list (int 1) (int 2) (int 3))
+  )
+  (call print
+    (binary in (int 2) (selector nums))
+  )
+  (call print
+    (binary in (int 4) (selector nums))
+  )
+)

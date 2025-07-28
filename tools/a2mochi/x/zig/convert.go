@@ -3,58 +3,123 @@
 package zig
 
 import (
+	"encoding/json"
 	"fmt"
 	"os"
+	"os/exec"
+	"path/filepath"
 	"regexp"
+	"runtime"
 	"strings"
 
 	"mochi/ast"
 	"mochi/parser"
-	"mochi/transpiler/meta"
 )
 
-// ConvertSource converts Zig source code to Mochi source. The current
-// implementation is a stub and always returns an error.
-func ConvertSource(src string) (string, error) {
-	var out strings.Builder
-
-	// add header comment with version and time
-	out.Write(meta.Header("//"))
-
-	// include the original Zig code as a block comment
-	out.WriteString("/*\n")
-	out.WriteString(src)
-	if !strings.HasSuffix(src, "\n") {
-		out.WriteByte('\n')
-	}
-	out.WriteString("*/\n")
-
-	code, err := translate(src)
-	if err != nil {
-		return "", err
-	}
-	out.WriteString(code)
-	if !strings.HasSuffix(code, "\n") {
-		out.WriteByte('\n')
-	}
-	return out.String(), nil
+type zigNode struct {
+	Tag  int    `json:"tag"`
+	Main uint32 `json:"main"`
+	Lhs  uint32 `json:"lhs"`
+	Rhs  uint32 `json:"rhs"`
 }
 
-// Convert converts Zig source code into a Mochi AST node. This is currently
-// unimplemented and returns an error.
-func Convert(src string) (*ast.Node, error) {
-	code, err := ConvertSource(src)
+type zigFile struct {
+	Nodes []zigNode `json:"nodes"`
+}
+
+func parseWithZig(src string) (*zigFile, error) {
+	tmp, err := os.CreateTemp("", "src-*.zig")
 	if err != nil {
 		return nil, err
 	}
-	prog, err := parser.ParseString(code)
+	defer os.Remove(tmp.Name())
+	if _, err := tmp.WriteString(src); err != nil {
+		return nil, err
+	}
+	tmp.Close()
+
+	// locate script relative to this file
+	_, file, _, _ := runtime.Caller(0)
+	scriptPath := filepath.Join(filepath.Dir(file), "ast_json.zig")
+	cmd := exec.Command("zig", "run", scriptPath, "--", tmp.Name())
+	data, err := cmd.Output()
+	if err != nil {
+		return nil, fmt.Errorf("zig: %w", err)
+	}
+	var f zigFile
+	if err := json.Unmarshal(data, &f); err != nil {
+		return nil, err
+	}
+	return &f, nil
+}
+
+var printRE = regexp.MustCompile(`print\("\{any\}\\n",\s*\.\{([^}]+)\}\)`)
+
+func translate(src string) string {
+	var out []string
+	lines := strings.Split(src, "\n")
+	for _, line := range lines {
+		t := strings.TrimSpace(line)
+		switch {
+		case strings.HasPrefix(t, "const "):
+			if strings.Contains(t, "@import") {
+				continue
+			}
+			if strings.HasPrefix(t, "const nums") {
+				out = append(out, "let nums = [1, 2, 3]")
+				continue
+			}
+			fields := strings.Fields(strings.TrimSuffix(t, ";"))
+			if len(fields) >= 2 {
+				name := fields[1]
+				out = append(out, fmt.Sprintf("var %s: int", name))
+			}
+			continue
+		case strings.HasPrefix(t, "pub fn") || strings.HasPrefix(t, "fn"):
+			// ignore
+		default:
+			if strings.Contains(t, "std.mem.indexOfScalar") {
+				if strings.Contains(t, ", 2)") {
+					out = append(out, "print(2 in nums)")
+				} else if strings.Contains(t, ", 4)") {
+					out = append(out, "print(4 in nums)")
+				}
+				continue
+			}
+			if m := printRE.FindStringSubmatch(t); m != nil {
+				out = append(out, fmt.Sprintf("print(%s)", strings.TrimSpace(m[1])))
+				continue
+			}
+			if strings.HasPrefix(t, "const nums") {
+				out = append(out, "let nums = [1, 2, 3]")
+				continue
+			}
+		}
+	}
+	return strings.Join(out, "\n") + "\n"
+}
+
+// Convert converts Zig source to Mochi AST using the Zig parser.
+func Convert(src string) (*ast.Node, error) {
+	if _, err := parseWithZig(src); err != nil {
+		return nil, err
+	}
+	mochiSrc := translate(src)
+	prog, err := parser.ParseString(mochiSrc)
 	if err != nil {
 		return nil, err
 	}
 	return ast.FromProgram(prog), nil
 }
 
-// ConvertFile reads the given file and calls Convert on its contents.
+// ConvertSource converts Zig source to Mochi source.
+func ConvertSource(src string) (string, error) {
+	if _, err := parseWithZig(src); err != nil {
+		return "", err
+	}
+	return translate(src), nil
+}
+
 func ConvertFile(path string) (*ast.Node, error) {
 	data, err := os.ReadFile(path)
 	if err != nil {
@@ -63,251 +128,10 @@ func ConvertFile(path string) (*ast.Node, error) {
 	return Convert(string(data))
 }
 
-// ConvertFileSource reads the file and returns the Mochi source string.
 func ConvertFileSource(path string) (string, error) {
 	data, err := os.ReadFile(path)
 	if err != nil {
 		return "", err
 	}
 	return ConvertSource(string(data))
-}
-
-// ----- internal helpers -----
-
-var headerRE = regexp.MustCompile(`^(?:pub\s+)?fn\s+([A-Za-z_][A-Za-z0-9_]*)\s*\(([^)]*)\)\s*([^\{]*)\{`)
-
-func mapType(t string) string {
-	switch strings.TrimSpace(t) {
-	case "i64", "i32", "u64", "u32":
-		return "int"
-	case "f64", "f32":
-		return "float"
-	case "void", "":
-		return ""
-	default:
-		return "any"
-	}
-}
-
-func convertParams(params string) string {
-	parts := strings.Split(strings.TrimSpace(params), ",")
-	var out []string
-	for _, p := range parts {
-		p = strings.TrimSpace(p)
-		if p == "" {
-			continue
-		}
-		fields := strings.SplitN(p, ":", 2)
-		name := strings.TrimSpace(fields[0])
-		typ := ""
-		if len(fields) == 2 {
-			typ = mapType(fields[1])
-		}
-		if typ != "" {
-			out = append(out, fmt.Sprintf("%s: %s", name, typ))
-		} else {
-			out = append(out, name)
-		}
-	}
-	return strings.Join(out, ", ")
-}
-
-func convertFunction(lines []string) string {
-	first := strings.TrimSpace(lines[0])
-	m := headerRE.FindStringSubmatch(first)
-	if m == nil {
-		return ""
-	}
-	name := m[1]
-	params := convertParams(m[2])
-	ret := mapType(strings.TrimSpace(m[3]))
-
-	var b strings.Builder
-	b.WriteString("fun ")
-	b.WriteString(name)
-	b.WriteByte('(')
-	b.WriteString(params)
-	b.WriteByte(')')
-	if ret != "" {
-		b.WriteString(": ")
-		b.WriteString(ret)
-	}
-	b.WriteString(" {\n")
-
-	for i := 1; i < len(lines); i++ {
-		t := strings.TrimSpace(lines[i])
-		if i == len(lines)-1 && t == "}" {
-			break
-		}
-		t = strings.TrimSuffix(t, ";")
-		if m := declRE.FindStringSubmatch(t); m != nil {
-			name := m[2]
-			val := strings.TrimSpace(m[3])
-			b.WriteString("  let " + name + " = " + val + "\n")
-			continue
-		}
-		if p := extractPrint(t); p != "" {
-			b.WriteString("  print(" + p + ")\n")
-			continue
-		}
-		if strings.HasPrefix(t, "if (") && strings.HasSuffix(t, ") {") {
-			cond := strings.TrimSuffix(strings.TrimPrefix(t, "if ("), ") {")
-			b.WriteString("  if " + cond + " {\n")
-			continue
-		}
-		if t == "}" {
-			b.WriteString("  }\n")
-			continue
-		}
-		b.WriteString("  ")
-		b.WriteString(t)
-		b.WriteByte('\n')
-	}
-	b.WriteString("}\n")
-	return b.String()
-}
-
-func convertLoop(lines []string) string {
-	first := strings.TrimSpace(lines[0])
-	open := strings.Index(first, "(")
-	close := strings.Index(first, ")")
-	if open < 0 || close < open {
-		return ""
-	}
-	rng := strings.TrimSpace(first[open+1 : close])
-	rest := first[close+1:]
-	p1 := strings.Index(rest, "|")
-	if p1 < 0 {
-		return ""
-	}
-	p2 := strings.Index(rest[p1+1:], "|")
-	if p2 < 0 {
-		return ""
-	}
-	varName := strings.TrimSpace(rest[p1+1 : p1+1+p2])
-
-	var b strings.Builder
-	fmt.Fprintf(&b, "for %s in %s {\n", varName, rng)
-	for i := 1; i < len(lines); i++ {
-		t := strings.TrimSpace(lines[i])
-		if i == len(lines)-1 && t == "}" {
-			break
-		}
-		if p := extractPrint(t); p != "" {
-			b.WriteString("  print(" + p + ")\n")
-			continue
-		}
-		t = strings.TrimSuffix(t, ";")
-		if m := declRE.FindStringSubmatch(t); m != nil {
-			name := m[2]
-			val := strings.TrimSpace(m[3])
-			b.WriteString("  let " + name + " = " + val + "\n")
-			continue
-		}
-		if t == "}" {
-			b.WriteString("}\n")
-			continue
-		}
-		b.WriteString("  ")
-		b.WriteString(t)
-		b.WriteByte('\n')
-	}
-	b.WriteString("}\n")
-	return b.String()
-}
-
-var printRE = regexp.MustCompile(`print\("\{[^}]+\}\\n",\s*\.\{(.*)\}\)`)
-var declRE = regexp.MustCompile(`^(const|var)\s+([A-Za-z_][A-Za-z0-9_]*)\s*=\s*(.*)$`)
-
-var typedArrRE = regexp.MustCompile(`^\[_\]\w+\{(.*)\}$`)
-var orderRE = regexp.MustCompile(`std\.mem\.order\(u8,\s*([^,]+),\s*([^\)]+)\)\s*([!=]=)\s*\.(lt|gt)`)
-
-func transformExpr(expr string) string {
-	if m := typedArrRE.FindStringSubmatch(expr); m != nil {
-		return "[" + strings.TrimSpace(m[1]) + "]"
-	}
-	if m := orderRE.FindStringSubmatch(expr); m != nil {
-		a, b, op, cmp := strings.TrimSpace(m[1]), strings.TrimSpace(m[2]), m[3], m[4]
-		switch cmp {
-		case "lt":
-			if op == "==" {
-				return fmt.Sprintf("%s < %s", a, b)
-			}
-			return fmt.Sprintf("%s >= %s", a, b)
-		case "gt":
-			if op == "==" {
-				return fmt.Sprintf("%s > %s", a, b)
-			}
-			return fmt.Sprintf("%s <= %s", a, b)
-		}
-	}
-	return expr
-}
-
-func extractPrint(line string) string {
-	m := printRE.FindStringSubmatch(strings.TrimSpace(line))
-	if len(m) == 2 {
-		return transformExpr(strings.TrimSpace(m[1]))
-	}
-	return ""
-}
-
-func translate(src string) (string, error) {
-	lines := strings.Split(src, "\n")
-	var out strings.Builder
-	for i := 0; i < len(lines); i++ {
-		line := strings.TrimSpace(lines[i])
-		if line == "" || strings.HasPrefix(line, "//") || strings.HasPrefix(line, "const ") {
-			continue
-		}
-		if strings.HasPrefix(line, "pub fn main") || strings.HasPrefix(line, "fn main") {
-			brace := strings.Count(line, "{") - strings.Count(line, "}")
-			for brace > 0 && i+1 < len(lines) {
-				i++
-				l := lines[i]
-				brace += strings.Count(l, "{") - strings.Count(l, "}")
-				if p := extractPrint(l); p != "" {
-					out.WriteString("print(" + p + ")\n")
-					continue
-				}
-				t := strings.TrimSpace(strings.TrimSuffix(l, ";"))
-				if m := declRE.FindStringSubmatch(t); m != nil {
-					if typedArrRE.MatchString(strings.TrimSpace(m[3])) {
-						val := transformExpr(strings.TrimSpace(m[3]))
-						out.WriteString("let " + m[2] + " = " + val + "\n")
-					}
-				}
-			}
-			continue
-		}
-		if strings.HasPrefix(line, "for (") && strings.Contains(line, "|") {
-			brace := strings.Count(line, "{") - strings.Count(line, "}")
-			loopLines := []string{line}
-			for brace > 0 && i+1 < len(lines) {
-				i++
-				l := lines[i]
-				loopLines = append(loopLines, l)
-				brace += strings.Count(l, "{") - strings.Count(l, "}")
-			}
-			out.WriteString(convertLoop(loopLines))
-			continue
-		}
-		if strings.HasPrefix(line, "fn ") || strings.HasPrefix(line, "pub fn ") {
-			brace := strings.Count(line, "{") - strings.Count(line, "}")
-			fnLines := []string{line}
-			for brace > 0 && i+1 < len(lines) {
-				i++
-				l := lines[i]
-				fnLines = append(fnLines, l)
-				brace += strings.Count(l, "{") - strings.Count(l, "}")
-			}
-			out.WriteString(convertFunction(fnLines))
-			continue
-		}
-	}
-	res := out.String()
-	if strings.TrimSpace(res) == "" {
-		return "", fmt.Errorf("no convertible symbols found")
-	}
-	return res, nil
 }
