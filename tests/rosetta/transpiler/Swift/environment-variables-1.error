@@ -1,0 +1,8 @@
+exit status 1
+/tmp/TestSwiftTranspiler_Rosetta_Golden493185798/001/main.swift:41:14: error: cannot find 'os' in scope
+39 |     let _benchStart = _now()
+40 |     
+41 |     print(_p(os.Getenv("SHELL")))
+   |              `- error: cannot find 'os' in scope
+42 |     let _benchEnd = _now()
+43 |     let _benchMemEnd = _mem()

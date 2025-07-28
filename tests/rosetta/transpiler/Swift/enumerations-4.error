@@ -1,0 +1,34 @@
+exit status 1
+/tmp/TestSwiftTranspiler_Rosetta_Golden57787803/001/main.swift:41:17: error: enum element with associated values must have at least one associated value
+39 |     let _benchStart = _now()
+40 |     indirect enum fruit {
+41 |         case int()
+   |                 |- error: enum element with associated values must have at least one associated value
+   |                 |- note: did you mean to remove the empty associated value list?
+   |                 `- note: did you mean to explicitly add a 'Void' associated value?
+42 |     }
+43 |     let apple: fruit = 0
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden57787803/001/main.swift:43:24: error: cannot convert value of type 'Int' to specified type 'fruit'
+41 |         case int()
+42 |     }
+43 |     let apple: fruit = 0
+   |                        `- error: cannot convert value of type 'Int' to specified type 'fruit'
+44 |     let banana: fruit = 1
+45 |     let cherry: fruit = 2
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden57787803/001/main.swift:44:25: error: cannot convert value of type 'Int' to specified type 'fruit'
+42 |     }
+43 |     let apple: fruit = 0
+44 |     let banana: fruit = 1
+   |                         `- error: cannot convert value of type 'Int' to specified type 'fruit'
+45 |     let cherry: fruit = 2
+46 |     let _benchEnd = _now()
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden57787803/001/main.swift:45:25: error: cannot convert value of type 'Int' to specified type 'fruit'
+43 |     let apple: fruit = 0
+44 |     let banana: fruit = 1
+45 |     let cherry: fruit = 2
+   |                         `- error: cannot convert value of type 'Int' to specified type 'fruit'
+46 |     let _benchEnd = _now()
+47 |     let _benchMemEnd = _mem()

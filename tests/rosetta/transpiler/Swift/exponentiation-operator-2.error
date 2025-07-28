@@ -1,0 +1,128 @@
+exit status 1
+/tmp/TestSwiftTranspiler_Rosetta_Golden3053449239/001/main.swift:80:26: warning: forced cast of 'Int' to same type has no effect
+ 78 |         print(_p("expI tests"))
+ 79 |         for pair in ([([2, 10] as! [Int]), ([2, -10] as! [Int]), ([-2, 10] as! [Int]), ([-2, 11] as! [Int]), ([11, 0] as! [Int])] as! [[Int]]) {
+ 80 |             if ((pair[1] as! Int) < 0) {
+    |                          `- warning: forced cast of 'Int' to same type has no effect
+ 81 |                 print(_p((((_p((pair[0] as! Int)) + "^") + _p((pair[1] as! Int))) + ": negative power not allowed")))
+ 82 |             } else {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3053449239/001/main.swift:81:41: warning: forced cast of 'Int' to same type has no effect
+ 79 |         for pair in ([([2, 10] as! [Int]), ([2, -10] as! [Int]), ([-2, 10] as! [Int]), ([-2, 11] as! [Int]), ([11, 0] as! [Int])] as! [[Int]]) {
+ 80 |             if ((pair[1] as! Int) < 0) {
+ 81 |                 print(_p((((_p((pair[0] as! Int)) + "^") + _p((pair[1] as! Int))) + ": negative power not allowed")))
+    |                                         `- warning: forced cast of 'Int' to same type has no effect
+ 82 |             } else {
+ 83 |                 print(_p(((((_p((pair[0] as! Int)) + "^") + _p((pair[1] as! Int))) + ": ") + _p(Int(expI((pair[0] as! Int), (pair[1] as! Int)))))))
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3053449239/001/main.swift:81:72: warning: forced cast of 'Int' to same type has no effect
+ 79 |         for pair in ([([2, 10] as! [Int]), ([2, -10] as! [Int]), ([-2, 10] as! [Int]), ([-2, 11] as! [Int]), ([11, 0] as! [Int])] as! [[Int]]) {
+ 80 |             if ((pair[1] as! Int) < 0) {
+ 81 |                 print(_p((((_p((pair[0] as! Int)) + "^") + _p((pair[1] as! Int))) + ": negative power not allowed")))
+    |                                                                        `- warning: forced cast of 'Int' to same type has no effect
+ 82 |             } else {
+ 83 |                 print(_p(((((_p((pair[0] as! Int)) + "^") + _p((pair[1] as! Int))) + ": ") + _p(Int(expI((pair[0] as! Int), (pair[1] as! Int)))))))
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3053449239/001/main.swift:83:42: warning: forced cast of 'Int' to same type has no effect
+ 81 |                 print(_p((((_p((pair[0] as! Int)) + "^") + _p((pair[1] as! Int))) + ": negative power not allowed")))
+ 82 |             } else {
+ 83 |                 print(_p(((((_p((pair[0] as! Int)) + "^") + _p((pair[1] as! Int))) + ": ") + _p(Int(expI((pair[0] as! Int), (pair[1] as! Int)))))))
+    |                                          `- warning: forced cast of 'Int' to same type has no effect
+ 84 |             }
+ 85 |         }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3053449239/001/main.swift:83:73: warning: forced cast of 'Int' to same type has no effect
+ 81 |                 print(_p((((_p((pair[0] as! Int)) + "^") + _p((pair[1] as! Int))) + ": negative power not allowed")))
+ 82 |             } else {
+ 83 |                 print(_p(((((_p((pair[0] as! Int)) + "^") + _p((pair[1] as! Int))) + ": ") + _p(Int(expI((pair[0] as! Int), (pair[1] as! Int)))))))
+    |                                                                         `- warning: forced cast of 'Int' to same type has no effect
+ 84 |             }
+ 85 |         }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3053449239/001/main.swift:83:115: warning: forced cast of 'Int' to same type has no effect
+ 81 |                 print(_p((((_p((pair[0] as! Int)) + "^") + _p((pair[1] as! Int))) + ": negative power not allowed")))
+ 82 |             } else {
+ 83 |                 print(_p(((((_p((pair[0] as! Int)) + "^") + _p((pair[1] as! Int))) + ": ") + _p(Int(expI((pair[0] as! Int), (pair[1] as! Int)))))))
+    |                                                                                                                   `- warning: forced cast of 'Int' to same type has no effect
+ 84 |             }
+ 85 |         }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3053449239/001/main.swift:83:134: warning: forced cast of 'Int' to same type has no effect
+ 81 |                 print(_p((((_p((pair[0] as! Int)) + "^") + _p((pair[1] as! Int))) + ": negative power not allowed")))
+ 82 |             } else {
+ 83 |                 print(_p(((((_p((pair[0] as! Int)) + "^") + _p((pair[1] as! Int))) + ": ") + _p(Int(expI((pair[0] as! Int), (pair[1] as! Int)))))))
+    |                                                                                                                                      `- warning: forced cast of 'Int' to same type has no effect
+ 84 |             }
+ 85 |         }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3053449239/001/main.swift:90:27: error: initializer 'init(_:)' requires that 'Source' conform to 'BinaryInteger'
+ 88 |         print(_p("\nexpF tests:"))
+ 89 |         for pair in ([[2.0, 10], [2.0, -10], [-2.0, 10], [-2.0, 11], [11.0, 0]] as! [[Any]]) {
+ 90 |             _ = printExpF(Double(((pair as! [Any])[0] as! Any)), ((pair as! [Any])[1] as! Int))
+    |                           `- error: initializer 'init(_:)' requires that 'Source' conform to 'BinaryInteger'
+ 91 |         }
+ 92 |         print(_p("disallowed in expI, allowed here"))
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3053449239/001/main.swift:90:41: warning: forced cast of '[Any]' to same type has no effect
+ 88 |         print(_p("\nexpF tests:"))
+ 89 |         for pair in ([[2.0, 10], [2.0, -10], [-2.0, 10], [-2.0, 11], [11.0, 0]] as! [[Any]]) {
+ 90 |             _ = printExpF(Double(((pair as! [Any])[0] as! Any)), ((pair as! [Any])[1] as! Int))
+    |                                         `- warning: forced cast of '[Any]' to same type has no effect
+ 91 |         }
+ 92 |         print(_p("disallowed in expI, allowed here"))
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3053449239/001/main.swift:90:55: warning: forced cast of 'Any' to same type has no effect
+ 88 |         print(_p("\nexpF tests:"))
+ 89 |         for pair in ([[2.0, 10], [2.0, -10], [-2.0, 10], [-2.0, 11], [11.0, 0]] as! [[Any]]) {
+ 90 |             _ = printExpF(Double(((pair as! [Any])[0] as! Any)), ((pair as! [Any])[1] as! Int))
+    |                                                       `- warning: forced cast of 'Any' to same type has no effect
+ 91 |         }
+ 92 |         print(_p("disallowed in expI, allowed here"))
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3053449239/001/main.swift:90:73: warning: forced cast of '[Any]' to same type has no effect
+ 88 |         print(_p("\nexpF tests:"))
+ 89 |         for pair in ([[2.0, 10], [2.0, -10], [-2.0, 10], [-2.0, 11], [11.0, 0]] as! [[Any]]) {
+ 90 |             _ = printExpF(Double(((pair as! [Any])[0] as! Any)), ((pair as! [Any])[1] as! Int))
+    |                                                                         `- warning: forced cast of '[Any]' to same type has no effect
+ 91 |         }
+ 92 |         print(_p("disallowed in expI, allowed here"))
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3053449239/001/main.swift:93:9: warning: using '_' to ignore the result of a Void-returning function is redundant
+ 91 |         }
+ 92 |         print(_p("disallowed in expI, allowed here"))
+ 93 |         _ = printExpF(0.0, Int(-1))
+    |         `- warning: using '_' to ignore the result of a Void-returning function is redundant
+ 94 |         print(_p("other interesting cases for 32 bit float type"))
+ 95 |         _ = printExpF(10.0, 39)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3053449239/001/main.swift:95:9: warning: using '_' to ignore the result of a Void-returning function is redundant
+ 93 |         _ = printExpF(0.0, Int(-1))
+ 94 |         print(_p("other interesting cases for 32 bit float type"))
+ 95 |         _ = printExpF(10.0, 39)
+    |         `- warning: using '_' to ignore the result of a Void-returning function is redundant
+ 96 |         _ = printExpF(10.0, Int(-39))
+ 97 |         _ = printExpF(Double(-10.0), 39)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3053449239/001/main.swift:96:9: warning: using '_' to ignore the result of a Void-returning function is redundant
+ 94 |         print(_p("other interesting cases for 32 bit float type"))
+ 95 |         _ = printExpF(10.0, 39)
+ 96 |         _ = printExpF(10.0, Int(-39))
+    |         `- warning: using '_' to ignore the result of a Void-returning function is redundant
+ 97 |         _ = printExpF(Double(-10.0), 39)
+ 98 |     }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3053449239/001/main.swift:97:9: warning: using '_' to ignore the result of a Void-returning function is redundant
+ 95 |         _ = printExpF(10.0, 39)
+ 96 |         _ = printExpF(10.0, Int(-39))
+ 97 |         _ = printExpF(Double(-10.0), 39)
+    |         `- warning: using '_' to ignore the result of a Void-returning function is redundant
+ 98 |     }
+ 99 |     _ = main()
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3053449239/001/main.swift:99:5: warning: using '_' to ignore the result of a Void-returning function is redundant
+ 97 |         _ = printExpF(Double(-10.0), 39)
+ 98 |     }
+ 99 |     _ = main()
+    |     `- warning: using '_' to ignore the result of a Void-returning function is redundant
+100 |     let _benchEnd = _now()
+101 |     let _benchMemEnd = _mem()

@@ -2,8 +2,8 @@
 
 Generated Swift code for Mochi Rosetta programs in `tests/rosetta/x/Mochi`. Outputs are stored in `tests/rosetta/transpiler/Swift`. Errors are captured in `.error` files.
 
-Completed: 162/493
-Last updated: 2025-07-28 10:28 +0700
+Completed: 194/493
+Last updated: 2025-07-28 10:41 +0700
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -356,56 +356,56 @@ Last updated: 2025-07-28 10:28 +0700
 | 347 | enforced-immutability | ✓ | 263µs | 3.0 MB |
 | 348 | entropy-1 | ✓ | 758µs | 3.3 MB |
 | 349 | entropy-2 | ✓ | 824µs | 3.4 MB |
-| 350 | entropy-narcissist |   |  |  |
-| 351 | enumerations-1 |   |  |  |
-| 352 | enumerations-2 |   |  |  |
+| 350 | entropy-narcissist | ✓ | 22.86ms | 3.5 MB |
+| 351 | enumerations-1 | ✓ | 61µs | 3.2 MB |
+| 352 | enumerations-2 | ✓ | 64µs | 2.9 MB |
 | 353 | enumerations-3 |   |  |  |
 | 354 | enumerations-4 |   |  |  |
 | 355 | environment-variables-1 |   |  |  |
 | 356 | environment-variables-2 |   |  |  |
 | 357 | equal-prime-and-composite-sums |   |  |  |
-| 358 | equilibrium-index |   |  |  |
-| 359 | erd-s-nicolas-numbers |   |  |  |
-| 360 | erd-s-selfridge-categorization-of-primes |   |  |  |
-| 361 | esthetic-numbers |   |  |  |
-| 362 | ethiopian-multiplication |   |  |  |
+| 358 | equilibrium-index | ✓ | 55.333ms | 3.3 MB |
+| 359 | erd-s-nicolas-numbers | ✓ |  |  |
+| 360 | erd-s-selfridge-categorization-of-primes | ✓ | 2.76064s | 3.4 MB |
+| 361 | esthetic-numbers | ✓ | 2.318637s | 3.7 MB |
+| 362 | ethiopian-multiplication | ✓ | 170µs | 3.1 MB |
 | 363 | euclid-mullin-sequence |   |  |  |
 | 364 | euler-method |   |  |  |
-| 365 | eulers-constant-0.5772... |   |  |  |
-| 366 | eulers-identity |   |  |  |
-| 367 | eulers-sum-of-powers-conjecture |   |  |  |
-| 368 | evaluate-binomial-coefficients |   |  |  |
+| 365 | eulers-constant-0.5772... | ✓ | 383µs | 3.5 MB |
+| 366 | eulers-identity | ✓ | 124µs | 3.2 MB |
+| 367 | eulers-sum-of-powers-conjecture | ✓ | 99.25ms | 5.2 MB |
+| 368 | evaluate-binomial-coefficients | ✓ | 435µs | 3.8 MB |
 | 369 | even-or-odd |   |  |  |
-| 370 | events |   |  |  |
-| 371 | evolutionary-algorithm |   |  |  |
-| 372 | exceptions-catch-an-exception-thrown-in-a-nested-call |   |  |  |
-| 373 | exceptions |   |  |  |
-| 374 | executable-library |   |  |  |
-| 375 | execute-a-markov-algorithm |   |  |  |
+| 370 | events | ✓ | 86µs | 3.4 MB |
+| 371 | evolutionary-algorithm | ✓ | 405.504ms | 3.1 MB |
+| 372 | exceptions-catch-an-exception-thrown-in-a-nested-call | ✓ | 99µs | 3.1 MB |
+| 373 | exceptions | ✓ | 174µs | 3.2 MB |
+| 374 | executable-library | ✓ | 1.654904s | 3.4 MB |
+| 375 | execute-a-markov-algorithm | ✓ | 25.614ms | 3.2 MB |
 | 376 | execute-a-system-command |   |  |  |
-| 377 | execute-brain- |   |  |  |
+| 377 | execute-brain- | ✓ | 7.201ms | 3.1 MB |
 | 378 | execute-computer-zero-1 |   |  |  |
-| 379 | execute-computer-zero |   |  |  |
-| 380 | execute-hq9+ |   |  |  |
-| 381 | execute-snusp |   |  |  |
+| 379 | execute-computer-zero | ✓ | 195µs | 3.1 MB |
+| 380 | execute-hq9+ | ✓ | 574µs | 3.1 MB |
+| 381 | execute-snusp | ✓ | 86µs | 2.8 MB |
 | 382 | exponentiation-operator-2 |   |  |  |
-| 383 | exponentiation-operator |   |  |  |
-| 384 | exponentiation-order |   |  |  |
-| 385 | exponentiation-with-infix-operators-in-or-operating-on-the-base |   |  |  |
+| 383 | exponentiation-operator | ✓ | 218µs | 3.1 MB |
+| 384 | exponentiation-order | ✓ | 184µs | 3.1 MB |
+| 385 | exponentiation-with-infix-operators-in-or-operating-on-the-base | ✓ | 243µs | 3.4 MB |
 | 386 | extend-your-language |   |  |  |
-| 387 | extensible-prime-generator |   |  |  |
-| 388 | extreme-floating-point-values |   |  |  |
+| 387 | extensible-prime-generator | ✓ | 71.127ms | 3.3 MB |
+| 388 | extreme-floating-point-values | ✓ | 149µs | 3.0 MB |
 | 389 | faces-from-a-mesh-2 |   |  |  |
 | 390 | faces-from-a-mesh |   |  |  |
 | 391 | factorial-base-numbers-indexing-permutations-of-a-collection |   |  |  |
-| 392 | factorial-primes |   |  |  |
-| 393 | factorial |   |  |  |
-| 394 | factorions |   |  |  |
-| 395 | factors-of-a-mersenne-number |   |  |  |
+| 392 | factorial-primes | ✓ | 664µs | 3.3 MB |
+| 393 | factorial | ✓ | 12.15ms | 3.8 MB |
+| 394 | factorions | ✓ | 370.674ms | 3.5 MB |
+| 395 | factors-of-a-mersenne-number | ✓ | 61.087ms | 3.3 MB |
 | 396 | factors-of-an-integer |   |  |  |
 | 397 | fairshare-between-two-and-more |   |  |  |
 | 398 | farey-sequence |   |  |  |
-| 399 | fast-fourier-transform |   |  |  |
+| 399 | fast-fourier-transform | ✓ | 238µs | 3.0 MB |
 | 400 | fasta-format |   |  |  |
 | 401 | faulhabers-formula |   |  |  |
 | 402 | faulhabers-triangle |   |  |  |
