@@ -59,6 +59,14 @@ func runMochi(src string) ([]byte, error) {
 	return bytes.TrimSpace(out.Bytes()), nil
 }
 
+func runMochiFile(path string) ([]byte, error) {
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return nil, err
+	}
+	return runMochi(string(data))
+}
+
 func TestConvert_Golden(t *testing.T) {
 	if _, err := exec.LookPath("python3"); err != nil {
 		t.Skip("python3 not installed")
@@ -95,6 +103,8 @@ func TestConvert_Golden(t *testing.T) {
 		"string_compare":      true,
 		"string_index":        true,
 		"string_prefix_slice": true,
+		"values_builtin":      true,
+		"var_assignment":      true,
 	}
 	outDir := filepath.Join(root, "tests", "a2mochi", "x", "py")
 	os.MkdirAll(outDir, 0o755)
@@ -138,7 +148,7 @@ func TestConvert_Golden(t *testing.T) {
 			if *update {
 				os.WriteFile(mochiPath, []byte(code), 0o644)
 			}
-			gotOut, err := runMochi(code)
+			gotOut, err := runMochiFile(mochiPath)
 			if err != nil {
 				t.Fatalf("run: %v", err)
 			}

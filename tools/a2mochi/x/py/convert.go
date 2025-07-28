@@ -613,6 +613,20 @@ func emitExpr(b *strings.Builder, n *Node, lines []string) error {
 			b.WriteString(")")
 			return nil
 		}
+		if fn != nil && fn.Type == "Name" && fn.ID == "list" {
+			args := n.callArgs()
+			if len(args) == 1 && args[0].Type == "Call" {
+				inner := args[0]
+				if inner.Func != nil && inner.Func.Type == "Attribute" && inner.Func.Attr == "values" {
+					b.WriteString("values(")
+					if err := emitExpr(b, inner.Func.valueNode(), lines); err != nil {
+						return err
+					}
+					b.WriteString(")")
+					return nil
+				}
+			}
+		}
 		if fn != nil && fn.Type == "Name" {
 			if len(n.Keywords) > 0 && len(n.callArgs()) == 0 && strings.Title(fn.ID) == fn.ID {
 				b.WriteString(fn.ID)
@@ -631,6 +645,10 @@ func emitExpr(b *strings.Builder, n *Node, lines []string) error {
 				return nil
 			}
 			b.WriteString(fn.ID)
+		} else if fn != nil {
+			if err := emitExpr(b, fn, lines); err != nil {
+				return err
+			}
 		}
 		b.WriteString("(")
 		args := n.callArgs()
