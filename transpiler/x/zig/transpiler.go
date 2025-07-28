@@ -98,6 +98,10 @@ func zigIdent(s string) string {
 	return buf.String()
 }
 
+func isIntType(t string) bool {
+	return strings.HasPrefix(t, "i") || strings.HasPrefix(t, "u")
+}
+
 // Program represents a Zig source file with one or more functions.
 type Field struct {
 	Name string
@@ -1187,11 +1191,7 @@ func (v *VarDecl) emit(w io.Writer, indent int) {
 	} else {
 		exprType := zigTypeFromExpr(v.Value)
 		if t, ok := varTypes[v.Name]; ok && t != "" {
-			if t == "i64" && exprType != "i64" {
-				fmt.Fprintf(w, ": %s", exprType)
-			} else {
-				fmt.Fprintf(w, ": %s", t)
-			}
+			fmt.Fprintf(w, ": %s", t)
 		} else if exprType != "" {
 			fmt.Fprintf(w, ": %s", exprType)
 		} else if v.Mutable {
@@ -1457,7 +1457,7 @@ func (b *BinaryExpr) emit(w io.Writer) {
 	if op == "/" {
 		lt := zigTypeFromExpr(b.Left)
 		rt := zigTypeFromExpr(b.Right)
-		if lt == "i64" && rt == "i64" {
+		if isIntType(lt) && isIntType(rt) {
 			io.WriteString(w, "@divTrunc(")
 			b.Left.emit(w)
 			io.WriteString(w, ", ")
