@@ -164,6 +164,11 @@ func FromStatement(s *parser.Statement) *Node {
 		n.Children = append(n.Children, mapStatements(s.Test.Body)...)
 		return n
 
+	case s.Bench != nil:
+		n := &Node{Kind: "bench", Value: s.Bench.Name}
+		n.Children = append(n.Children, mapStatements(s.Bench.Body)...)
+		return n
+
 	case s.Expect != nil:
 		return &Node{Kind: "expect", Children: []*Node{FromExpr(s.Expect.Value)}}
 
