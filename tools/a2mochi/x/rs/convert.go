@@ -9,6 +9,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -131,16 +132,37 @@ func convertParams(src string, n *node) []string {
 	return params
 }
 
+// convertLetStmt converts a LET_STMT node into a Mochi variable declaration line.
+func convertLetStmt(src string, n *node, level int) string {
+	text := strings.TrimSpace(src[n.start:n.end])
+	text = strings.TrimSuffix(text, ";")
+	text = strings.Replace(text, "let ", "var ", 1)
+	text = strings.Replace(text, "mut ", "", 1)
+	// convert type annotation if present
+	if colon := strings.Index(text, ":"); colon >= 0 {
+		eq := strings.Index(text, "=")
+		if eq == -1 || colon < eq {
+			name := strings.TrimSpace(text[:colon])
+			rest := text[colon+1:]
+			typStr := strings.TrimSpace(rest)
+			val := ""
+			if eq >= 0 {
+				typStr = strings.TrimSpace(rest[:eq-colon-1])
+				val = rest[eq-colon-1:]
+			}
+			typ := convertRustTypeFromString(typStr)
+			text = name + ": " + typ + val
+		}
+	}
+	text = sanitizeExpr(text)
+	return indent(level) + text
+}
+
 func convertStmt(src string, n *node, level int) []string {
 	idt := indent(level)
 	switch n.kind {
 	case "LET_STMT":
-		text := strings.TrimSpace(src[n.start:n.end])
-		text = strings.TrimSuffix(text, ";")
-		text = strings.Replace(text, "let ", "var ", 1)
-		text = strings.Replace(text, "mut ", "", 1)
-		text = sanitizeExpr(text)
-		return []string{idt + text}
+		return []string{convertLetStmt(src, n, level)}
 	case "EXPR_STMT":
 		if len(n.children) == 0 {
 			return nil
@@ -150,10 +172,10 @@ func convertStmt(src string, n *node, level int) []string {
 		case "MACRO_EXPR":
 			code := strings.TrimSpace(src[c.start:c.end])
 			if line, ok := convertPrintMacro(code); ok {
-				return []string{idt + line}
+				return []string{idt + sanitizeExpr(line)}
 			}
 			if line, ok := convertVecMacro(code); ok {
-				return []string{idt + line}
+				return []string{idt + sanitizeExpr(line)}
 			}
 			code = strings.TrimSuffix(code, ";")
 			code = sanitizeExpr(code)
@@ -382,6 +404,10 @@ func sanitizeExpr(code string) string {
 	code = strings.ReplaceAll(code, ".to_vec()", "")
 	code = strings.ReplaceAll(code, ".clone()", "")
 	code = strings.ReplaceAll(code, ".to_string()", "")
+	// simplify "+ -N" into "- N" for numeric literals
+	code = regexp.MustCompile(`\+\s*-([0-9])`).ReplaceAllString(code, " - $1")
+
+	code = strings.ReplaceAll(code, "Default::default()", "0")
 
 	return code
 }
