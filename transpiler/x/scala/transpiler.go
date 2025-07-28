@@ -1754,9 +1754,18 @@ func convertStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 				t = types.ExprType(st.Let.Value, env)
 			}
 			env.SetVar(st.Let.Name, t, false)
+			if typ == "" {
+				typ = toScalaTypeFromType(t)
+			}
 		}
 		if typ != "" {
 			localVarTypes[st.Let.Name] = typ
+			if e != nil {
+				et := inferTypeWithEnv(e, env)
+				if et == "" || et == "Any" || et != typ {
+					e = &CastExpr{Value: e, Type: typ}
+				}
+			}
 		}
 		return &LetStmt{Name: st.Let.Name, Type: typ, Value: e}, nil
 	case st.Var != nil:
@@ -1842,9 +1851,18 @@ func convertStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 				t = types.ExprType(st.Var.Value, env)
 			}
 			env.SetVar(st.Var.Name, t, true)
+			if typ == "" {
+				typ = toScalaTypeFromType(t)
+			}
 		}
 		if typ != "" {
 			localVarTypes[st.Var.Name] = typ
+			if e != nil {
+				et := inferTypeWithEnv(e, env)
+				if et == "" || et == "Any" || et != typ {
+					e = &CastExpr{Value: e, Type: typ}
+				}
+			}
 		}
 		return &VarStmt{Name: st.Var.Name, Type: typ, Value: e}, nil
 	case st.Type != nil:
