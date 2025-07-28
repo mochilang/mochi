@@ -1,0 +1,22 @@
+exit status 1
+/workspace/mochi/tests/rosetta/transpiler/Scala/dijkstras-algorithm.scala:53: error: type mismatch;
+ found   : (String, scala.math.BigInt)
+ required: String
+        val alt: Int = dist.getOrElse(u, BigInt(0)) + graph.getOrElse(u, scala.collection.mutable.Map[String,BigInt]()).getOrElse(v, BigInt(0))
+                                                                                                                                  ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/dijkstras-algorithm.scala:54: error: type mismatch;
+ found   : (String, scala.math.BigInt)
+ required: String
+        if (alt < dist.getOrElse(v, BigInt(0))) {
+                                 ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/dijkstras-algorithm.scala:55: error: type mismatch;
+ found   : (String, scala.math.BigInt)
+ required: String
+          dist.update(v, alt)
+                      ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/dijkstras-algorithm.scala:56: error: type mismatch;
+ found   : (String, scala.math.BigInt)
+ required: String
+          prev.update(v, u)
+                      ^
+four errors found
