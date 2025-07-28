@@ -1,0 +1,9 @@
+(program
+  (type Todo)
+  (let todo
+    (call Todo (string hi))
+  )
+  (call print
+    (selector title (selector todo))
+  )
+)

@@ -52,10 +52,18 @@ type Func struct {
 	Body   []string
 }
 
+// Var represents a top level variable definition.
+type Var struct {
+	Name    string
+	Expr    string
+	Mutable bool
+}
+
 // File represents a parsed Scala source file.
 type File struct {
 	Types  []TypeDecl
 	Funcs  []Func
+	Vars   []Var
 	Source string
 }
 
@@ -89,6 +97,19 @@ func ConvertSource(f *File) (string, error) {
 			b.WriteByte('\n')
 		}
 	}
+	for _, v := range f.Vars {
+		if v.Mutable {
+			b.WriteString("var ")
+		} else {
+			b.WriteString("let ")
+		}
+		b.WriteString(v.Name)
+		if v.Expr != "" {
+			b.WriteString(" = ")
+			b.WriteString(convertExpr(f, v.Expr))
+		}
+		b.WriteByte('\n')
+	}
 	for _, fn := range f.Funcs {
 		code := convertFromAST(f, fn)
 		if code == "" {
@@ -121,9 +142,77 @@ func Convert(f *File) (*ast.Node, error) {
 func parseSource(src string) File {
 	lines := strings.Split(strings.ReplaceAll(src, "\r\n", "\n"), "\n")
 	reHeader := regexp.MustCompile(`^def\s+([a-zA-Z0-9_]+)\s*\(([^)]*)\)(?:\s*:\s*[^=]+)?\s*=\s*(\{)?`)
+	reTrait := regexp.MustCompile(`^sealed\s+trait\s+([a-zA-Z0-9_]+)`)
+	reCaseClass := regexp.MustCompile(`^case\s+class\s+([a-zA-Z0-9_]+)\(([^)]*)\)(?:\s+extends\s+([a-zA-Z0-9_]+))?`)
+	reCaseObj := regexp.MustCompile(`^case\s+object\s+([a-zA-Z0-9_]+)(?:\s+extends\s+([a-zA-Z0-9_]+))?`)
+	reGlobal := regexp.MustCompile(`^(var|val)\s+([a-zA-Z0-9_]+)(?:\s*:\s*[^=]+)?\s*=\s*(.*)`)
 	var file File
+	traitMap := map[string]*TypeDecl{}
 	for i := 0; i < len(lines); i++ {
 		line := strings.TrimSpace(lines[i])
+		if m := reTrait.FindStringSubmatch(line); m != nil {
+			name := m[1]
+			td := TypeDecl{Name: name}
+			file.Types = append(file.Types, td)
+			traitMap[name] = &file.Types[len(file.Types)-1]
+			continue
+		}
+		if m := reCaseClass.FindStringSubmatch(line); m != nil {
+			name := m[1]
+			fields := []Field{}
+			for _, part := range strings.Split(m[2], ",") {
+				part = strings.TrimSpace(part)
+				if part == "" {
+					continue
+				}
+				fname := part
+				ftype := ""
+				if idx := strings.Index(part, ":"); idx != -1 {
+					fname = strings.TrimSpace(part[:idx])
+					ftype = strings.TrimSpace(part[idx+1:])
+				}
+				fields = append(fields, Field{Name: fname, Type: ftype})
+			}
+			variant := Variant{Name: name, Fields: fields}
+			trait := m[3]
+			if trait != "" {
+				td, ok := traitMap[trait]
+				if !ok {
+					td = &TypeDecl{Name: trait}
+					file.Types = append(file.Types, *td)
+					traitMap[trait] = &file.Types[len(file.Types)-1]
+				}
+				tptr := traitMap[trait]
+				tptr.Variants = append(tptr.Variants, variant)
+			} else {
+				file.Types = append(file.Types, TypeDecl{Name: name, Variants: []Variant{variant}})
+			}
+			continue
+		}
+		if m := reCaseObj.FindStringSubmatch(line); m != nil {
+			name := m[1]
+			variant := Variant{Name: name}
+			trait := m[2]
+			if trait != "" {
+				td, ok := traitMap[trait]
+				if !ok {
+					td = &TypeDecl{Name: trait}
+					file.Types = append(file.Types, *td)
+					traitMap[trait] = &file.Types[len(file.Types)-1]
+				}
+				traitMap[trait].Variants = append(traitMap[trait].Variants, variant)
+			} else {
+				file.Types = append(file.Types, TypeDecl{Name: name, Variants: []Variant{variant}})
+			}
+			continue
+		}
+		if m := reGlobal.FindStringSubmatch(line); m != nil {
+			mut := m[1] == "var"
+			name := m[2]
+			expr := strings.TrimSpace(m[3])
+			file.Vars = append(file.Vars, Var{Name: name, Expr: expr, Mutable: mut})
+			continue
+		}
 		if m := reHeader.FindStringSubmatch(line); m != nil {
 			name := m[1]
 			params := []string{}
@@ -355,6 +444,12 @@ func convertTypeDecl(t TypeDecl) string {
 					b.WriteString(", ")
 				}
 				b.WriteString(f.Name)
+				if f.Type != "" {
+					b.WriteString(": ")
+					b.WriteString(f.Type)
+				} else {
+					b.WriteString(": any")
+				}
 			}
 			b.WriteString(")")
 		}
