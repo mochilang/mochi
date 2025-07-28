@@ -1,0 +1,8 @@
+(program
+  (let a
+    (call ArrayBuffer (int 1) (int 2))
+  )
+  (call print
+    (call append (selector a) (int 3))
+  )
+)

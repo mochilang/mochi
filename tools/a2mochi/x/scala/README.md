@@ -12,3 +12,8 @@ The converter now prepends a header comment with the current Mochi version and
 generation timestamp (GMT+7). It also includes the original Scala source as a
 block comment at the top of the emitted Mochi file.
 
+## Checklist
+- [x] append_builtin
+- [x] avg_builtin
+- [x] sum_builtin
+

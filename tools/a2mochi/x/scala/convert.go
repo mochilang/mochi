@@ -120,7 +120,7 @@ func Convert(f *File) (*ast.Node, error) {
 
 func parseSource(src string) File {
 	lines := strings.Split(strings.ReplaceAll(src, "\r\n", "\n"), "\n")
-	reHeader := regexp.MustCompile(`^def\s+([a-zA-Z0-9_]+)\s*\(([^)]*)\)\s*=\s*(\{)?`)
+	reHeader := regexp.MustCompile(`^def\s+([a-zA-Z0-9_]+)\s*\(([^)]*)\)(?:\s*:\s*[^=]+)?\s*=\s*(\{)?`)
 	var file File
 	for i := 0; i < len(lines); i++ {
 		line := strings.TrimSpace(lines[i])
@@ -303,6 +303,14 @@ func convertExpr(expr string) string {
 		recv := strings.TrimSpace(expr[:idx])
 		arg := strings.TrimSuffix(expr[idx+8:], ")")
 		return "append(" + recv + ", " + convertExpr(arg) + ")"
+	}
+	if strings.Contains(expr, " :+ ") {
+		parts := strings.SplitN(expr, ":+", 2)
+		if len(parts) == 2 {
+			left := strings.TrimSpace(parts[0])
+			right := strings.TrimSpace(parts[1])
+			return "append(" + left + ", " + convertExpr(right) + ")"
+		}
 	}
 	return expr
 }
