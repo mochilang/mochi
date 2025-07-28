@@ -5,7 +5,7 @@ Between 7700 and 8000:
 10000th:
    [948349]
 {
-  "duration_us": 769364,
+  "duration_us": 776840,
   "memory_bytes": 96,
   "name": "main"
 }

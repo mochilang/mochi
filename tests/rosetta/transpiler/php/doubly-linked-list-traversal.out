@@ -3,7 +3,7 @@
 [A C B]
 From tail: B C A
 {
-  "duration_us": 48,
+  "duration_us": 155,
   "memory_bytes": 1240,
   "name": "main"
 }

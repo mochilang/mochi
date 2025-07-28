@@ -21,7 +21,7 @@ Distance Bearing ICAO Country               Airport
 "66.2\\t149\\tLFQQ\\tFrance Lille-Lesquin Airport"
 "68.4\\t272\\tEGMT\\tUnited Kingdom Thurrock Airfield"
 {
-  "duration_us": 191,
+  "duration_us": 291,
   "memory_bytes": 160,
   "name": "main"
 }

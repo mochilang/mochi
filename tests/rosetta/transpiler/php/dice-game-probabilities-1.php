@@ -31,6 +31,14 @@ function _str($x) {
     if ($x === null) return 'null';
     return strval($x);
 }
+function _intdiv($a, $b) {
+    if (function_exists('bcdiv')) {
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
+        return intval(bcdiv($sa, $sb, 0));
+    }
+    return intdiv($a, $b);
+}
 $__start_mem = memory_get_usage();
 $__start = _now();
   function powInt($base, $exp) {
@@ -42,7 +50,7 @@ $__start = _now();
   $r = $r * $b;
 }
   $b = $b * $b;
-  $e = $e / intval(2);
+  $e = _intdiv($e, intval(2));
 };
   return $r;
 };

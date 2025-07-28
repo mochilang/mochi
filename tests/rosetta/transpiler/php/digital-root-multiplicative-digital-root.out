@@ -18,7 +18,7 @@ MDR: First
   8: [8 18 24 29 36]
   9: [9 19 33 91 119]
 {
-  "duration_us": 52609,
+  "duration_us": 67164,
   "memory_bytes": 96,
   "name": "main"
 }

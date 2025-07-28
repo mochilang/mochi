@@ -12,7 +12,7 @@ It's value is 42
 
 Which variable do you want to inspect :
 {
-  "duration_us": 60,
+  "duration_us": 133,
   "memory_bytes": 8288,
   "name": "main"
 }

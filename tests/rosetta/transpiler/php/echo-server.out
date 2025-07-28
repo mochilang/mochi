@@ -2,7 +2,7 @@
 hello
 0: closed
 {
-  "duration_us": 47,
+  "duration_us": 50,
   "memory_bytes": 96,
   "name": "main"
 }
