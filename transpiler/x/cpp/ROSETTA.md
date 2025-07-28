@@ -2,7 +2,7 @@
 
 This directory stores C++ code generated from Mochi programs in `tests/rosetta/x/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.cpp` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (152/493) - Last updated 2025-07-28 10:03 +0700:
+Checklist of programs that currently transpile and run (155/493) - Last updated 2025-07-28 10:18 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | 100-doors-2 | ✓ | 222.0µs | 13.12MB |
@@ -154,7 +154,7 @@ Checklist of programs that currently transpile and run (152/493) - Last updated 
 | 147 | calendar---for-real-programmers-1 | ✓ | 829.0µs | 13.11MB |
 | 148 | calendar---for-real-programmers-2 | ✓ | 655.0µs | 13.56MB |
 | 149 | calendar | ✓ | 704.0µs | 13.25MB |
-| 150 | calkin-wilf-sequence |   | 415.0µs | 13.49MB |
+| 150 | calkin-wilf-sequence | ✓ | 415.0µs | 13.49MB |
 | 151 | call-a-foreign-language-function | ✓ | 152.0µs | 12.61MB |
 | 152 | call-a-function-1 | ✓ | 10.0µs | 12.54MB |
 | 153 | call-a-function-10 | ✓ | 36.0µs | 12.54MB |
@@ -169,7 +169,7 @@ Checklist of programs that currently transpile and run (152/493) - Last updated 
 | 162 | call-a-function-8 | ✓ | 57.0µs | 12.88MB |
 | 163 | call-a-function-9 | ✓ | 56.0µs | 12.79MB |
 | 164 | call-an-object-method-1 | ✓ | 15.0µs | 12.30MB |
-| 165 | call-an-object-method-2 |   |  |  |
+| 165 | call-an-object-method-2 | ✓ |  |  |
 | 166 | call-an-object-method-3 | ✓ | 3.0µs | 12.62MB |
 | 167 | call-an-object-method | ✓ | 2.0µs | 12.69MB |
 | 168 | camel-case-and-snake-case | ✓ | 1.0ms | 14.19MB |
@@ -180,7 +180,7 @@ Checklist of programs that currently transpile and run (152/493) - Last updated 
 | 173 | cartesian-product-of-two-or-more-lists-1 | ✓ | 284.0µs | 13.12MB |
 | 174 | cartesian-product-of-two-or-more-lists-2 | ✓ | 71.0µs | 14.17MB |
 | 175 | cartesian-product-of-two-or-more-lists-3 | ✓ | 296.0µs | 13.56MB |
-| 176 | cartesian-product-of-two-or-more-lists-4 |   |  |  |
+| 176 | cartesian-product-of-two-or-more-lists-4 | ✓ |  |  |
 | 177 | case-sensitivity-of-identifiers |   |  |  |
 | 178 | casting-out-nines |   |  |  |
 | 179 | catalan-numbers-1 |   |  |  |
