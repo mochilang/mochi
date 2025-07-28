@@ -1,0 +1,5 @@
+type Program {
+  fun Main() {
+    print("hello")
+  }
+}
