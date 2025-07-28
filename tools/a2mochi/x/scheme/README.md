@@ -20,4 +20,5 @@ Completed programs: 94/94
 - [x] query_sum_select
 - [x] tail_recursion
 - [x] var_assignment
+- [x] import_statements
 

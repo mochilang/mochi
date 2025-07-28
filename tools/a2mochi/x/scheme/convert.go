@@ -59,6 +59,22 @@ func Parse(src string) ([]Item, error) {
 			}
 		case len(n.list) == 3 && n.list[0].atom == "set!" && n.list[1].atom != "":
 			items = append(items, Item{Kind: "var", Name: n.list[1].atom})
+		case len(n.list) >= 2 && n.list[0].atom == "import":
+			for _, mod := range n.list[1:] {
+				if len(mod.list) > 0 {
+					var parts []string
+					for _, p := range mod.list {
+						if p.atom != "" {
+							parts = append(parts, sanitizeName(p.atom))
+						}
+					}
+					if len(parts) > 0 {
+						items = append(items, Item{Kind: "import", Name: strings.Join(parts, "_")})
+					}
+				} else if mod.atom != "" {
+					items = append(items, Item{Kind: "import", Name: sanitizeName(mod.atom)})
+				}
+			}
 		}
 	}
 	return items, nil
@@ -91,6 +107,10 @@ func ConvertSource(items []Item, src string) (string, error) {
 		case "var":
 			b.WriteString("let ")
 			b.WriteString(sanitizeName(it.Name))
+			b.WriteByte('\n')
+		case "import":
+			b.WriteString("use ")
+			b.WriteString(it.Name)
 			b.WriteByte('\n')
 		}
 	}
