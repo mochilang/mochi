@@ -29,6 +29,8 @@ var needHash bool
 var usesInput bool
 var usesNow bool
 var usesLookupHost bool
+var usesGetEnv bool
+var usesEnviron bool
 var usesJSON bool
 var usesBench bool
 var benchMain bool
@@ -272,6 +274,15 @@ func header() []byte {
                    (if (string-contains addr ":") acc (cons addr acc))))
           (list (list-sort string<? acc) 'nil))))))
 `
+	}
+	if usesGetEnv || usesEnviron {
+		prelude += "(import (srfi 98))\n"
+	}
+	if usesGetEnv {
+		prelude += "(define (_getenv name) (let ((v (get-environment-variable name))) (if v v \"\")))\n"
+	}
+	if usesEnviron {
+		prelude += "(define (_environ)\n  (map (lambda (p) (string-append (car p) \"=\" (cdr p)))\n       (get-environment-variables)))\n"
 	}
 	if usesJSON {
 		prelude += "(import (chibi json))\n"
@@ -806,6 +817,9 @@ func convertStmt(st *parser.Statement) (Node, error) {
 				return nil, err
 			}
 		}
+		if len(returnStack) == 0 {
+			return val, nil
+		}
 		return &List{Elems: []Node{currentReturn(), val}}, nil
 	case st.If != nil:
 		return convertIfStmt(st.If)
@@ -900,6 +914,8 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	usesNow = false
 	usesJSON = false
 	usesLookupHost = false
+	usesGetEnv = false
+	usesEnviron = false
 	usesBench = false
 	unionConsts = map[string]int{}
 	unionConstOrder = nil
@@ -1086,6 +1102,32 @@ func convertParserPostfix(pf *parser.PostfixExpr) (Node, error) {
 			return &List{Elems: []Node{Symbol("_lookup_host"), arg}}, nil
 		}
 	}
+	// handle os.Getenv call
+	if pf.Target.Selector != nil && len(pf.Target.Selector.Tail) == 1 && pf.Target.Selector.Tail[0] == "Getenv" && len(pf.Ops) > 0 && pf.Ops[0].Call != nil {
+		if pf.Target.Selector.Root == "os" {
+			call := pf.Ops[0].Call
+			if len(call.Args) != 1 {
+				return nil, fmt.Errorf("Getenv expects 1 arg")
+			}
+			arg, err := convertParserExpr(call.Args[0])
+			if err != nil {
+				return nil, err
+			}
+			usesGetEnv = true
+			return &List{Elems: []Node{Symbol("_getenv"), arg}}, nil
+		}
+	}
+	// handle os.Environ call
+	if pf.Target.Selector != nil && len(pf.Target.Selector.Tail) == 1 && pf.Target.Selector.Tail[0] == "Environ" && len(pf.Ops) > 0 && pf.Ops[0].Call != nil {
+		if pf.Target.Selector.Root == "os" {
+			call := pf.Ops[0].Call
+			if len(call.Args) != 0 {
+				return nil, fmt.Errorf("Environ expects no args")
+			}
+			usesEnviron = true
+			return &List{Elems: []Node{Symbol("_environ")}}, nil
+		}
+	}
 	// handle selector like `x.contains()` parsed as part of target
 	if pf.Target.Selector != nil && len(pf.Target.Selector.Tail) == 1 && pf.Target.Selector.Tail[0] == "get" && len(pf.Ops) > 0 && pf.Ops[0].Call != nil {
 		rootPrim := &parser.Primary{Selector: &parser.SelectorExpr{Root: pf.Target.Selector.Root}}
@@ -1188,9 +1230,15 @@ func convertParserPostfix(pf *parser.PostfixExpr) (Node, error) {
 				x := gensym("v")
 				cond := &List{Elems: []Node{
 					Symbol("cond"),
-					&List{Elems: []Node{&List{Elems: []Node{Symbol("string?"), Symbol(x)}}, &List{Elems: []Node{Symbol("exact"), &List{Elems: []Node{Symbol("floor"), &List{Elems: []Node{Symbol("string->number"), Symbol(x)}}}}}}}},
-					&List{Elems: []Node{&List{Elems: []Node{Symbol("boolean?"), Symbol(x)}}, &List{Elems: []Node{Symbol("if"), Symbol(x), IntLit(1), IntLit(0)}}}},
-					&List{Elems: []Node{Symbol("else"), &List{Elems: []Node{Symbol("exact"), &List{Elems: []Node{Symbol("floor"), Symbol(x)}}}}}},
+					&List{Elems: []Node{&List{Elems: []Node{Symbol("string?"), Symbol(x)}},
+						&List{Elems: []Node{Symbol("inexact->exact"),
+							&List{Elems: []Node{Symbol("floor"),
+								&List{Elems: []Node{Symbol("string->number"), Symbol(x)}}}}}}}},
+					&List{Elems: []Node{&List{Elems: []Node{Symbol("boolean?"), Symbol(x)}},
+						&List{Elems: []Node{Symbol("if"), Symbol(x), IntLit(1), IntLit(0)}}}},
+					&List{Elems: []Node{Symbol("else"),
+						&List{Elems: []Node{Symbol("inexact->exact"),
+							&List{Elems: []Node{Symbol("floor"), Symbol(x)}}}}}},
 				}}
 				node = &List{Elems: []Node{
 					Symbol("let"),

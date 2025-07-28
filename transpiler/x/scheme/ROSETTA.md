@@ -2,8 +2,8 @@
 
 Generated Scheme code for Rosetta Code tasks under `tests/rosetta/x/Mochi`.
 
-## Checklist (208/493)
-Last updated: 2025-07-28 03:19 UTC
+## Checklist (221/493)
+Last updated: 2025-07-28 03:44 UTC
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -356,19 +356,19 @@ Last updated: 2025-07-28 03:19 UTC
 | 347 | enforced-immutability | ✓ | 571.223ms | 12.1 MB |
 | 348 | entropy-1 | ✓ | 571.223ms | 12.8 MB |
 | 349 | entropy-2 | ✓ | 571.223ms | 12.5 MB |
-| 350 | entropy-narcissist |   |  |  |
-| 351 | enumerations-1 |   |  |  |
-| 352 | enumerations-2 |   |  |  |
-| 353 | enumerations-3 |   |  |  |
-| 354 | enumerations-4 |   |  |  |
-| 355 | environment-variables-1 |   |  |  |
-| 356 | environment-variables-2 |   |  |  |
-| 357 | equal-prime-and-composite-sums |   |  |  |
-| 358 | equilibrium-index |   |  |  |
-| 359 | erd-s-nicolas-numbers |   |  |  |
-| 360 | erd-s-selfridge-categorization-of-primes |   |  |  |
-| 361 | esthetic-numbers |   |  |  |
-| 362 | ethiopian-multiplication |   |  |  |
+| 350 | entropy-narcissist | ✓ | 571.223ms | 12.4 MB |
+| 351 | enumerations-1 | ✓ | 571.223ms | 12.2 MB |
+| 352 | enumerations-2 | ✓ | 571.223ms | 12.0 MB |
+| 353 | enumerations-3 | ✓ | 571.223ms | 12.1 MB |
+| 354 | enumerations-4 | ✓ | 571.223ms | 12.3 MB |
+| 355 | environment-variables-1 | ✓ | 571.223ms | 12.0 MB |
+| 356 | environment-variables-2 | ✓ | 571.223ms | 12.1 MB |
+| 357 | equal-prime-and-composite-sums | ✓ |  |  |
+| 358 | equilibrium-index | ✓ |  |  |
+| 359 | erd-s-nicolas-numbers | ✓ |  |  |
+| 360 | erd-s-selfridge-categorization-of-primes | ✓ |  |  |
+| 361 | esthetic-numbers | ✓ |  |  |
+| 362 | ethiopian-multiplication | ✓ |  |  |
 | 363 | euclid-mullin-sequence |   |  |  |
 | 364 | euler-method |   |  |  |
 | 365 | eulers-constant-0.5772... |   |  |  |
