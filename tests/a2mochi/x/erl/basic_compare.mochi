@@ -1,0 +1,9 @@
+package main
+fun main() {
+  let A = ((10 - 3))
+  let B = ((2 + 2))
+  print(A)
+  print(((A == 7)))
+  print(((B < 5)))
+}
+main()

@@ -4,6 +4,7 @@ package erl
 
 import (
 	"fmt"
+	"regexp"
 	"strconv"
 	"strings"
 
@@ -36,6 +37,9 @@ type AST struct {
 	Functions []Func   `json:"functions"`
 	Records   []Record `json:"records"`
 }
+
+var assignRe = regexp.MustCompile(`^([A-Za-z_][A-Za-z0-9_]*)\s*=\s*(.+)$`)
+var appendRe = regexp.MustCompile(`lists:append\(([^,]+),\s*\[([^\]]+)\]\)`)
 
 // Parse parses a very small subset of Erlang syntax and returns an AST.
 // It only supports module attributes, exports and simple function bodies.
@@ -252,6 +256,7 @@ func Convert(astFile *AST) (*ast.Node, error) {
 }
 
 func convertLine(ln string, recs []Record) string {
+	ln = strings.TrimSuffix(strings.TrimSpace(ln), ",")
 	if strings.HasPrefix(ln, "io:format(") {
 		ln = strings.TrimPrefix(ln, "io:format(")
 		ln = rewritePrintCall(ln)
@@ -260,6 +265,18 @@ func convertLine(ln string, recs []Record) string {
 		ln = rewritePrintCall(ln)
 	} else if strings.HasPrefix(ln, "mochi_print([") && strings.HasSuffix(ln, "])") {
 		ln = "print(" + strings.TrimSuffix(strings.TrimPrefix(ln, "mochi_print(["), "])") + ")"
+	}
+	if appendRe.MatchString(ln) {
+		ln = appendRe.ReplaceAllString(ln, "append($1, $2)")
+	}
+	if m := assignRe.FindStringSubmatch(strings.TrimSuffix(ln, ",")); m != nil {
+		ln = "let " + m[1] + " = " + m[2]
+	}
+	if strings.Contains(ln, "lists:sum(") {
+		ln = strings.ReplaceAll(ln, "lists:sum(", "sum(")
+	}
+	if strings.Contains(ln, "length(") {
+		ln = strings.ReplaceAll(ln, "length(", "len(")
 	}
 	for _, r := range recs {
 		t := strings.Title(r.Name)
@@ -279,6 +296,9 @@ func convertLine(ln string, recs []Record) string {
 func rewritePrintCall(args string) string {
 	if strings.HasPrefix(args, "\"~s~n\", [") && strings.HasSuffix(args, "])") {
 		return "print(" + strings.TrimSuffix(strings.TrimPrefix(args, "\"~s~n\", ["), "])") + ")"
+	}
+	if strings.HasPrefix(args, "\"~p~n\", [") && strings.HasSuffix(args, "])") {
+		return "print(" + strings.TrimSuffix(strings.TrimPrefix(args, "\"~p~n\", ["), "])") + ")"
 	}
 	return "print(" + args
 }

@@ -1,0 +1,17 @@
+(program main
+  (fun main
+    (call print
+      (group
+        (binary /
+          (call sum
+            (list (int 1) (int 2) (int 3))
+          )
+          (call len
+            (list (int 1) (int 2) (int 3))
+          )
+        )
+      )
+    )
+  )
+  (call main)
+)
