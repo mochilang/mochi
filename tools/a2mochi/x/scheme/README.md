@@ -19,4 +19,5 @@ Completed programs: 94/94
 - [x] partial_application
 - [x] query_sum_select
 - [x] tail_recursion
+- [x] var_assignment
 

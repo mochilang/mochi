@@ -30,33 +30,35 @@ func Parse(src string) ([]Item, error) {
 	}
 	var items []Item
 	for _, n := range nodes {
-		if len(n.list) < 3 || n.list[0].atom != "define" {
-			continue
-		}
-		def := n.list[1]
-		if len(def.list) > 0 {
-			name := def.list[0].atom
-			var params []string
-			for _, p := range def.list[1:] {
-				if p.atom != "" {
-					params = append(params, p.atom)
-				}
-			}
-			items = append(items, Item{Kind: "func", Name: name, Params: params})
-		} else if def.atom != "" {
-			// Support (define name (lambda (params...) ...)) forms
-			if len(n.list) > 2 && len(n.list[2].list) > 1 && n.list[2].list[0].atom == "lambda" {
-				lam := n.list[2].list[1]
+		switch {
+		case len(n.list) >= 3 && n.list[0].atom == "define":
+			def := n.list[1]
+			if len(def.list) > 0 {
+				name := def.list[0].atom
 				var params []string
-				for _, p := range lam.list {
+				for _, p := range def.list[1:] {
 					if p.atom != "" {
 						params = append(params, p.atom)
 					}
 				}
-				items = append(items, Item{Kind: "func", Name: def.atom, Params: params})
-			} else {
-				items = append(items, Item{Kind: "var", Name: def.atom})
+				items = append(items, Item{Kind: "func", Name: name, Params: params})
+			} else if def.atom != "" {
+				// Support (define name (lambda (params...) ...)) forms
+				if len(n.list) > 2 && len(n.list[2].list) > 1 && n.list[2].list[0].atom == "lambda" {
+					lam := n.list[2].list[1]
+					var params []string
+					for _, p := range lam.list {
+						if p.atom != "" {
+							params = append(params, p.atom)
+						}
+					}
+					items = append(items, Item{Kind: "func", Name: def.atom, Params: params})
+				} else {
+					items = append(items, Item{Kind: "var", Name: def.atom})
+				}
 			}
+		case len(n.list) == 3 && n.list[0].atom == "set!" && n.list[1].atom != "":
+			items = append(items, Item{Kind: "var", Name: n.list[1].atom})
 		}
 	}
 	return items, nil
