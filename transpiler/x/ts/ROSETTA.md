@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated TypeScript code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/TypeScript`.
-Last updated: 2025-07-28 01:02 UTC
+Last updated: 2025-07-28 01:29 UTC
 
 ## Rosetta Golden Test Checklist (467/467)
 | Index | Name | Status | Duration | Memory |
@@ -457,7 +457,7 @@ Last updated: 2025-07-28 01:02 UTC
 | 448 | ftp | ✓ | 519µs | 128.0 KB |
 | 449 | gamma-function | ✓ | 704µs | 256.0 KB |
 | 450 | general-fizzbuzz | ✓ | 575µs |  |
-| 451 | generic-swap | ✓ | 330µs |  |
+| 451 | generic-swap | ✓ | 346µs |  |
 | 452 | get-system-command-output | ✓ | 281µs | 128.0 KB |
 | 453 | giuga-numbers | ✓ | 447µs | 128.0 KB |
 | 454 | globally-replace-text-in-several-files | ✓ | 283µs | 128.0 KB |
