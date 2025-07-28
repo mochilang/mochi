@@ -12,6 +12,17 @@ import (
 	"mochi/transpiler/meta"
 )
 
+var traceNames map[string]bool
+
+func replaceOutsideQuotes(s, name, repl string) string {
+	parts := strings.Split(s, "\"")
+	re := regexp.MustCompile(`\b` + name + `\b`)
+	for i := 0; i < len(parts); i += 2 {
+		parts[i] = re.ReplaceAllString(parts[i], repl)
+	}
+	return strings.Join(parts, "\"")
+}
+
 // Field describes a record field in a data declaration.
 type Field struct {
 	Name string `json:"name"`
@@ -385,6 +396,31 @@ func convertExpr(expr string) string {
 	expr = strings.TrimSpace(expr)
 	expr = fixFuncCalls(expr)
 	expr = trimOuterParens(expr)
+	if strings.HasPrefix(expr, "\\") && strings.Contains(expr, "->") {
+		idx := strings.Index(expr, "->")
+		params := strings.Fields(strings.TrimSpace(expr[1:idx]))
+		body := strings.TrimSpace(expr[idx+2:])
+		var b strings.Builder
+		b.WriteString("fun(")
+		for i, p := range params {
+			if i > 0 {
+				b.WriteString(", ")
+			}
+			b.WriteString(p)
+			b.WriteString(": int")
+		}
+		b.WriteString("): int => ")
+		b.WriteString(convertExpr(body))
+		return b.String()
+	}
+	if strings.HasPrefix(expr, "trace ") {
+		rest := strings.TrimSpace(strings.TrimPrefix(expr, "trace "))
+		if i := strings.Index(rest, " "); i != -1 {
+			msg := trimOuterParens(rest[:i])
+			val := strings.TrimSpace(rest[i+1:])
+			return "__trace(" + msg + ", " + convertExpr(val) + ")"
+		}
+	}
 	if strings.HasPrefix(expr, "if ") && strings.Contains(expr, " then ") && strings.Contains(expr, " else ") {
 		condEnd := strings.Index(expr, " then ")
 		elseIdx := strings.LastIndex(expr, " else ")
@@ -397,11 +433,11 @@ func convertExpr(expr string) string {
 	}
 	if strings.HasPrefix(expr, "fromEnum(") && strings.HasSuffix(expr, ")") {
 		inner := strings.TrimSuffix(strings.TrimPrefix(expr, "fromEnum("), ")")
-		return "int(" + convertExpr(inner) + ")"
+		return convertExpr(inner)
 	}
 	if strings.HasPrefix(expr, "fromEnum ") {
 		inner := strings.TrimSpace(strings.TrimPrefix(expr, "fromEnum "))
-		return "int(" + convertExpr(inner) + ")"
+		return convertExpr(inner)
 	}
 	if strings.HasPrefix(expr, "read ") && strings.Contains(expr, "::") {
 		parts := strings.SplitN(strings.TrimPrefix(expr, "read "), "::", 2)
@@ -492,6 +528,27 @@ func convertExpr(expr string) string {
 func convertItems(items []Item) []byte {
 	items = reorderVars(items)
 	var out strings.Builder
+	needTrace := false
+	traceNames = make(map[string]bool)
+	for _, it := range items {
+		if strings.Contains(it.Body, "trace ") {
+			needTrace = true
+			traceNames[it.Name] = true
+		}
+	}
+	if needTrace {
+		for i, it := range items {
+			if it.Kind == "print" || it.Kind == "json" {
+				for name := range traceNames {
+					items[i].Body = replaceOutsideQuotes(it.Body, name, name+"()")
+				}
+			}
+		}
+	}
+	if needTrace {
+		out.WriteString("fun __trace(msg: string, v: bool): bool {\n")
+		out.WriteString("  print(msg)\n  return v\n}\n")
+	}
 	for _, it := range items {
 		switch it.Kind {
 		case "print":
@@ -507,14 +564,20 @@ func convertItems(items []Item) []byte {
 			out.WriteString(it.Name)
 			var paramTypes []string
 			var retType string
+			var convBody string
 			if it.Type != "" {
 				paramTypes, retType = parseSigTypes(it.Type)
+				convBody = convertExpr(it.Body)
 			} else {
 				paramTypes = make([]string, len(it.Params))
 				for i := range paramTypes {
 					paramTypes[i] = "int"
 				}
+				convBody = convertExpr(it.Body)
 				retType = "int"
+				if strings.HasPrefix(strings.TrimSpace(convBody), "fun(") {
+					retType = "fun(int): int"
+				}
 			}
 			out.WriteByte('(')
 			for i, p := range it.Params {
@@ -536,23 +599,31 @@ func convertItems(items []Item) []byte {
 				out.WriteString(" {}\n")
 			} else {
 				out.WriteString(" { return ")
-				out.WriteString(convertExpr(it.Body))
+				out.WriteString(convBody)
 				out.WriteString(" }\n")
 			}
 		case "var":
-			out.WriteString("let ")
-			out.WriteString(it.Name)
-			if it.Type != "" {
-				if typ, ok := parseVarSig(it.Type); ok {
-					out.WriteString(": ")
-					out.WriteString(typ)
-				}
-			}
-			if it.Body != "" {
-				out.WriteString(" = ")
+			if traceNames[it.Name] {
+				out.WriteString("fun ")
+				out.WriteString(it.Name)
+				out.WriteString("(): bool { return ")
 				out.WriteString(convertExpr(it.Body))
+				out.WriteString(" }\n")
+			} else {
+				out.WriteString("let ")
+				out.WriteString(it.Name)
+				if it.Type != "" {
+					if typ, ok := parseVarSig(it.Type); ok {
+						out.WriteString(": ")
+						out.WriteString(typ)
+					}
+				}
+				if it.Body != "" {
+					out.WriteString(" = ")
+					out.WriteString(convertExpr(it.Body))
+				}
+				out.WriteByte('\n')
 			}
-			out.WriteByte('\n')
 		case "for":
 			out.WriteString("for ")
 			out.WriteString(it.Name)
@@ -590,7 +661,9 @@ func convertItems(items []Item) []byte {
 	if out.Len() == 0 {
 		return nil
 	}
-	return []byte(out.String())
+	result := []byte(out.String())
+	traceNames = nil
+	return result
 }
 
 func parseSigTypes(sig string) ([]string, string) {
@@ -667,7 +740,9 @@ func parseVarSig(sig string) (string, bool) {
 
 // ConvertSource converts parsed Haskell items into Mochi source code.
 func ConvertSource(items []Item, original string) (string, error) {
-	src := convertItems(items)
+	dup := make([]Item, len(items))
+	copy(dup, items)
+	src := convertItems(dup)
 	if src == nil {
 		return "", fmt.Errorf("no output")
 	}
@@ -686,7 +761,9 @@ func ConvertSource(items []Item, original string) (string, error) {
 
 // Convert converts parsed Haskell items into a Mochi AST node.
 func Convert(items []Item, original string) (*ast.Node, error) {
-	src, err := ConvertSource(items, original)
+	dup := make([]Item, len(items))
+	copy(dup, items)
+	src, err := ConvertSource(dup, original)
 	if err != nil {
 		return nil, err
 	}
