@@ -105,7 +105,14 @@ func Parse(src string) (*Program, error) {
 	defer os.Remove(tmp.Name())
 
 	script := filepath.Join(root, "tools", "a2mochi", "x", "clj", "parse.clj")
-	cmd := exec.Command("clojure", script, tmp.Name())
+	cmd := exec.Command(
+		"clojure",
+		"-Sdeps",
+		"{:deps {org.clojure/data.json {:mvn/version \"2.5.0\"}}}",
+		"-M",
+		script,
+		tmp.Name(),
+	)
 	var out bytes.Buffer
 	var stderr bytes.Buffer
 	cmd.Stdout = &out
@@ -486,6 +493,39 @@ func cljToMochi(n sexprNode) string {
 						sb.WriteByte('\n')
 					}
 					sb.WriteString("}")
+					return sb.String()
+				}
+			}
+		case "for":
+			if len(v) >= 3 {
+				if bind, ok := v[1].([]sexprNode); ok && len(bind) >= 2 {
+					name := cljToMochi(bind[0])
+					coll := cljToMochi(bind[1])
+					var cond string
+					if len(bind) >= 4 {
+						if kw, ok := bind[2].(string); ok && kw == ":when" {
+							cond = cljToMochi(bind[3])
+						}
+					}
+					elem := cljToMochi(v[2])
+					var sb strings.Builder
+					sb.WriteString("(fun() {\n  let out = []\n  for ")
+					sb.WriteString(name)
+					sb.WriteString(" in ")
+					sb.WriteString(coll)
+					sb.WriteString(" {\n")
+					if cond != "" {
+						sb.WriteString("    if ")
+						sb.WriteString(cond)
+						sb.WriteString(" { out.append(")
+						sb.WriteString(elem)
+						sb.WriteString(") }\n")
+					} else {
+						sb.WriteString("    out.append(")
+						sb.WriteString(elem)
+						sb.WriteString(")\n")
+					}
+					sb.WriteString("  }\n  out\n})()")
 					return sb.String()
 				}
 			}
