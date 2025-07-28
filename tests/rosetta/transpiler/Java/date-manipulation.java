@@ -1,5 +1,5 @@
 public class Main {
-    static java.util.Map<String,Integer> months = new java.util.LinkedHashMap<String, Integer>(java.util.Map.ofEntries(java.util.Map.entry("January", 1), java.util.Map.entry("February", 2), java.util.Map.entry("March", 3), java.util.Map.entry("April", 4), java.util.Map.entry("May", 5), java.util.Map.entry("June", 6), java.util.Map.entry("July", 7), java.util.Map.entry("August", 8), java.util.Map.entry("September", 9), java.util.Map.entry("October", 10), java.util.Map.entry("November", 11), java.util.Map.entry("December", 12)));
+    static java.util.Map<String,Integer> months = ((java.util.Map<String,Integer>)(new java.util.LinkedHashMap<String, Integer>(java.util.Map.ofEntries(java.util.Map.entry("January", 1), java.util.Map.entry("February", 2), java.util.Map.entry("March", 3), java.util.Map.entry("April", 4), java.util.Map.entry("May", 5), java.util.Map.entry("June", 6), java.util.Map.entry("July", 7), java.util.Map.entry("August", 8), java.util.Map.entry("September", 9), java.util.Map.entry("October", 10), java.util.Map.entry("November", 11), java.util.Map.entry("December", 12)))));
 
     static boolean isLeap(int y) {
         if (Math.floorMod(y, 400) == 0) {
@@ -107,14 +107,14 @@ public class Main {
     static int parseIntStr(String str) {
         int i = 0;
         boolean neg = false;
-        if (str.length() > 0 && (str.substring(0, 1).equals("-"))) {
+        if (_runeLen(str) > 0 && (_substr(str, 0, 1).equals("-"))) {
             neg = true;
             i = 1;
         }
         int n = 0;
-        java.util.Map<String,Integer> digits = new java.util.LinkedHashMap<String, Integer>(java.util.Map.ofEntries(java.util.Map.entry("0", 0), java.util.Map.entry("1", 1), java.util.Map.entry("2", 2), java.util.Map.entry("3", 3), java.util.Map.entry("4", 4), java.util.Map.entry("5", 5), java.util.Map.entry("6", 6), java.util.Map.entry("7", 7), java.util.Map.entry("8", 8), java.util.Map.entry("9", 9)));
-        while (i < str.length()) {
-            n = n * 10 + (int)(((int)digits.getOrDefault(str.substring(i, i + 1), 0)));
+        java.util.Map<String,Integer> digits = ((java.util.Map<String,Integer>)(new java.util.LinkedHashMap<String, Integer>(java.util.Map.ofEntries(java.util.Map.entry("0", 0), java.util.Map.entry("1", 1), java.util.Map.entry("2", 2), java.util.Map.entry("3", 3), java.util.Map.entry("4", 4), java.util.Map.entry("5", 5), java.util.Map.entry("6", 6), java.util.Map.entry("7", 7), java.util.Map.entry("8", 8), java.util.Map.entry("9", 9)))));
+        while (i < _runeLen(str)) {
+            n = n * 10 + (int)(((int)(digits).get(_substr(str, i, i + 1))));
             i = i + 1;
         }
         if (neg) {
@@ -125,8 +125,8 @@ public class Main {
 
     static int indexOf(String s, String ch) {
         int i = 0;
-        while (i < s.length()) {
-            if ((s.substring(i, i + 1).equals(ch))) {
+        while (i < _runeLen(s)) {
+            if ((_substr(s, i, i + 1).equals(ch))) {
                 return i;
             }
             i = i + 1;
@@ -136,9 +136,9 @@ public class Main {
 
     static int[] parseTime(String s) {
         int c = ((Number)(s.indexOf(":"))).intValue();
-        int h = Integer.parseInt(s.substring(0, c));
-        int mi = Integer.parseInt(s.substring(c + 1, c + 3));
-        String ampm = s.substring(s.length() - 2, s.length());
+        int h = Integer.parseInt(_substr(s, 0, c));
+        int mi = Integer.parseInt(_substr(s, c + 1, c + 3));
+        String ampm = _substr(s, _runeLen(s) - 2, _runeLen(s));
         int hh = h;
         if ((ampm.equals("pm")) && h != 12) {
             hh = h + 12;
@@ -152,13 +152,13 @@ public class Main {
     static void main() {
         String input = "March 7 2009 7:30pm EST";
         System.out.println("Input:              " + input);
-        Object parts = new Object[]{};
+        String[] parts = new String[]{};
         String cur = "";
         int i = 0;
-        while (i < input.length()) {
-            String ch = input.substring(i, i + 1);
+        while (i < _runeLen(input)) {
+            String ch = _substr(input, i, i + 1);
             if ((ch.equals(" "))) {
-                if (cur.length() > 0) {
+                if (_runeLen(cur) > 0) {
                     parts = java.util.stream.Stream.concat(java.util.Arrays.stream(parts), java.util.stream.Stream.of(cur)).toArray(String[]::new);
                     cur = "";
                 }
@@ -167,19 +167,19 @@ public class Main {
             }
             i = i + 1;
         }
-        if (cur.length() > 0) {
+        if (_runeLen(cur) > 0) {
             parts = java.util.stream.Stream.concat(java.util.Arrays.stream(parts), java.util.stream.Stream.of(cur)).toArray(String[]::new);
         }
-        int month = (int)(((int)months.getOrDefault(parts[0], 0)));
+        int month = (int)(((int)(months).get(parts[0])));
         int day = Integer.parseInt(parts[1]);
         int year = Integer.parseInt(parts[2]);
         int[] tm = parseTime(parts[3]);
         int hour = tm[0];
         int minute = tm[1];
         String tz = parts[4];
-        java.util.Map<String,Integer> zoneOffsets = new java.util.LinkedHashMap<String, Integer>(java.util.Map.ofEntries(java.util.Map.entry("EST", -18000), java.util.Map.entry("EDT", -14400), java.util.Map.entry("MST", -25200)));
+        java.util.Map<String,Integer> zoneOffsets = ((java.util.Map<String,Integer>)(new java.util.LinkedHashMap<String, Integer>(java.util.Map.ofEntries(java.util.Map.entry("EST", -18000), java.util.Map.entry("EDT", -14400), java.util.Map.entry("MST", -25200)))));
         int local = epochSeconds(year, month, day, hour, minute);
-        int utc = local - (int)(((int)zoneOffsets.getOrDefault(tz, 0)));
+        int utc = local - (int)(((int)(zoneOffsets).get(tz)));
         int utc12 = utc + 43200;
         int startDST = epochSeconds(2009, 3, 8, 7, 0);
         int offEast = -18000;
@@ -232,5 +232,15 @@ public class Main {
         Runtime rt = Runtime.getRuntime();
         rt.gc();
         return rt.totalMemory() - rt.freeMemory();
+    }
+
+    static int _runeLen(String s) {
+        return s.codePointCount(0, s.length());
+    }
+
+    static String _substr(String s, int i, int j) {
+        int start = s.offsetByCodePoints(0, i);
+        int end = s.offsetByCodePoints(0, j);
+        return s.substring(start, end);
     }
 }

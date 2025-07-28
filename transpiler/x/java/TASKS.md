@@ -1,4 +1,134 @@
-## Progress (2025-07-28 10:37 +0700)
+## Progress (2025-07-28 11:14 +0700)
+- pascal transpiler: add failing dijkstra case (07c40fc178)
+
+- pascal transpiler: add failing dijkstra case (07c40fc178)
+
+- pascal transpiler: add failing dijkstra case (07c40fc178)
+
+- pascal transpiler: add failing dijkstra case (07c40fc178)
+
+- pascal transpiler: add failing dijkstra case (07c40fc178)
+
+- pascal transpiler: add failing dijkstra case (07c40fc178)
+
+- pascal transpiler: add failing dijkstra case (07c40fc178)
+
+- pascal transpiler: add failing dijkstra case (07c40fc178)
+
+- pascal transpiler: add failing dijkstra case (07c40fc178)
+
+- pascal transpiler: add failing dijkstra case (07c40fc178)
+
+- pascal transpiler: add failing dijkstra case (07c40fc178)
+
+- pascal transpiler: add failing dijkstra case (07c40fc178)
+
+- pascal transpiler: add failing dijkstra case (07c40fc178)
+
+- pascal transpiler: add failing dijkstra case (07c40fc178)
+
+- pascal transpiler: add failing dijkstra case (07c40fc178)
+
+- pascal transpiler: add failing dijkstra case (07c40fc178)
+
+- pascal transpiler: add failing dijkstra case (07c40fc178)
+
+- pascal transpiler: add failing dijkstra case (07c40fc178)
+
+- pascal transpiler: add failing dijkstra case (07c40fc178)
+
+- pascal transpiler: add failing dijkstra case (07c40fc178)
+
+- pascal transpiler: add failing dijkstra case (07c40fc178)
+
+- pascal transpiler: add failing dijkstra case (07c40fc178)
+
+- pascal transpiler: add failing dijkstra case (07c40fc178)
+
+- pascal transpiler: add failing dijkstra case (07c40fc178)
+
+- pascal transpiler: add failing dijkstra case (07c40fc178)
+
+- pascal transpiler: add failing dijkstra case (07c40fc178)
+
+- pascal transpiler: add failing dijkstra case (07c40fc178)
+
+- pascal transpiler: add failing dijkstra case (07c40fc178)
+
+- pascal transpiler: add failing dijkstra case (07c40fc178)
+
+- pascal transpiler: add failing dijkstra case (07c40fc178)
+
+- pascal transpiler: add failing dijkstra case (07c40fc178)
+
+- pascal transpiler: add failing dijkstra case (07c40fc178)
+
+- pascal transpiler: add failing dijkstra case (07c40fc178)
+
+- pascal transpiler: add failing dijkstra case (07c40fc178)
+
+- pascal transpiler: add failing dijkstra case (07c40fc178)
+
+- pascal transpiler: add failing dijkstra case (07c40fc178)
+
+- pascal transpiler: add failing dijkstra case (07c40fc178)
+
+- pascal transpiler: add failing dijkstra case (07c40fc178)
+
+- pascal transpiler: add failing dijkstra case (07c40fc178)
+
+- pascal transpiler: add failing dijkstra case (07c40fc178)
+
+- pascal transpiler: add failing dijkstra case (07c40fc178)
+
+- pascal transpiler: add failing dijkstra case (07c40fc178)
+
+- pascal transpiler: add failing dijkstra case (07c40fc178)
+
+- pascal transpiler: add failing dijkstra case (07c40fc178)
+
+- pascal transpiler: add failing dijkstra case (07c40fc178)
+
+- pascal transpiler: add failing dijkstra case (07c40fc178)
+
+- pascal transpiler: add failing dijkstra case (07c40fc178)
+
+- pascal transpiler: add failing dijkstra case (07c40fc178)
+
+- pascal transpiler: add failing dijkstra case (07c40fc178)
+
+- pascal transpiler: add failing dijkstra case (07c40fc178)
+
+- pascal transpiler: add failing dijkstra case (07c40fc178)
+
+- pascal transpiler: add failing dijkstra case (07c40fc178)
+
+- pascal transpiler: add failing dijkstra case (07c40fc178)
+
+- pascal transpiler: add failing dijkstra case (07c40fc178)
+
+- pascal transpiler: add failing dijkstra case (07c40fc178)
+
+- pascal transpiler: add failing dijkstra case (07c40fc178)
+
+- pascal transpiler: add failing dijkstra case (07c40fc178)
+
+- pascal transpiler: add failing dijkstra case (07c40fc178)
+
+- pascal transpiler: add failing dijkstra case (07c40fc178)
+
+- pascal transpiler: add failing dijkstra case (07c40fc178)
+
+- pascal transpiler: add failing dijkstra case (07c40fc178)
+
+- pascal transpiler: add failing dijkstra case (07c40fc178)
+
+- pascal transpiler: add failing dijkstra case (07c40fc178)
+
+- pascal transpiler: add failing dijkstra case (07c40fc178)
+
+- pascal transpiler: add failing dijkstra case (07c40fc178)
+
 - java transpiler: fix map index assignment (da56f4ceaa)
 
 - java transpiler: fix map index assignment (da56f4ceaa)

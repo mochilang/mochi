@@ -1,4 +1,5 @@
 public class Main {
+
     static int[] digits(int n) {
         if (n == 0) {
             return new int[]{0};
@@ -21,7 +22,7 @@ public class Main {
     static String commatize(int n) {
         String s = String.valueOf(n);
         String out = "";
-        int i = s.length();
+        int i = _runeLen(s);
         while (i > 3) {
             out = "," + s.substring(i - 3, i) + out;
             i = i - 3;
@@ -58,11 +59,11 @@ public class Main {
         String[] parts = new String[]{};
         String cur = "";
         int i = 0;
-        while (i < s.length()) {
-            if (i + sep.length() <= s.length() && (s.substring(i, i + sep.length()).equals(sep))) {
+        while (i < _runeLen(s)) {
+            if (i + _runeLen(sep) <= _runeLen(s) && (_substr(s, i, i + _runeLen(sep)).equals(sep))) {
                 parts = java.util.stream.Stream.concat(java.util.Arrays.stream(parts), java.util.stream.Stream.of(cur)).toArray(String[]::new);
                 cur = "";
-                i = i + sep.length();
+                i = i + _runeLen(sep);
             } else {
                 cur = cur + s.substring(i, i + 1);
                 i = i + 1;
@@ -75,14 +76,14 @@ public class Main {
     static int parseIntStr(String str) {
         int i = 0;
         boolean neg = false;
-        if (str.length() > 0 && (str.substring(0, 1).equals("-"))) {
+        if (_runeLen(str) > 0 && (str.substring(0, 1).equals("-"))) {
             neg = true;
             i = 1;
         }
         int n = 0;
-        java.util.Map<String,Integer> digits = new java.util.LinkedHashMap<String, Integer>(java.util.Map.ofEntries(java.util.Map.entry("0", 0), java.util.Map.entry("1", 1), java.util.Map.entry("2", 2), java.util.Map.entry("3", 3), java.util.Map.entry("4", 4), java.util.Map.entry("5", 5), java.util.Map.entry("6", 6), java.util.Map.entry("7", 7), java.util.Map.entry("8", 8), java.util.Map.entry("9", 9)));
-        while (i < str.length()) {
-            n = n * 10 + (int)(((int)digits.getOrDefault(str.substring(i, i + 1), 0)));
+        java.util.Map<String,Integer> digits = ((java.util.Map<String,Integer>)(new java.util.LinkedHashMap<String, Integer>(java.util.Map.ofEntries(java.util.Map.entry("0", 0), java.util.Map.entry("1", 1), java.util.Map.entry("2", 2), java.util.Map.entry("3", 3), java.util.Map.entry("4", 4), java.util.Map.entry("5", 5), java.util.Map.entry("6", 6), java.util.Map.entry("7", 7), java.util.Map.entry("8", 8), java.util.Map.entry("9", 9)))));
+        while (i < _runeLen(str)) {
+            n = n * 10 + (int)(((int)(digits).get(str.substring(i, i + 1))));
             i = i + 1;
         }
         if (neg) {
@@ -93,7 +94,7 @@ public class Main {
 
     static String reverseStr(String s) {
         String out = "";
-        int i = s.length() - 1;
+        int i = _runeLen(s) - 1;
         while (i >= 0) {
             out = out + s.substring(i, i + 1);
             i = i - 1;
@@ -103,7 +104,7 @@ public class Main {
 
     static String pad(String s, int w) {
         String out = s;
-        while (out.length() < w) {
+        while (_runeLen(out) < w) {
             out = " " + out;
         }
         return out;
@@ -126,7 +127,7 @@ public class Main {
         for (int[] r : ranges) {
             int start = r[0];
             int end = r[1];
-            int numDigits = String.valueOf(start).length();
+            int numDigits = _runeLen(String.valueOf(start));
             int center = numDigits / 2;
             int i = start;
             while (i <= end) {
@@ -213,6 +214,7 @@ public class Main {
         {
             long _benchStart = _now();
             long _benchMem = _mem();
+            main();
             long _benchDuration = _now() - _benchStart;
             long _benchMemory = _mem() - _benchMem;
             System.out.println("{");
@@ -244,5 +246,15 @@ public class Main {
         Runtime rt = Runtime.getRuntime();
         rt.gc();
         return rt.totalMemory() - rt.freeMemory();
+    }
+
+    static int _runeLen(String s) {
+        return s.codePointCount(0, s.length());
+    }
+
+    static String _substr(String s, int i, int j) {
+        int start = s.offsetByCodePoints(0, i);
+        int end = s.offsetByCodePoints(0, j);
+        return s.substring(start, end);
     }
 }

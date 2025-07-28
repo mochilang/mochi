@@ -27,12 +27,24 @@ public class Main {
             w = gzipWriter(w);
         }
         w = tarWriter(w);
-        java.util.Map<String,Object> hdr = new java.util.LinkedHashMap<String, Object>(java.util.Map.ofEntries(java.util.Map.entry("Name", filename), java.util.Map.entry("Mode", 432), java.util.Map.entry("Size", data.length()), java.util.Map.entry("ModTime", _now()), java.util.Map.entry("Typeflag", 0), java.util.Map.entry("Uname", "guest"), java.util.Map.entry("Gname", "guest")));
+        java.util.Map<String,Object> hdr = ((java.util.Map<String,Object>)(new java.util.LinkedHashMap<String, Object>(java.util.Map.ofEntries(java.util.Map.entry("Name", filename), java.util.Map.entry("Mode", 432), java.util.Map.entry("Size", _runeLen(data)), java.util.Map.entry("ModTime", _now()), java.util.Map.entry("Typeflag", 0), java.util.Map.entry("Uname", "guest"), java.util.Map.entry("Gname", "guest")))));
         tarWriteHeader(w, hdr);
         tarWrite(w, data);
     }
     public static void main(String[] args) {
-        main();
+        {
+            long _benchStart = _now();
+            long _benchMem = _mem();
+            main();
+            long _benchDuration = _now() - _benchStart;
+            long _benchMemory = _mem() - _benchMem;
+            System.out.println("{");
+            System.out.println("  \"duration_us\": " + _benchDuration + ",");
+            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
+            System.out.println("  \"name\": \"main\"");
+            System.out.println("}");
+            return;
+        }
     }
 
     static boolean _nowSeeded = false;
@@ -49,5 +61,15 @@ public class Main {
             return _nowSeed;
         }
         return (int)(System.nanoTime() / 1000);
+    }
+
+    static long _mem() {
+        Runtime rt = Runtime.getRuntime();
+        rt.gc();
+        return rt.totalMemory() - rt.freeMemory();
+    }
+
+    static int _runeLen(String s) {
+        return s.codePointCount(0, s.length());
     }
 }

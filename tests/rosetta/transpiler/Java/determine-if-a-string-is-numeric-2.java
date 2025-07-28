@@ -1,7 +1,7 @@
 public class Main {
 
     static boolean isInt(String s) {
-        if (s.length() == 0) {
+        if (_runeLen(s) == 0) {
             return false;
         }
         for (int _i = 0; _i < s.length(); _i++) {
@@ -60,5 +60,9 @@ public class Main {
         Runtime rt = Runtime.getRuntime();
         rt.gc();
         return rt.totalMemory() - rt.freeMemory();
+    }
+
+    static int _runeLen(String s) {
+        return s.codePointCount(0, s.length());
     }
 }

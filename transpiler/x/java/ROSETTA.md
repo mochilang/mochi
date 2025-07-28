@@ -1,9 +1,9 @@
 # Java Rosetta Transpiler Output
 
 Generated Java code for programs in `tests/rosetta/x/Mochi`. Each program has a `.java` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
-Last updated: 2025-07-28 10:50 GMT+7
+Last updated: 2025-07-28 11:43 GMT+7
 
-## Rosetta Checklist (259/493)
+## Rosetta Checklist (263/493)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 23.0ms | 245.84KB |
@@ -280,16 +280,16 @@ Last updated: 2025-07-28 10:50 GMT+7
 | 272 | cyclops-numbers | ✓ | 16.0ms | 0B |
 | 273 | damm-algorithm | ✓ | 44.0ms | 79.77KB |
 | 274 | date-format | ✓ | 56.0ms | 103.55KB |
-| 275 | date-manipulation |   |  |  |
+| 275 | date-manipulation | ✓ | 54.0ms | 126.62KB |
 | 276 | day-of-the-week | ✓ | 39.0ms | 69.08KB |
 | 277 | de-bruijn-sequences | ✓ | 1.22s | 105.70KB |
-| 278 | deal-cards-for-freecell |   |  |  |
+| 278 | deal-cards-for-freecell | ✓ | 49.0ms | 92.83KB |
 | 279 | death-star | ✓ | 65.0ms | 39.51KB |
 | 280 | deceptive-numbers | ✓ |  |  |
 | 281 | deconvolution-1d-2 | ✓ | 43.0ms | 65.21KB |
 | 282 | deconvolution-1d-3 | ✓ | 46.0ms | 95.74KB |
 | 283 | deconvolution-1d | ✓ | 35.0ms | 65.21KB |
-| 284 | deepcopy-1 |   |  |  |
+| 284 | deepcopy-1 | ✓ |  |  |
 | 285 | define-a-primitive-data-type | ✓ | 29.0ms | 39.78KB |
 | 286 | delegates |   |  |  |
 | 287 | demings-funnel | ✓ | 60.0ms | 109.08KB |
@@ -318,7 +318,7 @@ Last updated: 2025-07-28 10:50 GMT+7
 | 310 | display-an-outline-as-a-nested-table | ✓ | 56.0ms | 110.75KB |
 | 311 | distance-and-bearing | ✓ | 54.0ms | 103.98KB |
 | 312 | distributed-programming | ✓ | 43.0ms | 77.41KB |
-| 313 | diversity-prediction-theorem |   |  |  |
+| 313 | diversity-prediction-theorem | ✓ |  |  |
 | 314 | documentation |   |  |  |
 | 315 | doomsday-rule |   |  |  |
 | 316 | dot-product |   |  |  |

@@ -14,7 +14,7 @@ public class Main {
     }
 
     static boolean isCusip(String s) {
-        if (s.length() != 9) {
+        if (_runeLen(s) != 9) {
             return false;
         }
         int sum = 0;
@@ -85,5 +85,9 @@ public class Main {
         Runtime rt = Runtime.getRuntime();
         rt.gc();
         return rt.totalMemory() - rt.freeMemory();
+    }
+
+    static int _runeLen(String s) {
+        return s.codePointCount(0, s.length());
     }
 }

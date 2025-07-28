@@ -79,9 +79,9 @@ public class Main {
 
     static void main() {
         String shades = ".:!*oe&#%@";
-        V3 light = normalize(new V3(-50.0, 30.0, 50.0));
+        V3 light = normalize(new V3((-50.0), 30.0, 50.0));
         Sphere pos = new Sphere(20.0, 20.0, 0.0, 20.0);
-        Sphere neg = new Sphere(1.0, 1.0, -6.0, 20.0);
+        Sphere neg = new Sphere(1.0, 1.0, (-6.0), 20.0);
         int yi = 0;
         while (yi <= 40) {
             double y = (((Number)(yi)).doubleValue()) + 0.5;
@@ -123,14 +123,14 @@ public class Main {
                 }
                 vec = normalize(vec);
                 double b = powf(dot(light, vec), 2) + 0.5;
-                int intensity = ((Number)(((1.0 - b) * (((Number)(shades.length())).doubleValue())))).intValue();
+                int intensity = ((Number)(((1.0 - b) * (((Number)(_runeLen(shades))).doubleValue())))).intValue();
                 if (intensity < 0) {
                     intensity = 0;
                 }
-                if (intensity >= shades.length()) {
-                    intensity = shades.length() - 1;
+                if (intensity >= _runeLen(shades)) {
+                    intensity = _runeLen(shades) - 1;
                 }
-                line = line + shades.substring(intensity, intensity + 1);
+                line = line + _substr(shades, intensity, intensity + 1);
                 xi = xi + 1;
             }
             System.out.println(line);
@@ -173,5 +173,15 @@ public class Main {
         Runtime rt = Runtime.getRuntime();
         rt.gc();
         return rt.totalMemory() - rt.freeMemory();
+    }
+
+    static int _runeLen(String s) {
+        return s.codePointCount(0, s.length());
+    }
+
+    static String _substr(String s, int i, int j) {
+        int start = s.offsetByCodePoints(0, i);
+        int end = s.offsetByCodePoints(0, j);
+        return s.substring(start, end);
     }
 }

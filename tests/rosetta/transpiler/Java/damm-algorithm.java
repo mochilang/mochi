@@ -2,11 +2,11 @@ public class Main {
 
     static boolean damm(String s) {
         int[][] tbl = new int[][]{new int[]{0, 3, 1, 7, 5, 9, 8, 6, 4, 2}, new int[]{7, 0, 9, 2, 1, 5, 4, 8, 6, 3}, new int[]{4, 2, 0, 6, 8, 7, 1, 3, 5, 9}, new int[]{1, 7, 5, 0, 9, 8, 3, 4, 2, 6}, new int[]{6, 1, 2, 3, 0, 4, 5, 9, 7, 8}, new int[]{3, 6, 7, 4, 2, 0, 9, 5, 8, 1}, new int[]{5, 8, 6, 9, 7, 2, 0, 1, 3, 4}, new int[]{8, 9, 4, 5, 3, 6, 2, 0, 1, 7}, new int[]{9, 4, 3, 8, 6, 1, 7, 2, 0, 5}, new int[]{2, 5, 8, 1, 4, 3, 6, 7, 9, 0}};
-        java.util.Map<String,Integer> digits = new java.util.LinkedHashMap<String, Integer>(java.util.Map.ofEntries(java.util.Map.entry("0", 0), java.util.Map.entry("1", 1), java.util.Map.entry("2", 2), java.util.Map.entry("3", 3), java.util.Map.entry("4", 4), java.util.Map.entry("5", 5), java.util.Map.entry("6", 6), java.util.Map.entry("7", 7), java.util.Map.entry("8", 8), java.util.Map.entry("9", 9)));
+        java.util.Map<String,Integer> digits = ((java.util.Map<String,Integer>)(new java.util.LinkedHashMap<String, Integer>(java.util.Map.ofEntries(java.util.Map.entry("0", 0), java.util.Map.entry("1", 1), java.util.Map.entry("2", 2), java.util.Map.entry("3", 3), java.util.Map.entry("4", 4), java.util.Map.entry("5", 5), java.util.Map.entry("6", 6), java.util.Map.entry("7", 7), java.util.Map.entry("8", 8), java.util.Map.entry("9", 9)))));
         int interim = 0;
         int i = 0;
-        while (i < s.length()) {
-            int digit = (int)(((int)digits.getOrDefault(s.substring(i, i + 1), 0)));
+        while (i < _runeLen(s)) {
+            int digit = (int)(((int)(digits).get(s.substring(i, i + 1))));
             int[] row = tbl[interim];
             interim = row[digit];
             i = i + 1;
@@ -15,7 +15,7 @@ public class Main {
     }
 
     static String padLeft(String s, int width) {
-        while (s.length() < width) {
+        while (_runeLen(s) < width) {
             s = " " + s;
         }
         return s;
@@ -62,5 +62,9 @@ public class Main {
         Runtime rt = Runtime.getRuntime();
         rt.gc();
         return rt.totalMemory() - rt.freeMemory();
+    }
+
+    static int _runeLen(String s) {
+        return s.codePointCount(0, s.length());
     }
 }

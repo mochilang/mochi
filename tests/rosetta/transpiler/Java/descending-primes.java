@@ -35,7 +35,7 @@ public class Main {
 
     static String pad(int n, int width) {
         String s = String.valueOf(n);
-        while (s.length() < width) {
+        while (_runeLen(s) < width) {
             s = " " + s;
         }
         return s;
@@ -48,13 +48,13 @@ public class Main {
             while (i < primes.length) {
                 line = line + String.valueOf(pad(primes[i], 8)) + " ";
                 if (Math.floorMod((i + 1), 10) == 0) {
-                    System.out.println(line.substring(0, line.length() - 1));
+                    System.out.println(_substr(line, 0, _runeLen(line) - 1));
                     line = "";
                 }
                 i = i + 1;
             }
-            if (line.length() > 0) {
-                System.out.println(line.substring(0, line.length() - 1));
+            if (_runeLen(line) > 0) {
+                System.out.println(_substr(line, 0, _runeLen(line) - 1));
             }
             long _benchDuration = _now() - _benchStart;
             long _benchMemory = _mem() - _benchMem;
@@ -87,5 +87,15 @@ public class Main {
         Runtime rt = Runtime.getRuntime();
         rt.gc();
         return rt.totalMemory() - rt.freeMemory();
+    }
+
+    static int _runeLen(String s) {
+        return s.codePointCount(0, s.length());
+    }
+
+    static String _substr(String s, int i, int j) {
+        int start = s.offsetByCodePoints(0, i);
+        int end = s.offsetByCodePoints(0, j);
+        return s.substring(start, end);
     }
 }

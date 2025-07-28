@@ -4,16 +4,16 @@ public class Main {
         int i = 0;
         String prev = "";
         String res = "";
-        int orig = s.length();
-        while (i < s.length()) {
-            String ch = s.substring(i, i + 1);
+        int orig = _runeLen(s);
+        while (i < _runeLen(s)) {
+            String ch = _substr(s, i, i + 1);
             if (!(ch.equals(prev))) {
                 res = res + ch;
                 prev = ch;
             }
             i = i + 1;
         }
-        return new String[]{res, orig, res.length()};
+        return new Object[]{res, orig, _runeLen(res)};
     }
 
     static void main() {
@@ -66,5 +66,15 @@ public class Main {
         Runtime rt = Runtime.getRuntime();
         rt.gc();
         return rt.totalMemory() - rt.freeMemory();
+    }
+
+    static int _runeLen(String s) {
+        return s.codePointCount(0, s.length());
+    }
+
+    static String _substr(String s, int i, int j) {
+        int start = s.offsetByCodePoints(0, i);
+        int end = s.offsetByCodePoints(0, j);
+        return s.substring(start, end);
     }
 }

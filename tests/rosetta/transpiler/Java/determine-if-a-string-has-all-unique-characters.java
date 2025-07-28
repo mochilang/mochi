@@ -2,8 +2,8 @@ public class Main {
 
     static int indexOf3(String s, String ch, int start) {
         int i = start;
-        while (i < s.length()) {
-            if ((s.substring(i, i + 1).equals(ch))) {
+        while (i < _runeLen(s)) {
+            if ((_substr(s, i, i + 1).equals(ch))) {
                 return i;
             }
             i = i + 1;
@@ -48,15 +48,15 @@ public class Main {
     }
 
     static void analyze(String s) {
-        int le = s.length();
+        int le = _runeLen(s);
         System.out.println("Analyzing \"" + s + "\" which has a length of " + String.valueOf(le) + ":");
         if (le > 1) {
             int i = 0;
             while (i < le - 1) {
                 int j = i + 1;
                 while (j < le) {
-                    if ((s.substring(j, j + 1).equals(s.substring(i, i + 1)))) {
-                        String ch = s.substring(i, i + 1);
+                    if ((_substr(s, j, j + 1).equals(_substr(s, i, i + 1)))) {
+                        String ch = _substr(s, i, i + 1);
                         System.out.println("  Not all characters in the string are unique.");
                         System.out.println("  '" + ch + "' (0x" + toHex(ord(ch)).toLowerCase() + ") is duplicated at positions " + String.valueOf(i + 1) + " and " + String.valueOf(j + 1) + ".\n");
                         return;
@@ -113,5 +113,15 @@ public class Main {
         Runtime rt = Runtime.getRuntime();
         rt.gc();
         return rt.totalMemory() - rt.freeMemory();
+    }
+
+    static int _runeLen(String s) {
+        return s.codePointCount(0, s.length());
+    }
+
+    static String _substr(String s, int i, int j) {
+        int start = s.offsetByCodePoints(0, i);
+        int end = s.offsetByCodePoints(0, j);
+        return s.substring(start, end);
     }
 }

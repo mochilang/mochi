@@ -2,8 +2,8 @@ public class Main {
 
     static int indexOf(String s, String ch) {
         int i = 0;
-        while (i < s.length()) {
-            if ((s.substring(i, i + 1).equals(ch))) {
+        while (i < _runeLen(s)) {
+            if ((_substr(s, i, i + 1).equals(ch))) {
                 return i;
             }
             i = i + 1;
@@ -102,5 +102,15 @@ public class Main {
         Runtime rt = Runtime.getRuntime();
         rt.gc();
         return rt.totalMemory() - rt.freeMemory();
+    }
+
+    static int _runeLen(String s) {
+        return s.codePointCount(0, s.length());
+    }
+
+    static String _substr(String s, int i, int j) {
+        int start = s.offsetByCodePoints(0, i);
+        int end = s.offsetByCodePoints(0, j);
+        return s.substring(start, end);
     }
 }

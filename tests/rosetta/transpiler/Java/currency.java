@@ -3,13 +3,13 @@ public class Main {
     static int parseIntDigits(String s) {
         int n = 0;
         int i = 0;
-        java.util.Map<String,Integer> digits = new java.util.LinkedHashMap<String, Integer>(java.util.Map.ofEntries(java.util.Map.entry("0", 0), java.util.Map.entry("1", 1), java.util.Map.entry("2", 2), java.util.Map.entry("3", 3), java.util.Map.entry("4", 4), java.util.Map.entry("5", 5), java.util.Map.entry("6", 6), java.util.Map.entry("7", 7), java.util.Map.entry("8", 8), java.util.Map.entry("9", 9)));
-        while (i < s.length()) {
+        java.util.Map<String,Integer> digits = ((java.util.Map<String,Integer>)(new java.util.LinkedHashMap<String, Integer>(java.util.Map.ofEntries(java.util.Map.entry("0", 0), java.util.Map.entry("1", 1), java.util.Map.entry("2", 2), java.util.Map.entry("3", 3), java.util.Map.entry("4", 4), java.util.Map.entry("5", 5), java.util.Map.entry("6", 6), java.util.Map.entry("7", 7), java.util.Map.entry("8", 8), java.util.Map.entry("9", 9)))));
+        while (i < _runeLen(s)) {
             String ch = s.substring(i, i + 1);
             if (!(Boolean)(digits.containsKey(ch))) {
                 return 0;
             }
-            n = n * 10 + (int)(((int)digits.getOrDefault(ch, 0)));
+            n = n * 10 + (int)(((int)(digits).get(ch)));
             i = i + 1;
         }
         return n;
@@ -17,16 +17,16 @@ public class Main {
 
     static int parseDC(String s) {
         boolean neg = false;
-        if (s.length() > 0 && (s.substring(0, 1).equals("-"))) {
+        if (_runeLen(s) > 0 && (s.substring(0, 1).equals("-"))) {
             neg = true;
-            s = s.substring(1, s.length());
+            s = _substr(s, 1, _runeLen(s));
         }
         int dollars = 0;
         int cents = 0;
         int i = 0;
         boolean seenDot = false;
         int centDigits = 0;
-        while (i < s.length()) {
+        while (i < _runeLen(s)) {
             String ch = s.substring(i, i + 1);
             if ((ch.equals("."))) {
                 seenDot = true;
@@ -56,16 +56,16 @@ public class Main {
 
     static int parseRate(String s) {
         boolean neg = false;
-        if (s.length() > 0 && (s.substring(0, 1).equals("-"))) {
+        if (_runeLen(s) > 0 && (s.substring(0, 1).equals("-"))) {
             neg = true;
-            s = s.substring(1, s.length());
+            s = _substr(s, 1, _runeLen(s));
         }
         int whole = 0;
         int frac = 0;
         int digits = 0;
         boolean seenDot = false;
         int i = 0;
-        while (i < s.length()) {
+        while (i < _runeLen(s)) {
             String ch = s.substring(i, i + 1);
             if ((ch.equals("."))) {
                 seenDot = true;
@@ -102,7 +102,7 @@ public class Main {
         }
         int c = Math.floorMod(n, 100);
         String cstr = String.valueOf(c);
-        if (cstr.length() == 1) {
+        if (_runeLen(cstr) == 1) {
             cstr = "0" + cstr;
         }
         return String.valueOf(d) + "." + cstr;
@@ -118,7 +118,7 @@ public class Main {
 
     static String padLeft(String s, int n) {
         String out = s;
-        while (out.length() < n) {
+        while (_runeLen(out) < n) {
             out = " " + out;
         }
         return out;
@@ -171,5 +171,15 @@ public class Main {
         Runtime rt = Runtime.getRuntime();
         rt.gc();
         return rt.totalMemory() - rt.freeMemory();
+    }
+
+    static int _runeLen(String s) {
+        return s.codePointCount(0, s.length());
+    }
+
+    static String _substr(String s, int i, int j) {
+        int start = s.offsetByCodePoints(0, i);
+        int end = s.offsetByCodePoints(0, j);
+        return s.substring(start, end);
     }
 }
