@@ -51,6 +51,10 @@ func TestConvert_Golden(t *testing.T) {
 		"tail_recursion":    true,
 		"binary_precedence": true,
 		"avg_builtin":       true,
+		"fun_call":          true,
+		"for_loop":          true,
+		"len_builtin":       true,
+		"bool_chain":        true,
 	}
 
 	outDir := filepath.Join(root, "tests/a2mochi/x/zig")

@@ -140,6 +140,10 @@ func convertFunction(lines []string) string {
 			break
 		}
 		t = strings.TrimSuffix(t, ";")
+		if p := extractPrint(t); p != "" {
+			b.WriteString("  print(" + p + ")\n")
+			continue
+		}
 		if strings.HasPrefix(t, "if (") && strings.HasSuffix(t, ") {") {
 			cond := strings.TrimSuffix(strings.TrimPrefix(t, "if ("), ") {")
 			b.WriteString("  if " + cond + " {\n")
@@ -157,7 +161,50 @@ func convertFunction(lines []string) string {
 	return b.String()
 }
 
-var printRE = regexp.MustCompile(`print\("\{[^}]+\}\\n",\s*\.\{(.*)\}\);`)
+func convertLoop(lines []string) string {
+	first := strings.TrimSpace(lines[0])
+	open := strings.Index(first, "(")
+	close := strings.Index(first, ")")
+	if open < 0 || close < open {
+		return ""
+	}
+	rng := strings.TrimSpace(first[open+1 : close])
+	rest := first[close+1:]
+	p1 := strings.Index(rest, "|")
+	if p1 < 0 {
+		return ""
+	}
+	p2 := strings.Index(rest[p1+1:], "|")
+	if p2 < 0 {
+		return ""
+	}
+	varName := strings.TrimSpace(rest[p1+1 : p1+1+p2])
+
+	var b strings.Builder
+	fmt.Fprintf(&b, "for %s in %s {\n", varName, rng)
+	for i := 1; i < len(lines); i++ {
+		t := strings.TrimSpace(lines[i])
+		if i == len(lines)-1 && t == "}" {
+			break
+		}
+		if p := extractPrint(t); p != "" {
+			b.WriteString("  print(" + p + ")\n")
+			continue
+		}
+		t = strings.TrimSuffix(t, ";")
+		if t == "}" {
+			b.WriteString("}\n")
+			continue
+		}
+		b.WriteString("  ")
+		b.WriteString(t)
+		b.WriteByte('\n')
+	}
+	b.WriteString("}\n")
+	return b.String()
+}
+
+var printRE = regexp.MustCompile(`print\("\{[^}]+\}\\n",\s*\.\{(.*)\}\)`)
 
 func extractPrint(line string) string {
 	m := printRE.FindStringSubmatch(strings.TrimSpace(line))
@@ -185,6 +232,18 @@ func translate(src string) (string, error) {
 					out.WriteString("print(" + p + ")\n")
 				}
 			}
+			continue
+		}
+		if strings.HasPrefix(line, "for (") && strings.Contains(line, "|") {
+			brace := strings.Count(line, "{") - strings.Count(line, "}")
+			loopLines := []string{line}
+			for brace > 0 && i+1 < len(lines) {
+				i++
+				l := lines[i]
+				loopLines = append(loopLines, l)
+				brace += strings.Count(l, "{") - strings.Count(l, "}")
+			}
+			out.WriteString(convertLoop(loopLines))
 			continue
 		}
 		if strings.HasPrefix(line, "fn ") || strings.HasPrefix(line, "pub fn ") {
