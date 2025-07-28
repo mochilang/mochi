@@ -68,6 +68,16 @@ type Program struct {
 
 type Stmt interface{ emit(io.Writer) }
 
+type StmtList []Stmt
+
+func (s StmtList) emit(w io.Writer) {
+	for _, st := range s {
+		if st != nil {
+			st.emit(w)
+		}
+	}
+}
+
 type Expr interface{ emit(io.Writer) }
 
 // LetExpr represents a "let" expression with local bindings.
@@ -1322,6 +1332,7 @@ func header() string {
 	hdr += "(define (lower s) (string-downcase s))\n"
 	hdr += "(define (sublist lst start end)\n  (if (string? lst)\n      (substring lst start end)\n      (take (drop lst start) (- end start))))\n\n"
 	hdr += "(define (pad-start s width ch)\n  (let ([s (format \"~a\" s)])\n    (if (< (string-length s) width)\n        (string-append (make-string (- width (string-length s)) (string-ref ch 0)) s)\n        s)))\n"
+	hdr += "(define (index-of s ch)\n  (let loop ([i 0])\n    (cond [(>= i (string-length s)) -1]\n          [(string=? (substring s i (add1 i)) ch) i]\n          [else (loop (add1 i))])))\n"
 	hdr += "(define (_repeat s n)\n  (cond\n    [(string? s) (apply string-append (make-list (int n) s))]\n    [(list? s) (apply append (make-list (int n) s))]\n    [else '()]))\n"
 	hdr += "(define (_parse-int-str s base) (int (string->number s base)))\n"
 	hdr += "(define (_sha256 bs) (bytes->list (sha256-bytes (list->bytes bs))))\n"
@@ -1782,6 +1793,46 @@ func convertStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 		}
 		return up, nil
 	case st.Type != nil:
+		var fields []string
+		for _, mem := range st.Type.Members {
+			if mem.Field != nil {
+				fields = append(fields, mem.Field.Name)
+			}
+		}
+		var stmts []Stmt
+		for _, mem := range st.Type.Members {
+			if mem.Method != nil {
+				child := types.NewEnv(env)
+				child.SetVar("self", types.AnyType{}, true)
+				params := []string{"self"}
+				for _, p := range mem.Method.Params {
+					params = append(params, p.Name)
+					if env != nil {
+						var pt types.Type = types.AnyType{}
+						if p.Type != nil {
+							pt = types.ResolveTypeRef(p.Type, env)
+						}
+						child.SetVar(p.Name, pt, true)
+					}
+				}
+				for _, f := range fields {
+					child.SetVar(f, types.AnyType{}, true)
+				}
+				body, err := convertStatements(mem.Method.Body, child)
+				if err != nil {
+					return nil, err
+				}
+				var pre []Stmt
+				for _, f := range fields {
+					pre = append(pre, &LetStmt{Name: f, Expr: &IndexExpr{Target: &Name{Name: "self"}, Index: &StringLit{Value: f}, IsMap: true}})
+				}
+				body = append(pre, body...)
+				stmts = append(stmts, &FunDecl{Name: mem.Method.Name, Params: params, Body: body})
+			}
+		}
+		if len(stmts) > 0 {
+			return StmtList(stmts), nil
+		}
 		return nil, nil
 	case st.ExternVar != nil:
 		// extern variables are provided by imported modules
@@ -2124,13 +2175,13 @@ func convertBinary(b *parser.BinaryExpr, env *types.Env) (Expr, error) {
 		}
 		op := part.Op
 		currLeft := exprs[len(exprs)-1]
-		if (op == "==" || op == "!=") && (types.IsStringUnary(b.Left, env) || types.IsStringPostfix(part.Right, env)) {
+		if (op == "==" || op == "!=") && (types.IsStringType(leftType) || types.IsStringPostfix(part.Right, env)) {
 			if op == "==" {
 				op = "string=?"
 			} else {
 				op = "string!="
 			}
-			leftIsStr := types.IsStringUnary(b.Left, env)
+			leftIsStr := types.IsStringType(leftType)
 			rightIsStr := types.IsStringPostfix(part.Right, env)
 			if leftIsStr && !rightIsStr {
 				if n, ok := right.(*Name); ok {
@@ -2785,6 +2836,20 @@ func convertCall(c *parser.CallExpr, env *types.Env) (Expr, error) {
 		if len(args) == 3 {
 			// args[0]=string, args[1]=length, args[2]=pad string
 			return &CallExpr{Func: "pad-start", Args: args}, nil
+		}
+	case "indexOf":
+		if len(args) == 2 {
+			return &CallExpr{Func: "index-of", Args: args}, nil
+		}
+	case "split":
+		if len(args) == 2 {
+			return &CallExpr{Func: "string-split", Args: args}, nil
+		}
+	case "write":
+		if len(args) == 2 {
+			if n, ok := args[0].(*Name); ok && n.Name == "stdout" {
+				return &CallExpr{Func: "display", Args: []Expr{args[1]}}, nil
+			}
 		}
 	case "repeat":
 		if len(args) == 2 {
