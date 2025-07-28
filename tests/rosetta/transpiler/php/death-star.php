@@ -61,9 +61,9 @@ $__start = _now();
 };
   function main() {
   $shades = '.:!*oe&#%@';
-  $light = normalize(['x' => -50.0, 'y' => 30.0, 'z' => 50.0]);
+  $light = normalize(['x' => (-50.0), 'y' => 30.0, 'z' => 50.0]);
   $pos = ['cx' => 20.0, 'cy' => 20.0, 'cz' => 0.0, 'r' => 20.0];
-  $neg = ['cx' => 1.0, 'cy' => 1.0, 'cz' => -6.0, 'r' => 20.0];
+  $neg = ['cx' => 1.0, 'cy' => 1.0, 'cz' => (-6.0), 'r' => 20.0];
   $yi = 0;
   while ($yi <= 40) {
   $y = (floatval($yi)) + 0.5;

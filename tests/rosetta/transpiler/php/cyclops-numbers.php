@@ -36,8 +36,8 @@ function parseIntStr($s, $base = 10) {
 }
 function _intdiv($a, $b) {
     if (function_exists('bcdiv')) {
-        $sa = is_int($a) ? strval($a) : sprintf('%.0f', $a);
-        $sb = is_int($b) ? strval($b) : sprintf('%.0f', $b);
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
         return intval(bcdiv($sa, $sb, 0));
     }
     return intdiv($a, $b);
@@ -123,7 +123,7 @@ $__start = _now();
   $n = 0;
   $digits = ['0' => 0, '1' => 1, '2' => 2, '3' => 3, '4' => 4, '5' => 5, '6' => 6, '7' => 7, '8' => 8, '9' => 9];
   while ($i < strlen($str)) {
-  $n = $n * 10 + substr('digits', substr($str, $i, $i + 1 - $i), substr($str, $i, $i + 1 - $i) + 1 - substr($str, $i, $i + 1 - $i));
+  $n = $n * 10 . substr('digits', substr($str, $i, $i + 1 - $i), substr($str, $i, $i + 1 - $i) + 1 - substr($str, $i, $i + 1 - $i));
   $i = $i + 1;
 };
   if ($neg) {
@@ -261,6 +261,7 @@ The first 50 palindromic prime cyclops numbers are:'), PHP_EOL;
 
 First such number > 10 million is ' . commatize($fpp[0]) . ' at zero-based index ' . commatize($fpp[1])), PHP_EOL;
 };
+  main();
 $__end = _now();
 $__end_mem = memory_get_usage();
 $__duration = intdiv($__end - $__start, 1000);

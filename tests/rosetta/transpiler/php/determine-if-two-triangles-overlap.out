@@ -32,7 +32,7 @@ Triangle (1.0, 0.0), (2.0, 0.0), (1.0, 1.1)
 which have only a single corner in contact, if boundary points do not collide
 overlap
 {
-  "duration_us": 105,
+  "duration_us": 162,
   "memory_bytes": 96,
   "name": "main"
 }

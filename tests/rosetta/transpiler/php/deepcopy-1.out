@@ -3,7 +3,7 @@
 {0 nil [122 101 114 111] map[1:false]}
 {1 one [117 110 105 116] map[1:true]}
 {
-  "duration_us": 53,
+  "duration_us": 88,
   "memory_bytes": 968,
   "name": "main"
 }

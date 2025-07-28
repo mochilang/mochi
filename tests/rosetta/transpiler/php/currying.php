@@ -63,11 +63,11 @@ $__start = _now();
   echo rtrim('4³ = ' . _str($cube(4.0))), PHP_EOL;
   $a = ['value' => 2];
   $fn1 = null;
-$fn1 = function($b) use ($a, $pow2, $cube, $fn1) {
+$fn1 = function($b) use ($a, $fn1, $pow2, $cube) {
   return Foo_Method($a, $b);
 };
   $fn2 = null;
-$fn2 = function($f, $b) use ($a, $fn1, $fn2, $pow2, $cube) {
+$fn2 = function($f, $b) use ($fn1, $fn2, $pow2, $cube, $a) {
   return Foo_Method($f, $b);
 };
   echo rtrim('2 + 2 = ' . _str(Foo_Method($a, 2))), PHP_EOL;

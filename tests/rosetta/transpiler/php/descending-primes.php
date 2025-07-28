@@ -78,13 +78,13 @@ $__start = _now();
   while ($i < count($primes)) {
   $line = $line . pad($primes[$i], 8) . ' ';
   if (($i + 1) % 10 == 0) {
-  echo rtrim(json_encode(substr($line, 0, strlen($line) - 1 - 0), 1344)), PHP_EOL;
+  echo rtrim(substr($line, 0, strlen($line) - 1 - 0)), PHP_EOL;
   $line = '';
 }
   $i = $i + 1;
 }
   if (strlen($line) > 0) {
-  echo rtrim(json_encode(substr($line, 0, strlen($line) - 1 - 0), 1344)), PHP_EOL;
+  echo rtrim(substr($line, 0, strlen($line) - 1 - 0)), PHP_EOL;
 }
 $__end = _now();
 $__end_mem = memory_get_usage();

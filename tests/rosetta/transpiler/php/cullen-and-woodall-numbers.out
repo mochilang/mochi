@@ -10,7 +10,7 @@ First 5 Cullen primes (in terms of n):
 First 12 Woodall primes (in terms of n):
 2 3 6 30 75 81 115 123 249 362 384 462
 {
-  "duration_us": 124,
+  "duration_us": 269,
   "memory_bytes": 96,
   "name": "main"
 }
