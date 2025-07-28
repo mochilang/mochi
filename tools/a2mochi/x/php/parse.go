@@ -261,10 +261,130 @@ func simpleExpr(n pnode.Node) (string, bool) {
 		}
 		return fmt.Sprintf("%s(%s)", name, strings.Join(args, ", ")), true
 	case *expr.Ternary:
+		// Handle `cond ? "True" : "False"` -> cond
+		if v.IfTrue != nil && v.IfFalse != nil {
+			if t, ok1 := simpleExpr(v.IfTrue); ok1 && t == "\"True\"" {
+				if f, ok2 := simpleExpr(v.IfFalse); ok2 && f == "\"False\"" {
+					if cond, ok3 := simpleExpr(v.Condition); ok3 {
+						return cond, true
+					}
+				}
+			}
+		}
 		if v.IfFalse != nil {
 			return simpleExpr(v.IfFalse)
 		}
 		return "", false
+	case *binary.Concat:
+		left, ok1 := simpleExpr(v.Left)
+		if !ok1 {
+			return "", false
+		}
+		right, ok2 := simpleExpr(v.Right)
+		if !ok2 {
+			return "", false
+		}
+		return fmt.Sprintf("(%s + %s)", left, right), true
+	case *binary.Equal:
+		left, ok1 := simpleExpr(v.Left)
+		if !ok1 {
+			return "", false
+		}
+		right, ok2 := simpleExpr(v.Right)
+		if !ok2 {
+			return "", false
+		}
+		return fmt.Sprintf("(%s == %s)", left, right), true
+	case *binary.NotEqual:
+		left, ok1 := simpleExpr(v.Left)
+		if !ok1 {
+			return "", false
+		}
+		right, ok2 := simpleExpr(v.Right)
+		if !ok2 {
+			return "", false
+		}
+		return fmt.Sprintf("(%s != %s)", left, right), true
+	case *binary.Greater:
+		left, ok1 := simpleExpr(v.Left)
+		if !ok1 {
+			return "", false
+		}
+		right, ok2 := simpleExpr(v.Right)
+		if !ok2 {
+			return "", false
+		}
+		return fmt.Sprintf("(%s > %s)", left, right), true
+	case *binary.GreaterOrEqual:
+		left, ok1 := simpleExpr(v.Left)
+		if !ok1 {
+			return "", false
+		}
+		right, ok2 := simpleExpr(v.Right)
+		if !ok2 {
+			return "", false
+		}
+		return fmt.Sprintf("(%s >= %s)", left, right), true
+	case *binary.Smaller:
+		left, ok1 := simpleExpr(v.Left)
+		if !ok1 {
+			return "", false
+		}
+		right, ok2 := simpleExpr(v.Right)
+		if !ok2 {
+			return "", false
+		}
+		return fmt.Sprintf("(%s < %s)", left, right), true
+	case *binary.SmallerOrEqual:
+		left, ok1 := simpleExpr(v.Left)
+		if !ok1 {
+			return "", false
+		}
+		right, ok2 := simpleExpr(v.Right)
+		if !ok2 {
+			return "", false
+		}
+		return fmt.Sprintf("(%s <= %s)", left, right), true
+	case *binary.BooleanAnd:
+		left, ok1 := simpleExpr(v.Left)
+		if !ok1 {
+			return "", false
+		}
+		right, ok2 := simpleExpr(v.Right)
+		if !ok2 {
+			return "", false
+		}
+		return fmt.Sprintf("(%s && %s)", left, right), true
+	case *binary.LogicalAnd:
+		left, ok1 := simpleExpr(v.Left)
+		if !ok1 {
+			return "", false
+		}
+		right, ok2 := simpleExpr(v.Right)
+		if !ok2 {
+			return "", false
+		}
+		return fmt.Sprintf("(%s && %s)", left, right), true
+	case *binary.BooleanOr:
+		left, ok1 := simpleExpr(v.Left)
+		if !ok1 {
+			return "", false
+		}
+		right, ok2 := simpleExpr(v.Right)
+		if !ok2 {
+			return "", false
+		}
+		return fmt.Sprintf("(%s || %s)", left, right), true
+	case *binary.LogicalOr:
+		left, ok1 := simpleExpr(v.Left)
+		if !ok1 {
+			return "", false
+		}
+		right, ok2 := simpleExpr(v.Right)
+		if !ok2 {
+			return "", false
+		}
+		return fmt.Sprintf("(%s || %s)", left, right), true
 	case *binary.Plus:
 		left, ok1 := simpleExpr(v.Left)
 		if !ok1 {
