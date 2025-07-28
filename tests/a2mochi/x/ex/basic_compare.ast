@@ -1,9 +1,9 @@
 (program
   (fun main
-    (let a
+    (var a
       (binary - (int 10) (int 3))
     )
-    (let b
+    (var b
       (binary + (int 2) (int 2))
     )
     (call print (selector a))

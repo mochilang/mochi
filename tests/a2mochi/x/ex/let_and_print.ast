@@ -1,7 +1,7 @@
 (program
   (fun main
-    (let a (int 10))
-    (let b (int 20))
+    (var a (int 10))
+    (var b (int 20))
     (call print
       (binary + (selector a) (selector b))
     )
