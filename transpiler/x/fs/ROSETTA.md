@@ -2,7 +2,7 @@
 
 This file is auto-generated from rosetta tests.
 
-## Rosetta Golden Test Checklist (170/467)
+## Rosetta Golden Test Checklist (200/467)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 151µs | 41.3 KB |
@@ -169,14 +169,14 @@ This file is auto-generated from rosetta tests.
 | 162 | call-a-function-9 | ✓ | 33µs | 15.5 KB |
 | 163 | call-an-object-method-1 | ✓ | 20µs | 12.1 KB |
 | 164 | call-an-object-method-2 |   |  |  |
-| 165 | call-an-object-method-3 | ✓ | 7µs | 328 B |
-| 166 | call-an-object-method | ✓ | 7µs | 328 B |
-| 167 | camel-case-and-snake-case | ✓ | 230µs | 57.4 KB |
-| 168 | canny-edge-detector | ✓ | 175µs | 49.2 KB |
-| 169 | canonicalize-cidr | ✓ | 255µs | 53.3 KB |
-| 170 | cantor-set | ✓ | 383µs | 63.9 KB |
-| 171 | carmichael-3-strong-pseudoprimes | ✓ | 264µs | 42.1 KB |
-| 172 | cartesian-product-of-two-or-more-lists-1 | ✓ | 161µs | 42.1 KB |
+| 165 | call-an-object-method-3 | ✓ | 27µs | 16.5 KB |
+| 166 | call-an-object-method | ✓ | 27µs | 2.8 KB |
+| 167 | camel-case-and-snake-case | ✓ | 453µs | 57.4 KB |
+| 168 | canny-edge-detector | ✓ | 385µs | 42.8 KB |
+| 169 | canonicalize-cidr | ✓ | 493µs | 67.3 KB |
+| 170 | cantor-set | ✓ | 811µs | 75.8 KB |
+| 171 | carmichael-3-strong-pseudoprimes | ✓ | 518µs | 46.1 KB |
+| 172 | cartesian-product-of-two-or-more-lists-1 | ✓ | 325µs | 48.0 KB |
 | 173 | cartesian-product-of-two-or-more-lists-2 | ✓ | 215µs | 54.1 KB |
 | 174 | cartesian-product-of-two-or-more-lists-3 |   |  |  |
 | 175 | cartesian-product-of-two-or-more-lists-4 |   |  |  |
@@ -205,51 +205,51 @@ This file is auto-generated from rosetta tests.
 | 198 | cheryls-birthday | ✓ | 353µs | 50.4 KB |
 | 199 | chinese-remainder-theorem | ✓ | 325µs | 54.2 KB |
 | 200 | chinese-zodiac | ✓ | 322µs | 49.6 KB |
-| 201 | cholesky-decomposition-1 |   |  |  |
+| 201 | cholesky-decomposition-1 | ✓ | 294µs | 65.6 KB |
 | 202 | cholesky-decomposition |   |  |  |
 | 203 | chowla-numbers |   |  |  |
 | 204 | church-numerals-1 |   |  |  |
 | 205 | church-numerals-2 |   |  |  |
-| 206 | circles-of-given-radius-through-two-points |   |  |  |
-| 207 | circular-primes |   |  |  |
-| 208 | cistercian-numerals |   |  |  |
-| 209 | comma-quibbling |   |  |  |
+| 206 | circles-of-given-radius-through-two-points | ✓ | 379µs | 45.9 KB |
+| 207 | circular-primes | ✓ | 353µs | 65.7 KB |
+| 208 | cistercian-numerals | ✓ | 521µs | 79.3 KB |
+| 209 | comma-quibbling | ✓ | 335µs | 55.0 KB |
 | 210 | compiler-virtual-machine-interpreter |   |  |  |
-| 211 | composite-numbers-k-with-no-single-digit-factors-whose-factors-are-all-substrings-of-k |   |  |  |
-| 212 | compound-data-type |   |  |  |
-| 213 | concurrent-computing-1 |   |  |  |
-| 214 | concurrent-computing-2 |   |  |  |
-| 215 | concurrent-computing-3 |   |  |  |
+| 211 | composite-numbers-k-with-no-single-digit-factors-whose-factors-are-all-substrings-of-k | ✓ |  |  |
+| 212 | compound-data-type | ✓ | 24µs | 15.5 KB |
+| 213 | concurrent-computing-1 | ✓ | 337µs | 41.7 KB |
+| 214 | concurrent-computing-2 | ✓ | 342µs | 41.7 KB |
+| 215 | concurrent-computing-3 | ✓ | 333µs | 45.7 KB |
 | 216 | conditional-structures-1 |   |  |  |
-| 217 | conditional-structures-10 |   |  |  |
-| 218 | conditional-structures-2 |   |  |  |
+| 217 | conditional-structures-10 | ✓ | 369µs | 58.1 KB |
+| 218 | conditional-structures-2 | ✓ | 22µs | 12.3 KB |
 | 219 | conditional-structures-3 |   |  |  |
-| 220 | conditional-structures-4 |   |  |  |
-| 221 | conditional-structures-5 |   |  |  |
-| 222 | conditional-structures-6 |   |  |  |
+| 220 | conditional-structures-4 | ✓ | 20µs | 14.2 KB |
+| 221 | conditional-structures-5 | ✓ | 28µs | 3.9 KB |
+| 222 | conditional-structures-6 | ✓ | 22µs | 11.2 KB |
 | 223 | conditional-structures-7 |   |  |  |
 | 224 | conditional-structures-8 |   |  |  |
-| 225 | conditional-structures-9 |   |  |  |
+| 225 | conditional-structures-9 | ✓ | 20µs | 10.0 KB |
 | 226 | consecutive-primes-with-ascending-or-descending-differences |   |  |  |
-| 227 | constrained-genericity-1 |   |  |  |
-| 228 | constrained-genericity-2 |   |  |  |
-| 229 | constrained-genericity-3 |   |  |  |
+| 227 | constrained-genericity-1 | ✓ | 23µs | 3.6 KB |
+| 228 | constrained-genericity-2 | ✓ | 20µs |  |
+| 229 | constrained-genericity-3 | ✓ | 21µs | 12.7 KB |
 | 230 | constrained-genericity-4 |   |  |  |
 | 231 | constrained-random-points-on-a-circle-1 |   |  |  |
 | 232 | constrained-random-points-on-a-circle-2 |   |  |  |
 | 233 | continued-fraction |   |  |  |
-| 234 | convert-decimal-number-to-rational |   |  |  |
-| 235 | convert-seconds-to-compound-duration |   |  |  |
-| 236 | convex-hull |   |  |  |
-| 237 | conways-game-of-life |   |  |  |
+| 234 | convert-decimal-number-to-rational | ✓ |  |  |
+| 235 | convert-seconds-to-compound-duration | ✓ |  |  |
+| 236 | convex-hull | ✓ |  |  |
+| 237 | conways-game-of-life | ✓ |  |  |
 | 238 | copy-a-string-1 |   |  |  |
-| 239 | copy-a-string-2 |   |  |  |
-| 240 | copy-stdin-to-stdout-1 |   |  |  |
-| 241 | copy-stdin-to-stdout-2 |   |  |  |
-| 242 | count-in-factors |   |  |  |
-| 243 | count-in-octal-1 |   |  |  |
-| 244 | count-in-octal-2 |   |  |  |
-| 245 | count-in-octal-3 |   |  |  |
+| 239 | copy-a-string-2 | ✓ |  |  |
+| 240 | copy-stdin-to-stdout-1 | ✓ |  |  |
+| 241 | copy-stdin-to-stdout-2 | ✓ |  |  |
+| 242 | count-in-factors | ✓ |  |  |
+| 243 | count-in-octal-1 | ✓ | 345µs | 46.2 KB |
+| 244 | count-in-octal-2 | ✓ | 4.16ms | 51.5 KB |
+| 245 | count-in-octal-3 | ✓ | 323µs | 57.7 KB |
 | 246 | count-in-octal-4 |   |  |  |
 | 247 | count-occurrences-of-a-substring |   |  |  |
 | 248 | count-the-coins-1 |   |  |  |
@@ -473,4 +473,4 @@ This file is auto-generated from rosetta tests.
 | 466 | window-management |   |  |  |
 | 467 | zumkeller-numbers |   |  |  |
 
-Last updated: 2025-07-27 23:36 +0700
+Last updated: 2025-07-28 07:48 +0700

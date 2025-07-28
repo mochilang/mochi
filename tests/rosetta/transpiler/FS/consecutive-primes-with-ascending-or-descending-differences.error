@@ -1,0 +1,13 @@
+compile: exit status 1
+F# Compiler for F# 4.0 (Open Source Edition)
+Freely distributed under the Apache 2.0 Open Source License
+
+/workspace/mochi/tests/rosetta/transpiler/FS/consecutive-primes-with-ascending-or-descending-differences.fs(3,1): warning FS0221: The declarations in this file will be placed in an implicit module 'Consecutive-primes-with-ascending-or-descending-differences' based on the file name 'consecutive-primes-with-ascending-or-descending-differences.fs'. However this is not a valid F# identifier, so the contents will not be accessible from other files. Consider renaming the file or adding a 'module' or 'namespace' declaration at the top of the file.
+
+/workspace/mochi/tests/rosetta/transpiler/FS/consecutive-primes-with-ascending-or-descending-differences.fs(65,59): warning FS0067: This type test or downcast will always hold
+
+/workspace/mochi/tests/rosetta/transpiler/FS/consecutive-primes-with-ascending-or-descending-differences.fs(65,59): error FS0016: The type 'int array []' does not have any proper subtypes and cannot be used as the source of a type test or runtime coercion.
+
+/workspace/mochi/tests/rosetta/transpiler/FS/consecutive-primes-with-ascending-or-descending-differences.fs(75,51): warning FS0067: This type test or downcast will always hold
+
+/workspace/mochi/tests/rosetta/transpiler/FS/consecutive-primes-with-ascending-or-descending-differences.fs(75,51): error FS0016: The type 'int array []' does not have any proper subtypes and cannot be used as the source of a type test or runtime coercion.
