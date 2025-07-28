@@ -1420,13 +1420,11 @@ func (b *BenchStmt) emit(e *emitter) {
 	io.WriteString(e.w, "start = _now()")
 	e.nl()
 	e.indent++
-	pushScope()
 	for _, st := range b.Body {
 		e.writeIndent()
 		st.emit(e)
 		e.nl()
 	}
-	popScope()
 	e.indent--
 	e.writeIndent()
 	io.WriteString(e.w, "end_time = _now()")
@@ -1801,7 +1799,15 @@ type ForInStmt struct {
 }
 
 func (f *ForInStmt) emit(e *emitter) {
-	f.Iterable.emit(e)
+	// When iterating over a map index like `m[x]`, Ruby's `each` would
+	// yield key/value pairs. The source Mochi semantics expect iteration
+	// over the keys, so append `.keys` in this case.
+	if _, ok := f.Iterable.(*IndexExpr); ok && !f.CharEach {
+		f.Iterable.emit(e)
+		io.WriteString(e.w, ".keys")
+	} else {
+		f.Iterable.emit(e)
+	}
 	if f.CharEach {
 		io.WriteString(e.w, ".each_char do |")
 	} else {
@@ -2764,11 +2770,11 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	usesFetch = false
 	usesMem = false
 	currentEnv = env
-	if benchMain {
-		topVars = nil
-	} else {
-		topVars = map[string]bool{}
-	}
+	// track top-level variables even when benchmarking so that global
+	// variables are correctly prefixed with '$' when referenced inside
+	// functions. Without this, methods defined within the benchmark block
+	// cannot access global variables, leading to NameError at runtime.
+	topVars = map[string]bool{}
 	scopeStack = nil
 	rbProg := &Program{}
 	for _, st := range prog.Statements {
