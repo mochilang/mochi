@@ -5,6 +5,7 @@ import (
 	"flag"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"mochi/ast"
@@ -57,20 +58,61 @@ func runMochi(src string) ([]byte, error) {
 	return bytes.TrimSpace(out.Bytes()), nil
 }
 
-func TestConvert_Run(t *testing.T) {
+func TestConvert_Golden(t *testing.T) {
 	root := findRepoRoot(t)
-	names := []string{"print_hello", "append_builtin"}
-	for _, name := range names {
+	pattern := filepath.Join(root, "tests", "transpiler", "x", "rkt", "*.rkt")
+	files, err := filepath.Glob(pattern)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(files) == 0 {
+		t.Fatalf("no files: %s", pattern)
+	}
+
+	allowed := map[string]bool{
+		"print_hello":    true,
+		"append_builtin": true,
+		"fun_call":       true,
+		"fun_three_args": true,
+		"unary_neg":      true,
+	}
+
+	outDir := filepath.Join(root, "tests", "a2mochi", "x", "rkt")
+	os.MkdirAll(outDir, 0o755)
+
+	for _, srcPath := range files {
+		name := strings.TrimSuffix(filepath.Base(srcPath), ".rkt")
+		if !allowed[name] {
+			continue
+		}
 		t.Run(name, func(t *testing.T) {
-			srcPath := filepath.Join(root, "tests", "transpiler", "x", "rkt", name+".rkt")
 			data, err := os.ReadFile(srcPath)
 			if err != nil {
 				t.Fatalf("read src: %v", err)
 			}
+			items, err := rkt.Parse(string(data))
+			if err != nil {
+				t.Fatalf("parse: %v", err)
+			}
+			srcOut := rkt.ConvertSource(items, string(data))
 			node, err := rkt.Convert(string(data))
 			if err != nil {
 				t.Fatalf("convert: %v", err)
 			}
+			astPath := filepath.Join(outDir, name+".ast")
+			if *update {
+				os.WriteFile(astPath, []byte(node.String()), 0o644)
+				os.WriteFile(filepath.Join(outDir, name+".mochi"), []byte(srcOut), 0o644)
+			}
+			want, err := os.ReadFile(astPath)
+			if err != nil {
+				t.Fatalf("missing golden: %v", err)
+			}
+			got := node.String()
+			if strings.TrimSpace(string(want)) != strings.TrimSpace(got) {
+				t.Fatalf("golden mismatch\n--- Got ---\n%s\n--- Want ---\n%s", got, want)
+			}
+
 			var buf bytes.Buffer
 			if err := ast.Fprint(&buf, node); err != nil {
 				t.Fatalf("print: %v", err)
