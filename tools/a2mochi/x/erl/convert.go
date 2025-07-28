@@ -1,16 +1,9 @@
 package erl
 
 import (
-	"bytes"
-	"context"
-	"encoding/json"
 	"fmt"
-	"os"
-	"os/exec"
-	"path/filepath"
 	"strconv"
 	"strings"
-	"time"
 
 	"mochi/ast"
 	"mochi/parser"
@@ -42,12 +35,10 @@ type AST struct {
 	Records   []Record `json:"records"`
 }
 
-// Parse parses Erlang source using the bundled escript parser.
+// Parse parses a very small subset of Erlang syntax and returns an AST.
+// It only supports module attributes, exports and simple function bodies.
 func Parse(src string) (*AST, error) {
-	if _, err := exec.LookPath("escript"); err != nil {
-		return nil, fmt.Errorf("escript not found")
-	}
-	// drop shebang
+	// drop shebang if present
 	if strings.HasPrefix(src, "#!") {
 		if i := strings.Index(src, "\n"); i != -1 {
 			src = src[i+1:]
@@ -55,45 +46,104 @@ func Parse(src string) (*AST, error) {
 			src = ""
 		}
 	}
-	tmp, err := os.CreateTemp("", "src-*.erl")
-	if err != nil {
-		return nil, err
-	}
-	defer os.Remove(tmp.Name())
-	if _, err := tmp.WriteString(src); err != nil {
-		return nil, err
-	}
-	tmp.Close()
 
-	root, err := repoRoot()
-	if err != nil {
-		return nil, err
-	}
-	script := filepath.Join(root, "archived", "tools", "any2mochi", "x", "erlang", "parser", "parser.escript")
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
-	cmd := exec.CommandContext(ctx, "escript", script, tmp.Name())
-	var out bytes.Buffer
-	var stderr bytes.Buffer
-	cmd.Stdout = &out
-	cmd.Stderr = &stderr
-	if err := cmd.Run(); err != nil {
-		var perr struct {
-			Error string `json:"error"`
+	lines := strings.Split(strings.ReplaceAll(src, "\r\n", "\n"), "\n")
+	astFile := &AST{}
+	exported := map[string]int{}
+
+	for i := 0; i < len(lines); i++ {
+		raw := lines[i]
+		line := strings.TrimSpace(raw)
+		if strings.HasPrefix(line, "-module(") {
+			if end := strings.Index(line, ")"); end != -1 {
+				name := line[len("-module("):end]
+				name = strings.Trim(name, "'\"")
+				astFile.Module = name
+			}
+			continue
 		}
-		if jsonErr := json.Unmarshal(out.Bytes(), &perr); jsonErr == nil && perr.Error != "" {
-			return nil, fmt.Errorf("parse error: %s", perr.Error)
+		if strings.HasPrefix(line, "-export(") {
+			if open := strings.Index(line, "["); open != -1 {
+				if close := strings.Index(line[open+1:], "]"); close != -1 {
+					list := line[open+1 : open+1+close]
+					for _, item := range strings.Split(list, ",") {
+						item = strings.TrimSpace(strings.TrimSuffix(item, "."))
+						if item == "" {
+							continue
+						}
+						parts := strings.Split(item, "/")
+						if len(parts) != 2 {
+							continue
+						}
+						arity, _ := strconv.Atoi(strings.TrimSpace(parts[1]))
+						exported[strings.Trim(parts[0], "'\"")] = arity
+					}
+				}
+			}
+			continue
 		}
-		if stderr.Len() > 0 {
-			return nil, fmt.Errorf("%v: %s", err, strings.TrimSpace(stderr.String()))
+
+		idx := strings.Index(line, "->")
+		if idx == -1 {
+			continue
 		}
-		return nil, err
+		header := strings.TrimSpace(line[:idx])
+		after := strings.TrimSpace(line[idx+2:])
+		open := strings.Index(header, "(")
+		close := strings.LastIndex(header, ")")
+		if open == -1 || close == -1 || close < open {
+			continue
+		}
+		name := strings.TrimSpace(header[:open])
+		paramsText := strings.TrimSpace(header[open+1 : close])
+		var params []string
+		if paramsText != "" {
+			for _, p := range strings.Split(paramsText, ",") {
+				params = append(params, strings.TrimSpace(p))
+			}
+		}
+		fn := Func{
+			Name:    name,
+			Params:  params,
+			Line:    i + 1,
+			Arity:   len(params),
+			EndLine: i + 1,
+		}
+		if ar, ok := exported[name]; ok && ar == len(params) {
+			fn.Exported = true
+		}
+		if after != "" {
+			if strings.HasSuffix(after, ".") {
+				fn.Body = []string{strings.TrimSuffix(after, ".")}
+			} else {
+				fn.Body = []string{after}
+				fn.EndLine = i + 1
+			}
+		}
+		if !strings.HasSuffix(after, ".") {
+			for j := i + 1; j < len(lines); j++ {
+				ln := strings.TrimSpace(lines[j])
+				if strings.HasSuffix(ln, ".") {
+					fn.Body = append(fn.Body, strings.TrimSuffix(ln, "."))
+					fn.EndLine = j + 1
+					i = j
+					break
+				}
+				fn.Body = append(fn.Body, ln)
+				fn.EndLine = j + 1
+			}
+		}
+		astFile.Functions = append(astFile.Functions, fn)
 	}
-	var res AST
-	if err := json.Unmarshal(out.Bytes(), &res); err != nil {
-		return nil, err
+
+	for i := range astFile.Functions {
+		f := &astFile.Functions[i]
+		if ar, ok := exported[f.Name]; ok && ar == f.Arity {
+			f.Exported = true
+		}
 	}
-	return &res, nil
+
+	return astFile, nil
 }
 
 // ConvertSource converts a parsed AST into Mochi source code.
@@ -229,58 +279,4 @@ func rewritePrintCall(args string) string {
 		return "print(" + strings.TrimSuffix(strings.TrimPrefix(args, "\"~s~n\", ["), "])") + ")"
 	}
 	return "print(" + args
-}
-
-func repoRoot() (string, error) {
-	dir, err := os.Getwd()
-	if err != nil {
-		return "", err
-	}
-	for i := 0; i < 10; i++ {
-		if _, err := os.Stat(filepath.Join(dir, "go.mod")); err == nil {
-			return dir, nil
-		}
-		parent := filepath.Dir(dir)
-		if parent == dir {
-			break
-		}
-		dir = parent
-	}
-	return "", os.ErrNotExist
-}
-
-func formatParseError(src string, err error) error {
-	msg := err.Error()
-	line := 0
-	if strings.HasPrefix(msg, "parse error: {") {
-		parts := strings.SplitN(msg[len("parse error: "):], ",", 2)
-		if len(parts) > 0 {
-			n, _ := strconv.Atoi(strings.TrimLeft(strings.TrimSpace(parts[0]), "{"))
-			line = n
-		}
-	}
-	lines := strings.Split(src, "\n")
-	if line > 0 && line <= len(lines) {
-		start := line - 2
-		if start < 0 {
-			start = 0
-		}
-		end := line + 2
-		if end >= len(lines) {
-			end = len(lines) - 1
-		}
-		var b strings.Builder
-		for i := start; i <= end; i++ {
-			prefix := "   "
-			if i+1 == line {
-				prefix = ">>>"
-			}
-			fmt.Fprintf(&b, "%s %d: %s\n", prefix, i+1, lines[i])
-			if i+1 == line {
-				b.WriteString("    ^\n")
-			}
-		}
-		return fmt.Errorf("line %d: %s\n%s", line, msg, strings.TrimRight(b.String(), "\n"))
-	}
-	return fmt.Errorf("%s", msg)
 }
