@@ -94,6 +94,7 @@ func fixIndex(expr string) string {
 	expr = strings.ReplaceAll(expr, ";", ",")
 	expr = convertRecordFields(expr)
 	expr = convertContains(expr)
+	expr = convertBuiltins(expr)
 	expr = stripStringCall(expr)
 	return expr
 }
@@ -108,6 +109,12 @@ var (
 	listContainsRe   = regexp.MustCompile(`\bList\.contains\s+(\S+)\s+(\S+)`)
 	stringContainsRe = regexp.MustCompile(`(\w+)\.Contains\(([^)]+)\)`)
 	stringCallRe     = regexp.MustCompile(`^string\s*\((.*)\)$`)
+	stringLitRe      = regexp.MustCompile(`^string\s+"([^"]*)"$`)
+	listLengthRe     = regexp.MustCompile(`\bList\.length\s+(.*)`)
+	stringLengthRe   = regexp.MustCompile(`\bString\.length\s+(.*)`)
+	listSumRe        = regexp.MustCompile(`\bList\.sum\s+(.*)`)
+	mapOfListRe      = regexp.MustCompile(`Map\.ofList \[(.+)\]`)
+	simpleCallRe     = regexp.MustCompile(`\b(min|max|len|sum)\s+(\w+)`)
 )
 
 func convertContains(expr string) string {
@@ -120,10 +127,34 @@ func convertContains(expr string) string {
 	return expr
 }
 
+func convertBuiltins(expr string) string {
+	expr = listLengthRe.ReplaceAllString(expr, `len($1)`)
+	expr = stringLengthRe.ReplaceAllString(expr, `len($1)`)
+	expr = listSumRe.ReplaceAllString(expr, `sum($1)`)
+	if m := mapOfListRe.FindStringSubmatch(expr); m != nil {
+		parts := strings.Split(m[1], ",")
+		for i, p := range parts {
+			p = strings.TrimSpace(strings.Trim(p, "()"))
+			kv := strings.SplitN(p, ",", 2)
+			if len(kv) == 2 {
+				parts[i] = strings.TrimSpace(kv[0]) + ": " + strings.TrimSpace(kv[1])
+			} else {
+				parts[i] = strings.TrimSpace(p)
+			}
+		}
+		expr = strings.Replace(expr, m[0], "{"+strings.Join(parts, ", ")+"}", 1)
+	}
+	expr = simpleCallRe.ReplaceAllString(expr, `$1($2)`)
+	return expr
+}
+
 func stripStringCall(expr string) string {
 	trimmed := strings.TrimSpace(expr)
 	if m := stringCallRe.FindStringSubmatch(trimmed); m != nil {
 		return strings.TrimSpace(m[1])
+	}
+	if m := stringLitRe.FindStringSubmatch(trimmed); m != nil {
+		return "\"" + m[1] + "\""
 	}
 	return expr
 }
@@ -211,6 +242,10 @@ func writeStmts(out *strings.Builder, stmts []Stmt, indent int) {
 			out.WriteString(idt + "}\n")
 		case Return:
 			out.WriteString(idt + "return " + fixIndex(v.Expr) + "\n")
+		case Break:
+			out.WriteString(idt + "break\n")
+		case Continue:
+			out.WriteString(idt + "continue\n")
 		case Fun:
 			out.WriteString(idt + "fun " + v.Name + "(")
 			for i, p := range v.Params {
