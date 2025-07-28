@@ -1224,6 +1224,7 @@ var (
 	usesFetch       bool
 	usesMem         bool
 	benchMain       bool
+	loopDepth       int
 )
 
 // SetBenchMain configures whether the generated main function is wrapped in a
@@ -2908,7 +2909,7 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 				currentEnv.SetVar(st.Let.Name, types.AnyType{}, false)
 			}
 		}
-		if funcDepth == 0 {
+		if funcDepth == 0 && loopDepth == 0 {
 			if topVars != nil {
 				topVars[st.Let.Name] = true
 			}
@@ -2939,7 +2940,7 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 				currentEnv.SetVar(st.Var.Name, types.AnyType{}, true)
 			}
 		}
-		if funcDepth == 0 {
+		if funcDepth == 0 && loopDepth == 0 {
 			if topVars != nil {
 				topVars[st.Var.Name] = true
 			}
@@ -3282,6 +3283,8 @@ func convertMatchExpr(me *parser.MatchExpr) (Expr, error) {
 }
 
 func convertWhile(ws *parser.WhileStmt) (Stmt, error) {
+	loopDepth++
+	defer func() { loopDepth-- }()
 	cond, err := convertExpr(ws.Cond)
 	if err != nil {
 		return nil, err
@@ -3298,6 +3301,8 @@ func convertWhile(ws *parser.WhileStmt) (Stmt, error) {
 }
 
 func convertFor(f *parser.ForStmt) (Stmt, error) {
+	loopDepth++
+	defer func() { loopDepth-- }()
 	var elemType types.Type = types.AnyType{}
 	if currentEnv != nil {
 		t := types.ExprType(f.Source, currentEnv)
@@ -4092,7 +4097,12 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			t = types.ExprType(exprFromPrimary(prim), currentEnv)
 		}
 		if len(p.Selector.Tail) == 0 && currentEnv != nil {
-			if _, err := currentEnv.GetVar(p.Selector.Root); err == nil {
+			if vt, err := currentEnv.GetVar(p.Selector.Root); err == nil {
+				if _, okf := currentEnv.GetFunc(p.Selector.Root); okf {
+					if _, ok := vt.(types.FuncType); ok {
+						return &MethodRefExpr{Name: identName(p.Selector.Root)}, nil
+					}
+				}
 				return expr, nil
 			}
 			if _, ok := currentEnv.GetFunc(p.Selector.Root); ok {

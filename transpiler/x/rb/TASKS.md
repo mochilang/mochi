@@ -1,3 +1,508 @@
+## Progress (2025-07-28 07:49 +0700)
+- Commit 7e0ea1020c: rb transpiler: fix local var scoping and regenerate rosetta outputs
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-28 07:49 +0700)
+- Commit 7e0ea1020c: rb transpiler: fix local var scoping and regenerate rosetta outputs
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-28 07:49 +0700)
+- Commit 7e0ea1020c: rb transpiler: fix local var scoping and regenerate rosetta outputs
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-28 07:49 +0700)
+- Commit 7e0ea1020c: rb transpiler: fix local var scoping and regenerate rosetta outputs
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-28 07:49 +0700)
+- Commit 7e0ea1020c: rb transpiler: fix local var scoping and regenerate rosetta outputs
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-28 07:49 +0700)
+- Commit 7e0ea1020c: rb transpiler: fix local var scoping and regenerate rosetta outputs
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-28 07:49 +0700)
+- Commit 7e0ea1020c: rb transpiler: fix local var scoping and regenerate rosetta outputs
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-28 07:49 +0700)
+- Commit 7e0ea1020c: rb transpiler: fix local var scoping and regenerate rosetta outputs
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-28 07:49 +0700)
+- Commit 7e0ea1020c: rb transpiler: fix local var scoping and regenerate rosetta outputs
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-28 07:49 +0700)
+- Commit 7e0ea1020c: rb transpiler: fix local var scoping and regenerate rosetta outputs
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-28 07:49 +0700)
+- Commit 7e0ea1020c: rb transpiler: fix local var scoping and regenerate rosetta outputs
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-28 07:49 +0700)
+- Commit 7e0ea1020c: rb transpiler: fix local var scoping and regenerate rosetta outputs
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-28 07:49 +0700)
+- Commit 7e0ea1020c: rb transpiler: fix local var scoping and regenerate rosetta outputs
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-28 07:49 +0700)
+- Commit 7e0ea1020c: rb transpiler: fix local var scoping and regenerate rosetta outputs
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-28 07:49 +0700)
+- Commit 7e0ea1020c: rb transpiler: fix local var scoping and regenerate rosetta outputs
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-28 07:49 +0700)
+- Commit 7e0ea1020c: rb transpiler: fix local var scoping and regenerate rosetta outputs
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-28 07:49 +0700)
+- Commit 7e0ea1020c: rb transpiler: fix local var scoping and regenerate rosetta outputs
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-28 07:49 +0700)
+- Commit 7e0ea1020c: rb transpiler: fix local var scoping and regenerate rosetta outputs
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-28 07:49 +0700)
+- Commit 7e0ea1020c: rb transpiler: fix local var scoping and regenerate rosetta outputs
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-28 07:49 +0700)
+- Commit 7e0ea1020c: rb transpiler: fix local var scoping and regenerate rosetta outputs
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-28 07:49 +0700)
+- Commit 7e0ea1020c: rb transpiler: fix local var scoping and regenerate rosetta outputs
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-28 07:49 +0700)
+- Commit 7e0ea1020c: rb transpiler: fix local var scoping and regenerate rosetta outputs
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-28 07:49 +0700)
+- Commit 7e0ea1020c: rb transpiler: fix local var scoping and regenerate rosetta outputs
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-28 07:49 +0700)
+- Commit 7e0ea1020c: rb transpiler: fix local var scoping and regenerate rosetta outputs
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-28 07:49 +0700)
+- Commit 7e0ea1020c: rb transpiler: fix local var scoping and regenerate rosetta outputs
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-28 07:49 +0700)
+- Commit 7e0ea1020c: rb transpiler: fix local var scoping and regenerate rosetta outputs
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-28 07:49 +0700)
+- Commit 7e0ea1020c: rb transpiler: fix local var scoping and regenerate rosetta outputs
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-28 07:49 +0700)
+- Commit 7e0ea1020c: rb transpiler: fix local var scoping and regenerate rosetta outputs
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-28 07:49 +0700)
+- Commit 7e0ea1020c: rb transpiler: fix local var scoping and regenerate rosetta outputs
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-28 07:49 +0700)
+- Commit 7e0ea1020c: rb transpiler: fix local var scoping and regenerate rosetta outputs
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-28 07:49 +0700)
+- Commit 7e0ea1020c: rb transpiler: fix local var scoping and regenerate rosetta outputs
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-28 07:49 +0700)
+- Commit 7e0ea1020c: rb transpiler: fix local var scoping and regenerate rosetta outputs
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-28 07:49 +0700)
+- Commit 7e0ea1020c: rb transpiler: fix local var scoping and regenerate rosetta outputs
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-28 07:49 +0700)
+- Commit 7e0ea1020c: rb transpiler: fix local var scoping and regenerate rosetta outputs
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-28 07:49 +0700)
+- Commit 7e0ea1020c: rb transpiler: fix local var scoping and regenerate rosetta outputs
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-28 07:49 +0700)
+- Commit 7e0ea1020c: rb transpiler: fix local var scoping and regenerate rosetta outputs
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-28 07:49 +0700)
+- Commit 7e0ea1020c: rb transpiler: fix local var scoping and regenerate rosetta outputs
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-28 07:49 +0700)
+- Commit 7e0ea1020c: rb transpiler: fix local var scoping and regenerate rosetta outputs
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-28 07:49 +0700)
+- Commit 7e0ea1020c: rb transpiler: fix local var scoping and regenerate rosetta outputs
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-28 07:49 +0700)
+- Commit 7e0ea1020c: rb transpiler: fix local var scoping and regenerate rosetta outputs
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-28 07:49 +0700)
+- Commit 7e0ea1020c: rb transpiler: fix local var scoping and regenerate rosetta outputs
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-28 07:49 +0700)
+- Commit 7e0ea1020c: rb transpiler: fix local var scoping and regenerate rosetta outputs
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-28 07:49 +0700)
+- Commit 7e0ea1020c: rb transpiler: fix local var scoping and regenerate rosetta outputs
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-28 07:49 +0700)
+- Commit 7e0ea1020c: rb transpiler: fix local var scoping and regenerate rosetta outputs
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-28 07:49 +0700)
+- Commit 7e0ea1020c: rb transpiler: fix local var scoping and regenerate rosetta outputs
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-28 07:49 +0700)
+- Commit 7e0ea1020c: rb transpiler: fix local var scoping and regenerate rosetta outputs
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-28 07:49 +0700)
+- Commit 7e0ea1020c: rb transpiler: fix local var scoping and regenerate rosetta outputs
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-28 07:49 +0700)
+- Commit 7e0ea1020c: rb transpiler: fix local var scoping and regenerate rosetta outputs
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-28 07:49 +0700)
+- Commit 7e0ea1020c: rb transpiler: fix local var scoping and regenerate rosetta outputs
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-28 07:49 +0700)
+- Commit 7e0ea1020c: rb transpiler: fix local var scoping and regenerate rosetta outputs
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-28 07:49 +0700)
+- Commit 7e0ea1020c: rb transpiler: fix local var scoping and regenerate rosetta outputs
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-28 07:49 +0700)
+- Commit 7e0ea1020c: rb transpiler: fix local var scoping and regenerate rosetta outputs
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-28 07:49 +0700)
+- Commit 7e0ea1020c: rb transpiler: fix local var scoping and regenerate rosetta outputs
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-28 07:49 +0700)
+- Commit 7e0ea1020c: rb transpiler: fix local var scoping and regenerate rosetta outputs
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-28 07:49 +0700)
+- Commit 7e0ea1020c: rb transpiler: fix local var scoping and regenerate rosetta outputs
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-28 07:49 +0700)
+- Commit 7e0ea1020c: rb transpiler: fix local var scoping and regenerate rosetta outputs
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-28 07:49 +0700)
+- Commit 7e0ea1020c: rb transpiler: fix local var scoping and regenerate rosetta outputs
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-28 07:49 +0700)
+- Commit 7e0ea1020c: rb transpiler: fix local var scoping and regenerate rosetta outputs
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-28 07:49 +0700)
+- Commit 7e0ea1020c: rb transpiler: fix local var scoping and regenerate rosetta outputs
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-28 07:49 +0700)
+- Commit 7e0ea1020c: rb transpiler: fix local var scoping and regenerate rosetta outputs
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-28 07:49 +0700)
+- Commit 7e0ea1020c: rb transpiler: fix local var scoping and regenerate rosetta outputs
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-28 07:49 +0700)
+- Commit 7e0ea1020c: rb transpiler: fix local var scoping and regenerate rosetta outputs
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-28 07:49 +0700)
+- Commit 7e0ea1020c: rb transpiler: fix local var scoping and regenerate rosetta outputs
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-28 07:49 +0700)
+- Commit 7e0ea1020c: rb transpiler: fix local var scoping and regenerate rosetta outputs
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-28 07:49 +0700)
+- Commit 7e0ea1020c: rb transpiler: fix local var scoping and regenerate rosetta outputs
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-28 07:49 +0700)
+- Commit 7e0ea1020c: rb transpiler: fix local var scoping and regenerate rosetta outputs
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-28 07:49 +0700)
+- Commit 7e0ea1020c: rb transpiler: fix local var scoping and regenerate rosetta outputs
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-28 07:49 +0700)
+- Commit 7e0ea1020c: rb transpiler: fix local var scoping and regenerate rosetta outputs
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-28 07:49 +0700)
+- Commit 7e0ea1020c: rb transpiler: fix local var scoping and regenerate rosetta outputs
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-28 07:49 +0700)
+- Commit 7e0ea1020c: rb transpiler: fix local var scoping and regenerate rosetta outputs
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-28 07:49 +0700)
+- Commit 7e0ea1020c: rb transpiler: fix local var scoping and regenerate rosetta outputs
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-28 07:49 +0700)
+- Commit 7e0ea1020c: rb transpiler: fix local var scoping and regenerate rosetta outputs
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-28 07:49 +0700)
+- Commit 7e0ea1020c: rb transpiler: fix local var scoping and regenerate rosetta outputs
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-28 07:49 +0700)
+- Commit 7e0ea1020c: rb transpiler: fix local var scoping and regenerate rosetta outputs
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-28 07:49 +0700)
+- Commit 7e0ea1020c: rb transpiler: fix local var scoping and regenerate rosetta outputs
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-28 07:49 +0700)
+- Commit 7e0ea1020c: rb transpiler: fix local var scoping and regenerate rosetta outputs
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-28 07:49 +0700)
+- Commit 7e0ea1020c: rb transpiler: fix local var scoping and regenerate rosetta outputs
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-28 07:49 +0700)
+- Commit 7e0ea1020c: rb transpiler: fix local var scoping and regenerate rosetta outputs
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-28 07:49 +0700)
+- Commit 7e0ea1020c: rb transpiler: fix local var scoping and regenerate rosetta outputs
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-28 07:49 +0700)
+- Commit 7e0ea1020c: rb transpiler: fix local var scoping and regenerate rosetta outputs
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-28 07:49 +0700)
+- Commit 7e0ea1020c: rb transpiler: fix local var scoping and regenerate rosetta outputs
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-28 07:49 +0700)
+- Commit 7e0ea1020c: rb transpiler: fix local var scoping and regenerate rosetta outputs
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-28 07:49 +0700)
+- Commit 7e0ea1020c: rb transpiler: fix local var scoping and regenerate rosetta outputs
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-28 07:49 +0700)
+- Commit 7e0ea1020c: rb transpiler: fix local var scoping and regenerate rosetta outputs
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-28 07:49 +0700)
+- Commit 7e0ea1020c: rb transpiler: fix local var scoping and regenerate rosetta outputs
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-28 07:49 +0700)
+- Commit 7e0ea1020c: rb transpiler: fix local var scoping and regenerate rosetta outputs
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-28 07:49 +0700)
+- Commit 7e0ea1020c: rb transpiler: fix local var scoping and regenerate rosetta outputs
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-28 07:49 +0700)
+- Commit 7e0ea1020c: rb transpiler: fix local var scoping and regenerate rosetta outputs
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-28 07:49 +0700)
+- Commit 7e0ea1020c: rb transpiler: fix local var scoping and regenerate rosetta outputs
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-28 07:49 +0700)
+- Commit 7e0ea1020c: rb transpiler: fix local var scoping and regenerate rosetta outputs
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-28 07:49 +0700)
+- Commit 7e0ea1020c: rb transpiler: fix local var scoping and regenerate rosetta outputs
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-28 07:49 +0700)
+- Commit 7e0ea1020c: rb transpiler: fix local var scoping and regenerate rosetta outputs
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-28 07:49 +0700)
+- Commit 7e0ea1020c: rb transpiler: fix local var scoping and regenerate rosetta outputs
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-28 07:49 +0700)
+- Commit 7e0ea1020c: rb transpiler: fix local var scoping and regenerate rosetta outputs
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-28 07:49 +0700)
+- Commit 7e0ea1020c: rb transpiler: fix local var scoping and regenerate rosetta outputs
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-28 07:49 +0700)
+- Commit 7e0ea1020c: rb transpiler: fix local var scoping and regenerate rosetta outputs
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-28 07:49 +0700)
+- Commit 7e0ea1020c: rb transpiler: fix local var scoping and regenerate rosetta outputs
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-28 07:49 +0700)
+- Commit 7e0ea1020c: rb transpiler: fix local var scoping and regenerate rosetta outputs
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-28 07:49 +0700)
+- Commit 7e0ea1020c: rb transpiler: fix local var scoping and regenerate rosetta outputs
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-28 07:49 +0700)
+- Commit 7e0ea1020c: rb transpiler: fix local var scoping and regenerate rosetta outputs
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-28 07:49 +0700)
+- Commit 7e0ea1020c: rb transpiler: fix local var scoping and regenerate rosetta outputs
+- Generated Ruby for 104/104 programs
+- Updated README checklist and outputs
+
 ## Progress (2025-07-28 01:11 +0700)
 - Commit 7d6cc2e2cb: transpiler/rb: regenerate rosetta outputs 101-150
 - Generated Ruby for 104/104 programs
