@@ -86,11 +86,11 @@ func TestConvert_Golden(t *testing.T) {
 			if err != nil {
 				t.Fatalf("read src: %v", err)
 			}
-			nodes, err := ts.Parse(string(data))
+			prog, err := ts.Parse(string(data))
 			if err != nil {
 				t.Fatalf("parse: %v", err)
 			}
-			astNode, err := ts.Convert(nodes, string(data))
+			astNode, err := ts.Convert(prog)
 			if err != nil {
 				t.Fatalf("convert: %v", err)
 			}
