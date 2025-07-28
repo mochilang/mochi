@@ -1,0 +1,23 @@
+(program
+  (var a
+    (binary - (int 10) (int 3))
+  )
+  (var b
+    (binary + (int 2) (int 2))
+  )
+  (call print (selector a))
+  (call print
+    (if_expr
+      (binary == (selector a) (int 7))
+      (int 1)
+      (int 0)
+    )
+  )
+  (call print
+    (if_expr
+      (binary < (selector b) (int 5))
+      (int 1)
+      (int 0)
+    )
+  )
+)

@@ -1,0 +1,11 @@
+(program
+  (var a
+    (list (int 1) (int 2))
+  )
+  (call print
+    (binary +
+      (selector a)
+      (list (int 3))
+    )
+  )
+)
