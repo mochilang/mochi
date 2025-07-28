@@ -1,0 +1,66 @@
+type StepResult { n: bigint, ok: bool }
+
+fun step(n: bigint, program: list<list<bigint>>): StepResult {
+  var i = 0
+  while i < len(program) {
+    let num = program[i][0]
+    let den = program[i][1]
+    if n % den == 0 as bigint {
+      n = (n / den) * num
+      return StepResult{ n: n, ok: true }
+    }
+    i = i + 1
+  }
+  return StepResult{ n: n, ok: false }
+}
+
+fun main() {
+  let program: list<list<bigint>> = [
+    [17 as bigint, 91 as bigint],
+    [78 as bigint, 85 as bigint],
+    [19 as bigint, 51 as bigint],
+    [23 as bigint, 38 as bigint],
+    [29 as bigint, 33 as bigint],
+    [77 as bigint, 29 as bigint],
+    [95 as bigint, 23 as bigint],
+    [77 as bigint, 19 as bigint],
+    [1 as bigint, 17 as bigint],
+    [11 as bigint, 13 as bigint],
+    [13 as bigint, 11 as bigint],
+    [15 as bigint, 14 as bigint],
+    [15 as bigint, 2 as bigint],
+    [55 as bigint, 1 as bigint],
+  ]
+
+  var n: bigint = 2
+  var primes = 0
+  var count = 0
+  let limit = 1000000
+  let two: bigint = 2
+  var line = ""
+
+  while primes < 20 && count < limit {
+    let res = step(n, program)
+    n = res.n
+    if !res.ok { break }
+
+    var m = n
+    var pow = 0
+    while m % two == 0 as bigint {
+      m = m / two
+      pow = pow + 1
+    }
+    if m == 1 as bigint && pow > 1 {
+      line = line + str(pow) + " "
+      primes = primes + 1
+    }
+    count = count + 1
+  }
+  if len(line) > 0 {
+    print(substring(line, 0, len(line)-1))
+  } else {
+    print("")
+  }
+}
+
+main()
