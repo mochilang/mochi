@@ -2,7 +2,7 @@
 
 This directory contains Dart code generated from Mochi programs in `tests/rosetta/x/Mochi`. Each program has a `.dart` file and `.out` output. Compilation or runtime failures are captured in a `.error` file.
 
-Compiled and ran: 331/493
+Compiled and ran: 345/493
 
 ## Checklist
 | Index | Name | Status | Duration | Memory |
@@ -356,28 +356,28 @@ Compiled and ran: 331/493
 | 347 | enforced-immutability | ✓ | 5.513ms | 2.1 MB |
 | 348 | entropy-1 | ✓ | 7.844ms | 164.0 KB |
 | 349 | entropy-2 | ✓ | 7.268ms | 108.0 KB |
-| 350 | entropy-narcissist | ✓ | 8.571ms | 10.5 MB |
-| 351 | enumerations-1 |   |  |  |
-| 352 | enumerations-2 |   |  |  |
-| 353 | enumerations-3 |   |  |  |
-| 354 | enumerations-4 |   |  |  |
-| 355 | environment-variables-1 |   |  |  |
-| 356 | environment-variables-2 |   |  |  |
-| 357 | equal-prime-and-composite-sums |   |  |  |
+| 350 | entropy-narcissist | ✓ | 8.634ms | 2.2 MB |
+| 351 | enumerations-1 | ✓ | 5.532ms | 10.7 MB |
+| 352 | enumerations-2 | ✓ | 6.253ms | 11.4 MB |
+| 353 | enumerations-3 | ✓ | 5.367ms | 2.9 MB |
+| 354 | enumerations-4 | ✓ | 5.27ms | 2.5 MB |
+| 355 | environment-variables-1 | ✓ | 5.584ms | 2.4 MB |
+| 356 | environment-variables-2 | ✓ | 7.878ms | 1.7 MB |
+| 357 | equal-prime-and-composite-sums | ✓ | 28.781681s | 11.1 MB |
 | 358 | equilibrium-index |   |  |  |
 | 359 | erd-s-nicolas-numbers |   |  |  |
 | 360 | erd-s-selfridge-categorization-of-primes |   |  |  |
 | 361 | esthetic-numbers |   |  |  |
-| 362 | ethiopian-multiplication |   |  |  |
+| 362 | ethiopian-multiplication | ✓ | 5.631ms | 2.2 MB |
 | 363 | euclid-mullin-sequence |   |  |  |
-| 364 | euler-method |   |  |  |
-| 365 | eulers-constant-0.5772... |   |  |  |
-| 366 | eulers-identity |   |  |  |
-| 367 | eulers-sum-of-powers-conjecture |   |  |  |
+| 364 | euler-method | ✓ | 9.335ms | 9.9 MB |
+| 365 | eulers-constant-0.5772... | ✓ | 8.231ms | 8.3 MB |
+| 366 | eulers-identity | ✓ | 6.772ms | 204.0 KB |
+| 367 | eulers-sum-of-powers-conjecture | ✓ | 118.348ms | 5.4 MB |
 | 368 | evaluate-binomial-coefficients |   |  |  |
-| 369 | even-or-odd |   |  |  |
+| 369 | even-or-odd | ✓ | 10.765ms | 9.2 MB |
 | 370 | events |   |  |  |
-| 371 | evolutionary-algorithm |   |  |  |
+| 371 | evolutionary-algorithm | ✓ | 26.759ms | 3.5 MB |
 | 372 | exceptions-catch-an-exception-thrown-in-a-nested-call |   |  |  |
 | 373 | exceptions |   |  |  |
 | 374 | executable-library |   |  |  |
@@ -501,4 +501,4 @@ Compiled and ran: 331/493
 | 492 | window-management |   |  |  |
 | 493 | zumkeller-numbers |   |  |  |
 
-_Last updated: 2025-07-28 10:03 +0700_
+_Last updated: 2025-07-28 10:34 +0700_

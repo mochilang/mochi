@@ -67,7 +67,7 @@ num entropy(String data) {
   while (i < data.length) {
     String ch = _substr(data, i, i + 1);
     if (counts.containsKey(ch)) {
-    counts[ch] = ((counts[ch] ?? 0) + 1).toInt();
+    counts[ch] = (counts[ch] ?? 0) + 1;
   } else {
     counts[ch] = 1;
   }
@@ -75,8 +75,8 @@ num entropy(String data) {
   }
   num e = 0.0;
   num l = (data.length).toDouble();
-  for (String ch in counts!.keys) {
-    num px = ((counts[ch]!).toDouble()) / l;
+  for (String ch in counts.keys) {
+    num px = ((counts[ch] ?? 0) as num) / l;
     if (px > 0.0) {
     e = e - px * log2(px);
   }
