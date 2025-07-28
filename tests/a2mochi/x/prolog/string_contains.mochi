@@ -1,0 +1,23 @@
+// a2mochi 0.10.47 2025-07-28 18:31:21
+/*
+:- style_check(-singleton).
+:- initialization(main).
+
+main :-
+    S = "catch",
+    (sub_string(S, _, _, _, "cat") -> writeln(true) ; writeln(false)),
+    (sub_string(S, _, _, _, "dog") -> writeln(true) ; writeln(false)).
+*/
+fun main() {
+  let S = "catch"
+  if contains(S, "cat") {
+  print(true)
+  } else {
+  print(false)
+  }
+  if contains(S, "dog") {
+  print(true)
+  } else {
+  print(false)
+  }
+}

@@ -1,0 +1,14 @@
+// a2mochi 0.10.47 2025-07-28 18:31:13
+/*
+:- initialization(main).
+:- style_check(-singleton).
+
+main :-
+    Xs = [10, 20, 30],
+    nth0(1, Xs, R1), writeln(R1).
+*/
+fun main() {
+  let Xs = [10, 20, 30]
+  let R1 = Xs[1]
+  print(R1)
+}

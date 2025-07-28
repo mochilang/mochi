@@ -15,6 +15,8 @@ const version = "0.10.47"
 
 var callAssignPattern = regexp.MustCompile(`^(\w+)\((.*),\s*([A-Za-z]\w*)\)$`)
 var subStringAssignPattern = regexp.MustCompile(`^sub_string\(([^,]+),\s*([^,]+),\s*([^,]+),\s*[^,]+,\s*([A-Za-z]\w*)\)$`)
+var subStringContainsPattern = regexp.MustCompile(`^sub_string\(([^,]+),.*?,.*?,.*?,\s*"?([^"]+)"?\)$`)
+var nth0Pattern = regexp.MustCompile(`^nth0\(([^,]+),\s*([^,]+),\s*([A-Za-z]\w*)\)$`)
 
 // ConvertSource converts Prolog source code into Mochi source.
 func ConvertSource(src string) (string, error) {
@@ -160,6 +162,18 @@ func parseBody(body string) []string {
 			length := strings.TrimSpace(m[3])
 			outVar := strings.TrimSpace(m[4])
 			out = append(out, "  let "+outVar+" = substr("+src+", "+start+", "+length+")")
+		case subStringContainsPattern.MatchString(c):
+			m := subStringContainsPattern.FindStringSubmatch(c)
+			src := strings.TrimSpace(m[1])
+			sub := strings.Trim(m[2], "'")
+			sub = strings.Trim(sub, "\"")
+			out = append(out, "  print(contains("+src+", \""+sub+"\"))")
+		case nth0Pattern.MatchString(c):
+			m := nth0Pattern.FindStringSubmatch(c)
+			index := strings.TrimSpace(m[1])
+			list := strings.TrimSpace(m[2])
+			outVar := strings.TrimSpace(m[3])
+			out = append(out, "  let "+outVar+" = "+list+"["+index+"]")
 		case callAssignPattern.MatchString(c):
 			m := callAssignPattern.FindStringSubmatch(c)
 			name := m[1]
@@ -217,6 +231,13 @@ func splitClauses(body string) []string {
 }
 
 func convertExpr(expr string) string {
+	if subStringContainsPattern.MatchString(expr) {
+		m := subStringContainsPattern.FindStringSubmatch(expr)
+		src := strings.TrimSpace(m[1])
+		sub := strings.Trim(m[2], "'")
+		sub = strings.Trim(sub, "\"")
+		return "contains(" + src + ", \"" + sub + "\")"
+	}
 	expr = strings.ReplaceAll(expr, "=:=", "==")
 	expr = strings.ReplaceAll(expr, "=\\=", "!=")
 	expr = strings.ReplaceAll(expr, "@>=", ">=")

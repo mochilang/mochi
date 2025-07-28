@@ -1,0 +1,23 @@
+(program
+  (fun main
+    (let S (string catch))
+    (if
+      (call contains (selector S) (string cat))
+      (block
+        (call print (bool true))
+      )
+      (block
+        (call print (bool false))
+      )
+    )
+    (if
+      (call contains (selector S) (string dog))
+      (block
+        (call print (bool true))
+      )
+      (block
+        (call print (bool false))
+      )
+    )
+  )
+)
