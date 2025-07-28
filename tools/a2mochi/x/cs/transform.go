@@ -38,108 +38,77 @@ func rewriteExpr(s string) string {
 
 // Transform converts the parsed Program into a Mochi AST node.
 func Transform(p *Program) (*ast.Node, error) {
-	src, err := programToMochi(p)
-	if err != nil {
-		return nil, err
-	}
-	prog, err := parser.ParseString(src)
-	if err != nil {
-		return nil, err
-	}
-	return nodeFromProgram(prog), nil
+	return programToNode(p)
 }
 
-func nodeFromProgram(prog *parser.Program) *ast.Node {
-	n := &ast.Node{Kind: "program"}
-	if prog.Package != "" {
-		n.Value = prog.Package
+func programToNode(p *Program) (*ast.Node, error) {
+	if p == nil {
+		return nil, fmt.Errorf("nil program")
 	}
-	for _, st := range prog.Statements {
-		n.Children = append(n.Children, ast.FromStatement(st))
+	root := &ast.Node{Kind: "program"}
+	for _, t := range p.Types {
+		root.Children = append(root.Children, typeToNode(&t))
 	}
-	return n
+	if len(root.Children) == 0 {
+		return nil, fmt.Errorf("no convertible symbols found")
+	}
+	return root, nil
 }
 
 // --- Implementation below mostly ported from archived any2mochi ---
 
-// programToMochi converts a parsed Program into Mochi source code.
-func programToMochi(p *Program) (string, error) {
-	if p == nil {
-		return "", fmt.Errorf("nil program")
-	}
-	var out strings.Builder
-	for _, t := range p.Types {
-		if t.Doc != "" {
-			for _, ln := range strings.Split(t.Doc, "\n") {
-				out.WriteString("# ")
-				out.WriteString(strings.TrimSpace(ln))
-				out.WriteByte('\n')
-			}
+func typeToNode(t *Type) *ast.Node {
+	n := &ast.Node{Kind: "type", Value: t.Name}
+	for _, f := range t.Fields {
+		fn := &ast.Node{Kind: "field", Value: f.Name}
+		if ft := mapType(f.Type); ft != "" {
+			fn.Children = append(fn.Children, &ast.Node{Kind: "type", Value: ft})
 		}
-		out.WriteString("type ")
-		out.WriteString(t.Name)
-		out.WriteString(" {\n")
-		for _, f := range t.Fields {
-			if f.Doc != "" {
-				for _, ln := range strings.Split(f.Doc, "\n") {
-					out.WriteString("  # ")
-					out.WriteString(strings.TrimSpace(ln))
-					out.WriteByte('\n')
-				}
-			}
-			out.WriteString("  ")
-			out.WriteString(f.Name)
-			if ft := mapType(f.Type); ft != "" {
-				out.WriteString(": ")
-				out.WriteString(ft)
-			}
-			out.WriteByte('\n')
-		}
-		for _, fn := range t.Methods {
-			if fn.Doc != "" {
-				for _, ln := range strings.Split(fn.Doc, "\n") {
-					out.WriteString("  # ")
-					out.WriteString(strings.TrimSpace(ln))
-					out.WriteByte('\n')
-				}
-			}
-			out.WriteString("  fun ")
-			out.WriteString(fn.Name)
-			out.WriteByte('(')
-			for i, p := range fn.Params {
-				if i > 0 {
-					out.WriteString(", ")
-				}
-				out.WriteString(p.Name)
-				if pt := mapType(p.Type); pt != "" {
-					out.WriteString(": ")
-					out.WriteString(pt)
-				}
-			}
-			out.WriteByte(')')
-			if rt := mapType(fn.Ret); rt != "" {
-				out.WriteString(": ")
-				out.WriteString(rt)
-			}
-			body := convertBodyLines(fn.Body)
-			if len(body) == 0 {
-				out.WriteString(" {}\n")
-			} else {
-				out.WriteString(" {\n")
-				for _, b := range body {
-					out.WriteString("    ")
-					out.WriteString(b)
-					out.WriteByte('\n')
-				}
-				out.WriteString("  }\n")
-			}
-		}
-		out.WriteString("}\n")
+		n.Children = append(n.Children, fn)
 	}
-	if out.Len() == 0 {
-		return "", fmt.Errorf("no convertible symbols found")
+	for _, m := range t.Methods {
+		if mn, err := funcToNode(&m); err == nil {
+			n.Children = append(n.Children, mn)
+		}
 	}
-	return out.String(), nil
+	return n
+}
+
+func funcToNode(f *Func) (*ast.Node, error) {
+	n := &ast.Node{Kind: "fun", Value: f.Name}
+	for _, p := range f.Params {
+		pn := &ast.Node{Kind: "param", Value: p.Name}
+		if pt := mapType(p.Type); pt != "" {
+			pn.Children = append(pn.Children, &ast.Node{Kind: "type", Value: pt})
+		}
+		n.Children = append(n.Children, pn)
+	}
+	if rt := mapType(f.Ret); rt != "" {
+		n.Children = append(n.Children, &ast.Node{Kind: "type", Value: rt})
+	}
+	body, err := bodyToNodes(f.Body)
+	if err != nil {
+		return nil, err
+	}
+	n.Children = append(n.Children, body...)
+	return n, nil
+}
+
+func bodyToNodes(body []string) ([]*ast.Node, error) {
+	lines := convertBodyLines(body)
+	if len(lines) == 0 {
+		return nil, nil
+	}
+	src := strings.Join(lines, "\n") + "\n"
+	prog, err := parser.ParseString(src)
+	if err != nil {
+		return nil, err
+	}
+	nodes := make([]*ast.Node, len(prog.Statements))
+	for i, st := range prog.Statements {
+		nodes[i] = ast.FromStatement(st)
+	}
+	return nodes, nil
 }
 
 func convertBodyLines(body []string) []string {
