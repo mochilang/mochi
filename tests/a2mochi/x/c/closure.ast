@@ -1,0 +1,28 @@
+(program
+  (fun makeAdder
+    (param n (type int))
+    (type MakeAdderClosure)
+    (return
+      (struct MakeAdderClosure
+        (field n (selector n))
+      )
+    )
+  )
+  (fun MakeAdderClosure_call
+    (param n (type int))
+    (param x (type int))
+    (type int)
+    (return
+      (binary + (selector x) (selector n))
+    )
+  )
+  (var add10
+    (call makeAdder (int 10))
+  )
+  (call print
+    (call MakeAdderClosure_call
+      (selector n (selector add10))
+      (int 7)
+    )
+  )
+)
