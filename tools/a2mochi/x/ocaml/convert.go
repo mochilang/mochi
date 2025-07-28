@@ -187,14 +187,16 @@ func formatProgram(p *Program) []byte {
 			} else if strings.HasPrefix(line, "str ") {
 				line = strings.TrimSpace(strings.TrimPrefix(line, "str"))
 			}
-			appendLine("print(" + strings.TrimSpace(line) + ")")
+			line = normalizeCall(strings.TrimSpace(line))
+			appendLine("print(" + line + ")")
 		} else {
 			if strings.HasPrefix(line, "str(") && strings.HasSuffix(line, ")") {
 				line = strings.TrimSuffix(strings.TrimPrefix(line, "str("), ")")
 			} else if strings.HasPrefix(line, "str ") {
 				line = strings.TrimSpace(strings.TrimPrefix(line, "str"))
 			}
-			appendLine("print(" + strings.TrimSpace(line) + ")")
+			line = normalizeCall(strings.TrimSpace(line))
+			appendLine("print(" + line + ")")
 		}
 	}
 
@@ -322,6 +324,19 @@ func simplifyConcat(expr string) string {
 	}
 	inner := strings.TrimSpace(s[:end])
 	return inner
+}
+
+var simpleCall = regexp.MustCompile(`^[a-zA-Z_][a-zA-Z0-9_']*(?:\s+[a-zA-Z0-9_']+)+$`)
+
+func normalizeCall(s string) string {
+	if !simpleCall.MatchString(s) {
+		return s
+	}
+	parts := strings.Fields(s)
+	if len(parts) <= 1 {
+		return s
+	}
+	return parts[0] + "(" + strings.Join(parts[1:], ", ") + ")"
 }
 
 func replaceBuiltins(s string) string {
