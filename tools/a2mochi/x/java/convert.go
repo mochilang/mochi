@@ -3,138 +3,271 @@
 package java
 
 import (
+	"encoding/json"
 	"fmt"
 	"os"
+	"os/exec"
 	"path/filepath"
-	"regexp"
 	"strings"
+	"sync"
 	"time"
 
 	mochias "mochi/ast"
 	mochiparser "mochi/parser"
 )
 
-// Node holds parsed Java source. Parsing is not implemented yet.
+// Node represents the simplified Java AST produced by the helper parser.
 type Node struct {
-	Lines []string
+	Body []Stmt `json:"body"`
 }
 
-// Parse parses Java source code into a Node. Only splitting lines is done for now.
+// Stmt describes a statement in the simplified AST.
+type Stmt struct {
+	Kind  string `json:"kind"`
+	Name  string `json:"name,omitempty"`
+	Expr  *Expr  `json:"expr,omitempty"`
+	Start *Expr  `json:"start,omitempty"`
+	End   *Expr  `json:"end,omitempty"`
+	Body  []Stmt `json:"body,omitempty"`
+	Then  []Stmt `json:"then,omitempty"`
+	Else  []Stmt `json:"else,omitempty"`
+}
+
+// Expr describes an expression in the simplified AST.
+type Expr struct {
+	Kind   string `json:"kind"`
+	Value  string `json:"value,omitempty"`
+	Name   string `json:"name,omitempty"`
+	Left   *Expr  `json:"left,omitempty"`
+	Right  *Expr  `json:"right,omitempty"`
+	Target *Expr  `json:"target,omitempty"`
+	Args   []Expr `json:"args,omitempty"`
+	Expr   *Expr  `json:"expr,omitempty"`
+	Cond   *Expr  `json:"cond,omitempty"`
+	Then   *Expr  `json:"then,omitempty"`
+	Else   *Expr  `json:"else,omitempty"`
+	Elems  []Expr `json:"elems,omitempty"`
+	Op     string `json:"op,omitempty"`
+}
+
+var (
+	compileOnce sync.Once
+	compileErr  error
+	classDir    string
+)
+
+// ensureCompiled compiles the Java helper parser if needed.
+func ensureCompiled() error {
+	compileOnce.Do(func() {
+		root := repoRoot()
+		if root == "" {
+			compileErr = fmt.Errorf("repo root not found")
+			return
+		}
+		src := filepath.Join(root, "tools/a2mochi/x/java/internal/AstJson.java")
+		classDir = filepath.Join(root, "tools/a2mochi/x/java/internal/bin")
+		if _, err := os.Stat(filepath.Join(classDir, "AstJson.class")); err == nil {
+			return
+		}
+		os.MkdirAll(classDir, 0o755)
+		cmd := exec.Command("javac", "-d", classDir, src)
+		if out, err := cmd.CombinedOutput(); err != nil {
+			compileErr = fmt.Errorf("javac: %v: %s", err, out)
+		}
+	})
+	return compileErr
+}
+
+// Parse converts Java source into a Node by invoking the helper Java parser.
 func Parse(src string) (*Node, error) {
-	return &Node{Lines: strings.Split(src, "\n")}, nil
+	tmp, err := os.CreateTemp("", "a2mochi-java-*.java")
+	if err != nil {
+		return nil, err
+	}
+	defer os.Remove(tmp.Name())
+	if _, err := tmp.WriteString(src); err != nil {
+		return nil, err
+	}
+	tmp.Close()
+	return ParseFile(tmp.Name())
 }
 
-// ConvertSource converts a parsed Java node into Mochi source code.
-// Only a very small subset of Java is supported, enough for a few examples.
+// ParseFile parses a Java file and returns a Node.
+func ParseFile(path string) (*Node, error) {
+	if err := ensureCompiled(); err != nil {
+		return nil, err
+	}
+	cmd := exec.Command("java", "-cp", classDir, "internal.AstJson", path)
+	out, err := cmd.Output()
+	if err != nil {
+		if ee, ok := err.(*exec.ExitError); ok {
+			return nil, fmt.Errorf("java error: %s", string(ee.Stderr))
+		}
+		return nil, err
+	}
+	var n Node
+	if err := json.Unmarshal(out, &n); err != nil {
+		return nil, err
+	}
+	return &n, nil
+}
+
+// ConvertSource converts a Node into Mochi source code.
 func ConvertSource(n *Node) (string, error) {
-	if n == nil {
-		return "", fmt.Errorf("nil node")
+	var b strings.Builder
+	b.WriteString(header())
+	for _, st := range n.Body {
+		emitStmt(&b, "", st)
 	}
-	var out strings.Builder
-	out.WriteString(header())
-	out.WriteString("/*\n")
-	out.WriteString(strings.Join(n.Lines, "\n"))
-	if len(n.Lines) == 0 || n.Lines[len(n.Lines)-1] != "" {
-		out.WriteByte('\n')
-	}
-	out.WriteString("*/\n")
-
-	// varDecl matches a top-level static integer variable declaration. The
-	// initializer previously only allowed plain numbers which prevented
-	// simple expressions like "static int a = 1 + 2" from being parsed.
-	// Extend the pattern to accept any expression up to the semicolon so
-	// more examples can be converted.
-	varDecl := regexp.MustCompile(`^static\s+(?:int|double)\s+([A-Za-z_][A-Za-z0-9_]*)\s*=\s*([^;]+);`)
-	typedVar := regexp.MustCompile(`^static\s+(?:int|double)\s+([A-Za-z_][A-Za-z0-9_]*)\s*;`)
-	assignStmt := regexp.MustCompile(`^([A-Za-z_][A-Za-z0-9_]*)\s*=\s*(.+);`)
-	whileStart := regexp.MustCompile(`^while\s*\((.*)\)\s*\{`)
-	forStart := regexp.MustCompile(`^for\s*\(int\s+([A-Za-z_][A-Za-z0-9_]*)\s*=\s*([^;]+);\s*[A-Za-z_][A-Za-z0-9_]*\s*<\s*([^;]+);\s*[A-Za-z_][A-Za-z0-9_]*\+\+\)\s*\{`)
-	ifStart := regexp.MustCompile(`^if\s*\((.*)\)\s*\{`)
-	elseStart := regexp.MustCompile(`^}\s*else\s*\{`)
-	printStmt := regexp.MustCompile(`System\.out\.println\((.*)\);`)
-	parseInt := regexp.MustCompile(`^Integer\.parseInt\("([^"]*)"\)$`)
-	ternaryBool := regexp.MustCompile(`^(.*)\?\s*1\s*:\s*0$`)
-
-	// detect mutated variables so that we emit `var` declarations
-	mutated := map[string]bool{}
-	for _, line := range n.Lines {
-		line = strings.TrimSpace(line)
-		if m := assignStmt.FindStringSubmatch(line); m != nil && !strings.HasPrefix(line, "static") {
-			mutated[m[1]] = true
-		}
-	}
-
-	indent := ""
-	var stack []string
-
-	for _, line := range n.Lines {
-		line = strings.TrimSpace(line)
-
-		if m := varDecl.FindStringSubmatch(line); m != nil {
-			kw := "let"
-			if mutated[m[1]] {
-				kw = "var"
-			}
-			fmt.Fprintf(&out, "%s%s %s = %s\n", indent, kw, m[1], m[2])
-			continue
-		}
-		if m := typedVar.FindStringSubmatch(line); m != nil {
-			fmt.Fprintf(&out, "%svar %s = 0\n", indent, m[1])
-			continue
-		}
-		if m := assignStmt.FindStringSubmatch(line); m != nil && !strings.HasPrefix(line, "static") {
-			fmt.Fprintf(&out, "%s%s = %s\n", indent, m[1], m[2])
-			continue
-		}
-		if m := whileStart.FindStringSubmatch(line); m != nil {
-			cond := strings.TrimSpace(m[1])
-			fmt.Fprintf(&out, "%swhile (%s) {\n", indent, cond)
-			indent += "  "
-			stack = append(stack, "while")
-			continue
-		}
-		if m := forStart.FindStringSubmatch(line); m != nil {
-			name := m[1]
-			start := strings.TrimSpace(m[2])
-			end := strings.TrimSpace(m[3])
-			fmt.Fprintf(&out, "%sfor %s in %s..%s {\n", indent, name, start, end)
-			indent += "  "
-			stack = append(stack, "for")
-			continue
-		}
-		if m := ifStart.FindStringSubmatch(line); m != nil {
-			cond := strings.TrimSpace(m[1])
-			fmt.Fprintf(&out, "%sif %s {\n", indent, cond)
-			indent += "  "
-			stack = append(stack, "if")
-			continue
-		}
-		if elseStart.MatchString(line) {
-			indent = indent[:len(indent)-2]
-			fmt.Fprintf(&out, "%s} else {\n", indent)
-			indent += "  "
-			continue
-		}
-		if line == "}" && len(stack) > 0 {
-			indent = indent[:len(indent)-2]
-			fmt.Fprintf(&out, "%s}\n", indent)
-			stack = stack[:len(stack)-1]
-			continue
-		}
-		if m := printStmt.FindStringSubmatch(line); m != nil {
-			expr := strings.TrimSpace(m[1])
-			if p := parseInt.FindStringSubmatch(expr); p != nil {
-				expr = fmt.Sprintf("\"%s\" as int", p[1])
-			} else if t := ternaryBool.FindStringSubmatch(expr); t != nil {
-				expr = strings.TrimSpace(t[1])
-			}
-			fmt.Fprintf(&out, "%sprint(%s)\n", indent, expr)
-		}
-	}
-	return out.String(), nil
+	return b.String(), nil
 }
 
-// Convert converts a parsed Java Node into a Mochi AST node.
+func emitStmt(b *strings.Builder, indent string, st Stmt) {
+	switch st.Kind {
+	case "VarDecl":
+		b.WriteString(indent + "var " + st.Name)
+		if st.Expr != nil {
+			b.WriteString(" = ")
+			emitExpr(b, *st.Expr)
+		}
+		b.WriteByte('\n')
+	case "Assign":
+		b.WriteString(indent + st.Name + " = ")
+		if st.Expr != nil {
+			emitExpr(b, *st.Expr)
+		}
+		b.WriteByte('\n')
+	case "Print":
+		b.WriteString(indent + "print(")
+		if st.Expr != nil {
+			emitExpr(b, *st.Expr)
+		}
+		b.WriteString(")\n")
+	case "ForRange":
+		b.WriteString(indent + "for " + st.Name + " in ")
+		emitExpr(b, *st.Start)
+		b.WriteString("..")
+		emitExpr(b, *st.End)
+		b.WriteString(" {\n")
+		for _, s := range st.Body {
+			emitStmt(b, indent+"  ", s)
+		}
+		b.WriteString(indent + "}\n")
+	case "ForEach":
+		b.WriteString(indent + "for " + st.Name + " in ")
+		if st.Expr != nil {
+			emitExpr(b, *st.Expr)
+		}
+		b.WriteString(" {\n")
+		for _, s := range st.Body {
+			emitStmt(b, indent+"  ", s)
+		}
+		b.WriteString(indent + "}\n")
+	case "While":
+		b.WriteString(indent + "while (")
+		if st.Expr != nil {
+			emitExpr(b, *st.Expr)
+		}
+		b.WriteString(") {\n")
+		for _, s := range st.Body {
+			emitStmt(b, indent+"  ", s)
+		}
+		b.WriteString(indent + "}\n")
+	case "If":
+		b.WriteString(indent + "if ")
+		if st.Expr != nil {
+			emitExpr(b, *st.Expr)
+		}
+		b.WriteString(" {\n")
+		for _, s := range st.Then {
+			emitStmt(b, indent+"  ", s)
+		}
+		if len(st.Else) > 0 {
+			b.WriteString(indent + "} else {\n")
+			for _, s := range st.Else {
+				emitStmt(b, indent+"  ", s)
+			}
+		}
+		b.WriteString(indent + "}\n")
+	}
+}
+
+func emitExpr(b *strings.Builder, e Expr) {
+	switch e.Kind {
+	case "Literal":
+		b.WriteString(e.Value)
+	case "String":
+		b.WriteString("\"")
+		b.WriteString(e.Value)
+		b.WriteString("\"")
+	case "Ident":
+		b.WriteString(e.Name)
+	case "Binary":
+		emitExpr(b, *e.Left)
+		b.WriteString(" " + op(e.Op) + " ")
+		emitExpr(b, *e.Right)
+	case "Call":
+		emitExpr(b, *e.Target)
+		b.WriteString("(")
+		for i, a := range e.Args {
+			if i > 0 {
+				b.WriteString(", ")
+			}
+			emitExpr(b, a)
+		}
+		b.WriteString(")")
+	case "Member":
+		emitExpr(b, *e.Expr)
+		b.WriteString("." + e.Name)
+	case "Array":
+		b.WriteString("[")
+		for i, el := range e.Elems {
+			if i > 0 {
+				b.WriteString(",")
+			}
+			emitExpr(b, el)
+		}
+		b.WriteString("]")
+	case "Cond":
+		if e.Then != nil && e.Else != nil &&
+			e.Then.Kind == "Literal" && e.Then.Value == "1" &&
+			e.Else.Kind == "Literal" && e.Else.Value == "0" {
+			emitExpr(b, *e.Cond)
+		} else {
+			emitExpr(b, *e.Cond)
+		}
+	}
+}
+
+func op(k string) string {
+	switch k {
+	case "PLUS":
+		return "+"
+	case "MINUS":
+		return "-"
+	case "MULTIPLY":
+		return "*"
+	case "DIVIDE":
+		return "/"
+	case "REMAINDER":
+		return "%"
+	case "LESS_THAN":
+		return "<"
+	case "GREATER_THAN":
+		return ">"
+	case "EQUAL_TO":
+		return "=="
+	case "NOT_EQUAL_TO":
+		return "!="
+	case "LESS_THAN_EQUAL":
+		return "<="
+	case "GREATER_THAN_EQUAL":
+		return ">="
+	}
+	return k
+}
+
+// Convert converts a parsed Node into a Mochi AST node.
 func Convert(n *Node) (*mochias.Node, error) {
 	src, err := ConvertSource(n)
 	if err != nil {
@@ -149,11 +282,7 @@ func Convert(n *Node) (*mochias.Node, error) {
 
 // ConvertFile reads a Java file and converts it to a Mochi AST node.
 func ConvertFile(path string) (*mochias.Node, error) {
-	data, err := os.ReadFile(path)
-	if err != nil {
-		return nil, err
-	}
-	n, err := Parse(string(data))
+	n, err := ParseFile(path)
 	if err != nil {
 		return nil, err
 	}
@@ -162,11 +291,7 @@ func ConvertFile(path string) (*mochias.Node, error) {
 
 // ConvertFileSource reads a Java file and returns the generated Mochi source.
 func ConvertFileSource(path string) (string, error) {
-	data, err := os.ReadFile(path)
-	if err != nil {
-		return "", err
-	}
-	n, err := Parse(string(data))
+	n, err := ParseFile(path)
 	if err != nil {
 		return "", err
 	}
