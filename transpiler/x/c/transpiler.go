@@ -86,6 +86,7 @@ var (
 	needCharAt              bool
 	needSliceInt            bool
 	needSliceDouble         bool
+	needSliceStr            bool
 	needGMP                 bool
 	needStrBigInt           bool
 	needListAppendBigRat    bool
@@ -648,7 +649,7 @@ func (d *DeclStmt) emit(w io.Writer, indent int) {
 			return
 		}
 		if call, ok := d.Value.(*CallExpr); ok {
-			if call.Func == "_slice_int" || call.Func == "_slice_double" {
+			if call.Func == "_slice_int" || call.Func == "_slice_double" || call.Func == "_slice_str" {
 				writeIndent(w, indent)
 				fmt.Fprintf(w, "size_t %s_len = 0;\n", d.Name)
 				fmt.Fprintf(w, "%s *%s = ", base, d.Name)
@@ -799,7 +800,7 @@ func (a *AssignStmt) emit(w io.Writer, indent int) {
 	io.WriteString(w, ";\n")
 
 	if call, ok := a.Value.(*CallExpr); ok {
-		if call.Func == "_slice_int" || call.Func == "_slice_double" {
+		if call.Func == "_slice_int" || call.Func == "_slice_double" || call.Func == "_slice_str" {
 			return
 		}
 		if strings.HasSuffix(funcReturnTypes[call.Func], "[]") {
@@ -1023,7 +1024,7 @@ func (s *StringLit) emitExpr(w io.Writer) {
 type IntLit struct{ Value int }
 
 func (i *IntLit) emitExpr(w io.Writer) {
-    fmt.Fprintf(w, "%dLL", i.Value)
+	fmt.Fprintf(w, "%dLL", i.Value)
 }
 
 type FloatLit struct{ Value float64 }
@@ -1416,6 +1417,21 @@ func (c *CallExpr) emitExpr(w io.Writer) {
 	if c.Func == "_slice_double" && len(c.Args) == 5 {
 		needSliceDouble = true
 		io.WriteString(w, "_slice_double(")
+		c.Args[0].emitExpr(w)
+		io.WriteString(w, ", ")
+		c.Args[1].emitExpr(w)
+		io.WriteString(w, ", ")
+		c.Args[2].emitExpr(w)
+		io.WriteString(w, ", ")
+		c.Args[3].emitExpr(w)
+		io.WriteString(w, ", ")
+		c.Args[4].emitExpr(w)
+		io.WriteString(w, ")")
+		return
+	}
+	if c.Func == "_slice_str" && len(c.Args) == 5 {
+		needSliceStr = true
+		io.WriteString(w, "_slice_str(")
 		c.Args[0].emitExpr(w)
 		io.WriteString(w, ", ")
 		c.Args[1].emitExpr(w)
@@ -2383,6 +2399,21 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("    return res;\n")
 		buf.WriteString("}\n\n")
 	}
+	if needSliceStr {
+		buf.WriteString("static const char** _slice_str(const char **arr, size_t len, int start, int end, size_t *out_len) {\n")
+		buf.WriteString("    if (start < 0) start = 0;\n")
+		buf.WriteString("    if ((size_t)end > len) end = len;\n")
+		buf.WriteString("    if (start > end) start = end;\n")
+		buf.WriteString("    size_t n = end - start;\n")
+		buf.WriteString("    const char **res = NULL;\n")
+		buf.WriteString("    if (n) {\n")
+		buf.WriteString("        res = malloc(n * sizeof(char*));\n")
+		buf.WriteString("        memcpy(res, arr + start, n * sizeof(char*));\n")
+		buf.WriteString("    }\n")
+		buf.WriteString("    *out_len = n;\n")
+		buf.WriteString("    return res;\n")
+		buf.WriteString("}\n\n")
+	}
 	names := make([]string, 0, len(structTypes))
 	for name := range structTypes {
 		names = append(names, name)
@@ -2637,6 +2668,7 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 	needCharAt = false
 	needSliceInt = false
 	needSliceDouble = false
+	needSliceStr = false
 	datasetWhereEnabled = false
 	joinMultiEnabled = false
 	builtinAliases = make(map[string]string)
@@ -4596,6 +4628,17 @@ func convertUnary(u *parser.Unary) Expr {
 						needSliceDouble = true
 						funcReturnTypes["_slice_double"] = "double[]"
 						current = &CallExpr{Func: "_slice_double", Args: []Expr{current, &VarRef{Name: vr.Name + "_len"}, sliceStart, sliceEnd, &UnaryExpr{Op: "&", Expr: &VarRef{Name: currentVarName + "_len"}}}}
+					} else {
+						return nil
+					}
+				} else if typ == "const char*[]" {
+					if vr, ok := current.(*VarRef); ok {
+						if sliceEnd == nil {
+							sliceEnd = &VarRef{Name: vr.Name + "_len"}
+						}
+						needSliceStr = true
+						funcReturnTypes["_slice_str"] = "const char*[]"
+						current = &CallExpr{Func: "_slice_str", Args: []Expr{current, &VarRef{Name: vr.Name + "_len"}, sliceStart, sliceEnd, &UnaryExpr{Op: "&", Expr: &VarRef{Name: currentVarName + "_len"}}}}
 					} else {
 						return nil
 					}

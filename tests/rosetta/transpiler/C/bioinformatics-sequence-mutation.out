@@ -1,0 +1,40 @@
+SEQUENCE:
+    0: -1842500640
+
+BASE COUNT:
+    A:   0
+    C:   0
+    G:   0
+    T:   0
+    ------
+    Σ: 11
+    ======
+
+WEIGHTS (ex 300):
+  Change: 100
+  Delete: 100
+  Insert: 100
+
+MUTATIONS (10):
+  Insert @  4 'C'
+  Insert @  9 'A'
+  Change @  2 '8' to 'T'
+  Delete @  5 '4'
+  Change @  0 '-' to 'A'
+  Delete @  5 '4'
+  Delete @  1 '1'
+  Insert @  8 'T'
+  Delete @  9 '5'
+  Delete @  7 '2'
+
+SEQUENCE:
+    0: -1842481248
+
+BASE COUNT:
+    A:   0
+    C:   0
+    G:   0
+    T:   0
+    ------
+    Σ: 11
+    ======
