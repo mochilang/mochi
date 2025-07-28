@@ -1,0 +1,21 @@
+(program
+  (fun sum3
+    (param A)
+    (param B)
+    (param C)
+    (param R)
+    (let Return1
+      (binary +
+        (binary + (selector A) (selector B))
+        (selector C)
+      )
+    )
+    (let R (selector Return1))
+  )
+  (fun main
+    (let R0
+      (call sum3 (int 1) (int 2) (int 3))
+    )
+    (call print (selector R0))
+  )
+)

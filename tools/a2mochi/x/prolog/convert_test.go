@@ -43,9 +43,16 @@ func TestConvert_Golden(t *testing.T) {
 	}
 
 	allowed := map[string]bool{
-		"avg_builtin": true,
-		"print_hello": true,
-		"unary_neg":   true,
+		"avg_builtin":    true,
+		"print_hello":    true,
+		"unary_neg":      true,
+		"for_loop":       true,
+		"len_builtin":    true,
+		"sum_builtin":    true,
+		"let_and_print":  true,
+		"math_ops":       true,
+		"fun_call":       true,
+		"fun_three_args": true,
 	}
 
 	outDir := filepath.Join(root, "tests/a2mochi/x/prolog")

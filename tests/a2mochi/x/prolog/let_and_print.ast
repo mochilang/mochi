@@ -1,0 +1,10 @@
+(program
+  (fun main
+    (let A (int 10))
+    (let B (int 20))
+    (let R2
+      (binary + (selector A) (selector B))
+    )
+    (call print (selector R2))
+  )
+)
