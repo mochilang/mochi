@@ -1,5 +1,5 @@
-fun makeAdder(n) {
-  return fun(x) => (x + n)
+fun makeAdder(n: int): int {
+  return fun(x: int): int => (x + n)
 }
 var add10 = makeAdder(10)
 print(add10(7))

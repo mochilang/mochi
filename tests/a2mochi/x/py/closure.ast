@@ -1,9 +1,11 @@
 (program
   (fun makeAdder
-    (param n)
+    (param n (type int))
+    (type int)
     (return
       (funexpr
-        (param x)
+        (param x (type int))
+        (type int)
         (binary + (selector x) (selector n))
       )
     )

@@ -1,0 +1,5 @@
+var data = [1, 2]
+var flag = (len(from x in data
+where (x == 1)
+select x) > 0)
+print(if flag then true else false)

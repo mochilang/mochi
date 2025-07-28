@@ -1,0 +1,27 @@
+(program
+  (type People
+    (field name (type string))
+    (field age (type int))
+  )
+  (var people
+    (list
+      (call People (string Alice) (int 30))
+      (call People (string Bob) (int 25))
+    )
+  )
+  (for _row
+    (in (selector people))
+    (block
+      (var _tmp
+        (if_expr
+          (call hasattr (selector _row) (string __dataclass_fields__))
+          (group (selector _row))
+          (selector _row)
+        )
+      )
+      (call print
+        (group (selector _tmp))
+      )
+    )
+  )
+)

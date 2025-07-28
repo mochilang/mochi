@@ -1,0 +1,56 @@
+(program
+  (type People
+    (field name (type string))
+    (field age (type int))
+  )
+  (var people
+    (list
+      (call People (string Alice) (int 30))
+      (call People (string Bob) (int 15))
+      (call People (string Charlie) (int 65))
+      (call People (string Diana) (int 45))
+    )
+  )
+  (type Adult
+    (field name (type string))
+    (field age (type int))
+    (field is_senior (type bool))
+  )
+  (var adults
+    (query person
+      (source (selector people))
+      (where
+        (binary >=
+          (selector age (selector person))
+          (int 18)
+        )
+      )
+      (select
+        (call Adult
+          (selector name (selector person))
+          (selector age (selector person))
+          (binary >=
+            (selector age (selector person))
+            (int 60)
+          )
+        )
+      )
+    )
+  )
+  (call print (string "--- Adults ---"))
+  (for person
+    (in (selector adults))
+    (block
+      (call print
+        (selector name (selector person))
+        (string is)
+        (selector age (selector person))
+        (if_expr
+          (selector is_senior (selector person))
+          (string " (senior)")
+          (string "")
+        )
+      )
+    )
+  )
+)

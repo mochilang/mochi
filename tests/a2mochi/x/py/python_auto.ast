@@ -1,0 +1,8 @@
+(program
+  (call print
+    (group (int 16))
+  )
+  (call print
+    (selector pi (selector math))
+  )
+)

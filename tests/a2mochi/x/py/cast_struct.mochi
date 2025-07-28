@@ -1,0 +1,5 @@
+type Todo {
+  title: string
+}
+var todo = Todo {title: "hi"}
+print(todo.title)

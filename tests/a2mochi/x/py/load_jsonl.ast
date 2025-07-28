@@ -1,0 +1,49 @@
+(program
+  (type Person
+    (field name (type string))
+    (field age (type int))
+    (field email (type string))
+  )
+  (type People
+    (field age (type float))
+    (field email (type string))
+    (field name (type string))
+  )
+  (var people
+    (list
+      (call People (int 30) (string "alice@example.com") (string Alice))
+      (call People (int 15) (string "bob@example.com") (string Bob))
+      (call People (int 20) (string "charlie@example.com") (string Charlie))
+    )
+  )
+  (type Adult
+    (field name (type string))
+    (field email (type string))
+  )
+  (var adults
+    (query p
+      (source (selector people))
+      (where
+        (binary >=
+          (selector age (selector p))
+          (int 18)
+        )
+      )
+      (select
+        (call Adult
+          (selector name (selector p))
+          (selector email (selector p))
+        )
+      )
+    )
+  )
+  (for a
+    (in (selector adults))
+    (block
+      (call print
+        (selector name (selector a))
+        (selector email (selector a))
+      )
+    )
+  )
+)

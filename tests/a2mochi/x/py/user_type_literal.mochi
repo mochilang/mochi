@@ -1,0 +1,10 @@
+type Person {
+  name: string
+  age: int
+}
+type Book {
+  title: string
+  author: Person
+}
+var book = Book {title: "Go", author: Person {name: "Bob", age: 42}}
+print(book.author.name)

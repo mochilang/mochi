@@ -1,0 +1,21 @@
+type Person {
+  name: string
+  age: int
+  email: string
+}
+type People {
+  age: float
+  email: string
+  name: string
+}
+var people = [People(30, "alice@example.com", "Alice"), People(15, "bob@example.com", "Bob"), People(20, "charlie@example.com", "Charlie")]
+type Adult {
+  name: string
+  email: string
+}
+var adults = from p in people
+where (p.age >= 18)
+select Adult(p.name, p.email)
+for a in adults {
+  print(a.name, a.email)
+}

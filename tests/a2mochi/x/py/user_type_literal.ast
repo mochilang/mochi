@@ -1,0 +1,26 @@
+(program
+  (type Person
+    (field name (type string))
+    (field age (type int))
+  )
+  (type Book
+    (field title (type string))
+    (field author (type Person))
+  )
+  (var book
+    (struct Book
+      (field title (string Go))
+      (field author
+        (struct Person
+          (field name (string Bob))
+          (field age (int 42))
+        )
+      )
+    )
+  )
+  (call print
+    (selector name
+      (selector author (selector book))
+    )
+  )
+)

@@ -1,0 +1,17 @@
+type People {
+  name: string
+  age: int
+}
+var people = [People("Alice", 30), People("Bob", 15), People("Charlie", 65), People("Diana", 45)]
+type Adult {
+  name: string
+  age: int
+  is_senior: bool
+}
+var adults = from person in people
+where (person.age >= 18)
+select Adult(person.name, person.age, (person.age >= 60))
+print("--- Adults ---")
+for person in adults {
+  print(person.name, "is", person.age, if person.is_senior then " (senior)" else "")
+}

@@ -1,0 +1,14 @@
+(program
+  (var m
+    (map
+      (entry (string a) (int 1))
+      (entry (string b) (int 2))
+    )
+  )
+  (for k
+    (in (selector m))
+    (block
+      (call print (selector k))
+    )
+  )
+)

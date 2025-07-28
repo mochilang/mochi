@@ -7,7 +7,14 @@
       (binary + (selector a) (selector b))
     )
   )
+  (var add5
+    (funexpr
+      (param b (type int))
+      (type int)
+      (call add (int 5) (selector b))
+    )
+  )
   (call print
-    (call add (int 2) (int 3))
+    (call add5 (int 3))
   )
 )
