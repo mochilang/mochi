@@ -1,0 +1,304 @@
+package scala
+
+import (
+	"fmt"
+	"regexp"
+	"strings"
+
+	"mochi/ast"
+	"mochi/parser"
+)
+
+// Field describes a parameter or struct field with an optional type.
+type Field struct {
+	Name string
+	Type string
+}
+
+// Variant represents a case class belonging to a sealed trait.
+type Variant struct {
+	Name   string
+	Fields []Field
+}
+
+// TypeDecl holds a trait name and its case class variants.
+type TypeDecl struct {
+	Name     string
+	Variants []Variant
+}
+
+// Func represents a top level Scala function extracted from the source.
+type Func struct {
+	Name   string
+	Params []string
+	Body   []string
+}
+
+// File represents a parsed Scala source file.
+type File struct {
+	Types []TypeDecl
+	Funcs []Func
+}
+
+// Parse parses a limited subset of Scala into a File structure.
+func Parse(src string) (*File, error) {
+	f := parseSource(src)
+	return &f, nil
+}
+
+// ConvertSource converts a parsed File into Mochi source code.
+func ConvertSource(f *File) (string, error) {
+	var b strings.Builder
+	for _, t := range f.Types {
+		code := convertTypeDecl(t)
+		if code != "" {
+			b.WriteString(code)
+			b.WriteByte('\n')
+		}
+	}
+	for _, fn := range f.Funcs {
+		code := convertFromAST(fn)
+		if code == "" {
+			continue
+		}
+		b.WriteString(code)
+		b.WriteByte('\n')
+	}
+	if b.Len() == 0 {
+		return "", fmt.Errorf("no convertible symbols found")
+	}
+	return strings.TrimSuffix(b.String(), "\n"), nil
+}
+
+// Convert converts a parsed File into a Mochi AST node.
+func Convert(f *File) (*ast.Node, error) {
+	src, err := ConvertSource(f)
+	if err != nil {
+		return nil, err
+	}
+	prog, err := parser.ParseString(src)
+	if err != nil {
+		return nil, err
+	}
+	return ast.FromProgram(prog), nil
+}
+
+// --- parsing helpers ---
+
+func parseSource(src string) File {
+	lines := strings.Split(strings.ReplaceAll(src, "\r\n", "\n"), "\n")
+	reHeader := regexp.MustCompile(`^def\s+([a-zA-Z0-9_]+)\s*\(([^)]*)\)\s*=\s*(\{)?`)
+	var file File
+	for i := 0; i < len(lines); i++ {
+		line := strings.TrimSpace(lines[i])
+		if m := reHeader.FindStringSubmatch(line); m != nil {
+			name := m[1]
+			params := []string{}
+			for _, p := range strings.Split(m[2], ",") {
+				p = strings.TrimSpace(p)
+				if p == "" {
+					continue
+				}
+				if idx := strings.Index(p, ":"); idx != -1 {
+					p = strings.TrimSpace(p[:idx])
+				}
+				params = append(params, p)
+			}
+			body := []string{}
+			if m[3] == "{" {
+				depth := 1
+				for j := i + 1; j < len(lines); j++ {
+					l := strings.TrimSpace(lines[j])
+					if strings.Contains(l, "{") {
+						depth++
+					}
+					if strings.Contains(l, "}") {
+						depth--
+						if depth == 0 {
+							i = j
+							break
+						}
+					}
+					body = append(body, l)
+				}
+			}
+			file.Funcs = append(file.Funcs, Func{Name: name, Params: params, Body: body})
+		}
+	}
+	return file
+}
+
+// --- conversion helpers ---
+
+func convertFromAST(fn Func) string {
+	var b strings.Builder
+	topLevel := fn.Name == "main"
+	if !topLevel {
+		b.WriteString("fun ")
+		b.WriteString(fn.Name)
+		b.WriteByte('(')
+		for i, p := range fn.Params {
+			if i > 0 {
+				b.WriteString(", ")
+			}
+			b.WriteString(p)
+		}
+		b.WriteString(") {\n")
+	}
+	indent := 1
+	if topLevel {
+		indent = 0
+	}
+	write := func(s string) {
+		b.WriteString(strings.Repeat("  ", indent))
+		b.WriteString(s)
+		b.WriteByte('\n')
+	}
+
+	reWhile := regexp.MustCompile(`^while\s*\((.*)\)\s*{`)
+	reFor := regexp.MustCompile(`^for \(([^<-]+)<-([^\)]+)\)\s*{`)
+	reIf := regexp.MustCompile(`^if\s*\((.*)\)\s*{`)
+	reElseIf := regexp.MustCompile(`^}\s*else if\s*\((.*)\)\s*{`)
+	reElse := regexp.MustCompile(`^}\s*else\s*{`)
+
+	for _, l := range fn.Body {
+		line := strings.TrimSpace(l)
+		if line == "" {
+			continue
+		}
+		if line == "}" {
+			indent--
+			write("}")
+			if indent == 0 {
+				break
+			}
+			continue
+		}
+		if m := reElseIf.FindStringSubmatch(line); m != nil {
+			indent--
+			write("else if " + convertExpr(strings.TrimSpace(m[1])) + " {")
+			indent++
+			continue
+		}
+		if reElse.MatchString(line) {
+			indent--
+			write("else {")
+			indent++
+			continue
+		}
+		if m := reWhile.FindStringSubmatch(line); m != nil {
+			write("while " + convertExpr(strings.TrimSpace(m[1])) + " {")
+			indent++
+			continue
+		}
+		if m := reFor.FindStringSubmatch(line); m != nil {
+			name := strings.TrimSpace(m[1])
+			expr := convertExpr(strings.TrimSpace(m[2]))
+			write("for " + name + " in " + expr + " {")
+			indent++
+			continue
+		}
+		if m := reIf.FindStringSubmatch(line); m != nil {
+			write("if " + convertExpr(strings.TrimSpace(m[1])) + " {")
+			indent++
+			continue
+		}
+		switch {
+		case strings.HasPrefix(line, "println("):
+			expr := strings.TrimSuffix(strings.TrimPrefix(line, "println("), ")")
+			write("print(" + convertExpr(expr) + ")")
+		case strings.HasPrefix(line, "return "):
+			expr := strings.TrimSpace(strings.TrimPrefix(line, "return "))
+			write("return " + convertExpr(expr))
+		case strings.HasPrefix(line, "var "):
+			content := strings.TrimPrefix(line, "var ")
+			if idx := strings.Index(content, "="); idx != -1 {
+				left := strings.TrimSpace(content[:idx])
+				expr := strings.TrimSpace(content[idx+1:])
+				name := left
+				if c := strings.Index(left, ":"); c != -1 {
+					name = strings.TrimSpace(left[:c])
+				}
+				write("var " + name + " = " + convertExpr(expr))
+			} else {
+				write("var " + content)
+			}
+		case strings.HasPrefix(line, "val "):
+			if idx := strings.Index(line, "="); idx != -1 {
+				left := strings.TrimSpace(line[4:idx])
+				expr := strings.TrimSpace(line[idx+1:])
+				name := left
+				if c := strings.Index(left, ":"); c != -1 {
+					name = strings.TrimSpace(left[:c])
+				}
+				write("let " + name + " = " + convertExpr(expr))
+			}
+		case strings.Contains(line, ".append("):
+			idx := strings.Index(line, ".append(")
+			recv := strings.TrimSpace(line[:idx])
+			arg := strings.TrimSuffix(line[idx+8:], ")")
+			write("append(" + recv + ", " + convertExpr(arg) + ")")
+		case strings.Contains(line, "="):
+			parts := strings.SplitN(line, "=", 2)
+			left := strings.TrimSpace(parts[0])
+			right := strings.TrimSpace(parts[1])
+			if left != "" && right != "" {
+				write(left + " = " + convertExpr(right))
+			}
+		}
+	}
+	if !topLevel {
+		b.WriteString("}")
+	}
+	return b.String()
+}
+
+func convertExpr(expr string) string {
+	expr = strings.TrimSpace(expr)
+	if strings.HasSuffix(expr, ".toString()") {
+		expr = "str(" + strings.TrimSuffix(expr, ".toString()") + ")"
+	}
+	if strings.HasSuffix(expr, ".size") {
+		expr = "len(" + strings.TrimSuffix(expr, ".size") + ")"
+	}
+	if strings.HasSuffix(expr, ".length") {
+		expr = "len(" + strings.TrimSuffix(expr, ".length") + ")"
+	}
+	if strings.Contains(expr, ".append(") {
+		idx := strings.Index(expr, ".append(")
+		recv := strings.TrimSpace(expr[:idx])
+		arg := strings.TrimSuffix(expr[idx+8:], ")")
+		return "append(" + recv + ", " + convertExpr(arg) + ")"
+	}
+	return expr
+}
+
+func convertTypeDecl(t TypeDecl) string {
+	if len(t.Variants) == 0 {
+		return ""
+	}
+	var b strings.Builder
+	b.WriteString("type ")
+	b.WriteString(t.Name)
+	b.WriteString(" =\n")
+	for i, v := range t.Variants {
+		if i > 0 {
+			b.WriteString("  | ")
+		} else {
+			b.WriteString("  ")
+		}
+		b.WriteString(v.Name)
+		if len(v.Fields) > 0 {
+			b.WriteString("(")
+			for j, f := range v.Fields {
+				if j > 0 {
+					b.WriteString(", ")
+				}
+				b.WriteString(f.Name)
+			}
+			b.WriteString(")")
+		}
+		b.WriteByte('\n')
+	}
+	return strings.TrimSuffix(b.String(), "\n")
+}
