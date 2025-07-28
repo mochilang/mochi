@@ -2,9 +2,9 @@
 
 Generated PHP code from Mochi Rosetta tasks lives in `tests/rosetta/transpiler/php`.
 
-Last updated: 2025-07-28 11:14 +0700
+Last updated: 2025-07-28 11:49 +0700
 
-## Checklist (461/493)
+## Checklist (464/493)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 137µs | 136 B |
@@ -466,9 +466,9 @@ Last updated: 2025-07-28 11:14 +0700
 | 457 | fork | ✓ | 50µs | 128 B |
 | 458 | formal-power-series |   |  |  |
 | 459 | formatted-numeric-output |   |  |  |
-| 460 | forward-difference |   |  |  |
-| 461 | four-bit-adder-1 |   |  |  |
-| 462 | four-is-magic |   |  |  |
+| 460 | forward-difference | ✓ | 131µs | 504 B |
+| 461 | four-bit-adder-1 | ✓ | 73µs | 96 B |
+| 462 | four-is-magic | ✓ | 254µs | 192 B |
 | 463 | four-is-the-number-of-letters-in-the-... |   |  |  |
 | 464 | fractal-tree |   |  |  |
 | 465 | fractran |   |  |  |
