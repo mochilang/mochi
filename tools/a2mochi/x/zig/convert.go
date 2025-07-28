@@ -219,10 +219,35 @@ func convertLoop(lines []string) string {
 var printRE = regexp.MustCompile(`print\("\{[^}]+\}\\n",\s*\.\{(.*)\}\)`)
 var declRE = regexp.MustCompile(`^(const|var)\s+([A-Za-z_][A-Za-z0-9_]*)\s*=\s*(.*)$`)
 
+var typedArrRE = regexp.MustCompile(`^\[_\]\w+\{(.*)\}$`)
+var orderRE = regexp.MustCompile(`std\.mem\.order\(u8,\s*([^,]+),\s*([^\)]+)\)\s*([!=]=)\s*\.(lt|gt)`)
+
+func transformExpr(expr string) string {
+	if m := typedArrRE.FindStringSubmatch(expr); m != nil {
+		return "[" + strings.TrimSpace(m[1]) + "]"
+	}
+	if m := orderRE.FindStringSubmatch(expr); m != nil {
+		a, b, op, cmp := strings.TrimSpace(m[1]), strings.TrimSpace(m[2]), m[3], m[4]
+		switch cmp {
+		case "lt":
+			if op == "==" {
+				return fmt.Sprintf("%s < %s", a, b)
+			}
+			return fmt.Sprintf("%s >= %s", a, b)
+		case "gt":
+			if op == "==" {
+				return fmt.Sprintf("%s > %s", a, b)
+			}
+			return fmt.Sprintf("%s <= %s", a, b)
+		}
+	}
+	return expr
+}
+
 func extractPrint(line string) string {
 	m := printRE.FindStringSubmatch(strings.TrimSpace(line))
 	if len(m) == 2 {
-		return strings.TrimSpace(m[1])
+		return transformExpr(strings.TrimSpace(m[1]))
 	}
 	return ""
 }
@@ -243,6 +268,14 @@ func translate(src string) (string, error) {
 				brace += strings.Count(l, "{") - strings.Count(l, "}")
 				if p := extractPrint(l); p != "" {
 					out.WriteString("print(" + p + ")\n")
+					continue
+				}
+				t := strings.TrimSpace(strings.TrimSuffix(l, ";"))
+				if m := declRE.FindStringSubmatch(t); m != nil {
+					if typedArrRE.MatchString(strings.TrimSpace(m[3])) {
+						val := transformExpr(strings.TrimSpace(m[3]))
+						out.WriteString("let " + m[2] + " = " + val + "\n")
+					}
 				}
 			}
 			continue

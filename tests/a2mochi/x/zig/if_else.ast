@@ -1,0 +1,4 @@
+(program
+  (call print (string big))
+  (call print (string small))
+)
