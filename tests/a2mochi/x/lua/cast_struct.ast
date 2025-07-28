@@ -1,0 +1,10 @@
+(program
+  (let todo
+    (map
+      (entry (string title) (string hi))
+    )
+  )
+  (call print
+    (selector title (selector todo))
+  )
+)
