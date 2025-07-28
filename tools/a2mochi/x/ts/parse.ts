@@ -17,6 +17,8 @@ interface TSDecl {
   params?: TSParam[];
   ret?: string;
   body?: string;
+  /** initializer expression for variables */
+  value?: string;
   fields?: TSField[];
   alias?: string;
   variants?: string[];
@@ -134,6 +136,7 @@ function parse(src: string): TSDecl[] {
           });
         } else {
           const typ = tsToMochiType(d.type ? d.type.getText(source) : "");
+          const value = init ? init.getText(source) : "";
           decls.push({
             kind: "var",
             name,
@@ -144,6 +147,7 @@ function parse(src: string): TSDecl[] {
             endCol: end.col,
             snippet,
             ret: typ,
+            value,
             startOff: stmt.getStart(source),
             endOff: stmt.end,
             doc,
