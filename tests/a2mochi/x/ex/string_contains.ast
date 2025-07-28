@@ -1,6 +1,6 @@
 (program
   (fun main
-    (let s (string catch))
+    (var s (string catch))
     (call print
       (call
         (selector contains (selector s))

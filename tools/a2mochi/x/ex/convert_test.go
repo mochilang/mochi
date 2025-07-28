@@ -110,6 +110,11 @@ func TestConvert_Golden(t *testing.T) {
 		"for_loop":          true,
 		"if_else":           true,
 		"var_assignment":    true,
+		"len_map":           true,
+		"map_in_operator":   true,
+		"map_membership":    true,
+		"map_index":         true,
+		"string_index":      true,
 	}
 
 	outDir := filepath.Join(root, "tests", "a2mochi", "x", "ex")
