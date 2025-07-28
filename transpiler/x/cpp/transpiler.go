@@ -2278,6 +2278,14 @@ func (b *BinaryExpr) emit(w io.Writer) {
 	if b.Op == "+" {
 		lt := exprType(b.Left)
 		rt := exprType(b.Right)
+		if lt == "std::string" && rt == "std::string" {
+			io.WriteString(w, "(")
+			b.Left.emit(w)
+			io.WriteString(w, " + ")
+			b.Right.emit(w)
+			io.WriteString(w, ")")
+			return
+		}
 		if strings.HasPrefix(lt, "std::vector<") && lt == rt {
 			io.WriteString(w, "([&]{ auto __lhs = ")
 			b.Left.emit(w)
@@ -5866,9 +5874,46 @@ func cppType(t string) string {
 	}
 	if strings.HasPrefix(t, "fun(") {
 		if currentProgram != nil {
+			currentProgram.addInclude("<functional>")
+		}
+		body := strings.TrimPrefix(t, "fun(")
+		end := strings.Index(body, ")")
+		paramsPart := ""
+		retPart := ""
+		if end >= 0 {
+			paramsPart = body[:end]
+			retPart = strings.TrimSpace(body[end+1:])
+		}
+		ret := "std::any"
+		if currentProgram != nil {
 			currentProgram.addInclude("<any>")
 		}
-		return "std::any"
+		if strings.HasPrefix(retPart, ":") {
+			retPart = strings.TrimSpace(retPart[1:])
+			if retPart != "" {
+				ret = cppType(retPart)
+			}
+		}
+		if ret == "auto" {
+			if currentProgram != nil {
+				currentProgram.addInclude("<any>")
+			}
+			ret = "std::any"
+		}
+		var params []string
+		if strings.TrimSpace(paramsPart) != "" {
+			for _, p := range strings.Split(paramsPart, ",") {
+				pt := cppType(strings.TrimSpace(p))
+				if pt == "auto" {
+					if currentProgram != nil {
+						currentProgram.addInclude("<any>")
+					}
+					pt = "std::any"
+				}
+				params = append(params, pt)
+			}
+		}
+		return fmt.Sprintf("std::function<%s(%s)>", ret, strings.Join(params, ", "))
 	}
 	if strings.HasPrefix(t, "list<") && strings.HasSuffix(t, ">") {
 		elem := strings.TrimSuffix(strings.TrimPrefix(t, "list<"), ">")
@@ -6166,6 +6211,20 @@ func typeRefString(t *parser.TypeRef) string {
 	}
 	if t.Simple != nil {
 		return *t.Simple
+	}
+	if t.Fun != nil {
+		var params []string
+		for _, p := range t.Fun.Params {
+			params = append(params, typeRefString(p))
+		}
+		ret := ""
+		if t.Fun.Return != nil {
+			ret = typeRefString(t.Fun.Return)
+		}
+		if ret != "" {
+			return fmt.Sprintf("fun(%s): %s", strings.Join(params, ","), ret)
+		}
+		return fmt.Sprintf("fun(%s)", strings.Join(params, ","))
 	}
 	if t.Generic != nil {
 		parts := make([]string, len(t.Generic.Args))
