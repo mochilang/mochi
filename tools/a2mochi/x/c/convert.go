@@ -410,7 +410,7 @@ func parseStatements(body string) []string {
 			indent++
 		case strings.HasPrefix(l, "return "):
 			expr := strings.TrimSuffix(strings.TrimPrefix(l, "return "), ";")
-			out = append(out, strings.Repeat("  ", indent)+"return "+expr)
+			out = append(out, strings.Repeat("  ", indent)+"return "+convertExpr(expr))
 		case l == "continue;":
 			out = append(out, strings.Repeat("  ", indent)+"continue")
 		case l == "break;":
@@ -496,6 +496,10 @@ func parseStatements(body string) []string {
 				out = append(out, strings.Repeat("  ", indent)+convertVarDecl(strings.TrimSpace(l[7:])))
 			case strings.HasPrefix(l, "char "):
 				out = append(out, strings.Repeat("  ", indent)+convertVarDecl(strings.TrimSpace(l[5:])))
+			case strings.HasPrefix(l, "const char*"):
+				out = append(out, strings.Repeat("  ", indent)+convertVarDecl(strings.TrimSpace(l[len("const char*"):])))
+			case strings.HasPrefix(l, "const char "):
+				out = append(out, strings.Repeat("  ", indent)+convertVarDecl(strings.TrimSpace(l[len("const char "):])))
 			case functionPtrRE.MatchString(l):
 				m := functionPtrRE.FindStringSubmatch(l)
 				name := strings.TrimSpace(m[1])
@@ -509,7 +513,13 @@ func parseStatements(body string) []string {
 				if strings.Contains(tl, "[]") && strings.Contains(tl, "=") && strings.Contains(tl, "{") {
 					out = append(out, strings.Repeat("  ", indent)+convertVarDecl(tl))
 				} else {
-					out = append(out, strings.Repeat("  ", indent)+l)
+					if eq := strings.Index(tl, "="); eq != -1 {
+						name := strings.TrimSpace(tl[:eq])
+						rhs := convertExpr(strings.TrimSuffix(strings.TrimSpace(tl[eq+1:]), ";"))
+						out = append(out, strings.Repeat("  ", indent)+name+" = "+rhs)
+					} else {
+						out = append(out, strings.Repeat("  ", indent)+l)
+					}
 				}
 			}
 		}
@@ -529,11 +539,74 @@ func convertVarDecl(s string) string {
 		}
 		if strings.HasPrefix(rhs, "{") && strings.HasSuffix(rhs, "}") {
 			rhs = strings.TrimSpace(strings.TrimSuffix(strings.TrimPrefix(rhs, "{"), "}"))
+			rhs = convertExpr(rhs)
 			return "var " + name + " = [" + rhs + "]"
 		}
 		return "var " + name
 	}
+	if eq := strings.Index(s, "="); eq != -1 {
+		name := strings.TrimSpace(s[:eq])
+		rhs := convertExpr(strings.TrimSpace(s[eq+1:]))
+		return "var " + name + " = " + rhs
+	}
 	return "var " + s
+}
+
+func convertExpr(s string) string {
+	s = strings.TrimSpace(s)
+	for strings.HasPrefix(s, "(") && strings.HasSuffix(s, ")") {
+		if idx := matchingParen(s, 0); idx == len(s)-1 {
+			s = strings.TrimSpace(s[1 : len(s)-1])
+		} else {
+			break
+		}
+	}
+	q := indexTopLevel(s, '?')
+	if q != -1 {
+		colon := indexTopLevel(s[q+1:], ':')
+		if colon != -1 {
+			cond := strings.TrimSpace(s[:q])
+			t := convertExpr(strings.TrimSpace(s[q+1 : q+1+colon]))
+			f := convertExpr(strings.TrimSpace(s[q+1+colon+1:]))
+			return fmt.Sprintf("if %s then %s else %s", cond, t, f)
+		}
+	}
+	return s
+}
+
+func indexTopLevel(s string, ch byte) int {
+	depth := 0
+	for i := 0; i < len(s); i++ {
+		switch s[i] {
+		case '(':
+			depth++
+		case ')':
+			if depth > 0 {
+				depth--
+			}
+		default:
+			if s[i] == ch && depth == 0 {
+				return i
+			}
+		}
+	}
+	return -1
+}
+
+func matchingParen(s string, start int) int {
+	depth := 0
+	for i := start; i < len(s); i++ {
+		switch s[i] {
+		case '(':
+			depth++
+		case ')':
+			depth--
+			if depth == 0 {
+				return i
+			}
+		}
+	}
+	return -1
 }
 
 func header() string {

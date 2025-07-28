@@ -1,0 +1,72 @@
+(program
+  (fun classify
+    (param n (type int))
+    (type string)
+    (return
+      (if_expr
+        (binary == (selector n) (int 0))
+        (string zero)
+        (if_expr
+          (binary == (selector n) (int 1))
+          (string one)
+          (string many)
+        )
+      )
+    )
+  )
+  (var label
+    (if_expr
+      (binary == (selector x) (int 1))
+      (string one)
+      (if_expr
+        (binary == (selector x) (int 2))
+        (string two)
+        (if_expr
+          (binary == (selector x) (int 3))
+          (string three)
+          (string unknown)
+        )
+      )
+    )
+  )
+  (call print (selector label))
+  (var mood
+    (if_expr
+      (binary ==
+        (call strcmp (selector day) (string mon))
+        (int 0)
+      )
+      (string tired)
+      (if_expr
+        (binary ==
+          (call strcmp (selector day) (string fri))
+          (int 0)
+        )
+        (string excited)
+        (if_expr
+          (binary ==
+            (call strcmp (selector day) (string sun))
+            (int 0)
+          )
+          (string relaxed)
+          (string normal)
+        )
+      )
+    )
+  )
+  (call print (selector mood))
+  (var status
+    (if_expr
+      (binary == (selector ok) (int 1))
+      (string confirmed)
+      (string denied)
+    )
+  )
+  (call print (selector status))
+  (call print
+    (call classify (int 0))
+  )
+  (call print
+    (call classify (int 5))
+  )
+)
