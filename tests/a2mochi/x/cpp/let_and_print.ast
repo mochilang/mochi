@@ -1,0 +1,11 @@
+(program
+  (fun main
+    (type int)
+    (call print
+      (group
+        (binary + (selector a) (selector b))
+      )
+    )
+    (return (int 0))
+  )
+)

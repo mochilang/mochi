@@ -1,0 +1,7 @@
+(program
+  (fun main
+    (type int)
+    (call print (string hello))
+    (return (int 0))
+  )
+)
