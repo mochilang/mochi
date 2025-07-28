@@ -113,60 +113,60 @@ func decode(data []byte) ([]Function, []Class, error) {
 
 // ConvertSource converts the parsed Dart node into Mochi source code.
 func ConvertSource(n *Node) (string, error) {
-        var b strings.Builder
-        b.Write(meta.Header("// "))
-        b.WriteString("/*\n")
-        b.WriteString(n.Src)
-        if !strings.HasSuffix(n.Src, "\n") {
-                b.WriteByte('\n')
-        }
-        b.WriteString("*/\n")
-        for _, v := range parseTopLevelVars(n.Src, n.Functions, n.Classes) {
-                b.WriteString(v)
-                b.WriteByte('\n')
-        }
-        for _, c := range n.Classes {
-                b.WriteString("type ")
-                b.WriteString(c.Name)
-                b.WriteString(" {\n")
-                for _, f := range c.Fields {
-                        b.WriteString("  ")
-                        b.WriteString(f.Name)
-                        if t := toMochiType(f.Type); t != "" && t != "any" {
-                                b.WriteString(": ")
-                                b.WriteString(t)
-                        }
-                        b.WriteByte('\n')
-                }
-                b.WriteString("}\n")
-        }
-        for _, f := range n.Functions {
-                b.WriteString("fun ")
-                b.WriteString(f.Name)
-                b.WriteByte('(')
-                for i, p := range f.Params {
-                        if i > 0 {
-                                b.WriteString(", ")
-                        }
-                        b.WriteString(p.Name)
-                        if t := toMochiType(p.Type); t != "" && t != "any" {
-                                b.WriteString(": ")
-                                b.WriteString(t)
-                        }
-                }
-                b.WriteByte(')')
-                if r := toMochiType(f.Ret); r != "" {
-                        b.WriteString(": ")
-                        b.WriteString(r)
-                }
-                b.WriteString(" {\n")
-                for _, line := range f.Body {
-                        b.WriteString(convertBodyLine(line))
-                        b.WriteByte('\n')
-                }
-                b.WriteString("}\n")
-        }
-        return b.String(), nil
+	var b strings.Builder
+	b.Write(meta.Header("// "))
+	b.WriteString("/*\n")
+	b.WriteString(n.Src)
+	if !strings.HasSuffix(n.Src, "\n") {
+		b.WriteByte('\n')
+	}
+	b.WriteString("*/\n")
+	for _, v := range parseTopLevelVars(n.Src, n.Functions, n.Classes) {
+		b.WriteString(v)
+		b.WriteByte('\n')
+	}
+	for _, c := range n.Classes {
+		b.WriteString("type ")
+		b.WriteString(c.Name)
+		b.WriteString(" {\n")
+		for _, f := range c.Fields {
+			b.WriteString("  ")
+			b.WriteString(f.Name)
+			if t := toMochiType(f.Type); t != "" && t != "any" {
+				b.WriteString(": ")
+				b.WriteString(t)
+			}
+			b.WriteByte('\n')
+		}
+		b.WriteString("}\n")
+	}
+	for _, f := range n.Functions {
+		b.WriteString("fun ")
+		b.WriteString(f.Name)
+		b.WriteByte('(')
+		for i, p := range f.Params {
+			if i > 0 {
+				b.WriteString(", ")
+			}
+			b.WriteString(p.Name)
+			if t := toMochiType(p.Type); t != "" && t != "any" {
+				b.WriteString(": ")
+				b.WriteString(t)
+			}
+		}
+		b.WriteByte(')')
+		if r := toMochiType(f.Ret); r != "" {
+			b.WriteString(": ")
+			b.WriteString(r)
+		}
+		b.WriteString(" {\n")
+		for _, line := range f.Body {
+			b.WriteString(convertBodyLine(line))
+			b.WriteByte('\n')
+		}
+		b.WriteString("}\n")
+	}
+	return b.String(), nil
 }
 
 // Convert converts a parsed Dart node into a Mochi AST.
@@ -251,17 +251,46 @@ func parseTopLevelVars(src string, funcs []Function, classes []Class) []string {
 var quoteRe = regexp.MustCompile(`'([^']*)'`)
 
 func convertQuotes(s string) string {
-        return quoteRe.ReplaceAllStringFunc(s, func(q string) string {
-                return "\"" + strings.Trim(q, "'") + "\""
-        })
+	return quoteRe.ReplaceAllStringFunc(s, func(q string) string {
+		return "\"" + strings.Trim(q, "'") + "\""
+	})
 }
 
 var forVarRe = regexp.MustCompile(`^(\s*)for \((?:var|final|const) ([A-Za-z_][A-Za-z0-9_]*) in ([^)]*)\)`)
 
 func convertBodyLine(s string) string {
-        s = strings.TrimSuffix(s, ";")
-        s = forVarRe.ReplaceAllString(s, "${1}for ${2} in ${3}")
-        return convertQuotes(s)
+	s = strings.TrimSuffix(s, ";")
+	s = forVarRe.ReplaceAllString(s, "${1}for ${2} in ${3}")
+	s = convertTernary(s)
+	s = convertSpread(s)
+	s = convertLength(s)
+	return convertQuotes(s)
+}
+
+var ternaryRe = regexp.MustCompile(`([^?]+)\?\s*([^:]+)\s*:\s*(.+)`)
+
+func convertTernary(s string) string {
+	if ternaryRe.MatchString(s) {
+		return ternaryRe.ReplaceAllString(s, "if $1 { $2 } else { $3 }")
+	}
+	return s
+}
+
+var spreadRe = regexp.MustCompile(`\[\.\.\.([A-Za-z_][A-Za-z0-9_]*)\s*,\s*([^\]]+)\]`)
+
+func convertSpread(s string) string {
+	if m := spreadPrintRe.FindStringSubmatch(s); m != nil {
+		return fmt.Sprintf("print(append(%s, %s))", m[1], m[2])
+	}
+	return spreadRe.ReplaceAllString(s, "append($1, $2)")
+}
+
+var spreadPrintRe = regexp.MustCompile(`^print\("\[" \+ append\(([^,]+),\s*([^\)]+)\)\.join\("[, ]*"\) \+ "\]"\)$`)
+
+var lengthRe = regexp.MustCompile(`([A-Za-z0-9_\]\)]+)\.length`)
+
+func convertLength(s string) string {
+	return lengthRe.ReplaceAllString(s, "len($1)")
 }
 
 func splitArgs(s string) []string {
