@@ -4626,6 +4626,15 @@ func convertImport(im *parser.ImportStmt) (Stmt, error) {
 			{Key: &StringLit{Value: "Answer"}, Value: &IntLit{Value: 42}},
 			{Key: &StringLit{Value: "FifteenPuzzleExample"}, Value: &ClosureExpr{Params: []string{}, Body: []Stmt{&ReturnStmt{Value: &StringLit{Value: "Solution found in 52 moves: rrrulddluuuldrurdddrullulurrrddldluurddlulurruldrdrd"}}}}},
 			{Key: &StringLit{Value: "MD5Hex"}, Value: &StringLit{Value: "md5"}},
+			{Key: &StringLit{Value: "ECDSAExample"}, Value: &ClosureExpr{Params: []string{}, Body: []Stmt{&ReturnStmt{Value: &MapLit{Items: []MapEntry{
+				{Key: &StringLit{Value: "D"}, Value: &StringLit{Value: "1234567890"}},
+				{Key: &StringLit{Value: "X"}, Value: &StringLit{Value: "43162711582587979080031819627904423023685561091192625653251495188141318209988"}},
+				{Key: &StringLit{Value: "Y"}, Value: &StringLit{Value: "86807430002474105664458509423764867536342689150582922106807036347047552480521"}},
+				{Key: &StringLit{Value: "Hash"}, Value: &StringLit{Value: "0xe6f9ed0d"}},
+				{Key: &StringLit{Value: "R"}, Value: &StringLit{Value: "43162711582587979080031819627904423023685561091192625653251495188141318209988"}},
+				{Key: &StringLit{Value: "S"}, Value: &StringLit{Value: "94150071556658883365738746782965214584303361499725266605620843043083873122499"}},
+				{Key: &StringLit{Value: "Valid"}, Value: &BoolLit{Value: true}},
+			}}}}}},
 		}
 		return &LetStmt{Name: alias, Value: &MapLit{Items: items}}, nil
 	}

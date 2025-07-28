@@ -1,7 +1,7 @@
 3 four
 four 3
 {
-  "duration_us": 42,
+  "duration_us": 37,
   "memory_bytes": 96,
   "name": "main"
 }

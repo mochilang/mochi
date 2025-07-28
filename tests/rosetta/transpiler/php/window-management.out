@@ -7,7 +7,7 @@ Hide: pos=(100,100) size=(640x480) max=false icon=false visible=false
 Show: pos=(100,100) size=(640x480) max=false icon=false visible=true
 Move: pos=(110,110) size=(640x480) max=false icon=false visible=true
 {
-  "duration_us": 51,
+  "duration_us": 54,
   "memory_bytes": 96,
   "name": "main"
 }
