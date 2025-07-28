@@ -1,0 +1,14 @@
+(program
+  (var msg
+    (if_expr
+      (binary > (selector x) (int 10))
+      (string big)
+      (if_expr
+        (binary > (selector x) (int 5))
+        (string medium)
+        (string small)
+      )
+    )
+  )
+  (call print (selector msg))
+)

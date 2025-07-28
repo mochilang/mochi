@@ -64,16 +64,18 @@ func TestConvert_Golden(t *testing.T) {
 		"group_by_left_join":       true,
 		"group_by_multi_join":      true,
 		"group_by_multi_join_sort": true,
-		"if_then_else":             true,
-		"if_then_else_nested":      true,
-		"in_operator_extended":     true,
-		"inner_join":               true,
-		"join_multi":               true,
-		"left_join":                true,
-		"left_join_multi":          true,
-		"match_expr":               true,
-		"match_full":               true,
-		"membership":               true,
+		// support if-then-else constructs now
+		// "if_then_else":             true,
+		// "if_then_else_nested":      true,
+		"in_operator_extended": true,
+		"inner_join":           true,
+		"join_multi":           true,
+		"left_join":            true,
+		"left_join_multi":      true,
+		// match expressions now handled
+		// "match_expr":               true,
+		// "match_full":               true,
+		"membership": true,
 	}
 
 	outDir := filepath.Join(root, "tests/a2mochi/x/c")

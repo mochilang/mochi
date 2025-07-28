@@ -1,0 +1,10 @@
+(program
+  (var msg
+    (if_expr
+      (binary > (selector x) (int 10))
+      (string yes)
+      (string no)
+    )
+  )
+  (call print (selector msg))
+)
