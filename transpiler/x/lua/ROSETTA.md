@@ -4,7 +4,7 @@ Generated Lua code for programs in `tests/rosetta/x/Mochi`. Each program has a `
 
 Transpiled programs: 466/467
 
-Last updated: 2025-07-28 00:49 GMT+7
+Last updated: 2025-07-28 07:50 GMT+7
 
 Checklist:
 
@@ -210,7 +210,7 @@ Checklist:
 | 198 | cheryls-birthday | ✓ | 68µs | 2.8 KB |
 | 199 | chinese-remainder-theorem | ✓ | 45µs | 1.2 KB |
 | 200 | chinese-zodiac | ✓ | 65µs | 1.9 KB |
-| 201 | cholesky-decomposition-1 | ✓ | 201µs | 1.2 KB |
+| 201 | cholesky-decomposition-1 | ✓ | 1.176ms | 1.2 KB |
 | 202 | cholesky-decomposition | ✓ | 200µs | 3.0 KB |
 | 203 | chowla-numbers | ✓ | 28µs | 64 B |
 | 204 | church-numerals-1 | ✓ | 119µs | 3.9 KB |
