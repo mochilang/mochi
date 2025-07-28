@@ -1,5 +1,5 @@
-## Progress (2025-07-28 07:52 +0700)
-- Commit 254038b61f: transpiler(py): infer call return type
+## Progress (2025-07-28 08:06 +0700)
+- Commit 3a9fbea27e: transpiler(py): handle nonlocal vars
 - Generated Python for 104/104 programs
 - Updated README checklist and outputs
 - Removed runtime helpers and improved boolean type inference

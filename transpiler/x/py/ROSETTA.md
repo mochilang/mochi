@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Python code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/Python`.
-Last updated: 2025-07-28 07:59 GMT+7
+Last updated: 2025-07-28 08:20 GMT+7
 
-## Rosetta Golden Test Checklist (449/467)
+## Rosetta Golden Test Checklist (452/467)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 159.0µs | 12.75MB |
@@ -206,57 +206,57 @@ Last updated: 2025-07-28 07:59 GMT+7
 | 197 | chernicks-carmichael-numbers | ✓ | 1.73s | 13.80MB |
 | 198 | cheryls-birthday | ✓ | 517.0µs | 13.18MB |
 | 199 | chinese-remainder-theorem | ✓ | 16.0µs | 13.23MB |
-| 200 | chinese-zodiac | ✓ | 608.0µs | 13.06MB |
-| 201 | cholesky-decomposition-1 | ✓ | 157.0µs | 13.79MB |
-| 202 | cholesky-decomposition | ✓ | 120.0µs | 12.62MB |
-| 203 | chowla-numbers | ✓ | 10.0µs | 12.73MB |
-| 204 | church-numerals-1 | ✓ | 161.0µs | 12.87MB |
+| 200 | chinese-zodiac | ✓ | 603.0µs | 13.30MB |
+| 201 | cholesky-decomposition-1 | ✓ | 112.0µs | 14.27MB |
+| 202 | cholesky-decomposition | ✓ | 131.0µs | 13.30MB |
+| 203 | chowla-numbers | ✓ | 8.0µs | 12.92MB |
+| 204 | church-numerals-1 | ✓ | 102.0µs | 13.24MB |
 | 205 | church-numerals-2 | ✓ |  |  |
-| 206 | circles-of-given-radius-through-two-points | ✓ | 1.0ms | 13.59MB |
-| 207 | circular-primes | ✓ | 501.0µs | 13.24MB |
-| 208 | cistercian-numerals | ✓ | 1.0ms | 14.18MB |
-| 209 | comma-quibbling | ✓ | 20.0µs | 12.93MB |
-| 210 | compiler-virtual-machine-interpreter | ✓ | 319.0µs | 14.35MB |
+| 206 | circles-of-given-radius-through-two-points | ✓ | 791.0µs | 14.03MB |
+| 207 | circular-primes | ✓ | 263.0µs | 12.92MB |
+| 208 | cistercian-numerals | ✓ | 655.0µs | 14.45MB |
+| 209 | comma-quibbling | ✓ | 15.0µs | 13.28MB |
+| 210 | compiler-virtual-machine-interpreter | ✓ | 197.0µs | 14.43MB |
 | 211 | composite-numbers-k-with-no-single-digit-factors-whose-factors-are-all-substrings-of-k | ✓ |  |  |
-| 212 | compound-data-type | ✓ | 489.0µs | 12.27MB |
-| 213 | concurrent-computing-1 | ✓ | 12.0µs | 12.29MB |
-| 214 | concurrent-computing-2 | ✓ | 12.0µs | 12.43MB |
-| 215 | concurrent-computing-3 | ✓ | 22.0µs | 12.74MB |
-| 216 | conditional-structures-1 | ✓ | 1.0µs | 12.17MB |
-| 217 | conditional-structures-10 | ✓ | 7.0µs | 12.29MB |
-| 218 | conditional-structures-2 | ✓ | 1.0µs | 12.45MB |
-| 219 | conditional-structures-3 | ✓ | 2.0µs | 11.88MB |
-| 220 | conditional-structures-4 | ✓ | 2.0µs | 12.49MB |
-| 221 | conditional-structures-5 | ✓ | 1.0µs | 11.65MB |
-| 222 | conditional-structures-6 | ✓ | 1.0µs | 11.48MB |
-| 223 | conditional-structures-7 | ✓ | 2.0µs | 12.41MB |
-| 224 | conditional-structures-8 | ✓ | 1.0µs | 12.43MB |
-| 225 | conditional-structures-9 | ✓ | 1.0µs | 11.91MB |
+| 212 | compound-data-type | ✓ | 443.0µs | 12.39MB |
+| 213 | concurrent-computing-1 | ✓ | 13.0µs | 12.82MB |
+| 214 | concurrent-computing-2 | ✓ | 12.0µs | 12.78MB |
+| 215 | concurrent-computing-3 | ✓ | 21.0µs | 12.88MB |
+| 216 | conditional-structures-1 | ✓ | 1.0µs | 12.88MB |
+| 217 | conditional-structures-10 | ✓ | 7.0µs | 12.90MB |
+| 218 | conditional-structures-2 | ✓ | 1.0µs | 11.80MB |
+| 219 | conditional-structures-3 | ✓ | 1.0µs | 12.36MB |
+| 220 | conditional-structures-4 | ✓ | 3.0µs | 12.69MB |
+| 221 | conditional-structures-5 | ✓ | 1.0µs | 12.43MB |
+| 222 | conditional-structures-6 | ✓ | 1.0µs | 12.36MB |
+| 223 | conditional-structures-7 | ✓ | 2.0µs | 12.84MB |
+| 224 | conditional-structures-8 | ✓ | 1.0µs | 12.61MB |
+| 225 | conditional-structures-9 | ✓ | 1.0µs | 12.69MB |
 | 226 | consecutive-primes-with-ascending-or-descending-differences | ✓ |  |  |
-| 227 | constrained-genericity-1 | ✓ | 426.0µs | 12.24MB |
-| 228 | constrained-genericity-2 | ✓ | 402.0µs | 12.24MB |
-| 229 | constrained-genericity-3 | ✓ | 438.0µs | 12.27MB |
-| 230 | constrained-genericity-4 | ✓ | 11.0µs | 12.74MB |
-| 231 | constrained-random-points-on-a-circle-1 | ✓ | 1.0ms | 12.66MB |
-| 232 | constrained-random-points-on-a-circle-2 | ✓ | 1.0ms | 13.15MB |
-| 233 | continued-fraction | ✓ | 59.0µs | 12.87MB |
-| 234 | convert-decimal-number-to-rational | ✓ | 41.0µs | 12.88MB |
-| 235 | convert-seconds-to-compound-duration | ✓ | 15.0µs | 12.75MB |
-| 236 | convex-hull | ✓ | 566.0µs | 13.64MB |
-| 237 | conways-game-of-life | ✓ | 979.0ms | 13.68MB |
-| 238 | copy-a-string-1 | ✓ | 1.0µs | 11.70MB |
-| 239 | copy-a-string-2 | ✓ | 11.0µs | 12.61MB |
-| 240 | copy-stdin-to-stdout-1 | ✓ | 58.0µs | 12.43MB |
-| 241 | copy-stdin-to-stdout-2 | ✓ | 84.0µs | 12.35MB |
-| 242 | count-in-factors | ✓ | 1.0ms | 12.57MB |
-| 243 | count-in-octal-1 | ✓ | 299.0µs | 12.47MB |
-| 244 | count-in-octal-2 | ✓ | 217.0ms | 12.91MB |
-| 245 | count-in-octal-3 | error |  |  |
-| 246 | count-in-octal-4 | error |  |  |
-| 247 | count-occurrences-of-a-substring | ✓ | 22.0µs | 12.56MB |
-| 248 | count-the-coins-1 | ✓ | 1.0ms | 12.22MB |
-| 249 | count-the-coins-2 | error |  |  |
-| 250 | cramers-rule | ✓ | 258.0µs | 12.81MB |
+| 227 | constrained-genericity-1 | ✓ | 456.0µs | 12.38MB |
+| 228 | constrained-genericity-2 | ✓ | 400.0µs | 12.50MB |
+| 229 | constrained-genericity-3 | ✓ | 403.0µs | 12.66MB |
+| 230 | constrained-genericity-4 | ✓ | 12.0µs | 12.73MB |
+| 231 | constrained-random-points-on-a-circle-1 | ✓ | 1.0ms | 13.55MB |
+| 232 | constrained-random-points-on-a-circle-2 | ✓ | 1.0ms | 13.56MB |
+| 233 | continued-fraction | ✓ | 60.0µs | 12.99MB |
+| 234 | convert-decimal-number-to-rational | ✓ | 48.0µs | 12.98MB |
+| 235 | convert-seconds-to-compound-duration | ✓ | 15.0µs | 13.12MB |
+| 236 | convex-hull | ✓ | 600.0µs | 13.61MB |
+| 237 | conways-game-of-life | ✓ | 987.0ms | 14.00MB |
+| 238 | copy-a-string-1 | ✓ | 1.0µs | 11.88MB |
+| 239 | copy-a-string-2 | ✓ | 12.0µs | 12.75MB |
+| 240 | copy-stdin-to-stdout-1 | ✓ | 56.0µs | 12.19MB |
+| 241 | copy-stdin-to-stdout-2 | ✓ | 56.0µs | 12.56MB |
+| 242 | count-in-factors | ✓ | 973.0µs | 13.11MB |
+| 243 | count-in-octal-1 | ✓ | 184.0µs | 13.01MB |
+| 244 | count-in-octal-2 | ✓ | 157.0ms | 13.25MB |
+| 245 | count-in-octal-3 | ✓ | 51.0µs | 12.88MB |
+| 246 | count-in-octal-4 | ✓ | 31.0µs | 12.78MB |
+| 247 | count-occurrences-of-a-substring | ✓ | 15.0µs | 12.93MB |
+| 248 | count-the-coins-1 | ✓ | 17.0µs | 12.89MB |
+| 249 | count-the-coins-2 | ✓ | 2.0ms | 13.10MB |
+| 250 | cramers-rule | ✓ | 186.0µs | 13.12MB |
 | 251 | crc-32-1 | ✓ | 366.0µs | 12.77MB |
 | 252 | crc-32-2 | ✓ | 378.0µs | 12.99MB |
 | 253 | create-a-file-on-magnetic-tape | ✓ | 4.0µs | 12.37MB |
