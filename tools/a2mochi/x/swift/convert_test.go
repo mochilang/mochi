@@ -92,6 +92,12 @@ func TestConvert_Golden(t *testing.T) {
 		"print_hello":        true,
 		"sum_builtin":        true,
 		"unary_neg":          true,
+		"let_and_print":      true,
+		"list_index":         true,
+		"fun_three_args":     true,
+		"fun_expr_in_let":    true,
+		"string_concat":      true,
+		"var_assignment":     true,
 		"while_loop":         true,
 	}
 	outDir := filepath.Join(root, "tests", "a2mochi", "x", "swift")
