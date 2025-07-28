@@ -2,9 +2,9 @@
 
 Generated Lua code for programs in `tests/rosetta/x/Mochi`. Each program has a `.lua` file produced by the transpiler and a `.out` file with its runtime output. Compilation or runtime errors are captured in `.error` files.
 
-Transpiled programs: 466/467
+Transpiled programs: 463/467
 
-Last updated: 2025-07-28 00:49 GMT+7
+Last updated: 2025-07-28 08:09 GMT+7
 
 Checklist:
 
@@ -172,10 +172,10 @@ Checklist:
 | 160 | call-a-function-7 | ✓ | 3µs | 384 B |
 | 161 | call-a-function-8 | ✓ | 39µs | 400 B |
 | 162 | call-a-function-9 | ✓ | 17µs | 384 B |
-| 163 | call-an-object-method-1 | ✓ | 3µs | 424 B |
-| 164 | call-an-object-method-2 | ✓ | 4µs | 520 B |
-| 165 | call-an-object-method-3 | ✓ | 3µs | 432 B |
-| 166 | call-an-object-method | ✓ | 4µs | 432 B |
+| 163 | call-an-object-method-1 | ✓ | 2µs | 240 B |
+| 164 | call-an-object-method-2 | ✓ | 3µs | 336 B |
+| 165 | call-an-object-method-3 | ✓ | 3µs | 232 B |
+| 166 | call-an-object-method | ✓ | 2µs | 232 B |
 | 167 | camel-case-and-snake-case | ✓ | 498µs | 4.0 KB |
 | 168 | canny-edge-detector | ✓ | 306µs | 520 B |
 | 169 | canonicalize-cidr | ✓ | 415µs | 4.7 KB |
@@ -210,66 +210,66 @@ Checklist:
 | 198 | cheryls-birthday | ✓ | 68µs | 2.8 KB |
 | 199 | chinese-remainder-theorem | ✓ | 45µs | 1.2 KB |
 | 200 | chinese-zodiac | ✓ | 65µs | 1.9 KB |
-| 201 | cholesky-decomposition-1 | ✓ | 201µs | 1.2 KB |
-| 202 | cholesky-decomposition | ✓ | 200µs | 3.0 KB |
-| 203 | chowla-numbers | ✓ | 28µs | 64 B |
-| 204 | church-numerals-1 | ✓ | 119µs | 3.9 KB |
+| 201 | cholesky-decomposition-1 | ✓ | 215µs | 1.2 KB |
+| 202 | cholesky-decomposition | ✓ | 207µs | 3.0 KB |
+| 203 | chowla-numbers | ✓ | 25µs | 64 B |
+| 204 | church-numerals-1 | ✓ | 250µs | 3.9 KB |
 | 205 | church-numerals-2 | ✓ | 3µs | 480 B |
-| 206 | circles-of-given-radius-through-two-points | ✓ | 105µs | 2.6 KB |
-| 207 | circular-primes | ✓ | 872µs | 10.9 KB |
-| 208 | cistercian-numerals | ✓ | 1.443ms | 43.6 KB |
-| 209 | comma-quibbling | ✓ | 40µs | 2.9 KB |
-| 210 | compiler-virtual-machine-interpreter | ✓ | 426µs | 1.3 KB |
+| 206 | circles-of-given-radius-through-two-points | ✓ | 98µs | 2.6 KB |
+| 207 | circular-primes | ✓ | 693µs | 10.9 KB |
+| 208 | cistercian-numerals | ✓ | 1.173ms | 43.6 KB |
+| 209 | comma-quibbling | ✓ | 41µs | 2.9 KB |
+| 210 | compiler-virtual-machine-interpreter |   | 426µs | 1.3 KB |
 | 211 | composite-numbers-k-with-no-single-digit-factors-whose-factors-are-all-substrings-of-k | ✓ |  |  |
 | 212 | compound-data-type | ✓ | 1µs | 64 B |
-| 213 | concurrent-computing-1 | ✓ | 25µs | 856 B |
-| 214 | concurrent-computing-2 | ✓ | 28µs | 856 B |
-| 215 | concurrent-computing-3 | ✓ | 41µs | 856 B |
-| 216 | conditional-structures-1 | ✓ | 2µs | 144 B |
-| 217 | conditional-structures-10 | ✓ | 26µs | 208 B |
-| 218 | conditional-structures-2 | ✓ | 2µs | 144 B |
+| 213 | concurrent-computing-1 | ✓ | 53µs | 856 B |
+| 214 | concurrent-computing-2 | ✓ | 33µs | 856 B |
+| 215 | concurrent-computing-3 | ✓ | 42µs | 856 B |
+| 216 | conditional-structures-1 | ✓ | 1µs | 144 B |
+| 217 | conditional-structures-10 | ✓ | 28µs | 208 B |
+| 218 | conditional-structures-2 | ✓ | 1µs | 144 B |
 | 219 | conditional-structures-3 | ✓ | 2µs | 144 B |
-| 220 | conditional-structures-4 | ✓ | 3µs | 200 B |
+| 220 | conditional-structures-4 | ✓ | 2µs | 200 B |
 | 221 | conditional-structures-5 | ✓ | 2µs | 144 B |
 | 222 | conditional-structures-6 | ✓ | 2µs | 144 B |
-| 223 | conditional-structures-7 | ✓ | 1µs | 216 B |
+| 223 | conditional-structures-7 | ✓ | 2µs | 216 B |
 | 224 | conditional-structures-8 | ✓ | 2µs | 144 B |
-| 225 | conditional-structures-9 | ✓ | 2µs | 104 B |
+| 225 | conditional-structures-9 | ✓ | 1µs | 104 B |
 | 226 | consecutive-primes-with-ascending-or-descending-differences | ✓ |  |  |
 | 227 | constrained-genericity-1 | ✓ | 2µs | 64 B |
-| 228 | constrained-genericity-2 | ✓ | 2µs | 64 B |
-| 229 | constrained-genericity-3 | ✓ | 3µs | 104 B |
-| 230 | constrained-genericity-4 | ✓ | 34µs | 848 B |
-| 231 | constrained-random-points-on-a-circle-1 | ✓ | 3.474ms | 36.9 KB |
-| 232 | constrained-random-points-on-a-circle-2 | ✓ | 5.071ms | 95.0 KB |
-| 233 | continued-fraction | ✓ | 377µs | 3.0 KB |
-| 234 | convert-decimal-number-to-rational | ✓ | 97µs | 944 B |
-| 235 | convert-seconds-to-compound-duration | ✓ | 137µs | 2.7 KB |
-| 236 | convex-hull | ✓ | 428µs | 3.6 KB |
-| 237 | conways-game-of-life | ✓ | 1.458549s | 2.5 KB |
-| 238 | copy-a-string-1 | ✓ | 2µs | 64 B |
-| 239 | copy-a-string-2 | ✓ | 30µs | 136 B |
-| 240 | copy-stdin-to-stdout-1 | ✓ | 75µs | 64 B |
-| 241 | copy-stdin-to-stdout-2 | ✓ | 126µs | 168 B |
-| 242 | count-in-factors | ✓ | 711µs | 2.7 KB |
-| 243 | count-in-octal-1 | ✓ | 224µs | 2.8 KB |
-| 244 | count-in-octal-2 | ✓ | 140.675ms | 2.8 KB |
-| 245 | count-in-octal-3 | ✓ |  |  |
-| 246 | count-in-octal-4 | ✓ |  |  |
-| 247 | count-occurrences-of-a-substring | ✓ | 41µs | 912 B |
-| 248 | count-the-coins-1 | ✓ | 1.051ms | 15.9 KB |
-| 249 | count-the-coins-2 | ✓ |  |  |
-| 250 | cramers-rule | ✓ | 520µs | 4.5 KB |
-| 251 | crc-32-1 | ✓ | 1.802ms | 9.0 KB |
-| 252 | crc-32-2 | ✓ | 1.799ms | 9.0 KB |
-| 253 | create-a-file-on-magnetic-tape | ✓ | 5µs | 1.0 KB |
-| 254 | create-a-file | ✓ | 33µs | 888 B |
-| 255 | create-a-two-dimensional-array-at-runtime-1 | ✓ | 57µs | 856 B |
-| 256 | create-an-html-table | ✓ | 122µs | 2.8 KB |
-| 257 | create-an-object-at-a-given-address | ✓ | 120µs | 2.9 KB |
-| 258 | csv-data-manipulation | ✓ | 57µs | 1.5 KB |
-| 259 | csv-to-html-translation-1 | ✓ | 48µs | 4.3 KB |
-| 260 | csv-to-html-translation-2 | ✓ | 93µs | 2.4 KB |
+| 228 | constrained-genericity-2 | ✓ | 1µs | 64 B |
+| 229 | constrained-genericity-3 | ✓ | 1µs | 104 B |
+| 230 | constrained-genericity-4 | ✓ | 28µs | 848 B |
+| 231 | constrained-random-points-on-a-circle-1 | ✓ | 2.414ms | 36.1 KB |
+| 232 | constrained-random-points-on-a-circle-2 | ✓ | 3.14ms | 95.2 KB |
+| 233 | continued-fraction | ✓ | 152µs | 1.0 KB |
+| 234 | convert-decimal-number-to-rational | ✓ | 58µs | 992 B |
+| 235 | convert-seconds-to-compound-duration | ✓ | 71µs | 2.7 KB |
+| 236 | convex-hull |   | 428µs | 3.6 KB |
+| 237 | conways-game-of-life |   | 1.458549s | 2.5 KB |
+| 238 | copy-a-string-1 | ✓ | 1µs | 64 B |
+| 239 | copy-a-string-2 | ✓ | 33µs | 136 B |
+| 240 | copy-stdin-to-stdout-1 | ✓ | 21µs | 64 B |
+| 241 | copy-stdin-to-stdout-2 | ✓ | 37µs | 168 B |
+| 242 | count-in-factors | ✓ | 431µs | 2.7 KB |
+| 243 | count-in-octal-1 | ✓ | 140µs | 2.8 KB |
+| 244 | count-in-octal-2 | ✓ | 1.078499s | 2.8 KB |
+| 245 | count-in-octal-3 | ✓ | 71µs | 2.8 KB |
+| 246 | count-in-octal-4 | ✓ | 31µs | 848 B |
+| 247 | count-occurrences-of-a-substring | ✓ | 38µs | 2.9 KB |
+| 248 | count-the-coins-1 | ✓ | 43µs | 808 B |
+| 249 | count-the-coins-2 | ✓ | 4.556ms | 19.5 KB |
+| 250 | cramers-rule | ✓ | 451µs | 4.5 KB |
+| 251 | crc-32-1 | ✓ | 1.804ms | 9.0 KB |
+| 252 | crc-32-2 | ✓ | 1.76ms | 9.0 KB |
+| 253 | create-a-file-on-magnetic-tape | ✓ | 6µs | 1.0 KB |
+| 254 | create-a-file | ✓ | 32µs | 888 B |
+| 255 | create-a-two-dimensional-array-at-runtime-1 | ✓ | 34µs | 856 B |
+| 256 | create-an-html-table | ✓ | 42µs | 2.8 KB |
+| 257 | create-an-object-at-a-given-address | ✓ | 71µs | 952 B |
+| 258 | csv-data-manipulation | ✓ | 40µs | 1.5 KB |
+| 259 | csv-to-html-translation-1 | ✓ | 61µs | 4.3 KB |
+| 260 | csv-to-html-translation-2 | ✓ | 86µs | 2.4 KB |
 | 261 | csv-to-html-translation-3 | ✓ | 35µs | 64 B |
 | 262 | csv-to-html-translation-4 | ✓ | 28µs | 64 B |
 | 263 | csv-to-html-translation-5 | ✓ | 199µs | 2.4 KB |

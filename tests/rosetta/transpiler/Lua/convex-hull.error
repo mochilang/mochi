@@ -1,0 +1,7 @@
+exit status 1
+lua: ...space/mochi/tests/rosetta/transpiler/Lua/convex-hull.lua:42: attempt to index a nil value (local 'a')
+stack traceback:
+	...space/mochi/tests/rosetta/transpiler/Lua/convex-hull.lua:42: in function 'ccw'
+	...space/mochi/tests/rosetta/transpiler/Lua/convex-hull.lua:101: in function 'convexHull'
+	...space/mochi/tests/rosetta/transpiler/Lua/convex-hull.lua:353: in main chunk
+	[C]: in ?

@@ -1,0 +1,7 @@
+exit status 1
+lua: .../transpiler/Lua/compiler-virtual-machine-interpreter.lua:593: attempt to compare two nil values
+stack traceback:
+	.../transpiler/Lua/compiler-virtual-machine-interpreter.lua:593: in function 'runVM'
+	.../transpiler/Lua/compiler-virtual-machine-interpreter.lua:934: in function 'main'
+	.../transpiler/Lua/compiler-virtual-machine-interpreter.lua:936: in main chunk
+	[C]: in ?

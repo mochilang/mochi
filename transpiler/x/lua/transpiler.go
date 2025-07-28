@@ -1246,7 +1246,11 @@ func (m *MapLit) emit(w io.Writer) {
 }
 
 func (ix *IndexExpr) emit(w io.Writer) {
-	switch ix.Kind {
+	kind := ix.Kind
+	if kind == "map" && isListExpr(ix.Target) {
+		kind = "list_elem"
+	}
+	switch kind {
 	case "string":
 		io.WriteString(w, "string.sub(")
 		ix.Target.emit(w)
