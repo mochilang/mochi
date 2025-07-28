@@ -1,0 +1,9 @@
+(program
+  (for i
+    (range (int 1) (int 4))
+    (block
+      (call print (selector i))
+    )
+  )
+)
+

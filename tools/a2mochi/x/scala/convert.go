@@ -291,6 +291,14 @@ var reIndex = regexp.MustCompile(`^([a-z][a-zA-Z0-9_]*)\(([^()]*)\)$`)
 
 func convertExpr(file *File, expr string) string {
 	expr = strings.TrimSpace(expr)
+	if strings.Contains(expr, " until ") {
+		parts := strings.SplitN(expr, " until ", 2)
+		if len(parts) == 2 {
+			start := convertExpr(file, parts[0])
+			end := convertExpr(file, parts[1])
+			return fmt.Sprintf("range(%s, %s)", start, end)
+		}
+	}
 	if strings.HasSuffix(expr, ".toString()") {
 		expr = "str(" + strings.TrimSuffix(expr, ".toString()") + ")"
 	}
