@@ -2,61 +2,61 @@
 
 This checklist is auto-generated.
 Generated Python code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/Python`.
-Last updated: 2025-07-28 10:09 GMT+7
+Last updated: 2025-07-28 10:43 GMT+7
 
-## Rosetta Golden Test Checklist (467/493)
+## Rosetta Golden Test Checklist (473/493)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
-| 1 | 100-doors-2 | ✓ | 159.0µs | 12.75MB |
-| 2 | 100-doors-3 | ✓ | 127.0µs | 12.68MB |
-| 3 | 100-doors | ✓ | 227.0µs | 12.57MB |
-| 4 | 100-prisoners | ✓ | 521.0ms | 13.23MB |
-| 5 | 15-puzzle-game | ✓ | 219.0µs | 14.29MB |
-| 6 | 15-puzzle-solver | ✓ | 9.0µs | 12.38MB |
-| 7 | 2048 | ✓ | 2.0ms | 14.80MB |
-| 8 | 21-game | ✓ | 73.0µs | 13.49MB |
-| 9 | 24-game-solve | ✓ | 4.0ms | 13.72MB |
+| 1 | 100-doors-2 | ✓ | 105.0µs | 12.55MB |
+| 2 | 100-doors-3 | ✓ | 80.0µs | 12.87MB |
+| 3 | 100-doors | ✓ | 4.0ms | 12.92MB |
+| 4 | 100-prisoners | ✓ | 402.0ms | 13.01MB |
+| 5 | 15-puzzle-game | ✓ | 153.0µs | 14.05MB |
+| 6 | 15-puzzle-solver | ✓ | 9.0µs | 11.81MB |
+| 7 | 2048 | ✓ | 1.0ms | 14.71MB |
+| 8 | 21-game | ✓ | 69.0µs | 13.80MB |
+| 9 | 24-game-solve | ✓ | 33.0ms | 13.94MB |
 | 10 | 24-game | ✓ |  |  |
-| 11 | 4-rings-or-4-squares-puzzle | ✓ | 29.0ms | 12.94MB |
-| 12 | 9-billion-names-of-god-the-integer | ✓ | 10.77s | 233.82MB |
-| 13 | 99-bottles-of-beer-2 | ✓ | 12.0ms | 14.25MB |
-| 14 | 99-bottles-of-beer | ✓ | 441.0µs | 12.93MB |
-| 15 | DNS-query | ✓ | 930.0ms | 12.82MB |
-| 16 | Duffinian-numbers | ✓ | 151.0ms | 13.93MB |
-| 17 | Find-if-a-point-is-within-a-triangle |   |  |  |
-| 18 | a+b | ✓ | 881.0µs | 12.67MB |
-| 19 | abbreviations-automatic | ✓ | 4.0ms | 14.42MB |
-| 20 | abbreviations-easy | ✓ | 822.0µs | 13.62MB |
-| 21 | abbreviations-simple | ✓ | 1.0ms | 14.18MB |
-| 22 | abc-problem | ✓ | 355.0µs | 12.62MB |
-| 23 | abelian-sandpile-model-identity | ✓ | 153.0µs | 14.03MB |
-| 24 | abelian-sandpile-model | ✓ | 172.0µs | 13.74MB |
-| 25 | abstract-type | ✓ | 17.0µs | 12.49MB |
-| 26 | abundant-deficient-and-perfect-number-classifications | ✓ | 9.78s | 12.98MB |
-| 27 | abundant-odd-numbers | ✓ | 10.82s | 13.53MB |
-| 28 | accumulator-factory | ✓ | 20.0µs | 12.68MB |
-| 29 | achilles-numbers | ✓ | 19.0ms | 14.29MB |
-| 30 | ackermann-function-2 | ✓ | 16.0µs | 12.84MB |
-| 31 | ackermann-function-3 | ✓ | 198.25s | 13.68MB |
-| 32 | ackermann-function | ✓ | 1.0ms | 13.06MB |
-| 33 | active-directory-connect | ✓ | 16.0µs | 12.62MB |
-| 34 | active-directory-search-for-a-user | ✓ | 13.0µs | 12.90MB |
-| 35 | active-object | ✓ | 636.0µs | 12.75MB |
+| 11 | 4-rings-or-4-squares-puzzle | ✓ | 21.0ms | 13.19MB |
+| 12 | 9-billion-names-of-god-the-integer | ✓ | 7.52s | 233.87MB |
+| 13 | 99-bottles-of-beer-2 | ✓ | 8.0ms | 14.24MB |
+| 14 | 99-bottles-of-beer | ✓ | 310.0µs | 13.00MB |
+| 15 | DNS-query | ✓ | 646.0ms | 12.43MB |
+| 16 | Duffinian-numbers | ✓ | 128.0ms | 14.25MB |
+| 17 | Find-if-a-point-is-within-a-triangle | ✓ | 79.0µs | 13.62MB |
+| 18 | a+b | ✓ | 34.0µs | 12.51MB |
+| 19 | abbreviations-automatic | ✓ | 2.0ms | 14.14MB |
+| 20 | abbreviations-easy | ✓ | 549.0µs | 13.98MB |
+| 21 | abbreviations-simple | ✓ | 619.0µs | 14.00MB |
+| 22 | abc-problem | ✓ | 262.0µs | 13.26MB |
+| 23 | abelian-sandpile-model-identity | ✓ | 116.0µs | 14.00MB |
+| 24 | abelian-sandpile-model | ✓ | 98.0µs | 13.62MB |
+| 25 | abstract-type | ✓ | 12.0µs | 13.07MB |
+| 26 | abundant-deficient-and-perfect-number-classifications | ✓ | 6.37s | 13.37MB |
+| 27 | abundant-odd-numbers | ✓ | 7.15s | 13.10MB |
+| 28 | accumulator-factory | ✓ | 14.0µs | 12.90MB |
+| 29 | achilles-numbers | ✓ | 13.0ms | 14.18MB |
+| 30 | ackermann-function-2 | ✓ | 13.0µs | 12.80MB |
+| 31 | ackermann-function-3 | ✓ | 105.76s | 13.23MB |
+| 32 | ackermann-function | ✓ | 734.0µs | 12.85MB |
+| 33 | active-directory-connect | ✓ | 12.0µs | 12.82MB |
+| 34 | active-directory-search-for-a-user | ✓ | 11.0µs | 12.72MB |
+| 35 | active-object | ✓ | 430.0µs | 13.20MB |
 | 36 | add-a-variable-to-a-class-instance-at-runtime | ✓ |  |  |
-| 37 | additive-primes | ✓ | 221.0µs | 13.03MB |
-| 38 | address-of-a-variable | ✓ | 16.0µs | 12.60MB |
-| 39 | adfgvx-cipher | ✓ | 446.0µs | 14.88MB |
-| 40 | aks-test-for-primes | ✓ | 205.0µs | 13.18MB |
-| 41 | algebraic-data-types | ✓ | 220.0µs | 14.06MB |
-| 42 | align-columns | ✓ | 312.0µs | 13.68MB |
-| 43 | aliquot-sequence-classifications | ✓ | 967.0ms | 14.34MB |
-| 44 | almkvist-giullera-formula-for-pi | ✓ | 2.39s | 14.79MB |
-| 45 | almost-prime | ✓ | 591.0µs | 12.66MB |
-| 46 | amb | ✓ | 30.0µs | 12.88MB |
-| 47 | amicable-pairs | ✓ | 12.10s | 12.73MB |
-| 48 | anagrams-deranged-anagrams | ✓ | 130.0µs | 13.00MB |
-| 49 | anagrams | ✓ | 320.0µs | 13.80MB |
-| 50 | angle-difference-between-two-bearings-1 | ✓ | 34.0µs | 12.93MB |
+| 37 | additive-primes | ✓ | 159.0µs | 13.43MB |
+| 38 | address-of-a-variable | ✓ | 13.0µs | 12.62MB |
+| 39 | adfgvx-cipher | ✓ | 295.0µs | 14.38MB |
+| 40 | aks-test-for-primes | ✓ | 131.0µs | 13.21MB |
+| 41 | algebraic-data-types | ✓ | 148.0µs | 14.18MB |
+| 42 | align-columns | ✓ | 519.0µs | 14.00MB |
+| 43 | aliquot-sequence-classifications | ✓ | 547.0ms | 14.15MB |
+| 44 | almkvist-giullera-formula-for-pi | ✓ | 1.70s | 14.43MB |
+| 45 | almost-prime | ✓ | 438.0µs | 13.53MB |
+| 46 | amb | ✓ | 22.0µs | 13.19MB |
+| 47 | amicable-pairs | ✓ | 7.35s | 13.40MB |
+| 48 | anagrams-deranged-anagrams | ✓ | 89.0µs | 12.93MB |
+| 49 | anagrams | ✓ | 227.0µs | 13.43MB |
+| 50 | angle-difference-between-two-bearings-1 | ✓ | 24.0µs | 13.06MB |
 | 51 | angle-difference-between-two-bearings-2 | ✓ | 40.0µs | 13.18MB |
 | 52 | angles-geometric-normalization-and-conversion | ✓ | 185.0µs | 13.01MB |
 | 53 | animate-a-pendulum | ✓ | 70.0µs | 12.82MB |
@@ -266,7 +266,7 @@ Last updated: 2025-07-28 10:09 GMT+7
 | 257 | create-an-html-table | ✓ | 32.0µs | 12.64MB |
 | 258 | create-an-object-at-a-given-address | ✓ | 66.0µs | 12.43MB |
 | 259 | csv-data-manipulation | ✓ | 51.0µs | 13.26MB |
-| 260 | csv-to-html-translation-1 | error | 67.0µs | 12.44MB |
+| 260 | csv-to-html-translation-1 | ✓ | 25.0µs | 12.87MB |
 | 261 | csv-to-html-translation-2 | ✓ | 62.0µs | 13.05MB |
 | 262 | csv-to-html-translation-3 | ✓ | 17.0µs | 12.52MB |
 | 263 | csv-to-html-translation-4 | ✓ | 14.0µs | 12.30MB |
@@ -277,17 +277,17 @@ Last updated: 2025-07-28 10:09 GMT+7
 | 268 | currency | ✓ | 53.0µs | 14.00MB |
 | 269 | currying | ✓ | 40.0µs | 12.83MB |
 | 270 | curzon-numbers | ✓ | 267.0ms | 12.78MB |
-| 271 | cusip | error |  |  |
+| 271 | cusip | ✓ | 50.0µs | 13.11MB |
 | 272 | cyclops-numbers | ✓ |  |  |
 | 273 | damm-algorithm | ✓ | 37.0µs | 12.93MB |
 | 274 | date-format | ✓ | 33.0µs | 12.59MB |
 | 275 | date-manipulation | ✓ | 112.0µs | 13.82MB |
 | 276 | day-of-the-week | ✓ | 129.0µs | 12.50MB |
 | 277 | de-bruijn-sequences | ✓ | 1.21s | 13.91MB |
-| 278 | deal-cards-for-freecell | error |  |  |
-| 279 | death-star | error | 20.0ms | 13.62MB |
+| 278 | deal-cards-for-freecell | ✓ | 205.0µs | 13.13MB |
+| 279 | death-star | ✓ | 14.0ms | 13.70MB |
 | 280 | deceptive-numbers | ✓ | 37.0ms | 12.86MB |
-| 281 | deconvolution-1d-2 | error |  |  |
+| 281 | deconvolution-1d-2 | ✓ | 91.0µs | 13.06MB |
 | 282 | deconvolution-1d-3 | ✓ | 73.0µs | 14.13MB |
 | 283 | deconvolution-1d | ✓ | 58.0µs | 14.25MB |
 | 284 | deepcopy-1 | ✓ | 680.0µs | 14.25MB |
