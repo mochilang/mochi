@@ -1627,6 +1627,8 @@ func typeOfExpr(e Expr) string {
 				return fmt.Sprintf("%s[]", strings.TrimSpace(key))
 			}
 			return "object[]"
+		case "Split":
+			return "string[]"
 		case "Select", "Where":
 			return typeOfExpr(ex.Target)
 		default:
@@ -1936,7 +1938,7 @@ func (l *LenExpr) emit(w io.Writer) {
 		fmt.Fprint(w, ".Count")
 		return
 	}
-	if strings.HasPrefix(t, "Dictionary<") || isMapExpr(l.Arg) {
+	if strings.HasPrefix(t, "Dictionary<") && !strings.HasSuffix(t, "[]") || isMapExpr(l.Arg) {
 		fmt.Fprint(w, ".Count")
 	} else {
 		fmt.Fprint(w, ".Length")
@@ -2716,9 +2718,6 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 									varTypes[nameAlias] = "object[]"
 								}
 							}
-						}
-						if g, ok3 := globalDecls[s.Assign.Name]; ok3 {
-							g.Value = &RawExpr{Code: fmt.Sprintf("new %s{}", varTypes[nameAlias]), Type: varTypes[nameAlias]}
 						}
 						finalVarTypes[nameAlias] = varTypes[nameAlias]
 					}
