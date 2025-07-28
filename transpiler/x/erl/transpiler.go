@@ -1174,6 +1174,17 @@ func isFloatExpr(e Expr, env *types.Env, ctx *context) bool {
 		case "float", "avg", "sqrt", "sin", "cos", "tan", "pow":
 			return true
 		}
+		if env != nil {
+			name := strings.ToLower(v.Func)
+			if fn, ok := env.GetFunc(name); ok && fn.Return != nil {
+				if fn.Return.Simple != nil && *fn.Return.Simple == "float" {
+					return true
+				}
+				if fn.Return.Generic != nil && fn.Return.Generic.Name == "float" {
+					return true
+				}
+			}
+		}
 		return false
 	case *IndexExpr:
 		if env != nil {
@@ -1458,6 +1469,13 @@ func isMapExpr(e Expr, env *types.Env, ctx *context) bool {
 					}
 				}
 			}
+		} else if v.Func == "maps:get" && len(v.Args) >= 2 {
+			idx := &IndexExpr{Target: v.Args[1], Index: v.Args[0], Kind: "map"}
+			if t := exprType(idx, env, ctx); t != nil {
+				if _, ok := t.(types.MapType); ok {
+					return true
+				}
+			}
 		}
 		if ctx != nil {
 			name := ctx.original(v.Func)
@@ -1565,6 +1583,21 @@ func mapValueIsMap(e Expr, env *types.Env, ctx *context) bool {
 		if t := exprType(ie, env, ctx); t != nil {
 			if _, ok := t.(types.MapType); ok {
 				return true
+			}
+		}
+		if mapValueIsMap(ie.Target, env, ctx) {
+			return true
+		}
+	}
+	if ce, ok := e.(*CallExpr); ok && ce.Func == "erlang:get" && len(ce.Args) == 1 {
+		if a, ok := ce.Args[0].(*AtomLit); ok {
+			name := strings.Trim(a.Name, "'")
+			if t, err := env.GetVar(name); err == nil {
+				if mt, ok := t.(types.MapType); ok {
+					if _, ok := mt.Value.(types.MapType); ok {
+						return true
+					}
+				}
 			}
 		}
 	}
@@ -1944,6 +1977,15 @@ func (c *CallExpr) emit(w io.Writer) {
 		io.WriteString(w, "maps:values(")
 		if len(c.Args) > 0 {
 			c.Args[0].emit(w)
+		}
+		io.WriteString(w, ")")
+		return
+	case "panic":
+		io.WriteString(w, "erlang:error(")
+		if len(c.Args) > 0 {
+			c.Args[0].emit(w)
+		} else {
+			io.WriteString(w, "panic")
 		}
 		io.WriteString(w, ")")
 		return
