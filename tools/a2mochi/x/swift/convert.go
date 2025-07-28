@@ -328,6 +328,7 @@ func parseStatementsIndent(body string, indent int) []string {
 			}
 			l = strings.TrimSpace(l)
 			l = strings.TrimSuffix(l, ";")
+			l = rewriteMapLiteral(l)
 			l = rewriteStructLiteral(l)
 			l = rewriteCasts(l)
 			l = strings.ReplaceAll(l, "_append(", "append(")
@@ -388,6 +389,17 @@ func parseStatementsIndent(body string, indent int) []string {
 }
 
 var structLitRE = regexp.MustCompile(`^([A-Z][A-Za-z0-9_]*)\((.*)\)$`)
+
+var mapLitRE = regexp.MustCompile(`^\[(.*:.+)\]$`)
+
+func rewriteMapLiteral(expr string) string {
+	m := mapLitRE.FindStringSubmatch(expr)
+	if len(m) != 2 {
+		return expr
+	}
+	inner := strings.TrimSpace(m[1])
+	return "{ " + inner + " }"
+}
 
 func rewriteStructLiteral(expr string) string {
 	m := structLitRE.FindStringSubmatch(expr)
