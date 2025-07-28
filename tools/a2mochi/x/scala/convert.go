@@ -90,7 +90,7 @@ func ConvertSource(f *File) (string, error) {
 		}
 	}
 	for _, fn := range f.Funcs {
-		code := convertFromAST(fn)
+		code := convertFromAST(f, fn)
 		if code == "" {
 			continue
 		}
@@ -164,7 +164,7 @@ func parseSource(src string) File {
 
 // --- conversion helpers ---
 
-func convertFromAST(fn Func) string {
+func convertFromAST(file *File, fn Func) string {
 	var b strings.Builder
 	topLevel := fn.Name == "main"
 	if !topLevel {
@@ -210,7 +210,7 @@ func convertFromAST(fn Func) string {
 		}
 		if m := reElseIf.FindStringSubmatch(line); m != nil {
 			indent--
-			write("else if " + convertExpr(strings.TrimSpace(m[1])) + " {")
+			write("else if " + convertExpr(file, strings.TrimSpace(m[1])) + " {")
 			indent++
 			continue
 		}
@@ -221,29 +221,29 @@ func convertFromAST(fn Func) string {
 			continue
 		}
 		if m := reWhile.FindStringSubmatch(line); m != nil {
-			write("while " + convertExpr(strings.TrimSpace(m[1])) + " {")
+			write("while " + convertExpr(file, strings.TrimSpace(m[1])) + " {")
 			indent++
 			continue
 		}
 		if m := reFor.FindStringSubmatch(line); m != nil {
 			name := strings.TrimSpace(m[1])
-			expr := convertExpr(strings.TrimSpace(m[2]))
+			expr := convertExpr(file, strings.TrimSpace(m[2]))
 			write("for " + name + " in " + expr + " {")
 			indent++
 			continue
 		}
 		if m := reIf.FindStringSubmatch(line); m != nil {
-			write("if " + convertExpr(strings.TrimSpace(m[1])) + " {")
+			write("if " + convertExpr(file, strings.TrimSpace(m[1])) + " {")
 			indent++
 			continue
 		}
 		switch {
 		case strings.HasPrefix(line, "println("):
 			expr := strings.TrimSuffix(strings.TrimPrefix(line, "println("), ")")
-			write("print(" + convertExpr(expr) + ")")
+			write("print(" + convertExpr(file, expr) + ")")
 		case strings.HasPrefix(line, "return "):
 			expr := strings.TrimSpace(strings.TrimPrefix(line, "return "))
-			write("return " + convertExpr(expr))
+			write("return " + convertExpr(file, expr))
 		case strings.HasPrefix(line, "var "):
 			content := strings.TrimPrefix(line, "var ")
 			if idx := strings.Index(content, "="); idx != -1 {
@@ -253,7 +253,7 @@ func convertFromAST(fn Func) string {
 				if c := strings.Index(left, ":"); c != -1 {
 					name = strings.TrimSpace(left[:c])
 				}
-				write("var " + name + " = " + convertExpr(expr))
+				write("var " + name + " = " + convertExpr(file, expr))
 			} else {
 				write("var " + content)
 			}
@@ -265,19 +265,19 @@ func convertFromAST(fn Func) string {
 				if c := strings.Index(left, ":"); c != -1 {
 					name = strings.TrimSpace(left[:c])
 				}
-				write("let " + name + " = " + convertExpr(expr))
+				write("let " + name + " = " + convertExpr(file, expr))
 			}
 		case strings.Contains(line, ".append("):
 			idx := strings.Index(line, ".append(")
 			recv := strings.TrimSpace(line[:idx])
 			arg := strings.TrimSuffix(line[idx+8:], ")")
-			write("append(" + recv + ", " + convertExpr(arg) + ")")
+			write("append(" + recv + ", " + convertExpr(file, arg) + ")")
 		case strings.Contains(line, "="):
 			parts := strings.SplitN(line, "=", 2)
 			left := strings.TrimSpace(parts[0])
 			right := strings.TrimSpace(parts[1])
 			if left != "" && right != "" {
-				write(left + " = " + convertExpr(right))
+				write(left + " = " + convertExpr(file, right))
 			}
 		}
 	}
@@ -287,10 +287,15 @@ func convertFromAST(fn Func) string {
 	return b.String()
 }
 
-func convertExpr(expr string) string {
+var reIndex = regexp.MustCompile(`^([a-z][a-zA-Z0-9_]*)\(([^()]*)\)$`)
+
+func convertExpr(file *File, expr string) string {
 	expr = strings.TrimSpace(expr)
 	if strings.HasSuffix(expr, ".toString()") {
 		expr = "str(" + strings.TrimSuffix(expr, ".toString()") + ")"
+	}
+	if strings.HasSuffix(expr, ".toInt") {
+		expr = "int(" + strings.TrimSuffix(expr, ".toInt") + ")"
 	}
 	if strings.HasSuffix(expr, ".size") {
 		expr = "len(" + strings.TrimSuffix(expr, ".size") + ")"
@@ -302,15 +307,28 @@ func convertExpr(expr string) string {
 		idx := strings.Index(expr, ".append(")
 		recv := strings.TrimSpace(expr[:idx])
 		arg := strings.TrimSuffix(expr[idx+8:], ")")
-		return "append(" + recv + ", " + convertExpr(arg) + ")"
+		return "append(" + recv + ", " + convertExpr(file, arg) + ")"
 	}
 	if strings.Contains(expr, " :+ ") {
 		parts := strings.SplitN(expr, ":+", 2)
 		if len(parts) == 2 {
 			left := strings.TrimSpace(parts[0])
 			right := strings.TrimSpace(parts[1])
-			return "append(" + left + ", " + convertExpr(right) + ")"
+			return "append(" + left + ", " + convertExpr(file, right) + ")"
 		}
+	}
+	if m := reIndex.FindStringSubmatch(expr); m != nil {
+		name := m[1]
+		builtin := map[string]bool{"int": true, "len": true, "str": true, "append": true, "print": true, "range": true}
+		if builtin[name] {
+			return expr
+		}
+		for _, fn := range file.Funcs {
+			if fn.Name == name {
+				return expr
+			}
+		}
+		return name + "[" + convertExpr(file, m[2]) + "]"
 	}
 	return expr
 }
