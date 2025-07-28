@@ -1,0 +1,11 @@
+(program
+  (while
+    (binary < (selector i) (int 3))
+    (block
+      (call print (selector i))
+      (assign i
+        (binary + (selector i) (int 1))
+      )
+    )
+  )
+)
