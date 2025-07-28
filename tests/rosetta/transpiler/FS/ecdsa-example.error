@@ -1,0 +1,49 @@
+compile: exit status 1
+F# Compiler for F# 4.0 (Open Source Edition)
+Freely distributed under the Apache 2.0 Open Source License
+
+/workspace/mochi/tests/rosetta/transpiler/FS/ecdsa-example.fs(3,1): warning FS0221: The declarations in this file will be placed in an implicit module 'Ecdsa-example' based on the file name 'ecdsa-example.fs'. However this is not a valid F# identifier, so the contents will not be accessible from other files. Consider renaming the file or adding a 'module' or 'namespace' declaration at the top of the file.
+
+/workspace/mochi/tests/rosetta/transpiler/FS/ecdsa-example.fs(49,19): error FS0039: The value, constructor, namespace or type 'ECDSAExample' is not defined
+
+/workspace/mochi/tests/rosetta/transpiler/FS/ecdsa-example.fs(50,55): error FS0008: This runtime coercion or type test from type
+    'a    
+ to 
+    Map<string,obj>    
+involves an indeterminate type based on information prior to this program point. Runtime type tests are not allowed on some types. Further type annotations are needed.
+
+/workspace/mochi/tests/rosetta/transpiler/FS/ecdsa-example.fs(52,41): error FS0008: This runtime coercion or type test from type
+    'a    
+ to 
+    Map<string,obj>    
+involves an indeterminate type based on information prior to this program point. Runtime type tests are not allowed on some types. Further type annotations are needed.
+
+/workspace/mochi/tests/rosetta/transpiler/FS/ecdsa-example.fs(53,41): error FS0008: This runtime coercion or type test from type
+    'a    
+ to 
+    Map<string,obj>    
+involves an indeterminate type based on information prior to this program point. Runtime type tests are not allowed on some types. Further type annotations are needed.
+
+/workspace/mochi/tests/rosetta/transpiler/FS/ecdsa-example.fs(55,47): error FS0008: This runtime coercion or type test from type
+    'a    
+ to 
+    Map<string,obj>    
+involves an indeterminate type based on information prior to this program point. Runtime type tests are not allowed on some types. Further type annotations are needed.
+
+/workspace/mochi/tests/rosetta/transpiler/FS/ecdsa-example.fs(57,41): error FS0008: This runtime coercion or type test from type
+    'a    
+ to 
+    Map<string,obj>    
+involves an indeterminate type based on information prior to this program point. Runtime type tests are not allowed on some types. Further type annotations are needed.
+
+/workspace/mochi/tests/rosetta/transpiler/FS/ecdsa-example.fs(58,41): error FS0008: This runtime coercion or type test from type
+    'a    
+ to 
+    Map<string,obj>    
+involves an indeterminate type based on information prior to this program point. Runtime type tests are not allowed on some types. Further type annotations are needed.
+
+/workspace/mochi/tests/rosetta/transpiler/FS/ecdsa-example.fs(59,53): error FS0008: This runtime coercion or type test from type
+    'a    
+ to 
+    Map<string,obj>    
+involves an indeterminate type based on information prior to this program point. Runtime type tests are not allowed on some types. Further type annotations are needed.

@@ -1,0 +1,18 @@
+compile: exit status 1
+F# Compiler for F# 4.0 (Open Source Edition)
+Freely distributed under the Apache 2.0 Open Source License
+
+/workspace/mochi/tests/rosetta/transpiler/FS/eertree.fs(74,29): error FS0001: This expression was expected to have type
+    Map<string,obj> array    
+but here has type
+    Map<'a,'b>    
+
+/workspace/mochi/tests/rosetta/transpiler/FS/eertree.fs(76,33): error FS0001: This expression was expected to have type
+    Map<string,obj> array    
+but here has type
+    Map<'a,'b>    
+
+/workspace/mochi/tests/rosetta/transpiler/FS/eertree.fs(93,29): error FS0001: This expression was expected to have type
+    Map<string,obj> array    
+but here has type
+    Map<'a,'b>    

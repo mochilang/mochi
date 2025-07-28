@@ -1,0 +1,14 @@
+compile: exit status 1
+F# Compiler for F# 4.0 (Open Source Edition)
+Freely distributed under the Apache 2.0 Open Source License
+
+/workspace/mochi/tests/rosetta/transpiler/FS/display-an-outline-as-a-nested-table.fs(3,1): warning FS0221: The declarations in this file will be placed in an implicit module 'Display-an-outline-as-a-nested-table' based on the file name 'display-an-outline-as-a-nested-table.fs'. However this is not a valid F# identifier, so the contents will not be accessible from other files. Consider renaming the file or adding a 'module' or 'namespace' declaration at the top of the file.
+
+/workspace/mochi/tests/rosetta/transpiler/FS/display-an-outline-as-a-nested-table.fs(89,35): error FS0001: This expression was expected to have type
+    string array    
+but here has type
+    'a list    
+
+/workspace/mochi/tests/rosetta/transpiler/FS/display-an-outline-as-a-nested-table.fs(112,33): error FS0001: The type 'obj' does not support a conversion to the type 'int'
+
+/workspace/mochi/tests/rosetta/transpiler/FS/display-an-outline-as-a-nested-table.fs(188,21): error FS0027: This value is not mutable

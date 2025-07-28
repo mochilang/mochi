@@ -1,0 +1,17 @@
+compile: exit status 1
+F# Compiler for F# 4.0 (Open Source Edition)
+Freely distributed under the Apache 2.0 Open Source License
+
+/workspace/mochi/tests/rosetta/transpiler/FS/doubly-linked-list-element-definition.fs(3,1): warning FS0221: The declarations in this file will be placed in an implicit module 'Doubly-linked-list-element-definition' based on the file name 'doubly-linked-list-element-definition.fs'. However this is not a valid F# identifier, so the contents will not be accessible from other files. Consider renaming the file or adding a 'module' or 'namespace' declaration at the top of the file.
+
+/workspace/mochi/tests/rosetta/transpiler/FS/doubly-linked-list-element-definition.fs(46,20): error FS0043: The type 'Map<string,obj>' does not have 'null' as a proper value
+
+/workspace/mochi/tests/rosetta/transpiler/FS/doubly-linked-list-element-definition.fs(48,24): error FS0039: The type 'map' is not defined
+
+/workspace/mochi/tests/rosetta/transpiler/FS/doubly-linked-list-element-definition.fs(49,21): error FS0043: The type 'Map<string,obj>' does not have 'null' as a proper value
+
+/workspace/mochi/tests/rosetta/transpiler/FS/doubly-linked-list-element-definition.fs(54,20): error FS0043: The type 'Map<string,obj>' does not have 'null' as a proper value
+
+/workspace/mochi/tests/rosetta/transpiler/FS/doubly-linked-list-element-definition.fs(56,24): error FS0039: The type 'map' is not defined
+
+/workspace/mochi/tests/rosetta/transpiler/FS/doubly-linked-list-element-definition.fs(57,21): error FS0043: The type 'Map<string,obj>' does not have 'null' as a proper value

@@ -1,0 +1,7 @@
+EKG( 2): System.Int32[]
+EKG( 5): System.Int32[]
+EKG( 7): System.Int32[]
+EKG( 9): System.Int32[]
+EKG(10): System.Int32[]
+
+EKG(5) and EKG(7) converge at term 21

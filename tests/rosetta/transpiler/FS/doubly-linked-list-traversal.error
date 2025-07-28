@@ -1,0 +1,23 @@
+compile: exit status 1
+F# Compiler for F# 4.0 (Open Source Edition)
+Freely distributed under the Apache 2.0 Open Source License
+
+/workspace/mochi/tests/rosetta/transpiler/FS/doubly-linked-list-traversal.fs(34,83): error FS0010: Unexpected symbol ')' in expression
+
+/workspace/mochi/tests/rosetta/transpiler/FS/doubly-linked-list-traversal.fs(35,64): error FS0010: Unexpected symbol ')' in expression
+
+/workspace/mochi/tests/rosetta/transpiler/FS/doubly-linked-list-traversal.fs(37,72): error FS0010: Unexpected symbol ')' in expression
+
+/workspace/mochi/tests/rosetta/transpiler/FS/doubly-linked-list-traversal.fs(38,50): error FS0010: Unexpected symbol ')' in expression
+
+/workspace/mochi/tests/rosetta/transpiler/FS/doubly-linked-list-traversal.fs(50,74): error FS0010: Unexpected symbol ')' in expression
+
+/workspace/mochi/tests/rosetta/transpiler/FS/doubly-linked-list-traversal.fs(54,74): error FS0010: Unexpected symbol ')' in expression
+
+/workspace/mochi/tests/rosetta/transpiler/FS/doubly-linked-list-traversal.fs(55,74): error FS0010: Unexpected symbol ')' in expression
+
+/workspace/mochi/tests/rosetta/transpiler/FS/doubly-linked-list-traversal.fs(60,68): error FS0010: Unexpected symbol ')' in expression
+
+/workspace/mochi/tests/rosetta/transpiler/FS/doubly-linked-list-traversal.fs(61,42): error FS0010: Unexpected symbol ')' in expression
+
+/workspace/mochi/tests/rosetta/transpiler/FS/doubly-linked-list-traversal.fs(3,1): warning FS0221: The declarations in this file will be placed in an implicit module 'Doubly-linked-list-traversal' based on the file name 'doubly-linked-list-traversal.fs'. However this is not a valid F# identifier, so the contents will not be accessible from other files. Consider renaming the file or adding a 'module' or 'namespace' declaration at the top of the file.
