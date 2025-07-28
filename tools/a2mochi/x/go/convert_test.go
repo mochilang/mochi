@@ -78,6 +78,8 @@ func TestConvert_Golden(t *testing.T) {
 		"string_concat":  true,
 		"str_builtin":    true,
 		"unary_neg":      true,
+		"for_loop":       true,
+		"while_loop":     true,
 	}
 
 	outDir := filepath.Join(root, "tests/a2mochi/x/go")
