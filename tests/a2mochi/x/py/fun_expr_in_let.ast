@@ -1,0 +1,12 @@
+(program
+  (var square
+    (funexpr
+      (param x (type int))
+      (type int)
+      (binary * (selector x) (selector x))
+    )
+  )
+  (call print
+    (call square (int 6))
+  )
+)

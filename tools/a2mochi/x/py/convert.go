@@ -340,6 +340,8 @@ func emitFuncDef(b *strings.Builder, n *Node, indent string, lines []string, see
 			if err := emitExpr(b, a.Annotation, lines); err != nil {
 				return err
 			}
+		} else {
+			b.WriteString(": int")
 		}
 	}
 	b.WriteByte(')')
@@ -348,6 +350,8 @@ func emitFuncDef(b *strings.Builder, n *Node, indent string, lines []string, see
 		if err := emitExpr(b, n.Returns, lines); err != nil {
 			return err
 		}
+	} else {
+		b.WriteString(": int")
 	}
 	b.WriteString(" {\n")
 	for _, st := range n.Body {
@@ -783,8 +787,18 @@ func emitExpr(b *strings.Builder, n *Node, lines []string) error {
 			body = strings.TrimSpace(parts[1])
 		}
 		b.WriteString("fun (")
-		b.WriteString(args)
-		b.WriteString(") => ")
+		argParts := strings.Split(args, ",")
+		for i, p := range argParts {
+			p = strings.TrimSpace(p)
+			if i > 0 {
+				b.WriteString(", ")
+			}
+			if p != "" {
+				b.WriteString(p)
+				b.WriteString(": int")
+			}
+		}
+		b.WriteString(") : int => ")
 		b.WriteString(body)
 	case "ListComp":
 		if len(n.Generators) == 1 {
