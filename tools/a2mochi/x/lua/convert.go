@@ -120,16 +120,22 @@ func convertLuaStmts(stmts []luaast.Stmt, indent int, vars map[string]bool) []st
 			out = append(out, ind+"} while !("+cond+")")
 		case *luaast.IfStmt:
 			writeLuaIfStmt(&out, s, indent)
-		case *luaast.NumberForStmt:
-			step := "1"
-			if s.Step != nil {
-				step = luaExprString(s.Step)
-			}
-			init := luaExprString(s.Init)
-			limit := luaExprString(s.Limit)
-			out = append(out, ind+fmt.Sprintf("for %s = %s; %s <= %s; %s += %s {", s.Name, init, s.Name, limit, s.Name, step))
-			out = append(out, convertLuaStmts(s.Stmts, indent+1, map[string]bool{})...)
-			out = append(out, ind+"}")
+                case *luaast.NumberForStmt:
+                        step := "1"
+                        if s.Step != nil {
+                                step = luaExprString(s.Step)
+                        }
+                        init := luaExprString(s.Init)
+                        limit := luaExprString(s.Limit)
+                        endVal := fmt.Sprintf("(%s) + %s", limit, step)
+                        loop := fmt.Sprintf("for %s in %s..%s", s.Name, init, endVal)
+                        if step != "1" {
+                                loop += " step " + step
+                        }
+                        loop += " {"
+                        out = append(out, ind+loop)
+                        out = append(out, convertLuaStmts(s.Stmts, indent+1, map[string]bool{})...)
+                        out = append(out, ind+"}")
 		case *luaast.GenericForStmt:
 			iter := ""
 			if len(s.Exprs) > 0 {
