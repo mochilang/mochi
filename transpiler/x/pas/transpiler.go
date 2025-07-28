@@ -138,6 +138,7 @@ type Program struct {
 	NeedShowList  bool
 	NeedShowList2 bool
 	NeedListStr   bool
+	NeedListStr2  bool
 	UseLookupHost bool
 	UseNow        bool
 	UseMem        bool
@@ -480,6 +481,10 @@ func (c *CastExpr) emit(w io.Writer) {
 			c.Expr.emit(w)
 			io.WriteString(w, ")")
 		}
+	case "bigint":
+		io.WriteString(w, "Int64(")
+		c.Expr.emit(w)
+		io.WriteString(w, ")")
 	case "float":
 		io.WriteString(w, "Double(")
 		c.Expr.emit(w)
@@ -948,6 +953,19 @@ begin
 end;
 `)
 	}
+	if p.NeedListStr2 {
+		buf.WriteString(`function list_int_to_str(xs: array of integer): string;
+var i: integer;
+begin
+  Result := '[';
+  for i := 0 to High(xs) do begin
+    Result := Result + IntToStr(xs[i]);
+    if i < High(xs) then Result := Result + ' ';
+  end;
+  Result := Result + ']';
+end;
+`)
+	}
 	for _, r := range p.Records {
 		fmt.Fprintf(&buf, "type %s = record\n", r.Name)
 		for _, f := range r.Fields {
@@ -1322,6 +1340,18 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 				ex, err := convertExpr(env, st.Assign.Value)
 				if err != nil {
 					return nil, err
+				}
+				if isEmptyMapLiteral(st.Assign.Value) {
+					if t, ok := varTypes[name]; ok && strings.HasPrefix(t, "specialize TFPGMap") {
+						parts := strings.TrimPrefix(t, "specialize TFPGMap<")
+						parts = strings.TrimSuffix(parts, ">")
+						kv := strings.Split(parts, ",")
+						if len(kv) == 2 {
+							keyT := strings.TrimSpace(kv[0])
+							valT := strings.TrimSpace(kv[1])
+							ex = &CallExpr{Name: fmt.Sprintf("specialize TFPGMap<%s, %s>.Create", keyT, valT)}
+						}
+					}
 				}
 				if len(st.Assign.Field) > 0 {
 					target := &SelectorExpr{Root: st.Assign.Name}
@@ -1978,6 +2008,13 @@ func convertBody(env *types.Env, body []*parser.Statement, varTypes map[string]s
 				ex, err := convertExpr(env, st.Return.Value)
 				if err != nil {
 					return nil, err
+				}
+				if rec, ok := ex.(*RecordLit); ok {
+					var args []Expr
+					for _, f := range rec.Fields {
+						args = append(args, f.Expr)
+					}
+					ex = &CallExpr{Name: ctorName(rec.Type), Args: args}
 				}
 				out = append(out, &ReturnStmt{Expr: ex})
 			} else {
@@ -3221,6 +3258,8 @@ func typeOf(e *parser.Expr, env *types.Env) string {
 		return "boolean"
 	case types.IntType, types.Int64Type:
 		return "integer"
+	case types.BigIntType:
+		return "int64"
 	}
 	return ""
 }
@@ -3286,6 +3325,8 @@ func typeFromSimple(s string) string {
 		return "boolean"
 	case "float":
 		return "real"
+	case "bigint":
+		return "int64"
 	default:
 		return s
 	}
@@ -3533,6 +3574,11 @@ func convertPostfix(env *types.Env, pf *parser.PostfixExpr) (Expr, error) {
 			if g.Name == "list" && len(g.Args) == 1 && g.Args[0].Simple != nil {
 				elem := typeFromSimple(*g.Args[0].Simple)
 				expr = &CastExpr{Expr: expr, Type: "array of " + elem}
+			} else if g.Name == "map" && len(g.Args) == 2 && g.Args[0].Simple != nil && g.Args[1].Simple != nil {
+				key := typeFromSimple(*g.Args[0].Simple)
+				val := typeFromSimple(*g.Args[1].Simple)
+				currProg.UseFGL = true
+				expr = &CastExpr{Expr: expr, Type: fmt.Sprintf("specialize TFPGMap<%s, %s>", key, val)}
 			} else {
 				return nil, fmt.Errorf("unsupported postfix")
 			}
@@ -3603,6 +3649,10 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 				currProg.NeedListStr = true
 				return &CallExpr{Name: "list_to_str", Args: args}, nil
 			}
+			if strings.HasPrefix(t, "array of ") || isArrayAlias(t) {
+				currProg.NeedListStr2 = true
+				return &CallExpr{Name: "list_int_to_str", Args: args}, nil
+			}
 			if t == "Variant" || t == "any" || t == "string" {
 				return args[0], nil
 			}
@@ -3611,6 +3661,7 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 			} else {
 				name = "IntToStr"
 			}
+			currProg.UseSysUtils = true
 		} else if name == "upper" && len(args) == 1 {
 			currProg.UseSysUtils = true
 			return &CallExpr{Name: "UpperCase", Args: args}, nil
