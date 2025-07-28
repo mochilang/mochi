@@ -154,6 +154,13 @@ func convertLetStmt(src string, n *node, level int) string {
 			text = name + ": " + typ + val
 		}
 	}
+	// sanitize value expression separately to catch vec! and push() usage
+	if eq := strings.Index(text, "="); eq >= 0 {
+		before := strings.TrimSpace(text[:eq])
+		expr := strings.TrimSpace(text[eq+1:])
+		expr = sanitizeExpr(expr)
+		text = before + " = " + expr
+	}
 	text = sanitizeExpr(text)
 	return indent(level) + text
 }
@@ -336,6 +343,9 @@ func convertPrintMacro(code string) (string, bool) {
 			args := strings.TrimPrefix(code, m)
 			args = strings.TrimSpace(strings.TrimSuffix(strings.TrimPrefix(args, "("), ")"))
 			parts := splitRustArgs(args)
+			for i, p := range parts {
+				parts[i] = sanitizeExpr(p)
+			}
 			if m == "dbg!" {
 				return "print(" + strings.Join(parts, ", ") + ")", true
 			}
@@ -382,6 +392,10 @@ func sanitizeExpr(code string) string {
 			code = strings.TrimSpace(strings.TrimPrefix(code, "&"))
 			changed = true
 		}
+		if strings.HasPrefix(code, "let ") {
+			code = strings.TrimSpace(strings.Replace(code, "let ", "var ", 1))
+			changed = true
+		}
 		if strings.HasPrefix(code, "mut ") {
 			code = strings.TrimSpace(strings.TrimPrefix(code, "mut "))
 			changed = true
@@ -399,6 +413,34 @@ func sanitizeExpr(code string) string {
 		code = v
 	} else if v, ok := convertBoxNew(code); ok {
 		code = v
+	}
+	code = strings.ReplaceAll(code, "let ", "var ")
+	code = strings.ReplaceAll(code, "mut ", "")
+	// convert inline vec! macro usage
+	reVec := regexp.MustCompile(`vec!\[(?P<items>[^\]]*)\]`)
+	code = reVec.ReplaceAllString(code, `[$items]`)
+	// convert push() into append() assignment
+	rePush := regexp.MustCompile(`\b([A-Za-z_][A-Za-z0-9_]*)\.push\(([^)]*)\)`)
+	code = rePush.ReplaceAllString(code, `$1 = append($1, $2)`)
+	if strings.HasPrefix(code, "{") && strings.HasSuffix(code, "}") {
+		inner := strings.TrimSpace(code[1 : len(code)-1])
+		parts := strings.Split(inner, ";")
+		if len(parts) == 3 {
+			p1 := strings.TrimSpace(parts[0])
+			p2 := strings.TrimSpace(parts[1])
+			p3 := strings.TrimSpace(parts[2])
+			if strings.HasPrefix(p1, "var ") {
+				if eq := strings.Index(p1, "="); eq > 0 {
+					name := strings.TrimSpace(p1[4:eq])
+					base := strings.TrimSpace(p1[eq+1:])
+					pushPrefix := fmt.Sprintf("%s = append(%s,", name, name)
+					if strings.HasPrefix(p2, pushPrefix) && p3 == name {
+						arg := strings.TrimSpace(strings.TrimSuffix(strings.TrimPrefix(p2, pushPrefix), ")"))
+						code = fmt.Sprintf("append(%s, %s)", base, arg)
+					}
+				}
+			}
+		}
 	}
 
 	code = strings.ReplaceAll(code, ".to_vec()", "")
@@ -427,8 +469,8 @@ func convertRustTypeFromString(t string) string {
 		t = strings.TrimSuffix(strings.TrimPrefix(t, "Box<"), ">")
 	}
 	if strings.HasPrefix(t, "Vec<") && strings.HasSuffix(t, ">") {
-		inner := t[4 : len(t)-1]
-		return "[" + convertRustTypeFromString(inner) + "]"
+		// list types are not explicitly typed in Mochi
+		return "any"
 	}
 	if strings.HasPrefix(t, "Option<") && strings.HasSuffix(t, ">") {
 		inner := t[7 : len(t)-1]

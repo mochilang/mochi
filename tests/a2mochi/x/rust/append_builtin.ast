@@ -1,0 +1,11 @@
+(program
+  (fun main
+    (var a
+      (type any)
+      (list (int 1) (int 2))
+    )
+    (call print
+      (call append (selector a) (int 3))
+    )
+  )
+)
