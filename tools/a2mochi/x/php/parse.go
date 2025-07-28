@@ -253,6 +253,18 @@ func simpleExpr(n pnode.Node) (string, bool) {
 				args = append(args, val)
 			}
 		}
+		switch name {
+		case "array_sum":
+			name = "sum"
+		case "count", "strlen":
+			name = "len"
+		case "substr":
+			if len(args) == 3 {
+				end := fmt.Sprintf("(%s + %s)", args[1], args[2])
+				args[2] = end
+			}
+			name = "substring"
+		}
 		return fmt.Sprintf("%s(%s)", name, strings.Join(args, ", ")), true
 	case *expr.Ternary:
 		if v.IfFalse != nil {
@@ -302,6 +314,16 @@ func simpleExpr(n pnode.Node) (string, bool) {
 			return "", false
 		}
 		return fmt.Sprintf("(%s / %s)", left, right), true
+	case *binary.Concat:
+		left, ok1 := simpleExpr(v.Left)
+		if !ok1 {
+			return "", false
+		}
+		right, ok2 := simpleExpr(v.Right)
+		if !ok2 {
+			return "", false
+		}
+		return fmt.Sprintf("(%s + %s)", left, right), true
 	case *expr.ArrayDimFetch:
 		base, ok := simpleExpr(v.Variable)
 		if !ok {
@@ -322,6 +344,7 @@ func simpleExpr(n pnode.Node) (string, bool) {
 
 func arrayExpr(items []pnode.Node) (string, bool) {
 	elems := make([]string, 0, len(items))
+	mapMode := false
 	for _, it := range items {
 		ai, ok := it.(*expr.ArrayItem)
 		if !ok {
@@ -331,7 +354,19 @@ func arrayExpr(items []pnode.Node) (string, bool) {
 		if !ok {
 			return "", false
 		}
-		elems = append(elems, val)
+		if ai.Key != nil {
+			key, ok := simpleExpr(ai.Key)
+			if !ok {
+				return "", false
+			}
+			elems = append(elems, fmt.Sprintf("%s: %s", key, val))
+			mapMode = true
+		} else {
+			elems = append(elems, val)
+		}
+	}
+	if mapMode {
+		return "{" + strings.Join(elems, ", ") + "}", true
 	}
 	return "[" + strings.Join(elems, ", ") + "]", true
 }
