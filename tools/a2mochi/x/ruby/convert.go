@@ -178,16 +178,56 @@ func exprString(n Node) string {
 			walk(c)
 		}
 		return "{" + strings.Join(parts, ", ") + "}"
-	case "aref":
-		if len(n.Children) == 2 {
-			recv := exprString(n.Children[0])
-			idx := n.Children[1]
-			if idx.Type == "args_add_block" && len(idx.Children) > 0 {
-				idx = idx.Children[0]
-			}
-			return recv + "[" + exprString(idx) + "]"
-		}
-	}
+       case "aref":
+               if len(n.Children) == 2 {
+                       recv := exprString(n.Children[0])
+                       idx := n.Children[1]
+                       if idx.Type == "args_add_block" && len(idx.Children) > 0 {
+                               idx = idx.Children[0]
+                       }
+                       return recv + "[" + exprString(idx) + "]"
+               }
+       case "arg_paren", "args_add_block":
+               if len(n.Children) > 0 {
+                       return exprString(n.Children[0])
+               }
+       case "args_add":
+               var parts []string
+               for _, c := range n.Children {
+                       if c.Type == "args_new" {
+                               continue
+                       }
+                       parts = append(parts, exprString(c))
+               }
+               return strings.Join(parts, ", ")
+       case "call":
+               if len(n.Children) >= 3 {
+                       recv := exprString(n.Children[0])
+                       meth := n.Children[2]
+                       if meth.Type == "@ident" && meth.Value == "length" {
+                               return "len(" + recv + ")"
+                       }
+               }
+       case "method_add_arg":
+               if len(n.Children) == 2 {
+                       call := n.Children[0]
+                       args := n.Children[1]
+                       if call.Type == "call" && len(call.Children) >= 3 {
+                               recv := exprString(call.Children[0])
+                               meth := call.Children[2]
+                               if meth.Type == "@ident" && meth.Value == "include?" {
+                                       arg := args
+                                       if arg.Type == "arg_paren" && len(arg.Children) > 0 {
+                                               arg = arg.Children[0]
+                                       }
+                                       if arg.Type == "args_add_block" && len(arg.Children) > 0 {
+                                               arg = arg.Children[0]
+                                       }
+                                       return recv + ".contains(" + exprString(arg) + ")"
+                               }
+                       }
+               }
+       }
 
 	if n.Type == "paren" && len(n.Children) == 1 {
 		return "(" + exprString(n.Children[0]) + ")"
