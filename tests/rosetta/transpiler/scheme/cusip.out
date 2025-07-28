@@ -1,0 +1,11 @@
+WARNING: importing already defined binding: equal?
+WARNING: importing already defined binding: let-syntax
+WARNING: importing already defined binding: letrec-syntax
+WARNING: importing already defined binding: display
+WARNING: importing already defined binding: write
+037833100 -> correct
+17275R102 -> correct
+38259P508 -> correct
+594918104 -> correct
+68389X106 -> incorrect
+68389X105 -> correct

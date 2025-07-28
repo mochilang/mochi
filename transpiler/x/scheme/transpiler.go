@@ -335,6 +335,26 @@ func header() []byte {
   (let* ((b (if (number? base) base 10))
          (n (string->number (if (list? s) (list->string s) s) b)))
     (if n (inexact->exact (truncate n)) 0)))`
+	prelude += `
+(define (_split s sep)
+  (let* ((str (if (string? s) s (list->string s)))
+         (del (cond ((char? sep) sep)
+                     ((string? sep) (if (= (string-length sep) 1)
+                                       (string-ref sep 0)
+                                       sep))
+                     (else sep))))
+    (cond
+     ((and (string? del) (string=? del ""))
+      (map string (string->list str)))
+     ((char? del)
+      (string-split str del))
+     (else
+        (let loop ((r str) (acc '()))
+          (let ((idx (string-contains r del)))
+            (if idx
+                (loop (substring r (+ idx (string-length del)))
+                      (cons (substring r 0 idx) acc))
+                (reverse (cons r acc)))))))))`
 	if usesInput {
 		prelude += "\n(define (_input)\n  (let ((l (read-line)))\n    (if (eof-object? l) \"\" l)))"
 	}
@@ -2578,6 +2598,11 @@ func convertCall(target Node, call *parser.CallOp) (Node, error) {
 			return &List{Elems: []Node{Symbol("string-append"), args[0], args[1]}}, nil
 		}
 		return &List{Elems: []Node{Symbol("append"), args[0], &List{Elems: []Node{Symbol("_list"), args[1]}}}}, nil
+	case "split":
+		if len(args) != 2 {
+			return nil, fmt.Errorf("split expects 2 args")
+		}
+		return &List{Elems: []Node{Symbol("_split"), args[0], args[1]}}, nil
 	case "repeat":
 		if len(args) != 2 {
 			return nil, fmt.Errorf("repeat expects 2 args")

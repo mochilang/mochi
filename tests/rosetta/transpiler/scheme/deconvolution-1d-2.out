@@ -1,0 +1,9 @@
+WARNING: importing already defined binding: equal?
+WARNING: importing already defined binding: let-syntax
+WARNING: importing already defined binding: letrec-syntax
+WARNING: importing already defined binding: display
+WARNING: importing already defined binding: write
+[-8.0 -9.0 -3.0 -1.0 -6.0 7.0]
+[-8.0 -9.0 -3.0 -1.0 -6.0 7.0]
+[-3.0 -6.0 -1.0 8.0 -6.0 3.0 -1.0 -9.0 -9.0 3.0 -2.0 5.0 2.0 -2.0 -7.0 -1.0]
+[-3.0 -6.0 -1.0 8.0 -6.0 3.0 -1.0 -9.0 -9.0 3.0 -2.0 5.0 2.0 -2.0 -7.0 -1.0]
