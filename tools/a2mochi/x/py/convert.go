@@ -10,7 +10,6 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
-	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -193,16 +192,17 @@ func snippetAround(src string, line int) string {
 }
 
 func parseErrorLine(msg string) int {
-	re := regexp.MustCompile(`line (\d+)`)
-	matches := re.FindAllStringSubmatch(msg, -1)
-	if len(matches) == 0 {
+	idx := strings.LastIndex(msg, "line ")
+	if idx == -1 {
 		return 0
 	}
-	m := matches[len(matches)-1]
-	if len(m) == 2 {
-		if n, err := strconv.Atoi(m[1]); err == nil {
-			return n
-		}
+	idx += len("line ")
+	end := idx
+	for end < len(msg) && msg[end] >= '0' && msg[end] <= '9' {
+		end++
+	}
+	if n, err := strconv.Atoi(msg[idx:end]); err == nil {
+		return n
 	}
 	return 0
 }
