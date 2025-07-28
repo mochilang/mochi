@@ -1,0 +1,8 @@
+exit status 1
+/tmp/TestSwiftTranspiler_Rosetta_Golden2450239520/001/main.swift:42:17: error: cannot find 'panic' in scope
+40 |     func tax(_ cents: Int) -> Int {
+41 |         if (cents < 0) {
+42 |             _ = panic("Negative amounts not allowed")
+   |                 `- error: cannot find 'panic' in scope
+43 |         }
+44 |         return Int((Int(((cents * 5) + 50)) / 100))

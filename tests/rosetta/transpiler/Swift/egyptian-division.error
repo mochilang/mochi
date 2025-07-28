@@ -1,0 +1,64 @@
+exit status 1
+/tmp/TestSwiftTranspiler_Rosetta_Golden2034357649/001/main.swift:51:17: error: cannot find 'panic' in scope
+49 |     func egyptianDivide(_ dividend: Int, _ divisor: Int) -> DivResult {
+50 |         if ((dividend < 0) || (divisor <= 0)) {
+51 |             _ = panic("Invalid argument(s)")
+   |                 `- error: cannot find 'panic' in scope
+52 |         }
+53 |         if (dividend < divisor) {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2034357649/001/main.swift:54:50: warning: forced cast of 'DivResult' to same type has no effect
+52 |         }
+53 |         if (dividend < divisor) {
+54 |             return (DivResult(q: 0, r: dividend) as! DivResult)
+   |                                                  `- warning: forced cast of 'DivResult' to same type has no effect
+55 |         }
+56 |         var powers: [Int] = ([1] as! [Int])
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2034357649/001/main.swift:60:77: warning: forced cast of 'Int' to same type has no effect
+58 |         var doubling: Int = (divisor * 2)
+59 |         while (doubling <= dividend) {
+60 |             powers = (_append(powers, ((powers[(Int(((powers).count)) - 1)] as! Int) * 2)) as! [Int])
+   |                                                                             `- warning: forced cast of 'Int' to same type has no effect
+61 |             doublings = (_append(doublings, doubling) as! [Int])
+62 |             doubling = Int((doubling * 2))
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2034357649/001/main.swift:68:40: warning: forced cast of 'Int' to same type has no effect
+66 |         var i: Int = (Int(((doublings).count)) - 1)
+67 |         while (i >= 0) {
+68 |             if ((accum + (doublings[i] as! Int)) <= dividend) {
+   |                                        `- warning: forced cast of 'Int' to same type has no effect
+69 |                 accum = Int((accum + (doublings[i] as! Int)))
+70 |                 ans = Int((ans + (powers[i] as! Int)))
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2034357649/001/main.swift:69:52: warning: forced cast of 'Int' to same type has no effect
+67 |         while (i >= 0) {
+68 |             if ((accum + (doublings[i] as! Int)) <= dividend) {
+69 |                 accum = Int((accum + (doublings[i] as! Int)))
+   |                                                    `- warning: forced cast of 'Int' to same type has no effect
+70 |                 ans = Int((ans + (powers[i] as! Int)))
+71 |                 if (accum == dividend) {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2034357649/001/main.swift:70:45: warning: forced cast of 'Int' to same type has no effect
+68 |             if ((accum + (doublings[i] as! Int)) <= dividend) {
+69 |                 accum = Int((accum + (doublings[i] as! Int)))
+70 |                 ans = Int((ans + (powers[i] as! Int)))
+   |                                             `- warning: forced cast of 'Int' to same type has no effect
+71 |                 if (accum == dividend) {
+72 |                     break
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2034357649/001/main.swift:77:58: warning: forced cast of 'DivResult' to same type has no effect
+75 |             i = Int((i - 1))
+76 |         }
+77 |         return (DivResult(q: ans, r: (dividend - accum)) as! DivResult)
+   |                                                          `- warning: forced cast of 'DivResult' to same type has no effect
+78 |     }
+79 |     func main() {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2034357649/001/main.swift:85:5: warning: using '_' to ignore the result of a Void-returning function is redundant
+83 |         print(_p(((((((_p(dividend) + " divided by ") + _p(divisor)) + " is ") + _p(res.q)) + " with remainder ") + _p(res.r))))
+84 |     }
+85 |     _ = main()
+   |     `- warning: using '_' to ignore the result of a Void-returning function is redundant
+86 |     let _benchEnd = _now()
+87 |     let _benchMemEnd = _mem()

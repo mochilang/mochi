@@ -1,5 +1,5 @@
-## Progress (2025-07-27 21:41 +0700)
-- remove old error file for deconvolution
+## Progress (2025-07-28 10:32 +0700)
+- transpiler/swift: rosetta outputs generated for indexes 300-349
 - Generated golden tests for 102/104 programs
 - Updated README checklist and output artifacts
 

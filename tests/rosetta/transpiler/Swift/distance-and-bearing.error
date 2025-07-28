@@ -1,186 +1,160 @@
 exit status 1
-/tmp/TestSwiftTranspiler_Rosetta_Golden2425997729/001/main.swift:168:1: warning: using '_' to ignore the result of a Void-returning function is redundant
-166 |     }
-167 | }
-168 | _ = main()
-    | `- warning: using '_' to ignore the result of a Void-returning function is redundant
-169 | 
+/tmp/TestSwiftTranspiler_Rosetta_Golden415809029/001/main.swift:169:66: warning: forced cast of '[Any]' to same type has no effect
+167 |         while (i < Int(((arr).count))) {
+168 |             var j: Int = i
+169 |             while ((j > 0) && (String(describing: ((arr[(j - 1)] as! [Any])[0] as! Any))
+    |                                                                  `- warning: forced cast of '[Any]' to same type has no effect
+170 |             > String(describing: ((arr[j] as! [Any])[0] as! Any))
+171 |             )) {
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden2425997729/001/main.swift:133:62: warning: forced cast of '[Any]' to same type has no effect
-131 |     while (i < Int(((arr).count))) {
-132 |         var j: Int = i
-133 |         while ((j > 0) && (String(describing: ((arr[(j - 1)] as! [Any])[0] as! Any))
-    |                                                              `- warning: forced cast of '[Any]' to same type has no effect
-134 |         > String(describing: ((arr[j] as! [Any])[0] as! Any))
-135 |         )) {
+/tmp/TestSwiftTranspiler_Rosetta_Golden415809029/001/main.swift:169:80: warning: forced cast of 'Any' to same type has no effect
+167 |         while (i < Int(((arr).count))) {
+168 |             var j: Int = i
+169 |             while ((j > 0) && (String(describing: ((arr[(j - 1)] as! [Any])[0] as! Any))
+    |                                                                                `- warning: forced cast of 'Any' to same type has no effect
+170 |             > String(describing: ((arr[j] as! [Any])[0] as! Any))
+171 |             )) {
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden2425997729/001/main.swift:133:76: warning: forced cast of 'Any' to same type has no effect
-131 |     while (i < Int(((arr).count))) {
-132 |         var j: Int = i
-133 |         while ((j > 0) && (String(describing: ((arr[(j - 1)] as! [Any])[0] as! Any))
-    |                                                                            `- warning: forced cast of 'Any' to same type has no effect
-134 |         > String(describing: ((arr[j] as! [Any])[0] as! Any))
-135 |         )) {
+/tmp/TestSwiftTranspiler_Rosetta_Golden415809029/001/main.swift:170:43: warning: forced cast of '[Any]' to same type has no effect
+168 |             var j: Int = i
+169 |             while ((j > 0) && (String(describing: ((arr[(j - 1)] as! [Any])[0] as! Any))
+170 |             > String(describing: ((arr[j] as! [Any])[0] as! Any))
+    |                                           `- warning: forced cast of '[Any]' to same type has no effect
+171 |             )) {
+172 |                 let tmp = (arr[(j - 1)] as! [Any])
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden2425997729/001/main.swift:134:39: warning: forced cast of '[Any]' to same type has no effect
-132 |         var j: Int = i
-133 |         while ((j > 0) && (String(describing: ((arr[(j - 1)] as! [Any])[0] as! Any))
-134 |         > String(describing: ((arr[j] as! [Any])[0] as! Any))
-    |                                       `- warning: forced cast of '[Any]' to same type has no effect
-135 |         )) {
-136 |             let tmp = (arr[(j - 1)] as! [Any])
+/tmp/TestSwiftTranspiler_Rosetta_Golden415809029/001/main.swift:170:57: warning: forced cast of 'Any' to same type has no effect
+168 |             var j: Int = i
+169 |             while ((j > 0) && (String(describing: ((arr[(j - 1)] as! [Any])[0] as! Any))
+170 |             > String(describing: ((arr[j] as! [Any])[0] as! Any))
+    |                                                         `- warning: forced cast of 'Any' to same type has no effect
+171 |             )) {
+172 |                 let tmp = (arr[(j - 1)] as! [Any])
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden2425997729/001/main.swift:134:53: warning: forced cast of 'Any' to same type has no effect
-132 |         var j: Int = i
-133 |         while ((j > 0) && (String(describing: ((arr[(j - 1)] as! [Any])[0] as! Any))
-134 |         > String(describing: ((arr[j] as! [Any])[0] as! Any))
-    |                                                     `- warning: forced cast of 'Any' to same type has no effect
-135 |         )) {
-136 |             let tmp = (arr[(j - 1)] as! [Any])
+/tmp/TestSwiftTranspiler_Rosetta_Golden415809029/001/main.swift:172:41: warning: forced cast of '[Any]' to same type has no effect
+170 |             > String(describing: ((arr[j] as! [Any])[0] as! Any))
+171 |             )) {
+172 |                 let tmp = (arr[(j - 1)] as! [Any])
+    |                                         `- warning: forced cast of '[Any]' to same type has no effect
+173 |                 arr[(j - 1)] = (arr[j] as! [Any])
+174 |                 arr[j] = (tmp as! [Any])
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden2425997729/001/main.swift:136:37: warning: forced cast of '[Any]' to same type has no effect
-134 |         > String(describing: ((arr[j] as! [Any])[0] as! Any))
-135 |         )) {
-136 |             let tmp = (arr[(j - 1)] as! [Any])
-    |                                     `- warning: forced cast of '[Any]' to same type has no effect
-137 |             arr[(j - 1)] = (arr[j] as! [Any])
-138 |             arr[j] = (tmp as! [Any])
+/tmp/TestSwiftTranspiler_Rosetta_Golden415809029/001/main.swift:173:40: warning: forced cast of '[Any]' to same type has no effect
+171 |             )) {
+172 |                 let tmp = (arr[(j - 1)] as! [Any])
+173 |                 arr[(j - 1)] = (arr[j] as! [Any])
+    |                                        `- warning: forced cast of '[Any]' to same type has no effect
+174 |                 arr[j] = (tmp as! [Any])
+175 |                 j = Int((j - 1))
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden2425997729/001/main.swift:137:36: warning: forced cast of '[Any]' to same type has no effect
-135 |         )) {
-136 |             let tmp = (arr[(j - 1)] as! [Any])
-137 |             arr[(j - 1)] = (arr[j] as! [Any])
-    |                                    `- warning: forced cast of '[Any]' to same type has no effect
-138 |             arr[j] = (tmp as! [Any])
-139 |             j = Int((j - 1))
+/tmp/TestSwiftTranspiler_Rosetta_Golden415809029/001/main.swift:174:31: warning: forced cast of '[Any]' to same type has no effect
+172 |                 let tmp = (arr[(j - 1)] as! [Any])
+173 |                 arr[(j - 1)] = (arr[j] as! [Any])
+174 |                 arr[j] = (tmp as! [Any])
+    |                               `- warning: forced cast of '[Any]' to same type has no effect
+175 |                 j = Int((j - 1))
+176 |             }
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden2425997729/001/main.swift:138:27: warning: forced cast of '[Any]' to same type has no effect
-136 |             let tmp = (arr[(j - 1)] as! [Any])
-137 |             arr[(j - 1)] = (arr[j] as! [Any])
-138 |             arr[j] = (tmp as! [Any])
-    |                           `- warning: forced cast of '[Any]' to same type has no effect
-139 |             j = Int((j - 1))
-140 |         }
+/tmp/TestSwiftTranspiler_Rosetta_Golden415809029/001/main.swift:179:21: warning: forced cast of '[[Any]]' to same type has no effect
+177 |             i = Int((i + 1))
+178 |         }
+179 |         return (arr as! [[Any]])
+    |                     `- warning: forced cast of '[[Any]]' to same type has no effect
+180 |     }
+181 |     func main() {
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden2425997729/001/main.swift:143:17: warning: forced cast of '[[Any]]' to same type has no effect
-141 |         i = Int((i + 1))
-142 |     }
-143 |     return (arr as! [[Any]])
-    |                 `- warning: forced cast of '[[Any]]' to same type has no effect
-144 | }
-145 | func main() {
+/tmp/TestSwiftTranspiler_Rosetta_Golden415809029/001/main.swift:190:44: warning: forced cast of '[[Any]]' to same type has no effect
+188 |             results = (_append(results, [d, b, ap]) as! [[Any]])
+189 |         }
+190 |         results = (sortByDistance((results as! [[Any]])) as! [[Any]])
+    |                                            `- warning: forced cast of '[[Any]]' to same type has no effect
+191 |         print(_p("Distance Bearing ICAO Country               Airport"))
+192 |         print(_p("--------------------------------------------------------------"))
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden2425997729/001/main.swift:154:40: warning: forced cast of '[[Any]]' to same type has no effect
-152 |         results = ((results + [[d, b, ap]]) as! [[Any]])
-153 |     }
-154 |     results = (sortByDistance((results as! [[Any]])) as! [[Any]])
-    |                                        `- warning: forced cast of '[[Any]]' to same type has no effect
-155 |     print(_p("Distance Bearing ICAO Country               Airport"))
-156 |     print(_p("--------------------------------------------------------------"))
+/tmp/TestSwiftTranspiler_Rosetta_Golden415809029/001/main.swift:190:58: warning: forced cast of '[[Any]]' to same type has no effect
+188 |             results = (_append(results, [d, b, ap]) as! [[Any]])
+189 |         }
+190 |         results = (sortByDistance((results as! [[Any]])) as! [[Any]])
+    |                                                          `- warning: forced cast of '[[Any]]' to same type has no effect
+191 |         print(_p("Distance Bearing ICAO Country               Airport"))
+192 |         print(_p("--------------------------------------------------------------"))
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden2425997729/001/main.swift:154:54: warning: forced cast of '[[Any]]' to same type has no effect
-152 |         results = ((results + [[d, b, ap]]) as! [[Any]])
-153 |     }
-154 |     results = (sortByDistance((results as! [[Any]])) as! [[Any]])
-    |                                                      `- warning: forced cast of '[[Any]]' to same type has no effect
-155 |     print(_p("Distance Bearing ICAO Country               Airport"))
-156 |     print(_p("--------------------------------------------------------------"))
+/tmp/TestSwiftTranspiler_Rosetta_Golden415809029/001/main.swift:195:33: warning: forced cast of '[Any]' to same type has no effect
+193 |         var i: Int = 0
+194 |         while (i < Int(((results).count))) {
+195 |             let r = (results[i] as! [Any])
+    |                                 `- warning: forced cast of '[Any]' to same type has no effect
+196 |             let ap = ((r as! [Any])[2] as! Any)
+197 |             let dist = ((r as! [Any])[0] as! Any)
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden2425997729/001/main.swift:159:29: warning: forced cast of '[Any]' to same type has no effect
-157 |     var i: Int = 0
-158 |     while (i < Int(((results).count))) {
-159 |         let r = (results[i] as! [Any])
-    |                             `- warning: forced cast of '[Any]' to same type has no effect
-160 |         let ap = ((r as! [Any])[2] as! Any)
-161 |         let dist = ((r as! [Any])[0] as! Any)
+/tmp/TestSwiftTranspiler_Rosetta_Golden415809029/001/main.swift:196:26: warning: forced cast of '[Any]' to same type has no effect
+194 |         while (i < Int(((results).count))) {
+195 |             let r = (results[i] as! [Any])
+196 |             let ap = ((r as! [Any])[2] as! Any)
+    |                          `- warning: forced cast of '[Any]' to same type has no effect
+197 |             let dist = ((r as! [Any])[0] as! Any)
+198 |             let bear = ((r as! [Any])[1] as! Any)
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden2425997729/001/main.swift:160:22: warning: forced cast of '[Any]' to same type has no effect
-158 |     while (i < Int(((results).count))) {
-159 |         let r = (results[i] as! [Any])
-160 |         let ap = ((r as! [Any])[2] as! Any)
-    |                      `- warning: forced cast of '[Any]' to same type has no effect
-161 |         let dist = ((r as! [Any])[0] as! Any)
-162 |         let bear = ((r as! [Any])[1] as! Any)
+/tmp/TestSwiftTranspiler_Rosetta_Golden415809029/001/main.swift:196:40: warning: forced cast of 'Any' to same type has no effect
+194 |         while (i < Int(((results).count))) {
+195 |             let r = (results[i] as! [Any])
+196 |             let ap = ((r as! [Any])[2] as! Any)
+    |                                        `- warning: forced cast of 'Any' to same type has no effect
+197 |             let dist = ((r as! [Any])[0] as! Any)
+198 |             let bear = ((r as! [Any])[1] as! Any)
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden2425997729/001/main.swift:160:36: warning: forced cast of 'Any' to same type has no effect
-158 |     while (i < Int(((results).count))) {
-159 |         let r = (results[i] as! [Any])
-160 |         let ap = ((r as! [Any])[2] as! Any)
-    |                                    `- warning: forced cast of 'Any' to same type has no effect
-161 |         let dist = ((r as! [Any])[0] as! Any)
-162 |         let bear = ((r as! [Any])[1] as! Any)
+/tmp/TestSwiftTranspiler_Rosetta_Golden415809029/001/main.swift:197:28: warning: forced cast of '[Any]' to same type has no effect
+195 |             let r = (results[i] as! [Any])
+196 |             let ap = ((r as! [Any])[2] as! Any)
+197 |             let dist = ((r as! [Any])[0] as! Any)
+    |                            `- warning: forced cast of '[Any]' to same type has no effect
+198 |             let bear = ((r as! [Any])[1] as! Any)
+199 |             let line = ((((((((_p(Double(round(Double(dist), 1))) + "\t") + _p(Double(round(Double(bear), 0)))) + "\t") + String(describing: (ap as! Airport).icao)) + "\t") + String(describing: (ap as! Airport).country)) + " ") + String(describing: (ap as! Airport).name))
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden2425997729/001/main.swift:161:24: warning: forced cast of '[Any]' to same type has no effect
-159 |         let r = (results[i] as! [Any])
-160 |         let ap = ((r as! [Any])[2] as! Any)
-161 |         let dist = ((r as! [Any])[0] as! Any)
-    |                        `- warning: forced cast of '[Any]' to same type has no effect
-162 |         let bear = ((r as! [Any])[1] as! Any)
-163 |         let line = ((((((((_p(Double(round(Double(dist), 1))) + "\t") + _p(Double(round(Double(bear), 0)))) + "\t") + String(describing: ap.icao)) + "\t") + String(describing: ap.country)) + " ") + String(describing: ap.name))
+/tmp/TestSwiftTranspiler_Rosetta_Golden415809029/001/main.swift:197:42: warning: forced cast of 'Any' to same type has no effect
+195 |             let r = (results[i] as! [Any])
+196 |             let ap = ((r as! [Any])[2] as! Any)
+197 |             let dist = ((r as! [Any])[0] as! Any)
+    |                                          `- warning: forced cast of 'Any' to same type has no effect
+198 |             let bear = ((r as! [Any])[1] as! Any)
+199 |             let line = ((((((((_p(Double(round(Double(dist), 1))) + "\t") + _p(Double(round(Double(bear), 0)))) + "\t") + String(describing: (ap as! Airport).icao)) + "\t") + String(describing: (ap as! Airport).country)) + " ") + String(describing: (ap as! Airport).name))
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden2425997729/001/main.swift:161:38: warning: forced cast of 'Any' to same type has no effect
-159 |         let r = (results[i] as! [Any])
-160 |         let ap = ((r as! [Any])[2] as! Any)
-161 |         let dist = ((r as! [Any])[0] as! Any)
-    |                                      `- warning: forced cast of 'Any' to same type has no effect
-162 |         let bear = ((r as! [Any])[1] as! Any)
-163 |         let line = ((((((((_p(Double(round(Double(dist), 1))) + "\t") + _p(Double(round(Double(bear), 0)))) + "\t") + String(describing: ap.icao)) + "\t") + String(describing: ap.country)) + " ") + String(describing: ap.name))
+/tmp/TestSwiftTranspiler_Rosetta_Golden415809029/001/main.swift:198:28: warning: forced cast of '[Any]' to same type has no effect
+196 |             let ap = ((r as! [Any])[2] as! Any)
+197 |             let dist = ((r as! [Any])[0] as! Any)
+198 |             let bear = ((r as! [Any])[1] as! Any)
+    |                            `- warning: forced cast of '[Any]' to same type has no effect
+199 |             let line = ((((((((_p(Double(round(Double(dist), 1))) + "\t") + _p(Double(round(Double(bear), 0)))) + "\t") + String(describing: (ap as! Airport).icao)) + "\t") + String(describing: (ap as! Airport).country)) + " ") + String(describing: (ap as! Airport).name))
+200 |             print(_p(line))
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden2425997729/001/main.swift:162:24: warning: forced cast of '[Any]' to same type has no effect
-160 |         let ap = ((r as! [Any])[2] as! Any)
-161 |         let dist = ((r as! [Any])[0] as! Any)
-162 |         let bear = ((r as! [Any])[1] as! Any)
-    |                        `- warning: forced cast of '[Any]' to same type has no effect
-163 |         let line = ((((((((_p(Double(round(Double(dist), 1))) + "\t") + _p(Double(round(Double(bear), 0)))) + "\t") + String(describing: ap.icao)) + "\t") + String(describing: ap.country)) + " ") + String(describing: ap.name))
-164 |         print(_p(line))
+/tmp/TestSwiftTranspiler_Rosetta_Golden415809029/001/main.swift:198:42: warning: forced cast of 'Any' to same type has no effect
+196 |             let ap = ((r as! [Any])[2] as! Any)
+197 |             let dist = ((r as! [Any])[0] as! Any)
+198 |             let bear = ((r as! [Any])[1] as! Any)
+    |                                          `- warning: forced cast of 'Any' to same type has no effect
+199 |             let line = ((((((((_p(Double(round(Double(dist), 1))) + "\t") + _p(Double(round(Double(bear), 0)))) + "\t") + String(describing: (ap as! Airport).icao)) + "\t") + String(describing: (ap as! Airport).country)) + " ") + String(describing: (ap as! Airport).name))
+200 |             print(_p(line))
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden2425997729/001/main.swift:162:38: warning: forced cast of 'Any' to same type has no effect
-160 |         let ap = ((r as! [Any])[2] as! Any)
-161 |         let dist = ((r as! [Any])[0] as! Any)
-162 |         let bear = ((r as! [Any])[1] as! Any)
-    |                                      `- warning: forced cast of 'Any' to same type has no effect
-163 |         let line = ((((((((_p(Double(round(Double(dist), 1))) + "\t") + _p(Double(round(Double(bear), 0)))) + "\t") + String(describing: ap.icao)) + "\t") + String(describing: ap.country)) + " ") + String(describing: ap.name))
-164 |         print(_p(line))
+/tmp/TestSwiftTranspiler_Rosetta_Golden415809029/001/main.swift:199:48: error: initializer 'init(_:)' requires that 'Source' conform to 'BinaryInteger'
+197 |             let dist = ((r as! [Any])[0] as! Any)
+198 |             let bear = ((r as! [Any])[1] as! Any)
+199 |             let line = ((((((((_p(Double(round(Double(dist), 1))) + "\t") + _p(Double(round(Double(bear), 0)))) + "\t") + String(describing: (ap as! Airport).icao)) + "\t") + String(describing: (ap as! Airport).country)) + " ") + String(describing: (ap as! Airport).name))
+    |                                                `- error: initializer 'init(_:)' requires that 'Source' conform to 'BinaryInteger'
+200 |             print(_p(line))
+201 |             i = Int((i + 1))
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden2425997729/001/main.swift:163:44: error: initializer 'init(_:)' requires that 'Source' conform to 'BinaryInteger'
-161 |         let dist = ((r as! [Any])[0] as! Any)
-162 |         let bear = ((r as! [Any])[1] as! Any)
-163 |         let line = ((((((((_p(Double(round(Double(dist), 1))) + "\t") + _p(Double(round(Double(bear), 0)))) + "\t") + String(describing: ap.icao)) + "\t") + String(describing: ap.country)) + " ") + String(describing: ap.name))
-    |                                            `- error: initializer 'init(_:)' requires that 'Source' conform to 'BinaryInteger'
-164 |         print(_p(line))
-165 |         i = Int((i + 1))
+/tmp/TestSwiftTranspiler_Rosetta_Golden415809029/001/main.swift:199:93: error: initializer 'init(_:)' requires that 'Source' conform to 'BinaryInteger'
+197 |             let dist = ((r as! [Any])[0] as! Any)
+198 |             let bear = ((r as! [Any])[1] as! Any)
+199 |             let line = ((((((((_p(Double(round(Double(dist), 1))) + "\t") + _p(Double(round(Double(bear), 0)))) + "\t") + String(describing: (ap as! Airport).icao)) + "\t") + String(describing: (ap as! Airport).country)) + " ") + String(describing: (ap as! Airport).name))
+    |                                                                                             `- error: initializer 'init(_:)' requires that 'Source' conform to 'BinaryInteger'
+200 |             print(_p(line))
+201 |             i = Int((i + 1))
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden2425997729/001/main.swift:163:89: error: initializer 'init(_:)' requires that 'Source' conform to 'BinaryInteger'
-161 |         let dist = ((r as! [Any])[0] as! Any)
-162 |         let bear = ((r as! [Any])[1] as! Any)
-163 |         let line = ((((((((_p(Double(round(Double(dist), 1))) + "\t") + _p(Double(round(Double(bear), 0)))) + "\t") + String(describing: ap.icao)) + "\t") + String(describing: ap.country)) + " ") + String(describing: ap.name))
-    |                                                                                         `- error: initializer 'init(_:)' requires that 'Source' conform to 'BinaryInteger'
-164 |         print(_p(line))
-165 |         i = Int((i + 1))
-
-/tmp/TestSwiftTranspiler_Rosetta_Golden2425997729/001/main.swift:163:141: error: value of type 'Any' has no member 'icao'
-161 |         let dist = ((r as! [Any])[0] as! Any)
-162 |         let bear = ((r as! [Any])[1] as! Any)
-163 |         let line = ((((((((_p(Double(round(Double(dist), 1))) + "\t") + _p(Double(round(Double(bear), 0)))) + "\t") + String(describing: ap.icao)) + "\t") + String(describing: ap.country)) + " ") + String(describing: ap.name))
-    |                                                                                                                                             |- error: value of type 'Any' has no member 'icao'
-    |                                                                                                                                             `- note: cast 'Any' to 'AnyObject' or use 'as!' to force downcast to a more specific type to access members
-164 |         print(_p(line))
-165 |         i = Int((i + 1))
-
-/tmp/TestSwiftTranspiler_Rosetta_Golden2425997729/001/main.swift:163:180: error: value of type 'Any' has no member 'country'
-161 |         let dist = ((r as! [Any])[0] as! Any)
-162 |         let bear = ((r as! [Any])[1] as! Any)
-163 |         let line = ((((((((_p(Double(round(Double(dist), 1))) + "\t") + _p(Double(round(Double(bear), 0)))) + "\t") + String(describing: ap.icao)) + "\t") + String(describing: ap.country)) + " ") + String(describing: ap.name))
-    |                                                                                                                                                                                    |- error: value of type 'Any' has no member 'country'
-    |                                                                                                                                                                                    `- note: cast 'Any' to 'AnyObject' or use 'as!' to force downcast to a more specific type to access members
-164 |         print(_p(line))
-165 |         i = Int((i + 1))
-
-/tmp/TestSwiftTranspiler_Rosetta_Golden2425997729/001/main.swift:163:221: error: value of type 'Any' has no member 'name'
-161 |         let dist = ((r as! [Any])[0] as! Any)
-162 |         let bear = ((r as! [Any])[1] as! Any)
-163 |         let line = ((((((((_p(Double(round(Double(dist), 1))) + "\t") + _p(Double(round(Double(bear), 0)))) + "\t") + String(describing: ap.icao)) + "\t") + String(describing: ap.country)) + " ") + String(describing: ap.name))
-    |                                                                                                                                                                                                                             |- error: value of type 'Any' has no member 'name'
-    |                                                                                                                                                                                                                             `- note: cast 'Any' to 'AnyObject' or use 'as!' to force downcast to a more specific type to access members
-164 |         print(_p(line))
-165 |         i = Int((i + 1))
+/tmp/TestSwiftTranspiler_Rosetta_Golden415809029/001/main.swift:204:5: warning: using '_' to ignore the result of a Void-returning function is redundant
+202 |         }
+203 |     }
+204 |     _ = main()
+    |     `- warning: using '_' to ignore the result of a Void-returning function is redundant
+205 |     let _benchEnd = _now()
+206 |     let _benchMemEnd = _mem()
