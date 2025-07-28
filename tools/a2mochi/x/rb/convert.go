@@ -112,6 +112,14 @@ func buildNode(v any) Node {
 }
 
 func tokens(n Node) []string {
+	if (n.Type == "aref" || n.Type == "aref_field") && len(n.Children) >= 2 {
+		recv := exprString(n.Children[0])
+		idx := n.Children[1]
+		if idx.Type == "args_add_block" && len(idx.Children) > 0 {
+			idx = idx.Children[0]
+		}
+		return []string{recv + "[" + exprString(idx) + "]"}
+	}
 	if strings.HasPrefix(n.Type, "@") {
 		if n.Value != "" {
 			switch n.Type {
@@ -270,6 +278,18 @@ func digitsStringValue(n Node) (string, bool) {
 	return "", false
 }
 
+func isStringLiteral(n Node) bool {
+	switch n.Type {
+	case "string_literal", "@tstring_content":
+		return true
+	case "string_content", "string_add":
+		if len(n.Children) > 0 {
+			return isStringLiteral(n.Children[len(n.Children)-1])
+		}
+	}
+	return false
+}
+
 func firstArg(n Node) Node {
 	for {
 		switch n.Type {
@@ -301,19 +321,29 @@ func convertNode(n Node, level int, out *[]string, globals map[string]bool) {
 			if (f.Type == "@ident" && f.Value == "puts") ||
 				(f.Type == "fcall" && len(f.Children) > 0 && f.Children[0].Type == "@ident" && f.Children[0].Value == "puts") {
 				argNode := n.Children[len(n.Children)-1]
+				unwrapped := argNode
+				switch unwrapped.Type {
+				case "arg_paren", "args_add_block", "args_add", "args_new":
+					unwrapped = firstArg(unwrapped)
+				}
 				if val, ok := digitsStringValue(argNode); ok {
 					*out = append(*out, idt+"print(int(\""+val+"\"))")
-				} else if argNode.Type == "call" && len(argNode.Children) == 3 && argNode.Children[2].Type == "@ident" && argNode.Children[2].Value == "length" {
-					expr := exprString(argNode.Children[0])
+				} else if unwrapped.Type == "call" && len(unwrapped.Children) == 3 && unwrapped.Children[2].Type == "@ident" && unwrapped.Children[2].Value == "length" {
+					expr := exprString(unwrapped.Children[0])
 					*out = append(*out, idt+"print(len("+expr+"))")
-				} else if argNode.Type == "method_add_arg" {
-					call := argNode.Children[0]
+				} else if unwrapped.Type == "method_add_arg" {
+					call := unwrapped.Children[0]
 					if call.Type == "call" && len(call.Children) == 3 {
 						m := call.Children[2]
 						if m.Type == "@ident" && (m.Value == "include?" || m.Value == "key?") {
 							recv := exprString(call.Children[0])
-							arg := exprString(firstArg(argNode.Children[1]))
-							*out = append(*out, idt+"print(("+arg+" in "+recv+"))")
+							argNode2 := firstArg(unwrapped.Children[1])
+							arg := exprString(argNode2)
+							if isStringLiteral(argNode2) {
+								*out = append(*out, idt+"print("+recv+".contains("+arg+"))")
+							} else {
+								*out = append(*out, idt+"print(("+arg+" in "+recv+"))")
+							}
 							return
 						}
 					}
