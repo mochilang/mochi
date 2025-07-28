@@ -1,0 +1,4 @@
+(program
+  (let y (type int) (int 0))
+  (call print (selector y))
+)
