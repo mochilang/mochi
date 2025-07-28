@@ -1,7 +1,0 @@
-compile: exit status 1
-/tmp/TestJavaTranspiler_Rosetta_Goldendeal-cards-for-freecell3448515338/001/Main.java:34: error: cannot find symbol
-            stdout.write(" " + nums.substring(c / 4, c / 4 + 1) + suits.substring(Math.floorMod(c, 4), Math.floorMod(c, 4) + 1));
-            ^
-  symbol:   variable stdout
-  location: class Main
-1 error

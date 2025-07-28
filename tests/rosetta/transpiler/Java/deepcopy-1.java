@@ -27,9 +27,9 @@ public class Main {
     }
 
     static java.util.Map<Integer,Boolean> copyMap(java.util.Map<Integer,Boolean> src) {
-        java.util.Map<Integer,Boolean> out = new java.util.LinkedHashMap<Integer, Boolean>();
+        java.util.Map<Integer,Boolean> out = ((java.util.Map<Integer,Boolean>)(new java.util.LinkedHashMap<Integer, Boolean>()));
         for (int k : src.keySet()) {
-out.put(k, ((boolean)src.getOrDefault(k, false)));
+out.put(k, ((boolean)(src).getOrDefault(k, false)));
         }
         return out;
     }
@@ -51,11 +51,11 @@ out.put(k, ((boolean)src.getOrDefault(k, false)));
         bs = bs + "]";
         String ms = "map[";
         boolean first = true;
-        for (var k : c.m) {
+        for (int k : c.m.keySet()) {
             if (!first) {
                 ms = ms + " ";
             }
-            ms = ms + String.valueOf(k) + ":" + String.valueOf(((boolean)c.m.getOrDefault(k, false)));
+            ms = ms + String.valueOf(k) + ":" + String.valueOf(((boolean)(c.m).getOrDefault(k, false)));
             first = false;
         }
         ms = ms + "]";

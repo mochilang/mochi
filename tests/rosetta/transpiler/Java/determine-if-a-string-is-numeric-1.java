@@ -5,18 +5,18 @@ public class Main {
             return true;
         }
         int i = 0;
-        if (s.length() == 0) {
+        if (_runeLen(s) == 0) {
             return false;
         }
         if ((s.substring(0, 0+1).equals("+")) || (s.substring(0, 0+1).equals("-"))) {
-            if (s.length() == 1) {
+            if (_runeLen(s) == 1) {
                 return false;
             }
             i = 1;
         }
         boolean digits = false;
         boolean dot = false;
-        while (i < s.length()) {
+        while (i < _runeLen(s)) {
             String ch = s.substring(i, i+1);
             if ((ch.compareTo("0") >= 0) && (ch.compareTo("9") <= 0)) {
                 digits = true;
@@ -26,15 +26,15 @@ public class Main {
                 i = i + 1;
             } else             if (((ch.equals("e")) || (ch.equals("E"))) && digits) {
                 i = i + 1;
-                if (i < s.length() && ((s.substring(i, i+1).equals("+")) || (s.substring(i, i+1).equals("-")))) {
+                if (i < _runeLen(s) && ((s.substring(i, i+1).equals("+")) || (s.substring(i, i+1).equals("-")))) {
                     i = i + 1;
                 }
                 boolean ed = false;
-                while (i < s.length() && (s.substring(i, i+1).compareTo("0") >= 0) && (s.substring(i, i+1).compareTo("9") <= 0)) {
+                while (i < _runeLen(s) && (s.substring(i, i+1).compareTo("0") >= 0) && (s.substring(i, i+1).compareTo("9") <= 0)) {
                     ed = true;
                     i = i + 1;
                 }
-                return ed && i == s.length();
+                return ed && i == _runeLen(s);
             } else {
                 return false;
             }
@@ -85,5 +85,9 @@ public class Main {
         Runtime rt = Runtime.getRuntime();
         rt.gc();
         return rt.totalMemory() - rt.freeMemory();
+    }
+
+    static int _runeLen(String s) {
+        return s.codePointCount(0, s.length());
     }
 }

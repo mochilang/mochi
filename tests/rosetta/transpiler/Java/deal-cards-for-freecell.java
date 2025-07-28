@@ -31,7 +31,7 @@ deck[j] = tmp;
         int i = 0;
         while (i < cards.length) {
             int c = cards[i];
-            stdout.write(" " + nums.substring(c / 4, c / 4 + 1) + suits.substring(Math.floorMod(c, 4), Math.floorMod(c, 4) + 1));
+            System.out.print(" " + _substr(nums, c / 4, c / 4 + 1) + _substr(suits, Math.floorMod(c, 4), Math.floorMod(c, 4) + 1));
             if (Math.floorMod((i + 1), 8) == 0 || i + 1 == cards.length) {
                 System.out.println("");
             }
@@ -79,5 +79,11 @@ deck[j] = tmp;
         Runtime rt = Runtime.getRuntime();
         rt.gc();
         return rt.totalMemory() - rt.freeMemory();
+    }
+
+    static String _substr(String s, int i, int j) {
+        int start = s.offsetByCodePoints(0, i);
+        int end = s.offsetByCodePoints(0, j);
+        return s.substring(start, end);
     }
 }

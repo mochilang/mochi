@@ -56,9 +56,9 @@ public class Main {
 
     static String commatize(int n) {
         String s = String.valueOf(n);
-        int i = s.length() - 3;
+        int i = _runeLen(s) - 3;
         while (i > 0) {
-            s = s.substring(0, i) + "," + s.substring(i, s.length());
+            s = _substr(s, 0, i) + "," + _substr(s, i, _runeLen(s));
             i = i - 3;
         }
         return s;
@@ -66,7 +66,7 @@ public class Main {
 
     static String pad(String s, int width) {
         String out = s;
-        while (out.length() < width) {
+        while (_runeLen(out) < width) {
             out = " " + out;
         }
         return out;
@@ -168,5 +168,15 @@ public class Main {
         Runtime rt = Runtime.getRuntime();
         rt.gc();
         return rt.totalMemory() - rt.freeMemory();
+    }
+
+    static int _runeLen(String s) {
+        return s.codePointCount(0, s.length());
+    }
+
+    static String _substr(String s, int i, int j) {
+        int start = s.offsetByCodePoints(0, i);
+        int end = s.offsetByCodePoints(0, j);
+        return s.substring(start, end);
     }
 }

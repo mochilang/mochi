@@ -2,7 +2,7 @@ public class Main {
 
     static String padLeft(int n, int width) {
         String s = String.valueOf(n);
-        while (s.length() < width) {
+        while (_runeLen(s) < width) {
             s = " " + s;
         }
         return s;
@@ -46,7 +46,7 @@ public class Main {
                                 idx = idx + 1;
                                 j = j + 1;
                             }
-                            System.out.println(line.substring(0, line.length() - 1));
+                            System.out.println(_substr(line, 0, _runeLen(line) - 1));
                         }
                     }
                     if (count == 1000) {
@@ -96,5 +96,15 @@ public class Main {
         Runtime rt = Runtime.getRuntime();
         rt.gc();
         return rt.totalMemory() - rt.freeMemory();
+    }
+
+    static int _runeLen(String s) {
+        return s.codePointCount(0, s.length());
+    }
+
+    static String _substr(String s, int i, int j) {
+        int start = s.offsetByCodePoints(0, i);
+        int end = s.offsetByCodePoints(0, j);
+        return s.substring(start, end);
     }
 }

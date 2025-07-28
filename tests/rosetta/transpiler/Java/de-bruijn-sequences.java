@@ -48,7 +48,7 @@ a[t] = j;
 
     static boolean allDigits(String s) {
         int i = 0;
-        while (i < s.length()) {
+        while (i < _runeLen(s)) {
             String ch = s.substring(i, i + 1);
             if ((ch.compareTo("0") < 0) || (ch.compareTo("9") > 0)) {
                 return false;
@@ -61,7 +61,7 @@ a[t] = j;
     static int parseIntStr(String str) {
         int n = 0;
         int i = 0;
-        while (i < str.length()) {
+        while (i < _runeLen(str)) {
             n = n * 10 + (Integer.parseInt(str.substring(i, i + 1)));
             i = i + 1;
         }
@@ -69,7 +69,7 @@ a[t] = j;
     }
 
     static void validate(String db) {
-        int le = db.length();
+        int le = _runeLen(db);
         int[] found = new int[]{};
         int i = 0;
         while (i < 10000) {
@@ -111,7 +111,7 @@ found[n] = found[n] + 1;
 
     static String padLeft(int n, int width) {
         String s = String.valueOf(n);
-        while (s.length() < width) {
+        while (_runeLen(s) < width) {
             s = "0" + s;
         }
         return s;
@@ -132,7 +132,7 @@ found[n] = found[n] + 1;
 
     static String reverse(String s) {
         String out = "";
-        int i = s.length() - 1;
+        int i = _runeLen(s) - 1;
         while (i >= 0) {
             out = out + s.substring(i, i + 1);
             i = i - 1;
@@ -142,18 +142,18 @@ found[n] = found[n] + 1;
 
     static void main() {
         String db = String.valueOf(deBruijn(10, 4));
-        int le = db.length();
+        int le = _runeLen(db);
         System.out.println("The length of the de Bruijn sequence is " + String.valueOf(le));
         System.out.println("\nThe first 130 digits of the de Bruijn sequence are:");
         System.out.println(db.substring(0, 130));
         System.out.println("\nThe last 130 digits of the de Bruijn sequence are:");
-        System.out.println(db.substring(le - 130, db.length()));
+        System.out.println(db.substring(le - 130, _runeLen(db)));
         System.out.println("\nValidating the de Bruijn sequence:");
         validate(db);
         System.out.println("\nValidating the reversed de Bruijn sequence:");
         String dbr = String.valueOf(reverse(db));
         validate(dbr);
-        db = db.substring(0, 4443) + "." + db.substring(4444, db.length());
+        db = db.substring(0, 4443) + "." + db.substring(4444, _runeLen(db));
         System.out.println("\nValidating the overlaid de Bruijn sequence:");
         validate(db);
     }
@@ -193,5 +193,9 @@ found[n] = found[n] + 1;
         Runtime rt = Runtime.getRuntime();
         rt.gc();
         return rt.totalMemory() - rt.freeMemory();
+    }
+
+    static int _runeLen(String s) {
+        return s.codePointCount(0, s.length());
     }
 }
