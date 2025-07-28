@@ -1,0 +1,9 @@
+(program
+  (var y (type int))
+  (fun main
+    (type int)
+    (call print (selector y))
+    (return (int 0))
+  )
+  (call main)
+)

@@ -1,0 +1,10 @@
+(program
+  (var x (type auto) (int 1))
+  (fun main
+    (type int)
+    (assign x (int 2))
+    (call print (selector x))
+    (return (int 0))
+  )
+  (call main)
+)
