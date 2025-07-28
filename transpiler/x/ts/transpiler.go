@@ -2346,6 +2346,9 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 				t = tt
 			}
 		}
+		if _, ok := t.(types.BigIntType); ok {
+			t = types.IntType{}
+		}
 		typeStr := tsType(t)
 		if transpileEnv != nil {
 			transpileEnv.SetVar(s.Let.Name, t, false)
@@ -2404,6 +2407,9 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 				tt.Elem = st
 				t = tt
 			}
+		}
+		if _, ok := t.(types.BigIntType); ok {
+			t = types.IntType{}
 		}
 		typeStr := tsType(t)
 		if transpileEnv != nil {
@@ -4085,6 +4091,11 @@ func convertLiteral(l *parser.Literal) (Expr, error) {
 	case l.Int != nil:
 		if lt := literalType(l); lt != nil {
 			if _, ok := lt.(types.BigIntType); ok {
+				const maxSafe = int64(1<<53 - 1)
+				v := int64(*l.Int)
+				if v <= maxSafe && v >= -maxSafe {
+					return &NumberLit{Value: fmt.Sprintf("%d", *l.Int)}, nil
+				}
 				return &NumberLit{Value: fmt.Sprintf("%dn", *l.Int)}, nil
 			}
 		}
