@@ -1,0 +1,5 @@
+fun makeAdder(n) {
+  return fun(x) => (x + n)
+}
+var add10 = makeAdder(10)
+print(add10(7))

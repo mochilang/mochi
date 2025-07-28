@@ -1,8 +1,6 @@
 (program
   (for i
-    (in
-      (call range (int 1) (int 4))
-    )
+    (range (int 1) (int 4))
     (block
       (call print (selector i))
     )
