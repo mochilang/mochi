@@ -3978,7 +3978,18 @@ func convertBinary(b *parser.BinaryExpr) (Expr, error) {
 					if ops[i] == "+" || ops[i] == "-" || ops[i] == "*" || ops[i] == "/" || ops[i] == "%" {
 						lt := exprType(l)
 						rt := exprType(r)
-						if ops[i] != "+" || (lt != "std::string" && rt != "std::string") {
+						if ops[i] == "+" {
+							if !(lt == "std::string" || rt == "std::string") {
+								if !(strings.Contains(lt, "any") && strings.Contains(rt, "any")) {
+									if strings.Contains(lt, "any") {
+										l = &CastExpr{Value: l, Type: "double"}
+									}
+									if strings.Contains(rt, "any") {
+										r = &CastExpr{Value: r, Type: "double"}
+									}
+								}
+							}
+						} else {
 							if !(strings.Contains(lt, "any") && strings.Contains(rt, "any")) {
 								if strings.Contains(lt, "any") {
 									l = &CastExpr{Value: l, Type: "double"}
@@ -4062,6 +4073,13 @@ func convertPostfix(p *parser.PostfixExpr) (Expr, error) {
 				idx, err := convertExpr(op.Index.Start)
 				if err != nil {
 					return nil, err
+				}
+				if sl, ok := idx.(*StringLit); ok {
+					t := exprType(expr)
+					if ft := structFieldType(t, sl.Value); ft != "" {
+						expr = &SelectorExpr{Target: expr, Field: sl.Value}
+						continue
+					}
 				}
 				expr = &IndexExpr{Target: expr, Index: idx}
 			}
@@ -6271,13 +6289,13 @@ func exprType(e Expr) string {
 		if t, ok := localTypes[v.Name]; ok {
 			return t
 		}
+		if t, ok := globalTypes[v.Name]; ok {
+			return t
+		}
 		if currentEnv != nil {
 			if t, err := currentEnv.GetVar(v.Name); err == nil {
 				return cppTypeFrom(t)
 			}
-		}
-		if t, ok := globalTypes[v.Name]; ok {
-			return t
 		}
 		return "auto"
 	case *StructLit:
@@ -6379,6 +6397,9 @@ func exprType(e Expr) string {
 		case "+", "-", "*", "/", "%":
 			lt := exprType(v.Left)
 			rt := exprType(v.Right)
+			if v.Op == "+" && (lt == "std::string" || rt == "std::string") {
+				return "std::string"
+			}
 			if lt == "double" || rt == "double" {
 				return "double"
 			}
@@ -6528,6 +6549,7 @@ func inferStructFromList(name string, l *ListLit) (*StructDef, string, bool) {
 		}
 		l.Elems[i] = &StructLit{Name: sname, Fields: flds}
 	}
+	l.ElemType = sname
 	if currentProgram != nil {
 		if currentProgram.ListTypes == nil {
 			currentProgram.ListTypes = map[string]string{}
