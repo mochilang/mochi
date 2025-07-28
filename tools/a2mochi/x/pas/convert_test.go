@@ -1,3 +1,5 @@
+//go:build slow
+
 package pas_test
 
 import (

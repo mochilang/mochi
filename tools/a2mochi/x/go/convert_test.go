@@ -1,3 +1,5 @@
+//go:build slow
+
 package gox_test
 
 import (

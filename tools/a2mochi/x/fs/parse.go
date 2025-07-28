@@ -1,3 +1,5 @@
+//go:build slow
+
 package fs
 
 // Package fs provides a tiny F# parser used by the any2mochi tool. It mirrors

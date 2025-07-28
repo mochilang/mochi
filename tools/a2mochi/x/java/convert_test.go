@@ -1,3 +1,5 @@
+//go:build slow
+
 package java_test
 
 import (

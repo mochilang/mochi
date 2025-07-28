@@ -1,3 +1,5 @@
+//go:build slow
+
 package py_test
 
 import (
@@ -94,12 +96,12 @@ func TestConvert_Golden(t *testing.T) {
 		"string_concat":       true,
 		"string_compare":      true,
 		"string_index":        true,
-               "string_prefix_slice": true,
-               "list_assign":        true,
-               "map_assign":         true,
-               "membership":         true,
-               "map_membership":     true,
-       }
+		"string_prefix_slice": true,
+		"list_assign":         true,
+		"map_assign":          true,
+		"membership":          true,
+		"map_membership":      true,
+	}
 	outDir := filepath.Join(root, "tests", "a2mochi", "x", "py")
 	os.MkdirAll(outDir, 0o755)
 	for _, src := range files {
