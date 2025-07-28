@@ -196,7 +196,7 @@ func parseAST(src string) ([]Func, []Enum, []Struct, error) {
 	cmd.Stdout = &buf
 	cmd.Stderr = &errBuf
 	runErr := cmd.Run()
-	if runErr != nil && buf.Len() == 0 {
+	if buf.Len() == 0 {
 		return nil, nil, nil, fmt.Errorf("clang++: %w: %s", runErr, errBuf.String())
 	}
 	var root astNode
@@ -210,9 +210,7 @@ func parseAST(src string) ([]Func, []Enum, []Struct, error) {
 	var enums []Enum
 	var structs []Struct
 	collectAST(&root, src, &funcs, &enums, &structs, "")
-	if runErr != nil {
-		return funcs, enums, structs, fmt.Errorf("clang++: %w: %s", runErr, errBuf.String())
-	}
+	// Ignore clang++ errors as long as we obtained a parse tree.
 	return funcs, enums, structs, nil
 }
 
@@ -359,9 +357,15 @@ func convertBodyString(body string) []string {
 		case strings.Contains(l, "std::cout") || strings.HasPrefix(l, "cout <<"):
 			l = strings.TrimPrefix(l, "std::cout <<")
 			l = strings.TrimPrefix(l, "cout <<")
+			l = strings.TrimSpace(l)
+			l = strings.TrimPrefix(l, "std::boolalpha <<")
+			l = strings.TrimPrefix(l, "boolalpha <<")
 			l = strings.TrimSuffix(l, "<< std::endl")
 			l = strings.TrimSuffix(l, "<< endl")
 			l = strings.TrimSpace(l)
+			if strings.HasPrefix(l, "std::string(") && strings.HasSuffix(l, ")") {
+				l = strings.TrimSuffix(strings.TrimPrefix(l, "std::string("), ")")
+			}
 			out = append(out, "print("+l+")")
 		case strings.HasPrefix(l, "for (") && strings.Contains(l, ":"):
 			re := regexp.MustCompile(`^for \((?:const\s+)?(?:auto|[\w:<>,]+)[\s*&]*([A-Za-z_][A-Za-z0-9_]*)\s*:\s*([^\)]+)\)\s*\{?$`)
@@ -373,7 +377,7 @@ func convertBodyString(body string) []string {
 				out = append(out, l)
 			}
 		case strings.HasPrefix(l, "for ("):
-			re := regexp.MustCompile(`^for \((?:[A-Za-z_][A-Za-z0-9_<>\s]*\s+)?([A-Za-z_][A-Za-z0-9_]*)\s*=\s*([^;]+);\s*\1\s*<\s*([^;]+);\s*\1\+\+\s*\)\s*\{?$`)
+			re := regexp.MustCompile(`^for \((?:[A-Za-z_][A-Za-z0-9_<>,\s]*\s+)?([A-Za-z_][A-Za-z0-9_]*)\s*=\s*([^;]+);[^;]+<\s*([^;]+);[^\)]*\)\s*\{?$`)
 			if m := re.FindStringSubmatch(l); m != nil {
 				out = append(out, fmt.Sprintf("for %s in %s..%s {", m[1], strings.TrimSpace(m[2]), strings.TrimSpace(m[3])))
 			} else {
