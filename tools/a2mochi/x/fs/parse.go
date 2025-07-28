@@ -132,15 +132,19 @@ var (
 	forRangeRe    = regexp.MustCompile(`^for\s+(\w+)\s*=\s*(.+)\s+to\s+(.+)\s+do$`)
 	forInRe       = regexp.MustCompile(`^for\s+(\w+)\s+in\s+(.+)\s+do$`)
 	whileRe       = regexp.MustCompile(`^while\s*\((.+)\)\s*do$`)
-	funRe         = regexp.MustCompile(`^let\s+(?:inline\s+)?(?:rec\s+)?(\w+)(.*)?:\s*([^=]+)=\s*$`)
-	exceptionRe   = regexp.MustCompile(`^exception\s+Return_(\w+)\s+of\s+(.+)$`)
-	returnRe      = regexp.MustCompile(`^raise\s*\(Return_(\w+)\s*\((.*)\)\)$`)
-	ifRe          = regexp.MustCompile(`^if\s+(.+)\s+then$`)
-	elifRe        = regexp.MustCompile(`^elif\s+(.+)\s+then$`)
-	elseRe        = regexp.MustCompile(`^else$`)
-	typeRe        = regexp.MustCompile(`^type\s+(\w+)\s*=\s*$`)
-	variantRe     = regexp.MustCompile(`^\|\s*(\w+)(.*)$`)
-	fieldRe       = regexp.MustCompile(`^(\w+)\s*:\s*([^;]+);?$`)
+	// funRe matches function declarations with optional return type.
+	// It supports forms like:
+	//   let foo (x:int) : int =
+	//   let rec bar () =
+	funRe       = regexp.MustCompile(`^let\s+(?:inline\s+)?(?:rec\s+)?(\w+)(.*?)(?::\s*([^=]+))?=\s*$`)
+	exceptionRe = regexp.MustCompile(`^exception\s+Return_(\w+)\s+of\s+(.+)$`)
+	returnRe    = regexp.MustCompile(`^raise\s*\(Return_(\w+)\s*\((.*)\)\)$`)
+	ifRe        = regexp.MustCompile(`^if\s+(.+)\s+then$`)
+	elifRe      = regexp.MustCompile(`^elif\s+(.+)\s+then$`)
+	elseRe      = regexp.MustCompile(`^else$`)
+	typeRe      = regexp.MustCompile(`^type\s+(\w+)\s*=\s*$`)
+	variantRe   = regexp.MustCompile(`^\|\s*(\w+)(.*)$`)
+	fieldRe     = regexp.MustCompile(`^(\w+)\s*:\s*([^;]+);?$`)
 )
 
 // Parse performs a very small subset of F# parsing using regular expressions.
@@ -324,10 +328,12 @@ func Parse(src string) (*Program, error) {
 				if r, ok := retMap[name]; ok {
 					ret = r
 				}
+				indentStep := 4
 				if idx < len(lines) && strings.TrimSpace(lines[idx].text) == "try" {
+					indentStep = 8
 					idx++
 				}
-				body := parseBlock(ind + 8)
+				body := parseBlock(ind + indentStep)
 				if idx < len(lines) && strings.Contains(lines[idx].text, "failwith") {
 					idx++
 				}
