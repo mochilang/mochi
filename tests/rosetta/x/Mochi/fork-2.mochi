@@ -1,0 +1,20 @@
+// Another Mochi implementation of the Rosetta "Fork" task
+// Simulates process forking by recursively invoking the program logic.
+var nextPID = 1
+
+fun fork(hasChild: bool) {
+  let pid = nextPID
+  nextPID = nextPID + 1
+  print("PID: " + str(pid))
+
+  if !hasChild {
+    print("Done.")
+    return
+  }
+
+  let childPID = nextPID
+  print("Child's PID: " + str(childPID))
+  fork(false)
+}
+
+fork(true)
