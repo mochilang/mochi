@@ -46,7 +46,18 @@ func Transform(p *Program) (*ast.Node, error) {
 	if err != nil {
 		return nil, err
 	}
-	return ast.FromProgram(prog), nil
+	return fromProgram(prog), nil
+}
+
+func fromProgram(p *parser.Program) *ast.Node {
+	root := &ast.Node{Kind: "program"}
+	if p.Package != "" {
+		root.Value = p.Package
+	}
+	for _, st := range p.Statements {
+		root.Children = append(root.Children, ast.FromStatement(st))
+	}
+	return root
 }
 
 func emitVar(b *strings.Builder, d Node) {
