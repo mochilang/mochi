@@ -2,7 +2,7 @@
 
 This directory contains OCaml code generated from Rosetta Code programs in `tests/rosetta/x/Mochi`.
 
-Completed programs: 172/493
+Completed programs: 157/493
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -207,39 +207,39 @@ Completed programs: 172/493
 | 199 | cheryls-birthday | ✓ | 228.0µs | 5.97KB |
 | 200 | chinese-remainder-theorem | ✓ | 125.0µs | 248B |
 | 201 | chinese-zodiac | ✓ | 144.0µs | 4.03KB |
-| 202 | cholesky-decomposition-1 | ✓ | 291.0µs | 58.66KB |
-| 203 | cholesky-decomposition | ✓ | 230.0µs | 48.77KB |
-| 204 | chowla-numbers | ✓ | 26.0µs | 208B |
-| 205 | church-numerals-1 | error |  |  |
-| 206 | church-numerals-2 | error |  |  |
-| 207 | circles-of-given-radius-through-two-points | error |  |  |
-| 208 | circular-primes | ✓ | 1.0ms | 1.38MB |
-| 209 | cistercian-numerals | error |  |  |
-| 210 | comma-quibbling | ✓ | 29.0µs | 720B |
-| 211 | compiler-virtual-machine-interpreter | error |  |  |
-| 212 | composite-numbers-k-with-no-single-digit-factors-whose-factors-are-all-substrings-of-k | error |  |  |
-| 213 | compound-data-type | ✓ | 1.0µs | 208B |
-| 214 | concurrent-computing-1 | error |  |  |
-| 215 | concurrent-computing-2 | error |  |  |
-| 216 | concurrent-computing-3 | error |  |  |
-| 217 | conditional-structures-1 | error |  |  |
-| 218 | conditional-structures-10 | ✓ | 27.0µs | 208B |
-| 219 | conditional-structures-2 | error |  |  |
-| 220 | conditional-structures-3 | error |  |  |
-| 221 | conditional-structures-4 | ✓ | 1.0µs | 208B |
-| 222 | conditional-structures-5 | error |  |  |
-| 223 | conditional-structures-6 | error |  |  |
-| 224 | conditional-structures-7 | error |  |  |
-| 225 | conditional-structures-8 | error |  |  |
-| 226 | conditional-structures-9 | ✓ | 1.0µs | 208B |
-| 227 | consecutive-primes-with-ascending-or-descending-differences | ✓ |  |  |
-| 228 | constrained-genericity-1 | ✓ | 1.0µs | 208B |
-| 229 | constrained-genericity-2 | ✓ | 1.0µs | 208B |
-| 230 | constrained-genericity-3 | ✓ | 2.0µs | 208B |
-| 231 | constrained-genericity-4 | ✓ | 40.0µs | 296B |
-| 232 | constrained-random-points-on-a-circle-1 | ✓ | 4.0ms | 1.78MB |
-| 233 | constrained-random-points-on-a-circle-2 | ✓ | 6.0ms | 3.70MB |
-| 234 | continued-fraction | error |  |  |
+| 202 | cholesky-decomposition-1 | error | 291.0µs | 58.66KB |
+| 203 | cholesky-decomposition |   |  |  |
+| 204 | chowla-numbers |   |  |  |
+| 205 | church-numerals-1 |   |  |  |
+| 206 | church-numerals-2 |   |  |  |
+| 207 | circles-of-given-radius-through-two-points |   |  |  |
+| 208 | circular-primes |   |  |  |
+| 209 | cistercian-numerals |   |  |  |
+| 210 | comma-quibbling |   |  |  |
+| 211 | compiler-virtual-machine-interpreter |   |  |  |
+| 212 | composite-numbers-k-with-no-single-digit-factors-whose-factors-are-all-substrings-of-k |   |  |  |
+| 213 | compound-data-type |   |  |  |
+| 214 | concurrent-computing-1 |   |  |  |
+| 215 | concurrent-computing-2 |   |  |  |
+| 216 | concurrent-computing-3 |   |  |  |
+| 217 | conditional-structures-1 |   |  |  |
+| 218 | conditional-structures-10 |   |  |  |
+| 219 | conditional-structures-2 |   |  |  |
+| 220 | conditional-structures-3 |   |  |  |
+| 221 | conditional-structures-4 |   |  |  |
+| 222 | conditional-structures-5 |   |  |  |
+| 223 | conditional-structures-6 |   |  |  |
+| 224 | conditional-structures-7 |   |  |  |
+| 225 | conditional-structures-8 |   |  |  |
+| 226 | conditional-structures-9 |   |  |  |
+| 227 | consecutive-primes-with-ascending-or-descending-differences |   |  |  |
+| 228 | constrained-genericity-1 |   |  |  |
+| 229 | constrained-genericity-2 |   |  |  |
+| 230 | constrained-genericity-3 |   |  |  |
+| 231 | constrained-genericity-4 |   |  |  |
+| 232 | constrained-random-points-on-a-circle-1 |   |  |  |
+| 233 | constrained-random-points-on-a-circle-2 |   |  |  |
+| 234 | continued-fraction |   |  |  |
 | 235 | convert-decimal-number-to-rational |   |  |  |
 | 236 | convert-seconds-to-compound-duration |   |  |  |
 | 237 | convex-hull |   |  |  |
@@ -255,7 +255,7 @@ Completed programs: 172/493
 | 247 | count-in-octal-4 |   |  |  |
 | 248 | count-occurrences-of-a-substring |   |  |  |
 | 249 | count-the-coins-1 |   |  |  |
-| 250 | count-the-coins-2 |   |  |  |
+| 250 | count-the-coins-2 | ✓ | 257.0ms | 145.24MB |
 | 251 | cramers-rule |   |  |  |
 | 252 | crc-32-1 |   |  |  |
 | 253 | crc-32-2 |   |  |  |
@@ -499,4 +499,4 @@ Completed programs: 172/493
 | 491 | sorting-algorithms-bubble-sort |   |  |  |
 | 492 | window-management |   |  |  |
 | 493 | zumkeller-numbers |   |  |  |
-Last updated 2025-07-28 10:16 +0700
+Last updated 2025-07-28 11:14 +0700
