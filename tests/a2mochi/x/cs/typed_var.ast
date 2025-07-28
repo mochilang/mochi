@@ -1,0 +1,6 @@
+type Program {
+  x: int
+  fun Main() {
+    print(x)
+  }
+}

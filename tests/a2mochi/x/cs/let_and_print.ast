@@ -1,0 +1,13 @@
+(program
+  (type Program
+    (field a (type int))
+    (field b (type int))
+    (fun Main
+      (call print
+        (group
+          (binary + (selector a) (selector b))
+        )
+      )
+    )
+  )
+)

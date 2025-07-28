@@ -170,18 +170,15 @@ func convertAST(ast *AST) (string, error) {
 			}
 			out.WriteByte('\n')
 		}
-		out.WriteString("}\n")
 		for _, fn := range t.Methods {
 			if fn.Doc != "" {
 				for _, ln := range strings.Split(fn.Doc, "\n") {
-					out.WriteString("# ")
+					out.WriteString("  # ")
 					out.WriteString(strings.TrimSpace(ln))
 					out.WriteByte('\n')
 				}
 			}
-			out.WriteString("fun ")
-			out.WriteString(t.Name)
-			out.WriteByte('.')
+			out.WriteString("  fun ")
 			out.WriteString(fn.Name)
 			out.WriteByte('(')
 			for i, p := range fn.Params {
@@ -205,13 +202,14 @@ func convertAST(ast *AST) (string, error) {
 			} else {
 				out.WriteString(" {\n")
 				for _, b := range body {
-					out.WriteString("  ")
+					out.WriteString("    ")
 					out.WriteString(b)
 					out.WriteByte('\n')
 				}
-				out.WriteString("}\n")
+				out.WriteString("  }\n")
 			}
 		}
+		out.WriteString("}\n")
 	}
 	if out.Len() == 0 {
 		return "", fmt.Errorf("no convertible symbols found")
@@ -544,8 +542,8 @@ func parseSimple(src string) (*AST, error) {
 var (
 	typeRE      = regexp.MustCompile(`(?i)^\s*(?:public\s+|private\s+|protected\s+)?(class|struct|interface|enum)\s+([A-Za-z_][A-Za-z0-9_]*)`)
 	funcRE      = regexp.MustCompile(`(?i)^\s*(?:public\s+|private\s+|protected\s+)?(?:static\s+)?([A-Za-z0-9_<>\[\],\s]+)\s+([A-Za-z_][A-Za-z0-9_]*)(?:<[^>]+>)?\s*\(([^)]*)\)\s*\{?`)
-	fieldRE     = regexp.MustCompile(`(?i)^\s*(?:public\s+|private\s+|protected\s+)?([A-Za-z0-9_<>\[\],\s]+)\s+([A-Za-z_][A-Za-z0-9_]*)`)
-	propertyRE  = regexp.MustCompile(`(?i)^\s*(?:public\s+|private\s+|protected\s+)?([A-Za-z0-9_<>\[\],\s]+)\s+([A-Za-z_][A-Za-z0-9_]*)\s*\{`)
+	fieldRE     = regexp.MustCompile(`(?i)^\s*(?:public\s+|private\s+|protected\s+)?(?:static\s+)?([A-Za-z0-9_<>\[\],\s]+)\s+([A-Za-z_][A-Za-z0-9_]*)`)
+	propertyRE  = regexp.MustCompile(`(?i)^\s*(?:public\s+|private\s+|protected\s+)?(?:static\s+)?([A-Za-z0-9_<>\[\],\s]+)\s+([A-Za-z_][A-Za-z0-9_]*)\s*\{`)
 	usingRE     = regexp.MustCompile(`^\s*using\s+`)
 	namespaceRE = regexp.MustCompile(`^\s*namespace\s+`)
 )

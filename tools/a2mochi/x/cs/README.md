@@ -8,3 +8,10 @@ Completed programs: 105/105
 
 ## Checklist
 - [x] append_builtin
+- [x] print_hello
+- [x] let_and_print
+- [x] typed_var
+- [x] typed_let
+- [x] len_string
+- [x] list_index
+- [x] var_assignment
