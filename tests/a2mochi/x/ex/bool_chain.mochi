@@ -1,0 +1,10 @@
+fun boom() {
+  print("boom")
+  true
+}
+fun main() {
+  IO.inspect(((((1 < 2)) && ((2 < 3))) && ((3 < 4))))
+  IO.inspect(((((1 < 2)) && ((2 > 3))) && boom()))
+  IO.inspect((((((1 < 2)) && ((2 < 3))) && ((3 > 4))) && boom()))
+}
+main()

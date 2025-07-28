@@ -1,0 +1,58 @@
+(program
+  (fun boom
+    (call print (string boom))
+    (bool true)
+  )
+  (fun main
+    (call
+      (selector inspect (selector IO))
+      (binary &&
+        (binary &&
+          (group
+            (binary < (int 1) (int 2))
+          )
+          (group
+            (binary < (int 2) (int 3))
+          )
+        )
+        (group
+          (binary < (int 3) (int 4))
+        )
+      )
+    )
+    (call
+      (selector inspect (selector IO))
+      (binary &&
+        (binary &&
+          (group
+            (binary < (int 1) (int 2))
+          )
+          (group
+            (binary > (int 2) (int 3))
+          )
+        )
+        (call boom)
+      )
+    )
+    (call
+      (selector inspect (selector IO))
+      (binary &&
+        (binary &&
+          (binary &&
+            (group
+              (binary < (int 1) (int 2))
+            )
+            (group
+              (binary < (int 2) (int 3))
+            )
+          )
+          (group
+            (binary > (int 3) (int 4))
+          )
+        )
+        (call boom)
+      )
+    )
+  )
+  (call main)
+)
