@@ -382,6 +382,9 @@ func (n *Name) emit(w io.Writer) error {
 	case "None", "True", "False":
 		_, err := io.WriteString(w, n.Name)
 		return err
+	case "stdout", "stderr", "stdin":
+		_, err := io.WriteString(w, "sys."+n.Name)
+		return err
 	default:
 		_, err := io.WriteString(w, safeName(n.Name))
 		return err
@@ -1835,6 +1838,14 @@ func inferPyType(e Expr, env *types.Env) types.Type {
 			case "split":
 				if len(ex.Args) == 2 {
 					return types.ListType{Elem: types.StringType{}}
+				}
+			case "repeat":
+				if len(ex.Args) == 2 {
+					return types.StringType{}
+				}
+			case "parseIntStr":
+				if len(ex.Args) == 2 {
+					return types.IntType{}
 				}
 			case "upper", "lower":
 				if len(ex.Args) == 1 {
@@ -4465,7 +4476,13 @@ func convertPostfix(p *parser.PostfixExpr) (Expr, error) {
 			if replaced {
 				// already handled
 			} else if fe, ok := expr.(*FieldExpr); ok && fe.Name == "padStart" && len(args) == 2 {
-				expr = &CallExpr{Func: &FieldExpr{Target: fe.Target, Name: "rjust"}, Args: []Expr{args[0], args[1]}}
+				tgt := fe.Target
+				if currentEnv != nil {
+					if _, ok := inferPyType(tgt, currentEnv).(types.StringType); !ok {
+						tgt = &CallExpr{Func: &Name{Name: "str"}, Args: []Expr{tgt}}
+					}
+				}
+				expr = &CallExpr{Func: &FieldExpr{Target: tgt, Name: "rjust"}, Args: []Expr{args[0], args[1]}}
 			} else if fe, ok := expr.(*FieldExpr); ok && fe.Name == "contains" && len(args) == 1 {
 				expr = &BinaryExpr{Left: args[0], Op: "in", Right: fe.Target}
 			} else if _, ok := expr.(*BinaryExpr); !ok {
@@ -4614,9 +4631,17 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			if len(args) == 2 {
 				return &CallExpr{Func: &FieldExpr{Target: args[0], Name: "split"}, Args: []Expr{args[1]}}, nil
 			}
+		case "repeat":
+			if len(args) == 2 {
+				return &BinaryExpr{Left: args[0], Op: "*", Right: args[1]}, nil
+			}
 		case "contains":
 			if len(args) == 2 {
 				return &BinaryExpr{Left: args[1], Op: "in", Right: args[0]}, nil
+			}
+		case "parseIntStr":
+			if len(args) == 2 {
+				return &CallExpr{Func: &Name{Name: "int"}, Args: []Expr{args[0], args[1]}}, nil
 			}
 		case "sha256":
 			if len(args) == 1 {
@@ -4651,7 +4676,13 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			}
 		case "padStart":
 			if len(args) == 3 {
-				return &CallExpr{Func: &FieldExpr{Target: args[0], Name: "rjust"}, Args: []Expr{args[1], args[2]}}, nil
+				tgt := args[0]
+				if currentEnv != nil {
+					if _, ok := inferPyType(tgt, currentEnv).(types.StringType); !ok {
+						tgt = &CallExpr{Func: &Name{Name: "str"}, Args: []Expr{tgt}}
+					}
+				}
+				return &CallExpr{Func: &FieldExpr{Target: tgt, Name: "rjust"}, Args: []Expr{args[1], args[2]}}, nil
 			}
 		case "indexOf":
 			if len(args) == 2 {
