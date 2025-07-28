@@ -297,7 +297,7 @@ func parseValue(expr string) string {
 	if regexp.MustCompile(`^[0-9-]+$`).MatchString(expr) {
 		return expr
 	}
-	if strings.HasPrefix(expr, "(list") && strings.HasSuffix(expr, ")") {
+	if (strings.HasPrefix(expr, "(list ") || expr == "(list)") && strings.HasSuffix(expr, ")") {
 		inner := strings.TrimSpace(expr[len("(list") : len(expr)-1])
 		if inner == "" {
 			return "[]"
@@ -322,7 +322,10 @@ func parseValue(expr string) string {
 	if strings.HasPrefix(expr, "(hash") && strings.HasSuffix(expr, ")") {
 		return parseHash(expr)
 	}
-	return ""
+	if out := convertExpr(expr); out != expr {
+		return out
+	}
+	return expr
 }
 
 func parseHash(expr string) string {
@@ -351,24 +354,41 @@ func convertExpr(expr string) string {
 			return fmt.Sprintf("%s..%s", args[0], args[1])
 		}
 		return fmt.Sprintf("range(%s)", strings.Join(args, ", "))
-	} else if strings.HasPrefix(strings.TrimSpace(expr[1:]), "list") {
+	} else if trimmed := strings.TrimSpace(expr[1:]); strings.HasPrefix(trimmed, "list ") || strings.HasPrefix(trimmed, "list)") {
 		return parseValue(expr)
 	} else if strings.HasPrefix(expr, "(") && strings.HasSuffix(expr, ")") {
 		inner := strings.TrimSpace(expr[1 : len(expr)-1])
 		var parts []string
 		depth := 0
 		start := 0
+		inStr := false
+		escape := false
 		for i, r := range inner {
-			if r == '(' {
-				depth++
-			} else if r == ')' {
-				depth--
-			} else if r == ' ' && depth == 0 {
-				if start < i {
-					parts = append(parts, inner[start:i])
+			if inStr {
+				if escape {
+					escape = false
+				} else if r == '\\' {
+					escape = true
+				} else if r == '"' {
+					inStr = false
 				}
-				start = i + 1
 				continue
+			}
+			switch r {
+			case '"':
+				inStr = true
+			case '(':
+				depth++
+			case ')':
+				depth--
+			case ' ':
+				if depth == 0 {
+					if start < i {
+						parts = append(parts, inner[start:i])
+					}
+					start = i + 1
+					continue
+				}
 			}
 		}
 		if start < len(inner) {
@@ -384,6 +404,27 @@ func convertExpr(expr string) string {
 				b = "(" + b + ")"
 			}
 			return fmt.Sprintf("%s %s %s", a, parts[0], b)
+		}
+		if len(parts) == 3 && (parts[0] == "=" || parts[0] == "<" || parts[0] == ">" || parts[0] == "<=" || parts[0] == ">=") {
+			a := convertExpr(parts[1])
+			b := convertExpr(parts[2])
+			op := parts[0]
+			if op == "=" {
+				op = "=="
+			}
+			return fmt.Sprintf("%s %s %s", a, op, b)
+		}
+		if len(parts) == 3 && (parts[0] == "list-ref" || parts[0] == "string-ref") {
+			target := convertExpr(parts[1])
+			idx := convertExpr(parts[2])
+			return fmt.Sprintf("%s[%s]", target, idx)
+		}
+		if len(parts) >= 2 && parts[0] == "string-append" {
+			var args []string
+			for _, p := range parts[1:] {
+				args = append(args, convertExpr(p))
+			}
+			return strings.Join(args, " + ")
 		}
 		if len(parts) >= 1 {
 			var args []string
