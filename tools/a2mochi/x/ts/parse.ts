@@ -288,6 +288,61 @@ function parse(src: string): TSDecl[] {
         endOff: stmt.end,
         doc,
       });
+    } else if (ts.isForStatement(stmt)) {
+      let iter = "";
+      let startVal = "";
+      if (stmt.initializer && ts.isVariableDeclarationList(stmt.initializer)) {
+        const d = stmt.initializer.declarations[0];
+        iter = d.name.getText(source);
+        startVal = d.initializer ? d.initializer.getText(source) : "";
+      }
+      let endVal = "";
+      if (
+        stmt.condition &&
+        ts.isBinaryExpression(stmt.condition) &&
+        stmt.condition.left.getText(source) === iter &&
+        stmt.condition.operatorToken.kind === ts.SyntaxKind.LessThanToken
+      ) {
+        endVal = stmt.condition.right.getText(source);
+      }
+      let body = stmt.statement.getText(source);
+      if (ts.isBlock(stmt.statement)) body = body.slice(1, -1);
+      body = body.replace(/console\.log\(String\((.+?)\)\);?/g, "print($1)");
+      if (iter && startVal && endVal) {
+        decls.push({
+          kind: "expr",
+          node: ts.SyntaxKind[stmt.kind],
+          name: "",
+          expr: `for ${iter} in ${startVal}..${endVal} {${body}}`,
+          start: start.line,
+          startCol: start.col,
+          end: end.line,
+          endCol: end.col,
+          snippet,
+          startOff: stmt.getStart(source),
+          endOff: stmt.end,
+          doc,
+        });
+      }
+    } else if (ts.isWhileStatement(stmt)) {
+      const cond = stmt.expression.getText(source);
+      let body = stmt.statement.getText(source);
+      if (ts.isBlock(stmt.statement)) body = body.slice(1, -1);
+      body = body.replace(/console\.log\(String\((.+?)\)\);?/g, "print($1)");
+      decls.push({
+        kind: "expr",
+        node: ts.SyntaxKind[stmt.kind],
+        name: "",
+        expr: `while ${cond} {${body}}`,
+        start: start.line,
+        startCol: start.col,
+        end: end.line,
+        endCol: end.col,
+        snippet,
+        startOff: stmt.getStart(source),
+        endOff: stmt.end,
+        doc,
+      });
     } else if (ts.isExpressionStatement(stmt)) {
       if (ts.isCallExpression(stmt.expression)) {
         const call = stmt.expression;

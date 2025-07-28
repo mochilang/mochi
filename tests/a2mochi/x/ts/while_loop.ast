@@ -1,3 +1,16 @@
 (program
-  (let i (type int))
+  (let i (type int) (int 0))
+  (while
+    (group
+      (binary < (selector i) (int 3))
+    )
+    (block
+      (call print (selector i))
+      (assign i
+        (group
+          (binary + (selector i) (int 1))
+        )
+      )
+    )
+  )
 )
