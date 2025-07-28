@@ -1,0 +1,12 @@
+(program
+  (call print
+    (call len
+      (binary /
+        (selector sum
+          (call ArrayBuffer (int 1) (int 2) (int 3))
+        )
+        (call ArrayBuffer (int 1) (int 2) (int 3))
+      )
+    )
+  )
+)
