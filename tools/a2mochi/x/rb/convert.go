@@ -234,6 +234,24 @@ func digitsStringValue(n Node) (string, bool) {
 	return "", false
 }
 
+func firstArg(n Node) Node {
+	for {
+		switch n.Type {
+		case "arg_paren", "args_add_block", "args_new":
+			if len(n.Children) > 0 {
+				n = n.Children[0]
+				continue
+			}
+		case "args_add":
+			if len(n.Children) > 0 {
+				n = n.Children[len(n.Children)-1]
+				continue
+			}
+		}
+		return n
+	}
+}
+
 func convertNode(n Node, level int, out *[]string) {
 	idt := strings.Repeat("  ", level)
 	switch n.Type {
@@ -252,6 +270,19 @@ func convertNode(n Node, level int, out *[]string) {
 				} else if argNode.Type == "call" && len(argNode.Children) == 3 && argNode.Children[2].Type == "@ident" && argNode.Children[2].Value == "length" {
 					expr := exprString(argNode.Children[0])
 					*out = append(*out, idt+"print(len("+expr+"))")
+				} else if argNode.Type == "method_add_arg" {
+					call := argNode.Children[0]
+					if call.Type == "call" && len(call.Children) == 3 {
+						m := call.Children[2]
+						if m.Type == "@ident" && (m.Value == "include?" || m.Value == "key?") {
+							recv := exprString(call.Children[0])
+							arg := exprString(firstArg(argNode.Children[1]))
+							*out = append(*out, idt+"print(("+arg+" in "+recv+"))")
+							return
+						}
+					}
+					arg := exprString(argNode)
+					*out = append(*out, idt+"print("+arg+")")
 				} else {
 					arg := exprString(argNode)
 					*out = append(*out, idt+"print("+arg+")")
