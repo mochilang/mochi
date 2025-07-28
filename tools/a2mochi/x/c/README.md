@@ -1,7 +1,7 @@
 # a2mochi C Converter
 
-Completed programs: 83/104
-Date: 2025-07-28 19:04:45 GMT+7
+Completed programs: 63/104
+Date: 2025-07-28 20:38:51 GMT+7
 
 This directory holds golden outputs for converting C source files located in `tests/transpiler/x/c` into Mochi AST form. Each `.c` source has a matching `.mochi` and `.ast` file in this directory.
 
