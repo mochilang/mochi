@@ -4,7 +4,7 @@ Created: 2025-07-28
 
 This directory contains test helpers and golden files for converting F# programs under `tests/transpiler/x/fs` into Mochi AST form.
 
-Completed programs: 27/103
+Completed programs: 28/103
 
 ## Checklist
 - [x] append_builtin
@@ -33,4 +33,6 @@ Completed programs: 27/103
 - [x] var_assignment
 - [x] user_type_literal
 - [x] bool_chain
-- [x] break_continue
+- [ ] break_continue
+- [x] map_membership
+- [x] map_int_key

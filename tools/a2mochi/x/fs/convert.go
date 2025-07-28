@@ -106,9 +106,11 @@ func convertRecordFields(expr string) string {
 }
 
 var (
-	listContainsRe   = regexp.MustCompile(`\bList\.contains\s+(\S+)\s+(\S+)`)
-	stringContainsRe = regexp.MustCompile(`(\w+)\.Contains\(([^)]+)\)`)
-	stringCallRe     = regexp.MustCompile(`^string\s*\((.*)\)$`)
+        listContainsRe   = regexp.MustCompile(`\bList\.contains\s+(\S+)\s+(\S+)`)
+        stringContainsRe = regexp.MustCompile(`(\w+)\.Contains\(([^)]+)\)`)
+       mapContainsRe    = regexp.MustCompile(`\bMap\.containsKey\s+(\S+)\s+(\S+)`)
+       mapContainsNumRe = regexp.MustCompile(`if\s+Map\.containsKey\s+(\S+)\s+(\S+)\s+then\s+1\s+else\s+0`)
+        stringCallRe     = regexp.MustCompile(`^string\s*\((.*)\)$`)
 	stringLitRe      = regexp.MustCompile(`^string\s+"([^"]*)"$`)
 	listLengthRe     = regexp.MustCompile(`\bList\.length\s+(.*)`)
 	stringLengthRe   = regexp.MustCompile(`\bString\.length\s+(.*)`)
@@ -118,32 +120,36 @@ var (
 )
 
 func convertContains(expr string) string {
-	if m := listContainsRe.FindStringSubmatch(expr); m != nil {
-		return listContainsRe.ReplaceAllString(expr, m[1]+" in "+m[2])
-	}
-	if m := stringContainsRe.FindStringSubmatch(expr); m != nil {
-		return stringContainsRe.ReplaceAllString(expr, m[2]+" in "+m[1])
-	}
-	return expr
+       if m := mapContainsNumRe.FindStringSubmatch(expr); m != nil {
+               return mapContainsNumRe.ReplaceAllString(expr, m[1]+" in "+m[2])
+       }
+       if m := listContainsRe.FindStringSubmatch(expr); m != nil {
+               return listContainsRe.ReplaceAllString(expr, m[1]+" in "+m[2])
+       }
+       if m := stringContainsRe.FindStringSubmatch(expr); m != nil {
+               return stringContainsRe.ReplaceAllString(expr, m[2]+" in "+m[1])
+       }
+       if m := mapContainsRe.FindStringSubmatch(expr); m != nil {
+               return mapContainsRe.ReplaceAllString(expr, m[1]+" in "+m[2])
+       }
+        return expr
 }
 
 func convertBuiltins(expr string) string {
 	expr = listLengthRe.ReplaceAllString(expr, `len($1)`)
 	expr = stringLengthRe.ReplaceAllString(expr, `len($1)`)
 	expr = listSumRe.ReplaceAllString(expr, `sum($1)`)
-	if m := mapOfListRe.FindStringSubmatch(expr); m != nil {
-		parts := strings.Split(m[1], ",")
-		for i, p := range parts {
-			p = strings.TrimSpace(strings.Trim(p, "()"))
-			kv := strings.SplitN(p, ",", 2)
-			if len(kv) == 2 {
-				parts[i] = strings.TrimSpace(kv[0]) + ": " + strings.TrimSpace(kv[1])
-			} else {
-				parts[i] = strings.TrimSpace(p)
-			}
-		}
-		expr = strings.Replace(expr, m[0], "{"+strings.Join(parts, ", ")+"}", 1)
-	}
+       if m := mapOfListRe.FindStringSubmatch(expr); m != nil {
+               pairRe := regexp.MustCompile(`\(([^,]+),\s*([^\)]+)\)`)
+               pairs := pairRe.FindAllStringSubmatch(m[1], -1)
+               if len(pairs) > 0 {
+                       parts := make([]string, len(pairs))
+                       for i, p := range pairs {
+                               parts[i] = strings.TrimSpace(p[1]) + ": " + strings.TrimSpace(p[2])
+                       }
+                       expr = strings.Replace(expr, m[0], "{"+strings.Join(parts, ", ")+"}", 1)
+               }
+       }
 	expr = simpleCallRe.ReplaceAllString(expr, `$1($2)`)
 	return expr
 }
