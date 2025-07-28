@@ -4592,13 +4592,25 @@ func convertFunExpr(fn *parser.FunExpr, env *types.Env, vars map[string]VarInfo)
 	params := make([]string, len(fn.Params))
 	for i, p := range fn.Params {
 		typ := "int"
+		ret := ""
 		if p.Type != nil {
 			typ = typeRefString(p.Type)
+			if ts := typeString(types.ResolveTypeRef(p.Type, env)); ts != "" {
+				typ = ts
+			}
+			if ft, ok := types.ResolveTypeRef(p.Type, env).(types.FuncType); ok {
+				if r := typeString(ft.Return); r != "" {
+					ret = r
+				}
+			}
+			if typ == "any" {
+				typ = ""
+			}
 			if typ == "" {
 				typ = "int"
 			}
 		}
-		fnVars[p.Name] = VarInfo{typ: typ, ref: mutated[p.Name]}
+		fnVars[p.Name] = VarInfo{typ: typ, ref: mutated[p.Name], ret: ret}
 		params[i] = p.Name
 	}
 	var retExpr Expr
@@ -5292,16 +5304,18 @@ func convertCall(c *parser.CallExpr, env *types.Env, vars map[string]VarInfo) (E
 			}
 			args[i] = ex
 		}
-		ret := ""
-		if strings.HasPrefix(v.typ, "func-") {
-			ret = strings.TrimPrefix(v.typ, "func-")
-			if ret == "any" {
-				ret = ""
-			}
-		} else if t, err := env.GetVar(c.Func); err == nil {
-			if ft, ok := t.(types.FuncType); ok {
-				if r := typeString(ft.Return); r != "" {
-					ret = r
+		ret := v.ret
+		if ret == "" {
+			if strings.HasPrefix(v.typ, "func-") {
+				ret = strings.TrimPrefix(v.typ, "func-")
+				if ret == "any" {
+					ret = ""
+				}
+			} else if t, err := env.GetVar(c.Func); err == nil {
+				if ft, ok := t.(types.FuncType); ok {
+					if r := typeString(ft.Return); r != "" {
+						ret = r
+					}
 				}
 			}
 		}

@@ -2,7 +2,7 @@
 
 This directory contains OCaml code generated from Rosetta Code programs in `tests/rosetta/x/Mochi`.
 
-Completed programs: 157/493
+Completed programs: 160/493
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -205,12 +205,12 @@ Completed programs: 157/493
 | 197 | checkpoint-synchronization-4 | ✓ | 242.0µs | 5.24KB |
 | 198 | chernicks-carmichael-numbers | ✓ | 945.0ms | 47.19MB |
 | 199 | cheryls-birthday | ✓ | 228.0µs | 5.97KB |
-| 200 | chinese-remainder-theorem | ✓ | 125.0µs | 248B |
-| 201 | chinese-zodiac | ✓ | 144.0µs | 4.03KB |
-| 202 | cholesky-decomposition-1 | error | 291.0µs | 58.66KB |
-| 203 | cholesky-decomposition |   |  |  |
-| 204 | chowla-numbers |   |  |  |
-| 205 | church-numerals-1 |   |  |  |
+| 200 | chinese-remainder-theorem | ✓ | 30.0µs | 248B |
+| 201 | chinese-zodiac | ✓ | 59.0µs | 4.03KB |
+| 202 | cholesky-decomposition-1 | ✓ | 280.0µs | 58.66KB |
+| 203 | cholesky-decomposition | ✓ | 272.0µs | 48.77KB |
+| 204 | chowla-numbers | ✓ | 9.0µs | 208B |
+| 205 | church-numerals-1 | error |  |  |
 | 206 | church-numerals-2 |   |  |  |
 | 207 | circles-of-given-radius-through-two-points |   |  |  |
 | 208 | circular-primes |   |  |  |
@@ -499,4 +499,4 @@ Completed programs: 157/493
 | 491 | sorting-algorithms-bubble-sort |   |  |  |
 | 492 | window-management |   |  |  |
 | 493 | zumkeller-numbers |   |  |  |
-Last updated 2025-07-28 11:14 +0700
+Last updated 2025-07-28 11:42 +0700
