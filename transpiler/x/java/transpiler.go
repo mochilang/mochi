@@ -434,19 +434,34 @@ func fieldTypeFromVar(target Expr, name string) (string, bool) {
 				return "", false
 			}
 		}
-		base := strings.TrimSuffix(tname, "[]")
-		if topEnv != nil {
-			if st, ok := topEnv.GetStruct(base); ok {
-				if ft, ok2 := st.Fields[name]; ok2 {
-					return toJavaTypeFromType(ft), true
-				}
-			}
-		}
-		if structDefs != nil {
-			if f, ok := structDefs[base][name]; ok {
-				return f, true
-			}
-		}
+               base := strings.TrimSuffix(tname, "[]")
+               if topEnv != nil {
+                       if st, ok := topEnv.GetStruct(base); ok {
+                               if ft, ok2 := st.Fields[name]; ok2 {
+                                       return toJavaTypeFromType(ft), true
+                               }
+                       }
+               }
+               if structDefs != nil {
+                       if f, ok := structDefs[base][name]; ok {
+                               return f, true
+                       }
+                       if tname == "Object" {
+                               var found string
+                               for sn, fields := range structDefs {
+                                       if _, ok := fields[name]; ok {
+                                               if found != "" {
+                                                       found = "" // ambiguous
+                                                       break
+                                               }
+                                               found = sn
+                                       }
+                               }
+                               if found != "" {
+                                       return structDefs[found][name], true
+                               }
+                       }
+               }
 	case *FieldExpr:
 		if typ, ok := fieldTypeFromVar(v.Target, v.Name); ok {
 			base := strings.TrimSuffix(typ, "[]")
@@ -507,31 +522,39 @@ func inferType(e Expr) string {
 		if ex.ElemType != "" {
 			return ex.ElemType + "[]"
 		}
-		if len(ex.Elems) > 0 {
-			t := inferType(ex.Elems[0])
-			if t == "" {
-				for _, el := range ex.Elems[1:] {
-					t = inferType(el)
-					if t != "" {
-						break
-					}
-				}
-			}
-			if t != "" {
-				if strings.HasSuffix(t, "[]") {
-					return t + "[]"
-				}
-				switch t {
-				case "string":
-					return "string[]"
-				case "boolean":
-					return "bool[]"
-				default:
-					return t + "[]"
-				}
-			}
-		}
-		return ""
+               if len(ex.Elems) > 0 {
+                       t := inferType(ex.Elems[0])
+                       same := true
+                       for _, el := range ex.Elems[1:] {
+                               et := inferType(el)
+                               if et == "" {
+                                       continue
+                               }
+                               if t == "" {
+                                       t = et
+                               } else if et != t {
+                                       same = false
+                                       break
+                               }
+                       }
+                       if same && t != "" {
+                               if strings.HasSuffix(t, "[]") {
+                                       return t + "[]"
+                               }
+                               switch t {
+                               case "string":
+                                       return "string[]"
+                               case "boolean":
+                                       return "bool[]"
+                               default:
+                                       return t + "[]"
+                               }
+                       }
+                       if !same {
+                               return "Object[]"
+                       }
+               }
+               return ""
 	case *StructLit:
 		if ex.Name != "" {
 			return ex.Name
@@ -1166,9 +1189,17 @@ func (s *IfStmt) emit(w io.Writer, indent string) {
 type ExprStmt struct{ Expr Expr }
 
 func (s *ExprStmt) emit(w io.Writer, indent string) {
-	fmt.Fprint(w, indent)
-	s.Expr.emit(w)
-	fmt.Fprint(w, ";\n")
+        if call, ok := s.Expr.(*CallExpr); ok && call.Func == "panic" && len(call.Args) == 1 {
+                fmt.Fprint(w, indent)
+                fmt.Fprint(w, "throw new RuntimeException(String.valueOf(")
+                call.Args[0].emit(w)
+                fmt.Fprint(w, "));")
+                fmt.Fprint(w, "\n")
+                return
+        }
+        fmt.Fprint(w, indent)
+        s.Expr.emit(w)
+        fmt.Fprint(w, ";\n")
 }
 
 type LetStmt struct {
@@ -1558,8 +1589,8 @@ type ListLit struct {
 }
 
 func (l *ListLit) emit(w io.Writer) {
-	arrType := l.ElemType
-	if arrType == "" {
+        arrType := l.ElemType
+        if arrType == "" {
 		if len(l.Elems) > 0 {
 			t := inferType(l.Elems[0])
 			same := true
@@ -1569,35 +1600,55 @@ func (l *ListLit) emit(w io.Writer) {
 					break
 				}
 			}
-			if same && t != "" {
-				if strings.HasSuffix(t, "[]") {
-					arrType = t
-				} else {
-					arrType = t
-					if arrType == "" {
-						arrType = "Object"
-					}
-					switch arrType {
-					case "string":
-						arrType = "String"
-					case "boolean":
-						arrType = "boolean"
-					}
-				}
-			} else {
-				arrType = "Object"
-			}
-		} else {
-			arrType = "Object"
-		}
-		arrType = javaType(arrType)
-	} else {
-		jt := javaType(arrType)
-		if jt != "" {
-			arrType = jt
-		}
-	}
-	raw := arrType
+                        if same && t != "" {
+                                if strings.HasSuffix(t, "[]") {
+                                        arrType = t
+                                } else {
+                                        arrType = t
+                                        if arrType == "" {
+                                                arrType = "Object"
+                                        }
+                                        switch arrType {
+                                        case "string":
+                                                arrType = "String"
+                                        case "boolean":
+                                                arrType = "boolean"
+                                        }
+                                }
+                        } else {
+                                arrType = "Object"
+                        }
+                } else {
+                        arrType = "Object"
+                }
+                arrType = javaType(arrType)
+        } else {
+                jt := javaType(arrType)
+                if jt != "" {
+                        arrType = jt
+                }
+        }
+       if arrType == "Object" {
+               t := ""
+               same := true
+               for _, el := range l.Elems {
+                       et := inferType(el)
+                       if et == "" {
+                               same = false
+                               break
+                       }
+                       if t == "" {
+                               t = et
+                       } else if et != t {
+                               same = false
+                               break
+                       }
+               }
+               if same && t != "" {
+                       arrType = javaType(t)
+               }
+       }
+        raw := arrType
 	dims := 0
 	for strings.HasSuffix(raw, "[]") {
 		raw = strings.TrimSuffix(raw, "[]")
@@ -1951,13 +2002,33 @@ type FieldExpr struct {
 }
 
 func (f *FieldExpr) emit(w io.Writer) {
-	if v, ok := f.Target.(*VarExpr); ok {
-		if t, ok2 := varTypes[v.Name]; ok2 && t != "map" && !strings.Contains(t, "Map") {
-			f.Target.emit(w)
-			fmt.Fprint(w, "."+f.Name)
-			return
-		}
-	}
+        if v, ok := f.Target.(*VarExpr); ok {
+                if t, ok2 := varTypes[v.Name]; ok2 && t != "map" && !strings.Contains(t, "Map") {
+                        if t != "Object" {
+                                f.Target.emit(w)
+                                fmt.Fprint(w, "."+f.Name)
+                                return
+                        }
+                        if structDefs != nil {
+                                var found string
+                                for sn, fields := range structDefs {
+                                        if _, ok := fields[f.Name]; ok {
+                                                if found != "" {
+                                                        found = ""
+                                                        break
+                                                }
+                                                found = sn
+                                        }
+                                }
+                                if found != "" {
+                                        fmt.Fprintf(w, "((%s)", found)
+                                        f.Target.emit(w)
+                                        fmt.Fprintf(w, ").%s", f.Name)
+                                        return
+                                }
+                        }
+                }
+        }
 	if isMapExpr(f.Target) {
 		castType := "Object"
 		if fields := mapFieldsForExpr(f.Target); fields != nil {
@@ -4573,23 +4644,32 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			}
 			elems[i] = ex
 		}
-		lt := ""
-		for _, el := range elems {
-			t := inferType(el)
-			if t != "" {
-				lt = t
-				break
-			}
-		}
-		if strings.HasSuffix(lt, "[]") {
-			inner := strings.TrimSuffix(lt, "[]")
-			for _, el := range elems {
-				if ll, ok := el.(*ListLit); ok && ll.ElemType == "" {
-					ll.ElemType = inner
-				}
-			}
-		}
-		return &ListLit{ElemType: lt, Elems: elems}, nil
+               lt := ""
+               same := true
+               for i, el := range elems {
+                       t := inferType(el)
+                       if t == "" {
+                               continue
+                       }
+                       if i == 0 || lt == "" {
+                               lt = t
+                       } else if t != lt {
+                               same = false
+                               break
+                       }
+               }
+               if !same {
+                       lt = "Object"
+               }
+               if strings.HasSuffix(lt, "[]") {
+                       inner := strings.TrimSuffix(lt, "[]")
+                       for _, el := range elems {
+                               if ll, ok := el.(*ListLit); ok && ll.ElemType == "" {
+                                       ll.ElemType = inner
+                               }
+                       }
+               }
+               return &ListLit{ElemType: lt, Elems: elems}, nil
 	case p.Map != nil:
 		ml := p.Map
 		keys := make([]Expr, len(ml.Items))

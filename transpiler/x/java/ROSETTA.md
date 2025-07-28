@@ -1,9 +1,9 @@
 # Java Rosetta Transpiler Output
 
 Generated Java code for programs in `tests/rosetta/x/Mochi`. Each program has a `.java` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
-Last updated: 2025-07-28 10:25 GMT+7
+Last updated: 2025-07-28 10:50 GMT+7
 
-## Rosetta Checklist (284/493)
+## Rosetta Checklist (259/493)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 23.0ms | 245.84KB |
@@ -305,56 +305,56 @@ Last updated: 2025-07-28 10:25 GMT+7
 | 297 | determine-if-only-one-instance-is-running | ✓ | 6.0ms | 584B |
 | 298 | determine-if-two-triangles-overlap | ✓ | 26.0ms | 110.55KB |
 | 299 | determine-sentence-type | ✓ | 31.0ms | 52.66KB |
-| 300 | dice-game-probabilities-1 | ✓ | 43.0ms | 56.18KB |
-| 301 | dice-game-probabilities-2 | ✓ | 43.0ms | 10.58KB |
-| 302 | digital-root-multiplicative-digital-root | ✓ | 196.0ms | 120.93KB |
-| 303 | dijkstras-algorithm | ✓ | 50.0ms | 96.28KB |
-| 304 | dinesmans-multiple-dwelling-problem | ✓ | 49.0ms | 94.01KB |
-| 305 | dining-philosophers-1 | ✓ | 33.0ms | 38.70KB |
-| 306 | dining-philosophers-2 | ✓ | 34.0ms | 38.70KB |
-| 307 | disarium-numbers | ✓ | 3.35s | 83.91KB |
-| 308 | discordian-date | ✓ | 62.0ms | 101.55KB |
-| 309 | display-a-linear-combination | ✓ | 58.0ms | 101.29KB |
-| 310 | display-an-outline-as-a-nested-table | ✓ | 60.0ms | 110.75KB |
-| 311 | distance-and-bearing |   |  |  |
-| 312 | distributed-programming |   |  |  |
-| 313 | diversity-prediction-theorem | ✓ | 47.0ms | 81.02KB |
-| 314 | documentation | ✓ | 17.0ms | 0B |
-| 315 | doomsday-rule | ✓ | 45.0ms | 77.99KB |
-| 316 | dot-product | ✓ | 19.0ms | 792B |
-| 317 | doubly-linked-list-definition-1 | ✓ | 19.0ms | 0B |
+| 300 | dice-game-probabilities-1 | ✓ | 39.0ms | 56.18KB |
+| 301 | dice-game-probabilities-2 | ✓ | 38.0ms | 10.58KB |
+| 302 | digital-root-multiplicative-digital-root | ✓ | 181.0ms | 120.93KB |
+| 303 | dijkstras-algorithm | ✓ | 45.0ms | 96.28KB |
+| 304 | dinesmans-multiple-dwelling-problem | ✓ | 52.0ms | 94.01KB |
+| 305 | dining-philosophers-1 | ✓ | 34.0ms | 38.70KB |
+| 306 | dining-philosophers-2 | ✓ | 32.0ms | 38.70KB |
+| 307 | disarium-numbers | ✓ | 3.01s | 83.91KB |
+| 308 | discordian-date | ✓ | 53.0ms | 101.55KB |
+| 309 | display-a-linear-combination | ✓ | 51.0ms | 101.29KB |
+| 310 | display-an-outline-as-a-nested-table | ✓ | 56.0ms | 110.75KB |
+| 311 | distance-and-bearing | ✓ | 54.0ms | 103.98KB |
+| 312 | distributed-programming | ✓ | 43.0ms | 77.41KB |
+| 313 | diversity-prediction-theorem |   |  |  |
+| 314 | documentation |   |  |  |
+| 315 | doomsday-rule |   |  |  |
+| 316 | dot-product |   |  |  |
+| 317 | doubly-linked-list-definition-1 |   |  |  |
 | 318 | doubly-linked-list-definition-2 |   |  |  |
 | 319 | doubly-linked-list-element-definition |   |  |  |
 | 320 | doubly-linked-list-traversal |   |  |  |
-| 321 | dragon-curve | ✓ | 64.0ms | 87.17KB |
-| 322 | draw-a-clock | ✓ | 38.0ms | 37.52KB |
-| 323 | draw-a-cuboid | ✓ | 51.0ms | 88.09KB |
-| 324 | draw-a-pixel-1 | ✓ | 365.0ms | 388.07KB |
-| 325 | draw-a-rotating-cube | ✓ | 98.0ms | 96.24KB |
-| 326 | draw-a-sphere | ✓ | 50.0ms | 38.53KB |
+| 321 | dragon-curve |   |  |  |
+| 322 | draw-a-clock |   |  |  |
+| 323 | draw-a-cuboid |   |  |  |
+| 324 | draw-a-pixel-1 |   |  |  |
+| 325 | draw-a-rotating-cube |   |  |  |
+| 326 | draw-a-sphere |   |  |  |
 | 327 | dutch-national-flag-problem |   |  |  |
-| 328 | dynamic-variable-names | ✓ | 42.0ms | 38.10KB |
-| 329 | earliest-difference-between-prime-gaps | ✓ | 62.0ms | 112.08KB |
+| 328 | dynamic-variable-names |   |  |  |
+| 329 | earliest-difference-between-prime-gaps |   |  |  |
 | 330 | eban-numbers |   |  |  |
 | 331 | ecdsa-example |   |  |  |
-| 332 | echo-server | ✓ | 35.0ms | 37.62KB |
-| 333 | eertree | ✓ | 53.0ms | 99.79KB |
+| 332 | echo-server |   |  |  |
+| 333 | eertree |   |  |  |
 | 334 | egyptian-division |   |  |  |
-| 335 | ekg-sequence-convergence | ✓ | 69.0ms | 102.72KB |
+| 335 | ekg-sequence-convergence |   |  |  |
 | 336 | element-wise-operations |   |  |  |
-| 337 | elementary-cellular-automaton-infinite-length | ✓ | 69.0ms | 96.68KB |
+| 337 | elementary-cellular-automaton-infinite-length |   |  |  |
 | 338 | elementary-cellular-automaton-random-number-generator |   |  |  |
-| 339 | elementary-cellular-automaton | ✓ | 38.0ms | 38.83KB |
-| 340 | elliptic-curve-arithmetic | ✓ | 52.0ms | 97.39KB |
-| 341 | elliptic-curve-digital-signature-algorithm | ✓ | 21.0ms | 1.28KB |
-| 342 | emirp-primes | ✓ | 520.0ms | 103.34KB |
+| 339 | elementary-cellular-automaton |   |  |  |
+| 340 | elliptic-curve-arithmetic |   |  |  |
+| 341 | elliptic-curve-digital-signature-algorithm |   |  |  |
+| 342 | emirp-primes |   |  |  |
 | 343 | empty-directory |   |  |  |
-| 344 | empty-program | ✓ | 20.0ms | 0B |
-| 345 | empty-string-1 | ✓ | 21.0ms | 448B |
-| 346 | empty-string-2 | ✓ | 18.0ms | 552B |
-| 347 | enforced-immutability | ✓ | 22.0ms | 368B |
-| 348 | entropy-1 | ✓ | 20.0ms | 10.84KB |
-| 349 | entropy-2 | ✓ | 20.0ms | 10.84KB |
+| 344 | empty-program |   |  |  |
+| 345 | empty-string-1 |   |  |  |
+| 346 | empty-string-2 |   |  |  |
+| 347 | enforced-immutability |   |  |  |
+| 348 | entropy-1 |   |  |  |
+| 349 | entropy-2 |   |  |  |
 | 350 | entropy-narcissist |   |  |  |
 | 351 | enumerations-1 |   |  |  |
 | 352 | enumerations-2 |   |  |  |
