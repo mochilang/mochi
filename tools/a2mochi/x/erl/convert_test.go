@@ -11,7 +11,6 @@ import (
 	"strings"
 	"testing"
 
-	"mochi/ast"
 	"mochi/parser"
 	"mochi/runtime/vm"
 	"mochi/types"
@@ -75,18 +74,21 @@ func TestConvert_Golden(t *testing.T) {
 		t.Fatalf("no files: %s", pattern)
 	}
 	allowed := map[string]bool{
-		"append_builtin":    true,
-		"avg_builtin":       true,
-		"basic_compare":     true,
-		"binary_precedence": true,
-		"print_hello":       true,
-		"count_builtin":     true,
-		"len_map":           true,
-		"map_index":         true,
-		"map_int_key":       true,
-		"map_membership":    true,
-		"min_max_builtin":   true,
-		"values_builtin":    true,
+		"append_builtin":     true,
+		"avg_builtin":        true,
+		"basic_compare":      true,
+		"binary_precedence":  true,
+		"print_hello":        true,
+		"count_builtin":      true,
+		"len_builtin":        true,
+		"len_string":         true,
+		"len_map":            true,
+		"map_index":          true,
+		"cast_string_to_int": true,
+		"map_int_key":        true,
+		"map_membership":     true,
+		"min_max_builtin":    true,
+		"values_builtin":     true,
 	}
 	outDir := filepath.Join(root, "tests", "a2mochi", "x", "erl")
 	os.MkdirAll(outDir, 0o755)
@@ -100,17 +102,23 @@ func TestConvert_Golden(t *testing.T) {
 			if err != nil {
 				t.Fatalf("read src: %v", err)
 			}
-			astFile, err := erl.Parse(string(data))
+			srcText := string(data)
+			astFile, err := erl.Parse(srcText)
 			if err != nil {
 				t.Fatalf("parse: %v", err)
 			}
-			node, err := erl.Convert(astFile)
+			src, err := erl.ConvertSource(astFile, srcText)
+			if err != nil {
+				t.Fatalf("convert source: %v", err)
+			}
+			node, err := erl.Convert(astFile, srcText)
 			if err != nil {
 				t.Fatalf("convert: %v", err)
 			}
 			astPath := filepath.Join(outDir, name+".ast")
 			if *update {
 				os.WriteFile(astPath, []byte(node.String()), 0o644)
+				os.WriteFile(filepath.Join(outDir, name+".mochi"), []byte(src), 0o644)
 			}
 			want, err := os.ReadFile(astPath)
 			if err != nil {
@@ -121,16 +129,7 @@ func TestConvert_Golden(t *testing.T) {
 				t.Fatalf("golden mismatch\n--- Got ---\n%s\n--- Want ---\n%s", got, want)
 			}
 
-			var buf bytes.Buffer
-			if err := ast.Fprint(&buf, node); err != nil {
-				t.Fatalf("print: %v", err)
-			}
-			code := buf.String()
-			mochiPath := filepath.Join(outDir, name+".mochi")
-			if *update {
-				os.WriteFile(mochiPath, []byte(code), 0o644)
-			}
-			gotOut, err := runMochi(code)
+			gotOut, err := runMochi(src)
 			if err != nil {
 				t.Fatalf("run: %v", err)
 			}
