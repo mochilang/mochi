@@ -20,6 +20,7 @@ interface TSDecl {
   fields?: TSField[];
   alias?: string;
   variants?: string[];
+  expr?: string;
   start?: number;
   startCol?: number;
   end?: number;
@@ -47,7 +48,7 @@ function tsToMochiType(t: string): string {
     case "any":
     case "unknown":
     case "object":
-      return "";
+      return "any";
     case "number":
       return "int";
     case "string":
@@ -103,7 +104,8 @@ function parse(src: string): TSDecl[] {
         const name = d.name.getText(source);
         const init = d.initializer;
         if (
-          init && (ts.isArrowFunction(init) || ts.isFunctionExpression(init))
+          init &&
+          (ts.isArrowFunction(init) || ts.isFunctionExpression(init))
         ) {
           const params: TSParam[] = init.parameters.map((p) => ({
             name: p.name.getText(source),
@@ -192,10 +194,7 @@ function parse(src: string): TSDecl[] {
     } else if (ts.isClassDeclaration(stmt) || ts.isInterfaceDeclaration(stmt)) {
       const fields: TSField[] = [];
       stmt.members.forEach((mem) => {
-        if (
-          ts.isPropertyDeclaration(mem) ||
-          ts.isPropertySignature(mem)
-        ) {
+        if (ts.isPropertyDeclaration(mem) || ts.isPropertySignature(mem)) {
           fields.push({
             name: mem.name.getText(source),
             typ: tsToMochiType(mem.type ? mem.type.getText(source) : ""),
@@ -259,6 +258,43 @@ function parse(src: string): TSDecl[] {
           endOff: stmt.end,
           doc,
         });
+      }
+    } else if (ts.isExpressionStatement(stmt)) {
+      if (ts.isCallExpression(stmt.expression)) {
+        const call = stmt.expression;
+        const args = call.arguments.map((a) => a.getText(source)).join(", ");
+        const callee = call.expression.getText(source);
+        if (callee === "console.log") {
+          decls.push({
+            kind: "print",
+            node: ts.SyntaxKind[stmt.kind],
+            name: "",
+            body: args,
+            start: start.line,
+            startCol: start.col,
+            end: end.line,
+            endCol: end.col,
+            snippet,
+            startOff: stmt.getStart(source),
+            endOff: stmt.end,
+            doc,
+          });
+        } else {
+          decls.push({
+            kind: "expr",
+            node: ts.SyntaxKind[stmt.kind],
+            name: "",
+            expr: stmt.expression.getText(source),
+            start: start.line,
+            startCol: start.col,
+            end: end.line,
+            endCol: end.col,
+            snippet,
+            startOff: stmt.getStart(source),
+            endOff: stmt.end,
+            doc,
+          });
+        }
       }
     }
   });
