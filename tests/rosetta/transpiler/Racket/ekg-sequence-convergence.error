@@ -1,0 +1,11 @@
+run error: exit status 1
+string-contains?: contract violation
+  expected: string?
+  given: '(1 2)
+  context...:
+   /workspace/mochi/tests/rosetta/transpiler/Racket/ekg-sequence-convergence.rkt:143:4
+   /workspace/mochi/tests/rosetta/transpiler/Racket/ekg-sequence-convergence.rkt:139:4
+   /workspace/mochi/tests/rosetta/transpiler/Racket/ekg-sequence-convergence.rkt:135:0
+   /workspace/mochi/tests/rosetta/transpiler/Racket/ekg-sequence-convergence.rkt:130:2
+   /workspace/mochi/tests/rosetta/transpiler/Racket/ekg-sequence-convergence.rkt:43:0
+   body of "/workspace/mochi/tests/rosetta/transpiler/Racket/ekg-sequence-convergence.rkt"

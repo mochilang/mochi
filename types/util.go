@@ -60,6 +60,9 @@ func IsInt64Type(t Type) bool { _, ok := t.(Int64Type); return ok }
 // IsIntType reports whether t is an int type.
 func IsIntType(t Type) bool { _, ok := t.(IntType); return ok }
 
+// IsBigIntType reports whether t is a bigint type.
+func IsBigIntType(t Type) bool { _, ok := t.(BigIntType); return ok }
+
 // IsFloatType reports whether t is a float type.
 func IsFloatType(t Type) bool {
 	if _, ok := t.(FloatType); ok {
@@ -73,7 +76,9 @@ func IsFloatType(t Type) bool {
 func IsBoolType(t Type) bool { _, ok := t.(BoolType); return ok }
 
 // IsNumericType reports whether t is any numeric type.
-func IsNumericType(t Type) bool { return IsIntType(t) || IsInt64Type(t) || IsFloatType(t) }
+func IsNumericType(t Type) bool {
+	return IsIntType(t) || IsInt64Type(t) || IsBigIntType(t) || IsFloatType(t)
+}
 
 // IsStructType reports whether t is a struct type.
 func IsStructType(t Type) bool { _, ok := t.(StructType); return ok }

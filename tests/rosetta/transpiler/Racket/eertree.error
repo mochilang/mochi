@@ -1,0 +1,13 @@
+run error: exit status 1
+substring: ending index is out of range
+  ending index: 8
+  valid range: [0, 7]
+  string: "eertree"
+  context...:
+   /workspace/mochi/tests/rosetta/transpiler/Racket/eertree.rkt:87:4
+   /workspace/mochi/tests/rosetta/transpiler/Racket/eertree.rkt:58:15: loop
+   [repeats 2 more times]
+   /workspace/mochi/tests/rosetta/transpiler/Racket/eertree.rkt:52:2
+   /workspace/mochi/tests/rosetta/transpiler/Racket/eertree.rkt:129:2
+   /workspace/mochi/tests/rosetta/transpiler/Racket/eertree.rkt:43:0
+   body of "/workspace/mochi/tests/rosetta/transpiler/Racket/eertree.rkt"

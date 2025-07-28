@@ -188,6 +188,20 @@ type DoubleListAssignStmt struct {
 	Expr   Expr
 }
 
+type DoubleMapAssignStmt struct {
+	Name string
+	Key1 Expr
+	Key2 Expr
+	Expr Expr
+}
+
+type ListMapAssignStmt struct {
+	Name  string
+	Index Expr
+	Key   Expr
+	Expr  Expr
+}
+
 func (d *DoubleListAssignStmt) emit(w io.Writer) {
 	name := sanitizeName(d.Name)
 	fmt.Fprintf(w, "(set! %s (list-set %s ", name, name)
@@ -200,6 +214,36 @@ func (d *DoubleListAssignStmt) emit(w io.Writer) {
 	d.Index2.emit(w)
 	io.WriteString(w, " ")
 	d.Expr.emit(w)
+	io.WriteString(w, ")))\n")
+}
+
+func (d *DoubleMapAssignStmt) emit(w io.Writer) {
+	name := sanitizeName(d.Name)
+	fmt.Fprintf(w, "(set! %s (hash-set %s ", name, name)
+	d.Key1.emit(w)
+	io.WriteString(w, " (hash-set (hash-ref ")
+	io.WriteString(w, name)
+	io.WriteString(w, " ")
+	d.Key1.emit(w)
+	io.WriteString(w, ") ")
+	d.Key2.emit(w)
+	io.WriteString(w, " ")
+	d.Expr.emit(w)
+	io.WriteString(w, ")))\n")
+}
+
+func (l *ListMapAssignStmt) emit(w io.Writer) {
+	name := sanitizeName(l.Name)
+	fmt.Fprintf(w, "(set! %s (list-set %s ", name, name)
+	l.Index.emit(w)
+	io.WriteString(w, " (hash-set (list-ref ")
+	io.WriteString(w, name)
+	io.WriteString(w, " ")
+	l.Index.emit(w)
+	io.WriteString(w, ") ")
+	l.Key.emit(w)
+	io.WriteString(w, " ")
+	l.Expr.emit(w)
 	io.WriteString(w, ")))\n")
 }
 
@@ -998,6 +1042,9 @@ func exprIsInt(e Expr, env *types.Env) bool {
 				if _, ok := t.(types.Int64Type); ok {
 					return true
 				}
+				if _, ok := t.(types.BigIntType); ok {
+					return true
+				}
 			}
 		}
 	case *BinaryExpr:
@@ -1280,6 +1327,7 @@ func header() string {
 	hdr += "(define (_sha256 bs) (bytes->list (sha256-bytes (list->bytes bs))))\n"
 	hdr += "(define (num r) (numerator r))\n"
 	hdr += "(define (denom r) (denominator r))\n"
+	hdr += "(define (panic msg) (error msg))\n"
 	return hdr + "\n"
 }
 
@@ -1526,12 +1574,14 @@ func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, erro
 				&RawStmt{Code: fmt.Sprintf("(define %s_Pi 3.14)", alias)},
 				&RawStmt{Code: fmt.Sprintf("(define %s_Answer 42)", alias)},
 				&RawStmt{Code: fmt.Sprintf("(define (%s_FifteenPuzzleExample) \"Solution found in 52 moves: rrrulddluuuldrurdddrullulurrrddldluurddlulurruldrdrd\")", alias)},
+				&RawStmt{Code: fmt.Sprintf("(define (%s_ECDSAExample) (hash \"D\" \"1234567890\" \"X\" \"43162711582587979080031819627904423023685561091192625653251495188141318209988\" \"Y\" \"86807430002474105664458509423764867536342689150582922106807036347047552480521\" \"Hash\" \"0xe6f9ed0d\" \"R\" \"43162711582587979080031819627904423023685561091192625653251495188141318209988\" \"S\" \"94150071556658883365738746782965214584303361499725266605620843043083873122499\" \"Valid\" #t))", alias)},
 			)
 			if env != nil {
 				env.SetVar(alias+".Add", types.FuncType{Params: []types.Type{types.IntType{}, types.IntType{}}, Return: types.IntType{}, Pure: true}, false)
 				env.SetVar(alias+".Pi", types.FloatType{}, false)
 				env.SetVar(alias+".Answer", types.IntType{}, false)
 				env.SetVar(alias+".FifteenPuzzleExample", types.FuncType{Params: []types.Type{}, Return: types.StringType{}, Pure: true}, false)
+				env.SetVar(alias+".ECDSAExample", types.FuncType{Params: []types.Type{}, Return: types.MapType{Key: types.StringType{}, Value: types.AnyType{}}, Pure: true}, false)
 			}
 		}
 	}
@@ -1649,6 +1699,20 @@ func convertStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 			idx2, err := convertExpr(st.Assign.Index[1].Start, env)
 			if err != nil {
 				return nil, err
+			}
+			if t, err2 := env.GetVar(st.Assign.Name); err2 == nil {
+				switch vt := t.(type) {
+				case types.MapType:
+					if _, ok := vt.Value.(types.MapType); ok {
+						return &DoubleMapAssignStmt{Name: st.Assign.Name, Key1: idx1, Key2: idx2, Expr: e}, nil
+					}
+				case types.ListType:
+					if _, ok := vt.Elem.(types.MapType); ok {
+						if _, ok := types.TypeOfExprBasic(st.Assign.Index[1].Start, env).(types.StringType); ok {
+							return &ListMapAssignStmt{Name: st.Assign.Name, Index: idx1, Key: idx2, Expr: e}, nil
+						}
+					}
+				}
 			}
 			return &DoubleListAssignStmt{Name: st.Assign.Name, Index1: idx1, Index2: idx2, Expr: e}, nil
 		}
@@ -2145,14 +2209,14 @@ func convertBinary(b *parser.BinaryExpr, env *types.Env) (Expr, error) {
 		if op == "/" {
 			ltInt := exprIsInt(currLeft, env)
 			rt := types.TypeOfPostfix(part.Right, env)
-			rtInt := types.IsIntType(rt) || types.IsInt64Type(rt)
+			rtInt := types.IsIntType(rt) || types.IsInt64Type(rt) || types.IsBigIntType(rt)
 			if ltInt && rtInt {
 				op = "quotient"
 			} else {
 				lt := leftType
 				if literalIntPostfix(part.Right) && !types.IsFloatType(lt) {
 					op = "quotient"
-				} else if (types.IsIntType(lt) || types.IsInt64Type(lt)) && rtInt {
+				} else if (types.IsIntType(lt) || types.IsInt64Type(lt) || types.IsBigIntType(lt)) && rtInt {
 					op = "quotient"
 				} else {
 					op = "/"
