@@ -1,0 +1,8 @@
+(program
+  (fun main
+    (let x (int 1))
+    (let x (int 2))
+    (call print (selector x))
+  )
+  (call main)
+)
