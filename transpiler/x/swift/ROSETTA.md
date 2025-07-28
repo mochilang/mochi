@@ -2,8 +2,8 @@
 
 Generated Swift code for Mochi Rosetta programs in `tests/rosetta/x/Mochi`. Outputs are stored in `tests/rosetta/transpiler/Swift`. Errors are captured in `.error` files.
 
-Completed: 194/493
-Last updated: 2025-07-28 10:41 +0700
+Completed: 203/493
+Last updated: 2025-07-28 11:14 +0700
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -256,15 +256,15 @@ Last updated: 2025-07-28 10:41 +0700
 | 247 | count-in-octal-4 |   |  |  |
 | 248 | count-occurrences-of-a-substring |   |  |  |
 | 249 | count-the-coins-1 |   |  |  |
-| 250 | count-the-coins-2 |   |  |  |
-| 251 | cramers-rule |   |  |  |
-| 252 | crc-32-1 |   |  |  |
-| 253 | crc-32-2 |   |  |  |
-| 254 | create-a-file-on-magnetic-tape |   |  |  |
-| 255 | create-a-file |   |  |  |
-| 256 | create-a-two-dimensional-array-at-runtime-1 |   |  |  |
-| 257 | create-an-html-table |   |  |  |
-| 258 | create-an-object-at-a-given-address |   |  |  |
+| 250 | count-the-coins-2 | ✓ | 765µs | 3.2 MB |
+| 251 | cramers-rule | ✓ | 638µs | 3.4 MB |
+| 252 | crc-32-1 | ✓ | 1.565ms | 3.2 MB |
+| 253 | crc-32-2 | ✓ | 1.664ms | 3.3 MB |
+| 254 | create-a-file-on-magnetic-tape | ✓ | 234µs | 3.0 MB |
+| 255 | create-a-file | ✓ | 295µs | 3.1 MB |
+| 256 | create-a-two-dimensional-array-at-runtime-1 | ✓ | 424µs | 3.2 MB |
+| 257 | create-an-html-table | ✓ | 472µs | 3.0 MB |
+| 258 | create-an-object-at-a-given-address | ✓ | 495µs | 3.3 MB |
 | 259 | csv-data-manipulation |   |  |  |
 | 260 | csv-to-html-translation-1 |   |  |  |
 | 261 | csv-to-html-translation-2 |   |  |  |

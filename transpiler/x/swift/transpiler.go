@@ -341,11 +341,15 @@ func (v *VarDecl) emit(w io.Writer) {
 	fmt.Fprint(w, kw+" "+esc(v.Name))
 	typ := v.Type
 	if typ == "" {
-		switch v.Expr.(type) {
+		switch e := v.Expr.(type) {
 		case *MapLit:
-			typ = "[String: Any]"
+			if len(e.Keys) == 0 {
+				typ = "[String: Any]"
+			}
 		case *ArrayLit:
-			typ = "[Any]"
+			if len(e.Elems) == 0 {
+				typ = "[Any]"
+			}
 		}
 	}
 	if typ != "" {
@@ -2044,19 +2048,24 @@ func convertStmt(env *types.Env, st *parser.Statement) (Stmt, error) {
 		var err error
 		var typ string
 		if st.Var.Value != nil {
-			if st.Var.Type != nil && (types.IsEmptyListLiteral(st.Var.Value) || isEmptyMapLiteral(st.Var.Value) || isNullLiteral(st.Var.Value)) {
-				ex = zeroValue(st.Var.Type)
+			if st.Var.Type != nil && isNullLiteral(st.Var.Value) {
+				ex = &LitExpr{Value: "nil", IsString: false}
+				typ = toSwiftOptionalType(st.Var.Type)
 			} else {
-				ex, err = convertExpr(env, st.Var.Value)
-				if err != nil {
-					return nil, err
+				if st.Var.Type != nil && (types.IsEmptyListLiteral(st.Var.Value) || isEmptyMapLiteral(st.Var.Value)) {
+					ex = zeroValue(st.Var.Type)
+				} else {
+					ex, err = convertExpr(env, st.Var.Value)
+					if err != nil {
+						return nil, err
+					}
 				}
-			}
-			if st.Var.Type != nil {
-				typ = toSwiftType(st.Var.Type)
-			} else if env != nil {
-				t := types.TypeOfExpr(st.Var.Value, env)
-				typ = swiftTypeOf(t)
+				if st.Var.Type != nil {
+					typ = toSwiftType(st.Var.Type)
+				} else if env != nil {
+					t := types.TypeOfExpr(st.Var.Value, env)
+					typ = swiftTypeOf(t)
+				}
 			}
 			if typ == "" {
 				if _, ok := ex.(*MapLit); ok {
@@ -2142,7 +2151,11 @@ func convertStmt(env *types.Env, st *parser.Statement) (Stmt, error) {
 			if t, err := env.GetVar(st.Assign.Name); err == nil {
 				typ := swiftTypeOf(t)
 				if typ != "Any" {
-					ex = &CastExpr{Expr: ex, Type: typ + "!"}
+					if isNullLiteral(st.Assign.Value) {
+						ex = zeroValue(parserTypeRefFromType(t))
+					} else {
+						ex = &CastExpr{Expr: ex, Type: typ + "!"}
+					}
 				}
 			}
 		}
@@ -3270,6 +3283,13 @@ func convertPostfix(env *types.Env, p *parser.PostfixExpr) (Expr, error) {
 					}
 				} else if _, ok := baseType.(types.StructType); ok {
 					baseType = types.AnyType{}
+				}
+			}
+			if env != nil && types.IsAnyType(baseType) {
+				if name := rootNameExpr(&parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: &parser.PostfixExpr{Target: p.Target}}}}); name != "" {
+					if t, err := env.GetVar(name); err == nil && !types.IsAnyType(t) {
+						baseType = t
+					}
 				}
 			}
 			if env != nil && types.IsAnyType(baseType) {
