@@ -564,13 +564,18 @@ func (s *AssignStmt) emit(w io.Writer) error {
 			}
 		}
 	}
+	targetType := strings.TrimSuffix(inferType(s.Target), "?")
+	if n, ok := s.Value.(*Name); ok && n.Name == "null" && !strings.HasSuffix(targetType, "?") {
+		// assigning null to a non-null variable is a no-op
+		return nil
+	}
 	if err := s.Target.emit(w); err != nil {
 		return err
 	}
 	if _, err := io.WriteString(w, " = "); err != nil {
 		return err
 	}
-	targetType := strings.TrimSuffix(inferType(s.Target), "?")
+
 	if targetType == "BigInt" && inferType(s.Value) == "int" {
 		if lit, ok := s.Value.(*IntLit); ok {
 			_, err := fmt.Fprintf(w, "BigInt.from(%d)", lit.Value)
@@ -1343,6 +1348,17 @@ func (c *CallExpr) emit(w io.Writer) error {
 				return err
 			}
 			if _, err := io.WriteString(w, ").toInt()"); err != nil {
+				return err
+			}
+		} else if i < len(paramTypes) && strings.HasPrefix(paramTypes[i], "List<") && inferType(a) == "List<dynamic>" {
+			elem := strings.TrimSuffix(strings.TrimPrefix(paramTypes[i], "List<"), ">")
+			if _, err := io.WriteString(w, "List<"+elem+">.from("); err != nil {
+				return err
+			}
+			if err := a.emit(w); err != nil {
+				return err
+			}
+			if _, err := io.WriteString(w, ")"); err != nil {
 				return err
 			}
 		} else {
@@ -3465,6 +3481,8 @@ func inferType(e Expr) string {
 					return inferType(ex.Args[0])
 				}
 				return "List<dynamic>"
+			case "split":
+				return "List<String>"
 			case "indexOf":
 				return "int"
 			case "min", "max":
@@ -5073,6 +5091,17 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			}
 			useSubstrClamp = true
 			return &SubstringExpr{Str: s0, Start: s1, End: s2}, nil
+		}
+		if p.Call.Func == "split" && len(p.Call.Args) == 2 {
+			s0, err := convertExpr(p.Call.Args[0])
+			if err != nil {
+				return nil, err
+			}
+			s1, err := convertExpr(p.Call.Args[1])
+			if err != nil {
+				return nil, err
+			}
+			return &CallExpr{Func: &SelectorExpr{Receiver: s0, Field: "split"}, Args: []Expr{s1}}, nil
 		}
 		if p.Call.Func == "slice" && (len(p.Call.Args) == 2 || len(p.Call.Args) == 3) {
 			l0, err := convertExpr(p.Call.Args[0])
