@@ -10,6 +10,8 @@ import (
 	"strconv"
 	"strings"
 
+	"mochi/transpiler/meta"
+
 	"mochi/ast"
 	"mochi/parser"
 )
@@ -23,6 +25,7 @@ type Node struct {
 	Children []Node
 	EndLine  int
 	EndCol   int
+	Source   string
 }
 
 // Parse parses Ruby source code into a Node tree using ripper.
@@ -58,6 +61,7 @@ func Parse(src string) (*Node, error) {
 		return nil, err
 	}
 	node := buildNode(data)
+	node.Source = src
 	return &node, nil
 }
 
@@ -108,6 +112,14 @@ func buildNode(v any) Node {
 func tokens(n Node) []string {
 	if strings.HasPrefix(n.Type, "@") {
 		if n.Value != "" {
+			switch n.Type {
+			case "@tstring_content":
+				return []string{"\"" + n.Value + "\""}
+			case "@tok":
+				if n.Value == "-@" {
+					return []string{"-"}
+				}
+			}
 			return []string{n.Value}
 		}
 		return nil
@@ -120,6 +132,14 @@ func tokens(n Node) []string {
 }
 
 func exprString(n Node) string {
+	if n.Type == "paren" && len(n.Children) == 1 {
+		return "(" + exprString(n.Children[0]) + ")"
+	}
+	if n.Type == "unary" && len(n.Children) == 2 {
+		op := exprString(n.Children[0])
+		val := exprString(n.Children[1])
+		return op + val
+	}
 	toks := tokens(n)
 	if len(toks) == 0 {
 		return ""
@@ -127,7 +147,7 @@ func exprString(n Node) string {
 	s := strings.Join(toks, " ")
 	reps := []struct{ old, new string }{
 		{" ( ", "("}, {" )", ")"}, {"( ", "("}, {" , ", ", "},
-		{" [ ", "["}, {" ] ", "]"}, {" . ", "."},
+		{" [ ", "["}, {" ] ", "]"}, {" . ", "."}, {"- ", "-"},
 	}
 	for _, r := range reps {
 		s = strings.ReplaceAll(s, r.old, r.new)
@@ -194,6 +214,24 @@ func structFields(n Node) ([]string, bool) {
 	return fields, true
 }
 
+func digitsStringValue(n Node) (string, bool) {
+	if n.Type == "string_literal" && len(n.Children) > 0 {
+		return digitsStringValue(n.Children[len(n.Children)-1])
+	}
+	if n.Type == "string_add" && len(n.Children) > 0 {
+		return digitsStringValue(n.Children[len(n.Children)-1])
+	}
+	if n.Type == "string_content" && len(n.Children) == 1 {
+		return digitsStringValue(n.Children[0])
+	}
+	if n.Type == "@tstring_content" {
+		if regexp.MustCompile(`^\d+$`).MatchString(n.Value) {
+			return n.Value, true
+		}
+	}
+	return "", false
+}
+
 func convertNode(n Node, level int, out *[]string) {
 	idt := strings.Repeat("  ", level)
 	switch n.Type {
@@ -206,8 +244,16 @@ func convertNode(n Node, level int, out *[]string) {
 			f := n.Children[0]
 			if (f.Type == "@ident" && f.Value == "puts") ||
 				(f.Type == "fcall" && len(f.Children) > 0 && f.Children[0].Type == "@ident" && f.Children[0].Value == "puts") {
-				arg := exprString(n.Children[len(n.Children)-1])
-				*out = append(*out, idt+"print("+arg+")")
+				argNode := n.Children[len(n.Children)-1]
+				if val, ok := digitsStringValue(argNode); ok {
+					*out = append(*out, idt+"print(int(\""+val+"\"))")
+				} else if argNode.Type == "call" && len(argNode.Children) == 3 && argNode.Children[2].Type == "@ident" && argNode.Children[2].Value == "length" {
+					expr := exprString(argNode.Children[0])
+					*out = append(*out, idt+"print(len("+expr+"))")
+				} else {
+					arg := exprString(argNode)
+					*out = append(*out, idt+"print("+arg+")")
+				}
 				return
 			}
 		}
@@ -407,7 +453,19 @@ func ConvertSource(n *Node) (string, error) {
 	if len(lines) == 0 {
 		return "", fmt.Errorf("no convertible statements")
 	}
-	return strings.Join(lines, "\n"), nil
+	code := strings.Join(lines, "\n")
+	var b strings.Builder
+	b.Write(meta.Header("//"))
+	if n.Source != "" {
+		b.WriteString("/*\n")
+		b.WriteString(n.Source)
+		if !strings.HasSuffix(n.Source, "\n") {
+			b.WriteByte('\n')
+		}
+		b.WriteString("*/\n")
+	}
+	b.WriteString(code)
+	return b.String(), nil
 }
 
 // Convert converts a parsed Ruby node into a Mochi AST node.
