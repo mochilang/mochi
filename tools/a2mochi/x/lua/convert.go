@@ -110,9 +110,32 @@ func convertLuaStmts(stmts []luaast.Stmt, indent int, vars map[string]bool, mut 
 				out = append(out, ind+"return ("+strings.Join(parts, ", ")+")")
 			}
 		case *luaast.FuncCallStmt:
+			if fc, ok := s.Expr.(*luaast.FuncCallExpr); ok {
+				if luaExprString(fc.Func, mut) == "print" && len(fc.Args) == 1 {
+					if inner, ok := fc.Args[0].(*luaast.FuncCallExpr); ok {
+						if luaExprString(inner.Func, mut) == "string.format" && len(inner.Args) == 2 {
+							if str, ok := inner.Args[0].(*luaast.StringExpr); ok {
+								parts := strings.SplitN(str.Value, "%s", 2)
+								if len(parts) == 2 && parts[1] == "" {
+									prefix := strings.TrimSuffix(parts[0], " ")
+									out = append(out, ind+"print("+strconv.Quote(prefix)+", "+luaExprString(inner.Args[1], mut)+")")
+									continue
+								}
+							}
+						}
+					}
+				}
+			}
 			out = append(out, ind+luaExprString(s.Expr, mut))
 		case *luaast.BreakStmt:
 			out = append(out, ind+"break")
+		case *luaast.GotoStmt:
+			// Transpiler emits goto statements for simulated
+			// continue calls. Replace them with continue.
+			out = append(out, ind+"continue")
+		case *luaast.LabelStmt:
+			// Ignore labels used for continue targets.
+			continue
 		case *luaast.DoBlockStmt:
 			out = append(out, ind+"do {")
 			out = append(out, convertLuaStmts(s.Stmts, indent+1, copyVars(vars), mut)...)
@@ -233,10 +256,24 @@ func luaExprString(e luaast.Expr, mut map[string]bool) string {
 		}
 		return v.Value
 	case *luaast.ArithmeticOpExpr:
-		return luaExprString(v.Lhs, mut) + " " + v.Operator + " " + luaExprString(v.Rhs, mut)
+		// Always wrap arithmetic expressions in parentheses to
+		// preserve operator precedence when converting back to Mochi.
+		return "(" + luaExprString(v.Lhs, mut) + " " + v.Operator + " " + luaExprString(v.Rhs, mut) + ")"
 	case *luaast.StringConcatOpExpr:
 		return luaExprString(v.Lhs, mut) + " + " + luaExprString(v.Rhs, mut)
 	case *luaast.LogicalOpExpr:
+		// Lua's transpiler represents boolean expressions like
+		// `cond and 1 or 0`. Strip the numeric parts so we just emit the
+		// condition itself.
+		if v.Operator == "or" {
+			if num, ok := v.Rhs.(*luaast.NumberExpr); ok && num.Value == "0" {
+				if lhs, ok := v.Lhs.(*luaast.LogicalOpExpr); ok && lhs.Operator == "and" {
+					if num1, ok := lhs.Rhs.(*luaast.NumberExpr); ok && num1.Value == "1" {
+						return luaExprString(lhs.Lhs, mut)
+					}
+				}
+			}
+		}
 		op := v.Operator
 		if op == "and" {
 			op = "&&"
@@ -316,6 +353,22 @@ func luaExprString(e luaast.Expr, mut map[string]bool) string {
 			if len(args) == 3 {
 				return args[0] + "[" + args[1] + ":" + args[2] + "]"
 			}
+		case "string.format":
+			if len(args) == 2 {
+				if s, ok := v.Args[0].(*luaast.StringExpr); ok {
+					parts := strings.SplitN(s.Value, "%s", 2)
+					before := strconv.Quote(parts[0])
+					middle := luaExprString(v.Args[1], mut)
+					if len(parts) == 2 {
+						after := strconv.Quote(parts[1])
+						if parts[1] != "" {
+							return before + " + " + middle + " + " + after
+						}
+					}
+					return before + " + " + middle
+				}
+			}
+			callee = "fmt.Sprintf"
 		case "__union_all":
 			if len(args) == 2 {
 				return "(" + args[0] + " union all " + args[1] + ")"
@@ -349,6 +402,9 @@ func luaExprString(e luaast.Expr, mut map[string]bool) string {
 		return b.String()
 	case *luaast.AttrGetExpr:
 		if k, ok := v.Key.(*luaast.StringExpr); ok {
+			if id, ok := v.Object.(*luaast.IdentExpr); ok {
+				return id.Value + "." + k.Value
+			}
 			return luaExprString(v.Object, mut) + "[" + strconv.Quote(k.Value) + "]"
 		}
 		if _, ok := v.Key.(*luaast.IdentExpr); ok {
@@ -376,12 +432,84 @@ func luaExprString(e luaast.Expr, mut map[string]bool) string {
 
 func luaFuncSignature(fn *luaast.FunctionExpr) string {
 	var params []string
+	paramSet := make(map[string]bool)
 	if fn.ParList != nil {
 		for _, n := range fn.ParList.Names {
 			params = append(params, n)
+			paramSet[n] = true
 		}
 	}
-	return "(" + strings.Join(params, ", ") + ")"
+	types := make(map[string]string)
+	collectParamTypes(fn.Stmts, paramSet, types)
+	ret := ""
+	for _, st := range fn.Stmts {
+		if r, ok := st.(*luaast.ReturnStmt); ok && len(r.Exprs) == 1 {
+			switch r.Exprs[0].(type) {
+			case *luaast.TrueExpr, *luaast.FalseExpr, *luaast.LogicalOpExpr, *luaast.RelationalOpExpr, *luaast.UnaryNotOpExpr:
+				ret = ": bool"
+			case *luaast.NumberExpr, *luaast.ArithmeticOpExpr:
+				ret = ": int"
+			case *luaast.FunctionExpr:
+				ret = ": fun" + luaFuncSignature(r.Exprs[0].(*luaast.FunctionExpr))
+			}
+			break
+		}
+	}
+	for i, n := range params {
+		if t, ok := types[n]; ok {
+			params[i] = n + ": " + t
+		}
+	}
+	return "(" + strings.Join(params, ", ") + ")" + ret
+}
+
+func collectParamTypes(stmts []luaast.Stmt, params map[string]bool, types map[string]string) {
+	var visitExpr func(e luaast.Expr)
+	visitExpr = func(e luaast.Expr) {
+		switch v := e.(type) {
+		case *luaast.IdentExpr:
+			if params[v.Value] {
+				if _, ok := types[v.Value]; !ok {
+					types[v.Value] = "int"
+				}
+			}
+		case *luaast.ArithmeticOpExpr:
+			visitExpr(v.Lhs)
+			visitExpr(v.Rhs)
+		case *luaast.FuncCallExpr:
+			for _, a := range v.Args {
+				visitExpr(a)
+			}
+		case *luaast.FunctionExpr:
+			collectParamTypes(v.Stmts, params, types)
+		case *luaast.LogicalOpExpr:
+			visitExpr(v.Lhs)
+			visitExpr(v.Rhs)
+		case *luaast.RelationalOpExpr:
+			visitExpr(v.Lhs)
+			visitExpr(v.Rhs)
+		}
+	}
+	for _, st := range stmts {
+		switch s := st.(type) {
+		case *luaast.AssignStmt:
+			for _, e := range s.Rhs {
+				visitExpr(e)
+			}
+		case *luaast.LocalAssignStmt:
+			for _, e := range s.Exprs {
+				visitExpr(e)
+			}
+		case *luaast.FuncCallStmt:
+			visitExpr(s.Expr)
+		case *luaast.ReturnStmt:
+			for _, e := range s.Exprs {
+				visitExpr(e)
+			}
+		case *luaast.NumberForStmt, *luaast.GenericForStmt:
+			// ignore
+		}
+	}
 }
 
 func isAppendFunc(fn *luaast.FunctionExpr) bool {

@@ -1,0 +1,3 @@
+(program
+  (call print (string 1995))
+)
