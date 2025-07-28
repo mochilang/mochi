@@ -1,0 +1,3 @@
+exit status 1
+# command-line-arguments
+../../../tests/rosetta/transpiler/Go/earliest-difference-between-prime-gaps.go:23:20: cannot use []any{…} (value of type []any) as []Data value in variable declaration

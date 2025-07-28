@@ -1,7 +1,7 @@
 # Go Rosetta Transpiler Output
 
-Completed programs: 376/493
-Last updated: 2025-07-28 10:03 +0700
+Completed programs: 372/493
+Last updated: 2025-07-28 10:21 +0700
 
 Checklist:
 
@@ -324,9 +324,9 @@ Checklist:
 | 315 | doomsday-rule | ✓ | 420.0µs | 1.52KB |
 | 316 | dot-product | ✓ | 502.0µs | 952B |
 | 317 | doubly-linked-list-definition-1 | ✓ | 134.0µs | 0B |
-| 318 | doubly-linked-list-definition-2 | ✓ | 89.0µs | 2.52KB |
+| 318 | doubly-linked-list-definition-2 |   | 89.0µs | 2.52KB |
 | 319 | doubly-linked-list-element-definition | ✓ | 47.0µs | 2.02KB |
-| 320 | doubly-linked-list-traversal | ✓ | 105.0µs | 2.32KB |
+| 320 | doubly-linked-list-traversal |   | 105.0µs | 2.32KB |
 | 321 | dragon-curve | ✓ | 4.0ms | 2.43MB |
 | 322 | draw-a-clock | ✓ | 53.0µs | 1.51KB |
 | 323 | draw-a-cuboid | ✓ | 149.0µs | 23.87KB |
@@ -335,11 +335,11 @@ Checklist:
 | 326 | draw-a-sphere | ✓ | 1.0ms | 174.49KB |
 | 327 | dutch-national-flag-problem | ✓ | 45.0µs | 1.98KB |
 | 328 | dynamic-variable-names | ✓ | 101.0µs | 5.02KB |
-| 329 | earliest-difference-between-prime-gaps | ✓ | 109.0µs | 5.13KB |
-| 330 | eban-numbers | ✓ | 653.0µs | 6.48KB |
+| 329 | earliest-difference-between-prime-gaps |   | 109.0µs | 5.13KB |
+| 330 | eban-numbers |   | 653.0µs | 6.48KB |
 | 331 | ecdsa-example | ✓ | 305.0µs | 10.37KB |
 | 332 | echo-server | ✓ | 68.0µs | 1.10KB |
-| 333 | eertree | ✓ | 80.0µs | 6.70KB |
+| 333 | eertree |   | 80.0µs | 6.70KB |
 | 334 | egyptian-division | ✓ | 59.0µs | 1.26KB |
 | 335 | ekg-sequence-convergence | ✓ | 950.0µs | 16.26KB |
 | 336 | element-wise-operations | ✓ | 111.0µs | 7.20KB |
@@ -362,7 +362,7 @@ Checklist:
 | 353 | enumerations-3 | ✓ | 156.0µs | 0B |
 | 354 | enumerations-4 | ✓ | 144.0µs | 0B |
 | 355 | environment-variables-1 |   |  |  |
-| 356 | environment-variables-2 |   |  |  |
+| 356 | environment-variables-2 | ✓ | 1.0ms | 26.80KB |
 | 357 | equal-prime-and-composite-sums | ✓ | 9.0ms | 1.77MB |
 | 358 | equilibrium-index |   |  |  |
 | 359 | erd-s-nicolas-numbers | ✓ | 84.32s | 2.39GB |

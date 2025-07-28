@@ -1,6 +1,0 @@
-exit status 1
-# command-line-arguments
-../../../tests/rosetta/transpiler/Go/environment-variables-2.go:10:2: os redeclared in this block
-	../../../tests/rosetta/transpiler/Go/environment-variables-2.go:9:2: other declaration of os
-../../../tests/rosetta/transpiler/Go/environment-variables-2.go:10:2: "os" imported and not used
-../../../tests/rosetta/transpiler/Go/environment-variables-2.go:95:17: invalid operation: v (variable of type string) is not an interface

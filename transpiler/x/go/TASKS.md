@@ -1,3 +1,15 @@
+## Progress (2025-07-28 10:21 +0700)
+- fix go transpiler map literal type for map element
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-28 10:21 +0700)
+- fix go transpiler map literal type for map element
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-28 10:21 +0700)
+- fix go transpiler map literal type for map element
+- Regenerated golden files - 104/104 vm valid programs passing
+
 ## Progress (2025-07-28 10:03 +0700)
 - chore: sort rosetta index
 - Regenerated golden files - 104/104 vm valid programs passing

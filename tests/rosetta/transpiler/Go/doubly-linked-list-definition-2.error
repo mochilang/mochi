@@ -1,0 +1,13 @@
+exit status 1
+# command-line-arguments
+../../../tests/rosetta/transpiler/Go/doubly-linked-list-definition-2.go:36:19: cannot convert l["nextID"] (map index expression of interface type any) to type int: need type assertion
+../../../tests/rosetta/transpiler/Go/doubly-linked-list-definition-2.go:51:18: cannot convert l["head"] (map index expression of interface type any) to type int: need type assertion
+../../../tests/rosetta/transpiler/Go/doubly-linked-list-definition-2.go:52:9: cannot convert l["head"] (map index expression of interface type any) to type int: need type assertion
+../../../tests/rosetta/transpiler/Go/doubly-linked-list-definition-2.go:55:36: cannot convert l["head"] (map index expression of interface type any) to type int: need type assertion
+../../../tests/rosetta/transpiler/Go/doubly-linked-list-definition-2.go:57:19: cannot convert n["id"] (map index expression of interface type any) to type int: need type assertion
+../../../tests/rosetta/transpiler/Go/doubly-linked-list-definition-2.go:58:13: cannot convert h["id"] (map index expression of interface type any) to type int: need type assertion
+../../../tests/rosetta/transpiler/Go/doubly-linked-list-definition-2.go:61:19: cannot convert n["id"] (map index expression of interface type any) to type int: need type assertion
+../../../tests/rosetta/transpiler/Go/doubly-linked-list-definition-2.go:63:18: cannot convert n["id"] (map index expression of interface type any) to type int: need type assertion
+../../../tests/rosetta/transpiler/Go/doubly-linked-list-definition-2.go:66:13: cannot convert n["id"] (map index expression of interface type any) to type int: need type assertion
+../../../tests/rosetta/transpiler/Go/doubly-linked-list-definition-2.go:74:18: cannot convert l["tail"] (map index expression of interface type any) to type int: need type assertion
+../../../tests/rosetta/transpiler/Go/doubly-linked-list-definition-2.go:74:18: too many errors

@@ -1,0 +1,5 @@
+exit status 1
+# command-line-arguments
+../../../tests/rosetta/transpiler/Go/doubly-linked-list-traversal.go:22:19: cannot convert nodes[head]["next"] (map index expression of interface type any) to type int: need type assertion
+../../../tests/rosetta/transpiler/Go/doubly-linked-list-traversal.go:26:12: cannot convert nodes[id]["next"] (map index expression of interface type any) to type int: need type assertion
+../../../tests/rosetta/transpiler/Go/doubly-linked-list-traversal.go:56:12: cannot convert nodes[id]["prev"] (map index expression of interface type any) to type int: need type assertion
