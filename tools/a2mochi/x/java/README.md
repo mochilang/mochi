@@ -2,6 +2,12 @@
 
 This directory contains helpers and golden files for converting Java programs under `tests/transpiler/x/java` back into Mochi AST form.
 
-Completed programs: 0/103
+Completed programs: 3/103
 
-The converter is experimental and currently unimplemented.
+The converter is experimental and supports only simple variable assignments and
+print statements.
+
+## Checklist
+- [x] let_and_print
+- [x] print_hello
+- [x] unary_neg
