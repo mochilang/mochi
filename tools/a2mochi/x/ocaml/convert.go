@@ -157,8 +157,8 @@ func formatProgram(p *Program) []byte {
 		}
 		appendLine(prefix + v.Name + maybeExpr(v.Expr))
 	}
-	for _, pr := range p.Prints {
-		line := strings.TrimSpace(pr.Expr)
+	handlePrint := func(line string) {
+		line = strings.TrimSpace(line)
 		line = replaceBuiltins(line)
 		line = strings.ReplaceAll(line, "str (", "str(")
 		line = strings.ReplaceAll(line, "print (", "print(")
@@ -169,12 +169,12 @@ func formatProgram(p *Program) []byte {
 		if m := varRe.FindStringSubmatch(noNL); m != nil {
 			appendLine("var " + m[1] + ": int")
 			appendLine("print(" + m[1] + ")")
-			continue
+			return
 		}
 		if m := letRe.FindStringSubmatch(noNL); m != nil {
 			appendLine("let " + m[1] + ": int")
 			appendLine("print(" + m[1] + ")")
-			continue
+			return
 		}
 		if strings.HasPrefix(line, "print_endline") {
 			line = strings.TrimSpace(strings.TrimPrefix(line, "print_endline"))
@@ -184,13 +184,50 @@ func formatProgram(p *Program) []byte {
 			}
 			if strings.HasPrefix(line, "str(") && strings.HasSuffix(line, ")") {
 				line = strings.TrimSuffix(strings.TrimPrefix(line, "str("), ")")
+			} else if strings.HasPrefix(line, "str ") {
+				line = strings.TrimSpace(strings.TrimPrefix(line, "str"))
 			}
 			appendLine("print(" + strings.TrimSpace(line) + ")")
 		} else {
 			if strings.HasPrefix(line, "str(") && strings.HasSuffix(line, ")") {
 				line = strings.TrimSuffix(strings.TrimPrefix(line, "str("), ")")
+			} else if strings.HasPrefix(line, "str ") {
+				line = strings.TrimSpace(strings.TrimPrefix(line, "str"))
 			}
 			appendLine("print(" + strings.TrimSpace(line) + ")")
+		}
+	}
+
+	for _, pr := range p.Prints {
+		line := strings.TrimSpace(pr.Expr)
+		if strings.HasPrefix(line, "let ") {
+			line = strings.ReplaceAll(line, " in\n", ";")
+			line = strings.ReplaceAll(line, " in ", ";")
+			parts := strings.Split(line, ";")
+			for _, part := range parts {
+				stmt := strings.TrimSpace(part)
+				if stmt == "" {
+					continue
+				}
+				if strings.HasPrefix(stmt, "let ") {
+					appendLine(stmt)
+				} else {
+					handlePrint(stmt)
+				}
+			}
+			continue
+		}
+		if strings.Contains(line, ";\n") {
+			parts := regexp.MustCompile(`;\s*\n`).Split(line, -1)
+			for _, part := range parts {
+				stmt := strings.TrimSpace(part)
+				if stmt == "" {
+					continue
+				}
+				handlePrint(stmt)
+			}
+		} else {
+			handlePrint(line)
 		}
 	}
 	return out
