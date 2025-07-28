@@ -2,7 +2,7 @@
 
 This directory contains golden outputs for converting Prolog programs under `tests/transpiler/x/pl` into Mochi AST form. Only a tiny subset of programs is currently supported.
 
-Completed programs: 22/104
+Completed programs: 24/104
 
 - [x] avg_builtin
 - [x] print_hello
@@ -26,3 +26,5 @@ Completed programs: 22/104
 - [x] string_index
 - [x] slice
 - [x] string_compare
+- [x] list_index
+- [x] string_contains

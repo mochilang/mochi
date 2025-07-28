@@ -65,6 +65,8 @@ func TestConvert_Golden(t *testing.T) {
 		"string_index":       true,
 		"slice":              true,
 		"string_compare":     true,
+		"list_index":         true,
+		"string_contains":    true,
 	}
 
 	outDir := filepath.Join(root, "tests/a2mochi/x/prolog")
