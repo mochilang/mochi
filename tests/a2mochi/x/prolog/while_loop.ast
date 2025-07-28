@@ -1,0 +1,11 @@
+(program
+  (fun main
+    (let I (int 0))
+    (call print (int 0))
+    (let I1 (int 1))
+    (call print (int 1))
+    (let I2 (int 2))
+    (call print (int 2))
+    (let I3 (int 3))
+  )
+)

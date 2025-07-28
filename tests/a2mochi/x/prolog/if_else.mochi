@@ -1,0 +1,19 @@
+// a2mochi 0.10.47 2025-07-28 16:31:59
+/*
+:- style_check(-singleton).
+:- initialization(main).
+
+main :-
+    X is 5,
+    (X > 3 ->
+    writeln("big") ;
+    writeln("small")).
+*/
+fun main() {
+  let X = 5
+  if X > 3 {
+  print("big")
+  } else {
+  print("small")
+  }
+}

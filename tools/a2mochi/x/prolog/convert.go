@@ -128,10 +128,27 @@ func parseBody(body string) []string {
 			out = append(out, "  print("+arg+")")
 		case c == "nl":
 			continue
+		case strings.HasPrefix(c, "(") && strings.Contains(c, "->") && strings.Contains(c, ";"):
+			expr := strings.TrimSuffix(strings.TrimPrefix(c, "("), ")")
+			parts := strings.SplitN(expr, "->", 2)
+			cond := convertExpr(strings.TrimSpace(parts[0]))
+			rest := strings.TrimSpace(parts[1])
+			parts = strings.SplitN(rest, ";", 2)
+			thenPart := strings.TrimSpace(parts[0])
+			elsePart := strings.TrimSpace(parts[1])
+			out = append(out, "  if "+cond+" {")
+			for _, line := range parseBody(thenPart) {
+				out = append(out, "  "+strings.TrimPrefix(line, "  "))
+			}
+			out = append(out, "  } else {")
+			for _, line := range parseBody(elsePart) {
+				out = append(out, "  "+strings.TrimPrefix(line, "  "))
+			}
+			out = append(out, "  }")
 		case strings.Contains(c, " is "):
 			parts := strings.SplitN(c, " is ", 2)
 			name := strings.TrimSpace(parts[0])
-			expr := strings.TrimSpace(parts[1])
+			expr := convertExpr(strings.TrimSpace(parts[1]))
 			out = append(out, "  let "+name+" = "+expr)
 		case callAssignPattern.MatchString(c):
 			m := callAssignPattern.FindStringSubmatch(c)
@@ -145,7 +162,7 @@ func parseBody(body string) []string {
 		case strings.Contains(c, " = "):
 			parts := strings.SplitN(c, " = ", 2)
 			name := strings.TrimSpace(parts[0])
-			expr := strings.TrimSpace(parts[1])
+			expr := convertExpr(strings.TrimSpace(parts[1]))
 			out = append(out, "  let "+name+" = "+expr)
 		default:
 			out = append(out, "  // "+c)
@@ -180,4 +197,10 @@ func splitClauses(body string) []string {
 		clauses = append(clauses, strings.TrimSpace(body[start:]))
 	}
 	return clauses
+}
+
+func convertExpr(expr string) string {
+	expr = strings.ReplaceAll(expr, "=:=", "==")
+	expr = strings.ReplaceAll(expr, "=\\=", "!=")
+	return expr
 }
