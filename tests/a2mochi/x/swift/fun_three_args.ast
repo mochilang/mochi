@@ -5,9 +5,13 @@
     (param c (type int))
     (type int)
     (return
-      (binary +
-        (binary + (selector a) (selector b))
-        (selector c)
+      (group
+        (binary +
+          (group
+            (binary + (selector a) (selector b))
+          )
+          (selector c)
+        )
       )
     )
   )
