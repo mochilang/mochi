@@ -1,0 +1,47 @@
+compile: exit status 1
+/workspace/mochi/tests/rosetta/transpiler/CPP/crc-32-1.cpp:28:181: warning: multi-character character constant [-Wmultichar]
+   28 |     else if(val.type() == typeid(std::vector<int64_t>)) { const auto& v = std::any_cast<const std::vector<int64_t>&>(val); os << '['; for(size_t i=0;i<v.size();++i){ if(i>0) os << ', '; os << v[i]; } os << ']'; }
+      |                                                                                                                                                                                     ^~~~
+/workspace/mochi/tests/rosetta/transpiler/CPP/crc-32-1.cpp:29:209: warning: multi-character character constant [-Wmultichar]
+   29 |     else if(val.type() == typeid(std::vector<std::vector<int64_t>>)) { const auto& vv = std::any_cast<const std::vector<std::vector<int64_t>>&>(val); os << '['; for(size_t i=0;i<vv.size();++i){ if(i>0) os << ', '; const auto& v = vv[i]; os << '['; for(size_t j=0;j<v.size();++j){ if(j>0) os << ', '; os << v[j]; } os << ']'; } os << ']'; }
+      |                                                                                                                                                                                                                 ^~~~
+/workspace/mochi/tests/rosetta/transpiler/CPP/crc-32-1.cpp:29:295: warning: multi-character character constant [-Wmultichar]
+   29 |     else if(val.type() == typeid(std::vector<std::vector<int64_t>>)) { const auto& vv = std::any_cast<const std::vector<std::vector<int64_t>>&>(val); os << '['; for(size_t i=0;i<vv.size();++i){ if(i>0) os << ', '; const auto& v = vv[i]; os << '['; for(size_t j=0;j<v.size();++j){ if(j>0) os << ', '; os << v[j]; } os << ']'; } os << ']'; }
+      |                                                                                                                                                                                                                                                                                                       ^~~~
+/workspace/mochi/tests/rosetta/transpiler/CPP/crc-32-1.cpp:30:189: warning: multi-character character constant [-Wmultichar]
+   30 |     else if(val.type() == typeid(std::vector<std::string>)) { const auto& v = std::any_cast<const std::vector<std::string>&>(val); os << '['; for(size_t i=0;i<v.size();++i){ if(i>0) os << ', '; os << v[i]; } os << ']'; }
+      |                                                                                                                                                                                             ^~~~
+/workspace/mochi/tests/rosetta/transpiler/CPP/crc-32-1.cpp:31:183: warning: multi-character character constant [-Wmultichar]
+   31 |     else if(val.type() == typeid(std::vector<std::any>)) { const auto& v = std::any_cast<const std::vector<std::any>&>(val); os << '['; for(size_t i=0;i<v.size();++i){ if(i>0) os << ', '; any_to_stream(os, v[i]); } os << ']'; }
+      |                                                                                                                                                                                       ^~~~
+/workspace/mochi/tests/rosetta/transpiler/CPP/crc-32-1.cpp:32:215: warning: multi-character character constant [-Wmultichar]
+   32 |     else if(val.type() == typeid(std::map<std::string, std::any>)) { const auto& m = std::any_cast<const std::map<std::string, std::any>&>(val); os << '{'; bool first=true; for(const auto& p : m){ if(!first) os << ', '; first=false; os << p.first << ': '; any_to_stream(os, p.second); } os << '}'; }
+      |                                                                                                                                                                                                                       ^~~~
+/workspace/mochi/tests/rosetta/transpiler/CPP/crc-32-1.cpp:32:251: warning: multi-character character constant [-Wmultichar]
+   32 |     else if(val.type() == typeid(std::map<std::string, std::any>)) { const auto& m = std::any_cast<const std::map<std::string, std::any>&>(val); os << '{'; bool first=true; for(const auto& p : m){ if(!first) os << ', '; first=false; os << p.first << ': '; any_to_stream(os, p.second); } os << '}'; }
+      |                                                                                                                                                                                                                                                           ^~~~
+/workspace/mochi/tests/rosetta/transpiler/CPP/crc-32-1.cpp:55:9: error: expected unqualified-id before ‘xor’ token
+   55 | int64_t xor(int64_t a, int64_t b);
+      |         ^~~
+/workspace/mochi/tests/rosetta/transpiler/CPP/crc-32-1.cpp:65:9: error: expected unqualified-id before ‘xor’ token
+   65 | int64_t xor(int64_t a, int64_t b) {
+      |         ^~~
+/workspace/mochi/tests/rosetta/transpiler/CPP/crc-32-1.cpp: In function ‘std::vector<long int> crc32Table()’:
+/workspace/mochi/tests/rosetta/transpiler/CPP/crc-32-1.cpp:133:24: error: expected primary-expression before ‘xor’ token
+  133 |                 word = xor(rshift(word, int64_t(1)), int64_t(3988292384));
+      |                        ^~~
+/workspace/mochi/tests/rosetta/transpiler/CPP/crc-32-1.cpp: In function ‘int64_t crc32(std::string)’:
+/workspace/mochi/tests/rosetta/transpiler/CPP/crc-32-1.cpp:150:23: error: expected primary-expression before ‘xor’ token
+  150 |         int64_t idx = xor((crc % int64_t(256)), c);
+      |                       ^~~
+/workspace/mochi/tests/rosetta/transpiler/CPP/crc-32-1.cpp:151:15: error: expected primary-expression before ‘xor’ token
+  151 |         crc = xor(table[idx], rshift(crc, int64_t(8)));
+      |               ^~~
+/workspace/mochi/tests/rosetta/transpiler/CPP/crc-32-1.cpp:151:28: warning: ignoring return value of ‘constexpr std::vector<_Tp, _Alloc>::reference std::vector<_Tp, _Alloc>::operator[](size_type) [with _Tp = long int; _Alloc = std::allocator<long int>; reference = long int&; size_type = long unsigned int]’, declared with attribute ‘nodiscard’ [-Wunused-result]
+  151 |         crc = xor(table[idx], rshift(crc, int64_t(8)));
+      |                            ^
+In file included from /usr/include/c++/13/vector:66,
+                 from /workspace/mochi/tests/rosetta/transpiler/CPP/crc-32-1.cpp:4:
+/usr/include/c++/13/bits/stl_vector.h:1126:7: note: declared here
+ 1126 |       operator[](size_type __n) _GLIBCXX_NOEXCEPT
+      |       ^~~~~~~~
