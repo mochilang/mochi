@@ -53,23 +53,29 @@ func TestConvert_Golden(t *testing.T) {
 
 	outDir := filepath.Join(root, "tests/a2mochi/x/kt")
 	os.MkdirAll(outDir, 0o755)
-       allowed := map[string]bool{
-               "print_hello":     true,
-               "append_builtin":  true,
-               "basic_compare":   true,
-               "avg_builtin":     true,
-               "let_and_print":   true,
-               "list_index":      true,
-               "while_loop":      true,
-               "fun_three_args":  true,
-               "binary_precedence": true,
-               "bool_chain":        true,
-               "fun_call":          true,
-               "len_builtin":       true,
-               "len_string":        true,
-               "string_concat":     true,
-               "unary_neg":        true,
-       }
+	allowed := map[string]bool{
+		"print_hello":       true,
+		"append_builtin":    true,
+		"basic_compare":     true,
+		"avg_builtin":       true,
+		"let_and_print":     true,
+		"list_index":        true,
+		"while_loop":        true,
+		"fun_three_args":    true,
+		"binary_precedence": true,
+		"bool_chain":        true,
+		"fun_call":          true,
+		"len_builtin":       true,
+		"len_string":        true,
+		"string_concat":     true,
+		"unary_neg":         true,
+		"count_builtin":     true,
+		"for_loop":          true,
+		"if_else":           true,
+		"string_compare":    true,
+		"var_assignment":    true,
+		"sum_builtin":       true,
+	}
 
 	for _, srcPath := range files {
 		name := strings.TrimSuffix(filepath.Base(srcPath), ".kt")

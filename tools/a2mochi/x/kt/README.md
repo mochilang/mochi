@@ -1,6 +1,6 @@
 # a2mochi Kotlin Converter
 
-Completed programs: 15/102
+Completed programs: 21/102
 Date: 2025-07-28
 
 This directory holds golden outputs for the Kotlin to Mochi converter.
@@ -22,3 +22,9 @@ Implemented examples:
 - len_string
 - string_concat
 - unary_neg
+- count_builtin
+- for_loop
+- if_else
+- string_compare
+- var_assignment
+- sum_builtin
