@@ -1,0 +1,10 @@
+(program
+  (call print
+    (call len
+      (map
+        (entry (string a) (int 1))
+        (entry (string b) (int 2))
+      )
+    )
+  )
+)

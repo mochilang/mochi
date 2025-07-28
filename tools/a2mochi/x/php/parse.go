@@ -116,6 +116,9 @@ func funcFromFn(fn *stmt.Function) Func {
 		}
 	}
 	ret := typeString(fn.ReturnType)
+	if ret == "" && boolReturn(fn.Stmts) {
+		ret = "bool"
+	}
 	doc := strings.TrimSpace(fn.PhpDocComment)
 	pos := fn.GetPosition()
 	return Func{Name: name, Params: params, Return: ret, Doc: doc, StartLine: pos.StartLine, EndLine: pos.EndLine}
@@ -148,9 +151,35 @@ func methodFromNode(m *stmt.ClassMethod) Func {
 		}
 	}
 	ret := typeString(m.ReturnType)
+	if ret == "" && boolReturnNode(m.Stmt) {
+		ret = "bool"
+	}
 	doc := strings.TrimSpace(m.PhpDocComment)
 	pos := m.GetPosition()
 	return Func{Name: name, Params: params, Return: ret, Doc: doc, StartLine: pos.StartLine, EndLine: pos.EndLine}
+}
+
+func boolReturn(stmts []pnode.Node) bool {
+	for _, st := range stmts {
+		r, ok := st.(*stmt.Return)
+		if !ok || r.Expr == nil {
+			continue
+		}
+		if cf, ok := r.Expr.(*expr.ConstFetch); ok {
+			name := nameString(cf.Constant)
+			if name == "true" || name == "false" {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func boolReturnNode(n pnode.Node) bool {
+	if list, ok := n.(*stmt.StmtList); ok {
+		return boolReturn(list.Stmts)
+	}
+	return false
 }
 
 func parseExprStmt(p *Program, st *stmt.Expression) {
@@ -264,6 +293,8 @@ func simpleExpr(n pnode.Node) (string, bool) {
 		case "array_sum":
 			name = "sum"
 		case "count":
+			name = "len"
+		case "strlen":
 			name = "len"
 		case "intval":
 			if len(args) == 1 {
@@ -469,6 +500,7 @@ func simpleExpr(n pnode.Node) (string, bool) {
 
 func arrayExpr(items []pnode.Node) (string, bool) {
 	elems := make([]string, 0, len(items))
+	isMap := false
 	for _, it := range items {
 		ai, ok := it.(*expr.ArrayItem)
 		if !ok {
@@ -478,7 +510,20 @@ func arrayExpr(items []pnode.Node) (string, bool) {
 		if !ok {
 			return "", false
 		}
-		elems = append(elems, val)
+		if ai.Key != nil {
+			key, ok := simpleExpr(ai.Key)
+			if !ok {
+				return "", false
+			}
+			isMap = true
+			elems = append(elems, fmt.Sprintf("%s: %s", key, val))
+		} else {
+			elems = append(elems, val)
+		}
+	}
+	if isMap {
+		// simple support for maps; mixed arrays are not handled
+		return "{" + strings.Join(elems, ", ") + "}", true
 	}
 	return "[" + strings.Join(elems, ", ") + "]", true
 }

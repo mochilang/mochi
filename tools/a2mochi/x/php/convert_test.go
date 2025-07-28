@@ -85,6 +85,9 @@ func TestConvert_Golden(t *testing.T) {
 		"string_compare":     true,
 		"binary_precedence":  true,
 		"cast_string_to_int": true,
+		"bool_chain":         true,
+		"len_map":            true,
+		"len_string":         true,
 	}
 
 	outDir := filepath.Join(root, "tests", "a2mochi", "x", "php")
