@@ -76,6 +76,7 @@ func TestConvert_Golden(t *testing.T) {
 		"print_hello":   true,
 		"let_and_print": true,
 		"list_index":    true,
+		"avg_builtin":   true,
 	}
 
 	outDir := filepath.Join(root, "tests", "a2mochi", "x", "php")
