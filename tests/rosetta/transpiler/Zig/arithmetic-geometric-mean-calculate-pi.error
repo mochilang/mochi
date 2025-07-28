@@ -1,9 +1,0 @@
-zig build: exit status 1
-/tmp/arithmetic-geometric-mean-calculate-pi.zig:36:13: error: local variable is never mutated
-/tmp/arithmetic-geometric-mean-calculate-pi.zig:36:13: note: consider using 'const'
-/tmp/arithmetic-geometric-mean-calculate-pi.zig:32:13: error: local variable is never mutated
-/tmp/arithmetic-geometric-mean-calculate-pi.zig:32:13: note: consider using 'const'
-/tmp/arithmetic-geometric-mean-calculate-pi.zig:31:13: error: local variable is never mutated
-/tmp/arithmetic-geometric-mean-calculate-pi.zig:31:13: note: consider using 'const'
-/tmp/arithmetic-geometric-mean-calculate-pi.zig:39:9: error: local variable is never mutated
-/tmp/arithmetic-geometric-mean-calculate-pi.zig:39:9: note: consider using 'const'
