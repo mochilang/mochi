@@ -1,7 +1,7 @@
 # a2mochi TypeScript Converter
 
-Completed programs: 109/109
-Date: 2025-07-28 09:06:51 UTC
+Completed programs: 110/110
+Date: 2025-07-28 10:04:20 UTC
 
 This directory holds golden outputs for the TypeScript to Mochi converter.
 Each `.ts` source in `tests/transpiler/x/ts` has a matching `.mochi` and `.ast`
@@ -107,6 +107,7 @@ programs.
 - [x] two-sum
 - [x] typed_let
 - [x] typed_var
+- [x] var_init
 - [x] unary_neg
 - [x] update_stmt
 - [x] user_type_literal

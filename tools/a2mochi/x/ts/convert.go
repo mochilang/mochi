@@ -27,6 +27,7 @@ type Node struct {
 	Params   []Param  `json:"params,omitempty"`
 	Ret      string   `json:"ret,omitempty"`
 	Body     string   `json:"body,omitempty"`
+	Value    string   `json:"value,omitempty"`
 	Fields   []Field  `json:"fields,omitempty"`
 	Alias    string   `json:"alias,omitempty"`
 	Variants []string `json:"variants,omitempty"`
@@ -139,6 +140,10 @@ func writeVar(b *strings.Builder, d Node) {
 	if d.Ret != "" {
 		b.WriteString(": ")
 		b.WriteString(d.Ret)
+	}
+	if d.Value != "" {
+		b.WriteString(" = ")
+		b.WriteString(d.Value)
 	}
 	b.WriteByte('\n')
 }
