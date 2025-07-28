@@ -1,0 +1,49 @@
+(program
+  (let prefix (string fore))
+  (let s1 (string forest))
+  (let s2 (string desert))
+  (call print
+    (group
+      (binary ==
+        (call substring
+          (selector s1)
+          (int 0)
+          (group
+            (binary +
+              (int 0)
+              (group
+                (binary -
+                  (call len (selector prefix))
+                  (int 0)
+                )
+              )
+            )
+          )
+        )
+        (selector prefix)
+      )
+    )
+  )
+  (call print
+    (group
+      (binary ==
+        (call substring
+          (selector s2)
+          (int 0)
+          (group
+            (binary +
+              (int 0)
+              (group
+                (binary -
+                  (call len (selector prefix))
+                  (int 0)
+                )
+              )
+            )
+          )
+        )
+        (selector prefix)
+      )
+    )
+  )
+)

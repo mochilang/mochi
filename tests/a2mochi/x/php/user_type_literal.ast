@@ -1,0 +1,25 @@
+(program
+  (let book
+    (map
+      (entry (string title) (string Go))
+      (entry
+        (string author)
+        (map
+          (entry (string name) (string Bob))
+          (entry (string age) (int 42))
+        )
+      )
+    )
+  )
+  (call print
+    (index
+      (group
+        (cast
+          (index (selector book) (string author))
+          (type map (type string) (type any))
+        )
+      )
+      (string name)
+    )
+  )
+)

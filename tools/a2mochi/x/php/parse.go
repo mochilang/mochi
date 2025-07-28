@@ -296,6 +296,22 @@ func simpleExpr(n pnode.Node) (string, bool) {
 			name = "len"
 		case "strlen":
 			name = "len"
+		case "substr":
+			if len(args) == 3 {
+				end := fmt.Sprintf("(%s + %s)", args[1], args[2])
+				return fmt.Sprintf("substring(%s, %s, %s)", args[0], args[1], end), true
+			}
+		case "str_contains":
+			if len(args) == 2 {
+				return fmt.Sprintf("%s.contains(%s)", args[0], args[1]), true
+			}
+		case "array_merge":
+			if len(args) == 2 && strings.HasPrefix(args[1], "[") && strings.HasSuffix(args[1], "]") {
+				val := strings.TrimSuffix(strings.TrimPrefix(args[1], "["), "]")
+				return fmt.Sprintf("append(%s, %s)", args[0], val), true
+			}
+		case "array_values":
+			name = "values"
 		case "intval":
 			if len(args) == 1 {
 				return fmt.Sprintf("(%s as int)", args[0]), true
@@ -488,6 +504,9 @@ func simpleExpr(n pnode.Node) (string, bool) {
 		dim, ok := simpleExpr(v.Dim)
 		if !ok {
 			return "", false
+		}
+		if _, nested := v.Variable.(*expr.ArrayDimFetch); nested {
+			base = fmt.Sprintf("(%s as map<string, any>)", base)
 		}
 		return fmt.Sprintf("%s[%s]", base, dim), true
 	case *expr.Array:

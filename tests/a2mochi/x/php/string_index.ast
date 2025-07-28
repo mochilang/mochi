@@ -1,0 +1,22 @@
+(program
+  (let s (string mochi))
+  (call print
+    (call substring
+      (selector s)
+      (int 1)
+      (group
+        (binary +
+          (int 1)
+          (group
+            (binary -
+              (group
+                (binary + (int 1) (int 1))
+              )
+              (int 1)
+            )
+          )
+        )
+      )
+    )
+  )
+)
