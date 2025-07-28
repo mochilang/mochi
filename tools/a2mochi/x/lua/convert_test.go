@@ -119,15 +119,18 @@ func TestConvert_Golden(t *testing.T) {
 			if *update {
 				os.WriteFile(mochiPath, []byte(code), 0644)
 			}
-			gotOut, err := runMochi(code)
-			if err != nil {
-				t.Fatalf("run: %v", err)
-			}
-			vmSrc, err := os.ReadFile(filepath.Join(root, "tests", "vm", "valid", name+".mochi"))
-			if err != nil {
-				t.Fatalf("missing vm source: %v", err)
-			}
-			wantOut, err := runMochi(string(vmSrc))
+                        gotOut, err := runMochi(code)
+                        if err != nil {
+                                t.Fatalf("run: %v", err)
+                        }
+                        if *update {
+                                os.WriteFile(filepath.Join(outDir, name+".out"), gotOut, 0o644)
+                        }
+                        vmSrc, err := os.ReadFile(filepath.Join(root, "tests", "vm", "valid", name+".mochi"))
+                        if err != nil {
+                                t.Fatalf("missing vm source: %v", err)
+                        }
+                        wantOut, err := runMochi(string(vmSrc))
 			if err != nil {
 				t.Fatalf("run vm: %v", err)
 			}
