@@ -1,0 +1,12 @@
+(program
+  (let a
+    (list (int 1) (int 2))
+  )
+  (call print
+    (list
+      (index (selector a) (int 0))
+      (index (selector a) (int 1))
+      (int 3)
+    )
+  )
+)
