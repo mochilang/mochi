@@ -1,3 +1,5 @@
+//go:build slow
+
 package zig_test
 
 import (

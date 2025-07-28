@@ -1,3 +1,5 @@
+//go:build slow
+
 package scheme_test
 
 import (

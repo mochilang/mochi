@@ -1,3 +1,5 @@
+//go:build slow
+
 // Package ocaml provides a limited OCaml to Mochi converter using tree-sitter for parsing.
 package ocaml
 

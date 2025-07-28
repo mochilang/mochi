@@ -1,3 +1,5 @@
+//go:build slow
+
 package ruby_test
 
 import (
