@@ -87,6 +87,16 @@ func TestConvert_Golden(t *testing.T) {
 		"if_else":            true,
 		"while_loop":         true,
 		"unary_neg":          true,
+		"let_and_print":      true,
+		"var_assignment":     true,
+		"str_builtin":        true,
+		"substring_builtin":  true,
+		"string_concat":      true,
+		"string_index":       true,
+		"membership":         true,
+		"string_contains":    true,
+		"string_in_operator": true,
+		"map_in_operator":    true,
 	}
 	outDir := filepath.Join(root, "tests", "a2mochi", "x", "py")
 	os.MkdirAll(outDir, 0o755)

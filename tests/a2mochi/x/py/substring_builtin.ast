@@ -1,0 +1,9 @@
+(program
+  (call print
+    (index
+      (string mochi)
+      (start (int 1))
+      (end (int 4))
+    )
+  )
+)

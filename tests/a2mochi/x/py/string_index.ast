@@ -1,0 +1,6 @@
+(program
+  (var s (string mochi))
+  (call print
+    (index (selector s) (int 1))
+  )
+)

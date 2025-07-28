@@ -713,6 +713,18 @@ func emitExpr(b *strings.Builder, n *Node, lines []string) error {
 		}
 		b.WriteByte(' ')
 		op := n.Ops[0]
+		if op.Type == "NotIn" {
+			b.WriteString("!(")
+			if err := emitExpr(b, n.Left, lines); err != nil {
+				return err
+			}
+			b.WriteString(" in ")
+			if err := emitExpr(b, n.Comparators[0], lines); err != nil {
+				return err
+			}
+			b.WriteByte(')')
+			return nil
+		}
 		switch op.Type {
 		case "Eq":
 			b.WriteString("==")
@@ -726,6 +738,8 @@ func emitExpr(b *strings.Builder, n *Node, lines []string) error {
 			b.WriteString(">")
 		case "GtE":
 			b.WriteString(">=")
+		case "In":
+			b.WriteString("in")
 		default:
 			return newConvertError(n.Line, lines, "unhandled compare operator")
 		}
