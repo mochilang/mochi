@@ -1,0 +1,8 @@
+exit status 1
+/tmp/TestSwiftTranspiler_Rosetta_Golden2811705341/001/main.swift:46:22: error: type 'Any' does not conform to protocol 'Hashable'
+44 |     }
+45 |     struct dlList {
+46 |         var members: [Any: Int]
+   |                      `- error: type 'Any' does not conform to protocol 'Hashable'
+47 |         var head: Any
+48 |         var tail: Any

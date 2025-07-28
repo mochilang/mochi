@@ -1,0 +1,8 @@
+exit status 1
+/tmp/TestSwiftTranspiler_Rosetta_Golden3520844683/001/main.swift:46:23: error: type 'testpkg' has no member 'ECDSAExample'
+44 |         static func FifteenPuzzleExample() -> String { return "Solution found in 52 moves: rrrulddluuuldrurdddrullulurrrddldluurddlulurruldrdrd" }
+45 |     }
+46 |     let res = testpkg.ECDSAExample()
+   |                       `- error: type 'testpkg' has no member 'ECDSAExample'
+47 |     print(_p(("Private key:\nD: " + String(describing: res.D))))
+48 |     print(_p("\nPublic key:"))

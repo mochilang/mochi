@@ -1,0 +1,32 @@
+exit status 1
+/tmp/TestSwiftTranspiler_Rosetta_Golden646882711/001/main.swift:50:94: error: cannot convert value of type 'Any' to expected argument type 'Int'
+ 48 |         let digits: [String: Any] = ["0": 0, "1": 1, "2": 2, "3": 3, "4": 4, "5": 5, "6": 6, "7": 7, "8": 8, "9": 9]
+ 49 |         while (i < Int(((str).count))) {
+ 50 |             n = Int(((n * 10) + ((digits as! [String: Any])[String(Array(str)[i..<(i + 1)])] as! Any)))
+    |                                                                                              `- error: cannot convert value of type 'Any' to expected argument type 'Int'
+ 51 |             i = Int((i + 1))
+ 52 |         }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden646882711/001/main.swift:50:42: warning: forced cast of '[String : Any]' to same type has no effect
+ 48 |         let digits: [String: Any] = ["0": 0, "1": 1, "2": 2, "3": 3, "4": 4, "5": 5, "6": 6, "7": 7, "8": 8, "9": 9]
+ 49 |         while (i < Int(((str).count))) {
+ 50 |             n = Int(((n * 10) + ((digits as! [String: Any])[String(Array(str)[i..<(i + 1)])] as! Any)))
+    |                                          `- warning: forced cast of '[String : Any]' to same type has no effect
+ 51 |             i = Int((i + 1))
+ 52 |         }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden646882711/001/main.swift:50:94: warning: forced cast from 'Any?' to 'Any' only unwraps optionals; did you mean to use '!'?
+ 48 |         let digits: [String: Any] = ["0": 0, "1": 1, "2": 2, "3": 3, "4": 4, "5": 5, "6": 6, "7": 7, "8": 8, "9": 9]
+ 49 |         while (i < Int(((str).count))) {
+ 50 |             n = Int(((n * 10) + ((digits as! [String: Any])[String(Array(str)[i..<(i + 1)])] as! Any)))
+    |                                                                                              `- warning: forced cast from 'Any?' to 'Any' only unwraps optionals; did you mean to use '!'?
+ 51 |             i = Int((i + 1))
+ 52 |         }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden646882711/001/main.swift:125:5: warning: using '_' to ignore the result of a Void-returning function is redundant
+123 |         }
+124 |     }
+125 |     _ = main()
+    |     `- warning: using '_' to ignore the result of a Void-returning function is redundant
+126 |     let _benchEnd = _now()
+127 |     let _benchMemEnd = _mem()

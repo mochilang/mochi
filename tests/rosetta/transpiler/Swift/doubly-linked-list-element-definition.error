@@ -1,0 +1,104 @@
+exit status 1
+/tmp/TestSwiftTranspiler_Rosetta_Golden3720894311/001/main.swift:44:43: error: 'nil' is not compatible with expected argument type 'Any'
+42 |     }
+43 |     func main() {
+44 |         var a: [String: Any] = (Node("A", nil, nil) as! [String: Any])
+   |                                           `- error: 'nil' is not compatible with expected argument type 'Any'
+45 |         var b: [String: Any] = (Node("B", nil, a) as! [String: Any])
+46 |         a["next"] = b
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3720894311/001/main.swift:44:48: error: 'nil' is not compatible with expected argument type 'Any'
+42 |     }
+43 |     func main() {
+44 |         var a: [String: Any] = (Node("A", nil, nil) as! [String: Any])
+   |                                                `- error: 'nil' is not compatible with expected argument type 'Any'
+45 |         var b: [String: Any] = (Node("B", nil, a) as! [String: Any])
+46 |         a["next"] = b
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3720894311/001/main.swift:44:53: warning: forced cast of '[String : Any]' to same type has no effect
+42 |     }
+43 |     func main() {
+44 |         var a: [String: Any] = (Node("A", nil, nil) as! [String: Any])
+   |                                                     `- warning: forced cast of '[String : Any]' to same type has no effect
+45 |         var b: [String: Any] = (Node("B", nil, a) as! [String: Any])
+46 |         a["next"] = b
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3720894311/001/main.swift:45:43: error: 'nil' is not compatible with expected argument type 'Any'
+43 |     func main() {
+44 |         var a: [String: Any] = (Node("A", nil, nil) as! [String: Any])
+45 |         var b: [String: Any] = (Node("B", nil, a) as! [String: Any])
+   |                                           `- error: 'nil' is not compatible with expected argument type 'Any'
+46 |         a["next"] = b
+47 |         var c: [String: Any] = (Node("C", nil, b) as! [String: Any])
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3720894311/001/main.swift:45:51: warning: forced cast of '[String : Any]' to same type has no effect
+43 |     func main() {
+44 |         var a: [String: Any] = (Node("A", nil, nil) as! [String: Any])
+45 |         var b: [String: Any] = (Node("B", nil, a) as! [String: Any])
+   |                                                   `- warning: forced cast of '[String : Any]' to same type has no effect
+46 |         a["next"] = b
+47 |         var c: [String: Any] = (Node("C", nil, b) as! [String: Any])
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3720894311/001/main.swift:47:43: error: 'nil' is not compatible with expected argument type 'Any'
+45 |         var b: [String: Any] = (Node("B", nil, a) as! [String: Any])
+46 |         a["next"] = b
+47 |         var c: [String: Any] = (Node("C", nil, b) as! [String: Any])
+   |                                           `- error: 'nil' is not compatible with expected argument type 'Any'
+48 |         b["next"] = c
+49 |         var p: [String: Any] = a
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3720894311/001/main.swift:47:51: warning: forced cast of '[String : Any]' to same type has no effect
+45 |         var b: [String: Any] = (Node("B", nil, a) as! [String: Any])
+46 |         a["next"] = b
+47 |         var c: [String: Any] = (Node("C", nil, b) as! [String: Any])
+   |                                                   `- warning: forced cast of '[String : Any]' to same type has no effect
+48 |         b["next"] = c
+49 |         var p: [String: Any] = a
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3720894311/001/main.swift:51:18: warning: comparing non-optional value of type '[String : Any]' to 'nil' always returns true
+49 |         var p: [String: Any] = a
+50 |         var line: String = ""
+51 |         while (p != nil) {
+   |                  `- warning: comparing non-optional value of type '[String : Any]' to 'nil' always returns true
+52 |             line = String(describing: (line + String(describing: p["value"]!)))
+53 |             p = (p["next"]! as! [String: Any])
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3720894311/001/main.swift:54:19: warning: comparing non-optional value of type '[String : Any]' to 'nil' always returns true
+52 |             line = String(describing: (line + String(describing: p["value"]!)))
+53 |             p = (p["next"]! as! [String: Any])
+54 |             if (p != nil) {
+   |                   `- warning: comparing non-optional value of type '[String : Any]' to 'nil' always returns true
+55 |                 line = String(describing: (line + " "))
+56 |             }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3720894311/001/main.swift:59:16: warning: forced cast of '[String : Any]' to same type has no effect
+57 |         }
+58 |         print(_p(line))
+59 |         p = (c as! [String: Any])
+   |                `- warning: forced cast of '[String : Any]' to same type has no effect
+60 |         line = ""
+61 |         while (p != nil) {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3720894311/001/main.swift:61:18: warning: comparing non-optional value of type '[String : Any]' to 'nil' always returns true
+59 |         p = (c as! [String: Any])
+60 |         line = ""
+61 |         while (p != nil) {
+   |                  `- warning: comparing non-optional value of type '[String : Any]' to 'nil' always returns true
+62 |             line = String(describing: (line + String(describing: p["value"]!)))
+63 |             p = (p["prev"]! as! [String: Any])
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3720894311/001/main.swift:64:19: warning: comparing non-optional value of type '[String : Any]' to 'nil' always returns true
+62 |             line = String(describing: (line + String(describing: p["value"]!)))
+63 |             p = (p["prev"]! as! [String: Any])
+64 |             if (p != nil) {
+   |                   `- warning: comparing non-optional value of type '[String : Any]' to 'nil' always returns true
+65 |                 line = String(describing: (line + " "))
+66 |             }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3720894311/001/main.swift:70:5: warning: using '_' to ignore the result of a Void-returning function is redundant
+68 |         print(_p(line))
+69 |     }
+70 |     _ = main()
+   |     `- warning: using '_' to ignore the result of a Void-returning function is redundant
+71 |     let _benchEnd = _now()
+72 |     let _benchMemEnd = _mem()
