@@ -1,0 +1,11 @@
+(program
+  (var xs
+    (type list (type int))
+  )
+  (assign xs
+    (list (int 10) (int 20) (int 30))
+  )
+  (call print
+    (index (selector xs) (int 1))
+  )
+)

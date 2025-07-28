@@ -90,6 +90,70 @@ func toMochiType(t string) string {
 	return t
 }
 
+// toMochiString converts a Pascal string literal to a Mochi string.
+// Pascal strings are single quoted and escape quotes by doubling them.
+func toMochiString(s string) string {
+	if len(s) >= 2 && strings.HasPrefix(s, "'") && strings.HasSuffix(s, "'") {
+		inner := s[1 : len(s)-1]
+		inner = strings.ReplaceAll(inner, "''", "'")
+		return "\"" + inner + "\""
+	}
+	return s
+}
+
+// fixUnary inserts parentheses around negative literals that follow an operator
+// so that the Mochi parser accepts them.
+func fixUnary(expr string) string {
+	ops := []string{"+", "-", "*", "/", "%"}
+	for _, op := range ops {
+		target := op + " -"
+		if idx := strings.Index(expr, target); idx != -1 {
+			// find the number following the minus sign
+			j := idx + len(target)
+			for j < len(expr) && expr[j] == ' ' {
+				j++
+			}
+			k := j
+			for k < len(expr) && (expr[k] >= '0' && expr[k] <= '9') {
+				k++
+			}
+			if k > j {
+				expr = expr[:idx+len(op)] + " (-" + expr[j:k] + ")" + expr[k:]
+			}
+		}
+	}
+	return expr
+}
+
+// recordLiteral converts simple Pascal record literals like "(a: 1; b: 2)"
+// into Mochi map literals "{ a: 1, b: 2 }".
+func recordLiteral(s string) string {
+	if strings.HasPrefix(s, "(") && strings.HasSuffix(strings.TrimSpace(s), ")") && strings.Contains(s, ":") {
+		s = strings.TrimPrefix(s, "(")
+		s = strings.TrimSuffix(strings.TrimSpace(s), ")")
+		parts := strings.Split(s, ";")
+		var fields []string
+		for _, p := range parts {
+			p = strings.TrimSpace(p)
+			if p == "" {
+				continue
+			}
+			if strings.HasSuffix(p, ";") {
+				p = strings.TrimSuffix(p, ";")
+			}
+			if idx := strings.Index(p, ":"); idx != -1 {
+				name := strings.TrimSpace(p[:idx])
+				val := strings.TrimSpace(p[idx+1:])
+				fields = append(fields, name+": "+val)
+			}
+		}
+		if len(fields) > 0 {
+			return "{ " + strings.Join(fields, ", ") + " }"
+		}
+	}
+	return s
+}
+
 func parseFuncHeader(l string) (string, string, string) {
 	l = strings.TrimSpace(l)
 	l = strings.TrimSuffix(l, ";")
@@ -145,6 +209,7 @@ func convertFallback(src string) ([]byte, error) {
 	ifDepth := 0
 	inRepeat := false
 	waitingBegin := false
+	varBlock := false
 
 	addError := func(i int, msg string) ([]byte, error) {
 		snippet := func(idx int) string {
@@ -249,6 +314,23 @@ func convertFallback(src string) ([]byte, error) {
 					}
 				}
 
+			case strings.TrimSpace(lower) == "var":
+				varBlock = true
+
+			case varBlock && strings.Contains(l, ":"):
+				rest := strings.TrimSuffix(strings.TrimSpace(l), ";")
+				if idx := strings.Index(rest, ":"); idx != -1 {
+					name := strings.TrimSpace(rest[:idx])
+					typ := toMochiType(strings.TrimSpace(rest[idx+1:]))
+					if name != "" {
+						if typ != "" {
+							out = append(out, "var "+name+": "+typ)
+						} else {
+							out = append(out, "var "+name)
+						}
+					}
+				}
+
 			case strings.HasPrefix(lower, "var") && strings.Contains(l, ":"):
 				rest := strings.TrimSpace(strings.TrimPrefix(l, "var"))
 				rest = strings.TrimSuffix(rest, ";")
@@ -257,9 +339,9 @@ func convertFallback(src string) ([]byte, error) {
 					typ := toMochiType(strings.TrimSpace(rest[idx+1:]))
 					if name != "" {
 						if typ != "" {
-							out = append(out, "let "+name+": "+typ)
+							out = append(out, "var "+name+": "+typ)
 						} else {
-							out = append(out, "let "+name)
+							out = append(out, "var "+name)
 						}
 					}
 				}
@@ -277,10 +359,12 @@ func convertFallback(src string) ([]byte, error) {
 					funLine += " {"
 					out = append(out, funLine)
 					inFunc = true
+					varBlock = false
 				}
 
 			case lower == "begin":
 				inBody = true
+				varBlock = false
 			}
 			continue
 		}
@@ -312,10 +396,13 @@ func convertFallback(src string) ([]byte, error) {
 			}
 			lowerStmt := strings.ToLower(stmt)
 			switch {
-			case strings.HasPrefix(lowerStmt, "for ") && strings.Contains(lowerStmt, " in ") && strings.HasSuffix(lowerStmt, " do"):
+			case strings.HasPrefix(lowerStmt, "for ") && strings.Contains(lowerStmt, " in ") && strings.Contains(lowerStmt, " do"):
 				parts := strings.SplitN(stmt[len("for "):], " in ", 2)
 				varName := strings.TrimSpace(parts[0])
-				iter := strings.TrimSpace(strings.TrimSuffix(parts[1], " do"))
+				iterPart := strings.TrimSpace(parts[1])
+				iterPart = strings.TrimSuffix(iterPart, " do")
+				iterPart = strings.TrimSuffix(iterPart, " do begin")
+				iter := strings.TrimSpace(iterPart)
 				out = append(out, fmt.Sprintf("for %s in %s {", varName, iter))
 				loopDepth++
 				waitingBegin = true
@@ -325,7 +412,7 @@ func convertFallback(src string) ([]byte, error) {
 				rest := stmt[strings.Index(stmt, ":=")+2:]
 				toIdx := strings.Index(strings.ToLower(rest), "to ")
 				startExpr := strings.TrimSpace(rest[:toIdx])
-				rest = rest[toIdx+4:]
+				rest = rest[toIdx+3:]
 				doIdx := strings.Index(strings.ToLower(rest), "do")
 				endExpr := strings.TrimSpace(rest[:doIdx])
 				out = append(out, fmt.Sprintf("for %s in %s..%s {", varName, startExpr, endExpr))
@@ -393,6 +480,9 @@ func convertFallback(src string) ([]byte, error) {
 
 			case strings.HasPrefix(lowerStmt, "writeln("):
 				expr := strings.TrimSuffix(strings.TrimPrefix(stmt, "writeln("), ")")
+				expr = strings.ReplaceAll(expr, "Length(", "len(")
+				expr = toMochiString(expr)
+				expr = fixUnary(expr)
 				out = append(out, fmt.Sprintf("print(%s)", expr))
 
 			case strings.HasPrefix(lowerStmt, "setlength("):
@@ -406,6 +496,10 @@ func convertFallback(src string) ([]byte, error) {
 				parts := strings.SplitN(stmt, ":=", 2)
 				name := strings.TrimSpace(parts[0])
 				expr := strings.TrimSpace(parts[1])
+				expr = strings.ReplaceAll(expr, "Length(", "len(")
+				expr = toMochiString(expr)
+				expr = recordLiteral(expr)
+				expr = fixUnary(expr)
 				out = append(out, fmt.Sprintf("%s = %s", name, strings.TrimSuffix(expr, ";")))
 
 			case lowerStmt == "exit" && inFunc:

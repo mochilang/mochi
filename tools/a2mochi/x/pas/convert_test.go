@@ -71,18 +71,13 @@ func TestConvert_Golden(t *testing.T) {
 		t.Fatalf("no files: %s", pattern)
 	}
 	allowed := map[string]bool{
-		"print_hello":    true,
-		"for_loop":       true,
-		"let_and_print":  true,
-		"unary_neg":      true,
-		"len_builtin":    true,
-		"len_string":     true,
-		"map_index":      true,
-		"if_else":        true,
-		"while_loop":     true,
-		"string_concat":  true,
-		"string_compare": true,
-		"string_index":   true,
+		"print_hello":         true,
+		"let_and_print":       true,
+		"unary_neg":           true,
+		"len_builtin":         true,
+		"for_list_collection": true,
+		"list_index":          true,
+		"while_loop":          true,
 	}
 	outDir := filepath.Join(root, "tests", "a2mochi", "x", "pas")
 	os.MkdirAll(outDir, 0o755)
