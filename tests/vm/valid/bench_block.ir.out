@@ -1,22 +1,21 @@
-func main (regs=28)
+func __main (regs=28)
   // bench "simple" {
   Mem          0,0,0,0
-  Now          r1
+  RealNow      1,0,0,0
   // let n = 1000
   Const        r2, 1000
   Move         r3, r2
-  // var s = 0
-  Const        r4, 0
+  // var data = []
+  Const        r4, []
   Move         r5, r4
   // for i in 1..n {
   Const        r6, 1
-  Const        r2, 1000
   Move         r7, r6
 L1:
-  LessInt      r8, r7, r2
+  LessInt      r8, r7, r3
   JumpIfFalse  r8, L0
-  // s = s + i
-  AddInt       r9, r5, r7
+  // data = append(data, i)
+  Append       r9, r5, r7
   Move         r5, r9
   // for i in 1..n {
   Const        r10, 1
@@ -25,7 +24,7 @@ L1:
   Jump         L1
 L0:
   // bench "simple" {
-  Now          r12
+  RealNow      12,0,0,0
   Mem          13,0,0,0
   SubInt       r14, r12, r1
   Const        r2, 1000
@@ -44,4 +43,3 @@ L0:
   MakeMap      r27, 3, r21
   JSON         r27
   Return       r0
-
