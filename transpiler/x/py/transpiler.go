@@ -1787,6 +1787,13 @@ func inferPyType(e Expr, env *types.Env) types.Type {
 		return types.AnyType{}
 	case *CallExpr:
 		if n, ok := ex.Func.(*Name); ok {
+			if env != nil {
+				if t, ok := env.LookupType(n.Name); ok {
+					if ft, ok := t.(types.FuncType); ok {
+						return ft.Return
+					}
+				}
+			}
 			switch n.Name {
 			case "len":
 				return types.IntType{}
