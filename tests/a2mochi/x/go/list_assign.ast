@@ -1,0 +1,12 @@
+(program
+  (var nums
+    (list (int 1) (int 2))
+  )
+  (assign
+    (index (selector nums) (int 1))
+    (int 3)
+  )
+  (call print
+    (index (selector nums) (int 1))
+  )
+)
