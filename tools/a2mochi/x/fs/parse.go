@@ -113,6 +113,9 @@ type Expect struct {
 }
 
 type Program struct {
+	// Source holds the original F# input. It is preserved so the
+	// converter can emit the original program as a block comment.
+	Source string   `json:"source"`
 	Vars   []Var    `json:"vars"`
 	Prints []string `json:"prints"`
 	Stmts  []Stmt   `json:"stmts"`
@@ -344,7 +347,7 @@ func Parse(src string) (*Program, error) {
 		return stmts
 	}
 
-	prog := &Program{}
+	prog := &Program{Source: src}
 	idx = 0
 	snippetAround := func(lines []line, ln int) string {
 		start := ln - 2
