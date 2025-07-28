@@ -1,0 +1,7 @@
+(program
+  (call print
+    (group
+      (cast (string 1995) (type int))
+    )
+  )
+)
