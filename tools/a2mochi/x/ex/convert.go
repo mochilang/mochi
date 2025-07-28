@@ -229,6 +229,13 @@ func translateExpr(expr string) string {
 		expr = strings.TrimSpace(expr[1 : len(expr)-1])
 	}
 	switch {
+	case strings.HasPrefix(expr, "\"") && strings.Contains(expr, "#{") && strings.HasSuffix(expr, "\""):
+		m := regexp.MustCompile(`^"([^"]*)#\{([^}]+)\}"$`).FindStringSubmatch(expr)
+		if m != nil {
+			prefix := m[1]
+			inner := translateExpr(m[2])
+			return "\"" + prefix + "\" + " + inner
+		}
 	case strings.HasPrefix(expr, "%{") && strings.HasSuffix(expr, "}"):
 		inner := strings.TrimSpace(expr[2 : len(expr)-1])
 		inner = strings.ReplaceAll(inner, "=>", ":")
@@ -269,6 +276,12 @@ func translateExpr(expr string) string {
 	case strings.HasPrefix(expr, "Enum.max(") && strings.HasSuffix(expr, ")"):
 		inner := expr[len("Enum.max(") : len(expr)-1]
 		return "max(" + inner + ")"
+	case strings.HasPrefix(expr, "Kernel.inspect(") && strings.HasSuffix(expr, ")"):
+		inner := expr[len("Kernel.inspect(") : len(expr)-1]
+		return translateExpr(inner)
+	case strings.HasPrefix(expr, "String.to_integer(") && strings.HasSuffix(expr, ")"):
+		inner := expr[len("String.to_integer(") : len(expr)-1]
+		return "(" + translateExpr(inner) + " as int)"
 	case strings.HasPrefix(expr, "String.contains?(") && strings.HasSuffix(expr, ")"):
 		parts := splitArgs(expr[len("String.contains?(") : len(expr)-1])
 		if len(parts) == 2 {
@@ -351,11 +364,20 @@ func translateExpr(expr string) string {
 			return "len(" + parts[0] + ")"
 		}
 	}
+	remRe := regexp.MustCompile(`rem\(([^,]+),\s*([^)]+)\)`)
+	for remRe.MatchString(expr) {
+		m := remRe.FindStringSubmatch(expr)
+		expr = strings.Replace(expr, m[0], strings.TrimSpace(m[1])+" % "+strings.TrimSpace(m[2]), 1)
+	}
 	return expr
 }
 
 func translateLine(l string) string {
 	l = strings.TrimSpace(l)
+	if m := regexp.MustCompile(`^IO\.puts\("([^"]*)#\{([^}]+)\}"\)$`).FindStringSubmatch(l); m != nil {
+		prefix := strings.TrimRight(m[1], " ")
+		return "print(\"" + prefix + "\", " + translateExpr(m[2]) + ")"
+	}
 	if strings.HasPrefix(l, "IO.puts(") && strings.HasSuffix(l, ")") {
 		expr := strings.TrimSuffix(strings.TrimPrefix(l, "IO.puts("), ")")
 		return "print(" + translateExpr(strings.TrimSpace(expr)) + ")"
@@ -467,6 +489,10 @@ func convertFunc(fn Func) string {
 		case l == "" || strings.HasPrefix(l, "try do"):
 			inTry = true
 			continue
+		case strings.HasPrefix(l, "catch"):
+			continue
+		case strings.HasPrefix(l, ":"):
+			continue
 		case i+4 < len(seg) && strings.Contains(l, "= (fn ->") && strings.TrimSpace(seg[i+2]) == "cond do":
 			assign := strings.TrimSpace(seg[i+1])
 			parts := strings.SplitN(assign, "=", 2)
@@ -518,6 +544,7 @@ func convertFunc(fn Func) string {
 			}
 		case strings.HasPrefix(l, "if ") && strings.HasSuffix(l, " do"):
 			cond := strings.TrimSuffix(strings.TrimPrefix(l, "if "), " do")
+			cond = translateExpr(cond)
 			b.WriteString(strings.Repeat("  ", level) + "if " + cond + " {\n")
 			level++
 		case strings.HasPrefix(l, "for ") && strings.Contains(l, "<-") && strings.HasSuffix(l, " do"):
@@ -548,6 +575,10 @@ func convertFunc(fn Func) string {
 				args[i] = translateExpr(a)
 			}
 			b.WriteString(strings.Repeat("  ", level) + "print(" + strings.Join(args, ", ") + ")\n")
+		case regexp.MustCompile(`^IO\.puts\("([^"]*)#\{([^}]+)\}"\)$`).MatchString(l):
+			m := regexp.MustCompile(`^IO\.puts\("([^"]*)#\{([^}]+)\}"\)$`).FindStringSubmatch(l)
+			prefix := strings.TrimRight(m[1], " ")
+			b.WriteString(strings.Repeat("  ", level) + "print(\"" + prefix + "\", " + translateExpr(m[2]) + ")\n")
 		case strings.HasPrefix(l, "IO.puts(") && strings.HasSuffix(l, ")"):
 			expr := strings.TrimSuffix(strings.TrimPrefix(l, "IO.puts("), ")")
 			b.WriteString(strings.Repeat("  ", level) + "print(" + translateExpr(strings.TrimSpace(expr)) + ")\n")

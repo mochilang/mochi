@@ -4,13 +4,15 @@ This directory provides a small converter that turns a subset of Elixir source
 code into Mochi AST form. The implementation mirrors the Python and TypeScript
 converters and is mostly regex based.
 
-Completed programs: 25/104
+Completed programs: 27/104
 
 ## Checklist
 - [x] append_builtin
 - [x] basic_compare
 - [x] binary_precedence
 - [x] bool_chain
+- [x] break_continue
+- [x] cast_string_to_int
 - [x] let_and_print
 - [x] print_hello
 - [x] unary_neg
