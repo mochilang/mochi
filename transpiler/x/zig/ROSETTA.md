@@ -2,9 +2,9 @@
 
 Generated Zig code for Rosetta tasks lives under `tests/rosetta/transpiler/Zig`.
 
-Last updated: 2025-07-27 23:55 +0700
+Last updated: 2025-07-28 01:16 +0700
 
-## Program Checklist (60/467)
+## Program Checklist (64/467)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 8.923ms |  |
@@ -75,10 +75,10 @@ Last updated: 2025-07-27 23:55 +0700
 | 66 | arithmetic-complex | ✓ | 313µs |  |
 | 67 | arithmetic-derivative |   |  |  |
 | 68 | arithmetic-evaluation |   |  |  |
-| 69 | arithmetic-geometric-mean-calculate-pi |   |  |  |
-| 70 | arithmetic-geometric-mean |   |  |  |
-| 71 | arithmetic-integer-1 |   |  |  |
-| 72 | arithmetic-integer-2 |   |  |  |
+| 69 | arithmetic-geometric-mean-calculate-pi | ✓ | 55µs |  |
+| 70 | arithmetic-geometric-mean | ✓ | 82µs |  |
+| 71 | arithmetic-integer-1 | ✓ | 129µs |  |
+| 72 | arithmetic-integer-2 | ✓ | 159µs |  |
 | 73 | arithmetic-numbers |   |  |  |
 | 74 | arithmetic-rational |   |  |  |
 | 75 | array-concatenation |   |  |  |
