@@ -1,4 +1,88 @@
-## Progress (2025-07-28 11:14 +0700)
+## Progress (2025-07-28 11:48 +0700)
+- hs transpiler: add dice probabilities case (0f6b7a3ff7)
+
+- hs transpiler: add dice probabilities case (0f6b7a3ff7)
+
+- hs transpiler: add dice probabilities case (0f6b7a3ff7)
+
+- hs transpiler: add dice probabilities case (0f6b7a3ff7)
+
+- hs transpiler: add dice probabilities case (0f6b7a3ff7)
+
+- hs transpiler: add dice probabilities case (0f6b7a3ff7)
+
+- hs transpiler: add dice probabilities case (0f6b7a3ff7)
+
+- hs transpiler: add dice probabilities case (0f6b7a3ff7)
+
+- hs transpiler: add dice probabilities case (0f6b7a3ff7)
+
+- hs transpiler: add dice probabilities case (0f6b7a3ff7)
+
+- hs transpiler: add dice probabilities case (0f6b7a3ff7)
+
+- hs transpiler: add dice probabilities case (0f6b7a3ff7)
+
+- hs transpiler: add dice probabilities case (0f6b7a3ff7)
+
+- hs transpiler: add dice probabilities case (0f6b7a3ff7)
+
+- hs transpiler: add dice probabilities case (0f6b7a3ff7)
+
+- hs transpiler: add dice probabilities case (0f6b7a3ff7)
+
+- hs transpiler: add dice probabilities case (0f6b7a3ff7)
+
+- hs transpiler: add dice probabilities case (0f6b7a3ff7)
+
+- hs transpiler: add dice probabilities case (0f6b7a3ff7)
+
+- hs transpiler: add dice probabilities case (0f6b7a3ff7)
+
+- hs transpiler: add dice probabilities case (0f6b7a3ff7)
+
+- hs transpiler: add dice probabilities case (0f6b7a3ff7)
+
+- hs transpiler: add dice probabilities case (0f6b7a3ff7)
+
+- hs transpiler: add dice probabilities case (0f6b7a3ff7)
+
+- hs transpiler: add dice probabilities case (0f6b7a3ff7)
+
+- hs transpiler: add dice probabilities case (0f6b7a3ff7)
+
+- hs transpiler: add dice probabilities case (0f6b7a3ff7)
+
+- hs transpiler: add dice probabilities case (0f6b7a3ff7)
+
+- hs transpiler: add dice probabilities case (0f6b7a3ff7)
+
+- hs transpiler: add dice probabilities case (0f6b7a3ff7)
+
+- hs transpiler: add dice probabilities case (0f6b7a3ff7)
+
+- hs transpiler: add dice probabilities case (0f6b7a3ff7)
+
+- hs transpiler: add dice probabilities case (0f6b7a3ff7)
+
+- hs transpiler: add dice probabilities case (0f6b7a3ff7)
+
+- hs transpiler: add dice probabilities case (0f6b7a3ff7)
+
+- hs transpiler: add dice probabilities case (0f6b7a3ff7)
+
+- hs transpiler: add dice probabilities case (0f6b7a3ff7)
+
+- hs transpiler: add dice probabilities case (0f6b7a3ff7)
+
+- hs transpiler: add dice probabilities case (0f6b7a3ff7)
+
+- hs transpiler: add dice probabilities case (0f6b7a3ff7)
+
+- hs transpiler: add dice probabilities case (0f6b7a3ff7)
+
+- hs transpiler: add dice probabilities case (0f6b7a3ff7)
+
 - pascal transpiler: add failing dijkstra case (07c40fc178)
 
 - pascal transpiler: add failing dijkstra case (07c40fc178)

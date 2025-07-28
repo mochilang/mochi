@@ -55,7 +55,7 @@ public class Main {
         double avErr = averageSquareDiff(truth, preds);
         double crowdErr = (truth - av) * (truth - av);
         double div = averageSquareDiff(av, preds);
-        return new Object[]{avErr, crowdErr, div};
+        return new double[]{avErr, crowdErr, div};
     }
 
     static void main() {

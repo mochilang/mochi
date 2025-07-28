@@ -1351,7 +1351,10 @@ func (s *IndexAssignStmt) emit(w io.Writer, indent string) {
 				if ml, ok := s.Expr.(*MapLit); ok && ml.ValueType == "" {
 					kt := mapKeyType(inferType(s.Target))
 					oldKT, oldVT := ml.KeyType, ml.ValueType
-					ml.KeyType, ml.ValueType = kt, valType
+					if ml.KeyType == "" && (kt == "String" || kt == "string") {
+						ml.KeyType = kt
+					}
+					ml.ValueType = valType
 					ml.emit(w)
 					ml.KeyType, ml.ValueType = oldKT, oldVT
 				} else {
@@ -1634,8 +1637,7 @@ func (l *ListLit) emit(w io.Writer) {
 		for _, el := range l.Elems {
 			et := inferType(el)
 			if et == "" {
-				same = false
-				break
+				continue
 			}
 			if t == "" {
 				t = et
@@ -1712,22 +1714,45 @@ func (m *MapLit) emit(w io.Writer) {
 		keyType = javaBoxType(m.KeyType)
 	}
 	if len(m.Keys) > 0 {
-		fmt.Fprintf(w, "new java.util.LinkedHashMap<%s, %s>(java.util.Map.ofEntries(", keyType, valType)
-		for i := range m.Keys {
-			if i > 0 {
-				fmt.Fprint(w, ", ")
+		useEntries := valType != "Object"
+		for _, v := range m.Values {
+			if _, ok := v.(*NullLit); ok {
+				useEntries = false
+				break
 			}
-			fmt.Fprint(w, "java.util.Map.entry(")
-			m.Keys[i].emit(w)
-			fmt.Fprint(w, ", ")
-			if m.ValueType != "" {
-				emitCastExpr(w, m.Values[i], m.ValueType)
-			} else {
-				m.Values[i].emit(w)
-			}
-			fmt.Fprint(w, ")")
 		}
-		fmt.Fprint(w, "))")
+		if useEntries {
+			fmt.Fprintf(w, "new java.util.LinkedHashMap<%s, %s>(java.util.Map.ofEntries(", keyType, valType)
+			for i := range m.Keys {
+				if i > 0 {
+					fmt.Fprint(w, ", ")
+				}
+				fmt.Fprint(w, "java.util.Map.entry(")
+				m.Keys[i].emit(w)
+				fmt.Fprint(w, ", ")
+				if m.ValueType != "" {
+					emitCastExpr(w, m.Values[i], m.ValueType)
+				} else {
+					m.Values[i].emit(w)
+				}
+				fmt.Fprint(w, ")")
+			}
+			fmt.Fprint(w, "))")
+		} else {
+			fmt.Fprintf(w, "new java.util.LinkedHashMap<%s, %s>() {{", keyType, valType)
+			for i := range m.Keys {
+				fmt.Fprint(w, " put(")
+				m.Keys[i].emit(w)
+				fmt.Fprint(w, ", ")
+				if m.ValueType != "" {
+					emitCastExpr(w, m.Values[i], m.ValueType)
+				} else {
+					m.Values[i].emit(w)
+				}
+				fmt.Fprint(w, ");")
+			}
+			fmt.Fprint(w, " }}")
+		}
 	} else {
 		fmt.Fprintf(w, "new java.util.LinkedHashMap<%s, %s>()", keyType, valType)
 	}
@@ -2673,10 +2698,17 @@ func (ix *IndexExpr) emit(w io.Writer) {
 		ix.Index.emit(w)
 		fmt.Fprint(w, "+1)")
 	} else if isArrayExpr(ix.Target) {
+		needCast := ix.ResultType != "" && ix.ResultType != arrayElemType(ix.Target)
+		if needCast {
+			fmt.Fprintf(w, "((%s)(", javaType(ix.ResultType))
+		}
 		ix.Target.emit(w)
 		fmt.Fprint(w, "[")
 		ix.Index.emit(w)
 		fmt.Fprint(w, "]")
+		if needCast {
+			fmt.Fprint(w, "))")
+		}
 	} else if isMapExpr(ix.Target) {
 		castType := "java.util.Map"
 		if ix.ResultType != "" {
@@ -3314,6 +3346,21 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 					t = inferType(e)
 				}
 			}
+			if ml, ok := e.(*MapLit); ok && len(ml.Fields) > 0 {
+				uniq := ""
+				same := true
+				for _, ft := range ml.Fields {
+					if uniq == "" {
+						uniq = ft
+					} else if ft != uniq {
+						same = false
+						break
+					}
+				}
+				if !same || uniq == "Object" {
+					t = "java.util.Map<String,Object>"
+				}
+			}
 			if t == "" {
 				if lam, ok := e.(*LambdaExpr); ok {
 					ptypes := make([]string, len(lam.Params))
@@ -3339,7 +3386,23 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 				}
 				if ml.ValueType == "" {
 					if vt := mapValueType(t); vt != "" {
-						ml.ValueType = vt
+						if len(ml.Fields) > 0 {
+							uniq := ""
+							same := true
+							for _, ft := range ml.Fields {
+								if uniq == "" {
+									uniq = ft
+								} else if ft != uniq {
+									same = false
+									break
+								}
+							}
+							if same && uniq != "Object" {
+								ml.ValueType = vt
+							}
+						} else {
+							ml.ValueType = vt
+						}
 					}
 				}
 				if ml.KeyType == "" {
@@ -3650,6 +3713,8 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 				if len(ml.Fields) > 0 {
 					mapVarFields[s.Assign.Name] = ml.Fields
 				}
+			} else if l, ok := e.(*ListLit); ok && strings.HasSuffix(t, "[]") && l.ElemType == "" {
+				l.ElemType = strings.TrimSuffix(t, "[]")
 			} else if ce, ok := e.(*CallExpr); ok {
 				if f, ok2 := funcMapFields[ce.Func]; ok2 {
 					mapVarFields[s.Assign.Name] = f
@@ -3764,7 +3829,7 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 				return nil, err
 			}
 			if l, ok := e.(*ListLit); ok && strings.HasSuffix(currentFuncReturn, "[]") {
-				if l.ElemType == "" {
+				if l.ElemType == "" || l.ElemType == "Object" {
 					l.ElemType = strings.TrimSuffix(currentFuncReturn, "[]")
 				}
 				inner := strings.TrimSuffix(l.ElemType, "[]")

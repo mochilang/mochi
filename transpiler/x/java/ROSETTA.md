@@ -1,9 +1,9 @@
 # Java Rosetta Transpiler Output
 
 Generated Java code for programs in `tests/rosetta/x/Mochi`. Each program has a `.java` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
-Last updated: 2025-07-28 11:43 GMT+7
+Last updated: 2025-07-28 12:07 GMT+7
 
-## Rosetta Checklist (263/493)
+## Rosetta Checklist (280/493)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 23.0ms | 245.84KB |
@@ -305,37 +305,37 @@ Last updated: 2025-07-28 11:43 GMT+7
 | 297 | determine-if-only-one-instance-is-running | ✓ | 6.0ms | 584B |
 | 298 | determine-if-two-triangles-overlap | ✓ | 26.0ms | 110.55KB |
 | 299 | determine-sentence-type | ✓ | 31.0ms | 52.66KB |
-| 300 | dice-game-probabilities-1 | ✓ | 39.0ms | 56.18KB |
-| 301 | dice-game-probabilities-2 | ✓ | 38.0ms | 10.58KB |
-| 302 | digital-root-multiplicative-digital-root | ✓ | 181.0ms | 120.93KB |
-| 303 | dijkstras-algorithm | ✓ | 45.0ms | 96.28KB |
-| 304 | dinesmans-multiple-dwelling-problem | ✓ | 52.0ms | 94.01KB |
-| 305 | dining-philosophers-1 | ✓ | 34.0ms | 38.70KB |
-| 306 | dining-philosophers-2 | ✓ | 32.0ms | 38.70KB |
-| 307 | disarium-numbers | ✓ | 3.01s | 83.91KB |
-| 308 | discordian-date | ✓ | 53.0ms | 101.55KB |
-| 309 | display-a-linear-combination | ✓ | 51.0ms | 101.29KB |
-| 310 | display-an-outline-as-a-nested-table | ✓ | 56.0ms | 110.75KB |
-| 311 | distance-and-bearing | ✓ | 54.0ms | 103.98KB |
-| 312 | distributed-programming | ✓ | 43.0ms | 77.41KB |
-| 313 | diversity-prediction-theorem | ✓ |  |  |
-| 314 | documentation |   |  |  |
-| 315 | doomsday-rule |   |  |  |
-| 316 | dot-product |   |  |  |
-| 317 | doubly-linked-list-definition-1 |   |  |  |
-| 318 | doubly-linked-list-definition-2 |   |  |  |
-| 319 | doubly-linked-list-element-definition |   |  |  |
-| 320 | doubly-linked-list-traversal |   |  |  |
-| 321 | dragon-curve |   |  |  |
-| 322 | draw-a-clock |   |  |  |
-| 323 | draw-a-cuboid |   |  |  |
-| 324 | draw-a-pixel-1 |   |  |  |
-| 325 | draw-a-rotating-cube |   |  |  |
-| 326 | draw-a-sphere |   |  |  |
-| 327 | dutch-national-flag-problem |   |  |  |
-| 328 | dynamic-variable-names |   |  |  |
-| 329 | earliest-difference-between-prime-gaps |   |  |  |
-| 330 | eban-numbers |   |  |  |
+| 300 | dice-game-probabilities-1 | ✓ | 55.0ms | 56.18KB |
+| 301 | dice-game-probabilities-2 | ✓ | 52.0ms | 10.58KB |
+| 302 | digital-root-multiplicative-digital-root | ✓ | 234.0ms | 120.93KB |
+| 303 | dijkstras-algorithm | ✓ | 62.0ms | 96.28KB |
+| 304 | dinesmans-multiple-dwelling-problem | ✓ | 58.0ms | 94.01KB |
+| 305 | dining-philosophers-1 | ✓ | 37.0ms | 38.70KB |
+| 306 | dining-philosophers-2 | ✓ | 42.0ms | 38.70KB |
+| 307 | disarium-numbers | ✓ | 4.50s | 83.91KB |
+| 308 | discordian-date | ✓ | 64.0ms | 101.55KB |
+| 309 | display-a-linear-combination | ✓ | 64.0ms | 101.29KB |
+| 310 | display-an-outline-as-a-nested-table | ✓ | 83.0ms | 110.75KB |
+| 311 | distance-and-bearing | ✓ | 71.0ms | 103.98KB |
+| 312 | distributed-programming | ✓ | 55.0ms | 77.41KB |
+| 313 | diversity-prediction-theorem | ✓ | 54.0ms | 81.02KB |
+| 314 | documentation | ✓ | 22.0ms | 0B |
+| 315 | doomsday-rule | ✓ | 55.0ms | 77.99KB |
+| 316 | dot-product | ✓ | 23.0ms | 792B |
+| 317 | doubly-linked-list-definition-1 | ✓ | 24.0ms | 0B |
+| 318 | doubly-linked-list-definition-2 | ✓ | 26.0ms | 816B |
+| 319 | doubly-linked-list-element-definition | ✓ | 38.0ms | 38.74KB |
+| 320 | doubly-linked-list-traversal | ✓ | 59.0ms | 82.26KB |
+| 321 | dragon-curve | ✓ | 73.0ms | 87.17KB |
+| 322 | draw-a-clock | ✓ | 41.0ms | 38.40KB |
+| 323 | draw-a-cuboid | ✓ | 65.0ms | 88.09KB |
+| 324 | draw-a-pixel-1 | ✓ | 438.0ms | 388.07KB |
+| 325 | draw-a-rotating-cube | ✓ | 120.0ms | 96.24KB |
+| 326 | draw-a-sphere | ✓ | 55.0ms | 38.53KB |
+| 327 | dutch-national-flag-problem | ✓ | 42.0ms | 54.74KB |
+| 328 | dynamic-variable-names | ✓ | 41.0ms | 38.10KB |
+| 329 | earliest-difference-between-prime-gaps | ✓ | 71.0ms | 112.08KB |
+| 330 | eban-numbers | ✓ | 79.0ms | 102.79KB |
 | 331 | ecdsa-example |   |  |  |
 | 332 | echo-server |   |  |  |
 | 333 | eertree |   |  |  |
