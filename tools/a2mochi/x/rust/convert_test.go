@@ -63,6 +63,7 @@ func TestConvert_Golden(t *testing.T) {
 		"fun_call":       true,
 		"fun_three_args": true,
 		"bool_chain":     true,
+		"break_continue": true,
 		"math_ops":       true,
 		"var_assignment": true,
 		"typed_var":      true,
