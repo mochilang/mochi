@@ -93,18 +93,18 @@ func TestConvert_Golden(t *testing.T) {
 			if err != nil {
 				t.Fatalf("parse: %v", err)
 			}
-			node, err := cs.Convert(astNode)
+			node, err := cs.Transform(astNode)
 			if err != nil {
-				t.Fatalf("convert: %v", err)
+				t.Fatalf("transform: %v", err)
 			}
 			var buf bytes.Buffer
 			if err := ast.Fprint(&buf, node); err != nil {
 				t.Fatalf("print: %v", err)
 			}
 			_ = buf.String()
-			mochiSrc, err := cs.ConvertSource(astNode)
+			mochiSrc, err := cs.Print(node)
 			if err != nil {
-				t.Fatalf("source: %v", err)
+				t.Fatalf("print: %v", err)
 			}
 			mochiPath := filepath.Join(outDir, name+".mochi")
 			if *update {

@@ -36,8 +36,8 @@ func rewriteExpr(s string) string {
 	return s
 }
 
-// Convert converts the parsed Program into a Mochi AST node.
-func Convert(p *Program) (*ast.Node, error) {
+// Transform converts the parsed Program into a Mochi AST node.
+func Transform(p *Program) (*ast.Node, error) {
 	src, err := programToMochi(p)
 	if err != nil {
 		return nil, err
@@ -46,7 +46,18 @@ func Convert(p *Program) (*ast.Node, error) {
 	if err != nil {
 		return nil, err
 	}
-	return ast.FromProgram(prog), nil
+	return nodeFromProgram(prog), nil
+}
+
+func nodeFromProgram(prog *parser.Program) *ast.Node {
+	n := &ast.Node{Kind: "program"}
+	if prog.Package != "" {
+		n.Value = prog.Package
+	}
+	for _, st := range prog.Statements {
+		n.Children = append(n.Children, ast.FromStatement(st))
+	}
+	return n
 }
 
 // --- Implementation below mostly ported from archived any2mochi ---
