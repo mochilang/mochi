@@ -37,29 +37,29 @@ func Convert(p *Program) (*ast.Node, error) {
 	for _, d := range p.Nodes {
 		switch d.Kind {
 		case "var":
-			writeVar(&b, d)
+			emitVar(&b, d)
 		case "funcvar":
-			writeFuncVar(&b, d)
+			emitFuncVar(&b, d)
 		case "func":
-			writeFunc(&b, d)
+			emitFunc(&b, d)
 		case "enum":
-			writeEnum(&b, d)
+			emitEnum(&b, d)
 		case "type":
-			writeType(&b, d)
+			emitType(&b, d)
 		case "alias":
-			writeAlias(&b, d)
+			emitAlias(&b, d)
 		case "print":
-			writePrint(&b, d)
+			emitPrint(&b, d)
 		case "expr":
-			writeExpr(&b, d)
+			emitExpr(&b, d)
 		case "forof":
-			writeForOf(&b, d)
+			emitForOf(&b, d)
 		case "forin":
-			writeForIn(&b, d)
+			emitForIn(&b, d)
 		case "for":
-			writeForRange(&b, d)
+			emitForRange(&b, d)
 		case "while":
-			writeWhile(&b, d)
+			emitWhile(&b, d)
 		}
 	}
 	src := b.String()
@@ -70,19 +70,7 @@ func Convert(p *Program) (*ast.Node, error) {
 	return ast.FromProgram(prog), nil
 }
 
-// Print returns the Mochi source code for the given AST node.
-func Print(n *ast.Node) string {
-	var b strings.Builder
-	_ = ast.Fprint(&b, n)
-	s := b.String()
-	if len(s) > 0 && s[len(s)-1] != '\n' {
-		b.WriteByte('\n')
-		s = b.String()
-	}
-	return s
-}
-
-func writeVar(b *strings.Builder, d Node) {
+func emitVar(b *strings.Builder, d Node) {
 	b.WriteString("let ")
 	b.WriteString(d.Name)
 	if d.Ret != "" {
@@ -96,20 +84,20 @@ func writeVar(b *strings.Builder, d Node) {
 	b.WriteByte('\n')
 }
 
-func writeFuncVar(b *strings.Builder, d Node) {
+func emitFuncVar(b *strings.Builder, d Node) {
 	b.WriteString("let ")
 	b.WriteString(d.Name)
 	b.WriteString(" = ")
-	writeFuncSignature(b, d)
+	emitFuncSignature(b, d)
 }
 
-func writeFunc(b *strings.Builder, d Node) {
+func emitFunc(b *strings.Builder, d Node) {
 	b.WriteString("fun ")
 	b.WriteString(d.Name)
-	writeFuncSignature(b, d)
+	emitFuncSignature(b, d)
 }
 
-func writeFuncSignature(b *strings.Builder, d Node) {
+func emitFuncSignature(b *strings.Builder, d Node) {
 	b.WriteByte('(')
 	for i, p := range d.Params {
 		if i > 0 {
@@ -130,7 +118,7 @@ func writeFuncSignature(b *strings.Builder, d Node) {
 	b.WriteByte('\n')
 }
 
-func writeEnum(b *strings.Builder, d Node) {
+func emitEnum(b *strings.Builder, d Node) {
 	b.WriteString("type ")
 	b.WriteString(d.Name)
 	b.WriteString(" {\n")
@@ -142,7 +130,7 @@ func writeEnum(b *strings.Builder, d Node) {
 	b.WriteString("}\n")
 }
 
-func writeType(b *strings.Builder, d Node) {
+func emitType(b *strings.Builder, d Node) {
 	b.WriteString("type ")
 	b.WriteString(d.Name)
 	b.WriteString(" {\n")
@@ -158,7 +146,7 @@ func writeType(b *strings.Builder, d Node) {
 	b.WriteString("}\n")
 }
 
-func writeAlias(b *strings.Builder, d Node) {
+func emitAlias(b *strings.Builder, d Node) {
 	b.WriteString("type ")
 	b.WriteString(d.Name)
 	b.WriteString(" = ")
@@ -166,34 +154,34 @@ func writeAlias(b *strings.Builder, d Node) {
 	b.WriteByte('\n')
 }
 
-func writePrint(b *strings.Builder, d Node) {
+func emitPrint(b *strings.Builder, d Node) {
 	b.WriteString("print(")
 	b.WriteString(d.Body)
 	b.WriteString(")\n")
 }
 
-func writeExpr(b *strings.Builder, d Node) {
+func emitExpr(b *strings.Builder, d Node) {
 	b.WriteString(convertExpr(d.Expr))
 	b.WriteByte('\n')
 }
 
-func writeForOf(b *strings.Builder, d Node) {
+func emitForOf(b *strings.Builder, d Node) {
 	body := replaceConsoleLogs(d.Body)
 	list := replaceObjectValues(d.List)
 	fmt.Fprintf(b, "for %s in %s {%s}\n", d.Iter, list, body)
 }
 
-func writeForIn(b *strings.Builder, d Node) {
+func emitForIn(b *strings.Builder, d Node) {
 	body := replaceConsoleLogs(d.Body)
 	fmt.Fprintf(b, "for %s in %s {%s}\n", d.Iter, d.List, body)
 }
 
-func writeForRange(b *strings.Builder, d Node) {
+func emitForRange(b *strings.Builder, d Node) {
 	body := replaceConsoleLogs(d.Body)
 	fmt.Fprintf(b, "for %s in %s..%s {%s}\n", d.Iter, d.StartVal, d.EndVal, body)
 }
 
-func writeWhile(b *strings.Builder, d Node) {
+func emitWhile(b *strings.Builder, d Node) {
 	body := replaceConsoleLogs(d.Body)
 	fmt.Fprintf(b, "while %s {%s}\n", d.Cond, body)
 }
