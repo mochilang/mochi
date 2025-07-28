@@ -1,0 +1,64 @@
+// Mochi translation of Rosetta "First-class environments" task
+
+let jobs = 12
+
+fun pad(n: int): string {
+  var s = str(n)
+  while len(s) < 4 { s = " " + s }
+  return s
+}
+
+type HailResult { seq: int, cnt: int, out: string }
+
+fun hail(seq: int, cnt: int): HailResult {
+  var out = pad(seq)
+  if seq != 1 {
+    cnt = cnt + 1
+    if seq % 2 != 0 {
+      seq = 3 * seq + 1
+    } else {
+      seq = seq / 2
+    }
+  }
+  return HailResult{ seq: seq, cnt: cnt, out: out }
+}
+
+fun main() {
+  var seqs: list<int> = []
+  var cnts: list<int> = []
+  for i in 0..jobs {
+    seqs = append(seqs, i + 1)
+    cnts = append(cnts, 0)
+  }
+  while true {
+    var line = ""
+    var i = 0
+    while i < jobs {
+      let res = hail(seqs[i], cnts[i])
+      seqs[i] = res.seq
+      cnts[i] = res.cnt
+      line = line + res.out
+      i = i + 1
+    }
+    print(line)
+    var done = true
+    var j = 0
+    while j < jobs {
+      if seqs[j] != 1 { done = false }
+      j = j + 1
+    }
+    if done { break }
+  }
+  print("")
+  print("COUNTS:")
+  var counts = ""
+  var k = 0
+  while k < jobs {
+    counts = counts + pad(cnts[k])
+    k = k + 1
+  }
+  print(counts)
+  print("")
+}
+
+main()
