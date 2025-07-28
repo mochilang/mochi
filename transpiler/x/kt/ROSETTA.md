@@ -2,9 +2,9 @@
 
 Generated Kotlin sources for Rosetta Code tests are stored in `tests/rosetta/transpiler/Kotlin`.
 
-Last updated: 2025-07-28 11:26 +0700
+Last updated: 2025-07-28 11:42 +0700
 
-Completed tasks: **126/493**
+Completed tasks: **128/493**
 
 ### Checklist
 | Index | Name | Status | Duration | Memory |
@@ -208,8 +208,8 @@ Completed tasks: **126/493**
 | 197 | checkpoint-synchronization-4 |  |  |  |
 | 198 | chernicks-carmichael-numbers |  |  |  |
 | 199 | cheryls-birthday |  |  |  |
-| 200 | chinese-remainder-theorem |  |  |  |
-| 201 | chinese-zodiac |  |  |  |
+| 200 | chinese-remainder-theorem | ✓ | 8.12ms | 134.1 KB |
+| 201 | chinese-zodiac | ✓ | 10.60ms | 124.1 KB |
 | 202 | cholesky-decomposition-1 |  |  |  |
 | 203 | cholesky-decomposition |  |  |  |
 | 204 | chowla-numbers |  |  |  |
