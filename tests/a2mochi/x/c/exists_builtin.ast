@@ -1,0 +1,4 @@
+(program
+  (var flag (int 0))
+  (call print (selector flag))
+)

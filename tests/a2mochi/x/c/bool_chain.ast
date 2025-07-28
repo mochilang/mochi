@@ -1,0 +1,36 @@
+(program
+  (fun boom
+    (type int)
+    (call print (string boom))
+    (return (int 1))
+  )
+  (call print
+    (binary &&
+      (group
+        (binary && (int 1) (int 1))
+      )
+      (int 1)
+    )
+  )
+  (call print
+    (binary &&
+      (group
+        (binary && (int 1) (int 0))
+      )
+      (call boom)
+    )
+  )
+  (call print
+    (binary &&
+      (group
+        (binary &&
+          (group
+            (binary && (int 1) (int 1))
+          )
+          (int 0)
+        )
+      )
+      (call boom)
+    )
+  )
+)

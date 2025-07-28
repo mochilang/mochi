@@ -1,0 +1,15 @@
+(program
+  (assign
+    (index
+      (index (selector matrix) (int 1))
+      (int 0)
+    )
+    (int 5)
+  )
+  (call print
+    (index
+      (index (selector matrix) (int 1))
+      (int 0)
+    )
+  )
+)

@@ -1,0 +1,14 @@
+(program
+  (call print
+    (binary !=
+      (call strstr (selector s) (string cat))
+      (selector NULL)
+    )
+  )
+  (call print
+    (binary !=
+      (call strstr (selector s) (string dog))
+      (selector NULL)
+    )
+  )
+)
