@@ -92,8 +92,20 @@ func Parse(src string) ([]Item, error) {
 						}
 						items = append(items, Item{Kind: "json", Body: arg, Line: j + 1})
 					} else if strings.HasPrefix(t, "mapM_") {
-						if it, ok := parseMapM(t, j+1); ok {
+						buf := t
+						k := j
+						openParen := strings.Count(buf, "(") - strings.Count(buf, ")")
+						openBrack := strings.Count(buf, "[") - strings.Count(buf, "]")
+						for (openParen > 0 || openBrack > 0) && k+1 < len(lines) {
+							k++
+							next := strings.TrimSpace(lines[k])
+							buf += " " + next
+							openParen = strings.Count(buf, "(") - strings.Count(buf, ")")
+							openBrack = strings.Count(buf, "[") - strings.Count(buf, "]")
+						}
+						if it, ok := parseMapM(buf, k+1); ok {
 							items = append(items, it)
+							j = k
 						}
 					}
 					j++
@@ -228,22 +240,28 @@ func parseMapM(line string, lineNum int) (Item, bool) {
 	}
 	varName := strings.TrimSpace(l[2:idx])
 	rest := strings.TrimSpace(l[idx+2:])
+	depth := 1
 	close := -1
 	for i := 0; i < len(rest); i++ {
-		if rest[i] == ')' {
-			if i+1 >= len(rest) || rest[i+1] == ' ' || rest[i+1] == '(' || rest[i+1] == '[' {
+		switch rest[i] {
+		case '(':
+			depth++
+		case ')':
+			depth--
+			if depth == 0 {
 				close = i
+				i = len(rest)
 				break
 			}
 		}
 	}
 	if close == -1 {
-		close = strings.LastIndex(rest, ")")
-	}
-	if close == -1 {
 		return Item{}, false
 	}
 	body := strings.TrimSpace(rest[:close])
+	if strings.HasPrefix(body, "do") {
+		body = strings.TrimSpace(strings.TrimPrefix(body, "do"))
+	}
 	src := strings.TrimSpace(rest[close+1:])
 	if strings.HasPrefix(src, "(") && strings.HasSuffix(src, ")") {
 		src = strings.TrimSuffix(strings.TrimPrefix(src, "("), ")")
@@ -255,6 +273,7 @@ func parseMapM(line string, lineNum int) (Item, bool) {
 			end := strings.TrimSpace(parts[1])
 			end = strings.TrimSuffix(end, "- 1")
 			end = strings.TrimSpace(end)
+			end = "(" + end + " + 1)"
 			return Item{Kind: "for", Name: varName, Start: start, End: end, Body: convertBody(body), Line: lineNum}, true
 		}
 	}
@@ -282,9 +301,10 @@ func convertBody(body string) string {
 }
 
 var (
-	callParen = regexp.MustCompile(`([A-Za-z_][A-Za-z0-9_]*)\s+\(([^()]*)\)`)
-	callBrack = regexp.MustCompile(`([A-Za-z_][A-Za-z0-9_]*)\s+\[([^\]]*)\]`)
-	avgExpr   = regexp.MustCompile(`^fromIntegral\(sum\(([^()]*)\)\)\s*/\s*fromIntegral\(length\(([^()]*)\)\)$`)
+	callParen   = regexp.MustCompile(`([A-Za-z_][A-Za-z0-9_]*)\s+\(([^()]*)\)`)
+	callBrack   = regexp.MustCompile(`([A-Za-z_][A-Za-z0-9_]*)\s+\[([^\]]*)\]`)
+	avgExpr     = regexp.MustCompile(`^fromIntegral\(sum\(([^()]*)\)\)\s*/\s*fromIntegral\(length\(([^()]*)\)\)$`)
+	mapFromList = regexp.MustCompile(`^Map\.fromList\(\[(.*)\]\)$`)
 )
 
 // fixFuncCalls converts Haskell-style function application to Mochi calls.
@@ -311,6 +331,22 @@ func fixFuncCalls(expr string) string {
 func convertExpr(expr string) string {
 	expr = strings.TrimSpace(expr)
 	expr = fixFuncCalls(expr)
+	if m := mapFromList.FindStringSubmatch(expr); m != nil {
+		entries := strings.Split(m[1], "),")
+		var parts []string
+		for _, e := range entries {
+			e = strings.TrimSpace(e)
+			e = strings.TrimPrefix(e, "(")
+			e = strings.TrimSuffix(e, ")")
+			kv := strings.SplitN(e, ",", 2)
+			if len(kv) == 2 {
+				key := strings.TrimSpace(kv[0])
+				val := strings.TrimSpace(kv[1])
+				parts = append(parts, key+": "+val)
+			}
+		}
+		return "{" + strings.Join(parts, ", ") + "}"
+	}
 	if m := avgExpr.FindStringSubmatch(expr); m != nil {
 		if strings.TrimSpace(m[1]) == strings.TrimSpace(m[2]) {
 			return "avg(" + strings.TrimSpace(m[1]) + ")"
@@ -344,6 +380,9 @@ func convertExpr(expr string) string {
 	}
 	expr = strings.ReplaceAll(expr, "True", "true")
 	expr = strings.ReplaceAll(expr, "False", "false")
+	if strings.ContainsAny(expr, "()") {
+		return expr
+	}
 	parts := strings.Fields(expr)
 	if len(parts) > 1 {
 		ops := map[string]bool{"+": true, "-": true, "*": true, "/": true, "%": true, "&&": true, "||": true, "==": true, "<": true, ">": true, "<=": true, ">=": true}
