@@ -253,6 +253,12 @@ func simpleExpr(n pnode.Node) (string, bool) {
 				args = append(args, val)
 			}
 		}
+		switch name {
+		case "array_sum":
+			name = "sum"
+		case "count":
+			name = "len"
+		}
 		return fmt.Sprintf("%s(%s)", name, strings.Join(args, ", ")), true
 	case *expr.Ternary:
 		if v.IfFalse != nil {

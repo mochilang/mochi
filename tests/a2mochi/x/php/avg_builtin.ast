@@ -2,10 +2,10 @@
   (call print
     (group
       (binary /
-        (call array_sum
+        (call sum
           (list (int 1) (int 2) (int 3))
         )
-        (call count
+        (call len
           (list (int 1) (int 2) (int 3))
         )
       )
