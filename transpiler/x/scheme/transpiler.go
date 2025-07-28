@@ -1199,6 +1199,8 @@ func convertParserPostfix(pf *parser.PostfixExpr) (Node, error) {
 				}}
 			} else if t.Simple != nil && *t.Simple == "string" {
 				node = &List{Elems: []Node{Symbol("to-str"), node}}
+			} else if t.Simple != nil && *t.Simple == "float" {
+				node = &List{Elems: []Node{Symbol("+"), FloatLit(0), node}}
 			} // ignore other casts
 		case op.Field != nil && op.Field.Name == "contains" && i+1 < len(pf.Ops) && pf.Ops[i+1].Call != nil:
 			call := pf.Ops[i+1].Call
@@ -2269,18 +2271,18 @@ func makeBinaryTyped(op string, left, right Node, lt, rt types.Type) Node {
 		_, ok := t.(types.ListType)
 		return ok
 	}
-	isFloatType := func(t types.Type) bool {
-		_, ok := t.(types.FloatType)
+	isIntType := func(t types.Type) bool {
+		_, ok := t.(types.IntType)
 		return ok
 	}
 	if op == "/" {
-		if !isFloatType(lt) && !isFloatType(rt) {
+		if isIntType(lt) && isIntType(rt) {
 			return &List{Elems: []Node{Symbol("quotient"), left, right}}
 		}
 		return &List{Elems: []Node{Symbol("/"), left, right}}
 	}
 	if op == "%" {
-		if !isFloatType(lt) && !isFloatType(rt) {
+		if isIntType(lt) && isIntType(rt) {
 			return &List{Elems: []Node{Symbol("modulo"), left, right}}
 		}
 		needBase = true
