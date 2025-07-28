@@ -957,7 +957,7 @@ type StrBuiltin struct {
 func (s *StrBuiltin) emit(w io.Writer) {
 	switch s.Typ {
 	case "float":
-		io.WriteString(w, "(string_of_float (")
+		io.WriteString(w, "(Printf.sprintf \"%.16g\" (")
 		s.Expr.emit(w)
 		io.WriteString(w, "))")
 	case "bigint":
@@ -1160,9 +1160,9 @@ type AppendBuiltin struct {
 }
 
 func (a *AppendBuiltin) emit(w io.Writer) {
-	io.WriteString(w, "(List.append ")
+	io.WriteString(w, "(List.append (")
 	a.List.emit(w)
-	io.WriteString(w, " [")
+	io.WriteString(w, ") [")
 	if a.Elem != "" {
 		io.WriteString(w, "(Obj.magic (")
 		a.Value.emit(w)
