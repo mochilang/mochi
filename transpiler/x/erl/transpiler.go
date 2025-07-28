@@ -1175,7 +1175,7 @@ func isFloatExpr(e Expr, env *types.Env, ctx *context) bool {
 			return true
 		}
 		if env != nil {
-			name := strings.ToLower(v.Func)
+			name := v.Func
 			if fn, ok := env.GetFunc(name); ok && fn.Return != nil {
 				if fn.Return.Simple != nil && *fn.Return.Simple == "float" {
 					return true
@@ -1484,7 +1484,7 @@ func isMapExpr(e Expr, env *types.Env, ctx *context) bool {
 			}
 		}
 		if env != nil {
-			name := strings.ToLower(v.Func)
+			name := v.Func
 			if fn, ok := env.GetFunc(name); ok && fn.Return != nil {
 				if fn.Return.Generic != nil && fn.Return.Generic.Name == "map" {
 					return true
@@ -3053,11 +3053,16 @@ func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, erro
 	useRepeat = false
 	useNot = false
 	mutatedFuncs = map[string]int{
-		"topple":  0,
-		"fill":    0,
-		"fillrgb": 0,
-		"line":    0,
-		"bezier3": 0,
+		"topple":       0,
+		"fill":         0,
+		"fillrgb":      0,
+		"line":         0,
+		"bezier3":      0,
+		"newnode":      0,
+		"pushfront":    0,
+		"pushback":     0,
+		"insertbefore": 0,
+		"insertafter":  0,
 	}
 	p := &Program{}
 	for _, st := range prog.Statements {

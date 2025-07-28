@@ -1,0 +1,17 @@
+/workspace/mochi/tests/rosetta/transpiler/erl/doomsday-rule.erl:55:20: Warning: variable 'Neg_3' exported from 'case' (line 36, column 9)
+%   55| {Digits, I_4, N_2, Neg_3, Str} = Fun(Digits, I_3, N, Neg_3, Str),
+%     |                    ^
+
+Days of week given by Doomsday rule:
+1800-01-06 -> Sunday
+1875-03-29 -> Monday
+1915-12-07 -> Tuesday
+1970-12-23 -> Wednesday
+2043-05-14 -> Thursday
+2077-02-12 -> Thursday
+2101-04-02 -> Saturday
+{
+  "duration_us": 4883,
+  "memory_bytes": 2379968,
+  "name": "main"
+}
