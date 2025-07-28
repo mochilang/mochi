@@ -1138,13 +1138,20 @@ func (a *AbsBuiltin) emitPrint(w io.Writer) {
 type AppendBuiltin struct {
 	List  Expr
 	Value Expr
+	Elem  string
 }
 
 func (a *AppendBuiltin) emit(w io.Writer) {
 	io.WriteString(w, "(List.append ")
 	a.List.emit(w)
 	io.WriteString(w, " [")
-	a.Value.emit(w)
+	if a.Elem != "" {
+		io.WriteString(w, "(Obj.magic (")
+		a.Value.emit(w)
+		fmt.Fprintf(w, ") : %s)", ocamlType(a.Elem))
+	} else {
+		a.Value.emit(w)
+	}
 	io.WriteString(w, "])")
 }
 
@@ -2882,6 +2889,12 @@ func transpileStmt(st *parser.Statement, env *types.Env, vars map[string]VarInfo
 						valTyp = typ
 					}
 				}
+			} else if valTyp == "list" && strings.HasPrefix(typ, "list-") {
+				expr = defaultValueExpr(typ)
+				valTyp = typ
+			} else if valTyp == "map" && strings.HasPrefix(typ, "map-") {
+				expr = defaultValueExpr(typ)
+				valTyp = typ
 			}
 		} else if typ != "" {
 			expr = defaultValueExpr(typ)
@@ -4757,11 +4770,19 @@ func convertCall(c *parser.CallExpr, env *types.Env, vars map[string]VarInfo) (E
 		if err != nil {
 			return nil, "", err
 		}
+		elem := ""
+		if strings.HasPrefix(typ, "list-") {
+			elem = strings.TrimPrefix(typ, "list-")
+			if vtyp == "" {
+				valArg = &CastExpr{Expr: valArg, Type: "obj_to_" + elem}
+			}
+		}
 		resTyp := typ
 		if typ == "list" && vtyp != "" {
 			resTyp = "list-" + vtyp
+			elem = vtyp
 		}
-		return &AppendBuiltin{List: listArg, Value: valArg}, resTyp, nil
+		return &AppendBuiltin{List: listArg, Value: valArg, Elem: elem}, resTyp, nil
 	}
 	if c.Func == "sum" && len(c.Args) == 1 {
 		listArg, typ, err := convertExpr(c.Args[0], env, vars)
