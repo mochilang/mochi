@@ -440,6 +440,8 @@ func mapFieldType(typ, field string) (string, bool) {
 			return "map-int", true
 		case "left", "right":
 			return "map", true
+		case "ele", "elements", "elems":
+			return "list-float", true
 		}
 	}
 	if strings.HasPrefix(typ, "map-") {
@@ -1368,6 +1370,47 @@ type FuncCall struct {
 	Name string
 	Args []Expr
 	Ret  string
+}
+
+// ExprCall represents calling an expression that evaluates to a function.
+type ExprCall struct {
+	Fn   Expr
+	Args []Expr
+	Ret  string
+}
+
+func (c *ExprCall) emit(w io.Writer) {
+	io.WriteString(w, "(")
+	c.Fn.emit(w)
+	if len(c.Args) == 0 {
+		io.WriteString(w, " ())")
+		return
+	}
+	for _, a := range c.Args {
+		io.WriteString(w, " (")
+		a.emit(w)
+		io.WriteString(w, ")")
+	}
+	io.WriteString(w, ")")
+}
+
+func (c *ExprCall) emitPrint(w io.Writer) {
+	switch c.Ret {
+	case "int":
+		io.WriteString(w, "string_of_int ")
+		c.emit(w)
+	case "float":
+		io.WriteString(w, "string_of_float ")
+		c.emit(w)
+	case "string":
+		c.emit(w)
+	case "bool":
+		io.WriteString(w, "string_of_bool ")
+		c.emit(w)
+	default:
+		io.WriteString(w, "__show ")
+		c.emit(w)
+	}
 }
 
 func (f *FuncCall) emit(w io.Writer) {
@@ -4070,6 +4113,32 @@ func convertPostfix(p *parser.PostfixExpr, env *types.Env, vars map[string]VarIn
 			expr = &SliceExpr{Col: expr, Start: startExpr, End: endExpr, Typ: typ}
 			i++
 		case op.Call != nil:
+			if typ == "func" || strings.HasPrefix(typ, "func-") {
+				args := make([]Expr, len(op.Call.Args))
+				for j, a := range op.Call.Args {
+					ex, at, err := convertExpr(a, env, vars)
+					if err != nil {
+						return nil, "", err
+					}
+					if at == "int" {
+						ex = &CastExpr{Expr: ex, Type: "int_to_obj"}
+					} else if at == "float" {
+						ex = &CastExpr{Expr: ex, Type: "float_to_obj"}
+					}
+					args[j] = ex
+				}
+				ret := ""
+				if strings.HasPrefix(typ, "func-") {
+					ret = strings.TrimPrefix(typ, "func-")
+					if ret == "any" {
+						ret = ""
+					}
+				}
+				expr = &ExprCall{Fn: expr, Args: args, Ret: ret}
+				typ = ret
+				i++
+				continue
+			}
 			if idx, ok := expr.(*MapIndexExpr); ok {
 				if key, ok := idx.Key.(*StringLit); ok && key.Value == "get" {
 					if len(op.Call.Args) != 2 {
