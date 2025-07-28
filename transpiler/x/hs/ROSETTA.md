@@ -2,7 +2,7 @@
 
 Generated Haskell code for Rosetta Mochi programs. Each `.hs` file is in `tests/rosetta/transpiler/Haskell` with matching `.out` output. Failures produce a `.error` file.
 
-Last updated: 2025-07-28 11:14 GMT+7
+Last updated: 2025-07-28 11:48 GMT+7
 
 ## Checklist
 | Index | Name | Status | Duration | Memory |
@@ -24,7 +24,7 @@ Last updated: 2025-07-28 11:14 GMT+7
 | 15 | DNS-query | ✓ |  |  |
 | 16 | Duffinian-numbers |  |  |  |
 | 17 | Find-if-a-point-is-within-a-triangle |  |  |  |
-| 18 | a+b | ✓ |  |  |
+| 18 | a+b | ✓ | 66µs | 31.0 MB |
 | 19 | abbreviations-automatic |  |  |  |
 | 20 | abbreviations-easy |  |  |  |
 | 21 | abbreviations-simple |  |  |  |
