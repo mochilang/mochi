@@ -101,6 +101,13 @@ var aliasCounter int
 var usesFmt bool
 var envTypes map[string]types.Type
 
+func isNullExpr(e Expr) bool {
+	if r, ok := e.(*RawExpr); ok {
+		return strings.TrimSpace(r.Code) == "null"
+	}
+	return false
+}
+
 // reserved lists C# reserved keywords that cannot be used as identifiers.
 var reserved = map[string]bool{
 	"abstract": true, "as": true, "base": true, "bool": true, "break": true,
@@ -200,6 +207,8 @@ func (s *LetStmt) emit(w io.Writer) {
 	}
 	if t != "" && t != "object" {
 		fmt.Fprintf(w, "%s %s = ", t, name)
+	} else if isNullExpr(s.Value) {
+		fmt.Fprintf(w, "object %s = ", name)
 	} else {
 		fmt.Fprintf(w, "var %s = ", name)
 	}
@@ -227,6 +236,8 @@ func (s *VarStmt) emit(w io.Writer) {
 	}
 	if t != "" && t != "object" {
 		fmt.Fprintf(w, "%s %s", t, name)
+	} else if isNullExpr(s.Value) {
+		fmt.Fprintf(w, "object %s", name)
 	} else {
 		fmt.Fprintf(w, "var %s", name)
 	}
@@ -2022,19 +2033,6 @@ func (a *AppendExpr) emit(w io.Writer) {
 				t = ft
 			}
 		}
-	}
-	elem := strings.TrimSuffix(t, "[]")
-	itemT := typeOfExpr(a.Item)
-	cast := ""
-	if t == "" || strings.HasSuffix(t, "object[]") {
-		cast = "object"
-	} else if itemT == "" || itemT == "object" || itemT == "object[]" {
-		cast = elem
-	} else if itemT != elem {
-		cast = elem
-	}
-	if cast != "" {
-		fmt.Fprintf(w, "(%s)", cast)
 	}
 	a.Item.emit(w)
 	fmt.Fprint(w, ")))")
