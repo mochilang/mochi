@@ -14,6 +14,7 @@ import (
 const version = "0.10.47"
 
 var callAssignPattern = regexp.MustCompile(`^(\w+)\((.*),\s*([A-Za-z]\w*)\)$`)
+var subStringAssignPattern = regexp.MustCompile(`^sub_string\(([^,]+),\s*([^,]+),\s*([^,]+),\s*[^,]+,\s*([A-Za-z]\w*)\)$`)
 
 // ConvertSource converts Prolog source code into Mochi source.
 func ConvertSource(src string) (string, error) {
@@ -122,9 +123,11 @@ func parseBody(body string) []string {
 			continue
 		case strings.HasPrefix(c, "write("):
 			arg := strings.TrimSuffix(strings.TrimPrefix(c, "write("), ")")
+			arg = strings.ReplaceAll(arg, "'", "\"")
 			out = append(out, "  print("+arg+")")
 		case strings.HasPrefix(c, "writeln("):
 			arg := strings.TrimSuffix(strings.TrimPrefix(c, "writeln("), ")")
+			arg = strings.ReplaceAll(arg, "'", "\"")
 			out = append(out, "  print("+arg+")")
 		case c == "nl":
 			continue
@@ -150,6 +153,13 @@ func parseBody(body string) []string {
 			name := strings.TrimSpace(parts[0])
 			expr := convertExpr(strings.TrimSpace(parts[1]))
 			out = append(out, "  let "+name+" = "+expr)
+		case subStringAssignPattern.MatchString(c):
+			m := subStringAssignPattern.FindStringSubmatch(c)
+			src := strings.TrimSpace(m[1])
+			start := strings.TrimSpace(m[2])
+			length := strings.TrimSpace(m[3])
+			outVar := strings.TrimSpace(m[4])
+			out = append(out, "  let "+outVar+" = substr("+src+", "+start+", "+length+")")
 		case callAssignPattern.MatchString(c):
 			m := callAssignPattern.FindStringSubmatch(c)
 			name := m[1]
@@ -177,6 +187,7 @@ func parseBody(body string) []string {
 func splitClauses(body string) []string {
 	var clauses []string
 	depth := 0
+	brack := 0
 	start := 0
 	for i, r := range body {
 		switch r {
@@ -186,8 +197,14 @@ func splitClauses(body string) []string {
 			if depth > 0 {
 				depth--
 			}
+		case '[':
+			brack++
+		case ']':
+			if brack > 0 {
+				brack--
+			}
 		case ',':
-			if depth == 0 {
+			if depth == 0 && brack == 0 {
 				clauses = append(clauses, strings.TrimSpace(body[start:i]))
 				start = i + 1
 			}
@@ -202,5 +219,9 @@ func splitClauses(body string) []string {
 func convertExpr(expr string) string {
 	expr = strings.ReplaceAll(expr, "=:=", "==")
 	expr = strings.ReplaceAll(expr, "=\\=", "!=")
+	expr = strings.ReplaceAll(expr, "@>=", ">=")
+	expr = strings.ReplaceAll(expr, "@=<", "<=")
+	expr = strings.ReplaceAll(expr, "@>", ">")
+	expr = strings.ReplaceAll(expr, "@<", "<")
 	return expr
 }

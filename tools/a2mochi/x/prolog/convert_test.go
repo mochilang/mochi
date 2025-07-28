@@ -43,21 +43,29 @@ func TestConvert_Golden(t *testing.T) {
 	}
 
 	allowed := map[string]bool{
-		"avg_builtin":    true,
-		"print_hello":    true,
-		"unary_neg":      true,
-		"for_loop":       true,
-		"len_builtin":    true,
-		"sum_builtin":    true,
-		"let_and_print":  true,
-		"math_ops":       true,
-		"fun_call":       true,
-               "fun_three_args": true,
-               "basic_compare":  true,
-               "if_then_else":   true,
-               "if_else":        true,
-               "while_loop":     true,
-       }
+		"avg_builtin":        true,
+		"print_hello":        true,
+		"unary_neg":          true,
+		"for_loop":           true,
+		"len_builtin":        true,
+		"sum_builtin":        true,
+		"let_and_print":      true,
+		"math_ops":           true,
+		"fun_call":           true,
+		"fun_three_args":     true,
+		"basic_compare":      true,
+		"if_then_else":       true,
+		"if_else":            true,
+		"while_loop":         true,
+		"append_builtin":     true,
+		"binary_precedence":  true,
+		"cast_string_to_int": true,
+		"len_string":         true,
+		"string_concat":      true,
+		"string_index":       true,
+		"slice":              true,
+		"string_compare":     true,
+	}
 
 	outDir := filepath.Join(root, "tests/a2mochi/x/prolog")
 	os.MkdirAll(outDir, 0o755)

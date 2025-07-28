@@ -1,0 +1,21 @@
+// a2mochi 0.10.47 2025-07-28 16:56:05
+/*
+:- style_check(-singleton).
+:- initialization(main).
+
+main :-
+    writeln(2),
+    writeln(3),
+    writeln(1),
+    writeln(2),
+    L2 is 4 - 1, sub_string("hello", 1, L2, _, R2), writeln(R2).
+*/
+fun main() {
+  print(2)
+  print(3)
+  print(1)
+  print(2)
+  let L2 = 4 - 1
+  let R2 = substr("hello", 1, L2)
+  print(R2)
+}

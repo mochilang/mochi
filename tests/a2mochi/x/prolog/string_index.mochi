@@ -1,0 +1,14 @@
+// a2mochi 0.10.47 2025-07-28 16:56:05
+/*
+:- initialization(main).
+:- style_check(-singleton).
+
+main :-
+    S = "mochi",
+    sub_string(S, 1, 1, _, R1), writeln(R1).
+*/
+fun main() {
+  let S = "mochi"
+  let R1 = substr(S, 1, 1)
+  print(R1)
+}
