@@ -1026,6 +1026,20 @@ func (u *LowerExpr) emit(w io.Writer) {
 	io.WriteString(w, ".to_lowercase())")
 }
 
+// SplitExpr represents a call to the `split` builtin.
+type SplitExpr struct {
+	Str Expr
+	Sep Expr
+}
+
+func (s *SplitExpr) emit(w io.Writer) {
+	s.Str.emit(w)
+	io.WriteString(w, ".split(")
+	s.Sep.emit(w)
+	io.WriteString(w, ")")
+	io.WriteString(w, ".map(|x| x.to_string()).collect::<Vec<String>>()")
+}
+
 // SubstringExpr represents a call to the `substring` builtin.
 type SubstringExpr struct {
 	Str   Expr
@@ -1458,6 +1472,13 @@ func (b *BinaryExpr) emit(w io.Writer) {
 	}
 	if b.Op == "in" {
 		rt := inferType(b.Right)
+		if rt == "" {
+			if nr, ok := b.Right.(*NameRef); ok && mapVars[nr.Name] {
+				rt = "HashMap<String, i64>"
+			} else if _, ok := b.Right.(*MapLit); ok {
+				rt = "HashMap<String, i64>"
+			}
+		}
 		if rt == "String" {
 			b.Right.emit(w)
 			io.WriteString(w, ".contains(")
@@ -1488,6 +1509,20 @@ func (b *BinaryExpr) emit(w io.Writer) {
 				b.Left.emit(w)
 				io.WriteString(w, ")")
 			}
+			return
+		}
+		if nr, ok := b.Right.(*NameRef); ok && mapVars[nr.Name] {
+			b.Right.emit(w)
+			io.WriteString(w, ".contains_key(&")
+			b.Left.emit(w)
+			io.WriteString(w, ")")
+			return
+		}
+		if _, ok := b.Right.(*MapLit); ok {
+			b.Right.emit(w)
+			io.WriteString(w, ".contains_key(&")
+			b.Left.emit(w)
+			io.WriteString(w, ")")
 			return
 		}
 	}
@@ -3481,6 +3516,9 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 		if name == "lower" && len(args) == 1 {
 			return &LowerExpr{Value: args[0]}, nil
 		}
+		if name == "split" && len(args) == 2 {
+			return &SplitExpr{Str: args[0], Sep: args[1]}, nil
+		}
 		if name == "contains" && len(args) == 2 {
 			funReturns[name] = "bool"
 			return &MethodCallExpr{Receiver: args[0], Name: "contains", Args: []Expr{args[1]}}, nil
@@ -5206,6 +5244,11 @@ func exprNode(e Expr) *ast.Node {
 		return &ast.Node{Kind: "max", Children: []*ast.Node{exprNode(ex.List)}}
 	case *JoinExpr:
 		return &ast.Node{Kind: "join", Children: []*ast.Node{exprNode(ex.List)}}
+	case *SplitExpr:
+		n := &ast.Node{Kind: "split"}
+		n.Children = append(n.Children, exprNode(ex.Str))
+		n.Children = append(n.Children, exprNode(ex.Sep))
+		return n
 	case *NowExpr:
 		return &ast.Node{Kind: "now"}
 	case *SubstringExpr:
