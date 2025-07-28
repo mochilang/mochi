@@ -372,6 +372,10 @@ func convertExpr(expr string) string {
 			return parts[1] + " / " + parts[2]
 		}
 	}
+	if strings.HasPrefix(expr, "length(") && strings.HasSuffix(expr, ")") {
+		inner := strings.TrimSuffix(strings.TrimPrefix(expr, "length("), ")")
+		return "len(" + inner + ")"
+	}
 	if strings.Contains(expr, "`mod`") {
 		parts := strings.Split(expr, "`mod`")
 		if len(parts) == 2 {
