@@ -1,0 +1,69 @@
+fun weekday(y: int, m: int, d: int): int {
+  var yy = y
+  var mm = m
+  if mm < 3 {
+    mm = mm + 12
+    yy = yy - 1
+  }
+  let k = yy % 100
+  let j = (yy / 100) as int
+  let a = ((13 * (mm + 1)) / 5) as int
+  let b = (k / 4) as int
+  let c = (j / 4) as int
+  return (d + a + k + b + c + 5 * j) % 7
+}
+
+fun main() {
+  let months31 = [1, 3, 5, 7, 8, 10, 12]
+  let names = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+
+  var count = 0
+  var firstY = 0
+  var firstM = 0
+  var lastY = 0
+  var lastM = 0
+  var haveNone: list<int> = []
+
+  print("Months with five weekends:")
+  for year in 1900..2101 {
+    var hasOne = false
+    for m in months31 {
+      if weekday(year, m, 1) == 6 {
+        print("  " + str(year) + " " + names[m-1])
+        count = count + 1
+        hasOne = true
+        lastY = year
+        lastM = m
+        if firstY == 0 {
+          firstY = year
+          firstM = m
+        }
+      }
+    }
+    if !hasOne {
+      haveNone = append(haveNone, year)
+    }
+  }
+  print(str(count) + " total")
+  print("")
+
+  print("First five dates of weekends:")
+  for i in 0..5 {
+    let day = 1 + 7 * i
+    print("  Friday, " + names[firstM-1] + " " + str(day) + ", " + str(firstY))
+  }
+  print("Last five dates of weekends:")
+  for i in 0..5 {
+    let day = 1 + 7 * i
+    print("  Friday, " + names[lastM-1] + " " + str(day) + ", " + str(lastY))
+  }
+  print("")
+
+  print("Years with no months with five weekends:")
+  for y in haveNone {
+    print("  " + str(y))
+  }
+  print(str(len(haveNone)) + " total")
+}
+
+main()
