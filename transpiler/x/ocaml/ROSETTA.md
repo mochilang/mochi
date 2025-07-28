@@ -2,7 +2,7 @@
 
 This directory contains OCaml code generated from Rosetta Code programs in `tests/rosetta/x/Mochi`.
 
-Completed programs: 122/467
+Completed programs: 143/467
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -165,37 +165,37 @@ Completed programs: 122/467
 | 157 | call-a-function-4 | ✓ |  |  |
 | 158 | call-a-function-5 | ✓ |  |  |
 | 159 | call-a-function-6 | ✓ |  |  |
-| 160 | call-a-function-7 |   |  |  |
-| 161 | call-a-function-8 |   |  |  |
-| 162 | call-a-function-9 |   |  |  |
-| 163 | call-an-object-method-1 |   |  |  |
-| 164 | call-an-object-method-2 |   |  |  |
-| 165 | call-an-object-method-3 |   |  |  |
-| 166 | call-an-object-method |   |  |  |
-| 167 | camel-case-and-snake-case |   |  |  |
-| 168 | canny-edge-detector |   |  |  |
-| 169 | canonicalize-cidr |   |  |  |
-| 170 | cantor-set |   |  |  |
-| 171 | carmichael-3-strong-pseudoprimes |   |  |  |
-| 172 | cartesian-product-of-two-or-more-lists-1 |   |  |  |
-| 173 | cartesian-product-of-two-or-more-lists-2 |   |  |  |
-| 174 | cartesian-product-of-two-or-more-lists-3 |   |  |  |
-| 175 | cartesian-product-of-two-or-more-lists-4 |   |  |  |
-| 176 | case-sensitivity-of-identifiers |   |  |  |
-| 177 | casting-out-nines |   |  |  |
-| 178 | catalan-numbers-1 |   |  |  |
-| 179 | catalan-numbers-2 |   |  |  |
-| 180 | catalan-numbers-pascals-triangle |   |  |  |
-| 181 | catamorphism |   |  |  |
-| 182 | catmull-clark-subdivision-surface |   |  |  |
-| 183 | chaocipher |   |  |  |
-| 184 | chaos-game |   |  |  |
-| 185 | character-codes-1 |   |  |  |
-| 186 | character-codes-2 |   |  |  |
-| 187 | character-codes-3 |   |  |  |
-| 188 | character-codes-4 |   |  |  |
-| 189 | character-codes-5 |   |  |  |
-| 190 | chat-server |   |  |  |
+| 160 | call-a-function-7 | ✓ | 2.0µs | 208B |
+| 161 | call-a-function-8 | ✓ | 10.0µs | 1.82KB |
+| 162 | call-a-function-9 | ✓ | 3.0µs | 520B |
+| 163 | call-an-object-method-1 | error |  |  |
+| 164 | call-an-object-method-2 | error |  |  |
+| 165 | call-an-object-method-3 | error |  |  |
+| 166 | call-an-object-method | error |  |  |
+| 167 | camel-case-and-snake-case | ✓ | 235.0µs | 38.01KB |
+| 168 | canny-edge-detector | ✓ | 360.0µs | 75.23KB |
+| 169 | canonicalize-cidr | error |  |  |
+| 170 | cantor-set | ✓ | 213.0µs | 125.97KB |
+| 171 | carmichael-3-strong-pseudoprimes | ✓ | 1.0ms | 19.37KB |
+| 172 | cartesian-product-of-two-or-more-lists-1 | ✓ | 56.0µs | 3.67KB |
+| 173 | cartesian-product-of-two-or-more-lists-2 | error |  |  |
+| 174 | cartesian-product-of-two-or-more-lists-3 | error |  |  |
+| 175 | cartesian-product-of-two-or-more-lists-4 | error |  |  |
+| 176 | case-sensitivity-of-identifiers | ✓ | 43.0µs | 2.72KB |
+| 177 | casting-out-nines | ✓ | 3.0ms | 632.52KB |
+| 178 | catalan-numbers-1 | ✓ | 31.0µs | 448B |
+| 179 | catalan-numbers-2 | ✓ | 27.0µs | 448B |
+| 180 | catalan-numbers-pascals-triangle | ✓ | 369.0µs | 121.80KB |
+| 181 | catamorphism | error |  |  |
+| 182 | catmull-clark-subdivision-surface | error |  |  |
+| 183 | chaocipher | ✓ | 158.0µs | 34.91KB |
+| 184 | chaos-game | ✓ |  |  |
+| 185 | character-codes-1 | ✓ | 100.0µs | 240B |
+| 186 | character-codes-2 | ✓ | 48.0µs | 224B |
+| 187 | character-codes-3 | ✓ | 42.0µs | 656B |
+| 188 | character-codes-4 | ✓ | 26.0µs | 272B |
+| 189 | character-codes-5 | ✓ | 21.0µs | 224B |
+| 190 | chat-server | ✓ | 40.0µs | 1.23KB |
 | 191 | check-machin-like-formulas |   |  |  |
 | 192 | check-that-file-exists |   |  |  |
 | 193 | checkpoint-synchronization-1 |   |  |  |
@@ -473,4 +473,4 @@ Completed programs: 122/467
 | 465 | sorting-algorithms-bubble-sort |   |  |  |
 | 466 | window-management |   |  |  |
 | 467 | zumkeller-numbers |   |  |  |
-Last updated 2025-07-27 17:37 UTC
+Last updated 2025-07-27 18:10 UTC
