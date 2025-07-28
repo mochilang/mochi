@@ -62,12 +62,23 @@ func Convert(n *Node) (*mochias.Node, error) {
 				})
 			}
 		case *ast.FuncDecl:
-			if d.Name.Name != "main" || d.Body == nil {
+			if d.Body == nil {
 				continue
 			}
-			for _, st := range d.Body.List {
-				root.Children = append(root.Children, stmtToNode(st)...)
+			if d.Name.Name == "main" {
+				for _, st := range d.Body.List {
+					root.Children = append(root.Children, stmtToNode(st)...)
+				}
+				continue
 			}
+			fn := &mochias.Node{Kind: "fun", Value: d.Name.Name}
+			for _, p := range d.Type.Params.List {
+				for _, n := range p.Names {
+					fn.Children = append(fn.Children, &mochias.Node{Kind: "param", Value: n.Name})
+				}
+			}
+			fn.Children = append(fn.Children, blockToNode(d.Body))
+			root.Children = append(root.Children, fn)
 		}
 	}
 
@@ -143,6 +154,14 @@ func stmtToNode(st ast.Stmt) []*mochias.Node {
 			n.Children = append(n.Children, elseBlk)
 		}
 		return []*mochias.Node{n}
+	case *ast.ReturnStmt:
+		if len(s.Results) == 1 {
+			return []*mochias.Node{{
+				Kind:     "return",
+				Children: []*mochias.Node{exprToNode(s.Results[0])},
+			}}
+		}
+		return []*mochias.Node{{Kind: "return"}}
 	}
 	return nil
 }
@@ -185,6 +204,11 @@ func callToNode(c *ast.CallExpr) *mochias.Node {
 			}
 			return n
 		}
+		n := &mochias.Node{Kind: "call", Value: fn.Name}
+		for _, arg := range c.Args {
+			n.Children = append(n.Children, exprToNode(arg))
+		}
+		return n
 	}
 	return nil
 }
@@ -214,6 +238,48 @@ func exprToNode(e ast.Expr) *mochias.Node {
 		if n := callToNode(v); n != nil {
 			return n
 		}
+		if fn, ok := v.Fun.(*ast.FuncLit); ok {
+			// detect pattern: func() int { if cond { return 1 } return 0 }()
+			if len(fn.Body.List) == 1 {
+				if ifs, ok := fn.Body.List[0].(*ast.IfStmt); ok {
+					if len(ifs.Body.List) == 1 {
+						if ret, ok := ifs.Body.List[0].(*ast.ReturnStmt); ok && len(ret.Results) == 1 {
+							if bl, ok := ret.Results[0].(*ast.BasicLit); ok && bl.Value == "1" {
+								if ifs.Else != nil {
+									if eb, ok := ifs.Else.(*ast.BlockStmt); ok && len(eb.List) == 1 {
+										if ret0, ok := eb.List[0].(*ast.ReturnStmt); ok && len(ret0.Results) == 1 {
+											if bl0, ok := ret0.Results[0].(*ast.BasicLit); ok && bl0.Value == "0" {
+												return exprToNode(ifs.Cond)
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			} else if len(fn.Body.List) == 2 {
+				if ifs, ok := fn.Body.List[0].(*ast.IfStmt); ok {
+					if len(ifs.Body.List) == 1 {
+						if ret, ok := ifs.Body.List[0].(*ast.ReturnStmt); ok && len(ret.Results) == 1 {
+							if bl, ok := ret.Results[0].(*ast.BasicLit); ok && bl.Value == "1" {
+								if ret0, ok := fn.Body.List[1].(*ast.ReturnStmt); ok && len(ret0.Results) == 1 {
+									if bl0, ok := ret0.Results[0].(*ast.BasicLit); ok && bl0.Value == "0" {
+										return exprToNode(ifs.Cond)
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		n := &mochias.Node{Kind: "call"}
+		n.Children = append(n.Children, exprToNode(v.Fun))
+		for _, arg := range v.Args {
+			n.Children = append(n.Children, exprToNode(arg))
+		}
+		return n
 	case *ast.ParenExpr:
 		return exprToNode(v.X)
 	}
