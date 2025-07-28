@@ -1,0 +1,24 @@
+(program
+  (for v
+    (in
+      (list (int 10) (int 20))
+    )
+    (block
+      (call print (selector v))
+    )
+  )
+  (var m
+    (map
+      (entry (string a) (int 1))
+      (entry (string b) (int 2))
+    )
+  )
+  (for v
+    (in
+      (call values (selector m))
+    )
+    (block
+      (call print (selector v))
+    )
+  )
+)
