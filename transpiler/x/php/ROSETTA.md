@@ -2,9 +2,9 @@
 
 Generated PHP code from Mochi Rosetta tasks lives in `tests/rosetta/transpiler/php`.
 
-Last updated: 2025-07-28 00:58 +0700
+Last updated: 2025-07-28 01:20 +0700
 
-## Checklist (460/467)
+## Checklist (461/467)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 76µs | 136 B |
@@ -336,7 +336,7 @@ Last updated: 2025-07-28 00:58 +0700
 | 327 | dynamic-variable-names | ✓ | 60µs | 8.1 KB |
 | 328 | earliest-difference-between-prime-gaps | ✓ | 50µs | 96 B |
 | 329 | eban-numbers | ✓ | 11.691ms | 160 B |
-| 330 | ecdsa-example |   |  |  |
+| 330 | ecdsa-example | ✓ | 48µs | 1.6 KB |
 | 331 | echo-server | ✓ | 47µs | 96 B |
 | 332 | eertree | ✓ | 218µs | 160 B |
 | 333 | egyptian-division | ✓ | 106µs | 96 B |
@@ -454,23 +454,23 @@ Last updated: 2025-07-28 00:58 +0700
 | 445 | floyds-triangle | ✓ | 75µs | 96 B |
 | 446 | forest-fire | ✓ | 146µs | 1.5 KB |
 | 447 | fork | ✓ | 50µs | 128 B |
-| 448 | ftp | ✓ | 126µs | 160 B |
-| 449 | gamma-function | ✓ | 136µs | 128 B |
+| 448 | ftp | ✓ | 47µs | 160 B |
+| 449 | gamma-function | ✓ | 88µs | 128 B |
 | 450 | general-fizzbuzz | ✓ | 52µs | 96 B |
-| 451 | generic-swap | ✓ | 42µs | 96 B |
-| 452 | get-system-command-output | ✓ | 32µs | 96 B |
-| 453 | giuga-numbers | ✓ | 72µs | 96 B |
-| 454 | globally-replace-text-in-several-files | ✓ | 34µs | 96 B |
-| 455 | goldbachs-comet | ✓ | 2.094ms | 96 B |
-| 456 | golden-ratio-convergence | ✓ | 66µs | 96 B |
-| 457 | graph-colouring | ✓ | 20µs | 96 B |
-| 458 | gray-code | ✓ | 572µs | 96 B |
-| 459 | http | ✓ | 22.437ms | 536 B |
-| 460 | image-noise | ✓ | 19.732ms | 1.3 KB |
-| 461 | loops-increment-loop-index-within-loop-body | ✓ | 155.361ms | 128 B |
-| 462 | md5 | ✓ | 11µs | 1.2 KB |
-| 463 | nim-game | ✓ | 55µs | 8.1 KB |
-| 464 | plasma-effect | ✓ | 24.149ms | 480 B |
-| 465 | sorting-algorithms-bubble-sort | ✓ | 54µs | 504 B |
-| 466 | window-management | ✓ | 51µs | 96 B |
-| 467 | zumkeller-numbers | ✓ | 5.397036s | 96 B |
+| 451 | generic-swap | ✓ | 37µs | 96 B |
+| 452 | get-system-command-output | ✓ | 30µs | 96 B |
+| 453 | giuga-numbers | ✓ | 110µs | 96 B |
+| 454 | globally-replace-text-in-several-files | ✓ | 26µs | 96 B |
+| 455 | goldbachs-comet | ✓ | 2.066ms | 96 B |
+| 456 | golden-ratio-convergence | ✓ | 31µs | 96 B |
+| 457 | graph-colouring | ✓ | 28µs | 96 B |
+| 458 | gray-code | ✓ | 607µs | 96 B |
+| 459 | http | ✓ | 66.47ms | 536 B |
+| 460 | image-noise | ✓ | 25.155ms | 1.3 KB |
+| 461 | loops-increment-loop-index-within-loop-body | ✓ | 148.413ms | 128 B |
+| 462 | md5 | ✓ | 14µs | 1.2 KB |
+| 463 | nim-game | ✓ | 46µs | 8.1 KB |
+| 464 | plasma-effect | ✓ | 24.507ms | 480 B |
+| 465 | sorting-algorithms-bubble-sort | ✓ | 59µs | 504 B |
+| 466 | window-management | ✓ | 54µs | 96 B |
+| 467 | zumkeller-numbers | ✓ | 5.214915s | 96 B |
