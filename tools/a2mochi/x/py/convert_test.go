@@ -100,6 +100,7 @@ func TestConvert_Golden(t *testing.T) {
 		"string_compare":      true,
 		"string_index":        true,
 		"string_prefix_slice": true,
+		"slice":               true,
 		"list_assign":         true,
 		"map_assign":          true,
 		"membership":          true,
