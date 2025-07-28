@@ -80,6 +80,9 @@ func TestConvert_Golden(t *testing.T) {
 		"let_and_print":       true,
 		"for_loop":            true,
 		"for_list_collection": true,
+		"basic_compare":       true,
+		"string_concat":       true,
+		"list_index":          true,
 	}
 
 	outDir := filepath.Join(root, "tests", "a2mochi", "x", "rkt")
