@@ -1,3 +1,7 @@
+## Progress (2025-07-28 01:16 +0700)
+- fix java transpiler list type inference (68d913c5a0)
+- Regenerated golden files - 103/104 vm valid programs passing
+
 ## Progress (2025-07-25 01:49 +0700)
 - fix go tests by adding build tag (d0bf63391b)
 - Regenerated golden files - 103/104 vm valid programs passing
