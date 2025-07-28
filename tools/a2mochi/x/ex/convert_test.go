@@ -97,6 +97,12 @@ func TestConvert_Golden(t *testing.T) {
 		"let_and_print":     true,
 		"print_hello":       true,
 		"unary_neg":         true,
+		"count_builtin":     true,
+		"sum_builtin":       true,
+		"len_builtin":       true,
+		"len_string":        true,
+		"string_concat":     true,
+		"string_compare":    true,
 	}
 
 	outDir := filepath.Join(root, "tests", "a2mochi", "x", "ex")
@@ -145,6 +151,9 @@ func TestConvert_Golden(t *testing.T) {
 			gotOut, err := runMochi(code)
 			if err != nil {
 				t.Fatalf("run: %v", err)
+			}
+			if *update {
+				os.WriteFile(filepath.Join(outDir, name+".out"), gotOut, 0o644)
 			}
 			vmSrc, err := os.ReadFile(filepath.Join(root, "tests", "vm", "valid", name+".mochi"))
 			if err != nil {
