@@ -1,0 +1,63 @@
+fun commatize(n: int): string {
+  var s = str(n)
+  var i = len(s) % 3
+  if i == 0 { i = 3 }
+  var out = substring(s, 0, i)
+  while i < len(s) {
+    out = out + "," + substring(s, i, i+3)
+    i = i + 3
+  }
+  return out
+}
+
+fun p(L: int, n: int): int {
+  let Ls = str(L)
+  var digits = 1
+  var d = 1
+  while d <= 18 - len(Ls) {
+    digits = digits * 10
+    d = d + 1
+  }
+  let ten18 = 1000000000000000000
+  var count = 0
+  var i = 0
+  var probe = 1
+  while true {
+    probe = probe * 2
+    i = i + 1
+    if probe >= ten18 {
+      while true {
+        if probe >= ten18 { probe = probe / 10 }
+        if probe / digits == L {
+          count = count + 1
+          if count >= n {
+            count = count - 1
+            break
+          }
+        }
+        probe = probe * 2
+        i = i + 1
+      }
+    }
+    var ps = str(probe)
+    var le = len(Ls)
+    if le > len(ps) { le = len(ps) }
+    if substring(ps, 0, le) == Ls {
+      count = count + 1
+      if count >= n {
+        break
+      }
+    }
+  }
+  return i
+}
+
+// Limited to smaller counts to keep runtime reasonable
+var params = [[12,1], [12,2], [123,45]]
+var idx = 0
+while idx < len(params) {
+  let L = params[idx][0]
+  let m = params[idx][1]
+  print("p(" + str(L) + ", " + str(m) + ") = " + commatize(p(L, m)))
+  idx = idx + 1
+}
