@@ -142,9 +142,13 @@ var (
 	ifRe        = regexp.MustCompile(`^if\s+(.+)\s+then$`)
 	elifRe      = regexp.MustCompile(`^elif\s+(.+)\s+then$`)
 	elseRe      = regexp.MustCompile(`^else$`)
-	typeRe      = regexp.MustCompile(`^type\s+(\w+)\s*=\s*$`)
-	variantRe   = regexp.MustCompile(`^\|\s*(\w+)(.*)$`)
-	fieldRe     = regexp.MustCompile(`^(\w+)\s*:\s*([^;]+);?$`)
+	// typeRe matches type declarations. Some generated F# code puts the
+	// opening brace on the same line as the `type` statement, so the
+	// trailing `{` is optional.
+	typeRe    = regexp.MustCompile(`^type\s+(\w+)\s*=\s*\{?$`)
+	variantRe = regexp.MustCompile(`^\|\s*(\w+)(.*)$`)
+	// fieldRe matches a record field. F# may prefix fields with "mutable".
+	fieldRe = regexp.MustCompile(`^(?:mutable\s+)?(\w+)\s*:\s*([^;]+);?$`)
 )
 
 // Parse performs a very small subset of F# parsing using regular expressions.
@@ -262,8 +266,14 @@ func Parse(src string) (*Program, error) {
 			case typeRe.MatchString(t):
 				m := typeRe.FindStringSubmatch(t)
 				name := m[1]
-				if idx < len(lines) && strings.TrimSpace(lines[idx].text) == "{" {
+				hasBrace := strings.HasSuffix(strings.TrimSpace(t), "{")
+				if hasBrace {
+					// opening brace is on the same line
+				} else if idx < len(lines) && strings.TrimSpace(lines[idx].text) == "{" {
 					idx++
+					hasBrace = true
+				}
+				if hasBrace {
 					var fields []Field
 					for idx < len(lines) {
 						lt := strings.TrimSpace(lines[idx].text)

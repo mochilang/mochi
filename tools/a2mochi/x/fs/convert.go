@@ -92,9 +92,16 @@ func fixIndex(expr string) string {
 	expr = strings.ReplaceAll(expr, "[|", "[")
 	expr = strings.ReplaceAll(expr, "|]", "]")
 	expr = strings.ReplaceAll(expr, ";", ",")
+	expr = convertRecordFields(expr)
 	expr = convertContains(expr)
 	expr = stripStringCall(expr)
 	return expr
+}
+
+var recordFieldRe = regexp.MustCompile(`([,{]\s*)(\w+)\s*=`)
+
+func convertRecordFields(expr string) string {
+	return recordFieldRe.ReplaceAllString(expr, `$1$2:`)
 }
 
 var (
