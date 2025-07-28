@@ -1,0 +1,3 @@
+var s: string
+s = "mochi"
+print(s[(1 + 1)])

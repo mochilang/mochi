@@ -1,0 +1,4 @@
+var i: int
+for i in 1..((((4 - 1))) + 1) {
+  print(i)
+}
