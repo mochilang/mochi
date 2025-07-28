@@ -2763,7 +2763,11 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	usesFetch = false
 	usesMem = false
 	currentEnv = env
-	topVars = map[string]bool{}
+	if benchMain {
+		topVars = nil
+	} else {
+		topVars = map[string]bool{}
+	}
 	scopeStack = nil
 	rbProg := &Program{}
 	for _, st := range prog.Statements {
@@ -2864,7 +2868,7 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 					elems[i] = &StructNewExpr{Name: structName, Fields: fv}
 				}
 				list := &ListLit{Elems: elems}
-				stmts = append(stmts, &LetStmt{Name: identName(st.Let.Name), Value: list})
+				stmts = append(stmts, &LetStmt{Name: st.Let.Name, Value: list})
 				return &BlockStmt{Stmts: stmts}, nil
 			}
 			if q := extractQueryExpr(st.Let.Value); q != nil {
@@ -2876,7 +2880,7 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 				if def != nil {
 					stmts = append(stmts, def)
 				}
-				stmts = append(stmts, &LetStmt{Name: identName(st.Let.Name), Value: qe})
+				stmts = append(stmts, &LetStmt{Name: st.Let.Name, Value: qe})
 				return &BlockStmt{Stmts: stmts}, nil
 			}
 		}
@@ -2912,7 +2916,7 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 		if funcDepth > 0 {
 			addVar(st.Let.Name)
 		}
-		return &LetStmt{Name: identName(st.Let.Name), Value: v}, nil
+		return &LetStmt{Name: st.Let.Name, Value: v}, nil
 	case st.Var != nil:
 		var v Expr
 		var err error
@@ -2941,7 +2945,7 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 			}
 		}
 		addVar(st.Var.Name)
-		return &VarStmt{Name: identName(st.Var.Name), Value: v}, nil
+		return &VarStmt{Name: st.Var.Name, Value: v}, nil
 	case st.Assign != nil:
 		v, err := convertExpr(st.Assign.Value)
 		if err != nil {

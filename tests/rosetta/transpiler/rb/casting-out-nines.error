@@ -1,11 +1,9 @@
 run: exit status 1
-/workspace/mochi/tests/rosetta/transpiler/rb/casting-out-nines.rb: --> /workspace/mochi/tests/rosetta/transpiler/rb/casting-out-nines.rb
-syntax error, unexpected `begin'
-   46  start = _now()
->  80    def subset(base, begin, end)
->  96    end
-  132  end_time = _now()
-/workspace/mochi/tests/rosetta/transpiler/rb/casting-out-nines.rb:80: syntax error, unexpected `begin' (SyntaxError)
-  def subset(base, begin, end)
-                   ^~~~~
+/workspace/mochi/tests/rosetta/transpiler/rb/casting-out-nines.rb:102:in `[]': no member 'begin' in struct (NameError)
 
+    puts(_add(_add(_add(_add(_add(_add("\nTest case base = ", (tc["base"]).to_s), ", begin = "), tc["begin"]), ", end = "), tc["end"]), ":"))
+                                                                                                   ^^^^^^^^^
+Did you mean?  begin_
+               begin_=
+               BEGIN
+	from /workspace/mochi/tests/rosetta/transpiler/rb/casting-out-nines.rb:102:in `<main>'
