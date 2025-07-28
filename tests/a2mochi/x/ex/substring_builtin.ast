@@ -1,0 +1,15 @@
+(program
+  (fun main
+    (call print
+      (call substring
+        (string mochi)
+        (int 1)
+        (binary -
+          (binary + (int 1) (int 4))
+          (int 1)
+        )
+      )
+    )
+  )
+  (call main)
+)

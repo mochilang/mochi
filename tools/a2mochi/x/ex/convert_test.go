@@ -103,6 +103,10 @@ func TestConvert_Golden(t *testing.T) {
 		"len_string":        true,
 		"string_concat":     true,
 		"string_compare":    true,
+		"avg_builtin":       true,
+		"min_max_builtin":   true,
+		"string_contains":   true,
+		"substring_builtin": true,
 	}
 
 	outDir := filepath.Join(root, "tests", "a2mochi", "x", "ex")
