@@ -1,0 +1,10 @@
+(program
+  (fun main
+    (call print
+      (group
+        (cast (string 1995) (type int))
+      )
+    )
+  )
+  (call main)
+)
