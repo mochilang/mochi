@@ -350,24 +350,53 @@ func translateLine(l string) string {
 	if idx := strings.Index(l, "="); idx > 0 {
 		left := strings.TrimSpace(l[:idx])
 		right := translateExpr(strings.TrimSpace(l[idx+1:]))
-		return "let " + left + " = " + right
+		return left + " = " + right
 	}
 	return translateExpr(l)
 }
 
 func convertSimpleScript(src string) string {
-	lines := strings.Split(src, "\n")
-	var b strings.Builder
-	b.WriteString("fun main() {\n")
-	for _, l := range lines {
-		l = strings.TrimSpace(l)
+	raw := strings.Split(src, "\n")
+	var lines []string
+	enumEach := regexp.MustCompile(`^Enum.each\((.*),\s*fn\s+([a-zA-Z0-9_]+)\s*->$`)
+	for i := 0; i < len(raw); i++ {
+		l := strings.TrimSpace(raw[i])
 		if l == "" || strings.HasPrefix(l, "#") {
 			continue
 		}
-		b.WriteString("  " + translateLine(l) + "\n")
+		if m := enumEach.FindStringSubmatch(l); m != nil {
+			coll := strings.TrimSpace(m[1])
+			if hasOuterParens(coll) {
+				coll = strings.TrimSpace(coll[1 : len(coll)-1])
+			}
+			if m2 := regexp.MustCompile(`^1..\((.*) - 1\)$`).FindStringSubmatch(coll); m2 != nil {
+				coll = "1.." + strings.TrimSpace(m2[1])
+			}
+			v := strings.TrimSpace(m[2])
+			lines = append(lines, "for "+v+" <- "+coll+" do")
+			for j := i + 1; j < len(raw); j++ {
+				l2 := strings.TrimSpace(raw[j])
+				if l2 == "end)" {
+					lines = append(lines, "end")
+					i = j
+					break
+				}
+				lines = append(lines, l2)
+			}
+			continue
+		}
+		if l == "end)" {
+			lines = append(lines, "end")
+			continue
+		}
+		lines = append(lines, l)
 	}
-	b.WriteString("}\nmain()\n")
-	return b.String()
+	var seg []string
+	seg = append(seg, "def main() do")
+	seg = append(seg, lines...)
+	seg = append(seg, "end")
+	code := convertFunc(Func{Name: "main", Raw: seg})
+	return code + "\nmain()\n"
 }
 
 func convertFunc(fn Func) string {
@@ -387,6 +416,8 @@ func convertFunc(fn Func) string {
 	retPrefix := "throw {:return,"
 	level := 1
 	inTry := false
+	vars := map[string]bool{}
+	simpleVar := regexp.MustCompile(`^[a-zA-Z_][a-zA-Z0-9_]*$`)
 	for i := 1; i < len(seg); i++ {
 		l := strings.TrimSpace(seg[i])
 		if l == "catch {:return, v} -> v end" {
@@ -457,6 +488,7 @@ func convertFunc(fn Func) string {
 				coll := strings.TrimSpace(parts[1])
 				b.WriteString(strings.Repeat("  ", level) + "for " + v + " in " + coll + " {\n")
 				level++
+				vars[v] = true
 			}
 		case strings.HasPrefix(l, "while ") && strings.HasSuffix(l, " do"):
 			cond := strings.TrimSuffix(strings.TrimPrefix(l, "while"), " do")
@@ -486,7 +518,16 @@ func convertFunc(fn Func) string {
 			parts := strings.SplitN(l, "=", 2)
 			left := strings.TrimSpace(parts[0])
 			right := translateExpr(strings.TrimSpace(parts[1]))
-			b.WriteString(strings.Repeat("  ", level) + "let " + left + " = " + right + "\n")
+			if simpleVar.MatchString(left) {
+				if !vars[left] {
+					vars[left] = true
+					b.WriteString(strings.Repeat("  ", level) + "var " + left + " = " + right + "\n")
+				} else {
+					b.WriteString(strings.Repeat("  ", level) + left + " = " + right + "\n")
+				}
+			} else {
+				b.WriteString(strings.Repeat("  ", level) + left + " = " + right + "\n")
+			}
 		default:
 			line := translateExpr(l)
 			if i == len(seg)-2 {

@@ -107,6 +107,9 @@ func TestConvert_Golden(t *testing.T) {
 		"min_max_builtin":   true,
 		"string_contains":   true,
 		"substring_builtin": true,
+		"for_loop":          true,
+		"if_else":           true,
+		"var_assignment":    true,
 	}
 
 	outDir := filepath.Join(root, "tests", "a2mochi", "x", "ex")
