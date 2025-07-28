@@ -3,6 +3,7 @@
 package cs
 
 import (
+	"embed"
 	"encoding/json"
 	"fmt"
 	"os"
@@ -21,6 +22,8 @@ var (
 	helperOnce sync.Once
 	helperPath string
 	helperErr  error
+	//go:embed internal/AstJson.cs internal/AstJson.csproj
+	helperFS embed.FS
 )
 
 func stripLong(s string) string { return strings.ReplaceAll(s, "L", "") }
@@ -444,33 +447,38 @@ func parseRoslyn(src string) (*AST, error) {
 // ensureHelper builds the C# helper program if needed.
 func ensureHelper() error {
 	helperOnce.Do(func() {
-		_, file, _, _ := runtime.Caller(0)
-		root := filepath.Join(filepath.Dir(file), "../../../..")
-		helperPath = filepath.Join(root, "tools/a2mochi/x/cs/internal/bin/AstJson")
-		if runtime.GOOS == "windows" {
-			helperPath += ".exe"
-		}
-		if _, err := os.Stat(helperPath); err == nil {
-			return
-		}
 		if _, err := exec.LookPath("dotnet"); err != nil {
 			helperErr = fmt.Errorf("dotnet not installed")
 			return
 		}
-		dir := filepath.Join(root, "tools/a2mochi/x/cs/internal")
-		csproj := filepath.Join(dir, "AstJson.csproj")
-		if _, err := os.Stat(csproj); os.IsNotExist(err) {
-			proj := `<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework></PropertyGroup></Project>`
-			if err := os.WriteFile(csproj, []byte(proj), 0644); err != nil {
-				helperErr = err
-				return
-			}
+		dir, err := os.MkdirTemp("", "a2mochi-cshelper-")
+		if err != nil {
+			helperErr = err
+			return
 		}
-		cmd := exec.Command("dotnet", "publish", "-c", "Release", "-o", filepath.Dir(helperPath))
+		csPath := filepath.Join(dir, "AstJson.cs")
+		projPath := filepath.Join(dir, "AstJson.csproj")
+		if data, err := helperFS.ReadFile("internal/AstJson.cs"); err == nil {
+			os.WriteFile(csPath, data, 0644)
+		} else {
+			helperErr = err
+			return
+		}
+		if data, err := helperFS.ReadFile("internal/AstJson.csproj"); err == nil {
+			os.WriteFile(projPath, data, 0644)
+		} else {
+			helperErr = err
+			return
+		}
+		cmd := exec.Command("dotnet", "publish", "-c", "Release", "-o", dir)
 		cmd.Dir = dir
 		if out, err := cmd.CombinedOutput(); err != nil {
 			helperErr = fmt.Errorf("dotnet publish: %v: %s", err, out)
 			return
+		}
+		helperPath = filepath.Join(dir, "AstJson")
+		if runtime.GOOS == "windows" {
+			helperPath += ".exe"
 		}
 	})
 	return helperErr

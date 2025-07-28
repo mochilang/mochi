@@ -4,7 +4,6 @@ package cs_test
 
 import (
 	"bytes"
-	"encoding/json"
 	"flag"
 	"os"
 	"path/filepath"
@@ -94,15 +93,7 @@ func TestConvert_Golden(t *testing.T) {
 			if err != nil {
 				t.Fatalf("parse: %v", err)
 			}
-			j, err := json.Marshal(astNode)
-			if err != nil {
-				t.Fatalf("marshal: %v", err)
-			}
-			var round cs.AST
-			if err := json.Unmarshal(j, &round); err != nil {
-				t.Fatalf("unmarshal: %v", err)
-			}
-			node, err := cs.Convert(&round)
+			node, err := cs.Convert(astNode)
 			if err != nil {
 				t.Fatalf("convert: %v", err)
 			}
@@ -111,7 +102,7 @@ func TestConvert_Golden(t *testing.T) {
 				t.Fatalf("print: %v", err)
 			}
 			_ = buf.String()
-			mochiSrc, err := cs.ConvertSource(&round)
+			mochiSrc, err := cs.ConvertSource(astNode)
 			if err != nil {
 				t.Fatalf("source: %v", err)
 			}
