@@ -88,6 +88,7 @@ func TestConvert_Golden(t *testing.T) {
 		"for_loop":            true,
 		"len_builtin":         true,
 		"len_string":          true,
+		"len_map":             true,
 		"map_index":           true,
 		"if_else":             true,
 		"while_loop":          true,

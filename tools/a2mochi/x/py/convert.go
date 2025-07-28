@@ -358,6 +358,23 @@ func emitAST(b *strings.Builder, n *Node, indent string, lines []string, seen ma
 		return emitWhileStmt(b, n, indent, lines, seen)
 	case "If":
 		return emitIfStmt(b, n, indent, lines, seen)
+	case "Pass":
+		// no-op
+		return nil
+	case "Try":
+		// Ignore error handling and emit body statements only.
+		for _, st := range n.Body {
+			if err := emitAST(b, st, indent, lines, seen); err != nil {
+				return err
+			}
+		}
+		if len(n.Orelse) > 0 {
+			for _, st := range n.Orelse {
+				if err := emitAST(b, st, indent, lines, seen); err != nil {
+					return err
+				}
+			}
+		}
 	case "Continue":
 		b.WriteString("continue\n")
 	case "Break":
@@ -544,6 +561,9 @@ func emitAugAssignStmt(b *strings.Builder, n *Node, lines []string, seen map[str
 	case "Mult":
 		b.WriteByte('*')
 	case "Div":
+		b.WriteByte('/')
+	case "FloorDiv":
+		// Mochi only has integer division.
 		b.WriteByte('/')
 	case "Mod":
 		b.WriteByte('%')
@@ -760,6 +780,9 @@ func emitExpr(b *strings.Builder, n *Node, lines []string) error {
 			case "Mult":
 				b.WriteByte('*')
 			case "Div":
+				b.WriteByte('/')
+			case "FloorDiv":
+				// Mochi only has integer division.
 				b.WriteByte('/')
 			case "Mod":
 				b.WriteByte('%')
