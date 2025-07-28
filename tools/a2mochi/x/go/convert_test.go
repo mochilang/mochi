@@ -75,6 +75,8 @@ func TestConvert_Golden(t *testing.T) {
 		"if_else":           true,
 		"var_assignment":    true,
 		"len_string":        true,
+		"len_builtin":       true,
+		"len_map":           true,
 		"string_concat":     true,
 		"str_builtin":       true,
 		"unary_neg":         true,
