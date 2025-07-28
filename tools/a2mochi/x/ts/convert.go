@@ -30,6 +30,7 @@ type Node struct {
 	Fields   []Field  `json:"fields,omitempty"`
 	Alias    string   `json:"alias,omitempty"`
 	Variants []string `json:"variants,omitempty"`
+	Expr     string   `json:"expr,omitempty"`
 }
 
 type Param struct {
@@ -111,6 +112,10 @@ func ConvertSource(nodes []Node, original string) (string, error) {
 			writeType(&b, d)
 		case "alias":
 			writeAlias(&b, d)
+		case "print":
+			writePrint(&b, d)
+		case "expr":
+			writeExpr(&b, d)
 		}
 	}
 	return b.String(), nil
@@ -205,6 +210,17 @@ func writeAlias(b *strings.Builder, d Node) {
 	b.WriteString(d.Name)
 	b.WriteString(" = ")
 	b.WriteString(d.Alias)
+	b.WriteByte('\n')
+}
+
+func writePrint(b *strings.Builder, d Node) {
+	b.WriteString("print(")
+	b.WriteString(d.Body)
+	b.WriteString(")\n")
+}
+
+func writeExpr(b *strings.Builder, d Node) {
+	b.WriteString(d.Expr)
 	b.WriteByte('\n')
 }
 
