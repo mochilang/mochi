@@ -202,6 +202,7 @@ fun _div(a: BigRat, b: BigRat): BigRat = a.div(b)`,
 		"_sub":            "BigRat",
 		"_mul":            "BigRat",
 		"_div":            "BigRat",
+		"indexOf":         "Int",
 	}
 }
 
@@ -4751,6 +4752,19 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 				return nil, err
 			}
 			return &PadStartExpr{Value: str, Width: width, Pad: pad}, nil
+		case "indexOf":
+			if len(p.Call.Args) != 2 {
+				return nil, fmt.Errorf("indexOf expects 2 args")
+			}
+			target, err := convertExpr(env, p.Call.Args[0])
+			if err != nil {
+				return nil, err
+			}
+			needle, err := convertExpr(env, p.Call.Args[1])
+			if err != nil {
+				return nil, err
+			}
+			return &InvokeExpr{Callee: &FieldExpr{Receiver: target, Name: "indexOf"}, Args: []Expr{needle}}, nil
 		default:
 			args := make([]Expr, len(p.Call.Args))
 			for i, a := range p.Call.Args {

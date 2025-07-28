@@ -2,9 +2,9 @@
 
 Generated Kotlin sources for Rosetta Code tests are stored in `tests/rosetta/transpiler/Kotlin`.
 
-Last updated: 2025-07-28 10:03 +0700
+Last updated: 2025-07-28 11:26 +0700
 
-Completed tasks: **124/493**
+Completed tasks: **126/493**
 
 ### Checklist
 | Index | Name | Status | Duration | Memory |
@@ -258,8 +258,8 @@ Completed tasks: **124/493**
 | 247 | count-in-octal-4 |  |  |  |
 | 248 | count-occurrences-of-a-substring |  |  |  |
 | 249 | count-the-coins-1 |  |  |  |
-| 250 | count-the-coins-2 |  |  |  |
-| 251 | cramers-rule |  |  |  |
+| 250 | count-the-coins-2 | ✓ | 38.64ms | 92.5 KB |
+| 251 | cramers-rule | ✓ | 10.09ms | 130.8 KB |
 | 252 | crc-32-1 |  |  |  |
 | 253 | crc-32-2 |  |  |  |
 | 254 | create-a-file-on-magnetic-tape |  |  |  |
