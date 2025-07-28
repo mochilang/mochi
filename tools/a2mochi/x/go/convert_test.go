@@ -4,16 +4,12 @@ package gox_test
 
 import (
 	"bytes"
-	"encoding/json"
 	"flag"
-	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
 	"testing"
-	"time"
 
-	mochias "mochi/ast"
 	"mochi/parser"
 	"mochi/runtime/vm"
 	"mochi/types"
@@ -61,27 +57,6 @@ func runMochi(src string) ([]byte, error) {
 		return nil, err
 	}
 	return bytes.TrimSpace(out.Bytes()), nil
-}
-
-func readVersion(root string) string {
-	data, err := os.ReadFile(filepath.Join(root, "VERSION"))
-	if err != nil {
-		return "dev"
-	}
-	return strings.TrimSpace(string(data))
-}
-
-func buildHeader(lines []string, version string) string {
-	t := time.Now().In(time.FixedZone("GMT+7", 7*3600)).Format("2006-01-02 15:04:05")
-	var b strings.Builder
-	fmt.Fprintf(&b, "// a2mochi go v%s %s GMT+7\n", version, t)
-	b.WriteString("/*\n")
-	b.WriteString(strings.Join(lines, "\n"))
-	if len(lines) == 0 || lines[len(lines)-1] != "" {
-		b.WriteByte('\n')
-	}
-	b.WriteString("*/\n")
-	return b.String()
 }
 
 func TestConvert_Golden(t *testing.T) {
@@ -133,15 +108,7 @@ func TestConvert_Golden(t *testing.T) {
 			if err != nil {
 				t.Fatalf("convert: %v", err)
 			}
-			j, err := json.Marshal(astNode)
-			if err != nil {
-				t.Fatalf("marshal: %v", err)
-			}
-			var round mochias.Node
-			if err := json.Unmarshal(j, &round); err != nil {
-				t.Fatalf("unmarshal: %v", err)
-			}
-			got := []byte(round.String())
+			got := []byte(astNode.String())
 			outPath := filepath.Join(outDir, name+".ast")
 			if *update {
 				os.WriteFile(outPath, got, 0o644)
@@ -154,11 +121,10 @@ func TestConvert_Golden(t *testing.T) {
 				t.Fatalf("golden mismatch\n--- Got ---\n%s\n--- Want ---\n%s", got, want)
 			}
 
-			var buf bytes.Buffer
-			if err := mochias.Fprint(&buf, &round); err != nil {
-				t.Fatalf("print: %v", err)
+			code, err := gox.ConvertSource(node)
+			if err != nil {
+				t.Fatalf("convert source: %v", err)
 			}
-			code := buildHeader(node.Lines, readVersion(root)) + buf.String() + "\n"
 			mochiPath := filepath.Join(outDir, name+".mochi")
 			if *update {
 				os.WriteFile(mochiPath, []byte(code), 0o644)
