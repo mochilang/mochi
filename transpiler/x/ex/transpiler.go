@@ -1760,7 +1760,7 @@ func Emit(p *Program, benchMain bool) []byte {
 			}
 		default:
 			if es, ok := st.(*ExprStmt); ok {
-				if call, ok := es.Expr.(*CallExpr); ok && call.Func == "main" && len(call.Args) == 0 {
+				if call, ok := es.Expr.(*CallExpr); ok && (call.Func == "main" || call.Func == "Main.main") && len(call.Args) == 0 {
 					continue
 				}
 			}
@@ -1822,6 +1822,20 @@ func Emit(p *Program, benchMain bool) []byte {
 		buf.WriteString("  end\n")
 	}
 	buf.WriteString("end\n")
+	if hasMain && len(main) > 0 {
+		for _, st := range main {
+			if ls, ok := st.(*LetStmt); ok {
+				if _, ok := globalVars[ls.Name]; ok {
+					ls.emitGlobal(&buf, 0)
+				} else {
+					ls.emit(&buf, 0)
+				}
+			} else {
+				st.emit(&buf, 0)
+			}
+			buf.WriteString("\n")
+		}
+	}
 	if benchMain && hasMain {
 		buf.WriteString("Main.bench_main()\n")
 	} else {
@@ -2323,10 +2337,8 @@ func gatherMutVars(stmts []Stmt, env *types.Env) []string {
 				if _, ok := locals[t.Name]; ok {
 					break
 				}
-				if _, err := env.IsMutable(t.Name); err == nil {
-					if !moduleMode || !isGlobalVar(t.Name) {
-						set[t.Name] = struct{}{}
-					}
+				if !moduleMode || !isGlobalVar(t.Name) {
+					set[t.Name] = struct{}{}
 				}
 			case *IfStmt:
 				for _, v := range t.Vars {
@@ -3588,6 +3600,15 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 		case "repeat":
 			if len(args) == 2 {
 				return &CallExpr{Func: "String.duplicate", Args: args}, nil
+			}
+		case "indexOf":
+			if len(args) == 2 {
+				call := &CallExpr{Func: ":binary.match", Args: []Expr{args[0], args[1]}}
+				clauses := []CaseClause{
+					{Pattern: &AtomLit{Name: ":nomatch"}, Result: &NumberLit{Value: "-1"}},
+					{Pattern: &VarRef{Name: "t"}, Result: &CallExpr{Func: "elem", Args: []Expr{&VarRef{Name: "t"}, &NumberLit{Value: "0"}}}},
+				}
+				return &CaseExpr{Target: call, Clauses: clauses}, nil
 			}
 		case "parseIntStr":
 			if len(args) == 2 {

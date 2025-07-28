@@ -2,8 +2,8 @@
 
 Generated Elixir code from Mochi Rosetta programs lives in `tests/rosetta/transpiler/Elixir`.
 
-## Rosetta Test Checklist (119/493)
-_Last updated: 2025-07-28 03:09 +0000_
+## Rosetta Test Checklist (121/493)
+_Last updated: 2025-07-28 04:44 +0000_
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | 100-doors-2 | ✓ |  |  |
@@ -255,8 +255,8 @@ _Last updated: 2025-07-28 03:09 +0000_
 | 247 | count-in-octal-4 |  |  |  |
 | 248 | count-occurrences-of-a-substring |  |  |  |
 | 249 | count-the-coins-1 |  |  |  |
-| 250 | count-the-coins-2 |  |  |  |
-| 251 | cramers-rule |  |  |  |
+| 250 | count-the-coins-2 | ✓ | 63.33ms | 77.7 KB |
+| 251 | cramers-rule | ✓ | 4.48ms | 456.9 KB |
 | 252 | crc-32-1 |  |  |  |
 | 253 | crc-32-2 |  |  |  |
 | 254 | create-a-file-on-magnetic-tape |  |  |  |
