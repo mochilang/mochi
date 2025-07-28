@@ -104,6 +104,7 @@ func TestConvert_Golden(t *testing.T) {
 		"map_assign":          true,
 		"membership":          true,
 		"map_membership":      true,
+		"count_builtin":       true,
 	}
 	outDir := filepath.Join(root, "tests", "a2mochi", "x", "py")
 	os.MkdirAll(outDir, 0o755)
@@ -149,6 +150,9 @@ func TestConvert_Golden(t *testing.T) {
 			gotOut, err := runMochi(code)
 			if err != nil {
 				t.Fatalf("run: %v", err)
+			}
+			if *update {
+				os.WriteFile(filepath.Join(outDir, name+".out"), gotOut, 0o644)
 			}
 			vmSrc, err := os.ReadFile(filepath.Join(root, "tests", "vm", "valid", name+".mochi"))
 			if err != nil {
