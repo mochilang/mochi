@@ -91,22 +91,38 @@ func stmtToNode(st ast.Stmt) []*mochias.Node {
 				Children: []*mochias.Node{lhs, rhs},
 			}}
 		}
-	case *ast.IfStmt:
-		cond := exprToNode(s.Cond)
-		thenBlk := blockToNode(s.Body)
-		var elseBlk *mochias.Node
-		if s.Else != nil {
-			if eb, ok := s.Else.(*ast.BlockStmt); ok {
-				elseBlk = blockToNode(eb)
-			}
-		}
-		n := &mochias.Node{Kind: "if", Children: []*mochias.Node{cond, thenBlk}}
-		if elseBlk != nil {
-			n.Children = append(n.Children, elseBlk)
-		}
-		return []*mochias.Node{n}
-	}
-	return nil
+        case *ast.IfStmt:
+                cond := exprToNode(s.Cond)
+                thenBlk := blockToNode(s.Body)
+                var elseBlk *mochias.Node
+                if s.Else != nil {
+                        if eb, ok := s.Else.(*ast.BlockStmt); ok {
+                                elseBlk = blockToNode(eb)
+                        }
+                }
+                n := &mochias.Node{Kind: "if", Children: []*mochias.Node{cond, thenBlk}}
+                if elseBlk != nil {
+                        n.Children = append(n.Children, elseBlk)
+                }
+                return []*mochias.Node{n}
+       case *ast.ForStmt:
+               // support simple for i := a; i < b; i++ { ... }
+               if init, ok := s.Init.(*ast.AssignStmt); ok && init.Tok == token.DEFINE && len(init.Lhs) == 1 && len(init.Rhs) == 1 {
+                       if id, ok := init.Lhs[0].(*ast.Ident); ok {
+                               if cond, ok := s.Cond.(*ast.BinaryExpr); ok && cond.Op == token.LSS {
+                                       if inc, ok := s.Post.(*ast.IncDecStmt); ok && inc.Tok == token.INC {
+                                               start := exprToNode(init.Rhs[0])
+                                               end := exprToNode(cond.Y)
+                                               body := blockToNode(s.Body)
+                                               fr := &mochias.Node{Kind: "range", Children: []*mochias.Node{start, end}}
+                                               n := &mochias.Node{Kind: "for", Value: id.Name, Children: []*mochias.Node{fr, body}}
+                                               return []*mochias.Node{n}
+                                       }
+                               }
+                       }
+               }
+        }
+        return nil
 }
 
 func blockToNode(b *ast.BlockStmt) *mochias.Node {
@@ -147,14 +163,18 @@ func exprToNode(e ast.Expr) *mochias.Node {
 		}
 	case *ast.Ident:
 		return &mochias.Node{Kind: "selector", Value: v.Name}
-	case *ast.BinaryExpr:
-		return &mochias.Node{Kind: "binary", Value: v.Op.String(), Children: []*mochias.Node{
-			exprToNode(v.X), exprToNode(v.Y),
-		}}
-	case *ast.ParenExpr:
-		return exprToNode(v.X)
-	}
-	return &mochias.Node{Kind: "unknown"}
+       case *ast.BinaryExpr:
+               return &mochias.Node{Kind: "binary", Value: v.Op.String(), Children: []*mochias.Node{
+                       exprToNode(v.X), exprToNode(v.Y),
+               }}
+       case *ast.UnaryExpr:
+               if v.Op == token.SUB {
+                       return &mochias.Node{Kind: "unary", Value: "-", Children: []*mochias.Node{exprToNode(v.X)}}
+               }
+       case *ast.ParenExpr:
+               return exprToNode(v.X)
+       }
+       return &mochias.Node{Kind: "unknown"}
 }
 
 // ConvertSource emits Mochi source code for the parsed Go node. Only a header
