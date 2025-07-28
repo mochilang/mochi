@@ -1,0 +1,12 @@
+(program
+  (fun twoSum
+    (param nums
+      (type list (type int))
+    )
+    (param target (type int))
+    (type list (type int))
+  )
+  (let result
+    (type list (type int))
+  )
+)

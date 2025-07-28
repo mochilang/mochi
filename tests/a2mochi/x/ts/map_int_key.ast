@@ -1,0 +1,5 @@
+(program
+  (let m
+    (type map (type int) (type string))
+  )
+)

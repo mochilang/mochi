@@ -1,0 +1,20 @@
+(program
+  (type Result
+    (field cat (type string))
+    (field val (type int))
+    (field flag (type bool))
+  )
+  (type Item
+    (field cat (type string))
+    (field val (type int))
+    (field flag (type bool))
+  )
+  (let items
+    (type list (type Item))
+  )
+  (let result
+    (type list
+      (type map (type string) (type any))
+    )
+  )
+)

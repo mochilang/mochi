@@ -1,0 +1,6 @@
+type Data {
+  a: int
+  b: int
+}
+let data: list<Data>
+let sorted: list<map<string,int>>

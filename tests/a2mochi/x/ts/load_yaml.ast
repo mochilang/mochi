@@ -1,0 +1,17 @@
+(program
+  (type Result
+    (field name (type string))
+    (field email (type string))
+  )
+  (type Person
+    (field name (type string))
+    (field age (type int))
+    (field email (type string))
+  )
+  (let people
+    (type list (type Person))
+  )
+  (let adults
+    (type list (type Result))
+  )
+)

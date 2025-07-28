@@ -1,0 +1,2 @@
+fun sum_rec(n: int, acc: int): int {
+}

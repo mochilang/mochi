@@ -1,0 +1,10 @@
+(program
+  (type Person
+    (field name (type string))
+    (field age (type int))
+    (field status (type string))
+  )
+  (let people
+    (type list (type Person))
+  )
+)

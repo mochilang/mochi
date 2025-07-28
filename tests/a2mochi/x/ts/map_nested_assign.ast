@@ -1,0 +1,15 @@
+(program
+  (type Result
+    (field inner (type int))
+  )
+  (type Data
+    (field outer
+      (type
+        (struct
+          (field inner (type number))
+        )
+      )
+    )
+  )
+  (let data (type Data))
+)

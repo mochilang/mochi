@@ -1,0 +1,9 @@
+type Person {
+  name: string
+  age: int
+}
+type Book {
+  title: string
+  author: Person
+}
+let book: Book

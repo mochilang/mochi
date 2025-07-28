@@ -1,0 +1,4 @@
+type Tree = any
+fun sum_tree(t: Tree): int {
+}
+let t: Tree

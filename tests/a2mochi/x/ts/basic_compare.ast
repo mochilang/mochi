@@ -1,0 +1,4 @@
+(program
+  (let a (type int))
+  (let b (type int))
+)

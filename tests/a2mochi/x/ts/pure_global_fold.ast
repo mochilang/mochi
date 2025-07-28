@@ -1,0 +1,7 @@
+(program
+  (let k (type int))
+  (fun inc
+    (param x (type int))
+    (type int)
+  )
+)

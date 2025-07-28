@@ -1,0 +1,2 @@
+let nums: list<int>
+let result: int

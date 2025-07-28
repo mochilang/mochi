@@ -1,0 +1,7 @@
+type Result {
+  inner: int
+}
+type Data {
+  outer: { inner: number }
+}
+let data: Data

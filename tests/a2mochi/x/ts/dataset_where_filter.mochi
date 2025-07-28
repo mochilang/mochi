@@ -1,0 +1,10 @@
+type Result {
+  name: string
+  age: int
+}
+type People {
+  name: string
+  age: int
+}
+let people: list<People>
+let adults: list<Result>

@@ -1,0 +1,6 @@
+type Counter {
+  n: int
+}
+fun inc(c: Counter) {
+}
+let c: Counter

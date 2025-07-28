@@ -1,0 +1,3 @@
+let prefix: string
+let s1: string
+let s2: string

@@ -1,0 +1,3 @@
+let k: int
+fun inc(x: int): int {
+}

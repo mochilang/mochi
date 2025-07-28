@@ -1,0 +1,9 @@
+type Result {
+  n: int
+  l: string
+  b: bool
+}
+let nums: list<int>
+let letters: list<string>
+let bools: list<bool>
+let combos: list<Result>

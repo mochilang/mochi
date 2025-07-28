@@ -1,0 +1,12 @@
+(program
+  (let x (type int))
+  (let label (type string))
+  (let day (type string))
+  (let mood (type string))
+  (let ok (type bool))
+  (let status (type string))
+  (fun classify
+    (param n (type int))
+    (type string)
+  )
+)

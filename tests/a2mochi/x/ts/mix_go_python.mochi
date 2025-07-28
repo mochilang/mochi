@@ -1,0 +1,6 @@
+let strings
+let math
+let rawName: string
+let radius: int
+let name
+let area
