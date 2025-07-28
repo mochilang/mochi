@@ -10,6 +10,7 @@ import (
 
 	"mochi/ast"
 	"mochi/parser"
+	"mochi/transpiler/meta"
 )
 
 type Item struct {
@@ -34,12 +35,21 @@ func Parse(src string) ([]Item, error) {
 }
 
 // ConvertSource converts parsed Items into Mochi source code.
-func ConvertSource(items []Item) string {
+func ConvertSource(items []Item, src string) string {
 	internal := make([]item, len(items))
 	for i, it := range items {
 		internal[i] = item(it)
 	}
 	var b strings.Builder
+	b.Write(meta.Header("//"))
+	if strings.TrimSpace(src) != "" {
+		b.WriteString("/*\n")
+		b.WriteString(src)
+		if !strings.HasSuffix(src, "\n") {
+			b.WriteByte('\n')
+		}
+		b.WriteString("*/\n")
+	}
 	writeItems(&b, internal)
 	return b.String()
 }
@@ -356,8 +366,16 @@ func convertExpr(expr string) string {
 		if start < len(inner) {
 			parts = append(parts, inner[start:])
 		}
+		if len(parts) == 2 && parts[0] == "-" {
+			return "-" + convertExpr(parts[1])
+		}
 		if len(parts) == 3 && (parts[0] == "+" || parts[0] == "-" || parts[0] == "*" || parts[0] == "/") {
-			return fmt.Sprintf("%s %s %s", parts[1], parts[0], parts[2])
+			a := convertExpr(parts[1])
+			b := convertExpr(parts[2])
+			if strings.HasPrefix(b, "-") {
+				b = "(" + b + ")"
+			}
+			return fmt.Sprintf("%s %s %s", a, parts[0], b)
 		}
 		if len(parts) >= 1 {
 			var args []string
@@ -393,9 +411,16 @@ func writeItems(out *strings.Builder, items []item) {
 			out.WriteString(it.Name)
 			out.WriteByte('(')
 			if len(it.Params) > 0 {
-				out.WriteString(strings.Join(it.Params, ", "))
+				for i, p := range it.Params {
+					if i > 0 {
+						out.WriteString(", ")
+					}
+					out.WriteString(p)
+					out.WriteString(": int")
+				}
 			}
 			out.WriteByte(')')
+			out.WriteString(": int")
 			body := bodyFromSnippet(it.Body)
 			if len(body) == 0 {
 				out.WriteString(" {}\n")
@@ -430,9 +455,17 @@ func writeItems(out *strings.Builder, items []item) {
 }
 
 func bodyFromSnippet(snippet string) []string {
+	snippet = strings.TrimSpace(snippet)
 	var out []string
 	lineRe := regexp.MustCompile(`\([^()]+\)`)
-	for _, m := range lineRe.FindAllString(snippet, -1) {
+	matches := lineRe.FindAllString(snippet, -1)
+	if len(matches) == 0 || len(matches[0]) != len(snippet) {
+		if snippet != "" {
+			out = append(out, "return "+convertExpr(snippet))
+		}
+		return out
+	}
+	for _, m := range matches {
 		stmt := strings.TrimSpace(m)
 		if strings.HasPrefix(stmt, "(displayln") {
 			expr := strings.TrimSpace(stmt[len("(displayln") : len(stmt)-1])
@@ -444,6 +477,8 @@ func bodyFromSnippet(snippet string) []string {
 			} else {
 				out = append(out, "return")
 			}
+		} else {
+			out = append(out, "return "+convertExpr(stmt))
 		}
 	}
 	return out
