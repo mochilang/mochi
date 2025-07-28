@@ -44,6 +44,9 @@ var appendRe = regexp.MustCompile(`lists:append\(([^,]+),\s*\[([^\]]+)\]\)`)
 var mapsGetRe = regexp.MustCompile(`maps:get\(([^,]+),\s*([^\)]+)\)`)
 var mapsPutRe = regexp.MustCompile(`maps:put\(([^,]+),\s*([^,]+),\s*([^\)]+)\)`)
 var mapsIsKeyRe = regexp.MustCompile(`maps:is_key\(([^,]+),\s*([^\)]+)\)`)
+var stringStrNotZeroRe = regexp.MustCompile(`string:str\(([^,]+),\s*([^\)]+)\)\s*(=/=|/=)\s*0`)
+var stringStrZeroRe = regexp.MustCompile(`string:str\(([^,]+),\s*([^\)]+)\)\s*(==|=:=)\s*0`)
+var substrRe = regexp.MustCompile(`string:substr\(([^,]+),\s*([^,]+?)\s*\+\s*1,\s*([^\)]+)\)`)
 
 // Parse parses a very small subset of Erlang syntax and returns an AST.
 // It only supports module attributes, exports and simple function bodies.
@@ -305,6 +308,27 @@ func convertLine(ln string, recs []Record) string {
 	}
 	if strings.Contains(ln, "maps:values(") {
 		ln = strings.ReplaceAll(ln, "maps:values(", "values(")
+	}
+	if strings.Contains(ln, "++") {
+		ln = strings.ReplaceAll(ln, "++", "+")
+	}
+	if stringStrNotZeroRe.MatchString(ln) {
+		ln = stringStrNotZeroRe.ReplaceAllString(ln, "$1.contains($2)")
+	}
+	if stringStrZeroRe.MatchString(ln) {
+		ln = stringStrZeroRe.ReplaceAllString(ln, "!$1.contains($2)")
+	}
+	if substrRe.MatchString(ln) {
+		ln = substrRe.ReplaceAllStringFunc(ln, func(s string) string {
+			m := substrRe.FindStringSubmatch(s)
+			start := strings.TrimSpace(m[2])
+			length := strings.TrimSpace(m[3])
+			target := strings.TrimSpace(m[1])
+			if length == "1" {
+				return target + "[" + start + "]"
+			}
+			return "substring(" + target + ", " + start + ", " + start + " + " + length + ")"
+		})
 	}
 	if strings.Contains(ln, " andalso ") {
 		ln = strings.ReplaceAll(ln, " andalso ", " && ")
