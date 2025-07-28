@@ -22,8 +22,20 @@ public class Main {
         return (((Number)(wins)).doubleValue()) / (((Number)(trials)).doubleValue());
     }
     public static void main(String[] args) {
-        System.out.println(String.valueOf(beats(9, 4, 6, 6, 1000)));
-        System.out.println(String.valueOf(beats(5, 10, 7, 6, 1000)));
+        {
+            long _benchStart = _now();
+            long _benchMem = _mem();
+            System.out.println(String.valueOf(beats(9, 4, 6, 6, 1000)));
+            System.out.println(String.valueOf(beats(5, 10, 7, 6, 1000)));
+            long _benchDuration = _now() - _benchStart;
+            long _benchMemory = _mem() - _benchMem;
+            System.out.println("{");
+            System.out.println("  \"duration_us\": " + _benchDuration + ",");
+            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
+            System.out.println("  \"name\": \"main\"");
+            System.out.println("}");
+            return;
+        }
     }
 
     static boolean _nowSeeded = false;
@@ -40,5 +52,11 @@ public class Main {
             return _nowSeed;
         }
         return (int)(System.nanoTime() / 1000);
+    }
+
+    static long _mem() {
+        Runtime rt = Runtime.getRuntime();
+        rt.gc();
+        return rt.totalMemory() - rt.freeMemory();
     }
 }

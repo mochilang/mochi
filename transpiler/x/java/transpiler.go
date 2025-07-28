@@ -491,6 +491,11 @@ func inferType(e Expr) string {
 		if t := arrayElemType(ex.Target); t != "" {
 			return t
 		}
+		if ex.IsMap {
+			if t := mapValueType(inferType(ex.Target)); t != "" {
+				return t
+			}
+		}
 	case *SliceExpr:
 		if isStringExpr(ex.Value) {
 			return "string"
@@ -1338,7 +1343,11 @@ func (s *IndexAssignStmt) emit(w io.Writer, indent string) {
 	if len(s.Indices) > 1 {
 		base := s.Target
 		for i := 0; i < len(s.Indices)-1; i++ {
-			base = &IndexExpr{Target: base, Index: s.Indices[i], IsMap: isMapExpr(base)}
+			ix := &IndexExpr{Target: base, Index: s.Indices[i], IsMap: isMapExpr(base)}
+			if ix.IsMap {
+				ix.ResultType = mapValueType(inferType(base))
+			}
+			base = ix
 		}
 		last := s.Indices[len(s.Indices)-1]
 		if isMapExpr(base) {
@@ -2721,6 +2730,11 @@ func isMapExpr(e Expr) bool {
 	switch ex := e.(type) {
 	case *MapLit:
 		return true
+	case *IndexExpr:
+		if ex.IsMap {
+			return true
+		}
+		return isMapExpr(ex.Target)
 	case *VarExpr:
 		if ex.Type != "" {
 			if strings.HasSuffix(ex.Type, "[]") {
