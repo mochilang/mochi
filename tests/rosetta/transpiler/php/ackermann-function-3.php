@@ -33,11 +33,46 @@ function _str($x) {
 }
 function _intdiv($a, $b) {
     if (function_exists('bcdiv')) {
-        $sa = is_int($a) ? strval($a) : sprintf('%.0f', $a);
-        $sb = is_int($b) ? strval($b) : sprintf('%.0f', $b);
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
         return intval(bcdiv($sa, $sb, 0));
     }
     return intdiv($a, $b);
+}
+function _iadd($a, $b) {
+    if (function_exists('bcadd')) {
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
+        return bcadd($sa, $sb, 0);
+    }
+    return $a + $b;
+}
+function _isub($a, $b) {
+    if (function_exists('bcsub')) {
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
+        return bcsub($sa, $sb, 0);
+    }
+    return $a - $b;
+}
+function _imul($a, $b) {
+    if (function_exists('bcmul')) {
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
+        return bcmul($sa, $sb, 0);
+    }
+    return $a * $b;
+}
+function _idiv($a, $b) {
+    return _intdiv($a, $b);
+}
+function _imod($a, $b) {
+    if (function_exists('bcmod')) {
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
+        return intval(bcmod($sa, $sb));
+    }
+    return $a % $b;
 }
 $__start_mem = memory_get_usage();
 $__start = _now();
@@ -48,9 +83,9 @@ $__start = _now();
   $e = $exp;
   while ($e > 0) {
   if ($e % 2 == 1) {
-  $result = $result * $b;
+  $result = _imul($result, $b);
 }
-  $b = $b * $b;
+  $b = _imul($b, $b);
   $e = intval((_intdiv($e, 2)));
 };
   return $result;
@@ -60,7 +95,7 @@ $__start = _now();
   $n = $x;
   $c = 0;
   while ($n > 0) {
-  $n = $n / 2;
+  $n = _idiv($n, 2);
   $c = $c + 1;
 };
   return $c;
@@ -74,13 +109,13 @@ $__start = _now();
   if ($m <= 3) {
   $mi = intval($m);
   if ($mi == 0) {
-  return $n + 1;
+  return _iadd($n, 1);
 };
   if ($mi == 1) {
-  return $n + 2;
+  return _iadd($n, 2);
 };
   if ($mi == 2) {
-  return 2 * $n + 3;
+  return _iadd(_imul(2, $n), 3);
 };
   if ($mi == 3) {
   $nb = bit_len($n);
@@ -89,13 +124,13 @@ $__start = _now();
   return 0;
 };
   $r = pow_big(2, intval($n));
-  return 8 * $r - 3;
+  return _isub(_imul(8, $r), 3);
 };
 }
   if (bit_len($n) == 0) {
-  return ackermann2($m - (1), 1);
+  return ackermann2(_isub($m, (1)), 1);
 }
-  return ackermann2($m - (1), ackermann2($m, $n - (1)));
+  return ackermann2(_isub($m, (1)), ackermann2($m, _isub($n, (1))));
 };
   function show($m, $n) {
   global $err;

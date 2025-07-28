@@ -1,0 +1,9 @@
+run: exit status 255
+rows:
+
+Fatal error: Uncaught TypeError: count(): Argument #1 ($value) must be of type Countable|array, string given in /workspace/mochi/tests/rosetta/transpiler/php/9-billion-names-of-god-the-integer.php:137
+Stack trace:
+#0 /workspace/mochi/tests/rosetta/transpiler/php/9-billion-names-of-god-the-integer.php(147): cumu(1)
+#1 /workspace/mochi/tests/rosetta/transpiler/php/9-billion-names-of-god-the-integer.php(160): row(1)
+#2 {main}
+  thrown in /workspace/mochi/tests/rosetta/transpiler/php/9-billion-names-of-god-the-integer.php on line 137

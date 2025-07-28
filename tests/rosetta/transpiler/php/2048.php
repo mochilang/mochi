@@ -15,9 +15,27 @@ function _now() {
     }
     return hrtime(true);
 }
-$SIZE = 4;
-function newBoard() {
-  global $SIZE, $spawnTile, $pad, $draw, $reverseRow, $slideLeft, $moveLeft, $moveRight, $getCol, $setCol, $moveUp, $moveDown, $hasMoves, $has2048, $board, $r, $full, $score, $cmd, $moved, $m, $r2;
+function _str($x) {
+    if (is_array($x)) {
+        $isList = array_keys($x) === range(0, count($x) - 1);
+        if ($isList) {
+            $parts = [];
+            foreach ($x as $v) { $parts[] = _str($v); }
+            return '[' . implode(' ', $parts) . ']';
+        }
+        $parts = [];
+        foreach ($x as $k => $v) { $parts[] = _str($k) . ':' . _str($v); }
+        return 'map[' . implode(' ', $parts) . ']';
+    }
+    if (is_bool($x)) return $x ? 'true' : 'false';
+    if ($x === null) return 'null';
+    return strval($x);
+}
+$__start_mem = memory_get_usage();
+$__start = _now();
+  $SIZE = 4;
+  function newBoard() {
+  global $SIZE, $board, $r, $full, $score, $cmd, $moved, $m, $r2;
   $b = [];
   $y = 0;
   while ($y < $SIZE) {
@@ -31,9 +49,9 @@ function newBoard() {
   $y = $y + 1;
 };
   return ['cells' => $b];
-}
-function spawnTile($b) {
-  global $SIZE, $newBoard, $pad, $draw, $reverseRow, $slideLeft, $moveLeft, $moveRight, $getCol, $setCol, $moveUp, $moveDown, $hasMoves, $has2048, $board, $r, $full, $score, $cmd, $moved, $m, $r2;
+};
+  function spawnTile($b) {
+  global $SIZE, $board, $r, $full, $score, $cmd, $moved, $m, $r2;
   $grid = $b['cells'];
   $empty = [];
   $y = 0;
@@ -50,33 +68,33 @@ function spawnTile($b) {
   if (count($empty) == 0) {
   return ['board' => $b, 'full' => true];
 }
-  $idx = _now() % count($empty);
+  $idx = fmod(_now(), count($empty));
   $cell = $empty[$idx];
   $val = 4;
-  if (_now() % 10 < 9) {
+  if (fmod(_now(), 10) < 9) {
   $val = 2;
 }
   $grid[$cell[1]][$cell[0]] = $val;
   return ['board' => ['cells' => $grid], 'full' => count($empty) == 1];
-}
-function pad($n) {
-  global $SIZE, $newBoard, $spawnTile, $draw, $reverseRow, $slideLeft, $moveLeft, $moveRight, $getCol, $setCol, $moveUp, $moveDown, $hasMoves, $has2048, $board, $r, $full, $score, $cmd, $moved, $m, $r2;
-  $s = json_encode($n, 1344);
+};
+  function pad($n) {
+  global $SIZE, $board, $r, $full, $score, $cmd, $moved, $m, $r2;
+  $s = _str($n);
   $pad = 4 - strlen($s);
   $i = 0;
   $out = '';
-  while ($i < $pad) {
+  while ($i < 'pad') {
   $out = $out . ' ';
   $i = $i + 1;
 };
   return $out . $s;
-}
-function draw($b, $score) {
-  global $SIZE, $newBoard, $spawnTile, $pad, $reverseRow, $slideLeft, $moveLeft, $moveRight, $getCol, $setCol, $moveUp, $moveDown, $hasMoves, $has2048, $board, $r, $full, $cmd, $moved, $m, $r2;
-  echo 'Score: ' . json_encode($score, 1344), PHP_EOL;
+};
+  function draw($b, $score) {
+  global $SIZE, $board, $r, $full, $cmd, $moved, $m, $r2;
+  echo rtrim('Score: ' . _str($score)), PHP_EOL;
   $y = 0;
   while ($y < $SIZE) {
-  echo '+----+----+----+----+', PHP_EOL;
+  echo rtrim('+----+----+----+----+'), PHP_EOL;
   $line = '|';
   $x = 0;
   while ($x < $SIZE) {
@@ -88,14 +106,14 @@ function draw($b, $score) {
 }
   $x = $x + 1;
 };
-  echo $line, PHP_EOL;
+  echo rtrim($line), PHP_EOL;
   $y = $y + 1;
 };
-  echo '+----+----+----+----+', PHP_EOL;
-  echo 'W=Up S=Down A=Left D=Right Q=Quit', PHP_EOL;
-}
-function reverseRow($r) {
-  global $SIZE, $newBoard, $spawnTile, $pad, $draw, $slideLeft, $moveLeft, $moveRight, $getCol, $setCol, $moveUp, $moveDown, $hasMoves, $has2048, $board, $full, $score, $cmd, $moved, $m, $r2;
+  echo rtrim('+----+----+----+----+'), PHP_EOL;
+  echo rtrim('W=Up S=Down A=Left D=Right Q=Quit'), PHP_EOL;
+};
+  function reverseRow($r) {
+  global $SIZE, $board, $full, $score, $cmd, $moved, $m, $r2;
   $out = [];
   $i = count($r) - 1;
   while ($i >= 0) {
@@ -103,9 +121,9 @@ function reverseRow($r) {
   $i = $i - 1;
 };
   return $out;
-}
-function slideLeft($row) {
-  global $SIZE, $newBoard, $spawnTile, $pad, $draw, $reverseRow, $moveLeft, $moveRight, $getCol, $setCol, $moveUp, $moveDown, $hasMoves, $has2048, $board, $r, $full, $score, $cmd, $moved, $m, $r2;
+};
+  function slideLeft($row) {
+  global $SIZE, $board, $r, $full, $score, $cmd, $moved, $m, $r2;
   $xs = [];
   $i = 0;
   while ($i < count($row)) {
@@ -132,9 +150,9 @@ function slideLeft($row) {
   $res = array_merge($res, [0]);
 };
   return ['row' => $res, 'gain' => $gain];
-}
-function moveLeft($b, &$score) {
-  global $SIZE, $newBoard, $spawnTile, $pad, $draw, $reverseRow, $slideLeft, $moveRight, $getCol, $setCol, $moveUp, $moveDown, $hasMoves, $has2048, $board, $full, $cmd, $m, $r2;
+};
+  function moveLeft($b, $score) {
+  global $SIZE, $board, $full, $cmd, $m, $r2;
   $grid = $b['cells'];
   $moved = false;
   $y = 0;
@@ -153,9 +171,9 @@ function moveLeft($b, &$score) {
   $y = $y + 1;
 };
   return ['board' => ['cells' => $grid], 'score' => $score, 'moved' => $moved];
-}
-function moveRight($b, &$score) {
-  global $SIZE, $newBoard, $spawnTile, $pad, $draw, $reverseRow, $slideLeft, $moveLeft, $getCol, $setCol, $moveUp, $moveDown, $hasMoves, $has2048, $board, $full, $cmd, $m, $r2;
+};
+  function moveRight($b, $score) {
+  global $SIZE, $board, $full, $cmd, $m, $r2;
   $grid = $b['cells'];
   $moved = false;
   $y = 0;
@@ -176,9 +194,9 @@ function moveRight($b, &$score) {
   $y = $y + 1;
 };
   return ['board' => ['cells' => $grid], 'score' => $score, 'moved' => $moved];
-}
-function getCol($b, $x) {
-  global $SIZE, $newBoard, $spawnTile, $pad, $draw, $reverseRow, $slideLeft, $moveLeft, $moveRight, $setCol, $moveUp, $moveDown, $hasMoves, $has2048, $board, $r, $full, $score, $cmd, $moved, $m, $r2;
+};
+  function getCol($b, $x) {
+  global $SIZE, $board, $r, $full, $score, $cmd, $moved, $m, $r2;
   $col = [];
   $y = 0;
   while ($y < $SIZE) {
@@ -186,9 +204,9 @@ function getCol($b, $x) {
   $y = $y + 1;
 };
   return $col;
-}
-function setCol(&$b, $x, $col) {
-  global $SIZE, $newBoard, $spawnTile, $pad, $draw, $reverseRow, $slideLeft, $moveLeft, $moveRight, $getCol, $moveUp, $moveDown, $hasMoves, $has2048, $board, $r, $full, $score, $cmd, $moved, $m, $r2;
+};
+  function setCol(&$b, $x, $col) {
+  global $SIZE, $board, $r, $full, $score, $cmd, $moved, $m, $r2;
   $rows = $b['cells'];
   $y = 0;
   while ($y < $SIZE) {
@@ -198,9 +216,9 @@ function setCol(&$b, $x, $col) {
   $y = $y + 1;
 };
   $b['cells'] = $rows;
-}
-function moveUp($b, &$score) {
-  global $SIZE, $newBoard, $spawnTile, $pad, $draw, $reverseRow, $slideLeft, $moveLeft, $moveRight, $getCol, $setCol, $moveDown, $hasMoves, $has2048, $board, $full, $cmd, $m, $r2;
+};
+  function moveUp($b, $score) {
+  global $SIZE, $board, $full, $cmd, $m, $r2;
   $grid = $b['cells'];
   $moved = false;
   $x = 0;
@@ -220,9 +238,9 @@ function moveUp($b, &$score) {
   $x = $x + 1;
 };
   return ['board' => ['cells' => $grid], 'score' => $score, 'moved' => $moved];
-}
-function moveDown($b, &$score) {
-  global $SIZE, $newBoard, $spawnTile, $pad, $draw, $reverseRow, $slideLeft, $moveLeft, $moveRight, $getCol, $setCol, $moveUp, $hasMoves, $has2048, $board, $full, $cmd, $m, $r2;
+};
+  function moveDown($b, $score) {
+  global $SIZE, $board, $full, $cmd, $m, $r2;
   $grid = $b['cells'];
   $moved = false;
   $x = 0;
@@ -243,9 +261,9 @@ function moveDown($b, &$score) {
   $x = $x + 1;
 };
   return ['board' => ['cells' => $grid], 'score' => $score, 'moved' => $moved];
-}
-function hasMoves($b) {
-  global $SIZE, $newBoard, $spawnTile, $pad, $draw, $reverseRow, $slideLeft, $moveLeft, $moveRight, $getCol, $setCol, $moveUp, $moveDown, $has2048, $board, $r, $full, $score, $cmd, $moved, $m, $r2;
+};
+  function hasMoves($b) {
+  global $SIZE, $board, $r, $full, $score, $cmd, $moved, $m, $r2;
   $y = 0;
   while ($y < $SIZE) {
   $x = 0;
@@ -264,9 +282,9 @@ function hasMoves($b) {
   $y = $y + 1;
 };
   return false;
-}
-function has2048($b) {
-  global $SIZE, $newBoard, $spawnTile, $pad, $draw, $reverseRow, $slideLeft, $moveLeft, $moveRight, $getCol, $setCol, $moveUp, $moveDown, $hasMoves, $board, $r, $full, $score, $cmd, $moved, $m, $r2;
+};
+  function has2048($b) {
+  global $SIZE, $board, $r, $full, $score, $cmd, $moved, $m, $r2;
   $y = 0;
   while ($y < $SIZE) {
   $x = 0;
@@ -279,18 +297,18 @@ function has2048($b) {
   $y = $y + 1;
 };
   return false;
-}
-$board = newBoard();
-$r = spawnTile($board);
-$board = $r['board'];
-$full = $r['full'];
-$r = spawnTile($board);
-$board = $r['board'];
-$full = $r['full'];
-$score = 0;
-draw($board, $score);
-while (true) {
-  echo 'Move: ', PHP_EOL;
+};
+  $board = newBoard();
+  $r = spawnTile($board);
+  $board = $r['board'];
+  $full = $r['full'];
+  $r = spawnTile($board);
+  $board = $r['board'];
+  $full = $r['full'];
+  $score = 0;
+  draw($board, $score);
+  while (true) {
+  echo rtrim('Move: '), PHP_EOL;
   $cmd = trim(fgets(STDIN));
   $moved = false;
   if ($cmd == 'a' || $cmd == 'A') {
@@ -326,17 +344,25 @@ while (true) {
   $full = $r2['full'];
   if ($full && (!hasMoves($board))) {
   draw($board, $score);
-  echo 'Game Over', PHP_EOL;
+  echo rtrim('Game Over'), PHP_EOL;
   break;
 };
 }
   draw($board, $score);
   if (has2048($board)) {
-  echo 'You win!', PHP_EOL;
+  echo rtrim('You win!'), PHP_EOL;
   break;
 }
   if (!hasMoves($board)) {
-  echo 'Game Over', PHP_EOL;
+  echo rtrim('Game Over'), PHP_EOL;
   break;
 }
 }
+$__end = _now();
+$__end_mem = memory_get_usage();
+$__duration = intdiv($__end - $__start, 1000);
+$__mem_diff = max(0, $__end_mem - $__start_mem);
+$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
+$__j = json_encode($__bench, 128);
+$__j = str_replace("    ", "  ", $__j);
+echo $__j, PHP_EOL;;

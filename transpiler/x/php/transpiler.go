@@ -2929,6 +2929,18 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			if len(args) != 2 {
 				return nil, fmt.Errorf("append expects 2 args")
 			}
+			if transpileEnv != nil {
+				switch v := args[0].(type) {
+				case *Name:
+					if _, err := transpileEnv.GetVar(v.Value); err == nil {
+						args[0] = &Var{Name: v.Value}
+					}
+				case *StringLit:
+					if _, err := transpileEnv.GetVar(v.Value); err == nil {
+						args[0] = &Var{Name: v.Value}
+					}
+				}
+			}
 			tmp := &ListLit{Elems: []Expr{args[1]}}
 			return &CallExpr{Func: "array_merge", Args: []Expr{args[0], tmp}}, nil
 		} else if name == "json" {
@@ -4472,6 +4484,11 @@ func isBigIntExpr(e Expr) bool {
 		return isBigIntExpr(v.Then) && isBigIntExpr(v.Else)
 	case *IntDivExpr:
 		return isBigIntExpr(v.Left) && isBigIntExpr(v.Right)
+	case *CallExpr:
+		switch v.Func {
+		case "_iadd", "_isub", "_imul", "_idiv", "_imod", "_intdiv":
+			return true
+		}
 	}
 	if _, ok := exprType(e).(types.BigIntType); ok {
 		return true

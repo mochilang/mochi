@@ -33,8 +33,8 @@ function _str($x) {
 }
 function _intdiv($a, $b) {
     if (function_exists('bcdiv')) {
-        $sa = is_int($a) ? strval($a) : sprintf('%.0f', $a);
-        $sb = is_int($b) ? strval($b) : sprintf('%.0f', $b);
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
         return intval(bcdiv($sa, $sb, 0));
     }
     return intdiv($a, $b);
@@ -121,7 +121,7 @@ $__start = _now();
   if ($last == $seq[$n - 2]) {
   $aliquot = 'Aspiring';
 } else {
-  if (contains(array_slice($seq, 1, maxOf(1, $n - 2) - 1), $last)) {
+  if (in_array($last, array_slice($seq, 1, maxOf(1, $n - 2) - 1))) {
   $idx = indexOf($seq, $last);
   $aliquot = 'Cyclic[' . _str($n - 1 - $idx) . ']';
 } else {
@@ -172,7 +172,8 @@ $__start = _now();
 };
   function main() {
   global $THRESHOLD;
-  echo rtrim('Aliquot classifications - periods for Sociable/Cyclic in square brackets:\n'), PHP_EOL;
+  echo rtrim('Aliquot classifications - periods for Sociable/Cyclic in square brackets:
+'), PHP_EOL;
   $k = 1;
   while ($k <= 10) {
   $res = classifySequence($k);

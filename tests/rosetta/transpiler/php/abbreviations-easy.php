@@ -23,7 +23,8 @@ $__start = _now();
   $i = 0;
   while ($i < strlen($s)) {
   $ch = substr($s, $i, $i + 1 - $i);
-  if ($ch == ' ' || $ch == '\n' || $ch == '\t') {
+  if ($ch == ' ' || $ch == '
+' || $ch == '\t') {
   if (strlen($cur) > 0) {
   $words = array_merge($words, [$cur]);
   $cur = '';

@@ -33,8 +33,8 @@ function _str($x) {
 }
 function _intdiv($a, $b) {
     if (function_exists('bcdiv')) {
-        $sa = is_int($a) ? strval($a) : sprintf('%.0f', $a);
-        $sb = is_int($b) ? strval($b) : sprintf('%.0f', $b);
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
         return intval(bcdiv($sa, $sb, 0));
     }
     return intdiv($a, $b);
@@ -176,7 +176,8 @@ $__start = _now();
 };
   echo rtrim($line), PHP_EOL;
 };
-  echo rtrim('\nFirst 30 strong Achilles numbers:'), PHP_EOL;
+  echo rtrim('
+First 30 strong Achilles numbers:'), PHP_EOL;
   $strong = [];
   $count = 0;
   $idx = 0;
@@ -202,7 +203,8 @@ $__start = _now();
 };
   echo rtrim($line), PHP_EOL;
 };
-  echo rtrim('\nNumber of Achilles numbers with:'), PHP_EOL;
+  echo rtrim('
+Number of Achilles numbers with:'), PHP_EOL;
   $counts = [1, 12, 47, 192, 664, 2242, 7395, 24008, 77330, 247449, 788855, 2508051, 7960336, 25235383];
   $d = 2;
   while ($d <= $maxDigits) {

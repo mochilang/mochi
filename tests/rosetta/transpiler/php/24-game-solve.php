@@ -15,29 +15,48 @@ function _now() {
     }
     return hrtime(true);
 }
-$OP_ADD = 1;
-$OP_SUB = 2;
-$OP_MUL = 3;
-$OP_DIV = 4;
-function binEval($op, $l, $r) {
-  global $OP_ADD, $OP_SUB, $OP_MUL, $OP_DIV, $binString, $newNum, $exprEval, $exprString, $n_cards, $goal, $digit_range, $solve, $main;
-  $lv = exprEval($l);
-  $rv = exprEval($r);
+function _str($x) {
+    if (is_array($x)) {
+        $isList = array_keys($x) === range(0, count($x) - 1);
+        if ($isList) {
+            $parts = [];
+            foreach ($x as $v) { $parts[] = _str($v); }
+            return '[' . implode(' ', $parts) . ']';
+        }
+        $parts = [];
+        foreach ($x as $k => $v) { $parts[] = _str($k) . ':' . _str($v); }
+        return 'map[' . implode(' ', $parts) . ']';
+    }
+    if (is_bool($x)) return $x ? 'true' : 'false';
+    if ($x === null) return 'null';
+    return strval($x);
+}
+$__start_mem = memory_get_usage();
+$__start = _now();
+  $OP_ADD = 1;
+  $OP_SUB = 2;
+  $OP_MUL = 3;
+  $OP_DIV = 4;
+  function makeNode($n) {
+  global $OP_ADD, $OP_SUB, $OP_MUL, $OP_DIV, $n_cards, $goal, $digit_range;
+  return ['val' => ['num' => $n, 'denom' => 1], 'txt' => _str($n)];
+};
+  function combine($op, $l, $r) {
+  global $OP_ADD, $OP_SUB, $OP_MUL, $OP_DIV, $n_cards, $goal, $digit_range;
+  $res = null;
   if ($op == $OP_ADD) {
-  return ['num' => $lv['num'] * $rv['denom'] + $lv['denom'] * $rv['num'], 'denom' => $lv['denom'] * $rv['denom']];
-}
+  $res = ['num' => $l['val']['num'] * $r['val']['denom'] + $l['val']['denom'] * $r['val']['num'], 'denom' => $l['val']['denom'] * $r['val']['denom']];
+} else {
   if ($op == $OP_SUB) {
-  return ['num' => $lv['num'] * $rv['denom'] - $lv['denom'] * $rv['num'], 'denom' => $lv['denom'] * $rv['denom']];
-}
+  $res = ['num' => $l['val']['num'] * $r['val']['denom'] - $l['val']['denom'] * $r['val']['num'], 'denom' => $l['val']['denom'] * $r['val']['denom']];
+} else {
   if ($op == $OP_MUL) {
-  return ['num' => $lv['num'] * $rv['num'], 'denom' => $lv['denom'] * $rv['denom']];
+  $res = ['num' => $l['val']['num'] * $r['val']['num'], 'denom' => $l['val']['denom'] * $r['val']['denom']];
+} else {
+  $res = ['num' => $l['val']['num'] * $r['val']['denom'], 'denom' => $l['val']['denom'] * $r['val']['num']];
+};
+};
 }
-  return ['num' => $lv['num'] * $rv['denom'], 'denom' => $lv['denom'] * $rv['num']];
-}
-function binString($op, $l, $r) {
-  global $OP_ADD, $OP_SUB, $OP_MUL, $OP_DIV, $binEval, $newNum, $exprEval, $exprString, $n_cards, $goal, $digit_range, $solve, $main;
-  $ls = exprString($l);
-  $rs = exprString($r);
   $opstr = '';
   if ($op == $OP_ADD) {
   $opstr = ' + ';
@@ -52,49 +71,25 @@ function binString($op, $l, $r) {
 };
 };
 }
-  return '(' . $ls . $opstr . $rs . ')';
-}
-function newNum($n) {
-  global $OP_ADD, $OP_SUB, $OP_MUL, $OP_DIV, $binEval, $binString, $exprEval, $exprString, $n_cards, $goal, $digit_range, $solve, $main;
-  return ['__tag' => 'Num', 'value' => ['num' => $n, 'denom' => 1]];
-}
-function exprEval($x) {
-  global $OP_ADD, $OP_SUB, $OP_MUL, $OP_DIV, $binEval, $binString, $newNum, $exprString, $n_cards, $goal, $digit_range, $solve, $main;
-  return (function($__v) {
-  if ($__v['__tag'] === "Num") {
-    $v = $__v["value"];
-    return $v;
-  } elseif ($__v['__tag'] === "Bin") {
-    $op = $__v["op"];
-    $l = $__v["left"];
-    $r = $__v["right"];
-    return binEval($op, $l, $r);
-  }
-})($x);
-}
-function exprString($x) {
-  global $OP_ADD, $OP_SUB, $OP_MUL, $OP_DIV, $binEval, $binString, $newNum, $exprEval, $n_cards, $goal, $digit_range, $solve, $main;
-  return (function($__v) {
-  if ($__v['__tag'] === "Num") {
-    $v = $__v["value"];
-    return json_encode($v['num'], 1344);
-  } elseif ($__v['__tag'] === "Bin") {
-    $op = $__v["op"];
-    $l = $__v["left"];
-    $r = $__v["right"];
-    return binString($op, $l, $r);
-  }
-})($x);
-}
-$n_cards = 4;
-$goal = 24;
-$digit_range = 9;
-function solve($xs) {
-  global $OP_ADD, $OP_SUB, $OP_MUL, $OP_DIV, $binEval, $binString, $newNum, $exprEval, $exprString, $n_cards, $goal, $digit_range, $main;
+  return ['val' => $res, 'txt' => '(' . $l['txt'] . $opstr . $r['txt'] . ')'];
+};
+  function exprEval($x) {
+  global $OP_ADD, $OP_SUB, $OP_MUL, $OP_DIV, $n_cards, $goal, $digit_range;
+  return $x['val'];
+};
+  function exprString($x) {
+  global $OP_ADD, $OP_SUB, $OP_MUL, $OP_DIV, $n_cards, $goal, $digit_range;
+  return $x['txt'];
+};
+  $n_cards = 4;
+  $goal = 24;
+  $digit_range = 9;
+  function solve($xs) {
+  global $OP_ADD, $OP_SUB, $OP_MUL, $OP_DIV, $n_cards, $goal, $digit_range;
   if (count($xs) == 1) {
   $f = exprEval($xs[0]);
   if ($f['denom'] != 0 && $f['num'] == $f['denom'] * $goal) {
-  echo exprString($xs[0]), PHP_EOL;
+  echo rtrim(exprString($xs[0])), PHP_EOL;
   return true;
 };
   return false;
@@ -113,17 +108,18 @@ function solve($xs) {
 };
   $a = $xs[$i];
   $b = $xs[$j];
+  $node = null;
   foreach ([$OP_ADD, $OP_SUB, $OP_MUL, $OP_DIV] as $op) {
-  $node = ['__tag' => 'Bin', 'op' => $op, 'left' => $a, 'right' => $b];
+  $node = combine($op, $a, $b);
   if (solve(array_merge($rest, [$node]))) {
   return true;
 }
 };
-  $node = ['__tag' => 'Bin', 'op' => $OP_SUB, 'left' => $b, 'right' => $a];
+  $node = combine($OP_SUB, $b, $a);
   if (solve(array_merge($rest, [$node]))) {
   return true;
 }
-  $node = ['__tag' => 'Bin', 'op' => $OP_DIV, 'left' => $b, 'right' => $a];
+  $node = combine($OP_DIV, $b, $a);
   if (solve(array_merge($rest, [$node]))) {
   return true;
 }
@@ -132,24 +128,32 @@ function solve($xs) {
   $i = $i + 1;
 };
   return false;
-}
-function main() {
-  global $OP_ADD, $OP_SUB, $OP_MUL, $OP_DIV, $binEval, $binString, $newNum, $exprEval, $exprString, $n_cards, $goal, $digit_range, $solve;
+};
+  function main() {
+  global $OP_ADD, $OP_SUB, $OP_MUL, $OP_DIV, $n_cards, $goal, $digit_range;
   $iter = 0;
   while ($iter < 10) {
   $cards = [];
   $i = 0;
   while ($i < $n_cards) {
-  $n = (_now() % ($digit_range - 1)) + 1;
-  $cards = array_merge($cards, [newNum($n)]);
-  echo ' ' . json_encode($n, 1344), PHP_EOL;
+  $n = (fmod(_now(), ($digit_range - 1))) + 1;
+  $cards = array_merge($cards, [makeNode($n)]);
+  echo rtrim(' ' . _str($n)), PHP_EOL;
   $i = $i + 1;
 };
-  echo ':  ', PHP_EOL;
+  echo rtrim(':  '), PHP_EOL;
   if (!solve($cards)) {
-  echo 'No solution', PHP_EOL;
+  echo rtrim('No solution'), PHP_EOL;
 }
   $iter = $iter + 1;
 };
-}
-main();
+};
+  main();
+$__end = _now();
+$__end_mem = memory_get_usage();
+$__duration = intdiv($__end - $__start, 1000);
+$__mem_diff = max(0, $__end_mem - $__start_mem);
+$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
+$__j = json_encode($__bench, 128);
+$__j = str_replace("    ", "  ", $__j);
+echo $__j, PHP_EOL;;
