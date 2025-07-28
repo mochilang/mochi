@@ -2,7 +2,7 @@
 
 This directory stores C++ code generated from Mochi programs in `tests/rosetta/x/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.cpp` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (155/493) - Last updated 2025-07-28 10:18 +0700:
+Checklist of programs that currently transpile and run (182/493) - Last updated 2025-07-28 11:35 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | 100-doors-2 | ✓ | 222.0µs | 13.12MB |
@@ -154,7 +154,7 @@ Checklist of programs that currently transpile and run (155/493) - Last updated 
 | 147 | calendar---for-real-programmers-1 | ✓ | 829.0µs | 13.11MB |
 | 148 | calendar---for-real-programmers-2 | ✓ | 655.0µs | 13.56MB |
 | 149 | calendar | ✓ | 704.0µs | 13.25MB |
-| 150 | calkin-wilf-sequence | ✓ | 415.0µs | 13.49MB |
+| 150 | calkin-wilf-sequence |   | 415.0µs | 13.49MB |
 | 151 | call-a-foreign-language-function | ✓ | 152.0µs | 12.61MB |
 | 152 | call-a-function-1 | ✓ | 10.0µs | 12.54MB |
 | 153 | call-a-function-10 | ✓ | 36.0µs | 12.54MB |
@@ -169,7 +169,7 @@ Checklist of programs that currently transpile and run (155/493) - Last updated 
 | 162 | call-a-function-8 | ✓ | 57.0µs | 12.88MB |
 | 163 | call-a-function-9 | ✓ | 56.0µs | 12.79MB |
 | 164 | call-an-object-method-1 | ✓ | 15.0µs | 12.30MB |
-| 165 | call-an-object-method-2 | ✓ |  |  |
+| 165 | call-an-object-method-2 |   |  |  |
 | 166 | call-an-object-method-3 | ✓ | 3.0µs | 12.62MB |
 | 167 | call-an-object-method | ✓ | 2.0µs | 12.69MB |
 | 168 | camel-case-and-snake-case | ✓ | 1.0ms | 14.19MB |
@@ -180,7 +180,7 @@ Checklist of programs that currently transpile and run (155/493) - Last updated 
 | 173 | cartesian-product-of-two-or-more-lists-1 | ✓ | 284.0µs | 13.12MB |
 | 174 | cartesian-product-of-two-or-more-lists-2 | ✓ | 71.0µs | 14.17MB |
 | 175 | cartesian-product-of-two-or-more-lists-3 | ✓ | 296.0µs | 13.56MB |
-| 176 | cartesian-product-of-two-or-more-lists-4 | ✓ |  |  |
+| 176 | cartesian-product-of-two-or-more-lists-4 |   |  |  |
 | 177 | case-sensitivity-of-identifiers |   |  |  |
 | 178 | casting-out-nines |   |  |  |
 | 179 | catalan-numbers-1 |   |  |  |
@@ -254,57 +254,57 @@ Checklist of programs that currently transpile and run (155/493) - Last updated 
 | 247 | count-in-octal-4 |   |  |  |
 | 248 | count-occurrences-of-a-substring |   |  |  |
 | 249 | count-the-coins-1 |   |  |  |
-| 250 | count-the-coins-2 |   |  |  |
-| 251 | cramers-rule |   |  |  |
+| 250 | count-the-coins-2 | ✓ | 579.0µs | 13.13MB |
+| 251 | cramers-rule | ✓ |  |  |
 | 252 | crc-32-1 |   |  |  |
 | 253 | crc-32-2 |   |  |  |
-| 254 | create-a-file-on-magnetic-tape |   |  |  |
-| 255 | create-a-file |   |  |  |
+| 254 | create-a-file-on-magnetic-tape | ✓ |  |  |
+| 255 | create-a-file | ✓ |  |  |
 | 256 | create-a-two-dimensional-array-at-runtime-1 |   |  |  |
 | 257 | create-an-html-table |   |  |  |
-| 258 | create-an-object-at-a-given-address |   |  |  |
-| 259 | csv-data-manipulation |   |  |  |
+| 258 | create-an-object-at-a-given-address | ✓ |  |  |
+| 259 | csv-data-manipulation | ✓ |  |  |
 | 260 | csv-to-html-translation-1 |   |  |  |
 | 261 | csv-to-html-translation-2 |   |  |  |
-| 262 | csv-to-html-translation-3 |   |  |  |
-| 263 | csv-to-html-translation-4 |   |  |  |
-| 264 | csv-to-html-translation-5 |   |  |  |
+| 262 | csv-to-html-translation-3 | ✓ |  |  |
+| 263 | csv-to-html-translation-4 | ✓ |  |  |
+| 264 | csv-to-html-translation-5 | ✓ |  |  |
 | 265 | cuban-primes |   |  |  |
 | 266 | cullen-and-woodall-numbers |   |  |  |
-| 267 | cumulative-standard-deviation |   |  |  |
-| 268 | currency |   |  |  |
+| 267 | cumulative-standard-deviation | ✓ |  |  |
+| 268 | currency | ✓ |  |  |
 | 269 | currying |   |  |  |
-| 270 | curzon-numbers |   |  |  |
-| 271 | cusip |   |  |  |
+| 270 | curzon-numbers | ✓ |  |  |
+| 271 | cusip | ✓ |  |  |
 | 272 | cyclops-numbers |   |  |  |
-| 273 | damm-algorithm |   |  |  |
-| 274 | date-format |   |  |  |
+| 273 | damm-algorithm | ✓ |  |  |
+| 274 | date-format | ✓ |  |  |
 | 275 | date-manipulation |   |  |  |
-| 276 | day-of-the-week |   |  |  |
+| 276 | day-of-the-week | ✓ |  |  |
 | 277 | de-bruijn-sequences |   |  |  |
 | 278 | deal-cards-for-freecell |   |  |  |
 | 279 | death-star |   |  |  |
 | 280 | deceptive-numbers |   |  |  |
-| 281 | deconvolution-1d-2 |   |  |  |
-| 282 | deconvolution-1d-3 |   |  |  |
-| 283 | deconvolution-1d |   |  |  |
+| 281 | deconvolution-1d-2 | ✓ |  |  |
+| 282 | deconvolution-1d-3 | ✓ |  |  |
+| 283 | deconvolution-1d | ✓ |  |  |
 | 284 | deepcopy-1 |   |  |  |
 | 285 | define-a-primitive-data-type |   |  |  |
 | 286 | delegates |   |  |  |
 | 287 | demings-funnel |   |  |  |
-| 288 | department-numbers |   |  |  |
+| 288 | department-numbers | ✓ |  |  |
 | 289 | descending-primes |   |  |  |
-| 290 | detect-division-by-zero |   |  |  |
-| 291 | determine-if-a-string-has-all-the-same-characters |   |  |  |
-| 292 | determine-if-a-string-has-all-unique-characters |   |  |  |
-| 293 | determine-if-a-string-is-collapsible |   |  |  |
-| 294 | determine-if-a-string-is-numeric-1 |   |  |  |
+| 290 | detect-division-by-zero | ✓ |  |  |
+| 291 | determine-if-a-string-has-all-the-same-characters | ✓ |  |  |
+| 292 | determine-if-a-string-has-all-unique-characters | ✓ |  |  |
+| 293 | determine-if-a-string-is-collapsible | ✓ |  |  |
+| 294 | determine-if-a-string-is-numeric-1 | ✓ |  |  |
 | 295 | determine-if-a-string-is-numeric-2 |   |  |  |
-| 296 | determine-if-a-string-is-squeezable |   |  |  |
-| 297 | determine-if-only-one-instance-is-running |   |  |  |
-| 298 | determine-if-two-triangles-overlap |   |  |  |
-| 299 | determine-sentence-type |   |  |  |
-| 300 | dice-game-probabilities-1 |   |  |  |
+| 296 | determine-if-a-string-is-squeezable | ✓ |  |  |
+| 297 | determine-if-only-one-instance-is-running | ✓ |  |  |
+| 298 | determine-if-two-triangles-overlap | ✓ |  |  |
+| 299 | determine-sentence-type | ✓ |  |  |
+| 300 | dice-game-probabilities-1 | ✓ |  |  |
 | 301 | dice-game-probabilities-2 |   |  |  |
 | 302 | digital-root-multiplicative-digital-root |   |  |  |
 | 303 | dijkstras-algorithm |   |  |  |

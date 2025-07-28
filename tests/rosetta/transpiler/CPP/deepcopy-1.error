@@ -1,0 +1,74 @@
+compile: exit status 1
+/workspace/mochi/tests/rosetta/transpiler/CPP/deepcopy-1.cpp:20:181: warning: multi-character character constant [-Wmultichar]
+   20 |     else if(val.type() == typeid(std::vector<int64_t>)) { const auto& v = std::any_cast<const std::vector<int64_t>&>(val); os << '['; for(size_t i=0;i<v.size();++i){ if(i>0) os << ', '; os << v[i]; } os << ']'; }
+      |                                                                                                                                                                                     ^~~~
+/workspace/mochi/tests/rosetta/transpiler/CPP/deepcopy-1.cpp:21:209: warning: multi-character character constant [-Wmultichar]
+   21 |     else if(val.type() == typeid(std::vector<std::vector<int64_t>>)) { const auto& vv = std::any_cast<const std::vector<std::vector<int64_t>>&>(val); os << '['; for(size_t i=0;i<vv.size();++i){ if(i>0) os << ', '; const auto& v = vv[i]; os << '['; for(size_t j=0;j<v.size();++j){ if(j>0) os << ', '; os << v[j]; } os << ']'; } os << ']'; }
+      |                                                                                                                                                                                                                 ^~~~
+/workspace/mochi/tests/rosetta/transpiler/CPP/deepcopy-1.cpp:21:295: warning: multi-character character constant [-Wmultichar]
+   21 |     else if(val.type() == typeid(std::vector<std::vector<int64_t>>)) { const auto& vv = std::any_cast<const std::vector<std::vector<int64_t>>&>(val); os << '['; for(size_t i=0;i<vv.size();++i){ if(i>0) os << ', '; const auto& v = vv[i]; os << '['; for(size_t j=0;j<v.size();++j){ if(j>0) os << ', '; os << v[j]; } os << ']'; } os << ']'; }
+      |                                                                                                                                                                                                                                                                                                       ^~~~
+/workspace/mochi/tests/rosetta/transpiler/CPP/deepcopy-1.cpp:22:189: warning: multi-character character constant [-Wmultichar]
+   22 |     else if(val.type() == typeid(std::vector<std::string>)) { const auto& v = std::any_cast<const std::vector<std::string>&>(val); os << '['; for(size_t i=0;i<v.size();++i){ if(i>0) os << ', '; os << v[i]; } os << ']'; }
+      |                                                                                                                                                                                             ^~~~
+/workspace/mochi/tests/rosetta/transpiler/CPP/deepcopy-1.cpp:23:183: warning: multi-character character constant [-Wmultichar]
+   23 |     else if(val.type() == typeid(std::vector<std::any>)) { const auto& v = std::any_cast<const std::vector<std::any>&>(val); os << '['; for(size_t i=0;i<v.size();++i){ if(i>0) os << ', '; any_to_stream(os, v[i]); } os << ']'; }
+      |                                                                                                                                                                                       ^~~~
+/workspace/mochi/tests/rosetta/transpiler/CPP/deepcopy-1.cpp:24:215: warning: multi-character character constant [-Wmultichar]
+   24 |     else if(val.type() == typeid(std::map<std::string, std::any>)) { const auto& m = std::any_cast<const std::map<std::string, std::any>&>(val); os << '{'; bool first=true; for(const auto& p : m){ if(!first) os << ', '; first=false; os << p.first << ': '; any_to_stream(os, p.second); } os << '}'; }
+      |                                                                                                                                                                                                                       ^~~~
+/workspace/mochi/tests/rosetta/transpiler/CPP/deepcopy-1.cpp:24:251: warning: multi-character character constant [-Wmultichar]
+   24 |     else if(val.type() == typeid(std::map<std::string, std::any>)) { const auto& m = std::any_cast<const std::map<std::string, std::any>&>(val); os << '{'; bool first=true; for(const auto& p : m){ if(!first) os << ', '; first=false; os << p.first << ': '; any_to_stream(os, p.second); } os << '}'; }
+      |                                                                                                                                                                                                                                                           ^~~~
+/workspace/mochi/tests/rosetta/transpiler/CPP/deepcopy-1.cpp:60:129: warning: multi-character character constant [-Wmultichar]
+   60 |  << ", " << "'m': "<< "{"; bool first_3=true; for(const auto& p: v.m){ if(!first_3) os << ", "; first_3=false; os << p.first << ': ' << p.second; } os << "}"
+      |                                                                                                                                 ^~~~
+/workspace/mochi/tests/rosetta/transpiler/CPP/deepcopy-1.cpp: In function ‘std::map<long int, bool> copyMap(const std::map<long int, bool>&)’:
+/workspace/mochi/tests/rosetta/transpiler/CPP/deepcopy-1.cpp:85:12: error: no match for ‘operator[]’ (operand types are ‘std::map<long int, bool>’ and ‘std::pair<const long int, bool>’)
+   85 |         out[k] = src.at(k);
+      |            ^
+In file included from /usr/include/c++/13/map:63,
+                 from /workspace/mochi/tests/rosetta/transpiler/CPP/deepcopy-1.cpp:5:
+/usr/include/c++/13/bits/stl_map.h:504:7: note: candidate: ‘std::map<_Key, _Tp, _Compare, _Alloc>::mapped_type& std::map<_Key, _Tp, _Compare, _Alloc>::operator[](const key_type&) [with _Key = long int; _Tp = bool; _Compare = std::less<long int>; _Alloc = std::allocator<std::pair<const long int, bool> >; mapped_type = bool; key_type = long int]’
+  504 |       operator[](const key_type& __k)
+      |       ^~~~~~~~
+/usr/include/c++/13/bits/stl_map.h:504:34: note:   no known conversion for argument 1 from ‘std::pair<const long int, bool>’ to ‘const std::map<long int, bool>::key_type&’ {aka ‘const long int&’}
+  504 |       operator[](const key_type& __k)
+      |                  ~~~~~~~~~~~~~~~~^~~
+/usr/include/c++/13/bits/stl_map.h:524:7: note: candidate: ‘std::map<_Key, _Tp, _Compare, _Alloc>::mapped_type& std::map<_Key, _Tp, _Compare, _Alloc>::operator[](key_type&&) [with _Key = long int; _Tp = bool; _Compare = std::less<long int>; _Alloc = std::allocator<std::pair<const long int, bool> >; mapped_type = bool; key_type = long int]’
+  524 |       operator[](key_type&& __k)
+      |       ^~~~~~~~
+/usr/include/c++/13/bits/stl_map.h:524:29: note:   no known conversion for argument 1 from ‘std::pair<const long int, bool>’ to ‘std::map<long int, bool>::key_type&&’ {aka ‘long int&&’}
+  524 |       operator[](key_type&& __k)
+      |                  ~~~~~~~~~~~^~~
+/workspace/mochi/tests/rosetta/transpiler/CPP/deepcopy-1.cpp:85:24: error: no matching function for call to ‘std::map<long int, bool>::at(std::pair<const long int, bool>&) const’
+   85 |         out[k] = src.at(k);
+      |                  ~~~~~~^~~
+/usr/include/c++/13/bits/stl_map.h:549:7: note: candidate: ‘std::map<_Key, _Tp, _Compare, _Alloc>::mapped_type& std::map<_Key, _Tp, _Compare, _Alloc>::at(const key_type&) [with _Key = long int; _Tp = bool; _Compare = std::less<long int>; _Alloc = std::allocator<std::pair<const long int, bool> >; mapped_type = bool; key_type = long int]’
+  549 |       at(const key_type& __k)
+      |       ^~
+/usr/include/c++/13/bits/stl_map.h:549:26: note:   no known conversion for argument 1 from ‘std::pair<const long int, bool>’ to ‘const std::map<long int, bool>::key_type&’ {aka ‘const long int&’}
+  549 |       at(const key_type& __k)
+      |          ~~~~~~~~~~~~~~~~^~~
+/usr/include/c++/13/bits/stl_map.h:558:7: note: candidate: ‘const std::map<_Key, _Tp, _Compare, _Alloc>::mapped_type& std::map<_Key, _Tp, _Compare, _Alloc>::at(const key_type&) const [with _Key = long int; _Tp = bool; _Compare = std::less<long int>; _Alloc = std::allocator<std::pair<const long int, bool> >; mapped_type = bool; key_type = long int]’
+  558 |       at(const key_type& __k) const
+      |       ^~
+/usr/include/c++/13/bits/stl_map.h:558:26: note:   no known conversion for argument 1 from ‘std::pair<const long int, bool>’ to ‘const std::map<long int, bool>::key_type&’ {aka ‘const long int&’}
+  558 |       at(const key_type& __k) const
+      |          ~~~~~~~~~~~~~~~~^~~
+/workspace/mochi/tests/rosetta/transpiler/CPP/deepcopy-1.cpp: In lambda function:
+/workspace/mochi/tests/rosetta/transpiler/CPP/deepcopy-1.cpp:112:106: error: no matching function for call to ‘std::map<long int, bool>::at(std::pair<const long int, bool>&) const’
+  112 |  return ss.str(); }())) + std::string(":")) + ([&]{ std::ostringstream ss; ss << std::boolalpha << c.m.at(k); return ss.str(); }()));
+      |                                                                                                    ~~~~~~^~~
+/usr/include/c++/13/bits/stl_map.h:549:7: note: candidate: ‘std::map<_Key, _Tp, _Compare, _Alloc>::mapped_type& std::map<_Key, _Tp, _Compare, _Alloc>::at(const key_type&) [with _Key = long int; _Tp = bool; _Compare = std::less<long int>; _Alloc = std::allocator<std::pair<const long int, bool> >; mapped_type = bool; key_type = long int]’
+  549 |       at(const key_type& __k)
+      |       ^~
+/usr/include/c++/13/bits/stl_map.h:549:26: note:   no known conversion for argument 1 from ‘std::pair<const long int, bool>’ to ‘const std::map<long int, bool>::key_type&’ {aka ‘const long int&’}
+  549 |       at(const key_type& __k)
+      |          ~~~~~~~~~~~~~~~~^~~
+/usr/include/c++/13/bits/stl_map.h:558:7: note: candidate: ‘const std::map<_Key, _Tp, _Compare, _Alloc>::mapped_type& std::map<_Key, _Tp, _Compare, _Alloc>::at(const key_type&) const [with _Key = long int; _Tp = bool; _Compare = std::less<long int>; _Alloc = std::allocator<std::pair<const long int, bool> >; mapped_type = bool; key_type = long int]’
+  558 |       at(const key_type& __k) const
+      |       ^~
+/usr/include/c++/13/bits/stl_map.h:558:26: note:   no known conversion for argument 1 from ‘std::pair<const long int, bool>’ to ‘const std::map<long int, bool>::key_type&’ {aka ‘const long int&’}
+  558 |       at(const key_type& __k) const
+      |          ~~~~~~~~~~~~~~~~^~~
