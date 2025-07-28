@@ -140,6 +140,21 @@ func stmtToNode(st ast.Stmt) []*mochias.Node {
 			Kind:     "while",
 			Children: []*mochias.Node{exprToNode(s.Cond), body},
 		}}
+	case *ast.RangeStmt:
+		body := blockToNode(s.Body)
+		varName := ""
+		if id, ok := s.Value.(*ast.Ident); ok {
+			varName = id.Name
+		} else if id, ok := s.Key.(*ast.Ident); ok {
+			varName = id.Name
+		}
+		iter := exprToNode(s.X)
+		inNode := &mochias.Node{Kind: "in", Children: []*mochias.Node{iter}}
+		return []*mochias.Node{{
+			Kind:     "for",
+			Value:    varName,
+			Children: []*mochias.Node{inNode, body},
+		}}
 	case *ast.IfStmt:
 		cond := exprToNode(s.Cond)
 		thenBlk := blockToNode(s.Body)
@@ -197,8 +212,15 @@ func callToNode(c *ast.CallExpr) *mochias.Node {
 			}
 		}
 	case *ast.Ident:
-		if fn.Name == "len" {
+		switch fn.Name {
+		case "len":
 			n := &mochias.Node{Kind: "call", Value: "len"}
+			for _, arg := range c.Args {
+				n.Children = append(n.Children, exprToNode(arg))
+			}
+			return n
+		case "append":
+			n := &mochias.Node{Kind: "call", Value: "append"}
 			for _, arg := range c.Args {
 				n.Children = append(n.Children, exprToNode(arg))
 			}
