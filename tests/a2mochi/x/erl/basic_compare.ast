@@ -1,0 +1,26 @@
+(program main
+  (fun main
+    (let A
+      (group
+        (binary - (int 10) (int 3))
+      )
+    )
+    (let B
+      (group
+        (binary + (int 2) (int 2))
+      )
+    )
+    (call print (selector A))
+    (call print
+      (group
+        (binary == (selector A) (int 7))
+      )
+    )
+    (call print
+      (group
+        (binary < (selector B) (int 5))
+      )
+    )
+  )
+  (call main)
+)

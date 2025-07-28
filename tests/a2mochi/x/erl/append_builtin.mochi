@@ -1,0 +1,6 @@
+package main
+fun main() {
+  let A = [1, 2]
+  print(append(A, 3))
+}
+main()
