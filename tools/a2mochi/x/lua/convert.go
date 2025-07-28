@@ -29,7 +29,8 @@ func Parse(src string) ([]luaast.Stmt, error) {
 // ConvertSource converts parsed Lua statements into Mochi source code.
 func ConvertSource(stmts []luaast.Stmt) (string, error) {
 	var b strings.Builder
-	writeLuaChunk(&b, stmts)
+	mut := collectMutables(stmts)
+	writeLuaChunk(&b, stmts, mut)
 	return b.String(), nil
 }
 
@@ -46,7 +47,7 @@ func Convert(stmts []luaast.Stmt) (*ast.Node, error) {
 	return ast.FromProgram(prog), nil
 }
 
-func convertLuaStmts(stmts []luaast.Stmt, indent int, vars map[string]bool) []string {
+func convertLuaStmts(stmts []luaast.Stmt, indent int, vars map[string]bool, mut map[string]bool) []string {
 	if vars == nil {
 		vars = make(map[string]bool)
 	}
@@ -59,7 +60,7 @@ func convertLuaStmts(stmts []luaast.Stmt, indent int, vars map[string]bool) []st
 				if i < len(s.Exprs) {
 					if fn, ok := s.Exprs[i].(*luaast.FunctionExpr); ok {
 						out = append(out, ind+"fun "+n+luaFuncSignature(fn)+" {")
-						out = append(out, convertLuaStmts(fn.Stmts, indent+1, map[string]bool{})...)
+						out = append(out, convertLuaStmts(fn.Stmts, indent+1, map[string]bool{}, mut)...)
 						out = append(out, ind+"}")
 						vars[n] = true
 						continue
@@ -67,24 +68,32 @@ func convertLuaStmts(stmts []luaast.Stmt, indent int, vars map[string]bool) []st
 				}
 				val := ""
 				if i < len(s.Exprs) {
-					val = luaExprString(s.Exprs[i])
+					val = luaExprString(s.Exprs[i], mut)
 				}
-				out = append(out, ind+"let "+n+" = "+val)
+				keyword := "let "
+				if mut[n] {
+					keyword = "var "
+				}
+				out = append(out, ind+keyword+n+" = "+val)
 				vars[n] = true
 			}
 		case *luaast.AssignStmt:
 			for i, lh := range s.Lhs {
-				name := luaExprString(lh)
+				name := luaExprString(lh, mut)
 				val := ""
 				if i < len(s.Rhs) {
-					val = luaExprString(s.Rhs[i])
+					val = luaExprString(s.Rhs[i], mut)
 				}
 				if vars[name] {
 					out = append(out, ind+name+" = "+val)
 				} else if strings.ContainsAny(name, "[].") {
 					out = append(out, ind+name+" = "+val)
 				} else {
-					out = append(out, ind+"let "+name+" = "+val)
+					keyword := "let "
+					if mut[name] {
+						keyword = "var "
+					}
+					out = append(out, ind+keyword+name+" = "+val)
 					vars[name] = true
 				}
 			}
@@ -92,41 +101,41 @@ func convertLuaStmts(stmts []luaast.Stmt, indent int, vars map[string]bool) []st
 			if len(s.Exprs) == 0 {
 				out = append(out, ind+"return")
 			} else if len(s.Exprs) == 1 {
-				out = append(out, ind+"return "+luaExprString(s.Exprs[0]))
+				out = append(out, ind+"return "+luaExprString(s.Exprs[0], mut))
 			} else {
 				var parts []string
 				for _, e := range s.Exprs {
-					parts = append(parts, luaExprString(e))
+					parts = append(parts, luaExprString(e, mut))
 				}
 				out = append(out, ind+"return ("+strings.Join(parts, ", ")+")")
 			}
 		case *luaast.FuncCallStmt:
-			out = append(out, ind+luaExprString(s.Expr))
+			out = append(out, ind+luaExprString(s.Expr, mut))
 		case *luaast.BreakStmt:
 			out = append(out, ind+"break")
 		case *luaast.DoBlockStmt:
 			out = append(out, ind+"do {")
-			out = append(out, convertLuaStmts(s.Stmts, indent+1, map[string]bool{})...)
+			out = append(out, convertLuaStmts(s.Stmts, indent+1, copyVars(vars), mut)...)
 			out = append(out, ind+"}")
 		case *luaast.WhileStmt:
-			cond := luaExprString(s.Condition)
+			cond := luaExprString(s.Condition, mut)
 			out = append(out, ind+"while "+cond+" {")
-			out = append(out, convertLuaStmts(s.Stmts, indent+1, map[string]bool{})...)
+			out = append(out, convertLuaStmts(s.Stmts, indent+1, copyVars(vars), mut)...)
 			out = append(out, ind+"}")
 		case *luaast.RepeatStmt:
 			out = append(out, ind+"do {")
-			out = append(out, convertLuaStmts(s.Stmts, indent+1, map[string]bool{})...)
-			cond := luaExprString(s.Condition)
+			out = append(out, convertLuaStmts(s.Stmts, indent+1, copyVars(vars), mut)...)
+			cond := luaExprString(s.Condition, mut)
 			out = append(out, ind+"} while !("+cond+")")
 		case *luaast.IfStmt:
-			writeLuaIfStmt(&out, s, indent)
+			writeLuaIfStmt(&out, s, indent, vars, mut)
 		case *luaast.NumberForStmt:
 			step := "1"
 			if s.Step != nil {
-				step = luaExprString(s.Step)
+				step = luaExprString(s.Step, mut)
 			}
-			init := luaExprString(s.Init)
-			limit := luaExprString(s.Limit)
+			init := luaExprString(s.Init, mut)
+			limit := luaExprString(s.Limit, mut)
 			endVal := fmt.Sprintf("(%s) + %s", limit, step)
 			loop := fmt.Sprintf("for %s in %s..%s", s.Name, init, endVal)
 			if step != "1" {
@@ -134,21 +143,21 @@ func convertLuaStmts(stmts []luaast.Stmt, indent int, vars map[string]bool) []st
 			}
 			loop += " {"
 			out = append(out, ind+loop)
-			out = append(out, convertLuaStmts(s.Stmts, indent+1, map[string]bool{})...)
+			out = append(out, convertLuaStmts(s.Stmts, indent+1, copyVars(vars), mut)...)
 			out = append(out, ind+"}")
 		case *luaast.GenericForStmt:
 			iter := ""
 			if len(s.Exprs) > 0 {
-				iter = luaExprString(s.Exprs[0])
+				iter = luaExprString(s.Exprs[0], mut)
 			}
 			name := strings.Join(s.Names, ", ")
 			if len(s.Names) > 1 {
 				if call, ok := s.Exprs[0].(*luaast.FuncCallExpr); ok {
-					callee := luaExprString(call.Func)
+					callee := luaExprString(call.Func, mut)
 					if callee == "pairs" && len(call.Args) == 1 {
-						iter = "values(" + luaExprString(call.Args[0]) + ")"
+						iter = "values(" + luaExprString(call.Args[0], mut) + ")"
 					} else if callee == "ipairs" && len(call.Args) == 1 {
-						iter = luaExprString(call.Args[0])
+						iter = luaExprString(call.Args[0], mut)
 					} else {
 						iter = "values(" + iter + ")"
 					}
@@ -158,46 +167,46 @@ func convertLuaStmts(stmts []luaast.Stmt, indent int, vars map[string]bool) []st
 				name = s.Names[len(s.Names)-1]
 			}
 			out = append(out, ind+"for "+name+" in "+iter+" {")
-			out = append(out, convertLuaStmts(s.Stmts, indent+1, map[string]bool{})...)
+			out = append(out, convertLuaStmts(s.Stmts, indent+1, copyVars(vars), mut)...)
 			out = append(out, ind+"}")
 		case *luaast.FuncDefStmt:
 			origName := ""
 			if id, ok := s.Name.Func.(*luaast.IdentExpr); ok {
 				origName = id.Value
 			}
-			name := luaExprString(s.Name.Func)
+			name := luaExprString(s.Name.Func, mut)
 			if s.Name.Method != "" {
-				recv := luaExprString(s.Name.Func)
+				recv := luaExprString(s.Name.Func, mut)
 				name = recv + "." + s.Name.Method
 			}
 			if strings.HasPrefix(origName, "__") {
 				continue
 			}
 			out = append(out, ind+"fun "+name+luaFuncSignature(s.Func)+" {")
-			out = append(out, convertLuaStmts(s.Func.Stmts, indent+1, map[string]bool{})...)
+			out = append(out, convertLuaStmts(s.Func.Stmts, indent+1, map[string]bool{}, mut)...)
 			out = append(out, ind+"}")
 		}
 	}
 	return out
 }
 
-func writeLuaIfStmt(out *[]string, s *luaast.IfStmt, indent int) {
+func writeLuaIfStmt(out *[]string, s *luaast.IfStmt, indent int, vars map[string]bool, mut map[string]bool) {
 	ind := strings.Repeat("  ", indent)
-	*out = append(*out, ind+"if "+luaExprString(s.Condition)+" {")
-	*out = append(*out, convertLuaStmts(s.Then, indent+1, map[string]bool{})...)
+	*out = append(*out, ind+"if "+luaExprString(s.Condition, mut)+" {")
+	*out = append(*out, convertLuaStmts(s.Then, indent+1, copyVars(vars), mut)...)
 	cur := s
 	for {
 		if len(cur.Else) == 1 {
 			if next, ok := cur.Else[0].(*luaast.IfStmt); ok {
-				*out = append(*out, ind+"} else if "+luaExprString(next.Condition)+" {")
-				*out = append(*out, convertLuaStmts(next.Then, indent+1, map[string]bool{})...)
+				*out = append(*out, ind+"} else if "+luaExprString(next.Condition, mut)+" {")
+				*out = append(*out, convertLuaStmts(next.Then, indent+1, copyVars(vars), mut)...)
 				cur = next
 				continue
 			}
 		}
 		if len(cur.Else) > 0 {
 			*out = append(*out, ind+"} else {")
-			*out = append(*out, convertLuaStmts(cur.Else, indent+1, map[string]bool{})...)
+			*out = append(*out, convertLuaStmts(cur.Else, indent+1, copyVars(vars), mut)...)
 			*out = append(*out, ind+"}")
 		} else {
 			*out = append(*out, ind+"}")
@@ -206,7 +215,7 @@ func writeLuaIfStmt(out *[]string, s *luaast.IfStmt, indent int) {
 	}
 }
 
-func luaExprString(e luaast.Expr) string {
+func luaExprString(e luaast.Expr, mut map[string]bool) string {
 	switch v := e.(type) {
 	case *luaast.NumberExpr:
 		return v.Value
@@ -224,9 +233,9 @@ func luaExprString(e luaast.Expr) string {
 		}
 		return v.Value
 	case *luaast.ArithmeticOpExpr:
-		return luaExprString(v.Lhs) + " " + v.Operator + " " + luaExprString(v.Rhs)
+		return luaExprString(v.Lhs, mut) + " " + v.Operator + " " + luaExprString(v.Rhs, mut)
 	case *luaast.StringConcatOpExpr:
-		return luaExprString(v.Lhs) + " + " + luaExprString(v.Rhs)
+		return luaExprString(v.Lhs, mut) + " + " + luaExprString(v.Rhs, mut)
 	case *luaast.LogicalOpExpr:
 		op := v.Operator
 		if op == "and" {
@@ -234,34 +243,37 @@ func luaExprString(e luaast.Expr) string {
 		} else if op == "or" {
 			op = "||"
 		}
-		return luaExprString(v.Lhs) + " " + op + " " + luaExprString(v.Rhs)
+		return luaExprString(v.Lhs, mut) + " " + op + " " + luaExprString(v.Rhs, mut)
 	case *luaast.RelationalOpExpr:
-		return luaExprString(v.Lhs) + " " + v.Operator + " " + luaExprString(v.Rhs)
+		return luaExprString(v.Lhs, mut) + " " + v.Operator + " " + luaExprString(v.Rhs, mut)
 	case *luaast.UnaryMinusOpExpr:
-		return "-" + luaExprString(v.Expr)
+		return "-" + luaExprString(v.Expr, mut)
 	case *luaast.UnaryNotOpExpr:
-		return "!" + luaExprString(v.Expr)
+		return "!" + luaExprString(v.Expr, mut)
 	case *luaast.UnaryLenOpExpr:
-		return "len(" + luaExprString(v.Expr) + ")"
+		return "len(" + luaExprString(v.Expr, mut) + ")"
 	case *luaast.FuncCallExpr:
+		if val, ok := tryValuesCall(v, mut); ok {
+			return val
+		}
 		var args []string
 		for _, a := range v.Args {
-			args = append(args, luaExprString(a))
+			args = append(args, luaExprString(a, mut))
 		}
-		callee := luaExprString(v.Func)
+		callee := luaExprString(v.Func, mut)
 		if v.Method != "" {
-			callee = luaExprString(v.Receiver) + "." + v.Method
+			callee = luaExprString(v.Receiver, mut) + "." + v.Method
 		}
 		if fn, ok := v.Func.(*luaast.FunctionExpr); ok {
 			if isAppendFunc(fn) && len(v.Args) == 2 {
-				return "append(" + luaExprString(v.Args[0]) + ", " + luaExprString(v.Args[1]) + ")"
+				return "append(" + luaExprString(v.Args[0], mut) + ", " + luaExprString(v.Args[1], mut) + ")"
 			}
 			if isAvgFunc(fn) && len(v.Args) == 1 {
-				return "avg(" + luaExprString(v.Args[0]) + ")"
+				return "avg(" + luaExprString(v.Args[0], mut) + ")"
 			}
 		}
 		if (callee == "pairs" || callee == "ipairs") && len(args) == 1 {
-			return luaExprString(v.Args[0])
+			return luaExprString(v.Args[0], mut)
 		}
 		switch callee {
 		case "__print":
@@ -327,7 +339,7 @@ func luaExprString(e luaast.Expr) string {
 		b.WriteString("fun")
 		b.WriteString(luaFuncSignature(v))
 		b.WriteString(" {")
-		for _, line := range convertLuaStmts(v.Stmts, 1, map[string]bool{}) {
+		for _, line := range convertLuaStmts(v.Stmts, 1, map[string]bool{}, mut) {
 			b.WriteByte('\n')
 			b.WriteString("  ")
 			b.WriteString(line)
@@ -337,21 +349,21 @@ func luaExprString(e luaast.Expr) string {
 		return b.String()
 	case *luaast.AttrGetExpr:
 		if k, ok := v.Key.(*luaast.StringExpr); ok {
-			return luaExprString(v.Object) + "[" + strconv.Quote(k.Value) + "]"
+			return luaExprString(v.Object, mut) + "[" + strconv.Quote(k.Value) + "]"
 		}
 		if _, ok := v.Key.(*luaast.IdentExpr); ok {
-			return luaExprString(v.Object) + "." + luaExprString(v.Key)
+			return luaExprString(v.Object, mut) + "." + luaExprString(v.Key, mut)
 		}
-		return luaExprString(v.Object) + "[" + luaExprString(v.Key) + "]"
+		return luaExprString(v.Object, mut) + "[" + luaExprString(v.Key, mut) + "]"
 	case *luaast.TableExpr:
 		isMap := false
 		var items []string
 		for _, f := range v.Fields {
 			if f.Key != nil {
 				isMap = true
-				items = append(items, luaExprString(f.Key)+": "+luaExprString(f.Value))
+				items = append(items, luaExprString(f.Key, mut)+": "+luaExprString(f.Value, mut))
 			} else {
-				items = append(items, luaExprString(f.Value))
+				items = append(items, luaExprString(f.Value, mut))
 			}
 		}
 		if isMap {
@@ -428,6 +440,23 @@ func isAvgFunc(fn *luaast.FunctionExpr) bool {
 	return hasLoop && hasReturn
 }
 
+func tryValuesCall(call *luaast.FuncCallExpr, mut map[string]bool) (string, bool) {
+	if !isAttrCall(call.Func, "table", "concat") || len(call.Args) != 2 {
+		return "", false
+	}
+	if s, ok := call.Args[1].(*luaast.StringExpr); !ok || s.Value != " " {
+		return "", false
+	}
+	inner, ok := call.Args[0].(*luaast.FuncCallExpr)
+	if !ok || len(inner.Args) != 1 {
+		return "", false
+	}
+	if _, ok := inner.Func.(*luaast.FunctionExpr); !ok {
+		return "", false
+	}
+	return "values(" + luaExprString(inner.Args[0], mut) + ")", true
+}
+
 func isAttrCall(e luaast.Expr, object, method string) bool {
 	get, ok := e.(*luaast.AttrGetExpr)
 	if !ok {
@@ -497,13 +526,72 @@ func preprocessLuaSource(src string) string {
 	return strings.Join(lines, "\n")
 }
 
-func writeLuaChunk(out *strings.Builder, chunk []luaast.Stmt) {
-	for _, line := range convertLuaStmts(chunk, 0, map[string]bool{}) {
+func writeLuaChunk(out *strings.Builder, chunk []luaast.Stmt, mut map[string]bool) {
+	for _, line := range convertLuaStmts(chunk, 0, map[string]bool{}, mut) {
 		if strings.HasPrefix(line, "fun __") {
 			continue
 		}
 		out.WriteString(line)
 		out.WriteByte('\n')
+	}
+}
+
+func copyVars(src map[string]bool) map[string]bool {
+	dst := make(map[string]bool, len(src))
+	for k, v := range src {
+		dst[k] = v
+	}
+	return dst
+}
+
+func collectMutables(stmts []luaast.Stmt) map[string]bool {
+	counts := make(map[string]int)
+	collectAssignCounts(stmts, counts)
+	out := make(map[string]bool)
+	for k, c := range counts {
+		if c > 1 {
+			out[k] = true
+		}
+	}
+	return out
+}
+
+func collectAssignCounts(stmts []luaast.Stmt, counts map[string]int) {
+	for _, st := range stmts {
+		switch s := st.(type) {
+		case *luaast.LocalAssignStmt:
+			for _, n := range s.Names {
+				counts[n]++
+			}
+		case *luaast.AssignStmt:
+			for _, lh := range s.Lhs {
+				if id, ok := lh.(*luaast.IdentExpr); ok {
+					counts[id.Value]++
+				}
+			}
+		case *luaast.FuncDefStmt:
+			if id, ok := s.Name.Func.(*luaast.IdentExpr); ok {
+				counts[id.Value]++
+			}
+			collectAssignCounts(s.Func.Stmts, counts)
+		case *luaast.DoBlockStmt:
+			collectAssignCounts(s.Stmts, counts)
+		case *luaast.WhileStmt:
+			collectAssignCounts(s.Stmts, counts)
+		case *luaast.RepeatStmt:
+			collectAssignCounts(s.Stmts, counts)
+		case *luaast.IfStmt:
+			collectAssignCounts(s.Then, counts)
+			collectAssignCounts(s.Else, counts)
+		case *luaast.NumberForStmt:
+			counts[s.Name]++
+			collectAssignCounts(s.Stmts, counts)
+		case *luaast.GenericForStmt:
+			for _, n := range s.Names {
+				counts[n]++
+			}
+			collectAssignCounts(s.Stmts, counts)
+		}
 	}
 }
 
