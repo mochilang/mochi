@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"regexp"
 	"strconv"
 	"strings"
@@ -153,7 +154,16 @@ func ConvertSource(src string) (string, error) {
 	if out.Len() == 0 {
 		return "", fmt.Errorf("no convertible symbols found\n\nsource snippet:\n%s", snippet(src))
 	}
-	return out.String(), nil
+	var buf strings.Builder
+	buf.WriteString(header())
+	buf.WriteString("/*\n")
+	buf.WriteString(src)
+	if !strings.HasSuffix(src, "\n") {
+		buf.WriteByte('\n')
+	}
+	buf.WriteString("*/\n")
+	buf.WriteString(out.String())
+	return buf.String(), nil
 }
 
 // Convert parses Swift source and returns a Mochi AST node.
@@ -443,4 +453,36 @@ func snippetAround(src string, line, col int) string {
 		}
 	}
 	return strings.TrimRight(out.String(), "\n")
+}
+
+func repoRoot() string {
+	dir, _ := os.Getwd()
+	for i := 0; i < 10; i++ {
+		if _, err := os.Stat(filepath.Join(dir, "go.mod")); err == nil {
+			return dir
+		}
+		parent := filepath.Dir(dir)
+		if parent == dir {
+			break
+		}
+		dir = parent
+	}
+	return ""
+}
+
+func version() string {
+	root := repoRoot()
+	if root == "" {
+		return "dev"
+	}
+	if data, err := os.ReadFile(filepath.Join(root, "VERSION")); err == nil {
+		return strings.TrimSpace(string(data))
+	}
+	return "dev"
+}
+
+func header() string {
+	loc := time.FixedZone("GMT+7", 7*3600)
+	t := time.Now().In(loc)
+	return fmt.Sprintf("// a2mochi-swift v%s on %s\n", version(), t.Format("2006-01-02 15:04 MST"))
 }
