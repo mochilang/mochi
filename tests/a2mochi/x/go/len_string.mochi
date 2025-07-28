@@ -9,15 +9,9 @@ import (
 	"fmt"
 )
 
-var a int = 10
-
-var b int = 20
-
 func main() {
-	fmt.Println((a + b))
+	fmt.Println(len("mochi"))
 }
 */
-var a = 10
-var b = 20
-print((a + b))
+print(len("mochi"))
 

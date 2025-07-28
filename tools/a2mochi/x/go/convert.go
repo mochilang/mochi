@@ -123,8 +123,25 @@ func blockToNode(b *ast.BlockStmt) *mochias.Node {
 func callToNode(c *ast.CallExpr) *mochias.Node {
 	switch fn := c.Fun.(type) {
 	case *ast.SelectorExpr:
-		if id, ok := fn.X.(*ast.Ident); ok && id.Name == "fmt" && fn.Sel.Name == "Println" {
-			n := &mochias.Node{Kind: "call", Value: "print"}
+		if id, ok := fn.X.(*ast.Ident); ok && id.Name == "fmt" {
+			switch fn.Sel.Name {
+			case "Println":
+				n := &mochias.Node{Kind: "call", Value: "print"}
+				for _, arg := range c.Args {
+					n.Children = append(n.Children, exprToNode(arg))
+				}
+				return n
+			case "Sprint":
+				n := &mochias.Node{Kind: "call", Value: "str"}
+				for _, arg := range c.Args {
+					n.Children = append(n.Children, exprToNode(arg))
+				}
+				return n
+			}
+		}
+	case *ast.Ident:
+		if fn.Name == "len" {
+			n := &mochias.Node{Kind: "call", Value: "len"}
 			for _, arg := range c.Args {
 				n.Children = append(n.Children, exprToNode(arg))
 			}
@@ -151,6 +168,14 @@ func exprToNode(e ast.Expr) *mochias.Node {
 		return &mochias.Node{Kind: "binary", Value: v.Op.String(), Children: []*mochias.Node{
 			exprToNode(v.X), exprToNode(v.Y),
 		}}
+	case *ast.UnaryExpr:
+		if v.Op == token.SUB {
+			return &mochias.Node{Kind: "unary", Value: "-", Children: []*mochias.Node{exprToNode(v.X)}}
+		}
+	case *ast.CallExpr:
+		if n := callToNode(v); n != nil {
+			return n
+		}
 	case *ast.ParenExpr:
 		return exprToNode(v.X)
 	}
@@ -163,8 +188,19 @@ func ConvertSource(n *Node) (string, error) {
 	if n == nil {
 		return "", fmt.Errorf("nil node")
 	}
+	astNode, err := Convert(n)
+	if err != nil {
+		return "", err
+	}
+
+	var code strings.Builder
+	if err := mochias.Fprint(&code, astNode); err != nil {
+		return "", err
+	}
+
 	version := strings.TrimSpace(readVersion())
 	t := time.Now().In(time.FixedZone("GMT+7", 7*3600)).Format("2006-01-02 15:04:05")
+
 	var b strings.Builder
 	fmt.Fprintf(&b, "// a2mochi go v%s %s GMT+7\n", version, t)
 	b.WriteString("/*\n")
@@ -173,6 +209,8 @@ func ConvertSource(n *Node) (string, error) {
 		b.WriteByte('\n')
 	}
 	b.WriteString("*/\n")
+	b.WriteString(code.String())
+	b.WriteByte('\n')
 	return b.String(), nil
 }
 

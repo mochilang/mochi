@@ -1,0 +1,11 @@
+(program
+  (call print
+    (binary - (int 0) (int 3))
+  )
+  (call print
+    (binary +
+      (int 5)
+      (binary - (int 0) (int 2))
+    )
+  )
+)
