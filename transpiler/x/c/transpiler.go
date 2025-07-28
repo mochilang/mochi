@@ -1023,7 +1023,7 @@ func (s *StringLit) emitExpr(w io.Writer) {
 type IntLit struct{ Value int }
 
 func (i *IntLit) emitExpr(w io.Writer) {
-	fmt.Fprintf(w, "%d", i.Value)
+    fmt.Fprintf(w, "%dLL", i.Value)
 }
 
 type FloatLit struct{ Value float64 }
