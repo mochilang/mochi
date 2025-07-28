@@ -294,15 +294,56 @@ func isUnderscoreExpr(e *parser.Expr) bool {
 // --- Expression Conversion ---
 
 func FromExpr(e *parser.Expr) *Node {
-	n := FromUnary(e.Binary.Left)
+	// Convert a parser expression into an AST node while preserving
+	// operator precedence. The parser flattens binary operations so we
+	// rebuild the tree using a simple shunting-yard style algorithm.
+
+	operands := []*Node{FromUnary(e.Binary.Left)}
+	ops := []string{}
+
+	prec := func(op string) int {
+		switch op {
+		case "||":
+			return 1
+		case "&&":
+			return 2
+		case "==", "!=", "<", "<=", ">", ">=", "in":
+			return 3
+		case "+", "-", "union", "except", "intersect":
+			return 4
+		case "*", "/", "%":
+			return 5
+		default:
+			return 0
+		}
+	}
+
+	reduce := func(p int) {
+		for len(ops) > 0 && prec(ops[len(ops)-1]) >= p {
+			op := ops[len(ops)-1]
+			ops = ops[:len(ops)-1]
+			right := operands[len(operands)-1]
+			left := operands[len(operands)-2]
+			operands = operands[:len(operands)-2]
+			operands = append(operands, &Node{Kind: "binary", Value: op, Children: []*Node{left, right}})
+		}
+	}
+
 	for _, op := range e.Binary.Right {
 		val := op.Op
 		if op.All {
 			val += "_all"
 		}
-		n = &Node{Kind: "binary", Value: val, Children: []*Node{n, FromPostfixExpr(op.Right)}}
+		reduce(prec(val))
+		operands = append(operands, FromPostfixExpr(op.Right))
+		ops = append(ops, val)
 	}
-	return n
+	reduce(0)
+
+	if len(operands) > 0 {
+		return operands[0]
+	}
+	return &Node{Kind: "unknown"}
 }
 
 func FromUnary(u *parser.Unary) *Node {
