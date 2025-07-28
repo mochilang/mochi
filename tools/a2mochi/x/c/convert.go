@@ -310,6 +310,8 @@ func parseStructs(src string) []string {
 func parseStatements(body string) []string {
 	var out []string
 	indent := 1
+	skipLevel := 0
+	first := true
 	for _, line := range strings.Split(body, "\n") {
 		l := strings.TrimSpace(line)
 		if l == "" {
@@ -317,12 +319,22 @@ func parseStatements(body string) []string {
 		}
 		switch {
 		case l == "{":
+			if first {
+				first = false
+				skipLevel = 1
+				indent++
+				continue
+			}
 			out = append(out, strings.Repeat("  ", indent)+"{")
 			indent++
 		case l == "}":
 			indent--
 			if indent < 0 {
 				indent = 0
+			}
+			if skipLevel == 1 && indent == 1 {
+				skipLevel = 0
+				continue
 			}
 			out = append(out, strings.Repeat("  ", indent)+"}")
 		case strings.HasPrefix(l, "for ") || strings.HasPrefix(l, "for("):
@@ -419,6 +431,10 @@ func parseStatements(body string) []string {
 				l = strings.TrimSuffix(l, ";")
 			}
 			l = stripCasts(l)
+			if strings.Contains(l, "sizeof(") {
+				re := regexp.MustCompile(`sizeof\((\w+)\)\s*/\s*sizeof\(\w+\[0\]\)`)
+				l = re.ReplaceAllString(l, "len($1)")
+			}
 			switch {
 			case strings.HasSuffix(l, "++"):
 				v := strings.TrimSpace(strings.TrimSuffix(l, "++"))
@@ -467,19 +483,19 @@ func parseStatements(body string) []string {
 				val := strings.TrimSpace(parts[1])
 				out = append(out, strings.Repeat("  ", indent)+v+" = "+v+" ^ "+val)
 			case strings.HasPrefix(l, "int "):
-				out = append(out, strings.Repeat("  ", indent)+"var "+strings.TrimSpace(l[4:]))
+				out = append(out, strings.Repeat("  ", indent)+convertVarDecl(strings.TrimSpace(l[4:])))
 			case strings.HasPrefix(l, "size_t "):
-				out = append(out, strings.Repeat("  ", indent)+"var "+strings.TrimSpace(l[7:]))
+				out = append(out, strings.Repeat("  ", indent)+convertVarDecl(strings.TrimSpace(l[7:])))
 			case strings.HasPrefix(l, "long "):
-				out = append(out, strings.Repeat("  ", indent)+"var "+strings.TrimSpace(l[5:]))
+				out = append(out, strings.Repeat("  ", indent)+convertVarDecl(strings.TrimSpace(l[5:])))
 			case strings.HasPrefix(l, "short "):
-				out = append(out, strings.Repeat("  ", indent)+"var "+strings.TrimSpace(l[6:]))
+				out = append(out, strings.Repeat("  ", indent)+convertVarDecl(strings.TrimSpace(l[6:])))
 			case strings.HasPrefix(l, "float "):
-				out = append(out, strings.Repeat("  ", indent)+"var "+strings.TrimSpace(l[6:]))
+				out = append(out, strings.Repeat("  ", indent)+convertVarDecl(strings.TrimSpace(l[6:])))
 			case strings.HasPrefix(l, "double "):
-				out = append(out, strings.Repeat("  ", indent)+"var "+strings.TrimSpace(l[7:]))
+				out = append(out, strings.Repeat("  ", indent)+convertVarDecl(strings.TrimSpace(l[7:])))
 			case strings.HasPrefix(l, "char "):
-				out = append(out, strings.Repeat("  ", indent)+"var "+strings.TrimSpace(l[5:]))
+				out = append(out, strings.Repeat("  ", indent)+convertVarDecl(strings.TrimSpace(l[5:])))
 			case functionPtrRE.MatchString(l):
 				m := functionPtrRE.FindStringSubmatch(l)
 				name := strings.TrimSpace(m[1])
@@ -489,11 +505,35 @@ func parseStatements(body string) []string {
 				}
 				out = append(out, strings.Repeat("  ", indent)+"var "+name+" = "+val)
 			default:
-				out = append(out, strings.Repeat("  ", indent)+l)
+				tl := strings.TrimSpace(l)
+				if strings.Contains(tl, "[]") && strings.Contains(tl, "=") && strings.Contains(tl, "{") {
+					out = append(out, strings.Repeat("  ", indent)+convertVarDecl(tl))
+				} else {
+					out = append(out, strings.Repeat("  ", indent)+l)
+				}
 			}
 		}
 	}
 	return out
+}
+
+func convertVarDecl(s string) string {
+	s = strings.TrimSuffix(s, ";")
+	if strings.Contains(s, "[]") {
+		parts := strings.SplitN(s, "[]", 2)
+		fields := strings.Fields(parts[0])
+		name := fields[len(fields)-1]
+		rhs := strings.TrimSpace(parts[1])
+		if strings.HasPrefix(rhs, "=") {
+			rhs = strings.TrimSpace(strings.TrimPrefix(rhs, "="))
+		}
+		if strings.HasPrefix(rhs, "{") && strings.HasSuffix(rhs, "}") {
+			rhs = strings.TrimSpace(strings.TrimSuffix(strings.TrimPrefix(rhs, "{"), "}"))
+			return "var " + name + " = [" + rhs + "]"
+		}
+		return "var " + name
+	}
+	return "var " + s
 }
 
 func header() string {
