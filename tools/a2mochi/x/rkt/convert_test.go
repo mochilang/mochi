@@ -72,11 +72,14 @@ func TestConvert_Golden(t *testing.T) {
 	}
 
 	allowed := map[string]bool{
-		"print_hello":    true,
-		"append_builtin": true,
-		"fun_call":       true,
-		"fun_three_args": true,
-		"unary_neg":      true,
+		"print_hello":         true,
+		"append_builtin":      true,
+		"fun_call":            true,
+		"fun_three_args":      true,
+		"unary_neg":           true,
+		"let_and_print":       true,
+		"for_loop":            true,
+		"for_list_collection": true,
 	}
 
 	outDir := filepath.Join(root, "tests", "a2mochi", "x", "rkt")

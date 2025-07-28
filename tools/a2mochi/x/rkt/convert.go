@@ -51,6 +51,7 @@ func ConvertSource(items []Item, src string) string {
 		b.WriteString("*/\n")
 	}
 	writeItems(&b, internal)
+	parseToplevel(&b, src)
 	return b.String()
 }
 
@@ -343,6 +344,13 @@ func convertExpr(expr string) string {
 		if len(parts) == 3 {
 			return fmt.Sprintf("%s[%s]", parts[1], strings.Trim(parts[2], `"`))
 		}
+	} else if strings.HasPrefix(expr, "(in-range") {
+		inner := strings.TrimSpace(expr[len("(in-range") : len(expr)-1])
+		args := strings.Fields(inner)
+		if len(args) == 2 {
+			return fmt.Sprintf("%s..%s", args[0], args[1])
+		}
+		return fmt.Sprintf("range(%s)", strings.Join(args, ", "))
 	} else if strings.HasPrefix(strings.TrimSpace(expr[1:]), "list") {
 		return parseValue(expr)
 	} else if strings.HasPrefix(expr, "(") && strings.HasSuffix(expr, ")") {
