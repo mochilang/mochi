@@ -57,7 +57,7 @@ List<int> gen(int idx, int cur, bool used) {
     if (used && isPrime(cur)) {
     return [cur];
   };
-    return List<int>.from(<dynamic>[]);
+    return List<int>.from([]);
   }
   List<int> _with = gen(idx + 1, cur * 10 + digits[idx], true);
   List<int> without = gen(idx + 1, cur, used);

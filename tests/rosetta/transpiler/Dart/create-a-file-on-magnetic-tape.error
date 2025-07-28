@@ -1,6 +1,0 @@
-run: exit status 254
-../../../tests/rosetta/transpiler/Dart/create-a-file-on-magnetic-tape.dart:75:30: Error: A value of type 'Hdr' can't be assigned to a variable of type 'Map<String, dynamic>'.
- - 'Hdr' is from '../../../tests/rosetta/transpiler/Dart/create-a-file-on-magnetic-tape.dart'.
- - 'Map' is from 'dart:core'.
-  Map<String, dynamic> hdr = Hdr(Name: filename, Mode: 432, Size: data.length, ModTime: _now(), Typeflag: 0, Uname: "guest", Gname: "guest");
-                             ^
