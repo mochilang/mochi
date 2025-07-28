@@ -107,6 +107,19 @@ func convertStringLits(s string) string {
 	return b.String()
 }
 
+func convertOps(s string) string {
+	s = strings.ReplaceAll(s, "<>", "!=")
+	s = strings.ReplaceAll(s, " = ", " == ")
+	return s
+}
+
+func convertExpr(s string) string {
+	s = convertBuiltins(s)
+	s = convertOps(s)
+	s = convertStringLits(s)
+	return s
+}
+
 func convertBuiltins(s string) string {
 	s = strings.ReplaceAll(s, "Length(", "len(")
 	s = strings.ReplaceAll(s, "length(", "len(")
@@ -235,7 +248,6 @@ func convertFallback(src string) ([]byte, error) {
 	}
 
 	appendLine := func(s string) {
-		s = convertBuiltins(s)
 		s = convertStringLits(s)
 		s = fixUnary(s)
 		out = append(out, s)
@@ -412,7 +424,7 @@ func convertFallback(src string) ([]byte, error) {
 			case strings.HasPrefix(lowerStmt, "for ") && strings.Contains(lowerStmt, " in ") && strings.HasSuffix(lowerStmt, " do"):
 				parts := strings.SplitN(stmt[len("for "):], " in ", 2)
 				varName := strings.TrimSpace(parts[0])
-				iter := strings.TrimSpace(strings.TrimSuffix(parts[1], " do"))
+				iter := convertExpr(strings.TrimSpace(strings.TrimSuffix(parts[1], " do")))
 				appendLine(fmt.Sprintf("for %s in %s {", varName, iter))
 				loopDepth++
 				waitingBegin = true
@@ -421,18 +433,18 @@ func convertFallback(src string) ([]byte, error) {
 				varName := strings.TrimSpace(stmt[len("for "):strings.Index(stmt, ":=")])
 				rest := stmt[strings.Index(stmt, ":=")+2:]
 				toIdx := strings.Index(strings.ToLower(rest), "to ")
-				startExpr := strings.TrimSpace(rest[:toIdx])
+				startExpr := convertExpr(strings.TrimSpace(rest[:toIdx]))
 				rest = rest[toIdx+3:]
 				doIdx := strings.Index(strings.ToLower(rest), "do")
 				endRaw := strings.TrimSpace(rest[:doIdx])
-				endExpr := "(" + endRaw + ") + 1"
+				endExpr := "(" + convertExpr(endRaw) + ") + 1"
 				appendLine(fmt.Sprintf("for %s in %s..%s {", varName, startExpr, endExpr))
 				loopDepth++
 				waitingBegin = true
 
 			case strings.HasPrefix(lowerStmt, "while ") && strings.Contains(lowerStmt, " do"):
 				doIdx := strings.LastIndex(lowerStmt, " do")
-				cond := strings.TrimSpace(stmt[len("while "):doIdx])
+				cond := convertExpr(strings.TrimSpace(stmt[len("while "):doIdx]))
 				appendLine(fmt.Sprintf("while %s {", cond))
 				loopDepth++
 				waitingBegin = true
@@ -443,7 +455,7 @@ func convertFallback(src string) ([]byte, error) {
 				inRepeat = true
 
 			case strings.HasPrefix(lowerStmt, "until ") && inRepeat:
-				cond := strings.TrimSpace(stmt[len("until "):])
+				cond := convertExpr(strings.TrimSpace(stmt[len("until "):]))
 				if strings.HasSuffix(cond, ";") {
 					cond = strings.TrimSuffix(cond, ";")
 				}
@@ -464,12 +476,11 @@ func convertFallback(src string) ([]byte, error) {
 				continue
 
 			case strings.HasPrefix(lowerStmt, "if ") && strings.HasSuffix(lowerStmt, " continue"):
-				cond := strings.TrimSpace(stmt[3:strings.LastIndex(lowerStmt, " continue")])
-				cond = strings.TrimSuffix(cond, " then")
+				cond := convertExpr(strings.TrimSuffix(strings.TrimSpace(stmt[3:strings.LastIndex(lowerStmt, " continue")]), " then"))
 				appendLine(fmt.Sprintf("if %s { continue }", cond))
 
 			case strings.HasPrefix(lowerStmt, "if ") && strings.Contains(lowerStmt, " then"):
-				cond := strings.TrimSpace(stmt[3:strings.Index(lowerStmt, " then")])
+				cond := convertExpr(strings.TrimSpace(stmt[3:strings.Index(lowerStmt, " then")]))
 				rest := strings.TrimSpace(stmt[strings.Index(lowerStmt, " then")+5:])
 				if rest == "" || strings.ToLower(rest) == "begin" {
 					appendLine(fmt.Sprintf("if %s {", cond))
@@ -483,7 +494,7 @@ func convertFallback(src string) ([]byte, error) {
 						parts := strings.SplitN(rest, ":=", 2)
 						rest = strings.TrimSpace(parts[0]) + " = " + strings.TrimSpace(parts[1])
 					}
-					rest = convertBuiltins(rest)
+					rest = convertExpr(rest)
 					appendLine(fmt.Sprintf("if %s { %s }", cond, rest))
 				}
 
@@ -496,8 +507,7 @@ func convertFallback(src string) ([]byte, error) {
 				waitingBegin = true
 
 			case strings.HasPrefix(lowerStmt, "writeln("):
-				expr := strings.TrimSuffix(strings.TrimPrefix(stmt, "writeln("), ")")
-				expr = convertBuiltins(expr)
+				expr := convertExpr(strings.TrimSuffix(strings.TrimPrefix(stmt, "writeln("), ")"))
 				appendLine(fmt.Sprintf("print(%s)", expr))
 
 			case strings.HasPrefix(lowerStmt, "setlength("):
@@ -510,8 +520,7 @@ func convertFallback(src string) ([]byte, error) {
 			case strings.Contains(stmt, ":="):
 				parts := strings.SplitN(stmt, ":=", 2)
 				name := strings.TrimSpace(parts[0])
-				expr := strings.TrimSpace(parts[1])
-				expr = convertBuiltins(strings.TrimSuffix(expr, ";"))
+				expr := convertExpr(strings.TrimSuffix(strings.TrimSpace(parts[1]), ";"))
 				appendLine(fmt.Sprintf("%s = %s", name, expr))
 
 			case lowerStmt == "exit" && inFunc:
