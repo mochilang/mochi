@@ -47,11 +47,12 @@ func TestParseConvert(t *testing.T) {
 			if err != nil {
 				t.Fatalf("read: %v", err)
 			}
-			items, err := scheme.Parse(string(data))
+			srcStr := string(data)
+			items, err := scheme.Parse(srcStr)
 			if err != nil {
 				t.Fatalf("parse: %v", err)
 			}
-			if _, err := scheme.Convert(items); err != nil {
+			if _, err := scheme.Convert(items, srcStr); err != nil {
 				t.Fatalf("convert: %v", err)
 			}
 		})

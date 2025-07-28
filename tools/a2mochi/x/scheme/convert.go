@@ -8,6 +8,7 @@ import (
 
 	"mochi/ast"
 	"mochi/parser"
+	"mochi/transpiler/meta"
 )
 
 // Item represents a top-level Scheme definition.
@@ -50,8 +51,15 @@ func Parse(src string) ([]Item, error) {
 }
 
 // ConvertSource converts Items into Mochi source code.
-func ConvertSource(items []Item) (string, error) {
+func ConvertSource(items []Item, src string) (string, error) {
 	var b strings.Builder
+	b.WriteString(string(meta.Header("//")))
+	b.WriteString("/*\n")
+	b.WriteString(src)
+	if !strings.HasSuffix(src, "\n") {
+		b.WriteByte('\n')
+	}
+	b.WriteString("*/\n")
 	for _, it := range items {
 		switch it.Kind {
 		case "func":
@@ -76,8 +84,8 @@ func ConvertSource(items []Item) (string, error) {
 }
 
 // Convert converts parsed Items into a Mochi AST node.
-func Convert(items []Item) (*ast.Node, error) {
-	src, err := ConvertSource(items)
+func Convert(items []Item, srcStr string) (*ast.Node, error) {
+	src, err := ConvertSource(items, srcStr)
 	if err != nil {
 		return nil, err
 	}
