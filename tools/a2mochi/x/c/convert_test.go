@@ -3,12 +3,17 @@
 package c_test
 
 import (
+	"bytes"
 	"flag"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"strings"
 	"testing"
+
+	"mochi/parser"
+	"mochi/runtime/vm"
+	"mochi/types"
 
 	c "mochi/tools/a2mochi/x/c"
 )
@@ -32,6 +37,27 @@ func findRepoRoot(t *testing.T) string {
 	}
 	t.Fatal("go.mod not found")
 	return ""
+}
+
+func runMochi(src string) ([]byte, error) {
+	prog, err := parser.ParseString(src)
+	if err != nil {
+		return nil, err
+	}
+	env := types.NewEnv(nil)
+	if errs := types.Check(prog, env); len(errs) > 0 {
+		return nil, errs[0]
+	}
+	p, err := vm.Compile(prog, env)
+	if err != nil {
+		return nil, err
+	}
+	var out bytes.Buffer
+	m := vm.New(p, &out)
+	if err := m.Run(); err != nil {
+		return nil, err
+	}
+	return bytes.TrimSpace(out.Bytes()), nil
 }
 
 func TestConvert_Golden(t *testing.T) {
@@ -90,26 +116,40 @@ func TestConvert_Golden(t *testing.T) {
 			if err != nil {
 				t.Fatalf("read src: %v", err)
 			}
-			src, err := c.ConvertSource(string(data))
+			node, err := c.Parse(string(data))
 			if err != nil {
-				t.Fatalf("convert source: %v", err)
+				t.Fatalf("parse: %v", err)
 			}
-			astNode, err := c.Convert(string(data))
+			astNode, err := c.ConvertFromNode(string(data), node)
 			if err != nil {
 				t.Fatalf("convert: %v", err)
 			}
-			got := []byte(astNode.String())
-			astPath := filepath.Join(outDir, name+".ast")
-			if *update {
-				os.WriteFile(astPath, got, 0644)
-				os.WriteFile(filepath.Join(outDir, name+".mochi"), []byte(src), 0644)
-			}
-			want, err := os.ReadFile(astPath)
+			t.Log(astNode.String())
+			code, err := c.ConvertSourceFromNode(string(data), node)
 			if err != nil {
-				t.Fatalf("missing golden: %v", err)
+				t.Fatalf("convert source: %v", err)
 			}
-			if string(got) != string(want) {
-				t.Fatalf("golden mismatch\n--- Got ---\n%s\n--- Want ---\n%s", got, want)
+			mochiPath := filepath.Join(outDir, name+".mochi")
+			if *update {
+				os.WriteFile(mochiPath, []byte(code), 0644)
+			}
+			gotOut, err := runMochi(code)
+			if err != nil {
+				t.Fatalf("run: %v", err)
+			}
+			if *update {
+				os.WriteFile(filepath.Join(outDir, name+".out"), gotOut, 0644)
+			}
+			vmSrc, err := os.ReadFile(filepath.Join(root, "tests/vm/valid", name+".mochi"))
+			if err != nil {
+				t.Fatalf("missing vm source: %v", err)
+			}
+			wantOut, err := runMochi(string(vmSrc))
+			if err != nil {
+				t.Fatalf("run vm: %v", err)
+			}
+			if string(gotOut) != string(wantOut) {
+				t.Fatalf("output mismatch\nGot: %s\nWant: %s", gotOut, wantOut)
 			}
 		})
 	}
