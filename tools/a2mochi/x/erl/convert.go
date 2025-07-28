@@ -47,6 +47,7 @@ var mapsIsKeyRe = regexp.MustCompile(`maps:is_key\(([^,]+),\s*([^\)]+)\)`)
 var stringStrNotZeroRe = regexp.MustCompile(`string:str\(([^,]+),\s*([^\)]+)\)\s*(=/=|/=)\s*0`)
 var stringStrZeroRe = regexp.MustCompile(`string:str\(([^,]+),\s*([^\)]+)\)\s*(==|=:=)\s*0`)
 var substrRe = regexp.MustCompile(`string:substr\(([^,]+),\s*([^,]+?)\s*\+\s*1,\s*([^\)]+)\)`)
+var plusNegRe = regexp.MustCompile(`\+\s*-([0-9]+)`)
 
 // Parse parses a very small subset of Erlang syntax and returns an AST.
 // It only supports module attributes, exports and simple function bodies.
@@ -226,13 +227,28 @@ func ConvertSource(ast *AST, original string) (string, error) {
 		if f.Name == "main" && len(params) == 1 && params[0] == "_" {
 			params = nil
 		}
+		boolReturn := false
+		if len(f.Body) > 0 {
+			last := strings.TrimSpace(f.Body[len(f.Body)-1])
+			if last == "true" || last == "false" || strings.HasPrefix(last, "return ") {
+				boolReturn = true
+			}
+		}
 		for i, p := range params {
 			if i > 0 {
 				out.WriteString(", ")
 			}
 			out.WriteString(p)
+			if p != "_" {
+				out.WriteString(": any")
+			}
 		}
 		out.WriteByte(')')
+		if boolReturn {
+			out.WriteString(": bool")
+		} else if len(params) > 0 {
+			out.WriteString(": any")
+		}
 		if len(f.Body) == 0 {
 			out.WriteString(" {}\n")
 		} else {
@@ -312,6 +328,9 @@ func convertLine(ln string, recs []Record) string {
 	if strings.Contains(ln, "++") {
 		ln = strings.ReplaceAll(ln, "++", "+")
 	}
+	if strings.Contains(ln, "+ -") {
+		ln = plusNegRe.ReplaceAllString(ln, "+ (-$1)")
+	}
 	if stringStrNotZeroRe.MatchString(ln) {
 		ln = stringStrNotZeroRe.ReplaceAllString(ln, "$1.contains($2)")
 	}
@@ -360,6 +379,9 @@ func convertLine(ln string, recs []Record) string {
 			}
 		}
 		ln = strings.ReplaceAll(ln, "#"+r.Name+".", ".")
+	}
+	if ln == "true" || ln == "false" {
+		ln = "return " + ln
 	}
 	return ln
 }

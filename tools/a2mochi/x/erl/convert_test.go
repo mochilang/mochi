@@ -95,6 +95,9 @@ func TestConvert_Golden(t *testing.T) {
 		"string_prefix_slice": true,
 		"substring_builtin":   true,
 		"sum_builtin":         true,
+		"bool_chain":          true,
+		"short_circuit":       true,
+		"unary_neg":           true,
 	}
 	outDir := filepath.Join(root, "tests", "a2mochi", "x", "erl")
 	os.MkdirAll(outDir, 0o755)

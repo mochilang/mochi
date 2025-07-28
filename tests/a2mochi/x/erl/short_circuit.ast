@@ -1,0 +1,28 @@
+(program main
+  (fun boom
+    (param A (type any))
+    (param B (type any))
+    (type bool)
+    (call print (string boom))
+    (return (bool true))
+  )
+  (fun main
+    (call print
+      (group
+        (binary &&
+          (bool false)
+          (call boom (int 1) (int 2))
+        )
+      )
+    )
+    (call print
+      (group
+        (binary ||
+          (bool true)
+          (call boom (int 1) (int 2))
+        )
+      )
+    )
+  )
+  (call main)
+)
