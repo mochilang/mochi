@@ -328,9 +328,90 @@ func fixFuncCalls(expr string) string {
 	return expr
 }
 
+// trimOuterParens removes a single pair of wrapping parentheses if they
+// encompass the entire expression.
+func trimOuterParens(s string) string {
+	for {
+		if len(s) >= 2 && strings.HasPrefix(s, "(") && strings.HasSuffix(s, ")") {
+			depth := 0
+			ok := true
+			for i, ch := range s {
+				switch ch {
+				case '(':
+					depth++
+				case ')':
+					depth--
+					if depth == 0 && i != len(s)-1 {
+						ok = false
+						break
+					}
+				}
+			}
+			if ok && depth == 0 {
+				s = strings.TrimSpace(s[1 : len(s)-1])
+				continue
+			}
+		}
+		break
+	}
+	return s
+}
+
+// reorderVars moves variable declarations so that referenced variables are
+// defined before use. This handles simple dependencies between top-level vars.
+func reorderVars(items []Item) []Item {
+	nameIdx := map[string]int{}
+	for i, it := range items {
+		if it.Kind == "var" || it.Kind == "func" {
+			nameIdx[it.Name] = i
+		}
+	}
+	for i := 0; i < len(items); i++ {
+		it := items[i]
+		if it.Kind != "var" {
+			continue
+		}
+		for name, j := range nameIdx {
+			if j > i && strings.Contains(it.Body, name) {
+				items[i], items[j] = items[j], items[i]
+				nameIdx[it.Name], nameIdx[name] = j, i
+			}
+		}
+	}
+	return items
+}
+
 func convertExpr(expr string) string {
 	expr = strings.TrimSpace(expr)
 	expr = fixFuncCalls(expr)
+	expr = trimOuterParens(expr)
+	if strings.HasPrefix(expr, "if ") && strings.Contains(expr, " then ") && strings.Contains(expr, " else ") {
+		condEnd := strings.Index(expr, " then ")
+		elseIdx := strings.LastIndex(expr, " else ")
+		if condEnd != -1 && elseIdx > condEnd {
+			cond := strings.TrimSpace(expr[len("if "):condEnd])
+			thenPart := strings.TrimSpace(expr[condEnd+len(" then ") : elseIdx])
+			elsePart := strings.TrimSpace(expr[elseIdx+len(" else "):])
+			return "if " + convertExpr(cond) + " then " + convertExpr(thenPart) + " else " + convertExpr(elsePart)
+		}
+	}
+	if strings.HasPrefix(expr, "fromEnum(") && strings.HasSuffix(expr, ")") {
+		inner := strings.TrimSuffix(strings.TrimPrefix(expr, "fromEnum("), ")")
+		return "int(" + convertExpr(inner) + ")"
+	}
+	if strings.HasPrefix(expr, "fromEnum ") {
+		inner := strings.TrimSpace(strings.TrimPrefix(expr, "fromEnum "))
+		return "int(" + convertExpr(inner) + ")"
+	}
+	if strings.HasPrefix(expr, "read ") && strings.Contains(expr, "::") {
+		parts := strings.SplitN(strings.TrimPrefix(expr, "read "), "::", 2)
+		val := strings.TrimSpace(parts[0])
+		typ := mapType(strings.TrimSpace(parts[1]))
+		switch typ {
+		case "int", "float", "string", "bool":
+			return typ + "(" + val + ")"
+		}
+	}
 	if m := mapFromList.FindStringSubmatch(expr); m != nil {
 		entries := strings.Split(m[1], "),")
 		var parts []string
@@ -409,6 +490,7 @@ func convertExpr(expr string) string {
 
 // convertItems converts the Haskell AST items to Mochi source code.
 func convertItems(items []Item) []byte {
+	items = reorderVars(items)
 	var out strings.Builder
 	for _, it := range items {
 		switch it.Kind {
@@ -427,6 +509,12 @@ func convertItems(items []Item) []byte {
 			var retType string
 			if it.Type != "" {
 				paramTypes, retType = parseSigTypes(it.Type)
+			} else {
+				paramTypes = make([]string, len(it.Params))
+				for i := range paramTypes {
+					paramTypes[i] = "int"
+				}
+				retType = "int"
 			}
 			out.WriteByte('(')
 			for i, p := range it.Params {
@@ -447,7 +535,7 @@ func convertItems(items []Item) []byte {
 			if it.Body == "" {
 				out.WriteString(" {}\n")
 			} else {
-				out.WriteString(" { ")
+				out.WriteString(" { return ")
 				out.WriteString(convertExpr(it.Body))
 				out.WriteString(" }\n")
 			}
