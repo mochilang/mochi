@@ -1,4 +1,5 @@
-File "/workspace/mochi/tests/rosetta/transpiler/Python/call-a-function-7.py", line 39
-    _bench_end = _now()
-    ^
-IndentationError: expected an indented block after 'if' statement on line 38
+{
+  "duration_us": 1,
+  "memory_bytes": 13283328,
+  "name": "main"
+}
