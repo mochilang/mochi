@@ -1,4 +1,4 @@
-func main (regs=33)
+func __main (regs=33)
   // let width = 320
   Const        r4, 320
   Move         r0, r4

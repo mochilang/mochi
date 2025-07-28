@@ -1,4 +1,4 @@
-func main (regs=14)
+func __main (regs=14)
   // let OP_ADD = 1
   Const        r7, 1
   Move         r0, r7

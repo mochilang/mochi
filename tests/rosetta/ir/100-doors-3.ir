@@ -1,4 +1,4 @@
-func main (regs=18)
+func __main (regs=18)
   // var result = ""
   Const        r1, ""
   Move         r0, r1

@@ -1,4 +1,4 @@
-func main (regs=1)
+func __main (regs=1)
   // print("Would run: ls -l and capture output")
   Const        r0, "Would run: ls -l and capture output"
   Print        r0

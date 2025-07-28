@@ -1,0 +1,221 @@
+func __main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun fuscVal(n: int): int {
+func fuscVal (regs=16)
+  // var a = 1
+  Const        r1, 1
+  Move         r2, r1
+  // var b = 0
+  Const        r3, 0
+  Move         r4, r3
+  // var x = n
+  Move         r5, r0
+L2:
+  // while x > 0 {
+  Const        r3, 0
+  Less         r6, r3, r5
+  JumpIfFalse  r6, L0
+  // if x % 2 == 0 {
+  Const        r7, 2
+  Mod          r8, r5, r7
+  Const        r3, 0
+  Equal        r9, r8, r3
+  JumpIfFalse  r9, L1
+  // x = x / 2
+  Const        r7, 2
+  Div          r10, r5, r7
+  Move         r5, r10
+  // a = a + b
+  AddInt       r11, r2, r4
+  Move         r2, r11
+  // if x % 2 == 0 {
+  Jump         L2
+L1:
+  // x = (x - 1) / 2
+  Const        r1, 1
+  Sub          r12, r5, r1
+  Const        r7, 2
+  Div          r13, r12, r7
+  Move         r5, r13
+  // b = a + b
+  AddInt       r14, r2, r4
+  Move         r4, r14
+  // while x > 0 {
+  Jump         L2
+L0:
+  // if n == 0 { return 0 }
+  Const        r3, 0
+  Equal        r15, r0, r3
+  JumpIfFalse  r15, L3
+  Const        r3, 0
+  Return       r3
+L3:
+  // return b
+  Return       r4
+
+  // fun firstFusc(n: int): list<int> {
+func firstFusc (regs=11)
+  // var arr: list<int> = []
+  Const        r1, []
+  Move         r2, r1
+  // var i = 0
+  Const        r3, 0
+  Move         r4, r3
+L1:
+  // while i < n {
+  Less         r5, r4, r0
+  JumpIfFalse  r5, L0
+  // arr = append(arr, fuscVal(i))
+  Move         r6, r4
+  Call         r7, fuscVal, r6
+  Append       r8, r2, r7
+  Move         r2, r8
+  // i = i + 1
+  Const        r9, 1
+  AddInt       r10, r4, r9
+  Move         r4, r10
+  // while i < n {
+  Jump         L1
+L0:
+  // return arr
+  Return       r2
+
+  // fun commatize(n: int): string {
+func commatize (regs=25)
+  // var s = str(n)
+  Str          r1, r0
+  Move         r2, r1
+  // var neg = false
+  Const        r3, false
+  Move         r4, r3
+  // if n < 0 {
+  Const        r5, 0
+  Less         r6, r0, r5
+  JumpIfFalse  r6, L0
+  // neg = true
+  Const        r7, true
+  Move         r4, r7
+  // s = substring(s, 1, len(s))
+  Const        r8, 1
+  Len          r9, r2
+  Slice        r10, r2, r8, r9
+  Move         r2, r10
+L0:
+  // var i = len(s) - 3
+  Len          r11, r2
+  Const        r12, 3
+  SubInt       r13, r11, r12
+  Move         r14, r13
+L2:
+  // while i >= 1 {
+  Const        r8, 1
+  LessEqInt    r15, r8, r14
+  JumpIfFalse  r15, L1
+  // s = substring(s, 0, i) + "," + substring(s, i, len(s))
+  Const        r5, 0
+  Slice        r16, r2, r5, r14
+  Const        r17, ","
+  Add          r18, r16, r17
+  Len          r19, r2
+  Slice        r20, r2, r14, r19
+  Add          r21, r18, r20
+  Move         r2, r21
+  // i = i - 3
+  Const        r12, 3
+  SubInt       r22, r14, r12
+  Move         r14, r22
+  // while i >= 1 {
+  Jump         L2
+L1:
+  // if neg { return "-" + s }
+  JumpIfFalse  r4, L3
+  Const        r23, "-"
+  Add          r24, r23, r2
+  Return       r24
+L3:
+  // return s
+  Return       r2
+
+  // fun padLeft(s: string, w: int): string {
+func padLeft (regs=7)
+  // var out = s
+  Move         r2, r0
+L1:
+  // while len(out) < w { out = " " + out }
+  Len          r3, r2
+  Less         r4, r3, r1
+  JumpIfFalse  r4, L0
+  Const        r5, " "
+  Add          r6, r5, r2
+  Move         r2, r6
+  Jump         L1
+L0:
+  // return out
+  Return       r2
+
+  // fun main() {
+func main (regs=38)
+  // print("The first 61 fusc numbers are:")
+  Const        r0, "The first 61 fusc numbers are:"
+  Print        r0
+  // print(str(firstFusc(61)))
+  Const        r2, 61
+  Move         r1, r2
+  Call         r3, firstFusc, r1
+  Str          r4, r3
+  Print        r4
+  // print("\nThe fusc numbers whose length > any previous fusc number length are:")
+  Const        r5, "\nThe fusc numbers whose length > any previous fusc number length are:"
+  Print        r5
+  // let idxs = [0, 37, 1173, 35499, 699051, 19573419]
+  Const        r6, [0, 37, 1173, 35499, 699051, 19573419]
+  Move         r7, r6
+  // var i = 0
+  Const        r8, 0
+  Move         r9, r8
+L1:
+  // while i < len(idxs) {
+  Const        r10, 6
+  LessInt      r11, r9, r10
+  JumpIfFalse  r11, L0
+  // let idx = idxs[i]
+  Index        r12, r7, r9
+  Move         r13, r12
+  // let val = fuscVal(idx)
+  Move         r14, r13
+  Call         r15, fuscVal, r14
+  Move         r16, r15
+  // let numStr = padLeft(commatize(val), 7)
+  Move         r19, r16
+  Call         r20, commatize, r19
+  Move         r17, r20
+  Const        r21, 7
+  Move         r18, r21
+  Call2        r22, padLeft, r17, r18
+  Move         r23, r22
+  // let idxStr = padLeft(commatize(idx), 10)
+  Move         r26, r13
+  Call         r27, commatize, r26
+  Move         r24, r27
+  Const        r28, 10
+  Move         r25, r28
+  Call2        r29, padLeft, r24, r25
+  Move         r30, r29
+  // print(numStr + " (index " + idxStr + ")")
+  Const        r31, " (index "
+  Add          r32, r23, r31
+  Add          r33, r32, r30
+  Const        r34, ")"
+  Add          r35, r33, r34
+  Print        r35
+  // i = i + 1
+  Const        r36, 1
+  AddInt       r37, r9, r36
+  Move         r9, r37
+  // while i < len(idxs) {
+  Jump         L1
+L0:
+  Return       r0

@@ -1,0 +1,478 @@
+func __main (regs=44)
+  // let gregorianStr = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+  Const        r6, ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+  Move         r0, r6
+  SetGlobal    0,0,0,0
+  // let gregorian = [31,28,31,30,31,30,31,31,30,31,30,31]
+  Const        r7, [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+  Move         r1, r7
+  SetGlobal    1,1,0,0
+  // let republicanStr = ["Vendemiaire", "Brumaire", "Frimaire", "Nivose", "Pluviose", "Ventose", "Germinal", "Floreal", "Prairial", "Messidor", "Thermidor", "Fructidor"]
+  Const        r8, ["Vendemiaire", "Brumaire", "Frimaire", "Nivose", "Pluviose", "Ventose", "Germinal", "Floreal", "Prairial", "Messidor", "Thermidor", "Fructidor"]
+  Move         r2, r8
+  SetGlobal    2,2,0,0
+  // let sansculotidesStr = ["Fete de la vertu", "Fete du genie", "Fete du travail", "Fete de l'opinion", "Fete des recompenses", "Fete de la Revolution"]
+  Const        r9, ["Fete de la vertu", "Fete du genie", "Fete du travail", "Fete de l'opinion", "Fete des recompenses", "Fete de la Revolution"]
+  Move         r3, r9
+  SetGlobal    3,3,0,0
+  // let rep = dayToRep(greToDay(20, 5, 1795))
+  Const        r14, 20
+  Move         r11, r14
+  Const        r15, 5
+  Move         r12, r15
+  Const        r16, 1795
+  Move         r13, r16
+  Call         r17, greToDay, r11, r12, r13
+  Move         r10, r17
+  Call         r18, dayToRep, r10
+  Move         r4, r18
+  SetGlobal    4,4,0,0
+  // print(formatRep(rep[0], rep[1], rep[2]))
+  Const        r22, 0
+  Index        r23, r4, r22
+  Move         r19, r23
+  Const        r24, 1
+  Index        r25, r4, r24
+  Move         r20, r25
+  Const        r26, 2
+  Index        r27, r4, r26
+  Move         r21, r27
+  Call         r28, formatRep, r19, r20, r21
+  Print        r28
+  // let gre = dayToGre(repToDay(1, 9, 3))
+  Const        r24, 1
+  Move         r30, r24
+  Const        r33, 9
+  Move         r31, r33
+  Const        r34, 3
+  Move         r32, r34
+  Call         r35, repToDay, r30, r31, r32
+  Move         r29, r35
+  Call         r36, dayToGre, r29
+  Move         r5, r36
+  SetGlobal    5,5,0,0
+  // print(formatGre(gre[0], gre[1], gre[2]))
+  Const        r22, 0
+  Index        r40, r5, r22
+  Move         r37, r40
+  Const        r24, 1
+  Index        r41, r5, r24
+  Move         r38, r41
+  Const        r26, 2
+  Index        r42, r5, r26
+  Move         r39, r42
+  Call         r43, formatGre, r37, r38, r39
+  Print        r43
+  Return       r0
+
+  // fun greLeap(year: int): bool {
+func greLeap (regs=25)
+  // let a = (year % 4) as int
+  Const        r7, 4
+  Mod          r8, r6, r7
+  Cast         r9, r8, int
+  Move         r10, r9
+  // let b = (year % 100) as int
+  Const        r11, 100
+  Mod          r12, r6, r11
+  Cast         r13, r12, int
+  Move         r14, r13
+  // let c = (year % 400) as int
+  Const        r15, 400
+  Mod          r16, r6, r15
+  Cast         r17, r16, int
+  Move         r18, r17
+  // return a == 0 && (b != 0 || c == 0)
+  Const        r19, 0
+  Equal        r20, r10, r19
+  Move         r21, r20
+  JumpIfFalse  r21, L0
+  Const        r19, 0
+  NotEqual     r22, r14, r19
+  Const        r19, 0
+  Equal        r23, r18, r19
+  Move         r24, r22
+  JumpIfTrue   r24, L1
+  Move         r24, r23
+L1:
+  Move         r21, r24
+L0:
+  Return       r21
+
+  // fun repLeap(year: int): bool {
+func repLeap (regs=29)
+  // let a = ((year + 1) % 4) as int
+  Const        r7, 1
+  Add          r8, r6, r7
+  Const        r9, 4
+  Mod          r10, r8, r9
+  Cast         r11, r10, int
+  Move         r12, r11
+  // let b = ((year + 1) % 100) as int
+  Const        r7, 1
+  Add          r13, r6, r7
+  Const        r14, 100
+  Mod          r15, r13, r14
+  Cast         r16, r15, int
+  Move         r17, r16
+  // let c = ((year + 1) % 400) as int
+  Const        r7, 1
+  Add          r18, r6, r7
+  Const        r19, 400
+  Mod          r20, r18, r19
+  Cast         r21, r20, int
+  Move         r22, r21
+  // return a == 0 && (b != 0 || c == 0)
+  Const        r23, 0
+  Equal        r24, r12, r23
+  Move         r25, r24
+  JumpIfFalse  r25, L0
+  Const        r23, 0
+  NotEqual     r26, r17, r23
+  Const        r23, 0
+  Equal        r27, r22, r23
+  Move         r28, r26
+  JumpIfTrue   r28, L1
+  Move         r28, r27
+L1:
+  Move         r25, r28
+L0:
+  Return       r25
+
+  // fun greToDay(d: int, m: int, y: int): int {
+func greToDay (regs=35)
+  // var yy = y
+  Move         r9, r8
+  // var mm = m
+  Move         r10, r7
+  // if mm < 3 {
+  Const        r11, 3
+  Less         r12, r10, r11
+  JumpIfFalse  r12, L0
+  // yy = yy - 1
+  Const        r13, 1
+  Sub          r14, r9, r13
+  Move         r9, r14
+  // mm = mm + 12
+  Const        r15, 12
+  Add          r16, r10, r15
+  Move         r10, r16
+L0:
+  // return yy * 36525 / 100 - yy / 100 + yy / 400 + 306 * (mm + 1) / 10 + d - 654842
+  Const        r17, 36525
+  Mul          r18, r9, r17
+  Const        r19, 100
+  Div          r20, r18, r19
+  Const        r19, 100
+  Div          r21, r9, r19
+  Const        r22, 400
+  Div          r23, r9, r22
+  Const        r24, 306
+  Const        r13, 1
+  Add          r25, r10, r13
+  Mul          r26, r24, r25
+  Const        r27, 10
+  Div          r28, r26, r27
+  Sub          r29, r20, r21
+  Add          r30, r29, r23
+  Add          r31, r30, r28
+  Add          r32, r31, r6
+  Const        r33, 654842
+  Sub          r34, r32, r33
+  Return       r34
+
+  // fun repToDay(d: int, m: int, y: int): int {
+func repToDay (regs=39)
+  // var dd = d
+  Move         r9, r6
+  // var mm = m
+  Move         r10, r7
+  // if mm == 13 {
+  Const        r11, 13
+  Equal        r12, r10, r11
+  JumpIfFalse  r12, L0
+  // mm = mm - 1
+  Const        r13, 1
+  Sub          r14, r10, r13
+  Move         r10, r14
+  // dd = dd + 30
+  Const        r15, 30
+  Add          r16, r9, r15
+  Move         r9, r16
+L0:
+  // if repLeap(y) {
+  Move         r17, r8
+  Call         r18, repLeap, r17
+  JumpIfFalse  r18, L1
+  // dd = dd - 1
+  Const        r13, 1
+  Sub          r19, r9, r13
+  Move         r9, r19
+L1:
+  // return 365 * y + (y + 1) / 4 - (y + 1) / 100 + (y + 1) / 400 + 30 * mm + dd - 395
+  Const        r20, 365
+  Mul          r21, r20, r8
+  Const        r13, 1
+  Add          r22, r8, r13
+  Const        r23, 4
+  Div          r24, r22, r23
+  Const        r13, 1
+  Add          r25, r8, r13
+  Const        r26, 100
+  Div          r27, r25, r26
+  Const        r13, 1
+  Add          r28, r8, r13
+  Const        r29, 400
+  Div          r30, r28, r29
+  Const        r15, 30
+  Mul          r31, r15, r10
+  Add          r32, r21, r24
+  Sub          r33, r32, r27
+  Add          r34, r33, r30
+  Add          r35, r34, r31
+  Add          r36, r35, r9
+  Const        r37, 395
+  Sub          r38, r36, r37
+  Return       r38
+
+  // fun dayToGre(day: int): list<int> {
+func dayToGre (regs=48)
+  // var y = day * 100 / 36525
+  Const        r7, 100
+  Mul          r8, r6, r7
+  Const        r9, 36525
+  Div          r10, r8, r9
+  Move         r11, r10
+  // var d = day - y * 36525 / 100 + 21
+  Const        r9, 36525
+  Mul          r12, r11, r9
+  Const        r7, 100
+  Div          r13, r12, r7
+  Sub          r14, r6, r13
+  Const        r15, 21
+  Add          r16, r14, r15
+  Move         r17, r16
+  // y = y + 1792
+  Const        r18, 1792
+  Add          r19, r11, r18
+  Move         r11, r19
+  // d = d + y / 100 - y / 400 - 13
+  Const        r7, 100
+  Div          r20, r11, r7
+  Const        r21, 400
+  Div          r22, r11, r21
+  Add          r23, r17, r20
+  Sub          r24, r23, r22
+  Const        r25, 13
+  Sub          r26, r24, r25
+  Move         r17, r26
+  // var m = 8
+  Const        r27, 8
+  Move         r28, r27
+L1:
+  // while d > gregorian[m] {
+  Index        r29, r1, r28
+  Less         r30, r29, r17
+  JumpIfFalse  r30, L0
+  // d = d - gregorian[m]
+  Index        r31, r1, r28
+  Sub          r32, r17, r31
+  Move         r17, r32
+  // m = m + 1
+  Const        r33, 1
+  AddInt       r34, r28, r33
+  Move         r28, r34
+  // if m == 12 {
+  Const        r35, 12
+  EqualInt     r36, r28, r35
+  JumpIfFalse  r36, L1
+  // m = 0
+  Const        r37, 0
+  Move         r28, r37
+  // y = y + 1
+  Const        r33, 1
+  Add          r38, r11, r33
+  Move         r11, r38
+  // if greLeap(y) {
+  Move         r39, r11
+  Call         r40, greLeap, r39
+  JumpIfFalse  r40, L2
+  // gregorian[1] = 29
+  Const        r41, 29
+  Const        r33, 1
+  SetIndex     r1, r33, r41
+  SetGlobal    1,1,0,0
+  // if greLeap(y) {
+  Jump         L1
+L2:
+  // gregorian[1] = 28
+  Const        r42, 28
+  Const        r33, 1
+  SetIndex     r1, r33, r42
+  SetGlobal    1,1,0,0
+  // while d > gregorian[m] {
+  Jump         L1
+L0:
+  // m = m + 1
+  Const        r33, 1
+  AddInt       r43, r28, r33
+  Move         r28, r43
+  // return [d, m, y]
+  Move         r44, r17
+  Move         r45, r28
+  Move         r46, r11
+  MakeList     r47, 3, r44
+  Return       r47
+
+  // fun dayToRep(day: int): list<int> {
+func dayToRep (regs=53)
+  // var y = (day - 1) * 100 / 36525
+  Const        r7, 1
+  Sub          r8, r6, r7
+  Const        r9, 100
+  Mul          r10, r8, r9
+  Const        r11, 36525
+  Div          r12, r10, r11
+  Move         r13, r12
+  // if repLeap(y) {
+  Move         r14, r13
+  Call         r15, repLeap, r14
+  JumpIfFalse  r15, L0
+  // y = y - 1
+  Const        r7, 1
+  Sub          r16, r13, r7
+  Move         r13, r16
+L0:
+  // var d = day - (y + 1) * 36525 / 100 + 365 + (y + 1) / 100 - (y + 1) / 400
+  Const        r7, 1
+  Add          r17, r13, r7
+  Const        r11, 36525
+  Mul          r18, r17, r11
+  Const        r9, 100
+  Div          r19, r18, r9
+  Const        r7, 1
+  Add          r20, r13, r7
+  Const        r9, 100
+  Div          r21, r20, r9
+  Const        r7, 1
+  Add          r22, r13, r7
+  Const        r23, 400
+  Div          r24, r22, r23
+  Sub          r25, r6, r19
+  Const        r26, 365
+  Add          r27, r25, r26
+  Add          r28, r27, r21
+  Sub          r29, r28, r24
+  Move         r30, r29
+  // y = y + 1
+  Const        r7, 1
+  Add          r31, r13, r7
+  Move         r13, r31
+  // var m = 1
+  Const        r7, 1
+  Move         r32, r7
+  // var sc = 5
+  Const        r33, 5
+  Move         r34, r33
+  // if repLeap(y) {
+  Move         r35, r13
+  Call         r36, repLeap, r35
+  JumpIfFalse  r36, L1
+  // sc = 6
+  Const        r37, 6
+  Move         r34, r37
+L1:
+  // while d > 30 {
+  Const        r38, 30
+  Less         r39, r38, r30
+  JumpIfFalse  r39, L2
+  // d = d - 30
+  Const        r38, 30
+  Sub          r40, r30, r38
+  Move         r30, r40
+  // m = m + 1
+  Const        r7, 1
+  AddInt       r41, r32, r7
+  Move         r32, r41
+  // if m == 13 {
+  Const        r42, 13
+  EqualInt     r43, r32, r42
+  JumpIfFalse  r43, L1
+  // if d > sc {
+  Less         r44, r34, r30
+  JumpIfFalse  r44, L1
+  // d = d - sc
+  Sub          r45, r30, r34
+  Move         r30, r45
+  // m = 1
+  Const        r7, 1
+  Move         r32, r7
+  // y = y + 1
+  Const        r7, 1
+  Add          r46, r13, r7
+  Move         r13, r46
+  // sc = 5
+  Const        r33, 5
+  Move         r34, r33
+  // if repLeap(y) {
+  Move         r47, r13
+  Call         r48, repLeap, r47
+  JumpIfFalse  r48, L1
+  // sc = 6
+  Const        r37, 6
+  Move         r34, r37
+  // while d > 30 {
+  Jump         L1
+L2:
+  // return [d, m, y]
+  Move         r49, r30
+  Move         r50, r32
+  Move         r51, r13
+  MakeList     r52, 3, r49
+  Return       r52
+
+  // fun formatRep(d: int, m: int, y: int): string {
+func formatRep (regs=26)
+  // if m == 13 {
+  Const        r9, 13
+  Equal        r10, r7, r9
+  JumpIfFalse  r10, L0
+  // return sansculotidesStr[d - 1] + " " + str(y)
+  Const        r11, 1
+  Sub          r12, r6, r11
+  Index        r13, r3, r12
+  Const        r14, " "
+  Add          r15, r13, r14
+  Str          r16, r8
+  Add          r17, r15, r16
+  Return       r17
+L0:
+  // return str(d) + " " + republicanStr[m - 1] + " " + str(y)
+  Str          r18, r6
+  Const        r14, " "
+  Add          r19, r18, r14
+  Const        r11, 1
+  Sub          r20, r7, r11
+  Index        r21, r2, r20
+  Add          r22, r19, r21
+  Const        r14, " "
+  Add          r23, r22, r14
+  Str          r24, r8
+  Add          r25, r23, r24
+  Return       r25
+
+  // fun formatGre(d: int, m: int, y: int): string {
+func formatGre (regs=19)
+  // return str(d) + " " + gregorianStr[m - 1] + " " + str(y)
+  Str          r9, r6
+  Const        r10, " "
+  Add          r11, r9, r10
+  Const        r12, 1
+  Sub          r13, r7, r12
+  Index        r14, r0, r13
+  Add          r15, r11, r14
+  Const        r10, " "
+  Add          r16, r15, r10
+  Str          r17, r8
+  Add          r18, r16, r17
+  Return       r18

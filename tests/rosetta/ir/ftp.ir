@@ -1,4 +1,4 @@
-func main (regs=5)
+func __main (regs=5)
   // let serverData = {
   Const        r2, {"pub": {"readme.txt": "Hello from ftp.", "somefile.bin": "This is a file from the FTP server."}}
   Move         r0, r2

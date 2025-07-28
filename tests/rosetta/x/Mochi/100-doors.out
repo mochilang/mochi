@@ -9,7 +9,7 @@
 1 0 0 0 0 0 0 0 0 0
 0 0 0 0 0 0 0 0 0 1
 {
-  "duration_us": 4813,
-  "memory_bytes": 1691216,
+  "duration_us": 5800,
+  "memory_bytes": -1726688,
   "name": "main"
 }

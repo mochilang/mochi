@@ -1,4 +1,4 @@
-func main (regs=5)
+func __main (regs=5)
   // var nextPID = 1
   Const        r1, 1
   Move         r0, r1

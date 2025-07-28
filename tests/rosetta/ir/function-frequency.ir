@@ -1,0 +1,427 @@
+func __main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun join(xs: list<string>, sep: string): string {
+func join (regs=14)
+  // var res = ""
+  Const        r2, ""
+  Move         r3, r2
+  // var i = 0
+  Const        r4, 0
+  Move         r5, r4
+L2:
+  // while i < len(xs) {
+  Len          r6, r0
+  LessInt      r7, r5, r6
+  JumpIfFalse  r7, L0
+  // if i > 0 { res = res + sep }
+  Const        r4, 0
+  LessInt      r8, r4, r5
+  JumpIfFalse  r8, L1
+  Add          r9, r3, r1
+  Move         r3, r9
+L1:
+  // res = res + xs[i]
+  Index        r10, r0, r5
+  Add          r11, r3, r10
+  Move         r3, r11
+  // i = i + 1
+  Const        r12, 1
+  AddInt       r13, r5, r12
+  Move         r5, r13
+  // while i < len(xs) {
+  Jump         L2
+L0:
+  // return res
+  Return       r3
+
+  // fun sortPairs(xs: list<map<string, any>>): list<map<string, any>> {
+func sortPairs (regs=26)
+  // var arr = xs
+  Move         r1, r0
+  // var i = 1
+  Const        r2, 1
+  Move         r3, r2
+L4:
+  // while i < len(arr) {
+  Len          r4, r1
+  LessInt      r5, r3, r4
+  JumpIfFalse  r5, L0
+  // var j = i
+  Move         r6, r3
+L3:
+  // while j > 0 && (arr[j-1]["count"] as int) < (arr[j]["count"] as int) {
+  Const        r7, 0
+  LessInt      r8, r7, r6
+  Const        r2, 1
+  SubInt       r9, r6, r2
+  Index        r10, r1, r9
+  Const        r11, "count"
+  Index        r12, r10, r11
+  Cast         r13, r12, int
+  Index        r14, r1, r6
+  Const        r11, "count"
+  Index        r15, r14, r11
+  Cast         r16, r15, int
+  Less         r17, r13, r16
+  Move         r18, r8
+  JumpIfFalse  r18, L1
+  Move         r18, r17
+L1:
+  JumpIfFalse  r18, L2
+  // let tmp = arr[j-1]
+  Const        r2, 1
+  SubInt       r19, r6, r2
+  Index        r20, r1, r19
+  Move         r21, r20
+  // arr[j-1] = arr[j]
+  Index        r22, r1, r6
+  Const        r2, 1
+  SubInt       r23, r6, r2
+  SetIndex     r1, r23, r22
+  // arr[j] = tmp
+  SetIndex     r1, r6, r21
+  // j = j - 1
+  Const        r2, 1
+  SubInt       r24, r6, r2
+  Move         r6, r24
+  // while j > 0 && (arr[j-1]["count"] as int) < (arr[j]["count"] as int) {
+  Jump         L3
+L2:
+  // i = i + 1
+  Const        r2, 1
+  AddInt       r25, r3, r2
+  Move         r3, r25
+  // while i < len(arr) {
+  Jump         L4
+L0:
+  // return arr
+  Return       r1
+
+  // fun isAlphaNumDot(ch: string): bool {
+func isAlphaNumDot (regs=21)
+  // return (ch >= "A" && ch <= "Z") || (ch >= "a" && ch <= "z") || (ch >= "0" && ch <= "9") || ch == "_" || ch == "."
+  Const        r1, "A"
+  LessEq       r2, r1, r0
+  Const        r3, "Z"
+  LessEq       r4, r0, r3
+  Move         r5, r2
+  JumpIfFalse  r5, L0
+  Move         r5, r4
+L0:
+  Const        r6, "_"
+  Equal        r7, r0, r6
+  Const        r8, "."
+  Equal        r9, r0, r8
+  Move         r10, r5
+  JumpIfTrue   r10, L1
+  Const        r11, "a"
+  LessEq       r12, r11, r0
+  Const        r13, "z"
+  LessEq       r14, r0, r13
+  Move         r15, r12
+  JumpIfFalse  r15, L2
+  Move         r15, r14
+L2:
+  Move         r10, r15
+  JumpIfTrue   r10, L1
+  Const        r16, "0"
+  LessEq       r17, r16, r0
+  Const        r18, "9"
+  LessEq       r19, r0, r18
+  Move         r20, r17
+  JumpIfFalse  r20, L3
+  Move         r20, r19
+L3:
+  Move         r10, r20
+  JumpIfTrue   r10, L1
+  Move         r10, r7
+  JumpIfTrue   r10, L1
+  Move         r10, r9
+L1:
+  Return       r10
+
+  // fun main() {
+func main (regs=129)
+  // let srcLines = [
+  Const        r0, ["package main", "", "import (", "    \"fmt\"", "    \"go/ast\"", "    \"go/parser\"", "    \"go/token\"", "    \"io/ioutil\"", "    \"os\"", "    \"sort\"", ")", "", "func main() {", "    if len(os.Args) != 2 {", "        fmt.Println(\"usage ff <go source filename>\")", "        return", "    }", "    src, err := ioutil.ReadFile(os.Args[1])", "    if err != nil {", "        fmt.Println(err)", "        return", "    }", "    fs := token.NewFileSet()", "    a, err := parser.ParseFile(fs, os.Args[1], src, 0)", "    if err != nil {", "        fmt.Println(err)", "        return", "    }", "    f := fs.File(a.Pos())", "    m := make(map[string]int)", "    ast.Inspect(a, func(n ast.Node) bool {", "        if ce, ok := n.(*ast.CallExpr); ok {", "            start := f.Offset(ce.Pos())", "            end := f.Offset(ce.Lparen)", "            m[string(src[start:end])]++", "        }", "        return true", "    })", "    cs := make(calls, 0, len(m))", "    for k, v := range m {", "        cs = append(cs, &call{k, v})", "    }", "    sort.Sort(cs)", "    for i, c := range cs {", "        fmt.Printf(\"%-20s %4d\\n\", c.expr, c.count)", "        if i == 9 {", "            break", "        }", "    }", "}", "", "type call struct {", "    expr  string", "    count int", "}", "type calls []*call", "", "func (c calls) Len() int           { return len(c) }", "func (c calls) Swap(i, j int)      { c[i], c[j] = c[j], c[i] }", "func (c calls) Less(i, j int) bool { return c[i].count > c[j].count }"]
+  Move         r1, r0
+  // let src = join(srcLines, "\n")
+  Move         r2, r1
+  Const        r4, "\n"
+  Move         r3, r4
+  Call2        r5, join, r2, r3
+  Move         r6, r5
+  // var freq: map<string, int> = {}
+  Const        r7, {}
+  Move         r8, r7
+  // var i = 0
+  Const        r9, 0
+  Move         r10, r9
+  // var order: list<string> = []
+  Const        r11, []
+  Move         r12, r11
+L19:
+  // while i < len(src) {
+  Len          r13, r6
+  LessInt      r14, r10, r13
+  JumpIfFalse  r14, L0
+  // let ch = substring(src, i, i+1)
+  Const        r15, 1
+  AddInt       r16, r10, r15
+  Slice        r17, r6, r10, r16
+  Move         r18, r17
+  // if (ch >= "A" && ch <= "Z") || (ch >= "a" && ch <= "z") || ch == "_" {
+  Const        r19, "A"
+  LessEq       r20, r19, r18
+  Const        r21, "Z"
+  LessEq       r22, r18, r21
+  Move         r23, r20
+  JumpIfFalse  r23, L1
+  Move         r23, r22
+L1:
+  Const        r24, "_"
+  Equal        r25, r18, r24
+  Move         r26, r23
+  JumpIfTrue   r26, L2
+  Const        r27, "a"
+  LessEq       r28, r27, r18
+  Const        r29, "z"
+  LessEq       r30, r18, r29
+  Move         r31, r28
+  JumpIfFalse  r31, L3
+  Move         r31, r30
+L3:
+  Move         r26, r31
+  JumpIfTrue   r26, L2
+  Move         r26, r25
+L2:
+  JumpIfFalse  r26, L4
+  // var j = i + 1
+  Const        r15, 1
+  AddInt       r32, r10, r15
+  Move         r33, r32
+L7:
+  // while j < len(src) && isAlphaNumDot(substring(src, j, j+1)) {
+  Len          r34, r6
+  LessInt      r35, r33, r34
+  Move         r36, r35
+  JumpIfFalse  r36, L5
+  Const        r15, 1
+  AddInt       r38, r33, r15
+  Slice        r39, r6, r33, r38
+  Move         r37, r39
+  Call         r40, isAlphaNumDot, r37
+  Move         r36, r40
+L5:
+  JumpIfFalse  r36, L6
+  // j = j + 1
+  Const        r15, 1
+  AddInt       r41, r33, r15
+  Move         r33, r41
+  // while j < len(src) && isAlphaNumDot(substring(src, j, j+1)) {
+  Jump         L7
+L6:
+  // let token = substring(src, i, j)
+  Slice        r42, r6, r10, r33
+  Move         r43, r42
+  // var k = j
+  Move         r44, r33
+L10:
+  // while k < len(src) {
+  Len          r45, r6
+  LessInt      r46, r44, r45
+  JumpIfFalse  r46, L8
+  // let cc = substring(src, k, k+1)
+  Const        r15, 1
+  AddInt       r47, r44, r15
+  Slice        r48, r6, r44, r47
+  Move         r49, r48
+  // if cc == " " || cc == "\t" || cc == "\n" || cc == "\r" { k = k + 1 } else { break }
+  Const        r50, " "
+  Equal        r51, r49, r50
+  Const        r52, "\t"
+  Equal        r53, r49, r52
+  Const        r4, "\n"
+  Equal        r54, r49, r4
+  Const        r55, "\r"
+  Equal        r56, r49, r55
+  Move         r57, r51
+  JumpIfTrue   r57, L9
+  Move         r57, r53
+  JumpIfTrue   r57, L9
+  Move         r57, r54
+  JumpIfTrue   r57, L9
+  Move         r57, r56
+L9:
+  JumpIfFalse  r57, L8
+  Const        r15, 1
+  AddInt       r58, r44, r15
+  Move         r44, r58
+  Jump         L10
+L8:
+  // if k < len(src) && substring(src, k, k+1) == "(" {
+  Len          r59, r6
+  LessInt      r60, r44, r59
+  Const        r15, 1
+  AddInt       r61, r44, r15
+  Slice        r62, r6, r44, r61
+  Const        r63, "("
+  Equal        r64, r62, r63
+  Move         r65, r60
+  JumpIfFalse  r65, L11
+  Move         r65, r64
+L11:
+  JumpIfFalse  r65, L12
+  // var p = i - 1
+  Const        r15, 1
+  SubInt       r66, r10, r15
+  Move         r67, r66
+L16:
+  // while p >= 0 && (substring(src, p, p+1) == " " || substring(src, p, p+1) == "\t") { p = p - 1 }
+  Const        r9, 0
+  LessEqInt    r68, r9, r67
+  Move         r69, r68
+  JumpIfFalse  r69, L13
+  Const        r15, 1
+  AddInt       r70, r67, r15
+  Slice        r71, r6, r67, r70
+  Const        r50, " "
+  Equal        r72, r71, r50
+  Const        r15, 1
+  AddInt       r73, r67, r15
+  Slice        r74, r6, r67, r73
+  Const        r52, "\t"
+  Equal        r75, r74, r52
+  Move         r76, r72
+  JumpIfTrue   r76, L14
+  Move         r76, r75
+L14:
+  Move         r69, r76
+L13:
+  JumpIfFalse  r69, L15
+  Const        r15, 1
+  SubInt       r77, r67, r15
+  Move         r67, r77
+  Jump         L16
+L15:
+  // var skip = false
+  Const        r78, false
+  Move         r79, r78
+  // if p >= 3 {
+  Const        r80, 3
+  LessEqInt    r81, r80, r67
+  JumpIfFalse  r81, L17
+  // let before = substring(src, p-3, p+1)
+  Const        r80, 3
+  SubInt       r82, r67, r80
+  Const        r15, 1
+  AddInt       r83, r67, r15
+  Slice        r84, r6, r82, r83
+  Move         r85, r84
+  // if before == "func" { skip = true }
+  Const        r86, "func"
+  Equal        r87, r85, r86
+  JumpIfFalse  r87, L17
+  Const        r88, true
+  Move         r79, r88
+L17:
+  // if !skip {
+  Not          r89, r79
+  JumpIfFalse  r89, L12
+  // if token in freq { freq[token] = freq[token] + 1 } else { freq[token] = 1; order = append(order, token) }
+  In           r90, r43, r8
+  JumpIfFalse  r90, L18
+  Index        r91, r8, r43
+  Const        r15, 1
+  Add          r92, r91, r15
+  SetIndex     r8, r43, r92
+  Jump         L12
+L18:
+  Const        r15, 1
+  SetIndex     r8, r43, r15
+  Append       r93, r12, r43
+  Move         r12, r93
+L12:
+  // i = j
+  Move         r10, r33
+  // if (ch >= "A" && ch <= "Z") || (ch >= "a" && ch <= "z") || ch == "_" {
+  Jump         L19
+L4:
+  // i = i + 1
+  Const        r15, 1
+  AddInt       r94, r10, r15
+  Move         r10, r94
+  // while i < len(src) {
+  Jump         L19
+L0:
+  // var pairs: list<map<string, any>> = []
+  Const        r11, []
+  Move         r95, r11
+  // for t in order {
+  IterPrep     r96, r12
+  Len          r97, r96
+  Const        r98, 0
+L21:
+  LessInt      r99, r98, r97
+  JumpIfFalse  r99, L20
+  Index        r100, r96, r98
+  Move         r101, r100
+  // pairs = append(pairs, {"expr": t, "count": freq[t]})
+  Const        r102, "expr"
+  Const        r103, "count"
+  Index        r104, r8, r101
+  Move         r105, r102
+  Move         r106, r101
+  Move         r107, r103
+  Move         r108, r104
+  MakeMap      r109, 2, r105
+  Append       r110, r95, r109
+  Move         r95, r110
+  // for t in order {
+  Const        r111, 1
+  AddInt       r112, r98, r111
+  Move         r98, r112
+  Jump         L21
+L20:
+  // pairs = sortPairs(pairs)
+  Move         r113, r95
+  Call         r114, sortPairs, r113
+  Move         r95, r114
+  // var idx = 0
+  Const        r9, 0
+  Move         r115, r9
+L24:
+  // while idx < len(pairs) && idx < 10 {
+  Len          r116, r95
+  LessInt      r117, r115, r116
+  Const        r118, 10
+  LessInt      r119, r115, r118
+  Move         r120, r117
+  JumpIfFalse  r120, L22
+  Move         r120, r119
+L22:
+  JumpIfFalse  r120, L23
+  // let p = pairs[idx]
+  Index        r121, r95, r115
+  Move         r122, r121
+  // print(p["expr"] + " " + str(p["count"]))
+  Const        r102, "expr"
+  Index        r123, r122, r102
+  Const        r50, " "
+  Add          r124, r123, r50
+  Const        r103, "count"
+  Index        r125, r122, r103
+  Str          r126, r125
+  Add          r127, r124, r126
+  Print        r127
+  // idx = idx + 1
+  Const        r15, 1
+  AddInt       r128, r115, r15
+  Move         r115, r128
+  // while idx < len(pairs) && idx < 10 {
+  Jump         L24
+L23:
+  Return       r0
