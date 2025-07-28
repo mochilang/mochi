@@ -9,7 +9,6 @@ import (
 	"strings"
 	"testing"
 
-	"mochi/ast"
 	"mochi/parser"
 	"mochi/runtime/vm"
 	"mochi/types"
@@ -94,12 +93,13 @@ func TestConvert_Golden(t *testing.T) {
 		"string_concat":       true,
 		"string_compare":      true,
 		"string_index":        true,
-               "string_prefix_slice": true,
-               "list_assign":        true,
-               "map_assign":         true,
-               "membership":         true,
-               "map_membership":     true,
-       }
+		"string_prefix_slice": true,
+		"list_assign":         true,
+		"map_assign":          true,
+		"membership":          true,
+		"map_membership":      true,
+		"fun_call":            true,
+	}
 	outDir := filepath.Join(root, "tests", "a2mochi", "x", "py")
 	os.MkdirAll(outDir, 0o755)
 	for _, src := range files {
@@ -133,11 +133,10 @@ func TestConvert_Golden(t *testing.T) {
 				t.Fatalf("golden mismatch\n--- Got ---\n%s\n--- Want ---\n%s", got, want)
 			}
 
-			var buf bytes.Buffer
-			if err := ast.Fprint(&buf, node); err != nil {
+			code, err := py.Source(string(data), node)
+			if err != nil {
 				t.Fatalf("print: %v", err)
 			}
-			code := buf.String()
 			mochiPath := filepath.Join(outDir, name+".mochi")
 			if *update {
 				os.WriteFile(mochiPath, []byte(code), 0o644)

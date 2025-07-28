@@ -5,7 +5,10 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
+	"os"
 	"os/exec"
+	"path/filepath"
 	"regexp"
 	"strconv"
 	"strings"
@@ -1055,4 +1058,56 @@ func condBool(n *Node) *Node {
 		}
 	}
 	return nil
+}
+
+// header returns the meta comment prepended to generated Mochi source.
+func header() string {
+	loc := time.FixedZone("GMT+7", 7*60*60)
+	t := time.Now().In(loc)
+	return fmt.Sprintf("// Mochi version %s - %s\n", version(), t.Format("2006-01-02 15:04 -0700"))
+}
+
+// version reads the VERSION file from the repository root.
+func version() string {
+	dir, err := os.Getwd()
+	if err != nil {
+		return "dev"
+	}
+	for i := 0; i < 10; i++ {
+		if _, err := os.Stat(filepath.Join(dir, "go.mod")); err == nil {
+			data, err := os.ReadFile(filepath.Join(dir, "VERSION"))
+			if err != nil {
+				return "dev"
+			}
+			return strings.TrimSpace(string(data))
+		}
+		parent := filepath.Dir(dir)
+		if parent == dir {
+			break
+		}
+		dir = parent
+	}
+	return "dev"
+}
+
+// Fprint writes Mochi source for node to w including a header comment and the
+// original source code as a block comment.
+func Fprint(w io.Writer, src string, n *ast.Node) error {
+	if _, err := io.WriteString(w, header()); err != nil {
+		return err
+	}
+	if _, err := io.WriteString(w, "/*\n"+src+"\n*/\n"); err != nil {
+		return err
+	}
+	return ast.Fprint(w, n)
+}
+
+// Source returns Mochi source code for n with a header and the original source
+// attached as a block comment.
+func Source(src string, n *ast.Node) (string, error) {
+	var b strings.Builder
+	if err := Fprint(&b, src, n); err != nil {
+		return "", err
+	}
+	return b.String(), nil
 }
