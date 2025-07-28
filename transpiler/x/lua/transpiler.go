@@ -378,6 +378,7 @@ type FunExpr struct {
 	Params []string
 	Body   []Stmt
 	Expr   Expr
+	Env    *types.Env
 }
 type ListCastExpr struct{ Expr Expr }
 type BinaryExpr struct {
@@ -1350,6 +1351,10 @@ func (sx *SliceExpr) emit(w io.Writer) {
 }
 
 func (f *FunExpr) emit(w io.Writer) {
+	prev := currentEnv
+	if f.Env != nil {
+		currentEnv = f.Env
+	}
 	io.WriteString(w, "function(")
 	for i, p := range f.Params {
 		if i > 0 {
@@ -1368,6 +1373,7 @@ func (f *FunExpr) emit(w io.Writer) {
 		io.WriteString(w, "\n")
 	}
 	io.WriteString(w, "end")
+	currentEnv = prev
 }
 
 func (c *ListCastExpr) emit(w io.Writer) { c.Expr.emit(w) }
@@ -3286,12 +3292,23 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		return convertQueryExpr(p.Query)
 	case p.FunExpr != nil:
 		fe := &FunExpr{}
+		child := types.NewEnv(currentEnv)
 		for _, pa := range p.FunExpr.Params {
 			fe.Params = append(fe.Params, pa.Name)
+			if pa.Type != nil {
+				child.SetVar(pa.Name, types.ResolveTypeRef(pa.Type, currentEnv), false)
+			} else {
+				child.SetVar(pa.Name, types.AnyType{}, false)
+			}
 		}
+		prev := currentEnv
+		currentEnv = child
+		funcDepth++
 		if p.FunExpr.ExprBody != nil {
 			expr, err := convertExpr(p.FunExpr.ExprBody)
 			if err != nil {
+				currentEnv = prev
+				funcDepth--
 				return nil, err
 			}
 			fe.Expr = expr
@@ -3299,10 +3316,15 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		for _, st := range p.FunExpr.BlockBody {
 			s, err := convertStmt(st)
 			if err != nil {
+				currentEnv = prev
+				funcDepth--
 				return nil, err
 			}
 			fe.Body = append(fe.Body, s)
 		}
+		currentEnv = prev
+		funcDepth--
+		fe.Env = child
 		return fe, nil
 	case p.Match != nil:
 		return convertMatchExpr(p.Match)

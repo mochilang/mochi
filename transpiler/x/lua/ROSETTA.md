@@ -4,7 +4,7 @@ Generated Lua code for programs in `tests/rosetta/x/Mochi`. Each program has a `
 
 Transpiled programs: 465/493
 
-Last updated: 2025-07-28 10:03 GMT+7
+Last updated: 2025-07-28 11:14 GMT+7
 
 Checklist:
 
@@ -259,56 +259,56 @@ Checklist:
 | 247 | count-in-octal-4 | ✓ | 41µs | 848 B |
 | 248 | count-occurrences-of-a-substring | ✓ | 62µs | 2.9 KB |
 | 249 | count-the-coins-1 | ✓ | 45µs | 808 B |
-| 250 | count-the-coins-2 | ✓ | 4.766ms | 19.5 KB |
-| 251 | cramers-rule | ✓ | 499µs | 4.5 KB |
-| 252 | crc-32-1 | ✓ | 1.802ms | 9.0 KB |
-| 253 | crc-32-2 | ✓ | 1.799ms | 9.0 KB |
-| 254 | create-a-file-on-magnetic-tape | ✓ | 5µs | 1.0 KB |
-| 255 | create-a-file | ✓ | 33µs | 888 B |
-| 256 | create-a-two-dimensional-array-at-runtime-1 | ✓ | 57µs | 856 B |
-| 257 | create-an-html-table | ✓ | 122µs | 2.8 KB |
-| 258 | create-an-object-at-a-given-address | ✓ | 120µs | 2.9 KB |
-| 259 | csv-data-manipulation | ✓ | 57µs | 1.5 KB |
-| 260 | csv-to-html-translation-1 | ✓ | 48µs | 4.3 KB |
-| 261 | csv-to-html-translation-2 | ✓ | 93µs | 2.4 KB |
-| 262 | csv-to-html-translation-3 | ✓ | 35µs | 64 B |
-| 263 | csv-to-html-translation-4 | ✓ | 28µs | 64 B |
-| 264 | csv-to-html-translation-5 | ✓ | 199µs | 2.4 KB |
+| 250 | count-the-coins-2 | ✓ | 5.486ms | 2.3 KB |
+| 251 | cramers-rule | ✓ | 494µs | 1.9 KB |
+| 252 | crc-32-1 | ✓ | 2.581ms | 4.1 KB |
+| 253 | crc-32-2 | ✓ | 2.54ms | 4.1 KB |
+| 254 | create-a-file-on-magnetic-tape | ✓ | 6µs | 496 B |
+| 255 | create-a-file | ✓ | 36µs | 2.4 KB |
+| 256 | create-a-two-dimensional-array-at-runtime-1 | ✓ | 40µs | 2.3 KB |
+| 257 | create-an-html-table | ✓ | 52µs | 288 B |
+| 258 | create-an-object-at-a-given-address | ✓ | 157µs | 440 B |
+| 259 | csv-data-manipulation | ✓ | 58µs | 854 B |
+| 260 | csv-to-html-translation-1 | ✓ | 82µs | 1.2 KB |
+| 261 | csv-to-html-translation-2 | ✓ | 78µs | 1.3 KB |
+| 262 | csv-to-html-translation-3 | ✓ | 33µs | 248 B |
+| 263 | csv-to-html-translation-4 | ✓ | 33µs | 248 B |
+| 264 | csv-to-html-translation-5 | ✓ | 333µs | 1.8 KB |
 | 265 | cuban-primes | ✓ |  |  |
-| 266 | cullen-and-woodall-numbers | ✓ | 157µs | 1.1 KB |
-| 267 | cumulative-standard-deviation | ✓ | 100µs | 2.9 KB |
-| 268 | currency | ✓ | 84µs | 1.2 KB |
-| 269 | currying | ✓ |  |  |
-| 270 | curzon-numbers | ✓ | 51.514ms | 2.9 KB |
-| 271 | cusip | ✓ | 88µs | 1.1 KB |
+| 266 | cullen-and-woodall-numbers | ✓ | 160µs | 520 B |
+| 267 | cumulative-standard-deviation | ✓ | 75µs | 424 B |
+| 268 | currency | ✓ | 86µs | 552 B |
+| 269 | currying | ✓ | 183µs | 440 B |
+| 270 | curzon-numbers | ✓ | 1.076188s | 3.9 KB |
+| 271 | cusip | ✓ | 96µs | 504 B |
 | 272 | cyclops-numbers | ✓ | 3µs | 1.1 KB |
-| 273 | damm-algorithm | ✓ | 77µs | 952 B |
-| 274 | date-format | ✓ | 41µs | 928 B |
-| 275 | date-manipulation | ✓ | 118µs | 2.1 KB |
-| 276 | day-of-the-week | ✓ | 51µs | 2.7 KB |
+| 273 | damm-algorithm | ✓ | 97µs | 440 B |
+| 274 | date-format | ✓ | 40µs | 400 B |
+| 275 | date-manipulation | ✓ | 110µs | 1.6 KB |
+| 276 | day-of-the-week | ✓ | 63µs | 288 B |
 | 277 | de-bruijn-sequences | ✓ | 2.607883s | 164.3 KB |
-| 278 | deal-cards-for-freecell | ✓ | 504µs | 2.9 KB |
-| 279 | death-star | ✓ | 11.168ms | 984 B |
+| 278 | deal-cards-for-freecell | ✓ | 331µs |  |
+| 279 | death-star | ✓ | 11.917ms |  |
 | 280 | deceptive-numbers | ✓ | 7.434189s | 2.9 KB |
-| 281 | deconvolution-1d-2 | ✓ | 318µs | 1.2 KB |
-| 282 | deconvolution-1d-3 | ✓ | 239µs | 1.1 KB |
-| 283 | deconvolution-1d | ✓ | 229µs | 2.9 KB |
-| 284 | deepcopy-1 | ✓ | 152µs | 1.6 KB |
-| 285 | define-a-primitive-data-type | ✓ | 164µs | 1.2 KB |
-| 286 | delegates | ✓ | 46µs | 320 B |
+| 281 | deconvolution-1d-2 | ✓ | 165µs | 472 B |
+| 282 | deconvolution-1d-3 | ✓ | 112µs | 472 B |
+| 283 | deconvolution-1d | ✓ | 150µs | 440 B |
+| 284 | deepcopy-1 | ✓ | 49µs | 1.2 KB |
+| 285 | define-a-primitive-data-type | ✓ | 53µs | 672 B |
+| 286 | delegates | ✓ | 38µs | 528 B |
 | 287 | demings-funnel | ✓ | 3.27ms | 5.0 KB |
-| 288 | department-numbers | ✓ | 145µs | 2.1 KB |
-| 289 | descending-primes | ✓ | 2.33ms | 7.0 KB |
-| 290 | detect-division-by-zero | ✓ | 116µs | 880 B |
-| 291 | determine-if-a-string-has-all-the-same-characters | ✓ | 204µs | 1016 B |
-| 292 | determine-if-a-string-has-all-unique-characters | ✓ | 228µs | 1.1 KB |
+| 288 | department-numbers | ✓ | 71µs | 2.2 KB |
+| 289 | descending-primes | ✓ | 1.552ms | 6.5 KB |
+| 290 | detect-division-by-zero | ✓ | 40µs | 432 B |
+| 291 | determine-if-a-string-has-all-the-same-characters | ✓ | 70µs |  |
+| 292 | determine-if-a-string-has-all-unique-characters | ✓ | 360µs | 48 B |
 | 293 | determine-if-a-string-is-collapsible | ✓ | 425µs | 2.9 KB |
-| 294 | determine-if-a-string-is-numeric-1 | ✓ | 46µs | 912 B |
-| 295 | determine-if-a-string-is-numeric-2 | ✓ | 52µs | 912 B |
-| 296 | determine-if-a-string-is-squeezable | ✓ | 544µs | 1.9 KB |
-| 297 | determine-if-only-one-instance-is-running | ✓ | 33µs | 208 B |
-| 298 | determine-if-two-triangles-overlap | ✓ | 287µs | 1.3 KB |
-| 299 | determine-sentence-type | ✓ | 146µs | 1.0 KB |
+| 294 | determine-if-a-string-is-numeric-1 | ✓ | 28µs | 400 B |
+| 295 | determine-if-a-string-is-numeric-2 | ✓ | 30µs | 400 B |
+| 296 | determine-if-a-string-is-squeezable | ✓ | 560µs | 4.9 KB |
+| 297 | determine-if-only-one-instance-is-running | ✓ | 22µs | 400 B |
+| 298 | determine-if-two-triangles-overlap | ✓ | 225µs | 688 B |
+| 299 | determine-sentence-type | ✓ | 198µs | 440 B |
 | 300 | dice-game-probabilities-1 | ✓ | 37.704ms | 2.6 KB |
 | 301 | dice-game-probabilities-2 | ✓ | 9.884ms | 952 B |
 | 302 | digital-root-multiplicative-digital-root | ✓ | 10.988ms | 984 B |
