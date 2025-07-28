@@ -75,7 +75,18 @@ func buildNode(v any) Node {
 	if !ok || len(arr) == 0 {
 		return Node{}
 	}
-	n := Node{Type: fmt.Sprint(arr[0])}
+	typeStr, ok := arr[0].(string)
+	if !ok {
+		n := Node{Type: "list"}
+		for _, x := range arr {
+			c := buildNode(x)
+			if c.Type != "" {
+				n.Children = append(n.Children, c)
+			}
+		}
+		return n
+	}
+	n := Node{Type: typeStr}
 	if strings.HasPrefix(n.Type, "@") {
 		if len(arr) > 1 {
 			if s, ok := arr[1].(string); ok {
@@ -112,6 +123,14 @@ func buildNode(v any) Node {
 }
 
 func tokens(n Node) []string {
+	if (n.Type == "aref" || n.Type == "aref_field") && len(n.Children) >= 2 {
+		recv := exprString(n.Children[0])
+		idx := n.Children[1]
+		if idx.Type == "args_add_block" && len(idx.Children) > 0 {
+			idx = idx.Children[0]
+		}
+		return []string{recv + "[" + exprString(idx) + "]"}
+	}
 	if strings.HasPrefix(n.Type, "@") {
 		if n.Value != "" {
 			switch n.Type {
@@ -134,6 +153,42 @@ func tokens(n Node) []string {
 }
 
 func exprString(n Node) string {
+	switch n.Type {
+	case "array":
+		ts := tokens(n)
+		return "[" + strings.Join(ts, ", ") + "]"
+	case "hash":
+		var parts []string
+		var walk func(Node)
+		walk = func(x Node) {
+			switch x.Type {
+			case "assoc_new":
+				if len(x.Children) == 2 {
+					k := exprString(x.Children[0])
+					v := exprString(x.Children[1])
+					parts = append(parts, k+": "+v)
+				}
+			case "args_add", "assoclist_from_args", "args_add_block", "list":
+				for _, c := range x.Children {
+					walk(c)
+				}
+			}
+		}
+		for _, c := range n.Children {
+			walk(c)
+		}
+		return "{" + strings.Join(parts, ", ") + "}"
+	case "aref":
+		if len(n.Children) == 2 {
+			recv := exprString(n.Children[0])
+			idx := n.Children[1]
+			if idx.Type == "args_add_block" && len(idx.Children) > 0 {
+				idx = idx.Children[0]
+			}
+			return recv + "[" + exprString(idx) + "]"
+		}
+	}
+
 	if n.Type == "paren" && len(n.Children) == 1 {
 		return "(" + exprString(n.Children[0]) + ")"
 	}
@@ -264,7 +319,8 @@ func convertNode(n Node, level int, out *[]string) {
 		if len(n.Children) < 2 {
 			return
 		}
-		name := exprString(n.Children[0])
+		lhs := n.Children[0]
+		name := exprString(lhs)
 		if fields, ok := structFields(n.Children[1]); ok {
 			*out = append(*out, idt+"type "+name+" {")
 			for _, f := range fields {
@@ -274,11 +330,18 @@ func convertNode(n Node, level int, out *[]string) {
 			return
 		}
 		expr := exprString(n.Children[1])
-		kw := "let "
-		if level == 0 {
-			kw = "var "
+		kw := ""
+		if lhs.Type == "var_field" {
+			kw = "let "
+			if level == 0 {
+				kw = "var "
+			}
 		}
-		*out = append(*out, idt+kw+name+" = "+expr)
+		if kw != "" {
+			*out = append(*out, idt+kw+name+" = "+expr)
+		} else {
+			*out = append(*out, idt+name+" = "+expr)
+		}
 	case "while":
 		if len(n.Children) < 2 {
 			return
