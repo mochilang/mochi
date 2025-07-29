@@ -490,6 +490,12 @@ func exprNodeFromAST(n *Node) *ast.Node {
 		if n.Value == "ToArray" && len(n.Children) == 1 && n.Children[0].Kind == "call" && n.Children[0].Value == "Append" && len(n.Children[0].Children) == 2 {
 			return &ast.Node{Kind: "call", Value: "append", Children: []*ast.Node{exprNodeFromAST(n.Children[0].Children[0]), exprNodeFromAST(n.Children[0].Children[1])}}
 		}
+		if n.Value == "ToArray" && len(n.Children) == 1 {
+			return exprNodeFromAST(n.Children[0])
+		}
+		if n.Value == "ToList" && len(n.Children) == 1 {
+			return exprNodeFromAST(n.Children[0])
+		}
 		if n.Value == "ToInt32" && len(n.Children) == 2 && n.Children[0].Kind == "ident" && n.Children[0].Value == "Convert" {
 			return &ast.Node{Kind: "cast", Children: []*ast.Node{exprNodeFromAST(n.Children[1]), &ast.Node{Kind: "type", Value: "int"}}}
 		}
