@@ -209,6 +209,14 @@ func transformCall(c *ast.CallExpr) *mast.Node {
 				return n
 			}
 		}
+		if id, ok := fn.X.(*ast.Ident); ok && id.Name == "strings" {
+			if fn.Sel.Name == "Contains" {
+				return &mast.Node{Kind: "binary", Value: "in", Children: []*mast.Node{
+					transformExpr(c.Args[1]),
+					transformExpr(c.Args[0]),
+				}}
+			}
+		}
 	case *ast.Ident:
 		if fn.Name == "len" {
 			n := &mast.Node{Kind: "call", Value: "len"}
@@ -216,6 +224,9 @@ func transformCall(c *ast.CallExpr) *mast.Node {
 				n.Children = append(n.Children, transformExpr(arg))
 			}
 			return n
+		}
+		if fn.Name == "string" {
+			return nil
 		}
 		n := &mast.Node{Kind: "call", Value: fn.Name}
 		for _, arg := range c.Args {
@@ -250,6 +261,41 @@ func transformExpr(e ast.Expr) *mast.Node {
 	case *ast.CallExpr:
 		if n := transformCall(v); n != nil {
 			return n
+		}
+		if id, ok := v.Fun.(*ast.Ident); ok && id.Name == "string" && len(v.Args) == 1 {
+			arg := v.Args[0]
+			// string([]rune(s)[i]) or string([]rune(s)[start:end])
+			switch a := arg.(type) {
+			case *ast.IndexExpr:
+				if sel, ok := a.X.(*ast.CallExpr); ok {
+					if arr, ok := sel.Fun.(*ast.ArrayType); ok {
+						if elt, ok := arr.Elt.(*ast.Ident); ok && elt.Name == "rune" && len(sel.Args) == 1 {
+							if s, ok := sel.Args[0].(*ast.Ident); ok {
+								idx := transformExpr(a.Index)
+								one := &mast.Node{Kind: "int", Value: 1}
+								end := &mast.Node{Kind: "binary", Value: "+", Children: []*mast.Node{idx, one}}
+								return &mast.Node{Kind: "call", Value: "substring", Children: []*mast.Node{
+									{Kind: "selector", Value: s.Name}, idx, end,
+								}}
+							}
+						}
+					}
+				}
+			case *ast.SliceExpr:
+				if sel, ok := a.X.(*ast.CallExpr); ok {
+					if arr, ok := sel.Fun.(*ast.ArrayType); ok {
+						if elt, ok := arr.Elt.(*ast.Ident); ok && elt.Name == "rune" && len(sel.Args) == 1 {
+							if s, ok := sel.Args[0].(*ast.Ident); ok {
+								start := transformExpr(a.Low)
+								end := transformExpr(a.High)
+								return &mast.Node{Kind: "call", Value: "substring", Children: []*mast.Node{
+									{Kind: "selector", Value: s.Name}, start, end,
+								}}
+							}
+						}
+					}
+				}
+			}
 		}
 		if fn, ok := v.Fun.(*ast.FuncLit); ok {
 			if len(fn.Body.List) == 1 {
