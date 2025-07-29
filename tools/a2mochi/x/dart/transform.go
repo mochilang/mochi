@@ -89,13 +89,35 @@ func funcNode(fn Function) (*ast.Node, error) {
 	if r := toMochiType(fn.Ret); r != "" {
 		n.Children = append(n.Children, &ast.Node{Kind: "type", Value: r})
 	}
-	for _, line := range fn.Body {
-		stmt := convertBodyLine(line)
+	var buf []string
+	depth := 0
+	flush := func() error {
+		if len(buf) == 0 {
+			return nil
+		}
+		raw := strings.Join(buf, " ")
+		stmt := convertBodyLine(raw)
 		st, err := parseStmt(stmt)
 		if err != nil {
-			return nil, err
+			return err
 		}
 		n.Children = append(n.Children, st)
+		buf = nil
+		return nil
+	}
+	for _, line := range fn.Body {
+		trimmed := strings.TrimSpace(line)
+		buf = append(buf, trimmed)
+		depth += strings.Count(trimmed, "{")
+		depth -= strings.Count(trimmed, "}")
+		if depth == 0 {
+			if err := flush(); err != nil {
+				return nil, err
+			}
+		}
+	}
+	if depth == 0 {
+		_ = flush()
 	}
 	return n, nil
 }
@@ -200,6 +222,7 @@ func convertBodyLine(s string) string {
 	s = convertSpread(s)
 	s = convertReduce(s)
 	s = convertAny(s)
+	s = convertJoinPrint(s)
 	s = convertLength(s)
 	return convertQuotes(s)
 }
@@ -287,6 +310,21 @@ func convertAny(s string) string {
 		parts := anyRe.FindStringSubmatch(m)
 		if len(parts) == 4 {
 			return fmt.Sprintf("exists(from %s in %s where %s select %s)", parts[2], parts[1], strings.TrimSpace(parts[3]), parts[2])
+		}
+		return m
+	})
+}
+
+var joinPrintRe = regexp.MustCompile(`print\(\[([^\]]+)\]\.join\((?:"|')\s*(?:"|')\)\)`)
+
+func convertJoinPrint(s string) string {
+	return joinPrintRe.ReplaceAllStringFunc(s, func(m string) string {
+		parts := joinPrintRe.FindStringSubmatch(m)
+		if len(parts) == 2 {
+			args := splitArgs(parts[1])
+			if len(args) == 2 {
+				return fmt.Sprintf("print(%s, %s)", args[0], args[1])
+			}
 		}
 		return m
 	})

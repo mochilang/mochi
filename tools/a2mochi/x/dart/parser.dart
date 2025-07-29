@@ -41,7 +41,15 @@ void main() async {
           });
         }
       }
-      final body = d.functionExpression.body.toSource();
+      final bodyLines = <String>[];
+      final fb = d.functionExpression.body;
+      if (fb is BlockFunctionBody) {
+        for (var s in fb.block.statements) {
+          bodyLines.add(s.toSource());
+        }
+      } else {
+        bodyLines.add(fb.toSource());
+      }
       final start = unit.lineInfo.getLocation(d.offset).lineNumber;
       final end = unit.lineInfo.getLocation(d.end).lineNumber;
       final ret = d.returnType?.toSource() ?? '';
@@ -52,7 +60,7 @@ void main() async {
         'name': d.name.lexeme,
         'params': params,
         'ret': ret,
-        'body': body.split('\n'),
+        'body': bodyLines,
         'start': start,
         'end': end,
         'doc': doc,

@@ -12,4 +12,5 @@
       (call square (int 6))
     )
   )
+  (call main)
 )

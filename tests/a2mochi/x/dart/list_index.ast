@@ -1,0 +1,12 @@
+(program
+  (fun main
+    (let xs
+      (type list (type int))
+      (list (int 10) (int 20) (int 30))
+    )
+    (call print
+      (index (selector xs) (int 1))
+    )
+  )
+  (call main)
+)

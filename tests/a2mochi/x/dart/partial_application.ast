@@ -1,0 +1,20 @@
+(program
+  (fun add
+    (param a)
+    (param b)
+    (type float)
+    (return
+      (binary + (selector a) (selector b))
+    )
+  )
+  (fun main
+    (let add5
+      (type int)
+      (call add (int 5))
+    )
+    (call print
+      (call add5 (int 3))
+    )
+  )
+  (call main)
+)

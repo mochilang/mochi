@@ -1,0 +1,10 @@
+(program
+  (fun main
+    (call print
+      (call
+        (selector toString (int 123))
+      )
+    )
+  )
+  (call main)
+)

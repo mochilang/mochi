@@ -1,0 +1,24 @@
+(program
+  (fun main
+    (let m
+      (type map (type int) (type string))
+      (map
+        (entry (int 1) (string a))
+        (entry (int 2) (string b))
+      )
+    )
+    (call print
+      (call
+        (selector containsKey (selector m))
+        (int 1)
+      )
+    )
+    (call print
+      (call
+        (selector containsKey (selector m))
+        (int 3)
+      )
+    )
+  )
+  (call main)
+)
