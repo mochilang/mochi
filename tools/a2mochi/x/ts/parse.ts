@@ -34,6 +34,8 @@ interface TSDecl {
   snippet?: string;
   startOff?: number;
   endOff?: number;
+  bodyNodes?: TSDecl[];
+  elseNodes?: TSDecl[];
 }
 
 function pos(source: ts.SourceFile, p: number) {
@@ -72,8 +74,10 @@ function parse(src: string): TSDecl[] {
           }));
           const rt = init.type ? init.type.getText(source) : "";
           let body = "";
+          let bodyNodes: TSDecl[] | undefined = undefined;
           if (ts.isBlock(init.body)) {
             body = init.body.getText(source).slice(1, -1);
+            bodyNodes = parse(body);
           }
           decls.push({
             kind: "funcvar",
@@ -82,6 +86,7 @@ function parse(src: string): TSDecl[] {
             params,
             ret: rt,
             body,
+            bodyNodes,
             start: start.line,
             startCol: start.col,
             end: end.line,
@@ -119,7 +124,11 @@ function parse(src: string): TSDecl[] {
       }));
       const rt = stmt.type ? stmt.type.getText(source) : "";
       let body = "";
-      if (stmt.body) body = stmt.body.getText(source).slice(1, -1);
+      let bodyNodes: TSDecl[] | undefined = undefined;
+      if (stmt.body) {
+        body = stmt.body.getText(source).slice(1, -1);
+        bodyNodes = parse(body);
+      }
       decls.push({
         kind: "func",
         node: ts.SyntaxKind[stmt.kind],
@@ -228,13 +237,18 @@ function parse(src: string): TSDecl[] {
       }
       let list = stmt.expression.getText(source);
       let body = stmt.statement.getText(source);
-      if (ts.isBlock(stmt.statement)) body = body.slice(1, -1);
+      let bodyNodes: TSDecl[] | undefined = undefined;
+      if (ts.isBlock(stmt.statement)) {
+        body = body.slice(1, -1);
+        bodyNodes = parse(body);
+      }
       decls.push({
         kind: "forof",
         node: ts.SyntaxKind[stmt.kind],
         iter,
         list,
         body,
+        bodyNodes,
         start: start.line,
         startCol: start.col,
         end: end.line,
@@ -252,13 +266,18 @@ function parse(src: string): TSDecl[] {
       }
       let list = stmt.expression.getText(source);
       let body = stmt.statement.getText(source);
-      if (ts.isBlock(stmt.statement)) body = body.slice(1, -1);
+      let bodyNodes: TSDecl[] | undefined = undefined;
+      if (ts.isBlock(stmt.statement)) {
+        body = body.slice(1, -1);
+        bodyNodes = parse(body);
+      }
       decls.push({
         kind: "forin",
         node: ts.SyntaxKind[stmt.kind],
         iter,
         list,
         body,
+        bodyNodes,
         start: start.line,
         startCol: start.col,
         end: end.line,
@@ -286,7 +305,11 @@ function parse(src: string): TSDecl[] {
         endVal = stmt.condition.right.getText(source);
       }
       let body = stmt.statement.getText(source);
-      if (ts.isBlock(stmt.statement)) body = body.slice(1, -1);
+      let bodyNodes: TSDecl[] | undefined = undefined;
+      if (ts.isBlock(stmt.statement)) {
+        body = body.slice(1, -1);
+        bodyNodes = parse(body);
+      }
       decls.push({
         kind: "for",
         node: ts.SyntaxKind[stmt.kind],
@@ -294,6 +317,7 @@ function parse(src: string): TSDecl[] {
         startVal,
         endVal,
         body,
+        bodyNodes,
         start: start.line,
         startCol: start.col,
         end: end.line,
@@ -306,12 +330,17 @@ function parse(src: string): TSDecl[] {
     } else if (ts.isWhileStatement(stmt)) {
       const cond = stmt.expression.getText(source);
       let body = stmt.statement.getText(source);
-      if (ts.isBlock(stmt.statement)) body = body.slice(1, -1);
+      let bodyNodes: TSDecl[] | undefined = undefined;
+      if (ts.isBlock(stmt.statement)) {
+        body = body.slice(1, -1);
+        bodyNodes = parse(body);
+      }
       decls.push({
         kind: "while",
         node: ts.SyntaxKind[stmt.kind],
         cond,
         body,
+        bodyNodes,
         start: start.line,
         startCol: start.col,
         end: end.line,
@@ -324,12 +353,18 @@ function parse(src: string): TSDecl[] {
     } else if (ts.isIfStatement(stmt)) {
       const cond = stmt.expression.getText(source);
       let body = stmt.thenStatement.getText(source);
-      if (ts.isBlock(stmt.thenStatement)) body = body.slice(1, -1);
+      let bodyNodes: TSDecl[] | undefined = undefined;
+      if (ts.isBlock(stmt.thenStatement)) {
+        body = body.slice(1, -1);
+        bodyNodes = parse(body);
+      }
       let elsePart = "";
+      let elseNodes: TSDecl[] | undefined = undefined;
       if (stmt.elseStatement) {
         elsePart = stmt.elseStatement.getText(source);
         if (ts.isBlock(stmt.elseStatement)) {
           elsePart = elsePart.slice(1, -1);
+          elseNodes = parse(elsePart);
         }
       }
       decls.push({
@@ -337,7 +372,9 @@ function parse(src: string): TSDecl[] {
         node: ts.SyntaxKind[stmt.kind],
         cond,
         body,
+        bodyNodes,
         else: elsePart,
+        elseNodes,
         start: start.line,
         startCol: start.col,
         end: end.line,
