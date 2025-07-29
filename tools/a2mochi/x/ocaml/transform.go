@@ -30,6 +30,9 @@ func Transform(p *Program) (*ast.Node, error) {
 func buildMochi(p *Program) string {
 	var out strings.Builder
 	for _, fn := range p.Funcs {
+		if strings.HasPrefix(fn.Name, "__") {
+			continue
+		}
 		params := make([]string, 0, len(fn.Params))
 		for _, p := range fn.Params {
 			if p == "()" || p == "" {
@@ -292,8 +295,32 @@ func simplify(e string) string {
 	reCall := regexp.MustCompile(`\b(len|sum)\s+(\[[^\]]*\]|"[^"]+"|[A-Za-z0-9_]+)`)
 	e = reCall.ReplaceAllString(e, `$1($2)`)
 
+	reFold := regexp.MustCompile(`List\.fold_left\s+min\s+max_int\s+([A-Za-z0-9_]+)`)
+	e = reFold.ReplaceAllString(e, `min($1)`)
+	reFold = regexp.MustCompile(`List\.fold_left\s+max\s+min_int\s+([A-Za-z0-9_]+)`)
+	e = reFold.ReplaceAllString(e, `max($1)`)
+
 	re := regexp.MustCompile(`List\.append\s+(\[[^\]]*\]|[A-Za-z0-9_]+)\s+(\[[^\]]*\]|[A-Za-z0-9_]+)`)
 	e = re.ReplaceAllString(e, `append($1, $2)`)
+
+	mapListRe := regexp.MustCompile(`\[(\("[^"]+",[^\)]+\)\s*,?\s*)+\]`)
+	e = mapListRe.ReplaceAllStringFunc(e, func(m string) string {
+		pairRe := regexp.MustCompile(`\("([^"]+)",\s*([^\)]+)\)`)
+		pairs := pairRe.FindAllStringSubmatch(m, -1)
+		var b strings.Builder
+		b.WriteString("{")
+		for i, p := range pairs {
+			if i > 0 {
+				b.WriteString(", ")
+			}
+			fmt.Fprintf(&b, "\"%s\": %s", p[1], strings.TrimSpace(p[2]))
+		}
+		b.WriteString("}")
+		return b.String()
+	})
+
+	re = regexp.MustCompile(`List\.mem\s+([^\s]+)\s+([^\s]+)`)
+	e = re.ReplaceAllString(e, `$1 in $2`)
 
 	// list syntax
 	e = strings.ReplaceAll(e, ";", ",")
