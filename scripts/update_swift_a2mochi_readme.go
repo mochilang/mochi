@@ -1,3 +1,5 @@
+//go:build slow
+
 package main
 
 import swift "mochi/tools/a2mochi/x/swift"

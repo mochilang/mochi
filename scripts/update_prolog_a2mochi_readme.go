@@ -1,3 +1,5 @@
+//go:build slow
+
 package main
 
 import prolog "mochi/tools/a2mochi/x/prolog"
