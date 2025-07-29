@@ -548,6 +548,10 @@ func simpleExpr(n pnode.Node) (string, bool) {
 			if len(args) == 1 {
 				return fmt.Sprintf("(%s as int)", args[0]), true
 			}
+		case "strval":
+			if len(args) == 1 {
+				return fmt.Sprintf("str(%s)", args[0]), true
+			}
 		case "in_array":
 			if len(args) == 2 {
 				return fmt.Sprintf("(%s in %s)", args[0], args[1]), true
