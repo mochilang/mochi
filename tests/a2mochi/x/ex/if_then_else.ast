@@ -1,0 +1,14 @@
+(program
+  (fun main
+    (var x (int 12))
+    (var msg
+      (if_expr
+        (binary > (selector x) (int 10))
+        (string yes)
+        (string no)
+      )
+    )
+    (call print (selector msg))
+  )
+  (call main)
+)
