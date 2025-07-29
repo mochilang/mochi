@@ -206,7 +206,11 @@ func exprToNode(e luaast.Expr, mut map[string]bool) *ast.Node {
 	case *luaast.ArithmeticOpExpr:
 		left := exprToNode(v.Lhs, mut)
 		right := exprToNode(v.Rhs, mut)
-		return node("binary", v.Operator, left, right)
+		op := v.Operator
+		if op == "//" {
+			op = "/"
+		}
+		return node("binary", op, left, right)
 	case *luaast.StringConcatOpExpr:
 		return node("binary", "+", exprToNode(v.Lhs, mut), exprToNode(v.Rhs, mut))
 	case *luaast.LogicalOpExpr:
@@ -686,7 +690,11 @@ func luaExprString(e luaast.Expr, mut map[string]bool) string {
 	case *luaast.ArithmeticOpExpr:
 		// Always wrap arithmetic expressions in parentheses to
 		// preserve operator precedence when converting back to Mochi.
-		return "(" + luaExprString(v.Lhs, mut) + " " + v.Operator + " " + luaExprString(v.Rhs, mut) + ")"
+		op := v.Operator
+		if op == "//" {
+			op = "/"
+		}
+		return "(" + luaExprString(v.Lhs, mut) + " " + op + " " + luaExprString(v.Rhs, mut) + ")"
 	case *luaast.StringConcatOpExpr:
 		return luaExprString(v.Lhs, mut) + " + " + luaExprString(v.Rhs, mut)
 	case *luaast.LogicalOpExpr:

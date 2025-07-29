@@ -1,7 +1,7 @@
 # a2mochi Lua Converter
 
-Completed programs: 41/104
-Date: 2025-07-29 12:50:00 GMT+0000
+Completed programs: 42/104
+Date: 2025-07-29 06:34:00 GMT
 
 This directory contains helpers and golden files for converting Lua programs
 under `tests/transpiler/x/lua` back into Mochi code.
@@ -48,3 +48,4 @@ Supported examples:
 - [x] map_assign
 - [x] list_nested_assign
 - [x] map_nested_assign
+- [x] fun_three_args
