@@ -3,12 +3,14 @@
     (param x (type int))
     (type int)
     (block
-      (let inner (unknown))
-      (return
-        (call
-          (selector applyAsInt (selector inner))
-          (int 5)
+      (let inner
+        (funexpr
+          (param y (type int))
+          (binary + (selector x) (selector y))
         )
+      )
+      (return
+        (call (selector inner) (int 5))
       )
     )
   )

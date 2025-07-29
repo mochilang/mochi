@@ -51,7 +51,25 @@
                 (list (int 1) (int 2) (int 3))
               )
             )
-            (unknown)
+            (funexpr
+              (param v)
+              (call
+                (selector noneMatch
+                  (call
+                    (selector stream
+                      (selector Arrays
+                        (selector util (selector java))
+                      )
+                    )
+                    (list (int 2))
+                  )
+                )
+                (funexpr
+                  (param x)
+                  (binary == (selector x) (selector v))
+                )
+              )
+            )
           )
         )
       )
@@ -72,7 +90,25 @@
                 (list (int 1) (int 2) (int 3))
               )
             )
-            (unknown)
+            (funexpr
+              (param v)
+              (call
+                (selector anyMatch
+                  (call
+                    (selector stream
+                      (selector Arrays
+                        (selector util (selector java))
+                      )
+                    )
+                    (list (int 2) (int 4))
+                  )
+                )
+                (funexpr
+                  (param x)
+                  (binary == (selector x) (selector v))
+                )
+              )
+            )
           )
         )
       )

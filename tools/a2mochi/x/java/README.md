@@ -2,8 +2,8 @@
 
 This directory contains helpers and golden files for converting Java programs under `tests/transpiler/x/java` back into Mochi AST form.
 
-Completed programs: 47/103
-Date: 2025-07-30 00:24 GMT+7 GMT+7
+Completed programs: 50/103
+Date: 2025-07-30 00:41 GMT+7 GMT+7
 
 ## Checklist
 - [x] append_builtin
@@ -15,7 +15,7 @@ Date: 2025-07-30 00:24 GMT+7 GMT+7
 - [x] break_continue
 - [x] cast_string_to_int
 - [ ] cast_struct
-- [ ] closure
+- [x] closure
 - [x] count_builtin
 - [ ] cross_join
 - [ ] cross_join_filter
@@ -27,7 +27,7 @@ Date: 2025-07-30 00:24 GMT+7 GMT+7
 - [x] for_loop
 - [ ] for_map_collection
 - [x] fun_call
-- [ ] fun_expr_in_let
+- [x] fun_expr_in_let
 - [x] fun_three_args
 - [ ] go_auto
 - [ ] group_by
@@ -72,7 +72,7 @@ Date: 2025-07-30 00:24 GMT+7 GMT+7
 - [x] math_ops
 - [ ] membership
 - [x] min_max_builtin
-- [ ] nested_function
+- [x] nested_function
 - [ ] order_by_map
 - [ ] outer_join
 - [x] partial_application
