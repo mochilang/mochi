@@ -123,6 +123,18 @@ func rewriteExpr(s string) string {
 				s = fmt.Sprintf("append(%s, %s)", strings.TrimSpace(before), strings.TrimSpace(arg))
 			}
 		}
+                // <x>.Append(y) -> append(x, y)
+                if strings.HasSuffix(s, ")") && strings.Contains(s, ".Append(") {
+                        before := stripOuterParens(strings.TrimSpace(s[:strings.Index(s, ".Append(")]))
+                        rest := s[strings.Index(s, ".Append(")+len(".Append("):]
+                        if idx2 := strings.Index(rest, ")"); idx2 != -1 {
+                                arg := rest[:idx2]
+                                after := strings.TrimSpace(rest[idx2+1:])
+                                if parenBalanced(arg) && after == "" {
+                                        s = fmt.Sprintf("append(%s, %s)", strings.TrimSpace(before), strings.TrimSpace(arg))
+                                }
+                        }
+                }
 
 		// new T[]{...} -> [...]
 		for {
