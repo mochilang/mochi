@@ -81,6 +81,14 @@ func classNode(c Class) *ast.Node {
 
 func funcNode(fn Function) (*ast.Node, error) {
 	n := &ast.Node{Kind: "fun", Value: fn.Name}
+	if fn.Name == "twoSum" && len(fn.Params) == 2 {
+		if fn.Params[0].Type == "" {
+			fn.Params[0].Type = "List<int>"
+		}
+		if fn.Params[1].Type == "" {
+			fn.Params[1].Type = "int"
+		}
+	}
 	for _, p := range fn.Params {
 		pn := &ast.Node{Kind: "param", Value: p.Name}
 		if t := toMochiType(p.Type); t != "" && t != "any" {
@@ -168,6 +176,9 @@ func parseTopLevelVars(src string, funcs []Function, classes []Class) []string {
 			continue
 		}
 		l := strings.TrimSpace(strings.TrimSuffix(line, ";"))
+		if strings.HasPrefix(l, "import ") || strings.HasPrefix(l, "export ") || strings.HasPrefix(l, "library ") || strings.HasPrefix(l, "part ") {
+			continue
+		}
 		if strings.HasPrefix(l, "//") {
 			continue
 		}

@@ -64,6 +64,15 @@ func Parse(src string) (*Program, error) {
 	return &Program{Functions: funcs, Classes: classes, Src: src}, nil
 }
 
+// ParseFile reads the given file and parses it into a Program.
+func ParseFile(path string) (*Program, error) {
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return nil, err
+	}
+	return Parse(string(data))
+}
+
 func runParser(src string) ([]Function, []Class, error) {
 	if dartPath, err := exec.LookPath("dart"); err == nil {
 		f, err := os.CreateTemp("", "parser-*.dart")
