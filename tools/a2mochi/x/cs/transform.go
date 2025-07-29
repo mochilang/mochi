@@ -15,74 +15,118 @@ var longLit = regexp.MustCompile(`(\d+)L\b`)
 
 func stripLong(s string) string { return longLit.ReplaceAllString(s, "$1") }
 
+func parenBalanced(s string) bool {
+	depth := 0
+	for _, r := range s {
+		switch r {
+		case '(':
+			depth++
+		case ')':
+			depth--
+			if depth < 0 {
+				return false
+			}
+		}
+	}
+	return depth == 0
+}
+
+func stripOuterParens(s string) string {
+	for len(s) > 1 && strings.HasPrefix(s, "(") && strings.HasSuffix(s, ")") {
+		inner := s[1 : len(s)-1]
+		if parenBalanced(inner) {
+			s = strings.TrimSpace(inner)
+			continue
+		}
+		break
+	}
+	return s
+}
+
+// TestRewrite exposes rewriteExpr for tests and debugging.
+
 func rewriteExpr(s string) string {
 	s = strings.TrimSpace(s)
-
-	// remove ToString calls
-	s = strings.ReplaceAll(s, `.ToString("0.0")`, "")
-	s = strings.ReplaceAll(s, `.ToString()`, "")
-
-	// string.Join -> str()
-	if strings.HasPrefix(s, "string.Join(") {
-		inner := strings.TrimPrefix(s, "string.Join(")
-		if end := strings.LastIndex(inner, ")"); end != -1 {
-			inner = inner[:end]
-			if idx := strings.Index(inner, ","); idx != -1 {
-				inner = strings.TrimSpace(inner[idx+1:])
-			}
-			s = "str(" + inner + ")"
-		}
-	}
-
-	// <x>.Append(y).ToArray() -> append(x, y)
-	if strings.Contains(s, ".Append(") && strings.HasSuffix(s, ").ToArray()") {
-		before := s[:strings.Index(s, ".Append(")]
-		rest := s[strings.Index(s, ".Append(")+len(".Append("):]
-		if idx := strings.Index(rest, ")"); idx != -1 {
-			arg := rest[:idx]
-			s = fmt.Sprintf("append(%s, %s)", strings.TrimSpace(before), strings.TrimSpace(arg))
-		}
-	}
-
-	// new T[]{...} -> [...]
 	for {
-		start := strings.Index(s, "new ")
-		if start == -1 {
+		orig := s
+		s = stripOuterParens(s)
+
+		// remove ToString calls
+		s = strings.ReplaceAll(s, `.ToString("0.0")`, "")
+		s = strings.ReplaceAll(s, `.ToString()`, "")
+
+		// string.Join -> str()
+		if strings.HasPrefix(s, "string.Join(") {
+			inner := strings.TrimPrefix(s, "string.Join(")
+			if end := strings.LastIndex(inner, ")"); end != -1 {
+				inner = inner[:end]
+				if strings.HasPrefix(inner, "\"") {
+					if i := strings.Index(inner[1:], "\""); i != -1 {
+						inner = inner[i+2:]
+					}
+				}
+				if idx := strings.Index(inner, ","); idx != -1 {
+					inner = strings.TrimSpace(inner[idx+1:])
+				}
+				s = "str(" + inner + ")"
+			}
+		}
+
+		// <x>.Append(y).ToArray() -> append(x, y)
+		if strings.Contains(s, ".Append(") && strings.HasSuffix(s, ").ToArray()") {
+			before := stripOuterParens(strings.TrimSpace(s[:strings.Index(s, ".Append(")]))
+			rest := s[strings.Index(s, ".Append(")+len(".Append("):]
+			if idx := strings.Index(rest, ")"); idx != -1 {
+				arg := rest[:idx]
+				s = fmt.Sprintf("append(%s, %s)", strings.TrimSpace(before), strings.TrimSpace(arg))
+			}
+		}
+
+		// new T[]{...} -> [...]
+		for {
+			start := strings.Index(s, "new ")
+			if start == -1 {
+				break
+			}
+			arr := s[start:]
+			open := strings.Index(arr, "{")
+			close := strings.Index(arr, "}")
+			if open == -1 || close == -1 || close < open {
+				break
+			}
+			inner := strings.ReplaceAll(arr[open+1:close], " ", "")
+			s = s[:start] + "[" + inner + "]" + arr[close+1:]
+		}
+
+		// Average() -> avg()
+		if idx := strings.Index(s, ".Average()"); idx != -1 {
+			before := strings.TrimSpace(s[:idx])
+			after := s[idx+len(".Average()"):]
+			for strings.HasPrefix(before, "(") && strings.HasPrefix(after, ")") {
+				before = strings.TrimPrefix(before, "(")
+				after = strings.TrimPrefix(after, ")")
+			}
+			before = strings.TrimSuffix(before, ")")
+			s = "avg(" + strings.TrimSpace(before) + ")" + after
+		}
+
+		// ternary operator -> if
+		if q := strings.Index(s, "?"); q != -1 {
+			if c := strings.Index(s[q+1:], ":"); c != -1 {
+				cond := stripOuterParens(strings.TrimSpace(s[:q]))
+				thenPart := stripOuterParens(strings.TrimSpace(s[q+1 : q+1+c]))
+				elsePart := stripOuterParens(strings.TrimSpace(s[q+1+c+1:]))
+				s = fmt.Sprintf("if %s { %s } else { %s }", cond, thenPart, elsePart)
+			}
+		}
+
+		s = strings.TrimSpace(s)
+		s = stripOuterParens(s)
+		if s == orig {
 			break
 		}
-		arr := s[start:]
-		open := strings.Index(arr, "{")
-		close := strings.Index(arr, "}")
-		if open == -1 || close == -1 || close < open {
-			break
-		}
-		inner := strings.ReplaceAll(arr[open+1:close], " ", "")
-		s = s[:start] + "[" + inner + "]" + arr[close+1:]
 	}
-
-	// Average() -> avg()
-	if idx := strings.Index(s, ".Average()"); idx != -1 {
-		before := strings.TrimSpace(s[:idx])
-		after := s[idx+len(".Average()"):]
-		for strings.HasPrefix(before, "(") && strings.HasPrefix(after, ")") {
-			before = strings.TrimPrefix(before, "(")
-			after = strings.TrimPrefix(after, ")")
-		}
-		before = strings.TrimSuffix(before, ")")
-		s = "avg(" + strings.TrimSpace(before) + ")" + after
-	}
-
-	// ternary operator -> if
-	if q := strings.Index(s, "?"); q != -1 {
-		if c := strings.Index(s[q+1:], ":"); c != -1 {
-			cond := strings.TrimSpace(s[:q])
-			thenPart := strings.TrimSpace(s[q+1 : q+1+c])
-			elsePart := strings.TrimSpace(s[q+1+c+1:])
-			s = fmt.Sprintf("if %s { %s } else { %s }", cond, thenPart, elsePart)
-		}
-	}
-
-	return strings.TrimSpace(s)
+	return s
 }
 
 // Transform converts the parsed Program into a Mochi AST node.
@@ -98,6 +142,24 @@ func programToNode(p *Program) (*ast.Node, error) {
 	for _, t := range p.Types {
 		if strings.EqualFold(t.Name, "Program") {
 			var otherMethods []Func
+			otherFields := make([]Field, 0)
+			for _, f := range t.Fields {
+				if f.Static && f.Value != "" {
+					if v, err := exprNode(f.Value); err == nil {
+						n := &ast.Node{Kind: "let", Value: f.Name}
+						if ft := mapType(f.Type); ft != "" {
+							n.Children = append(n.Children, &ast.Node{Kind: "type", Value: ft})
+						}
+						n.Children = append(n.Children, v)
+						root.Children = append(root.Children, n)
+						continue
+					}
+				}
+				if !f.Static {
+					otherFields = append(otherFields, f)
+				}
+			}
+			t.Fields = otherFields
 			for _, m := range t.Methods {
 				if strings.EqualFold(m.Name, "Main") && m.Static {
 					stmts, err := bodyToNodes(m.Body)
@@ -177,6 +239,23 @@ func bodyToNodes(body []string) ([]*ast.Node, error) {
 		nodes[i] = ast.FromStatement(st)
 	}
 	return nodes, nil
+}
+
+func exprNode(expr string) (*ast.Node, error) {
+	expr = rewriteExpr(expr)
+	src := "return " + expr + "\n"
+	prog, err := parser.ParseString(src)
+	if err != nil {
+		return nil, err
+	}
+	if len(prog.Statements) == 0 || prog.Statements[0].Return == nil {
+		return nil, fmt.Errorf("expr parse failed")
+	}
+	ret := ast.FromStatement(prog.Statements[0])
+	if len(ret.Children) > 0 {
+		return ret.Children[0], nil
+	}
+	return nil, fmt.Errorf("expr parse failed")
 }
 
 func convertBodyLines(body []string) []string {
