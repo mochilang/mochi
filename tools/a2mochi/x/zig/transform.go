@@ -346,6 +346,28 @@ func parseParseInt(expr string) (string, bool) {
 	return fmt.Sprintf("%s as %s", val, typ), true
 }
 
+// replaceSliceExprs converts occurrences of "[start..end]" within the given
+// expression to Mochi's slice syntax "[start:end]". It performs a simple text
+// replacement without understanding nested structures but is sufficient for the
+// test programs which use straightforward slices.
+func replaceSliceExprs(expr string) string {
+	for {
+		idx := strings.Index(expr, "..")
+		if idx < 0 {
+			return expr
+		}
+		open := strings.LastIndex(expr[:idx], "[")
+		close := strings.Index(expr[idx+2:], "]")
+		if open < 0 || close < 0 {
+			return expr
+		}
+		close += idx + 2
+		start := strings.TrimSpace(expr[open+1 : idx])
+		end := strings.TrimSpace(expr[idx+2 : close])
+		expr = expr[:open] + "[" + start + ":" + end + "]" + expr[close+1:]
+	}
+}
+
 func parseSlice(expr string) (string, bool) {
 	idxDots := strings.Index(expr, "..")
 	if idxDots < 0 {
@@ -421,6 +443,7 @@ func parseFuncHeader(src string) (name, params, ret string, ok bool) {
 func transformExpr(expr string) string {
 	expr = stripTypedArrays(expr)
 	expr = replaceBuiltins(expr)
+	expr = replaceSliceExprs(expr)
 	if res, ok := parseRecordLiteral(expr); ok {
 		return res
 	}
