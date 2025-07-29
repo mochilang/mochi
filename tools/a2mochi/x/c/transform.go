@@ -65,6 +65,11 @@ func stmtNodeWithAssign(s Stmt, assigned map[string]bool, inFunc bool) *ast.Node
 		if assigned[v.Name] {
 			kind = "var"
 		}
+		if v.Value == "0" {
+			n := &ast.Node{Kind: kind, Value: v.Name}
+			n.Children = append(n.Children, &ast.Node{Kind: "type", Value: "int"})
+			return n
+		}
 		val := exprNode(v.Value)
 		if name, ok := lenExpr(v.Value); ok {
 			val = &ast.Node{Kind: "call", Value: "len", Children: []*ast.Node{exprNode(name)}}
@@ -142,6 +147,20 @@ func exprNode(expr string) *ast.Node {
 			break
 		}
 	}
+	if strings.HasPrefix(expr, "\"") && strings.HasSuffix(expr, "\"") {
+		if s, err := strconv.Unquote(expr); err == nil {
+			if i, err2 := strconv.Atoi(s); err2 == nil {
+				return &ast.Node{Kind: "int", Value: i}
+			}
+			if f, err2 := strconv.ParseFloat(s, 64); err2 == nil {
+				if f == float64(int64(f)) {
+					return &ast.Node{Kind: "int", Value: int(f)}
+				}
+				return &ast.Node{Kind: "float", Value: f}
+			}
+			return &ast.Node{Kind: "string", Value: s}
+		}
+	}
 	if l, op, r, ok := splitBinary(expr); ok {
 		left := exprNode(l)
 		right := exprNode(r)
@@ -165,20 +184,6 @@ func exprNode(expr string) *ast.Node {
 	}
 	if m := reIndex.FindStringSubmatch(expr); m != nil {
 		return &ast.Node{Kind: "index", Children: []*ast.Node{exprNode(m[1]), exprNode(m[2])}}
-	}
-	if strings.HasPrefix(expr, "\"") && strings.HasSuffix(expr, "\"") {
-		if s, err := strconv.Unquote(expr); err == nil {
-			if i, err2 := strconv.Atoi(s); err2 == nil {
-				return &ast.Node{Kind: "int", Value: i}
-			}
-			if f, err2 := strconv.ParseFloat(s, 64); err2 == nil {
-				if f == float64(int64(f)) {
-					return &ast.Node{Kind: "int", Value: int(f)}
-				}
-				return &ast.Node{Kind: "float", Value: f}
-			}
-			return &ast.Node{Kind: "string", Value: s}
-		}
 	}
 	if m := reList.FindStringSubmatch(expr); m != nil {
 		parts := strings.Split(m[1], ",")
