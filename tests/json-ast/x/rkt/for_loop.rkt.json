@@ -1,0 +1,50 @@
+{
+  "forms": [
+    {
+      "datum": [
+        {
+          "sym": "require"
+        },
+        {
+          "sym": "racket/list"
+        },
+        {
+          "sym": "racket/string"
+        }
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "for"
+        },
+        [
+          [
+            {
+              "sym": "i"
+            },
+            [
+              {
+                "sym": "in-range"
+              },
+              1,
+              4
+            ]
+          ]
+        ],
+        [
+          {
+            "sym": "displayln"
+          },
+          {
+            "sym": "i"
+          }
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    }
+  ]
+}

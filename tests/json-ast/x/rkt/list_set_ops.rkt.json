@@ -1,0 +1,267 @@
+{
+  "forms": [
+    {
+      "datum": [
+        {
+          "sym": "require"
+        },
+        {
+          "sym": "racket/list"
+        },
+        {
+          "sym": "racket/string"
+        }
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "struct"
+        },
+        {
+          "sym": "group"
+        },
+        [
+          {
+            "sym": "key"
+          },
+          {
+            "sym": "items"
+          }
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "displayln"
+        },
+        [
+          {
+            "sym": "union"
+          },
+          [
+            {
+              "sym": "list"
+            },
+            1,
+            2
+          ],
+          [
+            {
+              "sym": "list"
+            },
+            2,
+            3
+          ]
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "displayln"
+        },
+        [
+          {
+            "sym": "except"
+          },
+          [
+            {
+              "sym": "list"
+            },
+            1,
+            2,
+            3
+          ],
+          [
+            {
+              "sym": "list"
+            },
+            2
+          ]
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "displayln"
+        },
+        [
+          {
+            "sym": "intersect"
+          },
+          [
+            {
+              "sym": "list"
+            },
+            1,
+            2,
+            3
+          ],
+          [
+            {
+              "sym": "list"
+            },
+            2,
+            4
+          ]
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "displayln"
+        },
+        [
+          {
+            "sym": "cond"
+          },
+          [
+            [
+              {
+                "sym": "string?"
+              },
+              [
+                {
+                  "sym": "union"
+                },
+                [
+                  {
+                    "sym": "list"
+                  },
+                  1,
+                  2
+                ],
+                [
+                  {
+                    "sym": "list"
+                  },
+                  2,
+                  3
+                ]
+              ]
+            ],
+            [
+              {
+                "sym": "string-length"
+              },
+              [
+                {
+                  "sym": "union"
+                },
+                [
+                  {
+                    "sym": "list"
+                  },
+                  1,
+                  2
+                ],
+                [
+                  {
+                    "sym": "list"
+                  },
+                  2,
+                  3
+                ]
+              ]
+            ]
+          ],
+          [
+            [
+              {
+                "sym": "hash?"
+              },
+              [
+                {
+                  "sym": "union"
+                },
+                [
+                  {
+                    "sym": "list"
+                  },
+                  1,
+                  2
+                ],
+                [
+                  {
+                    "sym": "list"
+                  },
+                  2,
+                  3
+                ]
+              ]
+            ],
+            [
+              {
+                "sym": "hash-count"
+              },
+              [
+                {
+                  "sym": "union"
+                },
+                [
+                  {
+                    "sym": "list"
+                  },
+                  1,
+                  2
+                ],
+                [
+                  {
+                    "sym": "list"
+                  },
+                  2,
+                  3
+                ]
+              ]
+            ]
+          ],
+          [
+            {
+              "sym": "else"
+            },
+            [
+              {
+                "sym": "length"
+              },
+              [
+                {
+                  "sym": "union"
+                },
+                [
+                  {
+                    "sym": "list"
+                  },
+                  1,
+                  2
+                ],
+                [
+                  {
+                    "sym": "list"
+                  },
+                  2,
+                  3
+                ]
+              ]
+            ]
+          ]
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    }
+  ]
+}

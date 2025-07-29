@@ -1,0 +1,123 @@
+{
+  "forms": [
+    {
+      "datum": [
+        {
+          "sym": "require"
+        },
+        {
+          "sym": "racket/list"
+        },
+        {
+          "sym": "racket/string"
+        },
+        {
+          "sym": "racket/math"
+        },
+        {
+          "sym": "json"
+        }
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "define"
+        },
+        [
+          {
+            "sym": "inc"
+          },
+          {
+            "sym": "c"
+          }
+        ],
+        [
+          {
+            "sym": "set!"
+          },
+          {
+            "sym": "c"
+          },
+          [
+            {
+              "sym": "hash-set"
+            },
+            {
+              "sym": "c"
+            },
+            "n",
+            [
+              {
+                "sym": "+"
+              },
+              [
+                {
+                  "sym": "hash-ref"
+                },
+                {
+                  "sym": "c"
+                },
+                "n"
+              ],
+              1
+            ]
+          ]
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "define"
+        },
+        {
+          "sym": "c"
+        },
+        [
+          {
+            "sym": "hash"
+          },
+          "n",
+          0
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "inc"
+        },
+        {
+          "sym": "c"
+        }
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "displayln"
+        },
+        [
+          {
+            "sym": "hash-ref"
+          },
+          {
+            "sym": "c"
+          },
+          "n"
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    }
+  ]
+}

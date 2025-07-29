@@ -1,0 +1,146 @@
+{
+  "forms": [
+    {
+      "datum": [
+        {
+          "sym": "require"
+        },
+        {
+          "sym": "racket/list"
+        },
+        {
+          "sym": "racket/string"
+        }
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "define"
+        },
+        {
+          "sym": "data"
+        },
+        [
+          {
+            "sym": "list"
+          },
+          1,
+          2
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "define"
+        },
+        {
+          "sym": "flag"
+        },
+        [
+          {
+            "sym": "not"
+          },
+          [
+            {
+              "sym": "null?"
+            },
+            [
+              {
+                "sym": "let"
+              },
+              [
+                [
+                  {
+                    "sym": "_res"
+                  },
+                  [
+                    {
+                      "sym": "quote"
+                    },
+                    []
+                  ]
+                ]
+              ],
+              [
+                {
+                  "sym": "for"
+                },
+                [
+                  [
+                    {
+                      "sym": "x"
+                    },
+                    {
+                      "sym": "data"
+                    }
+                  ]
+                ],
+                [
+                  {
+                    "sym": "when"
+                  },
+                  [
+                    {
+                      "sym": "="
+                    },
+                    {
+                      "sym": "x"
+                    },
+                    1
+                  ],
+                  [
+                    {
+                      "sym": "set!"
+                    },
+                    {
+                      "sym": "_res"
+                    },
+                    [
+                      {
+                        "sym": "append"
+                      },
+                      {
+                        "sym": "_res"
+                      },
+                      [
+                        {
+                          "sym": "list"
+                        },
+                        {
+                          "sym": "x"
+                        }
+                      ]
+                    ]
+                  ]
+                ]
+              ],
+              {
+                "sym": "_res"
+              }
+            ]
+          ]
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "displayln"
+        },
+        {
+          "sym": "flag"
+        }
+      ],
+      "line": 0,
+      "col": 0
+    }
+  ]
+}

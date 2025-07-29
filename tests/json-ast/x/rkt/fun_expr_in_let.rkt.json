@@ -1,0 +1,70 @@
+{
+  "forms": [
+    {
+      "datum": [
+        {
+          "sym": "require"
+        },
+        {
+          "sym": "racket/list"
+        },
+        {
+          "sym": "racket/string"
+        },
+        {
+          "sym": "json"
+        }
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "define"
+        },
+        {
+          "sym": "square"
+        },
+        [
+          {
+            "sym": "lambda"
+          },
+          [
+            {
+              "sym": "x"
+            }
+          ],
+          [
+            {
+              "sym": "*"
+            },
+            {
+              "sym": "x"
+            },
+            {
+              "sym": "x"
+            }
+          ]
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "displayln"
+        },
+        [
+          {
+            "sym": "square"
+          },
+          6
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    }
+  ]
+}

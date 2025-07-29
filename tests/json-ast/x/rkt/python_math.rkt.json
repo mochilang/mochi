@@ -1,0 +1,466 @@
+{
+  "forms": [
+    {
+      "datum": [
+        {
+          "sym": "require"
+        },
+        {
+          "sym": "racket/list"
+        },
+        {
+          "sym": "racket/string"
+        },
+        {
+          "sym": "racket/math"
+        },
+        {
+          "sym": "json"
+        }
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "define"
+        },
+        {
+          "sym": "math_pi"
+        },
+        {
+          "sym": "pi"
+        }
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "define"
+        },
+        {
+          "sym": "math_e"
+        },
+        [
+          {
+            "sym": "exp"
+          },
+          1
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "define"
+        },
+        [
+          {
+            "sym": "math_sqrt"
+          },
+          {
+            "sym": "x"
+          }
+        ],
+        [
+          {
+            "sym": "sqrt"
+          },
+          {
+            "sym": "x"
+          }
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "define"
+        },
+        [
+          {
+            "sym": "math_pow"
+          },
+          {
+            "sym": "x"
+          },
+          {
+            "sym": "y"
+          }
+        ],
+        [
+          {
+            "sym": "expt"
+          },
+          {
+            "sym": "x"
+          },
+          {
+            "sym": "y"
+          }
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "define"
+        },
+        [
+          {
+            "sym": "math_sin"
+          },
+          {
+            "sym": "x"
+          }
+        ],
+        [
+          {
+            "sym": "sin"
+          },
+          {
+            "sym": "x"
+          }
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "define"
+        },
+        [
+          {
+            "sym": "math_log"
+          },
+          {
+            "sym": "x"
+          }
+        ],
+        [
+          {
+            "sym": "log"
+          },
+          {
+            "sym": "x"
+          }
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "define"
+        },
+        {
+          "sym": "r"
+        },
+        3
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "define"
+        },
+        {
+          "sym": "area"
+        },
+        [
+          {
+            "sym": "*"
+          },
+          {
+            "sym": "math_pi"
+          },
+          [
+            {
+              "sym": "math_pow"
+            },
+            {
+              "sym": "r"
+            },
+            2
+          ]
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "define"
+        },
+        {
+          "sym": "root"
+        },
+        [
+          {
+            "sym": "math_sqrt"
+          },
+          49
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "define"
+        },
+        {
+          "sym": "sin45"
+        },
+        [
+          {
+            "sym": "math_sin"
+          },
+          [
+            {
+              "sym": "/"
+            },
+            {
+              "sym": "math_pi"
+            },
+            4
+          ]
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "define"
+        },
+        {
+          "sym": "log_e"
+        },
+        [
+          {
+            "sym": "math_log"
+          },
+          {
+            "sym": "math_e"
+          }
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "displayln"
+        },
+        [
+          {
+            "sym": "string-join"
+          },
+          [
+            {
+              "sym": "map"
+            },
+            [
+              {
+                "sym": "lambda"
+              },
+              [
+                {
+                  "sym": "x"
+                }
+              ],
+              [
+                {
+                  "sym": "format"
+                },
+                "~a",
+                {
+                  "sym": "x"
+                }
+              ]
+            ],
+            [
+              {
+                "sym": "list"
+              },
+              "Circle area with r =",
+              {
+                "sym": "r"
+              },
+              "=\u003e",
+              {
+                "sym": "area"
+              }
+            ]
+          ],
+          " "
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "displayln"
+        },
+        [
+          {
+            "sym": "string-join"
+          },
+          [
+            {
+              "sym": "map"
+            },
+            [
+              {
+                "sym": "lambda"
+              },
+              [
+                {
+                  "sym": "x"
+                }
+              ],
+              [
+                {
+                  "sym": "format"
+                },
+                "~a",
+                {
+                  "sym": "x"
+                }
+              ]
+            ],
+            [
+              {
+                "sym": "list"
+              },
+              "Square root of 49:",
+              {
+                "sym": "root"
+              }
+            ]
+          ],
+          " "
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "displayln"
+        },
+        [
+          {
+            "sym": "string-join"
+          },
+          [
+            {
+              "sym": "map"
+            },
+            [
+              {
+                "sym": "lambda"
+              },
+              [
+                {
+                  "sym": "x"
+                }
+              ],
+              [
+                {
+                  "sym": "format"
+                },
+                "~a",
+                {
+                  "sym": "x"
+                }
+              ]
+            ],
+            [
+              {
+                "sym": "list"
+              },
+              "sin(π/4):",
+              {
+                "sym": "sin45"
+              }
+            ]
+          ],
+          " "
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "displayln"
+        },
+        [
+          {
+            "sym": "string-join"
+          },
+          [
+            {
+              "sym": "map"
+            },
+            [
+              {
+                "sym": "lambda"
+              },
+              [
+                {
+                  "sym": "x"
+                }
+              ],
+              [
+                {
+                  "sym": "format"
+                },
+                "~a",
+                {
+                  "sym": "x"
+                }
+              ]
+            ],
+            [
+              {
+                "sym": "list"
+              },
+              "log(e):",
+              {
+                "sym": "log_e"
+              }
+            ]
+          ],
+          " "
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    }
+  ]
+}

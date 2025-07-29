@@ -1,0 +1,629 @@
+{
+  "forms": [
+    {
+      "datum": [
+        {
+          "sym": "require"
+        },
+        {
+          "sym": "racket/list"
+        },
+        {
+          "sym": "racket/string"
+        }
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "struct"
+        },
+        {
+          "sym": "group"
+        },
+        [
+          {
+            "sym": "key"
+          },
+          {
+            "sym": "items"
+          }
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "define"
+        },
+        {
+          "sym": "customers"
+        },
+        [
+          {
+            "sym": "list"
+          },
+          [
+            {
+              "sym": "hash"
+            },
+            "id",
+            1,
+            "name",
+            "Alice"
+          ],
+          [
+            {
+              "sym": "hash"
+            },
+            "id",
+            2,
+            "name",
+            "Bob"
+          ],
+          [
+            {
+              "sym": "hash"
+            },
+            "id",
+            3,
+            "name",
+            "Charlie"
+          ],
+          [
+            {
+              "sym": "hash"
+            },
+            "id",
+            4,
+            "name",
+            "Diana"
+          ]
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "define"
+        },
+        {
+          "sym": "orders"
+        },
+        [
+          {
+            "sym": "list"
+          },
+          [
+            {
+              "sym": "hash"
+            },
+            "id",
+            100,
+            "customerId",
+            1,
+            "total",
+            250
+          ],
+          [
+            {
+              "sym": "hash"
+            },
+            "id",
+            101,
+            "customerId",
+            2,
+            "total",
+            125
+          ],
+          [
+            {
+              "sym": "hash"
+            },
+            "id",
+            102,
+            "customerId",
+            1,
+            "total",
+            300
+          ]
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "define"
+        },
+        {
+          "sym": "result"
+        },
+        [
+          {
+            "sym": "let"
+          },
+          [
+            [
+              {
+                "sym": "_res"
+              },
+              [
+                {
+                  "sym": "quote"
+                },
+                []
+              ]
+            ]
+          ],
+          [
+            {
+              "sym": "for"
+            },
+            [
+              [
+                {
+                  "sym": "o"
+                },
+                {
+                  "sym": "orders"
+                }
+              ]
+            ],
+            [
+              {
+                "sym": "let"
+              },
+              [
+                [
+                  {
+                    "sym": "matched"
+                  },
+                  false
+                ]
+              ],
+              [
+                {
+                  "sym": "for"
+                },
+                [
+                  [
+                    {
+                      "sym": "c"
+                    },
+                    {
+                      "sym": "customers"
+                    }
+                  ]
+                ],
+                [
+                  {
+                    "sym": "when"
+                  },
+                  [
+                    {
+                      "sym": "="
+                    },
+                    [
+                      {
+                        "sym": "hash-ref"
+                      },
+                      {
+                        "sym": "o"
+                      },
+                      "customerId"
+                    ],
+                    [
+                      {
+                        "sym": "hash-ref"
+                      },
+                      {
+                        "sym": "c"
+                      },
+                      "id"
+                    ]
+                  ],
+                  [
+                    {
+                      "sym": "set!"
+                    },
+                    {
+                      "sym": "matched"
+                    },
+                    true
+                  ],
+                  [
+                    {
+                      "sym": "set!"
+                    },
+                    {
+                      "sym": "_res"
+                    },
+                    [
+                      {
+                        "sym": "append"
+                      },
+                      {
+                        "sym": "_res"
+                      },
+                      [
+                        {
+                          "sym": "list"
+                        },
+                        [
+                          {
+                            "sym": "hash"
+                          },
+                          "customerName",
+                          [
+                            {
+                              "sym": "if"
+                            },
+                            {
+                              "sym": "c"
+                            },
+                            [
+                              {
+                                "sym": "hash-ref"
+                              },
+                              {
+                                "sym": "c"
+                              },
+                              "name"
+                            ],
+                            false
+                          ],
+                          "order",
+                          {
+                            "sym": "o"
+                          }
+                        ]
+                      ]
+                    ]
+                  ]
+                ],
+                [
+                  {
+                    "sym": "when"
+                  },
+                  [
+                    {
+                      "sym": "not"
+                    },
+                    {
+                      "sym": "matched"
+                    }
+                  ],
+                  [
+                    {
+                      "sym": "let"
+                    },
+                    [
+                      [
+                        {
+                          "sym": "c"
+                        },
+                        false
+                      ]
+                    ],
+                    [
+                      {
+                        "sym": "set!"
+                      },
+                      {
+                        "sym": "_res"
+                      },
+                      [
+                        {
+                          "sym": "append"
+                        },
+                        {
+                          "sym": "_res"
+                        },
+                        [
+                          {
+                            "sym": "list"
+                          },
+                          [
+                            {
+                              "sym": "hash"
+                            },
+                            "customerName",
+                            [
+                              {
+                                "sym": "if"
+                              },
+                              {
+                                "sym": "c"
+                              },
+                              [
+                                {
+                                  "sym": "hash-ref"
+                                },
+                                {
+                                  "sym": "c"
+                                },
+                                "name"
+                              ],
+                              false
+                            ],
+                            "order",
+                            {
+                              "sym": "o"
+                            }
+                          ]
+                        ]
+                      ]
+                    ]
+                  ]
+                ]
+              ]
+            ]
+          ],
+          {
+            "sym": "_res"
+          }
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "displayln"
+        },
+        "--- Right Join using syntax ---"
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "for"
+        },
+        [
+          [
+            {
+              "sym": "entry"
+            },
+            {
+              "sym": "result"
+            }
+          ]
+        ],
+        [
+          {
+            "sym": "if"
+          },
+          [
+            {
+              "sym": "hash-ref"
+            },
+            {
+              "sym": "entry"
+            },
+            "order"
+          ],
+          [
+            {
+              "sym": "begin"
+            },
+            [
+              {
+                "sym": "displayln"
+              },
+              [
+                {
+                  "sym": "string-join"
+                },
+                [
+                  {
+                    "sym": "filter"
+                  },
+                  [
+                    {
+                      "sym": "lambda"
+                    },
+                    [
+                      {
+                        "sym": "s"
+                      }
+                    ],
+                    [
+                      {
+                        "sym": "not"
+                      },
+                      [
+                        {
+                          "sym": "string=?"
+                        },
+                        {
+                          "sym": "s"
+                        },
+                        ""
+                      ]
+                    ]
+                  ],
+                  [
+                    {
+                      "sym": "list"
+                    },
+                    [
+                      {
+                        "sym": "format"
+                      },
+                      "~a",
+                      "Customer"
+                    ],
+                    [
+                      {
+                        "sym": "format"
+                      },
+                      "~a",
+                      [
+                        {
+                          "sym": "hash-ref"
+                        },
+                        {
+                          "sym": "entry"
+                        },
+                        "customerName"
+                      ]
+                    ],
+                    [
+                      {
+                        "sym": "format"
+                      },
+                      "~a",
+                      "has order"
+                    ],
+                    [
+                      {
+                        "sym": "format"
+                      },
+                      "~a",
+                      [
+                        {
+                          "sym": "hash-ref"
+                        },
+                        [
+                          {
+                            "sym": "hash-ref"
+                          },
+                          {
+                            "sym": "entry"
+                          },
+                          "order"
+                        ],
+                        "id"
+                      ]
+                    ],
+                    [
+                      {
+                        "sym": "format"
+                      },
+                      "~a",
+                      "- $"
+                    ],
+                    [
+                      {
+                        "sym": "format"
+                      },
+                      "~a",
+                      [
+                        {
+                          "sym": "hash-ref"
+                        },
+                        [
+                          {
+                            "sym": "hash-ref"
+                          },
+                          {
+                            "sym": "entry"
+                          },
+                          "order"
+                        ],
+                        "total"
+                      ]
+                    ]
+                  ]
+                ],
+                " "
+              ]
+            ]
+          ],
+          [
+            {
+              "sym": "begin"
+            },
+            [
+              {
+                "sym": "displayln"
+              },
+              [
+                {
+                  "sym": "string-join"
+                },
+                [
+                  {
+                    "sym": "filter"
+                  },
+                  [
+                    {
+                      "sym": "lambda"
+                    },
+                    [
+                      {
+                        "sym": "s"
+                      }
+                    ],
+                    [
+                      {
+                        "sym": "not"
+                      },
+                      [
+                        {
+                          "sym": "string=?"
+                        },
+                        {
+                          "sym": "s"
+                        },
+                        ""
+                      ]
+                    ]
+                  ],
+                  [
+                    {
+                      "sym": "list"
+                    },
+                    [
+                      {
+                        "sym": "format"
+                      },
+                      "~a",
+                      "Customer"
+                    ],
+                    [
+                      {
+                        "sym": "format"
+                      },
+                      "~a",
+                      [
+                        {
+                          "sym": "hash-ref"
+                        },
+                        {
+                          "sym": "entry"
+                        },
+                        "customerName"
+                      ]
+                    ],
+                    [
+                      {
+                        "sym": "format"
+                      },
+                      "~a",
+                      "has no orders"
+                    ]
+                  ]
+                ],
+                " "
+              ]
+            ]
+          ]
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    }
+  ]
+}

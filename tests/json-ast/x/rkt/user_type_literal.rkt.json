@@ -1,0 +1,92 @@
+{
+  "forms": [
+    {
+      "datum": [
+        {
+          "sym": "require"
+        },
+        {
+          "sym": "racket/list"
+        },
+        {
+          "sym": "racket/string"
+        }
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "struct"
+        },
+        {
+          "sym": "group"
+        },
+        [
+          {
+            "sym": "key"
+          },
+          {
+            "sym": "items"
+          }
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "define"
+        },
+        {
+          "sym": "book"
+        },
+        [
+          {
+            "sym": "hash"
+          },
+          "title",
+          "Go",
+          "author",
+          [
+            {
+              "sym": "hash"
+            },
+            "name",
+            "Bob",
+            "age",
+            42
+          ]
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "displayln"
+        },
+        [
+          {
+            "sym": "hash-ref"
+          },
+          [
+            {
+              "sym": "hash-ref"
+            },
+            {
+              "sym": "book"
+            },
+            "author"
+          ],
+          "name"
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    }
+  ]
+}

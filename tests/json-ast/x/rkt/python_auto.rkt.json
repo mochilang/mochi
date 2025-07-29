@@ -1,0 +1,191 @@
+{
+  "forms": [
+    {
+      "datum": [
+        {
+          "sym": "require"
+        },
+        {
+          "sym": "racket/list"
+        },
+        {
+          "sym": "racket/string"
+        },
+        {
+          "sym": "racket/math"
+        },
+        {
+          "sym": "json"
+        }
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "define"
+        },
+        {
+          "sym": "math_pi"
+        },
+        {
+          "sym": "pi"
+        }
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "define"
+        },
+        {
+          "sym": "math_e"
+        },
+        [
+          {
+            "sym": "exp"
+          },
+          1
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "define"
+        },
+        [
+          {
+            "sym": "math_sqrt"
+          },
+          {
+            "sym": "x"
+          }
+        ],
+        [
+          {
+            "sym": "sqrt"
+          },
+          {
+            "sym": "x"
+          }
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "define"
+        },
+        [
+          {
+            "sym": "math_pow"
+          },
+          {
+            "sym": "x"
+          },
+          {
+            "sym": "y"
+          }
+        ],
+        [
+          {
+            "sym": "expt"
+          },
+          {
+            "sym": "x"
+          },
+          {
+            "sym": "y"
+          }
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "define"
+        },
+        [
+          {
+            "sym": "math_sin"
+          },
+          {
+            "sym": "x"
+          }
+        ],
+        [
+          {
+            "sym": "sin"
+          },
+          {
+            "sym": "x"
+          }
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "define"
+        },
+        [
+          {
+            "sym": "math_log"
+          },
+          {
+            "sym": "x"
+          }
+        ],
+        [
+          {
+            "sym": "log"
+          },
+          {
+            "sym": "x"
+          }
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "displayln"
+        },
+        [
+          {
+            "sym": "math_sqrt"
+          },
+          16
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "displayln"
+        },
+        {
+          "sym": "math_pi"
+        }
+      ],
+      "line": 0,
+      "col": 0
+    }
+  ]
+}

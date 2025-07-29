@@ -1,0 +1,98 @@
+{
+  "forms": [
+    {
+      "datum": [
+        {
+          "sym": "require"
+        },
+        {
+          "sym": "racket/list"
+        },
+        {
+          "sym": "racket/string"
+        }
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "struct"
+        },
+        {
+          "sym": "group"
+        },
+        [
+          {
+            "sym": "key"
+          },
+          {
+            "sym": "items"
+          }
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "define"
+        },
+        {
+          "sym": "nums"
+        },
+        [
+          {
+            "sym": "list"
+          },
+          1,
+          2
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "set!"
+        },
+        {
+          "sym": "nums"
+        },
+        [
+          {
+            "sym": "list-set"
+          },
+          {
+            "sym": "nums"
+          },
+          1,
+          3
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "displayln"
+        },
+        [
+          {
+            "sym": "list-ref"
+          },
+          {
+            "sym": "nums"
+          },
+          1
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    }
+  ]
+}

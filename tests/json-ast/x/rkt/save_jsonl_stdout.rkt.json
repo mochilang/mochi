@@ -1,0 +1,92 @@
+{
+  "forms": [
+    {
+      "datum": [
+        {
+          "sym": "require"
+        },
+        {
+          "sym": "racket/list"
+        },
+        {
+          "sym": "racket/string"
+        },
+        {
+          "sym": "racket/math"
+        },
+        {
+          "sym": "json"
+        }
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "define"
+        },
+        {
+          "sym": "people"
+        },
+        [
+          {
+            "sym": "list"
+          },
+          [
+            {
+              "sym": "hash"
+            },
+            "name",
+            "Alice",
+            "age",
+            30
+          ],
+          [
+            {
+              "sym": "hash"
+            },
+            "name",
+            "Bob",
+            "age",
+            25
+          ]
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "for"
+        },
+        [
+          [
+            {
+              "sym": "_row"
+            },
+            {
+              "sym": "people"
+            }
+          ]
+        ],
+        [
+          {
+            "sym": "displayln"
+          },
+          [
+            {
+              "sym": "jsexpr-\u003estring"
+            },
+            {
+              "sym": "_row"
+            }
+          ]
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    }
+  ]
+}

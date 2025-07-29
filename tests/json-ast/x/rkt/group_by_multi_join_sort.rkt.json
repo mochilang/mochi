@@ -1,0 +1,192 @@
+{
+  "forms": [
+    {
+      "datum": [
+        {
+          "sym": "require"
+        },
+        {
+          "sym": "racket/list"
+        },
+        {
+          "sym": "racket/string"
+        },
+        {
+          "sym": "json"
+        }
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "define"
+        },
+        {
+          "sym": "nation"
+        },
+        [
+          {
+            "sym": "list"
+          },
+          [
+            {
+              "sym": "hash"
+            },
+            "n_nationkey",
+            1,
+            "n_name",
+            "BRAZIL"
+          ]
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "define"
+        },
+        {
+          "sym": "customer"
+        },
+        [
+          {
+            "sym": "list"
+          },
+          [
+            {
+              "sym": "hash"
+            },
+            "c_custkey",
+            1,
+            "c_name",
+            "Alice",
+            "c_acctbal",
+            100,
+            "c_nationkey",
+            1,
+            "c_address",
+            "123 St",
+            "c_phone",
+            "123-456",
+            "c_comment",
+            "Loyal"
+          ]
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "define"
+        },
+        {
+          "sym": "orders"
+        },
+        [
+          {
+            "sym": "list"
+          },
+          [
+            {
+              "sym": "hash"
+            },
+            "o_orderkey",
+            1000,
+            "o_custkey",
+            1,
+            "o_orderdate",
+            "1993-10-15"
+          ],
+          [
+            {
+              "sym": "hash"
+            },
+            "o_orderkey",
+            2000,
+            "o_custkey",
+            1,
+            "o_orderdate",
+            "1994-01-02"
+          ]
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "define"
+        },
+        {
+          "sym": "lineitem"
+        },
+        [
+          {
+            "sym": "list"
+          },
+          [
+            {
+              "sym": "hash"
+            },
+            "l_orderkey",
+            1000,
+            "l_returnflag",
+            "R",
+            "l_extendedprice",
+            1000,
+            "l_discount",
+            0.1
+          ],
+          [
+            {
+              "sym": "hash"
+            },
+            "l_orderkey",
+            2000,
+            "l_returnflag",
+            "N",
+            "l_extendedprice",
+            500,
+            "l_discount",
+            0
+          ]
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "define"
+        },
+        {
+          "sym": "start_date"
+        },
+        "1993-10-01"
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "define"
+        },
+        {
+          "sym": "end_date"
+        },
+        "1994-01-01"
+      ],
+      "line": 0,
+      "col": 0
+    }
+  ]
+}

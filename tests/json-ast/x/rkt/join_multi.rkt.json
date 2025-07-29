@@ -1,0 +1,360 @@
+{
+  "forms": [
+    {
+      "datum": [
+        {
+          "sym": "require"
+        },
+        {
+          "sym": "racket/list"
+        },
+        {
+          "sym": "racket/string"
+        },
+        {
+          "sym": "json"
+        }
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "define"
+        },
+        {
+          "sym": "customers"
+        },
+        [
+          {
+            "sym": "list"
+          },
+          [
+            {
+              "sym": "hash"
+            },
+            "id",
+            1,
+            "name",
+            "Alice"
+          ],
+          [
+            {
+              "sym": "hash"
+            },
+            "id",
+            2,
+            "name",
+            "Bob"
+          ]
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "define"
+        },
+        {
+          "sym": "orders"
+        },
+        [
+          {
+            "sym": "list"
+          },
+          [
+            {
+              "sym": "hash"
+            },
+            "id",
+            100,
+            "customerId",
+            1
+          ],
+          [
+            {
+              "sym": "hash"
+            },
+            "id",
+            101,
+            "customerId",
+            2
+          ]
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "define"
+        },
+        {
+          "sym": "items"
+        },
+        [
+          {
+            "sym": "list"
+          },
+          [
+            {
+              "sym": "hash"
+            },
+            "orderId",
+            100,
+            "sku",
+            "a"
+          ],
+          [
+            {
+              "sym": "hash"
+            },
+            "orderId",
+            101,
+            "sku",
+            "b"
+          ]
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "define"
+        },
+        {
+          "sym": "result"
+        },
+        [
+          {
+            "sym": "for*/list"
+          },
+          [
+            [
+              {
+                "sym": "o"
+              },
+              {
+                "sym": "orders"
+              }
+            ],
+            [
+              {
+                "sym": "c"
+              },
+              {
+                "sym": "customers"
+              }
+            ],
+            [
+              {
+                "sym": "i"
+              },
+              {
+                "sym": "items"
+              }
+            ]
+          ],
+          {
+            "sym": "when"
+          },
+          [
+            {
+              "sym": "and"
+            },
+            [
+              {
+                "sym": "="
+              },
+              [
+                {
+                  "sym": "hash-ref"
+                },
+                {
+                  "sym": "o"
+                },
+                "customerId"
+              ],
+              [
+                {
+                  "sym": "hash-ref"
+                },
+                {
+                  "sym": "c"
+                },
+                "id"
+              ]
+            ],
+            [
+              {
+                "sym": "="
+              },
+              [
+                {
+                  "sym": "hash-ref"
+                },
+                {
+                  "sym": "o"
+                },
+                "id"
+              ],
+              [
+                {
+                  "sym": "hash-ref"
+                },
+                {
+                  "sym": "i"
+                },
+                "orderId"
+              ]
+            ]
+          ],
+          [
+            {
+              "sym": "hash"
+            },
+            "name",
+            [
+              {
+                "sym": "hash-ref"
+              },
+              {
+                "sym": "c"
+              },
+              "name"
+            ],
+            "sku",
+            [
+              {
+                "sym": "hash-ref"
+              },
+              {
+                "sym": "i"
+              },
+              "sku"
+            ]
+          ]
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "displayln"
+        },
+        "--- Multi Join ---"
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "for"
+        },
+        [
+          [
+            {
+              "sym": "r"
+            },
+            {
+              "sym": "result"
+            }
+          ]
+        ],
+        [
+          {
+            "sym": "displayln"
+          },
+          [
+            {
+              "sym": "string-join"
+            },
+            [
+              {
+                "sym": "filter"
+              },
+              [
+                {
+                  "sym": "lambda"
+                },
+                [
+                  {
+                    "sym": "s"
+                  }
+                ],
+                [
+                  {
+                    "sym": "not"
+                  },
+                  [
+                    {
+                      "sym": "string=?"
+                    },
+                    {
+                      "sym": "s"
+                    },
+                    ""
+                  ]
+                ]
+              ],
+              [
+                {
+                  "sym": "list"
+                },
+                [
+                  {
+                    "sym": "format"
+                  },
+                  "~a",
+                  [
+                    {
+                      "sym": "hash-ref"
+                    },
+                    {
+                      "sym": "r"
+                    },
+                    "name"
+                  ]
+                ],
+                [
+                  {
+                    "sym": "format"
+                  },
+                  "~a",
+                  "bought item"
+                ],
+                [
+                  {
+                    "sym": "format"
+                  },
+                  "~a",
+                  [
+                    {
+                      "sym": "hash-ref"
+                    },
+                    {
+                      "sym": "r"
+                    },
+                    "sku"
+                  ]
+                ]
+              ]
+            ],
+            " "
+          ]
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    }
+  ]
+}

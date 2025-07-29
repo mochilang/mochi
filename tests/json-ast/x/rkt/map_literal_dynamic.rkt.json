@@ -1,0 +1,169 @@
+{
+  "forms": [
+    {
+      "datum": [
+        {
+          "sym": "require"
+        },
+        {
+          "sym": "racket/list"
+        },
+        {
+          "sym": "racket/string"
+        }
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "struct"
+        },
+        {
+          "sym": "group"
+        },
+        [
+          {
+            "sym": "key"
+          },
+          {
+            "sym": "items"
+          }
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "define"
+        },
+        {
+          "sym": "x"
+        },
+        3
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "define"
+        },
+        {
+          "sym": "y"
+        },
+        4
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "define"
+        },
+        {
+          "sym": "m"
+        },
+        [
+          {
+            "sym": "hash"
+          },
+          "a",
+          {
+            "sym": "x"
+          },
+          "b",
+          {
+            "sym": "y"
+          }
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "displayln"
+        },
+        [
+          {
+            "sym": "string-join"
+          },
+          [
+            {
+              "sym": "filter"
+            },
+            [
+              {
+                "sym": "lambda"
+              },
+              [
+                {
+                  "sym": "s"
+                }
+              ],
+              [
+                {
+                  "sym": "not"
+                },
+                [
+                  {
+                    "sym": "string=?"
+                  },
+                  {
+                    "sym": "s"
+                  },
+                  ""
+                ]
+              ]
+            ],
+            [
+              {
+                "sym": "list"
+              },
+              [
+                {
+                  "sym": "format"
+                },
+                "~a",
+                [
+                  {
+                    "sym": "hash-ref"
+                  },
+                  {
+                    "sym": "m"
+                  },
+                  "a"
+                ]
+              ],
+              [
+                {
+                  "sym": "format"
+                },
+                "~a",
+                [
+                  {
+                    "sym": "hash-ref"
+                  },
+                  {
+                    "sym": "m"
+                  },
+                  "b"
+                ]
+              ]
+            ]
+          ],
+          " "
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    }
+  ]
+}

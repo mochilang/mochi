@@ -1,0 +1,374 @@
+{
+  "forms": [
+    {
+      "datum": [
+        {
+          "sym": "require"
+        },
+        {
+          "sym": "racket/list"
+        },
+        {
+          "sym": "racket/string"
+        }
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "define"
+        },
+        {
+          "sym": "products"
+        },
+        [
+          {
+            "sym": "list"
+          },
+          [
+            {
+              "sym": "hash"
+            },
+            "name",
+            "Laptop",
+            "price",
+            1500
+          ],
+          [
+            {
+              "sym": "hash"
+            },
+            "name",
+            "Smartphone",
+            "price",
+            900
+          ],
+          [
+            {
+              "sym": "hash"
+            },
+            "name",
+            "Tablet",
+            "price",
+            600
+          ],
+          [
+            {
+              "sym": "hash"
+            },
+            "name",
+            "Monitor",
+            "price",
+            300
+          ],
+          [
+            {
+              "sym": "hash"
+            },
+            "name",
+            "Keyboard",
+            "price",
+            100
+          ],
+          [
+            {
+              "sym": "hash"
+            },
+            "name",
+            "Mouse",
+            "price",
+            50
+          ],
+          [
+            {
+              "sym": "hash"
+            },
+            "name",
+            "Headphones",
+            "price",
+            200
+          ]
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "define"
+        },
+        {
+          "sym": "expensive"
+        },
+        [
+          {
+            "sym": "let"
+          },
+          [
+            [
+              {
+                "sym": "_res"
+              },
+              [
+                {
+                  "sym": "quote"
+                },
+                []
+              ]
+            ]
+          ],
+          [
+            {
+              "sym": "for"
+            },
+            [
+              [
+                {
+                  "sym": "p"
+                },
+                {
+                  "sym": "products"
+                }
+              ]
+            ],
+            [
+              {
+                "sym": "set!"
+              },
+              {
+                "sym": "_res"
+              },
+              [
+                {
+                  "sym": "append"
+                },
+                {
+                  "sym": "_res"
+                },
+                [
+                  {
+                    "sym": "list"
+                  },
+                  [
+                    {
+                      "sym": "cons"
+                    },
+                    [
+                      {
+                        "sym": "hash-ref"
+                      },
+                      {
+                        "sym": "p"
+                      },
+                      "price"
+                    ],
+                    {
+                      "sym": "p"
+                    }
+                  ]
+                ]
+              ]
+            ]
+          ],
+          [
+            {
+              "sym": "set!"
+            },
+            {
+              "sym": "_res"
+            },
+            [
+              {
+                "sym": "sort"
+              },
+              {
+                "sym": "_res"
+              },
+              {
+                "sym": "\u003e"
+              },
+              {
+                "sym": "key"
+              },
+              {
+                "sym": "car"
+              }
+            ]
+          ],
+          [
+            {
+              "sym": "set!"
+            },
+            {
+              "sym": "_res"
+            },
+            [
+              {
+                "sym": "map"
+              },
+              {
+                "sym": "cdr"
+              },
+              {
+                "sym": "_res"
+              }
+            ]
+          ],
+          [
+            {
+              "sym": "set!"
+            },
+            {
+              "sym": "_res"
+            },
+            [
+              {
+                "sym": "drop"
+              },
+              {
+                "sym": "_res"
+              },
+              1
+            ]
+          ],
+          [
+            {
+              "sym": "set!"
+            },
+            {
+              "sym": "_res"
+            },
+            [
+              {
+                "sym": "take"
+              },
+              {
+                "sym": "_res"
+              },
+              3
+            ]
+          ],
+          {
+            "sym": "_res"
+          }
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "displayln"
+        },
+        "--- Top products (excluding most expensive) ---"
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "for"
+        },
+        [
+          [
+            {
+              "sym": "item"
+            },
+            {
+              "sym": "expensive"
+            }
+          ]
+        ],
+        [
+          {
+            "sym": "displayln"
+          },
+          [
+            {
+              "sym": "string-join"
+            },
+            [
+              {
+                "sym": "filter"
+              },
+              [
+                {
+                  "sym": "lambda"
+                },
+                [
+                  {
+                    "sym": "s"
+                  }
+                ],
+                [
+                  {
+                    "sym": "not"
+                  },
+                  [
+                    {
+                      "sym": "string=?"
+                    },
+                    {
+                      "sym": "s"
+                    },
+                    ""
+                  ]
+                ]
+              ],
+              [
+                {
+                  "sym": "list"
+                },
+                [
+                  {
+                    "sym": "format"
+                  },
+                  "~a",
+                  [
+                    {
+                      "sym": "hash-ref"
+                    },
+                    {
+                      "sym": "item"
+                    },
+                    "name"
+                  ]
+                ],
+                [
+                  {
+                    "sym": "format"
+                  },
+                  "~a",
+                  "costs $"
+                ],
+                [
+                  {
+                    "sym": "format"
+                  },
+                  "~a",
+                  [
+                    {
+                      "sym": "hash-ref"
+                    },
+                    {
+                      "sym": "item"
+                    },
+                    "price"
+                  ]
+                ]
+              ]
+            ],
+            " "
+          ]
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    }
+  ]
+}

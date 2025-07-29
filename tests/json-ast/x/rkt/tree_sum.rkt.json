@@ -1,0 +1,157 @@
+{
+  "forms": [
+    {
+      "datum": [
+        {
+          "sym": "require"
+        },
+        {
+          "sym": "racket/list"
+        },
+        {
+          "sym": "racket/string"
+        },
+        {
+          "sym": "racket/math"
+        },
+        {
+          "sym": "json"
+        }
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "define"
+        },
+        [
+          {
+            "sym": "sum_tree"
+          },
+          {
+            "sym": "t"
+          }
+        ],
+        [
+          {
+            "sym": "match"
+          },
+          {
+            "sym": "t"
+          },
+          [
+            {
+              "sym": "Leaf"
+            },
+            0
+          ],
+          [
+            [
+              {
+                "sym": "Node"
+              },
+              {
+                "sym": "left"
+              },
+              {
+                "sym": "value"
+              },
+              {
+                "sym": "right"
+              }
+            ],
+            [
+              {
+                "sym": "+"
+              },
+              [
+                {
+                  "sym": "+"
+                },
+                [
+                  {
+                    "sym": "sum_tree"
+                  },
+                  {
+                    "sym": "left"
+                  }
+                ],
+                {
+                  "sym": "value"
+                }
+              ],
+              [
+                {
+                  "sym": "sum_tree"
+                },
+                {
+                  "sym": "right"
+                }
+              ]
+            ]
+          ]
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "define"
+        },
+        {
+          "sym": "t"
+        },
+        [
+          {
+            "sym": "hash"
+          },
+          "left",
+          {
+            "sym": "Leaf"
+          },
+          "value",
+          1,
+          "right",
+          [
+            {
+              "sym": "hash"
+            },
+            "left",
+            {
+              "sym": "Leaf"
+            },
+            "value",
+            2,
+            "right",
+            {
+              "sym": "Leaf"
+            }
+          ]
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "displayln"
+        },
+        [
+          {
+            "sym": "sum_tree"
+          },
+          {
+            "sym": "t"
+          }
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    }
+  ]
+}

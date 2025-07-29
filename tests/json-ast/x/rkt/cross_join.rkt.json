@@ -1,0 +1,404 @@
+{
+  "forms": [
+    {
+      "datum": [
+        {
+          "sym": "require"
+        },
+        {
+          "sym": "racket/list"
+        },
+        {
+          "sym": "racket/string"
+        }
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "define"
+        },
+        {
+          "sym": "customers"
+        },
+        [
+          {
+            "sym": "list"
+          },
+          [
+            {
+              "sym": "hash"
+            },
+            "id",
+            1,
+            "name",
+            "Alice"
+          ],
+          [
+            {
+              "sym": "hash"
+            },
+            "id",
+            2,
+            "name",
+            "Bob"
+          ],
+          [
+            {
+              "sym": "hash"
+            },
+            "id",
+            3,
+            "name",
+            "Charlie"
+          ]
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "define"
+        },
+        {
+          "sym": "orders"
+        },
+        [
+          {
+            "sym": "list"
+          },
+          [
+            {
+              "sym": "hash"
+            },
+            "id",
+            100,
+            "customerId",
+            1,
+            "total",
+            250
+          ],
+          [
+            {
+              "sym": "hash"
+            },
+            "id",
+            101,
+            "customerId",
+            2,
+            "total",
+            125
+          ],
+          [
+            {
+              "sym": "hash"
+            },
+            "id",
+            102,
+            "customerId",
+            1,
+            "total",
+            300
+          ]
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "define"
+        },
+        {
+          "sym": "result"
+        },
+        [
+          {
+            "sym": "let"
+          },
+          [
+            [
+              {
+                "sym": "_res"
+              },
+              [
+                {
+                  "sym": "quote"
+                },
+                []
+              ]
+            ]
+          ],
+          [
+            {
+              "sym": "for"
+            },
+            [
+              [
+                {
+                  "sym": "o"
+                },
+                {
+                  "sym": "orders"
+                }
+              ]
+            ],
+            [
+              {
+                "sym": "for"
+              },
+              [
+                [
+                  {
+                    "sym": "c"
+                  },
+                  {
+                    "sym": "customers"
+                  }
+                ]
+              ],
+              [
+                {
+                  "sym": "set!"
+                },
+                {
+                  "sym": "_res"
+                },
+                [
+                  {
+                    "sym": "append"
+                  },
+                  {
+                    "sym": "_res"
+                  },
+                  [
+                    {
+                      "sym": "list"
+                    },
+                    [
+                      {
+                        "sym": "hash"
+                      },
+                      "orderId",
+                      [
+                        {
+                          "sym": "hash-ref"
+                        },
+                        {
+                          "sym": "o"
+                        },
+                        "id"
+                      ],
+                      "orderCustomerId",
+                      [
+                        {
+                          "sym": "hash-ref"
+                        },
+                        {
+                          "sym": "o"
+                        },
+                        "customerId"
+                      ],
+                      "pairedCustomerName",
+                      [
+                        {
+                          "sym": "hash-ref"
+                        },
+                        {
+                          "sym": "c"
+                        },
+                        "name"
+                      ],
+                      "orderTotal",
+                      [
+                        {
+                          "sym": "hash-ref"
+                        },
+                        {
+                          "sym": "o"
+                        },
+                        "total"
+                      ]
+                    ]
+                  ]
+                ]
+              ]
+            ]
+          ],
+          {
+            "sym": "_res"
+          }
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "displayln"
+        },
+        "--- Cross Join: All order-customer pairs ---"
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "for"
+        },
+        [
+          [
+            {
+              "sym": "entry"
+            },
+            {
+              "sym": "result"
+            }
+          ]
+        ],
+        [
+          {
+            "sym": "displayln"
+          },
+          [
+            {
+              "sym": "string-join"
+            },
+            [
+              {
+                "sym": "filter"
+              },
+              [
+                {
+                  "sym": "lambda"
+                },
+                [
+                  {
+                    "sym": "s"
+                  }
+                ],
+                [
+                  {
+                    "sym": "not"
+                  },
+                  [
+                    {
+                      "sym": "string=?"
+                    },
+                    {
+                      "sym": "s"
+                    },
+                    ""
+                  ]
+                ]
+              ],
+              [
+                {
+                  "sym": "list"
+                },
+                [
+                  {
+                    "sym": "format"
+                  },
+                  "~a",
+                  "Order"
+                ],
+                [
+                  {
+                    "sym": "format"
+                  },
+                  "~a",
+                  [
+                    {
+                      "sym": "hash-ref"
+                    },
+                    {
+                      "sym": "entry"
+                    },
+                    "orderId"
+                  ]
+                ],
+                [
+                  {
+                    "sym": "format"
+                  },
+                  "~a",
+                  "(customerId:"
+                ],
+                [
+                  {
+                    "sym": "format"
+                  },
+                  "~a",
+                  [
+                    {
+                      "sym": "hash-ref"
+                    },
+                    {
+                      "sym": "entry"
+                    },
+                    "orderCustomerId"
+                  ]
+                ],
+                [
+                  {
+                    "sym": "format"
+                  },
+                  "~a",
+                  ", total: $"
+                ],
+                [
+                  {
+                    "sym": "format"
+                  },
+                  "~a",
+                  [
+                    {
+                      "sym": "hash-ref"
+                    },
+                    {
+                      "sym": "entry"
+                    },
+                    "orderTotal"
+                  ]
+                ],
+                [
+                  {
+                    "sym": "format"
+                  },
+                  "~a",
+                  ") paired with"
+                ],
+                [
+                  {
+                    "sym": "format"
+                  },
+                  "~a",
+                  [
+                    {
+                      "sym": "hash-ref"
+                    },
+                    {
+                      "sym": "entry"
+                    },
+                    "pairedCustomerName"
+                  ]
+                ]
+              ]
+            ],
+            " "
+          ]
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    }
+  ]
+}

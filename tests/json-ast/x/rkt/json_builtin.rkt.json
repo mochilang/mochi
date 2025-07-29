@@ -1,0 +1,188 @@
+{
+  "forms": [
+    {
+      "datum": [
+        {
+          "sym": "require"
+        },
+        {
+          "sym": "racket/list"
+        },
+        {
+          "sym": "racket/string"
+        },
+        {
+          "sym": "json"
+        }
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "define"
+        },
+        [
+          {
+            "sym": "to-jsexpr"
+          },
+          {
+            "sym": "v"
+          }
+        ],
+        [
+          {
+            "sym": "cond"
+          },
+          [
+            [
+              {
+                "sym": "hash?"
+              },
+              {
+                "sym": "v"
+              }
+            ],
+            [
+              {
+                "sym": "for/hash"
+              },
+              [
+                [
+                  [
+                    {
+                      "sym": "k"
+                    },
+                    {
+                      "sym": "val"
+                    }
+                  ],
+                  [
+                    {
+                      "sym": "in-hash"
+                    },
+                    {
+                      "sym": "v"
+                    }
+                  ]
+                ]
+              ],
+              [
+                {
+                  "sym": "values"
+                },
+                [
+                  {
+                    "sym": "if"
+                  },
+                  [
+                    {
+                      "sym": "string?"
+                    },
+                    {
+                      "sym": "k"
+                    }
+                  ],
+                  [
+                    {
+                      "sym": "string-\u003esymbol"
+                    },
+                    {
+                      "sym": "k"
+                    }
+                  ],
+                  {
+                    "sym": "k"
+                  }
+                ],
+                [
+                  {
+                    "sym": "to-jsexpr"
+                  },
+                  {
+                    "sym": "val"
+                  }
+                ]
+              ]
+            ]
+          ],
+          [
+            [
+              {
+                "sym": "list?"
+              },
+              {
+                "sym": "v"
+              }
+            ],
+            [
+              {
+                "sym": "map"
+              },
+              {
+                "sym": "to-jsexpr"
+              },
+              {
+                "sym": "v"
+              }
+            ]
+          ],
+          [
+            {
+              "sym": "else"
+            },
+            {
+              "sym": "v"
+            }
+          ]
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "define"
+        },
+        {
+          "sym": "m"
+        },
+        [
+          {
+            "sym": "hash"
+          },
+          "a",
+          1,
+          "b",
+          2
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "displayln"
+        },
+        [
+          {
+            "sym": "jsexpr-\u003estring"
+          },
+          [
+            {
+              "sym": "to-jsexpr"
+            },
+            {
+              "sym": "m"
+            }
+          ]
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    }
+  ]
+}

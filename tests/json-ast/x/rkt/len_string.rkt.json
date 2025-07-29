@@ -1,0 +1,92 @@
+{
+  "forms": [
+    {
+      "datum": [
+        {
+          "sym": "require"
+        },
+        {
+          "sym": "racket/list"
+        },
+        {
+          "sym": "racket/string"
+        }
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "struct"
+        },
+        {
+          "sym": "group"
+        },
+        [
+          {
+            "sym": "key"
+          },
+          {
+            "sym": "items"
+          }
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "displayln"
+        },
+        [
+          {
+            "sym": "cond"
+          },
+          [
+            [
+              {
+                "sym": "string?"
+              },
+              "mochi"
+            ],
+            [
+              {
+                "sym": "string-length"
+              },
+              "mochi"
+            ]
+          ],
+          [
+            [
+              {
+                "sym": "hash?"
+              },
+              "mochi"
+            ],
+            [
+              {
+                "sym": "hash-count"
+              },
+              "mochi"
+            ]
+          ],
+          [
+            {
+              "sym": "else"
+            },
+            [
+              {
+                "sym": "length"
+              },
+              "mochi"
+            ]
+          ]
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    }
+  ]
+}

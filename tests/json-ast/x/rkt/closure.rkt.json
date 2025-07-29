@@ -1,0 +1,93 @@
+{
+  "forms": [
+    {
+      "datum": [
+        {
+          "sym": "require"
+        },
+        {
+          "sym": "racket/list"
+        },
+        {
+          "sym": "racket/string"
+        },
+        {
+          "sym": "json"
+        }
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "define"
+        },
+        [
+          {
+            "sym": "makeAdder"
+          },
+          {
+            "sym": "n"
+          }
+        ],
+        [
+          {
+            "sym": "lambda"
+          },
+          [
+            {
+              "sym": "x"
+            }
+          ],
+          [
+            {
+              "sym": "+"
+            },
+            {
+              "sym": "x"
+            },
+            {
+              "sym": "n"
+            }
+          ]
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "define"
+        },
+        {
+          "sym": "add10"
+        },
+        [
+          {
+            "sym": "makeAdder"
+          },
+          10
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "displayln"
+        },
+        [
+          {
+            "sym": "add10"
+          },
+          7
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    }
+  ]
+}

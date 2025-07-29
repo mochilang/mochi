@@ -1,0 +1,219 @@
+{
+  "forms": [
+    {
+      "datum": [
+        {
+          "sym": "require"
+        },
+        {
+          "sym": "racket/list"
+        },
+        {
+          "sym": "racket/string"
+        },
+        {
+          "sym": "json"
+        }
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "define"
+        },
+        {
+          "sym": "people"
+        },
+        [
+          {
+            "sym": "list"
+          },
+          [
+            {
+              "sym": "hash"
+            },
+            "name",
+            "Alice",
+            "age",
+            30,
+            "email",
+            "alice@example.com"
+          ],
+          [
+            {
+              "sym": "hash"
+            },
+            "name",
+            "Bob",
+            "age",
+            15,
+            "email",
+            "bob@example.com"
+          ],
+          [
+            {
+              "sym": "hash"
+            },
+            "name",
+            "Charlie",
+            "age",
+            20,
+            "email",
+            "charlie@example.com"
+          ]
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "define"
+        },
+        {
+          "sym": "adults"
+        },
+        [
+          {
+            "sym": "for/list"
+          },
+          [
+            [
+              {
+                "sym": "p"
+              },
+              {
+                "sym": "people"
+              }
+            ],
+            {
+              "sym": "when"
+            },
+            [
+              {
+                "sym": "\u003e="
+              },
+              [
+                {
+                  "sym": "hash-ref"
+                },
+                {
+                  "sym": "p"
+                },
+                "age"
+              ],
+              18
+            ]
+          ],
+          [
+            {
+              "sym": "hash"
+            },
+            "name",
+            [
+              {
+                "sym": "hash-ref"
+              },
+              {
+                "sym": "p"
+              },
+              "name"
+            ],
+            "email",
+            [
+              {
+                "sym": "hash-ref"
+              },
+              {
+                "sym": "p"
+              },
+              "email"
+            ]
+          ]
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "for"
+        },
+        [
+          [
+            {
+              "sym": "a"
+            },
+            {
+              "sym": "adults"
+            }
+          ]
+        ],
+        [
+          {
+            "sym": "displayln"
+          },
+          [
+            {
+              "sym": "string-join"
+            },
+            [
+              {
+                "sym": "map"
+              },
+              [
+                {
+                  "sym": "lambda"
+                },
+                [
+                  {
+                    "sym": "x"
+                  }
+                ],
+                [
+                  {
+                    "sym": "format"
+                  },
+                  "~a",
+                  {
+                    "sym": "x"
+                  }
+                ]
+              ],
+              [
+                {
+                  "sym": "list"
+                },
+                [
+                  {
+                    "sym": "hash-ref"
+                  },
+                  {
+                    "sym": "a"
+                  },
+                  "name"
+                ],
+                [
+                  {
+                    "sym": "hash-ref"
+                  },
+                  {
+                    "sym": "a"
+                  },
+                  "email"
+                ]
+              ]
+            ],
+            " "
+          ]
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    }
+  ]
+}

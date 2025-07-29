@@ -1,0 +1,168 @@
+{
+  "forms": [
+    {
+      "datum": [
+        {
+          "sym": "require"
+        },
+        {
+          "sym": "racket/list"
+        },
+        {
+          "sym": "racket/string"
+        }
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "define"
+        },
+        [
+          {
+            "sym": "boom"
+          }
+        ],
+        [
+          {
+            "sym": "displayln"
+          },
+          "boom"
+        ],
+        true
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "displayln"
+        },
+        [
+          {
+            "sym": "and"
+          },
+          [
+            {
+              "sym": "and"
+            },
+            [
+              {
+                "sym": "\u003c"
+              },
+              1,
+              2
+            ],
+            [
+              {
+                "sym": "\u003c"
+              },
+              2,
+              3
+            ]
+          ],
+          [
+            {
+              "sym": "\u003c"
+            },
+            3,
+            4
+          ]
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "displayln"
+        },
+        [
+          {
+            "sym": "and"
+          },
+          [
+            {
+              "sym": "and"
+            },
+            [
+              {
+                "sym": "\u003c"
+              },
+              1,
+              2
+            ],
+            [
+              {
+                "sym": "\u003e"
+              },
+              2,
+              3
+            ]
+          ],
+          [
+            {
+              "sym": "boom"
+            }
+          ]
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "displayln"
+        },
+        [
+          {
+            "sym": "and"
+          },
+          [
+            {
+              "sym": "and"
+            },
+            [
+              {
+                "sym": "and"
+              },
+              [
+                {
+                  "sym": "\u003c"
+                },
+                1,
+                2
+              ],
+              [
+                {
+                  "sym": "\u003c"
+                },
+                2,
+                3
+              ]
+            ],
+            [
+              {
+                "sym": "\u003e"
+              },
+              3,
+              4
+            ]
+          ],
+          [
+            {
+              "sym": "boom"
+            }
+          ]
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    }
+  ]
+}

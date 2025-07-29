@@ -1,0 +1,328 @@
+{
+  "forms": [
+    {
+      "datum": [
+        {
+          "sym": "require"
+        },
+        {
+          "sym": "racket/list"
+        },
+        {
+          "sym": "racket/string"
+        },
+        {
+          "sym": "racket/math"
+        },
+        {
+          "sym": "json"
+        }
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "define"
+        },
+        {
+          "sym": "items"
+        },
+        [
+          {
+            "sym": "list"
+          },
+          [
+            {
+              "sym": "hash"
+            },
+            "n",
+            1,
+            "v",
+            "a"
+          ],
+          [
+            {
+              "sym": "hash"
+            },
+            "n",
+            1,
+            "v",
+            "b"
+          ],
+          [
+            {
+              "sym": "hash"
+            },
+            "n",
+            2,
+            "v",
+            "c"
+          ]
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "define"
+        },
+        {
+          "sym": "result"
+        },
+        [
+          {
+            "sym": "let"
+          },
+          [
+            [
+              {
+                "sym": "_res"
+              },
+              [
+                {
+                  "sym": "quote"
+                },
+                []
+              ]
+            ]
+          ],
+          [
+            {
+              "sym": "for"
+            },
+            [
+              [
+                {
+                  "sym": "i"
+                },
+                {
+                  "sym": "items"
+                }
+              ]
+            ],
+            [
+              {
+                "sym": "set!"
+              },
+              {
+                "sym": "_res"
+              },
+              [
+                {
+                  "sym": "append"
+                },
+                {
+                  "sym": "_res"
+                },
+                [
+                  {
+                    "sym": "list"
+                  },
+                  [
+                    {
+                      "sym": "cons"
+                    },
+                    [
+                      {
+                        "sym": "hash-ref"
+                      },
+                      {
+                        "sym": "i"
+                      },
+                      "n"
+                    ],
+                    [
+                      {
+                        "sym": "hash-ref"
+                      },
+                      {
+                        "sym": "i"
+                      },
+                      "v"
+                    ]
+                  ]
+                ]
+              ]
+            ]
+          ],
+          [
+            {
+              "sym": "set!"
+            },
+            {
+              "sym": "_res"
+            },
+            [
+              {
+                "sym": "sort"
+              },
+              {
+                "sym": "_res"
+              },
+              [
+                {
+                  "sym": "lambda"
+                },
+                [
+                  {
+                    "sym": "a"
+                  },
+                  {
+                    "sym": "b"
+                  }
+                ],
+                [
+                  {
+                    "sym": "cond"
+                  },
+                  [
+                    [
+                      {
+                        "sym": "and"
+                      },
+                      [
+                        {
+                          "sym": "number?"
+                        },
+                        {
+                          "sym": "a"
+                        }
+                      ],
+                      [
+                        {
+                          "sym": "number?"
+                        },
+                        {
+                          "sym": "b"
+                        }
+                      ]
+                    ],
+                    [
+                      {
+                        "sym": "\u003c"
+                      },
+                      {
+                        "sym": "a"
+                      },
+                      {
+                        "sym": "b"
+                      }
+                    ]
+                  ],
+                  [
+                    [
+                      {
+                        "sym": "and"
+                      },
+                      [
+                        {
+                          "sym": "string?"
+                        },
+                        {
+                          "sym": "a"
+                        }
+                      ],
+                      [
+                        {
+                          "sym": "string?"
+                        },
+                        {
+                          "sym": "b"
+                        }
+                      ]
+                    ],
+                    [
+                      {
+                        "sym": "string\u003c?"
+                      },
+                      {
+                        "sym": "a"
+                      },
+                      {
+                        "sym": "b"
+                      }
+                    ]
+                  ],
+                  [
+                    {
+                      "sym": "else"
+                    },
+                    [
+                      {
+                        "sym": "string\u003c?"
+                      },
+                      [
+                        {
+                          "sym": "format"
+                        },
+                        "~a",
+                        {
+                          "sym": "a"
+                        }
+                      ],
+                      [
+                        {
+                          "sym": "format"
+                        },
+                        "~a",
+                        {
+                          "sym": "b"
+                        }
+                      ]
+                    ]
+                  ]
+                ]
+              ],
+              {
+                "sym": "key"
+              },
+              {
+                "sym": "car"
+              }
+            ]
+          ],
+          [
+            {
+              "sym": "set!"
+            },
+            {
+              "sym": "_res"
+            },
+            [
+              {
+                "sym": "map"
+              },
+              {
+                "sym": "cdr"
+              },
+              {
+                "sym": "_res"
+              }
+            ]
+          ],
+          {
+            "sym": "_res"
+          }
+        ]
+      ],
+      "line": 0,
+      "col": 0
+    },
+    {
+      "datum": [
+        {
+          "sym": "displayln"
+        },
+        {
+          "sym": "result"
+        }
+      ],
+      "line": 0,
+      "col": 0
+    }
+  ]
+}
