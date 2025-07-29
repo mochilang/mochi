@@ -2,7 +2,7 @@
 
 This package provides a small Haskell frontend for the `a2mochi` tool. It parses very simple Haskell programs and converts them into Mochi AST form. Only a tiny subset of the language is recognised – single line function declarations, variable bindings and trivial `main` blocks built from `putStrLn`, `print` and `mapM_` loops.
 
-Completed programs: 22/96
+Completed programs: 23/96
 
 - [x] append_builtin
 - [x] avg_builtin
@@ -52,7 +52,7 @@ Completed programs: 22/96
 - [x] len_string
 - [x] let_and_print
 - [ ] list_assign
-- [ ] list_index
+- [x] list_index
 - [ ] list_nested_assign
 - [ ] list_set_ops
 - [ ] load_jsonl
