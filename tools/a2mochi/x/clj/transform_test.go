@@ -25,6 +25,12 @@ func updateReadme() {
 	clj.UpdateReadmeForTests()
 }
 
+func TestMain(m *testing.M) {
+	code := m.Run()
+	updateReadme()
+	os.Exit(code)
+}
+
 func repoRoot(t *testing.T) string {
 	dir, err := os.Getwd()
 	if err != nil {
@@ -129,6 +135,7 @@ func TestTransformGolden(t *testing.T) {
 			if err != nil {
 				if *update {
 					os.WriteFile(filepath.Join(outDir, name+".error"), []byte(err.Error()), 0o644)
+					return
 				}
 				t.Fatalf("run: %v", err)
 			}
@@ -148,8 +155,5 @@ func TestTransformGolden(t *testing.T) {
 				t.Fatalf("output mismatch\nGot: %s\nWant: %s", gotOut, wantOut)
 			}
 		})
-	}
-	if *update {
-		updateReadme()
 	}
 }
