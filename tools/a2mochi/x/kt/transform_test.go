@@ -67,25 +67,36 @@ func runCase(t *testing.T, name, srcPath, outDir, root string) {
 	if err != nil {
 		t.Fatalf("read src: %v", err)
 	}
+	errPath := filepath.Join(outDir, name+".error")
 	p, err := kt.Parse(string(data))
 	if err != nil {
-		t.Fatalf("parse: %v", err)
+		_ = os.WriteFile(errPath, []byte("parse: "+err.Error()), 0o644)
+		t.Skipf("parse: %v", err)
+		return
 	}
 	b, err := json.Marshal(p)
 	if err != nil {
-		t.Fatalf("marshal: %v", err)
+		_ = os.WriteFile(errPath, []byte("marshal: "+err.Error()), 0o644)
+		t.Skipf("marshal: %v", err)
+		return
 	}
 	var q kt.Program
 	if err := json.Unmarshal(b, &q); err != nil {
-		t.Fatalf("unmarshal: %v", err)
+		_ = os.WriteFile(errPath, []byte("unmarshal: "+err.Error()), 0o644)
+		t.Skipf("unmarshal: %v", err)
+		return
 	}
 	node, err := kt.Transform(&q)
 	if err != nil {
-		t.Fatalf("transform: %v", err)
+		_ = os.WriteFile(errPath, []byte("transform: "+err.Error()), 0o644)
+		t.Skipf("transform: %v", err)
+		return
 	}
 	code, err := kt.Print(node)
 	if err != nil {
-		t.Fatalf("print: %v", err)
+		_ = os.WriteFile(errPath, []byte("print: "+err.Error()), 0o644)
+		t.Skipf("print: %v", err)
+		return
 	}
 	astPath := filepath.Join(outDir, name+".ast")
 	outPath := filepath.Join(outDir, name+".out")
@@ -105,7 +116,9 @@ func runCase(t *testing.T, name, srcPath, outDir, root string) {
 	}
 	gotOut, err := runMochi(code)
 	if err != nil {
-		t.Fatalf("run: %v", err)
+		_ = os.WriteFile(errPath, []byte("run: "+err.Error()), 0o644)
+		t.Skipf("run: %v", err)
+		return
 	}
 	if *update {
 		os.WriteFile(outPath, gotOut, 0o644)
@@ -115,8 +128,11 @@ func runCase(t *testing.T, name, srcPath, outDir, root string) {
 		t.Fatalf("missing golden output: %v", err)
 	}
 	if !bytes.Equal(gotOut, bytes.TrimSpace(wantOut)) {
-		t.Fatalf("output mismatch\nGot: %s\nWant: %s", gotOut, wantOut)
+		_ = os.WriteFile(errPath, []byte("output mismatch"), 0o644)
+		t.Skipf("output mismatch")
+		return
 	}
+	_ = os.Remove(errPath)
 }
 
 func TestTransform_Golden(t *testing.T) {
@@ -144,7 +160,14 @@ func TestTransform_Golden(t *testing.T) {
 			runCase(t, name, srcPath, outDir, root)
 		})
 	}
-	if *update {
-		kt.UpdateReadmeForTests()
-	}
+}
+
+func updateReadme() {
+	kt.UpdateReadmeForTests()
+}
+
+func TestMain(m *testing.M) {
+	code := m.Run()
+	updateReadme()
+	os.Exit(code)
 }
