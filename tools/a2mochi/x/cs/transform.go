@@ -78,20 +78,26 @@ func rewriteExpr(s string) string {
 			}
 		}
 
-		// string.Join -> str()
+		// string.Join with comma separator -> list expression
 		if strings.HasPrefix(s, "string.Join(") {
 			inner := strings.TrimPrefix(s, "string.Join(")
 			if end := strings.LastIndex(inner, ")"); end != -1 {
 				inner = inner[:end]
-				if strings.HasPrefix(inner, "\"") {
-					if i := strings.Index(inner[1:], "\""); i != -1 {
-						inner = inner[i+2:]
+				rest := strings.TrimSpace(inner)
+				if strings.HasPrefix(rest, "\",\"") {
+					rest = strings.TrimSpace(rest[len("\",\""):])
+					if strings.HasPrefix(rest, ",") {
+						rest = strings.TrimSpace(rest[1:])
+					}
+					arg := stripOuterParens(rest)
+					s = arg
+				} else {
+					parts := splitArgs(rest)
+					if len(parts) > 0 {
+						arg := stripOuterParens(parts[len(parts)-1])
+						s = fmt.Sprintf("str(%s)", arg)
 					}
 				}
-				if idx := strings.Index(inner, ","); idx != -1 {
-					inner = strings.TrimSpace(inner[idx+1:])
-				}
-				s = "str(" + inner + ")"
 			}
 		}
 
