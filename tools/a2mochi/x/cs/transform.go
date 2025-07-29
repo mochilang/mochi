@@ -50,6 +50,13 @@ func rewriteExpr(s string) string {
 		// remove ToString calls
 		s = strings.ReplaceAll(s, `.ToString("0.0")`, "")
 		s = strings.ReplaceAll(s, `.ToString()`, "")
+		if strings.HasPrefix(s, "ToString(") && strings.HasSuffix(s, ")") {
+			inner := strings.TrimSuffix(strings.TrimPrefix(s, "ToString("), ")")
+			parts := splitArgs(inner)
+			if len(parts) > 0 {
+				s = strings.TrimSpace(parts[0])
+			}
+		}
 
 		// lambda (int x) => (x*x) -> fun(x: int) => x*x
 		if arrow := strings.Index(s, "=>"); arrow != -1 {
@@ -138,47 +145,55 @@ func rewriteExpr(s string) string {
 			before = strings.TrimSuffix(before, ")")
 			s = "avg(" + strings.TrimSpace(before) + ")" + after
 		}
+		if strings.HasPrefix(s, "Average(") && strings.HasSuffix(s, ")") {
+			inner := strings.TrimSuffix(strings.TrimPrefix(s, "Average("), ")")
+			s = fmt.Sprintf("avg(%s)", stripOuterParens(inner))
+		}
 
-                // ToArray() -> expression
-                if strings.Contains(s, ".ToArray()") {
-                        s = strings.ReplaceAll(s, ".ToArray()", "")
-                }
+		// ToArray() -> expression
+		if strings.Contains(s, ".ToArray()") {
+			s = strings.ReplaceAll(s, ".ToArray()", "")
+		}
 
-                // ToList() -> expression
-                if strings.Contains(s, ".ToList()") {
-                        s = strings.ReplaceAll(s, ".ToList()", "")
-                }
+		// ToList() -> expression
+		if strings.Contains(s, ".ToList()") {
+			s = strings.ReplaceAll(s, ".ToList()", "")
+		}
+		if strings.HasPrefix(s, "ToList(") && strings.HasSuffix(s, ")") {
+			inner := strings.TrimSuffix(strings.TrimPrefix(s, "ToList("), ")")
+			s = stripOuterParens(inner)
+		}
 
-                // Any() -> exists()
-                if strings.HasSuffix(s, ".Any()") {
-                        before := strings.TrimSuffix(s, ".Any()")
-                        s = fmt.Sprintf("exists(%s)", stripOuterParens(before))
-                }
+		// Any() -> exists()
+		if strings.HasSuffix(s, ".Any()") {
+			before := strings.TrimSuffix(s, ".Any()")
+			s = fmt.Sprintf("exists(%s)", stripOuterParens(before))
+		}
 
-                // Sum() -> sum()
-                if strings.HasSuffix(s, ".Sum()") {
-                        before := strings.TrimSuffix(s, ".Sum()")
-                        s = fmt.Sprintf("sum(%s)", stripOuterParens(before))
-                }
+		// Sum() -> sum()
+		if strings.HasSuffix(s, ".Sum()") {
+			before := strings.TrimSuffix(s, ".Sum()")
+			s = fmt.Sprintf("sum(%s)", stripOuterParens(before))
+		}
 
-                // Contains(x) -> x in expr
-                if idx := strings.LastIndex(s, ".Contains("); idx != -1 && strings.HasSuffix(s, ")") {
-                        before := stripOuterParens(strings.TrimSpace(s[:idx]))
-                        arg := strings.TrimSuffix(s[idx+len(".Contains("):], ")")
-                        if parenBalanced(arg) {
-                                s = fmt.Sprintf("%s in %s", stripOuterParens(arg), before)
-                        }
-                }
+		// Contains(x) -> x in expr
+		if idx := strings.LastIndex(s, ".Contains("); idx != -1 && strings.HasSuffix(s, ")") {
+			before := stripOuterParens(strings.TrimSpace(s[:idx]))
+			arg := strings.TrimSuffix(s[idx+len(".Contains("):], ")")
+			if parenBalanced(arg) {
+				s = fmt.Sprintf("%s in %s", stripOuterParens(arg), before)
+			}
+		}
 
-                // string.Compare(a, b) -> if a < b { -1 } else if a > b { 1 } else { 0 }
-                if strings.HasPrefix(s, "string.Compare(") && strings.HasSuffix(s, ")") {
-                        args := splitArgs(strings.TrimSuffix(strings.TrimPrefix(s, "string.Compare("), ")"))
-                        if len(args) >= 2 {
-                                a := stripOuterParens(args[0])
-                                b := stripOuterParens(args[1])
-                                s = fmt.Sprintf("if %s < %s { -1 } else if %s > %s { 1 } else { 0 }", a, b, a, b)
-                        }
-                }
+		// string.Compare(a, b) -> if a < b { -1 } else if a > b { 1 } else { 0 }
+		if strings.HasPrefix(s, "string.Compare(") && strings.HasSuffix(s, ")") {
+			args := splitArgs(strings.TrimSuffix(strings.TrimPrefix(s, "string.Compare("), ")"))
+			if len(args) >= 2 {
+				a := stripOuterParens(args[0])
+				b := stripOuterParens(args[1])
+				s = fmt.Sprintf("if %s < %s { -1 } else if %s > %s { 1 } else { 0 }", a, b, a, b)
+			}
+		}
 
 		// Add(x) -> append(expr, x)
 		if idx := strings.LastIndex(s, ".Add("); idx != -1 && strings.HasSuffix(s, ")") {
@@ -189,11 +204,17 @@ func rewriteExpr(s string) string {
 			}
 		}
 
-                // ToUnixTimeMilliseconds() -> now()
-                if strings.Contains(s, ".ToUnixTimeMilliseconds()") {
-                        s = strings.ReplaceAll(s, "DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()", "now()")
-                        s = strings.ReplaceAll(s, ".ToUnixTimeMilliseconds()", "now()")
-                }
+		// ToUnixTimeMilliseconds() -> now()
+		if strings.Contains(s, ".ToUnixTimeMilliseconds()") {
+			s = strings.ReplaceAll(s, "DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()", "now()")
+			s = strings.ReplaceAll(s, ".ToUnixTimeMilliseconds()", "now()")
+		}
+		if strings.HasPrefix(s, "ToUnixTimeMilliseconds(") && strings.HasSuffix(s, ")") {
+			inner := strings.TrimSuffix(strings.TrimPrefix(s, "ToUnixTimeMilliseconds("), ")")
+			if strings.TrimSpace(inner) == "DateTimeOffset.UtcNow" {
+				s = "now()"
+			}
+		}
 
 		// ternary operator -> if
 		if q := strings.Index(s, "?"); q != -1 {
