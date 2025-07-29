@@ -6,45 +6,33 @@
   )
   (fun main
     (call print
-      (if_expr
+      (binary &&
+        (binary &&
+          (binary < (int 1) (int 2))
+          (binary < (int 2) (int 3))
+        )
+        (binary < (int 3) (int 4))
+      )
+    )
+    (call print
+      (binary &&
+        (binary &&
+          (binary < (int 1) (int 2))
+          (binary > (int 2) (int 3))
+        )
+        (call boom)
+      )
+    )
+    (call print
+      (binary &&
         (binary &&
           (binary &&
             (binary < (int 1) (int 2))
             (binary < (int 2) (int 3))
           )
-          (binary < (int 3) (int 4))
+          (binary > (int 3) (int 4))
         )
-        (int 1)
-        (int 0)
-      )
-    )
-    (call print
-      (if_expr
-        (binary &&
-          (binary &&
-            (binary < (int 1) (int 2))
-            (binary > (int 2) (int 3))
-          )
-          (call boom)
-        )
-        (int 1)
-        (int 0)
-      )
-    )
-    (call print
-      (if_expr
-        (binary &&
-          (binary &&
-            (binary &&
-              (binary < (int 1) (int 2))
-              (binary < (int 2) (int 3))
-            )
-            (binary > (int 3) (int 4))
-          )
-          (call boom)
-        )
-        (int 1)
-        (int 0)
+        (call boom)
       )
     )
   )
