@@ -36,7 +36,44 @@ func convertLambda(expr string) string {
 	return expr
 }
 
-var forRangeRE = regexp.MustCompile(`^for \(([^ ]+) <- ([0-9]+) until ([0-9]+)\) {?$`)
+func convertIfExpr(expr string) string {
+	expr = strings.TrimSpace(expr)
+	if strings.HasPrefix(expr, "if (") {
+		inner := strings.TrimPrefix(expr, "if (")
+		idx := strings.Index(inner, ")")
+		if idx > -1 {
+			cond := strings.TrimSpace(inner[:idx])
+			rest := strings.TrimSpace(inner[idx+1:])
+			if strings.HasPrefix(rest, "\"") {
+				end := strings.Index(rest[1:], "\"")
+				if end > -1 {
+					thenPart := rest[:end+2]
+					rest2 := strings.TrimSpace(rest[end+2:])
+					if strings.HasPrefix(rest2, "else ") {
+						elsePart := strings.TrimPrefix(rest2, "else ")
+						elsePart = convertIfExpr(elsePart)
+						if !strings.HasPrefix(elsePart, "if ") && !strings.HasPrefix(elsePart, "\"") {
+							elsePart = fmt.Sprintf("\"%s\"", strings.Trim(elsePart, "\""))
+						}
+						return fmt.Sprintf("if %s then %s else %s", cond, thenPart, elsePart)
+					}
+					return fmt.Sprintf("if %s then %s", cond, thenPart)
+				}
+			}
+		}
+	}
+	return expr
+}
+
+var (
+	forRangeRE = regexp.MustCompile(`^for \(([^ ]+) <- ([0-9]+) until ([0-9]+)\) {?$`)
+	forCollRE  = regexp.MustCompile(`^for \(([^ ]+) <- (.+)\)\s*{?$`)
+	valLineRE  = regexp.MustCompile(`^val ([^:=]+)(:[^=]+)?= (.+)$`)
+	varLineRE  = regexp.MustCompile(`^var ([^:=]+)(:[^=]+)?= (.+)$`)
+	whileRE    = regexp.MustCompile(`^while \((.+)\) {`)
+	ifRE       = regexp.MustCompile(`^if \((.+)\) {`)
+	elseIfRE   = regexp.MustCompile(`^else if \((.+)\) {`)
+)
 
 func convertLine(line string) string {
 	line = strings.TrimSpace(line)
@@ -48,6 +85,27 @@ func convertLine(line string) string {
 	}
 	if m := forRangeRE.FindStringSubmatch(line); len(m) == 4 {
 		return fmt.Sprintf("for %s in %s..%s {", m[1], m[2], m[3])
+	}
+	if m := forCollRE.FindStringSubmatch(line); len(m) == 3 {
+		return fmt.Sprintf("for %s in %s {", m[1], m[2])
+	}
+	if m := valLineRE.FindStringSubmatch(line); len(m) == 4 {
+		return fmt.Sprintf("let %s = %s", strings.TrimSpace(m[1]), convertLambda(m[3]))
+	}
+	if m := varLineRE.FindStringSubmatch(line); len(m) == 4 {
+		return fmt.Sprintf("var %s = %s", strings.TrimSpace(m[1]), convertLambda(m[3]))
+	}
+	if m := whileRE.FindStringSubmatch(line); len(m) == 2 {
+		return fmt.Sprintf("while %s {", m[1])
+	}
+	if m := elseIfRE.FindStringSubmatch(line); len(m) == 2 {
+		return fmt.Sprintf("} else if %s {", m[1])
+	}
+	if m := ifRE.FindStringSubmatch(line); len(m) == 2 {
+		return fmt.Sprintf("if %s {", m[1])
+	}
+	if line == "}" || strings.HasPrefix(line, "else {") {
+		return line
 	}
 	return line
 }
@@ -61,29 +119,14 @@ func Transform(p *Program) (*ast.Node, error) {
 	for _, d := range p.Decls {
 		switch d.Kind {
 		case "val":
-			rhs := convertLambda(d.RHS)
-			if strings.HasPrefix(strings.TrimSpace(rhs), "if (") {
-				rhs = strings.TrimPrefix(strings.TrimSpace(rhs), "if (")
-				parts := strings.SplitN(rhs, ")", 2)
-				if len(parts) == 2 {
-					cond := parts[0]
-					rest := strings.TrimSpace(parts[1])
-					if strings.Contains(rest, " else ") {
-						els := strings.SplitN(rest, " else ", 2)
-						thenPart := strings.TrimPrefix(els[0], "\"")
-						thenPart = strings.TrimSuffix(thenPart, "\"")
-						elsePart := strings.Trim(els[1], "\"")
-						rhs = fmt.Sprintf("if %s then \"%s\" else \"%s\"", cond, thenPart, elsePart)
-					}
-				}
-			}
+			rhs := convertIfExpr(convertLambda(d.RHS))
 			if rhs != "" {
 				fmt.Fprintf(&b, "let %s = %s\n", d.Name, rhs)
 			} else {
 				fmt.Fprintf(&b, "let %s\n", d.Name)
 			}
 		case "var":
-			rhs := convertLambda(d.RHS)
+			rhs := convertIfExpr(convertLambda(d.RHS))
 			if rhs != "" {
 				fmt.Fprintf(&b, "var %s = %s\n", d.Name, rhs)
 			} else {

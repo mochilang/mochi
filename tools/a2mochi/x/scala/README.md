@@ -1,7 +1,7 @@
 # a2mochi Scala Converter
 
-Completed programs: 30/104
-Date: 2025-07-29
+Completed programs: 32/104
+Date: 2025-07-30
 
 This directory contains the helper code and golden files for converting Scala
 sources under `tests/transpiler/x/scala` into Mochi AST form.
@@ -42,4 +42,6 @@ generation timestamp (GMT+7).
 - [x] closure
 - [x] fun_expr_in_let
 - [x] nested_function
+- [x] for_list_collection
+- [x] if_then_else_nested
 
