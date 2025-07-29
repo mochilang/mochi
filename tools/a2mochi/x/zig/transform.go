@@ -388,6 +388,8 @@ func parseSlice(expr string) (string, bool) {
 	if rest := strings.TrimSpace(expr[idxClose+1:]); rest != "" {
 		return "", false
 	}
+	start = transformExpr(start)
+	end = transformExpr(end)
 	return fmt.Sprintf("%s[%s:%s]", transformExpr(base), start, end), true
 }
 
