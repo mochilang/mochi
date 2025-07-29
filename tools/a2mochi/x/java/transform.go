@@ -145,15 +145,37 @@ func exprNode(e Expr) *mochias.Node {
 		}
 		return &mochias.Node{Kind: "binary", Value: op(e.Op), Children: []*mochias.Node{l, r}}
 	case "Call":
-		// special case: <expr>.length()
-		if e.Target != nil && e.Target.Kind == "Member" {
-			if e.Target.Name == "length" && len(e.Args) == 0 {
-				return &mochias.Node{Kind: "call", Value: "len", Children: []*mochias.Node{exprNode(*e.Target.Expr)}}
-			}
-			if e.Target.Name == "charAt" && len(e.Args) == 1 {
-				return &mochias.Node{Kind: "index", Children: []*mochias.Node{exprNode(*e.Target.Expr), exprNode(e.Args[0])}}
-			}
-		}
+               // special handling for method calls on an object
+               if e.Target != nil && e.Target.Kind == "Member" {
+                       switch e.Target.Name {
+                       case "length":
+                               if len(e.Args) == 0 {
+                                       return &mochias.Node{Kind: "call", Value: "len", Children: []*mochias.Node{exprNode(*e.Target.Expr)}}
+                               }
+                       case "charAt":
+                               if len(e.Args) == 1 {
+                                       return &mochias.Node{Kind: "index", Children: []*mochias.Node{exprNode(*e.Target.Expr), exprNode(e.Args[0])}}
+                               }
+                       case "substring":
+                               if len(e.Args) == 2 {
+                                       return &mochias.Node{Kind: "call", Value: "substring", Children: []*mochias.Node{exprNode(*e.Target.Expr), exprNode(e.Args[0]), exprNode(e.Args[1])}}
+                               }
+                       case "equals":
+                               if len(e.Args) == 1 {
+                                       l := exprNode(*e.Target.Expr)
+                                       r := exprNode(e.Args[0])
+                                       return &mochias.Node{Kind: "binary", Value: "==", Children: []*mochias.Node{l, r}}
+                               }
+                       case "size":
+                               if len(e.Args) == 0 {
+                                       return &mochias.Node{Kind: "call", Value: "len", Children: []*mochias.Node{exprNode(*e.Target.Expr)}}
+                               }
+                       case "valueOf":
+                               if len(e.Args) == 1 && e.Target.Expr != nil && e.Target.Expr.Kind == "Ident" && e.Target.Expr.Name == "String" {
+                                       return &mochias.Node{Kind: "call", Value: "str", Children: []*mochias.Node{exprNode(e.Args[0])}}
+                               }
+                       }
+               }
 		n := &mochias.Node{Kind: "call"}
 		n.Children = append(n.Children, exprNode(*e.Target))
 		for _, a := range e.Args {
