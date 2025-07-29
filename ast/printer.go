@@ -105,6 +105,12 @@ func writeStmt(b *strings.Builder, n *Node, indent int) {
 		fmt.Fprintf(b, "%sbreak\n", ind)
 	case "continue":
 		fmt.Fprintf(b, "%scontinue\n", ind)
+	case "print":
+		fmt.Fprintf(b, "%sprint", ind)
+		if len(n.Children) > 0 {
+			fmt.Fprintf(b, " %s", exprString(n.Children[0]))
+		}
+		b.WriteString("\n")
 	case "if":
 		if len(n.Children) < 2 {
 			return

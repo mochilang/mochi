@@ -1,13 +1,5 @@
-fun to_str(x: any) {
-}
-fun upper(s: any) {
-}
-fun lower(s: any) {
-}
-fun fmod(a: any, b: any) {
-}
 fun makeAdder(n: any) {
 }
-let add10
-print
-print
+let add10 = makeAdder(10)
+print to_str(add10(7))
+print ""

@@ -1,9 +1,1 @@
-fun to_str(x: any) {
-}
-fun upper(s: any) {
-}
-fun lower(s: any) {
-}
-fun fmod(a: any, b: any) {
-}
-let numbers
+let numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9]

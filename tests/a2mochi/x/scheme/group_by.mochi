@@ -1,4 +1,4 @@
-let people
-let stats
-print
-print
+let people = [alist_to_hash_table([cons("name", "Alice"), cons("age", 30), cons("city", "Paris")]), alist_to_hash_table([cons("name", "Bob"), cons("age", 15), cons("city", "Hanoi")]), alist_to_hash_table([cons("name", "Charlie"), cons("age", 65), cons("city", "Paris")]), alist_to_hash_table([cons("name", "Diana"), cons("age", 45), cons("city", "Hanoi")]), alist_to_hash_table([cons("name", "Eve"), cons("age", 70), cons("city", "Paris")]), alist_to_hash_table([cons("name", "Frank"), cons("age", 22), cons("city", "Hanoi")])]
+let stats = let(begin(for_each(lambda(person(), let*(begin(if(not(g9), begin(set_bang(g9, alist_to_hash_table([cons("key", k10), cons("items", [])])), hash_table_set_bang(groups8, k10, g9)), quote(nil)), hash_table_set_bang(g9, "items", append(hash_table_ref(g9, "items"), [alist_to_hash_table([cons("person", person)])]))))), people), for_each(lambda(g(), set_bang(res11, append(res11, [alist_to_hash_table([cons("city", hash_table_ref(g, "key")), cons("count", length(hash_table_ref(g, "items"))), cons("avg_age", let(exact_to_inexact((apply(+, xs) / length(xs)))))])]))), hash_table_values(groups8)), res11))
+print "--- People grouped by city ---"
+print ""

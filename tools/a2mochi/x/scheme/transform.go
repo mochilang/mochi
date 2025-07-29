@@ -86,7 +86,10 @@ func newPrint(val interface{}) *ast.Node {
 func constNode(v interface{}) *ast.Node {
 	switch val := v.(type) {
 	case float64:
-		return &ast.Node{Kind: "int", Value: int(val)}
+		if val == float64(int(val)) {
+			return &ast.Node{Kind: "int", Value: int(val)}
+		}
+		return &ast.Node{Kind: "float", Value: val}
 	case string:
 		return &ast.Node{Kind: "string", Value: val}
 	case bool:
@@ -139,7 +142,7 @@ func exprNode(v interface{}) *ast.Node {
 			}
 			return n
 		default:
-			n := &ast.Node{Kind: "call", Value: call}
+			n := &ast.Node{Kind: "call", Value: sanitizeName(call)}
 			for _, a := range argsVal {
 				if c := exprNode(a); c != nil {
 					n.Children = append(n.Children, c)
