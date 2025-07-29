@@ -301,7 +301,7 @@ func translateExpr(expr string) string {
 		return "values(" + translateExpr(inner) + ")"
 	case strings.HasPrefix(expr, "Map.keys(") && strings.HasSuffix(expr, ")"):
 		inner := expr[len("Map.keys(") : len(expr)-1]
-		return "keys(" + translateExpr(inner) + ")"
+		return translateExpr(inner)
 	case strings.HasPrefix(expr, "Enum.sort(") && strings.HasSuffix(expr, ")"):
 		inner := expr[len("Enum.sort(") : len(expr)-1]
 		return "sort(" + translateExpr(inner) + ")"
@@ -644,7 +644,7 @@ func convertFunction(fn Func) string {
 			level++
 		case strings.HasPrefix(l, "for ") && strings.Contains(l, "<-") && strings.HasSuffix(l, " do"):
 			rest := strings.TrimSuffix(strings.TrimPrefix(l, "for "), " do")
-			enums := strings.Split(rest, ",")
+			enums := splitArgs(rest)
 			loops := 0
 			for _, e := range enums {
 				parts := strings.SplitN(strings.TrimSpace(e), "<-", 2)
@@ -653,6 +653,7 @@ func convertFunction(fn Func) string {
 				}
 				v := strings.TrimSpace(parts[0])
 				coll := strings.TrimSpace(parts[1])
+				coll = translateExpr(coll)
 				b.WriteString(strings.Repeat("  ", level) + "for " + v + " in " + coll + " {\n")
 				level++
 				loops++
