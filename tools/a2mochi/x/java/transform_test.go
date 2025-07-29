@@ -5,10 +5,13 @@ package java_test
 import (
 	"bytes"
 	"flag"
+	"fmt"
 	"os"
 	"path/filepath"
+	"sort"
 	"strings"
 	"testing"
+	"time"
 
 	"mochi/parser"
 	"mochi/runtime/vm"
@@ -83,6 +86,8 @@ func TestTransform_Golden(t *testing.T) {
 		"let_and_print":       true,
 		"var_assignment":      true,
 		"for_loop":            true,
+		"append_builtin":      true,
+		"avg_builtin":         true,
 		"math_ops":            true,
 		"string_concat":       true,
 		"basic_compare":       true,
@@ -159,4 +164,42 @@ func TestTransform_Golden(t *testing.T) {
 			}
 		})
 	}
+}
+
+func updateReadme() {
+	root := repoRoot(&testing.T{})
+	srcDir := filepath.Join(root, "tests/transpiler/x/java")
+	outDir := filepath.Join(root, "tests/a2mochi/x/java")
+	pattern := filepath.Join(srcDir, "*.java")
+	files, _ := filepath.Glob(pattern)
+	sort.Strings(files)
+	total := len(files)
+	compiled := 0
+	var lines []string
+	for _, f := range files {
+		name := strings.TrimSuffix(filepath.Base(f), ".java")
+		mark := "[ ]"
+		if _, err := os.Stat(filepath.Join(outDir, name+".mochi")); err == nil {
+			compiled++
+			mark = "[x]"
+		}
+		lines = append(lines, fmt.Sprintf("- %s %s", mark, name))
+	}
+	loc := time.FixedZone("GMT+7", 7*3600)
+	ts := time.Now().In(loc).Format("2006-01-02 15:04 MST")
+	var buf bytes.Buffer
+	buf.WriteString("# a2mochi Java Converter\n\n")
+	buf.WriteString("This directory contains helpers and golden files for converting Java programs under `tests/transpiler/x/java` back into Mochi AST form.\n\n")
+	fmt.Fprintf(&buf, "Completed programs: %d/%d\n", compiled, total)
+	fmt.Fprintf(&buf, "Date: %s GMT+7\n\n", ts)
+	buf.WriteString("## Checklist\n")
+	buf.WriteString(strings.Join(lines, "\n"))
+	buf.WriteString("\n")
+	_ = os.WriteFile(filepath.Join(root, "tools/a2mochi/x/java/README.md"), buf.Bytes(), 0o644)
+}
+
+func TestMain(m *testing.M) {
+	code := m.Run()
+	updateReadme()
+	os.Exit(code)
 }
