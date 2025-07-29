@@ -1,0 +1,21 @@
+(program
+  (fun main
+    (type int)
+    (call print
+      (binary * (int 6) (int 7))
+    )
+    (call print
+      (cast
+        (group
+          (binary / (int 7) (int 2))
+        )
+        (type int)
+      )
+    )
+    (call print
+      (binary % (int 7) (int 2))
+    )
+    (return (int 0))
+  )
+  (call main)
+)
