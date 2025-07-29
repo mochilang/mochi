@@ -136,46 +136,40 @@ func exprNode(e Expr) *mochias.Node {
 		}
 		l := exprNode(*e.Left)
 		r := exprNode(*e.Right)
-		if l.Kind == "int" && r.Kind == "int" && e.Op == "DIVIDE" {
-			lv := l.Value.(int)
-			rv := r.Value.(int)
-			if rv != 0 {
-				return &mochias.Node{Kind: "int", Value: lv / rv}
-			}
-		}
+		// avoid constant folding to preserve original operation
 		return &mochias.Node{Kind: "binary", Value: op(e.Op), Children: []*mochias.Node{l, r}}
 	case "Call":
-               // special handling for method calls on an object
-               if e.Target != nil && e.Target.Kind == "Member" {
-                       switch e.Target.Name {
-                       case "length":
-                               if len(e.Args) == 0 {
-                                       return &mochias.Node{Kind: "call", Value: "len", Children: []*mochias.Node{exprNode(*e.Target.Expr)}}
-                               }
-                       case "charAt":
-                               if len(e.Args) == 1 {
-                                       return &mochias.Node{Kind: "index", Children: []*mochias.Node{exprNode(*e.Target.Expr), exprNode(e.Args[0])}}
-                               }
-                       case "substring":
-                               if len(e.Args) == 2 {
-                                       return &mochias.Node{Kind: "call", Value: "substring", Children: []*mochias.Node{exprNode(*e.Target.Expr), exprNode(e.Args[0]), exprNode(e.Args[1])}}
-                               }
-                       case "equals":
-                               if len(e.Args) == 1 {
-                                       l := exprNode(*e.Target.Expr)
-                                       r := exprNode(e.Args[0])
-                                       return &mochias.Node{Kind: "binary", Value: "==", Children: []*mochias.Node{l, r}}
-                               }
-                       case "size":
-                               if len(e.Args) == 0 {
-                                       return &mochias.Node{Kind: "call", Value: "len", Children: []*mochias.Node{exprNode(*e.Target.Expr)}}
-                               }
-                       case "valueOf":
-                               if len(e.Args) == 1 && e.Target.Expr != nil && e.Target.Expr.Kind == "Ident" && e.Target.Expr.Name == "String" {
-                                       return &mochias.Node{Kind: "call", Value: "str", Children: []*mochias.Node{exprNode(e.Args[0])}}
-                               }
-                       }
-               }
+		// special handling for method calls on an object
+		if e.Target != nil && e.Target.Kind == "Member" {
+			switch e.Target.Name {
+			case "length":
+				if len(e.Args) == 0 {
+					return &mochias.Node{Kind: "call", Value: "len", Children: []*mochias.Node{exprNode(*e.Target.Expr)}}
+				}
+			case "charAt":
+				if len(e.Args) == 1 {
+					return &mochias.Node{Kind: "index", Children: []*mochias.Node{exprNode(*e.Target.Expr), exprNode(e.Args[0])}}
+				}
+			case "substring":
+				if len(e.Args) == 2 {
+					return &mochias.Node{Kind: "call", Value: "substring", Children: []*mochias.Node{exprNode(*e.Target.Expr), exprNode(e.Args[0]), exprNode(e.Args[1])}}
+				}
+			case "equals":
+				if len(e.Args) == 1 {
+					l := exprNode(*e.Target.Expr)
+					r := exprNode(e.Args[0])
+					return &mochias.Node{Kind: "binary", Value: "==", Children: []*mochias.Node{l, r}}
+				}
+			case "size":
+				if len(e.Args) == 0 {
+					return &mochias.Node{Kind: "call", Value: "len", Children: []*mochias.Node{exprNode(*e.Target.Expr)}}
+				}
+			case "valueOf":
+				if len(e.Args) == 1 && e.Target.Expr != nil && e.Target.Expr.Kind == "Ident" && e.Target.Expr.Name == "String" {
+					return &mochias.Node{Kind: "call", Value: "str", Children: []*mochias.Node{exprNode(e.Args[0])}}
+				}
+			}
+		}
 		n := &mochias.Node{Kind: "call"}
 		n.Children = append(n.Children, exprNode(*e.Target))
 		for _, a := range e.Args {
@@ -195,12 +189,19 @@ func exprNode(e Expr) *mochias.Node {
 		}
 		return arr
 	case "Cond":
-		if e.Then != nil && e.Else != nil &&
-			e.Then.Kind == "Literal" && e.Then.Value == "1" &&
-			e.Else.Kind == "Literal" && e.Else.Value == "0" {
-			return exprNode(*e.Cond)
+		if e.Then != nil && e.Else != nil {
+			// special case for boolean expression encoded as 1/0
+			if e.Then.Kind == "Literal" && e.Then.Value == "1" &&
+				e.Else.Kind == "Literal" && e.Else.Value == "0" {
+				return exprNode(*e.Cond)
+			}
+			return &mochias.Node{Kind: "if_expr", Children: []*mochias.Node{
+				exprNode(*e.Cond),
+				exprNode(*e.Then),
+				exprNode(*e.Else),
+			}}
 		}
-		// general ternary not supported; return condition only
+		// fallback: just return condition
 		return exprNode(*e.Cond)
 	default:
 		return &mochias.Node{Kind: "unknown"}
