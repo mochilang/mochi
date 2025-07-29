@@ -1,0 +1,16 @@
+(program
+  (var m
+    (map
+      (entry (string a) (int 1))
+      (entry (string b) (int 2))
+    )
+  )
+  (fun main
+    (type int)
+    (call print
+      (index (selector m) (string b))
+    )
+    (return (int 0))
+  )
+  (call main)
+)
