@@ -1,0 +1,13 @@
+(program
+  (var x (type int))
+  (assign x (int 5))
+  (if
+    (binary > (selector x) (int 3))
+    (block
+      (call print (string big))
+    )
+    (block
+      (call print (string small))
+    )
+  )
+)

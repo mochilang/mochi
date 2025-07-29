@@ -76,6 +76,7 @@ var (
 	orRe  = regexp.MustCompile(`\bor\b`)
 	notRe = regexp.MustCompile(`\bnot\b`)
 	modRe = regexp.MustCompile(`\bmod\b`)
+	divRe = regexp.MustCompile(`\bdiv\b`)
 )
 
 func convertOps(s string) string {
@@ -85,6 +86,7 @@ func convertOps(s string) string {
 	s = orRe.ReplaceAllString(s, "||")
 	s = notRe.ReplaceAllString(s, "!")
 	s = modRe.ReplaceAllString(s, "%")
+	s = divRe.ReplaceAllString(s, "/")
 	return s
 }
 
@@ -93,15 +95,17 @@ func convertExpr(s string) string {
 	s = convertOps(s)
 	s = convertStringLits(s)
 	s = convertStringIndex(s)
+	s = convertRecordLit(s)
 	return s
 }
 
 var (
-	highRe     = regexp.MustCompile(`High\(([^\)]+)\)`)
-	copyRe     = regexp.MustCompile(`copy\(([^,]+),\s*([^,]+),\s*([^\)]+)\)`)
-	posRe      = regexp.MustCompile(`Pos\(([^,]+),\s*([^\)]+)\)`)
-	posCmpRe   = regexp.MustCompile(`Pos\(([^,]+),\s*([^\)]+)\)\s*(<>|=)\s*0`)
-	strToIntRe = regexp.MustCompile(`StrToInt\(([^\)]+)\)`)
+	highRe      = regexp.MustCompile(`High\(([^\)]+)\)`)
+	copyRe      = regexp.MustCompile(`copy\(([^,]+),\s*([^,]+),\s*([^\)]+)\)`)
+	posRe       = regexp.MustCompile(`Pos\(([^,]+),\s*([^\)]+)\)`)
+	posCmpRe    = regexp.MustCompile(`Pos\(([^,]+),\s*([^\)]+)\)\s*(<>|=)\s*0`)
+	strToIntRe  = regexp.MustCompile(`StrToInt\(([^\)]+)\)`)
+	recordLitRe = regexp.MustCompile(`\(([^()]+:[^()]+)\)`)
 )
 
 func convertBuiltins(s string) string {
@@ -158,6 +162,20 @@ func fixUnary(s string) string {
 var indexLitRe = regexp.MustCompile(`^\d+$`)
 var stringIdxRe = regexp.MustCompile(`([a-zA-Z_][a-zA-Z0-9_]*)\s*\[(.+?)\]`)
 
+func convertRecordLit(s string) string {
+	for {
+		if !recordLitRe.MatchString(s) {
+			break
+		}
+		s = recordLitRe.ReplaceAllStringFunc(s, func(m string) string {
+			inner := strings.TrimSpace(recordLitRe.FindStringSubmatch(m)[1])
+			inner = strings.ReplaceAll(inner, ";", ",")
+			return "{" + inner + "}"
+		})
+	}
+	return s
+}
+
 func convertStringIndex(s string) string {
 	return stringIdxRe.ReplaceAllStringFunc(s, func(m string) string {
 		parts := stringIdxRe.FindStringSubmatch(m)
@@ -178,8 +196,9 @@ func convertStringIndex(s string) string {
 }
 
 func toMochiType(t string) string {
-	t = strings.ToLower(strings.TrimSpace(t))
-	switch t {
+	orig := strings.TrimSpace(t)
+	lower := strings.ToLower(orig)
+	switch lower {
 	case "", "void":
 		return ""
 	case "integer", "longint", "shortint", "byte", "smallint":
@@ -191,21 +210,21 @@ func toMochiType(t string) string {
 	case "string", "ansistring", "widestring", "shortstring", "pchar", "char":
 		return "string"
 	}
-	if strings.HasPrefix(t, "specialize tarray<") && strings.HasSuffix(t, ">") {
-		inner := toMochiType(t[len("specialize tarray<") : len(t)-1])
+	if strings.HasPrefix(lower, "specialize tarray<") && strings.HasSuffix(lower, ">") {
+		inner := toMochiType(lower[len("specialize tarray<") : len(lower)-1])
 		if inner == "" {
 			inner = "any"
 		}
 		return "list<" + inner + ">"
 	}
-	if strings.HasPrefix(t, "array of ") {
-		inner := toMochiType(strings.TrimPrefix(t, "array of "))
+	if strings.HasPrefix(lower, "array of ") {
+		inner := toMochiType(strings.TrimPrefix(lower, "array of "))
 		if inner == "" {
 			inner = "any"
 		}
 		return "list<" + inner + ">"
 	}
-	return t
+	return orig
 }
 
 func parseFuncHeader(l string) (string, string, string) {
@@ -457,6 +476,7 @@ func convertFallback(src string) ([]byte, error) {
 		case (lowerStmt == "end" || lowerStmt == "end;") && inFunc:
 			appendLine("}")
 			inFunc = false
+			inBody = false
 			waitingBegin = false
 			continue
 
@@ -580,6 +600,14 @@ func convertFallback(src string) ([]byte, error) {
 		case strings.HasPrefix(lowerStmt, "generic "):
 			waitingBegin = true
 			continue
+
+		case strings.Contains(lowerStmt, "(") && strings.HasSuffix(lowerStmt, ");") &&
+			!strings.Contains(lowerStmt, ":=") &&
+			!strings.HasPrefix(lowerStmt, "exit(") &&
+			!strings.HasPrefix(lowerStmt, "writeln("):
+			call := strings.TrimSuffix(stmt, ";")
+			call = convertExpr(call)
+			appendLine(call)
 
 		case strings.Contains(stmt, ":="):
 			parts := strings.SplitN(stmt, ":=", 2)
