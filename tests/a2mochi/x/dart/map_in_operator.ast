@@ -8,16 +8,10 @@
       )
     )
     (call print
-      (call
-        (selector containsKey (selector m))
-        (int 1)
-      )
+      (binary in (int 1) (selector m))
     )
     (call print
-      (call
-        (selector containsKey (selector m))
-        (int 3)
-      )
+      (binary in (int 3) (selector m))
     )
   )
   (call main)
