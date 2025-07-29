@@ -35,7 +35,7 @@ func Transform(p *Program) (*ast.Node, error) {
 			root.Children = append(root.Children, n)
 		}
 		for _, pr := range p.Prints {
-			n, err := printNode(Print{Expr: pr})
+			n, err := printNode(PrintStmt{Expr: pr})
 			if err != nil {
 				return nil, err
 			}
@@ -75,7 +75,7 @@ func stmtNode(s Stmt) (*ast.Node, error) {
 			target += "[" + fixIndex(v.Index) + "]"
 		}
 		return &ast.Node{Kind: "assign", Value: target, Children: []*ast.Node{val}}, nil
-	case Print:
+	case PrintStmt:
 		return printNode(v)
 	case Expect:
 		e, err := exprNode(v.Cond)
@@ -208,7 +208,7 @@ func varNode(v Var) (*ast.Node, error) {
 	return n, nil
 }
 
-func printNode(p Print) (*ast.Node, error) {
+func printNode(p PrintStmt) (*ast.Node, error) {
 	e, err := exprNode(p.Expr)
 	if err != nil {
 		return nil, err
