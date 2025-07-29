@@ -4,16 +4,18 @@
 #include <stdio.h>
 #include <string.h>
 
-int i = 0;
-
 int main(void) {
-    while (i < 3) {
-        printf("%d\n", i);
-        i = i + 1;
+    {
+        int n_arr[] = {1, 2, 3};
+        size_t n_len = sizeof(n_arr) / sizeof(n_arr[0]);
+        for (size_t i = 0; i < n_len; i++) {
+            int n = n_arr[i];
+            printf("%d\n", n);
+        }
     }
     return 0;
 }
 */
-print(0)
 print(1)
 print(2)
+print(3)
