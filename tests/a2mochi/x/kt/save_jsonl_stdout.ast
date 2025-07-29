@@ -1,0 +1,12 @@
+(program
+  (fun _save
+    (param rows (type list<any>))
+    (param path (type string))
+    (param opts (type "map<string, any>"))
+  )
+  (fun toJson
+    (param v (type any))
+    (type string)
+  )
+  (fun main)
+)

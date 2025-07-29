@@ -43,7 +43,7 @@ type Program struct {
 func Parse(src string) (*Program, error) {
 	ast, err := parseKotlinc(src)
 	if err != nil {
-		return nil, err
+		return parseNaive(src)
 	}
 	return &Program{Nodes: toNodes(ast), Source: src}, nil
 }
@@ -304,6 +304,110 @@ func splitGeneric(s string) []string {
 		case '<':
 			depth++
 		case '>':
+			if depth > 0 {
+				depth--
+			}
+		case ',':
+			if depth == 0 {
+				parts = append(parts, strings.TrimSpace(s[start:i]))
+				start = i + 1
+			}
+		}
+	}
+	if start < len(s) {
+		parts = append(parts, strings.TrimSpace(s[start:]))
+	}
+	return parts
+}
+
+func parseNaive(src string) (*Program, error) {
+	var nodes []Node
+	for _, line := range strings.Split(src, "\n") {
+		line = strings.TrimSpace(line)
+		if strings.HasPrefix(line, "data class ") {
+			rest := strings.TrimPrefix(line, "data class ")
+			open := strings.Index(rest, "(")
+			if open == -1 {
+				continue
+			}
+			name := strings.TrimSpace(rest[:open])
+			close := strings.Index(rest, ")")
+			if close == -1 {
+				continue
+			}
+			fieldsPart := rest[open+1 : close]
+			var fields []Field
+			for _, p := range splitParams(fieldsPart) {
+				p = strings.TrimSpace(p)
+				p = strings.TrimPrefix(p, "val ")
+				p = strings.TrimPrefix(p, "var ")
+				kv := strings.SplitN(p, ":", 2)
+				if len(kv) != 2 {
+					continue
+				}
+				fields = append(fields, Field{Name: strings.TrimSpace(kv[0]), Typ: strings.TrimSpace(kv[1])})
+			}
+			nodes = append(nodes, Node{Kind: "type", Name: name, Fields: fields})
+			continue
+		}
+		if strings.HasPrefix(line, "fun ") {
+			rest := strings.TrimPrefix(line, "fun ")
+			open := strings.Index(rest, "(")
+			if open == -1 {
+				continue
+			}
+			name := strings.TrimSpace(rest[:open])
+			afterOpen := rest[open+1:]
+			close := strings.Index(afterOpen, ")")
+			if close == -1 {
+				continue
+			}
+			paramsPart := afterOpen[:close]
+			remainder := strings.TrimSpace(afterOpen[close+1:])
+			ret := ""
+			if strings.HasPrefix(remainder, ":") {
+				rest := strings.TrimSpace(remainder[1:])
+				end := len(rest)
+				if idx := strings.IndexAny(rest, "={"); idx != -1 {
+					end = idx
+				}
+				ret = strings.TrimSpace(rest[:end])
+			}
+			var params []Param
+			for _, p := range splitParams(paramsPart) {
+				p = strings.TrimSpace(p)
+				if p == "" {
+					continue
+				}
+				if idx := strings.Index(p, "="); idx != -1 {
+					p = strings.TrimSpace(p[:idx])
+				}
+				kv := strings.SplitN(p, ":", 2)
+				if len(kv) == 2 {
+					params = append(params, Param{Name: strings.TrimSpace(kv[0]), Typ: strings.TrimSpace(kv[1])})
+				} else if len(kv) == 1 {
+					params = append(params, Param{Name: strings.TrimSpace(kv[0])})
+				}
+			}
+			nodes = append(nodes, Node{Kind: "func", Name: name, Params: params, Ret: ret})
+			continue
+		}
+	}
+	if len(nodes) == 0 {
+		return nil, fmt.Errorf("no symbols found")
+	}
+	return &Program{Nodes: nodes, Source: src}, nil
+}
+
+func splitParams(s string) []string {
+	var parts []string
+	depth := 0
+	start := 0
+	for i, r := range s {
+		switch r {
+		case '<', '(', '[':
+			depth++
+		case '>', ')', ']':
 			if depth > 0 {
 				depth--
 			}

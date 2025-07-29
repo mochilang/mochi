@@ -1,0 +1,7 @@
+(program
+  (type GGroup
+    (field key (type "map<string, any>"))
+    (field items (type "list<map<string, map<string, any>>>"))
+  )
+  (fun main)
+)

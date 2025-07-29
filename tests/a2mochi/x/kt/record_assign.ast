@@ -1,0 +1,9 @@
+(program
+  (type Counter
+    (field n (type int))
+  )
+  (fun inc
+    (param c (type Counter))
+  )
+  (fun main)
+)

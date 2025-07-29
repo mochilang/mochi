@@ -1,0 +1,8 @@
+(program
+  (fun sum_rec
+    (param n (type int))
+    (param acc (type int))
+    (type int)
+  )
+  (fun main)
+)
