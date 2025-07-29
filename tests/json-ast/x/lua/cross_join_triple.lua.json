@@ -1,0 +1,296 @@
+{
+  "stmts": [
+    {
+      "Lhs": [
+        {
+          "Value": "nums"
+        }
+      ],
+      "Rhs": [
+        {
+          "Fields": [
+            {
+              "Key": null,
+              "Value": {
+                "Value": "1"
+              }
+            },
+            {
+              "Key": null,
+              "Value": {
+                "Value": "2"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Lhs": [
+        {
+          "Value": "letters"
+        }
+      ],
+      "Rhs": [
+        {
+          "Fields": [
+            {
+              "Key": null,
+              "Value": {
+                "Value": "A"
+              }
+            },
+            {
+              "Key": null,
+              "Value": {
+                "Value": "B"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Lhs": [
+        {
+          "Value": "bools"
+        }
+      ],
+      "Rhs": [
+        {
+          "Fields": [
+            {
+              "Key": null,
+              "Value": {}
+            },
+            {
+              "Key": null,
+              "Value": {}
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Lhs": [
+        {
+          "Value": "combos"
+        }
+      ],
+      "Rhs": [
+        {
+          "Fields": []
+        }
+      ]
+    },
+    {
+      "Names": [
+        "_",
+        "n"
+      ],
+      "Exprs": [
+        {
+          "Func": {
+            "Value": "ipairs"
+          },
+          "Receiver": null,
+          "Method": "",
+          "Args": [
+            {
+              "Value": "nums"
+            }
+          ],
+          "AdjustRet": false
+        }
+      ],
+      "Stmts": [
+        {
+          "Names": [
+            "_",
+            "l"
+          ],
+          "Exprs": [
+            {
+              "Func": {
+                "Value": "ipairs"
+              },
+              "Receiver": null,
+              "Method": "",
+              "Args": [
+                {
+                  "Value": "letters"
+                }
+              ],
+              "AdjustRet": false
+            }
+          ],
+          "Stmts": [
+            {
+              "Names": [
+                "_",
+                "b"
+              ],
+              "Exprs": [
+                {
+                  "Func": {
+                    "Value": "ipairs"
+                  },
+                  "Receiver": null,
+                  "Method": "",
+                  "Args": [
+                    {
+                      "Value": "bools"
+                    }
+                  ],
+                  "AdjustRet": false
+                }
+              ],
+              "Stmts": [
+                {
+                  "Expr": {
+                    "Func": {
+                      "Object": {
+                        "Value": "table"
+                      },
+                      "Key": {
+                        "Value": "insert"
+                      }
+                    },
+                    "Receiver": null,
+                    "Method": "",
+                    "Args": [
+                      {
+                        "Value": "combos"
+                      },
+                      {
+                        "Fields": [
+                          {
+                            "Key": {
+                              "Value": "n"
+                            },
+                            "Value": {
+                              "Value": "n"
+                            }
+                          },
+                          {
+                            "Key": {
+                              "Value": "l"
+                            },
+                            "Value": {
+                              "Value": "l"
+                            }
+                          },
+                          {
+                            "Key": {
+                              "Value": "b"
+                            },
+                            "Value": {
+                              "Value": "b"
+                            }
+                          }
+                        ]
+                      }
+                    ],
+                    "AdjustRet": false
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Expr": {
+        "Func": {
+          "Value": "print"
+        },
+        "Receiver": null,
+        "Method": "",
+        "Args": [
+          {
+            "Value": "--- Cross Join of three lists ---"
+          }
+        ],
+        "AdjustRet": false
+      }
+    },
+    {
+      "Names": [
+        "_",
+        "c"
+      ],
+      "Exprs": [
+        {
+          "Func": {
+            "Value": "ipairs"
+          },
+          "Receiver": null,
+          "Method": "",
+          "Args": [
+            {
+              "Value": "combos"
+            }
+          ],
+          "AdjustRet": false
+        }
+      ],
+      "Stmts": [
+        {
+          "Expr": {
+            "Func": {
+              "Value": "print"
+            },
+            "Receiver": null,
+            "Method": "",
+            "Args": [
+              {
+                "Func": {
+                  "Object": {
+                    "Value": "string"
+                  },
+                  "Key": {
+                    "Value": "format"
+                  }
+                },
+                "Receiver": null,
+                "Method": "",
+                "Args": [
+                  {
+                    "Value": "%s %s %s"
+                  },
+                  {
+                    "Object": {
+                      "Value": "c"
+                    },
+                    "Key": {
+                      "Value": "n"
+                    }
+                  },
+                  {
+                    "Object": {
+                      "Value": "c"
+                    },
+                    "Key": {
+                      "Value": "l"
+                    }
+                  },
+                  {
+                    "Object": {
+                      "Value": "c"
+                    },
+                    "Key": {
+                      "Value": "b"
+                    }
+                  }
+                ],
+                "AdjustRet": false
+              }
+            ],
+            "AdjustRet": false
+          }
+        }
+      ]
+    }
+  ]
+}

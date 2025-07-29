@@ -1,0 +1,103 @@
+{
+  "stmts": [
+    {
+      "Lhs": [
+        {
+          "Value": "x"
+        }
+      ],
+      "Rhs": [
+        {
+          "Value": "3"
+        }
+      ]
+    },
+    {
+      "Lhs": [
+        {
+          "Value": "y"
+        }
+      ],
+      "Rhs": [
+        {
+          "Value": "4"
+        }
+      ]
+    },
+    {
+      "Lhs": [
+        {
+          "Value": "m"
+        }
+      ],
+      "Rhs": [
+        {
+          "Fields": [
+            {
+              "Key": {
+                "Value": "a"
+              },
+              "Value": {
+                "Value": "x"
+              }
+            },
+            {
+              "Key": {
+                "Value": "b"
+              },
+              "Value": {
+                "Value": "y"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Expr": {
+        "Func": {
+          "Value": "print"
+        },
+        "Receiver": null,
+        "Method": "",
+        "Args": [
+          {
+            "Func": {
+              "Object": {
+                "Value": "string"
+              },
+              "Key": {
+                "Value": "format"
+              }
+            },
+            "Receiver": null,
+            "Method": "",
+            "Args": [
+              {
+                "Value": "%s %s"
+              },
+              {
+                "Object": {
+                  "Value": "m"
+                },
+                "Key": {
+                  "Value": "a"
+                }
+              },
+              {
+                "Object": {
+                  "Value": "m"
+                },
+                "Key": {
+                  "Value": "b"
+                }
+              }
+            ],
+            "AdjustRet": false
+          }
+        ],
+        "AdjustRet": false
+      }
+    }
+  ]
+}

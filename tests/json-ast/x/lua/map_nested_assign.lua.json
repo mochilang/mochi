@@ -1,0 +1,81 @@
+{
+  "stmts": [
+    {
+      "Lhs": [
+        {
+          "Value": "data"
+        }
+      ],
+      "Rhs": [
+        {
+          "Fields": [
+            {
+              "Key": {
+                "Value": "outer"
+              },
+              "Value": {
+                "Fields": [
+                  {
+                    "Key": {
+                      "Value": "inner"
+                    },
+                    "Value": {
+                      "Value": "1"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Lhs": [
+        {
+          "Object": {
+            "Object": {
+              "Value": "data"
+            },
+            "Key": {
+              "Value": "outer"
+            }
+          },
+          "Key": {
+            "Value": "inner"
+          }
+        }
+      ],
+      "Rhs": [
+        {
+          "Value": "2"
+        }
+      ]
+    },
+    {
+      "Expr": {
+        "Func": {
+          "Value": "print"
+        },
+        "Receiver": null,
+        "Method": "",
+        "Args": [
+          {
+            "Object": {
+              "Object": {
+                "Value": "data"
+              },
+              "Key": {
+                "Value": "outer"
+              }
+            },
+            "Key": {
+              "Value": "inner"
+            }
+          }
+        ],
+        "AdjustRet": false
+      }
+    }
+  ]
+}

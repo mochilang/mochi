@@ -1,0 +1,37 @@
+{
+  "stmts": [
+    {
+      "Name": "i",
+      "Init": {
+        "Value": "1"
+      },
+      "Limit": {
+        "Operator": "-",
+        "Lhs": {
+          "Value": "4"
+        },
+        "Rhs": {
+          "Value": "1"
+        }
+      },
+      "Step": null,
+      "Stmts": [
+        {
+          "Expr": {
+            "Func": {
+              "Value": "print"
+            },
+            "Receiver": null,
+            "Method": "",
+            "Args": [
+              {
+                "Value": "i"
+              }
+            ],
+            "AdjustRet": false
+          }
+        }
+      ]
+    }
+  ]
+}

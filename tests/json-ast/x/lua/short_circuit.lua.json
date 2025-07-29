@@ -1,0 +1,132 @@
+{
+  "stmts": [
+    {
+      "Name": {
+        "Func": {
+          "Value": "boom"
+        },
+        "Receiver": null,
+        "Method": ""
+      },
+      "Func": {
+        "ParList": {
+          "HasVargs": false,
+          "Names": [
+            "a",
+            "b"
+          ]
+        },
+        "Stmts": [
+          {
+            "Expr": {
+              "Func": {
+                "Value": "print"
+              },
+              "Receiver": null,
+              "Method": "",
+              "Args": [
+                {
+                  "Value": "boom"
+                }
+              ],
+              "AdjustRet": false
+            }
+          },
+          {
+            "Exprs": [
+              {}
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "Expr": {
+        "Func": {
+          "Value": "print"
+        },
+        "Receiver": null,
+        "Method": "",
+        "Args": [
+          {
+            "Operator": "or",
+            "Lhs": {
+              "Operator": "and",
+              "Lhs": {
+                "Operator": "and",
+                "Lhs": {},
+                "Rhs": {
+                  "Func": {
+                    "Value": "boom"
+                  },
+                  "Receiver": null,
+                  "Method": "",
+                  "Args": [
+                    {
+                      "Value": "1"
+                    },
+                    {
+                      "Value": "2"
+                    }
+                  ],
+                  "AdjustRet": false
+                }
+              },
+              "Rhs": {
+                "Value": "1"
+              }
+            },
+            "Rhs": {
+              "Value": "0"
+            }
+          }
+        ],
+        "AdjustRet": false
+      }
+    },
+    {
+      "Expr": {
+        "Func": {
+          "Value": "print"
+        },
+        "Receiver": null,
+        "Method": "",
+        "Args": [
+          {
+            "Operator": "or",
+            "Lhs": {
+              "Operator": "and",
+              "Lhs": {
+                "Operator": "or",
+                "Lhs": {},
+                "Rhs": {
+                  "Func": {
+                    "Value": "boom"
+                  },
+                  "Receiver": null,
+                  "Method": "",
+                  "Args": [
+                    {
+                      "Value": "1"
+                    },
+                    {
+                      "Value": "2"
+                    }
+                  ],
+                  "AdjustRet": false
+                }
+              },
+              "Rhs": {
+                "Value": "1"
+              }
+            },
+            "Rhs": {
+              "Value": "0"
+            }
+          }
+        ],
+        "AdjustRet": false
+      }
+    }
+  ]
+}

@@ -1,0 +1,223 @@
+{
+  "stmts": [
+    {
+      "Expr": {
+        "Func": {
+          "Value": "print"
+        },
+        "Receiver": null,
+        "Method": "",
+        "Args": [
+          {
+            "Func": {
+              "ParList": {
+                "HasVargs": false,
+                "Names": [
+                  "lst"
+                ]
+              },
+              "Stmts": [
+                {
+                  "Names": [
+                    "sum"
+                  ],
+                  "Exprs": [
+                    {
+                      "Value": "0"
+                    }
+                  ]
+                },
+                {
+                  "Names": [
+                    "_",
+                    "v"
+                  ],
+                  "Exprs": [
+                    {
+                      "Func": {
+                        "Value": "ipairs"
+                      },
+                      "Receiver": null,
+                      "Method": "",
+                      "Args": [
+                        {
+                          "Value": "lst"
+                        }
+                      ],
+                      "AdjustRet": false
+                    }
+                  ],
+                  "Stmts": [
+                    {
+                      "Lhs": [
+                        {
+                          "Value": "sum"
+                        }
+                      ],
+                      "Rhs": [
+                        {
+                          "Operator": "+",
+                          "Lhs": {
+                            "Value": "sum"
+                          },
+                          "Rhs": {
+                            "Value": "v"
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "Condition": {
+                    "Operator": "==",
+                    "Lhs": {
+                      "Expr": {
+                        "Value": "lst"
+                      }
+                    },
+                    "Rhs": {
+                      "Value": "0"
+                    }
+                  },
+                  "Then": [
+                    {
+                      "Exprs": [
+                        {
+                          "Value": "0"
+                        }
+                      ]
+                    }
+                  ],
+                  "Else": null
+                },
+                {
+                  "Names": [
+                    "r"
+                  ],
+                  "Exprs": [
+                    {
+                      "Operator": "/",
+                      "Lhs": {
+                        "Value": "sum"
+                      },
+                      "Rhs": {
+                        "Expr": {
+                          "Value": "lst"
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "Condition": {
+                    "Operator": "==",
+                    "Lhs": {
+                      "Value": "r"
+                    },
+                    "Rhs": {
+                      "Func": {
+                        "Object": {
+                          "Value": "math"
+                        },
+                        "Key": {
+                          "Value": "floor"
+                        }
+                      },
+                      "Receiver": null,
+                      "Method": "",
+                      "Args": [
+                        {
+                          "Value": "r"
+                        }
+                      ],
+                      "AdjustRet": false
+                    }
+                  },
+                  "Then": [
+                    {
+                      "Exprs": [
+                        {
+                          "Func": {
+                            "Object": {
+                              "Value": "math"
+                            },
+                            "Key": {
+                              "Value": "floor"
+                            }
+                          },
+                          "Receiver": null,
+                          "Method": "",
+                          "Args": [
+                            {
+                              "Value": "r"
+                            }
+                          ],
+                          "AdjustRet": false
+                        }
+                      ]
+                    }
+                  ],
+                  "Else": null
+                },
+                {
+                  "Exprs": [
+                    {
+                      "Func": {
+                        "Object": {
+                          "Value": "string"
+                        },
+                        "Key": {
+                          "Value": "format"
+                        }
+                      },
+                      "Receiver": null,
+                      "Method": "",
+                      "Args": [
+                        {
+                          "Value": "%.15f"
+                        },
+                        {
+                          "Value": "r"
+                        }
+                      ],
+                      "AdjustRet": false
+                    }
+                  ]
+                }
+              ]
+            },
+            "Receiver": null,
+            "Method": "",
+            "Args": [
+              {
+                "Fields": [
+                  {
+                    "Key": null,
+                    "Value": {
+                      "Value": "1"
+                    }
+                  },
+                  {
+                    "Key": null,
+                    "Value": {
+                      "Value": "2"
+                    }
+                  },
+                  {
+                    "Key": null,
+                    "Value": {
+                      "Value": "3"
+                    }
+                  }
+                ]
+              }
+            ],
+            "AdjustRet": false
+          }
+        ],
+        "AdjustRet": false
+      }
+    }
+  ]
+}

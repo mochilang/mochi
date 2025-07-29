@@ -1,0 +1,64 @@
+{
+  "stmts": [
+    {
+      "Lhs": [
+        {
+          "Value": "s"
+        }
+      ],
+      "Rhs": [
+        {
+          "Value": "mochi"
+        }
+      ]
+    },
+    {
+      "Expr": {
+        "Func": {
+          "Value": "print"
+        },
+        "Receiver": null,
+        "Method": "",
+        "Args": [
+          {
+            "Func": {
+              "Object": {
+                "Value": "string"
+              },
+              "Key": {
+                "Value": "sub"
+              }
+            },
+            "Receiver": null,
+            "Method": "",
+            "Args": [
+              {
+                "Value": "s"
+              },
+              {
+                "Operator": "+",
+                "Lhs": {
+                  "Value": "1"
+                },
+                "Rhs": {
+                  "Value": "1"
+                }
+              },
+              {
+                "Operator": "+",
+                "Lhs": {
+                  "Value": "1"
+                },
+                "Rhs": {
+                  "Value": "1"
+                }
+              }
+            ],
+            "AdjustRet": false
+          }
+        ],
+        "AdjustRet": false
+      }
+    }
+  ]
+}

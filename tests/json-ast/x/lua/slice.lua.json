@@ -1,0 +1,330 @@
+{
+  "stmts": [
+    {
+      "Expr": {
+        "Func": {
+          "Value": "print"
+        },
+        "Receiver": null,
+        "Method": "",
+        "Args": [
+          {
+            "Func": {
+              "Object": {
+                "Value": "table"
+              },
+              "Key": {
+                "Value": "concat"
+              }
+            },
+            "Receiver": null,
+            "Method": "",
+            "Args": [
+              {
+                "Func": {
+                  "ParList": {
+                    "HasVargs": false,
+                    "Names": [
+                      "lst",
+                      "s",
+                      "e"
+                    ]
+                  },
+                  "Stmts": [
+                    {
+                      "Names": [
+                        "r"
+                      ],
+                      "Exprs": [
+                        {
+                          "Fields": []
+                        }
+                      ]
+                    },
+                    {
+                      "Name": "i",
+                      "Init": {
+                        "Operator": "+",
+                        "Lhs": {
+                          "Value": "s"
+                        },
+                        "Rhs": {
+                          "Value": "1"
+                        }
+                      },
+                      "Limit": {
+                        "Value": "e"
+                      },
+                      "Step": null,
+                      "Stmts": [
+                        {
+                          "Lhs": [
+                            {
+                              "Object": {
+                                "Value": "r"
+                              },
+                              "Key": {
+                                "Operator": "+",
+                                "Lhs": {
+                                  "Expr": {
+                                    "Value": "r"
+                                  }
+                                },
+                                "Rhs": {
+                                  "Value": "1"
+                                }
+                              }
+                            }
+                          ],
+                          "Rhs": [
+                            {
+                              "Object": {
+                                "Value": "lst"
+                              },
+                              "Key": {
+                                "Value": "i"
+                              }
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "Exprs": [
+                        {
+                          "Value": "r"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                "Receiver": null,
+                "Method": "",
+                "Args": [
+                  {
+                    "Fields": [
+                      {
+                        "Key": null,
+                        "Value": {
+                          "Value": "1"
+                        }
+                      },
+                      {
+                        "Key": null,
+                        "Value": {
+                          "Value": "2"
+                        }
+                      },
+                      {
+                        "Key": null,
+                        "Value": {
+                          "Value": "3"
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "Value": "1"
+                  },
+                  {
+                    "Value": "3"
+                  }
+                ],
+                "AdjustRet": false
+              },
+              {
+                "Value": " "
+              }
+            ],
+            "AdjustRet": false
+          }
+        ],
+        "AdjustRet": false
+      }
+    },
+    {
+      "Expr": {
+        "Func": {
+          "Value": "print"
+        },
+        "Receiver": null,
+        "Method": "",
+        "Args": [
+          {
+            "Func": {
+              "Object": {
+                "Value": "table"
+              },
+              "Key": {
+                "Value": "concat"
+              }
+            },
+            "Receiver": null,
+            "Method": "",
+            "Args": [
+              {
+                "Func": {
+                  "ParList": {
+                    "HasVargs": false,
+                    "Names": [
+                      "lst",
+                      "s",
+                      "e"
+                    ]
+                  },
+                  "Stmts": [
+                    {
+                      "Names": [
+                        "r"
+                      ],
+                      "Exprs": [
+                        {
+                          "Fields": []
+                        }
+                      ]
+                    },
+                    {
+                      "Name": "i",
+                      "Init": {
+                        "Operator": "+",
+                        "Lhs": {
+                          "Value": "s"
+                        },
+                        "Rhs": {
+                          "Value": "1"
+                        }
+                      },
+                      "Limit": {
+                        "Value": "e"
+                      },
+                      "Step": null,
+                      "Stmts": [
+                        {
+                          "Lhs": [
+                            {
+                              "Object": {
+                                "Value": "r"
+                              },
+                              "Key": {
+                                "Operator": "+",
+                                "Lhs": {
+                                  "Expr": {
+                                    "Value": "r"
+                                  }
+                                },
+                                "Rhs": {
+                                  "Value": "1"
+                                }
+                              }
+                            }
+                          ],
+                          "Rhs": [
+                            {
+                              "Object": {
+                                "Value": "lst"
+                              },
+                              "Key": {
+                                "Value": "i"
+                              }
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "Exprs": [
+                        {
+                          "Value": "r"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                "Receiver": null,
+                "Method": "",
+                "Args": [
+                  {
+                    "Fields": [
+                      {
+                        "Key": null,
+                        "Value": {
+                          "Value": "1"
+                        }
+                      },
+                      {
+                        "Key": null,
+                        "Value": {
+                          "Value": "2"
+                        }
+                      },
+                      {
+                        "Key": null,
+                        "Value": {
+                          "Value": "3"
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "Value": "0"
+                  },
+                  {
+                    "Value": "2"
+                  }
+                ],
+                "AdjustRet": false
+              },
+              {
+                "Value": " "
+              }
+            ],
+            "AdjustRet": false
+          }
+        ],
+        "AdjustRet": false
+      }
+    },
+    {
+      "Expr": {
+        "Func": {
+          "Value": "print"
+        },
+        "Receiver": null,
+        "Method": "",
+        "Args": [
+          {
+            "Func": {
+              "Object": {
+                "Value": "string"
+              },
+              "Key": {
+                "Value": "sub"
+              }
+            },
+            "Receiver": null,
+            "Method": "",
+            "Args": [
+              {
+                "Value": "hello"
+              },
+              {
+                "Operator": "+",
+                "Lhs": {
+                  "Value": "1"
+                },
+                "Rhs": {
+                  "Value": "1"
+                }
+              },
+              {
+                "Value": "4"
+              }
+            ],
+            "AdjustRet": false
+          }
+        ],
+        "AdjustRet": false
+      }
+    }
+  ]
+}

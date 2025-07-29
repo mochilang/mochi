@@ -1,0 +1,75 @@
+{
+  "stmts": [
+    {
+      "Lhs": [
+        {
+          "Value": "book"
+        }
+      ],
+      "Rhs": [
+        {
+          "Fields": [
+            {
+              "Key": {
+                "Value": "title"
+              },
+              "Value": {
+                "Value": "Go"
+              }
+            },
+            {
+              "Key": {
+                "Value": "author"
+              },
+              "Value": {
+                "Fields": [
+                  {
+                    "Key": {
+                      "Value": "name"
+                    },
+                    "Value": {
+                      "Value": "Bob"
+                    }
+                  },
+                  {
+                    "Key": {
+                      "Value": "age"
+                    },
+                    "Value": {
+                      "Value": "42"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Expr": {
+        "Func": {
+          "Value": "print"
+        },
+        "Receiver": null,
+        "Method": "",
+        "Args": [
+          {
+            "Object": {
+              "Object": {
+                "Value": "book"
+              },
+              "Key": {
+                "Value": "author"
+              }
+            },
+            "Key": {
+              "Value": "name"
+            }
+          }
+        ],
+        "AdjustRet": false
+      }
+    }
+  ]
+}

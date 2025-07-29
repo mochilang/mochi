@@ -1,0 +1,127 @@
+{
+  "stmts": [
+    {
+      "Lhs": [
+        {
+          "Value": "a"
+        }
+      ],
+      "Rhs": [
+        {
+          "Fields": [
+            {
+              "Key": null,
+              "Value": {
+                "Value": "1"
+              }
+            },
+            {
+              "Key": null,
+              "Value": {
+                "Value": "2"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Expr": {
+        "Func": {
+          "Value": "print"
+        },
+        "Receiver": null,
+        "Method": "",
+        "Args": [
+          {
+            "Func": {
+              "ParList": {
+                "HasVargs": false,
+                "Names": [
+                  "lst",
+                  "item"
+                ]
+              },
+              "Stmts": [
+                {
+                  "Names": [
+                    "res"
+                  ],
+                  "Exprs": [
+                    {
+                      "Fields": [
+                        {
+                          "Key": null,
+                          "Value": {
+                            "Func": {
+                              "Object": {
+                                "Value": "table"
+                              },
+                              "Key": {
+                                "Value": "unpack"
+                              }
+                            },
+                            "Receiver": null,
+                            "Method": "",
+                            "Args": [
+                              {
+                                "Value": "lst"
+                              }
+                            ],
+                            "AdjustRet": false
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "Expr": {
+                    "Func": {
+                      "Object": {
+                        "Value": "table"
+                      },
+                      "Key": {
+                        "Value": "insert"
+                      }
+                    },
+                    "Receiver": null,
+                    "Method": "",
+                    "Args": [
+                      {
+                        "Value": "res"
+                      },
+                      {
+                        "Value": "item"
+                      }
+                    ],
+                    "AdjustRet": false
+                  }
+                },
+                {
+                  "Exprs": [
+                    {
+                      "Value": "res"
+                    }
+                  ]
+                }
+              ]
+            },
+            "Receiver": null,
+            "Method": "",
+            "Args": [
+              {
+                "Value": "a"
+              },
+              {
+                "Value": "3"
+              }
+            ],
+            "AdjustRet": false
+          }
+        ],
+        "AdjustRet": false
+      }
+    }
+  ]
+}

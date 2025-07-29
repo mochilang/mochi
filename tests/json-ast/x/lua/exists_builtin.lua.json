@@ -1,0 +1,152 @@
+{
+  "stmts": [
+    {
+      "Lhs": [
+        {
+          "Value": "data"
+        }
+      ],
+      "Rhs": [
+        {
+          "Fields": [
+            {
+              "Key": null,
+              "Value": {
+                "Value": "1"
+              }
+            },
+            {
+              "Key": null,
+              "Value": {
+                "Value": "2"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Lhs": [
+        {
+          "Value": "flag"
+        }
+      ],
+      "Rhs": [
+        {
+          "Operator": "\u003e",
+          "Lhs": {
+            "Expr": {
+              "Func": {
+                "ParList": {
+                  "HasVargs": false,
+                  "Names": []
+                },
+                "Stmts": [
+                  {
+                    "Names": [
+                      "_res"
+                    ],
+                    "Exprs": [
+                      {
+                        "Fields": []
+                      }
+                    ]
+                  },
+                  {
+                    "Names": [
+                      "_",
+                      "x"
+                    ],
+                    "Exprs": [
+                      {
+                        "Func": {
+                          "Value": "ipairs"
+                        },
+                        "Receiver": null,
+                        "Method": "",
+                        "Args": [
+                          {
+                            "Value": "data"
+                          }
+                        ],
+                        "AdjustRet": false
+                      }
+                    ],
+                    "Stmts": [
+                      {
+                        "Condition": {
+                          "Operator": "==",
+                          "Lhs": {
+                            "Value": "x"
+                          },
+                          "Rhs": {
+                            "Value": "1"
+                          }
+                        },
+                        "Then": [
+                          {
+                            "Expr": {
+                              "Func": {
+                                "Object": {
+                                  "Value": "table"
+                                },
+                                "Key": {
+                                  "Value": "insert"
+                                }
+                              },
+                              "Receiver": null,
+                              "Method": "",
+                              "Args": [
+                                {
+                                  "Value": "_res"
+                                },
+                                {
+                                  "Value": "x"
+                                }
+                              ],
+                              "AdjustRet": false
+                            }
+                          }
+                        ],
+                        "Else": null
+                      }
+                    ]
+                  },
+                  {
+                    "Exprs": [
+                      {
+                        "Value": "_res"
+                      }
+                    ]
+                  }
+                ]
+              },
+              "Receiver": null,
+              "Method": "",
+              "Args": [],
+              "AdjustRet": true
+            }
+          },
+          "Rhs": {
+            "Value": "0"
+          }
+        }
+      ]
+    },
+    {
+      "Expr": {
+        "Func": {
+          "Value": "print"
+        },
+        "Receiver": null,
+        "Method": "",
+        "Args": [
+          {
+            "Value": "flag"
+          }
+        ],
+        "AdjustRet": false
+      }
+    }
+  ]
+}

@@ -1,0 +1,262 @@
+{
+  "stmts": [
+    {
+      "Lhs": [
+        {
+          "Value": "nums"
+        }
+      ],
+      "Rhs": [
+        {
+          "Fields": [
+            {
+              "Key": null,
+              "Value": {
+                "Value": "1"
+              }
+            },
+            {
+              "Key": null,
+              "Value": {
+                "Value": "2"
+              }
+            },
+            {
+              "Key": null,
+              "Value": {
+                "Value": "3"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Lhs": [
+        {
+          "Value": "letters"
+        }
+      ],
+      "Rhs": [
+        {
+          "Fields": [
+            {
+              "Key": null,
+              "Value": {
+                "Value": "A"
+              }
+            },
+            {
+              "Key": null,
+              "Value": {
+                "Value": "B"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Lhs": [
+        {
+          "Value": "pairs"
+        }
+      ],
+      "Rhs": [
+        {
+          "Fields": []
+        }
+      ]
+    },
+    {
+      "Names": [
+        "_",
+        "n"
+      ],
+      "Exprs": [
+        {
+          "Func": {
+            "Value": "ipairs"
+          },
+          "Receiver": null,
+          "Method": "",
+          "Args": [
+            {
+              "Value": "nums"
+            }
+          ],
+          "AdjustRet": false
+        }
+      ],
+      "Stmts": [
+        {
+          "Names": [
+            "_",
+            "l"
+          ],
+          "Exprs": [
+            {
+              "Func": {
+                "Value": "ipairs"
+              },
+              "Receiver": null,
+              "Method": "",
+              "Args": [
+                {
+                  "Value": "letters"
+                }
+              ],
+              "AdjustRet": false
+            }
+          ],
+          "Stmts": [
+            {
+              "Condition": {
+                "Operator": "==",
+                "Lhs": {
+                  "Operator": "%",
+                  "Lhs": {
+                    "Value": "n"
+                  },
+                  "Rhs": {
+                    "Value": "2"
+                  }
+                },
+                "Rhs": {
+                  "Value": "0"
+                }
+              },
+              "Then": [
+                {
+                  "Expr": {
+                    "Func": {
+                      "Object": {
+                        "Value": "table"
+                      },
+                      "Key": {
+                        "Value": "insert"
+                      }
+                    },
+                    "Receiver": null,
+                    "Method": "",
+                    "Args": [
+                      {
+                        "Value": "pairs"
+                      },
+                      {
+                        "Fields": [
+                          {
+                            "Key": {
+                              "Value": "n"
+                            },
+                            "Value": {
+                              "Value": "n"
+                            }
+                          },
+                          {
+                            "Key": {
+                              "Value": "l"
+                            },
+                            "Value": {
+                              "Value": "l"
+                            }
+                          }
+                        ]
+                      }
+                    ],
+                    "AdjustRet": false
+                  }
+                }
+              ],
+              "Else": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Expr": {
+        "Func": {
+          "Value": "print"
+        },
+        "Receiver": null,
+        "Method": "",
+        "Args": [
+          {
+            "Value": "--- Even pairs ---"
+          }
+        ],
+        "AdjustRet": false
+      }
+    },
+    {
+      "Names": [
+        "_",
+        "p"
+      ],
+      "Exprs": [
+        {
+          "Func": {
+            "Value": "ipairs"
+          },
+          "Receiver": null,
+          "Method": "",
+          "Args": [
+            {
+              "Value": "pairs"
+            }
+          ],
+          "AdjustRet": false
+        }
+      ],
+      "Stmts": [
+        {
+          "Expr": {
+            "Func": {
+              "Value": "print"
+            },
+            "Receiver": null,
+            "Method": "",
+            "Args": [
+              {
+                "Func": {
+                  "Object": {
+                    "Value": "string"
+                  },
+                  "Key": {
+                    "Value": "format"
+                  }
+                },
+                "Receiver": null,
+                "Method": "",
+                "Args": [
+                  {
+                    "Value": "%s %s"
+                  },
+                  {
+                    "Object": {
+                      "Value": "p"
+                    },
+                    "Key": {
+                      "Value": "n"
+                    }
+                  },
+                  {
+                    "Object": {
+                      "Value": "p"
+                    },
+                    "Key": {
+                      "Value": "l"
+                    }
+                  }
+                ],
+                "AdjustRet": false
+              }
+            ],
+            "AdjustRet": false
+          }
+        }
+      ]
+    }
+  ]
+}

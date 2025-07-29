@@ -1,0 +1,78 @@
+{
+  "stmts": [
+    {
+      "Lhs": [
+        {
+          "Value": "nums"
+        }
+      ],
+      "Rhs": [
+        {
+          "Fields": [
+            {
+              "Key": null,
+              "Value": {
+                "Value": "1"
+              }
+            },
+            {
+              "Key": null,
+              "Value": {
+                "Value": "2"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Lhs": [
+        {
+          "Object": {
+            "Value": "nums"
+          },
+          "Key": {
+            "Operator": "+",
+            "Lhs": {
+              "Value": "1"
+            },
+            "Rhs": {
+              "Value": "1"
+            }
+          }
+        }
+      ],
+      "Rhs": [
+        {
+          "Value": "3"
+        }
+      ]
+    },
+    {
+      "Expr": {
+        "Func": {
+          "Value": "print"
+        },
+        "Receiver": null,
+        "Method": "",
+        "Args": [
+          {
+            "Object": {
+              "Value": "nums"
+            },
+            "Key": {
+              "Operator": "+",
+              "Lhs": {
+                "Value": "1"
+              },
+              "Rhs": {
+                "Value": "1"
+              }
+            }
+          }
+        ],
+        "AdjustRet": false
+      }
+    }
+  ]
+}

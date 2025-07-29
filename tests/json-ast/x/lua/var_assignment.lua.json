@@ -1,0 +1,43 @@
+{
+  "stmts": [
+    {
+      "Lhs": [
+        {
+          "Value": "x"
+        }
+      ],
+      "Rhs": [
+        {
+          "Value": "1"
+        }
+      ]
+    },
+    {
+      "Lhs": [
+        {
+          "Value": "x"
+        }
+      ],
+      "Rhs": [
+        {
+          "Value": "2"
+        }
+      ]
+    },
+    {
+      "Expr": {
+        "Func": {
+          "Value": "print"
+        },
+        "Receiver": null,
+        "Method": "",
+        "Args": [
+          {
+            "Value": "x"
+          }
+        ],
+        "AdjustRet": false
+      }
+    }
+  ]
+}

@@ -1,0 +1,98 @@
+{
+  "stmts": [
+    {
+      "Lhs": [
+        {
+          "Value": "s"
+        }
+      ],
+      "Rhs": [
+        {
+          "Value": "catch"
+        }
+      ]
+    },
+    {
+      "Expr": {
+        "Func": {
+          "Value": "print"
+        },
+        "Receiver": null,
+        "Method": "",
+        "Args": [
+          {
+            "Operator": "~=",
+            "Lhs": {
+              "Func": {
+                "Object": {
+                  "Value": "string"
+                },
+                "Key": {
+                  "Value": "find"
+                }
+              },
+              "Receiver": null,
+              "Method": "",
+              "Args": [
+                {
+                  "Value": "s"
+                },
+                {
+                  "Value": "cat"
+                },
+                {
+                  "Value": "1"
+                },
+                {}
+              ],
+              "AdjustRet": false
+            },
+            "Rhs": {}
+          }
+        ],
+        "AdjustRet": false
+      }
+    },
+    {
+      "Expr": {
+        "Func": {
+          "Value": "print"
+        },
+        "Receiver": null,
+        "Method": "",
+        "Args": [
+          {
+            "Operator": "~=",
+            "Lhs": {
+              "Func": {
+                "Object": {
+                  "Value": "string"
+                },
+                "Key": {
+                  "Value": "find"
+                }
+              },
+              "Receiver": null,
+              "Method": "",
+              "Args": [
+                {
+                  "Value": "s"
+                },
+                {
+                  "Value": "dog"
+                },
+                {
+                  "Value": "1"
+                },
+                {}
+              ],
+              "AdjustRet": false
+            },
+            "Rhs": {}
+          }
+        ],
+        "AdjustRet": false
+      }
+    }
+  ]
+}

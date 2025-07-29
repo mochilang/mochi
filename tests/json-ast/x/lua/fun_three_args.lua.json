@@ -1,0 +1,75 @@
+{
+  "stmts": [
+    {
+      "Name": {
+        "Func": {
+          "Value": "sum3"
+        },
+        "Receiver": null,
+        "Method": ""
+      },
+      "Func": {
+        "ParList": {
+          "HasVargs": false,
+          "Names": [
+            "a",
+            "b",
+            "c"
+          ]
+        },
+        "Stmts": [
+          {
+            "Exprs": [
+              {
+                "Operator": "+",
+                "Lhs": {
+                  "Operator": "+",
+                  "Lhs": {
+                    "Value": "a"
+                  },
+                  "Rhs": {
+                    "Value": "b"
+                  }
+                },
+                "Rhs": {
+                  "Value": "c"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "Expr": {
+        "Func": {
+          "Value": "print"
+        },
+        "Receiver": null,
+        "Method": "",
+        "Args": [
+          {
+            "Func": {
+              "Value": "sum3"
+            },
+            "Receiver": null,
+            "Method": "",
+            "Args": [
+              {
+                "Value": "1"
+              },
+              {
+                "Value": "2"
+              },
+              {
+                "Value": "3"
+              }
+            ],
+            "AdjustRet": false
+          }
+        ],
+        "AdjustRet": false
+      }
+    }
+  ]
+}

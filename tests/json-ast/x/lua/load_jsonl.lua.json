@@ -1,0 +1,311 @@
+{
+  "stmts": [
+    {
+      "Lhs": [
+        {
+          "Value": "people"
+        }
+      ],
+      "Rhs": [
+        {
+          "Fields": [
+            {
+              "Key": null,
+              "Value": {
+                "Fields": [
+                  {
+                    "Key": {
+                      "Value": "age"
+                    },
+                    "Value": {
+                      "Value": "30"
+                    }
+                  },
+                  {
+                    "Key": {
+                      "Value": "email"
+                    },
+                    "Value": {
+                      "Value": "alice@example.com"
+                    }
+                  },
+                  {
+                    "Key": {
+                      "Value": "name"
+                    },
+                    "Value": {
+                      "Value": "Alice"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "Key": null,
+              "Value": {
+                "Fields": [
+                  {
+                    "Key": {
+                      "Value": "age"
+                    },
+                    "Value": {
+                      "Value": "15"
+                    }
+                  },
+                  {
+                    "Key": {
+                      "Value": "email"
+                    },
+                    "Value": {
+                      "Value": "bob@example.com"
+                    }
+                  },
+                  {
+                    "Key": {
+                      "Value": "name"
+                    },
+                    "Value": {
+                      "Value": "Bob"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "Key": null,
+              "Value": {
+                "Fields": [
+                  {
+                    "Key": {
+                      "Value": "age"
+                    },
+                    "Value": {
+                      "Value": "20"
+                    }
+                  },
+                  {
+                    "Key": {
+                      "Value": "email"
+                    },
+                    "Value": {
+                      "Value": "charlie@example.com"
+                    }
+                  },
+                  {
+                    "Key": {
+                      "Value": "name"
+                    },
+                    "Value": {
+                      "Value": "Charlie"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Lhs": [
+        {
+          "Value": "adults"
+        }
+      ],
+      "Rhs": [
+        {
+          "Func": {
+            "ParList": {
+              "HasVargs": false,
+              "Names": []
+            },
+            "Stmts": [
+              {
+                "Names": [
+                  "_res"
+                ],
+                "Exprs": [
+                  {
+                    "Fields": []
+                  }
+                ]
+              },
+              {
+                "Names": [
+                  "_",
+                  "p"
+                ],
+                "Exprs": [
+                  {
+                    "Func": {
+                      "Value": "ipairs"
+                    },
+                    "Receiver": null,
+                    "Method": "",
+                    "Args": [
+                      {
+                        "Value": "people"
+                      }
+                    ],
+                    "AdjustRet": false
+                  }
+                ],
+                "Stmts": [
+                  {
+                    "Condition": {
+                      "Operator": "\u003e=",
+                      "Lhs": {
+                        "Object": {
+                          "Value": "p"
+                        },
+                        "Key": {
+                          "Value": "age"
+                        }
+                      },
+                      "Rhs": {
+                        "Value": "18"
+                      }
+                    },
+                    "Then": [
+                      {
+                        "Expr": {
+                          "Func": {
+                            "Object": {
+                              "Value": "table"
+                            },
+                            "Key": {
+                              "Value": "insert"
+                            }
+                          },
+                          "Receiver": null,
+                          "Method": "",
+                          "Args": [
+                            {
+                              "Value": "_res"
+                            },
+                            {
+                              "Fields": [
+                                {
+                                  "Key": {
+                                    "Value": "name"
+                                  },
+                                  "Value": {
+                                    "Object": {
+                                      "Value": "p"
+                                    },
+                                    "Key": {
+                                      "Value": "name"
+                                    }
+                                  }
+                                },
+                                {
+                                  "Key": {
+                                    "Value": "email"
+                                  },
+                                  "Value": {
+                                    "Object": {
+                                      "Value": "p"
+                                    },
+                                    "Key": {
+                                      "Value": "email"
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          ],
+                          "AdjustRet": false
+                        }
+                      }
+                    ],
+                    "Else": null
+                  }
+                ]
+              },
+              {
+                "Exprs": [
+                  {
+                    "Value": "_res"
+                  }
+                ]
+              }
+            ]
+          },
+          "Receiver": null,
+          "Method": "",
+          "Args": [],
+          "AdjustRet": false
+        }
+      ]
+    },
+    {
+      "Names": [
+        "_",
+        "a"
+      ],
+      "Exprs": [
+        {
+          "Func": {
+            "Value": "ipairs"
+          },
+          "Receiver": null,
+          "Method": "",
+          "Args": [
+            {
+              "Value": "adults"
+            }
+          ],
+          "AdjustRet": false
+        }
+      ],
+      "Stmts": [
+        {
+          "Expr": {
+            "Func": {
+              "Value": "print"
+            },
+            "Receiver": null,
+            "Method": "",
+            "Args": [
+              {
+                "Func": {
+                  "Object": {
+                    "Value": "string"
+                  },
+                  "Key": {
+                    "Value": "format"
+                  }
+                },
+                "Receiver": null,
+                "Method": "",
+                "Args": [
+                  {
+                    "Value": "%s %s"
+                  },
+                  {
+                    "Object": {
+                      "Value": "a"
+                    },
+                    "Key": {
+                      "Value": "name"
+                    }
+                  },
+                  {
+                    "Object": {
+                      "Value": "a"
+                    },
+                    "Key": {
+                      "Value": "email"
+                    }
+                  }
+                ],
+                "AdjustRet": false
+              }
+            ],
+            "AdjustRet": false
+          }
+        }
+      ]
+    }
+  ]
+}

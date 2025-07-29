@@ -1,0 +1,65 @@
+{
+  "stmts": [
+    {
+      "Name": {
+        "Func": {
+          "Value": "add"
+        },
+        "Receiver": null,
+        "Method": ""
+      },
+      "Func": {
+        "ParList": {
+          "HasVargs": false,
+          "Names": [
+            "a",
+            "b"
+          ]
+        },
+        "Stmts": [
+          {
+            "Exprs": [
+              {
+                "Operator": "+",
+                "Lhs": {
+                  "Value": "a"
+                },
+                "Rhs": {
+                  "Value": "b"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "Expr": {
+        "Func": {
+          "Value": "print"
+        },
+        "Receiver": null,
+        "Method": "",
+        "Args": [
+          {
+            "Func": {
+              "Value": "add"
+            },
+            "Receiver": null,
+            "Method": "",
+            "Args": [
+              {
+                "Value": "2"
+              },
+              {
+                "Value": "3"
+              }
+            ],
+            "AdjustRet": false
+          }
+        ],
+        "AdjustRet": false
+      }
+    }
+  ]
+}

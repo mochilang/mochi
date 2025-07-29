@@ -1,0 +1,474 @@
+{
+  "stmts": [
+    {
+      "Lhs": [
+        {
+          "Value": "math"
+        }
+      ],
+      "Rhs": [
+        {
+          "Fields": [
+            {
+              "Key": {
+                "Value": "sqrt"
+              },
+              "Value": {
+                "Object": {
+                  "Value": "math"
+                },
+                "Key": {
+                  "Value": "sqrt"
+                }
+              }
+            },
+            {
+              "Key": {
+                "Value": "pow"
+              },
+              "Value": {
+                "Object": {
+                  "Value": "math"
+                },
+                "Key": {
+                  "Value": "pow"
+                }
+              }
+            },
+            {
+              "Key": {
+                "Value": "sin"
+              },
+              "Value": {
+                "Object": {
+                  "Value": "math"
+                },
+                "Key": {
+                  "Value": "sin"
+                }
+              }
+            },
+            {
+              "Key": {
+                "Value": "log"
+              },
+              "Value": {
+                "Object": {
+                  "Value": "math"
+                },
+                "Key": {
+                  "Value": "log"
+                }
+              }
+            },
+            {
+              "Key": {
+                "Value": "pi"
+              },
+              "Value": {
+                "Object": {
+                  "Value": "math"
+                },
+                "Key": {
+                  "Value": "pi"
+                }
+              }
+            },
+            {
+              "Key": {
+                "Value": "e"
+              },
+              "Value": {
+                "Func": {
+                  "Object": {
+                    "Value": "math"
+                  },
+                  "Key": {
+                    "Value": "exp"
+                  }
+                },
+                "Receiver": null,
+                "Method": "",
+                "Args": [
+                  {
+                    "Value": "1"
+                  }
+                ],
+                "AdjustRet": false
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Lhs": [
+        {
+          "Value": "r"
+        }
+      ],
+      "Rhs": [
+        {
+          "Value": "3"
+        }
+      ]
+    },
+    {
+      "Lhs": [
+        {
+          "Value": "area"
+        }
+      ],
+      "Rhs": [
+        {
+          "Operator": "*",
+          "Lhs": {
+            "Object": {
+              "Value": "math"
+            },
+            "Key": {
+              "Value": "pi"
+            }
+          },
+          "Rhs": {
+            "Func": {
+              "Object": {
+                "Value": "math"
+              },
+              "Key": {
+                "Value": "pow"
+              }
+            },
+            "Receiver": null,
+            "Method": "",
+            "Args": [
+              {
+                "Value": "r"
+              },
+              {
+                "Value": "2"
+              }
+            ],
+            "AdjustRet": false
+          }
+        }
+      ]
+    },
+    {
+      "Lhs": [
+        {
+          "Value": "root"
+        }
+      ],
+      "Rhs": [
+        {
+          "Func": {
+            "Object": {
+              "Value": "math"
+            },
+            "Key": {
+              "Value": "sqrt"
+            }
+          },
+          "Receiver": null,
+          "Method": "",
+          "Args": [
+            {
+              "Value": "49"
+            }
+          ],
+          "AdjustRet": false
+        }
+      ]
+    },
+    {
+      "Lhs": [
+        {
+          "Value": "sin45"
+        }
+      ],
+      "Rhs": [
+        {
+          "Func": {
+            "Object": {
+              "Value": "math"
+            },
+            "Key": {
+              "Value": "sin"
+            }
+          },
+          "Receiver": null,
+          "Method": "",
+          "Args": [
+            {
+              "Operator": "/",
+              "Lhs": {
+                "Object": {
+                  "Value": "math"
+                },
+                "Key": {
+                  "Value": "pi"
+                }
+              },
+              "Rhs": {
+                "Value": "4"
+              }
+            }
+          ],
+          "AdjustRet": false
+        }
+      ]
+    },
+    {
+      "Lhs": [
+        {
+          "Value": "log_e"
+        }
+      ],
+      "Rhs": [
+        {
+          "Func": {
+            "Object": {
+              "Value": "math"
+            },
+            "Key": {
+              "Value": "log"
+            }
+          },
+          "Receiver": null,
+          "Method": "",
+          "Args": [
+            {
+              "Object": {
+                "Value": "math"
+              },
+              "Key": {
+                "Value": "e"
+              }
+            }
+          ],
+          "AdjustRet": false
+        }
+      ]
+    },
+    {
+      "Expr": {
+        "Func": {
+          "Value": "print"
+        },
+        "Receiver": null,
+        "Method": "",
+        "Args": [
+          {
+            "Func": {
+              "Object": {
+                "Value": "string"
+              },
+              "Key": {
+                "Value": "gsub"
+              }
+            },
+            "Receiver": null,
+            "Method": "",
+            "Args": [
+              {
+                "Func": {
+                  "Object": {
+                    "Value": "string"
+                  },
+                  "Key": {
+                    "Value": "format"
+                  }
+                },
+                "Receiver": null,
+                "Method": "",
+                "Args": [
+                  {
+                    "Value": "Circle area with r = %s =\u003e %s"
+                  },
+                  {
+                    "Value": "r"
+                  },
+                  {
+                    "Value": "area"
+                  }
+                ],
+                "AdjustRet": false
+              },
+              {
+                "Value": "%s+$"
+              },
+              {
+                "Value": ""
+              }
+            ],
+            "AdjustRet": true
+          }
+        ],
+        "AdjustRet": false
+      }
+    },
+    {
+      "Expr": {
+        "Func": {
+          "Value": "print"
+        },
+        "Receiver": null,
+        "Method": "",
+        "Args": [
+          {
+            "Func": {
+              "Object": {
+                "Value": "string"
+              },
+              "Key": {
+                "Value": "gsub"
+              }
+            },
+            "Receiver": null,
+            "Method": "",
+            "Args": [
+              {
+                "Func": {
+                  "Object": {
+                    "Value": "string"
+                  },
+                  "Key": {
+                    "Value": "format"
+                  }
+                },
+                "Receiver": null,
+                "Method": "",
+                "Args": [
+                  {
+                    "Value": "Square root of 49: %s"
+                  },
+                  {
+                    "Value": "root"
+                  }
+                ],
+                "AdjustRet": false
+              },
+              {
+                "Value": "%s+$"
+              },
+              {
+                "Value": ""
+              }
+            ],
+            "AdjustRet": true
+          }
+        ],
+        "AdjustRet": false
+      }
+    },
+    {
+      "Expr": {
+        "Func": {
+          "Value": "print"
+        },
+        "Receiver": null,
+        "Method": "",
+        "Args": [
+          {
+            "Func": {
+              "Object": {
+                "Value": "string"
+              },
+              "Key": {
+                "Value": "gsub"
+              }
+            },
+            "Receiver": null,
+            "Method": "",
+            "Args": [
+              {
+                "Func": {
+                  "Object": {
+                    "Value": "string"
+                  },
+                  "Key": {
+                    "Value": "format"
+                  }
+                },
+                "Receiver": null,
+                "Method": "",
+                "Args": [
+                  {
+                    "Value": "sin(π/4): %s"
+                  },
+                  {
+                    "Value": "sin45"
+                  }
+                ],
+                "AdjustRet": false
+              },
+              {
+                "Value": "%s+$"
+              },
+              {
+                "Value": ""
+              }
+            ],
+            "AdjustRet": true
+          }
+        ],
+        "AdjustRet": false
+      }
+    },
+    {
+      "Expr": {
+        "Func": {
+          "Value": "print"
+        },
+        "Receiver": null,
+        "Method": "",
+        "Args": [
+          {
+            "Func": {
+              "Object": {
+                "Value": "string"
+              },
+              "Key": {
+                "Value": "gsub"
+              }
+            },
+            "Receiver": null,
+            "Method": "",
+            "Args": [
+              {
+                "Func": {
+                  "Object": {
+                    "Value": "string"
+                  },
+                  "Key": {
+                    "Value": "format"
+                  }
+                },
+                "Receiver": null,
+                "Method": "",
+                "Args": [
+                  {
+                    "Value": "log(e): %s"
+                  },
+                  {
+                    "Value": "log_e"
+                  }
+                ],
+                "AdjustRet": false
+              },
+              {
+                "Value": "%s+$"
+              },
+              {
+                "Value": ""
+              }
+            ],
+            "AdjustRet": true
+          }
+        ],
+        "AdjustRet": false
+      }
+    }
+  ]
+}

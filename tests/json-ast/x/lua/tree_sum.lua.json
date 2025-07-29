@@ -1,0 +1,307 @@
+{
+  "stmts": [
+    {
+      "Name": {
+        "Func": {
+          "Value": "sum_tree"
+        },
+        "Receiver": null,
+        "Method": ""
+      },
+      "Func": {
+        "ParList": {
+          "HasVargs": false,
+          "Names": [
+            "t"
+          ]
+        },
+        "Stmts": [
+          {
+            "Exprs": [
+              {
+                "Func": {
+                  "ParList": {
+                    "HasVargs": false,
+                    "Names": [
+                      "_m"
+                    ]
+                  },
+                  "Stmts": [
+                    {
+                      "Condition": {
+                        "Operator": "==",
+                        "Lhs": {
+                          "Object": {
+                            "Value": "_m"
+                          },
+                          "Key": {
+                            "Value": "__name"
+                          }
+                        },
+                        "Rhs": {
+                          "Value": "Leaf"
+                        }
+                      },
+                      "Then": [
+                        {
+                          "Exprs": [
+                            {
+                              "Value": "0"
+                            }
+                          ]
+                        }
+                      ],
+                      "Else": [
+                        {
+                          "Condition": {
+                            "Operator": "==",
+                            "Lhs": {
+                              "Object": {
+                                "Value": "_m"
+                              },
+                              "Key": {
+                                "Value": "__name"
+                              }
+                            },
+                            "Rhs": {
+                              "Value": "Node"
+                            }
+                          },
+                          "Then": [
+                            {
+                              "Names": [
+                                "left"
+                              ],
+                              "Exprs": [
+                                {
+                                  "Object": {
+                                    "Value": "_m"
+                                  },
+                                  "Key": {
+                                    "Value": "left"
+                                  }
+                                }
+                              ]
+                            },
+                            {
+                              "Names": [
+                                "value"
+                              ],
+                              "Exprs": [
+                                {
+                                  "Object": {
+                                    "Value": "_m"
+                                  },
+                                  "Key": {
+                                    "Value": "value"
+                                  }
+                                }
+                              ]
+                            },
+                            {
+                              "Names": [
+                                "right"
+                              ],
+                              "Exprs": [
+                                {
+                                  "Object": {
+                                    "Value": "_m"
+                                  },
+                                  "Key": {
+                                    "Value": "right"
+                                  }
+                                }
+                              ]
+                            },
+                            {
+                              "Exprs": [
+                                {
+                                  "Operator": "+",
+                                  "Lhs": {
+                                    "Operator": "+",
+                                    "Lhs": {
+                                      "Func": {
+                                        "Value": "sum_tree"
+                                      },
+                                      "Receiver": null,
+                                      "Method": "",
+                                      "Args": [
+                                        {
+                                          "Value": "left"
+                                        }
+                                      ],
+                                      "AdjustRet": false
+                                    },
+                                    "Rhs": {
+                                      "Value": "value"
+                                    }
+                                  },
+                                  "Rhs": {
+                                    "Func": {
+                                      "Value": "sum_tree"
+                                    },
+                                    "Receiver": null,
+                                    "Method": "",
+                                    "Args": [
+                                      {
+                                        "Value": "right"
+                                      }
+                                    ],
+                                    "AdjustRet": false
+                                  }
+                                }
+                              ]
+                            }
+                          ],
+                          "Else": null
+                        }
+                      ]
+                    }
+                  ]
+                },
+                "Receiver": null,
+                "Method": "",
+                "Args": [
+                  {
+                    "Value": "t"
+                  }
+                ],
+                "AdjustRet": false
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "Lhs": [
+        {
+          "Value": "t"
+        }
+      ],
+      "Rhs": [
+        {
+          "Fields": [
+            {
+              "Key": {
+                "Value": "__name"
+              },
+              "Value": {
+                "Value": "Node"
+              }
+            },
+            {
+              "Key": {
+                "Value": "left"
+              },
+              "Value": {
+                "Fields": [
+                  {
+                    "Key": {
+                      "Value": "__name"
+                    },
+                    "Value": {
+                      "Value": "Leaf"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "Key": {
+                "Value": "value"
+              },
+              "Value": {
+                "Value": "1"
+              }
+            },
+            {
+              "Key": {
+                "Value": "right"
+              },
+              "Value": {
+                "Fields": [
+                  {
+                    "Key": {
+                      "Value": "__name"
+                    },
+                    "Value": {
+                      "Value": "Node"
+                    }
+                  },
+                  {
+                    "Key": {
+                      "Value": "left"
+                    },
+                    "Value": {
+                      "Fields": [
+                        {
+                          "Key": {
+                            "Value": "__name"
+                          },
+                          "Value": {
+                            "Value": "Leaf"
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "Key": {
+                      "Value": "value"
+                    },
+                    "Value": {
+                      "Value": "2"
+                    }
+                  },
+                  {
+                    "Key": {
+                      "Value": "right"
+                    },
+                    "Value": {
+                      "Fields": [
+                        {
+                          "Key": {
+                            "Value": "__name"
+                          },
+                          "Value": {
+                            "Value": "Leaf"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Expr": {
+        "Func": {
+          "Value": "print"
+        },
+        "Receiver": null,
+        "Method": "",
+        "Args": [
+          {
+            "Func": {
+              "Value": "sum_tree"
+            },
+            "Receiver": null,
+            "Method": "",
+            "Args": [
+              {
+                "Value": "t"
+              }
+            ],
+            "AdjustRet": false
+          }
+        ],
+        "AdjustRet": false
+      }
+    }
+  ]
+}

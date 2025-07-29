@@ -1,0 +1,2740 @@
+{
+  "stmts": [
+    {
+      "Lhs": [
+        {
+          "Value": "nation"
+        }
+      ],
+      "Rhs": [
+        {
+          "Fields": [
+            {
+              "Key": null,
+              "Value": {
+                "Fields": [
+                  {
+                    "Key": {
+                      "Value": "n_nationkey"
+                    },
+                    "Value": {
+                      "Value": "1"
+                    }
+                  },
+                  {
+                    "Key": {
+                      "Value": "n_name"
+                    },
+                    "Value": {
+                      "Value": "BRAZIL"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Lhs": [
+        {
+          "Value": "customer"
+        }
+      ],
+      "Rhs": [
+        {
+          "Fields": [
+            {
+              "Key": null,
+              "Value": {
+                "Fields": [
+                  {
+                    "Key": {
+                      "Value": "c_custkey"
+                    },
+                    "Value": {
+                      "Value": "1"
+                    }
+                  },
+                  {
+                    "Key": {
+                      "Value": "c_name"
+                    },
+                    "Value": {
+                      "Value": "Alice"
+                    }
+                  },
+                  {
+                    "Key": {
+                      "Value": "c_acctbal"
+                    },
+                    "Value": {
+                      "Value": "100"
+                    }
+                  },
+                  {
+                    "Key": {
+                      "Value": "c_nationkey"
+                    },
+                    "Value": {
+                      "Value": "1"
+                    }
+                  },
+                  {
+                    "Key": {
+                      "Value": "c_address"
+                    },
+                    "Value": {
+                      "Value": "123 St"
+                    }
+                  },
+                  {
+                    "Key": {
+                      "Value": "c_phone"
+                    },
+                    "Value": {
+                      "Value": "123-456"
+                    }
+                  },
+                  {
+                    "Key": {
+                      "Value": "c_comment"
+                    },
+                    "Value": {
+                      "Value": "Loyal"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Lhs": [
+        {
+          "Value": "orders"
+        }
+      ],
+      "Rhs": [
+        {
+          "Fields": [
+            {
+              "Key": null,
+              "Value": {
+                "Fields": [
+                  {
+                    "Key": {
+                      "Value": "o_orderkey"
+                    },
+                    "Value": {
+                      "Value": "1000"
+                    }
+                  },
+                  {
+                    "Key": {
+                      "Value": "o_custkey"
+                    },
+                    "Value": {
+                      "Value": "1"
+                    }
+                  },
+                  {
+                    "Key": {
+                      "Value": "o_orderdate"
+                    },
+                    "Value": {
+                      "Value": "1993-10-15"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "Key": null,
+              "Value": {
+                "Fields": [
+                  {
+                    "Key": {
+                      "Value": "o_orderkey"
+                    },
+                    "Value": {
+                      "Value": "2000"
+                    }
+                  },
+                  {
+                    "Key": {
+                      "Value": "o_custkey"
+                    },
+                    "Value": {
+                      "Value": "1"
+                    }
+                  },
+                  {
+                    "Key": {
+                      "Value": "o_orderdate"
+                    },
+                    "Value": {
+                      "Value": "1994-01-02"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Lhs": [
+        {
+          "Value": "lineitem"
+        }
+      ],
+      "Rhs": [
+        {
+          "Fields": [
+            {
+              "Key": null,
+              "Value": {
+                "Fields": [
+                  {
+                    "Key": {
+                      "Value": "l_orderkey"
+                    },
+                    "Value": {
+                      "Value": "1000"
+                    }
+                  },
+                  {
+                    "Key": {
+                      "Value": "l_returnflag"
+                    },
+                    "Value": {
+                      "Value": "R"
+                    }
+                  },
+                  {
+                    "Key": {
+                      "Value": "l_extendedprice"
+                    },
+                    "Value": {
+                      "Value": "1000"
+                    }
+                  },
+                  {
+                    "Key": {
+                      "Value": "l_discount"
+                    },
+                    "Value": {
+                      "Value": "0.1"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "Key": null,
+              "Value": {
+                "Fields": [
+                  {
+                    "Key": {
+                      "Value": "l_orderkey"
+                    },
+                    "Value": {
+                      "Value": "2000"
+                    }
+                  },
+                  {
+                    "Key": {
+                      "Value": "l_returnflag"
+                    },
+                    "Value": {
+                      "Value": "N"
+                    }
+                  },
+                  {
+                    "Key": {
+                      "Value": "l_extendedprice"
+                    },
+                    "Value": {
+                      "Value": "500"
+                    }
+                  },
+                  {
+                    "Key": {
+                      "Value": "l_discount"
+                    },
+                    "Value": {
+                      "Value": "0"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Lhs": [
+        {
+          "Value": "start_date"
+        }
+      ],
+      "Rhs": [
+        {
+          "Value": "1993-10-01"
+        }
+      ]
+    },
+    {
+      "Lhs": [
+        {
+          "Value": "end_date"
+        }
+      ],
+      "Rhs": [
+        {
+          "Value": "1994-01-01"
+        }
+      ]
+    },
+    {
+      "Lhs": [
+        {
+          "Value": "result"
+        }
+      ],
+      "Rhs": [
+        {
+          "Func": {
+            "ParList": {
+              "HasVargs": false,
+              "Names": []
+            },
+            "Stmts": [
+              {
+                "Names": [
+                  "groups"
+                ],
+                "Exprs": [
+                  {
+                    "Fields": []
+                  }
+                ]
+              },
+              {
+                "Names": [
+                  "orderKeys"
+                ],
+                "Exprs": [
+                  {
+                    "Fields": []
+                  }
+                ]
+              },
+              {
+                "Names": [
+                  "_",
+                  "c"
+                ],
+                "Exprs": [
+                  {
+                    "Func": {
+                      "Value": "ipairs"
+                    },
+                    "Receiver": null,
+                    "Method": "",
+                    "Args": [
+                      {
+                        "Value": "customer"
+                      }
+                    ],
+                    "AdjustRet": false
+                  }
+                ],
+                "Stmts": [
+                  {
+                    "Names": [
+                      "_",
+                      "o"
+                    ],
+                    "Exprs": [
+                      {
+                        "Func": {
+                          "Value": "ipairs"
+                        },
+                        "Receiver": null,
+                        "Method": "",
+                        "Args": [
+                          {
+                            "Value": "orders"
+                          }
+                        ],
+                        "AdjustRet": false
+                      }
+                    ],
+                    "Stmts": [
+                      {
+                        "Names": [
+                          "_",
+                          "l"
+                        ],
+                        "Exprs": [
+                          {
+                            "Func": {
+                              "Value": "ipairs"
+                            },
+                            "Receiver": null,
+                            "Method": "",
+                            "Args": [
+                              {
+                                "Value": "lineitem"
+                              }
+                            ],
+                            "AdjustRet": false
+                          }
+                        ],
+                        "Stmts": [
+                          {
+                            "Names": [
+                              "_",
+                              "n"
+                            ],
+                            "Exprs": [
+                              {
+                                "Func": {
+                                  "Value": "ipairs"
+                                },
+                                "Receiver": null,
+                                "Method": "",
+                                "Args": [
+                                  {
+                                    "Value": "nation"
+                                  }
+                                ],
+                                "AdjustRet": false
+                              }
+                            ],
+                            "Stmts": [
+                              {
+                                "Condition": {
+                                  "Operator": "and",
+                                  "Lhs": {
+                                    "Operator": "and",
+                                    "Lhs": {
+                                      "Operator": "and",
+                                      "Lhs": {
+                                        "Operator": "==",
+                                        "Lhs": {
+                                          "Object": {
+                                            "Value": "o"
+                                          },
+                                          "Key": {
+                                            "Value": "o_custkey"
+                                          }
+                                        },
+                                        "Rhs": {
+                                          "Object": {
+                                            "Value": "c"
+                                          },
+                                          "Key": {
+                                            "Value": "c_custkey"
+                                          }
+                                        }
+                                      },
+                                      "Rhs": {
+                                        "Operator": "==",
+                                        "Lhs": {
+                                          "Object": {
+                                            "Value": "l"
+                                          },
+                                          "Key": {
+                                            "Value": "l_orderkey"
+                                          }
+                                        },
+                                        "Rhs": {
+                                          "Object": {
+                                            "Value": "o"
+                                          },
+                                          "Key": {
+                                            "Value": "o_orderkey"
+                                          }
+                                        }
+                                      }
+                                    },
+                                    "Rhs": {
+                                      "Operator": "==",
+                                      "Lhs": {
+                                        "Object": {
+                                          "Value": "n"
+                                        },
+                                        "Key": {
+                                          "Value": "n_nationkey"
+                                        }
+                                      },
+                                      "Rhs": {
+                                        "Object": {
+                                          "Value": "c"
+                                        },
+                                        "Key": {
+                                          "Value": "c_nationkey"
+                                        }
+                                      }
+                                    }
+                                  },
+                                  "Rhs": {
+                                    "Operator": "==",
+                                    "Lhs": {
+                                      "Operator": "and",
+                                      "Lhs": {
+                                        "Operator": "\u003c",
+                                        "Lhs": {
+                                          "Operator": "and",
+                                          "Lhs": {
+                                            "Operator": "\u003e=",
+                                            "Lhs": {
+                                              "Object": {
+                                                "Value": "o"
+                                              },
+                                              "Key": {
+                                                "Value": "o_orderdate"
+                                              }
+                                            },
+                                            "Rhs": {
+                                              "Value": "start_date"
+                                            }
+                                          },
+                                          "Rhs": {
+                                            "Object": {
+                                              "Value": "o"
+                                            },
+                                            "Key": {
+                                              "Value": "o_orderdate"
+                                            }
+                                          }
+                                        },
+                                        "Rhs": {
+                                          "Value": "end_date"
+                                        }
+                                      },
+                                      "Rhs": {
+                                        "Object": {
+                                          "Value": "l"
+                                        },
+                                        "Key": {
+                                          "Value": "l_returnflag"
+                                        }
+                                      }
+                                    },
+                                    "Rhs": {
+                                      "Value": "R"
+                                    }
+                                  }
+                                },
+                                "Then": [
+                                  {
+                                    "Names": [
+                                      "key"
+                                    ],
+                                    "Exprs": [
+                                      {
+                                        "Fields": [
+                                          {
+                                            "Key": {
+                                              "Value": "c_custkey"
+                                            },
+                                            "Value": {
+                                              "Object": {
+                                                "Value": "c"
+                                              },
+                                              "Key": {
+                                                "Value": "c_custkey"
+                                              }
+                                            }
+                                          },
+                                          {
+                                            "Key": {
+                                              "Value": "c_name"
+                                            },
+                                            "Value": {
+                                              "Object": {
+                                                "Value": "c"
+                                              },
+                                              "Key": {
+                                                "Value": "c_name"
+                                              }
+                                            }
+                                          },
+                                          {
+                                            "Key": {
+                                              "Value": "c_acctbal"
+                                            },
+                                            "Value": {
+                                              "Object": {
+                                                "Value": "c"
+                                              },
+                                              "Key": {
+                                                "Value": "c_acctbal"
+                                              }
+                                            }
+                                          },
+                                          {
+                                            "Key": {
+                                              "Value": "c_address"
+                                            },
+                                            "Value": {
+                                              "Object": {
+                                                "Value": "c"
+                                              },
+                                              "Key": {
+                                                "Value": "c_address"
+                                              }
+                                            }
+                                          },
+                                          {
+                                            "Key": {
+                                              "Value": "c_phone"
+                                            },
+                                            "Value": {
+                                              "Object": {
+                                                "Value": "c"
+                                              },
+                                              "Key": {
+                                                "Value": "c_phone"
+                                              }
+                                            }
+                                          },
+                                          {
+                                            "Key": {
+                                              "Value": "c_comment"
+                                            },
+                                            "Value": {
+                                              "Object": {
+                                                "Value": "c"
+                                              },
+                                              "Key": {
+                                                "Value": "c_comment"
+                                              }
+                                            }
+                                          },
+                                          {
+                                            "Key": {
+                                              "Value": "n_name"
+                                            },
+                                            "Value": {
+                                              "Object": {
+                                                "Value": "n"
+                                              },
+                                              "Key": {
+                                                "Value": "n_name"
+                                              }
+                                            }
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "Names": [
+                                      "ks"
+                                    ],
+                                    "Exprs": [
+                                      {
+                                        "Func": {
+                                          "Value": "tostring"
+                                        },
+                                        "Receiver": null,
+                                        "Method": "",
+                                        "Args": [
+                                          {
+                                            "Value": "key"
+                                          }
+                                        ],
+                                        "AdjustRet": false
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "Names": [
+                                      "g"
+                                    ],
+                                    "Exprs": [
+                                      {
+                                        "Object": {
+                                          "Value": "groups"
+                                        },
+                                        "Key": {
+                                          "Value": "ks"
+                                        }
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "Condition": {
+                                      "Operator": "==",
+                                      "Lhs": {
+                                        "Value": "g"
+                                      },
+                                      "Rhs": {}
+                                    },
+                                    "Then": [
+                                      {
+                                        "Lhs": [
+                                          {
+                                            "Value": "g"
+                                          }
+                                        ],
+                                        "Rhs": [
+                                          {
+                                            "Fields": [
+                                              {
+                                                "Key": {
+                                                  "Value": "key"
+                                                },
+                                                "Value": {
+                                                  "Fields": [
+                                                    {
+                                                      "Key": {
+                                                        "Value": "c_custkey"
+                                                      },
+                                                      "Value": {
+                                                        "Object": {
+                                                          "Value": "c"
+                                                        },
+                                                        "Key": {
+                                                          "Value": "c_custkey"
+                                                        }
+                                                      }
+                                                    },
+                                                    {
+                                                      "Key": {
+                                                        "Value": "c_name"
+                                                      },
+                                                      "Value": {
+                                                        "Object": {
+                                                          "Value": "c"
+                                                        },
+                                                        "Key": {
+                                                          "Value": "c_name"
+                                                        }
+                                                      }
+                                                    },
+                                                    {
+                                                      "Key": {
+                                                        "Value": "c_acctbal"
+                                                      },
+                                                      "Value": {
+                                                        "Object": {
+                                                          "Value": "c"
+                                                        },
+                                                        "Key": {
+                                                          "Value": "c_acctbal"
+                                                        }
+                                                      }
+                                                    },
+                                                    {
+                                                      "Key": {
+                                                        "Value": "c_address"
+                                                      },
+                                                      "Value": {
+                                                        "Object": {
+                                                          "Value": "c"
+                                                        },
+                                                        "Key": {
+                                                          "Value": "c_address"
+                                                        }
+                                                      }
+                                                    },
+                                                    {
+                                                      "Key": {
+                                                        "Value": "c_phone"
+                                                      },
+                                                      "Value": {
+                                                        "Object": {
+                                                          "Value": "c"
+                                                        },
+                                                        "Key": {
+                                                          "Value": "c_phone"
+                                                        }
+                                                      }
+                                                    },
+                                                    {
+                                                      "Key": {
+                                                        "Value": "c_comment"
+                                                      },
+                                                      "Value": {
+                                                        "Object": {
+                                                          "Value": "c"
+                                                        },
+                                                        "Key": {
+                                                          "Value": "c_comment"
+                                                        }
+                                                      }
+                                                    },
+                                                    {
+                                                      "Key": {
+                                                        "Value": "n_name"
+                                                      },
+                                                      "Value": {
+                                                        "Object": {
+                                                          "Value": "n"
+                                                        },
+                                                        "Key": {
+                                                          "Value": "n_name"
+                                                        }
+                                                      }
+                                                    }
+                                                  ]
+                                                }
+                                              },
+                                              {
+                                                "Key": {
+                                                  "Value": "items"
+                                                },
+                                                "Value": {
+                                                  "Fields": []
+                                                }
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "Lhs": [
+                                          {
+                                            "Object": {
+                                              "Value": "groups"
+                                            },
+                                            "Key": {
+                                              "Value": "ks"
+                                            }
+                                          }
+                                        ],
+                                        "Rhs": [
+                                          {
+                                            "Value": "g"
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "Expr": {
+                                          "Func": {
+                                            "Object": {
+                                              "Value": "table"
+                                            },
+                                            "Key": {
+                                              "Value": "insert"
+                                            }
+                                          },
+                                          "Receiver": null,
+                                          "Method": "",
+                                          "Args": [
+                                            {
+                                              "Value": "orderKeys"
+                                            },
+                                            {
+                                              "Value": "ks"
+                                            }
+                                          ],
+                                          "AdjustRet": false
+                                        }
+                                      }
+                                    ],
+                                    "Else": null
+                                  },
+                                  {
+                                    "Names": [
+                                      "row"
+                                    ],
+                                    "Exprs": [
+                                      {
+                                        "Fields": []
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "Lhs": [
+                                      {
+                                        "Object": {
+                                          "Value": "row"
+                                        },
+                                        "Key": {
+                                          "Value": "c"
+                                        }
+                                      }
+                                    ],
+                                    "Rhs": [
+                                      {
+                                        "Value": "c"
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "Lhs": [
+                                      {
+                                        "Object": {
+                                          "Value": "row"
+                                        },
+                                        "Key": {
+                                          "Value": "o"
+                                        }
+                                      }
+                                    ],
+                                    "Rhs": [
+                                      {
+                                        "Value": "o"
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "Lhs": [
+                                      {
+                                        "Object": {
+                                          "Value": "row"
+                                        },
+                                        "Key": {
+                                          "Value": "l"
+                                        }
+                                      }
+                                    ],
+                                    "Rhs": [
+                                      {
+                                        "Value": "l"
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "Lhs": [
+                                      {
+                                        "Object": {
+                                          "Value": "row"
+                                        },
+                                        "Key": {
+                                          "Value": "n"
+                                        }
+                                      }
+                                    ],
+                                    "Rhs": [
+                                      {
+                                        "Value": "n"
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "Expr": {
+                                      "Func": {
+                                        "Object": {
+                                          "Value": "table"
+                                        },
+                                        "Key": {
+                                          "Value": "insert"
+                                        }
+                                      },
+                                      "Receiver": null,
+                                      "Method": "",
+                                      "Args": [
+                                        {
+                                          "Object": {
+                                            "Value": "g"
+                                          },
+                                          "Key": {
+                                            "Value": "items"
+                                          }
+                                        },
+                                        {
+                                          "Value": "row"
+                                        }
+                                      ],
+                                      "AdjustRet": false
+                                    }
+                                  }
+                                ],
+                                "Else": null
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "Names": [
+                  "tmp"
+                ],
+                "Exprs": [
+                  {
+                    "Fields": []
+                  }
+                ]
+              },
+              {
+                "Names": [
+                  "res"
+                ],
+                "Exprs": [
+                  {
+                    "Fields": []
+                  }
+                ]
+              },
+              {
+                "Names": [
+                  "_",
+                  "ks"
+                ],
+                "Exprs": [
+                  {
+                    "Func": {
+                      "Value": "ipairs"
+                    },
+                    "Receiver": null,
+                    "Method": "",
+                    "Args": [
+                      {
+                        "Value": "orderKeys"
+                      }
+                    ],
+                    "AdjustRet": false
+                  }
+                ],
+                "Stmts": [
+                  {
+                    "Names": [
+                      "g"
+                    ],
+                    "Exprs": [
+                      {
+                        "Object": {
+                          "Value": "groups"
+                        },
+                        "Key": {
+                          "Value": "ks"
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "Expr": {
+                      "Func": {
+                        "Object": {
+                          "Value": "table"
+                        },
+                        "Key": {
+                          "Value": "insert"
+                        }
+                      },
+                      "Receiver": null,
+                      "Method": "",
+                      "Args": [
+                        {
+                          "Value": "tmp"
+                        },
+                        {
+                          "Fields": [
+                            {
+                              "Key": {
+                                "Value": "k"
+                              },
+                              "Value": {
+                                "Operator": "-",
+                                "Lhs": {
+                                  "Value": "0"
+                                },
+                                "Rhs": {
+                                  "Func": {
+                                    "ParList": {
+                                      "HasVargs": false,
+                                      "Names": [
+                                        "lst"
+                                      ]
+                                    },
+                                    "Stmts": [
+                                      {
+                                        "Names": [
+                                          "s"
+                                        ],
+                                        "Exprs": [
+                                          {
+                                            "Value": "0"
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "Names": [
+                                          "_",
+                                          "v"
+                                        ],
+                                        "Exprs": [
+                                          {
+                                            "Func": {
+                                              "Value": "ipairs"
+                                            },
+                                            "Receiver": null,
+                                            "Method": "",
+                                            "Args": [
+                                              {
+                                                "Value": "lst"
+                                              }
+                                            ],
+                                            "AdjustRet": false
+                                          }
+                                        ],
+                                        "Stmts": [
+                                          {
+                                            "Lhs": [
+                                              {
+                                                "Value": "s"
+                                              }
+                                            ],
+                                            "Rhs": [
+                                              {
+                                                "Operator": "+",
+                                                "Lhs": {
+                                                  "Value": "s"
+                                                },
+                                                "Rhs": {
+                                                  "Value": "v"
+                                                }
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "Exprs": [
+                                          {
+                                            "Value": "s"
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  },
+                                  "Receiver": null,
+                                  "Method": "",
+                                  "Args": [
+                                    {
+                                      "Func": {
+                                        "ParList": {
+                                          "HasVargs": false,
+                                          "Names": []
+                                        },
+                                        "Stmts": [
+                                          {
+                                            "Names": [
+                                              "_res"
+                                            ],
+                                            "Exprs": [
+                                              {
+                                                "Fields": []
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "Names": [
+                                              "_",
+                                              "x"
+                                            ],
+                                            "Exprs": [
+                                              {
+                                                "Func": {
+                                                  "Value": "ipairs"
+                                                },
+                                                "Receiver": null,
+                                                "Method": "",
+                                                "Args": [
+                                                  {
+                                                    "Object": {
+                                                      "Value": "g"
+                                                    },
+                                                    "Key": {
+                                                      "Value": "items"
+                                                    }
+                                                  }
+                                                ],
+                                                "AdjustRet": false
+                                              }
+                                            ],
+                                            "Stmts": [
+                                              {
+                                                "Expr": {
+                                                  "Func": {
+                                                    "Object": {
+                                                      "Value": "table"
+                                                    },
+                                                    "Key": {
+                                                      "Value": "insert"
+                                                    }
+                                                  },
+                                                  "Receiver": null,
+                                                  "Method": "",
+                                                  "Args": [
+                                                    {
+                                                      "Value": "_res"
+                                                    },
+                                                    {
+                                                      "Operator": "*",
+                                                      "Lhs": {
+                                                        "Object": {
+                                                          "Object": {
+                                                            "Value": "x"
+                                                          },
+                                                          "Key": {
+                                                            "Value": "l"
+                                                          }
+                                                        },
+                                                        "Key": {
+                                                          "Value": "l_extendedprice"
+                                                        }
+                                                      },
+                                                      "Rhs": {
+                                                        "Operator": "-",
+                                                        "Lhs": {
+                                                          "Value": "1"
+                                                        },
+                                                        "Rhs": {
+                                                          "Object": {
+                                                            "Object": {
+                                                              "Value": "x"
+                                                            },
+                                                            "Key": {
+                                                              "Value": "l"
+                                                            }
+                                                          },
+                                                          "Key": {
+                                                            "Value": "l_discount"
+                                                          }
+                                                        }
+                                                      }
+                                                    }
+                                                  ],
+                                                  "AdjustRet": false
+                                                }
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "Exprs": [
+                                              {
+                                                "Value": "_res"
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      },
+                                      "Receiver": null,
+                                      "Method": "",
+                                      "Args": [],
+                                      "AdjustRet": false
+                                    }
+                                  ],
+                                  "AdjustRet": false
+                                }
+                              }
+                            },
+                            {
+                              "Key": {
+                                "Value": "v"
+                              },
+                              "Value": {
+                                "Fields": [
+                                  {
+                                    "Key": {
+                                      "Value": "c_custkey"
+                                    },
+                                    "Value": {
+                                      "Object": {
+                                        "Object": {
+                                          "Value": "g"
+                                        },
+                                        "Key": {
+                                          "Value": "key"
+                                        }
+                                      },
+                                      "Key": {
+                                        "Value": "c_custkey"
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "Key": {
+                                      "Value": "c_name"
+                                    },
+                                    "Value": {
+                                      "Object": {
+                                        "Object": {
+                                          "Value": "g"
+                                        },
+                                        "Key": {
+                                          "Value": "key"
+                                        }
+                                      },
+                                      "Key": {
+                                        "Value": "c_name"
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "Key": {
+                                      "Value": "revenue"
+                                    },
+                                    "Value": {
+                                      "Func": {
+                                        "ParList": {
+                                          "HasVargs": false,
+                                          "Names": [
+                                            "lst"
+                                          ]
+                                        },
+                                        "Stmts": [
+                                          {
+                                            "Names": [
+                                              "s"
+                                            ],
+                                            "Exprs": [
+                                              {
+                                                "Value": "0"
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "Names": [
+                                              "_",
+                                              "v"
+                                            ],
+                                            "Exprs": [
+                                              {
+                                                "Func": {
+                                                  "Value": "ipairs"
+                                                },
+                                                "Receiver": null,
+                                                "Method": "",
+                                                "Args": [
+                                                  {
+                                                    "Value": "lst"
+                                                  }
+                                                ],
+                                                "AdjustRet": false
+                                              }
+                                            ],
+                                            "Stmts": [
+                                              {
+                                                "Lhs": [
+                                                  {
+                                                    "Value": "s"
+                                                  }
+                                                ],
+                                                "Rhs": [
+                                                  {
+                                                    "Operator": "+",
+                                                    "Lhs": {
+                                                      "Value": "s"
+                                                    },
+                                                    "Rhs": {
+                                                      "Value": "v"
+                                                    }
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "Exprs": [
+                                              {
+                                                "Value": "s"
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      },
+                                      "Receiver": null,
+                                      "Method": "",
+                                      "Args": [
+                                        {
+                                          "Func": {
+                                            "ParList": {
+                                              "HasVargs": false,
+                                              "Names": []
+                                            },
+                                            "Stmts": [
+                                              {
+                                                "Names": [
+                                                  "_res"
+                                                ],
+                                                "Exprs": [
+                                                  {
+                                                    "Fields": []
+                                                  }
+                                                ]
+                                              },
+                                              {
+                                                "Names": [
+                                                  "_",
+                                                  "x"
+                                                ],
+                                                "Exprs": [
+                                                  {
+                                                    "Func": {
+                                                      "Value": "ipairs"
+                                                    },
+                                                    "Receiver": null,
+                                                    "Method": "",
+                                                    "Args": [
+                                                      {
+                                                        "Object": {
+                                                          "Value": "g"
+                                                        },
+                                                        "Key": {
+                                                          "Value": "items"
+                                                        }
+                                                      }
+                                                    ],
+                                                    "AdjustRet": false
+                                                  }
+                                                ],
+                                                "Stmts": [
+                                                  {
+                                                    "Expr": {
+                                                      "Func": {
+                                                        "Object": {
+                                                          "Value": "table"
+                                                        },
+                                                        "Key": {
+                                                          "Value": "insert"
+                                                        }
+                                                      },
+                                                      "Receiver": null,
+                                                      "Method": "",
+                                                      "Args": [
+                                                        {
+                                                          "Value": "_res"
+                                                        },
+                                                        {
+                                                          "Operator": "*",
+                                                          "Lhs": {
+                                                            "Object": {
+                                                              "Object": {
+                                                                "Value": "x"
+                                                              },
+                                                              "Key": {
+                                                                "Value": "l"
+                                                              }
+                                                            },
+                                                            "Key": {
+                                                              "Value": "l_extendedprice"
+                                                            }
+                                                          },
+                                                          "Rhs": {
+                                                            "Operator": "-",
+                                                            "Lhs": {
+                                                              "Value": "1"
+                                                            },
+                                                            "Rhs": {
+                                                              "Object": {
+                                                                "Object": {
+                                                                  "Value": "x"
+                                                                },
+                                                                "Key": {
+                                                                  "Value": "l"
+                                                                }
+                                                              },
+                                                              "Key": {
+                                                                "Value": "l_discount"
+                                                              }
+                                                            }
+                                                          }
+                                                        }
+                                                      ],
+                                                      "AdjustRet": false
+                                                    }
+                                                  }
+                                                ]
+                                              },
+                                              {
+                                                "Exprs": [
+                                                  {
+                                                    "Value": "_res"
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          },
+                                          "Receiver": null,
+                                          "Method": "",
+                                          "Args": [],
+                                          "AdjustRet": false
+                                        }
+                                      ],
+                                      "AdjustRet": false
+                                    }
+                                  },
+                                  {
+                                    "Key": {
+                                      "Value": "c_acctbal"
+                                    },
+                                    "Value": {
+                                      "Object": {
+                                        "Object": {
+                                          "Value": "g"
+                                        },
+                                        "Key": {
+                                          "Value": "key"
+                                        }
+                                      },
+                                      "Key": {
+                                        "Value": "c_acctbal"
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "Key": {
+                                      "Value": "n_name"
+                                    },
+                                    "Value": {
+                                      "Object": {
+                                        "Object": {
+                                          "Value": "g"
+                                        },
+                                        "Key": {
+                                          "Value": "key"
+                                        }
+                                      },
+                                      "Key": {
+                                        "Value": "n_name"
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "Key": {
+                                      "Value": "c_address"
+                                    },
+                                    "Value": {
+                                      "Object": {
+                                        "Object": {
+                                          "Value": "g"
+                                        },
+                                        "Key": {
+                                          "Value": "key"
+                                        }
+                                      },
+                                      "Key": {
+                                        "Value": "c_address"
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "Key": {
+                                      "Value": "c_phone"
+                                    },
+                                    "Value": {
+                                      "Object": {
+                                        "Object": {
+                                          "Value": "g"
+                                        },
+                                        "Key": {
+                                          "Value": "key"
+                                        }
+                                      },
+                                      "Key": {
+                                        "Value": "c_phone"
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "Key": {
+                                      "Value": "c_comment"
+                                    },
+                                    "Value": {
+                                      "Object": {
+                                        "Object": {
+                                          "Value": "g"
+                                        },
+                                        "Key": {
+                                          "Value": "key"
+                                        }
+                                      },
+                                      "Key": {
+                                        "Value": "c_comment"
+                                      }
+                                    }
+                                  }
+                                ]
+                              }
+                            }
+                          ]
+                        }
+                      ],
+                      "AdjustRet": false
+                    }
+                  }
+                ]
+              },
+              {
+                "Expr": {
+                  "Func": {
+                    "Object": {
+                      "Value": "table"
+                    },
+                    "Key": {
+                      "Value": "sort"
+                    }
+                  },
+                  "Receiver": null,
+                  "Method": "",
+                  "Args": [
+                    {
+                      "Value": "tmp"
+                    },
+                    {
+                      "ParList": {
+                        "HasVargs": false,
+                        "Names": [
+                          "a",
+                          "b"
+                        ]
+                      },
+                      "Stmts": [
+                        {
+                          "Exprs": [
+                            {
+                              "Operator": "\u003c",
+                              "Lhs": {
+                                "Object": {
+                                  "Value": "a"
+                                },
+                                "Key": {
+                                  "Value": "k"
+                                }
+                              },
+                              "Rhs": {
+                                "Object": {
+                                  "Value": "b"
+                                },
+                                "Key": {
+                                  "Value": "k"
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ],
+                  "AdjustRet": false
+                }
+              },
+              {
+                "Names": [
+                  "i",
+                  "p"
+                ],
+                "Exprs": [
+                  {
+                    "Func": {
+                      "Value": "ipairs"
+                    },
+                    "Receiver": null,
+                    "Method": "",
+                    "Args": [
+                      {
+                        "Value": "tmp"
+                      }
+                    ],
+                    "AdjustRet": false
+                  }
+                ],
+                "Stmts": [
+                  {
+                    "Lhs": [
+                      {
+                        "Object": {
+                          "Value": "res"
+                        },
+                        "Key": {
+                          "Value": "i"
+                        }
+                      }
+                    ],
+                    "Rhs": [
+                      {
+                        "Object": {
+                          "Value": "p"
+                        },
+                        "Key": {
+                          "Value": "v"
+                        }
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "Exprs": [
+                  {
+                    "Value": "res"
+                  }
+                ]
+              }
+            ]
+          },
+          "Receiver": null,
+          "Method": "",
+          "Args": [],
+          "AdjustRet": false
+        }
+      ]
+    },
+    {
+      "Expr": {
+        "Func": {
+          "ParList": {
+            "HasVargs": false,
+            "Names": [
+              "v"
+            ]
+          },
+          "Stmts": [
+            {
+              "Names": [
+                "is_array"
+              ],
+              "Exprs": [
+                {
+                  "ParList": {
+                    "HasVargs": false,
+                    "Names": [
+                      "t"
+                    ]
+                  },
+                  "Stmts": [
+                    {
+                      "Names": [
+                        "i"
+                      ],
+                      "Exprs": [
+                        {
+                          "Value": "1"
+                        }
+                      ]
+                    },
+                    {
+                      "Names": [
+                        "k",
+                        "_"
+                      ],
+                      "Exprs": [
+                        {
+                          "Func": {
+                            "Value": "pairs"
+                          },
+                          "Receiver": null,
+                          "Method": "",
+                          "Args": [
+                            {
+                              "Value": "t"
+                            }
+                          ],
+                          "AdjustRet": false
+                        }
+                      ],
+                      "Stmts": [
+                        {
+                          "Condition": {
+                            "Operator": "~=",
+                            "Lhs": {
+                              "Value": "k"
+                            },
+                            "Rhs": {
+                              "Value": "i"
+                            }
+                          },
+                          "Then": [
+                            {
+                              "Exprs": [
+                                {}
+                              ]
+                            }
+                          ],
+                          "Else": null
+                        },
+                        {
+                          "Lhs": [
+                            {
+                              "Value": "i"
+                            }
+                          ],
+                          "Rhs": [
+                            {
+                              "Operator": "+",
+                              "Lhs": {
+                                "Value": "i"
+                              },
+                              "Rhs": {
+                                "Value": "1"
+                              }
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "Exprs": [
+                        {}
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "Names": [
+                "encode"
+              ],
+              "Exprs": [
+                {
+                  "ParList": {
+                    "HasVargs": false,
+                    "Names": [
+                      "x",
+                      "ind"
+                    ]
+                  },
+                  "Stmts": [
+                    {
+                      "Lhs": [
+                        {
+                          "Value": "ind"
+                        }
+                      ],
+                      "Rhs": [
+                        {
+                          "Operator": "or",
+                          "Lhs": {
+                            "Value": "ind"
+                          },
+                          "Rhs": {
+                            "Value": "0"
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "Names": [
+                        "pad"
+                      ],
+                      "Exprs": [
+                        {
+                          "Func": {
+                            "Object": {
+                              "Value": "string"
+                            },
+                            "Key": {
+                              "Value": "rep"
+                            }
+                          },
+                          "Receiver": null,
+                          "Method": "",
+                          "Args": [
+                            {
+                              "Value": "  "
+                            },
+                            {
+                              "Value": "ind"
+                            }
+                          ],
+                          "AdjustRet": false
+                        }
+                      ]
+                    },
+                    {
+                      "Condition": {
+                        "Operator": "==",
+                        "Lhs": {
+                          "Func": {
+                            "Value": "type"
+                          },
+                          "Receiver": null,
+                          "Method": "",
+                          "Args": [
+                            {
+                              "Value": "x"
+                            }
+                          ],
+                          "AdjustRet": false
+                        },
+                        "Rhs": {
+                          "Value": "table"
+                        }
+                      },
+                      "Then": [
+                        {
+                          "Condition": {
+                            "Func": {
+                              "Value": "is_array"
+                            },
+                            "Receiver": null,
+                            "Method": "",
+                            "Args": [
+                              {
+                                "Value": "x"
+                              }
+                            ],
+                            "AdjustRet": false
+                          },
+                          "Then": [
+                            {
+                              "Names": [
+                                "parts"
+                              ],
+                              "Exprs": [
+                                {
+                                  "Fields": [
+                                    {
+                                      "Key": null,
+                                      "Value": {
+                                        "Value": "["
+                                      }
+                                    }
+                                  ]
+                                }
+                              ]
+                            },
+                            {
+                              "Names": [
+                                "i",
+                                "val"
+                              ],
+                              "Exprs": [
+                                {
+                                  "Func": {
+                                    "Value": "ipairs"
+                                  },
+                                  "Receiver": null,
+                                  "Method": "",
+                                  "Args": [
+                                    {
+                                      "Value": "x"
+                                    }
+                                  ],
+                                  "AdjustRet": false
+                                }
+                              ],
+                              "Stmts": [
+                                {
+                                  "Lhs": [
+                                    {
+                                      "Object": {
+                                        "Value": "parts"
+                                      },
+                                      "Key": {
+                                        "Operator": "+",
+                                        "Lhs": {
+                                          "Expr": {
+                                            "Value": "parts"
+                                          }
+                                        },
+                                        "Rhs": {
+                                          "Value": "1"
+                                        }
+                                      }
+                                    }
+                                  ],
+                                  "Rhs": [
+                                    {
+                                      "Lhs": {
+                                        "Value": "\n"
+                                      },
+                                      "Rhs": {
+                                        "Lhs": {
+                                          "Func": {
+                                            "Object": {
+                                              "Value": "string"
+                                            },
+                                            "Key": {
+                                              "Value": "rep"
+                                            }
+                                          },
+                                          "Receiver": null,
+                                          "Method": "",
+                                          "Args": [
+                                            {
+                                              "Value": "  "
+                                            },
+                                            {
+                                              "Operator": "+",
+                                              "Lhs": {
+                                                "Value": "ind"
+                                              },
+                                              "Rhs": {
+                                                "Value": "1"
+                                              }
+                                            }
+                                          ],
+                                          "AdjustRet": false
+                                        },
+                                        "Rhs": {
+                                          "Func": {
+                                            "Value": "encode"
+                                          },
+                                          "Receiver": null,
+                                          "Method": "",
+                                          "Args": [
+                                            {
+                                              "Value": "val"
+                                            },
+                                            {
+                                              "Operator": "+",
+                                              "Lhs": {
+                                                "Value": "ind"
+                                              },
+                                              "Rhs": {
+                                                "Value": "1"
+                                              }
+                                            }
+                                          ],
+                                          "AdjustRet": false
+                                        }
+                                      }
+                                    }
+                                  ]
+                                },
+                                {
+                                  "Condition": {
+                                    "Operator": "\u003c",
+                                    "Lhs": {
+                                      "Value": "i"
+                                    },
+                                    "Rhs": {
+                                      "Expr": {
+                                        "Value": "x"
+                                      }
+                                    }
+                                  },
+                                  "Then": [
+                                    {
+                                      "Lhs": [
+                                        {
+                                          "Object": {
+                                            "Value": "parts"
+                                          },
+                                          "Key": {
+                                            "Operator": "+",
+                                            "Lhs": {
+                                              "Expr": {
+                                                "Value": "parts"
+                                              }
+                                            },
+                                            "Rhs": {
+                                              "Value": "1"
+                                            }
+                                          }
+                                        }
+                                      ],
+                                      "Rhs": [
+                                        {
+                                          "Value": ","
+                                        }
+                                      ]
+                                    }
+                                  ],
+                                  "Else": null
+                                }
+                              ]
+                            },
+                            {
+                              "Condition": {
+                                "Operator": "\u003e",
+                                "Lhs": {
+                                  "Expr": {
+                                    "Value": "x"
+                                  }
+                                },
+                                "Rhs": {
+                                  "Value": "0"
+                                }
+                              },
+                              "Then": [
+                                {
+                                  "Lhs": [
+                                    {
+                                      "Object": {
+                                        "Value": "parts"
+                                      },
+                                      "Key": {
+                                        "Operator": "+",
+                                        "Lhs": {
+                                          "Expr": {
+                                            "Value": "parts"
+                                          }
+                                        },
+                                        "Rhs": {
+                                          "Value": "1"
+                                        }
+                                      }
+                                    }
+                                  ],
+                                  "Rhs": [
+                                    {
+                                      "Lhs": {
+                                        "Value": "\n"
+                                      },
+                                      "Rhs": {
+                                        "Value": "pad"
+                                      }
+                                    }
+                                  ]
+                                }
+                              ],
+                              "Else": null
+                            },
+                            {
+                              "Lhs": [
+                                {
+                                  "Object": {
+                                    "Value": "parts"
+                                  },
+                                  "Key": {
+                                    "Operator": "+",
+                                    "Lhs": {
+                                      "Expr": {
+                                        "Value": "parts"
+                                      }
+                                    },
+                                    "Rhs": {
+                                      "Value": "1"
+                                    }
+                                  }
+                                }
+                              ],
+                              "Rhs": [
+                                {
+                                  "Value": "]"
+                                }
+                              ]
+                            },
+                            {
+                              "Exprs": [
+                                {
+                                  "Func": {
+                                    "Object": {
+                                      "Value": "table"
+                                    },
+                                    "Key": {
+                                      "Value": "concat"
+                                    }
+                                  },
+                                  "Receiver": null,
+                                  "Method": "",
+                                  "Args": [
+                                    {
+                                      "Value": "parts"
+                                    }
+                                  ],
+                                  "AdjustRet": false
+                                }
+                              ]
+                            }
+                          ],
+                          "Else": [
+                            {
+                              "Names": [
+                                "keys"
+                              ],
+                              "Exprs": [
+                                {
+                                  "Fields": []
+                                }
+                              ]
+                            },
+                            {
+                              "Names": [
+                                "k"
+                              ],
+                              "Exprs": [
+                                {
+                                  "Func": {
+                                    "Value": "pairs"
+                                  },
+                                  "Receiver": null,
+                                  "Method": "",
+                                  "Args": [
+                                    {
+                                      "Value": "x"
+                                    }
+                                  ],
+                                  "AdjustRet": false
+                                }
+                              ],
+                              "Stmts": [
+                                {
+                                  "Expr": {
+                                    "Func": {
+                                      "Object": {
+                                        "Value": "table"
+                                      },
+                                      "Key": {
+                                        "Value": "insert"
+                                      }
+                                    },
+                                    "Receiver": null,
+                                    "Method": "",
+                                    "Args": [
+                                      {
+                                        "Value": "keys"
+                                      },
+                                      {
+                                        "Value": "k"
+                                      }
+                                    ],
+                                    "AdjustRet": false
+                                  }
+                                }
+                              ]
+                            },
+                            {
+                              "Expr": {
+                                "Func": {
+                                  "Object": {
+                                    "Value": "table"
+                                  },
+                                  "Key": {
+                                    "Value": "sort"
+                                  }
+                                },
+                                "Receiver": null,
+                                "Method": "",
+                                "Args": [
+                                  {
+                                    "Value": "keys"
+                                  },
+                                  {
+                                    "ParList": {
+                                      "HasVargs": false,
+                                      "Names": [
+                                        "a",
+                                        "b"
+                                      ]
+                                    },
+                                    "Stmts": [
+                                      {
+                                        "Exprs": [
+                                          {
+                                            "Operator": "\u003c",
+                                            "Lhs": {
+                                              "Func": {
+                                                "Value": "tostring"
+                                              },
+                                              "Receiver": null,
+                                              "Method": "",
+                                              "Args": [
+                                                {
+                                                  "Value": "a"
+                                                }
+                                              ],
+                                              "AdjustRet": false
+                                            },
+                                            "Rhs": {
+                                              "Func": {
+                                                "Value": "tostring"
+                                              },
+                                              "Receiver": null,
+                                              "Method": "",
+                                              "Args": [
+                                                {
+                                                  "Value": "b"
+                                                }
+                                              ],
+                                              "AdjustRet": false
+                                            }
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ],
+                                "AdjustRet": false
+                              }
+                            },
+                            {
+                              "Names": [
+                                "parts"
+                              ],
+                              "Exprs": [
+                                {
+                                  "Fields": [
+                                    {
+                                      "Key": null,
+                                      "Value": {
+                                        "Value": "{"
+                                      }
+                                    }
+                                  ]
+                                }
+                              ]
+                            },
+                            {
+                              "Names": [
+                                "i",
+                                "k"
+                              ],
+                              "Exprs": [
+                                {
+                                  "Func": {
+                                    "Value": "ipairs"
+                                  },
+                                  "Receiver": null,
+                                  "Method": "",
+                                  "Args": [
+                                    {
+                                      "Value": "keys"
+                                    }
+                                  ],
+                                  "AdjustRet": false
+                                }
+                              ],
+                              "Stmts": [
+                                {
+                                  "Lhs": [
+                                    {
+                                      "Object": {
+                                        "Value": "parts"
+                                      },
+                                      "Key": {
+                                        "Operator": "+",
+                                        "Lhs": {
+                                          "Expr": {
+                                            "Value": "parts"
+                                          }
+                                        },
+                                        "Rhs": {
+                                          "Value": "1"
+                                        }
+                                      }
+                                    }
+                                  ],
+                                  "Rhs": [
+                                    {
+                                      "Lhs": {
+                                        "Value": "\n"
+                                      },
+                                      "Rhs": {
+                                        "Lhs": {
+                                          "Func": {
+                                            "Object": {
+                                              "Value": "string"
+                                            },
+                                            "Key": {
+                                              "Value": "rep"
+                                            }
+                                          },
+                                          "Receiver": null,
+                                          "Method": "",
+                                          "Args": [
+                                            {
+                                              "Value": "  "
+                                            },
+                                            {
+                                              "Operator": "+",
+                                              "Lhs": {
+                                                "Value": "ind"
+                                              },
+                                              "Rhs": {
+                                                "Value": "1"
+                                              }
+                                            }
+                                          ],
+                                          "AdjustRet": false
+                                        },
+                                        "Rhs": {
+                                          "Lhs": {
+                                            "Func": {
+                                              "Object": {
+                                                "Value": "string"
+                                              },
+                                              "Key": {
+                                                "Value": "format"
+                                              }
+                                            },
+                                            "Receiver": null,
+                                            "Method": "",
+                                            "Args": [
+                                              {
+                                                "Value": "%q"
+                                              },
+                                              {
+                                                "Value": "k"
+                                              }
+                                            ],
+                                            "AdjustRet": false
+                                          },
+                                          "Rhs": {
+                                            "Lhs": {
+                                              "Value": ": "
+                                            },
+                                            "Rhs": {
+                                              "Func": {
+                                                "Value": "encode"
+                                              },
+                                              "Receiver": null,
+                                              "Method": "",
+                                              "Args": [
+                                                {
+                                                  "Object": {
+                                                    "Value": "x"
+                                                  },
+                                                  "Key": {
+                                                    "Value": "k"
+                                                  }
+                                                },
+                                                {
+                                                  "Operator": "+",
+                                                  "Lhs": {
+                                                    "Value": "ind"
+                                                  },
+                                                  "Rhs": {
+                                                    "Value": "1"
+                                                  }
+                                                }
+                                              ],
+                                              "AdjustRet": false
+                                            }
+                                          }
+                                        }
+                                      }
+                                    }
+                                  ]
+                                },
+                                {
+                                  "Condition": {
+                                    "Operator": "\u003c",
+                                    "Lhs": {
+                                      "Value": "i"
+                                    },
+                                    "Rhs": {
+                                      "Expr": {
+                                        "Value": "keys"
+                                      }
+                                    }
+                                  },
+                                  "Then": [
+                                    {
+                                      "Lhs": [
+                                        {
+                                          "Object": {
+                                            "Value": "parts"
+                                          },
+                                          "Key": {
+                                            "Operator": "+",
+                                            "Lhs": {
+                                              "Expr": {
+                                                "Value": "parts"
+                                              }
+                                            },
+                                            "Rhs": {
+                                              "Value": "1"
+                                            }
+                                          }
+                                        }
+                                      ],
+                                      "Rhs": [
+                                        {
+                                          "Value": ","
+                                        }
+                                      ]
+                                    }
+                                  ],
+                                  "Else": null
+                                }
+                              ]
+                            },
+                            {
+                              "Condition": {
+                                "Operator": "\u003e",
+                                "Lhs": {
+                                  "Expr": {
+                                    "Value": "keys"
+                                  }
+                                },
+                                "Rhs": {
+                                  "Value": "0"
+                                }
+                              },
+                              "Then": [
+                                {
+                                  "Lhs": [
+                                    {
+                                      "Object": {
+                                        "Value": "parts"
+                                      },
+                                      "Key": {
+                                        "Operator": "+",
+                                        "Lhs": {
+                                          "Expr": {
+                                            "Value": "parts"
+                                          }
+                                        },
+                                        "Rhs": {
+                                          "Value": "1"
+                                        }
+                                      }
+                                    }
+                                  ],
+                                  "Rhs": [
+                                    {
+                                      "Lhs": {
+                                        "Value": "\n"
+                                      },
+                                      "Rhs": {
+                                        "Value": "pad"
+                                      }
+                                    }
+                                  ]
+                                }
+                              ],
+                              "Else": null
+                            },
+                            {
+                              "Lhs": [
+                                {
+                                  "Object": {
+                                    "Value": "parts"
+                                  },
+                                  "Key": {
+                                    "Operator": "+",
+                                    "Lhs": {
+                                      "Expr": {
+                                        "Value": "parts"
+                                      }
+                                    },
+                                    "Rhs": {
+                                      "Value": "1"
+                                    }
+                                  }
+                                }
+                              ],
+                              "Rhs": [
+                                {
+                                  "Value": "}"
+                                }
+                              ]
+                            },
+                            {
+                              "Exprs": [
+                                {
+                                  "Func": {
+                                    "Object": {
+                                      "Value": "table"
+                                    },
+                                    "Key": {
+                                      "Value": "concat"
+                                    }
+                                  },
+                                  "Receiver": null,
+                                  "Method": "",
+                                  "Args": [
+                                    {
+                                      "Value": "parts"
+                                    }
+                                  ],
+                                  "AdjustRet": false
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ],
+                      "Else": [
+                        {
+                          "Condition": {
+                            "Operator": "==",
+                            "Lhs": {
+                              "Func": {
+                                "Value": "type"
+                              },
+                              "Receiver": null,
+                              "Method": "",
+                              "Args": [
+                                {
+                                  "Value": "x"
+                                }
+                              ],
+                              "AdjustRet": false
+                            },
+                            "Rhs": {
+                              "Value": "string"
+                            }
+                          },
+                          "Then": [
+                            {
+                              "Exprs": [
+                                {
+                                  "Func": {
+                                    "Object": {
+                                      "Value": "string"
+                                    },
+                                    "Key": {
+                                      "Value": "format"
+                                    }
+                                  },
+                                  "Receiver": null,
+                                  "Method": "",
+                                  "Args": [
+                                    {
+                                      "Value": "%q"
+                                    },
+                                    {
+                                      "Value": "x"
+                                    }
+                                  ],
+                                  "AdjustRet": false
+                                }
+                              ]
+                            }
+                          ],
+                          "Else": [
+                            {
+                              "Condition": {
+                                "Operator": "or",
+                                "Lhs": {
+                                  "Operator": "==",
+                                  "Lhs": {
+                                    "Func": {
+                                      "Value": "type"
+                                    },
+                                    "Receiver": null,
+                                    "Method": "",
+                                    "Args": [
+                                      {
+                                        "Value": "x"
+                                      }
+                                    ],
+                                    "AdjustRet": false
+                                  },
+                                  "Rhs": {
+                                    "Value": "boolean"
+                                  }
+                                },
+                                "Rhs": {
+                                  "Operator": "==",
+                                  "Lhs": {
+                                    "Func": {
+                                      "Value": "type"
+                                    },
+                                    "Receiver": null,
+                                    "Method": "",
+                                    "Args": [
+                                      {
+                                        "Value": "x"
+                                      }
+                                    ],
+                                    "AdjustRet": false
+                                  },
+                                  "Rhs": {
+                                    "Value": "number"
+                                  }
+                                }
+                              },
+                              "Then": [
+                                {
+                                  "Exprs": [
+                                    {
+                                      "Func": {
+                                        "Value": "tostring"
+                                      },
+                                      "Receiver": null,
+                                      "Method": "",
+                                      "Args": [
+                                        {
+                                          "Value": "x"
+                                        }
+                                      ],
+                                      "AdjustRet": false
+                                    }
+                                  ]
+                                }
+                              ],
+                              "Else": [
+                                {
+                                  "Condition": {
+                                    "Operator": "==",
+                                    "Lhs": {
+                                      "Value": "x"
+                                    },
+                                    "Rhs": {}
+                                  },
+                                  "Then": [
+                                    {
+                                      "Exprs": [
+                                        {
+                                          "Value": "null"
+                                        }
+                                      ]
+                                    }
+                                  ],
+                                  "Else": [
+                                    {
+                                      "Exprs": [
+                                        {
+                                          "Value": "null"
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "Expr": {
+                "Func": {
+                  "Value": "print"
+                },
+                "Receiver": null,
+                "Method": "",
+                "Args": [
+                  {
+                    "Func": {
+                      "Value": "encode"
+                    },
+                    "Receiver": null,
+                    "Method": "",
+                    "Args": [
+                      {
+                        "Value": "v"
+                      },
+                      {
+                        "Value": "0"
+                      }
+                    ],
+                    "AdjustRet": false
+                  }
+                ],
+                "AdjustRet": false
+              }
+            }
+          ]
+        },
+        "Receiver": null,
+        "Method": "",
+        "Args": [
+          {
+            "Value": "result"
+          }
+        ],
+        "AdjustRet": false
+      }
+    }
+  ]
+}

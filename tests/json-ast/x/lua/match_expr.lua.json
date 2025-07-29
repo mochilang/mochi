@@ -1,0 +1,139 @@
+{
+  "stmts": [
+    {
+      "Lhs": [
+        {
+          "Value": "x"
+        }
+      ],
+      "Rhs": [
+        {
+          "Value": "2"
+        }
+      ]
+    },
+    {
+      "Lhs": [
+        {
+          "Value": "label"
+        }
+      ],
+      "Rhs": [
+        {
+          "Func": {
+            "ParList": {
+              "HasVargs": false,
+              "Names": [
+                "_m"
+              ]
+            },
+            "Stmts": [
+              {
+                "Condition": {
+                  "Operator": "==",
+                  "Lhs": {
+                    "Value": "_m"
+                  },
+                  "Rhs": {
+                    "Value": "1"
+                  }
+                },
+                "Then": [
+                  {
+                    "Exprs": [
+                      {
+                        "Value": "one"
+                      }
+                    ]
+                  }
+                ],
+                "Else": [
+                  {
+                    "Condition": {
+                      "Operator": "==",
+                      "Lhs": {
+                        "Value": "_m"
+                      },
+                      "Rhs": {
+                        "Value": "2"
+                      }
+                    },
+                    "Then": [
+                      {
+                        "Exprs": [
+                          {
+                            "Value": "two"
+                          }
+                        ]
+                      }
+                    ],
+                    "Else": [
+                      {
+                        "Condition": {
+                          "Operator": "==",
+                          "Lhs": {
+                            "Value": "_m"
+                          },
+                          "Rhs": {
+                            "Value": "3"
+                          }
+                        },
+                        "Then": [
+                          {
+                            "Exprs": [
+                              {
+                                "Value": "three"
+                              }
+                            ]
+                          }
+                        ],
+                        "Else": [
+                          {
+                            "Condition": {},
+                            "Then": [
+                              {
+                                "Exprs": [
+                                  {
+                                    "Value": "unknown"
+                                  }
+                                ]
+                              }
+                            ],
+                            "Else": null
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          "Receiver": null,
+          "Method": "",
+          "Args": [
+            {
+              "Value": "x"
+            }
+          ],
+          "AdjustRet": false
+        }
+      ]
+    },
+    {
+      "Expr": {
+        "Func": {
+          "Value": "print"
+        },
+        "Receiver": null,
+        "Method": "",
+        "Args": [
+          {
+            "Value": "label"
+          }
+        ],
+        "AdjustRet": false
+      }
+    }
+  ]
+}

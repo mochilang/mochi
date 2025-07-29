@@ -1,0 +1,61 @@
+{
+  "stmts": [
+    {
+      "Lhs": [
+        {
+          "Value": "square"
+        }
+      ],
+      "Rhs": [
+        {
+          "ParList": {
+            "HasVargs": false,
+            "Names": [
+              "x"
+            ]
+          },
+          "Stmts": [
+            {
+              "Exprs": [
+                {
+                  "Operator": "*",
+                  "Lhs": {
+                    "Value": "x"
+                  },
+                  "Rhs": {
+                    "Value": "x"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Expr": {
+        "Func": {
+          "Value": "print"
+        },
+        "Receiver": null,
+        "Method": "",
+        "Args": [
+          {
+            "Func": {
+              "Value": "square"
+            },
+            "Receiver": null,
+            "Method": "",
+            "Args": [
+              {
+                "Value": "6"
+              }
+            ],
+            "AdjustRet": false
+          }
+        ],
+        "AdjustRet": false
+      }
+    }
+  ]
+}

@@ -1,0 +1,67 @@
+{
+  "stmts": [
+    {
+      "Name": {
+        "Func": {
+          "Value": "triple"
+        },
+        "Receiver": null,
+        "Method": ""
+      },
+      "Func": {
+        "ParList": {
+          "HasVargs": false,
+          "Names": [
+            "x"
+          ]
+        },
+        "Stmts": [
+          {
+            "Exprs": [
+              {
+                "Operator": "*",
+                "Lhs": {
+                  "Value": "x"
+                },
+                "Rhs": {
+                  "Value": "3"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "Expr": {
+        "Func": {
+          "Value": "print"
+        },
+        "Receiver": null,
+        "Method": "",
+        "Args": [
+          {
+            "Func": {
+              "Value": "triple"
+            },
+            "Receiver": null,
+            "Method": "",
+            "Args": [
+              {
+                "Operator": "+",
+                "Lhs": {
+                  "Value": "1"
+                },
+                "Rhs": {
+                  "Value": "2"
+                }
+              }
+            ],
+            "AdjustRet": false
+          }
+        ],
+        "AdjustRet": false
+      }
+    }
+  ]
+}

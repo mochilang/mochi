@@ -1,0 +1,53 @@
+{
+  "stmts": [
+    {
+      "Lhs": [
+        {
+          "Value": "m"
+        }
+      ],
+      "Rhs": [
+        {
+          "Fields": [
+            {
+              "Key": {
+                "Value": "1"
+              },
+              "Value": {
+                "Value": "a"
+              }
+            },
+            {
+              "Key": {
+                "Value": "2"
+              },
+              "Value": {
+                "Value": "b"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Expr": {
+        "Func": {
+          "Value": "print"
+        },
+        "Receiver": null,
+        "Method": "",
+        "Args": [
+          {
+            "Object": {
+              "Value": "m"
+            },
+            "Key": {
+              "Value": "1"
+            }
+          }
+        ],
+        "AdjustRet": false
+      }
+    }
+  ]
+}

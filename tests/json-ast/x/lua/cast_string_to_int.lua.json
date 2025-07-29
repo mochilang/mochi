@@ -1,0 +1,19 @@
+{
+  "stmts": [
+    {
+      "Expr": {
+        "Func": {
+          "Value": "print"
+        },
+        "Receiver": null,
+        "Method": "",
+        "Args": [
+          {
+            "Value": "1995"
+          }
+        ],
+        "AdjustRet": false
+      }
+    }
+  ]
+}

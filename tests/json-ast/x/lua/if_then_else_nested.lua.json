@@ -1,0 +1,79 @@
+{
+  "stmts": [
+    {
+      "Lhs": [
+        {
+          "Value": "x"
+        }
+      ],
+      "Rhs": [
+        {
+          "Value": "8"
+        }
+      ]
+    },
+    {
+      "Lhs": [
+        {
+          "Value": "msg"
+        }
+      ],
+      "Rhs": [
+        {
+          "Operator": "or",
+          "Lhs": {
+            "Operator": "and",
+            "Lhs": {
+              "Operator": "\u003e",
+              "Lhs": {
+                "Value": "x"
+              },
+              "Rhs": {
+                "Value": "10"
+              }
+            },
+            "Rhs": {
+              "Value": "big"
+            }
+          },
+          "Rhs": {
+            "Operator": "or",
+            "Lhs": {
+              "Operator": "and",
+              "Lhs": {
+                "Operator": "\u003e",
+                "Lhs": {
+                  "Value": "x"
+                },
+                "Rhs": {
+                  "Value": "5"
+                }
+              },
+              "Rhs": {
+                "Value": "medium"
+              }
+            },
+            "Rhs": {
+              "Value": "small"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "Expr": {
+        "Func": {
+          "Value": "print"
+        },
+        "Receiver": null,
+        "Method": "",
+        "Args": [
+          {
+            "Value": "msg"
+          }
+        ],
+        "AdjustRet": false
+      }
+    }
+  ]
+}

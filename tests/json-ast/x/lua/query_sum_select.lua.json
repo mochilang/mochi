@@ -1,0 +1,225 @@
+{
+  "stmts": [
+    {
+      "Lhs": [
+        {
+          "Value": "nums"
+        }
+      ],
+      "Rhs": [
+        {
+          "Fields": [
+            {
+              "Key": null,
+              "Value": {
+                "Value": "1"
+              }
+            },
+            {
+              "Key": null,
+              "Value": {
+                "Value": "2"
+              }
+            },
+            {
+              "Key": null,
+              "Value": {
+                "Value": "3"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Lhs": [
+        {
+          "Value": "result"
+        }
+      ],
+      "Rhs": [
+        {
+          "Func": {
+            "ParList": {
+              "HasVargs": false,
+              "Names": []
+            },
+            "Stmts": [
+              {
+                "Names": [
+                  "_tmp"
+                ],
+                "Exprs": [
+                  {
+                    "Fields": []
+                  }
+                ]
+              },
+              {
+                "Names": [
+                  "_",
+                  "n"
+                ],
+                "Exprs": [
+                  {
+                    "Func": {
+                      "Value": "ipairs"
+                    },
+                    "Receiver": null,
+                    "Method": "",
+                    "Args": [
+                      {
+                        "Value": "nums"
+                      }
+                    ],
+                    "AdjustRet": false
+                  }
+                ],
+                "Stmts": [
+                  {
+                    "Condition": {
+                      "Operator": "\u003e",
+                      "Lhs": {
+                        "Value": "n"
+                      },
+                      "Rhs": {
+                        "Value": "1"
+                      }
+                    },
+                    "Then": [
+                      {
+                        "Expr": {
+                          "Func": {
+                            "Object": {
+                              "Value": "table"
+                            },
+                            "Key": {
+                              "Value": "insert"
+                            }
+                          },
+                          "Receiver": null,
+                          "Method": "",
+                          "Args": [
+                            {
+                              "Value": "_tmp"
+                            },
+                            {
+                              "Value": "n"
+                            }
+                          ],
+                          "AdjustRet": false
+                        }
+                      }
+                    ],
+                    "Else": null
+                  }
+                ]
+              },
+              {
+                "Exprs": [
+                  {
+                    "Func": {
+                      "ParList": {
+                        "HasVargs": false,
+                        "Names": [
+                          "lst"
+                        ]
+                      },
+                      "Stmts": [
+                        {
+                          "Names": [
+                            "s"
+                          ],
+                          "Exprs": [
+                            {
+                              "Value": "0"
+                            }
+                          ]
+                        },
+                        {
+                          "Names": [
+                            "_",
+                            "v"
+                          ],
+                          "Exprs": [
+                            {
+                              "Func": {
+                                "Value": "ipairs"
+                              },
+                              "Receiver": null,
+                              "Method": "",
+                              "Args": [
+                                {
+                                  "Value": "lst"
+                                }
+                              ],
+                              "AdjustRet": false
+                            }
+                          ],
+                          "Stmts": [
+                            {
+                              "Lhs": [
+                                {
+                                  "Value": "s"
+                                }
+                              ],
+                              "Rhs": [
+                                {
+                                  "Operator": "+",
+                                  "Lhs": {
+                                    "Value": "s"
+                                  },
+                                  "Rhs": {
+                                    "Value": "v"
+                                  }
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "Exprs": [
+                            {
+                              "Value": "s"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    "Receiver": null,
+                    "Method": "",
+                    "Args": [
+                      {
+                        "Value": "_tmp"
+                      }
+                    ],
+                    "AdjustRet": false
+                  }
+                ]
+              }
+            ]
+          },
+          "Receiver": null,
+          "Method": "",
+          "Args": [],
+          "AdjustRet": false
+        }
+      ]
+    },
+    {
+      "Expr": {
+        "Func": {
+          "Value": "print"
+        },
+        "Receiver": null,
+        "Method": "",
+        "Args": [
+          {
+            "Value": "result"
+          }
+        ],
+        "AdjustRet": false
+      }
+    }
+  ]
+}

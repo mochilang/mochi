@@ -1,0 +1,122 @@
+{
+  "stmts": [
+    {
+      "Names": [
+        "_",
+        "v"
+      ],
+      "Exprs": [
+        {
+          "Func": {
+            "Value": "ipairs"
+          },
+          "Receiver": null,
+          "Method": "",
+          "Args": [
+            {
+              "Fields": [
+                {
+                  "Key": null,
+                  "Value": {
+                    "Value": "10"
+                  }
+                },
+                {
+                  "Key": null,
+                  "Value": {
+                    "Value": "20"
+                  }
+                }
+              ]
+            }
+          ],
+          "AdjustRet": false
+        }
+      ],
+      "Stmts": [
+        {
+          "Expr": {
+            "Func": {
+              "Value": "print"
+            },
+            "Receiver": null,
+            "Method": "",
+            "Args": [
+              {
+                "Value": "v"
+              }
+            ],
+            "AdjustRet": false
+          }
+        }
+      ]
+    },
+    {
+      "Lhs": [
+        {
+          "Value": "m"
+        }
+      ],
+      "Rhs": [
+        {
+          "Fields": [
+            {
+              "Key": {
+                "Value": "a"
+              },
+              "Value": {
+                "Value": "1"
+              }
+            },
+            {
+              "Key": {
+                "Value": "b"
+              },
+              "Value": {
+                "Value": "2"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Names": [
+        "_",
+        "v"
+      ],
+      "Exprs": [
+        {
+          "Func": {
+            "Value": "pairs"
+          },
+          "Receiver": null,
+          "Method": "",
+          "Args": [
+            {
+              "Value": "m"
+            }
+          ],
+          "AdjustRet": false
+        }
+      ],
+      "Stmts": [
+        {
+          "Expr": {
+            "Func": {
+              "Value": "print"
+            },
+            "Receiver": null,
+            "Method": "",
+            "Args": [
+              {
+                "Value": "v"
+              }
+            ],
+            "AdjustRet": false
+          }
+        }
+      ]
+    }
+  ]
+}

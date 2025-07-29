@@ -1,0 +1,52 @@
+{
+  "stmts": [
+    {
+      "Expr": {
+        "Func": {
+          "Value": "print"
+        },
+        "Receiver": null,
+        "Method": "",
+        "Args": [
+          {
+            "Operator": "-",
+            "Lhs": {
+              "Value": "0"
+            },
+            "Rhs": {
+              "Value": "3"
+            }
+          }
+        ],
+        "AdjustRet": false
+      }
+    },
+    {
+      "Expr": {
+        "Func": {
+          "Value": "print"
+        },
+        "Receiver": null,
+        "Method": "",
+        "Args": [
+          {
+            "Operator": "+",
+            "Lhs": {
+              "Value": "5"
+            },
+            "Rhs": {
+              "Operator": "-",
+              "Lhs": {
+                "Value": "0"
+              },
+              "Rhs": {
+                "Value": "2"
+              }
+            }
+          }
+        ],
+        "AdjustRet": false
+      }
+    }
+  ]
+}
