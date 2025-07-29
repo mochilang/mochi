@@ -1,0 +1,21 @@
+(program
+  (fun main
+    (let data
+      (type list (type int))
+      (list (int 1) (int 2))
+    )
+    (var flag
+      (call exists
+        (query x
+          (source (selector data))
+          (where
+            (binary == (selector x) (int 1))
+          )
+          (select (selector x))
+        )
+      )
+    )
+    (call print (selector flag))
+  )
+  (call main)
+)

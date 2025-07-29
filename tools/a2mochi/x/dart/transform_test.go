@@ -162,6 +162,7 @@ func TestTransform_Golden(t *testing.T) {
 		"list_index":          true,
 		"map_in_operator":     true,
 		"map_int_key":         true,
+		"exists_builtin":      true,
 		"membership":          true,
 		"nested_function":     true,
 		"partial_application": true,
