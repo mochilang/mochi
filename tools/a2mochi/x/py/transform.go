@@ -302,10 +302,28 @@ func Print(n *Node) (string, error) {
 	if code == "" {
 		return "", fmt.Errorf("no output")
 	}
+	// insert extern declarations for common python modules
+	lines := strings.Split(code, "\n")
+	var final []string
+	for i, line := range lines {
+		final = append(final, line)
+		if strings.HasPrefix(line, "import python \"math\" as math") {
+			externs := []string{
+				"extern let math.pi: float",
+				"extern let math.e: float",
+				"extern fun math.sqrt(x: float): float",
+				"extern fun math.pow(x: float, y: float): float",
+				"extern fun math.sin(x: float): float",
+				"extern fun math.log(x: float): float",
+			}
+			final = append(final, externs...)
+			_ = i
+		}
+	}
 	var out strings.Builder
 	out.WriteString(metaHeader())
 	out.WriteString(blockComment(strings.Join(n.Lines, "\n")))
-	out.WriteString(code)
+	out.WriteString(strings.Join(final, "\n"))
 	out.WriteByte('\n')
 	return out.String(), nil
 }
@@ -1034,7 +1052,12 @@ func emitExpr(b *strings.Builder, n *Node, lines []string, structs map[string][]
 		case string:
 			fmt.Fprintf(b, "%q", vv)
 		case float64:
-			if math.Mod(vv, 1) == 0 {
+			src := string(n.Value)
+			if strings.ContainsAny(src, ".eE") {
+				b.WriteString(src)
+			} else if strings.Contains(src, ".") {
+				b.WriteString(src)
+			} else if math.Mod(vv, 1) == 0 {
 				fmt.Fprintf(b, "%d", int64(vv))
 			} else {
 				fmt.Fprintf(b, "%v", vv)
