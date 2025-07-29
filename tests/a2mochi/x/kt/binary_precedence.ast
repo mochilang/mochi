@@ -1,1 +1,34 @@
-(program (fun main))
+(program
+  (call print
+    (binary +
+      (int 1)
+      (group
+        (binary * (int 2) (int 3))
+      )
+    )
+  )
+  (call print
+    (binary *
+      (group
+        (binary + (int 1) (int 2))
+      )
+      (int 3)
+    )
+  )
+  (call print
+    (binary +
+      (group
+        (binary * (int 2) (int 3))
+      )
+      (int 1)
+    )
+  )
+  (call print
+    (binary *
+      (int 2)
+      (group
+        (binary + (int 3) (int 1))
+      )
+    )
+  )
+)
