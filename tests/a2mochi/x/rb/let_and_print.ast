@@ -1,7 +1,3 @@
-(program
-  (let a (int 10))
-  (let b (type int) (int 20))
-  (call print
-    (binary + (selector a) (selector b))
-  )
-)
+var a = 10
+var b = 20
+print((a + b))

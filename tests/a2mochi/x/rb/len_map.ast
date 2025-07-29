@@ -1,10 +1,1 @@
-(program
-  (call print
-    (call len
-      (map
-        (entry (string a) (int 1))
-        (entry (string b) (int 2))
-      )
-    )
-  )
-)
+print(len({"a": 1, "b": 2}))

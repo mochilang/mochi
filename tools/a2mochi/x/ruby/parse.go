@@ -227,7 +227,7 @@ func exprString(n Node) string {
 					if arg.Type == "args_add_block" && len(arg.Children) > 0 {
 						arg = arg.Children[0]
 					}
-					return recv + ".contains(" + exprString(arg) + ")"
+					return exprString(arg) + " in " + recv
 				}
 			}
 		}
