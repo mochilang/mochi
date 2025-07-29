@@ -1,0 +1,4 @@
+(program
+  (var x (type int))
+  (call print (selector x))
+)
