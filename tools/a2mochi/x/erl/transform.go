@@ -123,6 +123,15 @@ func formatProgram(p *Program) (string, error) {
 					}
 				}
 			}
+			if strings.Contains(line, "maps:get(") || strings.Contains(line, "maps:put(") || strings.Contains(line, "maps:is_key(") {
+				for _, p := range f.Params {
+					if strings.Contains(line, p) {
+						if _, ok := paramType[p]; !ok {
+							paramType[p] = "map<string, int>"
+						}
+					}
+				}
+			}
 		}
 		for _, p := range f.Params {
 			if p == "Target" {
@@ -254,6 +263,9 @@ func rewriteLine(ln string, recs []Record) []string {
 	}
 	if ln == "ok" {
 		return nil
+	}
+	if ln == "nil" {
+		return []string{"null"}
 	}
 	if m := throwReturnRe.FindStringSubmatch(ln); m != nil {
 		return []string{"return " + strings.TrimSpace(m[1])}
