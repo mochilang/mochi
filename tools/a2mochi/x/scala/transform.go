@@ -65,6 +65,34 @@ func convertIfExpr(expr string) string {
 	return expr
 }
 
+var matchRE = regexp.MustCompile(`^(.+) match {(.+)}$`)
+
+func convertMatchExpr(expr string) string {
+	expr = strings.TrimSpace(expr)
+	m := matchRE.FindStringSubmatch(expr)
+	if len(m) == 3 {
+		head := strings.TrimSpace(m[1])
+		casesRaw := strings.TrimSpace(m[2])
+		parts := strings.Split(casesRaw, "case ")
+		var out []string
+		for _, p := range parts {
+			p = strings.TrimSpace(p)
+			if p == "" {
+				continue
+			}
+			se := strings.SplitN(p, "=>", 2)
+			if len(se) != 2 {
+				continue
+			}
+			pat := strings.TrimSpace(se[0])
+			body := strings.TrimSpace(se[1])
+			out = append(out, fmt.Sprintf("%s => %s", pat, body))
+		}
+		return fmt.Sprintf("match %s { %s }", head, strings.Join(out, " | "))
+	}
+	return expr
+}
+
 var (
 	forRangeRE = regexp.MustCompile(`^for \(([^ ]+) <- ([0-9]+) until ([0-9]+)\) {?$`)
 	forCollRE  = regexp.MustCompile(`^for \(([^ ]+) <- (.+)\)\s*{?$`)
@@ -77,6 +105,9 @@ var (
 
 func convertLine(line string) string {
 	line = strings.TrimSpace(line)
+	if strings.HasPrefix(line, "case class") || strings.HasPrefix(line, "class ") || strings.HasPrefix(line, "object ") {
+		return ""
+	}
 	if strings.HasPrefix(line, "println(") {
 		return "print" + line[len("println"):]
 	}
@@ -90,10 +121,16 @@ func convertLine(line string) string {
 		return fmt.Sprintf("for %s in %s {", m[1], m[2])
 	}
 	if m := valLineRE.FindStringSubmatch(line); len(m) == 4 {
-		return fmt.Sprintf("let %s = %s", strings.TrimSpace(m[1]), convertLambda(m[3]))
+		rhs := convertLambda(m[3])
+		rhs = convertIfExpr(rhs)
+		rhs = convertMatchExpr(rhs)
+		return fmt.Sprintf("let %s = %s", strings.TrimSpace(m[1]), rhs)
 	}
 	if m := varLineRE.FindStringSubmatch(line); len(m) == 4 {
-		return fmt.Sprintf("var %s = %s", strings.TrimSpace(m[1]), convertLambda(m[3]))
+		rhs := convertLambda(m[3])
+		rhs = convertIfExpr(rhs)
+		rhs = convertMatchExpr(rhs)
+		return fmt.Sprintf("var %s = %s", strings.TrimSpace(m[1]), rhs)
 	}
 	if m := whileRE.FindStringSubmatch(line); len(m) == 2 {
 		return fmt.Sprintf("while %s {", m[1])
@@ -119,14 +156,14 @@ func Transform(p *Program) (*ast.Node, error) {
 	for _, d := range p.Decls {
 		switch d.Kind {
 		case "val":
-			rhs := convertIfExpr(convertLambda(d.RHS))
+			rhs := convertMatchExpr(convertIfExpr(convertLambda(d.RHS)))
 			if rhs != "" {
 				fmt.Fprintf(&b, "let %s = %s\n", d.Name, rhs)
 			} else {
 				fmt.Fprintf(&b, "let %s\n", d.Name)
 			}
 		case "var":
-			rhs := convertIfExpr(convertLambda(d.RHS))
+			rhs := convertMatchExpr(convertIfExpr(convertLambda(d.RHS)))
 			if rhs != "" {
 				fmt.Fprintf(&b, "var %s = %s\n", d.Name, rhs)
 			} else {
