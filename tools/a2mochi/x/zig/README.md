@@ -3,47 +3,106 @@
 This directory stores helpers and golden files for converting Zig programs
 in `tests/transpiler/x/zig` into Mochi AST form.
 
-Completed programs: 41/104
+Completed programs: 43/98
+
+Last updated: 2025-07-29 15:22 +07
 
 ## Checklist
+- [x] append_builtin
 - [x] avg_builtin
+- [x] basic_compare
 - [x] binary_precedence
 - [x] bool_chain
-- [x] for_loop
-- [x] fun_call
-- [x] len_builtin
-- [x] len_string
-- [x] print_hello
-- [x] pure_fold
-- [x] tail_recursion
-- [x] unary_neg
-- [x] let_and_print
-- [x] math_ops
-- [x] basic_compare
-- [x] var_assignment
-- [x] while_loop
-- [x] str_builtin
-- [x] string_concat
-- [x] substring_builtin
-- [x] sum_builtin
-- [x] append_builtin
-- [x] if_else
-- [x] string_compare
-- [x] fun_three_args
-- [x] typed_let
-- [x] typed_var
 - [x] break_continue
-- [x] list_index
-- [x] list_assign
+- [ ] cast_string_to_int
+- [ ] cast_struct
+- [ ] closure
+- [x] count_builtin
+- [ ] cross_join
+- [ ] cross_join_filter
+- [ ] cross_join_triple
+- [ ] dataset_sort_take_limit
+- [ ] dataset_where_filter
+- [ ] exists_builtin
 - [x] for_list_collection
-- [x] string_contains
-- [x] slice
-- [x] string_index
+- [x] for_loop
+- [ ] for_map_collection
+- [x] fun_call
+- [x] fun_expr_in_let
+- [x] fun_three_args
+- [ ] group_by
+- [ ] group_by_conditional_sum
+- [ ] group_by_having
+- [ ] group_by_join
+- [ ] group_by_left_join
+- [ ] group_by_multi_join
+- [ ] group_by_multi_join_sort
+- [ ] group_by_multi_sort
+- [ ] group_by_sort
+- [ ] group_items_iteration
+- [x] if_else
 - [x] if_then_else
 - [x] if_then_else_nested
-- [x] string_in_operator
-- [x] fun_expr_in_let
-- [x] count_builtin
+- [x] in_operator
+- [ ] in_operator_extended
+- [ ] inner_join
+- [ ] join_multi
+- [ ] left_join
+- [ ] left_join_multi
+- [x] len_builtin
+- [ ] len_map
+- [x] len_string
+- [x] let_and_print
+- [x] list_assign
+- [x] list_index
+- [ ] list_nested_assign
+- [ ] list_set_ops
+- [ ] load_jsonl
+- [ ] load_yaml
+- [ ] map_assign
+- [ ] map_in_operator
+- [ ] map_index
+- [ ] map_int_key
+- [ ] map_literal_dynamic
+- [ ] map_membership
+- [ ] map_nested_assign
+- [ ] match_expr
+- [ ] match_full
+- [x] math_ops
+- [ ] membership
+- [ ] min_max_builtin
+- [ ] nested_function
+- [ ] order_by_map
+- [ ] outer_join
+- [ ] partial_application
+- [x] print_hello
+- [x] pure_fold
+- [ ] pure_global_fold
+- [ ] query_sum_select
+- [x] record_assign
+- [ ] right_join
+- [ ] save_jsonl_stdout
 - [x] short_circuit
+- [x] slice
+- [ ] sort_stable
+- [x] str_builtin
+- [x] string_compare
+- [x] string_concat
+- [x] string_contains
+- [x] string_in_operator
+- [x] string_index
+- [ ] string_prefix_slice
+- [x] substring_builtin
+- [x] sum_builtin
+- [x] tail_recursion
 - [x] test_block
+- [ ] tree_sum
 - [x] two-sum
+- [x] typed_let
+- [x] typed_var
+- [x] unary_neg
+- [ ] update_stmt
+- [ ] user_type_literal
+- [ ] values_builtin
+- [x] var_assignment
+- [x] while_loop
