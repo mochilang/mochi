@@ -76,7 +76,7 @@ var (
 	orRe  = regexp.MustCompile(`\bor\b`)
 	notRe = regexp.MustCompile(`\bnot\b`)
 	modRe = regexp.MustCompile(`\bmod\b`)
-	divRe = regexp.MustCompile(`\bdiv\b`)
+	divRe = regexp.MustCompile(`(?i)([^\s]+)\s+div\s+([^\s]+)`)
 )
 
 func convertOps(s string) string {
@@ -86,7 +86,7 @@ func convertOps(s string) string {
 	s = orRe.ReplaceAllString(s, "||")
 	s = notRe.ReplaceAllString(s, "!")
 	s = modRe.ReplaceAllString(s, "%")
-	s = divRe.ReplaceAllString(s, "/")
+	s = divRe.ReplaceAllString(s, "(($1 / $2) as int)")
 	return s
 }
 
@@ -477,18 +477,44 @@ func convertFallback(src string) ([]byte, error) {
 		lowerStmt := strings.ToLower(stmt)
 		switch {
 		case strings.HasPrefix(lowerStmt, "end."):
+			if loopDepth > 0 {
+				appendLine("}")
+				loopDepth--
+				waitingBegin = false
+			}
+			if ifDepth > 0 {
+				appendLine("}")
+				ifDepth--
+				waitingBegin = false
+			}
 			if inFunc {
 				appendLine("}")
 				inFunc = false
+				inBody = false
+				waitingBegin = false
 			}
 			break
 
-		case (lowerStmt == "end" || lowerStmt == "end;") && inFunc:
-			appendLine("}")
-			inFunc = false
-			inBody = false
-			waitingBegin = false
-			continue
+		case lowerStmt == "end" || lowerStmt == "end;":
+			if loopDepth > 0 {
+				appendLine("}")
+				loopDepth--
+				waitingBegin = false
+				continue
+			}
+			if ifDepth > 0 {
+				appendLine("}")
+				ifDepth--
+				waitingBegin = false
+				continue
+			}
+			if inFunc {
+				appendLine("}")
+				inFunc = false
+				inBody = false
+				waitingBegin = false
+				continue
+			}
 
 		case strings.HasPrefix(lowerStmt, "for ") && strings.Contains(lowerStmt, " in ") && strings.Contains(lowerStmt, " do"):
 			rest := strings.TrimSpace(stmt[len("for "):])
