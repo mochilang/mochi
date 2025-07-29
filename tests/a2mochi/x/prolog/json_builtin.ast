@@ -1,0 +1,12 @@
+(program
+  (fun main
+    (let _11276
+      (map
+        (entry (string a) (int 1))
+        (entry (string b) (int 2))
+      )
+    )
+    (call print (string "{\n \"a\": 1,\n \"b\": 2\n}"))
+  )
+  (call main)
+)

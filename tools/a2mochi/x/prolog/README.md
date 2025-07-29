@@ -2,8 +2,8 @@
 
 This directory contains golden outputs for converting Prolog programs under `tests/transpiler/x/pl` into Mochi AST form.
 
-Completed programs: 51/97
-Last updated: 2025-07-29 21:28 GMT+7
+Completed programs: 52/97
+Last updated: 2025-07-29 23:52 GMT+7
 
 ## Checklist
 - [x] append_builtin
@@ -45,7 +45,7 @@ Last updated: 2025-07-29 21:28 GMT+7
 - [ ] in_operator_extended
 - [ ] inner_join
 - [ ] join_multi
-- [ ] json_builtin
+- [x] json_builtin
 - [ ] left_join
 - [x] len_builtin
 - [x] len_map
