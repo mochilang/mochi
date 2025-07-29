@@ -1,0 +1,9 @@
+(program
+  (var data
+    (list (int 1) (int 2))
+  )
+  (var flag
+    (binary in (int 1) (selector data))
+  )
+  (call print (selector flag))
+)

@@ -186,6 +186,11 @@ func TestTransform_Golden(t *testing.T) {
 		"math_ops":            true,
 		"tail_recursion":      true,
 		"two-sum":             true,
+		"exists_builtin":      true,
+		"for_map_collection":  true,
+		"in_operator":         true,
+		"json_builtin":        true,
+		"test_block":          true,
 	}
 
 	outDir := filepath.Join(root, "tests/a2mochi/x/go")

@@ -1,0 +1,13 @@
+(program
+  (var xs
+    (list (int 1) (int 2) (int 3))
+  )
+  (call print
+    (binary in (int 2) (selector xs))
+  )
+  (call print
+    (unary !
+      (binary in (int 5) (selector xs))
+    )
+  )
+)
