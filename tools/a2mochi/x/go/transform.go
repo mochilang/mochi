@@ -5,7 +5,6 @@ import (
 	"go/ast"
 	"go/token"
 	"strconv"
-	"strings"
 
 	mast "mochi/ast"
 )
@@ -92,6 +91,15 @@ func transformStmt(st ast.Stmt) []*mast.Node {
 		if len(s.Lhs) == 1 && len(s.Rhs) == 1 {
 			lhs := transformExpr(s.Lhs[0])
 			rhs := transformExpr(s.Rhs[0])
+			if s.Tok == token.DEFINE {
+				if id, ok := s.Lhs[0].(*ast.Ident); ok {
+					return []*mast.Node{{
+						Kind:     "let",
+						Value:    id.Name,
+						Children: []*mast.Node{rhs},
+					}}
+				}
+			}
 			return []*mast.Node{{
 				Kind:     "assign",
 				Children: []*mast.Node{lhs, rhs},
@@ -340,6 +348,41 @@ func transformExpr(e ast.Expr) *mast.Node {
 			n.Children = append(n.Children, transformExpr(arg))
 		}
 		return n
+	case *ast.FuncLit:
+		if len(v.Body.List) == 1 {
+			if ret, ok := v.Body.List[0].(*ast.ReturnStmt); ok && len(ret.Results) == 1 {
+				// partial application: return fnName(const, param)
+				if call, ok := ret.Results[0].(*ast.CallExpr); ok {
+					if id, ok := call.Fun.(*ast.Ident); ok {
+						if v.Type != nil && v.Type.Params != nil && len(v.Type.Params.List) == 1 && len(call.Args) == 2 {
+							if argIdent, ok := call.Args[1].(*ast.Ident); ok && len(v.Type.Params.List[0].Names) == 1 && argIdent.Name == v.Type.Params.List[0].Names[0].Name {
+								return &mast.Node{Kind: "call", Value: id.Name, Children: []*mast.Node{transformExpr(call.Args[0])}}
+							}
+						}
+					}
+				}
+				fn := &mast.Node{Kind: "funexpr"}
+				if v.Type != nil {
+					if v.Type.Params != nil {
+						for _, p := range v.Type.Params.List {
+							for _, name := range p.Names {
+								param := &mast.Node{Kind: "param", Value: name.Name}
+								if p.Type != nil {
+									param.Children = []*mast.Node{transformType(p.Type)}
+								}
+								fn.Children = append(fn.Children, param)
+							}
+						}
+					}
+					if v.Type.Results != nil && len(v.Type.Results.List) == 1 {
+						fn.Children = append(fn.Children, transformType(v.Type.Results.List[0].Type))
+					}
+				}
+				fn.Children = append(fn.Children, transformExpr(ret.Results[0]))
+				return fn
+			}
+		}
+		return &mast.Node{Kind: "unknown"}
 	case *ast.ParenExpr:
 		return transformExpr(v.X)
 	case *ast.CompositeLit:
@@ -388,14 +431,30 @@ func defaultValue(t ast.Expr) *mast.Node {
 			return &mast.Node{Kind: "int", Value: 0}
 		case "string":
 			return &mast.Node{Kind: "string", Value: ""}
+		case "bool":
+			return &mast.Node{Kind: "bool", Value: false}
+		case "float64":
+			return &mast.Node{Kind: "float", Value: 0.0}
 		}
 	}
 	return &mast.Node{Kind: "nil"}
 }
 
 func transformType(t ast.Expr) *mast.Node {
-	if id, ok := t.(*ast.Ident); ok {
-		return &mast.Node{Kind: "type", Value: id.Name}
+	switch v := t.(type) {
+	case *ast.Ident:
+		return &mast.Node{Kind: "type", Value: v.Name}
+	case *ast.FuncType:
+		n := &mast.Node{Kind: "typefun"}
+		if v.Params != nil {
+			for _, p := range v.Params.List {
+				n.Children = append(n.Children, transformType(p.Type))
+			}
+		}
+		if v.Results != nil && len(v.Results.List) == 1 {
+			n.Children = append(n.Children, transformType(v.Results.List[0].Type))
+		}
+		return n
 	}
 	return &mast.Node{Kind: "type", Value: "any"}
 }

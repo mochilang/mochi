@@ -1,0 +1,21 @@
+(program
+  (fun outer
+    (param x (type int))
+    (type int)
+    (block
+      (let inner
+        (funexpr
+          (param y (type int))
+          (type int)
+          (binary + (selector x) (selector y))
+        )
+      )
+      (return
+        (call inner (int 5))
+      )
+    )
+  )
+  (call print
+    (call outer (int 3))
+  )
+)

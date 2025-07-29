@@ -1,0 +1,2 @@
+var square = fun(x: int): int => (x * x)
+print(square(6))
