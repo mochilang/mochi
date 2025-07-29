@@ -47,3 +47,12 @@ func Print(node *ast.Node) (string, error) {
 	out.WriteString(b.String())
 	return out.String(), nil
 }
+
+// WriteFile prints the node and writes it to the given file.
+func WriteFile(path string, node *ast.Node) error {
+	src, err := Print(node)
+	if err != nil {
+		return err
+	}
+	return os.WriteFile(path, []byte(src), 0o644)
+}
