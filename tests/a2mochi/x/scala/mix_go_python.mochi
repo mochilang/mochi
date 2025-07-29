@@ -1,0 +1,7 @@
+// a2mochi scala v0.10.48 2025-07-29 17:49:26 GMT+7
+let rawName = "   alice  "
+let radius = 3.0
+let name = rawName.trim().toUpperCase()
+let area = (math.Pi * math.pow(radius, 2.0))
+print(List("Hello", (name + "!")).mkString(" "))
+print(List("The area of a circle with radius", radius, "is", area).mkString(" "))

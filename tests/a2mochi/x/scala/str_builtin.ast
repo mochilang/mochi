@@ -1,0 +1,8 @@
+(program
+  (call print
+    (call
+      (selector valueOf (selector String))
+      (int 123)
+    )
+  )
+)

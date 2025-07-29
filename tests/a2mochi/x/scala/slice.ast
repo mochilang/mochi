@@ -1,0 +1,27 @@
+(program
+  (call print
+    (call
+      (selector slice
+        (call ArrayBuffer (int 1) (int 2) (int 3))
+      )
+      (int 1)
+      (int 3)
+    )
+  )
+  (call print
+    (call
+      (selector slice
+        (call ArrayBuffer (int 1) (int 2) (int 3))
+      )
+      (int 0)
+      (int 2)
+    )
+  )
+  (call print
+    (call
+      (selector slice (string hello))
+      (int 1)
+      (int 4)
+    )
+  )
+)

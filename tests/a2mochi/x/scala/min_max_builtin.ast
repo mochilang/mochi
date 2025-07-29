@@ -1,0 +1,11 @@
+(program
+  (let nums
+    (call ArrayBuffer (int 3) (int 1) (int 4))
+  )
+  (call print
+    (selector min (selector nums))
+  )
+  (call print
+    (selector max (selector nums))
+  )
+)

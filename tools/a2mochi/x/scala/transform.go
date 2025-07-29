@@ -133,6 +133,16 @@ func Transform(p *Program) (*ast.Node, error) {
 				fmt.Fprintf(&b, "var %s\n", d.Name)
 			}
 		case "def":
+			if d.Name == "main" {
+				for _, line := range strings.Split(d.Body, "\n") {
+					line = convertLine(line)
+					if line == "" {
+						continue
+					}
+					b.WriteString(line + "\n")
+				}
+				continue
+			}
 			fmt.Fprintf(&b, "fun %s(", d.Name)
 			for i, prm := range d.Params {
 				if i > 0 {

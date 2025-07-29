@@ -1,0 +1,2 @@
+// a2mochi scala v0.10.48 2025-07-29 17:50:11 GMT+7
+print(("hello " + "world"))

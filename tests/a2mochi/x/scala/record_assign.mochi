@@ -1,0 +1,7 @@
+// a2mochi scala v0.10.48 2025-07-29 17:49:51 GMT+7
+fun inc(c) {
+  c = (c.n + 1)
+}
+var c = Counter(0)
+inc(c)
+print(c.n)

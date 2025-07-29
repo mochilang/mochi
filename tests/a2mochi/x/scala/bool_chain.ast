@@ -1,6 +1,5 @@
 (program
   (fun boom
-    (type bool)
     (call print (string boom))
     (return (bool true))
   )

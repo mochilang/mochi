@@ -1,0 +1,8 @@
+// a2mochi scala v0.10.48 2025-07-29 17:50:29 GMT+7
+fun sum_rec(n, acc) {
+  if (n == 0) {
+    return acc
+  }
+  return sum_rec((n - 1), (acc + n))
+}
+print(sum_rec(10, 0))

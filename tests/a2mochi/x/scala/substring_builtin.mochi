@@ -1,0 +1,2 @@
+// a2mochi scala v0.10.48 2025-07-29 17:50:24 GMT+7
+print("mochi".substring(1, 4))

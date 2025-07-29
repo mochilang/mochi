@@ -1,0 +1,6 @@
+(program
+  (let s (string mochi))
+  (call print
+    (call s (int 1))
+  )
+)

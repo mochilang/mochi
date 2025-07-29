@@ -1,0 +1,10 @@
+(program
+  (for n
+    (in
+      (call ArrayBuffer (int 1) (int 2) (int 3))
+    )
+    (block
+      (call print (selector n))
+    )
+  )
+)

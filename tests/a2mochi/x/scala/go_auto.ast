@@ -1,0 +1,7 @@
+(program
+  (call print
+    (binary + (int 2) (int 3))
+  )
+  (call print (float 3.14))
+  (call print (int 42))
+)

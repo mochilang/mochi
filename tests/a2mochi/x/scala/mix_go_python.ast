@@ -1,0 +1,42 @@
+(program
+  (let rawName (string "   alice  "))
+  (let radius (float 3))
+  (let name
+    (call
+      (selector toUpperCase
+        (call
+          (selector trim (selector rawName))
+        )
+      )
+    )
+  )
+  (let area
+    (binary *
+      (selector Pi (selector math))
+      (call
+        (selector pow (selector math))
+        (selector radius)
+        (float 2)
+      )
+    )
+  )
+  (call print
+    (call
+      (selector mkString
+        (call List
+          (string Hello)
+          (binary + (selector name) (string !))
+        )
+      )
+      (string " ")
+    )
+  )
+  (call print
+    (call
+      (selector mkString
+        (call List (string "The area of a circle with radius") (selector radius) (string is) (selector area))
+      )
+      (string " ")
+    )
+  )
+)
