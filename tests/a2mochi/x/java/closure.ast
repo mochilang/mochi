@@ -2,6 +2,13 @@
   (let add10
     (call (selector makeAdder) (int 10))
   )
+  (fun makeAdder
+    (param n (type int))
+    (type java.util.function.IntUnaryOperator)
+    (block
+      (return (unknown))
+    )
+  )
   (call print
     (call
       (selector applyAsInt (selector add10))

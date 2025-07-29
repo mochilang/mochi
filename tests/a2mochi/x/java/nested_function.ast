@@ -1,4 +1,17 @@
 (program
+  (fun outer
+    (param x (type int))
+    (type int)
+    (block
+      (let inner (unknown))
+      (return
+        (call
+          (selector applyAsInt (selector inner))
+          (int 5)
+        )
+      )
+    )
+  )
   (call print
     (call (selector outer) (int 3))
   )

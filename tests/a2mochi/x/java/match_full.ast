@@ -43,6 +43,23 @@
       )
     )
   )
+  (fun classify
+    (param n (type int))
+    (type string)
+    (block
+      (return
+        (if_expr
+          (binary == (selector n) (int 0))
+          (string zero)
+          (if_expr
+            (binary == (selector n) (int 1))
+            (string one)
+            (string many)
+          )
+        )
+      )
+    )
+  )
   (call print (selector label))
   (call print (selector mood))
   (call print (selector status))

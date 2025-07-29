@@ -3,6 +3,31 @@
     (list (unknown) (unknown) (unknown))
   )
   (let adults (unknown))
+  (fun q
+    (param v (type Object))
+    (type string)
+    (block
+      (if
+        (unknown)
+        (block
+          (return
+            (binary +
+              (binary +
+                (string "'")
+                (call
+                  (selector toString (selector v))
+                )
+              )
+              (string "'")
+            )
+          )
+        )
+      )
+      (return
+        (call str (selector v))
+      )
+    )
+  )
   (for a
     (in (selector adults))
     (block

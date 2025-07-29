@@ -97,11 +97,23 @@ public class AstJson {
         for (VariableTree p : mt.getParameters()) {
             if (!first) out.print(',');
             first = false;
-            out.print('"');
+            out.print("{\"name\":\"");
             out.print(p.getName());
-            out.print('"');
+            out.print("\"");
+            if (p.getType() != null) {
+                out.print(",\"type\":\"");
+                out.print(p.getType());
+                out.print("\"");
+            }
+            out.print("}");
         }
-        out.print("],\"body\":");
+        out.print("],");
+        if (mt.getReturnType() != null) {
+            out.print("\"type\":\"");
+            out.print(mt.getReturnType());
+            out.print("\",");
+        }
+        out.print("\"body\":");
         printBlockStatements(mt.getBody());
         out.print("}");
     }

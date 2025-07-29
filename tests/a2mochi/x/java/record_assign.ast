@@ -1,5 +1,9 @@
 (program
   (let c (unknown))
+  (fun inc
+    (param c (type Counter))
+    (block (unknown))
+  )
   (unknown)
   (call print (unknown))
 )

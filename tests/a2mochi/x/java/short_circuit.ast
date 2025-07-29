@@ -1,4 +1,13 @@
 (program
+  (fun boom
+    (param a (type int))
+    (param b (type int))
+    (type bool)
+    (block
+      (call print (string boom))
+      (return (bool true))
+    )
+  )
   (call print
     (binary &&
       (bool false)
