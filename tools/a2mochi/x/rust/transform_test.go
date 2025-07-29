@@ -166,15 +166,37 @@ func runMochiE(rootDir, path string) ([]byte, error) {
 	return out.Bytes(), err
 }
 
+func loadAST(path string) (*rust.ASTNode, error) {
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return nil, err
+	}
+	var n rust.ASTNode
+	if err := json.Unmarshal(data, &n); err != nil {
+		return nil, err
+	}
+	return &n, nil
+}
+
 func processFile(rootDir, outDir, srcPath string) error {
 	name := strings.TrimSuffix(filepath.Base(srcPath), ".rs")
 	data, err := os.ReadFile(srcPath)
 	if err != nil {
 		return fmt.Errorf("read src: %w", err)
 	}
-	_, astNode, err := parseProgramE(data)
-	if err != nil {
-		return err
+	var astNode rust.ASTNode
+	if hasRustAnalyzer {
+		_, astNode, err = parseProgramE(data)
+		if err != nil {
+			return err
+		}
+	} else {
+		astPath := filepath.Join(outDir, name+".ast")
+		node, err := loadAST(astPath)
+		if err != nil {
+			return fmt.Errorf("load ast: %w", err)
+		}
+		astNode = *node
 	}
 	node, code, err := transformSourceE(string(data), &astNode)
 	if err != nil {
@@ -190,12 +212,14 @@ func processFile(rootDir, outDir, srcPath string) error {
 			return err
 		}
 	}
-	want, err := os.ReadFile(outPath)
-	if err != nil {
-		return fmt.Errorf("missing golden: %w", err)
-	}
-	if string(astBuf.Bytes()) != string(want) {
-		return fmt.Errorf("golden mismatch")
+	if hasRustAnalyzer {
+		want, err := os.ReadFile(outPath)
+		if err != nil {
+			return fmt.Errorf("missing golden: %w", err)
+		}
+		if string(astBuf.Bytes()) != string(want) {
+			return fmt.Errorf("golden mismatch")
+		}
 	}
 	mochiPath := filepath.Join(outDir, name+".mochi")
 	if err := os.WriteFile(mochiPath, []byte(code), 0644); err != nil {
@@ -224,10 +248,14 @@ func processFile(rootDir, outDir, srcPath string) error {
 	return nil
 }
 
+var hasRustAnalyzer bool
+
+func init() {
+	_, err := exec.LookPath("rust-analyzer")
+	hasRustAnalyzer = err == nil
+}
+
 func TestTransformGolden(t *testing.T) {
-	if _, err := exec.LookPath("rust-analyzer"); err != nil {
-		t.Skipf("rust-analyzer not installed: %v", err)
-	}
 
 	rootDir := repoRoot(t)
 	pattern := filepath.Join(rootDir, "tests/transpiler/x/rs", "*.rs")
@@ -244,23 +272,34 @@ func TestTransformGolden(t *testing.T) {
 
 	allowed := map[string]bool{
 		"append_builtin":      true,
+		"basic_compare":       true,
 		"binary_precedence":   true,
+		"bool_chain":          true,
 		"cast_string_to_int":  true,
 		"count_builtin":       true,
 		"for_list_collection": true,
+		"for_loop":            true,
+		"fun_call":            true,
+		"fun_three_args":      true,
 		"if_then_else":        true,
 		"if_then_else_nested": true,
 		"len_builtin":         true,
 		"len_string":          true,
+		"let_and_print":       true,
 		"list_assign":         true,
 		"list_index":          true,
+		"math_ops":            true,
 		"print_hello":         true,
 		"str_builtin":         true,
 		"string_compare":      true,
 		"string_concat":       true,
 		"string_contains":     true,
 		"string_index":        true,
+		"typed_let":           true,
+		"typed_var":           true,
+		"unary_neg":           true,
 		"var_assignment":      true,
+		"while_loop":          true,
 	}
 
 	for _, srcPath := range files {

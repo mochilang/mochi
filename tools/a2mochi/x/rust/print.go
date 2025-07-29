@@ -58,10 +58,8 @@ func Print(node *mochiast.Node) (string, error) {
 	if err := mochiast.Fprint(&buf, node); err != nil {
 		return "", err
 	}
-	out := buf.String()
-	if !strings.HasSuffix(out, "\n") {
-		out += "\n"
-	}
+	// trim trailing whitespace to keep output stable
+	out := strings.TrimRight(buf.String(), " \n") + "\n"
 	return out, nil
 }
 
