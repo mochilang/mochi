@@ -84,6 +84,7 @@ func TestTransform_Golden(t *testing.T) {
 		"bool_chain":              true,
 		"break_continue":          true,
 		"cast_string_to_int":      true,
+		"cast_struct":             true,
 		"print_hello":             true,
 		"avg_builtin":             true,
 		"sum_builtin":             true,
