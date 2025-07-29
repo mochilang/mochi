@@ -235,6 +235,9 @@ func rewriteLine(ln string, recs []Record) []string {
 	if stringStrZeroRe.MatchString(ln) {
 		ln = stringStrZeroRe.ReplaceAllString(ln, "!$1.contains($2)")
 	}
+	ln = strings.ReplaceAll(ln, "=<", "<=")
+	ln = strings.ReplaceAll(ln, "=:=", "==")
+	ln = strings.ReplaceAll(ln, "=/=", "!=")
 	if substrRe.MatchString(ln) {
 		ln = substrRe.ReplaceAllStringFunc(ln, func(s string) string {
 			m := substrRe.FindStringSubmatch(s)
