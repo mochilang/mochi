@@ -129,6 +129,7 @@ func TestTransformGolden(t *testing.T) {
 		"map_nested_assign":   true,
 		"membership":          true,
 		"print_hello":         true,
+		"sum_builtin":         true,
 		"str_builtin":         true,
 		"string_concat":       true,
 		"string_contains":     true,

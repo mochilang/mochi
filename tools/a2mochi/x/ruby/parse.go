@@ -217,6 +217,9 @@ func exprString(n Node) string {
 			if meth.Type == "@ident" && meth.Value == "length" {
 				return "len(" + recv + ")"
 			}
+			if meth.Type == "@ident" && meth.Value == "sum" {
+				return "sum(" + recv + ")"
+			}
 		}
 	case "method_add_arg":
 		if len(n.Children) == 2 {
@@ -252,8 +255,14 @@ func exprString(n Node) string {
 	case "lambda":
 		if len(n.Children) >= 2 {
 			ps := params(n.Children[0])
+			var typed []string
+			if ps != "" {
+				for _, p := range strings.Split(ps, ", ") {
+					typed = append(typed, p+": any")
+				}
+			}
 			body := exprString(n.Children[len(n.Children)-1])
-			return fmt.Sprintf("fun(%s) => (%s)", ps, body)
+			return fmt.Sprintf("fun(%s): any => (%s)", strings.Join(typed, ", "), body)
 		}
 	case "ifop":
 		if len(n.Children) >= 3 {
@@ -269,6 +278,9 @@ func exprString(n Node) string {
 	if n.Type == "unary" && len(n.Children) == 2 {
 		op := exprString(n.Children[0])
 		val := exprString(n.Children[1])
+		if op == "-" {
+			return "(" + op + val + ")"
+		}
 		return op + val
 	}
 	toks := tokens(n)

@@ -6,7 +6,7 @@ obtain an s-expression AST which is then converted to Mochi code. The
 implementation mirrors the Python and TypeScript converters and is only
 powerful enough for the examples under `tests/transpiler/x/rb`.
 
-Completed programs: 39/104
+Completed programs: 40/104
 
 ## Checklist
 - [x] append_builtin
