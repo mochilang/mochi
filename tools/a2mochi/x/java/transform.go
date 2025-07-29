@@ -138,11 +138,19 @@ func exprNode(e Expr) *mochias.Node {
 		r := exprNode(*e.Right)
 		if e.Op == "DIVIDE" && e.Left.Kind == "Literal" && e.Right.Kind == "Literal" &&
 			!strings.Contains(e.Left.Value, ".") && !strings.Contains(e.Right.Value, ".") {
-			return &mochias.Node{Kind: "binary", Value: "//", Children: []*mochias.Node{l, r}}
+			div := &mochias.Node{Kind: "binary", Value: "/", Children: []*mochias.Node{l, r}}
+			t := &mochias.Node{Kind: "type", Value: "int"}
+			return &mochias.Node{Kind: "cast", Children: []*mochias.Node{div, t}}
 		}
 		// avoid constant folding to preserve original operation
 		return &mochias.Node{Kind: "binary", Value: op(e.Op), Children: []*mochias.Node{l, r}}
 	case "Call":
+		if n := tryAppend(e); n != nil {
+			return n
+		}
+		if n := tryAvg(e); n != nil {
+			return n
+		}
 		// special handling for method calls on an object
 		if e.Target != nil && e.Target.Kind == "Member" {
 			if p := memberPath(e.Target); p == "java.util.Arrays.copyOfRange" && len(e.Args) == 3 {
@@ -329,4 +337,54 @@ func memberPath(e *Expr) string {
 	default:
 		return ""
 	}
+}
+
+func tryAppend(e Expr) *mochias.Node {
+	if e.Kind != "Call" || e.Target == nil || e.Target.Kind != "Member" {
+		return nil
+	}
+	if p := memberPath(e.Target); p != "java.util.Arrays.toString" || len(e.Args) != 1 {
+		return nil
+	}
+	arg := e.Args[0]
+	if arg.Kind != "Call" || arg.Target == nil || arg.Target.Kind != "Member" || arg.Target.Name != "toArray" {
+		return nil
+	}
+	inner := arg.Target.Expr
+	if inner == nil || inner.Kind != "Call" || inner.Target == nil || inner.Target.Kind != "Member" {
+		return nil
+	}
+	if memberPath(inner.Target) != "java.util.stream.IntStream.concat" || len(inner.Args) != 2 {
+		return nil
+	}
+	first := inner.Args[0]
+	second := inner.Args[1]
+	if first.Kind != "Call" || memberPath(first.Target) != "java.util.Arrays.stream" || len(first.Args) != 1 {
+		return nil
+	}
+	if second.Kind != "Call" || memberPath(second.Target) != "java.util.stream.IntStream.of" || len(second.Args) != 1 {
+		return nil
+	}
+	arr := exprNode(first.Args[0])
+	val := exprNode(second.Args[0])
+	return &mochias.Node{Kind: "call", Value: "append", Children: []*mochias.Node{arr, val}}
+}
+
+func tryAvg(e Expr) *mochias.Node {
+	if e.Kind != "Call" || e.Target == nil || e.Target.Kind != "Member" || e.Target.Name != "orElse" || len(e.Args) != 1 {
+		return nil
+	}
+	mid := e.Target.Expr
+	if mid == nil || mid.Kind != "Call" || mid.Target == nil || mid.Target.Kind != "Member" || mid.Target.Name != "average" {
+		return nil
+	}
+	streamCall := mid.Target.Expr
+	if streamCall == nil || streamCall.Kind != "Call" || streamCall.Target == nil || streamCall.Target.Kind != "Member" {
+		return nil
+	}
+	if memberPath(streamCall.Target) != "java.util.Arrays.stream" || len(streamCall.Args) != 1 {
+		return nil
+	}
+	arr := exprNode(streamCall.Args[0])
+	return &mochias.Node{Kind: "call", Value: "avg", Children: []*mochias.Node{arr}}
 }
