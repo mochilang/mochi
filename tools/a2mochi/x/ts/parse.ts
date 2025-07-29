@@ -73,10 +73,12 @@ function parse(src: string): TSDecl[] {
             typ: p.type ? p.type.getText(source) : "",
           }));
           const rt = init.type ? init.type.getText(source) : "";
-          let body = "";
+          let body = init.body.getText(source);
           let bodyNodes: TSDecl[] | undefined = undefined;
           if (ts.isBlock(init.body)) {
-            body = init.body.getText(source).slice(1, -1);
+            body = body.slice(1, -1);
+            bodyNodes = parse(body);
+          } else {
             bodyNodes = parse(body);
           }
           decls.push({
@@ -241,6 +243,8 @@ function parse(src: string): TSDecl[] {
       if (ts.isBlock(stmt.statement)) {
         body = body.slice(1, -1);
         bodyNodes = parse(body);
+      } else {
+        bodyNodes = parse(body);
       }
       decls.push({
         kind: "forof",
@@ -269,6 +273,8 @@ function parse(src: string): TSDecl[] {
       let bodyNodes: TSDecl[] | undefined = undefined;
       if (ts.isBlock(stmt.statement)) {
         body = body.slice(1, -1);
+        bodyNodes = parse(body);
+      } else {
         bodyNodes = parse(body);
       }
       decls.push({
@@ -309,6 +315,8 @@ function parse(src: string): TSDecl[] {
       if (ts.isBlock(stmt.statement)) {
         body = body.slice(1, -1);
         bodyNodes = parse(body);
+      } else {
+        bodyNodes = parse(body);
       }
       decls.push({
         kind: "for",
@@ -334,6 +342,8 @@ function parse(src: string): TSDecl[] {
       if (ts.isBlock(stmt.statement)) {
         body = body.slice(1, -1);
         bodyNodes = parse(body);
+      } else {
+        bodyNodes = parse(body);
       }
       decls.push({
         kind: "while",
@@ -357,6 +367,8 @@ function parse(src: string): TSDecl[] {
       if (ts.isBlock(stmt.thenStatement)) {
         body = body.slice(1, -1);
         bodyNodes = parse(body);
+      } else {
+        bodyNodes = parse(body);
       }
       let elsePart = "";
       let elseNodes: TSDecl[] | undefined = undefined;
@@ -364,6 +376,8 @@ function parse(src: string): TSDecl[] {
         elsePart = stmt.elseStatement.getText(source);
         if (ts.isBlock(stmt.elseStatement)) {
           elsePart = elsePart.slice(1, -1);
+          elseNodes = parse(elsePart);
+        } else {
           elseNodes = parse(elsePart);
         }
       }
