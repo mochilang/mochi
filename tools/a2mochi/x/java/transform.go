@@ -44,7 +44,7 @@ func stmtNode(s Stmt, mutated map[string]bool) *mochias.Node {
 		if s.Expr != nil {
 			n.Children = append(n.Children, exprNode(*s.Expr))
 		} else if s.Type != "" {
-			n.Children = append(n.Children, &mochias.Node{Kind: "type", Value: s.Type})
+			n.Children = append(n.Children, &mochias.Node{Kind: "type", Value: normalizeType(s.Type)})
 		} else {
 			n.Children = append(n.Children, &mochias.Node{Kind: "int", Value: 0})
 		}
@@ -66,6 +66,22 @@ func stmtNode(s Stmt, mutated map[string]bool) *mochias.Node {
 			}
 		}
 		return call
+	case "FnDecl":
+		fn := &mochias.Node{Kind: "fun", Value: s.Name}
+		for _, p := range s.Params {
+			fn.Children = append(fn.Children, &mochias.Node{Kind: "param", Value: p})
+		}
+		if s.Type != "" && s.Type != "void" {
+			fn.Children = append(fn.Children, &mochias.Node{Kind: "type", Value: normalizeType(s.Type)})
+		}
+		fn.Children = append(fn.Children, blockNode(s.Body, mutated))
+		return fn
+	case "Return":
+		n := &mochias.Node{Kind: "return"}
+		if s.Expr != nil {
+			n.Children = append(n.Children, exprNode(*s.Expr))
+		}
+		return n
 	case "ForRange":
 		r := &mochias.Node{Kind: "range", Children: []*mochias.Node{exprNode(*s.Start), exprNode(*s.End)}}
 		b := blockNode(s.Body, mutated)
@@ -289,6 +305,21 @@ func op(k string) string {
 	return k
 }
 
+func normalizeType(t string) string {
+	switch strings.ToLower(t) {
+	case "boolean":
+		return "bool"
+	case "int", "integer":
+		return "int"
+	case "float", "double":
+		return "float"
+	case "string":
+		return "string"
+	default:
+		return t
+	}
+}
+
 func isNumericLiteral(v string) bool {
 	if _, err := strconv.Atoi(v); err == nil {
 		return true
@@ -482,6 +513,8 @@ func scanMutations(stmts []Stmt, m map[string]bool) {
 			} else {
 				m[st.Name] = true
 			}
+		case "FnDecl":
+			scanMutations(st.Body, m)
 		case "While", "ForRange", "ForEach":
 			scanMutations(st.Body, m)
 		case "If":

@@ -49,6 +49,16 @@ public class AstJson {
                 for (Tree m : ct.getMembers()) {
                     if (m.getKind() == Tree.Kind.METHOD) {
                         MethodTree mt = (MethodTree) m;
+                        if (!mt.getModifiers().getFlags().contains(javax.lang.model.element.Modifier.STATIC)) continue;
+                        if (mt.getName().contentEquals("main")) continue;
+                        if (!firstStmt) out.print(',');
+                        firstStmt = false;
+                        printFnDecl(mt);
+                    }
+                }
+                for (Tree m : ct.getMembers()) {
+                    if (m.getKind() == Tree.Kind.METHOD) {
+                        MethodTree mt = (MethodTree) m;
                         if (mt.getName().contentEquals("main")) {
                             for (StatementTree st : mt.getBody().getStatements()) {
                                 if (!firstStmt) out.print(',');
@@ -76,6 +86,23 @@ public class AstJson {
             out.print(",\"expr\":");
             printExpr(vt.getInitializer());
         }
+        out.print("}");
+    }
+
+    private void printFnDecl(MethodTree mt) {
+        out.print("{\"kind\":\"FnDecl\",\"name\":\"");
+        out.print(mt.getName());
+        out.print("\",\"params\":[");
+        boolean first = true;
+        for (VariableTree p : mt.getParameters()) {
+            if (!first) out.print(',');
+            first = false;
+            out.print('"');
+            out.print(p.getName());
+            out.print('"');
+        }
+        out.print("],\"body\":");
+        printBlockStatements(mt.getBody());
         out.print("}");
     }
 
@@ -172,6 +199,15 @@ public class AstJson {
             if (it.getElseStatement() != null) {
                 out.print(",\"else\":");
                 printBlockStatements(it.getElseStatement());
+            }
+            out.print("}");
+            break;
+        case RETURN:
+            ReturnTree rt = (ReturnTree) st;
+            out.print("{\"kind\":\"Return\"");
+            if (rt.getExpression() != null) {
+                out.print(",\"expr\":");
+                printExpr(rt.getExpression());
             }
             out.print("}");
             break;

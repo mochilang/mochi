@@ -1,4 +1,10 @@
 (program
+  (fun boom
+    (block
+      (call print (string boom))
+      (return (bool true))
+    )
+  )
   (call print
     (binary &&
       (binary &&

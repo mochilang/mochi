@@ -19,17 +19,18 @@ type Node struct {
 
 // Stmt describes a statement in the simplified AST.
 type Stmt struct {
-	Kind   string `json:"kind"`
-	Name   string `json:"name,omitempty"`
-	Type   string `json:"type,omitempty"`
-	Target *Expr  `json:"target,omitempty"`
-	Expr   *Expr  `json:"expr,omitempty"`
-	Cond   *Expr  `json:"cond,omitempty"`
-	Start  *Expr  `json:"start,omitempty"`
-	End    *Expr  `json:"end,omitempty"`
-	Body   []Stmt `json:"body,omitempty"`
-	Then   []Stmt `json:"then,omitempty"`
-	Else   []Stmt `json:"else,omitempty"`
+	Kind   string   `json:"kind"`
+	Name   string   `json:"name,omitempty"`
+	Type   string   `json:"type,omitempty"`
+	Target *Expr    `json:"target,omitempty"`
+	Expr   *Expr    `json:"expr,omitempty"`
+	Cond   *Expr    `json:"cond,omitempty"`
+	Start  *Expr    `json:"start,omitempty"`
+	End    *Expr    `json:"end,omitempty"`
+	Body   []Stmt   `json:"body,omitempty"`
+	Then   []Stmt   `json:"then,omitempty"`
+	Else   []Stmt   `json:"else,omitempty"`
+	Params []string `json:"params,omitempty"`
 }
 
 // Expr describes an expression in the simplified AST.
