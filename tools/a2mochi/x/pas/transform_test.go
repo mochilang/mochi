@@ -111,6 +111,7 @@ func TestTransform_Golden(t *testing.T) {
 		"fun_call":            true,
 		"fun_three_args":      true,
 		"short_circuit":       true,
+		"go_auto":             true,
 	}
 	outDir := filepath.Join(root, "tests", "a2mochi", "x", "pas")
 	os.MkdirAll(outDir, 0o755)
