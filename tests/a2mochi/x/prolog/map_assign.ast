@@ -1,0 +1,19 @@
+(program
+  (fun main
+    (let _11676
+      (map
+        (entry (selector alice) (int 1))
+      )
+    )
+    (var _11706 (selector _11676))
+    (assign
+      (index (selector _11706) (string bob))
+      (int 2)
+    )
+    (let _11724
+      (index (selector _11706) (string bob))
+    )
+    (call print (selector _11724))
+  )
+  (call main)
+)

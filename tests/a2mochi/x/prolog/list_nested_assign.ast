@@ -1,0 +1,31 @@
+(program
+  (fun main
+    (let _12158
+      (list
+        (list (int 1) (int 2))
+        (list (int 3) (int 4))
+      )
+    )
+    (let _12168
+      (index (selector _12158) (int 1))
+    )
+    (var _12184 (selector _12168))
+    (assign
+      (index (selector _12184) (int 0))
+      (int 5)
+    )
+    (var _12204 (selector _12158))
+    (assign
+      (index (selector _12204) (int 1))
+      (selector _12184)
+    )
+    (let _12216
+      (index (selector _12204) (int 1))
+    )
+    (let _12224
+      (index (selector _12216) (int 0))
+    )
+    (call print (selector _12224))
+  )
+  (call main)
+)
