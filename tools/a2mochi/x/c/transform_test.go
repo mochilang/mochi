@@ -125,7 +125,7 @@ func TestTransform_Golden(t *testing.T) {
 				t.Fatalf("convert: %v", err)
 			}
 			t.Log(astNode.String())
-			code, err := c.Print(astNode)
+			code, err := c.Print(prog, astNode)
 			if err != nil {
 				t.Fatalf("convert source: %v", err)
 			}
