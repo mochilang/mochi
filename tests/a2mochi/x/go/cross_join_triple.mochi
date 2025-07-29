@@ -1,0 +1,16 @@
+var nums = [1, 2]
+var letters = ["A", "B"]
+var bools = [true, false]
+type Combo {
+  n: int
+  l: string
+  b: bool
+}
+let combos = from n in nums
+               from l in letters
+               from b in bools
+               select {"n": n, "l": l, "b": b} as Combo
+print("--- Cross Join of three lists ---")
+for c in combos {
+  print(c.n, c.l, c.b)
+}
