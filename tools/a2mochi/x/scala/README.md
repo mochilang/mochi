@@ -1,6 +1,6 @@
 # a2mochi Scala Converter
 
-Completed programs: 23/104
+Completed programs: 26/104
 Date: 2025-07-29
 
 This directory contains the helper code and golden files for converting Scala
@@ -34,4 +34,8 @@ generation timestamp (GMT+7).
 - [x] count_builtin
 - [x] bench_block
 - [x] break_continue
+- [x] for_loop
+- [x] while_loop
+- [x] if_else
+- [x] var_assignment
 
