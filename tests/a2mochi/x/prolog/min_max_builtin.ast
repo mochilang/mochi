@@ -1,0 +1,10 @@
+(program
+  (fun main
+    (let _11212
+      (list (int 3) (int 1) (int 4))
+    )
+    (call print (int 1))
+    (call print (int 4))
+  )
+  (call main)
+)

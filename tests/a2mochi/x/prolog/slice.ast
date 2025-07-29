@@ -8,7 +8,11 @@
       (binary - (int 4) (int 1))
     )
     (let _11684
-      (call substr (string hello) (int 1) (selector _11664))
+      (call substr
+        (string hello)
+        (int 1)
+        (binary + (int 1) (selector _11664))
+      )
     )
     (call print (selector _11684))
   )

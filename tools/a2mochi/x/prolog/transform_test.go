@@ -94,6 +94,7 @@ func TestTransform(t *testing.T) {
 	allowedSet := map[string]bool{
 		"avg_builtin":         true,
 		"print_hello":         true,
+		"unary_neg":           true,
 		"for_loop":            true,
 		"len_builtin":         true,
 		"sum_builtin":         true,
@@ -105,7 +106,10 @@ func TestTransform(t *testing.T) {
 		"cast_string_to_int":  true,
 		"len_string":          true,
 		"string_concat":       true,
+		"string_index":        true,
 		"string_compare":      true,
+		"list_index":          true,
+		"string_contains":     true,
 		"bool_chain":          true,
 		"str_builtin":         true,
 		"var_assignment":      true,
@@ -128,6 +132,7 @@ func TestTransform(t *testing.T) {
 		"for_map_collection":  true,
 		"map_in_operator":     true,
 		"map_membership":      true,
+		"min_max_builtin":     true,
 	}
 
 	outputDir := filepath.Join(root, "tests/a2mochi/x/prolog")
@@ -174,5 +179,8 @@ func TestTransform(t *testing.T) {
 				t.Fatalf("output mismatch\nGot: %s\nWant: %s", gotOut, wantOut)
 			}
 		})
+	}
+	if *update {
+		prolog.UpdateReadmeForTests()
 	}
 }

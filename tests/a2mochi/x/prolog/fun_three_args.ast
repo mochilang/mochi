@@ -1,16 +1,16 @@
 (program
   (fun sum3
     (param A)
-    (param A)
-    (param A)
-    (param A)
+    (param B)
+    (param C)
+    (param R)
     (let _11490
       (binary +
-        (binary + (selector _11468) (selector _11468))
-        (selector _11468)
+        (binary + (selector _11468) (selector _11470))
+        (selector _11472)
       )
     )
-    (let _11468 (selector _11490))
+    (let _11474 (selector _11490))
   )
   (fun main
     (let _12056
