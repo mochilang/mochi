@@ -19,7 +19,7 @@ var mapsIsKeyRe = regexp.MustCompile(`maps:is_key\(([^,]+),\s*([^\)]+)\)`)
 var stringStrNotZeroRe = regexp.MustCompile(`string:str\(([^,]+),\s*([^\)]+)\)\s*(=/=|/=)\s*0`)
 var stringStrZeroRe = regexp.MustCompile(`string:str\(([^,]+),\s*([^\)]+)\)\s*(=|=:=)\s*0`)
 var substrRe = regexp.MustCompile(`string:substr\(([^,]+),\s*([^,]+?)\s*\+\s*1,\s*([^\)]+)\)`)
-var plusNegRe = regexp.MustCompile(`\+\s*-([0-9]+)`)
+var listsNthRe = regexp.MustCompile(`lists:nth\(([^,]+),\s*([^\)]+)\)`)
 var caseIfRe = regexp.MustCompile(`case\s+(.+?)\s+of\s+true\s*->\s*(.+?);\s*(?:_|false)\s*->\s*(.+?)\s*end`)
 var printCallRe = regexp.MustCompile(`io:(?:format|fwrite)\("~[sp]~n",\s*\[(.+?)\]\)`)
 var foreachRe = regexp.MustCompile(`^lists:foreach\(fun\(([^)]*)\)\s*->\s*(.*?)\s*end,\s*(.+)\)$`)
@@ -134,10 +134,18 @@ func formatProgram(p *Program) (string, error) {
 			parts = append(parts, funLine+" {}")
 		} else {
 			parts = append(parts, funLine+" {")
-			for _, line := range f.Body {
+			for i, line := range f.Body {
 				ln := strings.ReplaceAll(line, "\n", " ")
 				ln = rewriteLine(ln, p.Records)
-				parts = append(parts, "  "+strings.TrimSpace(ln))
+				tln := strings.TrimSpace(ln)
+				if i == len(f.Body)-1 && !strings.HasPrefix(tln, "return ") &&
+					!assignRe.MatchString(strings.TrimSpace(line)) &&
+					!strings.HasPrefix(tln, "print(") &&
+					!strings.HasPrefix(tln, "for ") &&
+					!strings.HasPrefix(tln, "if ") {
+					tln = "return " + tln
+				}
+				parts = append(parts, "  "+tln)
 			}
 			parts = append(parts, "}")
 		}
@@ -194,9 +202,7 @@ func rewriteLine(ln string, recs []Record) string {
 	if strings.Contains(ln, "++") {
 		ln = strings.ReplaceAll(ln, "++", "+")
 	}
-	if strings.Contains(ln, "+ -") {
-		ln = plusNegRe.ReplaceAllString(ln, "+ (-$1)")
-	}
+	ln = fixPlusNeg(ln)
 	if stringStrNotZeroRe.MatchString(ln) {
 		ln = stringStrNotZeroRe.ReplaceAllString(ln, "$1.contains($2)")
 	}
@@ -213,6 +219,14 @@ func rewriteLine(ln string, recs []Record) string {
 				return target + "[" + start + "]"
 			}
 			return "substring(" + target + ", " + start + ", " + start + " + " + length + ")"
+		})
+	}
+	if listsNthRe.MatchString(ln) {
+		ln = listsNthRe.ReplaceAllStringFunc(ln, func(s string) string {
+			m := listsNthRe.FindStringSubmatch(s)
+			idx := strings.TrimSpace(m[1])
+			list := strings.TrimSpace(m[2])
+			return list + "[(" + idx + ") - 1]"
 		})
 	}
 	if printCallRe.MatchString(ln) {
@@ -298,4 +312,21 @@ func rewritePrint(args string) string {
 		return "print(" + m[1] + ")"
 	}
 	return "print(" + trimmed
+}
+
+func fixPlusNeg(s string) string {
+	for i := strings.Index(s, "+ -"); i != -1; i = strings.Index(s, "+ -") {
+		j := i + 3
+		k := j
+		for k < len(s) && s[k] >= '0' && s[k] <= '9' {
+			k++
+		}
+		if k > j {
+			s = s[:i+2] + "(-" + s[j:k] + ")" + s[k:]
+			i = i + 4
+		} else {
+			break
+		}
+	}
+	return s
 }

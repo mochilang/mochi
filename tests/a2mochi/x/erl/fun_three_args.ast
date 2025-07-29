@@ -1,0 +1,8 @@
+package main
+fun sum3(A: any, B: any, C: any): any {
+  return ((A + B) + C)
+}
+fun main() {
+  print(sum3(1, 2, 3))
+}
+main()

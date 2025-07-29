@@ -1,0 +1,6 @@
+package main
+fun main() {
+  let Xs = [10, 20, 30]
+  print(Xs[(((1 + 1)) - 1)])
+}
+main()
