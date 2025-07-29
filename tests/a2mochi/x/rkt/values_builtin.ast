@@ -1,0 +1,12 @@
+(program
+  (let m
+    (map
+      (entry (string a) (int 1))
+      (entry (string b) (int 2))
+      (entry (string c) (int 3))
+    )
+  )
+  (call print
+    (call values (selector m))
+  )
+)

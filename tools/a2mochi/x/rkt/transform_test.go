@@ -89,6 +89,12 @@ func TestTransformGolden(t *testing.T) {
 		"bool_chain":          true,
 		"if_then_else":        true,
 		"short_circuit":       true,
+		"values_builtin":      true,
+		"sum_builtin":         true,
+		"min_max_builtin":     true,
+		"string_compare":      true,
+		"membership":          true,
+		"str_builtin":         true,
 	}
 
 	outDir := filepath.Join(root, "tests", "a2mochi", "x", "rkt")
