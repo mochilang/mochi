@@ -101,14 +101,18 @@ func TestTransform_Golden(t *testing.T) {
 		"if_then_else":        true,
 		"if_then_else_nested": true,
 		"test_block":          true,
-               "list_index":          true,
-               "append_builtin":      true,
-               "bool_chain":          true,
-               "fun_call":            true,
-               "fun_expr_in_let":    true,
-               "fun_three_args":     true,
-               "math_ops":           true,
-       }
+		"list_index":          true,
+		"append_builtin":      true,
+		"bool_chain":          true,
+		"fun_call":            true,
+		"fun_expr_in_let":     true,
+		"fun_three_args":      true,
+		"math_ops":            true,
+		"len_map":             true,
+		"str_builtin":         true,
+		"min_max_builtin":     true,
+		"membership":          true,
+	}
 	outDir := filepath.Join(root, "tests", "a2mochi", "x", "ocaml")
 	os.MkdirAll(outDir, 0o755)
 
