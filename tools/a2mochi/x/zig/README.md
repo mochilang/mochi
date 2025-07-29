@@ -8,7 +8,7 @@ Completed programs: 34/98
 Last updated: 2025-07-30 00:18 +07
 
 ## Checklist
-- [ ] append_builtin
+- [x] append_builtin
 - [ ] avg_builtin
 - [x] basic_compare
 - [ ] binary_precedence
