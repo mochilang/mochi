@@ -91,6 +91,16 @@ func convertStmtsToNodes(stmts []luaast.Stmt, vars map[string]bool, mut map[stri
 			}
 		case *luaast.FuncCallStmt:
 			if fc, ok := s.Expr.(*luaast.FuncCallExpr); ok {
+				if isAttrCall(fc.Func, "table", "insert") && len(fc.Args) == 2 {
+					lhs := exprToNode(fc.Args[0], mut)
+					assignNode := node("assign", nil,
+						lhs,
+						node("call", "append",
+							exprToNode(fc.Args[0], mut),
+							exprToNode(fc.Args[1], mut)))
+					out = append(out, assignNode)
+					continue
+				}
 				if tgt := tableInsertTarget(fc); tgt != "" {
 					assignNode := node("assign", nil,
 						node("selector", tgt),
