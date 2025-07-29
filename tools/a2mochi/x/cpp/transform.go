@@ -301,6 +301,18 @@ func transformBody(body string) ([]*ast.Node, error) {
 
 func convertExpression(s string) string {
 	s = strings.TrimSpace(s)
+	for strings.HasPrefix(s, "(") && strings.HasSuffix(s, ")") {
+		inner := strings.TrimSpace(s[1 : len(s)-1])
+		if inner == "" {
+			break
+		}
+		// Only strip if parentheses are balanced inside
+		if strings.Count(inner, "(") == strings.Count(inner, ")") {
+			s = inner
+		} else {
+			break
+		}
+	}
 	if m := regexp.MustCompile(`^\(?\s*\[&\]\s*\{\s*auto\s+(\w+)\s*=\s*([A-Za-z_][A-Za-z0-9_]*)\s*;\s*\w+\.push_back\(([^)]+)\);\s*return\s+\w+;\s*\}\(\)\s*\)?$`).FindStringSubmatch(s); m != nil {
 		list := convertExpression(strings.TrimSpace(m[2]))
 		val := convertExpression(strings.TrimSpace(m[3]))
@@ -398,6 +410,9 @@ func convertExpression(s string) string {
 	if strings.Contains(s, "std::string(") {
 		re := regexp.MustCompile(`std::string\(([^()]*)\)`)
 		s = re.ReplaceAllString(s, `$1`)
+	}
+	if m := regexp.MustCompile(`^(\d+)\s*/\s*(\d+)$`).FindStringSubmatch(s); m != nil {
+		return fmt.Sprintf("(%s / %s) as int", m[1], m[2])
 	}
 	return s
 }

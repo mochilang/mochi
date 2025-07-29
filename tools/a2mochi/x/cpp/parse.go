@@ -201,7 +201,10 @@ func walkAST(n *clangNode, src string, funcs *[]Func, enums *[]Enum, structs *[]
 				if len(n.Inner) > 0 && n.Inner[0].Kind == "IntegerLiteral" {
 					var lit string
 					json.Unmarshal(n.Inner[0].Value, &lit)
-					g.Value = strings.TrimSpace(lit)
+					lit = strings.TrimSpace(lit)
+					if g.Value == "" && lit != "0" {
+						g.Value = lit
+					}
 				}
 				*globals = append(*globals, g)
 			}
