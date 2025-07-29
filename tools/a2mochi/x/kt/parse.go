@@ -8,10 +8,6 @@ import (
 	"os"
 	"os/exec"
 	"strings"
-
-	"mochi/ast"
-	"mochi/parser"
-	"mochi/transpiler/meta"
 )
 
 // Node represents a top-level declaration parsed from Kotlin.
@@ -23,25 +19,36 @@ type Node struct {
 	Fields []Field `json:"fields,omitempty"`
 }
 
+// Param represents a Kotlin function parameter.
 type Param struct {
 	Name string `json:"name"`
 	Typ  string `json:"typ"`
 }
 
+// Field represents a Kotlin class field.
 type Field struct {
 	Name string `json:"name"`
 	Typ  string `json:"typ"`
 }
 
-// Parse parses Kotlin source using kotlinc's -Xdump-declarations-to flag.
-func Parse(src string) ([]Node, error) {
+// Program holds parsed declarations and the original Kotlin source.
+type Program struct {
+	Nodes  []Node `json:"nodes"`
+	Source string `json:"-"`
+}
+
+// Parse parses Kotlin source by invoking kotlinc with the
+// -Xdump-declarations-to flag. It relies on the official Kotlin
+// compiler rather than any regex based parsing.
+func Parse(src string) (*Program, error) {
 	ast, err := parseKotlinc(src)
 	if err != nil {
 		return nil, err
 	}
-	return toNodes(ast), nil
+	return &Program{Nodes: toNodes(ast), Source: src}, nil
 }
 
+// astJSON mirrors the structure produced by kotlinc's JSON dump.
 type astJSON struct {
 	Classes   []cls   `json:"classes"`
 	Functions []fn    `json:"functions"`
@@ -138,96 +145,6 @@ func toNodes(a *astJSON) []Node {
 		nodes = append(nodes, Node{Kind: "var", Name: v.Name, Ret: mapType(v.Type)})
 	}
 	return nodes
-}
-
-// ConvertSource converts parsed nodes to Mochi source code.
-func ConvertSource(nodes []Node, orig string) (string, error) {
-	var b strings.Builder
-	b.Write(meta.Header("//"))
-	if orig != "" {
-		b.WriteString("/*\n")
-		b.WriteString(orig)
-		if !strings.HasSuffix(orig, "\n") {
-			b.WriteByte('\n')
-		}
-		b.WriteString("*/\n")
-	}
-	for _, n := range nodes {
-		switch n.Kind {
-		case "var":
-			writeVar(&b, n)
-		case "func":
-			writeFunc(&b, n)
-		case "type":
-			writeType(&b, n)
-		}
-	}
-	return b.String(), nil
-}
-
-// Convert converts parsed nodes to a Mochi AST node.
-func Convert(nodes []Node) (*ast.Node, error) {
-	src, err := ConvertSource(nodes, "")
-	if err != nil {
-		return nil, err
-	}
-	prog, err := parser.ParseString(src)
-	if err != nil {
-		return nil, err
-	}
-	return ast.FromProgram(prog), nil
-}
-
-func writeVar(b *strings.Builder, n Node) {
-	b.WriteString("let ")
-	b.WriteString(n.Name)
-	if n.Ret != "" {
-		b.WriteString(": ")
-		b.WriteString(n.Ret)
-	}
-	b.WriteByte('\n')
-}
-
-func writeFunc(b *strings.Builder, n Node) {
-	b.WriteString("fun ")
-	b.WriteString(n.Name)
-	writeFuncSignature(b, n)
-}
-
-func writeFuncSignature(b *strings.Builder, n Node) {
-	b.WriteByte('(')
-	for i, p := range n.Params {
-		if i > 0 {
-			b.WriteString(", ")
-		}
-		b.WriteString(p.Name)
-		if p.Typ != "" {
-			b.WriteString(": ")
-			b.WriteString(p.Typ)
-		}
-	}
-	b.WriteByte(')')
-	if n.Ret != "" && n.Ret != "Unit" {
-		b.WriteString(": ")
-		b.WriteString(n.Ret)
-	}
-	b.WriteString(" {\n}\n")
-}
-
-func writeType(b *strings.Builder, n Node) {
-	b.WriteString("type ")
-	b.WriteString(n.Name)
-	b.WriteString(" {\n")
-	for _, f := range n.Fields {
-		b.WriteString("  ")
-		b.WriteString(f.Name)
-		if f.Typ != "" {
-			b.WriteString(": ")
-			b.WriteString(f.Typ)
-		}
-		b.WriteByte('\n')
-	}
-	b.WriteString("}\n")
 }
 
 func mapType(t string) string {
