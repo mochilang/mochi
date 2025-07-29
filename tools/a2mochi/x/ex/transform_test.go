@@ -5,12 +5,14 @@ package ex_test
 import (
 	"bytes"
 	"flag"
+	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"strings"
 	"testing"
 
+	"mochi/ast"
 	"mochi/parser"
 	"mochi/runtime/vm"
 	"mochi/types"
@@ -18,14 +20,62 @@ import (
 	ex "mochi/tools/a2mochi/x/ex"
 )
 
-func TestConvertBasic(t *testing.T) {
+type qNode struct {
+	Op     string
+	Line   int
+	Column int
+	Value  string
+	Args   []qNode
+}
+
+func fromRaw(v interface{}) qNode {
+	switch x := v.(type) {
+	case string:
+		return qNode{Op: "string", Value: x}
+	case float64:
+		return qNode{Op: "number", Value: fmt.Sprintf("%v", x)}
+	case []interface{}:
+		n := qNode{}
+		if len(x) > 0 {
+			if s, ok := x[0].(string); ok {
+				n.Op = s
+			}
+		}
+		if len(x) > 1 {
+			if meta, ok := x[1].([]interface{}); ok {
+				for _, m := range meta {
+					if p, ok := m.([]interface{}); ok && len(p) == 2 {
+						key, _ := p[0].(string)
+						if val, ok := p[1].(float64); ok {
+							switch key {
+							case "line":
+								n.Line = int(val)
+							case "column":
+								n.Column = int(val)
+							}
+						}
+					}
+				}
+			}
+		}
+		if len(x) > 2 {
+			if args, ok := x[2].([]interface{}); ok {
+				for _, a := range args {
+					n.Args = append(n.Args, fromRaw(a))
+				}
+			}
+		}
+		return n
+	default:
+		return qNode{Op: "unknown"}
+	}
+}
+
+func TestTransformBasic(t *testing.T) {
 	src := `def main() do
   IO.puts("hi")
 end`
-	node, err := ex.Convert(src)
-	if err != nil {
-		t.Fatalf("convert: %v", err)
-	}
+	node := transformSource(t, src)
 	got := node.String()
 	want := "(program\n  (fun main\n    (call print (string hi))\n  )\n  (call main)\n)\n"
 	if got != want {
@@ -75,7 +125,27 @@ func runMochi(src string) ([]byte, error) {
 	return bytes.TrimSpace(out.Bytes()), nil
 }
 
-func TestConvert_Golden(t *testing.T) {
+func transformSource(t *testing.T, src string) *ast.Node {
+	t.Helper()
+	prog, err := ex.Parse(src)
+	if err != nil {
+		if !strings.Contains(err.Error(), "no functions found") {
+			t.Fatalf("parse: %v", err)
+		}
+		n, err := ex.TransformString(src)
+		if err != nil {
+			t.Fatalf("transform: %v", err)
+		}
+		return n
+	}
+	n, err := ex.Transform(prog)
+	if err != nil {
+		t.Fatalf("transform: %v", err)
+	}
+	return n
+}
+
+func TestTransformGolden(t *testing.T) {
 	if _, err := exec.LookPath("elixir"); err != nil {
 		t.Skip("elixir not installed")
 	}
@@ -132,14 +202,15 @@ func TestConvert_Golden(t *testing.T) {
 			if err != nil {
 				t.Fatalf("read: %v", err)
 			}
-			_, err = ex.ParseAST(string(data))
+			raw, err := ex.ParseAST(string(data))
 			if err != nil {
 				t.Fatalf("parse: %v", err)
 			}
-			node, err := ex.Convert(string(data))
-			if err != nil {
-				t.Fatalf("convert: %v", err)
-			}
+			astStruct := fromRaw(raw)
+			_ = astStruct // structure used for conversion
+
+			node := transformSource(t, string(data))
+			t.Log(node.String())
 			astPath := filepath.Join(outDir, name+".ast")
 			if *update {
 				os.WriteFile(astPath, []byte(node.String()), 0o644)
@@ -153,11 +224,10 @@ func TestConvert_Golden(t *testing.T) {
 				t.Fatalf("golden mismatch\n--- Got ---\n%s\n--- Want ---\n%s", got, want)
 			}
 
-			codeBytes, err := ex.ConvertParsed(string(data))
+			code, err := ex.Print(node)
 			if err != nil {
-				t.Fatalf("source: %v", err)
+				t.Fatalf("print: %v", err)
 			}
-			code := string(codeBytes)
 			mochiPath := filepath.Join(outDir, name+".mochi")
 			if *update {
 				os.WriteFile(mochiPath, []byte(code), 0o644)

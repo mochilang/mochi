@@ -3,181 +3,14 @@
 package ex
 
 import (
-	"bytes"
 	"fmt"
 	"os"
-	"os/exec"
 	"regexp"
 	"strings"
 
 	"mochi/ast"
 	"mochi/parser"
-	"mochi/transpiler/meta"
 )
-
-var skipFuncs = map[string]bool{
-	"_index_string": true,
-	"_slice_string": true,
-	"_count":        true,
-	"_sum":          true,
-	"_avg":          true,
-	"_union":        true,
-	"_except":       true,
-	"_intersect":    true,
-	"_group_by":     true,
-	"_query":        true,
-}
-
-type Func struct {
-	Name      string
-	Params    []string
-	Body      []string
-	StartLine int
-	EndLine   int
-	Header    string
-	Doc       string
-	Comments  []string
-	Raw       []string
-}
-
-type AST struct {
-	Funcs  []Func
-	Module string
-}
-
-var fnHeader = regexp.MustCompile(`^defp?\s+([a-zA-Z0-9_]+)(?:\(([^)]*)\))?\s*do\s*$`)
-
-func parseParams(paramStr string) []string {
-	if strings.TrimSpace(paramStr) == "" {
-		return nil
-	}
-	parts := strings.Split(paramStr, ",")
-	out := make([]string, 0, len(parts))
-	for _, p := range parts {
-		p = strings.TrimSpace(p)
-		if p != "" {
-			if idx := strings.Index(p, "\\"); idx >= 0 {
-				p = strings.TrimSpace(p[:idx])
-			}
-			if p != "" {
-				out = append(out, p)
-			}
-		}
-	}
-	return out
-}
-
-type ConvertError struct {
-	Line int
-	Msg  string
-	Snip string
-}
-
-func (e *ConvertError) Error() string {
-	if e.Line > 0 {
-		return fmt.Sprintf("line %d: %s\n%s", e.Line, e.Msg, e.Snip)
-	}
-	return fmt.Sprintf("%s\n%s", e.Msg, e.Snip)
-}
-
-func newConvertError(line int, lines []string, msg string) error {
-	start := line - 2
-	if start < 0 {
-		start = 0
-	}
-	end := line
-	if end >= len(lines) {
-		end = len(lines) - 1
-	}
-	var b strings.Builder
-	for i := start; i <= end; i++ {
-		prefix := "   "
-		if i+1 == line {
-			prefix = ">>>"
-		}
-		fmt.Fprintf(&b, "%s %d: %s\n", prefix, i+1, strings.TrimRight(lines[i], "\n"))
-	}
-	return &ConvertError{Line: line, Msg: msg, Snip: strings.TrimRight(b.String(), "\n")}
-}
-
-func validateWithElixir(src string) error {
-	if _, err := exec.LookPath("elixir"); err != nil {
-		return nil
-	}
-	cmd := exec.Command("elixir", "-e", "Code.string_to_quoted!(IO.read(:stdio, :eof))")
-	cmd.Stdin = strings.NewReader(src)
-	var stderr bytes.Buffer
-	cmd.Stderr = &stderr
-	if err := cmd.Run(); err != nil {
-		return nil
-	}
-	return nil
-}
-
-func Parse(src string) (*AST, error) {
-	if err := validateWithElixir(src); err != nil {
-		return nil, err
-	}
-	lines := strings.Split(src, "\n")
-	ast := &AST{}
-	for _, l := range lines {
-		l = strings.TrimSpace(l)
-		if strings.HasPrefix(l, "defmodule") {
-			parts := strings.Fields(l)
-			if len(parts) >= 2 {
-				ast.Module = strings.TrimSpace(parts[1])
-			}
-			break
-		}
-	}
-	for i := 0; i < len(lines); i++ {
-		line := strings.TrimSpace(lines[i])
-		m := fnHeader.FindStringSubmatch(line)
-		if m == nil {
-			continue
-		}
-		header := strings.TrimSpace(lines[i])
-		name := m[1]
-		params := parseParams(m[2])
-		var docLines []string
-		for j := i - 1; j >= 0; j-- {
-			l := strings.TrimSpace(lines[j])
-			if strings.HasPrefix(l, "#") {
-				docLines = append([]string{strings.TrimSpace(strings.TrimPrefix(l, "#"))}, docLines...)
-				continue
-			}
-			if l == "" {
-				continue
-			}
-			break
-		}
-		var body []string
-		startLine := i + 1
-		endLine := startLine
-		for j := i + 1; j < len(lines); j++ {
-			l := strings.TrimSpace(lines[j])
-			if l == "end" {
-				endLine = j + 1
-				i = j
-				break
-			}
-			body = append(body, l)
-		}
-		fn := Func{Name: name, Params: params, Body: body, StartLine: startLine, EndLine: endLine, Header: header}
-		if len(docLines) > 0 {
-			fn.Doc = strings.Join(docLines, "\n")
-			fn.Comments = docLines
-		}
-		fn.Raw = lines[startLine-1 : endLine]
-		if !skipFuncs[fn.Name] && !strings.HasPrefix(fn.Name, "_") {
-			ast.Funcs = append(ast.Funcs, fn)
-		}
-	}
-	if len(ast.Funcs) == 0 {
-		return nil, newConvertError(1, lines, "no functions found")
-	}
-	return ast, nil
-}
 
 func splitArgs(s string) []string {
 	var args []string
@@ -457,11 +290,11 @@ func convertSimpleScript(src string) string {
 	seg = append(seg, "def main() do")
 	seg = append(seg, lines...)
 	seg = append(seg, "end")
-	code := convertFunc(Func{Name: "main", Raw: seg})
+	code := convertFunction(Func{Name: "main", Raw: seg})
 	return code + "\nmain()\n"
 }
 
-func convertFunc(fn Func) string {
+func convertFunction(fn Func) string {
 	seg := fn.Raw
 	if len(seg) == 0 {
 		return ""
@@ -632,81 +465,83 @@ func convertFunc(fn Func) string {
 	return b.String()
 }
 
-func ConvertAST(astObj *AST) ([]byte, error) {
-	var out strings.Builder
+func Transform(p *Program) (*ast.Node, error) {
+	if p == nil {
+		return nil, fmt.Errorf("nil program")
+	}
+
+	root := &ast.Node{Kind: "program"}
 	hasMain := false
-	for _, fn := range astObj.Funcs {
-		code := convertFunc(fn)
+
+	for _, fn := range p.Funcs {
+		code := convertFunction(fn)
 		if code == "" {
 			continue
 		}
-		out.WriteString(code)
-		out.WriteByte('\n')
+		prog, err := parser.ParseString(code)
+		if err != nil {
+			return nil, err
+		}
+		if len(prog.Statements) == 0 {
+			continue
+		}
+		root.Children = append(root.Children, ast.FromStatement(prog.Statements[0]))
 		if fn.Name == "main" {
 			hasMain = true
 		}
 	}
-	if hasMain {
-		out.WriteString("main()\n")
-	}
-	if out.Len() == 0 {
-		return nil, fmt.Errorf("empty ast")
-	}
-	return []byte(out.String()), nil
-}
 
-func ConvertParsed(src string) ([]byte, error) {
-	astObj, err := Parse(src)
-	var code []byte
-	if err != nil {
-		if ce, ok := err.(*ConvertError); ok && strings.Contains(ce.Msg, "no functions found") {
-			code = []byte(convertSimpleScript(src))
-		} else {
-			return nil, err
-		}
-	} else {
-		code, err = ConvertAST(astObj)
+	if hasMain {
+		callProg, err := parser.ParseString("main()")
 		if err != nil {
 			return nil, err
 		}
+		if len(callProg.Statements) > 0 {
+			root.Children = append(root.Children, ast.FromStatement(callProg.Statements[0]))
+		}
 	}
-	var out strings.Builder
-	out.Write(meta.Header("//"))
-	out.WriteByte('\n')
-	out.WriteString("/*\n")
-	out.WriteString(src)
-	if !strings.HasSuffix(src, "\n") {
-		out.WriteByte('\n')
+
+	if len(root.Children) == 0 {
+		return nil, fmt.Errorf("empty program")
 	}
-	out.WriteString("*/\n")
-	out.Write(code)
-	return []byte(out.String()), nil
+
+	return root, nil
 }
 
-func ConvertFileParsed(path string) ([]byte, error) {
+func TransformString(src string) (*ast.Node, error) {
+	p, err := Parse(src)
+	if err != nil {
+		if ce, ok := err.(*ConvertError); ok && strings.Contains(ce.Msg, "no functions found") {
+			code := convertSimpleScript(src)
+			prog, err := parser.ParseString(code)
+			if err != nil {
+				return nil, err
+			}
+			return programNode(prog), nil
+		}
+		return nil, err
+	}
+	return Transform(p)
+}
+
+func TransformFile(path string) (*ast.Node, error) {
 	data, err := os.ReadFile(path)
 	if err != nil {
 		return nil, err
 	}
-	return ConvertParsed(string(data))
+	return TransformString(string(data))
 }
 
-func Convert(src string) (*ast.Node, error) {
-	code, err := ConvertParsed(src)
-	if err != nil {
-		return nil, err
+func programNode(p *parser.Program) *ast.Node {
+	if p == nil {
+		return nil
 	}
-	prog, err := parser.ParseString(string(code))
-	if err != nil {
-		return nil, err
+	n := &ast.Node{Kind: "program"}
+	if p.Package != "" {
+		n.Value = p.Package
 	}
-	return ast.FromProgram(prog), nil
-}
-
-func ConvertFile(path string) (*ast.Node, error) {
-	data, err := os.ReadFile(path)
-	if err != nil {
-		return nil, err
+	for _, st := range p.Statements {
+		n.Children = append(n.Children, ast.FromStatement(st))
 	}
-	return Convert(string(data))
+	return n
 }
