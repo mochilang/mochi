@@ -101,9 +101,94 @@ func sexprToNode(x any) *ast.Node {
 				}
 				return newNode("binary", op, sexprToNode(v[1]), sexprToNode(v[2]))
 			}
+		case "and", "or":
+			if len(v) >= 3 {
+				op := "&&"
+				if head == "or" {
+					op = "||"
+				}
+				left := sexprToNode(v[1])
+				for i := 2; i < len(v); i++ {
+					right := sexprToNode(v[i])
+					left = newNode("binary", op, left, right)
+				}
+				return left
+			}
 		case "not":
 			if len(v) == 2 {
 				return newNode("unary", "!", sexprToNode(v[1]))
+			}
+		case "if":
+			if len(v) >= 3 {
+				cond := sexprToNode(v[1])
+				thenN := sexprToNode(v[2])
+				if len(v) == 4 {
+					return newNode("if", nil, cond, thenN, sexprToNode(v[3]))
+				}
+				return newNode("if", nil, cond, thenN)
+			}
+		case "dotimes":
+			if len(v) == 3 {
+				bind, ok := v[1].([]any)
+				if ok && len(bind) == 2 {
+					name, _ := bind[0].(string)
+					limit := sexprToNode(bind[1])
+					body := sexprToNode(v[2])
+					r := newNode("range", newNode("int", 0), limit)
+					blk := newNode("block", nil)
+					if body != nil {
+						blk.Children = append(blk.Children, body)
+					}
+					return newNode("for", sanitizeName(name), r, blk)
+				}
+			}
+		case "doseq":
+			if len(v) >= 3 {
+				bind, ok := v[1].([]any)
+				if ok && len(bind) == 2 {
+					name, _ := bind[0].(string)
+					coll := sexprToNode(bind[1])
+					blk := newNode("block", nil)
+					for _, b := range v[2:] {
+						if n := sexprToNode(b); n != nil {
+							blk.Children = append(blk.Children, n)
+						}
+					}
+					in := newNode("in", coll)
+					return newNode("for", sanitizeName(name), in, blk)
+				}
+			}
+		case "fn*":
+			if len(v) >= 3 {
+				params, ok := v[1].([]any)
+				if ok {
+					fn := newNode("fun", "")
+					for _, p := range params {
+						if ps, ok := p.(string); ok {
+							fn.Children = append(fn.Children, newNode("param", sanitizeName(ps)))
+						}
+					}
+					blk := newNode("block", nil)
+					for _, b := range v[2:] {
+						if n := sexprToNode(b); n != nil {
+							blk.Children = append(blk.Children, n)
+						}
+					}
+					fn.Children = append(fn.Children, blk)
+					return fn
+				}
+			}
+		case "swap!":
+			if len(v) == 4 {
+				name, _ := v[1].(string)
+				opStr, _ := v[2].(string)
+				op := opStr
+				if op == "-" || op == "+" || op == "*" || op == "/" {
+					assign := newNode("assign", sanitizeName(name))
+					bin := newNode("binary", op, newNode("selector", sanitizeName(name)), sexprToNode(v[3]))
+					assign.Children = append(assign.Children, bin)
+					return assign
+				}
 			}
 		}
 		call := newNode("call", sanitizeName(head))
