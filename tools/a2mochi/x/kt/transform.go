@@ -4,87 +4,131 @@ package kt
 
 import (
 	"fmt"
+	"os"
+	"regexp"
 	"strings"
 
 	"mochi/ast"
+	"mochi/parser"
 )
 
-// Transform builds a Mochi AST from a parsed Kotlin Program.
+// Transform converts a parsed Kotlin Program into a Mochi AST node. The
+// implementation is intentionally lightweight and only handles a small
+// subset of constructs used in tests. Unsupported lines are ignored.
 func Transform(p *Program) (*ast.Node, error) {
 	if p == nil {
 		return nil, fmt.Errorf("nil program")
 	}
-	root := &ast.Node{Kind: "program"}
-	for _, d := range p.Nodes {
-		var n *ast.Node
-		switch d.Kind {
-		case "var":
-			n = varNode(d)
-		case "func":
-			n = funcNode(d)
-		case "type":
-			n = typeDeclNode(d)
-		}
-		if n != nil {
-			root.Children = append(root.Children, n)
-		}
+	code, err := translate(p.Source)
+	if err != nil {
+		return nil, err
 	}
-	return root, nil
+	prog, err := parser.ParseString(code)
+	if err != nil {
+		return nil, err
+	}
+	return ast.FromProgram(prog), nil
 }
 
-func typeNode(t string) *ast.Node {
-	mt := mapType(t)
-	if mt == "" {
-		return nil
-	}
-	return &ast.Node{Kind: "type", Value: mt}
-}
-
-func varNode(n Node) *ast.Node {
-	kind := "let"
-	if n.Kind == "var" {
-		kind = "var"
-	}
-	v := &ast.Node{Kind: kind, Value: sanitizeName(n.Name)}
-	if n.Ret != "" {
-		if tn := typeNode(n.Ret); tn != nil {
-			v.Children = append(v.Children, tn)
+// translate converts simple Kotlin constructs to Mochi source code.
+func translate(src string) (string, error) {
+	lines := strings.Split(src, "\n")
+	inMain := false
+	listVars := map[string]bool{}
+	var out []string
+	for _, l := range lines {
+		line := strings.TrimSpace(l)
+		if strings.HasPrefix(line, "fun main()") {
+			inMain = true
+			out = append(out, "fun main() {")
+			continue
 		}
-	}
-	return v
-}
-
-func funcNode(n Node) *ast.Node {
-	fn := &ast.Node{Kind: "fun", Value: sanitizeName(n.Name)}
-	for _, prm := range n.Params {
-		pn := &ast.Node{Kind: "param", Value: sanitizeName(prm.Name)}
-		if prm.Typ != "" {
-			if tn := typeNode(prm.Typ); tn != nil {
-				pn.Children = append(pn.Children, tn)
+		if inMain {
+			if line == "}" {
+				out = append(out, "}")
+				inMain = false
+				continue
+			}
+			if strings.HasPrefix(line, "val ") || strings.HasPrefix(line, "var ") {
+				stmt := strings.TrimPrefix(line, "val ")
+				kind := "let"
+				if strings.HasPrefix(line, "var ") {
+					stmt = strings.TrimPrefix(line, "var ")
+					kind = "var"
+				}
+				eq := strings.Index(stmt, "=")
+				if eq > 0 {
+					left := strings.TrimSpace(stmt[:eq])
+					right := strings.TrimSpace(stmt[eq+1:])
+					typ := ""
+					if colon := strings.Index(left, ":"); colon >= 0 {
+						typ = mapType(strings.TrimSpace(left[colon+1:]))
+						left = strings.TrimSpace(left[:colon])
+					}
+					expr := convertExpr(right, listVars)
+					if strings.HasPrefix(right, "mutableListOf(") {
+						listVars[left] = true
+					}
+					name := sanitizeName(left)
+					if typ != "" {
+						out = append(out, fmt.Sprintf("%s %s: %s = %s", kind, name, typ, expr))
+					} else {
+						out = append(out, fmt.Sprintf("%s %s = %s", kind, name, expr))
+					}
+				}
+				continue
+			}
+			if strings.HasPrefix(line, "println(") && strings.HasSuffix(line, ")") {
+				expr := strings.TrimSuffix(strings.TrimPrefix(line, "println("), ")")
+				out = append(out, fmt.Sprintf("print(%s)", convertExpr(expr, listVars)))
+				continue
 			}
 		}
-		fn.Children = append(fn.Children, pn)
 	}
-	if n.Ret != "" && n.Ret != "Unit" {
-		if tn := typeNode(n.Ret); tn != nil {
-			fn.Children = append(fn.Children, tn)
-		}
+	res := strings.Join(out, "\n")
+	if strings.TrimSpace(res) == "" {
+		return "", fmt.Errorf("no convertible symbols found")
 	}
-	return fn
+	return res, nil
 }
 
-func typeDeclNode(n Node) *ast.Node {
-	typ := &ast.Node{Kind: "type", Value: sanitizeName(n.Name)}
-	for _, f := range n.Fields {
-		fld := &ast.Node{Kind: "field", Value: sanitizeName(f.Name)}
-		if f.Typ != "" {
-			if tn := typeNode(f.Typ); tn != nil {
-				fld.Children = append(fld.Children, tn)
-			}
-		}
-		typ.Children = append(typ.Children, fld)
+var listCall = regexp.MustCompile(`^mutableListOf\((.*)\)$`)
+var avgCall = regexp.MustCompile(`^mutableListOf\((.*)\)\.average\(\)$`)
+
+func convertExpr(expr string, lists map[string]bool) string {
+	expr = strings.TrimSpace(expr)
+	if m := avgCall.FindStringSubmatch(expr); len(m) == 2 {
+		inner := strings.TrimSpace(m[1])
+		return "avg([" + inner + "])"
 	}
-	return typ
+	if m := listCall.FindStringSubmatch(expr); len(m) == 2 {
+		inner := strings.TrimSpace(m[1])
+		return "[" + inner + "]"
+	}
+	if parts := strings.Split(expr, "+"); len(parts) == 2 {
+		left := strings.TrimSpace(parts[0])
+		right := strings.TrimSpace(parts[1])
+		if lists[left] {
+			return fmt.Sprintf("append(%s, %s)", left, convertExpr(right, lists))
+		}
+	}
+	return expr
+}
+
+// TranslateForTest exposes translate for tests.
+func TranslateForTest(src string) (string, error) { return translate(src) }
+
+// TransformFile reads a Kotlin file from disk and converts it.
+func TransformFile(path string) (*ast.Node, error) {
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return nil, err
+	}
+	prog, err := Parse(string(data))
+	if err != nil {
+		return nil, err
+	}
+	return Transform(prog)
 }
 
 func sanitizeName(s string) string {

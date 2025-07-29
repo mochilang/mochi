@@ -79,6 +79,7 @@ func runCase(t *testing.T, name, srcPath, outDir, root string) {
 	if err := json.Unmarshal(b, &q); err != nil {
 		t.Fatalf("unmarshal: %v", err)
 	}
+	q.Source = string(data)
 	node, err := kt.Transform(&q)
 	if err != nil {
 		t.Fatalf("transform: %v", err)
