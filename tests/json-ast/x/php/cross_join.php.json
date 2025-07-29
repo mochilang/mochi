@@ -1,0 +1,2669 @@
+{
+  "root": [
+    {
+      "nodeType": "Stmt_Expression",
+      "attributes": {
+        "startLine": 2,
+        "startTokenPos": 1,
+        "startFilePos": 6,
+        "endLine": 2,
+        "endTokenPos": 53,
+        "endFilePos": 115
+      },
+      "expr": {
+        "nodeType": "Expr_Assign",
+        "attributes": {
+          "startLine": 2,
+          "startTokenPos": 1,
+          "startFilePos": 6,
+          "endLine": 2,
+          "endTokenPos": 52,
+          "endFilePos": 114
+        },
+        "var": {
+          "nodeType": "Expr_Variable",
+          "attributes": {
+            "startLine": 2,
+            "startTokenPos": 1,
+            "startFilePos": 6,
+            "endLine": 2,
+            "endTokenPos": 1,
+            "endFilePos": 15
+          },
+          "name": "customers"
+        },
+        "expr": {
+          "nodeType": "Expr_Array",
+          "attributes": {
+            "startLine": 2,
+            "startTokenPos": 5,
+            "startFilePos": 19,
+            "endLine": 2,
+            "endTokenPos": 52,
+            "endFilePos": 114,
+            "kind": 2
+          },
+          "items": [
+            {
+              "nodeType": "ArrayItem",
+              "attributes": {
+                "startLine": 2,
+                "startTokenPos": 6,
+                "startFilePos": 20,
+                "endLine": 2,
+                "endTokenPos": 19,
+                "endFilePos": 49
+              },
+              "key": null,
+              "value": {
+                "nodeType": "Expr_Array",
+                "attributes": {
+                  "startLine": 2,
+                  "startTokenPos": 6,
+                  "startFilePos": 20,
+                  "endLine": 2,
+                  "endTokenPos": 19,
+                  "endFilePos": 49,
+                  "kind": 2
+                },
+                "items": [
+                  {
+                    "nodeType": "ArrayItem",
+                    "attributes": {
+                      "startLine": 2,
+                      "startTokenPos": 7,
+                      "startFilePos": 21,
+                      "endLine": 2,
+                      "endTokenPos": 11,
+                      "endFilePos": 29
+                    },
+                    "key": {
+                      "nodeType": "Scalar_String",
+                      "attributes": {
+                        "startLine": 2,
+                        "startTokenPos": 7,
+                        "startFilePos": 21,
+                        "endLine": 2,
+                        "endTokenPos": 7,
+                        "endFilePos": 24,
+                        "kind": 2,
+                        "rawValue": "\"id\""
+                      },
+                      "value": "id"
+                    },
+                    "value": {
+                      "nodeType": "Scalar_Int",
+                      "attributes": {
+                        "startLine": 2,
+                        "startTokenPos": 11,
+                        "startFilePos": 29,
+                        "endLine": 2,
+                        "endTokenPos": 11,
+                        "endFilePos": 29,
+                        "rawValue": "1",
+                        "kind": 10
+                      },
+                      "value": 1
+                    },
+                    "byRef": false,
+                    "unpack": false
+                  },
+                  {
+                    "nodeType": "ArrayItem",
+                    "attributes": {
+                      "startLine": 2,
+                      "startTokenPos": 14,
+                      "startFilePos": 32,
+                      "endLine": 2,
+                      "endTokenPos": 18,
+                      "endFilePos": 48
+                    },
+                    "key": {
+                      "nodeType": "Scalar_String",
+                      "attributes": {
+                        "startLine": 2,
+                        "startTokenPos": 14,
+                        "startFilePos": 32,
+                        "endLine": 2,
+                        "endTokenPos": 14,
+                        "endFilePos": 37,
+                        "kind": 2,
+                        "rawValue": "\"name\""
+                      },
+                      "value": "name"
+                    },
+                    "value": {
+                      "nodeType": "Scalar_String",
+                      "attributes": {
+                        "startLine": 2,
+                        "startTokenPos": 18,
+                        "startFilePos": 42,
+                        "endLine": 2,
+                        "endTokenPos": 18,
+                        "endFilePos": 48,
+                        "kind": 2,
+                        "rawValue": "\"Alice\""
+                      },
+                      "value": "Alice"
+                    },
+                    "byRef": false,
+                    "unpack": false
+                  }
+                ]
+              },
+              "byRef": false,
+              "unpack": false
+            },
+            {
+              "nodeType": "ArrayItem",
+              "attributes": {
+                "startLine": 2,
+                "startTokenPos": 22,
+                "startFilePos": 52,
+                "endLine": 2,
+                "endTokenPos": 35,
+                "endFilePos": 79
+              },
+              "key": null,
+              "value": {
+                "nodeType": "Expr_Array",
+                "attributes": {
+                  "startLine": 2,
+                  "startTokenPos": 22,
+                  "startFilePos": 52,
+                  "endLine": 2,
+                  "endTokenPos": 35,
+                  "endFilePos": 79,
+                  "kind": 2
+                },
+                "items": [
+                  {
+                    "nodeType": "ArrayItem",
+                    "attributes": {
+                      "startLine": 2,
+                      "startTokenPos": 23,
+                      "startFilePos": 53,
+                      "endLine": 2,
+                      "endTokenPos": 27,
+                      "endFilePos": 61
+                    },
+                    "key": {
+                      "nodeType": "Scalar_String",
+                      "attributes": {
+                        "startLine": 2,
+                        "startTokenPos": 23,
+                        "startFilePos": 53,
+                        "endLine": 2,
+                        "endTokenPos": 23,
+                        "endFilePos": 56,
+                        "kind": 2,
+                        "rawValue": "\"id\""
+                      },
+                      "value": "id"
+                    },
+                    "value": {
+                      "nodeType": "Scalar_Int",
+                      "attributes": {
+                        "startLine": 2,
+                        "startTokenPos": 27,
+                        "startFilePos": 61,
+                        "endLine": 2,
+                        "endTokenPos": 27,
+                        "endFilePos": 61,
+                        "rawValue": "2",
+                        "kind": 10
+                      },
+                      "value": 2
+                    },
+                    "byRef": false,
+                    "unpack": false
+                  },
+                  {
+                    "nodeType": "ArrayItem",
+                    "attributes": {
+                      "startLine": 2,
+                      "startTokenPos": 30,
+                      "startFilePos": 64,
+                      "endLine": 2,
+                      "endTokenPos": 34,
+                      "endFilePos": 78
+                    },
+                    "key": {
+                      "nodeType": "Scalar_String",
+                      "attributes": {
+                        "startLine": 2,
+                        "startTokenPos": 30,
+                        "startFilePos": 64,
+                        "endLine": 2,
+                        "endTokenPos": 30,
+                        "endFilePos": 69,
+                        "kind": 2,
+                        "rawValue": "\"name\""
+                      },
+                      "value": "name"
+                    },
+                    "value": {
+                      "nodeType": "Scalar_String",
+                      "attributes": {
+                        "startLine": 2,
+                        "startTokenPos": 34,
+                        "startFilePos": 74,
+                        "endLine": 2,
+                        "endTokenPos": 34,
+                        "endFilePos": 78,
+                        "kind": 2,
+                        "rawValue": "\"Bob\""
+                      },
+                      "value": "Bob"
+                    },
+                    "byRef": false,
+                    "unpack": false
+                  }
+                ]
+              },
+              "byRef": false,
+              "unpack": false
+            },
+            {
+              "nodeType": "ArrayItem",
+              "attributes": {
+                "startLine": 2,
+                "startTokenPos": 38,
+                "startFilePos": 82,
+                "endLine": 2,
+                "endTokenPos": 51,
+                "endFilePos": 113
+              },
+              "key": null,
+              "value": {
+                "nodeType": "Expr_Array",
+                "attributes": {
+                  "startLine": 2,
+                  "startTokenPos": 38,
+                  "startFilePos": 82,
+                  "endLine": 2,
+                  "endTokenPos": 51,
+                  "endFilePos": 113,
+                  "kind": 2
+                },
+                "items": [
+                  {
+                    "nodeType": "ArrayItem",
+                    "attributes": {
+                      "startLine": 2,
+                      "startTokenPos": 39,
+                      "startFilePos": 83,
+                      "endLine": 2,
+                      "endTokenPos": 43,
+                      "endFilePos": 91
+                    },
+                    "key": {
+                      "nodeType": "Scalar_String",
+                      "attributes": {
+                        "startLine": 2,
+                        "startTokenPos": 39,
+                        "startFilePos": 83,
+                        "endLine": 2,
+                        "endTokenPos": 39,
+                        "endFilePos": 86,
+                        "kind": 2,
+                        "rawValue": "\"id\""
+                      },
+                      "value": "id"
+                    },
+                    "value": {
+                      "nodeType": "Scalar_Int",
+                      "attributes": {
+                        "startLine": 2,
+                        "startTokenPos": 43,
+                        "startFilePos": 91,
+                        "endLine": 2,
+                        "endTokenPos": 43,
+                        "endFilePos": 91,
+                        "rawValue": "3",
+                        "kind": 10
+                      },
+                      "value": 3
+                    },
+                    "byRef": false,
+                    "unpack": false
+                  },
+                  {
+                    "nodeType": "ArrayItem",
+                    "attributes": {
+                      "startLine": 2,
+                      "startTokenPos": 46,
+                      "startFilePos": 94,
+                      "endLine": 2,
+                      "endTokenPos": 50,
+                      "endFilePos": 112
+                    },
+                    "key": {
+                      "nodeType": "Scalar_String",
+                      "attributes": {
+                        "startLine": 2,
+                        "startTokenPos": 46,
+                        "startFilePos": 94,
+                        "endLine": 2,
+                        "endTokenPos": 46,
+                        "endFilePos": 99,
+                        "kind": 2,
+                        "rawValue": "\"name\""
+                      },
+                      "value": "name"
+                    },
+                    "value": {
+                      "nodeType": "Scalar_String",
+                      "attributes": {
+                        "startLine": 2,
+                        "startTokenPos": 50,
+                        "startFilePos": 104,
+                        "endLine": 2,
+                        "endTokenPos": 50,
+                        "endFilePos": 112,
+                        "kind": 2,
+                        "rawValue": "\"Charlie\""
+                      },
+                      "value": "Charlie"
+                    },
+                    "byRef": false,
+                    "unpack": false
+                  }
+                ]
+              },
+              "byRef": false,
+              "unpack": false
+            }
+          ]
+        }
+      }
+    },
+    {
+      "nodeType": "Stmt_Expression",
+      "attributes": {
+        "startLine": 3,
+        "startTokenPos": 55,
+        "startFilePos": 117,
+        "endLine": 3,
+        "endTokenPos": 128,
+        "endFilePos": 277
+      },
+      "expr": {
+        "nodeType": "Expr_Assign",
+        "attributes": {
+          "startLine": 3,
+          "startTokenPos": 55,
+          "startFilePos": 117,
+          "endLine": 3,
+          "endTokenPos": 127,
+          "endFilePos": 276
+        },
+        "var": {
+          "nodeType": "Expr_Variable",
+          "attributes": {
+            "startLine": 3,
+            "startTokenPos": 55,
+            "startFilePos": 117,
+            "endLine": 3,
+            "endTokenPos": 55,
+            "endFilePos": 123
+          },
+          "name": "orders"
+        },
+        "expr": {
+          "nodeType": "Expr_Array",
+          "attributes": {
+            "startLine": 3,
+            "startTokenPos": 59,
+            "startFilePos": 127,
+            "endLine": 3,
+            "endTokenPos": 127,
+            "endFilePos": 276,
+            "kind": 2
+          },
+          "items": [
+            {
+              "nodeType": "ArrayItem",
+              "attributes": {
+                "startLine": 3,
+                "startTokenPos": 60,
+                "startFilePos": 128,
+                "endLine": 3,
+                "endTokenPos": 80,
+                "endFilePos": 175
+              },
+              "key": null,
+              "value": {
+                "nodeType": "Expr_Array",
+                "attributes": {
+                  "startLine": 3,
+                  "startTokenPos": 60,
+                  "startFilePos": 128,
+                  "endLine": 3,
+                  "endTokenPos": 80,
+                  "endFilePos": 175,
+                  "kind": 2
+                },
+                "items": [
+                  {
+                    "nodeType": "ArrayItem",
+                    "attributes": {
+                      "startLine": 3,
+                      "startTokenPos": 61,
+                      "startFilePos": 129,
+                      "endLine": 3,
+                      "endTokenPos": 65,
+                      "endFilePos": 139
+                    },
+                    "key": {
+                      "nodeType": "Scalar_String",
+                      "attributes": {
+                        "startLine": 3,
+                        "startTokenPos": 61,
+                        "startFilePos": 129,
+                        "endLine": 3,
+                        "endTokenPos": 61,
+                        "endFilePos": 132,
+                        "kind": 2,
+                        "rawValue": "\"id\""
+                      },
+                      "value": "id"
+                    },
+                    "value": {
+                      "nodeType": "Scalar_Int",
+                      "attributes": {
+                        "startLine": 3,
+                        "startTokenPos": 65,
+                        "startFilePos": 137,
+                        "endLine": 3,
+                        "endTokenPos": 65,
+                        "endFilePos": 139,
+                        "rawValue": "100",
+                        "kind": 10
+                      },
+                      "value": 100
+                    },
+                    "byRef": false,
+                    "unpack": false
+                  },
+                  {
+                    "nodeType": "ArrayItem",
+                    "attributes": {
+                      "startLine": 3,
+                      "startTokenPos": 68,
+                      "startFilePos": 142,
+                      "endLine": 3,
+                      "endTokenPos": 72,
+                      "endFilePos": 158
+                    },
+                    "key": {
+                      "nodeType": "Scalar_String",
+                      "attributes": {
+                        "startLine": 3,
+                        "startTokenPos": 68,
+                        "startFilePos": 142,
+                        "endLine": 3,
+                        "endTokenPos": 68,
+                        "endFilePos": 153,
+                        "kind": 2,
+                        "rawValue": "\"customerId\""
+                      },
+                      "value": "customerId"
+                    },
+                    "value": {
+                      "nodeType": "Scalar_Int",
+                      "attributes": {
+                        "startLine": 3,
+                        "startTokenPos": 72,
+                        "startFilePos": 158,
+                        "endLine": 3,
+                        "endTokenPos": 72,
+                        "endFilePos": 158,
+                        "rawValue": "1",
+                        "kind": 10
+                      },
+                      "value": 1
+                    },
+                    "byRef": false,
+                    "unpack": false
+                  },
+                  {
+                    "nodeType": "ArrayItem",
+                    "attributes": {
+                      "startLine": 3,
+                      "startTokenPos": 75,
+                      "startFilePos": 161,
+                      "endLine": 3,
+                      "endTokenPos": 79,
+                      "endFilePos": 174
+                    },
+                    "key": {
+                      "nodeType": "Scalar_String",
+                      "attributes": {
+                        "startLine": 3,
+                        "startTokenPos": 75,
+                        "startFilePos": 161,
+                        "endLine": 3,
+                        "endTokenPos": 75,
+                        "endFilePos": 167,
+                        "kind": 2,
+                        "rawValue": "\"total\""
+                      },
+                      "value": "total"
+                    },
+                    "value": {
+                      "nodeType": "Scalar_Int",
+                      "attributes": {
+                        "startLine": 3,
+                        "startTokenPos": 79,
+                        "startFilePos": 172,
+                        "endLine": 3,
+                        "endTokenPos": 79,
+                        "endFilePos": 174,
+                        "rawValue": "250",
+                        "kind": 10
+                      },
+                      "value": 250
+                    },
+                    "byRef": false,
+                    "unpack": false
+                  }
+                ]
+              },
+              "byRef": false,
+              "unpack": false
+            },
+            {
+              "nodeType": "ArrayItem",
+              "attributes": {
+                "startLine": 3,
+                "startTokenPos": 83,
+                "startFilePos": 178,
+                "endLine": 3,
+                "endTokenPos": 103,
+                "endFilePos": 225
+              },
+              "key": null,
+              "value": {
+                "nodeType": "Expr_Array",
+                "attributes": {
+                  "startLine": 3,
+                  "startTokenPos": 83,
+                  "startFilePos": 178,
+                  "endLine": 3,
+                  "endTokenPos": 103,
+                  "endFilePos": 225,
+                  "kind": 2
+                },
+                "items": [
+                  {
+                    "nodeType": "ArrayItem",
+                    "attributes": {
+                      "startLine": 3,
+                      "startTokenPos": 84,
+                      "startFilePos": 179,
+                      "endLine": 3,
+                      "endTokenPos": 88,
+                      "endFilePos": 189
+                    },
+                    "key": {
+                      "nodeType": "Scalar_String",
+                      "attributes": {
+                        "startLine": 3,
+                        "startTokenPos": 84,
+                        "startFilePos": 179,
+                        "endLine": 3,
+                        "endTokenPos": 84,
+                        "endFilePos": 182,
+                        "kind": 2,
+                        "rawValue": "\"id\""
+                      },
+                      "value": "id"
+                    },
+                    "value": {
+                      "nodeType": "Scalar_Int",
+                      "attributes": {
+                        "startLine": 3,
+                        "startTokenPos": 88,
+                        "startFilePos": 187,
+                        "endLine": 3,
+                        "endTokenPos": 88,
+                        "endFilePos": 189,
+                        "rawValue": "101",
+                        "kind": 10
+                      },
+                      "value": 101
+                    },
+                    "byRef": false,
+                    "unpack": false
+                  },
+                  {
+                    "nodeType": "ArrayItem",
+                    "attributes": {
+                      "startLine": 3,
+                      "startTokenPos": 91,
+                      "startFilePos": 192,
+                      "endLine": 3,
+                      "endTokenPos": 95,
+                      "endFilePos": 208
+                    },
+                    "key": {
+                      "nodeType": "Scalar_String",
+                      "attributes": {
+                        "startLine": 3,
+                        "startTokenPos": 91,
+                        "startFilePos": 192,
+                        "endLine": 3,
+                        "endTokenPos": 91,
+                        "endFilePos": 203,
+                        "kind": 2,
+                        "rawValue": "\"customerId\""
+                      },
+                      "value": "customerId"
+                    },
+                    "value": {
+                      "nodeType": "Scalar_Int",
+                      "attributes": {
+                        "startLine": 3,
+                        "startTokenPos": 95,
+                        "startFilePos": 208,
+                        "endLine": 3,
+                        "endTokenPos": 95,
+                        "endFilePos": 208,
+                        "rawValue": "2",
+                        "kind": 10
+                      },
+                      "value": 2
+                    },
+                    "byRef": false,
+                    "unpack": false
+                  },
+                  {
+                    "nodeType": "ArrayItem",
+                    "attributes": {
+                      "startLine": 3,
+                      "startTokenPos": 98,
+                      "startFilePos": 211,
+                      "endLine": 3,
+                      "endTokenPos": 102,
+                      "endFilePos": 224
+                    },
+                    "key": {
+                      "nodeType": "Scalar_String",
+                      "attributes": {
+                        "startLine": 3,
+                        "startTokenPos": 98,
+                        "startFilePos": 211,
+                        "endLine": 3,
+                        "endTokenPos": 98,
+                        "endFilePos": 217,
+                        "kind": 2,
+                        "rawValue": "\"total\""
+                      },
+                      "value": "total"
+                    },
+                    "value": {
+                      "nodeType": "Scalar_Int",
+                      "attributes": {
+                        "startLine": 3,
+                        "startTokenPos": 102,
+                        "startFilePos": 222,
+                        "endLine": 3,
+                        "endTokenPos": 102,
+                        "endFilePos": 224,
+                        "rawValue": "125",
+                        "kind": 10
+                      },
+                      "value": 125
+                    },
+                    "byRef": false,
+                    "unpack": false
+                  }
+                ]
+              },
+              "byRef": false,
+              "unpack": false
+            },
+            {
+              "nodeType": "ArrayItem",
+              "attributes": {
+                "startLine": 3,
+                "startTokenPos": 106,
+                "startFilePos": 228,
+                "endLine": 3,
+                "endTokenPos": 126,
+                "endFilePos": 275
+              },
+              "key": null,
+              "value": {
+                "nodeType": "Expr_Array",
+                "attributes": {
+                  "startLine": 3,
+                  "startTokenPos": 106,
+                  "startFilePos": 228,
+                  "endLine": 3,
+                  "endTokenPos": 126,
+                  "endFilePos": 275,
+                  "kind": 2
+                },
+                "items": [
+                  {
+                    "nodeType": "ArrayItem",
+                    "attributes": {
+                      "startLine": 3,
+                      "startTokenPos": 107,
+                      "startFilePos": 229,
+                      "endLine": 3,
+                      "endTokenPos": 111,
+                      "endFilePos": 239
+                    },
+                    "key": {
+                      "nodeType": "Scalar_String",
+                      "attributes": {
+                        "startLine": 3,
+                        "startTokenPos": 107,
+                        "startFilePos": 229,
+                        "endLine": 3,
+                        "endTokenPos": 107,
+                        "endFilePos": 232,
+                        "kind": 2,
+                        "rawValue": "\"id\""
+                      },
+                      "value": "id"
+                    },
+                    "value": {
+                      "nodeType": "Scalar_Int",
+                      "attributes": {
+                        "startLine": 3,
+                        "startTokenPos": 111,
+                        "startFilePos": 237,
+                        "endLine": 3,
+                        "endTokenPos": 111,
+                        "endFilePos": 239,
+                        "rawValue": "102",
+                        "kind": 10
+                      },
+                      "value": 102
+                    },
+                    "byRef": false,
+                    "unpack": false
+                  },
+                  {
+                    "nodeType": "ArrayItem",
+                    "attributes": {
+                      "startLine": 3,
+                      "startTokenPos": 114,
+                      "startFilePos": 242,
+                      "endLine": 3,
+                      "endTokenPos": 118,
+                      "endFilePos": 258
+                    },
+                    "key": {
+                      "nodeType": "Scalar_String",
+                      "attributes": {
+                        "startLine": 3,
+                        "startTokenPos": 114,
+                        "startFilePos": 242,
+                        "endLine": 3,
+                        "endTokenPos": 114,
+                        "endFilePos": 253,
+                        "kind": 2,
+                        "rawValue": "\"customerId\""
+                      },
+                      "value": "customerId"
+                    },
+                    "value": {
+                      "nodeType": "Scalar_Int",
+                      "attributes": {
+                        "startLine": 3,
+                        "startTokenPos": 118,
+                        "startFilePos": 258,
+                        "endLine": 3,
+                        "endTokenPos": 118,
+                        "endFilePos": 258,
+                        "rawValue": "1",
+                        "kind": 10
+                      },
+                      "value": 1
+                    },
+                    "byRef": false,
+                    "unpack": false
+                  },
+                  {
+                    "nodeType": "ArrayItem",
+                    "attributes": {
+                      "startLine": 3,
+                      "startTokenPos": 121,
+                      "startFilePos": 261,
+                      "endLine": 3,
+                      "endTokenPos": 125,
+                      "endFilePos": 274
+                    },
+                    "key": {
+                      "nodeType": "Scalar_String",
+                      "attributes": {
+                        "startLine": 3,
+                        "startTokenPos": 121,
+                        "startFilePos": 261,
+                        "endLine": 3,
+                        "endTokenPos": 121,
+                        "endFilePos": 267,
+                        "kind": 2,
+                        "rawValue": "\"total\""
+                      },
+                      "value": "total"
+                    },
+                    "value": {
+                      "nodeType": "Scalar_Int",
+                      "attributes": {
+                        "startLine": 3,
+                        "startTokenPos": 125,
+                        "startFilePos": 272,
+                        "endLine": 3,
+                        "endTokenPos": 125,
+                        "endFilePos": 274,
+                        "rawValue": "300",
+                        "kind": 10
+                      },
+                      "value": 300
+                    },
+                    "byRef": false,
+                    "unpack": false
+                  }
+                ]
+              },
+              "byRef": false,
+              "unpack": false
+            }
+          ]
+        }
+      }
+    },
+    {
+      "nodeType": "Stmt_Expression",
+      "attributes": {
+        "startLine": 4,
+        "startTokenPos": 130,
+        "startFilePos": 279,
+        "endLine": 4,
+        "endTokenPos": 136,
+        "endFilePos": 291
+      },
+      "expr": {
+        "nodeType": "Expr_Assign",
+        "attributes": {
+          "startLine": 4,
+          "startTokenPos": 130,
+          "startFilePos": 279,
+          "endLine": 4,
+          "endTokenPos": 135,
+          "endFilePos": 290
+        },
+        "var": {
+          "nodeType": "Expr_Variable",
+          "attributes": {
+            "startLine": 4,
+            "startTokenPos": 130,
+            "startFilePos": 279,
+            "endLine": 4,
+            "endTokenPos": 130,
+            "endFilePos": 285
+          },
+          "name": "result"
+        },
+        "expr": {
+          "nodeType": "Expr_Array",
+          "attributes": {
+            "startLine": 4,
+            "startTokenPos": 134,
+            "startFilePos": 289,
+            "endLine": 4,
+            "endTokenPos": 135,
+            "endFilePos": 290,
+            "kind": 2
+          },
+          "items": []
+        }
+      }
+    },
+    {
+      "nodeType": "Stmt_Foreach",
+      "attributes": {
+        "startLine": 5,
+        "startTokenPos": 138,
+        "startFilePos": 293,
+        "endLine": 9,
+        "endTokenPos": 212,
+        "endFilePos": 499
+      },
+      "expr": {
+        "nodeType": "Expr_Variable",
+        "attributes": {
+          "startLine": 5,
+          "startTokenPos": 141,
+          "startFilePos": 302,
+          "endLine": 5,
+          "endTokenPos": 141,
+          "endFilePos": 308
+        },
+        "name": "orders"
+      },
+      "keyVar": null,
+      "byRef": false,
+      "valueVar": {
+        "nodeType": "Expr_Variable",
+        "attributes": {
+          "startLine": 5,
+          "startTokenPos": 145,
+          "startFilePos": 313,
+          "endLine": 5,
+          "endTokenPos": 145,
+          "endFilePos": 314
+        },
+        "name": "o"
+      },
+      "stmts": [
+        {
+          "nodeType": "Stmt_Foreach",
+          "attributes": {
+            "startLine": 6,
+            "startTokenPos": 150,
+            "startFilePos": 321,
+            "endLine": 8,
+            "endTokenPos": 210,
+            "endFilePos": 497
+          },
+          "expr": {
+            "nodeType": "Expr_Variable",
+            "attributes": {
+              "startLine": 6,
+              "startTokenPos": 153,
+              "startFilePos": 330,
+              "endLine": 6,
+              "endTokenPos": 153,
+              "endFilePos": 339
+            },
+            "name": "customers"
+          },
+          "keyVar": null,
+          "byRef": false,
+          "valueVar": {
+            "nodeType": "Expr_Variable",
+            "attributes": {
+              "startLine": 6,
+              "startTokenPos": 157,
+              "startFilePos": 344,
+              "endLine": 6,
+              "endTokenPos": 157,
+              "endFilePos": 345
+            },
+            "name": "c"
+          },
+          "stmts": [
+            {
+              "nodeType": "Stmt_Expression",
+              "attributes": {
+                "startLine": 7,
+                "startTokenPos": 162,
+                "startFilePos": 354,
+                "endLine": 7,
+                "endTokenPos": 208,
+                "endFilePos": 493
+              },
+              "expr": {
+                "nodeType": "Expr_Assign",
+                "attributes": {
+                  "startLine": 7,
+                  "startTokenPos": 162,
+                  "startFilePos": 354,
+                  "endLine": 7,
+                  "endTokenPos": 207,
+                  "endFilePos": 492
+                },
+                "var": {
+                  "nodeType": "Expr_ArrayDimFetch",
+                  "attributes": {
+                    "startLine": 7,
+                    "startTokenPos": 162,
+                    "startFilePos": 354,
+                    "endLine": 7,
+                    "endTokenPos": 164,
+                    "endFilePos": 362
+                  },
+                  "var": {
+                    "nodeType": "Expr_Variable",
+                    "attributes": {
+                      "startLine": 7,
+                      "startTokenPos": 162,
+                      "startFilePos": 354,
+                      "endLine": 7,
+                      "endTokenPos": 162,
+                      "endFilePos": 360
+                    },
+                    "name": "result"
+                  },
+                  "dim": null
+                },
+                "expr": {
+                  "nodeType": "Expr_Array",
+                  "attributes": {
+                    "startLine": 7,
+                    "startTokenPos": 168,
+                    "startFilePos": 366,
+                    "endLine": 7,
+                    "endTokenPos": 207,
+                    "endFilePos": 492,
+                    "kind": 2
+                  },
+                  "items": [
+                    {
+                      "nodeType": "ArrayItem",
+                      "attributes": {
+                        "startLine": 7,
+                        "startTokenPos": 169,
+                        "startFilePos": 367,
+                        "endLine": 7,
+                        "endTokenPos": 176,
+                        "endFilePos": 387
+                      },
+                      "key": {
+                        "nodeType": "Scalar_String",
+                        "attributes": {
+                          "startLine": 7,
+                          "startTokenPos": 169,
+                          "startFilePos": 367,
+                          "endLine": 7,
+                          "endTokenPos": 169,
+                          "endFilePos": 375,
+                          "kind": 2,
+                          "rawValue": "\"orderId\""
+                        },
+                        "value": "orderId"
+                      },
+                      "value": {
+                        "nodeType": "Expr_ArrayDimFetch",
+                        "attributes": {
+                          "startLine": 7,
+                          "startTokenPos": 173,
+                          "startFilePos": 380,
+                          "endLine": 7,
+                          "endTokenPos": 176,
+                          "endFilePos": 387
+                        },
+                        "var": {
+                          "nodeType": "Expr_Variable",
+                          "attributes": {
+                            "startLine": 7,
+                            "startTokenPos": 173,
+                            "startFilePos": 380,
+                            "endLine": 7,
+                            "endTokenPos": 173,
+                            "endFilePos": 381
+                          },
+                          "name": "o"
+                        },
+                        "dim": {
+                          "nodeType": "Scalar_String",
+                          "attributes": {
+                            "startLine": 7,
+                            "startTokenPos": 175,
+                            "startFilePos": 383,
+                            "endLine": 7,
+                            "endTokenPos": 175,
+                            "endFilePos": 386,
+                            "kind": 2,
+                            "rawValue": "\"id\""
+                          },
+                          "value": "id"
+                        }
+                      },
+                      "byRef": false,
+                      "unpack": false
+                    },
+                    {
+                      "nodeType": "ArrayItem",
+                      "attributes": {
+                        "startLine": 7,
+                        "startTokenPos": 179,
+                        "startFilePos": 390,
+                        "endLine": 7,
+                        "endTokenPos": 186,
+                        "endFilePos": 426
+                      },
+                      "key": {
+                        "nodeType": "Scalar_String",
+                        "attributes": {
+                          "startLine": 7,
+                          "startTokenPos": 179,
+                          "startFilePos": 390,
+                          "endLine": 7,
+                          "endTokenPos": 179,
+                          "endFilePos": 406,
+                          "kind": 2,
+                          "rawValue": "\"orderCustomerId\""
+                        },
+                        "value": "orderCustomerId"
+                      },
+                      "value": {
+                        "nodeType": "Expr_ArrayDimFetch",
+                        "attributes": {
+                          "startLine": 7,
+                          "startTokenPos": 183,
+                          "startFilePos": 411,
+                          "endLine": 7,
+                          "endTokenPos": 186,
+                          "endFilePos": 426
+                        },
+                        "var": {
+                          "nodeType": "Expr_Variable",
+                          "attributes": {
+                            "startLine": 7,
+                            "startTokenPos": 183,
+                            "startFilePos": 411,
+                            "endLine": 7,
+                            "endTokenPos": 183,
+                            "endFilePos": 412
+                          },
+                          "name": "o"
+                        },
+                        "dim": {
+                          "nodeType": "Scalar_String",
+                          "attributes": {
+                            "startLine": 7,
+                            "startTokenPos": 185,
+                            "startFilePos": 414,
+                            "endLine": 7,
+                            "endTokenPos": 185,
+                            "endFilePos": 425,
+                            "kind": 2,
+                            "rawValue": "\"customerId\""
+                          },
+                          "value": "customerId"
+                        }
+                      },
+                      "byRef": false,
+                      "unpack": false
+                    },
+                    {
+                      "nodeType": "ArrayItem",
+                      "attributes": {
+                        "startLine": 7,
+                        "startTokenPos": 189,
+                        "startFilePos": 429,
+                        "endLine": 7,
+                        "endTokenPos": 196,
+                        "endFilePos": 462
+                      },
+                      "key": {
+                        "nodeType": "Scalar_String",
+                        "attributes": {
+                          "startLine": 7,
+                          "startTokenPos": 189,
+                          "startFilePos": 429,
+                          "endLine": 7,
+                          "endTokenPos": 189,
+                          "endFilePos": 448,
+                          "kind": 2,
+                          "rawValue": "\"pairedCustomerName\""
+                        },
+                        "value": "pairedCustomerName"
+                      },
+                      "value": {
+                        "nodeType": "Expr_ArrayDimFetch",
+                        "attributes": {
+                          "startLine": 7,
+                          "startTokenPos": 193,
+                          "startFilePos": 453,
+                          "endLine": 7,
+                          "endTokenPos": 196,
+                          "endFilePos": 462
+                        },
+                        "var": {
+                          "nodeType": "Expr_Variable",
+                          "attributes": {
+                            "startLine": 7,
+                            "startTokenPos": 193,
+                            "startFilePos": 453,
+                            "endLine": 7,
+                            "endTokenPos": 193,
+                            "endFilePos": 454
+                          },
+                          "name": "c"
+                        },
+                        "dim": {
+                          "nodeType": "Scalar_String",
+                          "attributes": {
+                            "startLine": 7,
+                            "startTokenPos": 195,
+                            "startFilePos": 456,
+                            "endLine": 7,
+                            "endTokenPos": 195,
+                            "endFilePos": 461,
+                            "kind": 2,
+                            "rawValue": "\"name\""
+                          },
+                          "value": "name"
+                        }
+                      },
+                      "byRef": false,
+                      "unpack": false
+                    },
+                    {
+                      "nodeType": "ArrayItem",
+                      "attributes": {
+                        "startLine": 7,
+                        "startTokenPos": 199,
+                        "startFilePos": 465,
+                        "endLine": 7,
+                        "endTokenPos": 206,
+                        "endFilePos": 491
+                      },
+                      "key": {
+                        "nodeType": "Scalar_String",
+                        "attributes": {
+                          "startLine": 7,
+                          "startTokenPos": 199,
+                          "startFilePos": 465,
+                          "endLine": 7,
+                          "endTokenPos": 199,
+                          "endFilePos": 476,
+                          "kind": 2,
+                          "rawValue": "\"orderTotal\""
+                        },
+                        "value": "orderTotal"
+                      },
+                      "value": {
+                        "nodeType": "Expr_ArrayDimFetch",
+                        "attributes": {
+                          "startLine": 7,
+                          "startTokenPos": 203,
+                          "startFilePos": 481,
+                          "endLine": 7,
+                          "endTokenPos": 206,
+                          "endFilePos": 491
+                        },
+                        "var": {
+                          "nodeType": "Expr_Variable",
+                          "attributes": {
+                            "startLine": 7,
+                            "startTokenPos": 203,
+                            "startFilePos": 481,
+                            "endLine": 7,
+                            "endTokenPos": 203,
+                            "endFilePos": 482
+                          },
+                          "name": "o"
+                        },
+                        "dim": {
+                          "nodeType": "Scalar_String",
+                          "attributes": {
+                            "startLine": 7,
+                            "startTokenPos": 205,
+                            "startFilePos": 484,
+                            "endLine": 7,
+                            "endTokenPos": 205,
+                            "endFilePos": 490,
+                            "kind": 2,
+                            "rawValue": "\"total\""
+                          },
+                          "value": "total"
+                        }
+                      },
+                      "byRef": false,
+                      "unpack": false
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "nodeType": "Stmt_Echo",
+      "attributes": {
+        "startLine": 11,
+        "startTokenPos": 214,
+        "startFilePos": 502,
+        "endLine": 11,
+        "endTokenPos": 220,
+        "endFilePos": 562
+      },
+      "exprs": [
+        {
+          "nodeType": "Scalar_String",
+          "attributes": {
+            "startLine": 11,
+            "startTokenPos": 216,
+            "startFilePos": 507,
+            "endLine": 11,
+            "endTokenPos": 216,
+            "endFilePos": 552,
+            "kind": 2,
+            "rawValue": "\"--- Cross Join: All order-customer pairs ---\""
+          },
+          "value": "--- Cross Join: All order-customer pairs ---"
+        },
+        {
+          "nodeType": "Expr_ConstFetch",
+          "attributes": {
+            "startLine": 11,
+            "startTokenPos": 219,
+            "startFilePos": 555,
+            "endLine": 11,
+            "endTokenPos": 219,
+            "endFilePos": 561
+          },
+          "name": {
+            "nodeType": "Name",
+            "attributes": {
+              "startLine": 11,
+              "startTokenPos": 219,
+              "startFilePos": 555,
+              "endLine": 11,
+              "endTokenPos": 219,
+              "endFilePos": 561
+            },
+            "name": "PHP_EOL"
+          }
+        }
+      ]
+    },
+    {
+      "nodeType": "Stmt_Foreach",
+      "attributes": {
+        "startLine": 12,
+        "startTokenPos": 222,
+        "startFilePos": 564,
+        "endLine": 14,
+        "endTokenPos": 410,
+        "endFilePos": 1141
+      },
+      "expr": {
+        "nodeType": "Expr_Variable",
+        "attributes": {
+          "startLine": 12,
+          "startTokenPos": 225,
+          "startFilePos": 573,
+          "endLine": 12,
+          "endTokenPos": 225,
+          "endFilePos": 579
+        },
+        "name": "result"
+      },
+      "keyVar": null,
+      "byRef": false,
+      "valueVar": {
+        "nodeType": "Expr_Variable",
+        "attributes": {
+          "startLine": 12,
+          "startTokenPos": 229,
+          "startFilePos": 584,
+          "endLine": 12,
+          "endTokenPos": 229,
+          "endFilePos": 589
+        },
+        "name": "entry"
+      },
+      "stmts": [
+        {
+          "nodeType": "Stmt_Echo",
+          "attributes": {
+            "startLine": 13,
+            "startTokenPos": 234,
+            "startFilePos": 596,
+            "endLine": 13,
+            "endTokenPos": 408,
+            "endFilePos": 1139
+          },
+          "exprs": [
+            {
+              "nodeType": "Expr_BinaryOp_Concat",
+              "attributes": {
+                "startLine": 13,
+                "startTokenPos": 236,
+                "startFilePos": 601,
+                "endLine": 13,
+                "endTokenPos": 404,
+                "endFilePos": 1129
+              },
+              "left": {
+                "nodeType": "Expr_BinaryOp_Concat",
+                "attributes": {
+                  "startLine": 13,
+                  "startTokenPos": 236,
+                  "startFilePos": 601,
+                  "endLine": 13,
+                  "endTokenPos": 372,
+                  "endFilePos": 1005
+                },
+                "left": {
+                  "nodeType": "Expr_BinaryOp_Concat",
+                  "attributes": {
+                    "startLine": 13,
+                    "startTokenPos": 236,
+                    "startFilePos": 601,
+                    "endLine": 13,
+                    "endTokenPos": 368,
+                    "endFilePos": 999
+                  },
+                  "left": {
+                    "nodeType": "Expr_BinaryOp_Concat",
+                    "attributes": {
+                      "startLine": 13,
+                      "startTokenPos": 236,
+                      "startFilePos": 601,
+                      "endLine": 13,
+                      "endTokenPos": 364,
+                      "endFilePos": 981
+                    },
+                    "left": {
+                      "nodeType": "Expr_BinaryOp_Concat",
+                      "attributes": {
+                        "startLine": 13,
+                        "startTokenPos": 236,
+                        "startFilePos": 601,
+                        "endLine": 13,
+                        "endTokenPos": 360,
+                        "endFilePos": 975
+                      },
+                      "left": {
+                        "nodeType": "Expr_BinaryOp_Concat",
+                        "attributes": {
+                          "startLine": 13,
+                          "startTokenPos": 236,
+                          "startFilePos": 601,
+                          "endLine": 13,
+                          "endTokenPos": 328,
+                          "endFilePos": 875
+                        },
+                        "left": {
+                          "nodeType": "Expr_BinaryOp_Concat",
+                          "attributes": {
+                            "startLine": 13,
+                            "startTokenPos": 236,
+                            "startFilePos": 601,
+                            "endLine": 13,
+                            "endTokenPos": 324,
+                            "endFilePos": 869
+                          },
+                          "left": {
+                            "nodeType": "Expr_BinaryOp_Concat",
+                            "attributes": {
+                              "startLine": 13,
+                              "startTokenPos": 236,
+                              "startFilePos": 601,
+                              "endLine": 13,
+                              "endTokenPos": 320,
+                              "endFilePos": 854
+                            },
+                            "left": {
+                              "nodeType": "Expr_BinaryOp_Concat",
+                              "attributes": {
+                                "startLine": 13,
+                                "startTokenPos": 236,
+                                "startFilePos": 601,
+                                "endLine": 13,
+                                "endTokenPos": 316,
+                                "endFilePos": 848
+                              },
+                              "left": {
+                                "nodeType": "Expr_BinaryOp_Concat",
+                                "attributes": {
+                                  "startLine": 13,
+                                  "startTokenPos": 236,
+                                  "startFilePos": 601,
+                                  "endLine": 13,
+                                  "endTokenPos": 284,
+                                  "endFilePos": 733
+                                },
+                                "left": {
+                                  "nodeType": "Expr_BinaryOp_Concat",
+                                  "attributes": {
+                                    "startLine": 13,
+                                    "startTokenPos": 236,
+                                    "startFilePos": 601,
+                                    "endLine": 13,
+                                    "endTokenPos": 280,
+                                    "endFilePos": 727
+                                  },
+                                  "left": {
+                                    "nodeType": "Expr_BinaryOp_Concat",
+                                    "attributes": {
+                                      "startLine": 13,
+                                      "startTokenPos": 236,
+                                      "startFilePos": 601,
+                                      "endLine": 13,
+                                      "endTokenPos": 276,
+                                      "endFilePos": 710
+                                    },
+                                    "left": {
+                                      "nodeType": "Expr_BinaryOp_Concat",
+                                      "attributes": {
+                                        "startLine": 13,
+                                        "startTokenPos": 236,
+                                        "startFilePos": 601,
+                                        "endLine": 13,
+                                        "endTokenPos": 272,
+                                        "endFilePos": 704
+                                      },
+                                      "left": {
+                                        "nodeType": "Expr_BinaryOp_Concat",
+                                        "attributes": {
+                                          "startLine": 13,
+                                          "startTokenPos": 236,
+                                          "startFilePos": 601,
+                                          "endLine": 13,
+                                          "endTokenPos": 240,
+                                          "endFilePos": 613
+                                        },
+                                        "left": {
+                                          "nodeType": "Scalar_String",
+                                          "attributes": {
+                                            "startLine": 13,
+                                            "startTokenPos": 236,
+                                            "startFilePos": 601,
+                                            "endLine": 13,
+                                            "endTokenPos": 236,
+                                            "endFilePos": 607,
+                                            "kind": 2,
+                                            "rawValue": "\"Order\""
+                                          },
+                                          "value": "Order"
+                                        },
+                                        "right": {
+                                          "nodeType": "Scalar_String",
+                                          "attributes": {
+                                            "startLine": 13,
+                                            "startTokenPos": 240,
+                                            "startFilePos": 611,
+                                            "endLine": 13,
+                                            "endTokenPos": 240,
+                                            "endFilePos": 613,
+                                            "kind": 2,
+                                            "rawValue": "\" \""
+                                          },
+                                          "value": " "
+                                        }
+                                      },
+                                      "right": {
+                                        "nodeType": "Expr_Ternary",
+                                        "attributes": {
+                                          "startLine": 13,
+                                          "startTokenPos": 245,
+                                          "startFilePos": 618,
+                                          "endLine": 13,
+                                          "endTokenPos": 271,
+                                          "endFilePos": 703
+                                        },
+                                        "cond": {
+                                          "nodeType": "Expr_FuncCall",
+                                          "attributes": {
+                                            "startLine": 13,
+                                            "startTokenPos": 245,
+                                            "startFilePos": 618,
+                                            "endLine": 13,
+                                            "endTokenPos": 251,
+                                            "endFilePos": 644
+                                          },
+                                          "name": {
+                                            "nodeType": "Name",
+                                            "attributes": {
+                                              "startLine": 13,
+                                              "startTokenPos": 245,
+                                              "startFilePos": 618,
+                                              "endLine": 13,
+                                              "endTokenPos": 245,
+                                              "endFilePos": 625
+                                            },
+                                            "name": "is_float"
+                                          },
+                                          "args": [
+                                            {
+                                              "nodeType": "Arg",
+                                              "attributes": {
+                                                "startLine": 13,
+                                                "startTokenPos": 247,
+                                                "startFilePos": 627,
+                                                "endLine": 13,
+                                                "endTokenPos": 250,
+                                                "endFilePos": 643
+                                              },
+                                              "name": null,
+                                              "value": {
+                                                "nodeType": "Expr_ArrayDimFetch",
+                                                "attributes": {
+                                                  "startLine": 13,
+                                                  "startTokenPos": 247,
+                                                  "startFilePos": 627,
+                                                  "endLine": 13,
+                                                  "endTokenPos": 250,
+                                                  "endFilePos": 643
+                                                },
+                                                "var": {
+                                                  "nodeType": "Expr_Variable",
+                                                  "attributes": {
+                                                    "startLine": 13,
+                                                    "startTokenPos": 247,
+                                                    "startFilePos": 627,
+                                                    "endLine": 13,
+                                                    "endTokenPos": 247,
+                                                    "endFilePos": 632
+                                                  },
+                                                  "name": "entry"
+                                                },
+                                                "dim": {
+                                                  "nodeType": "Scalar_String",
+                                                  "attributes": {
+                                                    "startLine": 13,
+                                                    "startTokenPos": 249,
+                                                    "startFilePos": 634,
+                                                    "endLine": 13,
+                                                    "endTokenPos": 249,
+                                                    "endFilePos": 642,
+                                                    "kind": 2,
+                                                    "rawValue": "\"orderId\""
+                                                  },
+                                                  "value": "orderId"
+                                                }
+                                              },
+                                              "byRef": false,
+                                              "unpack": false
+                                            }
+                                          ]
+                                        },
+                                        "if": {
+                                          "nodeType": "Expr_FuncCall",
+                                          "attributes": {
+                                            "startLine": 13,
+                                            "startTokenPos": 255,
+                                            "startFilePos": 648,
+                                            "endLine": 13,
+                                            "endTokenPos": 264,
+                                            "endFilePos": 683
+                                          },
+                                          "name": {
+                                            "nodeType": "Name",
+                                            "attributes": {
+                                              "startLine": 13,
+                                              "startTokenPos": 255,
+                                              "startFilePos": 648,
+                                              "endLine": 13,
+                                              "endTokenPos": 255,
+                                              "endFilePos": 658
+                                            },
+                                            "name": "json_encode"
+                                          },
+                                          "args": [
+                                            {
+                                              "nodeType": "Arg",
+                                              "attributes": {
+                                                "startLine": 13,
+                                                "startTokenPos": 257,
+                                                "startFilePos": 660,
+                                                "endLine": 13,
+                                                "endTokenPos": 260,
+                                                "endFilePos": 676
+                                              },
+                                              "name": null,
+                                              "value": {
+                                                "nodeType": "Expr_ArrayDimFetch",
+                                                "attributes": {
+                                                  "startLine": 13,
+                                                  "startTokenPos": 257,
+                                                  "startFilePos": 660,
+                                                  "endLine": 13,
+                                                  "endTokenPos": 260,
+                                                  "endFilePos": 676
+                                                },
+                                                "var": {
+                                                  "nodeType": "Expr_Variable",
+                                                  "attributes": {
+                                                    "startLine": 13,
+                                                    "startTokenPos": 257,
+                                                    "startFilePos": 660,
+                                                    "endLine": 13,
+                                                    "endTokenPos": 257,
+                                                    "endFilePos": 665
+                                                  },
+                                                  "name": "entry"
+                                                },
+                                                "dim": {
+                                                  "nodeType": "Scalar_String",
+                                                  "attributes": {
+                                                    "startLine": 13,
+                                                    "startTokenPos": 259,
+                                                    "startFilePos": 667,
+                                                    "endLine": 13,
+                                                    "endTokenPos": 259,
+                                                    "endFilePos": 675,
+                                                    "kind": 2,
+                                                    "rawValue": "\"orderId\""
+                                                  },
+                                                  "value": "orderId"
+                                                }
+                                              },
+                                              "byRef": false,
+                                              "unpack": false
+                                            },
+                                            {
+                                              "nodeType": "Arg",
+                                              "attributes": {
+                                                "startLine": 13,
+                                                "startTokenPos": 263,
+                                                "startFilePos": 679,
+                                                "endLine": 13,
+                                                "endTokenPos": 263,
+                                                "endFilePos": 682
+                                              },
+                                              "name": null,
+                                              "value": {
+                                                "nodeType": "Scalar_Int",
+                                                "attributes": {
+                                                  "startLine": 13,
+                                                  "startTokenPos": 263,
+                                                  "startFilePos": 679,
+                                                  "endLine": 13,
+                                                  "endTokenPos": 263,
+                                                  "endFilePos": 682,
+                                                  "rawValue": "1344",
+                                                  "kind": 10
+                                                },
+                                                "value": 1344
+                                              },
+                                              "byRef": false,
+                                              "unpack": false
+                                            }
+                                          ]
+                                        },
+                                        "else": {
+                                          "nodeType": "Expr_ArrayDimFetch",
+                                          "attributes": {
+                                            "startLine": 13,
+                                            "startTokenPos": 268,
+                                            "startFilePos": 687,
+                                            "endLine": 13,
+                                            "endTokenPos": 271,
+                                            "endFilePos": 703
+                                          },
+                                          "var": {
+                                            "nodeType": "Expr_Variable",
+                                            "attributes": {
+                                              "startLine": 13,
+                                              "startTokenPos": 268,
+                                              "startFilePos": 687,
+                                              "endLine": 13,
+                                              "endTokenPos": 268,
+                                              "endFilePos": 692
+                                            },
+                                            "name": "entry"
+                                          },
+                                          "dim": {
+                                            "nodeType": "Scalar_String",
+                                            "attributes": {
+                                              "startLine": 13,
+                                              "startTokenPos": 270,
+                                              "startFilePos": 694,
+                                              "endLine": 13,
+                                              "endTokenPos": 270,
+                                              "endFilePos": 702,
+                                              "kind": 2,
+                                              "rawValue": "\"orderId\""
+                                            },
+                                            "value": "orderId"
+                                          }
+                                        }
+                                      }
+                                    },
+                                    "right": {
+                                      "nodeType": "Scalar_String",
+                                      "attributes": {
+                                        "startLine": 13,
+                                        "startTokenPos": 276,
+                                        "startFilePos": 708,
+                                        "endLine": 13,
+                                        "endTokenPos": 276,
+                                        "endFilePos": 710,
+                                        "kind": 2,
+                                        "rawValue": "\" \""
+                                      },
+                                      "value": " "
+                                    }
+                                  },
+                                  "right": {
+                                    "nodeType": "Scalar_String",
+                                    "attributes": {
+                                      "startLine": 13,
+                                      "startTokenPos": 280,
+                                      "startFilePos": 714,
+                                      "endLine": 13,
+                                      "endTokenPos": 280,
+                                      "endFilePos": 727,
+                                      "kind": 2,
+                                      "rawValue": "\"(customerId:\""
+                                    },
+                                    "value": "(customerId:"
+                                  }
+                                },
+                                "right": {
+                                  "nodeType": "Scalar_String",
+                                  "attributes": {
+                                    "startLine": 13,
+                                    "startTokenPos": 284,
+                                    "startFilePos": 731,
+                                    "endLine": 13,
+                                    "endTokenPos": 284,
+                                    "endFilePos": 733,
+                                    "kind": 2,
+                                    "rawValue": "\" \""
+                                  },
+                                  "value": " "
+                                }
+                              },
+                              "right": {
+                                "nodeType": "Expr_Ternary",
+                                "attributes": {
+                                  "startLine": 13,
+                                  "startTokenPos": 289,
+                                  "startFilePos": 738,
+                                  "endLine": 13,
+                                  "endTokenPos": 315,
+                                  "endFilePos": 847
+                                },
+                                "cond": {
+                                  "nodeType": "Expr_FuncCall",
+                                  "attributes": {
+                                    "startLine": 13,
+                                    "startTokenPos": 289,
+                                    "startFilePos": 738,
+                                    "endLine": 13,
+                                    "endTokenPos": 295,
+                                    "endFilePos": 772
+                                  },
+                                  "name": {
+                                    "nodeType": "Name",
+                                    "attributes": {
+                                      "startLine": 13,
+                                      "startTokenPos": 289,
+                                      "startFilePos": 738,
+                                      "endLine": 13,
+                                      "endTokenPos": 289,
+                                      "endFilePos": 745
+                                    },
+                                    "name": "is_float"
+                                  },
+                                  "args": [
+                                    {
+                                      "nodeType": "Arg",
+                                      "attributes": {
+                                        "startLine": 13,
+                                        "startTokenPos": 291,
+                                        "startFilePos": 747,
+                                        "endLine": 13,
+                                        "endTokenPos": 294,
+                                        "endFilePos": 771
+                                      },
+                                      "name": null,
+                                      "value": {
+                                        "nodeType": "Expr_ArrayDimFetch",
+                                        "attributes": {
+                                          "startLine": 13,
+                                          "startTokenPos": 291,
+                                          "startFilePos": 747,
+                                          "endLine": 13,
+                                          "endTokenPos": 294,
+                                          "endFilePos": 771
+                                        },
+                                        "var": {
+                                          "nodeType": "Expr_Variable",
+                                          "attributes": {
+                                            "startLine": 13,
+                                            "startTokenPos": 291,
+                                            "startFilePos": 747,
+                                            "endLine": 13,
+                                            "endTokenPos": 291,
+                                            "endFilePos": 752
+                                          },
+                                          "name": "entry"
+                                        },
+                                        "dim": {
+                                          "nodeType": "Scalar_String",
+                                          "attributes": {
+                                            "startLine": 13,
+                                            "startTokenPos": 293,
+                                            "startFilePos": 754,
+                                            "endLine": 13,
+                                            "endTokenPos": 293,
+                                            "endFilePos": 770,
+                                            "kind": 2,
+                                            "rawValue": "\"orderCustomerId\""
+                                          },
+                                          "value": "orderCustomerId"
+                                        }
+                                      },
+                                      "byRef": false,
+                                      "unpack": false
+                                    }
+                                  ]
+                                },
+                                "if": {
+                                  "nodeType": "Expr_FuncCall",
+                                  "attributes": {
+                                    "startLine": 13,
+                                    "startTokenPos": 299,
+                                    "startFilePos": 776,
+                                    "endLine": 13,
+                                    "endTokenPos": 308,
+                                    "endFilePos": 819
+                                  },
+                                  "name": {
+                                    "nodeType": "Name",
+                                    "attributes": {
+                                      "startLine": 13,
+                                      "startTokenPos": 299,
+                                      "startFilePos": 776,
+                                      "endLine": 13,
+                                      "endTokenPos": 299,
+                                      "endFilePos": 786
+                                    },
+                                    "name": "json_encode"
+                                  },
+                                  "args": [
+                                    {
+                                      "nodeType": "Arg",
+                                      "attributes": {
+                                        "startLine": 13,
+                                        "startTokenPos": 301,
+                                        "startFilePos": 788,
+                                        "endLine": 13,
+                                        "endTokenPos": 304,
+                                        "endFilePos": 812
+                                      },
+                                      "name": null,
+                                      "value": {
+                                        "nodeType": "Expr_ArrayDimFetch",
+                                        "attributes": {
+                                          "startLine": 13,
+                                          "startTokenPos": 301,
+                                          "startFilePos": 788,
+                                          "endLine": 13,
+                                          "endTokenPos": 304,
+                                          "endFilePos": 812
+                                        },
+                                        "var": {
+                                          "nodeType": "Expr_Variable",
+                                          "attributes": {
+                                            "startLine": 13,
+                                            "startTokenPos": 301,
+                                            "startFilePos": 788,
+                                            "endLine": 13,
+                                            "endTokenPos": 301,
+                                            "endFilePos": 793
+                                          },
+                                          "name": "entry"
+                                        },
+                                        "dim": {
+                                          "nodeType": "Scalar_String",
+                                          "attributes": {
+                                            "startLine": 13,
+                                            "startTokenPos": 303,
+                                            "startFilePos": 795,
+                                            "endLine": 13,
+                                            "endTokenPos": 303,
+                                            "endFilePos": 811,
+                                            "kind": 2,
+                                            "rawValue": "\"orderCustomerId\""
+                                          },
+                                          "value": "orderCustomerId"
+                                        }
+                                      },
+                                      "byRef": false,
+                                      "unpack": false
+                                    },
+                                    {
+                                      "nodeType": "Arg",
+                                      "attributes": {
+                                        "startLine": 13,
+                                        "startTokenPos": 307,
+                                        "startFilePos": 815,
+                                        "endLine": 13,
+                                        "endTokenPos": 307,
+                                        "endFilePos": 818
+                                      },
+                                      "name": null,
+                                      "value": {
+                                        "nodeType": "Scalar_Int",
+                                        "attributes": {
+                                          "startLine": 13,
+                                          "startTokenPos": 307,
+                                          "startFilePos": 815,
+                                          "endLine": 13,
+                                          "endTokenPos": 307,
+                                          "endFilePos": 818,
+                                          "rawValue": "1344",
+                                          "kind": 10
+                                        },
+                                        "value": 1344
+                                      },
+                                      "byRef": false,
+                                      "unpack": false
+                                    }
+                                  ]
+                                },
+                                "else": {
+                                  "nodeType": "Expr_ArrayDimFetch",
+                                  "attributes": {
+                                    "startLine": 13,
+                                    "startTokenPos": 312,
+                                    "startFilePos": 823,
+                                    "endLine": 13,
+                                    "endTokenPos": 315,
+                                    "endFilePos": 847
+                                  },
+                                  "var": {
+                                    "nodeType": "Expr_Variable",
+                                    "attributes": {
+                                      "startLine": 13,
+                                      "startTokenPos": 312,
+                                      "startFilePos": 823,
+                                      "endLine": 13,
+                                      "endTokenPos": 312,
+                                      "endFilePos": 828
+                                    },
+                                    "name": "entry"
+                                  },
+                                  "dim": {
+                                    "nodeType": "Scalar_String",
+                                    "attributes": {
+                                      "startLine": 13,
+                                      "startTokenPos": 314,
+                                      "startFilePos": 830,
+                                      "endLine": 13,
+                                      "endTokenPos": 314,
+                                      "endFilePos": 846,
+                                      "kind": 2,
+                                      "rawValue": "\"orderCustomerId\""
+                                    },
+                                    "value": "orderCustomerId"
+                                  }
+                                }
+                              }
+                            },
+                            "right": {
+                              "nodeType": "Scalar_String",
+                              "attributes": {
+                                "startLine": 13,
+                                "startTokenPos": 320,
+                                "startFilePos": 852,
+                                "endLine": 13,
+                                "endTokenPos": 320,
+                                "endFilePos": 854,
+                                "kind": 2,
+                                "rawValue": "\" \""
+                              },
+                              "value": " "
+                            }
+                          },
+                          "right": {
+                            "nodeType": "Scalar_String",
+                            "attributes": {
+                              "startLine": 13,
+                              "startTokenPos": 324,
+                              "startFilePos": 858,
+                              "endLine": 13,
+                              "endTokenPos": 324,
+                              "endFilePos": 869,
+                              "kind": 2,
+                              "rawValue": "\", total: $\""
+                            },
+                            "value": ", total: $"
+                          }
+                        },
+                        "right": {
+                          "nodeType": "Scalar_String",
+                          "attributes": {
+                            "startLine": 13,
+                            "startTokenPos": 328,
+                            "startFilePos": 873,
+                            "endLine": 13,
+                            "endTokenPos": 328,
+                            "endFilePos": 875,
+                            "kind": 2,
+                            "rawValue": "\" \""
+                          },
+                          "value": " "
+                        }
+                      },
+                      "right": {
+                        "nodeType": "Expr_Ternary",
+                        "attributes": {
+                          "startLine": 13,
+                          "startTokenPos": 333,
+                          "startFilePos": 880,
+                          "endLine": 13,
+                          "endTokenPos": 359,
+                          "endFilePos": 974
+                        },
+                        "cond": {
+                          "nodeType": "Expr_FuncCall",
+                          "attributes": {
+                            "startLine": 13,
+                            "startTokenPos": 333,
+                            "startFilePos": 880,
+                            "endLine": 13,
+                            "endTokenPos": 339,
+                            "endFilePos": 909
+                          },
+                          "name": {
+                            "nodeType": "Name",
+                            "attributes": {
+                              "startLine": 13,
+                              "startTokenPos": 333,
+                              "startFilePos": 880,
+                              "endLine": 13,
+                              "endTokenPos": 333,
+                              "endFilePos": 887
+                            },
+                            "name": "is_float"
+                          },
+                          "args": [
+                            {
+                              "nodeType": "Arg",
+                              "attributes": {
+                                "startLine": 13,
+                                "startTokenPos": 335,
+                                "startFilePos": 889,
+                                "endLine": 13,
+                                "endTokenPos": 338,
+                                "endFilePos": 908
+                              },
+                              "name": null,
+                              "value": {
+                                "nodeType": "Expr_ArrayDimFetch",
+                                "attributes": {
+                                  "startLine": 13,
+                                  "startTokenPos": 335,
+                                  "startFilePos": 889,
+                                  "endLine": 13,
+                                  "endTokenPos": 338,
+                                  "endFilePos": 908
+                                },
+                                "var": {
+                                  "nodeType": "Expr_Variable",
+                                  "attributes": {
+                                    "startLine": 13,
+                                    "startTokenPos": 335,
+                                    "startFilePos": 889,
+                                    "endLine": 13,
+                                    "endTokenPos": 335,
+                                    "endFilePos": 894
+                                  },
+                                  "name": "entry"
+                                },
+                                "dim": {
+                                  "nodeType": "Scalar_String",
+                                  "attributes": {
+                                    "startLine": 13,
+                                    "startTokenPos": 337,
+                                    "startFilePos": 896,
+                                    "endLine": 13,
+                                    "endTokenPos": 337,
+                                    "endFilePos": 907,
+                                    "kind": 2,
+                                    "rawValue": "\"orderTotal\""
+                                  },
+                                  "value": "orderTotal"
+                                }
+                              },
+                              "byRef": false,
+                              "unpack": false
+                            }
+                          ]
+                        },
+                        "if": {
+                          "nodeType": "Expr_FuncCall",
+                          "attributes": {
+                            "startLine": 13,
+                            "startTokenPos": 343,
+                            "startFilePos": 913,
+                            "endLine": 13,
+                            "endTokenPos": 352,
+                            "endFilePos": 951
+                          },
+                          "name": {
+                            "nodeType": "Name",
+                            "attributes": {
+                              "startLine": 13,
+                              "startTokenPos": 343,
+                              "startFilePos": 913,
+                              "endLine": 13,
+                              "endTokenPos": 343,
+                              "endFilePos": 923
+                            },
+                            "name": "json_encode"
+                          },
+                          "args": [
+                            {
+                              "nodeType": "Arg",
+                              "attributes": {
+                                "startLine": 13,
+                                "startTokenPos": 345,
+                                "startFilePos": 925,
+                                "endLine": 13,
+                                "endTokenPos": 348,
+                                "endFilePos": 944
+                              },
+                              "name": null,
+                              "value": {
+                                "nodeType": "Expr_ArrayDimFetch",
+                                "attributes": {
+                                  "startLine": 13,
+                                  "startTokenPos": 345,
+                                  "startFilePos": 925,
+                                  "endLine": 13,
+                                  "endTokenPos": 348,
+                                  "endFilePos": 944
+                                },
+                                "var": {
+                                  "nodeType": "Expr_Variable",
+                                  "attributes": {
+                                    "startLine": 13,
+                                    "startTokenPos": 345,
+                                    "startFilePos": 925,
+                                    "endLine": 13,
+                                    "endTokenPos": 345,
+                                    "endFilePos": 930
+                                  },
+                                  "name": "entry"
+                                },
+                                "dim": {
+                                  "nodeType": "Scalar_String",
+                                  "attributes": {
+                                    "startLine": 13,
+                                    "startTokenPos": 347,
+                                    "startFilePos": 932,
+                                    "endLine": 13,
+                                    "endTokenPos": 347,
+                                    "endFilePos": 943,
+                                    "kind": 2,
+                                    "rawValue": "\"orderTotal\""
+                                  },
+                                  "value": "orderTotal"
+                                }
+                              },
+                              "byRef": false,
+                              "unpack": false
+                            },
+                            {
+                              "nodeType": "Arg",
+                              "attributes": {
+                                "startLine": 13,
+                                "startTokenPos": 351,
+                                "startFilePos": 947,
+                                "endLine": 13,
+                                "endTokenPos": 351,
+                                "endFilePos": 950
+                              },
+                              "name": null,
+                              "value": {
+                                "nodeType": "Scalar_Int",
+                                "attributes": {
+                                  "startLine": 13,
+                                  "startTokenPos": 351,
+                                  "startFilePos": 947,
+                                  "endLine": 13,
+                                  "endTokenPos": 351,
+                                  "endFilePos": 950,
+                                  "rawValue": "1344",
+                                  "kind": 10
+                                },
+                                "value": 1344
+                              },
+                              "byRef": false,
+                              "unpack": false
+                            }
+                          ]
+                        },
+                        "else": {
+                          "nodeType": "Expr_ArrayDimFetch",
+                          "attributes": {
+                            "startLine": 13,
+                            "startTokenPos": 356,
+                            "startFilePos": 955,
+                            "endLine": 13,
+                            "endTokenPos": 359,
+                            "endFilePos": 974
+                          },
+                          "var": {
+                            "nodeType": "Expr_Variable",
+                            "attributes": {
+                              "startLine": 13,
+                              "startTokenPos": 356,
+                              "startFilePos": 955,
+                              "endLine": 13,
+                              "endTokenPos": 356,
+                              "endFilePos": 960
+                            },
+                            "name": "entry"
+                          },
+                          "dim": {
+                            "nodeType": "Scalar_String",
+                            "attributes": {
+                              "startLine": 13,
+                              "startTokenPos": 358,
+                              "startFilePos": 962,
+                              "endLine": 13,
+                              "endTokenPos": 358,
+                              "endFilePos": 973,
+                              "kind": 2,
+                              "rawValue": "\"orderTotal\""
+                            },
+                            "value": "orderTotal"
+                          }
+                        }
+                      }
+                    },
+                    "right": {
+                      "nodeType": "Scalar_String",
+                      "attributes": {
+                        "startLine": 13,
+                        "startTokenPos": 364,
+                        "startFilePos": 979,
+                        "endLine": 13,
+                        "endTokenPos": 364,
+                        "endFilePos": 981,
+                        "kind": 2,
+                        "rawValue": "\" \""
+                      },
+                      "value": " "
+                    }
+                  },
+                  "right": {
+                    "nodeType": "Scalar_String",
+                    "attributes": {
+                      "startLine": 13,
+                      "startTokenPos": 368,
+                      "startFilePos": 985,
+                      "endLine": 13,
+                      "endTokenPos": 368,
+                      "endFilePos": 999,
+                      "kind": 2,
+                      "rawValue": "\") paired with\""
+                    },
+                    "value": ") paired with"
+                  }
+                },
+                "right": {
+                  "nodeType": "Scalar_String",
+                  "attributes": {
+                    "startLine": 13,
+                    "startTokenPos": 372,
+                    "startFilePos": 1003,
+                    "endLine": 13,
+                    "endTokenPos": 372,
+                    "endFilePos": 1005,
+                    "kind": 2,
+                    "rawValue": "\" \""
+                  },
+                  "value": " "
+                }
+              },
+              "right": {
+                "nodeType": "Expr_Ternary",
+                "attributes": {
+                  "startLine": 13,
+                  "startTokenPos": 377,
+                  "startFilePos": 1010,
+                  "endLine": 13,
+                  "endTokenPos": 403,
+                  "endFilePos": 1128
+                },
+                "cond": {
+                  "nodeType": "Expr_FuncCall",
+                  "attributes": {
+                    "startLine": 13,
+                    "startTokenPos": 377,
+                    "startFilePos": 1010,
+                    "endLine": 13,
+                    "endTokenPos": 383,
+                    "endFilePos": 1047
+                  },
+                  "name": {
+                    "nodeType": "Name",
+                    "attributes": {
+                      "startLine": 13,
+                      "startTokenPos": 377,
+                      "startFilePos": 1010,
+                      "endLine": 13,
+                      "endTokenPos": 377,
+                      "endFilePos": 1017
+                    },
+                    "name": "is_float"
+                  },
+                  "args": [
+                    {
+                      "nodeType": "Arg",
+                      "attributes": {
+                        "startLine": 13,
+                        "startTokenPos": 379,
+                        "startFilePos": 1019,
+                        "endLine": 13,
+                        "endTokenPos": 382,
+                        "endFilePos": 1046
+                      },
+                      "name": null,
+                      "value": {
+                        "nodeType": "Expr_ArrayDimFetch",
+                        "attributes": {
+                          "startLine": 13,
+                          "startTokenPos": 379,
+                          "startFilePos": 1019,
+                          "endLine": 13,
+                          "endTokenPos": 382,
+                          "endFilePos": 1046
+                        },
+                        "var": {
+                          "nodeType": "Expr_Variable",
+                          "attributes": {
+                            "startLine": 13,
+                            "startTokenPos": 379,
+                            "startFilePos": 1019,
+                            "endLine": 13,
+                            "endTokenPos": 379,
+                            "endFilePos": 1024
+                          },
+                          "name": "entry"
+                        },
+                        "dim": {
+                          "nodeType": "Scalar_String",
+                          "attributes": {
+                            "startLine": 13,
+                            "startTokenPos": 381,
+                            "startFilePos": 1026,
+                            "endLine": 13,
+                            "endTokenPos": 381,
+                            "endFilePos": 1045,
+                            "kind": 2,
+                            "rawValue": "\"pairedCustomerName\""
+                          },
+                          "value": "pairedCustomerName"
+                        }
+                      },
+                      "byRef": false,
+                      "unpack": false
+                    }
+                  ]
+                },
+                "if": {
+                  "nodeType": "Expr_FuncCall",
+                  "attributes": {
+                    "startLine": 13,
+                    "startTokenPos": 387,
+                    "startFilePos": 1051,
+                    "endLine": 13,
+                    "endTokenPos": 396,
+                    "endFilePos": 1097
+                  },
+                  "name": {
+                    "nodeType": "Name",
+                    "attributes": {
+                      "startLine": 13,
+                      "startTokenPos": 387,
+                      "startFilePos": 1051,
+                      "endLine": 13,
+                      "endTokenPos": 387,
+                      "endFilePos": 1061
+                    },
+                    "name": "json_encode"
+                  },
+                  "args": [
+                    {
+                      "nodeType": "Arg",
+                      "attributes": {
+                        "startLine": 13,
+                        "startTokenPos": 389,
+                        "startFilePos": 1063,
+                        "endLine": 13,
+                        "endTokenPos": 392,
+                        "endFilePos": 1090
+                      },
+                      "name": null,
+                      "value": {
+                        "nodeType": "Expr_ArrayDimFetch",
+                        "attributes": {
+                          "startLine": 13,
+                          "startTokenPos": 389,
+                          "startFilePos": 1063,
+                          "endLine": 13,
+                          "endTokenPos": 392,
+                          "endFilePos": 1090
+                        },
+                        "var": {
+                          "nodeType": "Expr_Variable",
+                          "attributes": {
+                            "startLine": 13,
+                            "startTokenPos": 389,
+                            "startFilePos": 1063,
+                            "endLine": 13,
+                            "endTokenPos": 389,
+                            "endFilePos": 1068
+                          },
+                          "name": "entry"
+                        },
+                        "dim": {
+                          "nodeType": "Scalar_String",
+                          "attributes": {
+                            "startLine": 13,
+                            "startTokenPos": 391,
+                            "startFilePos": 1070,
+                            "endLine": 13,
+                            "endTokenPos": 391,
+                            "endFilePos": 1089,
+                            "kind": 2,
+                            "rawValue": "\"pairedCustomerName\""
+                          },
+                          "value": "pairedCustomerName"
+                        }
+                      },
+                      "byRef": false,
+                      "unpack": false
+                    },
+                    {
+                      "nodeType": "Arg",
+                      "attributes": {
+                        "startLine": 13,
+                        "startTokenPos": 395,
+                        "startFilePos": 1093,
+                        "endLine": 13,
+                        "endTokenPos": 395,
+                        "endFilePos": 1096
+                      },
+                      "name": null,
+                      "value": {
+                        "nodeType": "Scalar_Int",
+                        "attributes": {
+                          "startLine": 13,
+                          "startTokenPos": 395,
+                          "startFilePos": 1093,
+                          "endLine": 13,
+                          "endTokenPos": 395,
+                          "endFilePos": 1096,
+                          "rawValue": "1344",
+                          "kind": 10
+                        },
+                        "value": 1344
+                      },
+                      "byRef": false,
+                      "unpack": false
+                    }
+                  ]
+                },
+                "else": {
+                  "nodeType": "Expr_ArrayDimFetch",
+                  "attributes": {
+                    "startLine": 13,
+                    "startTokenPos": 400,
+                    "startFilePos": 1101,
+                    "endLine": 13,
+                    "endTokenPos": 403,
+                    "endFilePos": 1128
+                  },
+                  "var": {
+                    "nodeType": "Expr_Variable",
+                    "attributes": {
+                      "startLine": 13,
+                      "startTokenPos": 400,
+                      "startFilePos": 1101,
+                      "endLine": 13,
+                      "endTokenPos": 400,
+                      "endFilePos": 1106
+                    },
+                    "name": "entry"
+                  },
+                  "dim": {
+                    "nodeType": "Scalar_String",
+                    "attributes": {
+                      "startLine": 13,
+                      "startTokenPos": 402,
+                      "startFilePos": 1108,
+                      "endLine": 13,
+                      "endTokenPos": 402,
+                      "endFilePos": 1127,
+                      "kind": 2,
+                      "rawValue": "\"pairedCustomerName\""
+                    },
+                    "value": "pairedCustomerName"
+                  }
+                }
+              }
+            },
+            {
+              "nodeType": "Expr_ConstFetch",
+              "attributes": {
+                "startLine": 13,
+                "startTokenPos": 407,
+                "startFilePos": 1132,
+                "endLine": 13,
+                "endTokenPos": 407,
+                "endFilePos": 1138
+              },
+              "name": {
+                "nodeType": "Name",
+                "attributes": {
+                  "startLine": 13,
+                  "startTokenPos": 407,
+                  "startFilePos": 1132,
+                  "endLine": 13,
+                  "endTokenPos": 407,
+                  "endFilePos": 1138
+                },
+                "name": "PHP_EOL"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
