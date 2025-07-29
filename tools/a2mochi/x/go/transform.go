@@ -61,8 +61,15 @@ func Transform(p *Program) (*mast.Node, error) {
 			fn := &mast.Node{Kind: "fun", Value: d.Name.Name}
 			for _, p := range d.Type.Params.List {
 				for _, n := range p.Names {
-					fn.Children = append(fn.Children, &mast.Node{Kind: "param", Value: n.Name})
+					param := &mast.Node{Kind: "param", Value: n.Name}
+					if p.Type != nil {
+						param.Children = []*mast.Node{transformType(p.Type)}
+					}
+					fn.Children = append(fn.Children, param)
 				}
+			}
+			if d.Type.Results != nil && len(d.Type.Results.List) == 1 {
+				fn.Children = append(fn.Children, transformType(d.Type.Results.List[0].Type))
 			}
 			fn.Children = append(fn.Children, transformBlock(d.Body))
 			root.Children = append(root.Children, fn)
@@ -124,6 +131,28 @@ func transformStmt(st ast.Stmt) []*mast.Node {
 			Kind:     "while",
 			Children: []*mast.Node{transformExpr(s.Cond), body},
 		}}
+	case *ast.RangeStmt:
+		varName := "_"
+		if id, ok := s.Value.(*ast.Ident); ok {
+			varName = id.Name
+		}
+		iter := transformExpr(s.X)
+		body := transformBlock(s.Body)
+		return []*mast.Node{{
+			Kind:  "for",
+			Value: varName,
+			Children: []*mast.Node{
+				{Kind: "in", Children: []*mast.Node{iter}},
+				body,
+			},
+		}}
+	case *ast.BranchStmt:
+		switch s.Tok {
+		case token.BREAK:
+			return []*mast.Node{{Kind: "break"}}
+		case token.CONTINUE:
+			return []*mast.Node{{Kind: "continue"}}
+		}
 	case *ast.IfStmt:
 		cond := transformExpr(s.Cond)
 		thenBlk := transformBlock(s.Body)

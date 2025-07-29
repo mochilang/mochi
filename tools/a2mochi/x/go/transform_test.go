@@ -142,6 +142,11 @@ func TestTransform_Golden(t *testing.T) {
 		"map_index":         true,
 		"typed_var":         true,
 		"typed_let":         true,
+		"len_builtin":       true,
+		"len_map":           true,
+		"bool_chain":        true,
+		"short_circuit":     true,
+		"break_continue":    true,
 	}
 
 	outDir := filepath.Join(root, "tests/a2mochi/x/go")
