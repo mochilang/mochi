@@ -1,7 +1,7 @@
 # a2mochi Erlang Converter
 
 Completed programs: 48/103
-Date: 2025-07-29 17:49 GMT+7
+Date: 2025-07-29 18:13 GMT+7
 
 This directory stores golden files for the Erlang to Mochi converter.
 
@@ -82,13 +82,13 @@ This directory stores golden files for the Erlang to Mochi converter.
 - [ ] python_auto
 - [ ] python_math
 - [ ] query_sum_select
-- [x] record_assign
+- [ ] record_assign
 - [ ] right_join
 - [ ] save_jsonl_stdout
 - [x] short_circuit
 - [x] slice
 - [ ] sort_stable
-- [ ] str_builtin
+- [x] str_builtin
 - [x] string_compare
 - [x] string_concat
 - [x] string_contains
