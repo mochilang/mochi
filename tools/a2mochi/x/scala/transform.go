@@ -2,8 +2,10 @@ package scala
 
 import (
 	"fmt"
+	"strings"
 
 	"mochi/ast"
+	"mochi/parser"
 )
 
 func program(children ...*ast.Node) *ast.Node {
@@ -27,18 +29,39 @@ func Transform(p *Program) (*ast.Node, error) {
 	if p == nil {
 		return nil, fmt.Errorf("nil program")
 	}
-	root := program()
+	var b strings.Builder
 	for _, d := range p.Decls {
 		switch d.Kind {
 		case "val":
-			root.Children = append(root.Children, let(d.Name))
-		case "def":
-			var params []string
-			for _, prm := range d.Params {
-				params = append(params, prm.Name)
+			if d.RHS != "" {
+				fmt.Fprintf(&b, "let %s = %s\n", d.Name, d.RHS)
+			} else {
+				fmt.Fprintf(&b, "let %s\n", d.Name)
 			}
-			root.Children = append(root.Children, fun(d.Name, params...))
+		case "def":
+			fmt.Fprintf(&b, "fun %s(", d.Name)
+			for i, prm := range d.Params {
+				if i > 0 {
+					b.WriteString(", ")
+				}
+				b.WriteString(prm.Name)
+			}
+			b.WriteString(") {\n")
+			if d.Body != "" {
+				for _, line := range strings.Split(d.Body, "\n") {
+					line = strings.TrimSpace(line)
+					if line == "" {
+						continue
+					}
+					b.WriteString("  " + line + "\n")
+				}
+			}
+			b.WriteString("}\n")
 		}
 	}
-	return root, nil
+	prog, err := parser.ParseString(b.String())
+	if err != nil {
+		return nil, err
+	}
+	return ast.FromProgram(prog), nil
 }

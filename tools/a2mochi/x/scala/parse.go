@@ -22,6 +22,7 @@ type Decl struct {
 	Params []Param `json:"params,omitempty"`
 	Ret    string  `json:"ret,omitempty"`
 	Body   string  `json:"body,omitempty"`
+	RHS    string  `json:"rhs,omitempty"`
 }
 
 // Program is the root of the JSON AST produced by parser.scala.
