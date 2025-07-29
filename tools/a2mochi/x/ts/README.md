@@ -1,7 +1,7 @@
 # a2mochi TypeScript Converter
 
-Completed programs: 31/105
-Date: 2025-07-29 20:51:31 GMT+7
+Completed programs: 26/105
+Date: 2025-07-29 21:28:23 GMT+7
 
 This directory holds golden outputs for the TypeScript to Mochi converter.
 Each `.ts` source in `tests/transpiler/x/ts` has a matching `.mochi` and `.ast`
@@ -59,7 +59,7 @@ programs.
 - [x] let_and_print
 - [x] list_assign
 - [x] list_index
-- [x] list_nested_assign
+- [ ] list_nested_assign
 - [ ] list_set_ops
 - [ ] load_jsonl
 - [ ] load_yaml
@@ -72,7 +72,7 @@ programs.
 - [ ] map_nested_assign
 - [ ] match_expr
 - [ ] match_full
-- [x] math_ops
+- [ ] math_ops
 - [ ] membership
 - [ ] min_max_builtin
 - [ ] mix_go_python
@@ -106,11 +106,11 @@ programs.
 - [x] test_block
 - [ ] tree_sum
 - [ ] two-sum
-- [x] typed_let
-- [x] typed_var
+- [ ] typed_let
+- [ ] typed_var
 - [ ] unary_neg
 - [ ] update_stmt
 - [ ] user_type_literal
 - [ ] values_builtin
-- [x] var_assignment
+- [ ] var_assignment
 - [x] while_loop

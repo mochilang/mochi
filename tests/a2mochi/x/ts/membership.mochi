@@ -1,0 +1,3 @@
+let nums: list<int> = [1, 2, 3]
+print(nums.includes(2))
+print(nums.includes(4))

@@ -1,0 +1,20 @@
+(program
+  (let xs
+    (type list (type int))
+    (list (int 1) (int 2) (int 3))
+  )
+  (call print
+    (call
+      (selector includes (selector xs))
+      (int 2)
+    )
+  )
+  (call print
+    (unary !
+      (call
+        (selector includes (selector xs))
+        (int 5)
+      )
+    )
+  )
+)

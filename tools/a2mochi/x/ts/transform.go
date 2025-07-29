@@ -78,7 +78,11 @@ func nodeFromDecl(d Node) (*ast.Node, error) {
 
 func emitVar(d Node) string {
 	var sb strings.Builder
-	sb.WriteString("var ")
+	// Use `let` for variable declarations so that generated code matches
+	// existing golden files which treat both `const` and `let` as `let`.
+	// There is currently no distinction in the input AST between const and
+	// let so we default to `let` here instead of `var`.
+	sb.WriteString("let ")
 	sb.WriteString(d.Name)
 	if d.Ret != "" {
 		sb.WriteString(": ")
