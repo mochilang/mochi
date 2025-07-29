@@ -1,6 +1,6 @@
 # a2mochi Lua Converter
 
-Completed programs: 33/104
+Completed programs: 37/104
 Date: 2025-07-29 11:15:00 GMT+0000
 
 This directory contains helpers and golden files for converting Lua programs
@@ -40,3 +40,7 @@ Supported examples:
 - [x] substring_builtin
 - [x] string_index
 - [x] tail_recursion
+- [x] str_builtin
+- [x] sum_builtin
+- [x] string_contains
+- [x] string_in_operator

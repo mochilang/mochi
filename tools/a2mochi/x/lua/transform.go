@@ -240,9 +240,9 @@ func exprToNode(e luaast.Expr, mut map[string]bool) *ast.Node {
 					if isAttrCall(call.Func, "string", "find") && len(call.Args) >= 4 {
 						if num, ok := call.Args[2].(*luaast.NumberExpr); ok && num.Value == "1" {
 							if _, ok := call.Args[3].(*luaast.TrueExpr); ok {
-								return node("call", "contains",
-									exprToNode(call.Args[0], mut),
-									exprToNode(call.Args[1], mut))
+								recv := exprToNode(call.Args[0], mut)
+								callee := node("selector", "contains", recv)
+								return node("call", nil, callee, exprToNode(call.Args[1], mut))
 							}
 						}
 					}
@@ -274,6 +274,9 @@ func exprToNode(e luaast.Expr, mut map[string]bool) *ast.Node {
 			}
 			if isAvgFunc(fn) && len(v.Args) == 1 {
 				return node("call", "avg", exprToNode(v.Args[0], mut))
+			}
+			if isSumFunc(fn) && len(v.Args) == 1 {
+				return node("call", "sum", exprToNode(v.Args[0], mut))
 			}
 			if isLenFunc(fn) && len(v.Args) == 1 {
 				return node("call", "len", exprToNode(v.Args[0], mut))
@@ -308,6 +311,14 @@ func exprToNode(e luaast.Expr, mut map[string]bool) *ast.Node {
 		case "__avg":
 			if len(args) == 1 {
 				callee = "avg"
+			}
+		case "__sum":
+			if len(args) == 1 {
+				callee = "sum"
+			}
+		case "tostring":
+			if len(args) == 1 {
+				callee = "str"
 			}
 		case "__append":
 			if len(args) == 2 {
@@ -699,6 +710,21 @@ func luaExprString(e luaast.Expr, mut map[string]bool) string {
 		}
 		return luaExprString(v.Lhs, mut) + " " + op + " " + luaExprString(v.Rhs, mut)
 	case *luaast.RelationalOpExpr:
+		if v.Operator == "~=" {
+			if _, ok := v.Rhs.(*luaast.NilExpr); ok {
+				if call, ok := v.Lhs.(*luaast.FuncCallExpr); ok {
+					if isAttrCall(call.Func, "string", "find") && len(call.Args) >= 4 {
+						if num, ok := call.Args[2].(*luaast.NumberExpr); ok && num.Value == "1" {
+							if _, ok := call.Args[3].(*luaast.TrueExpr); ok {
+								recv := luaExprString(call.Args[0], mut)
+								arg := luaExprString(call.Args[1], mut)
+								return recv + ".contains(" + arg + ")"
+							}
+						}
+					}
+				}
+			}
+		}
 		return luaExprString(v.Lhs, mut) + " " + v.Operator + " " + luaExprString(v.Rhs, mut)
 	case *luaast.UnaryMinusOpExpr:
 		return "-" + luaExprString(v.Expr, mut)
@@ -755,6 +781,14 @@ func luaExprString(e luaast.Expr, mut map[string]bool) string {
 		case "__avg":
 			if len(args) == 1 {
 				callee = "avg"
+			}
+		case "__sum":
+			if len(args) == 1 {
+				callee = "sum"
+			}
+		case "tostring":
+			if len(args) == 1 {
+				callee = "str"
 			}
 		case "__append":
 			if len(args) == 2 {
@@ -979,6 +1013,26 @@ func isAvgFunc(fn *luaast.FunctionExpr) bool {
 		return false
 	}
 	// presence of for loop over ipairs and final return statements
+	hasLoop := false
+	hasReturn := false
+	for _, st := range fn.Stmts {
+		switch st.(type) {
+		case *luaast.NumberForStmt, *luaast.GenericForStmt:
+			hasLoop = true
+		case *luaast.ReturnStmt:
+			hasReturn = true
+		}
+	}
+	return hasLoop && hasReturn
+}
+
+func isSumFunc(fn *luaast.FunctionExpr) bool {
+	if len(fn.Stmts) < 3 {
+		return false
+	}
+	if assign, ok := fn.Stmts[0].(*luaast.LocalAssignStmt); !ok || len(assign.Names) != 1 || assign.Names[0] != "s" {
+		return false
+	}
 	hasLoop := false
 	hasReturn := false
 	for _, st := range fn.Stmts {
