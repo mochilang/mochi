@@ -1,8 +1,7 @@
 (program
   (fun add
-    (param a (type int))
-    (param b (type int))
-    (type int)
+    (param a)
+    (param b)
     (return
       (binary + (selector a) (selector b))
     )

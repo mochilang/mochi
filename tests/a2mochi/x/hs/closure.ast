@@ -1,7 +1,6 @@
 (program
   (fun makeAdder
-    (param n (type int))
-    (typefun (type int) (type int))
+    (param n)
     (return
       (funexpr
         (param x (type int))
