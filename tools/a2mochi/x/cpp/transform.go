@@ -155,15 +155,19 @@ func transformBody(body string) ([]*ast.Node, error) {
 			l = strings.TrimSpace(l)
 
 			parts := strings.Split(l, "<<")
-			for i := range parts {
-				p := strings.TrimSpace(parts[i])
+			filtered := parts[:0]
+			for _, part := range parts {
+				p := strings.TrimSpace(part)
 				if p == "' '" {
-					p = "\" \""
+					// skip explicit space when using comma-separated print
+					continue
 				}
 				p = convertExpression(p)
-				parts[i] = strings.TrimSpace(p)
+				filtered = append(filtered, strings.TrimSpace(p))
 			}
-			l = strings.Join(parts, " + ")
+			// Join parts using commas so print receives multiple arguments
+			// rather than concatenated expressions.
+			l = strings.Join(filtered, ", ")
 
 			l = negRe.ReplaceAllString(l, `$1 (-$2)`)
 			stmt, err := parseSingle("print(" + l + ")")
