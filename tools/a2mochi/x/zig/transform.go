@@ -47,11 +47,19 @@ func TransformFile(path string) (*ast.Node, error) {
 }
 
 func mapType(t string) string {
-	switch strings.TrimSpace(t) {
+	tt := strings.TrimSpace(t)
+	if strings.HasPrefix(tt, "[]") || strings.HasPrefix(tt, "[_]") {
+		inner := strings.TrimPrefix(tt, "[]")
+		inner = strings.TrimPrefix(inner, "[_]")
+		return "list<" + mapType(inner) + ">"
+	}
+	switch tt {
 	case "i64", "i32", "u64", "u32":
 		return "int"
 	case "f64", "f32":
 		return "float"
+	case "bool":
+		return "bool"
 	case "void", "":
 		return ""
 	default:
@@ -149,6 +157,47 @@ func parseOrder(expr string) (string, bool) {
 		return fmt.Sprintf("%s <= %s", a, b), true
 	}
 	return "", false
+}
+
+func findClosingBrace(s string, start int) int {
+	depth := 0
+	for i := start; i < len(s); i++ {
+		switch s[i] {
+		case '{':
+			depth++
+		case '}':
+			depth--
+			if depth == 0 {
+				return i
+			}
+		}
+	}
+	return -1
+}
+
+func stripTypedArrays(expr string) string {
+	for {
+		idx := strings.Index(expr, "[_]")
+		if idx < 0 {
+			return expr
+		}
+		brace := strings.Index(expr[idx:], "{")
+		if brace < 0 {
+			return expr
+		}
+		brace += idx
+		end := findClosingBrace(expr, brace)
+		if end < 0 {
+			return expr
+		}
+		inner := strings.TrimSpace(expr[brace+1 : end])
+		expr = expr[:idx] + "[" + inner + "]" + expr[end+1:]
+	}
+}
+
+func replaceBuiltins(expr string) string {
+	expr = strings.ReplaceAll(expr, "std.mem.len(", "len(")
+	return expr
 }
 
 func extractParens(s string) (inner, rest string, ok bool) {
@@ -293,6 +342,8 @@ func parseFuncHeader(src string) (name, params, ret string, ok bool) {
 }
 
 func transformExpr(expr string) string {
+	expr = stripTypedArrays(expr)
+	expr = replaceBuiltins(expr)
 	if res, ok := parseSlice(expr); ok {
 		return res
 	}
