@@ -1,0 +1,40 @@
+(program
+  (fun main
+    (var prefix (string fore))
+    (var s1 (string forest))
+    (call print
+      (binary ==
+        (call substring
+          (selector s1)
+          (int 0)
+          (binary -
+            (binary +
+              (int 0)
+              (call len (selector prefix))
+            )
+            (int 0)
+          )
+        )
+        (selector prefix)
+      )
+    )
+    (var s2 (string desert))
+    (call print
+      (binary ==
+        (call substring
+          (selector s2)
+          (int 0)
+          (binary -
+            (binary +
+              (int 0)
+              (call len (selector prefix))
+            )
+            (int 0)
+          )
+        )
+        (selector prefix)
+      )
+    )
+  )
+  (call main)
+)
