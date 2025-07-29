@@ -1,4 +1,5 @@
 {-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE OverloadedStrings #-}
 import System.Environment (getArgs)
 import Data.Aeson (encode, ToJSON(..), object, (.=))
 import qualified Data.ByteString.Lazy.Char8 as BL
@@ -42,34 +43,38 @@ main = do
     H.ParseOk (H.Module _ _ _ _ decls) ->
       BL.putStrLn (encode (mapMaybe declToItem decls))
 
-patternName :: H.Name -> String
-patternName (H.Ident s)  = s
-patternName (H.Symbol s) = s
+patternName :: H.Name l -> String
+patternName (H.Ident _ s)  = s
+patternName (H.Symbol _ s) = s
 
-patToName :: H.Pat -> String
-patToName (H.PVar n) = patternName n
+patToName :: H.Pat l -> String
+patToName (H.PVar _ n) = patternName n
 patToName _          = ""
 
-rhsToString :: H.Rhs -> String
-rhsToString (H.UnGuardedRhs e) = H.prettyPrint e
+rhsToString :: H.Rhs l -> String
+rhsToString (H.UnGuardedRhs _ e) = H.prettyPrint e
 rhsToString _ = ""
 
-declToItem :: H.Decl -> Maybe Item
+declToItem :: H.Decl l -> Maybe Item
 -- type signatures
 declToItem (H.TypeSig _ [n] t) =
   Just Item{ kind="sig", name=patternName n, params=[], body="", typ=H.prettyPrint t, fields=[] }
 -- simple function bindings
-declToItem (H.FunBind (H.Match n ps rhs _ : _)) =
+declToItem (H.FunBind _ (H.Match _ n ps rhs _ : _)) =
   Just Item{ kind="func", name=patternName n, params=map patToName ps, body=rhsToString rhs, typ="", fields=[] }
 -- pattern bindings
-declToItem (H.PatBind (H.PVar n) rhs _) =
+declToItem (H.PatBind _ (H.PVar _ n) rhs _) =
   Just Item{ kind="var", name=patternName n, params=[], body=rhsToString rhs, typ="", fields=[] }
 -- data declarations (only single record constructor supported)
-declToItem (H.DataDecl _ _ _ name _ [H.QualConDecl _ _ _ (H.RecDecl _ fs)] _) =
-  Just Item{ kind="struct", name=patternName name, params=[], body="", typ="", fields=concatMap convField fs }
-  where convField (ns, bty) = [Field (patternName f) (bangToStr bty) | f <- ns]
-        bangToStr (H.BangedTy t)   = H.prettyPrint t
-        bangToStr (H.UnBangedTy t) = H.prettyPrint t
-        bangToStr (H.UnpackedTy t) = H.prettyPrint t
+declToItem (H.DataDecl _ _ _ dh cons _) = case cons of
+  [H.QualConDecl _ _ _ (H.RecDecl _ _ fs)] ->
+    Just Item{ kind="struct", name=declHeadName dh, params=[], body="", typ="", fields=concatMap convField fs }
+  _ -> Nothing
+  where
+    convField (H.FieldDecl _ ns ty) = [Field (patternName f) (H.prettyPrint ty) | f <- ns]
+    declHeadName (H.DHead _ n) = patternName n
+    declHeadName (H.DHInfix _ _ n) = patternName n
+    declHeadName (H.DHParen _ h) = declHeadName h
+    declHeadName (H.DHApp _ h _) = declHeadName h
 -- ignore other declarations
 declToItem _ = Nothing
