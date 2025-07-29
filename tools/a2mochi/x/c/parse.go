@@ -72,7 +72,7 @@ type Break struct{}
 type Continue struct{}
 
 var (
-	reVar       = regexp.MustCompile(`^(?:[a-zA-Z_][a-zA-Z0-9_]*|int|long\s+long|size_t|const\s+char\s*\*)\s+([a-zA-Z_][a-zA-Z0-9_]*)(?:\[\])?\s*=\s*([^;]+);`)
+	reVar       = regexp.MustCompile(`^(?:static\s+)?(?:[a-zA-Z_][a-zA-Z0-9_]*|int|long\s+long|size_t|const\s+char\s*\*)\s+([a-zA-Z_][a-zA-Z0-9_]*)(?:\[\])?\s*=\s*([^;]+);`)
 	reAssign    = regexp.MustCompile(`^([a-zA-Z_][a-zA-Z0-9_]*)\s*=\s*([^;]+);`)
 	reFor       = regexp.MustCompile(`^for\s*\((?:int|size_t)\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*=\s*([^;]+);\s*([a-zA-Z_][a-zA-Z0-9_]*)\s*<\s*([^;]+);.*\)\s*{`)
 	reWhile     = regexp.MustCompile(`^while\s*\(([^\)]+)\)\s*{`)

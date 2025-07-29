@@ -76,8 +76,9 @@ func TestTransform_Golden(t *testing.T) {
 	}
 
 	runOnly := map[string]bool{
-		"cast_struct": true,
-		"closure":     true,
+		"cast_struct":        true,
+		"closure":            true,
+		"for_map_collection": true,
 	}
 
 	outDir := filepath.Join(root, "tests/a2mochi/x/c")
@@ -174,7 +175,7 @@ func updateReadme() {
 		lines = append(lines, fmt.Sprintf("- %s %s", mark, name))
 	}
 	loc, _ := time.LoadLocation("Asia/Bangkok")
-	ts := time.Now().In(loc).Format("2006-01-02 15:04:05 GMT")
+	ts := time.Now().In(loc).Format("2006-01-02 15:04:05 GMT+07")
 	var buf bytes.Buffer
 	buf.WriteString("# a2mochi C Converter\n\n")
 	buf.WriteString("This directory holds golden outputs for converting C source files located in `tests/transpiler/x/c` into Mochi AST form. Each `.c` source has a matching `.mochi` and `.ast` file in this directory.\n\n")
