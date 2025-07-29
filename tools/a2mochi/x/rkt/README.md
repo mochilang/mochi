@@ -9,7 +9,7 @@ The converter does not rely on a language server. It tokenises the input
 and recognises basic forms such as `define`, `struct` and `for`. Only a
 subset of expressions and statements are supported.
 
-Completed programs: 24/104
+Completed programs: 26/104
 
 ## Checklist
 - [x] append_builtin
@@ -36,4 +36,6 @@ Completed programs: 24/104
 - [x] map_index
 - [x] string_index
 - [x] substring_builtin
+- [x] map_assign
+- [x] var_assignment
 
