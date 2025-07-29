@@ -18,9 +18,9 @@ import (
 	"mochi/tools/a2mochi/x/lua"
 )
 
-var update = flag.Bool("update", false, "update golden files")
+var updateGolden = flag.Bool("update", false, "update golden files")
 
-func findRepoRoot(t *testing.T) string {
+func repoRoot(t *testing.T) string {
 	dir, err := os.Getwd()
 	if err != nil {
 		t.Fatal(err)
@@ -60,8 +60,40 @@ func runMochi(src string) ([]byte, error) {
 	return bytes.TrimSpace(out.Bytes()), nil
 }
 
-func TestConvert_Golden(t *testing.T) {
-	root := findRepoRoot(t)
+func parseFile(t *testing.T, path string) *lua.Program {
+	data, err := os.ReadFile(path)
+	if err != nil {
+		t.Fatalf("read src: %v", err)
+	}
+	prog, err := lua.Parse(string(data))
+	if err != nil {
+		t.Fatalf("parse: %v", err)
+	}
+	return prog
+}
+
+func transformAndPrint(t *testing.T, p *lua.Program) (*ast.Node, string) {
+	node, err := lua.Transform(p)
+	if err != nil {
+		t.Fatalf("transform: %v", err)
+	}
+	src, err := lua.Print(node)
+	if err != nil {
+		t.Fatalf("print: %v", err)
+	}
+	return node, src
+}
+
+func run(t *testing.T, src string) []byte {
+	out, err := runMochi(src)
+	if err != nil {
+		t.Fatalf("run: %v", err)
+	}
+	return out
+}
+
+func TestTransformGolden(t *testing.T) {
+	root := repoRoot(t)
 	pattern := filepath.Join(root, "tests/transpiler/x/lua", "*.lua")
 	files, err := filepath.Glob(pattern)
 	if err != nil {
@@ -73,36 +105,23 @@ func TestConvert_Golden(t *testing.T) {
 
 	outDir := filepath.Join(root, "tests/a2mochi/x/lua")
 	os.MkdirAll(outDir, 0o755)
-	if matches, _ := filepath.Glob(filepath.Join(outDir, "*.ast")); len(matches) == 0 && !*update {
+	if matches, _ := filepath.Glob(filepath.Join(outDir, "*.ast")); len(matches) == 0 && !*updateGolden {
 		t.Skip("golden files not present")
 	}
 
 	for _, srcPath := range files {
 		name := strings.TrimSuffix(filepath.Base(srcPath), ".lua")
 		t.Run(name, func(t *testing.T) {
-			data, err := os.ReadFile(srcPath)
-			if err != nil {
-				t.Fatalf("read src: %v", err)
+			prog := parseFile(t, srcPath)
+			node, src := transformAndPrint(t, prog)
+
+			got := []byte(node.String())
+			astPath := filepath.Join(outDir, name+".ast")
+			if *updateGolden {
+				os.WriteFile(astPath, got, 0o644)
+				os.WriteFile(filepath.Join(outDir, name+".mochi"), []byte(src), 0o644)
 			}
-			stmts, err := lua.Parse(string(data))
-			if err != nil {
-				t.Fatalf("parse: %v", err)
-			}
-			src, err := lua.ConvertSource(stmts)
-			if err != nil {
-				t.Fatalf("convert source: %v", err)
-			}
-			astNode, err := lua.Convert(stmts)
-			if err != nil {
-				t.Fatalf("convert: %v", err)
-			}
-			got := []byte(astNode.String())
-			outPath := filepath.Join(outDir, name+".ast")
-			if *update {
-				os.WriteFile(outPath, got, 0644)
-				os.WriteFile(filepath.Join(outDir, name+".mochi"), []byte(src), 0644)
-			}
-			want, err := os.ReadFile(outPath)
+			want, err := os.ReadFile(astPath)
 			if err != nil {
 				t.Fatalf("missing golden: %v", err)
 			}
@@ -110,30 +129,19 @@ func TestConvert_Golden(t *testing.T) {
 				t.Fatalf("golden mismatch\n--- Got ---\n%s\n--- Want ---\n%s", got, want)
 			}
 
-			var buf bytes.Buffer
-			if err := ast.Fprint(&buf, astNode); err != nil {
-				t.Fatalf("print: %v", err)
-			}
-			code := buf.String()
 			mochiPath := filepath.Join(outDir, name+".mochi")
-			if *update {
-				os.WriteFile(mochiPath, []byte(code), 0644)
+			if *updateGolden {
+				os.WriteFile(mochiPath, []byte(src), 0o644)
 			}
-                        gotOut, err := runMochi(code)
-                        if err != nil {
-                                t.Fatalf("run: %v", err)
-                        }
-                        if *update {
-                                os.WriteFile(filepath.Join(outDir, name+".out"), gotOut, 0o644)
-                        }
-                        vmSrc, err := os.ReadFile(filepath.Join(root, "tests", "vm", "valid", name+".mochi"))
-                        if err != nil {
-                                t.Fatalf("missing vm source: %v", err)
-                        }
-                        wantOut, err := runMochi(string(vmSrc))
+			gotOut := run(t, src)
+			if *updateGolden {
+				os.WriteFile(filepath.Join(outDir, name+".out"), gotOut, 0o644)
+			}
+			vmSrc, err := os.ReadFile(filepath.Join(root, "tests", "vm", "valid", name+".mochi"))
 			if err != nil {
-				t.Fatalf("run vm: %v", err)
+				t.Fatalf("missing vm source: %v", err)
 			}
+			wantOut := run(t, string(vmSrc))
 			if !bytes.Equal(gotOut, wantOut) {
 				t.Fatalf("output mismatch\nGot: %s\nWant: %s", gotOut, wantOut)
 			}
