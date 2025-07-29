@@ -1,0 +1,441 @@
+{
+  "Types": [
+    {
+      "Name": "Program",
+      "Kind": "class",
+      "Access": "",
+      "StartLine": 4,
+      "EndLine": 22,
+      "Fields": [
+        {
+          "Name": "x",
+          "Type": "int",
+          "Access": "",
+          "Line": 5,
+          "Value": "2",
+          "Ast": {
+            "Kind": "literal",
+            "Value": "2"
+          },
+          "Static": true,
+          "Doc": ""
+        },
+        {
+          "Name": "label",
+          "Type": "string",
+          "Access": "",
+          "Line": 6,
+          "Value": "((x == 1) ? \"one\" : ((x == 2) ? \"two\" : ((x == 3) ? \"three\" : \"unknown\")))",
+          "Ast": {
+            "Kind": "cond",
+            "Children": [
+              {
+                "Kind": "binary",
+                "Value": "==",
+                "Children": [
+                  {
+                    "Kind": "ident",
+                    "Value": "x"
+                  },
+                  {
+                    "Kind": "literal",
+                    "Value": "1"
+                  }
+                ]
+              },
+              {
+                "Kind": "literal",
+                "Value": "one"
+              },
+              {
+                "Kind": "cond",
+                "Children": [
+                  {
+                    "Kind": "binary",
+                    "Value": "==",
+                    "Children": [
+                      {
+                        "Kind": "ident",
+                        "Value": "x"
+                      },
+                      {
+                        "Kind": "literal",
+                        "Value": "2"
+                      }
+                    ]
+                  },
+                  {
+                    "Kind": "literal",
+                    "Value": "two"
+                  },
+                  {
+                    "Kind": "cond",
+                    "Children": [
+                      {
+                        "Kind": "binary",
+                        "Value": "==",
+                        "Children": [
+                          {
+                            "Kind": "ident",
+                            "Value": "x"
+                          },
+                          {
+                            "Kind": "literal",
+                            "Value": "3"
+                          }
+                        ]
+                      },
+                      {
+                        "Kind": "literal",
+                        "Value": "three"
+                      },
+                      {
+                        "Kind": "literal",
+                        "Value": "unknown"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          "Static": true,
+          "Doc": ""
+        },
+        {
+          "Name": "day",
+          "Type": "string",
+          "Access": "",
+          "Line": 7,
+          "Value": "\"sun\"",
+          "Ast": {
+            "Kind": "literal",
+            "Value": "sun"
+          },
+          "Static": true,
+          "Doc": ""
+        },
+        {
+          "Name": "mood",
+          "Type": "string",
+          "Access": "",
+          "Line": 8,
+          "Value": "((day == \"mon\") ? \"tired\" : ((day == \"fri\") ? \"excited\" : ((day == \"sun\") ? \"relaxed\" : \"normal\")))",
+          "Ast": {
+            "Kind": "cond",
+            "Children": [
+              {
+                "Kind": "binary",
+                "Value": "==",
+                "Children": [
+                  {
+                    "Kind": "ident",
+                    "Value": "day"
+                  },
+                  {
+                    "Kind": "literal",
+                    "Value": "mon"
+                  }
+                ]
+              },
+              {
+                "Kind": "literal",
+                "Value": "tired"
+              },
+              {
+                "Kind": "cond",
+                "Children": [
+                  {
+                    "Kind": "binary",
+                    "Value": "==",
+                    "Children": [
+                      {
+                        "Kind": "ident",
+                        "Value": "day"
+                      },
+                      {
+                        "Kind": "literal",
+                        "Value": "fri"
+                      }
+                    ]
+                  },
+                  {
+                    "Kind": "literal",
+                    "Value": "excited"
+                  },
+                  {
+                    "Kind": "cond",
+                    "Children": [
+                      {
+                        "Kind": "binary",
+                        "Value": "==",
+                        "Children": [
+                          {
+                            "Kind": "ident",
+                            "Value": "day"
+                          },
+                          {
+                            "Kind": "literal",
+                            "Value": "sun"
+                          }
+                        ]
+                      },
+                      {
+                        "Kind": "literal",
+                        "Value": "relaxed"
+                      },
+                      {
+                        "Kind": "literal",
+                        "Value": "normal"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          "Static": true,
+          "Doc": ""
+        },
+        {
+          "Name": "ok",
+          "Type": "bool",
+          "Access": "",
+          "Line": 9,
+          "Value": "true",
+          "Ast": {
+            "Kind": "literal",
+            "Value": "true"
+          },
+          "Static": true,
+          "Doc": ""
+        },
+        {
+          "Name": "status",
+          "Type": "string",
+          "Access": "",
+          "Line": 10,
+          "Value": "((ok == true) ? \"confirmed\" : ((ok == false) ? \"denied\" : \"denied\"))",
+          "Ast": {
+            "Kind": "cond",
+            "Children": [
+              {
+                "Kind": "binary",
+                "Value": "==",
+                "Children": [
+                  {
+                    "Kind": "ident",
+                    "Value": "ok"
+                  },
+                  {
+                    "Kind": "literal",
+                    "Value": "true"
+                  }
+                ]
+              },
+              {
+                "Kind": "literal",
+                "Value": "confirmed"
+              },
+              {
+                "Kind": "cond",
+                "Children": [
+                  {
+                    "Kind": "binary",
+                    "Value": "==",
+                    "Children": [
+                      {
+                        "Kind": "ident",
+                        "Value": "ok"
+                      },
+                      {
+                        "Kind": "literal",
+                        "Value": "false"
+                      }
+                    ]
+                  },
+                  {
+                    "Kind": "literal",
+                    "Value": "denied"
+                  },
+                  {
+                    "Kind": "literal",
+                    "Value": "denied"
+                  }
+                ]
+              }
+            ]
+          },
+          "Static": true,
+          "Doc": ""
+        }
+      ],
+      "Methods": [
+        {
+          "Name": "classify",
+          "Params": [
+            {
+              "Name": "n",
+              "Type": "int"
+            }
+          ],
+          "Ret": "string",
+          "Access": "",
+          "Static": true,
+          "Body": [
+            "    return ((n == 0) ? \"zero\" : ((n == 1) ? \"one\" : \"many\"));"
+          ],
+          "Ast": {
+            "Kind": "block",
+            "Children": [
+              {
+                "Kind": "return",
+                "Children": [
+                  {
+                    "Kind": "cond",
+                    "Children": [
+                      {
+                        "Kind": "binary",
+                        "Value": "==",
+                        "Children": [
+                          {
+                            "Kind": "ident",
+                            "Value": "n"
+                          },
+                          {
+                            "Kind": "literal",
+                            "Value": "0"
+                          }
+                        ]
+                      },
+                      {
+                        "Kind": "literal",
+                        "Value": "zero"
+                      },
+                      {
+                        "Kind": "cond",
+                        "Children": [
+                          {
+                            "Kind": "binary",
+                            "Value": "==",
+                            "Children": [
+                              {
+                                "Kind": "ident",
+                                "Value": "n"
+                              },
+                              {
+                                "Kind": "literal",
+                                "Value": "1"
+                              }
+                            ]
+                          },
+                          {
+                            "Kind": "literal",
+                            "Value": "one"
+                          },
+                          {
+                            "Kind": "literal",
+                            "Value": "many"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          "StartLine": 11,
+          "EndLine": 13,
+          "Doc": ""
+        },
+        {
+          "Name": "Main",
+          "Params": [],
+          "Ret": "void",
+          "Access": "",
+          "Static": true,
+          "Body": [
+            "        Console.WriteLine(label);",
+            "        Console.WriteLine(mood);",
+            "        Console.WriteLine(status);",
+            "        Console.WriteLine(classify(0));",
+            "        Console.WriteLine(classify(5));"
+          ],
+          "Ast": {
+            "Kind": "block",
+            "Children": [
+              {
+                "Kind": "call",
+                "Value": "print",
+                "Children": [
+                  {
+                    "Kind": "ident",
+                    "Value": "label"
+                  }
+                ]
+              },
+              {
+                "Kind": "call",
+                "Value": "print",
+                "Children": [
+                  {
+                    "Kind": "ident",
+                    "Value": "mood"
+                  }
+                ]
+              },
+              {
+                "Kind": "call",
+                "Value": "print",
+                "Children": [
+                  {
+                    "Kind": "ident",
+                    "Value": "status"
+                  }
+                ]
+              },
+              {
+                "Kind": "call",
+                "Value": "print",
+                "Children": [
+                  {
+                    "Kind": "call",
+                    "Value": "classify",
+                    "Children": [
+                      {
+                        "Kind": "literal",
+                        "Value": "0"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "Kind": "call",
+                "Value": "print",
+                "Children": [
+                  {
+                    "Kind": "call",
+                    "Value": "classify",
+                    "Children": [
+                      {
+                        "Kind": "literal",
+                        "Value": "5"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          "StartLine": 15,
+          "EndLine": 21,
+          "Doc": ""
+        }
+      ],
+      "Doc": ""
+    }
+  ],
+  "Src": "// Generated by Mochi 0.10.34 on 2025-07-21 23:52 +0700\nusing System;\n\nclass Program {\n    static int x = 2;\n    static string label = ((x == 1) ? \"one\" : ((x == 2) ? \"two\" : ((x == 3) ? \"three\" : \"unknown\")));\n    static string day = \"sun\";\n    static string mood = ((day == \"mon\") ? \"tired\" : ((day == \"fri\") ? \"excited\" : ((day == \"sun\") ? \"relaxed\" : \"normal\")));\n    static bool ok = true;\n    static string status = ((ok == true) ? \"confirmed\" : ((ok == false) ? \"denied\" : \"denied\"));\n    static string classify(int n) {\n    return ((n == 0) ? \"zero\" : ((n == 1) ? \"one\" : \"many\"));\n}\n\n    static void Main() {\n        Console.WriteLine(label);\n        Console.WriteLine(mood);\n        Console.WriteLine(status);\n        Console.WriteLine(classify(0));\n        Console.WriteLine(classify(5));\n    }\n}\n"
+}

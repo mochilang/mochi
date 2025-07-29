@@ -1,0 +1,178 @@
+{
+  "Types": [
+    {
+      "Name": "Program",
+      "Kind": "class",
+      "Access": "",
+      "StartLine": 5,
+      "EndLine": 12,
+      "Fields": [
+        {
+          "Name": "x",
+          "Type": "int",
+          "Access": "",
+          "Line": 6,
+          "Value": "3",
+          "Ast": {
+            "Kind": "literal",
+            "Value": "3"
+          },
+          "Static": true,
+          "Doc": ""
+        },
+        {
+          "Name": "y",
+          "Type": "int",
+          "Access": "",
+          "Line": 7,
+          "Value": "4",
+          "Ast": {
+            "Kind": "literal",
+            "Value": "4"
+          },
+          "Static": true,
+          "Doc": ""
+        },
+        {
+          "Name": "m",
+          "Type": "Dictionary\u003cstring, int\u003e",
+          "Access": "",
+          "Line": 8,
+          "Value": "new Dictionary\u003cstring, int\u003e{{\"a\", x}, {\"b\", y}}",
+          "Ast": {
+            "Kind": "new",
+            "Value": "Dictionary\u003cstring, int\u003e",
+            "Children": [
+              {
+                "Kind": "init",
+                "Children": [
+                  {
+                    "Kind": "pair",
+                    "Children": [
+                      {
+                        "Kind": "literal",
+                        "Value": "a"
+                      },
+                      {
+                        "Kind": "ident",
+                        "Value": "x"
+                      }
+                    ]
+                  },
+                  {
+                    "Kind": "pair",
+                    "Children": [
+                      {
+                        "Kind": "literal",
+                        "Value": "b"
+                      },
+                      {
+                        "Kind": "ident",
+                        "Value": "y"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          "Static": true,
+          "Doc": ""
+        }
+      ],
+      "Methods": [
+        {
+          "Name": "Main",
+          "Params": [],
+          "Ret": "void",
+          "Access": "",
+          "Static": true,
+          "Body": [
+            "        Console.WriteLine((\"[\" + (string.Join(\",\", new int[]{m[\"a\"], m[\"b\"]}) + \"]\")));"
+          ],
+          "Ast": {
+            "Kind": "block",
+            "Children": [
+              {
+                "Kind": "call",
+                "Value": "print",
+                "Children": [
+                  {
+                    "Kind": "binary",
+                    "Value": "+",
+                    "Children": [
+                      {
+                        "Kind": "literal",
+                        "Value": "["
+                      },
+                      {
+                        "Kind": "binary",
+                        "Value": "+",
+                        "Children": [
+                          {
+                            "Kind": "call",
+                            "Value": "Join",
+                            "Children": [
+                              {
+                                "Kind": "ident",
+                                "Value": "string"
+                              },
+                              {
+                                "Kind": "literal",
+                                "Value": ","
+                              },
+                              {
+                                "Kind": "array",
+                                "Children": [
+                                  {
+                                    "Kind": "index",
+                                    "Children": [
+                                      {
+                                        "Kind": "ident",
+                                        "Value": "m"
+                                      },
+                                      {
+                                        "Kind": "literal",
+                                        "Value": "a"
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "Kind": "index",
+                                    "Children": [
+                                      {
+                                        "Kind": "ident",
+                                        "Value": "m"
+                                      },
+                                      {
+                                        "Kind": "literal",
+                                        "Value": "b"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "Kind": "literal",
+                            "Value": "]"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          "StartLine": 9,
+          "EndLine": 11,
+          "Doc": ""
+        }
+      ],
+      "Doc": ""
+    }
+  ],
+  "Src": "// Generated by Mochi 0.10.34 on 2025-07-21 23:34 +0700\nusing System;\nusing System.Collections.Generic;\n\nclass Program {\n    static int x = 3;\n    static int y = 4;\n    static Dictionary\u003cstring, int\u003e m = new Dictionary\u003cstring, int\u003e{{\"a\", x}, {\"b\", y}};\n    static void Main() {\n        Console.WriteLine((\"[\" + (string.Join(\",\", new int[]{m[\"a\"], m[\"b\"]}) + \"]\")));\n    }\n}\n"
+}

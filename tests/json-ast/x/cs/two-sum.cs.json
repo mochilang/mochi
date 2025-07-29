@@ -1,0 +1,326 @@
+{
+  "Types": [
+    {
+      "Name": "Program",
+      "Kind": "class",
+      "Access": "",
+      "StartLine": 4,
+      "EndLine": 22,
+      "Fields": [
+        {
+          "Name": "result",
+          "Type": "int[]",
+          "Access": "",
+          "Line": 5,
+          "Value": "twoSum(new int[]{2, 7, 11, 15}, 9)",
+          "Ast": {
+            "Kind": "call",
+            "Value": "twoSum",
+            "Children": [
+              {
+                "Kind": "array",
+                "Children": [
+                  {
+                    "Kind": "literal",
+                    "Value": "2"
+                  },
+                  {
+                    "Kind": "literal",
+                    "Value": "7"
+                  },
+                  {
+                    "Kind": "literal",
+                    "Value": "11"
+                  },
+                  {
+                    "Kind": "literal",
+                    "Value": "15"
+                  }
+                ]
+              },
+              {
+                "Kind": "literal",
+                "Value": "9"
+              }
+            ]
+          },
+          "Static": true,
+          "Doc": ""
+        }
+      ],
+      "Methods": [
+        {
+          "Name": "twoSum",
+          "Params": [
+            {
+              "Name": "nums",
+              "Type": "int[]"
+            },
+            {
+              "Name": "target",
+              "Type": "int"
+            }
+          ],
+          "Ret": "int[]",
+          "Access": "",
+          "Static": true,
+          "Body": [
+            "    var n = nums.Length;",
+            "    for (var i = 0; i \u003c n; i++) {",
+            "    for (var j = (i + 1); j \u003c n; j++) {",
+            "    if (((nums[i] + nums[j]) == target)) {",
+            "    return new int[]{i, j};",
+            "}",
+            "}",
+            "};",
+            "    return new object[]{-1, -1};"
+          ],
+          "Ast": {
+            "Kind": "block",
+            "Children": [
+              {
+                "Kind": "var",
+                "Value": "n",
+                "Children": [
+                  {
+                    "Kind": "member",
+                    "Value": "Length",
+                    "Children": [
+                      {
+                        "Kind": "ident",
+                        "Value": "nums"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "Kind": "for",
+                "Value": "i",
+                "Children": [
+                  {
+                    "Kind": "range",
+                    "Children": [
+                      {
+                        "Kind": "literal",
+                        "Value": "0"
+                      },
+                      {
+                        "Kind": "ident",
+                        "Value": "n"
+                      }
+                    ]
+                  },
+                  {
+                    "Kind": "block",
+                    "Children": [
+                      {
+                        "Kind": "for",
+                        "Value": "j",
+                        "Children": [
+                          {
+                            "Kind": "range",
+                            "Children": [
+                              {
+                                "Kind": "binary",
+                                "Value": "+",
+                                "Children": [
+                                  {
+                                    "Kind": "ident",
+                                    "Value": "i"
+                                  },
+                                  {
+                                    "Kind": "literal",
+                                    "Value": "1"
+                                  }
+                                ]
+                              },
+                              {
+                                "Kind": "ident",
+                                "Value": "n"
+                              }
+                            ]
+                          },
+                          {
+                            "Kind": "block",
+                            "Children": [
+                              {
+                                "Kind": "if",
+                                "Children": [
+                                  {
+                                    "Kind": "binary",
+                                    "Value": "==",
+                                    "Children": [
+                                      {
+                                        "Kind": "binary",
+                                        "Value": "+",
+                                        "Children": [
+                                          {
+                                            "Kind": "index",
+                                            "Children": [
+                                              {
+                                                "Kind": "ident",
+                                                "Value": "nums"
+                                              },
+                                              {
+                                                "Kind": "ident",
+                                                "Value": "i"
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "Kind": "index",
+                                            "Children": [
+                                              {
+                                                "Kind": "ident",
+                                                "Value": "nums"
+                                              },
+                                              {
+                                                "Kind": "ident",
+                                                "Value": "j"
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "Kind": "ident",
+                                        "Value": "target"
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "Kind": "block",
+                                    "Children": [
+                                      {
+                                        "Kind": "return",
+                                        "Children": [
+                                          {
+                                            "Kind": "array",
+                                            "Children": [
+                                              {
+                                                "Kind": "ident",
+                                                "Value": "i"
+                                              },
+                                              {
+                                                "Kind": "ident",
+                                                "Value": "j"
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "Kind": "empty"
+              },
+              {
+                "Kind": "return",
+                "Children": [
+                  {
+                    "Kind": "array",
+                    "Children": [
+                      {
+                        "Kind": "unary",
+                        "Value": "-",
+                        "Children": [
+                          {
+                            "Kind": "literal",
+                            "Value": "1"
+                          }
+                        ]
+                      },
+                      {
+                        "Kind": "unary",
+                        "Value": "-",
+                        "Children": [
+                          {
+                            "Kind": "literal",
+                            "Value": "1"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          "StartLine": 6,
+          "EndLine": 16,
+          "Doc": ""
+        },
+        {
+          "Name": "Main",
+          "Params": [],
+          "Ret": "void",
+          "Access": "",
+          "Static": true,
+          "Body": [
+            "        Console.WriteLine(result[0]);",
+            "        Console.WriteLine(result[1]);"
+          ],
+          "Ast": {
+            "Kind": "block",
+            "Children": [
+              {
+                "Kind": "call",
+                "Value": "print",
+                "Children": [
+                  {
+                    "Kind": "index",
+                    "Children": [
+                      {
+                        "Kind": "ident",
+                        "Value": "result"
+                      },
+                      {
+                        "Kind": "literal",
+                        "Value": "0"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "Kind": "call",
+                "Value": "print",
+                "Children": [
+                  {
+                    "Kind": "index",
+                    "Children": [
+                      {
+                        "Kind": "ident",
+                        "Value": "result"
+                      },
+                      {
+                        "Kind": "literal",
+                        "Value": "1"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          "StartLine": 18,
+          "EndLine": 21,
+          "Doc": ""
+        }
+      ],
+      "Doc": ""
+    }
+  ],
+  "Src": "// Generated by Mochi 0.10.34 on 2025-07-22 09:58 +0700\nusing System;\n\nclass Program {\n    static int[] result = twoSum(new int[]{2, 7, 11, 15}, 9);\n    static int[] twoSum(int[] nums, int target) {\n    var n = nums.Length;\n    for (var i = 0; i \u003c n; i++) {\n    for (var j = (i + 1); j \u003c n; j++) {\n    if (((nums[i] + nums[j]) == target)) {\n    return new int[]{i, j};\n}\n}\n};\n    return new object[]{-1, -1};\n}\n\n    static void Main() {\n        Console.WriteLine(result[0]);\n        Console.WriteLine(result[1]);\n    }\n}\n"
+}

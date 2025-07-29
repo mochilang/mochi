@@ -1,0 +1,216 @@
+{
+  "Types": [
+    {
+      "Name": "Program",
+      "Kind": "class",
+      "Access": "",
+      "StartLine": 4,
+      "EndLine": 17,
+      "Fields": [
+        {
+          "Name": "numbers",
+          "Type": "int[]",
+          "Access": "",
+          "Line": 5,
+          "Value": "new int[]{1, 2, 3, 4, 5, 6, 7, 8, 9}",
+          "Ast": {
+            "Kind": "array",
+            "Children": [
+              {
+                "Kind": "literal",
+                "Value": "1"
+              },
+              {
+                "Kind": "literal",
+                "Value": "2"
+              },
+              {
+                "Kind": "literal",
+                "Value": "3"
+              },
+              {
+                "Kind": "literal",
+                "Value": "4"
+              },
+              {
+                "Kind": "literal",
+                "Value": "5"
+              },
+              {
+                "Kind": "literal",
+                "Value": "6"
+              },
+              {
+                "Kind": "literal",
+                "Value": "7"
+              },
+              {
+                "Kind": "literal",
+                "Value": "8"
+              },
+              {
+                "Kind": "literal",
+                "Value": "9"
+              }
+            ]
+          },
+          "Static": true,
+          "Doc": ""
+        }
+      ],
+      "Methods": [
+        {
+          "Name": "Main",
+          "Params": [],
+          "Ret": "void",
+          "Access": "",
+          "Static": true,
+          "Body": [
+            "        foreach (var n in numbers) {",
+            "    if (((n % 2) == 0)) {",
+            "    continue;",
+            "}",
+            "    if ((n \u003e 7)) {",
+            "    break;",
+            "}",
+            "    Console.WriteLine(string.Join(\" \", new object[]{\"odd number:\", n}).TrimEnd());",
+            "}"
+          ],
+          "Ast": {
+            "Kind": "block",
+            "Children": [
+              {
+                "Kind": "for",
+                "Value": "n",
+                "Children": [
+                  {
+                    "Kind": "range",
+                    "Children": [
+                      {
+                        "Kind": "ident",
+                        "Value": "numbers"
+                      }
+                    ]
+                  },
+                  {
+                    "Kind": "block",
+                    "Children": [
+                      {
+                        "Kind": "if",
+                        "Children": [
+                          {
+                            "Kind": "binary",
+                            "Value": "==",
+                            "Children": [
+                              {
+                                "Kind": "binary",
+                                "Value": "%",
+                                "Children": [
+                                  {
+                                    "Kind": "ident",
+                                    "Value": "n"
+                                  },
+                                  {
+                                    "Kind": "literal",
+                                    "Value": "2"
+                                  }
+                                ]
+                              },
+                              {
+                                "Kind": "literal",
+                                "Value": "0"
+                              }
+                            ]
+                          },
+                          {
+                            "Kind": "block",
+                            "Children": [
+                              {
+                                "Kind": "continue"
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "Kind": "if",
+                        "Children": [
+                          {
+                            "Kind": "binary",
+                            "Value": "\u003e",
+                            "Children": [
+                              {
+                                "Kind": "ident",
+                                "Value": "n"
+                              },
+                              {
+                                "Kind": "literal",
+                                "Value": "7"
+                              }
+                            ]
+                          },
+                          {
+                            "Kind": "block",
+                            "Children": [
+                              {
+                                "Kind": "break"
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "Kind": "call",
+                        "Value": "print",
+                        "Children": [
+                          {
+                            "Kind": "call",
+                            "Value": "TrimEnd",
+                            "Children": [
+                              {
+                                "Kind": "call",
+                                "Value": "Join",
+                                "Children": [
+                                  {
+                                    "Kind": "ident",
+                                    "Value": "string"
+                                  },
+                                  {
+                                    "Kind": "literal",
+                                    "Value": " "
+                                  },
+                                  {
+                                    "Kind": "array",
+                                    "Children": [
+                                      {
+                                        "Kind": "literal",
+                                        "Value": "odd number:"
+                                      },
+                                      {
+                                        "Kind": "ident",
+                                        "Value": "n"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          "StartLine": 6,
+          "EndLine": 16,
+          "Doc": ""
+        }
+      ],
+      "Doc": ""
+    }
+  ],
+  "Src": "// Generated by Mochi 0.10.33 on 2025-07-21 18:06 +0700\nusing System;\n\nclass Program {\n    static int[] numbers = new int[]{1, 2, 3, 4, 5, 6, 7, 8, 9};\n    static void Main() {\n        foreach (var n in numbers) {\n    if (((n % 2) == 0)) {\n    continue;\n}\n    if ((n \u003e 7)) {\n    break;\n}\n    Console.WriteLine(string.Join(\" \", new object[]{\"odd number:\", n}).TrimEnd());\n}\n    }\n}\n"
+}

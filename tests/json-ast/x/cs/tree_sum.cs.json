@@ -1,0 +1,294 @@
+{
+  "Types": [
+    {
+      "Name": "Program",
+      "Kind": "class",
+      "Access": "",
+      "StartLine": 4,
+      "EndLine": 13,
+      "Fields": [
+        {
+          "Name": "t",
+          "Type": "Node",
+          "Access": "",
+          "Line": 5,
+          "Value": "new Node{left = Leaf, value = 1, right = new Node{left = Leaf, value = 2, right = Leaf}}",
+          "Ast": {
+            "Kind": "new",
+            "Value": "Node",
+            "Children": [
+              {
+                "Kind": "init",
+                "Children": [
+                  {
+                    "Kind": "field",
+                    "Value": "left",
+                    "Children": [
+                      {
+                        "Kind": "ident",
+                        "Value": "Leaf"
+                      }
+                    ]
+                  },
+                  {
+                    "Kind": "field",
+                    "Value": "value",
+                    "Children": [
+                      {
+                        "Kind": "literal",
+                        "Value": "1"
+                      }
+                    ]
+                  },
+                  {
+                    "Kind": "field",
+                    "Value": "right",
+                    "Children": [
+                      {
+                        "Kind": "new",
+                        "Value": "Node",
+                        "Children": [
+                          {
+                            "Kind": "init",
+                            "Children": [
+                              {
+                                "Kind": "field",
+                                "Value": "left",
+                                "Children": [
+                                  {
+                                    "Kind": "ident",
+                                    "Value": "Leaf"
+                                  }
+                                ]
+                              },
+                              {
+                                "Kind": "field",
+                                "Value": "value",
+                                "Children": [
+                                  {
+                                    "Kind": "literal",
+                                    "Value": "2"
+                                  }
+                                ]
+                              },
+                              {
+                                "Kind": "field",
+                                "Value": "right",
+                                "Children": [
+                                  {
+                                    "Kind": "ident",
+                                    "Value": "Leaf"
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          "Static": true,
+          "Doc": ""
+        }
+      ],
+      "Methods": [
+        {
+          "Name": "sum_tree",
+          "Params": [
+            {
+              "Name": "t",
+              "Type": "object"
+            }
+          ],
+          "Ret": "int",
+          "Access": "",
+          "Static": true,
+          "Body": [
+            "    return ((t == Leaf) ? 0 : ((t == Node(left, value, right)) ? ((sum_tree(left) + value) + sum_tree(right)) : ((sum_tree(left) + value) + sum_tree(right))));"
+          ],
+          "Ast": {
+            "Kind": "block",
+            "Children": [
+              {
+                "Kind": "return",
+                "Children": [
+                  {
+                    "Kind": "cond",
+                    "Children": [
+                      {
+                        "Kind": "binary",
+                        "Value": "==",
+                        "Children": [
+                          {
+                            "Kind": "ident",
+                            "Value": "t"
+                          },
+                          {
+                            "Kind": "ident",
+                            "Value": "Leaf"
+                          }
+                        ]
+                      },
+                      {
+                        "Kind": "literal",
+                        "Value": "0"
+                      },
+                      {
+                        "Kind": "cond",
+                        "Children": [
+                          {
+                            "Kind": "binary",
+                            "Value": "==",
+                            "Children": [
+                              {
+                                "Kind": "ident",
+                                "Value": "t"
+                              },
+                              {
+                                "Kind": "call",
+                                "Value": "Node",
+                                "Children": [
+                                  {
+                                    "Kind": "ident",
+                                    "Value": "left"
+                                  },
+                                  {
+                                    "Kind": "ident",
+                                    "Value": "value"
+                                  },
+                                  {
+                                    "Kind": "ident",
+                                    "Value": "right"
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "Kind": "binary",
+                            "Value": "+",
+                            "Children": [
+                              {
+                                "Kind": "binary",
+                                "Value": "+",
+                                "Children": [
+                                  {
+                                    "Kind": "call",
+                                    "Value": "sum_tree",
+                                    "Children": [
+                                      {
+                                        "Kind": "ident",
+                                        "Value": "left"
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "Kind": "ident",
+                                    "Value": "value"
+                                  }
+                                ]
+                              },
+                              {
+                                "Kind": "call",
+                                "Value": "sum_tree",
+                                "Children": [
+                                  {
+                                    "Kind": "ident",
+                                    "Value": "right"
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "Kind": "binary",
+                            "Value": "+",
+                            "Children": [
+                              {
+                                "Kind": "binary",
+                                "Value": "+",
+                                "Children": [
+                                  {
+                                    "Kind": "call",
+                                    "Value": "sum_tree",
+                                    "Children": [
+                                      {
+                                        "Kind": "ident",
+                                        "Value": "left"
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "Kind": "ident",
+                                    "Value": "value"
+                                  }
+                                ]
+                              },
+                              {
+                                "Kind": "call",
+                                "Value": "sum_tree",
+                                "Children": [
+                                  {
+                                    "Kind": "ident",
+                                    "Value": "right"
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          "StartLine": 6,
+          "EndLine": 8,
+          "Doc": ""
+        },
+        {
+          "Name": "Main",
+          "Params": [],
+          "Ret": "void",
+          "Access": "",
+          "Static": true,
+          "Body": [
+            "        Console.WriteLine(sum_tree(t));"
+          ],
+          "Ast": {
+            "Kind": "block",
+            "Children": [
+              {
+                "Kind": "call",
+                "Value": "print",
+                "Children": [
+                  {
+                    "Kind": "call",
+                    "Value": "sum_tree",
+                    "Children": [
+                      {
+                        "Kind": "ident",
+                        "Value": "t"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          "StartLine": 10,
+          "EndLine": 12,
+          "Doc": ""
+        }
+      ],
+      "Doc": ""
+    }
+  ],
+  "Src": "// Generated by Mochi 0.10.34 on 2025-07-22 09:58 +0700\nusing System;\n\nclass Program {\n    static Node t = new Node{left = Leaf, value = 1, right = new Node{left = Leaf, value = 2, right = Leaf}};\n    static int sum_tree(object t) {\n    return ((t == Leaf) ? 0 : ((t == Node(left, value, right)) ? ((sum_tree(left) + value) + sum_tree(right)) : ((sum_tree(left) + value) + sum_tree(right))));\n}\n\n    static void Main() {\n        Console.WriteLine(sum_tree(t));\n    }\n}\n"
+}

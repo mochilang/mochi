@@ -1,0 +1,353 @@
+{
+  "Types": [
+    {
+      "Name": "Item",
+      "Kind": "struct",
+      "Access": "",
+      "StartLine": 6,
+      "EndLine": 10,
+      "Fields": [
+        {
+          "Name": "cat",
+          "Type": "string",
+          "Access": "public",
+          "Line": 7,
+          "Value": "",
+          "Static": false,
+          "Doc": ""
+        },
+        {
+          "Name": "val",
+          "Type": "int",
+          "Access": "public",
+          "Line": 8,
+          "Value": "",
+          "Static": false,
+          "Doc": ""
+        }
+      ],
+      "Methods": [
+        {
+          "Name": "ToString",
+          "Params": [],
+          "Ret": "string",
+          "Access": "public",
+          "Static": false,
+          "Body": [],
+          "Ast": {
+            "Kind": "block"
+          },
+          "StartLine": 9,
+          "EndLine": 9,
+          "Doc": ""
+        }
+      ],
+      "Doc": ""
+    },
+    {
+      "Name": "GGroup",
+      "Kind": "struct",
+      "Access": "",
+      "StartLine": 11,
+      "EndLine": 15,
+      "Fields": [
+        {
+          "Name": "key",
+          "Type": "string",
+          "Access": "public",
+          "Line": 12,
+          "Value": "",
+          "Static": false,
+          "Doc": ""
+        },
+        {
+          "Name": "items",
+          "Type": "Item[]",
+          "Access": "public",
+          "Line": 13,
+          "Value": "",
+          "Static": false,
+          "Doc": ""
+        }
+      ],
+      "Methods": [
+        {
+          "Name": "ToString",
+          "Params": [],
+          "Ret": "string",
+          "Access": "public",
+          "Static": false,
+          "Body": [],
+          "Ast": {
+            "Kind": "block"
+          },
+          "StartLine": 14,
+          "EndLine": 14,
+          "Doc": ""
+        }
+      ],
+      "Doc": ""
+    },
+    {
+      "Name": "GResult",
+      "Kind": "struct",
+      "Access": "",
+      "StartLine": 16,
+      "EndLine": 20,
+      "Fields": [
+        {
+          "Name": "cat",
+          "Type": "string",
+          "Access": "public",
+          "Line": 17,
+          "Value": "",
+          "Static": false,
+          "Doc": ""
+        },
+        {
+          "Name": "total",
+          "Type": "double",
+          "Access": "public",
+          "Line": 18,
+          "Value": "",
+          "Static": false,
+          "Doc": ""
+        }
+      ],
+      "Methods": [
+        {
+          "Name": "ToString",
+          "Params": [],
+          "Ret": "string",
+          "Access": "public",
+          "Static": false,
+          "Body": [],
+          "Ast": {
+            "Kind": "block"
+          },
+          "StartLine": 19,
+          "EndLine": 19,
+          "Doc": ""
+        }
+      ],
+      "Doc": ""
+    },
+    {
+      "Name": "Program",
+      "Kind": "class",
+      "Access": "",
+      "StartLine": 21,
+      "EndLine": 27,
+      "Fields": [
+        {
+          "Name": "items",
+          "Type": "Item[]",
+          "Access": "",
+          "Line": 22,
+          "Value": "new Item[]{new Item{cat = \"a\", val = 3}, new Item{cat = \"a\", val = 1}, new Item{cat = \"b\", val = 5}, new Item{cat = \"b\", val = 2}}",
+          "Ast": {
+            "Kind": "array",
+            "Children": [
+              {
+                "Kind": "new",
+                "Value": "Item",
+                "Children": [
+                  {
+                    "Kind": "init",
+                    "Children": [
+                      {
+                        "Kind": "field",
+                        "Value": "cat",
+                        "Children": [
+                          {
+                            "Kind": "literal",
+                            "Value": "a"
+                          }
+                        ]
+                      },
+                      {
+                        "Kind": "field",
+                        "Value": "val",
+                        "Children": [
+                          {
+                            "Kind": "literal",
+                            "Value": "3"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "Kind": "new",
+                "Value": "Item",
+                "Children": [
+                  {
+                    "Kind": "init",
+                    "Children": [
+                      {
+                        "Kind": "field",
+                        "Value": "cat",
+                        "Children": [
+                          {
+                            "Kind": "literal",
+                            "Value": "a"
+                          }
+                        ]
+                      },
+                      {
+                        "Kind": "field",
+                        "Value": "val",
+                        "Children": [
+                          {
+                            "Kind": "literal",
+                            "Value": "1"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "Kind": "new",
+                "Value": "Item",
+                "Children": [
+                  {
+                    "Kind": "init",
+                    "Children": [
+                      {
+                        "Kind": "field",
+                        "Value": "cat",
+                        "Children": [
+                          {
+                            "Kind": "literal",
+                            "Value": "b"
+                          }
+                        ]
+                      },
+                      {
+                        "Kind": "field",
+                        "Value": "val",
+                        "Children": [
+                          {
+                            "Kind": "literal",
+                            "Value": "5"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "Kind": "new",
+                "Value": "Item",
+                "Children": [
+                  {
+                    "Kind": "init",
+                    "Children": [
+                      {
+                        "Kind": "field",
+                        "Value": "cat",
+                        "Children": [
+                          {
+                            "Kind": "literal",
+                            "Value": "b"
+                          }
+                        ]
+                      },
+                      {
+                        "Kind": "field",
+                        "Value": "val",
+                        "Children": [
+                          {
+                            "Kind": "literal",
+                            "Value": "2"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          "Static": true,
+          "Doc": ""
+        },
+        {
+          "Name": "grouped",
+          "Type": "GResult[]",
+          "Access": "",
+          "Line": 23,
+          "Value": "(from i in items group i by i.cat into gTmp let g = new GGroup{ key = gTmp.Key, items = gTmp.ToArray() } orderby ((from x in g.items select x.val).ToArray().Sum()) descending select new GResult{cat = g.key, total = ((from x in g.items select x.val).ToArray().Sum())}).ToArray()",
+          "Ast": {
+            "Kind": "call",
+            "Value": "ToArray",
+            "Children": [
+              {
+                "Kind": "unknown"
+              }
+            ]
+          },
+          "Static": true,
+          "Doc": ""
+        }
+      ],
+      "Methods": [
+        {
+          "Name": "Main",
+          "Params": [],
+          "Ret": "void",
+          "Access": "",
+          "Static": true,
+          "Body": [
+            "        Console.WriteLine(string.Join(\" \", grouped).TrimEnd());"
+          ],
+          "Ast": {
+            "Kind": "block",
+            "Children": [
+              {
+                "Kind": "call",
+                "Value": "print",
+                "Children": [
+                  {
+                    "Kind": "call",
+                    "Value": "TrimEnd",
+                    "Children": [
+                      {
+                        "Kind": "call",
+                        "Value": "Join",
+                        "Children": [
+                          {
+                            "Kind": "ident",
+                            "Value": "string"
+                          },
+                          {
+                            "Kind": "literal",
+                            "Value": " "
+                          },
+                          {
+                            "Kind": "ident",
+                            "Value": "grouped"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          "StartLine": 24,
+          "EndLine": 26,
+          "Doc": ""
+        }
+      ],
+      "Doc": ""
+    }
+  ],
+  "Src": "// Generated by Mochi 0.10.33 on 2025-07-21 18:06 +0700\nusing System;\nusing System.Collections.Generic;\nusing System.Linq;\n\nstruct Item {\n    public string cat;\n    public int val;\n    public override string ToString() =\u003e $\"{{\\\"cat\\\": \\\"{cat}\\\", \\\"val\\\": {val}}}\";\n}\nstruct GGroup {\n    public string key;\n    public Item[] items;\n    public override string ToString() =\u003e $\"{{\\\"key\\\": \\\"{key}\\\", \\\"items\\\": {items}}}\";\n}\nstruct GResult {\n    public string cat;\n    public double total;\n    public override string ToString() =\u003e $\"{{\\\"cat\\\": \\\"{cat}\\\", \\\"total\\\": {total}}}\";\n}\nclass Program {\n    static Item[] items = new Item[]{new Item{cat = \"a\", val = 3}, new Item{cat = \"a\", val = 1}, new Item{cat = \"b\", val = 5}, new Item{cat = \"b\", val = 2}};\n    static GResult[] grouped = (from i in items group i by i.cat into gTmp let g = new GGroup{ key = gTmp.Key, items = gTmp.ToArray() } orderby ((from x in g.items select x.val).ToArray().Sum()) descending select new GResult{cat = g.key, total = ((from x in g.items select x.val).ToArray().Sum())}).ToArray();\n    static void Main() {\n        Console.WriteLine(string.Join(\" \", grouped).TrimEnd());\n    }\n}\n"
+}

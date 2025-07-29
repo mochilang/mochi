@@ -1,0 +1,702 @@
+{
+  "Types": [
+    {
+      "Name": "Nation",
+      "Kind": "struct",
+      "Access": "",
+      "StartLine": 6,
+      "EndLine": 10,
+      "Fields": [
+        {
+          "Name": "id",
+          "Type": "int",
+          "Access": "public",
+          "Line": 7,
+          "Value": "",
+          "Static": false,
+          "Doc": ""
+        },
+        {
+          "Name": "name",
+          "Type": "string",
+          "Access": "public",
+          "Line": 8,
+          "Value": "",
+          "Static": false,
+          "Doc": ""
+        }
+      ],
+      "Methods": [
+        {
+          "Name": "ToString",
+          "Params": [],
+          "Ret": "string",
+          "Access": "public",
+          "Static": false,
+          "Body": [],
+          "Ast": {
+            "Kind": "block"
+          },
+          "StartLine": 9,
+          "EndLine": 9,
+          "Doc": ""
+        }
+      ],
+      "Doc": ""
+    },
+    {
+      "Name": "Supplier",
+      "Kind": "struct",
+      "Access": "",
+      "StartLine": 11,
+      "EndLine": 15,
+      "Fields": [
+        {
+          "Name": "id",
+          "Type": "int",
+          "Access": "public",
+          "Line": 12,
+          "Value": "",
+          "Static": false,
+          "Doc": ""
+        },
+        {
+          "Name": "nation",
+          "Type": "int",
+          "Access": "public",
+          "Line": 13,
+          "Value": "",
+          "Static": false,
+          "Doc": ""
+        }
+      ],
+      "Methods": [
+        {
+          "Name": "ToString",
+          "Params": [],
+          "Ret": "string",
+          "Access": "public",
+          "Static": false,
+          "Body": [],
+          "Ast": {
+            "Kind": "block"
+          },
+          "StartLine": 14,
+          "EndLine": 14,
+          "Doc": ""
+        }
+      ],
+      "Doc": ""
+    },
+    {
+      "Name": "Partsupp",
+      "Kind": "struct",
+      "Access": "",
+      "StartLine": 16,
+      "EndLine": 22,
+      "Fields": [
+        {
+          "Name": "part",
+          "Type": "int",
+          "Access": "public",
+          "Line": 17,
+          "Value": "",
+          "Static": false,
+          "Doc": ""
+        },
+        {
+          "Name": "supplier",
+          "Type": "int",
+          "Access": "public",
+          "Line": 18,
+          "Value": "",
+          "Static": false,
+          "Doc": ""
+        },
+        {
+          "Name": "cost",
+          "Type": "double",
+          "Access": "public",
+          "Line": 19,
+          "Value": "",
+          "Static": false,
+          "Doc": ""
+        },
+        {
+          "Name": "qty",
+          "Type": "int",
+          "Access": "public",
+          "Line": 20,
+          "Value": "",
+          "Static": false,
+          "Doc": ""
+        }
+      ],
+      "Methods": [
+        {
+          "Name": "ToString",
+          "Params": [],
+          "Ret": "string",
+          "Access": "public",
+          "Static": false,
+          "Body": [],
+          "Ast": {
+            "Kind": "block"
+          },
+          "StartLine": 21,
+          "EndLine": 21,
+          "Doc": ""
+        }
+      ],
+      "Doc": ""
+    },
+    {
+      "Name": "PsResult",
+      "Kind": "struct",
+      "Access": "",
+      "StartLine": 23,
+      "EndLine": 27,
+      "Fields": [
+        {
+          "Name": "part",
+          "Type": "int",
+          "Access": "public",
+          "Line": 24,
+          "Value": "",
+          "Static": false,
+          "Doc": ""
+        },
+        {
+          "Name": "value",
+          "Type": "double",
+          "Access": "public",
+          "Line": 25,
+          "Value": "",
+          "Static": false,
+          "Doc": ""
+        }
+      ],
+      "Methods": [
+        {
+          "Name": "ToString",
+          "Params": [],
+          "Ret": "string",
+          "Access": "public",
+          "Static": false,
+          "Body": [],
+          "Ast": {
+            "Kind": "block"
+          },
+          "StartLine": 26,
+          "EndLine": 26,
+          "Doc": ""
+        }
+      ],
+      "Doc": ""
+    },
+    {
+      "Name": "GGroup",
+      "Kind": "struct",
+      "Access": "",
+      "StartLine": 28,
+      "EndLine": 32,
+      "Fields": [
+        {
+          "Name": "key",
+          "Type": "int",
+          "Access": "public",
+          "Line": 29,
+          "Value": "",
+          "Static": false,
+          "Doc": ""
+        },
+        {
+          "Name": "items",
+          "Type": "PsResult[]",
+          "Access": "public",
+          "Line": 30,
+          "Value": "",
+          "Static": false,
+          "Doc": ""
+        }
+      ],
+      "Methods": [
+        {
+          "Name": "ToString",
+          "Params": [],
+          "Ret": "string",
+          "Access": "public",
+          "Static": false,
+          "Body": [],
+          "Ast": {
+            "Kind": "block"
+          },
+          "StartLine": 31,
+          "EndLine": 31,
+          "Doc": ""
+        }
+      ],
+      "Doc": ""
+    },
+    {
+      "Name": "GResult",
+      "Kind": "struct",
+      "Access": "",
+      "StartLine": 33,
+      "EndLine": 37,
+      "Fields": [
+        {
+          "Name": "part",
+          "Type": "int",
+          "Access": "public",
+          "Line": 34,
+          "Value": "",
+          "Static": false,
+          "Doc": ""
+        },
+        {
+          "Name": "total",
+          "Type": "double",
+          "Access": "public",
+          "Line": 35,
+          "Value": "",
+          "Static": false,
+          "Doc": ""
+        }
+      ],
+      "Methods": [
+        {
+          "Name": "ToString",
+          "Params": [],
+          "Ret": "string",
+          "Access": "public",
+          "Static": false,
+          "Body": [],
+          "Ast": {
+            "Kind": "block"
+          },
+          "StartLine": 36,
+          "EndLine": 36,
+          "Doc": ""
+        }
+      ],
+      "Doc": ""
+    },
+    {
+      "Name": "Program",
+      "Kind": "class",
+      "Access": "",
+      "StartLine": 38,
+      "EndLine": 47,
+      "Fields": [
+        {
+          "Name": "nations",
+          "Type": "Nation[]",
+          "Access": "",
+          "Line": 39,
+          "Value": "new Nation[]{new Nation{id = 1, name = \"A\"}, new Nation{id = 2, name = \"B\"}}",
+          "Ast": {
+            "Kind": "array",
+            "Children": [
+              {
+                "Kind": "new",
+                "Value": "Nation",
+                "Children": [
+                  {
+                    "Kind": "init",
+                    "Children": [
+                      {
+                        "Kind": "field",
+                        "Value": "id",
+                        "Children": [
+                          {
+                            "Kind": "literal",
+                            "Value": "1"
+                          }
+                        ]
+                      },
+                      {
+                        "Kind": "field",
+                        "Value": "name",
+                        "Children": [
+                          {
+                            "Kind": "literal",
+                            "Value": "A"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "Kind": "new",
+                "Value": "Nation",
+                "Children": [
+                  {
+                    "Kind": "init",
+                    "Children": [
+                      {
+                        "Kind": "field",
+                        "Value": "id",
+                        "Children": [
+                          {
+                            "Kind": "literal",
+                            "Value": "2"
+                          }
+                        ]
+                      },
+                      {
+                        "Kind": "field",
+                        "Value": "name",
+                        "Children": [
+                          {
+                            "Kind": "literal",
+                            "Value": "B"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          "Static": true,
+          "Doc": ""
+        },
+        {
+          "Name": "suppliers",
+          "Type": "Supplier[]",
+          "Access": "",
+          "Line": 40,
+          "Value": "new Supplier[]{new Supplier{id = 1, nation = 1}, new Supplier{id = 2, nation = 2}}",
+          "Ast": {
+            "Kind": "array",
+            "Children": [
+              {
+                "Kind": "new",
+                "Value": "Supplier",
+                "Children": [
+                  {
+                    "Kind": "init",
+                    "Children": [
+                      {
+                        "Kind": "field",
+                        "Value": "id",
+                        "Children": [
+                          {
+                            "Kind": "literal",
+                            "Value": "1"
+                          }
+                        ]
+                      },
+                      {
+                        "Kind": "field",
+                        "Value": "nation",
+                        "Children": [
+                          {
+                            "Kind": "literal",
+                            "Value": "1"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "Kind": "new",
+                "Value": "Supplier",
+                "Children": [
+                  {
+                    "Kind": "init",
+                    "Children": [
+                      {
+                        "Kind": "field",
+                        "Value": "id",
+                        "Children": [
+                          {
+                            "Kind": "literal",
+                            "Value": "2"
+                          }
+                        ]
+                      },
+                      {
+                        "Kind": "field",
+                        "Value": "nation",
+                        "Children": [
+                          {
+                            "Kind": "literal",
+                            "Value": "2"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          "Static": true,
+          "Doc": ""
+        },
+        {
+          "Name": "partsupp",
+          "Type": "Partsupp[]",
+          "Access": "",
+          "Line": 41,
+          "Value": "new Partsupp[]{new Partsupp{part = 100, supplier = 1, cost = 10, qty = 2}, new Partsupp{part = 100, supplier = 2, cost = 20, qty = 1}, new Partsupp{part = 200, supplier = 1, cost = 5, qty = 3}}",
+          "Ast": {
+            "Kind": "array",
+            "Children": [
+              {
+                "Kind": "new",
+                "Value": "Partsupp",
+                "Children": [
+                  {
+                    "Kind": "init",
+                    "Children": [
+                      {
+                        "Kind": "field",
+                        "Value": "part",
+                        "Children": [
+                          {
+                            "Kind": "literal",
+                            "Value": "100"
+                          }
+                        ]
+                      },
+                      {
+                        "Kind": "field",
+                        "Value": "supplier",
+                        "Children": [
+                          {
+                            "Kind": "literal",
+                            "Value": "1"
+                          }
+                        ]
+                      },
+                      {
+                        "Kind": "field",
+                        "Value": "cost",
+                        "Children": [
+                          {
+                            "Kind": "literal",
+                            "Value": "10"
+                          }
+                        ]
+                      },
+                      {
+                        "Kind": "field",
+                        "Value": "qty",
+                        "Children": [
+                          {
+                            "Kind": "literal",
+                            "Value": "2"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "Kind": "new",
+                "Value": "Partsupp",
+                "Children": [
+                  {
+                    "Kind": "init",
+                    "Children": [
+                      {
+                        "Kind": "field",
+                        "Value": "part",
+                        "Children": [
+                          {
+                            "Kind": "literal",
+                            "Value": "100"
+                          }
+                        ]
+                      },
+                      {
+                        "Kind": "field",
+                        "Value": "supplier",
+                        "Children": [
+                          {
+                            "Kind": "literal",
+                            "Value": "2"
+                          }
+                        ]
+                      },
+                      {
+                        "Kind": "field",
+                        "Value": "cost",
+                        "Children": [
+                          {
+                            "Kind": "literal",
+                            "Value": "20"
+                          }
+                        ]
+                      },
+                      {
+                        "Kind": "field",
+                        "Value": "qty",
+                        "Children": [
+                          {
+                            "Kind": "literal",
+                            "Value": "1"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "Kind": "new",
+                "Value": "Partsupp",
+                "Children": [
+                  {
+                    "Kind": "init",
+                    "Children": [
+                      {
+                        "Kind": "field",
+                        "Value": "part",
+                        "Children": [
+                          {
+                            "Kind": "literal",
+                            "Value": "200"
+                          }
+                        ]
+                      },
+                      {
+                        "Kind": "field",
+                        "Value": "supplier",
+                        "Children": [
+                          {
+                            "Kind": "literal",
+                            "Value": "1"
+                          }
+                        ]
+                      },
+                      {
+                        "Kind": "field",
+                        "Value": "cost",
+                        "Children": [
+                          {
+                            "Kind": "literal",
+                            "Value": "5"
+                          }
+                        ]
+                      },
+                      {
+                        "Kind": "field",
+                        "Value": "qty",
+                        "Children": [
+                          {
+                            "Kind": "literal",
+                            "Value": "3"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          "Static": true,
+          "Doc": ""
+        },
+        {
+          "Name": "filtered",
+          "Type": "PsResult[]",
+          "Access": "",
+          "Line": 42,
+          "Value": "(from ps in partsupp join s in suppliers on ps.supplier equals s.id join n in nations on s.nation equals n.id where (n.name == \"A\") select new PsResult{part = ps.part, value = (ps.cost * ps.qty)}).ToArray()",
+          "Ast": {
+            "Kind": "call",
+            "Value": "ToArray",
+            "Children": [
+              {
+                "Kind": "unknown"
+              }
+            ]
+          },
+          "Static": true,
+          "Doc": ""
+        },
+        {
+          "Name": "grouped",
+          "Type": "GResult[]",
+          "Access": "",
+          "Line": 43,
+          "Value": "(from x in filtered group x by x.part into gTmp let g = new GGroup{ key = gTmp.Key, items = gTmp.ToArray() } select new GResult{part = g.key, total = ((from r in g.items select r.value).ToArray().Sum())}).ToArray()",
+          "Ast": {
+            "Kind": "call",
+            "Value": "ToArray",
+            "Children": [
+              {
+                "Kind": "unknown"
+              }
+            ]
+          },
+          "Static": true,
+          "Doc": ""
+        }
+      ],
+      "Methods": [
+        {
+          "Name": "Main",
+          "Params": [],
+          "Ret": "void",
+          "Access": "",
+          "Static": true,
+          "Body": [
+            "        Console.WriteLine(string.Join(\" \", grouped).TrimEnd());"
+          ],
+          "Ast": {
+            "Kind": "block",
+            "Children": [
+              {
+                "Kind": "call",
+                "Value": "print",
+                "Children": [
+                  {
+                    "Kind": "call",
+                    "Value": "TrimEnd",
+                    "Children": [
+                      {
+                        "Kind": "call",
+                        "Value": "Join",
+                        "Children": [
+                          {
+                            "Kind": "ident",
+                            "Value": "string"
+                          },
+                          {
+                            "Kind": "literal",
+                            "Value": " "
+                          },
+                          {
+                            "Kind": "ident",
+                            "Value": "grouped"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          "StartLine": 44,
+          "EndLine": 46,
+          "Doc": ""
+        }
+      ],
+      "Doc": ""
+    }
+  ],
+  "Src": "// Generated by Mochi 0.10.33 on 2025-07-21 18:06 +0700\nusing System;\nusing System.Collections.Generic;\nusing System.Linq;\n\nstruct Nation {\n    public int id;\n    public string name;\n    public override string ToString() =\u003e $\"{{\\\"id\\\": {id}, \\\"name\\\": \\\"{name}\\\"}}\";\n}\nstruct Supplier {\n    public int id;\n    public int nation;\n    public override string ToString() =\u003e $\"{{\\\"id\\\": {id}, \\\"nation\\\": {nation}}}\";\n}\nstruct Partsupp {\n    public int part;\n    public int supplier;\n    public double cost;\n    public int qty;\n    public override string ToString() =\u003e $\"{{\\\"part\\\": {part}, \\\"supplier\\\": {supplier}, \\\"cost\\\": {cost}, \\\"qty\\\": {qty}}}\";\n}\nstruct PsResult {\n    public int part;\n    public double value;\n    public override string ToString() =\u003e $\"{{\\\"part\\\": {part}, \\\"value\\\": {value}}}\";\n}\nstruct GGroup {\n    public int key;\n    public PsResult[] items;\n    public override string ToString() =\u003e $\"{{\\\"key\\\": {key}, \\\"items\\\": {items}}}\";\n}\nstruct GResult {\n    public int part;\n    public double total;\n    public override string ToString() =\u003e $\"{{\\\"part\\\": {part}, \\\"total\\\": {total}}}\";\n}\nclass Program {\n    static Nation[] nations = new Nation[]{new Nation{id = 1, name = \"A\"}, new Nation{id = 2, name = \"B\"}};\n    static Supplier[] suppliers = new Supplier[]{new Supplier{id = 1, nation = 1}, new Supplier{id = 2, nation = 2}};\n    static Partsupp[] partsupp = new Partsupp[]{new Partsupp{part = 100, supplier = 1, cost = 10, qty = 2}, new Partsupp{part = 100, supplier = 2, cost = 20, qty = 1}, new Partsupp{part = 200, supplier = 1, cost = 5, qty = 3}};\n    static PsResult[] filtered = (from ps in partsupp join s in suppliers on ps.supplier equals s.id join n in nations on s.nation equals n.id where (n.name == \"A\") select new PsResult{part = ps.part, value = (ps.cost * ps.qty)}).ToArray();\n    static GResult[] grouped = (from x in filtered group x by x.part into gTmp let g = new GGroup{ key = gTmp.Key, items = gTmp.ToArray() } select new GResult{part = g.key, total = ((from r in g.items select r.value).ToArray().Sum())}).ToArray();\n    static void Main() {\n        Console.WriteLine(string.Join(\" \", grouped).TrimEnd());\n    }\n}\n"
+}

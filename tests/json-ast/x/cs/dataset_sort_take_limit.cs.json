@@ -1,0 +1,436 @@
+{
+  "Types": [
+    {
+      "Name": "Product",
+      "Kind": "struct",
+      "Access": "",
+      "StartLine": 6,
+      "EndLine": 10,
+      "Fields": [
+        {
+          "Name": "name",
+          "Type": "string",
+          "Access": "public",
+          "Line": 7,
+          "Value": "",
+          "Static": false,
+          "Doc": ""
+        },
+        {
+          "Name": "price",
+          "Type": "int",
+          "Access": "public",
+          "Line": 8,
+          "Value": "",
+          "Static": false,
+          "Doc": ""
+        }
+      ],
+      "Methods": [
+        {
+          "Name": "ToString",
+          "Params": [],
+          "Ret": "string",
+          "Access": "public",
+          "Static": false,
+          "Body": [],
+          "Ast": {
+            "Kind": "block"
+          },
+          "StartLine": 9,
+          "EndLine": 9,
+          "Doc": ""
+        }
+      ],
+      "Doc": ""
+    },
+    {
+      "Name": "Program",
+      "Kind": "class",
+      "Access": "",
+      "StartLine": 11,
+      "EndLine": 20,
+      "Fields": [
+        {
+          "Name": "products",
+          "Type": "Product[]",
+          "Access": "",
+          "Line": 12,
+          "Value": "new Product[]{new Product{name = \"Laptop\", price = 1500}, new Product{name = \"Smartphone\", price = 900}, new Product{name = \"Tablet\", price = 600}, new Product{name = \"Monitor\", price = 300}, new Product{name = \"Keyboard\", price = 100}, new Product{name = \"Mouse\", price = 50}, new Product{name = \"Headphones\", price = 200}}",
+          "Ast": {
+            "Kind": "array",
+            "Children": [
+              {
+                "Kind": "new",
+                "Value": "Product",
+                "Children": [
+                  {
+                    "Kind": "init",
+                    "Children": [
+                      {
+                        "Kind": "field",
+                        "Value": "name",
+                        "Children": [
+                          {
+                            "Kind": "literal",
+                            "Value": "Laptop"
+                          }
+                        ]
+                      },
+                      {
+                        "Kind": "field",
+                        "Value": "price",
+                        "Children": [
+                          {
+                            "Kind": "literal",
+                            "Value": "1500"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "Kind": "new",
+                "Value": "Product",
+                "Children": [
+                  {
+                    "Kind": "init",
+                    "Children": [
+                      {
+                        "Kind": "field",
+                        "Value": "name",
+                        "Children": [
+                          {
+                            "Kind": "literal",
+                            "Value": "Smartphone"
+                          }
+                        ]
+                      },
+                      {
+                        "Kind": "field",
+                        "Value": "price",
+                        "Children": [
+                          {
+                            "Kind": "literal",
+                            "Value": "900"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "Kind": "new",
+                "Value": "Product",
+                "Children": [
+                  {
+                    "Kind": "init",
+                    "Children": [
+                      {
+                        "Kind": "field",
+                        "Value": "name",
+                        "Children": [
+                          {
+                            "Kind": "literal",
+                            "Value": "Tablet"
+                          }
+                        ]
+                      },
+                      {
+                        "Kind": "field",
+                        "Value": "price",
+                        "Children": [
+                          {
+                            "Kind": "literal",
+                            "Value": "600"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "Kind": "new",
+                "Value": "Product",
+                "Children": [
+                  {
+                    "Kind": "init",
+                    "Children": [
+                      {
+                        "Kind": "field",
+                        "Value": "name",
+                        "Children": [
+                          {
+                            "Kind": "literal",
+                            "Value": "Monitor"
+                          }
+                        ]
+                      },
+                      {
+                        "Kind": "field",
+                        "Value": "price",
+                        "Children": [
+                          {
+                            "Kind": "literal",
+                            "Value": "300"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "Kind": "new",
+                "Value": "Product",
+                "Children": [
+                  {
+                    "Kind": "init",
+                    "Children": [
+                      {
+                        "Kind": "field",
+                        "Value": "name",
+                        "Children": [
+                          {
+                            "Kind": "literal",
+                            "Value": "Keyboard"
+                          }
+                        ]
+                      },
+                      {
+                        "Kind": "field",
+                        "Value": "price",
+                        "Children": [
+                          {
+                            "Kind": "literal",
+                            "Value": "100"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "Kind": "new",
+                "Value": "Product",
+                "Children": [
+                  {
+                    "Kind": "init",
+                    "Children": [
+                      {
+                        "Kind": "field",
+                        "Value": "name",
+                        "Children": [
+                          {
+                            "Kind": "literal",
+                            "Value": "Mouse"
+                          }
+                        ]
+                      },
+                      {
+                        "Kind": "field",
+                        "Value": "price",
+                        "Children": [
+                          {
+                            "Kind": "literal",
+                            "Value": "50"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "Kind": "new",
+                "Value": "Product",
+                "Children": [
+                  {
+                    "Kind": "init",
+                    "Children": [
+                      {
+                        "Kind": "field",
+                        "Value": "name",
+                        "Children": [
+                          {
+                            "Kind": "literal",
+                            "Value": "Headphones"
+                          }
+                        ]
+                      },
+                      {
+                        "Kind": "field",
+                        "Value": "price",
+                        "Children": [
+                          {
+                            "Kind": "literal",
+                            "Value": "200"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          "Static": true,
+          "Doc": ""
+        },
+        {
+          "Name": "expensive",
+          "Type": "Product[]",
+          "Access": "",
+          "Line": 13,
+          "Value": "(((from p in products orderby p.price descending select p).Skip(1)).Take(3)).ToArray()",
+          "Ast": {
+            "Kind": "call",
+            "Value": "ToArray",
+            "Children": [
+              {
+                "Kind": "call",
+                "Value": "Take",
+                "Children": [
+                  {
+                    "Kind": "call",
+                    "Value": "Skip",
+                    "Children": [
+                      {
+                        "Kind": "unknown"
+                      },
+                      {
+                        "Kind": "literal",
+                        "Value": "1"
+                      }
+                    ]
+                  },
+                  {
+                    "Kind": "literal",
+                    "Value": "3"
+                  }
+                ]
+              }
+            ]
+          },
+          "Static": true,
+          "Doc": ""
+        }
+      ],
+      "Methods": [
+        {
+          "Name": "Main",
+          "Params": [],
+          "Ret": "void",
+          "Access": "",
+          "Static": true,
+          "Body": [
+            "        Console.WriteLine(\"--- Top products (excluding most expensive) ---\");",
+            "        foreach (var item in expensive) {",
+            "    Console.WriteLine(string.Join(\" \", new object[]{item.name, \"costs $\", item.price}).TrimEnd());",
+            "}"
+          ],
+          "Ast": {
+            "Kind": "block",
+            "Children": [
+              {
+                "Kind": "call",
+                "Value": "print",
+                "Children": [
+                  {
+                    "Kind": "literal",
+                    "Value": "--- Top products (excluding most expensive) ---"
+                  }
+                ]
+              },
+              {
+                "Kind": "for",
+                "Value": "item",
+                "Children": [
+                  {
+                    "Kind": "range",
+                    "Children": [
+                      {
+                        "Kind": "ident",
+                        "Value": "expensive"
+                      }
+                    ]
+                  },
+                  {
+                    "Kind": "block",
+                    "Children": [
+                      {
+                        "Kind": "call",
+                        "Value": "print",
+                        "Children": [
+                          {
+                            "Kind": "call",
+                            "Value": "TrimEnd",
+                            "Children": [
+                              {
+                                "Kind": "call",
+                                "Value": "Join",
+                                "Children": [
+                                  {
+                                    "Kind": "ident",
+                                    "Value": "string"
+                                  },
+                                  {
+                                    "Kind": "literal",
+                                    "Value": " "
+                                  },
+                                  {
+                                    "Kind": "array",
+                                    "Children": [
+                                      {
+                                        "Kind": "member",
+                                        "Value": "name",
+                                        "Children": [
+                                          {
+                                            "Kind": "ident",
+                                            "Value": "item"
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "Kind": "literal",
+                                        "Value": "costs $"
+                                      },
+                                      {
+                                        "Kind": "member",
+                                        "Value": "price",
+                                        "Children": [
+                                          {
+                                            "Kind": "ident",
+                                            "Value": "item"
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          "StartLine": 14,
+          "EndLine": 19,
+          "Doc": ""
+        }
+      ],
+      "Doc": ""
+    }
+  ],
+  "Src": "// Generated by Mochi 0.10.33 on 2025-07-21 18:06 +0700\nusing System;\nusing System.Collections.Generic;\nusing System.Linq;\n\nstruct Product {\n    public string name;\n    public int price;\n    public override string ToString() =\u003e $\"{{\\\"name\\\": \\\"{name}\\\", \\\"price\\\": {price}}}\";\n}\nclass Program {\n    static Product[] products = new Product[]{new Product{name = \"Laptop\", price = 1500}, new Product{name = \"Smartphone\", price = 900}, new Product{name = \"Tablet\", price = 600}, new Product{name = \"Monitor\", price = 300}, new Product{name = \"Keyboard\", price = 100}, new Product{name = \"Mouse\", price = 50}, new Product{name = \"Headphones\", price = 200}};\n    static Product[] expensive = (((from p in products orderby p.price descending select p).Skip(1)).Take(3)).ToArray();\n    static void Main() {\n        Console.WriteLine(\"--- Top products (excluding most expensive) ---\");\n        foreach (var item in expensive) {\n    Console.WriteLine(string.Join(\" \", new object[]{item.name, \"costs $\", item.price}).TrimEnd());\n}\n    }\n}\n"
+}

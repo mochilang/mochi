@@ -1,0 +1,398 @@
+{
+  "Types": [
+    {
+      "Name": "People",
+      "Kind": "struct",
+      "Access": "",
+      "StartLine": 6,
+      "EndLine": 10,
+      "Fields": [
+        {
+          "Name": "name",
+          "Type": "string",
+          "Access": "public",
+          "Line": 7,
+          "Value": "",
+          "Static": false,
+          "Doc": ""
+        },
+        {
+          "Name": "age",
+          "Type": "int",
+          "Access": "public",
+          "Line": 8,
+          "Value": "",
+          "Static": false,
+          "Doc": ""
+        }
+      ],
+      "Methods": [
+        {
+          "Name": "ToString",
+          "Params": [],
+          "Ret": "string",
+          "Access": "public",
+          "Static": false,
+          "Body": [],
+          "Ast": {
+            "Kind": "block"
+          },
+          "StartLine": 9,
+          "EndLine": 9,
+          "Doc": ""
+        }
+      ],
+      "Doc": ""
+    },
+    {
+      "Name": "PersonResult",
+      "Kind": "struct",
+      "Access": "",
+      "StartLine": 11,
+      "EndLine": 16,
+      "Fields": [
+        {
+          "Name": "name",
+          "Type": "string",
+          "Access": "public",
+          "Line": 12,
+          "Value": "",
+          "Static": false,
+          "Doc": ""
+        },
+        {
+          "Name": "age",
+          "Type": "int",
+          "Access": "public",
+          "Line": 13,
+          "Value": "",
+          "Static": false,
+          "Doc": ""
+        },
+        {
+          "Name": "is_senior",
+          "Type": "bool",
+          "Access": "public",
+          "Line": 14,
+          "Value": "",
+          "Static": false,
+          "Doc": ""
+        }
+      ],
+      "Methods": [
+        {
+          "Name": "ToString",
+          "Params": [],
+          "Ret": "string",
+          "Access": "public",
+          "Static": false,
+          "Body": [],
+          "Ast": {
+            "Kind": "block"
+          },
+          "StartLine": 15,
+          "EndLine": 15,
+          "Doc": ""
+        }
+      ],
+      "Doc": ""
+    },
+    {
+      "Name": "Program",
+      "Kind": "class",
+      "Access": "",
+      "StartLine": 17,
+      "EndLine": 26,
+      "Fields": [
+        {
+          "Name": "people",
+          "Type": "People[]",
+          "Access": "",
+          "Line": 18,
+          "Value": "new People[]{new People{name = \"Alice\", age = 30}, new People{name = \"Bob\", age = 15}, new People{name = \"Charlie\", age = 65}, new People{name = \"Diana\", age = 45}}",
+          "Ast": {
+            "Kind": "array",
+            "Children": [
+              {
+                "Kind": "new",
+                "Value": "People",
+                "Children": [
+                  {
+                    "Kind": "init",
+                    "Children": [
+                      {
+                        "Kind": "field",
+                        "Value": "name",
+                        "Children": [
+                          {
+                            "Kind": "literal",
+                            "Value": "Alice"
+                          }
+                        ]
+                      },
+                      {
+                        "Kind": "field",
+                        "Value": "age",
+                        "Children": [
+                          {
+                            "Kind": "literal",
+                            "Value": "30"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "Kind": "new",
+                "Value": "People",
+                "Children": [
+                  {
+                    "Kind": "init",
+                    "Children": [
+                      {
+                        "Kind": "field",
+                        "Value": "name",
+                        "Children": [
+                          {
+                            "Kind": "literal",
+                            "Value": "Bob"
+                          }
+                        ]
+                      },
+                      {
+                        "Kind": "field",
+                        "Value": "age",
+                        "Children": [
+                          {
+                            "Kind": "literal",
+                            "Value": "15"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "Kind": "new",
+                "Value": "People",
+                "Children": [
+                  {
+                    "Kind": "init",
+                    "Children": [
+                      {
+                        "Kind": "field",
+                        "Value": "name",
+                        "Children": [
+                          {
+                            "Kind": "literal",
+                            "Value": "Charlie"
+                          }
+                        ]
+                      },
+                      {
+                        "Kind": "field",
+                        "Value": "age",
+                        "Children": [
+                          {
+                            "Kind": "literal",
+                            "Value": "65"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "Kind": "new",
+                "Value": "People",
+                "Children": [
+                  {
+                    "Kind": "init",
+                    "Children": [
+                      {
+                        "Kind": "field",
+                        "Value": "name",
+                        "Children": [
+                          {
+                            "Kind": "literal",
+                            "Value": "Diana"
+                          }
+                        ]
+                      },
+                      {
+                        "Kind": "field",
+                        "Value": "age",
+                        "Children": [
+                          {
+                            "Kind": "literal",
+                            "Value": "45"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          "Static": true,
+          "Doc": ""
+        },
+        {
+          "Name": "adults",
+          "Type": "PersonResult[]",
+          "Access": "",
+          "Line": 19,
+          "Value": "(from person in people where (person.age \u003e= 18) select new PersonResult{name = person.name, age = person.age, is_senior = (person.age \u003e= 60)}).ToArray()",
+          "Ast": {
+            "Kind": "call",
+            "Value": "ToArray",
+            "Children": [
+              {
+                "Kind": "unknown"
+              }
+            ]
+          },
+          "Static": true,
+          "Doc": ""
+        }
+      ],
+      "Methods": [
+        {
+          "Name": "Main",
+          "Params": [],
+          "Ret": "void",
+          "Access": "",
+          "Static": true,
+          "Body": [
+            "        Console.WriteLine(\"--- Adults ---\");",
+            "        foreach (var person in adults) {",
+            "    Console.WriteLine(string.Join(\" \", new object[]{person.name, \"is\", person.age, (person.is_senior ? \" (senior)\" : \"\")}).TrimEnd());",
+            "}"
+          ],
+          "Ast": {
+            "Kind": "block",
+            "Children": [
+              {
+                "Kind": "call",
+                "Value": "print",
+                "Children": [
+                  {
+                    "Kind": "literal",
+                    "Value": "--- Adults ---"
+                  }
+                ]
+              },
+              {
+                "Kind": "for",
+                "Value": "person",
+                "Children": [
+                  {
+                    "Kind": "range",
+                    "Children": [
+                      {
+                        "Kind": "ident",
+                        "Value": "adults"
+                      }
+                    ]
+                  },
+                  {
+                    "Kind": "block",
+                    "Children": [
+                      {
+                        "Kind": "call",
+                        "Value": "print",
+                        "Children": [
+                          {
+                            "Kind": "call",
+                            "Value": "TrimEnd",
+                            "Children": [
+                              {
+                                "Kind": "call",
+                                "Value": "Join",
+                                "Children": [
+                                  {
+                                    "Kind": "ident",
+                                    "Value": "string"
+                                  },
+                                  {
+                                    "Kind": "literal",
+                                    "Value": " "
+                                  },
+                                  {
+                                    "Kind": "array",
+                                    "Children": [
+                                      {
+                                        "Kind": "member",
+                                        "Value": "name",
+                                        "Children": [
+                                          {
+                                            "Kind": "ident",
+                                            "Value": "person"
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "Kind": "literal",
+                                        "Value": "is"
+                                      },
+                                      {
+                                        "Kind": "member",
+                                        "Value": "age",
+                                        "Children": [
+                                          {
+                                            "Kind": "ident",
+                                            "Value": "person"
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "Kind": "cond",
+                                        "Children": [
+                                          {
+                                            "Kind": "member",
+                                            "Value": "is_senior",
+                                            "Children": [
+                                              {
+                                                "Kind": "ident",
+                                                "Value": "person"
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "Kind": "literal",
+                                            "Value": " (senior)"
+                                          },
+                                          {
+                                            "Kind": "literal"
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          "StartLine": 20,
+          "EndLine": 25,
+          "Doc": ""
+        }
+      ],
+      "Doc": ""
+    }
+  ],
+  "Src": "// Generated by Mochi 0.10.33 on 2025-07-21 18:06 +0700\nusing System;\nusing System.Collections.Generic;\nusing System.Linq;\n\nstruct People {\n    public string name;\n    public int age;\n    public override string ToString() =\u003e $\"{{\\\"name\\\": \\\"{name}\\\", \\\"age\\\": {age}}}\";\n}\nstruct PersonResult {\n    public string name;\n    public int age;\n    public bool is_senior;\n    public override string ToString() =\u003e $\"{{\\\"name\\\": \\\"{name}\\\", \\\"age\\\": {age}, \\\"is_senior\\\": {is_senior}}}\";\n}\nclass Program {\n    static People[] people = new People[]{new People{name = \"Alice\", age = 30}, new People{name = \"Bob\", age = 15}, new People{name = \"Charlie\", age = 65}, new People{name = \"Diana\", age = 45}};\n    static PersonResult[] adults = (from person in people where (person.age \u003e= 18) select new PersonResult{name = person.name, age = person.age, is_senior = (person.age \u003e= 60)}).ToArray();\n    static void Main() {\n        Console.WriteLine(\"--- Adults ---\");\n        foreach (var person in adults) {\n    Console.WriteLine(string.Join(\" \", new object[]{person.name, \"is\", person.age, (person.is_senior ? \" (senior)\" : \"\")}).TrimEnd());\n}\n    }\n}\n"
+}

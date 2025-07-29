@@ -1,0 +1,225 @@
+{
+  "Types": [
+    {
+      "Name": "Program",
+      "Kind": "class",
+      "Access": "",
+      "StartLine": 4,
+      "EndLine": 11,
+      "Fields": [],
+      "Methods": [
+        {
+          "Name": "Main",
+          "Params": [],
+          "Ret": "void",
+          "Access": "",
+          "Static": true,
+          "Body": [
+            "        Console.WriteLine(((string.Compare(\"a\", \"b\") \u003c 0) ? 1 : 0));",
+            "        Console.WriteLine(((string.Compare(\"a\", \"a\") \u003c= 0) ? 1 : 0));",
+            "        Console.WriteLine(((string.Compare(\"b\", \"a\") \u003e 0) ? 1 : 0));",
+            "        Console.WriteLine(((string.Compare(\"b\", \"b\") \u003e= 0) ? 1 : 0));"
+          ],
+          "Ast": {
+            "Kind": "block",
+            "Children": [
+              {
+                "Kind": "call",
+                "Value": "print",
+                "Children": [
+                  {
+                    "Kind": "cond",
+                    "Children": [
+                      {
+                        "Kind": "binary",
+                        "Value": "\u003c",
+                        "Children": [
+                          {
+                            "Kind": "call",
+                            "Value": "Compare",
+                            "Children": [
+                              {
+                                "Kind": "ident",
+                                "Value": "string"
+                              },
+                              {
+                                "Kind": "literal",
+                                "Value": "a"
+                              },
+                              {
+                                "Kind": "literal",
+                                "Value": "b"
+                              }
+                            ]
+                          },
+                          {
+                            "Kind": "literal",
+                            "Value": "0"
+                          }
+                        ]
+                      },
+                      {
+                        "Kind": "literal",
+                        "Value": "1"
+                      },
+                      {
+                        "Kind": "literal",
+                        "Value": "0"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "Kind": "call",
+                "Value": "print",
+                "Children": [
+                  {
+                    "Kind": "cond",
+                    "Children": [
+                      {
+                        "Kind": "binary",
+                        "Value": "\u003c=",
+                        "Children": [
+                          {
+                            "Kind": "call",
+                            "Value": "Compare",
+                            "Children": [
+                              {
+                                "Kind": "ident",
+                                "Value": "string"
+                              },
+                              {
+                                "Kind": "literal",
+                                "Value": "a"
+                              },
+                              {
+                                "Kind": "literal",
+                                "Value": "a"
+                              }
+                            ]
+                          },
+                          {
+                            "Kind": "literal",
+                            "Value": "0"
+                          }
+                        ]
+                      },
+                      {
+                        "Kind": "literal",
+                        "Value": "1"
+                      },
+                      {
+                        "Kind": "literal",
+                        "Value": "0"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "Kind": "call",
+                "Value": "print",
+                "Children": [
+                  {
+                    "Kind": "cond",
+                    "Children": [
+                      {
+                        "Kind": "binary",
+                        "Value": "\u003e",
+                        "Children": [
+                          {
+                            "Kind": "call",
+                            "Value": "Compare",
+                            "Children": [
+                              {
+                                "Kind": "ident",
+                                "Value": "string"
+                              },
+                              {
+                                "Kind": "literal",
+                                "Value": "b"
+                              },
+                              {
+                                "Kind": "literal",
+                                "Value": "a"
+                              }
+                            ]
+                          },
+                          {
+                            "Kind": "literal",
+                            "Value": "0"
+                          }
+                        ]
+                      },
+                      {
+                        "Kind": "literal",
+                        "Value": "1"
+                      },
+                      {
+                        "Kind": "literal",
+                        "Value": "0"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "Kind": "call",
+                "Value": "print",
+                "Children": [
+                  {
+                    "Kind": "cond",
+                    "Children": [
+                      {
+                        "Kind": "binary",
+                        "Value": "\u003e=",
+                        "Children": [
+                          {
+                            "Kind": "call",
+                            "Value": "Compare",
+                            "Children": [
+                              {
+                                "Kind": "ident",
+                                "Value": "string"
+                              },
+                              {
+                                "Kind": "literal",
+                                "Value": "b"
+                              },
+                              {
+                                "Kind": "literal",
+                                "Value": "b"
+                              }
+                            ]
+                          },
+                          {
+                            "Kind": "literal",
+                            "Value": "0"
+                          }
+                        ]
+                      },
+                      {
+                        "Kind": "literal",
+                        "Value": "1"
+                      },
+                      {
+                        "Kind": "literal",
+                        "Value": "0"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          "StartLine": 5,
+          "EndLine": 10,
+          "Doc": ""
+        }
+      ],
+      "Doc": ""
+    }
+  ],
+  "Src": "// Generated by Mochi 0.10.34 on 2025-07-22 08:49 +0700\nusing System;\n\nclass Program {\n    static void Main() {\n        Console.WriteLine(((string.Compare(\"a\", \"b\") \u003c 0) ? 1 : 0));\n        Console.WriteLine(((string.Compare(\"a\", \"a\") \u003c= 0) ? 1 : 0));\n        Console.WriteLine(((string.Compare(\"b\", \"a\") \u003e 0) ? 1 : 0));\n        Console.WriteLine(((string.Compare(\"b\", \"b\") \u003e= 0) ? 1 : 0));\n    }\n}\n"
+}

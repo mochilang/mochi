@@ -1,0 +1,248 @@
+{
+  "Types": [
+    {
+      "Name": "Data",
+      "Kind": "struct",
+      "Access": "",
+      "StartLine": 6,
+      "EndLine": 10,
+      "Fields": [
+        {
+          "Name": "a",
+          "Type": "int",
+          "Access": "public",
+          "Line": 7,
+          "Value": "",
+          "Static": false,
+          "Doc": ""
+        },
+        {
+          "Name": "b",
+          "Type": "int",
+          "Access": "public",
+          "Line": 8,
+          "Value": "",
+          "Static": false,
+          "Doc": ""
+        }
+      ],
+      "Methods": [
+        {
+          "Name": "ToString",
+          "Params": [],
+          "Ret": "string",
+          "Access": "public",
+          "Static": false,
+          "Body": [],
+          "Ast": {
+            "Kind": "block"
+          },
+          "StartLine": 9,
+          "EndLine": 9,
+          "Doc": ""
+        }
+      ],
+      "Doc": ""
+    },
+    {
+      "Name": "Program",
+      "Kind": "class",
+      "Access": "",
+      "StartLine": 11,
+      "EndLine": 17,
+      "Fields": [
+        {
+          "Name": "data",
+          "Type": "Data[]",
+          "Access": "",
+          "Line": 12,
+          "Value": "new Data[]{new Data{a = 1, b = 2}, new Data{a = 1, b = 1}, new Data{a = 0, b = 5}}",
+          "Ast": {
+            "Kind": "array",
+            "Children": [
+              {
+                "Kind": "new",
+                "Value": "Data",
+                "Children": [
+                  {
+                    "Kind": "init",
+                    "Children": [
+                      {
+                        "Kind": "field",
+                        "Value": "a",
+                        "Children": [
+                          {
+                            "Kind": "literal",
+                            "Value": "1"
+                          }
+                        ]
+                      },
+                      {
+                        "Kind": "field",
+                        "Value": "b",
+                        "Children": [
+                          {
+                            "Kind": "literal",
+                            "Value": "2"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "Kind": "new",
+                "Value": "Data",
+                "Children": [
+                  {
+                    "Kind": "init",
+                    "Children": [
+                      {
+                        "Kind": "field",
+                        "Value": "a",
+                        "Children": [
+                          {
+                            "Kind": "literal",
+                            "Value": "1"
+                          }
+                        ]
+                      },
+                      {
+                        "Kind": "field",
+                        "Value": "b",
+                        "Children": [
+                          {
+                            "Kind": "literal",
+                            "Value": "1"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "Kind": "new",
+                "Value": "Data",
+                "Children": [
+                  {
+                    "Kind": "init",
+                    "Children": [
+                      {
+                        "Kind": "field",
+                        "Value": "a",
+                        "Children": [
+                          {
+                            "Kind": "literal",
+                            "Value": "0"
+                          }
+                        ]
+                      },
+                      {
+                        "Kind": "field",
+                        "Value": "b",
+                        "Children": [
+                          {
+                            "Kind": "literal",
+                            "Value": "5"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          "Static": true,
+          "Doc": ""
+        },
+        {
+          "Name": "sorted",
+          "Type": "Data[]",
+          "Access": "",
+          "Line": 13,
+          "Value": "(from x in data orderby Tuple.Create(x.a, x.b) select x).ToArray()",
+          "Ast": {
+            "Kind": "call",
+            "Value": "ToArray",
+            "Children": [
+              {
+                "Kind": "unknown"
+              }
+            ]
+          },
+          "Static": true,
+          "Doc": ""
+        }
+      ],
+      "Methods": [
+        {
+          "Name": "Main",
+          "Params": [],
+          "Ret": "void",
+          "Access": "",
+          "Static": true,
+          "Body": [
+            "        Console.WriteLine((\"[\" + (string.Join(\", \", sorted) + \"]\")));"
+          ],
+          "Ast": {
+            "Kind": "block",
+            "Children": [
+              {
+                "Kind": "call",
+                "Value": "print",
+                "Children": [
+                  {
+                    "Kind": "binary",
+                    "Value": "+",
+                    "Children": [
+                      {
+                        "Kind": "literal",
+                        "Value": "["
+                      },
+                      {
+                        "Kind": "binary",
+                        "Value": "+",
+                        "Children": [
+                          {
+                            "Kind": "call",
+                            "Value": "Join",
+                            "Children": [
+                              {
+                                "Kind": "ident",
+                                "Value": "string"
+                              },
+                              {
+                                "Kind": "literal",
+                                "Value": ", "
+                              },
+                              {
+                                "Kind": "ident",
+                                "Value": "sorted"
+                              }
+                            ]
+                          },
+                          {
+                            "Kind": "literal",
+                            "Value": "]"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          "StartLine": 14,
+          "EndLine": 16,
+          "Doc": ""
+        }
+      ],
+      "Doc": ""
+    }
+  ],
+  "Src": "// Generated by Mochi 0.10.34 on 2025-07-21 23:52 +0700\nusing System;\nusing System.Collections.Generic;\nusing System.Linq;\n\nstruct Data {\n    public int a;\n    public int b;\n    public override string ToString() =\u003e $\"{{'a': {a}, 'b': {b}}}\";\n}\nclass Program {\n    static Data[] data = new Data[]{new Data{a = 1, b = 2}, new Data{a = 1, b = 1}, new Data{a = 0, b = 5}};\n    static Data[] sorted = (from x in data orderby Tuple.Create(x.a, x.b) select x).ToArray();\n    static void Main() {\n        Console.WriteLine((\"[\" + (string.Join(\", \", sorted) + \"]\")));\n    }\n}\n"
+}
