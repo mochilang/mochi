@@ -52,6 +52,8 @@ func nodeFromDecl(d Node) (*ast.Node, error) {
 		src = emitForRange(d)
 	case "while":
 		src = emitWhile(d)
+	case "if":
+		src = emitIf(d)
 	}
 	if src == "" {
 		return nil, nil
@@ -189,6 +191,15 @@ func emitForRange(d Node) string {
 func emitWhile(d Node) string {
 	body := replaceConsoleLogs(d.Body)
 	return fmt.Sprintf("while %s {%s}\n", d.Cond, body)
+}
+
+func emitIf(d Node) string {
+	thenBody := replaceConsoleLogs(d.Body)
+	elseBody := replaceConsoleLogs(d.Else)
+	if d.Else != "" {
+		return fmt.Sprintf("if %s {%s} else {%s}\n", d.Cond, thenBody, elseBody)
+	}
+	return fmt.Sprintf("if %s {%s}\n", d.Cond, thenBody)
 }
 
 // --- Helpers copied from archived any2mochi ---

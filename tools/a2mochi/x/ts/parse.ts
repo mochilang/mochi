@@ -321,6 +321,32 @@ function parse(src: string): TSDecl[] {
         endOff: stmt.end,
         doc,
       });
+    } else if (ts.isIfStatement(stmt)) {
+      const cond = stmt.expression.getText(source);
+      let body = stmt.thenStatement.getText(source);
+      if (ts.isBlock(stmt.thenStatement)) body = body.slice(1, -1);
+      let elsePart = "";
+      if (stmt.elseStatement) {
+        elsePart = stmt.elseStatement.getText(source);
+        if (ts.isBlock(stmt.elseStatement)) {
+          elsePart = elsePart.slice(1, -1);
+        }
+      }
+      decls.push({
+        kind: "if",
+        node: ts.SyntaxKind[stmt.kind],
+        cond,
+        body,
+        else: elsePart,
+        start: start.line,
+        startCol: start.col,
+        end: end.line,
+        endCol: end.col,
+        snippet,
+        startOff: stmt.getStart(source),
+        endOff: stmt.end,
+        doc,
+      });
     } else if (ts.isExpressionStatement(stmt)) {
       decls.push({
         kind: "expr",
