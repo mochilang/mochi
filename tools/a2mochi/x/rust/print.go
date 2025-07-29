@@ -72,3 +72,22 @@ func PrintWithHeader(src string, node *mochiast.Node) (string, error) {
 	}
 	return withHeader(src, []byte(code)), nil
 }
+
+// WriteFile writes the Mochi code to the given path.
+func WriteFile(path string, node *mochiast.Node) error {
+	code, err := Print(node)
+	if err != nil {
+		return err
+	}
+	return os.WriteFile(path, []byte(code), 0o644)
+}
+
+// WriteFileWithHeader writes the Mochi code with a header and original source
+// to the given path.
+func WriteFileWithHeader(path, src string, node *mochiast.Node) error {
+	code, err := PrintWithHeader(src, node)
+	if err != nil {
+		return err
+	}
+	return os.WriteFile(path, []byte(code), 0o644)
+}

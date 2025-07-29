@@ -1,17 +1,4 @@
-(program
-  (fun add
-    (param a (type int))
-    (param b (type int))
-    (type int)
-    (return
-      (group
-        (binary + (selector a) (selector b))
-      )
-    )
-  )
-  (fun main
-    (call print
-      (call add (int 2) (int 3))
-    )
-  )
-)
+fun add(a: int, b: int): int {
+  return ((a + b))
+}
+print(add(2, 3))

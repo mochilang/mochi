@@ -1,11 +1,3 @@
-(program
-  (fun main
-    (var a (type int) (int 10))
-    (var b (type int) (int 20))
-    (call print
-      (group
-        (binary + (selector a) (selector b))
-      )
-    )
-  )
-)
+var a: int = 10
+var b: int = 20
+print((a + b))

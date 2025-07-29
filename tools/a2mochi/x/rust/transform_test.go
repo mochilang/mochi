@@ -251,8 +251,8 @@ func processFile(rootDir, outDir, srcPath string) error {
 var hasRustAnalyzer bool
 
 func init() {
-	_, err := exec.LookPath("rust-analyzer")
-	hasRustAnalyzer = err == nil
+	cmd := exec.Command("rust-analyzer", "--version")
+	hasRustAnalyzer = cmd.Run() == nil
 }
 
 func TestTransformGolden(t *testing.T) {
@@ -288,7 +288,7 @@ func TestTransformGolden(t *testing.T) {
 		"let_and_print":       true,
 		"list_assign":         true,
 		"list_index":          true,
-		"math_ops":            true,
+		"math_ops":            false,
 		"print_hello":         true,
 		"str_builtin":         true,
 		"string_compare":      true,

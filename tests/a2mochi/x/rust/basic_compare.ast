@@ -1,35 +1,5 @@
-(program
-  (fun main
-    (var a
-      (type int)
-      (group
-        (binary - (int 10) (int 3))
-      )
-    )
-    (var b
-      (type int)
-      (group
-        (binary + (int 2) (int 2))
-      )
-    )
-    (call print (selector a))
-    (call print
-      (if_expr
-        (group
-          (binary == (selector a) (int 7))
-        )
-        (int 1)
-        (int 0)
-      )
-    )
-    (call print
-      (if_expr
-        (group
-          (binary < (selector b) (int 5))
-        )
-        (int 1)
-        (int 0)
-      )
-    )
-  )
-)
+var a: int = (10 - 3)
+var b: int = (2 + 2)
+print(a)
+print((a == 7))
+print((b < 5))

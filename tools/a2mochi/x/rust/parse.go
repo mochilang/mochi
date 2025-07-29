@@ -100,6 +100,9 @@ func ParseAST(src string) (*ASTNode, error) {
 	if _, err := exec.LookPath("rust-analyzer"); err != nil {
 		return nil, fmt.Errorf("rust-analyzer not installed")
 	}
+	if err := exec.Command("rust-analyzer", "--version").Run(); err != nil {
+		return nil, fmt.Errorf("rust-analyzer not installed")
+	}
 	ast, err := runRustAnalyzerParse("rust-analyzer", src)
 	if err != nil {
 		return nil, err
