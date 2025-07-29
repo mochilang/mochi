@@ -29,8 +29,12 @@ type Clause struct {
 
 // Parse parses Prolog source using swipl and returns the AST program.
 func Parse(src string) (*Program, error) {
-	if _, err := exec.LookPath("swipl"); err != nil {
-		return nil, fmt.Errorf("swipl not installed")
+	exe := os.Getenv("SWIPL")
+	if exe == "" {
+		exe = "swipl"
+	}
+	if _, err := exec.LookPath(exe); err != nil {
+		return nil, fmt.Errorf("%s not installed", exe)
 	}
 	tmp, err := os.CreateTemp("", "pl-*.pl")
 	if err != nil {
