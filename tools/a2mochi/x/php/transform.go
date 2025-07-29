@@ -35,7 +35,7 @@ func Transform(p *Program) (*ast.Node, error) {
 		n.Children = append(n.Children, funcNode(f))
 	}
 	for _, v := range p.Vars {
-		node, err := varNode(v)
+		node, err := varNode(v, p.Mutables)
 		if err != nil {
 			return nil, err
 		}
@@ -80,8 +80,12 @@ func funcNode(f Func) *ast.Node {
 	return n
 }
 
-func varNode(v Var) (*ast.Node, error) {
-	n := &ast.Node{Kind: "let", Value: v.Name}
+func varNode(v Var, muts map[string]bool) (*ast.Node, error) {
+	kind := "let"
+	if muts[v.Name] {
+		kind = "var"
+	}
+	n := &ast.Node{Kind: kind, Value: v.Name}
 	if v.Value != "" {
 		expr, err := parseExpr(v.Value)
 		if err != nil {
