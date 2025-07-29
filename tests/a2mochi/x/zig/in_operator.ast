@@ -1,0 +1,28 @@
+(program
+  (let xs
+    (list (int 1) (int 2) (int 3))
+  )
+  (call print
+    (call
+      (selector contains (selector xs))
+      (int 2)
+    )
+  )
+  (call print
+    (unary !
+      (group
+        (binary !=
+          (call
+            (selector indexOfScalar
+              (selector mem (selector std))
+            )
+            (selector i64)
+            (selector xs)
+            (int 5)
+          )
+          (unknown)
+        )
+      )
+    )
+  )
+)

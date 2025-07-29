@@ -292,6 +292,36 @@ func parseContains(expr string) (string, bool) {
 	return out, true
 }
 
+func parseScalarContains(expr string) (string, bool) {
+	expr = strings.TrimSpace(expr)
+	var not bool
+	switch {
+	case strings.HasSuffix(expr, " != null"):
+		expr = strings.TrimSpace(expr[:len(expr)-len(" != null")])
+	case strings.HasSuffix(expr, " == null"):
+		not = true
+		expr = strings.TrimSpace(expr[:len(expr)-len(" == null")])
+	default:
+		return "", false
+	}
+	prefix := "std.mem.indexOfScalar("
+	if !strings.HasPrefix(expr, prefix) || !strings.HasSuffix(expr, ")") {
+		return "", false
+	}
+	inner := strings.TrimSuffix(strings.TrimPrefix(expr, prefix), ")")
+	parts := strings.Split(inner, ",")
+	if len(parts) != 3 {
+		return "", false
+	}
+	arr := strings.TrimSpace(parts[1])
+	val := strings.TrimSpace(parts[2])
+	out := fmt.Sprintf("%s.contains(%s)", arr, val)
+	if not {
+		out = "!" + out
+	}
+	return out, true
+}
+
 func parseSlice(expr string) (string, bool) {
 	idxDots := strings.Index(expr, "..")
 	if idxDots < 0 {
@@ -313,6 +343,29 @@ func parseSlice(expr string) (string, bool) {
 		return "", false
 	}
 	return fmt.Sprintf("%s[%s:%s]", transformExpr(base), start, end), true
+}
+
+func parseRecordLiteral(expr string) (string, bool) {
+	expr = strings.TrimSpace(expr)
+	if !strings.HasPrefix(expr, ".{") || !strings.HasSuffix(expr, "}") {
+		return "", false
+	}
+	inner := strings.TrimSpace(expr[2 : len(expr)-1])
+	if inner == "" {
+		return "{}", true
+	}
+	parts := strings.Split(inner, ",")
+	var fields []string
+	for _, p := range parts {
+		fv := strings.SplitN(p, "=", 2)
+		if len(fv) != 2 {
+			continue
+		}
+		key := strings.TrimSpace(strings.TrimPrefix(fv[0], "."))
+		val := transformExpr(strings.TrimSpace(fv[1]))
+		fields = append(fields, fmt.Sprintf("%s: %s", key, val))
+	}
+	return "{" + strings.Join(fields, ", ") + "}", true
 }
 
 func parseFuncHeader(src string) (name, params, ret string, ok bool) {
@@ -344,6 +397,9 @@ func parseFuncHeader(src string) (name, params, ret string, ok bool) {
 func transformExpr(expr string) string {
 	expr = stripTypedArrays(expr)
 	expr = replaceBuiltins(expr)
+	if res, ok := parseRecordLiteral(expr); ok {
+		return res
+	}
 	if res, ok := parseSlice(expr); ok {
 		return res
 	}
@@ -354,6 +410,9 @@ func transformExpr(expr string) string {
 		return res
 	}
 	if res, ok := parseContains(expr); ok {
+		return res
+	}
+	if res, ok := parseScalarContains(expr); ok {
 		return res
 	}
 	if res, ok := parseOrder(expr); ok {
@@ -397,7 +456,9 @@ func parseBlock(lines []string, i *int) []stmt {
 		if strings.HasSuffix(t, "{") {
 			header := strings.TrimSpace(strings.TrimSuffix(t, "{"))
 			body := parseBlock(lines, i)
-			res = append(res, stmt{line: header, children: body})
+			if !strings.Contains(header, "struct") {
+				res = append(res, stmt{line: header, children: body})
+			}
 			continue
 		}
 		res = append(res, stmt{line: strings.TrimSuffix(t, ";")})
@@ -424,6 +485,9 @@ func parseAssign(line string) (lhs, rhs string, ok bool) {
 
 func gen(st stmt, indent string, b *strings.Builder) {
 	line := strings.TrimSpace(st.line)
+	if strings.Contains(line, "struct {") {
+		return
+	}
 	switch {
 	case strings.HasPrefix(line, "pub fn main") || strings.HasPrefix(line, "fn main"):
 		for _, ch := range st.children {

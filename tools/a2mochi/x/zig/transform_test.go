@@ -140,6 +140,8 @@ func TestTransform_Golden(t *testing.T) {
 		"for_list_collection": true,
 		"string_in_operator":  true,
 		"fun_expr_in_let":     true,
+		"record_assign":       true,
+		"in_operator":         true,
 		"count_builtin":       true,
 		"short_circuit":       true,
 		"test_block":          true,
