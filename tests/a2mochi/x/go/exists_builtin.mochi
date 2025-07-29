@@ -1,0 +1,3 @@
+var data = [1, 2]
+var flag = (1 in data)
+print(flag)

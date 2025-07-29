@@ -109,6 +109,9 @@ func transformStmt(st ast.Stmt) []*mast.Node {
 			if n := transformCall(call); n != nil {
 				return []*mast.Node{n}
 			}
+			if n := transformExpr(call); n != nil && n.Kind != "unknown" {
+				return []*mast.Node{n}
+			}
 		}
 	case *ast.AssignStmt:
 		if len(s.Lhs) == 1 && len(s.Rhs) == 1 {
@@ -184,7 +187,15 @@ func transformStmt(st ast.Stmt) []*mast.Node {
 		if id, ok := s.Value.(*ast.Ident); ok {
 			varName = id.Name
 		}
-		iter := transformExpr(s.X)
+		iterExpr := s.X
+		if call, ok := s.X.(*ast.CallExpr); ok {
+			if fn, ok := call.Fun.(*ast.FuncLit); ok {
+				if m := tryMapKeysIIFE(fn); m != nil {
+					iterExpr = m
+				}
+			}
+		}
+		iter := transformExpr(iterExpr)
 		body := transformBlock(s.Body)
 		return []*mast.Node{{
 			Kind:  "for",
@@ -358,6 +369,9 @@ func tryIIFE(c *ast.CallExpr) *mast.Node {
 	}
 
 	if n := tryJSONMarshal(fn); n != nil {
+		return n
+	}
+	if n := tryJSONPrint(fn); n != nil {
 		return n
 	}
 	if n := trySum(fn); n != nil {
@@ -544,6 +558,49 @@ func tryJSONMarshal(fn *ast.FuncLit) *mast.Node {
 		return nil
 	}
 	return transformExpr(call.Args[0])
+}
+
+// tryJSONPrint matches a function that marshals a value to JSON and prints it.
+func tryJSONPrint(fn *ast.FuncLit) *mast.Node {
+	if len(fn.Body.List) != 2 {
+		return nil
+	}
+	as, ok := fn.Body.List[0].(*ast.AssignStmt)
+	if !ok || as.Tok != token.DEFINE || len(as.Lhs) != 2 || len(as.Rhs) != 1 {
+		return nil
+	}
+	bIdent, ok := as.Lhs[0].(*ast.Ident)
+	if !ok {
+		return nil
+	}
+	call, ok := as.Rhs[0].(*ast.CallExpr)
+	if !ok {
+		return nil
+	}
+	sel, ok := call.Fun.(*ast.SelectorExpr)
+	if !ok {
+		return nil
+	}
+	pkg, ok := sel.X.(*ast.Ident)
+	if !ok || pkg.Name != "json" || (sel.Sel.Name != "MarshalIndent" && sel.Sel.Name != "Marshal") || len(call.Args) == 0 {
+		return nil
+	}
+	if stmt, ok := fn.Body.List[1].(*ast.ExprStmt); ok {
+		if pcall, ok := stmt.X.(*ast.CallExpr); ok {
+			if sel2, ok := pcall.Fun.(*ast.SelectorExpr); ok {
+				if pkg2, ok := sel2.X.(*ast.Ident); ok && pkg2.Name == "fmt" && sel2.Sel.Name == "Println" && len(pcall.Args) == 1 {
+					if inner, ok := pcall.Args[0].(*ast.CallExpr); ok {
+						if id, ok := inner.Fun.(*ast.Ident); ok && id.Name == "string" && len(inner.Args) == 1 {
+							if arg, ok := inner.Args[0].(*ast.Ident); ok && arg.Name == bIdent.Name {
+								return &mast.Node{Kind: "call", Value: "json", Children: []*mast.Node{transformExpr(call.Args[0])}}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	return nil
 }
 
 // trySum matches `s := 0; for _, v := range xs { s += v }; return s`.
@@ -749,6 +806,60 @@ func tryAvg(fn *ast.FuncLit) *mast.Node {
 	return &mast.Node{Kind: "call", Value: "avg", Children: []*mast.Node{expr}}
 }
 
+// tryMapKeysIIFE detects an immediately invoked function that builds and
+// returns a slice of map keys sorted deterministically. It returns the map
+// expression if the pattern matches.
+func tryMapKeysIIFE(fn *ast.FuncLit) ast.Expr {
+	if len(fn.Body.List) < 3 {
+		return nil
+	}
+	// first statement: keys := make(...)
+	init, ok := fn.Body.List[0].(*ast.AssignStmt)
+	if !ok || init.Tok != token.DEFINE || len(init.Lhs) != 1 {
+		return nil
+	}
+	keysIdent, ok := init.Lhs[0].(*ast.Ident)
+	if !ok {
+		return nil
+	}
+	// second statement: for k := range m { keys = append(keys, k) }
+	rng, ok := fn.Body.List[1].(*ast.RangeStmt)
+	if !ok || rng.Body == nil || len(rng.Body.List) != 1 {
+		return nil
+	}
+	assign, ok := rng.Body.List[0].(*ast.AssignStmt)
+	if !ok || len(assign.Lhs) != 1 || len(assign.Rhs) != 1 {
+		return nil
+	}
+	if id, ok := assign.Lhs[0].(*ast.Ident); !ok || id.Name != keysIdent.Name {
+		return nil
+	}
+	call, ok := assign.Rhs[0].(*ast.CallExpr)
+	if !ok || len(call.Args) != 2 {
+		return nil
+	}
+	if fid, ok := call.Fun.(*ast.Ident); !ok || fid.Name != "append" {
+		return nil
+	}
+	if a1, ok := call.Args[0].(*ast.Ident); !ok || a1.Name != keysIdent.Name {
+		return nil
+	}
+	if a2, ok := call.Args[1].(*ast.Ident); !ok || rng.Key == nil {
+		return nil
+	} else if kid, ok2 := rng.Key.(*ast.Ident); !ok2 || a2.Name != kid.Name {
+		return nil
+	}
+	// final statement: return keys
+	ret, ok := fn.Body.List[len(fn.Body.List)-1].(*ast.ReturnStmt)
+	if !ok || len(ret.Results) != 1 {
+		return nil
+	}
+	if rid, ok := ret.Results[0].(*ast.Ident); !ok || rid.Name != keysIdent.Name {
+		return nil
+	}
+	return rng.X
+}
+
 // tryExists matches patterns like len(func(){ res:=[]T{}; for _,v:=range xs { if v == k { res = append(res,v) } }; return res }()) > 0
 func tryExists(be *ast.BinaryExpr) *mast.Node {
 	if be.Op != token.GTR || !isZeroLit(be.Y) {
@@ -884,8 +995,11 @@ func transformExpr(e ast.Expr) *mast.Node {
 			transformExpr(v.X), transformExpr(v.Y),
 		}}
 	case *ast.UnaryExpr:
-		if v.Op == token.SUB {
+		switch v.Op {
+		case token.SUB:
 			return &mast.Node{Kind: "unary", Value: "-", Children: []*mast.Node{transformExpr(v.X)}}
+		case token.NOT:
+			return &mast.Node{Kind: "unary", Value: "!", Children: []*mast.Node{transformExpr(v.X)}}
 		}
 	case *ast.CallExpr:
 		if n := tryIIFE(v); n != nil {
