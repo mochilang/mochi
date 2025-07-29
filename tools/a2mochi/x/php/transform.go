@@ -4,6 +4,7 @@ package php
 
 import (
 	"fmt"
+	"strings"
 
 	"mochi/ast"
 	"mochi/parser"
@@ -109,6 +110,7 @@ func typeNode(t string) *ast.Node {
 
 // parseExpr parses a Mochi expression string to an AST node.
 func parseExpr(expr string) (*ast.Node, error) {
+	expr = strings.TrimSpace(expr)
 	prog, err := parser.ParseString("let _ = " + expr)
 	if err != nil {
 		return nil, err

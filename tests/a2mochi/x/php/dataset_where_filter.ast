@@ -1,0 +1,83 @@
+(program
+  (let people
+    (list
+      (map
+        (entry (string name) (string Alice))
+        (entry (string age) (int 30))
+      )
+      (map
+        (entry (string name) (string Bob))
+        (entry (string age) (int 15))
+      )
+      (map
+        (entry (string name) (string Charlie))
+        (entry (string age) (int 65))
+      )
+      (map
+        (entry (string name) (string Diana))
+        (entry (string age) (int 45))
+      )
+    )
+  )
+  (let adults (list))
+  (for person
+    (in (selector people))
+    (block
+      (if
+        (binary >=
+          (index
+            (group
+              (cast
+                (selector person)
+                (type map (type string) (type any))
+              )
+            )
+            (string age)
+          )
+          (int 18)
+        )
+        (block)
+      )
+    )
+  )
+  (call print (string "--- Adults ---"))
+  (for person
+    (in (selector adults))
+    (block
+      (call print
+        (index
+          (group
+            (cast
+              (selector person)
+              (type map (type string) (type any))
+            )
+          )
+          (string name)
+        )
+        (string " is")
+        (index
+          (group
+            (cast
+              (selector person)
+              (type map (type string) (type any))
+            )
+          )
+          (string age)
+        )
+        (if_expr
+          (index
+            (group
+              (cast
+                (selector person)
+                (type map (type string) (type any))
+              )
+            )
+            (string is_senior)
+          )
+          (string " (senior)")
+          (string "")
+        )
+      )
+    )
+  )
+)

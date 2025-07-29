@@ -1,0 +1,85 @@
+(program
+  (fun twoSum
+    (param nums (type any))
+    (param target (type any))
+    (type any)
+    (block
+      (let n
+        (call len (selector nums))
+      )
+      (for i
+        (range (int 0) (selector n))
+        (block
+          (for j
+            (range
+              (binary + (selector i) (int 1))
+              (selector n)
+            )
+            (block
+              (if
+                (binary ==
+                  (group
+                    (binary +
+                      (group
+                        (cast
+                          (index
+                            (group
+                              (cast
+                                (selector nums)
+                                (type map (type string) (type any))
+                              )
+                            )
+                            (selector i)
+                          )
+                          (type int)
+                        )
+                      )
+                      (group
+                        (cast
+                          (index
+                            (group
+                              (cast
+                                (selector nums)
+                                (type map (type string) (type any))
+                              )
+                            )
+                            (selector j)
+                          )
+                          (type int)
+                        )
+                      )
+                    )
+                  )
+                  (selector target)
+                )
+                (block
+                  (return
+                    (list (selector i) (selector j))
+                  )
+                )
+              )
+            )
+          )
+        )
+      )
+      (return
+        (list
+          (unary - (int 1))
+          (unary - (int 1))
+        )
+      )
+    )
+  )
+  (let result
+    (call twoSum
+      (list (int 2) (int 7) (int 11) (int 15))
+      (int 9)
+    )
+  )
+  (call print
+    (index (selector result) (int 0))
+  )
+  (call print
+    (index (selector result) (int 1))
+  )
+)

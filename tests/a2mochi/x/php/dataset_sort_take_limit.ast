@@ -1,0 +1,66 @@
+(program
+  (let products
+    (list
+      (map
+        (entry (string name) (string Laptop))
+        (entry (string price) (int 1500))
+      )
+      (map
+        (entry (string name) (string Smartphone))
+        (entry (string price) (int 900))
+      )
+      (map
+        (entry (string name) (string Tablet))
+        (entry (string price) (int 600))
+      )
+      (map
+        (entry (string name) (string Monitor))
+        (entry (string price) (int 300))
+      )
+      (map
+        (entry (string name) (string Keyboard))
+        (entry (string price) (int 100))
+      )
+      (map
+        (entry (string name) (string Mouse))
+        (entry (string price) (int 50))
+      )
+      (map
+        (entry (string name) (string Headphones))
+        (entry (string price) (int 200))
+      )
+    )
+  )
+  (let expensive (list))
+  (for p
+    (in (selector products))
+    (block)
+  )
+  (call print (string "--- Top products (excluding most expensive) ---"))
+  (for item
+    (in (selector expensive))
+    (block
+      (call print
+        (index
+          (group
+            (cast
+              (selector item)
+              (type map (type string) (type any))
+            )
+          )
+          (string name)
+        )
+        (string " costs $")
+        (index
+          (group
+            (cast
+              (selector item)
+              (type map (type string) (type any))
+            )
+          )
+          (string price)
+        )
+      )
+    )
+  )
+)

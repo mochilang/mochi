@@ -1,0 +1,22 @@
+(program
+  (fun add
+    (param a (type any))
+    (param b (type any))
+    (type any)
+    (block
+      (return
+        (binary + (selector a) (selector b))
+      )
+    )
+  )
+  (let add5
+    (funexpr
+      (param a0 (type int))
+      (type int)
+      (call add (int 5) (selector a0))
+    )
+  )
+  (call print
+    (call add5 (int 3))
+  )
+)

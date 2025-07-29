@@ -1,0 +1,24 @@
+(program
+  (let items
+    (list
+      (map
+        (entry (string n) (int 1))
+        (entry (string v) (string a))
+      )
+      (map
+        (entry (string n) (int 1))
+        (entry (string v) (string b))
+      )
+      (map
+        (entry (string n) (int 2))
+        (entry (string v) (string c))
+      )
+    )
+  )
+  (let result (list))
+  (for i
+    (in (selector items))
+    (block)
+  )
+  (call json (selector result))
+)

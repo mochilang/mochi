@@ -1,0 +1,5 @@
+error[T003]: unknown function: str_replace
+  --> :4:11
+
+help:
+  Ensure the function is defined before it's called.

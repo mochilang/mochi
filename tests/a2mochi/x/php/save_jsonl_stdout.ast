@@ -1,0 +1,28 @@
+(program
+  (let people
+    (list
+      (map
+        (entry (string name) (string Alice))
+        (entry (string age) (int 30))
+      )
+      (map
+        (entry (string name) (string Bob))
+        (entry (string age) (int 25))
+      )
+    )
+  )
+  (for _row
+    (in (selector people))
+    (block
+      (let j
+        (call json (selector _row))
+      )
+      (let j
+        (call str_replace (string ":") (string ": ") (selector j))
+      )
+      (let j
+        (call str_replace (string ",") (string ", ") (selector j))
+      )
+    )
+  )
+)

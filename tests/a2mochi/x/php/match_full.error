@@ -1,0 +1,1 @@
+parse /workspace/mochi/tests/transpiler/x/php/match_full.php: syntax error: unexpected T_DOUBLE_ARROW at line 4
