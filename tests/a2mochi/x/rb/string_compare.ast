@@ -1,4 +1,4 @@
-print(if "a" < "b" then 1 else 0)
-print(if "a" <= "a" then 1 else 0)
-print(if "b" > "a" then 1 else 0)
-print(if "b" >= "b" then 1 else 0)
+print(("a" < "b"))
+print(("a" <= "a"))
+print(("b" > "a"))
+print(("b" >= "b"))

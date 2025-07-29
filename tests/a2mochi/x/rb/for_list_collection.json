@@ -1,0 +1,340 @@
+{
+  "Type": "program",
+  "Value": "",
+  "Line": 2,
+  "Col": 1,
+  "Children": [
+    {
+      "Type": "stmts_add",
+      "Value": "",
+      "Line": 2,
+      "Col": 1,
+      "Children": [
+        {
+          "Type": "stmts_new",
+          "Value": "",
+          "Line": 0,
+          "Col": 0,
+          "Children": null,
+          "EndLine": 0,
+          "EndCol": 0,
+          "Source": ""
+        },
+        {
+          "Type": "method_add_block",
+          "Value": "",
+          "Line": 2,
+          "Col": 1,
+          "Children": [
+            {
+              "Type": "call",
+              "Value": "",
+              "Line": 2,
+              "Col": 1,
+              "Children": [
+                {
+                  "Type": "array",
+                  "Value": "",
+                  "Line": 2,
+                  "Col": 1,
+                  "Children": [
+                    {
+                      "Type": "args_add",
+                      "Value": "",
+                      "Line": 2,
+                      "Col": 1,
+                      "Children": [
+                        {
+                          "Type": "args_add",
+                          "Value": "",
+                          "Line": 2,
+                          "Col": 1,
+                          "Children": [
+                            {
+                              "Type": "args_add",
+                              "Value": "",
+                              "Line": 2,
+                              "Col": 1,
+                              "Children": [
+                                {
+                                  "Type": "args_new",
+                                  "Value": "",
+                                  "Line": 0,
+                                  "Col": 0,
+                                  "Children": null,
+                                  "EndLine": 0,
+                                  "EndCol": 0,
+                                  "Source": ""
+                                },
+                                {
+                                  "Type": "@int",
+                                  "Value": "1",
+                                  "Line": 2,
+                                  "Col": 1,
+                                  "Children": null,
+                                  "EndLine": 2,
+                                  "EndCol": 1,
+                                  "Source": ""
+                                }
+                              ],
+                              "EndLine": 2,
+                              "EndCol": 1,
+                              "Source": ""
+                            },
+                            {
+                              "Type": "@int",
+                              "Value": "2",
+                              "Line": 2,
+                              "Col": 4,
+                              "Children": null,
+                              "EndLine": 2,
+                              "EndCol": 4,
+                              "Source": ""
+                            }
+                          ],
+                          "EndLine": 2,
+                          "EndCol": 4,
+                          "Source": ""
+                        },
+                        {
+                          "Type": "@int",
+                          "Value": "3",
+                          "Line": 2,
+                          "Col": 7,
+                          "Children": null,
+                          "EndLine": 2,
+                          "EndCol": 7,
+                          "Source": ""
+                        }
+                      ],
+                      "EndLine": 2,
+                      "EndCol": 7,
+                      "Source": ""
+                    }
+                  ],
+                  "EndLine": 2,
+                  "EndCol": 7,
+                  "Source": ""
+                },
+                {
+                  "Type": "@period",
+                  "Value": ".",
+                  "Line": 2,
+                  "Col": 9,
+                  "Children": null,
+                  "EndLine": 2,
+                  "EndCol": 9,
+                  "Source": ""
+                },
+                {
+                  "Type": "@ident",
+                  "Value": "each",
+                  "Line": 2,
+                  "Col": 10,
+                  "Children": null,
+                  "EndLine": 2,
+                  "EndCol": 10,
+                  "Source": ""
+                }
+              ],
+              "EndLine": 2,
+              "EndCol": 10,
+              "Source": ""
+            },
+            {
+              "Type": "do_block",
+              "Value": "",
+              "Line": 3,
+              "Col": 2,
+              "Children": [
+                {
+                  "Type": "block_var",
+                  "Value": "",
+                  "Line": 0,
+                  "Col": 0,
+                  "Children": [
+                    {
+                      "Type": "params",
+                      "Value": "",
+                      "Line": 0,
+                      "Col": 0,
+                      "Children": [
+                        {
+                          "Type": "list",
+                          "Value": "",
+                          "Line": 0,
+                          "Col": 0,
+                          "Children": [
+                            {
+                              "Type": "@ident",
+                              "Value": "n",
+                              "Line": 2,
+                              "Col": 19,
+                              "Children": null,
+                              "EndLine": 2,
+                              "EndCol": 19,
+                              "Source": ""
+                            }
+                          ],
+                          "EndLine": 0,
+                          "EndCol": 0,
+                          "Source": ""
+                        }
+                      ],
+                      "EndLine": 0,
+                      "EndCol": 0,
+                      "Source": ""
+                    }
+                  ],
+                  "EndLine": 0,
+                  "EndCol": 0,
+                  "Source": ""
+                },
+                {
+                  "Type": "bodystmt",
+                  "Value": "",
+                  "Line": 3,
+                  "Col": 2,
+                  "Children": [
+                    {
+                      "Type": "stmts_add",
+                      "Value": "",
+                      "Line": 3,
+                      "Col": 2,
+                      "Children": [
+                        {
+                          "Type": "stmts_new",
+                          "Value": "",
+                          "Line": 0,
+                          "Col": 0,
+                          "Children": null,
+                          "EndLine": 0,
+                          "EndCol": 0,
+                          "Source": ""
+                        },
+                        {
+                          "Type": "method_add_arg",
+                          "Value": "",
+                          "Line": 3,
+                          "Col": 2,
+                          "Children": [
+                            {
+                              "Type": "fcall",
+                              "Value": "",
+                              "Line": 3,
+                              "Col": 2,
+                              "Children": [
+                                {
+                                  "Type": "@ident",
+                                  "Value": "puts",
+                                  "Line": 3,
+                                  "Col": 2,
+                                  "Children": null,
+                                  "EndLine": 3,
+                                  "EndCol": 2,
+                                  "Source": ""
+                                }
+                              ],
+                              "EndLine": 3,
+                              "EndCol": 2,
+                              "Source": ""
+                            },
+                            {
+                              "Type": "arg_paren",
+                              "Value": "",
+                              "Line": 3,
+                              "Col": 7,
+                              "Children": [
+                                {
+                                  "Type": "args_add_block",
+                                  "Value": "",
+                                  "Line": 3,
+                                  "Col": 7,
+                                  "Children": [
+                                    {
+                                      "Type": "args_add",
+                                      "Value": "",
+                                      "Line": 3,
+                                      "Col": 7,
+                                      "Children": [
+                                        {
+                                          "Type": "args_new",
+                                          "Value": "",
+                                          "Line": 0,
+                                          "Col": 0,
+                                          "Children": null,
+                                          "EndLine": 0,
+                                          "EndCol": 0,
+                                          "Source": ""
+                                        },
+                                        {
+                                          "Type": "var_ref",
+                                          "Value": "",
+                                          "Line": 3,
+                                          "Col": 7,
+                                          "Children": [
+                                            {
+                                              "Type": "@ident",
+                                              "Value": "n",
+                                              "Line": 3,
+                                              "Col": 7,
+                                              "Children": null,
+                                              "EndLine": 3,
+                                              "EndCol": 7,
+                                              "Source": ""
+                                            }
+                                          ],
+                                          "EndLine": 3,
+                                          "EndCol": 7,
+                                          "Source": ""
+                                        }
+                                      ],
+                                      "EndLine": 3,
+                                      "EndCol": 7,
+                                      "Source": ""
+                                    }
+                                  ],
+                                  "EndLine": 3,
+                                  "EndCol": 7,
+                                  "Source": ""
+                                }
+                              ],
+                              "EndLine": 3,
+                              "EndCol": 7,
+                              "Source": ""
+                            }
+                          ],
+                          "EndLine": 3,
+                          "EndCol": 7,
+                          "Source": ""
+                        }
+                      ],
+                      "EndLine": 3,
+                      "EndCol": 7,
+                      "Source": ""
+                    }
+                  ],
+                  "EndLine": 3,
+                  "EndCol": 7,
+                  "Source": ""
+                }
+              ],
+              "EndLine": 3,
+              "EndCol": 7,
+              "Source": ""
+            }
+          ],
+          "EndLine": 3,
+          "EndCol": 7,
+          "Source": ""
+        }
+      ],
+      "EndLine": 3,
+      "EndCol": 7,
+      "Source": ""
+    }
+  ],
+  "EndLine": 3,
+  "EndCol": 7,
+  "Source": "# Generated by Mochi transpiler v0.10.33 on 2025-07-21 16:57 +0700\n[1, 2, 3].each do |n|\n  puts(n)\nend\n"
+}
