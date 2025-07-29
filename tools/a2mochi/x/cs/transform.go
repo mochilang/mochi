@@ -110,23 +110,6 @@ func rewriteExpr(s string) string {
 			}
 		}
 
-		// new Dictionary{ {k,v}, ... } -> {k: v, ...}
-		if strings.HasPrefix(s, "new Dictionary") {
-			re := regexp.MustCompile(`new Dictionary<[^>]+>{(.*)}`)
-			if m := re.FindStringSubmatch(s); m != nil {
-				inner := strings.TrimSuffix(strings.TrimPrefix(strings.TrimSpace(m[1]), "{"), "}")
-				parts := strings.Split(inner, "}, {")
-				kvs := make([]string, 0, len(parts))
-				for _, p := range parts {
-					kv := strings.SplitN(strings.TrimSpace(p), ",", 2)
-					if len(kv) == 2 {
-						kvs = append(kvs, strings.TrimSpace(kv[0])+": "+strings.TrimSpace(kv[1]))
-					}
-				}
-				s = "{" + strings.Join(kvs, ", ") + "}"
-			}
-		}
-
 		// new T[]{...} -> [...]
 		for {
 			start := strings.Index(s, "new ")
@@ -189,13 +172,19 @@ func programToNode(p *Program) (*ast.Node, error) {
 			var otherMethods []Func
 			otherFields := make([]Field, 0)
 			for _, f := range t.Fields {
-				if f.Static && f.Value != "" {
-					if v, err := exprNode(f.Value); err == nil {
+				if f.Static && (f.Ast != nil || f.Value != "") {
+					var val *ast.Node
+					if f.Ast != nil {
+						val = exprNodeFromAST(f.Ast)
+					} else if v, err := exprNode(f.Value); err == nil {
+						val = v
+					}
+					if val != nil {
 						n := &ast.Node{Kind: "let", Value: f.Name}
 						if ft := mapType(f.Type); ft != "" {
 							n.Children = append(n.Children, &ast.Node{Kind: "type", Value: ft})
 						}
-						n.Children = append(n.Children, v)
+						n.Children = append(n.Children, val)
 						root.Children = append(root.Children, n)
 						continue
 					}
@@ -420,6 +409,31 @@ func exprNodeFromAST(n *Node) *ast.Node {
 			arr.Children = append(arr.Children, exprNodeFromAST(ch))
 		}
 		return arr
+	case "new":
+		if len(n.Children) > 0 && n.Children[0].Kind == "init" {
+			init := n.Children[0]
+			// handle dictionary and struct in initializer
+			if strings.HasPrefix(n.Value, "Dictionary") || strings.HasPrefix(n.Value, "SortedDictionary") {
+				m := &ast.Node{Kind: "map"}
+				for _, p := range init.Children {
+					if len(p.Children) == 2 {
+						m.Children = append(m.Children, &ast.Node{Kind: "pair", Children: []*ast.Node{exprNodeFromAST(p.Children[0]), exprNodeFromAST(p.Children[1])}})
+					}
+				}
+				return m
+			}
+			s := &ast.Node{Kind: "struct"}
+			if n.Value != "" {
+				s.Value = n.Value
+			}
+			for _, f := range init.Children {
+				if f.Kind == "field" && len(f.Children) == 1 {
+					s.Children = append(s.Children, &ast.Node{Kind: "field", Value: f.Value, Children: []*ast.Node{exprNodeFromAST(f.Children[0])}})
+				}
+			}
+			return s
+		}
+		return &ast.Node{Kind: "unknown"}
 	case "index":
 		if len(n.Children) == 2 {
 			return &ast.Node{Kind: "index", Children: []*ast.Node{exprNodeFromAST(n.Children[0]), exprNodeFromAST(n.Children[1])}}
@@ -432,6 +446,9 @@ func exprNodeFromAST(n *Node) *ast.Node {
 	case "member":
 		if n.Value == "Keys" && len(n.Children) > 0 {
 			return exprNodeFromAST(n.Children[0])
+		}
+		if n.Value == "Length" && len(n.Children) > 0 {
+			return &ast.Node{Kind: "call", Value: "len", Children: []*ast.Node{exprNodeFromAST(n.Children[0])}}
 		}
 		if len(n.Children) > 0 {
 			return &ast.Node{Kind: "selector", Value: n.Value, Children: []*ast.Node{exprNodeFromAST(n.Children[0])}}
