@@ -274,6 +274,8 @@ func mapType(typ string) string {
 		return "float"
 	case "bool":
 		return "bool"
+	case "auto":
+		return ""
 	case "char", "char16_t", "char32_t", "std::string", "string":
 		return "string"
 	}
@@ -283,6 +285,25 @@ func mapType(typ string) string {
 			inner = "any"
 		}
 		return "list<" + inner + ">"
+	}
+	for _, pre := range []string{"std::map<", "std::unordered_map<", "map<", "unordered_map<"} {
+		if strings.HasPrefix(typ, pre) && strings.HasSuffix(typ, ">") {
+			content := typ[len(pre) : len(typ)-1]
+			parts := strings.SplitN(content, ",", 2)
+			if len(parts) == 2 {
+				k := strings.TrimSpace(parts[0])
+				v := strings.TrimSpace(parts[1])
+				k = mapType(k)
+				v = mapType(v)
+				if k == "" {
+					k = "any"
+				}
+				if v == "" {
+					v = "any"
+				}
+				return "map<" + k + "," + v + ">"
+			}
+		}
 	}
 	return typ
 }

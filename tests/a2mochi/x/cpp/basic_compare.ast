@@ -1,0 +1,24 @@
+(program
+  (var a
+    (binary - (int 10) (int 3))
+  )
+  (var b
+    (binary + (int 2) (int 2))
+  )
+  (fun main
+    (type int)
+    (call print (selector a))
+    (call print
+      (group
+        (binary == (selector a) (int 7))
+      )
+    )
+    (call print
+      (group
+        (binary < (selector b) (int 5))
+      )
+    )
+    (return (int 0))
+  )
+  (call main)
+)

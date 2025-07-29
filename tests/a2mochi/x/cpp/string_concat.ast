@@ -1,0 +1,12 @@
+(program
+  (fun main
+    (type int)
+    (call print
+      (group
+        (binary + (string "hello ") (string world))
+      )
+    )
+    (return (int 0))
+  )
+  (call main)
+)
