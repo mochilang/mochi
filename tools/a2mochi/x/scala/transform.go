@@ -73,15 +73,30 @@ var (
 	whileRE    = regexp.MustCompile(`^while \((.+)\) {`)
 	ifRE       = regexp.MustCompile(`^if \((.+)\) {`)
 	elseIfRE   = regexp.MustCompile(`^else if \((.+)\) {`)
+	arrayBufRE = regexp.MustCompile(`ArrayBuffer\(([^)]*)\)`)      // to slice
+	appendOpRE = regexp.MustCompile(`([A-Za-z0-9_]+) :\+ (.+)`)    // a :+ b
+	sumCallRE  = regexp.MustCompile(`([A-Za-z0-9_\[\], ]+)\.sum`)  // x.sum
+	sizeCallRE = regexp.MustCompile(`([A-Za-z0-9_\[\], ]+)\.size`) // x.size
 )
+
+func convertExpr(expr string) string {
+	expr = convertLambda(strings.TrimSpace(expr))
+	expr = convertIfExpr(expr)
+	expr = arrayBufRE.ReplaceAllString(expr, "[$1]")
+	expr = appendOpRE.ReplaceAllString(expr, "append($1, $2)")
+	expr = sumCallRE.ReplaceAllString(expr, "sum($1)")
+	expr = sizeCallRE.ReplaceAllString(expr, "len($1)")
+	return expr
+}
 
 func convertLine(line string) string {
 	line = strings.TrimSpace(line)
 	if strings.HasPrefix(line, "println(") {
-		return "print" + line[len("println"):]
+		inner := strings.TrimSuffix(strings.TrimPrefix(line, "println("), ")")
+		return "print(" + convertExpr(inner) + ")"
 	}
 	if strings.HasPrefix(line, "return ((") {
-		return "return " + convertLambda(strings.TrimPrefix(line, "return "))
+		return "return " + convertExpr(strings.TrimPrefix(line, "return "))
 	}
 	if m := forRangeRE.FindStringSubmatch(line); len(m) == 4 {
 		return fmt.Sprintf("for %s in %s..%s {", m[1], m[2], m[3])
@@ -90,10 +105,10 @@ func convertLine(line string) string {
 		return fmt.Sprintf("for %s in %s {", m[1], m[2])
 	}
 	if m := valLineRE.FindStringSubmatch(line); len(m) == 4 {
-		return fmt.Sprintf("let %s = %s", strings.TrimSpace(m[1]), convertLambda(m[3]))
+		return fmt.Sprintf("let %s = %s", strings.TrimSpace(m[1]), convertExpr(m[3]))
 	}
 	if m := varLineRE.FindStringSubmatch(line); len(m) == 4 {
-		return fmt.Sprintf("var %s = %s", strings.TrimSpace(m[1]), convertLambda(m[3]))
+		return fmt.Sprintf("var %s = %s", strings.TrimSpace(m[1]), convertExpr(m[3]))
 	}
 	if m := whileRE.FindStringSubmatch(line); len(m) == 2 {
 		return fmt.Sprintf("while %s {", m[1])
@@ -107,7 +122,7 @@ func convertLine(line string) string {
 	if line == "}" || strings.HasPrefix(line, "else {") {
 		return line
 	}
-	return line
+	return convertExpr(line)
 }
 
 // Transform converts a parsed Scala Program into a Mochi AST node.
@@ -119,14 +134,14 @@ func Transform(p *Program) (*ast.Node, error) {
 	for _, d := range p.Decls {
 		switch d.Kind {
 		case "val":
-			rhs := convertIfExpr(convertLambda(d.RHS))
+			rhs := convertExpr(d.RHS)
 			if rhs != "" {
 				fmt.Fprintf(&b, "let %s = %s\n", d.Name, rhs)
 			} else {
 				fmt.Fprintf(&b, "let %s\n", d.Name)
 			}
 		case "var":
-			rhs := convertIfExpr(convertLambda(d.RHS))
+			rhs := convertExpr(d.RHS)
 			if rhs != "" {
 				fmt.Fprintf(&b, "var %s = %s\n", d.Name, rhs)
 			} else {

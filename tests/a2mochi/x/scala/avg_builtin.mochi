@@ -1,2 +1,2 @@
-// a2mochi scala v0.10.48 2025-07-29 17:46:49 GMT+7
-print((ArrayBuffer(1, 2, 3).sum / ArrayBuffer(1, 2, 3).size))
+// a2mochi scala v0.10.48 2025-07-29 18:23:56 GMT+7
+print((sum([1, 2, 3]) / len([1, 2, 3])))
