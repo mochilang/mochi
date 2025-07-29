@@ -56,6 +56,33 @@ func rewriteExpr(s string) string {
 		s = strings.ReplaceAll(s, `.ToString("0.0")`, "")
 		s = strings.ReplaceAll(s, `.ToString()`, "")
 
+		// lambda (int x) => (x*x) -> fun(x: int) => x*x
+		if arrow := strings.Index(s, "=>"); arrow != -1 {
+			left := strings.TrimSpace(s[:arrow])
+			right := strings.TrimSpace(s[arrow+2:])
+			if strings.HasPrefix(left, "(") && strings.HasSuffix(left, ")") {
+				params := strings.Trim(left, "()")
+				var out []string
+				for _, p := range strings.Split(params, ",") {
+					p = strings.TrimSpace(p)
+					if p == "" {
+						continue
+					}
+					parts := strings.Fields(p)
+					if len(parts) == 2 {
+						if t := mapType(parts[0]); t != "" {
+							out = append(out, fmt.Sprintf("%s: %s", parts[1], t))
+						} else {
+							out = append(out, parts[1])
+						}
+					} else {
+						out = append(out, p)
+					}
+				}
+				s = fmt.Sprintf("fun(%s) => %s", strings.Join(out, ", "), rewriteExpr(right))
+			}
+		}
+
 		// string.Join -> str()
 		if strings.HasPrefix(s, "string.Join(") {
 			inner := strings.TrimPrefix(s, "string.Join(")
@@ -366,6 +393,12 @@ func exprNodeFromAST(n *Node) *ast.Node {
 		if n.Value == "TrimEnd" && len(n.Children) == 1 {
 			return exprNodeFromAST(n.Children[0])
 		}
+		if n.Value == "ToArray" && len(n.Children) == 1 && n.Children[0].Kind == "call" && n.Children[0].Value == "Append" && len(n.Children[0].Children) == 2 {
+			return &ast.Node{Kind: "call", Value: "append", Children: []*ast.Node{exprNodeFromAST(n.Children[0].Children[0]), exprNodeFromAST(n.Children[0].Children[1])}}
+		}
+		if n.Value == "ToInt32" && len(n.Children) == 2 && n.Children[0].Kind == "ident" && n.Children[0].Value == "Convert" {
+			return &ast.Node{Kind: "cast", Children: []*ast.Node{exprNodeFromAST(n.Children[1]), &ast.Node{Kind: "type", Value: "int"}}}
+		}
 		if n.Value == "Join" && len(n.Children) >= 3 {
 			if n.Children[2].Kind == "array" {
 				lst := &ast.Node{Kind: "list"}
@@ -374,7 +407,7 @@ func exprNodeFromAST(n *Node) *ast.Node {
 				}
 				return lst
 			}
-			return &ast.Node{Kind: "call", Value: "str", Children: []*ast.Node{exprNodeFromAST(n.Children[2])}}
+			return &ast.Node{Kind: "call", Value: "str", Children: []*ast.Node{exprNodeFromAST(n.Children[len(n.Children)-1])}}
 		}
 		c := &ast.Node{Kind: "call", Value: n.Value}
 		for _, ch := range n.Children {
