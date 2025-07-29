@@ -1,0 +1,13 @@
+(program
+  (fun fn_0
+    (param x (type int))
+    (type int)
+    (return
+      (binary * (selector x) (selector x))
+    )
+  )
+  (let square (selector fn_0))
+  (call print
+    (call square (int 6))
+  )
+)
