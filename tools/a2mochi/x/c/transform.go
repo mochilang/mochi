@@ -120,6 +120,13 @@ func stmtNodeWithAssign(s Stmt, assigned map[string]bool, inFunc bool, next Stmt
 	case FunDecl:
 		body := blockNode(v.Body, assigned)
 		n := &ast.Node{Kind: "fun", Value: v.Name}
+		for _, p := range v.Params {
+			param := &ast.Node{Kind: "param", Value: p.Name}
+			if p.Type == "int" {
+				param.Children = append(param.Children, &ast.Node{Kind: "type", Value: "int"})
+			}
+			n.Children = append(n.Children, param)
+		}
 		if v.Ret == "int" {
 			n.Children = append(n.Children, &ast.Node{Kind: "type", Value: "int"})
 		}

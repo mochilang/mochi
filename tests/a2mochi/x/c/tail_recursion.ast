@@ -1,5 +1,7 @@
 (program
   (fun sum_rec
+    (param n (type int))
+    (param acc (type int))
     (type int)
     (block
       (if
@@ -17,5 +19,7 @@
       )
     )
   )
-  (call print (selector "0)"))
+  (call print
+    (call sum_rec (int 10) (int 0))
+  )
 )

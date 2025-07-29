@@ -47,9 +47,15 @@ type Return struct {
 	Expr string
 }
 type FunDecl struct {
+	Name   string
+	Ret    string
+	Params []Param
+	Body   []Stmt
+}
+
+type Param struct {
 	Name string
-	Ret  string
-	Body []Stmt
+	Type string
 }
 type Break struct{}
 type Continue struct{}
@@ -62,7 +68,7 @@ var (
 	reIf     = regexp.MustCompile(`^if\s*\((.*)\)\s*{`)
 	rePrintf = regexp.MustCompile(`printf\s*\((.*)\);`)
 	rePuts   = regexp.MustCompile(`puts\s*\("([^\"]*)"\);`)
-	reFunc   = regexp.MustCompile(`^(int|void)\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*\([^\)]*\)\s*{`)
+	reFunc   = regexp.MustCompile(`^(int|void)\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*\(([^\)]*)\)\s*{`)
 )
 
 // Parse parses a limited subset of C needed for simple tests.
@@ -82,9 +88,10 @@ func Parse(src string) (*Program, error) {
 				continue
 			}
 			if m := reFunc.FindStringSubmatch(trimmed); m != nil {
+				params := parseParams(m[3])
 				i++
 				body := parseBlock(lines, &i)
-				preStmts = append(preStmts, FunDecl{Name: m[2], Ret: m[1], Body: body})
+				preStmts = append(preStmts, FunDecl{Name: m[2], Ret: m[1], Params: params, Body: body})
 				continue
 			}
 			if m := reVar.FindStringSubmatch(trimmed); m != nil {
@@ -183,7 +190,7 @@ func parseBlock(lines []string, idx *int) []Stmt {
 			continue
 		}
 		if m := rePrintf.FindStringSubmatch(ln); m != nil {
-			args := strings.Split(m[1], ",")
+			args := parseArgs(m[1])
 			newline := false
 			if len(args) > 0 {
 				fmt := strings.TrimSpace(args[0])
@@ -197,6 +204,64 @@ func parseBlock(lines []string, idx *int) []Stmt {
 			continue
 		}
 		(*idx)++
+	}
+	return out
+}
+
+func parseArgs(s string) []string {
+	var args []string
+	depth := 0
+	inStr := false
+	escape := false
+	start := 0
+	for i, r := range s {
+		if escape {
+			escape = false
+			continue
+		}
+		switch r {
+		case '\\':
+			if inStr {
+				escape = true
+			}
+		case '"':
+			inStr = !inStr
+		case '(':
+			if !inStr {
+				depth++
+			}
+		case ')':
+			if !inStr && depth > 0 {
+				depth--
+			}
+		case ',':
+			if !inStr && depth == 0 {
+				args = append(args, strings.TrimSpace(s[start:i]))
+				start = i + 1
+			}
+		}
+	}
+	if start <= len(s) {
+		args = append(args, strings.TrimSpace(s[start:]))
+	}
+	return args
+}
+
+func parseParams(s string) []Param {
+	s = strings.TrimSpace(s)
+	s = strings.TrimPrefix(s, "(")
+	s = strings.TrimSuffix(s, ")")
+	if s == "" || s == "void" {
+		return nil
+	}
+	parts := parseArgs(s)
+	var out []Param
+	for _, p := range parts {
+		fields := strings.Fields(p)
+		if len(fields) > 0 {
+			name := fields[len(fields)-1]
+			out = append(out, Param{Name: name, Type: fields[0]})
+		}
 	}
 	return out
 }
