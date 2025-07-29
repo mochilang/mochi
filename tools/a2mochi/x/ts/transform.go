@@ -313,6 +313,7 @@ func convertConsole(expr string) string {
 	if strings.HasPrefix(inner, "String(") && strings.HasSuffix(inner, ")") {
 		inner = inner[len("String(") : len(inner)-1]
 	}
+	inner = convertExprSimple(inner)
 	if postfix != "" {
 		return "print((" + inner + ")" + postfix + ")"
 	}
@@ -329,6 +330,21 @@ func convertExpr(expr string) string {
 		if q := parseFilterMap(rhs, lhs); q != nil {
 			return strings.Join(q, "\n")
 		}
+	}
+	return convertExprSimple(expr)
+}
+
+func convertExprSimple(expr string) string {
+	expr = strings.TrimSpace(expr)
+	if strings.HasPrefix(expr, "+") {
+		inner := strings.TrimSpace(expr[1:])
+		if strings.HasPrefix(inner, "(") && strings.HasSuffix(inner, ")") {
+			inner = strings.TrimSpace(inner[1 : len(inner)-1])
+		}
+		return "match " + inner + " { true -> 1 false -> 0 }"
+	}
+	if strings.HasPrefix(expr, "String(") && strings.HasSuffix(expr, ")") {
+		return strings.TrimSpace(expr[len("String(") : len(expr)-1])
 	}
 	return expr
 }
