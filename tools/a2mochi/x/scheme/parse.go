@@ -77,8 +77,10 @@ func Parse(src string) (*Program, error) {
     [(and (pair? e) (eq? (car e) 'list))
      (hash 'list (map expr->json (cdr e)))]
     [(pair? e)
-     (hash 'call (symbol->string (car e))
-           'args (map expr->json (cdr e)))]
+     (if (symbol? (car e))
+         (hash 'call (symbol->string (car e))
+               'args (map expr->json (cdr e)))
+         null)]
     [else #f]))
 
 (define (item f)
