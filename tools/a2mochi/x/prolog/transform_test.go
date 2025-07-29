@@ -133,6 +133,8 @@ func TestTransform(t *testing.T) {
 		"map_in_operator":     true,
 		"map_membership":      true,
 		"min_max_builtin":     true,
+		"if_then_else_nested": true,
+		"string_prefix_slice": true,
 	}
 
 	outputDir := filepath.Join(root, "tests/a2mochi/x/prolog")

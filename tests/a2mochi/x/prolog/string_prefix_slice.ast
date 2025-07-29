@@ -1,0 +1,46 @@
+(program
+  (fun main
+    (let _12404 (string fore))
+    (let _12416 (string forest))
+    (let _12428
+      (binary - (int 4) (int 0))
+    )
+    (let _12442
+      (call substr
+        (selector _12416)
+        (int 0)
+        (binary + (int 0) (selector _12428))
+      )
+    )
+    (if
+      (binary == (selector _12442) (selector _12404))
+      (block
+        (call print (bool true))
+      )
+      (block
+        (call print (bool false))
+      )
+    )
+    (let _12478 (string desert))
+    (let _12490
+      (binary - (int 4) (int 0))
+    )
+    (let _12504
+      (call substr
+        (selector _12478)
+        (int 0)
+        (binary + (int 0) (selector _12490))
+      )
+    )
+    (if
+      (binary == (selector _12504) (selector _12404))
+      (block
+        (call print (bool true))
+      )
+      (block
+        (call print (bool false))
+      )
+    )
+  )
+  (call main)
+)
