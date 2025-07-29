@@ -5,10 +5,13 @@ package scheme_test
 import (
 	"bytes"
 	"flag"
+	"fmt"
 	"os"
 	"path/filepath"
+	"sort"
 	"strings"
 	"testing"
+	"time"
 
 	"mochi/ast"
 	"mochi/parser"
@@ -119,4 +122,41 @@ func TestTransform_Golden(t *testing.T) {
 			}
 		})
 	}
+}
+
+func updateReadme() {
+	root := repoRoot(&testing.T{})
+	srcDir := filepath.Join(root, "tests", "transpiler", "x", "scheme")
+	outDir := filepath.Join(root, "tests", "a2mochi", "x", "scheme")
+	pattern := filepath.Join(srcDir, "*.scm")
+	files, _ := filepath.Glob(pattern)
+	sort.Strings(files)
+	total := len(files)
+	compiled := 0
+	var lines []string
+	for _, f := range files {
+		name := strings.TrimSuffix(filepath.Base(f), ".scm")
+		mark := "[ ]"
+		if _, err := os.Stat(filepath.Join(outDir, name+".mochi")); err == nil {
+			compiled++
+			mark = "[x]"
+		}
+		lines = append(lines, fmt.Sprintf("- %s %s", mark, name))
+	}
+	tz := time.FixedZone("GMT+7", 7*60*60)
+	var buf bytes.Buffer
+	buf.WriteString("# a2mochi Scheme Converter\n\n")
+	fmt.Fprintf(&buf, "Completed programs: %d/%d\n", compiled, total)
+	fmt.Fprintf(&buf, "Date: %s\n\n", time.Now().In(tz).Format("2006-01-02 15:04:05 MST"))
+	buf.WriteString("This directory holds golden outputs for converting Scheme source files under `tests/transpiler/x/scheme` back into Mochi form.\n\n")
+	buf.WriteString("## Checklist\n")
+	buf.WriteString(strings.Join(lines, "\n"))
+	buf.WriteByte('\n')
+	_ = os.WriteFile(filepath.Join(root, "tools", "a2mochi", "x", "scheme", "README.md"), buf.Bytes(), 0o644)
+}
+
+func TestMain(m *testing.M) {
+	code := m.Run()
+	updateReadme()
+	os.Exit(code)
 }
