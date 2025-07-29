@@ -1175,13 +1175,7 @@ func collectAssignCounts(stmts []luaast.Stmt, counts map[string]int) {
 			}
 		case *luaast.AssignStmt:
 			for _, lh := range s.Lhs {
-				if id, ok := lh.(*luaast.IdentExpr); ok {
-					counts[id.Value]++
-				} else if get, ok := lh.(*luaast.AttrGetExpr); ok {
-					if id, ok := get.Object.(*luaast.IdentExpr); ok {
-						counts[id.Value]++
-					}
-				}
+				collectAssignTargets(lh, counts)
 			}
 		case *luaast.FuncDefStmt:
 			if id, ok := s.Name.Func.(*luaast.IdentExpr); ok {
@@ -1206,5 +1200,14 @@ func collectAssignCounts(stmts []luaast.Stmt, counts map[string]int) {
 			}
 			collectAssignCounts(s.Stmts, counts)
 		}
+	}
+}
+
+func collectAssignTargets(e luaast.Expr, counts map[string]int) {
+	switch v := e.(type) {
+	case *luaast.IdentExpr:
+		counts[v.Value]++
+	case *luaast.AttrGetExpr:
+		collectAssignTargets(v.Object, counts)
 	}
 }

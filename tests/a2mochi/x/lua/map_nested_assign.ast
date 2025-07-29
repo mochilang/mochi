@@ -1,0 +1,23 @@
+(program
+  (var data
+    (map
+      (entry
+        (string outer)
+        (map
+          (entry (string inner) (int 1))
+        )
+      )
+    )
+  )
+  (assign
+    (selector inner
+      (selector outer (selector data))
+    )
+    (int 2)
+  )
+  (call print
+    (selector inner
+      (selector outer (selector data))
+    )
+  )
+)
