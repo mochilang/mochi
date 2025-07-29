@@ -240,6 +240,9 @@ func convertBodyLine(s string) string {
 	s = convertAvg(s)
 	s = convertAny(s)
 	s = convertJoinPrint(s)
+	s = convertSlice(s)
+	s = convertSubstring(s)
+	s = convertToString(s)
 	return convertQuotes(s)
 }
 
@@ -355,6 +358,24 @@ func convertJoinPrint(s string) string {
 		}
 		return m
 	})
+}
+
+var sublistRe = regexp.MustCompile(`([A-Za-z_][A-Za-z0-9_]*|\[[^\]]+\])\.sublist\(([^,]+),\s*([^)]+)\)`)
+
+func convertSlice(s string) string {
+	return sublistRe.ReplaceAllString(s, "$1[$2:$3]")
+}
+
+var substringRe = regexp.MustCompile(`([A-Za-z_][A-Za-z0-9_]*|\"[^\"]*\")\.substring\(([^,]+),\s*([^)]+)\)`)
+
+func convertSubstring(s string) string {
+	return substringRe.ReplaceAllString(s, "substring($1, $2, $3)")
+}
+
+var toStringRe = regexp.MustCompile(`([A-Za-z0-9_]+)\.toString\(\)`)
+
+func convertToString(s string) string {
+	return toStringRe.ReplaceAllString(s, "str($1)")
 }
 
 var whileRe = regexp.MustCompile(`^(\s*)while\s*\(([^)]+)\)`)
