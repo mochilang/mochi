@@ -1,7 +1,7 @@
 # a2mochi Kotlin Converter
 
-Completed programs: 0/102 (0%)
-Date: 2025-07-29 21:34 GMT+7
+Completed programs: 4/102 (4%)
+Date: 2025-07-29 23:44 GMT+7
 
 This directory holds golden outputs for the Kotlin to Mochi converter.
 
@@ -10,10 +10,10 @@ Implemented examples:
 - [ ] append_builtin
 - [ ] avg_builtin
 - [ ] basic_compare
-- [ ] binary_precedence
+- [x] binary_precedence
 - [ ] bool_chain
 - [ ] break_continue
-- [ ] cast_string_to_int
+- [x] cast_string_to_int
 - [ ] cast_struct
 - [ ] closure
 - [ ] count_builtin
@@ -23,7 +23,7 @@ Implemented examples:
 - [ ] dataset_sort_take_limit
 - [ ] dataset_where_filter
 - [ ] exists_builtin
-- [ ] for_list_collection
+- [x] for_list_collection
 - [ ] for_loop
 - [ ] for_map_collection
 - [ ] fun_call
@@ -90,7 +90,7 @@ Implemented examples:
 - [ ] sort_stable
 - [ ] str_builtin
 - [ ] string_compare
-- [ ] string_concat
+- [x] string_concat
 - [ ] string_contains
 - [ ] string_in_operator
 - [ ] string_index

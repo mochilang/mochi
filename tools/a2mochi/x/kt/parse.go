@@ -38,6 +38,7 @@ type Stmt struct {
 	Kind string `json:"kind"`
 	Name string `json:"name,omitempty"`
 	Expr string `json:"expr,omitempty"`
+	Body []Stmt `json:"body,omitempty"`
 }
 
 // Program holds parsed declarations and the original Kotlin source.
@@ -544,10 +545,17 @@ func splitParams(s string) []string {
 
 func parseStmts(lines []string) []Stmt {
 	var stmts []Stmt
-	for _, l := range lines {
-		l = strings.TrimSpace(strings.TrimSuffix(l, ";"))
+	for i := 0; i < len(lines); i++ {
+		l := strings.TrimSpace(strings.TrimSuffix(lines[i], ";"))
+
+		// variable declaration
 		if strings.HasPrefix(l, "val ") || strings.HasPrefix(l, "var ") {
-			rest := strings.TrimSpace(strings.TrimPrefix(strings.TrimPrefix(l, "val "), "var "))
+			kind := "let"
+			rest := strings.TrimSpace(strings.TrimPrefix(l, "val "))
+			if strings.HasPrefix(l, "var ") {
+				kind = "var"
+				rest = strings.TrimSpace(strings.TrimPrefix(l, "var "))
+			}
 			eq := strings.Index(rest, "=")
 			if eq == -1 {
 				continue
@@ -557,16 +565,53 @@ func parseStmts(lines []string) []Stmt {
 				name = strings.TrimSpace(name[:colon])
 			}
 			expr := convertExpr(strings.TrimSpace(rest[eq+1:]))
-			if expr != "" {
-				stmts = append(stmts, Stmt{Kind: "let", Name: name, Expr: expr})
-			}
+			stmts = append(stmts, Stmt{Kind: kind, Name: name, Expr: expr})
 			continue
 		}
+
+		// println statement
 		if strings.HasPrefix(l, "println(") && strings.HasSuffix(l, ")") {
 			inner := strings.TrimSuffix(strings.TrimPrefix(l, "println("), ")")
 			expr := convertExpr(inner)
-			if expr != "" {
-				stmts = append(stmts, Stmt{Kind: "print", Expr: expr})
+			stmts = append(stmts, Stmt{Kind: "print", Expr: expr})
+			continue
+		}
+
+		// assignment
+		if idx := strings.Index(l, "="); idx != -1 && !strings.HasPrefix(l, "for ") {
+			name := strings.TrimSpace(l[:idx])
+			expr := convertExpr(strings.TrimSpace(l[idx+1:]))
+			stmts = append(stmts, Stmt{Kind: "set", Name: name, Expr: expr})
+			continue
+		}
+
+		// for loop
+		if strings.HasPrefix(l, "for (") && strings.HasSuffix(l, "{") {
+			head := strings.TrimSpace(strings.TrimSuffix(strings.TrimPrefix(l, "for ("), "{"))
+			head = strings.TrimSuffix(head, ")")
+			parts := strings.SplitN(head, " in ", 2)
+			if len(parts) == 2 {
+				varName := strings.TrimSpace(parts[0])
+				iter := convertExpr(strings.TrimSpace(parts[1]))
+				depth := 1
+				var body []string
+				for i++; i < len(lines); i++ {
+					line := strings.TrimSpace(lines[i])
+					if strings.HasSuffix(line, "{") {
+						depth++
+					}
+					if line == "}" {
+						depth--
+						if depth == 0 {
+							break
+						}
+					}
+					if depth > 0 {
+						body = append(body, line)
+					}
+				}
+				stmt := Stmt{Kind: "for", Name: varName, Expr: iter, Body: parseStmts(body)}
+				stmts = append(stmts, stmt)
 			}
 			continue
 		}
@@ -601,5 +646,15 @@ func convertExpr(expr string) string {
 	if m := appendRe.FindStringSubmatch(expr); m != nil {
 		return fmt.Sprintf("append(%s, %s)", m[1], m[2])
 	}
-	return ""
+	if strings.HasSuffix(expr, ".toInt()") {
+		inner := strings.TrimSuffix(expr, ".toInt()")
+		return "int(" + inner + ")"
+	}
+	if strings.Contains(expr, " until ") {
+		parts := strings.SplitN(expr, " until ", 2)
+		if len(parts) == 2 {
+			return fmt.Sprintf("%s..%s-1", convertExpr(parts[0]), convertExpr(parts[1]))
+		}
+	}
+	return expr
 }

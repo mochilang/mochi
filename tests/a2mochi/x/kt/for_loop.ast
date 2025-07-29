@@ -1,1 +1,11 @@
-(program (fun main))
+(program
+  (for i
+    (range
+      (int 1)
+      (binary - (int 4) (int 1))
+    )
+    (block
+      (call print (selector i))
+    )
+  )
+)

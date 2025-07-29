@@ -106,8 +106,16 @@ func genMochiFromStmts(stmts []Stmt) string {
 		switch s.Kind {
 		case "let":
 			fmt.Fprintf(&b, "let %s = %s\n", sanitizeName(s.Name), s.Expr)
+		case "var":
+			fmt.Fprintf(&b, "var %s = %s\n", sanitizeName(s.Name), s.Expr)
 		case "print":
 			fmt.Fprintf(&b, "print(%s)\n", s.Expr)
+		case "set":
+			fmt.Fprintf(&b, "%s = %s\n", sanitizeName(s.Name), s.Expr)
+		case "for":
+			fmt.Fprintf(&b, "for %s in %s {\n", sanitizeName(s.Name), s.Expr)
+			b.WriteString(genMochiFromStmts(s.Body))
+			b.WriteString("}\n")
 		}
 	}
 	return b.String()
