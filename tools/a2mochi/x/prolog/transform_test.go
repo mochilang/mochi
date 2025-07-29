@@ -123,6 +123,9 @@ func TestTransform(t *testing.T) {
 		"in_operator":         true,
 		"string_in_operator":  true,
 		"substring_builtin":   true,
+		"values_builtin":      true,
+		"typed_let":           true,
+		"typed_var":           true,
 	}
 
 	outputDir := filepath.Join(root, "tests/a2mochi/x/prolog")

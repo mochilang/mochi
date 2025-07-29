@@ -100,6 +100,23 @@ func parseBodyNodes(body string) ([]*ast.Node, error) {
 				node("block", nil, thenNodes...),
 				node("block", nil, elseNodes...),
 			))
+		case strings.HasPrefix(c, "(") && strings.Contains(c, "->"):
+			expr := strings.TrimSuffix(strings.TrimPrefix(c, "("), ")")
+			parts := strings.SplitN(expr, "->", 2)
+			condStr := convertExpr(strings.TrimSpace(parts[0]))
+			thenPart := strings.TrimSpace(parts[1])
+			condNode, err := parseExpr(condStr)
+			if err != nil {
+				return nil, err
+			}
+			thenNodes, err := parseBodyNodes(thenPart)
+			if err != nil {
+				return nil, err
+			}
+			out = append(out, node("if", nil,
+				condNode,
+				node("block", nil, thenNodes...),
+			))
 		case strings.Contains(c, " is "):
 			parts := strings.SplitN(c, " is ", 2)
 			name := strings.TrimSpace(parts[0])
@@ -320,6 +337,10 @@ func convertExpr(expr string) string {
 	expr = strings.ReplaceAll(expr, "@>", ">")
 	expr = strings.ReplaceAll(expr, "@<", "<")
 	expr = strings.ReplaceAll(expr, " = ", " == ")
+	// handle unspaced '=' in comparisons
+	expr = strings.ReplaceAll(expr, "==", "#eq#")
+	expr = strings.ReplaceAll(expr, "=", "==")
+	expr = strings.ReplaceAll(expr, "#eq#", "==")
 	expr = strings.ReplaceAll(expr, "map{", "{")
 	expr = strings.ReplaceAll(expr, "_{", "{")
 	expr = regexp.MustCompile(`^[A-Za-z0-9_]+{`).ReplaceAllStringFunc(expr, func(s string) string {
