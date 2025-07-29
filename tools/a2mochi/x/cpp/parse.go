@@ -180,7 +180,20 @@ func walkAST(n *clangNode, src string, funcs *[]Func, enums *[]Enum, structs *[]
 		*funcs = append(*funcs, Func{Name: name, Params: params, Ret: ret, Body: body})
 	case "VarDecl":
 		if parent == "" && n.Range != nil && n.Range.Begin.Offset >= 0 && n.Range.End.Offset >= n.Range.Begin.Offset && n.Range.End.Offset <= len(src) {
-			snippet := strings.TrimSpace(src[n.Range.Begin.Offset:n.Range.End.Offset])
+			start := n.Range.Begin.Offset
+			end := n.Range.End.Offset
+			if end <= len(src) {
+				snippet := src[start:end]
+				if strings.Count(snippet, "{") > strings.Count(snippet, "}") {
+					if idx := strings.Index(src[end:], ";"); idx != -1 {
+						end += idx + 1
+					}
+				}
+			}
+			if end > len(src) {
+				end = len(src)
+			}
+			snippet := strings.TrimSpace(src[start:end])
 			g := parseGlobalDecl(snippet)
 			if g.Name != "" {
 				if len(n.Inner) > 0 && n.Inner[0].Kind == "IntegerLiteral" {
