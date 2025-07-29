@@ -210,6 +210,8 @@ func parseStatementsIndent(body string, indent int) []string {
 			l = rewriteCasts(l)
 			l = rewriteCount(l)
 			l = rewriteMinMax(l)
+			l = rewriteRanges(l)
+			l = rewriteStrBuiltin(l)
 			l = strings.ReplaceAll(l, ")!", ")")
 			l = strings.ReplaceAll(l, "_append(", "append(")
 			l = strings.ReplaceAll(l, "_values(", "values(")
@@ -354,6 +356,14 @@ func rewriteMinMax(expr string) string {
 		break
 	}
 	return expr
+}
+
+func rewriteRanges(expr string) string {
+	return strings.ReplaceAll(expr, "..<", "..")
+}
+
+func rewriteStrBuiltin(expr string) string {
+	return strings.ReplaceAll(expr, "String(", "str(")
 }
 
 func gatherEnumElements(ms []item) []item {

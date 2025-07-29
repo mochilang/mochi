@@ -78,6 +78,8 @@ func TestTransformGolden(t *testing.T) {
 	allowed := map[string]bool{
 		"count_builtin":       true,
 		"for_list_collection": true,
+		"for_loop":            true,
+		"while_loop":          true,
 		"fun_expr_in_let":     true,
 		"fun_three_args":      true,
 		"len_map":             true,
@@ -87,6 +89,7 @@ func TestTransformGolden(t *testing.T) {
 		"min_max_builtin":     true,
 		"print_hello":         true,
 		"string_concat":       true,
+		"str_builtin":         true,
 		"var_assignment":      true,
 	}
 	outDir := filepath.Join(root, "tests", "a2mochi", "x", "swift")
