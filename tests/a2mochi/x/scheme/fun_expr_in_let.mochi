@@ -1,6 +1,4 @@
-fun to_str(x: any) {
-}
 fun square(x: any) {
 }
-print
-print
+print(to-str(square(6)))
+print("")

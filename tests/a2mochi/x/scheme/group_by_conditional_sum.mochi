@@ -1,4 +1,4 @@
-let items
-let result
-print
-print
+let items = [alist->hash-table([cons("cat", "a"), cons("val", 10), cons("flag", "true")]), alist->hash-table([cons("cat", "a"), cons("val", 5), cons("flag", "false")]), alist->hash-table([cons("cat", "b"), cons("val", 20), cons("flag", "true")])]
+let result = let(begin(for-each(lambda(i(), set!(res14, append(res14, [alist->hash-table([cons("cat", hash-table-ref(g, "key")), cons("share", quotient(apply(+, let(begin(for-each(lambda(x(), set!(res12, append(res12, [if(hash-table-ref(x, "flag"), hash-table-ref(x, "val"), 0)]))), "g"), res12))), apply(+, let(begin(for-each(lambda(x(), set!(res13, append(res13, [hash-table-ref(x, "val")]))), "g"), res13)))))])]))), items), res14))
+print(result)
+print("")

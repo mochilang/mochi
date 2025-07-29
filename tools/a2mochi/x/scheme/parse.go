@@ -123,7 +123,8 @@ func Parse(src string) (*Program, error) {
           (hash 'kind "assign" 'name (symbol->string (cadr f))
                 'value (expr->json val)))]
        [else #f])]
-    [(and (pair? f) (eq? (car f) 'display))
+    [(and (pair? f) (or (eq? (car f) 'display)
+                        (eq? (car f) 'displayln)))
      (let ([val (cadr f)])
        (hash 'kind "print"
              'value (expr->json val)))]

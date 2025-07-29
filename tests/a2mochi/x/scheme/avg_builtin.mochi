@@ -1,10 +1,2 @@
-fun to_str(x: any) {
-}
-fun upper(s: any) {
-}
-fun lower(s: any) {
-}
-fun fmod(a: any, b: any) {
-}
-print
-print
+print(to-str(let(exact->inexact((apply(+, xs) / length(xs))))))
+print("")

@@ -1,4 +1,4 @@
-let data
-let flag
-print
-print
+let data = [1, 2]
+let flag = if(null?(let(begin(for-each(lambda(x(), if((x == 1), set!(res6, append(res6, [x])), quote(nil))), data), res6))), "false", "true")
+print(if(flag, 1, 0))
+print("")

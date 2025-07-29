@@ -76,7 +76,7 @@ func newAssign(name string, val interface{}) *ast.Node {
 }
 
 func newPrint(val interface{}) *ast.Node {
-	n := &ast.Node{Kind: "print"}
+	n := &ast.Node{Kind: "call", Value: "print"}
 	if c := exprNode(val); c != nil {
 		n.Children = append(n.Children, c)
 	}

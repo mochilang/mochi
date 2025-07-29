@@ -1,5 +1,5 @@
-let customers
-let orders
-let stats
-print
-print
+let customers = [alist->hash-table([cons("id", 1), cons("name", "Alice")]), alist->hash-table([cons("id", 2), cons("name", "Bob")]), alist->hash-table([cons("id", 3), cons("name", "Charlie")])]
+let orders = [alist->hash-table([cons("id", 100), cons("customerId", 1)]), alist->hash-table([cons("id", 101), cons("customerId", 1)]), alist->hash-table([cons("id", 102), cons("customerId", 2)])]
+let stats = let(begin(for-each(lambda(c(), for-each(lambda(o(), if((hash-table-ref(o, "customerId") == hash-table-ref(c, "id")), let*(begin(if(not(g25), begin(set!(g25, alist->hash-table([cons("key", k26), cons("items", [])])), hash-table-set!(groups24, k26, g25)), quote(nil)), hash-table-set!(g25, "items", append(hash-table-ref(g25, "items"), [alist->hash-table([cons("c", c), cons("o", o)])])))), quote(nil))), orders)), customers), for-each(lambda(g(), set!(res27, append(res27, [alist->hash-table([cons("name", hash-table-ref(g, "key")), cons("count", length(let(begin(for-each(lambda(r(), if(hash-table-ref(r, "o"), set!(res23, append(res23, [r])), quote(nil))), hash-table-ref(g, "items")), res23))))])]))), hash-table-values(groups24)), res27))
+print("--- Group Left Join ---")
+print("")

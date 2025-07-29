@@ -1,6 +1,6 @@
-let nums
-let letters
-let bools
-let combos
-print
-print
+let nums = [1, 2]
+let letters = ["A", "B"]
+let bools = ["true", "false"]
+let combos = let(begin(for-each(lambda(n(), for-each(lambda(l(), for-each(lambda(b(), set!(res3, append(res3, [alist->hash-table([cons("n", n), cons("l", l), cons("b", b)])]))), bools)), letters)), nums), res3))
+print("--- Cross Join of three lists ---")
+print("")

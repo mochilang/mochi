@@ -1,16 +1,8 @@
-fun to_str(x: any) {
-}
-fun upper(s: any) {
-}
-fun lower(s: any) {
-}
-fun fmod(a: any, b: any) {
-}
-let a
-let b
-print
-print
-print
-print
-print
-print
+let a = (10 - 3)
+let b = (2 + 2)
+print(to-str(a))
+print("")
+print(to-str(if((a == 7), true, false)))
+print("")
+print(to-str(if((b < 5), true, false)))
+print("")
