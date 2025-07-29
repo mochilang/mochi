@@ -75,6 +75,7 @@ var (
 	andRe = regexp.MustCompile(`\band\b`)
 	orRe  = regexp.MustCompile(`\bor\b`)
 	notRe = regexp.MustCompile(`\bnot\b`)
+	modRe = regexp.MustCompile(`\bmod\b`)
 )
 
 func convertOps(s string) string {
@@ -83,6 +84,7 @@ func convertOps(s string) string {
 	s = andRe.ReplaceAllString(s, "&&")
 	s = orRe.ReplaceAllString(s, "||")
 	s = notRe.ReplaceAllString(s, "!")
+	s = modRe.ReplaceAllString(s, "%")
 	return s
 }
 
@@ -95,10 +97,11 @@ func convertExpr(s string) string {
 }
 
 var (
-	highRe   = regexp.MustCompile(`High\(([^\)]+)\)`)
-	copyRe   = regexp.MustCompile(`copy\(([^,]+),\s*([^,]+),\s*([^\)]+)\)`)
-	posRe    = regexp.MustCompile(`Pos\(([^,]+),\s*([^\)]+)\)`)
-	posCmpRe = regexp.MustCompile(`Pos\(([^,]+),\s*([^\)]+)\)\s*(<>|=)\s*0`)
+	highRe     = regexp.MustCompile(`High\(([^\)]+)\)`)
+	copyRe     = regexp.MustCompile(`copy\(([^,]+),\s*([^,]+),\s*([^\)]+)\)`)
+	posRe      = regexp.MustCompile(`Pos\(([^,]+),\s*([^\)]+)\)`)
+	posCmpRe   = regexp.MustCompile(`Pos\(([^,]+),\s*([^\)]+)\)\s*(<>|=)\s*0`)
+	strToIntRe = regexp.MustCompile(`StrToInt\(([^\)]+)\)`)
 )
 
 func convertBuiltins(s string) string {
@@ -110,6 +113,7 @@ func convertBuiltins(s string) string {
 		s = inner
 	}
 	s = highRe.ReplaceAllString(s, "len($1) - 1")
+	s = strToIntRe.ReplaceAllString(s, "($1 as int)")
 	s = posCmpRe.ReplaceAllStringFunc(s, func(m string) string {
 		parts := posCmpRe.FindStringSubmatch(m)
 		if len(parts) < 4 {
@@ -450,6 +454,29 @@ func convertFallback(src string) ([]byte, error) {
 			}
 			break
 
+		case (lowerStmt == "end" || lowerStmt == "end;") && inFunc:
+			appendLine("}")
+			inFunc = false
+			waitingBegin = false
+			continue
+
+		case strings.HasPrefix(lowerStmt, "for ") && strings.Contains(lowerStmt, " in ") && strings.Contains(lowerStmt, " do"):
+			rest := strings.TrimSpace(stmt[len("for "):])
+			inIdx := strings.Index(strings.ToLower(rest), " in ")
+			if inIdx == -1 {
+				return addError(i, "bad for")
+			}
+			varName := strings.TrimSpace(rest[:inIdx])
+			rest = rest[inIdx+4:]
+			doIdx := strings.Index(strings.ToLower(rest), " do")
+			if doIdx == -1 {
+				return addError(i, "bad for")
+			}
+			iterExpr := convertExpr(strings.TrimSpace(rest[:doIdx]))
+			appendLine(fmt.Sprintf("for %s in %s {", varName, iterExpr))
+			loopDepth++
+			waitingBegin = true
+
 		case strings.HasPrefix(lowerStmt, "for ") && strings.Contains(lowerStmt, " to ") && strings.Contains(lowerStmt, " do"):
 			parts := strings.SplitN(stmt, ":=", 2)
 			if len(parts) != 2 {
@@ -537,7 +564,15 @@ func convertFallback(src string) ([]byte, error) {
 		case strings.HasPrefix(lowerStmt, "writeln("):
 			expr := strings.TrimSuffix(strings.TrimPrefix(stmt, "writeln("), ");")
 			expr = convertExpr(expr)
+			expr = strings.ReplaceAll(expr, ", \" \"", "")
+			expr = strings.ReplaceAll(expr, "\" \" ,", "")
 			appendLine(fmt.Sprintf("print(%s)", expr))
+
+		case lowerStmt == "break" || lowerStmt == "break;":
+			appendLine("break")
+
+		case lowerStmt == "continue" || lowerStmt == "continue;":
+			appendLine("continue")
 
 		case strings.HasPrefix(lowerStmt, "setlength("):
 			continue
@@ -555,6 +590,11 @@ func convertFallback(src string) ([]byte, error) {
 			} else {
 				appendLine(fmt.Sprintf("%s = %s", name, expr))
 			}
+
+		case strings.HasPrefix(lowerStmt, "exit(") && strings.HasSuffix(lowerStmt, ");") && inFunc:
+			expr := strings.TrimSuffix(strings.TrimPrefix(stmt, "exit("), ");")
+			expr = convertExpr(strings.TrimSpace(expr))
+			appendLine(fmt.Sprintf("return %s", expr))
 
 		case lowerStmt == "exit" && inFunc:
 			appendLine("return")
