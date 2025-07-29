@@ -1,0 +1,372 @@
+//go:build slow
+
+package ts
+
+import (
+	"fmt"
+	"strings"
+
+	"mochi/ast"
+	"mochi/parser"
+)
+
+// Transform converts a Program into a Mochi AST node.
+func Transform(p *Program) (*ast.Node, error) {
+	root := &ast.Node{Kind: "program"}
+	for _, d := range p.Nodes {
+		st, err := nodeFromDecl(d)
+		if err != nil {
+			return nil, err
+		}
+		if st != nil {
+			root.Children = append(root.Children, st)
+		}
+	}
+	return root, nil
+}
+
+func nodeFromDecl(d Node) (*ast.Node, error) {
+	var src string
+	switch d.Kind {
+	case "var":
+		src = emitVar(d)
+	case "funcvar":
+		src = emitFuncVar(d)
+	case "func":
+		src = emitFunc(d)
+	case "enum":
+		src = emitEnum(d)
+	case "type":
+		src = emitType(d)
+	case "alias":
+		src = emitAlias(d)
+	case "print":
+		src = emitPrint(d)
+	case "expr":
+		src = emitExpr(d)
+	case "forof":
+		src = emitForOf(d)
+	case "forin":
+		src = emitForIn(d)
+	case "for":
+		src = emitForRange(d)
+	case "while":
+		src = emitWhile(d)
+	}
+	if src == "" {
+		return nil, nil
+	}
+	prog, err := parser.ParseString(src)
+	if err != nil {
+		return nil, err
+	}
+	if len(prog.Statements) == 0 {
+		return nil, nil
+	}
+	return ast.FromStatement(prog.Statements[0]), nil
+}
+
+func emitVar(d Node) string {
+	var sb strings.Builder
+	sb.WriteString("let ")
+	sb.WriteString(d.Name)
+	if d.Ret != "" {
+		sb.WriteString(": ")
+		sb.WriteString(toMochiType(d.Ret))
+	}
+	if d.Value != "" {
+		sb.WriteString(" = ")
+		sb.WriteString(d.Value)
+	}
+	sb.WriteByte('\n')
+	return sb.String()
+}
+
+func emitFuncVar(d Node) string {
+	var sb strings.Builder
+	sb.WriteString("let ")
+	sb.WriteString(d.Name)
+	sb.WriteString(" = ")
+	emitFuncSignature(&sb, d)
+	return sb.String()
+}
+
+func emitFunc(d Node) string {
+	var sb strings.Builder
+	sb.WriteString("fun ")
+	sb.WriteString(d.Name)
+	emitFuncSignature(&sb, d)
+	return sb.String()
+}
+
+func emitFuncSignature(b *strings.Builder, d Node) {
+	b.WriteByte('(')
+	for i, p := range d.Params {
+		if i > 0 {
+			b.WriteString(", ")
+		}
+		b.WriteString(p.Name)
+		if p.Typ != "" {
+			b.WriteString(": ")
+			b.WriteString(toMochiType(p.Typ))
+		}
+	}
+	b.WriteByte(')')
+	if d.Ret != "" && d.Ret != "void" {
+		b.WriteString(": ")
+		b.WriteString(toMochiType(d.Ret))
+	}
+	b.WriteString(" {\n}")
+	b.WriteByte('\n')
+}
+
+func emitEnum(d Node) string {
+	var sb strings.Builder
+	sb.WriteString("type ")
+	sb.WriteString(d.Name)
+	sb.WriteString(" {\n")
+	for _, v := range d.Variants {
+		sb.WriteString("  ")
+		sb.WriteString(v)
+		sb.WriteByte('\n')
+	}
+	sb.WriteString("}\n")
+	return sb.String()
+}
+
+func emitType(d Node) string {
+	var sb strings.Builder
+	sb.WriteString("type ")
+	sb.WriteString(d.Name)
+	sb.WriteString(" {\n")
+	for _, f := range d.Fields {
+		sb.WriteString("  ")
+		sb.WriteString(f.Name)
+		if f.Typ != "" {
+			sb.WriteString(": ")
+			sb.WriteString(toMochiType(f.Typ))
+		}
+		sb.WriteByte('\n')
+	}
+	sb.WriteString("}\n")
+	return sb.String()
+}
+
+func emitAlias(d Node) string {
+	var sb strings.Builder
+	sb.WriteString("type ")
+	sb.WriteString(d.Name)
+	sb.WriteString(" = ")
+	sb.WriteString(toMochiType(d.Alias))
+	sb.WriteByte('\n')
+	return sb.String()
+}
+
+func emitPrint(d Node) string {
+	return fmt.Sprintf("print(%s)\n", d.Body)
+}
+
+func emitExpr(d Node) string {
+	return convertExpr(d.Expr) + "\n"
+}
+
+func emitForOf(d Node) string {
+	body := replaceConsoleLogs(d.Body)
+	list := replaceObjectValues(d.List)
+	return fmt.Sprintf("for %s in %s {%s}\n", d.Iter, list, body)
+}
+
+func emitForIn(d Node) string {
+	body := replaceConsoleLogs(d.Body)
+	return fmt.Sprintf("for %s in %s {%s}\n", d.Iter, d.List, body)
+}
+
+func emitForRange(d Node) string {
+	body := replaceConsoleLogs(d.Body)
+	return fmt.Sprintf("for %s in %s..%s {%s}\n", d.Iter, d.StartVal, d.EndVal, body)
+}
+
+func emitWhile(d Node) string {
+	body := replaceConsoleLogs(d.Body)
+	return fmt.Sprintf("while %s {%s}\n", d.Cond, body)
+}
+
+// --- Helpers copied from archived any2mochi ---
+
+func findMatch(s string, openIdx int, open, close rune) int {
+	depth := 0
+	for i, r := range s[openIdx:] {
+		if r == open {
+			depth++
+		} else if r == close {
+			depth--
+			if depth == 0 {
+				return openIdx + i
+			}
+		}
+	}
+	return len(s)
+}
+
+func parseFilterMap(expr, lhs string) []string {
+	filterIdx := strings.Index(expr, ".filter(")
+	mapIdx := strings.Index(expr, ".map(")
+	if filterIdx == -1 || mapIdx == -1 || mapIdx < filterIdx {
+		return nil
+	}
+	list := strings.TrimSpace(expr[:filterIdx])
+	fStart := filterIdx + len(".filter(")
+	fEnd := findMatch(expr, fStart-1, '(', ')')
+	if fEnd <= fStart {
+		return nil
+	}
+	fPart := expr[fStart:fEnd]
+	arrow := strings.Index(fPart, "=>")
+	if arrow == -1 {
+		return nil
+	}
+	iter := strings.TrimSpace(strings.Trim(fPart[:arrow], "() "))
+	cond := strings.TrimSpace(strings.Trim(fPart[arrow+2:], "() "))
+	mStart := mapIdx + len(".map(")
+	mEnd := findMatch(expr, mStart-1, '(', ')')
+	if mEnd <= mStart {
+		return nil
+	}
+	mPart := expr[mStart:mEnd]
+	arrow = strings.Index(mPart, "=>")
+	if arrow == -1 {
+		return nil
+	}
+	iter2 := strings.TrimSpace(strings.Trim(mPart[:arrow], "() "))
+	body := strings.TrimSpace(strings.Trim(mPart[arrow+2:], "() "))
+	if iter2 != "" {
+		iter = iter2
+	}
+	var out []string
+	out = append(out, lhs+" = from "+iter+" in "+list)
+	out = append(out, "             where "+cond)
+	out = append(out, "             select "+body)
+	return out
+}
+
+func replaceObjectValues(s string) string {
+	const prefix = "Object.values("
+	if strings.HasPrefix(s, prefix) {
+		return "values(" + s[len(prefix):]
+	}
+	return s
+}
+
+func replaceConsoleLogs(body string) string {
+	prefix := "console.log(String("
+	for {
+		idx := strings.Index(body, prefix)
+		if idx == -1 {
+			break
+		}
+		end := findMatch(body, idx+len(prefix)-1, '(', ')')
+		if end == len(body) {
+			break
+		}
+		expr := body[idx+len(prefix) : end]
+		tail := end + 1
+		if strings.HasPrefix(body[tail:], ");") {
+			tail += 2
+		}
+		if tail < len(body) && body[tail] == ';' {
+			tail++
+		}
+		body = body[:idx] + "print(" + expr + ")" + body[tail:]
+	}
+	return body
+}
+
+func convertExpr(expr string) string {
+	if strings.HasPrefix(expr, "console.log(") {
+		inner := strings.TrimSuffix(strings.TrimPrefix(expr, "console.log("), ")")
+		if strings.HasPrefix(inner, "String(") && strings.HasSuffix(inner, ")") {
+			inner = inner[len("String(") : len(inner)-1]
+		}
+		return "print(" + inner + ")"
+	}
+	if assignIdx := strings.Index(expr, "="); assignIdx > 0 {
+		lhs := strings.TrimSpace(expr[:assignIdx])
+		rhs := strings.TrimSpace(expr[assignIdx+1:])
+		if q := parseFilterMap(rhs, lhs); q != nil {
+			return strings.Join(q, "\n")
+		}
+	}
+	return expr
+}
+
+func toMochiType(t string) string {
+	t = strings.TrimSpace(t)
+	if strings.Contains(t, "|") {
+		parts := strings.Split(t, "|")
+		filtered := make([]string, 0, len(parts))
+		for _, p := range parts {
+			p = strings.TrimSpace(p)
+			if p == "null" || p == "undefined" {
+				continue
+			}
+			mp := toMochiType(p)
+			if mp != "" {
+				filtered = append(filtered, mp)
+			}
+		}
+		if len(filtered) == 1 {
+			return filtered[0]
+		}
+		if len(filtered) > 1 {
+			return "any"
+		}
+		return ""
+	}
+	switch t {
+	case "", "any", "unknown", "object":
+		return "any"
+	case "number":
+		return "int"
+	case "string":
+		return "string"
+	case "boolean":
+		return "bool"
+	case "void", "undefined", "null":
+		return ""
+	}
+	if strings.HasSuffix(t, "[]") {
+		inner := toMochiType(t[:len(t)-2])
+		if inner == "" {
+			inner = "any"
+		}
+		return "list<" + inner + ">"
+	}
+	if strings.HasPrefix(t, "Array<") && strings.HasSuffix(t, ">") {
+		inner := toMochiType(t[6 : len(t)-1])
+		if inner == "" {
+			inner = "any"
+		}
+		return "list<" + inner + ">"
+	}
+	if strings.HasPrefix(t, "Record<") && strings.HasSuffix(t, ">") {
+		inner := t[7 : len(t)-1]
+		comma := strings.Index(inner, ",")
+		var k, v string
+		if comma >= 0 {
+			k = strings.TrimSpace(inner[:comma])
+			v = strings.TrimSpace(inner[comma+1:])
+		} else {
+			k = strings.TrimSpace(inner)
+		}
+		key := toMochiType(k)
+		val := toMochiType(v)
+		if key == "" {
+			key = "any"
+		}
+		if val == "" {
+			val = "any"
+		}
+		return "map<" + key + "," + val + ">"
+	}
+	return t
+}
