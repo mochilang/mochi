@@ -21,11 +21,12 @@ import (
 )
 
 type Program struct {
-	Functions []Func      `json:"functions"`
-	Classes   []Class     `json:"classes"`
-	Vars      []Var       `json:"vars"`
-	Prints    []PrintStmt `json:"prints"`
-	Stmts     []*ast.Node `json:"stmts"`
+	Functions []Func          `json:"functions"`
+	Classes   []Class         `json:"classes"`
+	Vars      []Var           `json:"vars"`
+	Prints    []PrintStmt     `json:"prints"`
+	Stmts     []*ast.Node     `json:"stmts"`
+	Mutables  map[string]bool `json:"-"`
 }
 
 // ParseError represents a PHP parse error with line information.
@@ -202,34 +203,60 @@ func boolReturnNode(n pnode.Node) bool {
 }
 
 func parseExprStmt(p *Program, st *stmt.Expression) *ast.Node {
-	return parseExprStmtRec(p, st, true)
+	node := parseExprStmtRec(p, st, true)
+	if node != nil && node.Kind != "let" {
+		p.Stmts = append(p.Stmts, node)
+	}
+	return node
 }
 
 func parseExprStmtRec(p *Program, st *stmt.Expression, record bool) *ast.Node {
 	switch e := st.Expr.(type) {
 	case *assign.Assign:
-		v, ok := e.Variable.(*expr.Variable)
-		if !ok {
-			return nil
+		switch v := e.Variable.(type) {
+		case *expr.Variable:
+			val, ok := simpleExpr(e.Expression)
+			if !ok {
+				return nil
+			}
+			pos := e.GetPosition()
+			if record {
+				p.Vars = append(p.Vars, Var{
+					Name:      identString(v.VarName),
+					Value:     val,
+					StartLine: pos.StartLine,
+					EndLine:   pos.EndLine,
+				})
+			}
+			exprNode, err := parseExpr(val)
+			if err != nil {
+				return nil
+			}
+			return &ast.Node{Kind: "let", Value: identString(v.VarName), Children: []*ast.Node{exprNode}}
+		default:
+			lhs, ok1 := simpleExprNoCast(e.Variable)
+			rhs, ok2 := simpleExpr(e.Expression)
+			if !ok1 || !ok2 {
+				return nil
+			}
+			if record {
+				if p.Mutables == nil {
+					p.Mutables = make(map[string]bool)
+				}
+				if name := baseVarName(e.Variable); name != "" {
+					p.Mutables[name] = true
+				}
+			}
+			lhsNode, err1 := parseExpr(lhs)
+			if err1 != nil {
+				return nil
+			}
+			rhsNode, err2 := parseExpr(rhs)
+			if err2 != nil {
+				return nil
+			}
+			return &ast.Node{Kind: "assign", Children: []*ast.Node{lhsNode, rhsNode}}
 		}
-		val, ok := simpleExpr(e.Expression)
-		if !ok {
-			return nil
-		}
-		pos := e.GetPosition()
-		if record {
-			p.Vars = append(p.Vars, Var{
-				Name:      identString(v.VarName),
-				Value:     val,
-				StartLine: pos.StartLine,
-				EndLine:   pos.EndLine,
-			})
-		}
-		exprNode, err := parseExpr(val)
-		if err != nil {
-			return nil
-		}
-		return &ast.Node{Kind: "let", Value: identString(v.VarName), Children: []*ast.Node{exprNode}}
 	case *expr.FunctionCall:
 		name := nameString(e.Function)
 		if name != "_print" || e.ArgumentList == nil || len(e.ArgumentList.Arguments) != 1 {
@@ -243,10 +270,6 @@ func parseExprStmtRec(p *Program, st *stmt.Expression, record bool) *ast.Node {
 		if !ok {
 			return nil
 		}
-		pos := e.GetPosition()
-		if record {
-			p.Prints = append(p.Prints, PrintStmt{Expr: val, StartLine: pos.StartLine, EndLine: pos.EndLine})
-		}
 		exprNode, err := parseExpr(val)
 		if err != nil {
 			return nil
@@ -256,19 +279,45 @@ func parseExprStmtRec(p *Program, st *stmt.Expression, record bool) *ast.Node {
 		if len(e.Exprs) == 0 {
 			return nil
 		}
-		val, ok := simpleExpr(e.Exprs[0])
-		if !ok {
+		parts, ok := concatParts(e.Exprs[0])
+		if !ok || len(parts) == 0 {
 			return nil
 		}
-		pos := e.GetPosition()
-		if record {
-			p.Prints = append(p.Prints, PrintStmt{Expr: val, StartLine: pos.StartLine, EndLine: pos.EndLine})
+		// merge adjacent string literals
+		merged := make([]string, 0, len(parts))
+		for i := 0; i < len(parts); i++ {
+			if i+1 < len(parts) && parts[i+1] == "\" \"" && strings.HasPrefix(parts[i], "\"") && strings.HasSuffix(parts[i], "\"") {
+				merged = append(merged, parts[i])
+				i++
+				continue
+			}
+			if i+1 < len(parts) && strings.HasPrefix(parts[i], "\"") && strings.HasSuffix(parts[i], "\"") && strings.HasPrefix(parts[i+1], "\"") && strings.HasSuffix(parts[i+1], "\"") {
+				s1, _ := strconv.Unquote(parts[i])
+				s2, _ := strconv.Unquote(parts[i+1])
+				merged = append(merged, strconv.Quote(s1+s2))
+				i++
+				continue
+			}
+			merged = append(merged, parts[i])
 		}
-		exprNode, err := parseExpr(val)
-		if err != nil {
-			return nil
+		parts = merged
+		tmp := make([]string, 0, len(parts))
+		for _, pstr := range parts {
+			if pstr == "\" \"" {
+				continue
+			}
+			tmp = append(tmp, pstr)
 		}
-		return &ast.Node{Kind: "call", Value: "print", Children: []*ast.Node{exprNode}}
+		parts = tmp
+		var nodes []*ast.Node
+		for _, pstr := range parts {
+			n, err := parseExpr(pstr)
+			if err != nil {
+				return nil
+			}
+			nodes = append(nodes, n)
+		}
+		return &ast.Node{Kind: "call", Value: "print", Children: nodes}
 	}
 	return nil
 }
@@ -312,6 +361,12 @@ func simpleExpr(n pnode.Node) (string, bool) {
 			return "", false
 		}
 		return "-" + val, true
+	case *expr.BooleanNot:
+		val, ok := simpleExpr(v.Expr)
+		if !ok {
+			return "", false
+		}
+		return fmt.Sprintf("(!%s)", val), true
 	case *castexpr.Int:
 		val, ok := simpleExpr(v.Expr)
 		if !ok {
@@ -385,6 +440,14 @@ func simpleExpr(n pnode.Node) (string, bool) {
 		case "intval":
 			if len(args) == 1 {
 				return fmt.Sprintf("(%s as int)", args[0]), true
+			}
+		case "in_array":
+			if len(args) == 2 {
+				return fmt.Sprintf("(%s in %s)", args[0], args[1]), true
+			}
+		case "array_key_exists":
+			if len(args) == 2 {
+				return fmt.Sprintf("(%s in %s)", args[0], args[1]), true
 			}
 		}
 		return fmt.Sprintf("%s(%s)", name, strings.Join(args, ", ")), true
@@ -634,9 +697,52 @@ func arrayExpr(items []pnode.Node) (string, bool) {
 	return "[" + strings.Join(elems, ", ") + "]", true
 }
 
+func concatParts(n pnode.Node) ([]string, bool) {
+	if c, ok := n.(*binary.Concat); ok {
+		left, ok1 := concatParts(c.Left)
+		right, ok2 := concatParts(c.Right)
+		if ok1 && ok2 {
+			return append(left, right...), true
+		}
+		return nil, false
+	}
+	val, ok := simpleExpr(n)
+	if !ok {
+		return nil, false
+	}
+	return []string{val}, true
+}
+
 func simpleExprEqual(s string, n pnode.Node) bool {
 	other, ok := simpleExpr(n)
 	return ok && other == s
+}
+
+func simpleExprNoCast(n pnode.Node) (string, bool) {
+	switch v := n.(type) {
+	case *expr.ArrayDimFetch:
+		base, ok := simpleExprNoCast(v.Variable)
+		if !ok {
+			return "", false
+		}
+		dim, ok := simpleExprNoCast(v.Dim)
+		if !ok {
+			return "", false
+		}
+		return fmt.Sprintf("%s[%s]", base, dim), true
+	default:
+		return simpleExpr(n)
+	}
+}
+
+func baseVarName(n pnode.Node) string {
+	switch v := n.(type) {
+	case *expr.ArrayDimFetch:
+		return baseVarName(v.Variable)
+	case *expr.Variable:
+		return identString(v.VarName)
+	}
+	return ""
 }
 
 func paramInfo(p *pnode.Parameter) Param {

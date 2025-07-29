@@ -1,0 +1,35 @@
+(program
+  (var data
+    (map
+      (entry
+        (string outer)
+        (map
+          (entry (string inner) (int 1))
+        )
+      )
+    )
+  )
+  (assign
+    (index
+      (group
+        (cast
+          (index (selector data) (string outer))
+          (type map (type string) (type any))
+        )
+      )
+      (string inner)
+    )
+    (int 2)
+  )
+  (call print
+    (index
+      (group
+        (cast
+          (index (selector data) (string outer))
+          (type map (type string) (type any))
+        )
+      )
+      (string inner)
+    )
+  )
+)

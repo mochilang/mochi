@@ -1,0 +1,26 @@
+(program
+  (var matrix
+    (list
+      (list (int 1) (int 2))
+      (list (int 3) (int 4))
+    )
+  )
+  (assign
+    (index
+      (index (selector matrix) (int 1))
+      (int 0)
+    )
+    (int 5)
+  )
+  (call print
+    (index
+      (group
+        (cast
+          (index (selector matrix) (int 1))
+          (type map (type string) (type any))
+        )
+      )
+      (int 0)
+    )
+  )
+)
