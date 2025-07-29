@@ -3,9 +3,9 @@
     (let _11442
       (map
         (entry
-          (selector outer)
+          (string outer)
           (map
-            (entry (selector inner) (int 1))
+            (entry (string inner) (int 1))
           )
         )
       )
@@ -13,9 +13,9 @@
     (let _11464
       (map
         (entry
-          (selector outer)
+          (string outer)
           (map
-            (entry (selector inner) (int 2))
+            (entry (string inner) (int 2))
           )
         )
       )

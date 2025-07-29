@@ -1,8 +1,8 @@
 (program
   (fun main
     (let _11308
-      (struct _11300
-        (field title (string hi))
+      (map
+        (entry (string title) (string hi))
       )
     )
     (let _11318

@@ -58,6 +58,7 @@ func parseBodyNodes(body string) ([]*ast.Node, error) {
 		case strings.HasPrefix(c, "write("):
 			arg := strings.TrimSuffix(strings.TrimPrefix(c, "write("), ")")
 			arg = strings.ReplaceAll(arg, "'", "\"")
+			arg = convertExpr(arg)
 			expr, err := parseExpr(arg)
 			if err != nil {
 				return nil, err
@@ -66,6 +67,7 @@ func parseBodyNodes(body string) ([]*ast.Node, error) {
 		case strings.HasPrefix(c, "writeln("):
 			arg := strings.TrimSuffix(strings.TrimPrefix(c, "writeln("), ")")
 			arg = strings.ReplaceAll(arg, "'", "\"")
+			arg = convertExpr(arg)
 			expr, err := parseExpr(arg)
 			if err != nil {
 				return nil, err
@@ -117,11 +119,11 @@ func parseBodyNodes(body string) ([]*ast.Node, error) {
 			if err != nil {
 				return nil, err
 			}
-			n3, err := parseExpr(length)
+			endExpr, err := parseExpr(start + " + " + length)
 			if err != nil {
 				return nil, err
 			}
-			call := node("call", "substr", n1, n2, n3)
+			call := node("call", "substr", n1, n2, endExpr)
 			out = append(out, node("let", outVar, call))
 		case func() bool { _, _, ok := parseSubStringContains(c); return ok }():
 			src, sub, _ := parseSubStringContains(c)
@@ -258,6 +260,7 @@ func splitClauses(body string) []string {
 	var clauses []string
 	depth := 0
 	brack := 0
+	brace := 0
 	start := 0
 	for i, r := range body {
 		switch r {
@@ -273,8 +276,14 @@ func splitClauses(body string) []string {
 			if brack > 0 {
 				brack--
 			}
+		case '{':
+			brace++
+		case '}':
+			if brace > 0 {
+				brace--
+			}
 		case ',':
-			if depth == 0 && brack == 0 {
+			if depth == 0 && brack == 0 && brace == 0 {
 				clauses = append(clauses, strings.TrimSpace(body[start:i]))
 				start = i + 1
 			}
@@ -296,13 +305,13 @@ func convertExpr(expr string) string {
 		return dict + "[" + key + "]"
 	}
 	if list, elem, ok := parseNotMember(expr); ok {
-		return "!contains(" + list + ", " + elem + ")"
+		return "!(" + elem + " in " + list + ")"
 	}
 	if list, elem, ok := parseMember(expr); ok {
-		return "contains(" + list + ", " + elem + ")"
+		return elem + " in " + list
 	}
 	if src, sub, ok := parseSubStringContains(expr); ok {
-		return "contains(" + src + ", \"" + sub + "\")"
+		return "\"" + sub + "\" in " + src
 	}
 	expr = strings.ReplaceAll(expr, "=:=", "==")
 	expr = strings.ReplaceAll(expr, "=\\=", "!=")
@@ -313,7 +322,14 @@ func convertExpr(expr string) string {
 	expr = strings.ReplaceAll(expr, " = ", " == ")
 	expr = strings.ReplaceAll(expr, "map{", "{")
 	expr = strings.ReplaceAll(expr, "_{", "{")
+	expr = regexp.MustCompile(`^[A-Za-z0-9_]+{`).ReplaceAllStringFunc(expr, func(s string) string {
+		if strings.HasSuffix(s, "{") {
+			return "{"
+		}
+		return s
+	})
 	expr = replaceTopLevelCommas(expr)
+	expr = quoteMapKeys(expr)
 	return expr
 }
 
@@ -448,12 +464,18 @@ func parseMember(s string) (list, elem string, ok bool) {
 
 func parseNotMember(s string) (list, elem string, ok bool) {
 	s = strings.TrimSpace(s)
-	if !strings.HasPrefix(s, "\\+(") || !strings.HasSuffix(s, ")") {
+	if !strings.HasPrefix(s, "\\+") {
 		return
 	}
-	inner := strings.TrimSuffix(strings.TrimPrefix(s, "\\+("), ")")
+	inner := strings.TrimPrefix(s, "\\+")
 	if strings.HasPrefix(inner, "(") && strings.HasSuffix(inner, ")") {
 		inner = strings.TrimSuffix(strings.TrimPrefix(inner, "("), ")")
+	}
+	for strings.HasPrefix(inner, "(") && strings.HasSuffix(inner, ")") {
+		inner = strings.TrimSuffix(strings.TrimPrefix(inner, "("), ")")
+	}
+	if !strings.HasSuffix(inner, ")") {
+		return
 	}
 	return parseMember(inner)
 }
@@ -493,6 +515,7 @@ func replaceTopLevelCommas(s string) string {
 	var b strings.Builder
 	depth := 0
 	brack := 0
+	brace := 0
 	inSingle := false
 	inDouble := false
 	for _, r := range s {
@@ -521,8 +544,16 @@ func replaceTopLevelCommas(s string) string {
 			if !inSingle && !inDouble && brack > 0 {
 				brack--
 			}
+		case '{':
+			if !inSingle && !inDouble {
+				brace++
+			}
+		case '}':
+			if !inSingle && !inDouble && brace > 0 {
+				brace--
+			}
 		case ',':
-			if !inSingle && !inDouble && depth == 0 && brack == 0 {
+			if !inSingle && !inDouble && depth == 0 && brack == 0 && brace == 0 {
 				b.WriteString(" && ")
 				continue
 			}
@@ -530,4 +561,10 @@ func replaceTopLevelCommas(s string) string {
 		b.WriteRune(r)
 	}
 	return b.String()
+}
+
+var mapKeyRe = regexp.MustCompile(`([,{]\s*)([a-zA-Z][A-Za-z0-9_]*)\s*:`)
+
+func quoteMapKeys(s string) string {
+	return mapKeyRe.ReplaceAllString(s, `$1"$2":`)
 }

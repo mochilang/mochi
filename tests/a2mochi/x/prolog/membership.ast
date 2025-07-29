@@ -1,0 +1,26 @@
+(program
+  (fun main
+    (let _11704
+      (list (int 1) (int 2) (int 3))
+    )
+    (if
+      (binary in (int 2) (selector _11704))
+      (block
+        (call print (bool true))
+      )
+      (block
+        (call print (bool false))
+      )
+    )
+    (if
+      (binary in (int 4) (selector _11704))
+      (block
+        (call print (bool true))
+      )
+      (block
+        (call print (bool false))
+      )
+    )
+  )
+  (call main)
+)
