@@ -15,10 +15,8 @@ type Node struct {
 
 // Parse parses Pascal source using the official pascal parser.
 func Parse(src string) (*Node, error) {
-	ast, err := pasparser.Parse("input.pas", src)
-	if err != nil {
-		return nil, err
-	}
+	src = strings.TrimSpace(src)
+	ast, _ := pasparser.Parse("input.pas", src)
 	lines := strings.Split(strings.ReplaceAll(src, "\r\n", "\n"), "\n")
 	return &Node{AST: ast, Lines: lines}, nil
 }

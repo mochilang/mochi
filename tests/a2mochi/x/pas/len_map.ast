@@ -1,0 +1,7 @@
+(program
+  (type Anon45
+    (field a (type int))
+    (field b (type int))
+  )
+  (call print (int 2))
+)

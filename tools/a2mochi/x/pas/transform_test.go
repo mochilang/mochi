@@ -97,8 +97,14 @@ func TestTransform_Golden(t *testing.T) {
 		"string_index":      true,
 		"typed_let":         true,
 		"typed_var":         true,
-		"var_assignment":    true,
-	}
+                "var_assignment":    true,
+                "count_builtin":     true,
+                "len_map":           true,
+                "substring_builtin": true,
+                "string_contains":   true,
+                "string_in_operator": true,
+                "string_prefix_slice": true,
+        }
 	outDir := filepath.Join(root, "tests", "a2mochi", "x", "pas")
 	os.MkdirAll(outDir, 0o755)
 	for _, srcPath := range files {

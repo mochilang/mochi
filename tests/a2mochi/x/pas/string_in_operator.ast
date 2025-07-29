@@ -1,0 +1,16 @@
+(program
+  (var s (type string))
+  (assign s (string catch))
+  (call print
+    (call
+      (selector contains (selector s))
+      (string cat)
+    )
+  )
+  (call print
+    (call
+      (selector contains (selector s))
+      (string dog)
+    )
+  )
+)
