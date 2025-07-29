@@ -2,6 +2,6 @@
   (let data
     (list (int 1) (int 2))
   )
-  (let flag (int 0))
+  (let flag (type int))
   (call print (selector flag))
 )

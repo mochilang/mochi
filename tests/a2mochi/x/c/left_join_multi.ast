@@ -1,28 +1,19 @@
 (program
-  (call print
-    (binary -
-      (selector "\"")
-      (binary -
-        (selector "")
-        (binary -
-          (selector "")
-          (binary -
-            (selector "Left Join Multi")
-            (binary -
-              (selector "")
-              (binary - (selector "") (selector "\""))
-            )
-          )
-        )
-      )
-    )
-  )
+  (let customers (selector "{ (Customers){.id = 1, .name = \"Alice\"}, (Customers){.id = 2, .name = \"Bob\"} }"))
+  (let orders (selector "{ (Orders){.id = 100, .customerId = 1}, (Orders){.id = 101, .customerId = 2} }"))
+  (let items (selector "{ (Items){.orderId = 100, .sku = \"a\"} }"))
+  (let result (selector "{ (Anon10){.item = \"{'orderId': 100, 'sku': 'a'}\", .name = \"Alice\", .orderId = 100}, (Anon10){.item = \"None\", .name = \"Bob\", .orderId = 101} }"))
+  (call print (string "--- Left Join Multi ---"))
+  (let r_arr (selector "{(Anon10){.item = \"{'orderId': 100, 'sku': 'a'}\", .name = \"Alice\", .orderId = 100}, (Anon10){.item = \"None\", .name = \"Bob\", .orderId = 101}}"))
   (let r_len
     (call len (selector r_arr))
   )
   (for i
     (range (int 0) (selector r_len))
     (block
+      (let r
+        (index (selector r_arr) (selector i))
+      )
       (call print (selector r.item))
     )
   )

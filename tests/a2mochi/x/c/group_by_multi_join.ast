@@ -1,4 +1,7 @@
 (program
+  (let nations (selector "{ (Nations){.id = 1, .name = \"A\"}, (Nations){.id = 2, .name = \"B\"} }"))
+  (let suppliers (selector "{ (Suppliers){.id = 1, .nation = 1}, (Suppliers){.id = 2, .nation = 2} }"))
+  (let partsupp (selector "{ (Partsupp){.part = 100, .supplier = 1, .cost = 10, .qty = 2}, (Partsupp){.part = 100, .supplier = 2, .cost = 20, .qty = 1}, (Partsupp){.part = 200, .supplier = 1, .cost = 5, .qty = 3} }"))
   (for i
     (range (int 0) (int 3))
     (block

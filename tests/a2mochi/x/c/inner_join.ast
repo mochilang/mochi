@@ -1,28 +1,18 @@
 (program
-  (call print
-    (binary -
-      (selector "\"")
-      (binary -
-        (selector "")
-        (binary -
-          (selector "")
-          (binary -
-            (selector "Orders with customer info")
-            (binary -
-              (selector "")
-              (binary - (selector "") (selector "\""))
-            )
-          )
-        )
-      )
-    )
-  )
+  (let customers (selector "{ (Customers){.id = 1, .name = \"Alice\"}, (Customers){.id = 2, .name = \"Bob\"}, (Customers){.id = 3, .name = \"Charlie\"} }"))
+  (let orders (selector "{ (Orders){.id = 100, .customerId = 1, .total = 250}, (Orders){.id = 101, .customerId = 2, .total = 125}, (Orders){.id = 102, .customerId = 1, .total = 300}, (Orders){.id = 103, .customerId = 4, .total = 80} }"))
+  (let result (selector "{ (Anon7){.customerName = \"Alice\", .orderId = 100, .total = 250}, (Anon7){.customerName = \"Bob\", .orderId = 101, .total = 125}, (Anon7){.customerName = \"Alice\", .orderId = 102, .total = 300} }"))
+  (call print (string "--- Orders with customer info ---"))
+  (let entry_arr (selector "{(Anon7){.customerName = \"Alice\", .orderId = 100, .total = 250}, (Anon7){.customerName = \"Bob\", .orderId = 101, .total = 125}, (Anon7){.customerName = \"Alice\", .orderId = 102, .total = 300}}"))
   (let entry_len
     (call len (selector entry_arr))
   )
   (for i
     (range (int 0) (selector entry_len))
     (block
+      (let entry
+        (index (selector entry_arr) (selector i))
+      )
       (call print (selector entry.total))
     )
   )

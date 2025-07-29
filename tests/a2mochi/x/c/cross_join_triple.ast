@@ -6,30 +6,18 @@
   (let bools
     (list (int 1) (int 0))
   )
-  (call print
-    (binary -
-      (selector "\"")
-      (binary -
-        (selector "")
-        (binary -
-          (selector "")
-          (binary -
-            (selector "Cross Join of three lists")
-            (binary -
-              (selector "")
-              (binary - (selector "") (selector "\""))
-            )
-          )
-        )
-      )
-    )
-  )
+  (let combos (selector "{ (Anon1){.b = 1, .l = \"A\", .n = 1}, (Anon1){.b = 0, .l = \"A\", .n = 1}, (Anon1){.b = 1, .l = \"B\", .n = 1}, (Anon1){.b = 0, .l = \"B\", .n = 1}, (Anon1){.b = 1, .l = \"A\", .n = 2}, (Anon1){.b = 0, .l = \"A\", .n = 2}, (Anon1){.b = 1, .l = \"B\", .n = 2}, (Anon1){.b = 0, .l = \"B\", .n = 2} }"))
+  (call print (string "--- Cross Join of three lists ---"))
+  (let c_arr (selector "{(Anon1){.b = 1, .l = \"A\", .n = 1}, (Anon1){.b = 0, .l = \"A\", .n = 1}, (Anon1){.b = 1, .l = \"B\", .n = 1}, (Anon1){.b = 0, .l = \"B\", .n = 1}, (Anon1){.b = 1, .l = \"A\", .n = 2}, (Anon1){.b = 0, .l = \"A\", .n = 2}, (Anon1){.b = 1, .l = \"B\", .n = 2}, (Anon1){.b = 0, .l = \"B\", .n = 2}}"))
   (let c_len
     (call len (selector c_arr))
   )
   (for i
     (range (int 0) (selector c_len))
     (block
+      (let c
+        (index (selector c_arr) (selector i))
+      )
       (call print (selector c.b))
     )
   )

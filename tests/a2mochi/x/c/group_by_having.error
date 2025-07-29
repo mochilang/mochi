@@ -1,1 +1,1 @@
-output mismatch
+parse error: 34:24: unexpected token "{" (expected ":" Expr)

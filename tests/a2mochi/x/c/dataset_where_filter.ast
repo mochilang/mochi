@@ -1,25 +1,9 @@
 (program
+  (let people (selector "{ (People){.name = \"Alice\", .age = 30}, (People){.name = \"Bob\", .age = 15}, (People){.name = \"Charlie\", .age = 65}, (People){.name = \"Diana\", .age = 45} }"))
   (for i
     (range (int 0) (int 4))
     (block
-      (call print
-        (binary -
-          (selector "\"")
-          (binary -
-            (selector "")
-            (binary -
-              (selector "")
-              (binary -
-                (selector Adults)
-                (binary -
-                  (selector "")
-                  (binary - (selector "") (selector "\""))
-                )
-              )
-            )
-          )
-        )
-      )
+      (call print (string "--- Adults ---"))
       (for i
         (range (int 0) (selector adults_len))
         (block

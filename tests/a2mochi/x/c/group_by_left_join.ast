@@ -1,4 +1,6 @@
 (program
+  (let customers (selector "{ (Customers){.id = 1, .name = \"Alice\"}, (Customers){.id = 2, .name = \"Bob\"}, (Customers){.id = 3, .name = \"Charlie\"} }"))
+  (let orders (selector "{ (Orders){.id = 100, .customerId = 1}, (Orders){.id = 101, .customerId = 1}, (Orders){.id = 102, .customerId = 2} }"))
   (for i
     (range (int 0) (int 3))
     (block
@@ -6,24 +8,7 @@
         (range (int 0) (int 3))
         (block)
       )
-      (call print
-        (binary -
-          (selector "\"")
-          (binary -
-            (selector "")
-            (binary -
-              (selector "")
-              (binary -
-                (selector "Group Left Join")
-                (binary -
-                  (selector "")
-                  (binary - (selector "") (selector "\""))
-                )
-              )
-            )
-          )
-        )
-      )
+      (call print (string "--- Group Left Join ---"))
       (for i
         (range (int 0) (selector stats_len))
         (block

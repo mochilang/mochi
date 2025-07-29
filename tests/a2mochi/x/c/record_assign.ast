@@ -1,4 +1,5 @@
 (program
+  (let c (selector "(Counter){.n = 0}"))
   (fun inc (type int) (block))
   (call print (selector c.n))
 )

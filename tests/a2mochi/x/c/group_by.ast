@@ -1,28 +1,17 @@
 (program
-  (call print
-    (binary -
-      (selector "\"")
-      (binary -
-        (selector "")
-        (binary -
-          (selector "")
-          (binary -
-            (selector "People grouped by city")
-            (binary -
-              (selector "")
-              (binary - (selector "") (selector "\""))
-            )
-          )
-        )
-      )
-    )
-  )
+  (let people (selector "{ (People){.name = \"Alice\", .age = 30, .city = \"Paris\"}, (People){.name = \"Bob\", .age = 15, .city = \"Hanoi\"}, (People){.name = \"Charlie\", .age = 65, .city = \"Paris\"}, (People){.name = \"Diana\", .age = 45, .city = \"Hanoi\"}, (People){.name = \"Eve\", .age = 70, .city = \"Paris\"}, (People){.name = \"Frank\", .age = 22, .city = \"Hanoi\"} }"))
+  (let stats (selector "{ (Anon3){.avg_age = 55, .city = \"Paris\", .count = 3}, (Anon3){.avg_age = 27.333333333333332, .city = \"Hanoi\", .count = 3} }"))
+  (call print (string "--- People grouped by city ---"))
+  (let s_arr (selector "{(Anon3){.avg_age = 55, .city = \"Paris\", .count = 3}, (Anon3){.avg_age = 27.333333333333332, .city = \"Hanoi\", .count = 3}}"))
   (let s_len
     (call len (selector s_arr))
   )
   (for i
     (range (int 0) (selector s_len))
     (block
+      (let s
+        (index (selector s_arr) (selector i))
+      )
       (call print (selector s.avg_age))
     )
   )

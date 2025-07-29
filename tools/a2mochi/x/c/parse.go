@@ -59,7 +59,7 @@ var (
 	reAssign = regexp.MustCompile(`^([a-zA-Z_][a-zA-Z0-9_]*)\s*=\s*([^;]+);`)
 	reFor    = regexp.MustCompile(`^for\s*\((?:int|size_t)\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*=\s*([^;]+);\s*([a-zA-Z_][a-zA-Z0-9_]*)\s*<\s*([^;]+);.*\)\s*{`)
 	reWhile  = regexp.MustCompile(`^while\s*\(([^\)]+)\)\s*{`)
-	reIf     = regexp.MustCompile(`^if\s*\(([^\)]+)\)\s*{`)
+	reIf     = regexp.MustCompile(`^if\s*\((.*)\)\s*{`)
 	rePrintf = regexp.MustCompile(`printf\s*\((.*)\);`)
 	rePuts   = regexp.MustCompile(`puts\s*\("([^\"]*)"\);`)
 	reFunc   = regexp.MustCompile(`^(int|void)\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*\([^\)]*\)\s*{`)

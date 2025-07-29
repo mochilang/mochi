@@ -1,5 +1,1 @@
-error[T002]: undefined variable: filtered_len
-  --> :76:15
-
-help:
-  Check if the variable was declared in this scope.
+parse error: 75:26: unexpected token "{" (expected ":" Expr)

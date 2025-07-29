@@ -1,4 +1,7 @@
 (program
+  (let customers (selector "{ (Customers){.id = 1, .name = \"Alice\"}, (Customers){.id = 2, .name = \"Bob\"} }"))
+  (let orders (selector "{ (Orders){.id = 100, .customerId = 1}, (Orders){.id = 101, .customerId = 2} }"))
+  (let items (selector "{ (Items){.orderId = 100, .sku = \"a\"}, (Items){.orderId = 101, .sku = \"b\"} }"))
   (for i
     (range (int 0) (int 2))
     (block
@@ -9,24 +12,7 @@
             (range (int 0) (int 2))
             (block)
           )
-          (call print
-            (binary -
-              (selector "\"")
-              (binary -
-                (selector "")
-                (binary -
-                  (selector "")
-                  (binary -
-                    (selector "Multi Join")
-                    (binary -
-                      (selector "")
-                      (binary - (selector "") (selector "\""))
-                    )
-                  )
-                )
-              )
-            )
-          )
+          (call print (string "--- Multi Join ---"))
           (for i
             (range (int 0) (selector result_len))
             (block
