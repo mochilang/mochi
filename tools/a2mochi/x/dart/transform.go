@@ -219,8 +219,30 @@ var forVarRe = regexp.MustCompile(`^(\s*)for \((?:var|final|const) ([A-Za-z_][A-
 // for (var i = 0; i < n; i++) { ... }
 var forRangeRe = regexp.MustCompile(`^(\s*)for \((?:var\s+)?([A-Za-z_][A-Za-z0-9_]*)\s*=\s*([^;]+);\s*[A-Za-z_][A-Za-z0-9_]*\s*<\s*([^;]+);\s*[A-Za-z_][A-Za-z0-9_]*\+\+\)`)
 
+var typedLocalRe = regexp.MustCompile(`^(?:final|const)?\s*[A-Za-z_][A-Za-z0-9_<>,\[\]]*\s+[A-Za-z_][A-Za-z0-9_]*\s*=`)
+
+func convertTypedVar(s string) (string, bool) {
+	trimmed := strings.TrimSpace(s)
+	if typedLocalRe.MatchString(trimmed) {
+		if typ, name, val, ok := parseTypedVar(trimmed); ok && name != "" {
+			out := "var " + name
+			if typ != "" && typ != "any" {
+				out += ": " + typ
+			}
+			if val != "" {
+				out += " = " + val
+			}
+			return convertQuotes(out), true
+		}
+	}
+	return "", false
+}
+
 func convertBodyLine(s string) string {
 	s = strings.TrimSuffix(s, ";")
+	if out, ok := convertTypedVar(s); ok {
+		return out
+	}
 	s = forVarRe.ReplaceAllString(s, "${1}for ${2} in ${3}")
 	s = forRangeRe.ReplaceAllString(s, "${1}for ${2} in ${3}..${4}")
 	if strings.HasPrefix(strings.TrimSpace(s), "let ") && !strings.Contains(s, ":") {
