@@ -1,0 +1,24 @@
+(program
+  (fun sum_rec
+    (param n (type int))
+    (param acc (type int))
+    (type int)
+    (block
+      (if
+        (binary == (selector n) (int 0))
+        (block
+          (return (selector acc))
+        )
+      )
+      (return
+        (call sum_rec
+          (binary - (selector n) (int 1))
+          (binary + (selector acc) (selector n))
+        )
+      )
+    )
+  )
+  (call print
+    (call sum_rec (int 10) (int 0))
+  )
+)
