@@ -1,28 +1,17 @@
 (program
-  (call print
-    (binary -
-      (selector "\"")
-      (binary -
-        (selector "")
-        (binary -
-          (selector "")
-          (binary -
-            (selector "Top products (excluding most expensive)")
-            (binary -
-              (selector "")
-              (binary - (selector "") (selector "\""))
-            )
-          )
-        )
-      )
-    )
-  )
+  (let products (selector "{ (Products){.name = \"Laptop\", .price = 1500}, (Products){.name = \"Smartphone\", .price = 900}, (Products){.name = \"Tablet\", .price = 600}, (Products){.name = \"Monitor\", .price = 300}, (Products){.name = \"Keyboard\", .price = 100}, (Products){.name = \"Mouse\", .price = 50}, (Products){.name = \"Headphones\", .price = 200} }"))
+  (let expensive (selector "{ (Anon3){.name = \"Smartphone\", .price = 900}, (Anon3){.name = \"Tablet\", .price = 600}, (Anon3){.name = \"Monitor\", .price = 300} }"))
+  (call print (string "--- Top products (excluding most expensive) ---"))
+  (let item_arr (selector "{(Anon3){.name = \"Smartphone\", .price = 900}, (Anon3){.name = \"Tablet\", .price = 600}, (Anon3){.name = \"Monitor\", .price = 300}}"))
   (let item_len
     (call len (selector item_arr))
   )
   (for i
     (range (int 0) (selector item_len))
     (block
+      (let item
+        (index (selector item_arr) (selector i))
+      )
       (call print (selector item.price))
     )
   )

@@ -1,16 +1,23 @@
 (program
-  (let start_date
+  (let nation (selector "{ (Nation){.n_nationkey = 1, .n_name = \"BRAZIL\"} }"))
+  (let customer
+    (binary - (selector "{ (Customer){.c_custkey = 1, .c_name = \"Alice\", .c_acctbal = 100, .c_nationkey = 1, .c_address = \"123 St\", .c_phone = \"123") (selector "456\", .c_comment = \"Loyal\"} }"))
+  )
+  (let orders
     (binary -
-      (selector "\"1993")
-      (binary - (int 10) (selector "01\""))
+      (selector "{ (Orders){.o_orderkey = 1000, .o_custkey = 1, .o_orderdate = \"1993")
+      (binary -
+        (int 10)
+        (binary -
+          (selector "15\"}, (Orders){.o_orderkey = 2000, .o_custkey = 1, .o_orderdate = \"1994")
+          (binary - (int 1) (selector "02\"} }"))
+        )
+      )
     )
   )
-  (let end_date
-    (binary -
-      (selector "\"1994")
-      (binary - (int 1) (selector "01\""))
-    )
-  )
+  (let lineitem (selector "{ (Lineitem){.l_orderkey = 1000, .l_returnflag = \"R\", .l_extendedprice = 1000, .l_discount = 0.1}, (Lineitem){.l_orderkey = 2000, .l_returnflag = \"N\", .l_extendedprice = 500, .l_discount = 0} }"))
+  (let start_date (string 1993-10-01))
+  (let end_date (string 1994-01-01))
   (for i
     (range (int 0) (int 1))
     (block
@@ -23,21 +30,54 @@
               (for m
                 (range (int 0) (int 1))
                 (block
-                  (let idx (int 0))
                   (if
-                    (binary != (selector found) (int 0))
-                    (block)
+                    (binary >=
+                      (call strcmp (selector o.o_orderdate) (selector start_date))
+                      (binary &&
+                        (bool false)
+                        (binary <
+                          (call strcmp (selector o.o_orderdate) (selector end_date))
+                          (binary &&
+                            (bool false)
+                            (binary ==
+                              (call strcmp (selector l.l_returnflag) (string R))
+                              (int 0)
+                            )
+                          )
+                        )
+                      )
+                    )
+                    (block
+                      (let rev
+                        (binary *
+                          (selector l.l_extendedprice)
+                          (binary - (int 1) (selector l.l_discount))
+                        )
+                      )
+                      (let idx (type int))
+                      (if
+                        (binary +
+                          (selector "found){ result[idx].revenue")
+                          (binary +
+                            (selector "= rev; } else { result[result_len")
+                            (binary + (selector "") (selector "] = (ResultItem"))
+                          )
+                        )
+                        (block)
+                        (block)
+                      )
+                    )
                     (block)
                   )
                 )
               )
             )
           )
+          (for a
+            (range (int 0) (selector result_len))
+            (block)
+          )
         )
-      )
-      (for a
-        (range (int 0) (selector result_len))
-        (block)
       )
     )
   )

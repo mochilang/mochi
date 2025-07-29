@@ -29,6 +29,10 @@ func Transform(p *Program) (*ast.Node, error) {
 	root := &ast.Node{Kind: "program"}
 	for i := 0; i < len(p.Stmts); {
 		st := p.Stmts[i]
+		var next Stmt
+		if i+1 < len(p.Stmts) {
+			next = p.Stmts[i+1]
+		}
 		if ps, ok := st.(PrintStmt); ok {
 			exprs := []string{ps.Expr}
 			newline := ps.Newline
@@ -51,14 +55,14 @@ func Transform(p *Program) (*ast.Node, error) {
 			continue
 		}
 		i++
-		if n := stmtNodeWithAssign(st, assigned, false); n != nil {
+		if n := stmtNodeWithAssign(st, assigned, false, next); n != nil {
 			root.Children = append(root.Children, n)
 		}
 	}
 	return root, nil
 }
 
-func stmtNodeWithAssign(s Stmt, assigned map[string]bool, inFunc bool) *ast.Node {
+func stmtNodeWithAssign(s Stmt, assigned map[string]bool, inFunc bool, next Stmt) *ast.Node {
 	switch v := s.(type) {
 	case VarDecl:
 		kind := "let"
@@ -66,6 +70,15 @@ func stmtNodeWithAssign(s Stmt, assigned map[string]bool, inFunc bool) *ast.Node
 			kind = "var"
 		}
 		if v.Value == "0" {
+			if inFunc {
+				n := &ast.Node{Kind: kind, Value: v.Name}
+				n.Children = append(n.Children, &ast.Node{Kind: "type", Value: "int"})
+				return n
+			}
+			if usesVarInNext(next, v.Name) {
+				val := &ast.Node{Kind: "int", Value: 0}
+				return &ast.Node{Kind: kind, Value: v.Name, Children: []*ast.Node{val}}
+			}
 			n := &ast.Node{Kind: kind, Value: v.Name}
 			n.Children = append(n.Children, &ast.Node{Kind: "type", Value: "int"})
 			return n
@@ -123,8 +136,13 @@ func stmtNodeWithAssign(s Stmt, assigned map[string]bool, inFunc bool) *ast.Node
 
 func blockNode(stmts []Stmt, assigned map[string]bool) *ast.Node {
 	blk := &ast.Node{Kind: "block"}
-	for _, s := range stmts {
-		if n := stmtNodeWithAssign(s, assigned, true); n != nil {
+	for i := 0; i < len(stmts); i++ {
+		var next Stmt
+		if i+1 < len(stmts) {
+			next = stmts[i+1]
+		}
+		s := stmts[i]
+		if n := stmtNodeWithAssign(s, assigned, true, next); n != nil {
 			blk.Children = append(blk.Children, n)
 		}
 	}
@@ -236,6 +254,21 @@ func boolify(n *ast.Node) *ast.Node {
 	}
 	zero := &ast.Node{Kind: "int", Value: 0}
 	return &ast.Node{Kind: "binary", Value: "!=", Children: []*ast.Node{n, zero}}
+}
+
+func usesVarInNext(s Stmt, name string) bool {
+	switch v := s.(type) {
+	case While:
+		return strings.Contains(v.Cond, name)
+	case For:
+		if v.Var == name {
+			return true
+		}
+		if strings.Contains(v.Start, name) || strings.Contains(v.End, name) {
+			return true
+		}
+	}
+	return false
 }
 
 func splitArgs(s string) []string {

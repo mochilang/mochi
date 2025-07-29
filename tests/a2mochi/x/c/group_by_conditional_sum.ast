@@ -1,1 +1,4 @@
-(program)
+(program
+  (let items (selector "{ (Items){.cat = \"a\", .val = 10, .flag = 1}, (Items){.cat = \"a\", .val = 5, .flag = 0}, (Items){.cat = \"b\", .val = 20, .flag = 1} }"))
+  (let result (selector "{ (Anon3){.cat = \"a\", .share = 0}, (Anon3){.cat = \"b\", .share = 1} }"))
+)

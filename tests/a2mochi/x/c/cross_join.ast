@@ -1,31 +1,18 @@
 (program
-  (call print
-    (binary -
-      (selector "\"")
-      (binary -
-        (selector "")
-        (binary -
-          (selector "")
-          (binary -
-            (selector "Cross Join: All order")
-            (binary -
-              (selector "customer pairs")
-              (binary -
-                (selector "")
-                (binary - (selector "") (selector "\""))
-              )
-            )
-          )
-        )
-      )
-    )
-  )
+  (let customers (selector "{ (Customers){.id = 1, .name = \"Alice\"}, (Customers){.id = 2, .name = \"Bob\"}, (Customers){.id = 3, .name = \"Charlie\"} }"))
+  (let orders (selector "{ (Orders){.id = 100, .customerId = 1, .total = 250}, (Orders){.id = 101, .customerId = 2, .total = 125}, (Orders){.id = 102, .customerId = 1, .total = 300} }"))
+  (let result (selector "{ (Anon5){.orderCustomerId = 1, .orderId = 100, .orderTotal = 250, .pairedCustomerName = \"Alice\"}, (Anon5){.orderCustomerId = 1, .orderId = 100, .orderTotal = 250, .pairedCustomerName = \"Bob\"}, (Anon5){.orderCustomerId = 1, .orderId = 100, .orderTotal = 250, .pairedCustomerName = \"Charlie\"}, (Anon5){.orderCustomerId = 2, .orderId = 101, .orderTotal = 125, .pairedCustomerName = \"Alice\"}, (Anon5){.orderCustomerId = 2, .orderId = 101, .orderTotal = 125, .pairedCustomerName = \"Bob\"}, (Anon5){.orderCustomerId = 2, .orderId = 101, .orderTotal = 125, .pairedCustomerName = \"Charlie\"}, (Anon5){.orderCustomerId = 1, .orderId = 102, .orderTotal = 300, .pairedCustomerName = \"Alice\"}, (Anon5){.orderCustomerId = 1, .orderId = 102, .orderTotal = 300, .pairedCustomerName = \"Bob\"}, (Anon5){.orderCustomerId = 1, .orderId = 102, .orderTotal = 300, .pairedCustomerName = \"Charlie\"} }"))
+  (call print (string "--- Cross Join: All order-customer pairs ---"))
+  (let entry_arr (selector "{(Anon5){.orderCustomerId = 1, .orderId = 100, .orderTotal = 250, .pairedCustomerName = \"Alice\"}, (Anon5){.orderCustomerId = 1, .orderId = 100, .orderTotal = 250, .pairedCustomerName = \"Bob\"}, (Anon5){.orderCustomerId = 1, .orderId = 100, .orderTotal = 250, .pairedCustomerName = \"Charlie\"}, (Anon5){.orderCustomerId = 2, .orderId = 101, .orderTotal = 125, .pairedCustomerName = \"Alice\"}, (Anon5){.orderCustomerId = 2, .orderId = 101, .orderTotal = 125, .pairedCustomerName = \"Bob\"}, (Anon5){.orderCustomerId = 2, .orderId = 101, .orderTotal = 125, .pairedCustomerName = \"Charlie\"}, (Anon5){.orderCustomerId = 1, .orderId = 102, .orderTotal = 300, .pairedCustomerName = \"Alice\"}, (Anon5){.orderCustomerId = 1, .orderId = 102, .orderTotal = 300, .pairedCustomerName = \"Bob\"}, (Anon5){.orderCustomerId = 1, .orderId = 102, .orderTotal = 300, .pairedCustomerName = \"Charlie\"}}"))
   (let entry_len
     (call len (selector entry_arr))
   )
   (for i
     (range (int 0) (selector entry_len))
     (block
+      (let entry
+        (index (selector entry_arr) (selector i))
+      )
       (call print (selector entry.pairedCustomerName))
     )
   )

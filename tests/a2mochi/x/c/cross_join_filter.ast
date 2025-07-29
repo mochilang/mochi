@@ -3,30 +3,18 @@
     (list (int 1) (int 2) (int 3))
   )
   (let letters (selector "{ \"A\", \"B\" }"))
-  (call print
-    (binary -
-      (selector "\"")
-      (binary -
-        (selector "")
-        (binary -
-          (selector "")
-          (binary -
-            (selector "Even pairs")
-            (binary -
-              (selector "")
-              (binary - (selector "") (selector "\""))
-            )
-          )
-        )
-      )
-    )
-  )
+  (let pairs (selector "{ (Pair){.n = 2, .l = \"A\"}, (Pair){.n = 2, .l = \"B\"} }"))
+  (call print (string "--- Even pairs ---"))
+  (let p_arr (selector "{(Pair){.n = 2, .l = \"A\"}, (Pair){.n = 2, .l = \"B\"}}"))
   (let p_len
     (call len (selector p_arr))
   )
   (for i
     (range (int 0) (selector p_len))
     (block
+      (let p
+        (index (selector p_arr) (selector i))
+      )
       (call print (selector p.l))
     )
   )

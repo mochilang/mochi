@@ -1,28 +1,18 @@
 (program
-  (call print
-    (binary -
-      (selector "\"")
-      (binary -
-        (selector "")
-        (binary -
-          (selector "")
-          (binary -
-            (selector "Orders per customer")
-            (binary -
-              (selector "")
-              (binary - (selector "") (selector "\""))
-            )
-          )
-        )
-      )
-    )
-  )
+  (let customers (selector "{ (Customers){.id = 1, .name = \"Alice\"}, (Customers){.id = 2, .name = \"Bob\"} }"))
+  (let orders (selector "{ (Orders){.id = 100, .customerId = 1}, (Orders){.id = 101, .customerId = 1}, (Orders){.id = 102, .customerId = 2} }"))
+  (let stats (selector "{ (Anon5){.count = 2, .name = \"Alice\"}, (Anon5){.count = 1, .name = \"Bob\"} }"))
+  (call print (string "--- Orders per customer ---"))
+  (let s_arr (selector "{(Anon5){.count = 2, .name = \"Alice\"}, (Anon5){.count = 1, .name = \"Bob\"}}"))
   (let s_len
     (call len (selector s_arr))
   )
   (for i
     (range (int 0) (selector s_len))
     (block
+      (let s
+        (index (selector s_arr) (selector i))
+      )
       (call print (selector s.count))
     )
   )

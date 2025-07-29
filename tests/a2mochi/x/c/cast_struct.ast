@@ -1,1 +1,3 @@
-(program)
+(program
+  (let todo (selector "(Todo){.title = \"hi\"}"))
+)

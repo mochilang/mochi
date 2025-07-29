@@ -1,28 +1,18 @@
 (program
-  (call print
-    (binary -
-      (selector "\"")
-      (binary -
-        (selector "")
-        (binary -
-          (selector "")
-          (binary -
-            (selector "Left Join")
-            (binary -
-              (selector "")
-              (binary - (selector "") (selector "\""))
-            )
-          )
-        )
-      )
-    )
-  )
+  (let customers (selector "{ (Customers){.id = 1, .name = \"Alice\"}, (Customers){.id = 2, .name = \"Bob\"} }"))
+  (let orders (selector "{ (Orders){.id = 100, .customerId = 1, .total = 250}, (Orders){.id = 101, .customerId = 3, .total = 80} }"))
+  (let result (selector "{ (Anon7){.customer = \"{'id': 1, 'name': 'Alice'}\", .orderId = 100, .total = 250}, (Anon7){.customer = \"None\", .orderId = 101, .total = 80} }"))
+  (call print (string "--- Left Join ---"))
+  (let entry_arr (selector "{(Anon7){.customer = \"{'id': 1, 'name': 'Alice'}\", .orderId = 100, .total = 250}, (Anon7){.customer = \"None\", .orderId = 101, .total = 80}}"))
   (let entry_len
     (call len (selector entry_arr))
   )
   (for i
     (range (int 0) (selector entry_len))
     (block
+      (let entry
+        (index (selector entry_arr) (selector i))
+      )
       (call print (selector entry.total))
     )
   )
