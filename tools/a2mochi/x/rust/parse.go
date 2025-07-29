@@ -163,7 +163,9 @@ func lineSnippet(src string, line int) string {
 }
 
 func runRustAnalyzerParse(cmd, src string) (string, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	// allow a longer timeout to handle larger inputs when parsing without
+	// crashing the external process
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 	c := exec.CommandContext(ctx, cmd, "parse")
 	c.Stdin = strings.NewReader(src)
