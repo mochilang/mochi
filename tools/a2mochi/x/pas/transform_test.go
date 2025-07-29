@@ -18,7 +18,7 @@ import (
 	"mochi/tools/a2mochi/x/pas"
 )
 
-var update = flag.Bool("update", false, "update golden files")
+var updateGolden = flag.Bool("update", false, "update golden files")
 
 func findRepoRoot(t *testing.T) string {
 	dir, err := os.Getwd()
@@ -60,7 +60,15 @@ func runMochi(src string) ([]byte, error) {
 	return bytes.TrimSpace(out.Bytes()), nil
 }
 
-func TestConvert_Golden(t *testing.T) {
+func parseAndTransform(src []byte) (*ast.Node, error) {
+	n, err := pas.Parse(string(src))
+	if err != nil {
+		return nil, err
+	}
+	return pas.Transform(n)
+}
+
+func TestTransform_Golden(t *testing.T) {
 	root := findRepoRoot(t)
 	pattern := filepath.Join(root, "tests", "transpiler", "x", "pas", "*.pas")
 	files, err := filepath.Glob(pattern)
@@ -103,38 +111,44 @@ func TestConvert_Golden(t *testing.T) {
 			if err != nil {
 				t.Fatalf("read src: %v", err)
 			}
-			prog, err := pas.Parse(string(data))
+
+			mochiNode, err := parseAndTransform(data)
 			if err != nil {
-				t.Fatalf("parse: %v", err)
+				t.Fatalf("transform: %v", err)
 			}
-			node, err := pas.Convert(prog)
-			if err != nil {
-				t.Fatalf("convert: %v", err)
-			}
+
 			astPath := filepath.Join(outDir, name+".ast")
-			if *update {
-				os.WriteFile(astPath, []byte(node.String()), 0o644)
+			if *updateGolden {
+				os.WriteFile(astPath, []byte(mochiNode.String()), 0o644)
 			}
 			wantAST, err := os.ReadFile(astPath)
 			if err != nil {
 				t.Fatalf("missing golden: %v", err)
 			}
-			if strings.TrimSpace(string(wantAST)) != strings.TrimSpace(node.String()) {
-				t.Fatalf("golden mismatch\n--- Got ---\n%s\n--- Want ---\n%s", node.String(), wantAST)
+			if strings.TrimSpace(string(wantAST)) != strings.TrimSpace(mochiNode.String()) {
+				t.Fatalf("golden mismatch\n--- Got ---\n%s\n--- Want ---\n%s", mochiNode.String(), wantAST)
 			}
 
-			var buf bytes.Buffer
-			if err := ast.Fprint(&buf, node); err != nil {
-				t.Fatalf("print: %v", err)
+			code, err := pas.Print(mochiNode)
+			if err != nil {
+				t.Fatalf("convert source: %v", err)
 			}
-			code := buf.String()
+
+			if !strings.Contains(code, "GMT+7") {
+				t.Fatalf("header missing timezone")
+			}
+
 			mochiPath := filepath.Join(outDir, name+".mochi")
-			if *update {
+			if *updateGolden {
 				os.WriteFile(mochiPath, []byte(code), 0o644)
 			}
+
 			gotOut, err := runMochi(code)
 			if err != nil {
 				t.Fatalf("run: %v", err)
+			}
+			if *updateGolden {
+				os.WriteFile(filepath.Join(outDir, name+".out"), gotOut, 0o644)
 			}
 			vmSrc, err := os.ReadFile(filepath.Join(root, "tests", "vm", "valid", name+".mochi"))
 			if err != nil {
