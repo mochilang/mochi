@@ -248,8 +248,10 @@ func fixIndex(expr string) string {
 	expr = strings.ReplaceAll(expr, "|]", "]")
 	expr = convertRecordFields(expr)
 	expr = convertContains(expr)
+	expr = convertListPrint(expr)
 	expr = stripStringCall(expr)
 	expr = convertBuiltins(expr)
+	expr = stripStringCall(expr)
 	expr = convertEquality(expr)
 	expr = strings.ReplaceAll(expr, ";", ",")
 	return expr
@@ -302,6 +304,17 @@ func convertContains(expr string) string {
 		if len(parts) >= 2 {
 			return strings.Replace(expr, "Map.containsKey "+parts[0]+" "+parts[1], parts[0]+" in "+parts[1], 1)
 		}
+	}
+	return expr
+}
+
+func convertListPrint(expr string) string {
+	expr = strings.TrimSpace(expr)
+	prefix := `(("[" + (String.concat ", " (List.map string `
+	suffix := `))) + "]")`
+	if strings.HasPrefix(expr, prefix) && strings.HasSuffix(expr, suffix) {
+		inner := strings.TrimSuffix(strings.TrimPrefix(expr, prefix), suffix)
+		return strings.TrimSpace(inner)
 	}
 	return expr
 }
@@ -364,12 +377,38 @@ func convertBuiltins(expr string) string {
 		inner := strings.TrimSuffix(strings.TrimPrefix(expr, "String.concat \" \" ["), "]")
 		parts := strings.Split(inner, ";")
 		if len(parts) == 2 {
-			a := strings.TrimSpace(parts[0])
-			b := strings.TrimSpace(parts[1])
+			a := toStr(strings.TrimSpace(parts[0]))
+			b := toStr(strings.TrimSpace(parts[1]))
 			expr = a + " + \" \" + " + b
 		}
 	}
 	return expr
+}
+
+func toStr(part string) string {
+	trimmed := strings.TrimSpace(part)
+	if strings.HasPrefix(trimmed, "string (") && strings.HasSuffix(trimmed, ")") {
+		inner := strings.TrimSpace(trimmed[len("string (") : len(trimmed)-1])
+		if strings.HasPrefix(inner, "\"") && strings.HasSuffix(inner, "\"") {
+			return inner
+		}
+		return "str(" + inner + ")"
+	}
+	if strings.HasPrefix(trimmed, "string(") && strings.HasSuffix(trimmed, ")") {
+		inner := strings.TrimSpace(trimmed[len("string(") : len(trimmed)-1])
+		if strings.HasPrefix(inner, "\"") && strings.HasSuffix(inner, "\"") {
+			return inner
+		}
+		return "str(" + inner + ")"
+	}
+	if strings.HasPrefix(trimmed, "string ") {
+		inner := strings.TrimSpace(trimmed[len("string "):])
+		if strings.HasPrefix(inner, "\"") && strings.HasSuffix(inner, "\"") {
+			return inner
+		}
+		return "str(" + inner + ")"
+	}
+	return trimmed
 }
 
 func stripStringCall(expr string) string {
