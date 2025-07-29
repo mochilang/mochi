@@ -1,7 +1,7 @@
 # a2mochi Pascal Converter
 
-Completed programs: 30/88
-Updated: 2025-07-29 21:26 GMT+7
+Completed programs: 31/88
+Updated: 2025-07-29 23:52 GMT+7
 
 ## Checklist
 - [ ] append_builtin
@@ -18,7 +18,7 @@ Updated: 2025-07-29 21:26 GMT+7
 - [ ] cross_join_filter
 - [ ] cross_join_triple
 - [ ] dataset_sort_take_limit
-- [ ] dataset_where_filter
+- [x] dataset_where_filter
 - [x] exists_builtin
 - [x] for_list_collection
 - [x] for_loop
