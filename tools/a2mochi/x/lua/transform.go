@@ -3,48 +3,380 @@
 package lua
 
 import (
-	"bytes"
 	"fmt"
-	"regexp"
 	"strconv"
 	"strings"
 
 	luaast "github.com/yuin/gopher-lua/ast"
-	luaparse "github.com/yuin/gopher-lua/parse"
-
 	"mochi/ast"
-	"mochi/parser"
 )
 
-// Parse parses Lua source code into a slice of AST statements.
-func Parse(src string) ([]luaast.Stmt, error) {
-	pre := preprocessLuaSource(src)
-	chunk, err := luaparse.Parse(bytes.NewReader([]byte(pre)), "src.lua")
-	if err != nil {
-		return nil, fmt.Errorf("%s", formatLuaParseError(err, src))
+// Transform converts a parsed Program into a Mochi AST node.
+func Transform(p *Program) (*ast.Node, error) {
+	if p == nil {
+		return nil, nil
 	}
-	return chunk, nil
+	mut := collectMutables(p.Stmts)
+	root := node("program", nil)
+	root.Children = append(root.Children, convertStmtsToNodes(p.Stmts, map[string]bool{}, mut)...)
+	return root, nil
 }
 
-// ConvertSource converts parsed Lua statements into Mochi source code.
-func ConvertSource(stmts []luaast.Stmt) (string, error) {
-	var b strings.Builder
-	mut := collectMutables(stmts)
-	writeLuaChunk(&b, stmts, mut)
-	return b.String(), nil
+func node(kind string, value any, children ...*ast.Node) *ast.Node {
+	return &ast.Node{Kind: kind, Value: value, Children: children}
 }
 
-// Convert converts parsed Lua statements into a Mochi AST node.
-func Convert(stmts []luaast.Stmt) (*ast.Node, error) {
-	src, err := ConvertSource(stmts)
-	if err != nil {
-		return nil, err
+func convertStmtsToNodes(stmts []luaast.Stmt, vars map[string]bool, mut map[string]bool) []*ast.Node {
+	if vars == nil {
+		vars = make(map[string]bool)
 	}
-	prog, err := parser.ParseString(src)
-	if err != nil {
-		return nil, err
+	var out []*ast.Node
+	for _, st := range stmts {
+		switch s := st.(type) {
+		case *luaast.LocalAssignStmt:
+			for i, n := range s.Names {
+				if i < len(s.Exprs) {
+					if fn, ok := s.Exprs[i].(*luaast.FunctionExpr); ok {
+						fnNode := node("fun", n)
+						if rt := inferReturnType(fn); rt != "" {
+							fnNode.Children = append(fnNode.Children, node("type", rt))
+						}
+						fnNode.Children = append(fnNode.Children, convertStmtsToNodes(fn.Stmts, map[string]bool{}, mut)...)
+						out = append(out, fnNode)
+						vars[n] = true
+						continue
+					}
+				}
+				var val *ast.Node
+				if i < len(s.Exprs) {
+					val = exprToNode(s.Exprs[i], mut)
+				}
+				kind := "let"
+				if mut[n] {
+					kind = "var"
+				}
+				out = append(out, node(kind, n, val))
+				vars[n] = true
+			}
+		case *luaast.AssignStmt:
+			for i, lh := range s.Lhs {
+				name := exprToNode(lh, mut)
+				var val *ast.Node
+				if i < len(s.Rhs) {
+					val = exprToNode(s.Rhs[i], mut)
+				}
+				out = append(out, node("assign", name.Value, val))
+			}
+		case *luaast.ReturnStmt:
+			if len(s.Exprs) == 0 {
+				out = append(out, node("return", nil))
+			} else if len(s.Exprs) == 1 {
+				out = append(out, node("return", nil, exprToNode(s.Exprs[0], mut)))
+			} else {
+				var nodes []*ast.Node
+				for _, e := range s.Exprs {
+					nodes = append(nodes, exprToNode(e, mut))
+				}
+				out = append(out, node("return", nil, node("tuple", nil, nodes...)))
+			}
+		case *luaast.FuncCallStmt:
+			out = append(out, exprToNode(s.Expr, mut))
+		case *luaast.BreakStmt:
+			out = append(out, node("break", nil))
+		case *luaast.GotoStmt:
+			out = append(out, node("continue", nil))
+		case *luaast.WhileStmt:
+			cond := exprToNode(s.Condition, mut)
+			body := node("block", nil, convertStmtsToNodes(s.Stmts, copyVars(vars), mut)...)
+			out = append(out, node("while", nil, cond, body))
+		case *luaast.IfStmt:
+			out = append(out, convertIfStmt(s, vars, mut))
+		case *luaast.NumberForStmt:
+			step := 1
+			if s.Step != nil {
+				if v, err := strconv.Atoi(luaNumberString(s.Step)); err == nil {
+					step = v
+				}
+			}
+			init := exprToNode(s.Init, mut)
+			limit := exprToNode(s.Limit, mut)
+			endVal := node("binary", "+", limit, node("int", step))
+			rng := node("range", nil, init, endVal)
+			body := node("block", nil, convertStmtsToNodes(s.Stmts, copyVars(vars), mut)...)
+			out = append(out, node("for", s.Name, rng, body))
+		case *luaast.GenericForStmt:
+			iter := node("null", nil)
+			if len(s.Exprs) > 0 {
+				iter = exprToNode(s.Exprs[0], mut)
+			}
+			name := s.Names[len(s.Names)-1]
+			if len(s.Names) > 1 {
+				if call, ok := s.Exprs[0].(*luaast.FuncCallExpr); ok {
+					callee := luaExprString(call.Func, mut)
+					if callee == "pairs" && len(call.Args) == 1 {
+						iter = node("call", "values", exprToNode(call.Args[0], mut))
+					} else if callee == "ipairs" && len(call.Args) == 1 {
+						iter = exprToNode(call.Args[0], mut)
+					} else {
+						iter = node("call", "values", iter)
+					}
+				} else {
+					iter = node("call", "values", iter)
+				}
+			}
+			body := node("block", nil, convertStmtsToNodes(s.Stmts, copyVars(vars), mut)...)
+			out = append(out, node("for", name, node("in", nil, iter), body))
+		case *luaast.FuncDefStmt:
+			name := luaExprString(s.Name.Func, mut)
+			fnNode := node("fun", name)
+			if rt := inferReturnType(s.Func); rt != "" {
+				fnNode.Children = append(fnNode.Children, node("type", rt))
+			}
+			fnNode.Children = append(fnNode.Children, convertStmtsToNodes(s.Func.Stmts, map[string]bool{}, mut)...)
+			out = append(out, fnNode)
+		}
 	}
-	return ast.FromProgram(prog), nil
+	return out
+}
+
+func convertIfStmt(s *luaast.IfStmt, vars map[string]bool, mut map[string]bool) *ast.Node {
+	n := node("if", nil, exprToNode(s.Condition, mut))
+	thenBlock := node("block", nil, convertStmtsToNodes(s.Then, copyVars(vars), mut)...)
+	n.Children = append(n.Children, thenBlock)
+	if len(s.Else) == 1 {
+		if next, ok := s.Else[0].(*luaast.IfStmt); ok {
+			n.Children = append(n.Children, convertIfStmt(next, copyVars(vars), mut))
+			return n
+		}
+	}
+	if len(s.Else) > 0 {
+		elseBlock := node("block", nil, convertStmtsToNodes(s.Else, copyVars(vars), mut)...)
+		n.Children = append(n.Children, elseBlock)
+	}
+	return n
+}
+
+func exprToNode(e luaast.Expr, mut map[string]bool) *ast.Node {
+	switch v := e.(type) {
+	case *luaast.NumberExpr:
+		if i, err := strconv.Atoi(v.Value); err == nil {
+			return node("int", i)
+		}
+		return node("int", 0)
+	case *luaast.StringExpr:
+		return node("string", v.Value)
+	case *luaast.TrueExpr:
+		return node("bool", true)
+	case *luaast.FalseExpr:
+		return node("bool", false)
+	case *luaast.NilExpr:
+		return node("null", nil)
+	case *luaast.IdentExpr:
+		if v.Value == "__print" {
+			return node("selector", "print")
+		}
+		return node("selector", v.Value)
+	case *luaast.ArithmeticOpExpr:
+		left := exprToNode(v.Lhs, mut)
+		right := exprToNode(v.Rhs, mut)
+		return node("group", nil, node("binary", v.Operator, left, right))
+	case *luaast.StringConcatOpExpr:
+		return node("binary", "+", exprToNode(v.Lhs, mut), exprToNode(v.Rhs, mut))
+	case *luaast.LogicalOpExpr:
+		if v.Operator == "or" {
+			if num, ok := v.Rhs.(*luaast.NumberExpr); ok && num.Value == "0" {
+				if lhs, ok := v.Lhs.(*luaast.LogicalOpExpr); ok && lhs.Operator == "and" {
+					if num1, ok := lhs.Rhs.(*luaast.NumberExpr); ok && num1.Value == "1" {
+						return exprToNode(lhs.Lhs, mut)
+					}
+				}
+			}
+		}
+		op := v.Operator
+		if op == "and" {
+			op = "&&"
+		} else if op == "or" {
+			op = "||"
+		}
+		return node("binary", op, exprToNode(v.Lhs, mut), exprToNode(v.Rhs, mut))
+	case *luaast.RelationalOpExpr:
+		return node("binary", v.Operator, exprToNode(v.Lhs, mut), exprToNode(v.Rhs, mut))
+	case *luaast.UnaryMinusOpExpr:
+		return node("binary", "-", node("int", 0), exprToNode(v.Expr, mut))
+	case *luaast.UnaryNotOpExpr:
+		return node("unary", "!", exprToNode(v.Expr, mut))
+	case *luaast.UnaryLenOpExpr:
+		return node("call", "len", exprToNode(v.Expr, mut))
+	case *luaast.FuncCallExpr:
+		if val, ok := tryValuesCallNode(v, mut); ok {
+			return val
+		}
+		var args []*ast.Node
+		for _, a := range v.Args {
+			args = append(args, exprToNode(a, mut))
+		}
+		callee := luaExprString(v.Func, mut)
+		if v.Method != "" {
+			callee = luaExprString(v.Receiver, mut) + "." + v.Method
+		}
+		if fn, ok := v.Func.(*luaast.FunctionExpr); ok {
+			if isAppendFunc(fn) && len(v.Args) == 2 {
+				return node("call", "append", exprToNode(v.Args[0], mut), exprToNode(v.Args[1], mut))
+			}
+			if isAvgFunc(fn) && len(v.Args) == 1 {
+				return node("call", "avg", exprToNode(v.Args[0], mut))
+			}
+		}
+		if (callee == "pairs" || callee == "ipairs") && len(args) == 1 {
+			return exprToNode(v.Args[0], mut)
+		}
+		switch callee {
+		case "__print":
+			callee = "print"
+		case "__add":
+			if len(args) == 2 {
+				return node("binary", "+", args[0], args[1])
+			}
+		case "__div":
+			if len(args) == 2 {
+				return node("binary", "/", args[0], args[1])
+			}
+		case "__eq":
+			if len(args) == 2 {
+				return node("binary", "==", args[0], args[1])
+			}
+		case "__contains":
+			if len(args) == 2 {
+				return node("binary", "in", args[0], args[1])
+			}
+		case "__count":
+			if len(args) == 1 {
+				callee = "count"
+			}
+		case "__avg":
+			if len(args) == 1 {
+				callee = "avg"
+			}
+		case "__append":
+			if len(args) == 2 {
+				callee = "append"
+			}
+		case "__input":
+			callee = "input"
+		case "__index":
+			if len(args) == 2 {
+				return node("index", nil, args[0], args[1])
+			}
+		case "__slice":
+			if len(args) == 3 {
+				return node("index", nil, args[0], node("start", nil, args[1]), node("end", nil, args[2]))
+			}
+		case "string.format":
+			if len(args) == 2 {
+				if s, ok := v.Args[0].(*luaast.StringExpr); ok {
+					parts := strings.SplitN(s.Value, "%s", 2)
+					before := node("string", parts[0])
+					middle := exprToNode(v.Args[1], mut)
+					if len(parts) == 2 {
+						after := node("string", parts[1])
+						if parts[1] != "" {
+							return node("binary", "+", before, node("binary", "+", middle, after))
+						}
+					}
+					return node("binary", "+", before, middle)
+				}
+			}
+			callee = "fmt.Sprintf"
+		case "__union_all":
+			if len(args) == 2 {
+				return node("binary", "union_all", args[0], args[1])
+			}
+		case "__union":
+			if len(args) == 2 {
+				return node("binary", "union", args[0], args[1])
+			}
+		case "__except":
+			if len(args) == 2 {
+				return node("binary", "except", args[0], args[1])
+			}
+		case "__intersect":
+			if len(args) == 2 {
+				return node("binary", "intersect", args[0], args[1])
+			}
+		}
+		n := node("call", callee)
+		n.Children = append(n.Children, args...)
+		return n
+	case *luaast.FunctionExpr:
+		n := node("funexpr", nil)
+		n.Children = append(n.Children, convertStmtsToNodes(v.Stmts, map[string]bool{}, mut)...)
+		return n
+	case *luaast.AttrGetExpr:
+		if k, ok := v.Key.(*luaast.StringExpr); ok {
+			if id, ok := v.Object.(*luaast.IdentExpr); ok {
+				return node("selector", k.Value, node("selector", id.Value))
+			}
+			return node("selector", k.Value, exprToNode(v.Object, mut))
+		}
+		if _, ok := v.Key.(*luaast.IdentExpr); ok {
+			return node("selector", luaExprString(v.Key, mut), exprToNode(v.Object, mut))
+		}
+		return node("index", nil, exprToNode(v.Object, mut), exprToNode(v.Key, mut))
+	case *luaast.TableExpr:
+		isMap := false
+		var items []*ast.Node
+		for _, f := range v.Fields {
+			if f.Key != nil {
+				isMap = true
+				items = append(items, node("entry", nil, exprToNode(f.Key, mut), exprToNode(f.Value, mut)))
+			} else {
+				items = append(items, exprToNode(f.Value, mut))
+			}
+		}
+		if isMap {
+			return node("map", nil, items...)
+		}
+		return node("list", nil, items...)
+	}
+	return node("unknown", nil)
+}
+
+func tryValuesCallNode(call *luaast.FuncCallExpr, mut map[string]bool) (*ast.Node, bool) {
+	if !isAttrCall(call.Func, "table", "concat") || len(call.Args) != 2 {
+		return nil, false
+	}
+	if s, ok := call.Args[1].(*luaast.StringExpr); !ok || s.Value != " " {
+		return nil, false
+	}
+	inner, ok := call.Args[0].(*luaast.FuncCallExpr)
+	if !ok || len(inner.Args) != 1 {
+		return nil, false
+	}
+	if _, ok := inner.Func.(*luaast.FunctionExpr); !ok {
+		return nil, false
+	}
+	return node("call", "values", exprToNode(inner.Args[0], mut)), true
+}
+
+func inferReturnType(fn *luaast.FunctionExpr) string {
+	for _, st := range fn.Stmts {
+		if r, ok := st.(*luaast.ReturnStmt); ok && len(r.Exprs) == 1 {
+			switch r.Exprs[0].(type) {
+			case *luaast.TrueExpr, *luaast.FalseExpr, *luaast.LogicalOpExpr, *luaast.RelationalOpExpr, *luaast.UnaryNotOpExpr:
+				return "bool"
+			case *luaast.NumberExpr, *luaast.ArithmeticOpExpr:
+				return "int"
+			}
+		}
+	}
+	return ""
+}
+
+func luaNumberString(e luaast.Expr) string {
+	if n, ok := e.(*luaast.NumberExpr); ok {
+		return n.Value
+	}
+	return "0"
 }
 
 func convertLuaStmts(stmts []luaast.Stmt, indent int, vars map[string]bool, mut map[string]bool) []string {
@@ -602,58 +934,6 @@ func isAttrCall(e luaast.Expr, object, method string) bool {
 	}
 	return false
 }
-
-func preprocessLuaSource(src string) string {
-	var out strings.Builder
-	inStr := false
-	strDelim := byte(0)
-	inComment := false
-	for i := 0; i < len(src); i++ {
-		ch := src[i]
-		if inComment {
-			out.WriteByte(ch)
-			if ch == '\n' {
-				inComment = false
-			}
-			continue
-		}
-		if inStr {
-			out.WriteByte(ch)
-			if ch == strDelim && (i == 0 || src[i-1] != '\\') {
-				inStr = false
-			}
-			continue
-		}
-		if ch == '-' && i+1 < len(src) && src[i+1] == '-' {
-			out.WriteByte(ch)
-			inComment = true
-			continue
-		}
-		if ch == '\'' || ch == '"' {
-			inStr = true
-			strDelim = ch
-			out.WriteByte(ch)
-			continue
-		}
-		if ch == '/' && i+1 < len(src) && src[i+1] == '/' {
-			out.WriteByte('/')
-			out.WriteByte(' ')
-			i++
-			continue
-		}
-		out.WriteByte(ch)
-	}
-	res := out.String()
-	lines := strings.Split(res, "\n")
-	for i, line := range lines {
-		trimmed := strings.TrimSpace(line)
-		if strings.HasPrefix(trimmed, "goto __continue") || strings.HasPrefix(trimmed, "::__continue") {
-			lines[i] = "--" + line
-		}
-	}
-	return strings.Join(lines, "\n")
-}
-
 func writeLuaChunk(out *strings.Builder, chunk []luaast.Stmt, mut map[string]bool) {
 	for _, line := range convertLuaStmts(chunk, 0, map[string]bool{}, mut) {
 		if strings.HasPrefix(line, "fun __") {
@@ -721,38 +1001,4 @@ func collectAssignCounts(stmts []luaast.Stmt, counts map[string]int) {
 			collectAssignCounts(s.Stmts, counts)
 		}
 	}
-}
-
-func formatLuaParseError(err error, src string) string {
-	msg := err.Error()
-	line := 0
-	col := 0
-	re := regexp.MustCompile(`line:(\d+)(?:\(column:(\d+)\))?`)
-	if m := re.FindStringSubmatch(msg); len(m) > 0 {
-		line, _ = strconv.Atoi(m[1])
-		if len(m) > 2 {
-			col, _ = strconv.Atoi(m[2])
-		}
-	}
-	lines := strings.Split(src, "\n")
-	if line <= 0 || line-1 >= len(lines) {
-		return msg
-	}
-	start := line - 2
-	if start < 0 {
-		start = 0
-	}
-	end := line
-	if end >= len(lines) {
-		end = len(lines) - 1
-	}
-	var b strings.Builder
-	b.WriteString(fmt.Sprintf("line %d: %s\n", line, msg))
-	for i := start; i <= end; i++ {
-		b.WriteString(fmt.Sprintf("%4d| %s\n", i+1, lines[i]))
-		if i == line-1 && col > 0 {
-			b.WriteString("     " + strings.Repeat(" ", col-1) + "^\n")
-		}
-	}
-	return strings.TrimSpace(b.String())
 }
