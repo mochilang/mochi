@@ -566,8 +566,7 @@ func gen(st stmt, indent string, b *strings.Builder) {
 		if open < 0 || close < open {
 			return
 		}
-		rng := strings.TrimSpace(line[open+1 : close])
-		rng = transformExpr(rng)
+		rng := transformExpr(strings.TrimSpace(line[open+1 : close]))
 		rest := line[close+1:]
 		p1 := strings.Index(rest, "|")
 		if p1 < 0 {
@@ -577,8 +576,17 @@ func gen(st stmt, indent string, b *strings.Builder) {
 		if p2 < 0 {
 			return
 		}
-		varName := strings.TrimSpace(rest[p1+1 : p1+1+p2])
-		fmt.Fprintf(b, "%sfor %s in %s {\n", indent, varName, rng)
+		vars := strings.Split(strings.TrimSpace(rest[p1+1:p1+1+p2]), ",")
+		iter := strings.TrimSpace(vars[0])
+		idx := ""
+		if len(vars) > 1 {
+			idx = strings.TrimSpace(vars[1])
+		}
+		if idx != "" {
+			fmt.Fprintf(b, "%sfor %s, %s in %s {\n", indent, iter, idx, rng)
+		} else {
+			fmt.Fprintf(b, "%sfor %s in %s {\n", indent, iter, rng)
+		}
 		for _, ch := range st.children {
 			gen(ch, indent+"  ", b)
 		}
@@ -590,6 +598,15 @@ func gen(st stmt, indent string, b *strings.Builder) {
 			gen(ch, indent+"  ", b)
 		}
 		fmt.Fprintf(b, "%s}\n", indent)
+	case strings.HasPrefix(line, "if (") && strings.Contains(line, ")") && !strings.HasSuffix(line, "{"):
+		cond, rest, ok := extractParens(strings.TrimPrefix(strings.TrimSpace(line), "if"))
+		if ok && strings.TrimSpace(rest) != "" {
+			fmt.Fprintf(b, "%sif %s {\n", indent, transformExpr(cond))
+			gen(stmt{line: strings.TrimSpace(rest)}, indent+"  ", b)
+			fmt.Fprintf(b, "%s}\n", indent)
+			return
+		}
+		fallthrough
 	case strings.HasPrefix(line, "if ("):
 		cond := strings.TrimSuffix(strings.TrimPrefix(line, "if ("), ")")
 		fmt.Fprintf(b, "%sif %s {\n", indent, transformExpr(cond))

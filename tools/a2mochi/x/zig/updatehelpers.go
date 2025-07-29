@@ -25,9 +25,13 @@ func UpdateReadme() {
 	for _, f := range files {
 		name := strings.TrimSuffix(filepath.Base(f), ".zig")
 		mark := "[ ]"
-		if _, err := os.Stat(filepath.Join(outDir, name+".mochi")); err == nil {
-			mark = "[x]"
-			done++
+		outFile := filepath.Join(outDir, name+".out")
+		if data, err := os.ReadFile(outFile); err == nil {
+			expect, err2 := os.ReadFile(filepath.Join(root, "tests", "vm", "valid", name+".out"))
+			if err2 == nil && strings.TrimSpace(string(data)) == strings.TrimSpace(string(expect)) {
+				mark = "[x]"
+				done++
+			}
 		}
 		lines = append(lines, fmt.Sprintf("- %s %s", mark, name))
 	}
