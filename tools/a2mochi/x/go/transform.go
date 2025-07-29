@@ -830,6 +830,24 @@ func transformExpr(e ast.Expr) *mast.Node {
 	case *ast.ParenExpr:
 		return transformExpr(v.X)
 	case *ast.CompositeLit:
+		if v.Type == nil {
+			m := &mast.Node{Kind: "map"}
+			for _, e := range v.Elts {
+				if kv, ok := e.(*ast.KeyValueExpr); ok {
+					key := ""
+					if id, ok := kv.Key.(*ast.Ident); ok {
+						key = strings.ToLower(id.Name)
+					} else if bl, ok := kv.Key.(*ast.BasicLit); ok {
+						key, _ = strconv.Unquote(bl.Value)
+					}
+					m.Children = append(m.Children, &mast.Node{
+						Kind:     "entry",
+						Children: []*mast.Node{{Kind: "string", Value: key}, transformExpr(kv.Value)},
+					})
+				}
+			}
+			return m
+		}
 		switch t := v.Type.(type) {
 		case *ast.ArrayType:
 			n := &mast.Node{Kind: "list"}
