@@ -13,6 +13,8 @@ public class Field
     public string Type { get; set; }
     public string Access { get; set; }
     public int Line { get; set; }
+    public string Value { get; set; }
+    public bool Static { get; set; }
     public string Doc { get; set; }
 }
 
@@ -83,6 +85,8 @@ public static class AstJson
         TypeSyntax typ = null;
         SyntaxTokenList modifiers = default;
         FileLinePositionSpan span = default;
+        bool isStatic = false;
+        string value = "";
 
         if (m is FieldDeclarationSyntax fd)
         {
@@ -90,6 +94,9 @@ public static class AstJson
             typ = fd.Declaration.Type;
             modifiers = fd.Modifiers;
             span = fd.GetLocation().GetLineSpan();
+            var v = fd.Declaration.Variables.First();
+            value = v.Initializer != null ? v.Initializer.Value.ToString() : "";
+            isStatic = fd.Modifiers.Any(SyntaxKind.StaticKeyword);
         }
         else if (m is PropertyDeclarationSyntax pd)
         {
@@ -97,6 +104,7 @@ public static class AstJson
             typ = pd.Type;
             modifiers = pd.Modifiers;
             span = pd.GetLocation().GetLineSpan();
+            isStatic = pd.Modifiers.Any(SyntaxKind.StaticKeyword);
         }
         else
         {
@@ -109,6 +117,8 @@ public static class AstJson
             Type = typ?.ToString() ?? "",
             Access = GetAccess(modifiers),
             Line = span.StartLinePosition.Line + 1,
+            Value = value,
+            Static = isStatic,
             Doc = GetDoc(m)
         };
     }

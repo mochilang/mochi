@@ -43,6 +43,8 @@ type Field struct {
 	Type   string
 	Access string
 	Line   int
+	Value  string
+	Static bool
 	Doc    string
 }
 
