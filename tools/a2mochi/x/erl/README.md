@@ -1,7 +1,7 @@
 # a2mochi Erlang Converter
 
-Completed programs: 48/103
-Date: 2025-07-29 18:13 GMT+7
+Completed programs: 49/103
+Date: 2025-07-29 18:50 GMT+7
 
 This directory stores golden files for the Erlang to Mochi converter.
 
@@ -67,7 +67,7 @@ This directory stores golden files for the Erlang to Mochi converter.
 - [x] map_literal_dynamic
 - [x] map_membership
 - [x] map_nested_assign
-- [ ] match_expr
+- [x] match_expr
 - [ ] match_full
 - [ ] math_ops
 - [x] membership

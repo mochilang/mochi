@@ -79,6 +79,9 @@ func parseProgram(src string) (*Program, error) {
 		return nil, err
 	}
 	script := filepath.Join(root, "archived", "tools", "any2mochi", "x", "erlang", "parser", "parser.escript")
+	if custom := os.Getenv("ERL_PARSER"); custom != "" {
+		script = custom
+	}
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	cmd := exec.CommandContext(ctx, "escript", script, tmp.Name())
