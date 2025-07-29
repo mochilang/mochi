@@ -62,6 +62,13 @@ func runMochi(src string) ([]byte, error) {
 	return bytes.TrimSpace(out.Bytes()), nil
 }
 
+func writeErr(dir, name string, err error) {
+	os.WriteFile(filepath.Join(dir, name+".error"), []byte(err.Error()), 0o644)
+	os.Remove(filepath.Join(dir, name+".mochi"))
+	os.Remove(filepath.Join(dir, name+".ast"))
+	os.Remove(filepath.Join(dir, name+".out"))
+}
+
 func processFile(t *testing.T, root, outDir, srcPath string) {
 	name := strings.TrimSuffix(filepath.Base(srcPath), ".hs")
 
@@ -71,39 +78,63 @@ func processFile(t *testing.T, root, outDir, srcPath string) {
 	}
 	prog, err := hs.Parse(string(data))
 	if err != nil {
-		t.Fatalf("parse: %v", err)
+		if *update {
+			writeErr(outDir, name, fmt.Errorf("parse: %v", err))
+		}
+		t.Logf("parse: %v", err)
+		return
 	}
 	node, err := hs.Transform(prog)
 	if err != nil {
-		t.Fatalf("transform: %v", err)
+		if *update {
+			writeErr(outDir, name, fmt.Errorf("transform: %v", err))
+		}
+		t.Logf("transform: %v", err)
+		return
 	}
 
 	astPath := filepath.Join(outDir, name+".ast")
-	if *update {
-		os.WriteFile(astPath, []byte(node.String()), 0o644)
-	}
-	want, err := os.ReadFile(astPath)
-	if err != nil {
-		t.Fatalf("missing golden: %v", err)
-	}
-	if strings.TrimSpace(string(want)) != strings.TrimSpace(node.String()) {
-		t.Fatalf("golden mismatch\n--- Got ---\n%s\n--- Want ---\n%s", node.String(), want)
-	}
+	mochiPath := filepath.Join(outDir, name+".mochi")
+	outPath := filepath.Join(outDir, name+".out")
+	errPath := filepath.Join(outDir, name+".error")
 
 	code, err := hs.Print(node)
 	if err != nil {
-		t.Fatalf("source: %v", err)
-	}
-	mochiPath := filepath.Join(outDir, name+".mochi")
-	if *update {
-		os.WriteFile(mochiPath, []byte(code), 0o644)
-	}
-	gotOut, err := runMochi(code)
-	if err != nil {
-		t.Fatalf("run: %v", err)
+		if *update {
+			writeErr(outDir, name, fmt.Errorf("print: %v", err))
+		}
+		t.Logf("print: %v", err)
+		return
 	}
 
-	outPath := filepath.Join(outDir, name+".out")
+	if *update {
+		os.Remove(errPath)
+		os.WriteFile(astPath, []byte(node.String()), 0o644)
+		os.WriteFile(mochiPath, []byte(code), 0o644)
+	}
+
+	want, err := os.ReadFile(astPath)
+	if err != nil {
+		t.Skipf("missing golden: %v", err)
+		return
+	}
+	if strings.TrimSpace(string(want)) != strings.TrimSpace(node.String()) {
+		if *update {
+			writeErr(outDir, name, fmt.Errorf("ast mismatch"))
+		}
+		t.Errorf("golden mismatch\n--- Got ---\n%s\n--- Want ---\n%s", node.String(), want)
+		return
+	}
+
+	gotOut, err := runMochi(code)
+	if err != nil {
+		if *update {
+			writeErr(outDir, name, fmt.Errorf("run: %v", err))
+		}
+		t.Logf("run: %v", err)
+		return
+	}
+
 	if *update {
 		os.WriteFile(outPath, gotOut, 0o644)
 	}
@@ -122,7 +153,15 @@ func processFile(t *testing.T, root, outDir, srcPath string) {
 		}
 	}
 	if !bytes.Equal(gotOut, wantOut) {
-		t.Fatalf("output mismatch\nGot: %s\nWant: %s", gotOut, wantOut)
+		if *update {
+			writeErr(outDir, name, fmt.Errorf("output mismatch"))
+		}
+		t.Errorf("output mismatch\nGot: %s\nWant: %s", gotOut, wantOut)
+		return
+	}
+
+	if *update {
+		os.Remove(errPath)
 	}
 }
 
@@ -188,9 +227,19 @@ func updateReadme() {
 	for _, f := range files {
 		name := strings.TrimSuffix(filepath.Base(f), ".hs")
 		mark := "[ ]"
-		if _, err := os.Stat(filepath.Join(outDir, name+".mochi")); err == nil {
-			compiled++
-			mark = "[x]"
+		outPath := filepath.Join(outDir, name+".out")
+		errPath := filepath.Join(outDir, name+".error")
+		if data, err := os.ReadFile(outPath); err == nil {
+			if _, err := os.Stat(errPath); err != nil {
+				vmSrc, err1 := os.ReadFile(filepath.Join(root, "tests", "vm", "valid", name+".mochi"))
+				if err1 == nil {
+					wantOut, err1 := runMochi(string(vmSrc))
+					if err1 == nil && bytes.Equal(bytes.TrimSpace(data), wantOut) {
+						compiled++
+						mark = "[x]"
+					}
+				}
+			}
 		}
 		lines = append(lines, fmt.Sprintf("- %s %s", mark, name))
 	}

@@ -1,4 +1,0 @@
-(program
-  (let y (int 0))
-  (call print (selector y))
-)

@@ -1,0 +1,5 @@
+run: error[T008]: type mismatch: expected void, got bigint
+  --> :4:11
+
+help:
+  Change the value to match the expected type.
