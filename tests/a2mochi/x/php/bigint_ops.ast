@@ -1,0 +1,19 @@
+(program
+  (let a (int 10))
+  (let b (int 5))
+  (call print
+    (binary + (selector a) (selector b))
+  )
+  (call print
+    (binary - (selector a) (selector b))
+  )
+  (call print
+    (binary * (selector a) (selector b))
+  )
+  (call print
+    (binary / (selector a) (selector b))
+  )
+  (call print
+    (binary % (selector a) (selector b))
+  )
+)
