@@ -91,11 +91,20 @@ func translateForBlock(expr string) string {
 
 func translateExpr(expr string) string {
 	expr = strings.TrimSpace(expr)
+	expr = strings.ReplaceAll(expr, "String.length(", "len(")
 	for hasOuterParens(expr) {
 		expr = strings.TrimSpace(expr[1 : len(expr)-1])
 	}
 	if fb := translateForBlock(expr); fb != "" {
 		return fb
+	}
+	if strings.Contains(expr, "==") && !strings.Contains(expr, "<-") && !strings.Contains(expr, " do") {
+		parts := strings.SplitN(expr, "==", 2)
+		if len(parts) == 2 {
+			left := translateExpr(strings.TrimSpace(parts[0]))
+			right := translateExpr(strings.TrimSpace(parts[1]))
+			return left + " == " + right
+		}
 	}
 	switch {
 	case strings.HasPrefix(expr, "\"") && strings.Contains(expr, "#{") && strings.HasSuffix(expr, "\""):
