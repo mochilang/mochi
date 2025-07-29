@@ -59,28 +59,28 @@ func runMochi(src string) ([]byte, error) {
 	return bytes.TrimSpace(out.Bytes()), nil
 }
 
-func parseFile(t *testing.T, path string) *fs.Program {
+func parseFile(path string) (*fs.Program, error) {
 	data, err := os.ReadFile(path)
 	if err != nil {
-		t.Fatalf("read: %v", err)
+		return nil, err
 	}
 	prog, err := fs.Parse(string(data))
 	if err != nil {
-		t.Fatalf("parse: %v", err)
+		return nil, err
 	}
-	return prog
+	return prog, nil
 }
 
-func transformSrc(t *testing.T, p *fs.Program) string {
+func transformSrc(p *fs.Program) (string, error) {
 	node, err := fs.Transform(p)
 	if err != nil {
-		t.Fatalf("transform: %v", err)
+		return "", err
 	}
 	code, err := fs.Print(node)
 	if err != nil {
-		t.Fatalf("print: %v", err)
+		return "", err
 	}
-	return code
+	return code, nil
 }
 
 func TestTransformGolden(t *testing.T) {
@@ -122,11 +122,13 @@ func TestTransformGolden(t *testing.T) {
 		"sum_builtin":         true,
 		"typed_let":           false,
 		"typed_var":           false,
+		"break_continue":      false,
 		"unary_neg":           true,
 		"user_type_literal":   true,
 		"var_assignment":      true,
 		"while_loop":          true,
 	}
+
 	outDir := filepath.Join(root, "tests", "a2mochi", "x", "fs")
 	os.MkdirAll(outDir, 0o755)
 	for _, src := range files {
@@ -135,33 +137,76 @@ func TestTransformGolden(t *testing.T) {
 			continue
 		}
 		t.Run(name, func(t *testing.T) {
-			prog := parseFile(t, src)
-			code := transformSrc(t, prog)
-			mochiPath := filepath.Join(outDir, name+".mochi")
-			if *updateGolden {
-				os.WriteFile(mochiPath, []byte(code), 0o644)
+			prog, err := parseFile(src)
+			if err != nil {
+				if *updateGolden {
+					os.WriteFile(filepath.Join(outDir, name+".error"), []byte(err.Error()), 0o644)
+				}
+				t.Errorf("parse: %v", err)
+				return
 			}
+
+			code, err := transformSrc(prog)
+			if err != nil {
+				if *updateGolden {
+					os.WriteFile(filepath.Join(outDir, name+".error"), []byte(err.Error()), 0o644)
+				}
+				t.Errorf("transform: %v", err)
+				return
+			}
+
 			gotOut, err := runMochi(code)
 			if err != nil {
-				t.Fatalf("run: %v", err)
+				if *updateGolden {
+					os.WriteFile(filepath.Join(outDir, name+".error"), []byte(err.Error()), 0o644)
+				}
+				t.Errorf("run: %v", err)
+				return
 			}
-			if *updateGolden {
-				os.WriteFile(filepath.Join(outDir, name+".out"), gotOut, 0o644)
-			}
+
 			vmSrc, err := os.ReadFile(filepath.Join(root, "tests", "vm", "valid", name+".mochi"))
 			if err != nil {
-				t.Fatalf("missing vm source: %v", err)
+				if *updateGolden {
+					os.WriteFile(filepath.Join(outDir, name+".error"), []byte("missing vm source"), 0o644)
+				}
+				t.Errorf("missing vm source: %v", err)
+				return
 			}
 			wantOut, err := runMochi(string(vmSrc))
 			if err != nil {
-				t.Fatalf("run vm: %v", err)
+				if *updateGolden {
+					os.WriteFile(filepath.Join(outDir, name+".error"), []byte(err.Error()), 0o644)
+				}
+				t.Errorf("run vm: %v", err)
+				return
 			}
+			if *updateGolden {
+				mochiPath := filepath.Join(outDir, name+".mochi")
+				os.WriteFile(mochiPath, []byte(code), 0o644)
+				os.WriteFile(filepath.Join(outDir, name+".out"), gotOut, 0o644)
+			}
+
 			if !bytes.Equal(gotOut, wantOut) {
-				t.Fatalf("output mismatch\nGot: %s\nWant: %s", gotOut, wantOut)
+				if *updateGolden {
+					os.WriteFile(filepath.Join(outDir, name+".error"), []byte("output mismatch"), 0o644)
+				}
+				t.Errorf("output mismatch\nGot: %s\nWant: %s", gotOut, wantOut)
+				return
+			}
+
+			if *updateGolden {
+				os.Remove(filepath.Join(outDir, name+".error"))
 			}
 		})
 	}
-	if *updateGolden {
-		fs.UpdateReadme()
-	}
+}
+
+func updateReadme() {
+	fs.UpdateReadme()
+}
+
+func TestMain(m *testing.M) {
+	code := m.Run()
+	updateReadme()
+	os.Exit(code)
 }
