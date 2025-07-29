@@ -1,0 +1,27 @@
+(program
+  (fun main
+    (type int)
+    (call print
+      (group
+        (binary < (string a) (string b))
+      )
+    )
+    (call print
+      (group
+        (binary <= (string a) (string a))
+      )
+    )
+    (call print
+      (group
+        (binary > (string b) (string a))
+      )
+    )
+    (call print
+      (group
+        (binary >= (string b) (string b))
+      )
+    )
+    (return (int 0))
+  )
+  (call main)
+)

@@ -273,6 +273,27 @@ func convertExpression(s string) string {
 	if strings.HasPrefix(s, "std::string(") && strings.HasSuffix(s, ")") {
 		return strings.TrimSuffix(strings.TrimPrefix(s, "std::string("), ")")
 	}
+	if strings.HasPrefix(s, "std::map") && strings.Contains(s, "{{") && strings.HasSuffix(s, "}}") {
+		start := strings.Index(s, "{{")
+		inner := s[start+1 : len(s)-1]
+		parts := strings.Split(inner, "},")
+		var pairs []string
+		for _, p := range parts {
+			p = strings.TrimSpace(strings.Trim(p, "{}"))
+			kv := strings.SplitN(p, ",", 2)
+			if len(kv) != 2 {
+				continue
+			}
+			k := convertExpression(strings.TrimSpace(kv[0]))
+			v := convertExpression(strings.TrimSpace(kv[1]))
+			pairs = append(pairs, fmt.Sprintf("%s: %s", k, v))
+		}
+		return "{" + strings.Join(pairs, ", ") + "}"
+	}
+	if strings.Contains(s, "std::string(") {
+		re := regexp.MustCompile(`std::string\(([^()]*)\)`)
+		s = re.ReplaceAllString(s, `$1`)
+	}
 	return s
 }
 func parseSingle(src string) (*ast.Node, error) {
