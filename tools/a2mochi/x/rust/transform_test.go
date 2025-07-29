@@ -138,6 +138,12 @@ func TestTransformGolden(t *testing.T) {
 		"string_index":        true,
 		"slice":               true,
 		"string_prefix_slice": true,
+		"len_map":             true,
+		"map_index":           true,
+		"map_int_key":         true,
+		"map_literal_dynamic": true,
+		"substring_builtin":   true,
+		"sum_builtin":         true,
 	}
 
 	for _, srcPath := range files {
