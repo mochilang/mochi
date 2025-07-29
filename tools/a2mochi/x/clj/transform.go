@@ -103,6 +103,7 @@ var builtins = map[string]bool{
 	"doseq":     true,
 	"fn*":       true,
 	"swap!":     true,
+	"atom":      true,
 }
 
 // newNode creates a new AST node with the given kind, value and children.
@@ -377,6 +378,18 @@ func sexprToNode(x any, fns map[string]bool) *ast.Node {
 					}
 					in := newNode("in", nil, coll)
 					return newNode("for", sanitizeName(name), in, blk)
+				}
+			}
+		case "boolean":
+			if len(v) == 2 {
+				return sexprToNode(v[1], fns)
+			}
+		case "some":
+			if len(v) == 3 {
+				if setLit, ok := v[1].([]any); ok && len(setLit) == 2 {
+					if head2, ok := setLit[0].(string); ok && head2 == "set" {
+						return newNode("binary", "in", sexprToNode(setLit[1], fns), sexprToNode(v[2], fns))
+					}
 				}
 			}
 		case "fn*":

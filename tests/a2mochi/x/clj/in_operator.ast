@@ -5,17 +5,11 @@
   (fun main
     (block
       (call print
-        (list
-          (selector boolean)
-          (list (selector some) (selector "#{2}") (selector xs))
-        )
+        (binary in (int 2) (selector xs))
       )
       (call print
         (unary !
-          (list
-            (selector boolean)
-            (list (selector some) (selector "#{5}") (selector xs))
-          )
+          (binary in (int 5) (selector xs))
         )
       )
     )
