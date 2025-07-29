@@ -25,4 +25,5 @@ Completed programs: 87/87
 - [x] import_statements
 - [x] require_statements
 - [x] left_join
+- [x] print_statements
 

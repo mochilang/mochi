@@ -112,6 +112,14 @@ func Parse(src string) (*Program, error) {
                             [(string? val) val]
                             [else #f])))]
        [else #f])]
+    [(and (pair? f) (eq? (car f) 'display))
+     (let ([val (cadr f)])
+       (hash 'kind "print"
+             'value (cond [(number? val) val]
+                         [(string? val) val]
+                         [else #f])))]
+    [(and (pair? f) (eq? (car f) 'newline))
+     (hash 'kind "print" 'value "")]
     [else #f]))
 (define forms (read-all in))
 (close-input-port in)

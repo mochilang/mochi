@@ -26,6 +26,8 @@ func Transform(p *Program) (*ast.Node, error) {
 			// ignore imports
 		case "assign":
 			prog.Children = append(prog.Children, newAssign(it.Name, it.Value))
+		case "print":
+			prog.Children = append(prog.Children, newPrint(it.Value))
 		}
 	}
 
@@ -65,6 +67,14 @@ func newAssign(name string, val interface{}) *ast.Node {
 		n.Children = append(n.Children, c)
 	} else {
 		n.Children = append(n.Children, &ast.Node{Kind: "int", Value: 0})
+	}
+	return n
+}
+
+func newPrint(val interface{}) *ast.Node {
+	n := &ast.Node{Kind: "print"}
+	if c := constNode(val); c != nil {
+		n.Children = append(n.Children, c)
 	}
 	return n
 }
