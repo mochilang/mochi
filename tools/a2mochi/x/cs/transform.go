@@ -11,37 +11,68 @@ import (
 	"mochi/parser"
 )
 
-var (
-	longLit     = regexp.MustCompile(`(\d+)L\b`)
-	appendRegex = regexp.MustCompile(`(\w+)\.Append\(([^\)]*)\)\.ToArray\(\)`)
-	joinRegex   = regexp.MustCompile(`string\.Join\([^,]+,\s*(.+)\)`)
-	avgRegex    = regexp.MustCompile(`([\w\[\],\s]+)\.Average\(\)`)
-	newArrRegex = regexp.MustCompile(`new\s+[^\[]+\[\]\s*\{([^}]*)\}`)
-)
+var longLit = regexp.MustCompile(`(\d+)L\b`)
 
 func stripLong(s string) string { return longLit.ReplaceAllString(s, "$1") }
 
 func rewriteExpr(s string) string {
 	s = strings.TrimSpace(s)
-	s = joinRegex.ReplaceAllString(s, "str($1)")
-	s = appendRegex.ReplaceAllStringFunc(s, func(m string) string {
-		parts := appendRegex.FindStringSubmatch(m)
-		if len(parts) == 3 {
-			return fmt.Sprintf("append(%s, %s)", parts[1], parts[2])
-		}
-		return m
-	})
-	s = avgRegex.ReplaceAllString(s, "avg($1)")
-	s = newArrRegex.ReplaceAllStringFunc(s, func(m string) string {
-		sub := newArrRegex.FindStringSubmatch(m)
-		if len(sub) == 2 {
-			inner := strings.ReplaceAll(sub[1], " ", "")
-			return "[" + inner + "]"
-		}
-		return m
-	})
+
+	// remove ToString calls
 	s = strings.ReplaceAll(s, `.ToString("0.0")`, "")
 	s = strings.ReplaceAll(s, `.ToString()`, "")
+
+	// string.Join -> str()
+	if strings.HasPrefix(s, "string.Join(") {
+		inner := strings.TrimPrefix(s, "string.Join(")
+		if end := strings.LastIndex(inner, ")"); end != -1 {
+			inner = inner[:end]
+			if idx := strings.Index(inner, ","); idx != -1 {
+				inner = strings.TrimSpace(inner[idx+1:])
+			}
+			s = "str(" + inner + ")"
+		}
+	}
+
+	// <x>.Append(y).ToArray() -> append(x, y)
+	if strings.Contains(s, ".Append(") && strings.HasSuffix(s, ").ToArray()") {
+		before := s[:strings.Index(s, ".Append(")]
+		rest := s[strings.Index(s, ".Append(")+len(".Append("):]
+		if idx := strings.Index(rest, ")"); idx != -1 {
+			arg := rest[:idx]
+			s = fmt.Sprintf("append(%s, %s)", strings.TrimSpace(before), strings.TrimSpace(arg))
+		}
+	}
+
+	// new T[]{...} -> [...]
+	for {
+		start := strings.Index(s, "new ")
+		if start == -1 {
+			break
+		}
+		arr := s[start:]
+		open := strings.Index(arr, "{")
+		close := strings.Index(arr, "}")
+		if open == -1 || close == -1 || close < open {
+			break
+		}
+		inner := strings.ReplaceAll(arr[open+1:close], " ", "")
+		s = s[:start] + "[" + inner + "]" + arr[close+1:]
+	}
+
+	// Average() -> avg()
+	if idx := strings.Index(s, ".Average()"); idx != -1 {
+		before := strings.TrimSpace(s[:idx])
+		after := s[idx+len(".Average()"):]
+		for strings.HasPrefix(before, "(") && strings.HasPrefix(after, ")") {
+			before = strings.TrimPrefix(before, "(")
+			after = strings.TrimPrefix(after, ")")
+		}
+		before = strings.TrimSuffix(before, ")")
+		s = "avg(" + strings.TrimSpace(before) + ")" + after
+	}
+
+	// ternary operator -> if
 	if q := strings.Index(s, "?"); q != -1 {
 		if c := strings.Index(s[q+1:], ":"); c != -1 {
 			cond := strings.TrimSpace(s[:q])
@@ -50,7 +81,8 @@ func rewriteExpr(s string) string {
 			s = fmt.Sprintf("if %s { %s } else { %s }", cond, thenPart, elsePart)
 		}
 	}
-	return s
+
+	return strings.TrimSpace(s)
 }
 
 // Transform converts the parsed Program into a Mochi AST node.
@@ -162,6 +194,7 @@ func convertBodyLines(body []string) []string {
 		case strings.HasPrefix(l, "Console.WriteLine("):
 			inner := strings.TrimPrefix(l, "Console.WriteLine(")
 			inner = strings.TrimSuffix(inner, ")")
+			inner = rewriteExpr(inner)
 			l = "print(" + inner + ")"
 		case strings.HasPrefix(l, "return "):
 			l = "return " + strings.TrimSpace(strings.TrimPrefix(l, "return "))
