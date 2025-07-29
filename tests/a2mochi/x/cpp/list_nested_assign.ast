@@ -1,0 +1,26 @@
+(program
+  (var matrix
+    (list
+      (list (int 1) (int 2))
+      (list (int 3) (int 4))
+    )
+  )
+  (fun main
+    (type int)
+    (assign
+      (index
+        (index (selector matrix) (int 1))
+        (int 0)
+      )
+      (int 5)
+    )
+    (call print
+      (index
+        (index (selector matrix) (int 1))
+        (int 0)
+      )
+    )
+    (return (int 0))
+  )
+  (call main)
+)
