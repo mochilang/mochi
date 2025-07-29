@@ -95,6 +95,12 @@ func translateExpr(expr string) string {
 	for hasOuterParens(expr) {
 		expr = strings.TrimSpace(expr[1 : len(expr)-1])
 	}
+	reEnumAt := regexp.MustCompile(`Enum\.at\(([^,]+),\s*([^\)]+)\)`)
+	for reEnumAt.MatchString(expr) {
+		m := reEnumAt.FindStringSubmatch(expr)
+		rep := translateExpr(strings.TrimSpace(m[1])) + "[" + translateExpr(strings.TrimSpace(m[2])) + "]"
+		expr = strings.Replace(expr, m[0], rep, 1)
+	}
 	if fb := translateForBlock(expr); fb != "" {
 		return fb
 	}
@@ -463,8 +469,50 @@ func convertSimpleScript(src string) string {
 	return code + "\nmain()\n"
 }
 
+func preprocessFuncLines(seg []string) []string {
+	if len(seg) == 0 {
+		return seg
+	}
+	enumEach := regexp.MustCompile(`^Enum.each\((.*),\s*fn\s+([a-zA-Z0-9_]+)\s*->$`)
+	rangeMinus := regexp.MustCompile(`^(.+)\.\.\((.+) - 1\)$`)
+	out := make([]string, 0, len(seg))
+	for i := 0; i < len(seg); i++ {
+		l := strings.TrimSpace(seg[i])
+		if m := enumEach.FindStringSubmatch(l); m != nil {
+			coll := strings.TrimSpace(m[1])
+			if hasOuterParens(coll) {
+				coll = strings.TrimSpace(coll[1 : len(coll)-1])
+			}
+			if m2 := rangeMinus.FindStringSubmatch(coll); m2 != nil {
+				coll = strings.TrimSpace(m2[1]) + ".." + strings.TrimSpace(m2[2])
+			}
+			v := strings.TrimSpace(m[2])
+			out = append(out, "for "+v+" <- "+coll+" do")
+			var body []string
+			for j := i + 1; j < len(seg); j++ {
+				l2 := strings.TrimSpace(seg[j])
+				if l2 == "end)" {
+					body = preprocessFuncLines(body)
+					out = append(out, body...)
+					out = append(out, "end")
+					i = j
+					break
+				}
+				body = append(body, l2)
+			}
+			continue
+		}
+		if l == "end)" {
+			out = append(out, "end")
+			continue
+		}
+		out = append(out, l)
+	}
+	return out
+}
+
 func convertFunction(fn Func) string {
-	seg := fn.Raw
+	seg := preprocessFuncLines(fn.Raw)
 	if len(seg) == 0 {
 		return ""
 	}
@@ -499,6 +547,8 @@ func convertFunction(fn Func) string {
 		case strings.HasPrefix(l, "catch"):
 			continue
 		case strings.HasPrefix(l, ":"):
+			continue
+		case strings.HasPrefix(l, "{"):
 			continue
 		case i+4 < len(seg) && strings.Contains(l, "= (fn ->") && strings.TrimSpace(seg[i+2]) == "cond do":
 			assign := strings.TrimSpace(seg[i+1])
@@ -589,7 +639,24 @@ func convertFunction(fn Func) string {
 			level++
 		case strings.HasPrefix(l, retPrefix):
 			val := strings.TrimSuffix(strings.TrimSpace(l[len(retPrefix):]), "}")
-			b.WriteString(strings.Repeat("  ", level) + "return " + strings.TrimSpace(val) + "\n")
+			expr := translateExpr(strings.TrimSpace(val))
+			if retType == "" {
+				switch {
+				case expr == "true" || expr == "false":
+					retType = ": bool"
+				case strings.HasPrefix(expr, "\"") && strings.HasSuffix(expr, "\""):
+					retType = ": string"
+				case strings.HasPrefix(expr, "["):
+					retType = ": list<any>"
+				case strings.HasPrefix(expr, "{"):
+					retType = ": any"
+				case strings.HasPrefix(expr, "len(") || strings.HasPrefix(expr, "sum("):
+					retType = ": int"
+				default:
+					retType = ": any"
+				}
+			}
+			b.WriteString(strings.Repeat("  ", level) + "return " + expr + "\n")
 		case l == "throw :break":
 			b.WriteString(strings.Repeat("  ", level) + "break\n")
 		case l == "throw :continue":
