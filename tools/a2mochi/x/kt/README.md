@@ -1,6 +1,6 @@
 # a2mochi Kotlin Converter
 
-Completed programs: 29/102
+Completed programs: 33/102
 Date: 2025-07-28
 
 This directory holds golden outputs for the Kotlin to Mochi converter.
@@ -36,3 +36,7 @@ Implemented examples:
 - closure
 - cast_struct
 - group_by
+- break_continue
+- short_circuit
+- typed_let
+- typed_var

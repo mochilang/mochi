@@ -40,7 +40,11 @@ func typeNode(t string) *ast.Node {
 }
 
 func varNode(n Node) *ast.Node {
-	v := &ast.Node{Kind: "let", Value: n.Name}
+	kind := "let"
+	if n.Kind == "var" {
+		kind = "var"
+	}
+	v := &ast.Node{Kind: kind, Value: n.Name}
 	if n.Ret != "" {
 		if tn := typeNode(n.Ret); tn != nil {
 			v.Children = append(v.Children, tn)
