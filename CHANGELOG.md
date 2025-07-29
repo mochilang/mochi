@@ -6,6 +6,10 @@
 
 * Additional program conversions and builtins across many a2mochi converters
 * Embedded Java parser and function type support for Kotlin transformations
+* Go converter handles list for-loops and struct types
+* Dart, Prolog and Lua gain new builtins and loop conversions
+* Racket, Scala and PHP transformers cover more examples and nested conditions
+* Python, Java and Swift golden files refreshed with extra tests
 
 ### Changed
 
