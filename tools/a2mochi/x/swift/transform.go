@@ -177,6 +177,8 @@ func interfaceTypeToMochi(t string) string {
 		return "bool"
 	case "String":
 		return "string"
+	case "Any":
+		return "any"
 	}
 	return ""
 }
@@ -442,6 +444,7 @@ func rewriteRanges(expr string) string {
 }
 
 func rewriteStrBuiltin(expr string) string {
+	expr = strings.ReplaceAll(expr, "String(describing:", "str(")
 	return strings.ReplaceAll(expr, "String(", "str(")
 }
 
@@ -562,5 +565,8 @@ func rewriteClosure(expr string) string {
 	if ret == "" {
 		ret = "any"
 	}
-	return fmt.Sprintf("fun(%s): %s { %s }", strings.Join(params, ", "), ret, body)
+	if strings.ContainsAny(body, "\n;") {
+		return fmt.Sprintf("fun(%s): %s { %s }", strings.Join(params, ", "), ret, body)
+	}
+	return fmt.Sprintf("fun(%s): %s => %s", strings.Join(params, ", "), ret, body)
 }

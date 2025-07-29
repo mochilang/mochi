@@ -161,7 +161,7 @@ func Parse(src string) (*Program, error) {
 	dec := json.NewDecoder(bytes.NewReader(data))
 	var f Program
 	if err := dec.Decode(&f); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("decode AST: %w", err)
 	}
 	f.Src = src
 	return &f, nil
