@@ -70,20 +70,24 @@ func runFile(path string) ([]byte, error) {
 	return runSrc(string(data))
 }
 
-func csToMochi(t *testing.T, src []byte) string {
+func convert(src []byte) (string, []byte, error) {
 	astNode, err := cs.Parse(string(src))
 	if err != nil {
-		t.Fatalf("parse: %v", err)
+		return "", nil, fmt.Errorf("parse: %w", err)
 	}
 	node, err := cs.Transform(astNode)
 	if err != nil {
-		t.Fatalf("transform: %v", err)
+		return "", nil, fmt.Errorf("transform: %w", err)
 	}
 	mochiSrc, err := cs.Print(node)
 	if err != nil {
-		t.Fatalf("print: %v", err)
+		return "", nil, fmt.Errorf("print: %w", err)
 	}
-	return mochiSrc
+	out, err := runSrc(mochiSrc)
+	if err != nil {
+		return "", nil, fmt.Errorf("run: %w", err)
+	}
+	return mochiSrc, out, nil
 }
 
 func TestTransformGolden(t *testing.T) {
@@ -107,25 +111,43 @@ func TestTransformGolden(t *testing.T) {
 			if err != nil {
 				t.Fatalf("read: %v", err)
 			}
-			mochiSrc := csToMochi(t, data)
+			mochiSrc, gotOut, err := convert(data)
 			mochiPath := filepath.Join(outDir, name+".mochi")
+			outPath := filepath.Join(outDir, name+".out")
+			errPath := filepath.Join(outDir, name+".error")
+			if err != nil {
+				if *update {
+					os.WriteFile(errPath, []byte(err.Error()), 0o644)
+				}
+				t.Errorf("convert: %v", err)
+				return
+			}
 			if *update {
 				os.WriteFile(mochiPath, []byte(mochiSrc), 0644)
-			}
-			gotOut, err := runSrc(mochiSrc)
-			if err != nil {
-				t.Fatalf("run: %v", err)
-			}
-			outPath := filepath.Join(outDir, name+".out")
-			if *update {
 				os.WriteFile(outPath, gotOut, 0644)
+				os.Remove(errPath)
+			} else {
+				wantSrc, err := os.ReadFile(mochiPath)
+				if err != nil {
+					t.Fatalf("read golden: %v", err)
+				}
+				if mochiSrc != string(wantSrc) {
+					t.Fatalf("mochi mismatch\n--- got ---\n%s\n--- want ---\n%s", mochiSrc, string(wantSrc))
+				}
+				wantOut, err := os.ReadFile(outPath)
+				if err != nil {
+					t.Fatalf("read out: %v", err)
+				}
+				if !bytes.Equal(gotOut, bytes.TrimSpace(wantOut)) {
+					t.Fatalf("output mismatch\nGot: %s\nWant: %s", gotOut, wantOut)
+				}
 			}
 			vmOut, err := runFile(filepath.Join(root, "tests/vm/valid", name+".mochi"))
 			if err != nil {
 				t.Fatalf("run vm: %v", err)
 			}
 			if !bytes.Equal(gotOut, vmOut) {
-				t.Fatalf("output mismatch\nGot: %s\nWant: %s", gotOut, vmOut)
+				t.Fatalf("output mismatch with vm\nGot: %s\nWant: %s", gotOut, vmOut)
 			}
 		})
 	}
@@ -139,14 +161,18 @@ func updateReadme() {
 	files, _ := filepath.Glob(pattern)
 	sort.Strings(files)
 	total := len(files)
-	compiled := 0
+	matched := 0
 	var lines []string
 	for _, f := range files {
 		name := strings.TrimSuffix(filepath.Base(f), ".cs")
 		mark := "[ ]"
-		if _, err := os.Stat(filepath.Join(outDir, name+".mochi")); err == nil {
-			compiled++
-			mark = "[x]"
+		outPath := filepath.Join(outDir, name+".out")
+		if out, err := os.ReadFile(outPath); err == nil {
+			vmOut, err2 := runFile(filepath.Join(root, "tests", "vm", "valid", name+".mochi"))
+			if err2 == nil && bytes.Equal(bytes.TrimSpace(out), vmOut) {
+				mark = "[x]"
+				matched++
+			}
 		}
 		lines = append(lines, fmt.Sprintf("- %s %s", mark, name))
 	}
@@ -169,7 +195,7 @@ func updateReadme() {
 	buf.WriteString("# a2mochi C# Converter\n\n")
 	buf.WriteString("Created: " + created + "\n\n")
 	buf.WriteString("This directory contains helpers and golden files for converting the C# output of the Mochi compiler back into Mochi AST form.\n\n")
-	fmt.Fprintf(&buf, "Completed programs: %d/%d (generated %s)\n\n", compiled, total, now)
+	fmt.Fprintf(&buf, "Completed programs: %d/%d (generated %s)\n\n", matched, total, now)
 	buf.WriteString("## Checklist\n")
 	buf.WriteString(strings.Join(lines, "\n"))
 	buf.WriteByte('\n')
