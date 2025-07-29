@@ -246,6 +246,9 @@ func rewriteLine(ln string, recs []Record) []string {
 				fmt.Sprintf("%s[%s] = %s", m[1], k, val),
 			}
 		}
+		if expr == "nil" || expr == "undefined" {
+			return []string{fmt.Sprintf("var %s: int", m[1])}
+		}
 		prefix = "let " + m[1] + " = "
 		ln = expr
 	}
