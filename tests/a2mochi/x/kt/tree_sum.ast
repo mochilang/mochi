@@ -1,4 +1,6 @@
 (program
+  (type Tree)
+  (type Leaf)
   (type Node
     (field left (type Tree))
     (field value (type int))

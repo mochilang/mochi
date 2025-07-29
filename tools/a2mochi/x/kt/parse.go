@@ -345,6 +345,18 @@ func parseNaive(src string) (*Program, error) {
 						nodes = append(nodes, Node{Kind: "type", Name: name, Fields: fields})
 					}
 				}
+			} else if strings.HasPrefix(trimmed, "interface ") || strings.HasPrefix(trimmed, "sealed interface ") {
+				name := strings.TrimSpace(strings.TrimPrefix(strings.TrimPrefix(trimmed, "sealed interface "), "interface "))
+				if idx := strings.IndexAny(name, " {:"); idx != -1 {
+					name = name[:idx]
+				}
+				nodes = append(nodes, Node{Kind: "type", Name: name})
+			} else if strings.HasPrefix(trimmed, "object ") {
+				name := strings.TrimSpace(strings.TrimPrefix(trimmed, "object "))
+				if idx := strings.IndexAny(name, " {:"); idx != -1 {
+					name = name[:idx]
+				}
+				nodes = append(nodes, Node{Kind: "type", Name: name})
 			} else if strings.HasPrefix(trimmed, "fun ") {
 				rest := strings.TrimPrefix(trimmed, "fun ")
 				if open := strings.Index(rest, "("); open != -1 {
