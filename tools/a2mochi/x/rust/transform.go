@@ -1,18 +1,13 @@
 //go:build slow
 
-package rs
+package rust
 
 import (
 	"bytes"
-	"context"
 	"fmt"
 	"os"
-	"os/exec"
-	"path/filepath"
-	"regexp"
 	"strconv"
 	"strings"
-	"time"
 
 	mochiast "mochi/ast"
 	"mochi/parser"
@@ -416,12 +411,55 @@ func sanitizeExpr(code string) string {
 	}
 	code = strings.ReplaceAll(code, "let ", "var ")
 	code = strings.ReplaceAll(code, "mut ", "")
-	// convert inline vec! macro usage
-	reVec := regexp.MustCompile(`vec!\[(?P<items>[^\]]*)\]`)
-	code = reVec.ReplaceAllString(code, `[$items]`)
-	// convert push() into append() assignment
-	rePush := regexp.MustCompile(`\b([A-Za-z_][A-Za-z0-9_]*)\.push\(([^)]*)\)`)
-	code = rePush.ReplaceAllString(code, `$1 = append($1, $2)`)
+	// convert inline vec! macro usage without regex
+	for {
+		start := strings.Index(code, "vec![")
+		if start < 0 {
+			break
+		}
+		end := strings.Index(code[start:], "]")
+		if end < 0 {
+			break
+		}
+		inner := code[start+5 : start+end]
+		code = code[:start] + "[" + inner + "]" + code[start+end+1:]
+	}
+	// convert push() into append() assignment without regex
+	for {
+		idx := strings.Index(code, ".push(")
+		if idx < 0 {
+			break
+		}
+		// find identifier start
+		start := idx - 1
+		for start >= 0 {
+			r := code[start]
+			if (r >= 'a' && r <= 'z') || (r >= 'A' && r <= 'Z') || (r >= '0' && r <= '9') || r == '_' {
+				start--
+			} else {
+				break
+			}
+		}
+		start++
+		name := code[start:idx]
+		end := idx + len(".push(")
+		depth := 1
+		for end < len(code) && depth > 0 {
+			switch code[end] {
+			case '(':
+				depth++
+			case ')':
+				depth--
+				if depth == 0 {
+					break
+				}
+			}
+			end++
+		}
+		arg := strings.TrimSpace(code[idx+len(".push(") : end])
+		repl := fmt.Sprintf("%s = append(%s, %s)", name, name, arg)
+		code = code[:start] + repl + code[end+1:]
+	}
 	if strings.HasPrefix(code, "{") && strings.HasSuffix(code, "}") {
 		inner := strings.TrimSpace(code[1 : len(code)-1])
 		parts := strings.Split(inner, ";")
@@ -446,8 +484,22 @@ func sanitizeExpr(code string) string {
 	code = strings.ReplaceAll(code, ".to_vec()", "")
 	code = strings.ReplaceAll(code, ".clone()", "")
 	code = strings.ReplaceAll(code, ".to_string()", "")
-	// simplify "+ -N" into "- N" for numeric literals
-	code = regexp.MustCompile(`\+\s*-([0-9])`).ReplaceAllString(code, " - $1")
+	// simplify "+ -N" into "- N" for numeric literals without regex
+	for {
+		idx := strings.Index(code, "+ -")
+		if idx < 0 || idx+3 >= len(code) {
+			break
+		}
+		if ch := code[idx+3]; ch >= '0' && ch <= '9' {
+			code = code[:idx] + " - " + code[idx+3:]
+		} else {
+			idx2 := strings.Index(code[idx+3:], "+ -")
+			if idx2 < 0 {
+				break
+			}
+			idx += 3 + idx2
+		}
+	}
 
 	code = strings.ReplaceAll(code, "Default::default()", "0")
 
@@ -736,23 +788,6 @@ func convertTrait(src string, n *node) []string {
 	return out
 }
 
-func runRustAnalyzerParse(cmd, src string) (string, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
-	c := exec.CommandContext(ctx, cmd, "parse")
-	c.Stdin = strings.NewReader(src)
-	var out, stderr bytes.Buffer
-	c.Stdout = &out
-	c.Stderr = &stderr
-	if err := c.Run(); err != nil {
-		if msg := strings.TrimSpace(stderr.String()); msg != "" {
-			return "", fmt.Errorf("%v: %s", err, msg)
-		}
-		return "", err
-	}
-	return out.String(), nil
-}
-
 func convertRustTree(src string, tree *node) ([]byte, error) {
 	if tree == nil {
 		return nil, fmt.Errorf("parse failed")
@@ -827,43 +862,38 @@ func convertRustTree(src string, tree *node) ([]byte, error) {
 	return []byte(strings.Join(out, "\n")), nil
 }
 
-// ConvertAST converts Rust source code using an already parsed syntax tree.
-func ConvertAST(src string, n *ASTNode) (*mochiast.Node, error) {
-	code, err := ConvertSourceAST(src, n)
+// TransformAST converts Rust source code using an already parsed syntax tree.
+func TransformAST(src string, n *ASTNode) (*mochiast.Node, error) {
+	code, err := convertRustTree(src, fromASTNode(n))
 	if err != nil {
 		return nil, err
 	}
-	prog, err := parser.ParseString(code)
+	prog, err := parser.ParseString(string(code))
 	if err != nil {
 		return nil, err
 	}
-	return mochiast.FromProgram(prog), nil
+	return FromProgram(prog), nil
 }
 
-// Convert converts Rust source code to a Mochi AST using rust-analyzer's parse output.
-func Convert(src string) (*mochiast.Node, error) {
-	code, err := ConvertSource(src)
-	if err != nil {
-		return nil, err
+// Transform converts a parsed Program into a Mochi AST.
+func Transform(p *Program) (*mochiast.Node, error) {
+	if p == nil || p.AST == nil {
+		return nil, fmt.Errorf("nil program")
 	}
-	prog, err := parser.ParseString(code)
-	if err != nil {
-		return nil, err
-	}
-	return mochiast.FromProgram(prog), nil
+	return TransformAST(p.Source, p.AST)
 }
 
-// ConvertFile reads the Rust file and converts it to Mochi.
-func ConvertFile(path string) (*mochiast.Node, error) {
-	data, err := os.ReadFile(path)
+// TransformFile reads the Rust file and converts it to Mochi.
+func TransformFile(path string) (*mochiast.Node, error) {
+	prog, err := ParseFile(path)
 	if err != nil {
 		return nil, err
 	}
-	return Convert(string(data))
+	return Transform(prog)
 }
 
-// ConvertASTFile parses the given Rust file and converts it using the parsed AST.
-func ConvertASTFile(path string) (*mochiast.Node, error) {
+// TransformASTFile parses the given Rust file and converts it using the parsed AST.
+func TransformASTFile(path string) (*mochiast.Node, error) {
 	data, err := os.ReadFile(path)
 	if err != nil {
 		return nil, err
@@ -872,12 +902,12 @@ func ConvertASTFile(path string) (*mochiast.Node, error) {
 	if err != nil {
 		return nil, err
 	}
-	return ConvertAST(string(data), ast)
+	return TransformAST(string(data), ast)
 }
 
-// ConvertASTFileSource parses the Rust file and converts it to Mochi source with
+// TransformASTFileSource parses the Rust file and converts it to Mochi source with
 // header and embedded original source code using the parsed AST.
-func ConvertASTFileSource(path string) (string, error) {
+func TransformASTFileSource(path string) (string, error) {
 	data, err := os.ReadFile(path)
 	if err != nil {
 		return "", err
@@ -920,79 +950,30 @@ func snippetAt(src string, line, col int) string {
 	return strings.TrimSuffix(out.String(), "\n")
 }
 
-func findRepoRoot() string {
-	dir, _ := os.Getwd()
-	for i := 0; i < 10; i++ {
-		if _, err := os.Stat(filepath.Join(dir, "go.mod")); err == nil {
-			return dir
-		}
-		parent := filepath.Dir(dir)
-		if parent == dir {
-			break
-		}
-		dir = parent
-	}
-	return "."
-}
-
-func readVersion() string {
-	path := filepath.Join(findRepoRoot(), "VERSION")
-	if b, err := os.ReadFile(path); err == nil {
-		return strings.TrimSpace(string(b))
-	}
-	return "dev"
-}
-
-func addHeader(src string, code []byte) string {
-	tz := time.FixedZone("GMT+7", 7*3600)
-	header := fmt.Sprintf("// Generated by Mochi a2mochi v%s on %s", readVersion(), time.Now().In(tz).Format("2006-01-02 15:04 -0700"))
-	var b strings.Builder
-	b.WriteString(header)
-	b.WriteByte('\n')
-	b.WriteString("/*\n")
-	b.WriteString(src)
-	if !strings.HasSuffix(src, "\n") {
-		b.WriteByte('\n')
-	}
-	b.WriteString("*/\n")
-	b.Write(code)
-	return b.String()
-}
-
 // ConvertSourceAST converts Rust source code and its parsed AST into Mochi source
 // with a generated header and the original Rust source as a block comment.
 func ConvertSourceAST(src string, n *ASTNode) (string, error) {
-	code, err := convertRustTree(src, fromASTNode(n))
+	node, err := TransformAST(src, n)
 	if err != nil {
 		return "", err
 	}
-	return addHeader(src, code), nil
+	var buf bytes.Buffer
+	if err := mochiast.Fprint(&buf, node); err != nil {
+		return "", err
+	}
+	return withHeader(src, buf.Bytes()), nil
 }
 
-// ConvertSource converts Rust source code into Mochi source using rust-analyzer.
-// The generated code includes a header comment and the original Rust source.
-func ConvertSource(src string) (string, error) {
-	if _, err := exec.LookPath("rust-analyzer"); err != nil {
-		return "", fmt.Errorf("rust-analyzer not installed")
-	}
-	out, err := runRustAnalyzerParse("rust-analyzer", src)
-	if err != nil {
-		return "", err
-	}
-	tree := parseTree(out)
-	code, err := convertRustTree(src, tree)
-	if err != nil {
-		return "", err
-	}
-	return addHeader(src, code), nil
-}
-
-// ConvertFileSource reads the Rust file and converts it to Mochi source with
+// TransformFileSource reads the Rust file and converts it to Mochi source with
 // header and embedded original source code.
-func ConvertFileSource(path string) (string, error) {
+func TransformFileSource(path string) (string, error) {
 	data, err := os.ReadFile(path)
 	if err != nil {
 		return "", err
 	}
-	return ConvertSource(string(data))
+	ast, err := ParseAST(string(data))
+	if err != nil {
+		return "", err
+	}
+	return ConvertSourceAST(string(data), ast)
 }
