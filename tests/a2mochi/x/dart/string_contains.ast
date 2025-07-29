@@ -2,16 +2,10 @@
   (fun main
     (let s (type string) (string catch))
     (call print
-      (call
-        (selector contains (selector s))
-        (string cat)
-      )
+      (binary in (string cat) (selector s))
     )
     (call print
-      (call
-        (selector contains (selector s))
-        (string dog)
-      )
+      (binary in (string dog) (selector s))
     )
   )
   (call main)

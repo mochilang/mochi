@@ -144,6 +144,7 @@ func TestTransform_Golden(t *testing.T) {
 	allowed := map[string]bool{
 		"append_builtin":      true,
 		"avg_builtin":         true,
+		"basic_compare":       true,
 		"binary_precedence":   true,
 		"bool_chain":          true,
 		"break_continue":      true,
@@ -151,10 +152,12 @@ func TestTransform_Golden(t *testing.T) {
 		"exists_builtin":      true,
 		"for_list_collection": true,
 		"for_loop":            true,
+		"in_operator":         true,
 		"let_and_print":       true,
 		"len_builtin":         true,
 		"list_index":          true,
 		"map_int_key":         true,
+		"membership":          true,
 		"print_hello":         true,
 		"string_concat":       true,
 		"string_contains":     true,
@@ -163,6 +166,7 @@ func TestTransform_Golden(t *testing.T) {
 		"test_block":          true,
 		"unary_neg":           true,
 		"var_assignment":      true,
+		"while_loop":          true,
 	}
 
 	outDir := filepath.Join(root, "tests/a2mochi/x/dart")
