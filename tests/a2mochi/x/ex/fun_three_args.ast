@@ -1,0 +1,20 @@
+(program
+  (fun sum3
+    (param a (type any))
+    (param b (type any))
+    (param c (type any))
+    (type any)
+    (return
+      (binary +
+        (binary + (selector a) (selector b))
+        (selector c)
+      )
+    )
+  )
+  (fun main
+    (call print
+      (call sum3 (int 1) (int 2) (int 3))
+    )
+  )
+  (call main)
+)
