@@ -528,6 +528,33 @@ func sanitizeExpr(code string) string {
 		repl := "len(" + expr + ")"
 		code = code[:loc[0]] + repl + code[loc[1]:]
 	}
+
+	// convert string indexing via chars().nth().unwrap()
+	reCharIndex := regexp.MustCompile(`([A-Za-z0-9_]+)\.chars\(\)\.nth\(([^)]*)\)\.unwrap\(\)`)
+	for {
+		loc := reCharIndex.FindStringSubmatchIndex(code)
+		if loc == nil {
+			break
+		}
+		sub := code[loc[0]:loc[1]]
+		parts := reCharIndex.FindStringSubmatch(sub)
+		idx := strings.ReplaceAll(parts[2], " as usize", "")
+		repl := fmt.Sprintf("%s[%s]", parts[1], strings.TrimSpace(idx))
+		code = code[:loc[0]] + repl + code[loc[1]:]
+	}
+
+	// convert `[start..end]` slice syntax to Mochi `[start:end]`
+	reSlice := regexp.MustCompile(`(vec!\[[^\]]*\]|\[[^\]]*\]|\([^)]*\)|[A-Za-z0-9_]+)\[(\d+)\.\.([^\]]+)\]`)
+	for {
+		loc := reSlice.FindStringSubmatchIndex(code)
+		if loc == nil {
+			break
+		}
+		sub := code[loc[0]:loc[1]]
+		parts := reSlice.FindStringSubmatch(sub)
+		repl := fmt.Sprintf("%s[%s:%s]", parts[1], parts[2], strings.TrimSpace(parts[3]))
+		code = code[:loc[0]] + repl + code[loc[1]:]
+	}
 	// convert inline vec! macro usage without regex
 	for {
 		start := strings.Index(code, "vec![")
