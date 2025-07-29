@@ -73,6 +73,71 @@ func mustRun(t *testing.T, src string) []byte {
 	return out
 }
 
+func testFile(t *testing.T, root, outDir, srcPath string) {
+	name := strings.TrimSuffix(filepath.Base(srcPath), ".ml")
+	errPath := filepath.Join(outDir, name+".error")
+	os.Remove(errPath)
+
+	data, err := os.ReadFile(srcPath)
+	if err != nil {
+		t.Fatalf("read src: %v", err)
+	}
+	prog, err := ocaml.Parse(string(data))
+	if err != nil {
+		os.WriteFile(errPath, []byte("parse: "+err.Error()), 0o644)
+		t.Fatalf("parse: %v", err)
+	}
+	node, err := ocaml.Transform(prog)
+	if err != nil {
+		os.WriteFile(errPath, []byte("transform: "+err.Error()), 0o644)
+		t.Fatalf("transform: %v", err)
+	}
+	astPath := filepath.Join(outDir, name+".ast")
+	if *update {
+		os.WriteFile(astPath, []byte(node.String()), 0o644)
+	}
+	want, err := os.ReadFile(astPath)
+	if err != nil {
+		t.Fatalf("missing golden: %v", err)
+	}
+	got := node.String()
+	if strings.TrimSpace(string(want)) != strings.TrimSpace(got) {
+		os.WriteFile(errPath, []byte("ast mismatch"), 0o644)
+		t.Fatalf("golden mismatch\n--- Got ---\n%s\n--- Want ---\n%s", got, want)
+	}
+
+	code, err := ocaml.Print(node)
+	if err != nil {
+		os.WriteFile(errPath, []byte("print: "+err.Error()), 0o644)
+		t.Fatalf("print: %v", err)
+	}
+	mochiPath := filepath.Join(outDir, name+".mochi")
+	if *update {
+		os.WriteFile(mochiPath, []byte(code), 0o644)
+	}
+	gotOut, err := run(code)
+	if err != nil {
+		os.WriteFile(errPath, []byte("run: "+err.Error()), 0o644)
+		t.Fatalf("run: %v", err)
+	}
+	if *update {
+		os.WriteFile(filepath.Join(outDir, name+".out"), gotOut, 0o644)
+	}
+	vmSrc, err := os.ReadFile(filepath.Join(root, "tests", "vm", "valid", name+".mochi"))
+	if err != nil {
+		t.Fatalf("missing vm source: %v", err)
+	}
+	wantOut, err := run(string(vmSrc))
+	if err != nil {
+		t.Fatalf("run vm: %v", err)
+	}
+	if !bytes.Equal(gotOut, wantOut) {
+		os.WriteFile(errPath, []byte(fmt.Sprintf("output mismatch\nGot: %s\nWant: %s", gotOut, wantOut)), 0o644)
+		t.Fatalf("output mismatch\nGot: %s\nWant: %s", gotOut, wantOut)
+	}
+	os.Remove(errPath)
+}
+
 func TestTransform_Golden(t *testing.T) {
 	if _, err := exec.LookPath("ocamlc"); err != nil {
 		t.Skipf("ocamlc not installed: %v", err)
@@ -117,11 +182,12 @@ func TestTransform_Golden(t *testing.T) {
 		"min_max_builtin":     true,
 		"membership":          true,
 		"map_in_operator":     true,
+		"map_membership":      true,
 		"string_contains":     true,
 		"string_in_operator":  true,
-               "string_prefix_slice": true,
-               "typed_let":           false,
-               "typed_var":           false,
+		"string_prefix_slice": true,
+		"typed_let":           false,
+		"typed_var":           false,
 	}
 	outDir := filepath.Join(root, "tests", "a2mochi", "x", "ocaml")
 	os.MkdirAll(outDir, 0o755)
@@ -132,51 +198,7 @@ func TestTransform_Golden(t *testing.T) {
 			continue
 		}
 		t.Run(name, func(t *testing.T) {
-			data, err := os.ReadFile(srcPath)
-			if err != nil {
-				t.Fatalf("read src: %v", err)
-			}
-			prog, err := ocaml.Parse(string(data))
-			if err != nil {
-				t.Fatalf("parse: %v", err)
-			}
-			node, err := ocaml.Transform(prog)
-			if err != nil {
-				t.Fatalf("transform: %v", err)
-			}
-			astPath := filepath.Join(outDir, name+".ast")
-			if *update {
-				os.WriteFile(astPath, []byte(node.String()), 0o644)
-			}
-			want, err := os.ReadFile(astPath)
-			if err != nil {
-				t.Fatalf("missing golden: %v", err)
-			}
-			got := node.String()
-			if strings.TrimSpace(string(want)) != strings.TrimSpace(got) {
-				t.Fatalf("golden mismatch\n--- Got ---\n%s\n--- Want ---\n%s", got, want)
-			}
-
-			code, err := ocaml.Print(node)
-			if err != nil {
-				t.Fatalf("print: %v", err)
-			}
-			mochiPath := filepath.Join(outDir, name+".mochi")
-			if *update {
-				os.WriteFile(mochiPath, []byte(code), 0o644)
-			}
-			gotOut := mustRun(t, code)
-			if *update {
-				os.WriteFile(filepath.Join(outDir, name+".out"), gotOut, 0o644)
-			}
-			vmSrc, err := os.ReadFile(filepath.Join(root, "tests", "vm", "valid", name+".mochi"))
-			if err != nil {
-				t.Fatalf("missing vm source: %v", err)
-			}
-			wantOut := mustRun(t, string(vmSrc))
-			if !bytes.Equal(gotOut, wantOut) {
-				t.Fatalf("output mismatch\nGot: %s\nWant: %s", gotOut, wantOut)
-			}
+			testFile(t, root, outDir, srcPath)
 		})
 	}
 }
@@ -194,9 +216,16 @@ func updateReadme() {
 	for _, f := range files {
 		name := strings.TrimSuffix(filepath.Base(f), ".ml")
 		mark := "[ ]"
-		if _, err := os.Stat(filepath.Join(outDir, name+".mochi")); err == nil {
-			compiled++
-			mark = "[x]"
+		outFile := filepath.Join(outDir, name+".out")
+		if data, err := os.ReadFile(outFile); err == nil {
+			vmSrc, err2 := os.ReadFile(filepath.Join(root, "tests", "vm", "valid", name+".mochi"))
+			if err2 == nil {
+				wantOut, err2 := run(string(vmSrc))
+				if err2 == nil && bytes.Equal(bytes.TrimSpace(data), wantOut) {
+					compiled++
+					mark = "[x]"
+				}
+			}
 		}
 		lines = append(lines, fmt.Sprintf("- %s %s", mark, name))
 	}

@@ -131,6 +131,7 @@ func DebugBuildMochi(p *Program) string { return buildMochi(p) }
 func convertExpr(expr string) []string {
 	expr = strings.ReplaceAll(expr, "\r", "")
 	expr = strings.TrimSpace(expr)
+	expr = strings.ReplaceAll(expr, "\n", " ")
 	expr = fixListSemicolons(expr)
 	var lines []string
 
