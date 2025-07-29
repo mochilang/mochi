@@ -34,13 +34,70 @@
       )
     )
   )
-  (let result (list))
+  (var result (list))
   (for o
     (in (selector orders))
     (block
       (for c
         (in (selector customers))
-        (block)
+        (block
+          (assign
+            (selector result)
+            (call append
+              (selector result)
+              (map
+                (entry
+                  (string orderId)
+                  (index
+                    (group
+                      (cast
+                        (selector o)
+                        (type map (type string) (type any))
+                      )
+                    )
+                    (string id)
+                  )
+                )
+                (entry
+                  (string orderCustomerId)
+                  (index
+                    (group
+                      (cast
+                        (selector o)
+                        (type map (type string) (type any))
+                      )
+                    )
+                    (string customerId)
+                  )
+                )
+                (entry
+                  (string pairedCustomerName)
+                  (index
+                    (group
+                      (cast
+                        (selector c)
+                        (type map (type string) (type any))
+                      )
+                    )
+                    (string name)
+                  )
+                )
+                (entry
+                  (string orderTotal)
+                  (index
+                    (group
+                      (cast
+                        (selector o)
+                        (type map (type string) (type any))
+                      )
+                    )
+                    (string total)
+                  )
+                )
+              )
+            )
+          )
+        )
       )
     )
   )

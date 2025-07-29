@@ -31,10 +31,15 @@
       )
     )
   )
-  (let expensive (list))
+  (var expensive (list))
   (for p
     (in (selector products))
-    (block)
+    (block
+      (assign
+        (selector expensive)
+        (call append (selector expensive) (selector p))
+      )
+    )
   )
   (call print (string "--- Top products (excluding most expensive) ---"))
   (for item

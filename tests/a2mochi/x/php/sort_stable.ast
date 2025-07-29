@@ -15,10 +15,26 @@
       )
     )
   )
-  (let result (list))
+  (var result (list))
   (for i
     (in (selector items))
-    (block)
+    (block
+      (assign
+        (selector result)
+        (call append
+          (selector result)
+          (index
+            (group
+              (cast
+                (selector i)
+                (type map (type string) (type any))
+              )
+            )
+            (string v)
+          )
+        )
+      )
+    )
   )
   (call json (selector result))
 )

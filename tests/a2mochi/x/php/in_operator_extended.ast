@@ -2,7 +2,7 @@
   (let xs
     (list (int 1) (int 2) (int 3))
   )
-  (let ys (list))
+  (var ys (list))
   (let m
     (map
       (entry (string a) (int 1))
@@ -19,7 +19,12 @@
           )
           (int 1)
         )
-        (block)
+        (block
+          (assign
+            (selector ys)
+            (call append (selector ys) (selector x))
+          )
+        )
       )
     )
   )

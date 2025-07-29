@@ -1,1 +1,1 @@
-:8: parse error: 1:10: unexpected token ")" (expected PostfixExpr)
+:8: parse expression "()": parse error: 1:10: unexpected token ")" (expected PostfixExpr)

@@ -31,7 +31,7 @@
       )
     )
   )
-  (let result (list))
+  (var result (list))
   (for o
     (in (selector orders))
     (block
@@ -62,7 +62,41 @@
                     (string id)
                   )
                 )
-                (block)
+                (block
+                  (assign
+                    (selector result)
+                    (call append
+                      (selector result)
+                      (map
+                        (entry
+                          (string orderId)
+                          (index
+                            (group
+                              (cast
+                                (selector o)
+                                (type map (type string) (type any))
+                              )
+                            )
+                            (string id)
+                          )
+                        )
+                        (entry
+                          (string name)
+                          (index
+                            (group
+                              (cast
+                                (selector c)
+                                (type map (type string) (type any))
+                              )
+                            )
+                            (string name)
+                          )
+                        )
+                        (entry (string item) (selector i))
+                      )
+                    )
+                  )
+                )
               )
             )
           )
@@ -90,7 +124,41 @@
                     (string id)
                   )
                 )
-                (block)
+                (block
+                  (assign
+                    (selector result)
+                    (call append
+                      (selector result)
+                      (map
+                        (entry
+                          (string orderId)
+                          (index
+                            (group
+                              (cast
+                                (selector o)
+                                (type map (type string) (type any))
+                              )
+                            )
+                            (string id)
+                          )
+                        )
+                        (entry
+                          (string name)
+                          (index
+                            (group
+                              (cast
+                                (selector c)
+                                (type map (type string) (type any))
+                              )
+                            )
+                            (string name)
+                          )
+                        )
+                        (entry (string item) (selector i))
+                      )
+                    )
+                  )
+                )
               )
             )
           )

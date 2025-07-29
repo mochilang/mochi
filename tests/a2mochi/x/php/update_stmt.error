@@ -1,5 +1,5 @@
-error[T024]: cannot assign to `people` (immutable)
-  --> :7:3
+error[T002]: undefined variable: idx
+  --> :7:10
 
 help:
-  Use `var` to declare mutable variables.
+  Check if the variable was declared in this scope.

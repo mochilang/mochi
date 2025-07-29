@@ -256,19 +256,39 @@ func parseExprStmtRec(p *Program, st *stmt.Expression, record bool) *ast.Node {
 				return nil
 			}
 			return &ast.Node{Kind: "let", Value: identString(v.VarName), Children: []*ast.Node{exprNode}}
-		default:
+		case *expr.ArrayDimFetch:
+			if v.Dim == nil {
+				base, ok1 := simpleExpr(v.Variable)
+				val, ok2 := simpleExpr(e.Expression)
+				if !ok1 || !ok2 {
+					return nil
+				}
+				if p.Mutables == nil {
+					p.Mutables = make(map[string]bool)
+				}
+				if name := baseVarName(v.Variable); name != "" {
+					p.Mutables[name] = true
+				}
+				lhsNode, err1 := parseExpr(base)
+				if err1 != nil {
+					return nil
+				}
+				rhsNode, err2 := parseExpr(fmt.Sprintf("append(%s, %s)", base, val))
+				if err2 != nil {
+					return nil
+				}
+				return &ast.Node{Kind: "assign", Children: []*ast.Node{lhsNode, rhsNode}}
+			}
 			lhs, ok1 := simpleExprNoCast(e.Variable)
 			rhs, ok2 := simpleExpr(e.Expression)
 			if !ok1 || !ok2 {
 				return nil
 			}
-			if record {
-				if p.Mutables == nil {
-					p.Mutables = make(map[string]bool)
-				}
-				if name := baseVarName(e.Variable); name != "" {
-					p.Mutables[name] = true
-				}
+			if p.Mutables == nil {
+				p.Mutables = make(map[string]bool)
+			}
+			if name := baseVarName(e.Variable); name != "" {
+				p.Mutables[name] = true
 			}
 			lhsNode, err1 := parseExpr(lhs)
 			if err1 != nil {

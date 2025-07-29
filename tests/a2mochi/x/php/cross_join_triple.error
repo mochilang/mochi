@@ -1,1 +1,5 @@
-parse error: 8:3: unexpected token "}" (expected "{" Statement* "}")
+error[T002]: undefined variable: bools
+  --> :6:14
+
+help:
+  Check if the variable was declared in this scope.

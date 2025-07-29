@@ -19,7 +19,7 @@
       )
     )
   )
-  (let adults (list))
+  (var adults (list))
   (for person
     (in (selector people))
     (block
@@ -36,7 +36,57 @@
           )
           (int 18)
         )
-        (block)
+        (block
+          (assign
+            (selector adults)
+            (call append
+              (selector adults)
+              (map
+                (entry
+                  (string name)
+                  (index
+                    (group
+                      (cast
+                        (selector person)
+                        (type map (type string) (type any))
+                      )
+                    )
+                    (string name)
+                  )
+                )
+                (entry
+                  (string age)
+                  (index
+                    (group
+                      (cast
+                        (selector person)
+                        (type map (type string) (type any))
+                      )
+                    )
+                    (string age)
+                  )
+                )
+                (entry
+                  (string is_senior)
+                  (group
+                    (binary >=
+                      (index
+                        (group
+                          (cast
+                            (selector person)
+                            (type map (type string) (type any))
+                          )
+                        )
+                        (string age)
+                      )
+                      (int 60)
+                    )
+                  )
+                )
+              )
+            )
+          )
+        )
       )
     )
   )

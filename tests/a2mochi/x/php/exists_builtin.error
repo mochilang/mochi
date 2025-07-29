@@ -1,1 +1,1 @@
-:3: parse error: 1:15: unexpected token ")" (expected PostfixExpr)
+:3: parse expression "(len(()) > 0)": parse error: 1:15: unexpected token ")" (expected PostfixExpr)

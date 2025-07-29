@@ -15,10 +15,15 @@
       )
     )
   )
-  (let sorted (list))
+  (var sorted (list))
   (for x
     (in (selector data))
-    (block)
+    (block
+      (assign
+        (selector sorted)
+        (call append (selector sorted) (selector x))
+      )
+    )
   )
   (call json (selector sorted))
 )
