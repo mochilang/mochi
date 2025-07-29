@@ -12,10 +12,11 @@ import (
 
 // Item represents a top-level Scheme definition discovered by the parser.
 type Item struct {
-	Kind   string      `json:"kind"`
-	Name   string      `json:"name"`
-	Params []string    `json:"params,omitempty"`
-	Value  interface{} `json:"value,omitempty"`
+	Kind   string        `json:"kind"`
+	Name   string        `json:"name"`
+	Params []string      `json:"params,omitempty"`
+	Value  interface{}   `json:"value,omitempty"`
+	Body   []interface{} `json:"body,omitempty"`
 }
 
 // Program holds the parsed representation of a Scheme source file.
@@ -108,7 +109,8 @@ func Parse(src string) (*Program, error) {
                (list? (cadar body)))
           (hash 'kind "func"
                 'name (symbol->string name)
-                'params (map symbol->string (cadar body)))]
+                'params (map symbol->string (cadar body))
+                'body (map expr->json (cddr (car body))))]
          [(symbol? name)
           (let ([val (car body)])
             (hash 'kind "var" 'name (symbol->string name)
