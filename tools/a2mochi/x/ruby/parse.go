@@ -3,13 +3,13 @@
 package ruby
 
 import (
-        "bytes"
-        "encoding/json"
-        "fmt"
-       "os"
-        "os/exec"
-        "strconv"
-        "strings"
+	"bytes"
+	"encoding/json"
+	"fmt"
+	"os"
+	"os/exec"
+	"strconv"
+	"strings"
 )
 
 // Node represents a Ruby AST node produced by ripper.
@@ -74,11 +74,11 @@ func Parse(src string) (*Node, error) {
 
 // ParseFile reads Ruby source code from a file and parses it using Parse.
 func ParseFile(path string) (*Node, error) {
-       data, err := os.ReadFile(path)
-       if err != nil {
-               return nil, err
-       }
-       return Parse(string(data))
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return nil, err
+	}
+	return Parse(string(data))
 }
 
 func buildNode(v any) Node {
@@ -188,8 +188,11 @@ func tokens(n Node) []string {
 func exprString(n Node) string {
 	switch n.Type {
 	case "array":
-		ts := tokens(n)
-		return "[" + strings.Join(ts, ", ") + "]"
+		var parts []string
+		for _, c := range n.Children {
+			parts = append(parts, exprString(c))
+		}
+		return "[" + strings.Join(parts, ", ") + "]"
 	case "hash":
 		var parts []string
 		var walk func(Node)

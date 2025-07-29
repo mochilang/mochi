@@ -6,6 +6,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"flag"
+	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -62,32 +63,32 @@ func run(src string) ([]byte, error) {
 	return bytes.TrimSpace(out.Bytes()), nil
 }
 
-func parseFile(t *testing.T, path string) *ruby.Node {
+func parseFile(path string) (*ruby.Node, error) {
 	data, err := os.ReadFile(path)
 	if err != nil {
-		t.Fatalf("read src: %v", err)
+		return nil, fmt.Errorf("read src: %w", err)
 	}
 	node, err := ruby.Parse(string(data))
 	if err != nil {
-		t.Fatalf("parse: %v", err)
+		return nil, fmt.Errorf("parse: %w", err)
 	}
-	return node
+	return node, nil
 }
 
-func transformNode(t *testing.T, n *ruby.Node) *ast.Node {
+func transformNode(n *ruby.Node) (*ast.Node, error) {
 	node, err := ruby.Transform(n)
 	if err != nil {
-		t.Fatalf("transform: %v", err)
+		return nil, fmt.Errorf("transform: %w", err)
 	}
-	return node
+	return node, nil
 }
 
-func printNode(t *testing.T, n *ast.Node) string {
+func printNode(n *ast.Node) (string, error) {
 	src, err := ruby.Print(n)
 	if err != nil {
-		t.Fatalf("print: %v", err)
+		return "", fmt.Errorf("print: %w", err)
 	}
-	return src
+	return src, nil
 }
 
 func TestTransformGolden(t *testing.T) {
@@ -122,6 +123,7 @@ func TestTransformGolden(t *testing.T) {
 		"let_and_print":       true,
 		"list_assign":         true,
 		"list_index":          true,
+		"list_nested_assign":  true,
 		"map_assign":          true,
 		"map_index":           true,
 		"map_int_key":         true,
@@ -154,18 +156,45 @@ func TestTransformGolden(t *testing.T) {
 			continue
 		}
 		t.Run(name, func(t *testing.T) {
-			n := parseFile(t, srcPath)
+			errPath := filepath.Join(outDir, name+".error")
 			if *updateGolden {
-				if j, err := json.MarshalIndent(n, "", "  "); err == nil {
+				os.Remove(errPath)
+			}
+
+			n, err := parseFile(srcPath)
+			if err != nil {
+				if *updateGolden {
+					os.WriteFile(errPath, []byte(err.Error()+"\n"), 0o644)
+				}
+				t.Fatalf("%v", err)
+			}
+			if *updateGolden {
+				if j, err2 := json.MarshalIndent(n, "", "  "); err2 == nil {
 					os.WriteFile(filepath.Join(outDir, name+".json"), j, 0o644)
 				}
 			}
-			astNode := transformNode(t, n)
+
+			astNode, err := transformNode(n)
+			if err != nil {
+				if *updateGolden {
+					os.WriteFile(errPath, []byte(err.Error()+"\n"), 0o644)
+				}
+				t.Fatalf("%v", err)
+			}
 			var astBuf bytes.Buffer
 			if err := ast.Fprint(&astBuf, astNode); err != nil {
+				if *updateGolden {
+					os.WriteFile(errPath, []byte("print ast: "+err.Error()+"\n"), 0o644)
+				}
 				t.Fatalf("print ast: %v", err)
 			}
-			mochiCode := printNode(t, astNode)
+			mochiCode, err := printNode(astNode)
+			if err != nil {
+				if *updateGolden {
+					os.WriteFile(errPath, []byte(err.Error()+"\n"), 0o644)
+				}
+				t.Fatalf("%v", err)
+			}
 			mochiPath := filepath.Join(outDir, name+".mochi")
 			if *updateGolden {
 				os.WriteFile(mochiPath, []byte(mochiCode), 0o644)
@@ -173,6 +202,9 @@ func TestTransformGolden(t *testing.T) {
 			}
 			gotOut, err := run(mochiCode)
 			if err != nil {
+				if *updateGolden {
+					os.WriteFile(errPath, []byte("run: "+err.Error()+"\n"), 0o644)
+				}
 				t.Fatalf("run: %v", err)
 			}
 			if *updateGolden {
@@ -180,18 +212,42 @@ func TestTransformGolden(t *testing.T) {
 			}
 			vmSrc, err := os.ReadFile(filepath.Join(root, "tests/vm/valid", name+".mochi"))
 			if err != nil {
+				if *updateGolden {
+					os.WriteFile(errPath, []byte("missing vm source: "+err.Error()+"\n"), 0o644)
+				}
 				t.Fatalf("missing vm source: %v", err)
 			}
 			wantOut, err := run(string(vmSrc))
 			if err != nil {
+				if *updateGolden {
+					os.WriteFile(errPath, []byte("run vm: "+err.Error()+"\n"), 0o644)
+				}
 				t.Fatalf("run vm: %v", err)
 			}
 			if !bytes.Equal(gotOut, wantOut) {
+				if *updateGolden {
+					os.WriteFile(errPath, []byte("output mismatch\n"+"Got: "+string(gotOut)+"\nWant: "+string(wantOut)+"\n"), 0o644)
+				}
 				t.Fatalf("output mismatch\nGot: %s\nWant: %s", gotOut, wantOut)
+			}
+			if *updateGolden {
+				os.Remove(errPath)
 			}
 		})
 	}
 	if *updateGolden {
-		ruby.UpdateReadmeForTests()
+		updateReadme()
 	}
+}
+
+func updateReadme() {
+	ruby.UpdateReadmeForTests()
+}
+
+func TestMain(m *testing.M) {
+	code := m.Run()
+	if *updateGolden {
+		updateReadme()
+	}
+	os.Exit(code)
 }
