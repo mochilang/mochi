@@ -4,7 +4,7 @@
       (list (int 1) (int 2))
     )
     (let _11218
-      (call append
+      (binary union_all
         (selector _11200)
         (list (int 3))
       )

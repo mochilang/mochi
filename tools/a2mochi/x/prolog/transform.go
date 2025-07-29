@@ -280,6 +280,37 @@ func parseBodyNodes(body string) ([]*ast.Node, error) {
 			}
 			idxNode := node("index", nil, n1, n2)
 			out = append(out, node("let", outVar, idxNode))
+		case func() bool { _, _, ok := parseLengthAssign(c); return ok }():
+			list, outVar, _ := parseLengthAssign(c)
+			n1, err := parseExpr(list)
+			if err != nil {
+				return nil, err
+			}
+			call := node("call", "len", n1)
+			out = append(out, node("let", outVar, call))
+		case func() bool {
+			name, args, _, ok := parseCallAssign(c)
+			return ok && len(args) == 2 && (name == "union" || name == "subtract" || name == "intersection" || name == "append")
+		}():
+			name, args, outVar, _ := parseCallAssign(c)
+			left, err := parseExpr(args[0])
+			if err != nil {
+				return nil, err
+			}
+			right, err := parseExpr(args[1])
+			if err != nil {
+				return nil, err
+			}
+			op := name
+			if name == "subtract" {
+				op = "except"
+			} else if name == "append" {
+				op = "union_all"
+			} else if name == "intersection" {
+				op = "intersect"
+			}
+			bin := node("binary", op, left, right)
+			out = append(out, node("let", outVar, bin))
 		case func() bool { _, _, _, ok := parseCallAssign(c); return ok }():
 			name, args, outVar, _ := parseCallAssign(c)
 			var argNodes []*ast.Node
@@ -442,6 +473,8 @@ func convertExpr(expr string) string {
 func parseArgs(s string) []string {
 	var args []string
 	depth := 0
+	brack := 0
+	brace := 0
 	start := 0
 	for i, r := range s {
 		switch r {
@@ -451,8 +484,20 @@ func parseArgs(s string) []string {
 			if depth > 0 {
 				depth--
 			}
+		case '[':
+			brack++
+		case ']':
+			if brack > 0 {
+				brack--
+			}
+		case '{':
+			brace++
+		case '}':
+			if brace > 0 {
+				brace--
+			}
 		case ',':
-			if depth == 0 {
+			if depth == 0 && brack == 0 && brace == 0 {
 				args = append(args, strings.TrimSpace(s[start:i]))
 				start = i + 1
 			}
@@ -618,6 +663,22 @@ func parseGetDict(s string) (key, dict, outVar string, ok bool) {
 	key = parts[0]
 	dict = parts[1]
 	outVar = parts[2]
+	ok = true
+	return
+}
+
+func parseLengthAssign(s string) (list string, outVar string, ok bool) {
+	s = strings.TrimSpace(s)
+	if !strings.HasPrefix(s, "length(") {
+		return
+	}
+	inner := strings.TrimSuffix(strings.TrimPrefix(s, "length("), ")")
+	parts := parseArgs(inner)
+	if len(parts) != 2 {
+		return
+	}
+	list = parts[0]
+	outVar = parts[1]
 	ok = true
 	return
 }

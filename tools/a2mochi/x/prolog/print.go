@@ -15,6 +15,8 @@ func Print(n *ast.Node) (string, error) {
 	}
 	var b strings.Builder
 	b.Write(transpmeta.Header("//"))
-	b.WriteString(n.Source())
+	code := n.Source()
+	code = strings.ReplaceAll(code, "union_all", "union all")
+	b.WriteString(code)
 	return b.String(), nil
 }
