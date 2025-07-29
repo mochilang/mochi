@@ -1,6 +1,6 @@
-// a2mochi-swift v0.10.47 on 2025-07-29 15:20 GMT+7
+// a2mochi-swift v0.10.48 on 2025-07-29 18:03 GMT+7
 let a = ((10 - 3))
 let b = ((2 + 2))
 print(a)
-print((if (a == 7) then true else false))
-print((if (b < 5) then true else false))
+print(((a == 7)))
+print(((b < 5)))

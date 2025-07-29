@@ -12,20 +12,12 @@
   (call print (selector a))
   (call print
     (group
-      (if_expr
-        (binary == (selector a) (int 7))
-        (bool true)
-        (bool false)
-      )
+      (binary == (selector a) (int 7))
     )
   )
   (call print
     (group
-      (if_expr
-        (binary < (selector b) (int 5))
-        (bool true)
-        (bool false)
-      )
+      (binary < (selector b) (int 5))
     )
   )
 )

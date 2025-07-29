@@ -1,0 +1,13 @@
+(program
+  (type Todo
+    (field title (type string))
+  )
+  (let todo
+    (struct Todo
+      (field title (string hi))
+    )
+  )
+  (call print
+    (selector title (selector todo))
+  )
+)
