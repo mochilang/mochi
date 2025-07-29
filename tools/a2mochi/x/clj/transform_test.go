@@ -6,7 +6,6 @@ import (
 	"bytes"
 	"flag"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"strings"
 	"testing"
@@ -72,9 +71,6 @@ func run(src string) ([]byte, error) {
 }
 
 func TestTransformGolden(t *testing.T) {
-	if _, err := exec.LookPath("clojure"); err != nil {
-		t.Skipf("clojure not installed: %v", err)
-	}
 	root := repoRoot(t)
 	pattern := filepath.Join(root, "tests", "transpiler", "x", "clj", "*.clj")
 	files, err := filepath.Glob(pattern)
