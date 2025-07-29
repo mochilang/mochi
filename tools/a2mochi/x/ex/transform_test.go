@@ -192,6 +192,8 @@ func TestTransformGolden(t *testing.T) {
 		"string_contains":     true,
 		"substring_builtin":   true,
 		"string_prefix_slice": true,
+		"for_list_collection": true,
+		"for_map_collection":  true,
 		"for_loop":            true,
 		"string_in_operator":  true,
 		"cast_struct":         true,
