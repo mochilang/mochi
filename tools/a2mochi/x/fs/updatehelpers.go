@@ -42,3 +42,18 @@ func UpdateReadme() {
 	buf.WriteString("\n")
 	_ = os.WriteFile(readme, buf.Bytes(), 0o644)
 }
+
+func repoRoot() string {
+	dir, _ := os.Getwd()
+	for i := 0; i < 10; i++ {
+		if _, err := os.Stat(filepath.Join(dir, "go.mod")); err == nil {
+			return dir
+		}
+		parent := filepath.Dir(dir)
+		if parent == dir {
+			break
+		}
+		dir = parent
+	}
+	return dir
+}
