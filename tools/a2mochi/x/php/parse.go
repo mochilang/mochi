@@ -656,7 +656,9 @@ func simpleExpr(n pnode.Node) (string, bool) {
 			return "", false
 		}
 		if _, nested := v.Variable.(*expr.ArrayDimFetch); nested {
-			base = fmt.Sprintf("(%s as map<string, any>)", base)
+			if _, ok := v.Dim.(*scalar.Lnumber); !ok {
+				base = fmt.Sprintf("(%s as map<string, any>)", base)
+			}
 		}
 		return fmt.Sprintf("%s[%s]", base, dim), true
 	case *expr.Array:
