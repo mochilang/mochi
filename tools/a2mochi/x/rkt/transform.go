@@ -530,6 +530,10 @@ func exprNode(d any) *ast.Node {
 			if len(v) == 2 {
 				return &ast.Node{Kind: "call", Value: "float", Children: []*ast.Node{exprNode(v[1])}}
 			}
+		case "length":
+			if len(v) == 2 {
+				return &ast.Node{Kind: "call", Value: "len", Children: []*ast.Node{exprNode(v[1])}}
+			}
 		case "+", "-", "*", "/", "<", ">", "<=", ">=", "=", "and", "or":
 			op := head
 			switch head {
