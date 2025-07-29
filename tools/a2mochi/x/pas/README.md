@@ -5,7 +5,7 @@ Pascal programs under `tests/transpiler/x/pas` into Mochi AST form.  The
 implementation is mostly regex based and is inspired by the Python and
 TypeScript converters.
 
-Completed programs: 30/104
+Completed programs: 32/104
 
 Supported features include:
 - basic `program` blocks with variable declarations
@@ -41,6 +41,8 @@ Supported features include:
 - [x] bool_chain
 - [x] break_continue
 - [x] cast_string_to_int
+- [x] if_else
+- [x] list_nested_assign
 - [x] fun_call
 - [x] fun_three_args
 - [x] short_circuit
