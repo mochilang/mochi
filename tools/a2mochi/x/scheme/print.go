@@ -12,7 +12,7 @@ import (
 )
 
 // Print renders the Mochi AST node to source code with a standard header.
-func Print(node *ast.Node) (string, error) {
+func Print(node *ast.Node, src string) (string, error) {
 	if node == nil {
 		return "", fmt.Errorf("nil node")
 	}
@@ -25,6 +25,12 @@ func Print(node *ast.Node) (string, error) {
 	}
 	var out strings.Builder
 	out.Write(meta.Header("//"))
+	out.WriteString("/*\n")
+	out.WriteString(src)
+	if !strings.HasSuffix(src, "\n") {
+		out.WriteByte('\n')
+	}
+	out.WriteString("*/\n")
 	out.WriteString(code.String())
 	return out.String(), nil
 }
@@ -35,7 +41,8 @@ func ConvertFileSource(path string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	prog, err := Parse(string(data))
+	src := string(data)
+	prog, err := Parse(src)
 	if err != nil {
 		return "", err
 	}
@@ -43,7 +50,7 @@ func ConvertFileSource(path string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return Print(node)
+	return Print(node, src)
 }
 
 // ConvertFile reads a Scheme file and returns a Mochi AST node.

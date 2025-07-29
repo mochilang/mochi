@@ -50,6 +50,23 @@ func Parse(src string) (*Program, error) {
       (if (eof-object? v)
           (reverse lst)
           (loop (cons v lst))))) )
+(define (module-name spec)
+  (cond
+    [(and (pair? spec)
+          (or (eq? (car spec) 'only)
+              (eq? (car spec) 'rename)))
+     (module-name (cadr spec))]
+    [(pair? spec)
+     (string-join (map (lambda (x)
+                         (cond [(symbol? x) (symbol->string x)]
+                               [(number? x) (number->string x)]
+                               [else ""]))
+                       spec)
+                "_")]
+    [(symbol? spec)
+     (symbol->string spec)]
+    [else #f]))
+
 (define (item f)
   (cond
     [(and (pair? f) (eq? (car f) 'define))
@@ -62,12 +79,19 @@ func Parse(src string) (*Program, error) {
          [(symbol? d)
           (hash 'kind "var" 'name (symbol->string d))]
          [else #f]))]
+    [(and (pair? f) (eq? (car f) 'import))
+     (for/list ([s (cdr f)] #:when (module-name s))
+       (hash 'kind "import" 'name (module-name s)))]
     [else #f]))
 (define forms (read-all in))
 (close-input-port in)
 (define items
-  (for/list ([f forms] #:when (item f))
-    (item f)))
+  (for/fold ([acc '()]) ([f forms])
+    (define it (item f))
+    (cond
+      [(list? it) (append acc it)]
+      [it (append acc (list it))]
+      [else acc])))
 (write-json items)
 `
 
