@@ -128,6 +128,22 @@ func transformStmt(st ast.Stmt) []*mast.Node {
 				Children: []*mast.Node{lhs, rhs},
 			}}
 		}
+	case *ast.DeclStmt:
+		if gd, ok := s.Decl.(*ast.GenDecl); ok && gd.Tok == token.VAR {
+			var nodes []*mast.Node
+			for _, sp := range gd.Specs {
+				vs, ok := sp.(*ast.ValueSpec)
+				if !ok || len(vs.Names) != 1 || len(vs.Values) != 1 {
+					continue
+				}
+				name := vs.Names[0].Name
+				val := transformExpr(vs.Values[0])
+				nodes = append(nodes, &mast.Node{Kind: "let", Value: name, Children: []*mast.Node{val}})
+			}
+			if len(nodes) > 0 {
+				return nodes
+			}
+		}
 	case *ast.ForStmt:
 		body := transformBlock(s.Body)
 		if s.Init == nil && s.Post == nil {
@@ -650,6 +666,13 @@ func astEqual(a, b ast.Expr) bool {
 	return ok && ok2 && ida.Name == idb.Name
 }
 
+func isIntLit(e ast.Expr) bool {
+	if bl, ok := e.(*ast.BasicLit); ok {
+		return bl.Kind == token.INT
+	}
+	return false
+}
+
 func transformExpr(e ast.Expr) *mast.Node {
 	switch v := e.(type) {
 	case *ast.BasicLit:
@@ -663,12 +686,24 @@ func transformExpr(e ast.Expr) *mast.Node {
 		case token.STRING:
 			s, _ := strconv.Unquote(v.Value)
 			return &mast.Node{Kind: "string", Value: s}
+		case token.CHAR:
+			r, _ := strconv.Unquote(v.Value)
+			if len(r) > 0 {
+				return &mast.Node{Kind: "int", Value: int(rune(r[0]))}
+			}
+			return &mast.Node{Kind: "int", Value: 0}
 		}
 	case *ast.Ident:
 		return &mast.Node{Kind: "selector", Value: v.Name}
 	case *ast.SelectorExpr:
 		return &mast.Node{Kind: "selector", Value: strings.ToLower(v.Sel.Name), Children: []*mast.Node{transformExpr(v.X)}}
 	case *ast.BinaryExpr:
+		if v.Op == token.QUO && isIntLit(v.X) && isIntLit(v.Y) {
+			div := &mast.Node{Kind: "binary", Value: v.Op.String(), Children: []*mast.Node{
+				transformExpr(v.X), transformExpr(v.Y),
+			}}
+			return &mast.Node{Kind: "cast", Children: []*mast.Node{div, &mast.Node{Kind: "type", Value: "int"}}}
+		}
 		return &mast.Node{Kind: "binary", Value: v.Op.String(), Children: []*mast.Node{
 			transformExpr(v.X), transformExpr(v.Y),
 		}}
@@ -881,6 +916,10 @@ func transformType(t ast.Expr) *mast.Node {
 			n.Children = append(n.Children, transformType(v.Results.List[0].Type))
 		}
 		return n
+	case *ast.ArrayType:
+		if id, ok := v.Elt.(*ast.Ident); ok {
+			return &mast.Node{Kind: "type", Value: "list<" + id.Name + ">"}
+		}
 	}
 	return &mast.Node{Kind: "type", Value: "any"}
 }
