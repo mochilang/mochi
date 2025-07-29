@@ -158,8 +158,8 @@ func parseBodyNodes(body string) ([]*ast.Node, error) {
 			}
 			call := node("call", name, argNodes...)
 			out = append(out, node("let", outVar, call))
-		case strings.Contains(c, " = "):
-			parts := strings.SplitN(c, " = ", 2)
+		case strings.Contains(c, " = ") || (strings.Contains(c, "=") && !strings.Contains(c, "==") && !strings.Contains(c, "=:=") && !strings.Contains(c, "=\\")):
+			parts := strings.SplitN(c, "=", 2)
 			name := strings.TrimSpace(parts[0])
 			exprStr := convertExpr(strings.TrimSpace(parts[1]))
 			exprNode, err := parseExpr(exprStr)
@@ -182,11 +182,15 @@ func TransformProgram(p *Program) (*ast.Node, error) {
 		return nil, fmt.Errorf("no convertible symbols found")
 	}
 	root := node("program", nil)
+	hasMain := false
 	for _, c := range p.Clauses {
 		if c.Name == ":-" {
 			continue
 		}
 		fn := node("fun", c.Name)
+		if c.Name == "main" {
+			hasMain = true
+		}
 		for _, param := range c.Params {
 			fn.Children = append(fn.Children, node("param", param))
 		}
@@ -196,6 +200,9 @@ func TransformProgram(p *Program) (*ast.Node, error) {
 		}
 		fn.Children = append(fn.Children, body...)
 		root.Children = append(root.Children, fn)
+	}
+	if hasMain {
+		root.Children = append(root.Children, node("call", "main"))
 	}
 	if len(root.Children) == 0 {
 		return nil, fmt.Errorf("no convertible symbols found")
@@ -237,6 +244,12 @@ func splitClauses(body string) []string {
 }
 
 func convertExpr(expr string) string {
+	if list, elem, ok := parseNotMember(expr); ok {
+		return "!contains(" + list + ", " + elem + ")"
+	}
+	if list, elem, ok := parseMember(expr); ok {
+		return "contains(" + list + ", " + elem + ")"
+	}
 	if src, sub, ok := parseSubStringContains(expr); ok {
 		return "contains(" + src + ", \"" + sub + "\")"
 	}
@@ -246,6 +259,8 @@ func convertExpr(expr string) string {
 	expr = strings.ReplaceAll(expr, "@=<", "<=")
 	expr = strings.ReplaceAll(expr, "@>", ">")
 	expr = strings.ReplaceAll(expr, "@<", "<")
+	expr = strings.ReplaceAll(expr, " = ", " == ")
+	expr = replaceTopLevelCommas(expr)
 	return expr
 }
 
@@ -342,4 +357,75 @@ func parseCallAssign(s string) (name string, args []string, outVar string, ok bo
 	outVar = parts[len(parts)-1]
 	ok = name != "" && outVar != ""
 	return
+}
+
+func parseMember(s string) (list, elem string, ok bool) {
+	s = strings.TrimSpace(s)
+	if !strings.HasPrefix(s, "member(") || !strings.HasSuffix(s, ")") {
+		return
+	}
+	inner := strings.TrimSuffix(strings.TrimPrefix(s, "member("), ")")
+	parts := parseArgs(inner)
+	if len(parts) != 2 {
+		return
+	}
+	elem = parts[0]
+	list = parts[1]
+	ok = true
+	return
+}
+
+func parseNotMember(s string) (list, elem string, ok bool) {
+	s = strings.TrimSpace(s)
+	if !strings.HasPrefix(s, "\\+(") || !strings.HasSuffix(s, ")") {
+		return
+	}
+	inner := strings.TrimSuffix(strings.TrimPrefix(s, "\\+("), ")")
+	if strings.HasPrefix(inner, "(") && strings.HasSuffix(inner, ")") {
+		inner = strings.TrimSuffix(strings.TrimPrefix(inner, "("), ")")
+	}
+	return parseMember(inner)
+}
+
+func replaceTopLevelCommas(s string) string {
+	var b strings.Builder
+	depth := 0
+	brack := 0
+	inSingle := false
+	inDouble := false
+	for _, r := range s {
+		switch r {
+		case '\'':
+			if !inDouble {
+				inSingle = !inSingle
+			}
+		case '"':
+			if !inSingle {
+				inDouble = !inDouble
+			}
+		case '(':
+			if !inSingle && !inDouble {
+				depth++
+			}
+		case ')':
+			if !inSingle && !inDouble && depth > 0 {
+				depth--
+			}
+		case '[':
+			if !inSingle && !inDouble {
+				brack++
+			}
+		case ']':
+			if !inSingle && !inDouble && brack > 0 {
+				brack--
+			}
+		case ',':
+			if !inSingle && !inDouble && depth == 0 && brack == 0 {
+				b.WriteString(" && ")
+				continue
+			}
+		}
+		b.WriteRune(r)
+	}
+	return b.String()
 }

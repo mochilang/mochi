@@ -4,12 +4,13 @@
     (call print (int 3))
     (call print (int 1))
     (call print (int 2))
-    (let L2
+    (let _11664
       (binary - (int 4) (int 1))
     )
-    (let R2
-      (call substr (string hello) (int 1) (selector L2))
+    (let _11684
+      (call substr (string hello) (int 1) (selector _11664))
     )
-    (call print (selector R2))
+    (call print (selector _11684))
   )
+  (call main)
 )

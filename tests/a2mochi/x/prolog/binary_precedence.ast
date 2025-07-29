@@ -1,20 +1,15 @@
 (program
   (fun main
     (call print (int 9))
-    (let R1
-      (binary *
-        (group (int 3))
-        (int 3)
-      )
+    (let _11454
+      (binary * (int 3) (int 3))
     )
-    (call print (selector R1))
+    (call print (selector _11454))
     (call print (int 7))
-    (let R3
-      (binary *
-        (int 2)
-        (group (int 4))
-      )
+    (let _11474
+      (binary * (int 2) (int 4))
     )
-    (call print (selector R3))
+    (call print (selector _11474))
   )
+  (call main)
 )

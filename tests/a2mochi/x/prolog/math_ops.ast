@@ -4,4 +4,5 @@
     (call print (float 3.5))
     (call print (int 1))
   )
+  (call main)
 )

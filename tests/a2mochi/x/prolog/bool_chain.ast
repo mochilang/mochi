@@ -1,7 +1,10 @@
 (program
   (fun main
     (if
-      (binary < (string a) (string b))
+      (binary &&
+        (binary && (bool true) (bool true))
+        (bool true)
+      )
       (block
         (call print (bool true))
       )
@@ -10,7 +13,10 @@
       )
     )
     (if
-      (binary <= (string a) (string a))
+      (binary &&
+        (binary && (bool true) (bool false))
+        (bool true)
+      )
       (block
         (call print (bool true))
       )
@@ -19,16 +25,13 @@
       )
     )
     (if
-      (binary > (string b) (string a))
-      (block
-        (call print (bool true))
+      (binary &&
+        (binary &&
+          (binary && (bool true) (bool true))
+          (bool false)
+        )
+        (bool true)
       )
-      (block
-        (call print (bool false))
-      )
-    )
-    (if
-      (binary >= (string b) (string b))
       (block
         (call print (bool true))
       )

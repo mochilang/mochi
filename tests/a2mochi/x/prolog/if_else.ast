@@ -1,8 +1,8 @@
 (program
   (fun main
-    (let X (int 5))
+    (let _11288 (int 5))
     (if
-      (binary > (selector X) (int 3))
+      (binary > (selector _11288) (int 3))
       (block
         (call print (string big))
       )
@@ -11,4 +11,5 @@
       )
     )
   )
+  (call main)
 )

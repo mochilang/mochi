@@ -1,10 +1,11 @@
 (program
   (fun main
-    (let I (int 1))
+    (let _11384 (int 1))
     (call print (int 1))
-    (let I1 (int 2))
+    (let _11394 (int 2))
     (call print (int 2))
-    (let I2 (int 3))
+    (let _11404 (int 3))
     (call print (int 3))
   )
+  (call main)
 )

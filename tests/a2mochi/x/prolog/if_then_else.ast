@@ -1,15 +1,16 @@
 (program
   (fun main
-    (let X (int 12))
+    (let _11306 (int 12))
     (if
-      (binary > (selector X) (int 10))
+      (binary > (selector _11306) (int 10))
       (block
-        (let Msg (string yes))
+        (let _11324 (string yes))
       )
       (block
-        (let Msg (string no))
+        (let _11324 (string no))
       )
     )
-    (call print (selector Msg))
+    (call print (selector _11324))
   )
+  (call main)
 )

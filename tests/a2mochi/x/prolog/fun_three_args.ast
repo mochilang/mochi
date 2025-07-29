@@ -1,21 +1,22 @@
 (program
   (fun sum3
     (param A)
-    (param B)
-    (param C)
-    (param R)
-    (let Return1
+    (param A)
+    (param A)
+    (param A)
+    (let _11490
       (binary +
-        (binary + (selector A) (selector B))
-        (selector C)
+        (binary + (selector _11468) (selector _11468))
+        (selector _11468)
       )
     )
-    (let R (selector Return1))
+    (let _11468 (selector _11490))
   )
   (fun main
-    (let R0
+    (let _12056
       (call sum3 (int 1) (int 2) (int 3))
     )
-    (call print (selector R0))
+    (call print (selector _12056))
   )
+  (call main)
 )

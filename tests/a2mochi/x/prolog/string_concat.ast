@@ -2,4 +2,5 @@
   (fun main
     (call print (string "hello world"))
   )
+  (call main)
 )

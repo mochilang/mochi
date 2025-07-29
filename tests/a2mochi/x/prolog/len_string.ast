@@ -2,4 +2,5 @@
   (fun main
     (call print (int 5))
   )
+  (call main)
 )

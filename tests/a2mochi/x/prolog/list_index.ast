@@ -1,11 +1,13 @@
 (program
   (fun main
-    (let Xs
+    (let _11230
       (list (int 10) (int 20) (int 30))
     )
-    (let R1
-      (index (selector Xs) (int 1))
+    (let _11240
+      (index (selector _11230)
+ (int 1))
     )
-    (call print (selector R1))
+    (call print (selector _11240))
   )
+  (call main)
 )
