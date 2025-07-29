@@ -1,0 +1,27 @@
+{
+  "funcs": [
+    {
+      "name": "main",
+      "ret": "int",
+      "body": "{\n    puts(todo.title);\n    return 0;\n"
+    }
+  ],
+  "structs": [
+    {
+      "name": "Todo",
+      "fields": [
+        {
+          "name": "title",
+          "type": "string"
+        }
+      ]
+    }
+  ],
+  "globals": [
+    {
+      "name": "todo",
+      "type": "Todo",
+      "value": "Todo){.title = \"hi\"}"
+    }
+  ]
+}

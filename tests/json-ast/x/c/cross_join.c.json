@@ -1,0 +1,128 @@
+{
+  "funcs": [
+    {
+      "name": "main",
+      "ret": "int",
+      "body": "{\n    puts(\"--- Cross Join: All order-customer pairs ---\");\n    {\n        Anon5 entry_arr[] = {(Anon5){.orderCustomerId = 1, .orderId = 100, .orderTotal = 250, .pairedCustomerName = \"Alice\"}, (Anon5){.orderCustomerId = 1, .orderId = 100, .orderTotal = 250, .pairedCustomerName = \"Bob\"}, (Anon5){.orderCustomerId = 1, .orderId = 100, .orderTotal = 250, .pairedCustomerName = \"Charlie\"}, (Anon5){.orderCustomerId = 2, .orderId = 101, .orderTotal = 125, .pairedCustomerName = \"Alice\"}, (Anon5){.orderCustomerId = 2, .orderId = 101, .orderTotal = 125, .pairedCustomerName = \"Bob\"}, (Anon5){.orderCustomerId = 2, .orderId = 101, .orderTotal = 125, .pairedCustomerName = \"Charlie\"}, (Anon5){.orderCustomerId = 1, .orderId = 102, .orderTotal = 300, .pairedCustomerName = \"Alice\"}, (Anon5){.orderCustomerId = 1, .orderId = 102, .orderTotal = 300, .pairedCustomerName = \"Bob\"}, (Anon5){.orderCustomerId = 1, .orderId = 102, .orderTotal = 300, .pairedCustomerName = \"Charlie\"}};\n        size_t entry_len = sizeof(entry_arr) / sizeof(entry_arr[0]);\n        for (size_t i = 0; i \u003c entry_len; i++) {\n            Anon5 entry = entry_arr[i];\n            printf(\"%s %d %s %d %s %d %s %s\\n\", \"Order\", entry.orderId, \"(customerId:\", entry.orderCustomerId, \", total: $\", entry.orderTotal, \") paired with\", entry.pairedCustomerName);\n        }\n    }\n    return 0;\n"
+    }
+  ],
+  "structs": [
+    {
+      "name": "Anon5",
+      "fields": [
+        {
+          "name": "orderCustomerId",
+          "type": "int"
+        },
+        {
+          "name": "orderId",
+          "type": "int"
+        },
+        {
+          "name": "orderTotal",
+          "type": "int"
+        },
+        {
+          "name": "pairedCustomerName",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "Customers",
+      "fields": [
+        {
+          "name": "id",
+          "type": "int"
+        },
+        {
+          "name": "name",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "Data2",
+      "fields": [
+        {
+          "name": "id",
+          "type": "int"
+        },
+        {
+          "name": "name",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "Data4",
+      "fields": [
+        {
+          "name": "id",
+          "type": "int"
+        },
+        {
+          "name": "customerId",
+          "type": "int"
+        },
+        {
+          "name": "total",
+          "type": "int"
+        }
+      ]
+    },
+    {
+      "name": "Orders",
+      "fields": [
+        {
+          "name": "id",
+          "type": "int"
+        },
+        {
+          "name": "customerId",
+          "type": "int"
+        },
+        {
+          "name": "total",
+          "type": "int"
+        }
+      ]
+    }
+  ],
+  "globals": [
+    {
+      "name": "customers[]",
+      "type": "Customers",
+      "value": "{ (Customers){.id = 1, .name = \"Alice\"}, (Customers){.id = 2, .name = \"Bob\"}, (Customers){.id = 3, .name = \"Charlie\"} }"
+    },
+    {
+      "name": "orders[]",
+      "type": "Orders",
+      "value": "{ (Orders){.id = 100, .customerId = 1, .total = 250}, (Orders){.id = 101, .customerId = 2, .total = 125}, (Orders){.id = 102, .customerId = 1, .total = 300} }"
+    },
+    {
+      "name": "result[]",
+      "type": "Anon5",
+      "value": "{ (Anon5){.orderCustomerId = 1, .orderId = 100, .orderTotal = 250, .pairedCustomerName = \"Alice\"}, (Anon5){.orderCustomerId = 1, .orderId = 100, .orderTotal = 250, .pairedCustomerName = \"Bob\"}, (Anon5){.orderCustomerId = 1, .orderId = 100, .orderTotal = 250, .pairedCustomerName = \"Charlie\"}, (Anon5){.orderCustomerId = 2, .orderId = 101, .orderTotal = 125, .pairedCustomerName = \"Alice\"}, (Anon5){.orderCustomerId = 2, .orderId = 101, .orderTotal = 125, .pairedCustomerName = \"Bob\"}, (Anon5){.orderCustomerId = 2, .orderId = 101, .orderTotal = 125, .pairedCustomerName = \"Charlie\"}, (Anon5){.orderCustomerId = 1, .orderId = 102, .orderTotal = 300, .pairedCustomerName = \"Alice\"}, (Anon5){.orderCustomerId = 1, .orderId = 102, .orderTotal = 300, .pairedCustomerName = \"Bob\"}, (Anon5){.orderCustomerId = 1, .orderId = 102, .orderTotal = 300, .pairedCustomerName = \"Charlie\"} }"
+    },
+    {
+      "name": "entry_arr[]",
+      "type": "Anon5",
+      "value": "{(Anon5){.orderCustomerId = 1, .orderId = 100, .orderTotal = 250, .pairedCustomerName = \"Alice\"}, (Anon5){.orderCustomerId = 1, .orderId = 100, .orderTotal = 250, .pairedCustomerName = \"Bob\"}, (Anon5){.orderCustomerId = 1, .orderId = 100, .orderTotal = 250, .pairedCustomerName = \"Charlie\"}, (Anon5){.orderCustomerId = 2, .orderId = 101, .orderTotal = 125, .pairedCustomerName = \"Alice\"}, (Anon5){.orderCustomerId = 2, .orderId = 101, .orderTotal = 125, .pairedCustomerName = \"Bob\"}, (Anon5){.orderCustomerId = 2, .orderId = 101, .orderTotal = 125, .pairedCustomerName = \"Charlie\"}, (Anon5){.orderCustomerId = 1, .orderId = 102, .orderTotal = 300, .pairedCustomerName = \"Alice\"}, (Anon5){.orderCustomerId = 1, .orderId = 102, .orderTotal = 300, .pairedCustomerName = \"Bob\"}, (Anon5){.orderCustomerId = 1, .orderId = 102, .orderTotal = 300, .pairedCustomerName = \"Charlie\"}}"
+    },
+    {
+      "name": "entry_len",
+      "type": "int",
+      "value": "sizeof(entry_arr) / sizeof(entry_arr[0]"
+    },
+    {
+      "name": "i",
+      "type": "int"
+    },
+    {
+      "name": "entry",
+      "type": "Anon5",
+      "value": "entry_arr[i"
+    }
+  ]
+}

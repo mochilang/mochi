@@ -1,0 +1,20 @@
+{
+  "funcs": [
+    {
+      "name": "triple",
+      "params": [
+        {
+          "name": "x",
+          "type": "int"
+        }
+      ],
+      "ret": "int",
+      "body": "{\n    return x * 3;\n"
+    },
+    {
+      "name": "main",
+      "ret": "int",
+      "body": "{\n    printf(\"%d\\n\", triple(3));\n    return 0;\n"
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "funcs": [
+    {
+      "name": "main",
+      "ret": "int",
+      "body": "{\n    puts(\"o\");\n    return 0;\n"
+    }
+  ],
+  "globals": [
+    {
+      "name": "s",
+      "type": "string"
+    }
+  ]
+}

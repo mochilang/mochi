@@ -1,0 +1,167 @@
+{
+  "funcs": [
+    {
+      "name": "main",
+      "ret": "int",
+      "body": "{\n    struct Stat {const char* name; int count;};\n    Stat stats[3]; size_t stats_len = 0;\n    for(size_t i=0;i\u003c3;i++){ Customers c=customers[i]; int cnt=0;\n      for(size_t j=0;j\u003c3;j++){ Orders o=orders[j]; if(o.customerId==c.id){ cnt++; }}\n      stats[stats_len++] = (Stat){c.name,cnt};\n    }\n    puts(\"--- Group Left Join ---\");\n    for(size_t i=0;i\u003cstats_len;i++){ Stat s=stats[i]; printf(\"%s %s %d\\n\", s.name, \"orders:\", s.count); }\n    return 0;\n"
+    }
+  ],
+  "structs": [
+    {
+      "name": "Anon5",
+      "fields": [
+        {
+          "name": "id",
+          "type": "int"
+        },
+        {
+          "name": "name",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "Anon6",
+      "fields": [
+        {
+          "name": "customerId",
+          "type": "int"
+        },
+        {
+          "name": "id",
+          "type": "int"
+        }
+      ]
+    },
+    {
+      "name": "Customers",
+      "fields": [
+        {
+          "name": "id",
+          "type": "int"
+        },
+        {
+          "name": "name",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "Data2",
+      "fields": [
+        {
+          "name": "id",
+          "type": "int"
+        },
+        {
+          "name": "name",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "Data4",
+      "fields": [
+        {
+          "name": "id",
+          "type": "int"
+        },
+        {
+          "name": "customerId",
+          "type": "int"
+        }
+      ]
+    },
+    {
+      "name": "Orders",
+      "fields": [
+        {
+          "name": "id",
+          "type": "int"
+        },
+        {
+          "name": "customerId",
+          "type": "int"
+        }
+      ]
+    },
+    {
+      "name": "Stat",
+      "fields": [
+        {
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "name": "count",
+          "type": "int"
+        }
+      ]
+    },
+    {
+      "name": "Stat",
+      "fields": [
+        {
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "name": "count",
+          "type": "int"
+        }
+      ]
+    }
+  ],
+  "globals": [
+    {
+      "name": "customers[]",
+      "type": "Customers",
+      "value": "{ (Customers){.id = 1, .name = \"Alice\"}, (Customers){.id = 2, .name = \"Bob\"}, (Customers){.id = 3, .name = \"Charlie\"} }"
+    },
+    {
+      "name": "orders[]",
+      "type": "Orders",
+      "value": "{ (Orders){.id = 100, .customerId = 1}, (Orders){.id = 101, .customerId = 1}, (Orders){.id = 102, .customerId = 2} }"
+    },
+    {
+      "name": "stats[3",
+      "type": "Stat"
+    },
+    {
+      "name": "stats_len",
+      "type": "int"
+    },
+    {
+      "name": "i",
+      "type": "int"
+    },
+    {
+      "name": "c",
+      "type": "Customers",
+      "value": "customers[i"
+    },
+    {
+      "name": "cnt",
+      "type": "int",
+      "value": "0"
+    },
+    {
+      "name": "j",
+      "type": "int"
+    },
+    {
+      "name": "o",
+      "type": "Orders",
+      "value": "orders[j"
+    },
+    {
+      "name": "i",
+      "type": "int"
+    },
+    {
+      "name": "s",
+      "type": "Stat",
+      "value": "stats[i"
+    }
+  ]
+}

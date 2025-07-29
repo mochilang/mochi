@@ -1,0 +1,218 @@
+{
+  "funcs": [
+    {
+      "name": "main",
+      "ret": "int",
+      "body": "{\n    FilteredItem filtered[12]; size_t filtered_len = 0;\n    for (size_t i=0;i\u003c3;i++){ Partsupp ps = partsupp[i]; for(size_t j=0;j\u003c2;j++){ Suppliers s = suppliers[j]; if(s.id==ps.supplier){ for(size_t k=0;k\u003c2;k++){ Nations n=nations[k]; if(n.id==s.nation \u0026\u0026 strcmp(n.name, \"A\")==0){ filtered[filtered_len++] = (FilteredItem){.part=ps.part,.value=ps.cost*ps.qty}; } } } } }\n    GroupedItem grouped[3]; size_t grouped_len = 0;\n    for(size_t i=0;i\u003cfiltered_len;i++){ FilteredItem x=filtered[i]; int f=0; for(size_t j=0;j\u003cgrouped_len;j++){ if(grouped[j].part==x.part){ grouped[j].total += (int)x.value; f=1; break; } } if(!f){ grouped[grouped_len++] = (GroupedItem){.part=x.part,.total=(int)x.value}; } }\n    for(size_t i=0;i\u003cgrouped_len;i++){ GroupedItem g=grouped[i]; printf(\"{\\\"part\\\": %d, \\\"total\\\": %d}%s\", g.part, g.total, i+1\u003cgrouped_len?\" \":\"\"); }\n    puts(\"\");\n    return 0;\n"
+    }
+  ],
+  "structs": [
+    {
+      "name": "Data2",
+      "fields": [
+        {
+          "name": "id",
+          "type": "int"
+        },
+        {
+          "name": "name",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "Data4",
+      "fields": [
+        {
+          "name": "id",
+          "type": "int"
+        },
+        {
+          "name": "nation",
+          "type": "int"
+        }
+      ]
+    },
+    {
+      "name": "Data6",
+      "fields": [
+        {
+          "name": "part",
+          "type": "int"
+        },
+        {
+          "name": "supplier",
+          "type": "int"
+        },
+        {
+          "name": "cost",
+          "type": "float"
+        },
+        {
+          "name": "qty",
+          "type": "int"
+        }
+      ]
+    },
+    {
+      "name": "FilteredItem",
+      "fields": [
+        {
+          "name": "part",
+          "type": "int"
+        },
+        {
+          "name": "value",
+          "type": "float"
+        }
+      ]
+    },
+    {
+      "name": "GroupedItem",
+      "fields": [
+        {
+          "name": "part",
+          "type": "int"
+        },
+        {
+          "name": "total",
+          "type": "int"
+        }
+      ]
+    },
+    {
+      "name": "Nations",
+      "fields": [
+        {
+          "name": "id",
+          "type": "int"
+        },
+        {
+          "name": "name",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "Partsupp",
+      "fields": [
+        {
+          "name": "part",
+          "type": "int"
+        },
+        {
+          "name": "supplier",
+          "type": "int"
+        },
+        {
+          "name": "cost",
+          "type": "float"
+        },
+        {
+          "name": "qty",
+          "type": "int"
+        }
+      ]
+    },
+    {
+      "name": "Suppliers",
+      "fields": [
+        {
+          "name": "id",
+          "type": "int"
+        },
+        {
+          "name": "nation",
+          "type": "int"
+        }
+      ]
+    }
+  ],
+  "globals": [
+    {
+      "name": "nations[]",
+      "type": "Nations",
+      "value": "{ (Nations){.id = 1, .name = \"A\"}, (Nations){.id = 2, .name = \"B\"} }"
+    },
+    {
+      "name": "suppliers[]",
+      "type": "Suppliers",
+      "value": "{ (Suppliers){.id = 1, .nation = 1}, (Suppliers){.id = 2, .nation = 2} }"
+    },
+    {
+      "name": "partsupp[]",
+      "type": "Partsupp",
+      "value": "{ (Partsupp){.part = 100, .supplier = 1, .cost = 10, .qty = 2}, (Partsupp){.part = 100, .supplier = 2, .cost = 20, .qty = 1}, (Partsupp){.part = 200, .supplier = 1, .cost = 5, .qty = 3} }"
+    },
+    {
+      "name": "filtered[12",
+      "type": "FilteredItem"
+    },
+    {
+      "name": "filtered_len",
+      "type": "int"
+    },
+    {
+      "name": "i",
+      "type": "int"
+    },
+    {
+      "name": "ps",
+      "type": "Partsupp",
+      "value": "partsupp[i"
+    },
+    {
+      "name": "j",
+      "type": "int"
+    },
+    {
+      "name": "s",
+      "type": "Suppliers",
+      "value": "suppliers[j"
+    },
+    {
+      "name": "k",
+      "type": "int"
+    },
+    {
+      "name": "n",
+      "type": "Nations",
+      "value": "nations[k"
+    },
+    {
+      "name": "grouped[3",
+      "type": "GroupedItem"
+    },
+    {
+      "name": "grouped_len",
+      "type": "int"
+    },
+    {
+      "name": "i",
+      "type": "int"
+    },
+    {
+      "name": "x",
+      "type": "FilteredItem",
+      "value": "filtered[i"
+    },
+    {
+      "name": "f",
+      "type": "int",
+      "value": "0"
+    },
+    {
+      "name": "j",
+      "type": "int"
+    },
+    {
+      "name": "i",
+      "type": "int"
+    },
+    {
+      "name": "g",
+      "type": "GroupedItem",
+      "value": "grouped[i"
+    }
+  ]
+}

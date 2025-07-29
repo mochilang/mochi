@@ -1,0 +1,20 @@
+{
+  "funcs": [
+    {
+      "name": "square",
+      "params": [
+        {
+          "name": "x",
+          "type": "int"
+        }
+      ],
+      "ret": "int",
+      "body": "{\n    return x * x;\n"
+    },
+    {
+      "name": "main",
+      "ret": "int",
+      "body": "{\n    printf(\"%d\\n\", square(6));\n    return 0;\n"
+    }
+  ]
+}

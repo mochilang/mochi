@@ -1,0 +1,9 @@
+{
+  "funcs": [
+    {
+      "name": "main",
+      "ret": "int",
+      "body": "{\n    puts(\"{\\\"a\\\":1,\\\"b\\\":2}\");\n    return 0;\n"
+    }
+  ]
+}

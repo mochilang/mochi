@@ -1,0 +1,62 @@
+{
+  "funcs": [
+    {
+      "name": "contains_int",
+      "params": [
+        {
+          "name": "arr",
+          "type": "int"
+        },
+        {
+          "name": "len",
+          "type": "int"
+        },
+        {
+          "name": "val",
+          "type": "int"
+        }
+      ],
+      "ret": "int",
+      "body": "{\n    for (size_t i = 0; i \u003c len; i++) {\n        if (arr[i] == val) return 1;\n    }\n    return 0;\n"
+    },
+    {
+      "name": "contains_str",
+      "params": [
+        {
+          "name": "arr",
+          "type": "string"
+        },
+        {
+          "name": "len",
+          "type": "int"
+        },
+        {
+          "name": "val",
+          "type": "string"
+        }
+      ],
+      "ret": "int",
+      "body": "{\n    for (size_t i = 0; i \u003c len; i++) {\n        if (strcmp(arr[i], val) == 0) return 1;\n    }\n    return 0;\n"
+    },
+    {
+      "name": "main",
+      "ret": "int",
+      "body": "{\n    printf(\"%d\\n\", 1);\n    printf(\"%d\\n\", 0);\n    return 0;\n"
+    }
+  ],
+  "globals": [
+    {
+      "name": "i",
+      "type": "int"
+    },
+    {
+      "name": "i",
+      "type": "int"
+    },
+    {
+      "name": "nums[]",
+      "type": "int",
+      "value": "{ 1, 2, 3 }"
+    }
+  ]
+}

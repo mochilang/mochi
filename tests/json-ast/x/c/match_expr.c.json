@@ -1,0 +1,21 @@
+{
+  "funcs": [
+    {
+      "name": "main",
+      "ret": "int",
+      "body": "{\n    const char* label = (x == 1 ? \"one\" : (x == 2 ? \"two\" : (x == 3 ? \"three\" : \"unknown\")));\n    puts(label);\n    return 0;\n"
+    }
+  ],
+  "globals": [
+    {
+      "name": "x",
+      "type": "int",
+      "value": "2"
+    },
+    {
+      "name": "label",
+      "type": "string",
+      "value": "x == 1 ? \"one\" : (x == 2 ? \"two\" : (x == 3 ? \"three\" : \"unknown\")"
+    }
+  ]
+}

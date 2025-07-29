@@ -1,0 +1,44 @@
+{
+  "funcs": [
+    {
+      "name": "main",
+      "ret": "int",
+      "body": "{\n    puts(book.author.name);\n    return 0;\n"
+    }
+  ],
+  "structs": [
+    {
+      "name": "Person",
+      "fields": [
+        {
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "name": "age",
+          "type": "int"
+        }
+      ]
+    },
+    {
+      "name": "Book",
+      "fields": [
+        {
+          "name": "title",
+          "type": "string"
+        },
+        {
+          "name": "author",
+          "type": "Person"
+        }
+      ]
+    }
+  ],
+  "globals": [
+    {
+      "name": "book",
+      "type": "Book",
+      "value": "Book){.title = \"Go\", .author = (Person){.name = \"Bob\", .age = 42}}"
+    }
+  ]
+}

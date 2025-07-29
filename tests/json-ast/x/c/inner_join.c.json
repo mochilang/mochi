@@ -1,0 +1,154 @@
+{
+  "funcs": [
+    {
+      "name": "main",
+      "ret": "int",
+      "body": "{\n    puts(\"--- Orders with customer info ---\");\n    {\n        Anon7 entry_arr[] = {(Anon7){.customerName = \"Alice\", .orderId = 100, .total = 250}, (Anon7){.customerName = \"Bob\", .orderId = 101, .total = 125}, (Anon7){.customerName = \"Alice\", .orderId = 102, .total = 300}};\n        size_t entry_len = sizeof(entry_arr) / sizeof(entry_arr[0]);\n        for (size_t i = 0; i \u003c entry_len; i++) {\n            Anon7 entry = entry_arr[i];\n            printf(\"%s %d %s %s %s %d\\n\", \"Order\", entry.orderId, \"by\", entry.customerName, \"- $\", entry.total);\n        }\n    }\n    return 0;\n"
+    }
+  ],
+  "structs": [
+    {
+      "name": "Anon5",
+      "fields": [
+        {
+          "name": "customerId",
+          "type": "int"
+        },
+        {
+          "name": "id",
+          "type": "int"
+        },
+        {
+          "name": "total",
+          "type": "int"
+        }
+      ]
+    },
+    {
+      "name": "Anon6",
+      "fields": [
+        {
+          "name": "id",
+          "type": "int"
+        },
+        {
+          "name": "name",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "Anon7",
+      "fields": [
+        {
+          "name": "customerName",
+          "type": "string"
+        },
+        {
+          "name": "orderId",
+          "type": "int"
+        },
+        {
+          "name": "total",
+          "type": "int"
+        }
+      ]
+    },
+    {
+      "name": "Customers",
+      "fields": [
+        {
+          "name": "id",
+          "type": "int"
+        },
+        {
+          "name": "name",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "Data2",
+      "fields": [
+        {
+          "name": "id",
+          "type": "int"
+        },
+        {
+          "name": "name",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "Data4",
+      "fields": [
+        {
+          "name": "id",
+          "type": "int"
+        },
+        {
+          "name": "customerId",
+          "type": "int"
+        },
+        {
+          "name": "total",
+          "type": "int"
+        }
+      ]
+    },
+    {
+      "name": "Orders",
+      "fields": [
+        {
+          "name": "id",
+          "type": "int"
+        },
+        {
+          "name": "customerId",
+          "type": "int"
+        },
+        {
+          "name": "total",
+          "type": "int"
+        }
+      ]
+    }
+  ],
+  "globals": [
+    {
+      "name": "customers[]",
+      "type": "Customers",
+      "value": "{ (Customers){.id = 1, .name = \"Alice\"}, (Customers){.id = 2, .name = \"Bob\"}, (Customers){.id = 3, .name = \"Charlie\"} }"
+    },
+    {
+      "name": "orders[]",
+      "type": "Orders",
+      "value": "{ (Orders){.id = 100, .customerId = 1, .total = 250}, (Orders){.id = 101, .customerId = 2, .total = 125}, (Orders){.id = 102, .customerId = 1, .total = 300}, (Orders){.id = 103, .customerId = 4, .total = 80} }"
+    },
+    {
+      "name": "result[]",
+      "type": "Anon7",
+      "value": "{ (Anon7){.customerName = \"Alice\", .orderId = 100, .total = 250}, (Anon7){.customerName = \"Bob\", .orderId = 101, .total = 125}, (Anon7){.customerName = \"Alice\", .orderId = 102, .total = 300} }"
+    },
+    {
+      "name": "entry_arr[]",
+      "type": "Anon7",
+      "value": "{(Anon7){.customerName = \"Alice\", .orderId = 100, .total = 250}, (Anon7){.customerName = \"Bob\", .orderId = 101, .total = 125}, (Anon7){.customerName = \"Alice\", .orderId = 102, .total = 300}}"
+    },
+    {
+      "name": "entry_len",
+      "type": "int",
+      "value": "sizeof(entry_arr) / sizeof(entry_arr[0]"
+    },
+    {
+      "name": "i",
+      "type": "int"
+    },
+    {
+      "name": "entry",
+      "type": "Anon7",
+      "value": "entry_arr[i"
+    }
+  ]
+}

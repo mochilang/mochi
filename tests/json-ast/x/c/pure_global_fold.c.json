@@ -1,0 +1,27 @@
+{
+  "funcs": [
+    {
+      "name": "inc",
+      "params": [
+        {
+          "name": "x",
+          "type": "int"
+        }
+      ],
+      "ret": "int",
+      "body": "{\n    return x + k;\n"
+    },
+    {
+      "name": "main",
+      "ret": "int",
+      "body": "{\n    printf(\"%d\\n\", inc(3));\n    return 0;\n"
+    }
+  ],
+  "globals": [
+    {
+      "name": "k",
+      "type": "int",
+      "value": "2"
+    }
+  ]
+}

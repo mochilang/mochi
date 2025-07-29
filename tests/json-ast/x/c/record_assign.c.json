@@ -1,0 +1,38 @@
+{
+  "funcs": [
+    {
+      "name": "inc",
+      "params": [
+        {
+          "name": "c",
+          "type": "Counter"
+        }
+      ],
+      "ret": "int",
+      "body": "{\n    c.n = c.n + 1;\n"
+    },
+    {
+      "name": "main",
+      "ret": "int",
+      "body": "{\n    printf(\"%d\\n\", c.n);\n    return 0;\n"
+    }
+  ],
+  "structs": [
+    {
+      "name": "Counter",
+      "fields": [
+        {
+          "name": "n",
+          "type": "int"
+        }
+      ]
+    }
+  ],
+  "globals": [
+    {
+      "name": "c",
+      "type": "Counter",
+      "value": "Counter){.n = 0}"
+    }
+  ]
+}

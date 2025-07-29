@@ -1,0 +1,53 @@
+{
+  "funcs": [
+    {
+      "name": "makeAdder",
+      "params": [
+        {
+          "name": "n",
+          "type": "int"
+        }
+      ],
+      "ret": "MakeAdderClosure",
+      "body": "{\n    return (MakeAdderClosure){.n = n};\n"
+    },
+    {
+      "name": "MakeAdderClosure_call",
+      "params": [
+        {
+          "name": "n",
+          "type": "int"
+        },
+        {
+          "name": "x",
+          "type": "int"
+        }
+      ],
+      "ret": "int",
+      "body": "{\n    return x + n;\n"
+    },
+    {
+      "name": "main",
+      "ret": "int",
+      "body": "{\n    MakeAdderClosure add10 = makeAdder(10);\n    printf(\"%d\\n\", MakeAdderClosure_call(add10.n, 7));\n    return 0;\n"
+    }
+  ],
+  "structs": [
+    {
+      "name": "MakeAdderClosure",
+      "fields": [
+        {
+          "name": "n",
+          "type": "int"
+        }
+      ]
+    }
+  ],
+  "globals": [
+    {
+      "name": "add10",
+      "type": "MakeAdderClosure",
+      "value": "makeAdder(10"
+    }
+  ]
+}

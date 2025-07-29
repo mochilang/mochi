@@ -1,0 +1,16 @@
+{
+  "funcs": [
+    {
+      "name": "main",
+      "ret": "int",
+      "body": "{\n    printf(\"%d\\n\", 1);\n    printf(\"%d\\n\", 1);\n    return 0;\n"
+    }
+  ],
+  "globals": [
+    {
+      "name": "xs[]",
+      "type": "int",
+      "value": "{ 1, 2, 3 }"
+    }
+  ]
+}

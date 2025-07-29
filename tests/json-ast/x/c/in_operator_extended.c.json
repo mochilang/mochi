@@ -1,0 +1,74 @@
+{
+  "funcs": [
+    {
+      "name": "contains_int",
+      "params": [
+        {
+          "name": "arr",
+          "type": "int"
+        },
+        {
+          "name": "len",
+          "type": "int"
+        },
+        {
+          "name": "val",
+          "type": "int"
+        }
+      ],
+      "ret": "int",
+      "body": "{\n    for (size_t i = 0; i \u003c len; i++) {\n        if (arr[i] == val) return 1;\n    }\n    return 0;\n"
+    },
+    {
+      "name": "main",
+      "ret": "int",
+      "body": "{\n    int ys[3]; size_t ys_len = 0;\n    for(size_t i=0;i\u003c3;i++){ int x=xs[i]; if((x % 2) == 1) {ys[ys_len++] = x; }}\n    printf(\"%d\\n\", contains_int(ys, ys_len, 1));\n    printf(\"%d\\n\", contains_int(ys, ys_len, 2));\n    printf(\"%d\\n\", 0);\n    printf(\"%d\\n\", 0);\n    printf(\"%d\\n\", strstr(s, \"ell\") != NULL);\n    printf(\"%d\\n\", strstr(s, \"foo\") != NULL);\n    return 0;\n"
+    }
+  ],
+  "globals": [
+    {
+      "name": "i",
+      "type": "int"
+    },
+    {
+      "name": "xs[]",
+      "type": "int",
+      "value": "{ 1, 2, 3 }"
+    },
+    {
+      "name": "m_keys[17]",
+      "type": "string",
+      "value": "{\"a\"}"
+    },
+    {
+      "name": "m_vals[17]",
+      "type": "int",
+      "value": "{1}"
+    },
+    {
+      "name": "m_len",
+      "type": "int"
+    },
+    {
+      "name": "s",
+      "type": "string"
+    },
+    {
+      "name": "ys[3",
+      "type": "int"
+    },
+    {
+      "name": "ys_len",
+      "type": "int"
+    },
+    {
+      "name": "i",
+      "type": "int"
+    },
+    {
+      "name": "x",
+      "type": "int",
+      "value": "xs[i"
+    }
+  ]
+}

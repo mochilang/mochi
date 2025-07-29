@@ -1,0 +1,69 @@
+{
+  "funcs": [
+    {
+      "name": "main",
+      "ret": "int",
+      "body": "{\n    puts(\"--- Cross Join of three lists ---\");\n    {\n        Anon1 c_arr[] = {(Anon1){.b = 1, .l = \"A\", .n = 1}, (Anon1){.b = 0, .l = \"A\", .n = 1}, (Anon1){.b = 1, .l = \"B\", .n = 1}, (Anon1){.b = 0, .l = \"B\", .n = 1}, (Anon1){.b = 1, .l = \"A\", .n = 2}, (Anon1){.b = 0, .l = \"A\", .n = 2}, (Anon1){.b = 1, .l = \"B\", .n = 2}, (Anon1){.b = 0, .l = \"B\", .n = 2}};\n        size_t c_len = sizeof(c_arr) / sizeof(c_arr[0]);\n        for (size_t i = 0; i \u003c c_len; i++) {\n            Anon1 c = c_arr[i];\n            printf(\"%d %s %d\\n\", c.n, c.l, c.b);\n        }\n    }\n    return 0;\n"
+    }
+  ],
+  "structs": [
+    {
+      "name": "Anon1",
+      "fields": [
+        {
+          "name": "b",
+          "type": "int"
+        },
+        {
+          "name": "l",
+          "type": "string"
+        },
+        {
+          "name": "n",
+          "type": "int"
+        }
+      ]
+    }
+  ],
+  "globals": [
+    {
+      "name": "nums[]",
+      "type": "int",
+      "value": "{ 1, 2 }"
+    },
+    {
+      "name": "letters[]",
+      "type": "string",
+      "value": "{ \"A\", \"B\" }"
+    },
+    {
+      "name": "bools[]",
+      "type": "int",
+      "value": "{ 1, 0 }"
+    },
+    {
+      "name": "combos[]",
+      "type": "Anon1",
+      "value": "{ (Anon1){.b = 1, .l = \"A\", .n = 1}, (Anon1){.b = 0, .l = \"A\", .n = 1}, (Anon1){.b = 1, .l = \"B\", .n = 1}, (Anon1){.b = 0, .l = \"B\", .n = 1}, (Anon1){.b = 1, .l = \"A\", .n = 2}, (Anon1){.b = 0, .l = \"A\", .n = 2}, (Anon1){.b = 1, .l = \"B\", .n = 2}, (Anon1){.b = 0, .l = \"B\", .n = 2} }"
+    },
+    {
+      "name": "c_arr[]",
+      "type": "Anon1",
+      "value": "{(Anon1){.b = 1, .l = \"A\", .n = 1}, (Anon1){.b = 0, .l = \"A\", .n = 1}, (Anon1){.b = 1, .l = \"B\", .n = 1}, (Anon1){.b = 0, .l = \"B\", .n = 1}, (Anon1){.b = 1, .l = \"A\", .n = 2}, (Anon1){.b = 0, .l = \"A\", .n = 2}, (Anon1){.b = 1, .l = \"B\", .n = 2}, (Anon1){.b = 0, .l = \"B\", .n = 2}}"
+    },
+    {
+      "name": "c_len",
+      "type": "int",
+      "value": "sizeof(c_arr) / sizeof(c_arr[0]"
+    },
+    {
+      "name": "i",
+      "type": "int"
+    },
+    {
+      "name": "c",
+      "type": "Anon1",
+      "value": "c_arr[i"
+    }
+  ]
+}

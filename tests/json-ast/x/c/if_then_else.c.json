@@ -1,0 +1,21 @@
+{
+  "funcs": [
+    {
+      "name": "main",
+      "ret": "int",
+      "body": "{\n    const char* msg = (x \u003e 10 ? \"yes\" : \"no\");\n    puts(msg);\n    return 0;\n"
+    }
+  ],
+  "globals": [
+    {
+      "name": "x",
+      "type": "int",
+      "value": "12"
+    },
+    {
+      "name": "msg",
+      "type": "string",
+      "value": "x \u003e 10 ? \"yes\" : \"no\""
+    }
+  ]
+}

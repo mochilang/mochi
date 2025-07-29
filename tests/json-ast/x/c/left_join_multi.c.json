@@ -1,0 +1,186 @@
+{
+  "funcs": [
+    {
+      "name": "main",
+      "ret": "int",
+      "body": "{\n    puts(\"--- Left Join Multi ---\");\n    {\n        Anon10 r_arr[] = {(Anon10){.item = \"{'orderId': 100, 'sku': 'a'}\", .name = \"Alice\", .orderId = 100}, (Anon10){.item = \"None\", .name = \"Bob\", .orderId = 101}};\n        size_t r_len = sizeof(r_arr) / sizeof(r_arr[0]);\n        for (size_t i = 0; i \u003c r_len; i++) {\n            Anon10 r = r_arr[i];\n            printf(\"%d %s %s\\n\", r.orderId, r.name, r.item);\n        }\n    }\n    return 0;\n"
+    }
+  ],
+  "structs": [
+    {
+      "name": "Anon10",
+      "fields": [
+        {
+          "name": "item",
+          "type": "string"
+        },
+        {
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "name": "orderId",
+          "type": "int"
+        }
+      ]
+    },
+    {
+      "name": "Anon7",
+      "fields": [
+        {
+          "name": "customerId",
+          "type": "int"
+        },
+        {
+          "name": "id",
+          "type": "int"
+        }
+      ]
+    },
+    {
+      "name": "Anon8",
+      "fields": [
+        {
+          "name": "id",
+          "type": "int"
+        },
+        {
+          "name": "name",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "Anon9",
+      "fields": [
+        {
+          "name": "orderId",
+          "type": "int"
+        },
+        {
+          "name": "sku",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "Customers",
+      "fields": [
+        {
+          "name": "id",
+          "type": "int"
+        },
+        {
+          "name": "name",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "Data2",
+      "fields": [
+        {
+          "name": "id",
+          "type": "int"
+        },
+        {
+          "name": "name",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "Data4",
+      "fields": [
+        {
+          "name": "id",
+          "type": "int"
+        },
+        {
+          "name": "customerId",
+          "type": "int"
+        }
+      ]
+    },
+    {
+      "name": "Data6",
+      "fields": [
+        {
+          "name": "orderId",
+          "type": "int"
+        },
+        {
+          "name": "sku",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "Items",
+      "fields": [
+        {
+          "name": "orderId",
+          "type": "int"
+        },
+        {
+          "name": "sku",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "Orders",
+      "fields": [
+        {
+          "name": "id",
+          "type": "int"
+        },
+        {
+          "name": "customerId",
+          "type": "int"
+        }
+      ]
+    }
+  ],
+  "globals": [
+    {
+      "name": "customers[]",
+      "type": "Customers",
+      "value": "{ (Customers){.id = 1, .name = \"Alice\"}, (Customers){.id = 2, .name = \"Bob\"} }"
+    },
+    {
+      "name": "orders[]",
+      "type": "Orders",
+      "value": "{ (Orders){.id = 100, .customerId = 1}, (Orders){.id = 101, .customerId = 2} }"
+    },
+    {
+      "name": "items[]",
+      "type": "Items",
+      "value": "{ (Items){.orderId = 100, .sku = \"a\"} }"
+    },
+    {
+      "name": "result[]",
+      "type": "Anon10",
+      "value": "{ (Anon10){.item = \"{'orderId': 100, 'sku': 'a'}\", .name = \"Alice\", .orderId = 100}, (Anon10){.item = \"None\", .name = \"Bob\", .orderId = 101} }"
+    },
+    {
+      "name": "r_arr[]",
+      "type": "Anon10",
+      "value": "{(Anon10){.item = \"{'orderId': 100, 'sku': 'a'}\", .name = \"Alice\", .orderId = 100}, (Anon10){.item = \"None\", .name = \"Bob\", .orderId = 101}}"
+    },
+    {
+      "name": "r_len",
+      "type": "int",
+      "value": "sizeof(r_arr) / sizeof(r_arr[0]"
+    },
+    {
+      "name": "i",
+      "type": "int"
+    },
+    {
+      "name": "r",
+      "type": "Anon10",
+      "value": "r_arr[i"
+    }
+  ]
+}

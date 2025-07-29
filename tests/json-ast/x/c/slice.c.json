@@ -1,0 +1,9 @@
+{
+  "funcs": [
+    {
+      "name": "main",
+      "ret": "int",
+      "body": "{\n    printf(\"%d \", 2);\n    printf(\"%d\\n\", 3);\n    printf(\"%d \", 1);\n    printf(\"%d\\n\", 2);\n    puts(\"ell\");\n    return 0;\n"
+    }
+  ]
+}

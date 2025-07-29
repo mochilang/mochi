@@ -1,0 +1,24 @@
+{
+  "funcs": [
+    {
+      "name": "boom",
+      "params": [
+        {
+          "name": "a",
+          "type": "int"
+        },
+        {
+          "name": "b",
+          "type": "int"
+        }
+      ],
+      "ret": "int",
+      "body": "{\n    puts(\"boom\");\n    return 1;\n"
+    },
+    {
+      "name": "main",
+      "ret": "int",
+      "body": "{\n    printf(\"%d\\n\", 0);\n    printf(\"%d\\n\", 1);\n    return 0;\n"
+    }
+  ]
+}
