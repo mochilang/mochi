@@ -175,7 +175,7 @@ func blockNode(stmts []Stmt, assigned map[string]bool) *ast.Node {
 
 var reBinary = regexp.MustCompile(`^(.+)\s*(==|!=|<=|>=|<|>|\+|\-|\*|/|%|&&|\|\|)\s*(.+)$`)
 var reCall = regexp.MustCompile(`^([a-zA-Z_][a-zA-Z0-9_]*)\((.*)\)$`)
-var reList = regexp.MustCompile(`^\{\s*([0-9]+(?:\s*,\s*[0-9]+)*)\s*\}$`)
+var reList = regexp.MustCompile(`^\{\s*([^}]*)\s*\}$`)
 var reIndex = regexp.MustCompile(`^([a-zA-Z_][a-zA-Z0-9_]*)\[(.+)\]$`)
 var reLen = regexp.MustCompile(`^sizeof\((\w+)\)\s*/\s*sizeof\((\w+)\[0\]\)$`)
 var reStructLit = regexp.MustCompile(`^\(([A-Za-z_][A-Za-z0-9_]*)\)\s*\{(.*)\}$`)
@@ -248,13 +248,14 @@ func exprNode(expr string) *ast.Node {
 		return &ast.Node{Kind: "cast", Children: []*ast.Node{rec, &ast.Node{Kind: "type", Value: typ}}}
 	}
 	if m := reList.FindStringSubmatch(expr); m != nil {
-		parts := strings.Split(m[1], ",")
+		parts := splitArgs(m[1])
 		n := &ast.Node{Kind: "list"}
 		for _, p := range parts {
 			p = strings.TrimSpace(p)
-			if i, err := strconv.Atoi(p); err == nil {
-				n.Children = append(n.Children, &ast.Node{Kind: "int", Value: i})
+			if p == "" {
+				continue
 			}
+			n.Children = append(n.Children, exprNode(p))
 		}
 		return n
 	}

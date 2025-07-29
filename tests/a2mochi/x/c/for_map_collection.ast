@@ -1,5 +1,7 @@
 (program
-  (let k_arr (selector "{\"a\", \"b\"}"))
+  (let k_arr
+    (list (string a) (string b))
+  )
   (let k_len
     (call len (selector k_arr))
   )
@@ -9,6 +11,7 @@
       (let k
         (index (selector k_arr) (selector i))
       )
+      (call print (selector k))
     )
   )
 )
