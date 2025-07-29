@@ -610,6 +610,15 @@ func convertFallback(src string) ([]byte, error) {
 			appendLine(call)
 
 		case strings.Contains(stmt, ":="):
+			exitAfter := false
+			if inFunc && strings.Contains(strings.ToLower(stmt), "; exit") {
+				idx := strings.Index(strings.ToLower(stmt), "; exit")
+				rest := strings.TrimSpace(stmt[idx+1:])
+				if strings.HasPrefix(strings.ToLower(rest), "exit") {
+					exitAfter = true
+				}
+				stmt = strings.TrimSpace(stmt[:idx])
+			}
 			parts := strings.SplitN(stmt, ":=", 2)
 			name := strings.TrimSpace(parts[0])
 			expr := convertExpr(strings.TrimSuffix(strings.TrimSpace(parts[1]), ";"))
@@ -617,6 +626,9 @@ func convertFallback(src string) ([]byte, error) {
 				appendLine(fmt.Sprintf("return %s", expr))
 			} else {
 				appendLine(fmt.Sprintf("%s = %s", name, expr))
+			}
+			if exitAfter {
+				appendLine("return")
 			}
 
 		case strings.HasPrefix(lowerStmt, "exit(") && strings.HasSuffix(lowerStmt, ");") && inFunc:
