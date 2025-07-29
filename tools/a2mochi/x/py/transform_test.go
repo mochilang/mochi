@@ -149,6 +149,7 @@ func TestTransform_Golden(t *testing.T) {
 		"two-sum":                 true,
 		"go_auto":                 true,
 		"python_auto":             true,
+		"python_math":             true,
 	}
 	outDir := filepath.Join(root, "tests", "a2mochi", "x", "py")
 	os.MkdirAll(outDir, 0o755)
