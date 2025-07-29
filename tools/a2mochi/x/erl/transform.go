@@ -219,9 +219,12 @@ func rewriteLine(ln string, recs []Record) []string {
 	if strings.Contains(ln, "lists:max(") {
 		ln = strings.ReplaceAll(ln, "lists:max(", "max(")
 	}
-	if strings.Contains(ln, "list_to_integer(") {
-		ln = strings.ReplaceAll(ln, "list_to_integer(", "int(")
-	}
+        if strings.Contains(ln, "list_to_integer(") {
+                ln = strings.ReplaceAll(ln, "list_to_integer(", "int(")
+        }
+        if strings.Contains(ln, "integer_to_list(") {
+                ln = strings.ReplaceAll(ln, "integer_to_list(", "str(")
+        }
 	if strings.Contains(ln, "length(") {
 		ln = strings.ReplaceAll(ln, "length(", "len(")
 	}
