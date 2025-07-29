@@ -76,6 +76,7 @@ func TestTransformGolden(t *testing.T) {
 		t.Fatalf("no files: %s", pattern)
 	}
 	allowed := map[string]bool{
+		"binary_precedence":   true,
 		"basic_compare":       true,
 		"count_builtin":       true,
 		"for_list_collection": true,
