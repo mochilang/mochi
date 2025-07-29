@@ -3,9 +3,9 @@
 This directory stores helpers and golden files for converting Zig programs
 in `tests/transpiler/x/zig` into Mochi AST form.
 
-Completed programs: 32/98
+Completed programs: 33/98
 
-Last updated: 2025-07-29 20:58 +07
+Last updated: 2025-07-29 21:30 +07
 
 ## Checklist
 - [ ] append_builtin
@@ -51,7 +51,7 @@ Last updated: 2025-07-29 20:58 +07
 - [ ] left_join_multi
 - [x] len_builtin
 - [ ] len_map
-- [ ] len_string
+- [x] len_string
 - [x] let_and_print
 - [x] list_assign
 - [x] list_index

@@ -1,5 +1,5 @@
 (program
   (call print
-    (selector len (string mochi))
+    (call len (string mochi))
   )
 )
