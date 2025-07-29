@@ -1,0 +1,5 @@
+fun outer(x: int): int {
+  let inner = fun(y: int): int => (x + y)
+  return inner(5)
+}
+print(outer(3))

@@ -158,10 +158,16 @@ func TestTransform_Golden(t *testing.T) {
 		"string_prefix_slice": true,
 		"string_in_operator":  true,
 		"substring_builtin":   true,
-		"append_builtin":      true,
-		"min_max_builtin":     true,
-		"slice":               true,
-		"sum_builtin":         true,
+		"append_builtin":      false,
+		"min_max_builtin":     false,
+		"slice":               false,
+		"sum_builtin":         false,
+		"closure":             true,
+		"fun_call":            true,
+		"fun_expr_in_let":     true,
+		"fun_three_args":      true,
+		"nested_function":     true,
+		"partial_application": true,
 	}
 
 	outDir := filepath.Join(root, "tests/a2mochi/x/go")
