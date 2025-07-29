@@ -4,10 +4,16 @@ package fs
 
 import (
 	"fmt"
+	"regexp"
 	"strings"
 
 	"mochi/ast"
 	"mochi/parser"
+)
+
+var (
+	appendRe = regexp.MustCompile(`([a-zA-Z_][\w]*)\s*@\s*\[([^\]]+)\]`)
+	eqRe     = regexp.MustCompile(`\s=\s`)
 )
 
 // Transform converts a parsed Program into a Mochi AST node.
@@ -243,6 +249,7 @@ func fixIndex(expr string) string {
 	expr = convertContains(expr)
 	expr = stripStringCall(expr)
 	expr = convertBuiltins(expr)
+	expr = convertEquality(expr)
 	expr = strings.ReplaceAll(expr, ";", ",")
 	return expr
 }
@@ -344,6 +351,7 @@ func convertBuiltins(expr string) string {
 			expr = expr[:i] + "{" + strings.Join(parts, ", ") + "}" + after
 		}
 	}
+	expr = appendRe.ReplaceAllString(expr, "append($1, $2)")
 	for _, name := range []string{"min", "max", "len", "sum"} {
 		prefix := name + " "
 		if idx := strings.Index(expr, prefix); idx != -1 {
@@ -381,6 +389,10 @@ func stripStringCall(expr string) string {
 		}
 	}
 	return trimmed
+}
+
+func convertEquality(expr string) string {
+	return eqRe.ReplaceAllString(expr, " == ")
 }
 
 func mapType(t string) string {
