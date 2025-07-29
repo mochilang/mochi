@@ -1,0 +1,6 @@
+(program
+  (type Todo
+    (field title (type string))
+  )
+  (fun main)
+)

@@ -207,6 +207,8 @@ func mapType(t string) string {
 		return "bool"
 	case "String", "Char":
 		return "string"
+	case "Any":
+		return "any"
 	}
 	if strings.HasPrefix(t, "List<") && strings.HasSuffix(t, ">") {
 		inner := mapType(t[5 : len(t)-1])
