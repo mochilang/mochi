@@ -2,12 +2,12 @@
 
 This package provides a small Haskell frontend for the `a2mochi` tool. It parses very simple Haskell programs and converts them into Mochi AST form. Only a tiny subset of the language is recognised – single line function declarations, variable bindings and trivial `main` blocks built from `putStrLn`, `print` and `mapM_` loops.
 
-Completed programs: 23/96
+Completed programs: 20/96 (2025-07-29 18:58:20 GMT+7)
 
 - [x] append_builtin
-- [x] avg_builtin
-- [x] basic_compare
-- [x] binary_precedence
+- [ ] avg_builtin
+- [ ] basic_compare
+- [ ] binary_precedence
 - [x] bool_chain
 - [ ] break_continue
 - [x] cast_string_to_int
@@ -87,16 +87,16 @@ Completed programs: 23/96
 - [ ] string_compare
 - [ ] string_concat
 - [ ] string_contains
-- [ ] string_in_operator
-- [ ] string_index
-- [ ] substring_builtin
+- [x] string_in_operator
+- [x] string_index
+- [x] substring_builtin
 - [x] sum_builtin
 - [ ] tail_recursion
 - [ ] test_block
 - [ ] two-sum
-- [x] typed_let
-- [x] typed_var
-- [x] unary_neg
+- [ ] typed_let
+- [ ] typed_var
+- [ ] unary_neg
 - [ ] values_builtin
 - [x] var_assignment
 - [ ] while_loop

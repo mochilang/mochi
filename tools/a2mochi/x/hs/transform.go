@@ -113,12 +113,12 @@ func parseMapM(line string, lineNum int) (Item, bool) {
 func convertBody(body string) string {
 	if strings.HasPrefix(body, "print") {
 		arg := strings.TrimSpace(strings.TrimPrefix(body, "print"))
-		arg = strings.Trim(arg, "()")
+		arg = trimOuterParens(arg)
 		return "print(" + convertExpr(arg) + ")"
 	}
 	if strings.HasPrefix(body, "putStrLn") {
 		arg := strings.TrimSpace(strings.TrimPrefix(body, "putStrLn"))
-		arg = strings.Trim(arg, "()")
+		arg = trimOuterParens(arg)
 		if strings.HasPrefix(arg, "show ") {
 			arg = "str(" + strings.TrimSpace(strings.TrimPrefix(arg, "show ")) + ")"
 		}
@@ -328,6 +328,20 @@ func convertExpr(expr string) string {
 	}
 	// mapFromList pattern not supported without regex
 	if strings.HasPrefix(expr, "[") && strings.HasSuffix(expr, "]") {
+		inner := strings.TrimSpace(expr[1 : len(expr)-1])
+		if strings.Contains(inner, "!!") {
+			parts := strings.Split(inner, "!!")
+			if len(parts) == 2 {
+				left := strings.TrimSpace(parts[0])
+				idx := strings.TrimSpace(parts[1])
+				left = strings.TrimPrefix(left, "(")
+				left = strings.TrimSuffix(left, ")")
+				idx = strings.TrimPrefix(idx, "(")
+				idx = strings.TrimSuffix(idx, ")")
+				idxExpr := convertExpr(idx)
+				return "substring(" + convertExpr(left) + ", " + idxExpr + ", " + idxExpr + " + 1)"
+			}
+		}
 		return expr
 	}
 	if strings.Contains(expr, "++") {
@@ -362,6 +376,43 @@ func convertExpr(expr string) string {
 			pat := convertExpr(fields[0])
 			obj := convertExpr(strings.Join(fields[1:], " "))
 			return pat + " in " + obj
+		}
+	}
+	if strings.Contains(expr, "`isInfixOf`") {
+		parts := strings.Split(expr, "`isInfixOf`")
+		if len(parts) == 2 {
+			left := strings.TrimSpace(parts[0])
+			right := strings.TrimSpace(parts[1])
+			return convertExpr(left) + " in " + convertExpr(right)
+		}
+	}
+	if strings.HasPrefix(expr, "take(") && strings.Contains(expr, ")(") && strings.Contains(expr, "drop ") {
+		i := len("take(")
+		depth := 1
+		j := i
+		for j < len(expr) && depth > 0 {
+			switch expr[j] {
+			case '(':
+				depth++
+			case ')':
+				depth--
+			}
+			j++
+		}
+		if depth == 0 {
+			lenPart := strings.TrimSpace(expr[i : j-1])
+			rest := strings.TrimSpace(expr[j:])
+			if strings.HasPrefix(rest, "(drop ") && strings.HasSuffix(rest, ")") {
+				inner := strings.TrimSuffix(strings.TrimPrefix(rest, "(drop "), ")")
+				fields := strings.Fields(inner)
+				if len(fields) >= 2 {
+					start := convertExpr(fields[0])
+					src := convertExpr(strings.Join(fields[1:], " "))
+					length := convertExpr(lenPart)
+					res := "substring(" + src + ", " + start + ", " + start + " + " + length + ")"
+					return res
+				}
+			}
 		}
 	}
 	if strings.HasPrefix(expr, "Map.elems ") {
@@ -509,37 +560,43 @@ func buildProgramNodeFromItems(items []Item) (*ast.Node, error) {
 			if strings.HasPrefix(body, "do") {
 				body = strings.TrimSpace(strings.TrimPrefix(body, "do"))
 			}
-			body = strings.ReplaceAll(body, "\n", " ")
-			line := strings.TrimSpace(body)
-			if pitem, ok := parseMapM(line, it.Line); ok {
-				node, err := itemToNode(pitem)
-				if err != nil {
-					return nil, err
+			lines := strings.Split(body, "\n")
+			for _, line := range lines {
+				line = strings.TrimSpace(line)
+				if line == "" {
+					continue
 				}
-				if node != nil {
-					root.Children = append(root.Children, node)
-				}
-				continue
-			}
-			if strings.HasPrefix(line, "print") || strings.HasPrefix(line, "putStrLn") {
-				arg := strings.TrimSpace(strings.TrimPrefix(line, "print"))
-				if strings.HasPrefix(line, "putStrLn") {
-					arg = strings.TrimSpace(strings.TrimPrefix(line, "putStrLn"))
-					if strings.HasPrefix(arg, "show ") {
-						arg = strings.TrimSpace(strings.TrimPrefix(arg, "show "))
-						arg = "str(" + arg + ")"
+				line = strings.ReplaceAll(line, "\n", " ")
+				if pitem, ok := parseMapM(line, it.Line); ok {
+					node, err := itemToNode(pitem)
+					if err != nil {
+						return nil, err
 					}
+					if node != nil {
+						root.Children = append(root.Children, node)
+					}
+					continue
 				}
-				arg = strings.Trim(arg, "()")
-				pitem := Item{Kind: "print", Body: arg}
-				node, err := itemToNode(pitem)
-				if err != nil {
-					return nil, err
+				if strings.HasPrefix(line, "print") || strings.HasPrefix(line, "putStrLn") {
+					arg := strings.TrimSpace(strings.TrimPrefix(line, "print"))
+					if strings.HasPrefix(line, "putStrLn") {
+						arg = strings.TrimSpace(strings.TrimPrefix(line, "putStrLn"))
+						if strings.HasPrefix(arg, "show ") {
+							arg = strings.TrimSpace(strings.TrimPrefix(arg, "show "))
+							arg = "str(" + arg + ")"
+						}
+					}
+					arg = trimOuterParens(arg)
+					pitem := Item{Kind: "print", Body: arg}
+					node, err := itemToNode(pitem)
+					if err != nil {
+						return nil, err
+					}
+					if node != nil {
+						root.Children = append(root.Children, node)
+					}
+					continue
 				}
-				if node != nil {
-					root.Children = append(root.Children, node)
-				}
-				continue
 			}
 			continue
 		}

@@ -11,6 +11,7 @@ import (
 	"sort"
 	"strings"
 	"testing"
+	"time"
 
 	"mochi/parser"
 	"mochi/runtime/vm"
@@ -61,19 +62,29 @@ func runMochi(src string) ([]byte, error) {
 	return bytes.TrimSpace(out.Bytes()), nil
 }
 
+func writeError(outDir, name string, err error) {
+	if err == nil {
+		return
+	}
+	_ = os.WriteFile(filepath.Join(outDir, name+".error"), []byte(err.Error()), 0o644)
+}
+
 func processFile(t *testing.T, root, outDir, srcPath string) {
 	name := strings.TrimSuffix(filepath.Base(srcPath), ".hs")
 
 	data, err := os.ReadFile(srcPath)
 	if err != nil {
+		writeError(outDir, name, err)
 		t.Fatalf("read: %v", err)
 	}
 	prog, err := hs.Parse(string(data))
 	if err != nil {
+		writeError(outDir, name, fmt.Errorf("parse: %w", err))
 		t.Fatalf("parse: %v", err)
 	}
 	node, err := hs.Transform(prog)
 	if err != nil {
+		writeError(outDir, name, fmt.Errorf("transform: %w", err))
 		t.Fatalf("transform: %v", err)
 	}
 
@@ -83,14 +94,17 @@ func processFile(t *testing.T, root, outDir, srcPath string) {
 	}
 	want, err := os.ReadFile(astPath)
 	if err != nil {
+		writeError(outDir, name, fmt.Errorf("missing golden: %w", err))
 		t.Fatalf("missing golden: %v", err)
 	}
 	if strings.TrimSpace(string(want)) != strings.TrimSpace(node.String()) {
+		writeError(outDir, name, fmt.Errorf("golden mismatch"))
 		t.Fatalf("golden mismatch\n--- Got ---\n%s\n--- Want ---\n%s", node.String(), want)
 	}
 
 	code, err := hs.Print(node)
 	if err != nil {
+		writeError(outDir, name, fmt.Errorf("source: %w", err))
 		t.Fatalf("source: %v", err)
 	}
 	mochiPath := filepath.Join(outDir, name+".mochi")
@@ -99,6 +113,7 @@ func processFile(t *testing.T, root, outDir, srcPath string) {
 	}
 	gotOut, err := runMochi(code)
 	if err != nil {
+		writeError(outDir, name, fmt.Errorf("run: %w", err))
 		t.Fatalf("run: %v", err)
 	}
 
@@ -109,10 +124,12 @@ func processFile(t *testing.T, root, outDir, srcPath string) {
 
 	vmSrc, err := os.ReadFile(filepath.Join(root, "tests", "vm", "valid", name+".mochi"))
 	if err != nil {
+		writeError(outDir, name, fmt.Errorf("missing vm source: %w", err))
 		t.Fatalf("missing vm source: %v", err)
 	}
 	wantOut, err := runMochi(string(vmSrc))
 	if err != nil {
+		writeError(outDir, name, fmt.Errorf("run vm: %w", err))
 		t.Fatalf("run vm: %v", err)
 	}
 	if !*update {
@@ -121,8 +138,11 @@ func processFile(t *testing.T, root, outDir, srcPath string) {
 		}
 	}
 	if !bytes.Equal(gotOut, wantOut) {
+		writeError(outDir, name, fmt.Errorf("output mismatch"))
 		t.Fatalf("output mismatch\nGot: %s\nWant: %s", gotOut, wantOut)
 	}
+
+	_ = os.Remove(filepath.Join(outDir, name+".error"))
 }
 
 func TestTransform_Golden(t *testing.T) {
@@ -162,6 +182,9 @@ func TestTransform_Golden(t *testing.T) {
 		"string_concat":       true,
 		"string_contains":     true,
 		"list_index":          true,
+		"string_in_operator":  true,
+		"string_index":        true,
+		"substring_builtin":   true,
 	}
 	outDir := filepath.Join(root, "tests", "a2mochi", "x", "hs")
 	os.MkdirAll(outDir, 0o755)
@@ -189,16 +212,26 @@ func updateReadme() {
 	for _, f := range files {
 		name := strings.TrimSuffix(filepath.Base(f), ".hs")
 		mark := "[ ]"
-		if _, err := os.Stat(filepath.Join(outDir, name+".mochi")); err == nil {
-			compiled++
-			mark = "[x]"
+		outPath := filepath.Join(outDir, name+".out")
+		if outData, err := os.ReadFile(outPath); err == nil {
+			vmSrc, err := os.ReadFile(filepath.Join(root, "tests", "vm", "valid", name+".mochi"))
+			if err == nil {
+				wantOut, err := runMochi(string(vmSrc))
+				if err == nil {
+					if bytes.Equal(bytes.TrimSpace(outData), wantOut) {
+						compiled++
+						mark = "[x]"
+					}
+				}
+			}
 		}
 		lines = append(lines, fmt.Sprintf("- %s %s", mark, name))
 	}
 	var buf bytes.Buffer
 	buf.WriteString("# a2mochi Haskell Converter\n\n")
 	buf.WriteString("This package provides a small Haskell frontend for the `a2mochi` tool. It parses very simple Haskell programs and converts them into Mochi AST form. Only a tiny subset of the language is recognised – single line function declarations, variable bindings and trivial `main` blocks built from `putStrLn`, `print` and `mapM_` loops.\n\n")
-	fmt.Fprintf(&buf, "Completed programs: %d/%d\n\n", compiled, total)
+	now := time.Now().In(time.FixedZone("GMT+7", 7*60*60))
+	fmt.Fprintf(&buf, "Completed programs: %d/%d (%s)\n\n", compiled, total, now.Format("2006-01-02 15:04:05 MST"))
 	buf.WriteString(strings.Join(lines, "\n"))
 	buf.WriteByte('\n')
 	_ = os.WriteFile(filepath.Join(root, "tools", "a2mochi", "x", "hs", "README.md"), buf.Bytes(), 0o644)
