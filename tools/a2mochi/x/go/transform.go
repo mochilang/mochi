@@ -5,6 +5,7 @@ import (
 	"go/ast"
 	"go/token"
 	"strconv"
+	"strings"
 
 	mast "mochi/ast"
 )
@@ -20,33 +21,55 @@ func Transform(p *Program) (*mast.Node, error) {
 	for _, decl := range p.File.Decls {
 		switch d := decl.(type) {
 		case *ast.GenDecl:
-			if d.Tok != token.VAR {
-				continue
-			}
-			for _, sp := range d.Specs {
-				vs, ok := sp.(*ast.ValueSpec)
-				if !ok || len(vs.Names) != 1 {
-					continue
-				}
-				name := vs.Names[0].Name
-				var val *mast.Node
-				switch len(vs.Values) {
-				case 1:
-					val = transformExpr(vs.Values[0])
-				case 0:
-					if vs.Type != nil {
-						val = transformType(vs.Type)
-					} else {
-						val = defaultValue(nil)
+			switch d.Tok {
+			case token.VAR:
+				for _, sp := range d.Specs {
+					vs, ok := sp.(*ast.ValueSpec)
+					if !ok || len(vs.Names) != 1 {
+						continue
 					}
-				default:
-					continue
+					name := vs.Names[0].Name
+					var val *mast.Node
+					switch len(vs.Values) {
+					case 1:
+						val = transformExpr(vs.Values[0])
+					case 0:
+						if vs.Type != nil {
+							val = transformType(vs.Type)
+						} else {
+							val = defaultValue(nil)
+						}
+					default:
+						continue
+					}
+					root.Children = append(root.Children, &mast.Node{
+						Kind:     "var",
+						Value:    name,
+						Children: []*mast.Node{val},
+					})
 				}
-				root.Children = append(root.Children, &mast.Node{
-					Kind:     "var",
-					Value:    name,
-					Children: []*mast.Node{val},
-				})
+			case token.TYPE:
+				for _, sp := range d.Specs {
+					ts, ok := sp.(*ast.TypeSpec)
+					if !ok {
+						continue
+					}
+					st, ok := ts.Type.(*ast.StructType)
+					if !ok {
+						continue
+					}
+					tn := &mast.Node{Kind: "type", Value: ts.Name.Name}
+					for _, f := range st.Fields.List {
+						for _, n := range f.Names {
+							fld := &mast.Node{Kind: "field", Value: fieldName(n.Name, f)}
+							if f.Type != nil {
+								fld.Children = []*mast.Node{transformType(f.Type)}
+							}
+							tn.Children = append(tn.Children, fld)
+						}
+					}
+					root.Children = append(root.Children, tn)
+				}
 			}
 		case *ast.FuncDecl:
 			if d.Body == nil {
@@ -643,6 +666,8 @@ func transformExpr(e ast.Expr) *mast.Node {
 		}
 	case *ast.Ident:
 		return &mast.Node{Kind: "selector", Value: v.Name}
+	case *ast.SelectorExpr:
+		return &mast.Node{Kind: "selector", Value: strings.ToLower(v.Sel.Name), Children: []*mast.Node{transformExpr(v.X)}}
 	case *ast.BinaryExpr:
 		return &mast.Node{Kind: "binary", Value: v.Op.String(), Children: []*mast.Node{
 			transformExpr(v.X), transformExpr(v.Y),
@@ -770,7 +795,7 @@ func transformExpr(e ast.Expr) *mast.Node {
 	case *ast.ParenExpr:
 		return transformExpr(v.X)
 	case *ast.CompositeLit:
-		switch v.Type.(type) {
+		switch t := v.Type.(type) {
 		case *ast.ArrayType:
 			n := &mast.Node{Kind: "list"}
 			for _, e := range v.Elts {
@@ -788,6 +813,23 @@ func transformExpr(e ast.Expr) *mast.Node {
 				}
 			}
 			return n
+		case *ast.Ident, *ast.StructType:
+			m := &mast.Node{Kind: "map"}
+			for _, e := range v.Elts {
+				if kv, ok := e.(*ast.KeyValueExpr); ok {
+					key := ""
+					if id, ok := kv.Key.(*ast.Ident); ok {
+						key = strings.ToLower(id.Name)
+					} else if bl, ok := kv.Key.(*ast.BasicLit); ok {
+						key, _ = strconv.Unquote(bl.Value)
+					}
+					m.Children = append(m.Children, &mast.Node{
+						Kind:     "entry",
+						Children: []*mast.Node{{Kind: "string", Value: key}, transformExpr(kv.Value)},
+					})
+				}
+			}
+			return &mast.Node{Kind: "cast", Children: []*mast.Node{m, transformType(t)}}
 		}
 	case *ast.IndexExpr:
 		return &mast.Node{Kind: "index", Children: []*mast.Node{transformExpr(v.X), transformExpr(v.Index)}}
@@ -841,4 +883,25 @@ func transformType(t ast.Expr) *mast.Node {
 		return n
 	}
 	return &mast.Node{Kind: "type", Value: "any"}
+}
+
+func fieldName(name string, f *ast.Field) string {
+	if f == nil || f.Tag == nil {
+		return strings.ToLower(name)
+	}
+	tag, err := strconv.Unquote(f.Tag.Value)
+	if err == nil {
+		for _, part := range strings.Split(tag, " ") {
+			if strings.HasPrefix(part, "json:\"") {
+				v := strings.TrimSuffix(strings.TrimPrefix(part, "json:\""), "\"")
+				if idx := strings.IndexByte(v, ','); idx >= 0 {
+					v = v[:idx]
+				}
+				if v != "" && v != "-" {
+					return v
+				}
+			}
+		}
+	}
+	return strings.ToLower(name)
 }
