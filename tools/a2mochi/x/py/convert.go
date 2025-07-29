@@ -360,17 +360,17 @@ func emitAST(b *strings.Builder, n *Node, indent string, lines []string, seen ma
 		return emitIfStmt(b, n, indent, lines, seen)
 	case "Continue":
 		b.WriteString("continue\n")
-        case "Break":
-                b.WriteString("break\n")
-       case "Assert":
-               b.WriteString("expect ")
-               if err := emitExpr(b, n.Test, lines); err != nil {
-                       return err
-               }
-               b.WriteByte('\n')
-        default:
-                return newConvertError(n.Line, lines, "unhandled statement")
-        }
+	case "Break":
+		b.WriteString("break\n")
+	case "Assert":
+		b.WriteString("expect ")
+		if err := emitExpr(b, n.Test, lines); err != nil {
+			return err
+		}
+		b.WriteByte('\n')
+	default:
+		return newConvertError(n.Line, lines, "unhandled statement")
+	}
 	return nil
 }
 
@@ -800,16 +800,14 @@ func emitExpr(b *strings.Builder, n *Node, lines []string) error {
 		}
 		b.WriteString(")")
 	case "Name":
-		id := n.ID
-		if id == "str" {
-			id = "string"
-		}
-		b.WriteString(id)
+		b.WriteString(n.ID)
 	case "Constant":
 		v := n.constValue()
 		switch vv := v.(type) {
 		case string:
 			fmt.Fprintf(b, "%q", vv)
+		case nil:
+			b.WriteString("nil")
 		default:
 			fmt.Fprintf(b, "%v", vv)
 		}
@@ -1098,7 +1096,14 @@ func emitExpr(b *strings.Builder, n *Node, lines []string) error {
 			case "UAdd":
 				b.WriteByte('+')
 			case "Not":
-				b.WriteString("not ")
+				b.WriteByte('!')
+				b.WriteByte('(')
+				if err := emitExpr(b, n.Operand, lines); err != nil {
+					return err
+				}
+				b.WriteByte(')')
+				b.WriteByte(')')
+				return nil
 			default:
 				return newConvertError(n.Line, lines, "unhandled unary operator")
 			}
