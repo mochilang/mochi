@@ -5,6 +5,7 @@ package cs
 import (
 	"fmt"
 	"regexp"
+	"strconv"
 	"strings"
 
 	"mochi/ast"
@@ -162,11 +163,15 @@ func programToNode(p *Program) (*ast.Node, error) {
 			t.Fields = otherFields
 			for _, m := range t.Methods {
 				if strings.EqualFold(m.Name, "Main") && m.Static {
-					stmts, err := bodyToNodes(m.Body)
+					stmts, err := blockToNodes(m.Ast)
 					if err != nil {
 						return nil, err
 					}
 					root.Children = append(root.Children, stmts...)
+				} else if m.Static {
+					if fn, err := funcToNode(&m); err == nil {
+						root.Children = append(root.Children, fn)
+					}
 				} else {
 					otherMethods = append(otherMethods, m)
 				}
@@ -216,7 +221,7 @@ func funcToNode(f *Func) (*ast.Node, error) {
 	if rt := mapType(f.Ret); rt != "" {
 		n.Children = append(n.Children, &ast.Node{Kind: "type", Value: rt})
 	}
-	body, err := bodyToNodes(f.Body)
+	body, err := blockToNodes(f.Ast)
 	if err != nil {
 		return nil, err
 	}
@@ -224,21 +229,128 @@ func funcToNode(f *Func) (*ast.Node, error) {
 	return n, nil
 }
 
-func bodyToNodes(body []string) ([]*ast.Node, error) {
-	lines := convertBodyLines(body)
-	if len(lines) == 0 {
+func blockToNodes(block *Node) ([]*ast.Node, error) {
+	if block == nil {
 		return nil, nil
 	}
-	src := strings.Join(lines, "\n") + "\n"
-	prog, err := parser.ParseString(src)
-	if err != nil {
-		return nil, err
+	var out []*ast.Node
+	for _, st := range block.Children {
+		out = append(out, stmtNode(st))
 	}
-	nodes := make([]*ast.Node, len(prog.Statements))
-	for i, st := range prog.Statements {
-		nodes[i] = ast.FromStatement(st)
+	return out, nil
+}
+
+func stmtNode(n *Node) *ast.Node {
+	switch n.Kind {
+	case "var":
+		v := &ast.Node{Kind: "var", Value: n.Value}
+		if len(n.Children) > 0 {
+			v.Children = append(v.Children, exprNodeFromAST(n.Children[0]))
+		}
+		return v
+	case "assign":
+		a := &ast.Node{Kind: "assign", Value: n.Value}
+		if len(n.Children) > 0 {
+			a.Children = append(a.Children, exprNodeFromAST(n.Children[0]))
+		}
+		return a
+	case "call":
+		c := &ast.Node{Kind: "call", Value: n.Value}
+		for _, ch := range n.Children {
+			c.Children = append(c.Children, exprNodeFromAST(ch))
+		}
+		return c
+	case "for":
+		if len(n.Children) >= 2 {
+			rng := rangeNode(n.Children[0])
+			body := &ast.Node{Kind: "block"}
+			for _, s := range n.Children[1].Children {
+				body.Children = append(body.Children, stmtNode(s))
+			}
+			return &ast.Node{Kind: "for", Value: n.Value, Children: []*ast.Node{rng, body}}
+		}
+	case "while":
+		if len(n.Children) == 2 {
+			return &ast.Node{Kind: "while", Children: []*ast.Node{exprNodeFromAST(n.Children[0]), blockNode(n.Children[1])}}
+		}
+	case "if":
+		cond := exprNodeFromAST(n.Children[0])
+		thenBlk := blockNode(n.Children[1])
+		out := &ast.Node{Kind: "if", Children: []*ast.Node{cond, thenBlk}}
+		if len(n.Children) > 2 {
+			out.Children = append(out.Children, blockNode(n.Children[2]))
+		}
+		return out
+	case "return":
+		r := &ast.Node{Kind: "return"}
+		if len(n.Children) > 0 {
+			r.Children = append(r.Children, exprNodeFromAST(n.Children[0]))
+		}
+		return r
+	case "break":
+		return &ast.Node{Kind: "break"}
+	case "continue":
+		return &ast.Node{Kind: "continue"}
+	case "block":
+		return blockNode(n)
 	}
-	return nodes, nil
+	return &ast.Node{Kind: "unknown"}
+}
+
+func rangeNode(n *Node) *ast.Node {
+	if n == nil || n.Kind != "range" || len(n.Children) < 2 {
+		return &ast.Node{Kind: "range"}
+	}
+	return &ast.Node{Kind: "range", Children: []*ast.Node{exprNodeFromAST(n.Children[0]), exprNodeFromAST(n.Children[1])}}
+}
+
+func blockNode(n *Node) *ast.Node {
+	blk := &ast.Node{Kind: "block"}
+	if n != nil {
+		for _, c := range n.Children {
+			blk.Children = append(blk.Children, stmtNode(c))
+		}
+	}
+	return blk
+}
+
+func exprNodeFromAST(n *Node) *ast.Node {
+	if n == nil {
+		return &ast.Node{Kind: "nil"}
+	}
+	switch n.Kind {
+	case "literal":
+		if i, err := strconv.Atoi(n.Value); err == nil {
+			return &ast.Node{Kind: "int", Value: i}
+		}
+		if f, err := strconv.ParseFloat(n.Value, 64); err == nil {
+			return &ast.Node{Kind: "float", Value: f}
+		}
+		if n.Value == "true" || n.Value == "false" {
+			return &ast.Node{Kind: "bool", Value: n.Value == "true"}
+		}
+		return &ast.Node{Kind: "string", Value: n.Value}
+	case "ident":
+		return &ast.Node{Kind: "selector", Value: n.Value}
+	case "binary":
+		return &ast.Node{Kind: "binary", Value: n.Value, Children: []*ast.Node{exprNodeFromAST(n.Children[0]), exprNodeFromAST(n.Children[1])}}
+	case "unary":
+		return &ast.Node{Kind: "unary", Value: n.Value, Children: []*ast.Node{exprNodeFromAST(n.Children[0])}}
+	case "call":
+		c := &ast.Node{Kind: "call", Value: n.Value}
+		for _, ch := range n.Children {
+			c.Children = append(c.Children, exprNodeFromAST(ch))
+		}
+		return c
+	case "member":
+		if len(n.Children) > 0 {
+			return &ast.Node{Kind: "selector", Value: n.Value, Children: []*ast.Node{exprNodeFromAST(n.Children[0])}}
+		}
+		return &ast.Node{Kind: "selector", Value: n.Value}
+	case "cond":
+		return &ast.Node{Kind: "if_expr", Children: []*ast.Node{exprNodeFromAST(n.Children[0]), exprNodeFromAST(n.Children[1]), exprNodeFromAST(n.Children[2])}}
+	}
+	return &ast.Node{Kind: "unknown"}
 }
 
 func exprNode(expr string) (*ast.Node, error) {
@@ -256,109 +368,6 @@ func exprNode(expr string) (*ast.Node, error) {
 		return ret.Children[0], nil
 	}
 	return nil, fmt.Errorf("expr parse failed")
-}
-
-func convertBodyLines(body []string) []string {
-	var out []string
-	for _, ln := range body {
-		l := strings.TrimSpace(ln)
-		if l == "" {
-			continue
-		}
-		if strings.HasSuffix(l, ";") {
-			l = strings.TrimSuffix(l, ";")
-		}
-		l = stripLong(l)
-		switch {
-		case strings.HasPrefix(l, "Console.WriteLine("):
-			inner := strings.TrimPrefix(l, "Console.WriteLine(")
-			inner = strings.TrimSuffix(inner, ")")
-			inner = rewriteExpr(inner)
-			l = "print(" + inner + ")"
-		case strings.HasPrefix(l, "return "):
-			l = "return " + strings.TrimSpace(strings.TrimPrefix(l, "return "))
-		case strings.HasPrefix(l, "foreach ("):
-			inner := strings.TrimPrefix(l, "foreach (")
-			inner = strings.TrimSuffix(inner, ") {")
-			parts := strings.SplitN(inner, " in ", 2)
-			if len(parts) == 2 {
-				varName := strings.TrimSpace(parts[0])
-				fs := strings.Fields(varName)
-				if len(fs) > 1 {
-					varName = fs[len(fs)-1]
-				}
-				iter := strings.TrimSpace(parts[1])
-				l = fmt.Sprintf("for %s in %s {", varName, iter)
-			}
-		case strings.HasPrefix(l, "for (") && strings.Contains(l, ";") && strings.Contains(l, ")"):
-			l = strings.TrimPrefix(l, "for (")
-			l = strings.TrimSuffix(l, ") {")
-			parts := strings.Split(l, ";")
-			if len(parts) >= 2 {
-				init := strings.TrimSpace(parts[0])
-				cond := strings.TrimSpace(parts[1])
-				if strings.HasPrefix(init, "var ") {
-					init = strings.TrimPrefix(init, "var ")
-				}
-				if eq := strings.Index(init, "="); eq != -1 {
-					name := strings.TrimSpace(init[:eq])
-					startVal := strings.TrimSpace(init[eq+1:])
-					startVal = stripLong(startVal)
-					endVal := ""
-					if idx := strings.Index(cond, "<"); idx != -1 {
-						endVal = strings.TrimSpace(cond[idx+1:])
-						endVal = stripLong(endVal)
-					}
-					l = fmt.Sprintf("for %s in %s..%s {", name, startVal, endVal)
-				}
-			}
-		case strings.HasPrefix(l, "while ("):
-			l = strings.TrimPrefix(l, "while (")
-			l = strings.TrimSpace(strings.TrimSuffix(l, "{"))
-			if strings.HasSuffix(l, ")") {
-				idx := strings.LastIndex(l, ")")
-				l = l[:idx]
-			}
-			l = strings.TrimSpace(l)
-			l = stripLong(l)
-			l = "while " + l + " {"
-		case strings.HasPrefix(l, "if ("):
-			l = strings.TrimPrefix(l, "if (")
-			l = strings.TrimSuffix(l, ") {")
-			l = stripLong(l)
-			l = "if " + l + " {"
-		case l == "}" || l == "} else {":
-			// keep as is
-		default:
-			if idx := strings.Index(l, "="); idx != -1 {
-				before := strings.TrimSpace(l[:idx])
-				rest := strings.TrimSpace(l[idx+1:])
-				parts := strings.Fields(before)
-				if len(parts) >= 2 {
-					name := parts[len(parts)-1]
-					l = "var " + name + " = " + rest
-				} else {
-					l = stripLong(l)
-				}
-			} else {
-				for _, t := range []string{"long ", "int ", "float ", "double ", "string ", "bool "} {
-					if strings.HasPrefix(l, t) {
-						l = strings.TrimPrefix(l, t)
-						if strings.HasPrefix(t, "string") {
-							l = "var " + l
-						} else {
-							l = "var " + stripLong(l)
-						}
-						break
-					}
-				}
-				l = stripLong(l)
-			}
-		}
-		l = rewriteExpr(l)
-		out = append(out, l)
-	}
-	return out
 }
 
 func mapType(t string) string {

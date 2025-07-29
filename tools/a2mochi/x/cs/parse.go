@@ -27,6 +27,12 @@ type Program struct {
 	Src   string
 }
 
+type Node struct {
+	Kind     string  `json:"Kind"`
+	Value    string  `json:"Value,omitempty"`
+	Children []*Node `json:"Children,omitempty"`
+}
+
 type Type struct {
 	Name      string
 	Kind      string
@@ -55,6 +61,7 @@ type Func struct {
 	Access    string
 	Static    bool
 	Body      []string
+	Ast       *Node
 	StartLine int
 	EndLine   int
 	Doc       string
