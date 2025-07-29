@@ -1,0 +1,15 @@
+type Person {
+  name: string
+  age: int
+  status: string
+}
+var people = [{"name": "Alice", "age": 17, "status": "minor"} as Person, {"name": "Bob", "age": 25, "status": "unknown"} as Person, {"name": "Charlie", "age": 18, "status": "unknown"} as Person, {"name": "Diana", "age": 16, "status": "minor"} as Person]
+for i in 0..len(people) {
+  let item = people[i]
+  if (item.age >= 18) {
+    item.status = "adult"
+    item.age = (item.age + 1)
+  }
+  people[i] = item
+}
+print("ok")
