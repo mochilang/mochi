@@ -1,0 +1,6 @@
+(program
+  (call print
+    (unary - (int 3))
+  )
+  (call print (int 3))
+)

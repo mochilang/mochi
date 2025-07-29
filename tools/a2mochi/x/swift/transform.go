@@ -173,14 +173,14 @@ func extractRange(src string, r offsetRange) string {
 	if r.Start < 0 {
 		r.Start = 0
 	}
-	end := r.End
+	end := r.End + 1
 	if end < r.Start {
 		end = r.Start
 	}
-	if end+1 > len(src) {
-		end = len(src) - 1
+	if end > len(src) {
+		end = len(src)
 	}
-	return src[r.Start : end+1]
+	return src[r.Start:end]
 }
 
 func bodyFromRange(src string, r offsetRange) []string {
@@ -212,6 +212,7 @@ func parseStatementsIndent(body string, indent int) []string {
 			l = rewriteMinMax(l)
 			l = rewriteRanges(l)
 			l = rewriteStrBuiltin(l)
+			l = rewriteTernary(l)
 			l = strings.ReplaceAll(l, ")!", ")")
 			l = strings.ReplaceAll(l, "_append(", "append(")
 			l = strings.ReplaceAll(l, "_values(", "values(")
@@ -364,6 +365,12 @@ func rewriteRanges(expr string) string {
 
 func rewriteStrBuiltin(expr string) string {
 	return strings.ReplaceAll(expr, "String(", "str(")
+}
+
+var ternaryBoolRE = regexp.MustCompile(`\(([^()]+)\)\s*\?\s*1\s*:\s*0`)
+
+func rewriteTernary(expr string) string {
+	return ternaryBoolRE.ReplaceAllString(expr, "if $1 then true else false")
 }
 
 func gatherEnumElements(ms []item) []item {

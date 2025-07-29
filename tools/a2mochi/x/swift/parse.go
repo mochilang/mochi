@@ -115,8 +115,46 @@ func Parse(src string) (*Program, error) {
 		return nil, &ConvertError{Line: line, Column: col, Msg: msg, Snip: snippetAround(src, line, col)}
 	}
 	data := out.Bytes()
-	if idx := bytes.IndexByte(data, '{'); idx > 0 {
-		data = data[idx:]
+	var filtered [][]byte
+	for _, line := range bytes.Split(data, []byte("\n")) {
+		trim := bytes.TrimSpace(line)
+		if len(trim) == 0 {
+			continue
+		}
+		if trim[0] >= '0' && trim[0] <= '9' && bytes.Contains(trim, []byte("|")) {
+			continue
+		}
+		if bytes.HasPrefix(trim, []byte("tests/")) && bytes.Contains(trim, []byte("warning")) {
+			continue
+		}
+		filtered = append(filtered, trim)
+	}
+	data = bytes.Join(filtered, []byte("\n"))
+	start := bytes.Index(data, []byte("{\"_kind\""))
+	if start >= 0 {
+		data = data[start:]
+		depth := 0
+		inStr := false
+		for i, b := range data {
+			switch b {
+			case '"':
+				if i == 0 || data[i-1] != '\\' {
+					inStr = !inStr
+				}
+			case '{':
+				if !inStr {
+					depth++
+				}
+			case '}':
+				if !inStr {
+					depth--
+					if depth == 0 {
+						data = data[:i+1]
+						break
+					}
+				}
+			}
+		}
 	}
 	dec := json.NewDecoder(bytes.NewReader(data))
 	var f Program

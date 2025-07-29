@@ -1,1 +1,2 @@
-print(("hello " + "world"))
+// a2mochi-swift v0.10.47 on 2025-07-29 10:18 GMT+7
+print("hello world")
