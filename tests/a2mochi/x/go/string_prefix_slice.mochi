@@ -1,0 +1,5 @@
+var prefix = "fore"
+var s1 = "forest"
+var s2 = "desert"
+print((substring(s1, 0, len(prefix)) == prefix))
+print((substring(s2, 0, len(prefix)) == prefix))

@@ -1,0 +1,25 @@
+(program
+  (var prefix (string fore))
+  (var s1 (string forest))
+  (var s2 (string desert))
+  (call print
+    (binary ==
+      (call substring
+        (selector s1)
+        (int 0)
+        (call len (selector prefix))
+      )
+      (selector prefix)
+    )
+  )
+  (call print
+    (binary ==
+      (call substring
+        (selector s2)
+        (int 0)
+        (call len (selector prefix))
+      )
+      (selector prefix)
+    )
+  )
+)
