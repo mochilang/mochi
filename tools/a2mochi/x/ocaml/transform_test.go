@@ -119,9 +119,9 @@ func TestTransform_Golden(t *testing.T) {
 		"map_in_operator":     true,
 		"string_contains":     true,
 		"string_in_operator":  true,
-		"string_prefix_slice": false,
-		"typed_let":           false,
-		"typed_var":           false,
+               "string_prefix_slice": true,
+               "typed_let":           false,
+               "typed_var":           false,
 	}
 	outDir := filepath.Join(root, "tests", "a2mochi", "x", "ocaml")
 	os.MkdirAll(outDir, 0o755)

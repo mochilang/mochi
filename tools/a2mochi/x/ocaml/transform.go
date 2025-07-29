@@ -203,7 +203,7 @@ func convertExpr(expr string) []string {
 		if p == "" {
 			continue
 		}
-		if strings.HasPrefix(p, "let ") && strings.Contains(p, " in ") {
+		if strings.HasPrefix(p, "let ") && (strings.Contains(p, " in ") || strings.Contains(p, " in\n")) {
 			sub := convertExpr(p)
 			lines = append(lines, sub...)
 			continue
@@ -293,9 +293,8 @@ func simplify(e string) string {
 	reRef := regexp.MustCompile(`!([A-Za-z0-9_]+)`)
 	e = reRef.ReplaceAllString(e, `$1`)
 
-	// List and string length
+	// List length
 	e = strings.ReplaceAll(e, "List.length", "len")
-	e = strings.ReplaceAll(e, "String.length", "len")
 	e = strings.ReplaceAll(e, "List.fold_left (fun acc x -> acc + x) 0", "sum")
 	reCall := regexp.MustCompile(`\b(len|sum)\s+(\[[^\]]*\]|"[^"]+"|[A-Za-z0-9_]+)`)
 	e = reCall.ReplaceAllString(e, `$1($2)`)
@@ -335,16 +334,6 @@ func simplify(e string) string {
 	// map membership using mem_assoc
 	re = regexp.MustCompile(`List\.mem_assoc\s+([^\s]+)\s+([^\s]+)`)
 	e = re.ReplaceAllString(e, `$1 in $2`)
-
-	// string contains/in operator pattern
-	if strings.Contains(e, "String.sub") && strings.Contains(e, "aux 0") {
-		re := regexp.MustCompile(`len\(([^\)]+)\)\s+and\s+len_sub\s*=\s*len\("([^"]+)"\)`)
-		if m := re.FindStringSubmatch(e); m != nil {
-			e = fmt.Sprintf("%s.contains(\"%s\")", simplify(strings.TrimSpace(m[1])), m[2])
-		}
-	}
-	re = regexp.MustCompile(`if \(([^\)]*\.contains\("[^"\)]+"\))\) then true else false`)
-	e = re.ReplaceAllString(e, `$1`)
 
 	// list syntax
 	e = strings.ReplaceAll(e, ";", ",")
@@ -397,6 +386,19 @@ func simplify(e string) string {
 			}
 		}
 	}
+
+	// Replace remaining String.length occurrences after substring handling
+	e = strings.ReplaceAll(e, "String.length", "len")
+
+	// string contains/in operator pattern
+	if strings.Contains(e, "String.sub") && strings.Contains(e, "aux 0") {
+		re := regexp.MustCompile(`let\s+len_s\s*=\s*len\s+([A-Za-z0-9_]+)\s+and\s+len_sub\s*=\s*len\s+"([^"]+)"`)
+		if m := re.FindStringSubmatch(e); m != nil {
+			e = fmt.Sprintf("%s.contains(\"%s\")", simplify(strings.TrimSpace(m[1])), m[2])
+		}
+	}
+	re = regexp.MustCompile(`if \(([^\)]*\.contains\("[^"\)]+"\))\) then true else false`)
+	e = re.ReplaceAllString(e, `$1`)
 
 	e = strings.TrimSpace(e)
 	for hasOuterParens(e) {
