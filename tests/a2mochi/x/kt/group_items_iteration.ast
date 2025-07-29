@@ -1,7 +1,70 @@
 (program
-  (type GGroup
-    (field key (type any))
-    (field items (type "list<map<string, map<string, any>>>"))
+  (let data
+    (list
+      (map
+        (entry (selector tag) (string a))
+        (entry (selector val) (int 1))
+      )
+      (map
+        (entry (selector tag) (string a))
+        (entry (selector val) (int 2))
+      )
+      (map
+        (entry (selector tag) (string b))
+        (entry (selector val) (int 3))
+      )
+    )
   )
-  (fun main)
+  (let groups
+    (query d
+      (source (selector data))
+      (group_by
+        (selector tag (selector d))
+        (into g)
+      )
+      (select (selector g))
+    )
+  )
+  (var tmp (list))
+  (for g
+    (in (selector groups))
+    (block
+      (var total (int 0))
+      (for x
+        (in
+          (selector items (selector g))
+        )
+        (block
+          (assign total
+            (binary +
+              (selector total)
+              (selector val (selector x))
+            )
+          )
+        )
+      )
+      (assign tmp
+        (call append
+          (selector tmp)
+          (map
+            (entry
+              (selector tag)
+              (selector key (selector g))
+            )
+            (entry (selector total) (selector total))
+          )
+        )
+      )
+    )
+  )
+  (let result
+    (query r
+      (source (selector tmp))
+      (sort
+        (selector tag (selector r))
+      )
+      (select (selector r))
+    )
+  )
+  (call print (selector result))
 )

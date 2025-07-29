@@ -1,7 +1,56 @@
 (program
-  (type GGroup
-    (field key (type any))
-    (field items (type "list<map<string, string>>"))
+  (let people
+    (list
+      (map
+        (entry (selector name) (string Alice))
+        (entry (selector city) (string Paris))
+      )
+      (map
+        (entry (selector name) (string Bob))
+        (entry (selector city) (string Hanoi))
+      )
+      (map
+        (entry (selector name) (string Charlie))
+        (entry (selector city) (string Paris))
+      )
+      (map
+        (entry (selector name) (string Diana))
+        (entry (selector city) (string Hanoi))
+      )
+      (map
+        (entry (selector name) (string Eve))
+        (entry (selector city) (string Paris))
+      )
+      (map
+        (entry (selector name) (string Frank))
+        (entry (selector city) (string Hanoi))
+      )
+      (map
+        (entry (selector name) (string George))
+        (entry (selector city) (string Paris))
+      )
+    )
   )
-  (fun main)
+  (let big
+    (query p
+      (source (selector people))
+      (group_by
+        (selector city (selector p))
+        (into g)
+      )
+      (select
+        (map
+          (entry
+            (selector city)
+            (selector key (selector g))
+          )
+          (entry
+            (selector num)
+            (call count (selector g))
+          )
+        )
+      )
+    )
+  )
+  (call json (selector big))
 )

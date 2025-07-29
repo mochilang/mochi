@@ -4,6 +4,21 @@
   )
   (fun inc
     (param c (type Counter))
+    (assign
+      (selector n (selector c))
+      (binary +
+        (selector n (selector c))
+        (int 1)
+      )
+    )
   )
-  (fun main)
+  (var c
+    (struct Counter
+      (field n (int 0))
+    )
+  )
+  (call inc (selector c))
+  (call print
+    (selector n (selector c))
+  )
 )

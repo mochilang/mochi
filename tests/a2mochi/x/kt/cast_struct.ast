@@ -2,5 +2,15 @@
   (type Todo
     (field title (type string))
   )
-  (fun main)
+  (let todo
+    (cast
+      (map
+        (entry (string title) (string hi))
+      )
+      (type Todo)
+    )
+  )
+  (call print
+    (selector title (selector todo))
+  )
 )

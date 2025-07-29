@@ -1,4 +1,53 @@
 (program
-  (fun boom (type bool))
-  (fun main)
+  (fun boom
+    (type bool)
+    (call print (string boom))
+    (return (bool true))
+  )
+  (call print
+    (binary &&
+      (binary &&
+        (group
+          (binary < (int 1) (int 2))
+        )
+        (group
+          (binary < (int 2) (int 3))
+        )
+      )
+      (group
+        (binary < (int 3) (int 4))
+      )
+    )
+  )
+  (call print
+    (binary &&
+      (binary &&
+        (group
+          (binary < (int 1) (int 2))
+        )
+        (group
+          (binary > (int 2) (int 3))
+        )
+      )
+      (call boom)
+    )
+  )
+  (call print
+    (binary &&
+      (binary &&
+        (binary &&
+          (group
+            (binary < (int 1) (int 2))
+          )
+          (group
+            (binary < (int 2) (int 3))
+          )
+        )
+        (group
+          (binary > (int 3) (int 4))
+        )
+      )
+      (call boom)
+    )
+  )
 )

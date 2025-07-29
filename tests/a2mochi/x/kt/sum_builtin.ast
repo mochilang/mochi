@@ -1,1 +1,7 @@
-(program (fun main))
+(program
+  (call print
+    (call sum
+      (list (int 1) (int 2) (int 3))
+    )
+  )
+)

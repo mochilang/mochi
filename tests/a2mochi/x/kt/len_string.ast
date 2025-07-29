@@ -1,1 +1,5 @@
-(program (fun main))
+(program
+  (call print
+    (call len (string mochi))
+  )
+)

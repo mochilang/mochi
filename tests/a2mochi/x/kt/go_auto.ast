@@ -1,1 +1,16 @@
-(program (fun main))
+(program
+  (unknown)
+  (call print
+    (call
+      (selector Add (selector testpkg))
+      (int 2)
+      (int 3)
+    )
+  )
+  (call print
+    (selector Pi (selector testpkg))
+  )
+  (call print
+    (selector Answer (selector testpkg))
+  )
+)

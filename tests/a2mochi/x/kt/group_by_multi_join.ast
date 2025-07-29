@@ -1,7 +1,121 @@
 (program
-  (type GGroup
-    (field key (type any))
-    (field items (type "list<map<string, any>>"))
+  (let nations
+    (list
+      (map
+        (entry (selector id) (int 1))
+        (entry (selector name) (string A))
+      )
+      (map
+        (entry (selector id) (int 2))
+        (entry (selector name) (string B))
+      )
+    )
   )
-  (fun main)
+  (let suppliers
+    (list
+      (map
+        (entry (selector id) (int 1))
+        (entry (selector nation) (int 1))
+      )
+      (map
+        (entry (selector id) (int 2))
+        (entry (selector nation) (int 2))
+      )
+    )
+  )
+  (let partsupp
+    (list
+      (map
+        (entry (selector part) (int 100))
+        (entry (selector supplier) (int 1))
+        (entry (selector cost) (float 10))
+        (entry (selector qty) (int 2))
+      )
+      (map
+        (entry (selector part) (int 100))
+        (entry (selector supplier) (int 2))
+        (entry (selector cost) (float 20))
+        (entry (selector qty) (int 1))
+      )
+      (map
+        (entry (selector part) (int 200))
+        (entry (selector supplier) (int 1))
+        (entry (selector cost) (float 5))
+        (entry (selector qty) (int 3))
+      )
+    )
+  )
+  (let filtered
+    (query ps
+      (source (selector partsupp))
+      (join s
+        (source (selector suppliers))
+        (on
+          (binary ==
+            (selector id (selector s))
+            (selector supplier (selector ps))
+          )
+        )
+      )
+      (join n
+        (source (selector nations))
+        (on
+          (binary ==
+            (selector id (selector n))
+            (selector nation (selector s))
+          )
+        )
+      )
+      (where
+        (binary ==
+          (selector name (selector n))
+          (string A)
+        )
+      )
+      (select
+        (map
+          (entry
+            (selector part)
+            (selector part (selector ps))
+          )
+          (entry
+            (selector value)
+            (binary *
+              (selector cost (selector ps))
+              (selector qty (selector ps))
+            )
+          )
+        )
+      )
+    )
+  )
+  (let grouped
+    (query x
+      (source (selector filtered))
+      (group_by
+        (selector part (selector x))
+        (into g)
+      )
+      (select
+        (map
+          (entry
+            (selector part)
+            (selector key (selector g))
+          )
+          (entry
+            (selector total)
+            (call sum
+              (query r
+                (source (selector g))
+                (select
+                  (selector value (selector r))
+                )
+              )
+            )
+          )
+        )
+      )
+    )
+  )
+  (call print (selector grouped))
 )

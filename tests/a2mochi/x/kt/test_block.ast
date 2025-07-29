@@ -1,7 +1,11 @@
 (program
-  (fun _expect
-    (param cond (type bool))
+  (test "addition works"
+    (let x
+      (binary + (int 1) (int 2))
+    )
+    (expect
+      (binary == (selector x) (int 3))
+    )
   )
-  (fun test_addition_works)
-  (fun main)
+  (call print (string ok))
 )

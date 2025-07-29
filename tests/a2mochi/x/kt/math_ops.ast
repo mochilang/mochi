@@ -1,1 +1,11 @@
-(program (fun main))
+(program
+  (call print
+    (binary * (int 6) (int 7))
+  )
+  (call print
+    (binary / (int 7) (int 2))
+  )
+  (call print
+    (binary % (int 7) (int 2))
+  )
+)

@@ -1,1 +1,13 @@
-(program (fun main))
+(program
+  (let x (int 2))
+  (let label
+    (match
+      (selector x)
+      (case (int 1) (string one))
+      (case (int 2) (string two))
+      (case (int 3) (string three))
+      (case (_) (string unknown))
+    )
+  )
+  (call print (selector label))
+)

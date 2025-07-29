@@ -1,12 +1,76 @@
 (program
-  (fun _expect
-    (param cond (type bool))
-  )
   (type Person
     (field name (type string))
     (field age (type int))
     (field status (type string))
   )
-  (fun test_update_adult_status)
-  (fun main)
+  (let people
+    (type list (type Person))
+    (list
+      (struct Person
+        (field name (string Alice))
+        (field age (int 17))
+        (field status (string minor))
+      )
+      (struct Person
+        (field name (string Bob))
+        (field age (int 25))
+        (field status (string unknown))
+      )
+      (struct Person
+        (field name (string Charlie))
+        (field age (int 18))
+        (field status (string unknown))
+      )
+      (struct Person
+        (field name (string Diana))
+        (field age (int 16))
+        (field status (string minor))
+      )
+    )
+  )
+  (update people
+    (set
+      (map
+        (entry (selector status) (string adult))
+        (entry
+          (selector age)
+          (binary + (selector age) (int 1))
+        )
+      )
+    )
+    (where
+      (binary >= (selector age) (int 18))
+    )
+  )
+  (test "update adult status"
+    (expect
+      (binary ==
+        (selector people)
+        (list
+          (struct Person
+            (field name (string Alice))
+            (field age (int 17))
+            (field status (string minor))
+          )
+          (struct Person
+            (field name (string Bob))
+            (field age (int 26))
+            (field status (string adult))
+          )
+          (struct Person
+            (field name (string Charlie))
+            (field age (int 19))
+            (field status (string adult))
+          )
+          (struct Person
+            (field name (string Diana))
+            (field age (int 16))
+            (field status (string minor))
+          )
+        )
+      )
+    )
+  )
+  (call print (string ok))
 )

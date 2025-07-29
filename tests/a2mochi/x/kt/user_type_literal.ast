@@ -7,5 +7,20 @@
     (field title (type string))
     (field author (type Person))
   )
-  (fun main)
+  (let book
+    (struct Book
+      (field title (string Go))
+      (field author
+        (struct Person
+          (field name (string Bob))
+          (field age (int 42))
+        )
+      )
+    )
+  )
+  (call print
+    (selector name
+      (selector author (selector book))
+    )
+  )
 )

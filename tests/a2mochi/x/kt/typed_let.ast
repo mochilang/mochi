@@ -1,1 +1,4 @@
-(program (fun main))
+(program
+  (let y (type int))
+  (call print (selector y))
+)

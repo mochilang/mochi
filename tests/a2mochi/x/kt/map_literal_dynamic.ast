@@ -1,1 +1,14 @@
-(program (fun main))
+(program
+  (var x (int 3))
+  (var y (int 4))
+  (var m
+    (map
+      (entry (string a) (selector x))
+      (entry (string b) (selector y))
+    )
+  )
+  (call print
+    (index (selector m) (string a))
+    (index (selector m) (string b))
+  )
+)

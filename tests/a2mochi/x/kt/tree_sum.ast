@@ -1,14 +1,39 @@
 (program
   (type Tree)
-  (type Leaf)
-  (type Node
-    (field left (type Tree))
-    (field value (type int))
-    (field right (type Tree))
-  )
   (fun sum_tree
     (param t (type Tree))
     (type int)
+    (return
+      (match
+        (selector t)
+        (case (selector Leaf) (int 0))
+        (case
+          (call Node (selector left) (selector value) (selector right))
+          (binary +
+            (binary +
+              (call sum_tree (selector left))
+              (selector value)
+            )
+            (call sum_tree (selector right))
+          )
+        )
+      )
+    )
   )
-  (fun main)
+  (let t
+    (struct Node
+      (field left (selector Leaf))
+      (field value (int 1))
+      (field right
+        (struct Node
+          (field left (selector Leaf))
+          (field value (int 2))
+          (field right (selector Leaf))
+        )
+      )
+    )
+  )
+  (call print
+    (call sum_tree (selector t))
+  )
 )

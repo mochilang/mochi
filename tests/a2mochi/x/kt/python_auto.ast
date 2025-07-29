@@ -1,1 +1,12 @@
-(program (fun main))
+(program
+  (unknown)
+  (call print
+    (call
+      (selector sqrt (selector math))
+      (float 16)
+    )
+  )
+  (call print
+    (selector pi (selector math))
+  )
+)

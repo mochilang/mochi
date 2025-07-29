@@ -1,1 +1,17 @@
-(program (fun main))
+(program
+  (let data
+    (list (int 1) (int 2))
+  )
+  (let flag
+    (call exists
+      (query x
+        (source (selector data))
+        (where
+          (binary == (selector x) (int 1))
+        )
+        (select (selector x))
+      )
+    )
+  )
+  (call print (selector flag))
+)

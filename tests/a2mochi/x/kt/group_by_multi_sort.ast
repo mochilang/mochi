@@ -1,7 +1,84 @@
 (program
-  (type GGroup
-    (field key (type "map<string, any>"))
-    (field items (type "list<map<string, map<string, any>>>"))
+  (let items
+    (list
+      (map
+        (entry (selector a) (string x))
+        (entry (selector b) (int 1))
+        (entry (selector val) (int 2))
+      )
+      (map
+        (entry (selector a) (string x))
+        (entry (selector b) (int 2))
+        (entry (selector val) (int 3))
+      )
+      (map
+        (entry (selector a) (string y))
+        (entry (selector b) (int 1))
+        (entry (selector val) (int 4))
+      )
+      (map
+        (entry (selector a) (string y))
+        (entry (selector b) (int 2))
+        (entry (selector val) (int 1))
+      )
+    )
   )
-  (fun main)
+  (let grouped
+    (query i
+      (source (selector items))
+      (group_by
+        (map
+          (entry
+            (selector a)
+            (selector a (selector i))
+          )
+          (entry
+            (selector b)
+            (selector b (selector i))
+          )
+        )
+        (into g)
+      )
+      (sort
+        (unary -
+          (call sum
+            (query x
+              (source (selector g))
+              (select
+                (selector val (selector x))
+              )
+            )
+          )
+        )
+      )
+      (select
+        (map
+          (entry
+            (selector a)
+            (selector a
+              (selector key (selector g))
+            )
+          )
+          (entry
+            (selector b)
+            (selector b
+              (selector key (selector g))
+            )
+          )
+          (entry
+            (selector total)
+            (call sum
+              (query x
+                (source (selector g))
+                (select
+                  (selector val (selector x))
+                )
+              )
+            )
+          )
+        )
+      )
+    )
+  )
+  (call print (selector grouped))
 )

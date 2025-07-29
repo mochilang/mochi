@@ -1,1 +1,45 @@
-(program (fun main))
+(program
+  (unknown)
+  (unknown)
+  (unknown)
+  (unknown)
+  (unknown)
+  (unknown)
+  (unknown)
+  (let r (float 3))
+  (let area
+    (binary *
+      (selector pi (selector math))
+      (call
+        (selector pow (selector math))
+        (selector r)
+        (float 2)
+      )
+    )
+  )
+  (let root
+    (call
+      (selector sqrt (selector math))
+      (float 49)
+    )
+  )
+  (let sin45
+    (call
+      (selector sin (selector math))
+      (binary /
+        (selector pi (selector math))
+        (float 4)
+      )
+    )
+  )
+  (let log_e
+    (call
+      (selector log (selector math))
+      (selector e (selector math))
+    )
+  )
+  (call print (string "Circle area with r =") (selector r) (string =>) (selector area))
+  (call print (string "Square root of 49:") (selector root))
+  (call print (string "sin(π/4):") (selector sin45))
+  (call print (string "log(e):") (selector log_e))
+)

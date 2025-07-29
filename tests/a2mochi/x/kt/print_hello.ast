@@ -1,1 +1,3 @@
-(program (fun main))
+(program
+  (call print (string hello))
+)

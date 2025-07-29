@@ -1,1 +1,9 @@
-(program (fun main))
+(program
+  (let m
+    (map
+      (entry (selector a) (int 1))
+      (entry (selector b) (int 2))
+    )
+  )
+  (call json (selector m))
+)

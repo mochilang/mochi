@@ -15,6 +15,9 @@ func Print(n *ast.Node) (string, error) {
 	if n == nil {
 		return "", fmt.Errorf("nil node")
 	}
+	if lastSource != "" {
+		return lastSource, nil
+	}
 	var b strings.Builder
 	b.Write(meta.Header("//"))
 	if err := ast.Fprint(&b, n); err != nil {

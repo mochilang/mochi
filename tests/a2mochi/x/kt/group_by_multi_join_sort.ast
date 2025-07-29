@@ -1,7 +1,232 @@
 (program
-  (type GGroup
-    (field key (type "map<string, any>"))
-    (field items (type "list<map<string, map<string, any>>>"))
+  (let nation
+    (list
+      (map
+        (entry (selector n_nationkey) (int 1))
+        (entry (selector n_name) (string BRAZIL))
+      )
+    )
   )
-  (fun main)
+  (let customer
+    (list
+      (map
+        (entry (selector c_custkey) (int 1))
+        (entry (selector c_name) (string Alice))
+        (entry (selector c_acctbal) (float 100))
+        (entry (selector c_nationkey) (int 1))
+        (entry (selector c_address) (string "123 St"))
+        (entry (selector c_phone) (string 123-456))
+        (entry (selector c_comment) (string Loyal))
+      )
+    )
+  )
+  (let orders
+    (list
+      (map
+        (entry (selector o_orderkey) (int 1000))
+        (entry (selector o_custkey) (int 1))
+        (entry (selector o_orderdate) (string 1993-10-15))
+      )
+      (map
+        (entry (selector o_orderkey) (int 2000))
+        (entry (selector o_custkey) (int 1))
+        (entry (selector o_orderdate) (string 1994-01-02))
+      )
+    )
+  )
+  (let lineitem
+    (list
+      (map
+        (entry (selector l_orderkey) (int 1000))
+        (entry (selector l_returnflag) (string R))
+        (entry (selector l_extendedprice) (float 1000))
+        (entry (selector l_discount) (float 0.1))
+      )
+      (map
+        (entry (selector l_orderkey) (int 2000))
+        (entry (selector l_returnflag) (string N))
+        (entry (selector l_extendedprice) (float 500))
+        (entry (selector l_discount) (float 0))
+      )
+    )
+  )
+  (let start_date (string 1993-10-01))
+  (let end_date (string 1994-01-01))
+  (let result
+    (query c
+      (source (selector customer))
+      (join o
+        (source (selector orders))
+        (on
+          (binary ==
+            (selector o_custkey (selector o))
+            (selector c_custkey (selector c))
+          )
+        )
+      )
+      (join l
+        (source (selector lineitem))
+        (on
+          (binary ==
+            (selector l_orderkey (selector l))
+            (selector o_orderkey (selector o))
+          )
+        )
+      )
+      (join n
+        (source (selector nation))
+        (on
+          (binary ==
+            (selector n_nationkey (selector n))
+            (selector c_nationkey (selector c))
+          )
+        )
+      )
+      (where
+        (binary &&
+          (binary &&
+            (binary >=
+              (selector o_orderdate (selector o))
+              (selector start_date)
+            )
+            (binary <
+              (selector o_orderdate (selector o))
+              (selector end_date)
+            )
+          )
+          (binary ==
+            (selector l_returnflag (selector l))
+            (string R)
+          )
+        )
+      )
+      (group_by
+        (map
+          (entry
+            (selector c_custkey)
+            (selector c_custkey (selector c))
+          )
+          (entry
+            (selector c_name)
+            (selector c_name (selector c))
+          )
+          (entry
+            (selector c_acctbal)
+            (selector c_acctbal (selector c))
+          )
+          (entry
+            (selector c_address)
+            (selector c_address (selector c))
+          )
+          (entry
+            (selector c_phone)
+            (selector c_phone (selector c))
+          )
+          (entry
+            (selector c_comment)
+            (selector c_comment (selector c))
+          )
+          (entry
+            (selector n_name)
+            (selector n_name (selector n))
+          )
+        )
+        (into g)
+      )
+      (sort
+        (unary -
+          (call sum
+            (query x
+              (source (selector g))
+              (select
+                (binary *
+                  (selector l_extendedprice
+                    (selector l (selector x))
+                  )
+                  (group
+                    (binary -
+                      (int 1)
+                      (selector l_discount
+                        (selector l (selector x))
+                      )
+                    )
+                  )
+                )
+              )
+            )
+          )
+        )
+      )
+      (select
+        (map
+          (entry
+            (selector c_custkey)
+            (selector c_custkey
+              (selector key (selector g))
+            )
+          )
+          (entry
+            (selector c_name)
+            (selector c_name
+              (selector key (selector g))
+            )
+          )
+          (entry
+            (selector revenue)
+            (call sum
+              (query x
+                (source (selector g))
+                (select
+                  (binary *
+                    (selector l_extendedprice
+                      (selector l (selector x))
+                    )
+                    (group
+                      (binary -
+                        (int 1)
+                        (selector l_discount
+                          (selector l (selector x))
+                        )
+                      )
+                    )
+                  )
+                )
+              )
+            )
+          )
+          (entry
+            (selector c_acctbal)
+            (selector c_acctbal
+              (selector key (selector g))
+            )
+          )
+          (entry
+            (selector n_name)
+            (selector n_name
+              (selector key (selector g))
+            )
+          )
+          (entry
+            (selector c_address)
+            (selector c_address
+              (selector key (selector g))
+            )
+          )
+          (entry
+            (selector c_phone)
+            (selector c_phone
+              (selector key (selector g))
+            )
+          )
+          (entry
+            (selector c_comment)
+            (selector c_comment
+              (selector key (selector g))
+            )
+          )
+        )
+      )
+    )
+  )
+  (call print (selector result))
 )

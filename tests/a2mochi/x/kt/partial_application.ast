@@ -3,6 +3,14 @@
     (param a (type int))
     (param b (type int))
     (type int)
+    (return
+      (binary + (selector a) (selector b))
+    )
   )
-  (fun main)
+  (let add5
+    (call add (int 5))
+  )
+  (call print
+    (call add5 (int 3))
+  )
 )

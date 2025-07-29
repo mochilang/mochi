@@ -1,1 +1,17 @@
-(program (fun main))
+(program
+  (let nums
+    (list (int 1) (int 2) (int 3))
+  )
+  (let result
+    (query n
+      (source (selector nums))
+      (where
+        (binary > (selector n) (int 1))
+      )
+      (select
+        (call sum (selector n))
+      )
+    )
+  )
+  (call print (selector result))
+)

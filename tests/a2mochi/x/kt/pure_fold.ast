@@ -2,6 +2,13 @@
   (fun triple
     (param x (type int))
     (type int)
+    (return
+      (binary * (selector x) (int 3))
+    )
   )
-  (fun main)
+  (call print
+    (call triple
+      (binary + (int 1) (int 2))
+    )
+  )
 )

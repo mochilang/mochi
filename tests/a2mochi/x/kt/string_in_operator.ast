@@ -1,1 +1,9 @@
-(program (fun main))
+(program
+  (let s (string catch))
+  (call print
+    (binary in (string cat) (selector s))
+  )
+  (call print
+    (binary in (string dog) (selector s))
+  )
+)

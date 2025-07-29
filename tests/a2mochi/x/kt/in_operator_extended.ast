@@ -1,1 +1,41 @@
-(program (fun main))
+(program
+  (let xs
+    (list (int 1) (int 2) (int 3))
+  )
+  (let ys
+    (query x
+      (source (selector xs))
+      (where
+        (binary ==
+          (binary % (selector x) (int 2))
+          (int 1)
+        )
+      )
+      (select (selector x))
+    )
+  )
+  (call print
+    (binary in (int 1) (selector ys))
+  )
+  (call print
+    (binary in (int 2) (selector ys))
+  )
+  (let m
+    (map
+      (entry (selector a) (int 1))
+    )
+  )
+  (call print
+    (binary in (string a) (selector m))
+  )
+  (call print
+    (binary in (string b) (selector m))
+  )
+  (let s (string hello))
+  (call print
+    (binary in (string ell) (selector s))
+  )
+  (call print
+    (binary in (string foo) (selector s))
+  )
+)

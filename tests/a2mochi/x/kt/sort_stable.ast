@@ -1,1 +1,30 @@
-(program (fun main))
+(program
+  (let items
+    (list
+      (map
+        (entry (selector n) (int 1))
+        (entry (selector v) (string a))
+      )
+      (map
+        (entry (selector n) (int 1))
+        (entry (selector v) (string b))
+      )
+      (map
+        (entry (selector n) (int 2))
+        (entry (selector v) (string c))
+      )
+    )
+  )
+  (let result
+    (query i
+      (source (selector items))
+      (sort
+        (selector n (selector i))
+      )
+      (select
+        (selector v (selector i))
+      )
+    )
+  )
+  (call print (selector result))
+)

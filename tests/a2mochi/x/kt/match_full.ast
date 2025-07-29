@@ -1,7 +1,51 @@
 (program
+  (let x (int 2))
+  (let label
+    (match
+      (selector x)
+      (case (int 1) (string one))
+      (case (int 2) (string two))
+      (case (int 3) (string three))
+      (case (_) (string unknown))
+    )
+  )
+  (call print (selector label))
+  (let day (string sun))
+  (let mood
+    (match
+      (selector day)
+      (case (string mon) (string tired))
+      (case (string fri) (string excited))
+      (case (string sun) (string relaxed))
+      (case (_) (string normal))
+    )
+  )
+  (call print (selector mood))
+  (let ok (bool true))
+  (let status
+    (match
+      (selector ok)
+      (case (bool true) (string confirmed))
+      (case (bool false) (string denied))
+    )
+  )
+  (call print (selector status))
   (fun classify
     (param n (type int))
     (type string)
+    (return
+      (match
+        (selector n)
+        (case (int 0) (string zero))
+        (case (int 1) (string one))
+        (case (_) (string many))
+      )
+    )
   )
-  (fun main)
+  (call print
+    (call classify (int 0))
+  )
+  (call print
+    (call classify (int 5))
+  )
 )

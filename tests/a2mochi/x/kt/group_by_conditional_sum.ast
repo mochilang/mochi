@@ -1,7 +1,67 @@
 (program
-  (type GGroup
-    (field key (type any))
-    (field items (type "list<map<string, any>>"))
+  (let items
+    (list
+      (map
+        (entry (selector cat) (string a))
+        (entry (selector val) (int 10))
+        (entry (selector flag) (bool true))
+      )
+      (map
+        (entry (selector cat) (string a))
+        (entry (selector val) (int 5))
+        (entry (selector flag) (bool false))
+      )
+      (map
+        (entry (selector cat) (string b))
+        (entry (selector val) (int 20))
+        (entry (selector flag) (bool true))
+      )
+    )
   )
-  (fun main)
+  (let result
+    (query i
+      (source (selector items))
+      (group_by
+        (selector cat (selector i))
+        (into g)
+      )
+      (sort
+        (selector key (selector g))
+      )
+      (select
+        (map
+          (entry
+            (selector cat)
+            (selector key (selector g))
+          )
+          (entry
+            (selector share)
+            (binary /
+              (call sum
+                (query x
+                  (source (selector g))
+                  (select
+                    (if_expr
+                      (selector flag (selector x))
+                      (selector val (selector x))
+                      (int 0)
+                    )
+                  )
+                )
+              )
+              (call sum
+                (query x
+                  (source (selector g))
+                  (select
+                    (selector val (selector x))
+                  )
+                )
+              )
+            )
+          )
+        )
+      )
+    )
+  )
+  (call print (selector result))
 )

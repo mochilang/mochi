@@ -3,6 +3,11 @@
     (param a (type int))
     (param b (type int))
     (type int)
+    (return
+      (binary + (selector a) (selector b))
+    )
   )
-  (fun main)
+  (call print
+    (call add (int 2) (int 3))
+  )
 )

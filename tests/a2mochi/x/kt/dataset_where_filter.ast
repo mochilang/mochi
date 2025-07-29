@@ -1,1 +1,75 @@
-(program (fun main))
+(program
+  (type People
+    (field name (type string))
+    (field age (type int))
+  )
+  (let people
+    (type list (type People))
+    (list
+      (struct People
+        (field name (string Alice))
+        (field age (int 30))
+      )
+      (struct People
+        (field name (string Bob))
+        (field age (int 15))
+      )
+      (struct People
+        (field name (string Charlie))
+        (field age (int 65))
+      )
+      (struct People
+        (field name (string Diana))
+        (field age (int 45))
+      )
+    )
+  )
+  (type Adult
+    (field name (type string))
+    (field age (type int))
+    (field is_senior (type bool))
+  )
+  (let adults
+    (query person
+      (source (selector people))
+      (where
+        (binary >=
+          (selector age (selector person))
+          (int 18)
+        )
+      )
+      (select
+        (struct Adult
+          (field name
+            (selector name (selector person))
+          )
+          (field age
+            (selector age (selector person))
+          )
+          (field is_senior
+            (binary >=
+              (selector age (selector person))
+              (int 60)
+            )
+          )
+        )
+      )
+    )
+  )
+  (call print (string "--- Adults ---"))
+  (for person
+    (in (selector adults))
+    (block
+      (call print
+        (selector name (selector person))
+        (string is)
+        (selector age (selector person))
+        (if_expr
+          (selector is_senior (selector person))
+          (string " (senior)")
+          (string "")
+        )
+      )
+    )
+  )
+)

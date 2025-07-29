@@ -1,1 +1,22 @@
-(program (fun main))
+(program
+  (let numbers
+    (list (int 1) (int 2) (int 3) (int 4) (int 5) (int 6) (int 7) (int 8) (int 9))
+  )
+  (for n
+    (in (selector numbers))
+    (block
+      (if
+        (binary ==
+          (binary % (selector n) (int 2))
+          (int 0)
+        )
+        (block (continue))
+      )
+      (if
+        (binary > (selector n) (int 7))
+        (block (break))
+      )
+      (call print (string "odd number:") (selector n))
+    )
+  )
+)
