@@ -1,0 +1,24 @@
+(program
+  (let n (int 1000))
+  (let s
+    (list (selector atom) (int 0))
+  )
+  (for i
+    (range (int 0) (selector n))
+    (block
+      (assign s
+        (binary + (selector s) (selector i))
+      )
+    )
+  )
+  (fun main
+    (block
+      (call print (selector "{"))
+      (call print (selector "  \"duration_us\": 571223,"))
+      (call print (selector "  \"memory_bytes\": 0,"))
+      (call print (selector "  \"name\": \"simple\""))
+      (call print (selector "}"))
+    )
+  )
+  (call main)
+)
