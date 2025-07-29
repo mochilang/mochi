@@ -58,6 +58,7 @@ func hasOuterParens(s string) bool {
 
 func translateExpr(expr string) string {
 	expr = strings.TrimSpace(expr)
+	expr = strings.ReplaceAll(expr, "%{", "{")
 	for hasOuterParens(expr) {
 		expr = strings.TrimSpace(expr[1 : len(expr)-1])
 	}
@@ -327,7 +328,11 @@ func convertFunction(fn Func) string {
 		return ""
 	}
 	name := fn.Name
-	paramStr := strings.Join(fn.Params, ", ")
+	params := make([]string, len(fn.Params))
+	for i, p := range fn.Params {
+		params[i] = p + ": any"
+	}
+	paramStr := strings.Join(params, ", ")
 	var b strings.Builder
 	retType := ""
 	b.WriteString("fun " + name + "(" + paramStr + ")")
@@ -340,6 +345,7 @@ func convertFunction(fn Func) string {
 	inTry := false
 	vars := map[string]bool{}
 	simpleVar := regexp.MustCompile(`^[a-zA-Z_][a-zA-Z0-9_]*$`)
+	var forStack []int
 	for i := 1; i < len(seg); i++ {
 		l := strings.TrimSpace(seg[i])
 		if l == "catch {:return, v} -> v end" {
@@ -389,12 +395,22 @@ func convertFunction(fn Func) string {
 				}
 			}
 		case l == "end":
-			if level > 1 {
+			if len(forStack) > 0 {
+				loops := forStack[len(forStack)-1]
+				for i := 0; i < loops && level > 1; i++ {
+					level--
+					b.WriteString(strings.Repeat("  ", level) + "}\n")
+				}
+				forStack = forStack[:len(forStack)-1]
+				if !inTry && level == 1 {
+					continue
+				}
+			} else if level > 1 {
 				level--
 				b.WriteString(strings.Repeat("  ", level) + "}\n")
-			}
-			if !inTry && level == 1 {
-				continue
+				if !inTry && level == 1 {
+					continue
+				}
 			}
 		case l == "else":
 			if level > 1 {
@@ -409,13 +425,22 @@ func convertFunction(fn Func) string {
 			level++
 		case strings.HasPrefix(l, "for ") && strings.Contains(l, "<-") && strings.HasSuffix(l, " do"):
 			rest := strings.TrimSuffix(strings.TrimPrefix(l, "for "), " do")
-			parts := strings.SplitN(rest, "<-", 2)
-			if len(parts) == 2 {
+			enums := strings.Split(rest, ",")
+			loops := 0
+			for _, e := range enums {
+				parts := strings.SplitN(strings.TrimSpace(e), "<-", 2)
+				if len(parts) != 2 {
+					continue
+				}
 				v := strings.TrimSpace(parts[0])
 				coll := strings.TrimSpace(parts[1])
 				b.WriteString(strings.Repeat("  ", level) + "for " + v + " in " + coll + " {\n")
 				level++
+				loops++
 				vars[v] = true
+			}
+			if loops > 0 {
+				forStack = append(forStack, loops)
 			}
 		case strings.HasPrefix(l, "while ") && strings.HasSuffix(l, " do"):
 			cond := strings.TrimSuffix(strings.TrimPrefix(l, "while"), " do")
