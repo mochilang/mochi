@@ -297,6 +297,22 @@ func parseBodyNodes(body string) ([]*ast.Node, error) {
 			}
 			call := node("call", "len", n1)
 			out = append(out, node("let", outVar, call))
+		case func() bool { _, _, _, _, ok := parsePutDict(c); return ok }():
+			key, dict, val, outVar, _ := parsePutDict(c)
+			nDict, err := parseExpr(convertExpr(dict))
+			if err != nil {
+				return nil, err
+			}
+			nKey, err := parseExpr(quoteAtom(key))
+			if err != nil {
+				return nil, err
+			}
+			nVal, err := parseExpr(convertExpr(val))
+			if err != nil {
+				return nil, err
+			}
+			call := node("call", "put_dict", nKey, nDict, nVal)
+			out = append(out, node("let", outVar, call))
 		case func() bool {
 			name, args, _, ok := parseCallAssign(c)
 			return ok && len(args) == 2 && (name == "union" || name == "subtract" || name == "intersection" || name == "append")
@@ -688,6 +704,24 @@ func parseLengthAssign(s string) (list string, outVar string, ok bool) {
 	}
 	list = parts[0]
 	outVar = parts[1]
+	ok = true
+	return
+}
+
+func parsePutDict(s string) (key, dict, value, outVar string, ok bool) {
+	s = strings.TrimSpace(s)
+	if !strings.HasPrefix(s, "put_dict(") {
+		return
+	}
+	inner := strings.TrimSuffix(strings.TrimPrefix(s, "put_dict("), ")")
+	parts := parseArgs(inner)
+	if len(parts) != 4 {
+		return
+	}
+	key = parts[0]
+	dict = parts[1]
+	value = parts[2]
+	outVar = parts[3]
 	ok = true
 	return
 }

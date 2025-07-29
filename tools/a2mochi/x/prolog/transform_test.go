@@ -138,6 +138,7 @@ func TestTransform(t *testing.T) {
 		"string_prefix_slice": true,
 		"list_set_ops":        true,
 		"json_builtin":        true,
+		"test_block":          true,
 	}
 
 	outputDir := filepath.Join(root, "tests/a2mochi/x/prolog")
