@@ -6,6 +6,7 @@ import (
 	"bytes"
 	"fmt"
 	"os"
+	"regexp"
 	"strconv"
 	"strings"
 
@@ -516,6 +517,17 @@ func sanitizeExpr(code string) string {
 	}
 	code = strings.ReplaceAll(code, "let ", "var ")
 	code = strings.ReplaceAll(code, "mut ", "")
+	// convert `.len()` calls into `len(expr)` using a regex for common cases
+	reLen := regexp.MustCompile(`(vec!\[[^\]]*\]|\[[^\]]*\]|\([^)]*\)|[A-Za-z0-9_]+)\.len\(\)`)
+	for {
+		loc := reLen.FindStringSubmatchIndex(code)
+		if loc == nil {
+			break
+		}
+		expr := code[loc[2]:loc[3]]
+		repl := "len(" + expr + ")"
+		code = code[:loc[0]] + repl + code[loc[1]:]
+	}
 	// convert inline vec! macro usage without regex
 	for {
 		start := strings.Index(code, "vec![")
