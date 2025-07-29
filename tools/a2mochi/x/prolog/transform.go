@@ -424,7 +424,8 @@ func convertExpr(expr string) string {
 	expr = eqRe.ReplaceAllString(expr, `$1==$2`)
 	expr = strings.ReplaceAll(expr, "map{", "{")
 	expr = strings.ReplaceAll(expr, "_{", "{")
-	expr = regexp.MustCompile(`^[A-Za-z0-9_]+{`).ReplaceAllStringFunc(expr, func(s string) string {
+	tagRe := regexp.MustCompile(`[_A-Za-z][_A-Za-z0-9]*{`)
+	expr = tagRe.ReplaceAllStringFunc(expr, func(s string) string {
 		if strings.HasSuffix(s, "{") {
 			return "{"
 		}
