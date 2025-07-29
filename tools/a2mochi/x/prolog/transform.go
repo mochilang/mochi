@@ -5,6 +5,7 @@ package prolog
 import (
 	"fmt"
 	"os"
+	"regexp"
 	"strings"
 
 	"mochi/ast"
@@ -176,6 +177,18 @@ func parseBodyNodes(body string) ([]*ast.Node, error) {
 			}
 			index := node("index", nil, n1, n2)
 			out = append(out, node("let", outVar, index))
+		case func() bool { _, _, _, ok := parseGetDict(c); return ok }():
+			key, dict, outVar, _ := parseGetDict(c)
+			n1, err := parseExpr(convertExpr(dict))
+			if err != nil {
+				return nil, err
+			}
+			n2, err := parseExpr(quoteAtom(key))
+			if err != nil {
+				return nil, err
+			}
+			idxNode := node("index", nil, n1, n2)
+			out = append(out, node("let", outVar, idxNode))
 		case func() bool { _, _, _, ok := parseCallAssign(c); return ok }():
 			name, args, outVar, _ := parseCallAssign(c)
 			var argNodes []*ast.Node
@@ -274,6 +287,14 @@ func splitClauses(body string) []string {
 }
 
 func convertExpr(expr string) string {
+	if key, dict, outVar, ok := parseGetDict(expr); ok {
+		dict = convertExpr(dict)
+		key = quoteAtom(key)
+		if outVar == "_" {
+			return "contains(" + dict + ", " + key + ")"
+		}
+		return dict + "[" + key + "]"
+	}
 	if list, elem, ok := parseNotMember(expr); ok {
 		return "!contains(" + list + ", " + elem + ")"
 	}
@@ -290,6 +311,8 @@ func convertExpr(expr string) string {
 	expr = strings.ReplaceAll(expr, "@>", ">")
 	expr = strings.ReplaceAll(expr, "@<", "<")
 	expr = strings.ReplaceAll(expr, " = ", " == ")
+	expr = strings.ReplaceAll(expr, "map{", "{")
+	expr = strings.ReplaceAll(expr, "_{", "{")
 	expr = replaceTopLevelCommas(expr)
 	return expr
 }
@@ -433,6 +456,37 @@ func parseNotMember(s string) (list, elem string, ok bool) {
 		inner = strings.TrimSuffix(strings.TrimPrefix(inner, "("), ")")
 	}
 	return parseMember(inner)
+}
+
+func parseGetDict(s string) (key, dict, outVar string, ok bool) {
+	s = strings.TrimSpace(s)
+	if !strings.HasPrefix(s, "get_dict(") {
+		return
+	}
+	inner := strings.TrimSuffix(strings.TrimPrefix(s, "get_dict("), ")")
+	parts := parseArgs(inner)
+	if len(parts) != 3 {
+		return
+	}
+	key = parts[0]
+	dict = parts[1]
+	outVar = parts[2]
+	ok = true
+	return
+}
+
+func quoteAtom(s string) string {
+	s = strings.Trim(s, " \t")
+	if strings.HasPrefix(s, "'") && strings.HasSuffix(s, "'") {
+		s = strings.Trim(s, "'")
+	}
+	if strings.HasPrefix(s, "\"") && strings.HasSuffix(s, "\"") {
+		return s
+	}
+	if matched, _ := regexp.MatchString(`^[a-z][A-Za-z0-9_]*$`, s); matched {
+		return "\"" + s + "\""
+	}
+	return s
 }
 
 func replaceTopLevelCommas(s string) string {

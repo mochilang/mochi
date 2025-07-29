@@ -1,0 +1,26 @@
+(program
+  (fun main
+    (let _11442
+      (map
+        (entry
+          (selector outer)
+          (map
+            (entry (selector inner) (int 1))
+          )
+        )
+      )
+    )
+    (let _11464
+      (map
+        (entry
+          (selector outer)
+          (map
+            (entry (selector inner) (int 2))
+          )
+        )
+      )
+    )
+    (call print (int 2))
+  )
+  (call main)
+)
