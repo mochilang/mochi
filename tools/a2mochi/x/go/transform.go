@@ -289,6 +289,14 @@ func tryIIFE(c *ast.CallExpr) *mast.Node {
 				}
 			}
 		}
+		if _, ok := fn.Body.List[0].(*ast.RangeStmt); ok {
+			if n := tryListMembership(fn); n != nil {
+				return n
+			}
+		}
+		if n := tryMapMembership(fn); n != nil {
+			return n
+		}
 	}
 	return nil
 }
@@ -322,6 +330,85 @@ func returnExprFromBlock(b *ast.BlockStmt) *mast.Node {
 		return transformExpr(ret.Results[0])
 	}
 	return nil
+}
+
+// tryListMembership matches loops that test for value membership in a slice.
+func tryListMembership(fn *ast.FuncLit) *mast.Node {
+	if len(fn.Body.List) != 2 {
+		return nil
+	}
+	rng, ok := fn.Body.List[0].(*ast.RangeStmt)
+	if !ok || rng.Body == nil || len(rng.Body.List) != 1 {
+		return nil
+	}
+	ifs, ok := rng.Body.List[0].(*ast.IfStmt)
+	if !ok || len(ifs.Body.List) != 1 {
+		return nil
+	}
+	retTrue, ok := ifs.Body.List[0].(*ast.ReturnStmt)
+	if !ok || len(retTrue.Results) != 1 {
+		return nil
+	}
+	if id, ok := retTrue.Results[0].(*ast.Ident); !ok || id.Name != "true" {
+		return nil
+	}
+	retFalse, ok := fn.Body.List[1].(*ast.ReturnStmt)
+	if !ok || len(retFalse.Results) != 1 {
+		return nil
+	}
+	if id, ok := retFalse.Results[0].(*ast.Ident); !ok || id.Name != "false" {
+		return nil
+	}
+	be, ok := ifs.Cond.(*ast.BinaryExpr)
+	if !ok || be.Op != token.EQL {
+		return nil
+	}
+	valIdent, ok := rng.Value.(*ast.Ident)
+	if !ok {
+		return nil
+	}
+	lhs, ok := be.X.(*ast.Ident)
+	if !ok || lhs.Name != valIdent.Name {
+		return nil
+	}
+	return &mast.Node{Kind: "binary", Value: "in", Children: []*mast.Node{
+		transformExpr(be.Y),
+		transformExpr(rng.X),
+	}}
+}
+
+// tryMapMembership matches `_, ok := m[key]; return ok` patterns.
+func tryMapMembership(fn *ast.FuncLit) *mast.Node {
+	if len(fn.Body.List) != 2 {
+		return nil
+	}
+	as, ok := fn.Body.List[0].(*ast.AssignStmt)
+	if !ok || len(as.Lhs) != 2 || len(as.Rhs) != 1 {
+		return nil
+	}
+	if as.Tok != token.DEFINE && as.Tok != token.ASSIGN {
+		return nil
+	}
+	okIdent, ok := as.Lhs[1].(*ast.Ident)
+	if !ok || okIdent.Name != "ok" {
+		return nil
+	}
+	idx, ok := as.Rhs[0].(*ast.IndexExpr)
+	if !ok {
+		return nil
+	}
+	ret, ok := fn.Body.List[1].(*ast.ReturnStmt)
+	if !ok || len(ret.Results) != 1 {
+		return nil
+	}
+	rident, ok := ret.Results[0].(*ast.Ident)
+	if !ok || rident.Name != okIdent.Name {
+		return nil
+	}
+	return &mast.Node{Kind: "binary", Value: "in", Children: []*mast.Node{
+		transformExpr(idx.Index),
+		transformExpr(idx.X),
+	}}
 }
 
 func transformExpr(e ast.Expr) *mast.Node {

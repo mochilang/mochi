@@ -19,10 +19,13 @@ func Print(node *mast.Node) (string, error) {
 	if err := mast.Fprint(&b, node); err != nil {
 		return "", err
 	}
-	s := b.String()
+	lines := strings.Split(b.String(), "\n")
+	for i, ln := range lines {
+		lines[i] = strings.TrimRight(ln, " ")
+	}
+	s := strings.Join(lines, "\n")
 	if len(s) > 0 && s[len(s)-1] != '\n' {
-		b.WriteByte('\n')
-		s = b.String()
+		s += "\n"
 	}
 	return s, nil
 }
