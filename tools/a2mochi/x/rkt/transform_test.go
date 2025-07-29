@@ -97,6 +97,7 @@ func TestTransformGolden(t *testing.T) {
 		"str_builtin":         true,
 		"math_ops":            true,
 		"string_contains":     true,
+		"for_map_collection":  true,
 	}
 
 	outDir := filepath.Join(root, "tests", "a2mochi", "x", "rkt")

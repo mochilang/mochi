@@ -137,6 +137,8 @@ func formNodeWithMut(d any, mutated map[string]bool) *ast.Node {
 					if bexpr, ok := bind[1].([]any); ok && len(bexpr) >= 1 {
 						if h, _ := symString(bexpr[0]); h == "in-range" && len(bexpr) >= 3 {
 							n.Children = append(n.Children, &ast.Node{Kind: "range", Children: []*ast.Node{exprNode(bexpr[1]), exprNode(bexpr[2])}})
+						} else if (h == "in-hash-keys" || h == "in-hash-values") && len(bexpr) == 2 {
+							n.Children = append(n.Children, &ast.Node{Kind: "in", Children: []*ast.Node{exprNode(bexpr[1])}})
 						} else {
 							n.Children = append(n.Children, &ast.Node{Kind: "in", Children: []*ast.Node{exprNode(bind[1])}})
 						}
