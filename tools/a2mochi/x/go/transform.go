@@ -336,6 +336,33 @@ func transformCall(c *ast.CallExpr) *mast.Node {
 				}}
 			}
 		}
+		if id, ok := fn.X.(*ast.Ident); ok && id.Name == "sort" && fn.Sel.Name == "Slice" && len(c.Args) == 2 {
+			if arr, ok := c.Args[0].(*ast.Ident); ok {
+				if fun, ok := c.Args[1].(*ast.FuncLit); ok && len(fun.Body.List) == 1 {
+					if ret, ok := fun.Body.List[0].(*ast.ReturnStmt); ok && len(ret.Results) == 1 {
+						if be, ok := ret.Results[0].(*ast.BinaryExpr); ok {
+							field := ""
+							if sel, ok := be.X.(*ast.SelectorExpr); ok {
+								field = sel.Sel.Name
+							}
+							key := &mast.Node{Kind: "selector", Value: lowerFirst(field), Children: []*mast.Node{{Kind: "selector", Value: "p"}}}
+							if be.Op == token.GTR {
+								key = &mast.Node{Kind: "unary", Value: "-", Children: []*mast.Node{key}}
+							}
+							lam := &mast.Node{Kind: "funexpr", Children: []*mast.Node{
+								{Kind: "param", Value: "p"},
+								{Kind: "type", Value: "any"},
+								key,
+							}}
+							sortCall := &mast.Node{Kind: "call", Value: "sort_by", Children: []*mast.Node{
+								{Kind: "selector", Value: arr.Name}, lam,
+							}}
+							return &mast.Node{Kind: "assign", Children: []*mast.Node{{Kind: "selector", Value: arr.Name}, sortCall}}
+						}
+					}
+				}
+			}
+		}
 	case *ast.Ident:
 		switch fn.Name {
 		case "len", "append", "sum", "min", "max":
@@ -346,6 +373,10 @@ func transformCall(c *ast.CallExpr) *mast.Node {
 			return n
 		case "string":
 			return nil
+		case "make":
+			if len(c.Args) == 2 {
+				return &mast.Node{Kind: "call", Value: "make_list", Children: []*mast.Node{transformExpr(c.Args[1])}}
+			}
 		}
 		n := &mast.Node{Kind: "call", Value: fn.Name}
 		for _, arg := range c.Args {

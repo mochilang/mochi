@@ -22,6 +22,7 @@ func Print(node *mast.Node) (string, error) {
 		return "", err
 	}
 	out := strings.ReplaceAll(b.String(), "\r\n", "\n")
+	out = strings.ReplaceAll(out, "\r", "")
 	lines := strings.Split(out, "\n")
 	for i, ln := range lines {
 		lines[i] = strings.TrimRight(ln, " ")
