@@ -17,5 +17,21 @@
       (unknown)
     )
   )
-  (call print (unknown))
+  (call print
+    (unary !
+      (call
+        (selector anyMatch
+          (call
+            (selector stream
+              (selector Arrays
+                (selector util (selector java))
+              )
+            )
+            (selector xs)
+          )
+        )
+        (unknown)
+      )
+    )
+  )
 )

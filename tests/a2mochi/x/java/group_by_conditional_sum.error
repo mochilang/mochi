@@ -1,1 +1,1 @@
-run: parse error: 4:15: unexpected token "stream" (expected <ident>)
+run: parse error: 4:32: lexer: invalid input text "?>.stream().map(..."

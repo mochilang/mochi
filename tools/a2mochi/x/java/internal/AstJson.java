@@ -294,6 +294,20 @@ public class AstJson {
             }
             out.print("]}");
             break;
+        case LOGICAL_COMPLEMENT:
+            UnaryTree ut = (UnaryTree) expr;
+            out.print("{\"kind\":\"Unary\",\"op\":\"LOGICAL_COMPLEMENT\",\"expr\":");
+            printExpr(ut.getExpression());
+            out.print("}");
+            break;
+        case TYPE_CAST:
+            TypeCastTree tct = (TypeCastTree) expr;
+            out.print("{\"kind\":\"Cast\",\"value\":\"");
+            out.print(tct.getType());
+            out.print("\",\"expr\":");
+            printExpr(tct.getExpression());
+            out.print("}");
+            break;
         case PLUS:
         case MINUS:
         case MULTIPLY:

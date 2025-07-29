@@ -9,7 +9,9 @@
         (call
           (selector map
             (call
-              (selector stream (unknown))
+              (selector stream
+                (cast (selector result) (type "java.util.List<?>"))
+              )
             )
           )
           (unknown)
