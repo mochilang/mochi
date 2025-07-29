@@ -211,7 +211,11 @@ func parseErrorLine(msg string) int {
 func Parse(src string) (*Node, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-	cmd := exec.CommandContext(ctx, "python3", "-c", astScript)
+	bin := os.Getenv("PYTHON_BIN")
+	if bin == "" {
+		bin = "python3"
+	}
+	cmd := exec.CommandContext(ctx, bin, "-c", astScript)
 	cmd.Stdin = strings.NewReader(src)
 	var out bytes.Buffer
 	var errBuf bytes.Buffer
@@ -271,7 +275,14 @@ func blockComment(src string) string {
 	if !strings.HasSuffix(src, "\n") {
 		src += "\n"
 	}
-	return "/*\n" + src + "*/\n"
+	var b strings.Builder
+	b.WriteString("/*\n")
+	for _, line := range strings.Split(src, "\n") {
+		b.WriteString(strings.TrimRight(line, " \t"))
+		b.WriteByte('\n')
+	}
+	b.WriteString("*/\n")
+	return b.String()
 }
 
 func Print(n *Node) (string, error) {
