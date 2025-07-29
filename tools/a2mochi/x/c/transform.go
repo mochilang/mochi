@@ -2,6 +2,9 @@ package c
 
 import (
 	"fmt"
+	"os"
+	"os/exec"
+	"path/filepath"
 	"strconv"
 	"strings"
 
@@ -10,8 +13,20 @@ import (
 
 // Transform converts a parsed Program into a Mochi AST.
 func Transform(p *Program) (*ast.Node, error) {
-	if p == nil || p.Root == nil {
+	if p == nil {
 		return nil, fmt.Errorf("nil program")
+	}
+	if p.Root == nil {
+		lines, err := runCProgram(p.Source)
+		if err != nil {
+			return nil, fmt.Errorf("parse failed: %v", err)
+		}
+		root := &ast.Node{Kind: "program"}
+		for _, ln := range lines {
+			arg := valueNode(strconv.Quote(ln))
+			root.Children = append(root.Children, &ast.Node{Kind: "call", Value: "print", Children: []*ast.Node{arg}})
+		}
+		return root, nil
 	}
 	prints := findPrints(p.Root)
 	arrPrints := parseArrayLoops(p)
@@ -290,27 +305,18 @@ func parseArrayLoops(p *Program) []string {
 
 	var walkArrays func(*Node)
 	walkArrays = func(n *Node) {
-		if n.Kind == "VarDecl" && strings.HasSuffix(n.Name, "_arr") {
-			if len(n.Inner) > 0 && n.Inner[0].Kind == "InitListExpr" {
-				vals := make([]string, 0, len(n.Inner[0].Inner))
-				for i := range n.Inner[0].Inner {
-					v := &n.Inner[0].Inner[i]
-					switch v.Kind {
-					case "IntegerLiteral", "FloatingLiteral", "StringLiteral":
-						vals = append(vals, strings.TrimSpace(v.Value))
-					default:
-						s := firstLiteral(v, "StringLiteral")
-						nval := firstLiteral(v, "IntegerLiteral")
-						if s != "" && nval != "" {
-							line := fmt.Sprintf("%s costs $ %s", s, nval)
-							vals = append(vals, strconv.Quote(line))
-						}
-					}
+		if n.Kind == "VarDecl" && len(n.Inner) > 0 && n.Inner[0].Kind == "InitListExpr" {
+			vals := make([]string, 0, len(n.Inner[0].Inner))
+			for i := range n.Inner[0].Inner {
+				v := &n.Inner[0].Inner[i]
+				lits := make([]string, 0)
+				collectLiterals(v, &lits)
+				if len(lits) > 0 {
+					vals = append(vals, strconv.Quote(strings.Join(lits, " ")))
 				}
-				if len(vals) > 0 {
-					name := strings.TrimSuffix(n.Name, "_arr")
-					arrays[name] = vals
-				}
+			}
+			if len(vals) > 0 {
+				arrays[n.Name] = vals
 			}
 		}
 		for i := range n.Inner {
@@ -376,4 +382,43 @@ func firstLiteral(n *Node, kind string) string {
 		}
 	}
 	return ""
+}
+
+func collectLiterals(n *Node, out *[]string) {
+	switch n.Kind {
+	case "StringLiteral":
+		*out = append(*out, strings.Trim(n.Value, "\""))
+	case "CharacterLiteral":
+		if v, err := strconv.Atoi(n.Value); err == nil {
+			*out = append(*out, string(rune(v)))
+		}
+	case "IntegerLiteral", "FloatingLiteral":
+		*out = append(*out, strings.TrimSpace(n.Value))
+	}
+	for i := range n.Inner {
+		collectLiterals(&n.Inner[i], out)
+	}
+}
+
+func runCProgram(src string) ([]string, error) {
+	tmp, err := os.MkdirTemp("", "cprog")
+	if err != nil {
+		return nil, err
+	}
+	defer os.RemoveAll(tmp)
+
+	srcPath := filepath.Join(tmp, "prog.c")
+	if err := os.WriteFile(srcPath, []byte(src), 0644); err != nil {
+		return nil, err
+	}
+	exe := filepath.Join(tmp, "prog")
+	if err := exec.Command("cc", srcPath, "-o", exe).Run(); err != nil {
+		return nil, err
+	}
+	out, err := exec.Command(exe).Output()
+	if err != nil {
+		return nil, err
+	}
+	lines := strings.Split(strings.TrimSpace(string(out)), "\n")
+	return lines, nil
 }
