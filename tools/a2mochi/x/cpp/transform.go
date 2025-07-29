@@ -372,9 +372,7 @@ func convertExpression(s string) string {
 		return "len(" + inner + ")"
 	}
 	if strings.HasPrefix(s, "std::vector") && strings.Contains(s, "{") && strings.HasSuffix(s, "}") {
-		start := strings.Index(s, "{")
-		inner := strings.TrimSpace(s[start+1 : len(s)-1])
-		return "[" + inner + "]"
+		return convertVector(s)
 	}
 	if strings.HasPrefix(s, "std::string(") && strings.HasSuffix(s, ")") {
 		return strings.TrimSuffix(strings.TrimPrefix(s, "std::string("), ")")
@@ -402,6 +400,45 @@ func convertExpression(s string) string {
 		s = re.ReplaceAllString(s, `$1`)
 	}
 	return s
+}
+
+// convertVector converts a std::vector initializer into a Mochi list. Nested
+// std::vector initializers are also handled.
+func convertVector(s string) string {
+	s = strings.TrimPrefix(s, "std::vector")
+	s = strings.TrimSpace(s)
+	if strings.HasPrefix(s, "<") {
+		if idx := strings.Index(s, ">"); idx != -1 {
+			s = s[idx+1:]
+		}
+	}
+	s = strings.TrimSpace(s)
+	if strings.HasPrefix(s, "{") && strings.HasSuffix(s, "}") {
+		inner := s[1 : len(s)-1]
+		depth := 0
+		start := 0
+		var parts []string
+		for i := 0; i < len(inner); i++ {
+			switch inner[i] {
+			case '{':
+				depth++
+			case '}':
+				depth--
+			case ',':
+				if depth == 0 {
+					parts = append(parts, strings.TrimSpace(inner[start:i]))
+					start = i + 1
+					continue
+				}
+			}
+		}
+		parts = append(parts, strings.TrimSpace(inner[start:]))
+		for i := range parts {
+			parts[i] = convertExpression(parts[i])
+		}
+		return "[" + strings.Join(parts, ", ") + "]"
+	}
+	return "[" + convertExpression(strings.TrimSpace(s)) + "]"
 }
 
 func parseSingle(src string) (*ast.Node, error) {
