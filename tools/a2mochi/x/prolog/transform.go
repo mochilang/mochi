@@ -100,6 +100,30 @@ func parseBodyNodes(body string) ([]*ast.Node, error) {
 				node("block", nil, thenNodes...),
 				node("block", nil, elseNodes...),
 			))
+		case strings.Contains(c, "->") && strings.Contains(c, ";"):
+			parts := strings.SplitN(c, "->", 2)
+			condStr := convertExpr(strings.TrimSpace(parts[0]))
+			rest := strings.TrimSpace(parts[1])
+			parts = strings.SplitN(rest, ";", 2)
+			thenPart := strings.TrimSpace(parts[0])
+			elsePart := strings.TrimSpace(parts[1])
+			condNode, err := parseExpr(condStr)
+			if err != nil {
+				return nil, err
+			}
+			thenNodes, err := parseBodyNodes(thenPart)
+			if err != nil {
+				return nil, err
+			}
+			elseNodes, err := parseBodyNodes(elsePart)
+			if err != nil {
+				return nil, err
+			}
+			out = append(out, node("if", nil,
+				condNode,
+				node("block", nil, thenNodes...),
+				node("block", nil, elseNodes...),
+			))
 		case strings.HasPrefix(c, "(") && strings.Contains(c, "->"):
 			expr := strings.TrimSuffix(strings.TrimPrefix(c, "("), ")")
 			parts := strings.SplitN(expr, "->", 2)

@@ -1,0 +1,15 @@
+(program
+  (fun main
+    (let _11400
+      (map
+        (entry (string a) (int 1))
+        (entry (string b) (int 2))
+      )
+    )
+    (let _11412 (string a))
+    (call print (string a))
+    (let _11434 (string b))
+    (call print (string b))
+  )
+  (call main)
+)
