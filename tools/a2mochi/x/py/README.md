@@ -1,11 +1,11 @@
 # Python AST Conversion
 
 Created: 2025-07-28
-Date: 2025-07-29 18:55:45 GMT+7
+Date: 2025-07-29 20:06:38 GMT+7
 
 This directory contains the test helpers and golden files for converting Python programs under `tests/transpiler/x/py` into Mochi AST form.
 
-Completed programs: 63/104
+Completed programs: 67/104
 
 ## Checklist
 - [x] append_builtin
@@ -31,7 +31,7 @@ Completed programs: 63/104
 - [x] fun_call
 - [x] fun_expr_in_let
 - [x] fun_three_args
-- [ ] go_auto
+- [x] go_auto
 - [ ] group_by
 - [ ] group_by_conditional_sum
 - [ ] group_by_having
@@ -44,7 +44,7 @@ Completed programs: 63/104
 - [ ] group_items_iteration
 - [x] if_else
 - [x] if_then_else
-- [ ] if_then_else_nested
+- [x] if_then_else_nested
 - [x] in_operator
 - [x] in_operator_extended
 - [ ] inner_join
@@ -82,7 +82,7 @@ Completed programs: 63/104
 - [x] print_hello
 - [ ] pure_fold
 - [ ] pure_global_fold
-- [ ] python_auto
+- [x] python_auto
 - [ ] python_math
 - [ ] query_sum_select
 - [ ] record_assign
@@ -103,7 +103,7 @@ Completed programs: 63/104
 - [x] tail_recursion
 - [x] test_block
 - [ ] tree_sum
-- [ ] two-sum
+- [x] two-sum
 - [ ] typed_let
 - [ ] typed_var
 - [x] unary_neg

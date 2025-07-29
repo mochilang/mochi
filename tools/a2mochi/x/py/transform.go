@@ -290,7 +290,7 @@ func Print(n *Node) (string, error) {
 		return "", fmt.Errorf("nil node")
 	}
 	var b strings.Builder
-	if err := emitAST(&b, n, "", n.Lines, map[string]bool{}, map[string][]string{}); err != nil {
+	if err := emitAST(&b, n, "", n.Lines, map[string]bool{}, map[string][]string{}, map[string]bool{}); err != nil {
 		return "", err
 	}
 	code := strings.TrimSpace(b.String())
@@ -338,21 +338,54 @@ func newTransformError(line int, lines []string, msg string) error {
 	return fmt.Errorf("line %d: %s\n%s", line, msg, strings.TrimRight(b.String(), "\n"))
 }
 
-func emitAST(b *strings.Builder, n *Node, indent string, lines []string, seen map[string]bool, structs map[string][]string) error {
+func emitImport(b *strings.Builder, n *Node, lines []string, imports map[string]bool) error {
+	if n == nil || n.Line <= 0 || n.Line-1 >= len(lines) {
+		return nil
+	}
+	src := strings.TrimSpace(lines[n.Line-1])
+	if strings.HasPrefix(src, "import ") {
+		rest := strings.TrimSpace(strings.TrimPrefix(src, "import "))
+		module := rest
+		alias := rest
+		if parts := strings.Split(rest, " as "); len(parts) == 2 {
+			module = strings.TrimSpace(parts[0])
+			alias = strings.TrimSpace(parts[1])
+		}
+		key := module + ":" + alias
+		if imports[key] {
+			return nil
+		}
+		imports[key] = true
+		fmt.Fprintf(b, "import python %q as %s\n", module, alias)
+	}
+	return nil
+}
+
+func emitAST(b *strings.Builder, n *Node, indent string, lines []string, seen map[string]bool, structs map[string][]string, imports map[string]bool) error {
 	if n == nil {
 		return nil
 	}
 	switch n.Type {
 	case "Module":
 		for _, c := range n.Body {
-			if err := emitAST(b, c, indent, lines, seen, structs); err != nil {
+			if c.Type == "Import" || c.Type == "ImportFrom" {
+				if err := emitImport(b, c, lines, imports); err != nil {
+					return err
+				}
+			}
+		}
+		for _, c := range n.Body {
+			if c.Type == "Import" || c.Type == "ImportFrom" {
+				continue
+			}
+			if err := emitAST(b, c, indent, lines, seen, structs, imports); err != nil {
 				return err
 			}
 		}
 	case "Import", "ImportFrom", "Global":
 		return nil
 	case "FunctionDef":
-		return emitFuncDef(b, n, indent, lines, seen, structs)
+		return emitFuncDef(b, n, indent, lines, seen, structs, imports)
 	case "ClassDef":
 		return emitClassDef(b, n, indent, lines, seen, structs)
 	case "Return":
@@ -364,11 +397,11 @@ func emitAST(b *strings.Builder, n *Node, indent string, lines []string, seen ma
 	case "AugAssign":
 		return emitAugAssignStmt(b, n, lines, seen, structs)
 	case "For":
-		return emitForStmt(b, n, indent, lines, seen, structs)
+		return emitForStmt(b, n, indent, lines, seen, structs, imports)
 	case "While":
-		return emitWhileStmt(b, n, indent, lines, seen, structs)
+		return emitWhileStmt(b, n, indent, lines, seen, structs, imports)
 	case "If":
-		return emitIfStmt(b, n, indent, lines, seen, structs)
+		return emitIfStmt(b, n, indent, lines, seen, structs, imports)
 	case "Continue":
 		b.WriteString("continue\n")
 	case "Break":
@@ -385,10 +418,10 @@ func emitAST(b *strings.Builder, n *Node, indent string, lines []string, seen ma
 	return nil
 }
 
-func emitFuncDef(b *strings.Builder, n *Node, indent string, lines []string, seen map[string]bool, structs map[string][]string) error {
+func emitFuncDef(b *strings.Builder, n *Node, indent string, lines []string, seen map[string]bool, structs map[string][]string, imports map[string]bool) error {
 	if n.Name == "main" {
 		for _, st := range n.Body {
-			if err := emitAST(b, st, indent, lines, seen, structs); err != nil {
+			if err := emitAST(b, st, indent, lines, seen, structs, imports); err != nil {
 				return err
 			}
 		}
@@ -413,26 +446,31 @@ func emitFuncDef(b *strings.Builder, n *Node, indent string, lines []string, see
 			if err := emitExpr(b, a.Annotation, lines, structs); err != nil {
 				return err
 			}
+		} else if paramIsList(n, a.Arg) {
+			b.WriteString(": list<int>")
 		} else {
 			b.WriteString(": int")
 		}
 	}
 	b.WriteByte(')')
-	b.WriteString(": ")
 	if n.Returns != nil {
+		b.WriteString(": ")
 		if err := emitExpr(b, n.Returns, lines, structs); err != nil {
 			return err
 		}
 	} else if rt := inferReturnType(n, lines); rt != "" {
+		b.WriteString(": ")
 		b.WriteString(rt)
+	} else if returnIsList(n) {
+		b.WriteString(": list<int>")
 	} else {
-		b.WriteString("int")
+		b.WriteString(": int")
 	}
 	b.WriteString(" {\n")
 	for _, st := range n.Body {
 		b.WriteString(indent)
 		b.WriteString("  ")
-		if err := emitAST(b, st, indent+"  ", lines, seen, structs); err != nil {
+		if err := emitAST(b, st, indent+"  ", lines, seen, structs, imports); err != nil {
 			return err
 		}
 	}
@@ -593,7 +631,7 @@ func emitAugAssignStmt(b *strings.Builder, n *Node, lines []string, seen map[str
 	return nil
 }
 
-func emitForStmt(b *strings.Builder, n *Node, indent string, lines []string, seen map[string]bool, structs map[string][]string) error {
+func emitForStmt(b *strings.Builder, n *Node, indent string, lines []string, seen map[string]bool, structs map[string][]string, imports map[string]bool) error {
 	b.WriteString("for ")
 	if err := emitExpr(b, n.Target, lines, structs); err != nil {
 		return err
@@ -629,7 +667,7 @@ func emitForStmt(b *strings.Builder, n *Node, indent string, lines []string, see
 	for _, st := range n.Body {
 		b.WriteString(indent)
 		b.WriteString("  ")
-		if err := emitAST(b, st, indent+"  ", lines, seen, structs); err != nil {
+		if err := emitAST(b, st, indent+"  ", lines, seen, structs, imports); err != nil {
 			return err
 		}
 	}
@@ -638,7 +676,7 @@ func emitForStmt(b *strings.Builder, n *Node, indent string, lines []string, see
 	return nil
 }
 
-func emitWhileStmt(b *strings.Builder, n *Node, indent string, lines []string, seen map[string]bool, structs map[string][]string) error {
+func emitWhileStmt(b *strings.Builder, n *Node, indent string, lines []string, seen map[string]bool, structs map[string][]string, imports map[string]bool) error {
 	b.WriteString("while ")
 	if err := emitExpr(b, n.Test, lines, structs); err != nil {
 		return err
@@ -647,7 +685,7 @@ func emitWhileStmt(b *strings.Builder, n *Node, indent string, lines []string, s
 	for _, st := range n.Body {
 		b.WriteString(indent)
 		b.WriteString("  ")
-		if err := emitAST(b, st, indent+"  ", lines, seen, structs); err != nil {
+		if err := emitAST(b, st, indent+"  ", lines, seen, structs, imports); err != nil {
 			return err
 		}
 	}
@@ -754,7 +792,7 @@ func emitListCompQuery(b *strings.Builder, n *Node, slice *Node, lines []string,
 	return nil
 }
 
-func emitIfStmt(b *strings.Builder, n *Node, indent string, lines []string, seen map[string]bool, structs map[string][]string) error {
+func emitIfStmt(b *strings.Builder, n *Node, indent string, lines []string, seen map[string]bool, structs map[string][]string, imports map[string]bool) error {
 	if n.Test != nil && n.Test.Type == "Compare" && len(n.Test.Ops) == 1 && n.Test.Ops[0].Type == "Eq" && n.Test.Left != nil && n.Test.Left.Type == "Name" && n.Test.Left.ID == "__name__" {
 		return nil
 	}
@@ -766,7 +804,7 @@ func emitIfStmt(b *strings.Builder, n *Node, indent string, lines []string, seen
 	for _, st := range n.Body {
 		b.WriteString(indent)
 		b.WriteString("  ")
-		if err := emitAST(b, st, indent+"  ", lines, seen, structs); err != nil {
+		if err := emitAST(b, st, indent+"  ", lines, seen, structs, imports); err != nil {
 			return err
 		}
 	}
@@ -777,7 +815,7 @@ func emitIfStmt(b *strings.Builder, n *Node, indent string, lines []string, seen
 		for _, st := range n.Orelse {
 			b.WriteString(indent)
 			b.WriteString("  ")
-			if err := emitAST(b, st, indent+"  ", lines, seen, structs); err != nil {
+			if err := emitAST(b, st, indent+"  ", lines, seen, structs, imports); err != nil {
 				return err
 			}
 		}
@@ -1478,6 +1516,62 @@ func lambdaType(n *Node, lines []string) string {
 		}
 	}
 	return fmt.Sprintf("fun(%s): int", strings.Join(args, ", "))
+}
+
+func paramIsList(fn *Node, name string) bool {
+	var walk func(n *Node) bool
+	walk = func(n *Node) bool {
+		if n == nil {
+			return false
+		}
+		if n.Type == "Subscript" {
+			v := n.valueNode()
+			for v != nil && v.Type == "Subscript" {
+				v = v.valueNode()
+			}
+			if v != nil && v.Type == "Name" && v.ID == name {
+				return true
+			}
+		}
+		if n.Type == "Call" && n.Func != nil && n.Func.Type == "Name" && n.Func.ID == "len" {
+			args := n.callArgs()
+			if len(args) == 1 && args[0].Type == "Name" && args[0].ID == name {
+				return true
+			}
+		}
+		fields := []*Node{n.Test, n.Target, n.Iter, n.Operand, n.Left, n.Right, n.Slice, n.Lower, n.Upper, n.Step, n.Elt}
+		for _, ch := range fields {
+			if walk(ch) {
+				return true
+			}
+		}
+		for _, lst := range [][]*Node{n.Body, n.Orelse, n.Elts, n.Keys, n.Values, n.Ops, n.Comparators, n.DecoratorList, n.Bases, n.Generators, n.Ifs} {
+			for _, c := range lst {
+				if walk(c) {
+					return true
+				}
+			}
+		}
+		return false
+	}
+	for _, st := range fn.Body {
+		if walk(st) {
+			return true
+		}
+	}
+	return false
+}
+
+func returnIsList(fn *Node) bool {
+	for _, st := range fn.Body {
+		if st.Type == "Return" {
+			v := st.valueNode()
+			if v != nil && v.Type == "List" {
+				return true
+			}
+		}
+	}
+	return false
 }
 
 func listStructType(n *Node, structs map[string][]string) string {

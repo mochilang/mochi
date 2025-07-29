@@ -58,6 +58,8 @@ func runMochi(src string) ([]byte, error) {
 	}
 	var out bytes.Buffer
 	m := vm.New(p, &out)
+	os.Setenv("MOCHI_NOW_SEED", "0")
+	vm.SetNowSeed(0)
 	if err := m.Run(); err != nil {
 		return nil, err
 	}
@@ -141,6 +143,8 @@ func TestTransform_Golden(t *testing.T) {
 		"match_expr":              true,
 		"str_builtin":             true,
 		"test_block":              true,
+		"go_auto":                 true,
+		"python_auto":             true,
 	}
 	outDir := filepath.Join(root, "tests", "a2mochi", "x", "py")
 	os.MkdirAll(outDir, 0o755)
